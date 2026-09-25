@@ -1,3 +1,4 @@
+import { loadUploadedEventSprites, registerUploadedEventSpriteFrames } from "./uploadedEventSprites";
 import sharedVillageObjects from "./sharedVillageObjects.json";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import forestHarmony from "./forestHarmonyTileset.json";
@@ -218,6 +219,7 @@ const RAW_CHARSET_TEXTURE_SUFFIX = "__raw";
 export function loadBundledAssets(scene: { readonly load: Pick<Phaser.Loader.LoaderPlugin, "image" | "on"> }, project?: Project): void {
   const usedTextures = project ? projectBundledTextureKeys(project) : null;
   loadUploadedTilesets(scene, project);
+  loadUploadedEventSprites(scene, project, project ? collectPlayReferencedStrings(project) : undefined);
   scene.load.image(TEX_TILESET, withInlineAsset(ASSET_TILESET));
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
     if (usedTextures && !usedTextures.has(asset.textureKey)) continue;
@@ -312,6 +314,7 @@ export function registerBundledFrames(scene: Phaser.Scene, project?: Project): v
   registerEasyRpgCharsetTextures(scene, usedTextures);
   registerUploadedCharsetTextures(scene, project);
   registerUploadedTilesets(scene, project);
+  registerUploadedEventSpriteFrames(scene, project);
   registerFarmingCropFrames(scene, usedTextures);
   registerEmoteFrames(scene);
 }

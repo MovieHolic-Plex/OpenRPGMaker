@@ -61,6 +61,12 @@ export function prepareWebExport(project: Project): PreparedWebExport {
   for (const tileset of Object.values(exportProject.tilesets)) {
     delete tileset.referenceDocuments;
     delete tileset.referenceSourceTilesetId;
+    for (const kit of tileset.structureKits ?? []) delete kit.referenceDocuments;
+  }
+  const spatialLibraries = exportProject.spatialAuthoring ? [exportProject.spatialAuthoring.library,
+    ...Object.values(exportProject.spatialAuthoring.occurrences).map(occurrence => occurrence.snapshot.library)] : [];
+  for (const library of spatialLibraries) for (const collection of Object.values(library)) {
+    for (const design of Object.values(collection)) Reflect.deleteProperty(design, 'referenceDocuments');
   }
   const projectJson = serialize(exportProject);
   deserialize(projectJson);

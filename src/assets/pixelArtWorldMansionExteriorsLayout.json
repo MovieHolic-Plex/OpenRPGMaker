@@ -1,0 +1,6930 @@
+[
+  {
+    "packId": "paw-mansion-exterior-b",
+    "sourceComparisons": [
+      {
+        "packId": "paw-mansion-exterior-b",
+        "recipeId": "msex-b-roof-whole",
+        "sourceRect": {
+          "x": 0,
+          "y": 28,
+          "width": 5,
+          "height": 5
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "231be40aa675d067e56b68dcd238b7242b395f61b98cbfdf93566bd3111501a5"
+      },
+      {
+        "packId": "paw-mansion-exterior-b",
+        "recipeId": "msex-b-wall-bay",
+        "sourceRect": {
+          "x": 0,
+          "y": 33,
+          "width": 5,
+          "height": 3
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "8e9e8aade3e09b40ec25f6b62577088fb792e3d4b8b8616e93568bc39d82eb15"
+      },
+      {
+        "packId": "paw-mansion-exterior-b",
+        "recipeId": "msex-b-facade-door-window",
+        "sourceRect": {
+          "x": 5,
+          "y": 36,
+          "width": 3,
+          "height": 5
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "4e7c13f011d146c06c2aa7a4323546f61aa9430d4fb7dbc4ea08b932bb287d55"
+      },
+      {
+        "packId": "paw-mansion-exterior-b",
+        "recipeId": "msex-b-arched-window-small",
+        "sourceRect": {
+          "x": 6,
+          "y": 23,
+          "width": 1,
+          "height": 2
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "381c63f1ee17e92f541ea7eceb7bef4de99e1139833c431218a5579e15bec150"
+      },
+      {
+        "packId": "paw-mansion-exterior-b",
+        "recipeId": "msex-b-arched-window-tall",
+        "sourceRect": {
+          "x": 7,
+          "y": 23,
+          "width": 1,
+          "height": 3
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "a51159ab43339c21276a2028060a6e291f502f721d0b3c38b421eb367f03e894"
+      },
+      {
+        "packId": "paw-mansion-exterior-b",
+        "recipeId": "msex-b-arched-window-wide",
+        "sourceRect": {
+          "x": 5,
+          "y": 26,
+          "width": 3,
+          "height": 3
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "32fb2868dbcd7f8987f7e60adb3402f75084cfdcb453c990b67b76cb7363b34c"
+      },
+      {
+        "packId": "paw-mansion-exterior-b",
+        "recipeId": "msex-b-balcony-enclosure",
+        "sourceRect": {
+          "x": 0,
+          "y": 41,
+          "width": 3,
+          "height": 4
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "c47b9edbf9a4344040705504e7e2484175767584df4eaa780cb86728514e9ead"
+      },
+      {
+        "packId": "paw-mansion-exterior-b",
+        "recipeId": "msex-b-bench-front",
+        "sourceRect": {
+          "x": 0,
+          "y": 13,
+          "width": 2,
+          "height": 2
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "a8f8f9c417ac69bce73b77205203803cd1e86529aa3c568e6ae13b3573e7f2f5"
+      },
+      {
+        "packId": "paw-mansion-exterior-b",
+        "recipeId": "msex-b-bench-back",
+        "sourceRect": {
+          "x": 0,
+          "y": 15,
+          "width": 2,
+          "height": 2
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "b255bd10e39095284cfd4cb097e306c0f34039a1394dd8ca39e24eca0c9d7c76"
+      },
+      {
+        "packId": "paw-mansion-exterior-b",
+        "recipeId": "msex-b-street-lamp",
+        "sourceRect": {
+          "x": 2,
+          "y": 13,
+          "width": 1,
+          "height": 4
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "5df856fb8049f3b72e2991a9a1d58208aece4d6b1180ea3076d73f375fda6714"
+      },
+      {
+        "packId": "paw-mansion-exterior-b",
+        "recipeId": "msex-b-tea-table",
+        "sourceRect": {
+          "x": 4,
+          "y": 9,
+          "width": 2,
+          "height": 3
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "7562bffd0d3e19d222e0e51b9849701496d41003429fb372c8d26297bace4fbc"
+      },
+      {
+        "packId": "paw-mansion-exterior-b",
+        "recipeId": "msex-b-tea-stool",
+        "sourceRect": {
+          "x": 6,
+          "y": 11,
+          "width": 1,
+          "height": 1
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "9272993bd1cbd7a90e3601a9d543602e5e4c5f9f2908b130399bf720763a9e34"
+      },
+      {
+        "packId": "paw-mansion-exterior-b",
+        "recipeId": "msex-b-rose-red",
+        "sourceRect": {
+          "x": 0,
+          "y": 9,
+          "width": 2,
+          "height": 2
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "9142697299586f9ee738489b79be75e43f16659c8b481b2728fe47860e29aeda"
+      },
+      {
+        "packId": "paw-mansion-exterior-b",
+        "recipeId": "msex-b-rose-pink",
+        "sourceRect": {
+          "x": 2,
+          "y": 9,
+          "width": 2,
+          "height": 2
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "0275b768a33ed8945dac09d5e28d6dcc0c2a387db0f0ed4c972d08ec1be570b8"
+      },
+      {
+        "packId": "paw-mansion-exterior-b",
+        "recipeId": "msex-b-flower-pedestal",
+        "sourceRect": {
+          "x": 5,
+          "y": 13,
+          "width": 1,
+          "height": 2
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "2fdb857bf42291f80ebe72120f1e9ecfb976908ac740c9bdbe0a7d34b82a6a4c"
+      },
+      {
+        "packId": "paw-mansion-exterior-b",
+        "recipeId": "msex-b-topiary-round",
+        "sourceRect": {
+          "x": 4,
+          "y": 15,
+          "width": 2,
+          "height": 2
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "1d2a438c113e2053be903e4fe6b2eae138e5aa6f0017a7ec44dbd6ef4825dd2e"
+      },
+      {
+        "packId": "paw-mansion-exterior-b",
+        "recipeId": "msex-b-topiary-tall",
+        "sourceRect": {
+          "x": 6,
+          "y": 13,
+          "width": 2,
+          "height": 4
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "2326074bde1b23b166d9c6d195aba600c2f9eb975a86f166ba874defbc42bb38"
+      },
+      {
+        "packId": "paw-mansion-exterior-b",
+        "recipeId": "msex-b-garden-gate-closed",
+        "sourceRect": {
+          "x": 0,
+          "y": 2,
+          "width": 3,
+          "height": 2
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "73496c4655a1dd6ff4db353f8f271f1f1d4c4f53cebfff61c8bae3cf4fcdf616"
+      }
+    ],
+    "sourceFilename": "ST-MsionB-E01.png",
+    "sourceSha256": "1a48151aa07d6b2c7d59b7a8674bf143060841d25ad2d5dd20bc4e5d214d246b",
+    "sourceCount": 408,
+    "count": 528,
+    "imageWidth": 256,
+    "imageHeight": 2112,
+    "composites": [
+      {
+        "id": "msex-b-whole-house",
+        "name": "B 저택 · 곡면지붕과 전체 2층 현관",
+        "canvas": {
+          "width": 224,
+          "height": 320
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "parts": [
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 0,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 32,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 32,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 64,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 64,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 64,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 96,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 64,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 128,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 96,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 160,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 128,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 192,
+              "y": 0
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 288
+            }
+          },
+          {
+            "role": "complete-central-window-door-front",
+            "sourceRect": {
+              "x": 160,
+              "y": 1152,
+              "width": 96,
+              "height": 160
+            },
+            "offset": {
+              "x": 64,
+              "y": 160
+            }
+          },
+          {
+            "role": "complete-west-window",
+            "sourceRect": {
+              "x": 192,
+              "y": 736,
+              "width": 32,
+              "height": 64
+            },
+            "offset": {
+              "x": 32,
+              "y": 192
+            }
+          },
+          {
+            "role": "complete-east-window",
+            "sourceRect": {
+              "x": 192,
+              "y": 736,
+              "width": 32,
+              "height": 64
+            },
+            "offset": {
+              "x": 160,
+              "y": 192
+            }
+          }
+        ],
+        "notes": "원본전체5×5지붕의중앙x2열만반복해7열, 곡면양끝/처마그대로. 외벽은33행cornice→34행3줄→35행기단. 원본(5,36)3×5창+현관전면을중앙에덮고작은아치창2개를벽위에올린다. 건물전체7×10, 남쪽중앙(3,10)이문앞접근이다. 발코니가없는지상출입표본. 장식포르티코/3층보행발코니를억지로겹치지않는다. 픽셀리사이즈/반전없음.",
+        "sourceRect": {
+          "x": 0,
+          "y": 51,
+          "width": 7,
+          "height": 10
+        },
+        "tiles": [
+          [
+            408,
+            409,
+            410,
+            411,
+            412,
+            413,
+            414
+          ],
+          [
+            416,
+            417,
+            418,
+            419,
+            420,
+            421,
+            422
+          ],
+          [
+            424,
+            425,
+            426,
+            427,
+            428,
+            429,
+            430
+          ],
+          [
+            432,
+            433,
+            434,
+            435,
+            436,
+            437,
+            438
+          ],
+          [
+            440,
+            441,
+            442,
+            443,
+            444,
+            445,
+            446
+          ],
+          [
+            448,
+            449,
+            450,
+            451,
+            452,
+            453,
+            454
+          ],
+          [
+            456,
+            457,
+            458,
+            459,
+            460,
+            461,
+            462
+          ],
+          [
+            464,
+            465,
+            466,
+            467,
+            468,
+            469,
+            470
+          ],
+          [
+            472,
+            473,
+            474,
+            475,
+            476,
+            477,
+            478
+          ],
+          [
+            480,
+            481,
+            482,
+            483,
+            484,
+            485,
+            486
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-balcony-portico",
+        "name": "장식발코니 · 앞난간과 양쪽기둥 완전체",
+        "canvas": {
+          "width": 96,
+          "height": 160
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "parts": [
+          {
+            "role": "whole-left-column-and-rail-cap",
+            "sourceRect": {
+              "x": 160,
+              "y": 992,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "role": "middle-front-rail-without-unrelated-window",
+            "sourceRect": {
+              "x": 192,
+              "y": 1024,
+              "width": 32,
+              "height": 128
+            },
+            "offset": {
+              "x": 32,
+              "y": 32
+            }
+          },
+          {
+            "role": "whole-right-column-and-rail-cap",
+            "sourceRect": {
+              "x": 224,
+              "y": 992,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 64,
+              "y": 0
+            }
+          }
+        ],
+        "notes": "원본(5,31)3×5사각에는중앙윗칸이위쪽아치창하단과공유되어혼입된다. 좌우기둥/난간끝전체1×5와중앙난간1×4(원본32행시작)를그대로합쳐순수장식포르티코전체를만든다. 창조각을포함하거나난간머리를자르지않는다. 단독지상출입건물아님,캐릭터를올려놓는발판아님. 공식보행발코니3레이어는별도미지원.",
+        "sourceRect": {
+          "x": 0,
+          "y": 61,
+          "width": 3,
+          "height": 5
+        },
+        "tiles": [
+          [
+            488,
+            489,
+            490
+          ],
+          [
+            496,
+            497,
+            498
+          ],
+          [
+            504,
+            505,
+            506
+          ],
+          [
+            512,
+            513,
+            514
+          ],
+          [
+            520,
+            521,
+            522
+          ]
+        ]
+      }
+    ],
+    "recipes": [
+      {
+        "id": "msex-b-roof-whole",
+        "name": "곡면 지붕 · 상단/양측/전면처마 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 28,
+          "width": 5,
+          "height": 5
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 4
+          },
+          {
+            "x": 1,
+            "y": 4
+          },
+          {
+            "x": 2,
+            "y": 4
+          },
+          {
+            "x": 3,
+            "y": 4
+          },
+          {
+            "x": 4,
+            "y": 4
+          }
+        ],
+        "tiles": [
+          [
+            224,
+            225,
+            226,
+            227,
+            228
+          ],
+          [
+            232,
+            233,
+            234,
+            235,
+            236
+          ],
+          [
+            240,
+            241,
+            242,
+            243,
+            244
+          ],
+          [
+            248,
+            249,
+            250,
+            251,
+            252
+          ],
+          [
+            256,
+            257,
+            258,
+            259,
+            260
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-wall-bay",
+        "name": "기둥과 석축을 포함한 외벽 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 33,
+          "width": 5,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          },
+          {
+            "x": 3,
+            "y": 2
+          },
+          {
+            "x": 4,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            264,
+            265,
+            266,
+            267,
+            268
+          ],
+          [
+            272,
+            273,
+            274,
+            275,
+            276
+          ],
+          [
+            280,
+            281,
+            282,
+            283,
+            284
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-facade-door-window",
+        "name": "2층 아치창과 1층 현관 · 전면 전체",
+        "sourceRect": {
+          "x": 5,
+          "y": 36,
+          "width": 3,
+          "height": 5
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 4
+          },
+          {
+            "x": 1,
+            "y": 4
+          },
+          {
+            "x": 2,
+            "y": 4
+          }
+        ],
+        "tiles": [
+          [
+            293,
+            294,
+            295
+          ],
+          [
+            301,
+            302,
+            303
+          ],
+          [
+            309,
+            310,
+            311
+          ],
+          [
+            317,
+            318,
+            319
+          ],
+          [
+            325,
+            326,
+            327
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-arched-window-small",
+        "name": "작은 아치창",
+        "sourceRect": {
+          "x": 6,
+          "y": 23,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          273,
+          281
+        ],
+        "tiles": [
+          [
+            190
+          ],
+          [
+            198
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-arched-window-tall",
+        "name": "키큰 아치창",
+        "sourceRect": {
+          "x": 7,
+          "y": 23,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ],
+        "exampleWallRows": [
+          273,
+          273,
+          281
+        ],
+        "tiles": [
+          [
+            191
+          ],
+          [
+            199
+          ],
+          [
+            207
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-arched-window-wide",
+        "name": "3열 아치창",
+        "sourceRect": {
+          "x": 5,
+          "y": 26,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
+        "exampleWallRows": [
+          273,
+          273,
+          281
+        ],
+        "tiles": [
+          [
+            213,
+            214,
+            215
+          ],
+          [
+            221,
+            222,
+            223
+          ],
+          [
+            229,
+            230,
+            231
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-balcony-enclosure",
+        "name": "발코니 난간 앞뒤·측면과 전면토대",
+        "sourceRect": {
+          "x": 0,
+          "y": 41,
+          "width": 3,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 2,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            328,
+            329,
+            330
+          ],
+          [
+            336,
+            337,
+            338
+          ],
+          [
+            344,
+            345,
+            346
+          ],
+          [
+            352,
+            353,
+            354
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-bench-front",
+        "name": "정원벤치 정면",
+        "sourceRect": {
+          "x": 0,
+          "y": 13,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            104,
+            105
+          ],
+          [
+            112,
+            113
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-bench-back",
+        "name": "정원벤치 뒷면",
+        "sourceRect": {
+          "x": 0,
+          "y": 15,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            120,
+            121
+          ],
+          [
+            128,
+            129
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-street-lamp",
+        "name": "쌍등 가로등 전체",
+        "sourceRect": {
+          "x": 2,
+          "y": 13,
+          "width": 1,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            106
+          ],
+          [
+            114
+          ],
+          [
+            122
+          ],
+          [
+            130
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-tea-table",
+        "name": "원형 티테이블 전체",
+        "sourceRect": {
+          "x": 4,
+          "y": 9,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            76,
+            77
+          ],
+          [
+            84,
+            85
+          ],
+          [
+            92,
+            93
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-tea-stool",
+        "name": "등받이 없는 원형 정원스툴",
+        "sourceRect": {
+          "x": 6,
+          "y": 11,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "all-sides",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ],
+        "tiles": [
+          [
+            94
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-rose-red",
+        "name": "붉은 장미 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 9,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            72,
+            73
+          ],
+          [
+            80,
+            81
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-rose-pink",
+        "name": "분홍 장미 전체",
+        "sourceRect": {
+          "x": 2,
+          "y": 9,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            74,
+            75
+          ],
+          [
+            82,
+            83
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-flower-pedestal",
+        "name": "꽃과 원형 화분 받침",
+        "sourceRect": {
+          "x": 5,
+          "y": 13,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            109
+          ],
+          [
+            117
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-topiary-round",
+        "name": "둥근 정원수",
+        "sourceRect": {
+          "x": 4,
+          "y": 15,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            124,
+            125
+          ],
+          [
+            132,
+            133
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-topiary-tall",
+        "name": "긴 정원수",
+        "sourceRect": {
+          "x": 6,
+          "y": 13,
+          "width": 2,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            110,
+            111
+          ],
+          [
+            118,
+            119
+          ],
+          [
+            126,
+            127
+          ],
+          [
+            134,
+            135
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-garden-gate-closed",
+        "name": "닫힌 철제 정원문",
+        "sourceRect": {
+          "x": 0,
+          "y": 2,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            16,
+            17,
+            18
+          ],
+          [
+            24,
+            25,
+            26
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-whole-house",
+        "name": "B 저택 · 곡면지붕과 전체 2층 현관",
+        "sourceRect": {
+          "x": 0,
+          "y": 51,
+          "width": 7,
+          "height": 10
+        },
+        "tiles": [
+          [
+            408,
+            409,
+            410,
+            411,
+            412,
+            413,
+            414
+          ],
+          [
+            416,
+            417,
+            418,
+            419,
+            420,
+            421,
+            422
+          ],
+          [
+            424,
+            425,
+            426,
+            427,
+            428,
+            429,
+            430
+          ],
+          [
+            432,
+            433,
+            434,
+            435,
+            436,
+            437,
+            438
+          ],
+          [
+            440,
+            441,
+            442,
+            443,
+            444,
+            445,
+            446
+          ],
+          [
+            448,
+            449,
+            450,
+            451,
+            452,
+            453,
+            454
+          ],
+          [
+            456,
+            457,
+            458,
+            459,
+            460,
+            461,
+            462
+          ],
+          [
+            464,
+            465,
+            466,
+            467,
+            468,
+            469,
+            470
+          ],
+          [
+            472,
+            473,
+            474,
+            475,
+            476,
+            477,
+            478
+          ],
+          [
+            480,
+            481,
+            482,
+            483,
+            484,
+            485,
+            486
+          ]
+        ],
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 9
+          },
+          {
+            "x": 1,
+            "y": 9
+          },
+          {
+            "x": 2,
+            "y": 9
+          },
+          {
+            "x": 3,
+            "y": 9
+          },
+          {
+            "x": 4,
+            "y": 9
+          },
+          {
+            "x": 5,
+            "y": 9
+          },
+          {
+            "x": 6,
+            "y": 9
+          }
+        ]
+      },
+      {
+        "id": "msex-b-balcony-portico",
+        "name": "장식발코니 · 앞난간과 양쪽기둥 완전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 61,
+          "width": 3,
+          "height": 5
+        },
+        "tiles": [
+          [
+            488,
+            489,
+            490
+          ],
+          [
+            496,
+            497,
+            498
+          ],
+          [
+            504,
+            505,
+            506
+          ],
+          [
+            512,
+            513,
+            514
+          ],
+          [
+            520,
+            521,
+            522
+          ]
+        ],
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 4
+          },
+          {
+            "x": 1,
+            "y": 4
+          },
+          {
+            "x": 2,
+            "y": 4
+          }
+        ]
+      }
+    ],
+    "scenes": [
+      {
+        "id": "mansion-exterior-b-court",
+        "name": "B 저택과 작은 정원",
+        "width": 9,
+        "height": 13,
+        "lowerTiles": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "upperTiles": [
+          -1,
+          408,
+          409,
+          410,
+          411,
+          412,
+          413,
+          414,
+          -1,
+          -1,
+          416,
+          417,
+          418,
+          419,
+          420,
+          421,
+          422,
+          -1,
+          -1,
+          424,
+          425,
+          426,
+          427,
+          428,
+          429,
+          430,
+          -1,
+          -1,
+          432,
+          433,
+          434,
+          435,
+          436,
+          437,
+          438,
+          -1,
+          -1,
+          440,
+          441,
+          442,
+          443,
+          444,
+          445,
+          446,
+          -1,
+          -1,
+          448,
+          449,
+          450,
+          451,
+          452,
+          453,
+          454,
+          -1,
+          -1,
+          456,
+          457,
+          458,
+          459,
+          460,
+          461,
+          462,
+          -1,
+          -1,
+          464,
+          465,
+          466,
+          467,
+          468,
+          469,
+          470,
+          -1,
+          -1,
+          472,
+          473,
+          474,
+          475,
+          476,
+          477,
+          478,
+          109,
+          -1,
+          480,
+          481,
+          482,
+          483,
+          484,
+          485,
+          486,
+          117,
+          -1,
+          104,
+          105,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          112,
+          113,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        "placements": [
+          {
+            "recipeId": "msex-b-whole-house",
+            "x": 1,
+            "y": 0
+          },
+          {
+            "recipeId": "msex-b-bench-front",
+            "x": 1,
+            "y": 10
+          },
+          {
+            "recipeId": "msex-b-flower-pedestal",
+            "x": 8,
+            "y": 8
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 4,
+            "y": 12
+          },
+          {
+            "x": 4,
+            "y": 11
+          },
+          {
+            "x": 4,
+            "y": 10
+          },
+          {
+            "x": 2,
+            "y": 12
+          },
+          {
+            "x": 8,
+            "y": 10
+          }
+        ],
+        "passableTiles": [
+          0,
+          4
+        ],
+        "lowerTileIds": [
+          0,
+          4
+        ],
+        "rooms": [
+          {
+            "id": "house",
+            "name": "지상출입저택전체",
+            "x": 1,
+            "y": 0,
+            "width": 7,
+            "height": 10
+          },
+          {
+            "id": "court",
+            "name": "짧은현관접근과정원",
+            "x": 0,
+            "y": 10,
+            "width": 9,
+            "height": 3
+          }
+        ],
+        "doorways": [
+          {
+            "from": "court",
+            "to": "house",
+            "x": 4,
+            "y": 10,
+            "width": 1,
+            "height": 1
+          }
+        ],
+        "notes": "9×13. 건물7×10을북서에두고남쪽2칸현관접근/서쪽벤치/동쪽꽃화분을분리한다. 남문4,12→현관4,10. 벤치앞2,12와화분앞8,10은같은짧은포장보도로연결된다. 건물사각전체solid이며문앞바닥까지접근한다. 현관검은그림은자동전이/개폐이벤트가아니다. 지붕/벽/문위에캐릭터를걷게하지않는다. 그림속정원수밑동은하위잔디/보도에닿는다."
+      }
+    ]
+  },
+  {
+    "packId": "paw-mansion-exterior-p",
+    "sourceComparisons": [
+      {
+        "packId": "paw-mansion-exterior-p",
+        "recipeId": "msex-p-roof-whole",
+        "sourceRect": {
+          "x": 0,
+          "y": 28,
+          "width": 5,
+          "height": 5
+        },
+        "rgbaIdenticalToB": false,
+        "alphaIdenticalToB": true,
+        "sha256": "a771cc6b34eb24084d54c9dc977466cce26228225392a4667308cc7621494bb7"
+      },
+      {
+        "packId": "paw-mansion-exterior-p",
+        "recipeId": "msex-p-wall-bay",
+        "sourceRect": {
+          "x": 0,
+          "y": 33,
+          "width": 5,
+          "height": 3
+        },
+        "rgbaIdenticalToB": false,
+        "alphaIdenticalToB": true,
+        "sha256": "73b399a9702b2286f2b98f1c858c5ce4ec08b7ca7eb1f1d1c345eda306f14f2e"
+      },
+      {
+        "packId": "paw-mansion-exterior-p",
+        "recipeId": "msex-p-facade-door-window",
+        "sourceRect": {
+          "x": 5,
+          "y": 36,
+          "width": 3,
+          "height": 5
+        },
+        "rgbaIdenticalToB": false,
+        "alphaIdenticalToB": true,
+        "sha256": "19bc7e98d719d358cb53ebb4dd7a059deea324cbc58158896b15b609ae1d86c5"
+      },
+      {
+        "packId": "paw-mansion-exterior-p",
+        "recipeId": "msex-p-arched-window-small",
+        "sourceRect": {
+          "x": 6,
+          "y": 23,
+          "width": 1,
+          "height": 2
+        },
+        "rgbaIdenticalToB": false,
+        "alphaIdenticalToB": true,
+        "sha256": "fe3a89098dad98910138bffb2da9346d93efad6606398f01f737c5286773950b"
+      },
+      {
+        "packId": "paw-mansion-exterior-p",
+        "recipeId": "msex-p-arched-window-tall",
+        "sourceRect": {
+          "x": 7,
+          "y": 23,
+          "width": 1,
+          "height": 3
+        },
+        "rgbaIdenticalToB": false,
+        "alphaIdenticalToB": true,
+        "sha256": "65a217c7d4722b03b9210cfc3e3ae43ba759ea1d20f2d85fae7eeb1d1dd961c1"
+      },
+      {
+        "packId": "paw-mansion-exterior-p",
+        "recipeId": "msex-p-arched-window-wide",
+        "sourceRect": {
+          "x": 5,
+          "y": 26,
+          "width": 3,
+          "height": 3
+        },
+        "rgbaIdenticalToB": false,
+        "alphaIdenticalToB": true,
+        "sha256": "1433b1c0a24bfb07f85afc4f87c1776141d23126aee7ce421eff07f21d90bf7f"
+      },
+      {
+        "packId": "paw-mansion-exterior-p",
+        "recipeId": "msex-p-balcony-enclosure",
+        "sourceRect": {
+          "x": 0,
+          "y": 41,
+          "width": 3,
+          "height": 4
+        },
+        "rgbaIdenticalToB": false,
+        "alphaIdenticalToB": true,
+        "sha256": "13dd9364cfdc28403a9fdbdff9ac2960f10222fc2d12f9e2bb1bd988b587682e"
+      },
+      {
+        "packId": "paw-mansion-exterior-p",
+        "recipeId": "msex-p-bench-front",
+        "sourceRect": {
+          "x": 0,
+          "y": 13,
+          "width": 2,
+          "height": 2
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "a8f8f9c417ac69bce73b77205203803cd1e86529aa3c568e6ae13b3573e7f2f5"
+      },
+      {
+        "packId": "paw-mansion-exterior-p",
+        "recipeId": "msex-p-bench-back",
+        "sourceRect": {
+          "x": 0,
+          "y": 15,
+          "width": 2,
+          "height": 2
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "b255bd10e39095284cfd4cb097e306c0f34039a1394dd8ca39e24eca0c9d7c76"
+      },
+      {
+        "packId": "paw-mansion-exterior-p",
+        "recipeId": "msex-p-street-lamp",
+        "sourceRect": {
+          "x": 2,
+          "y": 13,
+          "width": 1,
+          "height": 4
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "5df856fb8049f3b72e2991a9a1d58208aece4d6b1180ea3076d73f375fda6714"
+      },
+      {
+        "packId": "paw-mansion-exterior-p",
+        "recipeId": "msex-p-tea-table",
+        "sourceRect": {
+          "x": 4,
+          "y": 9,
+          "width": 2,
+          "height": 3
+        },
+        "rgbaIdenticalToB": false,
+        "alphaIdenticalToB": true,
+        "sha256": "ccfda551dd0e851696f1fc1d6125e767e9b2c10ef30e6f9d3bf65811378108e4"
+      },
+      {
+        "packId": "paw-mansion-exterior-p",
+        "recipeId": "msex-p-tea-stool",
+        "sourceRect": {
+          "x": 6,
+          "y": 11,
+          "width": 1,
+          "height": 1
+        },
+        "rgbaIdenticalToB": false,
+        "alphaIdenticalToB": true,
+        "sha256": "ad4faca9b87ebaa85ae68bb2ca8410e01270eb7ec97ef7e2a54fe64bab0d8724"
+      },
+      {
+        "packId": "paw-mansion-exterior-p",
+        "recipeId": "msex-p-rose-red",
+        "sourceRect": {
+          "x": 0,
+          "y": 9,
+          "width": 2,
+          "height": 2
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "9142697299586f9ee738489b79be75e43f16659c8b481b2728fe47860e29aeda"
+      },
+      {
+        "packId": "paw-mansion-exterior-p",
+        "recipeId": "msex-p-rose-pink",
+        "sourceRect": {
+          "x": 2,
+          "y": 9,
+          "width": 2,
+          "height": 2
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "0275b768a33ed8945dac09d5e28d6dcc0c2a387db0f0ed4c972d08ec1be570b8"
+      },
+      {
+        "packId": "paw-mansion-exterior-p",
+        "recipeId": "msex-p-flower-pedestal",
+        "sourceRect": {
+          "x": 5,
+          "y": 13,
+          "width": 1,
+          "height": 2
+        },
+        "rgbaIdenticalToB": false,
+        "alphaIdenticalToB": true,
+        "sha256": "aa189f41eb39ac3f4bfdff7f21e19de95a3e4e6695c56f46af3043a2de35131a"
+      },
+      {
+        "packId": "paw-mansion-exterior-p",
+        "recipeId": "msex-p-topiary-round",
+        "sourceRect": {
+          "x": 4,
+          "y": 15,
+          "width": 2,
+          "height": 2
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "1d2a438c113e2053be903e4fe6b2eae138e5aa6f0017a7ec44dbd6ef4825dd2e"
+      },
+      {
+        "packId": "paw-mansion-exterior-p",
+        "recipeId": "msex-p-topiary-tall",
+        "sourceRect": {
+          "x": 6,
+          "y": 13,
+          "width": 2,
+          "height": 4
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "2326074bde1b23b166d9c6d195aba600c2f9eb975a86f166ba874defbc42bb38"
+      },
+      {
+        "packId": "paw-mansion-exterior-p",
+        "recipeId": "msex-p-garden-gate-closed",
+        "sourceRect": {
+          "x": 0,
+          "y": 2,
+          "width": 3,
+          "height": 2
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "73496c4655a1dd6ff4db353f8f271f1f1d4c4f53cebfff61c8bae3cf4fcdf616"
+      }
+    ],
+    "sourceFilename": "ST-MsionP-E01.png",
+    "sourceSha256": "3723b044833d5a95680298df805d7b6ae321f6be89d6ddf375c2f5c8122d8775",
+    "sourceCount": 408,
+    "count": 552,
+    "imageWidth": 256,
+    "imageHeight": 2208,
+    "composites": [
+      {
+        "id": "msex-p-whole-house",
+        "name": "P 저택 · 곡면지붕과 전체 2층 현관",
+        "canvas": {
+          "width": 224,
+          "height": 320
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "parts": [
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 0,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 32,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 32,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 64,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 64,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 64,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 96,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 64,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 128,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 96,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 160,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 128,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 192,
+              "y": 0
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 288
+            }
+          },
+          {
+            "role": "complete-central-window-door-front",
+            "sourceRect": {
+              "x": 160,
+              "y": 1152,
+              "width": 96,
+              "height": 160
+            },
+            "offset": {
+              "x": 64,
+              "y": 160
+            }
+          },
+          {
+            "role": "complete-west-window",
+            "sourceRect": {
+              "x": 192,
+              "y": 736,
+              "width": 32,
+              "height": 64
+            },
+            "offset": {
+              "x": 32,
+              "y": 192
+            }
+          },
+          {
+            "role": "complete-east-window",
+            "sourceRect": {
+              "x": 192,
+              "y": 736,
+              "width": 32,
+              "height": 64
+            },
+            "offset": {
+              "x": 160,
+              "y": 192
+            }
+          }
+        ],
+        "notes": "원본전체5×5지붕의중앙x2열만반복해7열, 곡면양끝/처마그대로. 외벽은33행cornice→34행3줄→35행기단. 원본(5,36)3×5창+현관전면을중앙에덮고작은아치창2개를벽위에올린다. 건물전체7×10, 남쪽중앙(3,10)이문앞접근이다. 발코니가없는지상출입표본. 장식포르티코/3층보행발코니를억지로겹치지않는다. 픽셀리사이즈/반전없음.",
+        "sourceRect": {
+          "x": 0,
+          "y": 51,
+          "width": 7,
+          "height": 10
+        },
+        "tiles": [
+          [
+            408,
+            409,
+            410,
+            411,
+            412,
+            413,
+            414
+          ],
+          [
+            416,
+            417,
+            418,
+            419,
+            420,
+            421,
+            422
+          ],
+          [
+            424,
+            425,
+            426,
+            427,
+            428,
+            429,
+            430
+          ],
+          [
+            432,
+            433,
+            434,
+            435,
+            436,
+            437,
+            438
+          ],
+          [
+            440,
+            441,
+            442,
+            443,
+            444,
+            445,
+            446
+          ],
+          [
+            448,
+            449,
+            450,
+            451,
+            452,
+            453,
+            454
+          ],
+          [
+            456,
+            457,
+            458,
+            459,
+            460,
+            461,
+            462
+          ],
+          [
+            464,
+            465,
+            466,
+            467,
+            468,
+            469,
+            470
+          ],
+          [
+            472,
+            473,
+            474,
+            475,
+            476,
+            477,
+            478
+          ],
+          [
+            480,
+            481,
+            482,
+            483,
+            484,
+            485,
+            486
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-balcony-portico",
+        "name": "장식발코니 · 앞난간과 양쪽기둥 완전체",
+        "canvas": {
+          "width": 96,
+          "height": 160
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "parts": [
+          {
+            "role": "whole-left-column-and-rail-cap",
+            "sourceRect": {
+              "x": 160,
+              "y": 992,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "role": "middle-front-rail-without-unrelated-window",
+            "sourceRect": {
+              "x": 192,
+              "y": 1024,
+              "width": 32,
+              "height": 128
+            },
+            "offset": {
+              "x": 32,
+              "y": 32
+            }
+          },
+          {
+            "role": "whole-right-column-and-rail-cap",
+            "sourceRect": {
+              "x": 224,
+              "y": 992,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 64,
+              "y": 0
+            }
+          }
+        ],
+        "notes": "원본(5,31)3×5사각에는중앙윗칸이위쪽아치창하단과공유되어혼입된다. 좌우기둥/난간끝전체1×5와중앙난간1×4(원본32행시작)를그대로합쳐순수장식포르티코전체를만든다. 창조각을포함하거나난간머리를자르지않는다. 단독지상출입건물아님,캐릭터를올려놓는발판아님. 공식보행발코니3레이어는별도미지원.",
+        "sourceRect": {
+          "x": 0,
+          "y": 61,
+          "width": 3,
+          "height": 5
+        },
+        "tiles": [
+          [
+            488,
+            489,
+            490
+          ],
+          [
+            496,
+            497,
+            498
+          ],
+          [
+            504,
+            505,
+            506
+          ],
+          [
+            512,
+            513,
+            514
+          ],
+          [
+            520,
+            521,
+            522
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-tea-table-cups",
+        "name": "전체 정원탁자와 찻잔2개",
+        "canvas": {
+          "width": 64,
+          "height": 96
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "parts": [
+          {
+            "role": "whole-round-table",
+            "sourceRect": {
+              "x": 128,
+              "y": 288,
+              "width": 64,
+              "height": 96
+            },
+            "offset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-teacup-left",
+            "sourceRect": {
+              "x": 192,
+              "y": 320,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 6,
+              "y": 25
+            }
+          },
+          {
+            "role": "whole-teacup-right",
+            "sourceRect": {
+              "x": 192,
+              "y": 320,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 30,
+              "y": 25
+            }
+          }
+        ],
+        "notes": "원형탁자전체(4,9)2×3을보존하고완전찻잔(6,10)1×1 두개를상판에놓는다. 소품최하단픽셀은실제탁자불투명상판안에있어야한다. 원본바이트/408칸보존, 파생추가만한다. 별도식사/착석이벤트없음.",
+        "sourceRect": {
+          "x": 0,
+          "y": 66,
+          "width": 2,
+          "height": 3
+        },
+        "tiles": [
+          [
+            528,
+            529
+          ],
+          [
+            536,
+            537
+          ],
+          [
+            544,
+            545
+          ]
+        ]
+      }
+    ],
+    "recipes": [
+      {
+        "id": "msex-p-roof-whole",
+        "name": "곡면 지붕 · 상단/양측/전면처마 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 28,
+          "width": 5,
+          "height": 5
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 4
+          },
+          {
+            "x": 1,
+            "y": 4
+          },
+          {
+            "x": 2,
+            "y": 4
+          },
+          {
+            "x": 3,
+            "y": 4
+          },
+          {
+            "x": 4,
+            "y": 4
+          }
+        ],
+        "tiles": [
+          [
+            224,
+            225,
+            226,
+            227,
+            228
+          ],
+          [
+            232,
+            233,
+            234,
+            235,
+            236
+          ],
+          [
+            240,
+            241,
+            242,
+            243,
+            244
+          ],
+          [
+            248,
+            249,
+            250,
+            251,
+            252
+          ],
+          [
+            256,
+            257,
+            258,
+            259,
+            260
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-wall-bay",
+        "name": "기둥과 석축을 포함한 외벽 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 33,
+          "width": 5,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          },
+          {
+            "x": 3,
+            "y": 2
+          },
+          {
+            "x": 4,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            264,
+            265,
+            266,
+            267,
+            268
+          ],
+          [
+            272,
+            273,
+            274,
+            275,
+            276
+          ],
+          [
+            280,
+            281,
+            282,
+            283,
+            284
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-facade-door-window",
+        "name": "2층 아치창과 1층 현관 · 전면 전체",
+        "sourceRect": {
+          "x": 5,
+          "y": 36,
+          "width": 3,
+          "height": 5
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 4
+          },
+          {
+            "x": 1,
+            "y": 4
+          },
+          {
+            "x": 2,
+            "y": 4
+          }
+        ],
+        "tiles": [
+          [
+            293,
+            294,
+            295
+          ],
+          [
+            301,
+            302,
+            303
+          ],
+          [
+            309,
+            310,
+            311
+          ],
+          [
+            317,
+            318,
+            319
+          ],
+          [
+            325,
+            326,
+            327
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-arched-window-small",
+        "name": "작은 아치창",
+        "sourceRect": {
+          "x": 6,
+          "y": 23,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          273,
+          281
+        ],
+        "tiles": [
+          [
+            190
+          ],
+          [
+            198
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-arched-window-tall",
+        "name": "키큰 아치창",
+        "sourceRect": {
+          "x": 7,
+          "y": 23,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ],
+        "exampleWallRows": [
+          273,
+          273,
+          281
+        ],
+        "tiles": [
+          [
+            191
+          ],
+          [
+            199
+          ],
+          [
+            207
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-arched-window-wide",
+        "name": "3열 아치창",
+        "sourceRect": {
+          "x": 5,
+          "y": 26,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
+        "exampleWallRows": [
+          273,
+          273,
+          281
+        ],
+        "tiles": [
+          [
+            213,
+            214,
+            215
+          ],
+          [
+            221,
+            222,
+            223
+          ],
+          [
+            229,
+            230,
+            231
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-balcony-enclosure",
+        "name": "발코니 난간 앞뒤·측면과 전면토대",
+        "sourceRect": {
+          "x": 0,
+          "y": 41,
+          "width": 3,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 2,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            328,
+            329,
+            330
+          ],
+          [
+            336,
+            337,
+            338
+          ],
+          [
+            344,
+            345,
+            346
+          ],
+          [
+            352,
+            353,
+            354
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-bench-front",
+        "name": "정원벤치 정면",
+        "sourceRect": {
+          "x": 0,
+          "y": 13,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            104,
+            105
+          ],
+          [
+            112,
+            113
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-bench-back",
+        "name": "정원벤치 뒷면",
+        "sourceRect": {
+          "x": 0,
+          "y": 15,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            120,
+            121
+          ],
+          [
+            128,
+            129
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-street-lamp",
+        "name": "쌍등 가로등 전체",
+        "sourceRect": {
+          "x": 2,
+          "y": 13,
+          "width": 1,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            106
+          ],
+          [
+            114
+          ],
+          [
+            122
+          ],
+          [
+            130
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-tea-table",
+        "name": "원형 티테이블 전체",
+        "sourceRect": {
+          "x": 4,
+          "y": 9,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            76,
+            77
+          ],
+          [
+            84,
+            85
+          ],
+          [
+            92,
+            93
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-tea-stool",
+        "name": "등받이 없는 원형 정원스툴",
+        "sourceRect": {
+          "x": 6,
+          "y": 11,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "all-sides",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ],
+        "tiles": [
+          [
+            94
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-rose-red",
+        "name": "붉은 장미 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 9,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            72,
+            73
+          ],
+          [
+            80,
+            81
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-rose-pink",
+        "name": "분홍 장미 전체",
+        "sourceRect": {
+          "x": 2,
+          "y": 9,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            74,
+            75
+          ],
+          [
+            82,
+            83
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-flower-pedestal",
+        "name": "꽃과 원형 화분 받침",
+        "sourceRect": {
+          "x": 5,
+          "y": 13,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            109
+          ],
+          [
+            117
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-topiary-round",
+        "name": "둥근 정원수",
+        "sourceRect": {
+          "x": 4,
+          "y": 15,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            124,
+            125
+          ],
+          [
+            132,
+            133
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-topiary-tall",
+        "name": "긴 정원수",
+        "sourceRect": {
+          "x": 6,
+          "y": 13,
+          "width": 2,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            110,
+            111
+          ],
+          [
+            118,
+            119
+          ],
+          [
+            126,
+            127
+          ],
+          [
+            134,
+            135
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-garden-gate-closed",
+        "name": "닫힌 철제 정원문",
+        "sourceRect": {
+          "x": 0,
+          "y": 2,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            16,
+            17,
+            18
+          ],
+          [
+            24,
+            25,
+            26
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-whole-house",
+        "name": "P 저택 · 곡면지붕과 전체 2층 현관",
+        "sourceRect": {
+          "x": 0,
+          "y": 51,
+          "width": 7,
+          "height": 10
+        },
+        "tiles": [
+          [
+            408,
+            409,
+            410,
+            411,
+            412,
+            413,
+            414
+          ],
+          [
+            416,
+            417,
+            418,
+            419,
+            420,
+            421,
+            422
+          ],
+          [
+            424,
+            425,
+            426,
+            427,
+            428,
+            429,
+            430
+          ],
+          [
+            432,
+            433,
+            434,
+            435,
+            436,
+            437,
+            438
+          ],
+          [
+            440,
+            441,
+            442,
+            443,
+            444,
+            445,
+            446
+          ],
+          [
+            448,
+            449,
+            450,
+            451,
+            452,
+            453,
+            454
+          ],
+          [
+            456,
+            457,
+            458,
+            459,
+            460,
+            461,
+            462
+          ],
+          [
+            464,
+            465,
+            466,
+            467,
+            468,
+            469,
+            470
+          ],
+          [
+            472,
+            473,
+            474,
+            475,
+            476,
+            477,
+            478
+          ],
+          [
+            480,
+            481,
+            482,
+            483,
+            484,
+            485,
+            486
+          ]
+        ],
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 9
+          },
+          {
+            "x": 1,
+            "y": 9
+          },
+          {
+            "x": 2,
+            "y": 9
+          },
+          {
+            "x": 3,
+            "y": 9
+          },
+          {
+            "x": 4,
+            "y": 9
+          },
+          {
+            "x": 5,
+            "y": 9
+          },
+          {
+            "x": 6,
+            "y": 9
+          }
+        ]
+      },
+      {
+        "id": "msex-p-balcony-portico",
+        "name": "장식발코니 · 앞난간과 양쪽기둥 완전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 61,
+          "width": 3,
+          "height": 5
+        },
+        "tiles": [
+          [
+            488,
+            489,
+            490
+          ],
+          [
+            496,
+            497,
+            498
+          ],
+          [
+            504,
+            505,
+            506
+          ],
+          [
+            512,
+            513,
+            514
+          ],
+          [
+            520,
+            521,
+            522
+          ]
+        ],
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 4
+          },
+          {
+            "x": 1,
+            "y": 4
+          },
+          {
+            "x": 2,
+            "y": 4
+          }
+        ]
+      },
+      {
+        "id": "msex-p-tea-table-cups",
+        "name": "전체 정원탁자와 찻잔2개",
+        "sourceRect": {
+          "x": 0,
+          "y": 66,
+          "width": 2,
+          "height": 3
+        },
+        "tiles": [
+          [
+            528,
+            529
+          ],
+          [
+            536,
+            537
+          ],
+          [
+            544,
+            545
+          ]
+        ],
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ]
+      }
+    ],
+    "scenes": [
+      {
+        "id": "mansion-exterior-p-court",
+        "name": "P 저택과 작은 정원",
+        "width": 11,
+        "height": 12,
+        "lowerTiles": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          4,
+          4,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          4,
+          4,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          4,
+          4,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          4,
+          4,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "upperTiles": [
+          408,
+          409,
+          410,
+          411,
+          412,
+          413,
+          414,
+          -1,
+          110,
+          111,
+          -1,
+          416,
+          417,
+          418,
+          419,
+          420,
+          421,
+          422,
+          -1,
+          118,
+          119,
+          -1,
+          424,
+          425,
+          426,
+          427,
+          428,
+          429,
+          430,
+          -1,
+          126,
+          127,
+          -1,
+          432,
+          433,
+          434,
+          435,
+          436,
+          437,
+          438,
+          -1,
+          134,
+          135,
+          -1,
+          440,
+          441,
+          442,
+          443,
+          444,
+          445,
+          446,
+          -1,
+          -1,
+          -1,
+          -1,
+          448,
+          449,
+          450,
+          451,
+          452,
+          453,
+          454,
+          -1,
+          528,
+          529,
+          -1,
+          456,
+          457,
+          458,
+          459,
+          460,
+          461,
+          462,
+          94,
+          536,
+          537,
+          94,
+          464,
+          465,
+          466,
+          467,
+          468,
+          469,
+          470,
+          -1,
+          544,
+          545,
+          -1,
+          472,
+          473,
+          474,
+          475,
+          476,
+          477,
+          478,
+          -1,
+          -1,
+          -1,
+          -1,
+          480,
+          481,
+          482,
+          483,
+          484,
+          485,
+          486,
+          -1,
+          120,
+          121,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          128,
+          129,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        "placements": [
+          {
+            "recipeId": "msex-p-whole-house",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "recipeId": "msex-p-tea-table-cups",
+            "x": 8,
+            "y": 5
+          },
+          {
+            "recipeId": "msex-p-tea-stool",
+            "x": 7,
+            "y": 6
+          },
+          {
+            "recipeId": "msex-p-tea-stool",
+            "x": 10,
+            "y": 6
+          },
+          {
+            "recipeId": "msex-p-topiary-tall",
+            "x": 8,
+            "y": 0
+          },
+          {
+            "recipeId": "msex-p-bench-back",
+            "x": 8,
+            "y": 9
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 3,
+            "y": 11
+          },
+          {
+            "x": 3,
+            "y": 10
+          },
+          {
+            "x": 7,
+            "y": 10
+          },
+          {
+            "x": 7,
+            "y": 7
+          },
+          {
+            "x": 10,
+            "y": 7
+          },
+          {
+            "x": 9,
+            "y": 8
+          }
+        ],
+        "passableTiles": [
+          0,
+          4
+        ],
+        "lowerTileIds": [
+          0,
+          4
+        ],
+        "rooms": [
+          {
+            "id": "house",
+            "name": "지상출입저택전체",
+            "x": 0,
+            "y": 0,
+            "width": 7,
+            "height": 10
+          },
+          {
+            "id": "court",
+            "name": "짧은현관접근과정원",
+            "x": 0,
+            "y": 10,
+            "width": 11,
+            "height": 2
+          }
+        ],
+        "doorways": [
+          {
+            "from": "court",
+            "to": "house",
+            "x": 3,
+            "y": 10,
+            "width": 1,
+            "height": 1
+          }
+        ],
+        "notes": "11×12. 좌측건물/우측작은차정원으로서로다른외부역할을준다. 남문3,11→현관3,10. 우측테이블에두잔을두고양측스툴앞7,7/10,7을연결한다. 남쪽벤치는북향원본이며정원쪽9,8접근. 원형스툴은등받이가없어별도동서향변형을만들지않고같은전체원본을좌우에둔다. 건물사각전체solid이며문앞바닥까지접근한다. 현관검은그림은자동전이/개폐이벤트가아니다. 지붕/벽/문위에캐릭터를걷게하지않는다. 그림속정원수밑동은하위잔디/보도에닿는다."
+      }
+    ]
+  },
+  {
+    "packId": "paw-mansion-exterior-y",
+    "sourceComparisons": [
+      {
+        "packId": "paw-mansion-exterior-y",
+        "recipeId": "msex-y-roof-whole",
+        "sourceRect": {
+          "x": 0,
+          "y": 28,
+          "width": 5,
+          "height": 5
+        },
+        "rgbaIdenticalToB": false,
+        "alphaIdenticalToB": true,
+        "sha256": "a771cc6b34eb24084d54c9dc977466cce26228225392a4667308cc7621494bb7"
+      },
+      {
+        "packId": "paw-mansion-exterior-y",
+        "recipeId": "msex-y-wall-bay",
+        "sourceRect": {
+          "x": 0,
+          "y": 33,
+          "width": 5,
+          "height": 3
+        },
+        "rgbaIdenticalToB": false,
+        "alphaIdenticalToB": true,
+        "sha256": "f15620f0caee6018fbb726ed851ac27e18d96e688a9b963edf6f795e3794cdbc"
+      },
+      {
+        "packId": "paw-mansion-exterior-y",
+        "recipeId": "msex-y-facade-door-window",
+        "sourceRect": {
+          "x": 5,
+          "y": 36,
+          "width": 3,
+          "height": 5
+        },
+        "rgbaIdenticalToB": false,
+        "alphaIdenticalToB": true,
+        "sha256": "2055f4b394e2c5499855abab7e359055e3c5c7d011666f7fa5a168b4c5c12769"
+      },
+      {
+        "packId": "paw-mansion-exterior-y",
+        "recipeId": "msex-y-arched-window-small",
+        "sourceRect": {
+          "x": 6,
+          "y": 23,
+          "width": 1,
+          "height": 2
+        },
+        "rgbaIdenticalToB": false,
+        "alphaIdenticalToB": true,
+        "sha256": "fe3a89098dad98910138bffb2da9346d93efad6606398f01f737c5286773950b"
+      },
+      {
+        "packId": "paw-mansion-exterior-y",
+        "recipeId": "msex-y-arched-window-tall",
+        "sourceRect": {
+          "x": 7,
+          "y": 23,
+          "width": 1,
+          "height": 3
+        },
+        "rgbaIdenticalToB": false,
+        "alphaIdenticalToB": true,
+        "sha256": "65a217c7d4722b03b9210cfc3e3ae43ba759ea1d20f2d85fae7eeb1d1dd961c1"
+      },
+      {
+        "packId": "paw-mansion-exterior-y",
+        "recipeId": "msex-y-arched-window-wide",
+        "sourceRect": {
+          "x": 5,
+          "y": 26,
+          "width": 3,
+          "height": 3
+        },
+        "rgbaIdenticalToB": false,
+        "alphaIdenticalToB": true,
+        "sha256": "1433b1c0a24bfb07f85afc4f87c1776141d23126aee7ce421eff07f21d90bf7f"
+      },
+      {
+        "packId": "paw-mansion-exterior-y",
+        "recipeId": "msex-y-balcony-enclosure",
+        "sourceRect": {
+          "x": 0,
+          "y": 41,
+          "width": 3,
+          "height": 4
+        },
+        "rgbaIdenticalToB": false,
+        "alphaIdenticalToB": true,
+        "sha256": "13dd9364cfdc28403a9fdbdff9ac2960f10222fc2d12f9e2bb1bd988b587682e"
+      },
+      {
+        "packId": "paw-mansion-exterior-y",
+        "recipeId": "msex-y-bench-front",
+        "sourceRect": {
+          "x": 0,
+          "y": 13,
+          "width": 2,
+          "height": 2
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "a8f8f9c417ac69bce73b77205203803cd1e86529aa3c568e6ae13b3573e7f2f5"
+      },
+      {
+        "packId": "paw-mansion-exterior-y",
+        "recipeId": "msex-y-bench-back",
+        "sourceRect": {
+          "x": 0,
+          "y": 15,
+          "width": 2,
+          "height": 2
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "b255bd10e39095284cfd4cb097e306c0f34039a1394dd8ca39e24eca0c9d7c76"
+      },
+      {
+        "packId": "paw-mansion-exterior-y",
+        "recipeId": "msex-y-street-lamp",
+        "sourceRect": {
+          "x": 2,
+          "y": 13,
+          "width": 1,
+          "height": 4
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "5df856fb8049f3b72e2991a9a1d58208aece4d6b1180ea3076d73f375fda6714"
+      },
+      {
+        "packId": "paw-mansion-exterior-y",
+        "recipeId": "msex-y-tea-table",
+        "sourceRect": {
+          "x": 4,
+          "y": 9,
+          "width": 2,
+          "height": 3
+        },
+        "rgbaIdenticalToB": false,
+        "alphaIdenticalToB": true,
+        "sha256": "ccfda551dd0e851696f1fc1d6125e767e9b2c10ef30e6f9d3bf65811378108e4"
+      },
+      {
+        "packId": "paw-mansion-exterior-y",
+        "recipeId": "msex-y-tea-stool",
+        "sourceRect": {
+          "x": 6,
+          "y": 11,
+          "width": 1,
+          "height": 1
+        },
+        "rgbaIdenticalToB": false,
+        "alphaIdenticalToB": true,
+        "sha256": "ad4faca9b87ebaa85ae68bb2ca8410e01270eb7ec97ef7e2a54fe64bab0d8724"
+      },
+      {
+        "packId": "paw-mansion-exterior-y",
+        "recipeId": "msex-y-rose-red",
+        "sourceRect": {
+          "x": 0,
+          "y": 9,
+          "width": 2,
+          "height": 2
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "9142697299586f9ee738489b79be75e43f16659c8b481b2728fe47860e29aeda"
+      },
+      {
+        "packId": "paw-mansion-exterior-y",
+        "recipeId": "msex-y-rose-pink",
+        "sourceRect": {
+          "x": 2,
+          "y": 9,
+          "width": 2,
+          "height": 2
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "0275b768a33ed8945dac09d5e28d6dcc0c2a387db0f0ed4c972d08ec1be570b8"
+      },
+      {
+        "packId": "paw-mansion-exterior-y",
+        "recipeId": "msex-y-flower-pedestal",
+        "sourceRect": {
+          "x": 5,
+          "y": 13,
+          "width": 1,
+          "height": 2
+        },
+        "rgbaIdenticalToB": false,
+        "alphaIdenticalToB": true,
+        "sha256": "aa189f41eb39ac3f4bfdff7f21e19de95a3e4e6695c56f46af3043a2de35131a"
+      },
+      {
+        "packId": "paw-mansion-exterior-y",
+        "recipeId": "msex-y-topiary-round",
+        "sourceRect": {
+          "x": 4,
+          "y": 15,
+          "width": 2,
+          "height": 2
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "1d2a438c113e2053be903e4fe6b2eae138e5aa6f0017a7ec44dbd6ef4825dd2e"
+      },
+      {
+        "packId": "paw-mansion-exterior-y",
+        "recipeId": "msex-y-topiary-tall",
+        "sourceRect": {
+          "x": 6,
+          "y": 13,
+          "width": 2,
+          "height": 4
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "2326074bde1b23b166d9c6d195aba600c2f9eb975a86f166ba874defbc42bb38"
+      },
+      {
+        "packId": "paw-mansion-exterior-y",
+        "recipeId": "msex-y-garden-gate-closed",
+        "sourceRect": {
+          "x": 0,
+          "y": 2,
+          "width": 3,
+          "height": 2
+        },
+        "rgbaIdenticalToB": true,
+        "alphaIdenticalToB": true,
+        "sha256": "73496c4655a1dd6ff4db353f8f271f1f1d4c4f53cebfff61c8bae3cf4fcdf616"
+      }
+    ],
+    "sourceFilename": "ST-MsionY-E01.png",
+    "sourceSha256": "4769c99df2461d753265d01b3a526e25ec06e88b6df351856c201bb715f94b80",
+    "sourceCount": 408,
+    "count": 528,
+    "imageWidth": 256,
+    "imageHeight": 2112,
+    "composites": [
+      {
+        "id": "msex-y-whole-house",
+        "name": "Y 저택 · 곡면지붕과 전체 2층 현관",
+        "canvas": {
+          "width": 224,
+          "height": 320
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "parts": [
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 0,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 32,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 32,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 64,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 64,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 64,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 96,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 64,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 128,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 96,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 160,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 128,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 192,
+              "y": 0
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 288
+            }
+          },
+          {
+            "role": "complete-central-window-door-front",
+            "sourceRect": {
+              "x": 160,
+              "y": 1152,
+              "width": 96,
+              "height": 160
+            },
+            "offset": {
+              "x": 64,
+              "y": 160
+            }
+          },
+          {
+            "role": "complete-west-window",
+            "sourceRect": {
+              "x": 192,
+              "y": 736,
+              "width": 32,
+              "height": 64
+            },
+            "offset": {
+              "x": 32,
+              "y": 192
+            }
+          },
+          {
+            "role": "complete-east-window",
+            "sourceRect": {
+              "x": 192,
+              "y": 736,
+              "width": 32,
+              "height": 64
+            },
+            "offset": {
+              "x": 160,
+              "y": 192
+            }
+          }
+        ],
+        "notes": "원본전체5×5지붕의중앙x2열만반복해7열, 곡면양끝/처마그대로. 외벽은33행cornice→34행3줄→35행기단. 원본(5,36)3×5창+현관전면을중앙에덮고작은아치창2개를벽위에올린다. 건물전체7×10, 남쪽중앙(3,10)이문앞접근이다. 발코니가없는지상출입표본. 장식포르티코/3층보행발코니를억지로겹치지않는다. 픽셀리사이즈/반전없음.",
+        "sourceRect": {
+          "x": 0,
+          "y": 51,
+          "width": 7,
+          "height": 10
+        },
+        "tiles": [
+          [
+            408,
+            409,
+            410,
+            411,
+            412,
+            413,
+            414
+          ],
+          [
+            416,
+            417,
+            418,
+            419,
+            420,
+            421,
+            422
+          ],
+          [
+            424,
+            425,
+            426,
+            427,
+            428,
+            429,
+            430
+          ],
+          [
+            432,
+            433,
+            434,
+            435,
+            436,
+            437,
+            438
+          ],
+          [
+            440,
+            441,
+            442,
+            443,
+            444,
+            445,
+            446
+          ],
+          [
+            448,
+            449,
+            450,
+            451,
+            452,
+            453,
+            454
+          ],
+          [
+            456,
+            457,
+            458,
+            459,
+            460,
+            461,
+            462
+          ],
+          [
+            464,
+            465,
+            466,
+            467,
+            468,
+            469,
+            470
+          ],
+          [
+            472,
+            473,
+            474,
+            475,
+            476,
+            477,
+            478
+          ],
+          [
+            480,
+            481,
+            482,
+            483,
+            484,
+            485,
+            486
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-balcony-portico",
+        "name": "장식발코니 · 앞난간과 양쪽기둥 완전체",
+        "canvas": {
+          "width": 96,
+          "height": 160
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "parts": [
+          {
+            "role": "whole-left-column-and-rail-cap",
+            "sourceRect": {
+              "x": 160,
+              "y": 992,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "role": "middle-front-rail-without-unrelated-window",
+            "sourceRect": {
+              "x": 192,
+              "y": 1024,
+              "width": 32,
+              "height": 128
+            },
+            "offset": {
+              "x": 32,
+              "y": 32
+            }
+          },
+          {
+            "role": "whole-right-column-and-rail-cap",
+            "sourceRect": {
+              "x": 224,
+              "y": 992,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 64,
+              "y": 0
+            }
+          }
+        ],
+        "notes": "원본(5,31)3×5사각에는중앙윗칸이위쪽아치창하단과공유되어혼입된다. 좌우기둥/난간끝전체1×5와중앙난간1×4(원본32행시작)를그대로합쳐순수장식포르티코전체를만든다. 창조각을포함하거나난간머리를자르지않는다. 단독지상출입건물아님,캐릭터를올려놓는발판아님. 공식보행발코니3레이어는별도미지원.",
+        "sourceRect": {
+          "x": 0,
+          "y": 61,
+          "width": 3,
+          "height": 5
+        },
+        "tiles": [
+          [
+            488,
+            489,
+            490
+          ],
+          [
+            496,
+            497,
+            498
+          ],
+          [
+            504,
+            505,
+            506
+          ],
+          [
+            512,
+            513,
+            514
+          ],
+          [
+            520,
+            521,
+            522
+          ]
+        ]
+      }
+    ],
+    "recipes": [
+      {
+        "id": "msex-y-roof-whole",
+        "name": "곡면 지붕 · 상단/양측/전면처마 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 28,
+          "width": 5,
+          "height": 5
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 4
+          },
+          {
+            "x": 1,
+            "y": 4
+          },
+          {
+            "x": 2,
+            "y": 4
+          },
+          {
+            "x": 3,
+            "y": 4
+          },
+          {
+            "x": 4,
+            "y": 4
+          }
+        ],
+        "tiles": [
+          [
+            224,
+            225,
+            226,
+            227,
+            228
+          ],
+          [
+            232,
+            233,
+            234,
+            235,
+            236
+          ],
+          [
+            240,
+            241,
+            242,
+            243,
+            244
+          ],
+          [
+            248,
+            249,
+            250,
+            251,
+            252
+          ],
+          [
+            256,
+            257,
+            258,
+            259,
+            260
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-wall-bay",
+        "name": "기둥과 석축을 포함한 외벽 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 33,
+          "width": 5,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          },
+          {
+            "x": 3,
+            "y": 2
+          },
+          {
+            "x": 4,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            264,
+            265,
+            266,
+            267,
+            268
+          ],
+          [
+            272,
+            273,
+            274,
+            275,
+            276
+          ],
+          [
+            280,
+            281,
+            282,
+            283,
+            284
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-facade-door-window",
+        "name": "2층 아치창과 1층 현관 · 전면 전체",
+        "sourceRect": {
+          "x": 5,
+          "y": 36,
+          "width": 3,
+          "height": 5
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 4
+          },
+          {
+            "x": 1,
+            "y": 4
+          },
+          {
+            "x": 2,
+            "y": 4
+          }
+        ],
+        "tiles": [
+          [
+            293,
+            294,
+            295
+          ],
+          [
+            301,
+            302,
+            303
+          ],
+          [
+            309,
+            310,
+            311
+          ],
+          [
+            317,
+            318,
+            319
+          ],
+          [
+            325,
+            326,
+            327
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-arched-window-small",
+        "name": "작은 아치창",
+        "sourceRect": {
+          "x": 6,
+          "y": 23,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          273,
+          281
+        ],
+        "tiles": [
+          [
+            190
+          ],
+          [
+            198
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-arched-window-tall",
+        "name": "키큰 아치창",
+        "sourceRect": {
+          "x": 7,
+          "y": 23,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ],
+        "exampleWallRows": [
+          273,
+          273,
+          281
+        ],
+        "tiles": [
+          [
+            191
+          ],
+          [
+            199
+          ],
+          [
+            207
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-arched-window-wide",
+        "name": "3열 아치창",
+        "sourceRect": {
+          "x": 5,
+          "y": 26,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
+        "exampleWallRows": [
+          273,
+          273,
+          281
+        ],
+        "tiles": [
+          [
+            213,
+            214,
+            215
+          ],
+          [
+            221,
+            222,
+            223
+          ],
+          [
+            229,
+            230,
+            231
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-balcony-enclosure",
+        "name": "발코니 난간 앞뒤·측면과 전면토대",
+        "sourceRect": {
+          "x": 0,
+          "y": 41,
+          "width": 3,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 2,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            328,
+            329,
+            330
+          ],
+          [
+            336,
+            337,
+            338
+          ],
+          [
+            344,
+            345,
+            346
+          ],
+          [
+            352,
+            353,
+            354
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-bench-front",
+        "name": "정원벤치 정면",
+        "sourceRect": {
+          "x": 0,
+          "y": 13,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            104,
+            105
+          ],
+          [
+            112,
+            113
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-bench-back",
+        "name": "정원벤치 뒷면",
+        "sourceRect": {
+          "x": 0,
+          "y": 15,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            120,
+            121
+          ],
+          [
+            128,
+            129
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-street-lamp",
+        "name": "쌍등 가로등 전체",
+        "sourceRect": {
+          "x": 2,
+          "y": 13,
+          "width": 1,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            106
+          ],
+          [
+            114
+          ],
+          [
+            122
+          ],
+          [
+            130
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-tea-table",
+        "name": "원형 티테이블 전체",
+        "sourceRect": {
+          "x": 4,
+          "y": 9,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            76,
+            77
+          ],
+          [
+            84,
+            85
+          ],
+          [
+            92,
+            93
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-tea-stool",
+        "name": "등받이 없는 원형 정원스툴",
+        "sourceRect": {
+          "x": 6,
+          "y": 11,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "all-sides",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ],
+        "tiles": [
+          [
+            94
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-rose-red",
+        "name": "붉은 장미 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 9,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            72,
+            73
+          ],
+          [
+            80,
+            81
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-rose-pink",
+        "name": "분홍 장미 전체",
+        "sourceRect": {
+          "x": 2,
+          "y": 9,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            74,
+            75
+          ],
+          [
+            82,
+            83
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-flower-pedestal",
+        "name": "꽃과 원형 화분 받침",
+        "sourceRect": {
+          "x": 5,
+          "y": 13,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            109
+          ],
+          [
+            117
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-topiary-round",
+        "name": "둥근 정원수",
+        "sourceRect": {
+          "x": 4,
+          "y": 15,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            124,
+            125
+          ],
+          [
+            132,
+            133
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-topiary-tall",
+        "name": "긴 정원수",
+        "sourceRect": {
+          "x": 6,
+          "y": 13,
+          "width": 2,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            110,
+            111
+          ],
+          [
+            118,
+            119
+          ],
+          [
+            126,
+            127
+          ],
+          [
+            134,
+            135
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-garden-gate-closed",
+        "name": "닫힌 철제 정원문",
+        "sourceRect": {
+          "x": 0,
+          "y": 2,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            16,
+            17,
+            18
+          ],
+          [
+            24,
+            25,
+            26
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-whole-house",
+        "name": "Y 저택 · 곡면지붕과 전체 2층 현관",
+        "sourceRect": {
+          "x": 0,
+          "y": 51,
+          "width": 7,
+          "height": 10
+        },
+        "tiles": [
+          [
+            408,
+            409,
+            410,
+            411,
+            412,
+            413,
+            414
+          ],
+          [
+            416,
+            417,
+            418,
+            419,
+            420,
+            421,
+            422
+          ],
+          [
+            424,
+            425,
+            426,
+            427,
+            428,
+            429,
+            430
+          ],
+          [
+            432,
+            433,
+            434,
+            435,
+            436,
+            437,
+            438
+          ],
+          [
+            440,
+            441,
+            442,
+            443,
+            444,
+            445,
+            446
+          ],
+          [
+            448,
+            449,
+            450,
+            451,
+            452,
+            453,
+            454
+          ],
+          [
+            456,
+            457,
+            458,
+            459,
+            460,
+            461,
+            462
+          ],
+          [
+            464,
+            465,
+            466,
+            467,
+            468,
+            469,
+            470
+          ],
+          [
+            472,
+            473,
+            474,
+            475,
+            476,
+            477,
+            478
+          ],
+          [
+            480,
+            481,
+            482,
+            483,
+            484,
+            485,
+            486
+          ]
+        ],
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 9
+          },
+          {
+            "x": 1,
+            "y": 9
+          },
+          {
+            "x": 2,
+            "y": 9
+          },
+          {
+            "x": 3,
+            "y": 9
+          },
+          {
+            "x": 4,
+            "y": 9
+          },
+          {
+            "x": 5,
+            "y": 9
+          },
+          {
+            "x": 6,
+            "y": 9
+          }
+        ]
+      },
+      {
+        "id": "msex-y-balcony-portico",
+        "name": "장식발코니 · 앞난간과 양쪽기둥 완전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 61,
+          "width": 3,
+          "height": 5
+        },
+        "tiles": [
+          [
+            488,
+            489,
+            490
+          ],
+          [
+            496,
+            497,
+            498
+          ],
+          [
+            504,
+            505,
+            506
+          ],
+          [
+            512,
+            513,
+            514
+          ],
+          [
+            520,
+            521,
+            522
+          ]
+        ],
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 4
+          },
+          {
+            "x": 1,
+            "y": 4
+          },
+          {
+            "x": 2,
+            "y": 4
+          }
+        ]
+      }
+    ],
+    "scenes": [
+      {
+        "id": "mansion-exterior-y-court",
+        "name": "Y 저택과 작은 정원",
+        "width": 11,
+        "height": 13,
+        "lowerTiles": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ],
+        "upperTiles": [
+          -1,
+          -1,
+          -1,
+          408,
+          409,
+          410,
+          411,
+          412,
+          413,
+          414,
+          -1,
+          -1,
+          -1,
+          -1,
+          416,
+          417,
+          418,
+          419,
+          420,
+          421,
+          422,
+          -1,
+          110,
+          111,
+          -1,
+          424,
+          425,
+          426,
+          427,
+          428,
+          429,
+          430,
+          -1,
+          118,
+          119,
+          -1,
+          432,
+          433,
+          434,
+          435,
+          436,
+          437,
+          438,
+          -1,
+          126,
+          127,
+          -1,
+          440,
+          441,
+          442,
+          443,
+          444,
+          445,
+          446,
+          -1,
+          134,
+          135,
+          -1,
+          448,
+          449,
+          450,
+          451,
+          452,
+          453,
+          454,
+          -1,
+          -1,
+          -1,
+          -1,
+          456,
+          457,
+          458,
+          459,
+          460,
+          461,
+          462,
+          -1,
+          124,
+          125,
+          -1,
+          464,
+          465,
+          466,
+          467,
+          468,
+          469,
+          470,
+          -1,
+          132,
+          133,
+          -1,
+          472,
+          473,
+          474,
+          475,
+          476,
+          477,
+          478,
+          -1,
+          -1,
+          -1,
+          -1,
+          480,
+          481,
+          482,
+          483,
+          484,
+          485,
+          486,
+          -1,
+          -1,
+          -1,
+          -1,
+          72,
+          73,
+          -1,
+          -1,
+          -1,
+          104,
+          105,
+          -1,
+          -1,
+          -1,
+          -1,
+          80,
+          81,
+          -1,
+          -1,
+          -1,
+          112,
+          113,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1
+        ],
+        "placements": [
+          {
+            "recipeId": "msex-y-whole-house",
+            "x": 3,
+            "y": 0
+          },
+          {
+            "recipeId": "msex-y-topiary-tall",
+            "x": 0,
+            "y": 2
+          },
+          {
+            "recipeId": "msex-y-topiary-round",
+            "x": 0,
+            "y": 7
+          },
+          {
+            "recipeId": "msex-y-rose-red",
+            "x": 3,
+            "y": 10
+          },
+          {
+            "recipeId": "msex-y-bench-front",
+            "x": 8,
+            "y": 10
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 6,
+            "y": 12
+          },
+          {
+            "x": 6,
+            "y": 11
+          },
+          {
+            "x": 6,
+            "y": 10
+          },
+          {
+            "x": 2,
+            "y": 10
+          },
+          {
+            "x": 2,
+            "y": 6
+          },
+          {
+            "x": 9,
+            "y": 12
+          }
+        ],
+        "passableTiles": [
+          0,
+          4
+        ],
+        "lowerTileIds": [
+          0,
+          4
+        ],
+        "rooms": [
+          {
+            "id": "house",
+            "name": "지상출입저택전체",
+            "x": 3,
+            "y": 0,
+            "width": 7,
+            "height": 10
+          },
+          {
+            "id": "court",
+            "name": "짧은현관접근과정원",
+            "x": 0,
+            "y": 10,
+            "width": 11,
+            "height": 3
+          }
+        ],
+        "doorways": [
+          {
+            "from": "court",
+            "to": "house",
+            "x": 6,
+            "y": 10,
+            "width": 1,
+            "height": 1
+          }
+        ],
+        "notes": "11×13. 건물은동쪽,키큰정원수와둥근정원수는서쪽좁은정원띠다. x2한칸관리로를남쪽현관보도와연결한다. 남문6,12→현관6,10. 붉은장미와동쪽벤치가좌우접근을막지않는다. 건물사각전체solid이며문앞바닥까지접근한다. 현관검은그림은자동전이/개폐이벤트가아니다. 지붕/벽/문위에캐릭터를걷게하지않는다. 그림속정원수밑동은하위잔디/보도에닿는다."
+      }
+    ]
+  }
+]

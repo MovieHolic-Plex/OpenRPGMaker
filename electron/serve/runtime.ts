@@ -1,4 +1,3 @@
-import { readBridgeRequestBody } from "./requestBody";
 import { sharedContentMiddleware } from "../../scripts/lib/sharedContentSqlite";
 import { SHARED_CONTENT_ENDPOINT } from "../../src/project/sharedContentSchema";
 import { readSharedTileReferences } from "../../scripts/lib/sharedTileReferencesSqlite";
@@ -20,6 +19,7 @@ import { SHARED_CHARACTER_GRAPHICS_ENDPOINT } from "../../src/project/sharedChar
 
 import { loginPage, teamPage } from "./teamPage";
 import { sendHttpBody } from "./httpBody";
+import { BridgeRequestBodyError, readBridgeRequestBody } from "./bridgeRequestBody";
 
 const BRIDGE_PATH = "/__oprn/bridge";
 const BRIDGE_SCRIPT_PATH = "/__oprn/bridge.js";
@@ -268,7 +268,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
   };
 
   const inject = (html: string): string => {
-    const config = `<script>window.__OPRN_BRIDGE__=${JSON.stringify({ endpoint: BRIDGE_PATH, token, companionToken: shared ? null : companionToken })}</script>`;
+    const config = `<script>window.__OPRN_BRIDGE__=${JSON.stringify({ endpoint: BRIDGE_PATH, token, requestBodyEncoding: "gzip", companionToken: shared ? null : companionToken })}</script>`;
     return html.replace('</head>', `${config}<script src="${BRIDGE_SCRIPT_PATH}"></script></head>`);
   };
   const serveStatic = async (pathname: string, response: ServerResponse): Promise<void> => {
@@ -385,6 +385,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
           if (tab !== undefined && (typeof tab !== 'string' || !/^[a-zA-Z0-9-]{1,80}$/.test(tab))) throw new Error('invalid tab id');
           const project = request.headers['x-oprn-project'] ?? '';
           if (typeof project !== 'string') throw new Error('invalid project id');
+          const body = await readBridgeRequestBody(request);
           const selectedDir = await projectPath(project);
           const key = `${cookie ?? 'local'}:${tab ?? 'default'}:${project}`;
           if (!clients.has(key)) {
@@ -393,10 +394,9 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
           }
           clients.set(key, Date.now());
           sessions.setMember(key, (signedIn ?? team.owner()).id);
-          const body = JSON.parse(await readBridgeRequestBody(request));
           if (body?.channel === 'oprn:host.access') {
             if (sessions.member(key).role !== 'owner') { await sendJson(response, 403, { error: '접속 설정은 소유자만 변경할 수 있습니다.' }); return; }
-            const required = body.payload?.required;
+            const required = (body.payload as { required?: unknown } | null)?.required;
             if (typeof required !== 'boolean') throw new Error('invalid access setting');
             // Establish the current owner's login before enabling the gate.
             if (required) {
@@ -408,7 +408,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
             await sendJson(response, 200, { accessCodeRequired: required, ownerAccessCode: required ? ownerAccessCode : null });
           } else await sendJson(response, 200, await dispatchBridge(body, key));
         } catch (error) {
-          await sendJson(response, 400, { error: error instanceof Error ? error.message : String(error) });
+          await sendJson(response, error instanceof BridgeRequestBodyError ? error.statusCode : 400, { error: error instanceof Error ? error.message : String(error) });
         }
         return;
       }

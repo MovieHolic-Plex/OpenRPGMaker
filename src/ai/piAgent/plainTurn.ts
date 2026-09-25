@@ -16,6 +16,7 @@ import { buildPiIntentNote, resolvePiRunPlan, type PiRunPlan } from "./execution
 import type { PiAgentMode, PiAgentRequest, PiAgentThinkingLevel } from "./protocol";
 import type { PiTeamSpec } from "./teamSpec";
 import { resolveVillageContract, type VillageContract } from "./villageContract";
+import { MODERN_MAP_INITIAL_TOOLS, requestsModernMap } from '../modernTilesetPolicy';
 
 /**
  * 계획 턴의 지시문 머리. Pi 에는 세션 플래너가 없으므로 «실행하지 말고 계획만» 을 말로 만든다 —
@@ -88,15 +89,16 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       && (declared.intent.mode === "create" || declared.intent.mode === "modify")
       && declared.intent.needsPlan === false
       && declared.intent.clarify === null };
-    plan = { ...plan, villageContract: resolveVillageContract(project, declared.intent, currentMapId, selection ?? null, text) };
+    plan = { ...plan, villageContract: requestsModernMap(project, text, currentMapId ? [currentMapId] : []) ? undefined : resolveVillageContract(project, declared.intent, currentMapId, selection ?? null, text) };
     if (declared.intent.mode === "question") {
       plan = { ...plan, readOnly: true };
       questionPromoted = true;
     } else {
       // Send exact intent/adventure candidates through the real Pi request path.
       // This is exposure only: discovery can expand it, including full fallback.
-      initialToolNames = buildSessionRegistryTools({ requestText: text, intent: declared.intent })
-        .map(tool => tool.function.name);
+      initialToolNames = requestsModernMap(project, text, currentMapId ? [currentMapId] : [])
+        ? [...MODERN_MAP_INITIAL_TOOLS]
+        : buildSessionRegistryTools({ requestText: text, intent: declared.intent }).map(tool => tool.function.name);
     }
   }
   const team = input.piTeam && !plan.readOnly;

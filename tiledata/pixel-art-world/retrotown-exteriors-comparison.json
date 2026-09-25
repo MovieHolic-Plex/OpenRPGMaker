@@ -1,0 +1,535 @@
+[
+  {
+    "packId": "paw-retrotown-sento",
+    "recipeId": "retro-sento-plaster-wood-wall",
+    "sourceRect": {
+      "x": 0,
+      "y": 27,
+      "width": 3,
+      "height": 4
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "f22908e4ffa903aed8ad0a0820dc801f9be9f8e9040a963998856e355332b061"
+  },
+  {
+    "packId": "paw-retrotown-sento",
+    "recipeId": "retro-sento-awning-shutter-window",
+    "sourceRect": {
+      "x": 4,
+      "y": 40,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "18c9aad6da8b0be09f0e27a42e02d1b65c72fcdf5b732c1986daaafaea560ec3"
+  },
+  {
+    "packId": "paw-retrotown-sento",
+    "recipeId": "retro-sento-awning-paper-window",
+    "sourceRect": {
+      "x": 6,
+      "y": 40,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "db264dcd803c4c6719e39a9a9972948424d0c63a90f37a4181b4d6279fbb93d8"
+  },
+  {
+    "packId": "paw-retrotown-sento",
+    "recipeId": "retro-sento-wood-grille",
+    "sourceRect": {
+      "x": 2,
+      "y": 42,
+      "width": 2,
+      "height": 1
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "bbabc28eb62e4c8fe7c52bd0d6d9411b6fd99c7c61fd0212e844bda2f4da1007"
+  },
+  {
+    "packId": "paw-retrotown-sento",
+    "recipeId": "retro-sento-small-vent",
+    "sourceRect": {
+      "x": 1,
+      "y": 39,
+      "width": 1,
+      "height": 1
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "8e2b6db5f5ae264206295649d449a882fd297f6ac37e87da5558e52ecd90f907"
+  },
+  {
+    "packId": "paw-retrotown-sento",
+    "recipeId": "retro-sento-bamboo",
+    "sourceRect": {
+      "x": 0,
+      "y": 31,
+      "width": 1,
+      "height": 3
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "4bbc63fd2b14052d11078a03400052ff1eba8a87d7858507f7939c2b42d56dc9"
+  },
+  {
+    "packId": "paw-retrotown-sento",
+    "recipeId": "retro-sento-tree",
+    "sourceRect": {
+      "x": 4,
+      "y": 21,
+      "width": 4,
+      "height": 4
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "bda4af180e55a2e038d23fd0be9cd24b309812c4ab9a96a500641576bf5e362a"
+  },
+  {
+    "packId": "paw-retrotown-sento",
+    "recipeId": "retro-sento-stone-lantern",
+    "sourceRect": {
+      "x": 1,
+      "y": 25,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "8f8a412a6ee1d46826b9f872b0f809095a8cb3d7b4fd456c67d280f5278c56ea"
+  },
+  {
+    "packId": "paw-retrotown-sento",
+    "recipeId": "retro-sento-tanuki",
+    "sourceRect": {
+      "x": 0,
+      "y": 25,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "5f21f39ea3aabb0d4bfede01439d95e3eb7cc7a23b00c56602f21f0c9f7a8e46"
+  },
+  {
+    "packId": "paw-retrotown-sento",
+    "recipeId": "retro-sento-flower-planter",
+    "sourceRect": {
+      "x": 3,
+      "y": 25,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "10f79875de8a0c297c50c5b2d3ca7b7dd3ea4769f439a9193ef5b92ef22e39e5"
+  },
+  {
+    "packId": "paw-retrotown-sento",
+    "recipeId": "retro-sento-plant-planter",
+    "sourceRect": {
+      "x": 2,
+      "y": 25,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "8eb39569a72f6d822b9b74a4ddd50d1379532f202997f40635ce1da9524a3064"
+  },
+  {
+    "packId": "paw-retrotown-sento",
+    "recipeId": "retro-sento-bamboo-pot",
+    "sourceRect": {
+      "x": 4,
+      "y": 25,
+      "width": 1,
+      "height": 1
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "e941f932b183e314162a977fdbaae6f879817bd5815b35d940d645086d2d98d4"
+  },
+  {
+    "packId": "paw-retrotown-sento",
+    "recipeId": "retro-sento-fern-pot",
+    "sourceRect": {
+      "x": 4,
+      "y": 26,
+      "width": 1,
+      "height": 1
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "5c83148f96f883ddd6afd1d396760fdfbf10d9fd7d07927ec88827049b146121"
+  },
+  {
+    "packId": "paw-retrotown-sento",
+    "recipeId": "retro-sento-lidded-jar",
+    "sourceRect": {
+      "x": 0,
+      "y": 23,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "855f60ba2f1f381b5ec9b9a95af537d86effb60e1db100c47355557222833e34"
+  },
+  {
+    "packId": "paw-retrotown-sento",
+    "recipeId": "retro-sento-open-jar",
+    "sourceRect": {
+      "x": 1,
+      "y": 23,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "87aeec50b87137988fc31f5146a2a4245746172517401fc2f139b532ddb1ed44"
+  },
+  {
+    "packId": "paw-retrotown-sento",
+    "recipeId": "retro-sento-entrance-whole",
+    "sourceRect": {
+      "x": 4,
+      "y": 43,
+      "width": 4,
+      "height": 4
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "c82a43cd95f5d85b3730439bf12a976370c0330e36102a699bf985eb67aad48b"
+  },
+  {
+    "packId": "paw-retrotown-sento",
+    "recipeId": "retro-sento-sento-sign",
+    "sourceRect": {
+      "x": 6,
+      "y": 47,
+      "width": 2,
+      "height": 1
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "c01bfdf9357e0c7adf321c99abea1c31cf2f4f2eee1de38d489ee3bc7877f3f4"
+  },
+  {
+    "packId": "paw-retrotown-sento",
+    "recipeId": "retro-sento-inn-sign",
+    "sourceRect": {
+      "x": 4,
+      "y": 47,
+      "width": 2,
+      "height": 1
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "edea0884bf441540ec35afcc4d1be0f1b208a57aaf66c515d727823ad099ce9a"
+  },
+  {
+    "packId": "paw-retrotown-sento",
+    "recipeId": "retro-sento-chimney",
+    "sourceRect": {
+      "x": 2,
+      "y": 47,
+      "width": 1,
+      "height": 3
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "a57dfb41caac0aa5c7a1fd264a33f56c0a8de58c3f039d901d22d8c23a4d86e0"
+  },
+  {
+    "packId": "paw-retrotown-sento",
+    "recipeId": "retro-sento-water-bucket",
+    "sourceRect": {
+      "x": 1,
+      "y": 32,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "b2787c65c4e78dd0eaa1b9cb099b0927ecb71600058112e2cbbb6781cbe80e9a"
+  },
+  {
+    "packId": "paw-retrotown-sento",
+    "recipeId": "retro-sento-slatted-door",
+    "sourceRect": {
+      "x": 0,
+      "y": 43,
+      "width": 3,
+      "height": 3
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "67a2716701c705c6f8cd29fc7147e0665747b631a9c06b0380e83a8ab36daef8"
+  },
+  {
+    "packId": "paw-retrotown-rtown",
+    "recipeId": "retro-rtown-plaster-wood-wall",
+    "sourceRect": {
+      "x": 0,
+      "y": 27,
+      "width": 3,
+      "height": 4
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "f22908e4ffa903aed8ad0a0820dc801f9be9f8e9040a963998856e355332b061"
+  },
+  {
+    "packId": "paw-retrotown-rtown",
+    "recipeId": "retro-rtown-awning-shutter-window",
+    "sourceRect": {
+      "x": 4,
+      "y": 40,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "18c9aad6da8b0be09f0e27a42e02d1b65c72fcdf5b732c1986daaafaea560ec3"
+  },
+  {
+    "packId": "paw-retrotown-rtown",
+    "recipeId": "retro-rtown-awning-paper-window",
+    "sourceRect": {
+      "x": 6,
+      "y": 40,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "db264dcd803c4c6719e39a9a9972948424d0c63a90f37a4181b4d6279fbb93d8"
+  },
+  {
+    "packId": "paw-retrotown-rtown",
+    "recipeId": "retro-rtown-wood-grille",
+    "sourceRect": {
+      "x": 2,
+      "y": 42,
+      "width": 2,
+      "height": 1
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "bbabc28eb62e4c8fe7c52bd0d6d9411b6fd99c7c61fd0212e844bda2f4da1007"
+  },
+  {
+    "packId": "paw-retrotown-rtown",
+    "recipeId": "retro-rtown-small-vent",
+    "sourceRect": {
+      "x": 1,
+      "y": 39,
+      "width": 1,
+      "height": 1
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "8e2b6db5f5ae264206295649d449a882fd297f6ac37e87da5558e52ecd90f907"
+  },
+  {
+    "packId": "paw-retrotown-rtown",
+    "recipeId": "retro-rtown-bamboo",
+    "sourceRect": {
+      "x": 0,
+      "y": 31,
+      "width": 1,
+      "height": 3
+    },
+    "rgbaIdenticalToSento": false,
+    "alphaIdenticalToSento": false,
+    "rawRgbaSha256": "de419b61f51fdcad7d2652cac654f3038278601ee16cd2717e849fc3a546194b"
+  },
+  {
+    "packId": "paw-retrotown-rtown",
+    "recipeId": "retro-rtown-tree",
+    "sourceRect": {
+      "x": 4,
+      "y": 21,
+      "width": 4,
+      "height": 4
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "bda4af180e55a2e038d23fd0be9cd24b309812c4ab9a96a500641576bf5e362a"
+  },
+  {
+    "packId": "paw-retrotown-rtown",
+    "recipeId": "retro-rtown-stone-lantern",
+    "sourceRect": {
+      "x": 1,
+      "y": 25,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "8f8a412a6ee1d46826b9f872b0f809095a8cb3d7b4fd456c67d280f5278c56ea"
+  },
+  {
+    "packId": "paw-retrotown-rtown",
+    "recipeId": "retro-rtown-tanuki",
+    "sourceRect": {
+      "x": 0,
+      "y": 25,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "5f21f39ea3aabb0d4bfede01439d95e3eb7cc7a23b00c56602f21f0c9f7a8e46"
+  },
+  {
+    "packId": "paw-retrotown-rtown",
+    "recipeId": "retro-rtown-flower-planter",
+    "sourceRect": {
+      "x": 3,
+      "y": 25,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "10f79875de8a0c297c50c5b2d3ca7b7dd3ea4769f439a9193ef5b92ef22e39e5"
+  },
+  {
+    "packId": "paw-retrotown-rtown",
+    "recipeId": "retro-rtown-plant-planter",
+    "sourceRect": {
+      "x": 2,
+      "y": 25,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "8eb39569a72f6d822b9b74a4ddd50d1379532f202997f40635ce1da9524a3064"
+  },
+  {
+    "packId": "paw-retrotown-rtown",
+    "recipeId": "retro-rtown-bamboo-pot",
+    "sourceRect": {
+      "x": 4,
+      "y": 25,
+      "width": 1,
+      "height": 1
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "e941f932b183e314162a977fdbaae6f879817bd5815b35d940d645086d2d98d4"
+  },
+  {
+    "packId": "paw-retrotown-rtown",
+    "recipeId": "retro-rtown-fern-pot",
+    "sourceRect": {
+      "x": 4,
+      "y": 26,
+      "width": 1,
+      "height": 1
+    },
+    "rgbaIdenticalToSento": false,
+    "alphaIdenticalToSento": false,
+    "rawRgbaSha256": "d8476ed5947f94e7bd62c427a10940924c1ab57b3a3d1923a0ff34876635be4a"
+  },
+  {
+    "packId": "paw-retrotown-rtown",
+    "recipeId": "retro-rtown-lidded-jar",
+    "sourceRect": {
+      "x": 0,
+      "y": 23,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "855f60ba2f1f381b5ec9b9a95af537d86effb60e1db100c47355557222833e34"
+  },
+  {
+    "packId": "paw-retrotown-rtown",
+    "recipeId": "retro-rtown-open-jar",
+    "sourceRect": {
+      "x": 1,
+      "y": 23,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToSento": true,
+    "alphaIdenticalToSento": true,
+    "rawRgbaSha256": "87aeec50b87137988fc31f5146a2a4245746172517401fc2f139b532ddb1ed44"
+  },
+  {
+    "packId": "paw-retrotown-rtown",
+    "recipeId": "retro-rtown-glass-doors",
+    "sourceRect": {
+      "x": 6,
+      "y": 43,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToSento": false,
+    "alphaIdenticalToSento": false,
+    "rawRgbaSha256": "76c84920e3a9503ec262e805a1ef7a10df283689e8755493118b7dea75727e0d"
+  },
+  {
+    "packId": "paw-retrotown-rtown",
+    "recipeId": "retro-rtown-bonsai-stand",
+    "sourceRect": {
+      "x": 4,
+      "y": 45,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToSento": false,
+    "alphaIdenticalToSento": false,
+    "rawRgbaSha256": "6c0d8ed299ea50aa0140f0a48ba48a49b045d2e426796a2e25a507d88daa4e96"
+  },
+  {
+    "packId": "paw-retrotown-rtown",
+    "recipeId": "retro-rtown-mailboxes",
+    "sourceRect": {
+      "x": 6,
+      "y": 45,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToSento": false,
+    "alphaIdenticalToSento": false,
+    "rawRgbaSha256": "5f43a09990fdcc03166bccf678acd57cfeed6c443f3799396fce22f450f4e9b5"
+  },
+  {
+    "packId": "paw-retrotown-rtown",
+    "recipeId": "retro-rtown-dustbin",
+    "sourceRect": {
+      "x": 2,
+      "y": 45,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToSento": false,
+    "alphaIdenticalToSento": false,
+    "rawRgbaSha256": "4ee07c276fcf533fa4878bae2ef97584822ec87ad0df7950e7c9295cf43f2957"
+  },
+  {
+    "packId": "paw-retrotown-rtown",
+    "recipeId": "retro-rtown-fire-notice",
+    "sourceRect": {
+      "x": 4,
+      "y": 44,
+      "width": 1,
+      "height": 1
+    },
+    "rgbaIdenticalToSento": false,
+    "alphaIdenticalToSento": false,
+    "rawRgbaSha256": "2fd46070f11906083418483127210159b8390d64453752404e73e5dc0d5a84be"
+  }
+]

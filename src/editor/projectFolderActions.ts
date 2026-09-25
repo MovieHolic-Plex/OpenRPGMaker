@@ -1,4 +1,5 @@
 import { serialize } from "@/project/io";
+import { ensureSharedContent, loadSharedContent } from "@/project/sharedContent";
 import type { Project } from "@/project/types";
 
 function startBridge(): NonNullable<Window["oprn"]>["start"] | undefined {
@@ -12,6 +13,12 @@ function startBridge(): NonNullable<Window["oprn"]>["start"] | undefined {
 export async function createProjectFolderWithSeed(title: string, seed: Project): Promise<boolean> {
   const bridge = startBridge();
   if (!bridge) return false;
+  // A seed can predate bootstrap loading (or come from a copied project). Refresh
+  // before the first write; a failed host read must not create an incomplete folder.
+  // Packaged app:// currently has no shared-content endpoint, unlike HTTP hosts.
+  const required = window.location.protocol === "http:" || window.location.protocol === "https:";
+  await loadSharedContent({ required });
+  ensureSharedContent(seed);
   const created = await bridge.createProject({ title, seed: serialize(seed) });
   return created !== null;
 }
