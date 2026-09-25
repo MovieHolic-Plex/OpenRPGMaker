@@ -13,6 +13,7 @@ import { createForestHarmonyTileset, ensureForestHarmonyReferences, FOREST_HARMO
 import { ensureForestHarmonyVillageSlots } from "./forestHarmonyExtension";
 import { ensureForestHarmonyHouseParts } from "./forestHarmonyHouseParts";
 import { ensureForestHarmonyTreetopParts } from "./forestHarmonyTreetopParts";
+import { ATLAS_VEHICLES_TEXTURE, createAtlasVehiclesTileset, ensureAtlasVehiclesReferences } from "./atlasVehicles";
 import { createForestGrassJoinsTileset, extendForestGrassJoinsTileset, FOREST_GRASS_JOINS_TEXTURE } from "./forestGrassJoins";
 import { createLpcWoodenFurniture16Tileset, createLpcWoodenFurnitureTileset, seedLpcWoodenFurniture16Kits, seedLpcWoodenFurnitureKits } from "./lpcWoodenFurniture";
 import { createTiboInteriorTileset, extendTiboInteriorDefaults, TIBO_INTERIOR_ID, TIBO_INTERIOR_TEXTURE } from "./tiboInterior";
@@ -161,6 +162,7 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       changed = ensureFieldRouteReferences(project.tilesets[id]) || changed;
       changed = ensureElfTreetopReferences(project.tilesets[id]) || changed;
       if (id === SHARED_VILLAGE_OBJECT_ID) changed = ensureSharedVillageObjectReferences(project.tilesets[id]) || changed;
+      if (asset.textureKey === ATLAS_VEHICLES_TEXTURE) changed = ensureAtlasVehiclesReferences(project.tilesets[id]) || changed;
       if (id === TIBO_INTERIOR_ID) changed = extendTiboInteriorDefaults(project.tilesets[id]) || changed;
       changed = seedLpcWoodenFurnitureKits(project.tilesets[id]) || changed;
       changed = seedLpcWoodenFurniture16Kits(project.tilesets[id]) || changed;
@@ -275,6 +277,7 @@ function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[nu
 function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): TilesetDef {
   if (asset.textureKey === CASTLE_TILESET_TEXTURE_KEY) return createCastleTileset();
   if (asset.textureKey === SHARED_VILLAGE_OBJECT_TEXTURE) return createSharedVillageObjectsTileset();
+  if (asset.textureKey === ATLAS_VEHICLES_TEXTURE) return createAtlasVehiclesTileset();
   // New projects start with the shared tail slots the place documents use (2550~2759).
   if (asset.textureKey === FOREST_HARMONY_TEXTURE) {
     const tileset = createForestHarmonyTileset();

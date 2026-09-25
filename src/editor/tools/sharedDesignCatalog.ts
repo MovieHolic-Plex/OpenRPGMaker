@@ -76,7 +76,7 @@ export function sharedPlaces(): SharedPlaceEntry[] {
 
 // Bundled pieces the catalog already carries — not repeated as raw kit:/group: rows.
 const coveredKit = (kitId: string) => kitId.startsWith("dewbank:");
-const coveredGroup = (groupId: string) => groupId.startsWith("bare-trees:") || groupId.startsWith("climate-terrain:");
+const coveredGroup = (groupId: string) => groupId.startsWith("bare-trees:") || groupId.startsWith("climate-terrain:") || groupId.startsWith("atlas-vehicles:");
 
 function kitObjects(tileset: TilesetDef): SharedObjectEntry[] {
   return (tileset.structureKits ?? []).filter(kit => kit.kind === "section" && !coveredKit(kit.id)).map(kit => ({

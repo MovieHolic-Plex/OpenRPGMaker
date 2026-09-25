@@ -17,6 +17,8 @@ const EASYRPG_PROJECT_IDS = new Set([
   "forest_harmony",
   "tibo_interior_expanded",
   "interior_wall_ceiling_wood_floor",
+  // 탈것·장면 조각 — EasyRPG 배 시트의 결·색으로 찍은 손 도트(project/defaults/atlasVehicles.ts).
+  "oprn_atlas_vehicles",
 ]);
 
 function imageId(tileset: TilesetDef): string {

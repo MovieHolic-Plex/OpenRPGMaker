@@ -4,6 +4,7 @@ import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import forestHarmony from "./forestHarmonyTileset.json";
 import forestHarmonyHouseParts from "./forestHarmonyHouseParts.json";
 import forestHarmonyTreetopParts from "./forestHarmonyTreetopParts.json";
+import atlasVehicles from "./atlasVehiclesTileset.json";
 import climateSheets from "../../tiledata/climate-villages/sheets.json";
 import tiboRecovered from "./tiboRecoveredTileset.json";
 import { withInlineAsset } from "@/assets/inlineAssetStore";
@@ -148,6 +149,9 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   { textureKey: "tex_easyrpg_chipset_ship", path: "assets/easyrpg-chipset-ship-transparent.png", name: "배 · EasyRPG (CC0)" },
   // Harbor pieces for forest-village harbors (LPC rowboat CC-BY-SA 3.0 + EasyRPG ship tiles CC0) — assets/harbor-kit/CREDITS.txt.
   { textureKey: "tex_harbor_kit", path: "assets/harbor-kit/harbor-kit.png", name: "항구 조각 · 나룻배·계류 말뚝 (LPC CC-BY-SA · EasyRPG CC0)" },
+  // 탈것·장면 조각(배·비공정·마차·축제·처형대·하늘) — EasyRPG 배 시트(CC0) 결로 찍은 손 도트. 정의는 project/defaults/atlasVehicles.ts,
+  // 재생성: scripts/content/atlas-scenes/build_vehicles.py + register-vehicles.mjs. 출처 assets/atlas-scenes/CREDITS.txt.
+  { textureKey: "tex_oprn_atlas_vehicles", path: "assets/atlas-scenes/vehicles.png", name: "탈것·장면 조각 · 배·비공정·마차·축제 (EasyRPG 배 시트 CC0 + 손 도트)" },
   { textureKey: "tex_easyrpg_chipset_world", path: "assets/easyrpg-chipset-world-transparent.png", name: "월드맵 · EasyRPG (CC0)" },
   // retro_* 세 장은 출처가 섞여 있다(CC-BY/CC0/WTFPL) — ATTRIBUTION.md 와 vendor AUTHORS.md 참고.
   { textureKey: "tex_easyrpg_chipset_retro_dungeon", path: "assets/easyrpg-chipset-retro-dungeon-transparent.png", name: "레트로 던전 · EasyRPG (CC0)" },
@@ -175,6 +179,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_forest_harmony") return forestHarmony.count;
   if (key === "tex_forest_harmony_house_parts") return forestHarmonyHouseParts.frames;
   if (key === "tex_forest_harmony_treetop_parts") return forestHarmonyTreetopParts.frames;
+  if (key === "tex_oprn_atlas_vehicles") return atlasVehicles.count;
   if (key === "tex_forest_harmony_grass_joins") return 10;
   if (key === "tex_forest_harmony_snow") return climateSheets.snow.count;
   if (key === "tex_forest_harmony_volcano") return climateSheets.volcano.count;
