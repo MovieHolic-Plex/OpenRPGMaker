@@ -7,6 +7,7 @@
 // Same grammar as the sunken temple: doors are cut into the room (north = arch on the wall face, others = a gap in
 // the one-cell rim at the map edge), every prop stands in a group with a reason, built rooms get no floor dressing.
 import { grid } from "./kit.mjs";
+import { loadParts } from "./family.mjs";
 
 export function frontierPlans() {
   return [demonFront(), arena(), swampTemple(), pirateCove(), wellCellar()];
@@ -105,42 +106,43 @@ function swampTemple() {
 }
 
 function pirateCove() {
-  const W = 38, H = 26;
+  // The moored ship is the real ship of 「푸른물결항」 (EasyRPG ship sheet, stern mirrored like the harbor snapshot), stamped
+  // from the atlas parts (tiledata/atlas-dungeons/parts.json · moored-ship, 30×11). It floats in the inlet; a plank pier
+  // from the quay reaches a gap cut in its port rail (ship x23~24), so the deck is walked, not a painted raft.
+  const W = 52, H = 34, SX = 12, SY = 17;
+  const ship = loadParts().stamps["moored-ship"], deck = ship.lower[2][23];
+  const gap = [[SX + 23, SY + 1], [SX + 24, SY + 1]];
   return {
-    id: "dungeon-pirate-cove", name: "해적 소굴 · 숨은 선착장", theme: "cave", series: "frontier", placeKind: "natural", groves: 0, heaps: 0, dress: "sea", tileset: "oprn_dungeon_sea",
+    id: "dungeon-pirate-cove", name: "해적 소굴 · 숨은 선착장", theme: "cave", series: "frontier", placeKind: "natural", groves: 8, heaps: 3, outcrops: true, dress: "sea", tileset: "oprn_dungeon_sea",
     art: grid(W, H, [
-      [".", 2, 2, 13, 10, { blob: 21, wobble: 0.1 }], // 북서쪽 야영 굴
-      [".", 1, 8, 25, 19, { blob: 23, wobble: 0.08 }], // 가운데 모래 굴
-      [".", 17, 1, 31, 10, { blob: 25, wobble: 0.1 }], // 북동쪽 망루 턱
-      [".", 2, 15, 10, 23, { blob: 27, wobble: 0.12 }], // 남서쪽 보물 굴
-      [".", 15, 16, 30, 23, { blob: 29, wobble: 0.1 }], // 남동쪽 물가
-      [".", 0, 10, 3, 13], // 서쪽 굴길(테두리 문 틈)
-      ["#", 14, -1, 19, 11, { blob: 31, wobble: 0.12 }], // 야영 굴과 망루 턱을 가르는 바위 혀
-      ["W", 18, 3, 22, 7, { blob: 35, wobble: 0.12 }], // 망루 턱의 조수 웅덩이
-      ["W", 3, 12, 13, 19, { blob: 41, wobble: 0.1 }], // 모래 굴 조수 웅덩이
-      ["%", 7, 12, 8, 19], // 야영지에서 보물 굴로 건너는 널판
-      ["W", 18, 18, 28, 22, { blob: 47, wobble: 0.12 }], // 남쪽으로 들어온 바닷물
-      ["#", 12, 17, 18, 26, { blob: 43, wobble: 0.12 }], // 보물 굴과 물가를 가르는 남쪽 바위 혀
-      ["W", 22, 7, 37, 21, { blob: 6, wobble: 0.1 }], ["W", 30, 11, 37, 16], // 바다로 트인 물길(동쪽 맵 밖으로)
-      ["|", 5, 5, 10, 8], // 야영지 널마루
-      ["|", 24, 3, 29, 6], // 망루 널마루(바다 어귀를 내려다본다)
-      ["%", 18, 13, 27, 14], // 선착장 널판
-      ["%", 27, 15, 28, 15], // 배에 걸친 널판
-      ["%", 27, 16, 30, 16], ["%", 25, 17, 32, 17], ["%", 27, 18, 30, 18], // 선착장에 댄 배(이물·고물이 뾰족한 선체)
+      [".", 1, 1, 21, 13, { blob: 21, wobble: 0.1 }], // 북서쪽 야영 굴
+      [".", 27, 1, 46, 12, { blob: 25, wobble: 0.1 }], // 북동쪽 망루·화약 굴
+      ["|", 33, 4, 38, 7], // 망루 널마루
+      [".", 7, 10, 51, 33, { blob: 23, wobble: 0.04 }], // 바다가 드는 큰 굴(물굽이 둘레 물가)
+      [".", 0, 5, 4, 8], // 서쪽 굴길(테두리 문 틈)
+      ["#", 19, -2, 27, 8, { blob: 31, wobble: 0.14 }], // 두 굴을 가르는 바위 혀
+      ["W", 5, 14, 58, 33, { blob: 6, wobble: 0.05 }], // 배가 뜬 물굽이(동쪽 맵 밖 바다로 트였다)
+      ["W", 44, 14, 51, 29], // 바다 어귀
+      ["W", 9, 18, 11, 19], // 서쪽 벼랑 밑까지 드는 물
+      ["w", 9, 12, 42, 13], // 북쪽 물가 널판 부두
+      ["%", SX + 23, 14, SX + 24, SY], // 부두에서 뱃전 틈까지 걸친 널판
+      ["W", 5, 3, 11, 8, { blob: 41, wobble: 0.12 }], // 야영 굴 안쪽 조수 웅덩이
     ]),
+    stamps: [["moored-ship", SX, SY]],
+    extra: [...gap.map(([x, y]) => [x, y, deck, "lowerTiles"]), ...gap.map(([x, y]) => [x, y, -1, "upperTiles"])],
     props: [
-      ["t", 6, 7], ["(", 5, 7], [")", 9, 7], ["T", 8, 5], ["}", 11, 5], ["}", 12, 5], ["E", 5, 5], ["E", 5, 6], // 야영지: 탁자·의자·화로·침대 둘·나무통
-      ["E", 19, 11], ["E", 20, 11], ["E", 19, 12], ["j", 20, 12], ["E", 18, 15], ["J", 19, 15], // 선착장 뿌리 양옆에 부린 짐
-      ["E", 28, 17], ["J", 29, 17], // 배에 실린 짐
-      ["E", 2, 16], ["J", 2, 17], // 굴길 어귀에 부려 둔 밀수품
-      ["H", 5, 22], ["H", 7, 22], ["J", 6, 22], ["E", 4, 21], ["K", 8, 21], // 남서쪽 굴 끝 보물 더미와 지키다 죽은 해적
-      ["T", 27, 3], [")", 28, 5], // 망루 단: 화로와 바다를 보는 의자
+      ["t", 13, 5], ["(", 12, 5], [")", 16, 5], ["F", 14, 8], ["}", 16, 3], ["}", 17, 3], ["E", 12, 3], ["J", 13, 3], // 야영지: 탁자·의자·모닥불·침대 둘·짐
+      ["E", 10, 10], ["E", 11, 10], ["j", 12, 10], // 야영지 물가 물통
+      ["ship:barrel", 20, 12], ["ship:barrel", 21, 12], ["ship:crate", 22, 12], ["ship:crate", 23, 12], ["ship:rope", 24, 12], ["ship:anchor", 30, 12], // 부두에 부린 짐과 닻
+      ["ship:crate", 38, 12], ["ship:barrel", 39, 12], ["ship:barrel-open", 40, 12], ["ship:jug", 41, 12],
+      ["T", 34, 4], ["ship:table", 36, 5], ["ship:stool", 37, 5], ["ship:flag", 35, 2], ["ship:barrel", 40, 4], ["ship:barrel", 41, 4], ["ship:barrel", 42, 4], ["ship:crate", 40, 5], ["ship:barrel-open", 41, 5], ["ship:crate", 43, 5], // 망루 굴: 바다 어귀를 보는 화로·의자, 화약통
+      ["chest-red", 3, 8], ["chest-wood", 4, 9], ["J", 2, 9], ["ship:skull", 5, 10], ["ship:swords", 3, 10], // 야영 굴 서쪽 구석 두목의 보물과 지키다 죽은 해적
+      ["ship:crate", 29, 9], ["ship:crate", 30, 9], ["ship:barrel", 29, 10], // 망루 굴 어귀에 부린 짐
     ],
-    extra: [[27, 16, 252], [28, 16, 253], [29, 16, 253], [30, 16, 254], [27, 18, 252], [28, 18, 253], [29, 18, 253], [30, 18, 254]], // 뱃전(어두운 판자)
-    entry: [0, 12],
-    targets: [[7, 8], [6, 21], [26, 13], [32, 17], [25, 17], [26, 5]],
-    exits: [{ at: [0, 12], to: "outside", note: "서쪽 굴길 → 해안 절벽" }],
-    note: "동쪽 바다로 트인 물길이 들어오는 해적 소굴. 서쪽 굴길로 들어오면 어귀에 밀수품, 북서쪽 굴엔 널마루 야영지(탁자·의자·화로·침대 둘·나무통), 가운데 조수 웅덩이는 널판으로 건너 남서쪽 굴 끝 보물 더미(상자 둘·항아리·나무통, 지키다 죽은 해적)로 간다. 물가엔 널판 선착장이 물길로 뻗고, 뿌리 양옆에 부린 짐, 끝에 널판을 걸친 배(어두운 뱃전, 짐 둘)가 매여 있다. 북동쪽 턱은 조수 웅덩이 곁 망루 널마루(화로·바다를 보는 의자)",
+    entry: [0, 7],
+    targets: [[14, 6], [30, 11], [SX + 18, SY + 5], [SX + 5, SY + 5], [38, 7], [4, 8]],
+    exits: [{ at: [0, 7], to: "outside", note: "서쪽 굴길 → 해안 절벽" }],
+    note: "동쪽 바다로 트인 물굽이에 진짜 범선(「푸른물결항」의 배 — 대포·닻·조타륜·선실 지붕을 그대로, 선미는 좌우 반전)이 떠 있는 해적 소굴. 서쪽 굴길로 들어오면 북서쪽 굴에 야영지(탁자·의자·모닥불·침대 둘)와 조수 웅덩이, 그 서쪽 구석에 두목의 보물(붉은 상자·나무 상자·항아리)과 지키다 죽은 해적, 북쪽 물가를 따라 널판 부두가 뻗고 부두 위에 부린 짐(통·상자·밧줄·닻). 부두 가운데서 널판이 물 위로 내려가 뱃전 난간을 틔운 틈으로 갑판에 오른다. 북동쪽 굴은 바다 어귀를 내려다보는 망루(화로·의자·깃발)와 화약통 더미",
   };
 }
 

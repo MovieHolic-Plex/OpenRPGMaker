@@ -135,6 +135,22 @@ export const BUNDLED_REFERENCE_CHIPSET_ASSETS = [
   { textureKey: "tex_oprn_dungeon_sea", path: "assets/rpg-dungeons/sea-chipset.png", name: "던전 · 해저 동굴 (재칠)" },
   { textureKey: "tex_oprn_dungeon_lair", path: "assets/rpg-dungeons/lair-chipset.png", name: "던전 · 용의 둥지 (재칠)" },
   { textureKey: "tex_oprn_dungeon_cave", path: "assets/rpg-dungeons/cave-chipset.png", name: "던전 · 동굴 물웅덩이 (재칠)" },
+  // 아틀라스 던전(tiledata/atlas-dungeons, scripts/content/build-atlas-dungeon-sheets.py): 던전 가족 타일셋이 510~ 에 이식하는 조각 시트(EasyRPG 실내·배 사본, 재칠 수정·불, 직접 그린 관·거미줄·함정·장치)
+  // 와 던전 칩셋을 칸 번호 그대로 다시 칠하거나 형제 EasyRPG 시트의 오토타일 블록을 옮겨 넣은 열세 장.
+  { textureKey: "tex_oprn_dungeon_parts", path: "assets/atlas-dungeons/parts.png", name: "던전 조각 · 아틀라스 이식 시트" },
+  { textureKey: "tex_oprn_dungeon_ghostship", path: "assets/atlas-dungeons/ghostship-chipset.png", name: "던전 · 유령선 (배 시트 선실 벽·갑판·구멍, 재칠)" },
+  { textureKey: "tex_oprn_dungeon_manor", path: "assets/atlas-dungeons/manor-chipset.png", name: "던전 · 유령 저택 (실내 시트 벽지·마루·카펫, 재칠)" },
+  { textureKey: "tex_oprn_dungeon_lab", path: "assets/atlas-dungeons/lab-chipset.png", name: "던전 · 비밀 연구소 (밝은 벽돌·석재 바닥, 재칠)" },
+  { textureKey: "tex_oprn_dungeon_wind", path: "assets/atlas-dungeons/wind-chipset.png", name: "던전 · 바람의 신전 (옥빛 대리석, 재칠)" },
+  { textureKey: "tex_oprn_dungeon_tide", path: "assets/atlas-dungeons/tide-chipset.png", name: "던전 · 물의 신전 (청백 대리석, 재칠)" },
+  { textureKey: "tex_oprn_dungeon_earth", path: "assets/atlas-dungeons/earth-chipset.png", name: "던전 · 땅의 신전 (황토 사암·이끼, 재칠)" },
+  { textureKey: "tex_oprn_dungeon_fire", path: "assets/atlas-dungeons/fire-chipset.png", name: "던전 · 불의 신전 (검붉은 현무암, 재칠)" },
+  { textureKey: "tex_oprn_dungeon_sky", path: "assets/atlas-dungeons/sky-chipset.png", name: "던전 · 하늘 탑 (흰 대리석·금, 바깥은 하늘)" },
+  { textureKey: "tex_oprn_dungeon_trial", path: "assets/atlas-dungeons/trial-chipset.png", name: "던전 · 시련의 탑 (흑요석·보랏빛, 재칠)" },
+  { textureKey: "tex_oprn_dungeon_dream", path: "assets/atlas-dungeons/dream-chipset.png", name: "던전 · 꿈 세계 (연보라 몽환, 별 뜬 공허)" },
+  { textureKey: "tex_oprn_dungeon_spider", path: "assets/atlas-dungeons/spider-chipset.png", name: "던전 · 거미 소굴 (잿빛 동굴, 재칠)" },
+  { textureKey: "tex_oprn_dungeon_ruins", path: "assets/atlas-dungeons/ruins-chipset.png", name: "던전 · 고대 유적 (녹슨 청동·이끼 사암, 재칠)" },
+  { textureKey: "tex_oprn_dungeon_abyss", path: "assets/atlas-dungeons/abyss-chipset.png", name: "던전 · 심연 (흑금, 보너스 던전)" },
 ] as const satisfies readonly BundledImageAsset[];
 
 export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
