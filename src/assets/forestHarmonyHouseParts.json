@@ -1,8 +1,8 @@
 {
  "textureKey": "tex_forest_harmony_house_parts",
  "start": 3060,
- "count": 3071,
- "frames": 11,
+ "count": 3131,
+ "frames": 71,
  "grafts": [
   {
    "targetTile": 3060,
@@ -58,6 +58,306 @@
    "targetTile": 3070,
    "sourceChipset": "tex_forest_harmony_house_parts",
    "sourceTile": 10
+  },
+  {
+   "targetTile": 3071,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 11
+  },
+  {
+   "targetTile": 3072,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 12
+  },
+  {
+   "targetTile": 3073,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 13
+  },
+  {
+   "targetTile": 3074,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 14
+  },
+  {
+   "targetTile": 3075,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 15
+  },
+  {
+   "targetTile": 3076,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 16
+  },
+  {
+   "targetTile": 3077,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 17
+  },
+  {
+   "targetTile": 3078,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 18
+  },
+  {
+   "targetTile": 3079,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 19
+  },
+  {
+   "targetTile": 3080,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 20
+  },
+  {
+   "targetTile": 3081,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 21
+  },
+  {
+   "targetTile": 3082,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 22
+  },
+  {
+   "targetTile": 3083,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 23
+  },
+  {
+   "targetTile": 3084,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 24
+  },
+  {
+   "targetTile": 3085,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 25
+  },
+  {
+   "targetTile": 3086,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 26
+  },
+  {
+   "targetTile": 3087,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 27
+  },
+  {
+   "targetTile": 3088,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 28
+  },
+  {
+   "targetTile": 3089,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 29
+  },
+  {
+   "targetTile": 3090,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 30
+  },
+  {
+   "targetTile": 3091,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 31
+  },
+  {
+   "targetTile": 3092,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 32
+  },
+  {
+   "targetTile": 3093,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 33
+  },
+  {
+   "targetTile": 3094,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 34
+  },
+  {
+   "targetTile": 3095,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 35
+  },
+  {
+   "targetTile": 3096,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 36
+  },
+  {
+   "targetTile": 3097,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 37
+  },
+  {
+   "targetTile": 3098,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 38
+  },
+  {
+   "targetTile": 3099,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 39
+  },
+  {
+   "targetTile": 3100,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 40
+  },
+  {
+   "targetTile": 3101,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 41
+  },
+  {
+   "targetTile": 3102,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 42
+  },
+  {
+   "targetTile": 3103,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 43
+  },
+  {
+   "targetTile": 3104,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 44
+  },
+  {
+   "targetTile": 3105,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 45
+  },
+  {
+   "targetTile": 3106,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 46
+  },
+  {
+   "targetTile": 3107,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 47
+  },
+  {
+   "targetTile": 3108,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 48
+  },
+  {
+   "targetTile": 3109,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 49
+  },
+  {
+   "targetTile": 3110,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 50
+  },
+  {
+   "targetTile": 3111,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 51
+  },
+  {
+   "targetTile": 3112,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 52
+  },
+  {
+   "targetTile": 3113,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 53
+  },
+  {
+   "targetTile": 3114,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 54
+  },
+  {
+   "targetTile": 3115,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 55
+  },
+  {
+   "targetTile": 3116,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 56
+  },
+  {
+   "targetTile": 3117,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 57
+  },
+  {
+   "targetTile": 3118,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 58
+  },
+  {
+   "targetTile": 3119,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 59
+  },
+  {
+   "targetTile": 3120,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 60
+  },
+  {
+   "targetTile": 3121,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 61
+  },
+  {
+   "targetTile": 3122,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 62
+  },
+  {
+   "targetTile": 3123,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 63
+  },
+  {
+   "targetTile": 3124,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 64
+  },
+  {
+   "targetTile": 3125,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 65
+  },
+  {
+   "targetTile": 3126,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 66
+  },
+  {
+   "targetTile": 3127,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 67
+  },
+  {
+   "targetTile": 3128,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 68
+  },
+  {
+   "targetTile": 3129,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 69
+  },
+  {
+   "targetTile": 3130,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 70
   }
  ],
  "slots": [
@@ -80,7 +380,8 @@
     "userLocked": true,
     "defaultLayer": "upper",
     "layerBacking": "none"
-   }
+   },
+   "fallback": 326
   },
   {
    "name": "chimney-brick-smoke",
@@ -101,7 +402,8 @@
     "userLocked": true,
     "defaultLayer": "upper",
     "layerBacking": "none"
-   }
+   },
+   "fallback": 326
   },
   {
    "name": "chimney-stone-smoke",
@@ -122,7 +424,8 @@
     "userLocked": true,
     "defaultLayer": "upper",
     "layerBacking": "none"
-   }
+   },
+   "fallback": 326
   },
   {
    "name": "dormer-blue",
@@ -143,7 +446,8 @@
     "userLocked": true,
     "defaultLayer": "upper",
     "layerBacking": "none"
-   }
+   },
+   "fallback": -1
   },
   {
    "name": "dormer-orange",
@@ -164,7 +468,8 @@
     "userLocked": true,
     "defaultLayer": "upper",
     "layerBacking": "none"
-   }
+   },
+   "fallback": -1
   },
   {
    "name": "awning-wood",
@@ -185,7 +490,8 @@
     "userLocked": true,
     "defaultLayer": "upper",
     "layerBacking": "none"
-   }
+   },
+   "fallback": -1
   },
   {
    "name": "awning-cloth",
@@ -206,7 +512,8 @@
     "userLocked": true,
     "defaultLayer": "upper",
     "layerBacking": "none"
-   }
+   },
+   "fallback": -1
   },
   {
    "name": "finial-blue-l",
@@ -227,7 +534,8 @@
     "userLocked": true,
     "defaultLayer": "upper",
     "layerBacking": "none"
-   }
+   },
+   "fallback": 356
   },
   {
    "name": "finial-blue-r",
@@ -248,7 +556,8 @@
     "userLocked": true,
     "defaultLayer": "upper",
     "layerBacking": "none"
-   }
+   },
+   "fallback": 357
   },
   {
    "name": "finial-orange-l",
@@ -269,7 +578,8 @@
     "userLocked": true,
     "defaultLayer": "upper",
     "layerBacking": "none"
-   }
+   },
+   "fallback": 354
   },
   {
    "name": "finial-orange-r",
@@ -290,7 +600,1328 @@
     "userLocked": true,
     "defaultLayer": "upper",
     "layerBacking": "none"
-   }
+   },
+   "fallback": 355
+  },
+  {
+   "name": "roof-moss-374",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 이끼 초록 기와 (374 재칠)",
+    "description": "이끼 초록 기와 지붕 — 숲마을 374 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 374 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 374
+  },
+  {
+   "name": "roof-moss-375",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 이끼 초록 기와 (375 재칠)",
+    "description": "이끼 초록 기와 지붕 — 숲마을 375 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 375 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 375
+  },
+  {
+   "name": "roof-moss-376",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 이끼 초록 기와 (376 재칠)",
+    "description": "이끼 초록 기와 지붕 — 숲마을 376 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 376 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 376
+  },
+  {
+   "name": "roof-moss-377",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 이끼 초록 기와 (377 재칠)",
+    "description": "이끼 초록 기와 지붕 — 숲마을 377 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 377 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 377
+  },
+  {
+   "name": "roof-moss-404",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 이끼 초록 기와 (404 재칠)",
+    "description": "이끼 초록 기와 지붕 — 숲마을 404 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 404 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 404
+  },
+  {
+   "name": "roof-moss-405",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 이끼 초록 기와 (405 재칠)",
+    "description": "이끼 초록 기와 지붕 — 숲마을 405 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 405 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 405
+  },
+  {
+   "name": "roof-moss-354",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 이끼 초록 기와 (354 재칠)",
+    "description": "이끼 초록 기와 지붕 — 숲마을 354 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 354 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 354
+  },
+  {
+   "name": "roof-moss-355",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 이끼 초록 기와 (355 재칠)",
+    "description": "이끼 초록 기와 지붕 — 숲마을 355 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 355 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 355
+  },
+  {
+   "name": "roof-moss-384",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 이끼 초록 기와 (384 재칠)",
+    "description": "이끼 초록 기와 지붕 — 숲마을 384 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 384 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 384
+  },
+  {
+   "name": "roof-moss-385",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 이끼 초록 기와 (385 재칠)",
+    "description": "이끼 초록 기와 지붕 — 숲마을 385 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 385 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 385
+  },
+  {
+   "name": "dormer-moss",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕창 · 이끼 초록 기와",
+    "description": "이끼 초록 기와 지붕에 내는 작은 박공 지붕창(dormer-orange 재칠). 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": -1
+  },
+  {
+   "name": "finial-moss-l",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "박공 꼭대기 장식 · 이끼 초록 기와 왼쪽",
+    "description": "이끼 초록 기와 지붕 꼭대기 캡 + 금빛 구슬(finial-orange-l 재칠). 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 354
+  },
+  {
+   "name": "finial-moss-r",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "박공 꼭대기 장식 · 이끼 초록 기와 오른쪽",
+    "description": "이끼 초록 기와 지붕 꼭대기 캡 + 금빛 구슬(finial-orange-r 재칠). 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 355
+  },
+  {
+   "name": "roof-thatch-374",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 초가 (374 재칠)",
+    "description": "초가 지붕 — 숲마을 374 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 374 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 374
+  },
+  {
+   "name": "roof-thatch-375",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 초가 (375 재칠)",
+    "description": "초가 지붕 — 숲마을 375 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 375 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 375
+  },
+  {
+   "name": "roof-thatch-376",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 초가 (376 재칠)",
+    "description": "초가 지붕 — 숲마을 376 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 376 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 376
+  },
+  {
+   "name": "roof-thatch-377",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 초가 (377 재칠)",
+    "description": "초가 지붕 — 숲마을 377 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 377 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 377
+  },
+  {
+   "name": "roof-thatch-404",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 초가 (404 재칠)",
+    "description": "초가 지붕 — 숲마을 404 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 404 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 404
+  },
+  {
+   "name": "roof-thatch-405",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 초가 (405 재칠)",
+    "description": "초가 지붕 — 숲마을 405 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 405 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 405
+  },
+  {
+   "name": "roof-thatch-354",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 초가 (354 재칠)",
+    "description": "초가 지붕 — 숲마을 354 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 354 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 354
+  },
+  {
+   "name": "roof-thatch-355",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 초가 (355 재칠)",
+    "description": "초가 지붕 — 숲마을 355 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 355 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 355
+  },
+  {
+   "name": "roof-thatch-384",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 초가 (384 재칠)",
+    "description": "초가 지붕 — 숲마을 384 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 384 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 384
+  },
+  {
+   "name": "roof-thatch-385",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 초가 (385 재칠)",
+    "description": "초가 지붕 — 숲마을 385 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 385 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 385
+  },
+  {
+   "name": "dormer-thatch",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕창 · 초가",
+    "description": "초가 지붕에 내는 작은 박공 지붕창(dormer-orange 재칠). 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": -1
+  },
+  {
+   "name": "finial-thatch-l",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "박공 꼭대기 장식 · 초가 왼쪽",
+    "description": "초가 지붕 꼭대기 캡 + 금빛 구슬(finial-orange-l 재칠). 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 354
+  },
+  {
+   "name": "finial-thatch-r",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "박공 꼭대기 장식 · 초가 오른쪽",
+    "description": "초가 지붕 꼭대기 캡 + 금빛 구슬(finial-orange-r 재칠). 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 355
+  },
+  {
+   "name": "roof-slate-406",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 회청 슬레이트 (406 재칠)",
+    "description": "회청 슬레이트 지붕 — 숲마을 406 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 406 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 406
+  },
+  {
+   "name": "roof-slate-407",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 회청 슬레이트 (407 재칠)",
+    "description": "회청 슬레이트 지붕 — 숲마을 407 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 407 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 407
+  },
+  {
+   "name": "roof-slate-436",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 회청 슬레이트 (436 재칠)",
+    "description": "회청 슬레이트 지붕 — 숲마을 436 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 436 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 436
+  },
+  {
+   "name": "roof-slate-437",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 회청 슬레이트 (437 재칠)",
+    "description": "회청 슬레이트 지붕 — 숲마을 437 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 437 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 437
+  },
+  {
+   "name": "roof-slate-467",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 회청 슬레이트 (467 재칠)",
+    "description": "회청 슬레이트 지붕 — 숲마을 467 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 467 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 467
+  },
+  {
+   "name": "roof-slate-356",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 회청 슬레이트 (356 재칠)",
+    "description": "회청 슬레이트 지붕 — 숲마을 356 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 356 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 356
+  },
+  {
+   "name": "roof-slate-357",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 회청 슬레이트 (357 재칠)",
+    "description": "회청 슬레이트 지붕 — 숲마을 357 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 357 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 357
+  },
+  {
+   "name": "roof-slate-386",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 회청 슬레이트 (386 재칠)",
+    "description": "회청 슬레이트 지붕 — 숲마을 386 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 386 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 386
+  },
+  {
+   "name": "roof-slate-387",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 회청 슬레이트 (387 재칠)",
+    "description": "회청 슬레이트 지붕 — 숲마을 387 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 387 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 387
+  },
+  {
+   "name": "dormer-slate",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕창 · 회청 슬레이트",
+    "description": "회청 슬레이트 지붕에 내는 작은 박공 지붕창(dormer-blue 재칠). 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": -1
+  },
+  {
+   "name": "finial-slate-l",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "박공 꼭대기 장식 · 회청 슬레이트 왼쪽",
+    "description": "회청 슬레이트 지붕 꼭대기 캡 + 금빛 구슬(finial-blue-l 재칠). 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 356
+  },
+  {
+   "name": "finial-slate-r",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "박공 꼭대기 장식 · 회청 슬레이트 오른쪽",
+    "description": "회청 슬레이트 지붕 꼭대기 캡 + 금빛 구슬(finial-blue-r 재칠). 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 357
+  },
+  {
+   "name": "roof-charcoal-406",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 검은 기와 (406 재칠)",
+    "description": "검은 기와 지붕 — 숲마을 406 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 406 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 406
+  },
+  {
+   "name": "roof-charcoal-407",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 검은 기와 (407 재칠)",
+    "description": "검은 기와 지붕 — 숲마을 407 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 407 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 407
+  },
+  {
+   "name": "roof-charcoal-436",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 검은 기와 (436 재칠)",
+    "description": "검은 기와 지붕 — 숲마을 436 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 436 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 436
+  },
+  {
+   "name": "roof-charcoal-437",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 검은 기와 (437 재칠)",
+    "description": "검은 기와 지붕 — 숲마을 437 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 437 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 437
+  },
+  {
+   "name": "roof-charcoal-467",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 검은 기와 (467 재칠)",
+    "description": "검은 기와 지붕 — 숲마을 467 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 467 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 467
+  },
+  {
+   "name": "roof-charcoal-356",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 검은 기와 (356 재칠)",
+    "description": "검은 기와 지붕 — 숲마을 356 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 356 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 356
+  },
+  {
+   "name": "roof-charcoal-357",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 검은 기와 (357 재칠)",
+    "description": "검은 기와 지붕 — 숲마을 357 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 357 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 357
+  },
+  {
+   "name": "roof-charcoal-386",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 검은 기와 (386 재칠)",
+    "description": "검은 기와 지붕 — 숲마을 386 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 386 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 386
+  },
+  {
+   "name": "roof-charcoal-387",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕 · 검은 기와 (387 재칠)",
+    "description": "검은 기와 지붕 — 숲마을 387 칸을 색만 바꾼 사본(무늬·윤곽 동일). 층·통행은 원본 387 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 387
+  },
+  {
+   "name": "dormer-charcoal",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕창 · 검은 기와",
+    "description": "검은 기와 지붕에 내는 작은 박공 지붕창(dormer-blue 재칠). 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": -1
+  },
+  {
+   "name": "finial-charcoal-l",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "박공 꼭대기 장식 · 검은 기와 왼쪽",
+    "description": "검은 기와 지붕 꼭대기 캡 + 금빛 구슬(finial-blue-l 재칠). 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 356
+  },
+  {
+   "name": "finial-charcoal-r",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "박공 꼭대기 장식 · 검은 기와 오른쪽",
+    "description": "검은 기와 지붕 꼭대기 캡 + 금빛 구슬(finial-blue-r 재칠). 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   },
+   "fallback": 357
+  },
+  {
+   "name": "wall-brick-12",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "wall",
+    "label": "벽 · 붉은 벽돌 (12 재칠)",
+    "description": "붉은 벽돌 벽 — 숲마을 돌벽 12 칸을 색만 바꾼 사본. 층·통행은 원본 12 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 12
+  },
+  {
+   "name": "wall-brick-13",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "wall",
+    "label": "벽 · 붉은 벽돌 (13 재칠)",
+    "description": "붉은 벽돌 벽 — 숲마을 돌벽 13 칸을 색만 바꾼 사본. 층·통행은 원본 13 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 13
+  },
+  {
+   "name": "wall-brick-14",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "wall",
+    "label": "벽 · 붉은 벽돌 (14 재칠)",
+    "description": "붉은 벽돌 벽 — 숲마을 돌벽 14 칸을 색만 바꾼 사본. 층·통행은 원본 14 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 14
+  },
+  {
+   "name": "wall-brick-42",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "wall",
+    "label": "벽 · 붉은 벽돌 (42 재칠)",
+    "description": "붉은 벽돌 벽 — 숲마을 돌벽 42 칸을 색만 바꾼 사본. 층·통행은 원본 42 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 42
+  },
+  {
+   "name": "wall-brick-43",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "wall",
+    "label": "벽 · 붉은 벽돌 (43 재칠)",
+    "description": "붉은 벽돌 벽 — 숲마을 돌벽 43 칸을 색만 바꾼 사본. 층·통행은 원본 43 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 43
+  },
+  {
+   "name": "wall-brick-44",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "wall",
+    "label": "벽 · 붉은 벽돌 (44 재칠)",
+    "description": "붉은 벽돌 벽 — 숲마을 돌벽 44 칸을 색만 바꾼 사본. 층·통행은 원본 44 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 44
+  },
+  {
+   "name": "wall-brick-72",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "wall",
+    "label": "벽 · 붉은 벽돌 (72 재칠)",
+    "description": "붉은 벽돌 벽 — 숲마을 돌벽 72 칸을 색만 바꾼 사본. 층·통행은 원본 72 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 72
+  },
+  {
+   "name": "wall-brick-73",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "wall",
+    "label": "벽 · 붉은 벽돌 (73 재칠)",
+    "description": "붉은 벽돌 벽 — 숲마을 돌벽 73 칸을 색만 바꾼 사본. 층·통행은 원본 73 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 73
+  },
+  {
+   "name": "wall-brick-74",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "wall",
+    "label": "벽 · 붉은 벽돌 (74 재칠)",
+    "description": "붉은 벽돌 벽 — 숲마을 돌벽 74 칸을 색만 바꾼 사본. 층·통행은 원본 74 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 74
+  },
+  {
+   "name": "wall-half-timber-46",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "lower",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "wall",
+    "label": "벽 · 반목조 X 버팀",
+    "description": "회벽 46 위에 X 자 버팀목을 그린 반목조 벽 가운데 칸. 층·통행은 원본 46 과 같다. 집 재료 킷이 쓴다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "lower",
+    "layerBacking": "none"
+   },
+   "fallback": 46
   }
  ]
 }

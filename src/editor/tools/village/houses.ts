@@ -1,7 +1,7 @@
 // editor/tools/village/houses.ts
 // 집 배치·스탬프 — 후보 슬롯 생성, 키트 시공, 보호 마스크(footprint/스탠드오프), 문·용마루 복구.
 
-import { ALL_HOUSE_KIT_IDS, HOUSE_KITS as HOUSE_KIT_DEFS, stampFootprintHouseKit, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
+import { ALL_HOUSE_KIT_IDS, HOUSE_KITS as HOUSE_KIT_DEFS, houseKitForTileset, mixableHouseKitIds, stampFootprintHouseKit, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
 import { stampAuthoredHouseForm } from "@/editor/authoredHouseFormStamp";
 import { gableAccentSeed } from "@/editor/gableHouseCompose";
 import { stampHouseDoorBackground } from "@/editor/houseInteriors";
@@ -17,7 +17,6 @@ import {
   DOOR_BOTTOM_TILE,
   DOOR_TOP_TILE,
   expandRect,
-  HOUSE_KITS,
   HOUSE_MARGIN,
   pointInMap,
   rectsOverlap,
@@ -242,6 +241,8 @@ export function buildHouses(
   const houses: BuiltHouse[] = [];
   // 부품 씨앗 소금 — 같은 자리라도 마을 씨앗이 다르면 다른 부품이 붙게 rng 에서 한 번 뽑는다.
   const rngSeedSalt = houseParts ? Math.floor(rng() * 0x7fffffff) : 0;
+  // 킷 믹스 후보 — 부품 칸이 있는 타일셋이면 재료 킷(초가·슬레이트·벽돌·반목조 …)까지.
+  const kitPool = mixableHouseKitIds(houseParts);
   const usedTemplateIds = new Set<string>();
   const usedKitIds = new Set<HouseKitId>();
   const candidateTemplateIds = new Set(candidates.map((candidate) => candidate.template.id));
@@ -265,14 +266,15 @@ export function buildHouses(
       if (fixedForm && !forced && !forcedTemplateId && intent.kitMix !== "mixed" && fixedForm.kitId !== intent.kitMix) continue;
       if (!forcedTemplateId && target >= 4 && houses.length === 0 && hasMultiStoryCandidate && (candidate.template.stories ?? 1) === 1) continue;
       if (!forcedTemplateId && usedTemplateIds.size < requiredTemplateKinds && usedTemplateIds.has(candidate.template.id)) continue;
-      const unusedKits = HOUSE_KITS.filter((id) => !usedKitIds.has(id));
-      const mixedKitPool = usedKitIds.size < Math.min(3, target) && unusedKits.length > 0 ? unusedKits : HOUSE_KITS;
+      const unusedKits = kitPool.filter((id) => !usedKitIds.has(id));
+      const mixedKitPool = usedKitIds.size < Math.min(3, target) && unusedKits.length > 0 ? unusedKits : kitPool;
       // 템플릿 강제 킷(옥상 데크 등)이 최우선 — 지오메트리가 킷에 종속이라 다른 킷이면 시공이 깨진다.
-      const kitId = candidate.template.kitId
+      // 재료 킷은 부품 칸이 있는 타일셋에서만 — 없으면 같은 계열 기본 킷.
+      const kitId = houseKitForTileset(candidate.template.kitId
         ?? forced
         ?? (intent.kitMix === "mixed"
           ? (mixedKitPool[Math.floor(rng() * mixedKitPool.length)] as HouseKitId)
-          : intent.kitMix);
+          : intent.kitMix), houseParts);
       // housePlans[].templateId 가 있으면 그 템플릿만 허용(촌장 ㄱ자 등).
       if (forcedTemplateId && candidate.template.id !== forcedTemplateId) continue;
       // 자동 추첨 제외 형태는 명시했을 때만.

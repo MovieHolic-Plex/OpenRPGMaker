@@ -218,49 +218,158 @@ TILES = [
 ]
 
 
-def main():
-    rows = (len(TILES) + TPR - 1) // TPR
-    sheet = Image.new("RGBA", (TPR * S, rows * S), (0, 0, 0, 0))
-    for index, (_, _, _, tile) in enumerate(TILES):
-        sheet.paste(tile, ((index % TPR) * S, (index // TPR) * S))
-    # 알파 0/255 · 원본 팔레트 검사.
-    source_colors = {p[:3] for p in sheet_src.getdata() if p[3] == 255}
-    for (name, _, _, tile) in TILES:
-        for p in tile.getdata():
-            assert p[3] in (0, 255), (name, p)
-            if p[3] == 255 and p[:3] not in source_colors:
-                raise SystemExit(f"{name}: 원본 시트에 없는 색 {p[:3]}")
-    sheet.save(OUT_PNG)
-    slots = []
-    for index, (name, label, description, _) in enumerate(TILES):
-        slots.append({
+HAND_TILES = len(TILES)
+
+# ── 재료 재칠(2026-09-25) ────────────────────────────────────────────────────
+# 지붕·벽 칸을 색 사다리만 바꿔 복사한다. 무늬·윤곽·알파는 원본 그대로 — 새 색은 사다리 네 단
+# (가장 어두움·어두움·중간·밝음)에만 들어간다. 원본 칸 번호는 옮기지 않고 사본을 뒤에 붙인다.
+ORANGE_RAMP = {"#562945": 0, "#582840": 0, "#863736": 1, "#893437": 1, "#c27536": 2, "#c67832": 2, "#ecdb95": 3, "#e9da9a": 3}
+BLUE_RAMP = {"#201e45": 0, "#201a4e": 0, "#2e2b66": 1, "#2b2963": 1, "#524cb1": 2, "#5650b5": 2, "#cbc6e5": 3, "#ccc7e6": 3}
+ROOF_MATERIALS = [
+    # (이름, 원본 가족, 새 사다리 [가장 어두움, 어두움, 중간, 밝음], 한국어)
+    ("moss", "orange", ["#213524", "#3a5a32", "#6b8f45", "#c9dc93"], "이끼 초록 기와"),
+    ("thatch", "orange", ["#4f3a18", "#85622a", "#c4973a", "#ecd88f"], "초가"),
+    ("slate", "blue", ["#1f242c", "#343c48", "#5f6f82", "#b4bfcc"], "회청 슬레이트"),
+    ("charcoal", "blue", ["#141419", "#23232b", "#3f4150", "#8e91a3"], "검은 기와"),
+]
+FAMILY_RAMP = {"orange": ORANGE_RAMP, "blue": BLUE_RAMP}
+FAMILY_TILES = {
+    "orange": [374, 375, 376, 377, 404, 405, 354, 355, 384, 385],
+    "blue": [406, 407, 436, 437, 467, 356, 357, 386, 387],
+}
+BRICK_MAP = {
+    "#aa8a7e": "#b0533f", "#8c6c5b": "#944233", "#703f57": "#6e2a27", "#51283d": "#4f1d1d",
+    "#2b203f": "#3a1616", "#1b1024": "#260e0e", "#d9d2be": "#dcb49c", "#c2bca7": "#c89880",
+}
+STONE_WALL_TILES = [12, 13, 14, 42, 43, 44, 72, 73, 74]
+
+with open(os.path.join(ROOT, "src/assets/forestHarmonyTileset.json"), encoding="utf8") as _handle:
+    BASE_TILESET = json.load(_handle)
+
+
+def recolor(tile, mapping):
+    out = tile.copy()
+    px = out.load()
+    table = {hex_rgba(k)[:3]: hex_rgba(v) for k, v in mapping.items()}
+    for y in range(S):
+        for x in range(S):
+            p = px[x, y]
+            if p[3] == 255 and p[:3] in table:
+                px[x, y] = table[p[:3]]
+    return out
+
+
+def half_timber_mid():
+    # 회벽 46 위에 X 자 버팀목(윤곽 #431d00 · 나무 #845c1f) — 반목조 벽 가운데 칸.
+    tile = source_tile(46).copy()
+    px = tile.load()
+    dark, wood = hex_rgba("#431d00"), hex_rgba("#845c1f")
+    for y in range(S):
+        a, b = y, S - 1 - y
+        for x, color in ((a, dark), (min(S - 1, a + 1), wood), (b, dark), (max(0, b - 1), wood)):
+            px[x, y] = color
+    return tile
+
+
+# (이름, 라벨, 설명, 그림, 원본 칸 — 통행·층은 원본을 따른다)
+MATERIAL_TILES = []
+_accents = {name: tile for (name, _, _, tile) in TILES}
+for material, family, colors, word in ROOF_MATERIALS:
+    mapping = {hex_color: colors[level] for hex_color, level in FAMILY_RAMP[family].items()}
+    for tile_id in FAMILY_TILES[family]:
+        MATERIAL_TILES.append((f"roof-{material}-{tile_id}", f"지붕 · {word} ({tile_id} 재칠)",
+                               f"{word} 지붕 — 숲마을 {tile_id} 칸을 색만 바꾼 사본(무늬·윤곽 동일).",
+                               recolor(source_tile(tile_id), mapping), tile_id))
+    MATERIAL_TILES.append((f"dormer-{material}", f"지붕창 · {word}", f"{word} 지붕에 내는 작은 박공 지붕창(dormer-{family} 재칠).",
+                           recolor(_accents[f"dormer-{family}"], mapping), None))
+    for side in ("l", "r"):
+        MATERIAL_TILES.append((f"finial-{material}-{side}", f"박공 꼭대기 장식 · {word} {'왼쪽' if side == 'l' else '오른쪽'}",
+                               f"{word} 지붕 꼭대기 캡 + 금빛 구슬(finial-{family}-{side} 재칠).",
+                               recolor(_accents[f"finial-{family}-{side}"], mapping), None))
+for tile_id in STONE_WALL_TILES:
+    MATERIAL_TILES.append((f"wall-brick-{tile_id}", f"벽 · 붉은 벽돌 ({tile_id} 재칠)", f"붉은 벽돌 벽 — 숲마을 돌벽 {tile_id} 칸을 색만 바꾼 사본.",
+                           recolor(source_tile(tile_id), BRICK_MAP), tile_id))
+MATERIAL_TILES.append(("wall-half-timber-46", "벽 · 반목조 X 버팀", "회벽 46 위에 X 자 버팀목을 그린 반목조 벽 가운데 칸.", half_timber_mid(), 46))
+
+
+# 부품 칸이 없는 타일셋(기후 시트)으로 옮길 때 대신 둘 원본 칸 — 재칠은 원본, 꼭대기 장식은 원본 캡, 굴뚝은 326, 나머지는 지운다(-1).
+FINIAL_CAP = {"blue": {"l": 356, "r": 357}, "orange": {"l": 354, "r": 355}}
+MATERIAL_FAMILY = {material: family for (material, family, _, _) in ROOF_MATERIALS}
+
+
+def fallback_for(name, source):
+    if source is not None:
+        return source
+    if name.startswith("chimney"):
+        return 326
+    if name.startswith("finial-"):
+        _, family, side = name.split("-")
+        return FINIAL_CAP[MATERIAL_FAMILY.get(family, family)][side]
+    return -1
+
+
+def slot_for(name, label, description, source):
+    slot = slot_body(name, label, description, source)
+    slot["fallback"] = fallback_for(name, source)
+    return slot
+
+
+def slot_body(name, label, description, source):
+    if source is None:
+        # 손 도트 부품·부품 재칠 — 지붕 위 상위.
+        return {
             "name": name,
             "passability": {"up": False, "down": False, "left": False, "right": False},
             "priority": "upper",
             "terrain": 0,
             "tileMeta": {
-                "role": "roof" if not name.startswith("awning") else "prop",
+                "role": "prop" if name.startswith("awning") else "roof",
                 "label": label,
                 "description": f"{description} 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
-                "source": "user",
-                "passage": "solid",
-                "userLocked": True,
-                "defaultLayer": "upper",
-                "layerBacking": "none",
+                "source": "user", "passage": "solid", "userLocked": True, "defaultLayer": "upper", "layerBacking": "none",
             },
-        })
+        }
+    priority = BASE_TILESET["priority"][source]
+    return {
+        "name": name,
+        "passability": BASE_TILESET["passability"][source],
+        "priority": priority,
+        "terrain": BASE_TILESET["terrain"][source],
+        "tileMeta": {
+            "role": "wall" if name.startswith("wall") else "roof",
+            "label": label,
+            "description": f"{description} 층·통행은 원본 {source} 과 같다. 집 재료 킷이 쓴다.",
+            "source": "user", "passage": "solid", "userLocked": True, "defaultLayer": priority, "layerBacking": "none",
+        },
+    }
+
+
+def main():
+    entries = [(name, label, description, tile, None) for (name, label, description, tile) in TILES] + MATERIAL_TILES
+    rows = (len(entries) + TPR - 1) // TPR
+    sheet = Image.new("RGBA", (TPR * S, rows * S), (0, 0, 0, 0))
+    source_colors = {p[:3] for p in sheet_src.getdata() if p[3] == 255}
+    for index, (name, _, _, tile, _) in enumerate(entries):
+        for p in tile.getdata():
+            assert p[3] in (0, 255), (name, p)
+            # 손 도트 부품(앞쪽)은 원본 색만. 재칠 칸은 새 색 사다리를 쓰는 것이 목적이다.
+            if index < HAND_TILES and p[3] == 255 and p[:3] not in source_colors:
+                raise SystemExit(f"{name}: 원본 시트에 없는 색 {p[:3]}")
+        sheet.paste(tile, ((index % TPR) * S, (index // TPR) * S))
+    sheet.save(OUT_PNG)
+    slots = [slot_for(name, label, description, source) for (name, label, description, _, source) in entries]
     data = {
         "textureKey": TEXTURE_KEY,
         "start": TARGET_START,
-        "count": TARGET_START + len(TILES),
-        "frames": len(TILES),
-        "grafts": [{"targetTile": TARGET_START + i, "sourceChipset": TEXTURE_KEY, "sourceTile": i} for i in range(len(TILES))],
+        "count": TARGET_START + len(entries),
+        "frames": len(entries),
+        "grafts": [{"targetTile": TARGET_START + i, "sourceChipset": TEXTURE_KEY, "sourceTile": i} for i in range(len(entries))],
         "slots": slots,
     }
     with open(OUT_JSON, "w", encoding="utf8") as handle:
         json.dump(data, handle, ensure_ascii=False, indent=1)
         handle.write("\n")
-    print(OUT_PNG, sheet.size, "tiles", len(TILES), "→", TARGET_START, "..", TARGET_START + len(TILES) - 1)
+    print(OUT_PNG, sheet.size, "tiles", len(entries), "->", TARGET_START, "..", TARGET_START + len(entries) - 1)
 
 
 if __name__ == "__main__":

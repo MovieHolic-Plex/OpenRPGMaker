@@ -43,22 +43,53 @@ export interface GableRoofMaterial {
   /** 처마 밑 캡(투명) — 합각 벽 위 사선. */
   readonly underL: number;
   readonly underR: number;
+  /** 이 지붕색의 지붕창·꼭대기 장식 부품 이름(집 부품 시트). */
+  readonly parts: { readonly dormer: string; readonly finialL: string; readonly finialR: string };
 }
 
 export const GABLE_ROOF_BLUE: GableRoofMaterial = {
   lit: 406, dark: 407, top: 436, body: 437, eave: 467, capL: 356, capR: 357, underL: 386, underR: 387,
+  parts: { dormer: "dormer-blue", finialL: "finial-blue-l", finialR: "finial-blue-r" },
 };
 export const GABLE_ROOF_ORANGE: GableRoofMaterial = {
   lit: 376, dark: 377, top: 374, body: 375, eave: 405, capL: 354, capR: 355, underL: 384, underR: 385,
+  parts: { dormer: "dormer-orange", finialL: "finial-orange-l", finialR: "finial-orange-r" },
 };
 
+/** 재칠 지붕(집 부품 시트 roof-<재료>-<원본>) — 파랑 계열은 파랑 박공 문법, 주황 계열은 주황 문법을 그대로 따른다. */
+function recoloredMaterial(material: string, base: GableRoofMaterial): GableRoofMaterial {
+  const t = (tile: number): number => housePartTile(`roof-${material}-${tile}`);
+  return {
+    lit: t(base.lit), dark: t(base.dark), top: t(base.top), body: t(base.body), eave: t(base.eave),
+    capL: t(base.capL), capR: t(base.capR), underL: t(base.underL), underR: t(base.underR),
+    parts: { dormer: `dormer-${material}`, finialL: `finial-${material}-l`, finialR: `finial-${material}-r` },
+  };
+}
+
+/** 재칠 재료와 그 재료를 쓰는 킷 지붕 몸통 칸(주황 계열 = 404 재칠본, 파랑 계열 = 406 재칠본). */
+const RECOLORED: readonly { readonly material: GableRoofMaterial; readonly kitBody: number }[] = [
+  { material: recoloredMaterial("moss", GABLE_ROOF_ORANGE), kitBody: housePartTile("roof-moss-404") },
+  { material: recoloredMaterial("thatch", GABLE_ROOF_ORANGE), kitBody: housePartTile("roof-thatch-404") },
+  { material: recoloredMaterial("slate", GABLE_ROOF_BLUE), kitBody: housePartTile("roof-slate-406") },
+  { material: recoloredMaterial("charcoal", GABLE_ROOF_BLUE), kitBody: housePartTile("roof-charcoal-406") },
+];
+const RECOLORED_MATERIALS = RECOLORED.map((entry) => entry.material);
+
+/** 킷 지붕의 몸통 칸으로 박공 재료를 고른다. */
+const MATERIAL_BY_KIT_BODY: ReadonlyMap<number, GableRoofMaterial> = new Map([
+  [404, GABLE_ROOF_ORANGE],
+  [406, GABLE_ROOF_BLUE],
+  ...RECOLORED.map((entry): [number, GableRoofMaterial] => [entry.kitBody, entry.material]),
+]);
+
 export function gableRoofMaterialForKit(kit: HouseKit): GableRoofMaterial {
-  return kit.roof.kind === "blue" ? GABLE_ROOF_BLUE : GABLE_ROOF_ORANGE;
+  return MATERIAL_BY_KIT_BODY.get(kit.roof.body) ?? (kit.roof.kind === "blue" ? GABLE_ROOF_BLUE : GABLE_ROOF_ORANGE);
 }
 
 /** 박공 형태가 칠하는 모든 지붕 타일 — 감지·보호 쪽이 집 칸으로 세도록 공개한다. */
 export function gableRoofTiles(): readonly number[] {
-  return [GABLE_ROOF_BLUE, GABLE_ROOF_ORANGE].flatMap((material) => Object.values(material));
+  return [GABLE_ROOF_BLUE, GABLE_ROOF_ORANGE, ...RECOLORED_MATERIALS].flatMap((material) =>
+    [material.lit, material.dark, material.top, material.body, material.eave, material.capL, material.capR, material.underL, material.underR]);
 }
 
 export function isGableHouseFormId(id: string | undefined): boolean {
@@ -230,12 +261,8 @@ interface AccentContext {
 const at = (canvas: Canvas, x: number, y: number): { lower: number; upper: number } | undefined =>
   x < 0 || y < 0 || x >= canvas.w || y >= canvas.h ? undefined : { lower: canvas.lower[y * canvas.w + x]!, upper: canvas.upper[y * canvas.w + x]! };
 
-/** 박공 가족(파랑/주황) — 지붕창·꼭대기 장식 그림을 고른다. */
-const roofFamily = (roof: GableRoofMaterial): "blue" | "orange" => (roof.capL === GABLE_ROOF_BLUE.capL ? "blue" : "orange");
-
 function placeAccent(context: AccentContext, kind: AccentKind, seed: number): boolean {
   const { canvas, roof } = context;
-  const family = roofFamily(roof);
   const roofTiles = new Set([roof.lit, roof.dark, roof.body, roof.top]);
   if (kind === "chimney") {
     // 지붕 칸 중 그 열 지붕의 위 세 줄 안, 위 칸이 합각 벽이 아닌 곳. 오른쪽(어두운 면)을 먼저.
@@ -276,7 +303,7 @@ function placeAccent(context: AccentContext, kind: AccentKind, seed: number): bo
     }
     if (candidates.length === 0) return false;
     const cell = candidates[mix(seed, 3) % candidates.length]!;
-    overlay(canvas, cell.x, cell.y, housePartTile(family === "blue" ? "dormer-blue" : "dormer-orange"));
+    overlay(canvas, cell.x, cell.y, housePartTile(roof.parts.dormer));
     return true;
   }
   if (kind === "awning") {
@@ -292,8 +319,8 @@ function placeAccent(context: AccentContext, kind: AccentKind, seed: number): bo
   const apex = context.apexes.find((candidate) =>
     at(canvas, candidate.x, candidate.y)?.upper === roof.capL && at(canvas, candidate.x + 1, candidate.y)?.upper === roof.capR);
   if (!apex) return false;
-  overlay(canvas, apex.x, apex.y, housePartTile(family === "blue" ? "finial-blue-l" : "finial-orange-l"));
-  overlay(canvas, apex.x + 1, apex.y, housePartTile(family === "blue" ? "finial-blue-r" : "finial-orange-r"));
+  overlay(canvas, apex.x, apex.y, housePartTile(roof.parts.finialL));
+  overlay(canvas, apex.x + 1, apex.y, housePartTile(roof.parts.finialR));
   return true;
 }
 
