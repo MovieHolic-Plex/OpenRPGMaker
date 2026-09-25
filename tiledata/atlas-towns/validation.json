@@ -1198,5 +1198,280 @@
     4
    ]
   }
+ },
+ {
+  "id": "town-snow-village",
+  "seed": 18101,
+  "entry": [
+   28,
+   37
+  ],
+  "reachable": 806,
+  "targets": 8,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.385,
+   "at": [
+    21,
+    11
+   ],
+   "screenAt": [
+    24,
+    20
+   ]
+  }
+ },
+ {
+  "id": "town-snow-port",
+  "seed": 18201,
+  "entry": [
+   26,
+   37
+  ],
+  "reachable": 854,
+  "targets": 15,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.394,
+   "at": [
+    17,
+    8
+   ],
+   "screenAt": [
+    8,
+    8
+   ]
+  }
+ },
+ {
+  "id": "town-snow-lodge",
+  "seed": 18301,
+  "entry": [
+   4,
+   30
+  ],
+  "reachable": 628,
+  "targets": 9,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.38,
+   "at": [
+    14,
+    32
+   ],
+   "screenAt": [
+    20,
+    24
+   ]
+  }
+ },
+ {
+  "id": "town-desert-oasis",
+  "seed": 18401,
+  "entry": [
+   4,
+   30
+  ],
+  "reachable": 1924,
+  "targets": 9,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.367,
+   "at": [
+    10,
+    4
+   ],
+   "screenAt": [
+    28,
+    24
+   ]
+  }
+ },
+ {
+  "id": "town-desert-cliff",
+  "seed": 18501,
+  "entry": [
+   24,
+   37
+  ],
+  "reachable": 1420,
+  "targets": 12,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.367,
+   "at": [
+    12,
+    0
+   ],
+   "screenAt": [
+    12,
+    0
+   ]
+  }
+ },
+ {
+  "id": "town-desert-river",
+  "seed": 18601,
+  "entry": [
+   28,
+   4
+  ],
+  "reachable": 1736,
+  "targets": 12,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.362,
+   "at": [
+    18,
+    3
+   ],
+   "screenAt": [
+    0,
+    4
+   ]
+  }
+ },
+ {
+  "id": "town-desert-bazaar",
+  "seed": 18701,
+  "entry": [
+   31,
+   45
+  ],
+  "reachable": 1515,
+  "targets": 12,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.38,
+   "at": [
+    6,
+    9
+   ],
+   "screenAt": [
+    40,
+    28
+   ]
+  }
+ },
+ {
+  "id": "town-volcano-forge",
+  "seed": 18801,
+  "entry": [
+   4,
+   21
+  ],
+  "reachable": 1851,
+  "targets": 12,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.326,
+   "at": [
+    41,
+    11
+   ],
+   "screenAt": [
+    0,
+    24
+   ]
+  }
+ },
+ {
+  "id": "town-volcano-refuge",
+  "seed": 18901,
+  "entry": [
+   24,
+   41
+  ],
+  "reachable": 1327,
+  "targets": 7,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.353,
+   "at": [
+    4,
+    16
+   ],
+   "screenAt": [
+    12,
+    8
+   ]
+  }
+ },
+ {
+  "id": "town-autumn-maple",
+  "seed": 19001,
+  "entry": [
+   4,
+   10
+  ],
+  "reachable": 996,
+  "targets": 12,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 2,
+   "screen": 0.33,
+   "at": [
+    14,
+    6
+   ],
+   "screenAt": [
+    4,
+    8
+   ]
+  }
+ },
+ {
+  "id": "town-autumn-temple",
+  "seed": 19101,
+  "entry": [
+   26,
+   41
+  ],
+  "reachable": 833,
+  "targets": 10,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.339,
+   "at": [
+    31,
+    12
+   ],
+   "screenAt": [
+    28,
+    4
+   ]
+  }
  }
 ]

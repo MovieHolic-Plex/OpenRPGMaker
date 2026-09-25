@@ -63,6 +63,7 @@ await withTsModule("scripts/content/lib/atlas-towns-entry.ts", "atlas-towns-entr
         if (!(err instanceof assert.AssertionError)) throw err;
         lastError = err;
         if (process.env.ATLAS_DEBUG) console.log(plan.id, attempt, err.message.slice(0, 300));
+        if (process.env.ATLAS_PLAIN === plan.id) { const P = b.plainGrid(); for (let y = 0; y < b.H; y++) { let r = String(y % 100).padStart(2) + " "; for (let x = 0; x < b.W; x++) r += P[y * b.W + x] ? "." : b.upper[b.at(x, y)] >= 0 ? "u" : "#"; console.log(r); } }
         if (process.env.ATLAS_ASCII === plan.id || (process.env.ATLAS_ASCII === "1" && /No room|overlaps|No route/.test(err.message))) console.log(b.ascii());
         if (/overlaps|does not fit|Unknown|Stair must|Exit corridor|Bridge|Dock|Cave|leaves the map|Missing part|Cannot|Seal |No room|Fence overlaps|Pier |Shaft |Peak |needs the forest/.test(err.message)) break;
       }
