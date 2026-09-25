@@ -62,7 +62,7 @@ export function applyVillageClimate(project: Project, request: AuthorVillageRequ
   if (kind !== "snow") {
     const dressed = dressClimateMap(map, project.tilesets[tilesetId]!, kind, request.seed ?? 1);
     warnings.push(`${CLIMATE_LABEL[kind]} 손질: 꽃덤불·화분 ${dressed.gardenRemoved}칸 제거`
-      + (kind === "autumn" ? "" : `, 잎 달린 나무 ${dressed.treesCleared}칸 → 고목 덩이 ${dressed.groves}곳(${dressed.bareTrees}그루)${dressed.palms ? `, 물가 야자 ${dressed.palms}그루` : ""}`) + ".");
+      + (kind === "autumn" ? "" : `, 잎 달린 나무 ${dressed.treesCleared}칸 → 고목 덩이 ${dressed.groves}곳(${dressed.bareTrees}그루)${dressed.palms ? `, 물가 야자 ${dressed.palms}그루` : ""}${dressed.grassRemoved ? `, 키큰 풀 ${dressed.grassRemoved}칸 걷음` : ""}`) + ".");
   }
   if (kind === "snow" && (!map.climate || map.climate.mode === "inherit")) {
     map.climate = normalizeMapClimate({ mode: "fixed", weather: "snow", intensity: 0.6 })!;

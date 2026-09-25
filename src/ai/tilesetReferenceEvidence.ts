@@ -1,4 +1,4 @@
-import { referenceOwner, referenceRevision, REFERENCE_PAGE_SIZE } from "@/project/tilesetReferences";
+import { referenceOwner, referencePageStarts, referenceRevision } from "@/project/tilesetReferences";
 import { resolveReferenceImageDataUrl } from "@/project/bundledReferenceImages";
 import type { Project } from "@/project/types";
 import { TILESET_REFERENCE_TILE_CHOOSERS } from "@/editor/tools/tilesetReferenceTools";
@@ -79,7 +79,7 @@ export class TilesetReferenceEvidence {
       const packet: Packet = { tilesetId: id, ownerId: owner.id, categoryId: group.id, revision: referenceRevision(group) };
       const base = key(packet);
       for (const doc of group.documents) {
-        for (let offset = 0; offset < Math.max(1, doc.markdown.length); offset += REFERENCE_PAGE_SIZE) {
+        for (const offset of referencePageStarts(doc.markdown)) {
           if (!this.pages.has(`${base}:doc:${doc.id}:${offset}`)) missing.push(`read_tileset_reference(tilesetId:"${id}", categoryId:"${group.id}", documentId:"${doc.id}", offset:${offset})`);
         }
       }

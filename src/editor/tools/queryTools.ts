@@ -490,7 +490,7 @@ const listResources: ToolDefinition = {
 
 const queryTiles: ToolDefinition = {
   name: "query_tiles",
-  description: "타일셋의 타일 상세를 role/category/presetId로 조회한다. 프리셋이 있으면 배치 전에 개별 tile id 대신 presetId+paletteRole 후보를 확인하라.",
+  description: "타일셋의 타일 상세를 role/category/presetId로 조회한다. 쪽 넘김은 offset(응답 nextOffset), 칸 범위는 fromTile. 프리셋이 있으면 배치 전에 개별 tile id 대신 presetId+paletteRole 후보를 확인하라.",
   mode: "read",
   parameters: {
     type: "object",
@@ -500,6 +500,8 @@ const queryTiles: ToolDefinition = {
       category: { type: "string", description: "tileMeta category/role 또는 tileGroup role" },
       presetId: { type: "string", description: "pp_ 프리셋 id(prefix 생략 가능)" },
       limit: { type: "integer", description: "반환 개수 제한(기본 50, 최대 200)" },
+      offset: { type: "integer", minimum: 0, description: "조건에 맞는 칸 중 앞에서 건너뛸 개수. 다음 쪽은 응답의 nextOffset" },
+      fromTile: { type: "integer", minimum: 0, description: "이 칸 번호부터 조회(예: 2550 — 숲마을 이식 칸, 2880 — 잎 없는 고목)" },
     },
   },
   run(project, args): ToolExecResult {
@@ -513,8 +515,12 @@ const queryTiles: ToolDefinition = {
     const category = typeof args.category === "string" && args.category.trim().length > 0 ? args.category.trim() : undefined;
     const limit = typeof args.limit === "number" ? Math.max(1, Math.min(200, Math.floor(args.limit))) : 50;
     const presetTileIds = preset ? new Set(preset.slots.flatMap((slot) => slot.tileIds)) : null;
+    const offset = typeof args.offset === "number" ? Math.max(0, Math.floor(args.offset)) : 0;
+    const fromTile = typeof args.fromTile === "number" ? Math.max(0, Math.floor(args.fromTile)) : 0;
     const tiles = [];
-    for (let tile = 0; tile < tileset.count; tile += 1) {
+    let matched = 0;
+    let more = false;
+    for (let tile = fromTile; tile < tileset.count; tile += 1) {
       if (presetTileIds && !presetTileIds.has(tile)) continue;
       const meta = tileset.tileMeta?.[tile];
       const paletteRoles = paletteRolesForTile(tileset, tile, presetId);
@@ -522,6 +528,9 @@ const queryTiles: ToolDefinition = {
       if (role && meta?.role !== role && !(paletteRoles as readonly string[]).includes(role)) continue;
       if (category && !categories.includes(category)) continue;
       if (!meta && paletteRoles.length === 0 && categories.length === 0 && !presetTileIds) continue;
+      matched += 1;
+      if (matched <= offset) continue;
+      if (tiles.length >= limit) { more = true; break; }
       tiles.push({
         tile,
         label: meta?.label ?? "",
@@ -536,11 +545,11 @@ const queryTiles: ToolDefinition = {
         origin: tileMetaOrigin(meta),
         locked: tileMetaLocked(meta),
       });
-      if (tiles.length >= limit) break;
     }
+    const nextOffset = more ? offset + tiles.length : null;
     return {
-      summary: `타일 ${tiles.length}개 조회(${tilesetId}${presetId ? `, ${presetId}` : ""})`,
-      data: { tilesetId, presetId, tiles, total: tileset.count },
+      summary: `타일 ${tiles.length}개 조회(${tilesetId}${presetId ? `, ${presetId}` : ""})${nextOffset !== null ? ` — 더 있음: offset:${nextOffset}` : ""}`,
+      data: { tilesetId, presetId, tiles, total: tileset.count, offset, fromTile, nextOffset },
     };
   },
 };
