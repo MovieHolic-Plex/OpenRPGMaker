@@ -33,7 +33,7 @@ import {
   selectionRoots,
   siblingIndex,
 } from "@/project/mapTree";
-import { applyMapDeletion, planMapDeletion, type MapDeletionImpact } from "@/project/mapDeletion";
+import { applyMapDeletions, planMapDeletion, planMapDeletions, type MapDeletionBatchOptions, type MapDeletionImpact } from "@/project/mapDeletion";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
 import { remapExtraLayers } from "@/project/mapLayers";
 export {
@@ -168,29 +168,26 @@ export function deleteMap(mapId: MapId): DeleteMapResult {
   return { ok: true, impact: plan.impact };
 }
 
-export function deleteMapsInOrder(mapIds: readonly MapId[]): DeleteMapResult {
-  const remaining = mapIds.filter((mapId) => store.getCurrent().maps[mapId]);
+export function deleteMapsInOrder(mapIds: readonly MapId[], options?: MapDeletionBatchOptions): DeleteMapResult {
+  const project = store.getCurrent();
+  const remaining = mapIds.filter((mapId) => project.maps[mapId]);
   if (remaining.length === 0) return { ok: false, message: "맵을 찾을 수 없습니다." };
-  // 마지막 한 장은 루프 가드가 건너뛴다 — 삭제될 것이 없으면 스냅샷도 남기지 않는다.
-  if (Object.keys(store.getCurrent().maps).length <= 1) {
+  // 마지막 한 장은 남긴다 — 삭제될 것이 없으면 스냅샷도 남기지 않는다.
+  if (Object.keys(project.maps).length <= 1) {
     return { ok: false, message: "맵을 삭제할 수 없습니다." };
   }
+  // 검증에 실패하면 적용하지 않는다. 미리보기와 재로드 검증은 묶음당 한 번이다.
+  const plan = planMapDeletions(project, remaining, options);
+  if (!plan.ok) return { ok: false, message: plan.block.message };
   // 재귀 삭제 문구의 "한 번의 실행 취소로"(mapDeleteConfirm.ts:39) — 묶음당 스냅샷 1건.
   const [firstTargetId] = remaining;
   recordProjectSnapshot(remaining.length === 1 && firstTargetId
     ? `맵 삭제: ${store.getCurrent().maps[firstTargetId]?.name ?? firstTargetId}`
     : `맵 ${remaining.length}개 삭제`);
-  let lastImpact: MapDeletionImpact | null = null;
   store.update((p) => {
-    for (const mapId of remaining) {
-      if (!p.maps[mapId] || Object.keys(p.maps).length <= 1) continue;
-      const plan = planMapDeletion(p, mapId);
-      if (plan.ok) lastImpact = plan.impact;
-      applyMapDeletion(p, mapId);
-    }
+    applyMapDeletions(p, remaining, options);
   }, { scope: "project" });
-  if (!lastImpact) return { ok: false, message: "맵을 삭제할 수 없습니다." };
-  return { ok: true, impact: lastImpact };
+  return { ok: true, impact: plan.impact };
 }
 
 export function renameMap(mapId: MapId, name: string): void {

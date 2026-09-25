@@ -6,7 +6,7 @@ import { showConfirm } from "@/editor/ui/modal";
 import { collectMapDeletionImpact, type MapDeletionImpact } from "@/project/mapDeletion";
 import { findTreeNode, isMapTreeFolder, mapTreeNodeLabel } from "@/project/mapTree";
 import { store } from "@/project/store";
-import type { MapId } from "@/project/types";
+import type { MapId, MapTreeNode } from "@/project/types";
 
 // 확인 다이얼로그 본문(순수 함수 — 테스트 가능).
 export function mapDeletionConfirmMessage(impact: MapDeletionImpact): string {
@@ -137,6 +137,7 @@ export async function confirmAndDeleteMapRecursive(mapId: MapId): Promise<Confir
 
   const childIds = collectDescendantMapIds(mapId);
   const childNames = childIds.map((id) => project.maps[id]?.name ?? id);
+  const treeNodeIds = collectDescendantFolderIds(mapId);
 
   const confirmed = await showConfirm({
     title: "하위 포함 맵 삭제",
@@ -147,38 +148,44 @@ export async function confirmAndDeleteMapRecursive(mapId: MapId): Promise<Confir
   if (!confirmed) return { ok: false, message: "사용자가 삭제를 취소했습니다.", cancelled: true };
 
   const reversed = [...childIds].reverse();
-  return deleteMapsInOrder([...reversed, mapId]);
+  return deleteMapsInOrder([...reversed, mapId], { treeNodeIds });
 }
 
 /** 맵 트리에서 해당 맵의 직계 자식 맵 이름을 수집. */
 function collectChildMapNames(mapId: MapId): string[] {
   const project = store.getCurrent();
-  const node = findNode(project.mapTree, mapId);
+  const node = findTreeNode(project.mapTree, mapId);
   if (!node) return [];
   return node.children.map((child) => project.maps[child.mapId]?.name ?? child.mapId);
 }
 
-/** 맵 트리에서 해당 맵의 모든 후손 ID를 수집 (깊이 우선, 자식 → 손자 순). */
-function collectDescendantMapIds(mapId: MapId): MapId[] {
-  const project = store.getCurrent();
-  const node = findNode(project.mapTree, mapId);
+/** 후손 분류 노드. 맵 행이 없어서 맵 삭제만으로는 트리에 빈 분류가 남는다. */
+function collectDescendantFolderIds(mapId: MapId): MapId[] {
+  const node = findTreeNode(store.getCurrent().mapTree, mapId);
   if (!node) return [];
   const ids: MapId[] = [];
-  const walk = (n: { children: { mapId: MapId; children: unknown[] }[] }): void => {
-    for (const child of n.children) {
-      ids.push(child.mapId);
-      walk(child as { children: { mapId: MapId; children: unknown[] }[] });
+  const walk = (current: MapTreeNode): void => {
+    for (const child of current.children) {
+      if (isMapTreeFolder(child)) ids.push(child.mapId);
+      walk(child);
     }
   };
   walk(node);
   return ids;
 }
 
-function findNode(node: { mapId: MapId; children: { mapId: MapId; children: unknown[] }[] }, mapId: MapId): { mapId: MapId; children: { mapId: MapId; children: unknown[] }[] } | null {
-  if (node.mapId === mapId) return node;
-  for (const child of node.children) {
-    const found = findNode(child as typeof node, mapId);
-    if (found) return found;
-  }
-  return null;
+/** 맵 트리에서 해당 맵의 모든 후손 ID를 수집 (깊이 우선, 자식 → 손자 순). */
+function collectDescendantMapIds(mapId: MapId): MapId[] {
+  const project = store.getCurrent();
+  const node = findTreeNode(project.mapTree, mapId);
+  if (!node) return [];
+  const ids: MapId[] = [];
+  const walk = (current: MapTreeNode): void => {
+    for (const child of current.children) {
+      if (!isMapTreeFolder(child)) ids.push(child.mapId);
+      walk(child);
+    }
+  };
+  walk(node);
+  return ids;
 }
