@@ -10,6 +10,8 @@
 | `rpg-interiors-leisure-v1` | tibo_interior_expanded | 투기장 대기실, 카지노, 경매장 |
 | `rpg-interiors-ship-v1` | easyrpg_chipset_ship | 배 선실, 배 화물칸 |
 | `rpg-interiors-climate-v1` | tibo_interior_expanded | 사막 흙벽돌 민가·오아시스 여관 주점, 설원 사냥꾼 오두막·촌장집, 화산 대장장이 집·잿빛 마을 여관 |
+| `rpg-interiors-staples-v1` | tibo_interior_expanded | 등대 1층 등대지기 방·꼭대기 등불 방, 목장 마구간 헛간, 치료소 |
+| `rpg-interiors-sewer-prison-v1` | easyrpg_chipset_dungeon (맵은 oprn_dungeon_stone) | 지하 하수 감옥 |
 
 | 파일 | 내용 |
 |---|---|
@@ -41,3 +43,4 @@ BASE=http://127.0.0.1:<port> node scripts/qa/capture-rpg-interiors.mjs
 
 기후 집(2026-09-25): 사막·설원·화산 마을 집 안이 숲마을 실내(크림 회벽·나무 바닥)를 그대로 쓰던 것을 바꿨다. Tibo 시트 66행(1980~2009)에 기후 벽면 셋(통나무 1980~1985·사암 1986~1991·현무암 1992~1997, 윗줄 왼끝·가운데·오른끝 / 아랫줄)과 현무암 바닥 1998·사암 바닥 1999·흰 모피 깔개 2000~2008(3×3)을 구웠다. 원본 칸의 밝기를 유지하고 색만 바꿨다(통나무는 나무 바닥 72의 결로 새로 그림). 파이프라인 WALL_FACE_RETINT 에 "log"·"sandstone"·"basalt"로 들어 있다(Tibo 전용 번호라 480칸 easyrpg 실내 칩셋용 조수 도구 선택지에는 넣지 않았다). 기존 프로젝트는 extendTiboInteriorDefaults가 칸 수를 늘린다.
 기후 집의 위층 계단은 3칸 폭 돌계단 141|111|171 세 줄 — 첫 바닥 줄에서 북쪽 벽면 두 줄을 덮고 오른다(사용자가 맞다고 한 모양, 2026-09-25). 옛 방들의 세로 111/141/171은 그대로 둔다.
+JRPG 단골 실내(2026-09-25): 등대(1층 동쪽 3칸 폭 벽 계단 x=13~15 ↔ 등불 방 같은 자리 내리막 474|475), 마구간 헛간(통나무 벽·흙바닥), 치료소(진료실·병실), 지하 하수 감옥. 감옥은 던전 시트에 `scripts/content/rpg-dungeons/kit.mjs`(RPG 던전과 같은 조립, theme "stone")로 짓는다 — 타일셋은 RPG 던전의 `oprn_dungeon_stone` 복제(이식 480~488)이고 공용 문서는 번들 `easyrpg_chipset_dungeon`에 붙는다. 창살 뒤 감방은 일부러 닫은 곳이라 계획의 `sealed` 사각형으로 통행 검사에서 뺀다.

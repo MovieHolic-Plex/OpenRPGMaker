@@ -843,5 +843,174 @@
     "walkable": 89,
     "blocked": [],
     "pockets": []
+  },
+  {
+    "id": "interior-lighthouse-1f",
+    "entry": [
+      8,
+      11
+    ],
+    "targets": [
+      [
+        10,
+        7
+      ],
+      [
+        14,
+        6
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        13,
+        8
+      ]
+    ],
+    "reachable": 69,
+    "walkable": 60,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-lighthouse-lamp-room",
+    "entry": [
+      14,
+      7
+    ],
+    "targets": [
+      [
+        8,
+        9
+      ],
+      [
+        4,
+        6
+      ],
+      [
+        15,
+        7
+      ],
+      [
+        5,
+        7
+      ]
+    ],
+    "reachable": 58,
+    "walkable": 49,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-ranch-barn",
+    "entry": [
+      10,
+      12
+    ],
+    "targets": [
+      [
+        3,
+        9
+      ],
+      [
+        7,
+        9
+      ],
+      [
+        15,
+        9
+      ],
+      [
+        11,
+        6
+      ],
+      [
+        16,
+        10
+      ]
+    ],
+    "reachable": 98,
+    "walkable": 89,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-healer-clinic",
+    "entry": [
+      6,
+      13
+    ],
+    "targets": [
+      [
+        5,
+        9
+      ],
+      [
+        10,
+        9
+      ],
+      [
+        13,
+        7
+      ],
+      [
+        15,
+        10
+      ],
+      [
+        3,
+        8
+      ]
+    ],
+    "reachable": 88,
+    "walkable": 80,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-sewer-prison",
+    "entry": [
+      14,
+      4
+    ],
+    "targets": [
+      [
+        2,
+        9
+      ],
+      [
+        6,
+        9
+      ],
+      [
+        10,
+        9
+      ],
+      [
+        26,
+        9
+      ],
+      [
+        32,
+        9
+      ],
+      [
+        28,
+        13
+      ],
+      [
+        14,
+        20
+      ],
+      [
+        21,
+        12
+      ]
+    ],
+    "reachable": 243,
+    "walkable": 245,
+    "blocked": [],
+    "pockets": []
   }
 ]

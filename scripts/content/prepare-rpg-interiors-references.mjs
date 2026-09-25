@@ -13,6 +13,8 @@ const GROUPS = {
   castle: { tilesetId: "tibo_interior_expanded", id: "rpg-interiors-castle-v1", name: "RPG 실내 · 성 1층·식당·침실·병영·보물고 (개정1)", description: "성 1층 대형 맵(50×40: 알현실·대연회장·복도 고리·계단실·주방·경비 초소)과 식당·침실·병영·보물고. 계단·문 틈으로 이어지는 짝, 금벽돌/석벽 방, 식탁 의자 방향 규칙, 전체 배열과 통행 검사" },
   leisure: { tilesetId: "tibo_interior_expanded", id: "rpg-interiors-leisure-v1", name: "RPG 실내 · 투기장 대기실·카지노·경매장 (개정1)", description: "투기장 대기실, 카지노, 경매장. 카운터·무대·벤치 동선과 전체 배열" },
   climate: { tilesetId: "tibo_interior_expanded", id: "rpg-interiors-climate-v1", name: "RPG 실내 · 사막·설원·화산 집 (개정1)", description: "사막 흙벽돌 민가·오아시스 여관, 설원 사냥꾼 오두막·촌장집, 화산 대장장이 집·잿빛 마을 여관. 기후 벽면(사암·통나무·현무암)과 바닥·깔개, 3칸 폭 벽 계단, 숲마을 실내와 무엇이 다른지, 전체 배열과 통행 검사" },
+  staples: { tilesetId: "tibo_interior_expanded", id: "rpg-interiors-staples-v1", name: "RPG 실내 · 등대·마구간 헛간·치료소 (개정1)", description: "등대 1층 등대지기 방과 꼭대기 등불 방(3칸 폭 벽 계단 ↔ 같은 자리 내리막), 목장 마구간 헛간, 치료소(진료실·병실). 누가 어디서 무엇을 하는지, 전체 배열과 통행 검사" },
+  sewer: { tilesetId: "easyrpg_chipset_dungeon", catalogTileset: "oprn_dungeon_stone", id: "rpg-interiors-sewer-prison-v1", name: "RPG 실내 · 지하 하수 감옥 (개정1)", description: "던전 시트로 조립한 지하 하수도 감옥: 가운데 물길과 둑길, 창살 친 감방 다섯, 간수실. 벽 조립·창살·물길·일부러 닫은 감방 규칙과 전체 배열" },
   ship: { tilesetId: "easyrpg_chipset_ship", id: "rpg-interiors-ship-v1", name: "배 실내 · 선실·화물칸 (개정1)", description: "푸른물결호 갑판과 같은 배 칩셋으로 그린 갑판 아래 선실과 화물칸. 집 실내 껍데기를 배 시트로 바꾸는 법, Tibo 짐 이식표, 전체 배열" },
 };
 const docs = Object.fromEntries(Object.keys(GROUPS).map((k) => [k, []]));
@@ -46,7 +48,7 @@ interiorRoomPipeline의 plan→floor→walls 단계만 돌려 껍데기를 만�
 7. 빈칸 검사(/tmp/oprn-qa/emptiness.py --kind interior): 맨바닥만으로 된 정사각형 한 변 ≤3, 17×13 한 화면 맨바닥 ≤30%.`;
 
 for (const [g, k] of Object.entries(GROUPS)) {
-  if (g === "ship" || g === "climate") continue;
+  if (g === "ship" || g === "climate" || g === "staples" || g === "sewer") continue;
   doc(g, `${k.id}-guide`, `${k.name.split(" (")[0]} · 배치 규칙`, `# ${k.name.split(" (")[0]}
 
 모든 방은 tibo_interior_expanded(30열·16px)에 그린다. 0~479칸은 EasyRPG 실내 칩셋과 같은 그림이라 집 실내 벽·천장 번호를 그대로 쓰고, 소품은 Tibo 조립(structureKits)을 **id로** 찍는다. 좌표는 0기준. 지형·배치만 담았다(문 이동·NPC·상점 이벤트 없음).
@@ -123,6 +125,67 @@ ${list("climate")}
 `);
 }
 
+{
+  const k = GROUPS.staples;
+  doc("staples", `${k.id}-guide`, "RPG 실내 · 등대·마구간 헛간·치료소 · 배치 규칙", `# RPG 실내 · 등대·마구간 헛간·치료소
+
+모든 방은 tibo_interior_expanded(30열·16px)에 그린다. 벽·천장·문은 interiorRoomPipeline plan→floor→walls 껍데기, 소품은 Tibo 조립(structureKits)을 **id로** 찍는다. 좌표는 0기준. 지형·배치만 담았다(문 이동·NPC 이벤트 없음).
+
+${SHELL.split("\n## 가구 자리 규칙")[0].replace(/- 위층·지하는[^\n]*\n/, "")}
+## 계단 — 3칸 폭 벽 계단과 같은 자리 내리막
+- 아래층 오르막: 3칸 폭 돌계단 141(왼끝)|111(가운데)|171(오른끝)을 세 줄 쌓는다(아래층, 통행). 맨 아랫줄은 첫 바닥 줄, 윗 두 줄은 바로 위 북쪽 벽면 두 줄을 덮는다 — 계단이 벽을 타고 올라가는 모양(사용자가 맞다고 한 모양). 세 칸 모두 발치가 바닥, 위가 곧은 벽면이어야 한다.
+- 위층: 남쪽 문을 천장으로 되메우고, 아래층 계단과 같은 x 자리 첫 바닥 줄에 내리막 474|475 두 줄(2×2). 입구는 그 계단 앞이다.
+- 등대: 1층 동쪽 x=13~15 오르막 ↔ 등불 방 x=13~14 내리막.
+
+## 이 분류의 방마다 쓰임
+- 등대 1층: 침대·벽난로·식탁(등대지기 살림), 일지 책상·망원경(바다 감시), 등유 통·밧줄·지도통(등불 방으로 나를 짐). 벽걸이는 조타륜 장식·바다 지도.
+- 등불 방: 창을 뒷벽에 여럿 — 밤바다를 비추는 방이다. 가운데 무늬 석판 163 단 위에 렌즈(수정구 받침)와 화로 둘, 곁에 먼지떨이·청소 양동이(렌즈 닦기), 불 끄는 물 양동이.
+- 마구간 헛간: 통나무 벽 1980~1985·흙바닥 192. 북벽 먹이통 3×2 앞에 짚 깔개 3×3(가축 칸)과 물 양동이, 칸 사이에 마구 걸이(바닥에 서는 1×2, 벽걸이가 아니다), 물통·곡식 자루·손수레, 우유·달걀 자리.
+- 치료소: 진료실(약초장·물약 진열장·약재 서랍장, 나무 상판 진료대 위 약병·환약, 치유사 걸상, 대야·붕대, 대기 의자, 진찰 침대와 가림막)과 병실(침대·협탁 위아래 두 줄, 가운데 러너, 린넨 장·세면대). 침대 사이 칸이 갇히지 않게 가림막은 벽 끝에만.
+
+## 가구 자리 규칙
+숲마을 실내 분류(여관·민가)와 같다: 벽걸이는 벽면 두 줄 안, 키 큰 가구는 맨 윗행을 벽면 아랫줄에, 의자·걸상은 탁자 곁, 탁상 소품은 나무 상판 위, 문에서 목적지·계단까지 통로를 비우고 갇힌 바닥을 남기지 않는다. 모든 소품은 주인 곁에.
+빈칸 검사(/tmp/oprn-qa/emptiness.py --kind interior): 맨바닥 정사각형 한 변 ≤3, 17×13 한 화면 맨바닥 ≤30%.
+
+## 검사
+${check}
+${reach("staples")}
+## 이 분류의 방
+${list("staples")}
+`);
+}
+{
+  const k = GROUPS.sewer;
+  const dun = c.tilesets.oprn_dungeon_stone;
+  doc("sewer", `${k.id}-guide`, "RPG 실내 · 지하 하수 감옥 · 조립 규칙", `# 지하 하수 감옥 — 던전 시트 조립
+
+타일셋은 oprn_dungeon_stone = 번들 던전 시트(easyrpg_chipset_dungeon, 30열·16px) 번호 그대로 + 480~488 이식(보물상자 480·광차 481/482 Tibo, 돌계단 483~485·흉벽 486~488 EasyRPG 마을). 공용 「RPG 던전」 분류의 지하 수로·납골당과 같은 조립이다(scripts/content/rpg-dungeons/kit.mjs, theme "stone").
+
+## 벽 조립 (손으로 쌓지 않는다)
+- 바깥은 공허 430과 abyss-gray 오토타일 테두리. 열린 칸 중 위가 공허인 첫 두 줄이 벽면: 윗줄 21|22|23, 아랫줄 51|52|53(왼끝·가운데·오른끝). 바닥은 회녹색 돌 187.
+- 감방 칸막이는 공허 기둥(1칸 폭, 벽면까지 세로로)이다. 기둥 밑 첫 두 줄은 저절로 벽면 토막이 된다.
+- 감방 앞 창살은 바닥 한 줄 위층: 왼끝 234, 가운데 235, 오른끝 236, 감방 문 205(창살 문, 닫힘). 감방 안은 일부러 못 들어가는 곳(sealed) — 통행 검사에서 뺀다. 감방 바닥은 흙 오토타일(dirt).
+- 물길: 물 3(4칸 폭)을 맵 남쪽 끝까지 이어 흘러 나가게 한다(물길 끝을 막힌 네모 수조로 만들지 않는다). 가로지르는 판자 다리는 물 위에 141(위층)을 얹어 물이 한 덩어리로 남게 한다. 북쪽 끝 수문 창살 234|235|235|236은 물길 바로 위 바닥 줄.
+- 위층에서 내려오는 돌계단 483|484|485는 벽면 두 줄에 새긴다(아래층, "^" 조각). 입구는 그 바로 아래 바닥.
+- 조각: 화로 263/293, 석주 446/476, 침상 384/414, 해골과 뼈 299, 물통 419, 나무통 417, 항아리 418, 긴 탁자 385~387, 의자 327(왼쪽 보기)/328(오른쪽 보기), 둥근 탁자 326, 걸상 356, 책장 329/359, 이끼 394, 자갈 382·잔돌 383/412·돌무더기 259/260, 벽 균열 267·268/269, 붉은 카펫 오토타일(간수실 탁자 밑).
+
+## 배치 규칙
+- 감방마다 침상·해골·물통 중 둘 정도 — 누가 갇혀 있는지 보이게. 복도는 감방 앞 한 줄(창살 앞)을 비워 간수가 오간다.
+- 간수실은 감방 옆에: 탁자와 양쪽 의자, 침대, 압수품 상자, 나무통.
+- 둑길 3칸 중 물가 쪽은 비우고, 벽 쪽에 석주·화로·나무통 무리. 잔해는 흩뿌리지 말고 모서리·벽 곁에 몰아 둔다.
+- 빈칸 검사(/tmp/oprn-qa/emptiness.py --kind dungeon --plain 421,187,108,301,67,110,141): 맨바닥 정사각형 한 변 ≤4, 17×13 한 화면 ≤40%.
+
+## 이식표
+${block(dun.tileGrafts)}
+
+## 검사
+${check}
+${reach("sewer")}
+## 이 분류의 방
+${list("sewer")}
+`);
+}
+
 for (const p of c.plans) {
   const m = c.maps[p.id];
   doc(p.group, p.id, p.name + " · 용도와 배치", `# ${p.name}
@@ -134,7 +197,7 @@ ${p.note}. ${m.width}×${m.height}, tilesetId=${p.tilesetId}. 입구 (${p.entry.
 ![${p.name}](image:${p.id})
 
 ## 놓은 소품 (저작 순서)
-tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 번호 행렬, rug는 카펫 오토타일 섬, floor는 바닥 재질 칠. (x,y)는 왼쪽 위.${p.tilesetId === "easyrpg_chipset_ship" ? " 배 맵의 tibo-kit은 이식 번호로 바뀌어 들어간다(배 규칙 문서의 이식표)." : ""}
+tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 번호 행렬, rug는 카펫 오토타일 섬, floor는 바닥 재질 칠. (x,y)는 왼쪽 위.${p.tilesetId === "easyrpg_chipset_ship" ? " 배 맵의 tibo-kit은 이식 번호로 바뀌어 들어간다(배 규칙 문서의 이식표)." : ""}${p.tilesetId === "oprn_dungeon_stone" ? " 던전 맵은 prop(조각 이름)·tiles(번호 행렬, 왼쪽 위 기준)로 적었다." : ""}
 ${block(p.placements)}
 전체 두 레이어는 다음 배열 문서가 정답이다.
 `);
@@ -153,7 +216,7 @@ ${rows(m.upperTiles.slice(y * m.width, Math.min(y + 16, m.height) * m.width), m.
 
 // Used tiles with their meaning, per category — so a number is never guessed from a picture.
 for (const [g, k] of Object.entries(GROUPS)) {
-  const t = c.tilesets[k.tilesetId];
+  const t = c.tilesets[k.catalogTileset ?? k.tilesetId];
   const used = [...new Set(plansIn(g).flatMap((p) => [...c.maps[p.id].lowerTiles, ...c.maps[p.id].upperTiles]).filter((n) => n >= 0))].sort((a, b) => a - b);
   const entries = used.map((tile) => ({ tile, label: t.tileMeta?.[tile]?.label ?? "", passability: t.passability[tile], priority: t.priority[tile], graft: t.tileGrafts?.find((x) => x.targetTile === tile) }));
   for (let i = 0; i < entries.length; i += 120) doc(g, `${k.id}-dictionary-${i / 120 + 1}`, `사용 타일 사전 ${i / 120 + 1}`, `# 사용 타일 사전\n\n${k.tilesetId}에서 이 분류의 맵이 쓰는 번호·라벨·통행. graft가 있으면 그 칸은 다른 시트에서 이식한 그림이다.\n` + block(entries.slice(i, i + 120)));
@@ -166,7 +229,7 @@ for (const p of c.plans) {
   execFileSync("convert", [dir + "/images/" + n, "-strip", "-filter", "point", "-resize", "820x820>", "-colors", "128", "-define", "png:compression-level=9", file]);
   images[p.group].push({ id: p.id, name: n, caption: "실제 타일 완성 지도 · 열람용 축소본", dataUrl: "data:image/png;base64," + fs.readFileSync(file).toString("base64") });
 }
-const out = Object.entries(GROUPS).map(([g, { tilesetId, ...k }]) => ({ tilesetId, category: { ...k, documents: docs[g], images: images[g] } }));
+const out = Object.entries(GROUPS).map(([g, { tilesetId, catalogTileset: _ct, ...k }]) => ({ tilesetId, category: { ...k, documents: docs[g], images: images[g] } }));
 for (const { category: k } of out) if (k.documents.length > 64 || k.documents.some((d) => d.markdown.length > 12e4)) throw Error("Reference page limit " + k.id);
 fs.writeFileSync(target, JSON.stringify(out) + "\n");
 console.log(out.map(({ category: k }) => ({ id: k.id, documents: k.documents.length, images: k.images.length })), fs.statSync(target).size);

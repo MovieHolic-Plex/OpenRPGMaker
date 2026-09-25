@@ -16,6 +16,7 @@
 import fs from "node:fs";
 import assert from "node:assert/strict";
 import { withTsModule } from "../ontology-ts-loader.mjs";
+import { createKit, grid, GRAFTS, GRAFT_CHIPSETS } from "./rpg-dungeons/kit.mjs";
 
 const OUT = process.argv[2] ?? "tiledata/rpg-interiors";
 
@@ -24,6 +25,24 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
   const TIBO = structuredClone(base.tilesets.tibo_interior_expanded);
   const SHIP = structuredClone(base.tilesets.easyrpg_chipset_ship);
   const INT = base.tilesets.easyrpg_chipset_interior;
+  // Dungeon sheet for the sewer prison: the same dungeon-family copy the RPG dungeons use (three Tibo/town props grafted
+  // after tile 479 — stone steps, chest), built with rpg-dungeons/kit.mjs.
+  const DSTONE = structuredClone(base.tilesets.easyrpg_chipset_dungeon);
+  delete DSTONE.referenceDocuments;
+  Object.assign(DSTONE, { id: "oprn_dungeon_stone", name: "던전 · EasyRPG + 계단·상자·광차 이식" });
+  DSTONE.tileGrafts = Object.values(GRAFTS).map((g) => ({ sourceChipset: GRAFT_CHIPSETS[g.chipset ?? "tibo"], sourceTile: g.source, targetTile: g.target }));
+  DSTONE.count = 510;
+  while (DSTONE.terrain.length < DSTONE.count) DSTONE.terrain.push(0);
+  while (DSTONE.priority.length < DSTONE.count) DSTONE.priority.push("lower");
+  while (DSTONE.passability.length < DSTONE.count) DSTONE.passability.push({ up: false, down: false, left: false, right: false });
+  while (DSTONE.tileMeta.length < DSTONE.count) DSTONE.tileMeta.push({ label: "미사용", source: "unknown" });
+  for (const g of Object.values(GRAFTS)) {
+    const src = g.chipset === "town" ? base.tilesets.easyrpg_chipset_combined_town : base.tilesets.tibo_interior_expanded;
+    DSTONE.passability[g.target] = structuredClone(src.passability[g.source]);
+    DSTONE.priority[g.target] = "lower";
+    DSTONE.tileMeta[g.target] = { label: `${g.label} · ${g.chipset === "town" ? "EasyRPG 마을" : "Tibo"} ${g.source} 이식`, source: "custom" };
+  }
+  const dunKit = createKit(DSTONE);
   delete TIBO.referenceDocuments; delete SHIP.referenceDocuments;
   // The bundled ship sheet still carries its magenta key on some props; the deck snapshots key it the same way.
   SHIP.transparentColor = "#ff678b";
@@ -749,6 +768,113 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
     note: "현무암 벽·현무암 바닥 1998, 주방 5×8(돌바닥 42)과 홀 12×8을 칸막이로 나눴다(문 (7,10)). 주방: 작은 빵 화덕·불 피운 솥 걸이·소시지 걸이·국자 걸이·조리대·밀가루·쌀 포대·당근·양배추 상자·뚜껑 통·석탄 통. 홀: 술통 선반·받침대 맥주통·바 카운터와 높은 걸상 둘(주인 자리 (9,6)), 방패 벽 장식, 장작 벽난로와 횃불 둘·붉은 깔개, 동쪽 3칸 폭 돌계단 141|111|171(x=17~19), 긴 식탁과 벤치·원형 식탁 둘과 걸상, 문 앞 붉은 깔개와 양옆 화로",
   });
 
+  // ═════════ JRPG 단골 실내 (등대·마구간·치료소·지하 하수 감옥) ═════════
+  // 등대 1층 → 3칸 폭 벽 계단 → 등불 방(같은 자리 내리막 474|475). 헛간은 통나무 벽·흙바닥, 치료소는 석벽 두 방.
+  // 지하 하수 감옥은 던전 시트(oprn_dungeon_stone)에 rpg-dungeons/kit.mjs 조립(공허 테두리 + 벽면 두 줄 + 물길·창살).
+
+  // 등대 1층 · 등대지기 방 — 석벽·돌바닥. 침대·벽난로·항해 소품, 기름통, 동쪽 벽 계단으로 등불 방.
+  m = shell(18, 14, { wings: [{ x: 2, y: 5, w: 14, h: 6 }], door: { x: 8, y: 10 }, wall: "stone-brick" });
+  floorTo(m, 42);
+  block(m, 2, 5, [[324], [354]]); stamp(m, "tibo-library-039", 3, 5); stamp(m, "tibo-library-224", 4, 3);
+  stamp(m, "tibo-medieval-stone-fireplace", 7, 3); stamp(m, "tibo-v8-1-2", 6, 5); stamp(m, "tibo-v6-2-0", 10, 3);
+  stairsWall(m, 13, 5);
+  stamp(m, "tibo-warm-scribe-desk", 10, 5); stamp(m, "tibo-v11-1-3", 12, 5);
+  tealRug(m, 5, 7, 9, 9); stamp(m, "tibo-library-026", 7, 7); stamp(m, "tibo-v7-1-2", 6, 7); one(m, 8, 7, 298); stamp(m, "tibo-library-045", 2, 7);
+  stamp(m, "tibo-library-229", 14, 9); stamp(m, "tibo-library-229", 15, 9); stamp(m, "tibo-library-137", 13, 10); stamp(m, "tibo-library-196", 15, 8);
+  stamp(m, "tibo-library-022", 2, 9); stamp(m, "tibo-library-198", 11, 9); stamp(m, "tibo-library-194", 12, 10);
+  add("interior-lighthouse-1f", "등대 · 1층 등대지기 방", T, m, {
+    group: "staples", entry: [8, 11], keeper: [10, 7], targets: [[10, 7], [14, 6], [3, 7], [13, 8]],
+    use: "등대지기가 사는 등대 1층. 문으로 들어와 왼쪽 침대에서 자고, 벽난로에 불을 때며, 동쪽 책상에서 항해 일지를 쓰고 망원경으로 바다를 본다. 동쪽 계단으로 꼭대기 등불 방에 오르고, 기름통의 등유를 날라 올린다",
+    note: "석벽 134~136/164~166·돌바닥 42, 14×6칸. 왼쪽 침대 324/354·협탁·배 조타륜 장식, 가운데 장작 벽난로 3×3·장작 바구니, 바다 지도 액자, 동쪽 3칸 폭 돌계단 141|111|171(x=13~15, 첫 바닥 줄 y=5에서 벽면 두 줄을 타고 오름) → 등불 방, 계단 곁 필경사 책상(일지)·천체망원경, 가운데 청록 러그 위 정사각 식탁과 의자 둘, 침대 발치 궤짝, 오른쪽 앞 등유 통 둘·술 항아리·밧줄, 왼쪽 앞 생선 건조대, 지도통·가죽 배낭",
+  });
+
+  // 등대 꼭대기 · 등불 방 — 1층 계단 자리에 내리막. 가운데 무늬 석판 단 위 수정 렌즈와 화로 둘, 창 여러 개.
+  m = shell(18, 13, { wings: [{ x: 2, y: 5, w: 14, h: 5 }], door: { x: 8, y: 9 }, wall: "stone-brick" });
+  floorTo(m, 42); closeDoor(m, 8, 10);
+  stairsDown(m, 13, 5);
+  for (const x of [3, 5, 7, 9, 11]) one(m, x, 3, 54);
+  fill(m, 6, 6, 10, 8, 163); placed.push({ kind: "floor", tile: 163, x: 6, y: 6, w: 5, h: 3, role: "floor" });
+  stamp(m, "tibo-fantasy-crystal-stand", 8, 6); stamp(m, "tibo-brazier", 7, 7); stamp(m, "tibo-brazier", 9, 7);
+  stamp(m, "tibo-library-229", 2, 5); stamp(m, "tibo-library-229", 3, 5); stamp(m, "tibo-library-137", 2, 7);
+  stamp(m, "tibo-v11-1-3", 15, 4); stamp(m, "tibo-v9-1-0", 13, 3); stamp(m, "tibo-warm-scribe-desk", 2, 8);
+  stamp(m, "tibo-library-067", 6, 9); stamp(m, "tibo-library-065", 10, 9); stamp(m, "tibo-v6-1-1", 15, 9);
+  add("interior-lighthouse-lamp-room", "등대 · 꼭대기 등불 방", T, m, {
+    group: "staples", entry: [14, 7], targets: [[8, 9], [4, 6], [15, 7], [5, 7]],
+    use: "등대 꼭대기의 등불 방. 1층 동쪽 계단으로 올라오면 내리막 계단 앞. 가운데 단 위 수정 렌즈 곁 화로에 불을 지켜 밤바다를 비추고, 창 너머 바다를 망원경으로 살핀다. 등유는 서쪽 통에 두고, 렌즈는 먼지떨이로 닦는다",
+    note: "석벽·돌바닥 42, 14×5칸. 남쪽 문을 닫고 1층 계단 자리(x=13~14)에 내리막 돌계단 474|475. 뒷벽 창 54 다섯, 가운데 무늬 석판 163 단 5×3 위 수정구 받침(렌즈)과 화로 둘, 서쪽 등유 통 둘·술 항아리·필경사 책상(당번 일지), 동쪽 천체망원경·벽시계, 단 앞 깃털 먼지떨이·청소 양동이, 계단 곁 물 양동이(불 끄기)",
+  });
+
+  // 목장 · 마구간 헛간 — 통나무 벽·흙바닥. 북벽 먹이통 셋과 짚 깔개 칸, 물통·곡식 자루, 마구 걸이·안장 받침, 손수레.
+  m = shell(22, 14, { wings: [{ x: 2, y: 5, w: 18, h: 7 }], door: { x: 10, y: 11 }, wall: "log" });
+  floorTo(m, 192);
+  for (const x of [2, 6, 14]) { stamp(m, "tibo-medieval-hay-trough", x, 4); mat(m, x, 6, x + 2, 8); }
+  stamp(m, "tibo-fantasy-water-tub", 10, 4); stamp(m, "tibo-fantasy-grain-sacks", 17, 4);
+  stamp(m, "tibo-library-204", 5, 4); stamp(m, "tibo-library-204", 9, 4); stamp(m, "tibo-library-204", 13, 4);
+  stamp(m, "tibo-library-203", 11, 9); stamp(m, "tibo-medieval-handcart", 17, 8); stamp(m, "tibo-library-013", 16, 6);
+  stamp(m, "tibo-butter-churn", 2, 10); stamp(m, "tibo-library-023", 3, 11); stamp(m, "tibo-v6-2-1", 4, 11);
+  stamp(m, "tibo-library-061", 7, 10); stamp(m, "tibo-v6-1-1", 13, 6); stamp(m, "tibo-v6-1-1", 5, 6);
+  add("interior-ranch-barn", "목장 · 마구간 헛간", T, m, {
+    group: "staples", entry: [10, 12], targets: [[3, 9], [7, 9], [15, 9], [11, 6], [16, 10]],
+    use: "목장 일꾼이 말과 소를 돌보는 헛간. 북벽 먹이통 앞 짚 깔개 칸이 가축 자리이고, 가운데 물통에서 물을 떠 주며, 오른쪽 곡식 자루로 먹이를 채운다. 벽의 마구와 안장을 챙겨 말을 내고, 손수레로 짐을 나른다. 왼쪽 앞은 우유를 휘젓고 달걀을 모으는 자리",
+    note: "통나무 벽 1980~1985·흙바닥 192, 18×7칸. 북벽 마구간 먹이통 3×2 셋(x=2·6·14) 앞마다 짚 깔개 3×3 칸과 물 양동이, 가운데 물통 3×2, 오른쪽 식재료 자루 3×2·밀가루 포대·목제 손수레 3×3, 먹이통 사이 마구 걸이 셋, 문 곁 안장 받침대, 왼쪽 앞 버터 교반통·달걀 바구니·막대 양동이, 기댄 빗자루",
+  });
+
+  // 치료소 — 석벽 두 방. 서쪽 진료실(약초장·물약 진열장·약재 서랍장·진료대·대야), 동쪽 병실(침대 여섯·협탁·린넨 장).
+  m = shell(22, 15, { rooms: [{ id: "care", x: 2, y: 5, w: 8, h: 8 }, { id: "ward", x: 11, y: 5, w: 9, h: 8 }], innerDoors: [{ x: 10, y: 9 }], door: { x: 6, y: 12 }, wall: "stone-brick" });
+  floorTo(m, 102, [11, 5, 19, 12]);
+  stamp(m, "tibo-medieval-herbal-cabinet", 2, 3); stamp(m, "tibo-v4-2-0", 5, 3); stamp(m, "tibo-library-145", 8, 4);
+  table(m, 4, 7, 6, 7); stamp(m, "tibo-library-148", 4, 7); stamp(m, "tibo-library-155", 6, 7); stamp(m, "tibo-library-030", 5, 8);
+  stamp(m, "tibo-library-050", 8, 7); stamp(m, "tibo-library-149", 8, 9); stamp(m, "tibo-v9-1-1", 2, 7); stamp(m, "tibo-warm-bench", 2, 10);
+  stamp(m, "tibo-library-215", 9, 12); stamp(m, "tibo-library-166", 2, 9);
+  block(m, 7, 10, [[324], [354]]); stamp(m, "tibo-library-236", 5, 10); stamp(m, "tibo-library-039", 8, 11);
+  for (const x of [11, 14, 17]) { block(m, x, 5, [[324], [354]]); stamp(m, "tibo-library-039", x + 1, 5); block(m, x, 11, [[324], [354]]); stamp(m, "tibo-library-039", x + 1, 12); }
+  stamp(m, "tibo-library-059", 19, 4); one(m, 13, 3, 54); one(m, 16, 3, 54);
+  tealRug(m, 12, 8, 18, 9); stamp(m, "tibo-library-031", 15, 8); stamp(m, "tibo-v8-1-3", 19, 12); stamp(m, "tibo-library-236", 18, 6); stamp(m, "tibo-library-048", 13, 10); stamp(m, "tibo-library-065", 16, 10);
+  add("interior-healer-clinic", "치료소", T, m, {
+    group: "staples", entry: [6, 13], keeper: [5, 9], targets: [[5, 9], [10, 9], [13, 7], [15, 10], [3, 8]],
+    use: "상처 입은 모험가와 마을 사람을 돌보는 치료소. 문으로 들어오면 서쪽 진료실 — 치유사가 진료대 앞 걸상에 앉아 약병·환약을 내 주고, 약초장·물약 진열장에서 약을 꺼낸다. 기다리는 사람은 쿠션 의자에 앉는다. 칸막이 문 너머 동쪽 병실에 침대 여섯이 두 줄로 놓여 환자가 눕는다",
+    note: "석벽·진료실 나무 바닥 72, 병실 널 바닥 102, 진료실 8×8과 병실 9×8을 칸막이로 나눴다(문 (10,9)). 진료실: 뒷벽 약초 건조장 3×3·물약 진열장 3×3·약재 서랍장, 나무 상판 진료대(약병 세 개·환약 단지)와 치유사 걸상(자리 (5,9) 앞), 대야 받침대·붕대 바구니·약품함·물약 가마솥, 대기용 쿠션 긴 의자, 앞쪽 진찰 침대와 접이식 가림막·협탁, 문 곁 둥근 관목 화분. 병실: 침대 324/354와 협탁 세 쌍씩 위아래 두 줄, 린넨 장, 창 54 둘, 가운데 청록 러너와 음식 운반대, 동쪽 끝 접이식 가림막, 침대 곁 빨래통·청소 양동이, 세면대",
+  });
+
+  // 지하 하수 감옥 — 가운데 하수 물길과 양쪽 둑길, 서쪽 감방 셋·동쪽 감방 둘(창살 234~236, 가운데 205가 감방 문), 동쪽 간수실.
+  {
+    const W = 36, H = 24;
+    const spec = {
+      id: "interior-sewer-prison", theme: "stone",
+      art: grid(W, H, [
+        [".", 1, 2, 11, 13], ["#", 4, 2, 4, 7], ["#", 8, 2, 8, 7], [".", 12, 10, 12, 12], // 서쪽 감방 셋과 복도, 물길로 나가는 샛길
+        ["d", 1, 4, 3, 7], ["d", 5, 4, 7, 7], ["d", 9, 4, 11, 7], // 감방 바닥은 흙(짚 자리)
+        [".", 13, 2, 22, 22], ["~", 16, 6, 19, 23], ["=", 16, 13, 19, 14], // 물길(남쪽 끝으로 흘러 나감)과 판자 다리
+        [".", 24, 2, 34, 14], ["#", 29, 2, 29, 7], [".", 23, 10, 23, 12], // 동쪽 감방 둘과 간수실, 샛길
+        ["d", 24, 4, 28, 7], ["d", 30, 4, 34, 7], ["r", 25, 10, 30, 12], // 감방 흙바닥, 간수실 탁자 밑 붉은 깔개
+      ]),
+      props: [
+        ["^", 13, 2], ["[", 16, 5], ["=", 17, 5], ["=", 18, 5], ["]", 19, 5], ["x", 21, 3], ["T", 14, 5], ["T", 21, 5],
+        ["I", 13, 9], ["I", 22, 9], ["I", 13, 18], ["I", 22, 18], ["E", 21, 20], ["E", 22, 20], ["J", 22, 21], ["g", 14, 21], ["K", 20, 16],
+        // 서쪽 감방: 창살 한 줄(가운데 감방 문), 안에 침상·해골·양동이
+        ...[1, 5, 9].flatMap((x) => [["[", x, 8], ["0", x + 1, 8], ["]", x + 2, 8]]),
+        ["}", 1, 4], ["K", 3, 6], ["j", 7, 4], ["}", 5, 5], ["K", 10, 4], ["j", 11, 6], ["y", 5, 2],
+        ["T", 4, 10], ["T", 8, 10], ["E", 1, 12], ["E", 2, 12], ["j", 3, 13], ["s", 10, 12], ["g", 6, 13],
+        // 동쪽 감방 둘
+        ...[24, 30].flatMap((x) => [["[", x, 8], ["=", x + 1, 8], ["0", x + 2, 8], ["=", x + 3, 8], ["]", x + 4, 8]]),
+        ["}", 24, 4], ["K", 27, 6], ["j", 28, 4], ["}", 34, 4], ["K", 31, 5], ["x", 26, 2],
+        // 간수실: 긴 탁자와 의자, 침대, 둥근 탁자와 걸상, 보물상자(압수품), 나무통, 책장
+        ["t", 26, 11], [")", 25, 11], ["(", 29, 11], ["}", 34, 10], ["}", 34, 12], ["c", 32, 13], ["v", 33, 13],
+        ["H", 31, 14], ["E", 24, 14], ["E", 25, 14], ["b", 24, 9], ["T", 31, 9], ["J", 26, 14],
+        // 둑길: 하수구 이끼·돌무더기·나무통 무리, 물가 해골
+        ["R", 9, 13], ["u", 5, 12], ["E", 7, 13], ["g", 15, 16], ["u", 13, 20], ["g", 21, 7], ["g", 20, 11], ["R", 20, 22], ["g", 13, 15], ["u", 14, 12], ["U", 21, 15], ["z", 15, 19], ["K", 14, 17],
+      ],
+    };
+    const built = dunKit.build(spec);
+    for (const w of built.warnings) console.error(`interior-sewer-prison: prop ${w}`);
+    placed.push(...built.placements);
+    add("interior-sewer-prison", "지하 하수 감옥", "oprn_dungeon_stone", built.map, {
+      group: "sewer", entry: [14, 4], keeper: [28, 13], sealed: [[1, 4, 3, 7], [5, 4, 7, 7], [9, 4, 11, 7], [24, 4, 28, 7], [30, 4, 34, 7]],
+      targets: [[2, 9], [6, 9], [10, 9], [26, 9], [32, 9], [28, 13], [14, 20], [21, 12]],
+      use: "성 아래 하수도에 딸린 감옥. 위층에서 돌계단으로 내려오면 창살 친 수문 앞, 가운데 하수 물길을 따라 양쪽 둑길이 남쪽으로 흘러 나간다. 서쪽 샛길로 가면 감방 셋, 동쪽 샛길로 가면 감방 둘과 간수가 먹고 자는 간수실. 죄수는 창살 뒤에 갇혀 있다(감방 안은 일부러 못 들어간다)",
+      note: "던전 칩셋(oprn_dungeon_stone), 「무너진 납골당」과 같은 벽 조립(공허 테두리 + 갈색 벽면 두 줄 21~23/51~53 + 회녹색 돌바닥 187). 물길 3(4칸 폭, 남쪽 끝으로 흘러 나감) 위 판자 다리 141, 북쪽 수문 창살 234|235|235|236과 벽 균열, 둑길 석주 446/476 넷·화로 263/293 둘. 서쪽 감방 셋(3칸 폭, 공허 기둥으로 나눔)·동쪽 감방 둘(5칸 폭)은 창살 234·235·236 한 줄에 가운데 205가 감방 문, 안에 침상 384/414·해골과 뼈 299·물통 419. 감방 바닥은 흙 오토타일. 간수실: 붉은 깔개 위 긴 탁자 385~387과 양쪽 의자 327/328, 침대 둘, 둥근 탁자 326과 걸상 356, 압수품 상자(Tibo 이식 480), 나무통·항아리·책장 329/359·화로. 둑길 이끼 394·자갈 382·잔돌 383/412·돌무더기 259/260",
+    });
+  }
   // Grafted Tibo cargo takes the Tibo slot's walkability, priority and a readable label.
   const kitName = new Map();
   for (const k of TIBO.structureKits) for (const r of k.rows) for (const t of r.upperTiles ?? []) if (t >= 0 && !kitName.has(t)) kitName.set(t, k.name);
@@ -787,7 +913,7 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
   if (rules.length) console.error("placement rules:\n  " + rules.join("\n  "));
 
   // ── reachability with the runtime move rule ──
-  const tilesets = { tibo_interior_expanded: TIBO, easyrpg_chipset_ship: SHIP };
+  const tilesets = { tibo_interior_expanded: TIBO, easyrpg_chipset_ship: SHIP, oprn_dungeon_stone: DSTONE };
   const maps = {}, report = [];
   for (const p of places) {
     const map = { id: p.id, name: p.name, width: p.map.width, height: p.map.height, tileSize: 16, tilesetId: p.tilesetId, lowerTiles: p.map.lowerTiles, upperTiles: p.map.upperTiles, events: [] };
@@ -809,7 +935,9 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
       const walk = (t) => { const q = ts.passability[t]; return q && (q.up || q.down || q.left || q.right); };
       if (walk(lo) && up < 0) floorCells.push(k);
     }
-    const pockets = floorCells.filter((k) => !seen.has(k)).map((k) => [k % map.width, (k / map.width) | 0]);
+    // Cells behind bars are shut on purpose (plan.sealed rectangles); anything else unreachable is a mistake.
+    const sealedAt = (x, y) => (p.sealed ?? []).some(([x0, y0, x1, y1]) => x >= x0 && y >= y0 && x <= x1 && y <= y1);
+    const pockets = floorCells.filter((k) => !seen.has(k)).map((k) => [k % map.width, (k / map.width) | 0]).filter(([x, y]) => !sealedAt(x, y));
     const blocked = p.targets.filter(([x, y]) => !seen.has(y * map.width + x));
     report.push({ id: p.id, entry: p.entry, targets: p.targets, reachable: seen.size, walkable: floorCells.length, blocked, pockets });
   }
