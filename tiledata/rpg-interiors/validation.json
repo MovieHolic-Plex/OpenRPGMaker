@@ -1020,5 +1020,235 @@
     "walkable": 245,
     "blocked": [],
     "pockets": []
+  },
+  {
+    "id": "interior-cathedral-nave",
+    "entry": [
+      14,
+      24
+    ],
+    "targets": [
+      [
+        14,
+        7
+      ],
+      [
+        4,
+        7
+      ],
+      [
+        24,
+        7
+      ],
+      [
+        8,
+        16
+      ],
+      [
+        20,
+        16
+      ],
+      [
+        4,
+        19
+      ]
+    ],
+    "reachable": 229,
+    "walkable": 207,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-monastery-cloister",
+    "entry": [
+      19,
+      22
+    ],
+    "targets": [
+      [
+        3,
+        7
+      ],
+      [
+        7,
+        7
+      ],
+      [
+        11,
+        7
+      ],
+      [
+        16,
+        6
+      ],
+      [
+        23,
+        7
+      ],
+      [
+        8,
+        16
+      ],
+      [
+        19,
+        17
+      ],
+      [
+        12,
+        16
+      ],
+      [
+        26,
+        16
+      ]
+    ],
+    "reachable": 209,
+    "walkable": 187,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-desert-palace-throne",
+    "entry": [
+      12,
+      18
+    ],
+    "targets": [
+      [
+        12,
+        7
+      ],
+      [
+        9,
+        8
+      ],
+      [
+        5,
+        11
+      ],
+      [
+        19,
+        11
+      ],
+      [
+        12,
+        15
+      ],
+      [
+        3,
+        16
+      ]
+    ],
+    "reachable": 184,
+    "walkable": 158,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-snow-fortress-hall",
+    "entry": [
+      12,
+      19
+    ],
+    "targets": [
+      [
+        12,
+        7
+      ],
+      [
+        4,
+        8
+      ],
+      [
+        20,
+        8
+      ],
+      [
+        8,
+        12
+      ],
+      [
+        16,
+        12
+      ],
+      [
+        12,
+        12
+      ],
+      [
+        4,
+        16
+      ]
+    ],
+    "reachable": 167,
+    "walkable": 153,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-inn-cellar",
+    "entry": [
+      12,
+      6
+    ],
+    "targets": [
+      [
+        12,
+        6
+      ],
+      [
+        4,
+        6
+      ],
+      [
+        6,
+        6
+      ],
+      [
+        10,
+        9
+      ],
+      [
+        2,
+        7
+      ]
+    ],
+    "reachable": 46,
+    "walkable": 37,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-granary-storehouse",
+    "entry": [
+      8,
+      11
+    ],
+    "targets": [
+      [
+        12,
+        9
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        14,
+        6
+      ],
+      [
+        8,
+        7
+      ],
+      [
+        10,
+        7
+      ]
+    ],
+    "reachable": 55,
+    "walkable": 44,
+    "blocked": [],
+    "pockets": []
   }
 ]

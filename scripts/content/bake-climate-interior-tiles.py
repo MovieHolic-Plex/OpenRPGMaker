@@ -23,7 +23,10 @@ Row 68 (tiles 2040..2069), drawn here in the tub's three-quarter view (rim top f
   2040 2041 / 2042 2043 stone well 2x2 with a wooden frame, rope and bucket (monastery garden)
   2044 2045 2046 / 2047 2048 2049 stone fountain 3x2, round basin with a tiered centre bowl (palace hall, holy-water font)
   2050 rat hole at the foot of a wall face (transparent around the hole, sits on any lower wall-face tile)
-  2051..2069 unused
+  2051 2052 2053 / 2054 2055 2056 / 2057 2058 2059 pipe organ 3x3 (gold pipes in a dark case over the two wall-face
+    rows, the keyboard console on the floor row)
+  2060 / 2061 tall lancet stained-glass window 1x2 (144's own rows: arch head, red and blue panels, sill)
+  2062..2069 unused
 Idempotent: the sheet is cut back to its first 66 rows before the rows are appended.
 Usage: python3 scripts/content/bake-climate-interior-tiles.py
 """
@@ -365,8 +368,85 @@ def rat_hole():
     return img
 
 
+GOLD = [(96, 62, 22), (164, 116, 44), (224, 178, 78), (250, 226, 150)]
+DARKWOOD = [(34, 18, 10), (78, 44, 22), (120, 72, 36), (164, 108, 58)]
+
+
+def pipe_organ():
+    """3x3 pipe organ against the back wall: a dark wooden case with gold pipes (tall in the middle) over the two
+    wall-face rows, and on the floor row the wooden console with its keyboard seen from above."""
+    img = Image.new("RGBA", (48, 48), (0, 0, 0, 0))
+    px = img.load()
+    # case back panel
+    for y in range(4, 34):
+        for x in range(3, 45):
+            c = DARKWOOD[1] if (x + y) % 7 else DARKWOOD[0]
+            if x in (3, 44) or y == 4: c = OUT
+            elif x in (4, 43) or y == 5: c = DARKWOOD[2]
+            px[x, y] = (*c, 255)
+    # crest on top of the middle tower
+    for y in range(0, 5):
+        for x in range(17, 31):
+            if abs(x - 23.5) <= 6.5 - y * 0.9 or y >= 3:
+                c = DARKWOOD[2] if y < 4 else DARKWOOD[1]
+                if abs(x - 23.5) > 5.8 - y * 0.9 and y < 3: c = OUT
+                px[x, y] = (*c, 255)
+    # pipes: 4 px wide, lit west, a dark mouth two thirds down; heights rise to the middle
+    tops = [14, 11, 9, 7, 5, 3, 3, 5, 7, 9, 11, 14]
+    for i, top in enumerate(tops):
+        x0 = 5 + i * 3 + (1 if i >= 6 else 0) + (i // 3)
+        for y in range(top + 2, 31):
+            for dx in range(3):
+                x = x0 + dx
+                c = GOLD[3] if dx == 0 else GOLD[2] if dx == 1 else GOLD[1]
+                if y == top + 2: c = GOLD[1] if dx else GOLD[2]
+                px[x, y] = (*c, 255)
+            if x0 + 3 < 45: px[x0 + 3, y] = (*DARKWOOD[0], 255)
+        mouth = top + 2 + int((31 - top - 2) * 0.62)
+        px[x0, mouth] = (*GOLD[0], 255); px[x0 + 1, mouth] = (*OUT, 255); px[x0 + 2, mouth] = (*GOLD[0], 255)
+        px[x0 + 1, mouth + 1] = (*GOLD[1], 255)
+    # case base rail under the pipes
+    for y in range(30, 34):
+        for x in range(3, 45):
+            c = DARKWOOD[3] if y == 30 else DARKWOOD[2] if y == 31 else DARKWOOD[1]
+            if x in (3, 44) or y == 33: c = OUT
+            px[x, y] = (*c, 255)
+    # console on the floor row: wooden desk top with keys (white/black) then the front panel
+    for y in range(33, 46):
+        for x in range(9, 39):
+            if y < 38:
+                c = DARKWOOD[3] if y == 33 else DARKWOOD[2]
+                if 34 <= y <= 36 and 11 <= x <= 36:
+                    c = (236, 232, 220) if y > 34 else (200, 196, 186)
+                    if x % 3 == 0: c = (60, 56, 60)
+                if x in (9, 38): c = OUT
+            else:
+                c = DARKWOOD[1] if y < 44 else DARKWOOD[0]
+                if y == 38: c = DARKWOOD[2]
+                if x in (9, 38) or y == 45: c = OUT
+                if x in (14, 33) and 39 <= y <= 43: c = DARKWOOD[0]
+            px[x, y] = (*c, 255)
+    for y in range(46, 48):
+        for x in range(11, 40):
+            px[x, y] = (20, 12, 6, 80)
+    return img
+
+
+def tall_stained_glass():
+    """1x2 lancet window from 144's own rows: the arch head, then red/purple and blue panels in turn, the sill."""
+    src = cell(144)
+    seq = list(range(0, 9)) + list(range(9, 14)) + list(range(5, 9)) + list(range(9, 14)) + list(range(5, 9)) + [14]
+    img = Image.new("RGBA", (16, 32), (0, 0, 0, 0))
+    for y, sy in enumerate(seq):
+        for x in range(16):
+            img.putpixel((x, y + 1), src.getpixel((x, sy)))
+    return img
+
+
 row3 = Image.new("RGBA", (480, 16), (0, 0, 0, 0))
 extra = quarters(well()) + [fountain().crop((x, y, x + 16, y + 16)) for y in (0, 16) for x in (0, 16, 32)] + [rat_hole()]
+extra += [pipe_organ().crop((x, y, x + 16, y + 16)) for y in (0, 16, 32) for x in (0, 16, 32)]
+extra += [tall_stained_glass().crop((0, y, 16, y + 16)) for y in (0, 16)]
 for i, t in enumerate(extra):
     row3.paste(t, (i * 16, 0))
 out = Image.new("RGBA", (480, (BASE_ROWS + 3) * 16), (0, 0, 0, 0))
