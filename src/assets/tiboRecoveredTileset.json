@@ -2,12 +2,42 @@
   "id": "tibo_interior_expanded",
   "kind": "custom",
   "name": "실내 확장 · Tibo",
-  "count": 2040,
+  "count": 2070,
   "image": {
     "id": "tex_tibo_interior_expanded",
     "type": "bundled"
   },
   "terrain": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
     0,
     0,
     0,
@@ -4066,6 +4096,36 @@
     "lower",
     "lower",
     "lower",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
     "upper",
     "upper",
     "upper",
@@ -30653,6 +30713,325 @@
       "source": "bundled-default",
       "description": "",
       "defaultLayer": "upper"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "돌우물 왼쪽 위",
+        "well",
+        "우물",
+        "수도원",
+        "안뜰",
+        "실내"
+      ],
+      "label": "돌우물 왼쪽 위",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "2×2 나무 틀·도르래·두레박이 달린 돌우물. 안뜰·정원 바닥 한가운데나 길 끝에 둔다",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "돌우물 오른쪽 위",
+        "well",
+        "우물",
+        "수도원",
+        "안뜰",
+        "실내"
+      ],
+      "label": "돌우물 오른쪽 위",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "2×2 나무 틀·도르래·두레박이 달린 돌우물. 안뜰·정원 바닥 한가운데나 길 끝에 둔다",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "돌우물 왼쪽 아래",
+        "well",
+        "우물",
+        "수도원",
+        "안뜰",
+        "실내"
+      ],
+      "label": "돌우물 왼쪽 아래",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "2×2 나무 틀·도르래·두레박이 달린 돌우물. 안뜰·정원 바닥 한가운데나 길 끝에 둔다",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "돌우물 오른쪽 아래",
+        "well",
+        "우물",
+        "수도원",
+        "안뜰",
+        "실내"
+      ],
+      "label": "돌우물 오른쪽 아래",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "2×2 나무 틀·도르래·두레박이 달린 돌우물. 안뜰·정원 바닥 한가운데나 길 끝에 둔다",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "돌 분수 왼쪽 위",
+        "fountain",
+        "분수",
+        "수반",
+        "궁전",
+        "성수반",
+        "실내"
+      ],
+      "label": "돌 분수 왼쪽 위",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "3×2 둥근 돌 수반과 가운데 층층 물받이. 궁전 홀 좌우 한 쌍, 성당 입구 성수반으로 쓴다",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "돌 분수 위",
+        "fountain",
+        "분수",
+        "수반",
+        "궁전",
+        "성수반",
+        "실내"
+      ],
+      "label": "돌 분수 위",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "3×2 둥근 돌 수반과 가운데 층층 물받이. 궁전 홀 좌우 한 쌍, 성당 입구 성수반으로 쓴다",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "돌 분수 오른쪽 위",
+        "fountain",
+        "분수",
+        "수반",
+        "궁전",
+        "성수반",
+        "실내"
+      ],
+      "label": "돌 분수 오른쪽 위",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "3×2 둥근 돌 수반과 가운데 층층 물받이. 궁전 홀 좌우 한 쌍, 성당 입구 성수반으로 쓴다",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "돌 분수 왼쪽 아래",
+        "fountain",
+        "분수",
+        "수반",
+        "궁전",
+        "성수반",
+        "실내"
+      ],
+      "label": "돌 분수 왼쪽 아래",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "3×2 둥근 돌 수반과 가운데 층층 물받이. 궁전 홀 좌우 한 쌍, 성당 입구 성수반으로 쓴다",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "돌 분수 아래",
+        "fountain",
+        "분수",
+        "수반",
+        "궁전",
+        "성수반",
+        "실내"
+      ],
+      "label": "돌 분수 아래",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "3×2 둥근 돌 수반과 가운데 층층 물받이. 궁전 홀 좌우 한 쌍, 성당 입구 성수반으로 쓴다",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "돌 분수 오른쪽 아래",
+        "fountain",
+        "분수",
+        "수반",
+        "궁전",
+        "성수반",
+        "실내"
+      ],
+      "label": "돌 분수 오른쪽 아래",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "3×2 둥근 돌 수반과 가운데 층층 물받이. 궁전 홀 좌우 한 쌍, 성당 입구 성수반으로 쓴다",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "prop",
+      "tags": [
+        "쥐구멍",
+        "rat hole",
+        "쥐",
+        "벽",
+        "지하실",
+        "창고",
+        "실내"
+      ],
+      "label": "쥐구멍",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "description": "벽면 아랫줄 칸 위에 얹는 갉은 구멍(둘레 투명). 벽면 아랫줄에만 — 바닥에 두지 않는다",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
     }
   ],
   "tileSize": 16,
@@ -38836,6 +39215,53 @@
       "confidence": "high",
       "defaultLayer": "upper",
       "placementRules": "2×2 조각(윗줄 둘, 아랫줄 둘): 건초 더미 2019~2022, 말(오른쪽) 2023~2026, 말(왼쪽) 2027~2030, 젖소(오른쪽) 2031~2034. 가축은 칸막이 사이 짚 위에만."
+    },
+    {
+      "id": "interior-stone-well",
+      "name": "돌우물",
+      "tileIds": [
+        2040,
+        2041,
+        2042,
+        2043
+      ],
+      "role": "object",
+      "description": "2×2 조각(윗줄 2040 2041, 아랫줄 2042 2043). 수도원 안뜰·정원처럼 하늘이 트인 바닥 한가운데에. upper 층, 막힘.",
+      "source": "bundled-default",
+      "confidence": "high",
+      "defaultLayer": "upper",
+      "placementRules": "2×2 조각(윗줄 2040 2041, 아랫줄 2042 2043). 수도원 안뜰·정원처럼 하늘이 트인 바닥 한가운데에. upper 층, 막힘."
+    },
+    {
+      "id": "interior-stone-fountain",
+      "name": "돌 분수(수반)",
+      "tileIds": [
+        2044,
+        2045,
+        2046,
+        2047,
+        2048,
+        2049
+      ],
+      "role": "object",
+      "description": "3×2 조각(윗줄 2044~2046, 아랫줄 2047~2049). 궁전 홀 통로 양옆 한 쌍, 성당 입구 양옆 성수반. upper 층, 막힘.",
+      "source": "bundled-default",
+      "confidence": "high",
+      "defaultLayer": "upper",
+      "placementRules": "3×2 조각(윗줄 2044~2046, 아랫줄 2047~2049). 궁전 홀 통로 양옆 한 쌍, 성당 입구 양옆 성수반. upper 층, 막힘."
+    },
+    {
+      "id": "interior-rat-hole",
+      "name": "쥐구멍",
+      "tileIds": [
+        2050
+      ],
+      "role": "object",
+      "description": "벽면 아랫줄(첫 바닥 줄 바로 위) 칸에만 upper 로 얹는다. 곁 바닥에 찢긴 자루·흘린 곡식을 둔다(창고·지하실 쥐잡기).",
+      "source": "bundled-default",
+      "confidence": "high",
+      "defaultLayer": "upper",
+      "placementRules": "벽면 아랫줄(첫 바닥 줄 바로 위) 칸에만 upper 로 얹는다. 곁 바닥에 찢긴 자루·흘린 곡식을 둔다(창고·지하실 쥐잡기)."
     }
   ],
   "passability": [
@@ -51048,6 +51474,186 @@
       "down": false,
       "left": false,
       "right": false
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
     },
     {
       "up": true,

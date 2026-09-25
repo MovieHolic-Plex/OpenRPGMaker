@@ -63,7 +63,7 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
   const TABLE_KITS = new Set(K(`library-025 library-026 library-140 library-161 v4-4-0 v4-4-2 v4-5-2 v7-1-3 v7-2-3 v7-3-3
     fantasy-dining-set medieval-banquet-table medieval-scribe-desk warm-scribe-desk fantasy-alchemy-desk fantasy-prep-table
     fantasy-bar-counter chessboard fantasy-washstand library-040`));
-  const HANG_TILES = new Set([24, 54, 56, 57, 58, 84, 85, 86, 142, 144, 262, 290, 388, 418, /* ship sheet */ 119, 202, 295, 358]);
+  const HANG_TILES = new Set([24, 54, 56, 57, 58, 84, 85, 86, 142, 144, 260, 261, 262, 290, 388, 418, 472, 2050, /* ship sheet */ 119, 202, 295, 358]);
   const SEAT_TILES = new Set([267, 268, 297, 298, 476]);
   const TABLE_TILES = new Set([325, 326, 327, 328, 234, 264, 294, 236, 329]);
   for (const id of TABLE_KITS) for (const r of kits.get(id).rows) for (const t of r.upperTiles ?? []) if (t >= 0) TABLE_TILES.add(t);
@@ -889,6 +889,45 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
       note: "던전 칩셋(oprn_dungeon_stone), 「무너진 납골당」과 같은 벽 조립(공허 테두리 + 갈색 벽면 두 줄 21~23/51~53 + 회녹색 돌바닥 187). 물길 3(4칸 폭, 남쪽 끝으로 흘러 나감) 위 판자 다리 141, 북쪽 수문 창살 234|235|235|236과 벽 균열, 둑길 석주 446/476 넷·화로 263/293 둘. 서쪽 감방 셋(3칸 폭, 공허 기둥으로 나눔)·동쪽 감방 둘(5칸 폭)은 창살 234·235·236 한 줄에 가운데 205가 감방 문, 안에 침상 384/414·해골과 뼈 299·물통 419. 감방 바닥은 흙 오토타일. 간수실: 붉은 깔개 위 긴 탁자 385~387과 양쪽 의자 327/328, 침대 둘, 둥근 탁자 326과 걸상 356, 압수품 상자(Tibo 이식 480), 나무통·항아리·책장 329/359·화로. 둑길 이끼 394·자갈 382·잔돌 383/412·돌무더기 259/260",
     });
   }
+  // ═════════ 개정 2: 대성당·수도원·사막 궁전·설원 요새·여관 지하·곡물 창고 ═════════
+  // Row 68 of the Tibo sheet (bake-climate-interior-tiles.py): well 2040~2043, stone fountain 2044~2049, rat hole 2050.
+  const pillar = (m, x, y) => block(m, x, y, [[89], [119]]);
+  const well = (m, x, y) => block(m, x, y, [[2040, 2041], [2042, 2043]]);
+  const fountain = (m, x, y) => block(m, x, y, [[2044, 2045, 2046], [2047, 2048, 2049]]);
+  const statue = (m, x, y) => block(m, x, y, [[88], [118]]);
+
+  // 대성당 · 신랑(身廊) — 석벽·돌바닥. 북쪽 무늬 석판 제단부(제단·성녀상·붉은 커튼·촛대 탁자), 붉은 카펫 계단에서 문까지
+  // 가운데 통로, 양쪽 긴 의자 네 줄, 기둥 두 줄 너머 옆 통로(서쪽 성유물 예배소·고해 가림막, 동쪽 오르간 성가대석), 문 양옆 성수반.
+  m = shell(29, 26, { wings: [{ x: 2, y: 5, w: 25, h: 19 }], door: { x: 14, y: 23 }, wall: "stone-brick" });
+  floorTo(m, 42);
+  fill(m, 8, 5, 20, 8, 163); placed.push({ kind: "floor", tile: 163, x: 8, y: 5, w: 13, h: 4, role: "floor" });
+  stamp(m, "tibo-fantasy-altar", 13, 5); statue(m, 14, 3); placed.at(-1).role = "hang";
+  block(m, 11, 3, [[142, 143], [172, 173], [202, 203]], "upperTiles", "furn"); block(m, 16, 3, [[142, 143], [172, 173], [202, 203]], "upperTiles", "furn");
+  stamp(m, "tibo-v4-5-2", 9, 4); stamp(m, "tibo-v4-5-2", 19, 4);
+  for (const x of [3, 5, 9, 19, 23, 25]) one(m, x, 3, 144);
+  stamp(m, "tibo-lectern", 17, 6);
+  clothTable(m, 9, 7, 10, 7); stamp(m, "tibo-library-148", 9, 7);
+  clothTable(m, 18, 7, 19, 7); stamp(m, "tibo-library-168", 18, 7);
+  block(m, 13, 9, [[465, 466, 467]], "lowerTiles", "floor");
+  redRug(m, 13, 10, 15, 23);
+  for (const y of [11, 14, 17, 20]) { stamp(m, "tibo-fantasy-pew", 9, y); stamp(m, "tibo-fantasy-pew", 16, y); }
+  for (const y of [9, 12, 15, 18, 21]) { pillar(m, 7, y); pillar(m, 21, y); }
+  // west aisle: reliquary chapel at the north end, a confessional screen, saints along the wall, runner, font by the door
+  stamp(m, "tibo-medieval-reliquary", 3, 5); one(m, 2, 6, 204); one(m, 6, 6, 204); stamp(m, "tibo-fantasy-pew", 3, 8);
+  tealRug(m, 3, 10, 5, 22);
+  statue(m, 2, 11); statue(m, 2, 16); one(m, 6, 12, 204); one(m, 6, 17, 204);
+  stamp(m, "tibo-library-236", 5, 13);
+  fountain(m, 3, 20);
+  // east aisle: organ loft at the north end with music stands, runner, saints, font
+  stamp(m, "tibo-library-176", 23, 4); stamp(m, "tibo-library-173", 25, 5); stamp(m, "tibo-library-173", 22, 5); stamp(m, "tibo-v12-1-3", 26, 5);
+  tealRug(m, 23, 10, 25, 22);
+  statue(m, 26, 11); statue(m, 26, 16); one(m, 22, 12, 204); one(m, 22, 17, 204);
+  stamp(m, "tibo-v6-2-2", 22, 22); fountain(m, 23, 20);
+  add("interior-cathedral-nave", "대성당 · 신랑과 제단", T, m, {
+    group: "sacred", entry: [14, 24], keeper: [14, 7], targets: [[14, 7], [4, 7], [24, 7], [8, 16], [20, 16], [4, 19]],
+    use: "도시의 대성당. 문으로 들어와 성수반을 지나 붉은 카펫 통로를 걸어 제단 앞 계단에 오르면 사제가 상처를 치유하고, 쓰러진 동료를 되살리며, 모험을 기록(저장)해 준다. 신자는 양쪽 긴 의자에 앉아 기도하고, 옆 통로 북쪽 끝에 성유물 예배소(서)와 오르간 성가대석(동)이 있다",
+    note: "석벽·돌바닥 42, 25×19칸. 북쪽 무늬 석판 163 제단부(x=8~20, y=5~8) 위 제단 3×2와 뒤 벽 성녀상 88/118·양옆 붉은 대형 커튼 142~203·촛대 탁자 둘, 흰 천 탁자 위 약병(치유)·의식 초, 설교 독서대. 뒷벽 스테인드글라스 144 여섯. 제단부 앞 붉은 카펫 계단 465|466|467, 문까지 폭3 붉은 카펫, 양쪽 긴 의자 4×2 네 줄씩, 기둥 89/119 두 줄(x=7·21). 서쪽 옆 통로: 목조 성유물 제단과 촛대 둘·무릎 꿇는 긴 의자, 청록 러너, 성인상 둘·촛대, 고해 가림막, 문 곁 돌 성수반(2044~2049). 동쪽 옆 통로: 손풍금(오르간)과 악보 받침대 둘·작은 하프, 청록 러너, 성인상 둘·촛대, 헌금 상자, 돌 성수반",
+  });
   // Grafted Tibo cargo takes the Tibo slot's walkability, priority and a readable label.
   const kitName = new Map();
   for (const k of TIBO.structureKits) for (const r of k.rows) for (const t of r.upperTiles ?? []) if (t >= 0 && !kitName.has(t)) kitName.set(t, k.name);

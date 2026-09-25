@@ -1,4 +1,4 @@
-// Register the climate interior row (tiles 1980..2009) and the barn row (2010..2039, baked by bake-climate-interior-tiles.py) on the bundled Tibo
+// Register the climate interior row (tiles 1980..2009), the barn row (2010..2039) and the well/fountain/rat-hole row (2040..2069, all baked by bake-climate-interior-tiles.py) on the bundled Tibo
 // tileset definition src/assets/tiboRecoveredTileset.json: count, walkability, layer, labels and tile groups.
 // Existing projects grow to the new count through extendTiboInteriorDefaults (cells past their old count only).
 // Idempotent. Usage: node scripts/content/register-climate-interior-tiles.mjs
@@ -6,7 +6,7 @@ import fs from "node:fs";
 
 const FILE = "src/assets/tiboRecoveredTileset.json";
 const t = JSON.parse(fs.readFileSync(FILE, "utf8"));
-const FIRST = 1980, COUNT = 2040;
+const FIRST = 1980, COUNT = 2070;
 const solid = { up: false, down: false, left: false, right: false }, open = { up: true, down: true, left: true, right: true };
 const wall = (label, tags) => ({ role: "wall", tags: [label, ...tags, "벽", "실내"], label, source: "bundled-default", passage: "solid", confidence: "high", description: "", defaultLayer: "lower", repeatability: "repeat" });
 const floor = (label, tags, description = "") => ({ role: "terrain", tags: [label, ...tags, "바닥", "실내"], label, source: "bundled-default", passage: "passable", confidence: "high", terrainTag: 0, description, defaultLayer: "lower", repeatability: "repeat" });
@@ -33,7 +33,16 @@ const prop = (label, tags, description) => ({ role: "object", tags: [label, ...t
   cells[2027 + i] = [prop(`말(왼쪽 보기) ${p}`, ["horse", "말", "가축"], "2×2 서 있는 말. 마구간 칸 안 짚 위에 둔다(EasyRPG CharSet/Animal CC0)"), solid];
   cells[2031 + i] = [prop(`젖소(오른쪽 보기) ${p}`, ["cow", "소", "가축"], "2×2 서 있는 젖소. 마구간 칸 안 짚 위에 둔다(EasyRPG CharSet/Animal CC0)"), solid];
 });
-const UPPER = new Set(Array.from({ length: 19 }, (_, i) => 2016 + i));
+// Row 68: well, stone fountain, rat hole (drawn by bake-climate-interior-tiles.py in the water tub's three-quarter view).
+const thing = (label, tags, description, repeatability = "unique") => ({ role: "object", tags: [label, ...tags, "실내"], label, source: "bundled-default", passage: "solid", confidence: "high", description, defaultLayer: "upper", repeatability });
+["왼쪽 위", "오른쪽 위", "왼쪽 아래", "오른쪽 아래"].forEach((p, i) => {
+  cells[2040 + i] = [thing(`돌우물 ${p}`, ["well", "우물", "수도원", "안뜰"], "2×2 나무 틀·도르래·두레박이 달린 돌우물. 안뜰·정원 바닥 한가운데나 길 끝에 둔다"), solid];
+});
+["왼쪽 위", "위", "오른쪽 위", "왼쪽 아래", "아래", "오른쪽 아래"].forEach((p, i) => {
+  cells[2044 + i] = [thing(`돌 분수 ${p}`, ["fountain", "분수", "수반", "궁전", "성수반"], "3×2 둥근 돌 수반과 가운데 층층 물받이. 궁전 홀 좌우 한 쌍, 성당 입구 성수반으로 쓴다"), solid];
+});
+cells[2050] = [{ ...thing("쥐구멍", ["rat hole", "쥐", "벽", "지하실", "창고"], "벽면 아랫줄 칸 위에 얹는 갉은 구멍(둘레 투명). 벽면 아랫줄에만 — 바닥에 두지 않는다"), passage: "passable", role: "prop" }, open];
+const UPPER = new Set([...Array.from({ length: 19 }, (_, i) => 2016 + i), ...Array.from({ length: 11 }, (_, i) => 2040 + i)]);
 for (let n = FIRST; n < COUNT; n++) {
   const [meta, pass] = cells[n] ?? [{ label: "", source: "bundled-default", description: "", defaultLayer: "upper" }, open];
   t.terrain[n] = 0;
@@ -51,6 +60,9 @@ const groups = [
   { id: "barn-stall-partition", name: "마구간 칸막이", tileIds: [2016, 2017, 2018], role: "object", description: "남북으로 한 칸 폭. 2016 북쪽 끝(벽·먹이통 옆 첫 바닥 줄) → 2017 가운데 반복 → 2018 남쪽 끝 기둥. upper 층, 막힘." },
   { id: "barn-animals", name: "헛간 가축·건초", tileIds: [2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034], role: "object", description: "2×2 조각(윗줄 둘, 아랫줄 둘): 건초 더미 2019~2022, 말(오른쪽) 2023~2026, 말(왼쪽) 2027~2030, 젖소(오른쪽) 2031~2034. 가축은 칸막이 사이 짚 위에만." },
   { id: "climate-interior-fur-rug", name: "흰 모피 깔개(설원)", tileIds: [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008], role: "terrain", description: "3×3 조각(짚 돗자리 108~170과 같은 배치). 가운데 2004를 늘려 넓힌다." },
+  { id: "interior-stone-well", name: "돌우물", tileIds: [2040, 2041, 2042, 2043], role: "object", description: "2×2 조각(윗줄 2040 2041, 아랫줄 2042 2043). 수도원 안뜰·정원처럼 하늘이 트인 바닥 한가운데에. upper 층, 막힘." },
+  { id: "interior-stone-fountain", name: "돌 분수(수반)", tileIds: [2044, 2045, 2046, 2047, 2048, 2049], role: "object", description: "3×2 조각(윗줄 2044~2046, 아랫줄 2047~2049). 궁전 홀 통로 양옆 한 쌍, 성당 입구 양옆 성수반. upper 층, 막힘." },
+  { id: "interior-rat-hole", name: "쥐구멍", tileIds: [2050], role: "object", description: "벽면 아랫줄(첫 바닥 줄 바로 위) 칸에만 upper 로 얹는다. 곁 바닥에 찢긴 자루·흘린 곡식을 둔다(창고·지하실 쥐잡기)." },
 ];
 for (const g of groups) {
   const full = { ...g, source: "bundled-default", confidence: "high", defaultLayer: g.role === "object" ? "upper" : "lower", placementRules: g.description };
