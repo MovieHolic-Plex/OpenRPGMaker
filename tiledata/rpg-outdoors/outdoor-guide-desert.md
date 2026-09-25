@@ -1,4 +1,4 @@
-# 야외 장소 3곳 — 사막 시트
+# 야외 장소 5곳 — 사막 시트
 
 tilesetId=forest_harmony_desert. 좌표는 0기준, 16px. 지형과 배치만 있고 이벤트(문 이동·NPC)는 없다. 출구마다 어느 맵과 맞닿는지(meets)만 적었다.
 숲마을 칸 번호를 그대로 쓰는 기후 재칠 시트다.
@@ -23,3 +23,5 @@ tilesetId=forest_harmony_desert. 좌표는 0기준, 16px. 지형과 배치만 �
 - 모래바람 오아시스 도시 (outdoor-desert-oasis-city, 48×40, 마을·장면 게이트)
 - 금빛 모래언덕 (outdoor-desert-dunes, 56×40, 필드 게이트)
 - 야자 해변 해안 절벽 (outdoor-beach-cliffs, 56×36, 필드 게이트)
+- 사암 협곡 고갯길 (outdoor-desert-canyon-pass, 52×60, 필드 게이트)
+- 모래바다 대상로 (outdoor-desert-dune-sea, 72×42, 필드 게이트)
