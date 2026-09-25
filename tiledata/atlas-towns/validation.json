@@ -1,0 +1,77 @@
+[
+ {
+  "id": "town-home-meadow",
+  "seed": 11001,
+  "entry": [
+   25,
+   35
+  ],
+  "reachable": 1021,
+  "targets": 11,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.326,
+   "at": [
+    25,
+    13
+   ],
+   "screenAt": [
+    16,
+    24
+   ]
+  }
+ },
+ {
+  "id": "town-home-meadow-burning",
+  "seed": 11001,
+  "entry": [
+   25,
+   35
+  ],
+  "reachable": 1067,
+  "targets": 11,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.335,
+   "at": [
+    8,
+    12
+   ],
+   "screenAt": [
+    4,
+    4
+   ]
+  }
+ },
+ {
+  "id": "town-home-meadow-rebuilt",
+  "seed": 11001,
+  "entry": [
+   25,
+   35
+  ],
+  "reachable": 1018,
+  "targets": 11,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.339,
+   "at": [
+    22,
+    25
+   ],
+   "screenAt": [
+    20,
+    12
+   ]
+  }
+ }
+]
