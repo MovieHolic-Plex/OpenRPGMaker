@@ -1,4 +1,4 @@
-import { gableHouseFormSize, GABLE_HOUSE_FORM_SPECS } from "@/editor/gableHouseCompose";
+import { gableHouseFormSize, gableHouseFormStories, GABLE_HOUSE_FORM_SPECS } from "@/editor/gableHouseCompose";
 import { ALL_HOUSE_KIT_IDS, isHouseKitId, type HouseKitId } from "@/editor/houseKit";
 import { findGableHouseFormSpec, gableFormMixWeight } from "@/project/defaults/gableHouseFormCatalog";
 import { ToolError } from "@/editor/tools/types";
@@ -76,7 +76,7 @@ function hashInts(...values: readonly number[]): number {
  * templateId 를 생략한 사각형 한 장짜리 집에 박공 조합 형태를 골고루 배정한다(2026-09-25 기본 분배).
  *
  * 예전에는 wings 그대로의 모임지붕 사각형이 되어, 모델이 templateId 를 빠뜨리면 마을이 네모 덩어리만 남았다.
- * 층수·낮은 벽·옥상 데크·여러 날개를 명시한 집은 의도가 있는 사각형이라 건드리지 않는다.
+ * 낮은 벽·옥상 데크·여러 날개·3층을 명시한 집은 의도가 있는 사각형이라 건드리지 않는다. stories:2 는 2층 박공에서 고른다.
  * 형태는 날개 사각형 안에 들어가는 것 중 크기가 비슷한 것(폭·높이 차 ≤2)을 먼저, 같은 요청 안에서는 겹치지 않게
  * (seed·순번 해시) 고른다. 앵커는 가로 가운데·아래 맞춤 — 요청한 앞면(문 줄)이 그대로다.
  */
@@ -85,9 +85,11 @@ function assignDefaultGableForms(request: AuthorHouseRequest): AuthorHouseReques
   const seed = request.kind === "lots" ? request.seed ?? 1 : 1;
   const assign = <T extends HouseCore>(plan: T, index: number): T => {
     if (plan.templateId !== undefined || plan.wings.length !== 1) return plan;
-    if ((plan.stories ?? 1) > 1 || plan.lowWall === true || plan.roofDeck === true) return plan;
+    const stories = plan.stories ?? 1;
+    if (stories > 2 || plan.lowWall === true || plan.roofDeck === true) return plan;
     const wing = plan.wings[0] as HouseWing;
-    const sized = GABLE_HOUSE_FORM_SPECS.filter((spec) => gableFormMixWeight(spec) > 0)
+    // 층수가 같은 박공만 — stories:2 를 준 집은 2층 박공(gable-2f*), 생략·1 이면 단층 박공.
+    const sized = GABLE_HOUSE_FORM_SPECS.filter((spec) => gableFormMixWeight(spec) > 0 && gableHouseFormStories(spec) === stories)
       .map((spec) => ({ spec, ...gableHouseFormSize(spec) }))
       .filter((entry) => entry.w <= wing.w && entry.h <= wing.h);
     if (sized.length === 0) return plan;
@@ -108,7 +110,7 @@ function assignDefaultGableForms(request: AuthorHouseRequest): AuthorHouseReques
     return {
       ...plan,
       templateId: chosen.spec.id,
-      stories: 1,
+      stories,
       wings: [{ x: wing.x + Math.floor((wing.w - chosen.w) / 2), y: wing.y + wing.h - chosen.h, w: chosen.w, h: chosen.h }],
     };
   };

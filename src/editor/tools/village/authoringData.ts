@@ -192,7 +192,7 @@ export function gableSpecToTemplate(spec: GableHouseFormSpec): HouseTemplate {
     name: spec.name,
     w: preview.w,
     h: preview.h,
-    stories: 1,
+    stories: preview.stories === 2 ? 2 : 1,
     wings: [{ x: 0, y: 0, w: preview.w, h: preview.h }],
     wingsAt: (x: number, y: number) => [{ x, y, w: preview.w, h: preview.h }],
     form: preview,
