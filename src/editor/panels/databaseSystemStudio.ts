@@ -5,6 +5,7 @@ import { resolveFontSelection, FONT_ROLE_LABELS, FONT_ROLES, fontOptionsForRole 
 import { listDatabaseResourceOptions } from "@/editor/panels/databaseResourcePickerDialog";
 import { BATTLE_SKINS, resolveSkinId } from "@/battle/skins/registry";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
+import { galleryMenuLabel, isGalleryEnabled } from "@/project/gallery";
 import { resolvePlayResolution } from "@/project/playResolution";
 import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsage";
 import type { Project, StoryFlagKind, TitleScreenSettings } from "@/project/types";
@@ -170,8 +171,11 @@ function primaryCardGrid(project: Project): HTMLElement {
     {
       id: "startup",
       title: "시작 설정",
-      description: "게임 시작 흐름과 초기 전투",
-      status: project.database.troops.find((troop) => troop.id === project.system.initialTroopId)?.name ?? "초기 전투 없음 (선택 사항)",
+      description: "전투, 보상, 갤러리",
+      status: [
+        project.database.troops.find((troop) => troop.id === project.system.initialTroopId)?.name ?? "초기 전투 없음",
+        isGalleryEnabled(project) ? `${galleryMenuLabel(project)} 사용` : "갤러리 꺼짐",
+      ].join(" · "),
       statusKind: "neutral",
       target: "startup",
     },

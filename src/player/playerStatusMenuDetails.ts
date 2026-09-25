@@ -28,6 +28,9 @@ import type {
 import type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailFact, StatusMenuDetailOptions } from "@/player/playerStatusMenuDetailTypes";
 import { buildQuestLog, questStateLabel } from "@/player/questLog";
 import { MONSTER_PARTY_MAX, monsterCurrentHp, monsterDisplayName, monsterMaxHp } from "@/project/monsterCollection";
+import { galleryMenuLabel, listGalleryUnlocks } from "@/project/gallery";
+import { openGalleryViewer } from "@/player/galleryViewer";
+import { resourceDisplayName } from "@/player/resourceDisplay";
 import { listFriendshipEntries } from "@/project/friendship";
 import { createLifeLedgerDetail } from "@/player/lifeLedger";
 import {
@@ -65,6 +68,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "battle-reports": return battleReportDetail(options);
     case "quests": return questsDetail(options.project, options.session);
     case "relationships": return relationshipsDetail(options.project, options.session);
+    case "gallery": return galleryDetail(options.project, options.session);
     case "life-ledger": return createLifeLedgerDetail({
       project: options.project,
       session: options.session,
@@ -85,7 +89,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
 function groupDetail(options: StatusMenuDetailOptions, entryId: StatusMenuGroupEntryId): StatusMenuDetail {
   const commandIds = listStatusMenuGroupCommandIds(entryId, options.project, options.session);
   const entries = commandIds.map((commandId) => ({
-    label: statusMenuCommandLabel(commandId, options.waitModeEnabled),
+    label: statusMenuCommandLabel(commandId, options.waitModeEnabled, options.project),
     value: "",
     description: commandId === "to-title" ? "미저장 진행 삭제" : GROUP_COMMAND_DESCRIPTIONS[commandId],
     testId: `status-menu-group-command-${commandId}`,
@@ -103,6 +107,7 @@ const GROUP_COMMAND_DESCRIPTIONS: Partial<Record<StatusMenuCommandId, string>> =
   "battle-reports": "최근 전투 결과와 실제 행동 기록을 읽습니다.",
   quests: "받은 의뢰와 진행 상황을 봅니다.",
   relationships: "동료·주민과의 관계를 봅니다.",
+  gallery: "모아 둔 그림을 다시 봅니다.",
   "life-ledger": "출하·꾸러미·생활 기술·가공 설비·수집 도감·박물관 기록을 관리합니다.",
   options: "음량·대사 속도·메뉴 움직임을 이 기기에 설정합니다.",
   save: "현재 진행을 슬롯에 저장합니다.",
@@ -511,6 +516,32 @@ function questsDetail(project: Project, session: PlaySession): StatusMenuDetail 
     ]),
     emptyLabel: "등록된 임무가 없습니다",
     hint: "↑↓로 임무 목록을 읽습니다. ← 메뉴로 돌아갑니다.",
+  };
+}
+
+function galleryDetail(project: Project, session: PlaySession): StatusMenuDetail {
+  const label = galleryMenuLabel(project);
+  const unlocks = listGalleryUnlocks(session);
+  return {
+    title: label,
+    layout: "gallery",
+    entries: unlocks.map((resourceId, index) => {
+      const name = resourceDisplayName(resourceId, `그림 ${index + 1}`);
+      return {
+        label: name,
+        value: String(index + 1),
+        testId: `status-menu-gallery-${index}`,
+        icon: {
+          resourceId,
+          alt: name,
+          testId: `status-menu-gallery-thumb-${index}`,
+          smooth: true,
+        },
+        onActivate: () => openGalleryViewer({ project, resourceIds: unlocks, index }),
+      };
+    }),
+    emptyLabel: "아직 열린 그림이 없습니다.",
+    hint: "결정 키로 화면 가득 봅니다. 연 뒤 좌우로 넘깁니다.",
   };
 }
 

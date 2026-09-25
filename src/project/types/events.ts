@@ -277,6 +277,8 @@ export type Command =
       autoAdvance?: boolean;
       /** 이 한 줄만 쓰는 대화창 스타일(DialogueStyleId). 비우면 화자 프로필 → 프로젝트 기본. */
       style?: string;
+      /** 이 줄을 말할 때 재생하는 음성 파일(sound/music 리소스). 합성 삑 소리는 내지 않는다. */
+      voiceResourceId?: string;
       /** 대사 종류(DialogueContextId): narration·thought·whisper·shout·radio·sign·letter·system. 비우면 일반 대사. */
       context?: string;
       /** 대사 그릇(DialogueContainerId): box·balloon·bark·corner. 비우면 화자 프로필 → 상자. */
@@ -426,6 +428,8 @@ export type Command =
       rotation?: number;
       durationMs?: number;
       waitForPicture?: boolean;
+      /** 시스템이 갤러리를 켜 둔 동안, 이 그림을 한 번 보면 메뉴 목록에 남긴다. */
+      recordInGallery?: boolean;
     }
   | { kind: "erasePicture"; pictureId: string }
   | {

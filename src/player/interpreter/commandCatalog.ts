@@ -1,3 +1,4 @@
+import { isGalleryEnabled, recordGalleryUnlock } from "@/project/gallery";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { resolveAppearancePortrait } from "@/project/characterAppearances";
 import {
@@ -492,6 +493,7 @@ export function executeCommand(
         ...(command.style ? { style: command.style } : {}),
         ...(command.context ? { context: command.context } : {}),
         ...(command.container ? { container: command.container } : {}),
+        ...(command.voiceResourceId ? { voiceResourceId: command.voiceResourceId } : {}),
       });
     case "choices":
       return pause("choices", {
@@ -627,6 +629,9 @@ export function executeCommand(
         ownerEventId: state.currentEventId,
       });
     case "showPicture":
+      if (command.recordInGallery === true && state.project && isGalleryEnabled(state.project)) {
+        recordGalleryUnlock(state.session, command.resourceId);
+      }
       return pause("showPicture", {
         kind: "showPicture",
         pictureId: command.pictureId,

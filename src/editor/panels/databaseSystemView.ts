@@ -1,3 +1,4 @@
+import { normalizeGallerySettings } from "@/project/gallery";
 import { fieldHudEditor } from "./databaseFieldHud";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { GUARD_MAX_DAMAGE_REDUCTION_PERCENT } from "@/battle/action/guard";
@@ -536,6 +537,17 @@ function systemSectionNodes(
             });
           },
         ),
+      ]),
+      rm2k3Fieldset("갤러리", [
+        checkboxField("갤러리 사용", "db-field-system-gallery-enabled", project.system.gallery?.enabled === true, (checked) => {
+          updateSystem((draft) => {
+            const next = normalizeGallerySettings({ enabled: checked, label: draft.system.gallery?.label });
+            if (next) draft.system.gallery = next;
+            else delete draft.system.gallery;
+          });
+        }),
+        galleryLabelField(project.system.gallery?.label ?? ""),
+        systemHelp("켜면 플레이 중 메뉴의 기록에 이 이름으로 들어갑니다. 이름은 갤러리 대신 원하는 낱말을 적어도 됩니다. 그림 표시에서 「남기기」를 켠 그림만 모입니다."),
       ]),
     ]),
     optin: section("optin", optInSystemFields(project, rerender)),
@@ -1529,6 +1541,25 @@ function clampStageCoordinate(value: number, max: number): number {
 function optionalPositiveInteger(value: number): number | undefined {
   if (!Number.isFinite(value) || value <= 0) return undefined;
   return Math.trunc(value);
+}
+
+function galleryLabelField(value: string): HTMLElement {
+  const input = el("input", {
+    attrs: { type: "text", maxlength: "24", placeholder: "갤러리", spellcheck: "false" },
+    value,
+    dataset: { testid: "db-field-system-gallery-label" },
+  }) as HTMLInputElement;
+  input.addEventListener("change", () => {
+    updateSystem((draft) => {
+      const next = normalizeGallerySettings({
+        enabled: draft.system.gallery?.enabled === true,
+        label: input.value,
+      });
+      if (next) draft.system.gallery = next;
+      else delete draft.system.gallery;
+    }, "system:gallery-label");
+  });
+  return field("메뉴 이름", input);
 }
 
 function checkboxField(label: string, testid: string, checked: boolean, onChange: (checked: boolean) => void): HTMLElement {
@@ -2625,7 +2656,7 @@ const SYSTEM_SECTION_HELP: Record<Exclude<SystemSectionSlug, "overview">, string
   dialogue: "NPC 대사창의 모양·글꼴·글자 소리를 고르고, 대사 종류별 모양을 확인합니다.",
   font: "화면 역할마다 글꼴을 고르고 실제 문장으로 비교합니다.",
   resources: "프로젝트에서 공유하는 그래픽을 선택합니다.",
-  startup: "전투 방식, 기본 소리와 보상 규칙을 정합니다.",
+  startup: "전투 방식, 기본 소리, 보상, 갤러리를 정합니다.",
   optin: "선택 기능과 기존 프로젝트의 세부 설정을 관리합니다.",
   time: "시간 진행, 계절 길이와 하루 종료 동작을 정합니다.",
   typechart: "공격 타입과 방어 타입 사이의 배율을 편집합니다.",

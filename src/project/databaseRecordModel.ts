@@ -1,3 +1,4 @@
+import { normalizeGallerySettings } from "./gallery";
 import { normalizeFieldHud } from "./fieldHud";
 import { assertPromotionExtensions } from '@/project/growth/requirements';
 import {
@@ -235,6 +236,10 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     })(),
     ...(system.monsterBattleParty !== undefined ? { monsterBattleParty: system.monsterBattleParty === true } : {}),
     ...(system.giftSystem !== undefined ? { giftSystem: system.giftSystem === true } : {}),
+    ...(() => {
+      const gallery = normalizeGallerySettings(system.gallery);
+      return gallery ? { gallery } : {};
+    })(),
     ...(typeChart ? { typeChart } : {}),
     ...(timeSystem ? { timeSystem } : {}),
     ...(system.worldGen ? { worldGen: normalizeWorldGenRulesForStorage(system.worldGen) } : {}),

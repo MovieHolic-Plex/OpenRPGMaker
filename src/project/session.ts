@@ -341,6 +341,8 @@ export interface PlaySession {
   farmPlotsAdvancedThrough?: { readonly day: number; readonly season: Season; readonly year: number };
   friendship?: Record<string, number>;
   relationships?: Record<string, RelationshipState>;
+  /** 갤러리에 남긴 그림. 본 순서. 시스템이 꺼져 있으면 메뉴만 숨기고 기록은 유지한다. */
+  galleryUnlocks?: string[];
   dailyGifts?: DailyGiftLog;
   dailyTalks?: DailyTalkLog;
   /** Accumulated player steps toward the next monster walk-care tick. */

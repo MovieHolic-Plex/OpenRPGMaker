@@ -43,6 +43,7 @@ export function renderStatusMenuDetailPanel(
   });
   detailContexts.set(panel, { project, detail, showcase: options.showcase ?? false });
   if (detail.tabs?.length) panel.classList.add("life-ledger-detail");
+  if (detail.layout === "gallery") panel.classList.add("is-gallery");
   panel.append(el("h2", {
     class: "status-menu-detail-title",
     text: detail.title,
@@ -475,7 +476,7 @@ function renderDetailEntryIcon(project: Project, icon: NonNullable<StatusMenuDet
             `background-size:${columns * 100}% auto`,
             "background-position:0 0",
             "background-repeat:no-repeat",
-            "image-rendering:pixelated",
+            icon.smooth ? "image-rendering:auto" : "image-rendering:pixelated",
           ].join(";"),
         },
       })],
@@ -491,7 +492,7 @@ function renderDetailEntryIcon(project: Project, icon: NonNullable<StatusMenuDet
         "background-size:contain",
         "background-repeat:no-repeat",
         "background-position:center",
-        "image-rendering:pixelated",
+        icon.smooth ? "image-rendering:auto" : "image-rendering:pixelated",
       ].join(";"),
     },
     dataset: { testid: icon.testId },
