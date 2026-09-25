@@ -84,6 +84,7 @@ import { WORLD_CANON_TOOLS } from "./worldCanonTools";
 import { SPATIAL_TOOLS } from "./spatialTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { WEB_SEARCH_TOOLS } from "./webSearchTool";
+import { TILESET_CHANGE_TOOLS } from "./tilesetChangeTools";
 
 export { PLACEMENT_TOOLS };
 
@@ -215,6 +216,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(GAME_SYSTEM_TOGGLE_TOOLS, "system"),
   ...withDomain(TILESET_ATLAS_TOOLS, "tile"),
   ...TILESET_REFERENCE_TOOLS,
+  // 다른 칩셋 계열이 필요할 때 사용자에게 묻는 도구 — 실행기 거부 메시지가 이름을 부르므로 core 로 늘 노출한다.
+  ...TILESET_CHANGE_TOOLS,
   ...TILE_ASSEMBLY_GUIDE_TOOLS,
   ...FOREST_RECIPE_TOOLS,
   ...PUBLIC_TILE_RECIPE_TOOLS,

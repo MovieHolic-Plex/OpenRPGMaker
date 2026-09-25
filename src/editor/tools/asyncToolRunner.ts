@@ -60,7 +60,11 @@ export async function runToolAsync(
     if (ctx.project !== before || JSON.stringify(ctx.project) !== baseline) {
       throw new ToolError("생성 중 프로젝트가 바뀌었습니다. 최신 상태로 다시 요청하세요.", { code: "stale-project" });
     }
-    const isolated = { project: ctx.project };
+    const isolated: ToolContext = {
+      project: ctx.project,
+      ...(ctx.currentMapId ? { currentMapId: ctx.currentMapId } : {}),
+      ...(ctx.approvedTilesetFamilies ? { approvedTilesetFamilies: ctx.approvedTilesetFamilies } : {}),
+    };
     const applied = runToolDefinition(isolated, {
       ...tool,
       run(draft, targetArgs) {

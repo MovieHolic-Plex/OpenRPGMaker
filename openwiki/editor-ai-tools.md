@@ -61,6 +61,22 @@ paint_tiles·stamp_layer_block 으로 직접 깔라고, 정말 바꾸려면 tile
 - 회귀: `test/uploadedTilesetSwapGuard.test.ts` — 시험 도구(거부 / tilesetId 명시 통과 `ok:true` / 번들 맵), 실제 회귀
   `run_dungeon_room_pipeline{mapId, replaceExisting:true}` 거부 + 프로젝트 불변, `reset_project`·`revert_last_edit` 통과, 플래그 목록.
 
+### 실행기 계약 — 칩셋 계열 검사 `tileset-family-change` 와 `ask_tileset_change` (2026-09-25)
+
+- `ToolContext` 에 선택 `currentMapId`(사용자가 보고 있는 맵)·`approvedTilesetFamilies`(대화에서 승인한 목표 계열)가 있다.
+  Pi 요청 같은 이름 필드 → 워커 ctx, 채팅 세션은 게터로 매 호출 최신 값. 둘 다 없으면 아래 동작이 꺼진다(옛 동작).
+- 쓰기 도구 실행 뒤 `rejectTilesetFamilyChange`: 새 맵·`tilesetId` 가 바뀐 맵의 계열(`src/project/tilesetFamily.ts`)이 지금 보는 맵과 다르고
+  승인 목록에 없으면 `ToolError{code:"tileset-family-change", mapId}`. 메시지 = 지금 칩셋(이름·계열) → 쓰려던 칩셋, 같은 계열 후보 ≤8,
+  「후보로 다시 / 없으면 ask_tileset_change 로 묻고 턴 끝」. `allowsTilesetChange` 도구는 건너뛴다, 읽기 도구는 검사 없음, dryRun 도 검사.
+- `ToolDefinition.defaultTilesetId(project)`(create_map 만): tilesetId 없이 불리고 이 기본값이 지금 보는 맵과 다른 계열이면 실행기가 인자에
+  지금 보는 맵의 tilesetId 를 넣는다. 같은 계열이면 도구 기본값(숲마을) 그대로.
+- `ToolDefinition.fillsCurrentMapId`(ask_tileset_change 만): 비어 있는 `mapId` 인자를 `ctx.currentMapId` 로 채운다.
+- `ask_tileset_change{toTilesetId, reason, purpose?, mapId?}` — 읽기·core. 오류 `tileset-not-found`·`tileset-same-family`·`map-not-found`.
+  data `{kind:"tileset-change-question", mapId, fromTilesetId, toTilesetId, fromFamily, toFamily, fromLabel, toLabel, reason, purpose}` — 패널
+  `aiTilesetChangeCard.ts` 가 턴 끝에 견본 두 장 카드로 띄운다. 전체 흐름은 [teaching-assistant-tilesets.md](teaching-assistant-tilesets.md) 「칩셋 계열 규칙」.
+- 회귀: `test/tilesetFamilyGuard.test.ts`(업로드 계열 맵 + 던전 파이프라인 거부 / 같은 계열 통과 / 승인 통과 / currentMapId 없음 / reset·revert /
+  create_map 기본 칩셋 두 경우 / easyrpg 통과 / dryRun / ask_tileset_change), `test/tilesetFamily.test.ts`, `test/aiTilesetChangeCard.test.ts`.
+
 ### 남은 일 (네 층)
 
 - `scripts/qa-game/render.mts:92` 이식(graft) 원본은 늘 번들로 취급된다 — 업로드 타일셋이 이식 원본이면 기본 칩셋 그림으로 말없이 대신한다.

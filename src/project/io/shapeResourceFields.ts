@@ -86,6 +86,9 @@ export function validateTileset(id: string, value: unknown): void {
     assert(source.length > 0 && source !== id, "참고문서 원본은 다른 타일셋이어야 합니다.");
     assert(!tileset.referenceDocuments || (tileset.referenceDocuments as unknown[]).length === 0, "공유 문서와 자체 문서를 동시에 저장할 수 없습니다.");
   }
+  if (tileset.family !== undefined) {
+    assert(requireString(`tileset ${id}.family`, tileset.family).length > 0, `tileset ${id}: family 는 빈 문자열일 수 없습니다.`);
+  }
   requireString(`tileset ${id}.id`, tileset.id);
   requireString(`tileset ${id}.name`, tileset.name);
   validateAssetRef(`tileset ${id}.image`, tileset.image);

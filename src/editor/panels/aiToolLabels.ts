@@ -57,6 +57,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   shift_map: build("맵 밀기", "grid"),
   generate_map: build("맵 만들기", "map"),
   create_map: build("새 맵", "map"),
+  ask_tileset_change: inspect("타일 느낌 바꿀지 묻기", "grid"),
   resize_map: build("맵 크기 바꾸기", "map"),
   remove_map: build("맵 삭제", "map"),
   duplicate_map: build("맵 복제", "map"),

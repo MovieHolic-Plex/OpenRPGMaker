@@ -475,6 +475,11 @@ export interface TilesetDef {
   referenceDocuments?: import("../tilesetReferences").TilesetReferenceCategory[];
   /** 파생 아틀라스가 원본 칩셋의 문서를 공유할 때. 한 단계 참조만 허용. */
   referenceSourceTilesetId?: string;
+  /**
+   * 칩셋 계열(그림체 묶음, 2026-09-25). 같은 계열끼리는 조수가 말없이 바꿔도 되고, 다른 계열로 가려면
+   * 사용자 승인이 필요하다(`src/project/tilesetFamily.ts`). 없으면 원본·번들 이름에서 추정한다.
+   */
+  family?: string;
   id: TilesetId;
   name: string;
   image: AssetRef;

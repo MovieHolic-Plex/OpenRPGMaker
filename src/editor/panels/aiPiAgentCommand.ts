@@ -25,6 +25,8 @@ import { deriveRunOutcome } from "@/ai/runOutcome";
 import type { RunOutcome, RunOutcomeFacts } from "@/ai/runOutcome";
 import { startPiRunLog, type PiRunContext, type PiRunFacts } from "@/ai/piAgent/activityLog";
 import type { AuditEntry } from "@/ai/session/types";
+import type { TilesetChangeQuestion } from "@/editor/tools/tilesetChangeTools";
+import { tilesetQuestionFromEvent } from "./aiTilesetChangeCard";
 import { mergeMapBundles } from "@/ai/piAgent/mapBundle";
 import { changedProjectKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentMode, type PiAgentStats, type PiAgentThinkingLevel } from "@/ai/piAgent/protocol";
 import {
@@ -197,6 +199,10 @@ export interface PiCommandSurface {
   readonly onReviewResolved?: (applied: boolean) => void;
   readonly setStatus: (text: string) => void;
   readonly getCurrentMapId: () => string | null;
+  /** 사용자가 이 대화에서 승인한 칩셋 계열(질문 카드 「이 타일로 바꿔도 좋아요」). 요청의 approvedTilesetFamilies 로 간다. */
+  readonly getApprovedTilesetFamilies?: () => readonly string[];
+  /** 조수가 ask_tileset_change 로 칩셋 계열 변경을 물었다. 패널은 턴이 끝난 뒤 질문 카드를 띄운다. */
+  readonly onTilesetChangeQuestion?: (question: TilesetChangeQuestion) => void;
   /** 중단 시 미승인 변경을 폐기한다. 실시간·단계별 모드에서 이미 적용한 작업은 남는다. */
   readonly signal?: AbortSignal;
   /**
@@ -251,7 +257,11 @@ export async function runPiCommand(
   const mergedFromBundles = mergesMapBundles({ team, mapIds: command.mapIds, scopedByUser: command.scopedByUser === true, groupCount: groups.length });
   // 사용자가 보고 있는 맵 — 팀장의 「여기」. 명령이 못 실었으면(옛 호출자) 패널의 현재 맵으로 채운다.
   const currentMapId = command.currentMapId ?? surface.getCurrentMapId();
-  const here = currentMapId && base.maps[currentMapId] ? { currentMapId } : {};
+  const approvedTilesetFamilies = surface.getApprovedTilesetFamilies?.() ?? [];
+  const here = {
+    ...(currentMapId && base.maps[currentMapId] ? { currentMapId } : {}),
+    ...(approvedTilesetFamilies.length ? { approvedTilesetFamilies: [...approvedTilesetFamilies] } : {}),
+  };
 
   // 실행 결과 4축 — 세션 경로(assistantSession.getRunOutcome)와 같은 deriveRunOutcome 을 쓴다.
   // 실행부는 사실만 정하고 판정(목표)은 수용 검사가 소유하므로 Pi 경로에선 unassessed 가 정직한 값이다.
@@ -371,6 +381,8 @@ export async function runPiCommand(
       if (boardState.trace) boardState = { ...boardState, trace: recordActivityEvent(boardState.trace, raw) };
       return;
     }
+    const question = tilesetQuestionFromEvent(raw);
+    if (question) surface.onTilesetChangeQuestion?.(question);
     // 오류 문구는 갈라지기 **전에** 한 번만 고친다(explainTurnCap 주석 참고).
     const event: PiAgentEvent = raw.type === "error" ? { ...raw, message: explainTurnCap(raw.message) } : raw;
     showConstructionEvent(event);
@@ -432,6 +444,8 @@ export async function runPiCommand(
           if (boardState.trace) boardState = { ...boardState, trace: recordActivityEvent(boardState.trace, raw, "ultrabrain-plan") };
           return;
         }
+        const question = tilesetQuestionFromEvent(raw);
+        if (question) surface.onTilesetChangeQuestion?.(question);
         const event: PiAgentEvent = raw.type === "error" ? { ...raw, message: explainTurnCap(raw.message) } : raw;
         showConstructionEvent(event);
         push({ type: "agent_event", agentId: "ultrabrain-plan", event });

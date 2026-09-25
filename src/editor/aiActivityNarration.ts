@@ -68,6 +68,7 @@ const ACTIONS = {
   export: forms("내보내기 준비를 점검하는 중", "내보낼 준비를 점검했어요", "내보내기 점검을 마치지 못했어요"),
   play: forms("게임을 시험하는 중", "게임을 시험했어요", "게임 시험을 실패했어요"),
   history: forms("편집 내용을 되돌리는 중", "편집 내용을 되돌렸어요", "편집 내용 되돌리기를 실패했어요"),
+  askTileset: forms("타일 느낌을 바꿔도 될지 묻는 중", "타일 느낌을 바꿔도 될지 물었어요", "타일 느낌 변경을 묻지 못했어요"),
   focusView: forms("화면을 옮기는 중", "화면을 옮겼어요", "화면을 옮기지 못했어요"),
   opening: forms("오프닝을 만드는 중", "오프닝을 만들었어요", "오프닝 만들기를 실패했어요"),
   removeOpening: forms("오프닝을 지우는 중", "오프닝을 지웠어요", "오프닝 지우기를 실패했어요"),
@@ -137,6 +138,7 @@ addFamily(ACTIONS.export, "export_game check_export_readiness");
 addFamily(ACTIONS.play, "play_walkthrough run_scene_test run_action_combat_test");
 addFamily(ACTIONS.history, "revert_last_edit");
 addFamily(ACTIONS.focusView, "focus_editor_view");
+addFamily(ACTIONS.askTileset, "ask_tileset_change");
 addFamily(ACTIONS.opening, "set_opening edit_opening");
 addFamily(ACTIONS.openingImage, "generate_opening_image");
 addFamily(ACTIONS.removeOpening, "remove_opening");
