@@ -1,12 +1,12 @@
 import parts from "@/assets/forestHarmonyHouseParts.json";
-import type { PassFlag, TileAiMetadata, TileGraft, TilesetDef } from "../types";
+import type { GameMap, PassFlag, TileAiMetadata, TileGraft, TilesetDef } from "../types";
 
 // 숲마을 집 부품 칸(3060~) — 굴뚝·지붕창·현관 차양·박공 꼭대기 장식 손 도트. 박공 조합 형태(editor/gableHouseCompose)가
 // 집마다 0~2개를 결정적으로 붙인다. 원본: scripts/content/build-forest-harmony-house-parts.py →
 // public/assets/forest-harmony/house-parts.png + src/assets/forestHarmonyHouseParts.json.
 // 번호를 3060 부터 띄운 이유: 공용 이식 꼬리(2550~2759)와 기후 시트 덧칸(~3029)이 자랄 자리를 비워 둔다.
 
-type PartSlot = { name: string; passability: PassFlag; priority: "lower" | "upper"; terrain: number; tileMeta: TileAiMetadata };
+type PartSlot = { name: string; passability: PassFlag; priority: "lower" | "upper"; terrain: number; tileMeta: TileAiMetadata; fallback: number };
 const PARTS = parts as unknown as { textureKey: string; start: number; count: number; grafts: TileGraft[]; slots: PartSlot[] };
 
 export const FOREST_HARMONY_HOUSE_PARTS_START = PARTS.start;
@@ -20,6 +20,23 @@ export function housePartTile(name: string): number {
   const tile = HOUSE_PART_TILE[name];
   if (tile === undefined) throw new Error(`집 부품 칸이 없다: ${name}`);
   return tile;
+}
+
+/**
+ * 맵에서 집 부품 칸을 원본 칸으로 되돌린다 — 부품 칸이 없는 타일셋(기후 시트)으로 옮기기 전·후에 부른다.
+ * 재칠 지붕·벽은 원본 번호, 꼭대기 장식은 원본 캡, 굴뚝은 돌 굴뚝 326, 지붕창·차양은 지운다. 바꾼 칸 수를 돌려준다.
+ */
+export function downgradeHouseParts(map: GameMap): number {
+  let changed = 0;
+  for (const layer of [map.lowerTiles, map.upperTiles]) {
+    for (let index = 0; index < layer.length; index += 1) {
+      const tile = layer[index]!;
+      if (tile < PARTS.start || tile >= PARTS.count) continue;
+      layer[index] = PARTS.slots[tile - PARTS.start]!.fallback;
+      changed += 1;
+    }
+  }
+  return changed;
 }
 
 const sameGraft = (a: TileGraft, b: TileGraft) => a.sourceChipset === b.sourceChipset && a.sourceTile === b.sourceTile;

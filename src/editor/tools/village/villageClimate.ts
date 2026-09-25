@@ -14,6 +14,8 @@ import { createForestHarmonyTileset, FOREST_HARMONY_ID } from "@/project/default
 import { normalizeMapClimate } from "@/project/mapClimate";
 import type { Project } from "@/project/types";
 import { dressClimateMap } from "@/project/climateDressing";
+import { downgradeHouseParts } from "@/project/defaults/forestHarmonyHouseParts";
+import { houseKitForTileset, isHouseKitId } from "@/editor/houseKit";
 
 const CLIMATE_LABEL: Readonly<Record<ClimateVillageKind, string>> = { snow: "설원", desert: "사막", volcano: "화산", autumn: "가을" };
 
@@ -58,6 +60,14 @@ export function applyVillageClimate(project: Project, request: AuthorVillageRequ
   project.tilesets[tilesetId] ??= createClimateVillageTileset(kind);
   map.tilesetId = tilesetId;
   const warnings = borrowed === kind ? [] : [`groundTheme:"${kind}" → 숲마을 칩셋을 칸 번호가 같은 ${CLIMATE_LABEL[kind]} 칩셋(${tilesetId})으로 바꿨습니다.`];
+  // 집 부품 칸(3060~: 재료 킷 지붕·벽, 굴뚝·지붕창·차양·꼭대기 장식)은 기후 시트에 없다 — 원본 칸으로 되돌리고 킷 표기도 기본 킷으로.
+  const downgraded = downgradeHouseParts(map);
+  if (downgraded > 0) {
+    for (const region of map.layoutPlan?.regions ?? []) {
+      if (region.role === "house" && isHouseKitId(region.kitId)) region.kitId = houseKitForTileset(region.kitId, false);
+    }
+    warnings.push(`${CLIMATE_LABEL[kind]} 칩셋에는 집 재료·지붕 부품 칸이 없어 ${downgraded}칸을 기본 재료로 되돌렸습니다.`);
+  }
   // 사막·화산은 잎 달린 숲을 걷고 잎 없는 고목 덩이로, 셋 다 꽃덤불·화분을 뺀다(2026-09-25 조수 시험 — 사막 마을에 꽃덤불 33칸).
   if (kind !== "snow") {
     const dressed = dressClimateMap(map, project.tilesets[tilesetId]!, kind, request.seed ?? 1);

@@ -1,5 +1,7 @@
 import {
   HOUSE_KITS,
+  houseKitForTileset,
+  MATERIAL_HOUSE_KIT_IDS,
   type FootprintWing,
   type HouseKitId,
 } from "@/editor/houseKit";
@@ -40,6 +42,7 @@ export const PUBLIC_HOUSE_KIT_IDS = [
   "amber-wood",
   "slate-wood",
   "timber-hall",
+  ...MATERIAL_HOUSE_KIT_IDS,
 ] as const satisfies readonly HouseKitId[];
 
 export const INTERNAL_ONLY_HOUSE_KIT_IDS = [] as const satisfies readonly HouseKitId[];
@@ -106,9 +109,16 @@ export function isPublicHouseKitId(value: unknown): value is HouseKitId {
   return PUBLIC_HOUSE_KIT_IDS.some((kitId) => kitId === value);
 }
 
-export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildHouseKitResult {
-  const map = draft.maps[input.mapId];
-  if (!map) throw new ToolError(`맵을 찾을 수 없습니다: ${input.mapId}`, { code: "missing-map", mapId: input.mapId });
+export function buildHouseKit(draft: Project, requested: BuildHouseKitInput): BuildHouseKitResult {
+  const map = draft.maps[requested.mapId];
+  if (!map) throw new ToolError(`맵을 찾을 수 없습니다: ${requested.mapId}`, { code: "missing-map", mapId: requested.mapId });
+  // 재료 킷(초가·슬레이트·벽돌·반목조 …)은 집 부품 칸이 있는 타일셋에서만 — 없으면 같은 계열 기본 킷으로 짓고 알린다.
+  const hasHouseParts = tilesetHasHouseParts(draft.tilesets[map.tilesetId]);
+  const effectiveKitId = houseKitForTileset(requested.kitId, hasHouseParts);
+  const kitWarning = effectiveKitId === requested.kitId
+    ? undefined
+    : `킷 ${requested.kitId} 은 이 맵 타일셋(${map.tilesetId})에 재료 칸이 없어 ${effectiveKitId} 로 지었다.`;
+  const input: BuildHouseKitInput = { ...requested, kitId: effectiveKitId };
   const kit = HOUSE_KITS[input.kitId];
   if (!kit) {
     throw new ToolError(
@@ -131,7 +141,7 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
   });
   if (!result.ok) throw new ToolError(result.reason ?? "집 시공 실패", { code: "house-kit-failed", mapId: input.mapId });
 
-  const warnings: string[] = [];
+  const warnings: string[] = kitWarning ? [kitWarning] : [];
   const deckApplied = applyHouseRoofDeck(map, input.wings, result.doorAt, input.roofDeck);
   let doorNote = "문 없음";
   let interiorData: HouseKitInteriorData | undefined;

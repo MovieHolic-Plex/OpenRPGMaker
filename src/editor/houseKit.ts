@@ -13,12 +13,26 @@
 
 import { TILE } from "@/project/defaults/constants";
 import { createHouseDoorEvent, createHouseDoorStepEvent, stampHouseDoorBackground } from "@/editor/houseInteriors";
+import { housePartTile } from "@/project/defaults/forestHarmonyHouseParts";
 import type { GameEvent, GameMap, MapId } from "@/project/types";
 
-export type HouseKitId = "blue-stone" | "bright-plaster" | "amber-wood" | "slate-wood" | "timber-hall";
+export type HouseKitId =
+  | "blue-stone" | "bright-plaster" | "amber-wood" | "slate-wood" | "timber-hall"
+  | "moss-plaster" | "thatch-plaster" | "thatch-log" | "amber-brick" | "slate-brick" | "charcoal-timber";
+
+/**
+ * 재료 킷(2026-09-25) — 새 지붕색(이끼 초록·초가·회청 슬레이트·검은 기와)과 새 벽(붉은 벽돌·반목조).
+ * 칸은 숲마을 집 부품 시트(forest_harmony 3071~, project/defaults/forestHarmonyHouseParts)에 있다.
+ * 그 칸이 없는 타일셋(기후 시트 등)에서는 fallbackKitId 로 바꿔 짓는다 — 랜덤 믹스에도 그런 타일셋에선 안 넣는다.
+ */
+export const MATERIAL_HOUSE_KIT_IDS = [
+  "moss-plaster", "thatch-plaster", "thatch-log", "amber-brick", "slate-brick", "charcoal-timber",
+] as const satisfies readonly HouseKitId[];
 
 /** 모든 집 키트 id (툴 enum/검증 공용). */
-export const ALL_HOUSE_KIT_IDS = ["blue-stone", "bright-plaster", "amber-wood", "slate-wood", "timber-hall"] as const satisfies readonly HouseKitId[];
+export const ALL_HOUSE_KIT_IDS = [
+  "blue-stone", "bright-plaster", "amber-wood", "slate-wood", "timber-hall", ...MATERIAL_HOUSE_KIT_IDS,
+] as const satisfies readonly HouseKitId[];
 
 /**
  * 랜덤 킷 믹스에 넣어도 되는 킷.
@@ -74,6 +88,52 @@ export interface HouseKit {
    */
   readonly postColumn?: { readonly tiles: readonly [number, number, number]; readonly every: number };
   readonly roof: BlueRoofKit | BrightRoofKit;
+  /** 집 부품 시트 칸을 쓰는 재료 킷이면, 그 칸이 없는 타일셋에서 대신 쓸 기본 킷. */
+  readonly fallbackKitId?: HouseKitId;
+}
+
+/** 재료 킷의 지붕 — 집 부품 시트의 재칠 칸(roof-<재료>-<원본 번호>). */
+function brightRoofFrom(material: string): BrightRoofKit {
+  const t = (tile: number): number => housePartTile(`roof-${material}-${tile}`);
+  return {
+    kind: "bright",
+    body: t(404),
+    eave: t(405),
+    upper: { ridge: t(374), ridgeCapL: t(354), ridgeCapR: t(355), trimL: t(376), trimR: t(377), trimCapL: t(384), trimCapR: t(385) },
+  };
+}
+
+function blueRoofFrom(material: string): BlueRoofKit {
+  const t = (tile: number): number => housePartTile(`roof-${material}-${tile}`);
+  return { kind: "blue", body: t(406), rightEdge: t(407), eave: t(467), upper: { nw: t(356), ne: t(357), sw: t(386), se: t(387) } };
+}
+
+const BRIGHT_ORANGE_ROOF: BrightRoofKit = {
+  kind: "bright",
+  body: 404,
+  eave: 405,
+  upper: { ridge: 374, ridgeCapL: 354, ridgeCapR: 355, trimL: 376, trimR: 377, trimCapL: 384, trimCapR: 385 },
+};
+const brick = (tile: number): number => housePartTile(`wall-brick-${tile}`);
+const PLASTER_WALL: WallNineSlice = { top: [15, 16, 17], mid: [45, 46, 47], bottom: [75, 76, 77] };
+const LOG_WALL: WallNineSlice = { top: [102, 103, 104], mid: [132, 133, 134], bottom: [162, 163, 164] };
+const BRICK_WALL: WallNineSlice = {
+  top: [brick(12), brick(13), brick(14)], mid: [brick(42), brick(43), brick(44)], bottom: [brick(72), brick(73), brick(74)],
+};
+
+/** 이 킷이 집 부품 시트 칸을 쓰는가 — 쓰면 tilesetHasHouseParts 가 참인 타일셋에서만 그대로 짓는다. */
+export function houseKitNeedsHouseParts(kitId: HouseKitId): boolean {
+  return HOUSE_KITS[kitId].fallbackKitId !== undefined;
+}
+
+/** 이 타일셋에서 실제로 쓸 킷 — 재료 킷인데 부품 칸이 없으면 기본 킷으로. */
+export function houseKitForTileset(kitId: HouseKitId, hasHouseParts: boolean): HouseKitId {
+  return hasHouseParts ? kitId : HOUSE_KITS[kitId].fallbackKitId ?? kitId;
+}
+
+/** 랜덤 믹스 후보 — 부품 칸이 있는 타일셋이면 재료 킷까지. */
+export function mixableHouseKitIds(hasHouseParts: boolean): readonly HouseKitId[] {
+  return hasHouseParts ? [...MIXABLE_HOUSE_KIT_IDS, ...MATERIAL_HOUSE_KIT_IDS] : MIXABLE_HOUSE_KIT_IDS;
 }
 
 export const HOUSE_KITS: Record<HouseKitId, HouseKit> = {
@@ -129,6 +189,57 @@ export const HOUSE_KITS: Record<HouseKitId, HouseKit> = {
       eave: 405,
       upper: { ridge: 374, ridgeCapL: 354, ridgeCapR: 355, trimL: 376, trimR: 377, trimCapL: 384, trimCapR: 385 },
     },
+  },
+  // ── 재료 킷(2026-09-25) — 지붕·벽 칸은 집 부품 시트의 재칠 사본 ──
+  "moss-plaster": {
+    id: "moss-plaster",
+    name: "이끼 초록 기와 + 흰 회벽",
+    windowTile: 85,
+    wall: PLASTER_WALL,
+    roof: brightRoofFrom("moss"),
+    fallbackKitId: "timber-hall",
+  },
+  "thatch-plaster": {
+    id: "thatch-plaster",
+    name: "초가 + 흰 회벽",
+    windowTile: 85,
+    wall: PLASTER_WALL,
+    roof: brightRoofFrom("thatch"),
+    fallbackKitId: "timber-hall",
+  },
+  "thatch-log": {
+    id: "thatch-log",
+    name: "초가 + 통나무 벽",
+    windowTile: 85,
+    wall: LOG_WALL,
+    roof: brightRoofFrom("thatch"),
+    fallbackKitId: "amber-wood",
+  },
+  "amber-brick": {
+    id: "amber-brick",
+    name: "주황 기와 + 붉은 벽돌",
+    windowTile: 85,
+    wall: BRICK_WALL,
+    roof: BRIGHT_ORANGE_ROOF,
+    fallbackKitId: "bright-plaster",
+  },
+  "slate-brick": {
+    id: "slate-brick",
+    name: "회청 슬레이트 + 붉은 벽돌",
+    windowTile: 87,
+    wall: BRICK_WALL,
+    roof: blueRoofFrom("slate"),
+    fallbackKitId: "blue-stone",
+  },
+  // 반목조: 세 칸마다 X 버팀 기둥 열(위 196 · 가운데 X 회벽 · 아래 256), 사이는 민 회벽 — 창은 민 회벽에만 난다.
+  "charcoal-timber": {
+    id: "charcoal-timber",
+    name: "검은 기와 + 반목조",
+    windowTile: 85,
+    wall: PLASTER_WALL,
+    postColumn: { tiles: [196, housePartTile("wall-half-timber-46"), 256], every: 3 },
+    roof: blueRoofFrom("charcoal"),
+    fallbackKitId: "blue-stone",
   },
 };
 

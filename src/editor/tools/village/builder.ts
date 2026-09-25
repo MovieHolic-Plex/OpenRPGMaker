@@ -201,6 +201,10 @@ export function buildVillageDomain(
   const map = requireVillageMap(draft, mapId);
   // 타일셋 스코프 가드 — village/ 모듈의 원시 타일 id는 전부 combined_town 좌표다.
   const tilesetForMap = draft.tilesets?.[map.tilesetId];
+  // 집 부품·재료 킷 칸(3060~)은 숲마을 타일셋에만 있다. 기후 마을(snow·desert·volcano·autumn)은 숲마을로 지은 뒤
+  // 기후 칩셋으로 옮기므로(villageClimate) 처음부터 쓰지 않는다.
+  const housePartsOk = tilesetHasHouseParts(tilesetForMap)
+    && !(["snow", "desert", "volcano", "autumn"] as readonly unknown[]).includes(merged.groundTheme);
   if (!tilesetForMap || !isCombinedTownCompatibleTileset(tilesetForMap)) {
     throw new ToolError(
       `build_village는 숲마을·합본 마을 호환 칩셋 전용이다 — 이 맵의 타일셋: ${map.tilesetId}. ` +
@@ -373,7 +377,7 @@ export function buildVillageDomain(
     const treeKit = prepareVillageTreeKit(tilesetForMap);
     reliefNotes.push(`tree kit ${treeKit.id}`);
     morph = buildMorphologyVillage({
-      draft, map, area, seed, intent, morphology,
+      draft, map, area, seed, intent, morphology, houseParts: housePartsOk,
       maxHouses: housePlan.explicit ? housePlan.count : MAX_HOUSES,
       ...(morphology === "river" ? { riverWidth: riverBandDepth(Math.min(area.w, area.h), worldGenRules.water) } : {}),
       blocked: morphBlocked, softBlocked: morphForest, ...(relief ? { cliffBlocked: relief.cliff } : {}),
@@ -393,7 +397,7 @@ export function buildVillageDomain(
     boulevard ? { ewRow: boulevard.ewRow, nsCol: boulevard.nsCol, axis: boulevard.axis } : undefined,
     !doorEventsPlanned,
     sketchSites,
-    tilesetHasHouseParts(draft.tilesets[map.tilesetId]),
+    housePartsOk,
   );
   assertHouseProtection(existingHouses, draft, []);
   perfLap("houses");
@@ -1916,6 +1920,12 @@ function setVillageHarnessLayoutPlan(
     "amber-wood": "오렌지 통나무",
     "slate-wood": "파랑 통나무",
     "timber-hall": "빨간 널지붕 목조홀",
+    "moss-plaster": "초록 기와 회벽",
+    "thatch-plaster": "초가 회벽",
+    "thatch-log": "초가 통나무",
+    "amber-brick": "오렌지 벽돌",
+    "slate-brick": "슬레이트 벽돌",
+    "charcoal-timber": "검은 기와 반목조",
   };
   const explicitKits = intent.houseKits.slice(0, houses.length);
   const explicitTemplates = intent.houseTemplates.slice(0, houses.length);

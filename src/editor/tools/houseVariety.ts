@@ -23,12 +23,13 @@
 import {
   CHIMNEY_TILE,
   HOUSE_KITS,
-  MIXABLE_HOUSE_KIT_IDS,
+  ALL_HOUSE_KIT_IDS,
+  MATERIAL_HOUSE_KIT_IDS,
   stampFootprintHouseKit,
   type HouseKit,
   type HouseKitId,
 } from "@/editor/houseKit";
-import { composeGableHouseForm, gableRoofTiles, GABLE_HOUSE_FORM_SPECS } from "@/editor/gableHouseCompose";
+import { composeGableHouseForm, gableRoofMaterialForKit, gableRoofTiles, GABLE_HOUSE_FORM_SPECS } from "@/editor/gableHouseCompose";
 import { stampAuthoredHouseForm } from "@/editor/authoredHouseFormStamp";
 import type { AuthoredHouseFormDef } from "@/project/defaults/authoredHouseFormCatalog";
 import { TILE } from "@/project/defaults/constants";
@@ -46,7 +47,7 @@ export type HouseRect = { readonly x: number; readonly y: number; readonly w: nu
 export type HousePoint = { readonly x: number; readonly y: number };
 
 /** 지붕 색 — kitId 6종은 지붕색 3가지로 접힌다. "색만 바꾼 다양성"을 잡아내는 축. */
-export type HouseRoofColor = "blue" | "orange" | "red";
+export type HouseRoofColor = "blue" | "orange" | "red" | "moss" | "thatch" | "slate" | "charcoal";
 
 export type DetectedHouse = {
   readonly index: number;
@@ -144,7 +145,27 @@ const ROOF_COLOR_BY_KIT: Readonly<Record<HouseKitId, HouseRoofColor>> = {
   "bright-plaster": "orange",
   "amber-wood": "orange",
   "timber-hall": "red",
+  "amber-brick": "orange",
+  "moss-plaster": "moss",
+  "thatch-plaster": "thatch",
+  "thatch-log": "thatch",
+  "slate-brick": "slate",
+  "charcoal-timber": "charcoal",
 };
+
+/**
+ * 재료 킷(2026-09-25) 판정 — 재칠 지붕 칸은 재료마다 고유하고, 붉은 벽돌·반목조 벽 칸도 고유하다.
+ * 기존 다섯 킷의 판정(아래 classifyKit 본문)보다 먼저 본다.
+ */
+const MATERIAL_ROOF_BY_TILE: ReadonlyMap<number, HouseRoofColor> = new Map(
+  MATERIAL_HOUSE_KIT_IDS.flatMap((kitId) => {
+    const kit = HOUSE_KITS[kitId];
+    const tiles = [...kitRoofTileIds(kit), ...Object.values(gableRoofMaterialForKit(kit)).filter((value): value is number => typeof value === "number")];
+    return ROOF_COLOR_BY_KIT[kitId] === "orange" ? [] : tiles.map((tile): [number, HouseRoofColor] => [tile, ROOF_COLOR_BY_KIT[kitId]]);
+  }),
+);
+const BRICK_WALL_TILES: ReadonlySet<number> = new Set(kitWallTileIds(HOUSE_KITS["amber-brick"]).filter((tile) => tile >= 3000));
+const HALF_TIMBER_TILES: ReadonlySet<number> = new Set(kitWallTileIds(HOUSE_KITS["charcoal-timber"]).filter((tile) => tile >= 3000));
 
 export function roofColorForKit(kitId: HouseKitId): HouseRoofColor {
   return ROOF_COLOR_BY_KIT[kitId];
@@ -247,6 +268,18 @@ function shapeSignature(map: GameMap, component: Component): string {
 }
 
 function classifyKit(map: GameMap, cells: readonly number[]): HouseKitId | null {
+  let materialRoof: HouseRoofColor | undefined;
+  let brickWall = false;
+  let halfTimber = false;
+  for (const index of cells) {
+    for (const tile of [map.lowerTiles[index] ?? TILE.EMPTY, map.upperTiles[index] ?? TILE.EMPTY]) {
+      materialRoof ??= MATERIAL_ROOF_BY_TILE.get(tile);
+      if (BRICK_WALL_TILES.has(tile)) brickWall = true;
+      if (HALF_TIMBER_TILES.has(tile)) halfTimber = true;
+    }
+  }
+  const materialKit = classifyMaterialKit(map, cells, materialRoof, brickWall, halfTimber);
+  if (materialKit !== undefined) return materialKit;
   let post = false;
   let stone15 = false;
   let plaster12 = false;
@@ -268,6 +301,24 @@ function classifyKit(map: GameMap, cells: readonly number[]): HouseKitId | null 
   if (blueRoof) return wood102 ? "slate-wood" : stone15 ? "blue-stone" : null;
   if (brightTrim) return wood102 ? "amber-wood" : plaster12 ? "bright-plaster" : null;
   return null;
+}
+
+function classifyMaterialKit(
+  map: GameMap,
+  cells: readonly number[],
+  roof: HouseRoofColor | undefined,
+  brickWall: boolean,
+  halfTimber: boolean,
+): HouseKitId | null | undefined {
+  if (roof === undefined) return brickWall ? "amber-brick" : undefined;
+  const wood = cells.some((index) => WALL_WOOD_102.has(map.lowerTiles[index] ?? TILE.EMPTY));
+  switch (roof) {
+    case "moss": return "moss-plaster";
+    case "thatch": return wood ? "thatch-log" : "thatch-plaster";
+    case "slate": return brickWall ? "slate-brick" : null;
+    case "charcoal": return halfTimber ? "charcoal-timber" : null;
+    default: return undefined;
+  }
 }
 
 function findDoor(map: GameMap, cells: readonly number[]): HousePoint | null {
@@ -328,7 +379,7 @@ function catalogSignatures(): ReadonlyMap<string, string> {
   if (CATALOG_SIGNATURE_CACHE) return CATALOG_SIGNATURE_CACHE;
   const table = new Map<string, string>();
   for (const def of HOUSE_TEMPLATE_DEFS) {
-    const kitIds: readonly HouseKitId[] = def.kitId ? [def.kitId] : MIXABLE_HOUSE_KIT_IDS;
+    const kitIds: readonly HouseKitId[] = def.kitId ? [def.kitId] : ALL_HOUSE_KIT_IDS;
     const storyOptions: readonly (1 | 2 | 3)[] = def.lowWall ? [1] : [...new Set<1 | 2 | 3>([def.stories ?? 1, 1, 2, 3])];
     for (const kitId of kitIds) {
       for (const stories of storyOptions) {
@@ -342,7 +393,7 @@ function catalogSignatures(): ReadonlyMap<string, string> {
   }
   // 박공 조합 형태 — 킷마다 합성해 같은 서명 함수로 등록한다.
   for (const spec of GABLE_HOUSE_FORM_SPECS) {
-    for (const kitId of MIXABLE_HOUSE_KIT_IDS) {
+    for (const kitId of ALL_HOUSE_KIT_IDS) {
       for (const signature of formSignatures(composeGableHouseForm(spec, kitId))) {
         const key = `${kitId}|${signature}`;
         if (!table.has(key)) table.set(key, spec.id);
