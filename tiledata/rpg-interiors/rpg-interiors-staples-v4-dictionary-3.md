@@ -4,15 +4,15 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
 ```json
 [
   {
-    "tile": 2050,
-    "label": "쥐구멍",
+    "tile": 2142,
+    "label": "한 줄 나무 탁자 오른끝",
     "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
-    "priority": "upper"
+    "priority": "lower"
   }
 ]
 ```

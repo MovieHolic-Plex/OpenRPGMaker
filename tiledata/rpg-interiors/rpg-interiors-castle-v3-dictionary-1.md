@@ -367,6 +367,39 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "lower"
   },
   {
+    "tile": 198,
+    "label": "목재 탁자 하단",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 199,
+    "label": "목재 탁자 하단",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 200,
+    "label": "목재 탁자 하단",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
     "tile": 202,
     "label": "붉은 커튼 자락",
     "passability": {
@@ -400,8 +433,8 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 216,
-    "label": "확장 목재 탁자 상판",
+    "tile": 228,
+    "label": "흰 천 테이블",
     "passability": {
       "up": false,
       "down": false,
@@ -411,41 +444,8 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "lower"
   },
   {
-    "tile": 217,
-    "label": "확장 목재 탁자 상판",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower"
-  },
-  {
-    "tile": 218,
-    "label": "확장 목재 탁자 상판",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower"
-  },
-  {
-    "tile": 219,
-    "label": "확장 흰색 탁자 상판",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower"
-  },
-  {
-    "tile": 221,
-    "label": "확장 흰색 탁자 상판",
+    "tile": 230,
+    "label": "흰 천 테이블",
     "passability": {
       "up": false,
       "down": false,

@@ -454,3 +454,13 @@ Cauldron interaction belongs to the stove's accessible base when its graphic is 
 #### 생활 방식별 신규 실내 5종 (2026-09-24)
 
 어부·재봉사·공동 임대주택·전당포·상인 조합 회관, 총 5맵/14방을 추가했다. 원격 보관본 `oprn-shared-daily-life-five-20260924`, 루트 SQLite 라이브러리 `tibo-daily-life-five-20260924`, 기본 장소 카탈로그에 같은 ID로 등록한다. 기존 사용자 맵을 덮어쓰지 않는다. 정확한 조립·좌표·엔진 도달 좌표·저장 영수증은 `docs/interior-daily-life-five-20260924/`에 있다. 작은 침대, 하위 북벽4행/연결 천장, 의자 동쪽 방향, 용도별 바닥1~2종, 마을 미연결 1칸 출구를 적용했다.
+
+#### atlas 실내 100곳 · 뒷모습 긴 의자 · 탁자 앞면 (2026-09-25)
+
+Tibo 실내 확장 시트에 69~71행(2070~2159)을 덧붙였다(0~68행 픽셀 불변, `bake-atlas-interior-tiles.py`가 원본 SHA 확인).
+뒷모습 긴 의자 2070~2083(북쪽 제단·무대를 봄), 창살·창살 문 2084~2087, 금고 문·칠판·보석/창구 카운터·룰렛·돌 욕조·고기 걸이·가죽 건조틀,
+무대 앞면·계단 2130~2133, 탁자 앞면 2140~2147. 등록은 `register-atlas-interior-tiles.mjs`(tiboRecoveredTileset.json).
+
+- 성당·예배당의 긴 의자는 뒷모습만 쓴다. 앞모습 1814~1847(킷 `tibo-fantasy-pew`)은 신도가 제단을 등지므로 atlas·rpg-interiors 저작에서 거부한다(rpg-interiors 7곳 교체).
+- 나무 상판(terrain-deck)·흰 천(white-table) 오토타일에는 다리가 없다. `table()`은 섬의 맨 아래 줄을 앞면(198~200/228~230, 한 줄 탁자 2140~2145, 1칸 폭 201/231·2146/2147)으로 바꾼다. 곡물 창고 등 rpg-interiors의 table() 전부에 적용.
+- 100곳 저작은 `scripts/content/atlas-interiors/*.mjs` + 검사 `kit.mjs`(겹침·탁상 소품·벽걸이 줄·의자 방향·canMove 도달·밀폐 칸). 정본 `.oprn-projects/atlas-interiors-20260925`, 공용 DB 라이브러리 `oprn-atlas-interiors-20260925`(장소 100), 조각 54개 `tiledata/atlas-interiors/shared-objects.json`. 자세한 순서는 `tiledata/atlas-interiors/README.md`, 시각 QA는 `verify-shots/atlas-interiors/QA.md`.

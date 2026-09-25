@@ -70,6 +70,7 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
   const DECK = group(TIBO, "terrain-deck"), CLOTH = group(TIBO, "white-table");
   const TABLE_LOWER = new Set([...DECK.memberTileIds, ...Object.values(DECK.variantMap), ...CLOTH.memberTileIds, ...Object.values(CLOTH.variantMap)]);
   TABLE_LOWER.delete(127); // the deck group's own grass slot
+  for (const t of [198, 199, 200, 201, 228, 229, 230, 231, 2140, 2141, 2142, 2143, 2144, 2145, 2146, 2147]) TABLE_LOWER.add(t);   // legged bottom rows
   const FACE = new Set([74, 75, 76, 77, 104, 105, 106, 107, 134, 135, 136, 164, 165, 166, 314, 315, 316, 344, 345, 346, ...Array.from({ length: 18 }, (_, i) => 1980 + i)]);
   const roleOfKit = (id) => (TOP_KITS.has(id) ? "top" : HANG_KITS.has(id) ? "hang" : SEAT_KITS.has(id) ? "seat" : TABLE_KITS.has(id) ? "table" : "furn");
   const roleOfTile = (t) => (HANG_TILES.has(t) ? "hang" : SEAT_TILES.has(t) ? "seat" : TABLE_TILES.has(t) ? "table" : "furn");
@@ -129,7 +130,16 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
     autotile(m, g);
     for (const [i, t] of saved) m.lowerTiles[i] = t;
   };
-  const table = island("terrain-deck", "tabletop"), clothTable = island("white-table", "tabletop");
+  // A table is its top AND its front: the deck/cloth autotiles have no legs, so the island's bottom row is swapped for
+  // the sheet's legged bottom pieces (198|199|200, cloth 228|229|230; one-row tables 2140~2145 keep the top rim; 1-wide
+  // 201/231 and 2146/2147). Without it a table reads as a board lying on the floor (the granary scale table did).
+  const FRONTS = { deck: { multi: [198, 199, 200, 2146], one: [2140, 2141, 2142, 201] }, cloth: { multi: [228, 229, 230, 2147], one: [2143, 2144, 2145, 231] } };
+  const legged = (name, kind) => { const top = island(name, "tabletop"); return (m, x0, y0, x1, y1) => {
+    top(m, x0, y0, x1, y1);
+    const f = FRONTS[kind][y1 > y0 ? "multi" : "one"];
+    for (let x = x0; x <= x1; x++) put(m, x, y1, x0 === x1 ? f[3] : x === x0 ? f[0] : x === x1 ? f[2] : f[1], "lowerTiles");
+  }; };
+  const table = legged("terrain-deck", "deck"), clothTable = legged("white-table", "cloth");
   const CEIL = group(INT, "ceiling"), CEIL_TILES = [...new Set(Object.values(CEIL.variantMap))];
   const isCeil = (t) => t === 430 || CEIL_TILES.includes(t);
   const reshapeCeiling = (m) => autotile(m, CEIL, CEIL_TILES);
@@ -281,14 +291,14 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
   stamp(m, "tibo-fantasy-altar", 8, 5); block(m, 9, 3, [[88], [118]], "upperTiles", "hang");
   for (const x of [3, 5, 13, 15]) one(m, x, 3, 144);
   stamp(m, "tibo-v4-5-2", 6, 4); stamp(m, "tibo-v4-5-2", 12, 4); stamp(m, "tibo-lectern", 12, 6);
-  for (const y of [9, 11, 13]) { stamp(m, "tibo-fantasy-pew", 4, y); stamp(m, "tibo-fantasy-pew", 11, y); }
+  for (const y of [9, 11, 13]) { stamp(m, "tibo-atlas-pew-back", 4, y); stamp(m, "tibo-atlas-pew-back", 11, y); }
   for (const y of [9, 13]) { block(m, 2, y - 1, [[89], [119]]); block(m, 16, y - 1, [[89], [119]]); }
   for (const y of [11, 15]) { one(m, 2, y, 204); one(m, 16, y, 204); }
   redRug(m, 5, 7, 13, 7); one(m, 4, 6, 288); one(m, 14, 6, 288);
   add("interior-church-nave", "교회 · 예배당", T, m, {
     group: "civic", entry: [9, 16], keeper: [9, 7], targets: [[9, 7], [3, 9], [15, 14]],
     use: "사제가 예배를 올리고 마을 사람이 앉아 기도하는 곳. 교구마을 「교회 언덕」의 석벽 교회(스테인드글라스 두 장, 가운데 문)와 짝을 이룬다",
-    note: "석벽·회색 돌바닥 42. 앞쪽(북쪽) 제단부를 무늬 석판 163으로 깔고 제단 3×2 뒤 벽에 성녀 석상 88/118, 벽에 스테인드글라스 144 넷, 양옆 촛대 탁자·설교대 독서대. 문에서 제단까지 폭3 붉은 카펫, 좌우로 긴 의자 4×2 세 줄씩, 옆 통로에 기둥 89/119와 촛대, 제단부 앞 무릎 꿇는 붉은 카펫 한 줄과 화분 둘",
+    note: "석벽·회색 돌바닥 42. 앞쪽(북쪽) 제단부를 무늬 석판 163으로 깔고 제단 3×2 뒤 벽에 성녀 석상 88/118, 벽에 스테인드글라스 144 넷, 양옆 촛대 탁자·설교대 독서대. 문에서 제단까지 폭3 붉은 카펫, 좌우로 제단을 향해 앉는 뒷모습 긴 의자 4×2(2070~2077) 세 줄씩, 옆 통로에 기둥 89/119와 촛대, 제단부 앞 무릎 꿇는 붉은 카펫 한 줄과 화분 둘",
   });
 
   // ═════════ 민가 ═════════
@@ -621,13 +631,13 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
   block(m, 2, 3, [[142, 143], [172, 173], [202, 203]], "upperTiles", "furn"); block(m, 16, 3, [[142, 143], [172, 173], [202, 203]], "upperTiles", "furn");
   stamp(m, "tibo-lectern", 10, 5); stamp(m, "tibo-medieval-armor-stand", 5, 4); stamp(m, "tibo-easel", 8, 5);
   redRug(m, 9, 7, 10, 12); stamp(m, "tibo-fantasy-crystal-stand", 13, 5); stamp(m, "tibo-library-214", 14, 5); one(m, 7, 3, 84); one(m, 12, 3, 85);
-  for (const y of [8, 10]) { stamp(m, "tibo-fantasy-pew", 4, y); stamp(m, "tibo-fantasy-pew", 11, y); }
+  for (const y of [8, 10]) { stamp(m, "tibo-atlas-pew-back", 4, y); stamp(m, "tibo-atlas-pew-back", 11, y); }
   table(m, 16, 9, 16, 11); stamp(m, "tibo-library-076", 16, 9); stamp(m, "tibo-library-122", 16, 10); stamp(m, "tibo-library-238", 16, 11);
   stamp(m, "tibo-library-215", 2, 12); stamp(m, "tibo-library-215", 3, 12);
   add("interior-auction-house", "경매장", T, m, {
     group: "leisure", entry: [10, 13], keeper: [10, 7], targets: [[10, 7], [3, 9], [17, 10]],
     use: "귀한 물건을 경매로 파는 홀. 앞쪽 붉은 카펫 무대에 오늘의 물건(갑옷·그림·수정구)이 놓이고 경매인은 독서대 앞에서 호가를 부르며, 손님은 긴 의자에 앉아 값을 부른다. 낙찰되면 동벽을 등진 계산대에서 치른다",
-    note: "크림 벽 16×8칸. 뒷벽 양 끝 커튼 142/143·172/173·202/203, 앞쪽 붉은 카펫 무대 12×2에 갑옷 거치대·그림 이젤·수정구 받침·말린 꽃병, 벽에 그림 84·85, 경매인 독서대(경매인 자리 (10,7)), 가운데 통로 붉은 러너를 두고 긴 의자 4×2 두 줄씩, 동벽을 등진 세로 계산대(나무 상판 위 잉크와 깃펜·동전 쟁반·금고함, 점원 자리 x=17), 문 옆 둥근 관목 화분 둘",
+    note: "크림 벽 16×8칸. 뒷벽 양 끝 커튼 142/143·172/173·202/203, 앞쪽 붉은 카펫 무대 12×2에 갑옷 거치대·그림 이젤·수정구 받침·말린 꽃병, 벽에 그림 84·85, 경매인 독서대(경매인 자리 (10,7)), 가운데 통로 붉은 러너를 두고 무대를 향해 앉는 뒷모습 긴 의자 4×2(2070~2077) 두 줄씩, 동벽을 등진 세로 계산대(나무 상판 위 잉크와 깃펜·동전 쟁반·금고함, 점원 자리 x=17), 문 옆 둥근 관목 화분 둘",
   });
 
   // ═════════ 배 (easyrpg_chipset_ship, 갑판 맵과 같은 시트) ═════════
@@ -912,23 +922,23 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
   clothTable(m, 18, 7, 19, 7); stamp(m, "tibo-library-168", 18, 7);
   block(m, 13, 9, [[465, 466, 467]], "lowerTiles", "floor");
   redRug(m, 13, 10, 15, 23);
-  for (const y of [10, 12, 15, 17, 20, 22]) { stamp(m, "tibo-fantasy-pew", 9, y); stamp(m, "tibo-fantasy-pew", 16, y); }
+  for (const y of [10, 12, 15, 17, 20, 22]) { stamp(m, "tibo-atlas-pew-back", 9, y); stamp(m, "tibo-atlas-pew-back", 16, y); }
   for (const y of [9, 12, 15, 18, 21]) { pillar(m, 7, y); pillar(m, 21, y); }
   // west aisle: reliquary chapel under two lancets at the north end, side pews along the wall, a saint and a font by the door
-  stamp(m, "tibo-medieval-reliquary", 3, 5); one(m, 2, 6, 204); one(m, 6, 6, 204); stamp(m, "tibo-fantasy-pew", 3, 8);
-  for (const y of [10, 12, 15, 17]) stamp(m, "tibo-fantasy-pew", 2, y);
+  stamp(m, "tibo-medieval-reliquary", 3, 5); one(m, 2, 6, 204); one(m, 6, 6, 204); stamp(m, "tibo-atlas-pew-back", 3, 8);
+  for (const y of [10, 12, 15, 17]) stamp(m, "tibo-atlas-pew-back", 2, y);
   fountain(m, 2, 20); statue(m, 5, 20); one(m, 6, 14, 204); one(m, 2, 22, 204); one(m, 2, 23, 288);
   // east aisle: pipe organ against the back wall with the choir's music stands, side pews, a saint, font
   block(m, 23, 3, [[2051, 2052, 2053], [2054, 2055, 2056], [2057, 2058, 2059]]);
-  stamp(m, "tibo-library-173", 22, 5); stamp(m, "tibo-library-173", 26, 5); stamp(m, "tibo-v12-1-3", 22, 7); stamp(m, "tibo-fantasy-pew", 23, 8);
-  for (const y of [10, 12, 15, 17]) stamp(m, "tibo-fantasy-pew", 23, y);
+  stamp(m, "tibo-library-173", 22, 5); stamp(m, "tibo-library-173", 26, 5); stamp(m, "tibo-v12-1-3", 22, 7); stamp(m, "tibo-atlas-pew-back", 23, 8);
+  for (const y of [10, 12, 15, 17]) stamp(m, "tibo-atlas-pew-back", 23, y);
   fountain(m, 24, 20); statue(m, 23, 20); one(m, 22, 14, 204); one(m, 26, 22, 204); one(m, 26, 23, 288); one(m, 12, 9, 204); one(m, 16, 9, 204); one(m, 9, 9, 288); one(m, 19, 9, 288);
   for (const [x, y] of [[8, 14], [20, 14], [8, 19], [20, 19]]) one(m, x, y, 204);   // candle stands down the nave lanes
   stamp(m, "tibo-v6-2-2", 8, 23); stamp(m, "tibo-library-215", 20, 23);
   add("interior-cathedral-nave", "대성당 · 신랑과 제단", T, m, {
     group: "sacred", entry: [14, 24], keeper: [14, 7], targets: [[14, 7], [4, 7], [24, 7], [8, 16], [20, 16], [4, 19]],
     use: "도시의 대성당. 문으로 들어와 성수반을 지나 붉은 카펫 통로를 걸어 제단 앞 계단에 오르면 사제가 상처를 치유하고, 쓰러진 동료를 되살리며, 모험을 기록(저장)해 준다. 신자는 양쪽 긴 의자에 앉아 기도하고, 옆 통로 북쪽 끝에 성유물 예배소(서)와 오르간 성가대석(동)이 있다",
-    note: "석벽·돌바닥 42, 25×19칸. 북쪽 무늬 석판 163 제단부(x=8~20, y=5~8) 위 제단 3×2와 뒤 벽 성녀상 88/118·양옆 붉은 대형 커튼 142~203, 제단 앞 무릎 꿇는 붉은 카펫, 촛대·화분·향로 한 쌍씩, 흰 천 탁자 위 약병(치유)·의식 초, 설교 독서대. 뒷벽 긴 스테인드글라스 창 2060/2061 넷. 제단부 앞 붉은 카펫 계단 465|466|467과 양옆 촛대·화분, 문까지 폭3 붉은 카펫, 양쪽 긴 의자 4×2 여섯 줄씩(두 줄씩 붙이고 한 줄 띄움), 기둥 89/119 두 줄(x=7·21)과 통로 촛대. 서쪽 옆 통로: 목조 성유물 제단과 촛대 둘·무릎 꿇는 긴 의자, 옆 긴 의자 넷, 문 곁 돌 성수반 3×2(2044~2049)와 성인상·촛대·화분. 동쪽 옆 통로: 파이프 오르간 3×3(2051~2059)과 악보 받침대 둘·작은 하프·성가대 긴 의자, 옆 긴 의자 넷, 돌 성수반과 성인상. 문 곁 헌금 상자·화분",
+    note: "석벽·돌바닥 42, 25×19칸. 북쪽 무늬 석판 163 제단부(x=8~20, y=5~8) 위 제단 3×2와 뒤 벽 성녀상 88/118·양옆 붉은 대형 커튼 142~203, 제단 앞 무릎 꿇는 붉은 카펫, 촛대·화분·향로 한 쌍씩, 흰 천 탁자 위 약병(치유)·의식 초, 설교 독서대. 뒷벽 긴 스테인드글라스 창 2060/2061 넷. 제단부 앞 붉은 카펫 계단 465|466|467과 양옆 촛대·화분, 문까지 폭3 붉은 카펫, 양쪽 제단을 향해 앉는 뒷모습 긴 의자 4×2(2070~2077) 여섯 줄씩(두 줄씩 붙이고 한 줄 띄움), 기둥 89/119 두 줄(x=7·21)과 통로 촛대. 서쪽 옆 통로: 목조 성유물 제단과 촛대 둘·무릎 꿇는 긴 의자, 옆 긴 의자 넷, 문 곁 돌 성수반 3×2(2044~2049)와 성인상·촛대·화분. 동쪽 옆 통로: 파이프 오르간 3×3(2051~2059)과 악보 받침대 둘·작은 하프·성가대 긴 의자, 옆 긴 의자 넷, 돌 성수반과 성인상. 문 곁 헌금 상자·화분",
   });
   // 수도원 · 회랑 — 북쪽에 수도사 독방 셋·약초 창고·필사실, 서쪽 식당, 동쪽 회랑이 기둥으로 두른 안뜰(잔디·약초 밭·돌우물)을 감싼다.
   m = shell(30, 24, {
