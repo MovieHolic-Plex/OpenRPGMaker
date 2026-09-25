@@ -8,6 +8,7 @@
 
 import { findAuthoredHouseForm, type AuthoredHouseFormDef } from "@/project/defaults/authoredHouseFormCatalog";
 import type { GameMap } from "@/project/types";
+import { composeGableHouseFormById } from "./gableHouseCompose";
 import { stampFootprintHouseKit, type FootprintHousePlan, type RectHouseStampResult } from "./houseKit";
 
 export function stampAuthoredHouseForm(
@@ -51,7 +52,10 @@ export function stampHouseExterior(
   map: GameMap,
   plan: FootprintHousePlan & { readonly templateId?: string },
 ): RectHouseStampResult & { readonly formId?: string } {
-  const form = plan.templateId === undefined ? undefined : findAuthoredHouseForm(plan.templateId);
+  // 박공 조합 형태(gable-*)는 요청 킷으로 합성한 레시피, 저작 형태는 고정 레시피.
+  const form = plan.templateId === undefined
+    ? undefined
+    : composeGableHouseFormById(plan.templateId, plan.kitId) ?? findAuthoredHouseForm(plan.templateId);
   if (form === undefined) return stampFootprintHouseKit(map, plan);
   return { ...stampAuthoredHouseForm(map, form, { x: plan.wings[0]?.x ?? 0, y: plan.wings[0]?.y ?? 0 }), formId: form.id };
 }

@@ -28,6 +28,9 @@ import {
   type HouseKit,
   type HouseKitId,
 } from "@/editor/houseKit";
+import { composeGableHouseForm, gableRoofTiles, GABLE_HOUSE_FORM_SPECS } from "@/editor/gableHouseCompose";
+import { stampAuthoredHouseForm } from "@/editor/authoredHouseFormStamp";
+import type { AuthoredHouseFormDef } from "@/project/defaults/authoredHouseFormCatalog";
 import { TILE } from "@/project/defaults/constants";
 import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
 import type { GameMap } from "@/project/types";
@@ -100,9 +103,11 @@ function kitRoofTileIds(kit: HouseKit): readonly number[] {
   return out;
 }
 
-const ROOF_TILES: ReadonlySet<number> = new Set<number>(
-  Object.values(HOUSE_KITS).flatMap((kit) => kitRoofTileIds(kit)),
-);
+const ROOF_TILES: ReadonlySet<number> = new Set<number>([
+  ...Object.values(HOUSE_KITS).flatMap((kit) => kitRoofTileIds(kit)),
+  // 박공 조합 형태의 측면 덩어리 지붕(436/437·374/375 …) — 킷 지붕 표에는 없다.
+  ...gableRoofTiles(),
+]);
 
 /**
  * 벽 밴드 판정 타일. 지붕 집합과 겹치는 값은 빼서 "이 행은 벽인가"를 오판하지 않게 한다
@@ -119,6 +124,7 @@ const WALL_BAND_TILES: ReadonlySet<number> = new Set<number>(
 /** 어떤 킷이든 집 몸체로 보는 타일 전체 + 문. 마스크(=모양) 판정의 유일한 기준. */
 const HOUSE_MASK_TILES: ReadonlySet<number> = new Set<number>([
   ...Object.values(HOUSE_KITS).flatMap((kit) => [...kitWallTileIds(kit), ...kitRoofTileIds(kit)]),
+  ...gableRoofTiles(),
   DOOR_TOP_TILE,
   DOOR_BOTTOM_TILE,
 ]);
@@ -334,8 +340,48 @@ function catalogSignatures(): ReadonlyMap<string, string> {
       }
     }
   }
+  // 박공 조합 형태 — 킷마다 합성해 같은 서명 함수로 등록한다.
+  for (const spec of GABLE_HOUSE_FORM_SPECS) {
+    for (const kitId of MIXABLE_HOUSE_KIT_IDS) {
+      for (const signature of formSignatures(composeGableHouseForm(spec, kitId))) {
+        const key = `${kitId}|${signature}`;
+        if (!table.has(key)) table.set(key, spec.id);
+      }
+    }
+  }
   CATALOG_SIGNATURE_CACHE = table;
   return table;
+}
+
+/** 셀 레시피 한 장을 스크래치 맵에 찍어 문 유/무 서명을 낸다(stampSignatures 의 레시피 판). */
+function formSignatures(form: AuthoredHouseFormDef): readonly string[] {
+  const pad = 2;
+  const width = form.w + pad * 2;
+  const height = form.h + pad * 2;
+  const scratch = {
+    id: `scratch_${form.id}_${form.kitId}`,
+    name: form.id,
+    width,
+    height,
+    lowerTiles: new Array<number>(width * height).fill(TILE.EMPTY),
+    upperTiles: new Array<number>(width * height).fill(TILE.EMPTY),
+    events: [],
+  } as unknown as GameMap;
+  const result = stampAuthoredHouseForm(scratch, form, { x: pad, y: pad });
+  if (!result.ok) return [];
+  const signatures = new Set<string>();
+  const collect = (): void => {
+    for (const component of connectedComponents(scratch, { x: 0, y: 0, w: width, h: height })) {
+      signatures.add(shapeSignature(scratch, component));
+    }
+  };
+  collect();
+  if (result.doorAt) {
+    scratch.lowerTiles[(result.doorAt.y - 1) * width + result.doorAt.x] = DOOR_TOP_TILE;
+    scratch.lowerTiles[result.doorAt.y * width + result.doorAt.x] = DOOR_BOTTOM_TILE;
+    collect();
+  }
+  return [...signatures];
 }
 
 function stampBBox(wings: readonly HouseRect[]): HouseRect {
@@ -418,7 +464,8 @@ export function houseVarietyReport(houses: readonly DetectedHouse[]): HouseVarie
   const repeatedKits = kits.filter(([, count]) => count > 1);
   const usedTemplateIds = new Set(houses.flatMap((house) => (house.templateId === null ? [] : [house.templateId])));
   const usedKitIds = new Set(houses.flatMap((house) => (house.kitId === null ? [] : [house.kitId])));
-  const unusedTemplateIds = HOUSE_TEMPLATE_DEFS.map((def) => def.id).filter((id) => !usedTemplateIds.has(id));
+  const unusedTemplateIds = [...GABLE_HOUSE_FORM_SPECS.map((spec) => spec.id), ...HOUSE_TEMPLATE_DEFS.map((def) => def.id)]
+    .filter((id) => !usedTemplateIds.has(id));
   const unusedKitIds = (Object.keys(HOUSE_KITS) as HouseKitId[]).filter((id) => !usedKitIds.has(id));
 
   const distinctShapes = shapes.length;

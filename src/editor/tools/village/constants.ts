@@ -239,6 +239,21 @@ export interface HouseTemplate {
    * wings 는 bbox 한 장이고 kitId 는 레시피의 명목 재료다.
    */
   readonly form?: AuthoredHouseFormDef;
+  /**
+   * 킷을 받아 셀 레시피를 합성하는 형태(박공 조합 gable-*). 있으면 재료는 고정이 아니다 —
+   * 시공기는 킷을 고른 뒤 compose(kitId) 로 레시피를 얻어 찍는다. form 은 미리보기용 기본 재료 합성본이다.
+   */
+  readonly compose?: (kitId: HouseKitId) => AuthoredHouseFormDef;
+}
+
+/** 이 템플릿이 이 킷으로 찍을 셀 레시피 — 합성 형태면 합성, 고정 레시피면 그대로, 날개 문법이면 undefined. */
+export function templateFormFor(template: HouseTemplate, kitId: HouseKitId): AuthoredHouseFormDef | undefined {
+  return template.compose ? template.compose(kitId) : template.form;
+}
+
+/** 재료가 레시피에 박힌 템플릿인가 — 합성 형태(compose)는 킷을 따르므로 아니다. */
+export function templateHasFixedKit(template: HouseTemplate): boolean {
+  return template.form !== undefined && template.compose === undefined;
 }
 
 export interface HouseCandidate {
