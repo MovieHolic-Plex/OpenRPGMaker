@@ -252,3 +252,28 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* 오프닝 연출 — 효과 행(켜기 · 세기 · 삭제)과 AI 키아트 */
+.db-title-opening-effects {
+  display: grid;
+  gap: 6px;
+}
+.db-title-opening-effect-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+.db-title-opening-ai {
+  display: grid;
+  gap: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--line, rgba(255, 255, 255, 0.12));
+}
+.db-title-opening-prompt {
+  width: 100%;
+  resize: vertical;
+}
+.db-title-opening-ai [data-state="error"] {
+  color: var(--danger, #e06c6c);
+}

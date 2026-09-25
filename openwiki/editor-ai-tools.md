@@ -2189,3 +2189,9 @@ retired된 플래그도 설명은 고칠 수 있으나 다시 활성화하지 �
 설명을 바꾸기 위해 retire 후 재등록하거나 rename을 쓰지 않는다. 기존 declare/rename/retire
 계약은 유지한다. 새솔 저작 요청80에서 설명 교정 대신 retired=true 초안이 생성되어 폐기된
 사례 때문에 추가했다. 회귀 정의: `test/storyFlags.test.ts` (이번 세션에서 실행하지 않음).
+
+
+## 타이틀 오프닝 효과 도구 (2026-09-25)
+
+`set_title_screen` 의 `openingPreset`·`effects` 와 `generate_title_art`(키아트 생성 → 비전 맞춤)는
+[title-opening-effects.md](title-opening-effects.md) 에 정리했다.

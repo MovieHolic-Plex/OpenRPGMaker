@@ -1,6 +1,8 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { applySystemWindowSkinVariable, applyTitleScreenBackground } from "@/player/systemGraphics";
 import { createTitleParticlesCanvas } from "@/player/titleParticles";
+import { createTitleEffectsCanvas, titleEffectsSignature } from "@/player/titleEffects/renderer";
+import { activeTitleEffects } from "@/project/titleEffects";
 import { createLicenseNotice } from "@/player/titleLicenseNotice";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import type { Project, TitleBackgroundLayer, TitleIntroSettings, TitleScreenSettings } from "@/project/types";
@@ -40,6 +42,8 @@ export type TitleMenuContext = {
   readonly playIntro?: boolean;
   /** 설정 서명이 같으면 재사용할 기존 fx 스택(파티클 canvas 상태/rAF 보존). */
   readonly reuseFx?: HTMLElement | null;
+  /** 서명이 같으면 재사용할 기존 영역 효과 canvas(WebGL 컨텍스트·rAF 보존). */
+  readonly reuseEffects?: HTMLElement | null;
 };
 
 const DEFAULT_RESUME_LABEL = "이어하기";
@@ -112,7 +116,14 @@ export function renderTitleScreen(
     class: "title-screen rm-title-screen rm-title-screen-editorial",
     dataset: { testid: "title-screen" },
   });
-  applyTitleScreenBackground(title, backgroundResourceId, project);
+  applyTitleScreenBackground(title, backgroundResourceId, project, {
+    fit: settings.backgroundFit,
+    rendering: settings.backgroundRendering,
+  });
+  // 영역 효과(빛내림·물결·안개…)는 배경 그림을 직접 다시 그리는 WebGL canvas 다.
+  // 어두운 막(::before, z1)보다 아래(z0)여야 하므로 fx 스택과 분리해 루트 첫 자식으로 둔다.
+  const effects = renderTitleEffectsLayer(settings, backgroundResourceId, project, context?.reuseEffects ?? null);
+  if (effects) title.append(effects);
   // The full-screen title root owns the key art. Menu chrome consumes the runtime
   // windowskin CSS variable without applying the 9-slice fill over the artwork.
   applyTitleMenuGraphic(title, project);
@@ -122,6 +133,10 @@ export function renderTitleScreen(
   if (fx) title.append(fx);
   const playIntro = (context?.playIntro ?? true) && settings.intro !== undefined;
   const titleNodes = renderTitleNodes(settings, project);
+  if (settings.logoStyle) {
+    for (const node of titleNodes) node.dataset.logoStyle = settings.logoStyle;
+    title.dataset.logoStyle = settings.logoStyle;
+  }
   if (playIntro) applyTitleIntroToLogoNodes(titleNodes, settings.intro);
   title.append(...titleNodes);
   const showInputHint = settings.showInputHint !== false;
@@ -129,13 +144,48 @@ export function renderTitleScreen(
   wireTitleOptionClicks(menu, options, actions);
   if (playIntro) applyTitleIntroToMenu(menu, settings.intro);
   title.append(menu);
-  title.append(renderTitleEditorialCopy());
+  // 로고 질감을 고른 오프닝은 키아트와 부딪히는 기본 문구 대신 저자의 부제만 쓴다.
+  if (settings.logoStyle) {
+    if (settings.logoSubtitle) title.append(renderTitleLogoSubtitle(settings));
+  } else {
+    title.append(renderTitleEditorialCopy());
+  }
   title.append(createLicenseNotice());
   if (showInputHint) {
     title.append(renderInputHint());
   }
   title.append(titleSelectionDebug(clampedIndex));
   return title;
+}
+
+/** 영역 효과 canvas. 켜진 효과나 배경 그림이 없으면 null(레거시 DOM 불변). */
+export function renderTitleEffectsLayer(
+  settings: TitleScreenSettings,
+  backgroundResourceId: string | undefined,
+  project: Project,
+  reuse: HTMLElement | null,
+): HTMLElement | null {
+  const effects = activeTitleEffects(settings.effects);
+  if (!effects.length || !backgroundResourceId) return null;
+  const imageUrl = resolveAssetResourceUrl(backgroundResourceId, { project });
+  if (!imageUrl) return null;
+  const options = { effects, imageUrl, fit: settings.backgroundFit ?? "cover" };
+  const signature = titleEffectsSignature(options);
+  if (reuse && reuse.dataset.titleEffectsSignature === signature) return reuse;
+  const canvas = createTitleEffectsCanvas(options);
+  canvas.dataset.titleEffectsSignature = signature;
+  return canvas;
+}
+
+function renderTitleLogoSubtitle(settings: TitleScreenSettings): HTMLElement {
+  const node = el("div", {
+    class: "rm-title-logo-subtitle",
+    text: settings.logoSubtitle ?? "",
+    dataset: { testid: "title-logo-subtitle", logoStyle: settings.logoStyle ?? "plain" },
+  });
+  node.style.left = logicalX(settings.layout.titleX);
+  node.style.top = `calc(${logicalY(settings.layout.titleY)} + 3.4em)`;
+  return node;
 }
 
 /** fx 스택 재사용 판별용 서명 — 레이어/파티클 저작값이 같으면 DOM 을 다시 만들지 않는다. */
@@ -258,6 +308,7 @@ function renderTitleNodes(settings: TitleScreenSettings, project: Project): HTML
     const node = el("h1", {
       class: "rm-title-screen-title",
       text: settings.title,
+      dataset: { testid: "title-text" },
     });
     node.style.left = logicalX(settings.layout.titleX);
     node.style.top = logicalY(settings.layout.titleY);
@@ -273,6 +324,7 @@ function renderTitleNodes(settings: TitleScreenSettings, project: Project): HTML
     const fallback = el("h1", {
       class: "rm-title-screen-title",
       text: settings.title,
+      dataset: { testid: "title-text" },
     });
     fallback.style.left = logicalX(settings.layout.titleX);
     fallback.style.top = logicalY(settings.layout.titleY);
@@ -364,6 +416,7 @@ function renderMenu(
     class: "rm-title-menu rm-title-menu-open",
     attrs: { "aria-label": "게임 시작 메뉴", role: "listbox" },
   });
+  if (settings.menuStyle) menu.dataset.menuStyle = settings.menuStyle;
   menu.style.left = logicalX(settings.layout.menuX);
   menu.style.top = logicalY(titleMenuTop(settings.layout.menuY, options.length, hintVisible));
   for (const [index, option] of options.entries()) {

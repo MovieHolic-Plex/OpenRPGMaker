@@ -17,6 +17,7 @@ import { DEFAULT_DIALOGUE_STYLE_ID, DIALOGUE_PROJECT_SPEED_LIMITS, isDialogueSty
 import { isFontFamilyId } from "@/project/fontRegistry";
 import { normalizeElementRecords, normalizeGlobalBattleCommands, normalizeTerrainRecords } from "@/project/databaseUtilityRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
+import { normalizeTitleOpeningFields } from "@/project/titleEffects";
 import {
   DEFAULT_DAY_END_HOUR,
   DEFAULT_DAY_START_HOUR,
@@ -359,6 +360,8 @@ function normalizeTitleScreenSettings(
     ...(backgroundLayers ? { backgroundLayers } : {}),
     ...(particles ? { particles } : {}),
     ...(intro ? { intro } : {}),
+    // 오프닝 확장(맞춤·렌더링·영역 효과·로고/메뉴 스타일)도 omit-when-empty.
+    ...normalizeTitleOpeningFields(settings),
   };
 }
 

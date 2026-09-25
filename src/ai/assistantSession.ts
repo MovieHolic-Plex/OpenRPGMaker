@@ -34,6 +34,7 @@ import { isVerifyNpcRewardInput, npcRewardTargetSnapshot, VERIFY_NPC_REWARD_TOOL
 import { APPEARANCE_GENERATION_TOOL } from "@/editor/tools/characterAppearanceTools";
 import { GAME_OVER_IMAGE_TOOL, OPENING_IMAGE_TOOL } from "@/editor/tools/cinematicTools";
 import { IMAGE_ASSET_TOOL } from "@/editor/tools/imageAssetTools";
+import { TITLE_ART_TOOL } from "@/editor/tools/titleArtTools";
 import type { AppearanceGenerationHandoff } from "@/editor/characterAppearanceGeneration";
 import { EVENT_COMMAND_ASSIST_TOOL } from "@/editor/tools/eventCommandAssistTool";
 import { prepareTool, runToolAsync } from "@/editor/tools/asyncToolRunner";
@@ -5098,7 +5099,7 @@ export class AssistantSession {
         if (typeof args.theme === "string" && args.theme.trim()) turnTheme = args.theme.trim();
         this.emitToolStarted(onEvent, name, args);
         await operation.wait(this.yieldForUi(signal));
-        if (tool?.mode === "write" || name === APPEARANCE_GENERATION_TOOL || name === OPENING_IMAGE_TOOL || name === GAME_OVER_IMAGE_TOOL || name === IMAGE_ASSET_TOOL) writeToolAttempts += 1;
+        if (tool?.mode === "write" || name === APPEARANCE_GENERATION_TOOL || name === OPENING_IMAGE_TOOL || name === GAME_OVER_IMAGE_TOOL || name === IMAGE_ASSET_TOOL || name === TITLE_ART_TOOL) writeToolAttempts += 1;
         // 프로토콜 보장: 이 호출에 대한 role:"tool" 응답을 반드시 남긴다. 응답 없이 라운드를 벗어나면
         // 세션의 영구 대화에 짝 없는 tool_calls 가 남아 **그 뒤 모든 턴**이 공급자 400 으로 죽는다
         // (실측 2026-08-30). 예외는 삼키지 않고 응답을 붙인 뒤 그대로 다시 던진다.
@@ -5220,6 +5221,29 @@ export class AssistantSession {
                   data: { status: "generated", kind: asset.kind, resourceId: asset.resourceId, name: asset.name, tags: asset.tags },
                 }
                 : applied;
+            }
+          } else if (name === TITLE_ART_TOOL) {
+            const { generateTitleArt, titleArtScreenArgs } = await operation.wait(import("@/editor/titleArtGeneration"));
+            const art = await operation.wait(generateTitleArt(args, { signal }));
+            if (!art.ok) {
+              toolResult = { ok: false, summary: art.summary, issues: [{ severity: "error", code: art.code, message: art.summary }] };
+            } else {
+              // 등록 → 연결 모두 기존 쓰기 툴로. 연결이 실패해도 그림은 남으므로 id 를 돌려준다.
+              const registered = runTool(this.ctx, "upsert_resource", {
+                resource: { id: art.resourceId, name: art.request.name, kind: "title", dataUrl: art.dataUrl },
+              }, { dryRun: false });
+              if (!registered.ok) {
+                toolResult = registered;
+              } else {
+                const linked = runTool(this.ctx, "set_title_screen", titleArtScreenArgs(art.request, art.resourceId, art.effects), { dryRun: false });
+                toolResult = linked.ok
+                  ? {
+                    ...linked,
+                    summary: `타이틀 키아트 ${art.resourceId} 를 만들어 배경으로 걸고 「${art.request.preset.label}」 효과를 ${art.effects ? "그림에 맞춰 " : ""}적용했습니다. ${linked.summary}`,
+                    data: { status: "generated", resourceId: art.resourceId, name: art.request.name, preset: art.request.preset.id, fittedToArt: Boolean(art.effects) },
+                  }
+                  : { ...linked, summary: `그림 ${art.resourceId} 는 등록했지만 타이틀 연결에 실패했습니다: ${linked.summary}` };
+              }
             }
           } else if (name === APPEARANCE_GENERATION_TOOL) {
             const { startAppearanceGenerationFromAssistant } = await operation.wait(import("@/editor/characterAppearanceGeneration"));

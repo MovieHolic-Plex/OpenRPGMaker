@@ -3,7 +3,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { system2GaugeCssVars } from "@/assets/system2Sheet";
 import { transparentColorKeyDataUrl } from "@/assets/transparentColorKeyBackground";
 import { DEFAULT_RUNTIME_WINDOW_SKIN_ID, normalizeSystemWindowSkinId } from "@/project/databaseRecordModel";
-import type { Project } from "@/project/types";
+import type { Project, TitleBackgroundFit, TitleBackgroundRendering } from "@/project/types";
 
 function resourceUrl(resourceId: string | undefined, project?: Project): string | undefined {
   return resolveAssetResourceUrl(resourceId, { project: project ?? store.getCurrent() }) ?? undefined;
@@ -25,17 +25,28 @@ export function applyTitleGraphic(node: HTMLElement, project?: Project): void {
   }
 }
 
-export function applyTitleScreenBackground(node: HTMLElement, resourceId: string | undefined, project?: Project): void {
+/**
+ * 타이틀 배경. `fit`/`rendering` 미지정은 레거시(늘려 채우기 + 픽셀 보간)를 그대로 따른다 —
+ * 16:9 키아트를 4:3 무대에 늘리면 찌그러지므로 오프닝 연출은 cover + smooth 를 저작한다.
+ */
+export function applyTitleScreenBackground(
+  node: HTMLElement,
+  resourceId: string | undefined,
+  project?: Project,
+  options?: { fit?: TitleBackgroundFit; rendering?: TitleBackgroundRendering },
+): void {
   if (resourceId) {
     node.dataset.titleResource = resourceId;
   }
   const url = resourceUrl(resourceId, project);
   if (url) {
+    const fit = options?.fit ?? "stretch";
     node.style.backgroundImage = `url("${url}")`;
-    node.style.backgroundSize = "100% 100%";
+    node.style.backgroundSize = fit === "stretch" ? "100% 100%" : fit;
     node.style.backgroundRepeat = "no-repeat";
     node.style.backgroundPosition = "center";
-    node.style.imageRendering = "pixelated";
+    node.style.imageRendering = options?.rendering === "smooth" ? "auto" : "pixelated";
+    if (options?.fit) node.dataset.titleBackgroundFit = options.fit;
   } else {
     node.style.backgroundImage = "";
   }

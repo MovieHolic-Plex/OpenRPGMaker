@@ -41,9 +41,9 @@ export const TASK_RECIPES = [
   { id: "game-over-screen", read: ["get_game_over", "list_opening_media", "recommend_bgm"], write: ["set_game_over", "generate_game_over_image"],
     verify: ["get_game_over", "run_lint"],
     policy: "Game Over is system.gameOver. Read it before editing, generate a clean full-screen backdrop when needed, then connect its resourceId with set_game_over. Use recommend_bgm for mood-matched music and keep text/buttons out of generated art." },
-  { id: "image-assets", read: ["list_resources", "get_monster_resource"], write: ["generate_image_asset", "upsert_item", "upsert_enemy", "set_title_screen", "set_game_over"],
+  { id: "image-assets", read: ["list_resources", "get_monster_resource"], write: ["generate_image_asset", "generate_title_art", "upsert_item", "upsert_enemy", "set_title_screen", "set_game_over"],
     verify: ["get_database_records", "run_lint"],
-    policy: "Use generate_image_asset for picture item/prop icons, title art, map or battle backdrops, and monster sprites. Register the returned resourceId, then connect it through upsert_item.iconResourceId, upsert_enemy.monsterResourceId, set_title_screen, set_game_over, or the relevant event graphic field. Keep generated images free of text, logos, UI and watermarks." },
+    policy: "Use generate_image_asset for picture item/prop icons, title art, map or battle backdrops, and monster sprites. Register the returned resourceId, then connect it through upsert_item.iconResourceId, upsert_enemy.monsterResourceId, set_title_screen, set_game_over, or the relevant event graphic field. For a whole title screen (key art + god rays/particles/blade glint/water/mist + logo) use generate_title_art with a preset; it registers and connects everything itself. Keep generated images free of text, logos, UI and watermarks." },
 ] as const;
 
 // 에디터 작업 영역 순서(사람이 읽는 순서 = 안정 정렬 키). 도메인이 없거나 미지의 값이면 CATCH_ALL.

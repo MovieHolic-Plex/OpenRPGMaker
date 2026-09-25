@@ -37,8 +37,28 @@ import type {
   TitleBackgroundLayer,
   TitleIntroSettings,
   TitleParticleSettings,
+  TitleScreenSettings,
   TroopRecord,
 } from "@/project/types";
+import {
+  MAX_TITLE_EFFECT_REGION_POINTS,
+  MAX_TITLE_EFFECTS,
+  MAX_TITLE_MOTES,
+  TITLE_BACKGROUND_FITS,
+  TITLE_BACKGROUND_RENDERINGS,
+  TITLE_EFFECT_KINDS,
+  TITLE_LOGO_STYLES,
+  TITLE_MENU_STYLES,
+  TITLE_OPENING_PRESETS,
+  findTitleOpeningPreset,
+  normalizeTitleBackgroundFit,
+  normalizeTitleBackgroundRendering,
+  normalizeTitleEffects,
+  normalizeTitleLogoStyle,
+  normalizeTitleLogoSubtitle,
+  normalizeTitleMenuStyle,
+  titleOpeningPresetEffects,
+} from "@/project/titleEffects";
 import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
 import { assertPartyActorReferences } from "./partyActorReferences";
 import { resolveEventPlacement } from "./eventTools";
@@ -1678,7 +1698,7 @@ function requireTitleResource(draft: Project, field: string, id: string, kind: "
 
 const setTitleScreen: ToolDefinition = {
   name: "set_title_screen",
-  description: "타이틀 화면 제목/메뉴/표시/오디오와 배경 레이어/파티클/등장 연출을 갱신한다. titleScreen이 없으면 생성한다.",
+  description: "타이틀 화면 제목/메뉴/표시/오디오와 배경 레이어/파티클/등장 연출, 오프닝 효과(빛내림·빛 알갱이·칼날 반사광·물결·안개)와 로고/메뉴 질감을 갱신한다. titleScreen이 없으면 생성한다. 새 키아트까지 한 번에 만들려면 generate_title_art 를 써라.",
   mode: "write",
   parameters: {
     type: "object",
@@ -1759,6 +1779,42 @@ const setTitleScreen: ToolDefinition = {
         required: ["preset"],
         additionalProperties: false,
       },
+      openingPreset: {
+        type: "string",
+        enum: TITLE_OPENING_PRESETS.map((preset) => preset.id),
+        description: "오프닝 프리셋. effects·logoStyle·menuStyle 을 프리셋 값으로 채운다(같은 호출의 명시 인자가 이긴다). 좌표는 프리셋 구도 기준이라 배경 그림이 다르면 effects 를 직접 맞춰라.",
+      },
+      effects: {
+        type: "array",
+        description:
+          `배경 그림 위 영역 효과(WebGL). 최대 ${MAX_TITLE_EFFECTS}개, 목록 순서대로 칠한다. 좌표는 배경 그림 기준 0..1 (화면 밖 광원은 -0.5..1.5). `
+          + "godRays/motes: source(광원)+toward(빛 방향), spread(반폭 각). motes 는 region 으로도 된다. glint: line [[x,y],[x,y]] 칼날 따라 반사광, periodSec. "
+          + "water/mist/dapple: region 다각형(3~8점). glow: source 한 점 깜빡임, spread 반지름. camera: 전체 화면 느린 흔들림. 빈 배열이면 효과를 지운다.",
+        items: {
+          type: "object",
+          properties: {
+            kind: { type: "string", enum: TITLE_EFFECT_KINDS },
+            enabled: { type: "boolean" },
+            intensity: { type: "number", minimum: 0, maximum: 2 },
+            speed: { type: "number", minimum: 0, maximum: 4 },
+            color: { type: "string", description: "#rrggbb" },
+            source: { type: "array", items: { type: "number" }, minItems: 2, maxItems: 2 },
+            toward: { type: "array", items: { type: "number" }, minItems: 2, maxItems: 2 },
+            spread: { type: "number", minimum: 0, maximum: 1 },
+            line: { type: "array", items: { type: "array", items: { type: "number" }, minItems: 2, maxItems: 2 }, minItems: 2, maxItems: 2 },
+            periodSec: { type: "number", minimum: 0.5, maximum: 60 },
+            region: { type: "array", items: { type: "array", items: { type: "number" }, minItems: 2, maxItems: 2 }, minItems: 3, maxItems: MAX_TITLE_EFFECT_REGION_POINTS },
+            count: { type: "integer", minimum: 1, maximum: MAX_TITLE_MOTES },
+          },
+          required: ["kind"],
+          additionalProperties: false,
+        },
+      },
+      backgroundFit: { type: "string", enum: TITLE_BACKGROUND_FITS, description: "배경 맞춤. 기본 cover(비율 유지해 채움). stretch 는 레거시." },
+      backgroundRendering: { type: "string", enum: TITLE_BACKGROUND_RENDERINGS, description: "smooth(그린 키아트) | pixelated(도트 배경)" },
+      logoStyle: { type: "string", enum: TITLE_LOGO_STYLES, description: "제목 글자 질감. 지정하면 기본 편집 문구(A NEW ADVENTURE)를 숨긴다." },
+      logoSubtitle: { type: "string", description: "로고 밑 작은 부제(예: OATH OF THE BLADE). 빈 문자열이면 해제." },
+      menuStyle: { type: "string", enum: TITLE_MENU_STYLES, description: "window(창) | plain(키아트 위 글자 메뉴)" },
       intro: {
         type: "object",
         properties: {
@@ -1878,9 +1934,66 @@ const setTitleScreen: ToolDefinition = {
       else current.intro = intro;
     }
 
-    return { summary: `타이틀 화면 설정: "${current.title}"` };
+    const opening = applyTitleOpeningArgs(current, args);
+
+    return { summary: `타이틀 화면 설정: "${current.title}"${opening}` };
   },
 };
+
+/** set_title_screen 의 오프닝 인자(프리셋·효과·로고/메뉴 질감·배경 맞춤). 요약 꼬리 문자열을 돌려준다. */
+function applyTitleOpeningArgs(current: TitleScreenSettings, args: Record<string, unknown>): string {
+  const notes: string[] = [];
+  if (typeof args.openingPreset === "string") {
+    const preset = findTitleOpeningPreset(args.openingPreset);
+    if (!preset) {
+      throw new ToolError(
+        `openingPreset '${args.openingPreset}' 는 없습니다. 가능: ${TITLE_OPENING_PRESETS.map((item) => item.id).join(", ")}`,
+        { code: "invalid-args" },
+      );
+    }
+    current.effects = titleOpeningPresetEffects(preset);
+    current.logoStyle = preset.logoStyle;
+    current.menuStyle = preset.menuStyle;
+    notes.push(`프리셋 ${preset.label}`);
+  }
+  if ("effects" in args) {
+    if (!Array.isArray(args.effects)) throw new ToolError("effects 는 배열이어야 합니다.", { code: "invalid-args" });
+    const effects = normalizeTitleEffects(args.effects) ?? [];
+    const dropped = args.effects.length - effects.length;
+    if (dropped > 0 && effects.length === 0 && args.effects.length > 0) {
+      throw new ToolError(
+        "effects 가 모두 버려졌습니다. kind 와 그 kind 에 필요한 좌표(godRays·motes: source+toward, glint: line, water·mist·dapple: region 3점 이상, glow: source)를 확인하세요.",
+        { code: "invalid-args" },
+      );
+    }
+    if (effects.length === 0) delete current.effects;
+    else current.effects = effects;
+    notes.push(`효과 ${effects.length}개${dropped > 0 ? `(형식이 틀린 ${dropped}개 버림)` : ""}`);
+  }
+  const fit = normalizeTitleBackgroundFit(args.backgroundFit);
+  if (fit) current.backgroundFit = fit;
+  const rendering = normalizeTitleBackgroundRendering(args.backgroundRendering);
+  if (rendering) current.backgroundRendering = rendering;
+  if ("logoStyle" in args) {
+    const style = normalizeTitleLogoStyle(args.logoStyle);
+    if (style) current.logoStyle = style;
+    else delete current.logoStyle;
+  }
+  if ("logoSubtitle" in args) {
+    const subtitle = normalizeTitleLogoSubtitle(args.logoSubtitle);
+    if (subtitle) current.logoSubtitle = subtitle;
+    else delete current.logoSubtitle;
+  }
+  if ("menuStyle" in args) {
+    const style = normalizeTitleMenuStyle(args.menuStyle);
+    if (style) current.menuStyle = style;
+    else delete current.menuStyle;
+  }
+  if (current.effects?.length && !current.backgroundResourceId) {
+    notes.push("주의: 배경 그림이 없으면 효과는 보이지 않는다");
+  }
+  return notes.length ? ` · ${notes.join(" · ")}` : "";
+}
 
 function parseStarterEventArgs(value: unknown): { mapId?: string; eventId?: string; x?: number; y?: number; name?: string } {
   if (typeof value !== "object" || value === null || Array.isArray(value)) return {};

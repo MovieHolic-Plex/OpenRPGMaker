@@ -10,6 +10,7 @@ import { ACCEPTANCE_SCHEMA } from "../assistantAcceptanceTools";
 import { APPEARANCE_GENERATION_TOOL } from "@/editor/tools/characterAppearanceTools";
 import { GAME_OVER_IMAGE_TOOL, OPENING_IMAGE_TOOL } from "@/editor/tools/cinematicTools";
 import { IMAGE_ASSET_TOOL } from "@/editor/tools/imageAssetTools";
+import { TITLE_ART_TOOL } from "@/editor/tools/titleArtTools";
 
 // 이미지를 주입할 툴(명시적 '보여줘' 계열 + 미리보기). get_map_region 등 빈번 조회는 텍스트로 두어 토큰을 아낀다.
 export const VISION_TOOLS = new Set(["show_tiles", "show_tile_grid", "show_map_region", "preview_house", "look_at_houses", "render_group_sample"]);
@@ -232,7 +233,7 @@ export const WORK_PLAN_TOOLS: readonly OpenAiToolSchema[] = [
 ];
 
 /** 세션 전용 쓰기 툴(레지스트리 밖) — 질문 모드에서 함께 뺀다. */
-const SESSION_WRITE_TOOL_NAMES: ReadonlySet<string> = new Set(["set_build_spec", "set_work_plan", "complete_work_item", "skip_work_item", "repair_acceptance", "review_acceptance", APPEARANCE_GENERATION_TOOL, OPENING_IMAGE_TOOL, GAME_OVER_IMAGE_TOOL, IMAGE_ASSET_TOOL]);
+const SESSION_WRITE_TOOL_NAMES: ReadonlySet<string> = new Set(["set_build_spec", "set_work_plan", "complete_work_item", "skip_work_item", "repair_acceptance", "review_acceptance", APPEARANCE_GENERATION_TOOL, OPENING_IMAGE_TOOL, GAME_OVER_IMAGE_TOOL, IMAGE_ASSET_TOOL, TITLE_ART_TOOL]);
 
 /** 프로젝트를 바꾸는 툴인가 — 레지스트리 mode:"write" 또는 세션 전용 쓰기 툴. */
 export function isWriteToolName(name: string): boolean {

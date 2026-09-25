@@ -65,7 +65,15 @@ import { playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { DEFAULT_MENU_SKIN_ID, listMenuSkinIds, MENU_SKINS, resolveMenuSkinId } from "@/player/menuSkins/registry";
 import type { MenuSkinId } from "@/player/menuSkins/types";
 import { calculatePlaySurfaceScale } from "@/player/playSurfaceScale";
-import { listTitleMenuOptions, renderTitleFxStack, titleIntroClass } from "@/player/titleScreen";
+import { listTitleMenuOptions, renderTitleEffectsLayer, renderTitleFxStack, titleIntroClass } from "@/player/titleScreen";
+import {
+  MAX_TITLE_LOGO_SUBTITLE_LENGTH,
+  TITLE_EFFECT_LABELS,
+  TITLE_OPENING_PRESETS,
+  findTitleOpeningPreset,
+  titleOpeningPresetEffects,
+} from "@/project/titleEffects";
+import { applyToolSequenceToStore } from "@/editor/tools/applyChangesetToStore";
 import {
   analyzePlayResolution,
   normalizePlayResolution,
@@ -547,6 +555,7 @@ function systemSectionNodes(
                 titleScreenMenuFieldset(titleScreen, rerender),
                 titleScreenAudioFieldset(titleScreen, rerender),
                 titleScreenEffectsFieldset(titleScreen, rerender),
+                titleScreenOpeningFieldset(titleScreen, rerender),
               ],
             }),
           ],
@@ -2002,6 +2011,265 @@ function titleScreenEffectsFieldset(titleScreen: TitleScreenSettings, rerender: 
   });
 }
 
+function titleStageBackgroundSize(fit: TitleScreenSettings["backgroundFit"]): string {
+  if (fit === "cover" || fit === "contain") return fit;
+  return "100% 100%";
+}
+
+const TITLE_LOGO_STYLE_OPTIONS = [
+  { id: "plain", name: "기본" },
+  { id: "metal", name: "금속(은빛 광택)" },
+  { id: "gold", name: "황금" },
+  { id: "stone", name: "석재" },
+  { id: "glow", name: "빛남" },
+] as const;
+const TITLE_MENU_STYLE_OPTIONS = [
+  { id: "window", name: "창(윈도 스킨)" },
+  { id: "plain", name: "글자만(오프닝풍)" },
+] as const;
+const TITLE_BACKGROUND_FIT_OPTIONS = [
+  { id: "stretch", name: "늘이기(기존)" },
+  { id: "cover", name: "채우기(비율 유지·잘림)" },
+  { id: "contain", name: "맞추기(비율 유지·여백)" },
+] as const;
+const TITLE_BACKGROUND_RENDERING_OPTIONS = [
+  { id: "pixelated", name: "도트(선명)" },
+  { id: "smooth", name: "부드럽게(일러스트)" },
+] as const;
+
+/**
+ * 오프닝 연출 — 그림 위 영역 효과(빛내림·빛 먼지·칼날 반짝임·물결·안개…)와 로고/메뉴 스타일,
+ * 그리고 생성형 이미지로 키아트를 만들어 프리셋 효과까지 한 번에 거는 버튼.
+ * 편집은 모두 updateTitleScreen, AI 적용은 기존 쓰기 툴(upsert_resource → set_title_screen) 묶음 한 번.
+ */
+function titleScreenOpeningFieldset(titleScreen: TitleScreenSettings, rerender: SystemRefresh): HTMLElement {
+  const presetSelect = el("select", {
+    dataset: { testid: "db-title-opening-preset" },
+    children: TITLE_OPENING_PRESETS.map((preset) => el("option", { text: preset.label, attrs: { value: preset.id } })),
+  }) as HTMLSelectElement;
+  const presetDescription = el("p", { class: "db-system-help", text: TITLE_OPENING_PRESETS[0]?.description ?? "" });
+  presetSelect.addEventListener("change", () => {
+    presetDescription.textContent = findTitleOpeningPreset(presetSelect.value)?.description ?? "";
+  });
+  const applyPreset = el("button", {
+    class: "btn small",
+    text: "효과 프리셋 적용",
+    attrs: { type: "button" },
+    dataset: { testid: "db-title-opening-preset-apply" },
+    on: {
+      click: () => {
+        const preset = findTitleOpeningPreset(presetSelect.value);
+        if (!preset) return;
+        updateTitleScreen((settings) => {
+          settings.effects = titleOpeningPresetEffects(preset);
+          settings.logoStyle = preset.logoStyle;
+          settings.menuStyle = preset.menuStyle;
+          settings.backgroundFit = "cover";
+          settings.backgroundRendering = "smooth";
+        });
+        rerender();
+      },
+    },
+  });
+
+  const styleControls = [
+    koreanSelectField("로고 스타일", "db-field-title-screen-logo-style", titleScreen.logoStyle ?? "plain", TITLE_LOGO_STYLE_OPTIONS, (value) => {
+      updateTitleScreen((settings) => {
+        if (value === "plain") delete settings.logoStyle;
+        else settings.logoStyle = value;
+      });
+      rerender();
+    }),
+    koreanSelectField("메뉴 스타일", "db-field-title-screen-menu-style", titleScreen.menuStyle ?? "window", TITLE_MENU_STYLE_OPTIONS, (value) => {
+      updateTitleScreen((settings) => {
+        if (value === "window") delete settings.menuStyle;
+        else settings.menuStyle = value;
+      });
+      rerender();
+    }),
+    koreanSelectField("배경 맞춤", "db-field-title-screen-background-fit", titleScreen.backgroundFit ?? "stretch", TITLE_BACKGROUND_FIT_OPTIONS, (value) => {
+      updateTitleScreen((settings) => {
+        if (value === "stretch") delete settings.backgroundFit;
+        else settings.backgroundFit = value;
+      });
+      rerender();
+    }),
+    koreanSelectField("배경 그리기", "db-field-title-screen-background-rendering", titleScreen.backgroundRendering ?? "pixelated", TITLE_BACKGROUND_RENDERING_OPTIONS, (value) => {
+      updateTitleScreen((settings) => {
+        if (value === "pixelated") delete settings.backgroundRendering;
+        else settings.backgroundRendering = value;
+      });
+      rerender();
+    }),
+    textControl("로고 부제", titleScreen.logoSubtitle ?? "", (value) => {
+      updateTitleScreen((settings) => {
+        const trimmed = value.trim().slice(0, MAX_TITLE_LOGO_SUBTITLE_LENGTH);
+        if (trimmed) settings.logoSubtitle = trimmed;
+        else delete settings.logoSubtitle;
+      }, "system:title-screen:logo-subtitle");
+      rerender("effects");
+    }, "db-field-title-screen-logo-subtitle"),
+  ];
+
+  const effects = titleScreen.effects ?? [];
+  const effectRows = effects.map((effect, index) =>
+    el("div", {
+      class: "db-title-opening-effect-row",
+      dataset: { testid: `db-title-opening-effect-${index}`, effectKind: effect.kind },
+      children: [
+        checkboxField(TITLE_EFFECT_LABELS[effect.kind], `db-title-opening-effect-${index}-enabled`, effect.enabled !== false, (checked) => {
+          updateTitleScreen((settings) => {
+            const target = settings.effects?.[index];
+            if (!target) return;
+            if (checked) delete target.enabled;
+            else target.enabled = false;
+          });
+          rerender("effects");
+        }),
+        densitySliderField(
+          "세기",
+          `db-title-opening-effect-${index}-intensity`,
+          Math.round(((effect.intensity ?? 1) / 2) * 100),
+          effect.enabled === false,
+          (value) => {
+            updateTitleScreen((settings) => {
+              const target = settings.effects?.[index];
+              if (!target) return;
+              target.intensity = Math.max(0, Math.min(2, (value / 100) * 2));
+            }, `system:title-screen:effect-${index}-intensity`);
+            rerender("effects");
+          },
+        ),
+        el("button", {
+          class: "btn small",
+          text: "삭제",
+          attrs: { type: "button" },
+          dataset: { testid: `db-title-opening-effect-${index}-remove` },
+          on: {
+            click: () => {
+              updateTitleScreen((settings) => {
+                const next = (settings.effects ?? []).filter((_, i) => i !== index);
+                if (next.length) settings.effects = next;
+                else delete settings.effects;
+              });
+              rerender();
+            },
+          },
+        }),
+      ],
+    }),
+  );
+  const clearEffects = effects.length
+    ? el("button", {
+        class: "btn small",
+        text: "효과 모두 끄기",
+        attrs: { type: "button" },
+        dataset: { testid: "db-title-opening-effects-clear" },
+        on: {
+          click: () => {
+            updateTitleScreen((settings) => {
+              delete settings.effects;
+            });
+            rerender();
+          },
+        },
+      })
+    : null;
+
+  const promptInput = el("textarea", {
+    class: "db-title-opening-prompt",
+    attrs: { rows: "3", placeholder: "예: 칼 두 자루가 기대 선 큰 나무, 강 건너 성 마을, 안개 낀 산맥" },
+    dataset: { testid: "db-title-opening-ai-prompt" },
+  }) as HTMLTextAreaElement;
+  const aiStatus = el("p", { class: "db-system-help", dataset: { testid: "db-title-opening-ai-status" } });
+  const aiButton = el("button", {
+    class: "btn small primary",
+    text: "AI로 오프닝 만들기",
+    attrs: { type: "button" },
+    dataset: { testid: "db-title-opening-ai-generate" },
+  }) as HTMLButtonElement;
+  aiButton.addEventListener("click", () => {
+    void runTitleArtGeneration(presetSelect.value, promptInput.value, aiButton, aiStatus, rerender);
+  });
+
+  return el("fieldset", {
+    class: "oprn-db-fieldset db-title-workbench-group",
+    dataset: { testid: "db-title-opening" },
+    children: [
+      el("legend", { text: "오프닝 연출" }),
+      systemHelp("그림 위에 빛내림·빛 먼지·칼날 반짝임·물결·안개를 얹습니다. 프리셋은 구도가 비슷한 그림을 기준으로 좌표가 잡혀 있습니다."),
+      field("효과 프리셋", presetSelect),
+      presetDescription,
+      applyPreset,
+      el("div", {
+        class: "db-title-opening-effects",
+        dataset: { testid: "db-title-opening-effects" },
+        children: effectRows.length ? [...effectRows, ...(clearEffects ? [clearEffects] : [])] : [systemHelp("켜진 효과가 없습니다.")],
+      }),
+      ...styleControls,
+      el("div", {
+        class: "db-title-opening-ai",
+        children: [
+          systemHelp("선택한 프리셋 구도로 키아트를 생성해 배경에 걸고 효과·로고 스타일을 함께 적용합니다. 되돌리기 한 번으로 취소됩니다."),
+          field("장면 설명(선택)", promptInput),
+          aiButton,
+          aiStatus,
+        ],
+      }),
+    ],
+  });
+}
+
+async function runTitleArtGeneration(
+  presetId: string,
+  prompt: string,
+  button: HTMLButtonElement,
+  status: HTMLElement,
+  rerender: SystemRefresh,
+): Promise<void> {
+  button.disabled = true;
+  status.dataset.state = "running";
+  status.textContent = "키아트를 생성하는 중입니다… (수십 초 걸릴 수 있습니다)";
+  try {
+    const { generateTitleArt, titleArtToolCalls } = await import("@/editor/titleArtGeneration");
+    const title = store.getCurrent().system.titleScreen?.title;
+    const art = await generateTitleArt({ preset: presetId, ...(prompt.trim() ? { prompt: prompt.trim() } : {}), ...(title ? { title } : {}) });
+    if (!art.ok) {
+      status.dataset.state = "error";
+      status.textContent = art.summary;
+      return;
+    }
+    const results = applyToolSequenceToStore(titleArtToolCalls(art), { summary: "AI 타이틀 키아트", source: "agent" });
+    const failed = results.find((result) => !result.ok);
+    if (failed) {
+      status.dataset.state = "error";
+      status.textContent = failed.summary;
+      return;
+    }
+    status.dataset.state = "done";
+    status.textContent = "키아트를 배경에 걸고 효과를 적용했습니다.";
+    rerender();
+  } catch (error) {
+    status.dataset.state = "error";
+    status.textContent = error instanceof Error ? error.message : String(error);
+  } finally {
+    button.disabled = false;
+  }
+}
+
+function koreanSelectField<T extends string>(
+  label: string,
+  testid: string,
+  value: string,
+  options: readonly { readonly id: T; readonly name: string }[],
+  onChange: (value: T) => void,
+): HTMLElement {
+  return selectField(label, testid, value, options, (next) => {
+    const match = options.find((option) => option.id === next);
+    if (match) onChange(match.id);
+  });
+}
+
 function titleLayerRow(layer: TitleBackgroundLayer, index: number, rerender: SystemRefresh): HTMLElement {
   return el("div", {
     class: "db-title-layer-row",
@@ -2177,15 +2445,19 @@ function titleScreenWorkbenchPreview(
         ? {
             style: [
               `background-image:url("${bgUrl}")`,
-              "background-size:100% 100%",
+              `background-size:${titleStageBackgroundSize(titleScreen.backgroundFit)}`,
               "background-repeat:no-repeat",
               "background-position:center",
-              "image-rendering:pixelated",
+              `image-rendering:${titleScreen.backgroundRendering === "smooth" ? "auto" : "pixelated"}`,
             ].join(";"),
           }
         : {},
     });
     stage.style.aspectRatio = `${resolutionAnalysis.aspectWidth} / ${resolutionAnalysis.aspectHeight}`;
+
+    // 영역 효과(빛내림·물결·안개…)도 런타임과 같은 WebGL 레이어. 켜진 효과가 없으면 null.
+    const effectsLayer = renderTitleEffectsLayer(titleScreen, backgroundResourceId, project, null);
+    if (effectsLayer) stage.append(effectsLayer);
 
     // 배경 레이어 + 파티클은 런타임과 **같은 렌더러**(renderTitleFxStack)를 그대로 마운트한다
     // — 에디터 전용 복제가 낡을 수 없다. rAF 는 스테이지 교체 시 canvas 분리로 자체 해제된다.
@@ -2200,7 +2472,7 @@ function titleScreenWorkbenchPreview(
       const titleNode = el("div", {
         class: "db-title-workbench-title",
         text: titleScreen.title || "(제목 없음)",
-        dataset: { testid: "db-title-workbench-title-text" },
+        dataset: { testid: "db-title-workbench-title-text", logoStyle: titleScreen.logoStyle ?? "plain" },
       });
       titleNode.style.left = `${(titleScreen.layout.titleX / 320) * 100}%`;
       titleNode.style.top = `${(titleScreen.layout.titleY / 240) * 100}%`;

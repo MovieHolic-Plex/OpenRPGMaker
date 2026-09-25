@@ -17,6 +17,7 @@ const CALIBRATED_MIN_BUDGET = 6000;
 // → 오프닝 시네마틱 네 툴(get/set/remove_opening·list_opening_media)을 들인 뒤 4,811자(활성 툴 226개).
 // → 게임오버·오디오 탐색 파사드를 등록한 뒤 5,043자(활성 툴 238개).
 // → 범용 이미지 에셋 생성(generate_image_asset)을 등록한 뒤 5,065자(활성 툴 239개).
+// → 타이틀 키아트 한 번에 만들기(generate_title_art)를 등록한 뒤 5,085자(활성 툴 240개, 이름+쉼표 20자).
 // 이 상한이 프롬프트 예산을 잡아먹지는 않는다 — buildSystemPrompt 가 색인 길이만큼 예산을 늘려
 // 기존 섹션 자리를 지키기 때문이다(아래 "does not push ... over its budget" 케이스가 그것을 고정한다).
 // 상한을 올릴 때는 이 주석의 실측 자수를 함께 갱신한다 — 조용한 상향은 금지다.

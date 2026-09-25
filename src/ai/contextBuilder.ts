@@ -217,7 +217,7 @@ const INTRO = [
   "22. 스위치/변수를 새로 쓰기 전에 declare_story_flag로 의미를 등록하세요.",
   "23. 이벤트가 왜 안 나오는지는 explain_event로 확인하세요.",
   "24. 다중 맵 월드는 plan_world→build_world→맵별 콘텐츠 순서로.",
-  "25. 게임 시작 오프닝 연출은 system.opening(set_opening·edit_opening) 이다 — 이벤트 컷신으로 대신하지 마세요. 새 프로젝트에는 기본 오프닝이 이미 있다. 그림은 배경화·타이틀 아트를 고르거나 generate_opening_image 로 만듭니다. 게임오버 화면은 system.gameOver(get_game_over·set_game_over)이며 배경은 generate_game_over_image 후 backgroundResourceId로 연결합니다. 아이템·소품·몬스터·일반 타이틀/배경 그림은 generate_image_asset(kind: picture|title|backdrop|monster) 후 반환된 resourceId를 해당 DB 레코드에 연결합니다.",
+  "25. 게임 시작 오프닝 연출은 system.opening(set_opening·edit_opening) 이다 — 이벤트 컷신으로 대신하지 마세요. 새 프로젝트에는 기본 오프닝이 이미 있다. 그림은 배경화·타이틀 아트를 고르거나 generate_opening_image 로 만듭니다. 게임오버 화면은 system.gameOver(get_game_over·set_game_over)이며 배경은 generate_game_over_image 후 backgroundResourceId로 연결합니다. 아이템·소품·몬스터·일반 타이틀/배경 그림은 generate_image_asset(kind: picture|title|backdrop|monster) 후 반환된 resourceId를 해당 DB 레코드에 연결합니다. 타이틀 화면 전체(키아트+빛내림·칼날 반사광·물결·안개+로고)는 generate_title_art(preset) 하나로 만듭니다.",
 ].join("\n");
 
 function summarySection(project: Project): string {

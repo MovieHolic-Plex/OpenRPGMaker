@@ -71,6 +71,7 @@ const ACTIONS = {
   focusView: forms("화면을 옮기는 중", "화면을 옮겼어요", "화면을 옮기지 못했어요"),
   opening: forms("오프닝을 만드는 중", "오프닝을 만들었어요", "오프닝 만들기를 실패했어요"),
   removeOpening: forms("오프닝을 지우는 중", "오프닝을 지웠어요", "오프닝 지우기를 실패했어요"),
+  titleArt: forms("타이틀 화면을 그리는 중", "타이틀 화면을 그렸어요", "타이틀 화면 그리기를 실패했어요"),
   openingImage: forms("오프닝 그림을 만드는 중", "오프닝 그림을 만들었어요", "오프닝 그림 만들기를 실패했어요"),
 } as const;
 
@@ -139,6 +140,7 @@ addFamily(ACTIONS.history, "revert_last_edit");
 addFamily(ACTIONS.focusView, "focus_editor_view");
 addFamily(ACTIONS.opening, "set_opening edit_opening");
 addFamily(ACTIONS.openingImage, "generate_opening_image");
+addFamily(ACTIONS.titleArt, "generate_title_art");
 addFamily(ACTIONS.removeOpening, "remove_opening");
 
 function readOnlyAction(toolName: string): ActionForms | undefined {
