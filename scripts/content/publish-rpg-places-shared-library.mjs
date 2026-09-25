@@ -1,4 +1,4 @@
-// Publish the RPG interiors, RPG dungeons and fantasy places to the host shared-content SQLite (공용 DB) as one
+// Publish the RPG interiors, RPG dungeons, fantasy places and the round-2 outdoor places (field-routes save) to the host shared-content SQLite (공용 DB) as one
 // library: every map as a reviewed place (root → floor place → raster kit), the map source itself, a thumbnail, and
 // the AI reference categories of its pipeline. The bundled tilesets are copied as `shared_` tilesets whose image is
 // an uploaded atlas with the tile grafts and colour key already baked in, so the library stands on its own.
@@ -14,14 +14,18 @@ import { withTsModule } from "../ontology-ts-loader.mjs";
 const LIBRARY_ID = "oprn-rpg-fantasy-places-20260925";
 const DRY = process.argv.includes("--dry");
 const read = (p) => JSON.parse(fs.readFileSync(p, "utf8"));
-const projects = Object.fromEntries(["rpg-interiors", "rpg-dungeons", "rpg-places"].map((d) => [d, read(`output/evidence/${d}/reloaded.json`)]));
+const projects = Object.fromEntries(["rpg-interiors", "rpg-dungeons", "rpg-places", "field-routes"].map((d) => [d, read(`output/evidence/${d}/reloaded.json`)]));
 const catalogs = Object.fromEntries(["rpg-interiors", "rpg-dungeons", "rpg-places"].map((d) => [d, read(`tiledata/${d}/catalog.json`)]));
+// The outdoor places live in the field-routes save (tiledata/rpg-outdoors); only the round-2 fantasy set is published here.
+const OUTDOOR_IDS = new Set(["outdoor-demon-castle", "outdoor-forest-maze", "outdoor-dragon-peak", "outdoor-forest-camp", "outdoor-farm-ranch", "outdoor-lighthouse-cape", "outdoor-world-archipelago"]);
+{ const c = read("tiledata/rpg-outdoors/catalog.json"); catalogs["field-routes"] = { plans: c.plans.filter((p) => OUTDOOR_IDS.has(p.id)) }; }
 const plansOf = (c) => (Array.isArray(c.plans) ? c.plans : Object.values(c.plans));
 
 // Source tileset → shared copy. The plain dungeon sheet folds into the stone copy (same numbering below 480, the
 // stone copy only adds grafts after it). The interiors save carries the newest bundled definitions.
 const SOURCE = projects["rpg-interiors"].tilesets;
 const DUNGEON_SOURCE = projects["rpg-dungeons"].tilesets;
+const FIELD = projects["field-routes"].tilesets;
 const SHARED = {
   tibo_interior_expanded: { id: "shared_rpg_tibo_interior", name: "실내 확장 · Tibo (RPG 장소 공용)", def: SOURCE.tibo_interior_expanded, docs: /^(rpg-interiors-(?!ship|sewer)|fantasy-interiors)/, from: SOURCE.tibo_interior_expanded },
   easyrpg_chipset_ship: { id: "shared_rpg_ship", name: "배 · EasyRPG + Tibo 짐 (RPG 장소 공용)", def: SOURCE.easyrpg_chipset_ship, docs: /^rpg-interiors-ship/, from: SOURCE.easyrpg_chipset_ship },
@@ -31,15 +35,29 @@ const SHARED = {
   oprn_dungeon_desert: { id: "shared_rpg_dungeon_desert", name: "던전 · 사막 재칠 (RPG 장소 공용)", def: DUNGEON_SOURCE.oprn_dungeon_desert, owner: "shared_rpg_dungeon_stone" },
   oprn_dungeon_lair: { id: "shared_rpg_dungeon_lair", name: "던전 · 용의 둥지 재칠 (RPG 장소 공용)", def: DUNGEON_SOURCE.oprn_dungeon_lair, owner: "shared_rpg_dungeon_stone" },
   forest_harmony: { id: "shared_rpg_forest_harmony", name: "숲의 조화 (RPG 장소 공용)", def: SOURCE.forest_harmony, docs: /^fantasy-exteriors/, from: SOURCE.forest_harmony },
+  // Outdoor places: the field-routes save's forest sheet (diverse-village grafts), the climate sheets and the keyed world copy.
+  outdoor_forest_harmony: { id: "shared_rpg_outdoor_forest", name: "숲의 조화 · 야외 이식 포함 (RPG 장소 공용)", def: FIELD.forest_harmony, docs: /^field-routes-forest-/, from: FIELD.forest_harmony },
+  forest_harmony_snow: { id: "shared_rpg_outdoor_snow", name: "숲의 조화 · 설원 (RPG 장소 공용)", def: FIELD.forest_harmony_snow, docs: /^field-routes-snow-/, from: FIELD.forest_harmony_snow },
+  forest_harmony_volcano: { id: "shared_rpg_outdoor_volcano", name: "숲의 조화 · 화산 (RPG 장소 공용)", def: FIELD.forest_harmony_volcano, docs: /^field-routes-volcano-/, from: FIELD.forest_harmony_volcano },
+  oprn_world_keyed: { id: "shared_rpg_world", name: "월드맵 · EasyRPG 분홍 키 (RPG 장소 공용)", def: FIELD.oprn_world_keyed, docs: /^rpg-outdoors-world-/, from: FIELD.oprn_world_keyed },
 };
 const ALIAS = { easyrpg_chipset_dungeon: "oprn_dungeon_stone" };
-const sharedOf = (tilesetId) => SHARED[ALIAS[tilesetId] ?? tilesetId];
+// Shared key of a map's tileset: the outdoor forest sheet is its own copy (more grafts than the interiors' one).
+const keyOf = (pipeline, tilesetId) => pipeline === "field-routes" && tilesetId === "forest_harmony" ? "outdoor_forest_harmony" : ALIAS[tilesetId] ?? tilesetId;
 
 // Classification tags (spatialPlaceClassification: 그림체 / 장소유형 / 공간형태 / 용도).
 function tags(pipeline, plan, tilesetId) {
   const style = tilesetId === "tibo_interior_expanded" ? "Tibo" : "EasyRPG";
   const t = (category, environment, ...purposes) => [`그림체:${style}`, `장소유형:${category}`, `공간형태:${environment}`, ...purposes.map((p) => `용도:${p}`), "RPG 판타지"];
   const id = plan.id;
+  if (pipeline === "field-routes") {
+    if (plan.world) return t("자연", "실외", "월드맵");
+    if (/demon-castle/.test(id)) return t("던전·유적", "실외", "탐험");
+    if (/farm/.test(id)) return t("마을·도시", "실외", "주택");
+    if (/lighthouse/.test(id)) return t("건물·시설", "실외", "시설");
+    if (/camp/.test(id)) return t("자연", "실외", "휴식");
+    return t("자연", "실외", "탐험");
+  }
   if (pipeline === "rpg-interiors") {
     if (plan.group === "ship") return t("이동수단", "건물 내부", "항해");
     if (plan.group === "sewer") return t("던전·유적", "지하", "탐험", "감옥");
@@ -63,8 +81,9 @@ for (const [pipeline, project] of Object.entries(projects)) {
   for (const plan of plansOf(catalogs[pipeline])) {
     const map = project.maps[plan.id];
     if (!map) throw new Error(`${pipeline}: ${plan.id} missing from the canonical save`);
-    if (!sharedOf(map.tilesetId)) throw new Error(`${plan.id}: no shared tileset for ${map.tilesetId}`);
-    entries.push({ pipeline, plan, map });
+    const key = keyOf(pipeline, map.tilesetId);
+    if (!SHARED[key]) throw new Error(`${plan.id}: no shared tileset for ${map.tilesetId}`);
+    entries.push({ pipeline, plan, map, key });
   }
 }
 
@@ -107,8 +126,8 @@ try {
     }
     return { atlases, maps: out };
   }, {
-    tilesets: Object.fromEntries([...new Set(entries.map((e) => ALIAS[e.map.tilesetId] ?? e.map.tilesetId))].map((k) => [k, SHARED[k].def])),
-    maps: entries.map((e) => { const k = ALIAS[e.map.tilesetId] ?? e.map.tilesetId; return { id: e.plan.id, map: e.map, source: k, shared: SHARED[k].def }; }),
+    tilesets: Object.fromEntries([...new Set(entries.map((e) => e.key))].map((k) => [k, SHARED[k].def])),
+    maps: entries.map((e) => ({ id: e.plan.id, map: e.map, source: e.key, shared: SHARED[e.key].def })),
   });
 } finally {
   await b.close();
@@ -132,14 +151,14 @@ for (const [key, s] of Object.entries(SHARED)) {
   const atlas = baked.atlases[key];
   lib.assets[assetId] = { id: assetId, kind: "tileset", name: s.name, dataUrl: atlas.dataUrl, meta: { width: atlas.width, height: atlas.height, tileSize: def.tileSize ?? 16, source: `번들 ${key}${s.def.tileGrafts?.length ? " + 이식 " + s.def.tileGrafts.length + "칸" : ""}을 구운 그림` } };
 }
-for (const { pipeline, plan, map } of entries) {
-  const s = sharedOf(map.tilesetId), floor = `shared_floor_rpg_${plan.id}`, root = `shared_rpg_${plan.id}`, kit = `raster_rpg_${plan.id}`;
+for (const { pipeline, plan, map, key } of entries) {
+  const s = SHARED[key], floor = `shared_floor_rpg_${plan.id}`, root = `shared_rpg_${plan.id}`, kit = `raster_rpg_${plan.id}`;
   lib.tilesets[s.id].structureKits.push({ id: kit, name: plan.name, kind: "section", width: map.width, height: map.height,
     rows: Array.from({ length: map.height }, (_, y) => ({ tiles: map.lowerTiles.slice(y * map.width, (y + 1) * map.width), upperTiles: map.upperTiles.slice(y * map.width, (y + 1) * map.width) })),
     learnedFrom: { mapId: floor, x: 0, y: 0, width: map.width, height: map.height } });
   lib.maps[floor] = { ...structuredClone(map), id: floor, name: plan.name, tilesetId: s.id };
   const t = tags(pipeline, plan, map.tilesetId === "easyrpg_chipset_dungeon" ? "oprn_dungeon_stone" : map.tilesetId);
-  const [ex, ey] = plan.entry ?? [0, 0];
+  const [ex, ey] = plan.entry ?? (plan.places?.[0]?.approach ? [plan.places[0].approach[0], plan.places[0].approach[1]] : [0, 0]);
   lib.places[floor] = { id: floor, name: plan.name, revision: 1, tags: t, provenance: { origin: "builtin" }, kind: "facility", layout: "manual", children: [], connections: [],
     ports: [{ x: ex, y: ey, id: `entry-rpg-${plan.id}`, name: "입구" }], exterior: { tilesetId: s.id, kitId: kit } };
   lib.places[root] = { id: root, name: plan.name, revision: 1, tags: t, provenance: { origin: "builtin" }, kind: "facility", layout: "manual",

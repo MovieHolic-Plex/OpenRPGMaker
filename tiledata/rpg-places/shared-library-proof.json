@@ -1,18 +1,19 @@
 {
   "id": "oprn-rpg-fantasy-places-20260925",
-  "places": 70,
-  "maps": 70,
+  "places": 88,
+  "maps": 88,
   "tilesets": {
     "shared_rpg_tibo_interior": {
-      "count": 2040,
+      "count": 2070,
       "references": [
         "fantasy-interiors-v3",
         "rpg-interiors-inn-homes-v3",
         "rpg-interiors-civic-v3",
         "rpg-interiors-castle-v3",
         "rpg-interiors-leisure-v3",
-        "rpg-interiors-climate-v3",
-        "rpg-interiors-staples-v3"
+        "rpg-interiors-climate-v4",
+        "rpg-interiors-staples-v4",
+        "rpg-interiors-sacred-v1"
       ]
     },
     "shared_rpg_ship": {
@@ -27,8 +28,9 @@
         "fantasy-dungeon-rooms-v1",
         "rpg-interiors-sewer-prison-v1",
         "rpg-dungeons-natural-v2",
-        "rpg-dungeons-built-v1",
+        "rpg-dungeons-built-v2",
         "rpg-dungeons-grand-v1",
+        "rpg-dungeons-frontier-v1",
         "rpg-dungeons-sunken-temple-v2"
       ]
     },
@@ -57,12 +59,36 @@
       "references": [
         "fantasy-exteriors-v2"
       ]
+    },
+    "shared_rpg_outdoor_forest": {
+      "count": 3311,
+      "references": [
+        "field-routes-forest-v7"
+      ]
+    },
+    "shared_rpg_outdoor_snow": {
+      "count": 3660,
+      "references": [
+        "field-routes-snow-v9"
+      ]
+    },
+    "shared_rpg_outdoor_volcano": {
+      "count": 3660,
+      "references": [
+        "field-routes-volcano-v10"
+      ]
+    },
+    "shared_rpg_world": {
+      "count": 480,
+      "references": [
+        "rpg-outdoors-world-v2"
+      ]
     }
   },
-  "bytes": 21888015,
-  "renderCheck": "70 maps pixel-identical with the shared atlas",
+  "bytes": 39023439,
+  "renderCheck": "88 maps pixel-identical with the shared atlas",
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "e84ede1b4f5ad7e5c6bbf2b95e6b927e062b7b1ea4400a698612444658b1afb9",
+  "revision": "1ac6d2642316349c4e93461cef7841ba90e36202dd027458e00ddff6b1dcb09d",
   "reloaded": true,
-  "publishedAt": "2026-09-25T08:03:42.836Z"
+  "publishedAt": "2026-09-25T09:49:33.423Z"
 }
