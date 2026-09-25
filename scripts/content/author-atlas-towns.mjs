@@ -40,7 +40,7 @@ await withTsModule("scripts/content/lib/atlas-towns-entry.ts", "atlas-towns-entr
       const b = new TownMap(kit, { ...plan, tileset }, plan.seed + attempt);
       try {
         const entry = plan.build(b);
-        for (const [group, items] of plan.plaza ?? []) b.plazaFill(group, items);
+        for (const [group, items] of plan.plaza ?? []) b.plazaFill(group, items, plan.plazaSq ?? 3);
         b.pruneUnowned();
         const theme = { ...GATES[plan.gate ?? "town"], ...THEME_FILL[plan.theme ?? plan.tilesetId], plaza: plan.plaza ?? [], ...(plan.fill ?? {}) };
         if (plan.fill !== false) b.fill(theme.ground ? { ...theme, ...theme.fillGate } : theme);
@@ -63,7 +63,7 @@ await withTsModule("scripts/content/lib/atlas-towns-entry.ts", "atlas-towns-entr
         if (!(err instanceof assert.AssertionError)) throw err;
         lastError = err;
         if (process.env.ATLAS_DEBUG) console.log(plan.id, attempt, err.message.slice(0, 300));
-        if (process.env.ATLAS_ASCII === plan.id) console.log(b.ascii());
+        if (process.env.ATLAS_ASCII === plan.id || (process.env.ATLAS_ASCII === "1" && /No room|overlaps|No route/.test(err.message))) console.log(b.ascii());
         if (/overlaps|does not fit|Unknown|Stair must|Exit corridor|Bridge|Dock|Cave|leaves the map|Missing part|Cannot|Seal |No room|Fence overlaps|Pier |Shaft |Peak |needs the forest/.test(err.message)) break;
       }
     }

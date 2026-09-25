@@ -1,5 +1,130 @@
 [
  {
+  "id": "town-home-brook",
+  "seed": 11101,
+  "entry": [
+   4,
+   13
+  ],
+  "reachable": 1145,
+  "targets": 14,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.335,
+   "at": [
+    4,
+    0
+   ],
+   "screenAt": [
+    8,
+    16
+   ]
+  }
+ },
+ {
+  "id": "town-home-hilltop",
+  "seed": 11201,
+  "entry": [
+   22,
+   43
+  ],
+  "reachable": 1098,
+  "targets": 11,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.339,
+   "at": [
+    3,
+    3
+   ],
+   "screenAt": [
+    4,
+    35
+   ]
+  }
+ },
+ {
+  "id": "town-home-clearing",
+  "seed": 11301,
+  "entry": [
+   23,
+   37
+  ],
+  "reachable": 868,
+  "targets": 7,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 2,
+   "screen": 0.339,
+   "at": [
+    17,
+    0
+   ],
+   "screenAt": [
+    12,
+    12
+   ]
+  }
+ },
+ {
+  "id": "town-home-lakeside",
+  "seed": 11401,
+  "entry": [
+   4,
+   17
+  ],
+  "reachable": 856,
+  "targets": 13,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.339,
+   "at": [
+    0,
+    3
+   ],
+   "screenAt": [
+    8,
+    12
+   ]
+  }
+ },
+ {
+  "id": "town-home-coast",
+  "seed": 11501,
+  "entry": [
+   4,
+   12
+  ],
+  "reachable": 840,
+  "targets": 10,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.339,
+   "at": [
+    16,
+    27
+   ],
+   "screenAt": [
+    24,
+    4
+   ]
+  }
+ },
+ {
   "id": "town-home-meadow",
   "seed": 11001,
   "entry": [
@@ -71,6 +196,381 @@
    "screenAt": [
     20,
     12
+   ]
+  }
+ },
+ {
+  "id": "town-river-twinbridge",
+  "seed": 12101,
+  "entry": [
+   4,
+   8
+  ],
+  "reachable": 1461,
+  "targets": 15,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.339,
+   "at": [
+    45,
+    0
+   ],
+   "screenAt": [
+    28,
+    16
+   ]
+  }
+ },
+ {
+  "id": "town-river-fork",
+  "seed": 12201,
+  "entry": [
+   38,
+   41
+  ],
+  "reachable": 1432,
+  "targets": 16,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.339,
+   "at": [
+    6,
+    6
+   ],
+   "screenAt": [
+    20,
+    32
+   ]
+  }
+ },
+ {
+  "id": "town-lake-island",
+  "seed": 12301,
+  "entry": [
+   28,
+   43
+  ],
+  "reachable": 1041,
+  "targets": 10,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.339,
+   "at": [
+    50,
+    9
+   ],
+   "screenAt": [
+    32,
+    35
+   ]
+  }
+ },
+ {
+  "id": "town-waterfall",
+  "seed": 12401,
+  "entry": [
+   20,
+   45
+  ],
+  "reachable": 1219,
+  "targets": 14,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.339,
+   "at": [
+    2,
+    30
+   ],
+   "screenAt": [
+    12,
+    0
+   ]
+  }
+ },
+ {
+  "id": "town-canal",
+  "seed": 12501,
+  "entry": [
+   4,
+   22
+  ],
+  "reachable": 1596,
+  "targets": 20,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.339,
+   "at": [
+    24,
+    37
+   ],
+   "screenAt": [
+    0,
+    16
+   ]
+  }
+ },
+ {
+  "id": "town-marsh-stilts",
+  "seed": 12601,
+  "entry": [
+   4,
+   20
+  ],
+  "reachable": 1045,
+  "targets": 6,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.339,
+   "at": [
+    41,
+    13
+   ],
+   "screenAt": [
+    4,
+    4
+   ]
+  }
+ },
+ {
+  "id": "town-river-port",
+  "seed": 12701,
+  "entry": [
+   4,
+   22
+  ],
+  "reachable": 1035,
+  "targets": 14,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.339,
+   "at": [
+    22,
+    6
+   ],
+   "screenAt": [
+    0,
+    16
+   ]
+  }
+ },
+ {
+  "id": "town-river-delta",
+  "seed": 12801,
+  "entry": [
+   4,
+   20
+  ],
+  "reachable": 1266,
+  "targets": 13,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.344,
+   "at": [
+    52,
+    7
+   ],
+   "screenAt": [
+    28,
+    8
+   ]
+  }
+ },
+ {
+  "id": "city-capital-overview",
+  "seed": 13001,
+  "entry": [
+   59,
+   95
+  ],
+  "reachable": 5363,
+  "targets": 50,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.353,
+   "at": [
+    72,
+    7
+   ],
+   "screenAt": [
+    16,
+    52
+   ]
+  }
+ },
+ {
+  "id": "city-capital-market",
+  "seed": 13104,
+  "entry": [
+   32,
+   4
+  ],
+  "reachable": 1659,
+  "targets": 11,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 2,
+   "screen": 0.385,
+   "at": [
+    32,
+    0
+   ],
+   "screenAt": [
+    24,
+    16
+   ]
+  }
+ },
+ {
+  "id": "city-capital-noble",
+  "seed": 13201,
+  "entry": [
+   55,
+   30
+  ],
+  "reachable": 1574,
+  "targets": 8,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.339,
+   "at": [
+    28,
+    0
+   ],
+   "screenAt": [
+    36,
+    20
+   ]
+  }
+ },
+ {
+  "id": "city-capital-slums",
+  "seed": 13301,
+  "entry": [
+   20,
+   4
+  ],
+  "reachable": 1431,
+  "targets": 18,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 2,
+   "screen": 0.339,
+   "at": [
+    17,
+    0
+   ],
+   "screenAt": [
+    0,
+    0
+   ]
+  }
+ },
+ {
+  "id": "city-capital-temple",
+  "seed": 13401,
+  "entry": [
+   4,
+   22
+  ],
+  "reachable": 1638,
+  "targets": 13,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.348,
+   "at": [
+    4,
+    10
+   ],
+   "screenAt": [
+    4,
+    0
+   ]
+  }
+ },
+ {
+  "id": "city-capital-crafts",
+  "seed": 13501,
+  "entry": [
+   4,
+   21
+  ],
+  "reachable": 1565,
+  "targets": 15,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 2,
+   "screen": 0.339,
+   "at": [
+    2,
+    0
+   ],
+   "screenAt": [
+    16,
+    31
+   ]
+  }
+ },
+ {
+  "id": "city-capital-gate",
+  "seed": 13601,
+  "entry": [
+   28,
+   41
+  ],
+  "reachable": 1395,
+  "targets": 10,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.344,
+   "at": [
+    27,
+    39
+   ],
+   "screenAt": [
+    12,
+    0
    ]
   }
  }

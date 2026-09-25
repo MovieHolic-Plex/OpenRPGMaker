@@ -42,7 +42,8 @@ export function carveFit(file, [x0, y0, x1, y1], w, h, { blank = [] } = {}) {
     }
     return lines;
   };
-  cols = fit(cols, w);
+  // Keep the gate in the middle: fit the columns left and right of the source's middle separately.
+  if (cols.length !== w) { const mid = cols.length >> 1, wl = w >> 1; cols = [...fit(cols.slice(0, mid), wl), ...fit(cols.slice(mid), w - wl)]; }
   let rows = cols[0].map((_, y) => cols.map((c) => c[y]));
   rows = fit(rows, h);
   return { w, h, lower: rows.flat().map((c) => c[0]), upper: rows.flat().map((c) => c[1]) };
@@ -114,6 +115,10 @@ export class TownMap extends OutdoorMap {
   gableSize(form, kitId = "blue-stone") { const f = this.kit.api.composeGableHouseForm(this.kit.gables.get(form), kitId, {}); return [f.w, f.h]; }
   // The house at (x,y) or the nearest spot within r whose footprint + ring + two front rows are free (like houseNear).
   gableNear(form, kitId, x, y, opt = {}, r = 8) {
+    // A list of forms: the first that fits near (x, y) wins (smaller fallbacks after the wanted shape).
+    if (Array.isArray(form)) {
+      for (const [k, f] of form.entries()) { try { return this.gableNear(f, kitId, x, y, opt, r); } catch (e) { if (k === form.length - 1 || !/No room/.test(e.message)) throw e; } }
+    }
     const [w, h] = this.gableSize(form, kitId), spots = [];
     for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) spots.push([x + dx, y + dy, Math.abs(dx) + Math.abs(dy) * 1.2]);
     spots.sort((a, b) => a[2] - b[2]);
@@ -127,7 +132,7 @@ export class TownMap extends OutdoorMap {
     assert.fail(`No room for house ${form} near ${x},${y} ${this.spec.id}`);
   }
   // A list of houses: [form, kit, x, y, role, yard, side].
-  homes(list, r = 8) { return list.map(([form, kit, x, y, role, yard, side]) => this.gableNear(form, kit, x, y, { role, yard, side }, r)); }
+  homes(list, r = 8) { return list.map(([form, kit, x, y, role, yard, side]) => this.gableNear(Array.isArray(form) ? form : [form, ...["gable-long-low", "gable-2f-narrow"].filter((f) => f !== form)], kit, x, y, { role, yard, side }, r)); }
   // A fitted wall ring of the castle-town reference: outer walk + wall face, one south gate (towers on each side).
   wallRing(x, y, w, h, { towers = true, name = "성벽" } = {}) {
     const ring = carveFit(CASTLE_TOWN, [3, 8, 96, 96], w, h, { blank: [[7, 15, 92, 89]] });
@@ -138,8 +143,15 @@ export class TownMap extends OutdoorMap {
   }
   // A single straight wall (the ring's south wall with the gate) fitted to w: for gatehouses across a street.
   wallLine(x, y, w, { name = "성벽", towers = true, gate = true } = {}) {
-    const wall = carveFit(CASTLE_TOWN, [3, 89, 96, 96], w, 8, { blank: [[7, 89, 92, 89]] });
-    if (!gate) for (let k = 0; k < wall.w * wall.h; k++) if (wall.lower[k] === 190) { const x0 = k % wall.w; wall.lower[k] = wall.lower[(Math.floor(k / wall.w)) * wall.w + Math.max(0, x0 - 6)]; wall.upper[k] = wall.upper[(Math.floor(k / wall.w)) * wall.w + Math.max(0, x0 - 6)]; }
+    // Without a gate: the ring's south-west corner run (no gate in it) mirrored into a closed span, fitted to w.
+    let wall;
+    if (gate) wall = carveFit(CASTLE_TOWN, [3, 89, 96, 96], w, 8, { blank: [[7, 89, 92, 89]] });
+    else {
+      // the west run and the east run of the ring's south wall (both gate-free), each fitted to half the width
+      const wl = w >> 1, a = carveFit(CASTLE_TOWN, [3, 89, 40, 96], wl, 8, { blank: [[7, 89, 40, 89]] }), c = carveFit(CASTLE_TOWN, [58, 89, 96, 96], w - wl, 8, { blank: [[58, 89, 92, 89]] });
+      wall = { w, h: 8, lower: [], upper: [] };
+      for (let r = 0; r < 8; r++) { wall.lower.push(...a.lower.slice(r * wl, (r + 1) * wl), ...c.lower.slice(r * (w - wl), (r + 1) * (w - wl))); wall.upper.push(...a.upper.slice(r * wl, (r + 1) * wl), ...c.upper.slice(r * (w - wl), (r + 1) * (w - wl))); }
+    }
     this.stampPiece(name, x, y, w, 8, wall.lower, wall.upper);
     if (!gate) return { gx: null };
     const [g0, gw] = gateSpan(wall);
@@ -209,6 +221,48 @@ export class TownMap extends OutdoorMap {
       this.upper[i] = t;
     }
     this.placements.push({ name: "비계", kind: "overlay", x, y, w: p.w, h: p.h, owner: entry.id });
+  }
+  // A row of houses standing on the north side of an east-west street at row `roadY`: every front one cell above the
+  // street, `gap` cells between houses. choices = [[form, kit, role, yard, side], …] taken in turn; a spot that is not
+  // free is skipped (the next house tries further along). Returns the houses.
+  rowAbove(roadY, x0, x1, choices, { gap = 2, max = 99 } = {}) {
+    const out = [];
+    let x = x0, k = 0;
+    while (x < x1 && out.length < max) {
+      const [form, kit, role, yard, side] = choices[k % choices.length];
+      const f = this.kit.api.composeGableHouseForm(this.kit.gables.get(form), kit, {});
+      const y = roadY - 2 - f.doorAt.y;
+      if (x + f.w <= x1 && y >= 1 && this.freeRect(x, y, f.w, f.h, { keep: false }) && this.freeRect(x - 1, y - 1, f.w + 2, f.h + 2, { keep: false, road: false })
+        && !this.houses.some((o) => x < o.x + o.w + gap && x + f.w + gap > o.x && y < o.y + o.h + 1 && y + f.h > o.y - 1)) {
+        out.push(this.gable(form, kit, x, y, { role, yard, side })); x += f.w + gap; k++;
+      } else x++;
+    }
+    return out;
+  }
+  // A plank bridge across a north-south channel near row y: the first row pair (y, y±1, …) whose water runs match.
+  bridgeNear(x, y, reach = 4) {
+    const run = (yy) => { if (!this.water.has(this.at(x, yy))) return null; let a = x, c = x; while (this.water.has(this.at(a - 1, yy))) a--; while (this.water.has(this.at(c + 1, yy))) c++; return [a, c]; };
+    for (let d = 0; d <= reach; d++) for (const yy of d ? [y + d, y - d] : [y]) {
+      const r0 = run(yy), r1 = run(yy + 1);
+      if (r0 && r1 && r0[0] === r1[0] && r0[1] === r1[1] && r0[1] - r0[0] <= 8) { this.bridges([[x, yy]]); return yy; }
+    }
+    assert.fail(`Bridge no matching rows near ${x},${y} ${this.spec.id}`);
+  }
+  // A boardwalk (dock planks 199, two cells wide) across whatever water lies on the straight run from (x, y) going `dir`
+  // until land: the crossing for diagonal streams, where the two-row bridge pieces cannot sit. Returns both land ends.
+  planks(x, y, dir = "east", width = 2) {
+    const [dx, dy] = { east: [1, 0], west: [-1, 0], south: [0, 1], north: [0, -1] }[dir];
+    let k = 0; while (!this.water.has(this.at(x, y)) && k++ < 30) { x += dx; y += dy; }
+    assert(this.water.has(this.at(x, y)), `Pier planks find no water ${this.spec.id}`);
+    const start = [x - dx, y - dy], cells = [];
+    while (this.inside(x, y) && [...Array(width).keys()].some((w) => this.water.has(this.at(x + (dy ? w : 0), y + (dx ? w : 0))))) {
+      for (let w = 0; w < width; w++) { const X = x + (dy ? w : 0), Y = y + (dx ? w : 0), i = this.at(X, Y); if (this.water.has(i)) cells.push(i); }
+      x += dx; y += dy;
+    }
+    for (const i of cells) { this.upper[i] = 199; this.bridgeCells.add(i); }
+    this.access.push({ role: "plank-end", x: start[0], y: start[1] }, { role: "plank-end", x, y });
+    this.placements.push({ name: "판자 다리", kind: "bridge", x: Math.min(start[0], x), y: Math.min(start[1], y), w: Math.abs(x - start[0]) + 1, h: Math.abs(y - start[1]) + 1 });
+    return { from: start, to: [x, y] };
   }
   // Moor a boat / the ship on the nearest open water spot to (x, y) where the whole hull floats.
   moorNear(name, x, y, opt = {}, r = 6) {
