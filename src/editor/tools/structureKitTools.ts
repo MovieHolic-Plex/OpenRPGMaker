@@ -23,6 +23,7 @@ import type {
   TilesetDef,
 } from "@/project/types";
 import { TILE } from "@/project/defaults";
+import { referenceManifest } from "@/project/tilesetReferences";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -81,6 +82,7 @@ const listStructureKits: ToolDefinition = {
       placementText?: string[];
       parts?: StructureKitPart[];
       rows?: { tiles: number[]; upperTiles?: number[] }[];
+      referenceDocuments?: ReturnType<typeof referenceManifest>[];
     }[] = [];
     for (const tileset of tilesetsInScope(project, args.mapId)) {
       for (const kit of availableKits(tileset)) {
@@ -93,6 +95,7 @@ const listStructureKits: ToolDefinition = {
           width: size.width,
           height: size.height,
           learnedFrom: kit.learnedFrom,
+          ...(kit.referenceDocuments?.length ? { referenceDocuments: kit.referenceDocuments.map(referenceManifest) } : {}),
           repeatable: structureKitRepeatable(kit),
           growth: structureKitGrowthAxes(kit),
           layerHome: structureKitLayerHome(kit),

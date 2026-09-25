@@ -1,6 +1,6 @@
 import { linkedRegionMapId } from "@/project/spatial/regionMapLinks";
 import { REGION_REFERENCES, PLACE_REFERENCES } from "@/project/regionReferences";
-import { SHARED_REGION_REFERENCES } from '@/project/sharedSpatialReferences';
+import { sharedRegionReferences } from '@/project/sharedSpatialReferences';
 import { reviewedPlaceIndex } from "@/project/defaults/spatial/reviewedPlaceIndex";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { CONCEPT_FACILITY_TEMPLATES } from "@/project/defaults/conceptFacilityTemplates";
@@ -94,7 +94,7 @@ function regionCards(): SpatialGalleryCard[] {
   // 장소 탭과 같은 규약 — 실제 완성 맵에서 온 참고 사례만 기본 카드로 보인다.
   // 지형 어휘 더미 6종(REGION_CATALOG 카드)은 갤러리에 내지 않는다. 실체가 없는
   // 기본 설계가 목록을 채우면 무엇을 쓸 수 있는지가 오히려 안 보인다.
-  const cards: SpatialGalleryCard[] = [...REGION_REFERENCES, ...SHARED_REGION_REFERENCES].map(entry => ({ id: `region-reference:${entry.id}`, localId: entry.id,
+  const cards: SpatialGalleryCard[] = [...REGION_REFERENCES, ...sharedRegionReferences()].map(entry => ({ id: `region-reference:${entry.id}`, localId: entry.id,
     regionReferenceId: entry.id, name: entry.name, source: "default" as const, kind: "regions" as const,
     usage: 0, tilesetId: entry.tilesetId, regionKind: "regionKind" in entry ? entry.regionKind : "settlement" as const, subtitle: "완성 예시" }));
   const known = new Set(cards.map((card) => card.id));

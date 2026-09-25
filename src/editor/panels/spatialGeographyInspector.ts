@@ -16,11 +16,14 @@ import { selectVillagePresetDesign } from "./databaseVillageView";
 import { rememberLegacySpatialRoute } from "./spatialAuthoringSession";
 import { el } from "@/util/dom";
 
+import { spatialReferenceDocuments } from './spatialReferenceDocuments';
+
 export function renderSpatialGeographyInspector(view: GeographyView, rerender: () => void): HTMLElement {
   const { session, card, kind } = view;
   const { design, readonly } = viewableGeography(card, kind);
   const target = card && !readonly ? geographyDraftTarget(card, kind) : undefined;
   const body: HTMLElement[] = [];
+  body.push(...spatialReferenceDocuments(design?.referenceDocuments));
   if (card) {
     body.push(el("h3", { class: "spatial-inspector-name", text: card.name }));
     const subtitle = cardSubtitle(card);

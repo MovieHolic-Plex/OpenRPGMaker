@@ -81,6 +81,9 @@ export function validateResourceProfiles(value: unknown): void {
 export function validateTileset(id: string, value: unknown): void {
   const tileset = requireRecord(`tileset ${id}`, value);
   if (tileset.referenceDocuments !== undefined) validateTilesetReferences(tileset.referenceDocuments);
+  if (Array.isArray(tileset.structureKits)) for (const kit of tileset.structureKits) {
+    if (kit && typeof kit === 'object' && 'referenceDocuments' in kit && kit.referenceDocuments !== undefined) validateTilesetReferences(kit.referenceDocuments);
+  }
   if (tileset.referenceSourceTilesetId !== undefined) {
     const source = requireString(`tileset ${id}.referenceSourceTilesetId`, tileset.referenceSourceTilesetId);
     assert(source.length > 0 && source !== id, "참고문서 원본은 다른 타일셋이어야 합니다.");

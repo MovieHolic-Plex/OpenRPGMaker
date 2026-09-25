@@ -1542,6 +1542,7 @@ export class OutdoorMap {
     }
     const targets = [...this.access, ...extra.map(([x, y]) => ({ role: "extra", x, y }))];
     const blocked = targets.filter((a) => !seen.has(this.at(a.x, a.y)));
+    if (blocked.length && process.env.OUTDOOR_WALK === this.spec.id) console.log(this.ascii().split("\n").map((r, y) => y === 0 ? r : [...r].map((c, k) => k > 1 && seen.has(this.at(k - 2, y - 1)) ? "r" : c).join("")).join("\n"));
     assert.equal(blocked.length, 0, "Blocked " + this.spec.id + ": " + JSON.stringify(blocked.slice(0, 6)));
     for (const o of this.placements.filter((p) => p.kind === "prop")) assert(near(o), `Prop out of reach ${this.spec.id} ${o.name} ${o.x},${o.y}`);
     let leaks = 0;

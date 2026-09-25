@@ -1,3 +1,5 @@
+import { uploadedSpriteFrame } from "@/project/uploadedSpriteGeometry";
+import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import { mapTileSize } from "@/project/tileGeometry";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
 import {
@@ -28,6 +30,7 @@ export type RegionEventSprite = {
   readonly eventId: string;
   readonly priority: EventPriority;
   readonly imageUrl: string;
+  readonly preserveAlpha?: boolean;
   readonly frame: CharsetFrameSource;
   /** Destination top-left in region canvas pixels (origin feet at bottom-center). */
   readonly destX: number;
@@ -44,6 +47,7 @@ type RegionBox = { readonly x: number; readonly y: number; readonly w: number; r
 
 type ClaimedPageVisual = {
   readonly imageUrl: string;
+  readonly preserveAlpha?: boolean;
   readonly frame: CharsetFrameSource;
   readonly scale: number;
   readonly footprint: CharacterFootprint;
@@ -82,7 +86,7 @@ export async function drawRegionEventSprites(
   sprites: readonly RegionEventSprite[],
 ): Promise<void> {
   for (const sprite of sprites) {
-    const image = await loadKeyedCharsetImage(sprite.imageUrl);
+    const image = sprite.preserveAlpha ? await loadUnkeyedSpriteImage(sprite.imageUrl) : await loadKeyedCharsetImage(sprite.imageUrl);
     context.drawImage(
       image,
       sprite.frame.x,
@@ -127,6 +131,7 @@ function resolveEventSprite(
       eventId: event.id,
       priority: visual.priority,
       imageUrl: visual.imageUrl,
+      preserveAlpha: visual.preserveAlpha,
       frame: visual.frame,
       destX: feetX - destW / 2,
       destY: feetY - destH,
@@ -153,11 +158,10 @@ function startPageVisual(project: Project, event: GameEvent): ClaimedPageVisual 
 function pageVisual(project: Project, page: EventPage): ClaimedPageVisual | null {
   const graphic = page.graphic;
   if (!graphic || graphic.transparent === true || !graphic.sprite) return null;
-  const imageUrl = charsetImageUrl(project, graphic.sprite.id);
-  if (!imageUrl) return null;
+  const resolved = graphicVisual(project, graphic);
+  if (!resolved) return null;
   return {
-    imageUrl,
-    frame: frameSourceForGraphic(graphic),
+    ...resolved,
     scale: normalizeCharacterScale(graphic.scale),
     footprint: normalizeCharacterFootprint(page.footprint ?? UNIT_FOOTPRINT),
     priority: page.priority,
@@ -173,16 +177,15 @@ function claimedPageVisuals(
   for (const page of pages) {
     const graphic = page.graphic;
     if (!graphic || graphic.transparent === true || !graphic.sprite) continue;
-    const imageUrl = charsetImageUrl(project, graphic.sprite.id);
-    if (!imageUrl) {
+    const resolved = graphicVisual(project, graphic);
+    if (!resolved) {
       return {
         ok: false,
         reason: `map-event-rendering-unavailable: event ${event.id} graphic ${graphic.sprite.id} is not a supported charset/image for show_map_region; no approval`,
       };
     }
     const visual: ClaimedPageVisual = {
-      imageUrl,
-      frame: frameSourceForGraphic(graphic),
+      ...resolved,
       scale: normalizeCharacterScale(graphic.scale),
       footprint: normalizeCharacterFootprint(page.footprint ?? UNIT_FOOTPRINT),
       priority: page.priority,
@@ -212,6 +215,7 @@ function previewPages(event: GameEvent): readonly EventPage[] {
 function pageVisualKey(visual: ClaimedPageVisual): string {
   return [
     visual.imageUrl,
+    visual.preserveAlpha ? "alpha" : "charset-key",
     visual.frame.x,
     visual.frame.y,
     visual.frame.width,
@@ -226,6 +230,24 @@ function pageVisualKey(visual: ClaimedPageVisual): string {
 function anchorInRegion(event: GameEvent, region: RegionBox): boolean {
   return event.x >= region.x && event.x < region.x + region.w
     && event.y >= region.y && event.y < region.y + region.h;
+}
+
+function graphicVisual(project: Project, graphic: EventPageGraphic): { imageUrl: string; frame: CharsetFrameSource; preserveAlpha?: boolean } | null {
+  const id = graphic.sprite?.id;
+  if (!id) return null;
+  const def = project.assets.sprites[id];
+  const asset = project.assets.uploaded[def?.image.type === "uploaded" ? def.image.id : id];
+  if (asset?.kind === "sprite") {
+    const frame = uploadedSpriteFrame(asset, graphic.pattern ?? 0);
+    const imageUrl = uploadedAssetUrl(asset);
+    return frame && imageUrl ? { imageUrl, frame, preserveAlpha: true } : null;
+  }
+  const imageUrl = charsetImageUrl(project, id);
+  return imageUrl ? { imageUrl, frame: frameSourceForGraphic(graphic) } : null;
+}
+
+async function loadUnkeyedSpriteImage(url: string): Promise<HTMLImageElement> {
+  const image = new Image(); image.src = url; await image.decode(); return image;
 }
 
 function frameSourceForGraphic(graphic: EventPageGraphic): CharsetFrameSource {

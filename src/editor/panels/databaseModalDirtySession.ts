@@ -1,5 +1,6 @@
 import { getMapEditHistoryMarker, truncateMapEditHistoryFromMarker } from "@/editor/mapEditHistory";
 import { serialize } from "@/project/io";
+import { cloneProjectSharingReferenceDocuments } from "@/project/projectClone";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 
@@ -36,7 +37,7 @@ export function createDatabaseModalDirtySession(): DatabaseModalDirtySession {
     discard: () => {
       const current = store.getCurrent();
       // 맵은 이 세션의 소유가 아니다 — 현재 값을 그대로 넘겨 살린다.
-      store.replace({ ...structuredClone(snapshot), maps: current.maps, mapTree: current.mapTree });
+      store.replace({ ...cloneProjectSharingReferenceDocuments(snapshot), maps: current.maps, mapTree: current.mapTree });
       truncateMapEditHistoryFromMarker(historyMarkerAtOpen);
     },
     isDirty: () => projectSignature(store.getCurrent()) !== cleanSignature,
@@ -48,7 +49,9 @@ export function createDatabaseModalDirtySession(): DatabaseModalDirtySession {
 }
 
 function cloneCurrentProject(): Project {
-  return structuredClone(store.getCurrent());
+  // Reference document arrays are replaced atomically by their editors, as in store.update.
+  // Reuse that clone contract instead of duplicating their large image/MD payload on modal open.
+  return cloneProjectSharingReferenceDocuments(store.getCurrent());
 }
 
 /**

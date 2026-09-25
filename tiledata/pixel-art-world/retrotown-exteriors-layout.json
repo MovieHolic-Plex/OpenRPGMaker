@@ -1,0 +1,2372 @@
+[
+  {
+    "packId": "paw-retrotown-sento",
+    "sourceFilename": "ST-Sento-E01.png",
+    "sourceSha256": "bfdd46ba076a119f84cb7c98940a0fc6488d133b07c21f0bf0676915fa421ee0",
+    "composites": [
+      {
+        "id": "retro-sento-whole-building",
+        "name": "기와·굴뚝·宝湯 입구 전체 목욕탕",
+        "canvas": {
+          "width": 256,
+          "height": 352
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "parts": [
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 160
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 160
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 160
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 160
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 160
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 160
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 160
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 224,
+              "y": 160
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 192
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 192
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 192
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 192
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 192
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 192
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 192
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 224,
+              "y": 192
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 224
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 224
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 224
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 224
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 224
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 224
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 224
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 224,
+              "y": 224
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 256
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 256
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 256
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 256
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 256
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 256
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 256
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 224,
+              "y": 256
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 288
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 288
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 288
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 288
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 288
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 288
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 288
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 224,
+              "y": 288
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 960,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 320
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 960,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 320
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 960,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 320
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 960,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 320
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 960,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 320
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 960,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 320
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 960,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 320
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 960,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 224,
+              "y": 320
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 64
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 64
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 64
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 64
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 64
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 64
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 64
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 224,
+              "y": 64
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 96
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 96
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 96
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 96
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 96
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 96
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 96
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 224,
+              "y": 96
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1152,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 128
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1152,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 128
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1152,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 128
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1152,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 128
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1152,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 128
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1152,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 128
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1152,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 128
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1152,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 224,
+              "y": 128
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 192,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 160
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 192,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 160
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 192,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 160
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 192,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 160
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 192,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 160
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 192,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 160
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 192,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 160
+            }
+          },
+          {
+            "role": "whole-roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 192,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 224,
+              "y": 160
+            }
+          },
+          {
+            "role": "roof-front-foot-and-shadow",
+            "sourceRect": {
+              "x": 128,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 192
+            }
+          },
+          {
+            "role": "roof-front-foot-and-shadow",
+            "sourceRect": {
+              "x": 128,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 192
+            }
+          },
+          {
+            "role": "roof-front-foot-and-shadow",
+            "sourceRect": {
+              "x": 128,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 192
+            }
+          },
+          {
+            "role": "roof-front-foot-and-shadow",
+            "sourceRect": {
+              "x": 128,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 192
+            }
+          },
+          {
+            "role": "roof-front-foot-and-shadow",
+            "sourceRect": {
+              "x": 128,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 192
+            }
+          },
+          {
+            "role": "roof-front-foot-and-shadow",
+            "sourceRect": {
+              "x": 128,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 192
+            }
+          },
+          {
+            "role": "roof-front-foot-and-shadow",
+            "sourceRect": {
+              "x": 128,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 192
+            }
+          },
+          {
+            "role": "roof-front-foot-and-shadow",
+            "sourceRect": {
+              "x": 128,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 224,
+              "y": 192
+            }
+          },
+          {
+            "role": "complete-bathhouse-entrance",
+            "sourceRect": {
+              "x": 128,
+              "y": 1376,
+              "width": 128,
+              "height": 128
+            },
+            "offset": {
+              "x": 64,
+              "y": 224
+            }
+          },
+          {
+            "role": "complete-takarayu-sign",
+            "sourceRect": {
+              "x": 192,
+              "y": 1504,
+              "width": 64,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 248
+            }
+          },
+          {
+            "role": "whole-chimney",
+            "sourceRect": {
+              "x": 64,
+              "y": 1504,
+              "width": 32,
+              "height": 96
+            },
+            "offset": {
+              "x": 192,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-west-grille",
+            "sourceRect": {
+              "x": 64,
+              "y": 1344,
+              "width": 64,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 256
+            }
+          }
+        ],
+        "notes": "전체8×11. 목조외벽/기둥밑동을먼저놓고회색기와면→전면어두운처마를조립한다. 전체곡선입구(4,43)4×4를중앙에,宝湯간판(6,47)2×1을곡선지붕바로아래에합성한다. 굴뚝(2,47)1×3의머리와밑동보존. 원본복사만사용하고픽셀반전/그리기없음. ST-Sento-I02의탈의/욕실장소와추후연결가능하나이벤트없음."
+      }
+    ],
+    "scenePlans": [
+      {
+        "id": "retrotown-sento-entry",
+        "name": "작은 목욕탕 외관과 출입 앞길",
+        "width": 10,
+        "height": 13,
+        "baseTile": 4,
+        "lowerRects": [],
+        "placements": [
+          {
+            "recipeId": "retro-sento-whole-building",
+            "x": 1,
+            "y": 0
+          },
+          {
+            "recipeId": "retro-sento-water-bucket",
+            "x": 0,
+            "y": 9
+          },
+          {
+            "recipeId": "retro-sento-bamboo-pot",
+            "x": 9,
+            "y": 10
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 5,
+            "y": 12
+          },
+          {
+            "x": 5,
+            "y": 11
+          },
+          {
+            "x": 4,
+            "y": 11
+          },
+          {
+            "x": 0,
+            "y": 11
+          },
+          {
+            "x": 9,
+            "y": 11
+          }
+        ],
+        "passableTiles": [
+          4
+        ],
+        "lowerTileIds": [
+          4
+        ],
+        "wallTileIds": [],
+        "requiredClearRects": [],
+        "rooms": [
+          {
+            "id": "building",
+            "name": "정적 건물 전체",
+            "x": 1,
+            "y": 0,
+            "width": 8,
+            "height": 11
+          },
+          {
+            "id": "entry",
+            "name": "문 앞 2칸 보도",
+            "x": 0,
+            "y": 11,
+            "width": 10,
+            "height": 2
+          }
+        ],
+        "doorways": [
+          {
+            "from": "entry",
+            "to": "building",
+            "x": 5,
+            "y": 11,
+            "width": 1,
+            "height": 1
+          }
+        ],
+        "notes": "전체8×11. 목조외벽/기둥밑동을먼저놓고회색기와면→전면어두운처마를조립한다. 전체곡선입구(4,43)4×4를중앙에,宝湯간판(6,47)2×1을곡선지붕바로아래에합성한다. 굴뚝(2,47)1×3의머리와밑동보존. 원본복사만사용하고픽셀반전/그리기없음. ST-Sento-I02의탈의/욕실장소와추후연결가능하나이벤트없음. 문앞2칸보도와가구접근칸만확보한작은정적표본. 건물사각전체막힘,출입문그림은이벤트가아님. 접근→귀환은엔진충돌기준으로검증한다."
+      }
+    ]
+  },
+  {
+    "packId": "paw-retrotown-rtown",
+    "sourceFilename": "ST-RTown-E01.png",
+    "sourceSha256": "4d94f4a63f6ead17ea390203601245df12da8278feb10a6d9dac1063d952e26c",
+    "composites": [
+      {
+        "id": "retro-rtown-whole-building",
+        "name": "기와·차양·유리문 전체 목조 상점",
+        "canvas": {
+          "width": 192,
+          "height": 256
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "parts": [
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 64
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 64
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 64
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 64
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 64
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 64
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 96
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 96
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 96
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 96
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 96
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 96
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 128
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 128
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 128
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 128
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 128
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 128
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 160
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 160
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 160
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 160
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 160
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 160
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 192
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 192
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 192
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 192
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 192
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 928,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 192
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 960,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 224
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 960,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 224
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 960,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 224
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 960,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 224
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 960,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 224
+            }
+          },
+          {
+            "role": "wood-wall-with-end-posts-and-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 960,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 224
+            }
+          },
+          {
+            "role": "roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "role": "roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 0
+            }
+          },
+          {
+            "role": "roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 0
+            }
+          },
+          {
+            "role": "roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 0
+            }
+          },
+          {
+            "role": "roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 0
+            }
+          },
+          {
+            "role": "roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 0
+            }
+          },
+          {
+            "role": "roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 32
+            }
+          },
+          {
+            "role": "roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 32
+            }
+          },
+          {
+            "role": "roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 32
+            }
+          },
+          {
+            "role": "roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 32
+            }
+          },
+          {
+            "role": "roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 32
+            }
+          },
+          {
+            "role": "roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 32
+            }
+          },
+          {
+            "role": "roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 192,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 64
+            }
+          },
+          {
+            "role": "roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 192,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 64
+            }
+          },
+          {
+            "role": "roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 192,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 64
+            }
+          },
+          {
+            "role": "roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 192,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 64
+            }
+          },
+          {
+            "role": "roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 192,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 64
+            }
+          },
+          {
+            "role": "roof-ridge-plane-front-eave",
+            "sourceRect": {
+              "x": 192,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 64
+            }
+          },
+          {
+            "role": "roof-front-foot-and-shadow",
+            "sourceRect": {
+              "x": 128,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 96
+            }
+          },
+          {
+            "role": "roof-front-foot-and-shadow",
+            "sourceRect": {
+              "x": 128,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 96
+            }
+          },
+          {
+            "role": "roof-front-foot-and-shadow",
+            "sourceRect": {
+              "x": 128,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 96
+            }
+          },
+          {
+            "role": "roof-front-foot-and-shadow",
+            "sourceRect": {
+              "x": 128,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 96
+            }
+          },
+          {
+            "role": "roof-front-foot-and-shadow",
+            "sourceRect": {
+              "x": 128,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 96
+            }
+          },
+          {
+            "role": "roof-front-foot-and-shadow",
+            "sourceRect": {
+              "x": 128,
+              "y": 1184,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 96
+            }
+          },
+          {
+            "role": "whole-window-under-eave",
+            "sourceRect": {
+              "x": 128,
+              "y": 1344,
+              "width": 64,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 128
+            }
+          },
+          {
+            "role": "complete-shop-front-with-posts-without-loose-stone",
+            "sourceRect": {
+              "x": 0,
+              "y": 1504,
+              "width": 128,
+              "height": 80
+            },
+            "offset": {
+              "x": 0,
+              "y": 176
+            }
+          },
+          {
+            "role": "complete-side-paper-window",
+            "sourceRect": {
+              "x": 192,
+              "y": 1344,
+              "width": 64,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 192
+            }
+          },
+          {
+            "role": "whole-fire-warning",
+            "sourceRect": {
+              "x": 128,
+              "y": 1408,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 160
+            }
+          },
+          {
+            "role": "native-striped-awning-section",
+            "sourceRect": {
+              "x": 96,
+              "y": 1472,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 160
+            }
+          },
+          {
+            "role": "native-striped-awning-section",
+            "sourceRect": {
+              "x": 96,
+              "y": 1472,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 160
+            }
+          },
+          {
+            "role": "native-striped-awning-section",
+            "sourceRect": {
+              "x": 96,
+              "y": 1472,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 160
+            }
+          },
+          {
+            "role": "native-striped-awning-section",
+            "sourceRect": {
+              "x": 96,
+              "y": 1472,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 160
+            }
+          },
+          {
+            "role": "native-striped-awning-section",
+            "sourceRect": {
+              "x": 96,
+              "y": 1472,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 160
+            }
+          },
+          {
+            "role": "native-striped-awning-section",
+            "sourceRect": {
+              "x": 96,
+              "y": 1472,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 160
+            }
+          }
+        ],
+        "notes": "전체6×8. 회색기와상단/앞처마와갈색목조기둥/밑동,전체128×80px유리상점전면을보존한다. 원본의줄무늬차양셀을전면6열로이어주고위쪽덧문창/옆창을벽위에합성한다. 火の用心은화재주의표지이며상점명으로오인하지않는다. 좌측화분과우측쓰레기통은각1칸지상객체. 원본4×3사각의하단80..94px분리돌은문틀이아니므로문틀전체80px만보존해합성한다. 자동영업/우편/전이없음."
+      },
+      {
+        "id": "retro-rtown-shop-front",
+        "name": "디딤돌을 분리한 전체 유리문틀",
+        "canvas": {
+          "width": 128,
+          "height": 96
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "parts": [
+          {
+            "role": "whole-native-door-frame-without-separate-loose-step",
+            "sourceRect": {
+              "x": 0,
+              "y": 1504,
+              "width": 128,
+              "height": 80
+            },
+            "offset": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ],
+        "notes": "원본전체문틀128×80px. 원본타일사각하단의독립디딤돌은별개객체여서제외한다. 그림의문턱/밑동/양끝을보존하고남는아틀라스공간만투명패딩한다. 바닥에독립가구처럼놓지말고완성건물의벽에결합한다."
+      },
+      {
+        "id": "retro-rtown-paper-doors",
+        "name": "디딤돌을 분리한 전체 종이문틀",
+        "canvas": {
+          "width": 64,
+          "height": 96
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "parts": [
+          {
+            "role": "whole-native-door-frame-without-separate-loose-step",
+            "sourceRect": {
+              "x": 0,
+              "y": 1376,
+              "width": 64,
+              "height": 68
+            },
+            "offset": {
+              "x": 0,
+              "y": 0
+            }
+          }
+        ],
+        "notes": "원본전체문틀64×68px. 원본타일사각하단의독립디딤돌은별개객체여서제외한다. 그림의문턱/밑동/양끝을보존하고남는아틀라스공간만투명패딩한다. 바닥에독립가구처럼놓지말고완성건물의벽에결합한다."
+      }
+    ],
+    "scenePlans": [
+      {
+        "id": "retrotown-rtown-entry",
+        "name": "작은 레트로 상점과 측면 화분",
+        "width": 8,
+        "height": 10,
+        "baseTile": 4,
+        "lowerRects": [],
+        "placements": [
+          {
+            "recipeId": "retro-rtown-whole-building",
+            "x": 1,
+            "y": 0
+          },
+          {
+            "recipeId": "retro-rtown-flower-planter",
+            "x": 0,
+            "y": 6
+          },
+          {
+            "recipeId": "retro-rtown-dustbin",
+            "x": 7,
+            "y": 6
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 3,
+            "y": 9
+          },
+          {
+            "x": 3,
+            "y": 8
+          },
+          {
+            "x": 2,
+            "y": 8
+          },
+          {
+            "x": 0,
+            "y": 8
+          },
+          {
+            "x": 7,
+            "y": 8
+          }
+        ],
+        "passableTiles": [
+          4
+        ],
+        "lowerTileIds": [
+          4
+        ],
+        "wallTileIds": [],
+        "requiredClearRects": [],
+        "rooms": [
+          {
+            "id": "building",
+            "name": "정적 건물 전체",
+            "x": 1,
+            "y": 0,
+            "width": 6,
+            "height": 8
+          },
+          {
+            "id": "entry",
+            "name": "문 앞 2칸 보도",
+            "x": 0,
+            "y": 8,
+            "width": 8,
+            "height": 2
+          }
+        ],
+        "doorways": [
+          {
+            "from": "entry",
+            "to": "building",
+            "x": 3,
+            "y": 8,
+            "width": 1,
+            "height": 1
+          }
+        ],
+        "notes": "전체6×8. 회색기와상단/앞처마와갈색목조기둥/밑동,전체128×80px유리상점전면을보존한다. 원본의줄무늬차양셀을전면6열로이어주고위쪽덧문창/옆창을벽위에합성한다. 火の用心은화재주의표지이며상점명으로오인하지않는다. 좌측화분과우측쓰레기통은각1칸지상객체. 원본4×3사각의하단80..94px분리돌은문틀이아니므로문틀전체80px만보존해합성한다. 자동영업/우편/전이없음. 문앞2칸보도와가구접근칸만확보한작은정적표본. 건물사각전체막힘,출입문그림은이벤트가아님. 접근→귀환은엔진충돌기준으로검증한다."
+      }
+    ]
+  }
+]

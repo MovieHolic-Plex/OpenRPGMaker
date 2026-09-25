@@ -13,6 +13,7 @@ import {
 import { conceptFacilityTemplateById } from "@/project/defaults/conceptFacilityTemplates";
 import type { PlaceDesign } from "@/project/spatial/types";
 import { el } from "@/util/dom";
+import { reviewedPlaceReferences } from '@/project/defaults/spatial/reviewedPlaceCatalog';
 
 const KINDS: readonly PlaceDesign["kind"][] = ["facility", "settlement", "natural"];
 const LAYOUTS: readonly PlaceDesign["layout"][] = ["row", "double-row", "manual"];
@@ -29,6 +30,8 @@ const LAYOUT_LABEL = {
   manual: "직접",
 } as const;
 
+import { spatialReferenceDocuments } from './spatialReferenceDocuments';
+
 export function renderSpatialPlacesInspector(
   card: SpatialGalleryCard | undefined,
   open: boolean,
@@ -38,6 +41,7 @@ export function renderSpatialPlacesInspector(
   const target = card ? placeDraftTarget(card) : undefined;
   const project = workingProject();
   const body: HTMLElement[] = [];
+  body.push(...spatialReferenceDocuments(place?.referenceDocuments ?? (card?.reviewedPlaceId ? reviewedPlaceReferences(card.reviewedPlaceId) : undefined)));
   if (card) {
     body.push(el("h3", { class: "spatial-inspector-name", text: card.name }));
     const subtitle = cardSubtitle(card);
