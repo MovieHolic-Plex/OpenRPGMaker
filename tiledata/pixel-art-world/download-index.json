@@ -1,0 +1,2337 @@
+{
+  "checkedAt": "2026-09-24",
+  "notes": "제작자 페이지에서 공개적으로 연결된 ST-/SA- 원본 목록. 다운로드와 AI 조립 검토는 다름. 이미지 바이트는 사용자 로컬 폴더에만 보관.",
+  "assets": [
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-conveni01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Convi-E01.png",
+      "filename": "ST-Convi-E01.png",
+      "width": 256,
+      "height": 1728,
+      "sha256": "52c0e10cf764d8de1e8c816f56ec1a1729ea9b7353297ed8c21640af6f2fccde",
+      "bytes": 115422
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-conveni01.html",
+        "https://yms.main.jp/dotartworld/page2/tile-school01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Ditch01.png",
+      "filename": "SA-Ditch01.png",
+      "width": 384,
+      "height": 128,
+      "sha256": "ce6b06ca456e3bae08680d1fb6dad2eada83c9ab78bfdd1fd5895be7a9b9b7dc",
+      "bytes": 4112
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-conveni01.html",
+        "https://yms.main.jp/dotartworld/page2/tile-school01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-BorderG01.png",
+      "filename": "SA-BorderG01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "f3755cd0c2b6b02a9c162222585b6b3bcceb44f6195a997122b755459fe3da59",
+      "bytes": 1383
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-conveni01.html",
+        "https://yms.main.jp/dotartworld/page2/tile-school01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Roof01.png",
+      "filename": "SA-Roof01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "15d7faf904362bb07108b2e407fb750fd242f1c7db9c4ca2f5f27f2e0aec74bb",
+      "bytes": 965
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-conveni01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Roof02.png",
+      "filename": "SA-Roof02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "aeda7393c7487ad44f56349d57005c5b58419c5ac0864b566b2497850339a870",
+      "bytes": 840
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-conveni01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Convi-I01.png",
+      "filename": "ST-Convi-I01.png",
+      "width": 256,
+      "height": 1280,
+      "sha256": "6725e647d6007ab7bca5f4a9f2f784c7433bac672fdd01e649bf6cb544773d77",
+      "bytes": 67459
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-fastfood01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Fdshop-I01.png",
+      "filename": "ST-Fdshop-I01.png",
+      "width": 256,
+      "height": 1440,
+      "sha256": "70672a4e173856dce360986370b55970933bdb4ce449198e98af5a09b3efd342",
+      "bytes": 69808
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-fastfood01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Icecream-I01.png",
+      "filename": "ST-Icecream-I01.png",
+      "width": 256,
+      "height": 640,
+      "sha256": "f25b67886a656df2e1a63df8861b9a4aab8adfa27a21d6024304a12a23d8585a",
+      "bytes": 31563
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-fastfood01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Bakery-I01.png",
+      "filename": "ST-Bakery-I01.png",
+      "width": 256,
+      "height": 704,
+      "sha256": "8bc506de56fbed622d48b29a97c1e5bfd10513920a3755f2975ccba4e8677f35",
+      "bytes": 24314
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-hospital01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Hospital-I01.png",
+      "filename": "ST-Hospital-I01.png",
+      "width": 256,
+      "height": 1856,
+      "sha256": "1174a42296b5738d0f2cd7a844d743509194da89c62d3d634150a527c8275d89",
+      "bytes": 103647
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-izakaya01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Izakaya-I01.png",
+      "filename": "ST-Izakaya-I01.png",
+      "width": 256,
+      "height": 1600,
+      "sha256": "6c5488583371c4efbbb47c53f2f40402780b834ebee80385eeae7e3340b0f18a",
+      "bytes": 95106
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-izakaya01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Dway02.png",
+      "filename": "SA-Dway02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "451daedeab8e739a683202d6c1c563f4a6fcd452785c591839dbbd929509998f",
+      "bytes": 459
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-library01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Libry-I01.png",
+      "filename": "ST-Libry-I01.png",
+      "width": 256,
+      "height": 1600,
+      "sha256": "9165bc9e9db4c24369ce511cd5d93fe1ba2f7a32cfaa491f9d933ad9b52183e3",
+      "bytes": 74685
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-library01.html",
+        "https://yms.main.jp/dotartworld/page2/tile-school01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Wall01.png",
+      "filename": "SA-Wall01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "7732b153bd79758151858409e92b74e49176047e41d5a09f100283dc1e42d861",
+      "bytes": 444
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-library01.html",
+        "https://yms.main.jp/dotartworld/page2/tile-school01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Mat01.png",
+      "filename": "SA-Mat01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "a322f549ff6b35b11532a1da51a13a51dd79ebd110a3f6af116e00e7e6893683",
+      "bytes": 375
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-mansion01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-MsionB-E01.png",
+      "filename": "ST-MsionB-E01.png",
+      "width": 256,
+      "height": 1632,
+      "sha256": "1a48151aa07d6b2c7d59b7a8674bf143060841d25ad2d5dd20bc4e5d214d246b",
+      "bytes": 138158
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-mansion01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-MsionP-E01.png",
+      "filename": "ST-MsionP-E01.png",
+      "width": 256,
+      "height": 1632,
+      "sha256": "3723b044833d5a95680298df805d7b6ae321f6be89d6ddf375c2f5c8122d8775",
+      "bytes": 138465
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-mansion01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-MsionY-E01.png",
+      "filename": "ST-MsionY-E01.png",
+      "width": 256,
+      "height": 1632,
+      "sha256": "4769c99df2461d753265d01b3a526e25ec06e88b6df351856c201bb715f94b80",
+      "bytes": 138513
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-mansion01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Ivy01.png",
+      "filename": "SA-Ivy01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "3b16a7750e783b4ad20bf73f7830ccb3096c130af967f668e03324d45ba12948",
+      "bytes": 1691
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-mansion02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-MsionB-I01.png",
+      "filename": "ST-MsionB-I01.png",
+      "width": 256,
+      "height": 1760,
+      "sha256": "8338e8ebef716a86c687cb0f24683398efe2dadb9303f9c97772509e3ea8de9c",
+      "bytes": 131467
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-mansion02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-MsionP-I01.png",
+      "filename": "ST-MsionP-I01.png",
+      "width": 256,
+      "height": 1760,
+      "sha256": "2e3f22af16fd5de5de6b9d58543c31979e34b494be2c20fde7ca7de4eddc4c96",
+      "bytes": 132456
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-mansion02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-MsionY-I01.png",
+      "filename": "ST-MsionY-I01.png",
+      "width": 256,
+      "height": 1760,
+      "sha256": "ab203ceeaf8beed0ea9bf4741e4f52e09f33086dcabb1e1e05b524ae6739e1d1",
+      "bytes": 132473
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-mansion02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-MsionW-I01.png",
+      "filename": "ST-MsionW-I01.png",
+      "width": 256,
+      "height": 1760,
+      "sha256": "61343c5c30906b9d45a4aeeca7584129b2a5c0784aba910d9f01e86b19122092",
+      "bytes": 133792
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-mansion02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-MsionR-I01.png",
+      "filename": "ST-MsionR-I01.png",
+      "width": 256,
+      "height": 1760,
+      "sha256": "e85c9fd260f1a3645ea017a76f5175fbd6e68683b251233b52369a99d66351fa",
+      "bytes": 134540
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-mansion02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Carpet08.png",
+      "filename": "SA-Carpet08.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "0d9e2c378202c719d290dbdc5697956b45bd8c1daab443500ac2dde3b5645368",
+      "bytes": 827
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-mansion02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Carpet09.png",
+      "filename": "SA-Carpet09.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "ff5ae80c4eb7c901ecc2d0326aac9b0af1baae372c652ace218b428bf6df9a6f",
+      "bytes": 827
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-mansion02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Carpet06.png",
+      "filename": "SA-Carpet06.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "46e86f0e79c075978356eebb941ac3605a6e0df5372444ec09e8661778328854",
+      "bytes": 827
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-mansion02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Carpet08ST.png",
+      "filename": "SA-Carpet08ST.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "9f0dd0fae6383d793491b676b84914b4e27908faed3ea0e775a1c7ccb792dd88",
+      "bytes": 666
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-mansion02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Carpet09ST.png",
+      "filename": "SA-Carpet09ST.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "11c2b9245f0b6e29c38a341d0fde6e8bbb09becd33bd96f79e2f155135759c65",
+      "bytes": 666
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-mansion02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Carpet07.png",
+      "filename": "SA-Carpet07.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "9ecbc2432d31a804be46bf0580f9d37807ca5560cc9a9994b858d2463eb42d4b",
+      "bytes": 812
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-mansion02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Fur03.png",
+      "filename": "SA-Fur03.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "d64cf199977c60817a78c4699640f182fa631ce4c519067bb4188c96a0a229d2",
+      "bytes": 2054
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-mansion02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Cartain01.png",
+      "filename": "SA-Cartain01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "eee762c26f2564455fe7ef8083cb3c86b8302f5e7a513decf785063e8ea7f50e",
+      "bytes": 965
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-mansion02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Cartain02.png",
+      "filename": "SA-Cartain02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "f690a42402c4343d505ea4693a26274f3642a34c2fe34cdc0698c158295d7354",
+      "bytes": 965
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-office01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Office-I01.png",
+      "filename": "ST-Office-I01.png",
+      "width": 256,
+      "height": 1856,
+      "sha256": "800110f7768bfea83614cb7431f9048af0204b84db30d0e2482345a3fdbc85e0",
+      "bytes": 83326
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-park01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Park-E01.png",
+      "filename": "ST-Park-E01.png",
+      "width": 256,
+      "height": 1600,
+      "sha256": "4becd0ccc997e22003dc8a0f6fb8a6cc12379d14c004d9f744d9b4d0b07ad62e",
+      "bytes": 135390
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-park01.html",
+        "https://yms.main.jp/dotartworld/page2/tile-school01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Kadan01.png",
+      "filename": "SA-Kadan01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "bc7093707fe1b85ad1755b236531fe26b46f83f21cae463773f2668481ecfdc4",
+      "bytes": 2077
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-park01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Concrete03.png",
+      "filename": "SA-Concrete03.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "016edc7b7572e20684cfa259e383312619d7ed4d52b55db3d4bb44b67c6aa1c0",
+      "bytes": 970
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-park01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Roof04.png",
+      "filename": "SA-Roof04.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "66339559aa492af2d0cc973c7fce0e99ff73ab031a95abcb864c3a71bc9c3a3b",
+      "bytes": 1944
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-retrotown01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Sento-E01.png",
+      "filename": "ST-Sento-E01.png",
+      "width": 256,
+      "height": 1600,
+      "sha256": "bfdd46ba076a119f84cb7c98940a0fc6488d133b07c21f0bf0676915fa421ee0",
+      "bytes": 50466
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-retrotown01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-RTown-E01.png",
+      "filename": "ST-RTown-E01.png",
+      "width": 256,
+      "height": 1600,
+      "sha256": "4d94f4a63f6ead17ea390203601245df12da8278feb10a6d9dac1063d952e26c",
+      "bytes": 56749
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-retrotown01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Moss01.png",
+      "filename": "SA-Moss01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "e51438a218c382b953767b5e0b7c295f6ec608cd0145a898e0388c4200ab1310",
+      "bytes": 2519
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-retrotown01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Moss02.png",
+      "filename": "SA-Moss02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "719bff1b200eb557a49bcfa4c96d36728b42ece5c3643b90c8e8ec8b5e13e1db",
+      "bytes": 3086
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-rooms01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Room-I01.png",
+      "filename": "ST-Room-I01.png",
+      "width": 256,
+      "height": 1120,
+      "sha256": "455f8b8a61b90c8473f5c08fe88d74646e8028f756bd24ec08b9c6cbc176ef31",
+      "bytes": 24667
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-rooms01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Room-I02.png",
+      "filename": "ST-Room-I02.png",
+      "width": 256,
+      "height": 1120,
+      "sha256": "b94a5703252be70960bf3bbd6626a9a96d57f7c8c8efc2c2db9d00d13cd206f5",
+      "bytes": 66201
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-school01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Schl-E01.png",
+      "filename": "ST-Schl-E01.png",
+      "width": 256,
+      "height": 1824,
+      "sha256": "39b7b14027c50019479c609e44427163a52f38eef89af4c68ce6e4593a7b616f",
+      "bytes": 127341
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-school01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Saku01.png",
+      "filename": "SA-Saku01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "14025ba78f24984ae8e497fcda90c860795ac993999a48fcd1fe1eca48810dfb",
+      "bytes": 509
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-school01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Concrete02.png",
+      "filename": "SA-Concrete02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "d3d589e1215cdcca23b17c4a2654d907cd5171e03eb5ec4d23d9ec602a726cad",
+      "bytes": 741
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-school01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Schl-I01.png",
+      "filename": "ST-Schl-I01.png",
+      "width": 256,
+      "height": 1600,
+      "sha256": "b414d79c27779cfa4903f87595cb6406f874deef2c8f324cd0cc99c4f9b630c1",
+      "bytes": 78404
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-school01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Floor02.png",
+      "filename": "SA-Floor02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "71649fa46885b07a21c03fb2f08bdd011652ab9185275c90e48f22a8c523b406",
+      "bytes": 1365
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-school01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Floor05.png",
+      "filename": "SA-Floor05.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "eee3d654d4f1978c99ab291b9cef9c8e54de3f43e413d8465b33aa9152d626f4",
+      "bytes": 416
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-school01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Kyodan01.png",
+      "filename": "SA-Kyodan01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "9f2cadd502a10b79d30a2b42665f778c3c85d5e02f9633d46b1bb6348169777f",
+      "bytes": 1104
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-school01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Sunoko02.png",
+      "filename": "SA-Sunoko02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "0eb57527f3f5bc059145399cab23f66a80e10e5690fa70cb03a3262b97d4d638",
+      "bytes": 1122
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-school02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Schl-I02.png",
+      "filename": "ST-Schl-I02.png",
+      "width": 256,
+      "height": 1600,
+      "sha256": "aafbf9b4292d7c5d34587e4e25dfc4c5cd9818d01a6ce3b05b1c3571735f16da",
+      "bytes": 94655
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-school02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Schl-Gym.png",
+      "filename": "ST-Schl-Gym.png",
+      "width": 256,
+      "height": 1600,
+      "sha256": "88ea5da312fecf15098a3a0239b278d23f365ce978d4bbee727584ca24775b81",
+      "bytes": 78896
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-schoolw01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Schl-WE01.png",
+      "filename": "ST-Schl-WE01.png",
+      "width": 256,
+      "height": 1600,
+      "sha256": "36e5f775678a47a27e785620a07ee1c4ba9d67f5a59a6c60d5e230e1ed554970",
+      "bytes": 54461
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-schoolw01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Schl-WI01.png",
+      "filename": "ST-Schl-WI01.png",
+      "width": 256,
+      "height": 1600,
+      "sha256": "3375238abee35db986b562fdd06f0f75dba6d61949218212d9d8e3a0bf1fb37d",
+      "bytes": 84588
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-schoolw01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Schl-WI02.png",
+      "filename": "ST-Schl-WI02.png",
+      "width": 256,
+      "height": 1600,
+      "sha256": "488bc886b47f74d32df66383c049a30c8d38151d3fefa12571010ae0c8c22418",
+      "bytes": 43807
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-sento01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Sento-I02.png",
+      "filename": "ST-Sento-I02.png",
+      "width": 256,
+      "height": 1440,
+      "sha256": "bc1909fd8520333ea69a54113d41597233e73fbf081def507edac87bf5eb886a",
+      "bytes": 31540
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-sewer01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Sewer-01.png",
+      "filename": "ST-Sewer-01.png",
+      "width": 256,
+      "height": 1504,
+      "sha256": "7850f1bc6d82ac8a9947df171e733ddde6614599bd9c6d950e4774deef3b1e1e",
+      "bytes": 88552
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-sewer01.html",
+        "https://yms.main.jp/dotartworld/page2/tile-townE01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Ditch02.png",
+      "filename": "SA-Ditch02.png",
+      "width": 384,
+      "height": 128,
+      "sha256": "1807918dbe8edb5cc53cf4415d6a01939343992dde376733d59671256ed4a9cc",
+      "bytes": 7081
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-sewer01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Pool01.png",
+      "filename": "SA-Pool01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "c5d667991f48e48c9ec3ac09ae4e072370e0d6358cc2f10452c4b8c3f9b16b17",
+      "bytes": 2990
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-sewer01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Pool02.png",
+      "filename": "SA-Pool02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "014cf4fbd29c2ba9f32d53fc88fc4d123f04763f0b7c51075fc17ffdcfa97d96",
+      "bytes": 2988
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-toilet01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Toilet-I01.png",
+      "filename": "ST-Toilet-I01.png",
+      "width": 256,
+      "height": 1376,
+      "sha256": "a5deca7b104a16b86e8a27ea80f890497fba84fc99c04b22f0b744c19a5813be",
+      "bytes": 63098
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-townE01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Town-E01.png",
+      "filename": "ST-Town-E01.png",
+      "width": 256,
+      "height": 1600,
+      "sha256": "d28c556e346a833c14caf3e4668bf1fcec67c7862bc7b63f9b2279207fe7a13e",
+      "bytes": 108847
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-townI01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Town-I01.png",
+      "filename": "ST-Town-I01.png",
+      "width": 256,
+      "height": 1600,
+      "sha256": "9a3979e957a8094644046b32267077364a476511efbfa5807a39156fa5c10c48",
+      "bytes": 83020
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-townI01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Bath-I01.png",
+      "filename": "ST-Bath-I01.png",
+      "width": 256,
+      "height": 768,
+      "sha256": "e66dd50e1782d9c39013a04b9d96899c1e0b75ae0e08e0c6ea32ec29fa6db00d",
+      "bytes": 34464
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-wasitu01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Washitu-I01.png",
+      "filename": "ST-Washitu-I01.png",
+      "width": 256,
+      "height": 1600,
+      "sha256": "8667246423284808bf5047c2bd0b1f4750a5d555da0ce09b243c24f4e399751b",
+      "bytes": 94572
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-wasitu01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Kotatsu01.png",
+      "filename": "SA-Kotatsu01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "16376c2e6dff8aa51f74d43d9bc3db24c300f13586482cce9f5b866828e9dd35",
+      "bytes": 711
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page2/tile-wasitu01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Kotatsu02.png",
+      "filename": "SA-Kotatsu02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "64d84e0abe9969f4db1e78fd4f5f1150ad9e1a0660352186ff01b33f73a355c6",
+      "bytes": 718
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-DwayA01.png",
+      "filename": "SA-DwayA01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "80110c41f17f349bd762dc5c5e9a3bf55f5eb60e7ee8daa11947c95999cf5d74",
+      "bytes": 299
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-DwayA02.png",
+      "filename": "SA-DwayA02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "c556bf8db2a7c0c89168c18d657747c2a9303b591a909662d6fdb4a1705d93a4",
+      "bytes": 300
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-DwayB01.png",
+      "filename": "SA-DwayB01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "e2dd3bbd80898b0ff97f8201df693862234a6debb07227a72b52cf8d7a0183e0",
+      "bytes": 415
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-DwayB02.png",
+      "filename": "SA-DwayB02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "7c99d41b353e93af972a331fe2a2a758fdf8d006c6ef7a88b16679ff7874abeb",
+      "bytes": 409
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-DwayC01.png",
+      "filename": "SA-DwayC01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "451daedeab8e739a683202d6c1c563f4a6fcd452785c591839dbbd929509998f",
+      "bytes": 459
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-DwayC02.png",
+      "filename": "SA-DwayC02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "7a5e91a10c19ec70e250baa962960785cf4dc22b64780d157659c3420ef3e6a0",
+      "bytes": 459
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-DwayD01.png",
+      "filename": "SA-DwayD01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "bafe03e12b7a9efae447f749b8bfd3c7e1c99b12a1d997caebcc83f268c2e047",
+      "bytes": 878
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-AsphaltRoad01.png",
+      "filename": "SA-AsphaltRoad01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "1defffef1fe5d051ce71e8b6814dbd3b64560c930e84a284ced4255df109395f",
+      "bytes": 523
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html",
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Asphalt01.png",
+      "filename": "SA-Asphalt01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "ad12ed690dbdf8f8228c8dd62514463a71f091c4bab4d761abd244d5db4b4f99",
+      "bytes": 3068
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html",
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Asphalt02.png",
+      "filename": "SA-Asphalt02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "b52a639ecc8278243d594c2ab9d0341f7687e4b3b8ade8816ce0bf19f82b81cb",
+      "bytes": 2634
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html",
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-AsphaltBase.png",
+      "filename": "SA-AsphaltBase.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "3ac2ab1dbe273efe71c09e1a0a31c11a760c364249d0aab9deaaa29fd1c55905",
+      "bytes": 3558
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GroundG01.png",
+      "filename": "SA-GroundG01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "5fde882a88c0fa15237776b74e4ac03f5e0fb0014f5e3e3771377e22999cde7c",
+      "bytes": 966
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GroundG02.png",
+      "filename": "SA-GroundG02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "f498e1e462768f7a033c846852f88bbe97947d045585dfeb8cd26fc7b9c911a2",
+      "bytes": 5382
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GroundG03.png",
+      "filename": "SA-GroundG03.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "a203f079c921096fcd32f11362bbd2e3655a4c5593c6c29fe473875d31017736",
+      "bytes": 3826
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GroundG04.png",
+      "filename": "SA-GroundG04.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "db3badaa302e62a9f149086674446d94868049ea1fd77c825ac65732c97883a5",
+      "bytes": 5224
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GroundG05.png",
+      "filename": "SA-GroundG05.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "a46f40cf4b95631903da122862e75483e0b178597f5531f9a874c7ed4bfe0820",
+      "bytes": 3618
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GroundG06.png",
+      "filename": "SA-GroundG06.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "de4b193908be878d3814f433918e070190089b36dcc768cce03e00679203f37c",
+      "bytes": 3372
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GroundY01.png",
+      "filename": "SA-GroundY01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "e551c1b70fde23a4b7f776a0da43e7d20402fdcfe9de59c18de25af694f6b786",
+      "bytes": 5293
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Ground01.png",
+      "filename": "SA-Ground01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "ec7f4f6d20889e27ae442ddb4fa9f6823b48f643abcaf31f30eb50cb6a7553ad",
+      "bytes": 10409
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Ground02.png",
+      "filename": "SA-Ground02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "2b794d7816e7e45cd1f3ec7d8b03364aadcd7e1905bd17585b15b15235eab19e",
+      "bytes": 11491
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Ground03.png",
+      "filename": "SA-Ground03.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "d8bafd342b989100ee2b76cbf7a9528f4b345132b507a445147b8ad0227b5246",
+      "bytes": 11021
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Moss01.png",
+      "filename": "SA-Moss01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "e51438a218c382b953767b5e0b7c295f6ec608cd0145a898e0388c4200ab1310",
+      "bytes": 2519
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Moss02.png",
+      "filename": "SA-Moss02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "719bff1b200eb557a49bcfa4c96d36728b42ece5c3643b90c8e8ec8b5e13e1db",
+      "bytes": 3086
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Undulation01.png",
+      "filename": "SA-Undulation01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "62a4ca19ebeeb1bdeabac07b17febd78534507cad722ac61ac9ee6b57e18d376",
+      "bytes": 12186
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Undulation02.png",
+      "filename": "SA-Undulation02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "740f4bf70b52cd78d0214e2a1683c253fae3ab466a1a20faed9dd69cecbd5083",
+      "bytes": 12602
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GRoad01.png",
+      "filename": "SA-GRoad01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "065b747bc0b0562b1d1780786adfaac8338635927ea0ce5f3c9e09675eb291ce",
+      "bytes": 3181
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GRoad02.png",
+      "filename": "SA-GRoad02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "63b35b9bc8da8f814c9fc872c7c3dfa7def7ac0a8b6767448561b09f790b31c7",
+      "bytes": 3605
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-SRoad01.png",
+      "filename": "SA-SRoad01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "f984b3e50ff5b2ccf1b94eb441c41f343eabfe7dd5ee1f64e48dbd0a0e12340f",
+      "bytes": 4362
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-SRoad02.png",
+      "filename": "SA-SRoad02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "a072e8ec0bbf0d5df83d16e526154df493c4975bdf3e2d1028cbbaac56fd2d90",
+      "bytes": 4045
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GrassC01.png",
+      "filename": "SA-GrassC01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "707722057efcc37367c73a98cc1e78d51fb704afc9a743d03f65f56118afc97a",
+      "bytes": 2036
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GrassC02.png",
+      "filename": "SA-GrassC02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "a09d78e5cb1997f2e8edd711732793868dee0228a9c51fc6ae932ce379c5699a",
+      "bytes": 1923
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GrassC03.png",
+      "filename": "SA-GrassC03.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "036bb7b541cd28a793125503d9db7b098879e1d366fe3c69414bcddd29f31c26",
+      "bytes": 1331
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GrassD01.png",
+      "filename": "SA-GrassD01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "f742ce5684f839f580f2fed551c2dd094455b7d03972568525fbc8fcf9080e69",
+      "bytes": 2036
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GrassD02.png",
+      "filename": "SA-GrassD02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "381c7aff9cb4835f9e63d30e1d6aba2ce13441ff2983a38fc4bd6825235de38d",
+      "bytes": 1923
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GrassD03.png",
+      "filename": "SA-GrassD03.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "c7553f8a6e583a8d7ce1fe1becd05671ef34e3d89ec125416bf42560c167134c",
+      "bytes": 1334
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GrassE01.png",
+      "filename": "SA-GrassE01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "e3ed42d5e81d07a25abec24511f8c6be4ad8856ecc7bbd62a1e6987bb9565bd2",
+      "bytes": 3129
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GrassE02.png",
+      "filename": "SA-GrassE02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "07995fa77a79f1181f6c91d3bc0eba573f6c561f8cf6b79e9c0820d1d490c9dc",
+      "bytes": 3370
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GrassE03.png",
+      "filename": "SA-GrassE03.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "42d80aa5706c9e0731847cbcccfee1fa6fdd1cb1d922dc57af83dfe2de4d3671",
+      "bytes": 3069
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GrassE04.png",
+      "filename": "SA-GrassE04.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "a5f2ec7743d4f6b297d2160237d3bec311ca8ab7e3b8fb3fe3258b67efe55ee5",
+      "bytes": 5495
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GrassE05.png",
+      "filename": "SA-GrassE05.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "7e45bf8a331251fce53effc385a85d4580ddfcc076a147790979a25cd82c4f95",
+      "bytes": 4166
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GrassE06.png",
+      "filename": "SA-GrassE06.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "e3f47c770799b1c44b91eb31c3947622a0ce4382c800d642f5c908f664237d78",
+      "bytes": 4368
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Seawds01.png",
+      "filename": "SA-Seawds01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "d4cbc1540c7894c1e9832d8a1d896099a764dc59f3f32721d6832a78b637c693",
+      "bytes": 1615
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Hatake01.png",
+      "filename": "SA-Hatake01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "cb33fb4239613479abb4f705faaabef10a9e940d60b349dd5a535a41f65d5da8",
+      "bytes": 3655
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Hatake02.png",
+      "filename": "SA-Hatake02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "02042abd8b045fc5d784b0e98b21f5aff4000bedebc3b03c5a264a431447b144",
+      "bytes": 3906
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Hatake03.png",
+      "filename": "SA-Hatake03.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "f85f57fc22fb0b791b8528fb1329285750c3e85293ef9d11cdd61ddfb6fe7a69",
+      "bytes": 3658
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Hatake04.png",
+      "filename": "SA-Hatake04.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "7cbcb9991ffa4c3e576e5b149afe76c20b197b1766fc59ab19cf09ac882c1225",
+      "bytes": 3673
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Hatake05.png",
+      "filename": "SA-Hatake05.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "82aafb6427b178ad242dcd6415300b74361f314b55d303ccf695fbda58f7248e",
+      "bytes": 3949
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Hatake06.png",
+      "filename": "SA-Hatake06.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "99c3bcc6ccd4ead736b635c98c82a16ba6e24421550b0d431cff4144a8e53578",
+      "bytes": 3788
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-HatakeB01.png",
+      "filename": "SA-HatakeB01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "9b12d0270dbd431b76c565e95f33ee7f51f9606415edfe3ecfcef92eb1c3b099",
+      "bytes": 3867
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-HatakeB02.png",
+      "filename": "SA-HatakeB02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "da57b8718ee974a9482dcde762183a64e5925a07d3792f165c4e17a12bfcfff1",
+      "bytes": 3909
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-HatakeB03.png",
+      "filename": "SA-HatakeB03.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "a9b9ce37b9280984c5e3426157aeb716d693c089cd1999313d80dde56489d5a0",
+      "bytes": 3921
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-HatakeB04.png",
+      "filename": "SA-HatakeB04.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "01466cdfed00529581f8c14ba6b4f188212c07992cde88dddef7effb14ef0b78",
+      "bytes": 3853
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-HatakeB05.png",
+      "filename": "SA-HatakeB05.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "3ade22091f7c5f1a04be6dd16ecb7708fe88efcfa952c0ed1972ba8eac2aca2e",
+      "bytes": 3969
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-HatakeB06.png",
+      "filename": "SA-HatakeB06.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "04a7d0dd6bc45e674bd6d3ec684dbf412bad927e2741d22bfe3e3b5dcec2661c",
+      "bytes": 3750
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GBorderA01.png",
+      "filename": "SA-GBorderA01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "8b6daad6a51892ee50c3dd3eb595ced93e4428954483380f08481b6dc80ec0a2",
+      "bytes": 2294
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GBorderA02.png",
+      "filename": "SA-GBorderA02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "7a24cf7a6398ad1f6ccd6f57790d4487a684397c0ad969f0cabe83efd3f2f0bb",
+      "bytes": 2760
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GBorderC01.png",
+      "filename": "SA-GBorderC01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "f3755cd0c2b6b02a9c162222585b6b3bcceb44f6195a997122b755459fe3da59",
+      "bytes": 1383
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GBorderB01.png",
+      "filename": "SA-GBorderB01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "d8687ddc3e78b75e302f7ad907fce193d72294d72a51ca560048eb5debc77409",
+      "bytes": 2641
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GBorderB02.png",
+      "filename": "SA-GBorderB02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "64062ac74e79ab7fccb291afd4f26408142d78b510ebdefbdb24b41c650dba1d",
+      "bytes": 3750
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Stone01.png",
+      "filename": "SA-Stone01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "3a77115da410d18348181dd4ebc653cbe39a07d5ef3ea7451359765b53dec0f2",
+      "bytes": 17463
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Kadan01.png",
+      "filename": "SA-Kadan01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "bc7093707fe1b85ad1755b236531fe26b46f83f21cae463773f2668481ecfdc4",
+      "bytes": 2077
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Kadan02.png",
+      "filename": "SA-Kadan02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "22dd9be0d28919cbdd8569be3e12d37bde4e2f7c28b2c751d5452de37a928c57",
+      "bytes": 2705
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Kadan03.png",
+      "filename": "SA-Kadan03.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "01a01f5f03a6d63be300fd787519b230334253c1d3f21621ef5060a91a501c89",
+      "bytes": 2280
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GBorderC03.png",
+      "filename": "SA-GBorderC03.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "526b8eaa252ecead2417d9799340805bb67044248da385407b33396d401991e4",
+      "bytes": 3447
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Flower01.png",
+      "filename": "SA-Flower01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "bad6589aa0a5b577e87e5e1e335b33210bb50f9586978a016d162cb2a5eceb8f",
+      "bytes": 4894
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GBorderC02.png",
+      "filename": "SA-GBorderC02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "5099645c9ca3362cc1a692886eb354489b45d74bd5ceb3b6353aa0bc16564f2c",
+      "bytes": 1571
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-StFence01.png",
+      "filename": "SA-StFence01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "33c40faba03031fdca7b7bb5ebf2d9d93126b35da8b75f6d534c1a58bc03fbc4",
+      "bytes": 4070
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-StFence02.png",
+      "filename": "SA-StFence02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "af0108cc4a48bb9c073a9d68d2d2dbef4049b7fb5c6ae7f975106fb62fc11c5f",
+      "bytes": 3561
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-StFence03.png",
+      "filename": "SA-StFence03.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "7840db31e83bde5e12c26a67392a2de4b061a24f9cd455a14422e6703593f61f",
+      "bytes": 9093
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-GroundBase01.png",
+      "filename": "SA-GroundBase01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "df2f0cfbbbe3fac3a80c4cdedce08b57d7aa8373b457d1090f5773ac28b98b3d",
+      "bytes": 2097
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-StFenceBase.png",
+      "filename": "SA-StFenceBase.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "1e1a5f5a1150d2fe918a9c16df2a0874df3dddd58ca6aede56910b353f26196c",
+      "bytes": 4078
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Concrete01.png",
+      "filename": "SA-Concrete01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "016edc7b7572e20684cfa259e383312619d7ed4d52b55db3d4bb44b67c6aa1c0",
+      "bytes": 970
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Concrete02.png",
+      "filename": "SA-Concrete02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "d3d589e1215cdcca23b17c4a2654d907cd5171e03eb5ec4d23d9ec602a726cad",
+      "bytes": 741
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Concrete03.png",
+      "filename": "SA-Concrete03.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "016edc7b7572e20684cfa259e383312619d7ed4d52b55db3d4bb44b67c6aa1c0",
+      "bytes": 970
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Road01.png",
+      "filename": "SA-Road01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "39eb3e4642f97c44d849f81815594b223b1dfb9f2edf0a6a51b50b862d0d8b1d",
+      "bytes": 1397
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Road02.png",
+      "filename": "SA-Road02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "75143c8774d6bf9ede0850784c8878116f70ca08db2f8151b9a889095793c77a",
+      "bytes": 1357
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Ivy01.png",
+      "filename": "SA-Ivy01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "3b16a7750e783b4ad20bf73f7830ccb3096c130af967f668e03324d45ba12948",
+      "bytes": 1691
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Roof01.png",
+      "filename": "SA-Roof01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "15d7faf904362bb07108b2e407fb750fd242f1c7db9c4ca2f5f27f2e0aec74bb",
+      "bytes": 965
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Roof02.png",
+      "filename": "SA-Roof02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "aeda7393c7487ad44f56349d57005c5b58419c5ac0864b566b2497850339a870",
+      "bytes": 840
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Roof03.png",
+      "filename": "SA-Roof03.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "55d8e553744cff68e527f755b600ce978472f62c61684e127bb1da3c578d47ee",
+      "bytes": 2057
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Roof04.png",
+      "filename": "SA-Roof04.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "66339559aa492af2d0cc973c7fce0e99ff73ab031a95abcb864c3a71bc9c3a3b",
+      "bytes": 1944
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Saku01.png",
+      "filename": "SA-Saku01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "14025ba78f24984ae8e497fcda90c860795ac993999a48fcd1fe1eca48810dfb",
+      "bytes": 509
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Window01.png",
+      "filename": "SA-Window01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "1bf360bf97d9b0079c15c61ac71b6e3ac0e84397d6d5f2e5676d312a755dca48",
+      "bytes": 545
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Ditch01.png",
+      "filename": "SA-Ditch01.png",
+      "width": 384,
+      "height": 128,
+      "sha256": "ce6b06ca456e3bae08680d1fb6dad2eada83c9ab78bfdd1fd5895be7a9b9b7dc",
+      "bytes": 4112
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Ditch02.png",
+      "filename": "SA-Ditch02.png",
+      "width": 384,
+      "height": 128,
+      "sha256": "1807918dbe8edb5cc53cf4415d6a01939343992dde376733d59671256ed4a9cc",
+      "bytes": 7081
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Ditch03.png",
+      "filename": "SA-Ditch03.png",
+      "width": 384,
+      "height": 128,
+      "sha256": "96e87341f368f714ae6f425e707bebec851a09a7bd409ab76736a8705fcb3efc",
+      "bytes": 7061
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Ditch04.png",
+      "filename": "SA-Ditch04.png",
+      "width": 384,
+      "height": 128,
+      "sha256": "3dc2947162346fee2479d107ddc071c8c0c025526271d3461c5ffc2b3c5ca809",
+      "bytes": 6960
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-WallA01.png",
+      "filename": "SA-WallA01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "7732b153bd79758151858409e92b74e49176047e41d5a09f100283dc1e42d861",
+      "bytes": 444
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-WallA02.png",
+      "filename": "SA-WallA02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "3123f01148956fa8c3cbf7d19ad9b8268fd859887d1f3230031fdfdd88b8af29",
+      "bytes": 1489
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-WallD01.png",
+      "filename": "SA-WallD01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "682d7a80bb67179422af40e063c4d4acf474e3f7e81e78c9512f5d1c93a8016a",
+      "bytes": 286
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Carpet01.png",
+      "filename": "SA-Carpet01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "b8991a5b9efbf4bd806cd2bf282d6bd0452496dfecea722f103b964233ab21c3",
+      "bytes": 434
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Carpet02.png",
+      "filename": "SA-Carpet02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "f8828aeb938da60504f94c515e05aa0115c64d6f5eed01a443d9ec9e0a21935a",
+      "bytes": 423
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Carpet03.png",
+      "filename": "SA-Carpet03.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "6b194460c767ab0d97d5987623ece3fed9fe41ea0dee249e0ad0e2406def83a6",
+      "bytes": 434
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Carpet04.png",
+      "filename": "SA-Carpet04.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "77910ff16d3f72ad5b39924b7a7e98076f758e13ab2878c7730442ce248b88fa",
+      "bytes": 485
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Carpet05.png",
+      "filename": "SA-Carpet05.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "2ac74ea68a1f00c80521242421df2f4342780884d3266540c0ad50c871666b5f",
+      "bytes": 434
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Carpet06.png",
+      "filename": "SA-Carpet06.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "46e86f0e79c075978356eebb941ac3605a6e0df5372444ec09e8661778328854",
+      "bytes": 827
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Carpet07.png",
+      "filename": "SA-Carpet07.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "9ecbc2432d31a804be46bf0580f9d37807ca5560cc9a9994b858d2463eb42d4b",
+      "bytes": 812
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Carpet08.png",
+      "filename": "SA-Carpet08.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "0d9e2c378202c719d290dbdc5697956b45bd8c1daab443500ac2dde3b5645368",
+      "bytes": 827
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Carpet08ST.png",
+      "filename": "SA-Carpet08ST.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "9f0dd0fae6383d793491b676b84914b4e27908faed3ea0e775a1c7ccb792dd88",
+      "bytes": 666
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Carpet09.png",
+      "filename": "SA-Carpet09.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "ff5ae80c4eb7c901ecc2d0326aac9b0af1baae372c652ace218b428bf6df9a6f",
+      "bytes": 827
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Carpet09ST.png",
+      "filename": "SA-Carpet09ST.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "11c2b9245f0b6e29c38a341d0fde6e8bbb09becd33bd96f79e2f155135759c65",
+      "bytes": 666
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Cartain01.png",
+      "filename": "SA-Cartain01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "eee762c26f2564455fe7ef8083cb3c86b8302f5e7a513decf785063e8ea7f50e",
+      "bytes": 965
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Cartain02.png",
+      "filename": "SA-Cartain02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "f690a42402c4343d505ea4693a26274f3642a34c2fe34cdc0698c158295d7354",
+      "bytes": 965
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Carpet-Rose01.png",
+      "filename": "SA-Carpet-Rose01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "33c6563645f89e189f6967506c4403fcc5151b91e6b786bdff0d2cf864c856c1",
+      "bytes": 6582
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Carpet13.png",
+      "filename": "SA-Carpet13.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "e40583d021d2a89ee3b787f1112b40d62e0e62e1f31701f1a7fe4dc54b313454",
+      "bytes": 7664
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Carpet17.png",
+      "filename": "SA-Carpet17.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "f3e3570ab782f91f5b6f654b98d41dc244d33a394d37987444647320089f1119",
+      "bytes": 7917
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Carpet10.png",
+      "filename": "SA-Carpet10.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "9ee0dbb6c712bd5f6189e33c1dc56e4b3542946286679b5500e1c1bac07a9f11",
+      "bytes": 629
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Carpet11.png",
+      "filename": "SA-Carpet11.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "7a0710a2b93af6189a1b8e0b75c126c6baa1452bb25a8547c4374ead5d7b35dc",
+      "bytes": 614
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Carpet12.png",
+      "filename": "SA-Carpet12.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "c477c757d2185c9eb685f06614a8a8475f3cb9df74fc1114663cecfa0f4c508b",
+      "bytes": 614
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Carpet14.png",
+      "filename": "SA-Carpet14.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "6e595a60892230211157ff7c6765bd9683cf0d800fe83dfcf7339cfcf20d633f",
+      "bytes": 8078
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Carpet15.png",
+      "filename": "SA-Carpet15.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "3da58af2eed2fa4eaf1e303788c6525f0bbe7259a13b01cf2012e2e86275c0af",
+      "bytes": 8170
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Carpet16.png",
+      "filename": "SA-Carpet16.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "72a8061f2bb755a5a40a3df98121500507870b6b75afc2ff09e0e1048b0da05c",
+      "bytes": 7680
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Floor-T06.png",
+      "filename": "SA-Floor-T06.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "e822fd398149740720105a70f63becd3071674f1b5e3048a4ae8243455e038c4",
+      "bytes": 1765
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Floor-T07.png",
+      "filename": "SA-Floor-T07.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "0575c2838cf81065b9f4ef3490891bc64dd2eb10d493717a53a9ddfce28137e0",
+      "bytes": 693
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Floor-T08.png",
+      "filename": "SA-Floor-T08.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "32a31deea040395612455d75a9a78d0d0963d1a1c405226a860832dbf0e12acb",
+      "bytes": 434
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-FloorM01.png",
+      "filename": "SA-FloorM01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "3d482c3330296739272187b861c3b31075b3cb28604c645bd82d5bfa242bba5d",
+      "bytes": 609
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-FloorM03.png",
+      "filename": "SA-FloorM03.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "0f45d19fe360255ebac51e6a0b927b2c3213aaec1b6a1d83f8fda64ea01e5415",
+      "bytes": 581
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Floor-T12.png",
+      "filename": "SA-Floor-T12.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "25ec118cbf09cb64d86ec6afdb5c724ee34db8f41c8e88b6623f046b5543bf01",
+      "bytes": 1224
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-FloorS01.png",
+      "filename": "SA-FloorS01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "d1cb6c161386034addad3abd9669fee43269bf2326b58ef25600bc76f17e5e12",
+      "bytes": 413
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-FloorS03.png",
+      "filename": "SA-FloorS03.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "eee3d654d4f1978c99ab291b9cef9c8e54de3f43e413d8465b33aa9152d626f4",
+      "bytes": 416
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-FloorS05.png",
+      "filename": "SA-FloorS05.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "71649fa46885b07a21c03fb2f08bdd011652ab9185275c90e48f22a8c523b406",
+      "bytes": 1365
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-FloorT01.png",
+      "filename": "SA-FloorT01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "07ffb846c7f174a9265fb2ac0b348a47fc93e24a12415419664ea77f2d341f4a",
+      "bytes": 482
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-FloorT02.png",
+      "filename": "SA-FloorT02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "da2ede2a823451e9fa3965e2701810fc2b2ed7742004157eb5209bf38d19362c",
+      "bytes": 482
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Floor-T10.png",
+      "filename": "SA-Floor-T10.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "58878cc2a33584a9886b5eb701c977ba64477e65460253d85b5a428754ecf704",
+      "bytes": 3764
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-FloorT03.png",
+      "filename": "SA-FloorT03.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "36e7379aac03b503961f8f20147f9d782429e371121a0f09b1b0bac084d9a07c",
+      "bytes": 790
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-FloorT04.png",
+      "filename": "SA-FloorT04.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "733c83ec3c6df090ee678105b070d8f3c8ac8625abbffc8dccdfef5c94c0f610",
+      "bytes": 794
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Floor-T11.png",
+      "filename": "SA-Floor-T11.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "cb41acb5762814f9f844980343b3af6e059914e321571929efb68fbf1f08d9a3",
+      "bytes": 3920
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Fur01.png",
+      "filename": "SA-Fur01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "d64cf199977c60817a78c4699640f182fa631ce4c519067bb4188c96a0a229d2",
+      "bytes": 2054
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Fur02.png",
+      "filename": "SA-Fur02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "c6293c7437d5c561f455e5826d459cc2ceea2700366f847162c864b19b0b87bf",
+      "bytes": 2037
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Fur03.png",
+      "filename": "SA-Fur03.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "d64cf199977c60817a78c4699640f182fa631ce4c519067bb4188c96a0a229d2",
+      "bytes": 2054
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Goza01.png",
+      "filename": "SA-Goza01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "1294843d13ba76a7ae4aac4949e93a2c1fb887a42c19019c07d49560bcebd692",
+      "bytes": 7959
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Goza02.png",
+      "filename": "SA-Goza02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "2ce6f69b5822b0b090034a6a9bd892fd86d29420fc21e808596c45c51e68441a",
+      "bytes": 1721
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Goza03.png",
+      "filename": "SA-Goza03.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "be0a2aafb566253c4b63af44421850f1ecd5b3553bf19bf6cc450d389d711e95",
+      "bytes": 4518
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Kotatsu01.png",
+      "filename": "SA-Kotatsu01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "16376c2e6dff8aa51f74d43d9bc3db24c300f13586482cce9f5b866828e9dd35",
+      "bytes": 711
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Kotatsu02.png",
+      "filename": "SA-Kotatsu02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "64d84e0abe9969f4db1e78fd4f5f1150ad9e1a0660352186ff01b33f73a355c6",
+      "bytes": 718
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Sunoko02.png",
+      "filename": "SA-Sunoko02.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "0eb57527f3f5bc059145399cab23f66a80e10e5690fa70cb03a3262b97d4d638",
+      "bytes": 1122
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Sunoko03.png",
+      "filename": "SA-Sunoko03.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "3c32c8cd88efabea454916981d4aac6df62244ef386f760eac892d81a058b03d",
+      "bytes": 1176
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Sunoko01.png",
+      "filename": "SA-Sunoko01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "5d4a786302e66d963ba7e2f4b64ad75334abefce4dc5604fb134e128cc9c8eea",
+      "bytes": 939
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Kyodan01.png",
+      "filename": "SA-Kyodan01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "9f2cadd502a10b79d30a2b42665f778c3c85d5e02f9633d46b1bb6348169777f",
+      "bytes": 1104
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/autotiles02.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-in/SA-Mat01.png",
+      "filename": "SA-Mat01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "a322f549ff6b35b11532a1da51a13a51dd79ebd110a3f6af116e00e7e6893683",
+      "bytes": 375
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/door01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Dway01.png",
+      "filename": "SA-Dway01.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "80110c41f17f349bd762dc5c5e9a3bf55f5eb60e7ee8daa11947c95999cf5d74",
+      "bytes": 299
+    },
+    {
+      "pages": [
+        "https://yms.main.jp/dotartworld/page3/door01.html"
+      ],
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile/SA-Dway04.png",
+      "filename": "SA-Dway04.png",
+      "width": 96,
+      "height": 128,
+      "sha256": "c556bf8db2a7c0c89168c18d657747c2a9303b591a909662d6fdb4a1705d93a4",
+      "bytes": 300
+    }
+  ]
+}

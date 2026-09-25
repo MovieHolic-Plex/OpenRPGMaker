@@ -1,8 +1,8 @@
 {
   "projectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
   "projectDir": ".oprn-projects/field-routes-20260923",
-  "revision": 9,
-  "sha256": "56a9fd38bbb654722d5d7ca911748c46e2c583bb791776e11ac36da1d75612fa",
+  "revision": 11,
+  "sha256": "d6bde2bbd3b0a3de05461caa193f31c0a096fd1c61975973247dbd0e2b656bf5",
   "saved": true,
   "reopened": true,
   "maps": [
@@ -36,6 +36,21 @@
     "outdoor-nomad-camp",
     "outdoor-old-battlefield",
     "outdoor-great-valley",
-    "outdoor-world-map"
+    "outdoor-snow-frozen-ford",
+    "outdoor-snow-icewall-pass",
+    "outdoor-volcano-lavafall-ridge",
+    "outdoor-volcano-lava-lake",
+    "outdoor-desert-canyon-pass",
+    "outdoor-desert-dune-sea",
+    "outdoor-autumn-orchard-road",
+    "outdoor-autumn-maple-valley",
+    "outdoor-demon-castle",
+    "outdoor-forest-maze",
+    "outdoor-dragon-peak",
+    "outdoor-forest-camp",
+    "outdoor-farm-ranch",
+    "outdoor-lighthouse-cape",
+    "outdoor-world-map",
+    "outdoor-world-archipelago"
   ]
 }

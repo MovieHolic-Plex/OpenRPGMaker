@@ -112,6 +112,20 @@ describe("autotile bitmask engine", () => {
     expect(at(map, 1, 1)).toBe(SIMPLE_TILES.cornerSE);
   });
 
+  it("edgeConnects 그룹은 맵 밖을 이어진 이웃으로 본다(MZ) — 가장자리를 채운 칸은 몸통으로 남는다", () => {
+    const rows = [
+      [10, 10],
+      [10, 10],
+    ];
+    const points = [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }];
+    const mz = mapFromRows(rows);
+    shapeAutotileGroupAround(mz, { ...SIMPLE_GROUP, edgeConnects: true }, points);
+    expect(mz.lowerTiles).toEqual([SIMPLE_TILES.body, SIMPLE_TILES.body, SIMPLE_TILES.body, SIMPLE_TILES.body]);
+    expect(autotileNeighborMask(mapFromRows([[10]]), 0, 0, (t) => t === 10, 4, true)).toBe(15);
+    // 기존 그룹(생략)은 그대로 — 맵 밖 = 끊김.
+    expect(autotileNeighborMask(mapFromRows([[10]]), 0, 0, (t) => t === 10, 4)).toBe(0);
+  });
+
   it("variantMap 에 매핑이 없으면 타일을 바꾸지 않는다", () => {
     const partial: AutotileGroup = { id: "p", name: "p", memberTileIds: [10], variantMap: {} };
     const map = mapFromRows([[10]]);

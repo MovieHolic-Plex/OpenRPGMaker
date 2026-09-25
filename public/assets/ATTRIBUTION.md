@@ -489,3 +489,15 @@ claim; existing forest-harmony component notices still apply.
   colour key #ff678b became transparency, no other change.
 - Grafted onto the forest-village tileset for harbors. The packed sheet is distributed under CC BY-SA 3.0; the credit
   file `harbor-kit/CREDITS.txt` accompanies exports.
+
+## Atlas town parts (2026-09-25)
+
+- File: `forest-harmony/atlas-town-parts.png` (16px cells), built by `scripts/content/bake-atlas-town-parts.py`, grafted
+  onto forest_harmony at 3311~ (`src/assets/forestHarmonyAtlasTownParts.json`).
+- Sailing ship 「푸른물결호」: EasyRPG ship chipset (CC0) tiles and their mirrored stern copies, cut from the shared ship
+  reference render `region-references/bluewave-ship.png`; the surrounding sea was flood-filled to transparency.
+- Hide / black hide / red tents are recolours of forest_harmony chipset cells 417~479; the skull pike reuses cell 383.
+  Their original notices apply.
+- Fountain, striped market stalls, flames, smoke, ash, charred beams, scaffolding, bunting, lantern string and post,
+  hot-spring steam, totem and war banner are new pixels drawn in code by the script (no source image). Provenance, not a
+  new licence claim.

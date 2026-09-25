@@ -21,7 +21,7 @@ describe("RPG interiors (inn, homes, church, guild, castle rooms, ship, arena, c
   it("reassembles every place raster exactly through bounded AI reads and lists it under 장소", () => {
     const session = { ...spatialSession(), tab: "places" as const, mode: "design" as const, source: "defaults" as const };
     const cards = listSpatialGalleryCards(session);
-    expect(RPG_INTERIOR_PLACE_REFERENCES).toHaveLength(23);
+    expect(RPG_INTERIOR_PLACE_REFERENCES).toHaveLength(34);
     for (const entry of RPG_INTERIOR_PLACE_REFERENCES) {
       const lower: number[] = [], upper: number[] = [];
       let row: number | null = 0;

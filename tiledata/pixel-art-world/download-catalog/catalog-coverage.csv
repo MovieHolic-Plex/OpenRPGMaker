@@ -1,0 +1,33 @@
+﻿catalog_id,name,source_page,included_pages,status,direct_links,saved_direct_files,material_images_including_archive_members,sample_package_images,excluded_or_unavailable,unavailable_files,notes
+01,P1 · 학교 기본 — 学校基本セット,https://yms.main.jp/dotartworld/page2/tile-school01.html,https://yms.main.jp/dotartworld/page2/tile-school01.html,completed_with_recorded_exclusions,19,18,18,0,1,SC-Door-Schl03.png,school01의 SC-Door-Schl03.png는 HTTP404. 문 SUPPORT에 SC-Door-SchlG01.png 정상 별도 확보.
+02,P1 · 특별교실·체육관 — 特別教室セット,https://yms.main.jp/dotartworld/page2/tile-school02.html,https://yms.main.jp/dotartworld/page2/tile-school02.html,completed,3,3,3,0,0,,
+03,P1 · 병원 — 病院,https://yms.main.jp/dotartworld/page2/tile-hospital01.html,https://yms.main.jp/dotartworld/page2/tile-hospital01.html,completed,4,4,4,0,0,,
+04,P1 · 사무실 — オフィス内装,https://yms.main.jp/dotartworld/page2/tile-office01.html,https://yms.main.jp/dotartworld/page2/tile-office01.html,completed,2,2,2,0,0,,
+05,P1 · 도서관 — 図書館,https://yms.main.jp/dotartworld/page2/tile-library01.html,https://yms.main.jp/dotartworld/page2/tile-library01.html,completed,5,5,5,0,0,,
+06,P1 · 공용 화장실 — トイレ,https://yms.main.jp/dotartworld/page2/tile-toilet01.html,https://yms.main.jp/dotartworld/page2/tile-toilet01.html,completed,3,3,3,0,0,,
+07,P1 · 편의점 — コンビニエンスストア,https://yms.main.jp/dotartworld/page2/tile-conveni01.html,https://yms.main.jp/dotartworld/page2/tile-conveni01.html,completed,13,13,13,0,0,,
+08,P1 · 주택 내부·욕실 — 民家内装,https://yms.main.jp/dotartworld/page2/tile-townI01.html,https://yms.main.jp/dotartworld/page2/tile-townI01.html,completed,4,4,4,0,0,,
+09,P1 · 개인 방·원룸 — 部屋,https://yms.main.jp/dotartworld/page2/tile-rooms01.html,https://yms.main.jp/dotartworld/page2/tile-rooms01.html,completed,3,3,3,0,0,,
+10,P2 · 동네 외관 — 町外観,https://yms.main.jp/dotartworld/page2/tile-townE01.html,https://yms.main.jp/dotartworld/page2/tile-townE01.html,completed,2,2,2,0,0,,
+11,P2 · 목조 학교 — 木造校舎セット,https://yms.main.jp/dotartworld/page2/tile-schoolw01.html,https://yms.main.jp/dotartworld/page2/tile-schoolw01.html,completed,6,6,6,0,0,,
+12,P2 · 공원 — 公園,https://yms.main.jp/dotartworld/page2/tile-park01.html,https://yms.main.jp/dotartworld/page2/tile-park01.html,completed,4,4,4,0,0,,
+13,P2 · 하수도·지하 공간 — 下水道,https://yms.main.jp/dotartworld/page2/tile-sewer01.html,https://yms.main.jp/dotartworld/page2/tile-sewer01.html,completed,10,10,10,0,0,,
+14,P2 · 저택 내부 — 屋敷内装,https://yms.main.jp/dotartworld/page2/tile-mansion02.html,https://yms.main.jp/dotartworld/page2/tile-mansion02.html,completed,15,15,15,0,0,,저택 내부 5색 각각 256×1760. ZIP에는 5색 통합 PNG도 있음.
+15,P2 · 저택 외관 — 屋敷外観,https://yms.main.jp/dotartworld/page2/tile-mansion01.html,https://yms.main.jp/dotartworld/page2/tile-mansion01.html,completed,4,4,4,0,0,,저택 외관 3색 각각 256×1632.
+16,P3 · 패스트푸드점 — ファーストフード店,https://yms.main.jp/dotartworld/page2/tile-fastfood01.html,https://yms.main.jp/dotartworld/page2/tile-fastfood01.html,completed,2,2,2,0,0,,
+17,P3 · 아이스크림점 — アイスクリーム屋,https://yms.main.jp/dotartworld/page2/tile-fastfood01.html,https://yms.main.jp/dotartworld/page2/tile-fastfood01.html,completed,1,1,1,0,0,,
+18,P3 · 식당·이자카야 — 居酒屋,https://yms.main.jp/dotartworld/page2/tile-izakaya01.html,https://yms.main.jp/dotartworld/page2/tile-izakaya01.html,completed,2,2,2,0,0,,
+19,P3 · 일본식 방 — 和室,https://yms.main.jp/dotartworld/page2/tile-wasitu01.html,https://yms.main.jp/dotartworld/page2/tile-wasitu01.html,completed,3,3,3,0,0,,
+20,P3 · 일본식 옛 동네 — レトロな町並み,https://yms.main.jp/dotartworld/page2/tile-retrotown01.html,https://yms.main.jp/dotartworld/page2/tile-retrotown01.html,completed,6,6,6,0,0,,
+21,P3 · 일본식 대중목욕탕 — 銭湯内装,https://yms.main.jp/dotartworld/page2/tile-sento01.html,https://yms.main.jp/dotartworld/page2/tile-sento01.html,completed,2,2,2,0,0,,
+22,SUPPORT · 실외 오토타일 — オートタイル1（屋外用）,https://yms.main.jp/dotartworld/page3/autotiles01.html,https://yms.main.jp/dotartworld/page3/autotiles01.html,completed,89,89,311,0,0,,
+23,SUPPORT · 실내 오토타일 — オートタイル2,https://yms.main.jp/dotartworld/page3/autotiles02.html,https://yms.main.jp/dotartworld/page3/autotiles02.html,completed,54,54,107,0,0,,
+24,SUPPORT · 학교·현대 건물 문 — 扉1,https://yms.main.jp/dotartworld/page3/door01.html,https://yms.main.jp/dotartworld/page3/door01.html,completed,36,36,36,0,0,,
+25,SUPPORT · 일본식·기타 문 — 扉2,https://yms.main.jp/dotartworld/page3/door02.html,https://yms.main.jp/dotartworld/page3/door02.html,completed,9,9,9,0,0,,
+26,SUPPORT · 연출 오브젝트 1 — キャラ素材1,https://yms.main.jp/dotartworld/page3/chara01.html,https://yms.main.jp/dotartworld/page3/chara01.html | https://yms.main.jp/dotartworld/page3/chara-cars.html,completed_with_recorded_exclusions,37,36,36,0,1,SC-Funassi01.png,
+27,SUPPORT · 연출 오브젝트 2 — キャラ素材2,https://yms.main.jp/dotartworld/page3/chara02.html,https://yms.main.jp/dotartworld/page3/chara02.html,completed,14,14,14,0,0,,
+28,SUPPORT · 개별 소품 — チップ素材,https://yms.main.jp/dotartworld/page3/chips01.html,https://yms.main.jp/dotartworld/page3/chips01.html,completed,106,106,106,0,0,,
+29,SUPPORT · 음식 소품 — 食べ物,https://yms.main.jp/dotartworld/page3/food01.html,https://yms.main.jp/dotartworld/page3/food01.html,completed,10,10,10,0,0,,
+30,SUPPORT · XP·VX Ace 샘플 맵 — Sample Map,https://yms.main.jp/dotartworld/page2/samplemap01.html,https://yms.main.jp/dotartworld/page2/samplemap01.html,completed,9,9,7,66,0,,독립 이미지7 + 샘플게임 ZIP2. ZIP 내부 이미지는 sample_package_image로 분리; RTP 포함 여부/개별 권리 미검토.
+31,SUPPORT · 메인 페이지 리뉴얼·추가 소재 — TOP 更新,https://yms.main.jp/dotartworld/,https://yms.main.jp/dotartworld/ | https://yms.main.jp/dotartworld/page2/washitsu2.html | https://yms.main.jp/dotartworld/page2/worldmapvx.html,completed,68,68,80,0,0,,TOP 직접 자료와 TOP에서 링크한 和室追加素材/WorldMap VX 페이지 포함; 예시·축소판 제외.
+32,EXCLUDE_PENDING_CONFIRMATION · 구형 XP 카페·빵집 — XP版カフェとパン屋,https://yms.main.jp/dotartworld/,https://yms.main.jp/dotartworld/,completed_with_recorded_exclusions,1,0,0,0,2,ST-Bakery-I01.png | 구형 XP 카페 — XP版カフェ,XP 카페·빵집 2016-04-17 배포 종료; 빵집 옛 링크 HTTP200도 종료 공지 우선.

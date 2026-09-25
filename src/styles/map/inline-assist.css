@@ -124,13 +124,13 @@
   color: var(--danger);
 }
 
-/* 실행 — 입력이 있을 때만 강조색. 비어 있으면 누르면 전체 AI 작업 창이 열린다. */
+/* 실행 — 입력이 있을 때만 강조색. 비어 있으면 누르면 무엇을 할지 적으라고 한다(바로 깔기면 숲). */
 .selection-action-chip.selection-action-send {
   background: var(--accent);
   border-radius: 10px;
   color: var(--on-accent);
   margin-left: 2px;
-  order: 3;
+  order: 4;
 }
 
 .selection-action-chip.selection-action-send:hover {
@@ -146,6 +146,21 @@
 .selection-action-chip.selection-action-send.is-empty:hover {
   background: var(--accent-muted);
   color: var(--accent);
+}
+
+/* 바로 깔기 토글 — 실행 버튼 바로 앞. 켜지면 강조색 테두리로 「Enter 가 곧바로 깐다」를 보인다. */
+.selection-action-chip.selection-action-stamp {
+  order: 3;
+}
+
+.selection-action-chip.selection-action-stamp.is-active {
+  background: var(--accent-muted);
+  box-shadow: inset 0 0 0 1.5px var(--accent);
+  color: var(--accent);
+}
+
+.selection-action-chip.selection-action-stamp.is-active > svg {
+  fill: currentColor;
 }
 
 /* 넓은 영역 「지우기」의 확인 상태 — 한 번 더 눌러야 실제로 지워진다. */

@@ -115,17 +115,44 @@ export function collectMapDeletionImpact(project: Project, mapId: MapId): MapDel
   };
 }
 
-// 삭제 가능 여부 + 영향 요약. 삭제 결과가 재로드(shape 검증)를 통과하지 못하면 차단한다.
-export function planMapDeletion(project: Project, mapId: MapId): MapDeletionPlan {
-  const impact = collectMapDeletionImpact(project, mapId);
-  if (!impact) {
-    return { ok: false, block: { code: "missing-map", message: `맵(${mapId})이 존재하지 않습니다.` } };
+export interface MapDeletionBatchOptions {
+  /** 맵 행이 없는 트리 노드(분류 등). 하위 포함 삭제 때 빈 분류가 남지 않게 함께 뺀다. */
+  readonly treeNodeIds?: readonly string[];
+}
+
+// 요청 순서대로, 실제로 지울 맵. 마지막 한 장은 항상 남긴다.
+export function mapDeletionTargets(project: Project, mapIds: readonly MapId[]): MapId[] {
+  const seen = new Set<string>();
+  const existing: MapId[] = [];
+  for (const mapId of mapIds) {
+    if (seen.has(mapId) || !project.maps[mapId]) continue;
+    seen.add(mapId);
+    existing.push(mapId);
   }
-  if (Object.keys(project.maps).length <= 1) {
+  if (Object.keys(project.maps).length - existing.length >= 1) return existing;
+  return existing.slice(0, -1);
+}
+
+// 삭제 가능 여부 + 영향 요약. 묶음도 미리보기·재로드 검증은 한 번만 한다.
+export function planMapDeletions(
+  project: Project,
+  mapIds: readonly MapId[],
+  options?: MapDeletionBatchOptions,
+): MapDeletionPlan {
+  const targets = mapDeletionTargets(project, mapIds);
+  if (targets.length === 0) {
+    const present = mapIds.find((mapId) => project.maps[mapId]);
+    if (!present) {
+      return { ok: false, block: { code: "missing-map", message: `맵(${mapIds[0] ?? ""})이 존재하지 않습니다.` } };
+    }
     return { ok: false, block: { code: "last-map", message: "마지막 맵은 삭제할 수 없습니다." } };
   }
+  const impact = collectMapDeletionImpact(project, targets[targets.length - 1]!);
+  if (!impact) {
+    return { ok: false, block: { code: "missing-map", message: `맵(${targets[targets.length - 1]})이 존재하지 않습니다.` } };
+  }
   const preview = structuredClone(project);
-  applyMapDeletion(preview, mapId);
+  applyMapDeletions(preview, mapIds, options);
   try {
     deserialize(serialize(preview));
   } catch (error) {
@@ -138,49 +165,63 @@ export function planMapDeletion(project: Project, mapId: MapId): MapDeletionPlan
   return { ok: true, impact };
 }
 
+// 삭제 가능 여부 + 영향 요약. 삭제 결과가 재로드(shape 검증)를 통과하지 못하면 차단한다.
+export function planMapDeletion(project: Project, mapId: MapId): MapDeletionPlan {
+  return planMapDeletions(project, [mapId]);
+}
+
 // 맵 삭제 + 모든 참조 재배선/정리. draft를 직접 변경한다(호출 전 planMapDeletion으로 검증 권장).
 export function applyMapDeletion(draft: Project, mapId: MapId): void {
-  if (!draft.maps[mapId] || Object.keys(draft.maps).length <= 1) return;
+  applyMapDeletions(draft, [mapId]);
+}
+
+// 여러 맵을 한 번에 지운다. 참조 순회와 트리 재구성은 맵 수와 상관없이 한 번씩이다.
+export function applyMapDeletions(draft: Project, mapIds: readonly MapId[], options?: MapDeletionBatchOptions): void {
+  const targets = mapDeletionTargets(draft, mapIds);
+  if (targets.length === 0) return;
+  const deleted = new Set<string>(targets);
   const removedFarmAnimalBuildingIds = new Set(
     (draft.system.farmAnimalBuildings ?? [])
-      .filter((building) => building.mapId === mapId)
+      .filter((building) => deleted.has(building.mapId))
       .map((building) => building.id),
   );
-  const removedFarmAnimalEventIds = new Set(draft.maps[mapId].events.map((event) => event.id));
+  const removedFarmAnimalEventIds = new Set(
+    targets.flatMap((mapId) => draft.maps[mapId]?.events.map((event) => event.id) ?? []),
+  );
   const removedHousingIds = new Set((draft.session.farmBuildingPlacements ?? [])
-    .filter((placement) => placement.mapId === mapId).map((placement) => placement.instanceId));
+    .filter((placement) => deleted.has(placement.mapId)).map((placement) => placement.instanceId));
   if (draft.session.farmAnimals) draft.session.farmAnimals = draft.session.farmAnimals.map((animal) => {
     if (!animal.housingPlacementId || !removedHousingIds.has(animal.housingPlacementId)) return animal;
     const { housingPlacementId: _removed, ...unassigned } = animal;
     return unassigned;
   });
-  delete draft.maps[mapId];
+  for (const mapId of targets) delete draft.maps[mapId];
 
   if (draft.session.farmBuildingPlacements) {
-    draft.session.farmBuildingPlacements = draft.session.farmBuildingPlacements.filter((placement) => placement.mapId !== mapId);
+    draft.session.farmBuildingPlacements = draft.session.farmBuildingPlacements.filter((placement) => !deleted.has(placement.mapId));
   }
   if (draft.session.homeDecorationPlacements) {
-    draft.session.homeDecorationPlacements = draft.session.homeDecorationPlacements.filter((placement) => placement.mapId !== mapId);
+    draft.session.homeDecorationPlacements = draft.session.homeDecorationPlacements.filter((placement) => !deleted.has(placement.mapId));
   }
   if (draft.database.farmBuildingTypes) {
-    draft.database.farmBuildingTypes = draft.database.farmBuildingTypes.map((type) => withoutDeletedAllowedMap(type, mapId));
+    draft.database.farmBuildingTypes = draft.database.farmBuildingTypes.map((type) => withoutDeletedAllowedMaps(type, deleted));
   }
   if (draft.database.homeDecorationTypes) {
-    draft.database.homeDecorationTypes = draft.database.homeDecorationTypes.map((type) => withoutDeletedAllowedMap(type, mapId));
+    draft.database.homeDecorationTypes = draft.database.homeDecorationTypes.map((type) => withoutDeletedAllowedMaps(type, deleted));
   }
 
   if (draft.system.farmAnimalBuildings) {
     draft.system.farmAnimalBuildings = draft.system.farmAnimalBuildings.filter(
-      (building) => building.mapId !== mapId,
+      (building) => !deleted.has(building.mapId),
     );
   }
   if (draft.system.fishing) {
-    draft.system.fishing = { ...draft.system.fishing, spots: draft.system.fishing.spots.filter((spot) => spot.mapId !== mapId) };
+    draft.system.fishing = { ...draft.system.fishing, spots: draft.system.fishing.spots.filter((spot) => !deleted.has(spot.mapId)) };
   }
   if (draft.system.seasonalForage) {
     draft.system.seasonalForage = {
       ...draft.system.seasonalForage,
-      areas: draft.system.seasonalForage.areas.filter((area) => area.mapId !== mapId),
+      areas: draft.system.seasonalForage.areas.filter((area) => !deleted.has(area.mapId)),
     };
   }
   const remainingFarmAnimalEventIds = new Set(
@@ -210,11 +251,15 @@ export function applyMapDeletion(draft: Project, mapId: MapId): void {
     });
   }
 
-  // 맵 트리: 삭제 노드의 자식은 부모로 승격해 보존. 루트가 삭제되면 첫 자식(없으면 남은 맵)을 루트로.
-  draft.mapTree = rebuildTreeWithoutMap(draft.mapTree, mapId, Object.keys(draft.maps));
+  const removeFromTree = new Set<string>(deleted);
+  for (const nodeId of options?.treeNodeIds ?? []) {
+    if (!draft.maps[nodeId]) removeFromTree.add(nodeId);
+  }
+  // 맵 트리: 지우는 노드의 살아남은 자식만 부모로 승격. 함께 지우는 분류는 남기지 않는다.
+  draft.mapTree = rebuildTreeWithoutMaps(draft.mapTree, removeFromTree, Object.keys(draft.maps));
 
   // 시작 맵 재배선: 트리 루트(반드시 존재하는 맵)를 우선, startPos는 새 맵 경계로 클램프.
-  if (draft.startMapId === mapId) {
+  if (deleted.has(draft.startMapId)) {
     draft.startMapId = draft.maps[draft.mapTree.mapId] ? draft.mapTree.mapId : Object.keys(draft.maps)[0];
     const startMap = draft.maps[draft.startMapId];
     if (startMap) {
@@ -228,18 +273,18 @@ export function applyMapDeletion(draft: Project, mapId: MapId): void {
   // 연결/문서/퀘스트/테스트 프리셋 참조 정리.
   if (draft.mapConnections) {
     draft.mapConnections = draft.mapConnections.filter(
-      (connection) => connection.from.mapId !== mapId && connection.to.mapId !== mapId
+      (connection) => !deleted.has(connection.from.mapId) && !deleted.has(connection.to.mapId)
     );
   }
   if (draft.villageInfoDocuments) {
-    draft.villageInfoDocuments = draft.villageInfoDocuments.filter((doc) => doc.mapId !== mapId);
+    draft.villageInfoDocuments = draft.villageInfoDocuments.filter((doc) => !deleted.has(doc.mapId));
   }
   if (draft.quests) {
-    draft.quests = draft.quests.filter((quest) => !questReferencesMap(quest, mapId));
+    draft.quests = draft.quests.filter((quest) => !questReferencesAnyMap(quest, deleted));
   }
   if (draft.testPresets) {
     for (const preset of draft.testPresets) {
-      if (preset.startMapId === mapId) {
+      if (preset.startMapId && deleted.has(preset.startMapId)) {
         delete preset.startMapId;
         delete preset.startPos;
       }
@@ -249,52 +294,52 @@ export function applyMapDeletion(draft: Project, mapId: MapId): void {
   if (draft.world?.entities) {
     for (const entity of draft.world.entities) {
       if (!entity.refs) continue;
-      (entity as { refs?: typeof entity.refs }).refs = entity.refs.filter((ref) => !(ref.kind === "map" && ref.id === mapId));
+      (entity as { refs?: typeof entity.refs }).refs = entity.refs.filter((ref) => !(ref.kind === "map" && deleted.has(ref.id)));
     }
   }
   if (draft.worldGraph?.nodes) {
     draft.worldGraph = {
       ...draft.worldGraph,
-      nodes: draft.worldGraph.nodes.filter((node) => node.mapId !== mapId),
-      edges: draft.worldGraph.edges.filter((edge) => edge.from.mapId !== mapId && edge.to.mapId !== mapId),
+      nodes: draft.worldGraph.nodes.filter((node) => !deleted.has(node.mapId)),
+      edges: draft.worldGraph.edges.filter((edge) => !deleted.has(edge.from.mapId) && !deleted.has(edge.to.mapId)),
     };
   }
 
   // 이벤트 일정, 명령(transfer/changeTile), 생활 이동 목적지에서 삭제 맵 참조 제거.
   for (const map of Object.values(draft.maps)) {
     for (const event of map.events) {
-      stripEventScheduleMapReferences(event, mapId);
-      event.commands = stripMapCommands(event.commands, mapId);
-      for (const page of event.pages ?? []) stripPageMapReferences(page, mapId);
+      stripEventScheduleMapReferences(event, deleted);
+      event.commands = stripMapCommandSet(event.commands, deleted);
+      for (const page of event.pages ?? []) stripPageMapReferences(page, deleted);
     }
   }
   for (const commonEvent of draft.commonEvents) {
-    commonEvent.commands = stripMapCommands(commonEvent.commands, mapId);
+    commonEvent.commands = stripMapCommandSet(commonEvent.commands, deleted);
   }
   for (const troop of draft.database?.troops ?? []) {
     for (const page of troop.battleEventPages ?? []) {
-      page.commands = stripMapCommands(page.commands, mapId);
+      page.commands = stripMapCommandSet(page.commands, deleted);
     }
   }
 }
 
-function withoutDeletedAllowedMap<T extends { readonly allowedMapIds?: readonly string[] }>(type: T, mapId: string): T {
-  if (!type.allowedMapIds?.includes(mapId)) return type;
-  const kept = type.allowedMapIds.filter((id) => id !== mapId);
+function withoutDeletedAllowedMaps<T extends { readonly allowedMapIds?: readonly string[] }>(type: T, deleted: ReadonlySet<string>): T {
+  if (!type.allowedMapIds?.some((id) => deleted.has(id))) return type;
+  const kept = type.allowedMapIds.filter((id) => !deleted.has(id));
   const { allowedMapIds: _removed, ...base } = type;
   return { ...base, ...(kept.length > 0 ? { allowedMapIds: kept } : {}) } as T;
 }
 
-function stripEventScheduleMapReferences(event: GameEvent, mapId: MapId): void {
+function stripEventScheduleMapReferences(event: GameEvent, deleted: ReadonlySet<string>): void {
   if (event.schedule === undefined) return;
-  event.schedule = event.schedule.filter((entry) => entry.at.mapId !== mapId);
+  event.schedule = event.schedule.filter((entry) => !deleted.has(entry.at.mapId));
 }
 
-function stripPageMapReferences(page: EventPage, mapId: MapId): void {
-  page.commands = stripMapCommands(page.commands, mapId);
+function stripPageMapReferences(page: EventPage, deleted: ReadonlySet<string>): void {
+  page.commands = stripMapCommandSet(page.commands, deleted);
   if (page.movement.living) {
     page.movement.living.destinations = page.movement.living.destinations.filter(
-      (destination) => destination.mapId !== mapId
+      (destination) => !deleted.has(destination.mapId)
     );
     // 목적지가 모두 사라진 생활 이동은 제자리로 강등(빈 목적지 순회 방지).
     if (page.movement.living.destinations.length === 0 && page.movement.type === "living") {
@@ -306,35 +351,39 @@ function stripPageMapReferences(page: EventPage, mapId: MapId): void {
 
 // transfer/changeTile 명령 중 삭제 맵을 가리키는 것을 제거한다(중첩 분기 포함).
 export function stripMapCommands(commands: readonly Command[], mapId: MapId): Command[] {
+  return stripMapCommandSet(commands, new Set([mapId]));
+}
+
+function stripMapCommandSet(commands: readonly Command[], deleted: ReadonlySet<string>): Command[] {
   const result: Command[] = [];
   for (const command of commands) {
-    if ((command.kind === "transfer" || command.kind === "changeTile") && command.mapId === mapId) continue;
+    if ((command.kind === "transfer" || command.kind === "changeTile") && deleted.has(command.mapId)) continue;
     if (command.kind === "choices") {
       result.push({
         ...command,
-        options: command.options.map((option) => ({ ...option, branch: stripMapCommands(option.branch, mapId) })),
-        ...(command.cancelBranch ? { cancelBranch: stripMapCommands(command.cancelBranch, mapId) } : {}),
+        options: command.options.map((option) => ({ ...option, branch: stripMapCommandSet(option.branch, deleted) })),
+        ...(command.cancelBranch ? { cancelBranch: stripMapCommandSet(command.cancelBranch, deleted) } : {}),
       });
       continue;
     }
     if (command.kind === "presentItem") {
-      result.push(mapPresentItemBranches(command, (branch) => stripMapCommands(branch, mapId)));
+      result.push(mapPresentItemBranches(command, (branch) => stripMapCommandSet(branch, deleted)));
       continue;
     }
     if (command.kind === "fork") {
       result.push({
         ...command,
-        then: stripMapCommands(command.then, mapId),
-        ...(command.else ? { else: stripMapCommands(command.else, mapId) } : {}),
+        then: stripMapCommandSet(command.then, deleted),
+        ...(command.else ? { else: stripMapCommandSet(command.else, deleted) } : {}),
       });
       continue;
     }
     if (command.kind === "loop") {
-      result.push({ ...command, body: stripMapCommands(command.body, mapId) });
+      result.push({ ...command, body: stripMapCommandSet(command.body, deleted) });
       continue;
     }
     if (command.kind === "shop" && command.transactionBranch) {
-      result.push({ ...command, transactionBranch: stripMapCommands(command.transactionBranch, mapId) });
+      result.push({ ...command, transactionBranch: stripMapCommandSet(command.transactionBranch, deleted) });
       continue;
     }
     result.push(command);
@@ -391,39 +440,36 @@ function collectIncomingScheduleRows(
 }
 
 function questReferencesMap(quest: AnyQuestDef, mapId: MapId): boolean {
+  return questReferencesAnyMap(quest, new Set([mapId]));
+}
+
+function questReferencesAnyMap(quest: AnyQuestDef, deleted: ReadonlySet<string>): boolean {
   if (isQuestGraphDef(quest)) return false;
   const giver = quest.giver as { mapId?: unknown; create?: { mapId?: unknown } };
-  if (giver?.mapId === mapId) return true;
-  if (giver?.create?.mapId === mapId) return true;
-  if (quest.steps?.some((step) => (step as { mapId?: unknown }).mapId === mapId)) return true;
-  if (quest.gates?.some((gate) => gate.mapId === mapId)) return true;
+  if (typeof giver?.mapId === "string" && deleted.has(giver.mapId)) return true;
+  if (typeof giver?.create?.mapId === "string" && deleted.has(giver.create.mapId)) return true;
+  if (quest.steps?.some((step) => {
+    const stepMapId = (step as { mapId?: unknown }).mapId;
+    return typeof stepMapId === "string" && deleted.has(stepMapId);
+  })) return true;
+  if (quest.gates?.some((gate) => deleted.has(gate.mapId))) return true;
   return false;
 }
 
-// 트리에서 mapId 노드를 제거하되 자식을 그 자리에 승격(splice)해 보존한다.
-// 루트가 삭제되면 첫 자식을 새 루트로 승격, 자식이 없으면 남은 맵 중 하나를 루트로 세운다.
-function rebuildTreeWithoutMap(root: MapTreeNode, mapId: MapId, remainingMapIds: readonly string[]): MapTreeNode {
-  if (root.mapId === mapId) {
-    const [first, ...rest] = root.children;
-    if (first) {
-      return rebuildTreeWithoutMap(
-        { mapId: first.mapId, children: [...first.children, ...rest] },
-        mapId,
-        remainingMapIds
-      );
-    }
-    // 자식이 없는 루트 삭제: 남은 맵으로 최소 트리를 재구성한다(모든 맵을 루트 아래 나열).
-    const [newRoot, ...others] = remainingMapIds;
-    return { mapId: newRoot, children: others.map((id) => ({ mapId: id, children: [] })) };
-  }
-  return {
-    mapId: root.mapId,
-    children: root.children.flatMap((child) =>
-      child.mapId === mapId
-        ? child.children.map((grandChild) => rebuildTreeWithoutMap(grandChild, mapId, remainingMapIds))
-        : [rebuildTreeWithoutMap(child, mapId, remainingMapIds)]
-    ),
-  };
+// 지우는 노드를 빼고, 그 안에 살아남은 자식만 위로 올린다. 루트까지 빠지면 첫 생존 자식을 루트로 둔다.
+function rebuildTreeWithoutMaps(root: MapTreeNode, remove: ReadonlySet<string>, remainingMapIds: readonly string[]): MapTreeNode {
+  const expanded = expandSurvivingNodes(root, remove);
+  if (!remove.has(root.mapId)) return expanded[0] ?? root;
+  const [first, ...rest] = expanded;
+  if (first) return { ...first, children: [...first.children, ...rest] };
+  const [newRoot, ...others] = remainingMapIds;
+  return { mapId: newRoot, children: others.map((id) => ({ mapId: id, children: [] })) };
+}
+
+function expandSurvivingNodes(node: MapTreeNode, remove: ReadonlySet<string>): MapTreeNode[] {
+  const children = node.children.flatMap((child) => expandSurvivingNodes(child, remove));
+  if (remove.has(node.mapId)) return children;
+  return [{ ...node, children }];
 }
 
 function findTreeNode(node: MapTreeNode, mapId: MapId): MapTreeNode | null {

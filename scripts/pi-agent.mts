@@ -6,7 +6,8 @@
 //
 // 옵션: --provider google-antigravity|openai-codex  --model <id>  --report report.json  --max-turns N  --serial
 //       --team  팀장 에이전트가 맵을 나눠 시공·검수 에이전트를 띄운다(--maps 는 후보 맵)  --team-spec team.json  팀원 명세
-//       --current <mapId>  사용자가 보고 있는 맵(브라우저의 현재 맵과 같은 뜻). 팀장의 「여기」 기준
+//       --current <mapId>  사용자가 보고 있는 맵(브라우저의 현재 맵과 같은 뜻). 팀장의 「여기」 기준이자 칩셋 계열 검사의 기준
+//       --approve-tileset-family <계열>  사용자가 승인한 칩셋 계열(반복 가능, 예: castle). 이 계열로의 칩셋 변경을 허용한다
 //       --log-args  툴 호출 인자(tool_start)를 4000자까지 로그에 남긴다 — 모델이 무엇을 넣었는지 사후 분석용
 
 import fs from "node:fs";
@@ -29,6 +30,15 @@ function arg(name: string, fallback?: string): string | undefined {
   return process.argv[index + 1] ?? fallback;
 }
 const flag = (name: string) => process.argv.includes(`--${name}`);
+/** 반복 가능한 옵션의 값 전부(`--x a --x b` → [a, b]). */
+function args(name: string): string[] {
+  const values: string[] = [];
+  process.argv.forEach((value, index) => {
+    const next = process.argv[index + 1];
+    if (value === `--${name}` && next && !next.startsWith("--")) values.push(next);
+  });
+  return values;
+}
 
 function loadProject(): Project {
   const file = arg("project");
@@ -56,6 +66,7 @@ function logEvent(label: string, event: PiAgentEvent) {
   else if (event.type === "tool_start" && flag("log-args")) console.log(`${prefix}  ARGS ${event.name} ${JSON.stringify(event.args).slice(0, 4000)}`);
   else if (event.type === "tool_end") console.log(`${prefix}  ${event.ok ? "OK  " : "FAIL"} ${event.name} — ${event.summary}`);
   else if (event.type === "assistant") console.log(`${prefix}assistant: ${event.text.replace(/\n/g, " ").slice(0, 300)}`);
+  else if (event.type === "execution_status") console.log(`${prefix}STATUS ${event.name} ${event.summary.slice(0, 600)}`);
   else if (event.type === "error") console.log(`${prefix}ERROR ${event.message.slice(0, 400)}`);
 }
 
@@ -69,7 +80,11 @@ async function main() {
   const currentMapId = arg("current");
   const base = loadProject();
   if (currentMapId && !base.maps[currentMapId]) throw new Error(`--current 맵이 프로젝트에 없습니다: ${currentMapId}`);
-  const here = currentMapId ? { currentMapId } : {};
+  const approvedTilesetFamilies = args("approve-tileset-family");
+  const here = {
+    ...(currentMapId ? { currentMapId } : {}),
+    ...(approvedTilesetFamilies.length ? { approvedTilesetFamilies } : {}),
+  };
   const apiKey = await resolveRequestApiKey(provider);
   const groups = mapIds.length > 0 ? mapIds.map((id) => [id]) : [[] as string[]];
   const started = Date.now();

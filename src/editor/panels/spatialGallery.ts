@@ -24,6 +24,7 @@ import {
 } from "@/editor/panels/spatialGeographyDraft";
 import { renderGeographyThumb } from "@/editor/panels/spatialGeographyRaster";
 import { catalogListImage } from "@/editor/panels/catalogListImage";
+import { sharedObjectDef } from "@/editor/tools/sharedDesignCatalog";
 import { deferredSpatialCardThumb } from "@/editor/panels/spatialCardThumbs";
 import { tilesetListThumb } from "@/editor/panels/tilesetListThumb";
 import { designUsage, usageSummary } from "@/editor/panels/spatialUsage";
@@ -50,6 +51,15 @@ function renderBuiltinObject(tileset: TilesetDef, kitId: string): HTMLElement | 
 }
 
 function renderObjectThumb(card: SpatialGalleryCard): HTMLElement {
+  if (card.sharedObjectId) {
+    const preview = sharedObjectDef(card.sharedObjectId)?.preview;
+    if (preview) {
+      const img = catalogListImage(preview, "spatial-card-image");
+      img.style.imageRendering = "pixelated";
+      img.style.objectFit = "contain";
+      return img;
+    }
+  }
   const tileset = tilesetOf(card);
   const kitId = card.objectId ?? card.localId;
   if (tileset && kitId) {

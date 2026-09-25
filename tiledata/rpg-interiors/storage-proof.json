@@ -1,8 +1,8 @@
 {
   "projectId": "0c70c503-a2f7-432e-9f7b-4c00222702b2",
   "projectDir": ".oprn-projects/rpg-interiors-20260924",
-  "revision": 4,
-  "sha256": "48458fa9ea6407ea6aec399479b12db000fa54b0107f5acd7cccd5e673737fc0",
+  "revision": 12,
+  "sha256": "1d4f9bb3492763434d1ff79923e3a8ff4577b4a05209abc051a8d9734141eacc",
   "saved": true,
   "reopened": true,
   "maps": [
@@ -28,6 +28,23 @@
     "interior-casino",
     "interior-auction-house",
     "interior-ship-cabin",
-    "interior-ship-hold"
+    "interior-ship-hold",
+    "interior-desert-home",
+    "interior-desert-oasis-inn",
+    "interior-snow-hunter-cabin",
+    "interior-snow-chief-house",
+    "interior-volcano-smith-house",
+    "interior-volcano-ash-inn",
+    "interior-lighthouse-1f",
+    "interior-lighthouse-lamp-room",
+    "interior-ranch-barn",
+    "interior-healer-clinic",
+    "interior-sewer-prison",
+    "interior-cathedral-nave",
+    "interior-monastery-cloister",
+    "interior-desert-palace-throne",
+    "interior-snow-fortress-hall",
+    "interior-inn-cellar",
+    "interior-granary-storehouse"
   ]
 }

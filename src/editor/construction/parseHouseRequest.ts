@@ -1,4 +1,6 @@
-import { isHouseKitId, type HouseKitId } from "@/editor/houseKit";
+import { gableHouseFormSize, gableHouseFormStories, GABLE_HOUSE_FORM_SPECS } from "@/editor/gableHouseCompose";
+import { ALL_HOUSE_KIT_IDS, isHouseKitId, type HouseKitId } from "@/editor/houseKit";
+import { findGableHouseFormSpec, gableFormMixWeight } from "@/project/defaults/gableHouseFormCatalog";
 import { ToolError } from "@/editor/tools/types";
 import {
   AUTHORED_HOUSE_FORM_DEFS,
@@ -51,12 +53,69 @@ export function parseAuthorHouseRequest(value: unknown): AuthorHouseRequest {
   const kind = requiredString(request, "kind", "authorHouse");
   switch (kind) {
     case "single":
-      return parseSingleRequest(request);
+      return assignDefaultGableForms(parseSingleRequest(request));
     case "lots":
-      return parseLotsRequest(request);
+      return assignDefaultGableForms(parseLotsRequest(request));
     default:
       throw new ToolError("authorHouse.kind must be single or lots.", { code: "invalid-args" });
   }
+}
+
+function hashInts(...values: readonly number[]): number {
+  let h = 0x811c9dc5;
+  for (const value of values) {
+    h ^= value & 0xffff;
+    h = Math.imul(h, 0x01000193) >>> 0;
+    h ^= (value >>> 16) & 0xffff;
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h >>> 0;
+}
+
+/**
+ * templateId 를 생략한 사각형 한 장짜리 집에 박공 조합 형태를 골고루 배정한다(2026-09-25 기본 분배).
+ *
+ * 예전에는 wings 그대로의 모임지붕 사각형이 되어, 모델이 templateId 를 빠뜨리면 마을이 네모 덩어리만 남았다.
+ * 낮은 벽·옥상 데크·여러 날개·3층을 명시한 집은 의도가 있는 사각형이라 건드리지 않는다. stories:2 는 2층 박공에서 고른다.
+ * 형태는 날개 사각형 안에 들어가는 것 중 크기가 비슷한 것(폭·높이 차 ≤2)을 먼저, 같은 요청 안에서는 겹치지 않게
+ * (seed·순번 해시) 고른다. 앵커는 가로 가운데·아래 맞춤 — 요청한 앞면(문 줄)이 그대로다.
+ */
+function assignDefaultGableForms(request: AuthorHouseRequest): AuthorHouseRequest {
+  const used = new Set<string>();
+  const seed = request.kind === "lots" ? request.seed ?? 1 : 1;
+  const assign = <T extends HouseCore>(plan: T, index: number): T => {
+    if (plan.templateId !== undefined || plan.wings.length !== 1) return plan;
+    const stories = plan.stories ?? 1;
+    if (stories > 2 || plan.lowWall === true || plan.roofDeck === true) return plan;
+    const wing = plan.wings[0] as HouseWing;
+    // 층수가 같은 박공만 — stories:2 를 준 집은 2층 박공(gable-2f*), 생략·1 이면 단층 박공.
+    const sized = GABLE_HOUSE_FORM_SPECS.filter((spec) => gableFormMixWeight(spec) > 0 && gableHouseFormStories(spec) === stories)
+      .map((spec) => ({ spec, ...gableHouseFormSize(spec) }))
+      .filter((entry) => entry.w <= wing.w && entry.h <= wing.h);
+    if (sized.length === 0) return plan;
+    const close = sized.filter((entry) => entry.w >= wing.w - 2 && entry.h >= wing.h - 2);
+    const pool = close.length > 0 ? close : sized;
+    const fresh = pool.filter((entry) => !used.has(entry.spec.id));
+    const from = fresh.length > 0 ? fresh : pool;
+    // 가중치 추첨(spec.mix) — 해시를 [0,1) 로 펴서 누적 가중치에서 고른다.
+    const weights = from.map((entry) => gableFormMixWeight(entry.spec));
+    let ticket = (hashInts(seed, index, wing.x, wing.y, wing.w, wing.h) / 0x100000000) * weights.reduce((sum, weight) => sum + weight, 0);
+    let pick = 0;
+    while (pick < from.length - 1 && ticket >= weights[pick]!) {
+      ticket -= weights[pick]!;
+      pick += 1;
+    }
+    const chosen = from[pick]!;
+    used.add(chosen.spec.id);
+    return {
+      ...plan,
+      templateId: chosen.spec.id,
+      stories,
+      wings: [{ x: wing.x + Math.floor((wing.w - chosen.w) / 2), y: wing.y + wing.h - chosen.h, w: chosen.w, h: chosen.h }],
+    };
+  };
+  if (request.kind === "single") return assign(request, 0);
+  return { ...request, houses: request.houses.map((house, index) => assign(house, index)) };
 }
 
 /**
@@ -127,11 +186,16 @@ function parseHouseCore(record: BoundaryRecord, scope: string): HouseCore {
     kitId = rawKitId;
   } else {
     // 저작 형태(셀 레시피)는 재료가 레시피에 고정돼 kitId 인자가 무의미하다 — 생략 허용.
-    const form = typeof record["templateId"] === "string" ? findAuthoredHouseForm(record["templateId"]) : undefined;
-    if (form === undefined) {
+    const templateId = typeof record["templateId"] === "string" ? record["templateId"] : undefined;
+    const form = templateId === undefined ? undefined : findAuthoredHouseForm(templateId);
+    const gable = templateId === undefined ? undefined : findGableHouseFormSpec(templateId);
+    if (form !== undefined) kitId = form.kitId;
+    else if (gable !== undefined && rawKitId === undefined) {
+      // 박공 조합 형태는 킷을 따른다 — 빠뜨리면 형태 id 로 결정적으로 고른다.
+      kitId = ALL_HOUSE_KIT_IDS[hashInts(...[...gable.id].map((char) => char.charCodeAt(0))) % ALL_HOUSE_KIT_IDS.length]!;
+    } else {
       throw new ToolError(`${scope}.kitId is not a known house kit.`, { code: "invalid-args" });
     }
-    kitId = form.kitId;
   }
   const ownerName = optionalString(record, "ownerName", scope);
   const windows = parseWindows(record["windows"], scope);
@@ -191,11 +255,27 @@ function parseShape(
   }
   const def = findHouseTemplateDef(templateId);
   const anchor = wings[0] as HouseWing;
+  const gable = def ? undefined : findGableHouseFormSpec(templateId);
+  if (gable) {
+    // 박공 조합 형태 — 칸 모양은 고정, 재료는 요청 킷을 따른다(시공 때 합성).
+    const size = gableHouseFormSize(gable);
+    return {
+      kitId: requestedKitId,
+      wings: [{ x: anchor.x, y: anchor.y, w: size.w, h: size.h }],
+      templateId: gable.id,
+      stories: 1,
+      ...(chimney === undefined ? {} : { chimney }),
+    };
+  }
   if (!def) {
     // 날개 문법으로 못 만드는 저작 형태(셀 레시피) — 폭 상한 없는 고정 형태다.
     const form = findAuthoredHouseForm(templateId);
     if (!form) {
-      const known = [...HOUSE_TEMPLATE_DEFS.map((entry) => entry.id), ...AUTHORED_HOUSE_FORM_DEFS.map((entry) => entry.id)];
+      const known = [
+        ...GABLE_HOUSE_FORM_SPECS.map((entry) => entry.id),
+        ...HOUSE_TEMPLATE_DEFS.map((entry) => entry.id),
+        ...AUTHORED_HOUSE_FORM_DEFS.map((entry) => entry.id),
+      ];
       throw new ToolError(
         `${scope}.templateId '${templateId}' 는 알 수 없는 형태입니다. 사용 가능: ${known.join(", ")}`,
         { code: "invalid-args" },

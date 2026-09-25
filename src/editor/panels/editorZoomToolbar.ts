@@ -117,8 +117,8 @@ export function renderCanvasToolbar(container: HTMLElement): void {
     attrs: {
       type: "button",
       title: locationLayerOn
-        ? "구역 그리기 도구가 켜져 있습니다. 맵을 드래그해 이름 붙은 구역을 만듭니다. 타일 칠하기는 이 버튼을 끄거나 브러시를 다시 고르면 돌아옵니다."
-        : "구역 그리기 — 켜면 맵을 드래그해 이름 붙은 구역을 만듭니다. 이벤트 조건과 랜덤 인카운터가 그 이름을 가리킬 수 있습니다.",
+        ? "로케이션 켜짐 — 맵 위에 이름 붙은 구역(로케이션)이 보이고, 드래그하면 새로 그립니다. 타일 칠하기는 이 버튼을 끄거나 브러시를 다시 고르면 돌아옵니다."
+        : "로케이션 보기·그리기 — 켜면 이름 붙은 구역(로케이션)이 맵 위에 보이고 드래그로 새로 그립니다. 이벤트 조건과 랜덤 인카운터가 그 이름을 가리킬 수 있습니다.",
       "aria-pressed": String(locationLayerOn),
       ...(locationLayerOn ? { "aria-current": "true" } : {}),
     },

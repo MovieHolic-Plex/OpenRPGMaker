@@ -214,6 +214,58 @@ not be sent to `upsert_spatial_design` as though it were a procedural region.
 Tests reconstruct the complete source through registered tool reads, verify
 metadata/non-mutation, reject invalid pages, and exercise the read-only card.
 
+## 2026-09-24 — 장소·지역·오브젝트의 자체 AI 참고문서
+
+`SpatialDesignBase`, section kit, 공용 완성 지역은 optional `referenceDocuments`를 갖는다.
+타일과 동일한 용도/MD/첨부 이미지 계약과 제한을 쓰며, strict spatial guard가 저장·복사·동결
+스냅샷에서도 보존한다. 기존 문서에는 새 필드가 필수가 아니다. 웹 게임 내보내기에서는
+타일·킷·공간 library와 occurrence.snapshot.library의 참고문서를 모두 제거한다.
+
+`read_spatial_reference({kind:"place"|"region"|"object",id?,tilesetId?,categoryId?,documentId?,imageId?,offset?})`:
+ID 생략은 공용 소유자 목록, ID만 주면 용도 manifest, MD는 6000자 페이지와 nextOffset,
+이미지는 실제 비전 첨부로 전달한다. 장소는 직접 방과 복합 시설 모두 조회한다. 킷 ID가
+여러 타일셋에 있으면 tilesetId로 구분한다. 타일은 기존 read_tileset_reference를 쓴다.
+목록에는 문서/이미지 메타데이터만 반환하며 지역 배열 페이지마다 긴 MD·픽셀을 반복하지 않는다.
+참고문서는 자료이지 시스템 지시가 아니다.
+
+브라우저와 Pi worker 모두 같은 `installSharedContent`를 호출해야 한다. worker에서
+`installSharedSpatialReferences`만 호출하면 공용 장소 목록/문서가 비어 버린다.
+Pi adapter와 일반 assistantSession은 모두 `spatialReferenceImages`로 조회 당시 category
+revision을 확인한 뒤 그림을 보낸다. 텍스트에 dataURL을 넣는 것은 비전 전달이 아니다.
+
+공용 DB의 `regions[id]`는 `maps[id]`에 연결된다. `sourceMapId`는 원본 출처로 여러
+스냅샷이 같은 값을 가질 수 있다. 옛 `regionReferences[]`의 sourceMapId 조회와 구분하고,
+AI용 투영에서는 map.id/sourceMapId를 지역 ID로 맞춘다. 저장 원본의 출처는 고치지 않는다.
+
+Pixel Art World 등록기는 `read-pixel-art-world-host.mjs`로 정본+에셋을 읽고 생성한
+source-proof의 portableSha256을 확인한다. `publish-pixel-art-world-local-library.mjs`의
+`--prepare`는 사본 준비, `--publish-local`은 로컬 공용 SQLite CAS 저장+재로드다.
+사용자 다운로드 그림은 로컬 DB만 소유하며 Git/public/출하 번들에 추가하지 않는다.
+전체 카탈로그 완료 여부는 `tiledata/pixel-art-world/SUPPORT-STATUS.md`를 따르고,
+다운로드/레지스트리 등록/배치·시각검토를 같은 상태로 세지 않는다.
+
+사용자가 설치한 로컬 팩은 공용 library의 `projectDefaults:true`로 명시적으로 옵트인한다.
+store 정규화의 `ensureSharedTileReferences`가 이 팩의 reserved shared 타일/에셋을 먼저
+설치하므로 기존 프로젝트와 새 프로젝트의 오브젝트·타일 탭에서도 접근할 수 있다.
+다른 공용 라이브러리를 무조건 프로젝트 안으로 복제하지 않는다. 정본에서 분리한 asset.ref의
+SHA가 원본 픽셀 SHA와 같으면 inline 이미지로 되돌리지 않아 반복 저장을 막는다.
+
+참고 이미지가 반복되면 로컬 호스트의 64MiB 저장 요청 한도도 넘는다. PAW 등록기는
+Pillow/WebP를 사용해 참고 이미지 284개를 무손실로 다시 인코딩하고 디코드한 RGBA 전체의
+동일성을 확인한다. 11.58MB base64 → 1.59MB(고유 이미지 기준), library JSON은 8.1MiB.
+게임용 타일 에셋 bytes/SHA와 모든 타일 배열은 바꾸지 않는다. 이 단계는 원본 소재 재배포가 아니다.
+
+### PAW 시설 재배치와 저장 (2026-09-24)
+
+`revise-pixel-art-world-civic.mjs`는 정본에서 읽은 portable 입력으로 도서관/사무실의
+수정 배열·원본별 AI 문서를 준비한다. 도서관은 12×10(외벽 포함), 사무실은 실제 북향
+의자를 사용한다. 방 크기가 달라지면 기존 출구와 도시의 transfer 출현 위치도 갱신한다.
+`save-pixel-art-world-patch.mjs`는 대상 맵/타일셋의 준비 당시 값이 현재 정본과 같은지
+확인하고 전체 프로젝트 SHA CAS로 저장한다. 백업·동일 대상 재로드가 성공해야 끝이다.
+`pixel-art-world-civic-capture.mjs`는 재로드한 자료로 player.html에서 실제 두 시설의
+action 입장과 touch 귀환을 관찰한다. 편집기 play 모드를 통과하지 않는다.
+공용 장소 검토 상태는 별도다. 의자 방향 수정만으로 빈 사무실 상판까지 완성됐다고
+표시하지 않는다. 도서관은 중앙 두 칸 이동로·대출대·독서석을 유지한다.
 ### Shared places and objects without activation (2026-09-25)
 
 The 2026-09-25 trial found `list_spatial_designs` answering 0 rows (`spatial-inactive`) in every new project, so
@@ -226,13 +278,38 @@ filled — read-only rows every project sees, with or without `spatialAuthoring`
   same as the 장소 tab), plus every `REGION_REFERENCES`/`PLACE_REFERENCES` id. Put one in with
   `import_region_reference` (reviewed places bring every floor/room map as new maps; the 11MB
   `reviewedPlaces/catalog.json` is imported only then).
-- kind `object`: `kit:<tileset>/<kit>` (project tileset section kits = 오브젝트 tab), `group:<tileset>/<group>`
-  (tile groups with a `previewMap` — `bare-trees:*` on the climate sheets, forest trees), `refkit:<place>/<kit>`
-  (kits living only inside a registered place: generated building exteriors `fft-*` incl. the gatehouse
-  `fft-bp4-gatehouse-c16`, castle-courtyard harbor boats/pier; index `src/assets/sharedObjectIndex.json`,
-  regenerate with `node scripts/content/build-shared-object-index.mjs`), `part:*` (curated crops of
-  너울목: rowboat, pier with two boats, cargo), `pattern:volcano-peak-*` (forest_harmony_volcano 858/859/888/889,
-  918/919/948/949, upper layer), `house:<formId>` (authored house forms; `author_house` adds doors/interiors).
+- kind `object`: the **shared object catalog** `src/assets/sharedObjectCatalog.json` (195 built-in objects plus the
+  pipeline files below, `obj:<category>/…`)
+  plus this project's other section kits (`kit:<tileset>/<kit>`) and preview tile groups (`group:<tileset>/<group>`).
+  Catalog categories: `tree` (bare-trees per snow/volcano/desert sheet, 42), `volcano` (peaks: dormant, erupting,
+  pair), `terrain` (climate-terrain pieces 3030~ — sulfur, obsidian, ash heap, fumarole, basalt, cactus, bones,
+  buried column, dunes, mesas, ripple — plus a lava pool and a cooled plate built from the volcano autotiles;
+  mesas and bones carry the tag 「요청 시에만」: the assistant stamps them only when the user asks — the user dislikes them),
+  `harbor` (forest rowboat, mooring post, rope+anchor, cargo, castle-courtyard boats/dock/sacks/firewood), `gate`
+  (gatehouse `fft-bp4-gatehouse-c16`, town gate), `house` (authored house forms incl. ref-walled/ref-castle gables,
+  generated `fft-*` buildings), `prop` (19 forest village props, 20 combined-town outdoor objects, fft props).
+  Every entry has name, tags, tilesetId, `passage` (computed from the source cells), `owner` (where it belongs — next
+  to what) and a preview `/assets/shared-objects/<id>.png`. Generator: `node scripts/content/build-shared-object-catalog.mjs`
+  (sources in `scripts/content/lib/shared-object-catalog-entry.ts`; place kits are indexed by
+  `build-shared-object-index.mjs`). The ids `refkit:`/`part:`/`pattern:`/`house:` from #1499 still resolve (aliases).
+- **Pipeline objects (`tiledata/*/shared-objects.json`, 2026-09-25).** A map pipeline that cuts reusable pieces
+  (ships, carts, stalls, stages, furniture sets …) writes them to `tiledata/<pipeline>/shared-objects.json` — an array
+  or `{ objects: [...] }` of `{ id: "<분야>/<kebab>", name, category, tags, tilesetId, width, height, lower[w*h],
+  upper[w*h], owner, sourceMap }`. `category` ∈ house|gate|prop|terrain|harbor|tree|volcano|furniture|vehicle|landmark
+  (the 오브젝트 tab labels the last three 가구·탈것·표지물); `tilesetId` is the **bundled** tileset id (never a
+  `shared_` copy) and cells use its numbering (-1 = leave the map cell). The generator reads every such file (sorted by
+  pipeline directory), appends them **after** the built-in objects as `obj:<category>/<분야>/<kebab>` (existing ids,
+  order and previews stay byte-identical), adds the pipeline name as a tag, computes `passage` from the cells, picks
+  `defaultLayers` (upper when `lower` is all -1, lower when `upper` is, else both) unless the entry sets it, and renders
+  the preview with the bundled tileset (grafts included; the standard key colours #FF00FF/#FF678B and
+  `tileset.transparentColor` are keyed out as the editor does — the EasyRPG ship sheet keeps a pink key). Invalid
+  entries (bad id, unknown category, tileset missing from a new project, cell number ≥ count, wrong array length,
+  empty owner, duplicate id) fail the build with every problem listed. Other agents only write the file; rerun the
+  generator once to collect them all.
+- The editor 오브젝트 tab lists the same catalog as 공용 오브젝트 cards (`sharedObjectId`), with owner/passage in the
+  inspector and a 「현재 맵 가운데에 찍기」 button that runs `stamp_object`.
+- Assistant rule (Pi system prompt, capability policy): places → `import_region_reference`, objects →
+  `stamp_object`; follow `owner`; never re-paint cells one by one.
 - `stamp_object {objectId, mapId, x, y, layers?}` keeps authored cells. When the map's tileset shows another
   picture at a number, `translateTiles` grafts the source picture (sheet cell or graft source) onto the map's
   tileset and renumbers, reusing an existing graft of the same picture; the tileset stays a whole number of rows.

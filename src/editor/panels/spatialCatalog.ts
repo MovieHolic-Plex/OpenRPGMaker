@@ -9,6 +9,12 @@ import type { SpatialAuthoringSession, SpatialShellTab, SpatialSourceFilter } fr
 import { spatialPresentationId } from "@/editor/panels/spatialPresentation";
 import type { SpatialDesignReference } from "@/project/spatial/types";
 import type { TilesetDef } from "@/project/types";
+import { SHARED_OBJECTS } from "@/editor/tools/sharedDesignCatalog";
+
+const SHARED_OBJECT_CATEGORY_LABEL: Readonly<Record<string, string>> = {
+  tree: "잎 없는 고목", volcano: "화산 봉우리", gate: "성문·문루", terrain: "기후 지형", harbor: "항구 부품", house: "집 외형", prop: "마을 소품",
+  furniture: "가구", vehicle: "탈것", landmark: "표지물",
+};
 
 export { spatialCardDomSelector, spatialPresentationId } from "@/editor/panels/spatialPresentation";
 
@@ -31,6 +37,8 @@ export type SpatialGalleryCard = {
   readonly regionReferenceId?: string;
   readonly regionMapId?: string;
   readonly reviewedPlaceId?: string;
+  /** Shared object catalog id (src/assets/sharedObjectCatalog.json) — preview image + stamp_object. */
+  readonly sharedObjectId?: string;
   readonly placeKind?: "facility" | "settlement" | "natural";
   readonly regionKind?: "terrain" | "settlement";
   readonly missingSource?: boolean;
@@ -83,9 +91,23 @@ function objectCards(): SpatialGalleryCard[] {
     tilesetId,
     objectId: object.id,
   }));
+  // 공용 오브젝트 카탈로그(잎 없는 고목·화산 봉우리·기후 지형·항구 부품·성문루·집 외형·마을 소품). 조수 stamp_object 와 같은 목록.
+  cards.push(...SHARED_OBJECTS.map((object): SpatialGalleryCard => ({
+    id: `shared-object:${object.id}`,
+    localId: object.id,
+    name: object.name,
+    source: "default",
+    kind: "objects",
+    usage: 0,
+    tilesetId: object.tilesetId,
+    sharedObjectId: object.id,
+    subtitle: `${SHARED_OBJECT_CATEGORY_LABEL[object.category] ?? object.category} · ${object.width}×${object.height}`,
+  })));
   const known = new Set(cards.map((card) => card.id));
   for (const tileset of Object.values(project.tilesets)) {
     for (const kit of tileset.structureKits ?? []) {
+      // 숲마을 선별 소품(dewbank:*)은 공용 카탈로그 카드로 이미 보인다.
+      if (kit.id.startsWith("dewbank:")) continue;
       // Keep compatibility cards until a canonical design owns the same graphic.
       if (Object.values(project.spatialAuthoring?.library.objects ?? {}).some((object) =>
         object.graphic.tilesetId === tileset.id && object.graphic.kitId === kit.id)) continue;

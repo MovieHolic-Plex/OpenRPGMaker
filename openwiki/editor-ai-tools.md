@@ -21,6 +21,7 @@
 | `clear_region` / `clear_map` | (그대로) | lower 쪽은 2층·그림자, upper 쪽은 4층까지 비운다. |
 | `mirror_region` | (그대로) | 선택 층도 옮기고 그림자 사분면을 축에 맞춰 뒤집는다(좌우 tl↔tr·bl↔br). |
 | `copy_map_region` | `layers: all\|lower\|upper` | all = 1~4층·그림자, lower = 1·2층, upper = 3·4층. 보호 칸 되돌리기도 다섯 값을 되돌린다. |
+| `move_region` | `layers: all\|lower\|upper` + `fill: grass\|empty` | 잘라내기+붙여넣기. **옮기는 층과 비우는 층이 같다** — `layers:"upper"` 면 계단만 옮기고 1·2층·그림자는 보존한다. 같은 맵에서 겹치면 목적지에 쓴 칸은 비우지 않는다(전부 비우면 방금 옮긴 내용이 지워진다). 원본 비우기도 통행 보장 칸(시작 위치·transfer 목적지)의 두 번째 기록자라 목적지와 같은 스킵·되돌림 정책을 탄다. `withEvents` 는 id 를 보존해 **이동**(복제 아님)하고 같은 맵만 허용, 끄면 남은 이벤트를 경고로 알린다. |
 
 - **오토타일 재성형은 칠한 층 배열에서, 바닥 층(1·2층)에서만** 한다(`autotileEngine.autotileLayerView(map, layer)`).
   2층 풀 장식은 2층 이웃 기준으로 가장자리가 잡히고 1층은 안 바뀐다. 1층을 칠한 칸은 2층도 비웠으므로 둘레 2층 장식도 다시 잡는다.
@@ -60,6 +61,22 @@ paint_tiles·stamp_layer_block 으로 직접 깔라고, 정말 바꾸려면 tile
   설계에서 맵을 컴파일하는 도구라 빼지 않았다 — 거기서 칩셋이 바뀌면 역시 말없는 바꿔치기다.
 - 회귀: `test/uploadedTilesetSwapGuard.test.ts` — 시험 도구(거부 / tilesetId 명시 통과 `ok:true` / 번들 맵), 실제 회귀
   `run_dungeon_room_pipeline{mapId, replaceExisting:true}` 거부 + 프로젝트 불변, `reset_project`·`revert_last_edit` 통과, 플래그 목록.
+
+### 실행기 계약 — 칩셋 계열 검사 `tileset-family-change` 와 `ask_tileset_change` (2026-09-25)
+
+- `ToolContext` 에 선택 `currentMapId`(사용자가 보고 있는 맵)·`approvedTilesetFamilies`(대화에서 승인한 목표 계열)가 있다.
+  Pi 요청 같은 이름 필드 → 워커 ctx, 채팅 세션은 게터로 매 호출 최신 값. 둘 다 없으면 아래 동작이 꺼진다(옛 동작).
+- 쓰기 도구 실행 뒤 `rejectTilesetFamilyChange`: 새 맵·`tilesetId` 가 바뀐 맵의 계열(`src/project/tilesetFamily.ts`)이 지금 보는 맵과 다르고
+  승인 목록에 없으면 `ToolError{code:"tileset-family-change", mapId}`. 메시지 = 지금 칩셋(이름·계열) → 쓰려던 칩셋, 같은 계열 후보 ≤8,
+  「후보로 다시 / 없으면 ask_tileset_change 로 묻고 턴 끝」. `allowsTilesetChange` 도구는 건너뛴다, 읽기 도구는 검사 없음, dryRun 도 검사.
+- `ToolDefinition.defaultTilesetId(project)`(create_map 만): tilesetId 없이 불리고 이 기본값이 지금 보는 맵과 다른 계열이면 실행기가 인자에
+  지금 보는 맵의 tilesetId 를 넣는다. 같은 계열이면 도구 기본값(숲마을) 그대로.
+- `ToolDefinition.fillsCurrentMapId`(ask_tileset_change 만): 비어 있는 `mapId` 인자를 `ctx.currentMapId` 로 채운다.
+- `ask_tileset_change{toTilesetId, reason, purpose?, mapId?}` — 읽기·core. 오류 `tileset-not-found`·`tileset-same-family`·`map-not-found`.
+  data `{kind:"tileset-change-question", mapId, fromTilesetId, toTilesetId, fromFamily, toFamily, fromLabel, toLabel, reason, purpose}` — 패널
+  `aiTilesetChangeCard.ts` 가 턴 끝에 견본 두 장 카드로 띄운다. 전체 흐름은 [teaching-assistant-tilesets.md](teaching-assistant-tilesets.md) 「칩셋 계열 규칙」.
+- 회귀: `test/tilesetFamilyGuard.test.ts`(업로드 계열 맵 + 던전 파이프라인 거부 / 같은 계열 통과 / 승인 통과 / currentMapId 없음 / reset·revert /
+  create_map 기본 칩셋 두 경우 / easyrpg 통과 / dryRun / ask_tileset_change), `test/tilesetFamily.test.ts`, `test/aiTilesetChangeCard.test.ts`.
 
 ### 남은 일 (네 층)
 
@@ -2148,6 +2165,109 @@ Pi worker 모두 로드한다. `read_region_reference`의 목록/페이지 조�
 두 지역의 전체 페이지 배열 일치, 가구 복사 레이어/크기 보존을 직접 확인했다.
 전체 테스트 게이트와 운영 배포 확인은 별도이며 이 기록으로 대체하지 않는다.
 
+### 공용 저작 장면 → 명시적인 복사 요청 (2026-09-25)
+
+새 설계/직접 배치를 이 경로로 대체하지 않는다. 시스템 프롬프트와 도구 설명 모두
+사용자가 저장 장면 복사/동일 재현을 명시할 때만 이 도구를 쓰도록 한다.
+
+`sharedSceneTools.ts`의 `list_shared_scenes`(20개 페이지), `inspect_shared_scene`,
+`build_shared_scene`는 설치된 공용 장소를 실제 맵으로 복사한다. `sharedSceneAuthoring.ts`가
+전체 두 레이어·독립 타일셋/그림·events를 유지하고 내부 mapId를 재연결한다.
+필수 revision/namespace/links로 낡은 카탈로그와 덮어쓰기를 거절한다.
+`include`는 전이 목적맵 폐쇄, `omit`은 외부 전이를 가진 이벤트 전체 제외와 목록 보고,
+`reject`는 외부 연결이 있으면 실패다. 모든 의존성과 착지 이동 가능성을 확인한 뒤 한 번에 적용한다.
+기존 runner의 draft/commit/공간 계층 검증을 통과한다. 사용자 원본을 내려받거나 원격에 쓰지 않는다.
+
+Pi는 find_tools로 발견한 뒤 장소/지역 자체의 `read_spatial_reference` MD/그림을 읽고 실행한다.
+임의 번호를 선택하는 paint가 아니라 저장 예제를 복제하므로 타일 선택 선행 게이트는 적용하지 않는다.
+후속 타일 변경은 원래 타일 참고문서 읽기 게이트가 적용된다. 반환 `tilesetIdMapping`과
+사본 참고문서 첫 문서의 번호 대응을 따른다. 시작점 변경은 `setStart:true`일 때만 한다.
+
+PAW는 기존46장소 + 학교28실 = 74장소. 도시 include는12맵, 학교 omit은4맵/외부출구1개 제외.
+[사용 절차·배치 규칙·범위](../tiledata/pixel-art-world/AI-SCENE-AUTHORING.md).
+자료 존재/결정론 검사/실제 모델 재현/임의 새 평면 설계를 같은 주장으로 합치지 않는다.
+실제 모델7종류/21맵 생성, 별도SQLite 저장·재오픈, 실제player 전이32건의 근거와
+실패한 관측기 시도는 [SCENE-AI-VERIFICATION](../tiledata/pixel-art-world/SCENE-AI-VERIFICATION.md)에 기록한다.
+
+### 실내 직접 배치와 읽기 전용 검사 (2026-09-25)
+
+`interiorPlacementTools.ts`의 `inspect_interior_layout`은 `interiorPlacementAudit.ts`를 호출한다.
+mapId/wallMaterial/entry, 선택 rooms[{id,seed,doorways}]를 받는 read 도구다. 설치된 타일셋의
+`direct-authoring/dictionary`에서 재료·단일 가구 배열·지지칸·천장47변형을 읽는다.
+완성 맵 정답이나 자동 배치 코드는 없다. 조수가 직접 paint_tiles로 고친다.
+
+천장 남단 아래 벽 전체/맵 밖 벽/미칠한 바닥/가구 조립·접지/벽걸이/엔진 통행/가구 조작면을 검사한다.
+독립방은 rooms에 선언한 것만 검사한다. 문턱을 닫은 바닥 연결성(가구 무시)으로 현관 및 다른 방과
+분리되는지, 폭1~2칸의 각 문이 공용 공간으로 직접 열리는지 확인한다.
+모델이 독립방 선언을 빼먹거나 방 이름만 바꿔 요구조건을 축소할 수 있으므로 요청 조건과 별도로 대조한다.
+도구 ok:true는 조회 성공이며 data.valid:false면 구조 오류다. valid:true도 밀도/좌석 수/미적 품질/
+이벤트 성공 판정은 아니다. 128×128 이하, 단일 벽 재료, 스택 없는 맵만 지원한다.
+
+직접 배치 관찰기는 완성 맵/장면 배열/래스터 킷/복사 도구를 제거한 빈 프로젝트에서 실제 runPiAgent를
+호출한다. 65개 가구의 전체 배열은 부품 조립용이며 완성 방 좌표는 제공하지 않는다.
+실패·감독 피드백·재검사·SQLite 재오픈 근거는
+[직접 배치 검증](../tiledata/pixel-art-world/DIRECT-AUTHORING-VERIFICATION.md)에 분리 기록한다.
+
+### 현대 맵의 PAW 전용 소재 선택 (2026-09-25)
+
+`ai/modernTilesetPolicy.ts`를 일반 조수 지침과 Pi 시스템 프롬프트가 함께 쓴다.
+현대/모던/modern/contemporary 맵 요청은 설치된 Pixel Art World 원본 및 공용 파생 칩셋만 쓴다.
+기본 야외/마을·일반 실내 자동 생성 경로가 다른 소재를 고르게 하는 규칙보다 우선한다.
+원본을 추가 배포하거나 자동 다운로드하지 않는다. 미설치이면 기존 외부 타일셋 다운로드/가져오기 UI를 안내한다.
+새 설계를 완성 장면 복사로 대신하지 않는 이전 계약도 유지한다.
+
+Pi 실행은 요청의 현대 표지+맵 용도(또는 현재 맵 스타일 변경), 기존 PAW 맵의 후속 맵 작업으로
+전용 제약을 정한다. 명시적인 중세/판타지 전환은 후속 PAW 추론을 하지 않는다.
+임의 자연어의 시대/부정/복합 요청을 모두 이해하는 의미 분석기는 아니다.
+팀 하위 작업은 `modernTilesetOnly`를 상속하여 작업 재서술로 제약이 사라지지 않는다.
+기존 forest 기본 `villageContract`는 현대 요청에서 만들지 않으며, 런타임도 낡은 계약을 적용하지 않는다.
+
+실행 시작 때 PAW 식별자(`paw-`, `shared_paw_`, 공용 사본 이름)의 실제 설치 자산과
+타일 크기/열 수/칸 수를 고정한다. 이는 기존 설치 카탈로그의 소속 판정이며 라이선스·출처 해시 검증을
+새로 수행하는 보안 경계는 아니다. 설치 자체의 원본 검증은 기존 importer 계약이다.
+`toolAdapter`는 각 쓰기 도구 실행 뒤 변경된 맵의 이미지/격자 규격이 이 목록에 속하는지 확인한다.
+다른 칩셋의 맵 생성/타일·스택 변경/이미지 교체면 전체 도구 초안을 되돌리고 오류로 응답한다.
+ID만 PAW처럼 바꿔도 시작 시 승인된 그림/격자가 아니면 통과하지 않는다. 같은 그림·격자의 사본은 허용한다.
+팀 checkpoint 및 최종 병합에도 최초 팀 기준을 적용한다. 미설치이면 허용 시트0이므로 기본 칩셋 대체가 거부된다.
+기존 무관한 맵과 이벤트만 수정하는 작업은 타일 변경으로 판정하지 않는다.
+새 혼합 아틀라스는 기존 승인 시트가 아니므로 별도 준비/설치 없이 자동 승인하지 않는다.
+
+이번 변경은 소재 선택 경로와 적용 차단이다. 이전 직접 배치의 식당/의원 성공·주택 실패를
+새 성공으로 바꾸지 않으며, 새로운 실제 LLM 배치 실험은 하지 않았다. 전체 테스트/게이트도 실행하지 않았다.
+현대 제작 턴의 초기 도구도 설치 목록/참고문서 조회→create_map/paint_tiles/실제 이미지/실내 검사로
+선택한다. 다른 도구는 find_tools로 발견할 수 있지만 소재 제한은 같은 적용 경계를 통과한다.
+
+### 실내 요구조건과 같은 실행 안의 재검사 (2026-09-25 후속)
+
+`inspect_interior_layout.requirements`에 objects[{ids,min,max?,roomId?,side?}], roomIds,
+maxArea, maxEmptySquare, southExit를 선택적으로 선언한다. 완전체 인식 결과와 실제 문턱을 닫은
+바닥 성분을 대조하므로 방 이름만 붙이거나 가구 일부만 놓아서 수량을 채울 수 없다.
+욕조의 남쪽 조작면도 검사한다. largestEmptySquare는 가구 없는 연속 바닥의 최대 정사각형이며
+복도 폭/미학의 대용물이 아니다. 기준이 없는 요청에 임의의 밀도 상한을 강제하지 않는다.
+
+Pi의 `interiorCompletion.ts`는 PAW 현대 실행에서 수정된 direct-authoring 사전 보유 맵을
+종료 시 다시 검사하고, 검사 누락/현재 전체 그림 누락/구조 및 선언 요구조건 오류를 최대2회
+같은 Agent 대화로 돌려준다. 같은 오류 반복·턴/시간 상한이면 중단하고 미완료 error를 낸다.
+이 과정은 좌표를 생성하거나 대신 칠하지 않는다. 기존 중간 checkpoint/초안 저장을
+트랜잭션으로 취소하는 기능은 아니므로 미완료 결과를 승인본으로 게시하면 안 된다.
+
+최초 선언 requirements를 유지한다. 헤드리스 관찰의 `RunPiAgentOptions.interiorRequirements`는
+감독자가 원문에서 만든 고정 조건으로, 모델이 인자를 생략/완화해도 완료 검사에서 유지한다.
+일반 조수에서는 모델의 최초 선언이며 자연어의 모든 조건을 자동 추출·검증하는 기능은 아니다.
+모델이 방 구획을 고칠 수 있도록 rooms의 seed/문턱은 최신 선언으로 갱신한다.
+이 경로는 직접 배치 사전이 없는 도시·학교에 실내 검사를 억지로 적용하지 않는다.
+
+최종 프로토콜의 `done.interiorCompletion`에 남은 맵별 문제를 실어 보낸다. 브라우저 클라이언트는
+이 값이 비어 있지 않으면 done이 있어도 성공 반환하지 않는다. 팀 런타임은 해당 자식의 ledger와
+agent_done을 실패로 남기고 최종 결과에 문제를 전달한다. 이는 미완료 초안을 없애는 기능이 아니다.
+`pixel-art-world-interior-contract-check.mts`는 실제 과거 실패/성공 출력으로 구조·요구조건·그림
+신선도를 검사하고, `pixel-art-world-completion-client-check.mts`는 합성 NDJSON으로 실패 done의
+클라이언트 거부를 확인한다. 후자는 실제 모델 실행 성적이 아니다.
+
+이미지 렌더 경로가 연결된 Pi 실행은 `inspect_interior_layout` 결과에도 현재 전체 맵 PNG를
+함께 전달한다. 숫자 좌표만 보고 막힌 문을 반복 수정하지 않도록 구조 오류와 실제 모습을 같이
+본다. 이것은 실제 현재 배열의 렌더이며 모형 그림이 아니다. 후속 지시는 show_map_region도 요청하지만,
+완료 검사 자체는 검사 도구에 붙인 최신 전체 PNG 역시 현재 그림으로 인정한다.
 ## Isaiah 물 태그 판정 보완 (2026-09-24)
 
 기존 타일셋별 물 판정을 유지하며 `tileMeta.tags`의 정확한 `water`도 읽는다. Isaiah 공용 자료는 role 대신 tags를 쓰므로 이 경로가 필요하다. 기본 합본 마을 호환 그림의 숫자 판정과 category/role/팔레트/그룹 판정은 보존한다. 별도9897 구버전 워커에서 잔디0번을 물38칸으로 보고한 재현 및 갱신 여부는 `docs/qa/saesol-three-hour-ai-authoring.md`에 기록했다.

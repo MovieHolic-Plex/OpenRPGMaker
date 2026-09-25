@@ -1,17 +1,17 @@
-# RPG 던전 22곳 — 자연 동굴·광산·묘지·수로·신전·마법사 탑·마왕성·기후 동굴·피라미드·용의 둥지·큰 던전
+# RPG 던전 30곳 — 자연 동굴·광산·묘지·수로·신전·마법사 탑·마왕성·기후 동굴·피라미드·용의 둥지·큰 던전·해저 신전·변경 던전 다섯
 
-지형·배치 참고 사례(이동 이벤트·적·함정 동작·레버/열쇠 이벤트 없음). 「장소」 카드 22장과 공용 AI 문서 세 분류(자연·지은 던전·큰 던전, 모두 번들 던전 시트 `easyrpg_chipset_dungeon`에 붙는다)로 배포된다.
+지형·배치 참고 사례(이동 이벤트·적·함정 동작·레버/열쇠 이벤트 없음). 「장소」 카드 30장과 공용 AI 문서 다섯 분류(자연·지은 던전·큰 던전·해저 신전·변경 던전, 모두 번들 던전 시트 `easyrpg_chipset_dungeon`에 붙는다)로 배포된다.
 
 | 파일 | 내용 |
 |---|---|
-| `catalog.json` | 계획(plans: 입구·목표·출구·놓은 소품)·맵 22장·타일셋 다섯(`oprn_dungeon_stone` = 던전 시트 + 상자·광차·돌계단·흉벽 이식, `oprn_dungeon_cave/sea/desert/lair` = 같은 번호의 재칠 시트) |
+| `catalog.json` | 계획(plans: 입구·목표·출구·놓은 소품)·맵 30장·타일셋 다섯(`oprn_dungeon_stone` = 던전 시트 + 상자·광차·돌계단·흉벽 이식, `oprn_dungeon_cave/sea/desert/lair` = 같은 번호의 재칠 시트) |
 | `validation.json` | 입구에서 목표·출구 칸까지 런타임 `canMove`로 닿는지(저작 스크립트가 실패하면 멈춘다), 닫힌 곳(`sealed`) |
 | `sheet-classes.json` | 재칠 시트에서 무엇을 어떤 색으로 바꿨는지 |
 | `images/` | 앱 렌더러로 그린 원본 픽셀 그림 |
 | `*.md` | 공용 AI 문서 사본(`src/assets/sharedRpgDungeonReferences.json`과 같은 본문) |
 | `storage-proof.json` | 정본 `.oprn-projects/rpg-dungeons-20260924` 저장·재오픈 증명 |
 
-계획은 `scripts/content/rpg-dungeons/*.mjs`(caves·halls·tower·demon·climate·grand), 조립 도구는 `kit.mjs`(벽 문법·덩이·레일·계단), 채움은 `dress.mjs`(모서리 무더기·자연 무리, 빈칸 게이트 목표), 벽 혹은 `outcrops.mjs`.
+계획은 `scripts/content/rpg-dungeons/*.mjs`(caves·halls·tower·demon·climate·grand·sunken·frontier), 조립 도구는 `kit.mjs`(벽 문법·덩이·레일·계단, 아틀라스 조각 소품·스탬프), 타일셋은 `family.mjs`(던전 칩셋 + 이식 480~488 + 아틀라스 조각 510~, `tiledata/atlas-dungeons/parts.json`), 채움은 `dress.mjs`(모서리 무더기·자연 무리, 빈칸 게이트 목표), 벽 혹은 `outcrops.mjs`.
 
 재생성 순서(렌더는 dev 서버 `npm run dev:worktree`가 떠 있어야 한다):
 
@@ -26,5 +26,17 @@ node scripts/content/prepare-rpg-dungeons-regions.mjs output/evidence/rpg-dungeo
 ```
 
 한 맵만 고칠 때: `DUNGEON_ONLY=<id,…> DUNGEON_LAX=1 node scripts/content/author-rpg-dungeons.mjs`(→ `catalog.partial.json`).
-분류를 고쳐 다시 배포할 때는 분류 id의 `-v1`을 올리고 옛 id를 은퇴 목록에 넣어야 기존 프로젝트에서 교체된다(지금은 추가만 한다).
-마왕성 정문(`dungeon-demon-front`)과 숲 미로는 아직 없다 — 복도 남쪽 출구는 자리만 있다.
+분류 내용을 고쳐 다시 배포할 때는 **다시 만들기 전에** 옛 분류의 배포 판(`referenceRevision`)을 `previous-reference.json`에 적고, 분류 id의 `-vN`을 올리고, 옛 `*-vN-dictionary-*.md` 사본을 지운다(`prepare-rpg-dungeons-regions.mjs`의 분류 이름표도 새 id로). 그래야 기존 프로젝트에서 손대지 않은 옛 판만 교체된다. 지금 은퇴 목록: natural-v1·sunken-temple-v1·built-v1·frontier-v1.
+숲 미로는 야외 맵(`outdoor-forest-maze`, rpg-outdoors)으로 만들었다.
+
+## 해저 신전 (2026-09-25, `sunken.mjs`)
+해저 동굴 북쪽 출구(15,0)에서 이어지는 세 방: 「물에 잠긴 입구 회랑」 36×23 → 「산호 기둥 대전」 40×28 → 「바다 여신 제단」 34×24. 해저 재칠 시트 `oprn_dungeon_sea`를 그대로 쓴다(새 시트 없음): 청록 바다 바위 벽·석주·여신상, 신전 석판 바닥 108·무늬 석판 109, 곧은 물길(~)과 판자 다리, 바닥이 꺼진 불규칙한 웅덩이(W, 벽면 모서리엔 붙이지 않는다), 석주 밑동이 물에 닿는 곳의 산호 무리·해초, 신전 석판 섬을 두른 둥근 물 해자(W)와 무늬 석판 제단. 출입구는 방에 낸다 — 북쪽은 벽면의 석조 아치, 남쪽은 맵 끝 테두리 한 줄을 뚫는 문 틈(허공 위 바닥 띠 없음). 지은 방이라 바닥 꾸밈(groves·heaps)은 끄고 산호는 계획에 적은 무리만. 분류는 따로 `rpg-dungeons-sunken-temple-v2`(개정2, 2026-09-25: 벽 없는 복도·흩뿌린 산호·네모 해자 수정). 옛 판은 `previous-reference.json` 으로 걷는다. 넓은 대전은 무늬 석판 신랑을 8칸 폭으로 넓히고 웅덩이를 엇갈려 파서 빈칸 게이트(≤4·≤40%)를 넘긴다.
+
+## 변경 던전 다섯 (2026-09-25, `frontier.mjs`)
+분류 `rpg-dungeons-frontier-v1`(새 분류라 기존 프로젝트에도 추가된다, 해적 소굴 개정으로 지금은 `-v2`). 같은 날 1층 복도(`dungeon-demon-hall`)의 남쪽 출구를 허공 위 바닥 띠에서 테두리 문 틈으로 고치고(36×20 → 36×17, 화로는 방 안으로) 정문 홀과 좌표를 맞춰서 지은 던전 분류를 `rpg-dungeons-built-v2`로 올렸다.
+- 「마왕성 · 정문 홀」 33×25 `oprn_dungeon_stone`: 외관 `outdoor-demon-castle` 성문 앞 (30,34) ↔ 남쪽 문 틈 (16,24), 북쪽 아치 앞 (16,5) ↔ 복도 남쪽 문 틈 (17,16). 무늬 석판 위 카펫, 석주 세 쌍, 모양이 다른 용암 못 둘, 갈색 단 둘(소환 마법진·가고일이 지키는 뼈 무더기).
+- 「투기장 · 경기장」 33×28 `oprn_dungeon_stone`: 모래(82) 싸움터를 무늬 석판 층+걸상 줄 관중석과 쇠 난간이 두르고, 북쪽 갈색 단에 우승자 관람석. 서쪽 투사 계단(내려감, 출구 (3,14)) → `interior-arena-waiting-room` 동벽 계단 앞 (16,6). 모래는 일부러 비운 싸움터라 빈칸 게이트의 바탕 목록(421·187·108·301·67·110·141)에 넣지 않았다 — 넣으면 94%로 떨어진다.
+- 「늪 신전 · 독늪에 잠긴 폐신전」 38×28 `oprn_dungeon_cave`: 새 시트 없이 담색 테두리 구덩이 오토타일(pit-pale)을 검붉은 진창 독늪으로 쓴다(동굴 시트의 파란 물은 맑은 샘처럼 보인다). 진창 위 널판 길(`!` = pit-pale + upper 141)로 신전과 늪 섬 둘에 간다.
+- 「해적 소굴 · 숨은 선착장」 52×34 `oprn_dungeon_sea` (2026-09-25 개정2): 동쪽 맵 끝으로 트인 물굽이에 **진짜 범선**(아틀라스 조각 스탬프 `moored-ship` — 「푸른물결항」의 EasyRPG 배, 선미 좌우 반전)이 떠 있다. 옛 판의 널판 뗏목 「배」는 가짜 물건으로 지적받아 걷어냈다. 북쪽 물가 널판 부두에서 널판 다리가 뱃전 틈(배 x23~24)으로 갑판에 오르고, 북서쪽 야영 굴(두목의 보물)·북동쪽 망루 굴(화약통). 분류 `rpg-dungeons-frontier-v2`로 올리고 옛 v1 판은 `previous-reference.json` 으로 걷는다.
+- 「우물 밑 굴 · 첫 모험」 20×16 `oprn_dungeon_cave`: 북쪽 벽면 사다리(297 두 줄) 아래가 입구·출구, 벽에 붙은 물웅덩이 하나, 쥐 둥지 구석의 잃어버린 상자.
+- 섬 해도(`outdoor-world-archipelago`)가 투기장·늪 신전·해적 소굴을 placeId로 가리킨다. 이 셋과 우물 밑 굴의 바깥 출구는 `outside`(좌표 없음).

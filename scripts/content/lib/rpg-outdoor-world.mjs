@@ -33,15 +33,26 @@ export function buildWorldMap(api, tileset, plan) {
 
   // 1. Continent: noisy radial falloff; two-cell sea rim; keep the largest landmass (plus islands of 10+ cells).
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-    const dx = (x - W / 2) / (W * 0.47), dy = (y - H / 2) / (H * 0.45), d = Math.sqrt(dx * dx + dy * dy);
-    const v = fbm(x / 9, y / 9, 1) * 0.62 + (1 - d ** 1.7) * 0.8;
-    if (v > (plan.landAt ?? 0.66) && x > 1 && y > 1 && x < W - 2 && y < H - 2) cls[at(x, y)] = "plain";
+    // Archipelago (plan.islands, fractions [cx, cy, rx, ry]): land inside any wobbling island ellipse instead of one continent.
+    let land;
+    if (plan.islands) land = Math.max(...plan.islands.map(([cx, cy, rx, ry]) => 1 - Math.hypot((x - cx * W) / (rx * W), (y - cy * H) / (ry * H)))) + (fbm(x / 6, y / 6, 1) - 0.5) * 0.7 > 0;
+    else { const dx = (x - W / 2) / (W * 0.47), dy = (y - H / 2) / (H * 0.45), d = Math.sqrt(dx * dx + dy * dy);
+      land = fbm(x / 9, y / 9, 1) * 0.62 + (1 - d ** 1.7) * 0.8 > (plan.landAt ?? 0.66); }
+    if (land && x > 1 && y > 1 && x < W - 2 && y < H - 2) cls[at(x, y)] = "plain";
   }
   const comps = components((i) => cls[i] !== "sea");
   comps.sort((a, b) => b.length - a.length);
   for (const c of comps.slice(1)) if (c.length < 10) for (const i of c) cls[i] = "sea";
-  const main = new Set(comps[0]);
+  let main = new Set(comps[0]);
   smooth((i) => cls[i] === "sea", (i, wet) => { cls[i] = wet ? "sea" : "plain"; });
+  // One continent: places stand on the largest landmass. Islands: on any island of 10+ cells (after smoothing), each its
+  // own mass — joined by ship lanes, not roads.
+  const islandOf = new Map();
+  if (plan.islands) {
+    const kept = components((i) => cls[i] !== "sea").filter((c) => c.length >= 10).sort((a, b) => b.length - a.length);
+    kept.forEach((c, k) => { for (const i of c) islandOf.set(i, k); });
+    main = new Set(kept.flat());
+  }
 
   // 2. Places: fixed fractions of the map; each is snapped to the nearest open land cell of the main mass.
   const places = [];
@@ -95,7 +106,11 @@ export function buildWorldMap(api, tileset, plan) {
   const cost = (i) => { const c = cls[i]; if (c === "sea" || c === "mountain" || c === "snowmountain" || c === "marsh") return Infinity; return c === "road" ? 0.4 : c === "forest" || c === "snowforest" ? 2.4 : 1; };
   const door = (p) => [p.x + (p.w >> 1), p.y + p.h];
   const edges = [];
-  { const inTree = [0], left = places.map((_, k) => k).slice(1);
+  // Spanning tree per landmass (a continent has one; an archipelago one per island — the sea is crossed by ship lanes).
+  const massOf = (p) => (plan.islands ? islandOf.get(at(p.x, p.y)) : 0) ?? 0;
+  for (const mass of new Set(places.map(massOf))) {
+    const members = places.map((p, k) => [p, k]).filter(([p]) => massOf(p) === mass).map(([, k]) => k);
+    const inTree = [members[0]], left = members.slice(1);
     while (left.length) { let best = null;
       for (const a of inTree) for (const b of left) { const [ax, ay] = door(places[a]), [bx, by] = door(places[b]), d = Math.abs(ax - bx) + Math.abs(ay - by); if (!best || d < best[2]) best = [a, b, d]; }
       edges.push([best[0], best[1]]); inTree.push(best[1]); left.splice(left.indexOf(best[1]), 1); } }
@@ -142,15 +157,22 @@ export function buildWorldMap(api, tileset, plan) {
 
   // 8. Check: every place's approach cell is walkable and all of them are joined on foot (tileset passability).
   const pass = (i) => { const u = upper[i], t = u >= 0 ? u : lower[i], f = tileset.passability[t]; return Boolean(f && (f.up || f.down || f.left || f.right)) && (u < 0 || (() => { const g = tileset.passability[lower[i]]; return g && (g.up || g.down); })()); };
-  const start = door(places[0]), seen = new Set([at(...start)]), q = [at(...start)];
-  assert(pass(at(...start)), "World start not walkable " + start);
-  while (q.length) { const i = q.pop(), x = i % W, y = Math.floor(i / W); for (const [dx, dy] of N8.slice(0, 4)) { const j = at(x + dx, y + dy); if (inside(x + dx, y + dy) && !seen.has(j) && pass(j)) { seen.add(j); q.push(j); } } }
+  // Islands: each island's places are joined on foot from its first place; every island with places has a port
+  // (a place marked port: true) and every port is on a ship lane.
+  const seen = new Set();
+  for (const mass of new Set(places.map(massOf))) {
+    const start = door(places.find((p) => massOf(p) === mass)); seen.add(at(...start)); const q = [at(...start)];
+    assert(pass(at(...start)), "World start not walkable " + start);
+    while (q.length) { const i = q.pop(), x = i % W, y = Math.floor(i / W); for (const [dx, dy] of N8.slice(0, 4)) { const j = at(x + dx, y + dy); if (inside(x + dx, y + dy) && !seen.has(j) && pass(j)) { seen.add(j); q.push(j); } } }
+    if (plan.islands) assert(places.some((p) => massOf(p) === mass && p.port), "Island without a port: " + places.filter((p) => massOf(p) === mass).map((p) => p.id).join(","));
+  }
+  for (const p of places.filter((q) => q.port)) assert((plan.lanes ?? []).some((l) => l.includes(p.id)), "Port without a ship lane " + p.id);
   const blocked = places.filter((p) => !seen.has(at(...door(p))));
   assert.equal(blocked.length, 0, "World places cut off: " + blocked.map((p) => p.id).join(","));
   const e = emptiness();
   const counts = {}; for (const c of cls) counts[c] = (counts[c] ?? 0) + 1;
-  const meta = { places: places.map(({ id, name, placeId, icon, kind, x, y, w, h }) => ({ id, name, placeId, icon, kind, x, y, w, h, approach: door({ x, y, w, h }) })), terrain: counts,
-    roads: roadCells.size };
+  const meta = { places: places.map(({ id, name, placeId, icon, kind, x, y, w, h, port }) => ({ id, name, placeId, icon, kind, x, y, w, h, approach: door({ x, y, w, h }), ...(port ? { port: true } : {}), ...(plan.islands ? { island: massOf({ x, y }) } : {}) })), terrain: counts,
+    roads: roadCells.size, ...(plan.lanes ? { shipLanes: plan.lanes.map(([a, b]) => ({ from: a, to: b })) } : {}) };
   return { map, meta, check: { reachable: seen.size, places: places.length, emptiness: { maxSq: e.maxSq, screen: +e.screen.toFixed(3), at: e.at, screenAt: e.screenAt } } };
 
   // ——— helpers ———

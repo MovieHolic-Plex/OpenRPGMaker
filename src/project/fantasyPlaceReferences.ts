@@ -15,13 +15,13 @@ export const FANTASY_PLACE_REFERENCES = [
     "preview": "/assets/region-references/fantasy-weapon-shop.png",
     "tilesetPreview": "/assets/tibo-interior/interior-expanded.png",
     "projectDownload": "/assets/region-references/fantasy-weapon-shop.oprn.json",
-    "sourceProjectId": "6a531af0-80c4-443f-8138-013f8cfb2203",
+    "sourceProjectId": "aa842421-be3a-460d-a1b3-41ded7d502bb",
     "sourceMapId": "fantasy-weapon-shop",
     "snapshotProjectId": "oprn-place-fantasy-weapon-shop-v1",
     "rules": [
       "크림 벽 집 실내. 뒷벽에 방패·교차검, 양옆 무기 거치대, 상인 뒤 검·물약 진열대 263/293, 긴 카운터 325·326·327, 문에서 카운터까지 붉은 러그.",
       "입구 (8,10)에서 (8,8)·(8,6)까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「판타지 실내 · 상점·대장간·왕좌의 방·복도·마법사 탑 (개정1)」에 배치 규칙·놓은 소품 좌표·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「판타지 실내 · 상점·대장간·왕좌의 방·복도·마법사 탑 (개정3)」에 배치 규칙·놓은 소품 좌표·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형·배치 참고 사례. 문 이동·상인 NPC·상점 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -39,13 +39,13 @@ export const FANTASY_PLACE_REFERENCES = [
     "preview": "/assets/region-references/fantasy-armor-shop.png",
     "tilesetPreview": "/assets/tibo-interior/interior-expanded.png",
     "projectDownload": "/assets/region-references/fantasy-armor-shop.oprn.json",
-    "sourceProjectId": "6a531af0-80c4-443f-8138-013f8cfb2203",
+    "sourceProjectId": "aa842421-be3a-460d-a1b3-41ded7d502bb",
     "sourceMapId": "fantasy-armor-shop",
     "snapshotProjectId": "oprn-place-fantasy-armor-shop-v1",
     "rules": [
       "석벽 집 실내. 왼쪽 갑옷 거치대 둘, 오른쪽 마네킹 둘, 벽에 방패, 앞쪽에 장화·배낭·가죽.",
       "입구 (8,10)에서 (8,8)·(8,6)까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「판타지 실내 · 상점·대장간·왕좌의 방·복도·마법사 탑 (개정1)」에 배치 규칙·놓은 소품 좌표·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「판타지 실내 · 상점·대장간·왕좌의 방·복도·마법사 탑 (개정3)」에 배치 규칙·놓은 소품 좌표·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형·배치 참고 사례. 문 이동·상인 NPC·상점 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -63,13 +63,13 @@ export const FANTASY_PLACE_REFERENCES = [
     "preview": "/assets/region-references/fantasy-item-shop.png",
     "tilesetPreview": "/assets/tibo-interior/interior-expanded.png",
     "projectDownload": "/assets/region-references/fantasy-item-shop.oprn.json",
-    "sourceProjectId": "6a531af0-80c4-443f-8138-013f8cfb2203",
+    "sourceProjectId": "aa842421-be3a-460d-a1b3-41ded7d502bb",
     "sourceMapId": "fantasy-item-shop",
     "snapshotProjectId": "oprn-place-fantasy-item-shop-v1",
     "rules": [
       "크림 벽 집 실내. 물약 진열장·약재 서랍장·약초 건조대·잡화 선반을 뒷벽에, 카운터 앞쪽에 식재료 자루·진열 받침.",
       "입구 (8,10)에서 (7,8)·(7,6)까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「판타지 실내 · 상점·대장간·왕좌의 방·복도·마법사 탑 (개정1)」에 배치 규칙·놓은 소품 좌표·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「판타지 실내 · 상점·대장간·왕좌의 방·복도·마법사 탑 (개정3)」에 배치 규칙·놓은 소품 좌표·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형·배치 참고 사례. 문 이동·상인 NPC·상점 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -87,13 +87,13 @@ export const FANTASY_PLACE_REFERENCES = [
     "preview": "/assets/region-references/fantasy-smithy.png",
     "tilesetPreview": "/assets/tibo-interior/interior-expanded.png",
     "projectDownload": "/assets/region-references/fantasy-smithy.oprn.json",
-    "sourceProjectId": "6a531af0-80c4-443f-8138-013f8cfb2203",
+    "sourceProjectId": "aa842421-be3a-460d-a1b3-41ded7d502bb",
     "sourceMapId": "fantasy-smithy",
     "snapshotProjectId": "oprn-place-fantasy-smithy-v1",
     "rules": [
       "석벽·돌바닥 42. 벽난로 화덕 옆 풀무, 가운데 모루 작업대·담금질 물통·숫돌, 벽에 편자·앞치마·무기 거치대.",
       "입구 (9,11)에서 (7,7)·(9,7)까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「판타지 실내 · 상점·대장간·왕좌의 방·복도·마법사 탑 (개정1)」에 배치 규칙·놓은 소품 좌표·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「판타지 실내 · 상점·대장간·왕좌의 방·복도·마법사 탑 (개정3)」에 배치 규칙·놓은 소품 좌표·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형·배치 참고 사례. 문 이동·상인 NPC·상점 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -111,13 +111,13 @@ export const FANTASY_PLACE_REFERENCES = [
     "preview": "/assets/region-references/fantasy-throne-room.png",
     "tilesetPreview": "/assets/tibo-interior/interior-expanded.png",
     "projectDownload": "/assets/region-references/fantasy-throne-room.oprn.json",
-    "sourceProjectId": "6a531af0-80c4-443f-8138-013f8cfb2203",
+    "sourceProjectId": "aa842421-be3a-460d-a1b3-41ded7d502bb",
     "sourceMapId": "fantasy-throne-room",
     "snapshotProjectId": "oprn-place-fantasy-throne-room-v1",
     "rules": [
       "금벽돌 벽·돌바닥. 붉은 카펫 단(계단 465·466·467) 위 왕좌 447~449/477~479, 뒤에 커튼 142/143·172/173·202/203과 휘장 318/348·319/349, 기둥 89/119 두 줄과 기사 석상 87/117, 창 54·벽 횃불 24.",
       "입구 (12,19)에서 (12,7)·(12,9)까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「판타지 실내 · 상점·대장간·왕좌의 방·복도·마법사 탑 (개정1)」에 배치 규칙·놓은 소품 좌표·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「판타지 실내 · 상점·대장간·왕좌의 방·복도·마법사 탑 (개정3)」에 배치 규칙·놓은 소품 좌표·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형·배치 참고 사례. 문 이동·상인 NPC·상점 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -135,13 +135,13 @@ export const FANTASY_PLACE_REFERENCES = [
     "preview": "/assets/region-references/fantasy-castle-corridor.png",
     "tilesetPreview": "/assets/tibo-interior/interior-expanded.png",
     "projectDownload": "/assets/region-references/fantasy-castle-corridor.oprn.json",
-    "sourceProjectId": "6a531af0-80c4-443f-8138-013f8cfb2203",
+    "sourceProjectId": "aa842421-be3a-460d-a1b3-41ded7d502bb",
     "sourceMapId": "fantasy-castle-corridor",
     "snapshotProjectId": "oprn-place-fantasy-castle-corridor-v1",
     "rules": [
       "석벽 복도. 창 54와 벽 횃불 24를 번갈아, 기사 석상 87/117을 한쪽 벽을 따라, 가운데 붉은 러너.",
       "입구 (15,8)에서 (2,6)·(27,6)까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「판타지 실내 · 상점·대장간·왕좌의 방·복도·마법사 탑 (개정1)」에 배치 규칙·놓은 소품 좌표·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「판타지 실내 · 상점·대장간·왕좌의 방·복도·마법사 탑 (개정3)」에 배치 규칙·놓은 소품 좌표·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형·배치 참고 사례. 문 이동·상인 NPC·상점 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -159,7 +159,7 @@ export const FANTASY_PLACE_REFERENCES = [
     "preview": "/assets/region-references/fantasy-castle-jail.png",
     "tilesetPreview": "/assets/easyrpg-chipset-dungeon-transparent.png",
     "projectDownload": "/assets/region-references/fantasy-castle-jail.oprn.json",
-    "sourceProjectId": "6a531af0-80c4-443f-8138-013f8cfb2203",
+    "sourceProjectId": "aa842421-be3a-460d-a1b3-41ded7d502bb",
     "sourceMapId": "fantasy-castle-jail",
     "snapshotProjectId": "oprn-place-fantasy-castle-jail-v1",
     "rules": [
@@ -183,7 +183,7 @@ export const FANTASY_PLACE_REFERENCES = [
     "preview": "/assets/region-references/fantasy-demon-throne.png",
     "tilesetPreview": "/assets/easyrpg-chipset-dungeon-transparent.png",
     "projectDownload": "/assets/region-references/fantasy-demon-throne.oprn.json",
-    "sourceProjectId": "6a531af0-80c4-443f-8138-013f8cfb2203",
+    "sourceProjectId": "aa842421-be3a-460d-a1b3-41ded7d502bb",
     "sourceMapId": "fantasy-demon-throne",
     "snapshotProjectId": "oprn-place-fantasy-demon-throne-v1",
     "rules": [
@@ -207,13 +207,13 @@ export const FANTASY_PLACE_REFERENCES = [
     "preview": "/assets/region-references/fantasy-wizard-tower-floor.png",
     "tilesetPreview": "/assets/tibo-interior/interior-expanded.png",
     "projectDownload": "/assets/region-references/fantasy-wizard-tower-floor.oprn.json",
-    "sourceProjectId": "6a531af0-80c4-443f-8138-013f8cfb2203",
+    "sourceProjectId": "aa842421-be3a-460d-a1b3-41ded7d502bb",
     "sourceMapId": "fantasy-wizard-tower-floor",
     "snapshotProjectId": "oprn-place-fantasy-wizard-tower-floor-v1",
     "rules": [
-      "문 없이 계단으로 오가는 탑 한 층. 오른쪽 위 올라가는 계단 111/141/171, 왼쪽 아래 내려가는 계단 475, 가운데 마법진 381~443, 책장 18~80, 연금술 작업대·가마솥·수정구·별자리 판·망원경. 아래 두 모서리를 깎아 둥근 탑 느낌.",
+      "문 없이 계단으로 오가는 탑 한 층. 오른쪽 위 동벽을 타고 오르는 3칸 폭 계단 141|111|171(세 줄), 왼쪽 아래 내려가는 1×1 계단 474 하나, 가운데 마법진 381~443, 책장 18~80, 연금술 작업대·가마솥·수정구·별자리 판·망원경. 아래 두 모서리를 깎아 둥근 탑 느낌.",
       "입구 (16,6)에서 (5,12)·(10,11)·(13,7)까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「판타지 실내 · 상점·대장간·왕좌의 방·복도·마법사 탑 (개정1)」에 배치 규칙·놓은 소품 좌표·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「판타지 실내 · 상점·대장간·왕좌의 방·복도·마법사 탑 (개정3)」에 배치 규칙·놓은 소품 좌표·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형·배치 참고 사례. 문 이동·상인 NPC·상점 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -230,7 +230,7 @@ export const FANTASY_PLACE_REFERENCES = [
     "tilesetId": "forest_harmony",
     "preview": "/assets/region-references/fantasy-shop-street.png",
     "projectDownload": "/assets/region-references/fantasy-shop-street.oprn.json",
-    "sourceProjectId": "6a531af0-80c4-443f-8138-013f8cfb2203",
+    "sourceProjectId": "aa842421-be3a-460d-a1b3-41ded7d502bb",
     "sourceMapId": "fantasy-shop-street",
     "snapshotProjectId": "oprn-place-fantasy-shop-street-v1",
     "rules": [
@@ -253,7 +253,7 @@ export const FANTASY_PLACE_REFERENCES = [
     "tilesetId": "forest_harmony",
     "preview": "/assets/region-references/fantasy-ruined-castle.png",
     "projectDownload": "/assets/region-references/fantasy-ruined-castle.oprn.json",
-    "sourceProjectId": "6a531af0-80c4-443f-8138-013f8cfb2203",
+    "sourceProjectId": "aa842421-be3a-460d-a1b3-41ded7d502bb",
     "sourceMapId": "fantasy-ruined-castle",
     "snapshotProjectId": "oprn-place-fantasy-ruined-castle-v1",
     "rules": [

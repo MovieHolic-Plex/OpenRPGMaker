@@ -12,7 +12,9 @@ import { forestSetbackJitter } from "./forestContour";
 import { paintOrganicVillageLake } from "./organicLake";
 import { BRIDGE_PLANK_TILE } from "./landscape";
 import { stampAuthoredHouseForm } from "@/editor/authoredHouseFormStamp";
-import { stampFootprintHouseKit, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
+import { gableAccentSeed } from "@/editor/gableHouseCompose";
+import { tilesetHasHouseParts } from "@/project/defaults/forestHarmonyHouseParts";
+import { houseKitForTileset, mixableHouseKitIds, stampFootprintHouseKit, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
 import { stampHouseDoorBackground } from "@/editor/houseInteriors";
 import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { DEFAULT_FARMLAND_AUTOTILE_GROUP, DEFAULT_TALL_GRASS_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
@@ -38,7 +40,6 @@ import {
   FENCE_TOP_LEFT,
   FENCE_TOP_RAIL,
   FENCE_TOP_RIGHT,
-  HOUSE_KITS,
   pointInRect,
   requireTool,
   ROAD_TILES,
@@ -47,6 +48,8 @@ import {
   type Point,
   type Rect,
   type VillageIntent,
+  templateFormFor,
+  templateHasFixedKit,
 } from "./constants";
 import { applyRoofDeck, houseBlockedCells } from "./houses";
 import {
@@ -100,6 +103,8 @@ export interface MorphologyBuildArgs {
   /** 나무 어휘. 생략하면 합본 마을 원자(침엽수 1×2·활엽수 2×2). */
   readonly treeKit?: TreeKit;
   readonly windows: HouseKitWindowsOption | undefined;
+  /** 집 부품·재료 킷 칸을 써도 되는가(기후 마을은 false). 생략하면 맵 타일셋으로 판정. */
+  readonly houseParts?: boolean;
   readonly paintDoorTiles: boolean;
   readonly warnings: string[];
 }
@@ -125,7 +130,7 @@ export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBui
   const { draft, map, area, seed, intent, warnings } = args;
   const rng = mulberry32((seed ^ 0x3c6ef35f) >>> 0);
   const templates = intent.templateCatalog.filter((template) =>
-    !template.form || intent.kitMix === "mixed" || template.form.kitId === intent.kitMix);
+    !templateHasFixedKit(template) || intent.kitMix === "mixed" || template.form?.kitId === intent.kitMix);
   const plan = planVillageMorphology({
     morphology: args.morphology,
     area,
@@ -163,14 +168,18 @@ export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBui
   const houses: BuiltHouse[] = [];
   const slots: HouseSlot[] = [];
   const usedKits = new Set<HouseKitId>();
+  const houseParts = args.houseParts ?? tilesetHasHouseParts(draft.tilesets[map.tilesetId]);
+  // 킷 믹스 후보 — 부품 칸이 있는 타일셋이면 재료 킷까지.
+  const kitPool = mixableHouseKitIds(houseParts);
   for (const slot of plan.houses) {
     const { template, bbox } = slot;
-    const form = template.form;
-    const unused = HOUSE_KITS.filter((id) => !usedKits.has(id));
-    const pool = usedKits.size < 3 && unused.length > 0 ? unused : HOUSE_KITS;
-    const kitId: HouseKitId = template.kitId
-      ?? form?.kitId
-      ?? (intent.kitMix === "mixed" ? pool[Math.floor(rng() * pool.length)]! : intent.kitMix);
+    const unused = kitPool.filter((id) => !usedKits.has(id));
+    const pool = usedKits.size < 3 && unused.length > 0 ? unused : kitPool;
+    const kitId: HouseKitId = houseKitForTileset(template.kitId
+      ?? (templateHasFixedKit(template) ? template.form?.kitId : undefined)
+      ?? (intent.kitMix === "mixed" ? pool[Math.floor(rng() * pool.length)]! : intent.kitMix), houseParts);
+    // 박공 조합 형태는 고른 킷으로 합성(부품 칸이 있는 타일셋이면 굴뚝·지붕창 등 0~2개), 고정 레시피는 그대로.
+    const form = templateFormFor(template, kitId, houseParts ? gableAccentSeed(template.id, bbox.x, bbox.y, seed) : undefined);
     const stories: 1 | 2 | 3 = template.stories === 3 ? 3 : template.stories === 2 ? 2 : 1;
     const result = form
       ? stampAuthoredHouseForm(map, form, { x: bbox.x, y: bbox.y })

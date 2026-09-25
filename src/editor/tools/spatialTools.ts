@@ -1,10 +1,10 @@
 import { publicSpatialValue, publicSpatialKind, storageSpatialSource, storageSpatialDesign } from "./spatialPlaceContract";
 import { REGION_REFERENCES, PLACE_REFERENCES } from "@/project/regionReferences";
 import { preloadRegionReference, readRegionReference } from "@/project/regionReferenceSnapshots";
+import { sharedRegionReferences } from '@/project/sharedSpatialReferences';
 import { importReferenceScene, preloadRegionReferenceScene, preloadReviewedPlaceScenes, regionReferenceScene, reviewedPlaceScenes } from "@/project/regionReferenceImport";
 import { isSharedDesignId, matchesQuery, sharedObjects, sharedPlaces } from "./sharedDesignCatalog";
 import { prepareSharedObject, sharedDesignDetail } from "./sharedObjectTools";
-import { SHARED_REGION_REFERENCES } from '@/project/sharedSpatialReferences';
 import { previewSpatialAuthoring } from "@/editor/spatial/preview";
 import type { SpatialAuthoringRequest } from "@/editor/spatial/authoringTypes";
 import { SpatialCompileError, type SpatialStampTarget } from "@/editor/spatial/compilerTypes";
@@ -20,6 +20,8 @@ import { MAP_GENERATION_PROFILES } from "./mapGenerationProfiles";
 import { authorizeSpatialToolChange, consumeSpatialToolPreview, issueSpatialToolPreview } from "./spatialToolState";
 import { SPATIAL_APPLY_SCHEMA, SPATIAL_BUILD_SCHEMA, SPATIAL_GET_SCHEMA, SPATIAL_LIST_SCHEMA, SPATIAL_OCCURRENCE_SCHEMA, SPATIAL_UPSERT_SCHEMA } from "./spatialToolSchemas";
 import { ToolError, type ToolDefinition } from "./types";
+import { referenceManifest, referenceOwnerManifest } from '@/project/tilesetReferences';
+import { readSpatialReferenceTool } from './spatialReferenceTools';
 
 const kinds = ["object", "space", "place", "region", "world"] as const;
 const collections = { object: "objects", space: "spaces", place: "places", region: "regions", world: "worlds" } as const;
@@ -35,7 +37,8 @@ export function spatialToolDesigns(project: Project) {
   const document = checkedDocument(project.spatialAuthoring, project);
   return kinds.flatMap(kind => Object.keys(document.library[collections[kind]]).map(key => {
     const node = designNode(document.library, { kind, id: id(key, "designId") });
-    return { ...node.design, ...(node.kind === "place" ? { placeKind: node.design.kind } : {}),
+    const { referenceDocuments, ...design } = node.design;
+    return { ...design, ...(referenceDocuments ? { referenceDocuments: referenceDocuments.map(referenceManifest) } : {}), ...(node.kind === "place" ? { placeKind: node.design.kind } : {}),
       kind, children: designSlots(node).map(slot => ({ id: slot.id, source: slot.source, quantity: slot.quantity })) };
   }));
 }
@@ -88,12 +91,13 @@ function importReviewedPlace(project: Project, args: Record<string, unknown>) {
     data: { referenceId: `reviewed:${placeId}`, source: "reviewed", maps: results } };
 }
 export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
+  readSpatialReferenceTool,
   { name: "read_region_reference", mode: "read", domains: ["world", "map", "database"],
     description: "Read a completed region example: frozen tile rows, tile passage/priority, image and authoring lessons. Omit id to list examples. Works without spatial activation. Rows are zero-based; tile arrays are row-major and -1 means empty. Follow nextRow to recover the whole map; this is a reference, not a procedural design or build command. To put the place itself into the project (new map or pasted into a map), call import_region_reference instead of repainting these rows.",
     parameters: { type: "object", properties: { id: { type: "string" }, row: { type: "integer", minimum: 0 }, rows: { type: "integer", minimum: 1, maximum: 16 } }, additionalProperties: false },
     prepare: args => typeof args.id === "string" ? preloadRegionReference(args.id) : Promise.resolve(),
     run(_project, args) {
-      if (args.id === undefined) return { summary: "완성 지역 사례", data: { references: structuredClone([...REGION_REFERENCES, ...PLACE_REFERENCES, ...SHARED_REGION_REFERENCES]) } };
+      if (args.id === undefined) return { summary: "완성 지역 사례", data: { references: structuredClone([...REGION_REFERENCES, ...PLACE_REFERENCES, ...sharedRegionReferences()].map(referenceOwnerManifest)) } };
       try { return { summary: "완성 지역 사례 원본", data: readRegionReference(String(args.id), args.row === undefined ? 0 : Number(args.row), args.rows === undefined ? 8 : Number(args.rows)) }; }
       catch (error) { throw new ToolError(error instanceof Error ? error.message : String(error), { code: "invalid-args" }); }
     },
@@ -143,7 +147,7 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
     },
   },
   { name: "list_spatial_designs", mode: "read", domains: ["world", "map", "database"],
-    description: "Discover saved canonical designs across all project tilesets; query matches id, name or tags. object = reusable appearance/prop, including building exteriors; place = room, floor, yard, complete facility or settlement. Use environment:interior/outdoor for a direct place and placeKind:facility/settlement/natural for a grouped place. For a complete house search kind:place; for saved exteriors search kind:object with query:건물 외형 (or the authored name/tag). Context designs are only samples: search this full library before declaring an asset missing. List rows use kind:place plus placeKind:facility|settlement|natural; get_spatial_design returns the original upsert body. Read-only; never activates or seeds an empty library. When data.active is false the project has no spatialAuthoring document and canonical design/build tools reject with spatial-inactive; read_region_reference remains available — activation is a user-side editor action, not a tool. data.shared always lists the shared library every project sees (the editor 장소/오브젝트 tabs): kind:place rows are registered and reviewed places (use import_region_reference with the row id), kind:object rows are reusable exteriors and props — tileset kits, tile-group pieces such as bare-trees:*, place kits such as generated building exteriors and the gatehouse, harbor rowboat/pier parts, volcano peaks, authored house forms (use stamp_object with the row id). Page with limit/offset (default 40, data.shared.nextOffset).",
+    description: "Discover saved canonical designs across all project tilesets; query matches id, name or tags. object = reusable appearance/prop, including building exteriors; place = room, floor, yard, complete facility or settlement. Use environment:interior/outdoor for a direct place and placeKind:facility/settlement/natural for a grouped place. For a complete house search kind:place; for saved exteriors search kind:object with query:건물 외형 (or the authored name/tag). Context designs are only samples: search this full library before declaring an asset missing. List rows use kind:place plus placeKind:facility|settlement|natural; get_spatial_design returns the original upsert body. Read-only; never activates or seeds an empty library. When data.active is false the project has no spatialAuthoring document and canonical design/build tools reject with spatial-inactive; read_region_reference remains available — activation is a user-side editor action, not a tool. data.shared always lists the shared library every project sees (the editor 장소/오브젝트 tabs): kind:place rows are registered and reviewed places (use import_region_reference with the row id), kind:object rows are the shared object catalog (obj:… — leafless trees per climate, volcano peaks, climate terrain pieces such as lava pools, fumaroles, basalt, mesas and dunes, harbor boats/mooring posts/cargo, the gatehouse, generated buildings and house exteriors, village props like wells, lanterns, notice boards) plus this project's other kits (kit:/group:). Each row has owner (where it belongs — next to what), passage, tilesetId and preview; place it with stamp_object using the row id and follow owner. Page with limit/offset (default 40, data.shared.nextOffset).",
     parameters: SPATIAL_LIST_SCHEMA,
     run(project, args) {
       const kind = args.kind === undefined ? undefined : parseKind(args.kind, "kind");

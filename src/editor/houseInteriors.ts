@@ -119,10 +119,13 @@ export type HouseExteriorHint = {
   readonly ownerName?: string;
 };
 
+/** 파랑 계열 지붕 킷(석조 실내·돌 문짝) — 재료 킷 중 슬레이트·검은 기와도 여기. houseKit 을 import 하면 순환이라 id 로 적는다. */
+const BLUE_FAMILY_KITS: ReadonlySet<HouseKitId> = new Set<HouseKitId>(["blue-stone", "slate-wood", "slate-brick", "charcoal-timber"]);
+
 export function houseDoorVariantForKit(kitId: HouseKitId): HouseDoorVariant {
   return {
     textureKey: HOUSE_DOOR_CHARSET_TEXTURE,
-    characterIndex: kitId === "blue-stone" || kitId === "slate-wood" ? 4 : 0,
+    characterIndex: BLUE_FAMILY_KITS.has(kitId) ? 4 : 0,
   };
 }
 
@@ -357,9 +360,8 @@ export function houseProgramForOwner(ownerName: string | undefined): HouseInteri
 
 export function wallMaterialForKit(kitId: HouseKitId | undefined): InteriorWallMaterial | undefined {
   if (!kitId) return undefined;
-  if (kitId === "blue-stone" || kitId === "slate-wood") return "stone-brick";
-  if (kitId === "bright-plaster" || kitId === "amber-wood" || kitId === "timber-hall") return "cream";
-  return undefined;
+  if (BLUE_FAMILY_KITS.has(kitId)) return "stone-brick";
+  return "cream";
 }
 
 export function createHouseInteriorMap(options: {

@@ -46,6 +46,40 @@
 - 남은 것: 소리 층(찰칵+쿵 시차·음높이 흔들기), 막타 슬로, 몬스터 대치 초반 피해량(Lv11→Lv3 가 2/25)은 따로 확인.
   회귀: `test/battleHitIntensity.test.ts`.
 
+## 진입 · 결판 · 복귀 연출 (2026-09-25)
+
+출하 플레이어 실시간 녹화(15fps 프레임)로 잰 결함과 고친 자리. CSS 는 `battle/23-entry-exit.css` 한 장이다.
+
+- **진입**
+  - 필드 캔버스가 커버 동안 확대·회전하며 빨려 든다. `createBattleTransition(host, schedule, field)` 의 세 번째 인자로
+    `playSceneBattle` 이 `scene.game.canvas` 를 넘기고, `setFieldMotion` 이 `battle-encounter-swirl` 을 붙인다.
+    키프레임은 **선형 + 앞당김**이다. 처음엔 ease-in 이라 확대 대부분이 닫히는 막대 뒤에서 일어나 보이지 않았다
+    (rAF 실측: 400ms 에 scale 1.0, 980ms 에 1.47).
+  - 흰 플래시는 두 번 친다. 막대는 가운데서 자라는 V 대신 홀짝이 좌우에서 엇갈려 닫힌다.
+    `slide-pokemon`·`curtain-dq` 처럼 막대 방향을 스스로 정하는 스킨은 예외다.
+  - 유리 뼈대 인트로는 커버가 걷히는 **동안** 시작한다. 예전엔 걷힌 뒤라 빈 배경만 330ms 보였다.
+    적은 검은 실루엣으로 미끄러져 와서 멈출 때 번쩍이며 색을 입는다(120 + index×90ms 지연, 700ms).
+- **결판**
+  - 시퀀서 훅 `onResultPending(result)` 가 결과 홀드(`BATTLE_RESULT_HOLD_MS` 900) 직전에 한 번 불린다.
+  - 결판 막타(뒤에 피해·회복·빗나감 엔트리가 없고 결과가 이미 정해진 격파)는 격파 대사와 **같은 순간**에 이 훅을 부르고,
+    대사 체류를 `BATTLE_DECISIVE_KILL_LINE_MS`(240)로 줄인다. 예전엔 대사 660ms + 홀드 900ms 동안 빈 필드였다.
+  - `battleDom.showFinaleStamp` 가 필드에 「승리!」/「전멸…」 도장(`.battle-finale-stamp`)을 찍고 루트에
+    `data-battle-finale` 을 단다. 승리면 필드가 1.035배 다가오고, 전멸이면 필드가 흑백으로 가라앉는다.
+    도주는 도장이 없다. 같은 결과로 두 번 불러도 한 번만 찍는다.
+  - 결과 소리(`emitBattleJuice`)와 플래시는 도장과 함께 울린다. 결과 패널은 이미 울렸으면 다시 울리지 않는다.
+    도장만 걷고 `data-battle-finale` 은 전투가 닫힐 때까지 둔다. 지우면 패널이 뜨는 순간 줌·흑백이 한 프레임에 튄다.
+- **결과 패널**
+  - 경험치·골드 수치는 공개될 때 0 에서 최종값까지 520ms 동안 센다(`battleDirectorDom.countUpRewardValue`).
+    끝나면 원래 글자로 되돌리므로 최종 `textContent` 는 같다.
+  - 확인키 건너뛰기(모두 공개), 감소 모션, rAF 가 없는 환경에서는 세지 않는다. 레벨 업 행은 튀어나오며 테가 퍼진다.
+- **복귀**
+  - 끝날 때 커버는 스킨 색이 아니라 항상 검정이다. 정면 스킨은 파랑 커버로 페이드해 필드가 파랗게 물든 채 돌아왔다.
+  - `BATTLE_TRANSITION_EXIT_MS` 220 → 300. 복귀 열림은 `BATTLE_TRANSITION_RETURN_MS`(460)이고,
+    진입 열림(`REVEAL_MS` 300, 인트로 CSS 의 `--battle-reveal-ms`)과 분리했다.
+  - 필드 캔버스는 `battle-return-settle` 로 살짝 당겨졌다가 제자리로 내려앉는다.
+- **남은 것:** 게이지 흐름에서 인트로 뒤 「행동 게이지가 차는 중」 대기가 약 1.5초다. 초기 ATB 는 규칙 쪽 값이라 이번엔 건드리지 않았다.
+- **기본 스킨:** 편집기 기본은 이미 `rm2000`(정면)이다(`DEFAULT_BATTLE_SKIN_ID`, 드롭다운 첫 항목). 라벨에 「(기본)」을 붙였다.
+
 ## 전투 리뷰 후속: 상태 안내와 무대 채움 (2026-09-20)
 
 - `battleDom`은 우상단에 `F 자동 꺼짐/켜짐 · Shift 1×/1.8×/3×` 상태를 표시한다.
@@ -461,17 +495,25 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 
 감소 모션에서는 눌림·먼지가 함께 빠지므로 이 경로 자체가 없다.
 
-## 지원 전투 시스템은 둘뿐이다 (2026-08-28)
+## 지원 전투 시스템은 둘뿐이다 (2026-08-28, 스킨 부분은 2026-09-25 개정)
 
 - 지원 규칙은 **RM식 턴제** (`system.battleModel` 미설정 또는 `"rm2k3"`, 기본값)와 **포켓몬식** (`"gen1"`)이다. 표시 방식은 **정면** (`rm2000`, 기본값), **측면** (`rm2003`), **몬스터 대치** (`pokemon`) 세 가지다. 규칙 모델과 표시 스킨은 별개다.
 - 기본 `rm2000`은 적만 필드에 세우고 아군은 이름·HP·MP 상태창으로 표시한다(`partyFacing: "hidden"`, `showAllySprites: false`). 2026-09-03 연출 추가 때 들어간 뒷모습 파티를 2026-09-06 사용자 요청으로 복구했다. 미설정·`classic`·명시적 `rm2000` 모두 같은 경로다. 측면 `rm2003`의 아군 전투 시트와 `pokemon`의 후면 스프라이트는 유지한다. 회귀: `test/battleFieldAllySprite.test.ts`; 출하 화면: `npm run qa:runtime -- --scenario battle-frontview`.
 - **스킨 id 이력 (2026-09-03):** 기존 정면 스킨 `rm2003`을 `rm2000`으로 개명한 뒤, 같은 날 `rm2003`을 별도 측면 스킨으로 되살렸다. 현재 `resolveSkinId("rm2003") === "rm2003"`이며 옛 별칭 `classic`만 `rm2000`으로 간다. 등록 스킨은 12종이다. 두 스킨은 `_rm2000.css`의 유리 HUD를 `family: "glass"`로 공유하고 측면 배치는 `_rm2003.css`가 담당한다. 사용자 노출 라벨은 「유리 창 · 정면 필드」와 「유리 창 · 측면 필드」이며 타사 제품명은 쓰지 않는다(`test/detsukuruBrandStrings.test.ts`).
-- 지원 종료(deprecated) 스킨 9종: `octopath`, `chrono`, `bravely`, `dragonquest`, `ff`, `mother`, `goldensun`, `mv`, `vxace`. 실시간 2D 타일 액션 전투(`system.actionCombat`)는 계속 지원한다. 아래 스킨 지원 종료와 별개이며 최신 계약은 이 문서의 Supported action authoring 및 `openwiki/runtime-action-combat.md`를 따른다.
-- 지원 종료의 뜻은 좁다. 저장된 프로젝트는 그대로 돈다.
-  - 레지스트리는 여전히 지원 종료 스킨 9종을 들고 있다. 삭제도, 조용한 remap도 없다.
-  - `resolveSkinId` 는 저장된 지원 종료 id 를 다른 id 로 바꾸지 않는다 (`resolveSkinId("octopath") === "octopath"`).
-  - 스킨별 CSS(`src/styles/runtime/battle-skins/`) 와 배경(backdrop) 은 그대로 남긴다. 지우지 말 것.
-  - 줄어드는 것은 **새 저작 노출뿐이다.** 자료집 → 시스템의 스킨 드롭다운은 활성 3종만 나열하고, 프로젝트가 이미 저장해 둔 지원 종료 id가 있으면 그 항목 하나만 `(지원 종료)` 라벨로 덧붙여 선택을 보존한다.
+- **스킨 12종 전부 활성 (2026-09-25).** 2026-08-28 에 지원 종료였던 9종(`octopath`, `chrono`, `bravely`, `dragonquest`, `ff`, `mother`, `goldensun`, `mv`, `vxace`)은
+  각자 CSS 파일을 버리고 **유리 뼈대(family glass)의 변형**으로 되살렸다. 이유: 전투 개선이 활성 3종에만 들어가, 2026-09-25 출하 player 촬영에서
+  9종 대부분이 이름표·HP 바가 겹치고 명령창이 깨져 있었다. 스킨은 이제 세 값의 조합이다.
+  - **구도** `layout`(루트 `data-battle-layout`): `frontview` → `_rm2000.css`, `sideview` → `_rm2003.css`. 두 시트와 `05-poses-motion.css` 의 구도 규칙은
+    스킨 id 가 아니라 `[data-battle-skin-family="glass"][data-battle-layout=…]` 로 스코프한다. 배치는 `battlerPlacements.ts` 의 `FRONTVIEW`/`SIDEVIEW` 공유 객체
+    (`BATTLER_PLACEMENTS[id] === BATTLER_PLACEMENTS.rm2000|rm2003`). `showAllySprites` 는 구도가 정한다(측면만 true). `firstperson`/`active` 구도는 쓰지 않는다.
+  - **HUD** `hudTemplate`(`data-battle-hud`): `rows`(기본 줄) · `boxes`(얼굴 카드: 심야·금갈색) · `ring`(얼굴 둘레 HP 링: 청람) · `minimal`(표면 없는 얇은 줄: 먹빛·세피아).
+    CSS 는 `battle-skins/_glass-variants.css`. 링은 `syncBattleParty` 가 행에 심는 `--battle-hp-pct`·`data-hp-state` 를 읽는다.
+  - **색** `themeVars`: rm2000·rm2003 을 뺀 스킨은 `_glass-variants.css` 가 `--battle-window-*` → `--rm-floor/card/hairline…` 별칭으로 흘려 넣는다.
+    검은 창·코발트 창은 흰 테두리·각진 모서리. 배경 보정은 `--battle-backdrop-filter`.
+  - 지운 파일: `_octopath/_chrono/_bravely/_dragonquest/_ff/_mother/_goldensun/_mv/_vxace/_hud-templates.css`(약 1,500줄). 스킨별 ATB 가속
+    (`battle/runtime.ts`, chrono 1.18 등)과 전환 연출(`_transitions.css`)은 유지한다.
+  - `isDeprecatedBattleSkin`·`(지원 종료)` 드롭다운 경로는 남아 있다(지금은 해당 스킨 없음). 드롭다운 순서는 `ACTIVE_BATTLE_SKIN_IDS`(기본 셋 → 정면 → 측면).
+  - `test/fixtures/battleEnemyFeetRatios.json` 의 9종 항목은 해당 구도(rm2000/rm2003) 실측값의 사본이다 — 필드 기하가 같아졌기 때문이다.
 - 코드 권위자: `src/battle/skins/registry.ts` (`ACTIVE_BATTLE_SKIN_IDS` / `listActiveBattleSkinIds()` / `isDeprecatedBattleSkin()`), 저작 표면은 `src/editor/panels/databaseSystemView.ts`, 계약 테스트는 `test/battleSystemDeprecation.test.ts`.
 
 ## Roguelike run boundary (2026-08-24)
@@ -538,7 +580,7 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 ### 스킨 CSS 캐스케이드와 저작 가능 스킨
 
 - Battle CSS cascade contract (2026-08-27): `src/styles/runtime/index.css` imports 18 battle leaves into `layer(runtime)` in source order and carries **zero importance flags**; per-skin files in `src/styles/runtime/battle-skins/` load after it, so a skin rule scoped to `[data-battle-ui-style="classic"][data-battle-skin="<id>"]` already wins on specificity + source order. `_rm2000.css` is therefore **flag-free**, and `test/battleRm2000PixelGrid.test.ts` audits three invariants for it: no forced declarations, every px literal even, and at most four even font-size steps (26 / 20 / 16 / 12 px — the 640x480 logical stage is drawn at half-integer device scales, so odd logical px land on half device pixels). When a shared or other-skin rule must keep its forced declaration for the other 11 skins, narrow it away from rm2000 with a **specificity-neutral** `:not(:where([data-battle-skin="rm2000"]))` / `:not(:where([data-battle-skin="rm2003"] *))` instead of raising specificity — that is what the generic battler sizes in `_battlers.css` do (`.battle-skin-actor-image`, `.battle-enemy-image`), and it is why the other skins stayed byte-identical when the 279 rm2003(now rm2000) flags were deleted. The consolidated classic layout lives in `_rm2000.css` scoped to `[data-battle-ui-style="classic"][data-battle-skin="rm2003"]`. An absolutely-positioned grid child uses its **grid area** as containing block — the message window spans `grid-column/row: 1 / -1` so `top` anchors to the scene, not the HUD row. `--battle-stage-inset-top` is declared **exactly once** (`battle/01-scene-base.css`) as `var(--battle-stage-skin-inset-top, 48px)`; a skin retunes the stage only through that knob (`_rm2000.css` sets `48px`), so the battler groups (`battle/07-640-scene-turn-ribbon.css`), `.battle-animation-layer` and `.battle-effects-layer` always resolve to the same box and the percentage `--battle-node-x/y` anchors land on the same point. The shared "compact HUD layer" in the battle leaves owns the 320x240 stage geometry (scene grid `1fr + var(--battle-hud-height)` = 96px, HUD row placement, victory box sizing) **and the typography floor**: all battle text sits on the runtime pixel grid (9px primary / 7px secondary Galmuri11, never sub-7px) - the old 2.5-7px "cram-to-fit" pass was removed because it rendered as unreadable smudge at integer stage scale. The root command menu shows one-line entries (`small` detail hidden unless the menu has a `.battle-submenu-header`), and `.battle-command-panel` is pinned to `height:100%` of its `battle-command-host` grid cell so larger type compresses rows instead of overflowing the HUD.
-- Battle UI skin is project-level presentation. **Of the 11 registered skins only `rm2000` and `pokemon` are authorable**; the other 9 stay loadable for saved projects but are 지원 종료 (see "지원 전투 시스템은 둘뿐이다 (2026-08-28)" above for the exact contract). `system.battleUiStyle` (default `rm2000` via `DEFAULT_BATTLE_SKIN_ID` — unset/unknown resolve to the default, legacy `classic` → `rm2000`, legacy `rm2003` → `rm2000`, `pokemon` → `pokemon`). DOM stamps `data-battle-ui-style` in `battleDom.ts`; CSS under `src/styles/runtime/index.css` plus per-skin overrides in `src/styles/runtime/battle-skins/` own layout. Do **not** author per-map-event skins. If a fight needs a different skin later, override at `battleProcessing` / troop (same layering as `battleFlow`), not on every event row. Keep rules in `src/battle`; skins stay presentation-only. Pokemon skin uses its own 1:1 staging (enemy upper-right / ally lower-left) and does not reuse classic left-right columns.
+- Battle UI skin is project-level presentation. **All 12 registered skins are authorable since 2026-09-25** — 11 are glass-skeleton variants (layout × HUD × palette) and one is `pokemon` (see "지원 전투 시스템은 둘뿐이다" above for the exact contract). `system.battleUiStyle` (default `rm2000` via `DEFAULT_BATTLE_SKIN_ID` — unset/unknown resolve to the default, legacy `classic` → `rm2000`, legacy `rm2003` → `rm2000`, `pokemon` → `pokemon`). DOM stamps `data-battle-ui-style` in `battleDom.ts`; CSS under `src/styles/runtime/index.css` plus per-skin overrides in `src/styles/runtime/battle-skins/` own layout. Do **not** author per-map-event skins. If a fight needs a different skin later, override at `battleProcessing` / troop (same layering as `battleFlow`), not on every event row. Keep rules in `src/battle`; skins stay presentation-only. Pokemon skin uses its own 1:1 staging (enemy upper-right / ally lower-left) and does not reuse classic left-right columns.
 ### Gen 1(포켓몬식) 규칙 모델
 
 - Gen1 rule model is authored as `system.battleModel` (`rm2k3` default, or `gen1`) and stamped on `body[data-battle-model]`. It gates **rules only**, never presentation. Exact cartridge-oriented authorities live in `src/battle/gen1/{rng,damage,capture,status}.ts`; `runtime.ts` adapts the injected `[0,1)` session RNG to bytes and calls those modules. Strict flow orders switch → field command → move priority → paralysis-adjusted Speed, and consumes randomness only for a real tie. Do not confuse `SkillRecord.movePriority` with `EnemyActionPattern.priority` (AI weight). The rm2k3 path must remain unchanged.

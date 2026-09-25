@@ -119,7 +119,7 @@ const FLOOR_MATERIAL_TILES = new Set<number>([12, 13, 42, 43, 72, 73, 102, 103, 
 
 // 벽면 재질(하우스 셸의 크림 면 104|105|106을 방 완성 후 리틴트) — "저택 느낌은 벽부터" 지적.
 // 상단 행/하단 행이 다른 아트(하단은 걸레받이 몰딩)를 쓰는 2단 면.
-export type InteriorWallMaterial = "cream" | "gold-brick" | "stone-brick";
+export type InteriorWallMaterial = "cream" | "gold-brick" | "stone-brick" | "log" | "sandstone" | "basalt";
 
 
 /**

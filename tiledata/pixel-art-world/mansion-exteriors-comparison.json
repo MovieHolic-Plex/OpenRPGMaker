@@ -1,0 +1,704 @@
+[
+  {
+    "packId": "paw-mansion-exterior-b",
+    "recipeId": "msex-b-roof-whole",
+    "sourceRect": {
+      "x": 0,
+      "y": 28,
+      "width": 5,
+      "height": 5
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "231be40aa675d067e56b68dcd238b7242b395f61b98cbfdf93566bd3111501a5"
+  },
+  {
+    "packId": "paw-mansion-exterior-b",
+    "recipeId": "msex-b-wall-bay",
+    "sourceRect": {
+      "x": 0,
+      "y": 33,
+      "width": 5,
+      "height": 3
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "8e9e8aade3e09b40ec25f6b62577088fb792e3d4b8b8616e93568bc39d82eb15"
+  },
+  {
+    "packId": "paw-mansion-exterior-b",
+    "recipeId": "msex-b-facade-door-window",
+    "sourceRect": {
+      "x": 5,
+      "y": 36,
+      "width": 3,
+      "height": 5
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "4e7c13f011d146c06c2aa7a4323546f61aa9430d4fb7dbc4ea08b932bb287d55"
+  },
+  {
+    "packId": "paw-mansion-exterior-b",
+    "recipeId": "msex-b-arched-window-small",
+    "sourceRect": {
+      "x": 6,
+      "y": 23,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "381c63f1ee17e92f541ea7eceb7bef4de99e1139833c431218a5579e15bec150"
+  },
+  {
+    "packId": "paw-mansion-exterior-b",
+    "recipeId": "msex-b-arched-window-tall",
+    "sourceRect": {
+      "x": 7,
+      "y": 23,
+      "width": 1,
+      "height": 3
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "a51159ab43339c21276a2028060a6e291f502f721d0b3c38b421eb367f03e894"
+  },
+  {
+    "packId": "paw-mansion-exterior-b",
+    "recipeId": "msex-b-arched-window-wide",
+    "sourceRect": {
+      "x": 5,
+      "y": 26,
+      "width": 3,
+      "height": 3
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "32fb2868dbcd7f8987f7e60adb3402f75084cfdcb453c990b67b76cb7363b34c"
+  },
+  {
+    "packId": "paw-mansion-exterior-b",
+    "recipeId": "msex-b-balcony-enclosure",
+    "sourceRect": {
+      "x": 0,
+      "y": 41,
+      "width": 3,
+      "height": 4
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "c47b9edbf9a4344040705504e7e2484175767584df4eaa780cb86728514e9ead"
+  },
+  {
+    "packId": "paw-mansion-exterior-b",
+    "recipeId": "msex-b-bench-front",
+    "sourceRect": {
+      "x": 0,
+      "y": 13,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "a8f8f9c417ac69bce73b77205203803cd1e86529aa3c568e6ae13b3573e7f2f5"
+  },
+  {
+    "packId": "paw-mansion-exterior-b",
+    "recipeId": "msex-b-bench-back",
+    "sourceRect": {
+      "x": 0,
+      "y": 15,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "b255bd10e39095284cfd4cb097e306c0f34039a1394dd8ca39e24eca0c9d7c76"
+  },
+  {
+    "packId": "paw-mansion-exterior-b",
+    "recipeId": "msex-b-street-lamp",
+    "sourceRect": {
+      "x": 2,
+      "y": 13,
+      "width": 1,
+      "height": 4
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "5df856fb8049f3b72e2991a9a1d58208aece4d6b1180ea3076d73f375fda6714"
+  },
+  {
+    "packId": "paw-mansion-exterior-b",
+    "recipeId": "msex-b-tea-table",
+    "sourceRect": {
+      "x": 4,
+      "y": 9,
+      "width": 2,
+      "height": 3
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "7562bffd0d3e19d222e0e51b9849701496d41003429fb372c8d26297bace4fbc"
+  },
+  {
+    "packId": "paw-mansion-exterior-b",
+    "recipeId": "msex-b-tea-stool",
+    "sourceRect": {
+      "x": 6,
+      "y": 11,
+      "width": 1,
+      "height": 1
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "9272993bd1cbd7a90e3601a9d543602e5e4c5f9f2908b130399bf720763a9e34"
+  },
+  {
+    "packId": "paw-mansion-exterior-b",
+    "recipeId": "msex-b-rose-red",
+    "sourceRect": {
+      "x": 0,
+      "y": 9,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "9142697299586f9ee738489b79be75e43f16659c8b481b2728fe47860e29aeda"
+  },
+  {
+    "packId": "paw-mansion-exterior-b",
+    "recipeId": "msex-b-rose-pink",
+    "sourceRect": {
+      "x": 2,
+      "y": 9,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "0275b768a33ed8945dac09d5e28d6dcc0c2a387db0f0ed4c972d08ec1be570b8"
+  },
+  {
+    "packId": "paw-mansion-exterior-b",
+    "recipeId": "msex-b-flower-pedestal",
+    "sourceRect": {
+      "x": 5,
+      "y": 13,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "2fdb857bf42291f80ebe72120f1e9ecfb976908ac740c9bdbe0a7d34b82a6a4c"
+  },
+  {
+    "packId": "paw-mansion-exterior-b",
+    "recipeId": "msex-b-topiary-round",
+    "sourceRect": {
+      "x": 4,
+      "y": 15,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "1d2a438c113e2053be903e4fe6b2eae138e5aa6f0017a7ec44dbd6ef4825dd2e"
+  },
+  {
+    "packId": "paw-mansion-exterior-b",
+    "recipeId": "msex-b-topiary-tall",
+    "sourceRect": {
+      "x": 6,
+      "y": 13,
+      "width": 2,
+      "height": 4
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "2326074bde1b23b166d9c6d195aba600c2f9eb975a86f166ba874defbc42bb38"
+  },
+  {
+    "packId": "paw-mansion-exterior-b",
+    "recipeId": "msex-b-garden-gate-closed",
+    "sourceRect": {
+      "x": 0,
+      "y": 2,
+      "width": 3,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "73496c4655a1dd6ff4db353f8f271f1f1d4c4f53cebfff61c8bae3cf4fcdf616"
+  },
+  {
+    "packId": "paw-mansion-exterior-p",
+    "recipeId": "msex-p-roof-whole",
+    "sourceRect": {
+      "x": 0,
+      "y": 28,
+      "width": 5,
+      "height": 5
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "a771cc6b34eb24084d54c9dc977466cce26228225392a4667308cc7621494bb7"
+  },
+  {
+    "packId": "paw-mansion-exterior-p",
+    "recipeId": "msex-p-wall-bay",
+    "sourceRect": {
+      "x": 0,
+      "y": 33,
+      "width": 5,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "73b399a9702b2286f2b98f1c858c5ce4ec08b7ca7eb1f1d1c345eda306f14f2e"
+  },
+  {
+    "packId": "paw-mansion-exterior-p",
+    "recipeId": "msex-p-facade-door-window",
+    "sourceRect": {
+      "x": 5,
+      "y": 36,
+      "width": 3,
+      "height": 5
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "19bc7e98d719d358cb53ebb4dd7a059deea324cbc58158896b15b609ae1d86c5"
+  },
+  {
+    "packId": "paw-mansion-exterior-p",
+    "recipeId": "msex-p-arched-window-small",
+    "sourceRect": {
+      "x": 6,
+      "y": 23,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "fe3a89098dad98910138bffb2da9346d93efad6606398f01f737c5286773950b"
+  },
+  {
+    "packId": "paw-mansion-exterior-p",
+    "recipeId": "msex-p-arched-window-tall",
+    "sourceRect": {
+      "x": 7,
+      "y": 23,
+      "width": 1,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "65a217c7d4722b03b9210cfc3e3ae43ba759ea1d20f2d85fae7eeb1d1dd961c1"
+  },
+  {
+    "packId": "paw-mansion-exterior-p",
+    "recipeId": "msex-p-arched-window-wide",
+    "sourceRect": {
+      "x": 5,
+      "y": 26,
+      "width": 3,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "1433b1c0a24bfb07f85afc4f87c1776141d23126aee7ce421eff07f21d90bf7f"
+  },
+  {
+    "packId": "paw-mansion-exterior-p",
+    "recipeId": "msex-p-balcony-enclosure",
+    "sourceRect": {
+      "x": 0,
+      "y": 41,
+      "width": 3,
+      "height": 4
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "13dd9364cfdc28403a9fdbdff9ac2960f10222fc2d12f9e2bb1bd988b587682e"
+  },
+  {
+    "packId": "paw-mansion-exterior-p",
+    "recipeId": "msex-p-bench-front",
+    "sourceRect": {
+      "x": 0,
+      "y": 13,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "a8f8f9c417ac69bce73b77205203803cd1e86529aa3c568e6ae13b3573e7f2f5"
+  },
+  {
+    "packId": "paw-mansion-exterior-p",
+    "recipeId": "msex-p-bench-back",
+    "sourceRect": {
+      "x": 0,
+      "y": 15,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "b255bd10e39095284cfd4cb097e306c0f34039a1394dd8ca39e24eca0c9d7c76"
+  },
+  {
+    "packId": "paw-mansion-exterior-p",
+    "recipeId": "msex-p-street-lamp",
+    "sourceRect": {
+      "x": 2,
+      "y": 13,
+      "width": 1,
+      "height": 4
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "5df856fb8049f3b72e2991a9a1d58208aece4d6b1180ea3076d73f375fda6714"
+  },
+  {
+    "packId": "paw-mansion-exterior-p",
+    "recipeId": "msex-p-tea-table",
+    "sourceRect": {
+      "x": 4,
+      "y": 9,
+      "width": 2,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "ccfda551dd0e851696f1fc1d6125e767e9b2c10ef30e6f9d3bf65811378108e4"
+  },
+  {
+    "packId": "paw-mansion-exterior-p",
+    "recipeId": "msex-p-tea-stool",
+    "sourceRect": {
+      "x": 6,
+      "y": 11,
+      "width": 1,
+      "height": 1
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "ad4faca9b87ebaa85ae68bb2ca8410e01270eb7ec97ef7e2a54fe64bab0d8724"
+  },
+  {
+    "packId": "paw-mansion-exterior-p",
+    "recipeId": "msex-p-rose-red",
+    "sourceRect": {
+      "x": 0,
+      "y": 9,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "9142697299586f9ee738489b79be75e43f16659c8b481b2728fe47860e29aeda"
+  },
+  {
+    "packId": "paw-mansion-exterior-p",
+    "recipeId": "msex-p-rose-pink",
+    "sourceRect": {
+      "x": 2,
+      "y": 9,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "0275b768a33ed8945dac09d5e28d6dcc0c2a387db0f0ed4c972d08ec1be570b8"
+  },
+  {
+    "packId": "paw-mansion-exterior-p",
+    "recipeId": "msex-p-flower-pedestal",
+    "sourceRect": {
+      "x": 5,
+      "y": 13,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "aa189f41eb39ac3f4bfdff7f21e19de95a3e4e6695c56f46af3043a2de35131a"
+  },
+  {
+    "packId": "paw-mansion-exterior-p",
+    "recipeId": "msex-p-topiary-round",
+    "sourceRect": {
+      "x": 4,
+      "y": 15,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "1d2a438c113e2053be903e4fe6b2eae138e5aa6f0017a7ec44dbd6ef4825dd2e"
+  },
+  {
+    "packId": "paw-mansion-exterior-p",
+    "recipeId": "msex-p-topiary-tall",
+    "sourceRect": {
+      "x": 6,
+      "y": 13,
+      "width": 2,
+      "height": 4
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "2326074bde1b23b166d9c6d195aba600c2f9eb975a86f166ba874defbc42bb38"
+  },
+  {
+    "packId": "paw-mansion-exterior-p",
+    "recipeId": "msex-p-garden-gate-closed",
+    "sourceRect": {
+      "x": 0,
+      "y": 2,
+      "width": 3,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "73496c4655a1dd6ff4db353f8f271f1f1d4c4f53cebfff61c8bae3cf4fcdf616"
+  },
+  {
+    "packId": "paw-mansion-exterior-y",
+    "recipeId": "msex-y-roof-whole",
+    "sourceRect": {
+      "x": 0,
+      "y": 28,
+      "width": 5,
+      "height": 5
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "a771cc6b34eb24084d54c9dc977466cce26228225392a4667308cc7621494bb7"
+  },
+  {
+    "packId": "paw-mansion-exterior-y",
+    "recipeId": "msex-y-wall-bay",
+    "sourceRect": {
+      "x": 0,
+      "y": 33,
+      "width": 5,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "f15620f0caee6018fbb726ed851ac27e18d96e688a9b963edf6f795e3794cdbc"
+  },
+  {
+    "packId": "paw-mansion-exterior-y",
+    "recipeId": "msex-y-facade-door-window",
+    "sourceRect": {
+      "x": 5,
+      "y": 36,
+      "width": 3,
+      "height": 5
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "2055f4b394e2c5499855abab7e359055e3c5c7d011666f7fa5a168b4c5c12769"
+  },
+  {
+    "packId": "paw-mansion-exterior-y",
+    "recipeId": "msex-y-arched-window-small",
+    "sourceRect": {
+      "x": 6,
+      "y": 23,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "fe3a89098dad98910138bffb2da9346d93efad6606398f01f737c5286773950b"
+  },
+  {
+    "packId": "paw-mansion-exterior-y",
+    "recipeId": "msex-y-arched-window-tall",
+    "sourceRect": {
+      "x": 7,
+      "y": 23,
+      "width": 1,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "65a217c7d4722b03b9210cfc3e3ae43ba759ea1d20f2d85fae7eeb1d1dd961c1"
+  },
+  {
+    "packId": "paw-mansion-exterior-y",
+    "recipeId": "msex-y-arched-window-wide",
+    "sourceRect": {
+      "x": 5,
+      "y": 26,
+      "width": 3,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "1433b1c0a24bfb07f85afc4f87c1776141d23126aee7ce421eff07f21d90bf7f"
+  },
+  {
+    "packId": "paw-mansion-exterior-y",
+    "recipeId": "msex-y-balcony-enclosure",
+    "sourceRect": {
+      "x": 0,
+      "y": 41,
+      "width": 3,
+      "height": 4
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "13dd9364cfdc28403a9fdbdff9ac2960f10222fc2d12f9e2bb1bd988b587682e"
+  },
+  {
+    "packId": "paw-mansion-exterior-y",
+    "recipeId": "msex-y-bench-front",
+    "sourceRect": {
+      "x": 0,
+      "y": 13,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "a8f8f9c417ac69bce73b77205203803cd1e86529aa3c568e6ae13b3573e7f2f5"
+  },
+  {
+    "packId": "paw-mansion-exterior-y",
+    "recipeId": "msex-y-bench-back",
+    "sourceRect": {
+      "x": 0,
+      "y": 15,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "b255bd10e39095284cfd4cb097e306c0f34039a1394dd8ca39e24eca0c9d7c76"
+  },
+  {
+    "packId": "paw-mansion-exterior-y",
+    "recipeId": "msex-y-street-lamp",
+    "sourceRect": {
+      "x": 2,
+      "y": 13,
+      "width": 1,
+      "height": 4
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "5df856fb8049f3b72e2991a9a1d58208aece4d6b1180ea3076d73f375fda6714"
+  },
+  {
+    "packId": "paw-mansion-exterior-y",
+    "recipeId": "msex-y-tea-table",
+    "sourceRect": {
+      "x": 4,
+      "y": 9,
+      "width": 2,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "ccfda551dd0e851696f1fc1d6125e767e9b2c10ef30e6f9d3bf65811378108e4"
+  },
+  {
+    "packId": "paw-mansion-exterior-y",
+    "recipeId": "msex-y-tea-stool",
+    "sourceRect": {
+      "x": 6,
+      "y": 11,
+      "width": 1,
+      "height": 1
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "ad4faca9b87ebaa85ae68bb2ca8410e01270eb7ec97ef7e2a54fe64bab0d8724"
+  },
+  {
+    "packId": "paw-mansion-exterior-y",
+    "recipeId": "msex-y-rose-red",
+    "sourceRect": {
+      "x": 0,
+      "y": 9,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "9142697299586f9ee738489b79be75e43f16659c8b481b2728fe47860e29aeda"
+  },
+  {
+    "packId": "paw-mansion-exterior-y",
+    "recipeId": "msex-y-rose-pink",
+    "sourceRect": {
+      "x": 2,
+      "y": 9,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "0275b768a33ed8945dac09d5e28d6dcc0c2a387db0f0ed4c972d08ec1be570b8"
+  },
+  {
+    "packId": "paw-mansion-exterior-y",
+    "recipeId": "msex-y-flower-pedestal",
+    "sourceRect": {
+      "x": 5,
+      "y": 13,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "aa189f41eb39ac3f4bfdff7f21e19de95a3e4e6695c56f46af3043a2de35131a"
+  },
+  {
+    "packId": "paw-mansion-exterior-y",
+    "recipeId": "msex-y-topiary-round",
+    "sourceRect": {
+      "x": 4,
+      "y": 15,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "1d2a438c113e2053be903e4fe6b2eae138e5aa6f0017a7ec44dbd6ef4825dd2e"
+  },
+  {
+    "packId": "paw-mansion-exterior-y",
+    "recipeId": "msex-y-topiary-tall",
+    "sourceRect": {
+      "x": 6,
+      "y": 13,
+      "width": 2,
+      "height": 4
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "2326074bde1b23b166d9c6d195aba600c2f9eb975a86f166ba874defbc42bb38"
+  },
+  {
+    "packId": "paw-mansion-exterior-y",
+    "recipeId": "msex-y-garden-gate-closed",
+    "sourceRect": {
+      "x": 0,
+      "y": 2,
+      "width": 3,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "73496c4655a1dd6ff4db353f8f271f1f1d4c4f53cebfff61c8bae3cf4fcdf616"
+  }
+]

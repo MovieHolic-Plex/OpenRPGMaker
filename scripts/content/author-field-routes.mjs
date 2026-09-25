@@ -11,6 +11,8 @@ import { cliffColumns, paintVillageCliffs } from "./lib/village-cliffs.mjs";
 import { withTsModule } from "../ontology-ts-loader.mjs";
 import { dressDesert, freezeCells, placePeaks, reachable } from "./lib/climate-edits.mjs";
 import { dressDesertGround, dressVolcanoGround, terrainKit } from "./lib/climate-terrain.mjs";
+import { arrangeBareGroves, clearLeafyTrees } from "./lib/bare-trees.mjs";
+import { stairTile, isStairTile } from "./lib/cliff-stairs.mjs";
 
 const OUT = "tiledata/field-routes";
 const village = JSON.parse(fs.readFileSync("tiledata/forest-villages/diverse/catalog.json"));
@@ -75,9 +77,9 @@ const CLIMATE_FIELDS = [
   { id: "field-volcano-ford-cliff-road", climate: "volcano", from: "field-ford-cliff-road", name: "용암 강 벼랑길", peaks: 1, ground: "volcano",
     meets: ["잿빛 여울성 남쪽 입구(48,91)", "다음 필드", "용암못 폐촌 남쪽 입구(40,63)"],
     note: "재 덮인 절벽 위아래로 난 길. 북쪽에서 흘러온 용암 강이 절벽을 용암 폭포로 넘고, 아랫단 길은 현무암 다리로 건넌다. 빈 재밭은 식은 용암 판과 가지 친 용암 균열로 덮이고, 분기공이 김을 뿜는 작은 용암 웅덩이와 화산 봉우리 한 쌍이 있다" },
-  { id: "field-desert-crossroads", climate: "desert", from: "field-forest-crossroads", name: "오아시스 세 갈래길", desert: { palms: 10, cacti: 0, feet: false }, ground: "desert", groundOpts: { duneSeas: 2, duneShare: 0.55 },
+  { id: "field-desert-crossroads", climate: "desert", from: "field-forest-crossroads", name: "오아시스 세 갈래길", desert: { palms: 10, cacti: 0, feet: false }, ground: "desert", bareForest: true, groundOpts: { duneSeas: 2, duneShare: 0.55 },
     meets: ["모래 물굽이 포구 서쪽 입구(0,33)", "사암 층바위 협곡마을 남쪽 입구(42,71)", "다음 필드"],
-    note: "마른 덤불숲 사이 모래밭에서 길이 세 갈래로 갈린다. 남동쪽 오아시스 못가에 야자수가 둘러서고, 모래밭은 크고 작은 사구와 모래 물결·갈라진 땅으로 덮였다. 선인장은 몇 무리로만 서 있다" },
+    note: "트인 모래밭에서 길이 세 갈래로 갈린다. 남동쪽 오아시스 못가에 야자수가 둘러서고, 모래밭은 사구 능선과 모래 물결로 덮였다. 잎 없는 고목은 드문드문 덩이로만 서 있고 선인장은 한 무리뿐이다" },
   { id: "field-autumn-ford-cliff-road", climate: "autumn", from: "field-ford-cliff-road", name: "단풍 여울 벼랑길",
     meets: ["가을 두 폭포 강마을 남쪽 입구(24,71)", "다음 필드", "가을 종탑 언덕 교구 남쪽 입구(40,63)"],
     note: "단풍 숲을 가로지르는 절벽 위아래 길. 여울이 절벽을 폭포로 넘고, 금빛 풀밭 길이 나무다리로 여울을 건너 계단으로 윗단에 오른다" },
@@ -123,7 +125,7 @@ for (const spec of PLANS.filter((p) => !process.env.FIELD_ONLY || p.id === proce
     for (let yy = y; yy <= y + height; yy++) for (let xx = x; xx < x + 2; xx++) {
       const i = point(xx, yy);
       assert(cliffPlan.cliff.has(i), "Stair must span the whole face " + spec.id);
-      m.lowerTiles[i] = cliff[374]; m.upperTiles[i] = -1;
+      m.lowerTiles[i] = stairTile(xx, x); m.upperTiles[i] = -1;
     }
     reserve(x, y - 1, 2, height + 3, 1);
     const top = { x, y: y - 1 }, bottom = { x, y: y + height + 1 };
@@ -145,7 +147,7 @@ for (const spec of PLANS.filter((p) => !process.env.FIELD_ONLY || p.id === proce
       if (inside(x, y) && ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1 && !cliffPlan.cliff.has(point(x, y))) river.add(point(x, y));
     for (const i of river) {
       const x = i % W, y = Math.floor(i / W);
-      assert(m.lowerTiles[i] !== cliff[374], "River runs over a stair " + spec.id);
+      assert(!isStairTile(m.lowerTiles[i], cliff[374]), "River runs over a stair " + spec.id);
       if (!cliffPlan.cliff.has(i)) { water.add(i); continue; }
       const c = cliffPlan.columns.find((k) => k.x === x && y >= k.y && y <= k.y + k.height);
       m.upperTiles[i] = -1;
@@ -192,7 +194,7 @@ for (const spec of PLANS.filter((p) => !process.env.FIELD_ONLY || p.id === proce
   }
   // Solid cells for road routing: water (not bridges), cliff faces (not stairs), cliff wings.
   const solid = new Set();
-  for (let i = 0; i < W * H; i++) if ((water.has(i) && !bridgeCells.has(i)) || fallCells.has(i) || wings.has(i) || (cliffPlan.cliff.has(i) && m.lowerTiles[i] !== cliff[374])) solid.add(i);
+  for (let i = 0; i < W * H; i++) if ((water.has(i) && !bridgeCells.has(i)) || fallCells.has(i) || wings.has(i) || (cliffPlan.cliff.has(i) && !isStairTile(m.lowerTiles[i], cliff[374]))) solid.add(i);
   if (spec.cave) solid.add(point(...spec.cave));
   // Exits: 3 wide at the map edge, 5 deep.
   const exits = spec.exits.map((e, n) => {
@@ -249,7 +251,7 @@ for (const spec of PLANS.filter((p) => !process.env.FIELD_ONLY || p.id === proce
       if (inside(x + dx, y + dy) && !solid.has(ni) && m.lowerTiles[ni] === GROUND) roads.add(ni);
     }
   }
-  const roadPaint = new Set([...roads].filter((i) => m.lowerTiles[i] !== cliff[374] && !bridgeCells.has(i)));
+  const roadPaint = new Set([...roads].filter((i) => !isStairTile(m.lowerTiles[i], cliff[374]) && !bridgeCells.has(i)));
   paintGroup(roadPaint, roadGroup);
   for (const i of roads) reserve(i % W, Math.floor(i / W), 1, 1, 2);
   // Props: whole parts, beside the road, never on it.
@@ -436,6 +438,16 @@ await withTsModule("scripts/content/lib/climate-villages-entry.ts", "field-clima
       const project = { maps: { [map.id]: map }, tilesets: { [tileset.id]: tileset } };
       const isPlain = (x, y) => map.upperTiles[at(x, y)] === -1 && PLAIN.has(map.lowerTiles[at(x, y)]);
       const accept = () => { const seen = reachable(api.canMove, project, map, plan.entry); return targets.every(([x, y]) => seen.has(at(x, y))); };
+      // Desert (user 2026-09-25: 「사막치고 나무가 너무 많다」): the forest field's thicket walls go back to open sand and
+      // leafless-tree groves stand on a few of the cleared spots (sparse: edge band every ~16 cells, inland every ~22). The
+      // forest field's campfire (381) goes too — a lone fire in the open sand reads as a fire in the road.
+      if (spec.bareForest) {
+        const { cleared: bare } = clearLeafyTrees(map);
+        for (let i = 0; i < map.upperTiles.length; i++) if (map.upperTiles[i] === 381) { map.upperTiles[i] = -1; cleared++; }
+        const groves = arrangeBareGroves(map, { tileset, keep: keepClear, sites: bare, seed: plan.seed, accept, spacing: { band: 16, inner: 22 } });
+        edits.push({ kind: "bare-trees", clearedCells: bare.size, groves: groves.groves.length, trees: groves.trees,
+          rule: "숲 벽(잎 달린 수관) → 맨 모래; 잎 없는 나무 덩이 드문드문(가장자리 띠 16칸·안쪽 22칸 간격); 모닥불 381 제거" });
+      }
       const opts = { kit: terrainKit(tileset), isPlain, take: (x, y) => !ring.has(at(x, y)), accept, seed: plan.seed, limits: { maxSq: 5, screen: 0.47 }, water: wet, ...(spec.groundOpts ?? {}) };
       const g = spec.ground === "volcano" ? dressVolcanoGround(map, opts) : dressDesertGround(map, opts);
       assert(g.maxSq <= 5 && g.screen <= 0.5, `ground gate ${spec.id} maxSq=${g.maxSq} screen=${g.screen.toFixed(3)}`);

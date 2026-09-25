@@ -1,3 +1,4 @@
+import { ensureUploadedEventSpriteTextures } from "@/assets/uploadedEventSprites";
 import { ensureUploadedTilesetTextures } from "@/assets/uploadedTilesets";
 // editor/EditScene.ts
 // 에디터의 Phaser 씬. 맵을 그리드 단위로 렌더하고 입력을 actions로 보낸다.
@@ -38,8 +39,16 @@ import { AgentFocusRenderer, AgentGhostPreviewRenderer } from "@/editor/agentPre
 import { subscribeInlineProposalActions } from "@/editor/proposalInlineApproval";
 import { CameraScrollbars } from "@/editor/CameraScrollbars";
 import { CameraPanController, pointerScreenPosition } from "@/editor/CameraPanController";
-import { growMapOnEdges, mapEdgeGrowAxes, MAP_EDGE_GROW_ARM_MS, MAP_EDGE_GROW_STEP_MS, type MapEdgeGrowAxes } from "@/editor/mapEdgeGrow";
-import { exceedsMapDimensionLimit, mapSizeLimitMessage } from "@/project/mapSizeLimits";
+import {
+  applyMapEdgeDrag,
+  mapEdgeDragTarget,
+  mapEdgeGrowAxes,
+  mapEdgeGrowCursor,
+  NO_MAP_EDGE_SIDES,
+  type MapEdgeGrowAxes,
+  type MapEdgeSides,
+} from "@/editor/mapEdgeGrow";
+import { mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { store, type ProjectChangeCell, type ProjectChangeDescriptor } from "@/project/store";
 import { mapTileSize } from "@/project/tileGeometry";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
@@ -109,11 +118,11 @@ import { openStructurePlacementContextMenu } from "@/editor/panels/structurePlac
 import {
   isRegionTaskModalOpen,
   isRegionTaskRegionLocked,
-  openRegionTaskModal,
   REGION_TASK_MODAL_EVENT,
   retargetRegionTaskModal,
 } from "@/editor/panels/regionTaskModal";
 import { REGION_TASK_STATUS_EVENT, regionTaskStatusDetail } from "@/editor/regionTask/regionTaskStatus";
+import { requestAiRegionHandoff } from "@/editor/aiRegionHandoff";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import { BUILD_PALETTE_VISIBILITY_EVENT, isBuildPaletteEnabled, renderBuildPalettePopup } from "@/editor/panels/buildPalette";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
@@ -272,9 +281,23 @@ export class EditScene extends PhaserRuntime.Scene {
   private cameraPanController: CameraPanController | null = null;
   private mapEdgeBand: Phaser.GameObjects.Graphics | null = null;
   private pointerOverCanvas = false;
-  private mapEdgeGrowArmedAt = 0;
-  private mapEdgeGrowLastAt = 0;
-  private mapEdgeGrowLimitNoted = false;
+  /**
+   * 테두리 드래그 한 번. 호버는 안내만 하고 크기는 이 상태가 있을 때만 바뀐다.
+   * `added` 는 이 드래그에서 원래 크기에 더한 칸 수 — 되돌아 끌면 이 값까지만 줄인다.
+   */
+  private mapEdgeDrag: {
+    readonly mapId: MapId;
+    readonly axes: MapEdgeGrowAxes;
+    readonly originWidth: number;
+    readonly originHeight: number;
+    readonly historyKey: string;
+    added: MapEdgeSides;
+    limitNoted: boolean;
+  } | null = null;
+  /** 드래그마다 새 히스토리 키를 만들려는 일련번호. 같은 키면 앞 드래그와 한 단계로 묶인다. */
+  private mapEdgeDragSeq = 0;
+  /** 캔버스에 마지막으로 쓴 커서 — 매 프레임 같은 값을 다시 쓰지 않으려고 둔다. */
+  private mapEdgeCursor = "";
   private cameraScrollbars: CameraScrollbars | null = null;
   private navigationGeometry: { canvas: CanvasRect; unoccluded: CanvasRect; zoom: number } | null = null;
   private navigationResizeObserver: ResizeObserver | null = null;
@@ -591,6 +614,8 @@ export class EditScene extends PhaserRuntime.Scene {
 
     this.mapEdgeBand?.destroy();
     this.mapEdgeBand = null;
+    this.mapEdgeDrag = null;
+    this.setMapEdgeCursor("");
     this.stopPan();
     this.unsubStore?.();
     this.unsubEditor?.();
@@ -666,7 +691,7 @@ export class EditScene extends PhaserRuntime.Scene {
    */
   update(): void {
     if (this.activeCameraFocus && shouldDeferCameraFocus(this.pointerGestureState())) this.cancelCameraFocus();
-    this.stepMapEdgeGrow();
+    this.syncMapEdgeHint();
     this.syncNavigationGeometry();
     this.syncPublishedViewport();
     this.syncTileCullingFrame();
@@ -858,6 +883,7 @@ export class EditScene extends PhaserRuntime.Scene {
     // 타일 칠하기(scope: "map")마다 업로드 목록을 훑지 않도록 자산/프로젝트 변경에서만 돈다.
     if (change.scope !== "map") {
       ensureUploadedCharsetTextures(this, store.getCurrent(), () => this.redraw());
+      ensureUploadedEventSpriteTextures(this, store.getCurrent(), () => this.redraw());
       ensureUploadedTilesetTextures(this, store.getCurrent(), () => this.redraw());
       ensureBundledProjectTextures(this, store.getCurrent(), () => this.redraw());
     }
@@ -904,6 +930,9 @@ export class EditScene extends PhaserRuntime.Scene {
         this.beginRightRegionGesture(ptr);
         return;
       }
+      // 테두리 띠(맵 밖)에서 누른 좌클릭은 크기 드래그다. 팬보다 먼저 봐야 한다 — 선택 도구는
+      // 맵 밖 좌클릭을 팬으로 가져가므로 순서가 바뀌면 띠를 잡아도 카메라만 움직인다.
+      if (this.beginMapEdgeDrag(ptr)) return;
       if (this.shouldPan(ptr)) {
         this.startPan(ptr);
         return;
@@ -930,6 +959,10 @@ export class EditScene extends PhaserRuntime.Scene {
         this.lastPointerTile = { x, y };
         if (mid) movePastePreview(mid, x, y);
         this.renderPastePreviewGhost();
+        return;
+      }
+      if (this.mapEdgeDrag) {
+        this.updateMapEdgeDrag(ptr);
         return;
       }
       // 우클릭 제스처 중에는 버튼 플래그가 브라우저마다 들쭉날쭉해도 추적을 이어간다.
@@ -1628,59 +1661,128 @@ export class EditScene extends PhaserRuntime.Scene {
 
   private clearMapEdgeBand(): void {
     this.mapEdgeBand?.clear();
-    this.mapEdgeGrowArmedAt = 0;
+    if (!this.mapEdgeDrag) this.setMapEdgeCursor("");
   }
 
-  /** 맵 테두리 바깥에 포인터가 있으면 그 방향으로 맵 칸을 늘린다. 모서리는 가로·세로를 함께 늘린다. */
-  private stepMapEdgeGrow(): void {
-    const band = this.mapEdgeBand;
+  private setMapEdgeCursor(cursor: string): void {
+    if (this.mapEdgeCursor === cursor) return;
+    this.mapEdgeCursor = cursor;
+    const canvas = this.game?.canvas;
+    if (canvas) canvas.style.cursor = cursor;
+  }
+
+  /** 포인터 아래 테두리 띠. 맵 안이거나 띠 밖이면 null. */
+  private mapEdgeAxesAt(ptr: Phaser.Input.Pointer): MapEdgeGrowAxes | null {
+    const mapId = this.mapId();
+    const map = mapId ? store.getCurrent().maps[mapId] : undefined;
+    const camera = this.cameras?.main;
+    if (!map || !camera) return null;
+    const world = ptr.positionToCamera(camera) as { readonly x: number; readonly y: number };
+    const tileSize = this.activeTileSize();
+    return mapEdgeGrowAxes({
+      worldX: world.x,
+      worldY: world.y,
+      mapWidthPx: map.width * tileSize,
+      mapHeightPx: map.height * tileSize,
+      zoom: camera.zoom > 0 ? camera.zoom : 1,
+    });
+  }
+
+  /**
+   * 호버 안내: 맵 테두리 바깥 띠에 포인터가 있으면 그 변을 주황으로 칠하고 크기 조절 커서를 보인다.
+   * **크기는 바꾸지 않는다** — 바꾸는 것은 띠에서 시작한 좌클릭 드래그(beginMapEdgeDrag)뿐이다.
+   */
+  private syncMapEdgeHint(): void {
+    const drag = this.mapEdgeDrag;
+    if (drag) {
+      const map = store.getCurrent().maps[drag.mapId];
+      const tileSize = this.activeTileSize();
+      if (map) this.paintMapEdgeBand(drag.axes, map.width * tileSize, map.height * tileSize);
+      return;
+    }
     const gesture = this.pointerGestureState();
     const busy = gesture.painting || gesture.panning || gesture.dragging || gesture.rightRegionGesture || gesture.pastePreview;
     const ptr = this.input?.activePointer;
-    if (!band || !this.pointerOverCanvas || busy || !ptr || ptr.isDown) {
+    if (!this.mapEdgeBand || !this.pointerOverCanvas || busy || !ptr || ptr.isDown) {
       this.clearMapEdgeBand();
       return;
     }
     const mapId = this.mapId();
     const map = mapId ? store.getCurrent().maps[mapId] : undefined;
-    const camera = this.cameras?.main;
-    if (!mapId || !map || !camera) {
+    const axes = this.mapEdgeAxesAt(ptr);
+    if (!map || !axes) {
       this.clearMapEdgeBand();
       return;
     }
-    const world = ptr.positionToCamera(camera) as { readonly x: number; readonly y: number };
     const tileSize = this.activeTileSize();
-    const zoom = camera.zoom > 0 ? camera.zoom : 1;
-    const axes = mapEdgeGrowAxes({
+    this.paintMapEdgeBand(axes, map.width * tileSize, map.height * tileSize);
+    this.setMapEdgeCursor(mapEdgeGrowCursor(axes));
+  }
+
+  /**
+   * 띠 안에서 누른 좌클릭이면 테두리 드래그를 시작하고 true. 띠는 맵 **밖**이므로 그 아래에 칠할 칸이
+   * 없다 — 가로채도 칠하기·선택을 잃지 않는다. 잠긴 맵이면 알리고 누름을 삼킨다(띠를 잡았는데 카메라가
+   * 움직이면 잠금 때문인지 알 수 없다).
+   */
+  private beginMapEdgeDrag(ptr: Phaser.Input.Pointer): boolean {
+    if (ptr.button !== 0) return false;
+    const axes = this.mapEdgeAxesAt(ptr);
+    const mapId = this.mapId();
+    const map = mapId ? store.getCurrent().maps[mapId] : undefined;
+    if (!axes || !mapId || !map) return false;
+    if (!canEditMap(mapId)) {
+      toast(mapEditLockNotice(mapId), "error");
+      return true;
+    }
+    this.mapEdgeDragSeq += 1;
+    this.mapEdgeDrag = {
+      mapId,
+      axes,
+      originWidth: map.width,
+      originHeight: map.height,
+      historyKey: `map-edge-drag:${mapId}:${this.mapEdgeDragSeq}`,
+      added: NO_MAP_EDGE_SIDES,
+      limitNoted: false,
+    };
+    this.clearHoverPreview();
+    this.setMapEdgeCursor(mapEdgeGrowCursor(axes));
+    return true;
+  }
+
+  /**
+   * 포인터가 원래 테두리를 넘은 만큼 맵을 맞춘다. 되돌아 끌면 이 드래그에서 늘린 칸까지만 줄인다 —
+   * 원래 크기 아래로는 내려가지 않으므로 저작 내용은 잘리지 않는다.
+   */
+  private updateMapEdgeDrag(ptr: Phaser.Input.Pointer): void {
+    const drag = this.mapEdgeDrag;
+    const camera = this.cameras?.main;
+    if (!drag || !camera) return;
+    if (this.mapId() !== drag.mapId || !store.getCurrent().maps[drag.mapId]) {
+      this.mapEdgeDrag = null;
+      return;
+    }
+    const tileSize = this.activeTileSize();
+    const world = ptr.positionToCamera(camera) as { readonly x: number; readonly y: number };
+    const target = mapEdgeDragTarget({
+      axes: drag.axes,
+      added: drag.added,
+      originWidth: drag.originWidth,
+      originHeight: drag.originHeight,
+      tileSize,
       worldX: world.x,
       worldY: world.y,
-      mapWidthPx: map.width * tileSize,
-      mapHeightPx: map.height * tileSize,
-      zoom,
     });
-    this.paintMapEdgeBand(axes, map.width * tileSize, map.height * tileSize);
-    if (!axes) {
-      this.mapEdgeGrowArmedAt = 0;
-      this.mapEdgeGrowLimitNoted = false;
-      return;
+    if (target.clamped && !drag.limitNoted) {
+      drag.limitNoted = true;
+      toast(mapSizeLimitMessage(), "error");
     }
-    const now = typeof performance !== "undefined" ? performance.now() : Date.now();
-    if (this.mapEdgeGrowArmedAt === 0) this.mapEdgeGrowArmedAt = now;
-    if (now - this.mapEdgeGrowArmedAt < MAP_EDGE_GROW_ARM_MS) return;
-    if (now - this.mapEdgeGrowLastAt < MAP_EDGE_GROW_STEP_MS) return;
-    this.mapEdgeGrowLastAt = now;
-    const grown = growMapOnEdges(mapId, axes);
-    if (!grown) {
-      const wantsWidth = (axes.left || axes.right) && exceedsMapDimensionLimit(map.width + 1, 1);
-      const wantsHeight = (axes.up || axes.down) && exceedsMapDimensionLimit(1, map.height + 1);
-      if ((wantsWidth || wantsHeight) && !this.mapEdgeGrowLimitNoted) {
-        this.mapEdgeGrowLimitNoted = true;
-        toast(mapSizeLimitMessage(), "error");
-      }
-      return;
-    }
-    if (grown.dx !== 0 || grown.dy !== 0) {
-      camera.setScroll(camera.scrollX + grown.dx * tileSize, camera.scrollY + grown.dy * tileSize);
+    const next: MapEdgeSides = { left: target.left, right: target.right, up: target.up, down: target.down };
+    const moved = applyMapEdgeDrag(drag.mapId, drag.added, next, drag.historyKey);
+    if (!moved) return;
+    drag.added = next;
+    // 왼쪽·위로 늘면 내용이 밀린다. 카메라도 같은 만큼 옮겨 화면의 칸이 제자리에 있게 한다.
+    if (moved.dx !== 0 || moved.dy !== 0) {
+      camera.setScroll(camera.scrollX + moved.dx * tileSize, camera.scrollY + moved.dy * tileSize);
       this.afterCameraMoved();
     }
   }
@@ -2561,6 +2663,8 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private endPointerGesture(ptr: Phaser.Input.Pointer): "right-region" | "gesture" {
+    // 테두리 드래그는 놓는 순간 끝난다. 크기는 끄는 동안 이미 반영됐으므로 여기서 할 일은 상태를 내리는 것뿐이다.
+    this.mapEdgeDrag = null;
     if (this.rightRegionGesture) {
       this.finishRightRegionGesture(ptr);
       return "right-region";
@@ -2581,7 +2685,8 @@ export class EditScene extends PhaserRuntime.Scene {
     return {
       painting: this.isPainting,
       panning: this.cameraPanController?.active() ?? false,
-      dragging: this.dragOperationHandler?.busy() ?? false,
+      // 테두리 드래그도 드래그다 — 조수 카메라 초점이 끌던 맵을 빼앗아 가지 않게 미룬다.
+      dragging: (this.dragOperationHandler?.busy() ?? false) || this.mapEdgeDrag !== null,
       rightRegionGesture: this.rightRegionGesture !== null,
       pastePreview: editorState.get().pastePreview !== null,
     };
@@ -2754,7 +2859,7 @@ export class EditScene extends PhaserRuntime.Scene {
       this.clearBuildPaletteOverlay();
       const popup = kind === "build"
         ? renderBuildPalettePopup()
-        : renderSelectionActionChips(selection, openRegionTaskModal, () => this.replayDeferredCameraFocus());
+        : renderSelectionActionChips(selection, requestAiRegionHandoff, () => this.replayDeferredCameraFocus());
       if (!popup) {
         this.renderRegionTaskBadge();
         return;
