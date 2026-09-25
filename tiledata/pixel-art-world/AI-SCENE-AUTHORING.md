@@ -107,6 +107,13 @@ PAW 공용9개 라이브러리에 **86개 장소·24개 저장 맵**이 있다. 
 보존되었다. 실제 inspect/build 장면 구현으로8개 맵의 전체 배열과 천장 아래 벽이 재현되었다.
 `output/paw-modern-interiors/projection-proof.json`은 결정론적 복사 관찰이며 새 모델 생성 실험은 아니다.
 
+후속 실제 모델 확인은 [MODERN-INTERIORS-AI-VERIFICATION](MODERN-INTERIORS-AI-VERIFICATION.md).
+Gemini3.7 Flash가8개 실내를 검색·생성·렌더했고 전체 배열과 접근120점/독립방22개가 일치했다.
+조수 사본도 별도SQLite에 저장·재오픈했다. 다만 첫 생성에서8문서 모두 다음 페이지 읽기를
+생략했다. 추가 지시로20페이지 완독과8그림 재확인을 수행했으므로 완전 자율 준수로 보고하지 않는다.
+문서 조회 성공만 확인하지 말고 `document.nextOffset`이 null인지 확인한다.
+모델의 좌석 수/천장 해석에도 오독이 있어 이미지 설명을 배치 검사의 대체물로 쓰지 않는다.
+
 실제 모델 확인은 별도 `scripts/qa/pixel-art-world-scenes-live.mts`의 결과를 사용한다.
 결정론 도구 통과는 모델 성공률이 아니다. 이 경로는 **저작한 예제의 재현과 후속 편집**이며
 원하는 크기/평면을 무엇이든 처음부터 설계하는 능력을 증명하지 않는다.

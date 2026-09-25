@@ -7,7 +7,7 @@ const [input,projectDir,out]=process.argv.slice(2);
 if(!input||!projectDir||!out)throw Error('Usage: <result-project.json> <new-project-dir> <evidence-dir>');
 if(fs.existsSync(path.join(projectDir,'project.sqlite')))throw Error('Requires a new project folder');
 const project=JSON.parse(fs.readFileSync(input,'utf8')),submitted=structuredClone(project);
-if(project.meta.title!=='학교·교실·실내·도시 · 실제 AI 구현 확인')throw Error('Unexpected observation project');
+if(!['학교·교실·실내·도시 · 실제 AI 구현 확인','현대 일본 실내8개 · 실제 AI 구현 확인'].includes(project.meta.title))throw Error('Unexpected observation project');
 await withTsModule('electron/local-store/store.ts','scene-ai-save.mjs',async api=>{
  let store=await api.initLocalProjectStore({projectDir});
  try{
