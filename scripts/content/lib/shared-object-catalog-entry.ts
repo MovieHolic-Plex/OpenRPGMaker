@@ -12,7 +12,9 @@ import { BUNDLED_IMAGE_ASSETS } from "@/assets/bundled";
 /** Bundled texture key → public path, for previews. */
 export const TEXTURE_PATHS: Record<string, string> = Object.fromEntries(BUNDLED_IMAGE_ASSETS.map(asset => [asset.textureKey, asset.path]));
 
-export type Category = "tree" | "volcano" | "gate" | "terrain" | "harbor" | "house" | "prop";
+export type Category = "tree" | "volcano" | "gate" | "terrain" | "harbor" | "house" | "prop" | "furniture" | "vehicle" | "landmark";
+/** Categories a `tiledata/<pipeline>/shared-objects.json` entry may use. */
+export const TILEDATA_CATEGORIES: readonly Category[] = ["house", "gate", "prop", "terrain", "harbor", "tree", "volcano", "furniture", "vehicle", "landmark"];
 export type Source =
   | { kind: "tileset"; tilesetId: string }
   | { kind: "place-kit"; referenceId: string; kitId: string }
@@ -24,7 +26,22 @@ export interface BuiltObject {
   /** Tileset whose numbers `lower`/`upper` use (grafts + passability), for previews and passability. */
   sourceTileset: TilesetDef;
   assets: Project["assets"]["uploaded"];
+  /** Map the object was cut from (tiledata entries). */
+  sourceMap?: string;
 }
+
+/**
+ * One entry of `tiledata/<pipeline>/shared-objects.json` (공통 지침 형식). `id` is `<분야>/<kebab>`; the catalog id
+ * becomes `obj:<category>/<분야>/<kebab>`. Cells use the numbering of the **bundled** tileset `tilesetId` (not a
+ * shared_ copy); -1 leaves the map cell.
+ */
+export interface TiledataObjectEntry {
+  id: string; name: string; category: string; tags?: string[]; tilesetId: string;
+  width: number; height: number; lower: number[]; upper: number[]; owner: string;
+  sourceMap?: string; defaultLayers?: "both" | "upper" | "lower";
+}
+/** Parsed file, `file` relative to the repo root (for error messages and the source tag). */
+export interface TiledataObjectFile { file: string; pipeline: string; objects: TiledataObjectEntry[] }
 
 const kitPattern = (kit: NonNullable<TilesetDef["structureKits"]>[number]) => ({
   width: kit.width, height: kit.height,
@@ -91,7 +108,7 @@ const GENERATED_OWNER: Record<string, string> = {
 };
 
 // ── 모으기 ───────────────────────────────────────────────────────────────
-export async function collectSharedObjects(publicDir: string): Promise<BuiltObject[]> {
+export async function collectSharedObjects(publicDir: string, tiledataFiles: readonly TiledataObjectFile[] = []): Promise<BuiltObject[]> {
   setHeadlessPublicRoot(publicDir);
   const project = createHeadlessBlankProject();
   const ts = (id: string) => {
@@ -220,12 +237,63 @@ export async function collectSharedObjects(publicDir: string): Promise<BuiltObje
       tags: ["마을 소품", "합본 마을", ...def.families], owner: propOwner(def.label), tilesetId: town.id, source: { kind: "tileset", tilesetId: town.id },
       width: def.width, height: def.height, lower, upper, defaultLayers: "both", sourceTileset: town });
   }
-  // Unique ids.
+  // Unique ids (the entries above keep their historical de-duplication suffixes).
   const seen = new Set<string>();
   for (const entry of out) {
     let id = entry.id, n = 2;
     while (seen.has(id)) id = `${entry.id}-${n++}`;
     entry.id = id; seen.add(id);
   }
+
+  // (8) 파이프라인이 뽑은 오브젝트 — tiledata/*/shared-objects.json. Appended after every entry above so the
+  // existing ids, order and previews stay as they were. Invalid entries fail the build with every problem listed.
+  const problems: string[] = [];
+  for (const file of tiledataFiles) {
+    file.objects.forEach((entry, index) => {
+      const where = `${file.file}[${index}]${entry && typeof entry.id === "string" ? ` ${entry.id}` : ""}`;
+      const built = tiledataObject(project, file, entry, where, problems);
+      if (!built) return;
+      if (seen.has(built.id)) { problems.push(`${where}: 카탈로그 id ${built.id} 가 이미 있다`); return; }
+      seen.add(built.id);
+      out.push(built);
+    });
+  }
+  if (problems.length) throw new Error(`shared-objects.json 항목 ${problems.length}건이 잘못됐다:\n  ${problems.join("\n  ")}`);
   return out;
+}
+
+const KEBAB_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*\/[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+function tiledataObject(project: Project, file: TiledataObjectFile, entry: TiledataObjectEntry, where: string, problems: string[]): BuiltObject | null {
+  const before = problems.length;
+  const fail = (message: string) => problems.push(`${where}: ${message}`);
+  if (!entry || typeof entry !== "object") { fail("객체가 아니다"); return null; }
+  if (typeof entry.id !== "string" || !KEBAB_ID.test(entry.id)) fail(`id 는 "<분야>/<kebab>" 여야 한다 (받은 값 ${JSON.stringify(entry.id)})`);
+  if (typeof entry.name !== "string" || !entry.name.trim()) fail("name 이 비었다");
+  if (typeof entry.owner !== "string" || !entry.owner.trim()) fail("owner(어디 곁에 두는지) 가 비었다");
+  if (!TILEDATA_CATEGORIES.includes(entry.category as Category)) fail(`category ${JSON.stringify(entry.category)} 는 ${TILEDATA_CATEGORIES.join("|")} 중 하나여야 한다`);
+  if (entry.tags !== undefined && (!Array.isArray(entry.tags) || entry.tags.some(tag => typeof tag !== "string"))) fail("tags 는 문자열 배열이어야 한다");
+  if (entry.defaultLayers !== undefined && !["both", "upper", "lower"].includes(entry.defaultLayers)) fail(`defaultLayers ${JSON.stringify(entry.defaultLayers)}`);
+  const tileset = typeof entry.tilesetId === "string" ? project.tilesets[entry.tilesetId] : undefined;
+  if (!tileset) fail(`tilesetId ${JSON.stringify(entry.tilesetId)} 는 새 프로젝트의 번들 타일셋이 아니다 (shared_ 사본 말고 번들 id)`);
+  const { width, height } = entry;
+  if (!Number.isInteger(width) || !Number.isInteger(height) || width < 1 || height < 1) fail(`width×height ${width}×${height}`);
+  const cells = Number.isInteger(width) && Number.isInteger(height) ? width * height : -1;
+  for (const layer of ["lower", "upper"] as const) {
+    const tiles = entry[layer];
+    if (!Array.isArray(tiles) || tiles.length !== cells) { fail(`${layer} 는 길이 ${cells}(width*height) 배열이어야 한다 (받은 길이 ${Array.isArray(tiles) ? tiles.length : "없음"})`); continue; }
+    const bad = tiles.find(tile => !Number.isInteger(tile) || tile < -1 || (tileset && tile >= tileset.count));
+    if (bad !== undefined) fail(`${layer} 에 ${tileset?.id ?? "?"} 에 없는 칸 번호 ${bad} (count ${tileset?.count ?? "?"})`);
+  }
+  if (problems.length > before || !tileset) return null;
+  if ([...entry.lower, ...entry.upper].every(tile => tile < 0)) { fail("모든 칸이 -1 이다"); return null; }
+  const lowerEmpty = entry.lower.every(tile => tile < 0), upperEmpty = entry.upper.every(tile => tile < 0);
+  return {
+    id: `obj:${entry.category}/${entry.id}`, name: entry.name.trim(), category: entry.category as Category,
+    tags: [...new Set([...(entry.tags ?? []), file.pipeline])], owner: entry.owner.trim(),
+    tilesetId: tileset.id, source: { kind: "tileset", tilesetId: tileset.id }, width, height,
+    lower: [...entry.lower], upper: [...entry.upper],
+    defaultLayers: entry.defaultLayers ?? (lowerEmpty ? "upper" : upperEmpty ? "lower" : "both"),
+    sourceTileset: tileset, assets: {}, ...(entry.sourceMap ? { sourceMap: entry.sourceMap } : {}),
+  };
 }
