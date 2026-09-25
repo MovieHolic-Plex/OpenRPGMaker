@@ -769,6 +769,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     // 방향키 재렌더가 파티클 canvas/레이어 스택을 파괴하지 않도록, 지우기 전에 기존 fx 노드를
     // 붙잡아 renderTitleScreen 에 넘긴다(설정 서명이 같으면 같은 노드가 새 루트로 move 된다).
     const previousFx = layout.querySelector<HTMLElement>("[data-testid='title-fx']");
+    const previousEffects = layout.querySelector<HTMLElement>("[data-testid='title-effects']");
     // 모드 전환이 오디오 소유권을 가져간다. stopGame 의 게임 파괴는 Phaser 다음 프레임에
     // 실제로 일어나고 그 씬의 destroy 이 공유 엔진을 통째로 멈춘다 — 아래에서 켜는
     // 타이틀 BGM 이 그 정리에 쓸려 사라졌다(실측: 패배 후 타이틀 화면이 무음이 됐다).
@@ -784,6 +785,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       // intro 등장 연출은 최초 진입에만 — 방향키 이동(emitEnterJuice:false)에는 재생하지 않는다.
       playIntro: firstEnter,
       reuseFx: previousFx,
+      reuseEffects: previousEffects,
     };
     const options = listTitleMenuOptions(settings, titleContext);
     titleMenuIndex = clampTitleMenuIndex(titleMenuIndex, options.length);

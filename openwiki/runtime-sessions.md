@@ -346,6 +346,7 @@ Session state, save slots, farming, friendship, calendar, lighting, weather, fie
 ## Editorial title screen (2026-08-26)
 
 - `src/player/titleScreen.ts` renders the game-start surface with the stable editorial root `rm-title-screen-editorial`, the kicker `A NEW ADVENTURE`, and the subtitle `이야기가 시작되는 곳`. Keep the authored title/menu/resource behavior intact while preserving this calmer story-opening composition; do not restore the oversized crest, technical key-help copy, or saturated RM-style menu chrome.
+- **오프닝 효과 층 (2026-09-25):** 키아트 위 WebGL 효과(빛내림·알갱이·칼날 반사·물결·안개)와 로고/메뉴 질감, AI 키아트 생성·비전 맞춤은 [title-opening-effects.md](title-opening-effects.md).
 - Focused structure coverage lives in `test/titleScreen.test.ts`. Browser acceptance must open the actual test-play window and inspect the rendered title surface rather than relying on the System-tab preview alone.
 
 

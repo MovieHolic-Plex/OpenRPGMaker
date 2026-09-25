@@ -36,6 +36,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - `openwiki/editor-workflows.md` is now a slim index linking to the above topic pages.
    - `openwiki/large-village-generation.md` for 100×100 river/market village plan → build → road → QA flow.
    - Runtime pre-edit routing & cautions: `openwiki/runtime-pre-edit-routing.md` (read first for any runtime change)
+   - 타이틀 오프닝 효과 (WebGL 빛내림·칼날 반사·물결·안개, AI 키아트 + 비전 좌표 맞춤): `openwiki/title-opening-effects.md`
    - Runtime battle: `openwiki/runtime-battle.md`
    - 배틀러 idle 애니메이션을 **새로 추가하는 절차**(표시 상자 실측 → 클립 → 창 탐색 → 패킹 → 검증, 네 계약과 함정): `openwiki/battler-idle-playbook.md`
    - Runtime action combat: `openwiki/runtime-action-combat.md`

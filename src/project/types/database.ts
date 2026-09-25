@@ -1021,9 +1021,71 @@ export interface TitleIntroSettings {
   staggerMs?: number;
 }
 
+/**
+ * 배경 그림 맞춤. 생략 = 레거시 "stretch"(100% 100% 로 늘림) — 구 JSON 은 필드가 없고 화면도 그대로다.
+ * cover = 비율 유지로 화면을 채우고 넘치는 쪽을 자른다, contain = 비율 유지로 전부 보인다.
+ */
+export type TitleBackgroundFit = "cover" | "contain" | "stretch";
+/** 생략 = 레거시 "pixelated". 그려 넣은 키아트는 "smooth" 여야 계단이 안 생긴다. */
+export type TitleBackgroundRendering = "smooth" | "pixelated";
+
+/** 그림 좌표계(0..1, 좌상단 원점) 한 점. 빛 근원은 그림 밖(-0.5..1.5)에 둘 수 있다. */
+export type TitleEffectPoint = [number, number];
+
+/**
+ * 그림 위 영역 효과. 좌표는 모두 **배경 그림** 기준 정규 좌표라 화면 비율·맞춤이 바뀌어도 제자리에 남는다.
+ * - godRays: source → toward 방향의 빛내림(spread = 부채꼴 폭)
+ * - motes:   빛 속을 떠다니는 먼지 입자(source/toward 부채꼴 또는 region 안, count 개)
+ * - glint:   line(칼날 등) 위를 periodSec 마다 훑는 반사광
+ * - water:   region 안의 물결 일렁임 + 반짝임
+ * - mist:    region 안을 흐르는 안개
+ * - dapple:  region 안의 나뭇잎 그림자 흔들림
+ * - glow:    source 둘레의 깜빡이는 불빛(횃불·창문), spread = 반경
+ * - camera:  화면 전체의 느린 호흡 줌(intensity = 폭)
+ */
+export type TitleEffectKind = "godRays" | "motes" | "glint" | "water" | "mist" | "dapple" | "glow" | "camera";
+
+export interface TitleEffect {
+  kind: TitleEffectKind;
+  /** false 만 저장한다(끔). 생략 = 켬. */
+  enabled?: boolean;
+  /** 0..2, 생략 = 1. */
+  intensity?: number;
+  /** 0..4, 생략 = 1. */
+  speed?: number;
+  /** "#rrggbb". 생략 = 종류별 기본색. */
+  color?: string;
+  source?: TitleEffectPoint;
+  toward?: TitleEffectPoint;
+  /** 0.02..1 — godRays/motes 부채꼴 폭, glow 반경. */
+  spread?: number;
+  line?: [TitleEffectPoint, TitleEffectPoint];
+  /** glint 주기 초(1..60). */
+  periodSec?: number;
+  /** 3..8 점 다각형. */
+  region?: TitleEffectPoint[];
+  /** motes 개수(0..96). */
+  count?: number;
+}
+
+export type TitleLogoStyle = "plain" | "metal" | "gold" | "stone" | "glow";
+/** 생략 = "window"(윈도스킨 창). "plain" = 창 없이 글자만, 선택 항목이 빛난다. */
+export type TitleMenuStyle = "window" | "plain";
+
 export interface TitleScreenSettings {
   title: string;
   backgroundResourceId?: string;
+  /** 생략 = stretch(레거시). */
+  backgroundFit?: TitleBackgroundFit;
+  /** 생략 = pixelated(레거시). */
+  backgroundRendering?: TitleBackgroundRendering;
+  /** 그림 영역 효과(최대 12). 빈/무효면 normalize 가 필드를 생략한다. */
+  effects?: TitleEffect[];
+  /** 글자 로고 질감. 생략 = 레거시 편집 글꼴. 지정하면 기본 문구("A NEW ADVENTURE")를 숨긴다. */
+  logoStyle?: TitleLogoStyle;
+  /** 로고 아래 부제(최대 60자). */
+  logoSubtitle?: string;
+  menuStyle?: TitleMenuStyle;
   /** Optional title-screen BGM (music resource id). Empty/undefined = silent. */
   musicResourceId?: string;
   layout: TitleScreenLayout;

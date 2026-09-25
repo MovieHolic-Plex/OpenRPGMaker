@@ -460,3 +460,156 @@
   max-height: calc(100% - 16px);
   overflow-y: auto;
 }
+
+/* ── 오프닝 영역 효과 (WebGL) ─────────────────────────────────────────────
+   배경 그림 자체를 다시 그리는 canvas 라 어두운 막(::before, z1) 아래 z0 에 둔다.
+   WebGL 이 없으면 canvas 는 투명하게 남고 CSS 배경이 그대로 보인다. */
+.rm-title-screen > .rm-title-effects {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  display: block;
+}
+
+/* ── 로고 질감 ─────────────────────────────────────────────────────────────
+   글꼴은 번들하지 않는다(CDN 금지) — 설치돼 있으면 Cinzel/Trajan, 아니면 세리프. */
+.rm-title-screen.rm-title-screen-editorial[data-logo-style] .rm-title-screen-title[data-logo-style] {
+  --oprn-logo-fill: linear-gradient(180deg, #ffffff 0%, #d7dde6 38%, #7c8796 52%, #eef2f6 64%, #9aa4b1 100%);
+  --oprn-logo-edge: rgb(10 14 24 / 85%);
+  --oprn-logo-glow: rgb(0 0 0 / 55%);
+  font-family: "Cinzel", "Trajan Pro", "Cormorant SC", Georgia, "Noto Serif KR", serif;
+  font-size: 23px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  width: max-content;
+  max-width: 88%;
+  color: transparent;
+  background-image:
+    linear-gradient(105deg, transparent 0 40%, rgb(255 255 255 / 85%) 48%, transparent 56% 100%),
+    var(--oprn-logo-fill);
+  background-size: 250% 100%, 100% 100%;
+  background-position: 130% 0, 0 0;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-stroke: 0.6px var(--oprn-logo-edge);
+  text-shadow: none;
+  filter: drop-shadow(0 2px 0 var(--oprn-logo-edge)) drop-shadow(0 4px 10px var(--oprn-logo-glow));
+  animation: rm-title-logo-shine 6s ease-in-out 1.2s infinite;
+}
+
+.rm-title-screen .rm-title-screen-title[data-logo-style="plain"] {
+  --oprn-logo-fill: linear-gradient(#fff, #fff);
+  animation: none;
+  background-image: var(--oprn-logo-fill);
+  background-size: 100% 100%;
+}
+
+.rm-title-screen .rm-title-screen-title[data-logo-style="gold"] {
+  --oprn-logo-fill: linear-gradient(180deg, #fff6d0 0%, #f2c75c 36%, #9b6a1c 52%, #ffe08a 66%, #b8812a 100%);
+  --oprn-logo-edge: rgb(40 22 4 / 90%);
+}
+
+.rm-title-screen .rm-title-screen-title[data-logo-style="stone"] {
+  --oprn-logo-fill: linear-gradient(180deg, #d9d4c8 0%, #a8a193 45%, #6f695d 55%, #b9b2a3 100%);
+  --oprn-logo-edge: rgb(20 18 14 / 90%);
+  animation: none;
+  background-size: 100% 100%, 100% 100%;
+  background-image: var(--oprn-logo-fill);
+}
+
+.rm-title-screen .rm-title-screen-title[data-logo-style="glow"] {
+  --oprn-logo-fill: linear-gradient(180deg, #ffffff 0%, #d8f3ff 50%, #9fdcff 100%);
+  --oprn-logo-edge: rgb(20 60 110 / 60%);
+  --oprn-logo-glow: rgb(140 210 255 / 75%);
+}
+
+.rm-title-screen .rm-title-screen-logo[data-logo-style]:not([data-logo-style="plain"]) {
+  filter: drop-shadow(0 3px 8px rgb(0 0 0 / 55%));
+}
+
+.rm-title-screen .rm-title-logo-subtitle {
+  position: absolute;
+  z-index: 3;
+  font-family: "Cinzel", "Trajan Pro", Georgia, "Noto Serif KR", serif;
+  font-size: 8px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgb(236 240 246 / 88%);
+  text-shadow: 0 1px 4px rgb(0 0 0 / 80%);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.rm-title-screen .rm-title-logo-subtitle[data-logo-style="gold"] {
+  color: rgb(255 230 170 / 92%);
+}
+
+@keyframes rm-title-logo-shine {
+  0%, 62% { background-position: 130% 0, 0 0; }
+  100% { background-position: -30% 0, 0 0; }
+}
+
+/* ── 메뉴: 창 없는 글자 메뉴 (키아트 위에 떠 있는 형태) ────────────────────── */
+.player-layout.system-shell .rm-title-screen-editorial .rm-title-menu[data-menu-style="plain"],
+.rm-title-screen .rm-title-menu[data-menu-style="plain"] {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  gap: 3px;
+  padding: 0;
+}
+
+.player-layout.system-shell .rm-title-screen-editorial .rm-title-menu[data-menu-style="plain"] .rm-title-menu-button,
+.rm-title-screen .rm-title-menu[data-menu-style="plain"] .rm-title-menu-button {
+  background: none;
+  box-shadow: none;
+  color: rgb(226 232 240 / 78%);
+  font-family: "Cinzel", "Trajan Pro", Georgia, var(--runtime-ui-font), serif;
+  letter-spacing: 0.08em;
+  padding: 1px 4px 1px 12px;
+  position: relative;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 90%), 0 0 8px rgb(0 0 0 / 60%);
+}
+
+.player-layout.system-shell .rm-title-screen-editorial .rm-title-menu[data-menu-style="plain"] .rm-title-menu-button.selected,
+.rm-title-screen .rm-title-menu[data-menu-style="plain"] .rm-title-menu-button.selected {
+  background: linear-gradient(90deg, rgb(255 236 180 / 22%), transparent 85%);
+  box-shadow: none;
+  color: #fff8e6;
+  text-shadow: 0 0 6px rgb(255 214 130 / 85%), 0 1px 3px rgb(0 0 0 / 90%);
+}
+
+.player-layout.system-shell .rm-title-screen-editorial .rm-title-menu[data-menu-style="plain"] .rm-title-menu-button.selected::before,
+.rm-title-screen .rm-title-menu[data-menu-style="plain"] .rm-title-menu-button.selected::before {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  right: auto;
+  bottom: auto;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0;
+  padding: 0;
+  border: 0;
+  box-sizing: content-box;
+  filter: none;
+  animation: none;
+  font-size: 0;
+  line-height: 0;
+  transform: rotate(45deg);
+  background: #ffe7a8;
+  box-shadow: 0 0 5px rgb(255 214 130 / 90%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rm-title-screen .rm-title-screen-title[data-logo-style] {
+    animation: none !important;
+  }
+}
