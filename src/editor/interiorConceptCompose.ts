@@ -457,20 +457,22 @@ export function composeConceptRoom(input: ConceptComposeInput): ConceptComposeRe
         break;
       }
       case "stair-face": {
-        // The flight rises from the first floor row through both north wall-face rows.
+        // The up-stair stands on floor: its top step is the first floor row under the north wall face, never on
+        // the face rows (interior guide: 「계단은 바닥 위, 벽면 줄을 파고들지 않는다」). The rail is on its left, so
+        // an east wall comes first, then a west wall, then any spot along the north wall.
         const pick = withRetry((loose) => {
-          const candidates: Point[] = [];
+          const ranked: { point: Point; rank: number }[] = [];
           for (let y = room.y; y < room.y + room.h; y++) {
             for (let x = room.x; x <= room.x + room.w - object.width; x++) {
-              if (inRoomFloor(x, y - 1)) continue;
-              const fits = object.cells.every(cell => {
-                const cy = y - 2 + cell.dy;
-                return cell.dy < 2 ? faceFree(x + cell.dx, cy, loose) : freeFor(cell, x + cell.dx, cy, loose);
-              });
-              if (fits && preservesAccess(object.cells, x, y - 2, baselineReach)) candidates.push({ x, y: y - 2 });
+              if (!inRoomFloor(x, y) || inRoomFloor(x, y - 1)) continue;
+              if (!object.cells.every(cell => freeFor(cell, x + cell.dx, y + cell.dy, loose) && inRoomFloor(x + cell.dx, y + cell.dy))) continue;
+              if (!preservesAccess(object.cells, x, y, baselineReach)) continue;
+              const east = !inRoomFloor(x + object.width, y), west = !inRoomFloor(x - 1, y);
+              ranked.push({ point: { x, y }, rank: east ? 0 : west ? 1 : 2 });
             }
           }
-          return candidates;
+          const best = Math.min(...ranked.map(r => r.rank));
+          return ranked.filter(r => r.rank === best).map(r => r.point);
         }, candidates => candidates[flip ? 0 : candidates.length - 1] ?? null);
         if (pick) {
           paint(job, pick.x, pick.y, object.cells);

@@ -230,7 +230,8 @@ filled — read-only rows every project sees, with or without `spatialAuthoring`
   plus this project's other section kits (`kit:<tileset>/<kit>`) and preview tile groups (`group:<tileset>/<group>`).
   Catalog categories: `tree` (bare-trees per snow/volcano/desert sheet, 42), `volcano` (peaks: dormant, erupting,
   pair), `terrain` (climate-terrain pieces 3030~ — sulfur, obsidian, ash heap, fumarole, basalt, cactus, bones,
-  buried column, dunes, mesas, ripple — plus a lava pool and a cooled plate built from the volcano autotiles),
+  buried column, dunes, mesas, ripple — plus a lava pool and a cooled plate built from the volcano autotiles;
+  mesas and bones carry the tag 「요청 시에만」: the assistant stamps them only when the user asks — the user dislikes them),
   `harbor` (forest rowboat, mooring post, rope+anchor, cargo, castle-courtyard boats/dock/sacks/firewood), `gate`
   (gatehouse `fft-bp4-gatehouse-c16`, town gate), `house` (authored house forms incl. ref-walled/ref-castle gables,
   generated `fft-*` buildings), `prop` (19 forest village props, 20 combined-town outdoor objects, fft props).

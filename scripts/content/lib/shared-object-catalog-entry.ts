@@ -35,6 +35,8 @@ const kitPattern = (kit: NonNullable<TilesetDef["structureKits"]>[number]) => ({
 // ── 주인 규칙(어디 곁에 두나) ──────────────────────────────────────────────
 const TREE_OWNER = "기후 맵 빈 땅에 덩이로 — 큰·중간 1그루 + 곁나무 1~2그루 + 밑동 옆 바위·마른 덤불. 길·문·집에서 2칸 띄우고, 맵 가장자리 한 줄에 일렬로 세우지 않는다.";
 const SHRUB_OWNER = "고목 밑동 옆에 1~2개. 빈 땅에 낱개로 흩뿌리지 않는다.";
+/** The user does not want these in default desert dressing (climate maps keep them off too); stamp only on request. */
+const REQUEST_ONLY = new Set(["mesa", "bones"]);
 const TERRAIN_OWNER: Record<string, string> = {
   sulfur: "용암 균열·웅덩이·분기공 곁에만 — 빈 재 한가운데에 두지 않는다.",
   obsidian: "용암 균열 위나 바로 곁에 드물게 하나.",
@@ -42,10 +44,10 @@ const TERRAIN_OWNER: Record<string, string> = {
   fumarole: "작은 용암 웅덩이 곁에 한두 개(연기 2프레임), 유황 얼룩과 함께.",
   basalt: "화산 빈 땅에 한 무리 — 용암 판·웅덩이 곁. 길·입구에서 2칸.",
   cactus: "사막 모래 위 3~4곳에 2~3개씩 덩이로. 물·길·문에서 떨어져.",
-  bones: "길 없는 외딴 모래 한두 곳에만, 반쯤 묻힌 기둥과 함께.",
-  "buried-column": "길 없는 외딴 모래 한두 곳에만, 짐승 뼈와 함께.",
+  bones: "사용자가 짐승 뼈를 직접 요청했을 때만 찍는다 — 사막 기본 꾸밈에 넣지 않는다(기후 맵도 기본 꺼짐).",
+  "buried-column": "길 없는 외딴 모래 한두 곳에만, 드물게. 짐승 뼈는 곁들이지 않는다(요청 시에만).",
   dune: "사막 빈 땅·가장자리 띠에 여러 개를 이어서 사구 바다처럼. 길·집 곁은 비운다.",
-  mesa: "사막 가장자리나 넓은 빈 땅에 두 개까지. 길을 막지 않게.",
+  mesa: "사용자가 메사·바위 언덕을 직접 요청했을 때만 찍는다 — 사막 기본 꾸밈에 넣지 않는다(기후 맵도 기본 꺼짐).",
   ripple: "빈 모래 바닥의 물결 변형 — 넓은 빈칸을 끊어 줄 때만, 길·집 곁 아님.",
   "lava-pool": "화산 빈 재 땅에 한두 곳 — 분기공·유황 얼룩을 곁에. 길·다리에서 2칸.",
   "lava-plate": "용암 강·웅덩이 가장자리를 따라 띠처럼. 3×3 이상 덩이로.",
@@ -132,7 +134,7 @@ export async function collectSharedObjects(publicDir: string): Promise<BuiltObje
       const key = group.id.slice("climate-terrain:".length);
       const kind = Object.keys(TERRAIN_OWNER).find(k => key.startsWith(k)) ?? key;
       push({ id: `obj:terrain/${tilesetId.replace("forest_harmony_", "")}/${key}`, name: group.name, category: "terrain",
-        tags: [climateName[tilesetId]!, "기후 지형", group.name.split("·").pop()!.trim().replace(/ [a-z0-9-]+$/, ""), group.id],
+        tags: [climateName[tilesetId]!, "기후 지형", group.name.split("·").pop()!.trim().replace(/ [a-z0-9-]+$/, ""), group.id, ...(REQUEST_ONLY.has(kind) ? ["요청 시에만"] : [])],
         owner: TERRAIN_OWNER[kind] ?? "기후 맵 빈 땅에 덩이로.", tilesetId, source: { kind: "tileset", tilesetId },
         width: group.previewMap.width, height: group.previewMap.height,
         lower: group.previewMap.lowerTiles.map(t => t === 240 ? -1 : t), upper: [...group.previewMap.upperTiles], defaultLayers: "both", sourceTileset: tileset });

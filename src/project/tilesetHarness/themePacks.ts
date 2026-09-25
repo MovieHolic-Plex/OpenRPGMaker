@@ -297,7 +297,7 @@ export const INTERIOR_HARNESS_GROUPS: readonly PackHarnessGroup[] = [
   packGroup(INTERIOR_HARNESS_PREFIX, "dark-zone", "암흑/어두운 벽", "wall", "lower", [366, 367, 368, 369, 370, 371, 396, 397, 398, 399, 400, 401, 426, 427, 428, 429, 430, 431, 456, 457, 458, 459, 460, 461, 116, 146, 233, 257, 258], "solid", "repeat", "어두운 벽(366 브러시) 오토타일 계열과 동굴 암흑·공허(430/116) 타일입니다."),
   packGroup(INTERIOR_HARNESS_PREFIX, "kitchen", "주방 설비", "building", "lower", [21, 51, 22, 23, 52, 53, 373], "solid", "fixed", "화덕 오븐(21+51 세로쌍)·조리대(22/23+52/53)·벽난로 아궁이(373)입니다. 통행 불가."),
   packGroup(INTERIOR_HARNESS_PREFIX, "table-surface", "확장 탁자 상판", "building", "lower", [126,128,129,156,157,158,186,187,188,216,217,218,159,160,161,189,190,191,219,220,221], "solid", "repeat", "소품은 상판 위 upper, 하단·다리는 별도 부품으로 연결하는 확장 탁자입니다."),
-  packGroup(INTERIOR_HARNESS_PREFIX, "stairs-horizontal", "가로 돌계단", "building", "lower", [141,111,171], "passable", "repeat", "141(왼끝) | 111(반복) | 171(오른끝) 돌계단입니다. 목재가 아닙니다."),
+  packGroup(INTERIOR_HARNESS_PREFIX, "stairs-horizontal", "벽에 붙은 오르막 계단", "building", "lower", [111,141,171], "passable", "fixed", "세로 1×3 한 벌: 111(위) / 141 / 171(아래). 벽면 줄 아래 바닥 위에, 난간이 왼쪽이라 동벽에 붙인다. 가로로 늘어놓지 않는다. 돌이며 목재가 아닙니다."),
   packGroup(INTERIOR_HARNESS_PREFIX, "counter", "카운터/천 테이블", "building", "lower", [198, 199, 200, 201, 228, 229, 230, 231], "solid", "fixed", "목재·흰색 탁자 하단 부품입니다. 201번은 미확정 부품이므로 자동 조립에서 제외합니다."),
   packGroup(INTERIOR_HARNESS_PREFIX, "curtain", "붉은 대형 커튼", "building", "lower", [142, 143, 172, 173, 202, 203], "solid", "fixed", "무대용 대형 붉은 커튼(2×3)입니다. 벽면에 배치합니다."),
   packGroup(INTERIOR_HARNESS_PREFIX, "pillar", "기둥/제단", "building", "lower", [312, 313, 342, 343, 372, 374], "solid", "fixed", "석재 기둥 상·하단과 석판 제단입니다."),
