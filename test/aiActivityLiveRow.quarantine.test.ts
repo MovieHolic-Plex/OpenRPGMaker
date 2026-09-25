@@ -1,3 +1,5 @@
+// 격리(2026-09-25): 이 파일은 채팅의 선택 영역 파이프라인(regionTaskRunner)으로 라이브 활동 행을 몰았다.
+// 그 경로는 «영역 작업» 폐기로 채팅에서 빠졌다(선택 영역도 Pi 턴). Pi 경로로 다시 몰기 전까지 기본 스위트에서 뺀다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { clearConversations } from "@/ai/conversationStore";
