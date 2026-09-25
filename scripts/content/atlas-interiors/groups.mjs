@@ -8,5 +8,7 @@ import civic2 from "./civic2.mjs";
 import crafts from "./crafts.mjs";
 import castle from "./castle.mjs";
 import sacred from "./sacred.mjs";
+import ships from "./ships.mjs";
+import climate from "./climate.mjs";
 
-export const GROUPS = { homes, shops, taverns, guilds, schools, civic, civic2, crafts, castle, sacred };
+export const GROUPS = { homes, shops, taverns, guilds, schools, civic, civic2, crafts, castle, sacred, ships, climate };

@@ -2676,5 +2676,455 @@
     "walkable": 92,
     "blocked": [],
     "pockets": []
+  },
+  {
+    "id": "atlas-interior-ship-captain-cabin",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        10,
+        8
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        16,
+        7
+      ],
+      [
+        4,
+        9
+      ]
+    ],
+    "reachable": 58,
+    "walkable": 52,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-ship-below-deck",
+    "entry": [
+      11,
+      6
+    ],
+    "targets": [
+      [
+        11,
+        6
+      ],
+      [
+        4,
+        8
+      ],
+      [
+        18,
+        7
+      ],
+      [
+        12,
+        10
+      ],
+      [
+        3,
+        9
+      ],
+      [
+        10,
+        5
+      ],
+      [
+        11,
+        5
+      ],
+      [
+        12,
+        5
+      ]
+    ],
+    "reachable": 83,
+    "walkable": 73,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-desert-house",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        9,
+        6
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        15,
+        8
+      ],
+      [
+        12,
+        7
+      ]
+    ],
+    "reachable": 65,
+    "walkable": 62,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-desert-bazaar",
+    "entry": [
+      10,
+      11
+    ],
+    "targets": [
+      [
+        4,
+        7
+      ],
+      [
+        15,
+        7
+      ],
+      [
+        4,
+        9
+      ],
+      [
+        15,
+        9
+      ],
+      [
+        10,
+        7
+      ]
+    ],
+    "reachable": 85,
+    "walkable": 75,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-desert-oasis-inn",
+    "entry": [
+      12,
+      12
+    ],
+    "targets": [
+      [
+        6,
+        6
+      ],
+      [
+        12,
+        8
+      ],
+      [
+        20,
+        8
+      ],
+      [
+        6,
+        10
+      ],
+      [
+        15,
+        5
+      ]
+    ],
+    "reachable": 99,
+    "walkable": 95,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-snow-cabin",
+    "entry": [
+      8,
+      10
+    ],
+    "targets": [
+      [
+        10,
+        7
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        15,
+        8
+      ],
+      [
+        4,
+        8
+      ]
+    ],
+    "reachable": 44,
+    "walkable": 40,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-snow-lodge-inn",
+    "entry": [
+      12,
+      12
+    ],
+    "targets": [
+      [
+        21,
+        6
+      ],
+      [
+        11,
+        9
+      ],
+      [
+        6,
+        8
+      ],
+      [
+        16,
+        11
+      ],
+      [
+        21,
+        8
+      ]
+    ],
+    "reachable": 100,
+    "walkable": 94,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-snow-trading-post",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        12,
+        5
+      ],
+      [
+        11,
+        7
+      ],
+      [
+        4,
+        7
+      ],
+      [
+        15,
+        8
+      ]
+    ],
+    "reachable": 56,
+    "walkable": 53,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-volcano-forge",
+    "entry": [
+      12,
+      12
+    ],
+    "targets": [
+      [
+        9,
+        8
+      ],
+      [
+        14,
+        8
+      ],
+      [
+        5,
+        7
+      ],
+      [
+        19,
+        8
+      ],
+      [
+        16,
+        10
+      ]
+    ],
+    "reachable": 96,
+    "walkable": 85,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-volcano-fire-shrine",
+    "entry": [
+      9,
+      11
+    ],
+    "targets": [
+      [
+        9,
+        7
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        16,
+        7
+      ],
+      [
+        7,
+        9
+      ],
+      [
+        11,
+        9
+      ]
+    ],
+    "reachable": 81,
+    "walkable": 70,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-volcano-miner-house",
+    "entry": [
+      8,
+      10
+    ],
+    "targets": [
+      [
+        8,
+        8
+      ],
+      [
+        4,
+        7
+      ],
+      [
+        12,
+        7
+      ],
+      [
+        3,
+        9
+      ]
+    ],
+    "reachable": 54,
+    "walkable": 52,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-autumn-harvest-barn",
+    "entry": [
+      12,
+      12
+    ],
+    "targets": [
+      [
+        12,
+        7
+      ],
+      [
+        2,
+        7
+      ],
+      [
+        20,
+        7
+      ],
+      [
+        6,
+        11
+      ],
+      [
+        17,
+        11
+      ]
+    ],
+    "reachable": 105,
+    "walkable": 97,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-autumn-cider-house",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        7,
+        7
+      ],
+      [
+        12,
+        6
+      ],
+      [
+        16,
+        7
+      ],
+      [
+        6,
+        9
+      ]
+    ],
+    "reachable": 62,
+    "walkable": 52,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-autumn-harvest-feast",
+    "entry": [
+      12,
+      12
+    ],
+    "targets": [
+      [
+        12,
+        10
+      ],
+      [
+        2,
+        8
+      ],
+      [
+        21,
+        8
+      ],
+      [
+        9,
+        11
+      ],
+      [
+        15,
+        11
+      ]
+    ],
+    "reachable": 95,
+    "walkable": 74,
+    "blocked": [],
+    "pockets": []
   }
 ]
