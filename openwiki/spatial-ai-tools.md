@@ -278,7 +278,8 @@ filled — read-only rows every project sees, with or without `spatialAuthoring`
   same as the 장소 tab), plus every `REGION_REFERENCES`/`PLACE_REFERENCES` id. Put one in with
   `import_region_reference` (reviewed places bring every floor/room map as new maps; the 11MB
   `reviewedPlaces/catalog.json` is imported only then).
-- kind `object`: the **shared object catalog** `src/assets/sharedObjectCatalog.json` (195 objects, `obj:<category>/…`)
+- kind `object`: the **shared object catalog** `src/assets/sharedObjectCatalog.json` (195 built-in objects plus the
+  pipeline files below, `obj:<category>/…`)
   plus this project's other section kits (`kit:<tileset>/<kit>`) and preview tile groups (`group:<tileset>/<group>`).
   Catalog categories: `tree` (bare-trees per snow/volcano/desert sheet, 42), `volcano` (peaks: dormant, erupting,
   pair), `terrain` (climate-terrain pieces 3030~ — sulfur, obsidian, ash heap, fumarole, basalt, cactus, bones,
@@ -291,6 +292,20 @@ filled — read-only rows every project sees, with or without `spatialAuthoring`
   to what) and a preview `/assets/shared-objects/<id>.png`. Generator: `node scripts/content/build-shared-object-catalog.mjs`
   (sources in `scripts/content/lib/shared-object-catalog-entry.ts`; place kits are indexed by
   `build-shared-object-index.mjs`). The ids `refkit:`/`part:`/`pattern:`/`house:` from #1499 still resolve (aliases).
+- **Pipeline objects (`tiledata/*/shared-objects.json`, 2026-09-25).** A map pipeline that cuts reusable pieces
+  (ships, carts, stalls, stages, furniture sets …) writes them to `tiledata/<pipeline>/shared-objects.json` — an array
+  or `{ objects: [...] }` of `{ id: "<분야>/<kebab>", name, category, tags, tilesetId, width, height, lower[w*h],
+  upper[w*h], owner, sourceMap }`. `category` ∈ house|gate|prop|terrain|harbor|tree|volcano|furniture|vehicle|landmark
+  (the 오브젝트 tab labels the last three 가구·탈것·표지물); `tilesetId` is the **bundled** tileset id (never a
+  `shared_` copy) and cells use its numbering (-1 = leave the map cell). The generator reads every such file (sorted by
+  pipeline directory), appends them **after** the built-in objects as `obj:<category>/<분야>/<kebab>` (existing ids,
+  order and previews stay byte-identical), adds the pipeline name as a tag, computes `passage` from the cells, picks
+  `defaultLayers` (upper when `lower` is all -1, lower when `upper` is, else both) unless the entry sets it, and renders
+  the preview with the bundled tileset (grafts included; the standard key colours #FF00FF/#FF678B and
+  `tileset.transparentColor` are keyed out as the editor does — the EasyRPG ship sheet keeps a pink key). Invalid
+  entries (bad id, unknown category, tileset missing from a new project, cell number ≥ count, wrong array length,
+  empty owner, duplicate id) fail the build with every problem listed. Other agents only write the file; rerun the
+  generator once to collect them all.
 - The editor 오브젝트 tab lists the same catalog as 공용 오브젝트 cards (`sharedObjectId`), with owner/passage in the
   inspector and a 「현재 맵 가운데에 찍기」 button that runs `stamp_object`.
 - Assistant rule (Pi system prompt, capability policy): places → `import_region_reference`, objects →
