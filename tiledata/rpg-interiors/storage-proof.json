@@ -1,8 +1,8 @@
 {
   "projectId": "0c70c503-a2f7-432e-9f7b-4c00222702b2",
   "projectDir": ".oprn-projects/rpg-interiors-20260924",
-  "revision": 4,
-  "sha256": "48458fa9ea6407ea6aec399479b12db000fa54b0107f5acd7cccd5e673737fc0",
+  "revision": 6,
+  "sha256": "29faa16ee3e01ed4441b1c233f9af5eb4e9e315a76bb06b678062881ed0b5ef4",
   "saved": true,
   "reopened": true,
   "maps": [
@@ -28,6 +28,12 @@
     "interior-casino",
     "interior-auction-house",
     "interior-ship-cabin",
-    "interior-ship-hold"
+    "interior-ship-hold",
+    "interior-desert-home",
+    "interior-desert-oasis-inn",
+    "interior-snow-hunter-cabin",
+    "interior-snow-chief-house",
+    "interior-volcano-smith-house",
+    "interior-volcano-ash-inn"
   ]
 }

@@ -2,12 +2,42 @@
   "id": "tibo_interior_expanded",
   "kind": "custom",
   "name": "실내 확장 · Tibo",
-  "count": 1980,
+  "count": 2010,
   "image": {
     "id": "tex_tibo_interior_expanded",
     "type": "bundled"
   },
   "terrain": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
     0,
     0,
     0,
@@ -3969,6 +3999,36 @@
     "upper",
     "upper",
     "upper",
+    "upper",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
     "upper"
   ],
   "tileMeta": [
@@ -29472,6 +29532,572 @@
       "label": "",
       "description": "",
       "defaultLayer": "upper"
+    },
+    {
+      "role": "wall",
+      "tags": [
+        "통나무 벽 윗줄 왼끝",
+        "log wall",
+        "통나무",
+        "설원",
+        "오두막",
+        "벽",
+        "실내"
+      ],
+      "label": "통나무 벽 윗줄 왼끝",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "wall",
+      "tags": [
+        "통나무 벽 윗줄 가운데",
+        "log wall",
+        "통나무",
+        "설원",
+        "오두막",
+        "벽",
+        "실내"
+      ],
+      "label": "통나무 벽 윗줄 가운데",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "wall",
+      "tags": [
+        "통나무 벽 윗줄 오른끝",
+        "log wall",
+        "통나무",
+        "설원",
+        "오두막",
+        "벽",
+        "실내"
+      ],
+      "label": "통나무 벽 윗줄 오른끝",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "wall",
+      "tags": [
+        "통나무 벽 아랫줄 왼끝",
+        "log wall",
+        "통나무",
+        "설원",
+        "오두막",
+        "벽",
+        "실내"
+      ],
+      "label": "통나무 벽 아랫줄 왼끝",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "wall",
+      "tags": [
+        "통나무 벽 아랫줄 가운데",
+        "log wall",
+        "통나무",
+        "설원",
+        "오두막",
+        "벽",
+        "실내"
+      ],
+      "label": "통나무 벽 아랫줄 가운데",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "wall",
+      "tags": [
+        "통나무 벽 아랫줄 오른끝",
+        "log wall",
+        "통나무",
+        "설원",
+        "오두막",
+        "벽",
+        "실내"
+      ],
+      "label": "통나무 벽 아랫줄 오른끝",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "wall",
+      "tags": [
+        "사암 벽 윗줄 왼끝",
+        "sandstone wall",
+        "사암",
+        "사막",
+        "흙벽돌",
+        "벽",
+        "실내"
+      ],
+      "label": "사암 벽 윗줄 왼끝",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "wall",
+      "tags": [
+        "사암 벽 윗줄 가운데",
+        "sandstone wall",
+        "사암",
+        "사막",
+        "흙벽돌",
+        "벽",
+        "실내"
+      ],
+      "label": "사암 벽 윗줄 가운데",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "wall",
+      "tags": [
+        "사암 벽 윗줄 오른끝",
+        "sandstone wall",
+        "사암",
+        "사막",
+        "흙벽돌",
+        "벽",
+        "실내"
+      ],
+      "label": "사암 벽 윗줄 오른끝",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "wall",
+      "tags": [
+        "사암 벽 아랫줄 왼끝",
+        "sandstone wall",
+        "사암",
+        "사막",
+        "흙벽돌",
+        "벽",
+        "실내"
+      ],
+      "label": "사암 벽 아랫줄 왼끝",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "wall",
+      "tags": [
+        "사암 벽 아랫줄 가운데",
+        "sandstone wall",
+        "사암",
+        "사막",
+        "흙벽돌",
+        "벽",
+        "실내"
+      ],
+      "label": "사암 벽 아랫줄 가운데",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "wall",
+      "tags": [
+        "사암 벽 아랫줄 오른끝",
+        "sandstone wall",
+        "사암",
+        "사막",
+        "흙벽돌",
+        "벽",
+        "실내"
+      ],
+      "label": "사암 벽 아랫줄 오른끝",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "wall",
+      "tags": [
+        "현무암 벽 윗줄 왼끝",
+        "basalt wall",
+        "현무암",
+        "화산",
+        "검은 돌",
+        "벽",
+        "실내"
+      ],
+      "label": "현무암 벽 윗줄 왼끝",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "wall",
+      "tags": [
+        "현무암 벽 윗줄 가운데",
+        "basalt wall",
+        "현무암",
+        "화산",
+        "검은 돌",
+        "벽",
+        "실내"
+      ],
+      "label": "현무암 벽 윗줄 가운데",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "wall",
+      "tags": [
+        "현무암 벽 윗줄 오른끝",
+        "basalt wall",
+        "현무암",
+        "화산",
+        "검은 돌",
+        "벽",
+        "실내"
+      ],
+      "label": "현무암 벽 윗줄 오른끝",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "wall",
+      "tags": [
+        "현무암 벽 아랫줄 왼끝",
+        "basalt wall",
+        "현무암",
+        "화산",
+        "검은 돌",
+        "벽",
+        "실내"
+      ],
+      "label": "현무암 벽 아랫줄 왼끝",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "wall",
+      "tags": [
+        "현무암 벽 아랫줄 가운데",
+        "basalt wall",
+        "현무암",
+        "화산",
+        "검은 돌",
+        "벽",
+        "실내"
+      ],
+      "label": "현무암 벽 아랫줄 가운데",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "wall",
+      "tags": [
+        "현무암 벽 아랫줄 오른끝",
+        "basalt wall",
+        "현무암",
+        "화산",
+        "검은 돌",
+        "벽",
+        "실내"
+      ],
+      "label": "현무암 벽 아랫줄 오른끝",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "terrain",
+      "tags": [
+        "현무암 바닥",
+        "basalt floor",
+        "화산",
+        "검은 돌",
+        "바닥",
+        "실내"
+      ],
+      "label": "현무암 바닥",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "화산 마을 집·대장간의 어두운 돌바닥",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "terrain",
+      "tags": [
+        "사암 바닥",
+        "sandstone floor",
+        "사막",
+        "모래빛",
+        "바닥",
+        "실내"
+      ],
+      "label": "사암 바닥",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "사막 마을 집의 모래빛 돌바닥",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "terrain",
+      "tags": [
+        "흰 모피 깔개 왼쪽 위",
+        "fur rug",
+        "모피",
+        "설원",
+        "깔개",
+        "바닥",
+        "실내"
+      ],
+      "label": "흰 모피 깔개 왼쪽 위",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "3×3 흰 모피 깔개. 블록 단위로 깐다",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "terrain",
+      "tags": [
+        "흰 모피 깔개 위",
+        "fur rug",
+        "모피",
+        "설원",
+        "깔개",
+        "바닥",
+        "실내"
+      ],
+      "label": "흰 모피 깔개 위",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "3×3 흰 모피 깔개. 블록 단위로 깐다",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "terrain",
+      "tags": [
+        "흰 모피 깔개 오른쪽 위",
+        "fur rug",
+        "모피",
+        "설원",
+        "깔개",
+        "바닥",
+        "실내"
+      ],
+      "label": "흰 모피 깔개 오른쪽 위",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "3×3 흰 모피 깔개. 블록 단위로 깐다",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "terrain",
+      "tags": [
+        "흰 모피 깔개 왼쪽",
+        "fur rug",
+        "모피",
+        "설원",
+        "깔개",
+        "바닥",
+        "실내"
+      ],
+      "label": "흰 모피 깔개 왼쪽",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "3×3 흰 모피 깔개. 블록 단위로 깐다",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "terrain",
+      "tags": [
+        "흰 모피 깔개 가운데",
+        "fur rug",
+        "모피",
+        "설원",
+        "깔개",
+        "바닥",
+        "실내"
+      ],
+      "label": "흰 모피 깔개 가운데",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "3×3 흰 모피 깔개. 블록 단위로 깐다",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "terrain",
+      "tags": [
+        "흰 모피 깔개 오른쪽",
+        "fur rug",
+        "모피",
+        "설원",
+        "깔개",
+        "바닥",
+        "실내"
+      ],
+      "label": "흰 모피 깔개 오른쪽",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "3×3 흰 모피 깔개. 블록 단위로 깐다",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "terrain",
+      "tags": [
+        "흰 모피 깔개 왼쪽 아래",
+        "fur rug",
+        "모피",
+        "설원",
+        "깔개",
+        "바닥",
+        "실내"
+      ],
+      "label": "흰 모피 깔개 왼쪽 아래",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "3×3 흰 모피 깔개. 블록 단위로 깐다",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "terrain",
+      "tags": [
+        "흰 모피 깔개 아래",
+        "fur rug",
+        "모피",
+        "설원",
+        "깔개",
+        "바닥",
+        "실내"
+      ],
+      "label": "흰 모피 깔개 아래",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "3×3 흰 모피 깔개. 블록 단위로 깐다",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "terrain",
+      "tags": [
+        "흰 모피 깔개 오른쪽 아래",
+        "fur rug",
+        "모피",
+        "설원",
+        "깔개",
+        "바닥",
+        "실내"
+      ],
+      "label": "흰 모피 깔개 오른쪽 아래",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "3×3 흰 모피 깔개. 블록 단위로 깐다",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
     }
   ],
   "tileSize": 16,
@@ -37505,6 +38131,95 @@
       "description": "3×4 대리석 바닥 오토타일",
       "defaultLayer": "lower",
       "placementRules": "몸통으로 칠하면 변과 모서리가 이어집니다."
+    },
+    {
+      "id": "climate-interior-wall-log",
+      "name": "통나무 벽(설원)",
+      "tileIds": [
+        1980,
+        1981,
+        1982,
+        1983,
+        1984,
+        1985
+      ],
+      "role": "wall",
+      "description": "설원 오두막 실내 벽면. 윗줄 1980~1982, 아랫줄 1983~1985(왼끝·가운데·오른끝). interiorRoomPipeline wallMaterial \"log\".",
+      "source": "bundled-default",
+      "confidence": "high",
+      "defaultLayer": "lower",
+      "placementRules": "설원 오두막 실내 벽면. 윗줄 1980~1982, 아랫줄 1983~1985(왼끝·가운데·오른끝). interiorRoomPipeline wallMaterial \"log\"."
+    },
+    {
+      "id": "climate-interior-wall-sandstone",
+      "name": "사암 벽(사막)",
+      "tileIds": [
+        1986,
+        1987,
+        1988,
+        1989,
+        1990,
+        1991
+      ],
+      "role": "wall",
+      "description": "사막 집 실내 벽면. 윗줄 1986~1988, 아랫줄 1989~1991. wallMaterial \"sandstone\".",
+      "source": "bundled-default",
+      "confidence": "high",
+      "defaultLayer": "lower",
+      "placementRules": "사막 집 실내 벽면. 윗줄 1986~1988, 아랫줄 1989~1991. wallMaterial \"sandstone\"."
+    },
+    {
+      "id": "climate-interior-wall-basalt",
+      "name": "현무암 벽(화산)",
+      "tileIds": [
+        1992,
+        1993,
+        1994,
+        1995,
+        1996,
+        1997
+      ],
+      "role": "wall",
+      "description": "화산 마을 집·대장간 실내 벽면. 윗줄 1992~1994, 아랫줄 1995~1997. wallMaterial \"basalt\".",
+      "source": "bundled-default",
+      "confidence": "high",
+      "defaultLayer": "lower",
+      "placementRules": "화산 마을 집·대장간 실내 벽면. 윗줄 1992~1994, 아랫줄 1995~1997. wallMaterial \"basalt\"."
+    },
+    {
+      "id": "climate-interior-floor",
+      "name": "기후 실내 바닥",
+      "tileIds": [
+        1998,
+        1999
+      ],
+      "role": "terrain",
+      "description": "현무암 바닥 1998(화산), 사암 바닥 1999(사막).",
+      "source": "bundled-default",
+      "confidence": "high",
+      "defaultLayer": "lower",
+      "placementRules": "현무암 바닥 1998(화산), 사암 바닥 1999(사막)."
+    },
+    {
+      "id": "climate-interior-fur-rug",
+      "name": "흰 모피 깔개(설원)",
+      "tileIds": [
+        2000,
+        2001,
+        2002,
+        2003,
+        2004,
+        2005,
+        2006,
+        2007,
+        2008
+      ],
+      "role": "terrain",
+      "description": "3×3 조각(짚 돗자리 108~170과 같은 배치). 가운데 2004를 늘려 넓힌다.",
+      "source": "bundled-default",
+      "confidence": "high",
+      "defaultLayer": "lower",
+      "placementRules": "3×3 조각(짚 돗자리 108~170과 같은 배치). 가운데 2004를 늘려 넓힌다."
     }
   ],
   "passability": [
@@ -49315,6 +50030,186 @@
       "down": true,
       "left": true,
       "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
     {
       "up": true,

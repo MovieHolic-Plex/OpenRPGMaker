@@ -21,6 +21,11 @@
       "present": true
     },
     {
+      "tileset": "tibo_interior_expanded",
+      "category": "rpg-interiors-climate-v1",
+      "present": true
+    },
+    {
       "tileset": "easyrpg_chipset_ship",
       "category": "rpg-interiors-ship-v1",
       "present": true
@@ -231,6 +236,60 @@
       "preview": [
         352,
         224
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "interior-desert-home-17x13",
+      "aiRowsExact": true,
+      "preview": [
+        272,
+        208
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "interior-desert-oasis-inn-22x15",
+      "aiRowsExact": true,
+      "preview": [
+        352,
+        240
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "interior-snow-hunter-cabin-17x13",
+      "aiRowsExact": true,
+      "preview": [
+        272,
+        208
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "interior-snow-chief-house-27x15",
+      "aiRowsExact": true,
+      "preview": [
+        432,
+        240
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "interior-volcano-smith-house-20x14",
+      "aiRowsExact": true,
+      "preview": [
+        320,
+        224
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "interior-volcano-ash-inn-22x15",
+      "aiRowsExact": true,
+      "preview": [
+        352,
+        240
       ],
       "downloadExact": true
     }

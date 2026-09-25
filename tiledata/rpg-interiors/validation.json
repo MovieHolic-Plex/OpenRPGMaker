@@ -661,5 +661,187 @@
     "walkable": 66,
     "blocked": [],
     "pockets": []
+  },
+  {
+    "id": "interior-desert-home",
+    "entry": [
+      8,
+      10
+    ],
+    "targets": [
+      [
+        4,
+        9
+      ],
+      [
+        8,
+        6
+      ],
+      [
+        12,
+        9
+      ],
+      [
+        2,
+        7
+      ]
+    ],
+    "reachable": 44,
+    "walkable": 38,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-desert-oasis-inn",
+    "entry": [
+      13,
+      13
+    ],
+    "targets": [
+      [
+        9,
+        6
+      ],
+      [
+        18,
+        6
+      ],
+      [
+        4,
+        7
+      ],
+      [
+        13,
+        11
+      ],
+      [
+        15,
+        9
+      ]
+    ],
+    "reachable": 93,
+    "walkable": 86,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-snow-hunter-cabin",
+    "entry": [
+      8,
+      10
+    ],
+    "targets": [
+      [
+        7,
+        8
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        13,
+        8
+      ],
+      [
+        10,
+        6
+      ]
+    ],
+    "reachable": 42,
+    "walkable": 34,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-snow-chief-house",
+    "entry": [
+      13,
+      12
+    ],
+    "targets": [
+      [
+        4,
+        7
+      ],
+      [
+        13,
+        10
+      ],
+      [
+        21,
+        8
+      ],
+      [
+        10,
+        7
+      ]
+    ],
+    "reachable": 108,
+    "walkable": 101,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-volcano-smith-house",
+    "entry": [
+      6,
+      11
+    ],
+    "targets": [
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        9
+      ],
+      [
+        16,
+        8
+      ],
+      [
+        13,
+        7
+      ]
+    ],
+    "reachable": 56,
+    "walkable": 49,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-volcano-ash-inn",
+    "entry": [
+      13,
+      13
+    ],
+    "targets": [
+      [
+        9,
+        6
+      ],
+      [
+        18,
+        6
+      ],
+      [
+        4,
+        7
+      ],
+      [
+        13,
+        11
+      ],
+      [
+        17,
+        10
+      ]
+    ],
+    "reachable": 94,
+    "walkable": 89,
+    "blocked": [],
+    "pockets": []
   }
 ]
