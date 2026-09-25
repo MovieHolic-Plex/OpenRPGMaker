@@ -96,7 +96,8 @@ export function isGableHouseFormId(id: string | undefined): boolean {
   return id !== undefined && findGableHouseFormSpec(id) !== undefined;
 }
 
-const wallRowsOf = (part: GablePart): number => (part.wall === "low" ? 2 : 3);
+const storiesOf = (part: GablePart): 1 | 2 => (part.wall !== "low" && part.stories === 2 ? 2 : 1);
+const wallRowsOf = (part: GablePart): number => (part.wall === "low" ? 2 : storiesOf(part) === 2 ? 5 : 3);
 
 function partTop(part: GablePart): number {
   const wallTop = part.bottom - wallRowsOf(part) + 1;
@@ -149,8 +150,10 @@ interface PartPlacement {
 
 function drawWalls(canvas: Canvas, kit: HouseKit, placed: PartPlacement): void {
   const { part, x, bottom, wallTop } = placed;
+  // 2층 벽은 가운데 줄(wallTop+2)을 윗줄 칸으로 칠해 층 사이 띠(들보)를 낸다 — 위층이 따로 읽힌다.
+  const bandY = storiesOf(part) === 2 ? wallTop + 2 : undefined;
   for (let y = wallTop; y <= bottom; y += 1) {
-    const role: 0 | 1 | 2 = y === wallTop ? 0 : y === bottom ? 2 : 1;
+    const role: 0 | 1 | 2 = y === wallTop || y === bandY ? 0 : y === bottom ? 2 : 1;
     for (let dx = 0; dx < part.w; dx += 1) paint(canvas, x + dx, y, wallTileAt(kit, role, dx, part.w), placed.index);
   }
 }
@@ -251,7 +254,8 @@ function backfillSlopes(canvas: Canvas, roof: GableRoofMaterial): void {
 
 /** 창을 낼 벽 줄 —보통 벽은 가운데 줄, 낮은 벽(상·하 2줄)은 윗줄(처마 밑 창). */
 function windowRows(placed: PartPlacement): number[] {
-  return [placed.part.wall === "low" ? placed.wallTop : placed.wallTop + 1];
+  if (placed.part.wall === "low") return [placed.wallTop];
+  return storiesOf(placed.part) === 2 ? [placed.wallTop + 1, placed.wallTop + 3] : [placed.wallTop + 1];
 }
 
 /** 이 줄에서 부품 벽이 실제로 보이는 연속 칸 구간(뒤 부품이 앞 부품에 가린 곳은 뺀다). */
@@ -286,7 +290,7 @@ function drawWindows(canvas: Canvas, kit: HouseKit, placements: readonly PartPla
         const free = (x: number): boolean => {
           if (x <= run.x0 || x >= run.x1) return false;
           if (isPostOffset(kit, x - placed.x, placed.part.w)) return false;
-          if (placed === doorPart && Math.abs(x - doorAt.x) <= 1) return false;
+          if (placed === doorPart && y >= doorAt.y - 2 && Math.abs(x - doorAt.x) <= 1) return false;
           return canvas.upper[y * canvas.w + x] === -1;
         };
         let segmentStart = -1;
@@ -303,7 +307,7 @@ function drawWindows(canvas: Canvas, kit: HouseKit, placements: readonly PartPla
         if (placedAny) continue;
         // 폭 4 박공처럼 문이 안쪽 칸을 다 먹으면 문에서 먼 벽 끝 칸에 창(끝 반기둥 옆에 붙는 작은 창).
         const ends = [run.x0, run.x1]
-          .filter((x) => !(placed === doorPart && Math.abs(x - doorAt.x) <= 1) && canvas.upper[y * canvas.w + x] === -1)
+          .filter((x) => !(placed === doorPart && y >= doorAt.y - 2 && Math.abs(x - doorAt.x) <= 1) && canvas.upper[y * canvas.w + x] === -1)
           .sort((a, b) => Math.abs(b - doorAt.x) - Math.abs(a - doorAt.x));
         if (ends.length > 0) overlay(canvas, ends[0]!, y, kit.windowTile);
       }
@@ -391,7 +395,9 @@ function placeAccent(context: AccentContext, kind: AccentKind, seed: number): bo
     if (context.doorPart.part.wall === "low") return false;
     const y = context.doorAt.y - 2;
     const cell = at(canvas, context.doorAt.x, y);
-    if (!cell || cell.upper !== -1 || y !== context.doorPart.wallTop) return false;
+    // 1층 문 위 띠 줄 — 단층은 벽 윗줄, 2층은 층 띠(wallTop+2).
+    const bandY = storiesOf(context.doorPart.part) === 2 ? context.doorPart.wallTop + 2 : context.doorPart.wallTop;
+    if (!cell || cell.upper !== -1 || y !== bandY) return false;
     overlay(canvas, context.doorAt.x, y, housePartTile(mix(seed, 4) % 2 === 0 ? "awning-wood" : "awning-cloth"));
     return true;
   }
@@ -471,7 +477,8 @@ function composeInternal(spec: GableHouseFormSpec, kitId: HouseKitId, options: G
     const upperTiles = canvas.upper.slice(y * w, (y + 1) * w);
     rows.push(upperTiles.some((tile) => tile !== -1) ? { tiles, upperTiles } : { tiles });
   }
-  return { form: { id: spec.id, name: spec.name, w, h, stories: 1, kitId, doorAt, rows }, canvas, placements, roof, doorPart };
+  const stories = spec.parts.some((part) => storiesOf(part) === 2) ? 2 : 1;
+  return { form: { id: spec.id, name: spec.name, w, h, stories, kitId, doorAt, rows }, canvas, placements, roof, doorPart };
 }
 
 /** 합성 검사 결과 — 비어 있으면 통과. */
@@ -571,6 +578,11 @@ export function gableAccentSeed(templateId: string, x: number, y: number, salt =
 export function gableHouseFormSize(spec: GableHouseFormSpec): { readonly w: number; readonly h: number } {
   const form = composeGableHouseForm(spec, "bright-plaster");
   return { w: form.w, h: form.h };
+}
+
+/** 형태 층수(1·2) — 2층 부품이 하나라도 있으면 2. */
+export function gableHouseFormStories(spec: GableHouseFormSpec): 1 | 2 {
+  return spec.parts.some((part) => storiesOf(part) === 2) ? 2 : 1;
 }
 
 export { GABLE_HOUSE_FORM_SPECS };

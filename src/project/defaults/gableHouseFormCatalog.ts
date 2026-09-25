@@ -27,6 +27,8 @@ export interface GableFrontPart {
   readonly w: number;
   readonly bottom: number;
   readonly wall?: GableWallHeight;
+  /** 층수(기본 1). 2 = 벽 5줄(윗 띠·2층 창 줄·층 띠·1층 창 줄·아랫줄). wall:"low" 와 함께 쓰지 않는다. */
+  readonly stories?: 1 | 2;
   /** 합각과 좁아지는 몸통 사이의 온폭 몸통 행 — 뾰족함·뒤채까지 이어지는 날개 지붕. */
   readonly steep?: number;
   readonly door?: boolean;
@@ -41,6 +43,8 @@ export interface GableBlockPart {
   /** 지붕 행(용마루 + 몸통 + 처마) ≥2. */
   readonly roofRows: number;
   readonly wall?: GableWallHeight;
+  /** 층수(기본 1). 2 = 벽 5줄. */
+  readonly stories?: 1 | 2;
   readonly ends?: "hip" | "verge";
   readonly door?: boolean;
 }
@@ -103,6 +107,12 @@ export const GABLE_HOUSE_FORM_SPECS: readonly GableHouseFormSpec[] = [
   { id: "gable-long-low", name: "측면 박공 헛간", parts: [block(0, 7, 0, 3, { ends: "verge", wall: "low" })] },
   { id: "gable-long-step", name: "측면 박공 두 채", parts: [block(0, 5, 0, 3, { ends: "verge", door: true }), block(5, 3, -1, 3, { ends: "verge", wall: "low" })] },
   { id: "gable-hall", name: "측면 박공 + 정면 박공 두 개", parts: [block(0, 8, -1, 3, { ends: "verge" }), front(0, 4, 0, { door: true }), front(4, 4, 0)] },
+  // ── 2층(2026-09-25) — 벽 5줄: 윗 띠 · 2층 창 줄 · 층 띠(벽 윗줄 칸 재사용) · 1층 창·문 줄 · 아랫줄. 문은 1층에만. ──
+  { id: "gable-2f", name: "2층 박공집", parts: [front(0, 6, 0, { stories: 2 })] },
+  { id: "gable-2f-narrow", name: "좁은 2층 박공집", parts: [front(0, 4, 0, { stories: 2 })] },
+  { id: "gable-2f-long", name: "2층 측면 박공 장옥", parts: [block(0, 8, 0, 3, { ends: "verge", stories: 2 })] },
+  { id: "gable-2f-lean", name: "2층 박공 + 단층 곁채", parts: [block(0, 8, 0, 2), front(0, 4, 0, { stories: 2, door: true })] },
+  { id: "gable-2f-porch", name: "2층 장옥 + 현관 박공", parts: [block(0, 8, -1, 3, { stories: 2 }), front(0, 4, 0, { wall: "low", steep: 1, door: true })] },
 ];
 
 /** 자동 추첨 가중치 — 0 이면 자동 추첨 제외. */
