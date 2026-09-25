@@ -486,6 +486,21 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
   이동 뒤 재투영을 빠뜨려 QA 가 «옛 자리에 그대로» 를 잡은 것이 이 조항의 근거다.
 - 역할은 **하나만** 갖는다(`tags` 의 전용 낱말). 둘을 겹치면 어느 배열의 정본인지 흐려진다.
 
+#### 맵 테두리 드래그로 크기 늘리기 (2026-09-25)
+
+`src/editor/mapEdgeGrow.ts`(순수 판정·적용) + `EditScene` 의 `syncMapEdgeHint`·`beginMapEdgeDrag`·`updateMapEdgeDrag`.
+
+- **호버는 안내만 한다.** 맵 밖 56 화면픽셀 띠에 포인터가 있으면 그 변을 주황으로 칠하고 캔버스 커서를
+  `ew-resize`/`ns-resize`/`nwse-resize`/`nesw-resize` 로 바꾼다. 크기는 바꾸지 않는다 — 첫 구현(28a3c0397)은
+  머물기만 해도 170ms 마다 한 칸씩 키워 「가장자리에 호버하면 맵이 커진다」 신고가 나왔다.
+- **크기는 띠에서 시작한 좌클릭 드래그만 바꾼다.** `pointerdown` 에서 우클릭 다음, `shouldPan` **앞**에 본다 —
+  선택 도구는 맵 밖 좌클릭을 팬으로 가져가므로 순서가 바뀌면 띠를 잡아도 카메라만 움직인다. 띠는 맵 밖이라
+  가로채도 칠할 칸을 잃지 않는다. 드래그 중 `pointerGestureState().dragging` 은 참이다(조수 초점 양보).
+- 칸 수는 원래 테두리를 넘은 거리의 반올림이고, 잡은 축의 변만 늘린다. 되돌아 끌면 이 드래그에서 늘린 칸까지만
+  줄인다(원래 크기 아래 금지). 왼쪽·위는 내용을 밀고 카메라를 같은 칸만큼 옮긴다.
+- 드래그 한 번 = 되돌리기 한 단계. 히스토리 키에 드래그 일련번호를 넣는다 — 같은 키면 바로 앞 드래그와 묶인다.
+- 상한(`MAX_TOOL_MAP_DIMENSION`)은 깎고 토스트는 드래그당 한 번, 잠긴 맵은 누를 때 `mapEditLockNotice` 토스트 후 누름을 삼킨다.
+
 #### 로케이션과 이벤트가 같은 칸에서 만날 때 (클릭 소유권)
 
 순수 판정기는 `src/editor/locationPointerPriority.ts` 하나다. 같은 판정을 오버레이의
