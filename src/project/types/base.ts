@@ -1,5 +1,6 @@
 import type { ConceptBundleRecord } from "./conceptBundle";
 import type { InteriorFurnitureSnap, InteriorRoomKindRecord } from "./interior";
+import type { TilesetReferenceCategory } from "../tilesetReferences";
 
 export type MapId = string;
 export type TilesetId = string;
@@ -425,6 +426,7 @@ export interface StructureKitAiMeta {
 
 export interface SectionStructureKitDef {
   id: string;
+  referenceDocuments?: TilesetReferenceCategory[];
   kind: "section";
   name?: string;
   // 반복 단위 크기 — rows.length === height, rows[*].tiles.length === width.
@@ -486,6 +488,11 @@ export interface TilesetDef {
     /** 창 난 외벽 칸 → 같은 모양의 창 없는 외벽 칸. 문·간판·차양을 찍을 때 밑 창이 비쳐 보이지 않게 바꾼다. */
     plainWalls?: Record<string, number>;
   };
+  /**
+   * 칩셋 계열(그림체 묶음, 2026-09-25). 같은 계열끼리는 조수가 말없이 바꿔도 되고, 다른 계열로 가려면
+   * 사용자 승인이 필요하다(`src/project/tilesetFamily.ts`). 없으면 원본·번들 이름에서 추정한다.
+   */
+  family?: string;
   id: TilesetId;
   name: string;
   image: AssetRef;
@@ -566,7 +573,8 @@ export interface AutotileGroup {
   // 이웃을 세고 모양을 바꾸는 레이어. 생략 = lower. "upper" 는 바닥 위에 겹치는 투명 오토타일
   // (RPG Maker MV A2 오른쪽 절반의 울타리·주차선·균열처럼)이다 — 아래층 지면을 지우지 않는다.
   layer?: "lower" | "upper";
-  // true 면 맵 밖을 같은 재료로 센다(RPG Maker 규칙) — 맵 가장자리에 테두리가 그려지지 않는다. 생략 = false.
+  // 맵 가장자리 바깥을 이어진 이웃으로 본다. 둘 다 같은 뜻이다. edgeConnects 는 MZ 팩, outsideConnects 는 MV 팩 프리셋.
+  edgeConnects?: boolean;
   outsideConnects?: boolean;
 }
 

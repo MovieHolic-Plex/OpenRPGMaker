@@ -78,7 +78,7 @@ export interface ComposerElements {
   readonly autonomySelect: HTMLSelectElement | null;
   /** Pi 팀 토글. `teamToggleOptions` 를 주지 않았으면 null. 읽기 전용·계획 턴에서는 숨는다. */
   readonly teamToggle: HTMLElement | null;
-  /** 바로 깔기. 켜지면 전송이 모델 없이 place_props 로 간다. */
+  /** 바로 깔기. 켜지면 전송이 계획 턴 없이 모델 한 번으로 단계를 나눠 바로 깐다(모델 없으면 낱말 규칙). */
   readonly stampToggle: HTMLButtonElement;
   readonly setPiTeam: (team: boolean) => void;
   readonly syncApplyMode: () => void;
@@ -431,7 +431,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
       type: "button",
       "aria-pressed": "false",
       "aria-label": "바로 깔기",
-      title: "켜면 문장으로 도구를 고른 뒤 바로 깐다. 모델 턴은 없다.",
+      title: "켜면 계획·승인 없이 바로 깐다. 모델이 문장을 읽어 도구로 나누고, 연결이 없으면 낱말 규칙으로 깐다.",
     },
     dataset: { testid: "ai-stamp-place" },
     on: { click: () => {

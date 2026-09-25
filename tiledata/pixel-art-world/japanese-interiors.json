@@ -1,0 +1,563 @@
+[
+  {
+    "id": "paw-izakaya",
+    "name": "Pixel Art World · 이자카야·일식당",
+    "filename": "ST-Izakaya-I01.png",
+    "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-izakaya01.html",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Izakaya-I01.png",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/dotartworld/",
+    "width": 256,
+    "height": 1600,
+    "tileSize": 32,
+    "sha256": "6c5488583371c4efbbb47c53f2f40402780b834ebee80385eeae7e3340b0f18a",
+    "checkedAt": "2026-09-24",
+    "floorTile": 4,
+    "notes": "원본400칸과 파생 합성칸은 분리한다. 원본의 부스 하위좌석/상위테이블/칸막이 복구 순서를 따라 별도 atlas 뒤에 정적 완전체를 합성한다. 좌식 탁자(5,35) 영역에는 방석과 하단 보정 조각이 연속하므로 32px 사각을 무심코 자르지 않는다. 작은 식품들은 별도 음식 팩과 중복 학습하지 않는다. 그림은 정적이고 영업/착석/주문/문 이벤트는 별도다. 전체 시트 지원이 아닌 아래 검토 객체와 파생 장면만 지원한다.",
+    "recipes": [
+      {
+        "id": "izakaya-table",
+        "name": "목재 식탁 · 다리 포함",
+        "sourceRect": {
+          "x": 0,
+          "y": 11,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ]
+      },
+      {
+        "id": "izakaya-chair-front",
+        "name": "목재 의자 · 정면",
+        "sourceRect": {
+          "x": 2,
+          "y": 14,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      {
+        "id": "izakaya-chair-back",
+        "name": "목재 의자 · 뒷면",
+        "sourceRect": {
+          "x": 1,
+          "y": 14,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      {
+        "id": "izakaya-chair-east",
+        "name": "목재 의자 · 동향",
+        "sourceRect": {
+          "x": 1,
+          "y": 15,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "east",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      {
+        "id": "izakaya-chair-west",
+        "name": "목재 의자 · 서향",
+        "sourceRect": {
+          "x": 2,
+          "y": 15,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "west",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      {
+        "id": "izakaya-counter",
+        "name": "3열 서빙 카운터",
+        "sourceRect": {
+          "x": 0,
+          "y": 20,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "izakaya-fridge",
+        "name": "업소용 냉장고",
+        "sourceRect": {
+          "x": 0,
+          "y": 31,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ]
+      },
+      {
+        "id": "izakaya-kitchen",
+        "name": "스테인리스 조리대 · 하부장",
+        "sourceRect": {
+          "x": 2,
+          "y": 31,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ]
+      },
+      {
+        "id": "izakaya-stove",
+        "name": "2구 조리용 가스레인지",
+        "sourceRect": {
+          "x": 6,
+          "y": 33,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "izakaya-tea",
+        "name": "셀프 급차기",
+        "sourceRect": {
+          "x": 2,
+          "y": 29,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "izakaya-partition",
+        "name": "목재 칸막이 · 상단창과 하단판",
+        "sourceRect": {
+          "x": 4,
+          "y": 15,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "paw-washitu",
+    "name": "Pixel Art World · 일본식 방",
+    "filename": "ST-Washitu-I01.png",
+    "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-wasitu01.html",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Washitu-I01.png",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/dotartworld/",
+    "width": 256,
+    "height": 1600,
+    "tileSize": 32,
+    "sha256": "8667246423284808bf5047c2bd0b1f4750a5d555da0ce09b243c24f4e399751b",
+    "checkedAt": "2026-09-24",
+    "floorTile": 1,
+    "notes": "정확한 원본명은 ST-Washitu-I01.png다. 쇼지 앞(0,11)과 뒤(0,13)는 서로 다른 원본이며 뒤집거나 같은 조각으로 대체하지 않는다. 정면/뒷면 명명은 공식 앞뒤 설명과 실제 목재/회색 격자 차이를 따른다. 붉은/파란 이불은 북쪽 베개부터 남쪽 발끝까지 전체1×3, 접은 이불과 구분한다. 코타츠 전체의 장변 방향을 회전하지 않는다. 다다미 완성 장방형4×2를 하위에 반복하며 개별 중앙칸만 반복하지 않는다. 출입/수면/착석/쇼지 개폐는 별도 이벤트다.",
+    "recipes": [
+      {
+        "id": "washitu-shoji-front",
+        "name": "쇼지 · 목재 격자 앞면4장",
+        "sourceRect": {
+          "x": 0,
+          "y": 11,
+          "width": 4,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          },
+          {
+            "x": 3,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          41,
+          49
+        ]
+      },
+      {
+        "id": "washitu-shoji-back",
+        "name": "쇼지 · 회색 격자 뒷면4장",
+        "sourceRect": {
+          "x": 0,
+          "y": 13,
+          "width": 4,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          },
+          {
+            "x": 3,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          41,
+          49
+        ]
+      },
+      {
+        "id": "washitu-fusuma",
+        "name": "산수화 후스마4장",
+        "sourceRect": {
+          "x": 4,
+          "y": 15,
+          "width": 4,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          },
+          {
+            "x": 3,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          41,
+          49
+        ]
+      },
+      {
+        "id": "washitu-kotatsu",
+        "name": "코타츠 · 덮개와 상판 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 26,
+          "width": 4,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 2,
+            "y": 3
+          },
+          {
+            "x": 3,
+            "y": 3
+          }
+        ]
+      },
+      {
+        "id": "washitu-round-table",
+        "name": "둥근 좌식 탁자",
+        "sourceRect": {
+          "x": 4,
+          "y": 27,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "washitu-futon-red",
+        "name": "붉은 이불 · 북쪽 베개/남쪽 발끝",
+        "sourceRect": {
+          "x": 5,
+          "y": 40,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ]
+      },
+      {
+        "id": "washitu-futon-blue",
+        "name": "파란 이불 · 북쪽 베개/남쪽 발끝",
+        "sourceRect": {
+          "x": 6,
+          "y": 40,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ]
+      },
+      {
+        "id": "washitu-chest",
+        "name": "2열 서랍장",
+        "sourceRect": {
+          "x": 1,
+          "y": 40,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ]
+      },
+      {
+        "id": "washitu-bookcase",
+        "name": "문 달린 목재 책장",
+        "sourceRect": {
+          "x": 3,
+          "y": 43,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ]
+      },
+      {
+        "id": "washitu-cushion-blue",
+        "name": "파란 방석",
+        "sourceRect": {
+          "x": 4,
+          "y": 25,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      {
+        "id": "washitu-cushion-pattern",
+        "name": "문양 방석",
+        "sourceRect": {
+          "x": 5,
+          "y": 25,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      {
+        "id": "washitu-clock",
+        "name": "벽시계",
+        "sourceRect": {
+          "x": 0,
+          "y": 19,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ],
+        "exampleWallRows": [
+          49
+        ]
+      }
+    ]
+  }
+]

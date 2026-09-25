@@ -20,6 +20,8 @@ export type PiAgentThinkingLevel = "off" | "low" | "medium" | "high";
 export type PiAgentMode = "single" | "team";
 
 export interface PiAgentRequest {
+  /** Inherited by team members so task paraphrasing cannot drop the modern-map palette constraint. */
+  readonly modernTilesetOnly?: boolean;
   readonly villageContract?: import("./villageContract").VillageContract;
   readonly applyMode?: PiApplyMode;
   /** 기본 single. team 이면 팀장 에이전트가 맵별 시공·검수 에이전트를 띄운다. */
@@ -48,6 +50,11 @@ export interface PiAgentRequest {
    * 후보(mapIds)를 제한하지 않는다 — 실측(2026-09-15) 팀 모드가 이걸 버려 팀장이 43맵 중 엉뚱한 마을에 배정했다.
    */
   readonly currentMapId?: string;
+  /**
+   * 사용자가 이 대화에서 승인한 칩셋 계열(`src/project/tilesetFamily.ts`). 도구 ctx 에 그대로 실려
+   * 실행기 계열 검사(`tileset-family-change`)가 이 계열로의 변경을 통과시킨다. 비우면 승인 없음.
+   */
+  readonly approvedTilesetFamilies?: readonly string[];
   readonly project: Project;
   /** 기본 시스템 프롬프트를 대체한다(테스트·CLI 용). */
   readonly systemPrompt?: readonly string[];
@@ -172,7 +179,7 @@ type PiAgentEventPayload =
    * 쓰기 실행의 정본 증거. 프루프가 객체 정체성에 살아 이 경계를 넘지 못하므로 다이제스트로
    * 실어 보낸다 — 브라우저의 수용 게이트가 이걸로 «도구가 만든 제안»임을 확인한다.
    */
-  | { readonly type: "done"; readonly villageCompletion?: PiVillageCompletion; readonly project: Project; readonly stats: PiAgentStats; readonly changedKeys: readonly string[]; readonly spatialProof?: SpatialToolProof | null;
+  | { readonly type: "done"; readonly villageCompletion?: PiVillageCompletion; readonly interiorCompletion?: readonly { mapId: string; issues: readonly unknown[] }[]; readonly project: Project; readonly stats: PiAgentStats; readonly changedKeys: readonly string[]; readonly spatialProof?: SpatialToolProof | null;
       /** 요청 프로젝트와 내용이 같아 project 에서 뺀 무거운 키. 클라이언트가 요청 프로젝트의 것을 다시 붙인다. */
       readonly unchangedKeys?: readonly PiCheckpointHeavyKey[];
       /**

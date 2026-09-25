@@ -81,7 +81,11 @@ export const HOUSE_SHELL_FORBIDDEN_TILES: readonly number[] = [233, 257, 258];
 export const WALL_FACE_RETINT: Record<string, { upper: readonly number[]; lower: readonly number[] }> = {
   "gold-brick": { upper: [314, 315, 316], lower: [344, 345, 346] }, // 자주+금장 벽돌(귀족 저택)
   "stone-brick": { upper: [134, 135, 136], lower: [164, 165, 166] }, // 밝은 석재 벽돌
+  // 기후 실내(Tibo 1980~, scripts/content/bake-climate-interior-tiles.py): 설원 통나무·사막 사암·화산 현무암
+  log: { upper: [1980, 1981, 1982], lower: [1983, 1984, 1985] },
+  sandstone: { upper: [1986, 1987, 1988], lower: [1989, 1990, 1991] },
+  basalt: { upper: [1992, 1993, 1994], lower: [1995, 1996, 1997] },
 };
 
 /** All supported retinted north-wall faces; frames/ceiling are excluded. */
-export const HOUSE_SHELL_FACE_TILES: readonly number[] = [...HOUSE_SHELL_CREAM_FACE_TILES,134,135,136,164,165,166,314,315,316,344,345,346];
+export const HOUSE_SHELL_FACE_TILES: readonly number[] = [...HOUSE_SHELL_CREAM_FACE_TILES,134,135,136,164,165,166,314,315,316,344,345,346,1980,1981,1982,1983,1984,1985,1986,1987,1988,1989,1990,1991,1992,1993,1994,1995,1996,1997];

@@ -1,4 +1,5 @@
 import { TILE_ASSEMBLY_GUIDE_TOOLS } from "./tileAssemblyGuideTools";
+import { INTERIOR_PLACEMENT_TOOLS } from "./interiorPlacementTools";
 import { PUBLIC_TILE_RECIPE_TOOLS } from "./publicTileRecipeTools";
 import { FOREST_RECIPE_TOOLS } from "./forestRecipeTools";
 import { TILESET_REFERENCE_TOOLS, withTilesetReferencePurpose } from "./tilesetReferenceTools";
@@ -84,8 +85,10 @@ import { withMonsterAppearanceEnvelope } from "./monsterAppearanceTools";
 import { WORLD_STRUCTURE_TOOLS } from "./worldStructureTools";
 import { WORLD_CANON_TOOLS } from "./worldCanonTools";
 import { SPATIAL_TOOLS } from "./spatialTools";
+import { SHARED_SCENE_TOOLS } from "./sharedSceneTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { WEB_SEARCH_TOOLS } from "./webSearchTool";
+import { TILESET_CHANGE_TOOLS } from "./tilesetChangeTools";
 
 export { PLACEMENT_TOOLS };
 
@@ -181,6 +184,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   AUTHOR_VILLAGE_TOOL,
   ...WORLD_STRUCTURE_TOOLS,
   ...SPATIAL_TOOLS,
+  ...SHARED_SCENE_TOOLS,
   ...SHARED_OBJECT_TOOLS,
   ...withDomain(CONSTRUCTION_TOOLS_V3, "tile"),
   ...withDomain(HOUSE_VISION_TOOLS, "tile"),
@@ -219,7 +223,10 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(GAME_SYSTEM_TOGGLE_TOOLS, "system"),
   ...withDomain(TILESET_ATLAS_TOOLS, "tile"),
   ...TILESET_REFERENCE_TOOLS,
+  // 다른 칩셋 계열이 필요할 때 사용자에게 묻는 도구 — 실행기 거부 메시지가 이름을 부르므로 core 로 늘 노출한다.
+  ...TILESET_CHANGE_TOOLS,
   ...TILE_ASSEMBLY_GUIDE_TOOLS,
+  ...INTERIOR_PLACEMENT_TOOLS,
   ...FOREST_RECIPE_TOOLS,
   ...PUBLIC_TILE_RECIPE_TOOLS,
   // 혼합 도메인 — 각 툴이 자기 domains 를 선언하고, 선언이 없으면 map 으로 떨어진다.

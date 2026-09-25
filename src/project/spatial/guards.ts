@@ -1,4 +1,5 @@
 import { assert } from "../io/guards";
+import { validateTilesetReferences } from "../tilesetReferences";
 import type * as S from "./types";
 import { boolean, choice, concreteEndpoint, coordinate, dictionary, digest, id, ids, integer, list, nullableId,
   overviewEntries, overviewRoute, point, positive, record, rect, size, text, texts, vertex, type Parser } from "./guardValues";
@@ -24,9 +25,11 @@ const provenance: Parser<S.SpatialProvenance> = (v, p) => {
 };
 const base: Parser<S.SpatialDesignBase> = (v, p) => {
   const r = record(v, p);
-  return { id: id(r.id, `${p}.id`), name: text(r.name, `${p}.name`), revision: positive(r.revision, `${p}.revision`), tags: texts(r.tags, `${p}.tags`), provenance: provenance(r.provenance, `${p}.provenance`) };
+  if (r.referenceDocuments !== undefined) validateTilesetReferences(r.referenceDocuments);
+  return { id: id(r.id, `${p}.id`), name: text(r.name, `${p}.name`), revision: positive(r.revision, `${p}.revision`), tags: texts(r.tags, `${p}.tags`), provenance: provenance(r.provenance, `${p}.provenance`),
+    ...(r.referenceDocuments === undefined ? {} : { referenceDocuments: structuredClone(r.referenceDocuments) }) };
 };
-const baseFields = "id name revision tags provenance";
+const baseFields = "id name revision tags provenance referenceDocuments";
 const object: Parser<S.ObjectDesign> = (v, p) => {
   const r = record(v, p, `${baseFields} graphic anchors chips exteriorStories`);
   return { ...base(r, p), ...(r.exteriorStories === undefined ? {} : { exteriorStories: choice([1, 2, 3, 4] as const)(r.exteriorStories, `${p}.exteriorStories`) }), graphic: graphic(r.graphic, `${p}.graphic`), anchors: ports(r.anchors, `${p}.anchors`), chips: texts(r.chips, `${p}.chips`) };

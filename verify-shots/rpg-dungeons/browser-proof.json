@@ -14,6 +14,11 @@
       "tileset": "easyrpg_chipset_dungeon",
       "category": "rpg-dungeons-grand-v1",
       "present": true
+    },
+    {
+      "tileset": "easyrpg_chipset_dungeon",
+      "category": "rpg-dungeons-sunken-temple-v1",
+      "present": true
     }
   ],
   "places": [
@@ -212,6 +217,33 @@
       "preview": [
         1280,
         1024
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "dungeon-sunken-gate-36x28",
+      "aiRowsExact": true,
+      "preview": [
+        576,
+        448
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "dungeon-sunken-hall-40x32",
+      "aiRowsExact": true,
+      "preview": [
+        640,
+        512
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "dungeon-sunken-altar-34x28",
+      "aiRowsExact": true,
+      "preview": [
+        544,
+        448
       ],
       "downloadExact": true
     }

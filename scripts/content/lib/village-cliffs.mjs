@@ -1,5 +1,6 @@
 // Column grammar measured from the immutable great-falls reference, not a perimeter outline.
 import assert from "node:assert/strict";
+import { stairTile } from "./cliff-stairs.mjs";
 function cliffColumns(profile) {
   assert(Number.isInteger(profile.height) && profile.height >= 2, "Cliff height must be an integer >= 2");
   assert(profile.points.length >= 2 && profile.points.every((p) => p.length === 2 && p.every(Number.isInteger)), "Cliff points must be integer pairs");
@@ -47,7 +48,8 @@ function inspectVillageCliffs(map, plan, bindings) {
         if (d > 0 && (map.lowerTiles[i] !== fall.tile || map.upperTiles[i] !== -1)) errors.push({ code: "waterfall-gap", x, y, expectedLower: fall.tile, actualLower: map.lowerTiles[i], actualUpper: map.upperTiles[i] });
         continue;
       }
-      const lower = stair ? bindings[374] : null;
+      const sx0 = stair ? plan.stairs.find(([sx, sy, h]) => x >= sx && x < sx + 2 && y >= sy && y <= sy + h)[0] : 0;
+      const lower = stair ? stairTile(x, sx0) : null;
       const upper = stair ? -1 : mouth ? bindings[413] : bindings[c.source[d === 0 ? 0 : d === c.height ? 2 : 1]];
       if (map.upperTiles[i] !== upper || lower !== null && map.lowerTiles[i] !== lower) {
         errors.push({ code: stair ? "cliff-stair-gap" : d === c.height ? "cliff-toe-gap" : "cliff-face-direction", x, y, expectedUpper: upper, actualUpper: map.upperTiles[i], ...stair ? { expectedLower: lower, actualLower: map.lowerTiles[i] } : {} });

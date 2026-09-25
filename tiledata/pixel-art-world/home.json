@@ -1,0 +1,676 @@
+[
+  {
+    "id": "paw-home",
+    "name": "Pixel Art World · 현대 주택",
+    "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-townI01.html",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Town-I01.png",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/dotartworld/",
+    "filename": "ST-Town-I01.png",
+    "width": 256,
+    "height": 1600,
+    "tileSize": 32,
+    "sha256": "9a3979e957a8094644046b32267077364a476511efbfa5807a39156fa5c10c48",
+    "checkedAt": "2026-09-24",
+    "floorTile": 4,
+    "notes": "14×16칸 주택. 주방·침실·거실은 진짜 벽/천장 선과 문으로 구획한다. 목재 바닥 1/2를 벽으로 쓰지 않는다. 북벽 y=0..2, 바닥 y=3부터. 싱크·레인지·옷장 밑동은 y=3 바닥에 닿는다. ceilingCells는 사용자 SA-WallA01의 XP47 자동 연결로 교체할 막힌 벽 상단이며, 완성 저작 시 반드시 해당 원본을 함께 사용한다. 욕실과 수면·요리 기능은 별도다.",
+    "recipes": [
+      {
+        "id": "home-blue-kitchen",
+        "name": "파란 상부장·싱크대·하부장",
+        "sourceRect": {
+          "x": 0,
+          "y": 36,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ]
+      },
+      {
+        "id": "home-stove",
+        "name": "2구 레인지와 하부장",
+        "sourceRect": {
+          "x": 2,
+          "y": 38,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "home-window",
+        "name": "거실 2칸 창",
+        "sourceRect": {
+          "x": 0,
+          "y": 8,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "home-clock",
+        "name": "벽시계",
+        "sourceRect": {
+          "x": 0,
+          "y": 10,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      {
+        "id": "home-tv",
+        "name": "평면 TV",
+        "sourceRect": {
+          "x": 2,
+          "y": 16,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "home-coffee-table",
+        "name": "유리 거실 테이블",
+        "sourceRect": {
+          "x": 2,
+          "y": 13,
+          "width": 3,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 0
+          },
+          {
+            "x": 2,
+            "y": 0
+          }
+        ]
+      },
+      {
+        "id": "home-sofa-back",
+        "name": "북향 3칸 소파",
+        "sourceRect": {
+          "x": 2,
+          "y": 14,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "home-bed",
+        "name": "싱글 침대 · 머리부터 발치까지",
+        "sourceRect": {
+          "x": 3,
+          "y": 30,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ]
+      },
+      {
+        "id": "home-wardrobe",
+        "name": "침실 유리장과 옷장",
+        "sourceRect": {
+          "x": 0,
+          "y": 33,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ]
+      },
+      {
+        "id": "home-dining-table",
+        "name": "목재 식탁",
+        "sourceRect": {
+          "x": 0,
+          "y": 24,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ]
+      },
+      {
+        "id": "home-chair-east",
+        "name": "식탁 의자 · 오른쪽 방향",
+        "sourceRect": {
+          "x": 6,
+          "y": 25,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "east",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "home-chair-west",
+        "name": "식탁 의자 · 왼쪽 방향",
+        "sourceRect": {
+          "x": 5,
+          "y": 25,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "west",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      }
+    ],
+    "scenePlans": [
+      {
+        "id": "home-compact",
+        "name": "주택 · 분리된 침실·주방·거실",
+        "width": 14,
+        "height": 16,
+        "baseTile": 4,
+        "lowerRects": [
+          {
+            "x": 0,
+            "y": 0,
+            "width": 14,
+            "height": 1,
+            "tile": 17
+          },
+          {
+            "x": 0,
+            "y": 1,
+            "width": 14,
+            "height": 1,
+            "tile": 25
+          },
+          {
+            "x": 0,
+            "y": 2,
+            "width": 14,
+            "height": 1,
+            "tile": 33
+          },
+          {
+            "x": 0,
+            "y": 3,
+            "width": 7,
+            "height": 3,
+            "tile": 11
+          },
+          {
+            "x": 7,
+            "y": 0,
+            "width": 1,
+            "height": 7,
+            "tile": 17
+          },
+          {
+            "x": 0,
+            "y": 6,
+            "width": 5,
+            "height": 1,
+            "tile": 17
+          },
+          {
+            "x": 0,
+            "y": 7,
+            "width": 5,
+            "height": 1,
+            "tile": 17
+          },
+          {
+            "x": 0,
+            "y": 8,
+            "width": 5,
+            "height": 1,
+            "tile": 25
+          },
+          {
+            "x": 7,
+            "y": 6,
+            "width": 3,
+            "height": 1,
+            "tile": 17
+          },
+          {
+            "x": 7,
+            "y": 7,
+            "width": 3,
+            "height": 1,
+            "tile": 17
+          },
+          {
+            "x": 7,
+            "y": 8,
+            "width": 3,
+            "height": 1,
+            "tile": 25
+          },
+          {
+            "x": 11,
+            "y": 6,
+            "width": 3,
+            "height": 1,
+            "tile": 17
+          },
+          {
+            "x": 11,
+            "y": 7,
+            "width": 3,
+            "height": 1,
+            "tile": 17
+          },
+          {
+            "x": 11,
+            "y": 8,
+            "width": 3,
+            "height": 1,
+            "tile": 25
+          },
+          {
+            "x": 0,
+            "y": 9,
+            "width": 5,
+            "height": 1,
+            "tile": 33
+          },
+          {
+            "x": 7,
+            "y": 9,
+            "width": 3,
+            "height": 1,
+            "tile": 33
+          },
+          {
+            "x": 11,
+            "y": 9,
+            "width": 3,
+            "height": 1,
+            "tile": 33
+          }
+        ],
+        "placements": [
+          {
+            "recipeId": "home-blue-kitchen",
+            "x": 1,
+            "y": 1
+          },
+          {
+            "recipeId": "home-stove",
+            "x": 3,
+            "y": 2
+          },
+          {
+            "recipeId": "home-clock",
+            "x": 4,
+            "y": 1
+          },
+          {
+            "recipeId": "home-window",
+            "x": 11,
+            "y": 0
+          },
+          {
+            "recipeId": "home-wardrobe",
+            "x": 8,
+            "y": 1
+          },
+          {
+            "recipeId": "home-bed",
+            "x": 11,
+            "y": 2
+          },
+          {
+            "recipeId": "home-tv",
+            "x": 1,
+            "y": 9
+          },
+          {
+            "recipeId": "home-coffee-table",
+            "x": 1,
+            "y": 12
+          },
+          {
+            "recipeId": "home-sofa-back",
+            "x": 1,
+            "y": 14
+          },
+          {
+            "recipeId": "home-dining-table",
+            "x": 9,
+            "y": 11
+          },
+          {
+            "recipeId": "home-chair-east",
+            "x": 8,
+            "y": 12
+          },
+          {
+            "recipeId": "home-chair-west",
+            "x": 12,
+            "y": 12
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 6,
+            "y": 15
+          },
+          {
+            "x": 6,
+            "y": 14
+          },
+          {
+            "x": 2,
+            "y": 4
+          },
+          {
+            "x": 3,
+            "y": 4
+          },
+          {
+            "x": 5,
+            "y": 5
+          },
+          {
+            "x": 5,
+            "y": 10
+          },
+          {
+            "x": 10,
+            "y": 10
+          },
+          {
+            "x": 10,
+            "y": 5
+          },
+          {
+            "x": 9,
+            "y": 4
+          },
+          {
+            "x": 13,
+            "y": 4
+          },
+          {
+            "x": 11,
+            "y": 5
+          },
+          {
+            "x": 4,
+            "y": 11
+          },
+          {
+            "x": 4,
+            "y": 12
+          },
+          {
+            "x": 2,
+            "y": 13
+          },
+          {
+            "x": 10,
+            "y": 14
+          },
+          {
+            "x": 8,
+            "y": 14
+          },
+          {
+            "x": 12,
+            "y": 14
+          }
+        ],
+        "passableTiles": [
+          4,
+          11
+        ],
+        "lowerTileIds": [
+          4,
+          11,
+          17,
+          25,
+          33
+        ],
+        "notes": "14×16칸. 남쪽 문(6,15), 스폰(6,14). 주방 x0..6/y0..5, 침실 x8..13/y0..5, 거실 y10..15. 북벽과 내부 가로벽의 정면 높이를 모두3칸으로 맞춘다: 북쪽17/25/33=y0/1/2, 내부17/25/33=y7/8/9. 침실 x7세로벽과y6천장선, x10의문(y6..9)으로구획. 주방문x5..6. 천장 footprint는ceilingCells를사용자WallA01 XP47로치환한다. 싱크(1,1),레인지(3,2),옷장(8,1)밑동은y3바닥. 침대(11,2) 머리판만벽에겹치고발치y5통로. TV(1,9)는밑동y10바닥,테이블(1,12),소파(1,14),사이y11/y13통로. 식탁(9,11),동향의자(8,12),서향의자(12,12),남쪽y14통로. 벽부착물은창(11,0)과시계(4,1). 바닥4/11,벽17/25/33. 목재바닥을칸막이로쓰지않는다.",
+        "ceilingCells": [
+          {
+            "x": 7,
+            "y": 0
+          },
+          {
+            "x": 7,
+            "y": 1
+          },
+          {
+            "x": 7,
+            "y": 2
+          },
+          {
+            "x": 7,
+            "y": 3
+          },
+          {
+            "x": 7,
+            "y": 4
+          },
+          {
+            "x": 7,
+            "y": 5
+          },
+          {
+            "x": 7,
+            "y": 6
+          },
+          {
+            "x": 0,
+            "y": 6
+          },
+          {
+            "x": 1,
+            "y": 6
+          },
+          {
+            "x": 2,
+            "y": 6
+          },
+          {
+            "x": 3,
+            "y": 6
+          },
+          {
+            "x": 4,
+            "y": 6
+          },
+          {
+            "x": 8,
+            "y": 6
+          },
+          {
+            "x": 9,
+            "y": 6
+          },
+          {
+            "x": 11,
+            "y": 6
+          },
+          {
+            "x": 12,
+            "y": 6
+          },
+          {
+            "x": 13,
+            "y": 6
+          }
+        ],
+        "rooms": [
+          {
+            "id": "kitchen",
+            "name": "주방",
+            "x": 0,
+            "y": 0,
+            "width": 7,
+            "height": 6
+          },
+          {
+            "id": "bedroom",
+            "name": "침실",
+            "x": 8,
+            "y": 0,
+            "width": 6,
+            "height": 6
+          },
+          {
+            "id": "living",
+            "name": "거실",
+            "x": 0,
+            "y": 10,
+            "width": 14,
+            "height": 6
+          }
+        ],
+        "doorways": [
+          {
+            "from": "living",
+            "to": "kitchen",
+            "x": 5,
+            "y": 6,
+            "width": 2,
+            "height": 4
+          },
+          {
+            "from": "living",
+            "to": "bedroom",
+            "x": 10,
+            "y": 6,
+            "width": 1,
+            "height": 4
+          }
+        ]
+      }
+    ]
+  }
+]

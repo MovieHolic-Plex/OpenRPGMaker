@@ -1,0 +1,93 @@
+{
+ "ghostship": {
+  "id": "oprn_dungeon_ghostship",
+  "name": "던전 · 유령선 (배 시트 선실 벽·갑판·구멍, 재칠)",
+  "texture": "tex_oprn_dungeon_ghostship",
+  "path": "assets/atlas-dungeons/ghostship-chipset.png",
+  "how": "배 시트의 선실 벽(198~231)·갑판 널(12~14)·어두운 선창 테두리(369~461)·갑판 구멍(129~221)을 던전 칸 번호에 옮겨 넣고 차가운 청록 회색으로 바랜 난파선 색으로 칠했다"
+ },
+ "manor": {
+  "id": "oprn_dungeon_manor",
+  "name": "던전 · 유령 저택 (실내 시트 벽지·마루·카펫, 재칠)",
+  "texture": "tex_oprn_dungeon_manor",
+  "path": "assets/atlas-dungeons/manor-chipset.png",
+  "how": "실내 시트의 천장 테두리·크림 벽지(75~107)·나무 마루(72·102·103)·무늬 석판(162·163)·붉은 카펫을 던전 칸 번호에 옮기고 빛바랜 찬 색으로 칠했다. 던전 원래 벽(18~20·48~50 청록 돌)과 젖은 돌바닥 111 은 지하실용으로 남는다"
+ },
+ "lab": {
+  "id": "oprn_dungeon_lab",
+  "name": "던전 · 비밀 연구소 (밝은 벽돌·석재 바닥, 재칠)",
+  "texture": "tex_oprn_dungeon_lab",
+  "path": "assets/atlas-dungeons/lab-chipset.png",
+  "how": "실내 시트의 밝은 벽돌(135~167)·금간 석재 162·흰 바닥 74·문양 석판 163 을 옮기고 약품 냄새 나는 옅은 청록 회색으로 칠했다. 수정은 초록"
+ },
+ "wind": {
+  "id": "oprn_dungeon_wind",
+  "name": "던전 · 바람의 신전 (옥빛 대리석, 재칠)",
+  "texture": "tex_oprn_dungeon_wind",
+  "path": "assets/atlas-dungeons/wind-chipset.png",
+  "how": "벽·바닥·석상·테두리를 옥빛 대리석으로, 수정을 초록으로 칠했다"
+ },
+ "tide": {
+  "id": "oprn_dungeon_tide",
+  "name": "던전 · 물의 신전 (청백 대리석, 재칠)",
+  "texture": "tex_oprn_dungeon_tide",
+  "path": "assets/atlas-dungeons/tide-chipset.png",
+  "how": "벽을 물빛 대리석, 바닥을 흰 청석으로, 수정은 푸른색 그대로(더 맑게) 칠했다"
+ },
+ "earth": {
+  "id": "oprn_dungeon_earth",
+  "name": "던전 · 땅의 신전 (황토 사암·이끼, 재칠)",
+  "texture": "tex_oprn_dungeon_earth",
+  "path": "assets/atlas-dungeons/earth-chipset.png",
+  "how": "벽·바닥을 황토 사암으로, 수정을 호박색으로 칠했다"
+ },
+ "fire": {
+  "id": "oprn_dungeon_fire",
+  "name": "던전 · 불의 신전 (검붉은 현무암, 재칠)",
+  "texture": "tex_oprn_dungeon_fire",
+  "path": "assets/atlas-dungeons/fire-chipset.png",
+  "how": "벽·바닥·석상을 검붉은 현무암으로, 테두리 선을 불씨색으로, 수정을 붉게 칠했다(용암 신전에 푸른 수정 금지)"
+ },
+ "sky": {
+  "id": "oprn_dungeon_sky",
+  "name": "던전 · 하늘 탑 (흰 대리석·금, 바깥은 하늘)",
+  "texture": "tex_oprn_dungeon_sky",
+  "path": "assets/atlas-dungeons/sky-chipset.png",
+  "how": "벽·바닥을 흰 대리석과 상아색으로, 석상·기둥을 금빛으로, 공허 테두리를 구름 낀 하늘로 칠했다 — 방 밖이 트인 하늘로 보인다"
+ },
+ "trial": {
+  "id": "oprn_dungeon_trial",
+  "name": "던전 · 시련의 탑 (흑요석·보랏빛, 재칠)",
+  "texture": "tex_oprn_dungeon_trial",
+  "path": "assets/atlas-dungeons/trial-chipset.png",
+  "how": "벽·바닥을 흑요석과 보랏빛 석판으로, 수정을 보라로 칠했다"
+ },
+ "dream": {
+  "id": "oprn_dungeon_dream",
+  "name": "던전 · 꿈 세계 (연보라 몽환, 별 뜬 공허)",
+  "texture": "tex_oprn_dungeon_dream",
+  "path": "assets/atlas-dungeons/dream-chipset.png",
+  "how": "벽·바닥을 연보라·분홍으로, 공허를 별 뜬 남보라 밤으로, 수정을 분홍으로 칠했다"
+ },
+ "spider": {
+  "id": "oprn_dungeon_spider",
+  "name": "던전 · 거미 소굴 (잿빛 동굴, 재칠)",
+  "texture": "tex_oprn_dungeon_spider",
+  "path": "assets/atlas-dungeons/spider-chipset.png",
+  "how": "벽·바닥을 잿빛 보라 바위로, 수정을 보라로 칠했다"
+ },
+ "ruins": {
+  "id": "oprn_dungeon_ruins",
+  "name": "던전 · 고대 유적 (녹슨 청동·이끼 사암, 재칠)",
+  "texture": "tex_oprn_dungeon_ruins",
+  "path": "assets/atlas-dungeons/ruins-chipset.png",
+  "how": "벽을 이끼 낀 청록 돌로, 바닥을 모래빛 판석으로, 석상·창살을 청동으로, 수정을 청록 에너지빛으로 칠했다"
+ },
+ "abyss": {
+  "id": "oprn_dungeon_abyss",
+  "name": "던전 · 심연 (흑금, 보너스 던전)",
+  "texture": "tex_oprn_dungeon_abyss",
+  "path": "assets/atlas-dungeons/abyss-chipset.png",
+  "how": "벽·바닥을 먹빛으로, 석상·테두리 선을 금빛으로, 수정을 금색으로 칠했다"
+ }
+}

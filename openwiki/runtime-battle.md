@@ -46,6 +46,40 @@
 - 남은 것: 소리 층(찰칵+쿵 시차·음높이 흔들기), 막타 슬로, 몬스터 대치 초반 피해량(Lv11→Lv3 가 2/25)은 따로 확인.
   회귀: `test/battleHitIntensity.test.ts`.
 
+## 진입 · 결판 · 복귀 연출 (2026-09-25)
+
+출하 플레이어 실시간 녹화(15fps 프레임)로 잰 결함과 고친 자리. CSS 는 `battle/23-entry-exit.css` 한 장이다.
+
+- **진입**
+  - 필드 캔버스가 커버 동안 확대·회전하며 빨려 든다. `createBattleTransition(host, schedule, field)` 의 세 번째 인자로
+    `playSceneBattle` 이 `scene.game.canvas` 를 넘기고, `setFieldMotion` 이 `battle-encounter-swirl` 을 붙인다.
+    키프레임은 **선형 + 앞당김**이다. 처음엔 ease-in 이라 확대 대부분이 닫히는 막대 뒤에서 일어나 보이지 않았다
+    (rAF 실측: 400ms 에 scale 1.0, 980ms 에 1.47).
+  - 흰 플래시는 두 번 친다. 막대는 가운데서 자라는 V 대신 홀짝이 좌우에서 엇갈려 닫힌다.
+    `slide-pokemon`·`curtain-dq` 처럼 막대 방향을 스스로 정하는 스킨은 예외다.
+  - 유리 뼈대 인트로는 커버가 걷히는 **동안** 시작한다. 예전엔 걷힌 뒤라 빈 배경만 330ms 보였다.
+    적은 검은 실루엣으로 미끄러져 와서 멈출 때 번쩍이며 색을 입는다(120 + index×90ms 지연, 700ms).
+- **결판**
+  - 시퀀서 훅 `onResultPending(result)` 가 결과 홀드(`BATTLE_RESULT_HOLD_MS` 900) 직전에 한 번 불린다.
+  - 결판 막타(뒤에 피해·회복·빗나감 엔트리가 없고 결과가 이미 정해진 격파)는 격파 대사와 **같은 순간**에 이 훅을 부르고,
+    대사 체류를 `BATTLE_DECISIVE_KILL_LINE_MS`(240)로 줄인다. 예전엔 대사 660ms + 홀드 900ms 동안 빈 필드였다.
+  - `battleDom.showFinaleStamp` 가 필드에 「승리!」/「전멸…」 도장(`.battle-finale-stamp`)을 찍고 루트에
+    `data-battle-finale` 을 단다. 승리면 필드가 1.035배 다가오고, 전멸이면 필드가 흑백으로 가라앉는다.
+    도주는 도장이 없다. 같은 결과로 두 번 불러도 한 번만 찍는다.
+  - 결과 소리(`emitBattleJuice`)와 플래시는 도장과 함께 울린다. 결과 패널은 이미 울렸으면 다시 울리지 않는다.
+    도장만 걷고 `data-battle-finale` 은 전투가 닫힐 때까지 둔다. 지우면 패널이 뜨는 순간 줌·흑백이 한 프레임에 튄다.
+- **결과 패널**
+  - 경험치·골드 수치는 공개될 때 0 에서 최종값까지 520ms 동안 센다(`battleDirectorDom.countUpRewardValue`).
+    끝나면 원래 글자로 되돌리므로 최종 `textContent` 는 같다.
+  - 확인키 건너뛰기(모두 공개), 감소 모션, rAF 가 없는 환경에서는 세지 않는다. 레벨 업 행은 튀어나오며 테가 퍼진다.
+- **복귀**
+  - 끝날 때 커버는 스킨 색이 아니라 항상 검정이다. 정면 스킨은 파랑 커버로 페이드해 필드가 파랗게 물든 채 돌아왔다.
+  - `BATTLE_TRANSITION_EXIT_MS` 220 → 300. 복귀 열림은 `BATTLE_TRANSITION_RETURN_MS`(460)이고,
+    진입 열림(`REVEAL_MS` 300, 인트로 CSS 의 `--battle-reveal-ms`)과 분리했다.
+  - 필드 캔버스는 `battle-return-settle` 로 살짝 당겨졌다가 제자리로 내려앉는다.
+- **남은 것:** 게이지 흐름에서 인트로 뒤 「행동 게이지가 차는 중」 대기가 약 1.5초다. 초기 ATB 는 규칙 쪽 값이라 이번엔 건드리지 않았다.
+- **기본 스킨:** 편집기 기본은 이미 `rm2000`(정면)이다(`DEFAULT_BATTLE_SKIN_ID`, 드롭다운 첫 항목). 라벨에 「(기본)」을 붙였다.
+
 ## 전투 리뷰 후속: 상태 안내와 무대 채움 (2026-09-20)
 
 - `battleDom`은 우상단에 `F 자동 꺼짐/켜짐 · Shift 1×/1.8×/3×` 상태를 표시한다.

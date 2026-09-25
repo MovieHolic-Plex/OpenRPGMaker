@@ -1,0 +1,22 @@
+{
+  "id": "oprn-atlas-dungeons-20260925",
+  "places": 19,
+  "regions": 0,
+  "maps": 19,
+  "bytes": 6798253,
+  "tilesets": {
+    "shared_atlas_dungeon_cave": {
+      "count": 1140,
+      "references": []
+    },
+    "shared_atlas_dungeon_stone": {
+      "count": 1140,
+      "references": []
+    }
+  },
+  "renderCheck": "19 maps pixel-identical with the shared atlas",
+  "file": "/home/main/.local/share/oprn/shared-content.sqlite",
+  "revision": "12d4474eaca73944ff3a0394fc4d1a7b6661302c8c8e5bbaff6e3ed2c0fbaf05",
+  "reloaded": true,
+  "publishedAt": "2026-09-25T19:30:18.208Z"
+}

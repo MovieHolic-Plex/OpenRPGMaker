@@ -26,8 +26,14 @@ const terrain = object({ tilesetId: id, width: size, height: size, floor: text, 
 const base = { id, name: text, revision: { type: "integer", minimum: 1 }, tags: array(text),
   provenance: object({ origin: choices(["user", "builtin", "legacy", "ai"]), sourceId: text }, ["origin"]),
 } satisfies Record<string, JsonSchema>;
-const objects = object({ ...base, graphic, anchors: ports, chips: array(text) });
-const spaces = object({ ...base, environment: choices(["interior", "outdoor"]), tilesetId: id,
+const requiredBase = Object.keys(base);
+const documentedBase = { ...base, referenceDocuments: array(object({
+  id, name: text, description: text,
+  documents: array(object({ id, name: text, markdown: text })),
+  images: array(object({ id, name: text, caption: text, dataUrl: text })),
+})) };
+const objects = object({ ...documentedBase, graphic, anchors: ports, chips: array(text) }, [...requiredBase, "graphic", "anchors", "chips"]);
+const spaces = object({ ...documentedBase, environment: choices(["interior", "outdoor"]), tilesetId: id,
   shape: choices(["rect", "l", "alcove", "l-right", "bay", "notch", "cross"]), width: size, height: size, floor: text, wall: text,
   role: choices(["entrance", "walkway", "room"]), floorAreas: areas, ports, composition,
   interiorLayout: { ...object({
@@ -38,17 +44,17 @@ const spaces = object({ ...base, environment: choices(["interior", "outdoor"]), 
   objectSlots: array(object({ id, objectDesignId: id, quantity: { type: "integer", minimum: 1 }, required: { type: "boolean" },
     placement: object({ mode: choices(["auto", "fixed"]), x: integer, y: integer, wallOverlap: { type: "integer", enum: [1, 2], description: "Interior fixed placement only: x/y locates the first floor row; lift the graphic by this many rows. Only upper-layer pieces may overlap actual cream wall faces, with a floor-supported base. Use 1 for a two-tile cabinet against the north wall." } }, ["mode"]), chipOverrides: array(text), zoneId: id,
   }, ["id", "objectDesignId", "quantity", "required", "placement"])),
-}, [...Object.keys(base), "environment", "tilesetId", "shape", "width", "height", "floor", "wall", "ports", "objectSlots"]);
-const groupedPlaces = object({ ...base, kind: choices(["facility", "settlement", "natural"]), children: child(["place"]),
+}, [...requiredBase, "environment", "tilesetId", "shape", "width", "height", "floor", "wall", "ports", "objectSlots"]);
+const groupedPlaces = object({ ...documentedBase, kind: choices(["facility", "settlement", "natural"]), children: child(["place"]),
   layout: choices(["row", "double-row", "manual"]), ports, composition, connections: array(object(connection)),
   exterior: { ...graphic, description: "Copy a saved ObjectDesign.graphic {tilesetId,kitId} only with painted passable port cells. Otherwise place the object via objectSlots in an outdoor yard place for ground/approach. No objectDesignId link or anchors/chips inheritance in this field. Appearance does not define interior floors, ports or connections." },
-}, [...Object.keys(base), "kind", "children", "layout", "ports", "connections"]);
-const places: JsonSchema = { ...object({ ...spaces.properties, ...groupedPlaces.properties }, Object.keys(base)),
+}, [...requiredBase, "kind", "children", "layout", "ports", "connections"]);
+const places: JsonSchema = { ...object({ ...spaces.properties, ...groupedPlaces.properties }, requiredBase),
   description: "One place: environment interior/outdoor selects a directly editable room/yard with dimensions, materials, ports and objectSlots. Otherwise kind facility/settlement/natural selects a grouping with children, layout, ports and connections. Child references always use kind place." };
 const settlement = object({ presetId: id, seed: { type: "integer", minimum: 0 } });
-const regions = object({ ...base, composition, terrain, places: child(["place"]), ports, routes: array(object({ ...connection, points: array(point) })), settlement },
-  [...Object.keys(base), "terrain", "places", "ports", "routes"]);
-const worlds = object({ ...base, composition, terrain, regions: child(["region"]), ports, connections: array(object(connection)), entryPort: endpoint }, [...Object.keys(base), "terrain", "regions", "ports", "connections", "entryPort"]);
+const regions = object({ ...documentedBase, composition, terrain, places: child(["place"]), ports, routes: array(object({ ...connection, points: array(point) })), settlement },
+  [...requiredBase, "terrain", "places", "ports", "routes"]);
+const worlds = object({ ...documentedBase, composition, terrain, regions: child(["region"]), ports, connections: array(object(connection)), entryPort: endpoint }, [...requiredBase, "terrain", "regions", "ports", "connections", "entryPort"]);
 
 export const SPATIAL_DESIGN_SCHEMAS = { object: objects, space: spaces, place: places, region: regions, world: worlds } as const;
 // Kind-specific named bodies avoid an untyped catch-all design object on native providers.

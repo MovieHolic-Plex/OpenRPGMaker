@@ -1,0 +1,230 @@
+{
+ "texture": "tex_atlas_biome_world",
+ "count": 660,
+ "blocks": [
+  {
+   "key": "jungle",
+   "name": "우림",
+   "anchor": 480,
+   "source": 360,
+   "solid": true
+  },
+  {
+   "key": "mushroom-forest",
+   "name": "버섯 숲",
+   "anchor": 483,
+   "source": 360,
+   "solid": true
+  },
+  {
+   "key": "blight-forest",
+   "name": "오염된 숲",
+   "anchor": 486,
+   "source": 360,
+   "solid": true
+  },
+  {
+   "key": "taiga",
+   "name": "타이가 가문비 숲",
+   "anchor": 489,
+   "source": 360,
+   "solid": true
+  },
+  {
+   "key": "crystal-hills",
+   "name": "수정 언덕",
+   "anchor": 492,
+   "source": 363,
+   "solid": true
+  },
+  {
+   "key": "red-canyon",
+   "name": "붉은 협곡 언덕",
+   "anchor": 495,
+   "source": 363,
+   "solid": true
+  },
+  {
+   "key": "savanna",
+   "name": "사바나 초원",
+   "anchor": 498,
+   "source": 243,
+   "solid": false
+  },
+  {
+   "key": "tundra",
+   "name": "툰드라 이끼 들",
+   "anchor": 501,
+   "source": 243,
+   "solid": false
+  },
+  {
+   "key": "swamp",
+   "name": "늪",
+   "anchor": 504,
+   "source": 126,
+   "solid": true
+  },
+  {
+   "key": "crystal-plain",
+   "name": "수정 벌판",
+   "anchor": 507,
+   "source": 129,
+   "solid": false
+  }
+ ],
+ "icons": [
+  {
+   "key": "giant-mushroom",
+   "name": "거대 버섯",
+   "cells": [
+    [
+     600,
+     601
+    ],
+    [
+     630,
+     631
+    ]
+   ]
+  },
+  {
+   "key": "crystal-spire",
+   "name": "수정 첨탑",
+   "cells": [
+    [
+     602,
+     603
+    ],
+    [
+     632,
+     633
+    ]
+   ]
+  },
+  {
+   "key": "sky-island",
+   "name": "떠 있는 섬",
+   "cells": [
+    [
+     604,
+     605
+    ],
+    [
+     634,
+     635
+    ]
+   ]
+  },
+  {
+   "key": "acacia",
+   "name": "아카시아",
+   "cells": [
+    [
+     606,
+     607
+    ],
+    [
+     636,
+     637
+    ]
+   ]
+  },
+  {
+   "key": "mangrove",
+   "name": "맹그로브",
+   "cells": [
+    [
+     608,
+     609
+    ],
+    [
+     638,
+     639
+    ]
+   ]
+  },
+  {
+   "key": "dead-tree",
+   "name": "붉은 땅 고목",
+   "cells": [
+    [
+     610,
+     611
+    ],
+    [
+     640,
+     641
+    ]
+   ]
+  },
+  {
+   "key": "blight-tree",
+   "name": "오염된 고목",
+   "cells": [
+    [
+     612,
+     613
+    ],
+    [
+     642,
+     643
+    ]
+   ]
+  },
+  {
+   "key": "palm",
+   "name": "야자수",
+   "cells": [
+    [
+     614,
+     615
+    ],
+    [
+     644,
+     645
+    ]
+   ]
+  },
+  {
+   "key": "spruce",
+   "name": "가문비",
+   "cells": [
+    [
+     616,
+     617
+    ],
+    [
+     646,
+     647
+    ]
+   ]
+  },
+  {
+   "key": "giant-tree",
+   "name": "우림 거목",
+   "cells": [
+    [
+     618,
+     619
+    ],
+    [
+     648,
+     649
+    ]
+   ]
+  },
+  {
+   "key": "obelisk-mark",
+   "name": "흑요석 탑",
+   "cells": [
+    [
+     620
+    ],
+    [
+     650
+    ]
+   ]
+  }
+ ]
+}

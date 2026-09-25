@@ -4,11 +4,13 @@ import { slimCheckpointProject, unchangedHeavyKeys, type PiAgentEvent } from "..
 
 type Reply = { renderId?: unknown; png?: unknown; issue?: unknown };
 const pending = new Map<string, (reply: Reply) => void>();
+// 끊긴 소켓 뒤 재전달이 이미 받은 응답을 409 로 되돌리지 않게 최근 id 를 기억한다(piCheckpointBroker 와 같다).
+const resolved = new Set<string>();
 /** One-use, unguessable capability. Invalid payloads cannot consume another pending reply. */
 export function resolvePiRender(reply: Reply): boolean {
   if (!reply || typeof reply.renderId !== "string") return false;
   const resolve = pending.get(reply.renderId);
-  if (!resolve) return false;
+  if (!resolve) return resolved.has(reply.renderId);
   if (typeof reply.issue !== "string" && (typeof reply.png !== "string" || reply.png.length > 4_000_000 || !/^iVBORw0KGgo[A-Za-z0-9+/=]+$/.test(reply.png))) return false;
   if (typeof reply.issue !== "string") {
     const bytes = Buffer.from(reply.png as string, "base64");
@@ -17,6 +19,8 @@ export function resolvePiRender(reply: Reply): boolean {
     if (!width || !height || width > 512 || height > 512) return false;
   }
   pending.delete(reply.renderId);
+  resolved.add(reply.renderId);
+  if (resolved.size > 256) resolved.delete(resolved.values().next().value!);
   resolve(reply);
   return true;
 }

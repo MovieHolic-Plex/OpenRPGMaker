@@ -1,10 +1,12 @@
 import { sharedRegionSnapshot } from './sharedSpatialReferences';
+import { referenceOwnerManifest } from './tilesetReferences';
 import { DIVERSE_VILLAGE_PLACES } from "./diverseVillageReferences";
 import { FANTASY_PLACE_REFERENCES } from "./fantasyPlaceReferences";
 import { RPG_INTERIOR_PLACE_REFERENCES } from "./rpgInteriorPlaceReferences";
 import { RPG_DUNGEON_PLACE_REFERENCES } from "./rpgDungeonPlaceReferences";
 import { CLIMATE_VILLAGE_PLACE_REFERENCES } from "./climateVillagePlaceReferences";
 import { FIELD_ROUTE_PLACE_REFERENCES } from "./fieldRoutePlaceReferences";
+import { ELF_TREETOP_PLACE_REFERENCES } from "./elfTreetopPlaceReferences";
 import type { GameMap, TilesetDef } from "./types";
 import { cropExtraLayers } from "./mapLayers";
 import { LAKE_PLACE_REFERENCES, regionReference } from "./regionReferences";
@@ -65,6 +67,7 @@ const INTERIOR_FILE: SnapshotFile = () => import("./regionReferences/rpg-interio
 const DUNGEON_FILE: SnapshotFile = () => import("./regionReferences/rpg-dungeons.json");
 const CLIMATE_FILE: SnapshotFile = () => import("./regionReferences/climate-villages.json");
 const FIELD_FILE: SnapshotFile = () => import("./regionReferences/field-routes.json");
+const ELF_FILE: SnapshotFile = () => import("./regionReferences/elf-treetop.json");
 const SHIPS_FILE: SnapshotFile = () => import("./regionReferences/ships.json");
 const SHIP_MAP_IDS: Record<string, string> = {
   "bluewave-ship": "map_bluewave_ship",
@@ -98,6 +101,8 @@ function snapshotSource(id: string): SnapshotSource | undefined {
   if (climate) return fromMaps(CLIMATE_FILE, climate.sourceMapId);
   const field = FIELD_ROUTE_PLACE_REFERENCES.find(entry => entry.id === id);
   if (field) return fromMaps(FIELD_FILE, field.sourceMapId);
+  const elf = ELF_TREETOP_PLACE_REFERENCES.find(entry => entry.id === id);
+  if (elf) return fromMaps(ELF_FILE, elf.sourceMapId);
   const shipMapId = SHIP_MAP_IDS[id];
   return shipMapId ? fromMaps(SHIPS_FILE, shipMapId) : undefined;
 }
@@ -183,7 +188,7 @@ export function readRegionReference(id: string, row = 0, rows = 8) {
   const used = [...new Set([...lowerTiles, ...upperTiles])].filter(tile => tile >= 0);
   // 건물 목록·킷 요약은 첫 쪽(row 0)에만 싣는다 — 이어 읽기마다 되풀이하지 않게.
   const catalog = row === 0 && source.buildings ? { buildings: source.buildings, kits: source.kits ?? [] } : {};
-  return structuredClone({ ...reference, ...catalog, map: {
+  return structuredClone({ ...referenceOwnerManifest(reference), ...catalog, map: {
     id: map.id, width: map.width, height: map.height, tileSize: map.tileSize,
     tilesetId: map.tilesetId, row, rows: endRow - row, nextRow: endRow < map.height ? endRow : null,
     lowerTiles, upperTiles, events: map.events,

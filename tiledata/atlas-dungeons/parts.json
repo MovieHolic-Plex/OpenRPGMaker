@@ -1,0 +1,11924 @@
+{
+"base": 510,
+"texture": "tex_oprn_dungeon_parts",
+"count": 605,
+"parts": [
+{
+"tile": 510,
+"key": "ship:hull:10,0",
+"label": "배 선체·갑판 조각 29",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 29"
+},
+{
+"tile": 511,
+"key": "ship:hull:11,0",
+"label": "배 선체·갑판 조각 432",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 432"
+},
+{
+"tile": 512,
+"key": "ship:hull:12,0",
+"label": "배 선체·갑판 조각 433",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 433"
+},
+{
+"tile": 513,
+"key": "ship:hull:14,0",
+"label": "배 선체·갑판 조각 434",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 434"
+},
+{
+"tile": 514,
+"key": "ship:hull:15,0",
+"label": "배 선체·갑판 조각 174",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 174"
+},
+{
+"tile": 515,
+"key": "ship:hull:5,1",
+"label": "배 선체·갑판 조각 26",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 26"
+},
+{
+"tile": 516,
+"key": "ship:hull:6,1",
+"label": "배 선체·갑판 조각 27",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 27"
+},
+{
+"tile": 517,
+"key": "ship:hull:7,1",
+"label": "배 선체·갑판 조각 28",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 28"
+},
+{
+"tile": 518,
+"key": "ship:hull:8,1",
+"label": "배 선체·갑판 조각 76",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 76"
+},
+{
+"tile": 519,
+"key": "ship:deck:10,1",
+"label": "배 갑판 널(푸른물결항 배)",
+"pass": "udlr",
+"layer": "lower",
+"source": "EasyRPG 배 14"
+},
+{
+"tile": 520,
+"key": "ship:hull:10,1",
+"label": "배 선체·갑판 조각 45",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 배 45"
+},
+{
+"tile": 521,
+"key": "ship:hull:11,1",
+"label": "배 선체·갑판 조각 222",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 배 222"
+},
+{
+"tile": 522,
+"key": "ship:hull:14,1",
+"label": "배 선체·갑판 조각 77",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 배 77"
+},
+{
+"tile": 523,
+"key": "ship:hull:15,1",
+"label": "배 선체·갑판 조각 194",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 배 194"
+},
+{
+"tile": 524,
+"key": "ship:hull:24,1",
+"label": "배 선체·갑판 조각 28(좌우 반전)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 28(좌우 반전)"
+},
+{
+"tile": 525,
+"key": "ship:hull:25,1",
+"label": "배 선체·갑판 조각 27(좌우 반전)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 27(좌우 반전)"
+},
+{
+"tile": 526,
+"key": "ship:hull:26,1",
+"label": "배 선체·갑판 조각 26(좌우 반전)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 26(좌우 반전)"
+},
+{
+"tile": 527,
+"key": "ship:hull:4,2",
+"label": "배 선체·갑판 조각 55",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 55"
+},
+{
+"tile": 528,
+"key": "ship:hull:5,2",
+"label": "배 선체·갑판 조각 56",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 56"
+},
+{
+"tile": 529,
+"key": "ship:hull:6,2",
+"label": "배 선체·갑판 조각 324",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 324"
+},
+{
+"tile": 530,
+"key": "ship:hull:7,2",
+"label": "배 선체·갑판 조각 325",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 325"
+},
+{
+"tile": 531,
+"key": "ship:hull:8,2",
+"label": "배 선체·갑판 조각 204",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 204"
+},
+{
+"tile": 532,
+"key": "ship:hull:10,2",
+"label": "배 선체·갑판 조각 75",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 배 75"
+},
+{
+"tile": 533,
+"key": "ship:hull:15,2",
+"label": "배 선체·갑판 조각 224",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 배 224"
+},
+{
+"tile": 534,
+"key": "ship:hull:26,2",
+"label": "배 선체·갑판 조각 56(좌우 반전)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 56(좌우 반전)"
+},
+{
+"tile": 535,
+"key": "ship:hull:27,2",
+"label": "배 선체·갑판 조각 55(좌우 반전)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 55(좌우 반전)"
+},
+{
+"tile": 536,
+"key": "ship:hull:3,3",
+"label": "배 선체·갑판 조각 25",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 25"
+},
+{
+"tile": 537,
+"key": "ship:deck:4,3",
+"label": "배 갑판 널(푸른물결항 배)",
+"pass": "",
+"layer": "lower",
+"source": "EasyRPG 배 14"
+},
+{
+"tile": 538,
+"key": "ship:hull:11,3",
+"label": "배 선체·갑판 조각 462",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 462"
+},
+{
+"tile": 539,
+"key": "ship:hull:13,3",
+"label": "배 선체·갑판 조각 463",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 463"
+},
+{
+"tile": 540,
+"key": "ship:hull:14,3",
+"label": "배 선체·갑판 조각 464",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 464"
+},
+{
+"tile": 541,
+"key": "ship:hull:15,3",
+"label": "배 선체·갑판 조각 385",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 385"
+},
+{
+"tile": 542,
+"key": "ship:hull:23,3",
+"label": "배 선체·갑판 조각 379",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 379"
+},
+{
+"tile": 543,
+"key": "ship:hull:28,3",
+"label": "배 선체·갑판 조각 25(좌우 반전)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 25(좌우 반전)"
+},
+{
+"tile": 544,
+"key": "ship:hull:2,4",
+"label": "배 선체·갑판 조각 54",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 54"
+},
+{
+"tile": 545,
+"key": "ship:hull:3,4",
+"label": "배 선체·갑판 조각 72",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 72"
+},
+{
+"tile": 546,
+"key": "ship:hull:4,4",
+"label": "배 선체·갑판 조각 73",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 73"
+},
+{
+"tile": 547,
+"key": "ship:hull:6,4",
+"label": "배 선체·갑판 조각 144",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 144"
+},
+{
+"tile": 548,
+"key": "ship:hull:10,4",
+"label": "배 선체·갑판 조각 202",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 202"
+},
+{
+"tile": 549,
+"key": "ship:hull:29,4",
+"label": "배 선체·갑판 조각 54(좌우 반전)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 54(좌우 반전)"
+},
+{
+"tile": 550,
+"key": "ship:hull:0,5",
+"label": "배 선체·갑판 조각 87",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 87"
+},
+{
+"tile": 551,
+"key": "ship:hull:1,5",
+"label": "배 선체·갑판 조각 89",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 89"
+},
+{
+"tile": 552,
+"key": "ship:hull:2,5",
+"label": "배 선체·갑판 조각 84",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 84"
+},
+{
+"tile": 553,
+"key": "ship:hull:3,5",
+"label": "배 선체·갑판 조각 102",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 102"
+},
+{
+"tile": 554,
+"key": "ship:hull:4,5",
+"label": "배 선체·갑판 조각 103",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 103"
+},
+{
+"tile": 555,
+"key": "ship:hull:26,5",
+"label": "배 선체·갑판 조각 58",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 58"
+},
+{
+"tile": 556,
+"key": "ship:hull:29,5",
+"label": "배 선체·갑판 조각 378(좌우 반전)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 378(좌우 반전)"
+},
+{
+"tile": 557,
+"key": "ship:hull:2,6",
+"label": "배 선체·갑판 조각 114",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 114"
+},
+{
+"tile": 558,
+"key": "ship:hull:3,6",
+"label": "배 선체·갑판 조각 85",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 85"
+},
+{
+"tile": 559,
+"key": "ship:hull:4,6",
+"label": "배 선체·갑판 조각 263",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 배 263"
+},
+{
+"tile": 560,
+"key": "ship:hull:10,6",
+"label": "배 선체·갑판 조각 415",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 415"
+},
+{
+"tile": 561,
+"key": "ship:hull:28,6",
+"label": "배 선체·갑판 조각 85(좌우 반전)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 85(좌우 반전)"
+},
+{
+"tile": 562,
+"key": "ship:hull:29,6",
+"label": "배 선체·갑판 조각 114(좌우 반전)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 114(좌우 반전)"
+},
+{
+"tile": 563,
+"key": "ship:hull:3,7",
+"label": "배 선체·갑판 조각 115",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 115"
+},
+{
+"tile": 564,
+"key": "ship:hull:4,7",
+"label": "배 선체·갑판 조각 162",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 162"
+},
+{
+"tile": 565,
+"key": "ship:hull:5,7",
+"label": "배 선체·갑판 조각 259",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 259"
+},
+{
+"tile": 566,
+"key": "ship:hull:10,7",
+"label": "배 선체·갑판 조각 44",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 44"
+},
+{
+"tile": 567,
+"key": "ship:hull:11,7",
+"label": "배 선체·갑판 조각 252",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 252"
+},
+{
+"tile": 568,
+"key": "ship:hull:12,7",
+"label": "배 선체·갑판 조각 343",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 343"
+},
+{
+"tile": 569,
+"key": "ship:hull:13,7",
+"label": "배 선체·갑판 조각 344",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 344"
+},
+{
+"tile": 570,
+"key": "ship:hull:15,7",
+"label": "배 선체·갑판 조각 195",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 195"
+},
+{
+"tile": 571,
+"key": "ship:hull:27,7",
+"label": "배 선체·갑판 조각 162(좌우 반전)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 162(좌우 반전)"
+},
+{
+"tile": 572,
+"key": "ship:hull:28,7",
+"label": "배 선체·갑판 조각 115(좌우 반전)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 115(좌우 반전)"
+},
+{
+"tile": 573,
+"key": "ship:hull:4,8",
+"label": "배 선체·갑판 조각 116",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 116"
+},
+{
+"tile": 574,
+"key": "ship:hull:5,8",
+"label": "배 선체·갑판 조각 163",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 163"
+},
+{
+"tile": 575,
+"key": "ship:hull:6,8",
+"label": "배 선체·갑판 조각 164",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 164"
+},
+{
+"tile": 576,
+"key": "ship:hull:7,8",
+"label": "배 선체·갑판 조각 165",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 165"
+},
+{
+"tile": 577,
+"key": "ship:hull:8,8",
+"label": "배 선체·갑판 조각 326",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 326"
+},
+{
+"tile": 578,
+"key": "ship:hull:10,8",
+"label": "배 선체·갑판 조각 74",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 74"
+},
+{
+"tile": 579,
+"key": "ship:hull:11,8",
+"label": "배 선체·갑판 조각 282",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 282"
+},
+{
+"tile": 580,
+"key": "ship:hull:12,8",
+"label": "배 선체·갑판 조각 373",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 373"
+},
+{
+"tile": 581,
+"key": "ship:hull:14,8",
+"label": "배 선체·갑판 조각 137",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 137"
+},
+{
+"tile": 582,
+"key": "ship:hull:15,8",
+"label": "배 선체·갑판 조각 225",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 225"
+},
+{
+"tile": 583,
+"key": "ship:hull:24,8",
+"label": "배 선체·갑판 조각 165(좌우 반전)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 165(좌우 반전)"
+},
+{
+"tile": 584,
+"key": "ship:hull:25,8",
+"label": "배 선체·갑판 조각 164(좌우 반전)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 164(좌우 반전)"
+},
+{
+"tile": 585,
+"key": "ship:hull:26,8",
+"label": "배 선체·갑판 조각 163(좌우 반전)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 163(좌우 반전)"
+},
+{
+"tile": 586,
+"key": "ship:hull:27,8",
+"label": "배 선체·갑판 조각 116(좌우 반전)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 116(좌우 반전)"
+},
+{
+"tile": 587,
+"key": "ship:hull:5,9",
+"label": "배 선체·갑판 조각 117",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 117"
+},
+{
+"tile": 588,
+"key": "ship:hull:6,9",
+"label": "배 선체·갑판 조각 118",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 118"
+},
+{
+"tile": 589,
+"key": "ship:hull:7,9",
+"label": "배 선체·갑판 조각 166",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 166"
+},
+{
+"tile": 590,
+"key": "ship:hull:8,9",
+"label": "배 선체·갑판 조각 167",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 167"
+},
+{
+"tile": 591,
+"key": "ship:hull:11,9",
+"label": "배 선체·갑판 조각 402",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 402"
+},
+{
+"tile": 592,
+"key": "ship:hull:12,9",
+"label": "배 선체·갑판 조각 403",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 403"
+},
+{
+"tile": 593,
+"key": "ship:hull:14,9",
+"label": "배 선체·갑판 조각 404",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 404"
+},
+{
+"tile": 594,
+"key": "ship:hull:24,9",
+"label": "배 선체·갑판 조각 166(좌우 반전)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 166(좌우 반전)"
+},
+{
+"tile": 595,
+"key": "ship:hull:25,9",
+"label": "배 선체·갑판 조각 118(좌우 반전)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 118(좌우 반전)"
+},
+{
+"tile": 596,
+"key": "ship:hull:26,9",
+"label": "배 선체·갑판 조각 117(좌우 반전)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 117(좌우 반전)"
+},
+{
+"tile": 597,
+"key": "ship:hull:7,10",
+"label": "배 선체·갑판 조각 146",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 146"
+},
+{
+"tile": 598,
+"key": "ship:hull:8,10",
+"label": "배 선체·갑판 조각 147",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 147"
+},
+{
+"tile": 599,
+"key": "ship:hull:9,10",
+"label": "배 선체·갑판 조각 197",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 197"
+},
+{
+"tile": 600,
+"key": "ship:hull:24,10",
+"label": "배 선체·갑판 조각 146(좌우 반전)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 146(좌우 반전)"
+},
+{
+"tile": 601,
+"key": "int:bookcase:0,0",
+"label": "큰 책장 3×3",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 18·19·20·48·49·50·78·79·80"
+},
+{
+"tile": 602,
+"key": "int:bookcase:1,0",
+"label": "큰 책장 3×3",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 18·19·20·48·49·50·78·79·80"
+},
+{
+"tile": 603,
+"key": "int:bookcase:2,0",
+"label": "큰 책장 3×3",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 18·19·20·48·49·50·78·79·80"
+},
+{
+"tile": 604,
+"key": "int:bookcase:0,1",
+"label": "큰 책장 3×3",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 18·19·20·48·49·50·78·79·80"
+},
+{
+"tile": 605,
+"key": "int:bookcase:1,1",
+"label": "큰 책장 3×3",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 18·19·20·48·49·50·78·79·80"
+},
+{
+"tile": 606,
+"key": "int:bookcase:2,1",
+"label": "큰 책장 3×3",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 18·19·20·48·49·50·78·79·80"
+},
+{
+"tile": 607,
+"key": "int:bookcase:0,2",
+"label": "큰 책장 3×3",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 18·19·20·48·49·50·78·79·80"
+},
+{
+"tile": 608,
+"key": "int:bookcase:1,2",
+"label": "큰 책장 3×3",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 18·19·20·48·49·50·78·79·80"
+},
+{
+"tile": 609,
+"key": "int:bookcase:2,2",
+"label": "큰 책장 3×3",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 18·19·20·48·49·50·78·79·80"
+},
+{
+"tile": 610,
+"key": "int:shelf-books:0,0",
+"label": "책 꽂힌 선반장",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 147·177"
+},
+{
+"tile": 611,
+"key": "int:shelf-books:0,1",
+"label": "책 꽂힌 선반장",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 147·177"
+},
+{
+"tile": 612,
+"key": "int:cupboard:0,0",
+"label": "선반장",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 148·178"
+},
+{
+"tile": 613,
+"key": "int:cupboard:0,1",
+"label": "선반장",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 148·178"
+},
+{
+"tile": 614,
+"key": "int:wardrobe:0,0",
+"label": "양문 수납장",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 149·179"
+},
+{
+"tile": 615,
+"key": "int:wardrobe:0,1",
+"label": "양문 수납장",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 149·179"
+},
+{
+"tile": 616,
+"key": "int:bed-v:0,0",
+"label": "세로 침대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 324·354"
+},
+{
+"tile": 617,
+"key": "int:bed-v:0,1",
+"label": "세로 침대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 324·354"
+},
+{
+"tile": 618,
+"key": "int:bed-h:0,0",
+"label": "가로 침대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 355·356"
+},
+{
+"tile": 619,
+"key": "int:bed-h:1,0",
+"label": "가로 침대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 355·356"
+},
+{
+"tile": 620,
+"key": "int:table-long:0,0",
+"label": "긴 탁자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 325·326·327"
+},
+{
+"tile": 621,
+"key": "int:table-long:1,0",
+"label": "긴 탁자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 325·326·327"
+},
+{
+"tile": 622,
+"key": "int:table-long:2,0",
+"label": "긴 탁자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 325·326·327"
+},
+{
+"tile": 623,
+"key": "int:table-square",
+"label": "사각 탁자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 328"
+},
+{
+"tile": 624,
+"key": "int:table-round",
+"label": "원형 탁자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 236"
+},
+{
+"tile": 625,
+"key": "int:table-tall:0,0",
+"label": "세로 긴 탁자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 234·264·294"
+},
+{
+"tile": 626,
+"key": "int:table-tall:0,1",
+"label": "세로 긴 탁자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 234·264·294"
+},
+{
+"tile": 627,
+"key": "int:table-tall:0,2",
+"label": "세로 긴 탁자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 234·264·294"
+},
+{
+"tile": 628,
+"key": "int:chair-s",
+"label": "등받이 의자(남쪽 보기 — 탁자 북쪽에 둔다)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 267"
+},
+{
+"tile": 629,
+"key": "int:chair-s2",
+"label": "등받이 의자 2(남쪽 보기 — 탁자 북쪽에 둔다)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 268"
+},
+{
+"tile": 630,
+"key": "int:seat-r",
+"label": "의자(오른쪽 보기)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 297"
+},
+{
+"tile": 631,
+"key": "int:seat-l",
+"label": "의자(왼쪽 보기)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 298"
+},
+{
+"tile": 632,
+"key": "int:stool",
+"label": "원형 걸상",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 266"
+},
+{
+"tile": 633,
+"key": "int:chair-fallen",
+"label": "쓰러진 의자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 384"
+},
+{
+"tile": 634,
+"key": "int:candle",
+"label": "촛대",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 204"
+},
+{
+"tile": 635,
+"key": "int:lantern",
+"label": "랜턴",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 206"
+},
+{
+"tile": 636,
+"key": "int:clock:0,0",
+"label": "괘종시계",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 389·419"
+},
+{
+"tile": 637,
+"key": "int:clock:0,1",
+"label": "괘종시계",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 389·419"
+},
+{
+"tile": 638,
+"key": "int:mirror:0,0",
+"label": "대형 거울",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 269·299"
+},
+{
+"tile": 639,
+"key": "int:mirror:0,1",
+"label": "대형 거울",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 269·299"
+},
+{
+"tile": 640,
+"key": "int:armor:0,0",
+"label": "갑옷 전시대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 87·117"
+},
+{
+"tile": 641,
+"key": "int:armor:0,1",
+"label": "갑옷 전시대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 87·117"
+},
+{
+"tile": 642,
+"key": "int:bust:0,0",
+"label": "여자 흉상",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 88·118"
+},
+{
+"tile": 643,
+"key": "int:bust:0,1",
+"label": "여자 흉상",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 88·118"
+},
+{
+"tile": 644,
+"key": "int:pillar:0,0",
+"label": "돌기둥",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 89·119"
+},
+{
+"tile": 645,
+"key": "int:pillar:0,1",
+"label": "돌기둥",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 89·119"
+},
+{
+"tile": 646,
+"key": "int:armor-stand",
+"label": "갑옷(전시)",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 290"
+},
+{
+"tile": 647,
+"key": "int:curtain:0,0",
+"label": "붉은 커튼(창 양옆)",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 318·319·348·349"
+},
+{
+"tile": 648,
+"key": "int:curtain:1,0",
+"label": "붉은 커튼(창 양옆)",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 318·319·348·349"
+},
+{
+"tile": 649,
+"key": "int:curtain:0,1",
+"label": "붉은 커튼(창 양옆)",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 318·319·348·349"
+},
+{
+"tile": 650,
+"key": "int:curtain:1,1",
+"label": "붉은 커튼(창 양옆)",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 318·319·348·349"
+},
+{
+"tile": 651,
+"key": "int:drape:0,0",
+"label": "붉은 대형 커튼",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 142·143·172·173·202·203"
+},
+{
+"tile": 652,
+"key": "int:drape:1,0",
+"label": "붉은 대형 커튼",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 142·143·172·173·202·203"
+},
+{
+"tile": 653,
+"key": "int:drape:0,1",
+"label": "붉은 대형 커튼",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 142·143·172·173·202·203"
+},
+{
+"tile": 654,
+"key": "int:drape:1,1",
+"label": "붉은 대형 커튼",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 142·143·172·173·202·203"
+},
+{
+"tile": 655,
+"key": "int:drape:0,2",
+"label": "붉은 대형 커튼",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 142·143·172·173·202·203"
+},
+{
+"tile": 656,
+"key": "int:drape:1,2",
+"label": "붉은 대형 커튼",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 142·143·172·173·202·203"
+},
+{
+"tile": 657,
+"key": "int:banner:0,0",
+"label": "붉은 배너",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 378·379"
+},
+{
+"tile": 658,
+"key": "int:banner:1,0",
+"label": "붉은 배너",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 378·379"
+},
+{
+"tile": 659,
+"key": "int:piano:0,0",
+"label": "피아노",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 358·359"
+},
+{
+"tile": 660,
+"key": "int:piano:1,0",
+"label": "피아노",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 358·359"
+},
+{
+"tile": 661,
+"key": "int:cauldron",
+"label": "가마솥",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 323"
+},
+{
+"tile": 662,
+"key": "int:crystal-ball",
+"label": "수정구 점술대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 329"
+},
+{
+"tile": 663,
+"key": "int:jar-shelf",
+"label": "단지 선반",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 320"
+},
+{
+"tile": 664,
+"key": "int:jars",
+"label": "흰 단지 두 개",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 350"
+},
+{
+"tile": 665,
+"key": "int:pot",
+"label": "항아리",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 235"
+},
+{
+"tile": 666,
+"key": "int:barrel",
+"label": "대형 나무 통",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 205"
+},
+{
+"tile": 667,
+"key": "int:crate",
+"label": "나무 상자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 295"
+},
+{
+"tile": 668,
+"key": "int:box",
+"label": "나무 궤짝",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 55"
+},
+{
+"tile": 669,
+"key": "int:bucket",
+"label": "나무 물통",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 265"
+},
+{
+"tile": 670,
+"key": "int:plank-stand",
+"label": "세운 나무 판자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 386"
+},
+{
+"tile": 671,
+"key": "int:plank-pile",
+"label": "판자 더미",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 387"
+},
+{
+"tile": 672,
+"key": "int:glass",
+"label": "깨진 유리 조각",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 417"
+},
+{
+"tile": 673,
+"key": "int:crack:0,0",
+"label": "벽 균열",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 388·418"
+},
+{
+"tile": 674,
+"key": "int:crack:0,1",
+"label": "벽 균열",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 388·418"
+},
+{
+"tile": 675,
+"key": "int:skeleton",
+"label": "해골 유골",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 470"
+},
+{
+"tile": 676,
+"key": "int:sack",
+"label": "곡물 자루",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 471"
+},
+{
+"tile": 677,
+"key": "int:ladder",
+"label": "나무 사다리",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 472"
+},
+{
+"tile": 678,
+"key": "int:painting-land",
+"label": "풍경 액자",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 84"
+},
+{
+"tile": 679,
+"key": "int:painting-fire",
+"label": "불꽃 액자",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 85"
+},
+{
+"tile": 680,
+"key": "int:painting-big:0,0",
+"label": "대형 그림",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 114·115"
+},
+{
+"tile": 681,
+"key": "int:painting-big:1,0",
+"label": "대형 그림",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 114·115"
+},
+{
+"tile": 682,
+"key": "int:window",
+"label": "흰 창문",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 54"
+},
+{
+"tile": 683,
+"key": "int:window-curtain",
+"label": "커튼 창문",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 56"
+},
+{
+"tile": 684,
+"key": "int:window-dark",
+"label": "격자 창(어두운)",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 174"
+},
+{
+"tile": 685,
+"key": "int:stained",
+"label": "스테인드글라스",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 144"
+},
+{
+"tile": 686,
+"key": "int:book-open",
+"label": "펼친 책",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 145"
+},
+{
+"tile": 687,
+"key": "int:book-red",
+"label": "붉은 책",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 175"
+},
+{
+"tile": 688,
+"key": "int:letters",
+"label": "흩어진 편지",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 322"
+},
+{
+"tile": 689,
+"key": "int:feather",
+"label": "큰 깃털",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 352"
+},
+{
+"tile": 690,
+"key": "int:circle:0,0",
+"label": "마법진 3×3",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 381·382·383·411·412·413·441·442·443"
+},
+{
+"tile": 691,
+"key": "int:circle:1,0",
+"label": "마법진 3×3",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 381·382·383·411·412·413·441·442·443"
+},
+{
+"tile": 692,
+"key": "int:circle:2,0",
+"label": "마법진 3×3",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 381·382·383·411·412·413·441·442·443"
+},
+{
+"tile": 693,
+"key": "int:circle:0,1",
+"label": "마법진 3×3",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 381·382·383·411·412·413·441·442·443"
+},
+{
+"tile": 694,
+"key": "int:circle:1,1",
+"label": "마법진 3×3",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 381·382·383·411·412·413·441·442·443"
+},
+{
+"tile": 695,
+"key": "int:circle:2,1",
+"label": "마법진 3×3",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 381·382·383·411·412·413·441·442·443"
+},
+{
+"tile": 696,
+"key": "int:circle:0,2",
+"label": "마법진 3×3",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 381·382·383·411·412·413·441·442·443"
+},
+{
+"tile": 697,
+"key": "int:circle:1,2",
+"label": "마법진 3×3",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 381·382·383·411·412·413·441·442·443"
+},
+{
+"tile": 698,
+"key": "int:circle:2,2",
+"label": "마법진 3×3",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 381·382·383·411·412·413·441·442·443"
+},
+{
+"tile": 699,
+"key": "int:stove:0,0",
+"label": "난로 연통",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 209·239"
+},
+{
+"tile": 700,
+"key": "int:stove:0,1",
+"label": "난로 연통",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 209·239"
+},
+{
+"tile": 701,
+"key": "int:oven:0,0",
+"label": "화덕 오븐",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 21·51"
+},
+{
+"tile": 702,
+"key": "int:oven:0,1",
+"label": "화덕 오븐",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 21·51"
+},
+{
+"tile": 703,
+"key": "int:counter:0,0",
+"label": "조리대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 22·23·52·53"
+},
+{
+"tile": 704,
+"key": "int:counter:1,0",
+"label": "조리대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 22·23·52·53"
+},
+{
+"tile": 705,
+"key": "int:counter:0,1",
+"label": "조리대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 22·23·52·53"
+},
+{
+"tile": 706,
+"key": "int:counter:1,1",
+"label": "조리대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 22·23·52·53"
+},
+{
+"tile": 707,
+"key": "int:food",
+"label": "고기 요리",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 207"
+},
+{
+"tile": 708,
+"key": "int:salad",
+"label": "샐러드 접시",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 208"
+},
+{
+"tile": 709,
+"key": "int:bottles",
+"label": "술병과 잔",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 237"
+},
+{
+"tile": 710,
+"key": "int:dishes",
+"label": "식기 세트",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 238"
+},
+{
+"tile": 711,
+"key": "int:weapon-case:0,0",
+"label": "검 진열 박스",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 263·293"
+},
+{
+"tile": 712,
+"key": "int:weapon-case:0,1",
+"label": "검 진열 박스",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 263·293"
+},
+{
+"tile": 713,
+"key": "int:wall-sword",
+"label": "벽걸이 검",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 260"
+},
+{
+"tile": 714,
+"key": "int:wall-hammer",
+"label": "벽걸이 망치",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 261"
+},
+{
+"tile": 715,
+"key": "int:wall-shield",
+"label": "벽걸이 방패",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 262"
+},
+{
+"tile": 716,
+"key": "int:helmet",
+"label": "가죽 투구",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 291"
+},
+{
+"tile": 717,
+"key": "int:leather",
+"label": "가죽 갑옷",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 292"
+},
+{
+"tile": 718,
+"key": "int:ore",
+"label": "광석 바위",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 414"
+},
+{
+"tile": 719,
+"key": "int:rocks",
+"label": "둥근 바위 더미",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 415"
+},
+{
+"tile": 720,
+"key": "int:bricks",
+"label": "부서진 벽돌 더미",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 416"
+},
+{
+"tile": 721,
+"key": "int:fruit-shelf",
+"label": "과일 단지 선반",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 25"
+},
+{
+"tile": 722,
+"key": "int:cross",
+"label": "십자 장식",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 59"
+},
+{
+"tile": 723,
+"key": "int:cloth-table:0,0",
+"label": "흰 천 테이블",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 228·229·230"
+},
+{
+"tile": 724,
+"key": "int:cloth-table:1,0",
+"label": "흰 천 테이블",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 228·229·230"
+},
+{
+"tile": 725,
+"key": "int:cloth-table:2,0",
+"label": "흰 천 테이블",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 228·229·230"
+},
+{
+"tile": 726,
+"key": "int:teapot",
+"label": "돌 항아리",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 380"
+},
+{
+"tile": 727,
+"key": "int:necklace",
+"label": "보석 목걸이",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 321"
+},
+{
+"tile": 728,
+"key": "int:boots",
+"label": "가죽 장화 더미",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 353"
+},
+{
+"tile": 729,
+"key": "int:sign-weapon",
+"label": "무기점 간판",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 27"
+},
+{
+"tile": 730,
+"key": "int:sign-armor",
+"label": "방어구점 간판",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 28"
+},
+{
+"tile": 731,
+"key": "int:sign-item",
+"label": "잡화점 간판",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 29"
+},
+{
+"tile": 732,
+"key": "int:throne-red:0,0",
+"label": "붉은 의자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 446·476"
+},
+{
+"tile": 733,
+"key": "int:throne-red:0,1",
+"label": "붉은 의자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내 446·476"
+},
+{
+"tile": 734,
+"key": "int:stair-down",
+"label": "하강 계단 1×1",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내 474"
+},
+{
+"tile": 735,
+"key": "manor:bookcase:0,0",
+"label": "큰 책장 3×3",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 18·19·20·48·49·50·78·79·80"
+},
+{
+"tile": 736,
+"key": "manor:bookcase:1,0",
+"label": "큰 책장 3×3",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 18·19·20·48·49·50·78·79·80"
+},
+{
+"tile": 737,
+"key": "manor:bookcase:2,0",
+"label": "큰 책장 3×3",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 18·19·20·48·49·50·78·79·80"
+},
+{
+"tile": 738,
+"key": "manor:bookcase:0,1",
+"label": "큰 책장 3×3",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 18·19·20·48·49·50·78·79·80"
+},
+{
+"tile": 739,
+"key": "manor:bookcase:1,1",
+"label": "큰 책장 3×3",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 18·19·20·48·49·50·78·79·80"
+},
+{
+"tile": 740,
+"key": "manor:bookcase:2,1",
+"label": "큰 책장 3×3",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 18·19·20·48·49·50·78·79·80"
+},
+{
+"tile": 741,
+"key": "manor:bookcase:0,2",
+"label": "큰 책장 3×3",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 18·19·20·48·49·50·78·79·80"
+},
+{
+"tile": 742,
+"key": "manor:bookcase:1,2",
+"label": "큰 책장 3×3",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 18·19·20·48·49·50·78·79·80"
+},
+{
+"tile": 743,
+"key": "manor:bookcase:2,2",
+"label": "큰 책장 3×3",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 18·19·20·48·49·50·78·79·80"
+},
+{
+"tile": 744,
+"key": "manor:shelf-books:0,0",
+"label": "책 꽂힌 선반장",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 147·177"
+},
+{
+"tile": 745,
+"key": "manor:shelf-books:0,1",
+"label": "책 꽂힌 선반장",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 147·177"
+},
+{
+"tile": 746,
+"key": "manor:cupboard:0,0",
+"label": "선반장",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 148·178"
+},
+{
+"tile": 747,
+"key": "manor:cupboard:0,1",
+"label": "선반장",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 148·178"
+},
+{
+"tile": 748,
+"key": "manor:wardrobe:0,0",
+"label": "양문 수납장",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 149·179"
+},
+{
+"tile": 749,
+"key": "manor:wardrobe:0,1",
+"label": "양문 수납장",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 149·179"
+},
+{
+"tile": 750,
+"key": "manor:bed-v:0,0",
+"label": "세로 침대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 324·354"
+},
+{
+"tile": 751,
+"key": "manor:bed-v:0,1",
+"label": "세로 침대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 324·354"
+},
+{
+"tile": 752,
+"key": "manor:bed-h:0,0",
+"label": "가로 침대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 355·356"
+},
+{
+"tile": 753,
+"key": "manor:bed-h:1,0",
+"label": "가로 침대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 355·356"
+},
+{
+"tile": 754,
+"key": "manor:table-long:0,0",
+"label": "긴 탁자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 325·326·327"
+},
+{
+"tile": 755,
+"key": "manor:table-long:1,0",
+"label": "긴 탁자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 325·326·327"
+},
+{
+"tile": 756,
+"key": "manor:table-long:2,0",
+"label": "긴 탁자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 325·326·327"
+},
+{
+"tile": 757,
+"key": "manor:table-square",
+"label": "사각 탁자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 328"
+},
+{
+"tile": 758,
+"key": "manor:table-round",
+"label": "원형 탁자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 236"
+},
+{
+"tile": 759,
+"key": "manor:chair-s",
+"label": "등받이 의자(남쪽 보기 — 탁자 북쪽에 둔다)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 267"
+},
+{
+"tile": 760,
+"key": "manor:chair-s2",
+"label": "등받이 의자 2(남쪽 보기 — 탁자 북쪽에 둔다)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 268"
+},
+{
+"tile": 761,
+"key": "manor:seat-r",
+"label": "의자(오른쪽 보기)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 297"
+},
+{
+"tile": 762,
+"key": "manor:seat-l",
+"label": "의자(왼쪽 보기)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 298"
+},
+{
+"tile": 763,
+"key": "manor:stool",
+"label": "원형 걸상",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 266"
+},
+{
+"tile": 764,
+"key": "manor:chair-fallen",
+"label": "쓰러진 의자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 384"
+},
+{
+"tile": 765,
+"key": "manor:candle",
+"label": "촛대",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 204"
+},
+{
+"tile": 766,
+"key": "manor:clock:0,0",
+"label": "괘종시계",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 389·419"
+},
+{
+"tile": 767,
+"key": "manor:clock:0,1",
+"label": "괘종시계",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 389·419"
+},
+{
+"tile": 768,
+"key": "manor:mirror:0,0",
+"label": "대형 거울",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 269·299"
+},
+{
+"tile": 769,
+"key": "manor:mirror:0,1",
+"label": "대형 거울",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 269·299"
+},
+{
+"tile": 770,
+"key": "manor:armor:0,0",
+"label": "갑옷 전시대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 87·117"
+},
+{
+"tile": 771,
+"key": "manor:armor:0,1",
+"label": "갑옷 전시대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 87·117"
+},
+{
+"tile": 772,
+"key": "manor:bust:0,0",
+"label": "여자 흉상",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 88·118"
+},
+{
+"tile": 773,
+"key": "manor:bust:0,1",
+"label": "여자 흉상",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 88·118"
+},
+{
+"tile": 774,
+"key": "manor:curtain:0,0",
+"label": "붉은 커튼(창 양옆)",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 318·319·348·349"
+},
+{
+"tile": 775,
+"key": "manor:curtain:1,0",
+"label": "붉은 커튼(창 양옆)",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 318·319·348·349"
+},
+{
+"tile": 776,
+"key": "manor:curtain:0,1",
+"label": "붉은 커튼(창 양옆)",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 318·319·348·349"
+},
+{
+"tile": 777,
+"key": "manor:curtain:1,1",
+"label": "붉은 커튼(창 양옆)",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 318·319·348·349"
+},
+{
+"tile": 778,
+"key": "manor:drape:0,0",
+"label": "붉은 대형 커튼",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 142·143·172·173·202·203"
+},
+{
+"tile": 779,
+"key": "manor:drape:1,0",
+"label": "붉은 대형 커튼",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 142·143·172·173·202·203"
+},
+{
+"tile": 780,
+"key": "manor:drape:0,1",
+"label": "붉은 대형 커튼",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 142·143·172·173·202·203"
+},
+{
+"tile": 781,
+"key": "manor:drape:1,1",
+"label": "붉은 대형 커튼",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 142·143·172·173·202·203"
+},
+{
+"tile": 782,
+"key": "manor:drape:0,2",
+"label": "붉은 대형 커튼",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 142·143·172·173·202·203"
+},
+{
+"tile": 783,
+"key": "manor:drape:1,2",
+"label": "붉은 대형 커튼",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 142·143·172·173·202·203"
+},
+{
+"tile": 784,
+"key": "manor:banner:0,0",
+"label": "붉은 배너",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 378·379"
+},
+{
+"tile": 785,
+"key": "manor:banner:1,0",
+"label": "붉은 배너",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 378·379"
+},
+{
+"tile": 786,
+"key": "manor:piano:0,0",
+"label": "피아노",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 358·359"
+},
+{
+"tile": 787,
+"key": "manor:piano:1,0",
+"label": "피아노",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 358·359"
+},
+{
+"tile": 788,
+"key": "manor:jars",
+"label": "흰 단지 두 개",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 350"
+},
+{
+"tile": 789,
+"key": "manor:pot",
+"label": "항아리",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 235"
+},
+{
+"tile": 790,
+"key": "manor:barrel",
+"label": "대형 나무 통",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 205"
+},
+{
+"tile": 791,
+"key": "manor:crate",
+"label": "나무 상자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 295"
+},
+{
+"tile": 792,
+"key": "manor:box",
+"label": "나무 궤짝",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 55"
+},
+{
+"tile": 793,
+"key": "manor:plank-stand",
+"label": "세운 나무 판자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 386"
+},
+{
+"tile": 794,
+"key": "manor:plank-pile",
+"label": "판자 더미",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 387"
+},
+{
+"tile": 795,
+"key": "manor:glass",
+"label": "깨진 유리 조각",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 417"
+},
+{
+"tile": 796,
+"key": "manor:crack:0,0",
+"label": "벽 균열",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 388·418"
+},
+{
+"tile": 797,
+"key": "manor:crack:0,1",
+"label": "벽 균열",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 388·418"
+},
+{
+"tile": 798,
+"key": "manor:skeleton",
+"label": "해골 유골",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 470"
+},
+{
+"tile": 799,
+"key": "manor:sack",
+"label": "곡물 자루",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 471"
+},
+{
+"tile": 800,
+"key": "manor:painting-land",
+"label": "풍경 액자",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 84"
+},
+{
+"tile": 801,
+"key": "manor:painting-fire",
+"label": "불꽃 액자",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 85"
+},
+{
+"tile": 802,
+"key": "manor:painting-big:0,0",
+"label": "대형 그림",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 114·115"
+},
+{
+"tile": 803,
+"key": "manor:painting-big:1,0",
+"label": "대형 그림",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 114·115"
+},
+{
+"tile": 804,
+"key": "manor:window-curtain",
+"label": "커튼 창문",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 56"
+},
+{
+"tile": 805,
+"key": "manor:window-dark",
+"label": "격자 창(어두운)",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 174"
+},
+{
+"tile": 806,
+"key": "manor:book-open",
+"label": "펼친 책",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 145"
+},
+{
+"tile": 807,
+"key": "manor:letters",
+"label": "흩어진 편지",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 322"
+},
+{
+"tile": 808,
+"key": "manor:stove:0,0",
+"label": "난로 연통",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 209·239"
+},
+{
+"tile": 809,
+"key": "manor:stove:0,1",
+"label": "난로 연통",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 209·239"
+},
+{
+"tile": 810,
+"key": "manor:oven:0,0",
+"label": "화덕 오븐",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 21·51"
+},
+{
+"tile": 811,
+"key": "manor:oven:0,1",
+"label": "화덕 오븐",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 21·51"
+},
+{
+"tile": 812,
+"key": "manor:counter:0,0",
+"label": "조리대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 22·23·52·53"
+},
+{
+"tile": 813,
+"key": "manor:counter:1,0",
+"label": "조리대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 22·23·52·53"
+},
+{
+"tile": 814,
+"key": "manor:counter:0,1",
+"label": "조리대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 22·23·52·53"
+},
+{
+"tile": 815,
+"key": "manor:counter:1,1",
+"label": "조리대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 22·23·52·53"
+},
+{
+"tile": 816,
+"key": "manor:bottles",
+"label": "술병과 잔",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 237"
+},
+{
+"tile": 817,
+"key": "manor:dishes",
+"label": "식기 세트",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 238"
+},
+{
+"tile": 818,
+"key": "manor:cloth-table:0,0",
+"label": "흰 천 테이블",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 228·229·230"
+},
+{
+"tile": 819,
+"key": "manor:cloth-table:1,0",
+"label": "흰 천 테이블",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 228·229·230"
+},
+{
+"tile": 820,
+"key": "manor:cloth-table:2,0",
+"label": "흰 천 테이블",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 228·229·230"
+},
+{
+"tile": 821,
+"key": "manor:throne-red:0,0",
+"label": "붉은 의자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 446·476"
+},
+{
+"tile": 822,
+"key": "manor:throne-red:0,1",
+"label": "붉은 의자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 실내(저택 재칠) 446·476"
+},
+{
+"tile": 823,
+"key": "ship:barrel",
+"label": "대형 오크통",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 385"
+},
+{
+"tile": 824,
+"key": "ship:barrel-open",
+"label": "열린 나무통",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 415"
+},
+{
+"tile": 825,
+"key": "ship:crate",
+"label": "사각 나무 상자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 379"
+},
+{
+"tile": 826,
+"key": "ship:drawer",
+"label": "나무 서랍 가구",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 382"
+},
+{
+"tile": 827,
+"key": "ship:jug",
+"label": "도자기 항아리",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 386"
+},
+{
+"tile": 828,
+"key": "ship:table",
+"label": "둥근 나무 탁자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 387"
+},
+{
+"tile": 829,
+"key": "ship:stool",
+"label": "둥근 목재 의자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 417"
+},
+{
+"tile": 830,
+"key": "ship:bookcase:0,0",
+"label": "책장",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 414·384"
+},
+{
+"tile": 831,
+"key": "ship:bookcase:0,1",
+"label": "책장",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 414·384"
+},
+{
+"tile": 832,
+"key": "ship:cannon-l",
+"label": "왼쪽 향한 대포",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 324"
+},
+{
+"tile": 833,
+"key": "ship:cannon-r",
+"label": "오른쪽 향한 대포",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 325"
+},
+{
+"tile": 834,
+"key": "ship:cannon-front:0,0",
+"label": "정면 대포",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 326·356"
+},
+{
+"tile": 835,
+"key": "ship:cannon-front:0,1",
+"label": "정면 대포",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 326·356"
+},
+{
+"tile": 836,
+"key": "ship:cannon-up:0,0",
+"label": "상향 대포",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 327·357"
+},
+{
+"tile": 837,
+"key": "ship:cannon-up:0,1",
+"label": "상향 대포",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 327·357"
+},
+{
+"tile": 838,
+"key": "ship:cannon-cart-l",
+"label": "좌향 포차 대포",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 354"
+},
+{
+"tile": 839,
+"key": "ship:cannon-cart-r",
+"label": "우향 포신 대포",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 355"
+},
+{
+"tile": 840,
+"key": "ship:anchor",
+"label": "닻",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 259"
+},
+{
+"tile": 841,
+"key": "ship:rope",
+"label": "감긴 밧줄 더미",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 배 263"
+},
+{
+"tile": 842,
+"key": "ship:rigging",
+"label": "밧줄과 활 장비",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 204"
+},
+{
+"tile": 843,
+"key": "ship:wheel",
+"label": "나무 키(조타륜)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 58"
+},
+{
+"tile": 844,
+"key": "ship:wheel-side",
+"label": "나무 바퀴 측면",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 59"
+},
+{
+"tile": 845,
+"key": "ship:lamp",
+"label": "사각 금속 등",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 83"
+},
+{
+"tile": 846,
+"key": "ship:skull",
+"label": "해골과 뼈 더미",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 205"
+},
+{
+"tile": 847,
+"key": "ship:swords",
+"label": "엇갈린 은색 검",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 295"
+},
+{
+"tile": 848,
+"key": "ship:flag",
+"label": "붉은 삼각 깃발",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 288"
+},
+{
+"tile": 849,
+"key": "ship:banner:0,0",
+"label": "붉은 금장 깃발",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 318·348"
+},
+{
+"tile": 850,
+"key": "ship:banner:0,1",
+"label": "붉은 금장 깃발",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 318·348"
+},
+{
+"tile": 851,
+"key": "ship:hammock:0,0",
+"label": "흰 베개 침대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 416·446"
+},
+{
+"tile": 852,
+"key": "ship:hammock:0,1",
+"label": "흰 베개 침대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 416·446"
+},
+{
+"tile": 853,
+"key": "ship:bunk:0,0",
+"label": "침대(옆면)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 476·477"
+},
+{
+"tile": 854,
+"key": "ship:bunk:1,0",
+"label": "침대(옆면)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 476·477"
+},
+{
+"tile": 855,
+"key": "ship:wardrobe:0,0",
+"label": "나무 장롱",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 474·475"
+},
+{
+"tile": 856,
+"key": "ship:wardrobe:1,0",
+"label": "나무 장롱",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 474·475"
+},
+{
+"tile": 857,
+"key": "ship:organ:0,0",
+"label": "파이프오르간",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 444·445"
+},
+{
+"tile": 858,
+"key": "ship:organ:1,0",
+"label": "파이프오르간",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 444·445"
+},
+{
+"tile": 859,
+"key": "ship:potions",
+"label": "선반 위 물약병",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 148"
+},
+{
+"tile": 860,
+"key": "ship:shelf",
+"label": "벽 부착 가로 널 선반",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 143"
+},
+{
+"tile": 861,
+"key": "ship:vent",
+"label": "환기 격자창",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 202"
+},
+{
+"tile": 862,
+"key": "ship:porthole",
+"label": "창살 격자 창문",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 232"
+},
+{
+"tile": 863,
+"key": "ship:picture-sea:0,0",
+"label": "바다 그림 액자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 388·389"
+},
+{
+"tile": 864,
+"key": "ship:picture-sea:1,0",
+"label": "바다 그림 액자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 388·389"
+},
+{
+"tile": 865,
+"key": "ship:winch:0,0",
+"label": "원통형 권양기",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 138·142"
+},
+{
+"tile": 866,
+"key": "ship:winch:0,1",
+"label": "원통형 권양기",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 138·142"
+},
+{
+"tile": 867,
+"key": "ship:post",
+"label": "짧은 세로 목재 말뚝",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 57"
+},
+{
+"tile": 868,
+"key": "ship:hole",
+"label": "나무 위 검은 구멍",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 294"
+},
+{
+"tile": 869,
+"key": "ship:ladder:0,0",
+"label": "목재 사다리(2×2)",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 배 22·23·22·23"
+},
+{
+"tile": 870,
+"key": "ship:ladder:1,0",
+"label": "목재 사다리(2×2)",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 배 22·23·22·23"
+},
+{
+"tile": 871,
+"key": "ship:ladder:0,1",
+"label": "목재 사다리(2×2)",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 배 22·23·22·23"
+},
+{
+"tile": 872,
+"key": "ship:ladder:1,1",
+"label": "목재 사다리(2×2)",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 배 22·23·22·23"
+},
+{
+"tile": 873,
+"key": "ship:ladder-top",
+"label": "목재 사다리 상단",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 배 328"
+},
+{
+"tile": 874,
+"key": "ship:hatch-top",
+"label": "갑판 해치 입구 상단",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 배 264"
+},
+{
+"tile": 875,
+"key": "ship:rope-hang",
+"label": "늘어진 밧줄",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 298"
+},
+{
+"tile": 876,
+"key": "ship:cabin-wall:0,0",
+"label": "목재 선실 벽 4×2",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 198·199·200·201·228·229·230·231"
+},
+{
+"tile": 877,
+"key": "ship:cabin-wall:1,0",
+"label": "목재 선실 벽 4×2",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 198·199·200·201·228·229·230·231"
+},
+{
+"tile": 878,
+"key": "ship:cabin-wall:2,0",
+"label": "목재 선실 벽 4×2",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 198·199·200·201·228·229·230·231"
+},
+{
+"tile": 879,
+"key": "ship:cabin-wall:3,0",
+"label": "목재 선실 벽 4×2",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 198·199·200·201·228·229·230·231"
+},
+{
+"tile": 880,
+"key": "ship:cabin-wall:0,1",
+"label": "목재 선실 벽 4×2",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 198·199·200·201·228·229·230·231"
+},
+{
+"tile": 881,
+"key": "ship:cabin-wall:1,1",
+"label": "목재 선실 벽 4×2",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 198·199·200·201·228·229·230·231"
+},
+{
+"tile": 882,
+"key": "ship:cabin-wall:2,1",
+"label": "목재 선실 벽 4×2",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 198·199·200·201·228·229·230·231"
+},
+{
+"tile": 883,
+"key": "ship:cabin-wall:3,1",
+"label": "목재 선실 벽 4×2",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 198·199·200·201·228·229·230·231"
+},
+{
+"tile": 884,
+"key": "ship:rail-v:0,0",
+"label": "세로 목재 난간",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 418·478"
+},
+{
+"tile": 885,
+"key": "ship:rail-v:0,1",
+"label": "세로 목재 난간",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 418·478"
+},
+{
+"tile": 886,
+"key": "ship:rail-h:0,0",
+"label": "가로 목재 난간",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 447·448·449"
+},
+{
+"tile": 887,
+"key": "ship:rail-h:1,0",
+"label": "가로 목재 난간",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 447·448·449"
+},
+{
+"tile": 888,
+"key": "ship:rail-h:2,0",
+"label": "가로 목재 난간",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배 447·448·449"
+},
+{
+"tile": 889,
+"key": "ghost:barrel",
+"label": "대형 오크통",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 385"
+},
+{
+"tile": 890,
+"key": "ghost:barrel-open",
+"label": "열린 나무통",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 415"
+},
+{
+"tile": 891,
+"key": "ghost:crate",
+"label": "사각 나무 상자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 379"
+},
+{
+"tile": 892,
+"key": "ghost:drawer",
+"label": "나무 서랍 가구",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 382"
+},
+{
+"tile": 893,
+"key": "ghost:jug",
+"label": "도자기 항아리",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 386"
+},
+{
+"tile": 894,
+"key": "ghost:table",
+"label": "둥근 나무 탁자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 387"
+},
+{
+"tile": 895,
+"key": "ghost:stool",
+"label": "둥근 목재 의자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 417"
+},
+{
+"tile": 896,
+"key": "ghost:bookcase:0,0",
+"label": "책장",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 414·384"
+},
+{
+"tile": 897,
+"key": "ghost:bookcase:0,1",
+"label": "책장",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 414·384"
+},
+{
+"tile": 898,
+"key": "ghost:cannon-l",
+"label": "왼쪽 향한 대포",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 324"
+},
+{
+"tile": 899,
+"key": "ghost:cannon-r",
+"label": "오른쪽 향한 대포",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 325"
+},
+{
+"tile": 900,
+"key": "ghost:cannon-front:0,0",
+"label": "정면 대포",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 326·356"
+},
+{
+"tile": 901,
+"key": "ghost:cannon-front:0,1",
+"label": "정면 대포",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 326·356"
+},
+{
+"tile": 902,
+"key": "ghost:cannon-up:0,0",
+"label": "상향 대포",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 327·357"
+},
+{
+"tile": 903,
+"key": "ghost:cannon-up:0,1",
+"label": "상향 대포",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 327·357"
+},
+{
+"tile": 904,
+"key": "ghost:cannon-cart-l",
+"label": "좌향 포차 대포",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 354"
+},
+{
+"tile": 905,
+"key": "ghost:cannon-cart-r",
+"label": "우향 포신 대포",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 355"
+},
+{
+"tile": 906,
+"key": "ghost:anchor",
+"label": "닻",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 259"
+},
+{
+"tile": 907,
+"key": "ghost:rope",
+"label": "감긴 밧줄 더미",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 263"
+},
+{
+"tile": 908,
+"key": "ghost:rigging",
+"label": "밧줄과 활 장비",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 204"
+},
+{
+"tile": 909,
+"key": "ghost:wheel",
+"label": "나무 키(조타륜)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 58"
+},
+{
+"tile": 910,
+"key": "ghost:wheel-side",
+"label": "나무 바퀴 측면",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 59"
+},
+{
+"tile": 911,
+"key": "ghost:lamp",
+"label": "사각 금속 등",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 83"
+},
+{
+"tile": 912,
+"key": "ghost:skull",
+"label": "해골과 뼈 더미",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 205"
+},
+{
+"tile": 913,
+"key": "ghost:swords",
+"label": "엇갈린 은색 검",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 295"
+},
+{
+"tile": 914,
+"key": "ghost:flag",
+"label": "붉은 삼각 깃발",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 288"
+},
+{
+"tile": 915,
+"key": "ghost:banner:0,0",
+"label": "붉은 금장 깃발",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 318·348"
+},
+{
+"tile": 916,
+"key": "ghost:banner:0,1",
+"label": "붉은 금장 깃발",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 318·348"
+},
+{
+"tile": 917,
+"key": "ghost:hammock:0,0",
+"label": "흰 베개 침대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 416·446"
+},
+{
+"tile": 918,
+"key": "ghost:hammock:0,1",
+"label": "흰 베개 침대",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 416·446"
+},
+{
+"tile": 919,
+"key": "ghost:bunk:0,0",
+"label": "침대(옆면)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 476·477"
+},
+{
+"tile": 920,
+"key": "ghost:bunk:1,0",
+"label": "침대(옆면)",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 476·477"
+},
+{
+"tile": 921,
+"key": "ghost:wardrobe:0,0",
+"label": "나무 장롱",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 474·475"
+},
+{
+"tile": 922,
+"key": "ghost:wardrobe:1,0",
+"label": "나무 장롱",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 474·475"
+},
+{
+"tile": 923,
+"key": "ghost:organ:0,0",
+"label": "파이프오르간",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 444·445"
+},
+{
+"tile": 924,
+"key": "ghost:organ:1,0",
+"label": "파이프오르간",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 444·445"
+},
+{
+"tile": 925,
+"key": "ghost:potions",
+"label": "선반 위 물약병",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 148"
+},
+{
+"tile": 926,
+"key": "ghost:shelf",
+"label": "벽 부착 가로 널 선반",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 143"
+},
+{
+"tile": 927,
+"key": "ghost:vent",
+"label": "환기 격자창",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 202"
+},
+{
+"tile": 928,
+"key": "ghost:porthole",
+"label": "창살 격자 창문",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 232"
+},
+{
+"tile": 929,
+"key": "ghost:picture-sea:0,0",
+"label": "바다 그림 액자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 388·389"
+},
+{
+"tile": 930,
+"key": "ghost:picture-sea:1,0",
+"label": "바다 그림 액자",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 388·389"
+},
+{
+"tile": 931,
+"key": "ghost:winch:0,0",
+"label": "원통형 권양기",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 138·142"
+},
+{
+"tile": 932,
+"key": "ghost:winch:0,1",
+"label": "원통형 권양기",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 138·142"
+},
+{
+"tile": 933,
+"key": "ghost:post",
+"label": "짧은 세로 목재 말뚝",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 57"
+},
+{
+"tile": 934,
+"key": "ghost:hole",
+"label": "나무 위 검은 구멍",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 294"
+},
+{
+"tile": 935,
+"key": "ghost:ladder:0,0",
+"label": "목재 사다리(2×2)",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 22·23·22·23"
+},
+{
+"tile": 936,
+"key": "ghost:ladder:1,0",
+"label": "목재 사다리(2×2)",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 22·23·22·23"
+},
+{
+"tile": 937,
+"key": "ghost:ladder:0,1",
+"label": "목재 사다리(2×2)",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 22·23·22·23"
+},
+{
+"tile": 938,
+"key": "ghost:ladder:1,1",
+"label": "목재 사다리(2×2)",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 22·23·22·23"
+},
+{
+"tile": 939,
+"key": "ghost:ladder-top",
+"label": "목재 사다리 상단",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 328"
+},
+{
+"tile": 940,
+"key": "ghost:hatch-top",
+"label": "갑판 해치 입구 상단",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 264"
+},
+{
+"tile": 941,
+"key": "ghost:rope-hang",
+"label": "늘어진 밧줄",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 298"
+},
+{
+"tile": 942,
+"key": "ghost:cabin-wall:0,0",
+"label": "목재 선실 벽 4×2",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 198·199·200·201·228·229·230·231"
+},
+{
+"tile": 943,
+"key": "ghost:cabin-wall:1,0",
+"label": "목재 선실 벽 4×2",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 198·199·200·201·228·229·230·231"
+},
+{
+"tile": 944,
+"key": "ghost:cabin-wall:2,0",
+"label": "목재 선실 벽 4×2",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 198·199·200·201·228·229·230·231"
+},
+{
+"tile": 945,
+"key": "ghost:cabin-wall:3,0",
+"label": "목재 선실 벽 4×2",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 198·199·200·201·228·229·230·231"
+},
+{
+"tile": 946,
+"key": "ghost:cabin-wall:0,1",
+"label": "목재 선실 벽 4×2",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 198·199·200·201·228·229·230·231"
+},
+{
+"tile": 947,
+"key": "ghost:cabin-wall:1,1",
+"label": "목재 선실 벽 4×2",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 198·199·200·201·228·229·230·231"
+},
+{
+"tile": 948,
+"key": "ghost:cabin-wall:2,1",
+"label": "목재 선실 벽 4×2",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 198·199·200·201·228·229·230·231"
+},
+{
+"tile": 949,
+"key": "ghost:cabin-wall:3,1",
+"label": "목재 선실 벽 4×2",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 198·199·200·201·228·229·230·231"
+},
+{
+"tile": 950,
+"key": "ghost:rail-v:0,0",
+"label": "세로 목재 난간",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 418·478"
+},
+{
+"tile": 951,
+"key": "ghost:rail-v:0,1",
+"label": "세로 목재 난간",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 418·478"
+},
+{
+"tile": 952,
+"key": "ghost:rail-h:0,0",
+"label": "가로 목재 난간",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 447·448·449"
+},
+{
+"tile": 953,
+"key": "ghost:rail-h:1,0",
+"label": "가로 목재 난간",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 447·448·449"
+},
+{
+"tile": 954,
+"key": "ghost:rail-h:2,0",
+"label": "가로 목재 난간",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 배(유령선 재칠) 447·448·449"
+},
+{
+"tile": 955,
+"key": "cry-red:crystal-big:0,0",
+"label": "붉은 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(붉은 재칠) 320·321·350·351"
+},
+{
+"tile": 956,
+"key": "cry-red:crystal-big:1,0",
+"label": "붉은 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(붉은 재칠) 320·321·350·351"
+},
+{
+"tile": 957,
+"key": "cry-red:crystal-big:0,1",
+"label": "붉은 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(붉은 재칠) 320·321·350·351"
+},
+{
+"tile": 958,
+"key": "cry-red:crystal-big:1,1",
+"label": "붉은 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(붉은 재칠) 320·321·350·351"
+},
+{
+"tile": 959,
+"key": "cry-red:crystal-pillar:0,0",
+"label": "붉은 수정 기둥",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(붉은 재칠) 262·292"
+},
+{
+"tile": 960,
+"key": "cry-red:crystal-pillar:0,1",
+"label": "붉은 수정 기둥",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(붉은 재칠) 262·292"
+},
+{
+"tile": 961,
+"key": "cry-red:crystal-small",
+"label": "붉은 작은 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(붉은 재칠) 289"
+},
+{
+"tile": 962,
+"key": "cry-red:crystal-pile",
+"label": "붉은 수정 무더기",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(붉은 재칠) 413"
+},
+{
+"tile": 963,
+"key": "cry-red:gem",
+"label": "붉은 보석",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(붉은 재칠) 118"
+},
+{
+"tile": 964,
+"key": "cry-green:crystal-big:0,0",
+"label": "초록 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(초록 재칠) 320·321·350·351"
+},
+{
+"tile": 965,
+"key": "cry-green:crystal-big:1,0",
+"label": "초록 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(초록 재칠) 320·321·350·351"
+},
+{
+"tile": 966,
+"key": "cry-green:crystal-big:0,1",
+"label": "초록 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(초록 재칠) 320·321·350·351"
+},
+{
+"tile": 967,
+"key": "cry-green:crystal-big:1,1",
+"label": "초록 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(초록 재칠) 320·321·350·351"
+},
+{
+"tile": 968,
+"key": "cry-green:crystal-pillar:0,0",
+"label": "초록 수정 기둥",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(초록 재칠) 262·292"
+},
+{
+"tile": 969,
+"key": "cry-green:crystal-pillar:0,1",
+"label": "초록 수정 기둥",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(초록 재칠) 262·292"
+},
+{
+"tile": 970,
+"key": "cry-green:crystal-small",
+"label": "초록 작은 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(초록 재칠) 289"
+},
+{
+"tile": 971,
+"key": "cry-green:crystal-pile",
+"label": "초록 수정 무더기",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(초록 재칠) 413"
+},
+{
+"tile": 972,
+"key": "cry-green:gem",
+"label": "초록 보석",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(초록 재칠) 118"
+},
+{
+"tile": 973,
+"key": "cry-amber:crystal-big:0,0",
+"label": "호박색 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(호박색 재칠) 320·321·350·351"
+},
+{
+"tile": 974,
+"key": "cry-amber:crystal-big:1,0",
+"label": "호박색 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(호박색 재칠) 320·321·350·351"
+},
+{
+"tile": 975,
+"key": "cry-amber:crystal-big:0,1",
+"label": "호박색 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(호박색 재칠) 320·321·350·351"
+},
+{
+"tile": 976,
+"key": "cry-amber:crystal-big:1,1",
+"label": "호박색 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(호박색 재칠) 320·321·350·351"
+},
+{
+"tile": 977,
+"key": "cry-amber:crystal-pillar:0,0",
+"label": "호박색 수정 기둥",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(호박색 재칠) 262·292"
+},
+{
+"tile": 978,
+"key": "cry-amber:crystal-pillar:0,1",
+"label": "호박색 수정 기둥",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(호박색 재칠) 262·292"
+},
+{
+"tile": 979,
+"key": "cry-amber:crystal-small",
+"label": "호박색 작은 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(호박색 재칠) 289"
+},
+{
+"tile": 980,
+"key": "cry-amber:crystal-pile",
+"label": "호박색 수정 무더기",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(호박색 재칠) 413"
+},
+{
+"tile": 981,
+"key": "cry-amber:gem",
+"label": "호박색 보석",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(호박색 재칠) 118"
+},
+{
+"tile": 982,
+"key": "cry-gold:crystal-big:0,0",
+"label": "금빛 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(금빛 재칠) 320·321·350·351"
+},
+{
+"tile": 983,
+"key": "cry-gold:crystal-big:1,0",
+"label": "금빛 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(금빛 재칠) 320·321·350·351"
+},
+{
+"tile": 984,
+"key": "cry-gold:crystal-big:0,1",
+"label": "금빛 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(금빛 재칠) 320·321·350·351"
+},
+{
+"tile": 985,
+"key": "cry-gold:crystal-big:1,1",
+"label": "금빛 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(금빛 재칠) 320·321·350·351"
+},
+{
+"tile": 986,
+"key": "cry-gold:crystal-pillar:0,0",
+"label": "금빛 수정 기둥",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(금빛 재칠) 262·292"
+},
+{
+"tile": 987,
+"key": "cry-gold:crystal-pillar:0,1",
+"label": "금빛 수정 기둥",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(금빛 재칠) 262·292"
+},
+{
+"tile": 988,
+"key": "cry-gold:crystal-small",
+"label": "금빛 작은 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(금빛 재칠) 289"
+},
+{
+"tile": 989,
+"key": "cry-gold:crystal-pile",
+"label": "금빛 수정 무더기",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(금빛 재칠) 413"
+},
+{
+"tile": 990,
+"key": "cry-gold:gem",
+"label": "금빛 보석",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(금빛 재칠) 118"
+},
+{
+"tile": 991,
+"key": "cry-violet:crystal-big:0,0",
+"label": "보라 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(보라 재칠) 320·321·350·351"
+},
+{
+"tile": 992,
+"key": "cry-violet:crystal-big:1,0",
+"label": "보라 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(보라 재칠) 320·321·350·351"
+},
+{
+"tile": 993,
+"key": "cry-violet:crystal-big:0,1",
+"label": "보라 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(보라 재칠) 320·321·350·351"
+},
+{
+"tile": 994,
+"key": "cry-violet:crystal-big:1,1",
+"label": "보라 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(보라 재칠) 320·321·350·351"
+},
+{
+"tile": 995,
+"key": "cry-violet:crystal-pillar:0,0",
+"label": "보라 수정 기둥",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(보라 재칠) 262·292"
+},
+{
+"tile": 996,
+"key": "cry-violet:crystal-pillar:0,1",
+"label": "보라 수정 기둥",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(보라 재칠) 262·292"
+},
+{
+"tile": 997,
+"key": "cry-violet:crystal-small",
+"label": "보라 작은 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(보라 재칠) 289"
+},
+{
+"tile": 998,
+"key": "cry-violet:crystal-pile",
+"label": "보라 수정 무더기",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(보라 재칠) 413"
+},
+{
+"tile": 999,
+"key": "cry-violet:gem",
+"label": "보라 보석",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(보라 재칠) 118"
+},
+{
+"tile": 1000,
+"key": "cry-pink:crystal-big:0,0",
+"label": "분홍 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(분홍 재칠) 320·321·350·351"
+},
+{
+"tile": 1001,
+"key": "cry-pink:crystal-big:1,0",
+"label": "분홍 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(분홍 재칠) 320·321·350·351"
+},
+{
+"tile": 1002,
+"key": "cry-pink:crystal-big:0,1",
+"label": "분홍 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(분홍 재칠) 320·321·350·351"
+},
+{
+"tile": 1003,
+"key": "cry-pink:crystal-big:1,1",
+"label": "분홍 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(분홍 재칠) 320·321·350·351"
+},
+{
+"tile": 1004,
+"key": "cry-pink:crystal-pillar:0,0",
+"label": "분홍 수정 기둥",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(분홍 재칠) 262·292"
+},
+{
+"tile": 1005,
+"key": "cry-pink:crystal-pillar:0,1",
+"label": "분홍 수정 기둥",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(분홍 재칠) 262·292"
+},
+{
+"tile": 1006,
+"key": "cry-pink:crystal-small",
+"label": "분홍 작은 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(분홍 재칠) 289"
+},
+{
+"tile": 1007,
+"key": "cry-pink:crystal-pile",
+"label": "분홍 수정 무더기",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(분홍 재칠) 413"
+},
+{
+"tile": 1008,
+"key": "cry-pink:gem",
+"label": "분홍 보석",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(분홍 재칠) 118"
+},
+{
+"tile": 1009,
+"key": "cry-cyan:crystal-big:0,0",
+"label": "청록 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(청록 재칠) 320·321·350·351"
+},
+{
+"tile": 1010,
+"key": "cry-cyan:crystal-big:1,0",
+"label": "청록 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(청록 재칠) 320·321·350·351"
+},
+{
+"tile": 1011,
+"key": "cry-cyan:crystal-big:0,1",
+"label": "청록 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(청록 재칠) 320·321·350·351"
+},
+{
+"tile": 1012,
+"key": "cry-cyan:crystal-big:1,1",
+"label": "청록 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(청록 재칠) 320·321·350·351"
+},
+{
+"tile": 1013,
+"key": "cry-cyan:crystal-pillar:0,0",
+"label": "청록 수정 기둥",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(청록 재칠) 262·292"
+},
+{
+"tile": 1014,
+"key": "cry-cyan:crystal-pillar:0,1",
+"label": "청록 수정 기둥",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(청록 재칠) 262·292"
+},
+{
+"tile": 1015,
+"key": "cry-cyan:crystal-small",
+"label": "청록 작은 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(청록 재칠) 289"
+},
+{
+"tile": 1016,
+"key": "cry-cyan:crystal-pile",
+"label": "청록 수정 무더기",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(청록 재칠) 413"
+},
+{
+"tile": 1017,
+"key": "cry-cyan:gem",
+"label": "청록 보석",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(청록 재칠) 118"
+},
+{
+"tile": 1018,
+"key": "cry-white:crystal-big:0,0",
+"label": "흰 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(흰 재칠) 320·321·350·351"
+},
+{
+"tile": 1019,
+"key": "cry-white:crystal-big:1,0",
+"label": "흰 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(흰 재칠) 320·321·350·351"
+},
+{
+"tile": 1020,
+"key": "cry-white:crystal-big:0,1",
+"label": "흰 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(흰 재칠) 320·321·350·351"
+},
+{
+"tile": 1021,
+"key": "cry-white:crystal-big:1,1",
+"label": "흰 큰 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(흰 재칠) 320·321·350·351"
+},
+{
+"tile": 1022,
+"key": "cry-white:crystal-pillar:0,0",
+"label": "흰 수정 기둥",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(흰 재칠) 262·292"
+},
+{
+"tile": 1023,
+"key": "cry-white:crystal-pillar:0,1",
+"label": "흰 수정 기둥",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(흰 재칠) 262·292"
+},
+{
+"tile": 1024,
+"key": "cry-white:crystal-small",
+"label": "흰 작은 수정",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(흰 재칠) 289"
+},
+{
+"tile": 1025,
+"key": "cry-white:crystal-pile",
+"label": "흰 수정 무더기",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(흰 재칠) 413"
+},
+{
+"tile": 1026,
+"key": "cry-white:gem",
+"label": "흰 보석",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(흰 재칠) 118"
+},
+{
+"tile": 1027,
+"key": "fire-ghost:fire",
+"label": "도깨비불(청록) 바닥 불길",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 던전(도깨비불(청록) 재칠) 207"
+},
+{
+"tile": 1028,
+"key": "fire-ghost:fire-small",
+"label": "도깨비불(청록) 바닥 불길 작은",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 던전(도깨비불(청록) 재칠) 209"
+},
+{
+"tile": 1029,
+"key": "fire-ghost:torch",
+"label": "도깨비불(청록) 벽 횃불",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 던전(도깨비불(청록) 재칠) 264"
+},
+{
+"tile": 1030,
+"key": "fire-ghost:brazier:0,0",
+"label": "도깨비불(청록) 화로",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(도깨비불(청록) 재칠) 263·293"
+},
+{
+"tile": 1031,
+"key": "fire-ghost:brazier:0,1",
+"label": "도깨비불(청록) 화로",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(도깨비불(청록) 재칠) 263·293"
+},
+{
+"tile": 1032,
+"key": "fire-violet:fire",
+"label": "보랏빛 바닥 불길",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 던전(보랏빛 재칠) 207"
+},
+{
+"tile": 1033,
+"key": "fire-violet:fire-small",
+"label": "보랏빛 바닥 불길 작은",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 던전(보랏빛 재칠) 209"
+},
+{
+"tile": 1034,
+"key": "fire-violet:torch",
+"label": "보랏빛 벽 횃불",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 던전(보랏빛 재칠) 264"
+},
+{
+"tile": 1035,
+"key": "fire-violet:brazier:0,0",
+"label": "보랏빛 화로",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(보랏빛 재칠) 263·293"
+},
+{
+"tile": 1036,
+"key": "fire-violet:brazier:0,1",
+"label": "보랏빛 화로",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(보랏빛 재칠) 263·293"
+},
+{
+"tile": 1037,
+"key": "fire-green:fire",
+"label": "초록 바닥 불길",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 던전(초록 재칠) 207"
+},
+{
+"tile": 1038,
+"key": "fire-green:fire-small",
+"label": "초록 바닥 불길 작은",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 던전(초록 재칠) 209"
+},
+{
+"tile": 1039,
+"key": "fire-green:torch",
+"label": "초록 벽 횃불",
+"pass": "udlr",
+"layer": "upper",
+"source": "EasyRPG 던전(초록 재칠) 264"
+},
+{
+"tile": 1040,
+"key": "fire-green:brazier:0,0",
+"label": "초록 화로",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(초록 재칠) 263·293"
+},
+{
+"tile": 1041,
+"key": "fire-green:brazier:0,1",
+"label": "초록 화로",
+"pass": "",
+"layer": "upper",
+"source": "EasyRPG 던전(초록 재칠) 263·293"
+},
+{
+"tile": 1042,
+"key": "coffin-wood:0,0",
+"label": "나무 관(닫힘) 1×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1043,
+"key": "coffin-wood:0,1",
+"label": "나무 관(닫힘) 1×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1044,
+"key": "coffin-wood-open:0,0",
+"label": "열린 나무 관과 유골 1×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1045,
+"key": "coffin-wood-open:0,1",
+"label": "열린 나무 관과 유골 1×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1046,
+"key": "coffin-stone:0,0",
+"label": "석관(기사 부조) 1×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1047,
+"key": "coffin-stone:0,1",
+"label": "석관(기사 부조) 1×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1048,
+"key": "coffin-stone-open:0,0",
+"label": "열린 석관과 유골 1×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1049,
+"key": "coffin-stone-open:0,1",
+"label": "열린 석관과 유골 1×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1050,
+"key": "chest-wood",
+"label": "보물상자(나무·금테)",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1051,
+"key": "chest-wood-open",
+"label": "열린 보물상자",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1052,
+"key": "chest-iron",
+"label": "쇠 보물상자",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1053,
+"key": "chest-iron-open",
+"label": "열린 쇠 보물상자",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1054,
+"key": "chest-red",
+"label": "붉은 금장 보물상자(보스 보상)",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1055,
+"key": "chest-red-open",
+"label": "열린 붉은 보물상자",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1056,
+"key": "web-l",
+"label": "거미줄(왼쪽 위 모서리)",
+"pass": "udlr",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1057,
+"key": "web-r",
+"label": "거미줄(오른쪽 위 모서리)",
+"pass": "udlr",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1058,
+"key": "web-big:0,0",
+"label": "큰 거미줄 2×2(막힘)",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1059,
+"key": "web-big:1,0",
+"label": "큰 거미줄 2×2(막힘)",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1060,
+"key": "web-big:0,1",
+"label": "큰 거미줄 2×2(막힘)",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1061,
+"key": "web-big:1,1",
+"label": "큰 거미줄 2×2(막힘)",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1062,
+"key": "egg-sac",
+"label": "거미 알 무더기",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1063,
+"key": "cocoon:0,0",
+"label": "거미줄에 감긴 고치 1×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1064,
+"key": "cocoon:0,1",
+"label": "거미줄에 감긴 고치 1×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1065,
+"key": "spikes-down",
+"label": "가시 함정(들어감)",
+"pass": "udlr",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1066,
+"key": "spikes-up",
+"label": "가시 함정(솟음)",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1067,
+"key": "plate",
+"label": "발판 스위치",
+"pass": "udlr",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1068,
+"key": "plate-down",
+"label": "눌린 발판 스위치",
+"pass": "udlr",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1069,
+"key": "lever-off",
+"label": "바닥 레버(왼쪽)",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1070,
+"key": "lever-on",
+"label": "바닥 레버(오른쪽)",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1071,
+"key": "rune-wind",
+"label": "바닥 룬(wind)",
+"pass": "udlr",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1072,
+"key": "rune-water",
+"label": "바닥 룬(water)",
+"pass": "udlr",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1073,
+"key": "rune-earth",
+"label": "바닥 룬(earth)",
+"pass": "udlr",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1074,
+"key": "rune-fire",
+"label": "바닥 룬(fire)",
+"pass": "udlr",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1075,
+"key": "rune-star",
+"label": "바닥 룬(star)",
+"pass": "udlr",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1076,
+"key": "rune-eye",
+"label": "바닥 룬(eye)",
+"pass": "udlr",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1077,
+"key": "sparkle-gold",
+"label": "반짝임(금빛)",
+"pass": "udlr",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1078,
+"key": "sparkle-blue",
+"label": "샘물 반짝임(물 위)",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1079,
+"key": "gear-big:0,0",
+"label": "큰 톱니바퀴 2×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1080,
+"key": "gear-big:1,0",
+"label": "큰 톱니바퀴 2×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1081,
+"key": "gear-big:0,1",
+"label": "큰 톱니바퀴 2×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1082,
+"key": "gear-big:1,1",
+"label": "큰 톱니바퀴 2×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1083,
+"key": "gear",
+"label": "톱니바퀴",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1084,
+"key": "pipe-h",
+"label": "가로 관",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1085,
+"key": "pipe-v",
+"label": "세로 관",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1086,
+"key": "pipe-cross",
+"label": "관 이음",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1087,
+"key": "pipe-valve",
+"label": "관 밸브",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1088,
+"key": "piston:0,0",
+"label": "피스톤 기둥 1×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1089,
+"key": "piston:0,1",
+"label": "피스톤 기둥 1×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1090,
+"key": "vat:0,0",
+"label": "초록 약물 유리관 1×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1091,
+"key": "vat:0,1",
+"label": "초록 약물 유리관 1×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1092,
+"key": "vat-specimen:0,0",
+"label": "표본이 든 유리관 1×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1093,
+"key": "vat-specimen:0,1",
+"label": "표본이 든 유리관 1×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1094,
+"key": "vat-blue:0,0",
+"label": "푸른 약물 유리관 1×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1095,
+"key": "vat-blue:0,1",
+"label": "푸른 약물 유리관 1×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1096,
+"key": "vat-broken:0,0",
+"label": "깨진 유리관 1×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1097,
+"key": "vat-broken:0,1",
+"label": "깨진 유리관 1×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1098,
+"key": "console:0,0",
+"label": "장치 조종대 2×1",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1099,
+"key": "console:1,0",
+"label": "장치 조종대 2×1",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1100,
+"key": "mast-stump",
+"label": "부러진 돛대 밑동",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1101,
+"key": "hatch-open",
+"label": "열린 바닥 해치(사다리)",
+"pass": "udlr",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1102,
+"key": "hatch",
+"label": "닫힌 바닥 해치",
+"pass": "udlr",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1103,
+"key": "shackles",
+"label": "벽 족쇄",
+"pass": "udlr",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1104,
+"key": "ore-gold",
+"label": "금 광맥(벽면)",
+"pass": "udlr",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1105,
+"key": "ore-silver",
+"label": "은 광맥(벽면)",
+"pass": "udlr",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1106,
+"key": "lift:0,0",
+"label": "승강 발판 2×2",
+"pass": "udlr",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1107,
+"key": "lift:1,0",
+"label": "승강 발판 2×2",
+"pass": "udlr",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1108,
+"key": "lift:0,1",
+"label": "승강 발판 2×2",
+"pass": "udlr",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1109,
+"key": "lift:1,1",
+"label": "승강 발판 2×2",
+"pass": "udlr",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1110,
+"key": "basin:0,0",
+"label": "회복의 샘 돌확 2×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1111,
+"key": "basin:1,0",
+"label": "회복의 샘 돌확 2×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1112,
+"key": "basin:0,1",
+"label": "회복의 샘 돌확 2×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1113,
+"key": "basin:1,1",
+"label": "회복의 샘 돌확 2×2",
+"pass": "",
+"layer": "upper",
+"source": "drawn"
+},
+{
+"tile": 1114,
+"key": "bones",
+"label": "뼈 무더기",
+"pass": "udlr",
+"layer": "upper",
+"source": "drawn"
+}
+],
+"alias": {
+"ship:hull:10,0": 510,
+"ship:hull:11,0": 511,
+"ship:hull:12,0": 512,
+"ship:hull:13,0": 512,
+"ship:hull:14,0": 513,
+"ship:hull:15,0": 514,
+"ship:hull:5,1": 515,
+"ship:hull:6,1": 516,
+"ship:hull:7,1": 517,
+"ship:hull:8,1": 518,
+"ship:hull:9,1": 518,
+"ship:deck:10,1": 519,
+"ship:hull:10,1": 520,
+"ship:deck:11,1": 519,
+"ship:hull:11,1": 521,
+"ship:deck:12,1": 519,
+"ship:deck:13,1": 519,
+"ship:deck:14,1": 519,
+"ship:hull:14,1": 522,
+"ship:deck:15,1": 519,
+"ship:hull:15,1": 523,
+"ship:hull:16,1": 518,
+"ship:hull:17,1": 518,
+"ship:hull:18,1": 518,
+"ship:hull:19,1": 518,
+"ship:hull:20,1": 518,
+"ship:hull:21,1": 518,
+"ship:hull:22,1": 518,
+"ship:hull:23,1": 518,
+"ship:hull:24,1": 524,
+"ship:hull:25,1": 525,
+"ship:hull:26,1": 526,
+"ship:hull:4,2": 527,
+"ship:hull:5,2": 528,
+"ship:deck:6,2": 519,
+"ship:hull:6,2": 529,
+"ship:deck:7,2": 519,
+"ship:hull:7,2": 530,
+"ship:deck:8,2": 519,
+"ship:hull:8,2": 531,
+"ship:deck:9,2": 519,
+"ship:deck:10,2": 519,
+"ship:hull:10,2": 532,
+"ship:deck:11,2": 519,
+"ship:hull:11,2": 521,
+"ship:deck:12,2": 519,
+"ship:deck:13,2": 519,
+"ship:deck:14,2": 519,
+"ship:hull:14,2": 522,
+"ship:deck:15,2": 519,
+"ship:hull:15,2": 533,
+"ship:deck:16,2": 519,
+"ship:deck:17,2": 519,
+"ship:deck:18,2": 519,
+"ship:deck:19,2": 519,
+"ship:hull:19,2": 529,
+"ship:deck:20,2": 519,
+"ship:hull:20,2": 530,
+"ship:deck:21,2": 519,
+"ship:deck:22,2": 519,
+"ship:deck:23,2": 519,
+"ship:deck:24,2": 519,
+"ship:deck:25,2": 519,
+"ship:hull:26,2": 534,
+"ship:hull:27,2": 535,
+"ship:hull:3,3": 536,
+"ship:deck:4,3": 537,
+"ship:deck:5,3": 519,
+"ship:hull:5,3": 530,
+"ship:deck:6,3": 519,
+"ship:deck:7,3": 519,
+"ship:deck:8,3": 519,
+"ship:deck:9,3": 519,
+"ship:deck:10,3": 519,
+"ship:hull:11,3": 538,
+"ship:deck:12,3": 519,
+"ship:hull:13,3": 539,
+"ship:hull:14,3": 540,
+"ship:deck:15,3": 519,
+"ship:hull:15,3": 541,
+"ship:deck:16,3": 519,
+"ship:deck:17,3": 519,
+"ship:deck:18,3": 519,
+"ship:deck:19,3": 519,
+"ship:deck:20,3": 519,
+"ship:deck:21,3": 519,
+"ship:deck:22,3": 519,
+"ship:hull:22,3": 541,
+"ship:deck:23,3": 519,
+"ship:hull:23,3": 542,
+"ship:deck:24,3": 519,
+"ship:deck:25,3": 519,
+"ship:deck:26,3": 519,
+"ship:deck:27,3": 519,
+"ship:hull:28,3": 543,
+"ship:hull:2,4": 544,
+"ship:hull:3,4": 545,
+"ship:hull:4,4": 546,
+"ship:deck:5,4": 519,
+"ship:deck:6,4": 519,
+"ship:hull:6,4": 547,
+"ship:deck:7,4": 519,
+"ship:deck:8,4": 519,
+"ship:deck:9,4": 519,
+"ship:hull:10,4": 548,
+"ship:hull:11,4": 538,
+"ship:deck:12,4": 519,
+"ship:deck:13,4": 519,
+"ship:hull:14,4": 540,
+"ship:hull:15,4": 548,
+"ship:deck:16,4": 519,
+"ship:deck:17,4": 519,
+"ship:deck:18,4": 519,
+"ship:deck:19,4": 519,
+"ship:deck:20,4": 519,
+"ship:deck:21,4": 519,
+"ship:deck:22,4": 519,
+"ship:deck:23,4": 519,
+"ship:deck:24,4": 519,
+"ship:deck:25,4": 519,
+"ship:deck:26,4": 519,
+"ship:deck:27,4": 519,
+"ship:deck:28,4": 519,
+"ship:hull:29,4": 549,
+"ship:hull:0,5": 550,
+"ship:hull:1,5": 551,
+"ship:hull:2,5": 552,
+"ship:hull:3,5": 553,
+"ship:hull:4,5": 554,
+"ship:deck:5,5": 519,
+"ship:deck:6,5": 519,
+"ship:deck:7,5": 519,
+"ship:deck:8,5": 519,
+"ship:deck:9,5": 519,
+"ship:hull:10,5": 548,
+"ship:hull:11,5": 538,
+"ship:deck:12,5": 519,
+"ship:deck:13,5": 519,
+"ship:hull:14,5": 540,
+"ship:hull:15,5": 548,
+"ship:deck:16,5": 519,
+"ship:deck:17,5": 519,
+"ship:deck:18,5": 519,
+"ship:deck:19,5": 519,
+"ship:deck:20,5": 519,
+"ship:deck:21,5": 519,
+"ship:deck:22,5": 519,
+"ship:deck:23,5": 519,
+"ship:deck:24,5": 519,
+"ship:deck:25,5": 519,
+"ship:deck:26,5": 519,
+"ship:hull:26,5": 555,
+"ship:deck:27,5": 519,
+"ship:deck:28,5": 519,
+"ship:hull:29,5": 556,
+"ship:hull:2,6": 557,
+"ship:hull:3,6": 558,
+"ship:deck:4,6": 519,
+"ship:hull:4,6": 559,
+"ship:deck:5,6": 519,
+"ship:deck:6,6": 519,
+"ship:hull:6,6": 547,
+"ship:deck:7,6": 519,
+"ship:deck:8,6": 519,
+"ship:deck:9,6": 519,
+"ship:deck:10,6": 519,
+"ship:hull:10,6": 560,
+"ship:hull:11,6": 538,
+"ship:deck:12,6": 519,
+"ship:deck:13,6": 519,
+"ship:hull:14,6": 540,
+"ship:deck:15,6": 519,
+"ship:deck:16,6": 519,
+"ship:deck:17,6": 519,
+"ship:deck:18,6": 519,
+"ship:deck:19,6": 519,
+"ship:deck:20,6": 519,
+"ship:deck:21,6": 519,
+"ship:deck:22,6": 519,
+"ship:deck:23,6": 519,
+"ship:deck:24,6": 519,
+"ship:deck:25,6": 519,
+"ship:deck:26,6": 519,
+"ship:deck:27,6": 519,
+"ship:hull:28,6": 561,
+"ship:hull:29,6": 562,
+"ship:hull:3,7": 563,
+"ship:hull:4,7": 564,
+"ship:deck:5,7": 519,
+"ship:hull:5,7": 565,
+"ship:deck:6,7": 519,
+"ship:deck:7,7": 519,
+"ship:deck:8,7": 519,
+"ship:deck:9,7": 519,
+"ship:deck:10,7": 519,
+"ship:hull:10,7": 566,
+"ship:hull:11,7": 567,
+"ship:hull:12,7": 568,
+"ship:hull:13,7": 569,
+"ship:hull:14,7": 569,
+"ship:deck:15,7": 519,
+"ship:hull:15,7": 570,
+"ship:deck:16,7": 519,
+"ship:deck:17,7": 519,
+"ship:deck:18,7": 519,
+"ship:deck:19,7": 519,
+"ship:deck:20,7": 519,
+"ship:deck:21,7": 519,
+"ship:deck:22,7": 519,
+"ship:hull:22,7": 559,
+"ship:deck:23,7": 519,
+"ship:hull:23,7": 541,
+"ship:deck:24,7": 519,
+"ship:deck:25,7": 519,
+"ship:deck:26,7": 519,
+"ship:hull:27,7": 571,
+"ship:hull:28,7": 572,
+"ship:hull:4,8": 573,
+"ship:hull:5,8": 574,
+"ship:hull:6,8": 575,
+"ship:hull:7,8": 576,
+"ship:deck:8,8": 519,
+"ship:hull:8,8": 577,
+"ship:deck:9,8": 519,
+"ship:deck:10,8": 519,
+"ship:hull:10,8": 578,
+"ship:hull:11,8": 579,
+"ship:hull:12,8": 580,
+"ship:hull:13,8": 580,
+"ship:hull:14,8": 581,
+"ship:deck:15,8": 519,
+"ship:hull:15,8": 582,
+"ship:deck:16,8": 519,
+"ship:deck:17,8": 519,
+"ship:deck:18,8": 519,
+"ship:hull:18,8": 577,
+"ship:deck:19,8": 519,
+"ship:deck:20,8": 519,
+"ship:deck:21,8": 519,
+"ship:deck:22,8": 519,
+"ship:deck:23,8": 519,
+"ship:hull:24,8": 583,
+"ship:hull:25,8": 584,
+"ship:hull:26,8": 585,
+"ship:hull:27,8": 586,
+"ship:hull:5,9": 587,
+"ship:hull:6,9": 588,
+"ship:hull:7,9": 589,
+"ship:hull:8,9": 590,
+"ship:hull:9,9": 590,
+"ship:hull:10,9": 590,
+"ship:hull:11,9": 591,
+"ship:hull:12,9": 592,
+"ship:hull:13,9": 592,
+"ship:hull:14,9": 593,
+"ship:hull:15,9": 590,
+"ship:hull:16,9": 590,
+"ship:hull:17,9": 590,
+"ship:hull:18,9": 590,
+"ship:hull:19,9": 590,
+"ship:hull:20,9": 590,
+"ship:hull:21,9": 590,
+"ship:hull:22,9": 590,
+"ship:hull:23,9": 590,
+"ship:hull:24,9": 594,
+"ship:hull:25,9": 595,
+"ship:hull:26,9": 596,
+"ship:hull:7,10": 597,
+"ship:hull:8,10": 598,
+"ship:hull:9,10": 599,
+"ship:hull:10,10": 599,
+"ship:hull:11,10": 599,
+"ship:hull:12,10": 599,
+"ship:hull:13,10": 599,
+"ship:hull:14,10": 599,
+"ship:hull:15,10": 599,
+"ship:hull:16,10": 599,
+"ship:hull:17,10": 599,
+"ship:hull:18,10": 599,
+"ship:hull:19,10": 599,
+"ship:hull:20,10": 599,
+"ship:hull:21,10": 599,
+"ship:hull:22,10": 599,
+"ship:hull:23,10": 599,
+"ship:hull:24,10": 600,
+"int:bookcase:0,0": 601,
+"int:bookcase:1,0": 602,
+"int:bookcase:2,0": 603,
+"int:bookcase:0,1": 604,
+"int:bookcase:1,1": 605,
+"int:bookcase:2,1": 606,
+"int:bookcase:0,2": 607,
+"int:bookcase:1,2": 608,
+"int:bookcase:2,2": 609,
+"int:shelf-books:0,0": 610,
+"int:shelf-books:0,1": 611,
+"int:cupboard:0,0": 612,
+"int:cupboard:0,1": 613,
+"int:wardrobe:0,0": 614,
+"int:wardrobe:0,1": 615,
+"int:bed-v:0,0": 616,
+"int:bed-v:0,1": 617,
+"int:bed-h:0,0": 618,
+"int:bed-h:1,0": 619,
+"int:table-long:0,0": 620,
+"int:table-long:1,0": 621,
+"int:table-long:2,0": 622,
+"int:table-square": 623,
+"int:table-round": 624,
+"int:table-tall:0,0": 625,
+"int:table-tall:0,1": 626,
+"int:table-tall:0,2": 627,
+"int:chair-s": 628,
+"int:chair-s2": 629,
+"int:seat-r": 630,
+"int:seat-l": 631,
+"int:stool": 632,
+"int:chair-fallen": 633,
+"int:candle": 634,
+"int:lantern": 635,
+"int:clock:0,0": 636,
+"int:clock:0,1": 637,
+"int:mirror:0,0": 638,
+"int:mirror:0,1": 639,
+"int:armor:0,0": 640,
+"int:armor:0,1": 641,
+"int:bust:0,0": 642,
+"int:bust:0,1": 643,
+"int:pillar:0,0": 644,
+"int:pillar:0,1": 645,
+"int:armor-stand": 646,
+"int:curtain:0,0": 647,
+"int:curtain:1,0": 648,
+"int:curtain:0,1": 649,
+"int:curtain:1,1": 650,
+"int:drape:0,0": 651,
+"int:drape:1,0": 652,
+"int:drape:0,1": 653,
+"int:drape:1,1": 654,
+"int:drape:0,2": 655,
+"int:drape:1,2": 656,
+"int:banner:0,0": 657,
+"int:banner:1,0": 658,
+"int:piano:0,0": 659,
+"int:piano:1,0": 660,
+"int:cauldron": 661,
+"int:crystal-ball": 662,
+"int:jar-shelf": 663,
+"int:jars": 664,
+"int:pot": 665,
+"int:barrel": 666,
+"int:crate": 667,
+"int:box": 668,
+"int:bucket": 669,
+"int:plank-stand": 670,
+"int:plank-pile": 671,
+"int:glass": 672,
+"int:crack:0,0": 673,
+"int:crack:0,1": 674,
+"int:skeleton": 675,
+"int:sack": 676,
+"int:ladder": 677,
+"int:painting-land": 678,
+"int:painting-fire": 679,
+"int:painting-big:0,0": 680,
+"int:painting-big:1,0": 681,
+"int:window": 682,
+"int:window-curtain": 683,
+"int:window-dark": 684,
+"int:stained": 685,
+"int:book-open": 686,
+"int:book-red": 687,
+"int:letters": 688,
+"int:feather": 689,
+"int:circle:0,0": 690,
+"int:circle:1,0": 691,
+"int:circle:2,0": 692,
+"int:circle:0,1": 693,
+"int:circle:1,1": 694,
+"int:circle:2,1": 695,
+"int:circle:0,2": 696,
+"int:circle:1,2": 697,
+"int:circle:2,2": 698,
+"int:stove:0,0": 699,
+"int:stove:0,1": 700,
+"int:oven:0,0": 701,
+"int:oven:0,1": 702,
+"int:counter:0,0": 703,
+"int:counter:1,0": 704,
+"int:counter:0,1": 705,
+"int:counter:1,1": 706,
+"int:food": 707,
+"int:salad": 708,
+"int:bottles": 709,
+"int:dishes": 710,
+"int:weapon-case:0,0": 711,
+"int:weapon-case:0,1": 712,
+"int:wall-sword": 713,
+"int:wall-hammer": 714,
+"int:wall-shield": 715,
+"int:helmet": 716,
+"int:leather": 717,
+"int:ore": 718,
+"int:rocks": 719,
+"int:bricks": 720,
+"int:fruit-shelf": 721,
+"int:cross": 722,
+"int:cloth-table:0,0": 723,
+"int:cloth-table:1,0": 724,
+"int:cloth-table:2,0": 725,
+"int:teapot": 726,
+"int:necklace": 727,
+"int:boots": 728,
+"int:sign-weapon": 729,
+"int:sign-armor": 730,
+"int:sign-item": 731,
+"int:throne-red:0,0": 732,
+"int:throne-red:0,1": 733,
+"int:stair-down": 734,
+"manor:bookcase:0,0": 735,
+"manor:bookcase:1,0": 736,
+"manor:bookcase:2,0": 737,
+"manor:bookcase:0,1": 738,
+"manor:bookcase:1,1": 739,
+"manor:bookcase:2,1": 740,
+"manor:bookcase:0,2": 741,
+"manor:bookcase:1,2": 742,
+"manor:bookcase:2,2": 743,
+"manor:shelf-books:0,0": 744,
+"manor:shelf-books:0,1": 745,
+"manor:cupboard:0,0": 746,
+"manor:cupboard:0,1": 747,
+"manor:wardrobe:0,0": 748,
+"manor:wardrobe:0,1": 749,
+"manor:bed-v:0,0": 750,
+"manor:bed-v:0,1": 751,
+"manor:bed-h:0,0": 752,
+"manor:bed-h:1,0": 753,
+"manor:table-long:0,0": 754,
+"manor:table-long:1,0": 755,
+"manor:table-long:2,0": 756,
+"manor:table-square": 757,
+"manor:table-round": 758,
+"manor:chair-s": 759,
+"manor:chair-s2": 760,
+"manor:seat-r": 761,
+"manor:seat-l": 762,
+"manor:stool": 763,
+"manor:chair-fallen": 764,
+"manor:candle": 765,
+"manor:clock:0,0": 766,
+"manor:clock:0,1": 767,
+"manor:mirror:0,0": 768,
+"manor:mirror:0,1": 769,
+"manor:armor:0,0": 770,
+"manor:armor:0,1": 771,
+"manor:bust:0,0": 772,
+"manor:bust:0,1": 773,
+"manor:curtain:0,0": 774,
+"manor:curtain:1,0": 775,
+"manor:curtain:0,1": 776,
+"manor:curtain:1,1": 777,
+"manor:drape:0,0": 778,
+"manor:drape:1,0": 779,
+"manor:drape:0,1": 780,
+"manor:drape:1,1": 781,
+"manor:drape:0,2": 782,
+"manor:drape:1,2": 783,
+"manor:banner:0,0": 784,
+"manor:banner:1,0": 785,
+"manor:piano:0,0": 786,
+"manor:piano:1,0": 787,
+"manor:jars": 788,
+"manor:pot": 789,
+"manor:barrel": 790,
+"manor:crate": 791,
+"manor:box": 792,
+"manor:plank-stand": 793,
+"manor:plank-pile": 794,
+"manor:glass": 795,
+"manor:crack:0,0": 796,
+"manor:crack:0,1": 797,
+"manor:skeleton": 798,
+"manor:sack": 799,
+"manor:painting-land": 800,
+"manor:painting-fire": 801,
+"manor:painting-big:0,0": 802,
+"manor:painting-big:1,0": 803,
+"manor:window-curtain": 804,
+"manor:window-dark": 805,
+"manor:book-open": 806,
+"manor:letters": 807,
+"manor:stove:0,0": 808,
+"manor:stove:0,1": 809,
+"manor:oven:0,0": 810,
+"manor:oven:0,1": 811,
+"manor:counter:0,0": 812,
+"manor:counter:1,0": 813,
+"manor:counter:0,1": 814,
+"manor:counter:1,1": 815,
+"manor:bottles": 816,
+"manor:dishes": 817,
+"manor:cloth-table:0,0": 818,
+"manor:cloth-table:1,0": 819,
+"manor:cloth-table:2,0": 820,
+"manor:throne-red:0,0": 821,
+"manor:throne-red:0,1": 822,
+"ship:barrel": 823,
+"ship:barrel-open": 824,
+"ship:crate": 825,
+"ship:drawer": 826,
+"ship:jug": 827,
+"ship:table": 828,
+"ship:stool": 829,
+"ship:bookcase:0,0": 830,
+"ship:bookcase:0,1": 831,
+"ship:cannon-l": 832,
+"ship:cannon-r": 833,
+"ship:cannon-front:0,0": 834,
+"ship:cannon-front:0,1": 835,
+"ship:cannon-up:0,0": 836,
+"ship:cannon-up:0,1": 837,
+"ship:cannon-cart-l": 838,
+"ship:cannon-cart-r": 839,
+"ship:anchor": 840,
+"ship:rope": 841,
+"ship:rigging": 842,
+"ship:wheel": 843,
+"ship:wheel-side": 844,
+"ship:lamp": 845,
+"ship:skull": 846,
+"ship:swords": 847,
+"ship:flag": 848,
+"ship:banner:0,0": 849,
+"ship:banner:0,1": 850,
+"ship:hammock:0,0": 851,
+"ship:hammock:0,1": 852,
+"ship:bunk:0,0": 853,
+"ship:bunk:1,0": 854,
+"ship:wardrobe:0,0": 855,
+"ship:wardrobe:1,0": 856,
+"ship:organ:0,0": 857,
+"ship:organ:1,0": 858,
+"ship:potions": 859,
+"ship:shelf": 860,
+"ship:vent": 861,
+"ship:porthole": 862,
+"ship:picture-sea:0,0": 863,
+"ship:picture-sea:1,0": 864,
+"ship:winch:0,0": 865,
+"ship:winch:0,1": 866,
+"ship:post": 867,
+"ship:hole": 868,
+"ship:ladder:0,0": 869,
+"ship:ladder:1,0": 870,
+"ship:ladder:0,1": 871,
+"ship:ladder:1,1": 872,
+"ship:ladder-top": 873,
+"ship:hatch-top": 874,
+"ship:rope-hang": 875,
+"ship:cabin-wall:0,0": 876,
+"ship:cabin-wall:1,0": 877,
+"ship:cabin-wall:2,0": 878,
+"ship:cabin-wall:3,0": 879,
+"ship:cabin-wall:0,1": 880,
+"ship:cabin-wall:1,1": 881,
+"ship:cabin-wall:2,1": 882,
+"ship:cabin-wall:3,1": 883,
+"ship:rail-v:0,0": 884,
+"ship:rail-v:0,1": 885,
+"ship:rail-h:0,0": 886,
+"ship:rail-h:1,0": 887,
+"ship:rail-h:2,0": 888,
+"ghost:barrel": 889,
+"ghost:barrel-open": 890,
+"ghost:crate": 891,
+"ghost:drawer": 892,
+"ghost:jug": 893,
+"ghost:table": 894,
+"ghost:stool": 895,
+"ghost:bookcase:0,0": 896,
+"ghost:bookcase:0,1": 897,
+"ghost:cannon-l": 898,
+"ghost:cannon-r": 899,
+"ghost:cannon-front:0,0": 900,
+"ghost:cannon-front:0,1": 901,
+"ghost:cannon-up:0,0": 902,
+"ghost:cannon-up:0,1": 903,
+"ghost:cannon-cart-l": 904,
+"ghost:cannon-cart-r": 905,
+"ghost:anchor": 906,
+"ghost:rope": 907,
+"ghost:rigging": 908,
+"ghost:wheel": 909,
+"ghost:wheel-side": 910,
+"ghost:lamp": 911,
+"ghost:skull": 912,
+"ghost:swords": 913,
+"ghost:flag": 914,
+"ghost:banner:0,0": 915,
+"ghost:banner:0,1": 916,
+"ghost:hammock:0,0": 917,
+"ghost:hammock:0,1": 918,
+"ghost:bunk:0,0": 919,
+"ghost:bunk:1,0": 920,
+"ghost:wardrobe:0,0": 921,
+"ghost:wardrobe:1,0": 922,
+"ghost:organ:0,0": 923,
+"ghost:organ:1,0": 924,
+"ghost:potions": 925,
+"ghost:shelf": 926,
+"ghost:vent": 927,
+"ghost:porthole": 928,
+"ghost:picture-sea:0,0": 929,
+"ghost:picture-sea:1,0": 930,
+"ghost:winch:0,0": 931,
+"ghost:winch:0,1": 932,
+"ghost:post": 933,
+"ghost:hole": 934,
+"ghost:ladder:0,0": 935,
+"ghost:ladder:1,0": 936,
+"ghost:ladder:0,1": 937,
+"ghost:ladder:1,1": 938,
+"ghost:ladder-top": 939,
+"ghost:hatch-top": 940,
+"ghost:rope-hang": 941,
+"ghost:cabin-wall:0,0": 942,
+"ghost:cabin-wall:1,0": 943,
+"ghost:cabin-wall:2,0": 944,
+"ghost:cabin-wall:3,0": 945,
+"ghost:cabin-wall:0,1": 946,
+"ghost:cabin-wall:1,1": 947,
+"ghost:cabin-wall:2,1": 948,
+"ghost:cabin-wall:3,1": 949,
+"ghost:rail-v:0,0": 950,
+"ghost:rail-v:0,1": 951,
+"ghost:rail-h:0,0": 952,
+"ghost:rail-h:1,0": 953,
+"ghost:rail-h:2,0": 954,
+"cry-red:crystal-big:0,0": 955,
+"cry-red:crystal-big:1,0": 956,
+"cry-red:crystal-big:0,1": 957,
+"cry-red:crystal-big:1,1": 958,
+"cry-red:crystal-pillar:0,0": 959,
+"cry-red:crystal-pillar:0,1": 960,
+"cry-red:crystal-small": 961,
+"cry-red:crystal-pile": 962,
+"cry-red:gem": 963,
+"cry-green:crystal-big:0,0": 964,
+"cry-green:crystal-big:1,0": 965,
+"cry-green:crystal-big:0,1": 966,
+"cry-green:crystal-big:1,1": 967,
+"cry-green:crystal-pillar:0,0": 968,
+"cry-green:crystal-pillar:0,1": 969,
+"cry-green:crystal-small": 970,
+"cry-green:crystal-pile": 971,
+"cry-green:gem": 972,
+"cry-amber:crystal-big:0,0": 973,
+"cry-amber:crystal-big:1,0": 974,
+"cry-amber:crystal-big:0,1": 975,
+"cry-amber:crystal-big:1,1": 976,
+"cry-amber:crystal-pillar:0,0": 977,
+"cry-amber:crystal-pillar:0,1": 978,
+"cry-amber:crystal-small": 979,
+"cry-amber:crystal-pile": 980,
+"cry-amber:gem": 981,
+"cry-gold:crystal-big:0,0": 982,
+"cry-gold:crystal-big:1,0": 983,
+"cry-gold:crystal-big:0,1": 984,
+"cry-gold:crystal-big:1,1": 985,
+"cry-gold:crystal-pillar:0,0": 986,
+"cry-gold:crystal-pillar:0,1": 987,
+"cry-gold:crystal-small": 988,
+"cry-gold:crystal-pile": 989,
+"cry-gold:gem": 990,
+"cry-violet:crystal-big:0,0": 991,
+"cry-violet:crystal-big:1,0": 992,
+"cry-violet:crystal-big:0,1": 993,
+"cry-violet:crystal-big:1,1": 994,
+"cry-violet:crystal-pillar:0,0": 995,
+"cry-violet:crystal-pillar:0,1": 996,
+"cry-violet:crystal-small": 997,
+"cry-violet:crystal-pile": 998,
+"cry-violet:gem": 999,
+"cry-pink:crystal-big:0,0": 1000,
+"cry-pink:crystal-big:1,0": 1001,
+"cry-pink:crystal-big:0,1": 1002,
+"cry-pink:crystal-big:1,1": 1003,
+"cry-pink:crystal-pillar:0,0": 1004,
+"cry-pink:crystal-pillar:0,1": 1005,
+"cry-pink:crystal-small": 1006,
+"cry-pink:crystal-pile": 1007,
+"cry-pink:gem": 1008,
+"cry-cyan:crystal-big:0,0": 1009,
+"cry-cyan:crystal-big:1,0": 1010,
+"cry-cyan:crystal-big:0,1": 1011,
+"cry-cyan:crystal-big:1,1": 1012,
+"cry-cyan:crystal-pillar:0,0": 1013,
+"cry-cyan:crystal-pillar:0,1": 1014,
+"cry-cyan:crystal-small": 1015,
+"cry-cyan:crystal-pile": 1016,
+"cry-cyan:gem": 1017,
+"cry-white:crystal-big:0,0": 1018,
+"cry-white:crystal-big:1,0": 1019,
+"cry-white:crystal-big:0,1": 1020,
+"cry-white:crystal-big:1,1": 1021,
+"cry-white:crystal-pillar:0,0": 1022,
+"cry-white:crystal-pillar:0,1": 1023,
+"cry-white:crystal-small": 1024,
+"cry-white:crystal-pile": 1025,
+"cry-white:gem": 1026,
+"fire-ghost:fire": 1027,
+"fire-ghost:fire-small": 1028,
+"fire-ghost:torch": 1029,
+"fire-ghost:brazier:0,0": 1030,
+"fire-ghost:brazier:0,1": 1031,
+"fire-violet:fire": 1032,
+"fire-violet:fire-small": 1033,
+"fire-violet:torch": 1034,
+"fire-violet:brazier:0,0": 1035,
+"fire-violet:brazier:0,1": 1036,
+"fire-green:fire": 1037,
+"fire-green:fire-small": 1038,
+"fire-green:torch": 1039,
+"fire-green:brazier:0,0": 1040,
+"fire-green:brazier:0,1": 1041,
+"coffin-wood:0,0": 1042,
+"coffin-wood:0,1": 1043,
+"coffin-wood-open:0,0": 1044,
+"coffin-wood-open:0,1": 1045,
+"coffin-stone:0,0": 1046,
+"coffin-stone:0,1": 1047,
+"coffin-stone-open:0,0": 1048,
+"coffin-stone-open:0,1": 1049,
+"chest-wood": 1050,
+"chest-wood-open": 1051,
+"chest-iron": 1052,
+"chest-iron-open": 1053,
+"chest-red": 1054,
+"chest-red-open": 1055,
+"web-l": 1056,
+"web-r": 1057,
+"web-big:0,0": 1058,
+"web-big:1,0": 1059,
+"web-big:0,1": 1060,
+"web-big:1,1": 1061,
+"egg-sac": 1062,
+"cocoon:0,0": 1063,
+"cocoon:0,1": 1064,
+"spikes-down": 1065,
+"spikes-up": 1066,
+"plate": 1067,
+"plate-down": 1068,
+"lever-off": 1069,
+"lever-on": 1070,
+"rune-wind": 1071,
+"rune-water": 1072,
+"rune-earth": 1073,
+"rune-fire": 1074,
+"rune-star": 1075,
+"rune-eye": 1076,
+"sparkle-gold": 1077,
+"sparkle-blue": 1078,
+"gear-big:0,0": 1079,
+"gear-big:1,0": 1080,
+"gear-big:0,1": 1081,
+"gear-big:1,1": 1082,
+"gear": 1083,
+"pipe-h": 1084,
+"pipe-v": 1085,
+"pipe-cross": 1086,
+"pipe-valve": 1087,
+"piston:0,0": 1088,
+"piston:0,1": 1089,
+"vat:0,0": 1090,
+"vat:0,1": 1091,
+"vat-specimen:0,0": 1092,
+"vat-specimen:0,1": 1093,
+"vat-blue:0,0": 1094,
+"vat-blue:0,1": 1095,
+"vat-broken:0,0": 1096,
+"vat-broken:0,1": 1097,
+"console:0,0": 1098,
+"console:1,0": 1099,
+"mast-stump": 1100,
+"hatch-open": 1101,
+"hatch": 1102,
+"shackles": 1103,
+"ore-gold": 1104,
+"ore-silver": 1105,
+"lift:0,0": 1106,
+"lift:1,0": 1107,
+"lift:0,1": 1108,
+"lift:1,1": 1109,
+"basin:0,0": 1110,
+"basin:1,0": 1111,
+"basin:0,1": 1112,
+"basin:1,1": 1113,
+"bones": 1114
+},
+"stamps": {
+"moored-ship": {
+"name": "정박한 범선(푸른물결항 배, 선미 반전)",
+"w": 30,
+"h": 11,
+"lower": [
+[
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null
+],
+[
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+519,
+519,
+519,
+519,
+519,
+519,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null
+],
+[
+null,
+null,
+null,
+null,
+null,
+null,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+null,
+null,
+null,
+null
+],
+[
+null,
+null,
+null,
+null,
+537,
+519,
+519,
+519,
+519,
+519,
+519,
+null,
+519,
+null,
+null,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+null,
+null
+],
+[
+null,
+null,
+null,
+null,
+null,
+519,
+519,
+519,
+519,
+519,
+null,
+null,
+519,
+519,
+null,
+null,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+null
+],
+[
+null,
+null,
+null,
+null,
+null,
+519,
+519,
+519,
+519,
+519,
+null,
+null,
+519,
+519,
+null,
+null,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+null
+],
+[
+null,
+null,
+null,
+null,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+null,
+519,
+519,
+null,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+null,
+null
+],
+[
+null,
+null,
+null,
+null,
+null,
+519,
+519,
+519,
+519,
+519,
+519,
+null,
+null,
+null,
+null,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+null,
+null,
+null
+],
+[
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+519,
+519,
+519,
+null,
+null,
+null,
+null,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+519,
+null,
+null,
+null,
+null,
+null,
+null
+],
+[
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null
+],
+[
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null
+]
+],
+"upper": [
+[
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+510,
+511,
+512,
+512,
+513,
+514,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null
+],
+[
+null,
+null,
+null,
+null,
+null,
+515,
+516,
+517,
+518,
+518,
+520,
+521,
+null,
+null,
+522,
+523,
+518,
+518,
+518,
+518,
+518,
+518,
+518,
+518,
+524,
+525,
+526,
+null,
+null,
+null
+],
+[
+null,
+null,
+null,
+null,
+527,
+528,
+529,
+530,
+531,
+null,
+532,
+521,
+null,
+null,
+522,
+533,
+null,
+null,
+null,
+529,
+530,
+null,
+null,
+null,
+null,
+null,
+534,
+535,
+null,
+null
+],
+[
+null,
+null,
+null,
+536,
+null,
+530,
+null,
+null,
+null,
+null,
+null,
+538,
+null,
+539,
+540,
+541,
+null,
+null,
+null,
+null,
+null,
+null,
+541,
+542,
+null,
+null,
+null,
+null,
+543,
+null
+],
+[
+null,
+null,
+544,
+545,
+546,
+null,
+547,
+null,
+null,
+null,
+548,
+538,
+null,
+null,
+540,
+548,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+549
+],
+[
+550,
+551,
+552,
+553,
+554,
+null,
+null,
+null,
+null,
+null,
+548,
+538,
+null,
+null,
+540,
+548,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+555,
+null,
+null,
+556
+],
+[
+null,
+null,
+557,
+558,
+559,
+null,
+547,
+null,
+null,
+null,
+560,
+538,
+null,
+null,
+540,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+561,
+562
+],
+[
+null,
+null,
+null,
+563,
+564,
+565,
+null,
+null,
+null,
+null,
+566,
+567,
+568,
+569,
+569,
+570,
+null,
+null,
+null,
+null,
+null,
+null,
+559,
+541,
+null,
+null,
+null,
+571,
+572,
+null
+],
+[
+null,
+null,
+null,
+null,
+573,
+574,
+575,
+576,
+577,
+null,
+578,
+579,
+580,
+580,
+581,
+582,
+null,
+null,
+577,
+null,
+null,
+null,
+null,
+null,
+583,
+584,
+585,
+586,
+null,
+null
+],
+[
+null,
+null,
+null,
+null,
+null,
+587,
+588,
+589,
+590,
+590,
+590,
+591,
+592,
+592,
+593,
+590,
+590,
+590,
+590,
+590,
+590,
+590,
+590,
+590,
+594,
+595,
+596,
+null,
+null,
+null
+],
+[
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+597,
+598,
+599,
+599,
+599,
+599,
+599,
+599,
+599,
+599,
+599,
+599,
+599,
+599,
+599,
+599,
+599,
+600,
+null,
+null,
+null,
+null,
+null
+]
+],
+"note": "선체 칸 아래는 물(lower=null 이면 맵의 물을 둔다), 갑판 칸 lower 는 널. 이물 왼쪽, 선미 오른쪽. 승선 널판은 윗면 가운데 x=11~12 (선실 지붕 왼쪽) 에 댄다"
+},
+"int:bookcase": {
+"name": "큰 책장 3×3",
+"w": 3,
+"h": 3,
+"lower": [
+[
+null,
+null,
+null
+],
+[
+null,
+null,
+null
+],
+[
+null,
+null,
+null
+]
+],
+"upper": [
+[
+601,
+602,
+603
+],
+[
+604,
+605,
+606
+],
+[
+607,
+608,
+609
+]
+]
+},
+"int:shelf-books": {
+"name": "책 꽂힌 선반장",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+610
+],
+[
+611
+]
+]
+},
+"int:cupboard": {
+"name": "선반장",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+612
+],
+[
+613
+]
+]
+},
+"int:wardrobe": {
+"name": "양문 수납장",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+614
+],
+[
+615
+]
+]
+},
+"int:bed-v": {
+"name": "세로 침대",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+616
+],
+[
+617
+]
+]
+},
+"int:bed-h": {
+"name": "가로 침대",
+"w": 2,
+"h": 1,
+"lower": [
+[
+null,
+null
+]
+],
+"upper": [
+[
+618,
+619
+]
+]
+},
+"int:table-long": {
+"name": "긴 탁자",
+"w": 3,
+"h": 1,
+"lower": [
+[
+null,
+null,
+null
+]
+],
+"upper": [
+[
+620,
+621,
+622
+]
+]
+},
+"int:table-square": {
+"name": "사각 탁자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+623
+]
+]
+},
+"int:table-round": {
+"name": "원형 탁자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+624
+]
+]
+},
+"int:table-tall": {
+"name": "세로 긴 탁자",
+"w": 1,
+"h": 3,
+"lower": [
+[
+null
+],
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+625
+],
+[
+626
+],
+[
+627
+]
+]
+},
+"int:chair-s": {
+"name": "등받이 의자(남쪽 보기 — 탁자 북쪽에 둔다)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+628
+]
+]
+},
+"int:chair-s2": {
+"name": "등받이 의자 2(남쪽 보기 — 탁자 북쪽에 둔다)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+629
+]
+]
+},
+"int:seat-r": {
+"name": "의자(오른쪽 보기)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+630
+]
+]
+},
+"int:seat-l": {
+"name": "의자(왼쪽 보기)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+631
+]
+]
+},
+"int:stool": {
+"name": "원형 걸상",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+632
+]
+]
+},
+"int:chair-fallen": {
+"name": "쓰러진 의자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+633
+]
+]
+},
+"int:candle": {
+"name": "촛대",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+634
+]
+]
+},
+"int:lantern": {
+"name": "랜턴",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+635
+]
+]
+},
+"int:clock": {
+"name": "괘종시계",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+636
+],
+[
+637
+]
+]
+},
+"int:mirror": {
+"name": "대형 거울",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+638
+],
+[
+639
+]
+]
+},
+"int:armor": {
+"name": "갑옷 전시대",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+640
+],
+[
+641
+]
+]
+},
+"int:bust": {
+"name": "여자 흉상",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+642
+],
+[
+643
+]
+]
+},
+"int:pillar": {
+"name": "돌기둥",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+644
+],
+[
+645
+]
+]
+},
+"int:armor-stand": {
+"name": "갑옷(전시)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+646
+]
+]
+},
+"int:curtain": {
+"name": "붉은 커튼(창 양옆)",
+"w": 2,
+"h": 2,
+"lower": [
+[
+null,
+null
+],
+[
+null,
+null
+]
+],
+"upper": [
+[
+647,
+648
+],
+[
+649,
+650
+]
+]
+},
+"int:drape": {
+"name": "붉은 대형 커튼",
+"w": 2,
+"h": 3,
+"lower": [
+[
+null,
+null
+],
+[
+null,
+null
+],
+[
+null,
+null
+]
+],
+"upper": [
+[
+651,
+652
+],
+[
+653,
+654
+],
+[
+655,
+656
+]
+]
+},
+"int:banner": {
+"name": "붉은 배너",
+"w": 2,
+"h": 1,
+"lower": [
+[
+null,
+null
+]
+],
+"upper": [
+[
+657,
+658
+]
+]
+},
+"int:piano": {
+"name": "피아노",
+"w": 2,
+"h": 1,
+"lower": [
+[
+null,
+null
+]
+],
+"upper": [
+[
+659,
+660
+]
+]
+},
+"int:cauldron": {
+"name": "가마솥",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+661
+]
+]
+},
+"int:crystal-ball": {
+"name": "수정구 점술대",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+662
+]
+]
+},
+"int:jar-shelf": {
+"name": "단지 선반",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+663
+]
+]
+},
+"int:jars": {
+"name": "흰 단지 두 개",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+664
+]
+]
+},
+"int:pot": {
+"name": "항아리",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+665
+]
+]
+},
+"int:barrel": {
+"name": "대형 나무 통",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+666
+]
+]
+},
+"int:crate": {
+"name": "나무 상자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+667
+]
+]
+},
+"int:box": {
+"name": "나무 궤짝",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+668
+]
+]
+},
+"int:bucket": {
+"name": "나무 물통",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+669
+]
+]
+},
+"int:plank-stand": {
+"name": "세운 나무 판자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+670
+]
+]
+},
+"int:plank-pile": {
+"name": "판자 더미",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+671
+]
+]
+},
+"int:glass": {
+"name": "깨진 유리 조각",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+672
+]
+]
+},
+"int:crack": {
+"name": "벽 균열",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+673
+],
+[
+674
+]
+]
+},
+"int:skeleton": {
+"name": "해골 유골",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+675
+]
+]
+},
+"int:sack": {
+"name": "곡물 자루",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+676
+]
+]
+},
+"int:ladder": {
+"name": "나무 사다리",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+677
+]
+]
+},
+"int:painting-land": {
+"name": "풍경 액자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+678
+]
+]
+},
+"int:painting-fire": {
+"name": "불꽃 액자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+679
+]
+]
+},
+"int:painting-big": {
+"name": "대형 그림",
+"w": 2,
+"h": 1,
+"lower": [
+[
+null,
+null
+]
+],
+"upper": [
+[
+680,
+681
+]
+]
+},
+"int:window": {
+"name": "흰 창문",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+682
+]
+]
+},
+"int:window-curtain": {
+"name": "커튼 창문",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+683
+]
+]
+},
+"int:window-dark": {
+"name": "격자 창(어두운)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+684
+]
+]
+},
+"int:stained": {
+"name": "스테인드글라스",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+685
+]
+]
+},
+"int:book-open": {
+"name": "펼친 책",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+686
+]
+]
+},
+"int:book-red": {
+"name": "붉은 책",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+687
+]
+]
+},
+"int:letters": {
+"name": "흩어진 편지",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+688
+]
+]
+},
+"int:feather": {
+"name": "큰 깃털",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+689
+]
+]
+},
+"int:circle": {
+"name": "마법진 3×3",
+"w": 3,
+"h": 3,
+"lower": [
+[
+null,
+null,
+null
+],
+[
+null,
+null,
+null
+],
+[
+null,
+null,
+null
+]
+],
+"upper": [
+[
+690,
+691,
+692
+],
+[
+693,
+694,
+695
+],
+[
+696,
+697,
+698
+]
+]
+},
+"int:stove": {
+"name": "난로 연통",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+699
+],
+[
+700
+]
+]
+},
+"int:oven": {
+"name": "화덕 오븐",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+701
+],
+[
+702
+]
+]
+},
+"int:counter": {
+"name": "조리대",
+"w": 2,
+"h": 2,
+"lower": [
+[
+null,
+null
+],
+[
+null,
+null
+]
+],
+"upper": [
+[
+703,
+704
+],
+[
+705,
+706
+]
+]
+},
+"int:food": {
+"name": "고기 요리",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+707
+]
+]
+},
+"int:salad": {
+"name": "샐러드 접시",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+708
+]
+]
+},
+"int:bottles": {
+"name": "술병과 잔",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+709
+]
+]
+},
+"int:dishes": {
+"name": "식기 세트",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+710
+]
+]
+},
+"int:weapon-case": {
+"name": "검 진열 박스",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+711
+],
+[
+712
+]
+]
+},
+"int:wall-sword": {
+"name": "벽걸이 검",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+713
+]
+]
+},
+"int:wall-hammer": {
+"name": "벽걸이 망치",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+714
+]
+]
+},
+"int:wall-shield": {
+"name": "벽걸이 방패",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+715
+]
+]
+},
+"int:helmet": {
+"name": "가죽 투구",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+716
+]
+]
+},
+"int:leather": {
+"name": "가죽 갑옷",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+717
+]
+]
+},
+"int:ore": {
+"name": "광석 바위",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+718
+]
+]
+},
+"int:rocks": {
+"name": "둥근 바위 더미",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+719
+]
+]
+},
+"int:bricks": {
+"name": "부서진 벽돌 더미",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+720
+]
+]
+},
+"int:fruit-shelf": {
+"name": "과일 단지 선반",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+721
+]
+]
+},
+"int:cross": {
+"name": "십자 장식",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+722
+]
+]
+},
+"int:cloth-table": {
+"name": "흰 천 테이블",
+"w": 3,
+"h": 1,
+"lower": [
+[
+null,
+null,
+null
+]
+],
+"upper": [
+[
+723,
+724,
+725
+]
+]
+},
+"int:teapot": {
+"name": "돌 항아리",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+726
+]
+]
+},
+"int:necklace": {
+"name": "보석 목걸이",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+727
+]
+]
+},
+"int:boots": {
+"name": "가죽 장화 더미",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+728
+]
+]
+},
+"int:sign-weapon": {
+"name": "무기점 간판",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+729
+]
+]
+},
+"int:sign-armor": {
+"name": "방어구점 간판",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+730
+]
+]
+},
+"int:sign-item": {
+"name": "잡화점 간판",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+731
+]
+]
+},
+"int:throne-red": {
+"name": "붉은 의자",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+732
+],
+[
+733
+]
+]
+},
+"int:stair-down": {
+"name": "하강 계단 1×1",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+734
+]
+]
+},
+"manor:bookcase": {
+"name": "큰 책장 3×3",
+"w": 3,
+"h": 3,
+"lower": [
+[
+null,
+null,
+null
+],
+[
+null,
+null,
+null
+],
+[
+null,
+null,
+null
+]
+],
+"upper": [
+[
+735,
+736,
+737
+],
+[
+738,
+739,
+740
+],
+[
+741,
+742,
+743
+]
+]
+},
+"manor:shelf-books": {
+"name": "책 꽂힌 선반장",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+744
+],
+[
+745
+]
+]
+},
+"manor:cupboard": {
+"name": "선반장",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+746
+],
+[
+747
+]
+]
+},
+"manor:wardrobe": {
+"name": "양문 수납장",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+748
+],
+[
+749
+]
+]
+},
+"manor:bed-v": {
+"name": "세로 침대",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+750
+],
+[
+751
+]
+]
+},
+"manor:bed-h": {
+"name": "가로 침대",
+"w": 2,
+"h": 1,
+"lower": [
+[
+null,
+null
+]
+],
+"upper": [
+[
+752,
+753
+]
+]
+},
+"manor:table-long": {
+"name": "긴 탁자",
+"w": 3,
+"h": 1,
+"lower": [
+[
+null,
+null,
+null
+]
+],
+"upper": [
+[
+754,
+755,
+756
+]
+]
+},
+"manor:table-square": {
+"name": "사각 탁자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+757
+]
+]
+},
+"manor:table-round": {
+"name": "원형 탁자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+758
+]
+]
+},
+"manor:chair-s": {
+"name": "등받이 의자(남쪽 보기 — 탁자 북쪽에 둔다)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+759
+]
+]
+},
+"manor:chair-s2": {
+"name": "등받이 의자 2(남쪽 보기 — 탁자 북쪽에 둔다)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+760
+]
+]
+},
+"manor:seat-r": {
+"name": "의자(오른쪽 보기)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+761
+]
+]
+},
+"manor:seat-l": {
+"name": "의자(왼쪽 보기)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+762
+]
+]
+},
+"manor:stool": {
+"name": "원형 걸상",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+763
+]
+]
+},
+"manor:chair-fallen": {
+"name": "쓰러진 의자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+764
+]
+]
+},
+"manor:candle": {
+"name": "촛대",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+765
+]
+]
+},
+"manor:clock": {
+"name": "괘종시계",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+766
+],
+[
+767
+]
+]
+},
+"manor:mirror": {
+"name": "대형 거울",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+768
+],
+[
+769
+]
+]
+},
+"manor:armor": {
+"name": "갑옷 전시대",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+770
+],
+[
+771
+]
+]
+},
+"manor:bust": {
+"name": "여자 흉상",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+772
+],
+[
+773
+]
+]
+},
+"manor:curtain": {
+"name": "붉은 커튼(창 양옆)",
+"w": 2,
+"h": 2,
+"lower": [
+[
+null,
+null
+],
+[
+null,
+null
+]
+],
+"upper": [
+[
+774,
+775
+],
+[
+776,
+777
+]
+]
+},
+"manor:drape": {
+"name": "붉은 대형 커튼",
+"w": 2,
+"h": 3,
+"lower": [
+[
+null,
+null
+],
+[
+null,
+null
+],
+[
+null,
+null
+]
+],
+"upper": [
+[
+778,
+779
+],
+[
+780,
+781
+],
+[
+782,
+783
+]
+]
+},
+"manor:banner": {
+"name": "붉은 배너",
+"w": 2,
+"h": 1,
+"lower": [
+[
+null,
+null
+]
+],
+"upper": [
+[
+784,
+785
+]
+]
+},
+"manor:piano": {
+"name": "피아노",
+"w": 2,
+"h": 1,
+"lower": [
+[
+null,
+null
+]
+],
+"upper": [
+[
+786,
+787
+]
+]
+},
+"manor:jars": {
+"name": "흰 단지 두 개",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+788
+]
+]
+},
+"manor:pot": {
+"name": "항아리",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+789
+]
+]
+},
+"manor:barrel": {
+"name": "대형 나무 통",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+790
+]
+]
+},
+"manor:crate": {
+"name": "나무 상자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+791
+]
+]
+},
+"manor:box": {
+"name": "나무 궤짝",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+792
+]
+]
+},
+"manor:plank-stand": {
+"name": "세운 나무 판자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+793
+]
+]
+},
+"manor:plank-pile": {
+"name": "판자 더미",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+794
+]
+]
+},
+"manor:glass": {
+"name": "깨진 유리 조각",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+795
+]
+]
+},
+"manor:crack": {
+"name": "벽 균열",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+796
+],
+[
+797
+]
+]
+},
+"manor:skeleton": {
+"name": "해골 유골",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+798
+]
+]
+},
+"manor:sack": {
+"name": "곡물 자루",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+799
+]
+]
+},
+"manor:painting-land": {
+"name": "풍경 액자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+800
+]
+]
+},
+"manor:painting-fire": {
+"name": "불꽃 액자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+801
+]
+]
+},
+"manor:painting-big": {
+"name": "대형 그림",
+"w": 2,
+"h": 1,
+"lower": [
+[
+null,
+null
+]
+],
+"upper": [
+[
+802,
+803
+]
+]
+},
+"manor:window-curtain": {
+"name": "커튼 창문",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+804
+]
+]
+},
+"manor:window-dark": {
+"name": "격자 창(어두운)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+805
+]
+]
+},
+"manor:book-open": {
+"name": "펼친 책",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+806
+]
+]
+},
+"manor:letters": {
+"name": "흩어진 편지",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+807
+]
+]
+},
+"manor:stove": {
+"name": "난로 연통",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+808
+],
+[
+809
+]
+]
+},
+"manor:oven": {
+"name": "화덕 오븐",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+810
+],
+[
+811
+]
+]
+},
+"manor:counter": {
+"name": "조리대",
+"w": 2,
+"h": 2,
+"lower": [
+[
+null,
+null
+],
+[
+null,
+null
+]
+],
+"upper": [
+[
+812,
+813
+],
+[
+814,
+815
+]
+]
+},
+"manor:bottles": {
+"name": "술병과 잔",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+816
+]
+]
+},
+"manor:dishes": {
+"name": "식기 세트",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+817
+]
+]
+},
+"manor:cloth-table": {
+"name": "흰 천 테이블",
+"w": 3,
+"h": 1,
+"lower": [
+[
+null,
+null,
+null
+]
+],
+"upper": [
+[
+818,
+819,
+820
+]
+]
+},
+"manor:throne-red": {
+"name": "붉은 의자",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+821
+],
+[
+822
+]
+]
+},
+"ship:barrel": {
+"name": "대형 오크통",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+823
+]
+]
+},
+"ship:barrel-open": {
+"name": "열린 나무통",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+824
+]
+]
+},
+"ship:crate": {
+"name": "사각 나무 상자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+825
+]
+]
+},
+"ship:drawer": {
+"name": "나무 서랍 가구",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+826
+]
+]
+},
+"ship:jug": {
+"name": "도자기 항아리",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+827
+]
+]
+},
+"ship:table": {
+"name": "둥근 나무 탁자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+828
+]
+]
+},
+"ship:stool": {
+"name": "둥근 목재 의자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+829
+]
+]
+},
+"ship:bookcase": {
+"name": "책장",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+830
+],
+[
+831
+]
+]
+},
+"ship:cannon-l": {
+"name": "왼쪽 향한 대포",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+832
+]
+]
+},
+"ship:cannon-r": {
+"name": "오른쪽 향한 대포",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+833
+]
+]
+},
+"ship:cannon-front": {
+"name": "정면 대포",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+834
+],
+[
+835
+]
+]
+},
+"ship:cannon-up": {
+"name": "상향 대포",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+836
+],
+[
+837
+]
+]
+},
+"ship:cannon-cart-l": {
+"name": "좌향 포차 대포",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+838
+]
+]
+},
+"ship:cannon-cart-r": {
+"name": "우향 포신 대포",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+839
+]
+]
+},
+"ship:anchor": {
+"name": "닻",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+840
+]
+]
+},
+"ship:rope": {
+"name": "감긴 밧줄 더미",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+841
+]
+]
+},
+"ship:rigging": {
+"name": "밧줄과 활 장비",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+842
+]
+]
+},
+"ship:wheel": {
+"name": "나무 키(조타륜)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+843
+]
+]
+},
+"ship:wheel-side": {
+"name": "나무 바퀴 측면",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+844
+]
+]
+},
+"ship:lamp": {
+"name": "사각 금속 등",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+845
+]
+]
+},
+"ship:skull": {
+"name": "해골과 뼈 더미",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+846
+]
+]
+},
+"ship:swords": {
+"name": "엇갈린 은색 검",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+847
+]
+]
+},
+"ship:flag": {
+"name": "붉은 삼각 깃발",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+848
+]
+]
+},
+"ship:banner": {
+"name": "붉은 금장 깃발",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+849
+],
+[
+850
+]
+]
+},
+"ship:hammock": {
+"name": "흰 베개 침대",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+851
+],
+[
+852
+]
+]
+},
+"ship:bunk": {
+"name": "침대(옆면)",
+"w": 2,
+"h": 1,
+"lower": [
+[
+null,
+null
+]
+],
+"upper": [
+[
+853,
+854
+]
+]
+},
+"ship:wardrobe": {
+"name": "나무 장롱",
+"w": 2,
+"h": 1,
+"lower": [
+[
+null,
+null
+]
+],
+"upper": [
+[
+855,
+856
+]
+]
+},
+"ship:organ": {
+"name": "파이프오르간",
+"w": 2,
+"h": 1,
+"lower": [
+[
+null,
+null
+]
+],
+"upper": [
+[
+857,
+858
+]
+]
+},
+"ship:potions": {
+"name": "선반 위 물약병",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+859
+]
+]
+},
+"ship:shelf": {
+"name": "벽 부착 가로 널 선반",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+860
+]
+]
+},
+"ship:vent": {
+"name": "환기 격자창",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+861
+]
+]
+},
+"ship:porthole": {
+"name": "창살 격자 창문",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+862
+]
+]
+},
+"ship:picture-sea": {
+"name": "바다 그림 액자",
+"w": 2,
+"h": 1,
+"lower": [
+[
+null,
+null
+]
+],
+"upper": [
+[
+863,
+864
+]
+]
+},
+"ship:winch": {
+"name": "원통형 권양기",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+865
+],
+[
+866
+]
+]
+},
+"ship:post": {
+"name": "짧은 세로 목재 말뚝",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+867
+]
+]
+},
+"ship:hole": {
+"name": "나무 위 검은 구멍",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+868
+]
+]
+},
+"ship:ladder": {
+"name": "목재 사다리(2×2)",
+"w": 2,
+"h": 2,
+"lower": [
+[
+null,
+null
+],
+[
+null,
+null
+]
+],
+"upper": [
+[
+869,
+870
+],
+[
+871,
+872
+]
+]
+},
+"ship:ladder-top": {
+"name": "목재 사다리 상단",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+873
+]
+]
+},
+"ship:hatch-top": {
+"name": "갑판 해치 입구 상단",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+874
+]
+]
+},
+"ship:rope-hang": {
+"name": "늘어진 밧줄",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+875
+]
+]
+},
+"ship:cabin-wall": {
+"name": "목재 선실 벽 4×2",
+"w": 4,
+"h": 2,
+"lower": [
+[
+null,
+null,
+null,
+null
+],
+[
+null,
+null,
+null,
+null
+]
+],
+"upper": [
+[
+876,
+877,
+878,
+879
+],
+[
+880,
+881,
+882,
+883
+]
+]
+},
+"ship:rail-v": {
+"name": "세로 목재 난간",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+884
+],
+[
+885
+]
+]
+},
+"ship:rail-h": {
+"name": "가로 목재 난간",
+"w": 3,
+"h": 1,
+"lower": [
+[
+null,
+null,
+null
+]
+],
+"upper": [
+[
+886,
+887,
+888
+]
+]
+},
+"ghost:barrel": {
+"name": "대형 오크통",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+889
+]
+]
+},
+"ghost:barrel-open": {
+"name": "열린 나무통",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+890
+]
+]
+},
+"ghost:crate": {
+"name": "사각 나무 상자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+891
+]
+]
+},
+"ghost:drawer": {
+"name": "나무 서랍 가구",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+892
+]
+]
+},
+"ghost:jug": {
+"name": "도자기 항아리",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+893
+]
+]
+},
+"ghost:table": {
+"name": "둥근 나무 탁자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+894
+]
+]
+},
+"ghost:stool": {
+"name": "둥근 목재 의자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+895
+]
+]
+},
+"ghost:bookcase": {
+"name": "책장",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+896
+],
+[
+897
+]
+]
+},
+"ghost:cannon-l": {
+"name": "왼쪽 향한 대포",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+898
+]
+]
+},
+"ghost:cannon-r": {
+"name": "오른쪽 향한 대포",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+899
+]
+]
+},
+"ghost:cannon-front": {
+"name": "정면 대포",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+900
+],
+[
+901
+]
+]
+},
+"ghost:cannon-up": {
+"name": "상향 대포",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+902
+],
+[
+903
+]
+]
+},
+"ghost:cannon-cart-l": {
+"name": "좌향 포차 대포",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+904
+]
+]
+},
+"ghost:cannon-cart-r": {
+"name": "우향 포신 대포",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+905
+]
+]
+},
+"ghost:anchor": {
+"name": "닻",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+906
+]
+]
+},
+"ghost:rope": {
+"name": "감긴 밧줄 더미",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+907
+]
+]
+},
+"ghost:rigging": {
+"name": "밧줄과 활 장비",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+908
+]
+]
+},
+"ghost:wheel": {
+"name": "나무 키(조타륜)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+909
+]
+]
+},
+"ghost:wheel-side": {
+"name": "나무 바퀴 측면",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+910
+]
+]
+},
+"ghost:lamp": {
+"name": "사각 금속 등",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+911
+]
+]
+},
+"ghost:skull": {
+"name": "해골과 뼈 더미",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+912
+]
+]
+},
+"ghost:swords": {
+"name": "엇갈린 은색 검",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+913
+]
+]
+},
+"ghost:flag": {
+"name": "붉은 삼각 깃발",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+914
+]
+]
+},
+"ghost:banner": {
+"name": "붉은 금장 깃발",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+915
+],
+[
+916
+]
+]
+},
+"ghost:hammock": {
+"name": "흰 베개 침대",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+917
+],
+[
+918
+]
+]
+},
+"ghost:bunk": {
+"name": "침대(옆면)",
+"w": 2,
+"h": 1,
+"lower": [
+[
+null,
+null
+]
+],
+"upper": [
+[
+919,
+920
+]
+]
+},
+"ghost:wardrobe": {
+"name": "나무 장롱",
+"w": 2,
+"h": 1,
+"lower": [
+[
+null,
+null
+]
+],
+"upper": [
+[
+921,
+922
+]
+]
+},
+"ghost:organ": {
+"name": "파이프오르간",
+"w": 2,
+"h": 1,
+"lower": [
+[
+null,
+null
+]
+],
+"upper": [
+[
+923,
+924
+]
+]
+},
+"ghost:potions": {
+"name": "선반 위 물약병",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+925
+]
+]
+},
+"ghost:shelf": {
+"name": "벽 부착 가로 널 선반",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+926
+]
+]
+},
+"ghost:vent": {
+"name": "환기 격자창",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+927
+]
+]
+},
+"ghost:porthole": {
+"name": "창살 격자 창문",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+928
+]
+]
+},
+"ghost:picture-sea": {
+"name": "바다 그림 액자",
+"w": 2,
+"h": 1,
+"lower": [
+[
+null,
+null
+]
+],
+"upper": [
+[
+929,
+930
+]
+]
+},
+"ghost:winch": {
+"name": "원통형 권양기",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+931
+],
+[
+932
+]
+]
+},
+"ghost:post": {
+"name": "짧은 세로 목재 말뚝",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+933
+]
+]
+},
+"ghost:hole": {
+"name": "나무 위 검은 구멍",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+934
+]
+]
+},
+"ghost:ladder": {
+"name": "목재 사다리(2×2)",
+"w": 2,
+"h": 2,
+"lower": [
+[
+null,
+null
+],
+[
+null,
+null
+]
+],
+"upper": [
+[
+935,
+936
+],
+[
+937,
+938
+]
+]
+},
+"ghost:ladder-top": {
+"name": "목재 사다리 상단",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+939
+]
+]
+},
+"ghost:hatch-top": {
+"name": "갑판 해치 입구 상단",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+940
+]
+]
+},
+"ghost:rope-hang": {
+"name": "늘어진 밧줄",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+941
+]
+]
+},
+"ghost:cabin-wall": {
+"name": "목재 선실 벽 4×2",
+"w": 4,
+"h": 2,
+"lower": [
+[
+null,
+null,
+null,
+null
+],
+[
+null,
+null,
+null,
+null
+]
+],
+"upper": [
+[
+942,
+943,
+944,
+945
+],
+[
+946,
+947,
+948,
+949
+]
+]
+},
+"ghost:rail-v": {
+"name": "세로 목재 난간",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+950
+],
+[
+951
+]
+]
+},
+"ghost:rail-h": {
+"name": "가로 목재 난간",
+"w": 3,
+"h": 1,
+"lower": [
+[
+null,
+null,
+null
+]
+],
+"upper": [
+[
+952,
+953,
+954
+]
+]
+},
+"cry-red:crystal-big": {
+"name": "붉은 큰 수정",
+"w": 2,
+"h": 2,
+"lower": [
+[
+null,
+null
+],
+[
+null,
+null
+]
+],
+"upper": [
+[
+955,
+956
+],
+[
+957,
+958
+]
+]
+},
+"cry-red:crystal-pillar": {
+"name": "붉은 수정 기둥",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+959
+],
+[
+960
+]
+]
+},
+"cry-red:crystal-small": {
+"name": "붉은 작은 수정",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+961
+]
+]
+},
+"cry-red:crystal-pile": {
+"name": "붉은 수정 무더기",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+962
+]
+]
+},
+"cry-red:gem": {
+"name": "붉은 보석",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+963
+]
+]
+},
+"cry-green:crystal-big": {
+"name": "초록 큰 수정",
+"w": 2,
+"h": 2,
+"lower": [
+[
+null,
+null
+],
+[
+null,
+null
+]
+],
+"upper": [
+[
+964,
+965
+],
+[
+966,
+967
+]
+]
+},
+"cry-green:crystal-pillar": {
+"name": "초록 수정 기둥",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+968
+],
+[
+969
+]
+]
+},
+"cry-green:crystal-small": {
+"name": "초록 작은 수정",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+970
+]
+]
+},
+"cry-green:crystal-pile": {
+"name": "초록 수정 무더기",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+971
+]
+]
+},
+"cry-green:gem": {
+"name": "초록 보석",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+972
+]
+]
+},
+"cry-amber:crystal-big": {
+"name": "호박색 큰 수정",
+"w": 2,
+"h": 2,
+"lower": [
+[
+null,
+null
+],
+[
+null,
+null
+]
+],
+"upper": [
+[
+973,
+974
+],
+[
+975,
+976
+]
+]
+},
+"cry-amber:crystal-pillar": {
+"name": "호박색 수정 기둥",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+977
+],
+[
+978
+]
+]
+},
+"cry-amber:crystal-small": {
+"name": "호박색 작은 수정",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+979
+]
+]
+},
+"cry-amber:crystal-pile": {
+"name": "호박색 수정 무더기",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+980
+]
+]
+},
+"cry-amber:gem": {
+"name": "호박색 보석",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+981
+]
+]
+},
+"cry-gold:crystal-big": {
+"name": "금빛 큰 수정",
+"w": 2,
+"h": 2,
+"lower": [
+[
+null,
+null
+],
+[
+null,
+null
+]
+],
+"upper": [
+[
+982,
+983
+],
+[
+984,
+985
+]
+]
+},
+"cry-gold:crystal-pillar": {
+"name": "금빛 수정 기둥",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+986
+],
+[
+987
+]
+]
+},
+"cry-gold:crystal-small": {
+"name": "금빛 작은 수정",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+988
+]
+]
+},
+"cry-gold:crystal-pile": {
+"name": "금빛 수정 무더기",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+989
+]
+]
+},
+"cry-gold:gem": {
+"name": "금빛 보석",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+990
+]
+]
+},
+"cry-violet:crystal-big": {
+"name": "보라 큰 수정",
+"w": 2,
+"h": 2,
+"lower": [
+[
+null,
+null
+],
+[
+null,
+null
+]
+],
+"upper": [
+[
+991,
+992
+],
+[
+993,
+994
+]
+]
+},
+"cry-violet:crystal-pillar": {
+"name": "보라 수정 기둥",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+995
+],
+[
+996
+]
+]
+},
+"cry-violet:crystal-small": {
+"name": "보라 작은 수정",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+997
+]
+]
+},
+"cry-violet:crystal-pile": {
+"name": "보라 수정 무더기",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+998
+]
+]
+},
+"cry-violet:gem": {
+"name": "보라 보석",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+999
+]
+]
+},
+"cry-pink:crystal-big": {
+"name": "분홍 큰 수정",
+"w": 2,
+"h": 2,
+"lower": [
+[
+null,
+null
+],
+[
+null,
+null
+]
+],
+"upper": [
+[
+1000,
+1001
+],
+[
+1002,
+1003
+]
+]
+},
+"cry-pink:crystal-pillar": {
+"name": "분홍 수정 기둥",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+1004
+],
+[
+1005
+]
+]
+},
+"cry-pink:crystal-small": {
+"name": "분홍 작은 수정",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1006
+]
+]
+},
+"cry-pink:crystal-pile": {
+"name": "분홍 수정 무더기",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1007
+]
+]
+},
+"cry-pink:gem": {
+"name": "분홍 보석",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1008
+]
+]
+},
+"cry-cyan:crystal-big": {
+"name": "청록 큰 수정",
+"w": 2,
+"h": 2,
+"lower": [
+[
+null,
+null
+],
+[
+null,
+null
+]
+],
+"upper": [
+[
+1009,
+1010
+],
+[
+1011,
+1012
+]
+]
+},
+"cry-cyan:crystal-pillar": {
+"name": "청록 수정 기둥",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+1013
+],
+[
+1014
+]
+]
+},
+"cry-cyan:crystal-small": {
+"name": "청록 작은 수정",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1015
+]
+]
+},
+"cry-cyan:crystal-pile": {
+"name": "청록 수정 무더기",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1016
+]
+]
+},
+"cry-cyan:gem": {
+"name": "청록 보석",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1017
+]
+]
+},
+"cry-white:crystal-big": {
+"name": "흰 큰 수정",
+"w": 2,
+"h": 2,
+"lower": [
+[
+null,
+null
+],
+[
+null,
+null
+]
+],
+"upper": [
+[
+1018,
+1019
+],
+[
+1020,
+1021
+]
+]
+},
+"cry-white:crystal-pillar": {
+"name": "흰 수정 기둥",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+1022
+],
+[
+1023
+]
+]
+},
+"cry-white:crystal-small": {
+"name": "흰 작은 수정",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1024
+]
+]
+},
+"cry-white:crystal-pile": {
+"name": "흰 수정 무더기",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1025
+]
+]
+},
+"cry-white:gem": {
+"name": "흰 보석",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1026
+]
+]
+},
+"fire-ghost:fire": {
+"name": "도깨비불(청록) 바닥 불길",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1027
+]
+]
+},
+"fire-ghost:fire-small": {
+"name": "도깨비불(청록) 바닥 불길 작은",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1028
+]
+]
+},
+"fire-ghost:torch": {
+"name": "도깨비불(청록) 벽 횃불",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1029
+]
+]
+},
+"fire-ghost:brazier": {
+"name": "도깨비불(청록) 화로",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+1030
+],
+[
+1031
+]
+]
+},
+"fire-violet:fire": {
+"name": "보랏빛 바닥 불길",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1032
+]
+]
+},
+"fire-violet:fire-small": {
+"name": "보랏빛 바닥 불길 작은",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1033
+]
+]
+},
+"fire-violet:torch": {
+"name": "보랏빛 벽 횃불",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1034
+]
+]
+},
+"fire-violet:brazier": {
+"name": "보랏빛 화로",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+1035
+],
+[
+1036
+]
+]
+},
+"fire-green:fire": {
+"name": "초록 바닥 불길",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1037
+]
+]
+},
+"fire-green:fire-small": {
+"name": "초록 바닥 불길 작은",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1038
+]
+]
+},
+"fire-green:torch": {
+"name": "초록 벽 횃불",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1039
+]
+]
+},
+"fire-green:brazier": {
+"name": "초록 화로",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+1040
+],
+[
+1041
+]
+]
+},
+"coffin-wood": {
+"name": "나무 관(닫힘) 1×2",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+1042
+],
+[
+1043
+]
+]
+},
+"coffin-wood-open": {
+"name": "열린 나무 관과 유골 1×2",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+1044
+],
+[
+1045
+]
+]
+},
+"coffin-stone": {
+"name": "석관(기사 부조) 1×2",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+1046
+],
+[
+1047
+]
+]
+},
+"coffin-stone-open": {
+"name": "열린 석관과 유골 1×2",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+1048
+],
+[
+1049
+]
+]
+},
+"chest-wood": {
+"name": "보물상자(나무·금테)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1050
+]
+]
+},
+"chest-wood-open": {
+"name": "열린 보물상자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1051
+]
+]
+},
+"chest-iron": {
+"name": "쇠 보물상자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1052
+]
+]
+},
+"chest-iron-open": {
+"name": "열린 쇠 보물상자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1053
+]
+]
+},
+"chest-red": {
+"name": "붉은 금장 보물상자(보스 보상)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1054
+]
+]
+},
+"chest-red-open": {
+"name": "열린 붉은 보물상자",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1055
+]
+]
+},
+"web-l": {
+"name": "거미줄(왼쪽 위 모서리)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1056
+]
+]
+},
+"web-r": {
+"name": "거미줄(오른쪽 위 모서리)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1057
+]
+]
+},
+"web-big": {
+"name": "큰 거미줄 2×2(막힘)",
+"w": 2,
+"h": 2,
+"lower": [
+[
+null,
+null
+],
+[
+null,
+null
+]
+],
+"upper": [
+[
+1058,
+1059
+],
+[
+1060,
+1061
+]
+]
+},
+"egg-sac": {
+"name": "거미 알 무더기",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1062
+]
+]
+},
+"cocoon": {
+"name": "거미줄에 감긴 고치 1×2",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+1063
+],
+[
+1064
+]
+]
+},
+"spikes-down": {
+"name": "가시 함정(들어감)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1065
+]
+]
+},
+"spikes-up": {
+"name": "가시 함정(솟음)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1066
+]
+]
+},
+"plate": {
+"name": "발판 스위치",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1067
+]
+]
+},
+"plate-down": {
+"name": "눌린 발판 스위치",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1068
+]
+]
+},
+"lever-off": {
+"name": "바닥 레버(왼쪽)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1069
+]
+]
+},
+"lever-on": {
+"name": "바닥 레버(오른쪽)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1070
+]
+]
+},
+"rune-wind": {
+"name": "바닥 룬(wind)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1071
+]
+]
+},
+"rune-water": {
+"name": "바닥 룬(water)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1072
+]
+]
+},
+"rune-earth": {
+"name": "바닥 룬(earth)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1073
+]
+]
+},
+"rune-fire": {
+"name": "바닥 룬(fire)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1074
+]
+]
+},
+"rune-star": {
+"name": "바닥 룬(star)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1075
+]
+]
+},
+"rune-eye": {
+"name": "바닥 룬(eye)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1076
+]
+]
+},
+"sparkle-gold": {
+"name": "반짝임(금빛)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1077
+]
+]
+},
+"sparkle-blue": {
+"name": "샘물 반짝임(물 위)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1078
+]
+]
+},
+"gear-big": {
+"name": "큰 톱니바퀴 2×2",
+"w": 2,
+"h": 2,
+"lower": [
+[
+null,
+null
+],
+[
+null,
+null
+]
+],
+"upper": [
+[
+1079,
+1080
+],
+[
+1081,
+1082
+]
+]
+},
+"gear": {
+"name": "톱니바퀴",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1083
+]
+]
+},
+"pipe-h": {
+"name": "가로 관",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1084
+]
+]
+},
+"pipe-v": {
+"name": "세로 관",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1085
+]
+]
+},
+"pipe-cross": {
+"name": "관 이음",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1086
+]
+]
+},
+"pipe-valve": {
+"name": "관 밸브",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1087
+]
+]
+},
+"piston": {
+"name": "피스톤 기둥 1×2",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+1088
+],
+[
+1089
+]
+]
+},
+"vat": {
+"name": "초록 약물 유리관 1×2",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+1090
+],
+[
+1091
+]
+]
+},
+"vat-specimen": {
+"name": "표본이 든 유리관 1×2",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+1092
+],
+[
+1093
+]
+]
+},
+"vat-blue": {
+"name": "푸른 약물 유리관 1×2",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+1094
+],
+[
+1095
+]
+]
+},
+"vat-broken": {
+"name": "깨진 유리관 1×2",
+"w": 1,
+"h": 2,
+"lower": [
+[
+null
+],
+[
+null
+]
+],
+"upper": [
+[
+1096
+],
+[
+1097
+]
+]
+},
+"console": {
+"name": "장치 조종대 2×1",
+"w": 2,
+"h": 1,
+"lower": [
+[
+null,
+null
+]
+],
+"upper": [
+[
+1098,
+1099
+]
+]
+},
+"mast-stump": {
+"name": "부러진 돛대 밑동",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1100
+]
+]
+},
+"hatch-open": {
+"name": "열린 바닥 해치(사다리)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1101
+]
+]
+},
+"hatch": {
+"name": "닫힌 바닥 해치",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1102
+]
+]
+},
+"shackles": {
+"name": "벽 족쇄",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1103
+]
+]
+},
+"ore-gold": {
+"name": "금 광맥(벽면)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1104
+]
+]
+},
+"ore-silver": {
+"name": "은 광맥(벽면)",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1105
+]
+]
+},
+"lift": {
+"name": "승강 발판 2×2",
+"w": 2,
+"h": 2,
+"lower": [
+[
+null,
+null
+],
+[
+null,
+null
+]
+],
+"upper": [
+[
+1106,
+1107
+],
+[
+1108,
+1109
+]
+]
+},
+"basin": {
+"name": "회복의 샘 돌확 2×2",
+"w": 2,
+"h": 2,
+"lower": [
+[
+null,
+null
+],
+[
+null,
+null
+]
+],
+"upper": [
+[
+1110,
+1111
+],
+[
+1112,
+1113
+]
+]
+},
+"bones": {
+"name": "뼈 무더기",
+"w": 1,
+"h": 1,
+"lower": [
+[
+null
+]
+],
+"upper": [
+[
+1114
+]
+]
+}
+}
+}

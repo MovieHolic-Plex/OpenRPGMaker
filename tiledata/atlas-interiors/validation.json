@@ -1,0 +1,3134 @@
+[
+  {
+    "id": "atlas-interior-poor-hovel",
+    "entry": [
+      6,
+      8
+    ],
+    "targets": [
+      [
+        3,
+        6
+      ],
+      [
+        9,
+        6
+      ]
+    ],
+    "reachable": 17,
+    "walkable": 15,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-farmhouse",
+    "entry": [
+      13,
+      12
+    ],
+    "targets": [
+      [
+        4,
+        9
+      ],
+      [
+        16,
+        9
+      ],
+      [
+        12,
+        11
+      ],
+      [
+        18,
+        7
+      ]
+    ],
+    "reachable": 73,
+    "walkable": 69,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-fisher-house",
+    "entry": [
+      8,
+      10
+    ],
+    "targets": [
+      [
+        3,
+        7
+      ],
+      [
+        9,
+        7
+      ],
+      [
+        11,
+        7
+      ]
+    ],
+    "reachable": 45,
+    "walkable": 39,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-hunter-lodge",
+    "entry": [
+      8,
+      10
+    ],
+    "targets": [
+      [
+        8,
+        8
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        12,
+        7
+      ]
+    ],
+    "reachable": 37,
+    "walkable": 33,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-merchant-house-1f",
+    "entry": [
+      8,
+      13
+    ],
+    "targets": [
+      [
+        12,
+        6
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        19,
+        11
+      ],
+      [
+        16,
+        9
+      ],
+      [
+        11,
+        5
+      ],
+      [
+        12,
+        5
+      ],
+      [
+        13,
+        5
+      ]
+    ],
+    "reachable": 134,
+    "walkable": 126,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-merchant-house-2f",
+    "entry": [
+      12,
+      6
+    ],
+    "targets": [
+      [
+        5,
+        9
+      ],
+      [
+        19,
+        11
+      ],
+      [
+        23,
+        8
+      ],
+      [
+        12,
+        5
+      ]
+    ],
+    "reachable": 124,
+    "walkable": 116,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-manor-hall",
+    "entry": [
+      15,
+      17
+    ],
+    "targets": [
+      [
+        15,
+        6
+      ],
+      [
+        5,
+        5
+      ],
+      [
+        24,
+        5
+      ],
+      [
+        3,
+        12
+      ],
+      [
+        26,
+        11
+      ],
+      [
+        14,
+        5
+      ],
+      [
+        15,
+        5
+      ],
+      [
+        16,
+        5
+      ]
+    ],
+    "reachable": 265,
+    "walkable": 243,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-manor-bedrooms",
+    "entry": [
+      15,
+      6
+    ],
+    "targets": [
+      [
+        7,
+        11
+      ],
+      [
+        22,
+        6
+      ],
+      [
+        23,
+        14
+      ],
+      [
+        10,
+        13
+      ],
+      [
+        15,
+        5
+      ]
+    ],
+    "reachable": 192,
+    "walkable": 177,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-manor-banquet",
+    "entry": [
+      14,
+      13
+    ],
+    "targets": [
+      [
+        4,
+        7
+      ],
+      [
+        22,
+        7
+      ],
+      [
+        8,
+        11
+      ],
+      [
+        23,
+        9
+      ]
+    ],
+    "reachable": 112,
+    "walkable": 98,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-manor-library",
+    "entry": [
+      12,
+      13
+    ],
+    "targets": [
+      [
+        11,
+        6
+      ],
+      [
+        7,
+        10
+      ],
+      [
+        4,
+        10
+      ],
+      [
+        19,
+        10
+      ]
+    ],
+    "reachable": 95,
+    "walkable": 88,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-manor-salon",
+    "entry": [
+      11,
+      11
+    ],
+    "targets": [
+      [
+        10,
+        8
+      ],
+      [
+        16,
+        9
+      ],
+      [
+        4,
+        6
+      ]
+    ],
+    "reachable": 79,
+    "walkable": 68,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-cellar-house-1f",
+    "entry": [
+      7,
+      10
+    ],
+    "targets": [
+      [
+        3,
+        8
+      ],
+      [
+        14,
+        7
+      ],
+      [
+        7,
+        9
+      ],
+      [
+        16,
+        8
+      ]
+    ],
+    "reachable": 47,
+    "walkable": 40,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-cellar-house-b1",
+    "entry": [
+      15,
+      6
+    ],
+    "targets": [
+      [
+        4,
+        6
+      ],
+      [
+        10,
+        9
+      ],
+      [
+        14,
+        9
+      ],
+      [
+        14,
+        5
+      ],
+      [
+        15,
+        5
+      ],
+      [
+        16,
+        5
+      ]
+    ],
+    "reachable": 59,
+    "walkable": 52,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-herbalist-cottage",
+    "entry": [
+      8,
+      10
+    ],
+    "targets": [
+      [
+        8,
+        9
+      ],
+      [
+        12,
+        7
+      ],
+      [
+        3,
+        8
+      ]
+    ],
+    "reachable": 40,
+    "walkable": 39,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-scholar-house",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        10,
+        8
+      ],
+      [
+        5,
+        7
+      ],
+      [
+        14,
+        6
+      ],
+      [
+        11,
+        9
+      ],
+      [
+        2,
+        7
+      ]
+    ],
+    "reachable": 44,
+    "walkable": 36,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-weapon-shop",
+    "entry": [
+      9,
+      12
+    ],
+    "targets": [
+      [
+        8,
+        6
+      ],
+      [
+        8,
+        8
+      ],
+      [
+        14,
+        10
+      ],
+      [
+        3,
+        8
+      ]
+    ],
+    "reachable": 87,
+    "walkable": 81,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-armor-shop",
+    "entry": [
+      10,
+      12
+    ],
+    "targets": [
+      [
+        9,
+        6
+      ],
+      [
+        9,
+        8
+      ],
+      [
+        4,
+        10
+      ],
+      [
+        17,
+        11
+      ]
+    ],
+    "reachable": 93,
+    "walkable": 91,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-tool-shop",
+    "entry": [
+      9,
+      12
+    ],
+    "targets": [
+      [
+        8,
+        6
+      ],
+      [
+        8,
+        8
+      ],
+      [
+        16,
+        9
+      ],
+      [
+        3,
+        10
+      ]
+    ],
+    "reachable": 78,
+    "walkable": 76,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-general-store",
+    "entry": [
+      10,
+      12
+    ],
+    "targets": [
+      [
+        9,
+        6
+      ],
+      [
+        9,
+        8
+      ],
+      [
+        17,
+        10
+      ],
+      [
+        4,
+        10
+      ]
+    ],
+    "reachable": 86,
+    "walkable": 83,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-flower-shop",
+    "entry": [
+      8,
+      11
+    ],
+    "targets": [
+      [
+        7,
+        6
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        13,
+        9
+      ],
+      [
+        5,
+        10
+      ]
+    ],
+    "reachable": 53,
+    "walkable": 52,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-bakery",
+    "entry": [
+      9,
+      12
+    ],
+    "targets": [
+      [
+        8,
+        7
+      ],
+      [
+        8,
+        9
+      ],
+      [
+        15,
+        10
+      ],
+      [
+        4,
+        11
+      ]
+    ],
+    "reachable": 78,
+    "walkable": 77,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-butcher",
+    "entry": [
+      8,
+      11
+    ],
+    "targets": [
+      [
+        7,
+        6
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        12,
+        10
+      ],
+      [
+        3,
+        8
+      ]
+    ],
+    "reachable": 55,
+    "walkable": 53,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-tailor",
+    "entry": [
+      9,
+      12
+    ],
+    "targets": [
+      [
+        8,
+        6
+      ],
+      [
+        8,
+        8
+      ],
+      [
+        15,
+        11
+      ],
+      [
+        4,
+        10
+      ]
+    ],
+    "reachable": 79,
+    "walkable": 77,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-jeweler",
+    "entry": [
+      8,
+      11
+    ],
+    "targets": [
+      [
+        8,
+        6
+      ],
+      [
+        5,
+        10
+      ],
+      [
+        14,
+        10
+      ],
+      [
+        2,
+        8
+      ]
+    ],
+    "reachable": 54,
+    "walkable": 51,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-bookstore",
+    "entry": [
+      9,
+      12
+    ],
+    "targets": [
+      [
+        8,
+        6
+      ],
+      [
+        8,
+        8
+      ],
+      [
+        15,
+        11
+      ],
+      [
+        4,
+        11
+      ]
+    ],
+    "reachable": 78,
+    "walkable": 77,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-antique-shop",
+    "entry": [
+      9,
+      12
+    ],
+    "targets": [
+      [
+        8,
+        6
+      ],
+      [
+        8,
+        8
+      ],
+      [
+        15,
+        9
+      ],
+      [
+        4,
+        9
+      ]
+    ],
+    "reachable": 83,
+    "walkable": 79,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-magic-tools",
+    "entry": [
+      9,
+      12
+    ],
+    "targets": [
+      [
+        8,
+        6
+      ],
+      [
+        8,
+        8
+      ],
+      [
+        14,
+        9
+      ],
+      [
+        5,
+        10
+      ]
+    ],
+    "reachable": 89,
+    "walkable": 80,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-apothecary",
+    "entry": [
+      9,
+      12
+    ],
+    "targets": [
+      [
+        8,
+        6
+      ],
+      [
+        8,
+        8
+      ],
+      [
+        15,
+        11
+      ],
+      [
+        4,
+        9
+      ]
+    ],
+    "reachable": 84,
+    "walkable": 79,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-map-shop",
+    "entry": [
+      8,
+      11
+    ],
+    "targets": [
+      [
+        7,
+        6
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        13,
+        10
+      ],
+      [
+        4,
+        10
+      ]
+    ],
+    "reachable": 63,
+    "walkable": 60,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-roadside-inn-1f",
+    "entry": [
+      8,
+      13
+    ],
+    "targets": [
+      [
+        3,
+        6
+      ],
+      [
+        6,
+        9
+      ],
+      [
+        13,
+        6
+      ],
+      [
+        20,
+        8
+      ],
+      [
+        10,
+        11
+      ],
+      [
+        20,
+        10
+      ],
+      [
+        13,
+        5
+      ],
+      [
+        14,
+        5
+      ],
+      [
+        15,
+        5
+      ]
+    ],
+    "reachable": 94,
+    "walkable": 90,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-roadside-inn-2f",
+    "entry": [
+      14,
+      6
+    ],
+    "targets": [
+      [
+        3,
+        13
+      ],
+      [
+        9,
+        12
+      ],
+      [
+        14,
+        13
+      ],
+      [
+        4,
+        6
+      ],
+      [
+        14,
+        5
+      ]
+    ],
+    "reachable": 77,
+    "walkable": 76,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-harbor-tavern",
+    "entry": [
+      11,
+      12
+    ],
+    "targets": [
+      [
+        5,
+        6
+      ],
+      [
+        9,
+        9
+      ],
+      [
+        15,
+        11
+      ],
+      [
+        18,
+        6
+      ]
+    ],
+    "reachable": 86,
+    "walkable": 79,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-bard-tavern",
+    "entry": [
+      12,
+      14
+    ],
+    "targets": [
+      [
+        12,
+        6
+      ],
+      [
+        19,
+        6
+      ],
+      [
+        6,
+        11
+      ],
+      [
+        17,
+        11
+      ],
+      [
+        2,
+        12
+      ]
+    ],
+    "reachable": 123,
+    "walkable": 113,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-miner-tavern",
+    "entry": [
+      9,
+      11
+    ],
+    "targets": [
+      [
+        14,
+        6
+      ],
+      [
+        5,
+        7
+      ],
+      [
+        10,
+        7
+      ],
+      [
+        16,
+        10
+      ]
+    ],
+    "reachable": 65,
+    "walkable": 62,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-adventurer-hall",
+    "entry": [
+      13,
+      14
+    ],
+    "targets": [
+      [
+        20,
+        6
+      ],
+      [
+        6,
+        6
+      ],
+      [
+        13,
+        10
+      ],
+      [
+        21,
+        13
+      ],
+      [
+        4,
+        12
+      ]
+    ],
+    "reachable": 172,
+    "walkable": 163,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-merchant-guild",
+    "entry": [
+      11,
+      12
+    ],
+    "targets": [
+      [
+        10,
+        10
+      ],
+      [
+        4,
+        10
+      ],
+      [
+        18,
+        11
+      ],
+      [
+        17,
+        6
+      ]
+    ],
+    "reachable": 92,
+    "walkable": 88,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-thieves-den",
+    "entry": [
+      10,
+      12
+    ],
+    "targets": [
+      [
+        18,
+        7
+      ],
+      [
+        5,
+        10
+      ],
+      [
+        14,
+        9
+      ],
+      [
+        8,
+        6
+      ]
+    ],
+    "reachable": 104,
+    "walkable": 94,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-mage-guild",
+    "entry": [
+      11,
+      12
+    ],
+    "targets": [
+      [
+        11,
+        7
+      ],
+      [
+        4,
+        11
+      ],
+      [
+        18,
+        11
+      ],
+      [
+        8,
+        7
+      ]
+    ],
+    "reachable": 120,
+    "walkable": 109,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-knight-hall",
+    "entry": [
+      12,
+      13
+    ],
+    "targets": [
+      [
+        12,
+        6
+      ],
+      [
+        11,
+        9
+      ],
+      [
+        4,
+        8
+      ],
+      [
+        21,
+        12
+      ]
+    ],
+    "reachable": 134,
+    "walkable": 114,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-guildmaster-office",
+    "entry": [
+      8,
+      10
+    ],
+    "targets": [
+      [
+        9,
+        5
+      ],
+      [
+        8,
+        9
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        14,
+        6
+      ]
+    ],
+    "reachable": 51,
+    "walkable": 45,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-school-classroom",
+    "entry": [
+      9,
+      12
+    ],
+    "targets": [
+      [
+        14,
+        5
+      ],
+      [
+        4,
+        9
+      ],
+      [
+        16,
+        11
+      ],
+      [
+        9,
+        6
+      ]
+    ],
+    "reachable": 82,
+    "walkable": 80,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-academy-hall",
+    "entry": [
+      11,
+      14
+    ],
+    "targets": [
+      [
+        11,
+        6
+      ],
+      [
+        2,
+        10
+      ],
+      [
+        21,
+        12
+      ],
+      [
+        11,
+        10
+      ]
+    ],
+    "reachable": 104,
+    "walkable": 103,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-grand-library",
+    "entry": [
+      14,
+      17
+    ],
+    "targets": [
+      [
+        20,
+        14
+      ],
+      [
+        2,
+        11
+      ],
+      [
+        27,
+        11
+      ],
+      [
+        14,
+        7
+      ],
+      [
+        15,
+        12
+      ]
+    ],
+    "reachable": 175,
+    "walkable": 166,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-archive-vault",
+    "entry": [
+      16,
+      6
+    ],
+    "targets": [
+      [
+        10,
+        9
+      ],
+      [
+        2,
+        7
+      ],
+      [
+        15,
+        10
+      ],
+      [
+        15,
+        5
+      ],
+      [
+        16,
+        5
+      ],
+      [
+        17,
+        5
+      ]
+    ],
+    "reachable": 58,
+    "walkable": 55,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-hospital-ward",
+    "entry": [
+      12,
+      12
+    ],
+    "targets": [
+      [
+        12,
+        8
+      ],
+      [
+        2,
+        7
+      ],
+      [
+        21,
+        8
+      ],
+      [
+        11,
+        6
+      ],
+      [
+        12,
+        10
+      ]
+    ],
+    "reachable": 98,
+    "walkable": 97,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-clinic",
+    "entry": [
+      8,
+      10
+    ],
+    "targets": [
+      [
+        9,
+        7
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        13,
+        8
+      ],
+      [
+        8,
+        6
+      ]
+    ],
+    "reachable": 53,
+    "walkable": 42,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-bank-hall",
+    "entry": [
+      12,
+      12
+    ],
+    "targets": [
+      [
+        5,
+        8
+      ],
+      [
+        10,
+        8
+      ],
+      [
+        15,
+        8
+      ],
+      [
+        17,
+        5
+      ],
+      [
+        7,
+        5
+      ]
+    ],
+    "reachable": 106,
+    "walkable": 100,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-bank-vault",
+    "entry": [
+      9,
+      11
+    ],
+    "targets": [
+      [
+        3,
+        10
+      ],
+      [
+        10,
+        10
+      ],
+      [
+        15,
+        10
+      ]
+    ],
+    "reachable": 26,
+    "walkable": 61,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-theater-hall",
+    "entry": [
+      13,
+      15
+    ],
+    "targets": [
+      [
+        12,
+        6
+      ],
+      [
+        13,
+        10
+      ],
+      [
+        2,
+        11
+      ],
+      [
+        23,
+        11
+      ],
+      [
+        5,
+        6
+      ]
+    ],
+    "reachable": 130,
+    "walkable": 122,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-theater-backstage",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        10,
+        6
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        14,
+        8
+      ],
+      [
+        6,
+        7
+      ]
+    ],
+    "reachable": 59,
+    "walkable": 49,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-bathhouse",
+    "entry": [
+      11,
+      12
+    ],
+    "targets": [
+      [
+        9,
+        9
+      ],
+      [
+        7,
+        7
+      ],
+      [
+        14,
+        9
+      ],
+      [
+        4,
+        11
+      ],
+      [
+        21,
+        8
+      ]
+    ],
+    "reachable": 99,
+    "walkable": 90,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-hot-spring",
+    "entry": [
+      10,
+      12
+    ],
+    "targets": [
+      [
+        12,
+        10
+      ],
+      [
+        7,
+        9
+      ],
+      [
+        13,
+        5
+      ],
+      [
+        4,
+        9
+      ],
+      [
+        18,
+        9
+      ]
+    ],
+    "reachable": 78,
+    "walkable": 77,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-grand-casino",
+    "entry": [
+      13,
+      13
+    ],
+    "targets": [
+      [
+        12,
+        5
+      ],
+      [
+        6,
+        10
+      ],
+      [
+        18,
+        6
+      ],
+      [
+        21,
+        10
+      ],
+      [
+        12,
+        8
+      ]
+    ],
+    "reachable": 130,
+    "walkable": 117,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-black-market-auction",
+    "entry": [
+      11,
+      13
+    ],
+    "targets": [
+      [
+        11,
+        6
+      ],
+      [
+        6,
+        8
+      ],
+      [
+        16,
+        8
+      ],
+      [
+        2,
+        10
+      ],
+      [
+        19,
+        10
+      ]
+    ],
+    "reachable": 85,
+    "walkable": 80,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-guard-post",
+    "entry": [
+      8,
+      10
+    ],
+    "targets": [
+      [
+        10,
+        8
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        13,
+        7
+      ],
+      [
+        7,
+        6
+      ]
+    ],
+    "reachable": 48,
+    "walkable": 43,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-town-jail",
+    "entry": [
+      10,
+      12
+    ],
+    "targets": [
+      [
+        4,
+        10
+      ],
+      [
+        10,
+        8
+      ],
+      [
+        16,
+        8
+      ],
+      [
+        17,
+        11
+      ]
+    ],
+    "reachable": 63,
+    "walkable": 79,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-barracks",
+    "entry": [
+      12,
+      12
+    ],
+    "targets": [
+      [
+        12,
+        9
+      ],
+      [
+        4,
+        8
+      ],
+      [
+        19,
+        8
+      ],
+      [
+        2,
+        11
+      ],
+      [
+        21,
+        11
+      ]
+    ],
+    "reachable": 91,
+    "walkable": 87,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-town-hall",
+    "entry": [
+      13,
+      13
+    ],
+    "targets": [
+      [
+        13,
+        8
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        20,
+        8
+      ],
+      [
+        2,
+        11
+      ],
+      [
+        23,
+        9
+      ]
+    ],
+    "reachable": 118,
+    "walkable": 114,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-post-office",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        7,
+        6
+      ],
+      [
+        4,
+        8
+      ],
+      [
+        15,
+        7
+      ],
+      [
+        10,
+        8
+      ]
+    ],
+    "reachable": 62,
+    "walkable": 51,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-orphanage",
+    "entry": [
+      10,
+      12
+    ],
+    "targets": [
+      [
+        10,
+        8
+      ],
+      [
+        2,
+        8
+      ],
+      [
+        14,
+        8
+      ],
+      [
+        19,
+        7
+      ],
+      [
+        8,
+        9
+      ]
+    ],
+    "reachable": 88,
+    "walkable": 80,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-blacksmith",
+    "entry": [
+      10,
+      11
+    ],
+    "targets": [
+      [
+        8,
+        7
+      ],
+      [
+        14,
+        8
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        17,
+        10
+      ],
+      [
+        12,
+        6
+      ]
+    ],
+    "reachable": 74,
+    "walkable": 65,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-carpenter",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        7,
+        7
+      ],
+      [
+        11,
+        7
+      ],
+      [
+        16,
+        7
+      ],
+      [
+        3,
+        8
+      ]
+    ],
+    "reachable": 53,
+    "walkable": 46,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-glassblower",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        8,
+        8
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        14,
+        7
+      ],
+      [
+        11,
+        6
+      ]
+    ],
+    "reachable": 54,
+    "walkable": 49,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-leatherworks",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        12,
+        8
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        16,
+        7
+      ],
+      [
+        7,
+        7
+      ]
+    ],
+    "reachable": 52,
+    "walkable": 50,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-weaver",
+    "entry": [
+      10,
+      11
+    ],
+    "targets": [
+      [
+        7,
+        10
+      ],
+      [
+        5,
+        7
+      ],
+      [
+        15,
+        7
+      ],
+      [
+        19,
+        10
+      ],
+      [
+        11,
+        7
+      ]
+    ],
+    "reachable": 78,
+    "walkable": 67,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-watermill",
+    "entry": [
+      10,
+      11
+    ],
+    "targets": [
+      [
+        12,
+        9
+      ],
+      [
+        6,
+        9
+      ],
+      [
+        13,
+        6
+      ],
+      [
+        18,
+        7
+      ]
+    ],
+    "reachable": 86,
+    "walkable": 74,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-windmill-1f",
+    "entry": [
+      8,
+      11
+    ],
+    "targets": [
+      [
+        11,
+        9
+      ],
+      [
+        14,
+        6
+      ],
+      [
+        4,
+        9
+      ],
+      [
+        10,
+        7
+      ],
+      [
+        13,
+        5
+      ],
+      [
+        14,
+        5
+      ],
+      [
+        15,
+        5
+      ]
+    ],
+    "reachable": 74,
+    "walkable": 70,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-windmill-2f",
+    "entry": [
+      14,
+      6
+    ],
+    "targets": [
+      [
+        5,
+        8
+      ],
+      [
+        13,
+        9
+      ],
+      [
+        9,
+        7
+      ],
+      [
+        14,
+        5
+      ]
+    ],
+    "reachable": 68,
+    "walkable": 62,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-brewery",
+    "entry": [
+      12,
+      12
+    ],
+    "targets": [
+      [
+        10,
+        10
+      ],
+      [
+        5,
+        7
+      ],
+      [
+        18,
+        7
+      ],
+      [
+        21,
+        10
+      ],
+      [
+        12,
+        7
+      ]
+    ],
+    "reachable": 106,
+    "walkable": 89,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-bakery-workshop",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        8,
+        8
+      ],
+      [
+        5,
+        7
+      ],
+      [
+        16,
+        7
+      ],
+      [
+        4,
+        9
+      ],
+      [
+        11,
+        6
+      ]
+    ],
+    "reachable": 50,
+    "walkable": 45,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-castle-throne",
+    "entry": [
+      13,
+      15
+    ],
+    "targets": [
+      [
+        13,
+        7
+      ],
+      [
+        5,
+        9
+      ],
+      [
+        20,
+        9
+      ],
+      [
+        2,
+        13
+      ],
+      [
+        23,
+        13
+      ]
+    ],
+    "reachable": 181,
+    "walkable": 173,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-castle-council",
+    "entry": [
+      10,
+      12
+    ],
+    "targets": [
+      [
+        4,
+        7
+      ],
+      [
+        15,
+        7
+      ],
+      [
+        10,
+        10
+      ],
+      [
+        18,
+        11
+      ]
+    ],
+    "reachable": 81,
+    "walkable": 75,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-castle-royal-bedroom",
+    "entry": [
+      10,
+      12
+    ],
+    "targets": [
+      [
+        10,
+        8
+      ],
+      [
+        6,
+        9
+      ],
+      [
+        16,
+        8
+      ],
+      [
+        2,
+        11
+      ],
+      [
+        18,
+        11
+      ]
+    ],
+    "reachable": 101,
+    "walkable": 92,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-castle-library",
+    "entry": [
+      13,
+      13
+    ],
+    "targets": [
+      [
+        12,
+        7
+      ],
+      [
+        4,
+        9
+      ],
+      [
+        21,
+        9
+      ],
+      [
+        14,
+        10
+      ],
+      [
+        11,
+        12
+      ]
+    ],
+    "reachable": 108,
+    "walkable": 102,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-castle-chapel",
+    "entry": [
+      10,
+      13
+    ],
+    "targets": [
+      [
+        10,
+        7
+      ],
+      [
+        3,
+        9
+      ],
+      [
+        18,
+        9
+      ],
+      [
+        12,
+        10
+      ]
+    ],
+    "reachable": 100,
+    "walkable": 94,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-castle-kitchen",
+    "entry": [
+      12,
+      12
+    ],
+    "targets": [
+      [
+        10,
+        9
+      ],
+      [
+        7,
+        6
+      ],
+      [
+        15,
+        7
+      ],
+      [
+        21,
+        11
+      ],
+      [
+        4,
+        8
+      ],
+      [
+        14,
+        5
+      ]
+    ],
+    "reachable": 97,
+    "walkable": 87,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-castle-cellar",
+    "entry": [
+      14,
+      6
+    ],
+    "targets": [
+      [
+        14,
+        6
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        17,
+        10
+      ],
+      [
+        11,
+        10
+      ],
+      [
+        13,
+        5
+      ],
+      [
+        14,
+        5
+      ],
+      [
+        15,
+        5
+      ]
+    ],
+    "reachable": 82,
+    "walkable": 69,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-castle-tower-room",
+    "entry": [
+      8,
+      10
+    ],
+    "targets": [
+      [
+        9,
+        7
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        14,
+        7
+      ],
+      [
+        5,
+        9
+      ]
+    ],
+    "reachable": 56,
+    "walkable": 50,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-castle-prince-room",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        10,
+        7
+      ],
+      [
+        5,
+        7
+      ],
+      [
+        14,
+        7
+      ],
+      [
+        2,
+        9
+      ]
+    ],
+    "reachable": 59,
+    "walkable": 50,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-castle-guard-hall",
+    "entry": [
+      12,
+      12
+    ],
+    "targets": [
+      [
+        12,
+        10
+      ],
+      [
+        6,
+        8
+      ],
+      [
+        18,
+        8
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        20,
+        7
+      ]
+    ],
+    "reachable": 104,
+    "walkable": 88,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-village-chapel",
+    "entry": [
+      9,
+      12
+    ],
+    "targets": [
+      [
+        9,
+        7
+      ],
+      [
+        2,
+        8
+      ],
+      [
+        17,
+        8
+      ],
+      [
+        7,
+        10
+      ],
+      [
+        15,
+        5
+      ]
+    ],
+    "reachable": 69,
+    "walkable": 65,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-goddess-temple",
+    "entry": [
+      12,
+      14
+    ],
+    "targets": [
+      [
+        12,
+        9
+      ],
+      [
+        2,
+        12
+      ],
+      [
+        21,
+        12
+      ],
+      [
+        8,
+        6
+      ],
+      [
+        10,
+        7
+      ]
+    ],
+    "reachable": 123,
+    "walkable": 117,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-mountain-shrine",
+    "entry": [
+      7,
+      9
+    ],
+    "targets": [
+      [
+        7,
+        7
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        11,
+        8
+      ]
+    ],
+    "reachable": 38,
+    "walkable": 32,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-monastery-dorm",
+    "entry": [
+      10,
+      12
+    ],
+    "targets": [
+      [
+        10,
+        7
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        19,
+        8
+      ],
+      [
+        8,
+        6
+      ]
+    ],
+    "reachable": 89,
+    "walkable": 85,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-monastery-scriptorium",
+    "entry": [
+      10,
+      12
+    ],
+    "targets": [
+      [
+        10,
+        7
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        15,
+        8
+      ],
+      [
+        8,
+        11
+      ],
+      [
+        2,
+        7
+      ]
+    ],
+    "reachable": 86,
+    "walkable": 70,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-crypt",
+    "entry": [
+      10,
+      6
+    ],
+    "targets": [
+      [
+        10,
+        6
+      ],
+      [
+        16,
+        7
+      ],
+      [
+        4,
+        9
+      ],
+      [
+        18,
+        11
+      ],
+      [
+        14,
+        11
+      ],
+      [
+        9,
+        5
+      ],
+      [
+        10,
+        5
+      ],
+      [
+        11,
+        5
+      ]
+    ],
+    "reachable": 98,
+    "walkable": 92,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-ship-captain-cabin",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        10,
+        8
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        16,
+        7
+      ],
+      [
+        4,
+        9
+      ]
+    ],
+    "reachable": 58,
+    "walkable": 52,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-ship-below-deck",
+    "entry": [
+      11,
+      6
+    ],
+    "targets": [
+      [
+        11,
+        6
+      ],
+      [
+        4,
+        8
+      ],
+      [
+        18,
+        7
+      ],
+      [
+        12,
+        10
+      ],
+      [
+        3,
+        9
+      ],
+      [
+        10,
+        5
+      ],
+      [
+        11,
+        5
+      ],
+      [
+        12,
+        5
+      ]
+    ],
+    "reachable": 83,
+    "walkable": 73,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-desert-house",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        9,
+        6
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        15,
+        8
+      ],
+      [
+        12,
+        7
+      ]
+    ],
+    "reachable": 65,
+    "walkable": 62,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-desert-bazaar",
+    "entry": [
+      10,
+      11
+    ],
+    "targets": [
+      [
+        4,
+        7
+      ],
+      [
+        15,
+        7
+      ],
+      [
+        4,
+        9
+      ],
+      [
+        15,
+        9
+      ],
+      [
+        10,
+        7
+      ]
+    ],
+    "reachable": 85,
+    "walkable": 75,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-desert-oasis-inn",
+    "entry": [
+      12,
+      12
+    ],
+    "targets": [
+      [
+        6,
+        6
+      ],
+      [
+        12,
+        8
+      ],
+      [
+        20,
+        8
+      ],
+      [
+        6,
+        10
+      ],
+      [
+        15,
+        5
+      ]
+    ],
+    "reachable": 99,
+    "walkable": 95,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-snow-cabin",
+    "entry": [
+      8,
+      10
+    ],
+    "targets": [
+      [
+        10,
+        7
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        15,
+        8
+      ],
+      [
+        4,
+        8
+      ]
+    ],
+    "reachable": 44,
+    "walkable": 40,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-snow-lodge-inn",
+    "entry": [
+      12,
+      12
+    ],
+    "targets": [
+      [
+        21,
+        6
+      ],
+      [
+        11,
+        9
+      ],
+      [
+        6,
+        8
+      ],
+      [
+        16,
+        11
+      ],
+      [
+        21,
+        8
+      ]
+    ],
+    "reachable": 100,
+    "walkable": 94,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-snow-trading-post",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        12,
+        5
+      ],
+      [
+        11,
+        7
+      ],
+      [
+        4,
+        7
+      ],
+      [
+        15,
+        8
+      ]
+    ],
+    "reachable": 56,
+    "walkable": 53,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-volcano-forge",
+    "entry": [
+      12,
+      12
+    ],
+    "targets": [
+      [
+        9,
+        8
+      ],
+      [
+        14,
+        8
+      ],
+      [
+        5,
+        7
+      ],
+      [
+        19,
+        8
+      ],
+      [
+        16,
+        10
+      ]
+    ],
+    "reachable": 96,
+    "walkable": 85,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-volcano-fire-shrine",
+    "entry": [
+      9,
+      11
+    ],
+    "targets": [
+      [
+        9,
+        7
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        16,
+        7
+      ],
+      [
+        7,
+        9
+      ],
+      [
+        11,
+        9
+      ]
+    ],
+    "reachable": 81,
+    "walkable": 70,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-volcano-miner-house",
+    "entry": [
+      8,
+      10
+    ],
+    "targets": [
+      [
+        8,
+        8
+      ],
+      [
+        4,
+        7
+      ],
+      [
+        12,
+        7
+      ],
+      [
+        3,
+        9
+      ]
+    ],
+    "reachable": 54,
+    "walkable": 52,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-autumn-harvest-barn",
+    "entry": [
+      12,
+      12
+    ],
+    "targets": [
+      [
+        12,
+        7
+      ],
+      [
+        2,
+        7
+      ],
+      [
+        20,
+        7
+      ],
+      [
+        6,
+        11
+      ],
+      [
+        17,
+        11
+      ]
+    ],
+    "reachable": 105,
+    "walkable": 97,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-autumn-cider-house",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        7,
+        7
+      ],
+      [
+        12,
+        6
+      ],
+      [
+        16,
+        7
+      ],
+      [
+        6,
+        9
+      ]
+    ],
+    "reachable": 62,
+    "walkable": 52,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-autumn-harvest-feast",
+    "entry": [
+      12,
+      12
+    ],
+    "targets": [
+      [
+        12,
+        10
+      ],
+      [
+        2,
+        8
+      ],
+      [
+        21,
+        8
+      ],
+      [
+        9,
+        11
+      ],
+      [
+        15,
+        11
+      ]
+    ],
+    "reachable": 95,
+    "walkable": 74,
+    "blocked": [],
+    "pockets": []
+  }
+]

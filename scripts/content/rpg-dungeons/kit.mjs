@@ -22,6 +22,11 @@ export const THEMES = {
   hall: { rim: "abyss-gray", wall: [[21, 22, 23], [51, 52, 53]], floor: 108 },
   // redrock under the brown face — the shipped 마왕성 왕좌의 방
   demon: { rim: "abyss-gray", wall: [[21, 22, 23], [51, 52, 53]], floor: 301 },
+  // teal-green cut-stone face (18~20 / 48~50) over grey-green stone — waterworks, vaults; on the manor sheet the cellar
+  teal: { rim: "abyss-gray", wall: [[18, 19, 20], [48, 49, 50]], floor: 187 },
+  cellar: { rim: "abyss-gray", wall: [[18, 19, 20], [48, 49, 50]], floor: 111 },
+  // the teal face over snow-free ice blue rim — ice palaces
+  crystal: { rim: "abyss-blue", wall: [[18, 19, 20], [48, 49, 50]], floor: 108 },
 };
 
 /** Terrain characters. `fill` is a plain tile, `group` an autotile group shaped after placement. */
@@ -52,6 +57,10 @@ export const TERRAIN = {
   "D": { nine: [135, 136, 137, 165, 166, 167, 195, 196, 197] }, // brown dais
   "P": { nine: [405, 406, 407, 435, 436, 437, 465, 466, 467] }, // green-grey rock dais
   "m": { fill: 487, solid: false }, // crenellated parapet (tower roof edge), grafted from the town sheet
+  "y": { fill: 82 }, // packed arena sand
+  "k": { fill: 111 }, // dark damp stone (wet cellar / swamp floor)
+  "!": { group: "pit-pale", upper: 141 }, // plank boardwalk laid over a bog pit: one body under it
+  "$": { group: "pit-gold", upper: 141 }, // plank bridge laid over a bottomless shaft (gold-rimmed pit)
   "a": { fill: 172 }, "v": { fill: 173 }, "<": { fill: 202 }, ">": { fill: 203 }, // arrow floor panels
 };
 export const VOID = new Set([" ", "#"]);
@@ -121,7 +130,7 @@ export const PROPS = {
 };
 
 /** Props that hang on a wall face, and props that may stand either on the face or the floor. */
-export const WALL_PROPS = new Set(["w", "x", "y", "l", "p", "^", "A", "d", "V", "W"]);
+export const WALL_PROPS = new Set(["w", "x", "y", "l", "p", "^", "A", "d", "V", "W", "h"]);
 export const ANY_PROPS = new Set(["b", "-"]);
 
 /** Tibo props copied onto the dungeon sheet (same slots on every dungeon-family tileset copy). */
@@ -267,7 +276,30 @@ export function lines(text) {
   return rows;
 }
 
-export function createKit(DUN) {
+/** Parts (tiledata/atlas-dungeons/parts.json) that hang on a wall face, and parts that may stand on the face or the floor. */
+const PART_WALL = /^(?:(?:int|manor):(?:window|window-curtain|window-dark|stained|painting-[a-z]+|crack|wall-[a-z]+|banner|curtain|sign-[a-z]+|cross|fruit-shelf)|(?:ship|ghost):(?:porthole|vent|picture-sea|shelf|potions|lamp|flag|banner|rope-hang)|shackles|ore-[a-z]+|fire-[a-z]+:torch)$/;
+const PART_ANY = /^(?:(?:int|manor):(?:bookcase|shelf-books|cupboard|wardrobe|clock|mirror|armor|bust|pillar|drape|stove|oven|counter|weapon-case|jar-shelf)|(?:ship|ghost):(?:bookcase|wardrobe|organ|cabin-wall|ladder|winch)|web-[lr]|vat[a-z-]*|piston|console|gear-big|gear|pipe-[a-z]+)$/;
+
+/**
+ * Props of the parts sheet, by stamp key: { name, rows, layer }. Multi-layer stamps (the moored ship) are placed with
+ * spec.stamps instead.
+ */
+export function partProps(parts) {
+  const out = {};
+  for (const [key, s] of Object.entries(parts?.stamps ?? {})) {
+    const lowerUsed = s.lower.some((r) => r.some((t) => t !== null)), upperUsed = s.upper.some((r) => r.some((t) => t !== null));
+    if (lowerUsed && upperUsed) continue;
+    out[key] = { name: s.name, rows: (upperUsed ? s.upper : s.lower).map((r) => r.map((t) => t ?? -1)), ...(lowerUsed ? { layer: "lower" } : {}), part: true };
+  }
+  return out;
+}
+
+export function createKit(DUN, { parts, strictFloor = false } = {}) {
+  const PROPS_ALL = { ...PROPS, ...partProps(parts) };
+  // strictFloor: a standing piece is never set in water, lava, ice or a pit (bridges over them are floor).
+  const LIQUID = new Set(["~", "W", "L", "i", "c", "p", "o", "b"]);
+  const isWallProp = (c) => WALL_PROPS.has(c) || PART_WALL.test(c);
+  const isAnyProp = (c) => ANY_PROPS.has(c) || PART_ANY.test(c);
   const group = (id) => { const g = DUN.autotileGroups.find((x) => x.id.endsWith("-" + id)); assert(g, id); return g; };
   const autotile = (m, g, members = g.memberTileIds, connect) => {
     const mem = new Set(members), con = new Set([...(connect ?? g.connectTileIds ?? g.memberTileIds), ...mem]), src = [...m.lowerTiles];
@@ -371,7 +403,7 @@ export function createKit(DUN) {
         // The overlay is a copy of the art with prop letters written over it; unchanged cells are skipped.
         const c = ov[y][x];
         if (c === " " || c === art[y][x]) continue;
-        const p = PROPS[c]; assert(p, `${spec.id}: unknown prop ${JSON.stringify(c)} at ${x},${y}`);
+        const p = PROPS_ALL[c]; assert(p, `${spec.id}: unknown prop ${JSON.stringify(c)} at ${x},${y}`);
         const layer = p.layer === "lower" ? "lowerTiles" : "upperTiles";
         const rows = p.rows.map((row) => row.map((t) => (typeof t === "string" ? GRAFTS[t].target : t)));
         rows.forEach((row, dy) => row.forEach((t, dx) => put(x + dx, y + dy, t, layer)));
@@ -380,20 +412,44 @@ export function createKit(DUN) {
     }
     const faceAt = (x, y) => !isVoid(x, y) && wallRow(x, y) >= 0 && !spec.noWallChars?.includes(ch(x, y));
     const warnings = [];
-    for (const [c, x, y] of spec.props ?? []) {
-      const p = PROPS[c]; assert(p, `${spec.id}: unknown prop ${JSON.stringify(c)}`);
+    // strictFloor (atlas): pieces never overlap each other, never stand in water/lava/pits, and a piece a cell or two
+    // off its spot (a blob edge the plan could not see) is nudged to the nearest valid cell instead of being dropped.
+    const taken = new Set();
+    for (const [c, x0, y0] of spec.props ?? []) {
+      const p = PROPS_ALL[c]; assert(p, `${spec.id}: unknown prop ${JSON.stringify(c)}`);
+      const wet = (a, b) => strictFloor && !isWallProp(c) && !/^(lift|sparkle-blue|web-big)$/.test(c) && LIQUID.has(ch(a, b));
+      const cellsAt = (x, y) => p.rows.flatMap((row, dy) => row.map((t, dx) => [x + dx, y + dy, t])).filter(([, , t]) => t !== -1);
       // wall pieces hang on the face; everything else stands on open floor (not void, not a wall face)
-      const cells = p.rows.flatMap((row, dy) => row.map((_, dx) => [x + dx, y + dy]));
-      const bad = cells.filter(([a, b]) => (WALL_PROPS.has(c) ? !faceAt(a, b) : ANY_PROPS.has(c) ? isVoid(a, b) : isVoid(a, b) || faceAt(a, b)));
+      const badAt = (x, y) => cellsAt(x, y).filter(([a, b]) => (strictFloor && (a < 0 || b < 0 || a >= W || b >= H)) || wet(a, b) || (strictFloor && p.layer !== "lower" && taken.has(b * W + a))
+        || (isWallProp(c) ? !faceAt(a, b) : isAnyProp(c) ? isVoid(a, b) : isVoid(a, b) || faceAt(a, b)));
+      let x = x0, y = y0, bad = badAt(x, y);
+      if (bad.length && strictFloor) {
+        const near = [];
+        for (let r = 1; r <= 3; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) if (Math.max(Math.abs(dx), Math.abs(dy)) === r) near.push([dx, dy]);
+        near.sort((a, b) => Math.hypot(...a) - Math.hypot(...b));
+        const hit = near.find(([dx, dy]) => !badAt(x0 + dx, y0 + dy).length);
+        if (hit) { x = x0 + hit[0]; y = y0 + hit[1]; bad = []; warnings.push(`${c}@${x0},${y0} (${p.name}) nudged to ${x},${y}`); }
+      }
       // a piece that would stand in the rock or hang off a wall it is not on is left out, not drawn wrong
-      if (bad.length) { warnings.push(`${c}@${x},${y} (${p.name}) ${WALL_PROPS.has(c) ? "not on a wall face" : "off the floor"} — dropped: ${JSON.stringify(bad)}`); continue; }
+      if (bad.length) { warnings.push(`${c}@${x},${y} (${p.name}) ${isWallProp(c) ? "not on a wall face" : "off the floor"} — dropped: ${JSON.stringify(bad.map(([a, b]) => [a, b]))}`); continue; }
+      const cells = cellsAt(x, y);
+      if (p.layer !== "lower") for (const [a, b] of cells) taken.add(b * W + a);
       const layer = p.layer === "lower" ? "lowerTiles" : "upperTiles";
       const rows = p.rows.map((row) => row.map((t) => (typeof t === "string" ? GRAFTS[t].target : t)));
-      rows.forEach((row, dy) => row.forEach((t, dx) => put(x + dx, y + dy, t, layer)));
-      placements.push({ prop: p.name, x, y, w: rows[0].length, h: rows.length, layer: layer.replace("Tiles", ""), tiles: rows });
+      rows.forEach((row, dy) => row.forEach((t, dx) => { if (t !== -1) put(x + dx, y + dy, t, layer); }));
+      placements.push({ prop: p.name, ...(p.part ? { key: c } : {}), x, y, w: rows[0].length, h: rows.length, layer: layer.replace("Tiles", ""), tiles: rows });
+    }
+    // Two-layer stamps from the parts sheet (the moored ship): lower cells replace the terrain, null keeps it.
+    for (const [key, x, y] of spec.stamps ?? []) {
+      const s = parts?.stamps?.[key]; assert(s, `${spec.id}: unknown stamp ${key}`);
+      for (let dy = 0; dy < s.h; dy++) for (let dx = 0; dx < s.w; dx++) {
+        if (s.lower[dy][dx] !== null) put(x + dx, y + dy, s.lower[dy][dx], "lowerTiles");
+        if (s.upper[dy][dx] !== null) put(x + dx, y + dy, s.upper[dy][dx], "upperTiles");
+      }
+      placements.push({ stamp: s.name, key, x, y, w: s.w, h: s.h });
     }
     for (const [x, y, t, layer = "upperTiles"] of spec.extra ?? []) put(x, y, t, layer);
     return { map: m, placements, chars: art, warnings };
   }
-  return { build, group, autotile, members };
+  return { build, group, autotile, members, props: PROPS_ALL };
 }

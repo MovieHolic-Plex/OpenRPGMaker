@@ -1,6 +1,6 @@
 import { editorState } from "@/editor/editorState";
 import { requestEditorCameraFocus } from "@/editor/editorCameraFocus";
-import { openRegionTaskModal, type RegionTaskModalOptions } from "@/editor/panels/regionTaskModal";
+import { openRegionInAssistant } from "@/editor/aiRegionHandoff";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import type { MapId, Project } from "@/project/types";
 import { el } from "@/util/dom";
@@ -8,7 +8,7 @@ import { el } from "@/util/dom";
 export interface CanvasInspectionDeps {
   readonly focusIssue: (location: { readonly mapId: MapId; readonly x: number; readonly y: number }) => void;
   readonly lint: (project: Project) => readonly LintIssue[];
-  readonly openRegionTask: (options: RegionTaskModalOptions) => HTMLElement | void;
+  readonly openRegionTask: (options: Parameters<typeof openRegionInAssistant>[0]) => HTMLElement | void;
 }
 
 export interface CanvasInspectionOptions {
@@ -27,7 +27,7 @@ const defaultDeps: CanvasInspectionDeps = {
     requestEditorCameraFocus({ mapId, tileX: x, tileY: y });
   },
   lint: projectLint,
-  openRegionTask: openRegionTaskModal,
+  openRegionTask: openRegionInAssistant,
 };
 
 export function openCanvasInspectionPanel(options: CanvasInspectionOptions): HTMLElement {

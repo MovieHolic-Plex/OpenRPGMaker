@@ -597,7 +597,19 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
 
 ## 바로 깔기 (2026-09-25)
 
-컴포저 왼쪽 `바로 깔기` 토글(`ai-stamp-place`, `aria-pressed`, `localStorage` `oprn:ai-stamp-place`). 켜면 모델 의도 분류·Ultrabrain 계획·Deep 실행을 호출하지 않고, `planStampPlace`가 문장으로 도구를 고른 뒤 `applyToolToStore` 로 끝난다. 길·도로는 `paint_road`(영역 긴 축, 직선), 물·잔디·바닥은 `fill_region`, 지워는 `tile_erase`, 벽은 `build_wall`, 문은 `place_door`, 집은 `author_house`(기본 외관만, 실내·들어가가 있으면 연결 실내). 그 외는 `place_props`. 드래그 선택이 현재 맵과 같으면 그 사각형, 없으면 맵 전체. 빈 입력·숲·침엽수·활엽수·울창/빽빽은 impassable(침엽이 기본). 드문드문은 sparse, 성글은 normal. `나무 상자`·`과일박스`는 밀도 없이 영역 칸 수만큼 `packing:"dense"`. 모델 연결이 없어도 동작한다.
+컴포저 왼쪽 `바로 깔기` 토글(`ai-stamp-place`, `aria-pressed`, `localStorage` `oprn:ai-stamp-place`). 켜면 계획 턴·승인·Pi 세션 없이 곧바로 깐다.
+**의도 읽기와 일꾼은 모델이 주도한다**(사용자 판단, 2026-09-25 — 정규식만으로는 「땅으로」가 재료 이름이 되어 실패했고,
+「땅을 동그랗게, 물을 동그랗게 옆에 나무」처럼 나눠 말하면 알아듣지 못했다).
+
+- `src/editor/stampPlaceRunner.ts` `runStampPlace({text, mapId, selection, signal, onPhase})` — 가벼운 모델(`configForLiteModel`, 추론 끔, JSON) 한 번으로
+  문장을 **여러 단계**(`fill_region`·`place_props`·`paint_road`·`tile_erase`·`build_wall`·`place_door`·`author_house`)로 나눈다. 대상 사각형(선택 또는 맵 전체)을
+  부분 사각형으로 쪼개고, 재료는 **현재 타일셋의 실제 라벨**(`fillableMaterialSuggestions`·`formatMaterialLabelHint`·벽/문 후보) 중에서 고른다. 원은 정사각 상자.
+- 단계는 `applyToolSequenceToStore(..., {continueOnError:true})` 로 한 undo 체크포인트에 적용한다 — 한 단계가 실패해도 나머지는 깔린다.
+  실패한 단계만 도구 오류(가까운 라벨 제안 포함)와 함께 **한 번** 되물어 대체 단계를 받는다(최대 모델 호출 2회).
+- 순수 계획·검증은 `src/ai/stampPlanner.ts`: 허용 도구만, 좌표는 대상 안으로 자르고, 키는 허용 목록만 옮긴다. 단계 상한 8.
+- 빈 문장(=숲), AI 미연결, 모델 실패·시간 초과(20s)면 옛 낱말 규칙 `planStampPlace`(`src/ai/stampPlace.ts`)로 떨어지고 그 사실을 한 줄로 말한다.
+- 실측(워크트리 dev, Google 연결): 「왼쪽에 땅을 동그랗게, 가운데 물을 동그랗게, 오른쪽 옆에 나무」 12s·3단계 성공, 「땅으로 깔아줘」 → 흙길 오토타일 채움.
+  증거 `verify-shots/stamp-llm/`.
 
 ## 단순 생성·수정은 계획 필요 여부로 실행한다 (2026-09-18 갱신)
 
@@ -3038,3 +3050,21 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 실행 시작 때 첫 기준선 요약(캐시 없음)은 약 1.1초다. 남은 체크포인트 비용은 `projectLint.checkRoundtrip`(serialize+deserialize), 되돌리기 스냅샷 서명,
 스토어 복제, 타일 팔레트 다시 그리기에 흩어져 있다. 테스트: `test/contentDigest.test.ts`, `test/sha256.test.ts`(창 경계) — 이번 세션에서는 사용자 규칙에 따라 실행하지 않았고,
 동등성·제자리 수정·기억 넘기기는 실제 26MB 프로젝트로 임시 스크립트에서 확인했다.
+
+## 우클릭 드래그 바 → 채팅 한 경로 («영역 작업» 창 폐기, 2026-09-25)
+
+우클릭 드래그로 뜨는 선택 바(`selectionActionChips.ts`)에 문장을 치고 Enter 를 누르면 **그 문장이 곧바로 조수 채팅 턴**이 된다.
+예전에는 같은 문장이 든 「영역 작업」 창(`regionTaskModal`)이 한 번 더 떠서 실행을 다시 눌러야 했고, 그 창은 채팅과 다른 파이프라인
+(하드 클립·고스트 미리보기·승인)이라 진행·중단·기록이 둘로 갈렸다. 사용자 판단으로 그 창을 제품 입구에서 뺐다.
+
+- 입구는 전부 `src/editor/aiRegionHandoff.ts` 를 지난다: 드래그 바, 선택 영역 우클릭 메뉴(`✦ 이 영역에 AI 지시…`), 검사 패널의 「AI로 고치기」,
+  캔버스 AI 버튼(만들기·다듬기·묻기), 건축 팔레트 AI. 옛 `openRegionTaskModal(options)` 모양은 `openRegionInAssistant` 가 그대로 받아
+  `oprn:ai-region-handoff` 이벤트로 바꾼다(`autoRun:false` 면 입력줄에 담기만 한다).
+- 채팅(`aiChatPanel.ts` `handleRegionHandoff`)은 선택을 그 영역으로 맞추고 선택 칩을 켠 뒤 `send()` 를 부른다. 선택 영역도 이제
+  **Pi 턴**이다 — 범위는 `resolveTurnScope` 가 붙인다. `send()` 의 `sendSelectionRegionTask` 분기와 `aiRegionTaskRunner` 배선은 뺐다.
+- 바의 번개 버튼(`selection-chip-stamp`)이 바로 깔기 토글이다. 값은 `src/editor/stampPlaceMode.ts` 하나를 조수 입력줄 토글과 **공유**한다
+  (`oprn:ai-stamp-place`) — 어느 쪽에서 켜도 양쪽이 같이 선다. 켜진 채 Enter 면 `stamp:true` 로 넘어가 채팅의 바로 깔기가 돈다(빈 입력 = 숲).
+- 다듬기 칩은 `POLISH_INSTRUCTION` 을 일반 채팅 턴으로 보낸다(바로 깔기와 무관).
+- 남은 것: `regionTaskModal.ts` 와 `regionTask/*` UI 조각은 e2e 브리지(`editorToolHook` `openModal`)만 쓴다 — 삭제는 후속.
+  `test/aiActivityLiveRow` 는 옛 영역 경로로 라이브 행을 몰았으므로 격리했다(Pi 경로로 다시 써야 한다).
+- 증거: `verify-shots/drag-toolbar-handoff/` (02: Enter 뒤 창 0개·채팅 말풍선, 06: 바로 깔기로 숲이 바로 깔림).

@@ -24,8 +24,10 @@ export function isWorldAnimatedTile(tile: number, tileset?: Pick<TilesetDef, "ti
   return Boolean(strip && (!tileset || !hasWorldAutotileGraft(tileset, strip.frames)));
 }
 
+/** Sheets that keep the stock world layout in cells 0..479 (the atlas biome world sheet appends below it). */
+const WORLD_LAYOUT_TEXTURES = new Set([WORLD_COAST_TEXTURE, "tex_atlas_biome_world"]);
 export function isWorldTileset(tileset: Pick<TilesetDef, "image"> | undefined): boolean {
-  return tileset?.image.type === "bundled" && tileset.image.id === WORLD_COAST_TEXTURE;
+  return tileset?.image.type === "bundled" && WORLD_LAYOUT_TEXTURES.has(tileset.image.id);
 }
 
 export function isWorldSeaTile(tile: number): boolean { return sea.has(tile); }

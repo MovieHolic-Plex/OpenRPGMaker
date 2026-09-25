@@ -1,6 +1,8 @@
 // Plans of tiledata/rpg-outdoors. Each build(b) paints one map with the OutdoorMap builder and returns the check entry
 // (defaults to the first exit). Coordinates are 0-based cells. Terrain and placement only; exits only say what they meet.
 import { carveReference } from "./outdoor-kit.mjs";
+import { CLIMATE_FIELD_PLANS } from "./rpg-outdoor-climate-fields.mjs";
+import { ARCHIPELAGO_WORLD, ROUND2_PLANS } from "./rpg-outdoor-round2.mjs";
 const F = "forest_harmony";
 const CASTLE_TOWN = "src/project/regionReferences/castle-town.json";
 // Column of the carved piece whose bottom row is the middle of the cobble gate.
@@ -575,6 +577,10 @@ export const PLANS = [
       b.tallGrass(10, [6, 12]);
     },
   },
+  // Two more fields per climate sheet (lib/rpg-outdoor-climate-fields.mjs, 2026-09-25).
+  ...CLIMATE_FIELD_PLANS,
+  // Round 2 (lib/rpg-outdoor-round2.mjs, 2026-09-25): demon castle, forest maze, dragon peak, forest camp, farm, lighthouse cape.
+  ...ROUND2_PLANS,
   {
     // The world map (lib/rpg-outdoor-world.mjs): every place above as an icon or a named field region on one continent.
     id: "outdoor-world-map", world: true, name: "은빛 왕국 대륙 전도", category: "world", tilesetId: "oprn_world_keyed", width: 72, height: 56, seed: 7101,
@@ -611,4 +617,5 @@ export const PLANS = [
     ],
     links: [["fishing-village", "beach-cliffs"], ["ending-meadow", "nomad-camp"], ["graveyard-hill", "ruined-city"]],
   },
+  ARCHIPELAGO_WORLD,
 ];

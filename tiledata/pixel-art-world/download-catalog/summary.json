@@ -1,0 +1,36 @@
+{
+  "catalog_items": 32,
+  "catalog_source_pages": 30,
+  "additional_download_pages": 3,
+  "terms_pages": 2,
+  "direct_rows": 516,
+  "direct_saved_files": 512,
+  "direct_images": 505,
+  "direct_archives": 7,
+  "archive_images": 358,
+  "sample_package_images": 66,
+  "total_csv_rows": 874,
+  "status_counts": {
+    "reused_verified": 210,
+    "downloaded_verified": 302,
+    "http_error": 1,
+    "excluded_discontinued": 1,
+    "excluded_catalog_character": 1,
+    "unavailable_discontinued_notice": 1
+  },
+  "direct_category_counts": {
+    "tileset": 43,
+    "autotile": 187,
+    "door_sprite": 49,
+    "loose_chip_or_prop": 155,
+    "event_or_character_sprite": 58,
+    "tileset_archive": 2,
+    "item_icon": 2,
+    "autotile_archive": 3,
+    "food_prop": 11,
+    "sample_game_archive": 2
+  },
+  "saved_unique_hashes": 628,
+  "download_folder": "/home/main/.local/share/oprn/pixel-art-world-downloads",
+  "verification": "Every saved row reread; SHA-256 matched; every image fully decoded; ZIP CRC passed; UTF-8 BOM CSV roundtrip count matched."
+}

@@ -1,7 +1,10 @@
 export const BATTLE_TRANSITION_FLASH_MS = 340;
 export const BATTLE_TRANSITION_CLOSE_MS = 260;
 export const BATTLE_TRANSITION_REVEAL_MS = 300;
-export const BATTLE_TRANSITION_EXIT_MS = 220;
+export const BATTLE_TRANSITION_EXIT_MS = 300;
+/** 전투가 끝나고 검은 커버가 걷히며 필드가 돌아오는 시간. 진입 열림(REVEAL_MS)보다 길다 —
+ *  220/300ms 로는 결과 확인 직후 필드가 "튀어" 돌아왔다(2026-09-25 녹화). */
+export const BATTLE_TRANSITION_RETURN_MS = 460;
 
 export const BATTLE_TRANSITION_COVER_MS = BATTLE_TRANSITION_FLASH_MS + BATTLE_TRANSITION_CLOSE_MS;
 
@@ -47,9 +50,15 @@ export interface BattleTransition {
   destroy(): void;
 }
 
+/**
+ * `field` 는 전투 밑에 깔린 필드 화면(Phaser 캔버스)이다. 진입 커버 동안 이 화면이 확대·회전하며
+ * 빨려 들어가고(`battle-encounter-swirl`), 전투가 끝나 돌아올 때는 살짝 당겨졌다 제자리로 온다
+ * (`battle-return-settle`). CSS: battle/23-entry-exit.css. 없으면 커버만 돈다.
+ */
 export function createBattleTransition(
   host: HTMLElement,
-  schedule: (callback: () => void, delayMs: number) => number = (callback, delayMs) => window.setTimeout(callback, delayMs)
+  schedule: (callback: () => void, delayMs: number) => number = (callback, delayMs) => window.setTimeout(callback, delayMs),
+  field?: HTMLElement,
 ): BattleTransition {
   const overlay = battleTransitionOverlayNode();
   const timers = new Map<number, () => void>();
@@ -77,6 +86,14 @@ export function createBattleTransition(
     });
   };
 
+  const setFieldMotion = (motion: "battle-encounter-swirl" | "battle-return-settle" | undefined): void => {
+    if (!field) return;
+    field.classList.remove("battle-encounter-swirl", "battle-return-settle");
+    if (!motion || destroyed) return;
+    void field.offsetWidth;
+    field.classList.add(motion);
+  };
+
   const setPhase = (phase: BattleTransitionPhase): void => {
     if (destroyed) return;
     lastPhase = phase;
@@ -86,21 +103,27 @@ export function createBattleTransition(
   return {
     async cover() {
       setPhase("flash");
+      setFieldMotion("battle-encounter-swirl");
       await wait(BATTLE_TRANSITION_FLASH_MS);
       setPhase("close");
       await wait(BATTLE_TRANSITION_CLOSE_MS);
     },
     async reveal() {
-      if (lastPhase === "exit") overlay.querySelector(".battle-transition-blinds")?.remove();
+      const returning = lastPhase === "exit";
+      if (returning) overlay.querySelector(".battle-transition-blinds")?.remove();
+      // 진입이면 전투 화면이 필드를 덮었으니 필드 모션을 거둔다. 복귀면 필드가 제자리로 내려앉는다.
+      setFieldMotion(returning ? "battle-return-settle" : undefined);
       setPhase("reveal");
-      await wait(BATTLE_TRANSITION_REVEAL_MS);
+      await wait(returning ? BATTLE_TRANSITION_RETURN_MS : BATTLE_TRANSITION_REVEAL_MS);
       overlay.remove();
+      if (returning) setFieldMotion(undefined);
     },
     async exit() {
       setPhase("exit");
       await wait(BATTLE_TRANSITION_EXIT_MS);
     },
     destroy() {
+      setFieldMotion(undefined);
       destroyed = true;
       for (const [timer, resolve] of timers) { window.clearTimeout(timer); resolve(); }
       timers.clear();
@@ -128,10 +151,11 @@ const SKIN_TRANSITION_CLASS: Record<string, string> = {
 export function createSkinBattleTransition(
   host: HTMLElement,
   transition: string | undefined,
-  schedule: (callback: () => void, delayMs: number) => number = (callback, delayMs) => window.setTimeout(callback, delayMs)
+  schedule: (callback: () => void, delayMs: number) => number = (callback, delayMs) => window.setTimeout(callback, delayMs),
+  field?: HTMLElement,
 ): BattleTransition {
   const skinClass = transition ? (SKIN_TRANSITION_CLASS[transition] ?? "") : "";
-  const base = createBattleTransition(host, schedule);
+  const base = createBattleTransition(host, schedule, field);
   if (skinClass && host.lastElementChild instanceof HTMLElement) {
     const overlay = host.lastElementChild as HTMLElement;
     if (overlay.classList.contains("battle-transition-overlay")) {

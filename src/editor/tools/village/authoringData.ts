@@ -8,6 +8,7 @@
 import { isHouseKitId, type HouseKitId } from "@/editor/houseKit";
 import { composeGableHouseForm } from "@/editor/gableHouseCompose";
 import { AUTHORED_HOUSE_FORM_DEFS, type AuthoredHouseFormDef } from "@/project/defaults/authoredHouseFormCatalog";
+import { recipeHasWindow, withWindowRules } from "@/editor/authoredHouseFormStamp";
 import { GABLE_HOUSE_FORM_SPECS, gableFormMixWeight, type GableHouseFormSpec } from "@/project/defaults/gableHouseFormCatalog";
 import { HOUSE_TEMPLATE_DEFS, houseTemplateWingsAt, type HouseTemplateDef } from "@/project/defaults/houseTemplateCatalog";
 import type { Project } from "@/project/types";
@@ -178,7 +179,12 @@ export function formToTemplate(form: AuthoredHouseFormDef): HouseTemplate {
  * author_house 로만 쓴다. 정주지·왕궁 도시 참고 형태가 여기서 34종 날개 형태와 같은 후보 풀에 섞인다.
  */
 export function villageFormTemplates(): HouseTemplate[] {
-  return AUTHORED_HOUSE_FORM_DEFS.filter((form) => form.w <= VILLAGE_RANGE.templateW.max).map(formToTemplate);
+  // 레시피 창은 공통 창 규칙으로 다시 낸다 — 창 자리가 없는 좁은 레시피는 자동 추첨에서 뺀다(2026-09-25 3차).
+  return AUTHORED_HOUSE_FORM_DEFS.filter((form) => form.w <= VILLAGE_RANGE.templateW.max).map((raw) => {
+    const form = withWindowRules(raw);
+    const template = formToTemplate(form);
+    return recipeHasWindow(form) ? template : { ...template, excludeFromDefaultMix: true };
+  });
 }
 
 /**
@@ -318,6 +324,8 @@ function shapeReason(record: {
  *  · estate-*: 본채와 헛간이 떨어진 필지형이라 울타리 없이 서면 집 두 채로 읽힌다.
  *  · 「보이는 벽 면은 3칸 이상」 규칙(2차 검토)에 폭 8 안에서 맞출 수 없는 형태 — u·u-deep 은 안뜰 안쪽 벽이 2칸
  *    (3+2+3), t-porch·t-hall 은 가운데 현관 옆 본채 벽이 2칸(2+3+3 / 3+3+2). test/houseTemplateFaces.test.ts 가 잰다.
+ *  · 창을 낼 3칸 벽(끝 | 창 | 끝)이 없는 집(3차), 탑처럼 솟는 계단식 2층 둘(3차) — 아래 목록 주석.
+ *  · 고정 레시피(ref-*·저택)는 villageFormTemplates 가 창을 다시 내 보고 창이 없으면 따로 뺀다.
  */
 export const DEFAULT_MIX_EXCLUDED_TEMPLATE_IDS: ReadonlySet<string> = new Set([
   "courtyard",
@@ -328,6 +336,12 @@ export const DEFAULT_MIX_EXCLUDED_TEMPLATE_IDS: ReadonlySet<string> = new Set([
   "u-deep",
   "t-porch",
   "t-hall",
+  // 3차(창 규칙): 문을 빼면 「끝 | 창 | 끝」 3칸 벽이 남지 않아 창을 낼 자리가 없는 집.
+  // (외양간 hut-low 는 창 없는 창고라 남긴다.)
+  "rect-min",
+  // 3차: 계단식 2층 중 탑처럼 높이 솟는 둘 — 다층 몫은 2층 박공(gable-2f*)이 맡는다.
+  "tier-wide",
+  "tier-symmetric",
 ]);
 
 export interface TemplateCatalogResult {

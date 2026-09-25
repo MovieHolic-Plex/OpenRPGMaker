@@ -1,0 +1,925 @@
+[
+  {
+    "id": "paw-retrotown-sento",
+    "name": "Pixel Art World · 목욕탕 외관",
+    "filename": "ST-Sento-E01.png",
+    "width": 256,
+    "height": 1600,
+    "tileSize": 32,
+    "sha256": "bfdd46ba076a119f84cb7c98940a0fc6488d133b07c21f0bf0676915fa421ee0",
+    "checkedAt": "2026-09-25",
+    "floorTile": 4,
+    "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-retrotown01.html",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Sento-E01.png",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/dotartworld/",
+    "notes": "원본400칸을 보존한다. sourceRect는32px칸, 합성parts는픽셀이다. 기와/기둥/입구/간판을전체로조립한다. 공식목욕탕/상점샘플을참고하되픽셀은해당원본만쓴다. whole건물은정적solid;문앞접근은자동개폐/실내전이가아니다. ST-Sento-I02 내부는추후연결후보이며이번에연결하지않는다. 다른시트RTP캐릭터/자동문을섞지않는다.",
+    "recipes": [
+      {
+        "id": "retro-sento-plaster-wood-wall",
+        "name": "백벽과 목조 하부 · 기둥 포함",
+        "sourceRect": {
+          "x": 0,
+          "y": 27,
+          "width": 3,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 2,
+            "y": 3
+          }
+        ]
+      },
+      {
+        "id": "retro-sento-awning-shutter-window",
+        "name": "차양과 덧문창 전체",
+        "sourceRect": {
+          "x": 4,
+          "y": 40,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          233,
+          241
+        ]
+      },
+      {
+        "id": "retro-sento-awning-paper-window",
+        "name": "차양과 종이창 전체",
+        "sourceRect": {
+          "x": 6,
+          "y": 40,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          233,
+          241
+        ]
+      },
+      {
+        "id": "retro-sento-wood-grille",
+        "name": "가로 격자창",
+        "sourceRect": {
+          "x": 2,
+          "y": 42,
+          "width": 2,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "exampleWallRows": [
+          241
+        ]
+      },
+      {
+        "id": "retro-sento-small-vent",
+        "name": "작은 목재 환기창",
+        "sourceRect": {
+          "x": 1,
+          "y": 39,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ],
+        "exampleWallRows": [
+          241
+        ]
+      },
+      {
+        "id": "retro-sento-bamboo",
+        "name": "대나무 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 31,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ]
+      },
+      {
+        "id": "retro-sento-tree",
+        "name": "수관과 줄기 전체 정원수",
+        "sourceRect": {
+          "x": 4,
+          "y": 21,
+          "width": 4,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 2,
+            "y": 3
+          },
+          {
+            "x": 3,
+            "y": 3
+          }
+        ]
+      },
+      {
+        "id": "retro-sento-stone-lantern",
+        "name": "기단 있는 석등",
+        "sourceRect": {
+          "x": 1,
+          "y": 25,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "retro-sento-tanuki",
+        "name": "너구리 장식상",
+        "sourceRect": {
+          "x": 0,
+          "y": 25,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "retro-sento-flower-planter",
+        "name": "낮은 꽃화분",
+        "sourceRect": {
+          "x": 3,
+          "y": 25,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "retro-sento-plant-planter",
+        "name": "사각 식물화분",
+        "sourceRect": {
+          "x": 2,
+          "y": 25,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "retro-sento-bamboo-pot",
+        "name": "대나무 화분",
+        "sourceRect": {
+          "x": 4,
+          "y": 25,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      {
+        "id": "retro-sento-fern-pot",
+        "name": "붉은 꽃 화분",
+        "sourceRect": {
+          "x": 4,
+          "y": 26,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      {
+        "id": "retro-sento-lidded-jar",
+        "name": "뚜껑 있는 항아리",
+        "sourceRect": {
+          "x": 0,
+          "y": 23,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "retro-sento-open-jar",
+        "name": "열린 항아리",
+        "sourceRect": {
+          "x": 1,
+          "y": 23,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "retro-sento-entrance-whole",
+        "name": "곡선 지붕·기둥·유 노렌 목욕탕 입구",
+        "sourceRect": {
+          "x": 4,
+          "y": 43,
+          "width": 4,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 2,
+            "y": 3
+          },
+          {
+            "x": 3,
+            "y": 3
+          }
+        ]
+      },
+      {
+        "id": "retro-sento-sento-sign",
+        "name": "宝湯 목욕탕 간판",
+        "sourceRect": {
+          "x": 6,
+          "y": 47,
+          "width": 2,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "exampleWallRows": [
+          241
+        ]
+      },
+      {
+        "id": "retro-sento-inn-sign",
+        "name": "月光館 여관 간판",
+        "sourceRect": {
+          "x": 4,
+          "y": 47,
+          "width": 2,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "exampleWallRows": [
+          241
+        ]
+      },
+      {
+        "id": "retro-sento-chimney",
+        "name": "상단·몸통·밑동 전체 굴뚝",
+        "sourceRect": {
+          "x": 2,
+          "y": 47,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ]
+      },
+      {
+        "id": "retro-sento-water-bucket",
+        "name": "목재 물통",
+        "sourceRect": {
+          "x": 1,
+          "y": 32,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "retro-sento-slatted-door",
+        "name": "기둥 포함 닫힌 격자문 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 43,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "paw-retrotown-rtown",
+    "name": "Pixel Art World · 레트로 동네 외관",
+    "filename": "ST-RTown-E01.png",
+    "width": 256,
+    "height": 1600,
+    "tileSize": 32,
+    "sha256": "4d94f4a63f6ead17ea390203601245df12da8278feb10a6d9dac1063d952e26c",
+    "checkedAt": "2026-09-25",
+    "floorTile": 4,
+    "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-retrotown01.html",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-RTown-E01.png",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/dotartworld/",
+    "notes": "원본400칸을 보존한다. sourceRect는32px칸, 합성parts는픽셀이다. 기와/기둥/입구/간판을전체로조립한다. 공식목욕탕/상점샘플을참고하되픽셀은해당원본만쓴다. whole건물은정적solid;문앞접근은자동개폐/실내전이가아니다. ST-Sento-I02 내부는추후연결후보이며이번에연결하지않는다. 다른시트RTP캐릭터/자동문을섞지않는다.",
+    "recipes": [
+      {
+        "id": "retro-rtown-plaster-wood-wall",
+        "name": "백벽과 목조 하부 · 기둥 포함",
+        "sourceRect": {
+          "x": 0,
+          "y": 27,
+          "width": 3,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 2,
+            "y": 3
+          }
+        ]
+      },
+      {
+        "id": "retro-rtown-awning-shutter-window",
+        "name": "차양과 덧문창 전체",
+        "sourceRect": {
+          "x": 4,
+          "y": 40,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          233,
+          241
+        ]
+      },
+      {
+        "id": "retro-rtown-awning-paper-window",
+        "name": "차양과 종이창 전체",
+        "sourceRect": {
+          "x": 6,
+          "y": 40,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          233,
+          241
+        ]
+      },
+      {
+        "id": "retro-rtown-wood-grille",
+        "name": "가로 격자창",
+        "sourceRect": {
+          "x": 2,
+          "y": 42,
+          "width": 2,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "exampleWallRows": [
+          241
+        ]
+      },
+      {
+        "id": "retro-rtown-small-vent",
+        "name": "작은 목재 환기창",
+        "sourceRect": {
+          "x": 1,
+          "y": 39,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ],
+        "exampleWallRows": [
+          241
+        ]
+      },
+      {
+        "id": "retro-rtown-bamboo",
+        "name": "대나무 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 31,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ]
+      },
+      {
+        "id": "retro-rtown-tree",
+        "name": "수관과 줄기 전체 정원수",
+        "sourceRect": {
+          "x": 4,
+          "y": 21,
+          "width": 4,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 2,
+            "y": 3
+          },
+          {
+            "x": 3,
+            "y": 3
+          }
+        ]
+      },
+      {
+        "id": "retro-rtown-stone-lantern",
+        "name": "기단 있는 석등",
+        "sourceRect": {
+          "x": 1,
+          "y": 25,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "retro-rtown-tanuki",
+        "name": "너구리 장식상",
+        "sourceRect": {
+          "x": 0,
+          "y": 25,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "retro-rtown-flower-planter",
+        "name": "낮은 꽃화분",
+        "sourceRect": {
+          "x": 3,
+          "y": 25,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "retro-rtown-plant-planter",
+        "name": "사각 식물화분",
+        "sourceRect": {
+          "x": 2,
+          "y": 25,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "retro-rtown-bamboo-pot",
+        "name": "대나무 화분",
+        "sourceRect": {
+          "x": 4,
+          "y": 25,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      {
+        "id": "retro-rtown-fern-pot",
+        "name": "잎 화분",
+        "sourceRect": {
+          "x": 4,
+          "y": 26,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      {
+        "id": "retro-rtown-lidded-jar",
+        "name": "뚜껑 있는 항아리",
+        "sourceRect": {
+          "x": 0,
+          "y": 23,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "retro-rtown-open-jar",
+        "name": "열린 항아리",
+        "sourceRect": {
+          "x": 1,
+          "y": 23,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "retro-rtown-glass-doors",
+        "name": "위 환기창 포함 유리문 2열",
+        "sourceRect": {
+          "x": 6,
+          "y": 43,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          233,
+          241
+        ]
+      },
+      {
+        "id": "retro-rtown-bonsai-stand",
+        "name": "화분과 목재 받침 전체",
+        "sourceRect": {
+          "x": 4,
+          "y": 45,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "retro-rtown-mailboxes",
+        "name": "우편함 2열 전체",
+        "sourceRect": {
+          "x": 6,
+          "y": 45,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          233,
+          241
+        ]
+      },
+      {
+        "id": "retro-rtown-dustbin",
+        "name": "뚜껑 포함 파란 쓰레기통",
+        "sourceRect": {
+          "x": 2,
+          "y": 45,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "retro-rtown-fire-notice",
+        "name": "화재 주의 안내",
+        "sourceRect": {
+          "x": 4,
+          "y": 44,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ],
+        "exampleWallRows": [
+          241
+        ]
+      }
+    ]
+  }
+]

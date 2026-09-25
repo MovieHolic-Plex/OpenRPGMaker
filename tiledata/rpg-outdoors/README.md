@@ -1,6 +1,6 @@
 # 야외 장소
 
-마을·성소·이야기 장면·필드·80×64 대계곡·월드맵 24곳. 숲마을 부품(절벽·계단·폭포·다리·흙길·숲 윤곽·나무 도장·소품·항구 부품 #1439)으로 짰다.
+마을·성소·이야기 장면·필드·80×64 대계곡·월드맵 39곳(2026-09-25 기후 필드 8곳, 2차 7곳 추가). 숲마을 부품(절벽·계단·폭포·다리·흙길·숲 윤곽·나무 도장·소품·항구 부품 #1439)으로 짰다.
 지형과 배치만 있다. 이벤트·NPC·이동은 없고, 출구마다 어디와 맞닿는지(`meets`)만 적었다.
 
 | 장소 | id | 타일셋 | 크기 | 분류 |
@@ -28,14 +28,29 @@
 | 불꽃산 화산 지대 | outdoor-volcano-zone | forest_harmony_volcano | 56×40 | 화산 필드 |
 | 바람초원 유목민 천막촌 | outdoor-nomad-camp | forest_harmony_autumn | 40×32 | 가을 마을 |
 | 잿빛 들 옛 전쟁터 | outdoor-old-battlefield | forest_harmony_autumn | 48×36 | 가을 필드 |
+| 얼음강 나루 설원 | outdoor-snow-frozen-ford | forest_harmony_snow | 64×44 | 설원 필드 |
+| 눈보라 빙벽 고갯길 | outdoor-snow-icewall-pass | forest_harmony_snow | 48×60 | 설원 필드 |
+| 잿빛 능선 용암 폭포길 | outdoor-volcano-lavafall-ridge | forest_harmony_volcano | 60×50 | 화산 필드 |
+| 흑요석 용암호 둑길 | outdoor-volcano-lava-lake | forest_harmony_volcano | 64×44 | 화산 필드 |
+| 사암 협곡 고갯길 | outdoor-desert-canyon-pass | forest_harmony_desert | 52×60 | 사막 필드 |
+| 모래바다 대상로 | outdoor-desert-dune-sea | forest_harmony_desert | 72×42 | 사막 필드 |
+| 단풍 과수원 언덕길 | outdoor-autumn-orchard-road | forest_harmony_autumn | 60×44 | 가을 필드 |
+| 붉은 단풍 골짜기 | outdoor-autumn-maple-valley | forest_harmony_autumn | 60×52 | 가을 필드 |
 | 은빛 왕국 대륙 전도 | outdoor-world-map | oprn_world_keyed(월드 칩셋 분홍 키 사본) | 72×56 | 월드맵 |
+| 마왕성 외관 · 재의 성채 | outdoor-demon-castle | forest_harmony_volcano | 60×56 | 화산 필드 |
+| 미혹의 숲 미로 | outdoor-forest-maze | forest_harmony(이식 포함) | 56×48 | 필드 |
+| 용의 산 정상 · 눈 덮인 둥지 | outdoor-dragon-peak | forest_harmony_snow | 50×60 | 설원 필드 |
+| 숲 속 모닥불 야영지 | outdoor-forest-camp | forest_harmony(이식 포함) | 38×30 | 장면 |
+| 들녘 농장과 목장 | outdoor-farm-ranch | forest_harmony(이식 포함) | 50×40 | 마을 |
+| 갈매기 곶 등대 | outdoor-lighthouse-cape | forest_harmony(이식 포함) | 44×38 | 마을 |
+| 남쪽 바다 섬들 해도 | outdoor-world-archipelago | oprn_world_keyed | 72×56 | 월드맵 |
 
 | 파일 | 내용 |
 |---|---|
 | `catalog.json` | 계획(출구·절벽·집·소품과 주인·깔개·잎 없는 나무 자리 `bareTreeSpots`)과 맵 24장 |
 | `validation.json` | 입구에서 출구·문 앞·계단 끝까지 런타임 `canMove`로 닿는지, 쓴 씨앗 |
 | `images/` | 앱 렌더러로 그린 그림(칸당 16px) |
-| `*.md` | 공용 AI 문서 사본(`src/assets/sharedFieldRouteReferences.json`의 `field-routes-*-v5`(설원·화산·사막 `-v6`)·`rpg-outdoors-world-v1` 분류와 같은 본문) |
+| `*.md` | 공용 AI 문서 사본(`src/assets/sharedFieldRouteReferences.json`의 `field-routes-forest-v7`·`-snow-v9`·`-volcano-v10`·`-desert-v10`·`-autumn-v7`·`rpg-outdoors-world-v2` 분류와 같은 본문) |
 
 재생성 순서(렌더·캡처는 dev 서버 `npm run dev:worktree`가 떠 있어야 한다):
 
@@ -54,3 +69,7 @@ BASE=http://127.0.0.1:<port> node scripts/qa/capture-rpg-outdoors.mjs
 - 빈칸 검사 기준: 마을 한 덩이 ≤4칸·한 화면 ≤40%, 필드 ≤5·≤50%, 월드맵 ≤7·≤70%(저작 목표는 62%).
 - 월드맵은 `lib/rpg-outdoor-world.mjs`. EasyRPG 월드 칩셋의 아이콘 바탕은 불투명 분홍(#ff678b)이라 `transparentColor` 를 준 사본 `oprn_world_keyed` 에 그린다.
 - 갈매기 어촌의 부두 소품은 #1439 항구 부품(나룻배·계류 말뚝·밧줄 뭉치·닻·부두 술통·부두 상자·열린 물통, `lib/village-harbor.mjs` 의 HARBOR_SLOTS)을 `lib/harbor-kit.mjs` 로 부른다.
+
+- 기후 필드 8곳(2026-09-25, `lib/rpg-outdoor-climate-fields.mjs`): 기후마다 필드가 셋이 되도록 둘씩 더했다. 재칠이 아니라 서로 다른 짜임이다 — 설원 얼음강 나루(강 허리만 얼림 `freeze(fn)`, 하류는 다리)·빙벽 고갯길(두 단, 얼어붙은 산정 호수, 빙벽 갱도), 화산 용암 폭포 능선(용암 강이 두 단을 폭포로 넘음)·용암호 둑길(넓은 용암 호수와 흘러나가는 개울, 기후 지형 용암 웅덩이 끔 `groundOpts.pools: 0`), 사막 사암 협곡 고갯길(엇갈린 절벽 세 단, 절벽 밑 샘)·모래바다 대상로(절벽 없는 사구 바다, 샘가 대상 천막), 가을 과수원 언덕길(울타리 과수원 셋·개울가 밭)·단풍 골짜기(큰 폭포가 떨어지는 못, 하류 다리). 사막·화산은 `fill.spotCap`(잎 없는 나무 자리 상한)과 `palette: { stands }` 로 고목 덩이를 맵마다 3~4개로 줄였다(자리 상한에 걸린 뒤 채우기가 선인장으로 넘어가지 않게 팔레트에서 덤불을 뺀다). 동굴 입구 413 은 분홍 키가 남아 있어 빙벽·협곡 굴은 `shaft()` 로 팠다. 이 여덟 곳만 다시 만들려면 `OUTDOOR_ONLY=<id,...>` (나머지 계획·맵은 카탈로그 그대로).
+
+- 2차 야외 7곳(2026-09-25, `lib/rpg-outdoor-round2.mjs`): 마왕성 외관(재 절벽 윗단의 작은 성 표지물, 동서 용암 띠는 `waterWhere` 로 칠하고 계단 밑에서 끊어 둑길), 숲 미로(사방 숲 띠 `coverage: 1` + 넓히지 않은 오솔길, 막다른 길 상자 넷 — 빈터는 흙 `dirt` 포장, 자갈·돌 마당 그룹은 이 시트에서 걸을 수 없다), 용의 산 정상(눈 절벽 세 단, 꼭대기 조약돌 둥지는 빈칸 게이트에 맞게 작게), 숲 야영지, 농장·목장(울타리 목장 둘), 등대 곶(성곽 원탑 2×8 을 등대로), 섬 해도(`lib/rpg-outdoor-world.mjs` 의 `islands`: 섬마다 흙길 나무를 따로 잇고, 섬마다 항구 `port` 하나 이상·항구마다 배길 `lanes`, 메타 `shipLanes`). 이 일곱만 다시 만들려면 `OUTDOOR_ONLY=<id,...>`. 막힘 진단은 `OUTDOOR_WALK=<id>`(닿는 칸을 r 로 찍은 배열).

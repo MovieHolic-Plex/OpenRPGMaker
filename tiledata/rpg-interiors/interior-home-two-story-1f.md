@@ -163,7 +163,7 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "kind": "tibo-kit",
     "kitId": "tibo-fantasy-bookcase",
     "name": "두꺼운 책장",
-    "x": 14,
+    "x": 8,
     "y": 4,
     "w": 2,
     "h": 2,
@@ -172,18 +172,24 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
   {
     "kind": "tiles",
     "layer": "lower",
-    "x": 16,
-    "y": 5,
-    "w": 1,
+    "x": 14,
+    "y": 3,
+    "w": 3,
     "h": 3,
     "rows": [
       [
-        111
+        141,
+        111,
+        171
       ],
       [
-        141
+        141,
+        111,
+        171
       ],
       [
+        141,
+        111,
         171
       ]
     ],

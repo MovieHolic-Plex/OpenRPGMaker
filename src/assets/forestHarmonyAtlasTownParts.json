@@ -1,0 +1,5835 @@
+{
+"textureKey": "tex_forest_harmony_atlas_town_parts",
+"start": 3311,
+"count": 3491,
+"frames": 180,
+"grafts": [
+{
+"targetTile": 3311,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 0
+},
+{
+"targetTile": 3312,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 1
+},
+{
+"targetTile": 3313,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 2
+},
+{
+"targetTile": 3314,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 3
+},
+{
+"targetTile": 3315,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 4
+},
+{
+"targetTile": 3316,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 5
+},
+{
+"targetTile": 3317,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 6
+},
+{
+"targetTile": 3318,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 7
+},
+{
+"targetTile": 3319,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 8
+},
+{
+"targetTile": 3320,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 9
+},
+{
+"targetTile": 3321,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 10
+},
+{
+"targetTile": 3322,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 11
+},
+{
+"targetTile": 3323,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 12
+},
+{
+"targetTile": 3324,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 13
+},
+{
+"targetTile": 3325,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 14
+},
+{
+"targetTile": 3326,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 15
+},
+{
+"targetTile": 3327,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 16
+},
+{
+"targetTile": 3328,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 17
+},
+{
+"targetTile": 3329,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 18
+},
+{
+"targetTile": 3330,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 19
+},
+{
+"targetTile": 3331,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 20
+},
+{
+"targetTile": 3332,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 21
+},
+{
+"targetTile": 3333,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 22
+},
+{
+"targetTile": 3334,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 23
+},
+{
+"targetTile": 3335,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 24
+},
+{
+"targetTile": 3336,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 25
+},
+{
+"targetTile": 3337,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 26
+},
+{
+"targetTile": 3338,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 27
+},
+{
+"targetTile": 3339,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 28
+},
+{
+"targetTile": 3340,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 29
+},
+{
+"targetTile": 3341,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 30
+},
+{
+"targetTile": 3342,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 31
+},
+{
+"targetTile": 3343,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 32
+},
+{
+"targetTile": 3344,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 33
+},
+{
+"targetTile": 3345,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 34
+},
+{
+"targetTile": 3346,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 35
+},
+{
+"targetTile": 3347,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 36
+},
+{
+"targetTile": 3348,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 37
+},
+{
+"targetTile": 3349,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 38
+},
+{
+"targetTile": 3350,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 39
+},
+{
+"targetTile": 3351,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 40
+},
+{
+"targetTile": 3352,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 41
+},
+{
+"targetTile": 3353,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 42
+},
+{
+"targetTile": 3354,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 43
+},
+{
+"targetTile": 3355,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 44
+},
+{
+"targetTile": 3356,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 45
+},
+{
+"targetTile": 3357,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 46
+},
+{
+"targetTile": 3358,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 47
+},
+{
+"targetTile": 3359,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 48
+},
+{
+"targetTile": 3360,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 49
+},
+{
+"targetTile": 3361,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 50
+},
+{
+"targetTile": 3362,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 51
+},
+{
+"targetTile": 3363,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 52
+},
+{
+"targetTile": 3364,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 53
+},
+{
+"targetTile": 3365,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 54
+},
+{
+"targetTile": 3366,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 55
+},
+{
+"targetTile": 3367,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 56
+},
+{
+"targetTile": 3368,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 57
+},
+{
+"targetTile": 3369,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 58
+},
+{
+"targetTile": 3370,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 59
+},
+{
+"targetTile": 3371,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 60
+},
+{
+"targetTile": 3372,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 61
+},
+{
+"targetTile": 3373,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 62
+},
+{
+"targetTile": 3374,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 63
+},
+{
+"targetTile": 3375,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 64
+},
+{
+"targetTile": 3376,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 65
+},
+{
+"targetTile": 3377,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 66
+},
+{
+"targetTile": 3378,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 67
+},
+{
+"targetTile": 3379,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 68
+},
+{
+"targetTile": 3380,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 69
+},
+{
+"targetTile": 3381,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 70
+},
+{
+"targetTile": 3382,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 71
+},
+{
+"targetTile": 3383,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 72
+},
+{
+"targetTile": 3384,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 73
+},
+{
+"targetTile": 3385,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 74
+},
+{
+"targetTile": 3386,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 75
+},
+{
+"targetTile": 3387,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 76
+},
+{
+"targetTile": 3388,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 77
+},
+{
+"targetTile": 3389,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 78
+},
+{
+"targetTile": 3390,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 79
+},
+{
+"targetTile": 3391,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 80
+},
+{
+"targetTile": 3392,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 81
+},
+{
+"targetTile": 3393,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 82
+},
+{
+"targetTile": 3394,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 83
+},
+{
+"targetTile": 3395,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 84
+},
+{
+"targetTile": 3396,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 85
+},
+{
+"targetTile": 3397,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 86
+},
+{
+"targetTile": 3398,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 87
+},
+{
+"targetTile": 3399,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 88
+},
+{
+"targetTile": 3400,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 89
+},
+{
+"targetTile": 3401,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 90
+},
+{
+"targetTile": 3402,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 91
+},
+{
+"targetTile": 3403,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 92
+},
+{
+"targetTile": 3404,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 93
+},
+{
+"targetTile": 3405,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 94
+},
+{
+"targetTile": 3406,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 95
+},
+{
+"targetTile": 3407,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 96
+},
+{
+"targetTile": 3408,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 97
+},
+{
+"targetTile": 3409,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 98
+},
+{
+"targetTile": 3410,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 99
+},
+{
+"targetTile": 3411,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 100
+},
+{
+"targetTile": 3412,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 101
+},
+{
+"targetTile": 3413,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 102
+},
+{
+"targetTile": 3414,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 103
+},
+{
+"targetTile": 3415,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 104
+},
+{
+"targetTile": 3416,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 105
+},
+{
+"targetTile": 3417,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 106
+},
+{
+"targetTile": 3418,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 107
+},
+{
+"targetTile": 3419,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 108
+},
+{
+"targetTile": 3420,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 109
+},
+{
+"targetTile": 3421,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 110
+},
+{
+"targetTile": 3422,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 111
+},
+{
+"targetTile": 3423,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 112
+},
+{
+"targetTile": 3424,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 113
+},
+{
+"targetTile": 3425,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 114
+},
+{
+"targetTile": 3426,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 115
+},
+{
+"targetTile": 3427,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 116
+},
+{
+"targetTile": 3428,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 117
+},
+{
+"targetTile": 3429,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 118
+},
+{
+"targetTile": 3430,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 119
+},
+{
+"targetTile": 3431,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 120
+},
+{
+"targetTile": 3432,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 121
+},
+{
+"targetTile": 3433,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 122
+},
+{
+"targetTile": 3434,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 123
+},
+{
+"targetTile": 3435,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 124
+},
+{
+"targetTile": 3436,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 125
+},
+{
+"targetTile": 3437,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 126
+},
+{
+"targetTile": 3438,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 127
+},
+{
+"targetTile": 3439,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 128
+},
+{
+"targetTile": 3440,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 129
+},
+{
+"targetTile": 3441,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 130
+},
+{
+"targetTile": 3442,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 131
+},
+{
+"targetTile": 3443,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 132
+},
+{
+"targetTile": 3444,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 133
+},
+{
+"targetTile": 3445,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 134
+},
+{
+"targetTile": 3446,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 135
+},
+{
+"targetTile": 3447,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 136
+},
+{
+"targetTile": 3448,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 137
+},
+{
+"targetTile": 3449,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 138
+},
+{
+"targetTile": 3450,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 139
+},
+{
+"targetTile": 3451,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 140
+},
+{
+"targetTile": 3452,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 141
+},
+{
+"targetTile": 3453,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 142
+},
+{
+"targetTile": 3454,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 143
+},
+{
+"targetTile": 3455,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 144
+},
+{
+"targetTile": 3456,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 145
+},
+{
+"targetTile": 3457,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 146
+},
+{
+"targetTile": 3458,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 147
+},
+{
+"targetTile": 3459,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 148
+},
+{
+"targetTile": 3460,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 149
+},
+{
+"targetTile": 3461,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 150
+},
+{
+"targetTile": 3462,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 151
+},
+{
+"targetTile": 3463,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 152
+},
+{
+"targetTile": 3464,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 153
+},
+{
+"targetTile": 3465,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 154
+},
+{
+"targetTile": 3466,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 155
+},
+{
+"targetTile": 3467,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 156
+},
+{
+"targetTile": 3468,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 157
+},
+{
+"targetTile": 3469,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 158
+},
+{
+"targetTile": 3470,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 159
+},
+{
+"targetTile": 3471,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 160
+},
+{
+"targetTile": 3472,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 161
+},
+{
+"targetTile": 3473,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 162
+},
+{
+"targetTile": 3474,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 163
+},
+{
+"targetTile": 3475,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 164
+},
+{
+"targetTile": 3476,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 165
+},
+{
+"targetTile": 3477,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 166
+},
+{
+"targetTile": 3478,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 167
+},
+{
+"targetTile": 3479,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 168
+},
+{
+"targetTile": 3480,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 169
+},
+{
+"targetTile": 3481,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 170
+},
+{
+"targetTile": 3482,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 171
+},
+{
+"targetTile": 3483,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 172
+},
+{
+"targetTile": 3484,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 173
+},
+{
+"targetTile": 3485,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 174
+},
+{
+"targetTile": 3486,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 175
+},
+{
+"targetTile": 3487,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 176
+},
+{
+"targetTile": 3488,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 177
+},
+{
+"targetTile": 3489,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 178
+},
+{
+"targetTile": 3490,
+"sourceChipset": "tex_forest_harmony_atlas_town_parts",
+"sourceTile": 179
+}
+],
+"slots": [
+{
+"name": "범선 푸른물결호 13,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 13,1",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 12,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 12,2",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 13,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 13,2",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 14,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 14,2",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 16,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 16,2",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 17,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 17,2",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 7,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 7,3",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 8,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 8,3",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 9,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 9,3",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 10,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 10,3",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 12,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 12,3",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 13,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 13,3",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 14,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 14,3",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 16,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 16,3",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 17,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 17,3",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 26,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 26,3",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 27,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 27,3",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 28,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 28,3",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 6,4",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 6,4",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 7,4",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 7,4",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 8,4",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 8,4",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 9,4",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 9,4",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 10,4",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 10,4",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 12,4",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 12,4",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 17,4",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 17,4",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 28,4",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 28,4",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 29,4",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 29,4",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 5,5",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 5,5",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 13,5",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 13,5",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 15,5",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 15,5",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 16,5",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 16,5",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 17,5",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 17,5",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 25,5",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 25,5",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 30,5",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 30,5",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 4,6",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 4,6",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 5,6",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 5,6",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 6,6",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 6,6",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 8,6",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 8,6",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 12,6",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 12,6",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 31,6",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 31,6",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 1,7",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 1,7",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 2,7",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 2,7",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 3,7",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 3,7",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 4,7",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 4,7",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 5,7",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 5,7",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 6,7",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 6,7",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 28,7",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 28,7",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 31,7",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 31,7",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 4,8",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 4,8",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 5,8",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 5,8",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 6,8",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 6,8",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 12,8",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 12,8",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 13,8",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 13,8",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 30,8",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 30,8",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 31,8",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 31,8",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 5,9",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 5,9",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 6,9",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 6,9",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 7,9",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 7,9",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 12,9",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 12,9",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 13,9",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 13,9",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 14,9",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 14,9",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 15,9",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 15,9",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 16,9",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 16,9",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 17,9",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 17,9",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 29,9",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 29,9",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 30,9",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 30,9",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 6,10",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 6,10",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 7,10",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 7,10",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 8,10",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 8,10",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 9,10",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 9,10",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 10,10",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 10,10",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 12,10",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 12,10",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 13,10",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 13,10",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 14,10",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 14,10",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 16,10",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 16,10",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 17,10",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 17,10",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 26,10",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 26,10",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 27,10",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 27,10",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 28,10",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 28,10",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 29,10",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 29,10",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 7,11",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 7,11",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 8,11",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 8,11",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 9,11",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 9,11",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 10,11",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 10,11",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 11,11",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 11,11",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 13,11",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 13,11",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 14,11",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 14,11",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 16,11",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 16,11",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 26,11",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 26,11",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 27,11",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 27,11",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 28,11",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 28,11",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 9,12",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 9,12",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 10,12",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 10,12",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 11,12",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 11,12",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "범선 푸른물결호 26,12",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "범선 푸른물결호 26,12",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "광장 분수 1,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "광장 분수 1,1",
+"description": "돌 수반 분수 3×3. 광장 한가운데. 통행 불가. 둘레 한 칸은 비워 광장을 돌아 걷게 한다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "광장 분수 2,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "광장 분수 2,1",
+"description": "돌 수반 분수 3×3. 광장 한가운데. 통행 불가. 둘레 한 칸은 비워 광장을 돌아 걷게 한다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "광장 분수 3,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "광장 분수 3,1",
+"description": "돌 수반 분수 3×3. 광장 한가운데. 통행 불가. 둘레 한 칸은 비워 광장을 돌아 걷게 한다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "광장 분수 1,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "광장 분수 1,2",
+"description": "돌 수반 분수 3×3. 광장 한가운데. 통행 불가. 둘레 한 칸은 비워 광장을 돌아 걷게 한다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "광장 분수 2,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "광장 분수 2,2",
+"description": "돌 수반 분수 3×3. 광장 한가운데. 통행 불가. 둘레 한 칸은 비워 광장을 돌아 걷게 한다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "광장 분수 3,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "광장 분수 3,2",
+"description": "돌 수반 분수 3×3. 광장 한가운데. 통행 불가. 둘레 한 칸은 비워 광장을 돌아 걷게 한다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "광장 분수 1,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "광장 분수 1,3",
+"description": "돌 수반 분수 3×3. 광장 한가운데. 통행 불가. 둘레 한 칸은 비워 광장을 돌아 걷게 한다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "광장 분수 2,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "광장 분수 2,3",
+"description": "돌 수반 분수 3×3. 광장 한가운데. 통행 불가. 둘레 한 칸은 비워 광장을 돌아 걷게 한다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "광장 분수 3,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "광장 분수 3,3",
+"description": "돌 수반 분수 3×3. 광장 한가운데. 통행 불가. 둘레 한 칸은 비워 광장을 돌아 걷게 한다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "줄무늬 노점 빨강 1,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "줄무늬 노점 빨강 1,1",
+"description": "줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "줄무늬 노점 빨강 2,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "줄무늬 노점 빨강 2,1",
+"description": "줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "줄무늬 노점 빨강 3,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "줄무늬 노점 빨강 3,1",
+"description": "줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "줄무늬 노점 빨강 1,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "줄무늬 노점 빨강 1,2",
+"description": "줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "줄무늬 노점 빨강 2,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "줄무늬 노점 빨강 2,2",
+"description": "줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "줄무늬 노점 빨강 3,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "줄무늬 노점 빨강 3,2",
+"description": "줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "줄무늬 노점 파랑 1,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "줄무늬 노점 파랑 1,1",
+"description": "줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "줄무늬 노점 파랑 2,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "줄무늬 노점 파랑 2,1",
+"description": "줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "줄무늬 노점 파랑 3,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "줄무늬 노점 파랑 3,1",
+"description": "줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "줄무늬 노점 파랑 1,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "줄무늬 노점 파랑 1,2",
+"description": "줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "줄무늬 노점 파랑 2,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "줄무늬 노점 파랑 2,2",
+"description": "줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "줄무늬 노점 파랑 3,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "줄무늬 노점 파랑 3,2",
+"description": "줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "줄무늬 노점 초록 1,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "줄무늬 노점 초록 1,1",
+"description": "줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "줄무늬 노점 초록 2,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "줄무늬 노점 초록 2,1",
+"description": "줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "줄무늬 노점 초록 3,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "줄무늬 노점 초록 3,1",
+"description": "줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "줄무늬 노점 초록 1,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "줄무늬 노점 초록 1,2",
+"description": "줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "줄무늬 노점 초록 2,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "줄무늬 노점 초록 2,2",
+"description": "줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "줄무늬 노점 초록 3,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "줄무늬 노점 초록 3,2",
+"description": "줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "불길 1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "불길 1",
+"description": "지붕·잔해 위에 얹는 불길(윗레이어). 불타는 마을 전용. 통행 불가 칸 위에만 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "불길 2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "불길 2",
+"description": "지붕·잔해 위에 얹는 불길(윗레이어). 불타는 마을 전용. 통행 불가 칸 위에만 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "불길 3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "불길 3",
+"description": "지붕·잔해 위에 얹는 불길(윗레이어). 불타는 마을 전용. 통행 불가 칸 위에만 둔다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "큰 불길 1,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "큰 불길 1,1",
+"description": "두 칸 높이 큰 불길. 무너진 집·장작더미 위에.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "큰 불길 1,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "큰 불길 1,2",
+"description": "두 칸 높이 큰 불길. 무너진 집·장작더미 위에.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "연기 1",
+"passability": {
+"up": true,
+"down": true,
+"left": true,
+"right": true
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "연기 1",
+"description": "반투명 검은 연기(윗레이어, 통행 가능). 불길 위쪽 지붕에.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "passable",
+"layerBacking": "none"
+}
+},
+{
+"name": "연기 2",
+"passability": {
+"up": true,
+"down": true,
+"left": true,
+"right": true
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "연기 2",
+"description": "반투명 검은 연기(윗레이어, 통행 가능). 불길 위쪽 지붕에.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "passable",
+"layerBacking": "none"
+}
+},
+{
+"name": "잿자리 1",
+"passability": {
+"up": true,
+"down": true,
+"left": true,
+"right": true
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "잿자리 1",
+"description": "타고 남은 잿자리(윗레이어, 통행 가능). 불탄 집 둘레 땅에 두세 칸씩 붙여.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "passable",
+"layerBacking": "none"
+}
+},
+{
+"name": "잿자리 2",
+"passability": {
+"up": true,
+"down": true,
+"left": true,
+"right": true
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "잿자리 2",
+"description": "타고 남은 잿자리(윗레이어, 통행 가능). 불탄 집 둘레 땅에 두세 칸씩 붙여.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "passable",
+"layerBacking": "none"
+}
+},
+{
+"name": "잿자리 3",
+"passability": {
+"up": true,
+"down": true,
+"left": true,
+"right": true
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "잿자리 3",
+"description": "타고 남은 잿자리(윗레이어, 통행 가능). 불탄 집 둘레 땅에 두세 칸씩 붙여.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "passable",
+"layerBacking": "none"
+}
+},
+{
+"name": "그을린 들보 1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "그을린 들보 1",
+"description": "타다 남은 들보 더미. 무너진 집 자리에.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "그을린 들보 2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "그을린 들보 2",
+"description": "타다 남은 들보 더미. 무너진 집 자리에.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "비계 1,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "비계 1,1",
+"description": "짓고 있는 집 벽 앞에 세운 나무 비계 3×3(윗레이어, 통행 불가). 재건 마을의 공사 중인 집 벽·지붕 위에 겹친다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "비계 2,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "비계 2,1",
+"description": "짓고 있는 집 벽 앞에 세운 나무 비계 3×3(윗레이어, 통행 불가). 재건 마을의 공사 중인 집 벽·지붕 위에 겹친다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "비계 3,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "비계 3,1",
+"description": "짓고 있는 집 벽 앞에 세운 나무 비계 3×3(윗레이어, 통행 불가). 재건 마을의 공사 중인 집 벽·지붕 위에 겹친다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "비계 1,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "비계 1,2",
+"description": "짓고 있는 집 벽 앞에 세운 나무 비계 3×3(윗레이어, 통행 불가). 재건 마을의 공사 중인 집 벽·지붕 위에 겹친다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "비계 2,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "비계 2,2",
+"description": "짓고 있는 집 벽 앞에 세운 나무 비계 3×3(윗레이어, 통행 불가). 재건 마을의 공사 중인 집 벽·지붕 위에 겹친다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "비계 3,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "비계 3,2",
+"description": "짓고 있는 집 벽 앞에 세운 나무 비계 3×3(윗레이어, 통행 불가). 재건 마을의 공사 중인 집 벽·지붕 위에 겹친다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "비계 1,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "비계 1,3",
+"description": "짓고 있는 집 벽 앞에 세운 나무 비계 3×3(윗레이어, 통행 불가). 재건 마을의 공사 중인 집 벽·지붕 위에 겹친다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "비계 2,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "비계 2,3",
+"description": "짓고 있는 집 벽 앞에 세운 나무 비계 3×3(윗레이어, 통행 불가). 재건 마을의 공사 중인 집 벽·지붕 위에 겹친다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "비계 3,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "비계 3,3",
+"description": "짓고 있는 집 벽 앞에 세운 나무 비계 3×3(윗레이어, 통행 불가). 재건 마을의 공사 중인 집 벽·지붕 위에 겹친다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "축제 깃발 줄",
+"passability": {
+"up": true,
+"down": true,
+"left": true,
+"right": true
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "축제 깃발 줄",
+"description": "삼색 삼각 깃발 줄(윗레이어·통행 가능 ★). 길 위를 가로질러 등롱 기둥 사이에 한 줄로 잇는다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "passable",
+"layerBacking": "none"
+}
+},
+{
+"name": "등롱 줄",
+"passability": {
+"up": true,
+"down": true,
+"left": true,
+"right": true
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "등롱 줄",
+"description": "종이 등롱을 매단 줄(윗레이어·통행 가능 ★). 밤 축제 거리·광장 위를 가로질러.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "passable",
+"layerBacking": "none"
+}
+},
+{
+"name": "등롱 기둥 1,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "등롱 기둥 1,1",
+"description": "붉은 종이 등롱을 단 나무 기둥 1×2(통행 불가). 축제 깃발 줄·등롱 줄의 양 끝, 무대·광장 가장자리.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "등롱 기둥 1,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "등롱 기둥 1,2",
+"description": "붉은 종이 등롱을 단 나무 기둥 1×2(통행 불가). 축제 깃발 줄·등롱 줄의 양 끝, 무대·광장 가장자리.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "온천 김 1",
+"passability": {
+"up": true,
+"down": true,
+"left": true,
+"right": true
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "온천 김 1",
+"description": "온천물 위에 피어오르는 반투명 김(윗레이어). 물 칸 위에만, 서너 칸 떨어뜨려.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "passable",
+"layerBacking": "none"
+}
+},
+{
+"name": "온천 김 2",
+"passability": {
+"up": true,
+"down": true,
+"left": true,
+"right": true
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "온천 김 2",
+"description": "온천물 위에 피어오르는 반투명 김(윗레이어). 물 칸 위에만, 서너 칸 떨어뜨려.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "passable",
+"layerBacking": "none"
+}
+},
+{
+"name": "가죽 천막 1,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "가죽 천막 1,1",
+"description": "짐승 가죽 천막 3×3(아랫줄 가운데가 입구). 유목 천막촌·사냥꾼 야영지. 입구 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "가죽 천막 2,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "가죽 천막 2,1",
+"description": "짐승 가죽 천막 3×3(아랫줄 가운데가 입구). 유목 천막촌·사냥꾼 야영지. 입구 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "가죽 천막 3,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "가죽 천막 3,1",
+"description": "짐승 가죽 천막 3×3(아랫줄 가운데가 입구). 유목 천막촌·사냥꾼 야영지. 입구 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "가죽 천막 1,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "가죽 천막 1,2",
+"description": "짐승 가죽 천막 3×3(아랫줄 가운데가 입구). 유목 천막촌·사냥꾼 야영지. 입구 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "가죽 천막 2,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "가죽 천막 2,2",
+"description": "짐승 가죽 천막 3×3(아랫줄 가운데가 입구). 유목 천막촌·사냥꾼 야영지. 입구 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "가죽 천막 3,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "가죽 천막 3,2",
+"description": "짐승 가죽 천막 3×3(아랫줄 가운데가 입구). 유목 천막촌·사냥꾼 야영지. 입구 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "가죽 천막 1,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "가죽 천막 1,3",
+"description": "짐승 가죽 천막 3×3(아랫줄 가운데가 입구). 유목 천막촌·사냥꾼 야영지. 입구 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "가죽 천막 2,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "가죽 천막 2,3",
+"description": "짐승 가죽 천막 3×3(아랫줄 가운데가 입구). 유목 천막촌·사냥꾼 야영지. 입구 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "가죽 천막 3,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "가죽 천막 3,3",
+"description": "짐승 가죽 천막 3×3(아랫줄 가운데가 입구). 유목 천막촌·사냥꾼 야영지. 입구 앞 한 칸은 비운다.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "검은 가죽 천막 1,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "검은 가죽 천막 1,1",
+"description": "그을린 검은 가죽 천막 3×3. 고블린·오크 같은 몬스터 마을 전용.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "검은 가죽 천막 2,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "검은 가죽 천막 2,1",
+"description": "그을린 검은 가죽 천막 3×3. 고블린·오크 같은 몬스터 마을 전용.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "검은 가죽 천막 3,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "검은 가죽 천막 3,1",
+"description": "그을린 검은 가죽 천막 3×3. 고블린·오크 같은 몬스터 마을 전용.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "검은 가죽 천막 1,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "검은 가죽 천막 1,2",
+"description": "그을린 검은 가죽 천막 3×3. 고블린·오크 같은 몬스터 마을 전용.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "검은 가죽 천막 2,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "검은 가죽 천막 2,2",
+"description": "그을린 검은 가죽 천막 3×3. 고블린·오크 같은 몬스터 마을 전용.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "검은 가죽 천막 3,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "검은 가죽 천막 3,2",
+"description": "그을린 검은 가죽 천막 3×3. 고블린·오크 같은 몬스터 마을 전용.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "검은 가죽 천막 1,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "검은 가죽 천막 1,3",
+"description": "그을린 검은 가죽 천막 3×3. 고블린·오크 같은 몬스터 마을 전용.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "검은 가죽 천막 3,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "검은 가죽 천막 3,3",
+"description": "그을린 검은 가죽 천막 3×3. 고블린·오크 같은 몬스터 마을 전용.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "붉은 축제 천막 1,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "붉은 축제 천막 1,1",
+"description": "붉은 천 축제 천막 3×3. 축제 광장·장터 가장자리.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "붉은 축제 천막 2,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "붉은 축제 천막 2,1",
+"description": "붉은 천 축제 천막 3×3. 축제 광장·장터 가장자리.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "붉은 축제 천막 3,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "붉은 축제 천막 3,1",
+"description": "붉은 천 축제 천막 3×3. 축제 광장·장터 가장자리.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "붉은 축제 천막 1,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "붉은 축제 천막 1,2",
+"description": "붉은 천 축제 천막 3×3. 축제 광장·장터 가장자리.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "붉은 축제 천막 2,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "붉은 축제 천막 2,2",
+"description": "붉은 천 축제 천막 3×3. 축제 광장·장터 가장자리.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "붉은 축제 천막 3,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "붉은 축제 천막 3,2",
+"description": "붉은 천 축제 천막 3×3. 축제 광장·장터 가장자리.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "붉은 축제 천막 1,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "붉은 축제 천막 1,3",
+"description": "붉은 천 축제 천막 3×3. 축제 광장·장터 가장자리.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "붉은 축제 천막 3,3",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "붉은 축제 천막 3,3",
+"description": "붉은 천 축제 천막 3×3. 축제 광장·장터 가장자리.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "토템 기둥 1,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "토템 기둥 1,1",
+"description": "짐승 얼굴을 새긴 토템 기둥 1×2(통행 불가). 몬스터 마을·유목 천막촌 모닥불 곁.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "토템 기둥 1,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "토템 기둥 1,2",
+"description": "짐승 얼굴을 새긴 토템 기둥 1×2(통행 불가). 몬스터 마을·유목 천막촌 모닥불 곁.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "해골 창 1,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "해골 창 1,1",
+"description": "해골을 꽂은 창 1×2(통행 불가). 몬스터 마을 목책 입구 양옆에만.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "해골 창 1,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "해골 창 1,2",
+"description": "해골을 꽂은 창 1×2(통행 불가). 몬스터 마을 목책 입구 양옆에만.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "전투 깃발 1,1",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "전투 깃발 1,1",
+"description": "가죽 전투 깃발 1×2(통행 불가). 몬스터 마을 두목 천막·요새 문 앞.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+},
+{
+"name": "전투 깃발 1,2",
+"passability": {
+"up": false,
+"down": false,
+"left": false,
+"right": false
+},
+"priority": "upper",
+"terrain": 0,
+"tileMeta": {
+"role": "prop",
+"label": "전투 깃발 1,2",
+"description": "가죽 전투 깃발 1×2(통행 불가). 몬스터 마을 두목 천막·요새 문 앞.",
+"source": "user",
+"userLocked": true,
+"defaultLayer": "upper",
+"passage": "solid",
+"layerBacking": "none"
+}
+}
+],
+"parts": [
+{
+"name": "범선 푸른물결호",
+"w": 31,
+"h": 12,
+"passage": "solid",
+"category": "vehicle",
+"description": "돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"tiles": [
+[
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+3311,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1
+],
+[
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+3312,
+3313,
+3314,
+3314,
+3315,
+3316,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1
+],
+[
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+3317,
+3318,
+3319,
+3320,
+3320,
+3321,
+3322,
+3323,
+3323,
+3324,
+3325,
+3320,
+3320,
+3320,
+3320,
+3320,
+3320,
+3320,
+3320,
+3326,
+3327,
+3328,
+-1,
+-1,
+-1
+],
+[
+-1,
+-1,
+-1,
+-1,
+-1,
+3329,
+3330,
+3331,
+3332,
+3333,
+3323,
+3334,
+3322,
+3323,
+3323,
+3324,
+3335,
+3323,
+3323,
+3323,
+3331,
+3332,
+3323,
+3323,
+3323,
+3323,
+3323,
+3336,
+3337,
+-1,
+-1
+],
+[
+-1,
+-1,
+-1,
+-1,
+3338,
+3331,
+3332,
+3323,
+3323,
+3323,
+3323,
+3323,
+3339,
+3323,
+3340,
+3341,
+3342,
+3323,
+3323,
+3323,
+3323,
+3323,
+3323,
+3342,
+3343,
+3323,
+3323,
+3323,
+3323,
+3344,
+-1
+],
+[
+-1,
+-1,
+-1,
+3345,
+3346,
+3347,
+3323,
+3348,
+3323,
+3323,
+3323,
+3349,
+3339,
+3323,
+3323,
+3341,
+3349,
+3323,
+3323,
+3323,
+3323,
+3323,
+3323,
+3323,
+3323,
+3323,
+3323,
+3323,
+3323,
+3323,
+3350
+],
+[
+3351,
+3352,
+3353,
+3354,
+3355,
+3356,
+3323,
+3323,
+3323,
+3323,
+3323,
+3349,
+3339,
+3323,
+3323,
+3341,
+3349,
+3323,
+3323,
+3323,
+3323,
+3323,
+3323,
+3323,
+3323,
+3323,
+3323,
+3357,
+3323,
+3323,
+3358
+],
+[
+-1,
+-1,
+-1,
+3359,
+3360,
+3361,
+3323,
+3348,
+3323,
+3323,
+3323,
+3362,
+3363,
+3323,
+3323,
+3341,
+3323,
+3323,
+3323,
+3323,
+3323,
+3323,
+3323,
+3323,
+3323,
+3323,
+3323,
+3323,
+3323,
+3364,
+3365
+],
+[
+-1,
+-1,
+-1,
+-1,
+3366,
+3367,
+3368,
+3323,
+3323,
+3323,
+3323,
+3369,
+3370,
+3371,
+3372,
+3373,
+3374,
+3323,
+3323,
+3323,
+3323,
+3323,
+3323,
+3361,
+3342,
+3323,
+3323,
+3323,
+3375,
+3376,
+-1
+],
+[
+-1,
+-1,
+-1,
+-1,
+-1,
+3377,
+3378,
+3379,
+3380,
+3381,
+3323,
+3382,
+3383,
+3384,
+3384,
+3385,
+3386,
+3323,
+3323,
+3381,
+3323,
+3323,
+3323,
+3323,
+3323,
+3387,
+3388,
+3389,
+3390,
+-1,
+-1
+],
+[
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+3391,
+3392,
+3393,
+3394,
+3395,
+3395,
+3396,
+3397,
+3397,
+3398,
+3395,
+3395,
+3395,
+3394,
+3395,
+3395,
+3395,
+3395,
+3395,
+3399,
+3400,
+3401,
+-1,
+-1,
+-1
+],
+[
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+-1,
+3402,
+3403,
+3404,
+3404,
+3404,
+3404,
+3404,
+3404,
+3404,
+3404,
+3404,
+3404,
+3404,
+3404,
+3404,
+3404,
+3404,
+3405,
+-1,
+-1,
+-1,
+-1,
+-1
+]
+]
+},
+{
+"name": "광장 분수",
+"w": 3,
+"h": 3,
+"passage": "solid",
+"category": "landmark",
+"description": "돌 수반 분수 3×3. 광장 한가운데. 통행 불가. 둘레 한 칸은 비워 광장을 돌아 걷게 한다.",
+"tiles": [
+[
+3406,
+3407,
+3408
+],
+[
+3409,
+3410,
+3411
+],
+[
+3412,
+3413,
+3414
+]
+]
+},
+{
+"name": "줄무늬 노점 빨강",
+"w": 3,
+"h": 2,
+"passage": "solid",
+"category": "prop",
+"description": "줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다.",
+"tiles": [
+[
+3415,
+3416,
+3417
+],
+[
+3418,
+3419,
+3420
+]
+]
+},
+{
+"name": "줄무늬 노점 파랑",
+"w": 3,
+"h": 2,
+"passage": "solid",
+"category": "prop",
+"description": "줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다.",
+"tiles": [
+[
+3421,
+3422,
+3423
+],
+[
+3424,
+3425,
+3426
+]
+]
+},
+{
+"name": "줄무늬 노점 초록",
+"w": 3,
+"h": 2,
+"passage": "solid",
+"category": "prop",
+"description": "줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다.",
+"tiles": [
+[
+3427,
+3428,
+3429
+],
+[
+3430,
+3431,
+3432
+]
+]
+},
+{
+"name": "불길 1",
+"w": 1,
+"h": 1,
+"passage": "solid",
+"category": "fire",
+"description": "지붕·잔해 위에 얹는 불길(윗레이어). 불타는 마을 전용. 통행 불가 칸 위에만 둔다.",
+"tiles": [
+[
+3433
+]
+]
+},
+{
+"name": "불길 2",
+"w": 1,
+"h": 1,
+"passage": "solid",
+"category": "fire",
+"description": "지붕·잔해 위에 얹는 불길(윗레이어). 불타는 마을 전용. 통행 불가 칸 위에만 둔다.",
+"tiles": [
+[
+3434
+]
+]
+},
+{
+"name": "불길 3",
+"w": 1,
+"h": 1,
+"passage": "solid",
+"category": "fire",
+"description": "지붕·잔해 위에 얹는 불길(윗레이어). 불타는 마을 전용. 통행 불가 칸 위에만 둔다.",
+"tiles": [
+[
+3435
+]
+]
+},
+{
+"name": "큰 불길",
+"w": 1,
+"h": 2,
+"passage": "solid",
+"category": "fire",
+"description": "두 칸 높이 큰 불길. 무너진 집·장작더미 위에.",
+"tiles": [
+[
+3436
+],
+[
+3437
+]
+]
+},
+{
+"name": "연기 1",
+"w": 1,
+"h": 1,
+"passage": "passable",
+"category": "fire",
+"description": "반투명 검은 연기(윗레이어, 통행 가능). 불길 위쪽 지붕에.",
+"tiles": [
+[
+3438
+]
+]
+},
+{
+"name": "연기 2",
+"w": 1,
+"h": 1,
+"passage": "passable",
+"category": "fire",
+"description": "반투명 검은 연기(윗레이어, 통행 가능). 불길 위쪽 지붕에.",
+"tiles": [
+[
+3439
+]
+]
+},
+{
+"name": "잿자리 1",
+"w": 1,
+"h": 1,
+"passage": "passable",
+"category": "fire",
+"description": "타고 남은 잿자리(윗레이어, 통행 가능). 불탄 집 둘레 땅에 두세 칸씩 붙여.",
+"tiles": [
+[
+3440
+]
+]
+},
+{
+"name": "잿자리 2",
+"w": 1,
+"h": 1,
+"passage": "passable",
+"category": "fire",
+"description": "타고 남은 잿자리(윗레이어, 통행 가능). 불탄 집 둘레 땅에 두세 칸씩 붙여.",
+"tiles": [
+[
+3441
+]
+]
+},
+{
+"name": "잿자리 3",
+"w": 1,
+"h": 1,
+"passage": "passable",
+"category": "fire",
+"description": "타고 남은 잿자리(윗레이어, 통행 가능). 불탄 집 둘레 땅에 두세 칸씩 붙여.",
+"tiles": [
+[
+3442
+]
+]
+},
+{
+"name": "그을린 들보 1",
+"w": 1,
+"h": 1,
+"passage": "solid",
+"category": "fire",
+"description": "타다 남은 들보 더미. 무너진 집 자리에.",
+"tiles": [
+[
+3443
+]
+]
+},
+{
+"name": "그을린 들보 2",
+"w": 1,
+"h": 1,
+"passage": "solid",
+"category": "fire",
+"description": "타다 남은 들보 더미. 무너진 집 자리에.",
+"tiles": [
+[
+3444
+]
+]
+},
+{
+"name": "비계",
+"w": 3,
+"h": 3,
+"passage": "solid",
+"category": "construction",
+"description": "짓고 있는 집 벽 앞에 세운 나무 비계 3×3(윗레이어, 통행 불가). 재건 마을의 공사 중인 집 벽·지붕 위에 겹친다.",
+"tiles": [
+[
+3445,
+3446,
+3447
+],
+[
+3448,
+3449,
+3450
+],
+[
+3451,
+3452,
+3453
+]
+]
+},
+{
+"name": "축제 깃발 줄",
+"w": 1,
+"h": 1,
+"passage": "passable",
+"category": "festival",
+"description": "삼색 삼각 깃발 줄(윗레이어·통행 가능 ★). 길 위를 가로질러 등롱 기둥 사이에 한 줄로 잇는다.",
+"tiles": [
+[
+3454
+]
+]
+},
+{
+"name": "등롱 줄",
+"w": 1,
+"h": 1,
+"passage": "passable",
+"category": "festival",
+"description": "종이 등롱을 매단 줄(윗레이어·통행 가능 ★). 밤 축제 거리·광장 위를 가로질러.",
+"tiles": [
+[
+3455
+]
+]
+},
+{
+"name": "등롱 기둥",
+"w": 1,
+"h": 2,
+"passage": "solid",
+"category": "festival",
+"description": "붉은 종이 등롱을 단 나무 기둥 1×2(통행 불가). 축제 깃발 줄·등롱 줄의 양 끝, 무대·광장 가장자리.",
+"tiles": [
+[
+3456
+],
+[
+3457
+]
+]
+},
+{
+"name": "온천 김 1",
+"w": 1,
+"h": 1,
+"passage": "passable",
+"category": "spring",
+"description": "온천물 위에 피어오르는 반투명 김(윗레이어). 물 칸 위에만, 서너 칸 떨어뜨려.",
+"tiles": [
+[
+3458
+]
+]
+},
+{
+"name": "온천 김 2",
+"w": 1,
+"h": 1,
+"passage": "passable",
+"category": "spring",
+"description": "온천물 위에 피어오르는 반투명 김(윗레이어). 물 칸 위에만, 서너 칸 떨어뜨려.",
+"tiles": [
+[
+3459
+]
+]
+},
+{
+"name": "가죽 천막",
+"w": 3,
+"h": 3,
+"passage": "solid",
+"category": "tent",
+"description": "짐승 가죽 천막 3×3(아랫줄 가운데가 입구). 유목 천막촌·사냥꾼 야영지. 입구 앞 한 칸은 비운다.",
+"tiles": [
+[
+3460,
+3461,
+3462
+],
+[
+3463,
+3464,
+3465
+],
+[
+3466,
+3467,
+3468
+]
+]
+},
+{
+"name": "검은 가죽 천막",
+"w": 3,
+"h": 3,
+"passage": "solid",
+"category": "tent",
+"description": "그을린 검은 가죽 천막 3×3. 고블린·오크 같은 몬스터 마을 전용.",
+"tiles": [
+[
+3469,
+3470,
+3471
+],
+[
+3472,
+3473,
+3474
+],
+[
+3475,
+3467,
+3476
+]
+]
+},
+{
+"name": "붉은 축제 천막",
+"w": 3,
+"h": 3,
+"passage": "solid",
+"category": "tent",
+"description": "붉은 천 축제 천막 3×3. 축제 광장·장터 가장자리.",
+"tiles": [
+[
+3477,
+3478,
+3479
+],
+[
+3480,
+3481,
+3482
+],
+[
+3483,
+3467,
+3484
+]
+]
+},
+{
+"name": "토템 기둥",
+"w": 1,
+"h": 2,
+"passage": "solid",
+"category": "monster",
+"description": "짐승 얼굴을 새긴 토템 기둥 1×2(통행 불가). 몬스터 마을·유목 천막촌 모닥불 곁.",
+"tiles": [
+[
+3485
+],
+[
+3486
+]
+]
+},
+{
+"name": "해골 창",
+"w": 1,
+"h": 2,
+"passage": "solid",
+"category": "monster",
+"description": "해골을 꽂은 창 1×2(통행 불가). 몬스터 마을 목책 입구 양옆에만.",
+"tiles": [
+[
+3487
+],
+[
+3488
+]
+]
+},
+{
+"name": "전투 깃발",
+"w": 1,
+"h": 2,
+"passage": "solid",
+"category": "monster",
+"description": "가죽 전투 깃발 1×2(통행 불가). 몬스터 마을 두목 천막·요새 문 앞.",
+"tiles": [
+[
+3489
+],
+[
+3490
+]
+]
+}
+],
+"tileGroups": [
+{
+"id": "atlas-town-vehicle",
+"name": "마을·도시 부품 · 범선 푸른물결호",
+"role": "prop",
+"source": "user",
+"confidence": "high",
+"defaultLayer": "upper",
+"tileIds": [
+3311,
+3312,
+3313,
+3314,
+3315,
+3316,
+3317,
+3318,
+3319,
+3320,
+3321,
+3322,
+3323,
+3324,
+3325,
+3326,
+3327,
+3328,
+3329,
+3330,
+3331,
+3332,
+3333,
+3334,
+3335,
+3336,
+3337,
+3338,
+3339,
+3340,
+3341,
+3342,
+3343,
+3344,
+3345,
+3346,
+3347,
+3348,
+3349,
+3350,
+3351,
+3352,
+3353,
+3354,
+3355,
+3356,
+3357,
+3358,
+3359,
+3360,
+3361,
+3362,
+3363,
+3364,
+3365,
+3366,
+3367,
+3368,
+3369,
+3370,
+3371,
+3372,
+3373,
+3374,
+3375,
+3376,
+3377,
+3378,
+3379,
+3380,
+3381,
+3382,
+3383,
+3384,
+3385,
+3386,
+3387,
+3388,
+3389,
+3390,
+3391,
+3392,
+3393,
+3394,
+3395,
+3396,
+3397,
+3398,
+3399,
+3400,
+3401,
+3402,
+3403,
+3404,
+3405
+],
+"description": "범선 푸른물결호 31×12: 돛을 접은 큰 범선 갑판(EasyRPG 배 칩셋 CC0, 고물 조각 거울상 포함). 물 위에만 둔다. 뱃머리가 왼쪽, 가운데 선루, 대포·밧줄·통이 실려 있다. 부두 끝에 대어 둔다.",
+"placementRules": "배는 물 칸 위에만, 모든 칸이 물이어야 한다. 부두 끝 곁에 대고 뱃머리는 바다 쪽. 판자 몇 장으로 배를 흉내 내지 않는다."
+},
+{
+"id": "atlas-town-landmark",
+"name": "마을·도시 부품 · 광장 분수",
+"role": "prop",
+"source": "user",
+"confidence": "high",
+"defaultLayer": "upper",
+"tileIds": [
+3406,
+3407,
+3408,
+3409,
+3410,
+3411,
+3412,
+3413,
+3414
+],
+"description": "광장 분수 3×3: 돌 수반 분수 3×3. 광장 한가운데. 통행 불가. 둘레 한 칸은 비워 광장을 돌아 걷게 한다.",
+"placementRules": "분수는 포장 광장 한가운데. 둘레 한 칸은 비워 둔다."
+},
+{
+"id": "atlas-town-prop",
+"name": "마을·도시 부품 · 줄무늬 노점 빨강, 줄무늬 노점 파랑, 줄무늬 노점 초록",
+"role": "prop",
+"source": "user",
+"confidence": "high",
+"defaultLayer": "upper",
+"tileIds": [
+3415,
+3416,
+3417,
+3418,
+3419,
+3420,
+3421,
+3422,
+3423,
+3424,
+3425,
+3426,
+3427,
+3428,
+3429,
+3430,
+3431,
+3432
+],
+"description": "줄무늬 노점 빨강 3×2: 줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다. / 줄무늬 노점 파랑 3×2: 줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다. / 줄무늬 노점 초록 3×2: 줄무늬 차양을 친 장터 노점 3×2(윗줄 차양, 아랫줄 좌판). 통행 불가. 광장·시장 거리 가장자리에 여럿 줄지어 두고 앞 한 칸은 비운다.",
+"placementRules": "노점은 광장·시장 거리 가장자리에 차양이 위, 좌판이 아래로. 앞 한 칸은 통로로 비운다. 들판 한가운데 금지."
+},
+{
+"id": "atlas-town-fire",
+"name": "마을·도시 부품 · 불길 1, 불길 2, 불길 3, 큰 불길, 연기 1, 연기 2, 잿자리 1, 잿자리 2, 잿자리 3, 그을린 들보 1, 그을린 들보 2",
+"role": "prop",
+"source": "user",
+"confidence": "high",
+"defaultLayer": "upper",
+"tileIds": [
+3433,
+3434,
+3435,
+3436,
+3437,
+3438,
+3439,
+3440,
+3441,
+3442,
+3443,
+3444
+],
+"description": "불길 1 1×1: 지붕·잔해 위에 얹는 불길(윗레이어). 불타는 마을 전용. 통행 불가 칸 위에만 둔다. / 불길 2 1×1: 지붕·잔해 위에 얹는 불길(윗레이어). 불타는 마을 전용. 통행 불가 칸 위에만 둔다. / 불길 3 1×1: 지붕·잔해 위에 얹는 불길(윗레이어). 불타는 마을 전용. 통행 불가 칸 위에만 둔다. / 큰 불길 1×2: 두 칸 높이 큰 불길. 무너진 집·장작더미 위에. / 연기 1 1×1: 반투명 검은 연기(윗레이어, 통행 가능). 불길 위쪽 지붕에. / 연기 2 1×1: 반투명 검은 연기(윗레이어, 통행 가능). 불길 위쪽 지붕에. / 잿자리 1 1×1: 타고 남은 잿자리(윗레이어, 통행 가능). 불탄 집 둘레 땅에 두세 칸씩 붙여. / 잿자리 2 1×1: 타고 남은 잿자리(윗레이어, 통행 가능). 불탄 집 둘레 땅에 두세 칸씩 붙여. / 잿자리 3 1×1: 타고 남은 잿자리(윗레이어, 통행 가능). 불탄 집 둘레 땅에 두세 칸씩 붙여. / 그을린 들보 1 1×1: 타다 남은 들보 더미. 무너진 집 자리에. / 그을린 들보 2 1×1: 타다 남은 들보 더미. 무너진 집 자리에.",
+"placementRules": "불길·연기는 불타는 마을(밤 조명)의 지붕·잔해 위에만, 덩이로 모아 둔다(흩뿌리지 않는다). 잿자리는 불탄 집 둘레 땅."
+},
+{
+"id": "atlas-town-construction",
+"name": "마을·도시 부품 · 비계",
+"role": "prop",
+"source": "user",
+"confidence": "high",
+"defaultLayer": "upper",
+"tileIds": [
+3445,
+3446,
+3447,
+3448,
+3449,
+3450,
+3451,
+3452,
+3453
+],
+"description": "비계 3×3: 짓고 있는 집 벽 앞에 세운 나무 비계 3×3(윗레이어, 통행 불가). 재건 마을의 공사 중인 집 벽·지붕 위에 겹친다.",
+"placementRules": "비계는 짓고 있는 집 앞벽에 겹쳐 세우고 문 칸은 비운다. 곁에 통나무·장작·연장 상자."
+},
+{
+"id": "atlas-town-festival",
+"name": "마을·도시 부품 · 축제 깃발 줄, 등롱 줄, 등롱 기둥",
+"role": "prop",
+"source": "user",
+"confidence": "high",
+"defaultLayer": "upper",
+"tileIds": [
+3454,
+3455,
+3456,
+3457
+],
+"description": "축제 깃발 줄 1×1: 삼색 삼각 깃발 줄(윗레이어·통행 가능 ★). 길 위를 가로질러 등롱 기둥 사이에 한 줄로 잇는다. / 등롱 줄 1×1: 종이 등롱을 매단 줄(윗레이어·통행 가능 ★). 밤 축제 거리·광장 위를 가로질러. / 등롱 기둥 1×2: 붉은 종이 등롱을 단 나무 기둥 1×2(통행 불가). 축제 깃발 줄·등롱 줄의 양 끝, 무대·광장 가장자리.",
+"placementRules": "깃발 줄·등롱 줄은 길 위를 가로지르는 한 줄로, 양 끝에 등롱 기둥. 밤 축제 맵(어두운 조명)에서 광장·큰길 위에."
+},
+{
+"id": "atlas-town-spring",
+"name": "마을·도시 부품 · 온천 김 1, 온천 김 2",
+"role": "prop",
+"source": "user",
+"confidence": "high",
+"defaultLayer": "upper",
+"tileIds": [
+3458,
+3459
+],
+"description": "온천 김 1 1×1: 온천물 위에 피어오르는 반투명 김(윗레이어). 물 칸 위에만, 서너 칸 떨어뜨려. / 온천 김 2 1×1: 온천물 위에 피어오르는 반투명 김(윗레이어). 물 칸 위에만, 서너 칸 떨어뜨려.",
+"placementRules": "김은 온천물 칸 위에만, 서너 칸 띄어서."
+},
+{
+"id": "atlas-town-tent",
+"name": "마을·도시 부품 · 가죽 천막, 검은 가죽 천막, 붉은 축제 천막",
+"role": "prop",
+"source": "user",
+"confidence": "high",
+"defaultLayer": "upper",
+"tileIds": [
+3460,
+3461,
+3462,
+3463,
+3464,
+3465,
+3466,
+3467,
+3468,
+3469,
+3470,
+3471,
+3472,
+3473,
+3474,
+3475,
+3476,
+3477,
+3478,
+3479,
+3480,
+3481,
+3482,
+3483,
+3484
+],
+"description": "가죽 천막 3×3: 짐승 가죽 천막 3×3(아랫줄 가운데가 입구). 유목 천막촌·사냥꾼 야영지. 입구 앞 한 칸은 비운다. / 검은 가죽 천막 3×3: 그을린 검은 가죽 천막 3×3. 고블린·오크 같은 몬스터 마을 전용. / 붉은 축제 천막 3×3: 붉은 천 축제 천막 3×3. 축제 광장·장터 가장자리.",
+"placementRules": "천막은 입구(아랫줄 가운데) 앞 한 칸을 비운다. 모닥불·장작·물통과 함께 야영지 한 덩이로."
+},
+{
+"id": "atlas-town-monster",
+"name": "마을·도시 부품 · 토템 기둥, 해골 창, 전투 깃발",
+"role": "prop",
+"source": "user",
+"confidence": "high",
+"defaultLayer": "upper",
+"tileIds": [
+3485,
+3486,
+3487,
+3488,
+3489,
+3490
+],
+"description": "토템 기둥 1×2: 짐승 얼굴을 새긴 토템 기둥 1×2(통행 불가). 몬스터 마을·유목 천막촌 모닥불 곁. / 해골 창 1×2: 해골을 꽂은 창 1×2(통행 불가). 몬스터 마을 목책 입구 양옆에만. / 전투 깃발 1×2: 가죽 전투 깃발 1×2(통행 불가). 몬스터 마을 두목 천막·요새 문 앞.",
+"placementRules": "토템·해골 창·전투 깃발은 몬스터 마을의 모닥불·두목 천막·목책 입구 곁에만."
+}
+]
+}

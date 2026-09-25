@@ -280,6 +280,8 @@ function renderAiSummary(kit: SectionStructureKitDef): HTMLElement {
   });
 }
 
+import { spatialReferenceDocuments } from './spatialReferenceDocuments';
+
 export function renderInspector(
   tileset: TilesetDef,
   kit: SectionStructureKitDef,
@@ -333,6 +335,7 @@ export function renderInspector(
   );
 
   inspector.append(renderAiSummary(kit));
+  inspector.append(...spatialReferenceDocuments(kit.referenceDocuments));
 
   // 래스터 뷰 + 부위 오버레이
   const rasterWrap = el("div", {

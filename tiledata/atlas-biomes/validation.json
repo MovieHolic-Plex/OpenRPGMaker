@@ -1,0 +1,2425 @@
+[
+  {
+    "id": "jungle-vine-ford",
+    "seed": 7101,
+    "entry": [
+      4,
+      25
+    ],
+    "reachable": 1663,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.452,
+      "at": [
+        0,
+        7
+      ],
+      "screenAt": [
+        12,
+        8
+      ]
+    }
+  },
+  {
+    "id": "jungle-idol-cave",
+    "seed": 7111,
+    "entry": [
+      4,
+      31
+    ],
+    "reachable": 1334,
+    "targets": 8,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.434,
+      "at": [
+        51,
+        8
+      ],
+      "screenAt": [
+        8,
+        0
+      ]
+    }
+  },
+  {
+    "id": "jungle-terrace-falls",
+    "seed": 7121,
+    "entry": [
+      4,
+      38
+    ],
+    "reachable": 1237,
+    "targets": 7,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        49,
+        7
+      ],
+      "screenAt": [
+        16,
+        28
+      ]
+    }
+  },
+  {
+    "id": "jungle-spring-glade",
+    "seed": 7131,
+    "entry": [
+      4,
+      18
+    ],
+    "reachable": 1296,
+    "targets": 3,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.434,
+      "at": [
+        54,
+        14
+      ],
+      "screenAt": [
+        20,
+        16
+      ]
+    }
+  },
+  {
+    "id": "jungle-green-lake",
+    "seed": 7141,
+    "entry": [
+      4,
+      32
+    ],
+    "reachable": 1488,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        27,
+        6
+      ],
+      "screenAt": [
+        0,
+        24
+      ]
+    }
+  },
+  {
+    "id": "jungle-crossing",
+    "seed": 7151,
+    "entry": [
+      4,
+      20
+    ],
+    "reachable": 1643,
+    "targets": 4,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.448,
+      "at": [
+        28,
+        4
+      ],
+      "screenAt": [
+        16,
+        12
+      ]
+    }
+  },
+  {
+    "id": "jungle-vine-pass",
+    "seed": 7161,
+    "entry": [
+      26,
+      45
+    ],
+    "reachable": 1737,
+    "targets": 7,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.443,
+      "at": [
+        31,
+        18
+      ],
+      "screenAt": [
+        24,
+        37
+      ]
+    }
+  },
+  {
+    "id": "swamp-mist-causeway",
+    "seed": 7201,
+    "entry": [
+      4,
+      20
+    ],
+    "reachable": 1723,
+    "targets": 3,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.448,
+      "at": [
+        0,
+        6
+      ],
+      "screenAt": [
+        32,
+        28
+      ]
+    }
+  },
+  {
+    "id": "swamp-mangrove-channels",
+    "seed": 7211,
+    "entry": [
+      4,
+      23
+    ],
+    "reachable": 1793,
+    "targets": 2,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        51,
+        27
+      ],
+      "screenAt": [
+        40,
+        20
+      ]
+    }
+  },
+  {
+    "id": "swamp-black-lake",
+    "seed": 7221,
+    "entry": [
+      4,
+      32
+    ],
+    "reachable": 1431,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.452,
+      "at": [
+        38,
+        6
+      ],
+      "screenAt": [
+        8,
+        24
+      ]
+    }
+  },
+  {
+    "id": "swamp-two-bridges",
+    "seed": 7231,
+    "entry": [
+      4,
+      25
+    ],
+    "reachable": 2022,
+    "targets": 7,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        3,
+        19
+      ],
+      "screenAt": [
+        47,
+        12
+      ]
+    }
+  },
+  {
+    "id": "swamp-rot-glade",
+    "seed": 7241,
+    "entry": [
+      4,
+      20
+    ],
+    "reachable": 1263,
+    "targets": 3,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.448,
+      "at": [
+        15,
+        9
+      ],
+      "screenAt": [
+        24,
+        28
+      ]
+    }
+  },
+  {
+    "id": "swamp-cave-mouth",
+    "seed": 7251,
+    "entry": [
+      4,
+      32
+    ],
+    "reachable": 1531,
+    "targets": 6,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.448,
+      "at": [
+        11,
+        0
+      ],
+      "screenAt": [
+        36,
+        0
+      ]
+    }
+  },
+  {
+    "id": "swamp-mangrove-coast",
+    "seed": 7261,
+    "entry": [
+      28,
+      4
+    ],
+    "reachable": 1191,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.448,
+      "at": [
+        5,
+        5
+      ],
+      "screenAt": [
+        16,
+        4
+      ]
+    }
+  },
+  {
+    "id": "mushroom-crossroads",
+    "seed": 7301,
+    "entry": [
+      4,
+      21
+    ],
+    "reachable": 1531,
+    "targets": 4,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        47,
+        34
+      ],
+      "screenAt": [
+        12,
+        16
+      ]
+    }
+  },
+  {
+    "id": "mushroom-fairy-glade",
+    "seed": 7311,
+    "entry": [
+      4,
+      23
+    ],
+    "reachable": 1332,
+    "targets": 3,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.448,
+      "at": [
+        38,
+        6
+      ],
+      "screenAt": [
+        28,
+        16
+      ]
+    }
+  },
+  {
+    "id": "mushroom-spore-cave",
+    "seed": 7321,
+    "entry": [
+      4,
+      32
+    ],
+    "reachable": 1529,
+    "targets": 8,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.448,
+      "at": [
+        50,
+        0
+      ],
+      "screenAt": [
+        40,
+        28
+      ]
+    }
+  },
+  {
+    "id": "mushroom-spore-ford",
+    "seed": 7331,
+    "entry": [
+      4,
+      25
+    ],
+    "reachable": 1928,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.452,
+      "at": [
+        57,
+        4
+      ],
+      "screenAt": [
+        12,
+        16
+      ]
+    }
+  },
+  {
+    "id": "mushroom-terraces",
+    "seed": 7341,
+    "entry": [
+      30,
+      47
+    ],
+    "reachable": 1730,
+    "targets": 7,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        11,
+        20
+      ],
+      "screenAt": [
+        39,
+        0
+      ]
+    }
+  },
+  {
+    "id": "mushroom-glow-lake",
+    "seed": 7351,
+    "entry": [
+      4,
+      34
+    ],
+    "reachable": 1513,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        27,
+        6
+      ],
+      "screenAt": [
+        4,
+        8
+      ]
+    }
+  },
+  {
+    "id": "mushroom-falls",
+    "seed": 7361,
+    "entry": [
+      4,
+      39
+    ],
+    "reachable": 1432,
+    "targets": 7,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.439,
+      "at": [
+        10,
+        5
+      ],
+      "screenAt": [
+        24,
+        32
+      ]
+    }
+  },
+  {
+    "id": "crystal-steps",
+    "seed": 7401,
+    "entry": [
+      26,
+      47
+    ],
+    "reachable": 1709,
+    "targets": 7,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.448,
+      "at": [
+        44,
+        0
+      ],
+      "screenAt": [
+        4,
+        0
+      ]
+    }
+  },
+  {
+    "id": "crystal-cliff-cave",
+    "seed": 7411,
+    "entry": [
+      30,
+      39
+    ],
+    "reachable": 1693,
+    "targets": 7,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.443,
+      "at": [
+        8,
+        7
+      ],
+      "screenAt": [
+        16,
+        4
+      ]
+    }
+  },
+  {
+    "id": "crystal-mirror-lake",
+    "seed": 7421,
+    "entry": [
+      4,
+      34
+    ],
+    "reachable": 1530,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.443,
+      "at": [
+        29,
+        4
+      ],
+      "screenAt": [
+        4,
+        4
+      ]
+    }
+  },
+  {
+    "id": "crystal-plain-road",
+    "seed": 7431,
+    "entry": [
+      4,
+      20
+    ],
+    "reachable": 1821,
+    "targets": 3,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.443,
+      "at": [
+        14,
+        5
+      ],
+      "screenAt": [
+        44,
+        4
+      ]
+    }
+  },
+  {
+    "id": "crystal-light-ford",
+    "seed": 7441,
+    "entry": [
+      4,
+      17
+    ],
+    "reachable": 1697,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        26,
+        36
+      ],
+      "screenAt": [
+        28,
+        4
+      ]
+    }
+  },
+  {
+    "id": "crystal-spire-cross",
+    "seed": 7451,
+    "entry": [
+      4,
+      25
+    ],
+    "reachable": 1605,
+    "targets": 4,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.443,
+      "at": [
+        51,
+        17
+      ],
+      "screenAt": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "id": "crystal-falls",
+    "seed": 7461,
+    "entry": [
+      4,
+      36
+    ],
+    "reachable": 1390,
+    "targets": 7,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        46,
+        5
+      ],
+      "screenAt": [
+        4,
+        28
+      ]
+    }
+  },
+  {
+    "id": "badlands-red-cave",
+    "seed": 7501,
+    "entry": [
+      29,
+      39
+    ],
+    "reachable": 2229,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.452,
+      "at": [
+        21,
+        14
+      ],
+      "screenAt": [
+        16,
+        24
+      ]
+    }
+  },
+  {
+    "id": "badlands-layered-canyon",
+    "seed": 7511,
+    "entry": [
+      32,
+      47
+    ],
+    "reachable": 2423,
+    "targets": 6,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        35,
+        47
+      ],
+      "screenAt": [
+        0,
+        36
+      ]
+    }
+  },
+  {
+    "id": "badlands-stair-canyon",
+    "seed": 7521,
+    "entry": [
+      34,
+      47
+    ],
+    "reachable": 2486,
+    "targets": 8,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.443,
+      "at": [
+        0,
+        0
+      ],
+      "screenAt": [
+        12,
+        20
+      ]
+    }
+  },
+  {
+    "id": "badlands-dust-road",
+    "seed": 7531,
+    "entry": [
+      4,
+      17
+    ],
+    "reachable": 2649,
+    "targets": 3,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.425,
+      "at": [
+        46,
+        0
+      ],
+      "screenAt": [
+        40,
+        0
+      ]
+    }
+  },
+  {
+    "id": "badlands-red-river",
+    "seed": 7541,
+    "entry": [
+      4,
+      23
+    ],
+    "reachable": 2500,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.43,
+      "at": [
+        6,
+        39
+      ],
+      "screenAt": [
+        0,
+        0
+      ]
+    }
+  },
+  {
+    "id": "badlands-crossroads",
+    "seed": 7551,
+    "entry": [
+      4,
+      22
+    ],
+    "reachable": 2444,
+    "targets": 4,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.439,
+      "at": [
+        7,
+        0
+      ],
+      "screenAt": [
+        4,
+        0
+      ]
+    }
+  },
+  {
+    "id": "badlands-gorge-cave",
+    "seed": 7561,
+    "entry": [
+      4,
+      30
+    ],
+    "reachable": 2226,
+    "targets": 6,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.443,
+      "at": [
+        49,
+        22
+      ],
+      "screenAt": [
+        12,
+        0
+      ]
+    }
+  },
+  {
+    "id": "savanna-grass-road",
+    "seed": 7601,
+    "entry": [
+      4,
+      24
+    ],
+    "reachable": 2127,
+    "targets": 3,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.448,
+      "at": [
+        18,
+        3
+      ],
+      "screenAt": [
+        32,
+        4
+      ]
+    }
+  },
+  {
+    "id": "savanna-waterhole-ford",
+    "seed": 7611,
+    "entry": [
+      4,
+      20
+    ],
+    "reachable": 1981,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        25,
+        4
+      ],
+      "screenAt": [
+        32,
+        4
+      ]
+    }
+  },
+  {
+    "id": "savanna-dry-lake",
+    "seed": 7621,
+    "entry": [
+      4,
+      32
+    ],
+    "reachable": 1615,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.448,
+      "at": [
+        32,
+        4
+      ],
+      "screenAt": [
+        4,
+        4
+      ]
+    }
+  },
+  {
+    "id": "savanna-baobab-cross",
+    "seed": 7631,
+    "entry": [
+      4,
+      20
+    ],
+    "reachable": 1891,
+    "targets": 4,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        3,
+        31
+      ],
+      "screenAt": [
+        28,
+        8
+      ]
+    }
+  },
+  {
+    "id": "savanna-kopje-bluff",
+    "seed": 7641,
+    "entry": [
+      31,
+      39
+    ],
+    "reachable": 1852,
+    "targets": 6,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.443,
+      "at": [
+        33,
+        14
+      ],
+      "screenAt": [
+        12,
+        4
+      ]
+    }
+  },
+  {
+    "id": "savanna-falls",
+    "seed": 7651,
+    "entry": [
+      4,
+      36
+    ],
+    "reachable": 1493,
+    "targets": 7,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        50,
+        39
+      ],
+      "screenAt": [
+        40,
+        32
+      ]
+    }
+  },
+  {
+    "id": "savanna-open-plain",
+    "seed": 7661,
+    "entry": [
+      4,
+      17
+    ],
+    "reachable": 2298,
+    "targets": 2,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.443,
+      "at": [
+        55,
+        17
+      ],
+      "screenAt": [
+        0,
+        4
+      ]
+    }
+  },
+  {
+    "id": "taiga-ice-lake",
+    "seed": 7701,
+    "entry": [
+      4,
+      34
+    ],
+    "reachable": 1441,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.452,
+      "at": [
+        23,
+        4
+      ],
+      "screenAt": [
+        20,
+        28
+      ]
+    }
+  },
+  {
+    "id": "taiga-spruce-ford",
+    "seed": 7711,
+    "entry": [
+      4,
+      19
+    ],
+    "reachable": 1670,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        26,
+        4
+      ],
+      "screenAt": [
+        40,
+        24
+      ]
+    }
+  },
+  {
+    "id": "taiga-snow-glade",
+    "seed": 7721,
+    "entry": [
+      4,
+      27
+    ],
+    "reachable": 1287,
+    "targets": 3,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        38,
+        6
+      ],
+      "screenAt": [
+        4,
+        20
+      ]
+    }
+  },
+  {
+    "id": "taiga-bear-cave",
+    "seed": 7731,
+    "entry": [
+      4,
+      32
+    ],
+    "reachable": 1399,
+    "targets": 8,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.443,
+      "at": [
+        24,
+        0
+      ],
+      "screenAt": [
+        12,
+        0
+      ]
+    }
+  },
+  {
+    "id": "taiga-spruce-pass",
+    "seed": 7741,
+    "entry": [
+      31,
+      45
+    ],
+    "reachable": 1706,
+    "targets": 6,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        3,
+        34
+      ],
+      "screenAt": [
+        32,
+        0
+      ]
+    }
+  },
+  {
+    "id": "taiga-frozen-falls",
+    "seed": 7751,
+    "entry": [
+      4,
+      36
+    ],
+    "reachable": 1437,
+    "targets": 7,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.443,
+      "at": [
+        3,
+        4
+      ],
+      "screenAt": [
+        12,
+        28
+      ]
+    }
+  },
+  {
+    "id": "taiga-logger-cross",
+    "seed": 7761,
+    "entry": [
+      4,
+      26
+    ],
+    "reachable": 1592,
+    "targets": 4,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.448,
+      "at": [
+        51,
+        5
+      ],
+      "screenAt": [
+        32,
+        28
+      ]
+    }
+  },
+  {
+    "id": "tundra-river-ford",
+    "seed": 7801,
+    "entry": [
+      4,
+      23
+    ],
+    "reachable": 1839,
+    "targets": 4,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        0,
+        5
+      ],
+      "screenAt": [
+        43,
+        4
+      ]
+    }
+  },
+  {
+    "id": "tundra-moss-plain",
+    "seed": 7811,
+    "entry": [
+      4,
+      16
+    ],
+    "reachable": 2254,
+    "targets": 3,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.462,
+      "at": [
+        0,
+        5
+      ],
+      "screenAt": [
+        4,
+        20
+      ]
+    }
+  },
+  {
+    "id": "tundra-ice-lake",
+    "seed": 7821,
+    "entry": [
+      4,
+      35
+    ],
+    "reachable": 2077,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        2,
+        5
+      ],
+      "screenAt": [
+        12,
+        28
+      ]
+    }
+  },
+  {
+    "id": "tundra-frost-cave",
+    "seed": 7831,
+    "entry": [
+      33,
+      39
+    ],
+    "reachable": 1724,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.443,
+      "at": [
+        6,
+        4
+      ],
+      "screenAt": [
+        4,
+        31
+      ]
+    }
+  },
+  {
+    "id": "tundra-cold-coast",
+    "seed": 7841,
+    "entry": [
+      4,
+      21
+    ],
+    "reachable": 1340,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.434,
+      "at": [
+        39,
+        8
+      ],
+      "screenAt": [
+        24,
+        8
+      ]
+    }
+  },
+  {
+    "id": "tundra-cairn-cross",
+    "seed": 7851,
+    "entry": [
+      4,
+      24
+    ],
+    "reachable": 1788,
+    "targets": 4,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        3,
+        32
+      ],
+      "screenAt": [
+        36,
+        16
+      ]
+    }
+  },
+  {
+    "id": "tundra-frost-pass",
+    "seed": 7861,
+    "entry": [
+      29,
+      45
+    ],
+    "reachable": 1944,
+    "targets": 7,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.448,
+      "at": [
+        6,
+        8
+      ],
+      "screenAt": [
+        12,
+        37
+      ]
+    }
+  },
+  {
+    "id": "blight-cursed-cave",
+    "seed": 7901,
+    "entry": [
+      4,
+      32
+    ],
+    "reachable": 1485,
+    "targets": 6,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.493,
+      "at": [
+        38,
+        19
+      ],
+      "screenAt": [
+        24,
+        16
+      ]
+    }
+  },
+  {
+    "id": "blight-withered-glade",
+    "seed": 7911,
+    "entry": [
+      4,
+      20
+    ],
+    "reachable": 1385,
+    "targets": 3,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.425,
+      "at": [
+        4,
+        14
+      ],
+      "screenAt": [
+        24,
+        8
+      ]
+    }
+  },
+  {
+    "id": "blight-poison-marsh",
+    "seed": 7921,
+    "entry": [
+      4,
+      17
+    ],
+    "reachable": 1759,
+    "targets": 3,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.457,
+      "at": [
+        0,
+        12
+      ],
+      "screenAt": [
+        36,
+        12
+      ]
+    }
+  },
+  {
+    "id": "blight-violet-ford",
+    "seed": 7931,
+    "entry": [
+      4,
+      20
+    ],
+    "reachable": 1849,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.475,
+      "at": [
+        26,
+        4
+      ],
+      "screenAt": [
+        4,
+        12
+      ]
+    }
+  },
+  {
+    "id": "blight-obelisk-cross",
+    "seed": 7941,
+    "entry": [
+      4,
+      24
+    ],
+    "reachable": 1673,
+    "targets": 4,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.439,
+      "at": [
+        19,
+        6
+      ],
+      "screenAt": [
+        4,
+        20
+      ]
+    }
+  },
+  {
+    "id": "blight-dark-steps",
+    "seed": 7951,
+    "entry": [
+      26,
+      47
+    ],
+    "reachable": 1897,
+    "targets": 7,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.434,
+      "at": [
+        3,
+        0
+      ],
+      "screenAt": [
+        16,
+        39
+      ]
+    }
+  },
+  {
+    "id": "blight-venom-lake",
+    "seed": 7961,
+    "entry": [
+      4,
+      31
+    ],
+    "reachable": 1516,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.462,
+      "at": [
+        22,
+        7
+      ],
+      "screenAt": [
+        44,
+        16
+      ]
+    }
+  },
+  {
+    "id": "skyisle-cloud-steps",
+    "seed": 8001,
+    "entry": [
+      4,
+      20
+    ],
+    "reachable": 1027,
+    "targets": 8,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        4,
+        28
+      ],
+      "screenAt": [
+        40,
+        4
+      ]
+    }
+  },
+  {
+    "id": "skyisle-three-isles",
+    "seed": 8011,
+    "entry": [
+      4,
+      15
+    ],
+    "reachable": 959,
+    "targets": 6,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        7,
+        4
+      ],
+      "screenAt": [
+        16,
+        12
+      ]
+    }
+  },
+  {
+    "id": "skyisle-five-isles",
+    "seed": 8024,
+    "entry": [
+      4,
+      19
+    ],
+    "reachable": 1226,
+    "targets": 10,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        73,
+        21
+      ],
+      "screenAt": [
+        0,
+        16
+      ]
+    }
+  },
+  {
+    "id": "skyisle-cliff-edge",
+    "seed": 8031,
+    "entry": [
+      4,
+      19
+    ],
+    "reachable": 1214,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.443,
+      "at": [
+        7,
+        6
+      ],
+      "screenAt": [
+        16,
+        8
+      ]
+    }
+  },
+  {
+    "id": "skyisle-cloud-bay",
+    "seed": 8044,
+    "entry": [
+      29,
+      4
+    ],
+    "reachable": 1116,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        23,
+        4
+      ],
+      "screenAt": [
+        4,
+        16
+      ]
+    }
+  },
+  {
+    "id": "skyisle-sky-lake",
+    "seed": 8051,
+    "entry": [
+      4,
+      31
+    ],
+    "reachable": 1454,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        27,
+        3
+      ],
+      "screenAt": [
+        36,
+        20
+      ]
+    }
+  },
+  {
+    "id": "skyisle-meadow",
+    "seed": 8061,
+    "entry": [
+      4,
+      19
+    ],
+    "reachable": 1682,
+    "targets": 3,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.443,
+      "at": [
+        60,
+        8
+      ],
+      "screenAt": [
+        0,
+        4
+      ]
+    }
+  },
+  {
+    "id": "tropical-palm-beach",
+    "seed": 8101,
+    "entry": [
+      4,
+      18
+    ],
+    "reachable": 1225,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.443,
+      "at": [
+        30,
+        6
+      ],
+      "screenAt": [
+        8,
+        12
+      ]
+    }
+  },
+  {
+    "id": "tropical-coral-bay",
+    "seed": 8111,
+    "entry": [
+      28,
+      4
+    ],
+    "reachable": 1156,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        12,
+        4
+      ],
+      "screenAt": [
+        4,
+        32
+      ]
+    }
+  },
+  {
+    "id": "tropical-coral-isles",
+    "seed": 8121,
+    "entry": [
+      4,
+      17
+    ],
+    "reachable": 961,
+    "targets": 6,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        37,
+        16
+      ],
+      "screenAt": [
+        44,
+        12
+      ]
+    }
+  },
+  {
+    "id": "tropical-lagoon",
+    "seed": 8131,
+    "entry": [
+      4,
+      35
+    ],
+    "reachable": 1491,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.443,
+      "at": [
+        30,
+        17
+      ],
+      "screenAt": [
+        4,
+        12
+      ]
+    }
+  },
+  {
+    "id": "tropical-river-ford",
+    "seed": 8141,
+    "entry": [
+      4,
+      21
+    ],
+    "reachable": 1552,
+    "targets": 4,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.448,
+      "at": [
+        34,
+        4
+      ],
+      "screenAt": [
+        45,
+        28
+      ]
+    }
+  },
+  {
+    "id": "tropical-falls",
+    "seed": 8151,
+    "entry": [
+      4,
+      38
+    ],
+    "reachable": 1306,
+    "targets": 7,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        8,
+        26
+      ],
+      "screenAt": [
+        0,
+        24
+      ]
+    }
+  },
+  {
+    "id": "tropical-jungle-glade",
+    "seed": 8161,
+    "entry": [
+      4,
+      17
+    ],
+    "reachable": 1272,
+    "targets": 3,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        22,
+        25
+      ],
+      "screenAt": [
+        4,
+        12
+      ]
+    }
+  },
+  {
+    "id": "border-jungle-swamp-ford",
+    "seed": 8202,
+    "entry": [
+      4,
+      21
+    ],
+    "reachable": 1786,
+    "targets": 4,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.498,
+      "at": [
+        4,
+        5
+      ],
+      "screenAt": [
+        32,
+        8
+      ]
+    }
+  },
+  {
+    "id": "border-jungle-swamp-glade",
+    "seed": 8211,
+    "entry": [
+      4,
+      20
+    ],
+    "reachable": 1313,
+    "targets": 3,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.484,
+      "at": [
+        39,
+        28
+      ],
+      "screenAt": [
+        28,
+        24
+      ]
+    }
+  },
+  {
+    "id": "border-taiga-tundra-line",
+    "seed": 8224,
+    "entry": [
+      4,
+      30
+    ],
+    "reachable": 1441,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.489,
+      "at": [
+        18,
+        5
+      ],
+      "screenAt": [
+        40,
+        4
+      ]
+    }
+  },
+  {
+    "id": "border-taiga-tundra-cross",
+    "seed": 8231,
+    "entry": [
+      4,
+      22
+    ],
+    "reachable": 1518,
+    "targets": 4,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.448,
+      "at": [
+        37,
+        10
+      ],
+      "screenAt": [
+        8,
+        28
+      ]
+    }
+  },
+  {
+    "id": "border-savanna-badlands-plain",
+    "seed": 8263,
+    "entry": [
+      4,
+      17
+    ],
+    "reachable": 2085,
+    "targets": 3,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.489,
+      "at": [
+        54,
+        5
+      ],
+      "screenAt": [
+        36,
+        16
+      ]
+    }
+  },
+  {
+    "id": "border-savanna-badlands-bluff",
+    "seed": 8268,
+    "entry": [
+      28,
+      41
+    ],
+    "reachable": 1738,
+    "targets": 4,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.489,
+      "at": [
+        54,
+        14
+      ],
+      "screenAt": [
+        8,
+        8
+      ]
+    }
+  },
+  {
+    "id": "border-tropical-jungle-coast",
+    "seed": 8267,
+    "entry": [
+      4,
+      18
+    ],
+    "reachable": 1300,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.462,
+      "at": [
+        52,
+        9
+      ],
+      "screenAt": [
+        24,
+        4
+      ]
+    }
+  },
+  {
+    "id": "border-blight-forest-glade",
+    "seed": 8271,
+    "entry": [
+      4,
+      27
+    ],
+    "reachable": 1223,
+    "targets": 3,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.484,
+      "at": [
+        41,
+        7
+      ],
+      "screenAt": [
+        8,
+        12
+      ]
+    }
+  },
+  {
+    "id": "border-blight-forest-ford",
+    "seed": 8283,
+    "entry": [
+      4,
+      19
+    ],
+    "reachable": 1591,
+    "targets": 4,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.493,
+      "at": [
+        7,
+        10
+      ],
+      "screenAt": [
+        32,
+        20
+      ]
+    }
+  },
+  {
+    "id": "border-mushroom-crystal-cross",
+    "seed": 8291,
+    "entry": [
+      4,
+      25
+    ],
+    "reachable": 1624,
+    "targets": 4,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.466,
+      "at": [
+        5,
+        6
+      ],
+      "screenAt": [
+        24,
+        28
+      ]
+    }
+  },
+  {
+    "id": "border-swamp-blight-marsh",
+    "seed": 8301,
+    "entry": [
+      4,
+      21
+    ],
+    "reachable": 1814,
+    "targets": 3,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.48,
+      "at": [
+        57,
+        6
+      ],
+      "screenAt": [
+        32,
+        12
+      ]
+    }
+  },
+  {
+    "id": "border-tundra-crystal-plain",
+    "seed": 8324,
+    "entry": [
+      4,
+      22
+    ],
+    "reachable": 2165,
+    "targets": 3,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.484,
+      "at": [
+        15,
+        4
+      ],
+      "screenAt": [
+        12,
+        24
+      ]
+    }
+  },
+  {
+    "id": "atlas-world-continent",
+    "seed": 9101,
+    "reachable": 2448,
+    "places": 19,
+    "emptiness": {
+      "maxSq": 6,
+      "screen": 0.652,
+      "at": [
+        26,
+        37
+      ],
+      "screenAt": [
+        30,
+        22
+      ]
+    }
+  },
+  {
+    "id": "atlas-world-archipelago",
+    "seed": 9111,
+    "reachable": 742,
+    "places": 8,
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.593,
+      "at": [
+        13,
+        17
+      ],
+      "screenAt": [
+        8,
+        18
+      ]
+    }
+  },
+  {
+    "id": "atlas-region-rainforest",
+    "seed": 9121,
+    "reachable": 1012,
+    "places": 8,
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.643,
+      "at": [
+        23,
+        13
+      ],
+      "screenAt": [
+        12,
+        14
+      ]
+    }
+  },
+  {
+    "id": "atlas-region-frozen-north",
+    "seed": 9131,
+    "reachable": 1403,
+    "places": 9,
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.276,
+      "at": [
+        43,
+        22
+      ],
+      "screenAt": [
+        42,
+        22
+      ]
+    }
+  },
+  {
+    "id": "atlas-region-red-plains",
+    "seed": 9141,
+    "reachable": 1587,
+    "places": 10,
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.281,
+      "at": [
+        41,
+        6
+      ],
+      "screenAt": [
+        34,
+        2
+      ]
+    }
+  },
+  {
+    "id": "atlas-region-glowing-vale",
+    "seed": 9151,
+    "reachable": 909,
+    "places": 10,
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.38,
+      "at": [
+        24,
+        17
+      ],
+      "screenAt": [
+        18,
+        16
+      ]
+    }
+  },
+  {
+    "id": "atlas-region-blighted-march",
+    "seed": 9161,
+    "reachable": 929,
+    "places": 9,
+    "emptiness": {
+      "maxSq": 7,
+      "screen": 0.647,
+      "at": [
+        30,
+        6
+      ],
+      "screenAt": [
+        14,
+        16
+      ]
+    }
+  },
+  {
+    "id": "atlas-region-sky-reach",
+    "seed": 9171,
+    "reachable": 975,
+    "places": 7,
+    "emptiness": {
+      "maxSq": 6,
+      "screen": 0.647,
+      "at": [
+        25,
+        13
+      ],
+      "screenAt": [
+        26,
+        30
+      ]
+    }
+  },
+  {
+    "id": "atlas-region-coral-isles",
+    "seed": 9181,
+    "reachable": 943,
+    "places": 6,
+    "emptiness": {
+      "maxSq": 0,
+      "screen": 0,
+      "at": [
+        0,
+        0
+      ],
+      "screenAt": [
+        0,
+        0
+      ]
+    }
+  },
+  {
+    "id": "atlas-region-crossroads",
+    "seed": 9191,
+    "reachable": 1086,
+    "places": 10,
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.62,
+      "at": [
+        32,
+        19
+      ],
+      "screenAt": [
+        24,
+        22
+      ]
+    }
+  },
+  {
+    "id": "atlas-region-west-coast",
+    "seed": 9202,
+    "reachable": 1280,
+    "places": 9,
+    "emptiness": {
+      "maxSq": 6,
+      "screen": 0.638,
+      "at": [
+        34,
+        21
+      ],
+      "screenAt": [
+        34,
+        16
+      ]
+    }
+  }
+]

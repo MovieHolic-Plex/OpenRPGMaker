@@ -15,6 +15,9 @@ import {
 } from "./parityRig";
 
 describe("editor->player data-integrity round-trip", () => {
+  // 컬렉션마다 1회씩 총 12회 변이 + 2회 왕복이라 이 파일에서 가장 무겁다. store.update 는 호출마다
+  // 프로젝트 전체를 복제·정규화하는 안전 경로를 타므로(실측 호출당 ~620ms, 이 테스트 13.9s) 부하 걸린
+  // CI 러너에서 기본 15s 를 넘겨 parity 단계가 죽었다. 이 테스트만 넉넉히 준다.
   it("mutations across every collection persist losslessly with zero reference issues", () => {
     const before = editorProject(() => {});
     const counts = {
@@ -54,7 +57,7 @@ describe("editor->player data-integrity round-trip", () => {
     expect(project.database.items.length).toBe(counts.items + 1);
     expect(project.database.skills.length).toBe(counts.skills + 1);
     expect(referenceIssues(project)).toEqual([]);
-  });
+  }, 60_000);
 
   it("round-trip is idempotent (no data added or lost on repeated save/load)", () => {
     const once = editorProject(() => updateDatabaseRecord("skills", DEFAULT_SKILL_ID, { name: "idempotent-skill" }));

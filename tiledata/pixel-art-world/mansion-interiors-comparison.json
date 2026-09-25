@@ -1,0 +1,1666 @@
+[
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-arched-window",
+    "sourceRect": {
+      "x": 0,
+      "y": 4,
+      "width": 3,
+      "height": 3
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "70fe815b9236379bc5cc3309ed445117980751a1ccdb3ecdd2a960260b7337db"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-blue-curtain-window",
+    "sourceRect": {
+      "x": 4,
+      "y": 11,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "bd2134fb867b79664c8f0da5ff3449721726feb61395d7c628c3e2aa54077b54"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-landscape",
+    "sourceRect": {
+      "x": 1,
+      "y": 18,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "6ee3e33ed4bb7097ec61bdddabc431b1db298546796e73ecda638e282c2c2954"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-grand-clock",
+    "sourceRect": {
+      "x": 7,
+      "y": 13,
+      "width": 1,
+      "height": 3
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "12dfdd8493d958e9031781c6b795bd5a97cef43feb5a51c72d5c4da2f58277f9"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-writing-desk",
+    "sourceRect": {
+      "x": 0,
+      "y": 16,
+      "width": 3,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "5b770e144237cc45c72029bd1c5aa563fb7d7de0fa1dfaf7ff9771f4499337fe"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-bookcase",
+    "sourceRect": {
+      "x": 6,
+      "y": 18,
+      "width": 2,
+      "height": 3
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "a347575d1db497af4d2d5db9254f2fd0bf393cbbe66ba6a4781593ac03ee0945"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-vase-pedestal",
+    "sourceRect": {
+      "x": 0,
+      "y": 20,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "eeaa55a67cd750cb89ab0655195799d48e3dd8195b83786db165d8403151fa88"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-fireplace",
+    "sourceRect": {
+      "x": 0,
+      "y": 27,
+      "width": 3,
+      "height": 3
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "c785278b19d452608600870aee41b93e490f0d13000dd1240750be3224912f7b"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-glass-cabinet",
+    "sourceRect": {
+      "x": 6,
+      "y": 32,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "98c61b5d5e6c9d1fe99a8b2ea798afe092d713cd9a46ba8dad90b423d529b8ef"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-dresser",
+    "sourceRect": {
+      "x": 6,
+      "y": 29,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "d9e582d9e04db28fed15fcef85ce4abd31aec13dc82b4df3179f44794f5ec3ee"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-sofa-front",
+    "sourceRect": {
+      "x": 0,
+      "y": 32,
+      "width": 3,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "df3bb7ac08c669e38eec6df75e8ea6765eb9789b93f5c3d489fc7711fab4d735"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-sofa-back",
+    "sourceRect": {
+      "x": 0,
+      "y": 35,
+      "width": 3,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "c00452007678d3e2e58c953aee73dcfe98ffbb576197a09ecd9d6e937d475676"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-coffee-table",
+    "sourceRect": {
+      "x": 0,
+      "y": 34,
+      "width": 3,
+      "height": 1
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "2cfaab566abc7132903af1e0a025948e8b143b7e6c5a1969d1d1819d3000ba2b"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-armchair",
+    "sourceRect": {
+      "x": 3,
+      "y": 32,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "919065ea70e518780bc87ec23c369c2ef5118af6756acb7c3cfa0e875becd7d0"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-armchair-back",
+    "sourceRect": {
+      "x": 3,
+      "y": 35,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "b18a83917cd0226b6c5694f7836b8adb1f2a9de9702465a075786be96e172d8f"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-canopy-bed",
+    "sourceRect": {
+      "x": 0,
+      "y": 41,
+      "width": 2,
+      "height": 4
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "0ea1f454d1ba15e9628351ada748b1aad3a17825ab1b6495765301132d6c3834"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-double-bed",
+    "sourceRect": {
+      "x": 2,
+      "y": 42,
+      "width": 2,
+      "height": 3
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "c1ae6ca7b3d19335638c29dcffa51ec3036790746eac1f4aece7a624171ca832"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-vanity",
+    "sourceRect": {
+      "x": 7,
+      "y": 42,
+      "width": 1,
+      "height": 3
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "c78386573289d23b47bf6bdcde43c55a1a4fceac2775c3dc71cd2c2ce4e81842"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-grand-piano",
+    "sourceRect": {
+      "x": 3,
+      "y": 37,
+      "width": 3,
+      "height": 4
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "446c081426b8842992e51ffba32281f0efe2bc96ccfde2800574b7027f0362e7"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-harp",
+    "sourceRect": {
+      "x": 0,
+      "y": 38,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "af008d911ffad2fc74c1aa83e011f97925fb0861e9603c2a26b3502721042493"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-plant",
+    "sourceRect": {
+      "x": 6,
+      "y": 22,
+      "width": 1,
+      "height": 3
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "b4aa873f893884bdeb65c79521efa4b5561bb3b19d800579e124323c5eae9c7b"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-doll",
+    "sourceRect": {
+      "x": 2,
+      "y": 30,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "4443aa537d9b95b20481e0ea408e17f0eb5fed5c474246a8573167eed7a781c7"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-dining-table",
+    "sourceRect": {
+      "x": 0,
+      "y": 13,
+      "width": 3,
+      "height": 3
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "d2bde3f254fcf64b076a61a6ae4b9c9a7c57d50cd85beb5738fccf3d97e2ce48"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-chair-east",
+    "sourceRect": {
+      "x": 6,
+      "y": 13,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "f7598164a38dcb56844d947c6fedb73f4b5ce6d9153177762d86b7a442314196"
+  },
+  {
+    "packId": "paw-mansion-b",
+    "recipeId": "msion-b-chair-west",
+    "sourceRect": {
+      "x": 5,
+      "y": 13,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "587365c9191182bb29c1618e953b6dcc58d2f2704d271e6339153194c23c4774"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-arched-window",
+    "sourceRect": {
+      "x": 0,
+      "y": 4,
+      "width": 3,
+      "height": 3
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "70fe815b9236379bc5cc3309ed445117980751a1ccdb3ecdd2a960260b7337db"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-blue-curtain-window",
+    "sourceRect": {
+      "x": 4,
+      "y": 11,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "5a842d40febb20336ee6486f268c9da2edf9a97e92499811ed5403e92301efb5"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-landscape",
+    "sourceRect": {
+      "x": 1,
+      "y": 18,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "d3fe8988f32677a6dde00c591e1c185044bbd85977689b390f359a5c961f076b"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-grand-clock",
+    "sourceRect": {
+      "x": 7,
+      "y": 13,
+      "width": 1,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "f8e954c9e88d09b6f6bed38f74a82ce5c08544901b3a35ff82cf68951053782e"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-writing-desk",
+    "sourceRect": {
+      "x": 0,
+      "y": 16,
+      "width": 3,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "5b770e144237cc45c72029bd1c5aa563fb7d7de0fa1dfaf7ff9771f4499337fe"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-bookcase",
+    "sourceRect": {
+      "x": 6,
+      "y": 18,
+      "width": 2,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "27a969a005832792b26ee6d58ac9f6be73f670fe2c10428915308c2cb654998d"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-vase-pedestal",
+    "sourceRect": {
+      "x": 0,
+      "y": 20,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": false,
+    "sha256": "8f22c366c9d612b723ad24377661579731261a39bf4d3f86296406b18af9abde"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-fireplace",
+    "sourceRect": {
+      "x": 0,
+      "y": 27,
+      "width": 3,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "533c4b3d96a6e093bbc075898d690001e280d672d99b66cbf06a399d5fd7b430"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-glass-cabinet",
+    "sourceRect": {
+      "x": 6,
+      "y": 32,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "8dec5d8cf1ade1aba3281511e4d6672c2afc13e4506bab1613b56122ace2772d"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-dresser",
+    "sourceRect": {
+      "x": 6,
+      "y": 29,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "1e577cf5d22dc2ff0119757fc1f087bd4f4ea648f4a8f341a3925a7e80276f52"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-sofa-front",
+    "sourceRect": {
+      "x": 0,
+      "y": 32,
+      "width": 3,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "df3bb7ac08c669e38eec6df75e8ea6765eb9789b93f5c3d489fc7711fab4d735"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-sofa-back",
+    "sourceRect": {
+      "x": 0,
+      "y": 35,
+      "width": 3,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "c00452007678d3e2e58c953aee73dcfe98ffbb576197a09ecd9d6e937d475676"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-coffee-table",
+    "sourceRect": {
+      "x": 0,
+      "y": 34,
+      "width": 3,
+      "height": 1
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "874e4e52db24ef3ea0e1920263dda79806f0ddbfcde1f24cb58f8687e0e06e02"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-armchair",
+    "sourceRect": {
+      "x": 3,
+      "y": 32,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "919065ea70e518780bc87ec23c369c2ef5118af6756acb7c3cfa0e875becd7d0"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-armchair-back",
+    "sourceRect": {
+      "x": 3,
+      "y": 35,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "b18a83917cd0226b6c5694f7836b8adb1f2a9de9702465a075786be96e172d8f"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-canopy-bed",
+    "sourceRect": {
+      "x": 0,
+      "y": 41,
+      "width": 2,
+      "height": 4
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "588db6832c4da2c25ce60870189ed53da2f2ac579791a6f78bf1e497ef1ba3bd"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-double-bed",
+    "sourceRect": {
+      "x": 2,
+      "y": 42,
+      "width": 2,
+      "height": 3
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "c1ae6ca7b3d19335638c29dcffa51ec3036790746eac1f4aece7a624171ca832"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-vanity",
+    "sourceRect": {
+      "x": 7,
+      "y": 42,
+      "width": 1,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "d59f22fa1db9a82eba726fe877c2496e96f719b5f50150b8cdfc4020ce35575e"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-grand-piano",
+    "sourceRect": {
+      "x": 3,
+      "y": 37,
+      "width": 3,
+      "height": 4
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "446c081426b8842992e51ffba32281f0efe2bc96ccfde2800574b7027f0362e7"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-harp",
+    "sourceRect": {
+      "x": 0,
+      "y": 38,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "cfb7d7d6f5d427c7356bf10be814ebb1e108705478532fa77204b8f46e3fd3e0"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-plant",
+    "sourceRect": {
+      "x": 6,
+      "y": 22,
+      "width": 1,
+      "height": 3
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "b4aa873f893884bdeb65c79521efa4b5561bb3b19d800579e124323c5eae9c7b"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-doll",
+    "sourceRect": {
+      "x": 2,
+      "y": 30,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "bde7ba994bb80ea1f47292751d5ee82caaa285c07efebabbe6fab45cdbd4fd1c"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-dining-table",
+    "sourceRect": {
+      "x": 0,
+      "y": 13,
+      "width": 3,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "9448372a3188b1575f85b24048502f638d7f359522508a7f1816a29275c9386e"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-chair-east",
+    "sourceRect": {
+      "x": 6,
+      "y": 13,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "f7598164a38dcb56844d947c6fedb73f4b5ce6d9153177762d86b7a442314196"
+  },
+  {
+    "packId": "paw-mansion-p",
+    "recipeId": "msion-p-chair-west",
+    "sourceRect": {
+      "x": 5,
+      "y": 13,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "587365c9191182bb29c1618e953b6dcc58d2f2704d271e6339153194c23c4774"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-arched-window",
+    "sourceRect": {
+      "x": 0,
+      "y": 4,
+      "width": 3,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "b29c817b6a0c4faa8a0869c33fce534405f421fc8a2f517ef7c1fc895e030548"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-blue-curtain-window",
+    "sourceRect": {
+      "x": 4,
+      "y": 11,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "8d072809ed50dffba6678e690348c258d20a6a0477deb462a85af3c6eb4bfdd1"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-landscape",
+    "sourceRect": {
+      "x": 1,
+      "y": 18,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "7bb2fb922ee877149f5323619c7d7c307feb8fe5aaac66e95b5f9f9b3ae48016"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-grand-clock",
+    "sourceRect": {
+      "x": 7,
+      "y": 13,
+      "width": 1,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "0def58904946622dc46caf6f60b7f57be78e26250abc0a916480292a418f3b80"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-writing-desk",
+    "sourceRect": {
+      "x": 0,
+      "y": 16,
+      "width": 3,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "5b770e144237cc45c72029bd1c5aa563fb7d7de0fa1dfaf7ff9771f4499337fe"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-bookcase",
+    "sourceRect": {
+      "x": 6,
+      "y": 18,
+      "width": 2,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "0e960ed647d32f2aaa554ea2a3992979b55a5a690e59c4e37da02eeef20df9c0"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-vase-pedestal",
+    "sourceRect": {
+      "x": 0,
+      "y": 20,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": false,
+    "sha256": "76a99b0dc6c9fbbe82c572c33e4ebe5adb0b56dd66ae2a2389b3bd4d7d4b7b5b"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-fireplace",
+    "sourceRect": {
+      "x": 0,
+      "y": 27,
+      "width": 3,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "83ab71f1787e7232a4e89412dac8c599b1c62d0ad6096ec2bb61597995afd73c"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-glass-cabinet",
+    "sourceRect": {
+      "x": 6,
+      "y": 32,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "54a6457acad6f7f65f0471387aab9e60e05ee9ad96f4c5efe4742d4ff89b0c94"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-dresser",
+    "sourceRect": {
+      "x": 6,
+      "y": 29,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "7d856a2c4cf358c4acab6ccb67f3f5614ac7efa1beb9d03b064a309e35f2af5f"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-sofa-front",
+    "sourceRect": {
+      "x": 0,
+      "y": 32,
+      "width": 3,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "1ccc8621422bcac32cf3bf8a662109ce6f7ca0c5eae68cfb63efb03ff7e1a003"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-sofa-back",
+    "sourceRect": {
+      "x": 0,
+      "y": 35,
+      "width": 3,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "3665eb67c3b6cd4c4486366fa3978e8b8f0ba98dfced91d8bb6a0c3872c27bd6"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-coffee-table",
+    "sourceRect": {
+      "x": 0,
+      "y": 34,
+      "width": 3,
+      "height": 1
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "441427d84b7c46fde6bb9650d9bf51e5fe7758f654e9f9198a1c67ded890a6e7"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-armchair",
+    "sourceRect": {
+      "x": 3,
+      "y": 32,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "c9a4f5d2528f6253f5ce989368cf35195e0c01c96992d7b939a8149a1928cfb6"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-armchair-back",
+    "sourceRect": {
+      "x": 3,
+      "y": 35,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "18d481fe319d3b050d4a1de6e3de5fed39210c43a15969c1da938983e6896248"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-canopy-bed",
+    "sourceRect": {
+      "x": 0,
+      "y": 41,
+      "width": 2,
+      "height": 4
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "74771c1ac20761128e98a348cc1c6d5e168a829af6d33123af5c3c1192fa7351"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-double-bed",
+    "sourceRect": {
+      "x": 2,
+      "y": 42,
+      "width": 2,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "e971a9c50794b916cf96c1ae0ac14c97fecc6e84f06223b2f2f366b53a4f26b4"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-vanity",
+    "sourceRect": {
+      "x": 7,
+      "y": 42,
+      "width": 1,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "9cdd20144c8d87ae93c6e824e81a7e6a66fe7a57f6ad47a0ec0d6f901a72bf87"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-grand-piano",
+    "sourceRect": {
+      "x": 3,
+      "y": 37,
+      "width": 3,
+      "height": 4
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "446c081426b8842992e51ffba32281f0efe2bc96ccfde2800574b7027f0362e7"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-harp",
+    "sourceRect": {
+      "x": 0,
+      "y": 38,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "995f3af72054c1d49e3a9ba7f2804319bdda2c6592f2a3fab277433a96f6877b"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-plant",
+    "sourceRect": {
+      "x": 6,
+      "y": 22,
+      "width": 1,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "23d3a4f5cbdfc07be38c885c5bf123da7f76310db90bdc290de6deab0cb271c6"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-doll",
+    "sourceRect": {
+      "x": 2,
+      "y": 30,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "71a513ce10259e7604a2ce3a262a2dedaf4df07675027c2b3a7f296bc9f8dd94"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-dining-table",
+    "sourceRect": {
+      "x": 0,
+      "y": 13,
+      "width": 3,
+      "height": 3
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "d2bde3f254fcf64b076a61a6ae4b9c9a7c57d50cd85beb5738fccf3d97e2ce48"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-chair-east",
+    "sourceRect": {
+      "x": 6,
+      "y": 13,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "f7598164a38dcb56844d947c6fedb73f4b5ce6d9153177762d86b7a442314196"
+  },
+  {
+    "packId": "paw-mansion-y",
+    "recipeId": "msion-y-chair-west",
+    "sourceRect": {
+      "x": 5,
+      "y": 13,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "587365c9191182bb29c1618e953b6dcc58d2f2704d271e6339153194c23c4774"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-arched-window",
+    "sourceRect": {
+      "x": 0,
+      "y": 4,
+      "width": 3,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "3fe27b32a967430f64bddd107b3fa9e2bcf0c127db12de54a65bb87b5fa3dcb7"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-blue-curtain-window",
+    "sourceRect": {
+      "x": 4,
+      "y": 11,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "9731f3c0c9054b6a3c252138c7ca6ac3a1a533f093f9e157314dd721c0164d62"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-landscape",
+    "sourceRect": {
+      "x": 1,
+      "y": 18,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "27553c980ece47925f43674bdd691e2bd273d12945c79eb610006535576e4399"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-grand-clock",
+    "sourceRect": {
+      "x": 7,
+      "y": 13,
+      "width": 1,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "03dd0f4937deb0382da8241ed2227623980c7e3f0c1d62597725c1903facbbd3"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-writing-desk",
+    "sourceRect": {
+      "x": 0,
+      "y": 16,
+      "width": 3,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "5b770e144237cc45c72029bd1c5aa563fb7d7de0fa1dfaf7ff9771f4499337fe"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-bookcase",
+    "sourceRect": {
+      "x": 6,
+      "y": 18,
+      "width": 2,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "c39d3419cde127b3e05ea6ba0dadcc7cdd08a78fb25d9990561b11d451cfef9e"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-vase-pedestal",
+    "sourceRect": {
+      "x": 0,
+      "y": 20,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": false,
+    "sha256": "15bfa29dde780b5ee739313bb978306fed15e26fcdc15622a503309fa1f9cf2a"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-fireplace",
+    "sourceRect": {
+      "x": 0,
+      "y": 27,
+      "width": 3,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "70a37c4ed15b04dc65b4e1e090ba78ff40f23bad48afd2a9f1ebcb97566231db"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-glass-cabinet",
+    "sourceRect": {
+      "x": 6,
+      "y": 32,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "631b4bc69c3d042b703dfa3003b2a664d623a22d977070239d0c201e8f9d9831"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-dresser",
+    "sourceRect": {
+      "x": 6,
+      "y": 29,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "8787a7e063f07600d90f40a025cf645e98741494c42a71fd79c95c26491eefe2"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-sofa-front",
+    "sourceRect": {
+      "x": 0,
+      "y": 32,
+      "width": 3,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "acca0e894290967ac4d37932b3b5955c6f3511763d2377036fcce53bbdbff136"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-sofa-back",
+    "sourceRect": {
+      "x": 0,
+      "y": 35,
+      "width": 3,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "8478ff6b979fa8ce470fb6f34bcb936bc0e6220c04dc4d67bd4b092c7d2e6d86"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-coffee-table",
+    "sourceRect": {
+      "x": 0,
+      "y": 34,
+      "width": 3,
+      "height": 1
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "a96f2e6732717ed038b0d57d4d6a6d59d769bda1a18dc3a640cb13add0888f7a"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-armchair",
+    "sourceRect": {
+      "x": 3,
+      "y": 32,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "93f3572af4829ab84a6f231ed5b32c2909d782b7165c769271cd39394997fb85"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-armchair-back",
+    "sourceRect": {
+      "x": 3,
+      "y": 35,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "200e3dc691ce586e4a75009429fa2c3ac1050a33a6593777d090bede9f945581"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-canopy-bed",
+    "sourceRect": {
+      "x": 0,
+      "y": 41,
+      "width": 2,
+      "height": 4
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "efd2f1e538ed097c2b8b16140dfeafc1a237eb47e6b6939ad13184518144ee6f"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-double-bed",
+    "sourceRect": {
+      "x": 2,
+      "y": 42,
+      "width": 2,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": false,
+    "sha256": "2bce34abc7a330e082d713dd4211b16cb8c050bd92a2c4b56b14ec866e003d28"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-vanity",
+    "sourceRect": {
+      "x": 7,
+      "y": 42,
+      "width": 1,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "344a29a29d33efab5d8c051dc2250b617f615c0a2e262aa2cdac99d42c6ec88d"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-grand-piano",
+    "sourceRect": {
+      "x": 3,
+      "y": 37,
+      "width": 3,
+      "height": 4
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "a90dd72a5b30f933b9b8105486f685ea4441ee93f917f5bfc2957e5cb9646c26"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-harp",
+    "sourceRect": {
+      "x": 0,
+      "y": 38,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "205102c28ab6dd0b024648b2e3ff680d9af3b8baefd77a66e93dd36e67ebf533"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-plant",
+    "sourceRect": {
+      "x": 6,
+      "y": 22,
+      "width": 1,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "28da8e313d31cb928bf73b378ec58d33554711c38cfefc22f984fe1f733a911a"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-doll",
+    "sourceRect": {
+      "x": 2,
+      "y": 30,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "4443aa537d9b95b20481e0ea408e17f0eb5fed5c474246a8573167eed7a781c7"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-dining-table",
+    "sourceRect": {
+      "x": 0,
+      "y": 13,
+      "width": 3,
+      "height": 3
+    },
+    "rgbaIdenticalToB": true,
+    "alphaIdenticalToB": true,
+    "sha256": "d2bde3f254fcf64b076a61a6ae4b9c9a7c57d50cd85beb5738fccf3d97e2ce48"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-chair-east",
+    "sourceRect": {
+      "x": 6,
+      "y": 13,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "4c8fa3097430f26cb538e584520891c0f1b097bd0cea407f242099c43d0560d5"
+  },
+  {
+    "packId": "paw-mansion-w",
+    "recipeId": "msion-w-chair-west",
+    "sourceRect": {
+      "x": 5,
+      "y": 13,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "0643971bf89c0c8eed3adc359bf750a681460f330badb40fbaabc31b04045dc9"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-arched-window",
+    "sourceRect": {
+      "x": 0,
+      "y": 4,
+      "width": 3,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "3fe27b32a967430f64bddd107b3fa9e2bcf0c127db12de54a65bb87b5fa3dcb7"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-blue-curtain-window",
+    "sourceRect": {
+      "x": 4,
+      "y": 11,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "5d8974917b0436462196869ef56cfc4146507d8250ff947450a1d5439082db6d"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-landscape",
+    "sourceRect": {
+      "x": 1,
+      "y": 18,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "e5eecc5235ef770cd71b948823a1699fd565d6d40c809205d9fa7b7ed88f82d8"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-grand-clock",
+    "sourceRect": {
+      "x": 7,
+      "y": 13,
+      "width": 1,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "0e4a43c44e26afa788d0bb1a9d659ecc0639ee343426ad0a477163b60acd5b31"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-writing-desk",
+    "sourceRect": {
+      "x": 0,
+      "y": 16,
+      "width": 3,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "c98e73a257e0f64750bda6f9829dbbb0d4741aa09d67b65d99cedd2180c2971f"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-bookcase",
+    "sourceRect": {
+      "x": 6,
+      "y": 18,
+      "width": 2,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "dfe4ba79a866a128379a420c0b81f4eaa646ba5d08bd8eba485b17e7c37fe5c4"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-vase-pedestal",
+    "sourceRect": {
+      "x": 0,
+      "y": 20,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": false,
+    "sha256": "51d0837b969407697344d37558dbd6143361d2725cf96ad9505ea3164d70cd1b"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-fireplace",
+    "sourceRect": {
+      "x": 0,
+      "y": 27,
+      "width": 3,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "c3ca50c7c1a8318743727f8488280a3331993bbfcd96e4960cef36dc3c5b75f2"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-glass-cabinet",
+    "sourceRect": {
+      "x": 6,
+      "y": 32,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "f28c9c64a2729181de5e416c7ff25cf89e945bf632fb3e5c4d1a583366af08b1"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-dresser",
+    "sourceRect": {
+      "x": 6,
+      "y": 29,
+      "width": 2,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "238315f8f011f5bd23bd24cfece8a1359bf0f820b82bfde75b46c0f32ab81cc1"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-sofa-front",
+    "sourceRect": {
+      "x": 0,
+      "y": 32,
+      "width": 3,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "acca0e894290967ac4d37932b3b5955c6f3511763d2377036fcce53bbdbff136"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-sofa-back",
+    "sourceRect": {
+      "x": 0,
+      "y": 35,
+      "width": 3,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "8478ff6b979fa8ce470fb6f34bcb936bc0e6220c04dc4d67bd4b092c7d2e6d86"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-coffee-table",
+    "sourceRect": {
+      "x": 0,
+      "y": 34,
+      "width": 3,
+      "height": 1
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "a96f2e6732717ed038b0d57d4d6a6d59d769bda1a18dc3a640cb13add0888f7a"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-armchair",
+    "sourceRect": {
+      "x": 3,
+      "y": 32,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "93f3572af4829ab84a6f231ed5b32c2909d782b7165c769271cd39394997fb85"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-armchair-back",
+    "sourceRect": {
+      "x": 3,
+      "y": 35,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "200e3dc691ce586e4a75009429fa2c3ac1050a33a6593777d090bede9f945581"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-canopy-bed",
+    "sourceRect": {
+      "x": 0,
+      "y": 41,
+      "width": 2,
+      "height": 4
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "ee4664c61fb7cfd5dc9b3ff67c8b93caf2d149d4318dc3698293d4c23667f854"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-double-bed",
+    "sourceRect": {
+      "x": 2,
+      "y": 42,
+      "width": 2,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": false,
+    "sha256": "eeeebfdae40c7c3b3f5e02858b0df8deb73934dcd21514bec6d44096e9db6c7d"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-vanity",
+    "sourceRect": {
+      "x": 7,
+      "y": 42,
+      "width": 1,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "6c58e85dd1ca944f7c30e201fde9c8d1e9d457923f9be00f082ee7f0c7888230"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-grand-piano",
+    "sourceRect": {
+      "x": 3,
+      "y": 37,
+      "width": 3,
+      "height": 4
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "01357fd14b7628f4be407d85bf63aeb25cfc00cad509ac4ac7fe98b941e13e0b"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-harp",
+    "sourceRect": {
+      "x": 0,
+      "y": 38,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "b08c2fadd32e4e48dc497a76ad739740e5b9dc315ff6417eee8cfc5e23d68483"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-plant",
+    "sourceRect": {
+      "x": 6,
+      "y": 22,
+      "width": 1,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "9ef881c2691d2f1eab240b7b44051615b1a538ed6d2e99bfb81e7fd79f9eabc2"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-doll",
+    "sourceRect": {
+      "x": 2,
+      "y": 30,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "f763a2d1ad61bae7c78cc32dbac711607d9ba9bc94f6488a7c4ae0afcfb15649"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-dining-table",
+    "sourceRect": {
+      "x": 0,
+      "y": 13,
+      "width": 3,
+      "height": 3
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "eff880c57b3225ca0642e4b4addc3c5d09e6881658a926b18855f47c71289b61"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-chair-east",
+    "sourceRect": {
+      "x": 6,
+      "y": 13,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "5b6cb532e638715849dfc2dfeb239ac644ca8b916ee3dbd25ecf719f5370db55"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-chair-west",
+    "sourceRect": {
+      "x": 5,
+      "y": 13,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": true,
+    "sha256": "ab0464144262d1631f1e0185e0475e6428bd7b8f55349621e4c5f229e9fa4d5b"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-wide-display",
+    "sourceRect": {
+      "x": 3,
+      "y": 45,
+      "width": 3,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": false,
+    "sha256": "56a63a0b3382ef7baf39a056a2f42563917eef20301f27b080a4efbb2001c9a4"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-vertical-display",
+    "sourceRect": {
+      "x": 6,
+      "y": 46,
+      "width": 1,
+      "height": 4
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": false,
+    "sha256": "05a0f36e3e9259f14fac214ee9d6c1ca843bb79aa52b6e3cdbe37675a96e5a1f"
+  },
+  {
+    "packId": "paw-mansion-r",
+    "recipeId": "msion-r-crown-pedestal",
+    "sourceRect": {
+      "x": 5,
+      "y": 48,
+      "width": 1,
+      "height": 2
+    },
+    "rgbaIdenticalToB": false,
+    "alphaIdenticalToB": false,
+    "sha256": "140620b9821644d60e88bf5381d6008aa28e35eaedd11ac38518ae7ef0a4cc8a"
+  }
+]

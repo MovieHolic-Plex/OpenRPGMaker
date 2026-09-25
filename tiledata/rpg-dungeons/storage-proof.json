@@ -1,8 +1,8 @@
 {
   "projectId": "b9f19baf-00ed-451c-8534-0942d1ffb348",
   "projectDir": ".oprn-projects/rpg-dungeons-20260924",
-  "revision": 4,
-  "sha256": "9566d80358bbc8513a777c227506d2d01ebdcdf746cbf82cd76406ed647adb9d",
+  "revision": 9,
+  "sha256": "f377c9f23927774af07b9a467b4c447d7e1d444b2b6f24e51f1de0e64d6a2399",
   "saved": true,
   "reopened": true,
   "maps": [
@@ -27,6 +27,14 @@
     "dungeon-pyramid-tomb",
     "dungeon-sea-cave",
     "dungeon-dragon-lair",
-    "dungeon-sluice-ruins"
+    "dungeon-sluice-ruins",
+    "dungeon-sunken-gate",
+    "dungeon-sunken-hall",
+    "dungeon-sunken-altar",
+    "dungeon-demon-front",
+    "dungeon-arena-floor",
+    "dungeon-swamp-temple",
+    "dungeon-pirate-cove",
+    "dungeon-well-cellar"
   ]
 }

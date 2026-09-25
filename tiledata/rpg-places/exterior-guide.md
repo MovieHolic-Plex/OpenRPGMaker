@@ -7,6 +7,7 @@ forest_harmony. 두 맵 모두 컨셉 마을 「여울성 나루」(ford-castle-
 ```json
 {
   "627": {
+    "before": "청록 화살표 벽표지",
     "label": "무기점 간판 — 칼",
     "tags": [
       "무기점 간판",
@@ -18,6 +19,7 @@ forest_harmony. 두 맵 모두 컨셉 마을 「여울성 나루」(ford-castle-
     "description": "흰 판에 칼이 그려진 벽걸이 간판. 무기점 문 옆 벽면에 건다."
   },
   "628": {
+    "before": "보라 사각 벽표지",
     "label": "방어구점 간판 — 방패",
     "tags": [
       "방어구점 간판",
@@ -29,6 +31,7 @@ forest_harmony. 두 맵 모두 컨셉 마을 「여울성 나루」(ford-castle-
     "description": "흰 판에 방패가 그려진 벽걸이 간판. 방어구점 문 옆 벽면에 건다."
   },
   "629": {
+    "before": "붉은 항아리 벽표지",
     "label": "도구점 간판 — 항아리",
     "tags": [
       "도구점 간판",

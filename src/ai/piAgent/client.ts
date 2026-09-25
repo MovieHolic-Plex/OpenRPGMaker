@@ -45,7 +45,8 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
     throw new PiAgentClientError(`Pi 에이전트 실행 실패: ${detail}`, response.status);
   }
   if (!response.body) throw new PiAgentClientError("Pi 에이전트 응답에 본문이 없습니다");
-  let done: PiAgentDoneEvent | null = null;
+  // 대입이 스트림 콜백 안에서만 일어나 제어흐름 분석이 초기값 null 로 좁힌다(그러면 truthy 분기가 never 가 된다).
+  let done: PiAgentDoneEvent | null = null as PiAgentDoneEvent | null;
   let lastError: string | null = null;
   let checkpoints = Promise.resolve();
   let checkpointError: unknown;
@@ -155,6 +156,7 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   await checkpoints;
   // 워치독이 먼저 끊었으면 그 뒤 ACK 실패(워커가 이미 대기를 거둔 409)는 결과일 뿐 — 원인을 보고한다.
   if (checkpointError && !stale) throw checkpointError;
+  if (done?.interiorCompletion?.length) throw new PiAgentClientError(`실내 미완료: ${done.interiorCompletion.length}개 맵에 검사 문제가 남아 완료 처리하지 않았습니다. 실행 기록의 실내 검사 결과를 확인하세요.`);
   if (done) return done;
   if (stale) {
     throw new PiAgentClientError(`워커에서 ${Math.round((Date.now() - lastLineAt) / 1000)}초 동안 신호가 없어 연결을 끊었습니다. 워커가 응답하지 않습니다 — 다시 시도하고, 반복되면 개발 서버 콘솔의 [oh-my-pi-worker] 줄을 봐 주세요.`);

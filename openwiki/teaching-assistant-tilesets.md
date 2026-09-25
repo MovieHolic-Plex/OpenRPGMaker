@@ -217,6 +217,39 @@ itch.io 의 [Rasak Modern](https://rasak.itch.io/rasak-modern)처럼 「사용·
 - 헤드리스 실측(t1, 50×40 한 문장 요청): 조수가 첫 호출로 build_pack_town → 참고문서 읽기 → check_town_map 과 화단·나무를
   번갈아 issues 0 까지. 연구 정리 원본: 세션 산출 `/tmp/town-layout-research.md`(요지는 이 절).
 
+**마을·실내 묶음(2026-09-25).** `rasak_town`(A1~A5 City + Town·Building·Structure·Market + 울타리·정원·밭·작물·여름 나무)과
+`rasak_interior`(A2_Inside·A4/A5_House + HouseInterieur·LivingRoom·Tavern·Storage + 대장간·재봉·왕실). 제작자 프리뷰가 없으므로
+기준 맵은 `scripts/content/rasak/compose_examples.py`(+`_specs.py`)가 MZ 자동타일 규칙으로 조립한다(마을·광장·민가 방·주점 4장).
+참고문서 용도 `town_village`·`town_city`·`interior_house`·`interior_tavern`. 시험에서 배운 것 — 조수는 예제를 **통째로 복사**하고
+(방 하나를 stamp_layer_block 한 번으로 붙였다) 창을 지붕 줄에 단다. 그래서 문서에 집·방 **뼈대 배열**(작은 집·2층 집·방)과
+「통째로 붙이지 않는다」, 오류 ⑦「창·문을 지붕 줄에」를 넣었다. 지원 시트 45/176 — 남은 큰 것은 Special_Buildings·Forestfolk·Dungeon.
+
+**예제가 허접하면 조수도 허접하다(적대적 시각 QA 2026-09-25).** 첫 예제 네 장은 빈 바닥 46~60%·도시 좌우 대칭·방 하나 상자·의자 없는 식탁이었고,
+조수 결과는 그보다 더 비었다(빈 바닥 50~88%, 대칭 배수 7~18). 예제를 제작자 수준으로 다시 조립하고 `scripts/content/rasak/check_examples.py`
+(빈 바닥·빈 정사각형·대칭·허공, 제작자 맵으로 잰 기준)를 넘게 했다. 두 검수(구성 / 타일 칸 단위)를 따로 돌리면 서로 다른 결함을 잡는다 —
+타일 검수가 엔진 결함(맵 가장자리 자동타일 = 끊김 → `AutotileGroup.edgeConnects`)과 조립기 버그(3줄 벽에서 뜨는 문)를 찾았다.
+숫자만 보고 끝내지 않는다: 밀도 기준을 1칸 덤불로 채운 숲은 통과했지만 죽은 숲처럼 보였다.
+
+**문장 규칙은 예제를 못 이긴다 — 완성 건물(2026-09-25).** Rasak 특수 건물 43채를 `structureKits`(`sb_*`)로 싣고 조리법 첫머리에
+「완성 건물이 먼저」를 적었지만 조수는 예제대로 A3 조립 집만 지었다(시험 E). 마을 용도의 기준 맵을 완성 건물 마을로 바꾸자
+같은 모델이 `stamp_object(kit:…)` 로 건물 넷을 찍었다(E2). 예제 배열에서 킷 칸은 -1 로 비우고 「비운 자리 = 킷 원점」 줄을 단다 —
+그래야 수백 칸 배열을 조각내 옮기지 않는다. 길이 지붕으로 가던 문제는 `stamp_object` 가 킷의 입구 부위를 맵 좌표로 돌려주게 해서 고쳤다(E3).
+새 도구·새 자료를 가르칠 때는 문장보다 **예제 맵을 먼저** 바꾼다.
+
+**물체가 있어도 예제가 없으면 조수는 그 장소를 못 짓는다 — 상점·성 실내(2026-09-25).** Rasak 실내 묶음에는 대장간·재봉·왕실 물체 376개가
+이름표까지 있었지만 예제 방이 민가·여관뿐이라 쓰이지 않았다. 용도 셋(`interior_smithy`·`interior_tailor`·`interior_castle`)과 예제 맵을 더하자
+헤드리스 조수가 세 곳 모두 방을 나누고 방마다 맞는 가구 한 벌(화덕+풀무+모루+담금통 / 마네킹 줄+재봉 책상+베틀 / 왕좌 축+융단+서재)을 깔았다.
+남은 약점은 예전과 같다 — 예제 방 구성을 거의 그대로 옮기고, 맵이 예제보다 크면 한 방을 늘려 깔개를 흩어 채운다. 성은 칩셋 A4 에 돌벽이 없어
+**A5 평면 벽면 3줄**로 짓는다 — 조립기·검사기·오류 그림이 A5 막힌 벽면 그룹을 벽으로 봐야 했고, 사전 대표 번호가 성에 맞지 않아 조리법에 실제 번호를 적었다.
+
+**문서·예제만으로는 전체 배치가 옮겨지지 않는다 → 끝에서 한 번 수리 권고(2026-09-25).** 예제를 고친 뒤에도 조수 마을은 빈 바닥 44%였다.
+Pi 런타임(`scripts/lib/piAgentRuntime.ts`)은 모델이 끝났다고 할 때 `src/ai/piAgent/layoutQuality.ts` 로 이번 실행이 1층을 25% 넘게 칠한 맵
+(새 맵 포함, 마을 계약 맵 제외, 150칸·바닥 40칸 미만 제외)을 잰다. 정의·한도는 `check_examples.py` 와 같다(빈 바닥 ≤30%·빈 정사각형 ≤5·대칭 ≤2.2).
+넘으면 가장 빈 6×6 창 좌표와 함께 **수리 프롬프트를 한 번** 보낸다. 거부·되돌리기는 없고, 두 번째 결과는 `execution_status layout_quality` 로 알리기만 한다.
+헤드리스 D4(같은 프로젝트·과제): 마을 빈 바닥 58→44%, 도시 38%→통과, 민가 빈 바닥 38%→통과(대칭 5.2→4.8, 식탁 둘레 의자처럼 원래 대칭인 덩이가 끌어올린다).
+같은 실행에 **무변화 반복 차단**(`src/ai/piAgent/repeatBreaker.ts`)도 붙였다 — 키 순서만 바꾼 같은 호출이 맵을 안 바꾸면 3번째에 한 번 일러 주고 12번째에 멈춘다
+(실측: stamp_layer_block 같은 칸 137번 → 시간 상한 사망).
+
 ## 알려진 함정
 
 - **16px 표가 48px 업로드를 건드린다.** `ensureTilesetHarnesses` → `applyCustomChipsetMinimalHarness`
@@ -240,6 +273,41 @@ itch.io 의 [Rasak Modern](https://rasak.itch.io/rasak-modern)처럼 「사용·
 그리고 Claude Code 가 `AGENTS.md` 를 자동으로 읽도록 저장소 루트 `CLAUDE.md` 가 한 줄짜리 가져오기(골뱅이 + AGENTS.md)로 불러온다
 (Claude Code 는 `CLAUDE.md` 만 자동 로드한다. Codex 는 `AGENTS.md` 를 직접 읽는다).
 `tilesetReferenceTools.ts` 머리 주석도 이 문서를 가리킨다.
+
+## 칩셋 계열 규칙 (2026-09-25 사용자 결정)
+
+사용자 말: 「지금 보고 있는 칩에서 파생된 걸 쓰던가(easyrpg 계열이면 easyrpg), 타일이 달라지는 경우에는 사용자에게 말해야 한다 —
+견본까지 보여 줘야 한다.」 그래서 조수는 **사용자가 보고 있는 맵과 같은 계열**로만 맵을 만들고 칩셋을 바꾼다.
+
+- **계열 판정** `src/project/tilesetFamily.ts` `tilesetFamily(project, tilesetId)` — 순서: (1) `TilesetDef.family`(선택 문자열, 예
+  `"rasak-fantasy"`) (2) `referenceSourceTilesetId` 를 따라 뿌리로 가서 다시 판정 (3) 업로드 칩셋이고 family 가 없으면 `uploaded:<뿌리 id>`
+  (4) 번들은 `tilesetArtStyle()` 값(`easyrpg`·`castle`·`slates`·`lpc`·`modern`·`oga`·`scarloxy`·`other`; forest_harmony·기후 시트·tibo 는
+  easyrpg). 없는 id 는 `unknown:<id>`. 사람용 이름은 `tilesetFamilyLabel`, 같은 계열 목록은 `sameFamilyTilesets`.
+  업로드 팩 여러 장을 한 계열로 묶으려면 각 타일셋에 같은 `family` 를 적는다(Rasak 묶음은 `rasak-fantasy`).
+- **실행기 검사** `toolRunner.rejectTilesetFamilyChange` — 기준 = `ctx.currentMapId` 맵의 계열, 대상 = 이번 호출로 새로 생긴 맵 +
+  `tilesetId` 가 바뀐 맵. 계열이 다르고 `ctx.approvedTilesetFamilies` 에도 없으면 `tileset-family-change` 로 거부(draft 버림).
+  메시지는 같은 계열 후보(최대 8개)를 주고 「후보를 tilesetId 로 다시 불러라(못 받는 도구면 create_map(tilesetId=후보) 후 칠하기 도구) ·
+  없으면 ask_tileset_change 로 묻고 턴을 끝내라」고 지시한다. `currentMapId` 가 없으면(옛 호출자·MCP·헤드리스 `--current` 없음) 검사하지 않는다.
+  `allowsTilesetChange` 도구(`revert_last_edit`·`reset_project`)와 읽기 도구는 빠지고, dryRun 은 같은 검사를 탄다.
+  업로드 바꿔치기 검사(`uploaded-tileset-replaced`)는 currentMapId 없이도 도는 안전망으로 그대로 있다.
+- **create_map 기본 칩셋**: `tilesetId` 없이 불리면 도구 기본값(숲마을 `defaultOutdoorTilesetId`)이 지금 보는 맵과 **다른 계열일 때만**
+  실행기가 지금 보는 맵의 `tilesetId` 를 넣는다(`ToolDefinition.defaultTilesetId`, create_map 만 켬). 같은 계열이면 도구 기본값을 둔다 —
+  EasyRPG 실내를 보며 만든 새 야외 맵이 실내 칩셋이 되지 않게(결정 기록: 규칙 1 을 「같은 계열」로 읽었다). 업로드 칩셋은
+  `isCombinedTownCompatibleTileset` 이 아니라 빈 칸으로 채워진다(없는 번호를 깔지 않는다). generate_map·던전/실내 파이프라인·성 시공기처럼
+  EasyRPG 번호를 가정하는 도구에는 주입하지 않는다 — 계열 검사가 막는다.
+- **묻기** `ask_tileset_change{toTilesetId, reason, purpose?, mapId?}`(읽기, core 로 늘 노출) — 실행기가 비어 있는 `mapId` 를 지금 보는 맵으로
+  채운다(`ToolDefinition.fillsCurrentMapId`; `run(draft,args)` 가 ctx 를 못 받아서 고른 가장 작은 길). 같은 계열이면 `tileset-same-family` 로
+  거부한다. 결과 `data.kind:"tileset-change-question"`, 요약은 「답을 기다리며 이 턴을 끝내라」.
+- **질문 카드** `src/editor/panels/aiTilesetChangeCard.ts` — Pi 턴 이벤트에서 성공한 `ask_tileset_change` 를 잡아(`tilesetQuestionFromEvent`,
+  팀 `agent_event` 포장도 푼다) 턴이 끝난 뒤 대화 끝에 붙인다. 왼쪽 「지금」 = 지금 맵 가운데 최대 16×10칸을 `drawMapTileLayers` 로 그린 것,
+  오른쪽 「바뀐 뒤」 = 대상 칩셋 참고문서 그림(purpose 가 맞는 용도, 없으면 그림 있는 첫 용도의 첫 그림), 없으면 아틀라스 앞 12×8칸.
+  「이 타일로 바꿔도 좋아요」 → 패널 대화 상태 `approvedTilesetFamilies` 에 toFamily 추가 + `[사용자 승인] 칩셋 계열 변경 허용: … 원래 요청을 이어서 하라.`
+  전송, 「아니요, 지금 타일로」 → `[사용자 거절] … 계열 안에서만 만들어라 …` 전송. 승인 목록은 새 대화에서 비운다.
+- **ctx 가 받는 곳**: Pi 요청 `currentMapId`·`approvedTilesetFamilies`(`protocol.ts`) → 워커 `runPiAgent` 가 도구 ctx 에 싣는다(팀 레인은 요청을 펼쳐 그대로 받는다).
+  채팅 세션은 `AssistantSession.toolContext` 의 게터가 `contextOptions.getCurrentMapId`·`getApprovedTilesetFamilies` 를 매 호출 읽는다.
+- **헤드리스**: `bun scripts/pi-agent.mts --current <mapId> --approve-tileset-family <계열>`(반복 가능). `--current` 가 없으면 계열 검사가 꺼진다.
+- 프롬프트: `promptPolicies.TILESET_FAMILY_POLICY_LINE`(채팅·Pi 공통 한 줄). 회귀: `test/tilesetFamily.test.ts`·`test/tilesetFamilyGuard.test.ts`·
+  `test/aiTilesetChangeCard.test.ts`.
 
 ## 문서의 번호가 새 프로젝트에 있어야 한다 (2026-09-25)
 

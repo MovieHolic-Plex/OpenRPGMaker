@@ -1,0 +1,650 @@
+[
+ {
+  "id": "atlas-ice-gate",
+  "entry": [
+   8,
+   23
+  ],
+  "targets": [
+   [
+    12,
+    1
+   ],
+   [
+    22,
+    16
+   ],
+   [
+    17,
+    6
+   ],
+   [
+    6,
+    15
+   ]
+  ],
+  "exits": [
+   {
+    "at": [
+     8,
+     23
+    ],
+    "to": "outside",
+    "note": "남쪽 어귀 → 설산 기슭"
+   },
+   {
+    "at": [
+     12,
+     0
+    ],
+    "to": "atlas-ice-slide",
+    "arrive": [
+     17,
+     23
+    ],
+    "note": "북쪽 → 빙판 굴"
+   }
+  ],
+  "reachable": 252,
+  "walkable": 252,
+  "stranded": [],
+  "blocked": [],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.362,
+   "win": [
+    8,
+    4
+   ],
+   "at": [
+    16,
+    11
+   ]
+  },
+  "warnings": [
+   "*@27,13 (얼음 블록) nudged to 27,14",
+   "E@6,12 (나무통) nudged to 6,13",
+   "C@21,4 (푸른 수정 기둥) nudged to 20,4"
+  ]
+ },
+ {
+  "id": "atlas-ice-slide",
+  "entry": [
+   17,
+   25
+  ],
+  "targets": [
+   [
+    17,
+    1
+   ],
+   [
+    5,
+    14
+   ]
+  ],
+  "exits": [
+   {
+    "at": [
+     17,
+     25
+    ],
+    "to": "atlas-ice-gate",
+    "arrive": [
+     12,
+     1
+    ],
+    "note": "남쪽 → 입구"
+   },
+   {
+    "at": [
+     17,
+     0
+    ],
+    "to": "atlas-ice-queen",
+    "arrive": [
+     15,
+     21
+    ],
+    "note": "북쪽 → 얼음 여왕의 옥좌"
+   }
+  ],
+  "reachable": 398,
+  "walkable": 398,
+  "stranded": [],
+  "blocked": [],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.348,
+   "win": [
+    12,
+    13
+   ],
+   "at": [
+    17,
+    18
+   ]
+  },
+  "warnings": [
+   "*@14,7 (얼음 블록) nudged to 14,5",
+   "*@26,10 (얼음 블록) nudged to 27,9",
+   "*@8,13 (얼음 블록) nudged to 7,11",
+   "*@12,16 (얼음 블록) nudged to 11,17",
+   "*@19,12 (얼음 블록) off the floor — dropped: [[19,12]]",
+   "*@24,15 (얼음 블록) nudged to 26,16",
+   "*@16,17 (얼음 블록) nudged to 16,18",
+   "*@11,10 (얼음 블록) nudged to 9,9",
+   "*@21,17 (얼음 블록) nudged to 21,18",
+   "Q@4,11 (큰 푸른 수정) nudged to 5,11",
+   "C@30,8 (푸른 수정 기둥) nudged to 30,9",
+   "C@31,14 (푸른 수정 기둥) nudged to 29,14",
+   "n@29,18 (수정 무더기) nudged to 29,17",
+   "chest-iron@26,12 (쇠 보물상자) nudged to 28,13"
+  ]
+ },
+ {
+  "id": "atlas-ice-queen",
+  "entry": [
+   15,
+   23
+  ],
+  "targets": [
+   [
+    15,
+    9
+   ],
+   [
+    13,
+    7
+   ],
+   [
+    17,
+    7
+   ]
+  ],
+  "exits": [
+   {
+    "at": [
+     15,
+     23
+    ],
+    "to": "atlas-ice-slide",
+    "arrive": [
+     17,
+     1
+    ],
+    "note": "남쪽 → 빙판 굴"
+   }
+  ],
+  "reachable": 278,
+  "walkable": 278,
+  "stranded": [],
+  "blocked": [],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.367,
+   "win": [
+    4,
+    8
+   ],
+   "at": [
+    15,
+    12
+   ]
+  },
+  "warnings": [
+   "Z@14,4 (왕좌) nudged to 14,5",
+   "Q@11,4 (큰 푸른 수정) nudged to 11,5",
+   "Q@18,4 (큰 푸른 수정) nudged to 18,5",
+   "*@7,12 (얼음 블록) nudged to 7,11",
+   "*@22,14 (얼음 블록) nudged to 23,16",
+   "*@8,16 (얼음 블록) nudged to 9,16",
+   "S@6,6 (여신 석상) nudged to 7,7",
+   "S@23,6 (여신 석상) nudged to 22,6"
+  ]
+ },
+ {
+  "id": "atlas-lava-vent",
+  "entry": [
+   0,
+   13
+  ],
+  "targets": [
+   [
+    37,
+    11
+   ],
+   [
+    23,
+    8
+   ],
+   [
+    7,
+    12
+   ]
+  ],
+  "exits": [
+   {
+    "at": [
+     0,
+     13
+    ],
+    "to": "outside",
+    "note": "서쪽 → 화산 기슭"
+   },
+   {
+    "at": [
+     37,
+     11
+    ],
+    "to": "atlas-lava-forge",
+    "arrive": [
+     1,
+     12
+    ],
+    "note": "동쪽 → 드워프 대장간"
+   }
+  ],
+  "reachable": 241,
+  "walkable": 241,
+  "stranded": [],
+  "blocked": [],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.367,
+   "win": [
+    20,
+    8
+   ],
+   "at": [
+    26,
+    9
+   ]
+  },
+  "warnings": [
+   "cry-red:crystal-pillar@6,8 (붉은 수정 기둥) nudged to 6,9",
+   "F@5,15 (바닥 불길) nudged to 5,14",
+   "cry-red:crystal-pile@32,7 (붉은 수정 무더기) nudged to 30,9"
+  ]
+ },
+ {
+  "id": "atlas-lava-forge",
+  "entry": [
+   1,
+   12
+  ],
+  "targets": [
+   [
+    14,
+    9
+   ],
+   [
+    25,
+    10
+   ],
+   [
+    18,
+    20
+   ],
+   [
+    10,
+    20
+   ],
+   [
+    35,
+    17
+   ]
+  ],
+  "exits": [
+   {
+    "at": [
+     0,
+     12
+    ],
+    "to": "atlas-lava-vent",
+    "arrive": [
+     36,
+     11
+    ],
+    "note": "서쪽 → 용암 틈 길"
+   },
+   {
+    "at": [
+     35,
+     17
+    ],
+    "to": "atlas-lava-golem",
+    "arrive": [
+     15,
+     22
+    ],
+    "note": "동쪽 굴길 → 분화구"
+   }
+  ],
+  "reachable": 397,
+  "walkable": 397,
+  "stranded": [],
+  "blocked": [],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.371,
+   "win": [
+    4,
+    8
+   ],
+   "at": [
+    4,
+    15
+   ]
+  },
+  "warnings": [
+   "int:food@22,20 (고기 요리) nudged to 22,19"
+  ]
+ },
+ {
+  "id": "atlas-lava-golem",
+  "entry": [
+   15,
+   23
+  ],
+  "targets": [
+   [
+    15,
+    11
+   ],
+   [
+    16,
+    10
+   ]
+  ],
+  "exits": [
+   {
+    "at": [
+     15,
+     23
+    ],
+    "to": "atlas-lava-forge",
+    "arrive": [
+     34,
+     17
+    ],
+    "note": "남쪽 → 대장간"
+   }
+  ],
+  "reachable": 207,
+  "walkable": 207,
+  "stranded": [],
+  "blocked": [],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.357,
+   "win": [
+    12,
+    11
+   ],
+   "at": [
+    6,
+    14
+   ]
+  },
+  "warnings": [
+   "T@3,19 (화로) nudged to 5,16",
+   "T@26,19 (화로) nudged to 25,18",
+   "K@5,20 (해골과 뼈) nudged to 6,18",
+   "U@24,20 (잔돌 더미) nudged to 24,19"
+  ]
+ },
+ {
+  "id": "atlas-sea-tidepool",
+  "entry": [
+   6,
+   23
+  ],
+  "targets": [
+   [
+    31,
+    1
+   ],
+   [
+    29,
+    7
+   ],
+   [
+    4,
+    14
+   ]
+  ],
+  "exits": [
+   {
+    "at": [
+     6,
+     23
+    ],
+    "to": "outside",
+    "note": "남쪽 → 바닷가 절벽"
+   },
+   {
+    "at": [
+     31,
+     0
+    ],
+    "to": "atlas-sea-wreck",
+    "arrive": [
+     4,
+     22
+    ],
+    "note": "북쪽 → 난파선 잔해 해변"
+   }
+  ],
+  "reachable": 109,
+  "walkable": 120,
+  "stranded": [
+   [
+    22,
+    6
+   ],
+   [
+    23,
+    6
+   ],
+   [
+    24,
+    6
+   ],
+   [
+    25,
+    6
+   ],
+   [
+    21,
+    7
+   ],
+   [
+    22,
+    7
+   ],
+   [
+    23,
+    7
+   ],
+   [
+    24,
+    7
+   ],
+   [
+    25,
+    7
+   ],
+   [
+    23,
+    8
+   ],
+   [
+    24,
+    8
+   ]
+  ],
+  "blocked": [
+   [
+    31,
+    1
+   ],
+   [
+    29,
+    7
+   ],
+   [
+    31,
+    0
+   ]
+  ],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.362,
+   "win": [
+    4,
+    11
+   ],
+   "at": [
+    6,
+    10
+   ]
+  },
+  "warnings": [
+   "ship:rope@3,14 (감긴 밧줄 더미) nudged to 3,13",
+   "chest-wood@29,6 (보물상자(나무·금테)) nudged to 26,6",
+   "K@30,7 (해골과 뼈) off the floor — dropped: [[30,7]]",
+   "ship:anchor@20,15 (닻) nudged to 21,14",
+   "ship:post@24,15 (짧은 세로 목재 말뚝) nudged to 21,13"
+  ]
+ },
+ {
+  "id": "atlas-sea-wreck",
+  "entry": [
+   4,
+   25
+  ],
+  "targets": [
+   [
+    29,
+    9
+   ],
+   [
+    13,
+    15
+   ],
+   [
+    7,
+    11
+   ],
+   [
+    39,
+    18
+   ]
+  ],
+  "exits": [
+   {
+    "at": [
+     4,
+     25
+    ],
+    "to": "atlas-sea-tidepool",
+    "arrive": [
+     31,
+     1
+    ],
+    "note": "남쪽 → 조수 웅덩이"
+   },
+   {
+    "at": [
+     39,
+     18
+    ],
+    "to": "atlas-sea-kraken",
+    "arrive": [
+     15,
+     22
+    ],
+    "note": "남동쪽 굴 → 크라켄의 소굴"
+   }
+  ],
+  "reachable": 426,
+  "walkable": 426,
+  "stranded": [],
+  "blocked": [
+   [
+    29,
+    9
+   ]
+  ],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.407,
+   "win": [
+    4,
+    12
+   ],
+   "at": [
+    12,
+    4
+   ]
+  },
+  "warnings": [
+   "ship:flag@19,20 (붉은 삼각 깃발) not on a wall face — dropped: [[19,20]]"
+  ]
+ },
+ {
+  "id": "atlas-sea-kraken",
+  "entry": [
+   15,
+   23
+  ],
+  "targets": [
+   [
+    15,
+    17
+   ],
+   [
+    13,
+    16
+   ]
+  ],
+  "exits": [
+   {
+    "at": [
+     15,
+     23
+    ],
+    "to": "atlas-sea-wreck",
+    "arrive": [
+     38,
+     18
+    ],
+    "note": "남쪽 → 난파선 해변"
+   }
+  ],
+  "reachable": 193,
+  "walkable": 193,
+  "stranded": [],
+  "blocked": [],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.367,
+   "win": [
+    4,
+    11
+   ],
+   "at": [
+    2,
+    10
+   ]
+  },
+  "warnings": [
+   "ship:crate@5,17 (사각 나무 상자) nudged to 5,16",
+   "ship:barrel-open@6,18 (열린 나무통) nudged to 6,17",
+   "ship:rope@25,18 (감긴 밧줄 더미) nudged to 25,16",
+   "K@8,19 (해골과 뼈) nudged to 8,18",
+   "K@22,19 (해골과 뼈) nudged to 22,18"
+  ]
+ }
+]
