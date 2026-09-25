@@ -8,7 +8,7 @@ const sheets = JSON.parse(fs.readFileSync(dir + "/sheets.json")), data = JSON.pa
 const block = (o) => "```json\n" + JSON.stringify(o) + "\n```\n";
 const rows = (a, w) => "```text\n" + Array.from({ length: a.length / w }, (_, y) => a.slice(y * w, (y + 1) * w).join(" ")).join("\n") + "\n```\n";
 const CATEGORY = {
-  forest_harmony_snow: { id: "climate-snow-villages-v7", name: "설원 마을 · 눈 덮인 숲마을과 얼어붙은 못 (고목 일렬 금지 개정7)", description: "숲마을을 눈으로 다시 칠한 시트의 규칙. 칸 번호는 숲마을과 같고, 물 칸의 얼음 사본(걸을 수 있음)으로 못을 얼린다. 눈 얹힌 고목(2880~) 번호, 설원 마을 세 곳의 전체 배열과 통행 검사" },
+  forest_harmony_snow: { id: "climate-snow-villages-v8", name: "설원 마을 · 눈 덮인 숲마을과 얼어붙은 못, 눈 쌓인 성벽 (눈 성벽 개정8)", description: "숲마을을 눈으로 다시 칠한 시트의 규칙. 칸 번호는 숲마을과 같고, 물 칸의 얼음 사본(걸을 수 있음)으로 못을 얼린다. 눈 얹힌 고목(2880~)과 성벽·성탑 윗면의 눈 쌓인 사본(3630~) 번호, 설원 마을 세 곳의 전체 배열과 통행 검사" },
   forest_harmony_volcano: { id: "climate-volcano-villages-v8", name: "화산 마을 · 재와 용암, 균열과 식은 용암 판 (화산 지형 개정8)", description: "숲마을을 재·용암으로 다시 칠한 시트의 규칙. 칸 번호·통행은 숲마을과 같고 물 칸이 모두 용암, 나무다리는 현무암 다리다. 빈 재밭은 용암 균열·식은 용암 판·용암 웅덩이(3030~)로 채우는 법, 그을린 고목 덩이(2880~), 화산 봉우리와 화산 마을 세 곳의 전체 배열" },
   forest_harmony_desert: { id: "climate-desert-villages-v8", name: "사막 마을 · 모래와 사암, 사구와 모래 물결 (사막 지형 개정8)", description: "숲마을을 모래·사암으로 다시 칠한 시트의 규칙. 칸 번호·통행은 숲마을과 같고 물은 오아시스 물 그대로다. 빈 모래밭은 사구·모래 물결·갈라진 땅(3300~)으로 채우는 법, 메사·선인장 무리, 바랜 고목 덩이(2880~), 물가 야자와 사막 마을 두 곳의 전체 배열" },
   forest_harmony_autumn: { id: "climate-autumn-villages-v5", name: "가을 마을 · 단풍 든 숲마을 (마을 채우기 개정5)", description: "숲마을을 금빛 풀밭과 단풍으로 다시 칠한 시트의 규칙. 칸 번호·통행·물은 숲마을과 같다. 가을 마을 두 곳의 전체 배열" },
@@ -117,6 +117,8 @@ ${["dune-s-1", "dune-s-2", "dune-m-1", "dune-m-2", "dune-l-1", "mesa-3x3", "mesa
 `;
 
 const iceTable = sheets.snow.ice.map(([w, i]) => `${w}→${i}`).join(" ");
+const snowWalls = sheets.terrain.snowWalls;
+const snowWallTable = [...snowWalls.reduce((m, [src, dst]) => m.set(src, [...(m.get(src) ?? []), dst]), new Map())].map(([src, d]) => `${src}→${d.join("/")}`).join(" ");
 doc("forest_harmony_snow", "snow-guide", "설원 규칙 · 번호는 숲마을, 못은 얼음 사본으로", `# 설원 마을 — 눈 덮인 숲마을
 
 tilesetId=forest_harmony_snow, 시트 tex_forest_harmony_snow(30열·16px, ${sheets.snow.count}칸). 좌표는 0기준.
@@ -140,6 +142,18 @@ ${iceTable}
 
 ${bareSection("forest_harmony_snow", { cleared: false })}
 설원 마을 세 곳의 맵은 이번 개정에서 바뀌지 않았다(잎 없는 나무는 칸만 추가).
+
+## 눈 쌓인 성벽 — 성벽·성탑 윗면 사본 ${snowWalls.length}칸 (개정8)
+설원에 성·요새를 세울 때 성벽·흉벽·성벽 위 길·성탑 머리를 원본 대신 **눈 얹힌 사본**으로 깐다. 흰 눈 + 돌과 맞닿는 곳 1px 푸른 회색(#8ea3b5) 윤곽이라 눈밭 위에서도 성벽이 읽힌다. 통행·레이어·밑칠은 원본과 같다.
+- 흉벽 톱니(18·19·20·78·80·108·109·110): 톱니 윗면 3줄에 눈, 벽 윗면 석판은 반쯤 눈 더미.
+- 성벽 위 길(412 포석·21 돌): 튀어나온 돌만 하얗고 줄눈은 어둡다. 사본이 여러 개라 칸 위치로 번갈아 놓으면 긴 길이 한 무늬로 반복되지 않는다.
+- 안쪽 벽면 51: 윗단에 눈 처마(고드름). 벽면이 두 줄 이상이면 **맨 윗줄만** 사본, 아랫줄은 51 그대로(처마가 두 번 보이지 않게).
+- 성탑 머리 24·25: 둥근 머리에 눈 모자.
+- 원본→사본(여러 개면 번갈아):
+\`\`\`text
+${snowWallTable}
+\`\`\`
+- 도우미: scripts/content/lib/climate-terrain.mjs \`snowCastleTops(map, snowWalls)\` — 두 레이어의 원본 칸을 위 규칙대로 바꾼다(다시 돌려도 같다). 야외 장소 「서리성 요새」(outdoor-snow-fortress)가 이 사본으로 그려졌다.
 
 ## 검사
 마을 입구에서 런타임 이동 규칙(canMove)으로 모든 집 문 앞, 얼린 못은 울타리 문 쪽 얼음 칸과 가운데 얼음 칸까지 닿는지 확인했다.

@@ -70,15 +70,21 @@ def _layout():
           ("mesa-5x4", "desert", 0, 16, 5, 4, "mesa")]
     return L
 
-# Snow: castle tops that get a snow cap (source tile → copy, in this order from row 20 col 5).
-SNOW_WALLS = [18, 19, 20, 21, 24, 25, 51, 78, 80, 108, 109, 110, 412]
+# Snow: castle tops that get a snow cap (source tile → copy, in this order from row 20 col 0). A source listed again
+# gets another variant (the walks 412 and 21: the same dusting plus a small drift inside the tile, so a long walk
+# does not repeat one tile).
+SNOW_WALLS = [18, 19, 20, 21, 24, 25, 51, 78, 80, 108, 109, 110, 412, 412, 412, 21, 21]
 ROWS = 21
 COUNT = (ROW0 + ROWS) * COLS
 LAYOUT = _layout()
 
 def snow_layout():
-    """[(source castle tile, snow-capped copy)] in row 121."""
+    """[(source castle tile, snow-capped copy)] in row 121; a source may appear more than once (variants)."""
     return [(src, (ROW0 + 20) * COLS + k) for k, src in enumerate(SNOW_WALLS)]
+
+def snow_variant(k):
+    """0 for the first copy of SNOW_WALLS[k], 1, 2, … for the later ones."""
+    return SNOW_WALLS[:k].count(SNOW_WALLS[k])
 
 def tile_no(col, row): return (ROW0 + row) * COLS + col
 
@@ -592,40 +598,84 @@ def paint_column():
 # ── snow caps on castle tops ─────────────────────────────────────────────────────────────────────────────────────
 S_ = dict(snow=hexc('ffffff'), snow2=hexc('dfe9f1'), rim=hexc('8ea3b5'), rimD=hexc('6f8396'))
 
-def snow_cap(src):
-    """Snow settles on every upward-facing top edge (merlons, wall tops, tower heads) and blankets flat walk
-    surfaces in drifts; a 1px blue-grey outline keeps it readable on snowfields."""
+def _snow_pixel(a, x, y, c):
+    a[y, x, :3] = c; a[y, x, 3] = 255
+
+# How each castle top takes snow: flat wall tops and merlons (rim), walk surfaces (blanket), the wall face under a
+# walk (lip: an overhang with drips), tower heads against the sky (cap).
+SNOW_MODE = {18: 'rim', 19: 'rim', 20: 'rim', 78: 'rim', 80: 'rim', 108: 'rim', 109: 'rim', 110: 'rim',
+             21: 'blanket', 412: 'blanket', 51: 'lip', 24: 'cap', 25: 'cap'}
+
+def snow_cap(src, tile, variant=0):
+    """Snow on a castle top tile: white snow, a pale blue shade where it rounds off, and a 1px blue-grey outline where
+    it meets stone or sky, so a snowy wall still reads on a snowfield (bare-trees.py's snow on branches)."""
     a = src.copy(); A = a[..., 3] > 0; H, W = A.shape
     lum = a[..., :3].mean(-1)
-    cap = np.zeros((H, W), bool)
-    # (1) caps: first opaque pixels under open sky, two to three deep
-    for x in range(W):
+    snow = np.zeros((H, W), bool)
+    mode = SNOW_MODE[tile]
+    edge = np.zeros((H, W), bool)  # snow pixels that turn into the blue-grey outline (the wall edge stays readable)
+    if mode == 'rim':
+        # the flat wall top (pale slate, with its dark specks filled in) is snow, but where it meets the stone on its
+        # right or lower side it keeps a 1px blue-grey edge; merlons (lighter blocks) take snow on their top 3 rows
+        floor = A & (lum > 95) & (lum < 135)
+        nb = sum(np.roll(floor, d, ax).astype(int) for d in (-1, 1) for ax in (0, 1))
+        floor |= A & ~floor & (nb >= 3)
+        merlon = A & (lum >= 135) & ~floor
+        # half of the slate lies under drifts (two soft drifts a tile, tile-periodic), the rest stays stone
+        nz = periodic_noise(515 + tile, octaves=((2, 1.0), (4, 0.45)))
+        drift = nz >= np.percentile(nz, 45)
+        snow |= floor & drift
         for y in range(H):
-            if not A[y, x]: continue
-            if y == 0 or not A[y - 1, x]:
-                for k in range(3 if lum[y, x] > 70 else 2):
-                    if y + k < H and A[y + k, x]: cap[y + k, x] = True
-    # (2) flat light stone surfaces (walk tops) take drifts: periodic noise, so tiles join
-    nz = periodic_noise(515, octaves=((2, 1.0), (4, 0.7), (8, 0.3)))
-    flat = A & (lum > 95)
-    cap |= flat & (nz > -0.15)
-    # (3) top rows of the tile continue a cap from the tile above when the source is flat walkway
+            for x in range(W):
+                if not snow[y, x]: continue
+                if (x + 1 < W and A[y, x + 1] and not floor[y, x + 1] and not merlon[y, x + 1]) or \
+                   (y + 1 < H and A[y + 1, x] and not floor[y + 1, x] and not merlon[y + 1, x]): edge[y, x] = True
+        for x in range(W):
+            run = 0
+            for y in range(H):
+                if merlon[y, x]:
+                    run += 1
+                    if run <= 3: snow[y, x] = True
+                else: run = 0
+    elif mode == 'blanket':
+        # a walk dusted with snow: the raised stones whiten, the joints stay dark (the tile's own texture already
+        # tiles, so the dusting does too); variants add one small drift inside the tile, clear of its edges
+        snow = A & (lum >= np.percentile(lum[A], 62))
+        cnt = sum(np.roll(np.roll(snow, dy, 0), dx, 1).astype(int) for dy in (-1, 0, 1) for dx in (-1, 0, 1))
+        snow &= cnt >= 3  # no lone specks
+        if variant:
+            R = random.Random(tile * 7 + variant)
+            cx, cy = R.uniform(6, 9.5), R.uniform(6, 9.5)
+            rx, ry = R.uniform(3.2, 4.4), R.uniform(2.2, 3.0)
+            yy, xx = np.mgrid[0:H, 0:W]
+            wob = periodic_noise(900 + tile + variant, octaves=((4, 1.0),)) * 0.25
+            snow |= A & ((((xx - cx) / rx) ** 2 + ((yy - cy) / ry) ** 2) <= 1 + wob)
+    elif mode == 'lip':
+        for x in range(W):
+            depth = 2 + (1 if x % 5 in (1, 2) else 0) + (1 if x % 10 == 2 else 0)
+            for y in range(depth): snow[y, x] = A[y, x]
+    elif mode == 'cap':
+        for x in range(W):
+            for y in range(H):
+                if A[y, x] and (y == 0 or not A[y - 1, x]):
+                    for k in range(3 if lum[y, x] > 60 else 2):
+                        if y + k < H and A[y + k, x]: snow[y + k, x] = True
+                    break
     out = a.copy()
-    out[cap, :3] = S_['snow']
-    # soft shading: lower-right fringe of each drift slightly blue
     for y in range(H):
         for x in range(W):
-            if cap[y, x] and ((y + 1 < H and not cap[y + 1, x] and A[y + 1, x]) or (x + 1 < W and not cap[y, x + 1] and A[y, x + 1])):
-                out[y, x, :3] = S_['snow2']
-    # outline: 1px blue-grey on stone pixels touching the snow from below/right and on open sky above caps
+            if not snow[y, x]: continue
+            below = y + 1 < H and A[y + 1, x] and not snow[y + 1, x]
+            right = x + 1 < W and A[y, x + 1] and not snow[y, x + 1]
+            if edge[y, x]: _snow_pixel(out, x, y, S_['rim']); continue
+            _snow_pixel(out, x, y, S_['snow2'] if (below or right) and mode != 'lip' else S_['snow'])
+    # outline: stone just under the snow, and (cap) the sky just over it
     for y in range(H):
         for x in range(W):
-            if cap[y, x] or not A[y, x]: continue
-            if (y > 0 and cap[y - 1, x]) or (x > 0 and cap[y, x - 1]): out[y, x, :3] = S_['rim']
-    for y in range(H):
-        for x in range(W):
-            if not A[y, x] and y + 1 < H and cap[y + 1, x]:
-                out[y, x, :3] = S_['rim']; out[y, x, 3] = 255
+            if snow[y, x]: continue
+            if A[y, x] and y > 0 and snow[y - 1, x] and lum[y, x] > 45: _snow_pixel(out, x, y, S_['rim'])
+            elif mode == 'cap' and not A[y, x] and ((y + 1 < H and snow[y + 1, x]) or (0 < x and snow[y, x - 1] and not A[y, x]) or (x + 1 < W and snow[y, x + 1])):
+                _snow_pixel(out, x, y, S_['rim'])
     return out
 
 # ── bake ─────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -679,7 +729,7 @@ def _render(sheet, climate):
         elif k == 'column':
             for t, a in zip(st['tiles'], paint_column()): cells[t] = a
     if climate == 'snow':
-        for src, dst in snow_layout(): cells[dst] = snow_cap(tile_px(sheet, src))
+        for k, (src, dst) in enumerate(snow_layout()): cells[dst] = snow_cap(tile_px(sheet, src), src, snow_variant(k))
     return cells, mask
 
 def layout():

@@ -214,6 +214,34 @@ not be sent to `upsert_spatial_design` as though it were a procedural region.
 Tests reconstruct the complete source through registered tool reads, verify
 metadata/non-mutation, reject invalid pages, and exercise the read-only card.
 
+### Shared places and objects without activation (2026-09-25)
+
+The 2026-09-25 trial found `list_spatial_designs` answering 0 rows (`spatial-inactive`) in every new project, so
+the assistant never saw the places and objects the editor 장소/오브젝트 tabs show. Now `data.shared` is always
+filled — read-only rows every project sees, with or without `spatialAuthoring`, paged by `limit`/`offset`
+(default 40). Catalog: `src/editor/tools/sharedDesignCatalog.ts`; stamping: `src/project/objectStamp.ts` +
+`src/editor/tools/sharedObjectTools.ts`.
+
+- kind `place`: `reviewed:<id>` = `reviewedPlaceIndex()` (65 bundled + shared_* from the shared SQLite,
+  same as the 장소 tab), plus every `REGION_REFERENCES`/`PLACE_REFERENCES` id. Put one in with
+  `import_region_reference` (reviewed places bring every floor/room map as new maps; the 11MB
+  `reviewedPlaces/catalog.json` is imported only then).
+- kind `object`: `kit:<tileset>/<kit>` (project tileset section kits = 오브젝트 tab), `group:<tileset>/<group>`
+  (tile groups with a `previewMap` — `bare-trees:*` on the climate sheets, forest trees), `refkit:<place>/<kit>`
+  (kits living only inside a registered place: generated building exteriors `fft-*` incl. the gatehouse
+  `fft-bp4-gatehouse-c16`, castle-courtyard harbor boats/pier; index `src/assets/sharedObjectIndex.json`,
+  regenerate with `node scripts/content/build-shared-object-index.mjs`), `part:*` (curated crops of
+  너울목: rowboat, pier with two boats, cargo), `pattern:volcano-peak-*` (forest_harmony_volcano 858/859/888/889,
+  918/919/948/949, upper layer), `house:<formId>` (authored house forms; `author_house` adds doors/interiors).
+- `stamp_object {objectId, mapId, x, y, layers?}` keeps authored cells. When the map's tileset shows another
+  picture at a number, `translateTiles` grafts the source picture (sheet cell or graft source) onto the map's
+  tileset and renumbers, reusing an existing graft of the same picture; the tileset stays a whole number of rows.
+  Place-sourced objects load their place in `prepare`; `get_spatial_design` with a shared id returns the row and
+  its cells.
+- The shared SQLite (`~/.local/share/oprn/shared-content.sqlite`, served GET-only at `/__oprn/shared-content`) is
+  written only by `publishSharedContent` (`scripts/lib/sharedContentSqlite.ts`); its `shared_*` places reach this
+  list through `installSharedReviewedPlaces` → `reviewedPlaceIndex`. Nothing here writes to it or to any remote store.
+
 ### Importing a reference (`import_region_reference`, 2026-09-25)
 
 Re-painting reference rows is not the path: the 2026-09-25 assistant trial needed 328 `paint_tiles`

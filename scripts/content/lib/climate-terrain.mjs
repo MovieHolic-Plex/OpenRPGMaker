@@ -414,3 +414,28 @@ export function dressDesertGround(map, options) {
   });
   return { pieces, counts: count(map, kit), ...res };
 }
+
+/**
+ * Snow on the castle tops of a map on forest_harmony_snow. `snowWalls` is sheets.json terrain.snowWalls: [source,
+ * copy] pairs drawn by climate-terrain.py (a source listed more than once has variants, picked by cell hash). Wall
+ * tops, merlons, walks, the lower lip and tower heads take their snowy copy; the wall face 51 takes the copy with the
+ * hanging snow only on its top row (a face two rows high would otherwise show two lips). Idempotent; returns the
+ * number of cells changed.
+ */
+export function snowCastleTops(map, snowWalls) {
+  const FACE = 51, W = map.width, to = new Map();
+  for (const [src, dst] of snowWalls) { if (!to.has(src)) to.set(src, []); to.get(src).push(dst); }
+  let n = 0;
+  for (const layer of ["lowerTiles", "upperTiles"]) {
+    const old = map[layer].slice();
+    for (let i = 0; i < old.length; i++) {
+      const v = to.get(old[i]);
+      if (!v) continue;
+      if (old[i] === FACE && i >= W && (old[i - W] === FACE || to.get(FACE).includes(old[i - W]))) continue;
+      const x = i % W, y = Math.floor(i / W);
+      map[layer][i] = v[(((x * 73856093) ^ (y * 19349663)) >>> 0) % v.length];
+      n++;
+    }
+  }
+  return n;
+}
