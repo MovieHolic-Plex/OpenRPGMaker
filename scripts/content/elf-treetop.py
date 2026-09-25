@@ -33,23 +33,30 @@ meta = {}
 def rgb(h):
     return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4)) + (255,)
 
-# Elven planks: pale warm wood (forest_harmony 2701 family), rim/fascia from the village plank browns.
-PLANK = [rgb("b89a6c"), rgb("af8e64"), rgb("a6865e"), rgb("9c7c55")]
-SEAM = rgb("6e5236")
-RIM = rgb("7a5a38")
-RIM_D = rgb("5b3f24")
-FASCIA = [rgb("845c1f"), rgb("744c2a"), rgb("6b420d")]
-FASCIA_D = rgb("4a2a0c")
-ROPE = rgb("d7bf8a")
-ROPE_D = rgb("8f7448")
-POST = rgb("6b420d")
-POST_L = rgb("8c6232")
-BARK = [rgb("6a5236"), rgb("5d4630"), rgb("4f3a28"), rgb("3f2e20"), rgb("7b6243")]
-BARK_HI = rgb("8e7450")
-MOSS = [rgb("5f8f2a"), rgb("4a7a22"), rgb("7aa83a")]
-GLOW = [rgb("ffd98a"), rgb("f5b54a"), rgb("fff0c0")]
-DOOR = [rgb("7a4a20"), rgb("5e3614"), rgb("93602c")]
+# Elven planks: warm honey wood that sits in the forest_harmony greens; boards shade light → base → grain, dark gaps.
+PLANK = [rgb("c99a62"), rgb("b4854f"), rgb("a67747"), rgb("93673c")]   # highlight, base A, base B, grain
+PLANK_TONE = [(0, 0, 0), (5, 3, 0), (-6, -5, -2), (2, -1, -4)]       # per-board tint so boards read separately
+SEAM = rgb("5a3d24")
+LINE = rgb("3a2616")                                                  # outline where the deck meets the air
+RIM = rgb("d9ad74")                                                   # sunlit top edge of the deck
+RIM_D = rgb("7a5432")
+FASCIA = [rgb("8a5e34"), rgb("76502c"), rgb("684626")]                # the beam face under an open south edge
+FASCIA_HI = rgb("a47243")
+FASCIA_D = rgb("3e2814")
+ROPE = rgb("e0c890")
+ROPE_M = rgb("b89c66")
+ROPE_D = rgb("7d6440")
+POST = rgb("6b4524")
+POST_L = rgb("946434")
+BARK = [rgb("9a7448"), rgb("80603a"), rgb("684c2e"), rgb("523a23"), rgb("3c2a19"), rgb("281b10")]  # light → dark
+BARK_HI = rgb("b48a58")
+MOSS = [rgb("6f9f34"), rgb("4f7f26"), rgb("8fbf4a"), rgb("37601c")]
+GLOW = [rgb("ffdf96"), rgb("f2b04a"), rgb("fff4cc"), rgb("d98a2e")]
+DOOR = [rgb("7a4a20"), rgb("5e3614"), rgb("93602c"), rgb("3f230c")]
 IRON = rgb("2e2a26")
+
+def tint(c, t):
+    return tuple(max(0, min(255, c[i] + t[i])) for i in range(3)) + (c[3],)
 
 def tile_img():
     return Image.new("RGBA", (S, S), (0, 0, 0, 0))
@@ -75,52 +82,66 @@ def canon(mask):
     return m
 
 def plank_px(x, y, seed):
-    """World-aligned planks: 4 px boards, staggered joints every 12 px."""
-    board = y // 4
-    off = (board * 7) % 12
-    if y % 4 == 3:
-        return SEAM
-    if (x + off) % 12 == 0:
-        return SEAM
-    k = noise((x + off) // 12, board, seed)
-    base = PLANK[int(k * 3.99)]
-    if y % 4 == 0 and noise(x, y, seed + 3) > 0.55:
-        return PLANK[0]
-    if noise(x, y, seed + 9) > 0.93:
-        return PLANK[3]
-    return base
+    """Tile-periodic planks (16 px) so the body never shows a grid: 4 px boards (light top row, base, grain, gap),
+    one staggered joint per board, nail pairs beside each joint."""
+    board, r = (y // 4) % 4, y % 4
+    joint = (3, 11, 7, 14)[board]
+    if r == 3: return SEAM
+    if x == joint: return SEAM
+    tone = PLANK_TONE[(board + (x > joint)) % 4]
+    if r == 0:
+        c = PLANK[0] if x != joint + 1 else RIM
+    else:
+        c = PLANK[1] if (board + (x > joint)) % 2 == 0 else PLANK[2]
+        # grain: short darker streaks that run along the board
+        if r == 2 and noise((x + board * 5) // 4, board, seed) > 0.7: c = PLANK[3]
+    if r == 1 and x == joint + 1 and board == 1: c = SEAM                     # one nail pair per tile
+    if r == 2 and x == joint + 1 and board == 1: c = PLANK[3]
+    return tint(c, tone)
+
+def deck_distance(mask, fx, fy):
+    """Signed distance (px) from the deck silhouette at tile-local point (fx, fy); > 0 inside. Open sides are the tile
+    border, open convex corners are rounded (r 3), open diagonals between two joined sides cut the corner point."""
+    openN, openE, openS, openW = not mask & N, not mask & E, not mask & SO, not mask & W
+    d = 99.0
+    if openN: d = min(d, fy)
+    if openS: d = min(d, S - fy)
+    if openW: d = min(d, fx)
+    if openE: d = min(d, S - fx)
+    r = 3.0
+    for oa, ob, cx, cy in ((openN, openW, r, r), (openN, openE, S - r, r), (openS, openW, r, S - r), (openS, openE, S - r, S - r)):
+        if oa and ob and abs(fx - cx) <= r + 1e-9 and abs(fy - cy) <= r + 1e-9 and (fx < r) == (cx < S / 2) and (fy < r) == (cy < S / 2) \
+                and ((fx - cx) * (1 if cx > S / 2 else -1) > 0) and ((fy - cy) * (1 if cy > S / 2 else -1) > 0):
+            d = min(d, r - math.hypot(fx - cx, fy - cy))
+    for bit, need, cx, cy in ((NE, N | E, S, 0), (NW, N | W, 0, 0), (SE, SO | E, S, S), (SW, SO | W, 0, S)):
+        if mask & need == need and not mask & bit:
+            d = min(d, math.hypot(fx - cx, fy - cy) - 1.0)
+    return d
 
 def draw_deck(mask, seed):
     img = tile_img(); px = img.load()
-    openN, openE, openS, openW = not mask & N, not mask & E, not mask & SO, not mask & W
-    fascia = 4 if openS else 0
+    D = lambda x, y: deck_distance(mask, x + 0.5, y + 0.5)
+    FACE = 4                                           # beam height under an open south edge
     for y in range(S):
         for x in range(S):
-            # convex corner rounding
-            if openN and openW and x + y < 2: continue
-            if openN and openE and (S - 1 - x) + y < 2: continue
-            if openS and openW and x + (S - 1 - y) < 2: continue
-            if openS and openE and (S - 1 - x) + (S - 1 - y) < 2: continue
-            c = plank_px(x, y, seed)
-            if openN and y == 0: c = RIM
-            if openN and y == 1: c = PLANK[0]
-            if openW and x == 0: c = RIM_D
-            if openW and x == 1 and y < S - fascia: c = RIM
-            if openE and x == S - 1: c = RIM_D
-            if openE and x == S - 2 and y < S - fascia: c = SEAM
-            if fascia and y >= S - fascia:
-                c = FASCIA[(x // 3 + (y == S - fascia)) % 3] if y > S - fascia else RIM
-                if y == S - 1: c = FASCIA_D
-                if (x % 6 == 0) and y > S - fascia: c = FASCIA_D
+            d = D(x, y)
+            if d <= 0: continue
+            # the pixel is on the beam face if the air is within FACE px straight below
+            below = next((k for k in range(1, FACE + 1) if D(x, y + k) <= 0), None)
+            if below is not None:
+                k = below                              # 1 = bottom row of the face
+                c = FASCIA[(x // 4 + k) % 3]
+                if k == FACE: c = FASCIA_HI
+                if k == 1 or d < 1: c = FASCIA_D
+                if x % 8 == 5 and 1 < k < FACE: c = FASCIA_D   # peg heads along the beam
+            elif d < 1:
+                c = LINE
+            elif d < 2:
+                above_air = D(x, y - 1) <= 1
+                c = RIM if above_air else RIM_D
+            else:
+                c = plank_px(x, y, seed)
             px[x, y] = c
-    # concave (inner) corners: a small rim notch where the diagonal is open
-    for bit, cx, cy, dx, dy in ((NE, S - 1, 0, -1, 1), (NW, 0, 0, 1, 1), (SE, S - 1, S - 1, -1, -1), (SW, 0, S - 1, 1, -1)):
-        need = {NE: N | E, NW: N | W, SE: SO | E, SW: SO | W}[bit]
-        if mask & need == need and not mask & bit:
-            for i in range(3):
-                for j in range(3):
-                    if i + j <= 2:
-                        px[cx + dx * i, cy + dy * j] = RIM if (i + j) == 2 else (FASCIA[1] if bit in (SE, SW) else RIM_D)
     return img
 
 deck_masks = sorted({canon(m) for m in range(256)}, key=lambda m: (bin(m & 15).count("1"), m))
@@ -141,16 +162,19 @@ def draw_bridge_h(part, row):
             slat = (x % 4) != 3
             if 5 <= yy <= 27 and slat:
                 k = noise(x // 4, 0, 7 if part == "n" else 5)
-                c = PLANK[1 + int(k * 2.9)]
+                c = PLANK[1 + int(k * 1.99)]
                 if yy in (5, 27): c = SEAM
+                if yy in (6, 26) and x % 4 == 1: c = SEAM          # nail heads on the stringers
                 if x % 4 == 0: c = PLANK[0]
+                if x % 4 == 2 and noise(x, yy // 3, 3) > 0.6: c = PLANK[3]
                 px[x, y] = c
             elif 5 <= yy <= 27:
                 px[x, y] = (0, 0, 0, 0)
     # ropes: back rope sags a little in the middle tiles, front rope too
     for x in range(S):
         sag = 0 if part in "lr" else (1 if 4 <= x <= 11 else 0)
-        for yy, col in ((3 + sag, ROPE), (4 + sag, ROPE_D), (28 + sag, ROPE), (29 + sag, ROPE_D)):
+        twist = ROPE if x % 3 else ROPE_M
+        for yy, col in ((3 + sag, twist), (4 + sag, ROPE_D), (28 + sag, twist), (29 + sag, ROPE_D)):
             y = yy - row * S
             if 0 <= y < S: px[x, y] = col
         # vertical hangers every 4 px
@@ -193,7 +217,8 @@ def draw_bridge_v(part, col):
                     px[x, y] = c
     for y in range(S):
         sway = 0 if part in "tb" else (1 if 4 <= y <= 11 else 0)
-        for xx, c in ((2 - sway, ROPE), (3 - sway, ROPE_D), (28 + sway, ROPE), (29 + sway, ROPE_D)):
+        twist = ROPE if y % 3 else ROPE_M
+        for xx, c in ((2 - sway, twist), (3 - sway, ROPE_D), (28 + sway, twist), (29 + sway, ROPE_D)):
             x = xx - col * S
             if 0 <= x < S: px[x, y] = c
     if part in "tb":
@@ -213,18 +238,31 @@ for i, part in enumerate("tmnb"):
 
 # ── giant trunks ─────────────────────────────────────────────────────────────────────────────────────────
 def bark_px(x, y, width_px, seed):
-    """Round trunk: lit on the left third, dark on the right; vertical furrows."""
-    u = x / (width_px - 1)
-    shade = 0.15 + 0.85 * math.sin(math.pi * min(max(u, 0.02), 0.98)) ** 0.6
-    shade -= 0.25 * max(0.0, u - 0.55)
-    furrow = math.sin(x * 1.3 + 2.1 * math.sin(y * 0.21 + x * 0.4 + seed)) > 0.62
-    k = shade * 3.6
-    idx = 3 - int(min(3, max(0, k)))
-    c = BARK[idx]
-    if furrow: c = BARK[min(3, idx + 1)]
-    if u < 0.3 and noise(x, y, seed) > 0.86: c = BARK_HI
-    if noise(x, y, seed + 1) > 0.97: c = MOSS[1]
+    """Round trunk, tile-periodic in y (16 px) so any rows stack without a seam: cylinder shading lit from the
+    upper left, vertical bark plates split by wavy furrows, a thin rim light on the dark side."""
+    u = (x + 0.5) / width_px
+    lit = math.cos((u - 0.35) * math.pi * 0.95)                 # 1 at the lit third, falls off to both sides
+    yy = y % S
+    plate = max(6.0, width_px / 7)
+    wave = 1.1 * math.sin(2 * math.pi * yy / S + (int(x / plate) * 1.7))
+    fx = (x + wave) % plate
+    shade = lit - (0.45 if fx < 1.0 else 0.0) + (0.12 if 1.0 <= fx < 2.0 else 0.0)   # furrow dark, plate edge lit
+    idx = int(round((1 - max(-0.2, min(1.0, shade))) * 4.2))
+    c = BARK[max(0, min(5, idx))]
+    if u > 0.93 and fx >= 1.0: c = BARK[2]                     # bounced rim light on the shadow side
     return c
+
+def bark_details(px, wpx, hpx, seed):
+    """Knots and moss clumps, kept 3 px off each tile's top/bottom so stacked rows still join."""
+    rnd = random.Random(seed)
+    for row in range(hpx // S):
+        for _ in range(max(1, wpx // 24)):
+            kx, ky = rnd.randint(4, wpx - 6), row * S + rnd.randint(5, 10)
+            if rnd.random() < 0.5:                             # knot
+                for dx, dy, c in ((0, 0, BARK[5]), (1, 0, BARK[4]), (0, 1, BARK[4]), (1, 1, BARK[3]), (-1, 0, BARK[1]), (0, -1, BARK[1])):
+                    px[kx + dx, ky + dy] = c
+            else:                                              # a second, fainter knot
+                px[kx, ky] = BARK[4]; px[kx, ky + 1] = BARK[3]
 
 def trunk_strip(width, rows, seed, feature=None):
     """Return a (width*16)×(rows*16) image of trunk bark; feature draws windows / doors on it."""
@@ -233,19 +271,25 @@ def trunk_strip(width, rows, seed, feature=None):
     for y in range(rows * S):
         for x in range(wpx):
             px[x, y] = bark_px(x, y, wpx, seed)
+    bark_details(px, wpx, rows * S, seed)
     if feature: feature(px, wpx, rows * S)
     return img
 
 def round_window(px, cx, cy, r=4):
-    for y in range(cy - r - 1, cy + r + 2):
-        for x in range(cx - r - 1, cx + r + 2):
-            d = math.hypot(x - cx + 0.5, y - cy + 0.5)
-            if d <= r - 0.5:
-                px[x, y] = GLOW[0] if (x + y) % 5 else GLOW[2]
-                if y > cy + 1: px[x, y] = GLOW[1]
-                if x == cx or y == cy: px[x, y] = DOOR[1]
-            elif d <= r + 0.7:
-                px[x, y] = DOOR[1] if y > cy else DOOR[2]
+    """Round lit window: bark lip (light top-left, dark bottom-right), wooden frame, warm glass lighter at the top,
+    cross muntin."""
+    for y in range(cy - r - 2, cy + r + 3):
+        for x in range(cx - r - 2, cx + r + 3):
+            dx, dy = x - cx + 0.5, y - cy + 0.5
+            d = math.hypot(dx, dy)
+            if d <= r - 0.6:
+                c = GLOW[2] if dy < -r / 2 else (GLOW[0] if dy < r / 3 else GLOW[1])
+                if abs(dx) < 0.6 or abs(dy) < 0.6: c = DOOR[1]
+                px[x, y] = c
+            elif d <= r + 0.5:
+                px[x, y] = DOOR[3] if dy > 0 else DOOR[1]
+            elif d <= r + 1.5:
+                px[x, y] = BARK_HI if dx + dy < 0 else BARK[4]
 
 def arched_door(px, x0, y0, w, h):
     """Door w wide, h tall with a round top, planks and an iron ring."""
@@ -266,18 +310,32 @@ def arched_door(px, x0, y0, w, h):
     px[x0 + w - 3, ry] = IRON; px[x0 + w - 3, ry + 1] = IRON
 
 def base_roots(px, wpx, hpx):
-    """Bottom row: roots flare onto the deck; outside the trunk the pixels are cleared (deck shows through)."""
+    """Bottom row: roots flare onto the deck; outside the trunk the pixels are cleared (the deck backing shows),
+    the silhouette gets a dark outline and the deck right beside it a soft contact shadow."""
     y0 = hpx - S
+    inside = {}
     for y in range(y0, hpx):
         t = (y - y0) / (S - 1)
         for x in range(wpx):
             edge = min(x, wpx - 1 - x)
-            flare = int(3 * t * t) + (2 if t > 0.55 and noise(x // 3, 5, 9) > 0.5 else 0)
-            if edge < 3 - flare:
-                px[x, y] = (0, 0, 0, 0)
+            flare = int(3.2 * t * t) + (2 if t > 0.5 and noise(x // 3, 5, 9) > 0.5 else 0)
+            inside[x, y] = edge >= 3 - flare
+    for y in range(y0, hpx):
+        for x in range(wpx):
+            if not inside[x, y]:
+                near = any(inside.get((x + dx, y), False) for dx in (-2, -1, 1, 2))
+                px[x, y] = (20, 12, 6, 90) if near and y > y0 + 4 else (0, 0, 0, 0)
+            elif not inside.get((x - 1, y), True) or not inside.get((x + 1, y), True):
+                px[x, y] = BARK[5]
+            elif (x // 5 + y) % 7 == 0 and y > hpx - 6:
+                px[x, y] = BARK[1]                              # root ridges catching light
+    for x in range(2, wpx // 2):                               # moss where the lit roots meet the deck
+        for y in range(hpx - 5, hpx - 2):
+            if inside[x, y] and px[x, y][3] == 255 and noise(x // 2, y, 41) > 0.45 - 0.12 * (y - hpx + 5):
+                px[x, y] = MOSS[2] if y == hpx - 5 else MOSS[int(noise(x, y, 42) * 1.99)]
     for x in range(wpx):
-        if px[x, hpx - 1][3]:
-            px[x, hpx - 1] = BARK[3]
+        if inside[x, hpx - 1]: px[x, hpx - 1] = BARK[5]
+        if inside[x, hpx - 2] and px[x, hpx - 2][3] == 255 and x % 5 != 2: px[x, hpx - 2] = BARK[4]
 
 def cut(img, index0, width, row, role, passage, label, backing=None):
     for c in range(width):
@@ -322,16 +380,23 @@ put(151, ladder("m"), "ladder", "passable", backing="depth", label="밧줄 사�
 put(152, ladder("b"), "ladder", "passable", backing="depth", label="밧줄 사다리 · 아래 끝")
 
 lan = Image.new("RGBA", (S, 2 * S), (0, 0, 0, 0)); px = lan.load()
-for y in range(10, 31):
-    for x in (7, 8): px[x, y] = POST if x == 8 else POST_L
-for x in range(5, 11): px[x, 30] = FASCIA_D; px[x, 31] = FASCIA_D
+for y in range(1, 13):                                       # warm halo (semi-transparent, drawn under the lamp)
+    for x in range(0, S):
+        d = math.hypot(x - 7.5, y - 6.5)
+        if d < 7.5: px[x, y] = GLOW[0][:3] + (int(70 * (1 - d / 7.5) ** 1.4),)
+for y in range(10, 30):
+    px[7, y] = POST_L; px[8, y] = POST
+for x in range(5, 11): px[x, 29] = POST; px[x, 30] = FASCIA_D
+px[6, 28] = POST_L; px[9, 28] = POST
 for x in range(5, 11):
     for y in range(3, 10):
         edge = x in (5, 10) or y in (3, 9)
-        px[x, y] = DOOR[1] if edge else (GLOW[0] if (x + y) % 3 else GLOW[2])
+        px[x, y] = DOOR[1] if edge else (GLOW[2] if y < 6 else (GLOW[0] if y < 8 else GLOW[1]))
+px[7, 5] = px[8, 5] = rgb("ffffff")
 for x in range(4, 12): px[x, 2] = MOSS[1]
-for x in range(6, 10): px[x, 1] = MOSS[0]
-px[7, 0] = MOSS[2]; px[8, 0] = MOSS[2]
+for x in range(5, 11): px[x, 1] = MOSS[0]
+for x in (6, 7, 8, 9): px[x, 0] = MOSS[2] if x in (7, 8) else MOSS[0]
+px[4, 3] = MOSS[3]; px[11, 3] = MOSS[3]
 put(153, lan.crop((0, 0, S, S)), "prop", "solid", layer="upper", label="요정 등불 기둥 · 위")
 put(154, lan.crop((0, S, S, 2 * S)), "prop", "solid", layer="lower", backing="deck", label="요정 등불 기둥 · 밑")
 
