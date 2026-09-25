@@ -9,7 +9,7 @@ const c = JSON.parse(fs.readFileSync("tiledata/rpg-dungeons/catalog.json"));
 const proof = JSON.parse(fs.readFileSync("tiledata/rpg-dungeons/storage-proof.json"));
 const guidance = JSON.parse(fs.readFileSync("src/assets/sharedRpgDungeonReferences.json")).easyrpg_chipset_dungeon;
 const NATURAL = new Set(["cave", "mine", "ice", "lava", "sea", "lair"]);
-const categoryName = (p) => guidance.find((k) => k.id === (p.series === "grand" ? "rpg-dungeons-grand-v1" : p.series === "sunken" ? "rpg-dungeons-sunken-temple-v2" : p.series === "frontier" ? "rpg-dungeons-frontier-v1" : NATURAL.has(p.series) ? "rpg-dungeons-natural-v2" : "rpg-dungeons-built-v2")).name;
+const categoryName = (p) => guidance.find((k) => k.id === (p.series === "grand" ? "rpg-dungeons-grand-v1" : p.series === "sunken" ? "rpg-dungeons-sunken-temple-v2" : p.series === "frontier" ? "rpg-dungeons-frontier-v2" : NATURAL.has(p.series) ? "rpg-dungeons-natural-v2" : "rpg-dungeons-built-v2")).name;
 const SHEET = {
   oprn_dungeon_stone: "/assets/easyrpg-chipset-dungeon-transparent.png",
   oprn_dungeon_desert: "/assets/rpg-dungeons/desert-chipset.png",

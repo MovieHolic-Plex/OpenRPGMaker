@@ -5,6 +5,8 @@ import { ensureRpgDungeonReferences } from "./sharedRpgDungeonReferences";
 import { ensureFieldRouteReferences } from "./sharedFieldRouteReferences";
 import { ensureElfTreetopReferences } from "./sharedElfTreetopReferences";
 import { CLIMATE_VILLAGE_TEXTURES, createClimateVillageTileset, ensureClimateBareTrees, ensureClimateVillageReferences } from "./climateVillages";
+import { ATLAS_BIOME_TEXTURES, createAtlasBiomeTileset, ensureAtlasBiomeReferences } from "./atlasBiomes";
+import { ATLAS_BIOME_WORLD_TEXTURE, createAtlasBiomeWorldTileset } from "./atlasBiomeWorld";
 import { createSharedVillageObjectsTileset, ensureSharedVillageObjectReferences, SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "./sharedVillageObjects";
 import { createCastleTileset } from "./castleTileset";
 import { ensureForestGroveInterior } from "./forestGrove";
@@ -14,6 +16,7 @@ import { ensureForestHarmonyVillageSlots } from "./forestHarmonyExtension";
 import { ensureForestHarmonyHouseParts } from "./forestHarmonyHouseParts";
 import { ensureForestHarmonyTreetopParts } from "./forestHarmonyTreetopParts";
 import { ATLAS_VEHICLES_TEXTURE, createAtlasVehiclesTileset, ensureAtlasVehiclesReferences } from "./atlasVehicles";
+import { ensureForestHarmonyAtlasTownParts } from "./forestHarmonyAtlasTownParts";
 import { createForestGrassJoinsTileset, extendForestGrassJoinsTileset, FOREST_GRASS_JOINS_TEXTURE } from "./forestGrassJoins";
 import { createLpcWoodenFurniture16Tileset, createLpcWoodenFurnitureTileset, seedLpcWoodenFurniture16Kits, seedLpcWoodenFurnitureKits } from "./lpcWoodenFurniture";
 import { createTiboInteriorTileset, extendTiboInteriorDefaults, TIBO_INTERIOR_ID, TIBO_INTERIOR_TEXTURE } from "./tiboInterior";
@@ -148,6 +151,8 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyHouseParts(project.tilesets[id]) || changed;
       // Elf treetop village parts from 3131 (after the house parts) — decks, rope bridges, trunk houses.
       if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyTreetopParts(project.tilesets[id]) || changed;
+      // Atlas town parts from 3311 (after the treetop parts) — ship, fountain, stalls, fire, scaffolds, festival lanterns.
+      if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyAtlasTownParts(project.tilesets[id]) || changed;
       changed = ensureSharedCastleReferences(project.tilesets[id]) || changed;
       changed = ensureRpgPlaceReferences(project.tilesets[id]) || changed;
       changed = ensureRpgInteriorReferences(project.tilesets[id]) || changed;
@@ -161,6 +166,8 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       changed = ensureForestTallGrass(project.tilesets[id]) || changed;
       changed = ensureFieldRouteReferences(project.tilesets[id]) || changed;
       changed = ensureElfTreetopReferences(project.tilesets[id]) || changed;
+      // Atlas biome sheets (tiledata/atlas-biomes): the shipped biome guidance.
+      changed = ensureAtlasBiomeReferences(project.tilesets[id]) || changed;
       if (id === SHARED_VILLAGE_OBJECT_ID) changed = ensureSharedVillageObjectReferences(project.tilesets[id]) || changed;
       if (asset.textureKey === ATLAS_VEHICLES_TEXTURE) changed = ensureAtlasVehiclesReferences(project.tilesets[id]) || changed;
       if (id === TIBO_INTERIOR_ID) changed = extendTiboInteriorDefaults(project.tilesets[id]) || changed;
@@ -284,6 +291,7 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
     ensureForestHarmonyVillageSlots(tileset);
     ensureForestHarmonyHouseParts(tileset);
     ensureForestHarmonyTreetopParts(tileset);
+    ensureForestHarmonyAtlasTownParts(tileset);
     return tileset;
   }
   if (asset.textureKey === FOREST_GRASS_JOINS_TEXTURE) return createForestGrassJoinsTileset();
@@ -294,6 +302,13 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
   if (asset.textureKey === COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY) return createCombinedTownRetroWorldTileset();
   const climate = CLIMATE_VILLAGE_TEXTURES[asset.textureKey];
   if (climate) return createClimateVillageTileset(climate);
+  const biome = ATLAS_BIOME_TEXTURES[asset.textureKey];
+  if (biome) return createAtlasBiomeTileset(biome);
+  if (asset.textureKey === ATLAS_BIOME_WORLD_TEXTURE) {
+    const world = BUNDLED_EASYRPG_CHIPSET_ASSETS.find((a) => a.textureKey === "tex_easyrpg_chipset_world");
+    if (!world) throw new Error("번들 칩셋 목록에 tex_easyrpg_chipset_world 가 없습니다.");
+    return createAtlasBiomeWorldTileset(bundledStandardChipsetTileset(world));
+  }
   return bundledStandardChipsetTileset(asset);
 }
 
