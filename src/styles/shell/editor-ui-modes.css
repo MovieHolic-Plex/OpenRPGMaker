@@ -263,7 +263,7 @@ body.editor-ui-beginner .basic-left-rail.is-icon-rail {
 /* 테스트 플레이/전투 테스트 모달이 떠 있는 동안은 숨긴다 — 코치마크가 가리키는
    도구 레일은 모달 뒤에 있는데 카드만 모달 위(z-modal-top)에 남아, 작은 창에서
    전투 필드·HUD 를 덮었다(코덱스 적대 리뷰 C5). 모달이 닫히면 다시 보인다. */
-body:has(.test-play-modal-backdrop) .coach-mark-card {
+body.is-test-play-open .coach-mark-card {
   display: none;
 }
 

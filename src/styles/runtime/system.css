@@ -1,38 +1,4 @@
-/* Neo둥근모 — 90년대 퍼블릭 도메인 비트맵 글꼴 "둥근모꼴" 계보의 둥근 픽셀 폰트.
-   SIL OFL 1.1 (Eunbin Jeong / Dalgona), 라이선스 원문은 LICENSE-neodgm.txt.
-   Galmuri 는 고딕 자형이라 메뉴가 사무적으로 보였다 — 이 글꼴이 레트로 RPG 톤을 만든다. */
-@font-face {
-  font-family: "NeoDunggeunmo";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("../../../public/assets/fonts/neodgm.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "Galmuri9";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("../../../public/assets/fonts/Galmuri9.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "Galmuri11";
-  font-style: normal;
-  font-weight: 400;
-  font-display: block;
-  src: url("../../../public/assets/fonts/Galmuri11.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "Galmuri11";
-  font-style: normal;
-  font-weight: 700;
-  font-display: block;
-  src: url("../../../public/assets/fonts/Galmuri11-Bold.woff2") format("woff2");
-}
-
+/* 픽셀 글꼴 @font-face 는 fonts.css 가 소유한다(편집기가 런타임 시트 없이도 써야 해서). */
 :root {
   /* 픽셀 글꼴은 tokens.css 의 --font-pixel 을 그대로 따른다. 이전엔 여기서 자기 스택을 따로
      선언해 tokens.css 와 독립된 두 번째 진실 공급원이 됐고, 그러면 DB → 시스템 → 폰트

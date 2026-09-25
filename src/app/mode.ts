@@ -16,6 +16,7 @@ import { PRODUCT_BRAND } from "@/brand";
 import { ensurePhaser } from "@/app/phaserRuntime";
 import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
 import { syncProjectFontTheme } from "@/app/fontTheme";
+import { preloadRuntimeStyles } from "@/app/runtimeStyles";
 import { createPlayGame, type PlayGameBootOptions } from "@/player/createPlayGame";
 import { configureEditorGameAccessor } from "@/editor/panels/editorGameSuspension";
 import { installEditRenderGate, type EditRenderGateGame } from "@/editor/editRenderGate";
@@ -532,7 +533,7 @@ export async function enterMode(mode: Mode): Promise<void> {
     if (run !== modeRun) return;
     renderEditor(elements.main);
   } else {
-    const { renderPlayer } = await import("@/player/player");
+    const [{ renderPlayer }] = await Promise.all([import("@/player/player"), preloadRuntimeStyles()]);
     if (run !== modeRun) return;
     // Editor play mode is an authoring surface, not the shipped export player: QA
     // instrumentation stays on so debug hooks/state mirrors remain available here.

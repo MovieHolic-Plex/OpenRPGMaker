@@ -452,7 +452,7 @@ body:has(.ai-chat-panel:not(.is-collapsed)) .ai-work-strip {
 }
 
 /* 띠가 떠 있으면 토스트는 그 위에 쌓인다(bottom 은 데이터베이스 모달 규칙이 소유하므로 margin 으로). */
-body:has(.ai-work-strip:not([hidden])) .toast-stack {
+body.has-ai-work-strip .toast-stack {
   margin-bottom: var(--ai-work-strip-height, 128px);
 }
 

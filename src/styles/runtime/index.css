@@ -1,4 +1,5 @@
 /* runtime 표면 진입 시트 — 리프 시트를 @layer runtime 에 넣는다. 규칙을 여기 쓰지 말 것. 순서는 2026-09-11 유효 순서 그대로(세대 접기 전). */
+@import "./fonts.css" layer(runtime);
 @import "./system.css" layer(runtime);
 @import "./playSurface.css" layer(runtime);
 @import "./from-editor-core-part-2.css" layer(runtime);

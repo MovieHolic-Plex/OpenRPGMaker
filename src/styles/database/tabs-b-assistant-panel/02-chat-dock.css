@@ -119,8 +119,8 @@
 
 /* 입력창만 보기: 대기 중에는 맵을 가리는 카드 본문을 접되, 하단 ⋯ 메뉴로 언제든
    다른 대기 화면을 고를 수 있게 한다. */
-body:has(.database-modal-backdrop:not(.is-parked)) .ai-chat-panel,
-body:has([data-testid='resource-modal']) .ai-chat-panel {
+/* 리소스 관리자 창도 .database-modal-backdrop 이라 첫 선택자가 이미 덮는다. */
+body:has(.database-modal-backdrop:not(.is-parked)) .ai-chat-panel {
   display: none;
 }
 .ai-status-group {
