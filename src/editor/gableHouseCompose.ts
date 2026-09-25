@@ -13,7 +13,8 @@
 //  · 벽은 킷 나인슬라이스(+하프팀버 기둥 열) — 부품마다 따로 끊어 덩어리가 둘로 읽히게 한다.
 //  · 불투명 칸을 새로 칠하면 그 칸의 상위(앞서 얹은 캡·창)를 지운다. 캡만 얹는 칸은 하위를 건드리지 않는다.
 
-import { HOUSE_KITS, type HouseKit, type HouseKitId } from "@/editor/houseKit";
+import { CHIMNEY_TILE, HOUSE_KITS, type HouseKit, type HouseKitId } from "@/editor/houseKit";
+import { housePartTile } from "@/project/defaults/forestHarmonyHouseParts";
 import type { AuthoredHouseFormDef, AuthoredHouseFormRow } from "@/project/defaults/authoredHouseFormCatalog";
 import {
   findGableHouseFormSpec,
@@ -120,7 +121,7 @@ function drawWalls(canvas: Canvas, kit: HouseKit, placed: PartPlacement): void {
   }
 }
 
-function drawFrontRoof(canvas: Canvas, kit: HouseKit, roof: GableRoofMaterial, placed: PartPlacement & { readonly part: GableFrontPart }): void {
+function drawFrontRoof(canvas: Canvas, kit: HouseKit, roof: GableRoofMaterial, placed: PartPlacement & { readonly part: GableFrontPart }): { readonly x: number; readonly y: number } {
   const { part, x, wallTop } = placed;
   const w = part.w;
   const h = w / 2;
@@ -149,6 +150,7 @@ function drawFrontRoof(canvas: Canvas, kit: HouseKit, roof: GableRoofMaterial, p
   // 꼭대기.
   overlay(canvas, x + h - 1, y, roof.capL);
   overlay(canvas, x + h, y, roof.capR);
+  return { x: x + h - 1, y };
 }
 
 function drawBlockRoof(canvas: Canvas, roof: GableRoofMaterial, placed: PartPlacement & { readonly part: GableBlockPart }): void {
@@ -198,11 +200,124 @@ function drawWindows(canvas: Canvas, kit: HouseKit, placed: PartPlacement, doorX
   }
 }
 
+export interface GableComposeOptions {
+  /**
+   * 작은 지붕 부품(굴뚝·지붕창·현관 차양·박공 꼭대기 장식)을 0~2개 붙이는 씨앗. 생략하면 부품 없음.
+   * 부품 칸(forest_harmony 3060~)이 있는 타일셋에서만 넘겨야 한다 — tilesetHasHouseParts.
+   */
+  readonly accentSeed?: number;
+}
+
+function mix(seed: number, salt: number): number {
+  let h = (seed ^ Math.imul(salt + 0x9e3779b9, 0x85ebca6b)) >>> 0;
+  h = Math.imul(h ^ (h >>> 16), 0x7feb352d) >>> 0;
+  h = Math.imul(h ^ (h >>> 15), 0x846ca68b) >>> 0;
+  return (h ^ (h >>> 16)) >>> 0;
+}
+
+type AccentKind = "chimney" | "dormer" | "awning" | "finial";
+
+interface AccentContext {
+  readonly canvas: Canvas;
+  readonly kit: HouseKit;
+  readonly roof: GableRoofMaterial;
+  readonly placements: readonly PartPlacement[];
+  readonly apexes: readonly { readonly x: number; readonly y: number }[];
+  readonly doorAt: { readonly x: number; readonly y: number };
+  readonly doorPart: PartPlacement;
+}
+
+const at = (canvas: Canvas, x: number, y: number): { lower: number; upper: number } | undefined =>
+  x < 0 || y < 0 || x >= canvas.w || y >= canvas.h ? undefined : { lower: canvas.lower[y * canvas.w + x]!, upper: canvas.upper[y * canvas.w + x]! };
+
+/** 박공 가족(파랑/주황) — 지붕창·꼭대기 장식 그림을 고른다. */
+const roofFamily = (roof: GableRoofMaterial): "blue" | "orange" => (roof.capL === GABLE_ROOF_BLUE.capL ? "blue" : "orange");
+
+function placeAccent(context: AccentContext, kind: AccentKind, seed: number): boolean {
+  const { canvas, roof } = context;
+  const family = roofFamily(roof);
+  const roofTiles = new Set([roof.lit, roof.dark, roof.body, roof.top]);
+  if (kind === "chimney") {
+    // 지붕 칸 중 그 열 지붕의 위 세 줄 안, 위 칸이 합각 벽이 아닌 곳. 오른쪽(어두운 면)을 먼저.
+    const candidates: { x: number; y: number }[] = [];
+    for (let x = 0; x < canvas.w; x += 1) {
+      let firstRoofY = -1;
+      for (let y = 0; y < canvas.h; y += 1) {
+        const cell = at(canvas, x, y)!;
+        if (!roofTiles.has(cell.lower)) continue;
+        if (firstRoofY < 0) firstRoofY = y;
+        if (y - firstRoofY > 2 || cell.upper !== -1) continue;
+        candidates.push({ x, y });
+      }
+    }
+    if (candidates.length === 0) return false;
+    const right = candidates.filter((cell) => (at(canvas, cell.x, cell.y)!.lower === roof.dark || cell.x >= canvas.w / 2));
+    const pool = right.length > 0 ? right : candidates;
+    const cell = pool[mix(seed, 1) % pool.length]!;
+    const tiles = [CHIMNEY_TILE, housePartTile("chimney-brick"), housePartTile("chimney-brick-smoke"), housePartTile("chimney-stone-smoke")];
+    overlay(canvas, cell.x, cell.y, tiles[mix(seed, 2) % tiles.length]!);
+    return true;
+  }
+  if (kind === "dormer") {
+    // 측면 덩어리의 몸통 줄(용마루·처마 아닌 줄) 가운데 칸 — 아직 몸통으로 남아 있는 칸만.
+    const candidates: { x: number; y: number }[] = [];
+    for (const placed of context.placements) {
+      if (placed.part.kind !== "block" || placed.part.roofRows < 3) continue;
+      const top = placed.wallTop - placed.part.roofRows;
+      for (let y = top + 1; y <= placed.wallTop - 2; y += 1) {
+        for (let dx = 1; dx < placed.part.w - 1; dx += 1) {
+          const cell = at(canvas, placed.x + dx, y);
+          if (!cell || cell.lower !== roof.body || cell.upper !== -1) continue;
+          // 양옆도 몸통이어야 지붕 한가운데에 선다.
+          if (at(canvas, placed.x + dx - 1, y)?.lower !== roof.body || at(canvas, placed.x + dx + 1, y)?.lower !== roof.body) continue;
+          candidates.push({ x: placed.x + dx, y });
+        }
+      }
+    }
+    if (candidates.length === 0) return false;
+    const cell = candidates[mix(seed, 3) % candidates.length]!;
+    overlay(canvas, cell.x, cell.y, housePartTile(family === "blue" ? "dormer-blue" : "dormer-orange"));
+    return true;
+  }
+  if (kind === "awning") {
+    // 문 바로 위 벽 윗줄(보통 높이 벽만).
+    if (context.doorPart.part.wall === "low") return false;
+    const y = context.doorAt.y - 2;
+    const cell = at(canvas, context.doorAt.x, y);
+    if (!cell || cell.upper !== -1 || y !== context.doorPart.wallTop) return false;
+    overlay(canvas, context.doorAt.x, y, housePartTile(mix(seed, 4) % 2 === 0 ? "awning-wood" : "awning-cloth"));
+    return true;
+  }
+  // finial — 정면 박공 꼭대기 캡 두 칸을 장식 캡으로.
+  const apex = context.apexes.find((candidate) =>
+    at(canvas, candidate.x, candidate.y)?.upper === roof.capL && at(canvas, candidate.x + 1, candidate.y)?.upper === roof.capR);
+  if (!apex) return false;
+  overlay(canvas, apex.x, apex.y, housePartTile(family === "blue" ? "finial-blue-l" : "finial-orange-l"));
+  overlay(canvas, apex.x + 1, apex.y, housePartTile(family === "blue" ? "finial-blue-r" : "finial-orange-r"));
+  return true;
+}
+
+/** 집마다 0~2개 — 종류 순서도 씨앗으로 섞는다. 붙일 자리가 없는 종류는 건너뛴다. */
+function addAccents(context: AccentContext, seed: number): void {
+  const want = mix(seed, 0) % 3;
+  if (want === 0) return;
+  const kinds: AccentKind[] = ["chimney", "dormer", "awning", "finial"];
+  for (let i = kinds.length - 1; i > 0; i -= 1) {
+    const j = mix(seed, 10 + i) % (i + 1);
+    [kinds[i], kinds[j]] = [kinds[j]!, kinds[i]!];
+  }
+  let placed = 0;
+  for (const kind of kinds) {
+    if (placed >= want) break;
+    if (placeAccent(context, kind, mix(seed, 100 + placed))) placed += 1;
+  }
+}
+
 /**
- * 박공 조합 형태 하나를 킷 재료로 합성한다. 결정론적 — 같은 spec·kit 이면 같은 셀.
+ * 박공 조합 형태 하나를 킷 재료로 합성한다. 결정론적 — 같은 spec·kit·씨앗이면 같은 셀.
  * id 는 spec id 그대로라 author_house·마을·감지가 같은 이름을 본다.
  */
-export function composeGableHouseForm(spec: GableHouseFormSpec, kitId: HouseKitId): AuthoredHouseFormDef {
+export function composeGableHouseForm(spec: GableHouseFormSpec, kitId: HouseKitId, options: GableComposeOptions = {}): AuthoredHouseFormDef {
   const kit = HOUSE_KITS[kitId];
   const roof = gableRoofMaterialForKit(kit);
   const minX = Math.min(...spec.parts.map((part) => part.x));
@@ -218,11 +333,15 @@ export function composeGableHouseForm(spec: GableHouseFormSpec, kitId: HouseKitI
   const doorPart = placements.find((placed) => placed.part.door === true)
     ?? placements.reduce((best, placed) => (placed.bottom > best.bottom || (placed.bottom === best.bottom && placed.part.w > best.part.w) ? placed : best));
   const doorAt = { x: doorPart.x + doorOffset(kit, doorPart.part), y: doorPart.bottom };
+  const apexes: { x: number; y: number }[] = [];
   for (const placed of placements) {
-    if (placed.part.kind === "front") drawFrontRoof(canvas, kit, roof, placed as PartPlacement & { readonly part: GableFrontPart });
+    if (placed.part.kind === "front") apexes.push(drawFrontRoof(canvas, kit, roof, placed as PartPlacement & { readonly part: GableFrontPart }));
     else drawBlockRoof(canvas, roof, placed as PartPlacement & { readonly part: GableBlockPart });
     drawWalls(canvas, kit, placed);
     drawWindows(canvas, kit, placed, placed === doorPart ? doorAt.x : undefined);
+  }
+  if (options.accentSeed !== undefined) {
+    addAccents({ canvas, kit, roof, placements, apexes, doorAt, doorPart }, options.accentSeed >>> 0);
   }
   const rows: AuthoredHouseFormRow[] = [];
   for (let y = 0; y < h; y += 1) {
@@ -234,9 +353,16 @@ export function composeGableHouseForm(spec: GableHouseFormSpec, kitId: HouseKitI
 }
 
 /** id 로 합성. 박공 형태가 아니면 undefined. */
-export function composeGableHouseFormById(id: string, kitId: HouseKitId): AuthoredHouseFormDef | undefined {
+export function composeGableHouseFormById(id: string, kitId: HouseKitId, options: GableComposeOptions = {}): AuthoredHouseFormDef | undefined {
   const spec = findGableHouseFormSpec(id);
-  return spec ? composeGableHouseForm(spec, kitId) : undefined;
+  return spec ? composeGableHouseForm(spec, kitId, options) : undefined;
+}
+
+/** 자리마다 다른 부품 씨앗 — 같은 자리·같은 형태면 같은 부품. */
+export function gableAccentSeed(templateId: string, x: number, y: number, salt = 0): number {
+  let h = 0x811c9dc5 ^ salt;
+  for (const char of templateId) h = Math.imul(h ^ char.charCodeAt(0), 0x01000193) >>> 0;
+  return mix(mix(h, x), y);
 }
 
 /** 킷과 무관한 치수 — 카탈로그 설명·슬롯 필터용(재료가 바뀌어도 칸 모양은 같다). */

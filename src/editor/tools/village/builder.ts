@@ -72,6 +72,7 @@ import {
   type VillageIntent,
   templateFormFor,
 } from "./constants";
+import { tilesetHasHouseParts } from "@/project/defaults/forestHarmonyHouseParts";
 import {
   matchVillageArchetype,
   presetOverrides,
@@ -392,6 +393,7 @@ export function buildVillageDomain(
     boulevard ? { ewRow: boulevard.ewRow, nsCol: boulevard.nsCol, axis: boulevard.axis } : undefined,
     !doorEventsPlanned,
     sketchSites,
+    tilesetHasHouseParts(draft.tilesets[map.tilesetId]),
   );
   assertHouseProtection(existingHouses, draft, []);
   perfLap("houses");

@@ -4,6 +4,8 @@ import {
   type HouseKitId,
 } from "@/editor/houseKit";
 import { stampHouseExterior } from "@/editor/authoredHouseFormStamp";
+import { gableAccentSeed, isGableHouseFormId } from "@/editor/gableHouseCompose";
+import { tilesetHasHouseParts } from "@/project/defaults/forestHarmonyHouseParts";
 import {
   createHouseInteriorMap,
   registerInteriorMaps,
@@ -119,7 +121,14 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
   assertHousePlacement(map, bbox);
   const shape = houseExteriorPlan(input);
   // 저작 형태(셀 레시피) id 면 스탬프가 레시피로 바뀐다 — wings[0] 은 파서가 둔 앵커.
-  const result = stampHouseExterior(map, { kitId: input.kitId, wings: input.wings, templateId: input.templateId, ...shape.stampOptions });
+  // 박공 조합 형태 + 부품 칸이 있는 타일셋이면 자리마다 굴뚝·지붕창·차양·꼭대기 장식 0~2개.
+  const accentSeed = input.templateId !== undefined && isGableHouseFormId(input.templateId) && tilesetHasHouseParts(draft.tilesets[map.tilesetId])
+    ? gableAccentSeed(input.templateId, bbox.x, bbox.y)
+    : undefined;
+  const result = stampHouseExterior(map, {
+    kitId: input.kitId, wings: input.wings, templateId: input.templateId, ...shape.stampOptions,
+    ...(accentSeed === undefined ? {} : { accentSeed }),
+  });
   if (!result.ok) throw new ToolError(result.reason ?? "집 시공 실패", { code: "house-kit-failed", mapId: input.mapId });
 
   const warnings: string[] = [];

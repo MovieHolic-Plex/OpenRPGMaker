@@ -3,6 +3,7 @@
 
 import { ALL_HOUSE_KIT_IDS, HOUSE_KITS as HOUSE_KIT_DEFS, stampFootprintHouseKit, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
 import { stampAuthoredHouseForm } from "@/editor/authoredHouseFormStamp";
+import { gableAccentSeed } from "@/editor/gableHouseCompose";
 import { stampHouseDoorBackground } from "@/editor/houseInteriors";
 import { TILE } from "@/project/defaults/constants";
 import type { GameMap } from "@/project/types";
@@ -228,6 +229,8 @@ export function buildHouses(
    */
   paintDoorTiles = false,
   sketchSites?: readonly VillageSketchSite[],
+  /** 이 맵 타일셋에 집 부품 칸(3060~)이 있으면 박공 형태에 굴뚝·지붕창·차양·꼭대기 장식을 0~2개 붙인다. */
+  houseParts = false,
 ): BuiltHouse[] {
   const existing = new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x));
   const available = houseCandidates(area, plaza, target, intent.templateCatalog, intent.settlementLayout, boulevard, sketchSites);
@@ -237,6 +240,8 @@ export function buildHouses(
     ...gableFirst(shuffled(available.filter((candidate) => !candidate.organic), rng), rng),
   ];
   const houses: BuiltHouse[] = [];
+  // 부품 씨앗 소금 — 같은 자리라도 마을 씨앗이 다르면 다른 부품이 붙게 rng 에서 한 번 뽑는다.
+  const rngSeedSalt = houseParts ? Math.floor(rng() * 0x7fffffff) : 0;
   const usedTemplateIds = new Set<string>();
   const usedKitIds = new Set<HouseKitId>();
   const candidateTemplateIds = new Set(candidates.map((candidate) => candidate.template.id));
@@ -274,7 +279,8 @@ export function buildHouses(
       if (!forcedTemplateId && candidate.template.excludeFromDefaultMix) continue;
       const stories: 1 | 2 | 3 = candidate.template.stories === 3 ? 3 : candidate.template.stories === 2 ? 2 : 1;
       // 박공 조합 형태는 고른 킷으로 합성한다 — 고정 레시피는 그대로.
-      const form = templateFormFor(candidate.template, kitId);
+      const form = templateFormFor(candidate.template, kitId,
+        houseParts ? gableAccentSeed(candidate.template.id, candidate.bbox.x, candidate.bbox.y, rngSeedSalt) : undefined);
       const result = form
         ? stampAuthoredHouseForm(map, form, { x: candidate.bbox.x, y: candidate.bbox.y })
         : stampFootprintHouseKit(map, {

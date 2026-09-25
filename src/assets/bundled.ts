@@ -1,6 +1,7 @@
 import sharedVillageObjects from "./sharedVillageObjects.json";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import forestHarmony from "./forestHarmonyTileset.json";
+import forestHarmonyHouseParts from "./forestHarmonyHouseParts.json";
 import climateSheets from "../../tiledata/climate-villages/sheets.json";
 import tiboRecovered from "./tiboRecoveredTileset.json";
 import { withInlineAsset } from "@/assets/inlineAssetStore";
@@ -116,6 +117,9 @@ export const BUNDLED_REFERENCE_CHIPSET_ASSETS = [
   // 장소 「개울 건너 숲성 마을」의 생성 건물(설계도 방식)·손 도트 소품 시트. 숲마을 타일셋이 tileGrafts 로 뒤에 붙인다.
   // 재생성: scripts/asset-gen/forest-harmony-buildings/publish_place.py
   { textureKey: FOREST_FANTASY_TOWN_TEXTURE_KEY, path: "assets/forest-harmony/fantasy-town-buildings.png", name: "개울 건너 숲성 마을 · 생성 건물·소품" },
+  // 집 부품(굴뚝·지붕창·현관 차양·박공 꼭대기 장식) 손 도트 시트 — forest_harmony 가 tileGrafts 로 3060~ 에 붙인다.
+  // 재생성: scripts/content/build-forest-harmony-house-parts.py, 정의는 project/defaults/forestHarmonyHouseParts.ts.
+  { textureKey: "tex_forest_harmony_house_parts", path: "assets/forest-harmony/house-parts.png", name: "숲마을 · 집 부품" },
   // 던전 칩셋을 칸 번호 그대로 다시 칠한 네 장(scripts/content/build-rpg-dungeon-sheets.py) — 던전 장소(tiledata/rpg-dungeons) 사본만 쓴다.
   { textureKey: "tex_oprn_dungeon_desert", path: "assets/rpg-dungeons/desert-chipset.png", name: "던전 · 사암 피라미드 (재칠)" },
   { textureKey: "tex_oprn_dungeon_sea", path: "assets/rpg-dungeons/sea-chipset.png", name: "던전 · 해저 동굴 (재칠)" },
@@ -164,6 +168,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === FOREST_FANTASY_TOWN_TEXTURE_KEY) return FOREST_FANTASY_TOWN_FRAME_COUNT;
   if (key === "tex_shared_forest_village_objects") return sharedVillageObjects.count;
   if (key === "tex_forest_harmony") return forestHarmony.count;
+  if (key === "tex_forest_harmony_house_parts") return forestHarmonyHouseParts.frames;
   if (key === "tex_forest_harmony_grass_joins") return 10;
   if (key === "tex_forest_harmony_snow") return climateSheets.snow.count;
   if (key === "tex_forest_harmony_volcano") return climateSheets.volcano.count;
