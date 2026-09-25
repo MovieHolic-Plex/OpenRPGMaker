@@ -6,12 +6,17 @@ import { validateIceDiagonalTerrain } from "@/project/defaults/iceDiagonalTerrai
 import { dungeonFloorMask, dungeonRandom, planDungeonGraph, validateDungeonGraph, type DungeonDesign, type DungeonPoint } from "./topology";
 import { dungeonMaterial, dungeonPath, nearestDungeonFloor, shapeDungeonTerrain, stampDungeonConfluence, stampDungeonIceRelief, DUNGEON_STEPS } from "./terrain";
 import { layDungeonRail } from "./rail";
+import { countLava, LAVA_BRIDGE, LAVA_TILES, stampLavaPools, stampLavaRiver } from "./lava";
 
 export type ConnectedDungeonPlan = DungeonDesign & { mapId: string; name: string; width: number; height: number; theme: "stone" | "lava" | "ice"; hazard?: boolean };
 const BRIDGES = [252, 253, 254], RAILS = [54, 55, 84, 85, 116, 144];
+/** Walkable board over a hazard: the cliff ledge boards and the lava cave's plank bridge (141). */
+const PLANKS = [...BRIDGES, LAVA_BRIDGE];
+/** A lava cave (lava theme outside a crypt) paints the documented red rock, lava river and pools. */
+export function isLavaCave(plan: { theme: string; character?: string }): boolean { return plan.theme === "lava" && plan.character !== "crypt"; }
 export function connectedDungeonOpen(map: GameMap, plan: ConnectedDungeonPlan): (x: number, y: number) => boolean {
   const floor = dungeonMaterial(plan.theme, plan.character).floor;
-  return (x, y) => x >= 0 && y >= 0 && x < map.width && y < map.height && (BRIDGES.includes(map.upperTiles[y * map.width + x]!) || RAILS.includes(map.upperTiles[y * map.width + x]!) || [floor, 196, ...BRIDGES].includes(map.lowerTiles[y * map.width + x]!) && map.upperTiles[y * map.width + x] === -1);
+  return (x, y) => x >= 0 && y >= 0 && x < map.width && y < map.height && (PLANKS.includes(map.upperTiles[y * map.width + x]!) || RAILS.includes(map.upperTiles[y * map.width + x]!) || [floor, 196, ...PLANKS].includes(map.lowerTiles[y * map.width + x]!) && map.upperTiles[y * map.width + x] === -1);
 }
 export function connectedDungeonLandings(map: GameMap, plan: ConnectedDungeonPlan): DungeonPoint[] {
   const graph = planDungeonGraph(plan.width, plan.height, plan), open = connectedDungeonOpen(map, plan);
@@ -22,6 +27,8 @@ const SPRITES = {
   boulder: [[322, 323], [352, 353]], pile: [[318, 319], [348, 349]], scree: [[259, 260]], rubble: [[383]],
   barrel: [[417]], bucket: [[419]], sign: [[298]], statue: [[145], [175]], idol: [[146], [176]],
   memorial: [[148]], plaque: [[265]], pillar: [[446], [476]], broken: [[476]], bones: [[299]],
+  // Lava cave (dungeon-lava-cave.md): brown rock in the theme colour and a brazier; never blue crystal or a goddess statue.
+  redPile: [[318, 319], [348, 349]], redScree: [[259, 260]], redRubble: [[412]], redSpike: [[288]], brazier: [[263], [293]],
 } satisfies Record<string, number[][]>;
 type Prop = keyof typeof SPRITES;
 
@@ -48,8 +55,12 @@ export function applyConnectedDungeonLayer(map: GameMap, plan: ConnectedDungeonP
   if (layer === "floor") return result(map, "preserved room floors and variable-width passages");
   if (layer !== "hazard") return result(map, "unknown connected dungeon layer", [`unknown layer: ${layer}`]);
   const random = dungeonRandom((plan.seed ?? 1) + 901), at = (p: DungeonPoint) => p.y * W + p.x;
+  const lavaCave = isLavaCave(plan), lavaHazard = lavaCave && plan.hazard !== false;
+  let river = false;
   if (plan.hazard !== false && plan.character !== "crypt") {
     if (plan.theme === "ice") stampDungeonIceRelief(next, graph);
+    // A lava cave gets one fire river across its largest room instead of the rock-cliff confluence.
+    else if (lavaCave) river = !!stampLavaRiver(next, graph, material.floor, dungeonRandom((plan.seed ?? 1) + 577));
     else stampDungeonConfluence(next, graph, material.floor);
   }
   const open = connectedDungeonOpen(next, plan), landings = connectedDungeonLandings(next, plan);
@@ -66,7 +77,7 @@ export function applyConnectedDungeonLayer(map: GameMap, plan: ConnectedDungeonP
     for (const p of dungeonPath(W, H, a, b, open) ?? []) reserved.add(at(p));
   }
   // Landings at every crossing remain clear even when the shortest room route bypasses it.
-  for (let k = 0; k < next.upperTiles.length; k++) if (BRIDGES.includes(next.upperTiles[k]!)) {
+  for (let k = 0; k < next.upperTiles.length; k++) if (PLANKS.includes(next.upperTiles[k]!)) {
     const x = k % W, y = Math.floor(k / W);
     for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (open(x + dx, y + dy)) reserved.add((y + dy) * W + x + dx);
   }
@@ -74,7 +85,8 @@ export function applyConnectedDungeonLayer(map: GameMap, plan: ConnectedDungeonP
     const target = landings.filter((_, i) => graph.rooms[i]!.role === "worksite").sort((a, b) => Math.hypot(b.x - entrance.x, b.y - entrance.y) - Math.hypot(a.x - entrance.x, a.y - entrance.y))[0];
     if (target) for (const p of layDungeonRail(next, entrance, target, open)) reserved.add(at(p));
   }
-  if (plan.theme === "lava" && plan.hazard !== false) {
+  if (lavaHazard) stampLavaPools(next, graph, material.floor, reserved, entrance, dungeonRandom((plan.seed ?? 1) + 613));
+  else if (plan.theme === "lava" && plan.hazard !== false) {
     const lava: DungeonPoint[] = [];
     for (const room of graph.rooms.filter(r => ["collapse", "chamber"].includes(r.role) && r.width >= 10)) {
       const cx = room.x + Math.round(room.width * (.08 + random() * .18)), cy = room.y + Math.round(random() * 3), rx = 2.5 + random() * 2, ry = 1.5 + random() * 1.5;
@@ -90,7 +102,8 @@ export function applyConnectedDungeonLayer(map: GameMap, plan: ConnectedDungeonP
     used.push({ x, y }); return true;
   };
   for (const room of graph.rooms) {
-    const pool: Prop[] = room.role === "entrance" || room.role === "storage" || room.role === "worksite" ? ["barrel", "bucket", "sign"] : room.role === "shrine" ? ["statue", "idol", "plaque", "pillar"] : plan.character === "crypt" ? ["memorial", "plaque", "broken"] : (room.role === "crystal" && plan.theme !== "lava") || plan.theme === "ice" ? ["crystal", "spike", "shards", "fragments"] : ["boulder", "pile", "scree", "rubble"];
+    const pool: Prop[] = lavaCave ? (room.role === "entrance" ? ["brazier", "brazier"] : room.role === "storage" || room.role === "worksite" ? ["barrel", "bucket", "sign"] : room.role === "shrine" ? ["idol", "brazier", "plaque", "pillar"] : ["redPile", "redScree", "redRubble", "redSpike"])
+      : room.role === "entrance" || room.role === "storage" || room.role === "worksite" ? ["barrel", "bucket", "sign"] : room.role === "shrine" ? ["statue", "idol", "plaque", "pillar"] : plan.character === "crypt" ? ["memorial", "plaque", "broken"] : (room.role === "crystal" && plan.theme !== "lava") || plan.theme === "ice" ? ["crystal", "spike", "shards", "fragments"] : ["boulder", "pile", "scree", "rubble"];
     const candidates: { x: number; y: number; score: number }[] = [];
     for (let y = Math.max(1, room.y - Math.ceil(room.height / 2)); y < Math.min(H - 2, room.y + room.height / 2); y++) for (let x = Math.max(1, room.x - Math.ceil(room.width / 2)); x < Math.min(W - 2, room.x + room.width / 2); x++) {
       if (!open(x, y) || reserved.has(y * W + x)) continue;
@@ -114,7 +127,7 @@ export function applyConnectedDungeonLayer(map: GameMap, plan: ConnectedDungeonP
   let obstacles = 0;
   for (const room of graph.rooms) {
     if (room.role === "entrance") continue;
-    const cluster: Prop[] = plan.character === "crypt" ? ["pillar", "broken"] : plan.theme === "ice" || room.role === "crystal" ? ["crystal", "spike"] : ["boulder", "rubble"];
+    const cluster: Prop[] = lavaCave ? ["redPile", "bones"] : plan.character === "crypt" ? ["pillar", "broken"] : plan.theme === "ice" || room.role === "crystal" ? ["crystal", "spike"] : ["boulder", "rubble"];
     let best: { x: number; y: number; clearance: number } | undefined;
     for (let y = room.y - Math.floor(room.height / 2); y <= room.y + Math.floor(room.height / 2); y++) for (let x = room.x - Math.floor(room.width / 2); x <= room.x + Math.floor(room.width / 2); x++) {
       if (!open(x, y) || reserved.has(y * W + x)) continue;
@@ -127,7 +140,21 @@ export function applyConnectedDungeonLayer(map: GameMap, plan: ConnectedDungeonP
     obstacles += 1;
     stamp(best.x + 2, best.y + 1, cluster[1]!) || stamp(best.x - 1, best.y + 2, cluster[1]!);
   }
-  return result(next, `local relief, reserved circulation, ${used.length} contextual props (${obstacles} free-standing)`);
+  let lavaNote = "";
+  if (lavaCave) {
+    // Floor flames on the lava shore (dungeon-lava-cave.md): a few, off every reserved route.
+    const flames: DungeonPoint[] = [];
+    for (let y = 1; y < H - 1 && flames.length < 4; y++) for (let x = 1; x < W - 1 && flames.length < 4; x++) {
+      const k = y * W + x;
+      if (!open(x, y) || next.lowerTiles[k] !== material.floor || next.upperTiles[k] !== -1 || reserved.has(k)) continue;
+      if (!DUNGEON_STEPS.some(([dx, dy]) => LAVA_TILES.has(next.lowerTiles[(y + dy) * W + x + dx]!))) continue;
+      if (flames.some(p => Math.hypot(p.x - x, p.y - y) < 7) || random() < .6) continue;
+      next.upperTiles[k] = flames.length % 2 ? 209 : 207; flames.push({ x, y });
+    }
+    const { lava, bridge } = countLava(next);
+    lavaNote = `, lava ${lava} cells, ${river ? `plank bridge ${bridge} cells over the lava river` : "no lava river (no room wide enough)"}`;
+  }
+  return result(next, `local relief, reserved circulation, ${used.length} contextual props (${obstacles} free-standing)${lavaNote}`);
 }
 
 export function evaluateConnectedDungeon(map: GameMap, plan: ConnectedDungeonPlan, project?: Project) {
@@ -160,9 +187,11 @@ export function evaluateConnectedDungeon(map: GameMap, plan: ConnectedDungeonPla
   }
   for (let k = 0; k < map.lowerTiles.length; k++) {
     const tile = map.lowerTiles[k]!, above = map.lowerTiles[k - W], below = map.lowerTiles[k + W];
+    // The lava cave's wall foot is 163 (dungeon-lava-cave.md), not a cliff cap.
+    if (tile === material.wallBottom && tile !== 226) continue;
     if ([162, 163].includes(tile) && ![192, 193, 226].includes(below!)) issues.push(`cliff cap missing face (${k % W},${Math.floor(k / W)})`);
     if ([192, 193].includes(tile) && (![162, 163, 192, 193, 226].includes(above!) || ![192, 193, 222, 223, 226].includes(below!))) issues.push(`broken cliff face (${k % W},${Math.floor(k / W)})`);
-    if (RAILS.includes(map.upperTiles[k]!) && ![material.floor, 196, ...BRIDGES].includes(tile)) issues.push(`unsupported rail (${k % W},${Math.floor(k / W)})`);
+    if (RAILS.includes(map.upperTiles[k]!) && ![material.floor, 196, ...PLANKS].includes(tile)) issues.push(`unsupported rail (${k % W},${Math.floor(k / W)})`);
   }
   if (plan.theme === "ice") issues.push(...validateIceDiagonalTerrain({ width: W, height: H, lower: map.lowerTiles }).map(i => `ice ${i.code} (${i.x},${i.y})`));
   // Native rail corners must meet the reciprocal connector of the next rail.
@@ -174,6 +203,9 @@ export function evaluateConnectedDungeon(map: GameMap, plan: ConnectedDungeonPla
     for (let i = 0; i < queue.length; i++) { const k = queue[i]!, bits = railMasks[map.upperTiles[k]!]!; for (let d = 0; d < 4; d++) { const [dx, dy] = DUNGEON_STEPS[d]!, x = k % W + dx, y = Math.floor(k / W) + dy, n = y * W + x; if (x < 0 || y < 0 || x >= W || y >= H || !(bits & 1 << d) || !RAILS.includes(map.upperTiles[n]!)) continue; if (!(railMasks[map.upperTiles[n]!]! & 1 << ((d + 2) % 4))) issues.push(`rail connector mismatch (${x},${y})`); else if (!seen.has(n)) { seen.add(n); queue.push(n); } } }
     if (seen.size !== railCells.length) issues.push("rail line is disconnected");
   }
+  const lava = countLava(map);
+  if (isLavaCave(plan) && plan.hazard !== false && lava.lava === 0) issues.push("lava cave has no lava; widen a room so a pool or river fits");
+  if (project) for (let k = 0; k < map.lowerTiles.length; k++) if (LAVA_TILES.has(map.lowerTiles[k]!) && map.upperTiles[k] !== LAVA_BRIDGE && isPassable(project, map, k % W, Math.floor(k / W))) { issues.push(`runtime lava metadata allows passage (${k % W},${Math.floor(k / W)})`); break; }
   const unique = [...new Set(issues)];
-  return { ok: unique.length === 0, score: Math.max(0, 100 - unique.length * 10), issues: unique, metrics: { rooms: graph.rooms.length, links: graph.connections.length, railCells: railCells.length }, feedbackForLlm: unique.length ? unique.join("; ") : "연결·지형·소품 지지 검사 통과. 전체 맵 시각 검토는 별도로 수행하세요." };
+  return { ok: unique.length === 0, score: Math.max(0, 100 - unique.length * 10), issues: unique, metrics: { rooms: graph.rooms.length, links: graph.connections.length, railCells: railCells.length, ...(isLavaCave(plan) ? { lavaCells: lava.lava, lavaBridgeCells: lava.bridge } : {}) }, feedbackForLlm: unique.length ? unique.join("; ") : "연결·지형·소품 지지 검사 통과. 전체 맵 시각 검토는 별도로 수행하세요." };
 }

@@ -38,7 +38,7 @@ export function layDungeonRail(map: GameMap, from: DungeonPoint, to: DungeonPoin
     const p = path[i]!, neighbours = [path[i - 1], path[i + 1]].filter((v): v is DungeonPoint => !!v);
     const bits = DUNGEON_STEPS.reduce((mask, [dx, dy], bit) => mask | (neighbours.some(n => n.x === p.x + dx && n.y === p.y + dy) ? 1 << bit : 0), 0);
     // Preserve the board backing when a rail crosses a local cliff.
-    if ([252, 253, 254].includes(map.upperTiles[p.y * W + p.x]!)) map.lowerTiles[p.y * W + p.x] = map.upperTiles[p.y * W + p.x]!;
+    if ([252, 253, 254, 141].includes(map.upperTiles[p.y * W + p.x]!)) map.lowerTiles[p.y * W + p.x] = map.upperTiles[p.y * W + p.x]!;
     map.upperTiles[p.y * W + p.x] = corners[bits] ?? -1;
   }
   return path;

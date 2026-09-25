@@ -55,7 +55,9 @@ function parseDungeonPlan(args: Record<string, unknown>): DungeonRoomPlan {
   if (layout === "connected") {
     // Validate before any map allocation/mutation; the engine checks the overall map-size limit.
     if (args.graph !== undefined && (!args.graph || typeof args.graph !== "object")) throw new ToolError("graph must be an object", { code: "invalid-args" });
-    const graph = args.graph === undefined ? planDungeonGraph(width, height, plan) : args.graph as DungeonGraph;
+    let graph = args.graph === undefined ? planDungeonGraph(width, height, plan) : args.graph as DungeonGraph;
+    // 용암 동굴에는 수정 방이 없다(푸른 수정 금지) — 시드가 뽑은 crystal 역할을 chamber 로 바꾼다.
+    if (args.graph === undefined && theme === "lava" && character !== "crypt") graph = { ...graph, rooms: graph.rooms.map(r => r.role === "crystal" ? { ...r, role: "chamber" } : r) };
     const errors = validateDungeonGraph(graph, width, height);
     if (errors.length) throw new ToolError(errors.join("; "), { code: "invalid-args" });
     return { ...plan, graph: structuredClone(graph) };

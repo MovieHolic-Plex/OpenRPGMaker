@@ -1,7 +1,7 @@
 /** After the silhouette exists: a way out, one visible goal, one thing that moves. */
 import { isPassable } from "@/project/collision";
 import type { EventPage, GameEvent, GameMap, Project } from "@/project/types";
-import { connectedDungeonLandings, connectedDungeonOpen, type ConnectedDungeonPlan } from "./connected";
+import { connectedDungeonLandings, connectedDungeonOpen, isLavaCave, type ConnectedDungeonPlan } from "./connected";
 import type { DungeonGraph } from "./topology";
 
 type ExpeditionPlan = ConnectedDungeonPlan & {
@@ -28,6 +28,12 @@ const MARK: Record<DungeonLandmark, Mark> = {
   // 등대 꼭대기·봉화대: 횃불 화로대(삼각대 1×2)를 돌기둥 두 개가 두 칸씩 떨어져 감싼다.
   beacon: [{ dx: -2, tiles: [446, 476] }, { dx: 0, tiles: [263, 293] }, { dx: 2, tiles: [446, 476] }],
 };
+/**
+ * 용암 동굴의 보스 자리 = 제단 마법진(3×3, 441~443·471~473·27~29) — 여신상(145·175)이 아니다
+ * (rpg-dungeons 문서: 「보스 자리는 제단·마법진」). 자리가 넉넉하면 양옆에 화로를 둔다.
+ */
+const LAVA_ALTAR: Mark = [{ dx: -1, tiles: [441, 471, 27] }, { dx: 0, tiles: [442, 472, 28] }, { dx: 1, tiles: [443, 473, 29] }];
+const LAVA_ALTAR_BRAZIERS: Mark = [{ dx: -2, tiles: [263, 293] }, ...LAVA_ALTAR, { dx: 2, tiles: [263, 293] }];
 const FIXED = { type: "fixed" as const, speed: 3, frequency: 3 };
 const WANDER = { type: "random" as const, speed: 2, frequency: 3 };
 
@@ -35,8 +41,10 @@ function page(id: string, name: string, commands: EventPage["commands"], movemen
   return { id: `${id}_page`, name, conditions: [], graphic: { transparent: true }, trigger: { kind: "playerTouch" }, priority: "below", overlapForbidden: false, movement, commands };
 }
 
-function stamp(map: GameMap, open: (x: number, y: number) => boolean, at: { x: number; y: number }, mark: Mark): boolean {
+function stamp(map: GameMap, open: (x: number, y: number) => boolean, at: { x: number; y: number }, mark: Mark, reach = 0): boolean {
   const spots = [{ x: at.x, y: at.y - 1 }, { x: at.x + 1, y: at.y }, { x: at.x - 1, y: at.y }, { x: at.x, y: at.y + 1 }];
+  // A wider mark (the 3×3 altar) searches rings around the landing instead of its four neighbours only.
+  for (let r = 1; r <= reach; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) if (Math.max(Math.abs(dx), Math.abs(dy)) === r) spots.push({ x: at.x + dx, y: at.y - 1 + dy });
   for (const spot of spots) {
     const cells = mark.flatMap((column) => column.tiles.map((tile, i) => ({ x: spot.x + column.dx, y: spot.y + i, tile })));
     if (cells.some((c) => !open(c.x, c.y))) continue;
@@ -79,7 +87,11 @@ export function applyDungeonExpedition(project: Project, map: GameMap, plan: Exp
   for (const landing of landings) if (Math.hypot(landing.x - entrance.x, landing.y - entrance.y) > Math.hypot(far.x - entrance.x, far.y - entrance.y)) far = landing;
 
   if (plan.landmark) {
-    if (!stamp(map, open, far, MARK[plan.landmark])) warnings.push("표지를 놓을 열린 칸이 없다");
+    const altar = plan.landmark === "altar" && isLavaCave(connected);
+    const placed = altar
+      ? stamp(map, open, far, LAVA_ALTAR_BRAZIERS, 4) || stamp(map, open, far, LAVA_ALTAR, 5)
+      : stamp(map, open, far, MARK[plan.landmark]);
+    if (!placed) warnings.push(altar ? "제단 마법진(3×3)을 놓을 열린 칸이 없다 — 가장 먼 방을 넓힌다" : "표지를 놓을 열린 칸이 없다");
   }
 
   if (plan.linkMapId) {
