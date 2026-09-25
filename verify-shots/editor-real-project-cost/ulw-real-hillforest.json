@@ -1,0 +1,88 @@
+{
+  "label": "ulw-real-hillforest",
+  "bootMs": 21392,
+  "pageErrors": [],
+  "mapId": "map_peaceful_forest_100",
+  "mapSize": "100x100",
+  "maps": 12,
+  "tilesets": 323,
+  "weightMB": {
+    "maps": 0.3,
+    "meta": 0,
+    "flags": 0,
+    "assets": 18.6,
+    "system": 0,
+    "mapTree": 0,
+    "session": 0,
+    "version": 0,
+    "database": 0.2,
+    "startPos": 0,
+    "switches": 0,
+    "tilesets": 88.5,
+    "variables": 0,
+    "startMapId": 0,
+    "commonEvents": 0,
+    "mapConnections": 0,
+    "resourceProfiles": 0.2,
+    "villageInfoDocuments": 0
+  },
+  "referenceDocumentsMB": 39.5,
+  "rows": [
+    {
+      "label": "paint 1 cell (action+store+fanout+render)",
+      "iterations": 20,
+      "medianMs": 1.9,
+      "maxMs": 7.8,
+      "totalMs": 44.7
+    },
+    {
+      "label": "recordMapEditIfChanged (stroke 1st sample)",
+      "iterations": 8,
+      "medianMs": 6.4,
+      "maxMs": 10.8,
+      "totalMs": 53
+    },
+    {
+      "label": "projectWithoutEventDrafts (deep clone)",
+      "iterations": 5,
+      "medianMs": 617.3,
+      "maxMs": 804,
+      "totalMs": 3214.1
+    },
+    {
+      "label": "projectJsonWithoutEventDrafts (stringify)",
+      "iterations": 5,
+      "medianMs": 642.1,
+      "maxMs": 664.5,
+      "totalMs": 3222.9
+    },
+    {
+      "label": "canonicalJsonString (autosave path)",
+      "iterations": 3,
+      "medianMs": 1142.7,
+      "maxMs": 1265.9,
+      "totalMs": 3530.1
+    },
+    {
+      "label": "ProjectExportMirror.serialize (cold each time)",
+      "iterations": 3,
+      "medianMs": 834.7,
+      "maxMs": 1025.8,
+      "totalMs": 2629.7
+    },
+    {
+      "label": "structuredClone(project)",
+      "iterations": 3,
+      "medianMs": 769.8,
+      "maxMs": 775.1,
+      "totalMs": 2261.6
+    },
+    {
+      "label": "structuredClone(tilesets)",
+      "iterations": 3,
+      "medianMs": 633.3,
+      "maxMs": 670.5,
+      "totalMs": 1918.5
+    }
+  ]
+}

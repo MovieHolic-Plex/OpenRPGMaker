@@ -1,0 +1,39 @@
+{
+  "size": 96,
+  "bootErrors": [],
+  "bootConsoleErrors": [
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+    "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+  ],
+  "canvasTag": "CANVAS",
+  "idle": {
+    "avg": 17.1,
+    "max": 49.9,
+    "samples": 83
+  },
+  "zoomBefore": 2,
+  "zoomSteps": [
+    39.8,
+    31.8,
+    46.7,
+    36.8,
+    0.6,
+    0.6
+  ],
+  "zoomAfter": 8,
+  "zoomFrames": {
+    "avg": 24.4,
+    "max": 49.9,
+    "samples": 15
+  },
+  "paint": {
+    "wallMs": 19568
+  },
+  "paintFrames": {
+    "avg": 33,
+    "max": 7549.7,
+    "samples": 608
+  }
+}

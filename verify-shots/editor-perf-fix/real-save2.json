@@ -1,0 +1,187 @@
+{
+  "label": "real-save2",
+  "bootMs": 21020,
+  "pageErrors": [],
+  "mapId": "map_blank_start",
+  "maps": 1,
+  "tilesets": 321,
+  "referenceDocumentsMB": 39.9,
+  "rows": [
+    {
+      "name": "paint 1 cell",
+      "iterations": 15,
+      "medianMs": 5.5,
+      "maxMs": 9.9
+    },
+    {
+      "name": "projectWithoutEventDrafts",
+      "iterations": 3,
+      "medianMs": 503.9,
+      "maxMs": 633.5
+    },
+    {
+      "name": "serialize(project)",
+      "iterations": 3,
+      "medianMs": 617.1,
+      "maxMs": 625.4
+    },
+    {
+      "name": "serializeForComparison",
+      "iterations": 2,
+      "medianMs": 2281.5,
+      "maxMs": 2281.5
+    },
+    {
+      "name": "canonicalJsonString",
+      "iterations": 2,
+      "medianMs": 1374.4,
+      "maxMs": 1374.4
+    },
+    {
+      "name": "jsonContentDigest (cold)",
+      "iterations": 1,
+      "medianMs": 2391.6,
+      "maxMs": 2391.6
+    },
+    {
+      "name": "jsonContentDigest (warm)",
+      "iterations": 3,
+      "medianMs": 139.9,
+      "maxMs": 157.2
+    },
+    {
+      "name": "structuredClone(project)",
+      "iterations": 2,
+      "medianMs": 820.2,
+      "maxMs": 820.2
+    },
+    {
+      "name": "diffProjectDocuments (parsed inputs)",
+      "iterations": 2,
+      "medianMs": 5923.7,
+      "maxMs": 5923.7
+    },
+    {
+      "name": "diffProjectDocuments (in-memory identity)",
+      "iterations": 3,
+      "medianMs": 0,
+      "maxMs": 0.1
+    },
+    {
+      "name": "NEW saveMapPatch body (wireView diff, no reprojection)",
+      "iterations": 3,
+      "medianMs": 4471.4,
+      "maxMs": 7437.7
+    },
+    {
+      "name": "REAL saveMapPatch body (shared baseline, no edit)",
+      "iterations": 3,
+      "medianMs": 2609.2,
+      "maxMs": 9522.9
+    },
+    {
+      "name": "REAL saveMapPatch body (shared baseline, after 1 paint)",
+      "iterations": 3,
+      "medianMs": 2115.4,
+      "maxMs": 2354.7
+    },
+    {
+      "name": "  info: REAL patch shape",
+      "patchKeys": [],
+      "tilesetSetCount": 0,
+      "mapsSetCount": 0,
+      "baseIsPersisted": true
+    },
+    {
+      "name": "  step: diff only (shared baseline)",
+      "iterations": 3,
+      "medianMs": 407.2,
+      "maxMs": 467.7
+    },
+    {
+      "name": "  step: projectWithoutEventDrafts(local) only",
+      "iterations": 3,
+      "medianMs": 525.4,
+      "maxMs": 593.9
+    },
+    {
+      "name": "  step: projectWithoutEventDrafts(local)",
+      "iterations": 3,
+      "medianMs": 508.3,
+      "maxMs": 555.9
+    },
+    {
+      "name": "  step: projectWireView x2",
+      "iterations": 3,
+      "medianMs": 1.1,
+      "maxMs": 1.7
+    },
+    {
+      "name": "  step: diff(wireView base, wireView local)",
+      "iterations": 3,
+      "medianMs": 379,
+      "maxMs": 1688.1
+    },
+    {
+      "name": "  step: withWirePatchValues(patch)",
+      "iterations": 3,
+      "medianMs": 0,
+      "maxMs": 0.1
+    },
+    {
+      "name": "  info: patch top keys",
+      "patchKeys": [],
+      "tilesetSetCount": 0,
+      "mapsSetCount": 0,
+      "baseIsPersisted": true
+    },
+    {
+      "name": "FULL saveMapPatch body (legacy shape)",
+      "iterations": 1,
+      "medianMs": 10685.9,
+      "maxMs": 10685.9
+    },
+    {
+      "name": "syncEventDraftVaultFromProject",
+      "iterations": 5,
+      "medianMs": 0,
+      "maxMs": 0.3
+    },
+    {
+      "name": "store.update (whole-project clone)",
+      "iterations": 3,
+      "medianMs": 742.3,
+      "maxMs": 763
+    },
+    {
+      "name": "store.updateDatabase (scoped clone)",
+      "iterations": 5,
+      "medianMs": 7.9,
+      "maxMs": 8.9
+    },
+    {
+      "name": "removeLegacySpriteReferences (whole project walk)",
+      "iterations": 3,
+      "medianMs": 114.8,
+      "maxMs": 160.8
+    },
+    {
+      "name": "ensureBundledTilesets",
+      "iterations": 2,
+      "medianMs": 63.1,
+      "maxMs": 63.1
+    },
+    {
+      "name": "ProjectExportMirror.serialize (cold)",
+      "iterations": 2,
+      "medianMs": 824.9,
+      "maxMs": 824.9
+    },
+    {
+      "name": "normalizationFingerprint",
+      "iterations": 2,
+      "medianMs": 1004.2,
+      "maxMs": 1004.2
+    }
+  ]
+}

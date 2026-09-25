@@ -1,0 +1,36 @@
+{
+  "label": "roundtrip-baseline",
+  "saveKind": "saved",
+  "digestEqual": false,
+  "refsEqual": true,
+  "mapsEqual": true,
+  "tilesetsEqual": true,
+  "beforeDigest": "a6fea6c007232426",
+  "afterDigest": "5e5824181e3eb6d6",
+  "maps": 8,
+  "tilesets": 26,
+  "referenceDocumentTilesets": 10,
+  "referenceDocumentBytes": 19058253,
+  "serializeForComparisonEqual": false,
+  "differingKeys": [
+    {
+      "key": "resourceProfiles",
+      "beforeDigest": "e1b3090d3c41",
+      "afterDigest": "bf721d8e4d4f"
+    }
+  ],
+  "timings": [
+    {
+      "name": "digest before save",
+      "ms": 985.3
+    },
+    {
+      "name": "serialize for save",
+      "ms": 196.7
+    },
+    {
+      "name": "digest after reload",
+      "ms": 903.6
+    }
+  ]
+}

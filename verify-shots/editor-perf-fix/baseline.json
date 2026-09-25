@@ -1,0 +1,83 @@
+{
+  "label": "baseline",
+  "bootMs": 23127,
+  "pageErrors": [],
+  "mapId": "map_village",
+  "maps": 8,
+  "tilesets": 322,
+  "referenceDocumentsMB": 42,
+  "rows": [
+    {
+      "name": "paint 1 cell",
+      "iterations": 15,
+      "medianMs": 2.8,
+      "maxMs": 8.2
+    },
+    {
+      "name": "projectWithoutEventDrafts",
+      "iterations": 3,
+      "medianMs": 573.1,
+      "maxMs": 573.3
+    },
+    {
+      "name": "serialize(project)",
+      "iterations": 3,
+      "medianMs": 655.8,
+      "maxMs": 671.4
+    },
+    {
+      "name": "serializeForComparison",
+      "iterations": 2,
+      "medianMs": 2348.1,
+      "maxMs": 2348.1
+    },
+    {
+      "name": "canonicalJsonString",
+      "iterations": 2,
+      "medianMs": 1382,
+      "maxMs": 1382
+    },
+    {
+      "name": "structuredClone(project)",
+      "iterations": 2,
+      "medianMs": 728.9,
+      "maxMs": 728.9
+    },
+    {
+      "name": "diffProjectDocuments (parsed inputs)",
+      "iterations": 2,
+      "medianMs": 2638.1,
+      "maxMs": 2638.1
+    },
+    {
+      "name": "diffProjectDocuments (in-memory identity)",
+      "iterations": 3,
+      "medianMs": 0,
+      "maxMs": 0.1
+    },
+    {
+      "name": "FULL saveMapPatch body (legacy shape)",
+      "iterations": 1,
+      "medianMs": 4873.2,
+      "maxMs": 4873.2
+    },
+    {
+      "name": "syncEventDraftVaultFromProject",
+      "iterations": 5,
+      "medianMs": 0,
+      "maxMs": 0.1
+    },
+    {
+      "name": "store.update (whole-project clone)",
+      "iterations": 3,
+      "medianMs": 1154.4,
+      "maxMs": 1212.4
+    },
+    {
+      "name": "ProjectExportMirror.serialize (cold)",
+      "iterations": 2,
+      "medianMs": 851.9,
+      "maxMs": 851.9
+    }
+  ]
+}
