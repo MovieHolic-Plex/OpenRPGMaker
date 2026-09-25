@@ -4,8 +4,8 @@
 // a rail end, a miner's rest, a vein.
 import { grid, series, room, hpass, vpass } from "./lib.mjs";
 
-const tut = series({ theme: "cave", tileset: "oprn_dungeon_cave", series: "tutorial", seriesName: "시작의 동굴", env: "지하", groves: 8, heaps: 3 });
-const mine = series({ theme: "cave", tileset: "oprn_dungeon_cave", series: "mine", seriesName: "버려진 은광", env: "지하", wall: [[21, 22, 23], [255, 256, 257]], groves: 8, heaps: 3 });
+const tut = series({ theme: "cave", tileset: "oprn_dungeon_cave", series: "tutorial", seriesName: "시작의 동굴", env: "지하", groves: 12, heaps: 3, topUp: "cave" });
+const mine = series({ theme: "cave", tileset: "oprn_dungeon_cave", series: "mine", seriesName: "버려진 은광", env: "지하", wall: [[21, 22, 23], [255, 256, 257]], groves: 12, heaps: 3, topUp: "cave" });
 
 export function cavePlans() {
   return [tutorialMouth(), tutorialBats(), tutorialSlime(), mineGate(), mineB1(), mineShaft(), mineCrystal(), mineFlooded(), mineCore()];
@@ -43,7 +43,7 @@ function tutorialBats() {
     art: grid(W, H, [
       vpass(16, 17, 23), // 남쪽 굴길
       room(17, 11, 7, 6, 111, 0.08), // 가운데 박쥐 굴
-      ["W", 14, 8, 21, 13, { blob: 121, wobble: 0.22 }], // 천장 물이 고인 웅덩이(박쥐가 매달린 천장 아래)
+      ["W", 17, 9, 23, 14, { blob: 121, wobble: 0.22 }], // 천장 물이 고인 웅덩이(박쥐가 매달린 천장 아래)
       vpass(16, 0, 5), // 북쪽 굴길
       hpass(3, 11, 13), // 서쪽 굴길
       room(5, 13, 4, 4, 113, 0.08), // 서쪽 샘굴
@@ -239,8 +239,8 @@ function mineCore() {
       ["ore-gold", 6, 3], ["ore-silver", 9, 2], ["ore-gold", 17, 2], ["ore-silver", 20, 3], // 벽의 광맥
       ["chest-red", 16, 10], ["int:ore", 9, 9], ["int:ore", 17, 13], // 섬 위 보상과 광석
     ],
-    keeper: [13, 14], entry: [13, 23], targets: [[13, 14], [16, 11], [6, 18], [21, 6]],
+    keeper: [13, 14], entry: [13, 23], targets: [[13, 14], [16, 11], [6, 18], [13, 20]],
     exits: [{ at: [13, 23], to: "atlas-mine-flooded", arrive: [37, 13], note: "남쪽 → 4층" }],
-    note: "은광의 가장 깊은 곳, 광맥 심장부의 둥근 굴(보스방). 녹은 광석이 끓는 해자가 가운데 섬을 두르고, 남쪽 한 줄 다리로만 건넌다. 섬 위 갈색 광석 단에 골렘의 핵 마법진과 붉은 보물상자·광석, 벽마다 금·은 광맥. 골렘은 다리 끝 (13,14)에서 깨어난다",
+    note: "은광의 가장 깊은 곳, 광맥 심장부의 둥근 굴(보스방). 녹은 광석이 끓는 해자가 가운데 섬을 동·서·남 세 면에서 두르고(북쪽은 벽 밑 광석 단), 정면에서는 남쪽 한 줄 다리로 건넌다. 섬 위 갈색 광석 단에 골렘의 핵 마법진과 붉은 보물상자·광석, 벽마다 금·은 광맥. 골렘은 다리 끝 (13,14)에서 깨어난다",
   });
 }

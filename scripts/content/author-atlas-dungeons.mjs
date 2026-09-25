@@ -92,6 +92,30 @@ await withTsModule("scripts/content/lib/rpg-dungeons-entry.ts", "atlas-dungeons-
     chars.forEach((row, y) => [...row].forEach((c, x) => { if ((spec.keepClear ?? "tr=w_|q").includes(c)) clear.add(y * map.width + x); }));
     const dressing = spec.dress === false ? { placed: 0, log: [] } : dressFloor(map, spec, { passable, reach, protect: routes(spec, map, tilesetId), clear });
     if (dressing.placed) placements.push({ kind: "dressing", note: "무너진 벽 곁·모서리에 몰아 둔 잔해 덩이(1~3곳) — 통로는 막지 않음", clumps: dressing.log });
+    if (spec.topUp) {
+      const t = topUp(map, spec, { passable, reach, protect: routes(spec, map, tilesetId), clear, parts });
+      if (t.length) placements.push({ kind: "natural-clumps", note: "빈칸 게이트를 넘기려 가장 빈 화면에 덧붙인 자연 덩이(이미 있는 벽·덩이에 붙여 자라게) — 통로는 막지 않음", clumps: t });
+    }
+    // A floor cell or two left cut off at a water edge (a rock put back by the fill pass turns into floor again when it
+    // would float) gets a boulder: it is rock you cannot stand behind, not a pocket you cannot reach.
+    {
+      const seen = reach(map), stuck = [];
+      for (let i = 0; i < map.width * map.height; i++) {
+        if (seen.has(i) || map.upperTiles[i] !== -1 || ![421, 187, 108, 301, 67, 110, 141, 111].includes(map.lowerTiles[i])) continue;
+        const f = api.tilePassability(ts, map.lowerTiles[i], -1);
+        if (f.up || f.down || f.left || f.right) stuck.push(i);
+      }
+      if (stuck.length && stuck.length <= 6) {
+        const chasm = kit.group("chasm"), wet = new Set(kit.members(chasm)), Wd = map.width;
+        let pooled = false;
+        for (const i of stuck) {
+          if ([1, -1, Wd, -Wd].some((d) => wet.has(map.lowerTiles[i + d]))) { map.lowerTiles[i] = 190; pooled = true; }
+          else map.upperTiles[i] = parts.alias["int:rocks"];
+        }
+        if (pooled) kit.autotile(map, chasm, kit.members(chasm));
+        placements.push({ kind: "sealed-pocket", note: "닿지 않는 물가 한두 칸은 물로, 그 밖은 바위 더미로 메움", cells: stuck.map((i) => [i % Wd, Math.floor(i / Wd)]) });
+      }
+    }
     places.push({ spec, map, placements, tilesetId, warnings });
   }
 
@@ -135,3 +159,61 @@ await withTsModule("scripts/content/lib/rpg-dungeons-entry.ts", "atlas-dungeons-
   console.log(report.map((r) => `${r.id} ${maps[r.id].width}x${maps[r.id].height} ${maps[r.id].tilesetId.replace("oprn_dungeon_", "")} sq ${r.emptiness.maxSq} scr ${r.emptiness.screen}${flag(r)}`).join("\n"));
   console.log(`${report.length} maps → ${file}`);
 });
+
+// Natural clumps for the emptiness gate, grown where the barest screen is — each piece sits next to something that is
+// already there (a wall, a heap, a stand), so the floor fills from the edges in as a cave does, not as confetti.
+function topupPalettes() {
+  const P1 = (t) => ({ cells: [[0, 0, t]] }), P2 = (a, b) => ({ cells: [[0, 0, a], [0, 1, b]] }), P4 = (a, b, c, d) => ({ cells: [[0, 0, a], [1, 0, b], [0, 1, c], [1, 1, d]] });
+  return {
+  cave: [P2(261, 291), P1(288), P1(290), P4(322, 323, 352, 353), P4(318, 319, 348, 349), P1(412)],
+  sea: [P1(288), P4(318, 319, 348, 349), P1(412), P2(261, 291), P1(290)],
+  ice: [P2(262, 292), P1(289), P1(413), P1(232), P4(322, 323, 352, 353)],
+  lava: [P1(288), P1(412), P4(318, 319, 348, 349), P2(261, 291)],
+  lair: [P1(288), P2(261, 291), P4(318, 319, 348, 349)],
+  crypt: [P1(383), P1(299), { cells: [[0, 0, 259], [1, 0, 260]] }, P1(382)],
+  };
+}
+function topUp(m, spec, { passable, reach, protect, clear, parts }) {
+  const W = m.width, H = m.height, plain = new Set([421, 187, 108, 301, 67, 110, 141]);
+  let pal = topupPalettes()[spec.topUp === true ? "cave" : spec.topUp];
+  if (spec.topUpParts) pal = [...pal, ...spec.topUpParts.map((k) => { const s = parts.stamps[k]; return { cells: s.upper.flatMap((r, dy) => r.map((t, dx) => [dx, dy, t])).filter(([, , t]) => t !== null) }; })];
+  let seed = [...spec.id].reduce((a, c) => (a * 131 + c.charCodeAt(0)) >>> 0, 17);
+  const rnd = () => ((seed = (Math.imul(seed, 1103515245) + 12345) >>> 0) / 4294967296);
+  const bare = (x, y) => x >= 0 && y >= 0 && x < W && y < H && m.upperTiles[y * W + x] === -1 && plain.has(m.lowerTiles[y * W + x]);
+  const free = (x, y) => bare(x, y) && !protect.has(y * W + x) && !clear.has(y * W + x);
+  const log = [];
+  let reached = reach(m);
+  for (let n = 0; n < 40; n++) {
+    const s = bareStats(m);
+    if (s.sq <= 4 && s.screen <= 0.37) break;
+    const [wx, wy] = s.sq > 4 ? [s.at[0] - 1, s.at[1] - 1] : s.win;
+    const [ww, wh] = s.sq > 4 ? [s.sq + 2, s.sq + 2] : [17, 13];
+    const cand = [];
+    for (let y = wy; y < wy + wh; y++) for (let x = wx; x < wx + ww; x++) {
+      if (!free(x, y)) continue;
+      let hard = 0;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if ((dx || dy) && !bare(x + dx, y + dy)) hard++;
+      if (hard) cand.push([hard + rnd() * 2, x, y]);
+    }
+    cand.sort((a, b) => b[0] - a[0]);
+    let done = false;
+    for (const [, x, y] of cand.slice(0, 12)) {
+      for (const piece of [...pal].map((p) => [p.cells.length + rnd(), p]).sort((a, b) => b[0] - a[0]).map(([, p]) => p)) {
+        const cells = piece.cells.map(([dx, dy, t]) => [x + dx, y + dy, t]);
+        if (!cells.every(([a, b]) => free(a, b))) continue;
+        cells.forEach(([a, b, t]) => { m.upperTiles[b * W + a] = t; });
+        if (cells.some(([, , t]) => !passable(t))) {
+          const now = reach(m), own = new Set(cells.map(([a, b]) => b * W + a));
+          if ([...reached].some((k) => !own.has(k) && !now.has(k))) { cells.forEach(([a, b]) => { m.upperTiles[b * W + a] = -1; }); continue; }
+          reached = now;
+        }
+        log.push({ x, y, tiles: cells.map(([a, b, t]) => [a - x, b - y, t]) });
+        done = true;
+        break;
+      }
+      if (done) break;
+    }
+    if (!done) break;
+  }
+  return log;
+}
