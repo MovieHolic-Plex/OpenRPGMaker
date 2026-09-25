@@ -43,7 +43,7 @@
 
 ## 검사
 ```json
-{"reachable":1327,"emptiness":{"maxSq":3,"screen":0.362,"at":[4,0],"screenAt":[0,0]}}
+{"reachable":1338,"emptiness":{"maxSq":3,"screen":0.357,"at":[28,0],"screenAt":[28,0]}}
 ```
 
 전체 두 레이어는 「모래바람 오아시스 도시 · 0행부터 전체 배열」 문서가 정답이다.

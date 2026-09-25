@@ -106,5 +106,13 @@
   {
     "id": "field-routes-snow-v6",
     "revision": "149938-5a94ea4f-dafbf0c3"
+  },
+  {
+    "id": "field-routes-volcano-v6",
+    "revision": "124165-7045089e-2f1f5e18"
+  },
+  {
+    "id": "field-routes-desert-v6",
+    "revision": "174824-6c2d94a2-5fe44c28"
   }
 ]

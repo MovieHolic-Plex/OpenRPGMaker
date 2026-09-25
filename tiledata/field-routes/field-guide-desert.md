@@ -25,7 +25,7 @@ node scripts/content/author-field-routes.mjs   # 숲 필드 + 기후 필드, 통
 ```
 
 ```json
-[{"id":"field-desert-crossroads","entry":[4,40],"targets":[[0,40],[40,0],[95,24]],"reachable":2370,"blocked":[]}]
+[{"id":"field-desert-crossroads","entry":[4,40],"targets":[[0,40],[40,0],[95,24]],"reachable":2385,"blocked":[]}]
 ```
 
 ## 실제 구분
