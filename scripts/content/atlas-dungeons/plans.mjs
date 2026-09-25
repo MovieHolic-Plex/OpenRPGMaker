@@ -4,7 +4,8 @@ import { cavePlans } from "./caves.mjs";
 import { cryptPlans } from "./crypts.mjs";
 import { ghostPlans } from "./ghosts.mjs";
 import { templePlans } from "./temples.mjs";
+import { climatePlans } from "./climate.mjs";
 
 export function atlasPlans() {
-  return [...cavePlans(), ...cryptPlans(), ...ghostPlans(), ...templePlans()];
+  return [...cavePlans(), ...cryptPlans(), ...ghostPlans(), ...templePlans(), ...climatePlans()];
 }
