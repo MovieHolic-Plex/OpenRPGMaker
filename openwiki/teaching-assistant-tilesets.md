@@ -157,6 +157,13 @@ itch.io 의 [Rasak Modern](https://rasak.itch.io/rasak-modern)처럼 「사용·
 팩이 소유한 것만 갈아 끼운다 — 참고문서는 팩의 용도 id, `tileGroups`·`autotileGroups` 는 `rasak_` 접두어 id. 저자가 쓴 용도·그룹은 남는다. 판본은 `tiledata/rasak-fantasy/bundles.json` sha256,
 이름·번호 같은 텍스트만 `tiledata/rasak-fantasy/` 에 둔다. 작업물은 `~/third-party-assets/rasak/`.
 
+**마을·실내 묶음(2026-09-25).** `rasak_town`(A1~A5 City + Town·Building·Structure·Market + 울타리·정원·밭·작물·여름 나무)과
+`rasak_interior`(A2_Inside·A4/A5_House + HouseInterieur·LivingRoom·Tavern·Storage + 대장간·재봉·왕실). 제작자 프리뷰가 없으므로
+기준 맵은 `scripts/content/rasak/compose_examples.py`(+`_specs.py`)가 MZ 자동타일 규칙으로 조립한다(마을·광장·민가 방·주점 4장).
+참고문서 용도 `town_village`·`town_city`·`interior_house`·`interior_tavern`. 시험에서 배운 것 — 조수는 예제를 **통째로 복사**하고
+(방 하나를 stamp_layer_block 한 번으로 붙였다) 창을 지붕 줄에 단다. 그래서 문서에 집·방 **뼈대 배열**(작은 집·2층 집·방)과
+「통째로 붙이지 않는다」, 오류 ⑦「창·문을 지붕 줄에」를 넣었다. 지원 시트 45/176 — 남은 큰 것은 Special_Buildings·Forestfolk·Dungeon.
+
 ## 알려진 함정
 
 - **16px 표가 48px 업로드를 건드린다.** `ensureTilesetHarnesses` → `applyCustomChipsetMinimalHarness`
