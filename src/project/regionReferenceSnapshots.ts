@@ -5,6 +5,7 @@ import { RPG_INTERIOR_PLACE_REFERENCES } from "./rpgInteriorPlaceReferences";
 import { RPG_DUNGEON_PLACE_REFERENCES } from "./rpgDungeonPlaceReferences";
 import { CLIMATE_VILLAGE_PLACE_REFERENCES } from "./climateVillagePlaceReferences";
 import { FIELD_ROUTE_PLACE_REFERENCES } from "./fieldRoutePlaceReferences";
+import { ELF_TREETOP_PLACE_REFERENCES } from "./elfTreetopPlaceReferences";
 import type { GameMap, TilesetDef } from "./types";
 import { cropExtraLayers } from "./mapLayers";
 import { LAKE_PLACE_REFERENCES, regionReference } from "./regionReferences";
@@ -65,6 +66,7 @@ const INTERIOR_FILE: SnapshotFile = () => import("./regionReferences/rpg-interio
 const DUNGEON_FILE: SnapshotFile = () => import("./regionReferences/rpg-dungeons.json");
 const CLIMATE_FILE: SnapshotFile = () => import("./regionReferences/climate-villages.json");
 const FIELD_FILE: SnapshotFile = () => import("./regionReferences/field-routes.json");
+const ELF_FILE: SnapshotFile = () => import("./regionReferences/elf-treetop.json");
 const SHIPS_FILE: SnapshotFile = () => import("./regionReferences/ships.json");
 const SHIP_MAP_IDS: Record<string, string> = {
   "bluewave-ship": "map_bluewave_ship",
@@ -98,6 +100,8 @@ function snapshotSource(id: string): SnapshotSource | undefined {
   if (climate) return fromMaps(CLIMATE_FILE, climate.sourceMapId);
   const field = FIELD_ROUTE_PLACE_REFERENCES.find(entry => entry.id === id);
   if (field) return fromMaps(FIELD_FILE, field.sourceMapId);
+  const elf = ELF_TREETOP_PLACE_REFERENCES.find(entry => entry.id === id);
+  if (elf) return fromMaps(ELF_FILE, elf.sourceMapId);
   const shipMapId = SHIP_MAP_IDS[id];
   return shipMapId ? fromMaps(SHIPS_FILE, shipMapId) : undefined;
 }

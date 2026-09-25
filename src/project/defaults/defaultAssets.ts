@@ -3,6 +3,7 @@ import { ensureRpgPlaceReferences } from "./sharedRpgPlaceReferences";
 import { ensureRpgInteriorReferences } from "./sharedRpgInteriorReferences";
 import { ensureRpgDungeonReferences } from "./sharedRpgDungeonReferences";
 import { ensureFieldRouteReferences } from "./sharedFieldRouteReferences";
+import { ensureElfTreetopReferences } from "./sharedElfTreetopReferences";
 import { CLIMATE_VILLAGE_TEXTURES, createClimateVillageTileset, ensureClimateBareTrees, ensureClimateVillageReferences } from "./climateVillages";
 import { createSharedVillageObjectsTileset, ensureSharedVillageObjectReferences, SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "./sharedVillageObjects";
 import { createCastleTileset } from "./castleTileset";
@@ -11,6 +12,7 @@ import { ensureForestTallGrass } from "./forestTallGrass";
 import { createForestHarmonyTileset, ensureForestHarmonyReferences, FOREST_HARMONY_ID, FOREST_HARMONY_TEXTURE } from "./forestHarmony";
 import { ensureForestHarmonyVillageSlots } from "./forestHarmonyExtension";
 import { ensureForestHarmonyHouseParts } from "./forestHarmonyHouseParts";
+import { ensureForestHarmonyTreetopParts } from "./forestHarmonyTreetopParts";
 import { createForestGrassJoinsTileset, extendForestGrassJoinsTileset, FOREST_GRASS_JOINS_TEXTURE } from "./forestGrassJoins";
 import { createLpcWoodenFurniture16Tileset, createLpcWoodenFurnitureTileset, seedLpcWoodenFurniture16Kits, seedLpcWoodenFurnitureKits } from "./lpcWoodenFurniture";
 import { createTiboInteriorTileset, extendTiboInteriorDefaults, TIBO_INTERIOR_ID, TIBO_INTERIOR_TEXTURE } from "./tiboInterior";
@@ -143,6 +145,8 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyVillageSlots(project.tilesets[id]) || changed;
       // House parts (chimneys, dormers, awnings, gable finials) from 3060 — gable house forms use them when present.
       if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyHouseParts(project.tilesets[id]) || changed;
+      // Elf treetop village parts from 3131 (after the house parts) — decks, rope bridges, trunk houses.
+      if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyTreetopParts(project.tilesets[id]) || changed;
       changed = ensureSharedCastleReferences(project.tilesets[id]) || changed;
       changed = ensureRpgPlaceReferences(project.tilesets[id]) || changed;
       changed = ensureRpgInteriorReferences(project.tilesets[id]) || changed;
@@ -155,6 +159,7 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       // Tall grass E/F/G: F and G groups, the fixed E grammar (forest_harmony and the climate sheets).
       changed = ensureForestTallGrass(project.tilesets[id]) || changed;
       changed = ensureFieldRouteReferences(project.tilesets[id]) || changed;
+      changed = ensureElfTreetopReferences(project.tilesets[id]) || changed;
       if (id === SHARED_VILLAGE_OBJECT_ID) changed = ensureSharedVillageObjectReferences(project.tilesets[id]) || changed;
       if (id === TIBO_INTERIOR_ID) changed = extendTiboInteriorDefaults(project.tilesets[id]) || changed;
       changed = seedLpcWoodenFurnitureKits(project.tilesets[id]) || changed;
@@ -263,6 +268,7 @@ function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[nu
   ensureRpgInteriorReferences(tileset);
   ensureRpgDungeonReferences(tileset);
   ensureFieldRouteReferences(tileset);
+  ensureElfTreetopReferences(tileset);
   return tileset;
 }
 
@@ -274,6 +280,7 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
     const tileset = createForestHarmonyTileset();
     ensureForestHarmonyVillageSlots(tileset);
     ensureForestHarmonyHouseParts(tileset);
+    ensureForestHarmonyTreetopParts(tileset);
     return tileset;
   }
   if (asset.textureKey === FOREST_GRASS_JOINS_TEXTURE) return createForestGrassJoinsTileset();
