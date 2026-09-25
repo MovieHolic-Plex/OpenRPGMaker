@@ -411,8 +411,11 @@ function addRoad(ctx: PlanCtx, centerline: readonly Point[], width: 1 | 2 | 3, r
 // ───────────────────────── 집·필지 ─────────────────────────
 
 function pickTemplate(ctx: PlanCtx, maxW: number, maxH: number): HouseTemplate | undefined {
-  const fits = ctx.templates.filter((template) => template.w <= maxW && template.h <= maxH);
-  if (fits.length === 0) return undefined;
+  const sized = ctx.templates.filter((template) => template.w <= maxW && template.h <= maxH);
+  if (sized.length === 0) return undefined;
+  // 자동 추첨 제외 형태(ㄷ자 깊은·ㅁ자 중정 …)는 다른 후보가 없을 때만.
+  const preferred = sized.filter((template) => !template.excludeFromDefaultMix);
+  const fits = preferred.length > 0 ? preferred : sized;
   // 다층 빚: 다섯 채마다 한 채는 2층 이상을 우선한다(마을의 실루엣).
   const preferTall = ctx.storeyDebt >= 4 && fits.some((template) => (template.stories ?? 1) > 1);
   const pool = preferTall ? fits.filter((template) => (template.stories ?? 1) > 1) : fits;

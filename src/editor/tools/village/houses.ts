@@ -270,6 +270,8 @@ export function buildHouses(
           : intent.kitMix);
       // housePlans[].templateId 가 있으면 그 템플릿만 허용(촌장 ㄱ자 등).
       if (forcedTemplateId && candidate.template.id !== forcedTemplateId) continue;
+      // 자동 추첨 제외 형태는 명시했을 때만.
+      if (!forcedTemplateId && candidate.template.excludeFromDefaultMix) continue;
       const stories: 1 | 2 | 3 = candidate.template.stories === 3 ? 3 : candidate.template.stories === 2 ? 2 : 1;
       // 박공 조합 형태는 고른 킷으로 합성한다 — 고정 레시피는 그대로.
       const form = templateFormFor(candidate.template, kitId);
@@ -354,6 +356,10 @@ export function buildHouses(
 
 /** 다리 판자와 동일 — 상위 O가 하위 X를 덮는 통행 오버라이드. houseVariety 가 옥상 데크 판정에 쓴다. */
 export const ROOF_DECK_PLANK = 199;
+/** 데크 뒷줄 왼쪽 모서리·앞줄 난간(기둥/살) — manor-balcony 발코니와 같은 타일. */
+const ROOF_DECK_CORNER = 198;
+const ROOF_DECK_RAIL_POST = 167;
+const ROOF_DECK_RAIL = 163;
 
 /**
  * 옥상 데크(파랑 평지붕 전용) — 지붕 몸통 안쪽에 판자(199)를 얹어 보행면으로 만들고,
@@ -365,14 +371,22 @@ export function applyRoofDeck(map: GameMap, bbox: Rect, doorAt: { readonly x: nu
   const left = bbox.x;
   const right = bbox.x + bbox.w - 1;
   const eaveY = bbox.y + bbox.h - 3 - 1; // 벽 밴드 3행(1층) 바로 위가 처마
+  const { x: ladderX } = roofDeckLadderAttachment(bbox, doorAt);
+  // 데크 = 지붕 좌우 한 칸씩 남긴 가운데(좌우 대칭). 예전에는 오른쪽만 두 칸 남기고 가장자리 없이 판자만 깔아
+  // 지붕 위에 판자가 떠 있는 것처럼 보였다(2026-09-25). 이제 발코니 문법(manor-balcony, 사용자 원작)을 따른다:
+  // 뒷줄 첫 칸 198(데크 모서리) · 판자 199 · 앞줄은 난간 167/163(통행 막힘) — 사다리 열만 판자로 비워 오르내린다.
   for (let y = bbox.y + 1; y < eaveY; y += 1) {
-    for (let x = left + 1; x <= right - 2; x += 1) {
+    const front = y === eaveY - 1 && eaveY - 1 > bbox.y + 1;
+    for (let x = left + 1; x <= right - 1; x += 1) {
       const index = y * map.width + x;
-      if (map.upperTiles[index] === TILE.EMPTY) map.upperTiles[index] = ROOF_DECK_PLANK;
+      if (map.upperTiles[index] !== TILE.EMPTY) continue;
+      let tile = ROOF_DECK_PLANK;
+      if (front && x !== ladderX) tile = x === left + 1 || x === right - 1 || (x - left) % 2 === 1 ? ROOF_DECK_RAIL_POST : ROOF_DECK_RAIL;
+      else if (y === bbox.y + 1 && x === left + 1) tile = ROOF_DECK_CORNER;
+      map.upperTiles[index] = tile;
     }
   }
   // 사다리 기둥: 문에서 먼 쪽 벽 열, 처마→벽→지면 1칸까지 강제 설치(창문은 사다리로 대체).
-  const { x: ladderX } = roofDeckLadderAttachment(bbox, doorAt);
   for (let y = eaveY; y <= bbox.y + bbox.h; y += 1) {
     if (!pointInMap(map, { x: ladderX, y })) break;
     map.upperTiles[y * map.width + ladderX] = HOUSE_WALL_LADDER;

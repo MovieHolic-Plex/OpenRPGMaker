@@ -244,6 +244,11 @@ export interface HouseTemplate {
    * 시공기는 킷을 고른 뒤 compose(kitId) 로 레시피를 얻어 찍는다. form 은 미리보기용 기본 재료 합성본이다.
    */
   readonly compose?: (kitId: HouseKitId) => AuthoredHouseFormDef;
+  /**
+   * 기본 분배(자동 추첨)에서 빼는 형태 — 명시 templateId·프리셋 화이트리스트로만 나온다.
+   * 2026-09-25: ㄷ자 깊은·ㅁ자 중정은 날개 지붕이 안 이어져 구멍처럼 보이고, estate-* 는 두 채를 따로 놓은 것처럼 보였다.
+   */
+  readonly excludeFromDefaultMix?: boolean;
 }
 
 /** 이 템플릿이 이 킷으로 찍을 셀 레시피 — 합성 형태면 합성, 고정 레시피면 그대로, 날개 문법이면 undefined. */
