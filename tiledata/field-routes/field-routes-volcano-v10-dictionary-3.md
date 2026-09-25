@@ -1,0 +1,6 @@
+# 사용 타일 사전
+
+forest_harmony_volcano에서 이 분류의 필드가 쓰는 번호·라벨·통행.
+```json
+[{"tile":3212,"label":"현무암 기둥 무리 · 2x2-2 (1,1)","passability":{"up":false,"down":false,"left":false,"right":false}},{"tile":3213,"label":"현무암 기둥 무리 · 2x2-2 (2,1)","passability":{"up":false,"down":false,"left":false,"right":false}},{"tile":3214,"label":"현무암 기둥 무리 · 3x2 (1,1)","passability":{"up":false,"down":false,"left":false,"right":false}},{"tile":3215,"label":"현무암 기둥 무리 · 3x2 (2,1)","passability":{"up":false,"down":false,"left":false,"right":false}},{"tile":3216,"label":"현무암 기둥 무리 · 3x2 (3,1)","passability":{"up":false,"down":false,"left":false,"right":false}},{"tile":3242,"label":"현무암 기둥 무리 · 2x2-2 (1,2)","passability":{"up":false,"down":false,"left":false,"right":false}},{"tile":3243,"label":"현무암 기둥 무리 · 2x2-2 (2,2)","passability":{"up":false,"down":false,"left":false,"right":false}},{"tile":3244,"label":"현무암 기둥 무리 · 3x2 (1,2)","passability":{"up":false,"down":false,"left":false,"right":false}},{"tile":3245,"label":"현무암 기둥 무리 · 3x2 (2,2)","passability":{"up":false,"down":false,"left":false,"right":false}},{"tile":3246,"label":"현무암 기둥 무리 · 3x2 (3,2)","passability":{"up":false,"down":false,"left":false,"right":false}}]
+```

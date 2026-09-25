@@ -785,6 +785,156 @@
     }
   },
   {
+    "id": "outdoor-demon-castle",
+    "seed": 8101,
+    "entry": [
+      30,
+      51
+    ],
+    "reachable": 1486,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.443,
+      "at": [
+        55,
+        31
+      ],
+      "screenAt": [
+        0,
+        24
+      ]
+    }
+  },
+  {
+    "id": "outdoor-forest-maze",
+    "seed": 8201,
+    "entry": [
+      10,
+      43
+    ],
+    "reachable": 875,
+    "targets": 8,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.362,
+      "at": [
+        3,
+        15
+      ],
+      "screenAt": [
+        32,
+        32
+      ]
+    }
+  },
+  {
+    "id": "outdoor-dragon-peak",
+    "seed": 8301,
+    "entry": [
+      24,
+      55
+    ],
+    "reachable": 652,
+    "targets": 9,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.484,
+      "at": [
+        22,
+        8
+      ],
+      "screenAt": [
+        16,
+        4
+      ]
+    }
+  },
+  {
+    "id": "outdoor-forest-camp",
+    "seed": 8401,
+    "entry": [
+      4,
+      15
+    ],
+    "reachable": 454,
+    "targets": 2,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.339,
+      "at": [
+        15,
+        13
+      ],
+      "screenAt": [
+        4,
+        12
+      ]
+    }
+  },
+  {
+    "id": "outdoor-farm-ranch",
+    "seed": 8501,
+    "entry": [
+      26,
+      4
+    ],
+    "reachable": 1280,
+    "targets": 9,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 2,
+      "screen": 0.339,
+      "at": [
+        7,
+        0
+      ],
+      "screenAt": [
+        28,
+        0
+      ]
+    }
+  },
+  {
+    "id": "outdoor-lighthouse-cape",
+    "seed": 8601,
+    "entry": [
+      22,
+      4
+    ],
+    "reachable": 581,
+    "targets": 6,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.335,
+      "at": [
+        20,
+        22
+      ],
+      "screenAt": [
+        12,
+        16
+      ]
+    }
+  },
+  {
     "id": "outdoor-world-map",
     "seed": 7101,
     "reachable": 1136,
@@ -799,6 +949,24 @@
       "screenAt": [
         30,
         32
+      ]
+    }
+  },
+  {
+    "id": "outdoor-world-archipelago",
+    "seed": 7201,
+    "reachable": 1192,
+    "places": 11,
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.615,
+      "at": [
+        22,
+        38
+      ],
+      "screenAt": [
+        8,
+        16
       ]
     }
   }
