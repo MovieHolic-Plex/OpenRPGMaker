@@ -184,6 +184,13 @@ function create(name, baseRef) {
 // 이 도구 밖에서 만들어진 기존 워크트리를 같은 규약으로 보정한다.
 // (node_modules 누락 → 실행 불가, DEV_SERVER_PORT 누락 → 전부 9999 충돌)
 function adoptOne(path, label = "") {
+  // 경로가 사라진 등록(tmpfs 워크트리·지운 체크아웃)에 spawn 하면 cwd ENOENT 로 죽는다.
+  // dirtyFiles 와 같은 이유로 존재 확인이 먼저다 — 실측: 죽은 등록 하나가 adopt 전량 순회를
+  // 중단시켜 나머지 체크아웃의 포트 중복이 그대로 남았다.
+  if (!existsSync(path)) {
+    console.log(`${label || basename(path)}  경로 없음(등록만 남음): ${path} — git worktree prune 으로 등록을 지운다`);
+    return;
+  }
   const { port, applied } = provision(path);
   console.log(`${label || basename(path)}  port=${port}  ${path}`);
   console.log(applied.length ? `   보정: ${applied.join(", ")}` : "   보정 없음(이미 정상)");
