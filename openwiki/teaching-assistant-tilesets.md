@@ -170,6 +170,14 @@ itch.io 의 [Rasak Modern](https://rasak.itch.io/rasak-modern)처럼 「사용·
 타일 검수가 엔진 결함(맵 가장자리 자동타일 = 끊김 → `AutotileGroup.edgeConnects`)과 조립기 버그(3줄 벽에서 뜨는 문)를 찾았다.
 숫자만 보고 끝내지 않는다: 밀도 기준을 1칸 덤불로 채운 숲은 통과했지만 죽은 숲처럼 보였다.
 
+**문서·예제만으로는 전체 배치가 옮겨지지 않는다 → 끝에서 한 번 수리 권고(2026-09-25).** 예제를 고친 뒤에도 조수 마을은 빈 바닥 44%였다.
+Pi 런타임(`scripts/lib/piAgentRuntime.ts`)은 모델이 끝났다고 할 때 `src/ai/piAgent/layoutQuality.ts` 로 이번 실행이 1층을 25% 넘게 칠한 맵
+(새 맵 포함, 마을 계약 맵 제외, 150칸·바닥 40칸 미만 제외)을 잰다. 정의·한도는 `check_examples.py` 와 같다(빈 바닥 ≤30%·빈 정사각형 ≤5·대칭 ≤2.2).
+넘으면 가장 빈 6×6 창 좌표와 함께 **수리 프롬프트를 한 번** 보낸다. 거부·되돌리기는 없고, 두 번째 결과는 `execution_status layout_quality` 로 알리기만 한다.
+헤드리스 D4(같은 프로젝트·과제): 마을 빈 바닥 58→44%, 도시 38%→통과, 민가 빈 바닥 38%→통과(대칭 5.2→4.8, 식탁 둘레 의자처럼 원래 대칭인 덩이가 끌어올린다).
+같은 실행에 **무변화 반복 차단**(`src/ai/piAgent/repeatBreaker.ts`)도 붙였다 — 키 순서만 바꾼 같은 호출이 맵을 안 바꾸면 3번째에 한 번 일러 주고 12번째에 멈춘다
+(실측: stamp_layer_block 같은 칸 137번 → 시간 상한 사망).
+
 ## 알려진 함정
 
 - **16px 표가 48px 업로드를 건드린다.** `ensureTilesetHarnesses` → `applyCustomChipsetMinimalHarness`
