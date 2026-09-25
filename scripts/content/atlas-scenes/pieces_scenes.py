@@ -50,9 +50,10 @@ def airship(name, label, backed: bool, scheme="canvas"):
     paint_hull(hull, hull_mask(w * T, h * T, top, bot, 0, w * T), texture_tile(13))
     mid = oy + (B * T) // 2
     paint_bowsprit(hull, ox + 3, mid, 18)
-    roof_y = oy + T - 4
-    door = ((ox // T) + 11, (roof_y + 2 * T) // T)
-    paint_deckhouse(hull, ox + 9 * T, ox + 14 * T, roof_y - 12, 2 * T, T, door[0] * T + 3, windows=(ox + 9 * T + 6, ox + 14 * T - 12))
+    mid_row = above + B // 2
+    roof_y = (mid_row - 4) * T
+    door = ((ox // T) + 11, mid_row - 2)
+    paint_deckhouse(hull, ox + 9 * T, ox + 14 * T, roof_y, 2 * T, T, door[0] * T + 3, windows=(ox + 9 * T + 6, ox + 14 * T - 12))
     paint_stern_lantern(hull, ox + L * T - 6, mid - 5)
     # stern propeller on an outrigger (behind the stern, to the right)
     px, py = ox + L * T + 6, mid
@@ -74,7 +75,7 @@ def airship(name, label, backed: bool, scheme="canvas"):
             rig.set(ex + int(dx * k / (oy - 4 * T + 12)), y, (90, 70, 50))
     if backed:
         sky_backed(hull)
-    deck_keys = {texture_image(13).tobytes()}
+    deck_keys = {texture_image(13).tobytes(), texture_image(13).transpose(Image.FLIP_LEFT_RIGHT).tobytes()}
     return {"name": name, "label": label, "w": w, "h": h, "hull": hull, "rig": rig, "deck": deck_keys, "walk": {door},
             "block": set(), "doors": [list(door)], "kind": "airship", "skyBacked": backed,
             "meta": {"hullTop": above, "beam": B, "length": L}}

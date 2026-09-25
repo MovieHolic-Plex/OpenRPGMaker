@@ -12,14 +12,14 @@ T = 16
 
 # length, beam, bow, stern (tiles); masts: (x offset from the bow tip in tiles, height px, [(yard off, half, h)], nest)
 CLASSES = {
-    "galleon": dict(length=30, beam=7, bow=7, stern=3, house=(22, 27), masts=[
+    "galleon": dict(length=30, beam=8, bow=7, stern=3, house=(22, 27), masts=[
         (9.5, 8 * T + 8, [(10, 26, 20), (34, 34, 28), (66, 42, 34)], False),
         (16.5, 9 * T + 8, [(10, 28, 22), (36, 38, 30), (70, 46, 38)], True),
         (21.0, 7 * T + 8, [(10, 24, 18), (30, 30, 24), (58, 36, 28)], False)]),
-    "brig": dict(length=22, beam=6, bow=6, stern=3, house=(15, 19), masts=[
+    "brig": dict(length=22, beam=7, bow=6, stern=3, house=(15, 19), masts=[
         (7.5, 7 * T + 8, [(10, 24, 20), (32, 32, 26), (60, 38, 30)], False),
         (13.0, 8 * T, [(10, 26, 20), (34, 34, 28), (64, 40, 32)], True)]),
-    "sloop": dict(length=12, beam=4, bow=4, stern=2, house=None, masts=[
+    "sloop": dict(length=12, beam=5, bow=4, stern=2, house=None, masts=[
         (6.0, 5 * T + 8, [(10, 20, 16), (30, 28, 26)], False)]),
 }
 
@@ -44,7 +44,7 @@ PROP_KO = {"cannon-left": "갑판 대포(포구 왼쪽)", "cannon-right": "갑�
            "flag-red": "붉은 깃발", "banner-gold": "금빛 깃발", "ladder": "사다리", "painting": "액자", "aquarium": "물고기 수조"}
 
 
-def ship_piece(cls: str, rig: str, furled: bool, bow_right: bool) -> dict:
+def ship_piece(cls: str, rig: str, furled: bool, bow_right: bool, gangway_on: bool = None) -> dict:
     spec = CLASSES[cls]
     scheme, emblem, torn, flag, deck, ports = RIGS[rig]
     L, B = spec["length"], spec["beam"]
@@ -61,9 +61,11 @@ def ship_piece(cls: str, rig: str, furled: bool, bow_right: bool) -> dict:
     walk, block, doors = set(), set(), []
     if spec["house"]:
         x0, x1 = spec["house"]
-        # roof 2 rows from the second deck row, wall = the next row; the door is in the middle of the wall
-        roof_y = oy + T
-        door_cell = ((ox // T) + (x0 + x1) // 2, roof_y // T + 2)
+        # the wall stands two rows north of the mast-collar row, so the row in front of the door is the free walking
+        # lane (collars on the centre row, cannons on the south rail); the roof takes the two rows above the wall
+        mid_row = above + B // 2
+        roof_y = (mid_row - 4) * T
+        door_cell = ((ox // T) + (x0 + x1) // 2, mid_row - 2)
         paint_deckhouse(hull, ox + x0 * T, ox + x1 * T, roof_y, 2 * T, T, door_cell[0] * T + 3,
                         windows=(ox + x0 * T + 6, ox + x1 * T - 12))
         walk.add(door_cell)
@@ -72,7 +74,9 @@ def ship_piece(cls: str, rig: str, furled: bool, bow_right: bool) -> dict:
         paint_gunports(hull, [ox + x * T + 5 for x in range(spec["bow"] + 1, L - spec["stern"] - 1, 3)], oy + B * T + 5)
     paint_stern_lantern(hull, ox + L * T - 6, mid - 5)
     gangway = None
-    if furled:
+    if gangway_on is None:
+        gangway_on = furled
+    if gangway_on:
         # boarding plank on the near (south) side, midships: deck edge → rail → hull side → the quay row below the piece
         gx = (ox // T) + (spec["bow"] + L - spec["stern"]) // 2
         paint_gangway(hull, gx * T, oy + (B - 1) * T, h * T)
@@ -83,8 +87,9 @@ def ship_piece(cls: str, rig: str, furled: bool, bow_right: bool) -> dict:
         x = ox + int(mx * T) + 8
         paint_mast(rig_c, x, mid, height, sails, scheme=scheme, furled=furled, emblem=emblem, torn=torn, flag=flag, nest=nest)
         block.add((x // T, mid // T))
-    deck_keys = {texture_image(deck).tobytes()}
-    name = f"ship:{cls}:{rig}:{'furled' if furled else 'sailing'}:{'right' if bow_right else 'left'}"
+    deck_keys = {texture_image(deck).tobytes(), texture_image(deck).transpose(Image.FLIP_LEFT_RIGHT).tobytes()}
+    state = ("docked" if gangway_on else "furled") if furled else "sailing"
+    name = f"ship:{cls}:{rig}:{state}:{'right' if bow_right else 'left'}"
     if bow_right:
         hull.im = hull.im.transpose(Image.FLIP_LEFT_RIGHT)
         rig_c.im = rig_c.im.transpose(Image.FLIP_LEFT_RIGHT)
@@ -94,7 +99,7 @@ def ship_piece(cls: str, rig: str, furled: bool, bow_right: bool) -> dict:
             gangway = list(flip(gangway))
     return {"name": name, "w": w, "h": h, "hull": hull, "rig": rig_c, "deck": deck_keys, "walk": walk, "block": block,
             "doors": doors, "kind": "ship",
-            "label": f"{CLS_KO[cls]} · {RIG_KO[rig]} · {'돛 접음(정박)' if furled else '돛 폄(항해)'} · 뱃머리 {'오른쪽' if bow_right else '왼쪽'}",
+            "label": f"{CLS_KO[cls]} · {RIG_KO[rig]} · {('돛 접음·승선 판자(부두 정박)' if gangway_on else '돛 접음(닻 내림)') if furled else '돛 폄(항해)'} · 뱃머리 {'오른쪽' if bow_right else '왼쪽'}",
             "meta": {"class": cls, "rig": rig, "furled": furled, "bowRight": bow_right, "hullTop": above, "beam": B,
                      "length": L, "bowsprit": left, "gangway": gangway}}
 
@@ -142,6 +147,7 @@ def sheet_props():
 
 SAILING = [("galleon", "merchant"), ("galleon", "warship"), ("galleon", "pirate"), ("galleon", "royal"),
            ("brig", "merchant"), ("brig", "pirate"), ("brig", "liner"), ("sloop", "fishing"), ("sloop", "merchant")]
+ANCHORED = [("galleon", "warship"), ("galleon", "pirate"), ("sloop", "fishing"), ("brig", "merchant")]
 FURLED = [("galleon", "merchant"), ("galleon", "warship"), ("galleon", "pirate"), ("brig", "merchant"), ("sloop", "fishing")]
 
 
@@ -149,5 +155,6 @@ def pieces():
     out = [ship_piece(cls, rig, False, False) for cls, rig in SAILING]
     out.append(ship_piece("brig", "pirate", False, True))
     out += [ship_piece(cls, rig, True, right) for cls, rig in FURLED for right in (False, True)]
+    out += [ship_piece(cls, rig, True, right, False) for cls, rig in ANCHORED for right in (False, True)]
     out.extend(sheet_props())
     return out

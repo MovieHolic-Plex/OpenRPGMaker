@@ -1,0 +1,92 @@
+[
+  {
+    "id": "deck-merchant-galleon-sailing",
+    "entry": [
+      20,
+      13
+    ],
+    "reachable": 108,
+    "targets": 1
+  },
+  {
+    "id": "deck-warship-galleon-sailing",
+    "entry": [
+      20,
+      13
+    ],
+    "reachable": 102,
+    "targets": 1
+  },
+  {
+    "id": "deck-pirate-galleon-chase",
+    "entry": [
+      20,
+      13
+    ],
+    "reachable": 109,
+    "targets": 1
+  },
+  {
+    "id": "deck-royal-flagship",
+    "entry": [
+      20,
+      13
+    ],
+    "reachable": 107,
+    "targets": 1
+  },
+  {
+    "id": "deck-liner-brig",
+    "entry": [
+      16,
+      11
+    ],
+    "reachable": 63,
+    "targets": 1
+  },
+  {
+    "id": "deck-pirate-brig",
+    "entry": [
+      16,
+      11
+    ],
+    "reachable": 56,
+    "targets": 1
+  },
+  {
+    "id": "deck-fishing-sloop",
+    "entry": [
+      10,
+      8
+    ],
+    "reachable": 19,
+    "targets": 0
+  },
+  {
+    "id": "deck-merchant-galleon-docked",
+    "entry": [
+      23,
+      21
+    ],
+    "reachable": 301,
+    "targets": 3
+  },
+  {
+    "id": "deck-warship-anchored",
+    "entry": [
+      32,
+      13
+    ],
+    "reachable": 108,
+    "targets": 1
+  },
+  {
+    "id": "deck-pirate-boarding",
+    "entry": [
+      10,
+      12
+    ],
+    "reachable": 194,
+    "targets": 3
+  }
+]

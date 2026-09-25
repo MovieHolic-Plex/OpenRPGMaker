@@ -25,7 +25,7 @@ const oldReport = fs.existsSync(`${OUT}/validation.json`) ? JSON.parse(fs.readFi
 const strip = ({ build, ...rest }) => rest;
 
 await withTsModule("scripts/content/lib/atlas-scenes-entry.ts", "atlas-scenes-entry.mjs", async (api) => {
-  const blank = api.createBlankProject();
+  console.time("blank"); const blank = api.createBlankProject(); console.timeEnd("blank");
   const veh = blank.tilesets.oprn_atlas_vehicles;
   assert(veh, "new projects lack oprn_atlas_vehicles");
   // Working tilesets: every vehicle slot grafted at base + slot.
@@ -35,10 +35,10 @@ await withTsModule("scripts/content/lib/atlas-scenes-entry.ts", "atlas-scenes-en
   const forestBase = (t) => Math.max(FOREST_BASE, Math.ceil(t.count / 30) * 30);
   const climate = {};
   for (const k of ["snow", "volcano", "desert", "autumn"]) { const t = api.createClimateVillageTileset(k); climate[t.id] = withVehicleGrafts(t, veh, forestBase(t)); }
-  const forest = withVehicleGrafts(blank.tilesets.forest_harmony, veh, FOREST_BASE);
+  console.time("forest"); const forest = withVehicleGrafts(blank.tilesets.forest_harmony, veh, FOREST_BASE); console.timeEnd("forest");
   const tilesets = { easyrpg_chipset_ship: ship, forest_harmony: forest, ...climate };
   const baseOf = { easyrpg_chipset_ship: SHIP_BASE, forest_harmony: FOREST_BASE, ...Object.fromEntries(Object.entries(climate).map(([id, t]) => [id, forestBase(api.createClimateVillageTileset(id.replace("forest_harmony_", "")))])) };
-  const kit = loadKit(api);
+  console.time("kit"); const kit = loadKit(api); console.timeEnd("kit");
   const ctx = { api, ship, forest, climate, tilesets, baseOf, blank, kit };
 
   const PLANS = [...shipPlans(), ...skyPlans(), ...cabinPlans(), ...outdoorPlans()];

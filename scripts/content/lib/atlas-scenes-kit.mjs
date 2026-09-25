@@ -168,6 +168,13 @@ export class GridMap {
     const seen = this.walk(api, project, entry);
     const near = ([x, y]) => [[0, 0], [0, 1], [0, -1], [1, 0], [-1, 0]].some(([dx, dy]) => this.inside(x + dx, y + dy) && seen.has(this.at(x + dx, y + dy)));
     const blocked = targets.filter((t) => !near(t));
+    if (process.env.ATLAS_WALK === this.map.id) {
+      const tg = new Set(targets.map(([x, y]) => this.at(x, y)));
+      for (let y = 0; y < this.H; y++) console.log(String(y).padStart(2) + " " + Array.from({ length: this.W }, (_, x) => {
+        const i = this.at(x, y), p = this.ts.passability[this.upper[i]] ?? null;
+        return tg.has(i) ? "T" : x === entry[0] && y === entry[1] ? "E" : seen.has(i) ? "r" : this.lower[i] === 0 ? "~" : this.upper[i] >= 0 && p && !p.up ? "#" : ".";
+      }).join(""));
+    }
     assert.equal(blocked.length, 0, `Blocked ${this.map.id}: ${JSON.stringify(blocked.slice(0, 6))}`);
     return { reachable: seen.size, targets: targets.length };
   }
