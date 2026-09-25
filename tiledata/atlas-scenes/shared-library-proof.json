@@ -1,0 +1,34 @@
+{
+  "id": "oprn-atlas-scenes-20260925",
+  "places": 23,
+  "regions": 5,
+  "maps": 28,
+  "bytes": 21862285,
+  "tilesets": {
+    "shared_atlas_scenes_ship": {
+      "count": 2007,
+      "references": []
+    },
+    "shared_atlas_scenes_forest": {
+      "count": 4509,
+      "references": []
+    },
+    "shared_atlas_scenes_snow": {
+      "count": 3855,
+      "references": []
+    },
+    "shared_atlas_scenes_autumn": {
+      "count": 3758,
+      "references": []
+    },
+    "shared_atlas_scenes_desert": {
+      "count": 3869,
+      "references": []
+    }
+  },
+  "renderCheck": "28 maps pixel-identical with the shared atlas",
+  "file": "/home/main/.local/share/oprn/shared-content.sqlite",
+  "revision": "c34cea0c933ebde8094ccc5c6d406ef9626b9ca2c8a6be2846171fcd14ada832",
+  "reloaded": true,
+  "publishedAt": "2026-09-25T19:29:10.872Z"
+}
