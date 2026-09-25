@@ -91,8 +91,8 @@ export const RURAL_PLANS = [
   },
   {
     id: "town-harvest-fair", name: "단풍골 추수 장터", category: "rural", tilesetId: AUT, width: 52, height: 42, seed: 16501, plaza: [["dirt", ["과일 좌판", "나무통", "과일 상자", "씨앗 자루", "벤치"]]], plazaSq: 3,
-    purpose: "추수 끝난 가을 마을의 장터 날. 광장 무대와 노점, 깃발 줄, 수확물 더미, 둘레의 거둔 밭",
-    note: "가을 마을 한가운데 흙 광장에 추수 잔치 무대가 서고 노점과 과일 좌판이 둘러선다. 광장을 가로질러 축제 깃발 줄이 걸리고, 수확한 과일 상자와 씨앗 자루가 쌓였다. 광장 둘레엔 농가와 여관, 마을 밖은 거둔 밭. 남쪽 길로 들어와 서쪽 길로 나간다",
+    purpose: "추수 끝난 가을 마을의 장터 날. 광장 무대와 노점, 수확물 더미, 둘레의 거둔 밭",
+    note: "가을 마을 한가운데 흙 광장에 추수 잔치 무대가 서고 노점과 과일 좌판이 둘러선다. 수확한 과일 상자와 씨앗 자루가 쌓였다. 광장 둘레엔 농가와 여관, 마을 밖은 거둔 밭. 남쪽 길로 들어와 서쪽 길로 나간다",
     build(b) {
       b.exits([{ side: "south", at: 26, meets: "추수 들길(필드) 북쪽 출구" }, { side: "west", at: 20, meets: "서쪽 단풍길(필드) 동쪽 출구" }]);
       b.pave(b.ellipseCells(26, 20, 9, 5, 0.05), "dirt", { name: "장터 광장" });
@@ -100,8 +100,7 @@ export const RURAL_PLANS = [
       b.spine([["exit:0", [26, 26]], ["exit:1", [17, 20]]]);
       b.homes([["gable-cross", "amber-wood", 5, 4, "여관", "tavern", "right"], ["gable-house", "slate-wood", 38, 4, "농가", "farm", "left"], ["gable-long-low", "timber-hall", 38, 26, "곡물 창고", "storage", "left"], ["gable-house", "amber-wood", 6, 26, "농가", "laundry", "right"]], 5);
       b.connect(); b.paintRoads(); b.plazaUnroad();
-      b.props([["줄무늬 노점 빨강", 18, 22, "추수 장 노점", "장터 광장"], ["장터 노점", 30, 22, "추수 장 노점", "장터 광장"], ["줄무늬 노점 초록", 32, 18, "추수 장 노점", "장터 광장"]]);
-      b.streamer(18, 34, 17, { owner: "장터 광장" });
+      b.props([["장터 노점", 18, 22, "추수 장 노점", "장터 광장"], ["장터 노점", 30, 22, "추수 장 노점", "장터 광장"], ["과일 좌판", 32, 18, "추수 장 좌판", "장터 광장"], ["과일 좌판", 18, 18, "추수 장 좌판", "장터 광장"]]);
       b.crops(3, 34, 18, 6, { owner: "거둔 밀밭" }); b.crops(32, 34, 17, 6, { owner: "거둔 채소밭" });
       b.yards();
       b.forest({ bands: { north: [2, 1.5], east: [2, 1] }, blobs: [[2, 2, 3, 3, 6]], noise: 0.5 });

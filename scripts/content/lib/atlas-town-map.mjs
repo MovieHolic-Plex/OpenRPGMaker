@@ -78,8 +78,16 @@ export async function townTilesets(api) {
 }
 
 
+const ATLAS_NAMES = new Set(ATLAS_PARTS.map((p) => p.name));
+
 export class TownMap extends OutdoorMap {
   get climate() { return this.spec.tilesetId !== "forest_harmony"; }
+  // The atlas town parts (3311–3490) are grafted onto forest_harmony only: the climate sheets are separate baked images
+  // whose frames past 2730 hold other pictures (or none), so an atlas part there draws the wrong tiles.
+  part(name) {
+    if (this.climate) assert(!ATLAS_NAMES.has(name), `Missing part ${name} (atlas part, forest_harmony only) ${this.spec.id}`);
+    return super.part(name);
+  }
   // A gable house (form id × kit id); accents (chimney, dormer, awning, finial) only on the forest sheet.
   gable(form, kitId, x, y, opt = {}) {
     const spec = this.kit.gables.get(form);
@@ -292,7 +300,8 @@ export class TownMap extends OutdoorMap {
     let n = 0;
     for (let dy = 0; dy < p.h; dy++) for (let dx = 0; dx < p.w; dx++) {
       const t = p.upper[dy][dx], i = this.at(x + dx, y + dy);
-      if (t < 0 || !this.inside(x + dx, y + dy) || this.upper[i] !== -1 || this.solid.has(i)) continue;
+      // open water takes an overlay too (steam over a hot pool), without becoming walkable
+      if (t < 0 || !this.inside(x + dx, y + dy) || this.upper[i] !== -1 || (this.solid.has(i) && !this.water.has(i))) continue;
       this.upper[i] = t; this.dress.add(i); n++;
     }
     if (n) this.placements.push({ name, kind: "overlay", x, y, w: p.w, h: p.h, ...(owner ? { owner } : {}) });

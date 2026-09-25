@@ -401,26 +401,26 @@
  },
  {
   "id": "city-capital-overview",
-  "seed": 13001,
+  "seed": 13002,
   "entry": [
    59,
    95
   ],
-  "reachable": 5363,
+  "reachable": 5372,
   "targets": 50,
   "blocked": 0,
   "terraceLeaks": 0,
   "seals": [],
   "emptiness": {
    "maxSq": 3,
-   "screen": 0.353,
+   "screen": 0.339,
    "at": [
-    72,
-    7
+    38,
+    9
    ],
    "screenAt": [
-    16,
-    52
+    24,
+    8
    ]
   }
  },
@@ -556,20 +556,20 @@
    28,
    41
   ],
-  "reachable": 1395,
+  "reachable": 1226,
   "targets": 10,
   "blocked": 0,
   "terraceLeaks": 0,
   "seals": [],
   "emptiness": {
    "maxSq": 3,
-   "screen": 0.344,
+   "screen": 0.335,
    "at": [
     27,
     39
    ],
    "screenAt": [
-    12,
+    41,
     0
    ]
   }
@@ -1031,14 +1031,14 @@
    26,
    37
   ],
-  "reachable": 927,
+  "reachable": 914,
   "targets": 6,
   "blocked": 0,
   "terraceLeaks": 0,
   "seals": [],
   "emptiness": {
    "maxSq": 2,
-   "screen": 0.33,
+   "screen": 0.339,
    "at": [
     37,
     3
@@ -1356,21 +1356,21 @@
    31,
    45
   ],
-  "reachable": 1515,
+  "reachable": 1504,
   "targets": 12,
   "blocked": 0,
   "terraceLeaks": 0,
   "seals": [],
   "emptiness": {
    "maxSq": 4,
-   "screen": 0.38,
+   "screen": 0.398,
    "at": [
     6,
     9
    ],
    "screenAt": [
-    40,
-    28
+    24,
+    16
    ]
   }
  },
@@ -1471,6 +1471,431 @@
    "screenAt": [
     28,
     4
+   ]
+  }
+ },
+ {
+  "id": "town-elf-grove",
+  "seed": 19201,
+  "entry": [
+   27,
+   41
+  ],
+  "reachable": 1203,
+  "targets": 9,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.344,
+   "at": [
+    21,
+    23
+   ],
+   "screenAt": [
+    20,
+    16
+   ]
+  }
+ },
+ {
+  "id": "town-elf-lake",
+  "seed": 19301,
+  "entry": [
+   4,
+   17
+  ],
+  "reachable": 945,
+  "targets": 11,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 2,
+   "screen": 0.339,
+   "at": [
+    8,
+    6
+   ],
+   "screenAt": [
+    4,
+    20
+   ]
+  }
+ },
+ {
+  "id": "town-hot-spring",
+  "seed": 19401,
+  "entry": [
+   26,
+   37
+  ],
+  "reachable": 918,
+  "targets": 6,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 2,
+   "screen": 0.339,
+   "at": [
+    7,
+    0
+   ],
+   "screenAt": [
+    28,
+    12
+   ]
+  }
+ },
+ {
+  "id": "town-snow-hotspring",
+  "seed": 19501,
+  "entry": [
+   25,
+   37
+  ],
+  "reachable": 657,
+  "targets": 5,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.376,
+   "at": [
+    40,
+    23
+   ],
+   "screenAt": [
+    28,
+    16
+   ]
+  }
+ },
+ {
+  "id": "town-pilgrim",
+  "seed": 19601,
+  "entry": [
+   25,
+   43
+  ],
+  "reachable": 1106,
+  "targets": 11,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 2,
+   "screen": 0.339,
+   "at": [
+    41,
+    4
+   ],
+   "screenAt": [
+    16,
+    32
+   ]
+  }
+ },
+ {
+  "id": "town-monastery",
+  "seed": 19701,
+  "entry": [
+   27,
+   47
+  ],
+  "reachable": 993,
+  "targets": 4,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.33,
+   "at": [
+    23,
+    18
+   ],
+   "screenAt": [
+    32,
+    36
+   ]
+  }
+ },
+ {
+  "id": "town-nomad-steppe",
+  "seed": 19801,
+  "entry": [
+   4,
+   20
+  ],
+  "reachable": 796,
+  "targets": 4,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 2,
+   "screen": 0.339,
+   "at": [
+    6,
+    6
+   ],
+   "screenAt": [
+    33,
+    4
+   ]
+  }
+ },
+ {
+  "id": "town-nomad-desert",
+  "seed": 19901,
+  "entry": [
+   4,
+   24
+  ],
+  "reachable": 1852,
+  "targets": 4,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.367,
+   "at": [
+    0,
+    10
+   ],
+   "screenAt": [
+    4,
+    0
+   ]
+  }
+ },
+ {
+  "id": "town-goblin-camp",
+  "seed": 20001,
+  "entry": [
+   4,
+   21
+  ],
+  "reachable": 957,
+  "targets": 1,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.344,
+   "at": [
+    43,
+    8
+   ],
+   "screenAt": [
+    4,
+    20
+   ]
+  }
+ },
+ {
+  "id": "town-orc-warcamp",
+  "seed": 20101,
+  "entry": [
+   22,
+   29
+  ],
+  "reachable": 847,
+  "targets": 1,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 2,
+   "screen": 0.339,
+   "at": [
+    6,
+    6
+   ],
+   "screenAt": [
+    4,
+    12
+   ]
+  }
+ },
+ {
+  "id": "town-abandoned",
+  "seed": 20201,
+  "entry": [
+   4,
+   22
+  ],
+  "reachable": 1383,
+  "targets": 10,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.33,
+   "at": [
+    17,
+    6
+   ],
+   "screenAt": [
+    28,
+    4
+   ]
+  }
+ },
+ {
+  "id": "town-abandoned-snow",
+  "seed": 20306,
+  "entry": [
+   20,
+   35
+  ],
+  "reachable": 742,
+  "targets": 7,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 2,
+   "screen": 0.398,
+   "at": [
+    16,
+    6
+   ],
+   "screenAt": [
+    4,
+    12
+   ]
+  }
+ },
+ {
+  "id": "town-festival-day",
+  "seed": 20401,
+  "entry": [
+   28,
+   35
+  ],
+  "reachable": 1153,
+  "targets": 7,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 2,
+   "screen": 0.339,
+   "at": [
+    6,
+    0
+   ],
+   "screenAt": [
+    20,
+    16
+   ]
+  }
+ },
+ {
+  "id": "town-festival-night",
+  "seed": 20401,
+  "entry": [
+   28,
+   35
+  ],
+  "reachable": 1199,
+  "targets": 7,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.339,
+   "at": [
+    39,
+    3
+   ],
+   "screenAt": [
+    36,
+    8
+   ]
+  }
+ },
+ {
+  "id": "town-witch-hamlet",
+  "seed": 20601,
+  "entry": [
+   4,
+   21
+  ],
+  "reachable": 985,
+  "targets": 4,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.339,
+   "at": [
+    27,
+    0
+   ],
+   "screenAt": [
+    0,
+    4
+   ]
+  }
+ },
+ {
+  "id": "town-knight-camp",
+  "seed": 20701,
+  "entry": [
+   4,
+   24
+  ],
+  "reachable": 1405,
+  "targets": 9,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.33,
+   "at": [
+    14,
+    15
+   ],
+   "screenAt": [
+    12,
+    8
+   ]
+  }
+ },
+ {
+  "id": "town-academy",
+  "seed": 20801,
+  "entry": [
+   28,
+   43
+  ],
+  "reachable": 1301,
+  "targets": 8,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.344,
+   "at": [
+    24,
+    19
+   ],
+   "screenAt": [
+    20,
+    12
    ]
   }
  }
