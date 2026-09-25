@@ -8,7 +8,8 @@ import { towerPlans } from "./tower.mjs";
 import { demonPlans } from "./demon.mjs";
 import { climatePlans } from "./climate.mjs";
 import { grandPlans } from "./grand.mjs";
+import { sunkenPlans } from "./sunken.mjs";
 
 export function dungeonPlans() {
-  return [...cavePlans(), ...hallPlans(), ...towerPlans(), ...demonPlans(), ...climatePlans(), ...grandPlans()];
+  return [...cavePlans(), ...hallPlans(), ...towerPlans(), ...demonPlans(), ...climatePlans(), ...grandPlans(), ...sunkenPlans()];
 }

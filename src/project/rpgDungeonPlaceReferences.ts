@@ -496,7 +496,7 @@ export const RPG_DUNGEON_PLACE_REFERENCES = [
     "rules": [
       "남쪽과 동쪽이 바다로 트인 석호. 뱃머리를 바다로 둔 난파선 갑판이 물가에 걸렸고, 모래밭엔 떠밀려 온 나무통·항아리와 쓰러진 선원. 벽은 청록 바다 바위, 바닥은 흰 모래 해저, 붉은 산호 무리 둘과 조수 웅덩이. 북동쪽 바위 틈에 해적의 보물상자가 숨겨진 막다른 곳.",
       "입구 (0,12)에서 (24,9)·(15,1)·(18,17)·(6,13)까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "출구 자리: (0,12) → outside · (15,0) → deeper. 이동 이벤트는 없다.",
+      "출구 자리: (0,12) → outside · (15,0) → dungeon-sunken-gate (17,27). 이동 이벤트는 없다.",
       "공용 AI 문서 「RPG 던전 · 자연 동굴·광산·얼음·용암·해저·용의 둥지 (개정1)」에 벽 문법·채움 규칙·놓은 소품 좌표·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형·배치 참고 사례. 이동 이벤트·적·함정 동작·레버/열쇠 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
@@ -548,6 +548,81 @@ export const RPG_DUNGEON_PLACE_REFERENCES = [
       "입구 (39,63)에서 (42,7)·(66,34)·(7,37)·(15,28)·(44,26)·(30,52)·(41,33)·(58,50)까지 런타임 이동 규칙으로 닿는 것을 확인했다. 닫힌 곳: 보물고(북동쪽 창살 문 안)는 열쇠로만 열린다. 수로 → 전실 창살과 지름길 바위 문도 레버·이벤트 몫이라 처음엔 닫혀 있다.",
       "출구 자리: (39,63) → outside. 이동 이벤트는 없다.",
       "공용 AI 문서 「RPG 던전 · 큰 던전 「잊힌 수문 유적」 80×64 (개정1)」에 벽 문법·채움 규칙·놓은 소품 좌표·전체 배열·사용 타일 사전이 있다."
+    ],
+    "limitations": "지형·배치 참고 사례. 이동 이벤트·적·함정 동작·레버/열쇠 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
+  },
+  {
+    "id": "dungeon-sunken-gate-36x28",
+    "name": "해저 신전 · 물에 잠긴 입구 회랑",
+    "kind": "completed-place",
+    "placeKind": "facility",
+    "revision": 1,
+    "x": 0,
+    "y": 0,
+    "width": 36,
+    "height": 28,
+    "tilesetId": "oprn_dungeon_sea",
+    "preview": "/assets/region-references/dungeon-sunken-gate.png",
+    "tilesetPreview": "/assets/rpg-dungeons/sea-chipset.png",
+    "projectDownload": "/assets/region-references/dungeon-sunken-gate.oprn.json",
+    "sourceProjectId": "b9f19baf-00ed-451c-8534-0942d1ffb348",
+    "sourceMapId": "dungeon-sunken-gate",
+    "snapshotProjectId": "oprn-place-dungeon-sunken-gate-v1",
+    "rules": [
+      "해저 동굴 북쪽 굴길에서 들어오는 신전 입구 회랑. 가고일 둘이 지키는 굴길을 지나면 무늬 석판 참배길이 북쪽으로 곧게 가고, 양옆에 석주 두 줄이 선다. 회랑 허리를 물길이 가로질러 판자 다리로 건넌다. 바닥이 꺼져 물이 찬 웅덩이 넷(네 모서리)과 석주 밑동의 붉은 산호 무리, 벽엔 해초가 늘어졌다.",
+      "입구 (17,27)에서 (17,1)·(18,12)·(9,14)·(27,14)까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
+      "출구 자리: (17,27) → dungeon-sea-cave (15,1) · (17,0) → dungeon-sunken-hall (19,30). 이동 이벤트는 없다.",
+      "공용 AI 문서 「RPG 던전 · 해저 신전 세 방 (입구 회랑·산호 기둥 대전·바다 여신 제단)」에 벽 문법·채움 규칙·놓은 소품 좌표·전체 배열·사용 타일 사전이 있다."
+    ],
+    "limitations": "지형·배치 참고 사례. 이동 이벤트·적·함정 동작·레버/열쇠 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
+  },
+  {
+    "id": "dungeon-sunken-hall-40x32",
+    "name": "해저 신전 · 산호 기둥 대전",
+    "kind": "completed-place",
+    "placeKind": "facility",
+    "revision": 1,
+    "x": 0,
+    "y": 0,
+    "width": 40,
+    "height": 32,
+    "tilesetId": "oprn_dungeon_sea",
+    "preview": "/assets/region-references/dungeon-sunken-hall.png",
+    "tilesetPreview": "/assets/rpg-dungeons/sea-chipset.png",
+    "projectDownload": "/assets/region-references/dungeon-sunken-hall.oprn.json",
+    "sourceProjectId": "b9f19baf-00ed-451c-8534-0942d1ffb348",
+    "sourceMapId": "dungeon-sunken-hall",
+    "snapshotProjectId": "oprn-place-dungeon-sunken-hall-v1",
+    "rules": [
+      "석주 열 개가 두 줄로 선 대전. 가운데 무늬 석판 신랑이 남북으로 곧게 지나고 북쪽 통로 양옆을 여신상 둘이 지킨다. 신랑과 석주 줄 사이 바닥은 군데군데 꺼져 물이 찼고 그 곁에 산호가 자랐다. 양쪽 옆 복도는 물에 잠긴 물길이라 판자 다리로 건너 옆방에 간다. 서쪽 옆방엔 물이 찬 두 웅덩이 사이 여신상 앞 보물상자와 항아리, 동쪽 옆방은 바닥이 무너져 물이 찼고 쓰러진 석주 잔돌과 산호가 덮었다.",
+      "입구 (19,31)에서 (19,1)·(4,16)·(35,16)·(8,16)·(31,16)까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
+      "출구 자리: (19,31) → dungeon-sunken-gate (17,1) · (19,0) → dungeon-sunken-altar (16,27). 이동 이벤트는 없다.",
+      "공용 AI 문서 「RPG 던전 · 해저 신전 세 방 (입구 회랑·산호 기둥 대전·바다 여신 제단)」에 벽 문법·채움 규칙·놓은 소품 좌표·전체 배열·사용 타일 사전이 있다."
+    ],
+    "limitations": "지형·배치 참고 사례. 이동 이벤트·적·함정 동작·레버/열쇠 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
+  },
+  {
+    "id": "dungeon-sunken-altar-34x28",
+    "name": "해저 신전 · 바다 여신 제단",
+    "kind": "completed-place",
+    "placeKind": "facility",
+    "revision": 1,
+    "x": 0,
+    "y": 0,
+    "width": 34,
+    "height": 28,
+    "tilesetId": "oprn_dungeon_sea",
+    "preview": "/assets/region-references/dungeon-sunken-altar.png",
+    "tilesetPreview": "/assets/rpg-dungeons/sea-chipset.png",
+    "projectDownload": "/assets/region-references/dungeon-sunken-altar.oprn.json",
+    "sourceProjectId": "b9f19baf-00ed-451c-8534-0942d1ffb348",
+    "sourceMapId": "dungeon-sunken-altar",
+    "snapshotProjectId": "oprn-place-dungeon-sunken-altar-v1",
+    "rules": [
+      "신전 맨 안쪽 제단실. 물 해자가 바위 제단 섬을 두르고 남쪽 판자 다리 하나로만 건넌다. 섬 위엔 바다 여신상 둘 사이에 붉은 마법진, 그 뒤에 공물 상자가 놓였다(보스 자리 keeper는 다리 끝). 해자 바깥 네 모서리에 석주, 다리 앞 가고일 둘, 두 모서리엔 산호 무리, 북쪽 벽엔 해초와 석판.",
+      "입구 (16,27)에서 (16,15)·(16,11)·(5,20)·(28,20)까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
+      "출구 자리: (16,27) → dungeon-sunken-hall (19,1). 이동 이벤트는 없다.",
+      "공용 AI 문서 「RPG 던전 · 해저 신전 세 방 (입구 회랑·산호 기둥 대전·바다 여신 제단)」에 벽 문법·채움 규칙·놓은 소품 좌표·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형·배치 참고 사례. 이동 이벤트·적·함정 동작·레버/열쇠 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   }
