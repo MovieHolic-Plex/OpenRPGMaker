@@ -40,6 +40,10 @@ cells[2130] = [{ ...thing("무대 앞면 왼끝", ["stage", "무대", "극장", 
 cells[2131] = [{ ...thing("무대 앞면 가운데", ["stage", "무대", "극장", "강당"], STAGE, { repeatability: "repeat" }), role: "wall", defaultLayer: "lower" }, solid, "lower"];
 cells[2132] = [{ ...thing("무대 앞면 오른끝", ["stage", "무대", "극장", "강당"], STAGE), role: "wall", defaultLayer: "lower" }, solid, "lower"];
 cells[2133] = [{ ...thing("무대 계단", ["stage steps", "무대", "계단", "극장"], STAGE), role: "terrain", passage: "passable", defaultLayer: "lower" }, open, "lower"];
+const TABLE = "탁자 앞면(다리). 나무 상판 오토타일(terrain-deck 126~218)·흰 천 탁자(159~221)에는 다리가 없어 그대로 두면 탁자가 잘려 보인다. 탁자 섬의 맨 아래 줄은 다리 달린 조각으로 바꾼다: 두 줄 이상이면 198|199|200(흰 천 228|229|230), 한 줄 탁자면 이 2140|2141|2142(흰 천 2143|2144|2145), 폭 1칸이면 201(한 줄)·2146(두 줄 이상의 맨 아래). 아래층·막힘, 위층에 탁상 소품을 얹는다";
+[["한 줄 나무 탁자 왼끝", 2140], ["한 줄 나무 탁자 가운데", 2141], ["한 줄 나무 탁자 오른끝", 2142], ["한 줄 흰 천 탁자 왼끝", 2143], ["한 줄 흰 천 탁자 가운데", 2144], ["한 줄 흰 천 탁자 오른끝", 2145], ["폭 1칸 나무 탁자 아래(다리)", 2146], ["폭 1칸 흰 천 탁자 아래(천자락)", 2147]]
+  .forEach(([label, n]) => { cells[n] = [{ ...thing(label, ["table", "탁자", "다리", "앞면"], TABLE, { repeatability: "repeat" }), role: "building", defaultLayer: "lower" }, solid, "lower"]; });
+for (const n of [198, 199, 200, 201, 228, 229, 230, 231]) t.tileMeta[n].description = TABLE;
 piece(2134, 3, 2, "창구 카운터(창살)", ["teller counter", "은행", "창구", "창살", "카운터"], "3×2 쇠창살과 둥근 창구가 달린 은행 카운터(동전 쟁반·종). 창구 직원은 카운터 뒤(북쪽)에, 손님은 앞(남쪽)에 선다");
 
 const UPPER_KIT = (id, name, first, w, h, desc) => ({
@@ -87,6 +91,7 @@ const groups = [
   { id: "atlas-shop-counters", name: "보석·창구 카운터", tileIds: [2100, 2101, 2102, 2103, 2104, 2105, 2134, 2135, 2136, 2137, 2138, 2139], role: "object", description: "3×2 카운터 둘: 보석 진열 카운터 2100~2105, 은행 창구 카운터(창살) 2134~2139. 점원·직원은 카운터 뒤(북쪽) 바닥 한 줄에 서고 그 뒤 벽에 진열장·금고 문." },
   { id: "atlas-leisure-bath", name: "룰렛·돌 욕조", tileIds: [2106, 2107, 2108, 2109, 2110, 2111, 2112, 2113, 2114, 2115, 2116, 2117, 2118, 2119, 2120, 2121], role: "object", description: "룰렛 탁자 2×2(2106 2107 / 2108 2109), 돌 욕조 4×3(2110~2113 / 2114~2117 / 2118~2121). 욕조 곁에 나무 욕조·바가지·수건, 룰렛 둘레에 의자를 탁자 쪽으로." },
   { id: "atlas-trade-racks", name: "고기 걸이·가죽 건조틀", tileIds: [2122, 2123, 2124, 2125, 2126, 2127, 2128, 2129], role: "object", description: "2×2 바닥 소품: 고기 걸이 2122~2125(정육점), 가죽 건조틀 2126~2129(가죽 공방·사냥꾼)." },
+  { id: "atlas-table-fronts", name: "탁자 앞면(다리)", tileIds: [198, 199, 200, 201, 228, 229, 230, 231, 2140, 2141, 2142, 2143, 2144, 2145, 2146, 2147], role: "building", description: TABLE },
   { id: "atlas-stage", name: "무대 앞면·계단", tileIds: [2130, 2131, 2132, 2133], role: "terrain", description: "무대 바닥은 널 102. 남쪽 끝 줄을 2130 왼끝 · 2131 가운데 · 2132 오른끝으로 닫고(아래층·막힘), 오르는 자리 한 칸에 계단 2133(아래층·통행). 객석은 뒷모습 의자 268·뒷모습 긴 의자로 무대를 보게." },
 ];
 for (const g of groups) {

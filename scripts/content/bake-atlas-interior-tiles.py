@@ -24,7 +24,12 @@ Row 71 (tiles 2130..2159):
   2130 2131 2132  stage front face left end | middle | right end (lower layer, solid — the stage floor above it is planks 102)
   2133            stage steps (lower layer, walkable) — one cell in the stage front
   2134 2135 2136 / 2137 2138 2139  bank teller counter 3x2 (a counter under an iron grille with a window)
-  2140..2159 unused
+  2140 2141 2142  one-row wooden table with legs, left | middle | right (lower layer, the deck top rim over the legged
+                  bottom 198~200) — the sheet's deck autotile 126~218 has no legs, so a table drawn with it alone looks
+                  cut off; a table's bottom row is 198~200 (two rows or more) or these (one row)
+  2143 2144 2145  one-row white-cloth table with the hem (159~161 rim over 228~230)
+  2146 2147       1-wide legged bottom, wood (198|200 halves) and cloth (228|230 halves), for a 1-wide table 2+ rows deep
+  2148..2159 unused
 Idempotent: the sheet is cut back to its first 69 rows before the rows are appended.
 Usage: python3 scripts/content/bake-atlas-interior-tiles.py [--preview out.png]
 """
@@ -548,6 +553,19 @@ def teller_counter():
     return b
 
 
+def table_front(top, bottom, left=None):
+    """A table-top row with legs: the top rim rows 0..3 of `top` over rows 4..15 of the legged bottom piece `bottom`;
+    `left`/`bottom` halves when a 1-wide piece is made from a left and a right piece."""
+    t = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    if left is not None:
+        t.paste(cell(left).crop((0, 0, 8, 16)), (0, 0))
+        t.paste(cell(bottom).crop((8, 0, 16, 16)), (8, 0))
+        return t
+    t.paste(cell(bottom), (0, 0))
+    t.paste(cell(top).crop((0, 0, 16, 4)), (0, 0))
+    return t
+
+
 tiles69, tiles70, tiles71 = [], [], []
 pb = pew_back()
 tiles69 += split(pb)                     # 2070..2077 (top row 4, bottom row 4)
@@ -562,7 +580,11 @@ tiles70 += split(meat_rack())            # 2122..2125
 tiles70 += split(hide_frame())           # 2126..2129
 tiles71 += [stage_front("L"), stage_front("M"), stage_front("R"), stage_steps()]   # 2130..2133
 tiles71 += split(teller_counter())       # 2134..2139
-assert len(tiles69) == 28 and len(tiles70) == 30 and len(tiles71) == 10, (len(tiles69), len(tiles70), len(tiles71))
+# one-row tables with legs (wood 2140~2142, cloth 2143~2145) and 1-wide legged bottoms (wood 2146, cloth 2147)
+tiles71 += [table_front(156, 198), table_front(157, 199), table_front(158, 200)]
+tiles71 += [table_front(159, 228), table_front(160, 229), table_front(161, 230)]
+tiles71 += [table_front(None, 200, left=198), table_front(None, 230, left=228)]
+assert len(tiles69) == 28 and len(tiles70) == 30 and len(tiles71) == 18, (len(tiles69), len(tiles70), len(tiles71))
 
 if "--preview" in sys.argv:
     out = sys.argv[sys.argv.index("--preview") + 1]

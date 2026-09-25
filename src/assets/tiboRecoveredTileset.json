@@ -4310,14 +4310,14 @@
     "upper",
     "upper",
     "upper",
-    "upper",
-    "upper",
-    "upper",
-    "upper",
-    "upper",
-    "upper",
-    "upper",
-    "upper",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
     "upper",
     "upper",
     "upper",
@@ -7758,7 +7758,7 @@
       "source": "bundled-default",
       "passage": "solid",
       "confidence": "high",
-      "description": "",
+      "description": "탁자 앞면(다리). 나무 상판 오토타일(terrain-deck 126~218)·흰 천 탁자(159~221)에는 다리가 없어 그대로 두면 탁자가 잘려 보인다. 탁자 섬의 맨 아래 줄은 다리 달린 조각으로 바꾼다: 두 줄 이상이면 198|199|200(흰 천 228|229|230), 한 줄 탁자면 이 2140|2141|2142(흰 천 2143|2144|2145), 폭 1칸이면 201(한 줄)·2146(두 줄 이상의 맨 아래). 아래층·막힘, 위층에 탁상 소품을 얹는다",
       "defaultLayer": "lower",
       "repeatability": "fixed"
     },
@@ -7775,7 +7775,7 @@
       "source": "bundled-default",
       "passage": "solid",
       "confidence": "high",
-      "description": "",
+      "description": "탁자 앞면(다리). 나무 상판 오토타일(terrain-deck 126~218)·흰 천 탁자(159~221)에는 다리가 없어 그대로 두면 탁자가 잘려 보인다. 탁자 섬의 맨 아래 줄은 다리 달린 조각으로 바꾼다: 두 줄 이상이면 198|199|200(흰 천 228|229|230), 한 줄 탁자면 이 2140|2141|2142(흰 천 2143|2144|2145), 폭 1칸이면 201(한 줄)·2146(두 줄 이상의 맨 아래). 아래층·막힘, 위층에 탁상 소품을 얹는다",
       "defaultLayer": "lower",
       "repeatability": "fixed"
     },
@@ -7792,7 +7792,7 @@
       "source": "bundled-default",
       "passage": "solid",
       "confidence": "high",
-      "description": "",
+      "description": "탁자 앞면(다리). 나무 상판 오토타일(terrain-deck 126~218)·흰 천 탁자(159~221)에는 다리가 없어 그대로 두면 탁자가 잘려 보인다. 탁자 섬의 맨 아래 줄은 다리 달린 조각으로 바꾼다: 두 줄 이상이면 198|199|200(흰 천 228|229|230), 한 줄 탁자면 이 2140|2141|2142(흰 천 2143|2144|2145), 폭 1칸이면 201(한 줄)·2146(두 줄 이상의 맨 아래). 아래층·막힘, 위층에 탁상 소품을 얹는다",
       "defaultLayer": "lower",
       "repeatability": "fixed"
     },
@@ -7808,7 +7808,7 @@
       "source": "bundled-default",
       "passage": "solid",
       "confidence": "high",
-      "description": "",
+      "description": "탁자 앞면(다리). 나무 상판 오토타일(terrain-deck 126~218)·흰 천 탁자(159~221)에는 다리가 없어 그대로 두면 탁자가 잘려 보인다. 탁자 섬의 맨 아래 줄은 다리 달린 조각으로 바꾼다: 두 줄 이상이면 198|199|200(흰 천 228|229|230), 한 줄 탁자면 이 2140|2141|2142(흰 천 2143|2144|2145), 폭 1칸이면 201(한 줄)·2146(두 줄 이상의 맨 아래). 아래층·막힘, 위층에 탁상 소품을 얹는다",
       "defaultLayer": "lower",
       "repeatability": "fixed"
     },
@@ -8281,7 +8281,7 @@
       "source": "bundled-default",
       "passage": "solid",
       "confidence": "high",
-      "description": "",
+      "description": "탁자 앞면(다리). 나무 상판 오토타일(terrain-deck 126~218)·흰 천 탁자(159~221)에는 다리가 없어 그대로 두면 탁자가 잘려 보인다. 탁자 섬의 맨 아래 줄은 다리 달린 조각으로 바꾼다: 두 줄 이상이면 198|199|200(흰 천 228|229|230), 한 줄 탁자면 이 2140|2141|2142(흰 천 2143|2144|2145), 폭 1칸이면 201(한 줄)·2146(두 줄 이상의 맨 아래). 아래층·막힘, 위층에 탁상 소품을 얹는다",
       "defaultLayer": "lower",
       "repeatability": "fixed"
     },
@@ -8299,7 +8299,7 @@
       "source": "bundled-default",
       "passage": "solid",
       "confidence": "high",
-      "description": "",
+      "description": "탁자 앞면(다리). 나무 상판 오토타일(terrain-deck 126~218)·흰 천 탁자(159~221)에는 다리가 없어 그대로 두면 탁자가 잘려 보인다. 탁자 섬의 맨 아래 줄은 다리 달린 조각으로 바꾼다: 두 줄 이상이면 198|199|200(흰 천 228|229|230), 한 줄 탁자면 이 2140|2141|2142(흰 천 2143|2144|2145), 폭 1칸이면 201(한 줄)·2146(두 줄 이상의 맨 아래). 아래층·막힘, 위층에 탁상 소품을 얹는다",
       "defaultLayer": "lower",
       "repeatability": "fixed"
     },
@@ -8317,7 +8317,7 @@
       "source": "bundled-default",
       "passage": "solid",
       "confidence": "high",
-      "description": "",
+      "description": "탁자 앞면(다리). 나무 상판 오토타일(terrain-deck 126~218)·흰 천 탁자(159~221)에는 다리가 없어 그대로 두면 탁자가 잘려 보인다. 탁자 섬의 맨 아래 줄은 다리 달린 조각으로 바꾼다: 두 줄 이상이면 198|199|200(흰 천 228|229|230), 한 줄 탁자면 이 2140|2141|2142(흰 천 2143|2144|2145), 폭 1칸이면 201(한 줄)·2146(두 줄 이상의 맨 아래). 아래층·막힘, 위층에 탁상 소품을 얹는다",
       "defaultLayer": "lower",
       "repeatability": "fixed"
     },
@@ -8335,7 +8335,7 @@
       "source": "bundled-default",
       "passage": "solid",
       "confidence": "high",
-      "description": "",
+      "description": "탁자 앞면(다리). 나무 상판 오토타일(terrain-deck 126~218)·흰 천 탁자(159~221)에는 다리가 없어 그대로 두면 탁자가 잘려 보인다. 탁자 섬의 맨 아래 줄은 다리 달린 조각으로 바꾼다: 두 줄 이상이면 198|199|200(흰 천 228|229|230), 한 줄 탁자면 이 2140|2141|2142(흰 천 2143|2144|2145), 폭 1칸이면 201(한 줄)·2146(두 줄 이상의 맨 아래). 아래층·막힘, 위층에 탁상 소품을 얹는다",
       "defaultLayer": "lower",
       "repeatability": "fixed"
     },
@@ -32648,52 +32648,148 @@
       "repeatability": "unique"
     },
     {
-      "label": "",
+      "role": "building",
+      "tags": [
+        "한 줄 나무 탁자 왼끝",
+        "table",
+        "탁자",
+        "다리",
+        "앞면",
+        "실내"
+      ],
+      "label": "한 줄 나무 탁자 왼끝",
       "source": "bundled-default",
-      "description": "",
-      "defaultLayer": "upper"
+      "passage": "solid",
+      "confidence": "high",
+      "description": "탁자 앞면(다리). 나무 상판 오토타일(terrain-deck 126~218)·흰 천 탁자(159~221)에는 다리가 없어 그대로 두면 탁자가 잘려 보인다. 탁자 섬의 맨 아래 줄은 다리 달린 조각으로 바꾼다: 두 줄 이상이면 198|199|200(흰 천 228|229|230), 한 줄 탁자면 이 2140|2141|2142(흰 천 2143|2144|2145), 폭 1칸이면 201(한 줄)·2146(두 줄 이상의 맨 아래). 아래층·막힘, 위층에 탁상 소품을 얹는다",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
     },
     {
-      "label": "",
+      "role": "building",
+      "tags": [
+        "한 줄 나무 탁자 가운데",
+        "table",
+        "탁자",
+        "다리",
+        "앞면",
+        "실내"
+      ],
+      "label": "한 줄 나무 탁자 가운데",
       "source": "bundled-default",
-      "description": "",
-      "defaultLayer": "upper"
+      "passage": "solid",
+      "confidence": "high",
+      "description": "탁자 앞면(다리). 나무 상판 오토타일(terrain-deck 126~218)·흰 천 탁자(159~221)에는 다리가 없어 그대로 두면 탁자가 잘려 보인다. 탁자 섬의 맨 아래 줄은 다리 달린 조각으로 바꾼다: 두 줄 이상이면 198|199|200(흰 천 228|229|230), 한 줄 탁자면 이 2140|2141|2142(흰 천 2143|2144|2145), 폭 1칸이면 201(한 줄)·2146(두 줄 이상의 맨 아래). 아래층·막힘, 위층에 탁상 소품을 얹는다",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
     },
     {
-      "label": "",
+      "role": "building",
+      "tags": [
+        "한 줄 나무 탁자 오른끝",
+        "table",
+        "탁자",
+        "다리",
+        "앞면",
+        "실내"
+      ],
+      "label": "한 줄 나무 탁자 오른끝",
       "source": "bundled-default",
-      "description": "",
-      "defaultLayer": "upper"
+      "passage": "solid",
+      "confidence": "high",
+      "description": "탁자 앞면(다리). 나무 상판 오토타일(terrain-deck 126~218)·흰 천 탁자(159~221)에는 다리가 없어 그대로 두면 탁자가 잘려 보인다. 탁자 섬의 맨 아래 줄은 다리 달린 조각으로 바꾼다: 두 줄 이상이면 198|199|200(흰 천 228|229|230), 한 줄 탁자면 이 2140|2141|2142(흰 천 2143|2144|2145), 폭 1칸이면 201(한 줄)·2146(두 줄 이상의 맨 아래). 아래층·막힘, 위층에 탁상 소품을 얹는다",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
     },
     {
-      "label": "",
+      "role": "building",
+      "tags": [
+        "한 줄 흰 천 탁자 왼끝",
+        "table",
+        "탁자",
+        "다리",
+        "앞면",
+        "실내"
+      ],
+      "label": "한 줄 흰 천 탁자 왼끝",
       "source": "bundled-default",
-      "description": "",
-      "defaultLayer": "upper"
+      "passage": "solid",
+      "confidence": "high",
+      "description": "탁자 앞면(다리). 나무 상판 오토타일(terrain-deck 126~218)·흰 천 탁자(159~221)에는 다리가 없어 그대로 두면 탁자가 잘려 보인다. 탁자 섬의 맨 아래 줄은 다리 달린 조각으로 바꾼다: 두 줄 이상이면 198|199|200(흰 천 228|229|230), 한 줄 탁자면 이 2140|2141|2142(흰 천 2143|2144|2145), 폭 1칸이면 201(한 줄)·2146(두 줄 이상의 맨 아래). 아래층·막힘, 위층에 탁상 소품을 얹는다",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
     },
     {
-      "label": "",
+      "role": "building",
+      "tags": [
+        "한 줄 흰 천 탁자 가운데",
+        "table",
+        "탁자",
+        "다리",
+        "앞면",
+        "실내"
+      ],
+      "label": "한 줄 흰 천 탁자 가운데",
       "source": "bundled-default",
-      "description": "",
-      "defaultLayer": "upper"
+      "passage": "solid",
+      "confidence": "high",
+      "description": "탁자 앞면(다리). 나무 상판 오토타일(terrain-deck 126~218)·흰 천 탁자(159~221)에는 다리가 없어 그대로 두면 탁자가 잘려 보인다. 탁자 섬의 맨 아래 줄은 다리 달린 조각으로 바꾼다: 두 줄 이상이면 198|199|200(흰 천 228|229|230), 한 줄 탁자면 이 2140|2141|2142(흰 천 2143|2144|2145), 폭 1칸이면 201(한 줄)·2146(두 줄 이상의 맨 아래). 아래층·막힘, 위층에 탁상 소품을 얹는다",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
     },
     {
-      "label": "",
+      "role": "building",
+      "tags": [
+        "한 줄 흰 천 탁자 오른끝",
+        "table",
+        "탁자",
+        "다리",
+        "앞면",
+        "실내"
+      ],
+      "label": "한 줄 흰 천 탁자 오른끝",
       "source": "bundled-default",
-      "description": "",
-      "defaultLayer": "upper"
+      "passage": "solid",
+      "confidence": "high",
+      "description": "탁자 앞면(다리). 나무 상판 오토타일(terrain-deck 126~218)·흰 천 탁자(159~221)에는 다리가 없어 그대로 두면 탁자가 잘려 보인다. 탁자 섬의 맨 아래 줄은 다리 달린 조각으로 바꾼다: 두 줄 이상이면 198|199|200(흰 천 228|229|230), 한 줄 탁자면 이 2140|2141|2142(흰 천 2143|2144|2145), 폭 1칸이면 201(한 줄)·2146(두 줄 이상의 맨 아래). 아래층·막힘, 위층에 탁상 소품을 얹는다",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
     },
     {
-      "label": "",
+      "role": "building",
+      "tags": [
+        "폭 1칸 나무 탁자 아래(다리)",
+        "table",
+        "탁자",
+        "다리",
+        "앞면",
+        "실내"
+      ],
+      "label": "폭 1칸 나무 탁자 아래(다리)",
       "source": "bundled-default",
-      "description": "",
-      "defaultLayer": "upper"
+      "passage": "solid",
+      "confidence": "high",
+      "description": "탁자 앞면(다리). 나무 상판 오토타일(terrain-deck 126~218)·흰 천 탁자(159~221)에는 다리가 없어 그대로 두면 탁자가 잘려 보인다. 탁자 섬의 맨 아래 줄은 다리 달린 조각으로 바꾼다: 두 줄 이상이면 198|199|200(흰 천 228|229|230), 한 줄 탁자면 이 2140|2141|2142(흰 천 2143|2144|2145), 폭 1칸이면 201(한 줄)·2146(두 줄 이상의 맨 아래). 아래층·막힘, 위층에 탁상 소품을 얹는다",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
     },
     {
-      "label": "",
+      "role": "building",
+      "tags": [
+        "폭 1칸 흰 천 탁자 아래(천자락)",
+        "table",
+        "탁자",
+        "다리",
+        "앞면",
+        "실내"
+      ],
+      "label": "폭 1칸 흰 천 탁자 아래(천자락)",
       "source": "bundled-default",
-      "description": "",
-      "defaultLayer": "upper"
+      "passage": "solid",
+      "confidence": "high",
+      "description": "탁자 앞면(다리). 나무 상판 오토타일(terrain-deck 126~218)·흰 천 탁자(159~221)에는 다리가 없어 그대로 두면 탁자가 잘려 보인다. 탁자 섬의 맨 아래 줄은 다리 달린 조각으로 바꾼다: 두 줄 이상이면 198|199|200(흰 천 228|229|230), 한 줄 탁자면 이 2140|2141|2142(흰 천 2143|2144|2145), 폭 1칸이면 201(한 줄)·2146(두 줄 이상의 맨 아래). 아래층·막힘, 위층에 탁상 소품을 얹는다",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
     },
     {
       "label": "",
@@ -41195,6 +41291,34 @@
       "confidence": "high",
       "defaultLayer": "lower",
       "placementRules": "무대 바닥은 널 102. 남쪽 끝 줄을 2130 왼끝 · 2131 가운데 · 2132 오른끝으로 닫고(아래층·막힘), 오르는 자리 한 칸에 계단 2133(아래층·통행). 객석은 뒷모습 의자 268·뒷모습 긴 의자로 무대를 보게."
+    },
+    {
+      "id": "atlas-table-fronts",
+      "name": "탁자 앞면(다리)",
+      "tileIds": [
+        198,
+        199,
+        200,
+        201,
+        228,
+        229,
+        230,
+        231,
+        2140,
+        2141,
+        2142,
+        2143,
+        2144,
+        2145,
+        2146,
+        2147
+      ],
+      "role": "building",
+      "description": "탁자 앞면(다리). 나무 상판 오토타일(terrain-deck 126~218)·흰 천 탁자(159~221)에는 다리가 없어 그대로 두면 탁자가 잘려 보인다. 탁자 섬의 맨 아래 줄은 다리 달린 조각으로 바꾼다: 두 줄 이상이면 198|199|200(흰 천 228|229|230), 한 줄 탁자면 이 2140|2141|2142(흰 천 2143|2144|2145), 폭 1칸이면 201(한 줄)·2146(두 줄 이상의 맨 아래). 아래층·막힘, 위층에 탁상 소품을 얹는다",
+      "source": "bundled-default",
+      "confidence": "high",
+      "defaultLayer": "lower",
+      "placementRules": "탁자 앞면(다리). 나무 상판 오토타일(terrain-deck 126~218)·흰 천 탁자(159~221)에는 다리가 없어 그대로 두면 탁자가 잘려 보인다. 탁자 섬의 맨 아래 줄은 다리 달린 조각으로 바꾼다: 두 줄 이상이면 198|199|200(흰 천 228|229|230), 한 줄 탁자면 이 2140|2141|2142(흰 천 2143|2144|2145), 폭 1칸이면 201(한 줄)·2146(두 줄 이상의 맨 아래). 아래층·막힘, 위층에 탁상 소품을 얹는다"
     }
   ],
   "passability": [
@@ -54039,52 +54163,52 @@
       "right": false
     },
     {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
     {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
     {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
     {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
     {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
     {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
     {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
     {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
     {
       "up": true,
