@@ -30,7 +30,11 @@ export const DUNGEON_METADATA_PACK_VERSION = "3";
 export const DUNGEON_TEXTURE_KEY = "tex_easyrpg_chipset_dungeon";
 export const DUNGEON_HARNESS_PREFIX = "harness-dungeon-v1-";
 /** Recoloured copies of the dungeon sheet (scripts/content/build-rpg-dungeon-sheets.py): same tile numbers, same quarter rendering. */
-export const DUNGEON_REPAINT_TEXTURE_KEYS: ReadonlySet<string> = new Set(["tex_oprn_dungeon_desert", "tex_oprn_dungeon_sea", "tex_oprn_dungeon_lair", "tex_oprn_dungeon_cave"]);
+export const DUNGEON_REPAINT_TEXTURE_KEYS: ReadonlySet<string> = new Set([
+  "tex_oprn_dungeon_desert", "tex_oprn_dungeon_sea", "tex_oprn_dungeon_lair", "tex_oprn_dungeon_cave",
+  // atlas dungeon repaints (scripts/content/build-atlas-dungeon-sheets.py): same numbering, same water/autotile quarters
+  "tex_oprn_dungeon_ghostship", "tex_oprn_dungeon_manor", "tex_oprn_dungeon_lab", "tex_oprn_dungeon_wind", "tex_oprn_dungeon_tide", "tex_oprn_dungeon_earth", "tex_oprn_dungeon_fire", "tex_oprn_dungeon_sky", "tex_oprn_dungeon_trial", "tex_oprn_dungeon_dream", "tex_oprn_dungeon_spider", "tex_oprn_dungeon_ruins", "tex_oprn_dungeon_abyss",
+]);
 export function isDungeonSheetTexture(textureKey: string): boolean {
   return textureKey === DUNGEON_TEXTURE_KEY || DUNGEON_REPAINT_TEXTURE_KEYS.has(textureKey);
 }

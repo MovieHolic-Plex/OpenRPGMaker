@@ -171,6 +171,8 @@ function topupPalettes() {
   lava: [P1(288), P1(412), P4(318, 319, 348, 349), P2(261, 291)],
   lair: [P1(288), P2(261, 291), P4(318, 319, 348, 349)],
   crypt: [P1(383), P1(299), { cells: [[0, 0, 259], [1, 0, 260]] }, P1(382)],
+  // element temples: crystal growth in the sheet's own crystal colour (green / cyan / amber / red / violet…)
+  shrine: [P2(262, 292), P1(289), P1(413), P1(289), P2(262, 292)],
   };
 }
 function topUp(m, spec, { passable, reach, protect, clear, parts }) {
