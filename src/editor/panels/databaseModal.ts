@@ -141,7 +141,8 @@ export function prewarmDatabaseModal(): void {
 
 export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly onClose: () => void }): void {
   // 제목 화면·상태 메뉴·전투 명령·시네마틱 미리보기가 런타임 시트를 쓴다.
-  void preloadRuntimeStyles();
+  // 부팅 때 숨겨 만드는 창(prewarm)은 싣지 않는다 — 그러면 편집기 첫 화면이 다시 런타임 시트를 읽는다.
+  if (!parkingModal) void preloadRuntimeStyles();
   // 맵 도구 레일을 가리키는 온보드 코치마크가 body 최상위에 매달려 모달 위를 덮어
   // 목록 제목과 탭 검색을 가리는 사고가 있었다 — 모달이 열리면 화면을 모달에게 넘긴다.
   // 본 것으로 기록하지는 않는다(welcome intent 와 같은 정책).
