@@ -83,10 +83,10 @@ PURPOSES = {
     },
 
     'town_village': {
-        'bundle': 'rasak_town', 'preview': 'ex_village', 'name': '작은 마을',
-        'desc': '숲 벽(큰 수관 두 겹)·A3 지붕+벽 집 넷·문 아래서 끝나는 흙길·우물 마당·세 면 울타리 밭·연못·집마다 살림 덩이. 제작자 타일 프리뷰가 없어 MZ 규칙대로 조립한 예제 ex_village(34×24) 기준.',
-        'windows': [(3, 4, 11, 8), (12, 8, 11, 8), (2, 14, 12, 9), (18, 12, 12, 11)],
-        'cross': (4, 5, 9, 7),
+        'bundle': 'rasak_town', 'preview': 'ex_town_buildings', 'name': '작은 마을',
+        'desc': '완성 건물 넷(여관·상점·대장간·창고, stamp_object kit:rasak_town/sb_*)·입구 아래서 끝나는 흙길·큰길·우물 마당·세 면 울타리 밭·연못·숲 벽·건물마다 살림 덩이. 조립 예제 ex_town_buildings(40×28) 기준. 민가를 더 지을 때는 A3 집 틀.',
+        'windows': [(2, 8, 13, 8), (14, 9, 13, 9), (27, 4, 13, 12), (3, 16, 13, 10)],
+        'cross': (21, 16, 9, 7),
         'path': (('A2', 0), ('A2', 1)), 'cave': False,
         'main_ground': ('A2', 0),
         'alts': [('A2', 8), ('A2', 16), ('A2', 17), ('A1', 0), ('A1', 4), ('A3', 1), ('A3', 5), ('A3', 17), ('A3', 9), ('A3', 13), ('A3', 24)],
@@ -659,7 +659,7 @@ BUILDINGS_EXAMPLE = 'ex_town_buildings'
 
 def building_placements(m, objs):
     """예제 맵 3층에서 특수 건물이 찍힌 왼위 좌표를 찾는다(건물 칸 번호는 건물마다 고유)."""
-    w, L3 = m['width'], m['upperTiles']
+    w, L3 = m['width'], (m['L'][3] if 'L' in m else m['upperTiles'])
     pos = {t: i for i, t in enumerate(L3) if t >= 0}
     out = []
     for o in objs:
@@ -716,6 +716,9 @@ A3 지붕+벽으로 조립하는 집보다 훨씬 제작자 맵에 가깝다. �
 - 건물 위(지붕·벽 칸)에 소품을 올리지 않는다. 건물 칸에 나무·가로등을 겹치지 않는다.
 - 통행: 본체는 막힘, 지붕 맨 윗줄은 ★(캐릭터 뒤로 지나감), 입구·데크 칸은 통과. 마당의 낮은 울타리는 휴리스틱이라 통과로 잡힌 칸이 있다 — 막아야 하면 이벤트나 다른 물체로 막는다.
 - 한 맵에 같은 건물을 여러 번 쓰지 않는다(같은 그림이 되풀이되면 복사한 티가 난다). 비슷한 판(`_2`·`_3`)은 서로 다른 그림이다.
+- **한 마을은 한 설정**: 보통 마을에 해변 초가 오두막(`beach_*`)·바이킹 집을 섞지 않는다 — 지붕·벽 재질이 달라 다른 마을을 오려 붙인 것처럼 보인다.
+  둥근 초가 오두막은 해변·어촌 전용이다. 보통 마을의 **민가**(여관·가게가 아닌 집)는 `town_village` 의 A3 집 틀로 짓는다.
+- `stamp_object` 결과 요약에 **입구 맵 좌표**와 길 끝 칸이 나온다 — 그 칸으로 길을 잇는다. 지붕·벽 쪽으로 길을 대지 않는다.
 """
     ex_path = root / 'maps' / f'rasak_preview_{BUILDINGS_EXAMPLE}.layers.map.json'
     ex_doc, ex_img = None, None
@@ -953,6 +956,11 @@ def pick_extras(b, used_ids, limit=8):
 
 def object_line(code, o, layer_used=None):
     w, h = o['size']
+    if o.get('building'):
+        bd = o['building']
+        ent = ', '.join(f"{e['kind']}({e['x']},{e['y']})" for e in bd['entry']) or '없음(배경)'
+        return (f"- **{code}** {o['name']} — {w}×{h} 완성 건물 · 칸 배열 대신 `stamp_object({{\"objectId\":\"kit:rasak_town/{o['id']}\",\"mapId\":…,\"x\":…,\"y\":…}})`"
+                f" · 입구(킷 안 좌표) {ent} · 자세한 것은 `town_buildings`")
     ly = o['layer']
     cells = json.dumps(o['cells'], separators=(',', ':'))
     lu = ''
@@ -1068,7 +1076,8 @@ def catalog_images(b, entries, title, max_w=1380, max_h=1380):
     return out
 
 
-def win_json(win, layers=(1, 2, 3, 4, 'shadow')):
+def win_json(win, layers=(1, 2, 3, 4, 'shadow'), blank=frozenset()):
+    """blank = 창 안 칸 번호(행 우선) 중 3층을 -1 로 비울 칸 — 완성 건물 킷 칸은 배열 대신 stamp_object 줄로 알린다."""
     parts = []
     for L in layers:
         if L == 'shadow':
@@ -1077,7 +1086,7 @@ def win_json(win, layers=(1, 2, 3, 4, 'shadow')):
                 continue
             parts.append(f'"shadow":{grid_json(rows)}')
             continue
-        rows = arr2d([t if t is not None and t >= 0 else -1 for t in win['L'][L]], win['w'])
+        rows = arr2d([-1 if (L == 3 and n in blank) else (t if t is not None and t >= 0 else -1) for n, t in enumerate(win['L'][L])], win['w'])
         if all(v == -1 for r in rows for v in r):
             continue
         parts.append(f'"{L}":{grid_json(rows)}')
@@ -1456,9 +1465,10 @@ def build_purpose(pid, b, maps, groups, tables, out_dir, rules):
 
     # 4) 물체 도감
     cats = catalog_images(b, [(ocode[o['id']], o) for o in obj_list], f'{P["name"]} — 물체 도감 (O코드 · 층 · #첫 칸 번호)')
-    for i, im in enumerate(cats[:2]):
+    room = max(1, min(2, 8 - len(images) - 1))  # 오류 그림 한 장 자리를 남긴다
+    for i, im in enumerate(cats[:room]):
         images.append((f'objects{i + 1}', f'물체 도감 {i + 1}', '번호 사전의 O 코드. 체크 무늬 = 투명(배열 -1 또는 투명 픽셀). #번호 = 배열 첫 칸.', im))
-    dropped_catalog = max(0, len(cats) - 2)
+    dropped_catalog = max(0, len(cats) - room)
 
     # 5) 오류 나란히
     err_img, err_notes = error_pairs(b, P, m, wins, groups_by_member, main_k, kind_list)
@@ -1568,17 +1578,35 @@ O1~O{len(used_obj_ids)} 은 프리뷰에 쓰인 물체(많이 쓰인 순){', 그
                 if o:
                     o_in[ocode.get(o[0]['id'], o[0]['id'])] += 1
         note = ''
+        blank, kit_lines = set(), []
+        for o, ox, oy in building_placements(m, building_objects(b)):
+            wx, wy = ox - win['x0'], oy - win['y0']
+            inside = [(wx + c, wy + r) for r, row in enumerate(o['cells']) for c, t in enumerate(row)
+                      if t >= 0 and 0 <= wx + c < win['w'] and 0 <= wy + r < win['h']]
+            if not inside:
+                continue
+            blank |= {y * win['w'] + x for x, y in inside}
+            ents = ', '.join(f"{e['kind']} (창 {wx + e['x']},{wy + e['y']})" for e in o['building']['entry'])
+            kit_lines.append(f"- 3층 배열에서 비운 자리 = 완성 건물 `{o['id']}` — 창 왼위 기준 원점 ({wx},{wy})"
+                             + (' (창 밖으로 이어짐)' if len(inside) < sum(1 for row in o['cells'] for t in row if t >= 0) else '')
+                             + f": `stamp_object({{\"objectId\":\"kit:{tsid}/{o['id']}\",\"x\":창x{wx:+d},\"y\":창y{wy:+d}}})` · 입구 {ents}")
+        if kit_lines:
+            note += '\n' + '\n'.join(kit_lines)
         if P['preview'] == 'p27b':
             note = '\n둘레 암반(A4 kind 7)은 프리뷰가 옛 그림이라, 이 배열에서는 엔진이 대표 번호로 칠했을 때 잡는 모양으로 바꿔 두었다.'
         ex_docs.append(f"""## 예제 {i + 1} — {SRC(P)} ({win['x0']},{win['y0']})부터 {win['w']}×{win['h']}칸 (그림: 「예제 {i + 1} 완성 그림」)
 들어 있는 것: 바닥 {', '.join(f'{c} {n}' for c, n in k_in.most_common())} · 물체 {', '.join(f'{c} {n}' for c, n in o_in.most_common()) or '없음'}{note}
 {'배열 읽기용(통째 복사 금지) — -1 = 빈칸' if P.get('recipe') else f'빈 맵의 (x,y)에 그대로 옮기기: `stamp_layer_block {{{{mapId, x, y, reshape:false, {cat[1:-1]}, layers: 아래}}}}` (-1 = 빈칸/건드리지 않음)'}
 ```json
-{win_json(win)}
+{win_json(win, blank=frozenset(blank))}
 ```
 """)
-    ex_head = (("**예제는 배우는 용도다 — 통째로 붙이지 않는다.** 요청 크기·구성에 맞게 위 규칙의 집 틀·방 틀로 새로 짓고, 물체는 번호 사전에서 골라 직접 배치한다"
-                "(한두 물체 배열을 가져다 쓰는 것은 괜찮다). 같은 예제를 붙이면 모든 집·방이 똑같아진다.\n\n") if P.get('recipe') else '') + (
+    has_kits = bool(building_placements(m, building_objects(b)))
+    ex_head = (("**예제는 배우는 용도다 — 통째로 붙이지 않는다.** "
+                + ("여관·상점·대장간·창고 같은 **들어가는 건물은 예제처럼 완성 건물 킷**(`stamp_object` kit:…/sb_*, 목록은 `town_buildings`)으로 한 번에 찍고, "
+                   "민가를 더 둘 때만 위 규칙의 집 틀로 짓는다. 건물 고르기·자리는 맵마다 달라야 한다. " if has_kits else
+                   "요청 크기·구성에 맞게 위 규칙의 집 틀·방 틀로 새로 짓고, ")
+                + "물체는 번호 사전에서 골라 직접 배치한다(한두 물체 배열을 가져다 쓰는 것은 괜찮다). 같은 예제를 붙이면 모든 집·방이 똑같아진다.\n\n") if P.get('recipe') else '') + (
                "프리뷰를 잘라 낸 창의 네 층+그림자 전체 배열(행=위→아래). 층 분해는 이미지 「층 분해」.\n"
                "1·2층 바닥 번호는 엔진이 이웃을 보고 고른 **모양 번호**라 사전의 대표 번호와 다르다 — 예제를 통째로 옮길 때만 그대로 쓰고(reshape:false), "
                "새로 칠할 때는 대표 번호로 칠한다. 3·4층은 사전의 물체 배열 그대로다.\n\n")

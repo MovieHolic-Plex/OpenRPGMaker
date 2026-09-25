@@ -104,6 +104,9 @@ node /tmp/mzai/apply.mjs export --project ~/third-party-assets/rasak/study-proje
   `stamp_object({objectId:"kit:rasak_town/sb_<건물>", mapId, x, y})` 한 번으로 찍는다. 참고문서 용도 `town_buildings`(쓰는 법 · 완성 예제 실행 순서 · 목록) +
   그림(예제 1 + 설정별 목록 6). `town_village`·`town_city` 조리법 첫머리에 「완성 건물이 먼저」.
 - 예제 `ex_town_buildings`(40×28, `compose_examples_specs.py`) — 여관·상점·대장간·창고를 큰길 양쪽에, 길은 입구 바로 아래 칸에서 끝. `check_examples` 빈 바닥 21% · 빈 정사각형 4 · 대칭 1.2.
+- `town_village` 의 기준 맵을 `ex_town_buildings` 로 바꿨다 — 조수는 조리법 문장(「완성 건물이 먼저」)보다 **예제**를 따른다(시험 E: 문서만 → 조립 집, E2: 예제 교체 → 완성 건물 넷).
+  예제 배열에서 건물 킷 칸은 -1 로 비우고 「비운 자리 = stamp_object kit:… 원점」 줄로 알린다(배열로 건물을 조각내 옮기지 않게). 물체 사전의 건물 줄도 칸 배열 대신 킷 호출이다.
+- `stamp_object` 는 입구 부위가 있는 킷을 찍으면 요약·data 에 **입구 맵 좌표와 길 끝 칸**을 돌려준다(E2 에서 길이 지붕으로 가던 것이 E3 에서 입구로 간다).
 - 이미 있는 연구 프로젝트는 `apply --atlas-dir <baked>` 로 아틀라스 그림·칸 수를 갈아 끼운다(칸 수가 늘어난 경우만; `build_assistant_pack.py` 는 덤프가 짧으면 새 칸을 기본값으로 채운다).
 
 ## 프리뷰 재현 결과 (2026-09-24, 두 층 렌더 기준)
