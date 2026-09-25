@@ -136,6 +136,30 @@ export function mixableHouseKitIds(hasHouseParts: boolean): readonly HouseKitId[
   return hasHouseParts ? [...MIXABLE_HOUSE_KIT_IDS, ...MATERIAL_HOUSE_KIT_IDS] : MIXABLE_HOUSE_KIT_IDS;
 }
 
+/**
+ * 기둥 열(postColumn)이 설 벽 안쪽 오프셋 — 폭 width 인 벽 런에서.
+ *
+ * 2026-09-25 사용자 규약: 기둥 칸(양쪽 버팀대)은 벽 **가운데**에만 선다. 바깥 끝(0·width-1)은 물론 끝 바로 옆
+ * (1·width-2)에도 세우지 않는다 — 끝 칸의 반기둥과 붙어 기둥 두 개가 겹쳐 보인다. 간격은 every 안팎으로 고르게,
+ * 가능하면 좌우 대칭(폭 7 → {3}, 폭 10 → {3,6}, 폭 8 → {3}). 폭 5 이하는 기둥 없음.
+ */
+export function wallPostOffsets(width: number, every: number): ReadonlySet<number> {
+  const out = new Set<number>();
+  if (width < 6 || every < 2) return out;
+  const count = Math.max(0, Math.round((width - 1) / every) - 1);
+  for (let k = 1; k <= count; k += 1) {
+    // .5 는 내림 — 폭 8 은 3(문 칸 floor(w/2)=4 와 겹치지 않게), 폭 6 은 2.
+    const offset = Math.ceil((k * (width - 1)) / (count + 1) - 0.5);
+    if (offset >= 2 && offset <= width - 3) out.add(offset);
+  }
+  return out;
+}
+
+/** 이 킷에서 폭 width 벽 런의 offset 열이 기둥인가. */
+export function isWallPostAt(kit: HouseKit, offset: number, width: number): boolean {
+  return kit.postColumn !== undefined && wallPostOffsets(width, kit.postColumn.every).has(offset);
+}
+
 export const HOUSE_KITS: Record<HouseKitId, HouseKit> = {
   "blue-stone": {
     id: "blue-stone",
@@ -176,12 +200,13 @@ export const HOUSE_KITS: Record<HouseKitId, HouseKit> = {
     roof: { kind: "blue", body: 406, rightEdge: 407, eave: 467, upper: { nw: 356, ne: 357, sw: 386, se: 387 } },
   },
   // 2026-07-17 사용자 규약 2차: 기둥 세로 3단(196/226/256)과 회벽 열(16/46/76)의 교대 반복.
-  // 조립 검증: scratchpad todo-evidence/timber-hall-C.png — 좌우 가장자리 기둥 + 내부 3칸 간격 기둥.
+  // 2026-09-25 사용자 교정: 기둥 196/226/256 은 양쪽 버팀대가 달린 **가운데 전용** 칸이다 — 벽 바깥 끝에 서면
+  // 버팀대가 허공을 받친다. 끝은 반기둥+안쪽 버팀대 모서리 칸(15/45/75 · 17/47/77), 기둥은 wallPostOffsets 의 안쪽 열만.
   "timber-hall": {
     id: "timber-hall",
     name: "빨간 널지붕 + 목조 기둥 홀",
     windowTile: 85,
-    wall: { top: [196, 16, 196], mid: [226, 46, 226], bottom: [256, 76, 256] },
+    wall: PLASTER_WALL,
     postColumn: { tiles: [196, 226, 256], every: 3 },
     roof: {
       kind: "bright",
@@ -262,7 +287,7 @@ export interface RectHousePlan {
   /** 지붕 몸통 행 수(≥1). 높은 지붕이 필요하면 늘린다. */
   readonly roofBodyRows: number;
   readonly kitId: HouseKitId;
-  /** 낮은 벽(창고/헛간): 벽을 상단+하단 2행만 — 중단 없음, 창 없음. stories 무시. */
+  /** 낮은 벽(창고/헛간): 벽을 상단+하단 2행만 — 중단 없음, 창은 윗줄(처마 밑). stories 무시. */
   readonly lowWall?: boolean;
   /** 창문 자동 배치. 기본 활성, spacing=2. */
   readonly windows?: HouseKitWindowsOption;
@@ -318,15 +343,26 @@ function placeWindowsOnWallRuns(
   const spacing = windowSpacing(windows);
   if (spacing === null) return;
   const step = spacing + 1;
+  const isPostTile = (x: number, y: number): boolean =>
+    kit.postColumn !== undefined && (kit.postColumn.tiles as readonly number[]).includes(map.lowerTiles[y * map.width + x] ?? TILE.EMPTY);
+  const nearDoor = (x: number, y: number): boolean => doorAt !== undefined && Math.abs(x - doorAt.x) <= 1 && y >= doorAt.y - 2;
   for (const run of runs) {
     if (run.x1 - run.x0 + 1 < 3) continue;
+    let placed = false;
     for (let x = run.x0 + 1; x <= run.x1 - 1; x += step) {
-      if (doorAt && Math.abs(x - doorAt.x) <= 1) continue;
+      if (nearDoor(x, run.y)) continue;
       // 하프팀버 기둥 열에는 창을 내지 않는다 — 회벽 열에만.
-      const lowerTile = map.lowerTiles[run.y * map.width + x] ?? TILE.EMPTY;
-      if (kit.postColumn && (kit.postColumn.tiles as readonly number[]).includes(lowerTile)) continue;
+      if (isPostTile(x, run.y)) continue;
       upperIfEmpty(map, x, run.y, kit.windowTile);
+      placed = true;
     }
+    if (placed || spacing === 0) continue;
+    // 2026-09-25 사용자 규칙 「3칸 이상 벽 면이면 창 하나는」: 간격이 문·기둥에 다 걸리면 안쪽 빈 칸 → 문에서 먼 벽 끝 칸.
+    const inner = Array.from({ length: run.x1 - run.x0 - 1 }, (_, i) => run.x0 + 1 + i).filter((x) => !nearDoor(x, run.y) && !isPostTile(x, run.y));
+    const ends = [run.x0, run.x1].filter((x) => !nearDoor(x, run.y));
+    const far = (a: number, b: number): number => (doorAt ? Math.abs(b - doorAt.x) - Math.abs(a - doorAt.x) : 0);
+    const pick = inner.length > 0 ? inner[Math.floor((inner.length - 1) / 2)] : ends.sort(far)[0];
+    if (pick !== undefined) upperIfEmpty(map, pick, run.y, kit.windowTile);
   }
 }
 
@@ -341,6 +377,10 @@ function wallWindowRunsFromRoles(wallRole: ReadonlyMap<number, 0 | 1 | 2>, width
     let midRowsAbove = 0;
     while (wallRole.get(cellKey(x, y - midRowsAbove - 1)) === 1) midRowsAbove += 1;
     if (midRowsAbove % 2 === 0) eligible.add(cell);
+  }
+  // 낮은 벽(상·하 2줄, 중단 없음)은 윗줄에 처마 밑 창 — 2026-09-25 「창 없는 집이 너무 많다」.
+  if (eligible.size === 0) {
+    for (const [cell, role] of wallRole.entries()) if (role === 0) eligible.add(cell);
   }
   for (const cell of eligible) {
     const x = cell % width;
@@ -388,7 +428,7 @@ export interface FootprintHousePlan {
    * 1층=벽3행(상·중·하), 2층=벽5행(상·중×3·하). 기본 1.
    */
   readonly stories?: 1 | 2 | 3;
-  /** 낮은 벽(창고/헛간): 벽 밴드를 상단+하단 2행만 — 중단 없음, 창 없음. stories 무시. */
+  /** 낮은 벽(창고/헛간): 벽 밴드를 상단+하단 2행만 — 중단 없음, 창은 윗줄(처마 밑). stories 무시. */
   readonly lowWall?: boolean;
   /** 창문 자동 배치. 기본 활성, spacing=2. */
   readonly windows?: HouseKitWindowsOption;
@@ -575,7 +615,9 @@ export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): 
     if (!runStart && !runEnd && kit.postColumn) {
       let runX0 = x;
       while (sameRun(runX0 - 1)) runX0 -= 1;
-      if ((x - runX0) % kit.postColumn.every === 0) tile = kit.postColumn.tiles[role as 0 | 1 | 2];
+      let runX1 = x;
+      while (sameRun(runX1 + 1)) runX1 += 1;
+      if (isWallPostAt(kit, x - runX0, runX1 - runX0 + 1)) tile = kit.postColumn.tiles[role as 0 | 1 | 2];
     }
     lower(x, y, tile);
   }
@@ -724,7 +766,7 @@ export function stampRectHouseKit(map: GameMap, plan: RectHousePlan): RectHouseS
   const nineSliceRow = (y: number, [l, c, r]: readonly [number, number, number], postTile?: number): void => {
     lower(left, y, l);
     for (let x = left + 1; x < right; x += 1) {
-      const isPost = postTile !== undefined && kit.postColumn !== undefined && (x - left) % kit.postColumn.every === 0;
+      const isPost = postTile !== undefined && isWallPostAt(kit, x - left, right - left + 1);
       lower(x, y, isPost ? postTile : c);
     }
     lower(right, y, r);
@@ -779,9 +821,9 @@ export function stampRectHouseKit(map: GameMap, plan: RectHousePlan): RectHouseS
   nineSliceRow(y, kit.wall.bottom, kit.postColumn?.tiles[2]);
 
   const doorAt = { x: left + Math.floor(plan.width / 2), y };
-  if (!plan.lowWall) {
-    placeWindowsOnWallRuns(map, kit, rectWallWindowRuns(left, right, wallTopY, plan.stories), plan.windows, doorAt);
-  }
+  placeWindowsOnWallRuns(map, kit, plan.lowWall
+    ? [{ x0: left, x1: right, y: wallTopY }]
+    : rectWallWindowRuns(left, right, wallTopY, plan.stories), plan.windows, doorAt);
 
   return { ok: true, doorAt, height };
 }
