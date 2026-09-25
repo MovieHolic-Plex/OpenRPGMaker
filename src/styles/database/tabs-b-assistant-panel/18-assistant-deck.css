@@ -149,7 +149,9 @@ body.ai-studio-open .ai-team-sidebar { visibility: hidden; }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-stamp-toggle,
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-team-toggle,
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-effort-select { border: 0; background: var(--bg-inset); font-size: 11px; }
-.ai-chat-panel .ai-composer-stamp-toggle[aria-pressed="true"] {
+/* 켜짐은 왼쪽 사이드바의 납작한 칩 규칙(:not 때문에 명시도가 더 높다)보다 세야 보인다. */
+.ai-chat-panel .ai-composer-stamp-toggle[aria-pressed="true"],
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-stamp-toggle[aria-pressed="true"] {
   background: var(--accent-muted);
   border: 1px solid var(--accent);
   color: var(--accent-active);

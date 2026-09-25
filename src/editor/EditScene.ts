@@ -109,11 +109,11 @@ import { openStructurePlacementContextMenu } from "@/editor/panels/structurePlac
 import {
   isRegionTaskModalOpen,
   isRegionTaskRegionLocked,
-  openRegionTaskModal,
   REGION_TASK_MODAL_EVENT,
   retargetRegionTaskModal,
 } from "@/editor/panels/regionTaskModal";
 import { REGION_TASK_STATUS_EVENT, regionTaskStatusDetail } from "@/editor/regionTask/regionTaskStatus";
+import { requestAiRegionHandoff } from "@/editor/aiRegionHandoff";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import { BUILD_PALETTE_VISIBILITY_EVENT, isBuildPaletteEnabled, renderBuildPalettePopup } from "@/editor/panels/buildPalette";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
@@ -2754,7 +2754,7 @@ export class EditScene extends PhaserRuntime.Scene {
       this.clearBuildPaletteOverlay();
       const popup = kind === "build"
         ? renderBuildPalettePopup()
-        : renderSelectionActionChips(selection, openRegionTaskModal, () => this.replayDeferredCameraFocus());
+        : renderSelectionActionChips(selection, requestAiRegionHandoff, () => this.replayDeferredCameraFocus());
       if (!popup) {
         this.renderRegionTaskBadge();
         return;

@@ -1,12 +1,14 @@
 // 선택 영역 액션 바 — 우클릭 드래그를 놓은 자리에 뜨는 컴포저.
 // 한 줄짜리 AI 지시 입력(자라남)이 주인공이고, 복사·붙여넣기·지우기·다듬기 등은 그 안의 아이콘이다.
+// 문장을 치고 Enter 면 그 문장이 **곧바로 조수 채팅 턴**이 된다(영역은 턴 범위로 붙는다). 예전처럼
+// 「영역 작업」 창을 한 번 더 띄우지 않는다. 번개 토글(바로 깔기)이 켜져 있으면 계획 턴 없이 바로 깐다.
 // EditScene의 buildPalette 오버레이 슬롯을 공유 — 건축 팔레트가 켜져 있으면 그쪽이 우선.
-import { requestAiSelectionContext } from "@/editor/aiSelectionContext";
+import { requestAiRegionHandoff } from "@/editor/aiRegionHandoff";
+import { isStampPlaceOn, setStampPlaceOn, subscribeStampPlace } from "@/editor/stampPlaceMode";
 import { saveSelectionAsStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
 import type { TileSelection } from "@/editor/editorState";
 import { editorState } from "@/editor/editorState";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
-import { resolveRegionClientRect } from "@/editor/regionClientRect";
 import { toast } from "@/util/toast";
 import {
   cancelPastePreview,
@@ -15,9 +17,7 @@ import {
   copySelection,
   enterPastePreview,
 } from "@/editor/mapClipboard";
-import { openRegionTaskModal, type RegionTaskModalOptions } from "@/editor/panels/regionTaskModal";
 import { POLISH_INSTRUCTION } from "@/editor/regionTask/suggestedCommands";
-import type { RegionTaskMode } from "@/editor/regionTask/runRegionTask";
 import { el } from "@/util/dom";
 import { openWalkEncounterForSelection } from "@/editor/panels/walkEncounterModal";
 import { buildSvgIcon, makeSvgIcon, type SvgNodeSpec } from "@/editor/panels/tileToolbarIcons";
@@ -44,43 +44,34 @@ export interface SelectionChipPreset {
   readonly id: string;
   readonly label: string;
   readonly title: string;
-  /** null이면 지시 입력을 위해 모달만 연다(autoRun 없음). */
+  /** null이면 입력창의 문장을 보낸다. */
   readonly instruction: string | null;
-  /** "polish" 면 다듬기(주변 어울림 재구성) 경로로 실행한다. */
-  readonly mode?: RegionTaskMode;
 }
 
-// 구조물/길 같은 "무엇을 만들지" 단축 칩은 여기 두지 않는다 — 그건 지시문 선택이라 모달 안
-// 추천 칩의 일이다. 다만 **다듬기는 지시문을 고를 것이 없다**(대상=이 사각형, 목표=주변 어울림).
-// 모달을 열어 문장을 확인하고 실행 버튼을 누르는 왕복이 순손실이라 원탭으로 캔버스에 둔다.
+// 구조물/길 같은 "무엇을 만들지" 단축 칩은 여기 두지 않는다 — 그건 입력창에 한 문장으로 쓰면 된다.
+// 다만 **다듬기는 지시문을 고를 것이 없다**(대상=이 사각형, 목표=주변 어울림)라 원탭으로 둔다.
 export const SELECTION_CHIP_PRESETS: readonly SelectionChipPreset[] = [
   { id: "ai", label: "AI", title: "이 영역에 AI 지시 실행 (Enter)", instruction: null },
   {
     id: "polish",
     label: "다듬기",
-    title: "다듬기 — 주변과 어울리게 AI가 다시 짜기 (타일·이벤트 전권)",
+    title: "다듬기 — 주변과 어울리게 AI가 다시 짜기",
     instruction: POLISH_INSTRUCTION,
-    mode: "polish",
   },
 ] as const;
 
-export function selectionChipModalOptions(
-  preset: SelectionChipPreset,
+/** 바가 조수에게 넘기는 모양. 순수 함수 — 테스트가 이 계약을 본다. */
+export function selectionHandoff(
   selection: TileSelection,
-  anchor?: { readonly x: number; readonly y: number },
-): RegionTaskModalOptions {
-  const region = { x: selection.x, y: selection.y, width: selection.width, height: selection.height };
-  // 창이 자기가 바꿀 영역을 덮지 않도록 대상의 화면 사각형을 넘긴다. 이 계산은 Phaser
-  // 카메라를 읽어야 해서 EditScene 이 등록소에 꽂아 둔다 — 등록이 없으면(테스트·헤드리스)
-  // null 이고 창은 anchor 배치로 폴백한다.
-  const avoid = anchor ? resolveRegionClientRect(region) : null;
+  instruction: string,
+  stamp: boolean,
+): Parameters<typeof requestAiRegionHandoff>[0] {
   return {
     mapId: selection.mapId,
-    region,
-    ...(preset.instruction !== null ? { initialInstruction: preset.instruction, autoRun: true } : {}),
-    ...(preset.mode ? { mode: preset.mode } : {}),
-    ...(anchor ? { anchor } : {}),
-    ...(avoid ? { avoid } : {}),
+    region: { x: selection.x, y: selection.y, width: selection.width, height: selection.height },
+    instruction,
+    autoRun: true,
+    stamp,
   };
 }
 
@@ -98,6 +89,10 @@ const ICON_TRASH: readonly SvgNodeSpec[] = [
   { tag: "path", attrs: { d: "M8.5 6V4.5A1 1 0 0 1 9.5 3.5h3a1 1 0 0 1 1 1V6" } },
   { tag: "path", attrs: { d: "M5.5 6l.9 11.6A1.5 1.5 0 0 0 7.9 19h6.2a1.5 1.5 0 0 0 1.5-1.4L16.5 6" } },
   { tag: "path", attrs: { d: "M9.5 10v5M12.5 10v5" } },
+];
+// 바로 깔기 — 번개. 계획·승인 없이 곧바로 깐다는 뜻.
+const ICON_STAMP: readonly SvgNodeSpec[] = [
+  { tag: "path", attrs: { d: "M12.5 2.5L5 12.5h5.5l-1 7 7.5-10h-5.5l1-7z" } },
 ];
 const ICON_SEND: readonly SvgNodeSpec[] = [
   { tag: "path", attrs: { d: "M11 17.5V5" } },
@@ -136,13 +131,6 @@ function iconButton(input: {
   }) as HTMLButtonElement;
 }
 
-function anchorFromEvent(event: Event | undefined): { x: number; y: number } | undefined {
-  const mouse = event as MouseEvent | undefined;
-  if (!mouse || typeof mouse.clientX !== "number") return undefined;
-  if (mouse.clientX === 0 && mouse.clientY === 0) return undefined;
-  return { x: mouse.clientX, y: mouse.clientY };
-}
-
 function autosizePrompt(prompt: HTMLTextAreaElement): void {
   const style = prompt.style;
   if (!style) return;
@@ -166,7 +154,7 @@ export function focusSelectionActionPrompt(bar: HTMLElement): void {
 
 export function renderSelectionActionChips(
   selection: TileSelection,
-  openModal: typeof openRegionTaskModal = openRegionTaskModal,
+  handoff: typeof requestAiRegionHandoff = requestAiRegionHandoff,
   onPastePreviewCancel: () => void = () => undefined,
 ): HTMLElement {
   const hasClipboard = editorState.get().clipboard !== null;
@@ -180,34 +168,37 @@ export function renderSelectionActionChips(
     class: "selection-action-prompt",
     attrs: {
       rows: "1",
-      placeholder: "이 영역에 AI 지시…",
+      placeholder: isStampPlaceOn() ? "바로 깔기 — 비우면 숲" : "이 영역에 AI 지시…",
       "aria-label": "이 영역에 내릴 AI 지시",
       spellcheck: "false",
     },
     dataset: { testid: "selection-chip-prompt" },
   }) as HTMLTextAreaElement;
 
-  const runPreset = (preset: SelectionChipPreset, event?: Event): void => {
-    // 잠긴 맵은 AI 가 쓸 수 없다. 창을 여는 주체가 이 바라서 검사도 여기서 한다.
+  // 잠긴 맵은 AI 가 쓸 수 없다. 보내는 주체가 이 바라서 검사도 여기서 한다.
+  const handOff = (instruction: string, stamp: boolean): boolean => {
     if (!canEditMap(selection.mapId)) {
       toast(mapEditLockNotice(selection.mapId), "error");
-      return;
+      return false;
     }
-    requestAiSelectionContext(selection, false);
-    openModal(selectionChipModalOptions(preset, selection, anchorFromEvent(event) ?? promptAnchor()));
-  };
-
-  const promptAnchor = (): { x: number; y: number } | undefined => {
-    const rect = bar.getBoundingClientRect?.();
-    if (!rect || !(rect.width > 0)) return undefined;
-    return { x: Math.round(rect.left + rect.width / 2), y: Math.round(rect.top + rect.height / 2) };
+    handoff(selectionHandoff(selection, instruction, stamp));
+    return true;
   };
 
   const aiPreset = SELECTION_CHIP_PRESETS.find((preset) => preset.id === "ai")!;
-  const submitPrompt = (event?: Event): void => {
+  const submitPrompt = (): void => {
     const text = prompt.value.trim();
-    // 빈 입력으로 실행하면 지시를 고를 수 있는 전체 창을 연다(추천 칩·이전 지시).
-    runPreset(text ? { ...aiPreset, instruction: text } : aiPreset, event);
+    const stamp = isStampPlaceOn();
+    // 빈 문장: 바로 깔기면 숲(바로 깔기의 기본값), 아니면 무엇을 할지 먼저 적게 한다.
+    if (!text && !stamp) {
+      toast("이 영역에 무엇을 할지 적어 주세요", "info");
+      prompt.focus?.({ preventScroll: true });
+      return;
+    }
+    if (!handOff(text, stamp)) return;
+    prompt.value = "";
+    autosizePrompt(prompt);
+    syncSendState();
   };
 
   const send = iconButton({
@@ -215,13 +206,30 @@ export function renderSelectionActionChips(
     title: aiPreset.title,
     icon: buildSvgIcon(ICON_SEND),
     className: "is-primary selection-action-send",
-    onClick: (event) => submitPrompt(event),
+    onClick: () => submitPrompt(),
+  });
+
+  const stampButton = iconButton({
+    testid: "stamp",
+    title: "바로 깔기",
+    icon: buildSvgIcon(ICON_STAMP),
+    className: "selection-action-stamp",
+    onClick: () => setStampPlaceOn(!isStampPlaceOn()),
   });
 
   const syncSendState = (): void => {
     const empty = prompt.value.trim().length === 0;
-    send.classList?.toggle?.("is-empty", empty);
-    send.setAttribute("title", empty ? "AI 작업 창 열기" : aiPreset.title);
+    const stamp = isStampPlaceOn();
+    send.classList?.toggle?.("is-empty", empty && !stamp);
+    send.setAttribute("title", stamp ? "바로 깔기 (Enter) — 비우면 숲" : aiPreset.title);
+    stampButton.setAttribute("aria-pressed", String(stamp));
+    stampButton.classList?.toggle?.("is-active", stamp);
+    const stampTitle = stamp
+      ? "바로 깔기 켜짐 — Enter 가 계획·승인 없이 곧바로 깐다. 누르면 끈다"
+      : "바로 깔기 — 켜면 Enter 가 계획·승인 없이 곧바로 깐다";
+    stampButton.setAttribute("title", stampTitle);
+    stampButton.setAttribute("aria-label", "바로 깔기");
+    prompt.setAttribute("placeholder", stamp ? "바로 깔기 — 비우면 숲" : "이 영역에 AI 지시…");
   };
 
   const copyButton = iconButton({
@@ -277,7 +285,7 @@ export function renderSelectionActionChips(
     testid: "polish",
     title: polishPreset.title,
     icon: makeSvgIcon("polish"),
-    onClick: (event) => runPreset(polishPreset, event),
+    onClick: () => { handOff(polishPreset.instruction ?? "", false); },
   });
 
   const encounterButton = iconButton({
@@ -365,8 +373,16 @@ export function renderSelectionActionChips(
 
   // send 를 DOM 에서 입력창 바로 뒤에 둔다 — Tab 이 입력 → 실행 순서로 흐르고, 바의 첫 버튼이
   // AI 실행이라는 기존 계약(region-task-redesign e2e)도 유지된다. 화면 배치는 CSS order.
-  bar.append(makeAiSparkIcon(), prompt, send, tools);
+  bar.append(makeAiSparkIcon(), prompt, send, stampButton, tools);
   syncSendState();
+  // 조수 입력줄에서 바로 깔기를 바꿔도 이 바가 따라간다. 바가 떨어지면 구독을 푼다.
+  const unsubscribeStamp = subscribeStampPlace(() => {
+    if (!bar.isConnected) {
+      unsubscribeStamp();
+      return;
+    }
+    syncSendState();
+  });
   installDelayedTooltips(bar);
 
   // 바깥을 누르면 입력창 포커스를 돌려준다 — 그래야 캔버스 단축키(Ctrl+Z 등)가 다시 통한다.

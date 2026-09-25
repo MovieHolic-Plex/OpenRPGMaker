@@ -3038,3 +3038,21 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 실행 시작 때 첫 기준선 요약(캐시 없음)은 약 1.1초다. 남은 체크포인트 비용은 `projectLint.checkRoundtrip`(serialize+deserialize), 되돌리기 스냅샷 서명,
 스토어 복제, 타일 팔레트 다시 그리기에 흩어져 있다. 테스트: `test/contentDigest.test.ts`, `test/sha256.test.ts`(창 경계) — 이번 세션에서는 사용자 규칙에 따라 실행하지 않았고,
 동등성·제자리 수정·기억 넘기기는 실제 26MB 프로젝트로 임시 스크립트에서 확인했다.
+
+## 우클릭 드래그 바 → 채팅 한 경로 («영역 작업» 창 폐기, 2026-09-25)
+
+우클릭 드래그로 뜨는 선택 바(`selectionActionChips.ts`)에 문장을 치고 Enter 를 누르면 **그 문장이 곧바로 조수 채팅 턴**이 된다.
+예전에는 같은 문장이 든 「영역 작업」 창(`regionTaskModal`)이 한 번 더 떠서 실행을 다시 눌러야 했고, 그 창은 채팅과 다른 파이프라인
+(하드 클립·고스트 미리보기·승인)이라 진행·중단·기록이 둘로 갈렸다. 사용자 판단으로 그 창을 제품 입구에서 뺐다.
+
+- 입구는 전부 `src/editor/aiRegionHandoff.ts` 를 지난다: 드래그 바, 선택 영역 우클릭 메뉴(`✦ 이 영역에 AI 지시…`), 검사 패널의 「AI로 고치기」,
+  캔버스 AI 버튼(만들기·다듬기·묻기), 건축 팔레트 AI. 옛 `openRegionTaskModal(options)` 모양은 `openRegionInAssistant` 가 그대로 받아
+  `oprn:ai-region-handoff` 이벤트로 바꾼다(`autoRun:false` 면 입력줄에 담기만 한다).
+- 채팅(`aiChatPanel.ts` `handleRegionHandoff`)은 선택을 그 영역으로 맞추고 선택 칩을 켠 뒤 `send()` 를 부른다. 선택 영역도 이제
+  **Pi 턴**이다 — 범위는 `resolveTurnScope` 가 붙인다. `send()` 의 `sendSelectionRegionTask` 분기와 `aiRegionTaskRunner` 배선은 뺐다.
+- 바의 번개 버튼(`selection-chip-stamp`)이 바로 깔기 토글이다. 값은 `src/editor/stampPlaceMode.ts` 하나를 조수 입력줄 토글과 **공유**한다
+  (`oprn:ai-stamp-place`) — 어느 쪽에서 켜도 양쪽이 같이 선다. 켜진 채 Enter 면 `stamp:true` 로 넘어가 채팅의 바로 깔기가 돈다(빈 입력 = 숲).
+- 다듬기 칩은 `POLISH_INSTRUCTION` 을 일반 채팅 턴으로 보낸다(바로 깔기와 무관).
+- 남은 것: `regionTaskModal.ts` 와 `regionTask/*` UI 조각은 e2e 브리지(`editorToolHook` `openModal`)만 쓴다 — 삭제는 후속.
+  `test/aiActivityLiveRow` 는 옛 영역 경로로 라이브 행을 몰았으므로 격리했다(Pi 경로로 다시 써야 한다).
+- 증거: `verify-shots/drag-toolbar-handoff/` (02: Enter 뒤 창 0개·채팅 말풍선, 06: 바로 깔기로 숲이 바로 깔림).

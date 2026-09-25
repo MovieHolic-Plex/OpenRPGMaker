@@ -2,7 +2,7 @@ import { deckIcon } from "./aiDeckIcons";
 import { editorState, type EditorState, type TileSelection } from "@/editor/editorState";
 import { setBuildPaletteEnabled } from "@/editor/panels/buildPalette";
 import { openCanvasInspectionPanel } from "@/editor/panels/canvasInspectionPanel";
-import { openRegionTaskModal, type RegionTaskModalOptions } from "@/editor/panels/regionTaskModal";
+import { openRegionInAssistant } from "@/editor/aiRegionHandoff";
 import { makeSvgIcon, type SvgIconName } from "@/editor/panels/tileToolbarIcons";
 import { store } from "@/project/store";
 import type { MapId, Project } from "@/project/types";
@@ -15,7 +15,7 @@ export interface CanvasAiWorkbenchDeps {
   readonly getProject: () => Project;
   readonly getState: () => EditorState;
   readonly openInspection: (options: { readonly mapId: MapId; readonly project: Project }) => void;
-  readonly openRegionTask: (options: RegionTaskModalOptions) => HTMLElement | void;
+  readonly openRegionTask: (options: Parameters<typeof openRegionInAssistant>[0]) => HTMLElement | void;
   readonly selectBuildMode: () => void;
   readonly selectRegionTool: () => void;
   readonly toast: (message: string, kind?: ToastKind) => void;
@@ -25,7 +25,7 @@ const defaultDeps: CanvasAiWorkbenchDeps = {
   getProject: () => store.getCurrent(),
   getState: () => editorState.get(),
   openInspection: ({ mapId, project }) => { openCanvasInspectionPanel({ mapId, project }); },
-  openRegionTask: openRegionTaskModal,
+  openRegionTask: openRegionInAssistant,
   selectBuildMode: () => setBuildPaletteEnabled(true),
   selectRegionTool: () => editorState.set({ selection: null, tool: "select" }),
   toast,
