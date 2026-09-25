@@ -97,9 +97,9 @@ export const INTERIOR_TILE_SEMANTICS: readonly InteriorTileSemanticEntry[] = app
   ...entries([462, 464], "3×3 석조 화로 하단 양옆", "furniture", "solid", ["stone hearth", "화로", "화덕", "석조", "하단", "3x3"]),
   one(463, "석조 화로 화구 (불 꺼짐)", "furniture", "solid", ["stone hearth", "unlit", "화로", "화구", "불 꺼짐", "켜짐은 124 불 애니메이션"]),
   one(129, "흰색 탁자 단독 상판", "furniture", "solid", ["table", "탁자", "흰색", "상판"]),
-  one(141, "벽에 붙은 오르막 계단 가운데(111 아래·171 위)", "stairs", "passable", ["stone stairs", "돌계단", "오르막", "세로", "가운데"]),
-  one(111, "벽에 붙은 오르막 계단 맨 위(벽면 바로 아래 바닥)", "stairs", "passable", ["stone stairs", "돌계단", "오르막", "세로", "위"]),
-  one(171, "벽에 붙은 오르막 계단 맨 아래", "stairs", "passable", ["stone stairs", "돌계단", "오르막", "세로", "아래"]),
+  one(141, "가로 돌계단 왼끝", "stairs", "passable", ["stone stairs", "돌계단", "가로", "왼끝"]),
+  one(111, "가로 돌계단 반복부", "stairs", "passable", ["stone stairs", "돌계단", "가로", "반복"]),
+  one(171, "가로 돌계단 오른끝", "stairs", "passable", ["stone stairs", "돌계단", "가로", "오른끝"]),
   one(81, "유리판", "wall", "solid", ["glass", "유리", "창"]),
 
   // ── 어두운 벽/암흑 존(오토타일 366 계열) ────────────────────────────────────────

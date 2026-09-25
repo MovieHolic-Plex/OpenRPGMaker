@@ -210,9 +210,7 @@ export const INTERIOR_OBJECT_CATALOG: readonly InteriorObjectDef[] = [
   def("bathroom_steps", "욕실 단차 돌계단", [[141,111,171]], "lower", ["corridor"], "free"),
   def("bathtub", "욕조", [[22,23],[52,53]], "lower", ["bedroom"], "wall-north"),
   def("stairs_small", "한 칸 계단", [[444]], "lower", ["corridor"], "free"),
-  // 오르막 계단: 세로 3칸 111/141/171, 난간이 왼쪽이라 동벽에 붙인다. 벽면 줄이 아니라 그 앞 바닥 위에 선다
-  // (tiledata/rpg-interiors/rpg-interiors-inn-homes-v1-guide.md, 등록본 interior-inn-tavern-1f x=19).
-  def("stairs_horizontal", "벽에 붙은 오르막 계단", [[111],[141],[171]], "lower", ["corridor"], "free"),
+  def("stairs_horizontal", "벽 높이를 잇는 돌계단", [[141,111,171],[141,111,171],[141,111,171]], "lower", ["corridor"], "free"),
   def("stairs_down", "아래층 계단", [[474]], "upper", ["corridor"], "free"),
   def("flue", "난로 연통", [[209],[239]], "upper", ["kitchen","tavern"], "wall-north"),
   {
