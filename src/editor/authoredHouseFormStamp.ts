@@ -50,12 +50,13 @@ export function stampAuthoredHouseForm(
  */
 export function stampHouseExterior(
   map: GameMap,
-  plan: FootprintHousePlan & { readonly templateId?: string },
+  plan: FootprintHousePlan & { readonly templateId?: string; readonly accentSeed?: number },
 ): RectHouseStampResult & { readonly formId?: string } {
-  // 박공 조합 형태(gable-*)는 요청 킷으로 합성한 레시피, 저작 형태는 고정 레시피.
+  // 박공 조합 형태(gable-*)는 요청 킷으로 합성한 레시피(accentSeed 가 있으면 지붕 부품 0~2개), 저작 형태는 고정 레시피.
   const form = plan.templateId === undefined
     ? undefined
-    : composeGableHouseFormById(plan.templateId, plan.kitId) ?? findAuthoredHouseForm(plan.templateId);
+    : composeGableHouseFormById(plan.templateId, plan.kitId, plan.accentSeed === undefined ? {} : { accentSeed: plan.accentSeed })
+      ?? findAuthoredHouseForm(plan.templateId);
   if (form === undefined) return stampFootprintHouseKit(map, plan);
   return { ...stampAuthoredHouseForm(map, form, { x: plan.wings[0]?.x ?? 0, y: plan.wings[0]?.y ?? 0 }), formId: form.id };
 }

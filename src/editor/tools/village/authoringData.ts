@@ -196,7 +196,7 @@ export function gableSpecToTemplate(spec: GableHouseFormSpec): HouseTemplate {
     wings: [{ x: 0, y: 0, w: preview.w, h: preview.h }],
     wingsAt: (x: number, y: number) => [{ x, y, w: preview.w, h: preview.h }],
     form: preview,
-    compose: (kitId) => composeGableHouseForm(spec, kitId),
+    compose: (kitId, accentSeed) => composeGableHouseForm(spec, kitId, accentSeed === undefined ? {} : { accentSeed }),
   };
 }
 

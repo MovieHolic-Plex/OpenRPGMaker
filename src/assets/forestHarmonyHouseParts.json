@@ -1,0 +1,296 @@
+{
+ "textureKey": "tex_forest_harmony_house_parts",
+ "start": 3060,
+ "count": 3071,
+ "frames": 11,
+ "grafts": [
+  {
+   "targetTile": 3060,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 0
+  },
+  {
+   "targetTile": 3061,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 1
+  },
+  {
+   "targetTile": 3062,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 2
+  },
+  {
+   "targetTile": 3063,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 3
+  },
+  {
+   "targetTile": 3064,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 4
+  },
+  {
+   "targetTile": 3065,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 5
+  },
+  {
+   "targetTile": 3066,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 6
+  },
+  {
+   "targetTile": 3067,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 7
+  },
+  {
+   "targetTile": 3068,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 8
+  },
+  {
+   "targetTile": 3069,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 9
+  },
+  {
+   "targetTile": 3070,
+   "sourceChipset": "tex_forest_harmony_house_parts",
+   "sourceTile": 10
+  }
+ ],
+ "slots": [
+  {
+   "name": "chimney-brick",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "굴뚝 · 벽돌",
+    "description": "붉은 벽돌 굴뚝(연기 없음). 지붕 몸통 칸 위 상위에 얹는다. 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   }
+  },
+  {
+   "name": "chimney-brick-smoke",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "굴뚝 · 벽돌 + 연기",
+    "description": "연기가 오르는 붉은 벽돌 굴뚝. 지붕 몸통 칸 위 상위. 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   }
+  },
+  {
+   "name": "chimney-stone-smoke",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "굴뚝 · 돌 + 연기",
+    "description": "연기가 오르는 회색 돌 굴뚝(326 돌 굴뚝과 같은 색). 지붕 몸통 칸 위 상위. 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   }
+  },
+  {
+   "name": "dormer-blue",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕창 · 파랑 지붕",
+    "description": "파랑 지붕에 내는 작은 박공 지붕창. 측면 박공 덩어리 지붕 몸통 칸 위 상위. 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   }
+  },
+  {
+   "name": "dormer-orange",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "지붕창 · 주황 지붕",
+    "description": "주황 지붕에 내는 작은 박공 지붕창. 측면 박공 덩어리 지붕 몸통 칸 위 상위. 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   }
+  },
+  {
+   "name": "awning-wood",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "prop",
+    "label": "현관 차양 · 널판",
+    "description": "문 바로 위 벽 윗줄 칸에 얹는 널판 차양과 까치발. 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   }
+  },
+  {
+   "name": "awning-cloth",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "prop",
+    "label": "현관 차양 · 줄무늬 천",
+    "description": "문 바로 위 벽 윗줄 칸에 얹는 붉은 줄무늬 천 차양. 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   }
+  },
+  {
+   "name": "finial-blue-l",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "박공 꼭대기 장식 · 파랑 왼쪽",
+    "description": "파랑 사선 캡 356 + 꼭대기 금빛 구슬 왼쪽 반. 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   }
+  },
+  {
+   "name": "finial-blue-r",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "박공 꼭대기 장식 · 파랑 오른쪽",
+    "description": "파랑 사선 캡 357 + 꼭대기 금빛 구슬 오른쪽 반. 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   }
+  },
+  {
+   "name": "finial-orange-l",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "박공 꼭대기 장식 · 주황 왼쪽",
+    "description": "주황 사선 캡 354 + 꼭대기 금빛 구슬 왼쪽 반. 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   }
+  },
+  {
+   "name": "finial-orange-r",
+   "passability": {
+    "up": false,
+    "down": false,
+    "left": false,
+    "right": false
+   },
+   "priority": "upper",
+   "terrain": 0,
+   "tileMeta": {
+    "role": "roof",
+    "label": "박공 꼭대기 장식 · 주황 오른쪽",
+    "description": "주황 사선 캡 355 + 꼭대기 금빛 구슬 오른쪽 반. 상위·통행 불가. 집 시공기(박공 조합 형태)가 집마다 0~2개 결정적으로 붙인다.",
+    "source": "user",
+    "passage": "solid",
+    "userLocked": true,
+    "defaultLayer": "upper",
+    "layerBacking": "none"
+   }
+  }
+ ]
+}

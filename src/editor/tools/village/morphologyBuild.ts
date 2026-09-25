@@ -12,6 +12,8 @@ import { forestSetbackJitter } from "./forestContour";
 import { paintOrganicVillageLake } from "./organicLake";
 import { BRIDGE_PLANK_TILE } from "./landscape";
 import { stampAuthoredHouseForm } from "@/editor/authoredHouseFormStamp";
+import { gableAccentSeed } from "@/editor/gableHouseCompose";
+import { tilesetHasHouseParts } from "@/project/defaults/forestHarmonyHouseParts";
 import { stampFootprintHouseKit, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
 import { stampHouseDoorBackground } from "@/editor/houseInteriors";
 import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
@@ -165,6 +167,7 @@ export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBui
   const houses: BuiltHouse[] = [];
   const slots: HouseSlot[] = [];
   const usedKits = new Set<HouseKitId>();
+  const houseParts = tilesetHasHouseParts(draft.tilesets[map.tilesetId]);
   for (const slot of plan.houses) {
     const { template, bbox } = slot;
     const unused = HOUSE_KITS.filter((id) => !usedKits.has(id));
@@ -172,8 +175,8 @@ export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBui
     const kitId: HouseKitId = template.kitId
       ?? (templateHasFixedKit(template) ? template.form?.kitId : undefined)
       ?? (intent.kitMix === "mixed" ? pool[Math.floor(rng() * pool.length)]! : intent.kitMix);
-    // 박공 조합 형태는 고른 킷으로 합성, 고정 레시피는 그대로.
-    const form = templateFormFor(template, kitId);
+    // 박공 조합 형태는 고른 킷으로 합성(부품 칸이 있는 타일셋이면 굴뚝·지붕창 등 0~2개), 고정 레시피는 그대로.
+    const form = templateFormFor(template, kitId, houseParts ? gableAccentSeed(template.id, bbox.x, bbox.y, seed) : undefined);
     const stories: 1 | 2 | 3 = template.stories === 3 ? 3 : template.stories === 2 ? 2 : 1;
     const result = form
       ? stampAuthoredHouseForm(map, form, { x: bbox.x, y: bbox.y })
