@@ -597,7 +597,19 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
 
 ## 바로 깔기 (2026-09-25)
 
-컴포저 왼쪽 `바로 깔기` 토글(`ai-stamp-place`, `aria-pressed`, `localStorage` `oprn:ai-stamp-place`). 켜면 모델 의도 분류·Ultrabrain 계획·Deep 실행을 호출하지 않고, `planStampPlace`가 문장으로 도구를 고른 뒤 `applyToolToStore` 로 끝난다. 길·도로는 `paint_road`(영역 긴 축, 직선), 물·잔디·바닥은 `fill_region`, 지워는 `tile_erase`, 벽은 `build_wall`, 문은 `place_door`, 집은 `author_house`(기본 외관만, 실내·들어가가 있으면 연결 실내). 그 외는 `place_props`. 드래그 선택이 현재 맵과 같으면 그 사각형, 없으면 맵 전체. 빈 입력·숲·침엽수·활엽수·울창/빽빽은 impassable(침엽이 기본). 드문드문은 sparse, 성글은 normal. `나무 상자`·`과일박스`는 밀도 없이 영역 칸 수만큼 `packing:"dense"`. 모델 연결이 없어도 동작한다.
+컴포저 왼쪽 `바로 깔기` 토글(`ai-stamp-place`, `aria-pressed`, `localStorage` `oprn:ai-stamp-place`). 켜면 계획 턴·승인·Pi 세션 없이 곧바로 깐다.
+**의도 읽기와 일꾼은 모델이 주도한다**(사용자 판단, 2026-09-25 — 정규식만으로는 「땅으로」가 재료 이름이 되어 실패했고,
+「땅을 동그랗게, 물을 동그랗게 옆에 나무」처럼 나눠 말하면 알아듣지 못했다).
+
+- `src/editor/stampPlaceRunner.ts` `runStampPlace({text, mapId, selection, signal, onPhase})` — 가벼운 모델(`configForLiteModel`, 추론 끔, JSON) 한 번으로
+  문장을 **여러 단계**(`fill_region`·`place_props`·`paint_road`·`tile_erase`·`build_wall`·`place_door`·`author_house`)로 나눈다. 대상 사각형(선택 또는 맵 전체)을
+  부분 사각형으로 쪼개고, 재료는 **현재 타일셋의 실제 라벨**(`fillableMaterialSuggestions`·`formatMaterialLabelHint`·벽/문 후보) 중에서 고른다. 원은 정사각 상자.
+- 단계는 `applyToolSequenceToStore(..., {continueOnError:true})` 로 한 undo 체크포인트에 적용한다 — 한 단계가 실패해도 나머지는 깔린다.
+  실패한 단계만 도구 오류(가까운 라벨 제안 포함)와 함께 **한 번** 되물어 대체 단계를 받는다(최대 모델 호출 2회).
+- 순수 계획·검증은 `src/ai/stampPlanner.ts`: 허용 도구만, 좌표는 대상 안으로 자르고, 키는 허용 목록만 옮긴다. 단계 상한 8.
+- 빈 문장(=숲), AI 미연결, 모델 실패·시간 초과(20s)면 옛 낱말 규칙 `planStampPlace`(`src/ai/stampPlace.ts`)로 떨어지고 그 사실을 한 줄로 말한다.
+- 실측(워크트리 dev, Google 연결): 「왼쪽에 땅을 동그랗게, 가운데 물을 동그랗게, 오른쪽 옆에 나무」 12s·3단계 성공, 「땅으로 깔아줘」 → 흙길 오토타일 채움.
+  증거 `verify-shots/stamp-llm/`.
 
 ## 단순 생성·수정은 계획 필요 여부로 실행한다 (2026-09-18 갱신)
 
