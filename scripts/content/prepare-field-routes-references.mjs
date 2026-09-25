@@ -16,11 +16,12 @@ const CATEGORY = {
   forest_harmony: { id: "field-routes-forest-v5", name: "마을 사이 필드·야외 장소 · 숲 (개정5: 야외 장소·세폭포 대계곡 추가)", description: "집 없이 맵 가장자리에서 가장자리로 길이 이어지는 마을 사이 필드 세 곳과 야외 장소(마을·성소·장면·필드, 80×64 세폭포 대계곡). 출구 규칙(어디와 맞닿는지), 절벽·계단·여울·다리·숲·항구 조립, 채우기 규칙(쓸 번호·그룹·금지), 전체 배열과 통행 검사" },
   easyrpg_chipset_world: { id: "rpg-outdoors-world-v1", name: "야외 월드맵 · 은빛 왕국 대륙 전도", description: "EasyRPG 월드 칩셋으로 그린 대륙 월드맵. 바다 해안·지형 오토타일, 장소 아이콘과 흙길, 분홍 키(#ff678b) 주의, 전체 배열" },
   ...Object.fromEntries(Object.entries(CLIMATE).map(([ts, name]) => [ts, {
-    ...(ts === "forest_harmony_snow" ? { id: "field-routes-snow-v6", name: `${name} 마을 사이 필드·야외 장소 (개정6: 눈 쌓인 성벽)` }
-      : ts === "forest_harmony_desert" ? { id: "field-routes-desert-v8", name: `${name} 마을 사이 필드·야외 장소 (개정8: 숲 벽 대신 트인 모래밭·고목 드문드문, 능선 사구)` }
+    // 개정 v7/v8/v9/v6 (2026-09-25): 기후마다 필드 둘 추가(설원 얼음강 나루·빙벽 고갯길, 화산 용암 폭포 능선·용암호 둑길, 사막 사암 협곡·모래바다 대상로, 가을 과수원 언덕길·단풍 골짜기).
+    ...(ts === "forest_harmony_snow" ? { id: "field-routes-snow-v7", name: `${name} 마을 사이 필드·야외 장소 (개정7: 얼음강 나루·빙벽 고갯길 추가)` }
+      : ts === "forest_harmony_desert" ? { id: "field-routes-desert-v9", name: `${name} 마을 사이 필드·야외 장소 (개정9: 사암 협곡 고갯길·모래바다 대상로 추가)` }
       : ts === "forest_harmony_volcano"
-        ? { id: "field-routes-volcano-v7", name: `${name} 마을 사이 필드·야외 장소 (개정7: 가는 균열·굳은 용암 흐름, 차분한 땅)` }
-        : { id: `field-routes-${ts.replace("forest_harmony_", "")}-v5`, name: `${name} 마을 사이 필드·야외 장소 (개정5: 야외 장소 추가)` }),
+        ? { id: "field-routes-volcano-v8", name: `${name} 마을 사이 필드·야외 장소 (개정8: 용암 폭포 능선·용암호 둑길 추가)` }
+        : { id: `field-routes-${ts.replace("forest_harmony_", "")}-v6`, name: `${name} 마을 사이 필드·야외 장소 (개정6: 과수원 언덕길·단풍 골짜기 추가)` }),
     description: `숲마을 필드를 ${name} 시트로 옮긴 필드와 ${name} 시트의 야외 장소. 칸 번호는 숲마을과 같고 기후 편집만 더했다. 출구가 맞닿는 곳, 채우기 규칙, 전체 배열과 통행 검사`,
   }])),
 };

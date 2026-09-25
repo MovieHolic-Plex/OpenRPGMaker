@@ -1,4 +1,4 @@
-# 야외 장소 2곳 — 가을 시트
+# 야외 장소 4곳 — 가을 시트
 
 tilesetId=forest_harmony_autumn. 좌표는 0기준, 16px. 지형과 배치만 있고 이벤트(문 이동·NPC)는 없다. 출구마다 어느 맵과 맞닿는지(meets)만 적었다.
 숲마을 칸 번호를 그대로 쓰는 기후 재칠 시트다.
@@ -20,3 +20,5 @@ tilesetId=forest_harmony_autumn. 좌표는 0기준, 16px. 지형과 배치만 �
 ## 이 시트의 장소
 - 바람초원 유목민 천막촌 (outdoor-nomad-camp, 40×32, 마을·장면 게이트)
 - 잿빛 들 옛 전쟁터 (outdoor-old-battlefield, 48×36, 필드 게이트)
+- 단풍 과수원 언덕길 (outdoor-autumn-orchard-road, 60×44, 필드 게이트)
+- 붉은 단풍 골짜기 (outdoor-autumn-maple-valley, 60×52, 필드 게이트)
