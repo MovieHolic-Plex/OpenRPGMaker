@@ -60,7 +60,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
   // 남색 유리 표면(런타임 공용 토큰) 위에서 남보라 강조는 "AI 보라 그라데이션" 으로 읽혔고(디자인
   // 감사), 밤 숲·초록 몬스터 위에서도 대비가 약했다. HP(민트)·MP(하늘)는 의미색이라 별개다.
   rm2000: {
-    id: "rm2000", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "유리 창 · 정면 필드", layout: "frontview", showAllySprites: false,
+    id: "rm2000", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "유리 창 · 정면 필드 (기본)", layout: "frontview", showAllySprites: false,
     hudTemplate: "rows", transition: "wipe-blue", family: "glass",
     themeVars: {
       "--battle-window-bg": "rgba(14,18,34,.96)",

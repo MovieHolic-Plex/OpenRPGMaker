@@ -79,6 +79,7 @@ const RUNTIME_IMPORTS = [
   "./battle-skins/_windowskin.css",
   // 2026-09-25 타격감 층: 스킨 시트보다 뒤 — 같은 특정도의 스킨 규칙을 이긴다.
   "./battle/22-hit-feel.css",
+  "./battle/23-entry-exit.css",
   "./commerce.css",
   "./shop.css",
   "./title.css",

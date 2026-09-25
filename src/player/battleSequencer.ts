@@ -40,6 +40,8 @@ export const BATTLE_ENEMY_WINDUP_MS = 300;
 export const BATTLE_IMPACT_MS = 430;
 /** "○○을(를) 쓰러뜨렸다!" 격파 대사가 화면에 머무는 시간. */
 export const BATTLE_KILL_LINE_MS = 660;
+/** 결판 막타의 격파 대사 체류. 결과 도장이 같은 순간 뜨고 결과 홀드(900)가 뒤를 잇는다. */
+export const BATTLE_DECISIVE_KILL_LINE_MS = 240;
 export const BATTLE_RESOLVE_MS = 260;
 /** 시각 효과가 없는 로그 엔트리(상태 부여/해제 등)가 화면에 머무는 최소 시간. */
 export const BATTLE_LOG_MS = 520;
@@ -86,6 +88,9 @@ export interface BattleSequencerHooks {
   readonly animationImpactMs?: (animation: BattleAnimationSnapshot) => number;
   /** 도주 시도의 결과가 화면에 도달하는 순간. 도주음·BGM 정지는 성공이 확정된 뒤에만 울려야 한다. */
   readonly onEscapeOutcome?: (success: boolean) => void;
+  /** 결과가 정해진 뒤 결과 패널이 뜨기 전(BATTLE_RESULT_HOLD_MS) 한 번. 이 홀드는 예전엔 빈 필드만
+   *  보이는 정적 구간이었다 — 표시 계층이 승리/전멸 도장을 찍는다. */
+  readonly onResultPending?: (result: NonNullable<BattleSnapshot["result"]>) => void;
 }
 
 export interface BattleSequencer {
@@ -290,6 +295,7 @@ export function createBattleSequencer(
       return;
     }
     if (snapshot.result) {
+      hooks.onResultPending?.(snapshot.result);
       delay(() => {
         revealResult(snapshot, previous);
         setBusy(false);
@@ -457,12 +463,18 @@ export function createBattleSequencer(
     if (entry.kind === "action" && entry.commandKind === "escape" && entry.side === "actor") {
       hooks.onEscapeOutcome?.(entry.success === true);
     }
+    // 결판을 내는 막타: 뒤에 남은 피해·회복·빗나감 엔트리가 없고 결과가 이미 정해졌으면, 격파 대사와
+    // 동시에 결과 도장을 찍고 대사 체류를 줄인다 — 대사 660ms + 결과 홀드 900ms 동안 빈 필드만
+    // 보였다(2026-09-25 녹화). finishTurn 의 onResultPending 은 같은 결과면 표시 계층이 무시한다.
+    const decisive = Boolean(killLine && snapshot.result && !entries.slice(entryOffset + 1)
+      .some((later) => later.kind === "damage" || later.kind === "healing" || later.kind === "miss"));
     const afterBeats = killLine
       ? (): void => {
         hooks.onActionMotion?.(undefined);
         hooks.onDirectorState({ step: "impact", lines: [killLine], targetId: entry.targetId });
         hooks.onSyncView();
-        delay(continueNext, BATTLE_KILL_LINE_MS);
+        if (decisive && snapshot.result) hooks.onResultPending?.(snapshot.result);
+        delay(continueNext, decisive ? BATTLE_DECISIVE_KILL_LINE_MS : BATTLE_KILL_LINE_MS);
       }
       : continueNext;
     playBeats(beats, directorBase, afterBeats);
