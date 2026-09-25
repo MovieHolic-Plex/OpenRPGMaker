@@ -20,6 +20,11 @@
 // 그래서 저장된 `"rm2003"` 은 더 이상 rm2000 으로 풀리지 않는다(오늘 이전에 저장된 프로젝트의 "rm2003" 은
 // 측면 구도로 바뀐다 — 개명이 같은 날이라 감수한다). 활성 스킨 3종: pokemon · rm2000 · rm2003.
 //
+// 2026-09-25: 지원 종료 9종을 유리 뼈대의 변형으로 되살렸다(ACTIVE_BATTLE_SKIN_IDS). 스킨별 CSS 파일은 지웠고,
+// 스킨은 이제 **구도(layout: frontview|sideview) + HUD(hudTemplate) + 색(themeVars)** 의 조합이다.
+// 구도는 `_rm2000.css`(정면)·`_rm2003.css`(측면)가 `data-battle-layout` 으로, HUD·색은 `_glass-variants.css` 가 맡는다.
+// 배치는 battlerPlacements.ts 가 구도에서 파생한다. 라벨에 구도를 적는다(정면/측면).
+//
 // 2026-08-21: 라벨 전부 교체 완료. 예전에는 타사 프랜차이즈 이름을 그대로 썼다.
 // 라벨은 이제 **창 색 + 레이아웃/HUD 특징**을 말하고 서로 구분된다:
 //   흰 창·박스 HUD / 유리 창·정면 필드 / 유리 창·측면 필드 / 먹빛 창·최소 HUD /
@@ -96,9 +101,8 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   octopath: {
-    deprecated: true,
-    id: "octopath", defaultBackdropResourceId: "battle-skin-octopath-backdrop", label: "먹빛 창 · 최소 HUD", layout: "sideview", showAllySprites: true,
-    hudTemplate: "minimal", transition: "focus-blur",
+    id: "octopath", defaultBackdropResourceId: "battle-skin-octopath-backdrop", label: "먹빛 창 · 측면 · 얇은 HUD", layout: "sideview", showAllySprites: true,
+    hudTemplate: "minimal", transition: "focus-blur", family: "glass",
     themeVars: {
       "--battle-window-bg": "#0a1020",
       "--battle-window-edge": "#c9a24a",
@@ -116,9 +120,8 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   chrono: {
-    deprecated: true,
-    id: "chrono", defaultBackdropResourceId: "battle-skin-chrono-backdrop", label: "청람 창 · 링 게이지", layout: "active", showAllySprites: true,
-    hudTemplate: "ring", transition: "sweep-cyan",
+    id: "chrono", defaultBackdropResourceId: "battle-skin-chrono-backdrop", label: "청람 창 · 측면 · 링 게이지", layout: "sideview", showAllySprites: true,
+    hudTemplate: "ring", transition: "sweep-cyan", family: "glass",
     themeVars: {
       "--battle-window-bg": "#071a33",
       "--battle-window-edge": "#2ec4ff",
@@ -136,9 +139,8 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   bravely: {
-    deprecated: true,
-    id: "bravely", defaultBackdropResourceId: "battle-skin-bravely-backdrop", label: "세피아 창 · 주황 강조", layout: "sideview", showAllySprites: true,
-    hudTemplate: "minimal", transition: "brave-shift",
+    id: "bravely", defaultBackdropResourceId: "battle-skin-bravely-backdrop", label: "세피아 창 · 측면 · 얇은 HUD", layout: "sideview", showAllySprites: true,
+    hudTemplate: "minimal", transition: "brave-shift", family: "glass",
     themeVars: {
       "--battle-window-bg": "#1a1206",
       "--battle-window-edge": "#c49a5a",
@@ -156,9 +158,8 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   dragonquest: {
-    deprecated: true,
-    id: "dragonquest", defaultBackdropResourceId: "battle-skin-dragonquest-backdrop", label: "검은 창 · 1인칭 시점", layout: "firstperson", showAllySprites: false,
-    hudTemplate: "rows", transition: "curtain-dq",
+    id: "dragonquest", defaultBackdropResourceId: "battle-skin-dragonquest-backdrop", label: "검은 창 · 정면 · 흰 테두리", layout: "frontview", showAllySprites: false,
+    hudTemplate: "rows", transition: "curtain-dq", family: "glass",
     themeVars: {
       "--battle-window-bg": "#000810",
       "--battle-window-edge": "#ffffff",
@@ -176,9 +177,8 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   ff: {
-    deprecated: true,
-    id: "ff", defaultBackdropResourceId: "battle-skin-ff-backdrop", label: "코발트 창 · 청록 강조", layout: "sideview", showAllySprites: true,
-    hudTemplate: "rows", transition: "wipe-blue",
+    id: "ff", defaultBackdropResourceId: "battle-skin-ff-backdrop", label: "코발트 창 · 측면 · 흰 테두리", layout: "sideview", showAllySprites: true,
+    hudTemplate: "rows", transition: "wipe-blue", family: "glass",
     themeVars: {
       "--battle-window-bg": "#0f1e7a",
       "--battle-window-edge": "#e8e8e8",
@@ -196,9 +196,8 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   mother: {
-    deprecated: true,
-    id: "mother", defaultBackdropResourceId: "battle-skin-mother-backdrop", label: "암전 창 · 형광 분홍", layout: "frontview", showAllySprites: false,
-    hudTemplate: "rows", transition: "psychedelic",
+    id: "mother", defaultBackdropResourceId: "battle-skin-mother-backdrop", label: "암전 창 · 정면 · 형광 분홍", layout: "frontview", showAllySprites: false,
+    hudTemplate: "rows", transition: "psychedelic", family: "glass",
     themeVars: {
       "--battle-window-bg": "#0a0a0a",
       "--battle-window-edge": "#ffffff",
@@ -216,9 +215,8 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   goldensun: {
-    deprecated: true,
-    id: "goldensun", defaultBackdropResourceId: "battle-skin-goldensun-backdrop", label: "금갈색 창 · 박스 HUD", layout: "sideview", showAllySprites: true,
-    hudTemplate: "boxes", transition: "sweep-cyan",
+    id: "goldensun", defaultBackdropResourceId: "battle-skin-goldensun-backdrop", label: "금갈색 창 · 측면 · 얼굴 카드", layout: "sideview", showAllySprites: true,
+    hudTemplate: "boxes", transition: "sweep-cyan", family: "glass",
     themeVars: {
       "--battle-window-bg": "#1a0f02",
       "--battle-window-edge": "#ff9a1a",
@@ -236,9 +234,8 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   mv: {
-    deprecated: true,
-    id: "mv", defaultBackdropResourceId: "battle-skin-mv-backdrop", label: "밝은 창 · 정면", layout: "frontview", showAllySprites: false,
-    hudTemplate: "rows", transition: "fade",
+    id: "mv", defaultBackdropResourceId: "battle-skin-mv-backdrop", label: "밝은 창 · 정면 필드", layout: "frontview", showAllySprites: false,
+    hudTemplate: "rows", transition: "fade", family: "glass",
     themeVars: {
       "--battle-window-bg": "#f0f0f8",
       "--battle-window-edge": "#2a3a6a",
@@ -256,9 +253,8 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   vxace: {
-    deprecated: true,
-    id: "vxace", defaultBackdropResourceId: "battle-skin-vxace-backdrop", label: "심야 창 · 박스 HUD", layout: "frontview", showAllySprites: false,
-    hudTemplate: "boxes", transition: "fade",
+    id: "vxace", defaultBackdropResourceId: "battle-skin-vxace-backdrop", label: "심야 창 · 정면 · 얼굴 카드", layout: "frontview", showAllySprites: false,
+    hudTemplate: "boxes", transition: "fade", family: "glass",
     themeVars: {
       "--battle-window-bg": "#0a0f24",
       "--battle-window-edge": "#3a4a6a",
@@ -287,12 +283,21 @@ export function listBattleSkinIds(): BattleSkinId[] {
   return Object.keys(BATTLE_SKINS) as BattleSkinId[];
 }
 
-/** 지원이 이어지는 스킨 3종(몬스터 대치 · 정면 · 측면) — 새 저작 UI가 노출하는 집합. */
-export const ACTIVE_BATTLE_SKIN_IDS: readonly BattleSkinId[] = ["pokemon", "rm2000", "rm2003"];
+/**
+ * 새 저작 UI 가 노출하는 스킨 — 12종 전부(2026-09-25).
+ * 9종은 2026-08-28 에 지원 종료였다가, 각자 CSS 를 버리고 유리 뼈대(family glass: 정면 rm2000 ·
+ * 측면 rm2003 의 배치·HUD·연출) 위의 **색 + HUD 변형**으로 흡수해 되살렸다. 순서는 드롭다운 순서다 —
+ * 기본 셋을 앞에 두고, 그 뒤는 정면 → 측면.
+ */
+export const ACTIVE_BATTLE_SKIN_IDS: readonly BattleSkinId[] = [
+  "rm2000", "rm2003", "pokemon",
+  "vxace", "dragonquest", "mother", "mv",
+  "ff", "goldensun", "chrono", "octopath", "bravely",
+];
 
-/** BATTLE_SKINS 에서 deprecated 표식이 없는 id 만 추린다(ACTIVE_BATTLE_SKIN_IDS 와 동일해야 함). */
+/** 드롭다운 순서의 활성 스킨. deprecated 표식이 붙은 스킨은 빠진다(지금은 없다). */
 export function listActiveBattleSkinIds(): BattleSkinId[] {
-  return listBattleSkinIds().filter((id) => !BATTLE_SKINS[id].deprecated);
+  return ACTIVE_BATTLE_SKIN_IDS.filter((id) => !BATTLE_SKINS[id].deprecated);
 }
 
 export function isDeprecatedBattleSkin(id: BattleSkinId): boolean {

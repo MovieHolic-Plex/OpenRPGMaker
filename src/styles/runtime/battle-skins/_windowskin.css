@@ -41,9 +41,8 @@
   border-image-outset: 0 !important;
 }
 
-/* 밝은 창 스킨: 프레임만 — 어두운 타일이 어두운 글자를 삼키지 않게. */
-.battle-scene[data-battle-skin="pokemon"],
-.battle-scene[data-battle-skin="bravely"],
-.battle-scene[data-battle-skin="mv"] {
+/* 밝은 창 스킨: 프레임만 — 어두운 타일이 어두운 글자를 삼키지 않게. 유리 뼈대 변형(밝은 창 mv 포함)은
+   `_rm2000.css` 가 윈도스킨을 통째로 끈다(폭 0). */
+.battle-scene[data-battle-skin="pokemon"] {
   --battle-window-skin-slice: 24;
 }

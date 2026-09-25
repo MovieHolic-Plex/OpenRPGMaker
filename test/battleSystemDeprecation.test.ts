@@ -13,7 +13,7 @@ import { projectLint } from "@/project/lint/projectLint";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
-const DEPRECATED_IDS = [
+const REVIVED_IDS = [
   "octopath", "chrono", "bravely", "dragonquest",
   "ff", "mother", "goldensun", "mv", "vxace",
 ] as const;
@@ -34,17 +34,15 @@ function skinOptions(host: FakeElement): FakeElement[] {
   return select.children.filter((child) => child.tagName === "OPTION");
 }
 
-describe("battle skin deprecation registry", () => {
-  it("활성 스킨은 pokemon·rm2000·rm2003 셋이다(2026-09-03: 측면 rm2003 되살림)", () => {
-    expect(listActiveBattleSkinIds()).toEqual(["pokemon", "rm2000", "rm2003"]);
-    expect([...ACTIVE_BATTLE_SKIN_IDS]).toEqual(["pokemon", "rm2000", "rm2003"]);
+describe("battle skin registry — 되살린 9종 (2026-09-25)", () => {
+  it("12종 전부 활성이고, 기본 셋이 앞에 온다", () => {
+    expect(listActiveBattleSkinIds()).toEqual([...ACTIVE_BATTLE_SKIN_IDS]);
+    expect(listActiveBattleSkinIds()).toHaveLength(12);
+    expect(listActiveBattleSkinIds().slice(0, 3)).toEqual(["rm2000", "rm2003", "pokemon"]);
   });
 
-  it("나머지 9종은 deprecated 로 표시된다", () => {
-    for (const id of DEPRECATED_IDS) expect(isDeprecatedBattleSkin(id), id).toBe(true);
-    expect(isDeprecatedBattleSkin("pokemon")).toBe(false);
-    expect(isDeprecatedBattleSkin("rm2000")).toBe(false);
-    expect(isDeprecatedBattleSkin("rm2003")).toBe(false);
+  it("2026-08-28 에 지원 종료였던 9종은 이제 deprecated 가 아니다", () => {
+    for (const id of REVIVED_IDS) expect(isDeprecatedBattleSkin(id), id).toBe(false);
   });
 
   it("12종 등록과 resolveSkinId 동작은 그대로 유지된다(저장된 프로젝트 보존)", () => {
@@ -67,21 +65,18 @@ describe("editor skin dropdown", () => {
     cleanupDom = undefined;
   });
 
-  it("빈 프로젝트에서는 활성 스킨 3개만 보여준다", () => {
+  it("빈 프로젝트에서 12종을 모두 보여준다", () => {
     const options = skinOptions(renderSystem());
-    expect(options.map((option) => option.value)).toEqual(["pokemon", "rm2000", "rm2003"]);
+    expect(options.map((option) => option.value)).toEqual([...ACTIVE_BATTLE_SKIN_IDS]);
+    expect(options.some((option) => option.textContent.includes("지원 종료"))).toBe(false);
   });
 
-  it("저장된 deprecated 스킨은 '(지원 종료)' 항목으로 남겨 선택을 보존한다", () => {
+  it("저장된 되살린 스킨은 추가 항목 없이 그대로 선택된다", () => {
     store.update((draft) => {
       draft.system.battleUiStyle = "octopath";
     });
     const host = renderSystem();
-    const options = skinOptions(host);
-    expect(options).toHaveLength(4);
-    expect(options.map((option) => option.value)).toContain("octopath");
-    const saved = options.find((option) => option.value === "octopath");
-    expect(saved?.textContent.endsWith("(지원 종료)")).toBe(true);
+    expect(skinOptions(host)).toHaveLength(12);
     expect(findByTestId(host, "db-field-system-battle-ui-style")?.value).toBe("octopath");
   });
 });

@@ -112,8 +112,8 @@ describe("runtime play window skins — 전투 크롬", () => {
 
   it("스킨 파셜이 창 표면에서 border-image 를 죽이지 않는다", () => {
     const partials = [
-      "_pokemon", "_rm2000", "_octopath", "_chrono", "_bravely",
-      "_dragonquest", "_ff", "_mother", "_goldensun", "_mv", "_vxace",
+      // 2026-09-25: 스킨별 파셜 9개를 지우고 유리 변형 한 장으로 합쳤다.
+      "_pokemon", "_rm2000", "_rm2003", "_glass-variants",
     ];
     for (const name of partials) {
       const css = read(`src/styles/runtime/battle-skins/${name}.css`);

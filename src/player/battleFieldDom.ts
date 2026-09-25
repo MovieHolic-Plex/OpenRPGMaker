@@ -259,12 +259,16 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot, pr
       const pct = hpPercent(presented.hp, actor.maxHp);
       hpBar.style.setProperty("--battle-stat", `${pct}%`);
       hpBar.dataset.hpState = hpBarState(pct);
+      // 링 게이지 HUD(_glass-variants.css)는 얼굴 둘레를 HP 로 채운다 — 원은 행 단위 변수를 읽는다.
+      row.style.setProperty("--battle-hp-pct", String(pct));
+      row.dataset.hpState = hpBarState(pct);
     }
     const mpBar = row.querySelector<HTMLElement>(".battle-stat-bar-mp");
     if (mpBar) mpBar.style.setProperty("--battle-stat", `${hpPercent(actor.mp, actor.maxMp)}%`);
     const gaugePct = Math.max(0, Math.min(100, Math.round(actor.gauge)));
     const atbBar = row.querySelector<HTMLElement>(".battle-atb-bar");
     if (atbBar) atbBar.style.setProperty("--battle-atb", `${gaugePct}%`);
+    row.style.setProperty("--battle-atb-pct", String(gaugePct));
     const atbValueNode = row.querySelector<HTMLElement>(".battle-atb-value");
     if (atbValueNode) atbValueNode.textContent = `${gaugePct}%`;
     if (partyStatusRowsCarryIcons()) {
@@ -591,10 +595,11 @@ function appendEffectsLayer(field: HTMLElement): HTMLElement {
   return layer;
 }
 
-/** rm2000 은 필드 위에 어두운 그라데이션을 얹지 않는다 — 그게 몬스터 PNG 알파를
- *  반투명처럼 보이게 했다. 다른 스킨은 기존 스크림을 유지한다. */
+/** 유리 뼈대의 정면 구도(rm2000 과 그 변형)는 필드 위에 어두운 그라데이션을 얹지 않는다 — 그게 몬스터
+ *  PNG 알파를 반투명처럼 보이게 했다. 다른 스킨은 기존 스크림을 유지한다. */
 function battleBackdropImage(url: string): string {
-  if (activeSkin().id === "rm2000") return `url("${url}")`;
+  const skin = activeSkin();
+  if (skin.family === "glass" && skin.layout === "frontview") return `url("${url}")`;
   return `linear-gradient(rgba(4, 10, 24, 0.12), rgba(2, 6, 14, 0.28)), url("${url}")`;
 }
 
@@ -1070,7 +1075,7 @@ function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot
   if (actor.level) {
     const lv = document.createElement("span");
     lv.className = "battle-actor-level";
-    // 라벨/값을 나눠 담는다 — vxace 스킨이 참조처럼 "라벨 배지 + 큰 숫자" 로 그리려면
+    // 라벨/값을 나눠 담는다 — 얼굴 카드 HUD 가 "라벨 배지 + 큰 숫자" 로 그리려면
     // 두 조각의 서식이 달라야 한다. 합친 textContent 는 "Lv 1" 로 한 노드일 때와 같다.
     lv.append(vitalLabel(activeSkin().id === "pokemon" ? "레벨" : "Lv"), vitalValue(` ${actor.level}`));
     name.append(lv);
@@ -1084,7 +1089,7 @@ function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot
 
   const hpGauge = statBar("hp", actor.hp, actor.maxHp);
   const mpGauge = statBar("mp", actor.mp, actor.maxMp);
-  // 얼굴 초상은 vxace 스킨 전용 노출(기본 CSS 에서 display:none) — 기존 11종 레이아웃은 그대로.
+  // 얼굴 초상 — 유리 뼈대는 행 왼쪽 작은 초상, 얼굴 카드 HUD(boxes·ring)는 카드 머리에 크게 쓴다.
   const face = actorFaceNode(actor);
   if (face) row.append(face);
   row.append(name, vitals, hpGauge, mpGauge);
@@ -1107,7 +1112,7 @@ function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot
 
 /** 셀 우측의 역할 글자 한 자. 참조 스크린샷의 진형 배지(前/中/後) 자리인데 이 엔진에는
  *  진형 개념이 없다 — 대신 **실재하는** 직업명의 첫 글자를 쓴다(전사→"전"). 직업이 없으면 만들지 않는다.
- *  기본 CSS 에서 숨기고 vxace 스킨에서만 노출한다. */
+ *  기본 CSS 에서 숨기고 얼굴 카드 HUD(_glass-variants.css)에서만 노출한다. */
 function actorRoleNode(actor: BattleBattlerSnapshot): HTMLElement | null {
   if (!actor.classId) return null;
   const className = store.getCurrent().database.classes.find((entry) => entry.id === actor.classId)?.name;

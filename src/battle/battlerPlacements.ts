@@ -22,35 +22,43 @@ export const RM2000_PARTY_SLOTS: Readonly<Record<number, readonly number[]>> = {
   4: [44, 116, 204, 276],
 };
 
+/** 정면 구도(유리 뼈대): 적만 필드에 선다. */
+const FRONTVIEW: SkinBattlerPlacement = {
+  partyFacing: "hidden",
+  enemy: (i, n) => ({
+    x: Math.round(160 + (i - (n - 1) / 2) * 70),
+    y: n <= 1 ? 124 : 104 + (i % 2) * 8,
+  }),
+  party: (i, n) => ({ x: RM2000_PARTY_SLOTS[Math.min(4, Math.max(1, n))]![i] ?? 160, y: 160 }),
+};
+
+/** 측면 구도(유리 뼈대): 적은 왼쪽 두 줄, 아군 전투 시트는 오른쪽 사선 열. */
+const SIDEVIEW: SkinBattlerPlacement = {
+  partyFacing: "front",
+  enemy: (i, n) => ({
+    x: Math.round(108 + (i - (n - 1) / 2) * 48),
+    y: n <= 1 ? 124 : 112 + (i % 2) * 12,
+  }),
+  // 아군 4명 가로 간격 32 RM px(스프라이트 1.25배). 22 면 다음 배우가 앞 배우를 38% 덮어 2·3번은
+  // 실루엣만 남았다(2026-09-14 실측). 시작 x 196 → 마지막 292 + 반폭 24 = 316 으로 무대(320) 안에 든다.
+  party: (i) => ({ x: 196 + i * 32, y: 84 + i * 25 }),
+};
+
 export const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
   pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.25, enemy: (i, n) => (n <= 1 ? { x: 239, y: 92 } : { x: 250 - i * 58, y: 100 - (i % 2) * 14 }), party: () => ({ x: 76, y: 152 }) },
-  rm2000: {
-    partyFacing: "hidden",
-    enemy: (i, n) => ({
-      x: Math.round(160 + (i - (n - 1) / 2) * 70),
-      y: n <= 1 ? 124 : 104 + (i % 2) * 8,
-    }),
-    party: (i, n) => ({ x: RM2000_PARTY_SLOTS[Math.min(4, Math.max(1, n))]![i] ?? 160, y: 160 }),
-  },
-  rm2003: {
-    partyFacing: "front",
-    enemy: (i, n) => ({
-      x: Math.round(108 + (i - (n - 1) / 2) * 48),
-      y: n <= 1 ? 124 : 112 + (i % 2) * 12,
-    }),
-    // 아군 4명 가로 간격 32 RM px(스프라이트 1.25배). 22 면 다음 배우가 앞 배우를 38% 덮어 2·3번은
-    // 실루엣만 남았다(2026-09-14 실측). 시작 x 196 → 마지막 292 + 반폭 24 = 316 으로 무대(320) 안에 든다.
-    party: (i) => ({ x: 196 + i * 32, y: 84 + i * 25 }),
-  },
-  octopath: { partyFacing: "back", partyScale: 1.15, enemy: (i) => ({ x: 72 + (i % 2) * 54, y: 47 + Math.floor(i / 2) * 27 }), party: (i) => ({ x: 236 + (i % 2) * 42, y: 88 + Math.floor(i / 2) * 52 }) },
-  chrono: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 250 - i * 50, y: 48 }), party: (i) => ({ x: 62 + (i % 2) * 42, y: 104 + Math.floor(i / 2) * 30 }) },
-  bravely: { partyFacing: "back", partyScale: 1.35, enemy: (i) => ({ x: 64 + (i % 2) * 60, y: 47 + Math.floor(i / 2) * 27 }), party: (i) => ({ x: 218 + (i % 2) * 50, y: 84 + Math.floor(i / 2) * 56 }) },
-  dragonquest: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 60, y: 68 }), party: () => ({ x: 160, y: 150 }) },
-  ff: { partyFacing: "front", partyScale: 1.2, enemy: (i, n) => ({ x: 120 + (i - (n - 1) / 2) * 52, y: 46 }), party: (i) => ({ x: 242, y: 62 + i * 36 }) },
-  mother: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 50, y: 48 }), party: () => ({ x: 160, y: 150 }) },
-  goldensun: { partyFacing: "back", partyScale: 1.4, enemy: (i, n) => ({ x: 116 + (i - (n - 1) / 2) * 50, y: 46 }), party: (i) => ({ x: 232 + (i % 2) * 40, y: 92 + Math.floor(i / 2) * 48 }) },
-  mv: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 52, y: 60 }), party: () => ({ x: 160, y: 150 }) },
-  vxace: { partyFacing: "hidden", enemy: (i, n) => ({ x: 112 + (i - (n - 1) / 2) * 52, y: 96 }), party: () => ({ x: 112, y: 150 }) },
+  rm2000: FRONTVIEW,
+  rm2003: SIDEVIEW,
+  // 유리 뼈대 변형(2026-09-25): 구도가 같으면 배치도 같다 — 정면은 rm2000, 측면은 rm2003 을 그대로 쓴다.
+  // 예전 스킨별 배치표는 각자 CSS 와 짝이었고, CSS 를 지우면서 함께 걷었다.
+  octopath: SIDEVIEW,
+  chrono: SIDEVIEW,
+  bravely: SIDEVIEW,
+  dragonquest: FRONTVIEW,
+  ff: SIDEVIEW,
+  mother: FRONTVIEW,
+  goldensun: SIDEVIEW,
+  mv: FRONTVIEW,
+  vxace: FRONTVIEW,
 };
 
 export const CANONICAL_SIDEVIEW_ANCHOR_X = 84;
