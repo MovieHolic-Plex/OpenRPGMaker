@@ -739,3 +739,39 @@ def cave_mouth(face, stone="grey"):
         if inside(x, 30): a[31, x, :3] = C("2e2420"); a[30, x, :3] = C("1c1416")
     a[..., 3] = 255
     return a
+
+def underside(depth, seed):
+    """The rocky underside hanging below a sky island's south rim: one column (16 px wide, depth 1 or 2 cells).
+    Full width at the top (soil band, then strata) so neighbouring columns join; the bottom is one stalactite per column,
+    deepest mid-column and at the shared height on the column edges (any two variants meet)."""
+    W, H = 16, 16 * depth
+    a = canvas(W, H); st = STONE["sky"]; soil = (C("3a2a1c"), C("5a4028"), C("7a5a36"))
+    edge = 5 if depth == 1 else 12
+    for x in range(W):
+        m = math.sin(math.pi * (x + 0.5) / W)
+        bottom = edge + (H - 2 - edge) * m ** 1.4 * (0.75 + 0.25 * hash01(x // 3, 5, seed)) + (hash01(x, 9, seed) - 0.5) * 2
+        for y in range(int(bottom)):
+            if y < 3: c = soil[2 - y] if y else soil[0]
+            else:
+                f = y / H; u = (x + 0.5) / W
+                band = 0.12 * math.sin(y * 1.3 + seed) + 0.1 * (hash01(x // 2, y // 2, seed) - 0.5)
+                c = pick(st[1:-1], 0.75 - u * 0.45 - f * 0.35 + band, x, y)
+            put(a, x, y, c)
+    a = outline(a, st[0], where=np.broadcast_to(np.arange(H)[:, None] > 2, (H, W)))
+    rng = random.Random(seed)
+    for _ in range(2):   # dangling roots
+        x = rng.randint(2, W - 3); ys = [y for y in range(H) if opaque(a)[y, x]]
+        if ys:
+            for d in range(rng.randint(2, 4)): put(a, x + (d // 2) * rng.choice((-1, 0, 1)), ys[-1] + 1 + d, C("5a4028"))
+    return a
+
+def rock_pile(w, h, seed, stone="red"):
+    """A heap of three or four boulders leaning on one another (back ones drawn first, the front one last)."""
+    W, H = w * 16, h * 16
+    a = canvas(W, H); R = random.Random(seed)
+    parts = [(0.5, 0.55, 0.3, 0.36), (0.28, 0.8, 0.24, 0.24), (0.72, 0.82, 0.25, 0.22)]
+    if w >= 3: parts.insert(1, (0.2, 0.6, 0.18, 0.2))
+    for k, (fx, fy, rx, ry) in enumerate(parts):
+        r = rock(W, H, W * fx + R.uniform(-1, 1), H * fy - ry * H * 0.1, W * rx * 0.9, H * ry, STONE[stone], seed * 7 + k)
+        over(a, r)
+    return a

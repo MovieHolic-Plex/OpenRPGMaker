@@ -11,7 +11,7 @@ export function theme(b) {
   const k = b.kind;
   switch (k) {
     case "jungle": return {
-      canopy: { count: [3, 5], r: [4, 7] }, bigPatches: [0, 1],
+      canopy: { count: [3, 5], r: [4, 7] }, bigPatches: [0, 0],
       hero: { ids: ["giant-tree-1", "giant-tree-2"], count: [3, 5], per: [1, 3] },
       fill: { palette: { trees: 3.4, grass: 2.2, bushes: 1.6, flowers: 0.35 }, trees: P(k, "giant-tree-2", "jungle-tree", "jungle-tree", "broadleaf"), treeCount: [3, 5], bushes: T(b, "fern-1", "fern-2"), flowers: T(b, "orchid"), flowerCap: 6, bushSize: [4, 7], groves: 8, groveSq: 6, smallBushShare: 0 },
       vines: { ids: ["vine-1", "vine-2"], count: [3, 6] }, grounds: ["leaf-litter"], water: null,
@@ -34,10 +34,10 @@ export function theme(b) {
       grounds: ["crystal-vein"], water: null,
     };
     case "badlands": return {
-      hero: { ids: ["red-rock"], count: [3, 5], per: [1, 3] },
-      fill: { palette: { stands: 2.2, bushes: 1.2, rocks: 1 }, bushes: T(b, "sagebrush-1", "sagebrush-2"), rocks: T(b, "red-boulder-1", "red-boulder-2"), rocksAnywhere: true, groves: 0, standsAsSpots: true, stands: ["마른나무"], standCount: [2, 4], spotCap: 26,
-        fillGate: { maxSq: 8, screen: 0.66 }, smallBushShare: 0 },
-      bare: true, grounds: ["cracked-red", "red-gravel"], noForest: true, noForestEdge: true, water: null,
+      hero: { ids: ["red-rock", "rock-pile", "rock-pile-2"], count: [4, 6], per: [1, 2] },
+      fill: { palette: { stands: 2.6, bushes: 0.5, rocks: 0.35 }, bushes: T(b, "sagebrush-1", "sagebrush-2"), rocks: T(b, "red-boulder-1", "red-boulder-2"), rocksAnywhere: true, groves: 0, standsAsSpots: true, stands: ["마른나무"], standCount: [3, 5], spotCap: 18,
+        fillGate: { maxSq: 10, screen: 0.8 }, smallBushShare: 0 },
+      bigPatches: [3, 5], bigSize: [40, 70], bare: true, groveRocks: 0.08, grounds: ["cracked-red", "red-gravel"], noForest: true, noForestEdge: true, water: null,
     };
     case "savanna": return {
       hero: { ids: ["acacia-1", "baobab", "acacia-2", "kopje"], count: [3, 5], per: [1, 2] },
@@ -52,9 +52,9 @@ export function theme(b) {
     };
     case "tundra": return {
       hero: { ids: ["frost-rock"], count: [2, 3], per: [1, 2] },
-      fill: { palette: { stands: 1.3, bushes: 1.4, rocks: 0.45, grass: 1.4 }, bushes: T(b, "dwarf-shrub-1", "dwarf-shrub-2"), rocks: T(b, "lichen-rock-1", "lichen-rock-2"), rocksAnywhere: true, groves: 0, standsAsSpots: true, stands: ["마른나무"], standCount: [2, 3], spotCap: 16,
+      fill: { palette: { stands: 1.3, bushes: 1.2, rocks: 0.4, grass: 0.9 }, bushes: T(b, "dwarf-shrub-1", "dwarf-shrub-2"), rocks: T(b, "lichen-rock-1", "lichen-rock-2"), rocksAnywhere: true, groves: 0, standsAsSpots: true, stands: ["마른나무"], standCount: [2, 3], spotCap: 16,
         fillGate: { maxSq: 7, screen: 0.6 }, smallBushShare: 0 },
-      bare: true, grounds: ["permafrost", "snow-patch"], noForest: true, water: null, freeze: 0.95,
+      bare: true, grounds: ["permafrost", "snow-patch"], bigPatches: [3, 5], bigSize: [40, 80], noForest: true, water: null, freeze: 0.95,
     };
     case "blight": return {
       canopy: { count: [2, 3], r: [4, 6] },
@@ -67,7 +67,7 @@ export function theme(b) {
       canopy: { count: [0, 1], r: [3, 5] },
       hero: { ids: ["wind-crystal"], count: [1, 3], per: [1, 1] },
       fill: { palette: { trees: 3, grass: 1.8, bushes: 1.2, flowers: 1.5 }, trees: ["tree", "big-oak", "round-bush", "small-bush"], bushes: T(b, "sky-bush"), flowers: T(b, "wind-flower"), groves: 3, smallBushShare: 0.4 },
-      water: { ids: ["cloud-1", "cloud-2", "cloud-3", "float-rock-1", "float-rock-2"], count: [6, 10], reach: [2, 12], per: [1, 2], group: 4 }, grounds: ["meadow"],
+      water: { ids: ["cloud-1", "cloud-2", "cloud-3", "float-rock-1", "float-rock-2"], count: [6, 10], reach: [2, 12], per: [1, 2], group: 4 }, grounds: ["meadow"], undersides: true,
     };
     case "tropical": return {
       canopy: { count: [1, 2], r: [4, 6] },

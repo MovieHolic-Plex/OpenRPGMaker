@@ -11,6 +11,7 @@ def piece(pid, name, w, h, roles, paint, cat, rule):
 
 TREE_RULE = "나무 덩이: 윗줄(수관 C)은 위층·통과, 몸통(T)은 위층·통행 불가, 맨 아랫줄(B)은 아래층+땅 받침·통행 불가. 빈 땅(240)에만, 길·문·계단 끝·다리 끝에서 2칸 밖. 두세 그루를 어깨를 맞대 한 덩이로(일렬 금지)."
 SMALL_RULE = "작은 덤불·바위·수정(S): 위층·통행 불가. 3~5칸 덩이(L자로 시작, 한 줄 셋 이상 금지)로만 두고 흩뿌리지 않는다. 나무 덩이 발치·절벽 밑·물가에 붙인다."
+UNDER_RULE = "섬 밑동: 하늘섬 남쪽 가장자리(땅 칸 바로 밑이 하늘(물) 칸인 곳) 밑 하늘 칸에 위층으로 한 칸씩 붙여 가로로 잇는다. 가장자리 가운데는 깊게(1×2), 양 끝 두세 칸은 얕게(1×1). 다리·나루 밑에는 두지 않는다. 통행 불가."
 DECAL_RULE = "밟을 수 있는 장식(W): 위층·통과. 2×2 핵 + 한두 칸의 덩이로. 낱개로 흩뿌리지 않는다."
 WATER_RULE = "물 위 장식(O): 물 칸 위에만, 위층·통행 불가(물이라 원래 못 지나간다). 물가에서 1~3칸 안쪽에 2~4개씩 무리로."
 VINE_RULE = "절벽 덩굴(V): 절벽 몸통 칸 위층에만(윗단 가장자리·계단·폭포 칸 제외), 세로 2칸 한 벌. 한 절벽에 두세 벌까지, 붙여서 커튼처럼 늘어세우지 않는다."
@@ -69,6 +70,8 @@ PIECES = {
         piece("red-boulder-1", "붉은 바위", 1, 1, ["S"], lambda: A.boulder(1, 1, 1, "red"), "rock", SMALL_RULE),
         piece("red-boulder-2", "붉은 바위 · 납작", 1, 1, ["S"], lambda: A.boulder(1, 1, 2, "red", scale=0.85), "rock", SMALL_RULE),
         piece("red-rock", "붉은 큰 바위", 2, 2, ["TT", "BB"], lambda: A.boulder(2, 2, 3, "red"), "rock", TREE_RULE),
+        piece("rock-pile", "붉은 바위 무더기", 3, 2, ["TTT", "BBB"], lambda: A.rock_pile(3, 2, 5, "red"), "rock", TREE_RULE.replace("나무 덩이", "바위 무더기") + " 절벽 발치·길 굽이에."),
+        piece("rock-pile-2", "붉은 바위 무더기 · 작게", 2, 2, ["TT", "BB"], lambda: A.rock_pile(2, 2, 9, "red"), "rock", TREE_RULE.replace("나무 덩이", "바위 무더기") + " 절벽 발치·길 굽이에."),
         piece("sagebrush-1", "쑥 덤불", 1, 1, ["S"], lambda: A.sagebrush(1, "acacia"), "plant", SMALL_RULE),
         piece("sagebrush-2", "마른 쑥 덤불", 1, 1, ["S"], lambda: A.sagebrush(2, "tundra"), "plant", SMALL_RULE),
     ],
@@ -113,6 +116,10 @@ PIECES = {
         piece("cloud-3", "긴 구름", 4, 2, ["OOOO", "OOOO"], lambda: A.cloud(4, 2, 3), "water", WATER_RULE.replace("물 위", "하늘(물 칸) 위").replace("물가", "섬 가장자리")),
         piece("float-rock-1", "떠 있는 바위", 1, 1, ["O"], lambda: A.float_rock(1, 1, 2), "water", WATER_RULE.replace("물 위", "하늘(물 칸) 위")),
         piece("float-rock-2", "떠 있는 작은 섬", 2, 2, ["OO", "OO"], lambda: A.float_rock(2, 2, 1), "water", WATER_RULE.replace("물 위", "하늘(물 칸) 위")),
+        piece("underside-deep-1", "섬 밑동 (깊게)", 1, 2, ["O", "O"], lambda: A.underside(2, 3), "water", UNDER_RULE),
+        piece("underside-deep-2", "섬 밑동 (깊게, 다른 모양)", 1, 2, ["O", "O"], lambda: A.underside(2, 8), "water", UNDER_RULE),
+        piece("underside-1", "섬 밑동 (얕게)", 1, 1, ["O"], lambda: A.underside(1, 4), "water", UNDER_RULE),
+        piece("underside-2", "섬 밑동 (얕게, 다른 모양)", 1, 1, ["O"], lambda: A.underside(1, 11), "water", UNDER_RULE),
         piece("wind-crystal", "바람 수정 기둥", 1, 2, ["C", "B"], lambda: A.wind_crystal(1), "landmark", "바람 수정 기둥: 섬 끝·다리 어귀에 하나. 둘레 한 칸 비움."),
         piece("sky-bush", "하늘섬 덤불", 1, 1, ["S"], lambda: A.bush(5, "sky"), "plant", SMALL_RULE),
         piece("wind-flower", "바람꽃", 1, 1, ["W"], lambda: A.flowers(5, ("ffffff", "a8c8ff", "ffe070")), "decal", DECAL_RULE),

@@ -6,7 +6,7 @@
       4,
       25
     ],
-    "reachable": 1681,
+    "reachable": 1663,
     "targets": 5,
     "blocked": 0,
     "terraceLeaks": 0,
@@ -15,11 +15,11 @@
       "maxSq": 5,
       "screen": 0.452,
       "at": [
-        23,
-        34
+        0,
+        7
       ],
       "screenAt": [
-        8,
+        12,
         8
       ]
     }
@@ -31,20 +31,20 @@
       4,
       31
     ],
-    "reachable": 1318,
+    "reachable": 1334,
     "targets": 8,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
-      "maxSq": 5,
-      "screen": 0.448,
+      "maxSq": 4,
+      "screen": 0.434,
       "at": [
-        42,
-        19
+        51,
+        8
       ],
       "screenAt": [
-        36,
+        8,
         0
       ]
     }
@@ -56,7 +56,7 @@
       4,
       38
     ],
-    "reachable": 1201,
+    "reachable": 1237,
     "targets": 7,
     "blocked": 0,
     "terraceLeaks": 0,
@@ -65,12 +65,12 @@
       "maxSq": 5,
       "screen": 0.448,
       "at": [
-        7,
-        21
+        49,
+        7
       ],
       "screenAt": [
-        4,
-        4
+        16,
+        28
       ]
     }
   },
@@ -81,21 +81,21 @@
       4,
       18
     ],
-    "reachable": 1344,
+    "reachable": 1296,
     "targets": 3,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
-      "maxSq": 4,
-      "screen": 0.448,
+      "maxSq": 5,
+      "screen": 0.434,
       "at": [
-        39,
-        8
+        54,
+        14
       ],
       "screenAt": [
-        16,
-        28
+        20,
+        16
       ]
     }
   },
@@ -106,21 +106,21 @@
       4,
       32
     ],
-    "reachable": 1496,
+    "reachable": 1488,
     "targets": 5,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
       "maxSq": 5,
-      "screen": 0.443,
+      "screen": 0.448,
       "at": [
         27,
         6
       ],
       "screenAt": [
-        4,
-        20
+        0,
+        24
       ]
     }
   },
@@ -131,21 +131,21 @@
       4,
       20
     ],
-    "reachable": 1630,
+    "reachable": 1643,
     "targets": 4,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
-      "maxSq": 5,
+      "maxSq": 4,
       "screen": 0.448,
       "at": [
-        11,
-        38
+        28,
+        4
       ],
       "screenAt": [
-        20,
-        28
+        16,
+        12
       ]
     }
   },
@@ -706,21 +706,21 @@
       29,
       39
     ],
-    "reachable": 1887,
+    "reachable": 2229,
     "targets": 5,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
-      "maxSq": 4,
-      "screen": 0.448,
+      "maxSq": 5,
+      "screen": 0.452,
       "at": [
-        4,
-        0
+        21,
+        14
       ],
       "screenAt": [
-        20,
-        4
+        16,
+        24
       ]
     }
   },
@@ -731,21 +731,21 @@
       32,
       47
     ],
-    "reachable": 2108,
+    "reachable": 2423,
     "targets": 6,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
-      "maxSq": 4,
+      "maxSq": 5,
       "screen": 0.448,
       "at": [
-        5,
-        0
+        35,
+        47
       ],
       "screenAt": [
-        32,
-        0
+        0,
+        36
       ]
     }
   },
@@ -756,21 +756,21 @@
       34,
       47
     ],
-    "reachable": 1930,
+    "reachable": 2486,
     "targets": 8,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
-      "maxSq": 3,
-      "screen": 0.498,
+      "maxSq": 5,
+      "screen": 0.443,
       "at": [
-        51,
-        5
+        0,
+        0
       ],
       "screenAt": [
-        8,
-        39
+        12,
+        20
       ]
     }
   },
@@ -781,21 +781,21 @@
       4,
       17
     ],
-    "reachable": 2087,
+    "reachable": 2649,
     "targets": 3,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
-      "maxSq": 3,
-      "screen": 0.498,
+      "maxSq": 5,
+      "screen": 0.425,
       "at": [
         46,
         0
       ],
       "screenAt": [
         40,
-        16
+        0
       ]
     }
   },
@@ -806,46 +806,46 @@
       4,
       23
     ],
-    "reachable": 1900,
+    "reachable": 2500,
     "targets": 5,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
-      "maxSq": 3,
-      "screen": 0.484,
+      "maxSq": 5,
+      "screen": 0.43,
       "at": [
-        36,
-        3
+        6,
+        39
       ],
       "screenAt": [
-        44,
-        24
+        0,
+        0
       ]
     }
   },
   {
     "id": "badlands-crossroads",
-    "seed": 7553,
+    "seed": 7551,
     "entry": [
       4,
-      18
+      22
     ],
-    "reachable": 2002,
+    "reachable": 2444,
     "targets": 4,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
       "maxSq": 4,
-      "screen": 0.493,
+      "screen": 0.439,
       "at": [
-        51,
-        16
+        7,
+        0
       ],
       "screenAt": [
-        16,
-        8
+        4,
+        0
       ]
     }
   },
@@ -856,21 +856,21 @@
       4,
       30
     ],
-    "reachable": 1847,
+    "reachable": 2226,
     "targets": 6,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
-      "maxSq": 4,
-      "screen": 0.471,
+      "maxSq": 5,
+      "screen": 0.443,
       "at": [
-        39,
-        17
+        49,
+        22
       ],
       "screenAt": [
-        0,
-        24
+        12,
+        0
       ]
     }
   },
@@ -1231,14 +1231,39 @@
       4,
       23
     ],
-    "reachable": 1806,
+    "reachable": 1839,
     "targets": 4,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
       "maxSq": 5,
-      "screen": 0.439,
+      "screen": 0.448,
+      "at": [
+        0,
+        5
+      ],
+      "screenAt": [
+        43,
+        4
+      ]
+    }
+  },
+  {
+    "id": "tundra-moss-plain",
+    "seed": 7811,
+    "entry": [
+      4,
+      16
+    ],
+    "reachable": 2254,
+    "targets": 3,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.462,
       "at": [
         0,
         5
@@ -1250,51 +1275,26 @@
     }
   },
   {
-    "id": "tundra-moss-plain",
-    "seed": 7811,
-    "entry": [
-      4,
-      16
-    ],
-    "reachable": 2232,
-    "targets": 3,
-    "blocked": 0,
-    "terraceLeaks": 0,
-    "seals": [],
-    "emptiness": {
-      "maxSq": 5,
-      "screen": 0.439,
-      "at": [
-        56,
-        23
-      ],
-      "screenAt": [
-        4,
-        4
-      ]
-    }
-  },
-  {
     "id": "tundra-ice-lake",
     "seed": 7821,
     "entry": [
       4,
       35
     ],
-    "reachable": 2064,
+    "reachable": 2077,
     "targets": 5,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
       "maxSq": 5,
-      "screen": 0.443,
+      "screen": 0.448,
       "at": [
-        31,
-        17
+        2,
+        5
       ],
       "screenAt": [
-        36,
+        12,
         28
       ]
     }
@@ -1306,21 +1306,21 @@
       33,
       39
     ],
-    "reachable": 1699,
+    "reachable": 1724,
     "targets": 5,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
       "maxSq": 5,
-      "screen": 0.448,
+      "screen": 0.443,
       "at": [
-        8,
+        6,
         4
       ],
       "screenAt": [
-        40,
-        4
+        4,
+        31
       ]
     }
   },
@@ -1331,21 +1331,21 @@
       4,
       21
     ],
-    "reachable": 1339,
+    "reachable": 1340,
     "targets": 5,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
       "maxSq": 5,
-      "screen": 0.439,
+      "screen": 0.434,
       "at": [
-        31,
-        5
+        39,
+        8
       ],
       "screenAt": [
-        16,
-        12
+        24,
+        8
       ]
     }
   },
@@ -1356,21 +1356,21 @@
       4,
       24
     ],
-    "reachable": 1731,
+    "reachable": 1788,
     "targets": 4,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
-      "maxSq": 4,
-      "screen": 0.439,
+      "maxSq": 5,
+      "screen": 0.448,
       "at": [
-        43,
-        4
+        3,
+        32
       ],
       "screenAt": [
         36,
-        12
+        16
       ]
     }
   },
@@ -1381,21 +1381,21 @@
       29,
       45
     ],
-    "reachable": 1893,
+    "reachable": 1944,
     "targets": 7,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
-      "maxSq": 5,
-      "screen": 0.443,
+      "maxSq": 4,
+      "screen": 0.448,
       "at": [
-        9,
-        25
+        6,
+        8
       ],
       "screenAt": [
-        36,
-        32
+        12,
+        37
       ]
     }
   },
@@ -1926,26 +1926,26 @@
   },
   {
     "id": "border-jungle-swamp-ford",
-    "seed": 8201,
+    "seed": 8202,
     "entry": [
       4,
-      19
+      21
     ],
-    "reachable": 1784,
+    "reachable": 1786,
     "targets": 4,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
       "maxSq": 5,
-      "screen": 0.452,
+      "screen": 0.498,
       "at": [
-        59,
-        28
+        4,
+        5
       ],
       "screenAt": [
         32,
-        20
+        8
       ]
     }
   },
@@ -2201,26 +2201,26 @@
   },
   {
     "id": "border-tundra-crystal-plain",
-    "seed": 8321,
+    "seed": 8324,
     "entry": [
       4,
-      21
+      22
     ],
-    "reachable": 2091,
+    "reachable": 2165,
     "targets": 3,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
-      "maxSq": 5,
-      "screen": 0.452,
+      "maxSq": 4,
+      "screen": 0.484,
       "at": [
-        4,
-        6
+        15,
+        4
       ],
       "screenAt": [
-        0,
-        28
+        12,
+        24
       ]
     }
   }

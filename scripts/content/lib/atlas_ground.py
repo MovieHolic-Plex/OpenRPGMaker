@@ -138,9 +138,9 @@ def grounds(biome, lawn, neighbour_lawn=None):
     """{id: (kind 'ground'|'pool', name, blob_set kwargs + tex)} for this biome; lawn is the sheet's 240 tile."""
     G = {}
     if biome == "jungle":
-        G["leaf-litter"] = ("ground", "낙엽 깔린 숲바닥", dict(tex=tex_litter((C("3a4a1e"), C("2a3814"), C("6a7a2a"), C("8a5a2a"), C("4a3018")))))
+        G["leaf-litter"] = ("ground", "낙엽 깔린 숲바닥", dict(tex=tex_litter((C("4e6a26"), C("3e5a1e"), C("6e8a32"), C("8a6a32"), C("5a4a22")))))
     if biome == "swamp":
-        G["mud"] = ("ground", "질척한 진흙", dict(tex=tex_mud((C("4a3e28"), C("342a1a"), C("5e5034"), C("3a4632"), C("8aa088"))), rim=C("2e2616")))
+        G["mud"] = ("ground", "질척한 진흙", dict(tex=tex_mud((C("6a6038"), C("57502e"), C("7e744a"), C("5a6440"), C("9ab090"))), rim=C("4e4a2c")))
     if biome == "mushroom":
         G["glow-moss"] = ("ground", "빛 이끼", dict(tex=tex_dots(C("3e4a86"), C("323c70"), [C("7af0e0"), C("b8fff4"), C("c89af0")], 0.07, 5)))
     if biome == "crystal":
@@ -151,7 +151,7 @@ def grounds(biome, lawn, neighbour_lawn=None):
     if biome == "savanna":
         G["dry-dust"] = ("ground", "메마른 흙바닥", dict(tex=tex_dots(C("b8945a"), C("a8844c"), [C("8a6a3a"), C("d0b078"), C("7a8a3a")], 0.08, 29)))
     if biome == "taiga":
-        G["snowdrift"] = ("ground", "눈 더미", dict(tex=tex_snow(C("e8f0f6"), C("c4d4e2"), C("ffffff")), rim=C("aabccc")))
+        G["snowdrift"] = ("ground", "눈 더미", dict(tex=tex_snow(C("d6e0e8"), C("b4c4d2"), C("eef4f8")), rim=C("8e9eac")))
     if biome == "tundra":
         G["permafrost"] = ("ground", "얼어 갈라진 동토", dict(tex=tex_seams(C("8a8e84"), C("a4a89c"), C("5e625a"), None, 4, 33, 0.75)))
         G["snow-patch"] = ("ground", "잔설", dict(tex=tex_snow(C("dce4ea"), C("b8c6d2"), C("f0f4f8")), rim=C("98a8b6")))

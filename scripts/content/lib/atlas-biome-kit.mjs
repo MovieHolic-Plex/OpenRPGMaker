@@ -40,6 +40,25 @@ export const tileOf = (biome, id) => { const p = biome.pieces[id]; assert(p, "Un
 
 export class BiomeMap extends OutdoorMap {
   constructor(kit, spec, seed, biome) { super(kit, spec, seed); this.biome = biome; this.zone = null; }
+  // Sky islands: the rocky underside hangs in the sky cells below every south rim cell (deep mid-rim, shallow at the
+  // ends of a rim run), never under a bridge or a pier. Upper layer, solid (the sky is not walkable anyway).
+  undersides() {
+    const P = this.biome.pieces, deep = ["underside-deep-1", "underside-deep-2"].map((k) => P[k]), shallow = ["underside-1", "underside-2"].map((k) => P[k]);
+    if (!deep[0] || !shallow[0]) return 0;
+    const sky = (x, y) => this.inside(x, y) && this.water.has(this.at(x, y)) && !this.bridgeCells.has(this.at(x, y)) && this.upper[this.at(x, y)] === -1;
+    const rim = (x, y) => this.inside(x, y) && !this.water.has(this.at(x, y)) && sky(x, y + 1);
+    let n = 0;
+    for (let y = 0; y < this.H - 1; y++) for (let x = 0; x < this.W; x++) {
+      if (!rim(x, y)) continue;
+      const run = (d) => { let k = 0; while (rim(x + d * (k + 1), y) || rim(x + d * (k + 1), y - 1) || rim(x + d * (k + 1), y + 1)) k++; return k; };
+      const inner = Math.min(run(-1), run(1)) >= 1 && sky(x, y + 2);
+      const p = (inner ? deep : shallow)[(x * 7 + y * 3) % 2];
+      for (let d = 0; d < p.h; d++) { const i = this.at(x, y + 1 + d); this.upper[i] = p.tiles[d]; this.solid.add(i); this.occupied.add(i); this.keep.add(i); }
+      n++;
+    }
+    this.placements.push({ name: "섬 밑동", kind: "dressing", cluster: "underside", cells: n, x: 0, y: 0 });
+    return n;
+  }
   // biomes without leafy woods (badlands): the layout's edge woods are left out, the fill and groves close the gaps
   forest(opts) { if (this.noForest) return; return super.forest(opts); }
   // Cave mouth (the sheet's own 2×2 arch drawn on its cliff texture) at the foot of the cliff face at columns x, x+1:

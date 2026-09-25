@@ -51,6 +51,7 @@ await withTsModule("scripts/content/lib/atlas-biomes-entry.ts", "atlas-biomes-en
         plan.extra?.(b);
         // border fields: the neighbour biome's side of the map
         if (plan.zone) b.setZone((x, y) => plan.zone(x, y, b));
+        if (th.undersides) b.undersides();
         // frozen ponds (taiga, tundra): whole water bodies only
         if (th.freeze) freezeBodies(b, th.freeze);
         // biome woods: extra canopy masses in the open, clear of roads, access and the existing forest
@@ -71,11 +72,11 @@ await withTsModule("scripts/content/lib/atlas-biomes-entry.ts", "atlas-biomes-en
         }
         if (th.landmark) b.clumps([th.landmark.id], 1, { per: [1, 1], gapCheck: 8 });
         // a few large ground patches first, in the open (organic ellipses), before the fill cuts the plain into gaps
-        if (th.grounds?.length) b.groundFill(th.grounds, { maxSq: 0, screen: 0, cap: rnd(b, th.bigPatches ?? [2, 4]), size: [26, 48] });
+        if (th.grounds?.length) b.groundFill(th.grounds, { maxSq: 0, screen: 0, cap: rnd(b, th.bigPatches ?? [2, 4]), size: th.bigSize ?? [26, 48] });
         const fillOpts ={ maxSq: AIM.maxSq, screen: AIM.screen, treeCount: [2, 3], ...th.fill, ...(plan.fill ?? {}) };
         if (fillOpts.fillGate) Object.assign(fillOpts, fillOpts.fillGate);
         b.fill(fillOpts);
-        if (th.bare) b.bareGroves({ seed: b.seed, rockChance: 0.3 });
+        if (th.bare) b.bareGroves({ seed: b.seed, rockChance: th.groveRocks ?? 0.3 });
         if (th.water && b.water.size) b.waterDeco(th.water.ids, rnd(b, th.water.count), { reach: th.water.reach, per: th.water.per ?? [2, 4], group: th.water.group ?? 2 });
         if (th.vines && b.cliffPlan) b.cliffVines(th.vines.ids, rnd(b, th.vines.count));
         if (th.decals) { let n = 0; for (let k = 0; k < 60 && n < 4; k++) { const x = 2 + Math.floor(b.random() * (b.W - 4)), y = 2 + Math.floor(b.random() * (b.H - 4)); if ([...b.paved].some(([i, g]) => g === "sand" && Math.abs(i % b.W - x) + Math.abs(Math.floor(i / b.W) - y) <= 1) && b.clusterTiles(th.decals, x, y, 3, (i) => b.paved.get(i) === "sand" || b.bare(i), true)) n++; } }
