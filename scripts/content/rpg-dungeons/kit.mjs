@@ -52,6 +52,9 @@ export const TERRAIN = {
   "D": { nine: [135, 136, 137, 165, 166, 167, 195, 196, 197] }, // brown dais
   "P": { nine: [405, 406, 407, 435, 436, 437, 465, 466, 467] }, // green-grey rock dais
   "m": { fill: 487, solid: false }, // crenellated parapet (tower roof edge), grafted from the town sheet
+  "y": { fill: 82 }, // packed arena sand
+  "k": { fill: 111 }, // dark damp stone (wet cellar / swamp floor)
+  "!": { group: "pit-pale", upper: 141 }, // plank boardwalk laid over a bog pit: one body under it
   "a": { fill: 172 }, "v": { fill: 173 }, "<": { fill: 202 }, ">": { fill: 203 }, // arrow floor panels
 };
 export const VOID = new Set([" ", "#"]);
@@ -121,7 +124,7 @@ export const PROPS = {
 };
 
 /** Props that hang on a wall face, and props that may stand either on the face or the floor. */
-export const WALL_PROPS = new Set(["w", "x", "y", "l", "p", "^", "A", "d", "V", "W"]);
+export const WALL_PROPS = new Set(["w", "x", "y", "l", "p", "^", "A", "d", "V", "W", "h"]);
 export const ANY_PROPS = new Set(["b", "-"]);
 
 /** Tibo props copied onto the dungeon sheet (same slots on every dungeon-family tileset copy). */
