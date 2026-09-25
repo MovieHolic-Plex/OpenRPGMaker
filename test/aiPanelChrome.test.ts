@@ -352,7 +352,7 @@ describe("AI 패널 크롬", () => {
     expect(panel.querySelectorAll(".ai-composer-chip")).toHaveLength(0);
     expect(findByTestId(panel, "ai-authoring-examples")).toBeNull();
     expect(findByTestId(panel, "ai-start-visual-gallery")).toBeNull();
-    expect(input?.getAttribute("placeholder")).toBe(formatComposerPlaceholder(readAgentBrief()));
+    expect(input?.getAttribute("placeholder")).toBe(formatComposerPlaceholder());
   });
 
   it("복귀 타깃으로 펼치면 저장값이 0이 된다", () => {

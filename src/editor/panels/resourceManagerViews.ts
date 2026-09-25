@@ -491,6 +491,33 @@ function resourceEntryList(
   return container;
 }
 
+/**
+ * 캐릭터셋 카드의 걷기 미리보기 시계. **카드당 인터벌 하나**이고, 카드가 DOM 에서 떨어지면 스스로 멈춘다.
+ *
+ * 왜 (2026-09-25 실측): 예전에는 캐릭터 8칸마다 `setInterval` 을 하나씩 만들고 정리를 `card.addEventListener("remove")`
+ * 에 걸어 두었는데, `"remove"` 이벤트를 발화하는 곳이 저장소에 **한 곳도 없다**. 그래서 자원 관리자를 한 번 열면
+ * 인터벌 336개가 영구히 남아 3~4.5Hz 로 캔버스를 그렸다(카드 105장 · 닫은 뒤에도 그대로). 목록은 프로젝트/자산
+ * 변경마다 다시 그려지므로 렌더마다 누적됐다.
+ */
+function startCharsetRowTicker(card: HTMLElement, advance: readonly (() => void)[]): void {
+  if (advance.length === 0) return;
+  if (typeof window === "undefined" || typeof window.setInterval !== "function") return;
+  let mounted = false;
+  const timer = window.setInterval(() => {
+    // 아직 붙지 않은 프레임은 기다린다(el() 로 만든 카드는 다음 렌더에서 append 된다).
+    if (!card.isConnected) {
+      if (!mounted) return;
+      window.clearInterval(timer);
+      return;
+    }
+    mounted = true;
+    for (const step of advance) step();
+  }, CHARSET_ROW_TICK_MS);
+}
+
+/** 8칸을 한 시계로 돌린다. 예전의 칸별 220~325ms 대신 한 박자로 맞춘다. */
+const CHARSET_ROW_TICK_MS = 260;
+
 function renderCharsetRowCard(profile: ResourceProfile, isSelected: boolean, onSelect: () => void): HTMLElement {
   const project = store.getCurrent();
   const previewUrl = resolveAssetResourceUrl(profile.assetId, { project });
@@ -514,6 +541,7 @@ function renderCharsetRowCard(profile: ResourceProfile, isSelected: boolean, onS
   });
 
   const charactersStrip = el("div", { class: "rm-charset-characters-strip" });
+  const advanceFns: Array<() => void> = [];
   
   if (previewUrl) {
     const sheetImg = new Image();
@@ -562,17 +590,16 @@ function renderCharsetRowCard(profile: ResourceProfile, isSelected: boolean, onS
       }
 
       // Continuous 4-direction walk rotation loop
-      const interval = window.setInterval(() => {
+      advanceFns.push(() => {
         walkPattern = (walkPattern + 1) % 3;
         if (walkPattern === 0) {
           dirIdx = (dirIdx + 1) % 4; // rotate direction
         }
         drawFrame();
-      }, 220 + charIdx * 15); // slightly offset timings for organic look
-
-      card.addEventListener("remove", () => clearInterval(interval));
+      });
       charactersStrip.append(charBox);
     }
+    startCharsetRowTicker(card, advanceFns);
   }
 
   card.append(header, charactersStrip);

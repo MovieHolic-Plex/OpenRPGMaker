@@ -129,7 +129,7 @@ export function readAgentBrief(): AgentBrief {
  * 지시를 쓰고 보낸 뒤에야 — "의도 읽는 중…" 에서 멈춘 뒤에야 — 로그인이 필요하다는 걸 알았다.
  * 할 수 없는 일을 하라고 안내하지 않는다.
  */
-export function formatComposerPlaceholder(_brief: AgentBrief, aiReady = true): string {
+export function formatComposerPlaceholder(aiReady = true): string {
   return aiReady ? "한 문장으로 지시" : "AI 연결 후 지시할 수 있어요 — 오른쪽 위 상태 칩을 누르세요";
 }
 
