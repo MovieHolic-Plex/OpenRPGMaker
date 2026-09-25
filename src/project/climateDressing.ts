@@ -64,7 +64,7 @@ function contexts(tileset: TilesetDef) {
   const road = members(id => /road|dirt|cobble/.test(id) && !/grass/.test(id));
   const water = members(id => /lake|water|ice/.test(id));
   const life = (t: number) => road.has(t) || LIFE_ROLES.has(meta[t]?.role ?? "") || /계단|다리|울타리|문\/입구|stairs|bridge|fence|door/.test(meta[t]?.label ?? "");
-  return { life, water: (t: number) => water.has(t) || meta[t]?.role === "water" };
+  return { life, road: (t: number) => road.has(t), water: (t: number) => water.has(t) || meta[t]?.role === "water" };
 }
 
 export interface GroveOptions {
@@ -188,25 +188,37 @@ export function arrangeBareGroves(map: GameMap, tileset: TilesetDef, options: Gr
   return { groves: centres.length, trees: treeCount };
 }
 
-/** Desert palm clumps (2–3 palms) on the shore, clumps ten cells apart, off roads/doors/houses by two cells. */
+/** Desert palm clumps (2–3 palms) on the shore, clumps ten cells apart, off roads/doors/houses by two cells.
+ *  When a road runs along the bank (village rivers) the shore has no such cell; then the sand just past the
+ *  road counts — water within four cells, no road touching the palm, other life still two cells away. */
 export function plantPalmGroves(map: GameMap, tileset: TilesetDef, { groups = 3, seed = 1 }: { groups?: number; seed?: number } = {}): number {
   const W = map.width, H = map.height, at = (x: number, y: number) => y * W + x, random = rng(seed * 7 + 3);
   const ctx = contexts(tileset);
   const water = new Set<number>();
   for (let i = 0; i < W * H; i++) if (ctx.water(map.lowerTiles[i]!)) water.add(i);
-  const life = (x: number, y: number, r: number) => {
-    for (let yy = y - r; yy <= y + r; yy++) for (let xx = x - r; xx <= x + r; xx++) if (xx >= 0 && yy >= 0 && xx < W && yy < H) {
-      const i = at(xx, yy);
-      if (ctx.life(map.lowerTiles[i]!) || (map.upperTiles[i]! >= 0 && ctx.life(map.upperTiles[i]!)) || map.events.some(e => e.x === xx && e.y === yy)) return true;
-    }
+  const lifeAt = (i: number, xx: number, yy: number, roads: boolean) => {
+    const lower = map.lowerTiles[i]!, upper = map.upperTiles[i]!;
+    if (!roads && ctx.road(lower) && upper < 0) return false;
+    return ctx.life(lower) || (upper >= 0 && ctx.life(upper)) || map.events.some(e => e.x === xx && e.y === yy);
+  };
+  const near = (x: number, y: number, r: number, test: (i: number, xx: number, yy: number) => boolean) => {
+    for (let yy = y - r; yy <= y + r; yy++) for (let xx = x - r; xx <= x + r; xx++) if (xx >= 0 && yy >= 0 && xx < W && yy < H && test(at(xx, yy), xx, yy)) return true;
     return false;
   };
+  const life = (x: number, y: number, r: number) => near(x, y, r, (i, xx, yy) => lifeAt(i, xx, yy, true));
   const bare = (x: number, y: number) => x >= 1 && y >= 1 && x < W - 1 && y < H - 1 && PLAIN.has(map.lowerTiles[at(x, y)]!) && map.upperTiles[at(x, y)]! < 0;
   const ring = (x: number, y: number) => [-1, 0, 1].every(dy => [-1, 0, 1].every(dx => (dx === 0 && dy === 0) || bare(x + dx, y + dy) || water.has(at(x + dx, y + dy))));
   const shore: [number, number][] = [];
   for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
     if (!bare(x, y) || life(x, y, 2) || !ring(x, y)) continue;
     if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => water.has(at(x + dx!, y + dy!)))) shore.push([x, y]);
+  }
+  if (shore.length < 2) {
+    for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
+      if (!bare(x, y) || !ring(x, y) || !near(x, y, 4, i => water.has(i))) continue;
+      if (near(x, y, 1, i => ctx.road(map.lowerTiles[i]!)) || near(x, y, 2, (i, xx, yy) => lifeAt(i, xx, yy, false))) continue;
+      shore.push([x, y]);
+    }
   }
   for (let k = shore.length - 1; k > 0; k--) { const j = Math.floor(random() * (k + 1)); [shore[k], shore[j]] = [shore[j]!, shore[k]!]; }
   const clumps: [number, number][] = [];
