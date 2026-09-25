@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **86쪽 / 3448KB / 약 984,766 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **86쪽 / 3451KB / 약 985,388 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -1370,7 +1370,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L82` 마을 생활 공간 장식 (2026-09-13)
 - `L126` 겹치는 숲과 외곽 풀밭 (2026-09-13)
 
-### `openwiki/spatial-ai-tools.md` — 19KB · 238줄 · ~5,187 토큰
+### `openwiki/spatial-ai-tools.md` — 21KB · 266줄 · ~5,809 토큰
 
 - `L3` 장소 단일 계약 (2026-09-14)
 - `L19` Ownership
@@ -1380,7 +1380,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L142` Legacy adapters and context
 - `L184` Evidence and integration boundary
 - `L201` Completed region references (2026-09-13)
-  - `L217` Importing a reference (`import_region_reference`, 2026-09-25)
+  - `L217` Shared places and objects without activation (2026-09-25)
+  - `L245` Importing a reference (`import_region_reference`, 2026-09-25)
 
 ### `openwiki/spatial-authoring-controller.md` — 18KB · 294줄 · ~4,590 토큰
 
