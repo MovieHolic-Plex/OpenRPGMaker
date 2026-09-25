@@ -284,13 +284,16 @@ function paintAuto(tileset: TilesetDef, map: MvPackExampleMap, name: string, x: 
   shapeAllAutotileGroupsAround(map, tileset.autotileGroups ?? [], points);
 }
 
-function stampKit(tileset: TilesetDef, map: MvPackExampleMap, id: string, x: number, y: number): void {
+function stampKit(tileset: TilesetDef, map: MvPackExampleMap, id: string, x: number, y: number, options: { keepDoors?: boolean } = {}): void {
   const kit = tileset.structureKits?.find((entry) => entry.id === id);
   if (!kit) return;
+  const lastRow = kit.rows.length - 1;
   const onWall = kit.ai?.tags?.some((tag) => tag === "door" || tag === "wallmount" || tag === "overhead") === true;
   kit.rows.forEach((row, dy) => row.upperTiles?.forEach((tile, dx) => {
     if (tile < 0 || x + dx >= map.width || y + dy >= map.height) return;
     const index = (y + dy) * map.width + x + dx;
+    // stamp_tileset_object 와 같게: 차양 그늘 줄은 이미 있는 문을 덮지 않는다.
+    if (options.keepDoors && dy === lastRow && map.upperTiles[index]! >= 0) return;
     // stamp_tileset_object 와 같게: 벽 물체 밑의 창 난 벽돌은 창 없는 짝으로.
     const plain = onWall ? tileset.mvPack?.plainWalls?.[String(map.lowerTiles[index])] : undefined;
     if (plain !== undefined) map.lowerTiles[index] = plain;
@@ -305,17 +308,19 @@ function buildExampleBlock(tileset: TilesetDef, preset: MvPackPreset): MvPackExa
   const map: MvPackExampleMap = { width, height, lowerTiles: new Array(width * height).fill(-1), upperTiles: new Array(width * height).fill(-1) };
   if (preset.id !== "rasak-modern-city") return map;
   paintAuto(tileset, map, "회색 콘크리트 보도", 0, 0, width, height);
-  // 건물 두 채: 옥상 위, 외벽 아래.
-  paintAuto(tileset, map, "짙은 옥상(붉은 벽돌 테두리)", 1, 0, 8, 3);
-  paintAuto(tileset, map, "붉은 벽돌 외벽 창문", 1, 3, 8, 3);
+  // 건물 두 채를 층 띠로 쌓는다(작가 모텔·유리 상가): 옥상 2줄 → 창 난 위층 3줄(=3개 층) → 창 없는 1층 1줄.
+  paintAuto(tileset, map, "짙은 옥상(붉은 벽돌 테두리)", 1, 0, 8, 2);
+  paintAuto(tileset, map, "붉은 벽돌 외벽 창문", 1, 2, 8, 3);
+  paintAuto(tileset, map, "붉은 벽돌 외벽", 1, 5, 8, 1);
   paintAuto(tileset, map, "회색 옥상", 11, 0, 9, 2);
-  paintAuto(tileset, map, "회색 외벽 유리창 줄", 11, 2, 9, 3);
-  paintAuto(tileset, map, "회색 유리 상가 외벽", 11, 5, 9, 1);
+  paintAuto(tileset, map, "회색 외벽 유리창 줄", 11, 2, 9, 2);
+  paintAuto(tileset, map, "회색 유리 상가 외벽", 11, 4, 9, 2);
   // 차도 5줄 + 중앙선.
   paintAuto(tileset, map, "아스팔트 차도", 0, 8, width, 5);
   paintAuto(tileset, map, "잔디", 0, 13, 7, 2);
-  stampKit(tileset, map, "awning_red", 3, 3);
+  // 차양은 문 윗칸 줄(4행), 문은 맨 아래 줄(5행)이 밑. 차양 줄무늬가 문 윗칸을 덮는다.
   stampKit(tileset, map, "glass_door_bright", 4, 4);
+  stampKit(tileset, map, "awning_red", 3, 4, { keepDoors: true });
   stampKit(tileset, map, "metal_door", 15, 4);
   stampKit(tileset, map, "satellite_dish", 16, 0);
   for (let x = 0; x < width; x += 2) stampKit(tileset, map, "lane_line_horizontal", x, 10);

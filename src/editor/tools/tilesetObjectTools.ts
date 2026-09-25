@@ -231,14 +231,27 @@ const stampTilesetObject: ToolDefinition = {
         }
       });
     }
-    // 문은 차양 그늘(차양 아래 줄) 위에 찍어도 된다 — 차양 바로 밑이 가게 문 자리다.
+    // 가게 입구: 차양 윗줄(줄무늬)이 문 윗칸을 덮고, 문 아랫칸은 차양 그늘 줄 위에 그린다(작가 모텔·유리 상가).
+    // 한 칸에 위층 타일은 하나라, 찍는 순서와 상관없이 이 규칙으로 겹침을 푼다.
     const kind = objectKind(kit);
-    const yieldsToDoor = kind === "door"
-      ? new Set(packObjects(tileset).filter((other) => objectKind(other) === "overhead").flatMap((other) => other.rows.flatMap((row) => row.upperTiles ?? [])))
-      : new Set<number>();
+    const overheadKits = packObjects(tileset).filter((other) => objectKind(other) === "overhead");
+    const overheadTop = new Set(overheadKits.flatMap((other) => other.rows.slice(0, -1).flatMap((row) => row.upperTiles ?? [])));
+    const overheadShade = new Set(overheadKits.flatMap((other) => other.rows.at(-1)?.upperTiles ?? []));
+    const doorTiles = new Set(packObjects(tileset).filter((other) => objectKind(other) === "door").flatMap((other) => other.rows.flatMap((row) => row.upperTiles ?? [])));
+    const keepExisting = (w: (typeof writes)[number]): boolean => {
+      if (w.layer !== "upperTiles") return false;
+      const here = map.upperTiles[w.index]!;
+      return (kind === "door" && overheadTop.has(here)) || (kind === "overhead" && doorTiles.has(here) && overheadShade.has(w.tile));
+    };
+    const replacesExisting = (w: (typeof writes)[number]): boolean => {
+      const here = map.upperTiles[w.index]!;
+      return (kind === "door" && overheadShade.has(here)) || (kind === "overhead" && doorTiles.has(here) && overheadTop.has(w.tile));
+    };
+    const kept = writes.filter(keepExisting);
+    if (kept.length > 0) writes.splice(0, writes.length, ...writes.filter((w) => !keepExisting(w)));
     if (args.overwrite !== true) {
       const clash = writes.find((w) => w.layer === "upperTiles" && map.upperTiles[w.index]! >= 0 && map.upperTiles[w.index] !== w.tile
-        && !yieldsToDoor.has(map.upperTiles[w.index]!));
+        && !replacesExisting(w));
       if (clash) {
         throw new ToolError(
           `(${clash.x},${clash.y}) 위층에 이미 타일 ${map.upperTiles[clash.index]} 이 있습니다 — 다른 자리를 고르거나 overwrite:true.`,
