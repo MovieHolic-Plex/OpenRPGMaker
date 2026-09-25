@@ -172,6 +172,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   advance_dungeon_room_build: build("던전 다음 단계", "map"),
   run_dungeon_room_pipeline: build("던전 한 번에 짓기", "map"),
   author_wild_route: build("도로·풀숲 짓기", "map"),
+  arrange_tall_grass: build("키큰 풀 깔기", "map"),
   evaluate_dungeon_room: inspect("던전 평가", "shield"),
   list_dungeon_room_themes: inspect("던전 테마 목록", "map"),
   list_structure_kits: inspect("구조 킷 목록", "box"),
