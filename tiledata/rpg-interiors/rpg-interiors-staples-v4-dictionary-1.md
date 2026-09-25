@@ -114,39 +114,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "lower"
   },
   {
-    "tile": 156,
-    "label": "확장 목재 탁자 상판",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower"
-  },
-  {
-    "tile": 157,
-    "label": "확장 목재 탁자 상판",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower"
-  },
-  {
-    "tile": 158,
-    "label": "확장 목재 탁자 상판",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower"
-  },
-  {
     "tile": 163,
     "label": "문양 석판",
     "passability": {
@@ -1315,6 +1282,39 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
   {
     "tile": 1245,
     "label": "가죽 배낭",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1247,
+    "label": "밧줄 뭉치",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1249,
+    "label": "지도통",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1255,
+    "label": "안장 받침대",
     "passability": {
       "up": false,
       "down": false,

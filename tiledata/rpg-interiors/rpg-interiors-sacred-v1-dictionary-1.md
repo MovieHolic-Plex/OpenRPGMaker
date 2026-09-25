@@ -290,41 +290,8 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "lower"
   },
   {
-    "tile": 157,
-    "label": "확장 목재 탁자 상판",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower"
-  },
-  {
     "tile": 158,
     "label": "확장 목재 탁자 상판",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower"
-  },
-  {
-    "tile": 159,
-    "label": "확장 흰색 탁자 상판",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower"
-  },
-  {
-    "tile": 161,
-    "label": "확장 흰색 탁자 상판",
     "passability": {
       "up": false,
       "down": false,
@@ -422,6 +389,28 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "lower"
   },
   {
+    "tile": 198,
+    "label": "목재 탁자 하단",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 200,
+    "label": "목재 탁자 하단",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
     "tile": 202,
     "label": "붉은 커튼 자락",
     "passability": {
@@ -453,28 +442,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
       "right": true
     },
     "priority": "upper"
-  },
-  {
-    "tile": 216,
-    "label": "확장 목재 탁자 상판",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower"
-  },
-  {
-    "tile": 218,
-    "label": "확장 목재 탁자 상판",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower"
   },
   {
     "tile": 240,
@@ -1320,6 +1287,39 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
       "down": false,
       "left": false,
       "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1634,
+    "label": "목조 제단",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1635,
+    "label": "목조 제단",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1636,
+    "label": "목조 제단",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
     },
     "priority": "upper"
   }

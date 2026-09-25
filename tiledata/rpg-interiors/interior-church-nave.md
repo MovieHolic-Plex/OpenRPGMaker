@@ -2,7 +2,7 @@
 
 사제가 예배를 올리고 마을 사람이 앉아 기도하는 곳. 교구마을 「교회 언덕」의 석벽 교회(스테인드글라스 두 장, 가운데 문)와 짝을 이룬다.
 
-석벽·회색 돌바닥 42. 앞쪽(북쪽) 제단부를 무늬 석판 163으로 깔고 제단 3×2 뒤 벽에 성녀 석상 88/118, 벽에 스테인드글라스 144 넷, 양옆 촛대 탁자·설교대 독서대. 문에서 제단까지 폭3 붉은 카펫, 좌우로 긴 의자 4×2 세 줄씩, 옆 통로에 기둥 89/119와 촛대, 제단부 앞 무릎 꿇는 붉은 카펫 한 줄과 화분 둘. 19×18, tilesetId=tibo_interior_expanded. 입구 (9,16), 주인·담당 자리 (9,7). 통행 검사 목표 [[9,7],[3,9],[15,14]].
+석벽·회색 돌바닥 42. 앞쪽(북쪽) 제단부를 무늬 석판 163으로 깔고 제단 3×2 뒤 벽에 성녀 석상 88/118, 벽에 스테인드글라스 144 넷, 양옆 촛대 탁자·설교대 독서대. 문에서 제단까지 폭3 붉은 카펫, 좌우로 제단을 향해 앉는 뒷모습 긴 의자 4×2(2070~2077) 세 줄씩, 옆 통로에 기둥 89/119와 촛대, 제단부 앞 무릎 꿇는 붉은 카펫 한 줄과 화분 둘. 19×18, tilesetId=tibo_interior_expanded. 입구 (9,16), 주인·담당 자리 (9,7). 통행 검사 목표 [[9,7],[3,9],[15,14]].
 
 ![교회 · 예배당](images/interior-church-nave.png)
 
@@ -143,8 +143,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
   },
   {
     "kind": "tibo-kit",
-    "kitId": "tibo-fantasy-pew",
-    "name": "긴 의자",
+    "kitId": "tibo-atlas-pew-back",
+    "name": "뒷모습 긴 의자(북쪽을 봄)",
     "x": 4,
     "y": 9,
     "w": 4,
@@ -153,8 +153,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
   },
   {
     "kind": "tibo-kit",
-    "kitId": "tibo-fantasy-pew",
-    "name": "긴 의자",
+    "kitId": "tibo-atlas-pew-back",
+    "name": "뒷모습 긴 의자(북쪽을 봄)",
     "x": 11,
     "y": 9,
     "w": 4,
@@ -163,8 +163,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
   },
   {
     "kind": "tibo-kit",
-    "kitId": "tibo-fantasy-pew",
-    "name": "긴 의자",
+    "kitId": "tibo-atlas-pew-back",
+    "name": "뒷모습 긴 의자(북쪽을 봄)",
     "x": 4,
     "y": 11,
     "w": 4,
@@ -173,8 +173,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
   },
   {
     "kind": "tibo-kit",
-    "kitId": "tibo-fantasy-pew",
-    "name": "긴 의자",
+    "kitId": "tibo-atlas-pew-back",
+    "name": "뒷모습 긴 의자(북쪽을 봄)",
     "x": 11,
     "y": 11,
     "w": 4,
@@ -183,8 +183,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
   },
   {
     "kind": "tibo-kit",
-    "kitId": "tibo-fantasy-pew",
-    "name": "긴 의자",
+    "kitId": "tibo-atlas-pew-back",
+    "name": "뒷모습 긴 의자(북쪽을 봄)",
     "x": 4,
     "y": 13,
     "w": 4,
@@ -193,8 +193,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
   },
   {
     "kind": "tibo-kit",
-    "kitId": "tibo-fantasy-pew",
-    "name": "긴 의자",
+    "kitId": "tibo-atlas-pew-back",
+    "name": "뒷모습 긴 의자(북쪽을 봄)",
     "x": 11,
     "y": 13,
     "w": 4,
