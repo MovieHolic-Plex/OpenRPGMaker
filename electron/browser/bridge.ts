@@ -5,6 +5,7 @@ type BrowserBridgeConfig = {
   readonly endpoint: string;
   readonly token: string;
   readonly companionToken?: string | null;
+  readonly requestBodyEncoding?: "gzip";
 };
 
 declare global {
@@ -56,7 +57,8 @@ async function call(channel: string, payload: unknown, keepalive = false, compre
   const response = await fetch(config.endpoint, {
     method: "POST",
     keepalive,
-    headers: { ...encoded.headers, "content-type": "application/json", "x-oprn-bridge-token": config.token, "x-oprn-session": tabId, "x-oprn-project": selectedProject },
+    // x-oprn-channel lets the host grant project-document channels the larger decoded allowance.
+    headers: { ...encoded.headers, "content-type": "application/json", "x-oprn-bridge-token": config.token, "x-oprn-session": tabId, "x-oprn-project": selectedProject, "x-oprn-channel": channel },
     body: encoded.body,
   });
   if (!response.ok) throw new Error(`${channel}: ${response.status} ${await response.text()}`);

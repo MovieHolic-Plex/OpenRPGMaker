@@ -1,0 +1,27 @@
+{
+  "id": "oprn-atlas-interiors-20260925",
+  "places": 100,
+  "regions": 0,
+  "maps": 100,
+  "bytes": 14489623,
+  "tilesets": {
+    "shared_atlas_tibo_interior": {
+      "count": 2160,
+      "references": [
+        "fantasy-interiors-v3",
+        "rpg-interiors-inn-homes-v3",
+        "rpg-interiors-civic-v3",
+        "rpg-interiors-castle-v3",
+        "rpg-interiors-leisure-v3",
+        "rpg-interiors-climate-v4",
+        "rpg-interiors-staples-v4",
+        "rpg-interiors-sacred-v1"
+      ]
+    }
+  },
+  "renderCheck": "100 maps pixel-identical with the shared atlas",
+  "file": "/home/main/.local/share/oprn/shared-content.sqlite",
+  "revision": "5342b0a896d818d14092958e4f41ef6dca1fda66240b5c0824d9223a86e680c6",
+  "reloaded": true,
+  "publishedAt": "2026-09-25T17:05:34.384Z"
+}

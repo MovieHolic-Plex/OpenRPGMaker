@@ -1,6 +1,7 @@
 // ai/promptPolicies.ts
 // User-facing agent behavior rules kept as constants so tests can verify the
 // exact policy surface that is injected into the system prompt.
+import { MODERN_TILESET_POLICY_LINE } from './modernTilesetPolicy';
 
 /**
  * 집 다양성 규칙 — 채팅 세션(contextBuilder)과 Pi 시공 에이전트(piAgent/systemPrompt)가 같은 문장을 받는다.
@@ -18,6 +19,7 @@ export const TILESET_FAMILY_POLICY_LINE =
   "- 칩셋 계열(필수): 새 맵·바꾸는 칩셋은 사용자가 보고 있는 맵과 같은 계열(그림체)로 고른다. 다른 계열이 꼭 필요하면 칠하지 말고 ask_tileset_change 로 사용자에게 견본을 보여 묻고 턴을 끝낸다(이때만 되묻는다).";
 
 export const AGENT_UX_POLICY_LINES = [
+  MODERN_TILESET_POLICY_LINE,
   "## UX 응답 정책(반드시 준수)",
   "- 능력 경계: 이 엔진은 2D 타일 RPG 에디터이며 맵별 옵트인 실시간 액션 전투(공격·회피·가드)를 지원합니다. set_action_combat/make_action_enemy와 실제 리소스·적·트룹으로 저작하세요. 3D 오픈월드, 외부 서비스 연동/API 호출, 플러그인 설치, 실제 배포처럼 현재 툴/엔진이 지원하지 않는 요청은 쓰기 툴을 호출하거나 변경 제안을 만들지 마세요. 한계를 설명하고 2D 맵·이벤트·DB로 가능한 대안을 1~2개 제안한 뒤 턴을 끝내세요.",
   "- 전투 방식: 이번 요청과 프로젝트 위키의 제작 방향·현재 맵의 예외를 먼저 읽으세요. JRPG 기본은 보이는 몬스터에 닿으면 별도 전투 화면에서 명령을 고르는 방식입니다. 액션 RPG는 set_action_combat으로 시스템과 대상 맵을 켜고 make_action_enemy로 맵 위에서 직접 싸우는 적을 만드세요. 랜덤 인카운터는 사용자가 원할 때만 선택하세요. 던전이라는 말만으로 전투 방식을 바꾸지 마세요. 기존 결정에도 답이 없으면 '몬스터에 닿으면 전투 화면에서 싸울까요, 돌아다니는 화면에서 직접 공격할까요?'처럼 플레이 모습을 물으세요.",

@@ -571,7 +571,7 @@
     "id": "dungeon-demon-hall",
     "entry": [
       17,
-      19
+      16
     ],
     "targets": [
       [
@@ -595,14 +595,14 @@
       {
         "at": [
           17,
-          19
+          16
         ],
         "to": "dungeon-demon-front",
         "arrive": [
-          25,
-          7
+          16,
+          5
         ],
-        "note": "남쪽 입구 → 마왕성 정문"
+        "note": "남쪽 문 틈 → 마왕성 정문 홀 북쪽 아치"
       },
       {
         "at": [
@@ -617,8 +617,8 @@
         "note": "동쪽 끝 → 함정방"
       }
     ],
-    "reachable": 243,
-    "walkable": 261,
+    "reachable": 231,
+    "walkable": 249,
     "stranded": [
       [
         24,
@@ -1071,7 +1071,7 @@
         "to": "dungeon-sunken-gate",
         "arrive": [
           17,
-          27
+          22
         ],
         "note": "북쪽 → 해저 신전 입구 회랑"
       }
@@ -1573,12 +1573,12 @@
     "id": "dungeon-sunken-gate",
     "entry": [
       17,
-      27
+      22
     ],
     "targets": [
       [
         17,
-        1
+        5
       ],
       [
         18,
@@ -1597,30 +1597,30 @@
       {
         "at": [
           17,
-          27
+          22
         ],
         "to": "dungeon-sea-cave",
         "arrive": [
           15,
           1
         ],
-        "note": "남쪽 굴길 → 해저 동굴 북쪽"
+        "note": "남쪽 문 틈 → 해저 동굴 북쪽"
       },
       {
         "at": [
           17,
-          0
+          5
         ],
         "to": "dungeon-sunken-hall",
         "arrive": [
           19,
-          30
+          27
         ],
-        "note": "북쪽 → 산호 기둥 대전"
+        "note": "북쪽 벽 아치 → 산호 기둥 대전"
       }
     ],
-    "reachable": 312,
-    "walkable": 312,
+    "reachable": 272,
+    "walkable": 272,
     "stranded": [],
     "blocked": [],
     "onWallTop": []
@@ -1629,12 +1629,12 @@
     "id": "dungeon-sunken-hall",
     "entry": [
       19,
-      31
+      27
     ],
     "targets": [
       [
         19,
-        1
+        5
       ],
       [
         4,
@@ -1657,30 +1657,30 @@
       {
         "at": [
           19,
-          31
+          27
         ],
         "to": "dungeon-sunken-gate",
         "arrive": [
           17,
-          1
+          5
         ],
-        "note": "남쪽 → 입구 회랑"
+        "note": "남쪽 문 틈 → 입구 회랑"
       },
       {
         "at": [
           19,
-          0
+          5
         ],
         "to": "dungeon-sunken-altar",
         "arrive": [
           16,
-          27
+          23
         ],
-        "note": "북쪽 → 바다 여신 제단"
+        "note": "북쪽 벽 아치 → 바다 여신 제단"
       }
     ],
-    "reachable": 543,
-    "walkable": 543,
+    "reachable": 507,
+    "walkable": 507,
     "stranded": [],
     "blocked": [],
     "onWallTop": []
@@ -1689,7 +1689,7 @@
     "id": "dungeon-sunken-altar",
     "entry": [
       16,
-      27
+      23
     ],
     "targets": [
       [
@@ -1713,18 +1713,270 @@
       {
         "at": [
           16,
-          27
+          23
         ],
         "to": "dungeon-sunken-hall",
         "arrive": [
           19,
-          1
+          5
         ],
-        "note": "남쪽 → 산호 기둥 대전"
+        "note": "남쪽 문 틈 → 산호 기둥 대전"
       }
     ],
-    "reachable": 379,
-    "walkable": 379,
+    "reachable": 360,
+    "walkable": 360,
+    "stranded": [],
+    "blocked": [],
+    "onWallTop": []
+  },
+  {
+    "id": "dungeon-demon-front",
+    "entry": [
+      16,
+      24
+    ],
+    "targets": [
+      [
+        16,
+        5
+      ],
+      [
+        7,
+        21
+      ],
+      [
+        25,
+        21
+      ],
+      [
+        5,
+        13
+      ],
+      [
+        27,
+        13
+      ]
+    ],
+    "exits": [
+      {
+        "at": [
+          16,
+          24
+        ],
+        "to": "outdoor-demon-castle",
+        "arrive": [
+          30,
+          34
+        ],
+        "note": "남쪽 성문 틈 → 마왕성 외관 · 재의 성채 정문 앞"
+      },
+      {
+        "at": [
+          16,
+          5
+        ],
+        "to": "dungeon-demon-hall",
+        "arrive": [
+          17,
+          16
+        ],
+        "note": "북쪽 벽 아치 → 1층 복도 남쪽 문"
+      }
+    ],
+    "reachable": 418,
+    "walkable": 418,
+    "stranded": [],
+    "blocked": [],
+    "onWallTop": []
+  },
+  {
+    "id": "dungeon-arena-floor",
+    "entry": [
+      16,
+      27
+    ],
+    "targets": [
+      [
+        16,
+        14
+      ],
+      [
+        3,
+        15
+      ],
+      [
+        28,
+        15
+      ],
+      [
+        16,
+        8
+      ],
+      [
+        4,
+        24
+      ],
+      [
+        28,
+        5
+      ]
+    ],
+    "exits": [
+      {
+        "at": [
+          16,
+          27
+        ],
+        "to": "outside",
+        "note": "남쪽 관중 출입문 → 투기장 바깥"
+      },
+      {
+        "at": [
+          3,
+          14
+        ],
+        "to": "interior-arena-waiting-room",
+        "arrive": [
+          16,
+          6
+        ],
+        "note": "서쪽 투사 계단(내려감) → 투기장 대기실 동벽 계단 앞"
+      }
+    ],
+    "reachable": 603,
+    "walkable": 603,
+    "stranded": [],
+    "blocked": [],
+    "onWallTop": []
+  },
+  {
+    "id": "dungeon-swamp-temple",
+    "entry": [
+      17,
+      27
+    ],
+    "targets": [
+      [
+        18,
+        6
+      ],
+      [
+        9,
+        6
+      ],
+      [
+        28,
+        6
+      ],
+      [
+        6,
+        18
+      ],
+      [
+        30,
+        19
+      ]
+    ],
+    "exits": [
+      {
+        "at": [
+          17,
+          27
+        ],
+        "to": "outside",
+        "note": "남쪽 입구 → 늪지대"
+      }
+    ],
+    "reachable": 320,
+    "walkable": 320,
+    "stranded": [],
+    "blocked": [],
+    "onWallTop": []
+  },
+  {
+    "id": "dungeon-pirate-cove",
+    "entry": [
+      0,
+      7
+    ],
+    "targets": [
+      [
+        14,
+        6
+      ],
+      [
+        30,
+        11
+      ],
+      [
+        30,
+        22
+      ],
+      [
+        17,
+        22
+      ],
+      [
+        38,
+        7
+      ],
+      [
+        4,
+        8
+      ]
+    ],
+    "exits": [
+      {
+        "at": [
+          0,
+          7
+        ],
+        "to": "outside",
+        "note": "서쪽 굴길 → 해안 절벽"
+      }
+    ],
+    "reachable": 408,
+    "walkable": 408,
+    "stranded": [],
+    "blocked": [],
+    "onWallTop": []
+  },
+  {
+    "id": "dungeon-well-cellar",
+    "entry": [
+      9,
+      4
+    ],
+    "targets": [
+      [
+        3,
+        11
+      ],
+      [
+        8,
+        12
+      ],
+      [
+        13,
+        5
+      ],
+      [
+        10,
+        9
+      ]
+    ],
+    "exits": [
+      {
+        "at": [
+          9,
+          4
+        ],
+        "to": "outside",
+        "note": "사다리 → 마을 우물"
+      }
+    ],
+    "reachable": 79,
+    "walkable": 79,
     "stranded": [],
     "blocked": [],
     "onWallTop": []

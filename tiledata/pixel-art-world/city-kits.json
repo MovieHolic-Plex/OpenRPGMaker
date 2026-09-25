@@ -1,0 +1,2624 @@
+{
+  "sources": [
+    {
+      "id": "town",
+      "filename": "ST-Town-E01.png",
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Town-E01.png",
+      "sha256": "d28c556e346a833c14caf3e4668bf1fcec67c7862bc7b63f9b2279207fe7a13e",
+      "width": 256,
+      "height": 1600,
+      "tileSize": 32,
+      "tilesPerRow": 8,
+      "format": "tileset"
+    },
+    {
+      "id": "school",
+      "filename": "ST-Schl-E01.png",
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Schl-E01.png",
+      "sha256": "39b7b14027c50019479c609e44427163a52f38eef89af4c68ce6e4593a7b616f",
+      "width": 256,
+      "height": 1824,
+      "tileSize": 32,
+      "tilesPerRow": 8,
+      "format": "tileset"
+    },
+    {
+      "id": "park",
+      "filename": "ST-Park-E01.png",
+      "url": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Park-E01.png",
+      "sha256": "4becd0ccc997e22003dc8a0f6fb8a6cc12379d14c004d9f744d9b4d0b07ad62e",
+      "width": 256,
+      "height": 1600,
+      "tileSize": 32,
+      "tilesPerRow": 8,
+      "format": "tileset"
+    },
+    {
+      "id": "xp-roof01",
+      "filename": "SA-Roof01.png",
+      "url": "https://yms.main.jp/dotartworld/sozai/autotile2/autotile-ex/SA-Roof01.png",
+      "sha256": "15d7faf904362bb07108b2e407fb750fd242f1c7db9c4ca2f5f27f2e0aec74bb",
+      "width": 96,
+      "height": 128,
+      "tileSize": 32,
+      "tilesPerRow": 8,
+      "format": "xp-autotile",
+      "variantMasks": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        19,
+        23,
+        27,
+        31,
+        38,
+        39,
+        46,
+        47,
+        55,
+        63,
+        76,
+        77,
+        78,
+        79,
+        95,
+        110,
+        111,
+        127,
+        137,
+        139,
+        141,
+        143,
+        155,
+        159,
+        175,
+        191,
+        205,
+        207,
+        223,
+        239,
+        255
+      ]
+    }
+  ],
+  "kits": [
+    {
+      "id": "school-main",
+      "name": "햇살 초등학교 본관",
+      "kind": "building",
+      "width": 13,
+      "height": 10,
+      "lowerTiles": [
+        {
+          "source": "xp-roof01",
+          "tile": 20
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 31
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 31
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 31
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 31
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 31
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 31
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 31
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 31
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 31
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 31
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 31
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 26
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 24
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 46
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 46
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 46
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 46
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 46
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 46
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 46
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 46
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 46
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 46
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 46
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 42
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 16
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 38
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 38
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 38
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 38
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 38
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 38
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 38
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 38
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 38
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 38
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 38
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 34
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 256
+        },
+        {
+          "source": "school",
+          "tile": 257
+        },
+        {
+          "source": "school",
+          "tile": 257
+        },
+        {
+          "source": "school",
+          "tile": 257
+        },
+        {
+          "source": "school",
+          "tile": 257
+        },
+        {
+          "source": "school",
+          "tile": 257
+        },
+        {
+          "source": "school",
+          "tile": 257
+        },
+        {
+          "source": "school",
+          "tile": 257
+        },
+        {
+          "source": "school",
+          "tile": 257
+        },
+        {
+          "source": "school",
+          "tile": 257
+        },
+        {
+          "source": "school",
+          "tile": 257
+        },
+        {
+          "source": "school",
+          "tile": 257
+        },
+        {
+          "source": "school",
+          "tile": 258
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 249
+        },
+        {
+          "source": "school",
+          "tile": 249
+        },
+        {
+          "source": "school",
+          "tile": 249
+        },
+        {
+          "source": "school",
+          "tile": 249
+        },
+        {
+          "source": "school",
+          "tile": 249
+        },
+        {
+          "source": "school",
+          "tile": 249
+        },
+        {
+          "source": "school",
+          "tile": 249
+        },
+        {
+          "source": "school",
+          "tile": 249
+        },
+        {
+          "source": "school",
+          "tile": 249
+        },
+        {
+          "source": "school",
+          "tile": 249
+        },
+        {
+          "source": "school",
+          "tile": 249
+        },
+        {
+          "source": "school",
+          "tile": 249
+        },
+        {
+          "source": "school",
+          "tile": 249
+        }
+      ],
+      "upperTiles": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        {
+          "source": "school",
+          "tile": 195
+        },
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        {
+          "source": "school",
+          "tile": 266
+        },
+        {
+          "source": "school",
+          "tile": 267
+        },
+        {
+          "source": "school",
+          "tile": 266
+        },
+        {
+          "source": "school",
+          "tile": 267
+        },
+        null,
+        null,
+        null,
+        {
+          "source": "school",
+          "tile": 266
+        },
+        {
+          "source": "school",
+          "tile": 267
+        },
+        {
+          "source": "school",
+          "tile": 266
+        },
+        {
+          "source": "school",
+          "tile": 267
+        },
+        null,
+        null,
+        {
+          "source": "school",
+          "tile": 274
+        },
+        {
+          "source": "school",
+          "tile": 275
+        },
+        {
+          "source": "school",
+          "tile": 274
+        },
+        {
+          "source": "school",
+          "tile": 275
+        },
+        null,
+        null,
+        null,
+        {
+          "source": "school",
+          "tile": 274
+        },
+        {
+          "source": "school",
+          "tile": 275
+        },
+        {
+          "source": "school",
+          "tile": 274
+        },
+        {
+          "source": "school",
+          "tile": 275
+        },
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        {
+          "source": "school",
+          "tile": 266
+        },
+        {
+          "source": "school",
+          "tile": 267
+        },
+        {
+          "source": "school",
+          "tile": 266
+        },
+        {
+          "source": "school",
+          "tile": 267
+        },
+        null,
+        null,
+        null,
+        {
+          "source": "school",
+          "tile": 266
+        },
+        {
+          "source": "school",
+          "tile": 267
+        },
+        {
+          "source": "school",
+          "tile": 266
+        },
+        {
+          "source": "school",
+          "tile": 267
+        },
+        null,
+        null,
+        {
+          "source": "school",
+          "tile": 274
+        },
+        {
+          "source": "school",
+          "tile": 275
+        },
+        {
+          "source": "school",
+          "tile": 274
+        },
+        {
+          "source": "school",
+          "tile": 275
+        },
+        null,
+        {
+          "source": "school",
+          "tile": 280
+        },
+        {
+          "source": "school",
+          "tile": 281
+        },
+        {
+          "source": "school",
+          "tile": 274
+        },
+        {
+          "source": "school",
+          "tile": 275
+        },
+        {
+          "source": "school",
+          "tile": 274
+        },
+        {
+          "source": "school",
+          "tile": 275
+        },
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        {
+          "source": "school",
+          "tile": 288
+        },
+        {
+          "source": "school",
+          "tile": 289
+        },
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "entrance": {
+        "x": 6,
+        "y": 9
+      },
+      "approach": {
+        "x": 6,
+        "y": 10
+      },
+      "notes": "두 층 교실과 중앙 정문. lower 벽/지붕은 차단, 창·문 upper도 통과로 오해하지 않는다. 정문 두 칸(6,9),(7,9)에 부모가 실내 전이 이벤트를 붙인다. approach=(6,10)은 외부 보도. 실제 학교 원본의 벽·창·문과 XP 지붕만 사용."
+    },
+    {
+      "id": "clinic-small",
+      "name": "푸른 창 지역 의원",
+      "kind": "building",
+      "width": 9,
+      "height": 7,
+      "lowerTiles": [
+        {
+          "source": "xp-roof01",
+          "tile": 20
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 31
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 31
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 31
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 31
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 31
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 31
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 31
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 26
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 16
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 38
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 38
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 38
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 38
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 38
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 38
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 38
+        },
+        {
+          "source": "xp-roof01",
+          "tile": 34
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 241
+        },
+        {
+          "source": "school",
+          "tile": 249
+        },
+        {
+          "source": "school",
+          "tile": 249
+        },
+        {
+          "source": "school",
+          "tile": 249
+        },
+        {
+          "source": "school",
+          "tile": 249
+        },
+        {
+          "source": "school",
+          "tile": 249
+        },
+        {
+          "source": "school",
+          "tile": 249
+        },
+        {
+          "source": "school",
+          "tile": 249
+        },
+        {
+          "source": "school",
+          "tile": 249
+        },
+        {
+          "source": "school",
+          "tile": 249
+        }
+      ],
+      "upperTiles": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        {
+          "source": "school",
+          "tile": 266
+        },
+        {
+          "source": "school",
+          "tile": 267
+        },
+        null,
+        null,
+        null,
+        {
+          "source": "school",
+          "tile": 266
+        },
+        {
+          "source": "school",
+          "tile": 267
+        },
+        null,
+        null,
+        {
+          "source": "school",
+          "tile": 274
+        },
+        {
+          "source": "school",
+          "tile": 275
+        },
+        null,
+        null,
+        null,
+        {
+          "source": "school",
+          "tile": 274
+        },
+        {
+          "source": "school",
+          "tile": 275
+        },
+        null,
+        null,
+        null,
+        null,
+        null,
+        {
+          "source": "school",
+          "tile": 280
+        },
+        {
+          "source": "school",
+          "tile": 281
+        },
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        {
+          "source": "school",
+          "tile": 288
+        },
+        {
+          "source": "school",
+          "tile": 289
+        },
+        null,
+        null,
+        null
+      ],
+      "entrance": {
+        "x": 4,
+        "y": 6
+      },
+      "approach": {
+        "x": 4,
+        "y": 7
+      },
+      "notes": "학교 원본의 공공건물 벽·푸른 창으로 재구성한 작은 의원. 병원 고유 외관이라고 주장하지 않는다. 의료 간판/시설명은 부모의 표지 이벤트로 붙인다. door=(4,6),(5,6), approach=(4,7). 계단이나 자동 출입 이벤트는 포함하지 않는다."
+    },
+    {
+      "id": "home-red-gable",
+      "name": "붉은 지붕 목조 주택",
+      "kind": "building",
+      "width": 6,
+      "height": 9,
+      "lowerTiles": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        {
+          "source": "town",
+          "tile": 225
+        },
+        {
+          "source": "town",
+          "tile": 225
+        },
+        null,
+        null,
+        null,
+        {
+          "source": "town",
+          "tile": 225
+        },
+        {
+          "source": "town",
+          "tile": 225
+        },
+        {
+          "source": "town",
+          "tile": 225
+        },
+        {
+          "source": "town",
+          "tile": 225
+        },
+        null,
+        {
+          "source": "town",
+          "tile": 225
+        },
+        {
+          "source": "town",
+          "tile": 225
+        },
+        {
+          "source": "town",
+          "tile": 225
+        },
+        {
+          "source": "town",
+          "tile": 225
+        },
+        {
+          "source": "town",
+          "tile": 225
+        },
+        {
+          "source": "town",
+          "tile": 225
+        },
+        {
+          "source": "town",
+          "tile": 216
+        },
+        {
+          "source": "town",
+          "tile": 217
+        },
+        {
+          "source": "town",
+          "tile": 217
+        },
+        {
+          "source": "town",
+          "tile": 217
+        },
+        {
+          "source": "town",
+          "tile": 217
+        },
+        {
+          "source": "town",
+          "tile": 218
+        },
+        {
+          "source": "town",
+          "tile": 224
+        },
+        {
+          "source": "town",
+          "tile": 225
+        },
+        {
+          "source": "town",
+          "tile": 225
+        },
+        {
+          "source": "town",
+          "tile": 225
+        },
+        {
+          "source": "town",
+          "tile": 225
+        },
+        {
+          "source": "town",
+          "tile": 226
+        },
+        {
+          "source": "town",
+          "tile": 232
+        },
+        {
+          "source": "town",
+          "tile": 233
+        },
+        {
+          "source": "town",
+          "tile": 233
+        },
+        {
+          "source": "town",
+          "tile": 233
+        },
+        {
+          "source": "town",
+          "tile": 233
+        },
+        {
+          "source": "town",
+          "tile": 234
+        }
+      ],
+      "upperTiles": [
+        null,
+        null,
+        {
+          "source": "town",
+          "tile": 312
+        },
+        {
+          "source": "town",
+          "tile": 313
+        },
+        null,
+        null,
+        null,
+        {
+          "source": "town",
+          "tile": 312
+        },
+        {
+          "source": "town",
+          "tile": 320
+        },
+        {
+          "source": "town",
+          "tile": 321
+        },
+        {
+          "source": "town",
+          "tile": 313
+        },
+        null,
+        {
+          "source": "town",
+          "tile": 312
+        },
+        {
+          "source": "town",
+          "tile": 320
+        },
+        {
+          "source": "town",
+          "tile": 320
+        },
+        {
+          "source": "town",
+          "tile": 321
+        },
+        {
+          "source": "town",
+          "tile": 321
+        },
+        {
+          "source": "town",
+          "tile": 313
+        },
+        {
+          "source": "town",
+          "tile": 320
+        },
+        {
+          "source": "town",
+          "tile": 320
+        },
+        {
+          "source": "town",
+          "tile": 328
+        },
+        {
+          "source": "town",
+          "tile": 329
+        },
+        {
+          "source": "town",
+          "tile": 321
+        },
+        {
+          "source": "town",
+          "tile": 321
+        },
+        {
+          "source": "town",
+          "tile": 320
+        },
+        {
+          "source": "town",
+          "tile": 328
+        },
+        null,
+        null,
+        {
+          "source": "town",
+          "tile": 329
+        },
+        {
+          "source": "town",
+          "tile": 321
+        },
+        {
+          "source": "town",
+          "tile": 328
+        },
+        null,
+        {
+          "source": "town",
+          "tile": 304
+        },
+        null,
+        null,
+        {
+          "source": "town",
+          "tile": 329
+        },
+        null,
+        null,
+        null,
+        null,
+        {
+          "source": "town",
+          "tile": 262
+        },
+        {
+          "source": "town",
+          "tile": 263
+        },
+        null,
+        null,
+        {
+          "source": "town",
+          "tile": 259
+        },
+        null,
+        {
+          "source": "town",
+          "tile": 270
+        },
+        {
+          "source": "town",
+          "tile": 271
+        },
+        null,
+        null,
+        {
+          "source": "town",
+          "tile": 267
+        },
+        null,
+        null,
+        null
+      ],
+      "entrance": {
+        "x": 2,
+        "y": 8
+      },
+      "approach": {
+        "x": 2,
+        "y": 9
+      },
+      "notes": "town 붉은 경사지붕을 실제 대각 마감 방향대로 확장. 투명 삼각 지붕 아래에 테두리 없는 목재 벽225를 lower로 포함했다. 몰딩237을 반복하지 않는다. 입구=(2,8), approach=(2,9). 한 칸 문 전체는259/267의 두 행."
+    },
+    {
+      "id": "apartment-dark-roof",
+      "name": "기와 지붕 이층 주택",
+      "kind": "building",
+      "width": 10,
+      "height": 9,
+      "lowerTiles": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 65
+        },
+        {
+          "source": "town",
+          "tile": 65
+        },
+        {
+          "source": "town",
+          "tile": 65
+        },
+        {
+          "source": "town",
+          "tile": 65
+        },
+        {
+          "source": "town",
+          "tile": 65
+        },
+        {
+          "source": "town",
+          "tile": 65
+        },
+        {
+          "source": "town",
+          "tile": 65
+        },
+        {
+          "source": "town",
+          "tile": 65
+        },
+        {
+          "source": "town",
+          "tile": 65
+        },
+        {
+          "source": "town",
+          "tile": 65
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 57
+        },
+        {
+          "source": "town",
+          "tile": 65
+        },
+        {
+          "source": "town",
+          "tile": 65
+        },
+        {
+          "source": "town",
+          "tile": 65
+        },
+        {
+          "source": "town",
+          "tile": 65
+        },
+        {
+          "source": "town",
+          "tile": 65
+        },
+        {
+          "source": "town",
+          "tile": 65
+        },
+        {
+          "source": "town",
+          "tile": 65
+        },
+        {
+          "source": "town",
+          "tile": 65
+        },
+        {
+          "source": "town",
+          "tile": 65
+        },
+        {
+          "source": "town",
+          "tile": 65
+        }
+      ],
+      "upperTiles": [
+        {
+          "source": "town",
+          "tile": 284
+        },
+        {
+          "source": "town",
+          "tile": 284
+        },
+        {
+          "source": "town",
+          "tile": 284
+        },
+        {
+          "source": "town",
+          "tile": 284
+        },
+        {
+          "source": "town",
+          "tile": 284
+        },
+        {
+          "source": "town",
+          "tile": 284
+        },
+        {
+          "source": "town",
+          "tile": 284
+        },
+        {
+          "source": "town",
+          "tile": 284
+        },
+        {
+          "source": "town",
+          "tile": 284
+        },
+        {
+          "source": "town",
+          "tile": 284
+        },
+        {
+          "source": "town",
+          "tile": 292
+        },
+        {
+          "source": "town",
+          "tile": 292
+        },
+        {
+          "source": "town",
+          "tile": 292
+        },
+        {
+          "source": "town",
+          "tile": 292
+        },
+        {
+          "source": "town",
+          "tile": 292
+        },
+        {
+          "source": "town",
+          "tile": 292
+        },
+        {
+          "source": "town",
+          "tile": 292
+        },
+        {
+          "source": "town",
+          "tile": 292
+        },
+        {
+          "source": "town",
+          "tile": 292
+        },
+        {
+          "source": "town",
+          "tile": 292
+        },
+        {
+          "source": "town",
+          "tile": 300
+        },
+        {
+          "source": "town",
+          "tile": 300
+        },
+        {
+          "source": "town",
+          "tile": 300
+        },
+        {
+          "source": "town",
+          "tile": 300
+        },
+        {
+          "source": "town",
+          "tile": 300
+        },
+        {
+          "source": "town",
+          "tile": 300
+        },
+        {
+          "source": "town",
+          "tile": 300
+        },
+        {
+          "source": "town",
+          "tile": 300
+        },
+        {
+          "source": "town",
+          "tile": 300
+        },
+        {
+          "source": "town",
+          "tile": 300
+        },
+        {
+          "source": "town",
+          "tile": 308
+        },
+        {
+          "source": "town",
+          "tile": 308
+        },
+        {
+          "source": "town",
+          "tile": 308
+        },
+        {
+          "source": "town",
+          "tile": 308
+        },
+        {
+          "source": "town",
+          "tile": 308
+        },
+        {
+          "source": "town",
+          "tile": 308
+        },
+        {
+          "source": "town",
+          "tile": 308
+        },
+        {
+          "source": "town",
+          "tile": 308
+        },
+        {
+          "source": "town",
+          "tile": 308
+        },
+        {
+          "source": "town",
+          "tile": 308
+        },
+        null,
+        {
+          "source": "town",
+          "tile": 245
+        },
+        null,
+        {
+          "source": "town",
+          "tile": 245
+        },
+        null,
+        null,
+        {
+          "source": "town",
+          "tile": 245
+        },
+        null,
+        {
+          "source": "town",
+          "tile": 245
+        },
+        null,
+        null,
+        {
+          "source": "town",
+          "tile": 253
+        },
+        null,
+        {
+          "source": "town",
+          "tile": 253
+        },
+        null,
+        null,
+        {
+          "source": "town",
+          "tile": 253
+        },
+        null,
+        {
+          "source": "town",
+          "tile": 253
+        },
+        null,
+        null,
+        {
+          "source": "town",
+          "tile": 262
+        },
+        null,
+        {
+          "source": "town",
+          "tile": 262
+        },
+        null,
+        null,
+        null,
+        {
+          "source": "town",
+          "tile": 262
+        },
+        null,
+        null,
+        null,
+        {
+          "source": "town",
+          "tile": 270
+        },
+        null,
+        {
+          "source": "town",
+          "tile": 270
+        },
+        null,
+        {
+          "source": "town",
+          "tile": 260
+        },
+        null,
+        {
+          "source": "town",
+          "tile": 270
+        },
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        {
+          "source": "town",
+          "tile": 268
+        },
+        null,
+        null,
+        null,
+        null
+      ],
+      "entrance": {
+        "x": 5,
+        "y": 8
+      },
+      "approach": {
+        "x": 5,
+        "y": 9
+      },
+      "notes": "town 넓은 기와 지붕면284/292/300과 하단 그림자308를 사용한 이층 주택. 좁은 박공 능선274를 넓혀 사용하지 않는다. 지붕 투명 아래 lower 외벽 받침 포함. 문=(5,8), approach=(5,9). 아래층과 위층 창은 서로 다른 원본 방향을 유지한다."
+    },
+    {
+      "id": "park-swings",
+      "name": "그네",
+      "kind": "prop",
+      "width": 3,
+      "height": 3,
+      "lowerTiles": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "upperTiles": [
+        {
+          "source": "park",
+          "tile": 344
+        },
+        {
+          "source": "park",
+          "tile": 345
+        },
+        {
+          "source": "park",
+          "tile": 346
+        },
+        {
+          "source": "park",
+          "tile": 352
+        },
+        {
+          "source": "park",
+          "tile": 353
+        },
+        {
+          "source": "park",
+          "tile": 354
+        },
+        {
+          "source": "park",
+          "tile": 360
+        },
+        {
+          "source": "park",
+          "tile": 361
+        },
+        {
+          "source": "park",
+          "tile": 362
+        }
+      ],
+      "entrance": null,
+      "approach": {
+        "x": 1,
+        "y": 3
+      },
+      "notes": "공원 원본의 완전한 고정 조각. upper 아래 기존 보도/잔디 lower를 보존. 통행은 부모가 점유영역과 투명 여백을 검토해 등록한다. entrance 없음; approach는 관찰/상호작용 방향 참고."
+    },
+    {
+      "id": "park-slide",
+      "name": "미끄럼틀",
+      "kind": "prop",
+      "width": 5,
+      "height": 3,
+      "lowerTiles": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "upperTiles": [
+        null,
+        null,
+        {
+          "source": "park",
+          "tile": 349
+        },
+        {
+          "source": "park",
+          "tile": 350
+        },
+        {
+          "source": "park",
+          "tile": 351
+        },
+        null,
+        {
+          "source": "park",
+          "tile": 356
+        },
+        {
+          "source": "park",
+          "tile": 357
+        },
+        {
+          "source": "park",
+          "tile": 358
+        },
+        {
+          "source": "park",
+          "tile": 359
+        },
+        {
+          "source": "park",
+          "tile": 363
+        },
+        {
+          "source": "park",
+          "tile": 364
+        },
+        {
+          "source": "park",
+          "tile": 365
+        },
+        {
+          "source": "park",
+          "tile": 366
+        },
+        {
+          "source": "park",
+          "tile": 367
+        }
+      ],
+      "entrance": null,
+      "approach": {
+        "x": 2,
+        "y": 3
+      },
+      "notes": "공원 원본의 완전한 고정 조각. upper 아래 기존 보도/잔디 lower를 보존. 통행은 부모가 점유영역과 투명 여백을 검토해 등록한다. entrance 없음; approach는 관찰/상호작용 방향 참고."
+    },
+    {
+      "id": "park-bench-front",
+      "name": "공원 벤치 정면",
+      "kind": "prop",
+      "width": 2,
+      "height": 2,
+      "lowerTiles": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "upperTiles": [
+        {
+          "source": "park",
+          "tile": 315
+        },
+        {
+          "source": "park",
+          "tile": 316
+        },
+        {
+          "source": "park",
+          "tile": 323
+        },
+        {
+          "source": "park",
+          "tile": 324
+        }
+      ],
+      "entrance": null,
+      "approach": {
+        "x": 1,
+        "y": 2
+      },
+      "notes": "공원 원본의 완전한 고정 조각. upper 아래 기존 보도/잔디 lower를 보존. 통행은 부모가 점유영역과 투명 여백을 검토해 등록한다. entrance 없음; approach는 관찰/상호작용 방향 참고."
+    },
+    {
+      "id": "park-bench-back",
+      "name": "공원 벤치 뒷면",
+      "kind": "prop",
+      "width": 2,
+      "height": 2,
+      "lowerTiles": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "upperTiles": [
+        {
+          "source": "park",
+          "tile": 331
+        },
+        {
+          "source": "park",
+          "tile": 332
+        },
+        {
+          "source": "park",
+          "tile": 339
+        },
+        {
+          "source": "park",
+          "tile": 340
+        }
+      ],
+      "entrance": null,
+      "approach": {
+        "x": 1,
+        "y": 2
+      },
+      "notes": "공원 원본의 완전한 고정 조각. upper 아래 기존 보도/잔디 lower를 보존. 통행은 부모가 점유영역과 투명 여백을 검토해 등록한다. entrance 없음; approach는 관찰/상호작용 방향 참고."
+    },
+    {
+      "id": "park-lamp",
+      "name": "공원 가로등",
+      "kind": "prop",
+      "width": 1,
+      "height": 4,
+      "lowerTiles": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "upperTiles": [
+        {
+          "source": "park",
+          "tile": 319
+        },
+        {
+          "source": "park",
+          "tile": 327
+        },
+        {
+          "source": "park",
+          "tile": 335
+        },
+        {
+          "source": "park",
+          "tile": 343
+        }
+      ],
+      "entrance": null,
+      "approach": {
+        "x": 0,
+        "y": 4
+      },
+      "notes": "공원 원본의 완전한 고정 조각. upper 아래 기존 보도/잔디 lower를 보존. 통행은 부모가 점유영역과 투명 여백을 검토해 등록한다. entrance 없음; approach는 관찰/상호작용 방향 참고."
+    },
+    {
+      "id": "park-sandpit",
+      "name": "모서리 사각 모래놀이터",
+      "kind": "prop",
+      "width": 4,
+      "height": 3,
+      "lowerTiles": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "upperTiles": [
+        {
+          "source": "park",
+          "tile": 312
+        },
+        {
+          "source": "park",
+          "tile": 313
+        },
+        {
+          "source": "park",
+          "tile": 313
+        },
+        {
+          "source": "park",
+          "tile": 314
+        },
+        {
+          "source": "park",
+          "tile": 320
+        },
+        {
+          "source": "park",
+          "tile": 321
+        },
+        {
+          "source": "park",
+          "tile": 321
+        },
+        {
+          "source": "park",
+          "tile": 322
+        },
+        {
+          "source": "park",
+          "tile": 328
+        },
+        {
+          "source": "park",
+          "tile": 329
+        },
+        {
+          "source": "park",
+          "tile": 329
+        },
+        {
+          "source": "park",
+          "tile": 330
+        }
+      ],
+      "entrance": null,
+      "approach": {
+        "x": 2,
+        "y": 3
+      },
+      "notes": "공원 원본의 완전한 고정 조각. upper 아래 기존 보도/잔디 lower를 보존. 통행은 부모가 점유영역과 투명 여백을 검토해 등록한다. entrance 없음; approach는 관찰/상호작용 방향 참고."
+    },
+    {
+      "id": "park-tree-planter",
+      "name": "둥근 화단 나무",
+      "kind": "prop",
+      "width": 4,
+      "height": 6,
+      "lowerTiles": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "upperTiles": [
+        {
+          "source": "park",
+          "tile": 172
+        },
+        {
+          "source": "park",
+          "tile": 173
+        },
+        {
+          "source": "park",
+          "tile": 174
+        },
+        {
+          "source": "park",
+          "tile": 175
+        },
+        {
+          "source": "park",
+          "tile": 180
+        },
+        {
+          "source": "park",
+          "tile": 181
+        },
+        {
+          "source": "park",
+          "tile": 182
+        },
+        {
+          "source": "park",
+          "tile": 183
+        },
+        {
+          "source": "park",
+          "tile": 188
+        },
+        {
+          "source": "park",
+          "tile": 189
+        },
+        {
+          "source": "park",
+          "tile": 190
+        },
+        {
+          "source": "park",
+          "tile": 191
+        },
+        {
+          "source": "park",
+          "tile": 196
+        },
+        {
+          "source": "park",
+          "tile": 197
+        },
+        {
+          "source": "park",
+          "tile": 198
+        },
+        {
+          "source": "park",
+          "tile": 199
+        },
+        {
+          "source": "park",
+          "tile": 204
+        },
+        {
+          "source": "park",
+          "tile": 205
+        },
+        {
+          "source": "park",
+          "tile": 206
+        },
+        {
+          "source": "park",
+          "tile": 207
+        },
+        {
+          "source": "park",
+          "tile": 212
+        },
+        {
+          "source": "park",
+          "tile": 213
+        },
+        {
+          "source": "park",
+          "tile": 214
+        },
+        {
+          "source": "park",
+          "tile": 215
+        }
+      ],
+      "entrance": null,
+      "approach": {
+        "x": 2,
+        "y": 6
+      },
+      "notes": "공원 원본의 완전한 고정 조각. upper 아래 기존 보도/잔디 lower를 보존. 통행은 부모가 점유영역과 투명 여백을 검토해 등록한다. entrance 없음; approach는 관찰/상호작용 방향 참고."
+    },
+    {
+      "id": "ground-park-grass",
+      "name": "밝은 공원 잔디",
+      "kind": "ground",
+      "width": 1,
+      "height": 1,
+      "lowerTiles": [
+        {
+          "source": "park",
+          "tile": 0
+        }
+      ],
+      "upperTiles": [
+        null
+      ],
+      "entrance": null,
+      "approach": {
+        "x": 0,
+        "y": 1
+      },
+      "notes": "원본32px 반복 지면, lower 통행 가능. 별도 자동 경계/수변을 생성하지 않는다."
+    },
+    {
+      "id": "ground-park-soil",
+      "name": "공원 흙길",
+      "kind": "ground",
+      "width": 1,
+      "height": 1,
+      "lowerTiles": [
+        {
+          "source": "park",
+          "tile": 2
+        }
+      ],
+      "upperTiles": [
+        null
+      ],
+      "entrance": null,
+      "approach": {
+        "x": 0,
+        "y": 1
+      },
+      "notes": "원본32px 반복 지면, lower 통행 가능. 별도 자동 경계/수변을 생성하지 않는다."
+    }
+  ]
+}

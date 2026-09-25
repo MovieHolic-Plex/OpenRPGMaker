@@ -9,10 +9,10 @@ const sheets = JSON.parse(fs.readFileSync(dir + "/sheets.json")), data = JSON.pa
 const block = (o) => "```json\n" + JSON.stringify(o) + "\n```\n";
 const rows = (a, w) => "```text\n" + Array.from({ length: a.length / w }, (_, y) => a.slice(y * w, (y + 1) * w).join(" ")).join("\n") + "\n```\n";
 const CATEGORY = {
-  forest_harmony_snow: { id: "climate-snow-villages-v8", name: "설원 마을 · 눈 덮인 숲마을과 얼어붙은 못, 눈 쌓인 성벽 (눈 성벽 개정8)", description: "숲마을을 눈으로 다시 칠한 시트의 규칙. 칸 번호는 숲마을과 같고, 물 칸의 얼음 사본(걸을 수 있음)으로 못을 얼린다. 눈 얹힌 고목(2880~)과 성벽·성탑 윗면의 눈 쌓인 사본(3630~) 번호, 설원 마을 세 곳의 전체 배열과 통행 검사" },
-  forest_harmony_volcano: { id: "climate-volcano-villages-v10", name: "화산 마을 · 재와 용암, 가는 균열과 굳은 용암 흐름 (차분한 땅 개정10)", description: "숲마을을 재·용암으로 다시 칠한 시트의 규칙. 칸 번호·통행은 숲마을과 같고 물 칸이 모두 용암, 나무다리는 현무암 다리다. 빈 재밭은 용암 균열·식은 용암 판·용암 웅덩이(3030~)로 채우는 법, 그을린 고목 덩이(2880~), 화산 봉우리와 화산 마을 세 곳의 전체 배열" },
-  forest_harmony_desert: { id: "climate-desert-villages-v10", name: "사막 마을 · 모래와 사암, 능선 사구와 모래 물결 (차분한 땅 개정10)", description: "숲마을을 모래·사암으로 다시 칠한 시트의 규칙. 칸 번호·통행은 숲마을과 같고 물은 오아시스 물 그대로다. 빈 모래밭은 사구·모래 물결·갈라진 땅(3300~)으로 채우는 법, 메사·선인장 무리, 바랜 고목 덩이(2880~), 물가 야자와 사막 마을 두 곳의 전체 배열" },
-  forest_harmony_autumn: { id: "climate-autumn-villages-v5", name: "가을 마을 · 단풍 든 숲마을 (마을 채우기 개정5)", description: "숲마을을 금빛 풀밭과 단풍으로 다시 칠한 시트의 규칙. 칸 번호·통행·물은 숲마을과 같다. 가을 마을 두 곳의 전체 배열" },
+  forest_harmony_snow: { id: "climate-snow-villages-v9", name: "설원 마을 · 눈 덮인 숲마을과 얼어붙은 못, 눈 쌓인 성벽 (눈 성벽 개정8)", description: "숲마을을 눈으로 다시 칠한 시트의 규칙. 칸 번호는 숲마을과 같고, 물 칸의 얼음 사본(걸을 수 있음)으로 못을 얼린다. 눈 얹힌 고목(2880~)과 성벽·성탑 윗면의 눈 쌓인 사본(3630~) 번호, 설원 마을 세 곳의 전체 배열과 통행 검사" },
+  forest_harmony_volcano: { id: "climate-volcano-villages-v11", name: "화산 마을 · 재와 용암, 가는 균열과 굳은 용암 흐름 (차분한 땅 개정10)", description: "숲마을을 재·용암으로 다시 칠한 시트의 규칙. 칸 번호·통행은 숲마을과 같고 물 칸이 모두 용암, 나무다리는 현무암 다리다. 빈 재밭은 용암 균열·식은 용암 판·용암 웅덩이(3030~)로 채우는 법, 그을린 고목 덩이(2880~), 화산 봉우리와 화산 마을 세 곳의 전체 배열" },
+  forest_harmony_desert: { id: "climate-desert-villages-v11", name: "사막 마을 · 모래와 사암, 능선 사구와 모래 물결 (차분한 땅 개정10)", description: "숲마을을 모래·사암으로 다시 칠한 시트의 규칙. 칸 번호·통행은 숲마을과 같고 물은 오아시스 물 그대로다. 빈 모래밭은 사구·모래 물결·갈라진 땅(3300~)으로 채우는 법, 메사·선인장 무리, 바랜 고목 덩이(2880~), 물가 야자와 사막 마을 두 곳의 전체 배열" },
+  forest_harmony_autumn: { id: "climate-autumn-villages-v6", name: "가을 마을 · 단풍 든 숲마을 (마을 채우기 개정5)", description: "숲마을을 금빛 풀밭과 단풍으로 다시 칠한 시트의 규칙. 칸 번호·통행·물은 숲마을과 같다. 가을 마을 두 곳의 전체 배열" },
 };
 const docs = Object.fromEntries(Object.keys(CATEGORY).map((k) => [k, []]));
 const doc = (tilesetId, id, name, markdown) => {

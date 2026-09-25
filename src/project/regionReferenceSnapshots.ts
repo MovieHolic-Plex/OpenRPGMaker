@@ -1,4 +1,5 @@
 import { sharedRegionSnapshot } from './sharedSpatialReferences';
+import { referenceOwnerManifest } from './tilesetReferences';
 import { DIVERSE_VILLAGE_PLACES } from "./diverseVillageReferences";
 import { FANTASY_PLACE_REFERENCES } from "./fantasyPlaceReferences";
 import { RPG_INTERIOR_PLACE_REFERENCES } from "./rpgInteriorPlaceReferences";
@@ -187,7 +188,7 @@ export function readRegionReference(id: string, row = 0, rows = 8) {
   const used = [...new Set([...lowerTiles, ...upperTiles])].filter(tile => tile >= 0);
   // 건물 목록·킷 요약은 첫 쪽(row 0)에만 싣는다 — 이어 읽기마다 되풀이하지 않게.
   const catalog = row === 0 && source.buildings ? { buildings: source.buildings, kits: source.kits ?? [] } : {};
-  return structuredClone({ ...reference, ...catalog, map: {
+  return structuredClone({ ...referenceOwnerManifest(reference), ...catalog, map: {
     id: map.id, width: map.width, height: map.height, tileSize: map.tileSize,
     tilesetId: map.tilesetId, row, rows: endRow - row, nextRow: endRow < map.height ? endRow : null,
     lowerTiles, upperTiles, events: map.events,

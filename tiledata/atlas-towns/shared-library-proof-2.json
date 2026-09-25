@@ -1,0 +1,34 @@
+{
+  "id": "oprn-atlas-towns-20260925-2",
+  "places": 0,
+  "regions": 38,
+  "maps": 38,
+  "bytes": 43858487,
+  "tilesets": {
+    "shared_atlas_forest_harmony": {
+      "count": 3491,
+      "references": []
+    },
+    "shared_atlas_forest_harmony_autumn": {
+      "count": 2730,
+      "references": []
+    },
+    "shared_atlas_forest_harmony_snow": {
+      "count": 3660,
+      "references": []
+    },
+    "shared_atlas_forest_harmony_desert": {
+      "count": 3660,
+      "references": []
+    },
+    "shared_atlas_forest_harmony_volcano": {
+      "count": 3660,
+      "references": []
+    }
+  },
+  "renderCheck": "38 maps pixel-identical with the shared atlas",
+  "file": "/home/main/.local/share/oprn/shared-content.sqlite",
+  "revision": "fff0de0ba2651757a7ce394ce7fd68c2220c58c2a00263c4d139d057531a8867",
+  "reloaded": true,
+  "publishedAt": "2026-09-25T19:30:48.705Z"
+}

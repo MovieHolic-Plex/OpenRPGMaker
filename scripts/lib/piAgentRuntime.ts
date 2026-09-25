@@ -1,3 +1,5 @@
+import { PiInteriorCompletion } from '../../src/ai/piAgent/interiorCompletion.ts';
+import type { InteriorRequirements } from '../../src/project/interiorPlacementAudit.ts';
 import { randomUUID } from "node:crypto";
 import { PiTilesetReferenceGate } from "../../src/ai/piAgent/tilesetReferenceGate.ts";
 import { TILESET_REFERENCE_READ_TOOLS } from "../../src/editor/tools/tilesetReferenceTools.ts";
@@ -7,6 +9,8 @@ import { growthGuidanceLine } from "../../src/ai/session/buildSpecGate.ts";
 import { assertVillageContractArgs, validateVillageContract, villageDraftReceipt, type VillageDraftReceipt } from "../../src/ai/piAgent/villageContract.ts";
 import type { ActivityVisual } from "../../src/ai/activityVisual";
 import { authoredVillageMapId, inspectPiVillageCompletion, piVillageRepairPrompt } from "../../src/ai/piAgent/villageCompletion.ts";
+import { inspectPiLayoutQuality, piLayoutRepairPrompt } from "../../src/ai/piAgent/layoutQuality.ts";
+import { PiRepeatBreaker } from "../../src/ai/piAgent/repeatBreaker.ts";
 import { inspectPromptPayload } from "../../src/ai/authoring/promptInspection.ts";
 import { activityPayload } from "../../src/ai/activityTrace.ts";
 import { finishSpatialToolAcceptance, authorMergedSpatialProposal } from "../../src/editor/tools/spatialToolState.ts";
@@ -36,6 +40,7 @@ import { exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.
 import { createDeltaRelay } from "../../src/ai/piAgent/deltaRelay.ts";
 import { applyMapDeltas, diffMapsForDelta } from "../../src/ai/piAgent/mapDelta.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
+import { createModernTilesetPolicy, modernTilesetPolicyPrompt, requestsModernMap } from '../../src/ai/modernTilesetPolicy.ts';
 import { isTransientProviderStreamError, PI_PROVIDER_STREAM_RETRY_LIMIT, providerStreamResumePrompt } from "../../src/ai/piAgent/providerRetry.ts";
 import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
@@ -46,6 +51,8 @@ import type { GameMap, Project } from "../../src/project/types.ts";
 import type { ToolContext } from "../../src/editor/tools/types.ts";
 
 export interface RunPiAgentOptions {
+  /** Trusted request requirements for direct-authoring observations; no layout coordinates. */
+  readonly interiorRequirements?: Record<string, InteriorRequirements>;
   readonly onCheckpoint?: (checkpoint: PiProjectCheckpoint, signal?: AbortSignal) => Promise<Project | void>;
   readonly apiKey?: string;
   readonly providerApiKeys?: Record<string, string | undefined>;
@@ -181,8 +188,12 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const { readSharedTileReferences } = await import('./sharedTileReferencesSqlite');
   const { installSharedSpatialReferences } = await import('../../src/project/sharedSpatialReferences');
   installSharedSpatialReferences(readSharedTileReferences().spatial);
+  const { readSharedContent } = await import('./sharedContentSqlite');
+  const { installSharedContent } = await import('../../src/project/sharedContent');
+  await installSharedContent(readSharedContent());
   const emit = (event: PiAgentEvent) => options.onEvent?.({ ...event, at: event.at ?? Date.now() });
   const base = request.project;
+  const modernTilesetPolicy = request.modernTilesetOnly || requestsModernMap(base, request.task, [...request.mapIds, ...(request.currentMapId ? [request.currentMapId] : [])]) ? createModernTilesetPolicy(base) : undefined;
   // 지금 보는 맵·승인 계열은 실행기의 칩셋 계열 검사와 create_map 기본 칩셋이 읽는다(ToolContext 주석).
   const ctx: ToolContext = {
     project: structuredClone(base) as Project,
@@ -200,7 +211,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const tools: PiToolShape[] = [];
   const exposed = new Set<string>();
   const villageMapIds = new Set<string>();
-  const contract = request.readOnly || options.readOnlyTools ? undefined : request.villageContract;
+  const interiorCompletion = new PiInteriorCompletion(!request.readOnly && !options.readOnlyTools && (!!modernTilesetPolicy || !!options.interiorRequirements), options.interiorRequirements);
+  const contract = request.readOnly || options.readOnlyTools || modernTilesetPolicy ? undefined : request.villageContract;
   let receipt: VillageDraftReceipt | undefined;
   // 묶음 실행이면 호출 시점에 묶음 밖 맵 변경을 거부한다(병합의 「범위 밖 변경 버림」은 최후 안전망으로 남는다).
   // 계약 범위거나 호출자가 병합한다고 알린 실행(mapBundleMerge)이면 켠다 — 판정은 piMapScopeGuard 한 곳.
@@ -220,6 +232,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       toolNames: options.toolNames,
       onCall: recordCall,
       referenceGate,
+      modernTilesetPolicy,
       ...scopeGuard,
     });
     return shape ? wrapTool(shape) : undefined;
@@ -231,6 +244,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     exposed.add(shape.name);
   };
   const recordCall = (record: PiToolCallRecord): void => {
+    interiorCompletion.record(ctx.project, record);
     try { options.onToolCall?.(record); } catch { /* recording must never change the run */ }
     if (record.toolCallId) pendingSummaries.set(record.toolCallId, { ok: record.result.ok, summary: trimText(record.result.summary, 400), result: activityPayload(record.result), visuals: record.visuals });
     const villageMapId = authoredVillageMapId(record);
@@ -286,7 +300,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       throw error;
     }
   };
-  const wrapTool = (tool: PiToolShape): PiToolShape => !incremental && !contract && tool.name !== "show_map_region" ? tool : ({ ...tool,
+  const wrapTool = (tool: PiToolShape): PiToolShape => !incremental && !contract && tool.name !== "show_map_region" && tool.name !== "inspect_interior_layout" ? tool : ({ ...tool,
     async execute(id, params, signal) {
       // The core owns ordering: consecutive reads overlap; writes hold an exclusive
       // barrier through publication. A second queue here would serialize reads too.
@@ -297,11 +311,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         else if (tool.name !== "author_npc_cast" || !receipt) throw new Error("마을 계약: author_village로 시공하고 주민 대사만 보충하세요. 다른 쓰기는 별도 요청으로 진행합니다.");
       }
       const result = await tool.execute(id, params, signal);
-      if (tool.name === "show_map_region") {
+      if (tool.name === "show_map_region" || (tool.name === "inspect_interior_layout" && options.renderToolImage)) {
         if (!options.renderToolImage) throw new Error("맵 이미지 전달 경로가 없습니다. 배열만으로 시각 검토를 완료할 수 없습니다.");
-        const data = (result.details as { data?: unknown } | undefined)?.data;
+        const inspectedMap = tool.name === 'inspect_interior_layout' ? ctx.project.maps[String((params as { mapId?: unknown }).mapId)] : undefined;
+        const data = inspectedMap ? { mapId: inspectedMap.id, x: 0, y: 0, w: inspectedMap.width, h: inspectedMap.height } : (result.details as { data?: unknown } | undefined)?.data;
         const png = await options.renderToolImage(structuredClone(ctx.project), tool.name, data, signal ?? options.signal);
         result.content.push({ type: "image", mimeType: "image/png", data: png });
+        if (png && data && typeof data === "object") interiorCompletion.recordPreview(ctx.project, data);
         options.onEvent?.({ type: "execution_status", name: "map.image.delivered", ok: true, summary: "현재 초안 이미지를 모델 도구 응답에 포함했습니다.", data: { toolCallId: id, base64Length: png.length } });
       }
       if (tool.concurrency === "exclusive" && request.applyMode !== "step") await checkpoint(tool.name, tool.name, signal);
@@ -316,6 +332,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       : options.toolNames,
     onCall: recordCall,
     referenceGate,
+    modernTilesetPolicy,
     ...scopeGuard,
   });
   // 레지스트리 쪽 web_search 는 순수 핸드오프라 네트워크가 없다 — 아래 실제 실행 셰이프가 대신한다.
@@ -376,6 +393,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const systemPrompt = request.systemPrompt
     ? [...request.systemPrompt]
     : buildPiAgentSystemPrompt(base, request.mapIds, request.scopeStrict !== false);
+  if (modernTilesetPolicy) systemPrompt.push(modernTilesetPolicyPrompt(modernTilesetPolicy));
   if (allowedDefinitions.some(tool => tool.name === "find_tools")) {
     systemPrompt.push(buildToolCapabilityIndex(allowedDefinitions));
   }
@@ -442,12 +460,15 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 섀도우를 한 번만 복제하고 증분으로 따라가는 이유: 툴마다 전체를 다시 복제하면 43맵 프로젝트에서
   // 툴 호출 하나가 수십 MB 복제가 된다. 여기서는 diff 가 어차피 훑는 것만 훑고, 적용은 바뀐 칸뿐이다.
   let ghostShadow = structuredClone(base.maps ?? {}) as Record<string, GameMap>;
-  const emitMapDelta = (): void => {
+  const emitMapDelta = (): number => {
     const changes = diffMapsForDelta(ghostShadow, ctx.project.maps ?? {});
-    if (changes.length === 0) return;
+    if (changes.length === 0) return 0;
     ghostShadow = applyMapDeltas(ghostShadow, changes);
     emit({ type: "map_delta", maps: changes });
+    return changes.length;
   };
+  const repeats = new PiRepeatBreaker();
+  const toolArgs = new Map<string, unknown>();
   const unsubscribe = agent.subscribe((event: { type: string; [key: string]: unknown }) => {
     if (event.type === "message_update") {
       const part = event.assistantMessageEvent as { type?: string; delta?: unknown } | undefined;
@@ -473,6 +494,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       toolCalls += 1;
       toolStartedAt.set(String(event.toolCallId ?? ""), Date.now());
       emit({ type: "tool_start", id: String(event.toolCallId ?? ""), name: String(event.toolName ?? ""), args: event.args });
+      toolArgs.set(String(event.toolCallId ?? ""), event.args);
       return;
     }
     if (event.type === "tool_execution_end") {
@@ -503,7 +525,17 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       });
       // 순서 계약: 무엇을 했나(tool_end) 다음에 무엇이 바뀌었나(map_delta). 브라우저 다리가
       // 실행 중 도구 이름을 먼저 세우고 그 아래 칸을 그린다.
-      emitMapDelta();
+      const changed = emitMapDelta() > 0;
+      const args = toolArgs.get(callId);
+      toolArgs.delete(callId);
+      const repeat = repeats.observe(name, args, changed);
+      if (repeat?.action === "steer") {
+        emit({ type: "execution_status", name: "repeat_guard", ok: false, summary: repeat.message });
+        agent.steer({ role: "user", content: [{ type: "text", text: repeat.message }], timestamp: Date.now() });
+      } else if (repeat?.action === "stop") {
+        fatal = fatal ?? repeat.message;
+        agent.abort(fatal);
+      }
       return;
     }
     if (event.type === "message_end") {
@@ -575,6 +607,28 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       }
       await promptResuming(piVillageRepairPrompt(ctx.project, base, completion, receipt?.data.village.residentEventIds));
     }
+    // 배치 품질은 권고 한 번뿐이다 — 거부하지 않고, 두 번째 결과는 숫자만 알린다(layoutQuality.ts).
+    if (!fatal && !rejected && !contract && !request.readOnly && turns < maxTurns && !options.signal?.aborted) {
+      const layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds, villageMapIds);
+      if (layout.length) {
+        emit({ type: "execution_status", name: "layout_quality", ok: false, summary: `배치 품질 기준 미달 — 한 번 더 채웁니다: ${layout.map(i => `${i.mapId} ${i.problems.join(", ")}`).join(" / ")}`, data: layout });
+        await promptResuming(piLayoutRepairPrompt(layout));
+        const after = inspectPiLayoutQuality(ctx.project, base, request.mapIds, villageMapIds);
+        emit({ type: "execution_status", name: "layout_quality", ok: after.length === 0,
+          summary: after.length ? `배치 품질 수리 뒤에도 기준 미달: ${after.map(i => `${i.mapId} ${i.problems.join(", ")}`).join(" / ")}` : "배치 품질 기준 통과", data: after });
+      }
+    }
+    let previousInteriorIssues = '';
+    for (let attempt = 0; !fatal && !rejected && attempt < 2; attempt++) {
+      const problems = interiorCompletion.inspect(ctx.project, base);
+      const signature = JSON.stringify(problems);
+      if (!problems.length || signature === previousInteriorIssues || turns >= maxTurns || options.signal?.aborted) break;
+      previousInteriorIssues = signature;
+      for (const name of ['inspect_interior_layout', 'show_map_region', 'paint_tiles', 'get_map_region']) {
+        const shape = shapeFor(name); if (shape) declare(shape);
+      }
+      await agent.prompt('실내 완료 검사에서 다음 문제가 남았습니다. 완료라고 말하지 말고 실제 타일을 직접 수정하세요. 요청 조건을 줄이거나 가구로 빈칸만 메우지 마세요. 수정 후 같은 요구조건으로 inspect_interior_layout과 전체 show_map_region을 다시 호출하세요. 이 메시지는 오류 진단이며 정답 배치가 아닙니다.\n' + signature);
+    }
   } finally {
     unsubscribeTeamMessages?.();
     clearTimeout(timer);
@@ -597,7 +651,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const villageCompletion = contract ? validateVillageContract(ctx.project, base, contract, receipt)
     : villageMapIds.size ? inspectPiVillageCompletion(ctx.project, base, villageMapIds) : undefined;
   if (villageCompletion?.issues.length) emit({ type: "error", message: `마을 미완료: ${villageCompletion.issues.join("\n")}` });
+  const interiorProblems = interiorCompletion.inspect(ctx.project, base);
+  if (interiorProblems.length) emit({ type: 'error', message: '실내 미완료: ' + JSON.stringify(interiorProblems) });
   const done: PiAgentDoneEvent = {
+    interiorCompletion: interiorProblems,
     ...(villageCompletion ? { villageCompletion } : {}),
     type: "done",
     ...(fatal ? { stoppedEarly: fatal } : {}),

@@ -228,73 +228,26 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "role": "table"
   },
   {
-    "kind": "tabletop",
-    "group": "harness-interior-house-v1-terrain-deck",
-    "x": 17,
-    "y": 6,
-    "w": 2,
-    "h": 1,
-    "role": "tabletop"
-  },
-  {
-    "kind": "tibo-kit",
-    "kitId": "tibo-library-079",
-    "name": "편지 쟁반",
-    "x": 17,
-    "y": 6,
-    "w": 1,
-    "h": 1,
-    "role": "top"
-  },
-  {
-    "kind": "tibo-kit",
-    "kitId": "tibo-library-122",
-    "name": "동전 계산 쟁반",
-    "x": 18,
-    "y": 6,
-    "w": 1,
-    "h": 1,
-    "role": "top"
-  },
-  {
-    "kind": "tibo-kit",
-    "kitId": "tibo-v8-1-0",
-    "name": "열쇠판",
-    "x": 17,
-    "y": 3,
-    "w": 2,
-    "h": 1,
-    "role": "hang"
-  },
-  {
-    "kind": "tiles",
-    "layer": "upper",
-    "x": 19,
-    "y": 3,
-    "w": 1,
-    "h": 1,
-    "rows": [
-      [
-        57
-      ]
-    ],
-    "role": "hang"
-  },
-  {
     "kind": "tiles",
     "layer": "lower",
-    "x": 19,
-    "y": 5,
-    "w": 1,
+    "x": 17,
+    "y": 3,
+    "w": 3,
     "h": 3,
     "rows": [
       [
-        111
+        141,
+        111,
+        171
       ],
       [
-        141
+        141,
+        111,
+        171
       ],
       [
+        141,
+        111,
         171
       ]
     ],

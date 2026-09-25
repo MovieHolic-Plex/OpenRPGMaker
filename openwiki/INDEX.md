@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **86쪽 / 3476KB / 약 992,669 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **104쪽 / 3612KB / 약 1,035,029 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,18 +16,19 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 514KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3071 | ~148,400 |
-| `openwiki/editor-ai-tools.md` | 264KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 2208 | ~75,090 |
+| `openwiki/editor-ai-tools.md` | 273KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 2311 | ~78,093 |
 | `openwiki/editor-database.md` | 355KB | 61KB ⚠상한 초과 — 절을 더 쪼개라 | 2143 | ~103,420 |
 | `openwiki/editor-event-authoring.md` | 155KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 872 | ~45,047 |
 | `openwiki/editor-event-commands.md` | 62KB | 32KB | 258 | ~17,025 |
-| `openwiki/editor-interior-room-harness.md` | 93KB | 6KB | 451 | ~27,117 |
-| `openwiki/editor-pre-edit-routing.md` | 149KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 888 | ~43,293 |
+| `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 467 | ~28,297 |
+| `openwiki/editor-pre-edit-routing.md` | 150KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 899 | ~43,615 |
 | `openwiki/editor-workflows-misc.md` | 68KB | 30KB | 486 | ~18,651 |
 | `openwiki/runtime-battle.md` | 175KB | 31KB | 882 | ~50,386 |
 | `openwiki/runtime-pre-edit-routing.md` | 54KB | 34KB | 366 | ~15,889 |
 | `openwiki/runtime-project-schema.md` | 170KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1253 | ~46,894 |
 | `openwiki/runtime-sessions.md` | 104KB | 48KB | 486 | ~27,757 |
 | `openwiki/testing.md` | 205KB | 48KB | 1916 | ~56,826 |
+| `openwiki/tileset-reference-documents.md` | 52KB | 4KB | 543 | ~15,944 |
 
 ## 한국어 산문이 깨진 페이지
 
@@ -42,7 +43,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 117, 130, 131, 133, 136, 137 |
 | `openwiki/editor-observability.md` | 1 | 344 |
-| `openwiki/editor-pre-edit-routing.md` | 5 | 690, 699, 707, 711, 735 |
+| `openwiki/editor-pre-edit-routing.md` | 5 | 701, 710, 718, 722, 746 |
 | `openwiki/state-system.md` | 2 | 5, 86 |
 
 ## 없는 파일을 가리키는 참조
@@ -66,7 +67,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-genre-packs.md` | 2 | `src/editor/panels/newProjectDialog.ts`, `test/modalEscapeLayerGate.test.ts` |
 | `openwiki/editor-interior-room-harness.md` | 38 | `hearth-lit.json`, `hearth-unlit.json`, `output/audit-element-cliff-seams.py`, `output/audit-element-complex-seams.py`, `output/audit-four-context-dungeons-v3.py`, `output/audit-four-context-dungeons.py`, `output/build-element-complex-caves.mts`, `output/build-element-confluence-caves.mts`, `output/build-element-contour-caves.mts`, `output/build-four-context-dungeons-v2.mts`, `output/build-four-context-dungeons-v3.mts`, `output/build-four-context-dungeons.mts`, `output/context-element-caves.mts`, `output/decorate-element-caves.mts`, `output/element-complex-qa.mjs`, `output/element-confluence-qa.mjs`, `output/element-contour-qa.mjs`, `output/evidence/concept-v2/index.html`, `output/evidence/inn-exploration-v4/index.html`, `output/evidence/inn-inspection-v5/index.html`, `output/evidence/pr618-fixtures/inn.json`, `output/four-context-dungeons-qa.mjs`, `output/four-context-dungeons-v3-qa.mjs`, `output/save-element-complex-caves.mts`, `output/save-element-confluence-caves.mts`, `output/save-four-context-dungeons-v3.mts`, `output/save-four-context-dungeons.mts`, `reports.json`, `scripts/demo-assistant-interior-build.mts`, `seam-audit.json`, `test/innConceptRebuild.test.ts`, `test/innExploration.test.ts`, `test/interiorConceptAssemblies.test.ts`, `test/interiorLoadConsistency.test.ts`, `test/interiorLongTable.test.ts`, `test/stoneHearth.test.ts`, `test/storeDeferredLineage.test.ts`, `test/storeSaveOrdering.test.ts` |
 | `openwiki/editor-observability.md` | 2 | `scripts/qa/issue693-boot-diagnostics.mjs`, `scripts/qa/issue693-diagnostics.mjs` |
-| `openwiki/editor-pre-edit-routing.md` | 21 | `@/styles/database/index.css`, `authoringTestGate.ts`, `dbConnectionAdvancedSettings.ts`, `event-editor.part-4.css`, `figma-editor.css`, `figma-editor/10-map-tree.css`, `legacyDb-root-cache.spec.ts`, `referencePresetSnapshot.ts`, `rm2k3.part-1.css`, `shell/editor-responsive-expert.css`, `src/editor/tools/worldTools.ts`, `src/project/legacyDbProjectSync.ts`, `src/styles/editor/event-editor.balanced.css`, `src/styles/editor/left-sidebar.modern.css`, `src/styles/editor/map-location-layer.css`, `src/styles/editor/map-props.css`, `src/styles/editor/region-task.css`, `test/modalEscapeLayerGate.test.ts`, `test/regionTaskHouseProtection.test.ts`, `test/worldAiExclusion.test.ts`, `worldTools.ts` |
+| `openwiki/editor-pre-edit-routing.md` | 22 | `@/styles/database/index.css`, `authoringTestGate.ts`, `dbConnectionAdvancedSettings.ts`, `event-editor.part-4.css`, `figma-editor.css`, `figma-editor/10-map-tree.css`, `legacyDb-root-cache.spec.ts`, `output/paw-380-corrections/editor-observations.json`, `referencePresetSnapshot.ts`, `rm2k3.part-1.css`, `shell/editor-responsive-expert.css`, `src/editor/tools/worldTools.ts`, `src/project/legacyDbProjectSync.ts`, `src/styles/editor/event-editor.balanced.css`, `src/styles/editor/left-sidebar.modern.css`, `src/styles/editor/map-location-layer.css`, `src/styles/editor/map-props.css`, `src/styles/editor/region-task.css`, `test/modalEscapeLayerGate.test.ts`, `test/regionTaskHouseProtection.test.ts`, `test/worldAiExclusion.test.ts`, `worldTools.ts` |
 | `openwiki/editor-validation.md` | 8 | `final-layout.json`, `test/aiBlockedEventRelocation.test.ts`, `test/aiToolDiscoveryEscalation.test.ts`, `test/databaseSystemView.test.ts`, `test/interiorLongTable.test.ts`, `test/p0ProjectSchema.test.ts`, `test/projectLint.test.ts`, `viewport-matrix.json` |
 | `openwiki/editor-workflows-misc.md` | 22 | `.qa.json`, `default.json`, `game.html`, `loadNewRemoteProject.test.ts`, `release.json`, `runtime.json`, `scripts/build-dungeon-themed-maps.mts`, `scripts/build-grand-ice-cave.mts`, `scripts/build-ice-pass-map.mts`, `scripts/extend-home-8pyeong-with-dungeons.mts`, `src/editor/authoringTestGate.ts`, `src/styles/editor/audio-test-dialog.css`, `src/styles/editor/event-editor-help.css`, `src/styles/editor/help-modal.css`, `src/styles/editor/map-event-search.css`, `src/styles/editor/map-props.css`, `test/audioDescriptionCommandSurfaces.test.ts`, `test/audioDescriptionLifecycle.test.ts`, `test/devRuntimeArchive.test.ts`, `test/mapSurfaceFocus.test.ts`, `test/runtimePictureStacking.test.ts`, `transactionalNewRemoteProject.test.ts` |
 | `openwiki/emerald-fields.md` | 27 | `ANALYSIS.md`, `VISUAL-SUMMARY.md`, `author-emerald-wide.mts`, `cliff-contours.json`, `editor-saved-proof.json`, `emerald-wide-v2/reloaded-project.json`, `exit-seam-proof.json`, `fidelity/fidelity-proof.json`, `fidelity/reference-vs-editor.png`, `fidelity/runtime-visual/SUMMARY.md`, `inspection-16-fixed/manifest.json`, `inspection-16/REVIEW.md`, `map-open-saved.png`, `output/evidence/emerald-fields/fidelity/VALIDATION.md`, `output/evidence/emerald-region/legacy-db-proof.json`, `output/evidence/emerald-wide/reloaded-project.json`, `refine-emerald-reference.mts`, `region-saved.png`, `road-graph.json`, `scripts/author-emerald-fields.mts`, `scripts/author-emerald-wide.mts`, `scripts/refine-emerald-reference.mts`, `scripts/refine-emerald-wide.mts`, `scripts/register-emerald-region.mts`, `verify-shots/runtime-qa/emerald-fields/SUMMARY.md`, `verify-shots/runtime-qa/emerald-wide-v2/SUMMARY.md`, `verify-shots/runtime-qa/emerald-wide/SUMMARY.md` |
@@ -77,6 +78,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/location-layer-affordance-audit.md` | 1 | `src/styles/editor/map-location-layer.css` |
 | `openwiki/night-monster.md` | 2 | `build-night-monster.mts`, `verify-shots/runtime-qa/night-monster/SUMMARY.md` |
 | `openwiki/opening-still-pack.md` | 4 | `artifacts/stills-library-plan.json`, `queue-status.json`, `review/index.html`, `run-status.json` |
+| `openwiki/pixel-art-world-facility-complements.md` | 4 | `current-portable.json`, `library.json`, `preparation-proof.json`, `preparation-seal.json` |
+| `openwiki/pixel-art-world-food.md` | 1 | `output/paw-food-install/ui-import-proof.json` |
+| `openwiki/pixel-art-world-home.md` | 2 | `ST-Town-I01.png`, `output/paw-home/report.json` |
+| `openwiki/pixel-art-world-loose-supplements.md` | 4 | `current-portable.json`, `library.json`, `preparation-proof.json`, `preparation-seal.json` |
+| `openwiki/pixel-art-world-mansion-exteriors.md` | 1 | `output/paw-mansion-exterior-install/automatic-project-proof.json` |
 | `openwiki/project-wiki.md` | 2 | `projectWikiSession.test.ts`, `projectWikiTimeout.test.ts` |
 | `openwiki/quickstart.md` | 1 | `.oprn-local.json` |
 | `openwiki/runtime-action-combat.md` | 1 | `export-player/player.html` |
@@ -202,7 +208,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/autotiles.md` — 20KB · 180줄 · ~5,727 토큰
+### `openwiki/autotiles.md` — 23KB · 217줄 · ~6,683 토큰
 
 - `L5` World 지형과 공통 구조물
 - `L25` 1. RM2K식 3×4 템플릿 블록 문법
@@ -215,6 +221,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L152` 5. 검증
 - `L160` Tibo recovery (2026-09-17)
 - `L173` 실내 천장 기본 등록과 쿼터 합성 (2026-09-18)
+- `L181` Pixel Art World XP 사용자 원본 (2026-09-24)
+  - `L207` XP 공용 로컬 설치와 조립 표본
 
 ### `openwiki/battler-idle-playbook.md` — 11KB · 176줄 · ~3,490 토큰
 
@@ -396,7 +404,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L3032` 체크포인트 적용 권위는 노드 요약으로 비교한다 (2026-09-25)
 - `L3054` 우클릭 드래그 바 → 채팅 한 경로 («영역 작업» 창 폐기, 2026-09-25)
 
-### `openwiki/editor-ai-tools.md` — 264KB · 2208줄 · ~75,090 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 273KB · 2311줄 · ~78,093 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 조수 쓰기 도구의 네 층 — 1~4층·그림자 (MZ식 4층, 2026-09-25)
   - `L44` 실행기 계약 — 업로드 타일셋 칩셋 바꿔치기 거부 (2026-09-25)
@@ -478,10 +486,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L2110` 타일셋별 맵 의미 조회 (2026-09-23)
 - `L2114` Pi 완성 맵 이미지 반환 경로 (2026-09-23)
 - `L2144` 공용 LPC 자료 정리와 지역·오브젝트 조회 (2026-09-23)
-- `L2167` Isaiah 물 태그 판정 보완 (2026-09-24)
-- `L2171` 전투 결과 분기의 퀘스트 완료 플래그 (2026-09-24)
-- `L2181` Monster follower graphic authoring (2026-09-25)
-- `L2197` 기존 서사 플래그의 설명 수정 (2026-09-25)
+  - `L2167` 공용 저작 장면 → 명시적인 복사 요청 (2026-09-25)
+  - `L2191` 실내 직접 배치와 읽기 전용 검사 (2026-09-25)
+  - `L2210` 현대 맵의 PAW 전용 소재 선택 (2026-09-25)
+  - `L2239` 실내 요구조건과 같은 실행 안의 재검사 (2026-09-25 후속)
+- `L2270` Isaiah 물 태그 판정 보완 (2026-09-24)
+- `L2274` 전투 결과 분기의 퀘스트 완료 플래그 (2026-09-24)
+- `L2284` Monster follower graphic authoring (2026-09-25)
+- `L2300` 기존 서사 플래그의 설명 수정 (2026-09-25)
 
 ### `openwiki/editor-database.md` — 355KB · 2143줄 · ~103,420 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
@@ -686,45 +698,45 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L70` Validation
 - `L72` Two new-project surfaces, one choice model (2026-09-11)
 
-### `openwiki/editor-interior-room-harness.md` — 93KB · 451줄 · ~27,117 토큰 · 통째읽기 잘림
+### `openwiki/editor-interior-room-harness.md` — 98KB · 467줄 · ~28,297 토큰 · 통째읽기 잘림
 
 - `L7` 던전 천장과 단차의 구분 — 사용자 정정 (2026-09-13)
-- `L21` 대형 광산 저작 접합 교정 (2026-09-13)
-- `L29` 사용자 광산 참고 이미지와 확장판 (2026-09-13)
-- `L37` 광산 참고 문법의 얼음·용암 적용 (2026-09-13)
-- `L45` 얼음·용암 절벽 굴곡과 소품 보강 (2026-09-14)
-- `L53` 서로 합류하는 복합 절벽 — 실제 반영 (2026-09-14)
-- `L66` 기존 칩셋 던전 네 종류 (2026-09-14)
-- `L77` 네 던전의 연결 구조 우선 재저작 (2026-09-14)
-- `L85` 설산 빙벽 조립 정정 (2026-09-13)
-- `L97` Interior authoring/load consistency (2026-09-07)
-- `L138` Closed expandable long tables (2026-09-07)
-- `L179` 사용자 타일 정정: 항아리·돌계단·석조 화로
-- `L190` 여관 검수표와 숙박 검증
-- `L198` 여관 꾸러미 전면 재구성 (2026-09-06)
-- `L217` 실내 의미·형태 검토 반영 (2026-09-05)
-- `L230` 모든 AI 실내의 개념 꾸러미 계약 (2026-09-05)
-- `L241` Tileset-specific map generation contract
-- `L253` Interior Room Session Harness (villager-room-v1)
-- `L266` Safe detached draft and approval harness
-- `L274` Interior object catalog is the shape source of truth (2026-08-28)
-- `L285` 소품 표면 어휘가 `PlacementZone` 으로 통일됐다 (2026-08-30, PR #316)
-- `L298` 개념 시설 시공 — place_concept 경로가 파이프라인에서 다른 점 (2026-09-02)
-- `L312` 도면 호환성과 외장 스탬프 후속 (2026-09-05)
-- `L318` 입구 예약·멀티타일 통행 복원 (2026-09-05)
-- `L326` 공포 게임 제작 기능 (2026-09-05)
-- `L330` 여관 외 시설의 공간 구성 (2026-09-05)
-- `L340` PR618 통합: 큰 탁자와 기존 시설 구성 (2026-09-06)
-- `L348` 비직사각 실내 정본 재설계 (2026-09-13)
-- `L357` 생활 구역 조합으로 실내 저작 (2026-09-14)
-- `L366` 여관·잡화점의 시설별 실내 기준 (2026-09-14)
-- `L373` 연결 던전의 에디터 통합 (2026-09-14)
-- `L377` Compact interiors and automatic furnishing budgets (2026-09-14)
-- `L388` Open domestic interiors: activity areas are not enclosed rooms (2026-09-14)
-  - `L400` Follow-up: excess floor and furniture depth (2026-09-14)
-  - `L410` Small props require supports; short bathroom steps (2026-09-14)
-  - `L420` Reference-house correction: no shrub pots, cooking supports, inset cabinets (2026-09-14)
-  - `L430` All-interior review (2026-09-15)
+- `L26` 대형 광산 저작 접합 교정 (2026-09-13)
+- `L34` 사용자 광산 참고 이미지와 확장판 (2026-09-13)
+- `L42` 광산 참고 문법의 얼음·용암 적용 (2026-09-13)
+- `L50` 얼음·용암 절벽 굴곡과 소품 보강 (2026-09-14)
+- `L58` 서로 합류하는 복합 절벽 — 실제 반영 (2026-09-14)
+- `L71` 기존 칩셋 던전 네 종류 (2026-09-14)
+- `L82` 네 던전의 연결 구조 우선 재저작 (2026-09-14)
+- `L90` 설산 빙벽 조립 정정 (2026-09-13)
+- `L102` Interior authoring/load consistency (2026-09-07)
+- `L143` Closed expandable long tables (2026-09-07)
+- `L184` 사용자 타일 정정: 항아리·돌계단·석조 화로
+- `L195` 여관 검수표와 숙박 검증
+- `L203` 여관 꾸러미 전면 재구성 (2026-09-06)
+- `L222` 실내 의미·형태 검토 반영 (2026-09-05)
+- `L235` 모든 AI 실내의 개념 꾸러미 계약 (2026-09-05)
+- `L246` Tileset-specific map generation contract
+- `L258` Interior Room Session Harness (villager-room-v1)
+- `L271` Safe detached draft and approval harness
+- `L279` Interior object catalog is the shape source of truth (2026-08-28)
+- `L290` 소품 표면 어휘가 `PlacementZone` 으로 통일됐다 (2026-08-30, PR #316)
+- `L303` 개념 시설 시공 — place_concept 경로가 파이프라인에서 다른 점 (2026-09-02)
+- `L317` 도면 호환성과 외장 스탬프 후속 (2026-09-05)
+- `L323` 입구 예약·멀티타일 통행 복원 (2026-09-05)
+- `L331` 공포 게임 제작 기능 (2026-09-05)
+- `L335` 여관 외 시설의 공간 구성 (2026-09-05)
+- `L345` PR618 통합: 큰 탁자와 기존 시설 구성 (2026-09-06)
+- `L353` 비직사각 실내 정본 재설계 (2026-09-13)
+- `L363` 생활 구역 조합으로 실내 저작 (2026-09-14)
+- `L372` 여관·잡화점의 시설별 실내 기준 (2026-09-14)
+- `L379` 연결 던전의 에디터 통합 (2026-09-14)
+- `L383` Compact interiors and automatic furnishing budgets (2026-09-14)
+- `L394` Open domestic interiors: activity areas are not enclosed rooms (2026-09-14)
+  - `L406` Follow-up: excess floor and furniture depth (2026-09-14)
+  - `L416` Small props require supports; short bathroom steps (2026-09-14)
+  - `L426` Reference-house correction: no shrub pots, cooking supports, inset cabinets (2026-09-14)
+  - `L436` All-interior review (2026-09-15)
 
 ### `openwiki/editor-observability.md` — 43KB · 523줄 · ~12,379 토큰 · 깨진 줄 1
 
@@ -747,38 +759,39 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L505` 검증
 - `L512` Feature16 저작 보조 관측 경계 (2026-09-21)
 
-### `openwiki/editor-pre-edit-routing.md` — 149KB · 888줄 · ~43,293 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 150KB · 899줄 · ~43,615 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L5` 맵별 16/32/48px 좌표
 - `L13` 맵 칸 층은 `mapLayers.ts` 로만 읽고 쓴다 (MZ식 4층, 2026-09-24)
 - `L53` 맵 목록 클릭은 즉시 선택한다 (2026-09-18 후속)
-- `L106` database 표면 CSS 지연 로드와 공용 다이얼로그 (2026-09-21)
-- `L119` 맵 전환과 물 타일 애니메이션 공유 (2026-09-18)
-- `L137` 편집기 CSS·목록 비용 (2026-09-25)
-- `L168` 편집기 재렌더 비용 — 줌은 카메라 경로다 (2026-09-16)
-  - `L244` 커스텀 칩 팔레트의 빈틈 없는 표시 (2026-09-21)
-- `L263` Exterior door backing
-- `L273` Tile brush reliability (2026-09-06)
-- `L311` Combo Brush (2026-09-10, OPRN-OUT-022)
-  - `L316` 용어 (코드와 UI 가 같은 말을 쓴다)
-  - `L328` 소유 경계
-  - `L340` 근거 규칙 — 번호 인접으로 추론하지 않는다
-  - `L351` 검토 책임
-  - `L363` 경계와 진단
-  - `L373` 회귀 이음줌
-- `L385` Pre-edit routing
-  - `L387` 명명 로케이션 레이어 (2026-09-10)
-  - `L469` 로케이션 역할과 겹침 클릭 (2026-09-12)
-  - `L522` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
-  - `L524` 로케이션 앵커 — 좌표 대신 이름으로 가리키기 (2026-09-12)
-  - `L577` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
-  - `L637` Automatic usage guides disabled (2026-09-06)
-  - `L647` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
-- `L754` Agent cautions
-- `L766` 헤더 용어 정본과 중복 감사 (2026-08-30)
-  - `L802` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
-  - `L834` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
-  - `L863` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
+- `L106` 참고문서가 많은 프로젝트의 DB 되돌리기 스냅샷 (2026-09-25)
+- `L117` database 표면 CSS 지연 로드와 공용 다이얼로그 (2026-09-21)
+- `L130` 맵 전환과 물 타일 애니메이션 공유 (2026-09-18)
+- `L148` 편집기 CSS·목록 비용 (2026-09-25)
+- `L179` 편집기 재렌더 비용 — 줌은 카메라 경로다 (2026-09-16)
+  - `L255` 커스텀 칩 팔레트의 빈틈 없는 표시 (2026-09-21)
+- `L274` Exterior door backing
+- `L284` Tile brush reliability (2026-09-06)
+- `L322` Combo Brush (2026-09-10, OPRN-OUT-022)
+  - `L327` 용어 (코드와 UI 가 같은 말을 쓴다)
+  - `L339` 소유 경계
+  - `L351` 근거 규칙 — 번호 인접으로 추론하지 않는다
+  - `L362` 검토 책임
+  - `L374` 경계와 진단
+  - `L384` 회귀 이음줌
+- `L396` Pre-edit routing
+  - `L398` 명명 로케이션 레이어 (2026-09-10)
+  - `L480` 로케이션 역할과 겹침 클릭 (2026-09-12)
+  - `L533` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
+  - `L535` 로케이션 앵커 — 좌표 대신 이름으로 가리키기 (2026-09-12)
+  - `L588` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
+  - `L648` Automatic usage guides disabled (2026-09-06)
+  - `L658` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
+- `L765` Agent cautions
+- `L777` 헤더 용어 정본과 중복 감사 (2026-08-30)
+  - `L813` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
+  - `L845` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
+  - `L874` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
 
 ### `openwiki/editor-storage-chest.md` — 2KB · 17줄 · ~571 토큰
 
@@ -958,6 +971,91 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L99` Installation and integrity
 - `L114` Runtime and authoring contracts
 - `L133` Verification and examples
+
+### `openwiki/pixel-art-world-bath-gym.md` — 3KB · 31줄 · ~841 토큰
+
+- `L19` 로컬 공용 게시·정본 재로드 (2026-09-24)
+
+### `openwiki/pixel-art-world-civic.md` — 4KB · 38줄 · ~1,105 토큰
+
+절 제목 없음 (평면 목록 페이지).
+
+### `openwiki/pixel-art-world-doors.md` — 5KB · 53줄 · ~1,525 토큰
+
+절 제목 없음 (평면 목록 페이지).
+
+### `openwiki/pixel-art-world-eventprops.md` — 5KB · 60줄 · ~1,555 토큰
+
+- `L21` 로컬 공용 설치 (2026-09-24)
+- `L44` 물 연출 공용 설치 (2026-09-25)
+
+### `openwiki/pixel-art-world-facility-complements.md` — 7KB · 101줄 · ~2,194 토큰
+
+- `L45` 재현 가능한 로컬 공용 publisher
+
+### `openwiki/pixel-art-world-food.md` — 6KB · 37줄 · ~1,740 토큰
+
+- `L15` 실제 오브젝트 등록
+- `L21` 공용·정본 설치 (2026-09-24)
+
+### `openwiki/pixel-art-world-home.md` — 4KB · 43줄 · ~1,111 토큰
+
+- `L10` 도시의 서로 다른 두 주택 (2026-09-24 후속)
+
+### `openwiki/pixel-art-world-hospitality-complements.md` — 3KB · 24줄 · ~786 토큰
+
+절 제목 없음 (평면 목록 페이지).
+
+### `openwiki/pixel-art-world-japanese-interiors.md` — 11KB · 130줄 · ~3,482 토큰
+
+- `L3` 현대 실내 추가 8맵 (2026-09-25)
+- `L39` 이자카야
+- `L84` 로컬 공용 게시와 정본 확인 (2026-09-24)
+- `L110` 직접 배치와 완성 맵 복사를 구분 (2026-09-25)
+
+### `openwiki/pixel-art-world-loose-supplements.md` — 7KB · 93줄 · ~2,123 토큰
+
+- `L11` 별도 로컬 공용 라이브러리 준비·게시
+- `L80` 감독자 통합 관찰 (2026-09-25)
+
+### `openwiki/pixel-art-world-loose.md` — 6KB · 46줄 · ~1,933 토큰
+
+- `L15` 통합·실제 UI 관찰 (2026-09-24)
+- `L25` 검토 판본의 사용자 로컬 공용 게시 준비
+- `L37` 공용·기존 정본·새 SQLite 확인 (2026-09-24)
+
+### `openwiki/pixel-art-world-mansion-exteriors.md` — 3KB · 38줄 · ~948 토큰
+
+- `L17` 로컬 공용 저장과 실제 관찰 (2026-09-25)
+
+### `openwiki/pixel-art-world-mansion-interiors.md` — 3KB · 36줄 · ~919 토큰
+
+- `L17` 공용 게시·정본 재로드 (2026-09-25)
+
+### `openwiki/pixel-art-world-native-complements.md` — 4KB · 37줄 · ~1,196 토큰
+
+- `L22` 사용자 로컬 공용 등록 경로
+
+### `openwiki/pixel-art-world-retrotown-exteriors.md` — 2KB · 22줄 · ~635 토큰
+
+절 제목 없음 (평면 목록 페이지).
+
+### `openwiki/pixel-art-world-school-sewer.md` — 2KB · 28줄 · ~681 토큰
+
+- `L19` 별도 로컬 게시 경계 (2026-09-25)
+
+### `openwiki/pixel-art-world-school.md` — 14KB · 165줄 · ~4,349 토큰
+
+- `L3` 계단실 공용 문서와 실제 조수 확인 (2026-09-25)
+- `L67` 4층 학교 / 실제 방 구조 (2026-09-24)
+  - `L94` 반려 후 축소·벽 연속성 수정
+  - `L104` 2차 반려 후 밀도 재설계
+  - `L114` 380원본 범위 고정 후 학교 축소 (2026-09-25)
+  - `L128` 현재: 독립 계단실과 교실 뒤 사물함
+
+### `openwiki/pixel-art-world-static-expansion.md` — 3KB · 31줄 · ~969 토큰
+
+- `L23` 정본·공용 설치 도구
 
 ### `openwiki/placed-place-edits.md` — 5KB · 79줄 · ~1,282 토큰
 
@@ -1375,7 +1473,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L82` 마을 생활 공간 장식 (2026-09-13)
 - `L126` 겹치는 숲과 외곽 풀밭 (2026-09-13)
 
-### `openwiki/spatial-ai-tools.md` — 22KB · 276줄 · ~6,091 토큰
+### `openwiki/spatial-ai-tools.md` — 27KB · 328줄 · ~7,470 토큰
 
 - `L3` 장소 단일 계약 (2026-09-14)
 - `L19` Ownership
@@ -1385,8 +1483,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L142` Legacy adapters and context
 - `L184` Evidence and integration boundary
 - `L201` Completed region references (2026-09-13)
-  - `L217` Shared places and objects without activation (2026-09-25)
-  - `L255` Importing a reference (`import_region_reference`, 2026-09-25)
+- `L217` 2026-09-24 — 장소·지역·오브젝트의 자체 AI 참고문서
+  - `L258` PAW 시설 재배치와 저장 (2026-09-24)
+  - `L269` Shared places and objects without activation (2026-09-25)
+  - `L307` Importing a reference (`import_region_reference`, 2026-09-25)
 
 ### `openwiki/spatial-authoring-controller.md` — 18KB · 294줄 · ~4,590 토큰
 
@@ -1399,7 +1499,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L179` Exact connection cleanup
 - `L248` Verification and remaining integration
 
-### `openwiki/spatial-catalog-ui.md` — 18KB · 189줄 · ~4,938 토큰
+### `openwiki/spatial-catalog-ui.md` — 21KB · 220줄 · ~6,017 토큰
 
 - `L5` 목록은 축소 그림만 그린다 (2026-09-24)
 - `L14` Concept and selection contract (2026-09-12)
@@ -1415,6 +1515,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L176` 2026-09-24 — bundled fallback for all 31 interiors
 - `L180` 공용 장소 웹 배포 계약 (2026-09-24)
 - `L186` 호스트 전용 장소의 목록 썸네일 (2026-09-24)
+- `L190` 2026-09-24 — 공간 소유자의 참고문서 표시
+- `L203` RPG 판타지 장소 70곳 공용 DB 등록 (2026-09-25)
+- `L214` 공용 DB 게시 도우미 `scripts/content/lib/shared-library.mjs` (2026-09-25)
 
 ### `openwiki/spatial-geography-compiler.md` — 9KB · 158줄 · ~2,420 토큰
 
@@ -1529,7 +1632,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L30` 실제 데이터 보존
 - `L43` 역사 자료와 검증
 
-### `openwiki/teaching-assistant-tilesets.md` — 26KB · 242줄 · ~7,833 토큰
+### `openwiki/teaching-assistant-tilesets.md` — 30KB · 268줄 · ~9,019 토큰
 
 - `L8` 한 줄 요약
 - `L14` 조수가 실제로 받는 것
@@ -1542,28 +1645,31 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L116` 조수가 지금 받는 것
   - `L130` 네 층 팩을 가르치는 순서
   - `L150` Rasak Fantasy 파이프라인 (저장소 밖 그림)
-- `L167` 알려진 함정
-- `L177` 강제 장치 (이 문서를 안 읽어도 걸리는 것)
-- `L191` 칩셋 계열 규칙 (2026-09-25 사용자 결정)
-- `L226` 문서의 번호가 새 프로젝트에 있어야 한다 (2026-09-25)
+- `L193` 알려진 함정
+- `L203` 강제 장치 (이 문서를 안 읽어도 걸리는 것)
+- `L217` 칩셋 계열 규칙 (2026-09-25 사용자 결정)
+- `L252` 문서의 번호가 새 프로젝트에 있어야 한다 (2026-09-25)
 
-### `openwiki/team-project-host.md` — 19KB · 227줄 · ~5,793 토큰
+### `openwiki/team-project-host.md` — 24KB · 296줄 · ~7,549 토큰
 
 - `L5` 소유와 실행 위치
 - `L22` 실행
 - `L46` 기존 mdc-server 시작 명령의 SQLite 연결 (2026-09-18)
 - `L64` 저장·협업 계약
-- `L96` 백업과 이전
-- `L106` 검증 근거
-- `L115` 호스트 페이지 CSP (2026-09-22)
-- `L124` 적대적 리뷰 수정 (2026-09-18)
-- `L137` 웹 새 프로젝트 생성 (2026-09-18)
-- `L155` 운영 systemd가 Vite preview에 고정된 경우 (2026-09-18)
-- `L175` 맵 편집 권한 가져오기 (2026-09-18)
-- `L183` 운영 AI와 로그인 유지 (2026-09-18)
-- `L196` 내부 웹 기본 접속 (2026-09-18)
-- `L207` Large bridge save requests (2026-09-24)
-- `L213` 웹 편집기 저장 경로 경량화 (2026-09-25)
+- `L96` 큰 프로젝트의 HTTP 저장 전송 (2026-09-24)
+  - `L133` 헤드리스 대용량 콘텐츠 설치 (2026-09-25)
+- `L146` 백업과 이전
+- `L156` 검증 근거
+- `L165` 호스트 페이지 CSP (2026-09-22)
+- `L174` 적대적 리뷰 수정 (2026-09-18)
+- `L187` 웹 새 프로젝트 생성 (2026-09-18)
+  - `L205` 새 프로젝트의 공용 기본 자료 보장 (2026-09-24)
+- `L224` 운영 systemd가 Vite preview에 고정된 경우 (2026-09-18)
+- `L244` 맵 편집 권한 가져오기 (2026-09-18)
+- `L252` 운영 AI와 로그인 유지 (2026-09-18)
+- `L265` 내부 웹 기본 접속 (2026-09-18)
+- `L276` Large bridge save requests (2026-09-24)
+- `L282` 웹 편집기 저장 경로 경량화 (2026-09-25)
 
 ### `openwiki/testing.md` — 205KB · 1916줄 · ~56,826 토큰 · 통째읽기 잘림
 
@@ -1665,7 +1771,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L108` 브라우저 근거
 - `L121` Slates 참고 맵 3종
 
-### `openwiki/tile-layer-policy.md` — 29KB · 365줄 · ~9,004 토큰
+### `openwiki/tile-layer-policy.md` — 30KB · 374줄 · ~9,242 토큰
 
 - `L13` 다섯 부류
 - `L26` 층 번호 ↔ 맵 칸 ↔ 도구 인자 (MZ 네 층, 2026-09-25)
@@ -1687,39 +1793,45 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L300` 공용 오브젝트 (2026-09-22)
   - `L325` 16px 병행판 (2026-09-22)
   - `L344` 픽셀 크기 기록 계약 (2026-09-22)
+- `L366` AI 하위 페인트의 상위 가구 보존 (2026-09-25)
 
-### `openwiki/tileset-reference-documents.md` — 42KB · 432줄 · ~12,775 토큰
+### `openwiki/tileset-reference-documents.md` — 52KB · 543줄 · ~15,944 토큰 · 통째읽기 잘림
 
-- `L7` 사용자 경로와 정본
-- `L24` 타일 화면 구성 (2026-09-21)
-- `L45` 저장 계약
-- `L57` AI 선행 읽기 계약
-- `L84` Slates 이관
-- `L97` 확인 자료와 범위
-- `L103` Castle2 성채 학습 이관
-- `L115` 숲마을 공용 자료 (2026-09-21)
-- `L131` 공용 forest_harmony 참고문서 보충 (2026-09-22)
-  - `L146` Castle2 공용 기본 제공 수정
-- `L155` 실행형 부품·조립·검증 자료
-- `L173` 공용 숲 실행 조립법 (2026-09-22)
-  - `L190` 상세 공용 조립 계약 (public-assembly-v2)
-- `L202` 이슬여울 마을 장식 표본 (2026-09-22)
-- `L226` 다양한 마을의 번들 소유 참고문서 (2026-09-23)
-  - `L242` 절벽 조립 교정 (2026-09-23)
-  - `L252` 잔디 경계 개정3 (2026-09-23)
-  - `L262` 굽은 지형·입구 개정4 (2026-09-23)
-  - `L272` 생활 마당 개정5 (2026-09-23)
-  - `L281` 사용 목적 개정6 (2026-09-23)
-  - `L291` 공동 공간·정원 개정7 (2026-09-23)
-  - `L302` 계단 대지 개정8 (2026-09-23)
-  - `L317` 강과 폭포 개정9 (2026-09-23)
-  - `L329` 컨셉 마을 3종 · 창문 개정10 (2026-09-23)
-  - `L345` 판타지 장소 11곳 · 상점·성 내부·마왕성 (2026-09-23)
-  - `L361` 기후 마을 · 설원·화산 (2026-09-23)
-  - `L374` 사막·가을 기후 + 마을 사이 필드 (2026-09-23)
-  - `L387` 나무 몸통 개정 — 잘린 줄기 없애기 (2026-09-23)
-  - `L405` 수관 잎 채움 (2026-09-24)
-- `L416` 번들 참고 이미지는 정적 경로다 (2026-09-25)
+- `L5` 공용 SQLite 지역 참고문서 조회 (2026-09-24)
+- `L16` 사용자 다운로드형 타일셋 지원 (2026-09-24)
+  - `L57` 공간 설계·실제 발판 검사
+- `L74` 사용자 경로와 정본
+- `L91` 타일 화면 구성 (2026-09-21)
+- `L112` 저장 계약
+- `L124` AI 선행 읽기 계약
+- `L151` Slates 이관
+- `L164` 확인 자료와 범위
+- `L170` Castle2 성채 학습 이관
+- `L182` 숲마을 공용 자료 (2026-09-21)
+- `L198` 공용 forest_harmony 참고문서 보충 (2026-09-22)
+  - `L213` Castle2 공용 기본 제공 수정
+- `L222` 실행형 부품·조립·검증 자료
+- `L240` 공용 숲 실행 조립법 (2026-09-22)
+  - `L257` 상세 공용 조립 계약 (public-assembly-v2)
+- `L269` 이슬여울 마을 장식 표본 (2026-09-22)
+- `L293` 다양한 마을의 번들 소유 참고문서 (2026-09-23)
+  - `L309` 절벽 조립 교정 (2026-09-23)
+  - `L319` 잔디 경계 개정3 (2026-09-23)
+  - `L329` 굽은 지형·입구 개정4 (2026-09-23)
+  - `L339` 생활 마당 개정5 (2026-09-23)
+  - `L348` 사용 목적 개정6 (2026-09-23)
+  - `L358` 공동 공간·정원 개정7 (2026-09-23)
+  - `L369` 계단 대지 개정8 (2026-09-23)
+  - `L384` 강과 폭포 개정9 (2026-09-23)
+  - `L396` 컨셉 마을 3종 · 창문 개정10 (2026-09-23)
+  - `L412` 판타지 장소 11곳 · 상점·성 내부·마왕성 (2026-09-23)
+  - `L428` 기후 마을 · 설원·화산 (2026-09-23)
+  - `L441` 사막·가을 기후 + 마을 사이 필드 (2026-09-23)
+  - `L454` 나무 몸통 개정 — 잘린 줄기 없애기 (2026-09-23)
+  - `L473` 공용 PAW 장면 실행 경로 (2026-09-25)
+- `L494` PAW 천장 아래 벽과 실제 가게2종 (2026-09-25)
+  - `L516` 수관 잎 채움 (2026-09-24)
+- `L527` 번들 참고 이미지는 정적 경로다 (2026-09-25)
 
 ### `openwiki/town-tile-benchmark.md` — 10KB · 153줄 · ~3,024 토큰
 

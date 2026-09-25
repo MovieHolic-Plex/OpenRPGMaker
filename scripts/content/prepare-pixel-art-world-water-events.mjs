@@ -1,0 +1,37 @@
+// Ordinary importer/authoring observation. Private outputs; no project/shared DB writes.
+import fs from 'node:fs/promises';import path from 'node:path';import{fileURLToPath}from'node:url';import{createHash}from'node:crypto';import{chromium}from'playwright';
+const root=fileURLToPath(new URL('../../',import.meta.url));const[devUrl,downloads,outArg]=process.argv.slice(2);if(!outArg)throw Error('Usage: devURL original-downloads private-output');const out=path.resolve(outArg);if(!out.startsWith(path.join(root,'output')+'/'))throw Error('Private output required');await fs.mkdir(out,{recursive:true});
+const browser=await chromium.launch();const errors=[];
+try{
+const page=await browser.newPage();page.on('pageerror',e=>errors.push(e.message));await page.route('**/__water-prepare',r=>r.fulfill({contentType:'text/html',body:'<!doctype html><div id="app"></div>'}));await page.goto(new URL('/__water-prepare',devUrl).href);
+const originals={};for(const f of['SC-Water01.png','SC-Water02.png'])originals[f]=(await fs.readFile(path.join(downloads,'by-source/sozai/chara',f))).toString('base64');originals['ST-Sewer-01.png']=(await fs.readFile(path.join(downloads,'ST-Sewer-01.png'))).toString('base64');
+const result=await page.evaluate(async originals=>{
+ const {PIXEL_ART_WORLD_EVENT_PROPS,eventPropAssembly}=await import('/src/project/pixelArtWorldEventProps.ts');const{preparePixelArtWorldEventProp}=await import('/src/editor/pixelArtWorldEventPropImport.ts');const{waterSupportExample}=await import('/src/project/pixelArtWorldWaterSupport.ts');const{prepareExternalTileset}=await import('/src/editor/externalTilesetImport.ts');const{EXTERNAL_TILESET_PACKS}=await import('/src/project/externalTilesetCatalog.ts');
+ const file=name=>new File([Uint8Array.from(atob(originals[name]),c=>c.charCodeAt(0))],name,{type:'image/png'});
+ const source=await prepareExternalTileset(file('ST-Sewer-01.png'),EXTERNAL_TILESET_PACKS.find(p=>p.id==='paw-sewer'));
+ const {createBlankProject}=await import('/src/project/defaults/blankProject.ts');const project=createBlankProject();const template=structuredClone(Object.values(project.maps)[0]);project.maps={};const prepared=[],examples=[],pixelChecks=[];
+ const sourceAsset={id:source.assetId,name:'ST-Sewer-01.png',kind:'chipset',dataUrl:source.dataUrl,meta:{tileSize:32,width:256,height:1504,frameWidth:32,frameHeight:32,frames:376}};project.assets.uploaded[sourceAsset.id]=sourceAsset;project.tilesets[source.tileset.id]=source.tileset;
+ for(const pack of PIXEL_ART_WORLD_EVENT_PROPS.filter(p=>p.id==='paw-eventprop-water01'||p.id==='paw-eventprop-water02')){
+  const p=await preparePixelArtWorldEventProp(file(pack.filename),pack,'shared_'+pack.id.replaceAll('-','_'),{supportFile:file('ST-Sewer-01.png')});prepared.push(p);project.assets.uploaded[p.asset.id]=p.asset;
+  // Same browser-normalized original and assembled pixels, not raw straight-RGBA provenance.
+  const sourceImage=new Image();sourceImage.src='data:image/png;base64,'+originals[pack.filename];await sourceImage.decode();const src=document.createElement('canvas');src.width=pack.width;src.height=pack.height;src.getContext('2d').drawImage(sourceImage,0,0);const raw=src.getContext('2d').getImageData(0,0,src.width,src.height).data;
+  const atlasImage=new Image();atlasImage.src=p.asset.dataUrl;await atlasImage.decode();const can=document.createElement('canvas');can.width=atlasImage.width;can.height=atlasImage.height;can.getContext('2d').drawImage(atlasImage,0,0);const pixels=can.getContext('2d').getImageData(0,0,can.width,can.height).data;let exactPixels=0;
+  for(const frame of pack.frames){const composite=pack.frameComposites.find(c=>c.index===frame.index),[ox,oy]=frame.atlasOffset;for(const part of composite.parts){const[sx,sy,w,h]=part.sourceRect,[dx,dy]=part.destination;for(let y=0;y<h;y++)for(let x=0;x<w;x++){const si=((sy+y)*src.width+sx+x)*4,di=((Math.floor(frame.index/4)*pack.frameHeight+oy+dy+y)*can.width+frame.index%4*pack.frameWidth+ox+dx+x)*4;for(let c=0;c<4;c++)if((c===3||raw[si+3])&&raw[si+c]!==pixels[di+c])throw Error('Normalized source/whole-frame pixels differ');exactPixels++;}}}
+  pixelChecks.push({packId:pack.id,frames:pack.frames.length,exactNormalizedPixels:exactPixels,meta:p.asset.meta});
+  for(const variant of pack.variants.filter(v=>v.kind==='loop')){
+   const example=waterSupportExample(pack,variant,p.asset.id),map={...structuredClone(template),...example,id:pack.id+'-'+variant.id,name:pack.name+' '+variant.name,tilesetId:source.tileset.id,tileSize:32,events:[]};
+   const fixed=pack.variants.find(v=>v.id===variant.id.replace('-loop','-static'));
+   for(const [kind,v,x]of[['static',fixed,pack.frameWidth===96?1:2],['loop',variant,pack.frameWidth===96?5:4]]){const e=eventPropAssembly(pack,v,p.asset.id).events[0];e.id=kind;e.x=x;e.y=example.anchor.y;e.sprite=e.pages[0].graphic.sprite;e.trigger=e.pages[0].trigger;e.commands=e.pages[0].commands;map.events.push(e);}
+   project.maps[map.id]=map;examples.push({packId:pack.id,variantId:variant.id,mapId:map.id,support:example});
+  }
+ }
+ const first=Object.values(project.maps)[0];project.assets.sprites={};project.session.mapId=first.id;project.session.player={...project.session.player,x:0,y:first.height-1,direction:'up'};project.system.start={...project.system.start,mapId:first.id,x:0,y:first.height-1,direction:'up'};project.startPos={x:0,y:first.height-1};project.startMapId=first.id;project.system.opening={...project.system.opening,enabled:false};project.system.titleScreen={...project.system.titleScreen,enabled:false};
+ // One source change must reject before any project writes (preparation has no store mutation).
+ const corrupt=new Uint8Array(await file('SC-Water01.png').arrayBuffer());corrupt[20]^=1;let rejected=false;try{await preparePixelArtWorldEventProp(new File([corrupt],'SC-Water01.png'),PIXEL_ART_WORLD_EVENT_PROPS.find(p=>p.id==='paw-eventprop-water01'));}catch{rejected=true;}if(!rejected)throw Error('Changed edition accepted');
+ const {appendPixelArtWorldEventPropCatalog}=await import('/src/editor/panels/pixelArtWorldEventPropCatalog.ts');appendPixelArtWorldEventPropCatalog(document.getElementById('app'),{signal:new AbortController().signal,controls:[],refreshTargets:[],isBusy:()=>false,setBusy:()=>{},onImported:()=>{}});
+ return{prepared,project,examples,pixelChecks,rejected,ui:{cards:document.querySelectorAll('article').length,waterSources:document.querySelectorAll('input[data-testid^="paw-eventprop-water"][data-testid$="-file"]').length}};
+},originals);
+for(const p of result.prepared){for(const img of p.references.images)await fs.writeFile(path.join(out,p.packId+'-'+img.id+'.png'),Buffer.from(img.dataUrl.split(',')[1],'base64'));for(const d of p.references.documents)await fs.writeFile(path.join(out,p.packId+'-'+d.id+'.md'),d.markdown);}
+await fs.writeFile(path.join(out,'prepared.json'),JSON.stringify(result.prepared));await fs.writeFile(path.join(out,'runtime-fixture.json'),JSON.stringify(result.project));await fs.writeFile(path.join(out,'examples.json'),JSON.stringify(result.examples,null,2));delete result.project;delete result.prepared;
+const hash=b=>createHash('sha256').update(b).digest('hex');result.metadataSha256=hash(await fs.readFile(path.join(root,'src/assets/pixelArtWorldEventProps.json')));result.errors=errors;await fs.writeFile(path.join(out,'proof.json'),JSON.stringify(result,null,2));console.log({out,pixels:result.pixelChecks,ui:result.ui,errors});
+}finally{await browser.close();}

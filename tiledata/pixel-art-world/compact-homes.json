@@ -1,0 +1,2290 @@
+{
+  "tilesetId": "paw-home",
+  "tilesPerRow": 8,
+  "tilesetCount": 448,
+  "tilesetImageSha256": "4afe7d466f2cfb89f538a00edeef48fd1ce2a74b5a85296fe25b957bd5cd91a5",
+  "ceilingGroupId": "paw-wall-a01",
+  "floorTileIds": [
+    4,
+    11
+  ],
+  "wallFaceRows": [
+    17,
+    25,
+    33
+  ],
+  "maps": {
+    "home-compact-5": {
+      "id": "home-compact-5",
+      "width": 13,
+      "height": 16,
+      "tileSize": 32,
+      "tilesetId": "paw-home",
+      "lowerTiles": [
+        406,
+        410,
+        410,
+        410,
+        410,
+        414,
+        410,
+        410,
+        410,
+        410,
+        410,
+        410,
+        412,
+        405,
+        17,
+        17,
+        17,
+        17,
+        405,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        405,
+        405,
+        25,
+        25,
+        25,
+        25,
+        405,
+        25,
+        25,
+        25,
+        25,
+        25,
+        25,
+        405,
+        405,
+        33,
+        33,
+        33,
+        33,
+        405,
+        33,
+        33,
+        33,
+        33,
+        33,
+        33,
+        405,
+        405,
+        11,
+        11,
+        11,
+        11,
+        405,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        405,
+        405,
+        11,
+        11,
+        11,
+        11,
+        405,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        405,
+        405,
+        11,
+        11,
+        11,
+        11,
+        405,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        405,
+        407,
+        410,
+        410,
+        408,
+        4,
+        401,
+        4,
+        402,
+        410,
+        410,
+        410,
+        410,
+        413,
+        405,
+        17,
+        17,
+        17,
+        4,
+        17,
+        4,
+        17,
+        17,
+        17,
+        17,
+        17,
+        405,
+        405,
+        25,
+        25,
+        25,
+        4,
+        25,
+        4,
+        25,
+        25,
+        25,
+        25,
+        25,
+        405,
+        405,
+        33,
+        33,
+        33,
+        4,
+        33,
+        4,
+        33,
+        33,
+        33,
+        33,
+        33,
+        405,
+        405,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        405,
+        405,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        405,
+        405,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        405,
+        405,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        405,
+        403,
+        410,
+        410,
+        410,
+        408,
+        4,
+        402,
+        410,
+        410,
+        410,
+        410,
+        410,
+        409
+      ],
+      "upperTiles": [
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        64,
+        65,
+        -1,
+        -1,
+        -1,
+        288,
+        289,
+        -1,
+        80,
+        -1,
+        264,
+        265,
+        266,
+        72,
+        73,
+        -1,
+        -1,
+        -1,
+        296,
+        297,
+        306,
+        -1,
+        -1,
+        272,
+        273,
+        274,
+        243,
+        244,
+        -1,
+        -1,
+        -1,
+        304,
+        305,
+        314,
+        -1,
+        -1,
+        280,
+        281,
+        282,
+        251,
+        252,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        259,
+        260,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        130,
+        131,
+        132,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        138,
+        139,
+        140,
+        -1,
+        -1,
+        -1,
+        192,
+        193,
+        194,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        206,
+        200,
+        201,
+        202,
+        205,
+        -1,
+        -1,
+        -1,
+        114,
+        115,
+        116,
+        -1,
+        -1,
+        214,
+        208,
+        209,
+        210,
+        213,
+        -1,
+        -1,
+        -1,
+        122,
+        123,
+        124,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1
+      ],
+      "ceilingCells": [
+        {
+          "x": 0,
+          "y": 0
+        },
+        {
+          "x": 1,
+          "y": 0
+        },
+        {
+          "x": 2,
+          "y": 0
+        },
+        {
+          "x": 3,
+          "y": 0
+        },
+        {
+          "x": 4,
+          "y": 0
+        },
+        {
+          "x": 5,
+          "y": 0
+        },
+        {
+          "x": 6,
+          "y": 0
+        },
+        {
+          "x": 7,
+          "y": 0
+        },
+        {
+          "x": 8,
+          "y": 0
+        },
+        {
+          "x": 9,
+          "y": 0
+        },
+        {
+          "x": 10,
+          "y": 0
+        },
+        {
+          "x": 11,
+          "y": 0
+        },
+        {
+          "x": 12,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 1
+        },
+        {
+          "x": 5,
+          "y": 1
+        },
+        {
+          "x": 12,
+          "y": 1
+        },
+        {
+          "x": 0,
+          "y": 2
+        },
+        {
+          "x": 5,
+          "y": 2
+        },
+        {
+          "x": 12,
+          "y": 2
+        },
+        {
+          "x": 0,
+          "y": 3
+        },
+        {
+          "x": 5,
+          "y": 3
+        },
+        {
+          "x": 12,
+          "y": 3
+        },
+        {
+          "x": 0,
+          "y": 4
+        },
+        {
+          "x": 5,
+          "y": 4
+        },
+        {
+          "x": 12,
+          "y": 4
+        },
+        {
+          "x": 0,
+          "y": 5
+        },
+        {
+          "x": 5,
+          "y": 5
+        },
+        {
+          "x": 12,
+          "y": 5
+        },
+        {
+          "x": 0,
+          "y": 6
+        },
+        {
+          "x": 5,
+          "y": 6
+        },
+        {
+          "x": 12,
+          "y": 6
+        },
+        {
+          "x": 0,
+          "y": 7
+        },
+        {
+          "x": 1,
+          "y": 7
+        },
+        {
+          "x": 2,
+          "y": 7
+        },
+        {
+          "x": 3,
+          "y": 7
+        },
+        {
+          "x": 5,
+          "y": 7
+        },
+        {
+          "x": 7,
+          "y": 7
+        },
+        {
+          "x": 8,
+          "y": 7
+        },
+        {
+          "x": 9,
+          "y": 7
+        },
+        {
+          "x": 10,
+          "y": 7
+        },
+        {
+          "x": 11,
+          "y": 7
+        },
+        {
+          "x": 12,
+          "y": 7
+        },
+        {
+          "x": 0,
+          "y": 8
+        },
+        {
+          "x": 12,
+          "y": 8
+        },
+        {
+          "x": 0,
+          "y": 9
+        },
+        {
+          "x": 12,
+          "y": 9
+        },
+        {
+          "x": 0,
+          "y": 10
+        },
+        {
+          "x": 12,
+          "y": 10
+        },
+        {
+          "x": 0,
+          "y": 11
+        },
+        {
+          "x": 12,
+          "y": 11
+        },
+        {
+          "x": 0,
+          "y": 12
+        },
+        {
+          "x": 12,
+          "y": 12
+        },
+        {
+          "x": 0,
+          "y": 13
+        },
+        {
+          "x": 12,
+          "y": 13
+        },
+        {
+          "x": 0,
+          "y": 14
+        },
+        {
+          "x": 12,
+          "y": 14
+        },
+        {
+          "x": 0,
+          "y": 15
+        },
+        {
+          "x": 1,
+          "y": 15
+        },
+        {
+          "x": 2,
+          "y": 15
+        },
+        {
+          "x": 3,
+          "y": 15
+        },
+        {
+          "x": 4,
+          "y": 15
+        },
+        {
+          "x": 6,
+          "y": 15
+        },
+        {
+          "x": 7,
+          "y": 15
+        },
+        {
+          "x": 8,
+          "y": 15
+        },
+        {
+          "x": 9,
+          "y": 15
+        },
+        {
+          "x": 10,
+          "y": 15
+        },
+        {
+          "x": 11,
+          "y": 15
+        },
+        {
+          "x": 12,
+          "y": 15
+        }
+      ],
+      "placements": [
+        {
+          "recipeId": "home-blue-kitchen",
+          "x": 1,
+          "y": 2,
+          "width": 2,
+          "height": 3,
+          "placementKind": "standing",
+          "tiles": [
+            [
+              288,
+              289
+            ],
+            [
+              296,
+              297
+            ],
+            [
+              304,
+              305
+            ]
+          ]
+        },
+        {
+          "recipeId": "home-stove",
+          "x": 3,
+          "y": 3,
+          "width": 1,
+          "height": 2,
+          "placementKind": "standing",
+          "tiles": [
+            [
+              306
+            ],
+            [
+              314
+            ]
+          ]
+        },
+        {
+          "recipeId": "home-clock",
+          "x": 4,
+          "y": 2,
+          "width": 1,
+          "height": 1,
+          "placementKind": "wall-mounted",
+          "tiles": [
+            [
+              80
+            ]
+          ]
+        },
+        {
+          "recipeId": "home-window",
+          "x": 9,
+          "y": 1,
+          "width": 2,
+          "height": 2,
+          "placementKind": "wall-mounted",
+          "tiles": [
+            [
+              64,
+              65
+            ],
+            [
+              72,
+              73
+            ]
+          ]
+        },
+        {
+          "recipeId": "home-wardrobe",
+          "x": 6,
+          "y": 2,
+          "width": 3,
+          "height": 3,
+          "placementKind": "standing",
+          "tiles": [
+            [
+              264,
+              265,
+              266
+            ],
+            [
+              272,
+              273,
+              274
+            ],
+            [
+              280,
+              281,
+              282
+            ]
+          ]
+        },
+        {
+          "recipeId": "home-bed",
+          "x": 9,
+          "y": 3,
+          "width": 2,
+          "height": 3,
+          "placementKind": "standing",
+          "tiles": [
+            [
+              243,
+              244
+            ],
+            [
+              251,
+              252
+            ],
+            [
+              259,
+              260
+            ]
+          ]
+        },
+        {
+          "recipeId": "home-tv",
+          "x": 1,
+          "y": 10,
+          "width": 3,
+          "height": 2,
+          "placementKind": "standing",
+          "tiles": [
+            [
+              130,
+              131,
+              132
+            ],
+            [
+              138,
+              139,
+              140
+            ]
+          ]
+        },
+        {
+          "recipeId": "home-sofa-back",
+          "x": 1,
+          "y": 13,
+          "width": 3,
+          "height": 2,
+          "placementKind": "standing",
+          "tiles": [
+            [
+              114,
+              115,
+              116
+            ],
+            [
+              122,
+              123,
+              124
+            ]
+          ]
+        },
+        {
+          "recipeId": "home-dining-table",
+          "x": 7,
+          "y": 11,
+          "width": 3,
+          "height": 3,
+          "placementKind": "standing",
+          "tiles": [
+            [
+              192,
+              193,
+              194
+            ],
+            [
+              200,
+              201,
+              202
+            ],
+            [
+              208,
+              209,
+              210
+            ]
+          ]
+        },
+        {
+          "recipeId": "home-chair-east",
+          "x": 6,
+          "y": 12,
+          "width": 1,
+          "height": 2,
+          "placementKind": "standing",
+          "tiles": [
+            [
+              206
+            ],
+            [
+              214
+            ]
+          ]
+        },
+        {
+          "recipeId": "home-chair-west",
+          "x": 10,
+          "y": 12,
+          "width": 1,
+          "height": 2,
+          "placementKind": "standing",
+          "tiles": [
+            [
+              205
+            ],
+            [
+              213
+            ]
+          ]
+        }
+      ],
+      "approachCells": [
+        {
+          "x": 2,
+          "y": 5
+        },
+        {
+          "x": 3,
+          "y": 5
+        },
+        {
+          "x": 7,
+          "y": 5
+        },
+        {
+          "x": 10,
+          "y": 6
+        },
+        {
+          "x": 11,
+          "y": 5
+        },
+        {
+          "x": 4,
+          "y": 11
+        },
+        {
+          "x": 2,
+          "y": 12
+        },
+        {
+          "x": 8,
+          "y": 14
+        },
+        {
+          "x": 6,
+          "y": 14
+        },
+        {
+          "x": 10,
+          "y": 14
+        },
+        {
+          "x": 5,
+          "y": 14
+        }
+      ],
+      "name": "붉은 지붕집 · 북쪽 침실·주방과 남쪽 식사 거실",
+      "rooms": [
+        {
+          "id": "kitchen",
+          "floorRect": {
+            "x": 1,
+            "y": 4,
+            "width": 4,
+            "height": 3
+          },
+          "x": 1,
+          "y": 4,
+          "width": 4,
+          "height": 3
+        },
+        {
+          "id": "bedroom",
+          "floorRect": {
+            "x": 6,
+            "y": 4,
+            "width": 6,
+            "height": 3
+          },
+          "x": 6,
+          "y": 4,
+          "width": 6,
+          "height": 3
+        },
+        {
+          "id": "living-dining",
+          "floorRect": {
+            "x": 1,
+            "y": 11,
+            "width": 11,
+            "height": 4
+          },
+          "x": 1,
+          "y": 11,
+          "width": 11,
+          "height": 4
+        }
+      ],
+      "doorways": [
+        {
+          "from": "living-dining",
+          "to": "kitchen",
+          "x": 4,
+          "y": 7,
+          "width": 1,
+          "height": 4
+        },
+        {
+          "from": "living-dining",
+          "to": "bedroom",
+          "x": 6,
+          "y": 7,
+          "width": 1,
+          "height": 4
+        },
+        {
+          "from": "outside",
+          "to": "living-dining",
+          "x": 5,
+          "y": 15,
+          "width": 1,
+          "height": 1
+        }
+      ],
+      "spawn": {
+        "x": 5,
+        "y": 14,
+        "direction": "up"
+      },
+      "exitTrigger": {
+        "x": 5,
+        "y": 15
+      },
+      "designNotes": [
+        "Separate north kitchen and bedroom; south living/dining uses one table instead of adding a duplicate coffee table.",
+        "Wardrobe x6..8, bed x9..10; row y6 connects both bed sides and the actual foot approach to bedroom door x6.",
+        "Bedroom door emerges at (6,11), left of the dining table, so the table does not block ingress."
+      ],
+      "events": [
+        {
+          "id": "home-compact-5-exit-0",
+          "name": "돌아가기",
+          "x": 5,
+          "y": 15,
+          "trigger": {
+            "kind": "touch"
+          },
+          "commands": [
+            {
+              "kind": "transfer",
+              "mapId": "paw_city",
+              "x": 5,
+              "y": 42,
+              "direction": "down",
+              "fade": "black"
+            }
+          ],
+          "pages": [
+            {
+              "id": "home-compact-5-exit-0-page",
+              "name": "돌아가기",
+              "conditions": [],
+              "graphic": {},
+              "trigger": {
+                "kind": "touch"
+              },
+              "priority": "below",
+              "movement": {
+                "type": "fixed",
+                "speed": 3,
+                "frequency": 3
+              },
+              "commands": [
+                {
+                  "kind": "transfer",
+                  "mapId": "paw_city",
+                  "x": 5,
+                  "y": 42,
+                  "direction": "down",
+                  "fade": "black"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "eventPlan": {
+        "retainAndMoveEventId": "home-compact-5-exit-0",
+        "removeObsoleteEventIds": [
+          "home-compact-5-exit-1"
+        ],
+        "exitToCity": {
+          "mapId": "paw_city",
+          "x": 5,
+          "y": 42,
+          "direction": "down",
+          "fade": "black"
+        },
+        "incomingCityEventId": "door-home-compact-5-0",
+        "incomingTarget": {
+          "mapId": "home-compact-5",
+          "x": 5,
+          "y": 14,
+          "direction": "up",
+          "fade": "black"
+        },
+        "updateCommandLocations": [
+          "event.commands",
+          "event.pages[*].commands"
+        ],
+        "preserveCityDoorCoordinates": true
+      }
+    },
+    "home-compact-6": {
+      "id": "home-compact-6",
+      "width": 13,
+      "height": 15,
+      "tileSize": 32,
+      "tilesetId": "paw-home",
+      "lowerTiles": [
+        406,
+        410,
+        410,
+        410,
+        410,
+        410,
+        410,
+        414,
+        410,
+        410,
+        410,
+        410,
+        412,
+        405,
+        17,
+        17,
+        17,
+        17,
+        17,
+        17,
+        405,
+        17,
+        17,
+        17,
+        17,
+        405,
+        405,
+        25,
+        25,
+        25,
+        25,
+        25,
+        25,
+        405,
+        25,
+        25,
+        25,
+        25,
+        405,
+        405,
+        33,
+        33,
+        33,
+        33,
+        33,
+        33,
+        405,
+        33,
+        33,
+        33,
+        33,
+        405,
+        405,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        405,
+        4,
+        4,
+        4,
+        4,
+        405,
+        405,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        401,
+        4,
+        4,
+        4,
+        4,
+        405,
+        405,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        405,
+        405,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        406,
+        410,
+        410,
+        410,
+        410,
+        413,
+        405,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        405,
+        17,
+        17,
+        17,
+        17,
+        405,
+        405,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        405,
+        25,
+        25,
+        25,
+        25,
+        405,
+        405,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        405,
+        33,
+        33,
+        33,
+        33,
+        405,
+        405,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        401,
+        11,
+        11,
+        11,
+        11,
+        405,
+        405,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        11,
+        11,
+        11,
+        11,
+        405,
+        405,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        404,
+        11,
+        11,
+        11,
+        11,
+        405,
+        403,
+        410,
+        410,
+        410,
+        410,
+        408,
+        4,
+        403,
+        410,
+        410,
+        410,
+        410,
+        409
+      ],
+      "upperTiles": [
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        64,
+        65,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        264,
+        265,
+        266,
+        -1,
+        -1,
+        72,
+        73,
+        -1,
+        -1,
+        -1,
+        130,
+        131,
+        132,
+        272,
+        273,
+        274,
+        -1,
+        -1,
+        243,
+        244,
+        -1,
+        -1,
+        -1,
+        138,
+        139,
+        140,
+        280,
+        281,
+        282,
+        -1,
+        -1,
+        251,
+        252,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        259,
+        260,
+        -1,
+        -1,
+        -1,
+        106,
+        107,
+        108,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        114,
+        115,
+        116,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        122,
+        123,
+        124,
+        -1,
+        -1,
+        -1,
+        -1,
+        288,
+        289,
+        -1,
+        80,
+        -1,
+        -1,
+        -1,
+        192,
+        193,
+        194,
+        -1,
+        -1,
+        -1,
+        296,
+        297,
+        306,
+        -1,
+        -1,
+        -1,
+        206,
+        200,
+        201,
+        202,
+        205,
+        -1,
+        -1,
+        304,
+        305,
+        314,
+        -1,
+        -1,
+        -1,
+        214,
+        208,
+        209,
+        210,
+        213,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1
+      ],
+      "ceilingCells": [
+        {
+          "x": 0,
+          "y": 0
+        },
+        {
+          "x": 1,
+          "y": 0
+        },
+        {
+          "x": 2,
+          "y": 0
+        },
+        {
+          "x": 3,
+          "y": 0
+        },
+        {
+          "x": 4,
+          "y": 0
+        },
+        {
+          "x": 5,
+          "y": 0
+        },
+        {
+          "x": 6,
+          "y": 0
+        },
+        {
+          "x": 7,
+          "y": 0
+        },
+        {
+          "x": 8,
+          "y": 0
+        },
+        {
+          "x": 9,
+          "y": 0
+        },
+        {
+          "x": 10,
+          "y": 0
+        },
+        {
+          "x": 11,
+          "y": 0
+        },
+        {
+          "x": 12,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 1
+        },
+        {
+          "x": 7,
+          "y": 1
+        },
+        {
+          "x": 12,
+          "y": 1
+        },
+        {
+          "x": 0,
+          "y": 2
+        },
+        {
+          "x": 7,
+          "y": 2
+        },
+        {
+          "x": 12,
+          "y": 2
+        },
+        {
+          "x": 0,
+          "y": 3
+        },
+        {
+          "x": 7,
+          "y": 3
+        },
+        {
+          "x": 12,
+          "y": 3
+        },
+        {
+          "x": 0,
+          "y": 4
+        },
+        {
+          "x": 7,
+          "y": 4
+        },
+        {
+          "x": 12,
+          "y": 4
+        },
+        {
+          "x": 0,
+          "y": 5
+        },
+        {
+          "x": 7,
+          "y": 5
+        },
+        {
+          "x": 12,
+          "y": 5
+        },
+        {
+          "x": 0,
+          "y": 6
+        },
+        {
+          "x": 12,
+          "y": 6
+        },
+        {
+          "x": 0,
+          "y": 7
+        },
+        {
+          "x": 7,
+          "y": 7
+        },
+        {
+          "x": 8,
+          "y": 7
+        },
+        {
+          "x": 9,
+          "y": 7
+        },
+        {
+          "x": 10,
+          "y": 7
+        },
+        {
+          "x": 11,
+          "y": 7
+        },
+        {
+          "x": 12,
+          "y": 7
+        },
+        {
+          "x": 0,
+          "y": 8
+        },
+        {
+          "x": 7,
+          "y": 8
+        },
+        {
+          "x": 12,
+          "y": 8
+        },
+        {
+          "x": 0,
+          "y": 9
+        },
+        {
+          "x": 7,
+          "y": 9
+        },
+        {
+          "x": 12,
+          "y": 9
+        },
+        {
+          "x": 0,
+          "y": 10
+        },
+        {
+          "x": 7,
+          "y": 10
+        },
+        {
+          "x": 12,
+          "y": 10
+        },
+        {
+          "x": 0,
+          "y": 11
+        },
+        {
+          "x": 7,
+          "y": 11
+        },
+        {
+          "x": 12,
+          "y": 11
+        },
+        {
+          "x": 0,
+          "y": 12
+        },
+        {
+          "x": 12,
+          "y": 12
+        },
+        {
+          "x": 0,
+          "y": 13
+        },
+        {
+          "x": 7,
+          "y": 13
+        },
+        {
+          "x": 12,
+          "y": 13
+        },
+        {
+          "x": 0,
+          "y": 14
+        },
+        {
+          "x": 1,
+          "y": 14
+        },
+        {
+          "x": 2,
+          "y": 14
+        },
+        {
+          "x": 3,
+          "y": 14
+        },
+        {
+          "x": 4,
+          "y": 14
+        },
+        {
+          "x": 5,
+          "y": 14
+        },
+        {
+          "x": 7,
+          "y": 14
+        },
+        {
+          "x": 8,
+          "y": 14
+        },
+        {
+          "x": 9,
+          "y": 14
+        },
+        {
+          "x": 10,
+          "y": 14
+        },
+        {
+          "x": 11,
+          "y": 14
+        },
+        {
+          "x": 12,
+          "y": 14
+        }
+      ],
+      "placements": [
+        {
+          "recipeId": "home-window",
+          "x": 9,
+          "y": 1,
+          "width": 2,
+          "height": 2,
+          "placementKind": "wall-mounted",
+          "tiles": [
+            [
+              64,
+              65
+            ],
+            [
+              72,
+              73
+            ]
+          ]
+        },
+        {
+          "recipeId": "home-bed",
+          "x": 9,
+          "y": 3,
+          "width": 2,
+          "height": 3,
+          "placementKind": "standing",
+          "tiles": [
+            [
+              243,
+              244
+            ],
+            [
+              251,
+              252
+            ],
+            [
+              259,
+              260
+            ]
+          ]
+        },
+        {
+          "recipeId": "home-wardrobe",
+          "x": 4,
+          "y": 2,
+          "width": 3,
+          "height": 3,
+          "placementKind": "standing",
+          "tiles": [
+            [
+              264,
+              265,
+              266
+            ],
+            [
+              272,
+              273,
+              274
+            ],
+            [
+              280,
+              281,
+              282
+            ]
+          ]
+        },
+        {
+          "recipeId": "home-tv",
+          "x": 1,
+          "y": 3,
+          "width": 3,
+          "height": 2,
+          "placementKind": "standing",
+          "tiles": [
+            [
+              130,
+              131,
+              132
+            ],
+            [
+              138,
+              139,
+              140
+            ]
+          ]
+        },
+        {
+          "recipeId": "home-coffee-table",
+          "x": 1,
+          "y": 6,
+          "width": 3,
+          "height": 1,
+          "placementKind": "standing",
+          "tiles": [
+            [
+              106,
+              107,
+              108
+            ]
+          ]
+        },
+        {
+          "recipeId": "home-sofa-back",
+          "x": 1,
+          "y": 8,
+          "width": 3,
+          "height": 2,
+          "placementKind": "standing",
+          "tiles": [
+            [
+              114,
+              115,
+              116
+            ],
+            [
+              122,
+              123,
+              124
+            ]
+          ]
+        },
+        {
+          "recipeId": "home-dining-table",
+          "x": 2,
+          "y": 10,
+          "width": 3,
+          "height": 3,
+          "placementKind": "standing",
+          "tiles": [
+            [
+              192,
+              193,
+              194
+            ],
+            [
+              200,
+              201,
+              202
+            ],
+            [
+              208,
+              209,
+              210
+            ]
+          ]
+        },
+        {
+          "recipeId": "home-chair-east",
+          "x": 1,
+          "y": 11,
+          "width": 1,
+          "height": 2,
+          "placementKind": "standing",
+          "tiles": [
+            [
+              206
+            ],
+            [
+              214
+            ]
+          ]
+        },
+        {
+          "recipeId": "home-chair-west",
+          "x": 5,
+          "y": 11,
+          "width": 1,
+          "height": 2,
+          "placementKind": "standing",
+          "tiles": [
+            [
+              205
+            ],
+            [
+              213
+            ]
+          ]
+        },
+        {
+          "recipeId": "home-blue-kitchen",
+          "x": 8,
+          "y": 9,
+          "width": 2,
+          "height": 3,
+          "placementKind": "standing",
+          "tiles": [
+            [
+              288,
+              289
+            ],
+            [
+              296,
+              297
+            ],
+            [
+              304,
+              305
+            ]
+          ]
+        },
+        {
+          "recipeId": "home-stove",
+          "x": 10,
+          "y": 10,
+          "width": 1,
+          "height": 2,
+          "placementKind": "standing",
+          "tiles": [
+            [
+              306
+            ],
+            [
+              314
+            ]
+          ]
+        },
+        {
+          "recipeId": "home-clock",
+          "x": 11,
+          "y": 9,
+          "width": 1,
+          "height": 1,
+          "placementKind": "wall-mounted",
+          "tiles": [
+            [
+              80
+            ]
+          ]
+        }
+      ],
+      "approachCells": [
+        {
+          "x": 5,
+          "y": 5
+        },
+        {
+          "x": 3,
+          "y": 5
+        },
+        {
+          "x": 2,
+          "y": 7
+        },
+        {
+          "x": 4,
+          "y": 6
+        },
+        {
+          "x": 10,
+          "y": 6
+        },
+        {
+          "x": 9,
+          "y": 12
+        },
+        {
+          "x": 10,
+          "y": 12
+        },
+        {
+          "x": 3,
+          "y": 13
+        },
+        {
+          "x": 1,
+          "y": 13
+        },
+        {
+          "x": 5,
+          "y": 13
+        },
+        {
+          "x": 6,
+          "y": 12
+        }
+      ],
+      "name": "작은 주택 · 서쪽 거실, 동쪽 분리 침실과 주방",
+      "rooms": [
+        {
+          "id": "living-dining",
+          "floorRect": {
+            "x": 1,
+            "y": 4,
+            "width": 6,
+            "height": 10
+          },
+          "x": 1,
+          "y": 4,
+          "width": 6,
+          "height": 10
+        },
+        {
+          "id": "bedroom",
+          "floorRect": {
+            "x": 8,
+            "y": 4,
+            "width": 4,
+            "height": 3
+          },
+          "x": 8,
+          "y": 4,
+          "width": 4,
+          "height": 3
+        },
+        {
+          "id": "kitchen",
+          "floorRect": {
+            "x": 8,
+            "y": 11,
+            "width": 4,
+            "height": 3
+          },
+          "x": 8,
+          "y": 11,
+          "width": 4,
+          "height": 3
+        }
+      ],
+      "doorways": [
+        {
+          "from": "living-dining",
+          "to": "bedroom",
+          "x": 7,
+          "y": 6,
+          "width": 1,
+          "height": 1
+        },
+        {
+          "from": "living-dining",
+          "to": "kitchen",
+          "x": 7,
+          "y": 12,
+          "width": 1,
+          "height": 1
+        },
+        {
+          "from": "outside",
+          "to": "living-dining",
+          "x": 6,
+          "y": 14,
+          "width": 1,
+          "height": 1
+        }
+      ],
+      "spawn": {
+        "x": 6,
+        "y": 13,
+        "direction": "up"
+      },
+      "exitTrigger": {
+        "x": 6,
+        "y": 14
+      },
+      "designNotes": [
+        "Vertical partition keeps northeast bedroom and southeast kitchen separate from west living/dining.",
+        "Wardrobe is common storage; bedroom has connected foot aisle y6 across x8..11.",
+        "Keep height15: the tested height14 compression puts coffee table on the sole TV approach. No such compression is approved.",
+        "Entry transfer at outer threshold y14; the kitchen branch at y12 remains free."
+      ],
+      "events": [
+        {
+          "id": "home-compact-6-exit-0",
+          "name": "돌아가기",
+          "x": 6,
+          "y": 14,
+          "trigger": {
+            "kind": "touch"
+          },
+          "commands": [
+            {
+              "kind": "transfer",
+              "mapId": "paw_city",
+              "x": 14,
+              "y": 45,
+              "direction": "down",
+              "fade": "black"
+            }
+          ],
+          "pages": [
+            {
+              "id": "home-compact-6-exit-0-page",
+              "name": "돌아가기",
+              "conditions": [],
+              "graphic": {},
+              "trigger": {
+                "kind": "touch"
+              },
+              "priority": "below",
+              "movement": {
+                "type": "fixed",
+                "speed": 3,
+                "frequency": 3
+              },
+              "commands": [
+                {
+                  "kind": "transfer",
+                  "mapId": "paw_city",
+                  "x": 14,
+                  "y": 45,
+                  "direction": "down",
+                  "fade": "black"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "eventPlan": {
+        "retainAndMoveEventId": "home-compact-6-exit-0",
+        "removeObsoleteEventIds": [
+          "home-compact-6-exit-1"
+        ],
+        "exitToCity": {
+          "mapId": "paw_city",
+          "x": 14,
+          "y": 45,
+          "direction": "down",
+          "fade": "black"
+        },
+        "incomingCityEventId": "door-home-compact-6-0",
+        "incomingTarget": {
+          "mapId": "home-compact-6",
+          "x": 6,
+          "y": 13,
+          "direction": "up",
+          "fade": "black"
+        },
+        "updateCommandLocations": [
+          "event.commands",
+          "event.pages[*].commands"
+        ],
+        "preserveCityDoorCoordinates": true
+      }
+    }
+  },
+  "cityTransferEdits": [
+    {
+      "retainAndMoveEventId": "home-compact-5-exit-0",
+      "removeObsoleteEventIds": [
+        "home-compact-5-exit-1"
+      ],
+      "exitToCity": {
+        "mapId": "paw_city",
+        "x": 5,
+        "y": 42,
+        "direction": "down",
+        "fade": "black"
+      },
+      "incomingCityEventId": "door-home-compact-5-0",
+      "incomingTarget": {
+        "mapId": "home-compact-5",
+        "x": 5,
+        "y": 14,
+        "direction": "up",
+        "fade": "black"
+      },
+      "updateCommandLocations": [
+        "event.commands",
+        "event.pages[*].commands"
+      ],
+      "preserveCityDoorCoordinates": true
+    },
+    {
+      "retainAndMoveEventId": "home-compact-6-exit-0",
+      "removeObsoleteEventIds": [
+        "home-compact-6-exit-1"
+      ],
+      "exitToCity": {
+        "mapId": "paw_city",
+        "x": 14,
+        "y": 45,
+        "direction": "down",
+        "fade": "black"
+      },
+      "incomingCityEventId": "door-home-compact-6-0",
+      "incomingTarget": {
+        "mapId": "home-compact-6",
+        "x": 6,
+        "y": 13,
+        "direction": "up",
+        "fade": "black"
+      },
+      "updateCommandLocations": [
+        "event.commands",
+        "event.pages[*].commands"
+      ],
+      "preserveCityDoorCoordinates": true
+    }
+  ]
+}

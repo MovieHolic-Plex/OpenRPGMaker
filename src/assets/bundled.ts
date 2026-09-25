@@ -1,9 +1,13 @@
+import { loadUploadedEventSprites, registerUploadedEventSpriteFrames } from "./uploadedEventSprites";
 import sharedVillageObjects from "./sharedVillageObjects.json";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import forestHarmony from "./forestHarmonyTileset.json";
 import forestHarmonyHouseParts from "./forestHarmonyHouseParts.json";
 import forestHarmonyTreetopParts from "./forestHarmonyTreetopParts.json";
+import atlasVehicles from "./atlasVehiclesTileset.json";
+import forestHarmonyAtlasTownParts from "./forestHarmonyAtlasTownParts.json";
 import climateSheets from "../../tiledata/climate-villages/sheets.json";
+import atlasBiomeSheets from "./atlasBiomeSheets.json";
 import tiboRecovered from "./tiboRecoveredTileset.json";
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { loadUploadedTilesets, registerUploadedTilesets } from "./uploadedTilesets";
@@ -124,11 +128,30 @@ export const BUNDLED_REFERENCE_CHIPSET_ASSETS = [
   // 나무 위 마을(데크·밧줄 다리·줄기 집·사다리·등불·깊은 숲) 손 도트 시트 — forest_harmony 가 tileGrafts 로 3131~ 에 붙인다.
   // 재생성: scripts/content/elf-treetop.py, 정의는 project/defaults/forestHarmonyTreetopParts.ts.
   { textureKey: "tex_forest_harmony_treetop_parts", path: "assets/forest-harmony/treetop-parts.png", name: "숲마을 · 나무 위 마을" },
+  // 마을·도시 부품(범선·분수·차양 노점·불길·비계·축제 등롱·온천 김·가죽 천막·토템) — forest_harmony 가 tileGrafts 로 3311~ 에 붙인다.
+  // 재생성: scripts/content/bake-atlas-town-parts.py, 정의는 project/defaults/forestHarmonyAtlasTownParts.ts. 범선은 EasyRPG 배 칩셋(CC0).
+  { textureKey: "tex_forest_harmony_atlas_town_parts", path: "assets/forest-harmony/atlas-town-parts.png", name: "숲마을 · 마을·도시 부품" },
   // 던전 칩셋을 칸 번호 그대로 다시 칠한 네 장(scripts/content/build-rpg-dungeon-sheets.py) — 던전 장소(tiledata/rpg-dungeons) 사본만 쓴다.
   { textureKey: "tex_oprn_dungeon_desert", path: "assets/rpg-dungeons/desert-chipset.png", name: "던전 · 사암 피라미드 (재칠)" },
   { textureKey: "tex_oprn_dungeon_sea", path: "assets/rpg-dungeons/sea-chipset.png", name: "던전 · 해저 동굴 (재칠)" },
   { textureKey: "tex_oprn_dungeon_lair", path: "assets/rpg-dungeons/lair-chipset.png", name: "던전 · 용의 둥지 (재칠)" },
   { textureKey: "tex_oprn_dungeon_cave", path: "assets/rpg-dungeons/cave-chipset.png", name: "던전 · 동굴 물웅덩이 (재칠)" },
+  // 아틀라스 던전(tiledata/atlas-dungeons, scripts/content/build-atlas-dungeon-sheets.py): 던전 가족 타일셋이 510~ 에 이식하는 조각 시트(EasyRPG 실내·배 사본, 재칠 수정·불, 직접 그린 관·거미줄·함정·장치)
+  // 와 던전 칩셋을 칸 번호 그대로 다시 칠하거나 형제 EasyRPG 시트의 오토타일 블록을 옮겨 넣은 열세 장.
+  { textureKey: "tex_oprn_dungeon_parts", path: "assets/atlas-dungeons/parts.png", name: "던전 조각 · 아틀라스 이식 시트" },
+  { textureKey: "tex_oprn_dungeon_ghostship", path: "assets/atlas-dungeons/ghostship-chipset.png", name: "던전 · 유령선 (배 시트 선실 벽·갑판·구멍, 재칠)" },
+  { textureKey: "tex_oprn_dungeon_manor", path: "assets/atlas-dungeons/manor-chipset.png", name: "던전 · 유령 저택 (실내 시트 벽지·마루·카펫, 재칠)" },
+  { textureKey: "tex_oprn_dungeon_lab", path: "assets/atlas-dungeons/lab-chipset.png", name: "던전 · 비밀 연구소 (밝은 벽돌·석재 바닥, 재칠)" },
+  { textureKey: "tex_oprn_dungeon_wind", path: "assets/atlas-dungeons/wind-chipset.png", name: "던전 · 바람의 신전 (옥빛 대리석, 재칠)" },
+  { textureKey: "tex_oprn_dungeon_tide", path: "assets/atlas-dungeons/tide-chipset.png", name: "던전 · 물의 신전 (청백 대리석, 재칠)" },
+  { textureKey: "tex_oprn_dungeon_earth", path: "assets/atlas-dungeons/earth-chipset.png", name: "던전 · 땅의 신전 (황토 사암·이끼, 재칠)" },
+  { textureKey: "tex_oprn_dungeon_fire", path: "assets/atlas-dungeons/fire-chipset.png", name: "던전 · 불의 신전 (검붉은 현무암, 재칠)" },
+  { textureKey: "tex_oprn_dungeon_sky", path: "assets/atlas-dungeons/sky-chipset.png", name: "던전 · 하늘 탑 (흰 대리석·금, 바깥은 하늘)" },
+  { textureKey: "tex_oprn_dungeon_trial", path: "assets/atlas-dungeons/trial-chipset.png", name: "던전 · 시련의 탑 (흑요석·보랏빛, 재칠)" },
+  { textureKey: "tex_oprn_dungeon_dream", path: "assets/atlas-dungeons/dream-chipset.png", name: "던전 · 꿈 세계 (연보라 몽환, 별 뜬 공허)" },
+  { textureKey: "tex_oprn_dungeon_spider", path: "assets/atlas-dungeons/spider-chipset.png", name: "던전 · 거미 소굴 (잿빛 동굴, 재칠)" },
+  { textureKey: "tex_oprn_dungeon_ruins", path: "assets/atlas-dungeons/ruins-chipset.png", name: "던전 · 고대 유적 (녹슨 청동·이끼 사암, 재칠)" },
+  { textureKey: "tex_oprn_dungeon_abyss", path: "assets/atlas-dungeons/abyss-chipset.png", name: "던전 · 심연 (흑금, 보너스 던전)" },
 ] as const satisfies readonly BundledImageAsset[];
 
 export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
@@ -140,6 +163,21 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   {textureKey:"tex_forest_harmony_volcano",path:"assets/climate-villages/volcano-chipset.png",name:"화산 마을 · 재와 용암의 숲마을"},
   {textureKey:"tex_forest_harmony_desert",path:"assets/climate-villages/desert-chipset.png",name:"사막 마을 · 모래와 사암의 숲마을"},
   {textureKey:"tex_forest_harmony_autumn",path:"assets/climate-villages/autumn-chipset.png",name:"가을 마을 · 단풍 든 숲마을"},
+  // 바이옴 시트 11장(tiledata/atlas-biomes) — 숲마을(이식 포함)을 바이옴별로 다시 칠하고 바이옴 그림(3030~)을 손 도트로 붙였다.
+  // 그림은 scripts/content/build-atlas-biome-chipsets.py, 정의는 defaults/atlasBiomes.ts.
+  {textureKey:"tex_atlas_biome_jungle",path:"assets/atlas-biomes/jungle-chipset.png",name:"정글 · 열대우림 (바이옴)"},
+  {textureKey:"tex_atlas_biome_swamp",path:"assets/atlas-biomes/swamp-chipset.png",name:"늪 · 맹그로브 습지 (바이옴)"},
+  {textureKey:"tex_atlas_biome_mushroom",path:"assets/atlas-biomes/mushroom-chipset.png",name:"버섯 숲 · 푸른 이끼 골짜기 (바이옴)"},
+  {textureKey:"tex_atlas_biome_crystal",path:"assets/atlas-biomes/crystal-chipset.png",name:"수정 평원 · 빛나는 돌밭 (바이옴)"},
+  {textureKey:"tex_atlas_biome_badlands",path:"assets/atlas-biomes/badlands-chipset.png",name:"황무지 · 붉은 협곡 (바이옴)"},
+  {textureKey:"tex_atlas_biome_savanna",path:"assets/atlas-biomes/savanna-chipset.png",name:"사바나 · 금빛 초원 (바이옴)"},
+  {textureKey:"tex_atlas_biome_taiga",path:"assets/atlas-biomes/taiga-chipset.png",name:"타이가 · 눈 덮인 침엽수림 (바이옴)"},
+  {textureKey:"tex_atlas_biome_tundra",path:"assets/atlas-biomes/tundra-chipset.png",name:"툰드라 · 이끼 언 들 (바이옴)"},
+  {textureKey:"tex_atlas_biome_blight",path:"assets/atlas-biomes/blight-chipset.png",name:"오염된 땅 · 어둠의 숲 (바이옴)"},
+  {textureKey:"tex_atlas_biome_skyisle",path:"assets/atlas-biomes/skyisle-chipset.png",name:"하늘섬 · 구름 위 떠 있는 섬 (바이옴)"},
+  {textureKey:"tex_atlas_biome_tropical",path:"assets/atlas-biomes/tropical-chipset.png",name:"열대 섬 · 산호 해안 (바이옴)"},
+  // 바이옴 월드맵 시트 — EasyRPG 월드 시트(0~479 그대로) + 새 바이옴 지형 블록 10개·아이콘. build-atlas-biome-world.py, defaults/atlasBiomeWorld.ts.
+  {textureKey:"tex_atlas_biome_world",path:"assets/atlas-biomes/world-chipset.png",name:"월드맵 · 바이옴 확장 (OPRN)"},
   {textureKey:"tex_tibo_interior_expanded",path:"assets/tibo-interior/interior-expanded.png",name:"실내 확장 · Tibo"},
   { textureKey: CASTLE_TILESET_TEXTURE_KEY, path: "assets/opengameart-castle-tiles.png", name: CASTLE_TILESET_NAME },
   { textureKey: "tex_easyrpg_chipset_dungeon", path: "assets/easyrpg-chipset-dungeon-transparent.png", name: "던전 · EasyRPG (CC0)" },
@@ -147,6 +185,9 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   { textureKey: "tex_easyrpg_chipset_ship", path: "assets/easyrpg-chipset-ship-transparent.png", name: "배 · EasyRPG (CC0)" },
   // Harbor pieces for forest-village harbors (LPC rowboat CC-BY-SA 3.0 + EasyRPG ship tiles CC0) — assets/harbor-kit/CREDITS.txt.
   { textureKey: "tex_harbor_kit", path: "assets/harbor-kit/harbor-kit.png", name: "항구 조각 · 나룻배·계류 말뚝 (LPC CC-BY-SA · EasyRPG CC0)" },
+  // 탈것·장면 조각(배·비공정·마차·축제·처형대·하늘) — EasyRPG 배 시트(CC0) 결로 찍은 손 도트. 정의는 project/defaults/atlasVehicles.ts,
+  // 재생성: scripts/content/atlas-scenes/build_vehicles.py + register-vehicles.mjs. 출처 assets/atlas-scenes/CREDITS.txt.
+  { textureKey: "tex_oprn_atlas_vehicles", path: "assets/atlas-scenes/vehicles.png", name: "탈것·장면 조각 · 배·비공정·마차·축제 (EasyRPG 배 시트 CC0 + 손 도트)" },
   { textureKey: "tex_easyrpg_chipset_world", path: "assets/easyrpg-chipset-world-transparent.png", name: "월드맵 · EasyRPG (CC0)" },
   // retro_* 세 장은 출처가 섞여 있다(CC-BY/CC0/WTFPL) — ATTRIBUTION.md 와 vendor AUTHORS.md 참고.
   { textureKey: "tex_easyrpg_chipset_retro_dungeon", path: "assets/easyrpg-chipset-retro-dungeon-transparent.png", name: "레트로 던전 · EasyRPG (CC0)" },
@@ -174,11 +215,14 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_forest_harmony") return forestHarmony.count;
   if (key === "tex_forest_harmony_house_parts") return forestHarmonyHouseParts.frames;
   if (key === "tex_forest_harmony_treetop_parts") return forestHarmonyTreetopParts.frames;
+  if (key === "tex_oprn_atlas_vehicles") return atlasVehicles.count;
+  if (key === "tex_forest_harmony_atlas_town_parts") return forestHarmonyAtlasTownParts.frames;
   if (key === "tex_forest_harmony_grass_joins") return 10;
   if (key === "tex_forest_harmony_snow") return climateSheets.snow.count;
   if (key === "tex_forest_harmony_volcano") return climateSheets.volcano.count;
   if (key === "tex_forest_harmony_desert") return climateSheets.desert.count;
   if (key === "tex_forest_harmony_autumn") return climateSheets.autumn.count;
+  if (key in atlasBiomeSheets) return (atlasBiomeSheets as Record<string, number>)[key]!;
   if (key === "tex_tibo_interior_expanded") return tiboRecovered.count;
   if (key === SLATES_32_TEXTURE_KEY) return SLATES_32_FRAME_COUNT;
   if (key === COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY) return COMBINED_TOWN_RETRO_WORLD_TILE_COUNT;
@@ -218,6 +262,7 @@ const RAW_CHARSET_TEXTURE_SUFFIX = "__raw";
 export function loadBundledAssets(scene: { readonly load: Pick<Phaser.Loader.LoaderPlugin, "image" | "on"> }, project?: Project): void {
   const usedTextures = project ? projectBundledTextureKeys(project) : null;
   loadUploadedTilesets(scene, project);
+  loadUploadedEventSprites(scene, project, project ? collectPlayReferencedStrings(project) : undefined);
   scene.load.image(TEX_TILESET, withInlineAsset(ASSET_TILESET));
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
     if (usedTextures && !usedTextures.has(asset.textureKey)) continue;
@@ -312,6 +357,7 @@ export function registerBundledFrames(scene: Phaser.Scene, project?: Project): v
   registerEasyRpgCharsetTextures(scene, usedTextures);
   registerUploadedCharsetTextures(scene, project);
   registerUploadedTilesets(scene, project);
+  registerUploadedEventSpriteFrames(scene, project);
   registerFarmingCropFrames(scene, usedTextures);
   registerEmoteFrames(scene);
 }

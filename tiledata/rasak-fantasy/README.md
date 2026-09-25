@@ -10,7 +10,7 @@
 
 | 파일 | 내용 |
 |---|---|
-| `bundles.json` | 팩 정보, 시트별 sha256(팩 버전 확인용), MZ 슬롯(A1~E + 추가 시트) 묶음 3개: `rasak_field` · `rasak_swamp` · `rasak_cave` |
+| `bundles.json` | 팩 정보, 시트별 sha256(팩 버전 확인용), MZ 슬롯(A1~E + 추가 시트 + 특수 건물 그림) 묶음 5개: `rasak_field` · `rasak_swamp` · `rasak_cave` · `rasak_town` · `rasak_interior` |
 | `substitutions.json` | 제작자 프리뷰(2022 스크린샷) 이후 다시 그려진 그림 자리에 현재 시트의 같은 물체를 통째로 놓는 수동 대체 |
 | `names.json` | 묶음별 이름표(글만): 자동타일 kind(이름·역할·층·통행·대표 번호·모양별 칸 번호)·물체(이름·칸 배열·층·통행)·그림자 비트. 번호는 굽기 아틀라스(96칸 폭) 기준 |
 | `mz-autotile-masks.json` | OPRN 이웃 마스크 → MZ 모양 표(바닥 256·벽 16·폭포 4), 관찰된 연결 규칙, 프리뷰 검증 수치 |
@@ -90,6 +90,34 @@ node /tmp/mzai/apply.mjs export --project ~/third-party-assets/rasak/study-proje
   `compose_examples.py` → `check_examples.py` → `publish-study-project.mjs --layers`(새 폴더) → `apply dump` → `build_assistant_pack.py` →
   `apply verify|apply [--example-maps <maps>]|export`.
   새 묶음은 합성 칸이 없으므로 `manifest.layers.json`·`atlas.layers.png` 는 `manifest.json`·`atlas.png` 사본이다.
+
+## 특수 건물 43채 (2026-09-25)
+
+- `Special_Buildings/*.png` 는 타일 시트가 아니라 **건물 한 채가 통째로 그려진 그림**(해변 오두막·여관·대장간·상점·교회·항구·바이킹·사냥 야영)이다.
+  `bundles.json` 의 `rasak_town.buildingSheets` 로 묶고, `bake_atlas.py` 가 그림마다 `S<n>` 구역으로 굽는다 — 오른쪽·위에 투명을 덧대 48 배수로 맞추고
+  (밑변이 칸 경계에 붙게), 완전히 투명한 칸은 아틀라스에 넣지 않으며, 구역의 `grid`([y][x] → 아틀라스 번호, -1 = 빈 칸)를 manifest 에 적는다.
+  새 구역은 기존 구역 뒤·그림자 앞에 붙으므로 **앞 칸 번호는 그대로**다(마을 아틀라스 9600 → 13824칸, 4608×6912px).
+- 건물 이름표(로컬 `knowledge/work/new/special_buildings.json`): 한국어 이름·쓰임·설정·문 칸·본체 범위(mass)·걸을 수 있는 데크·마당 여부·입구(entry: 문·정면·데크·계단·사다리·판매대·작업장).
+  43채 중 문 그림이 있는 것은 19채뿐이다 — 나머지는 데크·사다리·판매대가 입구이고, 8채(뒷면·옆면·교회 옆면·사냥 야영 등)는 입구 없는 **배경 건물**이다.
+  통행: 본체는 막힘, 본체 기둥마다 맨 윗칸 ★, 입구·데크 칸은 통과, 마당은 불투명 50% 넘으면 막힘(낮은 울타리는 통과로 잡힐 수 있다).
+- 팩은 건물마다 `structureKits` 항목 `sb_<건물>`(3층 `upperTiles`, 입구 = `parts[kind:entrance]`)을 싣는다. 조수는 칸 배열을 옮겨 적지 않고
+  `stamp_object({objectId:"kit:rasak_town/sb_<건물>", mapId, x, y})` 한 번으로 찍는다. 참고문서 용도 `town_buildings`(쓰는 법 · 완성 예제 실행 순서 · 목록) +
+  그림(예제 1 + 설정별 목록 6). `town_village`·`town_city` 조리법 첫머리에 「완성 건물이 먼저」.
+- 예제 `ex_town_buildings`(40×28, `compose_examples_specs.py`) — 여관·상점·대장간·창고를 큰길 양쪽에, 길은 입구 바로 아래 칸에서 끝. `check_examples` 빈 바닥 21% · 빈 정사각형 4 · 대칭 1.2.
+- `town_village` 의 기준 맵을 `ex_town_buildings` 로 바꿨다 — 조수는 조리법 문장(「완성 건물이 먼저」)보다 **예제**를 따른다(시험 E: 문서만 → 조립 집, E2: 예제 교체 → 완성 건물 넷).
+  예제 배열에서 건물 킷 칸은 -1 로 비우고 「비운 자리 = stamp_object kit:… 원점」 줄로 알린다(배열로 건물을 조각내 옮기지 않게). 물체 사전의 건물 줄도 칸 배열 대신 킷 호출이다.
+- `stamp_object` 는 입구 부위가 있는 킷을 찍으면 요약·data 에 **입구 맵 좌표와 길 끝 칸**을 돌려준다(E2 에서 길이 지붕으로 가던 것이 E3 에서 입구로 간다).
+- 이미 있는 연구 프로젝트는 `apply --atlas-dir <baked>` 로 아틀라스 그림·칸 수를 갈아 끼운다(칸 수가 늘어난 경우만; `build_assistant_pack.py` 는 덤프가 짧으면 새 칸을 기본값으로 채운다).
+
+## 상점·성 실내 예제 3개 (2026-09-25)
+
+- 실내 묶음에 이미 들어 있던 대장간(`smith_*` 163)·재봉(`tailor_*` 106)·왕실(`royal_*` 107) 물체로 예제 셋과 참고문서 용도 셋을 만들었다.
+  `interior_smithy`(ex_smithy 26×17 — 불 작업장/무기 가게/창고) · `interior_tailor`(ex_tailor 22×16 — 가게/작업실/탈의실) · `interior_castle`(ex_castle 34×24 — 알현실/서재/침실/근위대/식당, 제작자 p21 구성).
+  `check_examples` 빈 바닥 3·10·12% · 빈 정사각형 3·4·3 · 대칭 1.1·1.6·1.0.
+- 성·대장간 작업장 벽은 **A5 평면 벽면**(돌 벽돌 3104, 아치 돌벽 3124)이다 — 이 팩 A4 벽에는 회색 돌벽이 없다. 성은 벽면 3줄이라 3×3 아치 창이 들어간다(`castle_interior`, 가로 문 `door_h3`).
+  조립기(`compose_examples.py` `ground`)·검사기(`check_examples.py`)·오류 그림 ②⑤(`build_assistant_pack.py`)가 A5 막힌 벽면 그룹을 벽으로, 검은 빈칸을 천장으로 본다.
+  사전 대표 번호(석판 3088 = 흰 벽돌 무늬, 막돌 3120)가 성에 맞지 않아 성 조리법(`room_notes`)에 실제 번호(석판 3091·아치 3124·벽돌 3104)를 적었다.
+- 「벽 속 화덕」(`smith_furnace_wall_*`, 이름에 「벽돌 포함」·「벽 아랫줄에 놓음」)은 벽면 칸에 박는 물체라 조립 검사에서 벽 위 허용.
 
 ## 프리뷰 재현 결과 (2026-09-24, 두 층 렌더 기준)
 

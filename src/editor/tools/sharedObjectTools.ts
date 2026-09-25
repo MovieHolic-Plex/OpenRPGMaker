@@ -7,7 +7,7 @@ import { catalogEntry, resolveObjectAlias, sharedObjectDef, sharedObjects, share
 import { ToolError, type ToolDefinition } from "./types";
 
 type Layers = "both" | "lower" | "upper";
-type Resolved = { name: string; source: TilesetDef; pattern: StampPattern; assets: Project["assets"]["uploaded"]; defaultLayers: Layers };
+type Resolved = { name: string; source: TilesetDef; pattern: StampPattern; assets: Project["assets"]["uploaded"]; defaultLayers: Layers; entrances?: StructureKitDef["parts"] };
 
 const fail = (message: string): never => { throw new ToolError(message, { code: "invalid-args" }); };
 
@@ -49,7 +49,8 @@ function resolveObject(project: Project, requestedId: string): Resolved {
     const source = project.tilesets[tilesetId] ?? fail(`타일셋 ${tilesetId} 이 프로젝트에 없습니다`);
     if (prefix === "kit") {
       const kit = source.structureKits?.find(entry => entry.id === innerId) ?? fail(`${tilesetId} 에 킷 ${innerId} 가 없습니다`);
-      return { name: kit.name ?? kit.id, source, pattern: kitPattern(kit), assets: {}, defaultLayers: "both" };
+      return { name: kit.name ?? kit.id, source, pattern: kitPattern(kit), assets: {}, defaultLayers: "both",
+        entrances: kit.parts?.filter(part => part.kind === "entrance") };
     }
     const group = source.tileGroups?.find(entry => entry.id === innerId) ?? fail(`${tilesetId} 에 타일 그룹 ${innerId} 이 없습니다`);
     const preview = group.previewMap ?? fail(`타일 그룹 ${innerId} 에는 도안(previewMap)이 없습니다`);
@@ -108,8 +109,13 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
         ...(result.clipped ? [`맵 밖으로 나간 칸은 뺐다 — 찍힌 범위 ${JSON.stringify(result.rect)}`] : []),
         ...(result.slotsAdded > 0 ? [`${map.tilesetId} 에 그림 ${result.slotsAdded}칸을 이식해 붙였다(${resolved.source.id} 그림)`] : []),
       ];
-      return { summary: `「${resolved.name}」 → ${map.id} (${result.rect.x},${result.rect.y}) ${result.rect.width}×${result.rect.height} · ${result.cells}칸`,
-        data: { objectId, mapId: map.id, layers, ...result }, ...(warnings.length ? { warnings } : {}) };
+      // 입구 부위가 있는 킷(특수 건물 등)은 맵 좌표 입구를 돌려준다 — 길을 입구 바로 아래 칸에서 끝내고 이벤트를 입구 칸에 둔다.
+      const entrances = (resolved.entrances ?? []).map(part => ({ x: Number(args.x) + part.dx, y: Number(args.y) + part.dy + part.h - 1, note: part.note ?? "" }));
+      const entranceText = entrances.length
+        ? ` · 입구 ${entrances.map(e => `(${e.x},${e.y})`).join(" ")} — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 ${entrances.map(e => `(${e.x},${e.y + 1})`).join(" ")} 에서 끝낸다`
+        : "";
+      return { summary: `「${resolved.name}」 → ${map.id} (${result.rect.x},${result.rect.y}) ${result.rect.width}×${result.rect.height} · ${result.cells}칸${entranceText}`,
+        data: { objectId, mapId: map.id, layers, ...result, ...(entrances.length ? { entrances } : {}) }, ...(warnings.length ? { warnings } : {}) };
     },
   },
 ];

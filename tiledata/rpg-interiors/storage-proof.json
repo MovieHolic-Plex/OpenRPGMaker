@@ -1,8 +1,8 @@
 {
   "projectId": "0c70c503-a2f7-432e-9f7b-4c00222702b2",
   "projectDir": ".oprn-projects/rpg-interiors-20260924",
-  "revision": 7,
-  "sha256": "01d31f91ec05b996ef43c40ac7aff59116ba3e2efe476d8d1e6793b17d4c061d",
+  "revision": 12,
+  "sha256": "1d4f9bb3492763434d1ff79923e3a8ff4577b4a05209abc051a8d9734141eacc",
   "saved": true,
   "reopened": true,
   "maps": [
@@ -39,6 +39,12 @@
     "interior-lighthouse-lamp-room",
     "interior-ranch-barn",
     "interior-healer-clinic",
-    "interior-sewer-prison"
+    "interior-sewer-prison",
+    "interior-cathedral-nave",
+    "interior-monastery-cloister",
+    "interior-desert-palace-throne",
+    "interior-snow-fortress-hall",
+    "interior-inn-cellar",
+    "interior-granary-storehouse"
   ]
 }

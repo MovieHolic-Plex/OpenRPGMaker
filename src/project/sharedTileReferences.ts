@@ -1,4 +1,5 @@
 import type { Project, TilesetDef } from './types';
+import { ensureSharedContent } from './sharedContent';
 import { validateTilesetReferences } from './tilesetReferences';
 import { sha256HexTextSync } from '@/util/sha256';
 import { installSharedSpatialReferences, ensureSharedSpatialReferences, type SharedSpatialReferences } from './sharedSpatialReferences';
@@ -33,7 +34,8 @@ export async function loadSharedTileReferences(): Promise<void> {
   } catch (error) { console.warn('공용 타일 참고문서 갱신 실패 — 저장된 문서를 유지합니다.', error); }
 }
 export function ensureSharedTileReferences(project: Project, source = snapshot): boolean {
-  let changed = ensureSharedSpatialReferences(project);
+  let changed = ensureSharedContent(project);
+  changed = ensureSharedSpatialReferences(project) || changed;
   for (const entry of source.entries) {
     const tile = project.tilesets[entry.id], asset = project.assets.uploaded[entry.assetId];
     if (!tile || !asset || tile.tileSize !== entry.tileSize || tile.tilesPerRow !== entry.tilesPerRow || tile.count !== entry.count

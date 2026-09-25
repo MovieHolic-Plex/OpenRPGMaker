@@ -1,0 +1,4418 @@
+[
+  {
+    "id": "paw-mansion-b",
+    "name": "Pixel Art World · 저택 내부 B",
+    "filename": "ST-MsionB-I01.png",
+    "width": 256,
+    "height": 1760,
+    "tileSize": 32,
+    "sha256": "8338e8ebef716a86c687cb0f24683398efe2dadb9303f9c97772509e3ea8de9c",
+    "checkedAt": "2026-09-24",
+    "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-mansion02.html",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-MsionB-I01.png",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/dotartworld/",
+    "floorTile": 0,
+    "notes": "원본440칸 native32, 색상 B 판본이다. B/P/Y/W/R은 동일 픽셀이나 단순팔레트로 취급하지 않는다. P 인형, Y 소파, W/R 침구·그림, R 하단 보석상 부품을 각각 검토했다. sourceRect는 칸 단위이며 전체 객체를 자르지 않는다. 천개침대/피아노의 모든 행과 커튼/건반/다리 보존. 난간·계단의 공식3레이어교차, 천장 샹들리에, 작은 상판 장식, 그림속 문 이벤트는 이 지원의 범위 밖이다.",
+    "recipes": [
+      {
+        "id": "msion-b-arched-window",
+        "name": "아치창 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 4,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
+        "exampleWallRows": [
+          17,
+          17,
+          25
+        ],
+        "tiles": [
+          [
+            32,
+            33,
+            34
+          ],
+          [
+            40,
+            41,
+            42
+          ],
+          [
+            48,
+            49,
+            50
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-blue-curtain-window",
+        "name": "청색커튼과 창 전체",
+        "sourceRect": {
+          "x": 4,
+          "y": 11,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          17,
+          25
+        ],
+        "tiles": [
+          [
+            92,
+            93
+          ],
+          [
+            100,
+            101
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-landscape",
+        "name": "금장 풍경화",
+        "sourceRect": {
+          "x": 1,
+          "y": 18,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          17,
+          25
+        ],
+        "tiles": [
+          [
+            145,
+            146
+          ],
+          [
+            153,
+            154
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-grand-clock",
+        "name": "바닥 괘종시계",
+        "sourceRect": {
+          "x": 7,
+          "y": 13,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            111
+          ],
+          [
+            119
+          ],
+          [
+            127
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-writing-desk",
+        "name": "3열 목재 상판·전면 패널 가구",
+        "sourceRect": {
+          "x": 0,
+          "y": 16,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            128,
+            129,
+            130
+          ],
+          [
+            136,
+            137,
+            138
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-bookcase",
+        "name": "2열 장식 서가",
+        "sourceRect": {
+          "x": 6,
+          "y": 18,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            150,
+            151
+          ],
+          [
+            158,
+            159
+          ],
+          [
+            166,
+            167
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-vase-pedestal",
+        "name": "꽃꽂이와 목재 받침 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 20,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            160
+          ],
+          [
+            168
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-fireplace",
+        "name": "화로와 기둥·상부 선반 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 27,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            216,
+            217,
+            218
+          ],
+          [
+            224,
+            225,
+            226
+          ],
+          [
+            232,
+            233,
+            234
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-glass-cabinet",
+        "name": "2열 유리 수납장",
+        "sourceRect": {
+          "x": 6,
+          "y": 32,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            262,
+            263
+          ],
+          [
+            270,
+            271
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-dresser",
+        "name": "2열 서랍장",
+        "sourceRect": {
+          "x": 6,
+          "y": 29,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            238,
+            239
+          ],
+          [
+            246,
+            247
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-sofa-front",
+        "name": "3열 소파 정면",
+        "sourceRect": {
+          "x": 0,
+          "y": 32,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            256,
+            257,
+            258
+          ],
+          [
+            264,
+            265,
+            266
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-sofa-back",
+        "name": "3열 소파 뒷면",
+        "sourceRect": {
+          "x": 0,
+          "y": 35,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            280,
+            281,
+            282
+          ],
+          [
+            288,
+            289,
+            290
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-coffee-table",
+        "name": "목재 거실 탁자",
+        "sourceRect": {
+          "x": 0,
+          "y": 34,
+          "width": 3,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 0
+          },
+          {
+            "x": 2,
+            "y": 0
+          }
+        ],
+        "tiles": [
+          [
+            272,
+            273,
+            274
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-armchair",
+        "name": "1인 소파 정면",
+        "sourceRect": {
+          "x": 3,
+          "y": 32,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            259
+          ],
+          [
+            267
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-armchair-back",
+        "name": "1인 소파 뒷면",
+        "sourceRect": {
+          "x": 3,
+          "y": 35,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            283
+          ],
+          [
+            291
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-canopy-bed",
+        "name": "천개·커튼·침구 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 41,
+          "width": 2,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            328,
+            329
+          ],
+          [
+            336,
+            337
+          ],
+          [
+            344,
+            345
+          ],
+          [
+            352,
+            353
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-double-bed",
+        "name": "2인 침구 · 머리판과 발끝",
+        "sourceRect": {
+          "x": 2,
+          "y": 42,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            338,
+            339
+          ],
+          [
+            346,
+            347
+          ],
+          [
+            354,
+            355
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-vanity",
+        "name": "거울과 화장대 전체",
+        "sourceRect": {
+          "x": 7,
+          "y": 42,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            343
+          ],
+          [
+            351
+          ],
+          [
+            359
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-grand-piano",
+        "name": "그랜드피아노 · 뚜껑·건반·다리",
+        "sourceRect": {
+          "x": 3,
+          "y": 37,
+          "width": 3,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 2,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            299,
+            300,
+            301
+          ],
+          [
+            307,
+            308,
+            309
+          ],
+          [
+            315,
+            316,
+            317
+          ],
+          [
+            323,
+            324,
+            325
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-harp",
+        "name": "하프 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 38,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            304
+          ],
+          [
+            312
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-plant",
+        "name": "큰 화분 · 잎과 밑동",
+        "sourceRect": {
+          "x": 6,
+          "y": 22,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            182
+          ],
+          [
+            190
+          ],
+          [
+            198
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-doll",
+        "name": "드레스 인형",
+        "sourceRect": {
+          "x": 2,
+          "y": 30,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            242
+          ],
+          [
+            250
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-dining-table",
+        "name": "3열 식탁 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 13,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            104,
+            105,
+            106
+          ],
+          [
+            112,
+            113,
+            114
+          ],
+          [
+            120,
+            121,
+            122
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-chair-east",
+        "name": "식탁 의자 동향",
+        "sourceRect": {
+          "x": 6,
+          "y": 13,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "east",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            110
+          ],
+          [
+            118
+          ]
+        ]
+      },
+      {
+        "id": "msion-b-chair-west",
+        "name": "식탁 의자 서향",
+        "sourceRect": {
+          "x": 5,
+          "y": 13,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "west",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            109
+          ],
+          [
+            117
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "paw-mansion-p",
+    "name": "Pixel Art World · 저택 내부 P",
+    "filename": "ST-MsionP-I01.png",
+    "width": 256,
+    "height": 1760,
+    "tileSize": 32,
+    "sha256": "2e3f22af16fd5de5de6b9d58543c31979e34b494be2c20fde7ca7de4eddc4c96",
+    "checkedAt": "2026-09-24",
+    "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-mansion02.html",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-MsionP-I01.png",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/dotartworld/",
+    "floorTile": 0,
+    "notes": "원본440칸 native32, 색상 P 판본이다. B/P/Y/W/R은 동일 픽셀이나 단순팔레트로 취급하지 않는다. P 인형, Y 소파, W/R 침구·그림, R 하단 보석상 부품을 각각 검토했다. sourceRect는 칸 단위이며 전체 객체를 자르지 않는다. 천개침대/피아노의 모든 행과 커튼/건반/다리 보존. 난간·계단의 공식3레이어교차, 천장 샹들리에, 작은 상판 장식, 그림속 문 이벤트는 이 지원의 범위 밖이다.",
+    "recipes": [
+      {
+        "id": "msion-p-arched-window",
+        "name": "아치창 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 4,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
+        "exampleWallRows": [
+          17,
+          17,
+          25
+        ],
+        "tiles": [
+          [
+            32,
+            33,
+            34
+          ],
+          [
+            40,
+            41,
+            42
+          ],
+          [
+            48,
+            49,
+            50
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-blue-curtain-window",
+        "name": "청색커튼과 창 전체",
+        "sourceRect": {
+          "x": 4,
+          "y": 11,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          17,
+          25
+        ],
+        "tiles": [
+          [
+            92,
+            93
+          ],
+          [
+            100,
+            101
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-landscape",
+        "name": "금장 풍경화",
+        "sourceRect": {
+          "x": 1,
+          "y": 18,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          17,
+          25
+        ],
+        "tiles": [
+          [
+            145,
+            146
+          ],
+          [
+            153,
+            154
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-grand-clock",
+        "name": "바닥 괘종시계",
+        "sourceRect": {
+          "x": 7,
+          "y": 13,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            111
+          ],
+          [
+            119
+          ],
+          [
+            127
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-writing-desk",
+        "name": "3열 목재 상판·전면 패널 가구",
+        "sourceRect": {
+          "x": 0,
+          "y": 16,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            128,
+            129,
+            130
+          ],
+          [
+            136,
+            137,
+            138
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-bookcase",
+        "name": "2열 장식 서가",
+        "sourceRect": {
+          "x": 6,
+          "y": 18,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            150,
+            151
+          ],
+          [
+            158,
+            159
+          ],
+          [
+            166,
+            167
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-vase-pedestal",
+        "name": "꽃꽂이와 목재 받침 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 20,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            160
+          ],
+          [
+            168
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-fireplace",
+        "name": "화로와 기둥·상부 선반 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 27,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            216,
+            217,
+            218
+          ],
+          [
+            224,
+            225,
+            226
+          ],
+          [
+            232,
+            233,
+            234
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-glass-cabinet",
+        "name": "2열 유리 수납장",
+        "sourceRect": {
+          "x": 6,
+          "y": 32,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            262,
+            263
+          ],
+          [
+            270,
+            271
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-dresser",
+        "name": "2열 서랍장",
+        "sourceRect": {
+          "x": 6,
+          "y": 29,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            238,
+            239
+          ],
+          [
+            246,
+            247
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-sofa-front",
+        "name": "3열 소파 정면",
+        "sourceRect": {
+          "x": 0,
+          "y": 32,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            256,
+            257,
+            258
+          ],
+          [
+            264,
+            265,
+            266
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-sofa-back",
+        "name": "3열 소파 뒷면",
+        "sourceRect": {
+          "x": 0,
+          "y": 35,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            280,
+            281,
+            282
+          ],
+          [
+            288,
+            289,
+            290
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-coffee-table",
+        "name": "목재 거실 탁자",
+        "sourceRect": {
+          "x": 0,
+          "y": 34,
+          "width": 3,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 0
+          },
+          {
+            "x": 2,
+            "y": 0
+          }
+        ],
+        "tiles": [
+          [
+            272,
+            273,
+            274
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-armchair",
+        "name": "1인 소파 정면",
+        "sourceRect": {
+          "x": 3,
+          "y": 32,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            259
+          ],
+          [
+            267
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-armchair-back",
+        "name": "1인 소파 뒷면",
+        "sourceRect": {
+          "x": 3,
+          "y": 35,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            283
+          ],
+          [
+            291
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-canopy-bed",
+        "name": "천개·커튼·침구 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 41,
+          "width": 2,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            328,
+            329
+          ],
+          [
+            336,
+            337
+          ],
+          [
+            344,
+            345
+          ],
+          [
+            352,
+            353
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-double-bed",
+        "name": "2인 침구 · 머리판과 발끝",
+        "sourceRect": {
+          "x": 2,
+          "y": 42,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            338,
+            339
+          ],
+          [
+            346,
+            347
+          ],
+          [
+            354,
+            355
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-vanity",
+        "name": "거울과 화장대 전체",
+        "sourceRect": {
+          "x": 7,
+          "y": 42,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            343
+          ],
+          [
+            351
+          ],
+          [
+            359
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-grand-piano",
+        "name": "그랜드피아노 · 뚜껑·건반·다리",
+        "sourceRect": {
+          "x": 3,
+          "y": 37,
+          "width": 3,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 2,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            299,
+            300,
+            301
+          ],
+          [
+            307,
+            308,
+            309
+          ],
+          [
+            315,
+            316,
+            317
+          ],
+          [
+            323,
+            324,
+            325
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-harp",
+        "name": "하프 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 38,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            304
+          ],
+          [
+            312
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-plant",
+        "name": "큰 화분 · 잎과 밑동",
+        "sourceRect": {
+          "x": 6,
+          "y": 22,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            182
+          ],
+          [
+            190
+          ],
+          [
+            198
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-doll",
+        "name": "드레스 인형",
+        "sourceRect": {
+          "x": 2,
+          "y": 30,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            242
+          ],
+          [
+            250
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-dining-table",
+        "name": "3열 식탁 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 13,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            104,
+            105,
+            106
+          ],
+          [
+            112,
+            113,
+            114
+          ],
+          [
+            120,
+            121,
+            122
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-chair-east",
+        "name": "식탁 의자 동향",
+        "sourceRect": {
+          "x": 6,
+          "y": 13,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "east",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            110
+          ],
+          [
+            118
+          ]
+        ]
+      },
+      {
+        "id": "msion-p-chair-west",
+        "name": "식탁 의자 서향",
+        "sourceRect": {
+          "x": 5,
+          "y": 13,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "west",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            109
+          ],
+          [
+            117
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "paw-mansion-y",
+    "name": "Pixel Art World · 저택 내부 Y",
+    "filename": "ST-MsionY-I01.png",
+    "width": 256,
+    "height": 1760,
+    "tileSize": 32,
+    "sha256": "ab203ceeaf8beed0ea9bf4741e4f52e09f33086dcabb1e1e05b524ae6739e1d1",
+    "checkedAt": "2026-09-24",
+    "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-mansion02.html",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-MsionY-I01.png",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/dotartworld/",
+    "floorTile": 0,
+    "notes": "원본440칸 native32, 색상 Y 판본이다. B/P/Y/W/R은 동일 픽셀이나 단순팔레트로 취급하지 않는다. P 인형, Y 소파, W/R 침구·그림, R 하단 보석상 부품을 각각 검토했다. sourceRect는 칸 단위이며 전체 객체를 자르지 않는다. 천개침대/피아노의 모든 행과 커튼/건반/다리 보존. 난간·계단의 공식3레이어교차, 천장 샹들리에, 작은 상판 장식, 그림속 문 이벤트는 이 지원의 범위 밖이다.",
+    "recipes": [
+      {
+        "id": "msion-y-arched-window",
+        "name": "아치창 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 4,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
+        "exampleWallRows": [
+          17,
+          17,
+          25
+        ],
+        "tiles": [
+          [
+            32,
+            33,
+            34
+          ],
+          [
+            40,
+            41,
+            42
+          ],
+          [
+            48,
+            49,
+            50
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-blue-curtain-window",
+        "name": "청색커튼과 창 전체",
+        "sourceRect": {
+          "x": 4,
+          "y": 11,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          17,
+          25
+        ],
+        "tiles": [
+          [
+            92,
+            93
+          ],
+          [
+            100,
+            101
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-landscape",
+        "name": "금장 풍경화",
+        "sourceRect": {
+          "x": 1,
+          "y": 18,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          17,
+          25
+        ],
+        "tiles": [
+          [
+            145,
+            146
+          ],
+          [
+            153,
+            154
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-grand-clock",
+        "name": "바닥 괘종시계",
+        "sourceRect": {
+          "x": 7,
+          "y": 13,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            111
+          ],
+          [
+            119
+          ],
+          [
+            127
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-writing-desk",
+        "name": "3열 목재 상판·전면 패널 가구",
+        "sourceRect": {
+          "x": 0,
+          "y": 16,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            128,
+            129,
+            130
+          ],
+          [
+            136,
+            137,
+            138
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-bookcase",
+        "name": "2열 장식 서가",
+        "sourceRect": {
+          "x": 6,
+          "y": 18,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            150,
+            151
+          ],
+          [
+            158,
+            159
+          ],
+          [
+            166,
+            167
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-vase-pedestal",
+        "name": "꽃꽂이와 목재 받침 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 20,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            160
+          ],
+          [
+            168
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-fireplace",
+        "name": "화로와 기둥·상부 선반 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 27,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            216,
+            217,
+            218
+          ],
+          [
+            224,
+            225,
+            226
+          ],
+          [
+            232,
+            233,
+            234
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-glass-cabinet",
+        "name": "2열 유리 수납장",
+        "sourceRect": {
+          "x": 6,
+          "y": 32,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            262,
+            263
+          ],
+          [
+            270,
+            271
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-dresser",
+        "name": "2열 서랍장",
+        "sourceRect": {
+          "x": 6,
+          "y": 29,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            238,
+            239
+          ],
+          [
+            246,
+            247
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-sofa-front",
+        "name": "3열 소파 정면",
+        "sourceRect": {
+          "x": 0,
+          "y": 32,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            256,
+            257,
+            258
+          ],
+          [
+            264,
+            265,
+            266
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-sofa-back",
+        "name": "3열 소파 뒷면",
+        "sourceRect": {
+          "x": 0,
+          "y": 35,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            280,
+            281,
+            282
+          ],
+          [
+            288,
+            289,
+            290
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-coffee-table",
+        "name": "목재 거실 탁자",
+        "sourceRect": {
+          "x": 0,
+          "y": 34,
+          "width": 3,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 0
+          },
+          {
+            "x": 2,
+            "y": 0
+          }
+        ],
+        "tiles": [
+          [
+            272,
+            273,
+            274
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-armchair",
+        "name": "1인 소파 정면",
+        "sourceRect": {
+          "x": 3,
+          "y": 32,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            259
+          ],
+          [
+            267
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-armchair-back",
+        "name": "1인 소파 뒷면",
+        "sourceRect": {
+          "x": 3,
+          "y": 35,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            283
+          ],
+          [
+            291
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-canopy-bed",
+        "name": "천개·커튼·침구 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 41,
+          "width": 2,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            328,
+            329
+          ],
+          [
+            336,
+            337
+          ],
+          [
+            344,
+            345
+          ],
+          [
+            352,
+            353
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-double-bed",
+        "name": "2인 침구 · 머리판과 발끝",
+        "sourceRect": {
+          "x": 2,
+          "y": 42,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            338,
+            339
+          ],
+          [
+            346,
+            347
+          ],
+          [
+            354,
+            355
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-vanity",
+        "name": "거울과 화장대 전체",
+        "sourceRect": {
+          "x": 7,
+          "y": 42,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            343
+          ],
+          [
+            351
+          ],
+          [
+            359
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-grand-piano",
+        "name": "그랜드피아노 · 뚜껑·건반·다리",
+        "sourceRect": {
+          "x": 3,
+          "y": 37,
+          "width": 3,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 2,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            299,
+            300,
+            301
+          ],
+          [
+            307,
+            308,
+            309
+          ],
+          [
+            315,
+            316,
+            317
+          ],
+          [
+            323,
+            324,
+            325
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-harp",
+        "name": "하프 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 38,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            304
+          ],
+          [
+            312
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-plant",
+        "name": "큰 화분 · 잎과 밑동",
+        "sourceRect": {
+          "x": 6,
+          "y": 22,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            182
+          ],
+          [
+            190
+          ],
+          [
+            198
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-doll",
+        "name": "드레스 인형",
+        "sourceRect": {
+          "x": 2,
+          "y": 30,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            242
+          ],
+          [
+            250
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-dining-table",
+        "name": "3열 식탁 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 13,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            104,
+            105,
+            106
+          ],
+          [
+            112,
+            113,
+            114
+          ],
+          [
+            120,
+            121,
+            122
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-chair-east",
+        "name": "식탁 의자 동향",
+        "sourceRect": {
+          "x": 6,
+          "y": 13,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "east",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            110
+          ],
+          [
+            118
+          ]
+        ]
+      },
+      {
+        "id": "msion-y-chair-west",
+        "name": "식탁 의자 서향",
+        "sourceRect": {
+          "x": 5,
+          "y": 13,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "west",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            109
+          ],
+          [
+            117
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "paw-mansion-w",
+    "name": "Pixel Art World · 저택 내부 W",
+    "filename": "ST-MsionW-I01.png",
+    "width": 256,
+    "height": 1760,
+    "tileSize": 32,
+    "sha256": "61343c5c30906b9d45a4aeeca7584129b2a5c0784aba910d9f01e86b19122092",
+    "checkedAt": "2026-09-24",
+    "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-mansion02.html",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-MsionW-I01.png",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/dotartworld/",
+    "floorTile": 0,
+    "notes": "원본440칸 native32, 색상 W 판본이다. B/P/Y/W/R은 동일 픽셀이나 단순팔레트로 취급하지 않는다. P 인형, Y 소파, W/R 침구·그림, R 하단 보석상 부품을 각각 검토했다. sourceRect는 칸 단위이며 전체 객체를 자르지 않는다. 천개침대/피아노의 모든 행과 커튼/건반/다리 보존. 난간·계단의 공식3레이어교차, 천장 샹들리에, 작은 상판 장식, 그림속 문 이벤트는 이 지원의 범위 밖이다.",
+    "recipes": [
+      {
+        "id": "msion-w-arched-window",
+        "name": "아치창 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 4,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
+        "exampleWallRows": [
+          17,
+          17,
+          25
+        ],
+        "tiles": [
+          [
+            32,
+            33,
+            34
+          ],
+          [
+            40,
+            41,
+            42
+          ],
+          [
+            48,
+            49,
+            50
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-blue-curtain-window",
+        "name": "청색커튼과 창 전체",
+        "sourceRect": {
+          "x": 4,
+          "y": 11,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          17,
+          25
+        ],
+        "tiles": [
+          [
+            92,
+            93
+          ],
+          [
+            100,
+            101
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-landscape",
+        "name": "금장 풍경화",
+        "sourceRect": {
+          "x": 1,
+          "y": 18,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          17,
+          25
+        ],
+        "tiles": [
+          [
+            145,
+            146
+          ],
+          [
+            153,
+            154
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-grand-clock",
+        "name": "바닥 괘종시계",
+        "sourceRect": {
+          "x": 7,
+          "y": 13,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            111
+          ],
+          [
+            119
+          ],
+          [
+            127
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-writing-desk",
+        "name": "3열 목재 상판·전면 패널 가구",
+        "sourceRect": {
+          "x": 0,
+          "y": 16,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            128,
+            129,
+            130
+          ],
+          [
+            136,
+            137,
+            138
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-bookcase",
+        "name": "2열 장식 서가",
+        "sourceRect": {
+          "x": 6,
+          "y": 18,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            150,
+            151
+          ],
+          [
+            158,
+            159
+          ],
+          [
+            166,
+            167
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-vase-pedestal",
+        "name": "꽃꽂이와 목재 받침 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 20,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            160
+          ],
+          [
+            168
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-fireplace",
+        "name": "화로와 기둥·상부 선반 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 27,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            216,
+            217,
+            218
+          ],
+          [
+            224,
+            225,
+            226
+          ],
+          [
+            232,
+            233,
+            234
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-glass-cabinet",
+        "name": "2열 유리 수납장",
+        "sourceRect": {
+          "x": 6,
+          "y": 32,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            262,
+            263
+          ],
+          [
+            270,
+            271
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-dresser",
+        "name": "2열 서랍장",
+        "sourceRect": {
+          "x": 6,
+          "y": 29,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            238,
+            239
+          ],
+          [
+            246,
+            247
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-sofa-front",
+        "name": "3열 소파 정면",
+        "sourceRect": {
+          "x": 0,
+          "y": 32,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            256,
+            257,
+            258
+          ],
+          [
+            264,
+            265,
+            266
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-sofa-back",
+        "name": "3열 소파 뒷면",
+        "sourceRect": {
+          "x": 0,
+          "y": 35,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            280,
+            281,
+            282
+          ],
+          [
+            288,
+            289,
+            290
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-coffee-table",
+        "name": "목재 거실 탁자",
+        "sourceRect": {
+          "x": 0,
+          "y": 34,
+          "width": 3,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 0
+          },
+          {
+            "x": 2,
+            "y": 0
+          }
+        ],
+        "tiles": [
+          [
+            272,
+            273,
+            274
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-armchair",
+        "name": "1인 소파 정면",
+        "sourceRect": {
+          "x": 3,
+          "y": 32,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            259
+          ],
+          [
+            267
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-armchair-back",
+        "name": "1인 소파 뒷면",
+        "sourceRect": {
+          "x": 3,
+          "y": 35,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            283
+          ],
+          [
+            291
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-canopy-bed",
+        "name": "천개·커튼·침구 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 41,
+          "width": 2,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            328,
+            329
+          ],
+          [
+            336,
+            337
+          ],
+          [
+            344,
+            345
+          ],
+          [
+            352,
+            353
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-double-bed",
+        "name": "2인 침구 · 머리판과 발끝",
+        "sourceRect": {
+          "x": 2,
+          "y": 42,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            338,
+            339
+          ],
+          [
+            346,
+            347
+          ],
+          [
+            354,
+            355
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-vanity",
+        "name": "거울과 화장대 전체",
+        "sourceRect": {
+          "x": 7,
+          "y": 42,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            343
+          ],
+          [
+            351
+          ],
+          [
+            359
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-grand-piano",
+        "name": "그랜드피아노 · 뚜껑·건반·다리",
+        "sourceRect": {
+          "x": 3,
+          "y": 37,
+          "width": 3,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 2,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            299,
+            300,
+            301
+          ],
+          [
+            307,
+            308,
+            309
+          ],
+          [
+            315,
+            316,
+            317
+          ],
+          [
+            323,
+            324,
+            325
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-harp",
+        "name": "하프 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 38,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            304
+          ],
+          [
+            312
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-plant",
+        "name": "큰 화분 · 잎과 밑동",
+        "sourceRect": {
+          "x": 6,
+          "y": 22,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            182
+          ],
+          [
+            190
+          ],
+          [
+            198
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-doll",
+        "name": "드레스 인형",
+        "sourceRect": {
+          "x": 2,
+          "y": 30,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            242
+          ],
+          [
+            250
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-dining-table",
+        "name": "3열 식탁 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 13,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            104,
+            105,
+            106
+          ],
+          [
+            112,
+            113,
+            114
+          ],
+          [
+            120,
+            121,
+            122
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-chair-east",
+        "name": "식탁 의자 동향",
+        "sourceRect": {
+          "x": 6,
+          "y": 13,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "east",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            110
+          ],
+          [
+            118
+          ]
+        ]
+      },
+      {
+        "id": "msion-w-chair-west",
+        "name": "식탁 의자 서향",
+        "sourceRect": {
+          "x": 5,
+          "y": 13,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "west",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            109
+          ],
+          [
+            117
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "paw-mansion-r",
+    "name": "Pixel Art World · 저택 내부 R",
+    "filename": "ST-MsionR-I01.png",
+    "width": 256,
+    "height": 1760,
+    "tileSize": 32,
+    "sha256": "e85c9fd260f1a3645ea017a76f5175fbd6e68683b251233b52369a99d66351fa",
+    "checkedAt": "2026-09-24",
+    "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-mansion02.html",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-MsionR-I01.png",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/dotartworld/",
+    "floorTile": 0,
+    "notes": "원본440칸 native32, 색상 R 판본이다. B/P/Y/W/R은 동일 픽셀이나 단순팔레트로 취급하지 않는다. P 인형, Y 소파, W/R 침구·그림, R 하단 보석상 부품을 각각 검토했다. sourceRect는 칸 단위이며 전체 객체를 자르지 않는다. 천개침대/피아노의 모든 행과 커튼/건반/다리 보존. 난간·계단의 공식3레이어교차, 천장 샹들리에, 작은 상판 장식, 그림속 문 이벤트는 이 지원의 범위 밖이다.",
+    "recipes": [
+      {
+        "id": "msion-r-arched-window",
+        "name": "아치창 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 4,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
+        "exampleWallRows": [
+          17,
+          17,
+          25
+        ],
+        "tiles": [
+          [
+            32,
+            33,
+            34
+          ],
+          [
+            40,
+            41,
+            42
+          ],
+          [
+            48,
+            49,
+            50
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-blue-curtain-window",
+        "name": "청색커튼과 창 전체",
+        "sourceRect": {
+          "x": 4,
+          "y": 11,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          17,
+          25
+        ],
+        "tiles": [
+          [
+            92,
+            93
+          ],
+          [
+            100,
+            101
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-landscape",
+        "name": "금장 풍경화",
+        "sourceRect": {
+          "x": 1,
+          "y": 18,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          17,
+          25
+        ],
+        "tiles": [
+          [
+            145,
+            146
+          ],
+          [
+            153,
+            154
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-grand-clock",
+        "name": "바닥 괘종시계",
+        "sourceRect": {
+          "x": 7,
+          "y": 13,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            111
+          ],
+          [
+            119
+          ],
+          [
+            127
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-writing-desk",
+        "name": "3열 목재 상판·전면 패널 가구",
+        "sourceRect": {
+          "x": 0,
+          "y": 16,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            128,
+            129,
+            130
+          ],
+          [
+            136,
+            137,
+            138
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-bookcase",
+        "name": "2열 장식 서가",
+        "sourceRect": {
+          "x": 6,
+          "y": 18,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            150,
+            151
+          ],
+          [
+            158,
+            159
+          ],
+          [
+            166,
+            167
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-vase-pedestal",
+        "name": "꽃꽂이와 목재 받침 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 20,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            160
+          ],
+          [
+            168
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-fireplace",
+        "name": "화로와 기둥·상부 선반 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 27,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            216,
+            217,
+            218
+          ],
+          [
+            224,
+            225,
+            226
+          ],
+          [
+            232,
+            233,
+            234
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-glass-cabinet",
+        "name": "2열 유리 수납장",
+        "sourceRect": {
+          "x": 6,
+          "y": 32,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            262,
+            263
+          ],
+          [
+            270,
+            271
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-dresser",
+        "name": "2열 서랍장",
+        "sourceRect": {
+          "x": 6,
+          "y": 29,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            238,
+            239
+          ],
+          [
+            246,
+            247
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-sofa-front",
+        "name": "3열 소파 정면",
+        "sourceRect": {
+          "x": 0,
+          "y": 32,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            256,
+            257,
+            258
+          ],
+          [
+            264,
+            265,
+            266
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-sofa-back",
+        "name": "3열 소파 뒷면",
+        "sourceRect": {
+          "x": 0,
+          "y": 35,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            280,
+            281,
+            282
+          ],
+          [
+            288,
+            289,
+            290
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-coffee-table",
+        "name": "목재 거실 탁자",
+        "sourceRect": {
+          "x": 0,
+          "y": 34,
+          "width": 3,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 0
+          },
+          {
+            "x": 2,
+            "y": 0
+          }
+        ],
+        "tiles": [
+          [
+            272,
+            273,
+            274
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-armchair",
+        "name": "1인 소파 정면",
+        "sourceRect": {
+          "x": 3,
+          "y": 32,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            259
+          ],
+          [
+            267
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-armchair-back",
+        "name": "1인 소파 뒷면",
+        "sourceRect": {
+          "x": 3,
+          "y": 35,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            283
+          ],
+          [
+            291
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-canopy-bed",
+        "name": "천개·커튼·침구 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 41,
+          "width": 2,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            328,
+            329
+          ],
+          [
+            336,
+            337
+          ],
+          [
+            344,
+            345
+          ],
+          [
+            352,
+            353
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-double-bed",
+        "name": "2인 침구 · 머리판과 발끝",
+        "sourceRect": {
+          "x": 2,
+          "y": 42,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            338,
+            339
+          ],
+          [
+            346,
+            347
+          ],
+          [
+            354,
+            355
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-vanity",
+        "name": "거울과 화장대 전체",
+        "sourceRect": {
+          "x": 7,
+          "y": 42,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            343
+          ],
+          [
+            351
+          ],
+          [
+            359
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-grand-piano",
+        "name": "그랜드피아노 · 뚜껑·건반·다리",
+        "sourceRect": {
+          "x": 3,
+          "y": 37,
+          "width": 3,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 2,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            299,
+            300,
+            301
+          ],
+          [
+            307,
+            308,
+            309
+          ],
+          [
+            315,
+            316,
+            317
+          ],
+          [
+            323,
+            324,
+            325
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-harp",
+        "name": "하프 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 38,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            304
+          ],
+          [
+            312
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-plant",
+        "name": "큰 화분 · 잎과 밑동",
+        "sourceRect": {
+          "x": 6,
+          "y": 22,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            182
+          ],
+          [
+            190
+          ],
+          [
+            198
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-doll",
+        "name": "드레스 인형",
+        "sourceRect": {
+          "x": 2,
+          "y": 30,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            242
+          ],
+          [
+            250
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-dining-table",
+        "name": "3열 식탁 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 13,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            104,
+            105,
+            106
+          ],
+          [
+            112,
+            113,
+            114
+          ],
+          [
+            120,
+            121,
+            122
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-chair-east",
+        "name": "식탁 의자 동향",
+        "sourceRect": {
+          "x": 6,
+          "y": 13,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "east",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            110
+          ],
+          [
+            118
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-chair-west",
+        "name": "식탁 의자 서향",
+        "sourceRect": {
+          "x": 5,
+          "y": 13,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "west",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            109
+          ],
+          [
+            117
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-wide-display",
+        "name": "가로 유리 진열장 전체",
+        "sourceRect": {
+          "x": 3,
+          "y": 45,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            363,
+            364,
+            365
+          ],
+          [
+            371,
+            372,
+            373
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-vertical-display",
+        "name": "세로 유리 진열장 전체",
+        "sourceRect": {
+          "x": 6,
+          "y": 46,
+          "width": 1,
+          "height": 4
+        },
+        "facing": "west",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            374
+          ],
+          [
+            382
+          ],
+          [
+            390
+          ],
+          [
+            398
+          ]
+        ]
+      },
+      {
+        "id": "msion-r-crown-pedestal",
+        "name": "왕관과 진열 받침 전체",
+        "sourceRect": {
+          "x": 5,
+          "y": 48,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            389
+          ],
+          [
+            397
+          ]
+        ]
+      }
+    ]
+  }
+]

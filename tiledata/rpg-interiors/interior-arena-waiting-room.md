@@ -41,48 +41,30 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "role": "furn"
   },
   {
-    "kind": "tibo-kit",
-    "kitId": "tibo-medieval-armor-stand",
-    "name": "갑옷 거치대",
-    "x": 14,
-    "y": 4,
-    "w": 2,
-    "h": 3,
-    "role": "furn"
-  },
-  {
     "kind": "tiles",
     "layer": "lower",
-    "x": 17,
-    "y": 5,
-    "w": 1,
+    "x": 15,
+    "y": 3,
+    "w": 3,
     "h": 3,
     "rows": [
       [
-        111
+        141,
+        111,
+        171
       ],
       [
-        141
+        141,
+        111,
+        171
       ],
       [
+        141,
+        111,
         171
       ]
     ],
     "role": "stairs"
-  },
-  {
-    "kind": "tiles",
-    "layer": "upper",
-    "x": 16,
-    "y": 3,
-    "w": 1,
-    "h": 1,
-    "rows": [
-      [
-        24
-      ]
-    ],
-    "role": "hang"
   },
   {
     "kind": "tibo-kit",

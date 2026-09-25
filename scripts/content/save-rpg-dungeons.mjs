@@ -23,7 +23,7 @@ const project = await withTsModule("scripts/content/lib/rpg-dungeons-entry.ts", 
   p.meta.title = "RPG 던전 · 동굴·탑·마왕성·피라미드·큰 던전 (정본)";
   return JSON.parse(JSON.stringify(p));
 });
-assert(project.tilesets.easyrpg_chipset_dungeon.referenceDocuments.some((k) => k.id === "rpg-dungeons-natural-v1"), "guidance missing on the bundled dungeon sheet");
+assert(project.tilesets.easyrpg_chipset_dungeon.referenceDocuments.some((k) => k.id === "rpg-dungeons-natural-v2"), "guidance missing on the bundled dungeon sheet");
 await withTsModule("electron/local-store/store.ts", "rpg-dungeons-store.mjs", async (api) => {
   let s = await api.initLocalProjectStore({ projectDir: dir }), id;
   try {

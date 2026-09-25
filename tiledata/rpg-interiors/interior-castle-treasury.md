@@ -43,7 +43,7 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "kind": "tibo-kit",
     "kitId": "tibo-library-221",
     "name": "방패 벽 장식",
-    "x": 11,
+    "x": 10,
     "y": 3,
     "w": 1,
     "h": 2,
@@ -69,7 +69,7 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
   {
     "kind": "tiles",
     "layer": "upper",
-    "x": 11,
+    "x": 10,
     "y": 4,
     "w": 1,
     "h": 2,
@@ -194,18 +194,24 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
   {
     "kind": "tiles",
     "layer": "lower",
-    "x": 13,
-    "y": 5,
-    "w": 1,
+    "x": 11,
+    "y": 3,
+    "w": 3,
     "h": 3,
     "rows": [
       [
-        111
+        141,
+        111,
+        171
       ],
       [
-        141
+        141,
+        111,
+        171
       ],
       [
+        141,
+        111,
         171
       ]
     ],

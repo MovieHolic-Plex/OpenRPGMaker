@@ -12,6 +12,11 @@ The LLM-harnessed interior pipeline: start session, advance build per layer, eva
 - `dungeonRoomPipeline.ts`의 직선 천장 벽 계약은 유지한다. 과거 예제나 메타 설명의 “대각 절벽”이라는 이름만 보고 천장 연결까지 허용된 것으로 해석하지 않는다.
 - 적용 콘텐츠: LegacyDb `rpg-zzu-ashen-vault-20260913` / `map_ashen_vault`. 엔진의 높이 시스템을 추가한 것이 아니라 칩셋 그림의 조립 규칙이다.
 - 추가 사용자 정정: 내부 단차는 **대각면 → 직선면 → 가로 계단 → 직선면 → 대각면**으로 연결할 수 있다. 계단을 벽 앞에 장식처럼 붙이지 말고 벽면을 실제로 끊어 위쪽·아래쪽 지면을 잇는다. 벽면은 통행 불가, 계단은 통행 가능이며 양방향 이동을 확인한다. 같은 문법으로 두 단을 쌓아 다층 지형을 표현할 수 있다.
+- **계단 조각은 시트에 그려진 모양 그대로 쓴다**(2026-09-25 사용자 지적 「1×3 으로 이상하게, 1×1 을 2×2 처럼」).
+  - Tibo `141|111|171` 은 **가로** 조각(왼끝·몸통·오른끝)이다. 오르막은 세 칸을 한 줄로 놓고 세 줄 쌓아(첫 바닥 줄 + 북쪽 벽면 두 줄) 벽을 타고 오르게 한다. 한 열에 세로로 쌓으면 난간이 한 칸씩 튄 부러진 기둥이 된다.
+  - Tibo `474`·`475`·`444`·`445` 는 각각 완성된 **1×1 계단**이다(타일 라벨 「독립 하강/대각 계단 (1×1)」). 한 자리에 **한 칸만** 쓴다 — `474|475` 를 나란히 붙이면 계단 두 개로 보인다(2026-09-25 사용자 지적, 등대 등불 방). 배경이 투명하므로 바닥 위 윗층에 얹는다(아래층에 깔면 바닥이 검게 빈다). 위층 내리막은 아래층 3칸 폭 계단의 가운데 x 에 둔다.
+  - 숲마을 계열 절벽 계단은 난간 있는 `111|112…|113` 을 절벽 면 한 줄마다 한 줄씩 깐다. 난간 없는 한 칸 디딤판 `2689`(옛 `bindings[374]`)을 두 칸씩 붙이면 회색 판을 절벽에 박은 것처럼 보인다. 생성기는 `scripts/content/lib/cliff-stairs.mjs`, 이미 그린 맵은 `fix-cliff-stairs.mjs`(JSON)·`save-cliff-stairs.mjs`(정본)로 고친다.
+  - 계단 칸 위층에는 아무것도 놓지 않고 발치 줄도 비운다(`author-rpg-interiors.mjs` 가 검사한다).
 - **계단을 벽의 밑동으로 쓰지 않는다.** 이 맵에서 `106`을 직선 벽의 마지막 행에 반복한 것은 저작 버그였다. 계단 `105/106/107`은 명시적으로 뚫은 계단 통로에만 놓고, 벽 몸통과 구분한다. 이동 테스트 통과만으로 이 시각 오류를 발견할 수 없으므로 계단 타일의 전체 배치 위치가 의도한 통로와 일치하는지도 확인한다.
 - **대각선 4칸과 정방향 벽 3칸이 같은 높이**다(사용자 정정). 두 쪽을 모두 4칸으로 쌓으면 접합 높이가 어긋난다. 이 맵의 하향 대각 끝에 이어지는 직선 구간은 대각 상단의 지면 부분을 고려해 한 행 아래에서 시작하며 아래 경계를 유지한다. 연결 계단도 같은 3행 높이에 맞춘다. 대각 타일 배열과 천장 벽은 이 보정으로 바꾸지 않는다.
 
@@ -351,6 +356,7 @@ compatibility evidence, not whole-task17 provider/UI/publication acceptance.
 - `SpatialInteriorLayout.rooms[]` optionally stores `shape` and `floor` per room; omitted values retain rectangular rooms and the space material. The existing wall grammar compiles the floor union, shared partitions and explicit doorways together. Shape `rect` on an envelope does not imply that its rooms fill that envelope.
 - Floor materials now include `jade` (13), `gravel` (42), and `dark-stone` (43), alongside wood/plank/stone/mat. These are material selections, not new pixel art or runtime passage overrides.
 - `HOUSE_SHELL_FACE_TILES` includes cream, stone-brick and gold-brick face cells. Since 2026-09-25 it also includes the climate faces `log` 1980~1985, `sandstone` 1986~1991 and `basalt` 1992~1997, which exist **only on `tibo_interior_expanded`** (row 66 baked by `scripts/content/bake-climate-interior-tiles.py`, registered by `register-climate-interior-tiles.mjs`). They are in `WALL_FACE_RETINT` for the authored climate interiors (`tiledata/rpg-interiors`, category `rpg-interiors-climate-v1`); the assistant tool enums still offer only cream|gold-brick|stone-brick because house interiors are built on the 480-cell `easyrpg_chipset_interior`, where those ids do not exist. Both fixed wall overlap and automatic wall furniture use it; the former cream-only check rejected cabinets after wall retint.
+- Row 68 of `tibo_interior_expanded` (2040~2069, same bake/register scripts, 2026-09-25) adds a stone well 2040~2043, a stone fountain 3×2 2044~2049, a rat hole 2050 (wall hanging on the lower wall-face row), a 3×3 pipe organ 2051~2059 (placed like the fireplace: top two rows over the wall face) and a 1×2 lancet stained-glass window 2060/2061. The authored cathedral, monastery, desert palace, inn cellar and granary use them (categories `rpg-interiors-sacred-v1`, `-climate-v4`, `-staples-v4`); rows 0..67 stay pixel-identical, so existing maps are unaffected. `author-rpg-interiors.mjs` counts 59 (cross), 174 (lattice window), 260/261, 472 (loft ladder), 2050, 2060/2061 as wall hangings.
 - `scripts/lib/diverseInteriorCatalog.mts` rebuilds the existing interior library with preserved IDs, restores program-specific furniture assemblies, and leaves user tile metadata intact. Publish uses `edit_spatial_occurrence(operation:refresh)` for the three saved house roots and validates LegacyDb reload; rendering evidence belongs in `output/evidence/interior-redesign`.
 - Contract tests: `test/spatialInteriorLayout.test.ts` checks connected irregular floors, per-room materials and save/load, alongside existing spatial schema and object-placement contracts.
 
@@ -448,3 +454,13 @@ Cauldron interaction belongs to the stove's accessible base when its graphic is 
 #### 생활 방식별 신규 실내 5종 (2026-09-24)
 
 어부·재봉사·공동 임대주택·전당포·상인 조합 회관, 총 5맵/14방을 추가했다. 원격 보관본 `oprn-shared-daily-life-five-20260924`, 루트 SQLite 라이브러리 `tibo-daily-life-five-20260924`, 기본 장소 카탈로그에 같은 ID로 등록한다. 기존 사용자 맵을 덮어쓰지 않는다. 정확한 조립·좌표·엔진 도달 좌표·저장 영수증은 `docs/interior-daily-life-five-20260924/`에 있다. 작은 침대, 하위 북벽4행/연결 천장, 의자 동쪽 방향, 용도별 바닥1~2종, 마을 미연결 1칸 출구를 적용했다.
+
+#### atlas 실내 100곳 · 뒷모습 긴 의자 · 탁자 앞면 (2026-09-25)
+
+Tibo 실내 확장 시트에 69~71행(2070~2159)을 덧붙였다(0~68행 픽셀 불변, `bake-atlas-interior-tiles.py`가 원본 SHA 확인).
+뒷모습 긴 의자 2070~2083(북쪽 제단·무대를 봄), 창살·창살 문 2084~2087, 금고 문·칠판·보석/창구 카운터·룰렛·돌 욕조·고기 걸이·가죽 건조틀,
+무대 앞면·계단 2130~2133, 탁자 앞면 2140~2147. 등록은 `register-atlas-interior-tiles.mjs`(tiboRecoveredTileset.json).
+
+- 성당·예배당의 긴 의자는 뒷모습만 쓴다. 앞모습 1814~1847(킷 `tibo-fantasy-pew`)은 신도가 제단을 등지므로 atlas·rpg-interiors 저작에서 거부한다(rpg-interiors 7곳 교체).
+- 나무 상판(terrain-deck)·흰 천(white-table) 오토타일에는 다리가 없다. `table()`은 섬의 맨 아래 줄을 앞면(198~200/228~230, 한 줄 탁자 2140~2145, 1칸 폭 201/231·2146/2147)으로 바꾼다. 곡물 창고 등 rpg-interiors의 table() 전부에 적용.
+- 100곳 저작은 `scripts/content/atlas-interiors/*.mjs` + 검사 `kit.mjs`(겹침·탁상 소품·벽걸이 줄·의자 방향·canMove 도달·밀폐 칸). 정본 `.oprn-projects/atlas-interiors-20260925`, 공용 DB 라이브러리 `oprn-atlas-interiors-20260925`(장소 100), 조각 54개 `tiledata/atlas-interiors/shared-objects.json`. 자세한 순서는 `tiledata/atlas-interiors/README.md`, 시각 QA는 `verify-shots/atlas-interiors/QA.md`.

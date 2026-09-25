@@ -13,6 +13,7 @@ import { SHARED_OBJECTS } from "@/editor/tools/sharedDesignCatalog";
 
 const SHARED_OBJECT_CATEGORY_LABEL: Readonly<Record<string, string>> = {
   tree: "잎 없는 고목", volcano: "화산 봉우리", gate: "성문·문루", terrain: "기후 지형", harbor: "항구 부품", house: "집 외형", prop: "마을 소품",
+  furniture: "가구", vehicle: "탈것", landmark: "표지물",
 };
 
 export { spatialCardDomSelector, spatialPresentationId } from "@/editor/panels/spatialPresentation";
