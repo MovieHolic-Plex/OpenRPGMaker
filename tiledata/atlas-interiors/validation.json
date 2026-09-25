@@ -1652,5 +1652,191 @@
     "walkable": 80,
     "blocked": [],
     "pockets": []
+  },
+  {
+    "id": "atlas-interior-guard-post",
+    "entry": [
+      8,
+      10
+    ],
+    "targets": [
+      [
+        10,
+        8
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        13,
+        7
+      ],
+      [
+        7,
+        6
+      ]
+    ],
+    "reachable": 48,
+    "walkable": 43,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-town-jail",
+    "entry": [
+      10,
+      12
+    ],
+    "targets": [
+      [
+        4,
+        10
+      ],
+      [
+        10,
+        8
+      ],
+      [
+        16,
+        8
+      ],
+      [
+        17,
+        11
+      ]
+    ],
+    "reachable": 63,
+    "walkable": 79,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-barracks",
+    "entry": [
+      12,
+      12
+    ],
+    "targets": [
+      [
+        12,
+        9
+      ],
+      [
+        4,
+        8
+      ],
+      [
+        19,
+        8
+      ],
+      [
+        2,
+        11
+      ],
+      [
+        21,
+        11
+      ]
+    ],
+    "reachable": 91,
+    "walkable": 87,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-town-hall",
+    "entry": [
+      13,
+      13
+    ],
+    "targets": [
+      [
+        13,
+        8
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        20,
+        8
+      ],
+      [
+        2,
+        11
+      ],
+      [
+        23,
+        9
+      ]
+    ],
+    "reachable": 118,
+    "walkable": 114,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-post-office",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        7,
+        6
+      ],
+      [
+        4,
+        8
+      ],
+      [
+        15,
+        7
+      ],
+      [
+        10,
+        8
+      ]
+    ],
+    "reachable": 62,
+    "walkable": 51,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-orphanage",
+    "entry": [
+      10,
+      12
+    ],
+    "targets": [
+      [
+        10,
+        8
+      ],
+      [
+        2,
+        8
+      ],
+      [
+        14,
+        8
+      ],
+      [
+        19,
+        7
+      ],
+      [
+        8,
+        9
+      ]
+    ],
+    "reachable": 88,
+    "walkable": 80,
+    "blocked": [],
+    "pockets": []
   }
 ]

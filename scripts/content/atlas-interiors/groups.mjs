@@ -4,5 +4,6 @@ import shops from "./shops.mjs";
 import taverns from "./taverns.mjs";
 import { guilds, schools } from "./guilds.mjs";
 import civic from "./civic.mjs";
+import civic2 from "./civic2.mjs";
 
-export const GROUPS = { homes, shops, taverns, guilds, schools, civic };
+export const GROUPS = { homes, shops, taverns, guilds, schools, civic, civic2 };
