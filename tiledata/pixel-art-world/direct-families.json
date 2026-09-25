@@ -1,0 +1,324 @@
+{
+  "note": "Interior direct-authoring families. Each family becomes one user-local combined tileset (shared_paw_direct_<id>) with a direct-authoring dictionary. Recipes come from the reviewed src/assets/pixelArtWorld*Catalog.json packs; walls are the stacks measured under ceilings in the saved shared maps (source numbering). No pixels in Git.",
+  "sheets": {
+    "Town-I01": {
+      "key": "home",
+      "wall": [
+        17,
+        25,
+        33
+      ]
+    },
+    "Room-I01": {
+      "key": "room-m",
+      "wall": [
+        17,
+        25
+      ]
+    },
+    "Room-I02": {
+      "key": "room-f",
+      "wall": [
+        17,
+        25
+      ]
+    },
+    "Bath-I01": {
+      "key": "bath",
+      "wall": [
+        17,
+        25
+      ]
+    },
+    "Washitu-I01": {
+      "key": "washitu",
+      "wall": [
+        41,
+        49,
+        57
+      ],
+      "extraFloors": {
+        "tatami": [
+          [
+            160,
+            161,
+            162,
+            163
+          ],
+          [
+            168,
+            169,
+            170,
+            171
+          ]
+        ]
+      }
+    },
+    "Toilet-I01": {
+      "key": "restroom",
+      "wall": [
+        17,
+        25
+      ]
+    },
+    "Izakaya-I01": {
+      "key": "izakaya",
+      "wall": [
+        17,
+        25
+      ],
+      "extraFloors": {
+        "tatami": [
+          [
+            296,
+            297
+          ],
+          [
+            304,
+            305
+          ],
+          [
+            312,
+            313
+          ]
+        ]
+      }
+    },
+    "Fdshop-I01": {
+      "key": "diner",
+      "wall": [
+        17,
+        33
+      ]
+    },
+    "Icecream-I01": {
+      "key": "icecream",
+      "wall": [
+        17,
+        25
+      ]
+    },
+    "Convi-I01": {
+      "key": "conveni",
+      "wall": [
+        17,
+        25
+      ]
+    },
+    "Libry-I01": {
+      "key": "library",
+      "wall": [
+        17,
+        25,
+        33
+      ]
+    },
+    "Office-I01": {
+      "key": "office",
+      "wall": [
+        17,
+        25
+      ]
+    },
+    "Hospital-I01": {
+      "key": "clinic",
+      "wall": [
+        17,
+        25
+      ]
+    },
+    "Schl-I01": {
+      "key": "school",
+      "wall": [
+        17,
+        25
+      ]
+    },
+    "Schl-I02": {
+      "key": "school-special",
+      "wall": [
+        17,
+        25
+      ]
+    },
+    "Schl-Gym": {
+      "key": "gym",
+      "wall": [
+        16,
+        24,
+        32
+      ]
+    },
+    "Schl-WI01": {
+      "key": "wood-school",
+      "wall": [
+        17,
+        25
+      ]
+    },
+    "Schl-WI02": {
+      "key": "wood-school-special",
+      "wall": [
+        17,
+        25
+      ]
+    },
+    "Sento-I02": {
+      "key": "sento",
+      "wall": [
+        17,
+        25,
+        33
+      ]
+    },
+    "MsionB-I01": {
+      "key": "mansion-b",
+      "wall": [
+        17,
+        25
+      ]
+    },
+    "MsionW-I01": {
+      "key": "mansion-w",
+      "wall": [
+        17,
+        25
+      ]
+    },
+    "MsionR-I01": {
+      "key": "mansion-r",
+      "wall": [
+        17,
+        25
+      ]
+    }
+  },
+  "families": [
+    {
+      "id": "living",
+      "name": "주거 (주택·아파트·다다미·기숙사)",
+      "sheets": [
+        "Town-I01",
+        "Room-I01",
+        "Room-I02",
+        "Bath-I01",
+        "Washitu-I01",
+        "Toilet-I01"
+      ],
+      "types": [
+        "단독주택",
+        "2층 주택",
+        "원룸 1K",
+        "1DK 아파트",
+        "나가야",
+        "다다미 주택",
+        "기숙사"
+      ]
+    },
+    {
+      "id": "food",
+      "name": "음식점 (이자카야·라멘·카페·패밀리레스토랑·패스트푸드·초밥·아이스크림)",
+      "sheets": [
+        "Izakaya-I01",
+        "Fdshop-I01",
+        "Icecream-I01",
+        "Town-I01"
+      ],
+      "types": [
+        "이자카야",
+        "라멘집",
+        "카페",
+        "패밀리레스토랑",
+        "패스트푸드",
+        "초밥집",
+        "아이스크림점"
+      ]
+    },
+    {
+      "id": "retail",
+      "name": "상점 (편의점·슈퍼·서점·약국·잡화·보석)",
+      "sheets": [
+        "Convi-I01",
+        "Libry-I01",
+        "MsionR-I01",
+        "Hospital-I01",
+        "Town-I01"
+      ],
+      "types": [
+        "편의점",
+        "슈퍼마켓",
+        "서점",
+        "약국",
+        "꽃집",
+        "과자가게",
+        "잡화점",
+        "골동품점",
+        "보석점"
+      ]
+    },
+    {
+      "id": "public",
+      "name": "공공 (의원·병동·파출소·우체국·은행·도서관·구청·공중화장실·사무실)",
+      "sheets": [
+        "Office-I01",
+        "Hospital-I01",
+        "Libry-I01",
+        "Toilet-I01",
+        "Convi-I01"
+      ],
+      "types": [
+        "동네의원",
+        "병원 병동",
+        "파출소",
+        "우체국",
+        "은행",
+        "도서관",
+        "구청 민원실",
+        "공중화장실",
+        "사무실",
+        "공원 관리소",
+        "코인 세탁소"
+      ]
+    },
+    {
+      "id": "school",
+      "name": "학교 (교실·교무실·보건실·과학실·체육관·목조교실)",
+      "sheets": [
+        "Schl-I01",
+        "Schl-I02",
+        "Schl-Gym",
+        "Schl-WI01",
+        "Schl-WI02",
+        "Toilet-I01"
+      ],
+      "types": [
+        "교실",
+        "교무실",
+        "보건실",
+        "과학실",
+        "체육관",
+        "목조 교실"
+      ]
+    },
+    {
+      "id": "leisure",
+      "name": "여가·숙박 (센토·료칸·탁구장·당구장·미술관·저택)",
+      "sheets": [
+        "Sento-I02",
+        "Washitu-I01",
+        "Schl-Gym",
+        "MsionB-I01",
+        "MsionW-I01",
+        "Bath-I01"
+      ],
+      "types": [
+        "센토",
+        "료칸",
+        "탁구장",
+        "당구장",
+        "미술관",
+        "서양 저택"
+      ]
+    }
+  ]
+}
