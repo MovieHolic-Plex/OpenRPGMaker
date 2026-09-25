@@ -30,6 +30,12 @@ import { COORD_SCHEMA, RECT_SCHEMA, REPLACE_EXISTING_SCHEMA } from "./schemaShap
 
 const KIT = INTERIOR_ROOM_KIT.kitId;
 
+/** 실내 도구 셋 공통 — tibo 지원·기본 꾸러미·Tibo 킷 안내. */
+const TILESET_DESCRIPTION =
+  "시공 칩셋. easyrpg_chipset_interior(생략 시) 또는 tibo_interior_expanded(0~479칸이 같은 그림이라 벽·바닥·가구 번호 동일). "
+  + "방 theme 은 개념 꾸러미 장소로 풀고, 꾸러미가 빈 새 프로젝트는 번들 기본값 여관·민가(bedroom·kitchen·living·dining·inn/reception…)를 쓴다. "
+  + "Tibo 킷(480번 이후 소품)은 여기서 고르지 않는다 — list_spatial_designs({kind:\"object\",query}) 의 kit:tibo_interior_expanded/<kitId> 를 stamp_object 로 찍어라.";
+
 /** 방 구조 bbox — RECT + 방 역할/재질. items:{type:"object"} 로 두면 모델이 `rooms:[{}]` 만 보낸다. */
 const INTERIOR_ROOM_RECT_SCHEMA: JsonSchema = {
   type: "object",
@@ -139,7 +145,7 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
         },
         tilesetId: {
           type: "string",
-          description: "가구·방 종류를 읽을 타일셋. 생략 시 실내 칩셋 easyrpg_chipset_interior",
+          description: TILESET_DESCRIPTION,
         },
         themeModifiers: {
           type: "array",
@@ -223,7 +229,7 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
         door: COORD_SCHEMA,
         theme: { type: "string" },
     shape: { type: "string", enum: ["rect", "l", "alcove", "l-right", "bay", "notch", "cross"] },
-        tilesetId: { type: "string" },
+        tilesetId: { type: "string", description: TILESET_DESCRIPTION },
         themeModifiers: {
           type: "array",
           items: { type: "string", enum: [...INTERIOR_THEME_MODIFIERS] },

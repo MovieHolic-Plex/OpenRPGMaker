@@ -229,11 +229,11 @@ compatibility evidence, not whole-task17 provider/UI/publication acceptance.
 
 ## 모든 AI 실내의 개념 꾸러미 계약 (2026-09-05)
 
-- 신규 독립 실내의 기본 경로는 `get_concept_facility` → 요청에 맞는 `plan` → `place_concept`다. 조회 이름이 미등록이거나 생략되면 `sources[]`에 **현재 프로젝트 꾸러미의 시설별 장소·물건 plan**을 반환한다. 모델은 이를 조합해 미등록 실내를 설계한다. 빈 꾸러미 배열은 사용자 삭제이므로 plan을 주더라도 재시드하거나 레거시 가구로 대체하지 않는다.
+- 신규 독립 실내의 기본 경로는 `get_concept_facility` → 요청에 맞는 `plan` → `place_concept`다. 조회 이름이 미등록이거나 생략되면 `sources[]`에 **현재 프로젝트 꾸러미의 시설별 장소·물건 plan**을 반환한다. 모델은 이를 조합해 미등록 실내를 설계한다. 빈 꾸러미는 재시드하지 않는다. 다만 시공 해석은 번들 기본값 여관·민가(`FALLBACK_INTERIOR_BUNDLES`)로 푼다(2026-09-25, 초안 폐기 뒤 새 프로젝트에서 template·방 테마 호출이 전부 막히던 것).
 - 기존 좌표형 도구도 우회하지 않는다. `RoomHarnessKit.preparePlan`을 공유 엔진의 start/run 양쪽에서 **플랜 저장 전에** 호출한다. 실내 킷의 `interiorConceptPlan.bindInteriorConceptPlan`은 rooms 또는 wings를 꾸러미 장소에 연결하고 `concept` 오버레이를 저장한다. 기본 7종 및 외관 용도(shop·workshop·dwelling·manor·inn) theme은 장소 별칭만 가지며 가구 목록은 코드에서 가져오지 않는다. 미등록 장소는 `concept-place-not-found`로 조회·설계 경로를 안내한다. 이미 모델이 설계한 concept 오버레이는 보존한다.
 - `author_house`와 마을 하네스는 `createHouseInteriorMap({ project: draft, … })`를 호출한다. 시설은 용도에서 선택(dwelling/manor→민가, shop→상점, inn→여관, workshop→대장간, study→서재)하고 **도면도 꾸러미 장소·크기·개수·층에서** 만든다. 구조물 그림은 해당 프로젝트의 가구 어휘를 읽는다. 외관이 추가 층을 요구하면 같은 꾸러미의 장소를 재사용하고, 명시된 꾸러미 층이 있으면 우선한다. 안팎·층간 전이는 기존 연결기로 연결한다. 프로젝트 없는 저수준 도면/패리티 하네스만 종전 순수 파이프라인을 유지한다.
 - 집 내부에도 `roomHarnessPlan`을 남기므로 저장·재로드 후 방 단위 수정이 가능하다. `furnish_interior_space`는 옛 도면을 꾸러미에 연결하고, theme 변경 시 대상 방의 오버레이만 교체한다. 재시공 방의 생성 이벤트만 걷고 칩 이벤트를 다시 붙이며 다른 방 이벤트는 보존한다. 개념 이벤트 id는 기존 맵 id 집합과 충돌하지 않는다.
-- `generate_map`의 `rooms` 프로필은 `concept-interior-required`로 개념 경로를 안내한다. 현재 개념 시공의 그림·벽 문법은 `easyrpg_chipset_interior`만 지원하며 다른 칩셋을 무음 대체하지 않는다. 야외·던전 프로필은 기존 경로다.
+- `generate_map`의 `rooms` 프로필은 `concept-interior-required`로 개념 경로를 안내한다. 현재 개념 시공의 그림·벽 문법은 `easyrpg_chipset_interior`와 `tibo_interior_expanded`(0~479칸이 픽셀 동일, 결과 타일 번호도 동일)만 지원하며 다른 칩셋을 무음 대체하지 않는다. Tibo 킷은 파이프라인 어휘에서 빼고 `stamp_object`(`kit:tibo_interior_expanded/<kitId>`)로 찍는다. 야외·던전 프로필은 기존 경로다.
 - 계약: `test/interiorConceptRoutes.test.ts`(수정한 꾸러미의 독립 방/start/집/마을/위층 반영, 직렬화, 미등록 시설 조합, 삭제·우회 차단, 방 이벤트 재시공), `test/generateMap.test.ts`, 기존 `test/interiorRoomPipelineParity.test.ts`.
 
 - **2026-09-05 시설 확장:** 기본 초안은 19시설·51장소 구성. 연결 집은 프로그램 id와 같은 시설을 먼저 찾고 기존 매핑으로 폴백하므로, `manor`는 등록된 귀족 저택을 쓰고 옛 프로젝트는 기존 민가를 계속 쓴다. `test/interiorConceptRoutes.test.ts`가 양쪽을 검증한다.

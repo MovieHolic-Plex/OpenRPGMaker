@@ -59,6 +59,8 @@ import type {
 
 export const INTERIOR_ROOM_KIT_ID = "villager-room-v1" as const;
 export const INTERIOR_ROOM_TILESET_ID = "easyrpg_chipset_interior";
+/** 실내 파이프라인 번호를 그대로 받는 Tibo 확장 시트(0~479칸 = 실내 칩셋 그림). */
+export const TIBO_INTERIOR_TILESET_ID = "tibo_interior_expanded";
 /** @deprecated multi-row cream face; walls are now 366 dark-wall autotile ring */
 export const INTERIOR_ROOM_FACE_ROWS = 1;
 export const INTERIOR_ROOM_HARNESS_PREFIX = "harness-interior-house-v1-";
@@ -280,6 +282,10 @@ export const INTERIOR_ROOM_THEME_CATALOG: Readonly<Record<InteriorRoomTheme, Int
 let activeInteriorVocab: InteriorRoomVocab | null = null;
 
 export function interiorVocabFromTileset(tileset: Project["tilesets"][string] | undefined): InteriorRoomVocab {
+  // Tibo 확장 시트: 0~479칸이 실내 칩셋과 같은 그림이라 가구 어휘도 실내 카탈로그를 그대로 쓴다.
+  // 시트의 Tibo 킷(328개, 전부 테마 5종이 붙어 있다)을 어휘에 넣으면 방 테마 가구 단계가 킷을 통째로 뿌린다 —
+  // 킷은 stamp_object(kit:tibo_interior_expanded/<kitId>)로 따로 찍는다.
+  if (tileset?.id === TIBO_INTERIOR_TILESET_ID) tileset = { ...tileset, structureKits: [] };
   return resolveInteriorRoomVocab(tileset, INTERIOR_OBJECT_CATALOG, BUILTIN_INTERIOR_ROOM_KINDS);
 }
 

@@ -138,7 +138,7 @@ describe("legacy tools with active canonical designs", () => {
     // Then
     expect(plan.concept?.rooms.room?.things.some(thing => thing.objectId === "bed_v")).toBe(false);
   });
-  it("preserves explicit empty legacy rejection when canonical authoring is absent", () => {
+  it("an empty legacy bundle falls back to the bundled house but still demands a plan without writing", () => {
     // Given
     const project = preparedProject();
     own(project.tilesets, INTERIOR_ROOM_TILESET_ID).scratchConceptBundles = [];
@@ -147,7 +147,7 @@ describe("legacy tools with active canonical designs", () => {
     const result = runTool({ project }, "place_concept", { query: "house", mapId: "empty-house" });
     // Then
     expect(result.ok).toBe(false);
-    expect(result.issues?.some(issue => issue.code === "concept-bundle-empty")).toBe(true);
+    expect(result.issues?.some(issue => issue.code === "concept-plan-required")).toBe(true);
     expect(JSON.stringify(project)).toBe(before);
   });
 });
