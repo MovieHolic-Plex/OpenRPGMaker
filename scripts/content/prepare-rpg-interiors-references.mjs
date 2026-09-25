@@ -1,5 +1,5 @@
 // Bundle-owned guidance for tiledata/rpg-interiors → src/assets/sharedRpgInteriorReferences.json. No project/host writes.
-// Five categories: four on tibo_interior_expanded (inn·homes / civic / castle / leisure) and one on easyrpg_chipset_ship.
+// Categories: inn·homes / civic / castle / leisure / climate on tibo_interior_expanded and one on easyrpg_chipset_ship.
 // Split by purpose so no category nears the 64-document limit and each guide stays about one kind of building.
 import fs from "node:fs";
 import { execFileSync } from "node:child_process";
@@ -12,6 +12,7 @@ const GROUPS = {
   civic: { tilesetId: "tibo_interior_expanded", id: "rpg-interiors-civic-v1", name: "RPG 실내 · 교회·길드·마법 상점·공방·도서관·교실 (개정1)", description: "교회 예배당, 모험가 길드, 마법 상점, 연금술 공방, 도서관, 마법 학원 교실. 누가 어디서 무엇을 하는지로 자리를 나눈 배치와 전체 배열" },
   castle: { tilesetId: "tibo_interior_expanded", id: "rpg-interiors-castle-v1", name: "RPG 실내 · 성 1층·식당·침실·병영·보물고 (개정1)", description: "성 1층 대형 맵(50×40: 알현실·대연회장·복도 고리·계단실·주방·경비 초소)과 식당·침실·병영·보물고. 계단·문 틈으로 이어지는 짝, 금벽돌/석벽 방, 식탁 의자 방향 규칙, 전체 배열과 통행 검사" },
   leisure: { tilesetId: "tibo_interior_expanded", id: "rpg-interiors-leisure-v1", name: "RPG 실내 · 투기장 대기실·카지노·경매장 (개정1)", description: "투기장 대기실, 카지노, 경매장. 카운터·무대·벤치 동선과 전체 배열" },
+  climate: { tilesetId: "tibo_interior_expanded", id: "rpg-interiors-climate-v1", name: "RPG 실내 · 사막·설원·화산 집 (개정1)", description: "사막 흙벽돌 민가·오아시스 여관, 설원 사냥꾼 오두막·촌장집, 화산 대장장이 집·잿빛 마을 여관. 기후 벽면(사암·통나무·현무암)과 바닥·깔개, 3칸 폭 벽 계단, 숲마을 실내와 무엇이 다른지, 전체 배열과 통행 검사" },
   ship: { tilesetId: "easyrpg_chipset_ship", id: "rpg-interiors-ship-v1", name: "배 실내 · 선실·화물칸 (개정1)", description: "푸른물결호 갑판과 같은 배 칩셋으로 그린 갑판 아래 선실과 화물칸. 집 실내 껍데기를 배 시트로 바꾸는 법, Tibo 짐 이식표, 전체 배열" },
 };
 const docs = Object.fromEntries(Object.keys(GROUPS).map((k) => [k, []]));
@@ -45,7 +46,7 @@ interiorRoomPipeline의 plan→floor→walls 단계만 돌려 껍데기를 만�
 7. 빈칸 검사(/tmp/oprn-qa/emptiness.py --kind interior): 맨바닥만으로 된 정사각형 한 변 ≤3, 17×13 한 화면 맨바닥 ≤30%.`;
 
 for (const [g, k] of Object.entries(GROUPS)) {
-  if (g === "ship") continue;
+  if (g === "ship" || g === "climate") continue;
   doc(g, `${k.id}-guide`, `${k.name.split(" (")[0]} · 배치 규칙`, `# ${k.name.split(" (")[0]}
 
 모든 방은 tibo_interior_expanded(30열·16px)에 그린다. 0~479칸은 EasyRPG 실내 칩셋과 같은 그림이라 집 실내 벽·천장 번호를 그대로 쓰고, 소품은 Tibo 조립(structureKits)을 **id로** 찍는다. 좌표는 0기준. 지형·배치만 담았다(문 이동·NPC·상점 이벤트 없음).
@@ -82,6 +83,45 @@ ${reach("ship")}
 ## 이 분류의 방
 ${list("ship")}
 `);
+
+const CLIMATE = `## 기후 벽면·바닥 (Tibo 1980~2009, 모든 프로젝트의 tibo_interior_expanded에 들어 있다)
+기후 마을(사막·설원·화산) 집 안은 숲마을 실내(크림 회벽 74~76/104~106·나무 바닥 72)를 쓰지 않는다. 껍데기는 똑같이 interiorRoomPipeline plan→floor→walls로 만들고 크림 벽면(74~76/104~106)을 아래 표의 번호로 바꾼다(파이프라인 retintHouseWallFace 의 "log"·"sandstone"·"basalt"). 이 번호는 tibo_interior_expanded 에만 있다 — 480칸 easyrpg_chipset_interior 에 쓰지 말 것.
+
+| 기후 | wallMaterial | 벽면 윗줄(왼끝·가운데·오른끝) | 아랫줄 | 바닥 | 깔개 |
+|---|---|---|---|---|---|
+| 설원 통나무 오두막 | log | 1980 1981 1982 | 1983 1984 1985 | 나무 72 | 흰 모피 3×3 2000~2008 |
+| 사막 흙벽돌·사암 집 | sandstone | 1986 1987 1988 | 1989 1990 1991 | 사암 1999, 주방 흙 192 | 짚 돗자리 3×3 108~170 |
+| 화산 현무암 집·대장간 | basalt | 1992 1993 1994 | 1995 1996 1997 | 현무암 1998, 주방 돌 42 | 붉은 카펫(벽난로 앞·문 앞) |
+
+- 3×3 깔개(짚 돗자리·흰 모피)는 조각 배치가 같다: 왼쪽 위·위·오른쪽 위 / 왼쪽·가운데·오른쪽 / 왼쪽 아래·아래·오른쪽 아래. 넓히면 가운데 줄·칸을 되풀이한다(2줄이면 위·아래 줄만).
+- 기후마다 소품 무리가 다르다. 사막: 저장 옹기·물 항아리·물통·베틀·실패 걸이·선인장 화분·실내 야자, 창 대신 직조 벽걸이. 설원: 장작 벽난로·장작 받침대·장작 바구니·사슴뿔 벽판·말린 침낭·가죽 배낭·밧줄·생선·고기 건조대·가죽 두루마리·여행 장화. 화산: 대장간 화덕·풀무·대장장이 작업대·모루 작업대·숫돌·담금질 물통·석탄 통·금속 주괴·고철 상자, 벽 횃불·화로. 숲마을 실내의 화분·꽃병은 사막 선인장·설원 장작·화산 화로로 바꾼다.
+
+## 계단 — 3칸 폭 벽 계단
+여관처럼 위층으로 오르는 계단은 3칸 폭 돌계단 141(왼끝)|111(가운데)|171(오른끝)을 세 줄 쌓는다(아래층, 통행). 맨 아랫줄은 첫 바닥 줄에 놓고 윗 두 줄은 바로 위 북쪽 벽면 두 줄을 덮는다 — 계단이 벽을 타고 올라가는 모양이다. 세 칸 모두 발치가 바닥이고 위가 곧은 벽면이어야 한다(모서리·칸막이 끝·문 틈 금지).
+
+## 가구 자리 규칙
+숲마을 실내 분류(여관·민가)의 규칙과 같다: 벽걸이는 벽면 두 줄 안, 키 큰 가구는 맨 윗행을 벽면 아랫줄에 걸침, 의자·걸상·벤치는 탁자 곁, 탁상 소품은 나무 상판 위, 카운터는 벽이나 선반을 등짐, 문에서 목적지까지 통로를 비우고 갇힌 바닥을 남기지 않음. 모든 소품은 주인(침대·화덕·카운터·작업대·식탁·거치대) 곁에 둔다.
+빈칸 검사(/tmp/oprn-qa/emptiness.py --kind interior): 맨바닥만으로 된 정사각형 한 변 ≤3, 17×13 한 화면 맨바닥 ≤30%.`;
+{
+  const k = GROUPS.climate;
+  const pairs = plansIn("climate").map((p) => `- ${p.name} (${p.id}): 숲마을 실내 \`${p.replaces}\` 대신 쓴다.`).join("\n");
+  doc("climate", `${k.id}-guide`, "RPG 실내 · 사막·설원·화산 집 · 배치 규칙", `# RPG 실내 · 사막·설원·화산 집
+
+모든 방은 tibo_interior_expanded(30열·16px)에 그린다. 0~479칸은 EasyRPG 실내 칩셋과 같은 그림이라 집 실내 벽·천장 번호를 그대로 쓰고, 소품은 Tibo 조립(structureKits)을 **id로** 찍는다. 좌표는 0기준. 지형·배치만 담았다(문 이동·NPC·상점 이벤트 없음).
+
+${CLIMATE}
+
+## 숲마을 실내와 짝
+${pairs}
+
+## 검사
+입구(문 개구부)에서 런타임 이동 규칙(canMove)으로 주인 자리·목적지·계단에 닿는지 확인한다.
+${check}
+${reach("climate")}
+## 이 분류의 방
+${list("climate")}
+`);
+}
 
 for (const p of c.plans) {
   const m = c.maps[p.id];

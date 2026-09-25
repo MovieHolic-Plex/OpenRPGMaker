@@ -51,7 +51,7 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
   const DECK = group(TIBO, "terrain-deck"), CLOTH = group(TIBO, "white-table");
   const TABLE_LOWER = new Set([...DECK.memberTileIds, ...Object.values(DECK.variantMap), ...CLOTH.memberTileIds, ...Object.values(CLOTH.variantMap)]);
   TABLE_LOWER.delete(127); // the deck group's own grass slot
-  const FACE = new Set([74, 75, 76, 77, 104, 105, 106, 107, 134, 135, 136, 164, 165, 166, 314, 315, 316, 344, 345, 346]);
+  const FACE = new Set([74, 75, 76, 77, 104, 105, 106, 107, 134, 135, 136, 164, 165, 166, 314, 315, 316, 344, 345, 346, ...Array.from({ length: 18 }, (_, i) => 1980 + i)]);
   const roleOfKit = (id) => (TOP_KITS.has(id) ? "top" : HANG_KITS.has(id) ? "hang" : SEAT_KITS.has(id) ? "seat" : TABLE_KITS.has(id) ? "table" : "furn");
   const roleOfTile = (t) => (HANG_TILES.has(t) ? "hang" : SEAT_TILES.has(t) ? "seat" : TABLE_TILES.has(t) ? "table" : "furn");
 
@@ -636,6 +636,118 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
     note: "선실과 같은 배 칩셋 껍데기(18×6칸). 오크통 385를 양 끝 벽에 쌓고, Tibo 쌓인 나무 상자·정사각 상자·뚜껑 둥근 통·식재료 자루·밀가루/쌀 포대·소포 더미를 이 시트 뒤쪽 칸에 이식해 놓았다. 앞 왼쪽 예비 대포 324/325 둘과 그 뒤 항아리 둘·감긴 밧줄 263, 가운데 급수 펌프 72/73/102/103(아래층), 벽에 환기 격자창 202, 북벽 앞 바닥에 사다리 22|23(x=10~11)",
   });
   tileMap = (t) => t;
+
+  // ═════════ 기후 실내 (사막·설원·화산) ═════════
+  // 숲마을 실내(크림 회벽·나무 바닥)를 그대로 쓰던 기후 마을 집 안. 벽은 Tibo 1980~의 기후 벽면(통나무·사암·현무암,
+  // bake-climate-interior-tiles.py), 바닥은 사암 1999·현무암 1998·흙 192, 깔개는 짚 돗자리 108~170·흰 모피 2000~2008.
+  // 계단은 사용자가 맞다고 한 3칸 폭 돌계단 141|111|171 — 첫 바닥 줄에서 북쪽 벽면 두 줄을 타고 오른다.
+  const nine = (tiles, kind = "rug") => (m, x0, y0, x1, y1) => {
+    placed.push({ kind, tiles: tiles[4], x: x0, y: y0, w: x1 - x0 + 1, h: y1 - y0 + 1, role: "rug" });
+    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+      const c = x === x0 ? 0 : x === x1 ? 2 : 1, r = y === y0 ? 0 : y === y1 ? 2 : 1;
+      put(m, x, y, tiles[r * 3 + c], "lowerTiles");
+    }
+  };
+  const mat = nine([108, 109, 110, 138, 139, 140, 168, 169, 170]), fur = nine([2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008]);
+  const stairsWall = (m, x, y) => {
+    for (let d = 0; d < 3; d++) assert(walkable(m, x + d, y) && FACE.has(get(m, x + d, y - 1)) && FACE.has(get(m, x + d, y - 2)), `wall stairs ${x + d},${y}`);
+    block(m, x, y - 2, [[141, 111, 171], [141, 111, 171], [141, 111, 171]], "lowerTiles", "stairs");
+  };
+
+  // 사막 · 흙벽돌 민가 — 사암 벽·사암 바닥, 짚 돗자리 위 식탁, 물 항아리·옹기, 베틀, 선인장 화분.
+  m = shell(17, 13, { wings: [{ x: 2, y: 5, w: 13, h: 5 }], door: { x: 8, y: 9 }, wall: "sandstone" });
+  floorTo(m, 1999);
+  block(m, 2, 5, [[324], [354]]); stamp(m, "tibo-library-039", 3, 5); one(m, 3, 3, 54); stamp(m, "tibo-library-220", 5, 3);
+  stamp(m, "tibo-bread-oven", 6, 5); stamp(m, "tibo-library-011", 7, 4); stamp(m, "tibo-library-055", 6, 6); stamp(m, "tibo-v6-1-1", 7, 6);
+  stamp(m, "tibo-fantasy-prep-table", 9, 4); stamp(m, "tibo-library-234", 12, 4); stamp(m, "tibo-library-234", 13, 4); stamp(m, "tibo-library-229", 14, 4);
+  mat(m, 3, 7, 5, 9); stamp(m, "tibo-library-026", 4, 7); stamp(m, "tibo-v7-1-2", 3, 8); one(m, 5, 8, 298);
+  stamp(m, "tibo-loom", 11, 7); stamp(m, "tibo-thread-rack", 10, 7); stamp(m, "tibo-library-209", 13, 8); stamp(m, "tibo-library-206", 2, 9);
+  add("interior-desert-home", "사막 · 흙벽돌 민가", T, m, {
+    group: "climate", climate: "desert", replaces: "interior-home-one-room", entry: [8, 10], targets: [[4, 9], [8, 6], [12, 9], [2, 7]],
+    use: "사막 마을 사람이 사는 한 칸 집. 서늘한 사암 벽 안에서 왼쪽 침대에서 자고, 뒷벽 작은 화덕과 조리대에서 밥하고, 짚 돗자리 위 식탁에서 먹고, 오른쪽 베틀로 천을 짠다. 물은 항아리·옹기에 받아 둔다",
+    note: "사암 벽 1986~1991·사암 바닥 1999, 13×5칸. 왼쪽 침대 324/354·협탁·창 54, 뒷벽 직조 벽걸이, 작은 빵 화덕과 향신료 선반, 화덕 앞 물 항아리·물 양동이, 조리대, 저장 옹기 둘·뚜껑 통(물·곡식), 짚 돗자리 108~170 위 정사각 식탁과 의자 둘, 오른쪽 베틀·실패 걸이, 문 옆 실내 야자, 구석 선인장 화분",
+  });
+
+  // 사막 · 오아시스 여관 — 흙바닥 주방과 사암 홀, 물통을 뒷벽에 두고 짚 돗자리 식탁, 동쪽 3칸 폭 계단으로 객실.
+  m = shell(22, 15, { rooms: [{ id: "kitchen", x: 2, y: 5, w: 5, h: 8 }, { id: "hall", x: 8, y: 5, w: 12, h: 8 }], innerDoors: [{ x: 7, y: 10 }], door: { x: 13, y: 12 }, wall: "sandstone" });
+  floorTo(m, 192, [2, 5, 6, 12]); floorTo(m, 1999);
+  stamp(m, "tibo-bread-oven", 2, 5); stamp(m, "tibo-fantasy-hanging-pot", 5, 5); stamp(m, "tibo-hanging-herbs", 2, 3); stamp(m, "tibo-library-012", 5, 3);
+  stamp(m, "tibo-fantasy-prep-table", 2, 8); stamp(m, "tibo-library-234", 2, 11); stamp(m, "tibo-library-234", 3, 11); stamp(m, "tibo-library-013", 4, 12); stamp(m, "tibo-library-024", 5, 12);
+  stamp(m, "tibo-fantasy-ale-rack", 8, 4); stamp(m, "tibo-fantasy-bar-counter", 8, 7); stamp(m, "tibo-library-029", 9, 9); stamp(m, "tibo-library-029", 11, 9);
+  stamp(m, "tibo-library-220", 11, 3); stamp(m, "tibo-fantasy-water-tub", 13, 4); stamp(m, "tibo-library-137", 12, 5); stamp(m, "tibo-library-055", 16, 5);
+  stairsWall(m, 17, 5);
+  mat(m, 12, 8, 14, 10); stamp(m, "tibo-library-025", 13, 8); stamp(m, "tibo-library-030", 12, 9); stamp(m, "tibo-library-030", 14, 9);
+  mat(m, 16, 8, 18, 10); stamp(m, "tibo-fantasy-dining-set", 16, 8);
+  mat(m, 9, 11, 11, 12); stamp(m, "tibo-v7-3-3", 10, 12); one(m, 9, 12, 297); one(m, 11, 12, 298);
+  stamp(m, "tibo-library-209", 18, 11); stamp(m, "tibo-library-206", 14, 12); stamp(m, "tibo-library-206", 12, 12);
+  add("interior-desert-oasis-inn", "사막 · 오아시스 여관 주점", T, m, {
+    group: "climate", climate: "desert", replaces: "interior-inn-tavern-1f", entry: [13, 13], keeper: [9, 6], targets: [[9, 6], [18, 6], [4, 7], [13, 11], [15, 9]],
+    use: "오아시스 곁 사막 여관의 1층. 대상(隊商)이 문으로 들어와 바에서 물과 술을 받고, 짚 돗자리 위 식탁에서 쉬며, 뒷벽 물통에서 물을 긷는다. 왼쪽 흙바닥 주방에서 요리하고 동쪽 계단으로 2층 객실에 오른다",
+    note: "사암 벽·사암 바닥 1999, 주방 5×8(흙바닥 192)과 홀 12×8을 칸막이로 나눴다(문 (7,10)). 주방: 작은 빵 화덕·불 피운 솥 걸이·말린 약초 걸이·국자 걸이·조리대·저장 옹기 둘·밀가루 포대·꿀 항아리. 홀: 뒷벽 술통 선반과 바 카운터·높은 걸상 둘(주인 자리 (9,6)), 직조 벽걸이·술 항아리·뒷벽 물통 3×2와 물 항아리, 동쪽 3칸 폭 돌계단 141|111|171(x=17~19, 첫 바닥 줄 y=5에서 벽면 두 줄을 타고 오름), 짚 돗자리 셋 위 원형 식탁과 걸상 둘·긴 식탁과 벤치·사과 접시 탁자와 의자 둘, 문 양옆 선인장 화분과 앞 오른쪽 야자",
+  });
+
+  // 설원 · 사냥꾼 오두막 — 통나무 벽, 벽난로와 흰 모피 깔개, 장작, 활·창 거치대와 가죽·고기 건조대.
+  m = shell(17, 13, { wings: [{ x: 2, y: 5, w: 13, h: 5 }], door: { x: 8, y: 9 }, wall: "log" });
+  block(m, 2, 5, [[324], [354]]); one(m, 3, 3, 54); stamp(m, "tibo-library-193", 3, 5); stamp(m, "tibo-library-045", 2, 7);
+  stamp(m, "tibo-medieval-stone-fireplace", 6, 4); stamp(m, "tibo-library-235", 4, 6); stamp(m, "tibo-v8-1-2", 9, 6);
+  fur(m, 6, 7, 8, 8); stamp(m, "tibo-library-223", 10, 3);
+  stamp(m, "tibo-fantasy-weapon-rack", 12, 4); stamp(m, "tibo-coat-rack", 14, 4); stamp(m, "tibo-library-194", 14, 8); stamp(m, "tibo-library-196", 14, 9);
+  stamp(m, "tibo-library-022", 11, 7); stamp(m, "tibo-library-119", 11, 9); stamp(m, "tibo-library-200", 9, 9);
+  stamp(m, "tibo-library-026", 4, 8); stamp(m, "tibo-v7-1-2", 3, 9); one(m, 5, 9, 298);
+  add("interior-snow-hunter-cabin", "설원 · 사냥꾼 오두막", T, m, {
+    group: "climate", climate: "snow", replaces: "interior-home-one-room", entry: [8, 10], targets: [[7, 8], [3, 8], [13, 8], [10, 6]],
+    use: "눈 덮인 숲가에 사는 사냥꾼의 통나무 오두막. 가운데 벽난로 앞 흰 모피 깔개에서 몸을 녹이고, 왼쪽 침대에서 자며, 오른쪽 거치대의 활·창을 챙겨 나간다. 잡은 짐승의 가죽과 고기는 문 옆 건조대에서 말린다",
+    note: "통나무 벽 1980~1985·나무 바닥 72, 13×5칸. 왼쪽 침대 324/354·말린 침낭·궤짝·창 54, 가운데 장작 벽난로 3×3과 장작 받침대·장작 바구니, 벽난로 앞 흰 모피 깔개 2000~2008(3×2), 뒷벽 사슴뿔 벽판, 오른쪽 무기 거치대·옷걸이, 그 앞 가죽 배낭·밧줄, 문 옆 생선·고기 건조대 2×2와 가죽 두루마리·여행 장화, 왼쪽 앞 정사각 식탁과 의자 둘",
+  });
+
+  // 설원 · 촌장집 — 서재·응접실·침실. 통나무 벽, 큰 벽난로와 연회 식탁, 흰 모피 깔개, 장작과 사슴뿔.
+  m = shell(27, 15, {
+    rooms: [{ id: "study", x: 2, y: 5, w: 6, h: 7 }, { id: "hall", x: 9, y: 5, w: 9, h: 7 }, { id: "bed", x: 19, y: 5, w: 6, h: 7 }],
+    innerDoors: [{ x: 8, y: 9 }, { x: 18, y: 9 }], door: { x: 13, y: 11 }, wall: "log",
+  });
+  stamp(m, "tibo-library-078", 2, 4); stamp(m, "tibo-v12-1-2", 3, 4); stamp(m, "tibo-v3-1-0", 5, 3);
+  tealRug(m, 2, 7, 6, 10); stamp(m, "tibo-medieval-scribe-desk", 3, 8);
+  stamp(m, "tibo-medieval-stone-fireplace", 9, 3); stamp(m, "tibo-v8-1-2", 12, 5); stamp(m, "tibo-library-223", 13, 3); stamp(m, "tibo-v6-2-0", 15, 3);
+  fur(m, 11, 7, 16, 10); stamp(m, "tibo-medieval-banquet-table", 12, 7); for (const x of [13, 14]) one(m, x, 9, 268); one(m, 11, 8, 297); one(m, 16, 8, 298);
+  stamp(m, "tibo-warm-crockery", 16, 4); stamp(m, "tibo-library-235", 9, 10); stamp(m, "tibo-library-221", 17, 3);
+  stamp(m, "tibo-fantasy-bed", 19, 4); stamp(m, "tibo-library-039", 22, 5); stamp(m, "tibo-fantasy-wardrobe", 23, 4);
+  stamp(m, "tibo-fantasy-washstand", 22, 9); stamp(m, "tibo-library-045", 20, 7); one(m, 20, 3, 54); fur(m, 19, 8, 21, 10);
+  add("interior-snow-chief-house", "설원 · 촌장집", T, m, {
+    group: "climate", climate: "snow", replaces: "interior-home-chief", entry: [13, 12], keeper: [4, 7], targets: [[4, 7], [13, 10], [21, 8], [10, 7]],
+    use: "설원 마을 촌장의 통나무 집. 가운데 응접실에서 큰 벽난로를 등지고 마을 사람과 연회 식탁에 둘러앉아 겨울 채비를 의논하고, 왼쪽 서재에서 장부를 보며, 오른쪽이 촌장 부부의 침실",
+    note: "통나무 벽·나무 바닥 72, 방 셋(서재 6×7·응접실 9×7·침실 6×7)을 세로 칸막이로 나누고 칸막이 천장을 북쪽 천장까지 이었다(문 (8,9)·(18,9)). 서재 문서 분류장·지구본·책장 수납장 3×3·청록 러그 위 필경사 책상, 응접실 장작 벽난로·장작 바구니·장작 받침대·사슴뿔 벽판·강 지도 액자·방패 벽 장식·식기장·흰 모피 깔개 위 연회 식탁과 의자 넷, 침실 목제 침대·협탁·옷장·궤짝·흰 모피 깔개·세면대",
+  });
+
+  // 화산 · 대장장이 집 — 현무암 벽·현무암 바닥. 서쪽 대장간(화덕·풀무·모루 작업대·숫돌·담금질 물통), 동쪽 살림방.
+  m = shell(20, 14, { rooms: [{ id: "forge", x: 2, y: 5, w: 10, h: 6 }, { id: "home", x: 13, y: 5, w: 5, h: 6 }], innerDoors: [{ x: 12, y: 8 }], door: { x: 6, y: 10 }, wall: "basalt" });
+  floorTo(m, 1998);
+  stamp(m, "tibo-library-104", 2, 4); stamp(m, "tibo-fantasy-bellows", 4, 4); stamp(m, "tibo-library-088", 7, 3); stamp(m, "tibo-medieval-smith-bench", 8, 4); stamp(m, "tibo-library-099", 11, 3);
+  stamp(m, "tibo-library-098", 7, 5); stamp(m, "tibo-fantasy-anvil-bench", 3, 7); stamp(m, "tibo-library-101", 2, 9);
+  stamp(m, "tibo-grindstone", 8, 7); stamp(m, "tibo-library-100", 8, 10); stamp(m, "tibo-fantasy-weapon-rack", 10, 8); stamp(m, "tibo-library-106", 2, 10);
+  stamp(m, "tibo-fantasy-bed", 15, 4); stamp(m, "tibo-library-039", 14, 5); one(m, 13, 3, 24);
+  stamp(m, "tibo-library-025", 14, 8); stamp(m, "tibo-library-030", 13, 9); stamp(m, "tibo-library-030", 15, 9); stamp(m, "tibo-library-045", 17, 8); stamp(m, "tibo-brazier", 17, 10);
+  add("interior-volcano-smith-house", "화산 · 대장장이 집", T, m, {
+    group: "climate", climate: "volcano", replaces: "fantasy-smithy", entry: [6, 11], keeper: [6, 7], targets: [[6, 7], [7, 9], [16, 8], [13, 7]],
+    use: "화산 기슭 대장장이의 현무암 집. 서쪽 대장간에서 화덕에 풀무질을 해 쇠를 달구고, 모루 작업대에서 두드려 담금질 물통에 식힌 뒤 숫돌에 간다. 완성한 무기는 거치대에 세운다. 칸막이 문 너머 동쪽이 살림방",
+    note: "현무암 벽 1992~1997·현무암 바닥 1998, 대장간 10×6과 살림방 5×6을 칸막이로 나눴다(문 (12,8)). 대장간: 뒷벽 작은 대장간 화덕 2×2·풀무 3×2·공구 벽판·대장장이 작업대 3×2·쇠집게 걸이, 풀무 곁 석탄 통, 모루 작업대 3×2와 담금질 물통, 숫돌 2×2·금속 주괴 더미·고철 상자·무기 거치대. 살림방: 목제 침대·협탁·벽 횃불, 원형 식탁과 걸상 둘, 궤짝, 화로",
+  });
+
+  // 화산 · 잿빛 마을 여관 — 현무암 벽, 돌바닥 주방과 현무암 홀, 화로와 벽난로, 동쪽 3칸 폭 계단.
+  m = shell(22, 15, { rooms: [{ id: "kitchen", x: 2, y: 5, w: 5, h: 8 }, { id: "hall", x: 8, y: 5, w: 12, h: 8 }], innerDoors: [{ x: 7, y: 10 }], door: { x: 13, y: 12 }, wall: "basalt" });
+  floorTo(m, 42, [2, 5, 6, 12]); floorTo(m, 1998);
+  stamp(m, "tibo-bread-oven", 2, 5); stamp(m, "tibo-fantasy-hanging-pot", 5, 5); stamp(m, "tibo-library-021", 2, 3); stamp(m, "tibo-library-012", 5, 3);
+  stamp(m, "tibo-fantasy-prep-table", 2, 8); stamp(m, "tibo-library-013", 2, 11); stamp(m, "tibo-library-014", 3, 11); stamp(m, "tibo-library-018", 2, 12); stamp(m, "tibo-library-019", 3, 12); stamp(m, "tibo-library-229", 4, 11); stamp(m, "tibo-library-098", 5, 12);
+  stamp(m, "tibo-fantasy-ale-rack", 8, 4); stamp(m, "tibo-library-133", 11, 4); stamp(m, "tibo-fantasy-bar-counter", 8, 7); stamp(m, "tibo-library-029", 9, 9); stamp(m, "tibo-library-029", 11, 9);
+  stamp(m, "tibo-medieval-stone-fireplace", 13, 3); redRug(m, 13, 6, 15, 6); one(m, 12, 3, 24); one(m, 16, 3, 24);
+  stairsWall(m, 17, 5);
+  stamp(m, "tibo-fantasy-dining-set", 13, 8); stamp(m, "tibo-library-025", 17, 8); stamp(m, "tibo-library-030", 16, 9); stamp(m, "tibo-library-030", 18, 9);
+  stamp(m, "tibo-library-025", 9, 11); stamp(m, "tibo-library-030", 8, 12); stamp(m, "tibo-library-030", 10, 12);
+  redRug(m, 12, 11, 14, 12); stamp(m, "tibo-brazier", 11, 12); stamp(m, "tibo-brazier", 16, 12); stamp(m, "tibo-library-221", 10, 3);
+  add("interior-volcano-ash-inn", "화산 · 잿빛 마을 여관", T, m, {
+    group: "climate", climate: "volcano", replaces: "interior-inn-tavern-1f", entry: [13, 13], keeper: [9, 6], targets: [[9, 6], [18, 6], [4, 7], [13, 11], [17, 10]],
+    use: "재가 내리는 화산 마을의 여관 1층. 광부와 대장장이가 문으로 들어와 바에서 술을 받고, 벽난로 앞 긴 식탁이나 원형 식탁에서 먹는다. 왼쪽 돌바닥 주방에서 요리하고 동쪽 계단으로 2층 객실에 오른다",
+    note: "현무암 벽·현무암 바닥 1998, 주방 5×8(돌바닥 42)과 홀 12×8을 칸막이로 나눴다(문 (7,10)). 주방: 작은 빵 화덕·불 피운 솥 걸이·소시지 걸이·국자 걸이·조리대·밀가루·쌀 포대·당근·양배추 상자·뚜껑 통·석탄 통. 홀: 술통 선반·받침대 맥주통·바 카운터와 높은 걸상 둘(주인 자리 (9,6)), 방패 벽 장식, 장작 벽난로와 횃불 둘·붉은 깔개, 동쪽 3칸 폭 돌계단 141|111|171(x=17~19), 긴 식탁과 벤치·원형 식탁 둘과 걸상, 문 앞 붉은 깔개와 양옆 화로",
+  });
 
   // Grafted Tibo cargo takes the Tibo slot's walkability, priority and a readable label.
   const kitName = new Map();
