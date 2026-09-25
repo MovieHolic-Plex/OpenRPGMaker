@@ -88,5 +88,68 @@
     ],
     "reachable": 194,
     "targets": 3
+  },
+  {
+    "id": "harbor-stone-quay-ships",
+    "entry": [
+      8,
+      20
+    ],
+    "reachable": 998,
+    "targets": 5
+  },
+  {
+    "id": "harbor-naval-base",
+    "entry": [
+      7,
+      20
+    ],
+    "reachable": 740,
+    "targets": 3
+  },
+  {
+    "id": "harbor-pirate-cove",
+    "entry": [
+      19,
+      30
+    ],
+    "reachable": 800,
+    "targets": 3
+  },
+  {
+    "id": "harbor-shipyard",
+    "entry": [
+      20,
+      29
+    ],
+    "reachable": 897,
+    "targets": 2
+  },
+  {
+    "id": "sky-airship-deck",
+    "entry": [
+      20,
+      11
+    ],
+    "reachable": 31,
+    "targets": 1
+  },
+  {
+    "id": "sky-dock-isle",
+    "entry": [
+      8,
+      11
+    ],
+    "reachable": 103,
+    "targets": 2
+  },
+  {
+    "id": "sky-isle-shrine",
+    "entry": [
+      19,
+      15
+    ],
+    "reachable": 100,
+    "targets": 3
   }
 ]
