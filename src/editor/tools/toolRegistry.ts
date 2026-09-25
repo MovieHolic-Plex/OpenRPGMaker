@@ -1,4 +1,5 @@
 import { TILE_ASSEMBLY_GUIDE_TOOLS } from "./tileAssemblyGuideTools";
+import { INTERIOR_PLACEMENT_TOOLS } from "./interiorPlacementTools";
 import { PUBLIC_TILE_RECIPE_TOOLS } from "./publicTileRecipeTools";
 import { FOREST_RECIPE_TOOLS } from "./forestRecipeTools";
 import { TILESET_REFERENCE_TOOLS, withTilesetReferencePurpose } from "./tilesetReferenceTools";
@@ -207,6 +208,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(TILESET_ATLAS_TOOLS, "tile"),
   ...TILESET_REFERENCE_TOOLS,
   ...TILE_ASSEMBLY_GUIDE_TOOLS,
+  ...INTERIOR_PLACEMENT_TOOLS,
   ...FOREST_RECIPE_TOOLS,
   ...PUBLIC_TILE_RECIPE_TOOLS,
   // 혼합 도메인 — 각 툴이 자기 domains 를 선언하고, 선언이 없으면 map 으로 떨어진다.

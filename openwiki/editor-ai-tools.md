@@ -2051,7 +2051,10 @@ Pi worker 모두 로드한다. `read_region_reference`의 목록/페이지 조�
 두 지역의 전체 페이지 배열 일치, 가구 복사 레이어/크기 보존을 직접 확인했다.
 전체 테스트 게이트와 운영 배포 확인은 별도이며 이 기록으로 대체하지 않는다.
 
-### 공용 저작 장면 → 실제 맵 구현 (2026-09-25)
+### 공용 저작 장면 → 명시적인 복사 요청 (2026-09-25)
+
+새 설계/직접 배치를 이 경로로 대체하지 않는다. 시스템 프롬프트와 도구 설명 모두
+사용자가 저장 장면 복사/동일 재현을 명시할 때만 이 도구를 쓰도록 한다.
 
 `sharedSceneTools.ts`의 `list_shared_scenes`(20개 페이지), `inspect_shared_scene`,
 `build_shared_scene`는 설치된 공용 장소를 실제 맵으로 복사한다. `sharedSceneAuthoring.ts`가
@@ -2071,3 +2074,22 @@ PAW는 기존46장소 + 학교28실 = 74장소. 도시 include는12맵, 학교 o
 자료 존재/결정론 검사/실제 모델 재현/임의 새 평면 설계를 같은 주장으로 합치지 않는다.
 실제 모델7종류/21맵 생성, 별도SQLite 저장·재오픈, 실제player 전이32건의 근거와
 실패한 관측기 시도는 [SCENE-AI-VERIFICATION](../tiledata/pixel-art-world/SCENE-AI-VERIFICATION.md)에 기록한다.
+
+### 실내 직접 배치와 읽기 전용 검사 (2026-09-25)
+
+`interiorPlacementTools.ts`의 `inspect_interior_layout`은 `interiorPlacementAudit.ts`를 호출한다.
+mapId/wallMaterial/entry, 선택 rooms[{id,seed,doorways}]를 받는 read 도구다. 설치된 타일셋의
+`direct-authoring/dictionary`에서 재료·단일 가구 배열·지지칸·천장47변형을 읽는다.
+완성 맵 정답이나 자동 배치 코드는 없다. 조수가 직접 paint_tiles로 고친다.
+
+천장 남단 아래 벽 전체/맵 밖 벽/미칠한 바닥/가구 조립·접지/벽걸이/엔진 통행/가구 조작면을 검사한다.
+독립방은 rooms에 선언한 것만 검사한다. 문턱을 닫은 바닥 연결성(가구 무시)으로 현관 및 다른 방과
+분리되는지, 폭1~2칸의 각 문이 공용 공간으로 직접 열리는지 확인한다.
+모델이 독립방 선언을 빼먹거나 방 이름만 바꿔 요구조건을 축소할 수 있으므로 요청 조건과 별도로 대조한다.
+도구 ok:true는 조회 성공이며 data.valid:false면 구조 오류다. valid:true도 밀도/좌석 수/미적 품질/
+이벤트 성공 판정은 아니다. 128×128 이하, 단일 벽 재료, 스택 없는 맵만 지원한다.
+
+직접 배치 관찰기는 완성 맵/장면 배열/래스터 킷/복사 도구를 제거한 빈 프로젝트에서 실제 runPiAgent를
+호출한다. 65개 가구의 전체 배열은 부품 조립용이며 완성 방 좌표는 제공하지 않는다.
+실패·감독 피드백·재검사·SQLite 재오픈 근거는
+[직접 배치 검증](../tiledata/pixel-art-world/DIRECT-AUTHORING-VERIFICATION.md)에 분리 기록한다.

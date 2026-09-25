@@ -244,6 +244,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   get_tile_assembly_part: inspect("조립 부품 읽기", "grid"),
   preview_forest_strip: inspect("숲 띠 미리보기", "tree"),
   validate_tile_assembly: inspect("조립 검사", "shield"),
+  inspect_interior_layout: inspect("실내 배치 검사", "shield"),
   inspect_forest_recipe: inspect("숲 조립 살펴보기", "tree"),
   stamp_forest_recipe: build("숲 조립", "tree"),
   inspect_tile_recipe: inspect("조립법 살펴보기", "grid"),

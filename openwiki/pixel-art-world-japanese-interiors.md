@@ -106,3 +106,24 @@ root가 실제 importer를 다시 실행해 원본400칸 보존/shape/접지/전
 
 천장 덩어리 남쪽 끝 아래 벽 두 행은 필수다. 내벽 끝(6,1) 아래(6,2)/(6,3),
 남천장y17 아래y18/19를 포함한다. [가게·천장 아래 벽 계약](../tiledata/pixel-art-world/RETAIL-INTERIORS.md).
+
+## 직접 배치와 완성 맵 복사를 구분 (2026-09-25)
+
+기존 `build_shared_scene` 확인은 저장 장면 복사였으며 새 평면 설계 능력의 증거가 아니다.
+새 평면/직접 배치 요청은 조수가 방·벽·문턱·가구 좌표를 선택해 `paint_tiles`로 저작한다.
+시스템 프롬프트와 복사 도구 설명도 명시적 복사 요청에서만 장면 복사를 사용하도록 고쳤다.
+
+사용자 로컬 공용 `shared_paw_modern_interiors`의 `direct-authoring` 용도는
+[직접 배치 원문](../tiledata/pixel-art-world/DIRECT-AUTHORING.md), 재료·가구65개 사전,
+객체 정상/잘림 오류 그림6장을 가진다. 완성 방/맵 배열은 이 용도에 없다.
+`prepare-pixel-art-world-direct-reference.py`는 실제 로컬 객체 킷과 레시피 전체 배열을 대조해
+사전을 만들고, 기존 local publisher가 재게시 때 함께 갱신한다. 원본/파생 픽셀의 Git 재배포는 없다.
+정본 native `paw-modern-interiors`에도 공식 호스트로 revision85 저장/동일 재로드했다.
+
+`inspect_interior_layout`은 실제 배열로 천장 아래 벽/완전체/접지/통행/의자 후면을 읽기 전용 검사한다.
+독립방은 `rooms[{id,seed,doorways}]`를 선언해야 문턱 폐쇄와 공용 공간 직접 출입을 검사한다.
+구조오류0도 밀도·방 용도·요구 위치·필수 가구를 자동 승인하지 않는다.
+
+식당/주택/의원의 빈 맵 직접 배치, 실패와 감독 피드백, 실제 SQLite 결과 저장 근거는
+[직접 배치 검증](../tiledata/pixel-art-world/DIRECT-AUTHORING-VERIFICATION.md).
+학교·도시 등을 포함한 모든 유형을 자율 설계 검증했다고 확장 해석하지 않는다.

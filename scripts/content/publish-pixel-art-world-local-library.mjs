@@ -250,6 +250,14 @@ if(cityRegion)for(const family of[{prefix:'paw-mansion-exterior-',id:'mansion-ex
 }
 await withTsModule('scripts/lib/sharedContentSqlite.ts','paw-region-candidate-read.mjs',api=>appendRegionCandidates(lib,api.readSharedContent()));
 await appendSceneAuthoringGuide(lib);
+// Keep the direct-placement dictionary reproducible, independently of saved scene rasters.
+if(lib.tilesets.shared_paw_modern_interiors){
+  const tile=lib.tilesets.shared_paw_modern_interiors;
+  await fs.writeFile(out+'/direct-reference-source.json',JSON.stringify({tile}));
+  await promisify(execFile)('python3',['scripts/content/prepare-pixel-art-world-direct-reference.py',out+'/direct-reference-source.json',out+'/direct-reference']);
+  const category=await read(out+'/direct-reference/category.json');
+  tile.referenceDocuments=[...tile.referenceDocuments.filter(c=>c.id!==category.id),category];
+}
 await fs.writeFile(out+'/library.json',JSON.stringify(lib));
 // Preserve every reference pixel while avoiding the host's 64 MiB request cap.
 const compressed=await promisify(execFile)('python3',['scripts/content/compress-pixel-art-world-reference-images.py',out+'/library.json']);
