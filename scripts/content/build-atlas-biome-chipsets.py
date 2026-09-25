@@ -18,6 +18,7 @@ import atlas_recolor as R
 from atlas_biome_specs import BIOMES, NEIGHBOUR
 from atlas_pieces import PIECES, neighbour_pieces
 import atlas_ground as G
+import atlas_art as A
 
 def load(name, path):
     spec = importlib.util.spec_from_file_location(name, ROOT / path); mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod); return mod
@@ -87,6 +88,10 @@ def build(k):
     lawn = cell(sheet0, 240)
     nb = NEIGHBOUR.get(k)
     pieces = [dict(p) for p in PIECES[k]]
+    # the biome's own cave mouth: its cliff face texture (the front face body, cell 2683) around a dark arch
+    face = cell(sheet0, 2683)
+    pieces.append(dict(id="cave-mouth", name="절벽 동굴 입구", w=2, h=2, roles=["VV", "VV"], paint=lambda face=face: A.cave_mouth(face), cat="cliff",
+                       rule="절벽 동굴 입구: 절벽 몸통 칸(윗단 가장자리 줄 밑, 높이 4 이상인 곳) 2×2 를 그대로 덮는다(위층, 지나갈 수 없다). 입구 앞 절벽 밑 칸이 접근 칸이다. 계단·폭포에서 5칸 밖."))
     npieces = neighbour_pieces(nb) if nb else []
     pos, next_row = pack(pieces + npieces, ART0 // COLS)
     ground_defs = G.grounds(k, lawn, cell(biome_sheet(nb), 240) if nb else None)
@@ -119,9 +124,9 @@ def build(k):
         bt = bare_trees.bake(out.crop((0, 0, 480, BARE0 // COLS * 16)), pal)
         block = bt.crop((0, BARE0 // COLS * 16, 480, ART0 // COLS * 16))
         if spec.get("bareGlow"):
-            a = np.array(block).astype(np.float32); A = a[..., 3] > 0
+            a = np.array(block).astype(np.float32); Am = a[..., 3] > 0
             rng = np.random.RandomState(7)
-            glow = (rng.rand(*A.shape) < 0.03) & A & (a[..., :3].sum(-1) > 60)
+            glow = (rng.rand(*Am.shape) < 0.03) & Am & (a[..., :3].sum(-1) > 60)
             a[glow, :3] = (176, 74, 224)
             block = Image.fromarray(a.astype(np.uint8))
         out.paste(block, (0, BARE0 // COLS * 16))

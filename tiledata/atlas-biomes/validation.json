@@ -1,0 +1,352 @@
+[
+  {
+    "id": "jungle-vine-ford",
+    "seed": 7101,
+    "entry": [
+      4,
+      25
+    ],
+    "reachable": 1665,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.443,
+      "at": [
+        60,
+        18
+      ],
+      "screenAt": [
+        12,
+        16
+      ]
+    }
+  },
+  {
+    "id": "jungle-idol-cave",
+    "seed": 7111,
+    "entry": [
+      4,
+      31
+    ],
+    "reachable": 1315,
+    "targets": 8,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.443,
+      "at": [
+        47,
+        33
+      ],
+      "screenAt": [
+        36,
+        0
+      ]
+    }
+  },
+  {
+    "id": "jungle-terrace-falls",
+    "seed": 7121,
+    "entry": [
+      4,
+      38
+    ],
+    "reachable": 1222,
+    "targets": 7,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.443,
+      "at": [
+        2,
+        4
+      ],
+      "screenAt": [
+        4,
+        4
+      ]
+    }
+  },
+  {
+    "id": "swamp-test",
+    "seed": 7201,
+    "entry": [
+      4,
+      20
+    ],
+    "reachable": 1577,
+    "targets": 3,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.448,
+      "at": [
+        0,
+        11
+      ],
+      "screenAt": [
+        4,
+        12
+      ]
+    }
+  },
+  {
+    "id": "mushroom-test",
+    "seed": 7301,
+    "entry": [
+      4,
+      21
+    ],
+    "reachable": 1534,
+    "targets": 4,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.443,
+      "at": [
+        43,
+        33
+      ],
+      "screenAt": [
+        8,
+        20
+      ]
+    }
+  },
+  {
+    "id": "crystal-test",
+    "seed": 7401,
+    "entry": [
+      26,
+      47
+    ],
+    "reachable": 1620,
+    "targets": 7,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.439,
+      "at": [
+        14,
+        12
+      ],
+      "screenAt": [
+        12,
+        0
+      ]
+    }
+  },
+  {
+    "id": "badlands-test",
+    "seed": 7501,
+    "entry": [
+      29,
+      39
+    ],
+    "reachable": 1313,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.452,
+      "at": [
+        32,
+        40
+      ],
+      "screenAt": [
+        20,
+        4
+      ]
+    }
+  },
+  {
+    "id": "savanna-test",
+    "seed": 7601,
+    "entry": [
+      4,
+      24
+    ],
+    "reachable": 1899,
+    "targets": 3,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.448,
+      "at": [
+        60,
+        7
+      ],
+      "screenAt": [
+        0,
+        4
+      ]
+    }
+  },
+  {
+    "id": "taiga-test",
+    "seed": 7701,
+    "entry": [
+      4,
+      34
+    ],
+    "reachable": 1389,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.448,
+      "at": [
+        23,
+        4
+      ],
+      "screenAt": [
+        0,
+        20
+      ]
+    }
+  },
+  {
+    "id": "tundra-test",
+    "seed": 7801,
+    "entry": [
+      4,
+      23
+    ],
+    "reachable": 1888,
+    "targets": 4,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.439,
+      "at": [
+        0,
+        5
+      ],
+      "screenAt": [
+        0,
+        4
+      ]
+    }
+  },
+  {
+    "id": "blight-test",
+    "seed": 7901,
+    "entry": [
+      4,
+      32
+    ],
+    "reachable": 1557,
+    "targets": 6,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.448,
+      "at": [
+        30,
+        0
+      ],
+      "screenAt": [
+        28,
+        0
+      ]
+    }
+  },
+  {
+    "id": "skyisle-test",
+    "seed": 8005,
+    "entry": [
+      4,
+      14
+    ],
+    "reachable": 1086,
+    "targets": 8,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.448,
+      "at": [
+        42,
+        4
+      ],
+      "screenAt": [
+        55,
+        20
+      ]
+    }
+  },
+  {
+    "id": "tropical-test",
+    "seed": 8101,
+    "entry": [
+      4,
+      18
+    ],
+    "reachable": 1114,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.448,
+      "at": [
+        6,
+        15
+      ],
+      "screenAt": [
+        0,
+        4
+      ]
+    }
+  },
+  {
+    "id": "border-test",
+    "seed": 8202,
+    "entry": [
+      4,
+      21
+    ],
+    "reachable": 1808,
+    "targets": 4,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.439,
+      "at": [
+        10,
+        8
+      ],
+      "screenAt": [
+        0,
+        16
+      ]
+    }
+  }
+]

@@ -20,7 +20,7 @@ PIECES = {
         piece("giant-tree-1", "거대 우림 나무 · 판뿌리", 5, 6, ["CCCCC", "CCCCC", "CCCCC", "CCCCC", "CCTCC", "BBBBB"], lambda: A.giant_tree(5, 6, 1), "tree", TREE_RULE + " 맵에 서너 그루, 숲 가장자리·빈터 한가운데의 주인공 나무로."),
         piece("giant-tree-2", "거대 우림 나무 · 덩굴", 4, 6, ["CCCC", "CCCC", "CCCC", "CCCC", "CTTC", "BBBB"], lambda: A.giant_tree(4, 6, 2, leaf="jungle2"), "tree", TREE_RULE),
         piece("jungle-tree", "우림 나무", 3, 4, ["CCC", "CCC", "CTC", "BBB"], lambda: A.broad_tree(3, 4, 3, "jungle2", "jungle"), "tree", TREE_RULE),
-        piece("fern-1", "양치 덤불", 1, 1, ["S"], lambda: A.fern(1), "plant", SMALL_RULE),
+        piece("fern-1", "우림 덤불", 1, 1, ["S"], lambda: A.bush(21, "jungle2", 6, (3.6, 5.0)), "plant", SMALL_RULE),
         piece("fern-2", "양치 덤불 · 밝은 잎", 1, 1, ["S"], lambda: A.fern(2, "jungle2"), "plant", SMALL_RULE),
         piece("broadleaf", "큰 잎 파초", 2, 2, ["CC", "BB"], lambda: A.broadleaf_plant(1), "plant", TREE_RULE),
         piece("orchid", "난초 꽃무리", 1, 1, ["W"], lambda: A.flowers(1, ("e84a8a", "ffd06a", "f070c0")), "decal", DECAL_RULE),

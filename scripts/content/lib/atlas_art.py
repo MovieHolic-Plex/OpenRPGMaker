@@ -704,3 +704,38 @@ def hibiscus(seed):
             for dx, dy in ((0, -1), (-1, 0), (1, 0), (0, 1)): put(a, x + dx, y + dy, C("f04a6a"))
             put(a, x, y, C("ffe070"))
     return a
+
+def cave_mouth(face, stone="grey"):
+    """2×2 cave mouth cut into a cliff face: the sheet's own cliff texture (face, 16×16×4) around a dark arch with a
+    rim of framing stones, a keystone and a floor line. Drawn over the cliff face (upper, solid)."""
+    a = canvas(32, 32)
+    for y in range(32):
+        for x in range(32): a[y, x] = face[y % 16, x % 16]
+    st = STONE[stone]
+    cx, top, bot = 16.0, 7.0, 32.0
+    def inside(x, y, grow=0.0):
+        ry = bot - top + grow; rx = 10.5 + grow
+        return ((x + 0.5 - cx) / rx) ** 2 + ((y + 0.5 - bot) / ry) ** 2 < 1
+    # framing stones: a ring 2.5 px outside the opening
+    for y in range(32):
+        for x in range(32):
+            if inside(x, y, 3.0) and not inside(x, y):
+                lit = (x < cx and y < 20)
+                n = hash01(x // 3, y // 3, 5)
+                c = st[4] if lit and n > 0.4 else st[3] if n > 0.35 else st[2]
+                if (x // 3 + y // 3) % 3 == 0: c = st[1]
+                a[y, x, :3] = c
+    for y in range(32):
+        for x in range(32):
+            if inside(x, y):
+                d = min(1.0, ((x + 0.5 - cx) / 10.5) ** 2 + ((y + 0.5 - bot) / (bot - top)) ** 2)
+                a[y, x, :3] = C("0a0708") if d < 0.55 else C("161012") if d < 0.8 else C("241a1c")
+    # keystone
+    for y in range(int(top) - 3, int(top) + 1):
+        for x in range(14, 19): a[y, x, :3] = st[4] if x < 16 else st[3]
+    for x in range(13, 20): a[int(top) - 4, x, :3] = st[1]
+    # floor line and a few pebbles at the threshold
+    for x in range(7, 26):
+        if inside(x, 30): a[31, x, :3] = C("2e2420"); a[30, x, :3] = C("1c1416")
+    a[..., 3] = 255
+    return a
