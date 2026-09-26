@@ -65,6 +65,8 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
   const drng = mulberry32((seed ^ 0x9e3779b9) >>> 0);
   const decor = recipe.decor;
   const lots: TownLot[] = [];
+  /** 문 앞 통로(문 x±1, 문 아래 1~2줄) — 노점·키오스크·ATM·카페 탁자가 서면 안 된다(DEFECTS r4-3). */
+  const nearDoor = (x: number, y: number) => lots.some((l) => l.door && Math.abs(l.door.x - x) <= 1 && y > l.door.y && y <= l.door.y + 2);
   const roads: TownLayoutResult["roads"][number][] = [];
   const kit = (id: string) => tileset.structureKits?.find((entry) => entry.id === id);
   const used = new Set<number>(map.upperTiles.flatMap((tile, i) => (tile >= 0 ? [i] : [])));
@@ -124,16 +126,22 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
   // ── 1. 가로 띠(행) 나누기 — 가게 깊이·큰길 폭(= 큰길 줄)은 시드가 고른다 ──
   // 주택가 한 단위(북→남): 뒤 생울타리 2 · 건물 6(박공 3 + 벽 3) · 앞마당 3 · 보도 1 · 잔디 1 · 로컬 차도 5 = 18줄(작은 맵은 뒤 1·앞 2 = 16줄).
   // 작가 도시(p3·p5)는 화면의 절반이 건물이다 — 마당을 얕게, 남는 줄은 맵 밖으로 이어지는 건물 뒷면(옥상)으로 채운다(DEFECTS r1-1).
-  let alley = H >= 48 ? 3 : 2;
+  let alley = H >= 48 ? 6 : 5; // 맨 위 3줄 = 골목 건너편 건물(옥상 1 + 뒷벽 2, 철문·설비), 상하차 마당 1줄, 그 아래 골목
   let bMax = H >= 48 ? int(rng, 7, 8) : 7;
-  const mainH = rng() < 0.5 ? 5 : 7; // 큰길 차도 줄 수(작가 예시는 4~5줄, 7줄은 넓은 간선)
+  // 큰길 차도 줄 수(작가 예시는 4~5줄, 7줄은 넓은 간선). 난수는 그대로 쓰고 7줄은 큰 맵에만 — 50×40 은 차도가 건물 자리를 먹는다(라운드 4 밀도).
+  const mainH = rng() < 0.5 || W < 70 ? 5 : 7;
   const fixedTop = () => alley + bMax + 3 + mainH + 1 + 2; // 골목 + 가게 + 보도3 + 큰길 + 잔디1 + 보도2
   if (H - fixedTop() < 9) { alley = 2; bMax = 6; }
+  /** 골목 건너편 뒷벽 띠(0~1줄)를 두나 — 골목이 차만 서 있는 빈 아스팔트가 되지 않게(라운드 4). */
+  const backWall = alley >= 5;
+  const alleyTop = backWall ? 3 : 1;
   const frontY = alley + bMax; // 가게 앞 보도 첫 줄
   const mainY = frontY + 3;
   const southLawnY = mainY + mainH;
   const southWalkY = southLawnY + 1;
   const bands: HouseBand[] = [];
+  /** 강을 건너는 다리 줄(보도·잔디 띠·둘째 상가 줄 골목·보도). 차도 줄은 roadRows. */
+  const deckRows = new Set<number>();
   let y = southWalkY + 2;
   // 큰 맵: 큰길 남쪽 보도 뒤에 큰길을 보는 둘째 상가 줄(깊이 6, 문이 보도 쪽 = 북쪽을 볼 수 없는 팩이라
   // 건물 뒷면이 큰길에 붙지 않게 보도 1줄 → 골목 1줄 → 상가(남쪽을 보는 파사드) → 보도 2줄로 띠를 만든다).
@@ -149,7 +157,7 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
   let roofRows = 0; // 마지막 로컬 도로 건너편: 보도 1줄 아래로 맵 밖 건물들의 옥상
   if (units > 0 && extra >= 2) { roofRows = extra - 1; extra = 0; }
   for (let u = 0; u < units; u += 1) {
-    if (u > 0) { paint(recipe.lawn, 0, y, W, 1); paint(recipe.sidewalk, 0, y + 1, W, 1); y += 2; }
+    if (u > 0) { paint(recipe.lawn, 0, y, W, 1); paint(recipe.sidewalk, 0, y + 1, W, 1); deckRows.add(y); deckRows.add(y + 1); y += 2; }
     const last = u === units - 1;
     const back = (H < 48 ? 1 : 2) + (last && extra >= 2 ? 1 : 0);
     const front = (H < 48 ? 2 : 3) + (last ? Math.min(1, extra) : 0);
@@ -157,6 +165,7 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
     const fy = houseY + 6;
     const walkY = fy + front;
     bands.push({ backY: y, back, houseY, frontY: fy, front, walkY, lawnY: walkY + 1, roadY: walkY + 2 });
+    deckRows.add(walkY); deckRows.add(walkY + 1);
     y = walkY + 7;
   }
   if (units === 0 && H - y >= 6) {
@@ -169,7 +178,8 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
   const stripY = roofRows > 0 ? H - roofRows - 1 : -1; // 마지막 로컬 도로 건너편 보도 줄
   // ── 2. 세로 골목길: 하나는 맵을 꿰뚫고(+ 교차로), 둘째는 큰길에서 T 로 갈라진다 — 같은 크기 블록 격자를 피한다 ──
   // 복도마다 모양도 시드가 고른다: 꿰뚫는 길(+), 큰길 남쪽으로만(ㅜ), 큰길 북쪽 가게 줄로만(ㅗ).
-  const crossCount = Math.max(0, Math.min(2, options.crossStreets ?? (W >= 70 ? (rng() < 0.75 ? 2 : 1) : W >= 50 && rng() < 0.3 ? 2 : 1)));
+  // 50×40 같은 작은 맵은 세로 길 하나 — 복도 하나가 9칸을 먹어 건물 커버가 27~29%로 떨어졌다(라운드 4). 난수는 예전처럼 한 번 쓴다.
+  const crossCount = Math.max(0, Math.min(2, options.crossStreets ?? (W >= 70 ? (rng() < 0.75 ? 2 : 1) : W >= 50 && rng() < 0.3 && W >= 60 ? 2 : 1)));
   /** x = 복도 왼쪽 끝(보도·잔디 2 + 차도 5 + 2 = 9칸), 차도는 행 y0 부터 y1 앞까지. */
   const corridors: { x: number; y0: number; y1: number }[] = [];
   type Shape = "through" | "south" | "north";
@@ -195,13 +205,31 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
     return out;
   };
   const shopSegments = splitSegments(corridors.filter((c) => c.y0 === 0));
-  const segments = splitSegments(corridors.filter((c) => c.y1 === H));
+  // ── 2b. 강: 주택가를 세로로 흐르는 물길(큰 맵은 항상, 50×40 은 시드 30%) — 건물 필지를 자르지 않게 블록을 나누고,
+  // 길·보도가 건너는 줄은 다리(차도·보도 그대로 + 난간), 물길 양옆은 판석 둑길(작가 p6). 난수는 따로 써 다른 배치가 흔들리지 않는다.
+  const wrng = mulberry32((seed ^ 0x27d4eb2d) >>> 0);
+  const flowKinds = (decor?.flowingWater ?? []).filter((name) => tileset.autotileGroups?.some((g) => g.name === name));
+  const RW = W >= 70 ? 7 : 5; // 둑길 1 + 물 + 둑길 1
+  const river = (() => {
+    if (!flowKinds.length || !bands.length || (W < 70 && wrng() >= 0.3)) return null;
+    const segs = splitSegments(corridors.filter((c) => c.y1 === H)).filter((s) => s.w >= RW + 12);
+    if (!segs.length) return null;
+    const seg = pick(wrng, segs);
+    return { x: seg.x + int(wrng, 6, seg.w - RW - 6), y0: south2 ? south2.alleyY : bands[0]!.backY };
+  })();
+  const inRiver = (x: number) => !!river && x >= river.x && x < river.x + RW;
+  /** 블록 조각을 강 열에서 둘로 나눈다(건물은 강을 건너지 않는다). */
+  const cutRiver = (segs: { x: number; w: number }[]) => (!river ? segs : segs.flatMap((s) => {
+    if (river.x + RW <= s.x || river.x >= s.x + s.w) return [s];
+    return [{ x: s.x, w: river.x - s.x }, { x: river.x + RW, w: s.x + s.w - river.x - RW }].filter((p) => p.w > 0);
+  }));
+  const segments = cutRiver(splitSegments(corridors.filter((c) => c.y1 === H)));
 
   // ── 3. 바닥: 잔디 → 골목 → 보도·잔디 띠 → 복도 옆 → 세로 차도 → 가로 차도 → 교차로 ──
   paint(recipe.lawn, 0, 0, W, H);
   // 맨 윗줄 = 골목 건너편 건물의 뒷면(5절 끝에서 옥상을 깐다), 그 아래 골목, 건물 뒤는 뒷주차.
-  paint(recipe.alley, 0, 1, W, frontY - 1);
-  roads.push({ kind: "alley", x: 0, y: 1, w: W, h: alley - 1 });
+  paint(recipe.alley, 0, alleyTop, W, frontY - alleyTop);
+  roads.push({ kind: "alley", x: 0, y: alleyTop, w: W, h: alley - alleyTop });
   paint(recipe.sidewalk, 0, frontY, W, 3);
   paint(recipe.sidewalk, 0, southWalkY, W, 2);
   for (const band of bands) if (band.roadY !== null) paint(recipe.sidewalk, 0, band.walkY, W, 1);
@@ -238,12 +266,44 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
   }
 
   // 큰 맵 둘째 상가 줄 바닥: 뒤 골목 1줄, 앞 보도 2줄(가게 → 보도 → 첫 주택 띠 뒤).
-  const south2Segments = south2 ? splitSegments(corridors.filter((c) => c.y0 <= south2!.alleyY && c.y1 >= south2!.frontY + 2)) : [];
+  const south2Segments = south2 ? cutRiver(splitSegments(corridors.filter((c) => c.y0 <= south2!.alleyY && c.y1 >= south2!.frontY + 2))) : [];
   if (south2) {
     for (const seg of south2Segments) {
       paint(recipe.alley, seg.x, south2.alleyY, seg.w, 1);
       paint(recipe.sidewalk, seg.x, south2.frontY, seg.w, 1);
       paint(recipe.lawn, seg.x, south2.frontY + 1, seg.w, 1);
+    }
+  }
+  // 강 바닥: 물줄은 둑길 + 흐르는 물(다리 사이 구간마다 다른 물 종류 — 좌우 이웃만 보는 폭포형이라 위아래 이음매가 없다),
+  // 다리 줄은 차도는 그대로, 나머지는 보도 데크, 물에 맞닿은 데크 줄에 난간.
+  if (river) {
+    // 다리 데크: 차도 양옆 보도·잔디 띠 줄(큰길 남쪽, 둘째 상가 줄, 주택 띠, 마지막 보도).
+    for (const r of [southLawnY, southWalkY, southWalkY + 1, stripY]) if (r >= 0) deckRows.add(r);
+    if (south2) for (const r of [south2.alleyY, south2.frontY, south2.frontY + 1]) deckRows.add(r);
+    for (const band of bands) if (band.roadY !== null) for (const r of [band.roadY - 2, band.roadY - 1]) deckRows.add(r);
+    const deck = (r: number) => deckRows.has(r) || roadRows.has(r);
+    let stretch = int(wrng, 0, flowKinds.length - 1) - 1;
+    let prevWater = false;
+    for (let r = river.y0; r < H; r += 1) {
+      if (deck(r)) {
+        if (!roadRows.has(r)) paint(r === south2?.alleyY ? recipe.alley : recipe.sidewalk, river.x, r, RW, 1);
+        prevWater = false;
+        continue;
+      }
+      if (!prevWater) stretch = (stretch + 1) % flowKinds.length;
+      prevWater = true;
+      paint(recipe.path, river.x, r, 1, 1);
+      paint(recipe.path, river.x + RW - 1, r, 1, 1);
+      paint(flowKinds[stretch]!, river.x + 1, r, RW - 2, 1);
+      for (let x = river.x; x < river.x + RW; x += 1) used.add(r * W + x);
+    }
+    // 다리 난간: 물에 맞닿은 보도 데크 줄, 물 폭만큼(차도는 두지 않는다).
+    const water = (r: number) => r >= river.y0 && r < H && !deck(r);
+    const rail = decor?.bridgeRailing;
+    if (rail) for (let r = river.y0; r < H; r += 1) {
+      if (!deckRows.has(r) || roadRows.has(r) || !(water(r - 1) || water(r + 1))) continue;
+      paint(rail, river.x + 1, r, RW - 2, 1);
+      for (let x = river.x + 1; x < river.x + RW - 1; x += 1) used.add(r * W + x);
     }
   }
   // ── 4. 가게 줄: 벽 맞댐, 폭·높이·재료가 이웃과 다르게, 모퉁이가 가장 높게, 통로는 한 곳 ──
@@ -256,17 +316,31 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
     return signDeck.pop() ?? "";
   };
   /** 옥상 윗면(x..x+w-1, y..y+rows-1)에 서로 다른 설비 n 가지 — 들어가는 크기만. */
+  const roofRole = (cx: number, cy: number) => (cx < 0 || cy < 0 || cx >= W || cy >= H ? "" : tileset.tileMeta?.[map.lowerTiles[cy * W + cx] ?? -1]?.role ?? "");
+  // 모든 칸이 옥상 재료이고 옆 테두리에서 1칸 안, 최소 2종(DEFECTS r4-2·6).
+  const onRoof = (id: string, x: number, baseY: number) => {
+    const k = kit(id);
+    if (!k) return false;
+    for (let dy = 0; dy < k.height; dy += 1) for (let dx = 0; dx < k.width; dx += 1) if (roofRole(x + dx, baseY - k.height + 1 + dy) !== "roof") return false;
+    return roofRole(x - 1, baseY) === "roof" && roofRole(x + k.width, baseY) === "roof";
+  };
   const roofKit = (pool: readonly string[], x: number, y: number, w: number, rows: number, n: number) => {
-    const fit = pool.filter((id) => { const k = kit(id); return !!k && k.width <= w && k.height <= rows; });
-    const chosen = [...fit].sort(() => drng() - 0.5).slice(0, n);
+    const fit = pool.filter((id) => { const k = kit(id); return !!k && k.width <= w - 2 && k.height <= rows; });
+    const chosen = [...fit].sort(() => drng() - 0.5).slice(0, Math.max(n, Math.min(2, fit.length)));
     for (const id of chosen) {
       const k = kit(id)!;
-      for (let tries = 0; tries < 5; tries += 1) if (place(id, x + int(drng, 0, w - k.width), y + int(drng, 0, rows - k.height) + k.height - 1)) break;
+      for (let tries = 0; tries < 8; tries += 1) {
+        const px = x + 1 + int(drng, 0, Math.max(0, w - 2 - k.width)), base = y + int(drng, 0, rows - k.height) + k.height - 1;
+        if (onRoof(id, px, base) && place(id, px, base)) break;
+      }
     }
   };
   const doorCols = new Set<number>(); // 가게 앞 보도에서 비워 둘 열
   const busyFront = new Set<number>(); // 자판기 금지 열(문·차양·쇼윈도)
   let passageLeft = 1;
+  let civicDone = false;
+  let civicLot: { x: number; w: number; sign: string } | null = null;
+  const mainFrontY = frontY;
   const buildShopRow = (frontY: number, bMax: number, rowSegments: readonly { x: number; w: number }[], curbRow: number) => {
   let prev: { w: number; h: number; storeys: number; style: MvTownFacade; dish?: boolean } | null = null;
   for (const seg of rowSegments) {
@@ -292,12 +366,15 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
         style = pick(rng, office ? recipe.offices : recipe.shops);
         storeys = pickStoreys();
       }
+      // 특수 건물: 큰 맵 첫 가게 줄의 폭 6칸 이상 사무실 하나를 경찰서·소방서·병원으로(간판 짝). 난수는 drng.
+      const civicPick = office && W >= 70 && !civicDone && w >= 6 && frontY === mainFrontY && decor?.civic?.length ? decor.civic.filter((c) => kit(c.sign))[seed % decor.civic.length] : undefined;
+      if (civicPick) { style = civicPick.facade; civicDone = true; }
       // 층 문법: 1층 띠는 언제나 2줄(문·쇼윈도 높이), 그 위 창 줄 하나 = 한 층, 옥상은 1~3줄.
       // 옥상은 남는 깊이를 채운다 — 건물 뒤에 빈 아스팔트 주차장이 넓게 남지 않게(가끔 1줄은 뒷마당으로 남긴다).
       const ground = 2;
       while (1 + (storeys - 1) + ground > bMax && storeys > 2) storeys -= 1;
       const room = bMax - (storeys - 1) - ground;
-      const roof = Math.max(1, Math.min(3, room - (room > 1 && rng() < 0.3 ? 1 : 0)));
+      const roof = Math.max(1, Math.min(3, room - (room > 1 && rng() < 0.3 && W >= 70 ? 1 : 0)));
       const height: number = roof + (storeys - 1) + ground;
       const top = frontY - height;
       paint(style.roof, x, top, w, roof);
@@ -308,7 +385,10 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
         const step = rng() < 0.5 ? 2 : 3;
         // 위층 창: 세로창 또는 넓은 창(불 켜진 창·어두운 창 섞어) — 건물마다 창 무늬가 다르다.
         const wide = decor?.upperWindows.length && w >= 5 && drng() < 0.45;
-        for (let r = top + roof + 1; r < frontY - ground; r += 2) {
+        // 세로로 긴 창(1×3): 3층 이상 벽돌 가게 일부 — 두 층을 터는 계단창처럼(라운드 4).
+        const tallWin = !wide && decor?.upperWindowsTall.length && storeys >= 4 && drng() < 0.5 ? pick(drng, decor.upperWindowsTall) : null;
+        if (tallWin && kit(tallWin)) for (let wx = x + 1; wx < x + w - 1; wx += 2) place(tallWin, wx, frontY - ground - 1, { force: true });
+        else for (let r = top + roof + 1; r < frontY - ground; r += 2) {
           if (wide) for (let wx = x + 1; wx + 3 <= x + w - 1; wx += 4) place(pick(drng, decor!.upperWindows), wx, r, { force: true });
           else for (let wx = x + 1; wx < x + w - 1; wx += step) place(recipe.objects.houseWindows[0]!, wx, r, { force: true });
         }
@@ -355,15 +435,17 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
       if (!office && style.awning && w >= 3) {
         const small = recipe.objects.awningSmall;
         if (rowMode && rng() < 0.8) {
+          // 가게 폭 안에서만 — 3칸 차양은 통째로, 남는 1~2칸은 1칸 차양으로 닫는다. 문 칸은 피해 잘린 조각이 없게(DEFECTS r4-4).
           let ax = x;
           while (ax < x + w) {
-            if (x + w - ax >= 3) { place(style.awning, ax, frontY - 1, { keepDoors: true, force: true }); ax += 3; }
-            else { if (small) place(small, ax, frontY - 1, { keepDoors: true, force: true }); ax += 1; }
+            const clear3 = x + w - ax >= 3 && ![ax, ax + 1, ax + 2].includes(doorX);
+            if (clear3) { place(style.awning, ax, frontY - 1, { keepDoors: true, force: true }); ax += 3; }
+            else { if (small && ax !== doorX) place(small, ax, frontY - 1, { keepDoors: true, force: true }); ax += 1; }
           }
         } else if (small && rng() < 0.7) place(small, doorX, frontY - 1, { keepDoors: true, force: true });
         for (let i = x; i < x + w; i += 1) busyFront.add(i);
       }
-      if (roof >= 2 && w >= 4 && !prev?.dish && rng() < 0.25) dish = place(pick(rng, recipe.objects.roofProps), x + int(rng, 0, w - 2), top + 1);
+      if (roof >= 2 && w >= 4 && !prev?.dish && rng() < 0.25) { const id = pick(rng, recipe.objects.roofProps), dx = x + int(rng, 0, w - 2); dish = onRoof(id, dx, top + 1) && place(id, dx, top + 1); }
       const gear = recipe.objects.roofGear ?? [];
       if (!office && decor) {
         // 간판: 가게마다 하나, 1층 띠 바로 위 위층 벽 맨 아랫줄(문 위 또는 쇼윈도 위). 이웃과 같은 간판은 안 쓴다.
@@ -398,11 +480,16 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
         const condensers: string[] = []; // 실외기는 옥상 설비 — 골목 아스팔트 위에 두지 않는다(DEFECTS r3-12)
         void gear;
         const bin = pick(rng, recipe.objects.backProps.filter((id) => id.startsWith("recycle")).concat(recipe.objects.backProps[0]!));
-        const pool = [bin, ...recipe.objects.backProps.filter((id) => !id.startsWith("recycle")), ...condensers];
+        const pool = [bin, ...recipe.objects.backProps.filter((id) => !id.startsWith("recycle")), ...condensers, ...(decor?.service ?? []).filter((id) => (kit(id)?.width ?? 9) === 1)];
         let bx = x + int(rng, 0, Math.max(0, w - n));
         for (let i = 0; i < n; i += 1, bx += 1) place(i === 0 ? bin : pick(rng, pool), bx, top - 1);
       }
       lots.push({ kind: office ? "office" : "shop", x, y: top, w, h: height, storeys, door: { x: doorX, y: frontY - 1 } });
+      if (civicPick) {
+        // 간판(2칸)은 1층 띠 바로 위 위층 벽 맨 아랫줄, 문 위 또는 가운데.
+        for (const sx of [doorX, doorX - 1, x + Math.floor((w - 2) / 2)]) if (sx >= x && sx + 2 <= x + w && place(civicPick.sign, sx, frontY - ground - 1, { force: true })) break;
+        civicLot = { x, w, sign: civicPick.sign };
+      }
       prev = { w, h: height, storeys, style, dish };
       x += w;
     }
@@ -554,7 +641,7 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
       place(style.door, door, bottom, { force: true });
       for (let wx = x; wx < x + w; wx += 1) if (Math.abs(wx - door) >= 2 && (wx - x) % 2 === 1) place(pick(rng, recipe.objects.houseWindows), wx, bottom, { force: true });
       const gear = recipe.objects.roofGear ?? [];
-      if (gear.length) for (let i = 0, n = int(rng, 1, 2); i < n; i += 1) place(pick(rng, gear), x + int(rng, 0, w - 1), lotTop + int(rng, 0, Math.max(0, roof - (lotTop - topY) - 1)));
+      if (gear.length) for (let i = 0, n = int(rng, 1, 2); i < n; i += 1) { const id = pick(rng, gear), gx = x + int(rng, 0, w - 1), gy = lotTop + int(rng, 0, Math.max(0, roof - (lotTop - topY) - 1)); if (onRoof(id, gx, gy)) place(id, gx, gy); }
       if (decor) roofAreas.push({ x, y: lotTop, w, rows: roof - (lotTop - topY), office: false, h: bottom - lotTop + 1, n: int(drng, 1, 2) });
       if (band.front > 0) paint(recipe.path, door, band.frontY, 1, Math.min(band.front, H - band.frontY));
       // 앞 화단: 문 양옆 화분 나무 한 쌍 — 앞마당 잔디를 줄로 끊는다.
@@ -575,6 +662,7 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
       const bandBottom = band.roadY === null ? H : band.walkY;
       if (si === parkSegIndex && band === parkBand) {
         const want = W >= 70 ? int(rng, 12, 16) : int(rng, 8, 9); // 작은 맵은 쌈지 공원
+        // 작은 맵은 공원 옆 블록이 집 한 채도 못 들어갈 폭(5~10칸)이면 공원이 끝까지 먹지 않게 줄인다.
         const pw = seg.w - want < 5 ? Math.min(seg.w, want + 4) : want;
         const atRight = seg.x + seg.w < W && (seg.x === 0 || rng() < 0.5);
         const parkX = atRight ? seg.x + seg.w - pw : seg.x;
@@ -617,7 +705,8 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
         if (end - x - lotW < 5) lotW = end - x;
         if (lotW > 13) lotW = int(rng, 7, 10);
         const drive = band.roadY !== null && lotW >= 10 && rng() < 0.5;
-        const hw = Math.max(4, Math.min(9, lotW - (drive ? 3 : W < 70 ? 1 : int(rng, 1, 2))));
+        // 작은 맵은 이웃 틈 0~1칸(밀도 30% 이상, 라운드 4). 난수 소비는 예전과 같다.
+        const hw = Math.max(4, Math.min(9, lotW - (drive ? 3 : W < 70 ? (x + lotW >= end ? 0 : 1) : int(rng, 1, 2))));
         const room = lotW - hw - (drive ? 3 : 0);
         const hx = x + (drive ? 0 : int(rng, 0, Math.max(0, room)));
         buildHouse(hx, hw, band, deal());
@@ -667,7 +756,7 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
   // 마지막 로컬 도로 건너편: 보도 한 줄 아래로 맵 밖으로 이어지는 건물들의 뒷면(옥상) — 빈 뒷마당 띠 대신(DEFECTS r1-1).
   const backRoofs = [...new Set([...recipe.shops, ...recipe.offices].map((s) => s.roof))];
   const roofBacks = (y0: number, rows: number) => {
-    for (const seg of splitSegments(corridors.filter((c) => c.y0 <= y0 && c.y1 >= y0 + rows))) {
+    for (const seg of cutRiver(splitSegments(corridors.filter((c) => c.y0 <= y0 && c.y1 >= y0 + rows)))) {
       let x = seg.x;
       let last = "";
       while (x < seg.x + seg.w) {
@@ -679,13 +768,64 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
         paint(roof, x, y0, w, rows);
         roofAreas.push({ x, y: y0, w, rows, office: false, h: 0, n: 1 });
         const gear = recipe.objects.roofGear ?? [];
-        if (gear.length && rows >= 1 && rng() < 0.7) place(pick(rng, gear), x + int(rng, 0, w - 1), y0 + int(rng, 0, rows - 1));
+        if (gear.length && rows >= 1 && rng() < 0.7) { const id = pick(rng, gear), gx = x + int(rng, 0, w - 1), gy = y0 + int(rng, 0, rows - 1); if (onRoof(id, gx, gy)) place(id, gx, gy); }
         x += w;
       }
     }
   };
   if (stripY >= 0) roofBacks(stripY + 1, H - stripY - 1);
-  roofBacks(0, 1); // 맨 윗줄: 뒷골목 건너편 건물 뒷면(철망 울타리 띠 대신, DEFECTS r1-5·12)
+  if (backWall) backWalls(); else roofBacks(0, 1); // 맨 윗줄: 뒷골목 건너편 건물(철망 울타리 띠 대신, DEFECTS r1-5·12)
+
+  /**
+   * 골목 건너편 건물의 뒷벽(0~1줄, 옆 건물과 재료가 다르게 5~9칸씩) — 벽마다 검은 철문 하나,
+   * 문 옆에 대형 쓰레기통·바퀴 쓰레기통·봉투·설비함 무리, 벽에 벽걸이 실외기. 무리 사이는 빈 포장으로 둔다.
+   */
+  function backWalls(): void {
+    const walls = [...new Set([...recipe.shops, ...recipe.offices, ...(recipe.apartments ?? [])].map((s) => s.ground))];
+    const door = decor?.backDoor && kit(decor.backDoor) ? decor.backDoor : null;
+    const service = (decor?.service ?? []).filter((id) => kit(id));
+    for (const seg of splitSegments(corridors.filter((c) => c.y0 === 0))) {
+      let x = seg.x;
+      let last = "";
+      while (x < seg.x + seg.w) {
+        let w = Math.min(int(drng, 5, 8), seg.x + seg.w - x);
+        if (seg.x + seg.w - x - w < 3) w = seg.x + seg.w - x;
+        if (w > 10) w = Math.ceil(w / 2); // 폭 10칸 상한(check_town_map facade-too-wide)
+        const mat = pick(drng, walls.filter((m) => m !== last));
+        last = mat;
+        const roofOf = [...recipe.shops, ...recipe.offices, ...(recipe.apartments ?? [])].find((s) => s.ground === mat)?.roof;
+        if (roofOf) paint(roofOf, x, 0, w, 1);
+        paint(mat, x, roofOf ? 1 : 0, w, roofOf ? 2 : 3);
+        // 뒷벽 앞 1줄 = 콘크리트 상하차 마당(설비·쓰레기통 자리). 아스팔트가 벽에 바로 붙으면 가게 앞 주차장으로 읽힌다.
+        paint(recipe.driveway, x, alleyTop, w, 1);
+        // 상하차 마당 끝에 볼라드 하나 — 뒷벽마다 마당이 이어져 빈 콘크리트 띠(36칸 초과)가 되지 않게.
+        if (decor?.bollard && kit(decor.bollard)) place(decor.bollard, x + w - 1, alleyTop);
+        if (w >= 2 && door) {
+          const dx = x + (w <= 3 ? Math.floor(w / 2) : int(drng, 1, w - 2));
+          place(door, dx, 2, { force: true });
+          lots.push({ kind: "rear-lot", x, y: 0, w, h: 3, door: { x: dx, y: 2 } });
+          if (decor?.acWall && kit(decor.acWall) && drng() < 0.6) {
+            const ax = pick(drng, [...Array(w).keys()].map((i) => x + i).filter((cx) => Math.abs(cx - dx) >= 2));
+            if (ax !== undefined) place(decor.acWall, ax, 1, { force: true });
+          }
+          // 문 옆 무리: 문 앞 칸은 비우고 한쪽으로 2~3개(대형 쓰레기통은 가끔). 뒷벽 세에 하나는 무리 없이 비운다.
+          if (service.length && drng() < 0.72) {
+            const side = drng() < 0.5 ? -1 : 1;
+            let cx = dx + side * 2;
+            const deck = [...service].sort(() => drng() - 0.5);
+            for (let n = 0, want = int(drng, 2, 3), i = 0; n < want && i < deck.length; i += 1) {
+              const id = deck[i]!;
+              const kw = kit(id)!.width;
+              const at = side < 0 ? cx - kw + 1 : cx;
+              if (at < x - 1 || at + kw > x + w + 1 || [...Array(kw).keys()].some((j) => Math.abs(at + j - dx) <= 1)) continue;
+              if (place(id, at, alleyTop)) { n += 1; cx += side * kw; }
+            }
+          }
+        }
+        x += w;
+      }
+    }
+  }
 
   function buildPark(px: number, py: number, pw: number, ph: number): void {
     const rng = grng;
@@ -801,7 +941,17 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
     for (const c of pathCells) paint(recipe.path, c % W, Math.floor(c / W), 1, 1);
     if (plaza) {
       paint(recipe.plaza ?? recipe.path, plaza.x, plaza.y, plaza.w, plaza.h);
+      // 광장 가운데 2×2는 평타일 포장 — 둘레가 같은 베이지 오토타일이라 이음매 없이 안쪽만 바뀐다(라운드 4 평타일).
+      const core = decor?.plazaCore?.filter((n) => tileset.tileGroups?.some((g) => g.name === n)) ?? [];
+      if (core.length) paint(pick(drng, core), plaza.x + 1, plaza.y + 1, 2, 2);
       if (recipe.objects.fountain) place(recipe.objects.fountain, plaza.x + 1, plaza.y + 2);
+      // 원형 키오스크(3×3)는 광장 옆 잔디에 — 3줄 가게 앞 보도는 통째로 막히므로 두지 않는다(DEFECTS r4-3).
+      const kiosk = decor?.kiosk && kit(decor.kiosk) ? decor.kiosk : null;
+      if (kiosk) for (const [kx, kb] of [[plaza.x + plaza.w + 1, plaza.y + 2], [plaza.x - 4, plaza.y + 2], [plaza.x, plaza.y - 2], [plaza.x, plaza.y + plaza.h + 3]] as const) {
+        let ok = kx > px && kx + 3 <= X1 && kb - 2 > py && kb < Y1;
+        for (let yy = kb - 2; ok && yy <= kb + 1; yy += 1) for (let xx = kx; ok && xx < kx + 3; xx += 1) if (pathCells.has(key(xx, yy)) && yy <= kb || used.has(key(xx, yy))) ok = false;
+        if (ok && place(kiosk, kx, kb)) break;
+      }
     }
     const isPath = (x: number, y: number) => pathCells.has(key(x, y));
     // 연못(수련잎) — 산책로에서 1칸 떨어진 빈 잔디에. 큰 공원은 4×3~5×4, 쌀지 공원은 3×2(자리가 있을 때만).
@@ -825,7 +975,8 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
     // 놀이 구역: 공원 한 모통이에 시소·그네·골대 1~3개(모래흙 바닥). 산책로를 막지 않게.
     if (decor?.play.length) {
       const corners = [[px + 1, py + 1], [X1 - 5, py + 1], [px + 1, Y1 - 4], [X1 - 5, Y1 - 4]].sort(() => drng() - 0.5);
-      const pool = decor.play.filter((id) => kit(id)).sort(() => drng() - 0.5).slice(0, big ? 3 : 2);
+      // 시소는 항상 먼저(지금까지 한 번도 못 들어갔다), 나머지는 섞어 묶는다(라운드 4).
+      const pool = decor.play.filter((id) => kit(id)).sort(() => drng() - 0.5).sort((a, b) => (a === "seesaw" ? -1 : b === "seesaw" ? 1 : 0)).slice(0, big ? 3 : 2);
       for (const [cx, cy] of corners) {
         let n = 0;
         for (const id of pool) {
@@ -866,6 +1017,16 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
       const w = kit(s.id)?.width ?? 1;
       if (recipe.worn && big && rng() < 0.6) for (let i = 0; i < w; i += 1) if (!used.has(key(s.x + i, s.y))) paint(recipe.worn, s.x + i, s.y, 1, 1);
       if (place(s.id, s.x, s.y)) benches.push(s);
+    }
+    // 긴 벤치 두 종류: 산책로가 대부분 사선이라 가로 3칸 산책로가 없다 — 산책로 칸 바로 위 잔디 3칸이 비어 있으면 길을 보고 선다(라운드 4).
+    for (const id of (decor?.longBenches ?? []).filter((b) => kit(b) && b !== recipe.objects.benchLong)) {
+      const cand = [...pathCells].flatMap((c) => { const x = c % W, y = Math.floor(c / W); return [{ x: x - 2, y }, { x: x + 2, y }, { x, y: y - 1 }]; }).sort(() => drng() - 0.5);
+      for (const c of cand) {
+        const xs = [c.x - 1, c.x, c.x + 1];
+        if (!xs.every((x) => inside(x, c.y) && !isPath(x, c.y) && !used.has(key(x, c.y)))) continue;
+        if (benches.some((b) => Math.abs(b.x - c.x) + Math.abs(b.y - c.y) < 3)) continue;
+        if (place(id, c.x - 1, c.y)) { benches.push({ x: c.x - 1, y: c.y }); break; }
+      }
     }
     // 가로등: 산책로 옆 칸, 불규칙하게 몇 개(큰 공원 1~3, 작은 공원 0~1).
     const lamps: { x: number; y: number }[] = [];
@@ -1001,7 +1162,7 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
     const id = pick(rng, carts);
     const pw = kit(id)?.width ?? 2;
     const px = c ? (rng() < 0.5 ? c.x - pw - int(rng, 1, 3) : c.x + 10 + int(rng, 0, 2)) : int(rng, 2, W - pw - 2);
-    if ([...Array(pw).keys()].some((i) => doorCols.has(px + i) || lampCols.has(px + i) || inCorridorAt(px + i, frontY + 1))) continue;
+    if ([...Array(pw).keys()].some((i) => doorCols.has(px + i) || lampCols.has(px + i) || inCorridorAt(px + i, frontY + 1) || nearDoor(px + i, frontY) || nearDoor(px + i, frontY + 1))) continue;
     if (place(id, px, frontY + 1)) n += 1;
   }
   for (const c of corridors) {
@@ -1096,13 +1257,14 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
   // 차선·화살표·빗물받이 같은 기존 물체와 겹치면 place 가 건너뛴다.
   const carsV = recipe.objects.carsVertical ?? [];
   const carsH = recipe.objects.carsHorizontal ?? [];
+  let greenLeft = false;
   /** x..x+w-1 열이 row 행에서 세로 골목길 복도(교차로·옆 보도)에서 1칸 이상 떨어졌나. */
   const clearOfCross = (x: number, w: number, row: number) => [...Array(w + 2).keys()].every((i) => !inCorridorAt(x - 1 + i, row));
   if (carsV.length) {
     // 가게 사이 통로(rear-lot, 폭 2~3, 골목 포장): 세로 차 한 대를 앞코가 보도에 닿게 세운다(작가 맵의 건물 사이 주차).
     // 뒷마당은 옥상이 깊이를 채워 0~2줄뿐이라 3칸 길이 차가 들어가지 않는다.
     for (const lot of lots) {
-      if (lot.kind !== "rear-lot" || lot.w < 2 || rng() < 0.2) continue;
+      if (lot.kind !== "rear-lot" || lot.y === 0 || lot.w < 2 || rng() < 0.2) continue;
       const [down, up] = pick(rng, carsV);
       place(rng() < 0.6 ? up : down, lot.x + (lot.w > 2 ? int(rng, 0, lot.w - 2) : 0), frontY - 1);
     }
@@ -1132,7 +1294,9 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
         if (north && [...Array(6).keys()].some((i) => drivewayCols.has(cx - 1 + i))) continue;
         if ([...Array(4).keys()].some((i) => taken.has(cx + i))) continue;
         const [left, right] = pick(rng, carsH);
-        if (place(north ? left : right, cx, baseY)) for (let i = 0; i < 4; i += 1) taken.add(cx + i);
+        // 북쪽 차선(서쪽으로)은 여러 대 중 한 대를 초록 차로 — 초록 승용차(왼쪽)는 한 번도 안 쓰였다(라운드 4).
+        const leftId = north && !greenLeft && kit("car_green_left") ? "car_green_left" : left;
+        if (place(north ? leftId : right, cx, baseY)) { for (let i = 0; i < 4; i += 1) taken.add(cx + i); if (north && leftId === "car_green_left") greenLeft = true; }
       }
     }
     // 큰길 7줄일 때만 1~2대: 북쪽 차로(mainY~+2, _left) · 남쪽 차로(+4~+6, _right). 5줄 큰길은 차가 중앙선을 덮는다.
@@ -1161,6 +1325,21 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
   }
 
   if (decor) decorate(decor);
+  // 강변: 둑길 바깥 잔디에 긴 벤치(물을 본다)·다리 머리 보도에 파라솔 노점 — 작가 p6 강변 쉬터.
+  if (river && decor) {
+    const longs = decor.longBenches.filter((id) => kit(id) && id !== recipe.objects.benchLong);
+    let li = 0;
+    for (const side of [-1, 1] as const) {
+      const bx = side < 0 ? river.x - 3 : river.x + RW;
+      for (let r = river.y0 + 1; r < H - 1 && li < longs.length * 2; r += 1) {
+        if (deckRows.has(r) || roadRows.has(r) || deckRows.has(r - 1) || roadRows.has(r - 1)) continue;
+        const lawnRow = [0, 1, 2].every((i) => { const l = tileset.tileMeta?.[map.lowerTiles[r * W + bx + i] ?? -1]?.label; return l === recipe.lawn || l === parkLawn || l === recipe.sidewalk; });
+        if (lawnRow && place(longs[li % longs.length]!, bx, r)) { li += 1; r += 4; }
+      }
+    }
+    const cart = decor.carts.find((id) => id === "parasol_hotdog_cart" && kit(id));
+    if (cart) for (const cx of [river.x - 3, river.x + RW + 1, river.x - 5, river.x + RW + 3]) if (place(cart, cx, southWalkY + 1)) break;
+  }
 
   // ── 8. 빈 바닥 메우기: check_town_map 과 같은 셈(위층이 빈 같은 재료 칸의 4방향 덩어리)으로 큰 빈 잔디·빈 골목을 찾아,
   // 덩어리에서 가장 빈 칸(둘레에서 먼 칸)부터 물체로 끊는다. 잔디는 구역에 맞는 나무·덤불·화단·벤치, 골목은 분리수거함·상자·쓰레기통.
@@ -1181,7 +1360,7 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
   const fillPool = (material: string, x: number, y: number): string[] => {
     const o = recipe.objects;
     // 골목: 상자·가득 찬 쓰레기통 한 개 — 분리수거함 줄이 되지 않게(DEFECTS r1-5).
-    if (material === recipe.alley) return [o.trash, "cardboard_box", ...o.backProps.filter((id) => !id.startsWith("recycle"))].filter((id) => kit(id));
+    if (material === recipe.alley) return [o.trash, "cardboard_box", ...o.backProps.filter((id) => !id.startsWith("recycle")), ...(decor?.service ?? []).filter((id) => (kit(id)?.width ?? 9) === 1)].filter((id) => kit(id));
     if (!greens.has(material)) return [o.trash, o.bench, ...o.flowerBeds]; // 보도·산책로
     if (lots.some((l) => l.kind === "park" && x >= l.x && x < l.x + l.w && y >= l.y && y < l.y + l.h)) return [...o.flowerBeds, o.bench, ...o.bushes.slice(0, 1)];
     // 마당: 줄 맞춘 생울타리·화단(무작위 나무 흩뿌리기 대신, DEFECTS r1-2).
@@ -1277,11 +1456,47 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
       if (!k) return false;
       for (let dy = 0; dy < k.height; dy += 1) for (let dx = 0; dx < k.width; dx += 1) {
         const cx = x + dx, cy = base - k.height + 1 + dy;
-        if (!walkable(cx, cy) || doorFrontCells.has(cy * W + cx) || doorCols.has(cx) && cy === frontY) return false;
+        if (!walkable(cx, cy) || doorFrontCells.has(cy * W + cx) || nearDoor(cx, cy) || doorCols.has(cx) && cy === frontY) return false;
       }
       return true;
     };
     const putWalk = (id: string, x: number, base: number) => onWalk(id, x, base) && place(id, x, base);
+
+    // H3 교차로: 네거리는 네 모통이 신호등, T·주택가 교차로는 부도로 진입 쪽 정지 표지(우측통행: 운전자 오른쪽).
+    // 모통이 옆 보도 두 칸에 점자 블록, 교차로 가운데 맨홀.
+    const lights = dc.trafficLights.filter(has);
+    const corner = (id: string | undefined, x: number, y: number, dx: number, dy: number) => {
+      // (x,y) = 대각 모통이 칸. 못 쓰면 보도 쪽으로 한두 칸 밀어 본다. 남쪽 모통이는 머리(윗칸)가 차도에 걸리지 않게 한 줄 더 남쪽에 세운다.
+      const headClear = (cx: number, cy: number) => { const k = id ? kit(id) : undefined; if (!k) return false; for (let r = cy - k.height + 1; r <= cy; r += 1) if (r < 1 || [recipe.road, recipe.intersection].includes(lowerLabel(cx, r))) return false; return true; };
+      // 밑칸은 보도여야 한다 — 큰길 남쪽 잔디 띠 위에 선 신호등·정지 표지(DEFECTS r4-1·11).
+      if (id) for (const [ox, oy] of [[0, 0], [0, dy], [dx, 0], [dx, dy], [dx * 2, 0], [0, dy * 2], [dx, dy * 2]] as const) { const cx = x + ox, cy = y + oy; if (cx >= 0 && cx < W && cy >= 1 && cy < H && walkable(cx, cy) && !doorFrontCells.has(cy * W + cx) && headClear(cx, cy) && place(id, cx, cy)) break; }
+      for (const [tx, ty] of [[x + dx, y], [x, y + dy]] as const) if (walkable(tx, ty)) overlay(dc.tactile, tx, ty);
+    };
+    const cross = (ix: number, iy: number, h: number, kind: "light" | "stopN" | "stopS" | "stopBoth") => {
+      type Corner = readonly [number, number, number, number];
+      const NW: Corner = [ix - 1, iy - 1, -1, -1], NE: Corner = [ix + 5, iy - 1, 1, -1], SW: Corner = [ix - 1, iy + h, -1, 1], SE: Corner = [ix + 5, iy + h, 1, 1];
+      if (kind === "light") {
+        // 축마다 색 짝: 마주 보는 모통이(NW–SE, NE–SW)가 같은 색, 다른 축은 반대 색. 위상은 시드마다(DEFECTS r4-1).
+        const [green, red, yellow] = [dc.trafficLights[0], dc.trafficLights[1], dc.trafficLights[2]].map((id) => (has(id) ? id : lights[0]));
+        const phases = [[green, red], [red, green], [yellow, red], [red, yellow]] as const;
+        const [a, b] = phases[Math.floor(drng() * phases.length)]!;
+        corner(a, ...NW); corner(a, ...SE); corner(b, ...NE); corner(b, ...SW);
+      }
+      else {
+        if (kind !== "stopS") corner(dc.stopSign, ...NW);
+        if (kind !== "stopN") corner(dc.stopSign, ...SE);
+        const rest: Corner[] = kind === "stopN" ? [NE] : kind === "stopS" ? [SW] : [NE, SW];
+        for (const c of rest) corner(undefined, ...c);
+      }
+      const mh = dc.manholes.filter(has);
+      if (mh.length) place(pick(drng, mh), ix + int(drng, 1, 3), iy + int(drng, 1, h - 2));
+    };
+    for (const c of corridors) {
+      if (through(c)) cross(c.x + 2, mainY, mainH, "light");
+      else if (c.y0 === mainY) cross(c.x + 2, mainY, mainH, "stopS");
+      else cross(c.x + 2, mainY, mainH, "stopN");
+      if (c.y1 === H) for (const band of bands) if (band.roadY !== null && band.roadY + 5 <= H) cross(c.x + 2, band.roadY, 5, "stopBoth");
+    }
 
     // H2 가게 앞 보도(frontY 줄 = 벽 쪽, +1 가운데, +2 연석). 카페는 가게의 20~30%, 문 옆 한 칸 떼고 벽에 붙여 2×2.
     const shopsFront = lots.filter((l) => (l.kind === "shop" || l.kind === "office") && l.door && l.door.y === frontY - 1);
@@ -1306,14 +1521,15 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
     const vends = dc.vending.filter(has);
     const wallSpots = shopsFront.flatMap((l) => [l.door!.x - 2, l.door!.x + 2, l.x, l.x + l.w - 1].map((x) => ({ x, lot: l }))).sort(() => drng() - 0.5);
     for (const id of vends) for (const s of wallSpots) if (putWalk(id, s.x, frontY + 1)) break;
-    if (has(dc.atm)) for (const lot of shopsFront.filter((l) => l.kind === "office")) for (const ax of [lot.door!.x - 1, lot.door!.x + 1]) if (putWalk(dc.atm, ax, frontY + 1)) break;
-    // 노점·키오스크: 세로 길 모통이 가까이(모통이 보도에서 1~4칸).
+    // ATM: 사무실 벽 여러 자리 중 하나(문 앞 통로 밖, DEFECTS r4-3·12).
+    if (has(dc.atm)) for (const lot of shopsFront.filter((l) => l.kind === "office")) for (const ax of [lot.door!.x - 2, lot.door!.x + 2, lot.door!.x - 3, lot.door!.x + 3, lot.x, lot.x + lot.w - 1].sort(() => drng() - 0.5)) if (putWalk(dc.atm, ax, frontY + 1)) break;
+    // 노점·키오스크: 세로 길 모통이 가까이(모통이 보도에서 1~4칸). 찫 모통이는 파라솔 핫도그 노점.
     const carts = dc.carts.filter(has);
-    for (const c of corridors.filter((cc) => cc.y0 === 0)) {
-      const id = pick(drng, carts);
+    for (const [ci, c] of corridors.filter((cc) => cc.y0 === 0).entries()) {
+      const id = ci === 0 && has("parasol_hotdog_cart") ? "parasol_hotdog_cart" : pick(drng, carts);
       if (!id) break;
       const k = kit(id)!;
-      for (const cx of [c.x - k.width - 1, c.x + 9 + 1, c.x - k.width - 3, c.x + 9 + 3]) if (putWalk(id, cx, frontY + 2)) break;
+      for (const cx of [c.x - k.width - 1, c.x + 9 + 1, c.x - k.width - 3, c.x + 9 + 3, c.x - k.width - 5, c.x + 9 + 5, c.x - k.width - 7, c.x + 9 + 7]) if (putWalk(id, cx, frontY + 2)) break;
     }
     // 빈 보도 구간 끊기: 보도 각 줄에서 물체 없는 8칸 이상은 가운데에 물체 하나(벽 줄 = 자판기·쓰레기통·화분, 연석 줄 = 화분 나무·벤치·화단).
     const wallPool = [...vends, o.trash, ...dc.planterTrees, ...o.flowerBeds.slice(0, 2)].filter(has);
@@ -1339,35 +1555,6 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
       }
     }
 
-    // H3 교차로: 네거리는 네 모통이 신호등, T·주택가 교차로는 부도로 진입 쪽 정지 표지(우측통행: 운전자 오른쪽).
-    // 모통이 옆 보도 두 칸에 점자 블록, 교차로 가운데 맨홀.
-    const lights = dc.trafficLights.filter(has);
-    const corner = (id: string | undefined, x: number, y: number, dx: number, dy: number) => {
-      // (x,y) = 대각 모통이 칸. 못 쓰면 보도 쪽으로 한두 칸 밀어 본다. 남쪽 모통이는 머리(윗칸)가 차도에 걸리지 않게 한 줄 더 남쪽에 세운다.
-      const headClear = (cx: number, cy: number) => { const k = id ? kit(id) : undefined; if (!k) return false; for (let r = cy - k.height + 1; r <= cy; r += 1) if (r < 1 || [recipe.road, recipe.intersection].includes(lowerLabel(cx, r))) return false; return true; };
-      if (id) for (const [ox, oy] of [[0, 0], [0, dy], [dx, 0], [dx, dy], [dx * 2, 0], [0, dy * 2]] as const) { const cx = x + ox, cy = y + oy; if (cx >= 0 && cx < W && cy >= 1 && cy < H && headClear(cx, cy) && place(id, cx, cy)) break; }
-      for (const [tx, ty] of [[x + dx, y], [x, y + dy]] as const) if (walkable(tx, ty)) overlay(dc.tactile, tx, ty);
-    };
-    const cross = (ix: number, iy: number, h: number, kind: "light" | "stopN" | "stopS" | "stopBoth") => {
-      type Corner = readonly [number, number, number, number];
-      const NW: Corner = [ix - 1, iy - 1, -1, -1], NE: Corner = [ix + 5, iy - 1, 1, -1], SW: Corner = [ix - 1, iy + h, -1, 1], SE: Corner = [ix + 5, iy + h, 1, 1];
-      if (kind === "light") { let i = 0; for (const c of [NW, NE, SW, SE]) corner(lights[i++ % lights.length], ...c); }
-      else {
-        if (kind !== "stopS") corner(dc.stopSign, ...NW);
-        if (kind !== "stopN") corner(dc.stopSign, ...SE);
-        const rest: Corner[] = kind === "stopN" ? [NE] : kind === "stopS" ? [SW] : [NE, SW];
-        for (const c of rest) corner(undefined, ...c);
-      }
-      const mh = dc.manholes.filter(has);
-      if (mh.length) place(pick(drng, mh), ix + int(drng, 1, 3), iy + int(drng, 1, h - 2));
-    };
-    for (const c of corridors) {
-      if (through(c)) cross(c.x + 2, mainY, mainH, "light");
-      else if (c.y0 === mainY) cross(c.x + 2, mainY, mainH, "stopS");
-      else cross(c.x + 2, mainY, mainH, "stopN");
-      if (c.y1 === H) for (const band of bands) if (band.roadY !== null && band.roadY + 5 <= H) cross(c.x + 2, band.roadY, 5, "stopBoth");
-    }
-
     // M8 차도 표시: 로컬 도로·세로 길에 맨홀(12~18칸마다), 세로 길 교차로 앞 화살표(우측통행), 로컬 도로 교차로 앞 화살표.
     const mh = dc.manholes.filter(has);
     for (const band of bands) if (band.roadY !== null && band.roadY + 5 <= H && mh.length) for (let x = int(drng, 3, 9); x < W; x += int(drng, 12, 18)) if (!inCorridor(x)) place(pick(drng, mh), x, band.roadY + int(drng, 1, 3));
@@ -1384,8 +1571,11 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
     // H4 옥상: 가장 높은 사무실에 헬기장(들어갈 때), 그다음 건물마다 다른 설비 1~3가지.
     const pad = dc.helipad && kit(dc.helipad);
     if (pad) {
-      const tallest = roofAreas.filter((a) => a.office && a.w >= pad.width).sort((a, b) => b.h - a.h || b.w - a.w)[0];
-      if (tallest) place(dc.helipad!, tallest.x + Math.floor((tallest.w - pad.width) / 2), tallest.y + pad.height - 1, { force: tallest.rows + 1 >= Math.min(3, pad.height) });
+      const tall = roofAreas.filter((a) => a.office && a.w >= pad.width + 2).sort((a, b) => b.h - a.h || b.w - a.w);
+      for (const t of tall) {
+        const hx = t.x + Math.floor((t.w - pad.width) / 2), hb = t.y + pad.height - 1;
+        if (onRoof(dc.helipad!, hx, hb) && place(dc.helipad!, hx, hb, { force: true })) break;
+      }
     }
     for (const a of roofAreas) roofKit(dc.roofTop, a.x, a.y, a.w, a.rows, a.n);
 
@@ -1461,7 +1651,7 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
     // 뒷골목 바닥 얼룩·균열 조각(2~3칸) 몇 개.
     for (let i = 0, n = Math.round(W / 12); i < n && dc.stains.length; i += 1) {
       const name = pick(drng, dc.stains);
-      const x = int(drng, 0, W - 3), y = int(drng, 1, alley);
+      const x = int(drng, 0, W - 3), y = int(drng, alleyTop, alley);
       for (let dx = 0; dx < int(drng, 2, 3); dx += 1) if (lowerLabel(x + dx, y) === recipe.alley) overlay(name, x + dx, y);
     }
 
@@ -1492,7 +1682,5 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
       // 골목 끝(맵 왼·오른 가장자리) 짙은 아스팔트 위 가드레일 — 막다른 뒷골목 같은 인상.
       for (const x of [0, W - 2]) if (lowerLabel(x, alley) === recipe.alley && lowerLabel(x + 1, alley) === recipe.alley) place(dc.guardrail, x, alley);
     }
-    // 큰 맵: 원형 키오스크를 광장·모통이 보도에.
-    if (has(dc.kiosk)) for (const c of corridors) for (const cx of [c.x - 4, c.x + 10, c.x - 6, c.x + 12]) if (putWalk(dc.kiosk, cx, frontY + 2)) break;
   }
 }
