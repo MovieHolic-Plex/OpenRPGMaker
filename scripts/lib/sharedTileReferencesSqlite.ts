@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { createHash } from 'node:crypto';
 import { gzipSync } from 'node:zlib';
 import { validateTilesetReferences } from '../../src/project/tilesetReferences';
+import { linkSharedTileReferenceImages } from './sharedContentSqlite';
 import type { SharedTileReferenceSnapshot } from '../../src/project/sharedTileReferences';
 import type { Project } from '../../src/project/types';
 import type { SharedSpatialReferences } from '../../src/project/sharedSpatialReferences';
@@ -27,6 +28,9 @@ export function encodedSharedTileReferences(file = sharedTileReferencesFile()): 
   const cached = encodedCache.get(file);
   if (cached?.revision === revision) return cached.gzip;
   const snapshot = readSharedTileReferences(file);
+  // 카탈로그 응답과 같은 내용 주소로 바꾼다 — 늦게 적용돼도 프로젝트 참고문서를 인라인으로 되돌리지 않는다.
+  // 이미지 식별 필드(imageSha256·dataUrlSha256)는 타일셋 그림 자체라 그대로다.
+  linkSharedTileReferenceImages(snapshot.entries, file);
   const gzip = gzipSync(JSON.stringify(snapshot), { level: 1 });
   encodedCache.set(file, { revision: snapshot.revision, gzip });
   return gzip;

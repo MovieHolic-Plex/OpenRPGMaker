@@ -46,19 +46,36 @@ export function readSharedContentForEditor(scope: SharedContentScope, file = sha
  * 주소 → 원본 dataURL 은 색인에 남겨 이미지 요청이 SQLite 를 다시 파싱하지 않게 한다.
  */
 function linkReferenceImages(library: SharedContentLibrary, index: Map<string, string>): SharedContentLibrary {
-  const link = (categories: TilesetReferenceCategory[] | undefined): void => {
-    for (const category of categories ?? []) for (const image of category.images) {
-      const address = sharedReferenceImageAddress(image.dataUrl);
-      if (!address) continue;
-      if (!index.has(address)) index.set(address, image.dataUrl);
-      image.dataUrl = address;
-    }
-  };
   for (const tileset of Object.values(library.tilesets)) {
-    link(tileset.referenceDocuments);
-    for (const kit of tileset.structureKits ?? []) link(kit.referenceDocuments);
+    linkReferenceCategories(tileset.referenceDocuments, index);
+    for (const kit of tileset.structureKits ?? []) linkReferenceCategories(kit.referenceDocuments, index);
   }
   return library;
+}
+function linkReferenceCategories(categories: TilesetReferenceCategory[] | undefined, index: Map<string, string>): void {
+  for (const category of categories ?? []) for (const image of category.images) {
+    const address = sharedReferenceImageAddress(image.dataUrl);
+    if (!address) continue;
+    if (!index.has(address)) index.set(address, image.dataUrl);
+    image.dataUrl = address;
+  }
+}
+/**
+ * 공용 타일 참고문서 응답(`/__oprn/shared-tile-references`)도 카탈로그와 **같은 주소**로 보낸다.
+ * 실측(2026-09-26): 이 응답만 인라인 dataURL 이라, 늦게 도착해 열린 프로젝트에 적용되면 카탈로그가 주소로
+ * 바꿔 둔 참고문서 295개가 인라인으로 되돌아갔다(15.3MB → 33.1MB). 타일셋 전부가 바뀐 것으로 보여 첫 칠하기
+ * 저장이 60초 넘게 끝나지 않았다. 같은 색인에 넣으므로 주소 요청은 기존 핸들러가 바이트로 푼다.
+ */
+export function linkSharedTileReferenceImages(entries: readonly { documents: TilesetReferenceCategory[]; kits?: readonly { referenceDocuments?: TilesetReferenceCategory[] }[] }[], file = sharedContentFile()): void {
+  const db = open(file);
+  let revision: string;
+  try { revision = snapshotRevision(db.prepare('SELECT id, revision FROM content_libraries ORDER BY id').all() as { id: string; revision: string }[]); }
+  finally { db.close(); }
+  const index = referenceImageIndexFor(file, revision);
+  for (const entry of entries) {
+    linkReferenceCategories(entry.documents, index);
+    for (const kit of entry.kits ?? []) linkReferenceCategories(kit.referenceDocuments, index);
+  }
 }
 const referenceImageIndexes = new Map<string, { revision: string; images: Map<string, string> }>();
 function referenceImageIndexFor(file: string, revision: string): Map<string, string> {
