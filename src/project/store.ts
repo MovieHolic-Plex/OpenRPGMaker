@@ -226,7 +226,9 @@ class ProjectStore {
   private autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
   private autoSaveRetryTimer: ReturnType<typeof setTimeout> | null = null;
   private autoSaveState: AutoSaveState = { kind: "idle" };
-  private readonly autoSaveDelayMs = 4000;
+  // 마지막 편집 뒤 이만큼 조용하면 저장한다. 편집마다 타이머를 다시 걸어 연속 획은 한 저장으로 묶인다.
+  // 4s 는 첫 칠하기가 「저장됨」까지 걸리는 시간의 절반이었다(2026-09-26 실측, 획을 뗄 뒤 6.9s 에 저장 시작).
+  private readonly autoSaveDelayMs = 1500;
   private readonly autoSaveRetryBaseDelayMs = 10_000;
   private readonly autoSaveRetryMaxDelayMs = 120_000;
   private autoSaveRetryCount = 0;
