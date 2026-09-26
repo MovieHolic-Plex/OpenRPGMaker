@@ -904,7 +904,7 @@ function refreshPanels(change?: ProjectChangeDescriptor, editorStateOnly = false
   if (!editorStateOnly && (!change || change.scope === "project" || change.projectSwitch)) paintPersistenceBanner();
   // 좌측 패널 호스트는 프리셋에 따라 없을 수 있다 — 캔버스 크롬만 있으면 갱신을 진행한다.
   if (!canvasToolbarRoot || !mapLockBannerRoot) return;
-  if (change?.scope === "map" && change.cells?.length) {
+  if (change?.scope === "map" && (change.cells?.length || change.relief)) {
     renderCanvasToolbar(canvasToolbarRoot);
     renderMapEditLockBanner(mapLockBannerRoot);
     return;
@@ -942,7 +942,7 @@ function refreshAuthoringJourney(change?: ProjectChangeDescriptor): void {
     change.scope === "database" ||
     change.scope === "system" ||
     change.scope === "project" ||
-    (change.scope === "map" && !change.cells?.length)
+    (change.scope === "map" && !change.cells?.length && !change.relief)
   ) {
     authoringJourneyReferenceIssues = collectProjectReferenceIssues(project);
   }

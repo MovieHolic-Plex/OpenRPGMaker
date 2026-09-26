@@ -87,13 +87,19 @@ export type ProjectChangeAnnotation = {
 };
 
 export type ProjectChangeDescriptor =
-  | ({ readonly scope: "map"; readonly mapId: MapId; readonly cells?: readonly ProjectChangeCell[] } & ProjectChangeAnnotation)
+  | ({
+      readonly scope: "map";
+      readonly mapId: MapId;
+      readonly cells?: readonly ProjectChangeCell[];
+      /** 높이(map.relief)만 바뀐 편집 — 높이 붓이 포인터 표본마다 낸다. 타일·이벤트·속성은 안 바뀐다. */
+      readonly relief?: true;
+    } & ProjectChangeAnnotation)
   | ({ readonly scope: "database"; readonly collection?: string } & ProjectChangeAnnotation)
   | ({ readonly scope: "system" | "assets" | "project" } & ProjectChangeAnnotation);
 
-/** Tile-grid-only edit (paint, fill, erase): emitted per pointer sample, never touches events or metadata. */
+/** Tile-grid-only edit (paint, fill, erase) or relief-brush edit: emitted per pointer sample, never touches events or metadata. */
 export function isTileCellChange(change: ProjectChangeDescriptor | undefined): change is Extract<ProjectChangeDescriptor, { scope: "map" }> {
-  return change?.scope === "map" && !!change.cells?.length;
+  return change?.scope === "map" && (!!change.cells?.length || change.relief === true);
 }
 
 /** Identity of the project that is actually loaded in this editor session. */
@@ -933,7 +939,7 @@ class ProjectStore {
   updateMapTiles(
     mapId: MapId,
     mapMutator: (draft: GameMap) => void,
-    change: { readonly cells?: readonly ProjectChangeCell[] } & ProjectChangeAnnotation = {},
+    change: { readonly cells?: readonly ProjectChangeCell[]; readonly relief?: true } & ProjectChangeAnnotation = {},
   ): void {
     if (!canWriteTeamProject()) return;
     const currentMap = this.current.maps[mapId];

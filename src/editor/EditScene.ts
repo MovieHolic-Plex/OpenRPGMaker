@@ -916,6 +916,10 @@ export class EditScene extends PhaserRuntime.Scene {
       canIncrementalCells: mapId !== null && this.canIncrementallyRenderCells(mapId),
     });
     if (plan.kind === "skip") return;
+    if (plan.kind === "relief") {
+      this.scheduleReliefRender();
+      return;
+    }
     if (plan.kind === "cells") {
       this.redrawCells(plan.cells);
       return;
@@ -937,8 +941,9 @@ export class EditScene extends PhaserRuntime.Scene {
         this.handlePastePreviewPointerDown(this.isRightClick(ptr), tile);
         return;
       }
-      if (this.isRightClick(ptr)) {
+      if (this.isRightClick(ptr) && editorState.get().tool !== "relief") {
         // 우클릭: 드래그 시작하면 영역 AI, 클릭만이면 스포이트(아래 pointerup).
+        // 높이 붓만은 예외다 — 오른쪽 버튼이 왼쪽의 반대 방식으로 칠한다(TilePaintEngine · reliefInverseMode).
         this.updateHoverPreview(ptr);
         this.beginRightRegionGesture(ptr);
         return;
@@ -2225,6 +2230,34 @@ export class EditScene extends PhaserRuntime.Scene {
     });
   }
 
+  /**
+   * 높이 붓 드래그는 포인터 표본마다 relief 를 바꾼다. 절벽 그림은 맵 전체를 다시 굽는 비싼 일이라(20×15 약 25ms,
+   * 100×100 약 400ms 실측) 표본마다 굽지 않는다. 타일 칸은 안 바뀌므로 다시 그리지 않는다.
+   * 칠하는 동안에는 직전 굽기 비용의 2배 간격으로만 굽어 큰 맵에서도 입력이 끊기지 않게 한다.
+   * 굽기는 늘 마지막 값을 읽으므로 스트로크의 끝 모양은 빠지지 않는다.
+   */
+  private reliefRenderQueued = false;
+  private lastReliefRenderAt = 0;
+  private lastReliefRenderCost = 0;
+  private scheduleReliefRender(): void {
+    if (this.reliefRenderQueued) return;
+    this.reliefRenderQueued = true;
+    const wait = this.isPainting
+      ? Math.max(0, this.lastReliefRenderAt + this.lastReliefRenderCost * 2 - performance.now())
+      : 0;
+    const run = (): void => {
+      this.reliefRenderQueued = false;
+      if (!this.reliefLayer) return;
+      const started = performance.now();
+      this.renderReliefLayer();
+      this.lastReliefRenderAt = performance.now();
+      this.lastReliefRenderCost = this.lastReliefRenderAt - started;
+      this.requestRenderFrame();
+    };
+    if (wait > 0) setTimeout(() => requestAnimationFrame(run), wait);
+    else requestAnimationFrame(run);
+  }
+
     /**
    * 높이 절벽 그림. 16px 칸으로 그린 뒤 맵 칸 크기에 맞춰 늘린다. 윗면이 들리는 만큼(pad) 위로 올린다.
    * 0단 칸은 투명이라 타일이 그대로 보인다. relief 가 같으면(키) 다시 그리지 않는다.
@@ -2239,17 +2272,21 @@ export class EditScene extends PhaserRuntime.Scene {
     if (key === this.reliefRenderKey) return;
     this.reliefRenderKey = key;
     layer.removeAll(true);
-    if (this.textures.exists(RELIEF_TEXTURE_KEY)) this.textures.remove(RELIEF_TEXTURE_KEY);
-    if (!relief || reliefIsFlat(relief)) return;
+    if (!relief || reliefIsFlat(relief)) {
+      if (this.textures.exists(RELIEF_TEXTURE_KEY)) this.textures.remove(RELIEF_TEXTURE_KEY);
+      return;
+    }
     const r = renderRelief(effectiveHeights(gridFromRelief(relief)), { transparentGround: true });
-    const canvas = document.createElement("canvas");
-    canvas.width = r.PW;
-    canvas.height = r.SH;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    ctx.putImageData(new ImageData(new Uint8ClampedArray(r.rgba), r.PW, r.SH), 0, 0);
-    const texture = this.textures.addCanvas(RELIEF_TEXTURE_KEY, canvas);
-    texture?.setFilter(PhaserRuntime.Textures.FilterMode.NEAREST);
+    // 같은 크기면 캔버스 텍스처를 고쳐 쓴다 — 드래그 중 텍스처를 매번 만들고 지우면 GPU 업로드가 겹친다.
+    const existing = this.textures.exists(RELIEF_TEXTURE_KEY) ? this.textures.get(RELIEF_TEXTURE_KEY) : null;
+    const reusable = existing instanceof PhaserRuntime.Textures.CanvasTexture
+      && existing.width === r.PW && existing.height === r.SH ? existing : null;
+    if (existing && !reusable) this.textures.remove(RELIEF_TEXTURE_KEY);
+    const texture = reusable ?? this.textures.createCanvas(RELIEF_TEXTURE_KEY, r.PW, r.SH);
+    if (!texture) return;
+    texture.context.putImageData(new ImageData(new Uint8ClampedArray(r.rgba), r.PW, r.SH), 0, 0);
+    texture.refresh();
+    texture.setFilter(PhaserRuntime.Textures.FilterMode.NEAREST);
     const scale = tileSize / RELIEF_TILE;
     layer.add(this.add.image(0, -r.pad * scale, RELIEF_TEXTURE_KEY).setOrigin(0, 0).setScale(scale));
   }
