@@ -327,6 +327,10 @@ async function main() {
       ["autumn_trial", "시험 · 가을 숲", "rasak_seasons", 3456],
       ["mushroom_trial", "시험 · 버섯 숲", "rasak_seasons", 3456],
       ["market_trial", "시험 · 겨울 장터", "rasak_town2", 3456],
+      ["garden_village_trial", "시험 · 정원 마을", "rasak_garden", 3072],
+      ["desert_trial", "시험 · 서부 사막 마을", "rasak_desert", 3072],
+      ["skull_crypt_trial", "시험 · 해골 지하묘지", "rasak_crypt", 4608],
+      ["temple_trial", "시험 · 사암 신전", "rasak_temple", 4608],
     ];
     for (const [id, name, ts, ground] of trials) {
       if (!project.tilesets[ts]) continue;

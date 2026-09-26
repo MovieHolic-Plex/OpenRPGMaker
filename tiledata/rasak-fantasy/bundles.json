@@ -328,6 +328,78 @@
         "E": "Town/Tileset_Town_Rasak.png"
       },
       "extraSheets": []
+    },
+    {
+      "id": "rasak_desert",
+      "name": "Rasak · 사막 마을·서부 개척지",
+      "previews": [
+        "사막 마을(분위기 참고)"
+      ],
+      "sheets": {
+        "A1": "Nature/A1_SnowDesert_Rasak.png",
+        "A2": "Snow_Desert/A2_SnowDesert_Rasak.png",
+        "A3": "Snow_Desert/A3_Village1_Rasak.png",
+        "A5": "Snow_Desert/A5_Desert_Rasak.png",
+        "B": "Snow_Desert/Tileset_WildWest_Rasak.png",
+        "C": "Outposts/Tileset_Barbarian_Rasak.png",
+        "D": "Snow_Desert/Tileset_Station_Rasak.png",
+        "E": "Nature/Tileset_Nature_ForrestFloorSummer_Rasak.png"
+      },
+      "extraSheets": []
+    },
+    {
+      "id": "rasak_garden",
+      "name": "Rasak · 정원·꽃밭 마을",
+      "previews": [
+        "정원 마을(분위기 참고)"
+      ],
+      "sheets": {
+        "A1": "Town/A1_City_Rasak.png",
+        "A2": "Town/A2_Garden_Rasak.png",
+        "A3": "Town/A3_City1_Rasak.png",
+        "A5": "Town/A5_City_Rasak.png",
+        "B": "Town/Tileset_Garden_Rasak.png",
+        "C": "Town/Tileset_Town_Rasak.png",
+        "D": "Nature/Tileset_Nature_TreesSummer_Rasak.png",
+        "E": "Town/Tileset_Building_Rasak.png"
+      },
+      "extraSheets": []
+    },
+    {
+      "id": "rasak_crypt",
+      "name": "Rasak · 해골 지하묘지",
+      "previews": [
+        "지하묘지(분위기 참고)"
+      ],
+      "sheets": {
+        "A1": "Dungeon/Dungeon/A1_Dungeon_Rasak.png",
+        "A2": "Dungeon/Crypt/A2_Crypt_Rasak.png",
+        "A4": "Dungeon/Crypt/A4_Crypt_Rasak.png",
+        "A5": "Cave/A5_Cave_Rasak.png",
+        "B": "Dungeon/Crypt/Tileset_Crypt_Rasak.png",
+        "C": "Dungeon/Crypt/Tileset_Crypt2_Rasak.png",
+        "D": "Dungeon/Dungeon/Tileset_Dungeon_Rasak.png",
+        "E": "Dungeon/Tileset_Chaos.png"
+      },
+      "extraSheets": []
+    },
+    {
+      "id": "rasak_temple",
+      "name": "Rasak · 신전·동양 실내",
+      "previews": [
+        "신전 실내(분위기 참고)"
+      ],
+      "sheets": {
+        "A1": "Dungeon/Dungeon/A1_Dungeon_Rasak.png",
+        "A2": "Dungeon/Temple/A2_Temple_Rasak.png",
+        "A4": "Dungeon/Temple/A4_Tempel_Rasak.png",
+        "A5": "Dungeon/Dungeon/A5_Dungeon_Rasak.png",
+        "B": "Dungeon/Temple/Tilesets_Temple_inside2_Rasak.png",
+        "C": "Interiors/Tileset_Japanese_Inside_Rasak.png",
+        "D": "Dungeon/Temple/Tilesets_Temple_inside_Rasak.png",
+        "E": "Dungeon/Crypt/Tileset_Crypt_Rasak.png"
+      },
+      "extraSheets": []
     }
   ],
   "sourceSha256": {

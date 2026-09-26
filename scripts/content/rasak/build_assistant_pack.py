@@ -23,7 +23,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 T = 48
 COLS = 96
-BUNDLES = ['rasak_field', 'rasak_swamp', 'rasak_cave', 'rasak_town', 'rasak_interior', 'rasak_dungeon', 'rasak_castle', 'rasak_forestfolk', 'rasak_snow', 'rasak_port', 'rasak_seasons', 'rasak_town2']
+BUNDLES = ['rasak_field', 'rasak_swamp', 'rasak_cave', 'rasak_town', 'rasak_interior', 'rasak_dungeon', 'rasak_castle', 'rasak_forestfolk', 'rasak_snow', 'rasak_port', 'rasak_seasons', 'rasak_town2', 'rasak_desert', 'rasak_garden', 'rasak_crypt', 'rasak_temple']
 N, E, S, W, NE, SE, SW, NW = 1, 2, 4, 8, 16, 32, 64, 128
 DIRS = [(0, -1, N), (1, 0, E), (0, 1, S), (-1, 0, W), (1, -1, NE), (1, 1, SE), (-1, 1, SW), (-1, -1, NW)]
 # p27b 둘레 암반(A4 kind 7)은 2022 옛 그림을 현재 시트로 맞춘 결과라 안쪽이 모양 15 로 재구성된다(names-review). 표 검증·예제에서 뺀다.
@@ -327,6 +327,84 @@ PURPOSES = {
 4. **겨울 장터**: 줄무늬 노점(`market_stall_striped_*`)·노점 몸체(`market_stall_body_*`)·장터 가판(`xmas_stall_counter*`)·선물 더미·작은 크리스마스 나무·장식 가로등(`xmas_lamp_post_garland`, 한쪽 줄만)·우물·수레·상자 더미.
 5. **가죽 공방 뒤뜰**(흙 바닥, 돌 울타리로 구분): 빨랫줄(`tannery_laundry_line_*`)·무두질 통·가죽 틀·빨래 통·이젤. 벽걸이 그림 액자(`tannery_painting_wall*`)는 집 벽에.
 6. 맵 위쪽에 빈 풀밭 줄을 남기지 않는다 — 집 줄 지붕이 맵 위 끝에서 시작해도 된다.
+""",
+    },
+    'town_garden_village': {
+        'bundle': 'rasak_garden', 'preview': 'ex_garden_village', 'name': '정원 마을',
+        'desc': '막돌 포장 길·가운데 생울타리 정원(분수·화단·가지친 나무·정원 탁자)·A3 집 셋(문·창)과 앞마당 텃밭·잔디깎기·갈퀴·낙엽 더미·가장자리 여름 나무. 조립 예제 ex_garden_village(34×22) 기준.',
+        'windows': [(0, 0, 17, 11), (17, 0, 17, 11), (0, 11, 17, 11), (17, 11, 17, 11)],
+        'cross': (10, 6, 12, 8),
+        'path': (('A2', 2), ('A2', 0)), 'cave': False,
+        'main_ground': ('A2', 0),
+        'alts': [('A2', 2), ('A2', 22), ('A3', 3), ('A3', 9), ('A3', 5), ('A3', 13), ('A3', 1), ('A3', 11)],
+        'recipe': 'castle',
+        'room_notes': """## 정원 마을 — 짓는 순서(예제 ex_garden_village)
+1. 바탕 풀밭, 막돌 포장 큰길(2칸)과 집 문까지 1칸 샛길.
+2. **집**은 A3 지붕 2~3줄 + 벽 2줄, 집마다 지붕·벽 kind 를 다르게. 문은 `building_door_*`(이름에 「벽 아랫줄에 놓음」), 창은 벽걸이 `building_window_*`.
+3. **정원은 생울타리로 테를 두른다**(`garden_hedge_*` — 긴 벽·U자·T자 미로 조각을 이어 붙임). 안쪽에 분수(`garden_wall_fountain*`)·돌 화분(`garden_planter_stone_*`)·가지친 나무(`garden_topiary_*`)·꽃 줄(`garden_flowers_*_row`/`_vertical`, 색을 섞지 말고 줄마다 한 색)·정원 탁자.
+4. **집마다 앞마당 일감**: 텃밭(흙 밭 2층 + 작물)·잔디깎기(`garden_mower_*`)·갈퀴·낙엽 더미(`garden_leaf_pile_*`)·물 호스. 빈 앞마당 금지.
+5. 맵 가장자리는 여름 나무(`trees_summer_*`)를 무리로 — 1그루씩 흩지 않는다. 나무는 집·생울타리에서 1칸 띄운다.
+""",
+    },
+    'town_desert_west': {
+        'bundle': 'rasak_desert', 'preview': 'ex_desert_town', 'name': '서부 사막 마을',
+        'desc': '노란 모래·흙 큰길·A3 판자 집 넷(지붕 색 다름)·현관 차양·나무 보도 난간·물탱크 탑·풍차·짐수레·통·상자·선인장 무리·바위·마른 덤불. 조립 예제 ex_desert_town(34×22) 기준.',
+        'windows': [(0, 0, 17, 11), (17, 0, 17, 11), (0, 11, 17, 11), (17, 11, 17, 11)],
+        'cross': (0, 3, 16, 10),
+        'path': (('A2', 2), ('A2', 0)), 'cave': False,
+        'main_ground': ('A2', 0),
+        'alts': [('A2', 2), ('A3', 7), ('A3', 13), ('A3', 21), ('A3', 29), ('A3', 3), ('A3', 24), ('A3', 2), ('A3', 11)],
+        'recipe': 'castle',
+        'room_notes': """## 서부 사막 마을 — 짓는 순서(예제 ex_desert_town)
+1. 바탕 노란 모래, 동서 흙 큰길(3칸) + 남쪽 갈래(2칸).
+2. **집은 A3 로 짓는다**(지붕 3줄 + 벽 2~3줄, 집마다 kind 다르게). 벽 아랫줄이 큰길 바로 윗줄에 닿게.
+3. **경고 — 서부 시트(Wild West) 윗부분을 통째로 옮기지 않는다.** 그 영역은 완성된 건물 정면이 아니라 판벽·지붕·계단·차양 **조각 모음**이다. 범위째 복사하면 지붕과 벽이 뒤섞인 뒤죽박죽이 된다(적대적 시각 QA 에서 확인). 시트에서는 이름 붙은 소품(`wildwest_*`)만 쓴다.
+4. 집 앞: 현관 차양(`wildwest_porch_awning`)·나무 보도 난간(`wildwest_boardwalk_rail`)·말뚝(`wildwest_hitching_post_tall`)·긴 의자·통 짝·상자 더미.
+5. 마을 풍경: 물탱크 탑(`wildwest_water_tower`)·풍차(`wildwest_windmill_frame`)·짐수레(`wildwest_wagon`)는 집과 1칸 이상 띄워 길가에. 선인장(`wildwest_cactus_*`)·바위·마른 덤불은 **가장자리에 무리로**.
+""",
+    },
+    'dungeon_skull_crypt': {
+        'bundle': 'rasak_crypt', 'preview': 'ex_skull_crypt', 'name': '해골 지하묘지',
+        'desc': '방 넷 — 벽감 묘실(석관·묘비·유골 단지)/납골실(세운·눕힌 관·해골·횃대)/혼돈의 방(붉은 살덩이·촉수·알)/입구 복도(석상·해골 촛대). 방마다 다른 A4 벽과 모자이크 바닥. 조립 예제 ex_skull_crypt(30×20) 기준.',
+        'windows': [(0, 0, 14, 10), (13, 0, 17, 10), (0, 10, 13, 10), (12, 9, 18, 11)],
+        'cross': (1, 1, 12, 9),
+        'path': (('A2', 0), ('A2', 1)), 'cave': False, 'interior': True,
+        'main_ground': ('A2', 0),
+        'alts': [('A2', 1), ('A2', 2), ('A2', 3), ('A4', 0), ('A4', 27), ('A4', 11), ('A4', 43), ('A4', 25)],
+        'recipe': 'room',
+        'room_notes': """## 해골 지하묘지 — 방마다 할 일(예제 ex_skull_crypt)
+- **좌우를 거울처럼 맞추지 않는다**(검사: 3층 물체 칸의 좌우 거울 칸도 3층인 비율 ÷ 밀도 ≤ 2.2배). 시험 K3 에서 가운데 복도 양옆 방을 같은 폭·같은 가구 줄로 지어 2.5~3.5배로 실패했다. 양옆 방은 폭·깊이를 다르게, 가구 줄은 한쪽은 벽에 붙이고 다른 쪽은 가운데에 두는 식으로 어긋나게, 기둥은 간격을 다르게 한다.
+- **예제 창 넷을 그대로 찍어 맵을 채우지 않는다.** 시험 K1 에서 조수가 예제 창 네 개를 `stamp_layer_block` 으로 붙여 3층 600칸이 예제와 전부 같았다. 방 틀(천장·벽면 2줄·바닥)은 요청한 방 수·크기에 맞게 `paint_tiles` rect 로 새로 파고, 가구는 번호 사전에서 골라 방마다 직접 놓는다. 물체 배열 한두 개를 가져다 쓰는 것은 괜찮다.
+- **틀은 실내와 같다**: 맵 전체를 A4 윗면(검은 천장)으로 덮고 방마다 벽면 2줄 + 바닥을 판다. 방마다 벽 kind 를 바꾼다(회색 돌 24~31 / 검갈색 흙 8~15 / 짙은 벽돌 40~47). 바닥은 모자이크 A2 0~3.
+- **통로를 먼저 비운다**: 문과 문을 잇는 줄을 정해 두고 그 칸에는 물체를 놓지 않는다 — 관·뼈 무더기로 방을 막는 것이 가장 흔한 실패다.
+- **벽감 묘실**: 석관(`crypt_sarcophagus_*`, 큰 석관 `crypt2_stone_sarcophagus_big`)·묘비·유골 단지(`crypt_urn_*`)·뼈 무더기. 벽 선반(`crypt_wall_shelf_*`)은 벽면에만.
+- **납골실**: 세운 관·눕힌 관(`crypt2_coffin_*`, 모양 섞기)·서 있는/앉은 해골(`crypt2_skeleton_*`)·횃대. 관은 벽을 따라 줄로.
+- **혼돈의 방**: 붉은 살덩이·촉수·알(`chaos_*`)을 큰 것부터 무리로. 다른 방에는 섞지 않는다.
+- **바닥 결**: 격자 덮개(A2 4)·모자이크 조각(A2 7)은 2층에 2×2 덩이로, 자갈·핏자국·뼈 조각은 1칸짜리를 드문드문.
+- **그림자는 벽면·큰 석관 바로 오른쪽 칸에만** 칠한다. 방을 판 뒤 복도 가운데에 남은 그림자는 지운다(시험 K2 에서 벽 없는 그림자 8칸).
+""",
+    },
+    'interior_temple_hall': {
+        'bundle': 'rasak_temple', 'preview': 'ex_temple_hall', 'name': '사암 신전·동양 실내',
+        'desc': '방 넷 — 본전(붉은 융단 길·나무 기둥·제단·긴 탁자)/회색 돌 명상실(돌 옥좌·돌 탁자·돌 기둥)/다다미 객실(장지문·이불·옻칠 탁자)/입구 회랑(돌 말뚝 줄). 조립 예제 ex_temple_hall(30×20) 기준.',
+        'windows': [(0, 0, 16, 12), (16, 0, 14, 10), (0, 12, 16, 8), (16, 9, 14, 11)],
+        'cross': (1, 1, 14, 10),
+        'path': (('A2', 0), ('A2', 1)), 'cave': False, 'interior': True,
+        'main_ground': ('A2', 0),
+        'alts': [('A2', 16), ('A2', 8), ('A2', 1), ('A4', 0), ('A4', 27), ('A4', 24), ('A4', 40), ('A4', 10)],
+        'recipe': 'room',
+        'room_notes': """## 사암 신전·동양 실내 — 방마다 할 일(예제 ex_temple_hall)
+- **좌우를 거울처럼 맞추지 않는다**(검사: 3층 물체 칸의 좌우 거울 칸도 3층인 비율 ÷ 밀도 ≤ 2.2배). 시험 K3 에서 가운데 복도 양옆 방을 같은 폭·같은 가구 줄로 지어 2.5~3.5배로 실패했다. 양옆 방은 폭·깊이를 다르게, 가구 줄은 한쪽은 벽에 붙이고 다른 쪽은 가운데에 두는 식으로 어긋나게, 기둥은 간격을 다르게 한다.
+- **예제 창 넷을 그대로 찍어 맵을 채우지 않는다.** 시험 K1 에서 조수가 예제 창 네 개를 `stamp_layer_block` 으로 붙여 3층 600칸이 예제와 전부 같았다. 방 틀(천장·벽면 2줄·바닥)은 요청한 방 수·크기에 맞게 `paint_tiles` rect 로 새로 파고, 가구는 번호 사전에서 골라 방마다 직접 놓는다. 물체 배열 한두 개를 가져다 쓰는 것은 괜찮다.
+- **틀**: 맵 전체 A4 윗면(황토 사암 0~2), 방마다 벽면 2줄 + 바닥. 벽 kind 는 방마다 다르게(기둥 벽 27 / 세로 점선 24 / 민 40 / 양옆 기둥 10).
+- **나무판과 돌판을 구분한다**: `temple_*` 는 나무·붉은 칠, `temple2_*` 는 같은 모양의 회색 돌이다. 한 방에는 한쪽만 — 본전은 나무, 명상실은 돌.
+- **본전**: 문에서 제단까지 붉은 융단(A2 7, 2층) 2칸 길을 먼저 깔고 비운다. 양옆에 기둥(`temple_pillar_wood_*`)을 간격을 달리해 세우고 긴 탁자·낮은 의자·둥근 탁자.
+- **다다미 객실**(`japanese_*`): 장지문 벽을 북쪽 벽 아래에, 이불·옻칠 탁자·나무 선반. 1칸짜리 소품은 **3층 것만** 바닥에 — 4층 소품은 탁자 위에만 놓는다.
+- **입구 회랑**: 짧은 돌 말뚝(`temple2_post_stone_short_a`)을 줄로, 붉은 끈(`temple_cord_red_*`)은 기둥 사이에.
+- 문과 문을 잇는 통로는 미리 비워 두고 채운다.
+- **같은 종류 방이 둘이면 가구를 다르게**(시험 K2: 다다미 객실 둘에 같은 한 벌을 같은 자리에 놓아 좌우 대칭 2.7배로 실패). 한 방은 이불 둘·낮은 탁자, 다른 방은 옻칠 탁자·선반·방석처럼 물체와 자리를 바꾼다.
+- **붉은 융단은 본전 문에서 제단 앞까지 끊지 않고** 2칸 폭으로 깐다(K2 는 반쯤에서 끊겼다).
+- **본전이 가장 커야 가장 채워진다**: 기둥 줄 양끝·벽 쪽에 긴 탁자·향로·등·낮은 의자를 놓아 빈 바닥이 한 덩이로 남지 않게 한다. 그림자는 벽·기둥 바로 오른쪽 칸에만 칠한다(K2 벽 없는 그림자 6칸).
 """,
     },
 }
@@ -1887,6 +1965,7 @@ O1~O{len(used_obj_ids)} 은 프리뷰에 쓰인 물체(많이 쓰인 순){', 그
 
 def side_by_side(rows, title):
     """정상 | 오류 나란히. rows = [[(제목, 정상그림, 오류그림, 설명), …], …] — 한 줄에 쌍 한두 개."""
+    rows = [r for r in rows if r]  # 쌍이 넷뿐이면 마지막 줄이 빈다(벽면 ⑤가 없는 실내)
     pairs = [p for r in rows for p in r]
     cell_w = max(a.width + b2.width for _, a, b2, _ in pairs) + 30
     cell_w = max(a.width + b2.width for r in rows if len(r) > 1 for _, a, b2, _ in r) + 30 if any(len(r) > 1 for r in rows) else cell_w

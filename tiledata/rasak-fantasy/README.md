@@ -164,6 +164,22 @@ node /tmp/mzai/apply.mjs export --project ~/third-party-assets/rasak/study-proje
 - 조수 시험 J1: 가을 숲 26% · 버섯 숲 28% · 겨울 장터 30%(한계선) 통과. 비교 http://mdc-server:18301/rasak-seasons-town2.html
 - 서버 재부팅으로 `/tmp/mzai` 시험 도구가 지워졌다 — `~/third-party-assets/rasak/tools/`(run.sh·render_run.py·tasks.json·batch13.sh)에 사본을 둔다.
 
+## 사막·정원·지하묘지·신전 묶음 (2026-09-26)
+
+- 남은 미사용 시트 14장을 새 묶음 넷으로 덮었다: `rasak_desert` "사막 마을·서부 개척지"(물체 372) · `rasak_garden` "정원·꽃밭 마을"(369) ·
+  `rasak_crypt` "해골 지하묘지"(A2·A4 Crypt · Chaos 시트, 389) · `rasak_temple` "신전·동양 실내"(Temple 안 두 장 · Japanese Inside, 303).
+  `Bird Houses.png` 는 격자에 맞지 않아 뺐다.
+- 서부 시트(Wild West) 윗부분은 완성 정면이 아니라 판벽·지붕·계단·차양 조각 모음이다 — 통째로 옮기면 뒤죽박죽이 된다(적대적 시각 QA). 집은 A3 로 짓고 시트에서는 이름 붙은 소품만 쓴다(참고문서에 경고).
+- 조립 예제: `ex_garden_village`(34×22, 빈 바닥 18%) · `ex_desert_town`(34×22, 15%) · `ex_skull_crypt`(30×20, 8%) · `ex_temple_hall`(30×20, 22%).
+  실내 두 예제는 처음에 방이 텅 비거나(없는 물체 id) 관·가구로 통로가 막혔다 — 문과 문을 잇는 통로 칸을 먼저 예약하고 방별 소품 풀로 채워 고쳤다.
+- 팩 빌드 수정: 정상/오류 쌍이 넷뿐인 실내 용도(벽걸이 ⑥ 없음)에서 빈 줄로 `side_by_side` 가 죽던 것을 막았다.
+- 참고문서 용도 넷: `town_garden_village` · `town_desert_west` · `dungeon_skull_crypt` · `interior_temple_hall`. 연구 프로젝트 rev 19 → 20(add) → 21(apply), 다시 열어 16묶음 왕복 일치.
+- 조수 시험 K1: 사막 23% · 정원 30%(한계선) 통과. 지하묘지 9%·신전 22% 는 **예제 창 넷을 통째로 찍은 결과**(신전 3층 600칸이 예제와 같음)라 인정하지 않았다 —
+  두 용도 문서에 「예제 창 통째 금지」를 넣고 과제를 예제와 다른 방 구성으로 바꿔 K2 로 다시 쟀다.
+- K2: 지하묘지 16% 통과(복사 1/76칸)·신전 대칭 2.7배 실패(다다미방 둘에 같은 한 벌). K3: 둘 다 가운데 복도 양옆에 같은 폭 방을 지어 대칭 2.5·3.5배 실패.
+  문서에 「좌우 거울 금지」(양옆 방 폭·깊이·가구 줄을 어긋나게)와 「같은 종류 방은 가구를 다르게」·「융단은 문에서 제단까지」·「그림자는 벽 오른쪽만」을 넣었다.
+- K4: 지하묘지 22%(대칭 1.5, 복사 4/101칸) · 신전 28%(대칭 1.8, 복사 0/77칸) 통과. 연구 프로젝트 rev 24. 비교 http://mdc-server:18301/rasak-desert-garden.html
+
 ## 프리뷰 재현 결과 (2026-09-24, 두 층 렌더 기준)
 
 | 프리뷰 | 묶음 | 완전 일치 | ±32 이내 | 남은 차이 |
