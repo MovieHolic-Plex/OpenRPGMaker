@@ -160,6 +160,42 @@ async function main() {
     store.close();
     return;
   }
+  if (cmd === "add") {
+    // bundles.json 에 있는데 프로젝트에 없는 묶음을 굽기 결과로 새 타일셋·자산으로 더한다(던전·성곽 묶음, 2026-09-26).
+    // 있는 타일셋은 건드리지 않는다. 저장 뒤 다시 열어 새 타일셋이 그대로인지 확인한다.
+    const baked = need("baked");
+    const { tilesetFor, atlasCoverage } = await import("./study-tileset.mjs");
+    const { store, snap } = await open(dir);
+    const project = snap.project;
+    const added: string[] = [];
+    for (const id of RASAK) {
+      if (project.tilesets[id]) continue;
+      const variant = existsSync(join(baked, id, "manifest.layers.json")) ? "layers." : "";
+      const manifest = JSON.parse(readFileSync(join(baked, id, `manifest.${variant}json`), "utf8"));
+      const bytes = readFileSync(join(baked, id, `atlas.${variant}png`));
+      const { asset, tileset } = tilesetFor(manifest, bytes, atlasCoverage(manifest, bytes));
+      project.assets.uploaded[asset.id] = asset as Project["assets"]["uploaded"][string];
+      project.tilesets[id] = tileset as TilesetDef;
+      added.push(id);
+    }
+    if (!added.length) {
+      console.log(JSON.stringify({ projectId: store.projectId, revision: snap.revision, added }));
+      store.close();
+      return;
+    }
+    assertNoOtherHolder(dir);
+    const saved = await store.saveProject(project);
+    store.close();
+    const reopened = await openLocalProjectStore({ projectDir: dir });
+    const reload = reopened.loadSnapshot()!;
+    const same = Object.fromEntries(added.map((id) => {
+      const a = project.tilesets[id]!, b = reload.project.tilesets[id]!;
+      return [id, { count: b.count, tileMeta: JSON.stringify(a.tileMeta) === JSON.stringify(b.tileMeta), passability: JSON.stringify(a.passability) === JSON.stringify(b.passability) }];
+    }));
+    console.log(JSON.stringify({ projectId: reopened.projectId, saved: saved.kind, revisionBefore: snap.revision, revisionAfter: reload.revision, added, reloaded: same }));
+    reopened.close();
+    return;
+  }
   if (cmd === "verify") {
     const pack = JSON.parse(readFileSync(need("pack"), "utf8")) as Pack;
     const { store, snap } = await open(dir);
@@ -222,12 +258,20 @@ async function main() {
     // --example-maps <dir>: 조립 예제(compose_examples.py 출력 rasak_preview_ex_*.layers.map.json)로 프로젝트의 같은 id 맵 칸을 갈아 끼운다.
     // 이미 있는 맵만(맵 트리·이벤트·BGM 은 그대로), 크기·네 층·그림자만 바꾼다. 없으면 건너뛰고 알린다.
     const exampleDir = arg("example-maps");
-    const examplesReplaced: string[] = [], examplesMissing: string[] = [];
+    const examplesReplaced: string[] = [], examplesMissing: string[] = [], examplesAdded: string[] = [];
     if (exampleDir) {
       for (const file of readdirSync(exampleDir).filter((f) => /^rasak_preview_ex_.*\.layers\.map\.json$/.test(f))) {
         const m = JSON.parse(readFileSync(join(exampleDir, file), "utf8")) as GameMap;
         const cur = project.maps[m.id];
-        if (!cur) { examplesMissing.push(m.id); continue; }
+        if (!cur) {
+          // 새 예제(새 묶음)는 맵으로 더하고 맵 트리 뿌리의 자식으로 단다. 타일셋이 없으면 건너뛴다(add 먼저).
+          if (!project.tilesets[m.tilesetId]) { examplesMissing.push(m.id); continue; }
+          project.maps[m.id] = { ...m, events: m.events ?? [] } as GameMap;
+          const root = project.mapTree as unknown as { children?: { mapId: string; children: unknown[] }[] };
+          if (root?.children && !root.children.some((n) => n.mapId === m.id)) root.children.push({ mapId: m.id, children: [] });
+          examplesAdded.push(m.id);
+          continue;
+        }
         project.maps[m.id] = { ...cur, width: m.width, height: m.height, tilesetId: m.tilesetId, lowerTiles: m.lowerTiles, upperTiles: m.upperTiles,
           lowerOverlayTiles: m.lowerOverlayTiles, upperOverlayTiles: m.upperOverlayTiles, shadowBits: m.shadowBits };
         examplesReplaced.push(m.id);
@@ -253,7 +297,7 @@ async function main() {
     const mapsEqual = Object.keys(project.maps).every((m) => JSON.stringify(project.maps[m]) === JSON.stringify(reload.project.maps[m]));
     console.log(JSON.stringify({
       projectId: reopened.projectId, saved: saved.kind, sha256Saved: saved.kind === "saved" ? saved.sha256 : null,
-      sha256Reloaded: reload.sha256, revisionBefore: snap.revision, revisionAfter: reload.revision, roundTrip, mapsEqual, atlasUpgraded, examplesReplaced, examplesMissing, counts,
+      sha256Reloaded: reload.sha256, revisionBefore: snap.revision, revisionAfter: reload.revision, roundTrip, mapsEqual, atlasUpgraded, examplesReplaced, examplesAdded, examplesMissing, counts,
     }, null, 1));
     reopened.close();
     return;
@@ -275,6 +319,8 @@ async function main() {
       ["smithy_trial", "시험 · 대장간 실내", "rasak_interior", 1536],
       ["tailor_trial", "시험 · 재봉점 실내", "rasak_interior", 1536],
       ["castle_trial", "시험 · 성 실내", "rasak_interior", 1536],
+      ["dungeon_trial", "시험 · 지하 묘지", "rasak_dungeon", 4608],
+      ["castle_court_trial", "시험 · 성곽과 폐허", "rasak_castle", 3072],
     ];
     for (const [id, name, ts, ground] of trials) {
       if (!project.tilesets[ts]) continue;
@@ -300,7 +346,7 @@ async function main() {
     store.close();
     return;
   }
-  throw new Error("명령: dump | verify | apply | export");
+  throw new Error("명령: add | dump | verify | apply | export");
 }
 
 await main();

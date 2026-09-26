@@ -59,7 +59,7 @@ MID_TREES = ['trees_summer_tall_leafy', 'trees_summer_gnarled_leafy', 'trees_sum
              'trees_summer_birch_leafy_b', 'trees_summer_small_leafy_b', 'trees_summer_small_leafy_a']
 
 
-def forest(c, cells, seed):
+def forest(c, cells, seed, edge=('garden_bush_green', 'garden_bush_green', 'garden_bush_roses')):
     """숲 벽: 큰 나무(4×4·3×4)를 빈틈없이 채우고(3층), 그 사이를 반 칸씩 어긋난 나무로 한 번 더 덮는다(4층 — 겹쳐 그림).
     수관까지 숲 칸 안에만 심는다(마을 물체를 덮지 않음). 가장자리 빈 칸만 초록 덤불로 마감한다.
     짙은 풀(A2:8) 네모 바닥·잎 없는 어린나무 무더기는 쓰지 않는다 — 계단 얼룩, 죽은 숲처럼 보인다."""
@@ -89,7 +89,7 @@ def forest(c, cells, seed):
     for (x, y) in sorted(cells - covered):
         near_village = any((x + dx, y + dy) not in cells for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
         if near_village and c.L[3][y * c.w + x] is None:
-            c.obj(['garden_bush_green', 'garden_bush_green', 'garden_bush_roses'][rnd.randrange(3)], x, y)
+            c.obj(edge[rnd.randrange(len(edge))], x, y)
 
 
 @example
@@ -910,4 +910,204 @@ def ex_castle(ctx):
     c.obj('tavern_barrel_lying_pair', 16, 21)
     c.obj('living_crate_pots', 11, 22)
     c.obj('living_chair_left', 14, 20)
+    return c
+
+
+
+@example
+def ex_dungeon(ctx):
+    """지하 묘지 던전 32×22 — 입구 홀 / 석관 묘실 / 감옥(쇠창살·형틀·족쇄·핏자국) / 창고 / 의식실(제단 보석·붉은 깔개).
+    벽은 회색 벽돌(A4), 바닥은 방마다 다른 돌. 뼈·핏자국·돌 부스러기는 2층으로 1~2칸마다 흩는다. 좌우 대칭 금지."""
+    c = Canvas(ctx, 'rasak_dungeon', 32, 22, 'ex_dungeon', 'Rasak 예제 · 지하 묘지 던전(묘실·감옥·창고·의식실)')
+    TOP, WALL, WALL2 = 'A4:0', 'A4:8', 'A4:9'
+    F1, F2, F3 = 'A2:0', 'A2:1', 'A2:2'
+    interior(c, TOP, [
+        (1, 1, 11, 9, WALL, F1),     # 묘실
+        (13, 1, 20, 8, WALL2, F2),   # 감옥
+        (22, 1, 30, 10, WALL, F3),   # 의식실
+        (1, 11, 9, 20, WALL2, F2),   # 창고
+        (11, 10, 20, 20, WALL, F1),  # 입구 홀
+        (22, 12, 30, 20, WALL2, F2), # 옆 굴
+    ], doors=door_v(12, 6, F1) + door_v(21, 6, F2) + door_h(5, 10, F2) + door_h(16, 9, F1) + door_v(10, 17, F2) + door_v(21, 17, F2) + door_h(26, 11, F2) + [(15, 21, F1)])
+    # ── 묘실: 석관 줄(서로 다른 모양) · 묘비 · 유골 단지 · 벽 선반
+    c.obj('crypt_wall_shelf_38', 2, 2)
+    c.obj('crypt_wall_shelf_54', 7, 1)
+    c.obj('crypt_sarcophagus_a', 2, 3)
+    c.obj('crypt_sarcophagus_c', 5, 3)
+    c.obj('crypt2_stone_sarcophagus_big', 7, 5)
+    c.obj('crypt_tomb_tall_a', 1, 6)
+    c.obj('crypt_tomb_low_b', 4, 7)
+    c.obj('crypt_headstone_round_b', 10, 3)
+    c.obj('crypt_urn_large_56', 8, 3)
+    c.obj('crypt_urn_bones_spill', 11, 3)
+    c.obj('crypt_stone_post_small_blue', 3, 9)
+    c.obj('crypt_urn_small_gold', 6, 9)
+    c.obj('crypt_bones_pile_a', 5, 6)
+    c.obj('crypt2_bone_long_18', 2, 5)
+    c.obj('dungeon_pebble_beige_1', 10, 8)
+    c.obj('crypt_pebbles', 7, 8)
+    # ── 감옥: 쇠창살 칸 · 형틀 · 족쇄 · 해골 · 핏자국
+    for x in (13, 14, 15, 16):
+        c.obj('dungeon_iron_grate', x, 5)
+    c.obj('dungeon_iron_grate_b', 16, 4)
+    c.obj('dungeon_chain_hang', 14, 2)
+    c.obj('crypt2_skeleton_sitting', 13, 3)
+    c.obj('dungeon_shackle', 15, 3)
+    c.obj('dungeon_blood_pool', 14, 4)
+    c.obj('dungeon_pillory', 18, 3)
+    c.obj('dungeon_blood_drip_215', 17, 6)
+    c.obj('dungeon_bench_bones_212', 20, 3)
+    c.obj('dungeon_stool_wood_71', 19, 7)
+    c.obj('dungeon_candle_lit', 20, 8)
+    c.obj('dungeon_skull_small', 13, 7)
+    c.obj('dungeon_blood_spots_175', 15, 7)
+    c.obj('dungeon_iron_bar_lying', 17, 8)
+    # ── 의식실: 제단 보석 둘(색 다름) · 붉은 깔개 · 옥좌 · 초 · 석상
+    c.obj('temple_carpet_red_v', 26, 5)
+    c.obj('temple_carpet_red_v', 26, 8)
+    c.obj('dungeon_frame_red_orb', 25, 3)
+    c.obj('crypt_dark_statue_a', 23, 3)
+    c.obj('crypt_dark_statue_b', 28, 3)
+    c.obj('dungeon_frame_green_orb', 29, 6)
+    c.obj('crypt2_candle_tall', 24, 6)
+    c.obj('crypt2_candle_skull_52', 28, 8)
+    c.obj('crypt_stone_altar_a', 22, 8)
+    c.obj('crypt_bones_row_a', 29, 9)
+    c.obj('dungeon_blood_smear_223', 27, 7)
+    c.obj('crypt_rag_orange_c', 23, 10)
+    # ── 창고: 궤·상자·자루·통나무·선반
+    c.obj('dungeon_shelf_wood_low', 1, 13)
+    c.obj('dungeon_cabinet_wood_157', 4, 13)
+    c.obj('dungeon_cabinet_wood_red', 5, 13)
+    c.obj('dungeon_chest_lock_closed', 7, 13)
+    c.obj('dungeon_chest_gem_closed', 8, 13)
+    c.obj('dungeon_crate_wood_224', 1, 16)
+    c.obj('dungeon_crate_wood_b_240', 2, 16)
+    c.obj('dungeon_sack_upright_238', 1, 18)
+    c.obj('dungeon_log_lying', 4, 19)
+    c.obj('dungeon_chest_plain_open', 8, 17)
+    c.obj('dungeon_iron_stand_228', 6, 16)
+    c.obj('crypt_urn_tall_74', 3, 17)
+    c.obj('dungeon_pebble_dark_186', 6, 18)
+    c.obj('crypt2_wood_planks', 8, 20)
+    c.obj('dungeon_moss_speck', 4, 15)
+    # ── 입구 홀: 기둥 줄(한쪽만) · 횃대 · 긴 탁자 · 흩어진 뼈
+    c.obj('crypt_stone_pillar_176', 12, 13)
+    c.obj('crypt_stone_pillar_192', 12, 17)
+    c.obj('crypt2_torch_stand', 19, 12)
+    c.obj('crypt2_wooden_table_long', 14, 14)
+    c.obj('crypt2_coffin_lying_26', 18, 17)
+    c.obj('crypt2_skeleton_standing_36', 20, 15)
+    c.obj('crypt2_bones_heap_9', 13, 19)
+    c.obj('crypt2_bones_small_1', 17, 19)
+    c.obj('dungeon_crack_diag_a_130', 19, 19)
+    c.obj('dungeon_blood_drop_214', 14, 18)
+    c.obj('crypt_floor_stain_dark_2', 11, 15)
+    c.obj('dungeon_bones_lying', 15, 12)
+    # ── 옆 굴: 세운 관 · 관 더미 · 부서진 관 · 해골
+    c.obj('crypt2_coffin_upright_a', 22, 14)
+    c.obj('crypt2_coffin_upright_dark_a', 23, 14)
+    c.obj('crypt2_coffin_upright_dark_b', 25, 14)
+    c.obj('crypt2_wooden_coffin_stack', 27, 14)
+    c.obj('crypt2_coffin_lying_open', 23, 18)
+    c.obj('crypt2_coffin_broken', 29, 18)
+    c.obj('crypt2_skeleton_standing_37', 26, 17)
+    c.obj('crypt2_skull_mossy_96', 30, 17)
+    c.obj('crypt2_bones_small_3', 25, 20)
+    c.obj('dungeon_ribcage', 27, 19)
+    c.obj('crypt_pebble_tiny', 22, 20)
+    return c
+
+
+
+def rampart(c, x, y, w, top='A4:0', face='A4:8', top_h=2, face_h=2):
+    """성벽 한 토막: A4 윗면(통로) top_h 줄 + 벽면 face_h 줄. 오른쪽 칸에 그림자."""
+    c.kind(1, top, rect(x, y, w, top_h))
+    c.kind(1, face, rect(x, y + top_h, w, face_h))
+    for j in range(top_h + face_h):
+        c.shadow(x + w, y + j, 5)
+
+
+@example
+def ex_castle_court(ctx):
+    """성 안뜰과 폐허 36×26 — 북쪽 성벽(흉벽·성탑 둘·아치 성문) / 안뜰 돌길 / 동쪽 나무 요새(망루·말뚝 벽) / 서남쪽 무너진 폐허 / 해자.
+    같은 모양 되풀이 금지: 성탑은 지붕 색이 다르고, 성벽 벽면에 창·문 리듬을 넣는다."""
+    c = Canvas(ctx, 'rasak_castle', 36, 26, 'ex_castle_court', 'Rasak 예제 · 성 안뜰과 폐허(성벽·성문·망루·폐허·해자)')
+    c.kind(1, 'A2:0', rect(0, 0, 36, 26))
+    # 들풀 얼룩과 짙은 풀
+    c.kind(1, 'A2:8', blob(26, 18, [(0, 5), (-1, 7), (0, 8), (1, 6)]) + blob(0, 20, [(0, 6), (0, 7), (0, 6), (0, 5), (0, 4), (0, 3)]))
+    # ── 북쪽 성벽(y=2..5) · 서쪽 탑 · 동쪽 탑
+    rampart(c, 3, 2, 20)
+    c.obj('castle_battlement_gray', 5, 2)
+    c.obj('castle_battlement_gray', 11, 2)
+    c.obj('castle_battlement_gray', 17, 2)
+    for x, o in ((4, 'castle_slit_stone_a_152'), (7, 'castle_window_wood_slit_shut_a'), (15, 'castle_slit_stone_lit_a'), (19, 'castle_window_wood_slit_dark_a_153'), (21, 'castle_slit_stone_b')):
+        c.obj(o, x, 4)
+    c.obj('castle_wall_arch_gate_open', 11, 4)
+    c.obj('castle_round_tower_gray_3', 0, 4)
+    c.obj('castle_tower_roof_cone_red', 0, 0)
+    c.obj('castle_round_tower_gray_3', 23, 4)
+    c.obj('castle_tower_roof_cone_blue', 23, 0)
+    # ── 해자(성벽 앞 물, 성문 앞은 도개교)
+    c.kind(1, 'A1:8', rect(0, 7, 11, 2) + rect(14, 7, 12, 2))
+    c.obj('castle_drawbridge_chain', 11, 5, over=True)
+    c.kind(1, 'A5:cobble_road', rect(12, 6, 1, 3))
+    # ── 안뜰 돌길(성문에서 남으로, 굽어 요새·폐허로 갈라짐)
+    road = path([(12, 9), (12, 14), (20, 14), (20, 17)], width=2) + path([(12, 14), (6, 14), (6, 18)], width=1)
+    c.kind(1, 'A2:3', road)
+    c.kind(1, 'A5:stone_slab_floor', rect(9, 11, 7, 2))
+    # 안뜰 소품: 나무 · 난간 · 기둥 · 잔돌 · 들풀(1~2칸마다 무엇이든 있게, 한쪽으로 치우쳐)
+    c.obj('castle_railing_iron', 16, 10)
+    c.obj('castle_railing_wood', 7, 10)
+    c.obj('ruins2_pillar_short_grey', 16, 12)
+    c.obj('ruins2_stone_bit_grey', 14, 10)
+    c.obj('trees_summer_small_leafy_a', 3, 12)
+    c.obj('trees_summer_birch_leafy', 9, 15)
+    c.obj('trees_summer_tall_leafy', 16, 15)
+    c.obj('trees_summer_sparse_leafy', 23, 9)
+    c.obj('trees_summer_fir_lone', 24, 13)
+    c.obj('trees_summer_small_leafy_b', 14, 17)
+    c.obj('trees_summer_birch_leafy_b', 3, 15)
+    c.obj('ruins2_stone_bit_dark', 18, 11)
+    c.obj('ruins_rubble_small_69', 22, 16)
+    c.obj('trees_summer_log_moss', 19, 10)
+    c.obj('trees_summer_dead_bush', 10, 9)
+    c.obj('castle_wood_pole_crossbar', 8, 12)
+    c.obj('trees_summer_sapling_leafy', 21, 12)
+    c.kind(2, 'A2:13', [(10, 10), (15, 9), (8, 13), (17, 13), (3, 11), (13, 16), (19, 16), (11, 18)])
+    c.kind(2, 'A2:5', [(4, 10), (1, 12), (22, 10), (9, 17), (25, 16), (5, 17)])
+    c.kind(2, 'A2:7', [(2, 9), (3, 9), (18, 9), (25, 9), (26, 9), (22, 14), (7, 16)])
+    c.kind(2, 'A2:23', [(15, 11), (5, 13), (13, 13), (23, 11)])
+    forest(c, blob(0, 9, [(0, 2), (0, 2), (0, 3), (0, 3), (0, 2)]), 3, edge=('trees_summer_sapling_leafy', 'trees_summer_fir_seedling', 'trees_summer_sapling_leafy'))
+    # ── 동쪽 나무 요새(말뚝 벽·망루·성문)
+    c.obj('fort_palisade_wall_wide', 27, 3)
+    c.obj('fort_watchtower_wide', 31, 1)
+    c.obj('fort_palisade_wall_two_doors', 28, 12)
+    c.obj('fort_gate_frame_open', 33, 12)
+    c.obj('fort_flag_pole', 26, 6)
+    c.obj('fort_watchtower_narrow_a', 33, 16)
+    c.obj('fort_ladder_narrow', 32, 18)
+    c.kind(1, 'A2:1', path([(34, 15), (34, 24)], width=1) + path([(22, 17), (34, 17)], width=1))
+    # ── 서남쪽 폐허(무너진 탑·아치 문·잔해·돌 더미)
+    c.obj('ruins2_arch_gate_grey', 1, 18)
+    c.obj('ruins2_wall_piece_dark', 6, 19)
+    c.obj('ruins_pillar_thin', 9, 19)
+    c.obj('ruins2_wall_corner_grey', 11, 20)
+    c.obj('ruins_rubble_block', 8, 23)
+    c.obj('ruins2_rubble_pile_dark', 13, 21)
+    c.obj('ruins2_stone_bit_dark', 5, 24)
+    c.obj('ruins_rubble_small_189', 10, 22)
+    c.obj('ruins2_ledge_grey', 2, 23)
+    c.obj('ruins2_pillar_short_dark', 18, 20)
+    c.obj('ruins2_wall_arch_low_grey', 20, 20)
+    c.kind(2, 'A2:13', [(7, 22), (12, 24), (17, 23), (4, 21)])
+    c.kind(2, 'A2:23', [(15, 20), (19, 25), (0, 25), (25, 24), (28, 22)])
+    c.obj('trees_summer_gnarled_bare', 17, 23)
+    c.obj('trees_summer_bare_small', 25, 19)
+    c.obj('ruins2_stone_bit_grey', 17, 22)
+    c.obj('ruins_rubble_small_69', 0, 24)
+    c.obj('trees_summer_log_hollow', 11, 25)
+    c.kind(2, 'A2:5', [(3, 25), (9, 21), (16, 21), (21, 23)])
+    # 남동 풀밭: 숲 가장자리
+    forest(c, blob(24, 21, [(2, 8), (1, 9), (0, 10), (0, 10), (0, 10)]), 7, edge=('trees_summer_sapling_leafy', 'trees_summer_fir_seedling', 'trees_summer_sapling_leafy'))
     return c

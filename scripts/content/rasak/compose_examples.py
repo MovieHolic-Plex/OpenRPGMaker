@@ -76,7 +76,8 @@ class Canvas:
                 if not self.ok(cx, cy):
                     continue
                 g = self.ground(cx, cy)
-                if oid.startswith(('building_', 'sb_')):
+                # 성벽 부품 시트(castle_ — 흉벽·성문·탑)는 건물 부품처럼 성벽 윗면·벽면 위에 얹는다.
+                if oid.startswith(('building_', 'sb_', 'castle_')):
                     continue
                 if wall_mount and g != 'wall':
                     self.errors.append(f'{where}: 벽걸이인데 ({cx},{cy}) 가 벽면이 아님({g})')
