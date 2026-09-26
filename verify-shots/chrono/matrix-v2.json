@@ -1,0 +1,110 @@
+{
+ "note": "After PR #1598 + #1609 on main 72d57506f. chrono runtime gate 8/8; per-feature gates ct-techs 5/5, ct-ngplus 7/7, ct-field 5/5, ct-engine 6/6.",
+ "rows": [
+  {
+   "criterion": "combo techs",
+   "before": "FAIL",
+   "after": "PASS"
+  },
+  {
+   "criterion": "positional AoE",
+   "before": "FAIL",
+   "after": "PASS"
+  },
+  {
+   "criterion": "NG+",
+   "before": "FAIL",
+   "after": "PASS"
+  },
+  {
+   "criterion": "field battle",
+   "before": "FAIL",
+   "after": "PARTIAL"
+  },
+  {
+   "criterion": "TP learning",
+   "before": "MISSING",
+   "after": "PASS"
+  },
+  {
+   "criterion": "Active ATB/speed",
+   "before": "PARTIAL",
+   "after": "PASS"
+  },
+  {
+   "criterion": "Stop/Protect/Shield/Berserk",
+   "before": "PARTIAL",
+   "after": "PASS"
+  },
+  {
+   "criterion": "state weakness",
+   "before": "PARTIAL",
+   "after": "PASS"
+  },
+  {
+   "criterion": "counters",
+   "before": "MISSING",
+   "after": "PASS"
+  },
+  {
+   "criterion": "auto-revive",
+   "before": "MISSING",
+   "after": "PASS"
+  },
+  {
+   "criterion": "enemy movement",
+   "before": "MISSING",
+   "after": "PASS"
+  },
+  {
+   "criterion": "victory pose",
+   "before": "MISSING",
+   "after": "PARTIAL"
+  },
+  {
+   "criterion": "party followers",
+   "before": "PARTIAL",
+   "after": "PASS"
+  },
+  {
+   "criterion": "leader switch",
+   "before": "MISSING",
+   "after": "PASS"
+  },
+  {
+   "criterion": "ledge hop",
+   "before": "MISSING",
+   "after": "PASS"
+  },
+  {
+   "criterion": "time gate",
+   "before": "PARTIAL",
+   "after": "PASS"
+  },
+  {
+   "criterion": "chapter display",
+   "before": "MISSING",
+   "after": "PASS"
+  },
+  {
+   "criterion": "cutscene labels",
+   "before": "PARTIAL",
+   "after": "PASS"
+  },
+  {
+   "criterion": "save point",
+   "before": "PASS",
+   "after": "PASS"
+  },
+  {
+   "criterion": "multi ending",
+   "before": "PARTIAL",
+   "after": "PASS"
+  },
+  {
+   "criterion": "vehicle",
+   "before": "MISSING",
+   "after": "MISSING"
+  }
+ ]
+}
