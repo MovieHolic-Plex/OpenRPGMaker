@@ -16,6 +16,8 @@ const STREET = "Tileset_Modern_Street_Rasak.png";
 const SHOP = "Tileset_Modern_CityShopping_Rasak.png";
 const PARK = "Tileset_Modern_Park_Rasak.png";
 const EXTRAS = "Tileset_Modern_BuildingExtras.png";
+const GARBAGE = "Tileset_Modern_Garbage_Rasak.png";
+const SLUMS = "Tileset_Modern_Slums_Rasak.png";
 
 type Row = readonly [kind: number, name: string, role: MvPackAutotile["role"], description?: string];
 const autos = (sheet: string, rows: readonly Row[]): MvPackAutotile[] =>
@@ -257,6 +259,23 @@ const OBJECTS: MvPackObject[] = ([
   ["picnic_table", PARK, 8, 14, 2, 2, "tall", "피크닉 탁자"],
   ["traffic_light_red", STREET, 12, 14, 1, 2, "tall", "신호등(빨강)"],
   ["bollard", STREET, 4, 7, 1, 1, "prop", "흰 볼라드"],
+  // ── 4라운드 뒷골목 설비 (2026-09-26 칸 알파 경계 실측: 부품 픽셀이 모두 적힌 칸 안에 든다) ──
+  // 대형 쓰레기통(Slums 2×2, 위 줄은 뚜껑) · 바퀴 쓰레기통·봉투·드럼통·설비함·타이어·상자(Garbage 1×1) · 벽걸이 실외기.
+  ["dumpster_green", SLUMS, 0, 12, 2, 2, "tall", "초록 대형 쓰레기통", { description: "뒷문 옆 뒷길·뒷골목. 아래 줄이 막힌다" }],
+  ["dumpster_green_2", SLUMS, 2, 12, 2, 2, "tall", "초록 대형 쓰레기통 2"],
+  ["dumpster_open", SLUMS, 0, 8, 2, 2, "tall", "뚜껑 열린 대형 쓰레기통"],
+  ["crate_large", SLUMS, 6, 14, 2, 2, "tall", "큰 나무 상자"],
+  ["wheelie_bin_green", GARBAGE, 9, 3, 1, 1, "prop", "초록 바퀴 쓰레기통"],
+  ["wheelie_bin_black", GARBAGE, 12, 3, 1, 1, "prop", "검정 바퀴 쓰레기통"],
+  ["wheelie_bins_green_black", GARBAGE, 13, 3, 1, 1, "prop", "초록·검정 바퀴 쓰레기통 한 쌍"],
+  ["wheelie_bins_yellow_red", GARBAGE, 14, 3, 1, 1, "prop", "노랑·빨강 바퀴 쓰레기통 한 쌍"],
+  ["trash_bags", GARBAGE, 5, 11, 1, 1, "prop", "쓰레기 봉투 두 개"],
+  ["trash_bags_2", GARBAGE, 7, 11, 1, 1, "prop", "쓰레기 봉투 더미"],
+  ["barrels_gray", GARBAGE, 6, 3, 1, 1, "prop", "회색 드럼통 무리"],
+  ["utility_meter", GARBAGE, 8, 3, 1, 1, "prop", "회색 설비함(계량기)", { description: "뒷벽에 붙여 세운다" }],
+  ["tire_stack", GARBAGE, 4, 14, 1, 1, "prop", "타이어 더미"],
+  ["box_stack", GARBAGE, 6, 15, 1, 1, "prop", "쌓인 상자"],
+  ["ac_unit_wall", "Tileset_Modern_PublicTransportation_Slums_Rasak.png.png", 7, 0, 1, 1, "wallmount", "벽걸이 실외기", { description: "뒷벽·옆벽 외벽에 붙인다" }],
   // ── 거리 소품 (Tileset_Modern_PublicTransportation_Clean) ──
   ["bus_shelter", "Tileset_Modern_PublicTransportation_Clean_Rasak.png", 0, 6, 3, 3, "tall", "버스 정류장 쉼터", { description: "큰길 보도 바깥쪽(3×3). 위 두 줄은 캐릭터 위, 맨 아래 줄이 막힌다" }],
   ...CARS,
@@ -342,6 +361,8 @@ const TOWN: MvTownRecipe = {
     upperWindows: ["window_lit_wide", "window_dark_wide"],
     upperWindowsTall: ["window_lit_tall", "window_dark_tall"],
     fireEscape: "fire_escape", wallLadder: "wall_ladder", backDoor: "metal_door",
+    service: ["dumpster_green", "dumpster_green_2", "dumpster_open", "crate_large", "wheelie_bin_green", "wheelie_bin_black", "wheelie_bins_green_black", "wheelie_bins_yellow_red", "trash_bags", "trash_bags_2", "barrels_gray", "utility_meter", "tire_stack", "box_stack", "power_box"],
+    acWall: "ac_unit_wall",
     roofTop: ["roof_solar", "roof_water_tank", "roof_antenna", "satellite_dish", "roof_ac_large", "roof_vent", "roof_vent_slat"],
     helipad: "helipad", roofRailing: "유리 난간",
     cafeTables: ["round_table_red_chairs", "white_round_table", "wood_table"],
@@ -475,10 +496,10 @@ export const RASAK_MODERN_CITY: MvPackPreset = {
     { file: A5S, folder: "Tilesets/City", sha256: "db4b601ed126dea96e8ad504fa1c1aebebb595d481cd66b9152495f551979d64" },
     { file: STREET, folder: "Tilesets/City", sha256: "afa13ba0627ac3a5a73464de93234dd90c98fef22f0368e5e05bbf2f6d0125aa" },
     { file: SHOP, folder: "Tilesets/City", sha256: "0adc90d5e9da7b9d266575216862eb3c698ced7460e58ba8488dd8e6cd1cbbf2" },
-    { file: "Tileset_Modern_Garbage_Rasak.png", folder: "Tilesets/City", sha256: "ce499b8544c99bbf93c85d617be0cbcd14a8521ea8876b3ffaf892c3a038ecea" },
+    { file: GARBAGE, folder: "Tilesets/City", sha256: "ce499b8544c99bbf93c85d617be0cbcd14a8521ea8876b3ffaf892c3a038ecea" },
     { file: EXTRAS, folder: "Tilesets/City", sha256: "e327ac6819478a86ac688239cd161a6fa4b26b9ef543bfa72aa29232cbb8962c" },
     { file: PARK, folder: "Tilesets/City", sha256: "98485957a640b182d7f25bb41f755c70e909fd8e87a2042b008571382b842a02" },
-    { file: "Tileset_Modern_Slums_Rasak.png", folder: "Tilesets/City", sha256: "33b5162f00a34c0469bc7007ce5a0dc17c682f508657f61f495e8c4f57d98fe9" },
+    { file: SLUMS, folder: "Tilesets/City", sha256: "33b5162f00a34c0469bc7007ce5a0dc17c682f508657f61f495e8c4f57d98fe9" },
     { file: "Tileset_Modern_PublicTransportation_Clean_Rasak.png", folder: "Tilesets/City", sha256: "5719e05429835bcb6175a3bcf009a0b19eb4668d542c94d2ed83d32099990e92" },
     { file: "Tileset_Modern_PublicTransportation_Dirty_Rasak.png.png", folder: "Tilesets/City", sha256: "9b442ce9ba7624f921b898d70ba6272cb23f847a28601bbf0f06db1750dcd4da" },
     { file: "Tileset_Modern_PublicTransportation_Slums_Rasak.png.png", folder: "Tilesets/City", sha256: "e92c3b4609ad56ed9e60b9d63e8ab46a684bfe95c8322d233e905923cc41e4ca" },

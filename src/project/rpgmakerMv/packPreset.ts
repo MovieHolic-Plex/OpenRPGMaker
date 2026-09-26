@@ -216,6 +216,10 @@ export interface MvTownDecor {
   readonly fireEscape?: string;
   readonly wallLadder?: string;
   readonly backDoor?: string;
+  /** 뒷문 옆 뒷길·뒷골목 설비(대형 쓰레기통·바퀴 쓰레기통·봉투·설비함·상자). 뒷문마다 2~3개 무리. */
+  readonly service?: readonly string[];
+  /** 뒷벽에 붙이는 벽걸이 실외기. */
+  readonly acWall?: string;
   /** 옥상 윗면 설비(건물마다 1~3종). */
   readonly roofTop: readonly string[];
   readonly helipad?: string;
