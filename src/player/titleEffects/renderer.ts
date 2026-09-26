@@ -138,6 +138,21 @@ export interface TitleEffectsCanvasOptions {
 
 type RendererHandle = { frame: number; stop: () => void };
 const running = new WeakMap<HTMLCanvasElement, RendererHandle>();
+/** 살아 있는 캔버스의 효과 값만 바꾸는 함수 — 편집기 드래그·슬라이더가 WebGL 문맥을 새로 만들지 않게. */
+const uniformSetters = new WeakMap<HTMLCanvasElement, (uniforms: TitleEffectUniforms) => void>();
+
+/**
+ * 이미 그리고 있는 효과 캔버스의 효과 값만 바꾼다(그림·맞춤은 그대로).
+ * 캔버스가 이 렌더러 것이 아니거나 WebGL 을 못 쓰면 false — 호출자가 새로 만든다.
+ */
+export function updateTitleEffectsCanvas(canvas: HTMLCanvasElement, effects: readonly TitleEffect[]): boolean {
+  const setter = uniformSetters.get(canvas);
+  if (!setter) return false;
+  const uniforms = encodeTitleEffectUniforms(effects);
+  canvas.dataset.titleEffectsCount = String(uniforms.count);
+  setter(uniforms);
+  return true;
+}
 
 /** 효과 캔버스를 만든다. 그림을 불러오면 스스로 그리기 시작한다. */
 export function createTitleEffectsCanvas(options: TitleEffectsCanvasOptions): HTMLCanvasElement {
@@ -157,7 +172,8 @@ export function stopTitleEffects(canvas: HTMLCanvasElement): void {
   running.delete(canvas);
 }
 
-function startTitleEffects(canvas: HTMLCanvasElement, uniforms: TitleEffectUniforms, options: TitleEffectsCanvasOptions): void {
+function startTitleEffects(canvas: HTMLCanvasElement, initialUniforms: TitleEffectUniforms, options: TitleEffectsCanvasOptions): void {
+  let uniforms = initialUniforms;
   let gl: WebGL2RenderingContext | null = null;
   try {
     gl = canvas.getContext("webgl2", { premultipliedAlpha: false, alpha: true, antialias: false }) as WebGL2RenderingContext | null;
@@ -174,6 +190,10 @@ function startTitleEffects(canvas: HTMLCanvasElement, uniforms: TitleEffectUnifo
     return;
   }
   const context = gl;
+  // 그림을 불러오기 전에 들어온 값은 보관했다가 onload 가 쓴다.
+  uniformSetters.set(canvas, (next) => {
+    uniforms = next;
+  });
   const image = new Image();
   image.decoding = "async";
   image.onerror = () => {
@@ -212,13 +232,16 @@ function startTitleEffects(canvas: HTMLCanvasElement, uniforms: TitleEffectUnifo
     context.uniform1i(loc.image, 0);
     context.uniform2f(loc.imageSize, image.naturalWidth || 1, image.naturalHeight || 1);
     context.uniform1i(loc.fit, FIT_ID[options.fit ?? "stretch"]);
-    context.uniform1i(loc.count, uniforms.count);
-    context.uniform1iv(loc.kind, uniforms.kind);
-    context.uniform4fv(loc.a, uniforms.a);
-    context.uniform4fv(loc.b, uniforms.b);
-    context.uniform3fv(loc.color, uniforms.color);
-    context.uniform1iv(loc.ptsN, uniforms.ptsN);
-    context.uniform2fv(loc.pts, uniforms.pts);
+    const applyUniforms = (): void => {
+      context.uniform1i(loc.count, uniforms.count);
+      context.uniform1iv(loc.kind, uniforms.kind);
+      context.uniform4fv(loc.a, uniforms.a);
+      context.uniform4fv(loc.b, uniforms.b);
+      context.uniform3fv(loc.color, uniforms.color);
+      context.uniform1iv(loc.ptsN, uniforms.ptsN);
+      context.uniform2fv(loc.pts, uniforms.pts);
+    };
+    applyUniforms();
 
     const draw = (seconds: number) => {
       resizeCanvas(canvas, context);
@@ -227,8 +250,14 @@ function startTitleEffects(canvas: HTMLCanvasElement, uniforms: TitleEffectUnifo
       context.drawArrays(context.TRIANGLE_STRIP, 0, 4);
     };
     const frozen = typeof options.freezeAtSec === "number" ? options.freezeAtSec : prefersReducedMotion() ? 0 : undefined;
+    let lastSeconds = frozen ?? 0;
+    uniformSetters.set(canvas, (next) => {
+      uniforms = next;
+      applyUniforms();
+      if (frozen !== undefined || typeof requestAnimationFrame !== "function") draw(lastSeconds);
+    });
     if (frozen !== undefined || typeof requestAnimationFrame !== "function") {
-      draw(frozen ?? 0);
+      draw(lastSeconds);
       canvas.dataset.titleEffectsAnimated = "false";
       return;
     }
@@ -241,10 +270,12 @@ function startTitleEffects(canvas: HTMLCanvasElement, uniforms: TitleEffectUnifo
     const tick = () => {
       if (!canvas.isConnected) {
         running.delete(canvas);
+        uniformSetters.delete(canvas);
         context.getExtension("WEBGL_lose_context")?.loseContext();
         return;
       }
-      draw((nowMs() - started) / 1000);
+      lastSeconds = (nowMs() - started) / 1000;
+      draw(lastSeconds);
       handle.frame = requestAnimationFrame(tick);
     };
     running.set(canvas, handle);

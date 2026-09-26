@@ -68,8 +68,14 @@ import type { MenuSkinId } from "@/player/menuSkins/types";
 import { calculatePlaySurfaceScale } from "@/player/playSurfaceScale";
 import { listTitleMenuOptions, renderTitleEffectsLayer, renderTitleFxStack, titleIntroClass, titleMenuTop } from "@/player/titleScreen";
 import {
+  TITLE_OPENING_FREE_PRESET,
+  mountTitleEffectOverlay,
+  titleOpeningEffectsEditor,
+  titleOpeningPresetChips,
+  type TitleOpeningHost,
+} from "./titleOpeningEditor";
+import {
   MAX_TITLE_LOGO_SUBTITLE_LENGTH,
-  TITLE_EFFECT_LABELS,
   TITLE_OPENING_PRESETS,
   findTitleOpeningPreset,
   titleOpeningPresetEffects,
@@ -559,15 +565,16 @@ function systemSectionNodes(
           class: "db-title-workbench",
           dataset: { testid: "db-title-workbench" },
           children: [
-            titleScreenWorkbenchPreview(titleScreen),
+            titleScreenWorkbenchPreview(titleScreen, rerender),
             el("div", {
               class: "db-title-workbench-fields",
               children: [
+                titleWorkbenchJumpNav(),
+                titleScreenOpeningFieldset(titleScreen, rerender),
                 titleScreenDisplayFieldset(titleScreen, titleBackgroundResourceId, project.system.titleResourceId, rerender),
                 titleScreenMenuFieldset(titleScreen, rerender),
-                titleScreenAudioFieldset(titleScreen, rerender),
                 titleScreenEffectsFieldset(titleScreen, rerender),
-                titleScreenOpeningFieldset(titleScreen, rerender),
+                titleScreenAudioFieldset(titleScreen, rerender),
               ],
             }),
           ],
@@ -1701,10 +1708,12 @@ function titleScreenDisplayFieldset(
     }, { min: 0, max: 240 }),
   );
 
+  children.push(...titleLogoStyleControls(titleScreen, rerender), ...titleBackgroundStyleControls(titleScreen, rerender));
+
   return el("fieldset", {
     class: "oprn-db-fieldset db-title-workbench-group",
     dataset: { testid: "db-title-workbench-display" },
-    children: [el("legend", { text: "표시" }), ...children],
+    children: [el("legend", { text: "글자·배경" }), ...children],
   });
 }
 
@@ -1713,7 +1722,7 @@ function titleScreenAudioFieldset(titleScreen: TitleScreenSettings, rerender: Sy
     class: "oprn-db-fieldset db-title-workbench-group",
     dataset: { testid: "db-title-workbench-audio" },
     children: [
-      el("legend", { text: "오디오" }),
+      el("legend", { text: "소리" }),
       resourcePickerControl({
         label: "타이틀 BGM",
         resourceId: titleScreen.musicResourceId,
@@ -1786,6 +1795,7 @@ function titleScreenMenuFieldset(titleScreen: TitleScreenSettings, rerender: Sys
     children: [
       el("legend", { text: "메뉴" }),
       systemHelp("새 게임은 시작 경로이므로 항상 표시합니다. 이어하기는 자동 저장이 있을 때만 표시됩니다."),
+      titleMenuStyleControl(titleScreen, rerender),
       el("div", {
         class: "db-title-menu-option-row",
         dataset: { testid: "db-title-menu-option-new-game" },
@@ -2082,46 +2092,71 @@ const TITLE_BACKGROUND_RENDERING_OPTIONS = [
   { id: "smooth", name: "부드럽게(일러스트)" },
 ] as const;
 
-/**
- * 오프닝 연출 — 그림 위 영역 효과(빛내림·빛 먼지·칼날 반짝임·물결·안개…)와 로고/메뉴 스타일,
- * 그리고 생성형 이미지로 키아트를 만들어 프리셋 효과까지 한 번에 거는 버튼.
- * 편집은 모두 updateTitleScreen, AI 적용은 기존 쓰기 툴(upsert_resource → set_title_screen) 묶음 한 번.
- */
-function titleScreenOpeningFieldset(titleScreen: TitleScreenSettings, rerender: SystemRefresh): HTMLElement {
-  const presetSelect = el("select", {
-    dataset: { testid: "db-title-opening-preset" },
-    children: TITLE_OPENING_PRESETS.map((preset) => el("option", { text: preset.label, attrs: { value: preset.id } })),
-  }) as HTMLSelectElement;
-  const presetDescription = el("p", { class: "db-system-help", text: TITLE_OPENING_PRESETS[0]?.description ?? "" });
-  presetSelect.addEventListener("change", () => {
-    presetDescription.textContent = findTitleOpeningPreset(presetSelect.value)?.description ?? "";
-  });
-  const applyPreset = el("button", {
-    class: "btn small",
-    text: "효과 프리셋 적용",
-    attrs: { type: "button" },
-    dataset: { testid: "db-title-opening-preset-apply" },
-    on: {
-      click: () => {
-        const preset = findTitleOpeningPreset(presetSelect.value);
-        if (!preset) return;
-        const current = store.getCurrent().system.titleScreen;
-        if ((current?.effects?.length ?? 0) > 0 && !globalThis.confirm(
-          "지금 효과·로고 스타일·메뉴 스타일·배경 맞춤을 프리셋 값으로 바꿉니다. 계속할까요? (되돌리기로 복구할 수 있습니다)",
-        )) return;
-        updateTitleScreen((settings) => {
-          settings.effects = titleOpeningPresetEffects(preset);
-          settings.logoStyle = preset.logoStyle;
-          settings.menuStyle = preset.menuStyle;
-          settings.backgroundFit = "cover";
-          settings.backgroundRendering = "smooth";
-        });
-        rerender();
-      },
-    },
-  });
+// ─────────────────────────────────────────────────────────────────────────────
+// 오프닝 효과 편집기 연결 — 무대 손잡이·효과 목록이 부르는 host.
+// 끌기·슬라이더는 효과 canvas 만 갈아 끼우고(liveEffects), 추가·삭제만 전체를 다시 그린다.
+// ─────────────────────────────────────────────────────────────────────────────
 
-  const styleControls = [
+/** 고른 프리셋 칩 — 패널을 다시 그려도 유지된다. */
+let titleOpeningPresetId: string = TITLE_OPENING_PRESETS[0]?.id ?? TITLE_OPENING_FREE_PRESET;
+
+function titleOpeningHost(rerender: SystemRefresh): TitleOpeningHost {
+  return {
+    update: (mutator, key) => updateTitleScreen(mutator, key),
+    current: () => store.getCurrent().system.titleScreen ?? defaultTitleScreenSettings(),
+    rerender: () => rerender(),
+    liveEffects: () => refreshTitleEffectsLayer(),
+  };
+}
+
+function refreshTitleEffectsLayer(): void {
+  const stage = document.querySelector<HTMLElement>('[data-testid="db-title-workbench-stage"]');
+  if (!stage) return;
+  const project = store.getCurrent();
+  const settings = project.system.titleScreen ?? defaultTitleScreenSettings();
+  const backgroundResourceId = settings.backgroundResourceId ?? project.system.titleResourceId;
+  const existing = stage.querySelector<HTMLElement>("[data-title-effects-signature]");
+  const next = renderTitleEffectsLayer(settings, backgroundResourceId, project, existing);
+  if (next === existing) return;
+  if (!next) {
+    existing?.remove();
+    return;
+  }
+  if (existing) existing.replaceWith(next);
+  else stage.prepend(next);
+}
+
+/** 오른쪽 칸 맨 위의 바로가기 — 칸이 길어서 원하는 묶음으로 바로 뛴다. */
+function titleWorkbenchJumpNav(): HTMLElement {
+  const targets = [
+    ["오프닝 효과", "db-title-opening"],
+    ["글자·배경", "db-title-workbench-display"],
+    ["메뉴", "db-title-workbench-menu"],
+    ["연출", "db-title-workbench-effects"],
+    ["소리", "db-title-workbench-audio"],
+  ] as const;
+  return el("nav", {
+    class: "db-title-workbench-jump",
+    attrs: { "aria-label": "타이틀 설정 바로가기" },
+    dataset: { testid: "db-title-workbench-jump" },
+    children: targets.map(([label, testid]) =>
+      el("button", {
+        class: "db-title-workbench-jump-link",
+        text: label,
+        attrs: { type: "button" },
+        on: {
+          click: (event: Event) => {
+            const root = (event.currentTarget as HTMLElement).closest(".db-title-workbench-fields");
+            root?.querySelector<HTMLElement>(`[data-testid="${testid}"]`)?.scrollIntoView({ block: "start", behavior: "smooth" });
+          },
+        },
+      }),
+    ),
+  });
+}
+
+function titleLogoStyleControls(titleScreen: TitleScreenSettings, rerender: SystemRefresh): HTMLElement[] {
+  return [
     koreanSelectField("로고 스타일", "db-field-title-screen-logo-style", titleScreen.logoStyle ?? "plain", TITLE_LOGO_STYLE_OPTIONS, (value) => {
       updateTitleScreen((settings) => {
         if (value === "plain") delete settings.logoStyle;
@@ -2129,13 +2164,19 @@ function titleScreenOpeningFieldset(titleScreen: TitleScreenSettings, rerender: 
       });
       rerender();
     }),
-    koreanSelectField("메뉴 스타일", "db-field-title-screen-menu-style", titleScreen.menuStyle ?? "window", TITLE_MENU_STYLE_OPTIONS, (value) => {
+    textControl("로고 부제", titleScreen.logoSubtitle ?? "", (value) => {
       updateTitleScreen((settings) => {
-        if (value === "window") delete settings.menuStyle;
-        else settings.menuStyle = value;
-      });
-      rerender();
-    }),
+        const trimmed = value.trim().slice(0, MAX_TITLE_LOGO_SUBTITLE_LENGTH);
+        if (trimmed) settings.logoSubtitle = trimmed;
+        else delete settings.logoSubtitle;
+      }, "system:title-screen:logo-subtitle");
+      rerender("effects");
+    }, "db-field-title-screen-logo-subtitle"),
+  ];
+}
+
+function titleBackgroundStyleControls(titleScreen: TitleScreenSettings, rerender: SystemRefresh): HTMLElement[] {
+  return [
     koreanSelectField("배경 맞춤", "db-field-title-screen-background-fit", titleScreen.backgroundFit ?? "stretch", TITLE_BACKGROUND_FIT_OPTIONS, (value) => {
       updateTitleScreen((settings) => {
         if (value === "stretch") delete settings.backgroundFit;
@@ -2150,97 +2191,89 @@ function titleScreenOpeningFieldset(titleScreen: TitleScreenSettings, rerender: 
       });
       rerender();
     }),
-    textControl("로고 부제", titleScreen.logoSubtitle ?? "", (value) => {
-      updateTitleScreen((settings) => {
-        const trimmed = value.trim().slice(0, MAX_TITLE_LOGO_SUBTITLE_LENGTH);
-        if (trimmed) settings.logoSubtitle = trimmed;
-        else delete settings.logoSubtitle;
-      }, "system:title-screen:logo-subtitle");
-      rerender("effects");
-    }, "db-field-title-screen-logo-subtitle"),
   ];
+}
 
-  const effects = titleScreen.effects ?? [];
-  const effectRows = effects.map((effect, index) =>
-    el("div", {
-      class: "db-title-opening-effect-row",
-      dataset: { testid: `db-title-opening-effect-${index}`, effectKind: effect.kind },
-      children: [
-        checkboxField(TITLE_EFFECT_LABELS[effect.kind], `db-title-opening-effect-${index}-enabled`, effect.enabled !== false, (checked) => {
-          updateTitleScreen((settings) => {
-            const target = settings.effects?.[index];
-            if (!target) return;
-            if (checked) delete target.enabled;
-            else target.enabled = false;
-          });
-          rerender("effects");
-        }),
-        densitySliderField(
-          "세기",
-          `db-title-opening-effect-${index}-intensity`,
-          Math.round(((effect.intensity ?? 1) / 2) * 100),
-          effect.enabled === false,
-          (value) => {
-            updateTitleScreen((settings) => {
-              const target = settings.effects?.[index];
-              if (!target) return;
-              target.intensity = Math.max(0, Math.min(2, (value / 100) * 2));
-            }, `system:title-screen:effect-${index}-intensity`);
-            rerender("effects");
-          },
-        ),
-        el("button", {
-          class: "btn small",
-          text: "삭제",
-          attrs: { type: "button" },
-          dataset: { testid: `db-title-opening-effect-${index}-remove` },
-          on: {
-            click: () => {
-              updateTitleScreen((settings) => {
-                const next = (settings.effects ?? []).filter((_, i) => i !== index);
-                if (next.length) settings.effects = next;
-                else delete settings.effects;
-              });
-              rerender();
-            },
-          },
-        }),
-      ],
-    }),
-  );
-  const clearEffects = effects.length
-    ? el("button", {
-        class: "btn small",
-        text: "효과 모두 끄기",
-        attrs: { type: "button" },
-        dataset: { testid: "db-title-opening-effects-clear" },
-        on: {
-          click: () => {
-            updateTitleScreen((settings) => {
-              delete settings.effects;
-            });
-            rerender();
-          },
-        },
-      })
-    : null;
+function titleMenuStyleControl(titleScreen: TitleScreenSettings, rerender: SystemRefresh): HTMLElement {
+  return koreanSelectField("메뉴 스타일", "db-field-title-screen-menu-style", titleScreen.menuStyle ?? "window", TITLE_MENU_STYLE_OPTIONS, (value) => {
+    updateTitleScreen((settings) => {
+      if (value === "window") delete settings.menuStyle;
+      else settings.menuStyle = value;
+    });
+    rerender();
+  });
+}
 
+/**
+ * 오프닝 효과 — 한 칸에 세 단계만 둔다.
+ * 1) 분위기 칩(프리셋 10종 + 「자유」) → 그림 만들기 또는 지금 그림에 효과만 입히기.
+ * 2) 켜진 효과 목록 + 고른 효과의 값 조절(무대 위 손잡이로도 끈다).
+ * 생성은 기존 쓰기 툴(upsert_resource → set_title_screen) 묶음 한 번이라 되돌리기 한 번으로 취소된다.
+ */
+function titleScreenOpeningFieldset(titleScreen: TitleScreenSettings, rerender: SystemRefresh): HTMLElement {
+  if (titleOpeningPresetId !== TITLE_OPENING_FREE_PRESET && !findTitleOpeningPreset(titleOpeningPresetId)) {
+    titleOpeningPresetId = TITLE_OPENING_PRESETS[0]?.id ?? TITLE_OPENING_FREE_PRESET;
+  }
+  const isFree = () => titleOpeningPresetId === TITLE_OPENING_FREE_PRESET;
+  const presetDescription = el("p", { class: "db-system-help db-title-preset-description", dataset: { testid: "db-title-opening-preset-description" } });
   const promptInput = el("textarea", {
     class: "db-title-opening-prompt",
-    attrs: { rows: "3", placeholder: "예: 칼 두 자루가 기대 선 큰 나무, 강 건너 성 마을, 안개 낀 산맥" },
+    attrs: { rows: "3" },
     dataset: { testid: "db-title-opening-ai-prompt" },
   }) as HTMLTextAreaElement;
+  const applyPreset = el("button", {
+    class: "btn small",
+    text: "지금 그림에 효과만 입히기",
+    attrs: { type: "button" },
+    dataset: { testid: "db-title-opening-preset-apply" },
+  }) as HTMLButtonElement;
   const aiStatus = el("p", { class: "db-system-help", dataset: { testid: "db-title-opening-ai-status" } });
   const aiButton = el("button", {
     class: "btn small primary",
-    text: "AI로 오프닝 만들기",
     attrs: { type: "button" },
     dataset: { testid: "db-title-opening-ai-generate" },
   }) as HTMLButtonElement;
   let aiAbort: AbortController | null = null;
+
+  const aiIdleLabel = () => (isFree() ? "설명대로 키아트 만들기" : "이 분위기로 키아트 만들기");
+  const syncMode = () => {
+    const preset = findTitleOpeningPreset(titleOpeningPresetId);
+    presetDescription.textContent = preset
+      ? preset.description
+      : "프리셋 없이 장면 설명만으로 그림을 만들고, 그림을 보고 어울리는 효과를 골라 위치까지 맞춥니다.";
+    promptInput.placeholder = isFree()
+      ? "필수 — 예: 폭풍우 치는 밤바다 위 등대, 부서진 배의 돛"
+      : "선택 — 예: 칼 두 자루가 기대 선 큰 나무, 강 건너 성 마을";
+    applyPreset.hidden = isFree();
+    if (!aiAbort) aiButton.textContent = aiIdleLabel();
+  };
+
+  applyPreset.addEventListener("click", () => {
+    const preset = findTitleOpeningPreset(titleOpeningPresetId);
+    if (!preset) return;
+    const current = store.getCurrent().system.titleScreen;
+    if ((current?.effects?.length ?? 0) > 0 && !globalThis.confirm(
+      "지금 효과·로고 스타일·메뉴 스타일·배경 맞춤을 프리셋 값으로 바꿉니다. 계속할까요? (되돌리기로 복구할 수 있습니다)",
+    )) return;
+    updateTitleScreen((settings) => {
+      settings.effects = titleOpeningPresetEffects(preset);
+      settings.logoStyle = preset.logoStyle;
+      settings.menuStyle = preset.menuStyle;
+      settings.backgroundFit = "cover";
+      settings.backgroundRendering = "smooth";
+    });
+    rerender();
+  });
+
   aiButton.addEventListener("click", () => {
     if (aiAbort) {
       aiAbort.abort();
+      return;
+    }
+    if (isFree() && promptInput.value.trim().length < 4) {
+      aiStatus.dataset.state = "error";
+      aiStatus.textContent = "「자유」는 장면 설명이 있어야 그릴 수 있습니다. 한 줄이면 됩니다.";
+      promptInput.focus();
       return;
     }
     const current = store.getCurrent().system.titleScreen;
@@ -2249,42 +2282,43 @@ function titleScreenOpeningFieldset(titleScreen: TitleScreenSettings, rerender: 
     )) return;
     aiAbort = new AbortController();
     aiButton.textContent = "생성 취소";
-    void runTitleArtGeneration(presetSelect.value, promptInput.value, aiStatus, rerender, aiAbort.signal).finally(() => {
+    const presetId = isFree() ? undefined : titleOpeningPresetId;
+    void runTitleArtGeneration(presetId, promptInput.value, aiStatus, rerender, aiAbort.signal).finally(() => {
       aiAbort = null;
-      aiButton.textContent = "AI로 오프닝 만들기";
+      aiButton.textContent = aiIdleLabel();
     });
   });
 
+  const chips = titleOpeningPresetChips(titleOpeningPresetId, (presetId) => {
+    titleOpeningPresetId = presetId;
+    syncMode();
+  });
+  syncMode();
+
   return el("fieldset", {
-    class: "oprn-db-fieldset db-title-workbench-group",
+    class: "oprn-db-fieldset db-title-workbench-group db-title-opening",
     dataset: { testid: "db-title-opening" },
     children: [
-      el("legend", { text: "오프닝 연출" }),
-      systemHelp("그림 위에 빛내림·빛 먼지·칼날 반짝임·물결·안개를 얹습니다. 프리셋은 구도가 비슷한 그림을 기준으로 좌표가 잡혀 있습니다."),
-      field("효과 프리셋", presetSelect),
-      presetDescription,
-      applyPreset,
-      el("div", {
-        class: "db-title-opening-effects",
-        dataset: { testid: "db-title-opening-effects" },
-        children: effectRows.length ? [...effectRows, ...(clearEffects ? [clearEffects] : [])] : [systemHelp("켜진 효과가 없습니다.")],
-      }),
-      ...styleControls,
+      el("legend", { text: "오프닝 효과" }),
       el("div", {
         class: "db-title-opening-ai",
         children: [
-          systemHelp("선택한 프리셋 구도로 키아트를 생성해 배경에 걸고 효과·로고 스타일을 함께 적용합니다. 되돌리기 한 번으로 취소됩니다."),
-          field("장면 설명(선택)", promptInput),
-          aiButton,
+          el("h4", { class: "db-title-opening-step", text: "① 분위기 고르고 그림 만들기" }),
+          chips,
+          presetDescription,
+          field("장면 설명", promptInput),
+          el("div", { class: "db-title-opening-actions", children: [aiButton, applyPreset] }),
           aiStatus,
         ],
       }),
+      el("h4", { class: "db-title-opening-step", text: "② 효과 다듬기 — 무대 위 손잡이를 끌어 위치를 옮깁니다" }),
+      titleOpeningEffectsEditor(titleScreen, titleOpeningHost(rerender)),
     ],
   });
 }
 
 async function runTitleArtGeneration(
-  presetId: string,
+  presetId: string | undefined,
   prompt: string,
   status: HTMLElement,
   rerender: SystemRefresh,
@@ -2296,7 +2330,7 @@ async function runTitleArtGeneration(
     const { generateTitleArt, titleArtToolCalls } = await import("@/editor/titleArtGeneration");
     const title = store.getCurrent().system.titleScreen?.title;
     const art = await generateTitleArt(
-      { preset: presetId, ...(prompt.trim() ? { prompt: prompt.trim() } : {}), ...(title ? { title } : {}) },
+      { ...(presetId ? { preset: presetId } : {}), ...(prompt.trim() ? { prompt: prompt.trim() } : {}), ...(title ? { title } : {}) },
       { signal },
     );
     signal.throwIfAborted();
@@ -2314,9 +2348,12 @@ async function runTitleArtGeneration(
     }
     status.dataset.state = "done";
     // 맞춤이 실패하면 프리셋 좌표가 그대로 들어간다 — 그림과 어긋날 수 있다는 사실을 숨기지 않는다.
-    status.textContent = art.effects
-      ? "키아트를 배경에 걸고, 그림을 보고 위치를 맞춘 효과를 적용했습니다."
-      : "키아트를 배경에 걸었습니다. 효과 위치 맞춤은 실패해 프리셋 좌표를 그대로 썼으니 그림과 어긋날 수 있습니다.";
+    const freeFitFailed = !presetId && art.effects?.length === 1 && art.effects[0]?.kind === "camera";
+    status.textContent = freeFitFailed
+      ? "키아트를 배경에 걸었습니다. 효과 위치 맞춤은 실패해 화면 흔들림만 넣었습니다. 아래 목록에서 효과를 더하세요."
+      : art.effects
+        ? "키아트를 배경에 걸고, 그림을 보고 위치를 맞춘 효과를 적용했습니다."
+        : "키아트를 배경에 걸었습니다. 효과 위치 맞춤은 실패해 프리셋 좌표를 그대로 썼으니 그림과 어긋날 수 있습니다.";
     rerender();
   } catch (error) {
     if (signal.aborted) {
@@ -2497,7 +2534,9 @@ function densitySliderField(
 
 function titleScreenWorkbenchPreview(
   titleScreen: TitleScreenSettings,
+  rerender: SystemRefresh,
 ): HTMLElement {
+  const host = titleOpeningHost(rerender);
   // Every replay reads one current store snapshot. Text-only edits do not rebuild
   // this workbench, so the render-time project/settings must not drive the stage.
   const buildStage = (project: Project): HTMLElement => {
@@ -2623,6 +2662,8 @@ function titleScreenWorkbenchPreview(
     if (titleScreen.menuStyle) menu.dataset.menuStyle = titleScreen.menuStyle;
     placeTitleMenu(menu, titleScreen, visibleOptions.length);
     stage.append(menu);
+    // 효과 위치 손잡이 — 켜진 효과가 있을 때만. 끌기는 효과 canvas 만 갈아 끼운다(무대 재생성 없음).
+    if (titleScreen.effects?.length) mountTitleEffectOverlay(stage, host, bgUrl ?? undefined);
     return stage;
   };
 

@@ -1,7 +1,7 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { applySystemWindowSkinVariable, applyTitleScreenBackground } from "@/player/systemGraphics";
 import { createTitleParticlesCanvas } from "@/player/titleParticles";
-import { createTitleEffectsCanvas, titleEffectsSignature } from "@/player/titleEffects/renderer";
+import { createTitleEffectsCanvas, titleEffectsSignature, updateTitleEffectsCanvas } from "@/player/titleEffects/renderer";
 import { activeTitleEffects } from "@/project/titleEffects";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import type { Project, TitleBackgroundLayer, TitleIntroSettings, TitleScreenSettings } from "@/project/types";
@@ -177,8 +177,20 @@ export function renderTitleEffectsLayer(
   const options = { effects, imageUrl, fit: settings.backgroundFit ?? "stretch" };
   const signature = titleEffectsSignature(options);
   if (reuse && reuse.dataset.titleEffectsSignature === signature) return reuse;
+  // 같은 그림·맞춤에서 효과 값만 바뀌면 WebGL 문맥을 새로 만들지 않고 값만 바꾼다(편집기 드래그·슬라이더).
+  if (
+    reuse instanceof HTMLCanvasElement &&
+    reuse.dataset.titleEffectsImage === imageUrl &&
+    reuse.dataset.titleEffectsFit === options.fit &&
+    updateTitleEffectsCanvas(reuse, effects)
+  ) {
+    reuse.dataset.titleEffectsSignature = signature;
+    return reuse;
+  }
   const canvas = createTitleEffectsCanvas(options);
   canvas.dataset.titleEffectsSignature = signature;
+  canvas.dataset.titleEffectsImage = imageUrl;
+  canvas.dataset.titleEffectsFit = options.fit;
   return canvas;
 }
 
