@@ -103,3 +103,48 @@ export function ensureForestGroveInterior(tileset: TilesetDef): boolean {
   tileset.autotileGroups = tileset.autotileGroups!.map(candidate => candidate === group ? next : candidate);
   return true;
 }
+
+export const FOREST_GROVE_WALK_GROUP = "forest_harmony_grove_walk_47";
+
+const walkMeta = (meta: TileAiMetadata): TileAiMetadata => ({ ...meta,
+  label: `${meta.label} · 지나감`, passage: "star",
+  description: "쌍꾸르식 통행 가능한 수관(★). 일반 굽이숲 수관과 같은 그림이고 이어 그린다. 주인공이 밑으로 걸어 들어가고 캐릭터 위에 그려진다 — 숨은 길·보물 자리." });
+
+/**
+ * 쌍꾸르 관례의 «통행 가능한 수관»: 같은 굽이숲 픽셀을 새 슬롯에 한 벌 더 이식하고 ★(통행 + 상위)로 둔다.
+ * ★ 는 이동 판정에서 건너뛰어 바닥(잔디)이 통행을 정하고(collision.layeredPassability), 런타임은 항상 캐릭터 위에 그린다
+ * (characterDepth.mapUpperTileDepth) — 주인공이 잎 아래로 사라진다. 두 그룹은 서로를 이웃으로 세어 경계가 이어진다.
+ * 원래 수관 슬롯·번호·동결 메타는 건드리지 않는다. 이미 있으면 아무것도 하지 않고 그룹을 돌려준다.
+ */
+export function ensureWalkableCanopy(tileset: TilesetDef): AutotileGroup | undefined {
+  const existing = tileset.autotileGroups?.find(group => group.id === FOREST_GROVE_WALK_GROUP);
+  if (existing) return existing;
+  const grove = tileset.autotileGroups?.find(group => group.id === FOREST_GROVE_GROUP);
+  if (!grove || tileset.image.type !== "bundled" || tileset.image.id !== "tex_forest_harmony") return undefined;
+  const sources = new Map((tileset.tileGrafts ?? []).map(graft => [graft.targetTile, graft] as const));
+  const tiles = [...forestCanopyTiles(grove)].sort((a, b) => a - b);
+  if (tiles.some(tile => !sources.has(tile))) return undefined;
+  const lastGraft = Math.max(-1, ...(tileset.tileGrafts ?? []).map(graft => graft.targetTile));
+  const start = Math.ceil(Math.max(tileset.count, lastGraft + 1) / tileset.tilesPerRow) * tileset.tilesPerRow;
+  const twin = new Map(tiles.map((tile, i) => [tile, start + i] as const));
+  const count = Math.ceil((start + tiles.length) / tileset.tilesPerRow) * tileset.tilesPerRow;
+  for (let tile = tileset.count; tile < count; tile++) setCanopySlot(tileset, tile, canopyMeta());
+  tileset.count = count;
+  for (const [tile, slot] of twin) {
+    setCanopySlot(tileset, slot, walkMeta(tileset.tileMeta?.[tile] ?? canopyMeta()));
+    tileset.passability[slot] = { up: true, down: true, left: true, right: true };
+  }
+  tileset.tileGrafts = [...(tileset.tileGrafts ?? []), ...tiles.map(tile => ({ ...sources.get(tile)!, targetTile: twin.get(tile)! }))];
+  const walk: AutotileGroup = {
+    ...grove,
+    id: FOREST_GROVE_WALK_GROUP,
+    name: "굽이숲 · 지나가는 수관(★)",
+    memberTileIds: grove.memberTileIds.map(tile => twin.get(tile)!),
+    connectTileIds: [...tiles, ...twin.values()],
+    variantMap: Object.fromEntries(Object.entries(grove.variantMap).map(([mask, tile]) => [mask, twin.get(tile)!])),
+    ...(grove.interiorVariants ? { interiorVariants: grove.interiorVariants.map(tier => tier.map(tile => twin.get(tile)!)) } : {}),
+  };
+  const joined: AutotileGroup = { ...grove, connectTileIds: [...(grove.connectTileIds ?? grove.memberTileIds), ...twin.values()] };
+  tileset.autotileGroups = [...tileset.autotileGroups!.map(group => group === grove ? joined : group), walk];
+  return walk;
+}
