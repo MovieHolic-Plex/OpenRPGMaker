@@ -50,6 +50,13 @@
 `.omo/gates-vitest-report.json` 에서 **오래 걸린 파일 상위**를 뽑아 `/usr/bin/time -v` 로 단독 실행해
 피크 RSS 를 재는 쪽이 빠르다(이번에도 그렇게 찾았다).
 
+## main 의 ci-fast 는 다음 머지가 진행 중 잡을 끊지 않는다 (2026-09-26)
+
+`concurrency.cancel-in-progress` 가 main 에서도 true 이면, 머지가 잡보다 빠를 때 앞선 main 실행이
+parity 같은 중간 단계에서 `cancelled` 가 된다. 타입체크는 통과했는데 그 커밋의 체크는 완료로 남지 않는다.
+main 푸시만 `cancel-in-progress: false` 다. 이미 돈 잡은 끝내고, 대기열에만 있던 옛 커밋은 최신 커밋이 대체한다.
+PR 브랜치는 그대로 새 푸시가 옛 잡을 끊는다.
+
 ## parity 스위트 CI OOM (2026-09-19)
 
 `ci-fast` parity 단계가 4코어/6GiB 슬라이스에서 `Killed` exit 137 로 죽었다(PR #989, `35406626024`).
