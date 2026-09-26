@@ -16,7 +16,8 @@ import { RETRO_HOUSE_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetr
 import { RETRO_WORLD_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetroWorld";
 import { SHIP_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsShip";
 import { WORLD_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsWorld";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { TILE } from "@/project/defaults/constants";
+import { defaultToolTilesetId } from "@/project/defaults/forestHarmony";
 import { hasExtraLayers, layerTileAt, shadowAt, TILE_LAYER_NOS } from "@/project/mapLayers";
 import {
   COMBINED_TOWN_HARNESS_PREFIX,
@@ -73,7 +74,7 @@ const OVERLAY_SCHEMA = {
 } satisfies JsonSchema;
 
 function requireTileset(project: Project, tilesetId: unknown): TilesetDef {
-  const id = (tilesetId as string | undefined) ?? DEFAULT_TILESET_ID;
+  const id = (tilesetId as string | undefined) ?? defaultToolTilesetId(project);
   const tileset = project.tilesets[id];
   if (!tileset) throw new ToolError(`타일셋을 찾을 수 없습니다: ${id}`, { code: "tileset-not-found" });
   return tileset;
@@ -234,7 +235,7 @@ const getTileInfo: ToolDefinition = {
     type: "object",
     properties: {
       tileIds: { type: "array", items: { type: "integer" }, description: "조회할 타일 인덱스 목록(최대 30)" },
-      tilesetId: { type: "string", description: "생략 시 기본 타일셋" },
+      tilesetId: { type: "string", description: "생략 시 시작 맵의 타일셋(없으면 숲마을)" },
     },
     required: ["tileIds"],
   },
@@ -274,7 +275,7 @@ const listUnclassifiedTiles: ToolDefinition = {
   parameters: {
     type: "object",
     properties: {
-      tilesetId: { type: "string", description: "생략 시 기본 타일셋" },
+      tilesetId: { type: "string", description: "생략 시 시작 맵의 타일셋(없으면 숲마을)" },
       limit: { type: "integer", description: "가져올 개수. 기본 24, 최대 100" },
       offset: { type: "integer", description: "건너뛸 미분류 타일 개수. 기본 0" },
     },
@@ -313,7 +314,7 @@ const setTileMetadata: ToolDefinition = {
   parameters: {
     type: "object",
     properties: {
-      tilesetId: { type: "string", description: "생략 시 기본 타일셋" },
+      tilesetId: { type: "string", description: "생략 시 시작 맵의 타일셋(없으면 숲마을)" },
       entries: {
         type: "array",
         description: "[{tile, label?, description?, role?, tags?}] — 같은 의미의 타일 여러 개를 한 번에 기록",
@@ -379,7 +380,7 @@ const setTileRules: ToolDefinition = {
   parameters: {
     type: "object",
     properties: {
-      tilesetId: { type: "string", description: "생략 시 기본 타일셋" },
+      tilesetId: { type: "string", description: "생략 시 시작 맵의 타일셋(없으면 숲마을)" },
       entries: {
         type: "array",
         description: "[{tile, layer?: auto|lower|upper, passable?: boolean, terrainTag?: integer}]",
@@ -473,7 +474,7 @@ const upsertTileGroup: ToolDefinition = {
   parameters: {
     type: "object",
     properties: {
-      tilesetId: { type: "string", description: "생략 시 기본 타일셋" },
+      tilesetId: { type: "string", description: "생략 시 시작 맵의 타일셋(없으면 숲마을)" },
       id: { type: "string", description: "기존 그룹 갱신 시 지정. 생략하면 이름에서 생성" },
       name: { type: "string" },
       role: { type: "string", enum: TILE_GROUP_ROLES as unknown as string[] },
@@ -546,7 +547,7 @@ const setGroupJunction: ToolDefinition = {
   parameters: {
     type: "object",
     properties: {
-      tilesetId: { type: "string", description: "생략 시 기본 타일셋" },
+      tilesetId: { type: "string", description: "생략 시 시작 맵의 타일셋(없으면 숲마을)" },
       groupId: { type: "string" },
       junction: JUNCTION_SCHEMA,
     },
@@ -575,7 +576,7 @@ const setGroupOverlay: ToolDefinition = {
   parameters: {
     type: "object",
     properties: {
-      tilesetId: { type: "string", description: "생략 시 기본 타일셋" },
+      tilesetId: { type: "string", description: "생략 시 시작 맵의 타일셋(없으면 숲마을)" },
       groupId: { type: "string" },
       overlay: OVERLAY_SCHEMA,
     },
@@ -849,7 +850,7 @@ const showTiles: ToolDefinition = {
     type: "object",
     properties: {
       tileIds: { type: "array", items: { type: "integer" }, description: "보여줄 타일 인덱스(최대 12)" },
-      tilesetId: { type: "string", description: "생략 시 기본 타일셋" },
+      tilesetId: { type: "string", description: "생략 시 시작 맵의 타일셋(없으면 숲마을)" },
     },
     required: ["tileIds"],
   },

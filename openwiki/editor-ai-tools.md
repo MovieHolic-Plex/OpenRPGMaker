@@ -171,6 +171,19 @@ DEFAULT/AUTO/YOLO/단계별 적용에서는 검색까지 직렬 실행됐다. �
 - `author_village.target.tilesetId`는 **new 전용**이다. 스키마·파서·생성·변이 전 호환성 검사에
   모두 전달한다. 기존 맵은 해당 맵 칩셋을 검사하며 자동 교체하지 않는다.
 - 숲마을은 합본 마을 0~479의 집·길 번호와 레트로 절벽 구간을 보존하므로 호환 판정에 포함한다.
+- **합본 마을은 사용 중단 (2026-09-26).** `tilesetKind.ts::isDeprecatedTileset`가 `easyrpg_chipset_combined_town`을
+  표시하고, 맵 만들기·맵 속성의 타일 그림판 목록(`tilesetSelectOptions.ts`)은 이름 뒤에 「사용 중단 · 숲마을 칩 사용」을 붙이고
+  묶음 끝으로 보낸다. 기존 맵은 그대로 동작하고 `DEFAULT_TILESET_ID`·성채 빌더·지리 컴파일·데모 맵은 이번 범위가 아니다.
+  이유: 숲마을 칩은 합본 480칸 중 400칸을 픽셀 그대로(378칸은 같은 번호) 담고, 나머지 80칸(잔디·키큰 풀·흑길·모래 오토타일)은
+  다시 칠한 변형이다. 합본에는 굽이숲 수관(`forest_harmony_grove_47`)이 없어 `place_props` density 숲이
+  덮불 섬는 `plantForestComposition`으로 떨어진다.
+- **도구의 tilesetId 생략 = 시작 맵 타일셋 (2026-09-26).** `forestHarmony.ts::defaultToolTilesetId`가
+  시작 맵 타일셋을 고르고, 없으면 `defaultOutdoorTilesetId`(숲마을)로 간다. 합본 마을로 고정 폴백하던
+  `set_tile_passability`, `set_tile_metadata`·`set_tile_rules`·`upsert_tile_group` 등 타일 메타 도구, `set_cluster_rule`,
+  `set_group_layout`, `render_group_sample`, `upsert_palette_preset`, `suggest_group_from_range`,
+  `propose_tile_vocabulary`, `query_tiles`가 이 규칙을 쓴다. 명시한 `tilesetId`는 그대로 우선한다.
+  이유: 빈 프로젝트 시작 맵이 숲마을인데 생략 호출이 보이지 않는 합본 마을 메타를 고쳤다.
+  `DEFAULT_TILESET_ID` 상수, 성채 빌더, 지리 정주지 컴파일, 표시용 폴백은 그대로다.
   `isCombinedTownTileset` 자체를 바꾸거나 합본 마을 하네스로 숲마을 저작 정의를 덮지 않는다.
   숲마을 언덕도 morphology + relief 경로를 사용한다.
 - 나무는 `treeKitForTileset`이 숲마을 `tileGroups[].previewMap`의 완성 조립과 셀별 레이어를 읽는다.

@@ -1,5 +1,5 @@
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
-import type { TileGroupMetadata, TileGroupRole, TilesetDef } from "@/project/types";
+import { defaultToolTilesetId } from "@/project/defaults/forestHarmony";
+import type { Project, TileGroupMetadata, TileGroupRole, TilesetDef } from "@/project/types";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 type PatternGrammar = NonNullable<TileGroupMetadata["patternGrammar"]>;
@@ -66,7 +66,7 @@ const suggestGroupFromRange: ToolDefinition = {
     required: ["tilesetId"],
   },
   run(project, args): ToolExecResult {
-    const tileset = requireTileset(project.tilesets, args.tilesetId);
+    const tileset = requireTileset(project, args.tilesetId);
     const explicitTileIds = tileIdsValue(tileset, args.tileIds);
     const rect = rectValue(args.rect, tileset) ?? rectFromTileIds(tileset, explicitTileIds);
     const tileIds = explicitTileIds ?? tileIdsFromRect(tileset, rect);
@@ -96,9 +96,9 @@ const suggestGroupFromRange: ToolDefinition = {
 
 export const RANGE_CLASSIFY_TOOLS: readonly ToolDefinition[] = [suggestGroupFromRange];
 
-function requireTileset(tilesets: Record<string, TilesetDef>, idValue: unknown): TilesetDef {
-  const id = typeof idValue === "string" && idValue.length > 0 ? idValue : DEFAULT_TILESET_ID;
-  const tileset = tilesets[id];
+function requireTileset(project: Pick<Project, "tilesets" | "maps" | "startMapId">, idValue: unknown): TilesetDef {
+  const id = typeof idValue === "string" && idValue.length > 0 ? idValue : defaultToolTilesetId(project);
+  const tileset = project.tilesets[id];
   if (!tileset) throw new ToolError(`타일셋을 찾을 수 없습니다: ${id}`, { code: "tileset-not-found" });
   return tileset;
 }
