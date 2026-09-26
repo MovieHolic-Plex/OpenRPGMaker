@@ -1,7 +1,7 @@
 import { z, type ZodType } from "zod";
 import { deserializeStoredProjectJson } from "../../src/project/persistence/core/loadRepair";
 import { canonicalJsonString } from "../../src/project/persistence/core/canonicalJson";
-import { resolveMapPatchDocuments } from "../../src/project/persistence/core/projectPatch";
+import { resolveMapPatchDocuments, applyProjectDocumentPatch } from "../../src/project/persistence/core/projectPatch";
 import type { Project } from "../../src/project/types";
 import { OPRN_CHANNELS } from "../shared/channels";
 import {
@@ -43,11 +43,14 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
   const cached = services.get(sessions);
   if (cached) return cached;
   const store = (key: SessionKey) => sessions.require(key).store;
-  const preparedPatches = new WeakMap<object, { base: Project; project: Project; changedMapIds?: readonly string[]; baseSha?: string }>();
+  /** 임대를 빼앗긴 `resource\0session`. 이 세션은 해당 자원을 혼자 모드에서도 자동 회수하지 않는다. */
+  const displacedLeases = new Set<string>();
+  type PreparedPatch = { readonly getBase: () => Project; readonly project: Project; readonly changedMapIds?: readonly string[]; readonly baseSha?: string };
+  const preparedPatches = new WeakMap<object, PreparedPatch>();
 
   function prepareMapPatch(key: SessionKey, payload: unknown):
     | { readonly kind: "stale-base" }
-    | { readonly kind: "ready"; readonly base: Project; readonly project: Project; readonly changedMapIds?: readonly string[]; readonly baseSha?: string } {
+    | ({ readonly kind: "ready" } & PreparedPatch) {
     if (payload !== null && typeof payload === "object" && preparedPatches.has(payload)) {
       return { kind: "ready", ...preparedPatches.get(payload)! };
     }
@@ -59,9 +62,24 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
       sha256: info.sha256 ?? null,
     });
     if (resolved.kind === "stale-base") return resolved;
-    const ready = {
-      base: deserializeStoredProjectJson(resolved.baseJson),
-      project: deserializeStoredProjectJson(resolved.localJson),
+    // 기준본 역직렬화는 쓸 때만 한다(다른 세션 잠금 충돌 검사·기준이 다를 때의 3자 병합).
+    // 혼자 칠하는 흔한 경로에서는 읽히지 않는다 — 실측(2026-09-26, 81MB) 패치마다 약 1.6s.
+    let base: Project | undefined;
+    const baseJson = resolved.baseJson;
+    // 패치 경로의 로컬 트리는 기준 트리와 가지를 공유하므로 그대로 복구하면 기준본이 더러워진다.
+    // 기준 트리를 이 자리에서 직접 파싱했으면(저장 행·보낸 기준 문서) 그 글을 한 번 더 파싱해 로컬 트리를
+    // 따로 만들고 제자리에서 복구한다 — 복구 전 전체 structuredClone(약 0.4s)보다 파싱(약 0.1s)이 싸다.
+    // 복구가 실패하면 손대지 않은 로컬 문서 글로 돌아간다(loadRepair 계약, 글은 그때만 만든다).
+    const baseText = input.patch ? (input.baseSerialized ?? stored.exportSerialized()) : null;
+    const project = input.patch && baseText
+      ? (() => {
+        const privateLocal = applyProjectDocumentPatch(JSON.parse(baseText) as unknown, input.patch!);
+        return deserializeStoredProjectJson(privateLocal, () => JSON.stringify(resolved.localJson));
+      })()
+      : deserializeStoredProjectJson(resolved.localJson);
+    const ready: PreparedPatch = {
+      getBase: () => (base ??= deserializeStoredProjectJson(baseJson)),
+      project,
       ...(input.changedMapIds ? { changedMapIds: input.changedMapIds } : {}),
       // The base came from the stored row only when the client's hash matched it.
       ...(input.baseSerialized === undefined && input.patch && info.sha256 && input.baseSha === info.sha256 ? { baseSha: info.sha256 } : {}),
@@ -101,13 +119,23 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
       const session = sessions.require(key), member = sessions.member(key);
       if (member.role === 'viewer') throw new Error('읽기 전용 팀원은 편집할 수 없습니다');
       const lease = session.locks.get(input.resource);
-      if (lease && lease.expiresAt > Date.now() && lease.session !== key) {
-        const canTakeover = member.role === 'owner' || lease.memberId === member.id;
-        if (input.release || !input.takeover || !canTakeover) {
-          return { kind: 'locked', ownerLabel: lease.ownerLabel, expiresAt: lease.expiresAt, canTakeover };
+      const liveForeignLease = lease && lease.expiresAt > Date.now() && lease.session !== key ? lease : null;
+      if (liveForeignLease) {
+        const canTakeover = member.role === 'owner' || liveForeignLease.memberId === member.id;
+        // 혼자 쓰는 팀(구성원 1명)에서 같은 구성원이 새 탭으로 다시 열면 이전 임대를 회수한다.
+        // 실측(2026-09-26 온보딩 저니 04): 이전 탭이 pagehide 없이 죽으면(크래시·브라우저 강제 종료·절전)
+        // 임대가 90초 남아, 혼자 만든 프로젝트에서 「호스트님이 편집 중입니다」로 칠하기가 막혔다.
+        // 밀려난 세션은 자동 회수하지 않는다 — 살아 있는 두 탭이 20초 갱신마다 서로 빼앗는 핑퐁을 막는다.
+        // 그 탭은 기존 계약대로 locked+canTakeover 를 받고 명시적 클릭으로만 되찾는다.
+        const soloReclaim = !input.release && liveForeignLease.memberId === member.id
+          && session.team.list().length === 1 && !displacedLeases.has(`${input.resource}\u0000${key}`);
+        if (!soloReclaim && (input.release || !input.takeover || !canTakeover)) {
+          return { kind: 'locked', ownerLabel: liveForeignLease.ownerLabel, expiresAt: liveForeignLease.expiresAt, canTakeover };
         }
       }
       if (input.release) { session.locks.delete(input.resource); return { kind: 'released' }; }
+      if (liveForeignLease) displacedLeases.add(`${input.resource}\u0000${liveForeignLease.session}`);
+      displacedLeases.delete(`${input.resource}\u0000${key}`);
       const expiresAt = Date.now() + 90_000;
       session.locks.set(input.resource, { session: key, memberId: member.id, ownerLabel: member.label, expiresAt });
       return { kind: 'held', expiresAt };
@@ -148,7 +176,7 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
       const prepared = prepareMapPatch(key, payload);
       if (prepared.kind === "stale-base") return prepared;
       return await store(key).saveMapPatch({
-        baseProject: prepared.base,
+        getBaseProject: prepared.getBase,
         project: prepared.project,
         ...(prepared.changedMapIds ? { changedMapIds: prepared.changedMapIds } : {}),
         ...(prepared.baseSha ? { baseSha: prepared.baseSha } : {}),
@@ -287,20 +315,28 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
       if (channel === OPRN_CHANNELS.assetsPruneUnused && sessions.require(key).team.list().length > 1) throw new Error('팀 작업 중에는 미사용 에셋 정리를 실행할 수 없습니다');
       if ([OPRN_CHANNELS.assetsPruneUnused, OPRN_CHANNELS.projectSeparateMedia, OPRN_CHANNELS.projectBackup].some(candidate => candidate === channel)) requireOwner(key);
       if (channel === OPRN_CHANNELS.projectSave || channel === OPRN_CHANNELS.projectSaveMapPatch) {
-        let base: Project | undefined;
-        let local: Project;
-        if (channel === OPRN_CHANNELS.projectSave) {
-          local = projectFromSerialized(saveProjectSchema.parse(payload).serialized);
-          base = store(key).loadSnapshot()?.project;
-        } else {
+        // 다른 세션이 지금 쥐고 있는 임대가 있을 때만 문서를 열어 비교한다. 혼자 쓰는 흔한 경우에는
+        // 역직렬화를 하지 않는다 — 실측(2026-09-26, 81MB 새 프로젝트) 전체 저장마다 저장 행 파싱+역직렬화 약 2s.
+        let documents: { readonly base: Project | undefined; readonly local: Project } | null = null;
+        if (channel === OPRN_CHANNELS.projectSaveMapPatch) {
           const prepared = prepareMapPatch(key, payload);
           if (prepared.kind === "stale-base") return prepared;
-          base = prepared.base;
-          local = prepared.project;
         }
+        const readDocuments = (): { readonly base: Project | undefined; readonly local: Project } => {
+          if (documents) return documents;
+          if (channel === OPRN_CHANNELS.projectSave) {
+            documents = { local: projectFromSerialized(saveProjectSchema.parse(payload).serialized), base: store(key).loadSnapshot()?.project };
+          } else {
+            const prepared = prepareMapPatch(key, payload);
+            if (prepared.kind === "stale-base") throw new Error("stale base after preparation");
+            documents = { base: prepared.getBase(), local: prepared.project };
+          }
+          return documents;
+        };
         const session = sessions.require(key);
         const conflicts = [...session.locks].filter(([resource, lease]) => {
           if (lease.session === key || lease.expiresAt <= Date.now()) return false;
+          const { base, local } = readDocuments();
           const value = (project: Project | undefined): unknown => resource.startsWith('map:')
             ? project?.maps[resource.slice(4)] : resource === 'database' ? project?.database : project;
           return canonicalJsonString(value(base) ?? null) !== canonicalJsonString(value(local) ?? null);

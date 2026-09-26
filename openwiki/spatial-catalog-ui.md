@@ -203,6 +203,10 @@ The same 31 shared root IDs and their 33 floor rasters are also included in `rev
   defaults 103MB → 45MB, 캐시 적중 응답 0.05s. `accept-encoding` 에 gzip 이 없으면 풀어서 보낸다.
   Electron `app://` 는 프로세스 안 전달이라 풀어서 돌려준다.
   vite/Electron `app://`/팀 호스트 세 경로는 모두 `scripts/lib/sharedContentSqlite.ts` 의 같은 핸들러를 쓴다.
+- 공용 타일 참고문서(`/__oprn/shared-tile-references`, 2026-09-26)는 부팅이 기다리지 않는다. 실측 183MB · 호스트 24.8s 에
+  클라이언트 10s abort 가 걸려 부팅이 10s 멈추고 자료는 한 번도 오지 않았다. 이제 abort 없이 뒤에서 받고, 로드 뒤에
+  도착하면 `store.applySharedTileReferences()` 가 열린 프로젝트에 system 정규화로 반영한다(바뀐 게 없으면 no-op).
+  호스트는 `encodedSharedTileReferences` 가 판본당 한 번 직렬화·gzip(1) 해 재사용한다.
 
 등록 완료는 DB 저장만으로 판정하지 않는다. 해당 변경을 main에 병합하고, main의 커밋으로 빌드한 배포 파일에서 공용 로더와 장소 31종을 확인한 뒤 실제 hostProject URL의 자료집 → 맵 → 장소에서 재확인한다. 미커밋 파일로 빌드한 결과는 다음 배포에서 사라질 수 있다.
 

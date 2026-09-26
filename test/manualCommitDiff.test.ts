@@ -22,8 +22,10 @@ let session: MemoryProjectSession | null = null;
 let recordSpy: MockInstance<MemoryRepository["commits"]["record"]> | null = null;
 let saveSpy: MockInstance<MemoryRepository["save"]> | null = null;
 
-/** fire-and-forget `.then()` 체인이 끝날 때까지 마이크로태스크를 비운다. */
+/** 유휴 시간으로 미룬 커밋을 지금 기록하고, fire-and-forget `.then()` 체인이 끝날 때까지 마이크로태스크를 비운다. */
 async function flushPending(): Promise<void> {
+  const { flushPendingManualProjectCommit } = await import("@/project/projectCommitLog");
+  flushPendingManualProjectCommit();
   for (let i = 0; i < 5; i += 1) await Promise.resolve();
 }
 

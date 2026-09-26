@@ -1,0 +1,8 @@
+{
+ "dialogs": [
+  "beforeunload"
+ ],
+ "stayedOnPage": true,
+ "savedAfterMs": 20389,
+ "welcomeAfterReload": 0
+}

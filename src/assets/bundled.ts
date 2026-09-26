@@ -798,7 +798,12 @@ function registerTileAnimationsForTexture(scene: Phaser.Scene, textureKey: strin
     textureKey === LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY ||
     textureKey === LPC_WOODEN_FURNITURE_16_TEXTURE_KEY
   ) return;
+  const texture = scene.textures.get(textureKey);
   for (const strip of CHIPSET_ANIMATION_STRIPS) {
+    // 물·폭포 스트립은 EasyRPG 480칸 배치(최대 tile_214)를 전제한다. 그보다 작은 부품 시트
+    // (선별 소품 84칸·마을 부품 180칸·나무 윗단 180칸·잔디 사선 10칸)는 그 프레임을 등록하지 않으므로
+    // 만들면 Phaser 가 'has no frame' 경고를 스트립마다 낸다. 실측 2026-09-26: 새 프로젝트에서 약 400건.
+    if (!strip.frames.every((frame) => texture.has(`tile_${frame}`))) continue;
     const stripKey = chipsetAnimationKey(textureKey, strip.key);
     if (scene.anims.exists(stripKey)) continue;
     const frameRate = strip.fps > 0 ? strip.fps : CHIPSET_ANIMATION_FPS;

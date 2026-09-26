@@ -194,6 +194,19 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
     if (showBriefing) markWelcomeIntentAppliedThisBoot();
   }
 
+  // 브리핑 모듈은 셸 마운트와 **병렬로** 미리 받는다. 셸을 다 그린 뒤에 import 하면 그동안 편집기가
+  // 먼저 보였다가 웰컴이 덮는다(2026-09-26 실측: 캔버스 20.3s → 웰컴 23.5s, 최대 7.4s 차이).
+  // catch 는 미처리 거부 경고만 막는다 — 실패는 아래 await 에서 그대로 던진다.
+  const welcomeModules = showBriefing
+    ? Promise.all([
+        import("@/editor/welcomeGenreSystemPresetAction"),
+        import("@/ai/llmClient"),
+        import("@/editor/panels/aiChatPanelHelpers"),
+        import("@/editor/panels/aiConnectionStatus"),
+      ])
+    : null;
+  void welcomeModules?.catch(() => undefined);
+
   // 맵 URL 동기화: URL의 ?map= 파라미터로 맵 복원 + 뒤로가기/앞으로가기 설치
   const { restoreMapFromUrl, installMapUrlSync } = await import("@/editor/mapUrlSync");
   installMapUrlSync();
@@ -205,8 +218,9 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
 
   await renderTopbar();
   await enterMode("edit");
-  // 편집기 셸이 그려졌다 — index.html 의 첫 로드 로더를 걷는다(웰컴 브리핑은 그 위에 뜬다).
-  dismissBootLoader();
+  // 편집기 셸이 그려졌다 — index.html 의 첫 로드 로더를 걷는다. 브리핑이 뜰 때는 웰컴이 마운트된
+  // 직후까지 로더를 남겨 편집기가 한순간도 맨몸으로 보이지 않게 한다(아래 presentEditorWelcome 직후).
+  if (!showBriefing || !elements) dismissBootLoader();
 
   if (sharedDemoOpen && !showBriefing) {
     const { presentSharedDemoIntro } = await import("@/editor/sharedDemoIntro");
@@ -214,14 +228,18 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
   }
 
   if (showBriefing && elements) {
-    const { applyWelcomeGenreSystemPresetPlan } = await import("@/editor/welcomeGenreSystemPresetAction");
     // 브리핑이 "만들 수 있다" 고 약속하기 전에 실제로 가능한지 본다. 미설정 상태에서 보내면
     // 채팅 패널이 "의도 읽는 중…" 에서 조용히 멈춘다(2026-09-22 실측 30초+, 실패 토스트 없음).
-    const [{ loadAiConfig }, { isAiConfigReady }, { getAiConnectionStatus }] = await Promise.all([
-      import("@/ai/llmClient"),
-      import("@/editor/panels/aiChatPanelHelpers"),
-      import("@/editor/panels/aiConnectionStatus"),
-    ]);
+    // 모듈 로드가 실패하면 로더가 영영 덮지 않도록 걷고 나서 던진다.
+    const [
+      { applyWelcomeGenreSystemPresetPlan },
+      { loadAiConfig },
+      { isAiConfigReady },
+      { getAiConnectionStatus },
+    ] = await welcomeModules!.catch((error: unknown) => {
+      dismissBootLoader();
+      throw error;
+    });
     const aiReady = (): boolean => {
       try {
         // config 모양만 보면 chatgpt 모드가 **언제나 true** 다(assistantEndpoint.ts 주석 참고).
@@ -233,7 +251,7 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
         return true;
       }
     };
-    const result = await presentEditorWelcome(elements.root, {
+    const welcomeResult = presentEditorWelcome(elements.root, {
       applySystemPreset: (plan, brief) => applyWelcomeGenreSystemPresetPlan(plan, undefined, brief),
       canGenerate: aiReady,
       openAiSettings: () => {
@@ -242,6 +260,10 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
           .catch(() => undefined);
       },
     });
+    // presentEditorWelcome 은 Promise 실행자 안에서 동기로 마운트한다 — 이 시점에 웰컴이 이미 DOM 에 있다.
+    // 로더 페이드아웃(200ms)이 웰컴 위로 겹쳐 빠지므로 로더 → 웰컴 사이에 편집기가 비치지 않는다.
+    dismissBootLoader();
+    const result = await welcomeResult;
     if (result.dismiss) setEditorWelcomeDismissed(true);
     if (result.systemPresetPlan) {
       clearWelcomeIntentBootFlags();
