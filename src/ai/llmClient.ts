@@ -103,10 +103,13 @@ export function companionRequestBaseUrl(): string {
 }
 export const DEFAULT_CHATGPT_BASE_URL = companionCompletionsBaseUrl();
 // 공장 기본은 Antigravity Gemini 3.8 Flash — 에디터 툴콜이 Codex 보다 안정적이다.
-// 왜 3.7 이 아닌가(2026-09-26 실측, 동반 서비스 직결 OAuth): 3.8-flash 한 호출이 effort minimal/low 에서
-// 약 2.2~2.8s, high 에서 약 4.0~5.8s 다(전제 1k→30k 토큰은 0.5s 밖에 안 움직여 지연은 사고 강도가 지배한다).
-// Ultrabrain 역할이 이미 이 모델을 쓰고, 우리가 기본으로 보내는 사고 강도 집합(minimal/low/medium/high)도
-// 이 모델의 것이다 — 기본 모델을 여기 맞춰 두면 실행 루프가 같은 지연 특성을 받는다.
+// 3.7 이 아니라 3.8 인 이유는 **지연 우위가 아니라 일관성**이다: Ultrabrain 역할(계획·검수)이 이미
+// 3.8-flash 를 쓰고, 우리가 기본으로 보내는 사고 강도 집합(minimal/low/medium/high)도 이 모델의 것이다 —
+// 기본값만 3.7 로 남기면 한 턴 안에서 두 모델이 섞인다.
+// 3.7 대 3.8 의 지연 비교(2026-09-26, 동반 서비스 직결, 각 셀 n=3 중앙값, provider-37.json 대 provider-reps3.json):
+// low@2k 2452 vs 2080ms(3.8 우세), low@30k 2923 vs 4101ms·high@30k 4243 vs 6344ms(3.7 우세) —
+// **일관된 우위가 없다**(분산이 크다). 측정으로 확정된 축은 모델 세대가 아니라 사고 강도다:
+// 같은 모델에서 high/low 중앙값 1.54×(2k)·1.55×(30k), 실제 Pi 런 1.36~1.43×.
 // 제공자는 Antigravity·Codex 둘 중 하나이고, 저장된 선택은 존중된다. providerId 가 없는
 // 옛 blob 은 기본 제공자(Antigravity)로 읽히므로 이 상수가 그 blob 의 모델 기본값이기도 하다.
 export const DEFAULT_MODEL = "gemini-3.8-flash";

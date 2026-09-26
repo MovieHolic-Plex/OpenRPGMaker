@@ -3082,6 +3082,10 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
   선언 한 번이 실제로 1.2~7.5s 를 쓰므로(2026-09-16 실측) 이걸 빼면 표의 total 이 거짓으로 짧아진다. 기록기는 `runPiTurn` → `runPiCommand` 의 `options.timing` 으로 넘어간다.
 - 단계 이름(`src/editor/panels/aiPiAgentCommand.ts` 의 `stage(name, run)`, 던져도 `finally` 로 닫는다):
   `plan`(Ultrabrain 계획 턴) · `exec`(실행 런의 `Promise.all`) · `checkpoint`(발행 하나마다) · `review`(맵 조화 검수 + 수리·재검수 루프) · `apply`(`apply()` 경로).
+- **단계는 서로 중첩된다 — 합하지 마라.** 이 단계들은 턴을 분할하지 않는다. `checkpoint` 는 `exec` 안에서 돌고(`aiPiAgentCommand.ts:496` 의 `stage("exec")` 안에 `:510` 의 `stage("checkpoint")` 가 들어 있다)
+  수리 런의 체크포인트는 `review` 안에서 돈다(`:686`). 수리·재검수 실행 자체도 `review` 로 기록되고, 병렬 그룹(`Promise.all`)에서는 여러 그룹의 `checkpoint` 가 같은 벽시계 구간을 **겹쳐서** 더한다.
+  그래서 `totalMs` 는 **턴 벽시계 하나**이고 각 단계 값은 **그 단계의 벽시계 합**이다 — 단계 합은 `totalMs` 를 넘을 수 있고, 실제로 넘는다. 단계 값은 서로 비교해 「어디가 오래 걸렸나」를 보는 데만 쓰고,
+  합산해 「나머지 시간」을 유도하거나 백분율로 쪼개지 마라.
 - 쓰는 자리: `finishLog` 가 만드는 **그 활동 로그 행 하나**다(`PiRunFacts.timing` → `startPiRunLog` → `AiActivityLogInput.timing` → `AiActivityLogRecord.timing`).
   계측 때문에 두 번째 행을 만들지 않는다 — 그러면 `npm run ai:log` 가 한 실행을 두 건으로 센다.
 - 읽는 자리: `npm run ai:trace` (`scripts/list-ai-turn-timing.mjs`). 디스크 미러 `output/ai-activity` 만 읽고, `timing` 없는 행은 건너뛴다.
@@ -3097,7 +3101,12 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 
 ### 실측 (2026-09-26, 동반 서비스 127.0.0.1:17832 직결 · 실제 OAuth · gemini-3.8-flash)
 
-- 작은 프롬프트 모델 호출 1회: effort minimal/low 약 2.2~2.8s, high 약 4.0~5.8s. 전제를 1k→30k 토큰으로 키워도 약 0.5s 밖에 안 움직인다 — **payload 는 지연의 원인이 아니다.**
+- 작은 프롬프트 모델 호출 1회: effort minimal/low 약 2.2~2.8s, high 약 4.0~5.8s. 전제를 1k→30k 토큰으로 키워도 약 0.5s 밖에 안 움직인다 — **payload 는 지연의 지배 요인이 아니다(1차 실측 n=1).**
+  단 아래 n=3 재실측에서는 2k→30k 이 low 중앙값 2080→4101ms 로 더 벌어졌다 — 「+0.5s 뿐」은 1차 실측 한정이고, 남는 결론은 「payload 는 effort 보다 작은 2차 요인」이다.
 - 읽기 전용 3턴 도구 사용 Pi 실행: thinking low 6.36s / 7.41s, high 9.09s / 8.47s → 턴당 약 2.1s(low) 대 약 2.9s(high). 로컬 도구 실행은 ~0ms 라 턴 벽시계는 사실상 모델 호출의 합이다.
+- **n=3 재실측(2026-09-26T01:06–01:07Z, `provider-reps3.json` · `agent-reps3.json`) — high는 low의 「2배」가 아니다.**
+  셀당 3회 중앙값: 모델 호출 1회 low 2080ms(2k) / 4101ms(30k), high 3196ms(2k) / 6344ms(30k) → **1.54× · 1.55×**.
+  실제 Pi 런(1턴·툴 0회) low 3957ms, high 5365ms → **1.36×**. 정직한 범위는 약 1.4~1.6배다 — 반값이 아니다.
+  표본 분산이 크다(low @30k 가 2832~6413ms) — 이 박스는 부하를 나눠 쓰므로 중앙값만 인용한다. n=3 에이전트 런 6행은 전부 `turns=1 · tools=0` 으로 끝나서 위 3턴 실측(3턴·툴 2회)과 조건이 다르다 — 두 실측을 섞어 평균하지 않는다.
 - 프롬프트 캐시: 같은 접두를 다시 보낸 실행이 cacheRead 12,021 토큰을 보고했다 — 공급자의 암묵 접두 캐시가 실행 사이에도 이미 듣는다. 세션 id 를 바꿀 필요는 없다.
 - 프로브: `scripts/qa/_ai-turn-latency-probe.mjs` (`provider` / `agent` 모드), 증거 `verify-shots/ai-turn-latency/`.

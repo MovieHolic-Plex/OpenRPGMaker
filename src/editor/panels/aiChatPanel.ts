@@ -1996,7 +1996,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     readonly echoed?: boolean;
     /** 모델에 보낸 전체 지시문 — 말풍선(displayText)과 다를 때만. 입력창을 되살릴 때 함께 되살린다. */
     readonly sentText?: string;
-    /** 평문 턴의 단계 기록기 — 의도 선언까지 한 기록기에 담아야 턴 벽시계와 단계 합이 맞는다. */
+    /** 평문 턴의 단계 기록기 — 의도 선언까지 한 기록기에 담아야 total 이 턴 벽시계 전체를 덮는다.
+     *  단계는 서로 중첩된다(checkpoint 는 exec·review 안에서 돌고, 병렬 그룹은 겹친다) —
+     *  단계 합은 total 과 맞지 않는다. 표에서 더하지 마라. */
     readonly timing?: TurnTimingRecorder }): Promise<void> => {
     // slotClaimed: 호출자(평문 경로)가 의도 분류 전에 이미 슬롯을 잡았다. 그 경우 turnBusy=true 는
     // «다른 턴이 점유 중» 이 아니라 «이 턴의 분류 단계» 다 — 여기서 다시 거부하면 자기 턴을 죽인다.

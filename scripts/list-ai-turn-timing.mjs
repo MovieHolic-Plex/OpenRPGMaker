@@ -6,13 +6,21 @@ import { join } from "node:path";
 
 const DIR = join(process.cwd(), "output", "ai-activity");
 
+// 건너뛴 행을 센다 — 조용히 버리면 미러가 깨진 것(파싱 실패·요약에만 있고 본체가 없는 id)과
+// 「그 턴이 원래 없었다」가 출력에서 구별되지 않는다.
+const skipped = { corrupt: 0, missing: 0, noTiming: 0 };
+
 function readRecord(id) {
   if (typeof id !== "string") return null;
   const path = join(DIR, `${id}.json`);
-  if (!existsSync(path)) return null;
+  if (!existsSync(path)) {
+    skipped.missing += 1;
+    return null;
+  }
   try {
     return JSON.parse(readFileSync(path, "utf8"));
   } catch {
+    skipped.corrupt += 1;
     return null;
   }
 }
@@ -23,6 +31,7 @@ function readLatest() {
   try {
     return JSON.parse(readFileSync(path, "utf8"));
   } catch {
+    skipped.corrupt += 1;
     return null;
   }
 }
@@ -43,7 +52,7 @@ function listDisk() {
       // 요약(index.json)에는 timing 이 없다 — 단계는 개별 레코드에만 있으므로 항상 본체를 읽는다.
       records = rows.map((row) => readRecord(row.id)).filter(Boolean);
     } catch {
-      /* fall through to per-file scan */
+      skipped.corrupt += 1; // index.json 자체가 깨졌다 — 아래 개별 파일 스캔으로 복구한다.
     }
   }
   if (!records) {
@@ -77,8 +86,9 @@ if (disk.error) {
 }
 
 // timing 없는 행은 건너뛴다 — 계측 이전의 턴과 계측을 못 붙인 경로가 0ms 로 보이면 표가 거짓말을 한다.
-const rows = disk.records
-  .filter((record) => record?.timing && Array.isArray(record.timing.stages))
+const timed = disk.records.filter((record) => record?.timing && Array.isArray(record.timing.stages));
+skipped.noTiming = disk.records.length - timed.length;
+const rows = timed
   .slice(0, last)
   .map((record) => ({
     id: record.id,
@@ -90,18 +100,31 @@ const rows = disk.records
   }));
 
 if (asJson) {
-  console.log(JSON.stringify({ dir: DIR, count: rows.length, rows }, null, 2));
+  console.log(JSON.stringify({ dir: DIR, count: rows.length, skipped, rows }, null, 2));
   process.exit(0);
 }
 
 if (rows.length === 0) {
   console.log(`${DIR}: timing 이 붙은 턴이 없다 — 계측이 들어간 뒤의 AI 턴을 한 번 돌려야 한다.`);
+  // 전부 손상이면 「턴이 없다」와 구별되지 않는다 — 미러가 깨진 경우는 여기서도 보여야 한다.
+  if (skipped.corrupt || skipped.missing) {
+    console.log(`건너뛴 행: 손상 ${skipped.corrupt} · 본체 없음 ${skipped.missing} · timing 없음 ${skipped.noTiming}`);
+  }
   process.exit(0);
 }
 
 console.log(
   "열: 시각 | 채널 | 지시(앞 40자) | total=턴 벽시계ms | 이어지는 칸은 단계=ms (그 턴의 기록 순서, 같은 이름은 합).",
 );
+console.log(
+  "주의: 단계는 중첩·중복된다 — checkpoint 는 exec 안에서, 수리 런의 checkpoint 는 review 안에서 돌고 병렬 그룹은 겹쳐 더한다. " +
+    "단계를 합하지 마라. total 은 턴 벽시계 하나이고 단계 합은 total 을 넘을 수 있다(단계끼리 비교하는 데만 쓴다).",
+);
+if (skipped.corrupt || skipped.missing || skipped.noTiming) {
+  console.log(
+    `건너뛴 행: 손상 ${skipped.corrupt} · 본체 없음 ${skipped.missing} · timing 없음 ${skipped.noTiming} (손상·본체 없음이 0 이 아니면 미러가 깨진 것이다).`,
+  );
+}
 for (const row of rows) {
   const stages = row.stages.map((stage) => `${stage.name}=${stage.ms}`).join(" ");
   console.log(
