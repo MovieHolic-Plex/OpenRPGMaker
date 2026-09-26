@@ -2330,3 +2330,14 @@ retired된 플래그도 설명은 고칠 수 있으나 다시 활성화하지 �
 
 `set_title_screen` 의 `openingPreset`·`effects` 와 `generate_title_art`(키아트 생성 → 비전 맞춤)는
 [title-opening-effects.md](title-opening-effects.md) 에 정리했다.
+
+
+## 크로노 트리거식 필드 도구 인자 (2026-09-26)
+
+- `configure_companion_rules {fromParty:true}`: 파티 선두 뒤 활성 멤버가 addFollower 없이 따라온다. `false` 면 필드를 지운다.
+- `add_companion`: 이름이 이미 「… 합류」로 끝나면 이벤트 이름에 접미사를 다시 붙이지 않는다.
+- `changeParty` 명령 `action`: `add`·`remove`·`lead`(선두 교대). 명령 스키마·편집기 폼·미리보기가 셋 다 받는다.
+- `set_tile_rules` 항목 `ledge: up|down|left|right|none`: 한 방향 턱. `set_tile_passability` 스키마는 테스트가 고정하고 있어 건드리지 않았다.
+- `place_savepoint {heal?:boolean}`: 기본 false(크로노 트리거 세이브 포인트는 회복하지 않음). true 면 `recoverAll` 을 앞에 넣는다.
+- `create_time_gate {a:{mapId,x,y}, b:{mapId,x,y}, name?, graphic?}` (`src/editor/tools/timeGateTools.ts`): `create_transfer_pair` 로 자리를 잡고, 두 게이트 전이 앞에 흰 `Flash Screen` 을 넣고 페이드를 white 로 바꾼다. 번들 캐릭터 시트에는 소용돌이·차원문 그림이 없어 기본 그래픽은 투명이다.
+- 명령 보장 표: `setEventGraphicPattern`·`cutsceneControl`·`checkpointSave`·`triggerEnding`·`setSelfSwitch` 는 맵/공통에서 `full` 이다(전투는 종전 유지). 저작 길은 그대로라 `indirectAuthoring` 로 선택창 행 요구를 면제한다. 도구 요약의 「미지원 커맨드 N건」은 「런타임 제한 커맨드 N건」이 되었다.

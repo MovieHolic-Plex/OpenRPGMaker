@@ -82,6 +82,8 @@ export type RuntimeQaOp =
       readonly timeoutMs?: number;
     }
   | { readonly kind: "waitForGrounded"; readonly timeoutMs?: number }
+  | { readonly kind: "waitForFollowers"; readonly count: number; readonly ids?: readonly string[]; readonly timeoutMs?: number }
+  | { readonly kind: "waitForLeader"; readonly actorId: string; readonly spriteResourceId?: string; readonly timeoutMs?: number }
   | { readonly kind: "captureShadowSample" }
   | {
       readonly kind: "pressUntil";

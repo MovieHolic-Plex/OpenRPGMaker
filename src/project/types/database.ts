@@ -1346,6 +1346,11 @@ export interface CompanionConfig {
   formation?: "line" | "beside";
   /** true 면 맵 이동 시 액터 동료를 해제한다. 생략 시 유지(기존 동작). */
   clearOnTransfer?: boolean;
+  /**
+   * true 면 파티 선두 뒤의 활성 멤버(partyActorIds[1..activeSlots|4))가 addFollower 없이 자동으로
+   * 따라온다(크로노 트리거식). 새 게임·불러오기·changeParty 마다 다시 맞춘다. 생략 = 기존 동작.
+   */
+  fromParty?: boolean;
 }
 
 export interface MonsterCareConfig {

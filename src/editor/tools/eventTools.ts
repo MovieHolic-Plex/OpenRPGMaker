@@ -1137,7 +1137,7 @@ const upsertEvent: ToolDefinition = {
     }
     const unsupportedCommands = countLimitedRuntimeSupportCommandsForEvent(event);
     return {
-      summary: `${map.name}에 이벤트 '${event.id}' ${outcome === "added" ? "추가" : "수정"} — 미지원 커맨드 ${unsupportedCommands}건${adjusted ? ` — 위치 자동 조정 (${event.x}, ${event.y})` : ""}`,
+      summary: `${map.name}에 이벤트 '${event.id}' ${outcome === "added" ? "추가" : "수정"} — 런타임 제한 커맨드 ${unsupportedCommands}건${adjusted ? ` — 위치 자동 조정 (${event.x}, ${event.y})` : ""}`,
       data: { eventId: event.id, unsupportedCommands, x: event.x, y: event.y, adjusted },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
@@ -3185,6 +3185,7 @@ const placeSavepoint: ToolDefinition = {
       y: { type: "integer" },
       name: { type: "string" },
       id: { type: "string" },
+      heal: { type: "boolean", description: "true 면 저장 전에 파티 전원 회복(recoverAll). 기본 false — 크로노 트리거의 세이브 포인트는 회복하지 않는다." },
     },
     required: ["mapId", "x", "y"],
   },
@@ -3192,6 +3193,7 @@ const placeSavepoint: ToolDefinition = {
     const map = requireMap(draft, args.mapId as string);
     const requestedX = args.x as number;
     const requestedY = args.y as number;
+    const heal = args.heal === true;
     if (!inMapBounds(map, requestedX, requestedY)) {
       throw new ToolError(`세이브 포인트 위치가 맵 밖입니다: (${requestedX}, ${requestedY})`, { code: "savepoint-out-of-bounds", mapId: map.id, x: requestedX, y: requestedY });
     }
@@ -3224,8 +3226,9 @@ const placeSavepoint: ToolDefinition = {
           animationType: "fixedGraphic",
           movement: PASSIVE,
           commands: [
+            ...(heal ? [{ kind: "recoverAll" } as Command] : []),
             { kind: "checkpointSave", label: "savepoint" },
-            { kind: "text", body: "이곳에 모험을 기록했다." },
+            { kind: "text", body: heal ? "기운이 돌아왔다. 이곳에 모험을 기록했다." : "이곳에 모험을 기록했다." },
           ],
         },
       ],
@@ -3233,8 +3236,8 @@ const placeSavepoint: ToolDefinition = {
     assertEventShape(event);
     upsertEventIntoMap(map, event);
     return {
-      summary: `${map.name}에 세이브 포인트 '${name}' 배치 (${x}, ${y})${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}`,
-      data: { eventId: id, x, y, adjusted },
+      summary: `${map.name}에 세이브 포인트 '${name}' 배치 (${x}, ${y})${heal ? " — 전원 회복 포함" : ""}${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}`,
+      data: { eventId: id, x, y, adjusted, heal },
       ...(adjusted ? { warnings: [placementAdjustedWarning("세이브 포인트", { x: requestedX, y: requestedY }, placement)] } : {}),
     };
   },
@@ -3812,7 +3815,7 @@ const scriptCutscene: ToolDefinition = {
     assertEventPartyActorReferences(draft, event);
     const unsupportedCommands = countLimitedRuntimeSupportCommandsForEvent(event);
     return {
-      summary: `${map.name}에 컷신 '${eventId}' ${outcome === "added" ? "생성" : "페이지 추가"} — beat ${beats.length}개, 명령 ${commands.length}개, 미지원 커맨드 ${unsupportedCommands}건`,
+      summary: `${map.name}에 컷신 '${eventId}' ${outcome === "added" ? "생성" : "페이지 추가"} — beat ${beats.length}개, 명령 ${commands.length}개, 런타임 제한 커맨드 ${unsupportedCommands}건`,
       data: { eventId, pageId: page.id, commandCount: commands.length, unsupportedCommands },
       ...(warnings.length > 0 ? { warnings } : {}),
     };

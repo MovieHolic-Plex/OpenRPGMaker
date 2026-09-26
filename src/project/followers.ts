@@ -3,7 +3,9 @@ import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { CompanionConfig, Dir, EventPageGraphic, GameMap, MonsterSpeciesGraphic, Project } from "@/project/types";
 import type { MonsterInstance, PlaySession, RuntimeFollower } from "@/project/session";
 import { defaultActorCharacterResourceId } from "@/project/actorModel";
+import { resolveActorAppearance } from "@/project/characterAppearances";
 import { inBounds, isPassable } from "@/project/collision";
+import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
 
 const MAX_TRAIL_POINTS = 64;
 /** 궤적 버툴 길이. `gap * maxCompanions` 상한의 근거다. */
@@ -75,7 +77,10 @@ export function addFollowerToSession(
   input: { readonly actorId?: string; readonly graphic?: EventPageGraphic; readonly name?: string }
 ): RuntimeFollower | null {
   let follower = followerFromInput(project, input);
-  if (!follower) return null;
+  if (!follower) {
+    console.warn(`[addFollower] 동료를 붙이지 못했습니다: ${followerFailureReason(project, input)}`);
+    return null;
+  }
   // Stabilize id before de-duplicating display name — id is what the sprite map keys on.
   const desiredId = followerIdFor({ actorId: follower.eventId, name: follower.name }, session);
   if ((follower as { id?: string }).id !== desiredId) follower = { ...follower, id: desiredId } as typeof follower;
@@ -92,7 +97,10 @@ export function addFollowerToSession(
   const rules = resolveCompanionRules(project.system.companions);
   let keptActors = actorFollowers;
   if (rules.maxCompanions !== undefined && actorFollowers.length + 1 > rules.maxCompanions) {
-    if (rules.overflow === "reject") return null;
+    if (rules.overflow === "reject") {
+      console.warn(`[addFollower] 동료 상한 ${rules.maxCompanions}명에 닿아 '${follower.name}' 을(를) 붙이지 않았습니다(overflow:"reject").`);
+      return null;
+    }
     keptActors = actorFollowers.slice(actorFollowers.length + 1 - rules.maxCompanions);
   }
   session.followers = [...keptActors, follower, ...monsterFollowers];
@@ -157,6 +165,54 @@ export function syncMonsterPartyFollowers(project: Project, session: PlaySession
   if (!hadFollowers || !session.followerTrail || session.followerTrail.length === 0) {
     resetFollowerTrailNearPlayer(session, project.maps[session.currentMapId], project.system.companions);
   }
+}
+
+/** 파티 동료로 걷는 활성 멤버 수 상한(선두 포함). system.activeSlots 가 없으면 4명. */
+const DEFAULT_ACTIVE_PARTY_SLOTS = 4;
+
+function isPartyFollower(entry: RuntimeFollower): boolean {
+  return entry.source === "party";
+}
+
+/**
+ * system.companions.fromParty 가 켜져 있으면 파티 선두 뒤 활성 멤버를 동료로 맞춘다(크로노 트리거식).
+ * 저작 addFollower 로 이미 붙은 배우는 다시 붙이지 않는다. 꺼져 있으면 파티 파생 동료만 걷어낸다 —
+ * 옛 프로젝트는 파티 파생 동료가 없으므로 아무것도 바뀌지 않는다. 멱등이라 매 새로고침마다 불러도 된다.
+ */
+export function syncPartyFollowers(project: Project, session: PlaySession): void {
+  const current = session.followers ?? [];
+  const enabled = project.system.companions?.fromParty === true;
+  if (!enabled && !current.some(isPartyFollower)) return;
+  const others = current.filter((entry) => !isPartyFollower(entry));
+  const manualActorIds = new Set(others.flatMap((entry) => entry.kind !== "monster" && entry.eventId ? [entry.eventId] : []));
+  const partyFollowers: RuntimeFollower[] = [];
+  if (enabled) {
+    const slots = project.system.activeSlots ?? DEFAULT_ACTIVE_PARTY_SLOTS;
+    for (const actorId of session.partyActorIds.slice(1, Math.max(1, slots))) {
+      if (manualActorIds.has(actorId)) continue;
+      const follower = followerFromInput(project, { actorId });
+      if (!follower) {
+        console.warn(`[fromParty] 파티 동료를 붙이지 못했습니다: ${followerFailureReason(project, { actorId })}`);
+        continue;
+      }
+      partyFollowers.push({ ...follower, source: "party" });
+    }
+  }
+  const before = current.filter(isPartyFollower).map((entry) => `${entry.id}|${spriteKeyOf(entry.graphic)}`).join(",");
+  const after = partyFollowers.map((entry) => `${entry.id}|${spriteKeyOf(entry.graphic)}`).join(",");
+  if (before === after) return;
+  const actorOthers = others.filter((entry) => entry.kind !== "monster" && !entry.monsterInstanceId);
+  const monsterOthers = others.filter((entry) => entry.kind === "monster" || Boolean(entry.monsterInstanceId));
+  session.followers = [...partyFollowers, ...actorOthers, ...monsterOthers];
+  const needed = session.followers.length * resolveCompanionRules(project.system.companions).gap;
+  if (session.followers.length === 0) session.followerTrail = [];
+  else if ((session.followerTrail?.length ?? 0) < needed) {
+    resetFollowerTrailNearPlayer(session, project.maps[session.currentMapId], project.system.companions);
+  }
+}
+
+function spriteKeyOf(graphic: EventPageGraphic): string {
+  return `${graphic.sprite?.id ?? ""}:${String(graphic.pattern ?? "")}`;
 }
 
 export function recordFollowerPlayerStep(
@@ -244,10 +300,18 @@ function followerFromInput(
   input: { readonly actorId?: string; readonly graphic?: EventPageGraphic; readonly name?: string }
 ): RuntimeFollower | null {
   if (input.actorId) {
-    const actor = project.database.actors.find((entry) => entry.id === input.actorId);
-    const resourceId = actor?.characterResourceId ?? defaultActorCharacterResourceId({ id: input.actorId });
-    const graphic = resourceId ? actorFollowerGraphic(resourceId) : input.graphic;
-    if (!graphic) return null;
+    const record = project.database.actors.find((entry) => entry.id === input.actorId);
+    if (!record && !input.graphic && !defaultActorCharacterResourceId({ id: input.actorId })) return null;
+    // 주인공 스프라이트(playerSpriteResources)와 같은 규칙: 외형 세트 → 배우 걷기 그림(+칸) → 기본 배우 그림.
+    const actor = record ? resolveActorAppearance(project, record) : undefined;
+    const ownResourceId = actor?.characterResourceId?.trim();
+    const defaultResourceId = defaultActorCharacterResourceId({ id: input.actorId });
+    const graphic = ownResourceId
+      ? charsetFollowerGraphic(ownResourceId, actor?.characterIndex ?? 0)
+      : defaultResourceId
+        ? charsetFollowerGraphic(defaultResourceId, 0)
+        // 걷기 그림이 없는 배우도 사라지지 않게 한다 — 저작 그래픽, 없으면 기본 주민 그림.
+        : input.graphic ?? charsetFollowerGraphic(DEFAULT_EASYRPG_CHARSET_ID, 0);
     return {
       id: `actor:${input.actorId}`,
       eventId: input.actorId,
@@ -265,10 +329,15 @@ function followerFromInput(
   };
 }
 
-function actorFollowerGraphic(resourceId: string): EventPageGraphic | undefined {
-  const asset = CHARSET_ASSETS.find((entry) => entry.id === resourceId || entry.textureKey === resourceId);
-  const textureKey = asset?.textureKey ?? resourceId;
-  return charsetFollowerGraphic(textureKey, 0);
+function followerFailureReason(
+  project: Project,
+  input: { readonly actorId?: string; readonly graphic?: EventPageGraphic }
+): string {
+  if (input.actorId && !project.database.actors.some((entry) => entry.id === input.actorId) && !input.graphic) {
+    return `배우 '${input.actorId}' 가 데이터베이스에 없습니다`;
+  }
+  if (!input.actorId && !input.graphic) return "actorId 도 graphic 도 없습니다";
+  return "그래픽을 정할 수 없습니다";
 }
 
 function monsterFollowerName(instance: MonsterInstance, speciesName: string | undefined): string {

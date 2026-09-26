@@ -43,7 +43,7 @@ import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
 import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
 import { saveSessionCheckpoint } from "@/player/checkpoints";
 import { compileCutscene, CutsceneValidationError, withoutEndingBeats, type CutsceneBeat } from "@/editor/cutscene";
-import { addFollowerToSession, removeFollowerFromSession } from "@/project/followers";
+import { addFollowerToSession, removeFollowerFromSession, syncPartyFollowers } from "@/project/followers";
 import { addSessionLight, removeSessionLight, setSessionLighting } from "@/project/lightingRules";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
 import { evolveMonster, giveMonster, moveMonster } from "@/project/monsterCollection";
@@ -904,6 +904,7 @@ export function executeCommand(
       return resumeNext(frame);
     case "changeParty":
       changeParty(state.session, command.actorId, command.action, state.project);
+      if (state.project) syncPartyFollowers(state.project, state.session as PlaySession);
       return resumeNext(frame);
     case "giveMonster":
       if (state.project) giveMonster(state.project, state.session as PlaySession, command);

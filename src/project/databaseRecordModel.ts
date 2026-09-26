@@ -56,7 +56,7 @@ import {
   normalizeFarmBuildingTypes,
   normalizeHomeDecorationTypes,
 } from "@/project/spatialPlacements";
-import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
+import type { ActorExperienceCurve, CompanionConfig, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 import { normalizeCharacterFootprint, normalizePassRows } from "@/project/footprint";
 import { normalizePlayResolution } from "@/project/playResolution";
 import { normalizeCameraZoom } from "@/project/cameraZoom";
@@ -226,6 +226,11 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     // 기본(rm2k3)은 저장하지 않고, 명시적 gen1 선택만 보존한다(무효값도 rm2k3로 정규화).
     ...(system.battleModel === "gen1" ? { battleModel: "gen1" as const } : {}),
     activeSlots: normalizeOptionalPositiveInteger(system.activeSlots),
+    // 동료 규칙도 화이트리스트에 있어야 왕복 1회에 사라지지 않는다(없던 동안 gap·formation·fromParty 가 로드마다 지워졌다).
+    ...(() => {
+      const companions = normalizeCompanionConfig(system.companions);
+      return companions ? { companions } : {};
+    })(),
     rewardPolicy: normalizeRewardPolicy(system.rewardPolicy),
     // 생활 스킬 시스템 옵트인 플래그. 화이트리스트 방식 정규화라 여기에 없으면 저장/로드 1회 왕복에
     // 사라진다 — 실제로 누락되어 사용자가 켠 플래그가 영속되지 않았다. 기본(미설정)은 생략 유지.
@@ -708,6 +713,18 @@ function positiveNumber(value: number | undefined, fallback: number): number {
   if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) return fallback;
   return value;
 }
+function normalizeCompanionConfig(value: CompanionConfig | undefined): CompanionConfig | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const out: CompanionConfig = {};
+  if (typeof value.gap === "number" && Number.isFinite(value.gap)) out.gap = Math.trunc(value.gap);
+  if (typeof value.maxCompanions === "number" && Number.isFinite(value.maxCompanions)) out.maxCompanions = Math.trunc(value.maxCompanions);
+  if (value.overflow === "reject" || value.overflow === "replaceOldest") out.overflow = value.overflow;
+  if (value.formation === "line" || value.formation === "beside") out.formation = value.formation;
+  if (value.clearOnTransfer === true) out.clearOnTransfer = true;
+  if (value.fromParty === true) out.fromParty = true;
+  return Object.keys(out).length > 0 ? out : undefined;
+}
+
 
 function normalizeLearnedSkills(skills: readonly Partial<ActorLearnedSkill>[] | undefined, legacy: readonly string[] = []): ActorLearnedSkill[] {
   const source = skills ?? legacy.map((skillId) => ({ level: 1, skillId }));

@@ -39,6 +39,7 @@ const VITAL_AMOUNT_MODE_SEGMENTS = [
 const PARTY_ACTION_OPTIONS = [
   { value: "add", label: "파티에 추가" },
   { value: "remove", label: "파티에서 제거" },
+  { value: "lead", label: "선두로" },
 ] as const;
 
 const MONSTER_MOVE_TARGET_OPTIONS = [
@@ -853,6 +854,7 @@ export function changePartyBody(context: CommandEditContext, cmd: Extract<Comman
     options: [
       { value: "add", label: "파티에 추가", key: "add" },
       { value: "remove", label: "파티에서 제거", key: "remove" },
+      { value: "lead", label: "선두로", key: "lead" },
     ],
     value: cmd.action,
     testid: "change-party-action-select",
@@ -870,7 +872,7 @@ export function changePartyBody(context: CommandEditContext, cmd: Extract<Comman
       return;
     }
     const beforeIn = startStateOf(project).partyActorIds.includes(record.id);
-    const afterIn = selectedOptionValue(action.select, PARTY_ACTION_OPTIONS, cmd.action) === "add";
+    const afterIn = selectedOptionValue(action.select, PARTY_ACTION_OPTIONS, cmd.action) !== "remove";
     preview.root.dataset.beforeIn = String(beforeIn);
     preview.root.dataset.afterIn = String(afterIn);
     preview.body.replaceChildren(

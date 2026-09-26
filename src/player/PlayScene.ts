@@ -72,6 +72,7 @@ import { applyStoredCameraState, centerRuntimeCamera, panRuntimeCamera } from "@
 import { runtimeMapViewZoom, runtimePixelDensity } from "@/player/runtimeViewScale";
 import { hasSessionCheckpoint, restoreSessionCheckpoint, setSessionCheckpoint, getSessionCheckpoint } from "@/player/checkpoints";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
+import { syncPartyFollowers } from "@/project/followers";
 import { seedLocationOccupancyForScene } from "@/player/playSceneLocationTransitions";
 import { installLightingLayer, syncLightingLayer, updateLighting } from "@/player/playSceneLighting";
 import type { LightingAmbientTransition } from "@/project/lightingRules";
@@ -283,6 +284,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     installTimeTintLayer(this);
     installLightingLayer(this);
     this.cameras.main.startFollow(this.player, true, 0.2, 0.2);
+    // 파티 동료(system.companions.fromParty) — 새 게임·불러오기 모두 세션 파티에서 다시 맞춘다.
+    syncPartyFollowers(project, this.session);
     syncFollowerSprites(this);
     this.centerCamera();
     void this.syncMinimap();
@@ -453,6 +456,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     }
     refreshSceneRuntimeSurfaces(this);
     syncPlayerCharacterScale(this);
+    syncPartyFollowers(project, this.session);
     syncFollowerSprites(this);
     applyStoredCameraState(this);
     syncWeatherLayer(this);

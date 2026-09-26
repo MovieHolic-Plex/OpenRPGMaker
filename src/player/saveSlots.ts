@@ -34,7 +34,7 @@ import {
   sanitizeShopShelf,
   sanitizeShopTradeCounts,
 } from "@/project/economyValues";
-import { syncMonsterPartyFollowers } from "@/project/followers";
+import { syncMonsterPartyFollowers, syncPartyFollowers } from "@/project/followers";
 import { normalizeMonsterInstanceBattleState } from "@/project/monsterCollection";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
@@ -752,6 +752,7 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
     if (!makers.ok && makers.reason !== "disabled") throw new LifeReconciliationError("makerInstances", makers.instanceId ?? "makers", makers.reason);
   }
   syncMonsterPartyFollowers(project, reconciled);
+  syncPartyFollowers(project, reconciled);
   return reconciled;
 }
 

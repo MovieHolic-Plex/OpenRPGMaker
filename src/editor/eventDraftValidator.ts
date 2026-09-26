@@ -1020,9 +1020,9 @@ function validateCommand(
     case "changeActorMp": require("reference.actor.missing", "배우", command.actorId, refs.actors); return;
     case "changeParty":
       require("reference.actor.missing", "배우", command.actorId, refs.actors);
-      if (command.action !== "add" && command.action !== "remove") issues.push({
+      if (command.action !== "add" && command.action !== "remove" && command.action !== "lead") issues.push({
         severity: "error", code: "changeParty.action.invalid",
-        message: `파티 편성의 동작이 합류(add)·이탈(remove) 중 하나가 아닙니다: ${JSON.stringify(command.action)}`,
+        message: `파티 편성의 동작이 합류(add)·이탈(remove)·선두(lead) 중 하나가 아닙니다: ${JSON.stringify(command.action)}`,
         pageId, commandPath: path, field: { testId: "change-party-action-select" },
       });
       return;
