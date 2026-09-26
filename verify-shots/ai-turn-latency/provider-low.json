@@ -1,0 +1,53 @@
+{
+  "mode": "provider",
+  "base": "http://127.0.0.1:17832",
+  "measuredAt": "2026-09-25T23:35:14.818Z",
+  "commit": "aac5d54c1",
+  "stream": false,
+  "rows": [
+    {
+      "model": "gemini-3.8-flash",
+      "effort": "low",
+      "targetTokens": 1000,
+      "rep": 1,
+      "ms": 2224,
+      "status": 200,
+      "usage": null,
+      "error": null,
+      "firstTokenMs": null
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "effort": "low",
+      "targetTokens": 30000,
+      "rep": 1,
+      "ms": 2475,
+      "status": 200,
+      "usage": null,
+      "error": null,
+      "firstTokenMs": null
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "effort": "medium",
+      "targetTokens": 1000,
+      "rep": 1,
+      "ms": 1985,
+      "status": 200,
+      "usage": null,
+      "error": null,
+      "firstTokenMs": null
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "effort": "medium",
+      "targetTokens": 30000,
+      "rep": 1,
+      "ms": 3901,
+      "status": 200,
+      "usage": null,
+      "error": null,
+      "firstTokenMs": null
+    }
+  ]
+}

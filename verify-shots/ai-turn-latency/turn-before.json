@@ -1,0 +1,13 @@
+{
+  "base": "http://127.0.0.1:9901",
+  "prompt": "이 빈 맵 중앙에 작은 숲 쉼터를 만들어 주세요.",
+  "startedAt": "2026-09-26T00:00:26.882Z",
+  "bootMs": 25196,
+  "turnMs": null,
+  "ok": null,
+  "status": null,
+  "error": "page.evaluate: Target crashed ",
+  "timing": null,
+  "mirrorRow": null,
+  "finishedAt": "2026-09-26T00:12:06.150Z"
+}
