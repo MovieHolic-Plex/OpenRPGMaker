@@ -1,13 +1,26 @@
 // ai/stampPlanner.ts
 // 바로 깔기의 모델 계획 층 — 한 번의 가벼운 모델 호출로 문장을 여러 도구 단계로 나눈다.
 //
-// 왜: 정규식 `planStampPlace`(stampPlace.ts)는 문장 하나를 도구 하나로 옮기고 남은 낱말을 재료로 넣었다.
+// 왜: 옛 정규식 계획(stampPlace.ts, 2026-09-27 삭제)은 문장 하나를 도구 하나로 옮기고 남은 낱말을 재료로 넣었다.
 // 「땅으로」가 place_props material 이 되어 「라벨/설명이 "땅으로" 인 타일을 찾지 못했습니다」로 끝났고,
 // 「땅을 동그랗게, 물을 동그랗게 옆에 나무」처럼 여러 부분으로 나눠 말하면 알아듣지 못했다(2026-09-25 사용자 신고).
 // 여기서는 모델이 **실제 타일셋 라벨 중에서** 재료를 고르고, 대상 사각형 안에 단계마다 하위 사각형을 나눈다.
 // 좌표·도구·인자 모양은 코드가 검증한다 — 대상 사각형 밖으로 나간 칸은 잘라 내고, 허용 목록 밖 도구는 버린다.
 // 이 파일은 순수하다(네트워크·스토어 없음). 호출·실행은 editor/stampPlaceRunner.ts.
-import type { StampTool } from "./stampPlace";
+import { clampChestGold, type MapPlacementContext } from "./mapPlacementContext";
+
+export type StampTool =
+  | "fill_region"
+  | "place_props"
+  | "paint_road"
+  | "tile_erase"
+  | "build_wall"
+  | "place_door"
+  | "author_house"
+  | "place_chest"
+  | "place_npc"
+  | "place_savepoint"
+  | "place_examine_hotspots";
 
 export const STAMP_TOOLS: readonly StampTool[] = [
   "fill_region",
@@ -17,6 +30,10 @@ export const STAMP_TOOLS: readonly StampTool[] = [
   "build_wall",
   "place_door",
   "author_house",
+  "place_chest",
+  "place_npc",
+  "place_savepoint",
+  "place_examine_hotspots",
 ];
 
 /** 한 번에 받을 단계 상한. 바로 깔기는 한 문장이라 이보다 많으면 모델이 쪼개기에 빠진 것이다. */
@@ -35,6 +52,8 @@ export interface StampStep {
   readonly args: Record<string, unknown>;
   /** 채팅에 남길 한 줄 라벨. */
   readonly label: string;
+  /** 코드가 고친 점과 근거(예: 상자 금액 보정). 결과 줄에 붙인다. */
+  readonly note?: string;
 }
 
 /** 모델에게 주는 사실. 재료는 현재 맵 타일셋의 실제 라벨이다. */
@@ -54,6 +73,8 @@ export interface StampPlanFacts {
   /** 벽·문 라벨 후보(있을 때만). */
   readonly wallMaterials?: readonly string[];
   readonly doorMaterials?: readonly string[];
+  /** 현재 맵 사실 — 상자 보상·NPC·조사 지점을 이 맵에 맞춰 고르는 근거(1순위). */
+  readonly placement?: MapPlacementContext;
 }
 
 export const STAMP_PLANNER_SYSTEM_PROMPT = [
@@ -64,7 +85,10 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "- material MUST be copied verbatim from the provided labels (facts.fillMaterials for fill_region; the labels in facts.materialHint for place_props; facts.wallMaterials / facts.doorMaterials for walls/doors). Map everyday words to the closest real label: 땅/흙/맨땅 → a dirt/soil/earth fill label; 풀밭/잔디 → grass; 물/호수/연못 → water; 숲/나무 → a tree label. Never invent a label; never use a group id.",
   "- Shapes: 동그랗게/원/둥근/호수/연못 → fill_region shape \"circle\" (ellipse for wide ovals); otherwise \"rect\".",
   "- A circle needs a square box: give circle steps a sub-rectangle with w == h (the largest square that fits its part); use ellipse only when the user says 타원/길쭉하게.",
-  "- Trees/forest use place_props with density: 숲/울창/빽빽 → \"impassable\", 성글게 → \"normal\", 드문드문/가로수 → \"sparse\". Non-tree props (상자 etc.) use count instead of density.",
+  "- Trees/forest use place_props with density: 숲/나무/숲길 → \"dense\" (walkable forest with water, small trees, rocks and hidden canopy paths), 울창/빽빽/통행 불가/막힌 → \"impassable\", 성글게 → \"normal\", 드문드문/가로수 → \"sparse\". Decorative crates/boxes (장식 상자·나무 상자) are place_props with count.",
+  "- Game objects: 보물상자/상자(열어서 얻는) → place_chest; 사람/주민/상인/NPC/경비 → place_npc (one step per person, give each a fitting Korean name and 1-2 short lines); 세이브/저장 → place_savepoint; 조사/살펴보기/표지판/비석 → place_examine_hotspots. Put them on walkable ground inside the target, not on trees, water or walls.",
+  "- facts.placement describes THIS map (its fights, existing chests, shops, NPCs, wiki). It is the main reference. Chest gold MUST be inside facts.placement.chestGold.min..max; prefer an item from facts.placement.rewardItems (use its id) when the sentence asks for items. Never invent item ids. NPC names must not repeat facts.placement.existing.npcs. Match NPC lines to the map name, locations and wiki.",
+  "- An empty sentence (\"(빈 입력) …\") means: decorate the target sensibly for this map (terrain first); add at most one game object and only if it clearly fits.",
   "- Order steps ground first (fill_region / paint_road), then walls/houses, then props, so props land on finished ground.",
   "- Do not add things the user did not ask for. Empty steps [] only if nothing can be done.",
   `- At most ${STAMP_MAX_STEPS} steps. Omit mapId; code fills it.`,
@@ -76,6 +100,10 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "build_wall {rect:{x,y,w,h}, material}",
   "place_door {at:{x,y}, material}",
   "author_house {wings:[{x,y,w,h}] (w>=3,h>=5), interior?:\"exterior-only\"|\"linked-interior\"}",
+  "place_chest {at:{x,y}, gold?:int, itemId?:string, why?:\"short basis\"}",
+  "place_npc {at:{x,y}, name, role?:string, lines?:[\"...\"], merchant?:boolean}",
+  "place_savepoint {at:{x,y}}",
+  "place_examine_hotspots {spots:[{at:{x,y}, name, lines:[\"...\"]}]}",
 ].join("\n");
 
 export function buildStampPlannerUserPayload(facts: StampPlanFacts): string {
@@ -88,7 +116,14 @@ export function buildStampPlannerUserPayload(facts: StampPlanFacts): string {
     materialHint: facts.materialHint,
     ...(facts.wallMaterials?.length ? { wallMaterials: facts.wallMaterials } : {}),
     ...(facts.doorMaterials?.length ? { doorMaterials: facts.doorMaterials } : {}),
+    ...(facts.placement ? { placement: placementForModel(facts.placement) } : {}),
   });
+}
+
+/** 모델에게 보내는 맵 사실 — 거르는 데만 쓰는 id 목록은 뺀다(토큰만 먹는다). */
+function placementForModel(placement: MapPlacementContext): Omit<MapPlacementContext, "knownItemIds"> {
+  const { knownItemIds: _known, ...rest } = placement;
+  return rest;
 }
 
 /** 실패한 단계와 도구 오류를 보여 주고 대체 단계만 받는다. */
@@ -188,6 +223,10 @@ const TOOL_KO: Record<StampTool, string> = {
   build_wall: "벽",
   place_door: "문",
   author_house: "집",
+  place_chest: "보물상자",
+  place_npc: "NPC",
+  place_savepoint: "세이브 포인트",
+  place_examine_hotspots: "조사 지점",
 };
 
 /**
@@ -272,7 +311,79 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
         },
       };
     }
+    case "place_chest": {
+      const at = pointOrCenter(args.at, rect, target);
+      if (!at) return dropped("상자 위치가 없습니다");
+      const basis = facts.placement?.chestGold;
+      const itemRaw = stringArg(args.itemId);
+      const known = itemRaw && facts.placement ? facts.placement.knownItemIds.includes(itemRaw) : false;
+      const itemId = known ? itemRaw : undefined;
+      const goldRaw = finiteInt(args.gold);
+      const notes: string[] = [];
+      if (itemRaw && !known) notes.push(`없는 아이템 ${itemRaw} 은 뺐습니다`);
+      let gold: number | undefined;
+      if (goldRaw !== null && goldRaw > 0) {
+        if (basis) {
+          const clamped = clampChestGold(goldRaw, basis);
+          gold = clamped.gold;
+          notes.push(clamped.note);
+        } else gold = goldRaw;
+      }
+      if (!itemId && gold === undefined) {
+        gold = basis ? Math.round((basis.min + basis.max) / 2) : 50;
+        notes.push(basis ? `금액이 없어 ${gold}G(${basis.reason})` : "금액이 없어 50G");
+      }
+      const note = notes.join(" · ");
+      return { step: { tool: stampTool, label: labelText ?? "보물상자", note, args: { mapId, x: at.x, y: at.y, contents: { ...(itemId ? { itemId } : {}), ...(gold !== undefined ? { gold } : {}) } } } };
+    }
+    case "place_npc": {
+      const at = pointOrCenter(args.at, rect, target);
+      if (!at) return dropped("NPC 위치가 없습니다");
+      const name = stringArg(args.name) ?? "마을 사람";
+      const role = stringArg(args.role);
+      const lines = stringList(args.lines, 3);
+      const body = lines.length > 0 ? lines : [`${name}: 안녕하세요.`];
+      return {
+        step: {
+          tool: stampTool,
+          label: labelText ?? `${name} NPC`,
+          args: {
+            mapId, x: at.x, y: at.y, name,
+            graphic: { query: role ?? name },
+            pages: [{ lines: body }],
+          },
+        },
+      };
+    }
+    case "place_savepoint": {
+      const at = pointOrCenter(args.at, rect, target);
+      if (!at) return dropped("세이브 위치가 없습니다");
+      return { step: { tool: stampTool, label: labelText ?? "세이브 포인트", args: { mapId, x: at.x, y: at.y } } };
+    }
+    case "place_examine_hotspots": {
+      const raw = Array.isArray(args.spots) ? args.spots : Array.isArray(args.hotspots) ? args.hotspots : [];
+      const hotspots = raw.slice(0, 6).flatMap((spot) => {
+        if (!isRecord(spot)) return [];
+        const at = clampPointToTarget(spot.at, target);
+        if (!at) return [];
+        const lines = stringList(spot.lines, 3);
+        return [{ at, name: stringArg(spot.name) ?? "조사 지점", lines: lines.length > 0 ? lines : ["특별한 것은 없다."] }];
+      });
+      if (hotspots.length === 0) return dropped("조사 지점이 없습니다");
+      return { step: { tool: stampTool, label: labelText ?? `조사 지점 ${hotspots.length}곳`, args: { mapId, hotspots } } };
+    }
   }
+}
+
+function stringList(value: unknown, limit: number): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.map(stringArg).filter((line): line is string => Boolean(line)).map((line) => line.slice(0, 120)).slice(0, limit);
+}
+
+function pointOrCenter(value: unknown, rect: StampRect | null, target: StampRect): { x: number; y: number } | null {
+  if (value !== undefined) return clampPointToTarget(value, target);
+  const box = rect ?? target;
+  return { x: box.x + Math.floor(box.w / 2), y: box.y + Math.floor(box.h / 2) };
 }
 
 export interface ParsedStampPlan {

@@ -121,6 +121,7 @@ import { createCollapsedUndoButton, createDirectorRestoreButton, setRestoreButto
 import { getEditorUiMode } from "@/editor/editorUiMode";
 import { openAiSettingsModal, registerAiSettingsPanel } from "./aiSettingsModal";
 import { runStampPlace } from "@/editor/stampPlaceRunner";
+import { buildMapPlacementContext, formatChestRewardHint } from "@/ai/mapPlacementContext";
 import { getTool } from "@/editor/tools/toolRegistry";
 import {
   formatComposerPlaceholder,
@@ -1426,6 +1427,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 재료 라벨 예시는 현재 맵 타일셋의 사실이다 — 빠지면 모델이 그룹 id 를 재료로 쓰는 실수로 돌아간다.
     const tileset = tilesetForTurn(scopeMapId);
     if (tileset) parts.push(formatMaterialLabelHint(tileset).replace(/^- /, ""));
+    // 상자 보상은 현재 맵의 진행도로 정한다 — 바로 깔기와 같은 기준(mapPlacementContext).
+    const placement = ctx.mapId ? buildMapPlacementContext(store.getCurrent(), ctx.mapId) : null;
+    if (placement) parts.push(formatChestRewardHint(placement));
     // 선택 영역은 '현재 맵의 것'이고 맵 범위 안에 있을 때만 첨부한다.
     // 맵을 전환해도 남아 있던 이전 맵의 선택(예: 10×10 맵에 (11,9))이 모델에 새 좌표로 오인되던 문제(BUG F) 방지.
     const sel = ctx.selection;
@@ -2362,7 +2366,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       toast("맵을 연 뒤 바로 깔 수 있습니다", "info");
       return;
     }
-    appendBubble("user", text.trim() || "숲");
+    appendBubble("user", text.trim() || "(알아서 깔기)");
     const controller = new AbortController();
     stampController = controller;
     activeAbortController = controller;
@@ -2397,7 +2401,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   const refreshComposerPlaceholder = (): void => {
     if (stampPlaceOn) {
-      input.setAttribute("placeholder", "바로 깔기 — 무엇을 어떻게 깔지 한 문장으로. 비우면 숲.");
+      input.setAttribute("placeholder", "바로 깔기 — 무엇을 어떻게 깔지 한 문장으로(상자·NPC도). 비우면 알아서.");
       syncConversationState();
       return;
     }

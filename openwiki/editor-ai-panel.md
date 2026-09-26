@@ -627,7 +627,21 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
 - 단계는 `applyToolSequenceToStore(..., {continueOnError:true})` 로 한 undo 체크포인트에 적용한다 — 한 단계가 실패해도 나머지는 깔린다.
   실패한 단계만 도구 오류(가까운 라벨 제안 포함)와 함께 **한 번** 되물어 대체 단계를 받는다(최대 모델 호출 2회).
 - 순수 계획·검증은 `src/ai/stampPlanner.ts`: 허용 도구만, 좌표는 대상 안으로 자르고, 키는 허용 목록만 옮긴다. 단계 상한 8.
-- 빈 문장(=숲), AI 미연결, 모델 실패·시간 초과(20s)면 옛 낱말 규칙 `planStampPlace`(`src/ai/stampPlace.ts`)로 떨어지고 그 사실을 한 줄로 말한다.
+- **반드시 모델을 거친다 (2026-09-27, 사용자 판단).** 낱말 규칙 폴백(`stampPlace.ts`)은 삭제했다 — 「숲」을 통행 불가로 올려 덤불만 깔던 경로였다.
+  빈 문장도 모델에 보낸다(`EMPTY_SENTENCE`: 이 자리에 어울리는 것을 알아서). AI 미연결이면 **아무것도 깔지 않고** 연결이 필요하다고 말한다.
+  계획 호출이 실패·시간 초과(20s)이거나 쓸 단계가 없으면 **한 번만** 다시 묻고, 그래도 없으면 아무것도 깔지 않고 이유를 말한다.
+- **게임 오브젝트도 깐다**: `place_chest`·`place_npc`(이름·그래픽 질의·대사 1~3줄 → `pages:[{lines}]`)·`place_savepoint`·`place_examine_hotspots`.
+  숲 규칙: 숲/나무 → `dense`(물·작은 나무·숨은 수관 길), 울창/빽빽/통행 불가 → `impassable`.
+- **현재 맵 사실이 1순위** — `src/ai/mapPlacementContext.ts` `buildMapPlacementContext(project, mapId)`(순수).
+  이 맵의 조우(`encounterTable`·`troopIds`(조우율>0)·`fieldSpawns`) → 트룹 적 합계 = 전투 1회 골드·경험치·드롭,
+  이미 깔린 상자(닫힘 페이지 selfSwitch A=false 의 `changeGold`/`changeItem`)·상점 재고와 가격·NPC 이름·세이브 수·출입구(`transfer`·`worldGraph` 간선),
+  이 맵에 걸린 설정집 문서(`projectWikiContext` mapId). 계획 사실(`facts.placement`)로 모델에 간다(`knownItemIds` 는 빼고).
+- **상자 금액 범위 `chestGold`**: 전투 1회분 ×0.5~×4, 기존 상자 ×0.5~×2(둘 다 있으면 합친 범위), 전투·상자가 없고 상점만 있으면 상점가 ×0.5~ 중앙 ×3.
+  현재 맵에 신호가 없을 때만 출입구 이웃 맵(scope `neighbor`), 그다음 프로젝트 적 보상 분포(`project`), 적도 없으면 20~100G(`none`).
+  바로 깔기 검증기가 모델 금액을 이 범위로 맞추고(`clampChestGold`) 결과 줄에 근거를 붙인다. 없는 `itemId` 는 버리고 금액으로 대신한다.
+- **채팅 조수도 같은 기준**: 컨텍스트 footer 에 `formatChestRewardHint` 한 줄(범위·근거·아이템 후보), `place_chest` 는 범위 밖 금액이면 막지 않고 경고한다.
+- **속도 (측정, 미해결)**: 도구 `run` 은 1ms 인데 `runTool` 한 번이 ~700ms — `createDraft` 의 `structuredClone`(프로젝트 25.9MB 중 타일셋 25.0MB) 367ms + `summarizeChanges` 타일셋 `JSON.stringify` 비교 334ms.
+  타일셋을 참조 공유(copy-on-write)하면 줄지만 드래프트에서 타일셋을 직접 고치는 도구가 21파일이라 이번 변경에서 하지 않았다.
 - 실측(워크트리 dev, Google 연결): 「왼쪽에 땅을 동그랗게, 가운데 물을 동그랗게, 오른쪽 옆에 나무」 12s·3단계 성공, 「땅으로 깔아줘」 → 흙길 오토타일 채움.
   증거 `verify-shots/stamp-llm/`.
 

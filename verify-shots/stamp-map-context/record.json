@@ -1,0 +1,271 @@
+{
+  "aiReady": {
+    "ready": true,
+    "turnBusy": false,
+    "configReady": true,
+    "lastStatus": "대기",
+    "bridgeConnected": false,
+    "panelMounted": true
+  },
+  "setup": {
+    "mapId": "map_village_30_100x100",
+    "placed": {
+      "x": 4,
+      "y": 2
+    },
+    "size": [
+      100,
+      100
+    ],
+    "lateGold": [],
+    "chestGold": {
+      "min": 150,
+      "max": 600,
+      "scope": "map",
+      "reason": "이 맵 기존 상자 300G"
+    },
+    "events": 21
+  },
+  "ms": 21223,
+  "bubbles": [
+    "상자 두 개랑 상인 NPC 하나",
+    "첫 번째 보물상자 배치 · 어둠 동굴 2층에 보물상자 '보물상자' 배치 (48, 50) — 보상 회복약 · 250G (이 맵 기존 상자 300G)",
+    "두 번째 보물상자 배치 · 어둠 동굴 2층에 보물상자 '보물상자' 배치 (52, 50) — 보상 마력약 · 300G (이 맵 기존 상자 300G)",
+    "상인 NPC 배치 · 어둠 동굴 2층에 NPC '방랑상인 도현' 배치 (50, 50) — 페이지 1개 — SimplePage 정규화 경고 1건"
+  ],
+  "result": [
+    {
+      "id": "ev_house_door_30_map_village_30_100x100_1",
+      "x": 60,
+      "y": 23,
+      "gold": [],
+      "item": [],
+      "lines": []
+    },
+    {
+      "id": "ev_house_door_30_map_village_30_100x100_2",
+      "x": 33,
+      "y": 43,
+      "gold": [],
+      "item": [],
+      "lines": []
+    },
+    {
+      "id": "ev_house_door_30_map_village_30_100x100_3",
+      "x": 45,
+      "y": 62,
+      "gold": [],
+      "item": [],
+      "lines": []
+    },
+    {
+      "id": "ev_house_door_30_map_village_30_100x100_4",
+      "x": 60,
+      "y": 44,
+      "gold": [],
+      "item": [],
+      "lines": []
+    },
+    {
+      "id": "ev_house_door_30_map_village_30_100x100_5",
+      "x": 60,
+      "y": 72,
+      "gold": [],
+      "item": [],
+      "lines": []
+    },
+    {
+      "id": "ev_house_door_30_map_village_30_100x100_6",
+      "x": 10,
+      "y": 10,
+      "gold": [],
+      "item": [],
+      "lines": []
+    },
+    {
+      "id": "ev_house_door_30_map_village_30_100x100_7",
+      "x": 60,
+      "y": 93,
+      "gold": [],
+      "item": [],
+      "lines": []
+    },
+    {
+      "id": "ev_house_door_30_map_village_30_100x100_8",
+      "x": 41,
+      "y": 23,
+      "gold": [],
+      "item": [],
+      "lines": []
+    },
+    {
+      "id": "ev_house_door_30_map_village_30_100x100_9",
+      "x": 21,
+      "y": 62,
+      "gold": [],
+      "item": [],
+      "lines": []
+    },
+    {
+      "id": "ev_house_door_30_map_village_30_100x100_10",
+      "x": 39,
+      "y": 93,
+      "gold": [],
+      "item": [],
+      "lines": []
+    },
+    {
+      "id": "ev_house_door_30_map_village_30_100x100_11",
+      "x": 41,
+      "y": 72,
+      "gold": [],
+      "item": [],
+      "lines": []
+    },
+    {
+      "id": "ev_house_door_30_map_village_30_100x100_12",
+      "x": 10,
+      "y": 96,
+      "gold": [],
+      "item": [],
+      "lines": []
+    },
+    {
+      "id": "ev_mir_elder",
+      "x": 50,
+      "y": 48,
+      "gold": [
+        100
+      ],
+      "item": [
+        "item_potion"
+      ],
+      "lines": [
+        "이슬 장터의 종이 약해져 새벽 안개가 걷히지 않네.",
+        "달빛 숲에서 약초 세 포기를 모아 주게. 북쪽 표지판을 보게."
+      ]
+    },
+    {
+      "id": "ev_noah",
+      "x": 47,
+      "y": 52,
+      "gold": [],
+      "item": [],
+      "lines": [
+        "다치면 언제든 오게. 장터 약초로 몸을 돌봐 줄게.",
+        "기운이 돌았길."
+      ]
+    },
+    {
+      "id": "ev_merchant",
+      "x": 53,
+      "y": 52,
+      "gold": [],
+      "item": [],
+      "lines": [
+        "이슬 장터 특산품일세. 둘러보게.",
+        "아직 좌판을 펴는 중이야. 조금만 기다려 주겠나?"
+      ]
+    },
+    {
+      "id": "ev_kid",
+      "x": 55,
+      "y": 55,
+      "gold": [],
+      "item": [],
+      "lines": [
+        "북쪽 숲에 반짝 꽃이 세 포기 있대! 미르 장로님이 찾으셔.",
+        "잡아 봐! 나 진짜 빠르다!"
+      ]
+    },
+    {
+      "id": "ev_sign",
+      "x": 50,
+      "y": 51,
+      "gold": [],
+      "item": [],
+      "lines": [
+        "【이슬 장터 이정표】 북: 달빛 숲 / 서: 폐광 / 동: 종탑 사당"
+      ]
+    },
+    {
+      "id": "ev_to_forest",
+      "x": 50,
+      "y": 3,
+      "gold": [],
+      "item": [],
+      "lines": []
+    },
+    {
+      "id": "ev_to_mine",
+      "x": 6,
+      "y": 50,
+      "gold": [],
+      "item": [],
+      "lines": []
+    },
+    {
+      "id": "ev_to_shrine",
+      "x": 96,
+      "y": 50,
+      "gold": [],
+      "item": [],
+      "lines": []
+    },
+    {
+      "id": "ev_chest_04f9396a-efca-426e-a6cc-3b7c9af1cc90",
+      "x": 4,
+      "y": 2,
+      "gold": [
+        300
+      ],
+      "item": [],
+      "lines": [
+        "보물상자를 열었다! 300G 를 손에 넣었다.",
+        "상자는 비어 있다."
+      ]
+    },
+    {
+      "id": "ev_chest_102f5aad-d579-4749-822d-3fba1cf87255",
+      "x": 48,
+      "y": 50,
+      "gold": [
+        250
+      ],
+      "item": [
+        "item_potion"
+      ],
+      "lines": [
+        "보물상자를 열었다! 회복약 · 250G 를 손에 넣었다.",
+        "상자는 비어 있다."
+      ]
+    },
+    {
+      "id": "ev_chest_419c3ab3-1113-4d0e-822d-0dcb7f4f4d76",
+      "x": 52,
+      "y": 50,
+      "gold": [
+        300
+      ],
+      "item": [
+        "item_ether"
+      ],
+      "lines": [
+        "보물상자를 열었다! 마력약 · 300G 를 손에 넣었다.",
+        "상자는 비어 있다."
+      ]
+    },
+    {
+      "id": "ev_npc_63a7f2f8-a5ef-4f00-bafd-bd4fa67ec9a0",
+      "name": "방랑상인 도현",
+      "x": 50,
+      "y": 50,
+      "gold": [],
+      "item": [],
+      "lines": [
+        "동굴 속에서도 거래는 계속됩니다.",
+        "필요한 물건이 있으신가요?"
+      ]
+    }
+  ]
+}
