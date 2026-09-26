@@ -1694,3 +1694,71 @@ def ex_temple_hall(ctx):
     for cx, cy in [(2, 10), (13, 11), (19, 6), (25, 3), (5, 16), (12, 16)]:
         c.kind(2, 'A2:5', [(cx + dx, cy) for dx in (0, 1) if c.ok(cx + dx, cy) and c.ground(cx + dx, cy) == 'floor' and c.L[3][cy * c.w + cx + dx] is None])
     return c
+
+
+
+@example
+def ex_skull_ossuary(ctx):
+    """해골 납골당 28×20 — 벽 전체가 해골이 박힌 납골 벽(A4 변형판). 굽은 복도 + 크기가 다른 방 넷(큰 납골실·관 창고·제단 굴·막다른 뼈 구덩이).
+    통로 칸을 먼저 예약하고 방별 소품 풀로 채운다. 좌우 대칭 금지."""
+    c = Canvas(ctx, 'rasak_crypt_skulls', 28, 20, 'ex_skull_ossuary', 'Rasak 예제 · 해골 납골당(해골 박힌 벽)')
+    interior(c, 'A4:0', [
+        (1, 1, 13, 8, 'A4:8', 'A2:0'),      # 큰 납골실
+        (15, 1, 26, 6, 'A4:24', 'A2:1'),    # 관 창고
+        (1, 10, 8, 18, 'A4:40', 'A2:2'),    # 막다른 뼈 구덩이
+        (10, 10, 26, 18, 'A4:11', 'A2:3'),  # 제단 굴
+    ], doors=door_v(14, 4, 'A2:0') + door_h(5, 9, 'A2:2') + door_v(9, 14, 'A2:3') + door_h(20, 7, 'A2:1') + [(18, 19, 'A2:3')])
+    import random
+    rnd = random.Random(29)
+    ids = {o['id'] for o in c.ctx.names['bundles'][c.b]['objects']}
+    lanes = {(x, 4) for x in range(2, 26)} | {(5, y) for y in range(3, 18)} | {(x, 14) for x in range(2, 26)} | {(20, y) for y in range(3, 19)}
+    for (lx, ly) in lanes:
+        c.owner.setdefault((3, ly * c.w + lx), '__lane__')
+    def fill(pools, box, n):
+        x0, y0, x1, y1 = box
+        items = [i for pre in pools for i in ids if i.startswith(pre) and c.ctx.object(c.b, i)['layer'] == 3 and '벽걸이' not in c.ctx.object(c.b, i)['name']]
+        for _ in range(n):
+            if items: c.try_obj(items[rnd.randrange(len(items))], x0 + rnd.randrange(x1 - x0), y0 + rnd.randrange(y1 - y0))
+    fill(('crypt_urn_', 'crypt_bones_pile', 'crypt_sarcophagus', 'crypt2_stone_sarcophagus', 'crypt_tomb'), (2, 3, 13, 8), 45)
+    fill(('crypt2_coffin_', 'crypt2_skeleton_'), (16, 3, 26, 6), 30)
+    fill(('crypt_bones_pile', 'crypt2_skeleton_', 'crypt_urn_bones'), (2, 12, 8, 18), 28)
+    fill(('crypt_dark_statue', 'crypt2_candle_skull', 'crypt2_torch', 'chaos_'), (11, 12, 26, 18), 55)
+    for k_ in [k_ for k_, v in c.owner.items() if v == '__lane__']:
+        del c.owner[k_]
+    for cx, cy in [(3, 7), (11, 6), (23, 5), (3, 16), (13, 16), (24, 12)]:
+        c.kind(2, ('A2:4', 'A2:7')[(cx + cy) % 2], [(cx + dx, cy + dy) for dx, dy in ((0, 0), (1, 0), (0, 1), (1, 1)) if c.ok(cx + dx, cy + dy) and c.ground(cx + dx, cy + dy) == 'floor' and c.L[3][(cy + dy) * c.w + cx + dx] is None])
+    return c
+
+
+@example
+def ex_stone_temple(ctx):
+    """회색 돌 신전 28×20 — 회색 돌 A4 변형판. 북동 큰 성소(남색 융단·돌 기둥·제단) / 서쪽 좁은 수도사 방(이불·낮은 탁자) / 남쪽 넓은 회랑(돌 말뚝·등) / 남동 작은 보물실.
+    통로 예약 후 방별 풀. 좌우 대칭 금지."""
+    c = Canvas(ctx, 'rasak_temple2', 28, 20, 'ex_stone_temple', 'Rasak 예제 · 회색 돌 신전(성소·수도사 방·회랑)')
+    interior(c, 'A4:0', [
+        (9, 1, 26, 10, 'A4:27', 'A2:16'),   # 성소
+        (1, 1, 7, 10, 'A4:8', 'A2:24'),     # 수도사 방
+        (1, 12, 18, 18, 'A4:40', 'A2:16'),  # 회랑
+        (20, 12, 26, 18, 'A4:14', 'A2:24'), # 보물실
+    ], doors=door_v(8, 6, 'A2:16') + door_h(4, 11, 'A2:24') + door_h(15, 11, 'A2:16') + door_v(19, 15, 'A2:16') + [(10, 19, 'A2:16')])
+    import random
+    rnd = random.Random(41)
+    ids = {o['id'] for o in c.ctx.names['bundles'][c.b]['objects']}
+    c.kind(2, 'A2:23', [(15, y) for y in range(4, 11)] + [(16, y) for y in range(4, 11)])
+    lanes = {(15, y) for y in range(3, 12)} | {(16, y) for y in range(3, 12)} | {(x, 6) for x in range(2, 10)} | {(x, 15) for x in range(2, 26)} | {(4, y) for y in range(3, 16)} | {(10, y) for y in range(12, 19)}
+    for (lx, ly) in lanes:
+        c.owner.setdefault((3, ly * c.w + lx), '__lane__')
+    def fill(pools, box, n):
+        x0, y0, x1, y1 = box
+        items = [i for pre in pools for i in ids if i.startswith(pre) and c.ctx.object(c.b, i)['layer'] == 3 and '벽걸이' not in c.ctx.object(c.b, i)['name']]
+        for _ in range(n):
+            if items: c.try_obj(items[rnd.randrange(len(items))], x0 + rnd.randrange(x1 - x0), y0 + rnd.randrange(y1 - y0))
+    for oid, x, y in (('temple2_throne_altar', 14, 1), ('temple2_pillar_stone_a', 12, 4), ('temple2_pillar_stone_a', 19, 5), ('temple2_pillar_stone_b', 23, 3)):
+        oid in ids and c.try_obj(oid, x, y)
+    fill(('temple2_table', 'temple2_bench', 'temple2_stand', 'temple2_railing', 'temple2_post'), (10, 3, 26, 10), 22)
+    fill(('japanese_',), (2, 3, 7, 10), 34)
+    fill(('temple2_',), (2, 13, 18, 18), 60)
+    fill(('crypt_urn_', 'crypt_chest', 'crypt_niche'), (21, 13, 26, 18), 30)
+    for k_ in [k_ for k_, v in c.owner.items() if v == '__lane__']:
+        del c.owner[k_]
+    return c

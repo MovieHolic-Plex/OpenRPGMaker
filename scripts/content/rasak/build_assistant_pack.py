@@ -23,7 +23,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 T = 48
 COLS = 96
-BUNDLES = ['rasak_field', 'rasak_swamp', 'rasak_cave', 'rasak_town', 'rasak_interior', 'rasak_dungeon', 'rasak_castle', 'rasak_forestfolk', 'rasak_snow', 'rasak_port', 'rasak_seasons', 'rasak_town2', 'rasak_desert', 'rasak_garden', 'rasak_crypt', 'rasak_temple']
+BUNDLES = ['rasak_field', 'rasak_swamp', 'rasak_cave', 'rasak_town', 'rasak_interior', 'rasak_dungeon', 'rasak_castle', 'rasak_forestfolk', 'rasak_snow', 'rasak_port', 'rasak_seasons', 'rasak_town2', 'rasak_desert', 'rasak_garden', 'rasak_crypt', 'rasak_temple', 'rasak_crypt_skulls', 'rasak_temple2']
 N, E, S, W, NE, SE, SW, NW = 1, 2, 4, 8, 16, 32, 64, 128
 DIRS = [(0, -1, N), (1, 0, E), (0, 1, S), (-1, 0, W), (1, -1, NE), (1, 1, SE), (-1, 1, SW), (-1, -1, NW)]
 # p27b 둘레 암반(A4 kind 7)은 2022 옛 그림을 현재 시트로 맞춘 결과라 안쪽이 모양 15 로 재구성된다(names-review). 표 검증·예제에서 뺀다.
@@ -405,6 +405,42 @@ PURPOSES = {
 - **같은 종류 방이 둘이면 가구를 다르게**(시험 K2: 다다미 객실 둘에 같은 한 벌을 같은 자리에 놓아 좌우 대칭 2.7배로 실패). 한 방은 이불 둘·낮은 탁자, 다른 방은 옻칠 탁자·선반·방석처럼 물체와 자리를 바꾼다.
 - **붉은 융단은 본전 문에서 제단 앞까지 끊지 않고** 2칸 폭으로 깐다(K2 는 반쯤에서 끊겼다).
 - **본전이 가장 커야 가장 채워진다**: 기둥 줄 양끝·벽 쪽에 긴 탁자·향로·등·낮은 의자를 놓아 빈 바닥이 한 덩이로 남지 않게 한다. 그림자는 벽·기둥 바로 오른쪽 칸에만 칠한다(K2 벽 없는 그림자 6칸).
+""",
+    },
+    'dungeon_skull_ossuary': {
+        'bundle': 'rasak_crypt_skulls', 'preview': 'ex_skull_ossuary', 'name': '해골 납골당(해골 박힌 벽)',
+        'desc': '벽 전체가 해골이 박힌 납골 벽인 지하묘지 — 큰 납골실(석관·유골 단지)/관 창고(세운·눕힌 관, 해골)/막다른 뼈 구덩이/제단 굴(석상·해골 촛대·붉은 살덩이). 조립 예제 ex_skull_ossuary(28×20) 기준.',
+        'windows': [(0, 0, 14, 10), (14, 0, 14, 9), (0, 9, 10, 11), (9, 9, 19, 11)],
+        'cross': (1, 1, 12, 8),
+        'path': (('A2', 0), ('A2', 1)), 'cave': False, 'interior': True,
+        'main_ground': ('A2', 0),
+        'alts': [('A2', 1), ('A2', 2), ('A2', 3), ('A4', 0), ('A4', 8), ('A4', 24), ('A4', 40), ('A4', 11)],
+        'recipe': 'room',
+        'room_notes': """## 해골 납골당 — 방마다 할 일(예제 ex_skull_ossuary)
+- 이 묶음은 `rasak_crypt` 와 물체·바닥이 같고 **A4 벽만 해골이 박힌 납골 벽**이다(벽 8~15 해골 빽빽 · 24~31 해골 섞인 회색 돌 · 40~47 해골 박힌 짙은 벽돌). 보통 지하묘지는 `rasak_crypt`, 해골 벽 분위기면 이 묶음.
+- **예제 창을 그대로 찍어 맵을 채우지 않는다**(시험 K1 에서 지하묘지·신전이 예제를 통째로 붙였다). 방 틀은 요청한 방 수·크기로 `paint_tiles` rect 로 새로 판다.
+- **좌우 거울 금지**(검사 ≤ 2.2배): 방 폭·깊이를 서로 다르게, 복도는 굽게.
+- 통로(문–문 줄)를 먼저 비워 두고 방마다 소품을 채운다. 관·뼈 무더기로 문 앞을 막지 않는다.
+- 납골실: 석관·유골 단지·뼈 무더기. 관 창고: 세운 관·눕힌 관·해골. 제단 굴: 석상·해골 촛대·붉은 살덩이(`chaos_*`).
+- 그림자는 벽면·큰 물체 바로 오른쪽 칸에만.
+""",
+    },
+    'interior_stone_temple': {
+        'bundle': 'rasak_temple2', 'preview': 'ex_stone_temple', 'name': '회색 돌 신전',
+        'desc': '회색 돌 벽(A4 변형판) 신전 — 큰 성소(남색 융단·돌 기둥·돌 옥좌)/좁은 수도사 방(이불·낮은 탁자)/넓은 회랑(돌 말뚝·난간)/작은 보물실(단지·궤). 조립 예제 ex_stone_temple(28×20) 기준.',
+        'windows': [(8, 0, 20, 11), (0, 0, 9, 11), (0, 11, 19, 9), (19, 11, 9, 9)],
+        'cross': (9, 1, 17, 9),
+        'path': (('A2', 16), ('A2', 24)), 'cave': False, 'interior': True,
+        'main_ground': ('A2', 16),
+        'alts': [('A2', 24), ('A2', 0), ('A4', 0), ('A4', 8), ('A4', 27), ('A4', 40), ('A4', 14)],
+        'recipe': 'room',
+        'room_notes': """## 회색 돌 신전 — 방마다 할 일(예제 ex_stone_temple)
+- 이 묶음은 `rasak_temple` 와 물체·바닥이 같고 **A4 벽만 회색 돌**이다(배치·번호는 사암판과 같음 — 8 짙은 회색 벽 · 27 기둥 벽 · 40 민 벽 · 14 장식 띠 벽돌). 사암 신전은 `rasak_temple`.
+- 가구는 돌판(`temple2_*`)을 쓴다 — 나무판(`temple_*`)은 사암 신전용. 동양 방은 `japanese_*`, 보물실은 `crypt_urn_*`·궤.
+- **예제 창 통째 금지 · 좌우 거울 금지**(방 폭·깊이·기둥 간격을 어긋나게, 같은 종류 방은 가구를 다르게).
+- 성소: 남색 융단(A2 23, 2층)을 문에서 옥좌까지 2칸 폭으로 먼저 깔고 비운다. 기둥은 간격을 다르게.
+- 수도사 방은 1칸짜리 3층 소품만 바닥에(4층 소품은 탁자 위에만). 벽걸이 천은 벽면 줄에만.
+- 통로(문–문 줄)를 먼저 비우고 채운다. 그림자는 벽 오른쪽 칸에만.
 """,
     },
 }

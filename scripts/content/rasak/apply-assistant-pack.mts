@@ -331,6 +331,8 @@ async function main() {
       ["desert_trial", "시험 · 서부 사막 마을", "rasak_desert", 3072],
       ["skull_crypt_trial", "시험 · 해골 지하묘지", "rasak_crypt", 4608],
       ["temple_trial", "시험 · 사암 신전", "rasak_temple", 4608],
+      ["ossuary_trial", "시험 · 해골 납골당", "rasak_crypt_skulls", 4608],
+      ["stone_temple_trial", "시험 · 회색 돌 신전", "rasak_temple2", 4608],
     ];
     for (const [id, name, ts, ground] of trials) {
       if (!project.tilesets[ts]) continue;
