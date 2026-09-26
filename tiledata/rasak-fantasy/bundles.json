@@ -400,6 +400,42 @@
         "E": "Dungeon/Crypt/Tileset_Crypt_Rasak.png"
       },
       "extraSheets": []
+    },
+    {
+      "id": "rasak_crypt_skulls",
+      "name": "Rasak · 해골 납골 벽 지하묘지",
+      "previews": [
+        "지하묘지(분위기 참고)"
+      ],
+      "sheets": {
+        "A1": "Dungeon/Dungeon/A1_Dungeon_Rasak.png",
+        "A2": "Dungeon/Crypt/A2_Crypt_Rasak.png",
+        "A4": "Dungeon/Crypt/A4_CryptSkulls_Rasak.png",
+        "A5": "Cave/A5_Cave_Rasak.png",
+        "B": "Dungeon/Crypt/Tileset_Crypt_Rasak.png",
+        "C": "Dungeon/Crypt/Tileset_Crypt2_Rasak.png",
+        "D": "Dungeon/Dungeon/Tileset_Dungeon_Rasak.png",
+        "E": "Dungeon/Tileset_Chaos.png"
+      },
+      "extraSheets": []
+    },
+    {
+      "id": "rasak_temple2",
+      "name": "Rasak · 회색 돌 신전",
+      "previews": [
+        "신전 실내(분위기 참고)"
+      ],
+      "sheets": {
+        "A1": "Dungeon/Dungeon/A1_Dungeon_Rasak.png",
+        "A2": "Dungeon/Temple/A2_Temple_Rasak.png",
+        "A4": "Dungeon/Temple/A4_Tempel2_Rasak.png",
+        "A5": "Dungeon/Dungeon/A5_Dungeon_Rasak.png",
+        "B": "Dungeon/Temple/Tilesets_Temple_inside2_Rasak.png",
+        "C": "Interiors/Tileset_Japanese_Inside_Rasak.png",
+        "D": "Dungeon/Temple/Tilesets_Temple_inside_Rasak.png",
+        "E": "Dungeon/Crypt/Tileset_Crypt_Rasak.png"
+      },
+      "extraSheets": []
     }
   ],
   "sourceSha256": {

@@ -179,6 +179,10 @@ node /tmp/mzai/apply.mjs export --project ~/third-party-assets/rasak/study-proje
 - K2: 지하묘지 16% 통과(복사 1/76칸)·신전 대칭 2.7배 실패(다다미방 둘에 같은 한 벌). K3: 둘 다 가운데 복도 양옆에 같은 폭 방을 지어 대칭 2.5·3.5배 실패.
   문서에 「좌우 거울 금지」(양옆 방 폭·깊이·가구 줄을 어긋나게)와 「같은 종류 방은 가구를 다르게」·「융단은 문에서 제단까지」·「그림자는 벽 오른쪽만」을 넣었다.
 - K4: 지하묘지 22%(대칭 1.5, 복사 4/101칸) · 신전 28%(대칭 1.8, 복사 0/77칸) 통과. 연구 프로젝트 rev 24. 비교 http://mdc-server:18301/rasak-desert-garden.html
+- A4 벽 변형 둘은 A4 칸이 하나라 변형 묶음으로 넣었다: `rasak_crypt_skulls`(해골 박힌 납골 벽, `A4_CryptSkulls`) · `rasak_temple2`(회색 돌, `A4_Tempel2`).
+  물체·바닥은 원 묶음과 같고 A4 만 다르다. 예제 `ex_skull_ossuary`(22%) · `ex_stone_temple`(30%), 용도 `dungeon_skull_ossuary` · `interior_stone_temple`.
+  연구 프로젝트 rev 25(add) → 26(apply), 18묶음 왕복 일치. 시험 L1: 납골당 27%(대칭 1.1) · 회색 신전 27%(2.0) 통과, 예제 복사 2/95 · 1/101칸.
+- 이로써 미사용 시트는 `Bird Houses.png`(격자 불일치) 하나다. `Horror/Tileset_Chaos.png` 는 `Dungeon/Tileset_Chaos.png` 와 같은 파일.
 
 ## 프리뷰 재현 결과 (2026-09-24, 두 층 렌더 기준)
 
