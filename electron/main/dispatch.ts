@@ -43,6 +43,8 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
   const cached = services.get(sessions);
   if (cached) return cached;
   const store = (key: SessionKey) => sessions.require(key).store;
+  /** 임대를 빼앗긴 `resource\0session`. 이 세션은 해당 자원을 혼자 모드에서도 자동 회수하지 않는다. */
+  const displacedLeases = new Set<string>();
   const preparedPatches = new WeakMap<object, { base: Project; project: Project; changedMapIds?: readonly string[]; baseSha?: string }>();
 
   function prepareMapPatch(key: SessionKey, payload: unknown):
@@ -101,13 +103,23 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
       const session = sessions.require(key), member = sessions.member(key);
       if (member.role === 'viewer') throw new Error('읽기 전용 팀원은 편집할 수 없습니다');
       const lease = session.locks.get(input.resource);
-      if (lease && lease.expiresAt > Date.now() && lease.session !== key) {
-        const canTakeover = member.role === 'owner' || lease.memberId === member.id;
-        if (input.release || !input.takeover || !canTakeover) {
-          return { kind: 'locked', ownerLabel: lease.ownerLabel, expiresAt: lease.expiresAt, canTakeover };
+      const liveForeignLease = lease && lease.expiresAt > Date.now() && lease.session !== key ? lease : null;
+      if (liveForeignLease) {
+        const canTakeover = member.role === 'owner' || liveForeignLease.memberId === member.id;
+        // 혼자 쓰는 팀(구성원 1명)에서 같은 구성원이 새 탭으로 다시 열면 이전 임대를 회수한다.
+        // 실측(2026-09-26 온보딩 저니 04): 이전 탭이 pagehide 없이 죽으면(크래시·브라우저 강제 종료·절전)
+        // 임대가 90초 남아, 혼자 만든 프로젝트에서 「호스트님이 편집 중입니다」로 칠하기가 막혔다.
+        // 밀려난 세션은 자동 회수하지 않는다 — 살아 있는 두 탭이 20초 갱신마다 서로 빼앗는 핑퐁을 막는다.
+        // 그 탭은 기존 계약대로 locked+canTakeover 를 받고 명시적 클릭으로만 되찾는다.
+        const soloReclaim = !input.release && liveForeignLease.memberId === member.id
+          && session.team.list().length === 1 && !displacedLeases.has(`${input.resource}\u0000${key}`);
+        if (!soloReclaim && (input.release || !input.takeover || !canTakeover)) {
+          return { kind: 'locked', ownerLabel: liveForeignLease.ownerLabel, expiresAt: liveForeignLease.expiresAt, canTakeover };
         }
       }
       if (input.release) { session.locks.delete(input.resource); return { kind: 'released' }; }
+      if (liveForeignLease) displacedLeases.add(`${input.resource}\u0000${liveForeignLease.session}`);
+      displacedLeases.delete(`${input.resource}\u0000${key}`);
       const expiresAt = Date.now() + 90_000;
       session.locks.set(input.resource, { session: key, memberId: member.id, ownerLabel: member.label, expiresAt });
       return { kind: 'held', expiresAt };

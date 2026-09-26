@@ -249,6 +249,13 @@ node scripts/install-project-host-service.mjs --project-dir /home/main/.local/sh
 거절한다. 명시적 클릭의 첫 요청에만 takeover를 보내므로 탭끼리 자동으로 권한을 빼앗지 않는다.
 기존 안내만 있고 일반 checkout만 호출하던 버튼을 실제 takeover 요청으로 연결했다.
 
+2026-09-26 혼자 쓰는 팀 회수: 팀 구성원이 1명이고 요청자가 lease와 같은 member이면 takeover 없이도
+새 세션에 lease를 준다. 이전 탭이 pagehide 없이 죽으면(크래시·강제 종료·절전) 최대 90초 동안
+「호스트님이 편집 중입니다」로 칠하기가 막혔다(온보딩 저니 04, 토스트 4개 누적). 이렇게 밀려난 세션은
+그 자원을 자동 회수하지 않고 기존처럼 `locked`+`canTakeover`를 받는다(살아 있는 두 탭의 핑퐁 방지).
+구성원이 2명 이상이면 계약은 그대로다. 렌더러의 칠하기 거부 안내는 키 토스트 하나로 교체되어 쌓이지 않는다
+(`toastMapEditLockNotice`).
+
 ## 운영 AI와 로그인 유지 (2026-09-18)
 
 설치기의 `--enable-owner-ai`는 서비스에 `OPRN_HOST_OWNER_AI=1`을 설정한다. 인증된 owner의
