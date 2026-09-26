@@ -25,7 +25,12 @@ export async function readBridgeRequestBody(request: IncomingMessage): Promise<{
   // The hint grants only a bounded transport allowance; it must match the parsed envelope.
   // Creation carries a full serialized seed, including the same shared assets
   // and reference documents as a later save. Keep its allowance equally bounded.
-  const projectDocument = channelHint === OPRN_CHANNELS.projectSave || channelHint === OPRN_CHANNELS.startCreateProject;
+  // A map patch carries whatever changed since the last save — after load normalization that is
+  // most tilesets and assets, i.e. nearly the whole document (2026-09-26: 96MB decoded on an 85MB
+  // project), and a stale base resends the full base as well. Under 64MB decoded every such first
+  // save failed with 413 and was retried forever, so it gets the same bound as a full save.
+  const projectDocument = channelHint === OPRN_CHANNELS.projectSave || channelHint === OPRN_CHANNELS.startCreateProject
+    || channelHint === OPRN_CHANNELS.projectSaveMapPatch;
   const decodedLimit = projectDocument ? PROJECT_SAVE_BODY_LIMIT : BRIDGE_BODY_LIMIT;
   const wireLimit = encoding === 'gzip' ? BRIDGE_BODY_LIMIT : decodedLimit;
   const declaredLength = Number(request.headers['content-length']);
