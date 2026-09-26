@@ -1,5 +1,6 @@
 import type { Project, TilesetDef } from "./types";
 import { isBundledReferenceImage } from "./bundledReferenceImagePath";
+import { SHARED_CONTENT_PREVIEW_ENDPOINT } from "./sharedContentSchema";
 
 /** Authored, portable reference material. Uploaded image bytes travel with the project;
  * shipped images are same-origin static paths (`isBundledReferenceImage`). */
@@ -92,7 +93,7 @@ export function referenceManifest(category: TilesetReferenceCategory) {
 export function referenceOwnerManifest<T extends object>(value: T) {
   const { referenceDocuments, preview, ...metadata } = value as T & { referenceDocuments?: TilesetReferenceCategory[]; preview?: string };
   return { ...metadata,
-    ...(preview === undefined ? {} : preview.startsWith('data:image/') ? { previewImageAvailable: true } : { preview }),
+    ...(preview === undefined ? {} : preview.startsWith('data:image/') || preview.startsWith(SHARED_CONTENT_PREVIEW_ENDPOINT) ? { previewImageAvailable: true } : { preview }),
     ...(referenceDocuments ? { referenceDocuments: referenceDocuments.map(referenceManifest) } : {}),
   };
 }
