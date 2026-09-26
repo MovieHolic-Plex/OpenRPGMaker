@@ -10,6 +10,8 @@ import { stopAudioChannel } from "@/player/audio";
 import { playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { mountBattleScene, type BattleDomController } from "@/player/battleDom";
 import { createSkinBattleTransition, type BattleTransition } from "@/player/battleTransition";
+import { computeOnFieldAnchors, hideOnFieldSprites, instantBattleTransition, type OnFieldScene } from "@/player/battleOnField";
+import { mapTileSize } from "@/project/tileGeometry";
 import { resolveSkinId, getBattleSkin } from "@/battle/skins/registry";
 import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
 import { maybeAutosave } from "@/player/autosave";
@@ -70,7 +72,7 @@ function captureFieldSnapshot(game: unknown): Promise<string | undefined> {
 type BattleHostScene = Pick<PlaySceneContext, "session" | "tileY" | "battleAbortController" | "showGameOverScreen">
   & Parameters<typeof dialogueHost>[0]
   & Partial<Pick<PlaySceneContext, "events" | "runtimeTimers">>
-  & { readonly map: Pick<PlaySceneContext["map"], "height"> };
+  & { readonly map: Pick<PlaySceneContext["map"], "height" | "tileSize"> };
 
 export async function playBattle(
   scene: BattleHostScene,
@@ -202,9 +204,18 @@ export async function playBattle(
       const gameCanvas: unknown = Reflect.get(scene.game, "canvas");
       const fieldCanvas = gameCanvas instanceof HTMLElement ? gameCanvas : undefined;
       // 필드 배경(system.battleBackdrop === "field"): 지금 보이는 필드(주인공 주변)를 전투 배경으로 찍고 제자리 페이드로 들어간다.
-      const fieldBackdrop = project.system.battleBackdrop === "field";
+      // 필드 위 전투(system.battlePresentation === "onField", battleOnField.ts): 전환 없이, 배틀러는 필드 스프라이트
+      // 자리에 선다. 앵커를 스프라이트를 숨기기 **전에** 재고, 숨긴 뒤 스냅샷을 찍어 한 캐릭터가 두 번 보이지 않게 한다.
+      const onFieldAnchors = project.system.battlePresentation === "onField"
+        ? computeOnFieldAnchors(scene as unknown as OnFieldScene, fieldCanvas, step.ownerEventId, mapTileSize(scene.map))
+        : undefined;
+      const restoreOnFieldSprites = onFieldAnchors ? hideOnFieldSprites(scene as unknown as OnFieldScene, step.ownerEventId) : () => {};
+      const fieldBackdrop = project.system.battleBackdrop === "field" || onFieldAnchors !== undefined;
       const fieldSnapshot = fieldBackdrop ? captureFieldSnapshot(scene.game) : Promise.resolve(undefined);
-      const entryTransition = createSkinBattleTransition(host, entrySkin.transition, undefined, fieldCanvas, fieldBackdrop);
+      const newTransition = (): BattleTransition => onFieldAnchors
+        ? instantBattleTransition()
+        : createSkinBattleTransition(host, entrySkin.transition, undefined, fieldCanvas, fieldBackdrop);
+      const entryTransition = newTransition();
       const cleanup = (): void => {
         signal?.removeEventListener("abort", abort);
         scene.events?.off("shutdown", onShutdown);
@@ -215,6 +226,7 @@ export async function playBattle(
         exitTransition?.destroy();
         battleScene?.destroy();
         battleScene = undefined;
+        restoreOnFieldSprites();
       };
       const onShutdown = (): void => { shutdown = true; abort(); };
       const checkOwner = (): void => { if (!current()) abort(); };
@@ -242,6 +254,7 @@ export async function playBattle(
         battleScene = mountBattleScene({
           host, runtime,
           fieldBackdropUrl,
+          onField: onFieldAnchors,
           audioContext: { project, session },
           showEventText: (request, inputSignal) => {
             if (!current()) { abort(); return Promise.reject(new DOMException("Battle cancelled", "AbortError")); }
@@ -272,7 +285,7 @@ export async function playBattle(
             if (exiting) return;
             exiting = true;
             try {
-              const transition = createSkinBattleTransition(host, entrySkin.transition, undefined, fieldCanvas, fieldBackdrop);
+              const transition = newTransition();
               exitTransition = transition;
               void transition.exit().then(async () => {
                 if (!current()) { abort(); return; }

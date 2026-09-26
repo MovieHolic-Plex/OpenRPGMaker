@@ -32,6 +32,7 @@ import type { DamageFeedback } from "@/player/battleSequencer";
 import type { BattlePresentationLedger } from "@/player/battlePresentation";
 import { BATTLE_ASSET_PIXEL_SCALE } from "@/player/battleStageScale";
 import { battlerHiresSheet, battlerHiresSheetUrl } from "@/assets/battlerHiresSheets";
+import { onFieldEnemyPoint, onFieldPartyPoint, onFieldPointToAuthored, type OnFieldAnchors } from "@/player/battleOnField";
 import { defaultActorFaceResourceId } from "@/project/actorFaceDefaults";
 import { store } from "@/project/store";
 import { scheduleBattleTimer } from "@/player/battleTimerScope";
@@ -184,6 +185,8 @@ export interface BattleFieldPresentation {
   readonly calm?: boolean;
   /** 지금 impact 비트로 맞고 있는 배틀러 — 이 배틀러만 hit pose 를 보여준다. */
   readonly hitTargetId?: string;
+  /** 필드 위 전투(battlePresentation onField): 배틀러가 필드 스프라이트 자리에 선다(battleOnField.ts). */
+  readonly onField?: OnFieldAnchors;
 }
 
 export function syncBattleField(
@@ -367,7 +370,7 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
       if (!currentIds.has(node.dataset.testid ?? "")) node.remove();
     }
   }
-  const positions = resolveEnemyRowPositions(snapshot, snapshot.enemies);
+  const positions = onFieldEnemyPositions(group as HTMLElement, snapshot, presentation?.onField) ?? resolveEnemyRowPositions(snapshot, snapshot.enemies);
   for (const [index, enemy] of snapshot.enemies.entries()) {
     let node = group.querySelector<HTMLElement>(`[data-testid="${enemy.id}"]`);
     if (!node) {
@@ -376,7 +379,9 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     }
     if (!node) continue;
     syncEnemyNode(node, enemy, snapshot, presentation);
-    const position = fitBattleEnemy(field, node, positions[index]);
+    // 필드 위 전투는 심볼 발밑이 곧 자리다 — 큰 적을 전장 안으로 밀어 넣는 보정을 하지 않는다.
+    const position = presentation?.onField ? positions[index]! : fitBattleEnemy(field, node, positions[index]);
+    if (presentation?.onField) fitNodeToFieldSprite(node, ".battle-enemy-image", presentation.onField);
     // 옮겨진 적: 새 좌표로 미끄러지게 이동 시간을 노드에 싣는다(01-scene-base.css 의 left/top 트랜지션).
     if (enemy.moved && node.dataset.battleMoveSequence !== String(enemy.moved.sequence)) {
       node.dataset.battleMoveSequence = String(enemy.moved.sequence);
@@ -411,6 +416,7 @@ function syncActorGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
       for (const node of group.querySelectorAll<HTMLElement>(".battle-actor")) node.classList.add("battle-actor-switched-in");
     }
   }
+  if (presentation?.onField) placeOnFieldActors(group, presentation.onField);
   for (const actor of snapshot.actors) {
     const node = group.querySelector<HTMLElement>(`[data-testid="battle-actor-${actor.recordId}"]`);
     if (!node) continue;
@@ -704,6 +710,52 @@ function enemyGroup(enemies: readonly BattleBattlerSnapshot[], snapshot: BattleS
     group.append(enemyButton(enemy, snapshot, index, positions[index]));
   }
   return group;
+}
+
+/** 필드 위 전투: 적은 심볼 자리(여럿이면 한 칸 간격 가로줄). 좌표를 못 재면 undefined → 스킨 배치. */
+function onFieldEnemyPositions(
+  group: HTMLElement,
+  snapshot: BattleSnapshot,
+  anchors: OnFieldAnchors | undefined,
+): readonly { x: number; y: number }[] | undefined {
+  if (!anchors) return undefined;
+  const positions = snapshot.enemies.map((_, index) =>
+    onFieldPointToAuthored(onFieldEnemyPoint(anchors, index, snapshot.enemies.length), anchors.canvas, group));
+  return positions.every((position) => position !== undefined) ? positions as { x: number; y: number }[] : undefined;
+}
+
+/** 필드 위 전투: 아군 노드를 주인공·동료 스프라이트 자리로 옮긴다(스킨 배치를 덮어쓴다). */
+function placeOnFieldActors(group: HTMLElement, anchors: OnFieldAnchors): void {
+  for (const [index, node] of [...group.querySelectorAll<HTMLElement>(":scope > .battle-actor")].entries()) {
+    const position = onFieldPointToAuthored(onFieldPartyPoint(anchors, index), anchors.canvas, group);
+    if (!position) continue;
+    positionBattleNode(node, position.x, position.y);
+    node.style.setProperty("--battle-depth", String(1 + Math.round(position.y / 16)));
+    fitNodeToFieldSprite(node, ".battle-actor-sprite", anchors);
+  }
+}
+
+/** 필드 위 전투에서 배틀러가 서 있는 캐릭터 키(화면 px). 필드 캐릭터(24×32 charset)는 1.5칸 남짓이다. */
+const ON_FIELD_SPRITE_TILES = 1.5;
+
+/**
+ * 필드 위 전투: 배틀러를 필드 캐릭터 크기로 줄인다. 전투 시트는 전투장 비율(파티 ~120px, 큰 적 ~200px)이라
+ * 그대로 두면 필드 스프라이트 3배 크기로 겹친다. 스킨마다 크기를 정하는 방식이 달라서(변수·transform) 노드에
+ * 독립 CSS `scale` 을 발끝 앵커 기준으로 건다 — transform 과 곱해지므로 어느 스킨에서든 같다.
+ * 스프라이트 사각형을 한 번 재서 정한다; 그림이 아직 안 그려졌으면(높이 0) 다음 동기화에서 다시 잰다.
+ */
+function fitNodeToFieldSprite(node: HTMLElement, spriteSelector: string, anchors: OnFieldAnchors): void {
+  if (node.dataset.onFieldFitted === "true") return;
+  const sprite = node.querySelector<HTMLElement>(spriteSelector);
+  const canvas = anchors.canvas.getBoundingClientRect();
+  const height = sprite?.getBoundingClientRect().height ?? 0;
+  if (!(height > 0) || !(canvas.height > 0)) return;
+  const target = anchors.tileFy * canvas.height * ON_FIELD_SPRITE_TILES;
+  // 원점 0 0 = 노드의 left/top = 발끝 앵커다. 노드는 transform: translate(-50%, -100%) 로 발끝을 그 점에 맞추는데,
+  // 개별 scale 은 transform 과 곱해져 그 이동량까지 줄인다. 원점을 앵커 점에 두면 발끝이 제자리에 남는다.
+  node.style.transformOrigin = "0 0";
+  node.style.scale = String(Number(Math.min(1, target / height).toFixed(4)));
+  node.dataset.onFieldFitted = "true";
 }
 
 function resolveEnemyRowPositions(

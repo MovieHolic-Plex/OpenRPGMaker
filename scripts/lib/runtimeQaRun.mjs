@@ -307,6 +307,28 @@ async function applyOp(page, op, runState) {
         { timeout: op.timeoutMs ?? 30_000 },
       );
       return;
+    case "captureFieldAnchors": {
+      // 전투가 없을 때의 필드 스프라이트 발끝(원점 0.5,1)을 화면 px 로 적는다 — 전투 DOM 과 독립된 근거.
+      runState.fieldAnchors = await page.evaluate((eventId) => {
+        const canvas = document.querySelector("canvas");
+        const camera = window.__oprnCamera ? window.__oprnCamera() : null;
+        const sprites = window.__oprnCharacterSprites ? window.__oprnCharacterSprites() : null;
+        if (!canvas || !camera || !sprites) return null;
+        const rect = canvas.getBoundingClientRect();
+        const sx = rect.width / camera.width;
+        const sy = rect.height / camera.height;
+        const toScreen = (p) => ({ x: rect.left + (p.x - camera.scrollX) * camera.zoom * sx, y: rect.top + (p.y - camera.scrollY) * camera.zoom * sy });
+        const event = sprites.events?.[eventId];
+        return {
+          tilePx: 16 * camera.zoom * sx,
+          player: toScreen(sprites.player),
+          followers: Object.values(sprites.followers ?? {}).map(toScreen),
+          event: event ? toScreen(event) : null,
+        };
+      }, op.eventId);
+      if (!runState.fieldAnchors?.event) throw new Error(`captureFieldAnchors: 이벤트 스프라이트 ${op.eventId} 를 찾지 못했다`);
+      return;
+    }
     case "captureShadowSample": {
       // 그림자가 떠 있는 지금의 프레임과 기하를 기록한다. 대조 프레임은 나중에
       // (캐릭터가 그 자리를 떠난 뒤) `playerShadowInkAtLeast` 가 직접 찍는다.
@@ -526,6 +548,38 @@ function readBattlerGeometryInPage() {
  *   보므로 display:none 안의 노드도 통과한다 — 실제로 전투 적 HP 목록(.battle-enemy-list-panel)이
  *   숨겨진 스킨에서 `battle-enemy-list-hp-*` 를 단정하면 화면에 없는 숫자를 증거로 삼게 된다.
  */
+/**
+ * 필드 위 전투 배치 판정. 적·아군 스프라이트의 **발끝**(사각형 아래 가운데)이 전투 전 필드 스프라이트 발끝과
+ * maxTiles 칸 안에 있는지 본다. 한 칸 = 전투 전 카메라에서 잰 타일의 화면 px.
+ */
+async function evaluateOnFieldPlacement(page, spec, anchors) {
+  if (!anchors) return ["onFieldPlacement: 앞선 비트에서 captureFieldAnchors 를 하지 않았다"];
+  const nodes = await page.evaluate(([enemyTestid, actorTestids]) => {
+    const foot = (node) => {
+      if (!node) return null;
+      const r = node.getBoundingClientRect();
+      return r.width > 0 && r.height > 0 ? { x: r.left + r.width / 2, y: r.bottom } : null;
+    };
+    const sprite = (node) => node?.querySelector(".battle-enemy-image, .battle-actor-sprite") ?? node;
+    return {
+      enemy: foot(sprite(document.querySelector(`[data-testid="${enemyTestid}"]`))),
+      actors: actorTestids.map((id) => foot(sprite(document.querySelector(`[data-testid="${id}"]`)))),
+    };
+  }, [spec.enemyTestid, spec.actorTestids ?? []]);
+  const failures = [];
+  const maxPx = (spec.maxTiles ?? 1) * anchors.tilePx;
+  const check = (label, got, want) => {
+    if (!got) { failures.push(`onFieldPlacement: ${label} 노드가 화면에 없다`); return; }
+    if (!want) { failures.push(`onFieldPlacement: ${label} 의 전투 전 스프라이트 좌표가 없다`); return; }
+    const d = Math.hypot(got.x - want.x, got.y - want.y);
+    if (d > maxPx) failures.push(`onFieldPlacement: ${label} 발끝 (${got.x.toFixed(0)},${got.y.toFixed(0)}) ↔ 필드 (${want.x.toFixed(0)},${want.y.toFixed(0)}) 거리 ${d.toFixed(1)}px > ${maxPx.toFixed(1)}px(${spec.maxTiles ?? 1}칸)`);
+  };
+  check(spec.enemyTestid, nodes.enemy, anchors.event);
+  const fieldParty = [anchors.player, ...anchors.followers];
+  nodes.actors.forEach((got, index) => check(spec.actorTestids[index], got, fieldParty[index]));
+  return failures;
+}
+
 async function readObserved(page, {
   auditBattleTextNodes = false, watchedEventIds = [], watchedTestids = [],
   watchedItemIds = [], watchedSpeciesIds = [], watchedPlaceableKeys = [], watchedTestidPrefixes = [],
@@ -851,6 +905,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       watchedTestidPrefixes,
     });
     const failures = [...opFailures, ...evaluateExpect(beat.expect ?? {}, observed)];
+    if (beat.expect?.onFieldPlacement) failures.push(...await evaluateOnFieldPlacement(page, beat.expect.onFieldPlacement, runState.fieldAnchors));
     let shot = null;
     let shadowInk = null;
     // 픽셀 검사는 화면을 한 번 더 찍는다 — 위 expect 평가와 같은 프레임을 볼 수 없으므로

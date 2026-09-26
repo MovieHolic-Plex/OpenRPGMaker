@@ -65,6 +65,8 @@ export const OP_KINDS = [
   "waitForLift",
   "waitForGrounded",
   "captureShadowSample",
+  // 필드 위 전투(ct-onfield): 전투 전 주인공·동료·심볼 스프라이트의 **화면** 발끝 좌표를 기록한다.
+  "captureFieldAnchors",
 ];
 
 const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;

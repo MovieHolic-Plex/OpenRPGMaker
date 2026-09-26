@@ -1295,6 +1295,9 @@ export interface SystemRecords {
   atbSpeed?: number;
   /** field 면 전투 배경이 주인공 주변 필드 화면의 스냅숏이고 진입은 제자리 페이드. 생략 = 트룹/지형 배경. */
   battleBackdrop?: "field";
+  /** onField 면 전투가 **필드 위에서** 벌어진다(크로노식): 전환 연출 없이, 적은 부딪힌 심볼 자리에, 아군은 파티가 선 자리에
+   *  선다. 배경은 필드 스냅샷 그대로(확대·자르기 없음). battleBackdrop 과 무관하게 필드 배경을 쓴다. 생략 = 전환 후 전투장. */
+  battlePresentation?: "onField";
   battleUiStyle?: BattleUiStyle;
   /** ESC(X) 게임 메뉴 디자인. 생략 = workbench(작업대, 지금 화면). */
   menuUiStyle?: MenuUiStyle;
