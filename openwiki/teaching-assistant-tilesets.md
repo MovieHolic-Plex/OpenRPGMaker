@@ -220,6 +220,13 @@ itch.io 의 [Rasak Modern](https://rasak.itch.io/rasak-modern)처럼 「사용·
   의도 노트를 「create_map(그 타일셋) → build_pack_town → check_town_map」 으로 바꾼다.
 - 헤드리스 실측(t1, 50×40 한 문장 요청): 조수가 첫 호출로 build_pack_town → 참고문서 읽기 → check_town_map 과 화단·나무를
   번갈아 issues 0 까지. 연구 정리 원본: 세션 산출 `/tmp/town-layout-research.md`(요지는 이 절).
+- **부품 보강(2026-09-26, kits 레인).** 작가 건물에 쓰였는데 이름이 없던 칸에 이름을 붙였다 —
+  1줄 1층 띠(`door_row_*`, `shopfront_row_left/_row/_right` = CityShopping 0~4,8), 옥상 설비(`roof_vent`·`roof_fan`·`roof_vent_slat`·`roof_ac_large`,
+  BuildingExtras 13~14,0~2), `wall_ladder`, 나무 수종(`poplar_tree`·`round_tree`·`round_tree_small`·`bush_wide`, Park), `bus_shelter`(PublicTransportation 0,6 3×3).
+  좌표는 구운 아틀라스 칸과 원본 시트를 픽셀 비교(불일치 0)로 확인했다. 작가 맵의 `scene-composites(…)` 칸은 복원 아틀라스의
+  합성 패널이라 팩 시트 좌표가 아니다 — 프리셋에 넣지 않는다.
+  `MvTownRecipe` 의 선택 필드: `MvTownFacade.shopfrontEnds`(1×1 쇼윈도 줄 양끝), `objects.streetTrees`(거리마다 한 수종),
+  `parkTrees`, `roofGear`(건물마다 0~2), `streetProps`(가게 앞 보도 가운데 줄 35%), `busStop`(큰길 남쪽 보도 한 곳). 비어 있으면 이전 동작 그대로.
 
 **마을·실내 묶음(2026-09-25).** `rasak_town`(A1~A5 City + Town·Building·Structure·Market + 울타리·정원·밭·작물·여름 나무)과
 `rasak_interior`(A2_Inside·A4/A5_House + HouseInterieur·LivingRoom·Tavern·Storage + 대장간·재봉·왕실). 제작자 프리뷰가 없으므로
