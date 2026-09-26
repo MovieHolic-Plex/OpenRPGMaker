@@ -22,8 +22,6 @@ export type TitleOpeningHost = {
   rerender(): void;
   /** 지금 저장된 설정. */
   current(): TitleScreenSettings;
-  /** 깊이 시차 효과의 깊이 지도를 키아트에서 AI 로 만든다. 없으면 버튼을 숨긴다. */
-  generateDepth?(index: number, status: HTMLElement): Promise<void>;
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -251,9 +249,6 @@ export function mountTitleEffectOverlay(stage: HTMLElement, host: TitleOpeningHo
 // ─────────────────────────────────────────────────────────────────────────────
 
 function kindHint(kind: TitleEffectKind): string {
-  if (kind === "parallax") {
-    return "깊이 지도에 따라 가까운 것은 크게, 먼 것은 작게 움직여 그림이 입체로 흘러갑니다. 지도가 없으면 아래쪽을 가깝게 봅니다.";
-  }
   switch (TITLE_EFFECT_GEOMETRY[kind]) {
     case "ray":
       return "무대에서 광원과 방향 손잡이를 끌어 옮깁니다.";
@@ -332,9 +327,7 @@ function effectInspector(effect: TitleEffect, index: number, host: TitleOpeningH
         target.periodSec = value;
       })));
   }
-  if (effect.kind === "parallax") children.push(depthMapControls(effect, index, host));
-  // 카메라 호흡·깊이 시차는 그림 자체를 움직일 뿐 색을 쓰지 않는다.
-  const defaultColor = geometry === "none" ? undefined : TITLE_EFFECT_DEFAULT_COLORS[effect.kind];
+  const defaultColor = TITLE_EFFECT_DEFAULT_COLORS[effect.kind];
   if (defaultColor) {
     const colorInput = el("input", {
       attrs: { type: "color" },
@@ -367,50 +360,6 @@ function effectInspector(effect: TitleEffect, index: number, host: TitleOpeningH
     dataset: { testid: "db-title-opening-inspector", effectKind: effect.kind },
     children,
   });
-}
-
-/** 깊이 시차의 깊이 지도: 상태 + AI 로 만들기 + 기본 기울기로 되돌리기. */
-function depthMapControls(effect: TitleEffect, index: number, host: TitleOpeningHost): HTMLElement {
-  const hasDepth = Boolean(effect.depthResourceId);
-  const status = el("p", {
-    class: "db-title-fx-depth-status",
-    dataset: { testid: `db-title-opening-effect-${index}-depth-status` },
-    text: hasDepth ? "깊이 지도를 씁니다." : "깊이 지도 없음 — 아래쪽을 가깝게 보는 기본 기울기로 움직입니다.",
-  });
-  const buttons: HTMLElement[] = [];
-  if (host.generateDepth) {
-    const generate = el("button", {
-      class: "btn small",
-      text: hasDepth ? "깊이 지도 다시 만들기" : "키아트로 깊이 지도 만들기",
-      attrs: { type: "button" },
-      dataset: { testid: `db-title-opening-effect-${index}-depth-generate` },
-    }) as HTMLButtonElement;
-    generate.addEventListener("click", () => {
-      generate.disabled = true;
-      void host.generateDepth?.(index, status).finally(() => {
-        generate.disabled = false;
-      });
-    });
-    buttons.push(generate);
-  }
-  if (hasDepth) {
-    buttons.push(el("button", {
-      class: "btn small ghost",
-      text: "기본 기울기로",
-      attrs: { type: "button" },
-      dataset: { testid: `db-title-opening-effect-${index}-depth-clear` },
-      on: {
-        click: () => {
-          host.update((settings) => {
-            const target = settings.effects?.[index];
-            if (target) delete target.depthResourceId;
-          });
-          host.rerender();
-        },
-      },
-    }));
-  }
-  return el("div", { class: "db-title-fx-depth", children: [el("span", { text: "깊이 지도" }), status, el("div", { class: "db-title-fx-depth-actions", children: buttons })] });
 }
 
 /** 켜진 효과 목록 + 선택한 효과의 값 조절 + 효과 추가. */

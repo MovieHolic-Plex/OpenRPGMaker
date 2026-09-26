@@ -1076,10 +1076,8 @@ export type TitleEffectPoint = [number, number];
  * - dapple:  region 안의 나뭇잎 그림자 흔들림
  * - glow:    source 둘레의 깜빡이는 불빛(횃불·창문), spread = 반경
  * - camera:  화면 전체의 느린 호흡 줌(intensity = 폭)
- * - parallax: 깊이 지도로 가까운 것과 먼 것을 다르게 움직이는 2.5D 시차(intensity = 폭).
- *             depthResourceId 가 없으면 「아래가 가깝다」는 기본 깊이를 쓴다.
  */
-export type TitleEffectKind = "godRays" | "motes" | "glint" | "water" | "mist" | "dapple" | "glow" | "camera" | "parallax";
+export type TitleEffectKind = "godRays" | "motes" | "glint" | "water" | "mist" | "dapple" | "glow" | "camera";
 
 export interface TitleEffect {
   kind: TitleEffectKind;
@@ -1102,8 +1100,6 @@ export interface TitleEffect {
   region?: TitleEffectPoint[];
   /** motes 개수(0..96). */
   count?: number;
-  /** parallax 깊이 지도 그림 id(흰색 = 가까움, 검정 = 멂). 배경 그림과 같은 구도여야 한다. */
-  depthResourceId?: string;
 }
 
 export type TitleLogoStyle = "plain" | "metal" | "gold" | "stone" | "glow";

@@ -35,7 +35,6 @@ export const TITLE_EFFECT_KINDS: readonly TitleEffectKind[] = [
   "dapple",
   "glow",
   "camera",
-  "parallax",
 ];
 export const TITLE_BACKGROUND_FITS: readonly TitleBackgroundFit[] = ["cover", "contain", "stretch"];
 export const TITLE_BACKGROUND_RENDERINGS: readonly TitleBackgroundRendering[] = ["smooth", "pixelated"];
@@ -52,7 +51,6 @@ export const TITLE_EFFECT_LABELS: Readonly<Record<TitleEffectKind, string>> = {
   dapple: "잎 그림자",
   glow: "불빛",
   camera: "카메라 호흡",
-  parallax: "깊이 시차",
 };
 
 /** 종류별로 어떤 기하가 필요한가 — 편집기 손잡이와 AI 조립이 이 표를 따른다. */
@@ -65,7 +63,6 @@ export const TITLE_EFFECT_GEOMETRY: Readonly<Record<TitleEffectKind, "ray" | "li
   dapple: "region",
   glow: "point",
   camera: "none",
-  parallax: "none",
 };
 
 /** 종류별 기본색. 렌더러는 color 가 없으면 이 값을 쓴다. */
@@ -78,7 +75,6 @@ export const TITLE_EFFECT_DEFAULT_COLORS: Readonly<Record<TitleEffectKind, strin
   dapple: "#000000",
   glow: "#ffb454",
   camera: "#000000",
-  parallax: "#000000",
 };
 
 export function isTitleEffectKind(value: unknown): value is TitleEffectKind {
@@ -145,7 +141,7 @@ export function normalizeTitleEffect(raw: unknown): TitleEffect | undefined {
   const geometry = TITLE_EFFECT_GEOMETRY[kind];
   const intensity = optionalScalar(effect.intensity, 0, 2, 1);
   const speed = optionalScalar(effect.speed, 0, 4, 1);
-  const color = kind === "camera" || kind === "dapple" || kind === "parallax" ? undefined : normalizeColor(effect.color);
+  const color = kind === "camera" || kind === "dapple" ? undefined : normalizeColor(effect.color);
   const result: TitleEffect = {
     kind,
     ...(effect.enabled === false ? { enabled: false } : {}),
@@ -188,8 +184,6 @@ export function normalizeTitleEffect(raw: unknown): TitleEffect | undefined {
     result.source = source;
     const spread = optionalScalar(effect.spread, 0.02, 1, 0.08);
     if (spread !== undefined) result.spread = spread;
-  } else if (kind === "parallax" && typeof effect.depthResourceId === "string" && effect.depthResourceId.trim()) {
-    result.depthResourceId = effect.depthResourceId.trim();
   }
   return result;
 }
@@ -388,7 +382,6 @@ export function defaultTitleEffect(kind: TitleEffectKind): TitleEffect {
     case "glow":
       return { kind, source: [0.5, 0.5] };
     case "camera":
-    case "parallax":
       return { kind };
   }
 }
@@ -434,7 +427,6 @@ export const TITLE_OPENING_PRESETS: readonly TitleOpeningPreset[] = [
     transition: { kind: "flash" },
     effects: [
       { kind: "camera", intensity: 0.8 },
-      { kind: "parallax", intensity: 0.8 },
       { kind: "mist", region: [[0.37, 0.19], [0.8, 0.17], [0.82, 0.4], [0.36, 0.42]] },
       { kind: "water", region: [[0.518, 0.545], [0.625, 0.535], [0.628, 0.6], [0.515, 0.61]] },
       { kind: "dapple", region: [[0, 0.72], [0.55, 0.62], [0.62, 1], [0, 1]] },
@@ -459,7 +451,6 @@ export const TITLE_OPENING_PRESETS: readonly TitleOpeningPreset[] = [
     transition: { kind: "fade", durationMs: 1200 },
     effects: [
       { kind: "camera", intensity: 0.6 },
-      { kind: "parallax", intensity: 0.8 },
       { kind: "godRays", source: [0.72, 0.12], toward: [0.6, 0.9], intensity: 0.55, color: "#bcd4ff", spread: 0.3 },
       { kind: "glow", source: [0.58, 0.42], spread: 0.05 },
       { kind: "glow", source: [0.66, 0.36], spread: 0.04, speed: 1.3 },
@@ -484,7 +475,6 @@ export const TITLE_OPENING_PRESETS: readonly TitleOpeningPreset[] = [
     transition: { kind: "fade" },
     effects: [
       { kind: "camera", intensity: 0.5 },
-      { kind: "parallax", intensity: 0.8 },
       { kind: "glow", source: [0.55, 0.6], spread: 0.06 },
       { kind: "glow", source: [0.72, 0.56], spread: 0.05, speed: 0.8 },
       { kind: "mist", region: [[0.1, 0.3], [1, 0.28], [1, 0.52], [0.1, 0.55]], intensity: 0.8, color: "#d6e2f2" },
@@ -507,7 +497,6 @@ export const TITLE_OPENING_PRESETS: readonly TitleOpeningPreset[] = [
     transition: { kind: "mist" },
     effects: [
       { kind: "camera", intensity: 0.7 },
-      { kind: "parallax", intensity: 0.8 },
       { kind: "godRays", source: [0.35, -0.1], toward: [0.55, 0.8], intensity: 0.7, color: "#f2eedd" },
       { kind: "motes", source: [0.35, -0.1], toward: [0.55, 0.8], count: 45, color: "#f4efdc" },
       { kind: "mist", region: [[0.1, 0.45], [1, 0.4], [1, 0.75], [0.1, 0.8]], intensity: 1.4 },
@@ -530,7 +519,6 @@ export const TITLE_OPENING_PRESETS: readonly TitleOpeningPreset[] = [
     transition: { kind: "flash" },
     effects: [
       { kind: "camera", intensity: 0.6 },
-      { kind: "parallax", intensity: 0.8 },
       { kind: "godRays", source: [0.62, 0.44], toward: [0.62, 1.1], intensity: 0.8, color: "#ffb070", spread: 0.45 },
       { kind: "water", region: [[0, 0.5], [1, 0.48], [1, 1], [0, 1]], color: "#ffd9a8", intensity: 1.2 },
       { kind: "glint", line: [[0.45, 0.47], [0.8, 0.47]], color: "#fff1c9", periodSec: 7 },
@@ -554,7 +542,6 @@ export const TITLE_OPENING_PRESETS: readonly TitleOpeningPreset[] = [
     transition: { kind: "zoom" },
     effects: [
       { kind: "camera", intensity: 0.5 },
-      { kind: "parallax", intensity: 0.8 },
       { kind: "glow", source: [0.68, 0.45], spread: 0.1, color: "#7ee0ff", intensity: 1.2, speed: 0.5 },
       { kind: "glow", source: [0.4, 0.58], spread: 0.07, color: "#b98cff", speed: 0.7 },
       { kind: "motes", region: [[0.2, 0.15], [1, 0.15], [1, 0.8], [0.2, 0.8]], count: 60, color: "#bff4ff", intensity: 0.9, speed: 0.5 },
@@ -578,7 +565,6 @@ export const TITLE_OPENING_PRESETS: readonly TitleOpeningPreset[] = [
     transition: { kind: "flash", durationMs: 600 },
     effects: [
       { kind: "camera", intensity: 0.9, speed: 1.2 },
-      { kind: "parallax", intensity: 0.8 },
       { kind: "glow", source: [0.6, 0.86], spread: 0.16, color: "#ff6a2a", intensity: 1.3, speed: 0.6 },
       { kind: "glow", source: [0.7, 0.12], spread: 0.08, color: "#ff8a3c", speed: 0.9 },
       { kind: "motes", source: [0.6, 1.1], toward: [0.6, 0.1], count: 70, color: "#ff8a3c", speed: 1.6, spread: 0.5 },
@@ -602,7 +588,6 @@ export const TITLE_OPENING_PRESETS: readonly TitleOpeningPreset[] = [
     transition: { kind: "mist" },
     effects: [
       { kind: "camera", intensity: 0.5 },
-      { kind: "parallax", intensity: 0.8 },
       { kind: "godRays", source: [0.1, -0.1], toward: [0.5, 0.8], intensity: 0.5, color: "#fff0e0", spread: 0.3 },
       { kind: "motes", source: [0.9, 0.1], toward: [0.2, 0.9], count: 60, color: "#ffc4d8", intensity: 1.1, speed: 0.9, spread: 0.6 },
       { kind: "water", region: [[0.4, 0.8], [0.7, 0.79], [0.72, 0.95], [0.38, 0.95]], color: "#ffe8f0" },
@@ -626,7 +611,6 @@ export const TITLE_OPENING_PRESETS: readonly TitleOpeningPreset[] = [
     transition: { kind: "fade" },
     effects: [
       { kind: "camera", intensity: 0.4 },
-      { kind: "parallax", intensity: 0.8 },
       { kind: "godRays", source: [0.82, 0.02], toward: [0.5, 0.9], intensity: 0.9, color: "#fff2c4", spread: 0.25 },
       { kind: "water", region: [[0.45, 0.69], [0.7, 0.67], [0.71, 0.82], [0.44, 0.83]], color: "#e6fbff" },
       { kind: "mist", region: [[0, 0.4], [1, 0.38], [1, 0.52], [0, 0.54]], color: "#f4dcae", intensity: 0.8, speed: 1.4 },
@@ -649,7 +633,6 @@ export const TITLE_OPENING_PRESETS: readonly TitleOpeningPreset[] = [
     transition: { kind: "zoom" },
     effects: [
       { kind: "camera", intensity: 0.7, speed: 0.8 },
-      { kind: "parallax", intensity: 0.8 },
       { kind: "godRays", source: [0.55, -0.12], toward: [0.5, 0.9], intensity: 0.8, color: "#fffbe8", spread: 0.35 },
       { kind: "motes", source: [0.55, -0.12], toward: [0.5, 0.9], count: 50, color: "#ffffff", intensity: 0.7 },
       { kind: "water", region: [[0.6, 0.55], [0.645, 0.55], [0.65, 0.8], [0.595, 0.8]], color: "#ffffff", intensity: 1.4, speed: 1.6 },

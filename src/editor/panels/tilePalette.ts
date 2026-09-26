@@ -276,7 +276,7 @@ function makePaletteSurface(input: {
 
   const model = { map, rerender: renderPalettePreservingViewport, state, tileset };
   root.append(makeSidebarMapHeader(map, renderPalettePreservingViewport));
-  root.append(makeTileToolbar({ ...model, refreshChrome: refreshPaletteChrome }));
+  root.append(makeTileToolbar(model));
   const assist = makeBrushAssistSection(map.id, state, tileset);
   const options = el('div', { class: 'sidebar-paint-options' });
   options.append(makeTileBrushControls(state, renderPalettePreservingViewport));
@@ -491,11 +491,6 @@ function renderPalettePreservingViewport(): void {
   preservePaletteViewport(renderCurrentPalette);
 }
 
-/** 도구줄 배지·되돌리기만 다시 그린다. 보조 창이 열려 있거나 자리가 없으면 전체로 돌아간다. */
-function refreshPaletteChrome(): void {
-  if (!syncMountedPaletteToolPick()) renderPalettePreservingViewport();
-}
-
 
 
 // combined_town 전용 정적 테이블(describeChipsetTile)을 다른 칩셋에 쓰면 오답 —
@@ -647,7 +642,7 @@ export function syncMountedPaletteToolPick(): boolean {
   if (!map || !tileset) return false;
   const focusSnapshot = captureFocus(root);
   const model = { map, rerender: renderPalettePreservingViewport, state, tileset };
-  toolbar.replaceWith(makeTileToolbar({ ...model, refreshChrome: refreshPaletteChrome }));
+  toolbar.replaceWith(makeTileToolbar(model));
   const shape = options.querySelector<HTMLElement>(".sidebar-shape-select");
   const nextControls = makeTileBrushControls(state, renderPalettePreservingViewport);
   controls.replaceWith(nextControls);

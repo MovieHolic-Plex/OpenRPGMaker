@@ -3,8 +3,7 @@
  *
  * - 좌표계: `q` 는 배경 그림 기준 0..1, `P` 는 그림 높이를 1 로 둔 종횡비 공간(q * (aspect,1)).
  *   효과 기하(점·선·다각형)는 저장값 그대로 0..1 그림 좌표로 들어오고, 거리 계산은 P 공간에서 한다.
- * - 순서: 카메라 호흡(uv) → 깊이 시차(uv) → 물결 굴절(uv) → 그림 샘플 → 목록 순서대로 색 효과.
- *   깊이 시차는 q 자체를 옮기므로 뒤따르는 색 효과(칼날 반사·물결 등)도 그림 내용을 따라 움직인다.
+ * - 순서: 카메라 호흡(uv) → 물결 굴절(uv) → 그림 샘플 → 목록 순서대로 색 효과.
  * - 시간 t 에 대해 결정적이다(난수 없음, 해시 노이즈만). 같은 t 면 같은 그림.
  */
 export const TITLE_EFFECT_SHADER_MAX_EFFECTS = 12;
@@ -23,7 +22,6 @@ export const TITLE_EFFECT_SHADER_KIND = {
   dapple: 6,
   glow: 7,
   camera: 8,
-  parallax: 9,
 } as const;
 
 export const TITLE_EFFECT_VERTEX_SHADER = `#version 300 es
@@ -55,8 +53,6 @@ uniform vec4 uB[MAX_FX];     // intensity, speed, spread/period, count/feather
 uniform vec3 uColor[MAX_FX];
 uniform int uPtsN[MAX_FX];
 uniform vec2 uPts[MAX_FX * MAX_PTS];
-uniform sampler2D uDepth;    // 깊이 지도(흰색 = 가까움). uHasDepth 가 0 이면 쓰지 않는다.
-uniform int uHasDepth;
 
 float h1(float n) { return fract(sin(n) * 43758.5453); }
 float h2(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -101,11 +97,6 @@ float polySd(int fx, vec2 p) {
 float regionMask(int fx, vec2 p, float feather) {
   return smoothstep(feather, -feather, polySd(fx, p));
 }
-// 깊이(0 멂 .. 1 가까움). 깊이 지도가 없으면 「아래가 가깝다」는 풍경 기본값.
-float depthAt(vec2 q) {
-  if (uHasDepth == 1) return texture(uDepth, clamp(q, 0.0, 1.0)).r;
-  return smoothstep(0.25, 1.05, q.y);
-}
 float luma(vec3 c) { return dot(c, vec3(0.299, 0.587, 0.114)); }
 vec3 screenAdd(vec3 c, vec3 add) { return 1.0 - (1.0 - c) * (1.0 - clamp(add, 0.0, 1.0)); }
 
@@ -130,25 +121,6 @@ void main() {
     float t = uTime * uB[i].y;
     float z = 1.0 - 0.012 * k * (0.5 + 0.5 * sin(t * 0.35));
     q = (q - 0.5) * z + 0.5 + k * vec2(0.003 * sin(t * 0.21), 0.002 * cos(t * 0.17));
-  }
-
-  // 1.5) 깊이 시차 — 가까운 것은 크게, 먼 것은 반대로 조금 움직여 2.5D 카메라처럼 보이게 한다.
-  //      화면 q 에 보일 원본 좌표 u 는 u = q - off * (depth(u) - 0.5) 의 고정점이라 몇 번 되풀어 푼다.
-  for (int i = 0; i < MAX_FX; i++) {
-    if (i >= uCount) break;
-    if (uKind[i] != 9) continue;
-    float k = uB[i].x;
-    float t = uTime * uB[i].y;
-    // 가장자리가 드러나지 않게 폭만큼 살짝 당겨 본다.
-    q = (q - 0.5) * (1.0 - 0.03 * k) + 0.5;
-    vec2 off = k * vec2(0.022 * sin(t * 0.23), 0.009 * sin(t * 0.17 + 1.3));
-    float dolly = k * 0.018 * (0.5 + 0.5 * sin(t * 0.13 - 1.57));
-    vec2 u = q;
-    for (int j = 0; j < 5; j++) {
-      float d = depthAt(u) - 0.5;
-      u = q - off * d - (q - 0.5) * dolly * d;
-    }
-    q = u;
   }
 
   // 2) 물결 굴절 — 영역 안 샘플 좌표만 흔든다.

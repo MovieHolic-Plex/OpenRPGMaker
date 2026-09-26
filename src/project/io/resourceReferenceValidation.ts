@@ -109,9 +109,6 @@ export function validateSystemResources(system: SystemRecords, resourceIds: Read
   for (const [index, layer] of (system.titleScreen?.backgroundLayers ?? []).entries()) {
     validateOptionalResource(`system.titleScreen.backgroundLayers[${index}].resourceId`, layer.resourceId, resourceIds);
   }
-  for (const [index, effect] of (system.titleScreen?.effects ?? []).entries()) {
-    validateOptionalResource(`system.titleScreen.effects[${index}].depthResourceId`, effect.depthResourceId, resourceIds);
-  }
   validateCinematicResources("system.opening", system.opening, resourceIds);
   validateCinematicResources("system.gameOver.sequence", system.gameOver?.sequence, resourceIds);
   validateOptionalResource("system.gameOver.backgroundResourceId", system.gameOver?.backgroundResourceId, resourceIds);

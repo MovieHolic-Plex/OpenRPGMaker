@@ -28,11 +28,6 @@ export type TileToolbarModel = {
   readonly map: Pick<GameMap, "id" | "tilesetId">;
   readonly tileset: TilesetDef;
   readonly rerender: () => void;
-  /**
-   * 배지·되돌리기 단추만 바뀐 뒤의 갱신(획이 끝난 뒤, 규칙 감사 갱신). 없으면 rerender 를 쓴다.
-   * 표준 팔레트는 도구줄만 갈고 시트는 두다 — 시트까지 다시 짓으면 획을 뗄 때마다 190ms 였다(2026-09-26).
-   */
-  readonly refreshChrome?: () => void;
 };
 
 let openMenu: ToolbarMenuId = null;

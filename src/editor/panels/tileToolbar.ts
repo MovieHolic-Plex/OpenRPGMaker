@@ -69,7 +69,7 @@ let toolbarBadgeRefreshInstalled = false;
  * the labelled Tools surface; inspection utilities live below the sheet.
  */
 export function makeTileToolbar(model: TileToolbarModel): HTMLElement {
-  installToolbarBadgeRefresh(model.refreshChrome ?? model.rerender);
+  installToolbarBadgeRefresh(model.rerender);
   const { state } = model;
   const row = el("div", {
     class: "oprn-tile-toolbar",

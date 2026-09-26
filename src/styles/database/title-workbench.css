@@ -558,29 +558,6 @@
   padding: 2px;
   width: 44px;
 }
-.db-title-fx-depth {
-  display: grid;
-  gap: 6px;
-  grid-template-columns: 56px 1fr;
-}
-.db-title-fx-depth > span {
-  color: var(--db-studio-text-2, #5c6475);
-  font: 500 12px/1.6 var(--font-ui);
-}
-.db-title-fx-depth-status {
-  color: var(--db-studio-text-2, #5c6475);
-  font: 400 12px/1.5 var(--font-ui);
-  margin: 0;
-}
-.db-title-fx-depth-status[data-state="error"] {
-  color: var(--db-danger, #b3261e);
-}
-.db-title-fx-depth-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  grid-column: 2;
-}
 .db-title-fx-slider .db-title-density-value {
   color: var(--db-studio-text-2, #5c6475);
   font: 500 12px/1 var(--font-ui);

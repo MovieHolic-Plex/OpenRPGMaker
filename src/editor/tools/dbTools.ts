@@ -1796,8 +1796,7 @@ const setTitleScreen: ToolDefinition = {
         description:
           `배경 그림 위 영역 효과(WebGL). 최대 ${MAX_TITLE_EFFECTS}개, 목록 순서대로 칠한다. 좌표는 배경 그림 기준 0..1 (화면 밖 광원은 -0.5..1.5). `
           + "godRays/motes: source(광원)+toward(빛 방향), spread(반폭 각). motes 는 region 으로도 된다. glint: line [[x,y],[x,y]] 칼날 따라 반사광, periodSec. "
-          + "water/mist/dapple: region 다각형(3~8점). glow: source 한 점 깜빡임, spread 반지름. camera: 전체 화면 느린 흔들림. "
-          + "parallax: 깊이 시차 — depthResourceId(흑백 깊이 지도, 흰색=가까움)로 가까운 것과 먼 것을 다르게 움직인다. 없으면 아래쪽을 가깝게 본다. 빈 배열이면 효과를 지운다.",
+          + "water/mist/dapple: region 다각형(3~8점). glow: source 한 점 깜빡임, spread 반지름. camera: 전체 화면 느린 흔들림. 빈 배열이면 효과를 지운다.",
         items: {
           type: "object",
           properties: {
@@ -1813,7 +1812,6 @@ const setTitleScreen: ToolDefinition = {
             periodSec: { type: "number", minimum: 1, maximum: 60 },
             region: { type: "array", items: { type: "array", items: { type: "number" } }, description: `[[x, y], ...] 꼭짓점 3~${MAX_TITLE_EFFECT_REGION_POINTS}개` },
             count: { type: "integer", minimum: 0, maximum: MAX_TITLE_MOTES },
-            depthResourceId: { type: "string", description: "parallax 전용: 깊이 지도 리소스 id(흰색=가까움)" },
           },
           required: ["kind"],
           additionalProperties: false,
