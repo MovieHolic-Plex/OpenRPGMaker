@@ -39,6 +39,7 @@ import type {
   EnemyRecord,
   EquipmentRecord,
   ItemRecord,
+  Project,
   SkillRecord,
   StateRecord,
   TroopRecord,

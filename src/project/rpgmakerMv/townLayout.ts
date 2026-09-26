@@ -197,12 +197,12 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
         style = pick(rng, office ? recipe.offices : recipe.shops);
         storeys = corner ? int(rng, 3, 4) : pick(rng, [1, 2, 2, 3, 3, 4]);
       }
-      let ground = storeys === 1 || (!office && style.shopfront && rng() < 0.6) ? 2 : 1;
+      let ground: number = storeys === 1 || (!office && style.shopfront && rng() < 0.6) ? 2 : 1;
       let roof = 2;
       while (roof + (storeys - 1) + ground > bMax) {
         if (roof > 1) roof -= 1; else if (ground > 1) ground -= 1; else storeys -= 1;
       }
-      const height = roof + (storeys - 1) + ground;
+      const height: number = roof + (storeys - 1) + ground;
       const top = frontY - height;
       paint(style.roof, x, top, w, roof);
       if (storeys > 1) paint(style.upper, x, top + roof, w, storeys - 1);

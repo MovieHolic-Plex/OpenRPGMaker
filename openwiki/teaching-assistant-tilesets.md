@@ -214,6 +214,10 @@ itch.io 의 [Rasak Modern](https://rasak.itch.io/rasak-modern)처럼 「사용·
 - **`check_town_map`**(읽기): 물체 없이 36칸 넘게 이어진 같은 바닥, 맵 끝 2줄 이상 빈 띠, 보도 25% 초과를 issues 로.
 - 참고문서 「까는 순서」 0절이 「마을은 build_pack_town 부터 + 손으로 고칠 때 규칙」. 참고문서는 올릴 때 구워지므로
   `refreshMvPackGuide`(ensureBundledTilesets 에서 호출)가 이미 올린 프로젝트의 지침 글만 지금 프리셋으로 바꾼다.
+- **편집기 경로의 숲마을 가로채기.** 편집기 채팅은 의도 선언이 「마을」에 author_village 를 고르면 마을 계약(author_village 외 쓰기 거부)을
+  건다 — Rasak 타일셋을 문장에 적어도 68×44 숲마을(forest_harmony)이 지어졌다(헤드리스 pi-agent 는 계약이 없어 멀쩡했다).
+  `src/ai/piAgent/packTownRoute.ts` 가 요청이 부른(또는 대상 맵이 쓰는) 팩 도시 타일셋을 찾으면 계약을 걸지 않고
+  의도 노트를 「create_map(그 타일셋) → build_pack_town → check_town_map」 으로 바꾼다.
 - 헤드리스 실측(t1, 50×40 한 문장 요청): 조수가 첫 호출로 build_pack_town → 참고문서 읽기 → check_town_map 과 화단·나무를
   번갈아 issues 0 까지. 연구 정리 원본: 세션 산출 `/tmp/town-layout-research.md`(요지는 이 절).
 

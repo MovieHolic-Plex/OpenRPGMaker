@@ -4,6 +4,7 @@
 // (`scripts/qa-game/gen.mts`)가 **같은 함수**를 부른다. 문장·상수를 두 곳에 베끼면 헤드리스 결과가
 // 브라우저 결과를 대표하지 못한다 — 여기 하나만 고치면 두 경로가 같이 바뀐다.
 
+import { packTownTargetFor } from "./packTownRoute";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
 import type { IntentSelectionFact } from "@/ai/intentDeclaration";
 import { buildIntentFacts, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
@@ -81,8 +82,11 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     // Pi 이관(2026-09-11)에서 빠져 author_village·권장 크기·선택 사각형 지시가 모델에 닿지 않았다(2026-09-17 실측).
     const noteTargetMapId = declared.intent.targetMapId ?? currentMapId;
     const noteTargetMap = noteTargetMapId ? project.maps[noteTargetMapId] : undefined;
+    // 선언이 숲마을 도구를 고른 «마을» 요청일 때만 — 팩 맵에서 가로등 하나 고치는 요청에 마을 노트를 붙이지 않는다.
+    const packTown = declared.intent.tools.includes("author_village") ? packTownTargetFor(project, text, noteTargetMapId) : null;
     intentNote = buildPiIntentNote({
       project,
+      packTown,
       intent: declared.intent,
       targetMap: noteTargetMap
         ? { id: noteTargetMap.id, width: noteTargetMap.width, height: noteTargetMap.height, lived: isLivedMap(noteTargetMap) }

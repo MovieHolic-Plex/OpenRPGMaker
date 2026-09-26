@@ -1167,7 +1167,7 @@ const fillRegion: ToolDefinition = {
         shape,
         reshaped: reshaped + neighborsReshaped,
         groupId: group.id,
-        layer,
+        layer: requestedLayer,
         effectiveLayer: toolLayerLabel(layerNo),
         upperCleared,
         skipped: { structure: structure.skipped.length, events: events.skipped.length, passage: filtered.skipped.length },
