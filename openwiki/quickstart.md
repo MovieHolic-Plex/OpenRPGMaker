@@ -30,6 +30,10 @@ npm run wt -- adopt <이름> --path <워크트리 절대경로>   # node_modules
 - `git worktree` 는 추적 파일만 체크아웃한다. `node_modules`(수 GB)와 gitignored `.env.local` 은 따라오지 않는다.
 - `npm run wt create <name>` 로 만든 워크트리는 이 세 가지가 이미 되어 있다. `.herdr/`·`.claude/worktrees/` 처럼
   **다른 도구가 만든 워크트리는 보정이 안 되어 있다** — 실측: 이 문서를 쓴 워크트리가 그랬다.
+  다만 `npm run dev:worktree` 는 `node_modules` 가 없으면 **스스로 보정을 먼저 돌린다**(2026-09-25,
+  `scripts/dev-server.mjs` — `scripts/agent-worktree.mjs adopt --path` 를 그대로 부른다).
+  그래서 dev 서버를 띄우는 것만으로 끝나고, 정션이 생기므로 `npx tsc`·vitest 도 같은 실행에서 함께 정상이 된다.
+  dev 서버를 안 띄우고 보정만 하려면 위 `npm run wt -- adopt` 를 직접 쓴다.
 - 보정 없이 실행하면 증상이 오해를 부른다: `npx tsc` 가 전역 TypeScript 7 을 잡아 `tsconfig.json` 의 `baseUrl` 을
   "제거된 옵션" 이라고 하고, vitest 는 아예 없다. **저장소 설정이 깨진 게 아니다.**
 - 다른 워크트리의 tsconfig 를 본 저장소 tsc 로 `-p` 로 겨누는 우회는 쓰지 마라. 실측: 그렇게 하면 모듈 해석이

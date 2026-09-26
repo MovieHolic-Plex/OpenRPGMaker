@@ -9,6 +9,9 @@
 //   1. 링크된 워크트리에서 `npm run dev` 는 거절한다(명시 --port 가 있으면 통과 — playwright webServer).
 //   2. `npm run dev:worktree` 는 포트를 스스로 배정·기록한다(겹침·예약 포트는 미배정으로 본다).
 //      한 번 기록되면 같은 워크트리 = 같은 포트다. 명시 `--port` 는 임시 우회로 남는다.
+//   3. 워크트리에 node_modules 정션이 없으면 보정(`wt adopt --path`)을 스스로 돌린다 — herdr·Claude Code
+//      등 다른 도구가 만든 체크아웃은 정션·env 가 없어 `npm run dev:worktree` 첫 실행이 죽었다.
+//      보정 규약은 scripts/agent-worktree.mjs 한 곳에만 둔다(여기서 재구현하지 않는다).
 //
 // 사용: node scripts/dev-server.mjs <main|worktree> [vite 인자…]
 import { spawn, execFileSync } from "node:child_process";
@@ -61,8 +64,22 @@ function portFree(host, port) {
   });
 }
 
+// 다른 도구가 만든 워크트리(herdr·.claude/worktrees·codex·t3)는 node_modules 정션과 gitignored env 가
+// 없다. 손으로 adopt 를 시키는 대신 여기서 한 번 채운다. 실패하면 아래 fail 이 원래 안내를 그대로 낸다.
+function ensureWorktreeNodeModules() {
+  const provisioner = join(ROOT, "scripts", "agent-worktree.mjs");
+  if (!linked || !existsSync(provisioner)) return;
+  console.log(`[dev] node_modules 가 없다 — 워크트리 보정을 먼저 돌린다 (npm run wt -- adopt --path ${ROOT})`);
+  try {
+    execFileSync(process.execPath, [provisioner, "adopt", "--path", ROOT], { cwd: ROOT, stdio: "inherit" });
+  } catch (error) {
+    console.error(`[dev] 보정 실패: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
 function launchVite(viteArgs, env) {
   const viteJs = join(ROOT, "node_modules", "vite", "bin", "vite.js");
+  if (!existsSync(viteJs)) ensureWorktreeNodeModules();
   if (!existsSync(viteJs)) {
     fail(`node_modules 가 없다(${viteJs}). 워크트리면 'npm run wt -- adopt --path ${ROOT}' 로 node_modules 정션·env 를 채운 뒤 다시 실행.`);
   }

@@ -8,8 +8,13 @@
 //
 // 순수 함수(decideWorktreePort 등)는 파일·git 을 모른다. 파일·git 을 만지는 것은 아래
 // ensureWorktreeDevPort 하나다.
+//
+// 2026-09-25 보강: 파일 스캔만으로는 **지운 워크트리의 서버**가 살아남은 경우를 못 본다 —
+// 실측으로 삭제된 codex 워크트리 4개가 9806·9807·9817·9818 을 계속 listen 하고 있었고,
+// 배정기가 그 중 9807 을 골라 `npm run dev:worktree` 가 곧바로 죽었다. 이제 listen 중인 포트는
+// (자기 서버가 쥔 것은 제외하고) 점유로 본다(`listeningPortHolders`).
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, rmdirSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readlinkSync, rmdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 
 /** 메인 체크아웃 `npm run dev` 의 포트 — 워크트리는 절대 잡지 않는다. */
@@ -18,7 +23,10 @@ export const MAIN_DEV_PORT = 9999;
 export const PREVIEW_PORT = 9888;
 export const RESERVED_PORTS = new Set([MAIN_DEV_PORT, PREVIEW_PORT]);
 export const PORT_BASE = 9801;
-export const PORT_COUNT = 100;
+// 100 칸(9801~9900)은 실측에서 꽉 찼다 — 등록 워크트리 98개가 각자 한 칸을 쥐면 새로 만든
+// 워크트리가 "배정 범위가 다 찼습니다" 로 죽는다(2026-09-25, t3·paseo 경로 재현).
+// 9901~9998 을 새로 열어 198 칸으로 둔다.
+export const PORT_COUNT = 198;
 export const ENV_PORT_KEY = "DEV_SERVER_PORT";
 
 const ENV_PORT_LINE = /^DEV_SERVER_PORT=(\d+)[ \t]*$/m;
@@ -220,6 +228,41 @@ function readEnvLocal(path) {
 }
 
 /**
+ * 지금 실제로 listen 중인 포트 → 그 프로세스 `{ pid, cwd }`. 리눅스 `ss -ltnpH` 한 번과
+ * `/proc/<pid>/cwd` 로 얻는다. 판단이 불가능하면(비리눅스·`ss` 없음) 빈 Map — 그때는
+ * 예전처럼 파일 스캔만으로 판단한다.
+ *
+ * `cwd` 는 지운 워크트리면 `"… (deleted)"` 로 끝난다 — 그 자체가 신호다(살아 있는 유령).
+ */
+export function listeningPortHolders() {
+  let out;
+  try {
+    out = execFileSync("ss", ["-ltnpH"], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] });
+  } catch {
+    return new Map();
+  }
+  const holders = new Map();
+  for (const line of out.split("\n")) {
+    const address = line.trim().split(/\s+/)[3]; // Local Address:Port
+    if (!address) continue;
+    const port = Number(address.slice(address.lastIndexOf(":") + 1));
+    if (!Number.isInteger(port) || port <= 0 || holders.has(port)) continue;
+    const pid = /pid=(\d+)/.exec(line)?.[1];
+    let cwd = null;
+    if (pid) {
+      try { cwd = readlinkSync(`/proc/${pid}/cwd`); } catch { /* 권한 없음·이미 종료 */ }
+    }
+    holders.set(port, { pid: pid ? Number(pid) : null, cwd });
+  }
+  return holders;
+}
+
+/** 점유 프로세스를 안내문에 쓸 문자열로 — holders 는 경로 목록으로 출력된다. */
+function describeLiveHolder(holder) {
+  return `${holder.cwd ?? "cwd 알 수 없음"} (pid ${holder.pid ?? "?"})`;
+}
+
+/**
  * 이 체크아웃의 고정 포트를 보장한다: 없거나·남과 겹치거나·예약이면 새로 배정해 `.env.local` 에
  * 기록한다. `.env.local` 자체가 없으면 메인 체크아웃 것을 복사(원본 배정 줄은 지움)한 뒤 기록한다.
  * 돌려주는 값: { port, reason: kept|missing|duplicate|reserved, previous, holders }.
@@ -236,6 +279,13 @@ export function ensureWorktreeDevPort(root) {
       copied = true;
     }
     const claimed = claimedPortsByOthers(listWorktrees(self), self, readEnvLocal);
+    // 파일에 안 적혔어도 실제로 쥐여 있는 포트가 있다. 내 서버가 이미 그 포트에 떠 있으면 그대로
+    // 두고(런처가 「이 워크트리의 서버가 이미 떠 있다」 로 안내한다), 남이 쥔 포트만 점유로 본다.
+    for (const [port, holder] of listeningPortHolders()) {
+      if (holder.cwd && resolve(holder.cwd) === self) continue;
+      if (!claimed.has(port)) claimed.set(port, []);
+      claimed.get(port).push(describeLiveHolder(holder));
+    }
     const decision = decideWorktreePort({ current: readEnvPort(text), claimed });
     if (decision.reason !== "kept" || copied) writeFileSync(envLocal, writeEnvPort(text, decision.port), "utf8");
     return { ...decision, copied, envLocal };
