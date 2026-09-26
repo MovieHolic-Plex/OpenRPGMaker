@@ -1,0 +1,109 @@
+{
+ "paintAt": 86244,
+ "savedAt": null,
+ "paintToSavedMs": null,
+ "ev": [
+  {
+   "t": 16478,
+   "m": "req:oprn:project.open",
+   "ms": 42,
+   "bytes": 77
+  },
+  {
+   "t": 16525,
+   "m": "req:oprn:project.load",
+   "ms": 15,
+   "bytes": 77
+  },
+  {
+   "t": 23483,
+   "m": "req:oprn:team.lock",
+   "ms": 44,
+   "bytes": 73
+  },
+  {
+   "t": 23676,
+   "m": "autosave:pending"
+  },
+  {
+   "t": 24197,
+   "m": "canvas"
+  },
+  {
+   "t": 31601,
+   "m": "autosave:saving"
+  },
+  {
+   "t": 33060,
+   "m": "FAIL:http://127.0.0.1:9911/auth/status?provider=google-antigravity",
+   "why": "net::ERR_ABORTED"
+  },
+  {
+   "t": 34252,
+   "m": "FAIL:http://127.0.0.1:9911/__oprn/edit-activity",
+   "why": "net::ERR_ABORTED"
+  },
+  {
+   "t": 38592,
+   "m": "autosave:pending"
+  },
+  {
+   "t": 48770,
+   "m": "req:oprn:team.lock",
+   "ms": 3798,
+   "bytes": 73
+  },
+  {
+   "t": 52237,
+   "m": "FAIL:http://127.0.0.1:9911/__oprn/edit-activity",
+   "why": "net::ERR_ABORTED"
+  },
+  {
+   "t": 56131,
+   "m": "req:oprn:project.save",
+   "ms": 7123,
+   "bytes": 0
+  },
+  {
+   "t": 85080,
+   "m": "seed-save-not-saved-in-60s"
+  },
+  {
+   "t": 85081,
+   "m": "req:oprn:team.lock",
+   "ms": 22,
+   "bytes": 73
+  },
+  {
+   "t": 86244,
+   "m": "PAINT"
+  },
+  {
+   "t": 87902,
+   "m": "FAIL:http://127.0.0.1:9911/__oprn/edit-activity",
+   "why": "net::ERR_ABORTED"
+  },
+  {
+   "t": 88325,
+   "m": "req:oprn:project.saveMapPatch",
+   "ms": 12173,
+   "bytes": 0
+  },
+  {
+   "t": 110482,
+   "m": "req:oprn:project.saveMapPatch",
+   "ms": 11583,
+   "bytes": 2457
+  },
+  {
+   "t": 110549,
+   "m": "req:oprn:team.lock",
+   "ms": 11516,
+   "bytes": 73
+  },
+  {
+   "t": 135535,
+   "m": "end"
+  }
+ ]
+}

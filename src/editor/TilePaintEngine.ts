@@ -15,7 +15,7 @@ import {
 } from "@/editor/clusterAssistRecovery";
 import { revealPaletteTileFromMap } from "@/editor/panels/tilePalette";
 import { selectTileRegion } from "@/editor/mapClipboard";
-import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
+import { canEditMap, toastMapEditLockNotice } from "@/editor/mapEditLocks";
 import { recordMapEditIfChanged } from "@/editor/mapEditHistory";
 import { beginKitStampCapture, checkKitStampConditions, commitKitStampCapture } from "@/editor/structurePlacementActions";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
@@ -79,7 +79,7 @@ export class TilePaintEngine {
     const layer = editorState.get().layer;
     if (!canEditMap(mid) && toolCanMutateMap(tool)) {
       this.deps.setPaintState({ isPainting: false, lastPaintKey: "" });
-      toast(mapEditLockNotice(mid), "error");
+      toastMapEditLockNotice(mid);
       return;
     }
     const { activePaletteStamp, autoConnectMode, brushSize, clusterAssistMode, selectedTile } = editorState.get();

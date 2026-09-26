@@ -1,0 +1,86 @@
+{
+ "paintAt": 84362,
+ "savedAt": null,
+ "paintToSavedMs": null,
+ "ev": [
+  {
+   "t": 16535,
+   "m": "req:oprn:project.open",
+   "ms": 7,
+   "bytes": 79
+  },
+  {
+   "t": 16546,
+   "m": "req:oprn:project.load",
+   "ms": 4,
+   "bytes": 79
+  },
+  {
+   "t": 22053,
+   "m": "req:oprn:team.lock",
+   "ms": 46,
+   "bytes": 73
+  },
+  {
+   "t": 22300,
+   "m": "autosave:pending"
+  },
+  {
+   "t": 22872,
+   "m": "canvas"
+  },
+  {
+   "t": 29498,
+   "m": "autosave:saving"
+  },
+  {
+   "t": 31639,
+   "m": "FAIL:http://127.0.0.1:9911/auth/status?provider=google-antigravity",
+   "why": "net::ERR_ABORTED"
+  },
+  {
+   "t": 31844,
+   "m": "FAIL:http://127.0.0.1:9911/__oprn/edit-activity",
+   "why": "net::ERR_ABORTED"
+  },
+  {
+   "t": 36759,
+   "m": "autosave:pending"
+  },
+  {
+   "t": 46923,
+   "m": "req:oprn:team.lock",
+   "ms": 3667,
+   "bytes": 73
+  },
+  {
+   "t": 50526,
+   "m": "FAIL:http://127.0.0.1:9911/__oprn/edit-activity",
+   "why": "net::ERR_ABORTED"
+  },
+  {
+   "t": 50959,
+   "m": "req:oprn:project.save",
+   "ms": 5896,
+   "bytes": 0
+  },
+  {
+   "t": 83240,
+   "m": "seed-save-not-saved-in-60s"
+  },
+  {
+   "t": 83250,
+   "m": "req:oprn:team.lock",
+   "ms": 16,
+   "bytes": 73
+  },
+  {
+   "t": 84362,
+   "m": "PAINT"
+  },
+  {
+   "t": 129442,
+   "m": "end"
+  }
+ ]
+}

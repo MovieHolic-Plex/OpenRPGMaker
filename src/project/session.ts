@@ -324,6 +324,8 @@ export interface PlaySession {
    * 계약은 `src/project/locationTransitions.ts`.
    */
   occupiedLocationIds?: Record<MapId, string[]>;
+  /** 탈것 탑승·세운 자리. 생략 = 걷는 중이고 모든 탈것이 저작 위치에 있다. */
+  vehicle?: import("@/project/vehicles").VehicleSessionState;
   // 현재 위치(맵 진입/transfer 시 갱신).
   currentMapId: MapId;
   x: number;

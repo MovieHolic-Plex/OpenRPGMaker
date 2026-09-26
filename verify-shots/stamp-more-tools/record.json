@@ -1,0 +1,698 @@
+{
+  "runs": [
+    {
+      "text": "상자 두 개랑 상인 NPC 하나",
+      "ms": 25266,
+      "bubbles": [
+        "상자 두 개랑 상인 NPC 하나",
+        "첫 번째 보물상자 배치 · 어둠 동굴 2층에 보물상자 '보물상자' 배치 (48, 50) — 보상 250G (이 맵 기존 상자 300G)",
+        "두 번째 보물상자 배치 · 어둠 동굴 2층에 보물상자 '보물상자' 배치 (52, 50) — 보상 회복약",
+        "상인 NPC 배치 · 어둠 동굴 2층에 주민 '방랑 상인' 생성 (49, 53) — characterId=char_방랑-상인, 스케줄 0개, 대사 페이지 1개, 상점 재고 3개"
+      ],
+      "events": [
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_1",
+          "x": 60,
+          "y": 23,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_2",
+          "x": 33,
+          "y": 43,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_3",
+          "x": 45,
+          "y": 62,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_4",
+          "x": 60,
+          "y": 44,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_5",
+          "x": 60,
+          "y": 72,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_6",
+          "x": 10,
+          "y": 10,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_7",
+          "x": 60,
+          "y": 93,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_8",
+          "x": 41,
+          "y": 23,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_9",
+          "x": 21,
+          "y": 62,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_10",
+          "x": 39,
+          "y": 93,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_11",
+          "x": 41,
+          "y": 72,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_12",
+          "x": 10,
+          "y": 96,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_mir_elder",
+          "x": 50,
+          "y": 48,
+          "cmds": [
+            "text",
+            "choices",
+            "changeGold",
+            "changeItem",
+            "setSwitch"
+          ],
+          "gold": [
+            100
+          ],
+          "weather": []
+        },
+        {
+          "id": "ev_noah",
+          "x": 47,
+          "y": 52,
+          "cmds": [
+            "text",
+            "recoverAll"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_merchant",
+          "x": 53,
+          "y": 52,
+          "cmds": [
+            "text",
+            "shop"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_kid",
+          "x": 55,
+          "y": 55,
+          "cmds": [
+            "text"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_sign",
+          "x": 50,
+          "y": 51,
+          "cmds": [
+            "text"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_to_forest",
+          "x": 50,
+          "y": 3,
+          "cmds": [
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_to_mine",
+          "x": 6,
+          "y": 50,
+          "cmds": [
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_to_shrine",
+          "x": 96,
+          "y": 50,
+          "cmds": [
+            "fork"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_chest_16ff4e30-d986-4252-b17b-07745b5cd69a",
+          "x": 4,
+          "y": 2,
+          "cmds": [
+            "playAudio",
+            "setEventGraphicPattern",
+            "wait",
+            "changeGold",
+            "text",
+            "setSelfSwitch"
+          ],
+          "gold": [
+            300
+          ],
+          "weather": []
+        },
+        {
+          "id": "ev_chest_7c239b27-6382-41d3-803e-b14e14493a2d",
+          "x": 48,
+          "y": 50,
+          "cmds": [
+            "playAudio",
+            "setEventGraphicPattern",
+            "wait",
+            "changeGold",
+            "text",
+            "setSelfSwitch"
+          ],
+          "gold": [
+            250
+          ],
+          "weather": []
+        },
+        {
+          "id": "ev_chest_08cc1ed1-05f5-4cb2-b935-eb153c0ec0e2",
+          "x": 52,
+          "y": 50,
+          "cmds": [
+            "playAudio",
+            "setEventGraphicPattern",
+            "wait",
+            "changeItem",
+            "text",
+            "setSelfSwitch"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_villager_ee39023f-9367-4715-aa59-ea51dccc8e37",
+          "x": 49,
+          "y": 53,
+          "cmds": [
+            "changeFace",
+            "text",
+            "shop"
+          ],
+          "gold": [],
+          "weather": []
+        }
+      ]
+    },
+    {
+      "text": "비 오게 하고 길목에 몬스터 하나, 함정 하나",
+      "ms": 16352,
+      "bubbles": [
+        "@>상자 두 개랑 상인 NPC 하나",
+        "@>첫 번째 보물상자 배치 · 어둠 동굴 2층에 보물상자 '보물상자' 배치 (48, 50) — 보상 250G (이 맵 기존 상자 300G)",
+        "@>두 번째 보물상자 배치 · 어둠 동굴 2층에 보물상자 '보물상자' 배치 (52, 50) — 보상 회복약",
+        "@>상인 NPC 배치 · 어둠 동굴 2층에 주민 '방랑 상인' 생성 (49, 53) — characterId=char_방랑-상인, 스케줄 0개, 대사 페이지 1개, 상점 재고 3개",
+        "비 오게 하고 길목에 몬스터 하나, 함정 하나",
+        "비 오는 날씨 설정 · 어둠 동굴 2층 분위기 설정 — 날씨 rain, 조명 유지",
+        "북쪽 길목에 몬스터 배치 · 어둠 동굴 2층에 전투 블로커 'trqalate' 배치 (50, 10) (이 맵 적 그룹 동굴 드래곤)",
+        "길목에 함정 설치 · 어둠 동굴 2층에 즉사 트랩 1개 배치"
+      ],
+      "events": [
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_1",
+          "x": 60,
+          "y": 23,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_2",
+          "x": 33,
+          "y": 43,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_3",
+          "x": 45,
+          "y": 62,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_4",
+          "x": 60,
+          "y": 44,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_5",
+          "x": 60,
+          "y": 72,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_6",
+          "x": 10,
+          "y": 10,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_7",
+          "x": 60,
+          "y": 93,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_8",
+          "x": 41,
+          "y": 23,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_9",
+          "x": 21,
+          "y": 62,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_10",
+          "x": 39,
+          "y": 93,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_11",
+          "x": 41,
+          "y": 72,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_house_door_30_map_village_30_100x100_12",
+          "x": 10,
+          "y": 96,
+          "cmds": [
+            "setEventGraphicPattern",
+            "wait",
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_mir_elder",
+          "x": 50,
+          "y": 48,
+          "cmds": [
+            "text",
+            "choices",
+            "changeGold",
+            "changeItem",
+            "setSwitch"
+          ],
+          "gold": [
+            100
+          ],
+          "weather": []
+        },
+        {
+          "id": "ev_noah",
+          "x": 47,
+          "y": 52,
+          "cmds": [
+            "text",
+            "recoverAll"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_merchant",
+          "x": 53,
+          "y": 52,
+          "cmds": [
+            "text",
+            "shop"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_kid",
+          "x": 55,
+          "y": 55,
+          "cmds": [
+            "text"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_sign",
+          "x": 50,
+          "y": 51,
+          "cmds": [
+            "text"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_to_forest",
+          "x": 50,
+          "y": 3,
+          "cmds": [
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_to_mine",
+          "x": 6,
+          "y": 50,
+          "cmds": [
+            "transfer"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_to_shrine",
+          "x": 96,
+          "y": 50,
+          "cmds": [
+            "fork"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_chest_16ff4e30-d986-4252-b17b-07745b5cd69a",
+          "x": 4,
+          "y": 2,
+          "cmds": [
+            "playAudio",
+            "setEventGraphicPattern",
+            "wait",
+            "changeGold",
+            "text",
+            "setSelfSwitch"
+          ],
+          "gold": [
+            300
+          ],
+          "weather": []
+        },
+        {
+          "id": "ev_chest_7c239b27-6382-41d3-803e-b14e14493a2d",
+          "x": 48,
+          "y": 50,
+          "cmds": [
+            "playAudio",
+            "setEventGraphicPattern",
+            "wait",
+            "changeGold",
+            "text",
+            "setSelfSwitch"
+          ],
+          "gold": [
+            250
+          ],
+          "weather": []
+        },
+        {
+          "id": "ev_chest_08cc1ed1-05f5-4cb2-b935-eb153c0ec0e2",
+          "x": 52,
+          "y": 50,
+          "cmds": [
+            "playAudio",
+            "setEventGraphicPattern",
+            "wait",
+            "changeItem",
+            "text",
+            "setSelfSwitch"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_villager_ee39023f-9367-4715-aa59-ea51dccc8e37",
+          "x": 49,
+          "y": 53,
+          "cmds": [
+            "changeFace",
+            "text",
+            "shop"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_scene_mood_map_village_30_100x100",
+          "x": 0,
+          "y": 0,
+          "cmds": [
+            "setWeather"
+          ],
+          "gold": [],
+          "weather": [
+            "rain"
+          ]
+        },
+        {
+          "id": "ev_battle_de98cfc7-d847-4c7a-b94d-82a089e30e57",
+          "x": 50,
+          "y": 10,
+          "cmds": [
+            "text",
+            "battleProcessing",
+            "fork"
+          ],
+          "gold": [],
+          "weather": []
+        },
+        {
+          "id": "ev_trap_35eab3a5-a8f3-42bb-ac72-1d439e4ac523",
+          "x": 50,
+          "y": 15,
+          "cmds": [
+            "killPlayer"
+          ],
+          "gold": [],
+          "weather": []
+        }
+      ]
+    }
+  ],
+  "setup": {
+    "mapId": "map_village_30_100x100",
+    "chestGold": {
+      "min": 150,
+      "max": 600,
+      "scope": "map",
+      "reason": "이 맵 기존 상자 300G"
+    },
+    "troops": [
+      {
+        "id": "tr_qa_late",
+        "name": "동굴 드래곤",
+        "gold": 0
+      }
+    ],
+    "occupiedNear": [
+      {
+        "id": "ev_mir_elder",
+        "x": 50,
+        "y": 48,
+        "kind": "other",
+        "name": "미르"
+      },
+      {
+        "id": "ev_noah",
+        "x": 47,
+        "y": 52,
+        "kind": "other",
+        "name": "노아"
+      },
+      {
+        "id": "ev_merchant",
+        "x": 53,
+        "y": 52,
+        "kind": "shop",
+        "name": "만물상"
+      },
+      {
+        "id": "ev_sign",
+        "x": 50,
+        "y": 51,
+        "kind": "other",
+        "name": "표지판"
+      }
+    ]
+  }
+}

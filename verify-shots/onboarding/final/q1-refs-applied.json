@@ -1,0 +1,11 @@
+2 | import { Database } from "bun:sqlite";
+3 | import { gunzipSync } from "node:zlib";
+4 | import { encodedSharedTileReferences } from "../../../scripts/lib/sharedTileReferencesSqlite";
+5 | import { readSharedReferenceImage } from "../../../scripts/lib/sharedContentSqlite";
+6 | const db = new Database(process.argv[2] ?? "/tmp/qf-onboard/game/project.sqlite", { readonly: true });
+7 | const doc = JSON.parse((db.query("select current_json from project").get() as any).current_json);
+                                                                             ^
+TypeError: null is not an object (evaluating 'db.query("select current_json from project").get().current_json')
+      at /home/main/.herdr/worktrees/rpg-zzu/worktree-quiet-field-0a15/.omo/evidence/onboarding/late-apply-after.ts:7:74
+
+Bun v1.4.2 (Linux x64)

@@ -39,35 +39,49 @@ export function defaultElementRecords(): DatabaseElementRecord[] {
   ];
 }
 
+/**
+ * 기본 지형 기록. **배열 순서 = 타일셋 지형 태그 − 1** 이다(terrainRecordAt: tag N → terrains[N-1]).
+ * 번들 칩셋은 chipsetMapping.TERRAIN_TAG 로 태그를 준다 — 0 보통 땅(기록 없음), 1 물, 2 모래, 3 눈, 4 돌.
+ * 2026-09-27 까지는 [초원, 숲, "사막"(id terrain_water)] 이라 물 칸(태그 1)이 초원 기록을 읽어
+ * 배가 기본 물 위를 못 다녔고, 모래 칸은 숲 배경을, 눈 칸은 이름만 사막인 물 기록을 읽었다.
+ * 이미 저장된 프로젝트는 자기 database.terrains 를 그대로 쓴다 — 새 프로젝트만 바뀐다.
+ */
 export function defaultTerrainRecords(): DatabaseTerrainRecord[] {
   return [
     {
-      id: "terrain_grassland",
-      name: "초원",
+      id: "terrain_water",
+      name: "물",
       damage: 0,
       encounterRatePercent: 100,
-      // Tag 1 — open grass: dawn sky battle field (distinct from forest fallback).
-      battleBackgroundResourceId: "easyrpg-backdrop-dawn1",
+      battleBackgroundResourceId: "easyrpg-backdrop-sky1",
       characterDisplay: "normal",
-      vehiclePassage: { boat: false, ship: false, airshipLand: true },
+      vehiclePassage: { boat: true, ship: true, airshipLand: false },
     },
     {
-      id: "terrain_road",
-      name: "숲",
-      damage: 0,
-      encounterRatePercent: 50,
-      battleBackgroundResourceId: "generated-battle-reference-forest",
-      characterDisplay: "normal",
-      vehiclePassage: { boat: false, ship: false, airshipLand: true },
-    },
-    {
-      id: "terrain_water",
-      name: "사막",
+      id: "terrain_sand",
+      name: "모래",
       damage: 0,
       encounterRatePercent: 100,
       battleBackgroundResourceId: "easyrpg-backdrop-sunset1",
       characterDisplay: "normal",
-      vehiclePassage: { boat: true, ship: true, airshipLand: false },
+      vehiclePassage: { boat: false, ship: false, airshipLand: true },
+    },
+    {
+      id: "terrain_snow",
+      name: "눈",
+      damage: 0,
+      encounterRatePercent: 100,
+      battleBackgroundResourceId: "easyrpg-backdrop-dawn2",
+      characterDisplay: "normal",
+      vehiclePassage: { boat: false, ship: false, airshipLand: true },
+    },
+    {
+      id: "terrain_stone",
+      name: "돌",
+      damage: 0,
+      encounterRatePercent: 50,
+      characterDisplay: "normal",
+      vehiclePassage: { boat: false, ship: false, airshipLand: true },
     },
   ];
 }

@@ -6,7 +6,8 @@ import { canonicalJsonString } from "../../src/project/persistence/core/canonica
 import { deserializeStoredProjectJson } from "../../src/project/persistence/core/loadRepair";
 import { mergeTeamProject, validateMergedTeamProject } from "../../src/project/persistence/core/teamMerge";
 import type { MapSaveConflict } from "../../src/project/persistence/core/mapMerge";
-import { projectWire, type ProjectWire } from "../../src/project/persistence/core/projectWire";
+import type { ProjectWire } from "../../src/project/persistence/core/projectWire";
+import { serialize } from "../../src/project/io/serialize";
 import type { GameMap, Project, UploadedAsset, UploadedAssetRef } from "../../src/project/types";
 import { applyStorePragmas, openNodeSqliteDriver, readDataVersion, type Driver, type DriverValue } from "./driver";
 import { LocalStoreError } from "./errors";
@@ -39,7 +40,9 @@ export type LocalStoreInfo = {
 };
 
 export type LocalMapPatchInput = {
-  readonly baseProject: Project;
+  /** 3자 병합에만 쓰는 기준본. 호스트 디스패치는 필요할 때만 역직렬화하도록 getBaseProject 를 준다. */
+  readonly baseProject?: Project;
+  readonly getBaseProject?: () => Project;
   readonly project: Project;
   readonly changedMapIds?: readonly string[];
   /** Stored sha the base was read from; lets the save skip echoing an unmerged document. */
@@ -198,6 +201,18 @@ function sha256HexOfText(value: string): string {
   return createHash("sha256").update(value, "utf8").digest("hex");
 }
 
+/** 호스트가 쓰는 와이어. 파싱한 JSON 은 쓰지 않으므로 만들지 않는다(81MB 문서에서 파싱 약 0.4s). */
+type HostWire = Pick<ProjectWire, "serialized" | "sha256">;
+
+/**
+ * 직렬화 + 네이티브 SHA-256. 공용 projectWire 는 브라우저와 같은 JS 해시를 쓰고 JSON 도 다시 파싱한다.
+ * 실측(2026-09-26, 81MB 새 프로젝트): 호스트 패치 한 번의 projectWire 2.7s 중 파싱·JS 해시가 약 1s.
+ */
+function hostWire(project: Project): HostWire {
+  const serialized = serialize(project);
+  return { serialized, sha256: sha256HexOfText(serialized) };
+}
+
 function readMeta(driver: Driver, key: string): string | null {
   const row = driver.prepare("SELECT value FROM meta WHERE key = ?").get([key]);
   if (!row) return null;
@@ -220,6 +235,25 @@ function readProjectRow(driver: Driver): ProjectRow | null {
     title: row.title === null || row.title === undefined ? null : String(row.title),
     documentVersion: Number(row.document_version),
     serialized: String(row.current_json),
+    sha256: String(row.current_sha256),
+    revision: Number(row.revision),
+    updatedAt: String(row.updated_at),
+  };
+}
+
+/**
+ * 문서 본문 없이 저장 행의 메타만 읽는다. 실측(2026-09-26, 81MB 새 프로젝트): `info()` 가 sha 하나를 보려고
+ * current_json 81MB 를 끌어오는 데 한 번에 약 0.4s 걸렸고, 팀 상태 폴링(3초)·맵 패치마다 돌았다.
+ */
+function readProjectMeta(driver: Driver): Omit<ProjectRow, "serialized"> | null {
+  const row = driver.prepare(
+    "SELECT project_id, title, document_version, current_sha256, revision, updated_at FROM project WHERE id = 1",
+  ).get([]);
+  if (!row) return null;
+  return {
+    projectId: String(row.project_id),
+    title: row.title === null || row.title === undefined ? null : String(row.title),
+    documentVersion: Number(row.document_version),
     sha256: String(row.current_sha256),
     revision: Number(row.revision),
     updatedAt: String(row.updated_at),
@@ -260,8 +294,8 @@ function replaceMapMirrors(driver: Driver, projectId: string, project: Project, 
   }
 }
 
-function writeProjectRow(driver: Driver, project: Project, wire: ProjectWire, projectId: string, now: string): number {
-  const revision = (readProjectRow(driver)?.revision ?? 0) + 1;
+function writeProjectRow(driver: Driver, project: Project, wire: HostWire, projectId: string, now: string): number {
+  const revision = (readProjectMeta(driver)?.revision ?? 0) + 1;
   driver.prepare(
     `INSERT INTO project (id, project_id, title, document_version, current_json, current_sha256, revision, updated_at)
      VALUES (1, ?, ?, ?, ?, ?, ?, ?)
@@ -321,7 +355,7 @@ function insertCommit(driver: Driver, projectId: string, input: LocalCommitInput
     input.identity.kind,
     input.identity.label,
     input.identity.agentName ?? null,
-    readProjectRow(driver)?.sha256 ?? null,
+    readProjectMeta(driver)?.sha256 ?? null,
     jsonOrNull(input.diff),
     jsonOrNull(input.toolNames ?? []),
     jsonOrNull(input.editActivity),
@@ -360,11 +394,29 @@ function backupStamp(now: string): string {
 }
 
 function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, projectId: string, clock: () => string): LocalProjectStore {
+  // 마지막으로 이 프로세스가 쓴(또는 읽은) 문서 문자열. 저장 행 sha 가 같을 때만 쓴다 — 다른 프로세스가
+  // 행을 바꾸면 sha 가 달라 자동으로 버려진다. 문자열은 불변이라 공유해도 안전하다.
+  // 실측(2026-09-26, 81MB 새 프로젝트): 패치·상태 조회마다 81MB 행을 다시 읽었다(한 번에 약 0.4s).
+  let cached: { readonly sha256: string; readonly serialized: string } | null = null;
+  const remember = (sha256: string, serialized: string): void => {
+    cached = { sha256, serialized };
+  };
+  const cachedFor = (sha256: string | null | undefined) => (sha256 && cached?.sha256 === sha256 ? cached : null);
+  const storedSerialized = (): string | null => {
+    const meta = readProjectMeta(driver);
+    if (!meta) return null;
+    const hit = cachedFor(meta.sha256);
+    if (hit) return hit.serialized;
+    const row = readProjectRow(driver);
+    if (!row) return null;
+    remember(row.sha256, row.serialized);
+    return row.serialized;
+  };
   return {
     projectDir: options.projectDir,
     projectId,
     info(): LocalStoreInfo {
-      const row = readProjectRow(driver);
+      const row = readProjectMeta(driver);
       const mapCount = driver.prepare("SELECT COUNT(*) AS count FROM maps WHERE project_id = ?").get([projectId]);
       return {
         formatVersion: Number(readMeta(driver, META_KEYS.formatVersion) ?? LOCAL_STORE_FORMAT_VERSION),
@@ -385,28 +437,28 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
       return mirrors;
     },
     loadSnapshot(): LocalProjectSnapshot | null {
-      const row = readProjectRow(driver);
-      if (!row) return null;
-      return { project: deserializeStoredProjectJson(JSON.parse(row.serialized)), sha256: row.sha256, revision: row.revision };
+      const meta = readProjectMeta(driver);
+      if (!meta) return null;
+      const serialized = storedSerialized();
+      if (serialized === null) return null;
+      return { project: deserializeStoredProjectJson(JSON.parse(serialized)), sha256: meta.sha256, revision: meta.revision };
     },
     async saveProject(project: Project): Promise<LocalStoreSaveResult> {
-      const wire = await projectWire(project);
-      return driver.transaction(() => ({
-        kind: "saved",
+      const wire = hostWire(project);
+      const saved = driver.transaction(() => ({
+        kind: "saved" as const,
         sha256: wire.sha256,
         revision: writeProjectRow(driver, project, wire, projectId, clock()),
       }));
+      remember(wire.sha256, wire.serialized);
+      return saved;
     },
     async saveSerialized(serialized: string, expectedSha?: string | null): Promise<LocalStoreSaveResult> {
       const json = JSON.parse(serialized);
       const parsed = deserializeStoredProjectJson(json, serialized);
-      const wire: ProjectWire = {
-        serialized,
-        json,
-        sha256: sha256HexOfText(serialized),
-      };
-      return driver.transaction(() => {
-        if (expectedSha !== undefined && (readProjectRow(driver)?.sha256 ?? null) !== expectedSha) {
+      const wire: HostWire = { serialized, sha256: sha256HexOfText(serialized) };
+      const result = driver.transaction((): LocalStoreSaveResult => {
+        if (expectedSha !== undefined && (readProjectMeta(driver)?.sha256 ?? null) !== expectedSha) {
           return { kind: "conflict", conflicts: [{ mapId: "project", name: "프로젝트가 다른 사용자에 의해 변경되었습니다" }] };
         }
         // The caller already holds `serialized`; echoing a multi-megabyte body back
@@ -414,18 +466,33 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
         return { kind: "saved", sha256: wire.sha256,
           revision: writeProjectRow(driver, parsed, wire, projectId, clock()) };
       });
+      if (result.kind === "saved") remember(wire.sha256, serialized);
+      return result;
     },
     async saveMapPatch(input: LocalMapPatchInput): Promise<LocalStoreSaveResult> {
       for (let attempt = 0; attempt < MAP_PATCH_MAX_ATTEMPTS; attempt += 1) {
-        const planned = readProjectRow(driver);
-        const latest = planned ? deserializeStoredProjectJson(JSON.parse(planned.serialized)) : input.baseProject;
+        const planned = readProjectMeta(driver);
+        // 호출자의 기준이 저장 행 그대로면(baseSha 일치) 그 뒤로 쓴 사람이 없다 — latest ≡ base 라 3자 병합은
+        // 언제나 local 이다. 병합을 건너뛴다. 실측(2026-09-26, 81MB 새 프로젝트 문서, 칠하기 한 칸): 저장 행
+        // 역직렬화 1.9s + 타일셋마다 정렬 직렬화 비교하는 mergeTeamProject 5.3s 가 매 패치에 돌았다(호스트 15s).
+        // 검증·와이어·CAS 쓰기는 그대로라 그 사이 다른 저장이 끼면 아래에서 다시 병합 경로를 탄다.
+        const baseIsStored = input.baseSha != null && planned?.sha256 === input.baseSha;
+        const storedText = baseIsStored || !planned ? null : storedSerialized();
+        const baseProject = baseIsStored ? null : (input.baseProject ?? input.getBaseProject?.());
+        if (!baseIsStored && !baseProject) throw new LocalStoreError("cas", "map patch base is required to merge");
+        const plan = baseIsStored
+          ? { kind: "merged" as const, project: input.project }
+          : mergeTeamProject(
+            baseProject!,
+            input.project,
+            storedText !== null ? deserializeStoredProjectJson(JSON.parse(storedText)) : baseProject!,
+          );
         // Never trust a caller-supplied map-id list: all changed roots must participate.
-        const plan = mergeTeamProject(input.baseProject, input.project, latest);
         if (plan.kind === "conflict") return plan;
         validateMergedTeamProject(plan.project);
-        const wire = await projectWire(plan.project);
+        const wire = hostWire(plan.project);
         const written = driver.transaction((): LocalStoreSaveResult | null => {
-          if ((readProjectRow(driver)?.sha256 ?? null) !== (planned?.sha256 ?? null)) return null;
+          if ((readProjectMeta(driver)?.sha256 ?? null) !== (planned?.sha256 ?? null)) return null;
           const revision = writeProjectRow(driver, plan.project, wire, projectId, clock());
           // Nobody wrote since the caller's base: the merge is the caller's own document,
           // so only a real team merge has content worth sending back.
@@ -434,12 +501,15 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
             ? { kind: "saved", sha256: wire.sha256, revision }
             : { kind: "saved", sha256: wire.sha256, serialized: wire.serialized, revision };
         });
-        if (written) return written;
+        if (written) {
+          remember(wire.sha256, wire.serialized);
+          return written;
+        }
       }
       throw new LocalStoreError("cas", "project changed too often while saving a patch");
     },
     exportSerialized(): string | null {
-      return readProjectRow(driver)?.serialized ?? null;
+      return storedSerialized();
     },
     backup(): string {
       const backupDir = join(options.projectDir, BACKUPS_DIR, `${backupStamp(clock())}-${randomUUID()}`);
@@ -639,12 +709,12 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
         uploaded[id] = { ...rest, ref };
         migratedAssetIds.push(id);
       }
-      const current = readProjectRow(driver);
+      const current = readProjectMeta(driver);
       if (migratedAssetIds.length === 0) {
         return { changed: false, migratedAssetIds: [], project, sha256: current?.sha256 ?? null, revision: current?.revision ?? 0 };
       }
       const nextProject: Project = { ...project, assets: { ...project.assets, uploaded } };
-      const wire = await projectWire(nextProject);
+      const wire = hostWire(nextProject);
       const revision = driver.transaction(() => writeProjectRow(driver, nextProject, wire, projectId, clock()));
       insertCommit(
         driver,

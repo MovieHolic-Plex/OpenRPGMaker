@@ -1,5 +1,18 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 탈것 배치 도구 — place_vehicle (2026-09-26)
+
+- `place_vehicle {vehicle: boat|ship|airship, mapId, x, y, characterIndex?}` (`src/editor/tools/vehicleTools.ts`, 도메인 event,
+  라벨 「탈것 세우기」): `system.vehicles` 에 종류당 한 항목을 쓰고 다시 부르면 옮긴다. characterIndex 는 EasyRPG
+  `Vehicles.png` 의 칸이다(기본 boat 0 소형선, ship 1 대형선, airship 2 비행선; 288×256 은 일반 8칸 시트다).
+- 통행은 이 도구가 아니라 **지형 레코드**(`database.terrains[태그-1].vehiclePassage`)가 정한다. 자리가 그 탈것에 맞지 않으면
+  (배: 그 칸 지형이 boat/ship 불허, 비행선: airshipLand 불허) 쓰기는 하되 경고한다.
+- 기본 DB 는 이미 태그 3 `terrain_water` 에 boat/ship=true·airshipLand=false, 태그 1·2 에 airshipLand=true 를 준다. 그래서
+  기본값은 바꾸지 않았다. 다만 기본 `forest_harmony` 칩셋의 **물 오토타일(0~2·30~32…)은 태그 1** 이고 태그 3 은 6·7·8·36…98
+  무리다 — 물을 배가 다니게 하려면 `set_tile_rules` 의 `terrainTag: 3` 을 오토타일 무리 전체에 준다(칠하면 이웃에 맞춰
+  무리 안의 다른 번호로 재성형된다). 런타임 계약은 `openwiki/runtime-sessions.md` 「탈것」 절.
+- 검증 픽스처: `scripts/qa/runtime/ct-vehicle-fixture.mts` (runTool 만 쓴다).
+
 ## 보수·단계 요청 전용 도구 — repair_fence, improve_title_screen (2026-09-26)
 
 사용자 프롬프트 코퍼스에서 도구가 없던 두 문형을 메운다.

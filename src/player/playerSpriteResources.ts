@@ -7,6 +7,7 @@ import { parseActorGraphicOverride } from "@/project/actorGraphicOverride";
 import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
 import type { PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
+import { boardedVehicleId, vehicleCharacterIndex, VEHICLE_CHARSET_RESOURCE_ID, VEHICLE_CHARSET_TEXTURE_KEY } from "@/project/vehicles";
 
 const CHARSET_IDLE_PATTERN = 1;
 const CHARSET_WALK_SEQUENCE = [0, 1, 2, 1] as const;
@@ -24,6 +25,8 @@ export type PlayerSpriteResource = {
 };
 
 export function resolvePlayerSpriteResource(project: Project, session: PlaySession): PlayerSpriteResource {
+  const vehicleId = boardedVehicleId(session);
+  if (vehicleId) return createCharsetSpriteResource(VEHICLE_CHARSET_RESOURCE_ID, VEHICLE_CHARSET_TEXTURE_KEY, vehicleCharacterIndex(project, vehicleId));
   const actorId = session.partyActorIds[0];
   const actor = actorId ? project.database.actors.find((entry) => entry.id === actorId) : undefined;
   const effectiveActor = actor ? resolveActorAppearance(project, actor) : undefined;

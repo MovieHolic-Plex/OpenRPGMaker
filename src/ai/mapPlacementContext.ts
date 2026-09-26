@@ -13,6 +13,17 @@ import type { Command, GameEvent, GameMap, Project } from "@/project/types";
 
 export type RewardScope = "map" | "neighbor" | "project" | "none";
 
+/** 맵 성격 — 명시 필드가 없어 신호로 추정한다. town 이면 적대 배치를 막고 보상을 낮춘다. */
+export type MapRole = "town" | "dungeon" | "field" | "interior" | "unknown";
+
+export interface MapRoleGuess {
+  readonly role: MapRole;
+  /** 왜 그렇게 봤는지 — 사람이 읽는 근거 한 줄. */
+  readonly reason: string;
+}
+
+export type PlacedKind = "chest" | "shop" | "inn" | "npc" | "savepoint" | "exit" | "other";
+
 export interface GoldRange {
   readonly min: number;
   readonly med: number;
@@ -47,6 +58,10 @@ export interface MapPlacementContext {
     readonly escapeDisabled?: boolean;
     readonly farm?: boolean;
   };
+  /** 맵 성격 추정 — 마을이면 함정·길막 몬스터를 요청 없이 깔지 않는다. */
+  readonly role: MapRoleGuess;
+  /** 여관 1박 요금 기준(이 맵 여관이 있으면 그 값). */
+  readonly innPrice: { readonly gold: number; readonly reason: string };
   /** 이 맵에서 싸우는 적(조우·필드 스폰). 없으면 null. */
   readonly fights: {
     readonly encounterRate: number;
@@ -61,13 +76,19 @@ export interface MapPlacementContext {
     readonly npcs: readonly string[];
     readonly savepoints: number;
     readonly exits: readonly { readonly x: number; readonly y: number; readonly toMapId: string; readonly toName: string }[];
+    /** 이미 이벤트가 선 칸 — 새 이벤트는 이 칸과 그 바로 위아래(두 칸 높이 그림)를 피한다. move/remove 는 이 id 만. */
+    readonly occupied: readonly { readonly id: string; readonly x: number; readonly y: number; readonly kind: PlacedKind; readonly name: string }[];
   };
+  /** 이 맵에서 실제로 나오는 트룹 — 길막 몬스터는 이 id 만 쓴다. */
+  readonly encounterTroops: readonly { readonly id: string; readonly name: string; readonly gold: number }[];
   /** 이 맵에 걸린 설정집 문서(id·이름·요약). */
   readonly wiki: readonly { readonly id: string; readonly name: string; readonly summary: string }[];
   /** 상자에 넣어도 되는 실제 아이템 후보(이 맵 드롭·상점 → 없으면 이웃 → 프로젝트 싼 소모품). */
   readonly rewardItems: readonly PlacementItemRef[];
   /** 프로젝트에 실제로 있는 아이템·장비 id — 모델이 지어낸 id 를 거르는 데만 쓴다(모델에게 보내지 않는다). */
   readonly knownItemIds: readonly string[];
+  /** 실제 아이템·장비 가격표(id → 가격) — 상인 재고를 거르는 데만 쓴다(모델에게 보내지 않는다). */
+  readonly itemPrices: Readonly<Record<string, number>>;
   readonly chestGold: ChestRewardBasis;
 }
 
@@ -240,6 +261,70 @@ function goldBasis(facts: MapFacts, scope: RewardScope, where: string): ChestRew
   return { min, max, scope, reason: reasons.join(" · ") };
 }
 
+const TOWN_WORDS = /마을|촌|town|village|거리|시장|항구|광장|성읍|도시|city|harbor|market|plaza|hamlet/i;
+const DUNGEON_WORDS = /동굴|던전|dungeon|cave|탑|tower|폐허|ruin|지하|숲속 깊|미궁|labyrinth|요새|fortress|성채/i;
+const INTERIOR_WORDS = /집|방|여관|상점 안|가게|교회|성당|inn|house|room|shop interior|church|interior|실내/i;
+
+/**
+ * 맵 성격 추정. 적 조우는 "위험한 곳"의 가장 강한 신호, 그다음 레이아웃 종류·이름·상점/여관/주민 수.
+ * 이름만 「마을」이어도 조우가 있으면 마을로 보지 않는다(습격 이벤트 맵 등).
+ */
+export function guessMapRole(project: Project, map: GameMap): MapRoleGuess {
+  const hostile = mapTroopIds(map).length > 0 && (map.encounterRate ?? 0) > 0 || (map.fieldSpawns?.length ?? 0) > 0;
+  const commands = map.events.flatMap((event) => eventCommands(event));
+  const shops = commands.filter((command) => command.kind === "shop").length;
+  const inns = commands.filter((command) => command.kind === "inn").length;
+  const npcs = map.events.filter((event) => isNpcLike(event)).length;
+  const layout = map.layoutPlan?.kind ?? "";
+  const indoor = map.climate?.mode === "indoor";
+  if (hostile) {
+    if (DUNGEON_WORDS.test(map.name) || indoor) return { role: "dungeon", reason: "적이 나오고 이름·실내 설정이 던전" };
+    return { role: DUNGEON_WORDS.test(map.name) ? "dungeon" : "field", reason: "이 맵에서 적이 나온다" };
+  }
+  if (/village|town|houses|civic|avenue|market/i.test(layout)) return { role: "town", reason: `레이아웃 종류 ${layout}` };
+  if (TOWN_WORDS.test(map.name)) return { role: "town", reason: `이름 「${map.name}」` };
+  if (indoor || INTERIOR_WORDS.test(map.name)) return { role: "interior", reason: indoor ? "실내 설정" : `이름 「${map.name}」` };
+  if (shops + inns > 0 || npcs >= 3 || (map.safeZones?.length ?? 0) > 0) {
+    return { role: "town", reason: `적이 없고 상점·여관 ${shops + inns}곳, 주민 ${npcs}명` };
+  }
+  if (DUNGEON_WORDS.test(map.name)) return { role: "dungeon", reason: `이름 「${map.name}」` };
+  void project;
+  return { role: "unknown", reason: "성격을 가를 신호가 없다" };
+}
+
+/**
+ * 마을·실내 상자 — 이웃 던전 보상을 그대로 빌리지 않는다(마을 상자에 던전급 금액 방지).
+ * 이 맵 기존 상자 > 이 맵 상점 물가 > 이웃 맵 기준의 1/4 > 프로젝트 기준의 절반.
+ */
+function safeAreaBasis(here: MapFacts, neighbor: ChestRewardBasis | null, project: Project, label: string): ChestRewardBasis {
+  const chests = range(here.chestGold);
+  if (chests) {
+    const min = roundGold(chests.min * 0.5);
+    return { min, max: Math.max(min, roundGold(chests.max * 1.5)), scope: "map", reason: `${label} · 이 맵 기존 상자 ${chests.min === chests.max ? `${chests.min}G` : `${chests.min}~${chests.max}G`}` };
+  }
+  const shop = range(here.shopItems.map((item) => item.price));
+  if (shop) {
+    const min = roundGold(Math.max(5, shop.min * 0.5));
+    return { min, max: Math.max(min, roundGold(shop.med * 1.5)), scope: "map", reason: `${label} · 이 맵 상점 ${shop.min}~${shop.max}G` };
+  }
+  if (neighbor) {
+    const min = roundGold(Math.max(5, neighbor.min * 0.25));
+    return { min, max: Math.max(min, roundGold(neighbor.max * 0.25)), scope: "neighbor", reason: `${label === "마을" ? "마을이라" : "실내라"} 이웃 맵 기준(${neighbor.min}~${neighbor.max}G)의 1/4` };
+  }
+  const base = projectBasis(project);
+  const min = roundGold(Math.max(5, base.min * 0.5));
+  return { min, max: Math.max(min, roundGold(base.max * 0.5)), scope: base.scope, reason: `${label} · ${base.reason}의 절반` };
+}
+
+function innPriceFor(map: GameMap, basis: ChestRewardBasis, neighborBattle: readonly number[]): { gold: number; reason: string } {
+  for (const event of map.events) for (const command of eventCommands(event)) {
+    if (command.kind === "inn" && typeof command.price === "number") return { gold: command.price, reason: "이 맵 기존 여관 요금" };
+  }
+  const battle = range([...neighborBattle]);
+  if (battle) return { gold: Math.max(5, roundGold(battle.med * 0.5)), reason: `이웃 맵 전투 1회(${battle.med}G)의 절반` };
+  return { gold: Math.max(5, roundGold(basis.max * 0.1)), reason: `상자 상한 ${basis.max}G 의 1/10` };
+}
+
 function projectBasis(project: Project): ChestRewardBasis {
   const gold = range(project.database.enemies.map((enemy) => enemy.rewards?.gold ?? 0));
   if (!gold) return { min: 20, max: 100, scope: "none", reason: "진행도 정보가 없어 기본 20~100G" };
@@ -254,8 +339,24 @@ export function buildMapPlacementContext(project: Project, mapId: string): MapPl
   const exits = exitsOf(project, map);
   const neighbors = exits.map((exit) => project.maps[exit.toMapId]).filter((next): next is GameMap => Boolean(next));
 
-  let chestGold = goldBasis(here, "map", "이 맵");
+  const role = guessMapRole(project, map);
+  const safeArea = role.role === "town" || role.role === "interior";
+  let chestGold = safeArea ? null : goldBasis(here, "map", "이 맵");
   let neighborFacts: MapFacts | null = null;
+  if (safeArea && neighbors.length > 0) {
+    const merged: MapFacts = { troopGold: [], troopExp: [], enemyNames: [], drops: [], chestGold: [], shopItems: [] };
+    for (const next of neighbors) {
+      const facts = mapFacts(project, next);
+      merged.troopGold.push(...facts.troopGold);
+      merged.chestGold.push(...facts.chestGold);
+      merged.drops.push(...facts.drops);
+      merged.shopItems.push(...facts.shopItems);
+    }
+    neighborFacts = merged;
+  }
+  if (safeArea) {
+    chestGold = safeAreaBasis(here, neighborFacts ? goldBasis(neighborFacts, "neighbor", "이웃 맵") : null, project, role.role === "town" ? "마을" : "실내");
+  }
   if (!chestGold && neighbors.length > 0) {
     const merged: MapFacts = { troopGold: [], troopExp: [], enemyNames: [], drops: [], chestGold: [], shopItems: [] };
     for (const next of neighbors) {
@@ -281,16 +382,25 @@ export function buildMapPlacementContext(project: Project, mapId: string): MapPl
   const rewardItems = uniqueRefs([
     ...here.drops,
     ...here.shopItems,
-    ...(neighborFacts ? [...neighborFacts.drops, ...neighborFacts.shopItems] : []),
+    ...(neighborFacts ? [...(safeArea ? [] : neighborFacts.drops), ...neighborFacts.shopItems] : []),
     ...(here.drops.length + here.shopItems.length === 0 && !neighborFacts?.drops.length && !neighborFacts?.shopItems.length ? priceFits : []),
   ]).slice(0, MAX_LIST);
 
+  const occupied: { id: string; x: number; y: number; kind: PlacedKind; name: string }[] = [];
   const chests: { x: number; y: number; gold?: number; item?: string }[] = [];
   const shops: { eventName: string; items: PlacementItemRef[] }[] = [];
   const npcs: string[] = [];
   let savepoints = 0;
   for (const event of map.events) {
     const reward = chestReward(event);
+    const kindCommands = eventCommands(event);
+    const kind: PlacedKind = reward ? "chest"
+      : kindCommands.some((command) => command.kind === "shop") ? "shop"
+        : kindCommands.some((command) => command.kind === "inn") ? "inn"
+        : isSavepoint(kindCommands) ? "savepoint"
+          : kindCommands.some((command) => command.kind === "transfer") ? "exit"
+            : isNpcLike(event) ? "npc" : "other";
+    occupied.push({ id: event.id, x: event.x, y: event.y, kind, name: eventLabel(event).slice(0, 40) });
     if (reward) {
       const item = reward.itemId ? itemRef(project, reward.itemId)?.name ?? reward.itemId : undefined;
       chests.push({ x: event.x, y: event.y, ...(reward.gold ? { gold: reward.gold } : {}), ...(item ? { item } : {}) });
@@ -312,6 +422,8 @@ export function buildMapPlacementContext(project: Project, mapId: string): MapPl
   const battleGold = range(here.troopGold);
   const climate = !map.climate ? undefined : map.climate.mode === "fixed" ? String(map.climate.weather) : map.climate.mode === "indoor" ? "indoor" : undefined;
   return {
+    role,
+    innPrice: innPriceFor(map, chestGold, neighborFacts?.troopGold ?? []),
     map: {
       id: map.id,
       name: map.name,
@@ -332,10 +444,18 @@ export function buildMapPlacementContext(project: Project, mapId: string): MapPl
         drops: here.drops.slice(0, MAX_LIST),
       }
       : null,
-    existing: { chests: chests.slice(0, MAX_LIST), shops: shops.slice(0, 4), npcs: npcs.slice(0, MAX_LIST), savepoints, exits: exits.slice(0, MAX_LIST) },
+    existing: { chests: chests.slice(0, MAX_LIST), shops: shops.slice(0, 4), npcs: npcs.slice(0, MAX_LIST), savepoints, exits: exits.slice(0, MAX_LIST), occupied: occupied.slice(0, 60) },
+    encounterTroops: mapTroopIds(map).flatMap((id) => {
+      const troop = project.database.troops.find((record) => record.id === id);
+      if (!troop) return [];
+      const enemyIds = troop.members?.length ? troop.members.map((member) => member.enemyId) : troop.enemyIds;
+      const gold = enemyIds.reduce((sum, enemyId) => sum + (project.database.enemies.find((enemy) => enemy.id === enemyId)?.rewards?.gold ?? 0), 0);
+      return [{ id: troop.id, name: troop.name, gold }];
+    }).slice(0, MAX_LIST),
     wiki,
     rewardItems,
     knownItemIds: [...project.database.items.map((item) => item.id), ...project.database.equipment.map((item) => item.id)],
+    itemPrices: Object.fromEntries([...project.database.items, ...project.database.equipment].map((item) => [item.id, item.price ?? 0])),
     chestGold,
   };
 }
@@ -351,5 +471,6 @@ export function clampChestGold(gold: number, basis: ChestRewardBasis): { readonl
 /** 채팅 컨텍스트용 한 줄 — 모델이 상자 보상을 이 맵에 맞춰 고르게 한다. */
 export function formatChestRewardHint(context: MapPlacementContext): string {
   const items = context.rewardItems.slice(0, 4).map((item) => `${item.name}(${item.id})`).join(", ");
-  return `상자 보상 기준: ${context.chestGold.min}~${context.chestGold.max}G (${context.chestGold.reason})${items ? ` · 아이템 후보 ${items}` : ""}`;
+  const town = context.role.role === "town" ? ` · 마을(${context.role.reason}) — 함정·길막 몬스터는 요청할 때만, 여관 1박 ${context.innPrice.gold}G` : "";
+  return `상자 보상 기준: ${context.chestGold.min}~${context.chestGold.max}G (${context.chestGold.reason})${items ? ` · 아이템 후보 ${items}` : ""}${town}`;
 }

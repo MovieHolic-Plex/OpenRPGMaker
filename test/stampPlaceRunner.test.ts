@@ -19,9 +19,19 @@ function harness(options: {
   readonly ready?: boolean;
   readonly chatError?: Error;
   readonly fail?: (call: Call) => string | null;
+  /** 맵 이름을 바꾸고 조우를 비운다 — 이름만으로 마을 성격을 추정하게. */
+  readonly mapName?: string;
 }) {
   const project = createBlankProject();
   const mapId = project.startMapId;
+  if (options.mapName) {
+    const map = project.maps[mapId]!;
+    map.name = options.mapName;
+    map.encounterRate = 0;
+    map.encounterTable = [];
+    map.troopIds = [];
+    map.fieldSpawns = [];
+  }
   const requests: ChatRequest[] = [];
   const applied: Call[][] = [];
   const queue = [...(options.replies ?? [])];
@@ -174,6 +184,69 @@ describe("runStampPlaceWith", () => {
     expect(calls[2]!.args).toMatchObject({ name: "떠돌이 상인", pages: [{ lines: ["좋은 물건 있어요."] }] });
     expect(result.lines.some((line) => line.includes("올림"))).toBe(true);
     expect(result.lines.some((line) => line.includes("item_made_up"))).toBe(true);
+  });
+
+  it("moves new events off existing events and off each other", async () => {
+    const h = harness({ replies: [JSON.stringify({ steps: [
+      { tool: "place_chest", args: { at: { x: 5, y: 5 }, gold: 60 }, label: "A" },
+      { tool: "place_chest", args: { at: { x: 5, y: 5 }, gold: 60 }, label: "B" },
+    ] })] });
+    const result = await runStampPlaceWith({ text: "상자 둘", mapId: h.mapId, selection: null }, h.deps);
+    const calls = h.applied[0]!;
+    const a = calls[0]!.args as { x: number; y: number };
+    const b = calls[1]!.args as { x: number; y: number };
+    expect(a.x === b.x && Math.abs(a.y - b.y) <= 1).toBe(false);
+    expect(result.lines.some((line) => line.includes("겹쳐서"))).toBe(true);
+  });
+
+  it("turns a merchant into make_villager with real, affordable stock only", async () => {
+    const h = harness({ replies: [JSON.stringify({ steps: [
+      { tool: "place_npc", args: { at: { x: 8, y: 8 }, name: "상인", merchant: true, stock: ["item_potion", "item_made_up"] } },
+    ] })] });
+    await runStampPlaceWith({ text: "상인", mapId: h.mapId, selection: null }, h.deps);
+    const call = h.applied[0]![0]!;
+    expect(call.name).toBe("make_villager");
+    const stock = (call.args.shop as { stock: { itemId: string }[] }).stock.map((entry) => entry.itemId);
+    expect(stock).toContain("item_potion");
+    expect(stock).not.toContain("item_made_up");
+  });
+
+  it("drops a battle blocker when the map has no encounters, and unknown event ids", async () => {
+    const h = harness({ replies: [
+      JSON.stringify({ steps: [
+        { tool: "place_battle_blocker", args: { at: { x: 4, y: 4 }, troopId: "tr_x" } },
+        { tool: "remove_event", args: { eventId: "ev_missing" } },
+      ] }),
+      JSON.stringify({ steps: [] }),
+    ] });
+    const result = await runStampPlaceWith({ text: "몬스터", mapId: h.mapId, selection: null }, h.deps);
+    expect(result).toMatchObject({ ok: false, applied: 0 });
+    expect(result.lines[0]).toContain("적 그룹");
+  });
+
+  it("in a town, drops unrequested traps and blockers but keeps townsfolk", async () => {
+    const h = harness({ mapName: "조용한 마을", replies: [JSON.stringify({ steps: [
+      { tool: "place_trap", args: { at: { x: 4, y: 4 } } },
+      { tool: "place_signpost", args: { at: { x: 6, y: 6 }, lines: ["북쪽: 동굴"] } },
+    ] })] });
+    const result = await runStampPlaceWith({ text: "", mapId: h.mapId, selection: null }, h.deps);
+    const names = h.applied[0]!.map((call) => call.name);
+    expect(names).toEqual(["place_npc"]);
+    expect(result.lines.some((line) => line.includes("마을이라 요청 없이 함정을"))).toBe(true);
+  });
+
+  it("in a town, keeps a trap the sentence asks for", async () => {
+    const h = harness({ mapName: "조용한 마을", replies: [JSON.stringify({ steps: [{ tool: "place_trap", args: { at: { x: 4, y: 4 } } }] })] });
+    await runStampPlaceWith({ text: "마을 입구에 함정 하나", mapId: h.mapId, selection: null }, h.deps);
+    expect(h.applied[0]!.map((call) => call.name)).toEqual(["place_trap"]);
+  });
+
+  it("clamps an inn price to the map's basis", async () => {
+    const h = harness({ mapName: "조용한 마을", replies: [JSON.stringify({ steps: [{ tool: "place_inn", args: { at: { x: 5, y: 5 }, price: 99999 } }] })] });
+    await runStampPlaceWith({ text: "여관", mapId: h.mapId, selection: null }, h.deps);
+    const page = (h.applied[0]![0]!.args.pages as { commands: { kind: string; price: number }[] }[])[0]!;
+    expect(page.commands[0]!.kind).toBe("inn");
+    expect(page.commands[0]!.price).toBeLessThan(99999);
   });
 
   it("keeps model rects inside the selection", async () => {

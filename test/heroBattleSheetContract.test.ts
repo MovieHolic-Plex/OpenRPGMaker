@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { POSE_FRAME, type BattleBattlerPose } from "@/battle/battlePose";
+import { POSE_FRAME, VICTORY_POSE_FRAME, type BattleBattlerPose } from "@/battle/battlePose";
 
 // 주인공 전투 캐릭터셋(리소스 kind "n") 6장의 **출하 규격**을 못 박는다.
 //
@@ -129,9 +129,14 @@ describe("hero battle charset sheets", () => {
     expect(silhouetteDiff(sheet, POSE_FRAME.defend, POSE_FRAME.dead), "defend vs dead 실루엣")
       .toBeGreaterThan(MIN_SILHOUETTE_DIFF_RATIO);
 
-    // 행 1 열 2 는 victory 예약이라 비어 있어야 한다(battlePose.ts 의 POSE_FRAME 주석 참조).
-    // 여기 그림이 생기면 포즈 union 과 런타임을 같이 손댔다는 뜻이므로 이 단정을 갱신해야 한다.
-    expect(measureCell(sheet, { col: 2, row: 1 }).opaque, "행 1 열 2 (victory 예약)").toBe(0);
+    // 행 1 열 2 는 victory 다(2026-09-26 부터 채운다). 비어 있으면 battleFieldDom.ts 의
+    // victoryFrameFor 가 idle 로 떨어져 승리 포즈가 보이지 않는다. 그림이 있고 idle 과 달라야 한다.
+    const victory = measureCell(sheet, VICTORY_POSE_FRAME);
+    expect(victory.opaque, "victory 실루엣 면적").toBeGreaterThanOrEqual(MIN_OPAQUE_PIXELS);
+    expect(victory.height / CELL, "victory 셀 높이 점유율").toBeGreaterThanOrEqual(MIN_CELL_FILL);
+    expect(diffRatio(sheet, POSE_FRAME.idle, VICTORY_POSE_FRAME), "idle vs victory").toBeGreaterThan(MIN_POSE_DIFF_RATIO);
+    expect(silhouetteDiff(sheet, VICTORY_POSE_FRAME, POSE_FRAME.idle), "victory vs idle 실루엣")
+      .toBeGreaterThan(MIN_SILHOUETTE_DIFF_RATIO);
 
     // 행 2~7 전체가 투명하다. 예전에는 행 0 바로 아래 8px 띠만 봤는데(오슬라이스 회귀 방어선),
     // 이제 런타임이 Y 를 움직이므로 띠 가드는 성립하지 않는다. 대신 **쓰지 않는 행 전체**를

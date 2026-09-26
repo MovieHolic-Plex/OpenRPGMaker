@@ -20,13 +20,15 @@ import type { ProjectWriteAuthority } from "./spatial/saveRouting";
 import type { SaveResult } from "./persistence/types";
 import type { RemoteProjectTarget } from "./persistence/target";
 import { isSharedDemoProjectId, SHARED_DEMO_PROJECT_ID } from "./sharedDemoProject";
-import { projectWithoutEventDrafts } from "./eventDrafts";
+import { projectViewWithoutEventDrafts, projectWithoutEventDrafts } from "./eventDrafts";
+import { jsonContentDigest, shareContentDigests } from "./persistence/core/contentDigest";
 import { cloneProjectSharingReferenceDocuments } from "./projectClone";
 import { assertCanonicalReplacement, ProjectRoutingError } from "./spatial/saveRouting";
 import { SpatialPersistenceError, type MirrorStatus } from "./spatial/persistenceTypes";
 import { applyAudioDescriptionDelta } from "./audioDescriptions";
 import { applyMonsterMetadataDelta } from "./monsterMetadata";
 import { serialize, serializeForComparison } from "./io";
+import { projectWireView } from "./io/serialize";
 import {
   applyEventDraftVault,
   clearEventDraftVault,
@@ -43,7 +45,7 @@ import type { ProjectRepository } from "./persistence/types";
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
 import { repairMapTreeOrphans } from "@/project/mapTree";
 import { cloneExtraLayers } from "@/project/mapLayers";
-import { sha256HexText } from "@/util/sha256";
+
 import { jsonEqual, normalizationFingerprint } from "@/util/structuralJson";
 import { randomUuid } from "@/util/id";
 import { createLogger } from "@/util/logger";
@@ -120,12 +122,18 @@ export type AutoSaveState =
       readonly code?: "session-not-persisted";
     };
 
+/** contentIdentity prefix for an accepted save whose content could not be normalized; never equals a real SHA-256. */
+const UNAVAILABLE_CONTENT_IDENTITY = "unavailable:";
+
 /** In-memory accepted-save token; contains no credentials or mutable project data. */
 export type ProjectPersistenceReceipt = {
   readonly revisionId: string;
   readonly projectId: string;
   readonly mutationGeneration: number;
-  /** SHA-256 of the existing normalized comparison, not the wire/server hash. */
+  /**
+   * Content digest of the saved form (drafts dropped, wire view). Same value ⇔ same saved JSON (key order ignored).
+   * Computed on first read from the accepted (never-mutated) baseline — see persistCurrent.
+   */
   readonly contentIdentity: string;
   readonly sha256?: string;
   readonly serverRevision?: number;
@@ -241,7 +249,9 @@ class ProjectStore {
   private autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
   private autoSaveRetryTimer: ReturnType<typeof setTimeout> | null = null;
   private autoSaveState: AutoSaveState = { kind: "idle" };
-  private readonly autoSaveDelayMs = 4000;
+  // 마지막 편집 뒤 이만큼 조용하면 저장한다. 편집마다 타이머를 다시 걸어 연속 획은 한 저장으로 묶인다.
+  // 4s 는 첫 칠하기가 「저장됨」까지 걸리는 시간의 절반이었다(2026-09-26 실측, 획을 뗄 뒤 6.9s 에 저장 시작).
+  private readonly autoSaveDelayMs = 1500;
   private readonly autoSaveRetryBaseDelayMs = 10_000;
   private readonly autoSaveRetryMaxDelayMs = 120_000;
   private autoSaveRetryCount = 0;
@@ -346,7 +356,7 @@ class ProjectStore {
             else this.beginLocalProjectSession();
             this.remotePersistenceEnabled = !sharedDemo;
             this.remotePersistenceDisabledReason = sharedDemo ? "shared-demo" : null;
-            this.persistedBaseline = sharedDemo ? null : projectWithoutEventDrafts(this.current);
+            this.persistedBaseline = sharedDemo ? null : this.baselineFrom(this.current);
             resetManualProjectCommitBaseline(this.current);
             this.syncProjectUrlBar();
           }
@@ -577,7 +587,7 @@ class ProjectStore {
           });
         }
         this.writeAuthority = saved.authority;
-        this.persistedBaseline = projectWithoutEventDrafts(saved.project);
+        this.persistedBaseline = this.baselineFrom(saved.project);
         this.lastPersistenceReceipt = null;
         this.lastSavedHostRevision = null;
         this.persistenceRecovery = { kind: "ready", mirror: saved.mirror };
@@ -641,12 +651,12 @@ class ProjectStore {
         this.persistenceRecovery = { kind: "ready" };
         this.loaded = true;
         if (this.writeAuthority?.mode === "canonical") {
-          this.persistedBaseline = projectWithoutEventDrafts(this.current);
+          this.persistedBaseline = this.baselineFrom(this.current);
           this.dirtySinceLastPersist = false;
         }
         await this.normalizeCurrentProject();
         if (this.writeAuthority?.mode !== "canonical") {
-          this.persistedBaseline = projectWithoutEventDrafts(this.current);
+          this.persistedBaseline = this.baselineFrom(this.current);
           this.dirtySinceLastPersist = false;
         }
         resetManualProjectCommitBaseline(this.current);
@@ -692,7 +702,7 @@ class ProjectStore {
     // 메우는 만큼 «다르다» 로 달 수 있지만, 그 방향은 논리적으로 같은 스냅샷을 한 번 다시 얹는 것뿐이다.
     if (this.persistedBaseline && jsonEqual(snapshot.project, this.persistedBaseline)) return true;
     this.current = preserveEventDraftsOnProject(snapshot.project, this.current);
-    this.persistedBaseline = projectWithoutEventDrafts(snapshot.project);
+    this.persistedBaseline = this.baselineFrom(snapshot.project);
     this.writeAuthority = snapshot.authority;
     this.lastPersistenceReceipt = null;
     this.lastSavedHostRevision = null;
@@ -734,12 +744,12 @@ class ProjectStore {
       this.writeAuthority = authority;
       this.persistenceRecovery = { kind: "ready" };
       if (this.writeAuthority?.mode === "canonical") {
-        this.persistedBaseline = projectWithoutEventDrafts(this.current);
+        this.persistedBaseline = this.baselineFrom(this.current);
         this.dirtySinceLastPersist = false;
       }
       await this.normalizeCurrentProject();
       if (this.writeAuthority?.mode !== "canonical") {
-        this.persistedBaseline = projectWithoutEventDrafts(this.current);
+        this.persistedBaseline = this.baselineFrom(this.current);
         this.dirtySinceLastPersist = false;
       }
       resetManualProjectCommitBaseline(this.current);
@@ -957,6 +967,22 @@ class ProjectStore {
     this.scheduleAutoSave();
   }
 
+  /**
+   * 저장 기준본을 만든다(초안 제외 사적 사본). 첫 저장의 비교는 기준본의 요약 기억이 비어 있어 문서 전체를
+   * 요약했다(2026-09-26 실측, 81MB 새 프로젝트 첫 칠하기 diff 1.8s 동안 메인 스레드 정지). 한가할 때 원본의
+   * 요약을 미리 만들어 기준본에 넘긴다 — 기억은 값 대조로만 쓰이므로 그 사이 무엇이 바뀌어도 결과는 같다.
+   */
+  private baselineFrom(source: Project): Project {
+    const baseline = projectWithoutEventDrafts(source);
+    const lineage = this.contentLineage;
+    scheduleIdleWork(() => {
+      if (this.contentLineage !== lineage || this.persistedBaseline !== baseline) return;
+      jsonContentDigest(projectWireView(baseline));
+      shareContentDigests(baseline, this.current);
+    });
+    return baseline;
+  }
+
   /** @internal */
   _getPersistedBaselineForTest(): Project | null {
     return this.persistedBaseline;
@@ -1011,7 +1037,10 @@ class ProjectStore {
       if (!this.remotePersistenceEnabled) return { kind: "disabled", receipt };
       if (!read) return { kind: "failed", receipt, message: "Saved project not found" };
       if (read.projectId !== receipt.projectId) return { kind: "mismatch", receipt, reason: "target" };
-      const observedIdentity = await sha256HexText(serializeForComparison(projectWithoutEventDrafts(read.project)));
+      if (receipt.contentIdentity.startsWith(UNAVAILABLE_CONTENT_IDENTITY)) {
+        return { kind: "failed", receipt, message: "Accepted project could not produce a content identity" };
+      }
+      const observedIdentity = persistedContentIdentity(read.project);
       if (options.signal?.aborted) return { kind: "cancelled", receipt };
       if (!this.remotePersistenceEnabled) return { kind: "disabled", receipt };
       if (observedIdentity !== receipt.contentIdentity) return { kind: "mismatch", receipt, reason: "content" };
@@ -1390,20 +1419,31 @@ class ProjectStore {
     const diagnosticOwner = diagnosticToken();
     const lineageAtSubmit = this.contentLineage;
     const projectAtSubmit = this.current;
-    const submittedProject = projectWithoutEventDrafts(projectAtSubmit);
+    // 어댑터가 제출 내용의 사적 사본(`submitted`)을 돌려주면(returnsSubmittedCopy) 복제 없는 보기를 넘긴다. 이 보기는
+    // 어댑터가 await 전에 동기로 패치·직렬화로 다 읽는다(electronRepository). 실측(2026-09-26, 81MB 새
+    // 프로젝트): 저장마다 전체 복제 1.2s + 기준본 요약 기억 넘기기 1.9s 가 메인 스레드를 막았다.
+    // 사적 사본이 필요한 드문 경로(팀 병합·충돌 기준)는 아래에서 제출 시점 복제본을 따로 만든다.
+    const viewSubmit = this.repository.returnsSubmittedCopy === true;
+    const submittedProject = viewSubmit ? projectViewWithoutEventDrafts(projectAtSubmit) : projectWithoutEventDrafts(projectAtSubmit);
     // 커밋 로그가 쓸 diff baseline — **이 저장 직전에 서버가 갖고 있던 내용**이다.
     // 아래에서 `this.persistedBaseline` 을 저장 결과로 갈아치우므로 여기서 잡아두지 않으면
     // 커밋 diff 가 "자기 자신과의 비교"(=빈 diff)로 무너진다. await 앞에서 읽는 이유는
     // normalizeCurrentProject 가 persistInFlight 코얼레싱 밖에서 persistCurrent 를 직접
     // 부르는 경로가 있어서다 — RTT 중에 이 필드가 다른 저장에 의해 바뀔 수 있다.
     const commitBaseline = this.persistedBaseline;
+    // 복제 제출본은 매번 새 객체라 맵 패치 비교(`sameTilesetValue` 의 요약)가 타일셋 수백 칸을 처음부터 다시
+    // 요약했다. 기준본의 요약 기억을 넘겨 바뀜 가지만 다시 계산하게 한다(기억은 값 대조로만 채택된다).
+    // 보기 제출본은 current 의 객체를 공유해 기억이 이미 붙어 있으므로 넘길 것이 없다.
+    if (commitBaseline && !viewSubmit) shareContentDigests(commitBaseline, submittedProject);
     const authority = this.writeAuthority ?? undefined;
     const result = commitBaseline
       ? await this.repository.saveMapPatch({ project: submittedProject, baseProject: commitBaseline, authority }, target)
       : await this.repository.save(submittedProject, target, authority);
     if (result.kind === "not-configured") return result;
     if (result.kind === "conflict") return result;
-    const savedProject = result.project ?? submittedProject;
+    // 보기 제출본은 current 와 객체를 공유하므로 여기서부터는 붙잡지 않는다. 어댑터가 await 전에 만든 사적 사본을 쓴다.
+    const submittedPrivate = result.submitted ?? (viewSubmit ? projectWithoutEventDrafts(submittedProject) : submittedProject);
+    const savedProject = result.project ?? submittedPrivate;
     // Keep accepted content detached even if a replacement arrives during receipt hashing.
     // 복제는 `projectWithoutEventDrafts` → `cloneProjectSharingReferenceDocuments` 가 한다:
     // 맵·DB·타일셋 레코드는 새 객체지만 타일셋 참고문서 배열은 **일부러 공유**한다.
@@ -1415,24 +1455,32 @@ class ProjectStore {
     // draft 가 없으므로 다시 복제하지 않는다 — 같은 내용을 두 번 복제하는 유일한 이유가 없었다.
     // 아래 mergeTeamProject · 기준본 교체는 savedProject !== submittedProject 인 경우에만 돌고,
     // delta 결과는 대입 전에 structuredClone 된다. 에쿠가 오면(팀 및합) 그때만 복제한다.
-    const acceptedBaseline = savedProject === submittedProject ? submittedProject : projectWithoutEventDrafts(savedProject);
-    let receipt: ProjectPersistenceReceipt | undefined;
-    try {
-      // Capture accepted content before the hash await; never derive it from live getCurrent().
-      const acceptedContent = serializeForComparison(acceptedBaseline);
-      receipt = Object.freeze({
-        revisionId: randomUuid(),
-        projectId: target.projectId,
-        mutationGeneration: generationAtSubmit,
-        contentIdentity: await sha256HexText(acceptedContent),
-        ...(result.sha256 ? { sha256: result.sha256 } : {}),
-        ...(result.authority?.mode === "canonical" && result.authority.revision !== undefined ? { serverRevision: result.authority.revision } : {}),
-      });
-      this.persistenceTargets.set(receipt, { target, contentLineage: lineageAtSubmit, projectAtSubmit });
-    } catch (error) {
-      // Intermediate projects may save but cannot supply normalized proof. Preserve flush compatibility.
-      log.warn("Accepted project could not produce a persistence receipt", error);
-    }
+    const acceptedBaseline = savedProject === submittedPrivate ? submittedPrivate : projectWithoutEventDrafts(savedProject);
+    // 영수증의 contentIdentity 는 처음 읽힐 때 계산한다. 읽는 곳은 조수 실행의 저장 증명·체크포인트뿐이고,
+    // 사람의 자동저장은 한 번도 읽지 않는다. 대상 acceptedBaseline 은 persistedBaseline 으로 교체만 될 뿐
+    // 제자리 수정되지 않으므로 늦게 계산해도 같은 값이다. 요약 캐시(jsonContentDigest)라 바뀐 가지만 다시 계산한다.
+    // 계산이 실패하면(정규화할 수 없는 중간 문서) 어느 읽기와도 맞지 않는 표식을 돌려 증명을 실패시킨다.
+    const revisionId = randomUuid();
+    let contentIdentity: string | undefined;
+    const receipt: ProjectPersistenceReceipt = Object.freeze({
+      revisionId,
+      projectId: target.projectId,
+      mutationGeneration: generationAtSubmit,
+      get contentIdentity(): string {
+        if (contentIdentity === undefined) {
+          try {
+            contentIdentity = persistedContentIdentity(acceptedBaseline);
+          } catch (error) {
+            log.warn("Accepted project could not produce a content identity", error);
+            contentIdentity = `${UNAVAILABLE_CONTENT_IDENTITY}${revisionId}`;
+          }
+        }
+        return contentIdentity;
+      },
+      ...(result.sha256 ? { sha256: result.sha256 } : {}),
+      ...(result.authority?.mode === "canonical" && result.authority.revision !== undefined ? { serverRevision: result.authority.revision } : {}),
+    });
+    this.persistenceTargets.set(receipt, { target, contentLineage: lineageAtSubmit, projectAtSubmit });
     recordManualProjectCommitAfterSave(savedProject, commitBaseline);
     // Historical saves retain proof, but cannot adopt a baseline, metadata or dirty state
     // into a replacement project (including a replacement during the hash await).
@@ -1445,17 +1493,17 @@ class ProjectStore {
     if (this.repository.kind === 'local') {
       // No returned document means the host wrote exactly what was submitted; skip two
       // whole-project canonical stringifies on every save.
-      receivedTeamChanges = savedProject !== submittedProject
-        && serializeForComparison(savedProject) !== serializeForComparison(submittedProject);
+      receivedTeamChanges = savedProject !== submittedPrivate
+        && serializeForComparison(savedProject) !== serializeForComparison(submittedPrivate);
       if (receivedTeamChanges) {
-        const merged = mergeTeamProject(submittedProject, projectWithoutEventDrafts(this.current), savedProject);
+        const merged = mergeTeamProject(submittedPrivate, projectWithoutEventDrafts(this.current), savedProject);
         if (merged.kind === 'merged') {
           this.current = preserveEventDraftsOnProject(merged.project, this.current);
           reconciledTeamProject = true;
         } else {
           // An edit made during I/O conflicts with an accepted team change. Keep its old
           // base so the next save reports a conflict rather than silently rebasing it away.
-          this.persistedBaseline = submittedProject;
+          this.persistedBaseline = submittedPrivate;
         }
       }
     }
@@ -1465,12 +1513,12 @@ class ProjectStore {
       publishDiagnostic({ category: "authoring", phase: "saved", generation: generationAtSubmit, storage: "remote" });
     }
     const audioDescriptions = applyAudioDescriptionDelta(
-      submittedProject.audioDescriptions,
+      submittedPrivate.audioDescriptions,
       this.current.audioDescriptions,
       savedProject.audioDescriptions,
     );
     const monsterMetadata = applyMonsterMetadataDelta(
-      submittedProject.monsterMetadata,
+      submittedPrivate.monsterMetadata,
       this.current.monsterMetadata,
       savedProject.monsterMetadata,
     );
@@ -1696,6 +1744,17 @@ function nonPersistentSessionAutoSaveState(): AutoSaveState {
     code: "session-not-persisted",
     message: "이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요.",
   };
+}
+
+function scheduleIdleWork(run: () => void): void {
+  const idle = (globalThis as { requestIdleCallback?: (cb: () => void, options?: { timeout: number }) => number }).requestIdleCallback;
+  if (typeof idle === "function") idle(run, { timeout: 3_000 });
+  else setTimeout(run, 500);
+}
+
+/** 저장 형태(초안 제외·와이어 보기)의 내용 요약. 영수증과 재로드 검증이 같은 함수를 써야 비교가 성립한다. */
+function persistedContentIdentity(project: Project): string {
+  return jsonContentDigest(projectWireView(projectViewWithoutEventDrafts(project)))!;
 }
 
 function autoSaveErrorMessage(error: unknown): string {

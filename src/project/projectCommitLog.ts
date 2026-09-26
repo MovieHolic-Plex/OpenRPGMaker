@@ -141,6 +141,38 @@ export function recordProjectCommitFireAndForget(input: CommitLogInput): void {
  * 과대 집계이긴 하지만 "시스템" 한 단어보다는 감사에 쓸 수 있다.
  */
 export function recordManualProjectCommitAfterSave(project: Project, baseline?: Project | null): void {
+  // 저장 완료를 막지 않는다. 문서 요약·diff 는 수 MB 문서에서 초 단위라(2026-09-26 실측, 81MB 새 프로젝트
+  // 칠하기 한 획에 약 2.2s 동안 메인 스레드 정지) 한가할 때 모아 한 번 돈다. 그 사이 여러 저장이 오면
+  // 첫 기준본 → 마지막 저장본 하나의 커밋으로 합친다. 두 문서는 저장이 넘긴 사적 객체라 나중에 읽어도 같다.
+  pendingManualCommit = {
+    project,
+    baseline: pendingManualCommit ? pendingManualCommit.baseline : baseline,
+  };
+  if (pendingManualCommitScheduled) return;
+  pendingManualCommitScheduled = true;
+  scheduleWhenIdle(() => {
+    pendingManualCommitScheduled = false;
+    flushPendingManualProjectCommit();
+  });
+}
+
+/** 미뤄 둔 사람 저장 커밋을 지금 기록한다(유휴 콜백·재기준선·테스트가 부른다). */
+export function flushPendingManualProjectCommit(): void {
+  const pending = pendingManualCommit;
+  pendingManualCommit = null;
+  if (pending) recordManualProjectCommitNow(pending.project, pending.baseline);
+}
+
+let pendingManualCommit: { readonly project: Project; readonly baseline: Project | null | undefined } | null = null;
+let pendingManualCommitScheduled = false;
+
+function scheduleWhenIdle(run: () => void): void {
+  const idle = (globalThis as { requestIdleCallback?: (cb: () => void, options?: { timeout: number }) => number }).requestIdleCallback;
+  if (typeof idle === "function") idle(run, { timeout: 5_000 });
+  else setTimeout(run, 1_000);
+}
+
+function recordManualProjectCommitNow(project: Project, baseline?: Project | null): void {
   const digest = manualCommitDigest(project);
   if (digest === lastManualDigest) return;
   // 복제 없는 투영을 쓴다: 이 값은 `summarizeChanges` 와 `commits.record` 가 읽기만 하고,
@@ -191,6 +223,8 @@ export function recordManualProjectCommitAfterSave(project: Project, baseline?: 
 }
 
 export function resetManualProjectCommitBaseline(project: Project): void {
+  // 프로젝트 전환·AI 적용 재기준선: 미뤄 둔 이전 저장의 커밋은 그 기준에서 끝난다 — 지금 남긴다.
+  flushPendingManualProjectCommit();
   lastManualDigest = manualCommitDigest(project);
   // 프로젝트 전환/재베이스라인 시 남아 있던 pending 엔트리를 버린다 — 안 버리면 이전
   // 프로젝트의 편집이 다음 프로젝트의 첫 커밋에 실려 엉뚱한 맵 id 로 읽힌다.

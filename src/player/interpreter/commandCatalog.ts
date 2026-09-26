@@ -135,6 +135,10 @@ function executeM2Command(
     return eventIds.length ? pause("relocateEvents", { kind: "relocateEvents", eventIds }) : resumeNext(frame);
   }
 
+  if (entry.title === "Get On/Off Vehicle" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    return pause("vehicle", { kind: "vehicle", boarded: ensureM2Runtime(state.session).system["vehicle_boarded"] === true });
+  }
+
   if (entry.title === "Spawn Event" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("spawnEvent", { kind: "spawnEvent", eventId: spawnEventId(command.fields) });
   }

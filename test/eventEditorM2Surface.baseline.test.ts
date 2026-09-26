@@ -160,7 +160,10 @@ describe("M2 명령 폼 표면 스냅샷", () => {
       .filter(({ surface }) => surface.error || surface.testidCount === 0)
       .map(({ id, kind, surface }) => `${id} → ${kind}: ${surface.error ?? `testid ${surface.testidCount}종`}`);
     expect(broken, "별칭 대상 kind 의 폼이 죽었다").toEqual([]);
-  });
+    // 42종을 실제로 렌더한다. 실측(2026-09-27): 합계 43.2s — 표정 세트 76종 복원(0a89506c3) 뒤
+    // changeFace 갤러리가 얼굴 칸 1,319개를 그려 한 번에 1.8s, 나머지도 렌더당 약 1s 다.
+    // 기본 15s 로는 이 축이 매번 시간 초과로 빨개져 보증이 꺼진다. 축은 그대로 두고 시간만 준다.
+  }, 120_000);
 
   // ── A-6. control 0 ⟺ fields 0 양방향 불변식 ───────────────────────────────────
   //
