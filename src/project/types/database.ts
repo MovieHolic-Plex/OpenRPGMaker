@@ -89,6 +89,8 @@ export interface ActorOptions {
 export interface ActorLearnedSkill {
   level: number;
   skillId: SkillId;
+  /** 기술 포인트(TP) 습득 문턱. 있으면 레벨만으로는 배우지 않고, 누적 TP 와 레벨을 모두 채운 승리 뒤에 배운다(배우 전용). */
+  tp?: number;
 }
 
 export interface ClassRecord {
@@ -245,6 +247,16 @@ export interface SkillRecord {
   movePriority?: number;
   /** 실시간 액션 전투에서 캐스트 가능한 액션 스킬. 생략 시 턴제 전용. */
   actionSkill?: ActionSkillProfile;
+  /** 연계기(듀얼·트리플 테크): 함께 쓰는 배우 2~3명(시전자 포함). 모두 준비돼야 쓸 수 있고 각자 MP·턴을 소비한다. */
+  comboActorIds?: ActorId[];
+  /** 위치 범위기: 단일 대상 스코프에서 주 대상 둘레의 같은 편도 함께 맞힌다(전투장 픽셀). */
+  area?: SkillArea;
+}
+
+export interface SkillArea {
+  /** circle: 주 대상에서 유클리드 거리 radius 이내. line: 주 대상과 |dy| <= radius/2 인 가로 띠. */
+  shape: "circle" | "line";
+  radius: number;
 }
 
 export interface SkillMpCost {
@@ -554,6 +566,8 @@ export interface EnemyRewards {
   gold: number;
   dropItemId?: ItemId;
   dropRatePercent: number;
+  /** 기술 포인트. 승리 시 살아남은 파티원 전원이 트룹 합계를 받는다. 생략 = 0. */
+  tp?: number;
   /** When present, replaces the legacy single drop (including an explicitly empty list). */
   drops?: { itemId: ItemId; ratePercent: number; quantity: number; condition: EnemyActionCondition }[];
 }
@@ -964,6 +978,8 @@ export interface TitleScreenMenuLabels {
   quit: string;
   /** 오토세이브 "이어하기" 라벨. 생략 시 런타임 기본 라벨("이어하기"). */
   resume?: string;
+  /** "강하게 다시 하기"(New Game+) 라벨. system.newGamePlus.label 보다 우선한다. */
+  newGamePlus?: string;
   /** 크레딧(저작자 표기) 라벨. 생략 시 "크레딧". 항목 자체는 숨길 수 없다. */
   credits?: string;
 }
@@ -1287,6 +1303,10 @@ export interface SystemRecords {
     readonly enabled: boolean;
     readonly label?: string;
   };
+  /** 클리어 후 타이틀의 "강하게 다시 하기". 생략 = 없음. */
+  newGamePlus?: import("@/project/newGamePlus").NewGamePlusSettings;
+  /** 변수 값 → 장(시대) 이름. ESC 메뉴·저장 칸에 보인다. 생략 = 표시 없음. */
+  chapter?: import("@/project/newGamePlus").ChapterSettings;
   typeChart?: TypeChartRecord;
   timeSystem?: TimeSystemConfig;
   /** Opt-in 실시간 액션 전투 패키지. 생략 시 필드 스폰 접촉은 기존 턴제 전투로 라우팅된다. */
@@ -1384,6 +1404,11 @@ export interface CompanionConfig {
   formation?: "line" | "beside";
   /** true 면 맵 이동 시 액터 동료를 해제한다. 생략 시 유지(기존 동작). */
   clearOnTransfer?: boolean;
+  /**
+   * true 면 파티 선두 뒤의 활성 멤버(partyActorIds[1..activeSlots|4))가 addFollower 없이 자동으로
+   * 따라온다(크로노 트리거식). 새 게임·불러오기·changeParty 마다 다시 맞춘다. 생략 = 기존 동작.
+   */
+  fromParty?: boolean;
 }
 
 export interface MonsterCareConfig {

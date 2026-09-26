@@ -1,6 +1,6 @@
 import type { BattleResult } from "@/battle/runtime";
 import type { BattleBattlerSnapshot, BattleEventStateSnapshot, BattleRewardsSnapshot } from "@/battle/types";
-import { computeActorLevelUp, type BattleLevelUpResult } from "@/battle/battleLevelUp";
+import { computeActorLevelUp, computeTechPointLearning, type BattleLevelUpResult } from "@/battle/battleLevelUp";
 import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
 import { changeGold, type PlaySession } from "@/project/session";
 import { setRelationshipState } from "@/project/relationshipState";
@@ -69,6 +69,7 @@ export function applyBattleRewardsToSession(
       const levelUp = applyActorLevelUp(session, project, actorId);
       if (levelUp) levelUps.push(levelUp);
     }
+    applyTechPointsToSession(session, project, outcome, rewardActorIdList);
   }
   changeGold(session, "+=", Math.max(0, Math.trunc(outcome.rewards.gold)));
   const itemState = transitionItemStates(
@@ -90,6 +91,30 @@ export function applyBattleRewardsToSession(
       : undefined;
   applyMonsterExperienceAndEvolution(project, session, earnedExp, participantInstanceIds);
   return levelUps;
+}
+
+// 기술 포인트: 살아남은 보상 대상 전원이 트룹 TP 합계를 받고, 문턱을 넘은 기술을 배운다.
+// 레벨업 뒤에 돈다 — tp 항목의 level 조건은 이번 승리로 오른 레벨까지 본다. 저작된 TP 가 없으면 아무것도 쓰지 않는다.
+function applyTechPointsToSession(
+  session: PlaySession,
+  project: Project,
+  outcome: BattleRewardsOutcome,
+  actorIds: readonly string[],
+): void {
+  const earnedTp = Math.max(0, Math.trunc(outcome.rewards.tp ?? 0));
+  if (earnedTp <= 0) return;
+  for (const actorId of new Set(actorIds)) {
+    const vitals = session.actorVitals[actorId];
+    const snapshot = (outcome.actors ?? []).find((actor) => actor.recordId === actorId);
+    if ((vitals ? vitals.hp : snapshot?.hp ?? 1) <= 0) continue;
+    session.actorTechPoints ??= {};
+    const totalTp = (session.actorTechPoints[actorId] ?? 0) + earnedTp;
+    session.actorTechPoints[actorId] = totalTp;
+    const level = session.actorLevels[actorId] ?? 1;
+    const known = [...(session.actorSkillIds[actorId] ?? []), ...(snapshot?.skillIds ?? [])];
+    const learned = computeTechPointLearning(project, actorId, level, totalTp, known);
+    if (learned.length > 0) session.actorSkillIds[actorId] = [...(session.actorSkillIds[actorId] ?? []), ...learned];
+  }
 }
 
 // 파티 몬스터 배틀러의 전투 종료 HP를 세션 인스턴스의 currentHp로 되돌려쓴다.

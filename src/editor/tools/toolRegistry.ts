@@ -13,6 +13,7 @@ import { CLUSTER_RULE_TOOLS } from "./clusterRuleTools";
 import { DB_TOOLS } from "./dbTools";
 import { ENDING_TOOLS } from "./endingTools";
 import { COMPANION_TOOLS } from "./companionTools";
+import { TIME_GATE_TOOLS } from "./timeGateTools";
 import { EVENT_COMMAND_ASSIST_TOOLS } from "./eventCommandAssistTool";
 import { EVENT_TOOLS } from "./eventTools";
 import { NPC_CAST_TOOLS } from "./npcCastTools";
@@ -64,6 +65,8 @@ import { AI_DOC_TOOLS } from "./aiDocTools";
 import { CINEMATIC_TOOLS } from "./cinematicTools";
 import { IMAGE_ASSET_TOOLS } from "./imageAssetTools";
 import { TITLE_ART_TOOLS } from "./titleArtTools";
+import { TITLE_IMPROVE_TOOLS } from "./titleImproveTools";
+import { FENCE_REPAIR_TOOLS } from "./fenceRepairTools";
 import { AUDIO_DESCRIPTION_TOOLS } from "./audioDescriptionTools";
 import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import { VIEW_FOCUS_TOOLS } from "./viewFocusTools";
@@ -189,6 +192,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...SHARED_SCENE_TOOLS,
   ...SHARED_OBJECT_TOOLS,
   ...withDomain(CONSTRUCTION_TOOLS_V3, "tile"),
+  ...withDomain(FENCE_REPAIR_TOOLS, "tile"),
   ...withDomain(HOUSE_VISION_TOOLS, "tile"),
   ...withDomain(VILLAGE_TOOLS, "tile"),
   ...withDomain(VILLAGE_SESSION_TOOLS, "tile"),
@@ -212,6 +216,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(EVENT_COMMAND_ASSIST_TOOLS, "event"),
   ...withDomain(NPC_CAST_TOOLS, "event"),
   ...withDomain(COMPANION_TOOLS, "event"),
+  ...withDomain(TIME_GATE_TOOLS, "event"),
   ...withDomain(INVESTIGATION_TOOLS, "event"),
   ...withDomain(MYSTERY_CASE_TOOLS, "event"),
   ...withDomain(NARRATIVE_HORROR_TEMPLATE_TOOLS, "event"),
@@ -251,6 +256,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(CINEMATIC_TOOLS, "system"),
   ...withDomain(IMAGE_ASSET_TOOLS, "system"),
   ...withDomain(TITLE_ART_TOOLS, "system"),
+  ...withDomain(TITLE_IMPROVE_TOOLS, "system"),
   ...withDomain(AUDIO_DESCRIPTION_TOOLS, "system"),
   ...withDomain(EXPORT_TOOLS, "system"),
   ...withDomain(PLAY_TOOLS, "system"),

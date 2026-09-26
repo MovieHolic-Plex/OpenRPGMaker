@@ -161,6 +161,8 @@ export interface BattleSessionState {
   readonly actorSkillIds?: Readonly<Record<string, readonly SkillId[]>>;
   readonly actorExperience?: Readonly<Record<string, number>>;
   readonly actorLevels?: Readonly<Record<string, number>>;
+  /** 배우별 누적 기술 포인트(TP). 승리 후 TP 습득 미리보기의 기준. */
+  readonly actorTechPoints?: Readonly<Record<string, number>>;
   readonly actorBattleCommands?: Readonly<Record<string, readonly string[]>>;
   // 레거시 호환 플래그(setFlag 커맨드 기준 상태).
   readonly flags?: Readonly<Record<string, boolean>>;
@@ -416,6 +418,10 @@ export interface BattleRewardsSnapshot {
   // 파티 몬스터(battleParty: "monsters") 경로의 레벨업 미리보기. levelUps 는 액터 전용이라
   // 몬스터가 싸운 전투는 성장 피드백이 화면에 전혀 나오지 않았다.
   readonly monsterLevelUps?: readonly MonsterLevelUpPreview[];
+  /** 기술 포인트(트룹 합계). 살아남은 파티원 전원이 받는다. 저작된 TP 가 없으면 생략. */
+  readonly tp?: number;
+  /** TP 로 새로 배우는 기술 미리보기(결과 화면용). 세션 적립은 battleRewardsToSession 이 같은 규칙으로 한다. */
+  readonly techLearned?: readonly { readonly actorId: string; readonly actorName: string; readonly skillIds: readonly SkillId[] }[];
 }
 
 export interface BattleEventStateSnapshot {

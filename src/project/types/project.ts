@@ -644,7 +644,10 @@ export interface TestPreset {
   startPos?: { x: number; y: number };
 }
 
-export type EndingCondition = Extract<Condition, { kind: "switch" | "variable" }>;
+/** 강하게 다시 하기(New Game+) 판정의 엔딩 전용 조건. 트리거 시점의 session.flags.ngplus 를 본다. */
+export type EndingNewGamePlusCondition = { kind: "newGamePlus"; value: boolean };
+
+export type EndingCondition = Extract<Condition, { kind: "switch" | "variable" }> | EndingNewGamePlusCondition;
 
 // 선언형 엔딩 레지스트리. switch/variable conditions가 모두 참인 엔딩 중 priority가
 // 가장 높은 항목을 triggerEnding이 선택한다. epilogue는 script_cutscene과 같은 beat 배열이다.

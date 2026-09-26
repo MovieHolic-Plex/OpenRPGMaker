@@ -374,7 +374,7 @@ const setTileMetadata: ToolDefinition = {
 const setTileRules: ToolDefinition = {
   name: "set_tile_rules",
   description:
-    "타일의 규칙을 설정한다: layer(auto/lower/upper — 홈 레이어 확정), passable(통행 가능 여부), terrainTag(지면 종류). 레이어 변경은 사용자가 요청/확인한 경우에만 confirmedByUser=true로 호출하라. 여러 타일은 entries로 한 번에.",
+    "타일의 규칙을 설정한다: layer(auto/lower/upper — 홈 레이어 확정), passable(통행 가능 여부), terrainTag(지면 종류), ledge(한 방향 턱: up/down/left/right 방향으로 들어서면 주인공이 2칸 뛰어내리고 다른 방향은 막힌다, none=해제). 레이어 변경은 사용자가 요청/확인한 경우에만 confirmedByUser=true로 호출하라. 여러 타일은 entries로 한 번에.",
   mode: "write",
   parameters: {
     type: "object",
@@ -382,7 +382,7 @@ const setTileRules: ToolDefinition = {
       tilesetId: { type: "string", description: "생략 시 기본 타일셋" },
       entries: {
         type: "array",
-        description: "[{tile, layer?: auto|lower|upper, passable?: boolean, terrainTag?: integer}]",
+        description: "[{tile, layer?: auto|lower|upper, passable?: boolean, terrainTag?: integer, ledge?: up|down|left|right|none}]",
         items: { type: "object", additionalProperties: true },
       },
       confirmedByUser: { type: "boolean", description: "사용자가 직접 요청/확정한 변경이면 true — layer 변경에 필수" },
@@ -426,6 +426,22 @@ const setTileRules: ToolDefinition = {
         markUserTileRuntimeMetadata(tileset, tile, { passage: passable ? "passable" : "solid" });
         changes.push(`타일 ${tile} 통행→${passable ? "가능" : "차단"}`);
       }
+      if (entry.ledge !== undefined) {
+        const ledge = entry.ledge;
+        if (ledge !== "up" && ledge !== "down" && ledge !== "left" && ledge !== "right" && ledge !== "none") {
+          throw new ToolError(`알 수 없는 ledge: ${String(ledge)} (up/down/left/right/none)`, { code: "invalid-args" });
+        }
+        if (ledge === "none") {
+          if (tileset.ledgeDirections) {
+            delete tileset.ledgeDirections[String(tile)];
+            if (Object.keys(tileset.ledgeDirections).length === 0) delete tileset.ledgeDirections;
+          }
+          changes.push(`타일 ${tile} 턱 해제`);
+        } else {
+          (tileset.ledgeDirections ??= {})[String(tile)] = ledge;
+          changes.push(`타일 ${tile} 턱→${ledge} 방향으로 뛰어내림`);
+        }
+      }
       if (typeof entry.terrainTag === "number" && Number.isInteger(entry.terrainTag)) {
         tileset.terrain[tile] = entry.terrainTag;
         markUserTileRuntimeMetadata(tileset, tile, { terrainTag: entry.terrainTag });
@@ -437,7 +453,7 @@ const setTileRules: ToolDefinition = {
       warnings.push(`사용자 확정(잠금) 메타데이터라 건너뜀: 타일 ${skipped.join(", ")} — confirmedByUser=true로만 수정 가능`);
     }
     if (changes.length === 0 && skipped.length === 0) {
-      throw new ToolError("entries에 적용할 규칙(layer/passable/terrainTag)이 없습니다.", { code: "invalid-args" });
+      throw new ToolError("entries에 적용할 규칙(layer/passable/terrainTag/ledge)이 없습니다.", { code: "invalid-args" });
     }
     return {
       summary: `타일 규칙 ${changes.length}건 설정${skipped.length > 0 ? `, ${skipped.length}건 잠금 건너뜀` : ""}${changes.length > 0 ? ` — ${changes.slice(0, 4).join(", ")}${changes.length > 4 ? " 외" : ""}` : ""}`,

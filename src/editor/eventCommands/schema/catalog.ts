@@ -401,9 +401,10 @@ defineCommand({
     action: f.enum("동작", [
       { value: "add", label: "합류", key: "add" },
       { value: "remove", label: "이탈", key: "remove" },
+      { value: "lead", label: "선두로", key: "lead" },
     ]),
   },
-  summary: (c, l) => `${l.recordName(str(c.actorId))} ${c.action === "remove" ? "이탈" : "합류"}`,
+  summary: (c, l) => `${l.recordName(str(c.actorId))} ${c.action === "remove" ? "이탈" : c.action === "lead" ? "선두로" : "합류"}`,
 });
 
 defineCommand({

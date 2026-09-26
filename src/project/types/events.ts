@@ -402,7 +402,7 @@ export type Command =
   | { kind: "setRelationship"; npcKey?: string; state: RelationshipState }
   | { kind: "changeFactionStance"; a: string; b: string; op: "=" | "+=" | "-="; value: number }
   | { kind: "getFriendship"; npcKey?: string; variableId: string }
-  | { kind: "changeParty"; actorId: ActorId; action: "add" | "remove" }
+  | { kind: "changeParty"; actorId: ActorId; action: "add" | "remove" | "lead" }
   | { kind: "giveMonster"; speciesId: MonsterSpeciesId; level: number; nickname?: string }
   | { kind: "moveMonster"; instanceId: MonsterInstanceId; to: "party" | "box" }
   | { kind: "evolveMonster"; instanceId: MonsterInstanceId; toSpeciesId?: MonsterSpeciesId; successBranch?: Command[]; failureBranch?: Command[] }

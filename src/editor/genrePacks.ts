@@ -126,12 +126,15 @@ const PACKS: Readonly<Record<GenrePackId, GenrePackDefinition>> = {
     recipes: [recipe({
       id: "adventure-system",
       title: "기본 JRPG 시스템 프리셋",
-      appliesSystemFields: ["system.genre"],
+      appliesSystemFields: ["system.genre", "system.battleParty", "system.battleUiStyle", "system.menuUiStyle", "system.companions"],
     })],
     vocabulary: { actor: "hero", event: "quest", enemy: "enemy", map: "area" },
     requirements: [
       { id: "world-map", kind: "map", runtimeCapability: "map-runtime" },
       { id: "quest-event", kind: "map-event", runtimeCapability: "event-interpreter" },
+      { id: "battle-troops", kind: "database-troops", runtimeCapability: "battle-runtime" },
+      { id: "lint-errors", kind: "project-lint-errors", runtimeCapability: "project-lint" },
+      { id: "reference-integrity", kind: "project-reference-integrity", runtimeCapability: "reference-validation" },
     ],
   }),
   "monster-collect": definePack({

@@ -97,8 +97,8 @@ function collectKindShapeFailures(label: string, value: unknown): string[] {
     if (raw.kind === "text" && typeof raw.body !== "string") {
       failures.push(`${path}.body: 대사는 string body가 필요합니다. 예: {kind:"text",body:"안녕하세요"}`);
     }
-    if (raw.kind === "changeParty" && raw.action !== "add" && raw.action !== "remove") {
-      failures.push(`${path}.action: 파티 편성은 action:"add"(합류) 또는 action:"remove"(이탈)입니다 — op 는 쓰지 않습니다. 실제 값 ${describeValue(raw.action)}. 예: {kind:"changeParty",actorId:"actor_x",action:"add"}`);
+    if (raw.kind === "changeParty" && raw.action !== "add" && raw.action !== "remove" && raw.action !== "lead") {
+      failures.push(`${path}.action: 파티 편성은 action:"add"(합류)·"remove"(이탈)·"lead"(선두 교대)입니다 — op 는 쓰지 않습니다. 실제 값 ${describeValue(raw.action)}. 예: {kind:"changeParty",actorId:"actor_x",action:"add"}`);
     }
     if (raw.kind === "text" && typeof raw.body === "string" && /\\n(?!\[)/u.test(raw.body)) {
       failures.push(`${path}.body: 문자형 역슬래시+n 대신 실제 줄바꿈을 넣으세요. 배우 이름 제어문자 \\n[번호]는 그대로 사용할 수 있습니다.`);

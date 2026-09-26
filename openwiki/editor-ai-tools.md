@@ -1,5 +1,20 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 보수·단계 요청 전용 도구 — repair_fence, improve_title_screen (2026-09-26)
+
+사용자 프롬프트 코퍼스에서 도구가 없던 두 문형을 메운다.
+
+- `repair_fence` (`src/editor/tools/fenceRepairTools.ts`, 로직 `village/fenceRepair.ts`): 「담장이 엉망, 새로 만들지 말고 손봐줘」.
+  울타리 칸 집합은 그대로 두고 이웃 연결(N/S/E/W)로 조각을 다시 고른다(`canonicalFenceTile`, fences.ts 둘레 세트 정본과 같은 번호).
+  이웃 없는 외톨이만 걷는다. 칸을 늘리는 건 `fillGaps:true`(같은 줄 1칸 구멍만, 3칸 게이트 유지)뿐이다.
+  합본 마을 호환 칩셋이 아니면 `fence-tileset-mismatch`. 실측: author_village 4채 마을 울타리 116칸을 반은 틀린 조각으로,
+  외톨이 3개를 섞어 어긋난 이음 58 → 0, 추가 0칸, 제거 3칸(전부 주입한 외톨이) — `verify-shots/gap-fixes/c2-*`.
+  **발견:** 시공기 자체가 남기는 비정본 이음 5개(세로만 있는 모서리 438/378/380, 한쪽 이웃뿐인 가로대 379)도 이 도구가 정규화한다.
+- `improve_title_screen` (`src/editor/tools/titleImproveTools.ts`): 「타이틀을 N단계로 개선해줘」. stage 누적 —
+  1=intro(riseIn/slideUp)·logoStyle·backgroundFit, 2=particles·타이틀 BGM(스타터 곡이 등록돼 있을 때만), 3=오프닝 프리셋 effects·menuStyle.
+  비어 있는 칸만 채우고 유지한 항목을 요약에 적는다. 런타임 증거: `npm run qa:runtime -- --scenario title-improve`
+  (`TITLE_STAGE=0|3`), stage 0 은 `title-effects` 부재, stage 3 은 WebGL 효과 레이어 동작.
+
 ## 절벽 높이 도구 — read_relief · sculpt_relief · check_relief (2026-09-26)
 
 `src/editor/tools/reliefTools.ts`, 레지스트리에는 `withDomain(RELIEF_TOOLS, "map")`. 왜: 절벽을 타일 번호로 깔면 윗단·몸통·대각선 모서리를 칸마다
@@ -2331,3 +2346,14 @@ retired된 플래그도 설명은 고칠 수 있으나 다시 활성화하지 �
 
 `set_title_screen` 의 `openingPreset`·`effects` 와 `generate_title_art`(키아트 생성 → 비전 맞춤)는
 [title-opening-effects.md](title-opening-effects.md) 에 정리했다.
+
+
+## 크로노 트리거식 필드 도구 인자 (2026-09-26)
+
+- `configure_companion_rules {fromParty:true}`: 파티 선두 뒤 활성 멤버가 addFollower 없이 따라온다. `false` 면 필드를 지운다.
+- `add_companion`: 이름이 이미 「… 합류」로 끝나면 이벤트 이름에 접미사를 다시 붙이지 않는다.
+- `changeParty` 명령 `action`: `add`·`remove`·`lead`(선두 교대). 명령 스키마·편집기 폼·미리보기가 셋 다 받는다.
+- `set_tile_rules` 항목 `ledge: up|down|left|right|none`: 한 방향 턱. `set_tile_passability` 스키마는 테스트가 고정하고 있어 건드리지 않았다.
+- `place_savepoint {heal?:boolean}`: 기본 false(크로노 트리거 세이브 포인트는 회복하지 않음). true 면 `recoverAll` 을 앞에 넣는다.
+- `create_time_gate {a:{mapId,x,y}, b:{mapId,x,y}, name?, graphic?}` (`src/editor/tools/timeGateTools.ts`): `create_transfer_pair` 로 자리를 잡고, 두 게이트 전이 앞에 흰 `Flash Screen` 을 넣고 페이드를 white 로 바꾼다. 번들 캐릭터 시트에는 소용돌이·차원문 그림이 없어 기본 그래픽은 투명이다.
+- 명령 보장 표: `setEventGraphicPattern`·`cutsceneControl`·`checkpointSave`·`triggerEnding`·`setSelfSwitch` 는 맵/공통에서 `full` 이다(전투는 종전 유지). 저작 길은 그대로라 `indirectAuthoring` 로 선택창 행 요구를 면제한다. 도구 요약의 「미지원 커맨드 N건」은 「런타임 제한 커맨드 N건」이 되었다.

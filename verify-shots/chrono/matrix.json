@@ -1,0 +1,141 @@
+{
+ "counts": {
+  "PASS": 14,
+  "FAIL": 4,
+  "PARTIAL": 4
+ },
+ "rows": [
+  {
+   "criterion": "전투 화면: 크로노 스킨 + 게이지(ATB)",
+   "verdict": "PASS",
+   "evidence": "set_project_settings battle.uiStyle=chrono, flow=gauge. 출하 플레이어에서 data-battle-skin=chrono 단정 통과",
+   "shot": "04-ct-battle"
+  },
+  {
+   "criterion": "3인 파티 + 레벨 습득 기술",
+   "verdict": "PASS",
+   "evidence": "upsert_actor learnedSkills, set_party 3명. 전투 화면에 아군 3명",
+   "shot": "05-ct-battle-attack"
+  },
+  {
+   "criterion": "보이는 필드 적(심볼 인카운트)",
+   "verdict": "PASS",
+   "evidence": "place_battle_blocker. 시작 칸 위의 적을 조사하면 전투 진입",
+   "shot": "03-ct-field"
+  },
+  {
+   "criterion": "필드에서 그대로 싸우기(심리스 전투)",
+   "verdict": "FAIL",
+   "evidence": "전투는 항상 별도 전투 화면으로 전환된다. 맵 위 전투 모드 없음(fieldBattle 계열 코드 0건)",
+   "shot": null
+  },
+  {
+   "criterion": "연계기(듀얼·트리플 테크)",
+   "verdict": "FAIL",
+   "evidence": "스킬에 참여 캐릭터 필드가 없다 — upsert_skill 이 requiredActorIds 를 unknown-db-field 로 거부",
+   "shot": null
+  },
+  {
+   "criterion": "위치 기반 범위기(직선·원형)",
+   "verdict": "FAIL",
+   "evidence": "스킬 범위는 self/ally/allAllies/enemy/allEnemies 뿐. 적 배치에 따른 범위 판정 없음",
+   "shot": null
+  },
+  {
+   "criterion": "전체 공격 기술",
+   "verdict": "PASS",
+   "evidence": "scope:allEnemies 스킬 저작",
+   "shot": null
+  },
+  {
+   "criterion": "속성 약점",
+   "verdict": "PASS",
+   "evidence": "upsert_enemy elementRates (불 A, 얼음 E)",
+   "shot": null
+  },
+  {
+   "criterion": "보스 페이즈 + 밸런스 시뮬",
+   "verdict": "PASS",
+   "evidence": "author_boss_phases 2단계, simulate_battle 20회: 승률 100%, 페이즈 2/2 발동. 숨은 멤버 없이 소환을 걸면 명확한 오류로 막힌다",
+   "shot": null
+  },
+  {
+   "criterion": "시작 마을 + 상점",
+   "verdict": "PASS",
+   "evidence": "author_village 5채·주민 3, make_villager + set_shop_stock 3품목",
+   "shot": "03-ct-field"
+  },
+  {
+   "criterion": "성",
+   "verdict": "PASS",
+   "evidence": "build_castle 48×40 (평가 100)",
+   "shot": "07-ct-castle"
+  },
+  {
+   "criterion": "던전",
+   "verdict": "PASS",
+   "evidence": "run_dungeon_room_pipeline stone/cavern",
+   "shot": "08-ct-cave"
+  },
+  {
+   "criterion": "시간 여행(같은 장소의 다른 시대)",
+   "verdict": "PARTIAL",
+   "evidence": "duplicate_map + set_scene_mood(안개·어둠) + create_transfer_pair(흰 페이드)로 시대 맵과 시간의 문은 된다. 과거 변경이 미래 맵에 반영되는 시대 연동은 전용 기능이 없어 스위치로 손수 짜야 한다",
+   "shot": "06-ct-era-future"
+  },
+  {
+   "criterion": "맵 연결(마을·성·동굴)",
+   "verdict": "PASS",
+   "evidence": "create_transfer_pair 3쌍",
+   "shot": null
+  },
+  {
+   "criterion": "세이브 포인트",
+   "verdict": "PASS",
+   "evidence": "place_savepoint. 린트가 checkpointSave 를 runtime-partial 로 표시",
+   "shot": "08-ct-cave"
+  },
+  {
+   "criterion": "보물상자",
+   "verdict": "PASS",
+   "evidence": "place_chest → play_walkthrough 에서 마력약·200G 획득 확인",
+   "shot": null
+  },
+  {
+   "criterion": "서사 플래그 + 퀘스트",
+   "verdict": "PASS",
+   "evidence": "declare_story_flag(자동 슬롯), create_quest(대화 단계), 보스 격파 시 스위치 켜짐(워크스루)",
+   "shot": null
+  },
+  {
+   "criterion": "컷신(천년제 개막)",
+   "verdict": "PARTIAL",
+   "evidence": "script_cutscene 저작은 성공했지만 도구가 스스로 '미지원 커맨드 3건'을 보고하고, 린트가 cutsceneControl 을 runtime-partial 로 표시",
+   "shot": null
+  },
+  {
+   "criterion": "멀티 엔딩",
+   "verdict": "PARTIAL",
+   "evidence": "define_ending 2개 + triggerEnding 연결, evaluate_game_quality 이상 없음. 엔딩까지 실제로 플레이하진 않았다",
+   "shot": null
+  },
+  {
+   "criterion": "오프닝 + 타이틀",
+   "verdict": "PASS",
+   "evidence": "set_opening 텍스트 2장면, improve_title_screen 3단계(moonlitCastle). 출하 플레이어에서 WebGL 효과·오프닝 문구 확인",
+   "shot": "01-ct-title"
+  },
+  {
+   "criterion": "동료가 뒤따라 걷기",
+   "verdict": "PARTIAL",
+   "evidence": "configure_companion_rules + add_companion(autorun) 저작은 성공. 필드 샷에서 추종 동료를 확인하지 못했고, 런타임 상태에 동료 수가 노출되지 않아 단정할 수 없었다",
+   "shot": "03-ct-field"
+  },
+  {
+   "criterion": "강하게 다시 하기(NG+)",
+   "verdict": "FAIL",
+   "evidence": "set_project_settings 가 newGamePlus 를 허용되지 않은 인자로 거부. 엔진 코드에 NG+ 흔적 0건",
+   "shot": null
+  }
+ ]
+}

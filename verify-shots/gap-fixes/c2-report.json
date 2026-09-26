@@ -1,0 +1,60 @@
+{
+ "builtFenceCells": 116,
+ "builtBadJoints": 5,
+ "scrambledCells": 56,
+ "messyBadJoints": 58,
+ "summary": "울타리 마을 울타리 보수 — 어긋난 이음 58→0, 조각 교체 55칸, 외톨이 제거 3칸 (울타리 119→116칸).",
+ "data": {
+  "mapId": "map_fence_town",
+  "fenceCellsBefore": 119,
+  "fenceCellsAfter": 116,
+  "retiled": 55,
+  "orphansRemoved": 3,
+  "gapsFilled": 0,
+  "badJointsBefore": 58,
+  "badJointsAfter": 0
+ },
+ "addedCells": 0,
+ "removedCells": 3,
+ "removedAreOrphans": true,
+ "identicalToBuilt": false,
+ "diffsFromBuilt": [
+  {
+   "x": 2,
+   "y": 14,
+   "built": 438,
+   "repaired": 408,
+   "nb": "N"
+  },
+  {
+   "x": 13,
+   "y": 17,
+   "built": 378,
+   "repaired": 408,
+   "nb": "S"
+  },
+  {
+   "x": 22,
+   "y": 17,
+   "built": 380,
+   "repaired": 408,
+   "nb": "S"
+  },
+  {
+   "x": 13,
+   "y": 25,
+   "built": 438,
+   "repaired": 408,
+   "nb": "N"
+  },
+  {
+   "x": 19,
+   "y": 25,
+   "built": 379,
+   "repaired": 409,
+   "nb": "E"
+  }
+ ],
+ "otherTileset": "atlas_biome_jungle",
+ "rejection": "fence-tileset-mismatch 'repair_fence' 실행 실패: repair_fence 는 합본 마을·숲마을 호환 칩셋 전용입니다 — 이 맵의 칩셋: atlas_biome_jungle. 다른 칩셋에서는 울타리 조각 번호가 다른 그림입니다."
+}

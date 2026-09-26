@@ -1,6 +1,6 @@
-import type { Condition, EndingDef } from "@/project/types";
+import type { Condition, EndingCondition, EndingDef } from "@/project/types";
 
-export function endingConditionKey(conditions: readonly Condition[]): string {
+export function endingConditionKey(conditions: readonly (Condition | EndingCondition)[]): string {
   return conditions.map(normalizeConditionKey).sort().join("|");
 }
 
@@ -122,6 +122,6 @@ function variableBoundsImpossible(bounds: VariableBounds): boolean {
   return bounds.min === bounds.max && (bounds.minStrict || bounds.maxStrict);
 }
 
-function normalizeConditionKey(condition: Condition): string {
+function normalizeConditionKey(condition: Condition | EndingCondition): string {
   return JSON.stringify(condition, Object.keys(condition).sort());
 }

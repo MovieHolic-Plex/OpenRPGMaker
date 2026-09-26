@@ -135,6 +135,7 @@ function normalizeRewards(rewards: Partial<EnemyRewards> | undefined): EnemyRewa
     gold: clampInteger(rewards?.gold ?? 0, 0, 999999),
     dropItemId: cleanOptionalId(rewards?.dropItemId),
     dropRatePercent: clampInteger(rewards?.dropRatePercent ?? 0, 0, 100),
+    ...(typeof rewards?.tp === "number" && Number.isFinite(rewards.tp) && rewards.tp > 0 ? { tp: clampInteger(rewards.tp, 1, 999999) } : {}),
     ...(Array.isArray(rewards?.drops) ? { drops: rewards.drops.slice(0, 64).filter(drop => drop && cleanOptionalId(drop.itemId)).map(drop => ({
       itemId: drop.itemId.trim(), ratePercent: clampInteger(drop.ratePercent ?? 100, 0, 100),
       quantity: clampInteger(drop.quantity ?? 1, 1, 99), condition: normalizeActionCondition(drop.condition),

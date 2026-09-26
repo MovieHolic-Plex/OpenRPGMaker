@@ -1,5 +1,5 @@
-import { battleSkillUseFailure } from "@/battle/battleSkillUse";
-import { resolveBattleTargets, targetIdFor } from "@/battle/battleTargetResolver";
+import { battleActorSkillFailure, comboParticipantsFromSnapshot, comboSkillIdsFor } from "@/battle/battleSkillUse";
+import { areaTargets, resolveBattleTargets, targetIdFor } from "@/battle/battleTargetResolver";
 import { predictSkillDamageFor } from "@/battle/battlePredict";
 import type { ActorCommand, BattleBattlerSnapshot, BattleSnapshot } from "@/battle/types";
 import { stateBehavior } from "@/battle/battleStates";
@@ -15,10 +15,12 @@ export function chooseAutoBattleCommand(project: Project, snapshot: BattleSnapsh
 
   const actor = snapshot.actors.find((entry) => entry.recordId === snapshot.activeActorId);
   if (!actor || actor.defeated) return undefined;
-  const learned = actor.skillIds
+  // 연계기는 배우지 않아도 연계 멤버에게 열린다 — 메뉴(battleCommandDom)와 같은 목록.
+  const offered = [...actor.skillIds, ...comboSkillIdsFor(project, actor.recordId, snapshot.actors.map((entry) => entry.recordId), actor.skillIds)];
+  const learned = offered
     .map((skillId) => project.database.skills.find((record) => record.id === skillId))
     .filter((skill): skill is SkillRecord => Boolean(skill))
-    .filter((skill) => !battleSkillUseFailure(project, actor, skill.id));
+    .filter((skill) => !battleActorSkillFailure(project, actor, skill.id, comboParticipantsFromSnapshot(snapshot)));
 
   const recovery = bestRecovery(project, snapshot, actor, learned, rng);
   if (recovery) return recovery;
@@ -113,8 +115,10 @@ function bestAttack(
       continue;
     }
     for (const target of resolution.candidates) {
-      const damage = Math.max(0, predictSkillDamageFor(project, actor, skill, target).amount);
-      candidates.push({ skill, target, score: damage + (damage >= target.hp ? 1000 : 0) });
+      // 위치 범위기는 주 대상 둘레까지 합산한다 — 런타임 대상 해결과 같은 areaTargets 를 쓴다.
+      const hits = areaTargets(target, resolution.candidates, skill.area);
+      const damage = hits.reduce((sum, hit) => sum + Math.max(0, predictSkillDamageFor(project, actor, skill, hit).amount), 0);
+      candidates.push({ skill, target, score: damage + (hits.some((hit) => predictSkillDamageFor(project, actor, skill, hit).amount >= hit.hp) ? 1000 : 0) });
     }
   }
   const selected = pickBest(candidates, (entry) => entry.score, rng);

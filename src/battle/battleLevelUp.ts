@@ -48,7 +48,8 @@ export function computeActorLevelUp(
   const gainOf = (curve: readonly number[]) => parameterValueAtLevel(curve, level) - parameterValueAtLevel(curve, fromLevel);
   const learnedSkillIds = new Set<SkillId>(
     actor.learnedSkills
-      .filter((entry) => entry.level > fromLevel && entry.level <= level)
+      // TP 문턱이 있는 항목은 레벨만으로 배우지 않는다(computeTechPointLearning 이 맡는다).
+      .filter((entry) => entry.tp === undefined && entry.level > fromLevel && entry.level <= level)
       .map((entry) => entry.skillId)
   );
   if (useClassGrowth && klass) {
@@ -70,4 +71,26 @@ export function computeActorLevelUp(
     agilityGain: gainOf(curves.agility),
     learnedSkillIds: [...learnedSkillIds],
   };
+}
+
+/**
+ * 기술 포인트(TP) 습득. 누적 TP 가 문턱 이상이고 레벨도 채운, 아직 모르는 기술을 돌려준다.
+ * 전투 결과 미리보기(runtime)와 세션 적립(battleRewardsToSession)이 같은 함수를 쓴다.
+ */
+export function computeTechPointLearning(
+  project: Project,
+  actorId: string,
+  level: number,
+  totalTp: number,
+  knownSkillIds: readonly SkillId[],
+): SkillId[] {
+  const record = project.database.actors.find((entry) => entry.id === actorId);
+  if (!record) return [];
+  const learned: SkillId[] = [];
+  for (const entry of normalizeActorRecord(record).learnedSkills) {
+    if (entry.tp === undefined || entry.tp > totalTp || entry.level > level) continue;
+    if (knownSkillIds.includes(entry.skillId) || learned.includes(entry.skillId)) continue;
+    learned.push(entry.skillId);
+  }
+  return learned;
 }

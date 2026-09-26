@@ -1,0 +1,36 @@
+{
+ "simulate": {
+  "summary": "전투 시뮬(troop_ct_logs, Lv5, n=1): 승률 100%, 평균 116.0타",
+  "winRate": 1,
+  "rewardsTp": 9,
+  "techLearned": [
+   {
+    "actorId": "actor_hero",
+    "actorName": "크로",
+    "skillIds": [
+     "skill_ct_tp_tech"
+    ]
+   }
+  ]
+ },
+ "session": {
+  "actorTechPoints": {
+   "actor_hero": 9,
+   "actor_mage": 9
+  },
+  "heroSkillsBefore": [],
+  "heroSkillsAfter": [
+   "skill_ct_tp_tech"
+  ]
+ },
+ "saveRoundTrip": {
+  "actorTechPoints": {
+   "actor_hero": 9,
+   "actor_mage": 9
+  },
+  "heroSkills": [
+   "skill_ct_tp_tech"
+  ]
+ }
+}
+CT_TP_OK

@@ -59,6 +59,7 @@ import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/d
 import { getCharacterProfile, resolveCharacterSpeaker } from "@/project/characterProfiles";
 import { resolveDialogueLook } from "@/project/dialogueStyles";
 import { dialogueSceneHooks } from "@/player/playSceneDialogueHooks";
+import { reportEndingClear } from "@/player/playSceneOverlays";
 
 export type RunCommandsOptions = {
   readonly allowNested?: boolean;
@@ -648,6 +649,7 @@ async function consumeBlockingStep(
       scene.showGameOverScreen(step.message, step.gameOverId);
       return resumeInterpreter(interpreter);
     case "returnToTitle":
+      reportEndingClear(scene, step.clear);
       if (step.title !== undefined || step.message !== undefined || step.presentation) {
         scene.showEndingScreen(step.title ?? "", step.message ?? "", step.presentation);
       } else {
