@@ -1,5 +1,6 @@
-import { SHARED_CONTENT_PREVIEW_CACHE, sharedContentPreviewResponse, sharedContentResponse } from '../../scripts/lib/sharedContentSqlite';
+import { SHARED_CONTENT_PREVIEW_CACHE, sharedContentPreviewResponse, sharedContentResponse, sharedReferenceImageResponse } from '../../scripts/lib/sharedContentSqlite';
 import { SHARED_CONTENT_ENDPOINT, SHARED_CONTENT_PREVIEW_ENDPOINT } from '../../src/project/sharedContentSchema';
+import { SHARED_REFERENCE_IMAGE_PREFIX } from '../../src/project/bundledReferenceImagePath';
 import { existsSync, readFileSync } from "node:fs";
 import { gunzipSync } from "node:zlib";
 import { extname, normalize, resolve, sep } from "node:path";
@@ -66,8 +67,8 @@ export function registerAppProtocol(rendererDir: string, activityLogBaseDir: () 
         ? new Response(new Uint8Array(gunzipSync(r.gzip)), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } })
         : Response.json(r.body, { status: r.status, headers: { 'cache-control': 'no-store' } });
     }
-    if (url.pathname === SHARED_CONTENT_PREVIEW_ENDPOINT) {
-      const r = sharedContentPreviewResponse(request.method, url);
+    if (url.pathname === SHARED_CONTENT_PREVIEW_ENDPOINT || url.pathname.startsWith(SHARED_REFERENCE_IMAGE_PREFIX)) {
+      const r = url.pathname === SHARED_CONTENT_PREVIEW_ENDPOINT ? sharedContentPreviewResponse(request.method, url) : sharedReferenceImageResponse(request.method, url);
       return r.bytes ? new Response(new Uint8Array(r.bytes), { headers: { 'content-type': r.mime!, 'cache-control': SHARED_CONTENT_PREVIEW_CACHE } }) : new Response(null, { status: r.status });
     }
     if (url.pathname === SHARED_CHARACTER_GRAPHICS_ENDPOINT) {

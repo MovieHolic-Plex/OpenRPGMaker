@@ -4,14 +4,18 @@ import { gunzipSync } from "node:zlib";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { encodedSharedContent, publishSharedContent, readSharedContent, readSharedContentForEditor, readSharedContentPreview } from "../scripts/lib/sharedContentSqlite";
+import { encodedSharedContent, publishSharedContent, readSharedContent, readSharedContentForEditor, readSharedContentPreview, readSharedReferenceImage } from "../scripts/lib/sharedContentSqlite";
+import { isSharedReferenceImage } from "@/project/bundledReferenceImagePath";
+import { validateTilesetReferences } from "@/project/tilesetReferences";
 import type { SharedContentLibrary } from "@/project/sharedContentSchema";
 
 const PIXEL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
 const hashLibrary = (value: unknown) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 
 function library(projectDefaults: boolean): SharedContentLibrary {
-  return { version: 1, ...(projectDefaults ? { projectDefaults: true } : {}), roots: [], places: {}, tilesets: {}, assets: {}, maps: {}, sourceProjectId: "test", previews: { shared_room: PIXEL } };
+  const reference = [{ id: "study", name: "study", description: "", documents: [], images: [{ id: "a", name: "a", caption: "", dataUrl: PIXEL }] }];
+  const tileset = { id: "shared_room", referenceDocuments: reference, structureKits: [{ id: "kit", referenceDocuments: structuredClone(reference) }] };
+  return { version: 1, ...(projectDefaults ? { projectDefaults: true } : {}), roots: [], places: {}, tilesets: { shared_room: tileset } as unknown as SharedContentLibrary["tilesets"], assets: {}, maps: {}, sourceProjectId: "test", previews: { shared_room: PIXEL } };
 }
 
 let directory: string;
@@ -43,8 +47,29 @@ describe("editor shared-content snapshot", () => {
 
   it("keeps the publishing reader byte-exact and rejects unknown preview requests", () => {
     expect(readSharedContent(file).libraries.catalog!.previews.shared_room).toBe(PIXEL);
+    expect(readSharedContent(file).libraries.defaults!.tilesets.shared_room!.referenceDocuments![0]!.images[0]!.dataUrl).toBe(PIXEL);
     expect(readSharedContentPreview("catalog", "place", "missing", file)).toBeNull();
     expect(readSharedContentPreview("catalog", "tileset", "shared_room", file)).toBeNull();
+  });
+});
+
+describe("shared tileset reference images", () => {
+  it("replaces inline tileset and kit reference images with one address that serves the same bytes", () => {
+    const tileset = readSharedContentForEditor("defaults", file).libraries.defaults!.tilesets.shared_room!;
+    const address = tileset.referenceDocuments![0]!.images[0]!.dataUrl;
+    expect(isSharedReferenceImage(address)).toBe(true);
+    expect(tileset.structureKits![0]!.referenceDocuments![0]!.images[0]!.dataUrl).toBe(address);
+    expect(() => validateTilesetReferences(tileset.referenceDocuments)).not.toThrow();
+    const found = readSharedReferenceImage(address, file);
+    expect(found?.mime).toBe("image/png");
+    expect(found?.bytes.equals(Buffer.from(PIXEL.slice(PIXEL.indexOf(",") + 1), "base64"))).toBe(true);
+  });
+
+  it("serves an address from a library outside the requested scope and rejects unknown or malformed ones", () => {
+    const address = readSharedContentForEditor("all", file).libraries.catalog!.tilesets.shared_room!.referenceDocuments![0]!.images[0]!.dataUrl;
+    expect(readSharedReferenceImage(address, file)).not.toBeNull();
+    expect(readSharedReferenceImage(address.replace(/-\d+\.png$/, "-1.png"), file)).toBeNull();
+    expect(readSharedReferenceImage("/__oprn/shared-content/image/../x.png", file)).toBeNull();
   });
 });
 

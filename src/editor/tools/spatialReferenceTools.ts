@@ -3,6 +3,7 @@ import { referenceManifest, referenceRevision, REFERENCE_PAGE_SIZE, type Tileset
 import { sharedContentSnapshot } from '@/project/sharedContent';
 import { regionReference } from '@/project/regionReferences';
 import { reviewedPlaceReferences } from '@/project/defaults/spatial/reviewedPlaceCatalog';
+import { resolveReferenceImageDataUrl } from '@/project/bundledReferenceImages';
 import { ToolError, type ToolDefinition } from './types';
 
 /** Read the selected owner, never substitute an unrelated tileset's documentation. */
@@ -29,7 +30,7 @@ export function spatialReferenceSource(project: Project, args: Record<string, un
 }
 
 /** Resolve exactly the category revision whose metadata was delivered to the model. */
-export function spatialReferenceImages(project: Project, args: Record<string, unknown>, data: unknown) {
+export async function spatialReferenceImages(project: Project, args: Record<string, unknown>, data: unknown) {
   if (args.imageId === undefined) return [];
   const result = data as { revision?: string; image?: { id?: string } } | undefined;
   const category = spatialReferenceSource(project, args).find(c => c.id === args.categoryId);
@@ -37,7 +38,8 @@ export function spatialReferenceImages(project: Project, args: Record<string, un
   if (!category || !image || result?.image?.id !== image.id || result.revision !== referenceRevision(category)) {
     throw new ToolError('공간 참고 이미지가 조회 후 변경되었습니다. 다시 읽으세요.');
   }
-  return [{ dataUrl: image.dataUrl, label: `${category.name} / ${image.name} · ${image.caption}` }];
+  // 공용 구조 킷 문서는 호스트 주소로 온다. 제공자는 이 호스트의 경로가 아니라 바이트가 필요하다.
+  return [{ dataUrl: await resolveReferenceImageDataUrl(image.dataUrl), label: `${category.name} / ${image.name} · ${image.caption}` }];
 }
 
 export const readSpatialReferenceTool: ToolDefinition = {
