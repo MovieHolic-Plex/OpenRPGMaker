@@ -151,6 +151,19 @@ export function buildUltrabrainPlanRequest(input: {
   };
 }
 
+/**
+ * 자율성 다이얼이 역할 저장값(Deep)을 이겨도 되는가. 「저장값이 있나」로는 판정할 수 없다 —
+ * 설정 모달의 `collect()` 가 저장마다 역할 3개를 모두 쓰므로(aiSettingsModal), 설정을 한 번이라도
+ * 만진 사용자는 전원 `roleModels.deep` 을 갖는다. 그래서 「저장값이 폴백과 다른가」로 본다:
+ * 세 항목(공급자·모델·사고 강도)이 폴백과 같으면 사용자가 고른 것이 아니라 모달이 적어 준 값이다.
+ * `derived` 는 호출자가 `modelForRole({ ...config, roleModels: undefined }, "deep")` 로 넘긴다.
+ */
+export function prefersCallerThinking(stored: RoleModel | undefined, derived: RoleModel): boolean {
+  if (!stored) return true;
+  return stored.provider === derived.provider && stored.model === derived.model
+    && stored.thinkingLevel === derived.thinkingLevel;
+}
+
 /** 실행 턴이 읽는 지시문 = 모델 지시 + Ultrabrain 계획. */
 export function withUltrabrainPlan(modelTask: string, plan: string): string {
   return `${modelTask}\n\nUltrabrain 실행 계획:\n${plan}`;
@@ -187,7 +200,11 @@ export function buildPiRunRequest(input: {
   const effectiveProvider = brainRun ? input.brain.providerId! : input.deep.provider;
   // 다이얼을 안 실은 턴은 여전히 역할 값이다 — 계획·팀 턴은 Ultrabrain 강도로 돌아서 계획을 몰래 낮추지 않는다.
   const roleLevel = (brainRun ? input.brain.reasoningEffort : input.deep.thinkingLevel) as PiAgentThinkingLevel;
-  const level = input.preferCallerThinking && input.callerThinkingLevel ? input.callerThinkingLevel : roleLevel;
+  // 다이얼은 **실행 턴만** 움직인다 — brainRun(계획 턴·팀 턴)은 다이얼을 실어도 Ultrabrain 강도를 지킨다.
+  // 자율성 「확인」은 planOnly + reasoningEffort "low" 로 풀리고 패널은 그때도 preferCallerThinking 을
+  // 같이 실으므로(aiPiAgentCommand 의 실행 턴 요청), brainRun 을 안 빼면 Ultrabrain 계획이 high → low 로
+  // 조용히 떨어진다(2026-09-26 리뷰 실측). 두 입력을 다 비운 옛 호출자는 여전히 역할 값 그대로다.
+  const level = !brainRun && input.preferCallerThinking && input.callerThinkingLevel ? input.callerThinkingLevel : roleLevel;
   return {
     mode: input.team ? "team" : "single",
     applyMode: input.applyMode,

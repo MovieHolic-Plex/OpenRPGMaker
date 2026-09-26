@@ -45,7 +45,7 @@ import { changeChipsWithAreas, openWideChangeViewer, renderChangePreviewCard, ty
 import { createPiGhostBridge } from "./aiPiGhostBridge";
 import { loadAiConfig } from "@/ai/llmClient";
 import { composePiTask } from "@/ai/piAgent/executionRoute";
-import { buildPiRunRequest, buildUltrabrainPlanRequest, needsUltrabrainPlanTurn, withUltrabrainPlan } from "@/ai/piAgent/plainTurn";
+import { buildPiRunRequest, buildUltrabrainPlanRequest, needsUltrabrainPlanTurn, prefersCallerThinking, withUltrabrainPlan } from "@/ai/piAgent/plainTurn";
 import { applyProposedProject, captureApplyAuthority } from "@/editor/tools/applyChangesetToStore";
 import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
 import { showConfirm } from "@/editor/ui/modal";
@@ -160,7 +160,11 @@ export interface PiRunOptions {
    * 「무엇을 올리면 되는지」를 말할 수 없다 — 이름은 여기서만 붙일 수 있다.
    */
   readonly autonomyLabel?: string;
-  /** Legacy caller hint. Role-specific reasoning takes precedence in Pi execution. */
+  /**
+   * 자율성 다이얼이 푼 사고 강도. 이것이 실행 루프의 강도를 정한다 — 단, 사용자가 역할 모델(Deep)을
+   * 폴백과 다르게 저장했으면 그 저장값이 이긴다. 계획 턴·팀 턴은 다이얼과 무관하게 항상 Ultrabrain
+   * 강도로 돈다(`buildPiRunRequest` 의 brainRun).
+   */
   readonly thinkingLevel?: PiAgentThinkingLevel;
   /**
    * 이 턴의 단계별 벽시계 기록기(패널이 턴마다 하나 만든다). 없으면 계측만 빠지고 실행은 같다 —
@@ -249,11 +253,15 @@ export async function runPiCommand(
   });
   const brain = configForUltrabrain(config);
   const deep = modelForRole(config, "deep");
-  // 실행 루프의 사고 강도는 자율성 다이얼이 정한다 — 단, 역할 모델(Deep)을 직접 저장한 사용자는 그대로 이긴다.
+  // 실행 루프의 사고 강도는 자율성 다이얼이 정한다 — 단, 역할 모델(Deep)을 폴백과 **다르게** 저장한
+  // 사용자는 그대로 이긴다. 「저장값이 있나」로 판정하면 안 되는 이유: 설정 모달의 collect() 는 어느 컨트롤을
+  // 바꿔 저장해도 역할 3개를 전부 쓴다 — 즉 설정을 한 번이라도 만진 사용자는 누구나 roleModels.deep 을
+  // 갖게 되어 다이얼이 통째로 죽었다. 폴백은 modelForRole 이 소유하므로 여기서 다시 지어내지 않고
+  // roleModels 를 벗긴 설정으로 한 번 더 부른다.
   // 실측(2026-09-26, 읽기 전용 3턴 도구 사용 실행): thinking high 는 턴당 약 2.9s, low 는 약 2.1s 이고
   // 전제가 1k→30k 토큰으로 커져도 0.5s 밖에 안 밀린다. 즉 다이얼을 「빠르게」로 내린 턴이 강도를 못 받으면
   // 매 왕복마다 0.8s 를 그대로 더 낸다.
-  const preferCallerThinking = !config.roleModels?.deep;
+  const preferCallerThinking = prefersCallerThinking(config.roleModels?.deep, modelForRole({ ...config, roleModels: undefined }, "deep"));
   /** 수리 실행은 `buildPiRunRequest` 를 안 거쳐 요청을 직접 짜는다 — 실행 턴과 같은 강도를 들도록 같은 판정을 한 번 더 한다. */
   const execThinkingLevel: PiAgentThinkingLevel = preferCallerThinking && options.thinkingLevel ? options.thinkingLevel : deep.thinkingLevel;
   /**
@@ -767,7 +775,8 @@ export async function runPiCommand(
   }
   // 명세는 한 번만 계산해 검토 카드와 영수증이 **같은 것**을 쓴다 — 두 번 만들면 두 화면이 갈라진다.
   const receiptLedger = buildChangeLedger(base, merged.project);
-  const applyNow = async (): Promise<boolean> => {
+  // 적용은 한 턴에 여러 번 부려질 수 있다(단계 모드·검토 카드 다시 누르기) — 기록기가 같은 이름을 합산하므로 그 전부가 한 칸에 모인다.
+  const apply = async (): Promise<boolean> => {
     surface.signal?.throwIfAborted();
     // 맵·이벤트가 사라지는 적용만 사람이 한 번 더 본다. 근거는 툴 이름이 아니라 base ↔ 제안의
     // 실제 차이다. 검토 카드가 아니라 apply() 안에 두는 이유: 자동 적용(piApply="auto")에는 카드
@@ -800,7 +809,10 @@ export async function runPiCommand(
     // (세션 경로의 aiProposalCard.applyProposal 과 같은 관례).
     ghost.dispose();
     const alreadyPublished = publication.count > 0 && changedProjectKeys(publication.project, merged.project).length === 0;
-    const appliedResult = alreadyPublished ? { ok: true as const } : await applyProposedProject(merged.project, {
+    // 계측은 «실제 변이» 만 감싼다. 예전에는 apply 단계가 이 함수 전체였고 그 안에서 finishLog 가 불려
+    // 스냅숏이 구간이 닫히기 전에 찍혔다 — 그래서 표의 apply 는 구조적으로 항상 0ms 였다(2026-09-26 리뷰 실측).
+    // 사람이 삭제 확인 모달을 보는 시간도 이제 들어가지 않는다 — 알아야 하는 값은 적용 자체의 벽시계다.
+    const appliedResult = alreadyPublished ? { ok: true as const } : await stage("apply", () => applyProposedProject(merged.project, {
     base: publication.count ? publication.authority : proposalBase,
     baseline: publication.count ? publication.baseline : baseline,
     source: "agent",
@@ -813,7 +825,7 @@ export async function runPiCommand(
     snapshotLabel: `Pi ${team ? "팀" : "에이전트"} ${scopeText}`,
     snapshotMapId: command.mapIds[0] ?? surface.getCurrentMapId(),
     reason: `Pi ${team ? "팀" : `에이전트 ${groups.length}개`}, 툴콜 ${toolCalls}회`,
-  });
+  }));
     if (!appliedResult.ok) {
       const reason = `적용 실패(${appliedResult.reason}): ${appliedResult.issue ?? "무결성 오류"}`;
       publishFinalOutcome();
@@ -852,8 +864,6 @@ export async function runPiCommand(
     });
     return true;
   };
-  // 적용은 한 턴에 여러 번 부려질 수 있다(단계 모드·검토 카드 다시 누르기) — 기록기가 같은 이름을 합산하므로 그 전부가 한 칸에 모인다.
-  const apply = (): Promise<boolean> => stage("apply", applyNow);
   // 정책에 따라 자동 반영하거나 미적용 초안을 검토 카드에 남긴다.
   // 기준(base)이 그 사이 바뀌면 applyProposedProject 가 stale-base 로 거절한다.
   if ((!(options.villageContract ? builderFailed : villageIncomplete) && applyMode === "yolo") || (isLiveApplyMode(applyMode) && !harmonyManualReview)
