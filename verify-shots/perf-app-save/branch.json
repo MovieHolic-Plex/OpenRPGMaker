@@ -1,0 +1,149 @@
+{
+  "bootMs": 33809,
+  "mapId": "map_blank_start",
+  "cycles": [
+    {
+      "i": 0,
+      "paint": {
+        "ok": true,
+        "ms": 3847,
+        "summary": "빈 맵에 타일 0 페인트(cells, 1층 lower, 1칸)"
+      },
+      "saveMs": 15475,
+      "wallMs": 19594
+    },
+    {
+      "i": 1,
+      "paint": {
+        "ok": true,
+        "ms": 4095,
+        "summary": "빈 맵에 타일 0 페인트(cells, 1층 lower, 1칸)"
+      },
+      "saveMs": 13262,
+      "wallMs": 17487
+    },
+    {
+      "i": 2,
+      "paint": {
+        "ok": true,
+        "ms": 4965,
+        "summary": "빈 맵에 타일 0 페인트(cells, 1층 lower, 1칸)"
+      },
+      "saveMs": 7677,
+      "wallMs": 12726
+    },
+    {
+      "i": 3,
+      "paint": {
+        "ok": true,
+        "ms": 4244,
+        "summary": "빈 맵에 타일 0 페인트(cells, 1층 lower, 1칸)"
+      },
+      "saveMs": 6656,
+      "wallMs": 11103
+    }
+  ],
+  "totalProfileMs": 63113,
+  "top": [
+    {
+      "fn": "(program) :0",
+      "selfMs": 15742
+    },
+    {
+      "fn": "(idle) :0",
+      "selfMs": 12246
+    },
+    {
+      "fn": "(garbage collector) :0",
+      "selfMs": 10231
+    },
+    {
+      "fn": "JXe main-Djx-j8Aj.js:32",
+      "selfMs": 5868
+    },
+    {
+      "fn": "WDt main-Djx-j8Aj.js:32",
+      "selfMs": 3320
+    },
+    {
+      "fn": "Gd main-Djx-j8Aj.js:6",
+      "selfMs": 2300
+    },
+    {
+      "fn": "YHr main-Djx-j8Aj.js:146",
+      "selfMs": 1794
+    },
+    {
+      "fn": "ft tilePalette-D6qkgE-Q.js:4",
+      "selfMs": 1788
+    },
+    {
+      "fn": "ZDt main-Djx-j8Aj.js:32",
+      "selfMs": 1601
+    },
+    {
+      "fn": "r main-Djx-j8Aj.js:16",
+      "selfMs": 790
+    },
+    {
+      "fn": "JFe main-Djx-j8Aj.js:32",
+      "selfMs": 511
+    },
+    {
+      "fn": "getBoundingClientRect :0",
+      "selfMs": 495
+    },
+    {
+      "fn": "oB main-Djx-j8Aj.js:249",
+      "selfMs": 472
+    },
+    {
+      "fn": "compress main-Djx-j8Aj.js:6",
+      "selfMs": 410
+    },
+    {
+      "fn": "bufferSubData :0",
+      "selfMs": 373
+    },
+    {
+      "fn": "structuredClone :0",
+      "selfMs": 336
+    },
+    {
+      "fn": "kye main-Djx-j8Aj.js:32",
+      "selfMs": 323
+    },
+    {
+      "fn": "(anonymous) :0",
+      "selfMs": 243
+    },
+    {
+      "fn": "f main-Djx-j8Aj.js:32",
+      "selfMs": 234
+    },
+    {
+      "fn": "send :0",
+      "selfMs": 204
+    },
+    {
+      "fn": "clearColor :0",
+      "selfMs": 162
+    },
+    {
+      "fn": "iXe main-Djx-j8Aj.js:32",
+      "selfMs": 158
+    },
+    {
+      "fn": "WB main-Djx-j8Aj.js:16",
+      "selfMs": 158
+    },
+    {
+      "fn": "encodeInto :0",
+      "selfMs": 145
+    },
+    {
+      "fn": "invoke sandbox_bundle:2",
+      "selfMs": 141
+    }
+  ]
+}

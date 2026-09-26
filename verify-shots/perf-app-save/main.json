@@ -1,0 +1,149 @@
+{
+  "bootMs": 32776,
+  "mapId": "map_blank_start",
+  "cycles": [
+    {
+      "i": 0,
+      "paint": {
+        "ok": true,
+        "ms": 5414,
+        "summary": "빈 맵에 타일 0 페인트(cells, 1층 lower, 1칸)"
+      },
+      "saveMs": 25292,
+      "wallMs": 30885
+    },
+    {
+      "i": 1,
+      "paint": {
+        "ok": true,
+        "ms": 8485,
+        "summary": "빈 맵에 타일 0 페인트(cells, 1층 lower, 1칸)"
+      },
+      "saveMs": 17874,
+      "wallMs": 26409
+    },
+    {
+      "i": 2,
+      "paint": {
+        "ok": true,
+        "ms": 6838,
+        "summary": "빈 맵에 타일 0 페인트(cells, 1층 lower, 1칸)"
+      },
+      "saveMs": 26750,
+      "wallMs": 33626
+    },
+    {
+      "i": 3,
+      "paint": {
+        "ok": true,
+        "ms": 7987,
+        "summary": "빈 맵에 타일 0 페인트(cells, 1층 lower, 1칸)"
+      },
+      "saveMs": 26682,
+      "wallMs": 34856
+    }
+  ],
+  "totalProfileMs": 127047,
+  "top": [
+    {
+      "fn": "(idle) :0",
+      "selfMs": 42661
+    },
+    {
+      "fn": "(program) :0",
+      "selfMs": 17547
+    },
+    {
+      "fn": "(garbage collector) :0",
+      "selfMs": 17021
+    },
+    {
+      "fn": "Yz main-DxuWfPSi.js:20",
+      "selfMs": 9864
+    },
+    {
+      "fn": "iK main-DxuWfPSi.js:20",
+      "selfMs": 9401
+    },
+    {
+      "fn": "DI main-DxuWfPSi.js:20",
+      "selfMs": 6194
+    },
+    {
+      "fn": "hDt main-DxuWfPSi.js:20",
+      "selfMs": 5663
+    },
+    {
+      "fn": "XXe main-DxuWfPSi.js:20",
+      "selfMs": 5106
+    },
+    {
+      "fn": "getBoundingClientRect :0",
+      "selfMs": 2039
+    },
+    {
+      "fn": "compress main-DxuWfPSi.js:6",
+      "selfMs": 1564
+    },
+    {
+      "fn": "ft tilePalette-CPM5e54C.js:4",
+      "selfMs": 1506
+    },
+    {
+      "fn": "JX main-DxuWfPSi.js:20",
+      "selfMs": 1273
+    },
+    {
+      "fn": "xHr main-DxuWfPSi.js:146",
+      "selfMs": 1156
+    },
+    {
+      "fn": "r main-DxuWfPSi.js:16",
+      "selfMs": 562
+    },
+    {
+      "fn": "iB main-DxuWfPSi.js:249",
+      "selfMs": 482
+    },
+    {
+      "fn": "encodeInto :0",
+      "selfMs": 477
+    },
+    {
+      "fn": "structuredClone :0",
+      "selfMs": 440
+    },
+    {
+      "fn": "wDt main-DxuWfPSi.js:20",
+      "selfMs": 370
+    },
+    {
+      "fn": "digestHex main-DxuWfPSi.js:6",
+      "selfMs": 315
+    },
+    {
+      "fn": "(anonymous) main-DxuWfPSi.js:20",
+      "selfMs": 291
+    },
+    {
+      "fn": "UB main-DxuWfPSi.js:16",
+      "selfMs": 270
+    },
+    {
+      "fn": "send :0",
+      "selfMs": 211
+    },
+    {
+      "fn": "vYt main-DxuWfPSi.js:20",
+      "selfMs": 197
+    },
+    {
+      "fn": "requestAnimationFrame :0",
+      "selfMs": 158
+    },
+    {
+      "fn": "setAttribute :0",
+      "selfMs": 150
+    }
+  ]
+}
