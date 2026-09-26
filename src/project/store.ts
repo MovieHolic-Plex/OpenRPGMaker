@@ -1396,7 +1396,11 @@ class ProjectStore {
     // 다음 저장의 문서 비교가 배열 실체 하나로 끝난다(projectPatch.sameTilesetValue).
     // 예전의 바깥 structuredClone 은 그 배열까지 떼어 내 저장마다 42MB 를 복사하고, 비교를
     // 언제나 «다른 배열»로 만들어 전체 문서를 다시 직렬화하게 했다(2026-09-25 실측 약 0.6s + 1.5s).
-    const acceptedBaseline = projectWithoutEventDrafts(savedProject);
+    // 호스트가 아무것도 돌려보내지 않았으면(제출한 것을 그대로 썼다는 뜻) 제출본이 이미 사적이고
+    // draft 가 없으므로 다시 복제하지 않는다 — 같은 내용을 두 번 복제하는 유일한 이유가 없었다.
+    // 아래 mergeTeamProject · 기준본 교체는 savedProject !== submittedProject 인 경우에만 돌고,
+    // delta 결과는 대입 전에 structuredClone 된다. 에쿠가 오면(팀 및합) 그때만 복제한다.
+    const acceptedBaseline = savedProject === submittedProject ? submittedProject : projectWithoutEventDrafts(savedProject);
     let receipt: ProjectPersistenceReceipt | undefined;
     try {
       // Capture accepted content before the hash await; never derive it from live getCurrent().
