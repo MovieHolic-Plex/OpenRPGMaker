@@ -63,7 +63,8 @@ def measure(m, man, interior, a5=(frozenset(), frozenset())):
         e = man['entries'][L1[i]]
         return bool(e) and e.get('slot') == 'A4' and not e.get('wall')
 
-    floor = [L1[i] is not None and L1[i] >= 0 and not is_wall(i) and L3[i] < 0 for i in range(n)]
+    # 물(A1)은 걷는 바닥이 아니다 — 바다·호수가 넓은 항구·물가 맵에서 물을 「빈 바닥」으로 세지 않는다.
+    floor = [L1[i] is not None and L1[i] >= 0 and not is_wall(i) and slot_of(man, L1[i]) != 'A1' and L3[i] < 0 for i in range(n)]
     occ = [L2[i] >= 0 or L3[i] >= 0 for i in range(n)]
 
     def near(i):

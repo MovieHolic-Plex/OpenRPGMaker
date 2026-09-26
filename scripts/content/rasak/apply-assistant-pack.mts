@@ -321,6 +321,9 @@ async function main() {
       ["castle_trial", "시험 · 성 실내", "rasak_interior", 1536],
       ["dungeon_trial", "시험 · 지하 묘지", "rasak_dungeon", 4608],
       ["castle_court_trial", "시험 · 성곽과 폐허", "rasak_castle", 3072],
+      ["elf_trial", "시험 · 엘프 숲 마을", "rasak_forestfolk", 3072],
+      ["snow_trial", "시험 · 설원 바이킹 마을", "rasak_snow", 3840],
+      ["port_trial", "시험 · 항구", "rasak_port", 0],
     ];
     for (const [id, name, ts, ground] of trials) {
       if (!project.tilesets[ts]) continue;

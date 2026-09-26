@@ -205,6 +205,87 @@
         "Ruins/Tileset_Old_World2_Rasak.png",
         "Nature/Tileset_Nature_TreesSummer_Rasak.png"
       ]
+    },
+    {
+      "id": "rasak_forestfolk",
+      "name": "Rasak · 엘프 숲 마을",
+      "previews": [
+        "p05 숲 마을(분위기 참고)"
+      ],
+      "sheets": {
+        "A1": "Town/A1_City_Rasak.png",
+        "A2": "Nature/A2_Nature_Rasak.png",
+        "A3": "Forestfolk/A3_Forestfolk_Rasak.png",
+        "A5": "Town/A5_City_Rasak.png",
+        "B": "Forestfolk/Tileset_ForestfolkGreen_Rasak.png",
+        "C": "Forestfolk/Tileset_ForestfolkBlue_Rasak.png",
+        "D": "Forestfolk/Tileset_ForestfolkRed_Rasak.png",
+        "E": "Forestfolk/Tileset_ForestfolkYellow_Rasak.png"
+      },
+      "extraSheets": [
+        "Forestfolk/Tileset_ForestfolkTreeGreen1_Rasak.png",
+        "Forestfolk/Tileset_ForestfolkTreeGreen2_Rasak.png",
+        "Forestfolk/Tileset_ForestfolkTreeGreen3_Rasak.png",
+        "Forestfolk/Tileset_ForestfolkTreeBlue1_Rasak.png",
+        "Forestfolk/Tileset_ForestfolkTreeBlue2_Rasak.png",
+        "Forestfolk/Tileset_ForestfolkTreeBlue3_Rasak.png",
+        "Forestfolk/Tileset_ForestfolkTreeRed1_Rasak.png",
+        "Forestfolk/Tileset_ForestfolkTreeRed2_Rasak.png",
+        "Forestfolk/Tileset_ForestfolkTreeRed3_Rasak.png",
+        "Forestfolk/Tileset_ForestfolkTreeYellow1_Rasak.png",
+        "Forestfolk/Tileset_ForestfolkTreeYellow2_Rasak.png",
+        "Forestfolk/Tileset_ForestfolkTreeYellow3_Rasak.png",
+        "Forestfolk/Tileset_ForestfolkTreeVellow2_Rasak.png",
+        "Forestfolk/Tileset_ForestfolkTreeTransition_Rasak.png",
+        "Outposts/Tileset_Huntercamp_Rasak.png",
+        "Outposts/Tileset_Temple_Rasak.png"
+      ]
+    },
+    {
+      "id": "rasak_snow",
+      "name": "Rasak · 설원·바이킹 마을",
+      "previews": [
+        "설원 마을(분위기 참고)"
+      ],
+      "sheets": {
+        "A1": "Nature/A1_SnowDesert_Rasak.png",
+        "A2": "Snow_Desert/A2_SnowDesert_Rasak.png",
+        "A3": "Snow_Desert/A3_Viking_Rasak.png",
+        "A5": "Snow_Desert/A5_Snow_Rasak.png",
+        "B": "Snow_Desert/Tileset_VikingSnow_Rasak.png",
+        "C": "Snow_Desert/Tileset_Viking_Rasak.png",
+        "D": "Snow_Desert/Tileset_Snow&Ice_Rasak.png",
+        "E": "Outposts/Tileset_Barbarian_Rasak.png"
+      },
+      "extraSheets": [
+        "Interiors/Tileset_VikingInterior_Rasak.png",
+        "Snow_Desert/Tileset_Station_Rasak.png"
+      ]
+    },
+    {
+      "id": "rasak_port",
+      "name": "Rasak · 항구·배",
+      "previews": [
+        "항구(분위기 참고)"
+      ],
+      "sheets": {
+        "A1": "Town/A1_City_Rasak.png",
+        "A2": "Ship/A2_Ship_Rasak.png",
+        "A3": "Town/A3_City1_Rasak.png",
+        "A5": "Town/A5_City_Rasak.png",
+        "B": "Ship/Tileset_Ship_Left_Rasak.png",
+        "C": "Ship/Tileset_Ship_Right_Rasak.png",
+        "D": "Ship/Tileset_Ship_Decoration_Rasak.png",
+        "E": "Ship/Tileset_Sails_Rasak.png"
+      },
+      "extraSheets": [
+        "Ship/Tileset_Ship_Left_Red_Rasak.png",
+        "Ship/Tileset_Ship_Right_Red_Rasak.png",
+        "Ship/Tileset_ShipOld_Left_Rasak.png",
+        "Ship/Tileset_ShipOld_Right_Rasak.png",
+        "Ship/Tileset_BlackSails_Rasak.png",
+        "Outposts/Tileset_Beach_Rasak.png"
+      ]
     }
   ],
   "sourceSha256": {
