@@ -111,5 +111,7 @@ describe("store.load — 비어 있는 로컬 폴더(새 프로젝트)", () => {
     const { deserialize } = await import("@/project/io");
     const doc = deserialize(saved[0]);
     expect(Object.keys(doc.maps).length).toBeGreaterThan(0);
-  });
+    // 실제 store 를 부팅하고 빈 프로젝트 전체를 폴더에 심는다. 단독 실측(2026-09-26) 모듈 적재 9s · load 3.5s ·
+    // flush 6.5s 로 기본 15s 를 넘긴다. 멈춤이 아니라 케이스 비용이라 이 케이스만 예산을 늘린다.
+  }, 60_000);
 });
