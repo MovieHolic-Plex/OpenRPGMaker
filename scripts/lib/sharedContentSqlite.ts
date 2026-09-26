@@ -36,7 +36,10 @@ export function readSharedContentForEditor(scope: SharedContentScope, file = sha
     const all = db.prepare('SELECT id, revision FROM content_libraries ORDER BY id').all() as { id: string; revision: string }[];
     const rows = (scope === 'defaults'
       ? db.prepare("SELECT id, revision, payload FROM content_libraries WHERE json_extract(payload, '$.projectDefaults') = 1 ORDER BY id").all()
-      : db.prepare('SELECT id, revision, payload FROM content_libraries ORDER BY id').all()) as { id: string; revision: string; payload: string }[];
+      : scope === 'rest'
+        // 부팅이 defaults 를 이미 받았다 — 뒤따르는 요청은 나머지만 받는다(2026-09-27 실측: defaults 20MB 가 두 번 왔다).
+        ? db.prepare("SELECT id, revision, payload FROM content_libraries WHERE coalesce(json_extract(payload, '$.projectDefaults'), 0) != 1 ORDER BY id").all()
+        : db.prepare('SELECT id, revision, payload FROM content_libraries ORDER BY id').all()) as { id: string; revision: string; payload: string }[];
     return { revision: snapshotRevision(all), libraries: Object.fromEntries(rows.map(r => [r.id, linkReferenceImages(linkPreviews(r.id, r.revision, JSON.parse(r.payload) as SharedContentLibrary), referenceImageIndexFor(file, snapshotRevision(all)))])) };
   } finally { db.close(); }
 }
@@ -158,11 +161,22 @@ export function publishSharedContent(id: string, value: SharedContentLibrary, ex
   if(hash(JSON.stringify(reloaded)) !== revision) throw new Error('Shared SQLite reload mismatch');
   return {file,id,revision,reloaded};
 }
-export function sharedContentResponse(method: string, url: URL): { status: number; gzip?: Buffer; body?: { error: string } } {
+export function sharedContentResponse(method: string, url: URL, ifNoneMatch?: string): { status: number; gzip?: Buffer; etag?: string; body?: { error: string } } {
   if(method !== 'GET') return {status:405,body:{error:'공용 콘텐츠는 호스트 등록 절차에서 수정합니다.'}};
-  const scope: SharedContentScope = url.searchParams.get('scope') === 'defaults' ? 'defaults' : 'all';
-  try {return {status:200,gzip:encodedSharedContent(scope)};}
+  const requested = url.searchParams.get('scope');
+  const scope: SharedContentScope = requested === 'defaults' || requested === 'rest' ? requested : 'all';
+  try {
+    const { revision, gzip } = encodedSharedContentWithRevision(scope);
+    const etag = sharedContentEtag(scope, revision);
+    // 판본이 같으면 본문 없이 304 — 부팅마다 73MB(gzip) 를 다시 받던 것을 없앤다(2026-09-27 실측).
+    if (ifNoneMatch && ifNoneMatch.split(',').some(tag => tag.trim() === etag)) return { status: 304, etag };
+    return {status:200,gzip,etag};
+  }
   catch {return {status:500,body:{error:'공용 SQLite 자료를 읽지 못했습니다.'}};}
+}
+/** 범위마다 본문이 다르므로 ETag 에 범위를 넣는다. 판본은 전체 카탈로그 기준(모든 범위 공통)이다. */
+export function sharedContentEtag(scope: SharedContentScope, revision: string): string {
+  return `"${scope}-${revision}"`;
 }
 /**
  * 부팅 응답은 매번 같다 — 카탈로그 판본이 같으면 압축본을 재사용한다.
@@ -171,16 +185,19 @@ export function sharedContentResponse(method: string, url: URL): { status: numbe
  */
 const encodedCache = new Map<string, { revision: string; gzip: Buffer }>();
 export function encodedSharedContent(scope: SharedContentScope, file = sharedContentFile()): Buffer {
+  return encodedSharedContentWithRevision(scope, file).gzip;
+}
+export function encodedSharedContentWithRevision(scope: SharedContentScope, file = sharedContentFile()): { revision: string; gzip: Buffer } {
   const db = open(file);
   let revision: string;
   try { revision = snapshotRevision(db.prepare('SELECT id, revision FROM content_libraries ORDER BY id').all() as { id: string; revision: string }[]); }
   finally { db.close(); }
   const key = file + '\n' + scope, cached = encodedCache.get(key);
-  if (cached?.revision === revision) return cached.gzip;
+  if (cached?.revision === revision) return cached;
   const snapshot = readSharedContentForEditor(scope, file);
-  const gzip = gzipSync(JSON.stringify(snapshot), { level: 1 });
-  encodedCache.set(key, { revision: snapshot.revision, gzip });
-  return gzip;
+  const entry = { revision: snapshot.revision, gzip: gzipSync(JSON.stringify(snapshot), { level: 1 }) };
+  encodedCache.set(key, entry);
+  return entry;
 }
 export function sharedContentPreviewResponse(method: string, url: URL): { status: number; mime?: string; bytes?: Buffer } {
   if (method !== 'GET') return { status: 405 };
@@ -214,9 +231,12 @@ export function sharedContentMiddleware(req: IncomingMessage,res: ServerResponse
     return;
   }
   if(url.pathname!==SHARED_CONTENT_ENDPOINT) return next();
-  const result=sharedContentResponse(req.method??'GET', url);
+  const result=sharedContentResponse(req.method??'GET', url, typeof req.headers['if-none-match'] === 'string' ? req.headers['if-none-match'] : undefined);
+  // 브라우저 HTTP 캐시는 이 크기의 본문을 저장하지 않는다 — 클라이언트가 IndexedDB 에 판본별로 들고 If-None-Match 를 보낸다.
+  const cacheHeaders = { 'cache-control': 'no-store', ...(result.etag ? { etag: result.etag } : {}) };
+  if (result.status === 304) { res.writeHead(304, { ...cacheHeaders, vary: 'accept-encoding' }).end(); return; }
   if (!result.gzip) { res.writeHead(result.status,{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}).end(JSON.stringify(result.body)); return; }
   const gzip = /\bgzip\b/.test(String(req.headers['accept-encoding'] ?? ''));
   const bytes = gzip ? result.gzip : gunzipSync(result.gzip);
-  res.writeHead(200,{'content-type':'application/json; charset=utf-8','cache-control':'no-store','content-length':bytes.length,...(gzip?{'content-encoding':'gzip',vary:'accept-encoding'}:{})}).end(bytes);
+  res.writeHead(200,{'content-type':'application/json; charset=utf-8',...cacheHeaders,'content-length':bytes.length,vary:'accept-encoding',...(gzip?{'content-encoding':'gzip'}:{})}).end(bytes);
 }

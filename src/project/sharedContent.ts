@@ -3,6 +3,7 @@ import type { Project, TilesetDef } from './types';
 import { sha256HexBytes } from '@/util/sha256';
 import { jsonEqual } from '@/util/structuralJson';
 import { SHARED_CONTENT_ENDPOINT, type SharedContentScope, type SharedContentSnapshot } from './sharedContentSchema';
+import { readSharedContentCache, writeSharedContentCache } from './sharedContentCache';
 const bundledLibraries: Record<string, SharedContentLibrary> = {};
 let snapshot: SharedContentSnapshot = {revision:'bundled',libraries:bundledLibraries};
 let defaultAssetHashes = new Map<string,string>();
@@ -42,11 +43,28 @@ export async function loadSharedContent(options: { required?: boolean; scope?: S
   if(typeof window==='undefined') return;
   try {
     const scope=options.scope ?? 'all';
-    const r=await fetch(`${SHARED_CONTENT_ENDPOINT}?scope=${scope}`,{cache:'no-store',signal:AbortSignal.timeout(60000)});
-    if(!r.ok) { if(r.status===404 && !options.required) return; throw new Error(`HTTP ${r.status}`); }
-    const value=await r.json() as SharedContentSnapshot;
+    // 판본(ETag)을 기기 캐시와 비교한다. 같으면 호스트가 본문 없이 304 를 주고 캐시를 쓴다 — 예전 no-store 는
+    // 공용 자료가 그대로여도 부팅마다 gzip 73MB 를 다시 받았다(2026-09-27 실측). HTTP 캐시는 본문이 커서 안 남는다.
+    const cached=await readSharedContentCache(scope);
+    const r=await fetch(`${SHARED_CONTENT_ENDPOINT}?scope=${scope}`,{cache:'no-store',headers:cached?{'if-none-match':cached.etag}:{},signal:AbortSignal.timeout(60000)});
+    let value: SharedContentSnapshot;
+    if(r.status===304 && cached) value=cached.value;
+    else {
+      if(!r.ok) { if(r.status===404 && !options.required) return; throw new Error(`HTTP ${r.status}`); }
+      value=await r.json() as SharedContentSnapshot;
+      const etag=r.headers.get('etag');
+      if(etag) void writeSharedContentCache(scope, etag, value);
+    }
     // 부팅 뒤 늦게 도착한 기본 범위 응답이 이미 설치된 전체 카탈로그를 덮지 않게 한다.
     if(scope==='defaults' && snapshotScope==='all') return;
+    // 'rest' 는 기본 라이브러리를 뺄 나머지다 — 이미 설치된 같은 판본의 기본과 합쳐야 전체가 된다.
+    // 판본이 다르면(그 사이 게시됨) 합칠 수 없으므로 전체를 다시 받는다.
+    if(scope==='rest') {
+      if(snapshotScope!=='defaults' || snapshot.revision!==value.revision) { await loadSharedContent({ ...options, scope:'all' }); return; }
+      await installSharedContent({ revision:value.revision, libraries:{ ...snapshot.libraries, ...value.libraries } });
+      snapshotScope='all';
+      return;
+    }
     await installSharedContent(value);
     snapshotScope=scope;
   } catch(error) {

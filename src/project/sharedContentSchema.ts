@@ -5,7 +5,7 @@ export const SHARED_CONTENT_ENDPOINT = '/__oprn/shared-content';
 /** Preview bytes, split out of the catalog JSON. `?library=&kind=place|region&id=&v=` */
 export const SHARED_CONTENT_PREVIEW_ENDPOINT = '/__oprn/shared-content/preview';
 /** `defaults` = only projectDefaults libraries (the boot path); `all` = the whole catalog. */
-export type SharedContentScope = 'defaults' | 'all';
+export type SharedContentScope = 'defaults' | 'rest' | 'all';
 export interface SharedRegionReference {
   id: string; name: string; kind: "completed-map"; regionKind: "settlement" | "terrain";
   revision: number; width: number; height: number; tilesetId: string; preview: string;

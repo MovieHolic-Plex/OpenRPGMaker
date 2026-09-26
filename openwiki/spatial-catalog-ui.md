@@ -185,8 +185,16 @@ The same 31 shared root IDs and their 33 floor rasters are also included in `rev
 
 - 부팅(`src/main.ts`)과 새 프로젝트 생성은 `?scope=defaults` 만 기다린다. `projectDefaults: true` 라이브러리만 오고,
   이것이 정규화(`ensureSharedContent`)가 프로젝트에 넣는 `shared_*` 타일셋의 전부다.
-- 장소·지역 카탈로그 전체(`scope=all`)는 편집기가 뜬 뒤 백그라운드로 받는다. 갤러리·AI 도구는 호출 시점에
-  `sharedContentSnapshot()` 을 읽으므로 설치 뒤 열면 전체가 보인다. 늦게 온 `defaults` 응답은 설치된 전체를 덮지 않는다.
+- 장소·지역 카탈로그는 편집기가 뜬 뒤 백그라운드로 `scope=rest`(defaults 를 뺀 나머지)만 받아 이미 설치된 defaults 와 합친다
+  (2026-09-27; 예전 `scope=all` 은 defaults 20MB(gzip)를 두 번 받았다). rest 의 판본이 설치된 defaults 와 다르면
+  (그 사이 게시) 합치지 않고 `scope=all` 을 다시 받는다. 갤러리·AI 도구는 호출 시점에 `sharedContentSnapshot()` 을
+  읽으므로 설치 뒤 열면 전체가 보인다. 늦게 온 `defaults` 응답은 설치된 전체를 덮지 않는다.
+- **판본 캐시 (2026-09-27).** 호스트는 `etag: "<scope>-<카탈로그 판본>"` 을 주고 `If-None-Match` 가 같으면 본문 없는 304 를
+  돌려준다(`sharedContentResponse`). 클라이언트는 범위별 마지막 응답을 IndexedDB `oprn-shared-content` 에 둔다
+  (`src/project/sharedContentCache.ts`). 브라우저 HTTP 캐시는 쓰지 않는다 — 풀어서 100MB 가 넘는 본문을 Chromium 이
+  저장하지 않아 `no-cache`+ETag 만으로는 두 번째 부팅도 200 이었다. 실측: 부팅 전송 73.7MB → 첫 부팅 53.2MB, 다음 부팅부터 0(304 두 건).
+  Electron `app://` 프로토콜은 조건 헤더를 넘기지 않아 항상 200(프로세스 안 전달이라 전송 비용 없음).
+  회귀: `test/sharedContentLoad.test.ts`, `test/sharedContentSqlite.test.ts`.
 - 편집기 응답은 `previews[*]` 와 `regions[*].preview` 의 dataURL 을
   `/__oprn/shared-content/preview?library=&kind=place|region&id=&v=` 주소로 바꾼다. 바이트는 SQLite `json_extract` 로 그 칸만 꺼낸다.
   `v` 는 라이브러리 판본이라 불변 캐시다. 게시 스크립트가 쓰는 `readSharedContent()` 는 원본 그대로다.

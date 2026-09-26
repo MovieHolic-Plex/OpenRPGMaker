@@ -109,7 +109,8 @@ async function bootEditorWithOpenedProject(host: HTMLElement): Promise<void> {
   void tileReferences.then(() => store.applySharedReferenceRefresh());
   // 장소·지역 카탈로그 전체는 편집기가 뜬 뒤 받는다. 기본 라이브러리는 위에서 이미 설치됐으므로
   // 정규화 결과(프로젝트에 들어가는 shared_* 타일셋)는 바뀌지 않는다.
-  void loadSharedContent();
+  // 나머지(rest)만 받아 합친다 — 전체(all)를 받으면 위에서 받은 기본 20MB(gzip)가 두 번 온다(2026-09-27 실측).
+  void loadSharedContent({ scope: "rest" });
 }
 
 async function registerPwaIfEnabled(): Promise<void> {
