@@ -13,6 +13,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { renderTilePalette } from "@/editor/panels/tilePalette";
+import { layerSwitcherKey, makeLeftLayerSwitcher } from "@/editor/panels/leftLayerSwitcher";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { resetTileToolbarMenusForTests } from '@/editor/panels/tileToolbarMenus';
@@ -50,10 +51,8 @@ describe("렌더된 표준 도구막대의 맵 모드 클릭 배선", () => {
 
   function clickTool(testid: string): void {
     renderTilePalette(container);
-    if (testid === 'tool-collision') {
-      container.querySelector<HTMLElement>('[data-testid="layer-lower"]')?.click();
-      container.querySelector<HTMLElement>('[data-testid="sidebar-tools-menu"]')?.click();
-    }
+    // 레이어 줄(높이·바닥·상위·이벤트)은 머리줄(menu.ts)이 소유한다 — 같은 부품을 붙여 누른다.
+    if (testid.startsWith("layer-")) container.append(makeLeftLayerSwitcher(layerSwitcherKey(editorState.get())));
     const button = container.querySelector<HTMLElement>(`[data-testid="${testid}"]`);
     if (!button) throw new Error(`도구막대에 testid 없음: ${testid}`);
     button.click();
@@ -75,7 +74,7 @@ describe("렌더된 표준 도구막대의 맵 모드 클릭 배선", () => {
     expect(editorState.get().layer).toBe("event");
   });
 
-  it("통행 표시 버튼 클릭은 이벤트 레이어에서 바닥으로 탈출시킨다", () => {
+  it("「높이」 버튼 클릭은 이벤트 레이어에서 바닥으로 탈출시킨다", () => {
     editorState.set({
       activePaletteStamp: null,
       currentMapId: store.getCurrent().startMapId,
@@ -85,9 +84,9 @@ describe("렌더된 표준 도구막대의 맵 모드 클릭 배선", () => {
       tool: "event",
     });
 
-    clickTool("tool-collision");
+    clickTool("layer-relief");
 
-    expect(editorState.get().tool).toBe("collision");
+    expect(editorState.get().tool).toBe("relief");
     expect(editorState.get().layer).toBe("lower");
   });
 
@@ -101,9 +100,9 @@ describe("렌더된 표준 도구막대의 맵 모드 클릭 배선", () => {
       tool: "paint",
     });
 
-    clickTool("tool-collision");
+    clickTool("layer-relief");
 
-    expect(editorState.get().tool).toBe("collision");
+    expect(editorState.get().tool).toBe("relief");
     expect(editorState.get().activePaletteStamp).toBeNull();
     expect(editorState.get().selection).toBeNull();
   });

@@ -73,12 +73,8 @@ describe("도구막대 오버플로 도달성", () => {
     for (const testid of ["tool-select", "tool-paint", "tool-erase", "tool-fill", "oprn-tool-undo"]) {
       expect(scroll!.querySelector(`[data-testid="${testid}"]`), testid).toBeTruthy();
     }
-    const trigger = row.querySelector<HTMLElement>('[data-testid="sidebar-tools-menu"]');
-    const wrapper = trigger?.parentElement;
-    expect(wrapper).toBeTruthy();
-    expect(trigger).toBeTruthy();
-    expect(wrapper!.parentElement).toBe(row);
-    expect(scroll!.contains(trigger!)).toBe(false);
+    // 「도구」 메뉴는 삭제됐다 — 복사·붙여넣기는 Ctrl+C/V 와 선택 칩이 맡는다.
+    expect(row.querySelector('[data-testid="sidebar-tools-menu"]')).toBeNull();
   });
 
   it("열린 드롭다운은 잘리는 스크롤 컨테이너의 자손이 아니다", () => {
@@ -103,11 +99,6 @@ describe("도구막대 오버플로 도달성", () => {
       expect(dropdown!.querySelector(`[data-testid="${testid}"]`), testid).toBeTruthy();
     }
     expectDirectSizes();
-    host.querySelector<HTMLElement>('[data-testid="sidebar-tools-menu"]')!.click();
-    // 칠하기 모양은 사이드바 옵션줄 소유 — 도구 표면에는 집기·밀기·통행+복사·붙여넣기만 있다.
-    for (const testid of ['copy-button', 'paste-button', 'tool-eyedropper', 'tool-pan', 'tool-collision']) {
-      expect(host.querySelector(`[data-testid="sidebar-tools-surface"] [data-testid="${testid}"]`)).not.toBeNull();
-    }
   });
 
   it("도구막대 행은 더 이상 가로 스크롤 띠가 아니고, 내부 컨테이너가 스크롤을 맡는다", () => {

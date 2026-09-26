@@ -49,13 +49,13 @@ describe('sidebar R1 real renderer ownership', () => {
   });
   it('removes the mounted open surface when the renderer subscribed before its lifecycle', () => {
     setEditorUiMode('standard', null);
-    get('sidebar-tools-menu').click();
+    get('sidebar-map-switcher').click();
     setEditorUiMode('expert', null);
     expect(host.querySelector('[data-sidebar-surface]')).toBeNull();
-    expect(get('sidebar-tools-menu').getAttribute('aria-expanded')).toBe('false');
-    get('sidebar-tools-menu').click(); escape();
+    expect(get('sidebar-map-switcher').getAttribute('aria-expanded')).toBe('false');
+    get('sidebar-map-switcher').click(); escape();
     expect(host.querySelector('[data-sidebar-surface]')).toBeNull();
-    expect(document.activeElement).toBe(get('sidebar-tools-menu'));
+    expect(document.activeElement).toBe(get('sidebar-map-switcher'));
   });
   it('routes one Escape to the actual map context menu and then restores the map row', () => {
     setEditorUiMode('standard', null);

@@ -3,10 +3,11 @@
 // Project 데이터(store)와 분리된 에디터 세션 전용 UI 상태.
 // 상세 설계: docs/specs/2026-06-18-oprn-overhaul-design.md 3.1.
 
+import type { ReliefBrushMode } from "@/project/relief/edit";
 import type { MapId } from "@/project/types";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 
-export type Tool = "paint" | "fill" | "collision" | "event" | "erase" | "select" | "eyedropper" | "pan";
+export type Tool = "paint" | "fill" | "collision" | "event" | "erase" | "select" | "eyedropper" | "pan" | "relief";
 export type PaintShape = "pen" | "rect" | "round";
 export type Layer = "lower" | "upper" | "event";
 export type AutoConnectMode = boolean;
@@ -69,6 +70,10 @@ export interface EditorState {
   clusterAssistMode: ClusterAssistMode;
   activePaletteStamp: ActivePaletteStamp;
   brushSize: EditorBrushSize;
+  /** 「높이」 붓 방식 — 올리기/내리기/단 지정/평탄. map.relief 를 고친다. */
+  reliefMode: ReliefBrushMode;
+  /** 「단 지정」 붓이 맞출 단(0~14). */
+  reliefLevel: number;
   selectedEventPageId: string | null;
   selection: TileSelection | null;
   pendingEventCoordinate: PendingEventCoordinate | null;
@@ -100,6 +105,8 @@ class EditorStateStore {
     clusterAssistMode: true,
     activePaletteStamp: null,
     brushSize: 1,
+    reliefMode: "raise",
+    reliefLevel: 2,
     selectedEventId: null,
     selectedEventPageId: null,
     selection: null,
@@ -183,6 +190,8 @@ const PALETTE_REFRESH_KEYS = [
   "clusterAssistMode",
   "activePaletteStamp",
   "brushSize",
+  "reliefMode",
+  "reliefLevel",
   "selectedEventId",
   "selectedEventPageId",
   "pendingEventCoordinate",

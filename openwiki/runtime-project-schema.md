@@ -1,5 +1,16 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 높이 지형 `map.relief` — 선택 필드 (2026-09-26)
+
+`GameMap.relief?: ReliefData` — `{ width, height, levels: number[] }`(행 우선, 칸마다 0~14단). **없으면 평지**이고 옛 맵은 바이트 단위로 그대로다.
+권위 코드는 `src/project/relief/`(`types`·`edit`·`ops`·`check`·`render`).
+
+- 불러오기: `io/shape.ts` `normalizeProjectRelief` 가 `normalizeRelief` 로 맵 크기에 맞추고 0~14 로 자른다. 전부 0 이거나 모양이 틀리면 필드를 **지운다**.
+- 쓰기 규칙: 결과가 전부 0 이면 `relief` 를 지운다(붓·조수 도구 모두). 빈 `relief` 를 남기지 않는다.
+- 크기 바꾸기·밀기·자르기: `mapLayers.ts` 의 `ExtraLayerFields` 에 `relief` 가 들어가 `cloneExtraLayers`/`remapExtraLayers` 가 같은 칸 번호로 옮긴다.
+- 렌더: 편집기 `EditScene` 이 `renderRelief(effectiveHeights(h), {transparentGround:true})` 로 절벽 벽면·45° 대각선을 그려 1층과 3층 사이에 깐다.
+- **한계(아직):** 높이는 그림만 바꾼다. 윗단 위 타일·이벤트·통행·런타임 플레이어 높이는 relief 를 모른다. 런타임(`player.html`) 렌더도 아직 없다.
+
 ## 맵 칸 2층·4층·그림자 — 선택 필드 (MZ식 4층 PR ①, 2026-09-24)
 
 설계: `docs/superpowers/specs/2026-09-24-mz-four-layer-design.md`. `GameMap` 에 선택 필드 셋이 붙었다.

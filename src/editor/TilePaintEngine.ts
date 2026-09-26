@@ -4,6 +4,7 @@ import {
   eraseVisibleTilesBulk,
   toggleCollision,
   fillTile,
+  paintRelief,
 } from "@/editor/actions";
 import { comboBrushPlacement, evaluateComboBrushPlacement, isComboBrush } from "@/editor/comboBrush";
 import { editorState } from "@/editor/editorState";
@@ -60,6 +61,7 @@ export class TilePaintEngine {
    */
   private placementNoticeShown = false;
   private strokeSnapshotRecorded = false;
+  private reliefStrokeBase = 0;
 
   constructor(private readonly deps: TilePaintEngineDeps) {}
 
@@ -220,6 +222,20 @@ export class TilePaintEngine {
       case "collision":
         this.applyStrokeEdit(mid, () => toggleCollision(mid, x, y), { includeTilesets: true });
         break;
+      case "relief": {
+        // 붓 크기 N = 반지름 N-1 원. 올리기/내리기는 스트로크 첫 칸 높이 ±1 을 상한으로 삼아
+        // 드래그가 같은 언덕을 계속 쌓아 올리지 않게 한다. 평탄은 첫 칸 높이로 맞춘다.
+        const { reliefMode, reliefLevel } = editorState.get();
+        const relief = store.getCurrent().maps[mid]?.relief;
+        if (firstStrokeTile) this.reliefStrokeBase = relief ? relief.levels[y * relief.width + x] ?? 0 : 0;
+        const base = this.reliefStrokeBase;
+        const level = reliefMode === "raise" ? base + 1 : reliefMode === "lower" ? base - 1 : reliefLevel;
+        this.applyStrokeEdit(mid, () => {
+          // 1칸 폭 돌기·홈은 렌더 규칙이 깎아 안 보인다 — 붓은 최소 반지름 1(3칸 폭)로 칠한다.
+          paintRelief(mid, x, y, reliefMode, { radius: Math.max(1, brushSize - 1), level, flattenTo: base });
+        });
+        break;
+      }
       case "event":
         this.deps.setPaintState({ isPainting: false, lastPaintKey: "" });
         this.deps.handleEventClick(mid, x, y, clickCount >= 2);
@@ -351,5 +367,5 @@ function applyPaletteStamp(input: {
 }
 
 function toolCanMutateMap(tool: string): boolean {
-  return tool === "paint" || tool === "fill" || tool === "erase" || tool === "collision" || tool === "event";
+  return tool === "paint" || tool === "fill" || tool === "erase" || tool === "collision" || tool === "event" || tool === "relief";
 }
