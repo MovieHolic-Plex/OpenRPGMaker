@@ -1,7 +1,7 @@
 {
  "c2": {
   "kind": "saved",
-  "saveMs": 3794,
+  "saveMs": 3954,
   "cell0": 101,
   "revisionDelta": 1
  },
@@ -15,6 +15,15 @@
   "inPlacePrice": 777,
   "baselineEqualsHost": true,
   "currentEqualsHost": true
+ },
+ "c3b": {
+  "cells": [
+   106,
+   107
+  ],
+  "inPlacePrice": 888,
+  "baselineEqualsHost": true,
+  "receiptIdentityMatchesHost": true
  },
  "c4Stale": {
   "kind": "saved",

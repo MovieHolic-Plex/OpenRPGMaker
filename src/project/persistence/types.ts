@@ -163,8 +163,9 @@ export interface ProjectRepository {
   /** true 면 문서에 ref 만 넣는다(파일 저장이 있는 어댑터). false 면 dataUrl 을 넣는다. */
   readonly supportsAssetRefs: boolean;
   /**
-   * true 면 save·saveMapPatch 가 입력 문서를 await 전에 동기로 다 읽고, 저장 결과에 그 내용의 사적 사본
-   * (`submitted`)을 싣는다. 스토어는 이때만 복제 없는 보기를 넘긴다. 없으면 제출 전에 복제한다.
+   * true 면 save·saveMapPatch 가 입력 문서를 호스트에 보내기 전에 다 읽고(맵 패치는 잘게 나눈 비교 동안 쉰다),
+   * 저장 결과에 그 내용의 사적 사본(`submitted`)을 싣는다. 스토어는 이때만 복제 없는 보기를 넘긴다 — 스토어는
+   * 가지를 교체만 하므로 보기가 가리키는 내용은 제출 때 그대로다. 없으면 제출 전에 복제한다.
    */
   readonly returnsSubmittedCopy?: boolean;
   /** 지금 이 편집기 세션이 향하는 대상. 원격이면 설정·URL·저장된 선택에서 계산한다. */

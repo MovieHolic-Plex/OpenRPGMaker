@@ -1459,14 +1459,20 @@ class ProjectStore {
       // Capture accepted content before the hash await; never derive it from live getCurrent().
       // 요약 캐시(jsonContentDigest)는 바뀜 가지만 다시 계산한다. 예전의 전체 정렬 직렬화 + SHA-256 은
       // 저장마다 문서 전체를 다시 돌았다(2026-09-26 실측, 81MB 새 프로젝트 부하 시 수 초).
-      receipt = Object.freeze({
+      // 정체성은 처음 읽힐 때 만든다(AI 실행 증명·체크포인트만 읽는다). 기준본은 사적이고 바뀌지 않으므로
+      // 늦게 계산해도 같은 값이다 — 저장마다 요약 한 번(실측 약 0.3s 메인 스레드)을 아낀다.
+      let identity: string | undefined;
+      const fields = {
         revisionId: randomUuid(),
         projectId: target.projectId,
         mutationGeneration: generationAtSubmit,
-        contentIdentity: persistedContentIdentity(acceptedBaseline),
         ...(result.sha256 ? { sha256: result.sha256 } : {}),
         ...(result.authority?.mode === "canonical" && result.authority.revision !== undefined ? { serverRevision: result.authority.revision } : {}),
-      });
+      };
+      receipt = Object.freeze(Object.defineProperty(fields, "contentIdentity", {
+        enumerable: true,
+        get: () => (identity ??= persistedContentIdentity(acceptedBaseline)),
+      }) as ProjectPersistenceReceipt);
       this.persistenceTargets.set(receipt, { target, contentLineage: lineageAtSubmit, projectAtSubmit });
     } catch (error) {
       // Intermediate projects may save but cannot supply normalized proof. Preserve flush compatibility.

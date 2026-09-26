@@ -74,30 +74,11 @@ function sameTilesetValue(base: unknown, local: unknown): boolean {
   return jsonContentDigest(baseRest) === jsonContentDigest(localRest);
 }
 
-function diffDict(
-  base: Record<string, unknown>,
-  local: Record<string, unknown>,
-  same: (base: unknown, local: unknown) => boolean = sameValue,
-): DictPatch {
-  const set: Record<string, unknown> = {};
-  const del: string[] = [];
-  for (const key of new Set([...Object.keys(base), ...Object.keys(local)])) {
-    const hasLocal = Object.prototype.hasOwnProperty.call(local, key);
-    if (!hasLocal) {
-      del.push(key);
-      continue;
-    }
-    if (Object.prototype.hasOwnProperty.call(base, key) && same(base[key], local[key])) continue;
-    set[key] = local[key];
-  }
-  return {
-    ...(Object.keys(set).length > 0 ? { set } : {}),
-    ...(del.length > 0 ? { del } : {}),
-  };
-}
-
-/** 두 JSON 트리를 병합 단위로 비교한다. 키 순서만 다른 값은 빠진다. */
-export function diffProjectDocuments(base: unknown, local: unknown): ProjectDocumentPatch {
+/**
+ * 비교 본체. 항목 하나를 볼 때마다 한 번씩 멈출 자리(yield)를 내준다 — 동기 판은 그냥 끝까지 돌고,
+ * 비동기 판은 그 자리에서 메인 스레드를 잠깐 돌려준다. 같은 코드라 두 판의 결과가 언제나 같다.
+ */
+function* diffProjectDocumentsSteps(base: unknown, local: unknown): Generator<void, ProjectDocumentPatch> {
   const baseRecord = isRecord(base) ? base : {};
   const localRecord = isRecord(local) ? local : {};
   const set: Record<string, unknown> = {};
@@ -112,13 +93,31 @@ export function diffProjectDocuments(base: unknown, local: unknown): ProjectDocu
     const localValue = localRecord[key];
     const hasBase = Object.prototype.hasOwnProperty.call(baseRecord, key);
     const baseValue = hasBase ? baseRecord[key] : undefined;
-    const sameForKey = key === "tilesets" ? sameTilesetValue : sameValue;
-    if (hasBase && sameForKey(baseValue, localValue)) continue;
+    const same = key === "tilesets" ? sameTilesetValue : sameValue;
     if ((NESTED_KEYS as readonly string[]).includes(key) && isRecord(baseValue) && isRecord(localValue)) {
-      const child = diffDict(baseValue, localValue, key === "tilesets" ? sameTilesetValue : sameValue);
-      if (child.set || child.del) nested[key as NestedKey] = child;
+      // 사전 가지는 항목별로 본다 — 통째 비교가 같으면 항목별 비교도 모두 같으므로 결과는 그대로다.
+      if (baseValue === localValue) continue;
+      const childSet: Record<string, unknown> = {};
+      const childDel: string[] = [];
+      for (const childKey of new Set([...Object.keys(baseValue), ...Object.keys(localValue)])) {
+        if (!Object.prototype.hasOwnProperty.call(localValue, childKey)) {
+          childDel.push(childKey);
+          continue;
+        }
+        yield;
+        if (Object.prototype.hasOwnProperty.call(baseValue, childKey) && same(baseValue[childKey], localValue[childKey])) continue;
+        childSet[childKey] = localValue[childKey];
+      }
+      if (Object.keys(childSet).length > 0 || childDel.length > 0) {
+        nested[key as NestedKey] = {
+          ...(Object.keys(childSet).length > 0 ? { set: childSet } : {}),
+          ...(childDel.length > 0 ? { del: childDel } : {}),
+        };
+      }
       continue;
     }
+    yield;
+    if (hasBase && same(baseValue, localValue)) continue;
     set[key] = localValue;
   }
   return {
@@ -126,6 +125,40 @@ export function diffProjectDocuments(base: unknown, local: unknown): ProjectDocu
     ...(del.length > 0 ? { del } : {}),
     ...nested,
   };
+}
+
+/** 두 JSON 트리를 병합 단위로 비교한다. 키 순서만 다른 값은 빠진다. */
+export function diffProjectDocuments(base: unknown, local: unknown): ProjectDocumentPatch {
+  const steps = diffProjectDocumentsSteps(base, local);
+  for (;;) {
+    const step = steps.next();
+    if (step.done) return step.value;
+  }
+}
+
+/**
+ * `diffProjectDocuments` 와 같은 결과를 내되, `sliceMs` 를 넘게 연달아 돌지 않고 `yieldToMain` 에서 쉰다.
+ *
+ * 왜 (2026-09-26 실측, 81MB 새 프로젝트): 저장 비교가 타일셋 수십 칸 · DB 를 제자리 수정까지 잡으려고 값으로
+ * 대조해 한 번에 약 1.1s 메인 스레드를 막았다(칠하기 직후 화면 정지). 대조 자체는 그대로 두고 잘게 나눈다.
+ * 쉬는 동안 스토어는 가지를 **교체**만 하므로(update·updateMap*) 입력이 가리키는 객체는 제출 때 내용 그대로다.
+ */
+export async function diffProjectDocumentsSliced(
+  base: unknown,
+  local: unknown,
+  yieldToMain: () => Promise<void>,
+  sliceMs = 12,
+): Promise<ProjectDocumentPatch> {
+  const steps = diffProjectDocumentsSteps(base, local);
+  let sliceStart = performance.now();
+  for (;;) {
+    const step = steps.next();
+    if (step.done) return step.value;
+    if (performance.now() - sliceStart >= sliceMs) {
+      await yieldToMain();
+      sliceStart = performance.now();
+    }
+  }
 }
 
 /**

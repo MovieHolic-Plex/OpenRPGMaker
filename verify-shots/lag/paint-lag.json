@@ -1,21 +1,21 @@
 {
- "canvasAt": 24477,
- "seedSavedAt": 74770,
+ "canvasAt": 21924,
+ "seedSavedAt": 57979,
  "strokes": [
   {
    "stroke": 0,
-   "releaseToSavedMs": 5691,
-   "worstMainThreadStallMs": 1375
+   "releaseToSavedMs": 8111,
+   "worstMainThreadStallMs": 289
   },
   {
    "stroke": 1,
-   "releaseToSavedMs": 6595,
-   "worstMainThreadStallMs": 985
+   "releaseToSavedMs": 6956,
+   "worstMainThreadStallMs": 314
   },
   {
    "stroke": 2,
-   "releaseToSavedMs": 6748,
-   "worstMainThreadStallMs": 897
+   "releaseToSavedMs": 7143,
+   "worstMainThreadStallMs": 356
   }
  ]
 }
