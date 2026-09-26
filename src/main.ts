@@ -100,9 +100,12 @@ void bootEditorWithOpenedProject(app)
 async function bootEditorWithOpenedProject(host: HTMLElement): Promise<void> {
   await adoptElectronOpenProject();
   await initializeTeamAccess();
-  await Promise.all([loadSharedTileReferences(), loadSharedContent()]);
+  await Promise.all([loadSharedTileReferences(), loadSharedContent({ scope: "defaults" })]);
   await bootApp(host);
   startTeamSession();
+  // 장소·지역 카탈로그 전체는 편집기가 뜬 뒤 받는다. 기본 라이브러리는 위에서 이미 설치됐으므로
+  // 정규화 결과(프로젝트에 들어가는 shared_* 타일셋)는 바뀌지 않는다.
+  void loadSharedContent();
 }
 
 async function registerPwaIfEnabled(): Promise<void> {

@@ -181,6 +181,18 @@ The same 31 shared root IDs and their 33 floor rasters are also included in `rev
 
 검수된 Tibo 실내 31종은 기본 카탈로그에 포함한다. 추가 공용 장소는 `loadSharedContent()`가 호스트의 `/__oprn/shared-content`에서 프로젝트 ID 없이 읽어 `installSharedReviewedPlaces()`에 설치한다. 웹 호스트와 Vite가 같은 SQLite 읽기 경로를 제공하며, 갤러리는 정적 상수 대신 `reviewedPlaceIndex()`를 사용한다. 썸네일도 호스트 공용 미리보기를 우선 사용한다. 프로젝트 소유 복사본은 변경하지 않는다.
 
+### 부팅 범위와 미리보기 주소 (2026-09-26)
+
+- 부팅(`src/main.ts`)과 새 프로젝트 생성은 `?scope=defaults` 만 기다린다. `projectDefaults: true` 라이브러리만 오고,
+  이것이 정규화(`ensureSharedContent`)가 프로젝트에 넣는 `shared_*` 타일셋의 전부다.
+- 장소·지역 카탈로그 전체(`scope=all`)는 편집기가 뜬 뒤 백그라운드로 받는다. 갤러리·AI 도구는 호출 시점에
+  `sharedContentSnapshot()` 을 읽으므로 설치 뒤 열면 전체가 보인다. 늦게 온 `defaults` 응답은 설치된 전체를 덮지 않는다.
+- 편집기 응답은 `previews[*]` 와 `regions[*].preview` 의 dataURL 을
+  `/__oprn/shared-content/preview?library=&kind=place|region&id=&v=` 주소로 바꾼다. 바이트는 SQLite `json_extract` 로 그 칸만 꺼낸다.
+  `v` 는 라이브러리 판본이라 불변 캐시다. 게시 스크립트가 쓰는 `readSharedContent()` 는 원본 그대로다.
+- 실측(2026-09-26, 26개 라이브러리): 전체 응답 395MB 중 미리보기 dataURL 185MB. 부팅이 이걸 기다려 로더 해제까지 약 40초였다.
+  vite/Electron `app://`/팀 호스트 세 경로는 모두 `scripts/lib/sharedContentSqlite.ts` 의 같은 핸들러를 쓴다.
+
 등록 완료는 DB 저장만으로 판정하지 않는다. 해당 변경을 main에 병합하고, main의 커밋으로 빌드한 배포 파일에서 공용 로더와 장소 31종을 확인한 뒤 실제 hostProject URL의 자료집 → 맵 → 장소에서 재확인한다. 미커밋 파일로 빌드한 결과는 다음 배포에서 사라질 수 있다.
 
 ## 호스트 전용 장소의 목록 썸네일 (2026-09-24)

@@ -17,7 +17,7 @@ export async function createProjectFolderWithSeed(title: string, seed: Project):
   // before the first write; a failed host read must not create an incomplete folder.
   // Packaged app:// currently has no shared-content endpoint, unlike HTTP hosts.
   const required = window.location.protocol === "http:" || window.location.protocol === "https:";
-  await loadSharedContent({ required });
+  await loadSharedContent({ required, scope: "defaults" });
   ensureSharedContent(seed);
   const created = await bridge.createProject({ title, seed: serialize(seed) });
   return created !== null;

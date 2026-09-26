@@ -1,5 +1,5 @@
-import { sharedContentResponse } from '../../scripts/lib/sharedContentSqlite';
-import { SHARED_CONTENT_ENDPOINT } from '../../src/project/sharedContentSchema';
+import { SHARED_CONTENT_PREVIEW_CACHE, sharedContentPreviewResponse, sharedContentResponse } from '../../scripts/lib/sharedContentSqlite';
+import { SHARED_CONTENT_ENDPOINT, SHARED_CONTENT_PREVIEW_ENDPOINT } from '../../src/project/sharedContentSchema';
 import { existsSync, readFileSync } from "node:fs";
 import { extname, normalize, resolve, sep } from "node:path";
 import { protocol } from "electron";
@@ -58,7 +58,11 @@ export function registerAppProtocol(rendererDir: string, activityLogBaseDir: () 
       const body = request.method === "GET" || request.method === "HEAD" ? undefined : await request.arrayBuffer();
       return fetch(new URL(`${url.pathname}${url.search}`, origin), { method: request.method, headers, body });
     }
-    if (url.pathname === SHARED_CONTENT_ENDPOINT) { const r = sharedContentResponse(request.method); return Response.json(r.body, {status:r.status,headers:{'cache-control':'no-store'}}); }
+    if (url.pathname === SHARED_CONTENT_ENDPOINT) { const r = sharedContentResponse(request.method, url); return Response.json(r.body, {status:r.status,headers:{'cache-control':'no-store'}}); }
+    if (url.pathname === SHARED_CONTENT_PREVIEW_ENDPOINT) {
+      const r = sharedContentPreviewResponse(request.method, url);
+      return r.bytes ? new Response(new Uint8Array(r.bytes), { headers: { 'content-type': r.mime!, 'cache-control': SHARED_CONTENT_PREVIEW_CACHE } }) : new Response(null, { status: r.status });
+    }
     if (url.pathname === SHARED_CHARACTER_GRAPHICS_ENDPOINT) {
       if (request.method === "POST" && (request.headers.get("x-oprn-shared-catalog") !== "1" || Number(request.headers.get("content-length") ?? 0) > 2 * 1024 * 1024)) return new Response(null, { status: 403 });
       try {
