@@ -1,0 +1,20 @@
+{
+  "mode": "provider",
+  "base": "http://127.0.0.1:17832",
+  "measuredAt": "2026-09-26T02:37:56.221Z",
+  "commit": "8f4c3d6da",
+  "stream": false,
+  "rows": [
+    {
+      "model": "gemini-3.8-flash",
+      "effort": "high",
+      "targetTokens": 1000,
+      "rep": 1,
+      "ms": 18522,
+      "status": 200,
+      "usage": null,
+      "error": null,
+      "firstTokenMs": null
+    }
+  ]
+}
