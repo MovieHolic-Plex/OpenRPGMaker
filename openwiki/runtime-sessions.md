@@ -532,7 +532,7 @@ buyOnly/sellOnly; real item comparison and purchase/sale handlers remain authori
 - **타기·내리기** (`src/player/playSceneVehicles.ts`). 걷는 중 확인 키는 정면(없으면 발밑)의 세운 탈것이 조사보다 먼저다.
   타면 주인공이 그 칸으로 옮겨 가고 `resolvePlayerSpriteResource` 가 `tex_easyrpg_charset_vehicles` 의 칸을 돌려준다;
   `syncFollowerSprites` 는 탑승 중 동료를 그리지 않는다. 탄 채로 확인 키는 내리기뿐이다: 배는 정면의 걸을 수 있고 막는
-  이벤트가 없는 칸으로 내리고 배는 그 칸에 남는다; 비행선은 발밑 지형이 `airshipLand` 이고 통행 가능한 칸이면 그 자리에 내려앉는다.
+  이벤트가 없는 칸으로 내리고 배는 그 칸에 남는다; 비행선은 통행 가능한 칸이면 그 자리에 내려앉는다 — 지형 기록이 있는 칸(태그 1..N)은 그 `airshipLand` 를 따르고, 태그 0 보통 땅은 기록이 없어 허용이다. 기본 지형 기록은 **순서 = 타일셋 태그 − 1** 로 [물(배 허용·착륙 불가), 모래, 눈, 돌] 이다(2026-09-27 이전 기본값은 [초원, 숲, "사막"=terrain_water] 이라 기본 물 위로 배가 못 다녔다; 저장된 프로젝트는 자기 기록을 그대로 쓴다).
   내리면 동료 궤적이 `placePlayerOnCurrentMap` 으로 새로 깔린다. 명령 `Get On/Off Vehicle` 은 인터프리터 스텝 `{kind:"vehicle", boarded}`
   로 같은 함수를 부른다(전경·병렬 양쪽). 조건이 안 맞으면 아무 일도 없다.
 - **통행.** 탑승 중 `tryStartVehicleStep` 이 일반 걸음(턱·밀기·반복 맵 접기 포함)을 대신한다. 배는 지형 레코드 `vehiclePassage.boat/.ship`

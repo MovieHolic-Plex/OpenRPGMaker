@@ -5,7 +5,7 @@
 //   - 내리면 그 칸을 session.vehicle.positions[id] 에 적는다. 적힌 값이 없으면 저작 위치를 쓴다.
 // 통행:
 //   - 소형선/대형선은 지형 레코드의 vehiclePassage.boat / .ship 이 참인 칸만 간다(보통 물).
-//   - 비행선은 충돌을 무시하고, 내릴 때만 발밑 지형의 vehiclePassage.airshipLand 를 본다.
+//   - 비행선은 충돌을 무시하고, 내릴 때만 발밑 지형의 vehiclePassage.airshipLand 를 본다(지형 기록 없는 보통 땅은 착륙 가능).
 // 둘 다 없는 프로젝트(system.vehicles 생략, session.vehicle 없음)는 기존 동작과 같다.
 import { inBounds, isPassable } from "@/project/collision";
 import { terrainRecordAt } from "@/project/terrainAt";
@@ -142,10 +142,15 @@ export function vehicleCanEnter(project: Project, map: GameMap, id: VehicleId, x
   return id === "boat" ? passage?.boat === true : passage?.ship === true;
 }
 
-/** 비행선이 (x,y) 에 내려앉을 수 있나 — 지형이 착륙을 허용하고 걸어 설 수 있는 칸이어야 한다. */
+/**
+ * 비행선이 (x,y) 에 내려앉을 수 있나 — 걸어 설 수 있는 칸이어야 하고, 지형 기록이 있으면 그 airshipLand 를 따른다.
+ * 태그 0(보통 땅)은 기록이 없다(terrainRecordAt) — 그런 땅은 걸을 수 있는 한 착륙할 수 있다.
+ * 막고 싶은 칸은 지형 기록을 붙이고 airshipLand 를 끈다.
+ */
 export function airshipCanLand(project: Project, map: GameMap, x: number, y: number): boolean {
   if (!inBounds(map, x, y) || !isPassable(project, map, x, y)) return false;
-  return terrainRecordAt(project, { mapId: map.id, x, y })?.record.vehiclePassage.airshipLand === true;
+  const terrain = terrainRecordAt(project, { mapId: map.id, x, y });
+  return terrain ? terrain.record.vehiclePassage.airshipLand === true : true;
 }
 
 /** 걸음 속도 배율. 대형선·비행선은 두 배로 빠르다(소형선은 걷기와 같다). */

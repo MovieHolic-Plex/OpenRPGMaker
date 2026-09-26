@@ -12,7 +12,7 @@ const placeVehicle: ToolDefinition = {
   description:
     "탈것(boat 소형선 / ship 대형선 / airship 비행선)을 맵 칸에 세운다. {vehicle, mapId, x, y, characterIndex?} — 한 종류당 하나이고 다시 부르면 옮긴다."
     + " 플레이어는 정면의 탈것에 확인 키로 타고, 탄 채로 확인 키를 누르면 내린다. 소형선·대형선은 지형(DB 지형 효과)의 vehiclePassage.boat/ship 이 참인 칸(보통 물)만 가고"
-    + " 걸을 수 있는 정면 칸으로 내린다. 비행선은 벽·물을 넘어 날고 vehiclePassage.airshipLand 인 칸에만 내려앉는다."
+    + " 걸을 수 있는 정면 칸으로 내린다. 비행선은 벽·물을 넘어 날고 걸을 수 있는 칸에 내려앉는다(지형 기록이 있으면 그 vehiclePassage.airshipLand 를 따른다)."
     + " 물 타일에 지형 태그가 없으면 set_tile_rules 의 terrainTag 로 그 지형 레코드 번호(1부터)를 준다. characterIndex 는 Vehicles 그림 칸(기본 boat 0, ship 1, airship 2).",
   mode: "write",
   parameters: {

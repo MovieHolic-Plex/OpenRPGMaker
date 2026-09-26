@@ -1,0 +1,487 @@
+{
+  "scenarioId": "ct-vehicle",
+  "projectPath": ".omo/runtime-qa/ct-vehicle-pS2cr9/project.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "parked-vehicles",
+      "note": "New game: the guardian follows the hero; the boat and airship are parked sprites on the field",
+      "shot": "01-parked-vehicles.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 10,
+        "y": 8,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "title-screen",
+          "state": "absent"
+        },
+        {
+          "kind": "waitForRuntime"
+        },
+        {
+          "kind": "seed",
+          "seed": 1
+        },
+        {
+          "kind": "waitForFollowers",
+          "count": 1,
+          "ids": [
+            "actor:actor_guardian"
+          ]
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "id": "walker-blocked-by-lake",
+      "note": "On foot, the lake edge at (7,4) blocks the hero standing at (8,4)",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 8,
+        "y": 4,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "teleport",
+          "mapId": "map_blank_start",
+          "x": 8,
+          "y": 4
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 8,
+          "y": 4
+        },
+        {
+          "kind": "hold",
+          "dir": "left",
+          "ms": 600
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "board-boat",
+      "note": "Facing the parked boat and pressing action boards it: vehicle texture, followers hidden",
+      "shot": "03-board-boat.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 7,
+        "y": 4,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "vehicle": {
+          "boardedId": "boat"
+        }
+      },
+      "actions": [
+        {
+          "kind": "face",
+          "dir": "left"
+        },
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 7,
+          "y": 4
+        },
+        {
+          "kind": "waitForFollowers",
+          "count": 0
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "boat-crosses-lake",
+      "note": "Holding left sails the boat across the water tiles to the west shore (2,4)",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 4,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "vehicle": {
+          "boardedId": "boat"
+        }
+      },
+      "actions": [
+        {
+          "kind": "dir",
+          "dir": "left"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 2,
+          "y": 4
+        },
+        {
+          "kind": "dir",
+          "dir": null
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "id": "boat-blocked-by-land",
+      "note": "The boat cannot leave the water: holding left at (2,4) stays put",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 2,
+        "y": 4,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "vehicle": {
+          "boardedId": "boat"
+        }
+      },
+      "actions": [
+        {
+          "kind": "hold",
+          "dir": "left",
+          "ms": 600
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "id": "get-off-boat",
+      "note": "Action gets off onto the walkable shore (1,4); the boat stays parked at (2,4) and the follower returns",
+      "shot": "06-get-off-boat.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 1,
+        "y": 4,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "vehicle": {
+          "positions": {
+            "boat": {
+              "mapId": "map_blank_start",
+              "x": 2,
+              "y": 4,
+              "direction": "left"
+            }
+          }
+        }
+      },
+      "actions": [
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 1,
+          "y": 4
+        },
+        {
+          "kind": "waitForFollowers",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "id": "water-blocks-walker-again",
+      "note": "After getting off, a water tile the boat crossed blocks the walker again",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 4,
+        "y": 7,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "vehicle": {
+          "positions": {
+            "boat": {
+              "mapId": "map_blank_start",
+              "x": 2,
+              "y": 4,
+              "direction": "left"
+            }
+          }
+        }
+      },
+      "actions": [
+        {
+          "kind": "teleport",
+          "mapId": "map_blank_start",
+          "x": 4,
+          "y": 7
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 4,
+          "y": 7
+        },
+        {
+          "kind": "hold",
+          "dir": "up",
+          "ms": 600
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "id": "board-airship",
+      "note": "Facing the airship at (11,10) and pressing action boards it",
+      "shot": "08-board-airship.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 11,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "vehicle": {
+          "positions": {
+            "boat": {
+              "mapId": "map_blank_start",
+              "x": 2,
+              "y": 4,
+              "direction": "left"
+            }
+          },
+          "boardedId": "airship"
+        }
+      },
+      "actions": [
+        {
+          "kind": "teleport",
+          "mapId": "map_blank_start",
+          "x": 12,
+          "y": 10
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 12,
+          "y": 10
+        },
+        {
+          "kind": "face",
+          "dir": "left"
+        },
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 11,
+          "y": 10
+        },
+        {
+          "kind": "waitForFollowers",
+          "count": 0
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "id": "airship-refuses-landing",
+      "note": "(11,10) stone terrain has airshipLand off: action does not land",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 11,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "vehicle": {
+          "positions": {
+            "boat": {
+              "mapId": "map_blank_start",
+              "x": 2,
+              "y": 4,
+              "direction": "left"
+            }
+          },
+          "boardedId": "airship"
+        }
+      },
+      "actions": [
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "hold",
+          "ms": 400
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "id": "airship-flies-over-wall",
+      "note": "The airship crosses the impassable wall column x=13 one tap at a time and stops on the pad (16,10)",
+      "shot": "10-airship-flies-over-wall.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 16,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "vehicle": {
+          "positions": {
+            "boat": {
+              "mapId": "map_blank_start",
+              "x": 2,
+              "y": 4,
+              "direction": "left"
+            }
+          },
+          "boardedId": "airship"
+        }
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 12,
+          "y": 10
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 13,
+          "y": 10
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 14,
+          "y": 10
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 15,
+          "y": 10
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 16,
+          "y": 10
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "id": "airship-lands",
+      "note": "(16,10) plain grass (no terrain record) allows landing: action lands, the airship stays parked and the follower returns",
+      "shot": "11-airship-lands.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 16,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "vehicle": {
+          "positions": {
+            "boat": {
+              "mapId": "map_blank_start",
+              "x": 2,
+              "y": 4,
+              "direction": "left"
+            },
+            "airship": {
+              "mapId": "map_blank_start",
+              "x": 16,
+              "y": 10,
+              "direction": "right"
+            }
+          }
+        }
+      },
+      "actions": [
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "waitForFollowers",
+          "count": 1
+        }
+      ]
+    }
+  ]
+}

@@ -67,7 +67,7 @@ export default {
       { kind: "waitForPosition", mapId: START, x: 11, y: 10 },
       { kind: "waitForFollowers", count: 0 },
     ], expect: { mapId: START, x: 11, y: 10, vehicleBoarded: "airship", playerTextureKey: VEHICLES, followerSpriteCount: 0 }, shot: true },
-    { id: "airship-refuses-landing", note: "(11,10) grass has no airshipLand terrain: action does not land", ops: [
+    { id: "airship-refuses-landing", note: "(11,10) stone terrain has airshipLand off: action does not land", ops: [
       { kind: "action" },
       // 거절은 기다릴 사건이 없다 — 막힘 검증과 같이 이름 붙은 hold 로 몇 프레임을 흘린다.
       { kind: "hold", ms: 400 },
@@ -79,7 +79,7 @@ export default {
       ...tap("ArrowRight", 15, 10),
       ...tap("ArrowRight", 16, 10),
     ], expect: { mapId: START, x: 16, y: 10, vehicleBoarded: "airship", playerTextureKey: VEHICLES }, shot: true },
-    { id: "airship-lands", note: "(16,10) terrain allows airshipLand: action lands, the airship stays parked and the follower returns", ops: [
+    { id: "airship-lands", note: "(16,10) plain grass (no terrain record) allows landing: action lands, the airship stays parked and the follower returns", ops: [
       { kind: "action" },
       { kind: "waitForFollowers", count: 1 },
     ], expect: { mapId: START, x: 16, y: 10, vehicleBoarded: null, followerSpriteCount: 1, parkedVehicleSprites: ["boat", "airship"] }, shot: true },
