@@ -55,16 +55,17 @@ call("C01", "set_project_settings", { title: "시간의 문", battle: { flow: "g
 call("C04", "upsert_skill", { skill: { id: "skill_cyclone", name: "회전베기", scope: "allEnemies", power: 24, description: "주변 적 전부를 벤다", mpCost: { flat: 2, percentMax: 0 }, elementId: "sword" } });
 call("C04", "upsert_skill", { skill: { id: "skill_fire_ring", name: "파이어", scope: "allEnemies", power: 20, description: "불꽃이 적 전부를 덮는다", mpCost: { flat: 3, percentMax: 0 }, elementId: "fire" } });
 call("C04", "upsert_skill", { skill: { id: "skill_aura", name: "오라", scope: "ally", power: 30, description: "아군 하나 회복", effect: { kind: "healing", statistic: "mind", affects: "hp" }, mpCost: { flat: 1, percentMax: 0 } } });
-call("C02", "upsert_actor", { actor: { id: "actor_hero", name: "크로", initialLevel: 5, learnedSkills: [{ level: 1, skillId: "skill_attack" }, { level: 3, skillId: "skill_cyclone" }] } });
+call("C02", "upsert_actor", { actor: { id: "actor_hero", name: "크로", initialLevel: 5, learnedSkills: [{ level: 1, skillId: "skill_attack" }, { level: 3, skillId: "skill_cyclone", tp: 5 }] } });
 call("C02", "upsert_actor", { actor: { id: "actor_mage", name: "루카", initialLevel: 5, learnedSkills: [{ level: 1, skillId: "skill_fire_ring" }] } });
 call("C02", "upsert_actor", { actor: { id: "actor_cleric", name: "마루", initialLevel: 5, learnedSkills: [{ level: 1, skillId: "skill_aura" }] } });
 call("C02", "set_party", { scope: "start", actorIds: ["actor_hero", "actor_mage", "actor_cleric"] });
 
 // ── C05 연계기(듀얼 테크): 두 캐릭터가 함께 쓰는 기술 ──
-call("C05", "upsert_skill", { skill: { id: "skill_x_strike", name: "X베기", scope: "enemy", power: 60, description: "두 사람이 교차해 벤다", requiredActorIds: ["actor_hero", "actor_mage"] } });
+call("C05", "upsert_skill", { skill: { id: "skill_x_strike", name: "X베기", scope: "enemy", power: 60, description: "두 사람이 교차해 벤다", comboActorIds: ["actor_hero", "actor_mage"] } });
+call("C23", "upsert_skill", { skill: { id: "skill_ct_circle", name: "회오리", scope: "enemy", power: 30, description: "주변 적을 휘감는다", area: { shape: "circle", radius: 60 } } });
 
 // ── C06 속성 약점 ──
-call("C06", "upsert_enemy", { enemy: { id: "enemy_ice_imp", name: "얼음 임프", monsterResourceId: "generated-enemy-bat-01", stats: { maxHp: 80, maxMp: 10, attack: 14, defense: 8, mind: 8, agility: 12 }, elementRates: { fire: "A", ice: "E" }, rewards: { exp: 20, gold: 30 } } });
+call("C06", "upsert_enemy", { enemy: { id: "enemy_ice_imp", name: "얼음 임프", monsterResourceId: "generated-enemy-bat-01", stats: { maxHp: 80, maxMp: 10, attack: 14, defense: 8, mind: 8, agility: 12 }, elementRates: { fire: "A", ice: "E" }, rewards: { exp: 20, gold: 30, tp: 5 }, reactions: [{ trigger: "physical", skillId: "skill_attack", chance: 100 }] } });
 call("C06", "upsert_troop", { troop: { id: "troop_imps", name: "임프 무리", enemyIds: ["enemy_ice_imp", "enemy_ice_imp"] } });
 
 // ── C07 보스 페이즈 + 시뮬레이션 ──
@@ -144,7 +145,7 @@ call("C20", "set_title_screen", { title: "시간의 문" });
 call("C20", "improve_title_screen", { stage: 3, openingPreset: "moonlitCastle", particles: "fireflies" });
 
 // ── C21 파티 동료가 따라 걷기 ──
-call("C21", "configure_companion_rules", { gap: 1, maxCompanions: 3, formation: "line" });
+call("C21", "configure_companion_rules", { gap: 1, maxCompanions: 3, formation: "line", fromParty: true });
 {
   const joinAt = passableNear(ctx.project, town, 5, 5);
   call("C21", "add_companion", { who: { actorId: "actor_mage" }, target: { mapId: town, x: joinAt.x, y: joinAt.y }, trigger: "autorun", name: "루카 합류", hidden: true });
@@ -153,7 +154,14 @@ call("C21", "configure_companion_rules", { gap: 1, maxCompanions: 3, formation: 
 }
 
 // ── C22 NG+(강하게 다시 하기) ──
-call("C22", "set_project_settings", { newGamePlus: { enabled: true, carryLevels: true } });
+call("C22", "set_project_settings", { newGamePlus: { enabled: true, carry: ["levels", "skills", "equipment"] } });
+call("C26", "set_project_settings", { battle: { atbMode: "active", atbSpeed: 4, backdrop: "field" } });
+call("C27", "upsert_state", { state: { id: "state_ct_stop", name: "스톱", runtimeEffects: { freezesGauge: true } } });
+call("C27", "upsert_state", { state: { id: "state_ct_protect", name: "프로텍트", runtimeEffects: { physicalDefenseMultiplier: 0.5 } } });
+call("C27", "upsert_state", { state: { id: "state_ct_berserk", name: "버서크", runtimeEffects: { forcedAction: "attackRandom" } } });
+call("C28", "upsert_equipment", { equipment: { id: "equip_ct_greendream", name: "그린드림", slot: "accessory", effectFlags: { autoRevive: 50 } } });
+call("C29", "upsert_troop_battle_page", { troopId: "troop_boss", page: { id: "boss_step_back", name: "뒤로 물러난다", span: "battle", conditions: [{ kind: "turn", start: 2, interval: 0 }], commands: [{ kind: "m2Command", commandId: "m2-218-move-enemy", fields: { target: "enemy-1", x: 60, y: 90, durationMs: 400 } }] } });
+call("C30", "set_project_settings", { chapter: { variableId: ctx.project.database.variables?.[0]?.id ?? "var_0001", labels: { "0": "서기 1000년", "1": "서기 2300년" } } });
 
 // ── 시작 위치: 필드 적 바로 남쪽 → 런타임에서 위를 보고 조사하면 전투 ──
 const startPair = standPair(ctx.project, town, 20, 22);

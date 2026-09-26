@@ -749,7 +749,8 @@
      },
      {
       "level": 3,
-      "skillId": "skill_cyclone"
+      "skillId": "skill_cyclone",
+      "tp": 5
      }
     ],
     "stateRates": {
@@ -2131,11 +2132,64 @@
   {
    "criterion": "C05",
    "tool": "upsert_skill",
-   "ok": false,
-   "summary": "'upsert_skill' 실행 실패: skill.requiredActorIds는 허용되지 않는 필드입니다. 허용 필드: damageFormula, criticalRate, criticalMultiplier, cooldownTurns, hitSequence, actionSkill, id, name, scope, power, animationId, description, type, mpCost, …",
-   "issues": [
-    "unknown-db-field: skill.requiredActorIds는 허용되지 않는 필드입니다. 허용 필드: damageFormula, criticalRate, criticalMultiplier, cooldownTurns, hitSequence, actionSkill, id, name, scope, power, animationId, description, type, mpCost, successRate, variance, hitRate, effect, elementId, stateEffects, maxPp, gen1Critic"
-   ]
+   "ok": true,
+   "summary": "스킬 'X베기' 추가",
+   "data": {
+    "id": "skill_x_strike",
+    "name": "X베기",
+    "scope": "enemy",
+    "power": 60,
+    "description": "두 사람이 교차해 벤다",
+    "type": "normal",
+    "mpCost": {
+     "flat": 0,
+     "percentMax": 0
+    },
+    "successRate": 100,
+    "variance": 0,
+    "hitRate": 100,
+    "effect": {
+     "kind": "damage",
+     "statistic": "attack",
+     "affects": "hp"
+    },
+    "stateEffects": [],
+    "comboActorIds": [
+     "actor_hero",
+     "actor_mage"
+    ]
+   }
+  },
+  {
+   "criterion": "C23",
+   "tool": "upsert_skill",
+   "ok": true,
+   "summary": "스킬 '회오리' 추가",
+   "data": {
+    "id": "skill_ct_circle",
+    "name": "회오리",
+    "scope": "enemy",
+    "power": 30,
+    "description": "주변 적을 휘감는다",
+    "type": "normal",
+    "mpCost": {
+     "flat": 0,
+     "percentMax": 0
+    },
+    "successRate": 100,
+    "variance": 0,
+    "hitRate": 100,
+    "effect": {
+     "kind": "damage",
+     "statistic": "attack",
+     "affects": "hp"
+    },
+    "stateEffects": [],
+    "area": {
+     "shape": "circle",
+     "radius": 60
+    }
+   }
   },
   {
    "criterion": "C06",
@@ -2168,7 +2222,8 @@
     "rewards": {
      "exp": 20,
      "gold": 30,
-     "dropRatePercent": 0
+     "dropRatePercent": 0,
+     "tp": 5
     },
     "actions": [],
     "stateRates": {
@@ -2187,7 +2242,14 @@
      "wind": "C",
      "holy": "C",
      "dark": "C"
-    }
+    },
+    "reactions": [
+     {
+      "trigger": "physical",
+      "skillId": "skill_attack",
+      "chance": 100
+     }
+    ]
    }
   },
   {
@@ -2338,7 +2400,7 @@
     "winRate": 1,
     "avgTurns": 22.3,
     "avgPotionsUsed": 0,
-    "avgHpRemaining": 999.55,
+    "avgHpRemaining": 992.2,
     "samples": 20,
     "battleFlow": "gauge",
     "participatingActorIds": [
@@ -2399,7 +2461,17 @@
      "items": [],
      "levelUps": [],
      "monsterLevelUps": [],
-     "enemyLevel": 1
+     "enemyLevel": 1,
+     "tp": 5,
+     "techLearned": [
+      {
+       "actorId": "actor_hero",
+       "actorName": "크로",
+       "skillIds": [
+        "skill_cyclone"
+       ]
+      }
+     ]
     }
    }
   },
@@ -2451,13 +2523,12 @@
      },
      "warnings": [
       "형태 마을 계획: 광장촌 보충 시도 5 / 광장촌 렌즈 29×11 / morphology=green 집 5 길 7획 밭 0 출구 2",
-      "형태 마을 연못 실패: layer is not defined",
       "상점가 지정: 2:shop, 1:shop, 3:inn (광장 근접순)",
       "시간 시스템이 꺼져 있어 이 시간표는 실행되지 않습니다 — NPC 가 제자리에 머무릅니다. system.timeSystem.enabled 를 켜면 시간표대로 이동합니다.",
       "시간 시스템이 꺼져 있어 이 시간표는 실행되지 않습니다 — NPC 가 제자리에 머무릅니다. system.timeSystem.enabled 를 켜면 시간표대로 이동합니다.",
       "시간 시스템이 꺼져 있어 이 시간표는 실행되지 않습니다 — NPC 가 제자리에 머무릅니다. system.timeSystem.enabled 를 켜면 시간표대로 이동합니다.",
       "주민 시간표를 저장했지만 시간 시스템이 꺼져 있어 실행되지 않습니다 — 주민이 제자리에 머무릅니다. system.timeSystem.enabled 를 켜면 시간표대로 이동합니다.",
-      "[vperf] houses=0.1s finishing=0.0s roads=0.0s trees=0.0s decoration=0.0s audit=0.0s"
+      "[vperf] houses=0.0s finishing=0.0s roads=0.0s trees=0.0s decoration=0.0s audit=0.0s"
      ]
     },
     "village": {
@@ -2836,8 +2907,8 @@
    "ok": true,
    "summary": "출입구 쌍 생성: 트루스 마을 (현대)(2,3) ↔ 트루스 마을 (미래 폐허)(2,3)",
    "data": {
-    "eventIdA": "ev_gate_5f2135f1-7528-427f-a011-b67ee604f896",
-    "eventIdB": "ev_gate_990a412b-727b-457f-8a89-51728b1d066a",
+    "eventIdA": "ev_gate_e84cbbb1-0fe3-45a5-bf83-e2f3a0dea356",
+    "eventIdB": "ev_gate_36692c01-6a65-4eb1-9c7e-97f498cc572e",
     "gateA": {
      "x": 2,
      "y": 3
@@ -2864,8 +2935,8 @@
    "ok": true,
    "summary": "출입구 쌍 생성: 트루스 마을 (현대)(37,27) ↔ 가르디아 성(24,39)",
    "data": {
-    "eventIdA": "ev_gate_f4df569f-5df4-4b5a-8879-a3dc94adcafa",
-    "eventIdB": "ev_gate_9628116d-5db3-41b9-b9b3-92cb679b819a",
+    "eventIdA": "ev_gate_1cae3ce8-ab42-48ea-be19-5d73d750f695",
+    "eventIdB": "ev_gate_244a1d78-087c-4124-ad91-258dd31e72da",
     "gateA": {
      "x": 37,
      "y": 27
@@ -2892,8 +2963,8 @@
    "ok": true,
    "summary": "출입구 쌍 생성: 트루스 마을 (현대)(1,27) ↔ 잊힌 동굴(8,9)",
    "data": {
-    "eventIdA": "ev_gate_37cf6c4b-b86b-4270-92a1-c627187440c2",
-    "eventIdB": "ev_gate_83542697-80eb-41d8-86eb-02326de27bd4",
+    "eventIdA": "ev_gate_e1027102-b6e3-4a15-839e-129decedb55e",
+    "eventIdB": "ev_gate_787015bb-71c8-41a3-9733-e8ad3599e13c",
     "gateA": {
      "x": 1,
      "y": 27
@@ -2960,10 +3031,11 @@
    "ok": true,
    "summary": "잊힌 동굴에 세이브 포인트 '세이브 포인트' 배치 (30, 20)",
    "data": {
-    "eventId": "ev_save_329345ab-252e-4b97-9cbf-3eb24e60715c",
+    "eventId": "ev_save_f773ba16-c61b-468e-9be5-7312989e605d",
     "x": 30,
     "y": 20,
-    "adjusted": false
+    "adjusted": false,
+    "heal": false
    }
   },
   {
@@ -3002,12 +3074,12 @@
    "criterion": "C18",
    "tool": "script_cutscene",
    "ok": true,
-   "summary": "트루스 마을 (현대)에 컷신 'ev_millennial_fair' 생성 — beat 2개, 명령 6개, 미지원 커맨드 3건",
+   "summary": "트루스 마을 (현대)에 컷신 'ev_millennial_fair' 생성 — beat 2개, 명령 6개, 런타임 제한 커맨드 0건",
    "data": {
     "eventId": "ev_millennial_fair",
     "pageId": "ev_millennial_fair_cutscene_1",
     "commandCount": 6,
-    "unsupportedCommands": 3
+    "unsupportedCommands": 0
    }
   },
   {
@@ -3157,12 +3229,12 @@
      {
       "stage": 3,
       "field": "effects",
-      "value": "moonlitCastle 6개"
+      "value": "moonlitCastle 8개"
      },
      {
       "stage": 3,
       "field": "menuStyle",
-      "value": "plain"
+      "value": "window"
      }
     ],
     "kept": []
@@ -3172,22 +3244,23 @@
    "criterion": "C21",
    "tool": "configure_companion_rules",
    "ok": true,
-   "summary": "동료 규칙 — 간격 1칸, 상한 3, 초과 시 거부, 맵 이동 시 유지.",
+   "summary": "동료 규칙 — 간격 1칸, 상한 3, 초과 시 거부, 맵 이동 시 유지, 파티 멤버 자동 동행.",
    "data": {
     "gap": 1,
     "maxCompanions": 3,
     "overflow": "reject",
     "formation": "line",
-    "clearOnTransfer": false
+    "clearOnTransfer": false,
+    "fromParty": true
    }
   },
   {
    "criterion": "C21",
    "tool": "add_companion",
    "ok": true,
-   "summary": "트루스 마을 (현대) (2, 2)에 자동 합류 동료 이벤트 '루카 합류 합류' 배치",
+   "summary": "트루스 마을 (현대) (2, 2)에 자동 합류 동료 이벤트 '루카 합류' 배치",
    "data": {
-    "eventId": "ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09",
+    "eventId": "ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418",
     "mapId": "map_era_present",
     "x": 2,
     "y": 2,
@@ -3200,9 +3273,9 @@
    "criterion": "C21",
    "tool": "add_companion",
    "ok": true,
-   "summary": "트루스 마을 (현대) (3, 2)에 자동 합류 동료 이벤트 '마루 합류 합류' 배치",
+   "summary": "트루스 마을 (현대) (3, 2)에 자동 합류 동료 이벤트 '마루 합류' 배치",
    "data": {
-    "eventId": "ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c",
+    "eventId": "ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b",
     "mapId": "map_era_present",
     "x": 3,
     "y": 2,
@@ -3214,11 +3287,131 @@
   {
    "criterion": "C22",
    "tool": "set_project_settings",
-   "ok": false,
-   "summary": "'set_project_settings' 인자 검증 실패",
-   "issues": [
-    "invalid-args: 허용되지 않은 인자: newGamePlus"
-   ]
+   "ok": true,
+   "summary": "프로젝트 설정 변경 — 강하게 다시 하기=켬",
+   "data": {
+    "changed": [
+     "강하게 다시 하기=켬"
+    ]
+   }
+  },
+  {
+   "criterion": "C26",
+   "tool": "set_project_settings",
+   "ok": true,
+   "summary": "프로젝트 설정 변경 — 전투",
+   "data": {
+    "changed": [
+     "전투"
+    ]
+   }
+  },
+  {
+   "criterion": "C27",
+   "tool": "upsert_state",
+   "ok": true,
+   "summary": "상태 '스톱' 추가",
+   "data": {
+    "id": "state_ct_stop",
+    "name": "스톱",
+    "runtimeEffects": {
+     "freezesGauge": true
+    }
+   }
+  },
+  {
+   "criterion": "C27",
+   "tool": "upsert_state",
+   "ok": true,
+   "summary": "상태 '프로텍트' 추가",
+   "data": {
+    "id": "state_ct_protect",
+    "name": "프로텍트",
+    "runtimeEffects": {
+     "physicalDefenseMultiplier": 0.5
+    }
+   }
+  },
+  {
+   "criterion": "C27",
+   "tool": "upsert_state",
+   "ok": true,
+   "summary": "상태 '버서크' 추가",
+   "data": {
+    "id": "state_ct_berserk",
+    "name": "버서크",
+    "runtimeEffects": {
+     "forcedAction": "attackRandom"
+    }
+   }
+  },
+  {
+   "criterion": "C28",
+   "tool": "upsert_equipment",
+   "ok": true,
+   "summary": "장비 '그린드림'(accessory) 추가",
+   "data": {
+    "id": "equip_ct_greendream",
+    "name": "그린드림",
+    "slot": "accessory",
+    "price": 0,
+    "description": "",
+    "statBonuses": {
+     "attack": 0,
+     "defense": 0,
+     "mind": 0,
+     "agility": 0
+    },
+    "equippableActorIds": [],
+    "equippableClassIds": [],
+    "cursed": false,
+    "twoHanded": false,
+    "accuracy": 100,
+    "criticalRate": 0,
+    "attackElementIds": [],
+    "stateInflictIds": [],
+    "stateInflictionChance": 100,
+    "effectFlags": {
+     "preemptive": false,
+     "doubleAttack": false,
+     "attackAll": false,
+     "ignoreDodge": false,
+     "preventCriticalHits": false,
+     "increasePhysicalDodge": false,
+     "halfMpCost": false,
+     "negateTerrainDamage": false,
+     "fixedEquipment": false,
+     "autoRevive": 50
+    },
+    "elementalDefenseIds": [],
+    "stateDefenseIds": [],
+    "stateDefenseMode": "resist",
+    "stateResistanceChance": 0
+   }
+  },
+  {
+   "criterion": "C29",
+   "tool": "upsert_troop_battle_page",
+   "ok": true,
+   "summary": "트룹 '포식자' 전투 이벤트 페이지 '뒤로 물러난다' 추가(조건 1개, 커맨드 1개)",
+   "data": {
+    "troopId": "troop_boss",
+    "pageId": "boss_step_back",
+    "outcome": "added",
+    "pageCount": 3,
+    "unsupportedCommands": 0
+   }
+  },
+  {
+   "criterion": "C30",
+   "tool": "set_project_settings",
+   "ok": true,
+   "summary": "프로젝트 설정 변경 — 장 표시=2개",
+   "data": {
+    "changed": [
+     "장 표시=2개"
+    ]
+   }
   },
   {
    "criterion": "C09",
@@ -3333,43 +3526,11 @@
       "issues": [
        {
         "severity": "warning",
-        "code": "runtime-support:setSelfSwitch",
-        "mapId": "map_era_present",
-        "x": 24,
-        "y": 12,
-        "message": "맵 이벤트 ev_pendant_talk0/ev_pendant_talk0_talk에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
-       },
-       {
-        "severity": "warning",
-        "code": "runtime-support:cutsceneControl",
-        "mapId": "map_era_present",
-        "x": 20,
-        "y": 20,
-        "message": "맵 이벤트 ev_millennial_fair/ev_millennial_fair_cutscene_1에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): cutsceneControl"
-       },
-       {
-        "severity": "warning",
-        "code": "runtime-support:setSelfSwitch",
-        "mapId": "map_era_present",
-        "x": 20,
-        "y": 20,
-        "message": "맵 이벤트 ev_millennial_fair/ev_millennial_fair_cutscene_1에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
-       },
-       {
-        "severity": "warning",
-        "code": "runtime-support:cutsceneControl",
-        "mapId": "map_era_present",
-        "x": 20,
-        "y": 20,
-        "message": "맵 이벤트 ev_millennial_fair/ev_millennial_fair_cutscene_1에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): cutsceneControl"
-       },
-       {
-        "severity": "warning",
         "code": "runtime-support:addFollower",
         "mapId": "map_era_present",
         "x": 2,
         "y": 2,
-        "message": "맵 이벤트 ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09/ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+        "message": "맵 이벤트 ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418/ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
        },
        {
         "severity": "warning",
@@ -3377,55 +3538,7 @@
         "mapId": "map_era_present",
         "x": 3,
         "y": 2,
-        "message": "맵 이벤트 ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c/ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
-       },
-       {
-        "severity": "warning",
-        "code": "runtime-support:triggerEnding",
-        "mapId": "map_castle",
-        "x": 24,
-        "y": 10,
-        "message": "맵 이벤트 ev_king/ev_king_p1에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): triggerEnding"
-       },
-       {
-        "severity": "warning",
-        "code": "runtime-support:checkpointSave",
-        "mapId": "map_cave",
-        "x": 30,
-        "y": 20,
-        "message": "맵 이벤트 ev_save_329345ab-252e-4b97-9cbf-3eb24e60715c/ev_save_329345ab-252e-4b97-9cbf-3eb24e60715c_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): checkpointSave"
-       },
-       {
-        "severity": "warning",
-        "code": "runtime-support:setEventGraphicPattern",
-        "mapId": "map_cave",
-        "x": 9,
-        "y": 8,
-        "message": "맵 이벤트 ev_cave_chest/ev_cave_chest_closed에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
-       },
-       {
-        "severity": "warning",
-        "code": "runtime-support:setEventGraphicPattern",
-        "mapId": "map_cave",
-        "x": 9,
-        "y": 8,
-        "message": "맵 이벤트 ev_cave_chest/ev_cave_chest_closed에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
-       },
-       {
-        "severity": "warning",
-        "code": "runtime-support:setSelfSwitch",
-        "mapId": "map_cave",
-        "x": 9,
-        "y": 8,
-        "message": "맵 이벤트 ev_cave_chest/ev_cave_chest_closed에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
-       },
-       {
-        "severity": "warning",
-        "code": "runtime-support:triggerEnding",
-        "mapId": "map_era_future",
-        "x": 19,
-        "y": 14,
-        "message": "맵 이벤트 ev_doom_record/ev_doom_record_p0에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): triggerEnding"
+        "message": "맵 이벤트 ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b/ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
        },
        {
         "severity": "warning",
@@ -3450,12 +3563,12 @@
        {
         "severity": "warning",
         "code": "story-flag:undeclared",
-        "message": "레지스트리 밖 스위치/변수 사용: switch:sw_ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_done (map:map_era_present event:ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09/page1 pages[0].conditions[0])"
+        "message": "레지스트리 밖 스위치/변수 사용: switch:sw_ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418_done (map:map_era_present event:ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418/page1 pages[0].conditions[0])"
        },
        {
         "severity": "warning",
         "code": "story-flag:undeclared",
-        "message": "레지스트리 밖 스위치/변수 사용: switch:sw_ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_done (map:map_era_present event:ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c/page1 pages[0].conditions[0])"
+        "message": "레지스트리 밖 스위치/변수 사용: switch:sw_ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b_done (map:map_era_present event:ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b/page1 pages[0].conditions[0])"
        },
        {
         "severity": "warning",
@@ -3823,19 +3936,19 @@
          }
         ]
        },
-       "sw_ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_done": {
+       "sw_ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418_done": {
         "reads": [
          {
           "access": "read",
           "kind": "switch",
-          "targetId": "sw_ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_done",
+          "targetId": "sw_ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418_done",
           "source": "map-event",
           "mapId": "map_era_present",
-          "eventId": "ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09",
-          "pageId": "ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_page",
+          "eventId": "ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418",
+          "pageId": "ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418_page",
           "pageNumber": 1,
           "conditionPath": "pages[0].conditions[0]",
-          "label": "map:map_era_present event:ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09/page1 pages[0].conditions[0]",
+          "label": "map:map_era_present event:ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418/page1 pages[0].conditions[0]",
           "detail": "event page condition"
          }
         ],
@@ -3843,31 +3956,31 @@
          {
           "access": "write",
           "kind": "switch",
-          "targetId": "sw_ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_done",
+          "targetId": "sw_ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418_done",
           "source": "map-event",
           "mapId": "map_era_present",
-          "eventId": "ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09",
-          "pageId": "ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_page",
+          "eventId": "ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418",
+          "pageId": "ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418_page",
           "pageNumber": 1,
           "commandPath": "pages[0].commands[1]",
-          "label": "map:map_era_present event:ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09/page1 pages[0].commands[1]",
+          "label": "map:map_era_present event:ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418/page1 pages[0].commands[1]",
           "detail": "setSwitch"
          }
         ]
        },
-       "sw_ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_done": {
+       "sw_ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b_done": {
         "reads": [
          {
           "access": "read",
           "kind": "switch",
-          "targetId": "sw_ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_done",
+          "targetId": "sw_ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b_done",
           "source": "map-event",
           "mapId": "map_era_present",
-          "eventId": "ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c",
-          "pageId": "ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_page",
+          "eventId": "ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b",
+          "pageId": "ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b_page",
           "pageNumber": 1,
           "conditionPath": "pages[0].conditions[0]",
-          "label": "map:map_era_present event:ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c/page1 pages[0].conditions[0]",
+          "label": "map:map_era_present event:ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b/page1 pages[0].conditions[0]",
           "detail": "event page condition"
          }
         ],
@@ -3875,14 +3988,14 @@
          {
           "access": "write",
           "kind": "switch",
-          "targetId": "sw_ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_done",
+          "targetId": "sw_ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b_done",
           "source": "map-event",
           "mapId": "map_era_present",
-          "eventId": "ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c",
-          "pageId": "ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_page",
+          "eventId": "ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b",
+          "pageId": "ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b_page",
           "pageNumber": 1,
           "commandPath": "pages[0].commands[1]",
-          "label": "map:map_era_present event:ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c/page1 pages[0].commands[1]",
+          "label": "map:map_era_present event:ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b/page1 pages[0].commands[1]",
           "detail": "setSwitch"
          }
         ]
@@ -4138,53 +4251,53 @@
        {
         "access": "read",
         "kind": "switch",
-        "targetId": "sw_ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_done",
+        "targetId": "sw_ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418_done",
         "source": "map-event",
         "mapId": "map_era_present",
-        "eventId": "ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09",
-        "pageId": "ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_page",
+        "eventId": "ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418",
+        "pageId": "ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418_page",
         "pageNumber": 1,
         "conditionPath": "pages[0].conditions[0]",
-        "label": "map:map_era_present event:ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09/page1 pages[0].conditions[0]",
+        "label": "map:map_era_present event:ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418/page1 pages[0].conditions[0]",
         "detail": "event page condition"
        },
        {
         "access": "write",
         "kind": "switch",
-        "targetId": "sw_ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_done",
+        "targetId": "sw_ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418_done",
         "source": "map-event",
         "mapId": "map_era_present",
-        "eventId": "ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09",
-        "pageId": "ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_page",
+        "eventId": "ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418",
+        "pageId": "ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418_page",
         "pageNumber": 1,
         "commandPath": "pages[0].commands[1]",
-        "label": "map:map_era_present event:ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09/page1 pages[0].commands[1]",
+        "label": "map:map_era_present event:ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418/page1 pages[0].commands[1]",
         "detail": "setSwitch"
        },
        {
         "access": "read",
         "kind": "switch",
-        "targetId": "sw_ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_done",
+        "targetId": "sw_ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b_done",
         "source": "map-event",
         "mapId": "map_era_present",
-        "eventId": "ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c",
-        "pageId": "ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_page",
+        "eventId": "ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b",
+        "pageId": "ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b_page",
         "pageNumber": 1,
         "conditionPath": "pages[0].conditions[0]",
-        "label": "map:map_era_present event:ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c/page1 pages[0].conditions[0]",
+        "label": "map:map_era_present event:ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b/page1 pages[0].conditions[0]",
         "detail": "event page condition"
        },
        {
         "access": "write",
         "kind": "switch",
-        "targetId": "sw_ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_done",
+        "targetId": "sw_ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b_done",
         "source": "map-event",
         "mapId": "map_era_present",
-        "eventId": "ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c",
-        "pageId": "ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_page",
+        "eventId": "ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b",
+        "pageId": "ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b_page",
         "pageNumber": 1,
         "commandPath": "pages[0].commands[1]",
-        "label": "map:map_era_present event:ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c/page1 pages[0].commands[1]",
+        "label": "map:map_era_present event:ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b/page1 pages[0].commands[1]",
         "detail": "setSwitch"
        },
        {
@@ -4295,53 +4408,21 @@
    "criterion": "V3",
    "tool": "run_lint",
    "ok": true,
-   "summary": "lint: error 0건 / warning 40건 / info 12건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것.",
+   "summary": "lint: error 0건 / warning 30건 / info 12건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것.",
    "data": {
     "counts": {
      "errors": 0,
      "infos": 12,
-     "warnings": 40
+     "warnings": 30
     },
     "issues": [
-     {
-      "severity": "warning",
-      "code": "runtime-support:setSelfSwitch",
-      "mapId": "map_era_present",
-      "x": 24,
-      "y": 12,
-      "message": "맵 이벤트 ev_pendant_talk0/ev_pendant_talk0_talk에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
-     },
-     {
-      "severity": "warning",
-      "code": "runtime-support:cutsceneControl",
-      "mapId": "map_era_present",
-      "x": 20,
-      "y": 20,
-      "message": "맵 이벤트 ev_millennial_fair/ev_millennial_fair_cutscene_1에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): cutsceneControl"
-     },
-     {
-      "severity": "warning",
-      "code": "runtime-support:setSelfSwitch",
-      "mapId": "map_era_present",
-      "x": 20,
-      "y": 20,
-      "message": "맵 이벤트 ev_millennial_fair/ev_millennial_fair_cutscene_1에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
-     },
-     {
-      "severity": "warning",
-      "code": "runtime-support:cutsceneControl",
-      "mapId": "map_era_present",
-      "x": 20,
-      "y": 20,
-      "message": "맵 이벤트 ev_millennial_fair/ev_millennial_fair_cutscene_1에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): cutsceneControl"
-     },
      {
       "severity": "warning",
       "code": "runtime-support:addFollower",
       "mapId": "map_era_present",
       "x": 2,
       "y": 2,
-      "message": "맵 이벤트 ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09/ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+      "message": "맵 이벤트 ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418/ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
      },
      {
       "severity": "warning",
@@ -4349,55 +4430,7 @@
       "mapId": "map_era_present",
       "x": 3,
       "y": 2,
-      "message": "맵 이벤트 ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c/ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
-     },
-     {
-      "severity": "warning",
-      "code": "runtime-support:triggerEnding",
-      "mapId": "map_castle",
-      "x": 24,
-      "y": 10,
-      "message": "맵 이벤트 ev_king/ev_king_p1에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): triggerEnding"
-     },
-     {
-      "severity": "warning",
-      "code": "runtime-support:checkpointSave",
-      "mapId": "map_cave",
-      "x": 30,
-      "y": 20,
-      "message": "맵 이벤트 ev_save_329345ab-252e-4b97-9cbf-3eb24e60715c/ev_save_329345ab-252e-4b97-9cbf-3eb24e60715c_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): checkpointSave"
-     },
-     {
-      "severity": "warning",
-      "code": "runtime-support:setEventGraphicPattern",
-      "mapId": "map_cave",
-      "x": 9,
-      "y": 8,
-      "message": "맵 이벤트 ev_cave_chest/ev_cave_chest_closed에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
-     },
-     {
-      "severity": "warning",
-      "code": "runtime-support:setEventGraphicPattern",
-      "mapId": "map_cave",
-      "x": 9,
-      "y": 8,
-      "message": "맵 이벤트 ev_cave_chest/ev_cave_chest_closed에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
-     },
-     {
-      "severity": "warning",
-      "code": "runtime-support:setSelfSwitch",
-      "mapId": "map_cave",
-      "x": 9,
-      "y": 8,
-      "message": "맵 이벤트 ev_cave_chest/ev_cave_chest_closed에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
-     },
-     {
-      "severity": "warning",
-      "code": "runtime-support:triggerEnding",
-      "mapId": "map_era_future",
-      "x": 19,
-      "y": 14,
-      "message": "맵 이벤트 ev_doom_record/ev_doom_record_p0에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): triggerEnding"
+      "message": "맵 이벤트 ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b/ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
      },
      {
       "severity": "warning",
@@ -4422,12 +4455,12 @@
      {
       "severity": "warning",
       "code": "story-flag:undeclared",
-      "message": "레지스트리 밖 스위치/변수 사용: switch:sw_ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_done (map:map_era_present event:ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09/page1 pages[0].conditions[0])"
+      "message": "레지스트리 밖 스위치/변수 사용: switch:sw_ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418_done (map:map_era_present event:ev_companion_2828e113-9d76-4976-99c0-98a65f3b1418/page1 pages[0].conditions[0])"
      },
      {
       "severity": "warning",
       "code": "story-flag:undeclared",
-      "message": "레지스트리 밖 스위치/변수 사용: switch:sw_ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_done (map:map_era_present event:ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c/page1 pages[0].conditions[0])"
+      "message": "레지스트리 밖 스위치/변수 사용: switch:sw_ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b_done (map:map_era_present event:ev_companion_036f3b5e-630a-48d0-b1e7-7ab5ed6de04b/page1 pages[0].conditions[0])"
      },
      {
       "severity": "warning",
@@ -4702,8 +4735,8 @@
     "assetCount": 1947,
     "uploadedAssetCount": 0,
     "publicAssetCount": 1947,
-    "estimatedSizeBytes": 22105953,
-    "projectJsonBytes": 22105953,
+    "estimatedSizeBytes": 22108287,
+    "projectJsonBytes": 22108287,
     "projectTitle": "시간의 문",
     "shapeRoundTrip": true,
     "producedFile": false
@@ -4718,7 +4751,31 @@
    "actor_mage",
    "actor_cleric"
   ],
-  "xStrikeStored": null,
+  "xStrikeStored": {
+   "id": "skill_x_strike",
+   "name": "X베기",
+   "scope": "enemy",
+   "power": 60,
+   "description": "두 사람이 교차해 벤다",
+   "type": "normal",
+   "mpCost": {
+    "flat": 0,
+    "percentMax": 0
+   },
+   "successRate": 100,
+   "variance": 0,
+   "hitRate": 100,
+   "effect": {
+    "kind": "damage",
+    "statistic": "attack",
+    "affects": "hp"
+   },
+   "stateEffects": [],
+   "comboActorIds": [
+    "actor_hero",
+    "actor_mage"
+   ]
+  },
   "maps": [
    {
     "id": "map_era_present",
@@ -4753,9 +4810,16 @@
     "tileset": "easyrpg_chipset_combined_town"
    }
   ],
-  "newGamePlus": null,
+  "newGamePlus": {
+   "enabled": true,
+   "carry": [
+    "levels",
+    "skills",
+    "equipment"
+   ]
+  },
   "bossSwitch": "sw_boss_down",
-  "bossTroopPages": 2,
+  "bossTroopPages": 3,
   "start": {
    "mapId": "map_era_present",
    "x": 20,
