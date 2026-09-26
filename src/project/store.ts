@@ -219,7 +219,17 @@ export function setDevProjectFactory(factory: DevProjectFactory | null): void {
   devProjectFactory = factory;
 }
 class ProjectStore {
-  private current: Project;
+  private currentValue: Project | null = null;
+  /**
+   * 로드 전 자리표시 프로젝트는 처음 읽을 때 만든다. 생성자에서 만들면 부팅마다 load() 가
+   * 곧바로 버리는 빈 프로젝트를 한 벌 더 지었다(2026-09-26 실측 약 0.4~1s, 타일셋 30여 벌).
+   */
+  private get current(): Project {
+    return this.currentValue ??= createBlankProject();
+  }
+  private set current(project: Project) {
+    this.currentValue = project;
+  }
   private listeners = new Set<Listener>();
   private autoSaveListeners = new Set<AutoSaveListener>();
   private autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
@@ -272,7 +282,6 @@ class ProjectStore {
   }
 
   constructor() {
-    this.current = createBlankProject();
     this.boundOnlineHandler = () => this.onNetworkRestored();
     // 존재만 보지 않고 **능력**을 본다. 테스트가 심는 부분 스텁 window 에는 addEventListener 가
     // 없어서 `typeof window !== "undefined"` 만으로는 생성자가 던졌고, 그 결과 저장/로드

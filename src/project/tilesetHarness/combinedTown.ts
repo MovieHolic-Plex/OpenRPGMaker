@@ -15,7 +15,7 @@ import {
   COMBINED_TOWN_HARNESS_PREFIX,
   type CombinedTownHarnessGroup,
 } from "./combinedTownGroups";
-import { applyEasyRpgThemeMetadataPacks } from "./themePacks";
+import { applyEasyRpgThemeMetadataPacks, themePackContractTiles } from "./themePacks";
 import { hasInteriorCabinetOverride } from "@/project/defaults/interiorTransparentPropLayerRepair";
 import { hasInteriorLongTableOverride } from "./interiorLongTableLegacy";
 import { roleCapabilities } from "@/project/tileRoles";
@@ -63,6 +63,9 @@ export function ensureTilesetHarnesses(project: Pick<Project, "tilesets">): bool
 function applyCustomChipsetMinimalHarness(tileset: TilesetDef): boolean {
   // MV/MZ 팩 프리셋은 통행·레이어를 프리셋이 정한다 — 16px 표를 들이대면 물·옥상이 상위로 간다.
   if (tileset.mvPack) return false;
+  // 호스트 공용 타일셋(shared_*)은 값을 호스트가 소유하고 ensureSharedContent 가 매 로드 원본으로 되돌린다.
+  // 여기서 바꾸면 두 정규화기가 매 로드 서로를 되돌리며 변경을 보고했다(2026-09-26 실측: 32px 공용 19벌).
+  if (tileset.id.startsWith("shared_")) return false;
   // Castle2.png ships its own custom-atlas layer defaults. The legacy RM2k3 transparency
   // table is indexed by unrelated 16px combined-town cells and must not reinterpret them.
   if (
@@ -74,7 +77,11 @@ function applyCustomChipsetMinimalHarness(tileset: TilesetDef): boolean {
   const cabinetOverride = tileset.image.type === "bundled"
     && tileset.image.id === "tex_easyrpg_chipset_interior" && hasInteriorCabinetOverride(tileset);
   const tableOverride = hasInteriorLongTableOverride(tileset);
+  // 테마 팩이 계약하는 칸은 같은 호출의 applyEasyRpgThemeMetadataPacks 가 그룹 레이어로 다시 쓴다.
+  // 여기서 upper 로 올리면 매번 되돌려져, 결과는 같은데 변경을 보고해 부팅 정규화가 23MB 를 다시 비교했다.
+  const packTiles = themePackContractTiles(tileset);
   for (let tile = 0; tile < tileset.count; tile += 1) {
+    if (packTiles?.has(tile)) continue;
     if (cabinetOverride && (tile === 148 || tile === 178)) continue;
     if (tableOverride && (tile === 325 || tile === 326 || tile === 327)) continue;
     if (!isTransparentChipsetTile(tile)) continue;
@@ -92,14 +99,18 @@ function applyCustomChipsetMinimalHarness(tileset: TilesetDef): boolean {
 export function applyCombinedTownHarness(tileset: TilesetDef): boolean {
   if (!isCombinedTownTileset(tileset)) return false;
   if (!isStandard480Tileset(tileset)) return false;
+  // 그룹 계약·투명 오버레이·데크 규칙이 같은 칸(울타리·창문·데크)을 차례로 다시 쓴다. 단계별 보고를
+  // 합치면 최종 값이 같아도 매 로드 변경으로 보고했다(2026-09-26 실측) — 이 세 단계는 끝 상태로 판정한다.
+  const runtimeBefore = JSON.stringify([tileset.priority, tileset.passability, tileset.terrain]);
   let changed = false;
   ensureTileMetaLength(tileset);
   for (const group of COMBINED_TOWN_HARNESS_GROUPS) {
     for (const tile of group.tileIds) changed = applyTileContract(tileset, group, tile) || changed;
   }
-  changed = enforceTransparentOverlayPriority(tileset) || changed;
+  enforceTransparentOverlayPriority(tileset);
   // RM2k3 데크/층계: wood floor 가장자리 4방향 + 돌계단 가로 통행 (그룹 일괄 passable 이후 덮어씀)
-  changed = applyRm2k3ElevationPassability(tileset) || changed;
+  applyRm2k3ElevationPassability(tileset);
+  changed = runtimeBefore !== JSON.stringify([tileset.priority, tileset.passability, tileset.terrain]) || changed;
   const current = tileset.tileGroups ?? [];
   const suppressed = normalizeSuppressedHarnessGroupIds(tileset);
   if (suppressed.changed) changed = true;
@@ -216,7 +227,8 @@ function applyTileContract(tileset: TilesetDef, group: CombinedTownHarnessGroup,
     tileset.tileMeta![tile] = nextMeta;
     changed = true;
   }
-  changed = setTileRuntimeContract(tileset, tile, group, tileset.tileMeta?.[tile]) || changed;
+  // 런타임 배열 변경은 호출자(applyCombinedTownHarness)가 끝 상태로 판정한다.
+  setTileRuntimeContract(tileset, tile, group, tileset.tileMeta?.[tile]);
   return changed;
 }
 
