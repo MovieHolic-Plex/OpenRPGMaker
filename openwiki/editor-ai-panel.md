@@ -653,7 +653,8 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
   `place_storage_chest`, `place_trap`, `place_battle_blocker`(troopId 는 `encounterTroops`=이 맵 조우 트룹만, 없는 id 는 이 맵 첫 트룹으로, 조우가 없으면 버림),
   `set_scene_mood`(날씨 none/rain/storm/snow/fog, applyMode map), `arrange_tall_grass`, `set_start_position`, `move_event`·`remove_event`(`occupied` 에 있는 id 만).
   `knownItemIds`·`itemPrices` 는 거르는 데만 쓰고 모델에게 보내지 않는다.
-- **마을 (2026-09-27)**: 맵에 「마을」 필드가 없어 `guessMapRole`(`mapPlacementContext.ts`)이 신호로 추정한다 — 조우·필드 스폰이 있으면 던전/필드(이름이 「불타는 마을」이어도),
+- **맵 성격 (2026-09-27)**: `GameMap.mapRole`(town/dungeon/field/interior, 값·라벨은 `src/project/mapRole.ts`)을 맵 설정 → 기본 설정 「맵 성격」에서 고른다. 지정하면 `guessMapRole` 이 추정 없이 그 값을 쓴다(`explicit: true`, 이유 「맵 속성에서 지정」 — 조우가 있어도 이긴다). 「자동」은 필드를 지우고 추정 결과와 근거를 선택지에 보여 준다. 조수는 `set_map_properties {mapRole}`(`"auto"` 로 지움). 불러오기에서 모르는 값은 경고 후 버린다(프로젝트는 열린다). 런타임 동작은 바꾸지 않는다.
+- **마을 (2026-09-27)**: `mapRole` 이 없으면 `guessMapRole`(`mapPlacementContext.ts`)이 신호로 추정한다 — 조우·필드 스폰이 있으면 던전/필드(이름이 「불타는 마을」이어도),
   없으면 레이아웃 종류(village/town/houses…) → 이름(마을·촌·시장·항구…) → 실내 설정/이름 → 상점·여관 수·주민 3명 이상·safeZones 순. 근거는 `role.reason` 에 남는다.
   마을·실내면: 상자 범위는 이 맵 기존 상자 → 이 맵 상점 물가 → **이웃 맵 기준의 1/4** → 프로젝트 기준의 절반(마을 상자에 던전급 금액 방지), 보상 후보에서 이웃 던전 드롭 제외,
   함정·길막 몬스터는 문장에 함정/몬스터/습격 같은 말이 있을 때만(「알아서」에 섞이지 않게). 새 도구 `place_inn`(여관 주인 NPC + `inn` 명령, 요금은 이 맵 여관 → 이웃 전투 1회의 절반 → 상자 상한 1/10, 요청값은 기준의 1/3~3배로 보정),

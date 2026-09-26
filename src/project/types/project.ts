@@ -39,6 +39,9 @@ import type {
 } from "./events";
 import type { Season, TimePhase } from "../gameTime";
 
+/** 맵 성격 — 값 목록·라벨·판별은 `@/project/mapRole`(types 배럴은 타입만 내보낸다). */
+export type MapRoleKind = "town" | "dungeon" | "field" | "interior";
+
 export interface GameMap {
   /** Unset inherits global weather; indoor suppresses presentation only. */
   climate?: import("../mapClimate").MapClimate;
@@ -98,6 +101,11 @@ export interface GameMap {
   disableTeleport?: boolean;
   /** 도주(이스케이프) 금지 맵. */
   disableEscape?: boolean;
+  /**
+   * 맵 성격(마을·던전·필드·실내). 저작자가 고른 정본 — 바로 깔기·배치 조수가 이 값을 먼저 믿고,
+   * 없을 때만 조우·이름·레이아웃으로 추정한다(`guessMapRole`). 런타임 동작은 바꾸지 않는다.
+   */
+  mapRole?: MapRoleKind;
   /**
    * 생성·시공 시 bbox 설계도. 타일 시공 후에도 남겨 두어
    * "가운데 파란 집 옮겨줘" 같은 영역 쿼리에 쓴다. 선택 필드 — 옛 맵 호환.

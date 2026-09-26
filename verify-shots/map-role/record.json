@@ -1,0 +1,28 @@
+{
+  "generalSummary": "기본 설정\n이슬 장터 마을 · 자동(마을) · 합본 마을 · EasyRPG (CC0) · 100×100",
+  "options": [
+    "자동 — 마을(이름 「이슬 장터 마을」)",
+    "마을",
+    "던전",
+    "필드",
+    "실내"
+  ],
+  "before": "",
+  "triggerText": "자동 — 마을(이름 「이슬 장터 마을」)",
+  "triggerAfter": "던전",
+  "afterSelect": {
+    "field": "dungeon",
+    "role": {
+      "role": "dungeon",
+      "reason": "맵 속성에서 지정",
+      "explicit": true
+    },
+    "chest": {
+      "min": 15,
+      "max": 150,
+      "scope": "map",
+      "reason": "이 맵 상점 30~120G"
+    }
+  },
+  "afterAuto": null
+}

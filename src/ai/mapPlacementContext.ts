@@ -20,6 +20,8 @@ export interface MapRoleGuess {
   readonly role: MapRole;
   /** 왜 그렇게 봤는지 — 사람이 읽는 근거 한 줄. */
   readonly reason: string;
+  /** 맵 속성에서 저작자가 고른 값이면 true(추정이 아님). */
+  readonly explicit?: boolean;
 }
 
 export type PlacedKind = "chest" | "shop" | "inn" | "npc" | "savepoint" | "exit" | "other";
@@ -270,6 +272,8 @@ const INTERIOR_WORDS = /집|방|여관|상점 안|가게|교회|성당|inn|house
  * 이름만 「마을」이어도 조우가 있으면 마을로 보지 않는다(습격 이벤트 맵 등).
  */
 export function guessMapRole(project: Project, map: GameMap): MapRoleGuess {
+  // 저작자가 맵 속성에서 고른 값이 정본 — 추정보다 늘 먼저(2026-09-27 사용자 요청: 추정이 틀리면 마을 규칙이 통째로 빠진다).
+  if (map.mapRole) return { role: map.mapRole, reason: "맵 속성에서 지정", explicit: true };
   const hostile = mapTroopIds(map).length > 0 && (map.encounterRate ?? 0) > 0 || (map.fieldSpawns?.length ?? 0) > 0;
   const commands = map.events.flatMap((event) => eventCommands(event));
   const shops = commands.filter((command) => command.kind === "shop").length;

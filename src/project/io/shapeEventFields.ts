@@ -10,6 +10,7 @@ import { validateLightingState } from "./shapeLightingFields";
 import { validateTrigger } from "./shapeReferenceFields";
 import { isSeason, isTimePhase } from "@/project/gameTime";
 import { EXTRA_LAYER_KEYS, malformedExtraLayerKeys } from "@/project/mapLayers";
+import { isMapRoleKind } from "@/project/mapRole";
 import {
   isMapPlanningItemOrigin,
   isMapPlanningItemStatus,
@@ -50,6 +51,10 @@ export function validateMaps(value: unknown): Record<string, unknown> {
     }
     if (map.lowerTileStacks !== undefined) validateTileStacks(`map ${id}.lowerTileStacks`, map.lowerTileStacks, expected);
     if (map.upperTileStacks !== undefined) validateTileStacks(`map ${id}.upperTileStacks`, map.upperTileStacks, expected);
+    if (map.mapRole !== undefined && !isMapRoleKind(map.mapRole)) {
+      console.warn(`[맵 성격] map ${id}: mapRole ${JSON.stringify(map.mapRole)} 은 모르는 값이라 버리고 불러온다(town/dungeon/field/interior).`);
+      delete map.mapRole;
+    }
     if (map.encounterRate !== undefined) requireNumber(`map ${id}.encounterRate`, map.encounterRate);
     if (map.troopIds !== undefined) validateIdArray(`map ${id}.troopIds`, map.troopIds);
     if (map.encounterTable !== undefined) validateEncounterTable(`map ${id}.encounterTable`, map.encounterTable);

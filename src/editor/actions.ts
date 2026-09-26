@@ -378,6 +378,16 @@ export function setMapFlags(mapId: MapId, flags: { disableSave?: boolean; disabl
   }, { scope: "map", mapId });
 }
 
+/** 맵 성격을 고른다. undefined 면 지워서 자동 추정으로 돌아간다. */
+export function setMapRole(mapId: MapId, role: import("@/project/types").MapRoleKind | undefined): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (role) map.mapRole = role; else delete map.mapRole;
+  }, { scope: "map", mapId });
+}
+
 export function setMapLoop(mapId: MapId, loop: import("@/project/mapLoop").MapLoop | undefined): void {
   if (!allowMapMutation(mapId)) return;
   store.update((p) => {

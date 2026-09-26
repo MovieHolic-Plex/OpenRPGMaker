@@ -1,8 +1,10 @@
 import { renderMapAtmosphere } from "./mapAtmosphere";
+import { isMapRoleKind, MAP_ROLE_KINDS, MAP_ROLE_LABELS } from "@/project/mapRole";
+import { guessMapRole, type MapRole } from "@/ai/mapPlacementContext";
 import { selectField as climateSelectField } from "@/editor/panels/databaseControls";
 import {
   resizeMap, renameMap, setMapEncounterRate, setMapEncounterTable, setMapFieldSpawns, setMapTileset,
-  setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags, setMapLoop, setMapMinimap,
+  setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags, setMapLoop, setMapMinimap, setMapRole,
   setMapCloudShadows, setMapClimate,
 } from "@/editor/actions";
 import { appendGroupedTilesetOptions } from "@/editor/tilesetSelectOptions";
@@ -31,6 +33,10 @@ import type { EncounterTableEntry, FieldSpawnDef, MapBgmSetting } from "@/projec
 import { clearChildren, el } from "@/util/dom";
 import { showConfirm } from "@/editor/ui/modal";
 import { toast } from "@/util/toast";
+
+function roleLabel(role: MapRole): string {
+  return role === "unknown" ? "알 수 없음" : MAP_ROLE_LABELS[role];
+}
 
 type MapPropsTab = "atmosphere" | "climate" | "general" | "background" | "clouds" | "bgm" | "battle" | "restrictions" | "encounter" | "spawns" | "minimap";
 
@@ -98,7 +104,8 @@ function sectionSummary(tab: MapPropsTab, map: import("@/project/types").GameMap
   const resourceName = (id: string | undefined): string =>
     listDatabaseResourceOptions(id ? "backdrop" : "backdrop", project).find((item) => item.id === id)?.name ?? "";
   if (tab === "general") {
-    return `${map.name} · ${project.tilesets[map.tilesetId]?.name ?? "그림판"} · ${map.width}×${map.height}`;
+    const role = map.mapRole ? MAP_ROLE_LABELS[map.mapRole] : `자동(${roleLabel(guessMapRole(project, map).role)})`;
+    return `${map.name} · ${role} · ${project.tilesets[map.tilesetId]?.name ?? "그림판"} · ${map.width}×${map.height}`;
   }
   if (tab === "bgm") {
     if (map.bgm?.mode === "none") return "무음";
@@ -332,6 +339,22 @@ function renderGeneralTab(host: HTMLElement, map: import("@/project/types").Game
   appendGroupedTilesetOptions(tilesetSelect, Object.values(store.getCurrent().tilesets));
   tilesetSelect.value = map.tilesetId;
   section.append(fieldRow("타일 그림판", tilesetSelect));
+
+  // 맵 성격 — 바로 깔기·배치 조수가 먼저 믿는 값. 비우면 조우·이름·레이아웃으로 추정한 값을 보여 준다.
+  const guessed = guessMapRole(store.getCurrent(), map);
+  const roleSelect = el("select", { dataset: { testid: "map-role" }, attrs: { "aria-label": "맵 성격" } }) as HTMLSelectElement;
+  const autoOption = el("option", { text: `자동 — ${roleLabel(guessed.role)}(${guessed.reason})` }) as HTMLOptionElement;
+  autoOption.value = "";
+  roleSelect.append(autoOption);
+  for (const kind of MAP_ROLE_KINDS) {
+    const option = el("option", { text: MAP_ROLE_LABELS[kind] }) as HTMLOptionElement;
+    option.value = kind;
+    roleSelect.append(option);
+  }
+  roleSelect.value = map.mapRole ?? "";
+  roleSelect.addEventListener("change", () => setMapRole(map.id, isMapRoleKind(roleSelect.value) ? roleSelect.value : undefined));
+  section.append(fieldRow("맵 성격", roleSelect));
+  section.append(el("p", { class: "map-props-hint", text: "바로 깔기가 이 값을 기준으로 깝니다. 마을·실내면 함정·몬스터를 요청 없이 두지 않고 상자 보상을 낮춥니다." }));
 
   // 크기
   const wInput = el("input", {
