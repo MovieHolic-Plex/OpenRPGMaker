@@ -1,6 +1,7 @@
 import { normalizeGallerySettings } from "@/project/gallery";
 import { fieldHudEditor } from "./databaseFieldHud";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { genId } from "@/util/id";
 import { GUARD_MAX_DAMAGE_REDUCTION_PERCENT } from "@/battle/action/guard";
 import { BATTLE_SKINS, isDeprecatedBattleSkin, listActiveBattleSkinIds, listBattleSkinIds, resolveSkinId } from "@/battle/skins/registry";
 import {
@@ -2115,7 +2116,59 @@ function titleOpeningHost(rerender: SystemRefresh): TitleOpeningHost {
     current: () => store.getCurrent().system.titleScreen ?? defaultTitleScreenSettings(),
     rerender: () => rerender(),
     liveEffects: () => refreshTitleEffectsLayer(),
+    generateDepth: (index, status) => runTitleDepthGeneration(index, status, rerender),
   };
+}
+
+/** 배경 키아트를 dataURL 로 읽는다. 번들 경로·blob 이면 받아서 바꾼다. */
+async function titleBackgroundDataUrl(): Promise<string | undefined> {
+  const project = store.getCurrent();
+  const resourceId = project.system.titleScreen?.backgroundResourceId ?? project.system.titleResourceId;
+  const url = resolveAssetResourceUrl(resourceId, { project });
+  if (!url) return undefined;
+  if (url.startsWith("data:")) return url;
+  const blob = await (await fetch(url)).blob();
+  return await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error ?? new Error("키아트 그림을 읽지 못했습니다."));
+    reader.readAsDataURL(blob);
+  });
+}
+
+/** 키아트에서 깊이 지도를 만들어 리소스로 등록하고, 켜진 깊이 시차 효과(index 가 없으면 전부)에 연결한다. */
+async function attachTitleDepthMap(index?: number, signal?: AbortSignal): Promise<void> {
+  const art = await titleBackgroundDataUrl();
+  if (!art) throw new Error("배경 키아트가 없습니다. 먼저 배경 그림을 고르거나 생성하세요.");
+  const { generateTitleDepthMap } = await import("@/editor/titleDepthGeneration");
+  const depth = await generateTitleDepthMap(art, signal ? { signal } : {});
+  signal?.throwIfAborted();
+  const resourceId = genId("title_depth");
+  const results = applyToolSequenceToStore(
+    [{ name: "upsert_resource", args: { resource: { id: resourceId, name: "타이틀 깊이 지도", kind: "title", dataUrl: depth.dataUrl } } }],
+    { summary: "AI 타이틀 깊이 지도", source: "agent" },
+  );
+  const failed = results.find((result) => !result.ok);
+  if (failed) throw new Error(failed.summary);
+  updateTitleScreen((settings) => {
+    settings.effects?.forEach((effect, at) => {
+      if (effect.kind === "parallax" && (index === undefined || index === at)) effect.depthResourceId = resourceId;
+    });
+  });
+}
+
+/** 깊이 시차 효과의 「깊이 지도 만들기」 버튼. */
+async function runTitleDepthGeneration(index: number, status: HTMLElement, rerender: SystemRefresh): Promise<void> {
+  status.dataset.state = "running";
+  status.textContent = "키아트를 보고 깊이 지도를 만드는 중입니다… (수십 초 걸릴 수 있습니다)";
+  try {
+    await attachTitleDepthMap(index);
+    status.dataset.state = "done";
+    rerender();
+  } catch (error) {
+    status.dataset.state = "error";
+    status.textContent = error instanceof Error ? error.message : String(error);
+  }
 }
 
 function refreshTitleEffectsLayer(): void {
@@ -2387,6 +2440,17 @@ async function runTitleArtGeneration(
       status.textContent = failed.summary;
       return;
     }
+    // 깊이 시차가 켜졌으면 새 그림에 맞는 깊이 지도도 이어서 만든다. 실패해도 키아트는 그대로 둔다(기본 기울기로 움직인다).
+    let depthNote = "";
+    if (store.getCurrent().system.titleScreen?.effects?.some((effect) => effect.kind === "parallax")) {
+      status.textContent = "키아트를 걸었습니다. 입체 움직임용 깊이 지도를 만드는 중입니다…";
+      try {
+        await attachTitleDepthMap(undefined, signal);
+      } catch (error) {
+        if (signal.aborted) throw error;
+        depthNote = " 깊이 지도는 만들지 못해 기본 기울기로 움직입니다.";
+      }
+    }
     status.dataset.state = "done";
     // 맞춤이 실패하면 프리셋 좌표가 그대로 들어간다 — 그림과 어긋날 수 있다는 사실을 숨기지 않는다.
     const freeFitFailed = !presetId && art.effects?.length === 1 && art.effects[0]?.kind === "camera";
@@ -2395,6 +2459,7 @@ async function runTitleArtGeneration(
       : art.effects
         ? "키아트를 배경에 걸고, 그림을 보고 위치를 맞춘 효과를 적용했습니다."
         : "키아트를 배경에 걸었습니다. 효과 위치 맞춤은 실패해 프리셋 좌표를 그대로 썼으니 그림과 어긋날 수 있습니다.";
+    status.textContent += depthNote;
     rerender();
   } catch (error) {
     if (signal.aborted) {
