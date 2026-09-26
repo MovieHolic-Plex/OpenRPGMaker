@@ -1,0 +1,21 @@
+{
+ "canvasAt": 24477,
+ "seedSavedAt": 74770,
+ "strokes": [
+  {
+   "stroke": 0,
+   "releaseToSavedMs": 5691,
+   "worstMainThreadStallMs": 1375
+  },
+  {
+   "stroke": 1,
+   "releaseToSavedMs": 6595,
+   "worstMainThreadStallMs": 985
+  },
+  {
+   "stroke": 2,
+   "releaseToSavedMs": 6748,
+   "worstMainThreadStallMs": 897
+  }
+ ]
+}

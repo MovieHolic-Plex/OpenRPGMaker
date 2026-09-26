@@ -334,7 +334,7 @@ class ProjectStore {
             else this.beginLocalProjectSession();
             this.remotePersistenceEnabled = !sharedDemo;
             this.remotePersistenceDisabledReason = sharedDemo ? "shared-demo" : null;
-            this.persistedBaseline = sharedDemo ? null : projectWithoutEventDrafts(this.current);
+            this.persistedBaseline = sharedDemo ? null : this.baselineFrom(this.current);
             resetManualProjectCommitBaseline(this.current);
             this.syncProjectUrlBar();
           }
@@ -565,7 +565,7 @@ class ProjectStore {
           });
         }
         this.writeAuthority = saved.authority;
-        this.persistedBaseline = projectWithoutEventDrafts(saved.project);
+        this.persistedBaseline = this.baselineFrom(saved.project);
         this.lastPersistenceReceipt = null;
         this.lastSavedHostRevision = null;
         this.persistenceRecovery = { kind: "ready", mirror: saved.mirror };
@@ -629,12 +629,12 @@ class ProjectStore {
         this.persistenceRecovery = { kind: "ready" };
         this.loaded = true;
         if (this.writeAuthority?.mode === "canonical") {
-          this.persistedBaseline = projectWithoutEventDrafts(this.current);
+          this.persistedBaseline = this.baselineFrom(this.current);
           this.dirtySinceLastPersist = false;
         }
         await this.normalizeCurrentProject();
         if (this.writeAuthority?.mode !== "canonical") {
-          this.persistedBaseline = projectWithoutEventDrafts(this.current);
+          this.persistedBaseline = this.baselineFrom(this.current);
           this.dirtySinceLastPersist = false;
         }
         resetManualProjectCommitBaseline(this.current);
@@ -680,7 +680,7 @@ class ProjectStore {
     // 메우는 만큼 «다르다» 로 달 수 있지만, 그 방향은 논리적으로 같은 스냅샷을 한 번 다시 얹는 것뿐이다.
     if (this.persistedBaseline && jsonEqual(snapshot.project, this.persistedBaseline)) return true;
     this.current = preserveEventDraftsOnProject(snapshot.project, this.current);
-    this.persistedBaseline = projectWithoutEventDrafts(snapshot.project);
+    this.persistedBaseline = this.baselineFrom(snapshot.project);
     this.writeAuthority = snapshot.authority;
     this.lastPersistenceReceipt = null;
     this.lastSavedHostRevision = null;
@@ -722,12 +722,12 @@ class ProjectStore {
       this.writeAuthority = authority;
       this.persistenceRecovery = { kind: "ready" };
       if (this.writeAuthority?.mode === "canonical") {
-        this.persistedBaseline = projectWithoutEventDrafts(this.current);
+        this.persistedBaseline = this.baselineFrom(this.current);
         this.dirtySinceLastPersist = false;
       }
       await this.normalizeCurrentProject();
       if (this.writeAuthority?.mode !== "canonical") {
-        this.persistedBaseline = projectWithoutEventDrafts(this.current);
+        this.persistedBaseline = this.baselineFrom(this.current);
         this.dirtySinceLastPersist = false;
       }
       resetManualProjectCommitBaseline(this.current);
@@ -966,6 +966,22 @@ class ProjectStore {
     this.markLocalMutation(descriptor);
     this.emit(descriptor);
     this.scheduleAutoSave();
+  }
+
+  /**
+   * 저장 기준본을 만든다(초안 제외 사적 사본). 첫 저장의 비교는 기준본의 요약 기억이 비어 있어 문서 전체를
+   * 요약했다(2026-09-26 실측, 81MB 새 프로젝트 첫 칠하기 diff 1.8s 동안 메인 스레드 정지). 한가할 때 원본의
+   * 요약을 미리 만들어 기준본에 넘긴다 — 기억은 값 대조로만 쓰이므로 그 사이 무엇이 바뀌어도 결과는 같다.
+   */
+  private baselineFrom(source: Project): Project {
+    const baseline = projectWithoutEventDrafts(source);
+    const lineage = this.contentLineage;
+    scheduleIdleWork(() => {
+      if (this.contentLineage !== lineage || this.persistedBaseline !== baseline) return;
+      jsonContentDigest(projectWireView(baseline));
+      shareContentDigests(baseline, this.current);
+    });
+    return baseline;
   }
 
   /** @internal */
@@ -1702,6 +1718,12 @@ function nonPersistentSessionAutoSaveState(): AutoSaveState {
     code: "session-not-persisted",
     message: "이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요.",
   };
+}
+
+function scheduleIdleWork(run: () => void): void {
+  const idle = (globalThis as { requestIdleCallback?: (cb: () => void, options?: { timeout: number }) => number }).requestIdleCallback;
+  if (typeof idle === "function") idle(run, { timeout: 3_000 });
+  else setTimeout(run, 500);
 }
 
 /** 저장 형태(초안 제외·와이어 보기)의 내용 요약. 영수증과 재로드 검증이 같은 함수를 써야 비교가 성립한다. */
