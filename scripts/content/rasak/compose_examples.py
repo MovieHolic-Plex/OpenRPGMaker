@@ -36,6 +36,9 @@ class Canvas:
         for x, y in cells:
             if not self.ok(x, y):
                 continue
+            # 2층 바닥 장식(풀숲·낙엽·자갈 조각)은 바닥 위에만. 흩뿌림 덩이가 집 지붕 끝에 걸리면 지붕에 풀이 돋는다(확대 QA 2026-09-27).
+            if layer == 2 and self.ground(x, y) not in ('floor', 'table'):
+                continue
             self.L[layer][y * self.w + x] = self.ctx.key_value(self.b, key)
 
     def tile(self, layer, t, x, y):
@@ -92,9 +95,12 @@ class Canvas:
     def try_obj(self, oid, x, y):
         """흩뿌림용: 물체 칸이 맵 안이고 같은 층 다른 물체와 겹치지 않고 바닥(floor) 위일 때만 찍는다. 찍었으면 True."""
         o = self.ctx.object(self.b, oid)
+        if '벽걸이' in o['name'] or '쓰지 말 것' in o['name'] or '벽 아랫줄에 놓음' in o['name']:   # 벽걸이는 벽면에만, 글자 딱지 등 금지 물체는 흩뿌리지 않는다
+            return False
         ly = o['layer']
         cells = [(x + c, y + r) for r, row in enumerate(o['cells']) for c, t in enumerate(row) if t >= 0]
-        if not all(self.ok(cx, cy) and (ly, cy * self.w + cx) not in self.owner and self.ground(cx, cy) == 'floor' for cx, cy in cells):
+        # 주인 기록 없이 찍힌 칸(시트 통째 배·건물 조각)도 이미 차 있으면 덮지 않는다(확대 QA: 배 등불이 대포를 덮음)
+        if not all(self.ok(cx, cy) and (ly, cy * self.w + cx) not in self.owner and self.L[ly][cy * self.w + cx] is None and self.ground(cx, cy) == 'floor' for cx, cy in cells):
             return False
         self.obj(oid, x, y)
         return True

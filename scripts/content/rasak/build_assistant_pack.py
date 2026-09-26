@@ -377,7 +377,7 @@ PURPOSES = {
 - **예제 창 넷을 그대로 찍어 맵을 채우지 않는다.** 시험 K1 에서 조수가 예제 창 네 개를 `stamp_layer_block` 으로 붙여 3층 600칸이 예제와 전부 같았다. 방 틀(천장·벽면 2줄·바닥)은 요청한 방 수·크기에 맞게 `paint_tiles` rect 로 새로 파고, 가구는 번호 사전에서 골라 방마다 직접 놓는다. 물체 배열 한두 개를 가져다 쓰는 것은 괜찮다.
 - **틀은 실내와 같다**: 맵 전체를 A4 윗면(검은 천장)으로 덮고 방마다 벽면 2줄 + 바닥을 판다. 방마다 벽 kind 를 바꾼다(회색 돌 24~31 / 검갈색 흙 8~15 / 짙은 벽돌 40~47). 바닥은 모자이크 A2 0~3.
 - **통로를 먼저 비운다**: 문과 문을 잇는 줄을 정해 두고 그 칸에는 물체를 놓지 않는다 — 관·뼈 무더기로 방을 막는 것이 가장 흔한 실패다.
-- **벽감 묘실**: 석관(`crypt_sarcophagus_*`, 큰 석관 `crypt2_stone_sarcophagus_big`)·묘비·유골 단지(`crypt_urn_*`)·뼈 무더기. 벽 선반(`crypt_wall_shelf_*`)은 벽면에만.
+- **벽감 묘실**: 석관(`crypt_sarcophagus_*`, 큰 석관 `crypt2_stone_sarcophagus_big`)·묘비·유골 단지(`crypt_urn_*`)·뼈 무더기. 매장 벽감(`crypt_wall_shelf_*` — 이름과 달리 흙 구멍 벽감)은 벽면 아랫줄에만. `crypt2_candle_skull_*` 는 초가 아니라 작은 무덤 표지, `crypt2_candle_tall` 은 나무 말뚝, 켜진 초는 `dungeon_candle_lit`.
 - **납골실**: 세운 관·눕힌 관(`crypt2_coffin_*`, 모양 섞기)·서 있는/앉은 해골(`crypt2_skeleton_*`)·횃대. 관은 벽을 따라 줄로.
 - **혼돈의 방**: 붉은 살덩이·촉수·알(`chaos_*`)을 큰 것부터 무리로. 다른 방에는 섞지 않는다.
 - **바닥 결**: 격자 덮개(A2 4)·모자이크 조각(A2 7)은 2층에 2×2 덩이로, 자갈·핏자국·뼈 조각은 1칸짜리를 드문드문.
@@ -1848,6 +1848,7 @@ def build_purpose(pid, b, maps, groups, tables, out_dir, rules):
 - 그림자: `paint_shadow`(quarters 또는 bits: 1=좌상 2=우상 4=좌하 8=우하). 지우기: `tile_erase layer:"shadow"`.
 - 지우기: `tile_erase layer:"2"|"3"|"4"|"shadow"` — 층을 골라 지운다(`"all"` 은 전부).
 - 사전에 없는 물체는 `tile_query {{ask:"labels", mapId, query:"한글 이름"}}` 로 찾는다(칸 이름표는 「물체 이름 (행,열)」, 설명에 층·통행·배열).
+- **움직이는 소품**(`anim_*` — 불꽃·등불·수정 빛·분수·풍차·물레방아·깃발·나비·물고기·물보라): 이름에 「애니」가 붙은 물체다. 칸 번호는 **각 칸 strip 의 첫 프레임**이라 3층에 그대로 찍으면 엔진이 제자리에서 되풀이 재생한다. 프레임 번호(+1·+2·+3)를 직접 찍지 않는다 — 멈춘 그림이 된다. `tile_query {{ask:"labels", query:"애니"}}` 로 목록을 본다. 한 장면에 두세 개면 충분하고, 문·길 앞은 피한다.
   재료 이름 도구(`fill_region`)의 material 은 사전의 이름을 **글자 그대로** 쓴다. `place_props`·`build_wall`·`build_roof` 는 이 팩에서 쓰지 않는다.
 
 ## 금지

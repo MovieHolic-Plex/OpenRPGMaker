@@ -30,6 +30,15 @@
         "Nature/Tileset_Nature_Rasak.png",
         "Nature/Tileset_Nature_TreesSpring_Rasak.png",
         "Town/Tileset_Fences_Rasak.png"
+      ],
+      "animSheets": [
+        "Nature/Water/!$Bubbles.png",
+        "Nature/Water/!$Ice_char.png",
+        "Nature/Water/!$Waterfall_Bottom.png",
+        "Nature/Water/!$Waterfall_Left.png",
+        "Nature/Water/!$Waterfall_Right.png",
+        "Nature/Water/!$Waterfall_Top.png",
+        "Nature/Water/Water Animations.png"
       ]
     },
     {
@@ -49,6 +58,13 @@
       "extraSheets": [
         "Nature/Tileset_Nature_Rasak.png",
         "Nature/Tileset_Rocks_Rasak.png"
+      ],
+      "animSheets": [
+        "Nature/Animals/Animal_Clam.png",
+        "Nature/Animals/Animal_Ducks.png",
+        "Nature/Animals/Animal_Fish.png",
+        "Nature/Animals/Animal_Lake.png",
+        "Nature/Animals/Animal_Molluscs.png"
       ]
     },
     {
@@ -135,6 +151,15 @@
         "Special_Buildings/Wild_Inn_Big.png",
         "Special_Buildings/Wild_Inn_Smal.png",
         "Special_Buildings/Wild_Smith.png"
+      ],
+      "animSheets": [
+        "Exterieur/!$AlarmBell.png",
+        "Exterieur/!$Campfire.png",
+        "Exterieur/!$Campfire2.png",
+        "Exterieur/!$Swing.png",
+        "Exterieur/!$WindChime.png",
+        "Mashines/!$Windmill.png",
+        "Mashines/$Watermill.png"
       ]
     },
     {
@@ -157,6 +182,20 @@
         "Interiors/Tileset_SmithAndWorkshop_Rasak.png",
         "Interiors/Tileset_Tailoring_Rasak.png",
         "Interiors/Tileset_Royal_Rasak.png"
+      ],
+      "animSheets": [
+        "Interieur/!$Grandfather-Clock.png",
+        "Interieur/!$Hanging-Clock.png",
+        "Interieur/!Terarium-Kit.png",
+        "Interieur/!Terarium.png",
+        "Interieur/$Aquarium Selfbuild.png",
+        "Interieur/$Small Clock.png",
+        "Interieur/Aquarium.png",
+        "Lights/!$Lightning Window.png",
+        "Lights/!$furnace.png",
+        "Lights/!Fire.png",
+        "Lights/!Firebowl.png",
+        "Lights/!Lantern.png"
       ]
     },
     {
@@ -180,6 +219,15 @@
         "Horror/Tileset_Horror_Rasak.png",
         "Dungeon/Tileset_Chaos.png",
         "Dungeon/Temple/Tilesets_Temple_inside_Rasak.png"
+      ],
+      "animSheets": [
+        "Dungeon/!$Temple_Snakehead.png",
+        "Dungeon/!Dungeon_Animated.png",
+        "Dungeon/!Grave_Animated.png",
+        "Mashines/!$Ventilator.png",
+        "Mashines/!Chains.png",
+        "Mashines/$Metallic_Mashine.png",
+        "Mashines/$Wooden_Mashine.png"
       ]
     },
     {
@@ -285,6 +333,16 @@
         "Ship/Tileset_ShipOld_Right_Rasak.png",
         "Ship/Tileset_BlackSails_Rasak.png",
         "Outposts/Tileset_Beach_Rasak.png"
+      ],
+      "animSheets": [
+        "Lights/!ShipLanterns.png",
+        "Ship/!$Front Sail Animated.png",
+        "Ship/!$ShipRopes.png",
+        "Ship/!FlagsLeft.png",
+        "Ship/!FlagsLeftDestroyed.png",
+        "Ship/!FlagsRight.png",
+        "Ship/!FlagsRightDestroyed.png",
+        "Ship/!SailsAnimated.png"
       ]
     },
     {
@@ -309,6 +367,29 @@
         "Nature/Tileset_MushroomForrestWinter_Rasak.png",
         "Nature/Tileset_Nature_GiantTrees_Rasak.png",
         "Nature/Tileset_Nature_PinkDream_Rasak.png"
+      ],
+      "animSheets": [
+        "Nature/Animals/Animal_Ants.png",
+        "Nature/Animals/Animal_Arachnids.png",
+        "Nature/Animals/Animal_Bugs.png",
+        "Nature/Animals/Animal_Butterfly.png",
+        "Nature/Animals/Animal_Firefly.png",
+        "Nature/Animals/Animal_Insects.png",
+        "Nature/Plants/!Tree Bird.png",
+        "Nature/Plants/!Tree Fruit.png",
+        "Nature/Plants/Element-Mushrooms.png",
+        "Nature/Plants/Falling leaves.png",
+        "Nature/Plants/Foldflower.png",
+        "Nature/Plants/Foldflower2.png",
+        "Nature/Plants/Foldflower3.png",
+        "Nature/Plants/Glowflower.png",
+        "Nature/Rocks/Floating Rocks Brown.png",
+        "Nature/Rocks/Floating Rocks Brown2.png",
+        "Nature/Rocks/Floating Rocks Brown3.png",
+        "Nature/Rocks/Floating Rocks Grey.png",
+        "Nature/Rocks/Floating Rocks Grey2.png",
+        "Nature/Rocks/Floating Rocks Grey3.png",
+        "Nature/lighteffect.png"
       ]
     },
     {
@@ -327,7 +408,11 @@
         "D": "Town/Tileset_Market_Rasak.png",
         "E": "Town/Tileset_Town_Rasak.png"
       },
-      "extraSheets": []
+      "extraSheets": [],
+      "animSheets": [
+        "Lights/!Christmas_Lights_and_animated.png",
+        "Lights/!advent_wreath.png"
+      ]
     },
     {
       "id": "rasak_desert",
@@ -363,7 +448,15 @@
         "D": "Nature/Tileset_Nature_TreesSummer_Rasak.png",
         "E": "Town/Tileset_Building_Rasak.png"
       },
-      "extraSheets": []
+      "extraSheets": [],
+      "animSheets": [
+        "Structures/!Fountain.png",
+        "Structures/!Fountain2.png",
+        "Structures/!Fountain_Statue.png"
+      ],
+      "tailSheets": [
+        "Bird Houses.png"
+      ]
     },
     {
       "id": "rasak_crypt",
@@ -399,7 +492,13 @@
         "D": "Dungeon/Temple/Tilesets_Temple_inside_Rasak.png",
         "E": "Dungeon/Crypt/Tileset_Crypt_Rasak.png"
       },
-      "extraSheets": []
+      "extraSheets": [],
+      "animSheets": [
+        "Lights/!$Crystal_Light_1.png",
+        "Lights/!$Crystal_Light_2.png",
+        "Lights/!$Crystal_Light_3.png",
+        "Lights/!Temple_Fire.png"
+      ]
     },
     {
       "id": "rasak_crypt_skulls",
@@ -614,6 +713,151 @@
     "Town/Tileset_Market_Rasak.png": "58cb44b76ba90687fe0209fced596ee67aa91385baffbc74c89499e99cae56e0",
     "Town/Tileset_Structure_Rasak.png": "6aa45ef35c981b8ab5f67f36f09d216e5a13f84fd15c8fe459b47d68fa5bda30",
     "Town/Tileset_Tannery_Painting_Laundry_Rasak.png": "4f770a3ff14e7aebb0f357a4297680dc6b8544c8520061453b08741bea5a076b",
-    "Town/Tileset_Town_Rasak.png": "0abc371d16126d760cf4d5792438a2d55dc6c8e8f68200e528c5fd1066324267"
+    "Town/Tileset_Town_Rasak.png": "0abc371d16126d760cf4d5792438a2d55dc6c8e8f68200e528c5fd1066324267",
+    "Animations/Dungeon/!$Temple_Snakehead.png": "d8d4e1f386fa612123859b42cd9c1c8417a5d0b388b37d3ca050af0bc20f1e38",
+    "Animations/Dungeon/!Dungeon_Animated.png": "c7a76358a98da4d8d91ecf649dc3460d89ea7e9402965a54023dc921d20eb6a5",
+    "Animations/Dungeon/!Grave_Animated.png": "37454a5b2833d9859c3acb69289528f4f8d9ec9968ced73a6ec2ef8224a5934b",
+    "Animations/Exterieur/!$AlarmBell.png": "c8850b4cbb2fc8701705d28cbd0a6f7bb3785205c7699ee4ee335f0efdfb5d93",
+    "Animations/Exterieur/!$Campfire.png": "84618dc1c28e9a3eccb259fd23609c52fe66a93d42992ed8dff646185b618bec",
+    "Animations/Exterieur/!$Campfire2.png": "31432025c81d510795cbf23bda5b331ed5f527c67d5a0b0766c1f9192278bfe0",
+    "Animations/Exterieur/!$Swing.png": "535adc3d95c02131203427ca4884f8c90a78e5c561dde73b20dae46b1d6e1059",
+    "Animations/Exterieur/!$WindChime.png": "ece170af7329d236abd1b37e59143468f315b9ebe88e35fecc617ec9c8317d98",
+    "Animations/Interieur/!$Grandfather-Clock.png": "3bf90549fe676d1afcee2f5acf8ffb6cb7871bcfe2c601d1e415dd6d7ffe4b6b",
+    "Animations/Interieur/!$Hanging-Clock.png": "12538822334645924716a80c2370de3912ba2223df4b4d3d736dca3c2af7ba53",
+    "Animations/Interieur/!Terarium-Kit.png": "3ef986af6c1dbc9ec1e45243e9acd060215aba91fb9818a19bd96e81fe8c2f35",
+    "Animations/Interieur/!Terarium.png": "5dc8cde8afb26ef76d4d4919ec39504258da6b30ccb13ed9467c7cbc6a568f08",
+    "Animations/Interieur/$Aquarium Selfbuild.png": "18254b19786c7fc9a3a7ff364fda538ecd481385bb846c4c28b88384bcb8c323",
+    "Animations/Interieur/$Small Clock.png": "59332aaae8f47248ad3f803840de56e88fa5c920ee9eced75a8958f03a7c334c",
+    "Animations/Interieur/Aquarium.png": "262e00a2422e36298e23e7211698189cc77df676cc7d248b10ddbdbfa1e4d212",
+    "Animations/Lights/!$Crystal_Light_1.png": "e997df11d1d626a2e4620c8ebc11fad1b2d2161c6a4fe048d6633665a0e31341",
+    "Animations/Lights/!$Crystal_Light_2.png": "70c31c05548cb0b7141d7ac966d95280ce2ccf42b68d804151a8fd865878f002",
+    "Animations/Lights/!$Crystal_Light_3.png": "ee14e417b75e1a91ef2e8b8873b9585580d880e8bda22a6aecbc5ae8c97c1827",
+    "Animations/Lights/!$Lightning Window.png": "00e5d98c4bebbeab4a07bc3ef1944a6eb7d5139921c8b54eb2d2f38f9d50569a",
+    "Animations/Lights/!$furnace.png": "9143c46cdf632921fc554ca290eacaafc382104bac59785b4afa943184d953d4",
+    "Animations/Lights/!Christmas_Lights_and_animated.png": "7b53f84283db12ca9b22e987f462a1377c3b8719d8e327cae5dc949fd16624c0",
+    "Animations/Lights/!Fire.png": "71346c4d691d104aa85859e4dae3c30f5c4db6eb18310832e93d5be4ef75bce0",
+    "Animations/Lights/!Firebowl.png": "a6333ef51e9aa3b9e43cf2898198a44298491b3f1b31da8d4dfc275097d352e9",
+    "Animations/Lights/!Lantern.png": "be339da03c7219318e192394551600998003d06e4b83a4b798bbdd3fcff9a215",
+    "Animations/Lights/!ShipLanterns.png": "0e080aaa5d0875979f466dbaa333b7c03c8441f003de930d7a7e41446599fa49",
+    "Animations/Lights/!Temple_Fire.png": "18a1b1983239909262a8142b4e5abdcb7bb0cf027e665c88a7e4a1690aad332e",
+    "Animations/Lights/!advent_wreath.png": "d7288c7a531c7cb451f563b0920d712363a2efcdfd523cad73e2a01501c38b4e",
+    "Animations/Mashines/!$Ventilator.png": "ba88534a476749ca215d2c3b1dd3bc86fc95231bdeb9ba54e760c4267d3eecf1",
+    "Animations/Mashines/!$Windmill.png": "04745f4853079739ed0de557839fede851a3ef733ae598a1a8c9ae1c262073c0",
+    "Animations/Mashines/!Chains.png": "c1970a61b2b4b075d4421f7c01ebc62a2cad519b357f9c66ae971e1a2c7d6f60",
+    "Animations/Mashines/$Metallic_Mashine.png": "df1d3c25afd2f85fac14aff06500007272cd1fe7556217f92ec282b7793ca023",
+    "Animations/Mashines/$Watermill.png": "2b2650e364ce39dab55e84f70be02979967818ea0cc43455cc2b0ff8a654fe90",
+    "Animations/Mashines/$Wooden_Mashine.png": "4bddb5463c1f300e76223d7284f9d5c23418e46ae7756f0d10b5c1c28efa6f18",
+    "Animations/Nature/Animals/Animal_Ants.png": "1c704f24112155375ec9aaa2d778fffe73cf7effd9399f0b8388db8c2229b58c",
+    "Animations/Nature/Animals/Animal_Arachnids.png": "d7a63f31fff215892b4d979c8dfda746135a0267d4313afab57445605ef6a9aa",
+    "Animations/Nature/Animals/Animal_Bugs.png": "dac26000fc489f6947ef9028ba90ade23d09269193f44bc21081cc25df0d0daf",
+    "Animations/Nature/Animals/Animal_Butterfly.png": "a46b335064c6fe209a8f4d3788e8cb09fc4efa86ec7111d766faf645034bc2b0",
+    "Animations/Nature/Animals/Animal_Clam.png": "ee0e736ae3c14bc8b30bf0c6f47c1cf2d4910e909447cac6c766ca162bc87e33",
+    "Animations/Nature/Animals/Animal_Ducks.png": "203618c9bf2c209492453284d205fb8fd8fe5e0a90c25182ff424e866fd4733f",
+    "Animations/Nature/Animals/Animal_Firefly.png": "919beb72c76b37e3e71c4bfeb02e83bee9badf86f700f838c5c167d0a639f225",
+    "Animations/Nature/Animals/Animal_Fish.png": "4b3afd048fe1d4d5b414260c459d960667f5f6b505b669c0525da8d535f15f02",
+    "Animations/Nature/Animals/Animal_Insects.png": "68e865043ecd0422dc662390a3658bb6f259bbde94a906a40844f8235604dba4",
+    "Animations/Nature/Animals/Animal_Lake.png": "eb5945ae64652a8e9c09301e382fddd322051c2cdf7bda4d1c9044aca3f13956",
+    "Animations/Nature/Animals/Animal_Molluscs.png": "cd0522db09d66c4c6857d7c77d2766e78d6754d01a4766c293454301475b4a53",
+    "Animations/Nature/Plants/!Tree Bird.png": "d40e0a8f68e86760fcbeac42ea80c50d69f092e2ec652b6517aa82ba0366d3d5",
+    "Animations/Nature/Plants/!Tree Fruit.png": "83c46ec0e551d8fa48e782651547dec7c8a221f1251daa37fd08fd4f1d544022",
+    "Animations/Nature/Plants/Element-Mushrooms.png": "574d21c1cfc8c48fc21628b221567bd1fa935e4781365df5d084cb9d21d6d46d",
+    "Animations/Nature/Plants/Falling leaves.png": "a638ef13289a878a9f5c8809afa06ea35e95bf155861dadfe6bd08c27ce33994",
+    "Animations/Nature/Plants/Foldflower.png": "9e8a87810659a3ce339de8cf35a6365e1ea8dd51f4865b7bd006789f0b5512a6",
+    "Animations/Nature/Plants/Foldflower2.png": "064c45fc39974fce3b09911341ff8844784fc62f06fd7e21c2b7e073a66498b5",
+    "Animations/Nature/Plants/Foldflower3.png": "cc9baa3eaac3588e2631a32488fdbcdcf1ea2e9856cb3cff18485831cd0d3929",
+    "Animations/Nature/Plants/Glowflower.png": "fd368e3432ab044277c3577778a271d2dd3bf6ffd13aa25975c1374080ec3c02",
+    "Animations/Nature/Rocks/Floating Rocks Brown.png": "8becc7d7cbc581bd4061854688f4e8d43ebf4fa9e32333295c2b8771f0fa9e92",
+    "Animations/Nature/Rocks/Floating Rocks Brown2.png": "d14610cdbb858b3ee06dfc9f13dce71b50b4e78286e6caf41c40f097d5646a8c",
+    "Animations/Nature/Rocks/Floating Rocks Brown3.png": "ebe0bd514058ab6062bd8ef9bb96f2fdea60ace89dea95383f1a1d275df5bc5a",
+    "Animations/Nature/Rocks/Floating Rocks Grey.png": "b5d61abc48dc721596b8cdb8d2306a5b4286b2a8e414bbc1da9297d8188363a3",
+    "Animations/Nature/Rocks/Floating Rocks Grey2.png": "e0a57da060f6792700eb7f32b2484f7da764577b13abfeba9a6d66a908feaff2",
+    "Animations/Nature/Rocks/Floating Rocks Grey3.png": "2afaf4c9c9f4e2f4e9286ea0b2ac9f75b7287daf47a64f6255532997f224ade2",
+    "Animations/Nature/Water/!$Bubbles.png": "9e6414f2cc33ee988b1343716c0a85f021fe127827e1689d7173285c9751a749",
+    "Animations/Nature/Water/!$Ice_char.png": "f10a59f904d2cb88cb33b30726b690b775596d621c3cc1fb00d86d355367fbe5",
+    "Animations/Nature/Water/!$Waterfall_Bottom.png": "9c4e2374c2bb8096424507aeb18e502b4d0ab54e10f058f71687f84887c34db2",
+    "Animations/Nature/Water/!$Waterfall_Left.png": "8dbc1fad0bbfaf825315fdec5558f9f79727d9908432818616cf1761aa776285",
+    "Animations/Nature/Water/!$Waterfall_Right.png": "da15d41d1fd933533fc183d00f559dd969fd719c0fa7378bde9c794c5f794e17",
+    "Animations/Nature/Water/!$Waterfall_Top.png": "123df82278f6223278ff2e7d26b7317246198681c5b93f889b699f9dc8409037",
+    "Animations/Nature/Water/Water Animations.png": "e3ae71862dba0d63816d0ee3f4652696d6dcce1558ff1e29bdff0849657f1efa",
+    "Animations/Nature/lighteffect.png": "47f7ab019a7a4f55d211c5a2c3da3eed85816a613b4cce9c35d5dfbc83b56dc9",
+    "Animations/Ship/!$Front Sail Animated.png": "ef078ac955ebc4f77e2a281db7aa4646ee7c95c81a9907479e54b9578c3e62ac",
+    "Animations/Ship/!$ShipRopes.png": "892742a772a6660fe3e7c13e24994739d194dd6e49d12a2ed027f66c957a4005",
+    "Animations/Ship/!FlagsLeft.png": "62dea33a3e86becbf20040d776f103b856d5eaf1a18748e948afb8d115845825",
+    "Animations/Ship/!FlagsLeftDestroyed.png": "36430739181f957ab718023d07ade3bc497eb8af6ca28df83469996f53fce5f0",
+    "Animations/Ship/!FlagsRight.png": "986c81c063d5491a330185e7919ac23f0c7d1958bb77e944b035f4a721bdf114",
+    "Animations/Ship/!FlagsRightDestroyed.png": "d98e8eac047a281332c2f4fb2a57b5e30bf2842df0d09eec7076e2a09e9c66b1",
+    "Animations/Ship/!SailsAnimated.png": "d1cf282547977b1e2e454b13065ffca571c51cd1a2ce27c4f72dbe4c1b54fb24",
+    "Animations/Structures/!Fountain.png": "104aa60ad2e941d9820320cf8696e06f8deb99816c51ae559720129203ab7cd5",
+    "Animations/Structures/!Fountain2.png": "fea3c0144115d87d9efc1a55ebe2c913cb1a8984ce30353f6810d9896765ed4d",
+    "Animations/Structures/!Fountain_Statue.png": "aee2dd0732371000e3402950f1abf368c628796fa510b88305b0b4a6658344a9"
+  },
+  "animExcluded": {
+    "!Japanese.png": "일본풍 문·장지 열림 섞인 시트 — 절반이 열림 단계(이벤트 전용)",
+    "Battlefield/!$Ballista.png": "공성 병기 발사·이동(이벤트 전용 — 투석기·공성탑은 발사 순서가 있는 연출)",
+    "Battlefield/!$CatapultProjectile.png": "공성 병기 발사·이동(이벤트 전용 — 투석기·공성탑은 발사 순서가 있는 연출)",
+    "Battlefield/!$Catapult_Moving.png": "공성 병기 발사·이동(이벤트 전용 — 투석기·공성탑은 발사 순서가 있는 연출)",
+    "Battlefield/!$Siegetower_Big.png": "공성 병기 발사·이동(이벤트 전용 — 투석기·공성탑은 발사 순서가 있는 연출)",
+    "Battlefield/!Canon.png": "공성 병기 발사·이동(이벤트 전용 — 투석기·공성탑은 발사 순서가 있는 연출)",
+    "Battlefield/!Catapult.png": "공성 병기 발사·이동(이벤트 전용 — 투석기·공성탑은 발사 순서가 있는 연출)",
+    "Battlefield/!Catapult_Fire.png": "공성 병기 발사·이동(이벤트 전용 — 투석기·공성탑은 발사 순서가 있는 연출)",
+    "Battlefield/!Catapult_Ice.png": "공성 병기 발사·이동(이벤트 전용 — 투석기·공성탑은 발사 순서가 있는 연출)",
+    "Battlefield/!Catapult_PoisonFire.png": "공성 병기 발사·이동(이벤트 전용 — 투석기·공성탑은 발사 순서가 있는 연출)",
+    "Battlefield/!Siege_Ram.png": "공성 병기 발사·이동(이벤트 전용 — 투석기·공성탑은 발사 순서가 있는 연출)",
+    "Battlefield/!Siegetower.png": "공성 병기 발사·이동(이벤트 전용 — 투석기·공성탑은 발사 순서가 있는 연출)",
+    "Battlefield/Seamines.png": "공성 병기 발사·이동(이벤트 전용 — 투석기·공성탑은 발사 순서가 있는 연출)",
+    "Chaos/!$Chaos_Door.png": "혼돈 문 열림(이벤트 전용)",
+    "Chaos/!Chaos-Spawning_Virus1.png": "혼돈 번식 단계 — 퍼지는 과정(이벤트 전용)",
+    "Chaos/!Chaos-Spawning_Virus2.png": "혼돈 번식 단계 — 퍼지는 과정(이벤트 전용)",
+    "Chaos/!Chaos-Spread.png": "혼돈 번짐 단계(이벤트 전용)",
+    "Chaos/!Chaos-Spread2.png": "혼돈 번짐 단계(이벤트 전용)",
+    "Doors/!$Drawbrige.png": "문·성문·도개교 열림 단계(이벤트 전용 — 반복하면 계속 여닫힘)",
+    "Doors/!$Gate3.png": "문·성문·도개교 열림 단계(이벤트 전용 — 반복하면 계속 여닫힘)",
+    "Doors/!BigDoor1.png": "문·성문·도개교 열림 단계(이벤트 전용 — 반복하면 계속 여닫힘)",
+    "Doors/!BigDoor1_Bright.png": "문·성문·도개교 열림 단계(이벤트 전용 — 반복하면 계속 여닫힘)",
+    "Doors/!BigDoor1_Dark.png": "문·성문·도개교 열림 단계(이벤트 전용 — 반복하면 계속 여닫힘)",
+    "Doors/!BigDoor2.png": "문·성문·도개교 열림 단계(이벤트 전용 — 반복하면 계속 여닫힘)",
+    "Doors/!BigDoor2_Bright.png": "문·성문·도개교 열림 단계(이벤트 전용 — 반복하면 계속 여닫힘)",
+    "Doors/!BigDoor2_Dark.png": "문·성문·도개교 열림 단계(이벤트 전용 — 반복하면 계속 여닫힘)",
+    "Doors/!BigDoor3.png": "문·성문·도개교 열림 단계(이벤트 전용 — 반복하면 계속 여닫힘)",
+    "Doors/!BigDoor3_Bright.png": "문·성문·도개교 열림 단계(이벤트 전용 — 반복하면 계속 여닫힘)",
+    "Doors/!BigDoor3_Dark.png": "문·성문·도개교 열림 단계(이벤트 전용 — 반복하면 계속 여닫힘)",
+    "Doors/!Door.png": "문·성문·도개교 열림 단계(이벤트 전용 — 반복하면 계속 여닫힘)",
+    "Doors/!Door_shadow.png": "문·성문·도개교 열림 단계(이벤트 전용 — 반복하면 계속 여닫힘)",
+    "Doors/!GateFence.png": "문·성문·도개교 열림 단계(이벤트 전용 — 반복하면 계속 여닫힘)",
+    "Dungeon/!BasePlate.png": "누름판 정지 그림 — 이벤트 받침(이벤트 전용)",
+    "Dungeon/!Buttons.png": "누름 단추 단계(이벤트 전용)",
+    "Dungeon/!Chest.png": "상자 열림 단계(이벤트 전용)",
+    "Dungeon/!Dungeon_Hidden_Path.png": "숨은 통로 열림 단계(이벤트 전용)",
+    "Dungeon/!Stalag-Konsole.png": "석순 조종대 단계(이벤트 전용 퍼즐)",
+    "Dungeon/!Stalag-Konsole1.png": "석순 조종대 단계(이벤트 전용 퍼즐)",
+    "Dungeon/!Stalag-Konsole2.png": "석순 조종대 단계(이벤트 전용 퍼즐)",
+    "Dungeon/!Stalag-Konsole3.png": "석순 조종대 단계(이벤트 전용 퍼즐)",
+    "Dungeon/!Stalag-Konsole4.png": "석순 조종대 단계(이벤트 전용 퍼즐)",
+    "Dungeon/!Switch_Rasak.png": "스위치 켜짐 단계(이벤트 전용)",
+    "Dungeon/Traps.png": "함정 작동 단계(이벤트 전용, 칸 48×72 비표준)",
+    "Dungeon/Traps2.png": "함정 작동 단계(이벤트 전용, 칸 48×72 비표준)",
+    "Exterieur/!$Haul Tree Fall.png": "나무 베어 넘어짐 단계(이벤트 전용)",
+    "Exterieur/!$Haul Tree Winter.png": "나무 베어 넘어짐 단계(이벤트 전용)",
+    "Exterieur/!$Haul Tree.png": "나무 베어 넘어짐 단계(이벤트 전용)",
+    "Exterieur/!Bird Houses.png": "새집 애니 시트(칸 12×24 — 48 격자 아님). 같은 새집 그림은 Tileset/Bird Houses.png(48 격자, 3×7칸)로 rasak_garden 에 구움",
+    "Magic/Magic Circle.png": "마법진 발동 연출(칸 144×144, 화면 연출)",
+    "Mashines/$Wooden Crane.png": "기중기 회전 단계(이벤트 전용)",
+    "Mashines/Crane Cargo right.png": "기중기 짐 싣기 단계(이벤트 전용)",
+    "Mashines/Crane cargo left.png": "기중기 짐 싣기 단계(이벤트 전용)",
+    "Nature/Animals/Animal_Cave.png": "걷는 동굴 짐승 — 이동 이벤트 필요",
+    "Nature/Animals/Animal_Forrest_1.png": "걷는 숲 짐승(사슴·곰 등 4방향 걷기) — 이동 이벤트 필요",
+    "Nature/Animals/Animal_Forrest_2.png": "걷는 숲 짐승 — 이동 이벤트 필요",
+    "Nature/Animals/Animal_Fox.png": "걷는 짐승(4방향 걷기) — 제자리 반복하면 헛걸음, 이동 이벤트 필요",
+    "Nature/Animals/Animal_Snakes.png": "기어가는 뱀(4방향 이동) — 이동 이벤트 필요",
+    "Nature/Animals/Animal_Wolf.png": "걷는 짐승(4방향 걷기) — 제자리 반복하면 헛걸음",
+    "Nature/Lightning.png": "번개 화면 효과(칸 216×216, 타일 아님 — 화면 연출)",
+    "Structures/!Fountain_Statue18+.png": "성인 표현 조각상(18+) — 공용 묶음에 넣지 않음",
+    "Transportation/!$Train.png": "열차·썰매 이동 연출(이벤트 전용 — 캐릭터처럼 움직이는 탈것)",
+    "Transportation/!$Train_Coal_Lore.png": "열차·썰매 이동 연출(이벤트 전용 — 캐릭터처럼 움직이는 탈것)",
+    "Transportation/!Train_Wagon.png": "열차·썰매 이동 연출(이벤트 전용 — 캐릭터처럼 움직이는 탈것)",
+    "Transportation/Sled.png": "열차·썰매 이동 연출(이벤트 전용 — 캐릭터처럼 움직이는 탈것)"
+  },
+  "tileExcluded": {
+    "Horror/Tileset_Chaos.png": "Dungeon/Tileset_Chaos.png 와 바이트까지 같은 파일(sha256 동일) — 그쪽으로 rasak_dungeon·rasak_crypt 에 구움"
   }
 }

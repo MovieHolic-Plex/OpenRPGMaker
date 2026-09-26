@@ -15,6 +15,8 @@
 #   S1.. whole-building pictures (Special_Buildings): padded on the right/top to 48px, row-major, fully
 #        transparent cells are not stored; the section's `grid` maps [y][x] to the atlas index (-1 = blank)
 #   Autotile kinds whose source block is fully transparent are skipped; the manifest lists kinds.
+#   N1.. animation sheets (Fantasy/Animations, MZ character sheets '!'/'$'): one object per character, every 48px cell
+#        stores its frames consecutively and gets one animationStrip; the section's `characters[].grid` maps cells to strip bases
 #   shadow  15 synthetic MZ auto-shadow quarter masks (bits 1..15)
 # manifest.json maps every atlas index back to its MZ tileId.
 import argparse, hashlib, json, os, sys
@@ -134,6 +136,80 @@ def bake_building(atlas, sheet, rel):
     return grid
 
 
+def anim_characters(sheet, rel):
+    """RPG Maker MZ 캐릭터 시트('!'·'$' 접두어) → 캐릭터마다 반복 재생 프레임 원점 목록.
+    '$' = 3열×4줄 한 캐릭터, 아니면 12열×8줄 = 캐릭터 8개(각 3열×4줄).
+    아래 방향 줄의 3프레임이 움직이면 0,1,2,1 로 되풀이하고(불꽃·물결·날갯짓),
+    줄 안은 같고 줄끼리 다르면 네 줄이 단계라 가운데 열을 위→아래로 되풀이한다(깜빡이는 빛·도는 풍차).
+    어느 쪽도 아니면 정지 그림 하나."""
+    h, w = sheet.shape[:2]
+    single = '$' in Path(rel).name
+    cols, rows = (3, 4) if single else (12, 8)
+    cw, ch = w // cols, h // rows
+    out = []
+    for k in range(1 if single else 8):
+        bx = 0 if single else (k % 4) * cw * 3
+        by = 0 if single else (k // 4) * ch * 4
+        F = [[sheet[by + r * ch:by + (r + 1) * ch, bx + f * cw:bx + (f + 1) * cw].astype(int) for f in range(3)] for r in range(4)]
+        if not any(F[r][f][:, :, 3].any() for r in range(4) for f in range(3)):
+            continue
+
+        def d(a, b):
+            m = (a[:, :, 3] > 0) | (b[:, :, 3] > 0)
+            return float(np.abs(a - b)[m].mean()) if m.any() else 0.0
+        inrow = max(d(F[0][0], F[0][1]), d(F[0][1], F[0][2]))
+        across = max(d(F[0][1], F[r][1]) for r in (1, 2, 3))
+        if inrow > 3:
+            frames, mode = [(bx + f * cw, by) for f in (0, 1, 2, 1)], 'row'
+        elif across > 3:
+            frames, mode = [(bx + cw, by + r * ch) for r in range(4)], 'rows'
+        else:
+            frames, mode = [(bx + cw, by)], 'still'
+        out.append({'character': k, 'cw': cw, 'ch': ch, 'frames': frames, 'mode': mode})
+    return out
+
+
+def bake_anim(atlas, sheet, rel, fps):
+    """애니메이션 시트 한 장 → 캐릭터마다 물체 하나. 캐릭터 칸(cw×ch)을 48 배수로(위·양옆 투명 덧대기, 밑변은 칸 경계) 맞춰
+    48 칸으로 쪼개고, 칸마다 프레임을 연속으로 저장해 strip 하나를 단다. grid[y][x] = 그 칸 strip 의 첫 프레임(-1 = 빈 칸)."""
+    atlas.pad_row()
+    chars = []
+    for c in anim_characters(sheet, rel):
+        cw, ch, frames = c['cw'], c['ch'], c['frames']
+        cols, rows = -(-cw // T), -(-ch // T)
+        padx = (cols * T - cw) // 2
+        pads = []
+        for fx, fy in frames:
+            p = np.zeros((rows * T, cols * T, 4), np.uint8)
+            p[rows * T - ch:, padx:padx + cw] = sheet[fy:fy + ch, fx:fx + cw]
+            pads.append(p)
+        grid = []
+        for y in range(rows):
+            row = []
+            for x in range(cols):
+                cells = [p[y * T:(y + 1) * T, x * T:(x + 1) * T] for p in pads]
+                if all(blank(t) for t in cells):
+                    row.append(-1)
+                    continue
+                base = len(atlas.tiles)
+                for f, t in enumerate(cells):
+                    atlas.add(t.copy(), {'slot': 'N', 'file': rel, 'character': c['character'], 'x': x, 'y': y, 'frame': f})
+                if len(cells) > 1:
+                    atlas.strips.append({'baseTile': base, 'frames': len(cells), 'fps': fps})
+                row.append(base)
+            grid.append(row)
+        chars.append({'character': c['character'], 'mode': c['mode'], 'frames': len(frames), 'size': [cols, rows], 'grid': grid})
+    return chars
+
+
+def pad_sheet(sheet):
+    """B..E 와 같은 16열×16줄(256칸) 판으로 덧댄다 — 작은 시트(새집 3×7칸)도 plain() 의 칸 번호 규칙을 그대로 쓴다."""
+    out = np.zeros((16 * T, 16 * T, 4), np.uint8)
+    h, w = sheet.shape[:2]
+    out[:min(h, 16 * T), :min(w, 16 * T)] = sheet[:16 * T, :16 * T]
+    return out
+
+
 def bake_shadows(atlas):
     atlas.pad_row()
     for bits in range(1, 16):
@@ -184,6 +260,26 @@ def main():
                      'size': [len(grid[0]), len(grid)], 'grid': grid})
     shadow_start = (len(atlas.tiles) + COLS - 1) // COLS * COLS
     bake_shadows(atlas)
+    # 애니 시트는 그림자 **뒤**에 둔다 — 앞에 두면 그림자·합성 칸 번호가 밀려 기존 맵(pNN 재현·예제)이 틀어진다.
+    atlas.pad_row()
+    # 그림자 뒤 일반 물체 시트(tailSheets): 기존 번호를 밀지 않고 시트를 더할 때(새집 시트 2026-09-27). 슬롯 이름 T1..
+    for i, rel in enumerate(bundle.get('tailSheets', [])):
+        path = src / rel
+        digest = sha256(path)
+        if known.get(rel) and known[rel] != digest:
+            raise SystemExit(f'{rel}: sha256 differs from the pack this bundle was written for ({digest})')
+        start = (len(atlas.tiles) + COLS - 1) // COLS * COLS
+        bake_slot(atlas, f'T{i + 1}', pad_sheet(load(path)), bundle.get('waterFps', 4))
+        used.append({'slot': f'T{i + 1}', 'file': rel, 'sha256': digest, 'start': start, 'end': len(atlas.tiles)})
+    anim_root = src.parent / 'Animations'
+    for i, rel in enumerate(bundle.get('animSheets', [])):
+        path = anim_root / rel
+        digest = sha256(path)
+        if known.get('Animations/' + rel) and known['Animations/' + rel] != digest:
+            raise SystemExit(f'{rel}: sha256 differs from the pack this bundle was written for ({digest})')
+        start = len(atlas.tiles) + (-len(atlas.tiles)) % COLS
+        chars = bake_anim(atlas, load(path), rel, bundle.get('animFps', 6))
+        used.append({'slot': f'N{i + 1}', 'file': 'Animations/' + rel, 'sha256': digest, 'start': start, 'end': len(atlas.tiles), 'characters': chars})
     atlas.pad_row()
     rows = len(atlas.tiles) // COLS
     img = np.zeros((rows * T, COLS * T, 4), np.uint8)
