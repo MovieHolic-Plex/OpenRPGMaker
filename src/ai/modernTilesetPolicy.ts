@@ -1,4 +1,5 @@
 import type { Project, TilesetDef } from '@/project/types';
+import { packTownTargetFor } from './piAgent/packTownRoute';
 
 /** Authoring policy, not a download/license verifier. Freeze installed PAW pixels before the run. */
 export const MODERN_TILESET_POLICY_LINE = '현대·현대 일본 맵(도시/학교/교실/주택/상점/시설 실내)은 Pixel Art World(yms.main.jp/dotartworld)의 사용자 설치 칩셋과 그 공용 파생 타일셋만 사용한다. 이 규칙은 일반 야외 기본 칩셋/판타지 집/실내 자동 생성 지침보다 우선한다. 다른 현대 소재(Modern Exteriors 등)나 판타지 기본 칩셋으로 대체·혼합하지 않는다. 설치 목록과 해당 용도 참고문서의 모든 MD/그림을 읽고 요청에 맞는 평면을 직접 배치한다. 필요한 PAW 칩셋이 없으면 자료집 → 맵 → 타일 → 외부 타일셋 다운로드에서 제작자 페이지를 열어 원본 PNG를 받고 가져오도록 안내한다. 다운로드/설치 완료를 지어내거나 완성 맵 복사를 새 설계라고 보고하지 않는다.';
@@ -9,6 +10,9 @@ export function isPawTileset(tile: TilesetDef | undefined): boolean {
 }
 
 export function requestsModernMap(project: Project, task: string, mapIds: readonly string[] = []): boolean {
+  // 팩 도시 타일셋(Rasak Modern 등) 마을은 PAW 정책 밖이다 — 팩 이름의 «Modern/모던» 이 PAW 전용 게이트를 켜서
+  // 그 타일셋 쓰기를 모두 거부했다(2026-09-26 헤드리스 시험 run-1~3).
+  if (packTownTargetFor(project, task, null) || mapIds.some(id => packTownTargetFor(project, undefined, id))) return false;
   const mapWork = /맵|지도|마을|도시|학교|교실|실내|주택|아파트|상점|가게|거리|복도|이자카야|편의점|사무실|의원|병원|방(?:을|이|에|도|\s)|\b(?:map|town|city|school|classroom|interior|house|shop|street|room|office|clinic)\b/i.test(task);
   const positive = task.replace(/(?:현대|모던)(?:식|풍|가|는)?\s*(?:말고|아닌|아니라|제외)|\bnot\s+(?:modern|contemporary)\b/gi, '');
   const modern = /현대(?!\s*자동차)|모던|\b(?:modern|contemporary)\b/i.test(positive);
