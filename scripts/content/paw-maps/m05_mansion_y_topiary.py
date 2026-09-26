@@ -67,7 +67,7 @@ TN, RT, SE, CV, PK, SC, GY = 'ST-Town-E01.png', 'ST-RTown-E01.png', 'ST-Sento-E0
 def rtown(m, x, y, name, sh=RT, wall=None, roof=None, awning=True, front='shop', window=True, fire=True):
     """retro-rtown-whole-building (6x8) with wall/roof tiles remapped on the same sheet (TOWN.md 건물 다양화)"""
     WALL = {'grey': {232: 266, 233: 267, 234: 266, 240: 266, 241: 267, 242: 266}, 'plaster': {232: 250, 233: 251, 234: 252, 240: 250, 241: 251, 242: 252}}.get(wall, {})
-    ROOF = {'dark': {274: 283, 282: 291, 302: 299}, 'light': {274: 286, 282: 294, 302: 302}, 'mid': {274: 281, 282: 289, 302: 292}}.get(roof, {})
+    ROOF = {'dark': {274: 283, 282: 291, 302: 303}, 'light': {274: 286, 282: 294, 302: 302}, 'mid': {274: 281, 282: 289, 302: 292}}.get(roof, {})
     c = next(c for p in J('retrotown-exteriors-layout.json') for c in p['composites'] if c['id'] == 'retro-rtown-whole-building')
     claim(m, x, y, 6, 8, name); s = sheet(sh); im = Image.new('RGBA', (192, 256))
     for p in c['parts']:
@@ -194,63 +194,69 @@ def finish(m):
 
 V = 'y'; SH = 'ST-MsionY-E01.png'
 def mx(rid, x, y, name=None): rec(m, SH, f'msex-y-' + rid, x, y, name or f'{rid}@{x},{y}')
-m = Map('m05_mansion_y_topiary', '양관 Y 정원수 길', 36, 26, 'exterior', '노란 양관. 두꺼운 생울타리 안, 남문에서 굽이치며 현관으로 오르는 자갈 관리로, 곡선으로 깎은 정원수 생울타리 줄과 동서 화단.')
-
-def box(x, y, w, h): return {(xx, yy) for yy in range(y, y + h) for xx in range(x, x + w)}
-def octo(cx, cy, rows): return {(cx + dx, cy + dy) for dy, hw in rows for dx in range(-hw, hw + 1)}
-def mir(cells, axis=34): return {(axis - x, y) for x, y in cells}
-def ring(inside, gate=()):
-    """1-cell hedge/fence following the 8-neighbour outline of an arbitrary inside cell set"""
-    return {(x, y) for y in range(m.h) for x in range(m.w) if (x, y) not in inside and (x, y) not in gate
-            and any((x + a, y + b) in inside for a in (-1, 0, 1) for b in (-1, 0, 1))}
-def core(cells): return {c for c in cells if all((c[0] + a, c[1] + b) in cells for a, b in ((1, 0), (-1, 0), (0, 1), (0, -1)))}
-def paint(cells, ref, name=None):
-    m.cells(sorted(cells), ref)
-    if name:
-        for x, y in cells: claim(m, x, y, 1, 1, name)
-def onbed(rid, x, y, name):
-    """standing plant on a bed: every cell must be bed (then the bed claim is handed over)"""
-    q = CATALOG['recipes'][SH][f'msex-{V}-' + rid]['rect']
-    cs = box(x, y, q['width'], q['height'])
-    assert all(OWN.get(c) == 'bed' for c in cs), (name, 'not on bed')
-    for c in cs: del OWN[c]
-    mx(rid, x, y, name)
-
+def blob(rows, x0, y0): return [(x0 + dx, y0 + dy) for dy, r in enumerate(rows) for dx, c in enumerate(r) if c == 'x']
+m = Map('m05_mansion_y_topiary', '양관 Y 정원수 길', 36, 26, 'exterior', '노란 양관. 두툼한 생울타리 안에 굽은 자갈 관리로, 무리 지은 정원수, 모양이 다른 동서 화단. 남쪽 대문 밖은 골목.')
 m.fill(0, 0, 36, 26, auto('SA-GrassC01.png'))
-# boundary hedge: a 2-row north mass that steps down beside the house, stepped east/west sides, south gate
-inside = (box(2, 2, 32, 21) | box(4, 1, 28, 1) | box(4, 23, 10, 1) | box(21, 23, 11, 1)) - \
-         {(2, 2), (33, 2), (2, 3), (33, 3), (2, 22), (33, 22), (2, 21), (33, 21), (3, 22), (32, 22)}
-inside |= box(14, 23, 7, 1) | box(14, 1, 7, 1)
-gate = box(16, 24, 3, 2)
-inside -= box(4, 1, 10, 1) | box(21, 1, 11, 1)          # north hedge is 2 rows deep beside the house
-inside |= box(14, 0, 7, 1)                                  # lawn strip behind the house, no 1-tile hedge strip on the edge
-paint(ring(inside, gate), auto('SA-GBorderB01.png'), 'hedge')
-m.cells(sorted(box(0, 0, 36, 26) - inside - gate - {c for c in OWN if OWN[c] == 'hedge'}), auto('SA-GBorderB01.png'))
-for c in sorted(box(0, 0, 36, 26) - inside - gate):
-    if c not in OWN: claim(m, *c, 1, 1, 'hedge')
-# gravel walk: gate -> jogs west -> climbs back to the porch; side loops round each hedge garden
-walk = (box(16, 21, 3, 5) | box(14, 18, 4, 3) | box(13, 15, 3, 3) | box(14, 13, 3, 2) | box(15, 11, 5, 2)) - {(13, 15), (19, 12), (15, 12)}
-walk |= box(17, 19, 2, 2)
-def dil(c): return {(x + a, y + b) for x, y in c for a in (-1, 0, 1) for b in (-1, 0, 1)}
-stw = octo(8, 18, [(-2, 2), (-1, 3), (0, 4), (1, 3), (2, 2)]); ste = octo(26, 17, [(-2, 2), (-1, 3), (0, 4), (1, 3)])
-hw, he = dil(stw) - stw, dil(ste) - ste                       # clipped hedge ring round a stone court
-loopw, loope = dil(dil(stw)) - dil(stw), dil(dil(ste)) - dil(ste)   # gravel loop round each hedge garden, 4-connected
-walk |= box(19, 16, 2, 2)
-paint(walk | loopw | loope, auto('SA-SRoad02.png'))
-comp(m, 'msex-y-whole-house', 14, 1, 'house')          # 7x10, porch (17,10) -> approach (17,11)
-paint(hw, auto('SA-BorderG02.png'), 'hrow-w'); paint(he, auto('SA-BorderG02.png'), 'hrow-e')
-paint(stw, auto('SA-Stone01.png')); paint(ste, auto('SA-Stone01.png'))
-mx('flower-pedestal', 8, 17, 'ped-w'); mx('flower-pedestal', 26, 16, 'ped-e')
-# north beds flanking the house: notched outlines, flowers only inside, topiaries behind
-bw = box(4, 8, 8, 3) - {(4, 8), (11, 10), (4, 10)} | {(5, 7), (6, 7)}
-be = mir(bw)
-paint(bw | be, auto('SA-Kadan03.png'))
-for x, y in bw | be: claim(m, x, y, 1, 1, 'bed')
-onbed('rose-pink', 6, 8, 'rose-w'); onbed('rose-red', 27, 8, 'rose-e')
-m.cells(sorted({c for c in core(bw) | core(be) | {(9, 9), (10, 9), (24, 9), (25, 9)} if OWN.get(c) == 'bed'}), auto('SA-Flower01.png'), 'up')
-mx('topiary-tall', 4, 3, 'tall-a'); mx('topiary-round', 8, 3, 'rnd-a'); mx('topiary-tall', 11, 2, 'tall-b')
-mx('topiary-round', 22, 3, 'rnd-b'); mx('topiary-tall', 25, 2, 'tall-c'); mx('topiary-round', 29, 4, 'rnd-c')
-# benches off the walk, staggered
-mx('bench-front', 23, 11, 'bench-e'); mx('flower-pedestal', 15, 22, 'ped-gate-l'); mx('flower-pedestal', 19, 22, 'ped-gate-r'); mx('bench-front', 7, 11, 'bench-w')
-mx('topiary-round', 30, 21, 'rnd-se'); mx('topiary-round', 11, 12, 'rnd-mid')
+H = ['xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+     'xxxxxxxxxxxxx.........xxxxxxxxxxxxxx',
+     'xx.....xxxx.............xxxx......xx',
+     'xx..............................xxxx',
+     'xxx..............................xxx',
+     'xx................................xx',
+     'xx................................xx',
+     'xx................................xx',
+     'xxx...............................xx',
+     'xxxx..............................xx',
+     'xxx...............................xx',
+     'xx...............................xxx',
+     'xx...............................xxx',
+     'xx................................xx',
+     'xx................................xx',
+     'xx................................xx',
+     'xxx...............................xx',
+     'xx................................xx',
+     'xx...............................xxx',
+     'xx................................xx',
+     'xxx..............................xxx',
+     'xxxxxxxxxxxxxxx.....xxxxxxxxxxxxxxxx',
+     '....................................',
+     '....................................',
+     '....................................',
+     '....................................']
+hedge = blob(H, 0, 0)
+m.cells(hedge, auto('SA-GBorderB01.png'))
+for c in hedge: claim(m, c[0], c[1], 1, 1, 'hedge')
+m.fill(0, 22, 36, 4, auto('SA-Stone01.png'))               # stone-paved lane outside the gate
+comp(m, 'msex-y-whole-house', 14, 1, 'house')              # porch (17,10) -> approach (17,11)
+# gravel walks: porch -> S-curve -> gate (15..19); loop east and west
+walk = blob(['...xxx....',   # y11
+             '...xxxx...',   # y12
+             '....xxxx..',   # y13
+             '.....xxxx.',   # y14
+             '.....xxxx.',   # y15
+             '....xxxx..',   # y16
+             '...xxxx...',   # y17
+             '..xxxx....',   # y18
+             '..xxxxx...',   # y19
+             '..xxxxxx..',   # y20
+             '..xxxxx...'], 13, 11)
+walk += blob(['.......xxxxx', '...xxxxx....', 'xxxx........'], 4, 17)       # west loop to the bench
+walk += blob(['xxxxxx......', '.....xxxxx..', '.........xxx'], 21, 13)      # east loop to the bench
+m.cells(walk, auto('SA-SRoad02.png'))
+# clipped hedge blocks (BorderG) as staggered topiary rooms, not two identical bars
+for nm, b in (('hrow-w', blob(['xxxxxx..', 'xxxxxxxx', '..xxxxxx'], 3, 18)),
+              ('hrow-e', blob(['..xxxxxx', 'xxxxxxxx', 'xxxxx...'], 24, 17))):
+    m.cells(b, auto('SA-BorderG02.png')); [claim(m, x, y, 1, 1, nm) for x, y in b]
+# topiary groups: tall trio west (stepped), round + tall cluster east
+for (x, y) in ((3, 3), (6, 4), (9, 3)): mx('topiary-tall', x, y, f'tall{x}')
+for (x, y) in ((24, 4), (27, 3)): mx('topiary-round', x, y, f'rnd{x}')
+mx('topiary-tall', 30, 3, 'tall30')
+# flower beds: west L, east notched
+for nm, b in (('bed-w', blob(['xxxxxxx', 'xxxxxxx', 'xxx....'], 3, 10)),
+              ('bed-e', blob(['..xxxxxx', 'xxxxxxxx', 'xxxxxxxx'], 24, 9))):
+    m.cells(b, auto('SA-Kadan03.png')); [claim(m, x, y, 1, 1, nm) for x, y in b]
+m.cells(blob(['.xxxxx', 'xx....'], 3, 10) + blob(['...xxxx', '.xxxxx.'], 25, 9) + [(26, 11), (27, 11), (28, 11)], auto('SA-Flower01.png'), 'up')
+mx('bench-front', 8, 15, 'bench-w'); mx('bench-front', 30, 13, 'bench-e')
+mx('flower-pedestal', 13, 11, 'ped-l'); mx('flower-pedestal', 21, 11, 'ped-r')
+mx('rose-pink', 11, 18, 'rose-sw'); mx('rose-red', 22, 19, 'rose-se')
 finish(m)

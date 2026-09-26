@@ -57,20 +57,20 @@ def ring(cells, r=1):
     return out - set(cells)
 m.fill(0, 0, W, H, sea)
 land = clean(blob(18, 15, 14, 11))
-isle = clean(blob(35, 7, 2.5, 2.5))
+isle = clean(blob(35, 7, 2.6, 2.6))
 # shoal = unbroken band around every coast (1 cell, 2 on the exposed south/east shore)
 shoal = clean(ring(land, 1) | {c for c in ring(land, 2) if c[0] > 22 or c[1] > 20} | ring(isle, 1))
 m.cells(shoal, shoal_ref := vx('WorldMap-A1.png', 1, 0))
 m.cells(land, grass); m.cells(isle, isle_grass)
 lakec = clean(blob(19, 19, 2.2, 1.6), land)
-inner = {c for c in land if all((c[0] + dx, c[1] + dy) in land for dx, dy in N4)}   # keep biomes off the coastline
+inner = {c for c in land if all((c[0] + dx, c[1] + dy) in land for dx in range(-2, 3) for dy in range(-2, 3))}   # biomes stay 2 cells off the coast so the grass rim never thins to a diagonal line
 sandc = clean(blob(27, 21, 5, 3) - lakec, inner)
 snowc = clean(blob(11, 8, 5, 3) - lakec, inner)
 m.cells(sandc, sand); m.cells(snowc, snow); m.cells(lakec, lake)
 forestc = clean(blob(10, 18, 5, 4) - lakec - sandc - snowc, land)
 mountc = clean(blob(21, 8, 6, 2.5) - lakec - forestc, land)
 hillc = clean(blob(25, 14, 3, 2) - lakec - forestc - mountc - sandc, land)
-isleforest = clean(blob(36, 8, 1.4, 1.2), isle)
+isleforest = clean(blob(35.5, 7.8, 2.0, 1.6), isle) - {(34, 6)}   # leave the tower cell open
 m.cells(forestc, forest, 'up'); m.cells(mountc, mount, 'up'); m.cells(hillc, hills, 'up'); m.cells(isleforest, isle_forest, 'up')
 over = forestc | mountc | hillc | isleforest
 # place icons (single-cell world symbols) - each asserted to sit on open ground of the intended biome

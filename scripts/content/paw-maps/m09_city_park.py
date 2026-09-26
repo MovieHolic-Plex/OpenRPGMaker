@@ -67,7 +67,7 @@ TN, RT, SE, CV, PK, SC, GY = 'ST-Town-E01.png', 'ST-RTown-E01.png', 'ST-Sento-E0
 def rtown(m, x, y, name, sh=RT, wall=None, roof=None, awning=True, front='shop', window=True, fire=True):
     """retro-rtown-whole-building (6x8) with wall/roof tiles remapped on the same sheet (TOWN.md 건물 다양화)"""
     WALL = {'grey': {232: 266, 233: 267, 234: 266, 240: 266, 241: 267, 242: 266}, 'plaster': {232: 250, 233: 251, 234: 252, 240: 250, 241: 251, 242: 252}}.get(wall, {})
-    ROOF = {'dark': {274: 283, 282: 291, 302: 299}, 'light': {274: 286, 282: 294, 302: 302}, 'mid': {274: 281, 282: 289, 302: 292}}.get(roof, {})
+    ROOF = {'dark': {274: 283, 282: 291, 302: 303}, 'light': {274: 286, 282: 294, 302: 302}, 'mid': {274: 281, 282: 289, 302: 292}}.get(roof, {})
     c = next(c for p in J('retrotown-exteriors-layout.json') for c in p['composites'] if c['id'] == 'retro-rtown-whole-building')
     claim(m, x, y, 6, 8, name); s = sheet(sh); im = Image.new('RGBA', (192, 256))
     for p in c['parts']:
@@ -223,7 +223,6 @@ pond = (ell(31.5, 6.2, 7.2, 3.6) | ell(26.2, 8.6, 3.1, 2.0) | ell(34.6, 9.0, 2.6
 basin = dil(pond) - pond
 m.cells(dil(pond), auto('SA-GroundG05.png')); m.cells(pond, auto('SA-Pool02.png'), 'up')
 claimset(dil(pond), 'pond')
-R(m, 'suiren.png', 0, 0, 2, 2, 27, 4, False); R(m, 'suiren.png', 0, 0, 2, 2, 34, 7, False)
 # ---- walks: bent GRoad strips (autotile over arbitrary cell sets) from each gate, skirting the pond
 path = walk([(0, 15), (5, 15.6), (10, 16.8), (15, 16.6), (19.5, 15), (23, 13.6), (28, 13.3), (33, 14.2), (36.5, 17), (37.8, 20.5), (37.3, 23.8)])
 path |= walk([(15, 16.6), (17.6, 19.5), (19.5, 23), (20.8, 26.5), (21, 29.5)])

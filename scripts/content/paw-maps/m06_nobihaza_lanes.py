@@ -67,7 +67,7 @@ TN, RT, SE, CV, PK, SC, GY = 'ST-Town-E01.png', 'ST-RTown-E01.png', 'ST-Sento-E0
 def rtown(m, x, y, name, sh=RT, wall=None, roof=None, awning=True, front='shop', window=True, fire=True):
     """retro-rtown-whole-building (6x8) with wall/roof tiles remapped on the same sheet (TOWN.md 건물 다양화)"""
     WALL = {'grey': {232: 266, 233: 267, 234: 266, 240: 266, 241: 267, 242: 266}, 'plaster': {232: 250, 233: 251, 234: 252, 240: 250, 241: 251, 242: 252}}.get(wall, {})
-    ROOF = {'dark': {274: 283, 282: 291, 302: 299}, 'light': {274: 286, 282: 294, 302: 302}, 'mid': {274: 281, 282: 289, 302: 292}}.get(roof, {})
+    ROOF = {'dark': {274: 283, 282: 291, 302: 303}, 'light': {274: 286, 282: 294, 302: 302}, 'mid': {274: 281, 282: 289, 302: 292}}.get(roof, {})
     c = next(c for p in J('retrotown-exteriors-layout.json') for c in p['composites'] if c['id'] == 'retro-rtown-whole-building')
     claim(m, x, y, 6, 8, name); s = sheet(sh); im = Image.new('RGBA', (192, 256))
     for p in c['parts']:
@@ -192,33 +192,36 @@ def finish(m):
     m.save()
 # ---- end helpers ----
 
-m = Map('m06_nobihaza_lanes', '블록담 주택가 골목', 42, 30, 'exterior', '2칸 폭 아스팔트 골목(동서 y13-14, y28-29 · 남북 x19-20)을 블록담이 둘러싼다. 집마다 담 문을 골목 쪽으로 내고, 남동 구석은 토관이 쌓인 공터.')
+m = Map('m06_nobihaza_lanes', '블록담 주택가 골목', 42, 30, 'exterior', '2칸 폭 아스팔트 골목(동서 y13-14, y28-29). 남북 골목은 교차로에서 한 칸 꺾인다(북 x19-20, 남 x21-22). 북서 모퉁이는 빈터, 집마다 앞마당을 두고 담 문을 골목 쪽으로 낸다. 남동은 토관이 쌓인 공터.')
+def blob(rows, x0, y0): return [(x0 + dx, y0 + dy) for dy, r in enumerate(rows) for dx, c in enumerate(r) if c == 'x']
 m.fill(0, 0, 42, 30, auto('SA-Grass04.png'))
-m.fill(0, 13, 42, 2, auto('SA-Asphalt01.png')); m.fill(0, 28, 42, 2, auto('SA-Asphalt01.png')); m.fill(19, 0, 2, 30, auto('SA-Asphalt01.png'))
+m.fill(0, 13, 42, 2, auto('SA-Asphalt01.png')); m.fill(0, 28, 42, 2, auto('SA-Asphalt01.png'))
+m.fill(19, 0, 2, 13, auto('SA-Asphalt01.png')); m.fill(21, 15, 2, 13, auto('SA-Asphalt01.png'))   # jogging N-S lane
 def path(x, y0, y1): m.fill(x, y0, 1, y1 - y0 + 1, auto('SA-Stone01.png'))
-# ---- NW lot x0..18, y0..12: big house with a shoji wing, back garden
-ax, ay = jhouse(m, 1, 1, 5, 'nw-house', roof='dark')
-path(ax, ay, 12); bwall(m, 0, 0, 18, 12, gates=(ax,), name='nw-wall')
-pine(m, 13, 2, 'nw-pine'); T1(m, TN, 155, 13, 8); T1(m, TN, 156, 14, 8)
-R(m, 'yukiyanagi.png', 0, 0, 2, 2, 15, 9, 'nw-shrub')
-# ---- NE lots: apartment x21..31, red-gable house x32..39
-kit(m, 'apartment-dark-roof', 22, 2, 'ne-apt'); path(27, 11, 12); bwall(m, 21, 0, 32, 12, gates=(27,), name='ne-wall-a')
-kit(m, 'home-red-gable', 34, 3, 'ne-home'); path(36, 12, 12); bwall(m, 33, 2, 40, 12, gates=(36,), name='ne-wall-b')   # set back 2 rows
+# ---- NW: house lot x0..13, corner vacant lot x14..18 (worn ground, ragged)
+ax, ay = jhouse(m, 1, 1, 5, 'nw-house', roof='dark', stones=False)       # 10x9 -> front yard row y10
+path(ax, ay, 12); bwall(m, 0, 0, 13, 12, gates=(ax,), name='nw-wall')
+pine(m, 11, 1, 'nw-pine'); T1(m, TN, 155, 11, 8); T1(m, TN, 156, 12, 8)
+m.cells(blob(['.xxx.', 'xxxx.', 'xxxxx', 'xxxxx', '.xxxx', 'xxxxx', 'xxxxx', 'xxxx.', 'xxxxx', '.xxxx', 'xxxxx', 'xxxxx', 'xxxxx'], 14, 0), auto('SA-GroundG05.png'))
+R(m, 'yukiyanagi.png', 0, 0, 2, 2, 15, 2, 'nw-shrub'); loose(m, 'koji2.png', 5, 17, 9, 'lot-stone')
+# ---- NE: apartment set back with a front yard, red-gable house on a narrower lot, gap before the edge
+kit(m, 'apartment-dark-roof', 22, 1, 'ne-apt'); path(27, 10, 12); bwall(m, 21, 0, 32, 12, gates=(27,), name='ne-wall-a')
+T1(m, TN, 204, 25, 10, 'apt-pot-a'); T1(m, TN, 204, 29, 10, 'apt-pot-b')
+kit(m, 'home-red-gable', 34, 3, 'ne-home'); path(36, 12, 12); bwall(m, 33, 2, 40, 12, gates=(36,), name='ne-wall-b')
 R(m, 'yukiyanagi.png', 0, 0, 2, 2, 36, 0, 'ne-shrub')
-
-# ---- SW lots y15..27, gates on the south lane
-ax, ay = jhouse(m, 1, 16, 2, 'sw-house', wall='plaster', roof='light', side='left', front='plaster')
+# ---- SW: two lots of different widths, houses pulled back off the lane
+ax, ay = jhouse(m, 1, 16, 2, 'sw-house', wall='plaster', roof='light', side='left', front='plaster', stones=False)
 path(ax, ay, 27); bwall(m, 0, 15, 9, 27, gates=(ax,), name='sw-wall-a')
-kit(m, 'home-red-gable', 11, 18, 'sw-home'); path(13, 27, 27); bwall(m, 10, 17, 18, 27, gates=(13,), name='sw-wall-b')   # narrower lot set back from the north lane
-R(m, 'yukiyanagi.png', 0, 0, 2, 2, 11, 15, 'sw-shrub'); T1(m, TN, 155, 15, 15); T1(m, TN, 156, 16, 15)
-# ---- SE: house x21..32, vacant lot (空き地) with the pipe stack x33..39
-ax, ay = jhouse(m, 22, 16, 5, 'se-house', wall='wood', roof='light', side='left')
-path(ax, ay, 27); bwall(m, 21, 15, 32, 27, gates=(ax,), name='se-wall')
-lot = ['..xxxxxxx', '.xxxxxxxx', 'xxxxxxxxx', 'xxxxxxxxx', 'xxxxxxxxx', 'xxxxxxxxx', 'xxxxxxxxx', 'xxxxxxxxx', 'xxxxxxxx.', 'xxxxxxxx.', 'xxxxxxxxx', '.xxxxxxxx', '..xxxxxxx']
-m.cells([(33 + dx, 15 + dy) for dy, r in enumerate(lot) for dx, c in enumerate(r) if c == 'x'], auto('SA-GroundG05.png'))   # worn vacant lot, ragged edge
-loose(m, 'koji2.png', 0, 34, 17, 'pipes'); loose(m, 'koji2.png', 3, 36, 23, 'pipe-pile')
-loose(m, 'koji2.png', 6, 38, 18, 'stones')
-# ---- lane furniture: poles, jizo at the crossing, postbox, garbage station
-for (x, y) in ((6, 12), (30, 12)): pass
-loose(m, 'jizo.png', 0, 39, 15, 'jizo'); pole(m, 33, 27); R(m, 'gomi.png', 0, 0, 2, 3, 37, 25, 'gomi')
+kit(m, 'home-red-gable', 11, 17, 'sw-home'); path(13, 26, 27); bwall(m, 10, 16, 20, 27, gates=(13,), name='sw-wall-b')
+R(m, 'yukiyanagi.png', 0, 0, 2, 2, 17, 18, 'sw-shrub'); T1(m, TN, 155, 17, 23); T1(m, TN, 156, 18, 23)
+# ---- SE: house lot east of the jogged lane, vacant lot (空き地) running to the east edge
+ax, ay = jhouse(m, 24, 16, 4, 'se-house', wall='wood', roof='light', side='left', stones=False)
+path(ax, ay, 27); bwall(m, 23, 15, 33, 27, gates=(ax,), name='se-wall')
+lot = ['xxxxxxxx', 'xxxxxxxx', '.xxxxxxx', 'xxxxxxxx', 'xxxxxxxx', 'xxxxxxxx', 'xxxxxxx.', 'xxxxxxxx', 'xxxxxxxx', '.xxxxxxx', 'xxxxxxxx', 'xxxxxxxx', 'xxxxxxxx']
+m.cells(blob(lot, 34, 15), auto('SA-GroundG05.png'))
+loose(m, 'koji2.png', 0, 35, 17, 'pipes'); loose(m, 'koji2.png', 3, 37, 23, 'pipe-pile')
+loose(m, 'koji2.png', 6, 39, 19, 'stones')
+# ---- lane furniture: jizo at the lot corner, streetlamps, garbage station at the lane
+loose(m, 'jizo.png', 0, 39, 15, 'jizo'); R(m, 'gomi.png', 0, 0, 2, 3, 34, 25, 'gomi')
+loose(m, 'streetlamp.png', 2, 18, 9, 'lamp-n'); loose(m, 'streetlamp.png', 2, 36, 24, 'lamp-s')
 finish(m)

@@ -67,7 +67,7 @@ TN, RT, SE, CV, PK, SC, GY = 'ST-Town-E01.png', 'ST-RTown-E01.png', 'ST-Sento-E0
 def rtown(m, x, y, name, sh=RT, wall=None, roof=None, awning=True, front='shop', window=True, fire=True):
     """retro-rtown-whole-building (6x8) with wall/roof tiles remapped on the same sheet (TOWN.md 건물 다양화)"""
     WALL = {'grey': {232: 266, 233: 267, 234: 266, 240: 266, 241: 267, 242: 266}, 'plaster': {232: 250, 233: 251, 234: 252, 240: 250, 241: 251, 242: 252}}.get(wall, {})
-    ROOF = {'dark': {274: 283, 282: 291, 302: 299}, 'light': {274: 286, 282: 294, 302: 302}, 'mid': {274: 281, 282: 289, 302: 292}}.get(roof, {})
+    ROOF = {'dark': {274: 283, 282: 291, 302: 303}, 'light': {274: 286, 282: 294, 302: 302}, 'mid': {274: 281, 282: 289, 302: 292}}.get(roof, {})
     c = next(c for p in J('retrotown-exteriors-layout.json') for c in p['composites'] if c['id'] == 'retro-rtown-whole-building')
     claim(m, x, y, 6, 8, name); s = sheet(sh); im = Image.new('RGBA', (192, 256))
     for p in c['parts']:
@@ -290,7 +290,4 @@ for r in runs:
     for x in r:
         t = 32 if x == r[0] else 35 if x == r[-1] else 33 + x % 2
         T1(m, 'guardrail.png', t, x, TOP[x] - 2, 'rail')
-for x, y in ((14, 24), (33, 25)):
-    assert all((x + i, y + j) in water for i in (0, 1) for j in (0, 1)), ('lily off water', x, y)
-    R(m, 'suiren.png', 0, 0, 2, 2, x, y, False)
 finish(m)
