@@ -1,0 +1,18 @@
+# BI-ModernS01.png 16x16 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 
+   0 .  ~b ~b ~b ~l ~b ~b +l +o #b ~g +g ~g ~o ~o +l 
+   1 ~G ~G ~G ~o ~o ~o ~o +o ~o ~c ~k +g ~k +g +g +b 
+   2 +G +G +G ~o +o ~o +o +o .  .  +l ~b ~g ~g +g +g 
+   3 +b +b +o ~o +o ~o ~r ~o .  .  ~o ~m ~c +g +g +g 
+   4 +o +r +o +r +o ~o #o .  .  +g +b ~b +o +o +o ~o 
+   5 +r #r #r +r +o +o +o .  .  .  ~o ~b +o ~g ~c +b 
+   6 ~k ~k ~k ~k +o +b ~o +o +o ~b +b +b ~o ~o ~r ~o 
+   7 +G +o +r +r ~r +o +g ~l ~b ~b +r +g +o +o +o ~g 
+   8 +o ~o ~G +o +o ~o ~l ~l ~o +r +r +G +g +g ~r ~g 
+   9 +o #o +o +o +g +g +o +o .  ~r ~r ~g ~g ~k ~g ~o 
+  10 +o +o +g +o ~g ~g ~r ~r .  +l +o +G +l +c ~o ~o 
+  11 +g +g +o +o +b +b +b +l .  +l +o ~o ~l ~o ~o ~o 
+  12 ~r ~r +g +o ~l #g +o +w ~o ~r ~g ~c ~o ~o +o +o 
+  13 +r +r ~l +l ~c #g #l #l +o +r ~r +g +o ~o +o +g 
+  14 #o #o +o +o ~o +b ~r +o .  .  .  .  .  .  +o +o 
+  15 #o #o #o #o #o +b +r +o .  .  .  .  .  .  +g #k 

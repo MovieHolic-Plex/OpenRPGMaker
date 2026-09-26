@@ -1,0 +1,21 @@
+{
+  "id": "pixel-art-world-exteriors-local",
+  "tileset": "shared_paw_exteriors",
+  "tiles": 392,
+  "atlasSha": "808d68466bafbabc0e11ab653b2cce1d56d60f00bf82892623af6126f43d9a7c",
+  "places": 6,
+  "placeRecords": 12,
+  "maps": {
+    "city-50": "50×50",
+    "mansion-exterior-b-court": "9×13",
+    "mansion-exterior-p-court": "11×12",
+    "mansion-exterior-y-court": "11×13",
+    "retrotown-sento-entry": "10×13",
+    "retrotown-rtown-entry": "8×10"
+  },
+  "bytes": 1297660,
+  "file": "/home/main/.local/share/oprn/shared-content.sqlite",
+  "revision": "05fe6ac2fcae5b3ec192d642a16a7fc71dc67ffbca492b506bf8ba6fc25bd813",
+  "reloaded": true,
+  "publishedAt": "2026-09-25T23:16:43.635Z"
+}

@@ -1,0 +1,10 @@
+# sf.png 6x8 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  3  4  5  
+   0 .  .  .  ~l #l ~l 
+   1 ~b +b ~b +b #b +b 
+   2 +b #b +b +b #b +b 
+   3 ~b ~b ~b ~l +b ~g 
+   4 ~l #l ~l .  .  .  
+   5 ~g +l ~g .  .  .  
+   6 ~l #l ~l .  .  .  
+   7 ~g +l ~g .  .  .  

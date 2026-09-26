@@ -1,0 +1,14 @@
+# SC-Door-Ruins01.png 12x12 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  3  4  5  6  7  8  9  10 11 
+   0 ~l +l ~l ~l +l ~l ~l +l ~l .  +l .  
+   1 +l #l +l +l #l +l +l #l +l ~l +l ~g 
+   2 +g #l +g +g #l +l +g #l +l ~l #l ~g 
+   3 ~l +l ~l ~l +l ~l ~l +l ~l .  +o .  
+   4 +l #l +l +l #g +l +l #l +l ~l +o ~g 
+   5 +l #l +g +l #g +g +g #l +l ~l #l ~g 
+   6 ~l +l ~l ~l +l ~l ~l +l ~l .  +o .  
+   7 +l #w +l +l #g +l +l #l +l ~l +o ~g 
+   8 +g #w +g +g #g +g +g #l +l ~l #l ~g 
+   9 ~l +l ~l ~l +l ~l ~l +l ~l .  .  .  
+  10 +l #w +l +g #g +g +l #l +l ~l ~l ~g 
+  11 +l #w +l +g #g +g +g #l +l ~l #l ~g 

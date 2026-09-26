@@ -1,0 +1,10 @@
+# SC-Door-Schl01.png 12x8 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  3  4  5  6  7  8  9  10 11 
+   0 .  #b #b .  #g #g #b #b .  #g #g .  
+   1 .  #l #l .  #l #l #l #l .  #l #l .  
+   2 .  #b #b .  #g #g #b #b .  #g #g .  
+   3 .  #g #l .  #g #l #l #g .  #l #g .  
+   4 .  #g #b .  #g #g #b #g .  #g #g .  
+   5 .  #g #l .  #g #l #l #g .  #l #g .  
+   6 .  #k #b .  #k #g #b #g .  #g #g .  
+   7 .  #g #l .  #g #l #l #g .  #l #g .  

@@ -1,0 +1,8 @@
+# oshiromv.png 12x6 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  3  4  5  6  7  8  9  10 11 
+   0 .  ~g ~g .  ~o ~g .  ~w ~w .  ~o ~b 
+   1 +g +g +g ~g +g +g +w +w +b ~g +l +b 
+   2 #g #g #g #g #g #g #l #l #l #l #l #l 
+   3 .  ~g ~g ~k +m .  +g ~c +c +w ~b .  
+   4 +g +g +g ~g #r +g #g +g #g #l ~b .  
+   5 #g #g #g +o #r +o #g #g #g #l +l .  

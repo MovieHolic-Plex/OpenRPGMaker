@@ -1,0 +1,33 @@
+# ST-Geru-I01.png 8x31 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  3  4  5  6  7  
+   0 #k +o +o +o +o +o ~o ~o 
+   1 +o +o +o +r +r +r ~g ~o 
+   2 #o #o #o #r #r #r #c +o 
+   3 +o +o +o #o #o #o +o ~o 
+   4 +l +o +o +r +r +r #c ~o 
+   5 ~o ~o ~m +r +r +r +o ~o 
+   6 +o ~o ~r ~o ~o ~o ~l ~o 
+   7 #g #g #g #g #g +l #o +g 
+   8 #l #l #g #g #g ~o ~o ~o 
+   9 #o #l #l #g #g +o #o +o 
+  10 #o #o #o #g #g ~o ~g ~g 
+  11 #o #o #o #o #g ~o +o ~o 
+  12 #o #o #o #o #g ~o #o +o 
+  13 #o #o #o #o #g ~o +o ~o 
+  14 #o #o #o #o #g ~o .  +r 
+  15 #o #o #o #g #g #o +r #o 
+  16 #o #o #g #g #g #r +o +o 
+  17 #g #g #g #g #g #r #r ~g 
+  18 #g #g #g #g #g +r +r ~g 
+  19 #g #g #g #g #g #g #l #g 
+  20 #g #g #g #l #l #l #l #l 
+  21 #g #g #l #l #o #o #o #o 
+  22 #g #g #o #o #o #o #o #o 
+  23 #g #o #o #o #o #o #o #o 
+  24 #g #o #o #o #o #o #o #o 
+  25 #g #o #o #o #o #o #o #o 
+  26 #g #o #o #o #o #o #o #o 
+  27 #g #g #o #o #o #o #o #o 
+  28 #g #g #g #o #o #o #o #o 
+  29 #g #g #g #g #g #o #o #o 
+  30 #g #g #g #g #g #g #g #g 

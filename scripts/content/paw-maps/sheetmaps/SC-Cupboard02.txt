@@ -1,0 +1,14 @@
+# SC-Cupboard02.png 4x12 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  3  
+   0 +l +l .  .  
+   1 #l #l .  .  
+   2 +g +g .  .  
+   3 +l +l .  .  
+   4 #l #l .  .  
+   5 +g +g .  .  
+   6 +l +l .  .  
+   7 #l #l .  .  
+   8 +g +g .  .  
+   9 +l +l .  .  
+  10 #l #l .  .  
+  11 +g +g .  .  

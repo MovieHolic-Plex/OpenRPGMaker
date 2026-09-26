@@ -1,0 +1,3 @@
+# kenbikyou.png 2x1 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  
+   0 ~g ~g 

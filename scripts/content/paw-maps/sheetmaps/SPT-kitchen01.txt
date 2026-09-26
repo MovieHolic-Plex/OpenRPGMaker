@@ -1,0 +1,10 @@
+# SPT-kitchen01.png 6x8 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  3  4  5  
+   0 #b #b #b #r #r #o 
+   1 #l #c #c #c #c #l 
+   2 +b +b #g #g +r +r 
+   3 .  .  #b #r .  .  
+   4 #o #o #o #o #o #o 
+   5 #l #c #c #c #c #l 
+   6 +o +o #g #g +o +o 
+   7 .  .  #o #o .  .  
