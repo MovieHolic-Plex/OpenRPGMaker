@@ -100,9 +100,13 @@ void bootEditorWithOpenedProject(app)
 async function bootEditorWithOpenedProject(host: HTMLElement): Promise<void> {
   await adoptElectronOpenProject();
   await initializeTeamAccess();
-  await Promise.all([loadSharedTileReferences(), loadSharedContent({ scope: "defaults" })]);
+  // 공용 타일 참고문서는 기다리지 않는다. 실측(2026-09-26): 183MB · 호스트 24.8s 라 부팅이 10s 씩 멈췄다.
+  // 로드 전에 오면 로드 정규화가, 뒤에 오면 applySharedTileReferences 가 열린 프로젝트에 반영한다.
+  const tileReferences = loadSharedTileReferences();
+  await loadSharedContent({ scope: "defaults" });
   await bootApp(host);
   startTeamSession();
+  void tileReferences.then((installed) => { if (installed) store.applySharedTileReferences(); });
   // 장소·지역 카탈로그 전체는 편집기가 뜬 뒤 받는다. 기본 라이브러리는 위에서 이미 설치됐으므로
   // 정규화 결과(프로젝트에 들어가는 shared_* 타일셋)는 바뀌지 않는다.
   void loadSharedContent();

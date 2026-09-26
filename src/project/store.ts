@@ -815,6 +815,29 @@ class ProjectStore {
     });
   }
 
+  /**
+   * 부팅 뒤 늦게 도착한 공용 타일 참고문서를 열린 프로젝트에 반영한다(main.ts 가 부팅을 막지 않으려 뒤로 뺐다).
+   * 로드 정규화의 sharedTileReferences 단계와 같은 결과를 같은 system 표식으로 남기고, 바뀐 게 없으면
+   * 변이·자동저장을 만들지 않는다 — 응답이 로드 전에 와서 정규화가 이미 반영했으면 여기서는 no-op 이다.
+   */
+  applySharedTileReferences(): void {
+    if (!this.loaded || !canWriteTeamProject()) return;
+    const draft: Project = cloneProjectSharingReferenceDocuments(this.current);
+    if (!ensureSharedTileReferences(draft)) return;
+    assertCanonicalReplacement(draft, this.writeAuthority);
+    this.current = draft;
+    syncEventDraftVaultFromProject(this.current);
+    const change: ProjectChangeDescriptor = {
+      scope: "system",
+      label: "프로젝트 정규화 (공용 타일 참고문서 늦은 적용)",
+      origin: "system",
+      fields: [{ path: "sharedTileReferences", after: true }],
+    };
+    this.markLocalMutation(change);
+    this.emit(change);
+    this.scheduleAutoSave();
+  }
+
   update(mutator: (draft: Project) => void, change: ProjectChangeDescriptor = { scope: "project" }): void {
     if (!canWriteTeamProject()) return;
     const draft: Project = cloneProjectSharingReferenceDocuments(this.current);

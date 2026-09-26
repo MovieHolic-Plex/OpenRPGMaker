@@ -12,14 +12,19 @@ export interface SharedTileReferenceEntry {
 }
 export interface SharedTileReferenceSnapshot { revision: string; entries: SharedTileReferenceEntry[]; spatial?: SharedSpatialReferences }
 let snapshot: SharedTileReferenceSnapshot = { revision: '', entries: [] };
-/** Host-wide documents. No project ID, tile installation or map mutation. */
-export async function loadSharedTileReferences(): Promise<void> {
+/**
+ * Host-wide documents. No project ID, tile installation or map mutation.
+ * 설치하면 true — 이미 열린 프로젝트에는 호출자가 store.applySharedTileReferences() 로 늦게 반영한다.
+ * 부팅은 이 응답을 기다리지 않으므로 시간 제한을 두지 않는다. 실측(2026-09-26): 응답 183MB,
+ * 호스트 첫 직렬화 24.8s 라 예전 10s abort 는 매 부팅 실패를 보장했다. 실패는 경고만 남긴다.
+ */
+export async function loadSharedTileReferences(): Promise<boolean> {
   snapshot = { revision: '', entries: [] };
   installSharedSpatialReferences();
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined') return false;
   try {
-    const response = await fetch(SHARED_TILE_REFERENCES_ENDPOINT, { cache: 'no-store', signal: AbortSignal.timeout(10000) });
-    if (response.status === 404) return;
+    const response = await fetch(SHARED_TILE_REFERENCES_ENDPOINT, { cache: 'no-store' });
+    if (response.status === 404) return false;
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const value = await response.json() as SharedTileReferenceSnapshot;
     if (typeof value.revision !== 'string' || !Array.isArray(value.entries)) throw new Error('Invalid shared tile references');
@@ -31,7 +36,8 @@ export async function loadSharedTileReferences(): Promise<void> {
     }
     snapshot = value;
     installSharedSpatialReferences(value.spatial);
-  } catch (error) { console.warn('공용 타일 참고문서 갱신 실패 — 저장된 문서를 유지합니다.', error); }
+    return true;
+  } catch (error) { console.warn('공용 타일 참고문서 갱신 실패 — 저장된 문서를 유지합니다.', error); return false; }
 }
 export function ensureSharedTileReferences(project: Project, source = snapshot): boolean {
   let changed = ensureSharedContent(project);
