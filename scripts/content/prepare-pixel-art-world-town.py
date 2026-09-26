@@ -525,14 +525,8 @@ kit_variant('clinic-small', 77, 45, 'clinic-se', sub={'xp-roof01': R3}, label='r
 ground(77, 52, 9, 2, ASPH)   # clinic front car park onto the y54 lane
 for sx in (78, 84): put(sx, 52, T(CV, 6), 'up', False)
 kit_variant('apartment-dark-roof', 86, 45, 'apartment-se', APT['light-glass'], label='light-roof-glass')
-# vegetable field behind the konbini (SA-Hatake01 soil + vege chips + scarecrow)
-field = [(x, y) for y in range(39, 44) for x in range(76, 84)]   # east of the x74 lane, never over its asphalt
-claim(76, 39, 8, 5, 'field-se')
-xpcells(field, 'SA-Hatake01.png', 'lo', True)
-for i, x in enumerate(range(77, 83)):
-    put(x, 40, T(CH + 'vege.png', (4, 5, 8, 9)[i % 4]), 'up', False)
-    put(x, 42, T(CH + 'vege.png', (16, 17, 18, 19)[i % 4]), 'up', False)
-put(80, 40, T(CH + 'vege.png', 2), 'up', False); put(80, 41, T(CH + 'vege.png', 6), 'up', False)
+# 空き地 (vacant lot) east of the x74 lane: the construction-materials chip (koji1, 9x5) — the neighbourhood lot every Nobihaza-style town has
+chip(76, 39, 'koji1.png', 9, 0, 9, 5, 'akichi-se')
 # jizo at the corner where the x74 lane leaves the arterial; big sakura inside the lot line, off the sidewalk
 chip(71, 40, 'jizo.png', 3, 0, 3, 4, 'jizo-se')
 chip(89, 40, 'ume.png', 6, 3, 3, 3, 'ume-se')   # small plum with grass around it, clear of both lot walls
@@ -612,6 +606,32 @@ def rear_wall(y, x0, x1, name):
         t = 16 if x == x0 else 18 if x == x1 else 17
         put(x, y, T(TN, t), 'up', True); owner[y][x] = name + '-wall'
 rear_wall(39, 0, 21, 'sw-rear-a'); rear_wall(39, 24, 42, 'sw-rear-b')
+
+# ブロック塀の路地 (Nobihaza-style): every lane in the southern residential districts is hemmed by block wall.
+# Any open cell touching a lane becomes wall; gates (gravel), door approaches and building fronts stay open.
+def lane_cell(x, y): return 0 <= x < W and 0 <= y < H and lo[y][x] == [ASPH] and not up[y][x] and not 45 <= x <= 50
+def wallable(x, y):
+    if not (0 <= x < W and 39 <= y <= 62) or 45 <= x <= 50: return False
+    if (x, y) in APPR or lo[y][x] == [GRAVEL] or up[y][x] or lane_cell(x, y): return False
+    o = owner[y][x]
+    return o is None or o.endswith('-yard')
+FRONT = {}
+for y in range(39, 63):
+    for x in range(W):
+        if not wallable(x, y): continue
+        if lane_cell(x, y + 1): FRONT[(x, y)] = 'S'      # lane below: this is a lot's front (bottom) wall
+        elif lane_cell(x, y - 1): FRONT[(x, y)] = 'N'    # lane above: the next lot's top wall
+        elif lane_cell(x + 1, y): FRONT[(x, y)] = 'E'
+        elif lane_cell(x - 1, y): FRONT[(x, y)] = 'W'
+for (x, y), side in FRONT.items():
+    if side in 'SN':
+        l = FRONT.get((x - 1, y)) == side or (owner[y][x - 1] or '').endswith('-wall') if x > 0 else False
+        r = FRONT.get((x + 1, y)) == side or (owner[y][x + 1] or '').endswith('-wall') if x + 1 < W else False
+        if side == 'S': t = 41 if (l and r) else 40 if r else 42 if l else 41
+        else: t = 17 if (l and r) else 16 if r else 18 if l else 17
+    else:
+        t = 26 if side == 'E' else 24
+    put(x, y, T(TN, t), 'up', True); owner[y][x] = 'lane-wall'
 
 # lived-in yards (few, deliberate): laundry pole in a back garden, a bicycle by a side door, a pot by the genkan
 def yard_prop(x, y, t, name, solid_=True, f=TN):
