@@ -20,14 +20,15 @@ import type { ProjectWriteAuthority } from "./spatial/saveRouting";
 import type { SaveResult } from "./persistence/types";
 import type { RemoteProjectTarget } from "./persistence/target";
 import { isSharedDemoProjectId, SHARED_DEMO_PROJECT_ID } from "./sharedDemoProject";
-import { projectWithoutEventDrafts } from "./eventDrafts";
-import { shareContentDigests } from "./persistence/core/contentDigest";
+import { projectViewWithoutEventDrafts, projectWithoutEventDrafts } from "./eventDrafts";
+import { jsonContentDigest, shareContentDigests } from "./persistence/core/contentDigest";
 import { cloneProjectSharingReferenceDocuments } from "./projectClone";
 import { assertCanonicalReplacement, ProjectRoutingError } from "./spatial/saveRouting";
 import { SpatialPersistenceError, type MirrorStatus } from "./spatial/persistenceTypes";
 import { applyAudioDescriptionDelta } from "./audioDescriptions";
 import { applyMonsterMetadataDelta } from "./monsterMetadata";
 import { serialize, serializeForComparison } from "./io";
+import { projectWireView } from "./io/serialize";
 import {
   applyEventDraftVault,
   clearEventDraftVault,
@@ -44,7 +45,6 @@ import type { ProjectRepository } from "./persistence/types";
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
 import { repairMapTreeOrphans } from "@/project/mapTree";
 import { cloneExtraLayers } from "@/project/mapLayers";
-import { sha256HexText } from "@/util/sha256";
 import { jsonEqual, normalizationFingerprint } from "@/util/structuralJson";
 import { randomUuid } from "@/util/id";
 import { createLogger } from "@/util/logger";
@@ -120,7 +120,7 @@ export type ProjectPersistenceReceipt = {
   readonly revisionId: string;
   readonly projectId: string;
   readonly mutationGeneration: number;
-  /** SHA-256 of the existing normalized comparison, not the wire/server hash. */
+  /** Content digest of the saved form (drafts dropped, wire view). Same value ⇔ same saved JSON (key order ignored). */
   readonly contentIdentity: string;
   readonly sha256?: string;
   readonly serverRevision?: number;
@@ -1020,7 +1020,7 @@ class ProjectStore {
       if (!this.remotePersistenceEnabled) return { kind: "disabled", receipt };
       if (!read) return { kind: "failed", receipt, message: "Saved project not found" };
       if (read.projectId !== receipt.projectId) return { kind: "mismatch", receipt, reason: "target" };
-      const observedIdentity = await sha256HexText(serializeForComparison(projectWithoutEventDrafts(read.project)));
+      const observedIdentity = persistedContentIdentity(read.project);
       if (options.signal?.aborted) return { kind: "cancelled", receipt };
       if (!this.remotePersistenceEnabled) return { kind: "disabled", receipt };
       if (observedIdentity !== receipt.contentIdentity) return { kind: "mismatch", receipt, reason: "content" };
@@ -1433,12 +1433,13 @@ class ProjectStore {
     let receipt: ProjectPersistenceReceipt | undefined;
     try {
       // Capture accepted content before the hash await; never derive it from live getCurrent().
-      const acceptedContent = serializeForComparison(acceptedBaseline);
+      // 요약 캐시(jsonContentDigest)는 바뀜 가지만 다시 계산한다. 예전의 전체 정렬 직렬화 + SHA-256 은
+      // 저장마다 문서 전체를 다시 돌았다(2026-09-26 실측, 81MB 새 프로젝트 부하 시 수 초).
       receipt = Object.freeze({
         revisionId: randomUuid(),
         projectId: target.projectId,
         mutationGeneration: generationAtSubmit,
-        contentIdentity: await sha256HexText(acceptedContent),
+        contentIdentity: persistedContentIdentity(acceptedBaseline),
         ...(result.sha256 ? { sha256: result.sha256 } : {}),
         ...(result.authority?.mode === "canonical" && result.authority.revision !== undefined ? { serverRevision: result.authority.revision } : {}),
       });
@@ -1693,6 +1694,11 @@ function nonPersistentSessionAutoSaveState(): AutoSaveState {
     code: "session-not-persisted",
     message: "이 세션은 저장되지 않습니다. 보존하려면 프로젝트를 내보내세요.",
   };
+}
+
+/** 저장 형태(초안 제외·와이어 보기)의 내용 요약. 영수증과 재로드 검증이 같은 함수를 써야 비교가 성립한다. */
+function persistedContentIdentity(project: Project): string {
+  return jsonContentDigest(projectWireView(projectViewWithoutEventDrafts(project)))!;
 }
 
 function autoSaveErrorMessage(error: unknown): string {
