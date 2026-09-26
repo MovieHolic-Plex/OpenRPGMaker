@@ -1,7 +1,7 @@
 import { sharedContentMiddleware } from "../../scripts/lib/sharedContentSqlite";
 import { SHARED_CONTENT_ENDPOINT, SHARED_CONTENT_PREVIEW_ENDPOINT } from "../../src/project/sharedContentSchema";
 import { SHARED_REFERENCE_IMAGE_PREFIX } from "../../src/project/bundledReferenceImagePath";
-import { readSharedTileReferences } from "../../scripts/lib/sharedTileReferencesSqlite";
+import { sharedTileReferencesBody } from "../../scripts/lib/sharedTileReferencesSqlite";
 import { SHARED_TILE_REFERENCES_ENDPOINT } from "../../src/project/sharedTileReferences";
 import { createHash, randomUUID } from "node:crypto";
 import { mkdir, readFile, realpath, rm, writeFile, rename, readdir } from "node:fs/promises";
@@ -343,8 +343,9 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       if (url.pathname === SHARED_CONTENT_ENDPOINT || url.pathname === SHARED_CONTENT_PREVIEW_ENDPOINT || url.pathname.startsWith(SHARED_REFERENCE_IMAGE_PREFIX)) { sharedContentMiddleware(request, response, () => {}); return; }
       if (url.pathname === SHARED_TILE_REFERENCES_ENDPOINT) {
         if (request.method !== 'GET') { await sendJson(response, 405, { error: 'Read only' }); return; }
-        response.setHeader('cache-control', 'no-store');
-        await sendJson(response, 200, readSharedTileReferences()); return;
+        const { body, gzip } = sharedTileReferencesBody(request.headers['accept-encoding']);
+        response.writeHead(200, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'content-length': body.length, ...(gzip ? { 'content-encoding': 'gzip', vary: 'accept-encoding' } : {}) }).end(body);
+        return;
       }
       if (url.pathname === SHARED_CHARACTER_GRAPHICS_ENDPOINT) {
         if (request.method !== 'GET' && signedIn?.role !== 'owner') {

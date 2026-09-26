@@ -36,6 +36,18 @@ export async function loadSharedTileReferences(): Promise<void> {
 export function ensureSharedTileReferences(project: Project, source = snapshot): boolean {
   let changed = ensureSharedContent(project);
   changed = ensureSharedSpatialReferences(project) || changed;
+  return applySharedTileReferenceEntries(project, source) || changed;
+}
+/** 이 참고문서가 보강할 타일셋이 프로젝트에 하나라도 있는가(타일셋·업로드 자산 id 만 본다). */
+export function sharedTileReferencesTouch(project: Project, source = snapshot): boolean {
+  return source.entries.some(entry => project.tilesets[entry.id] && project.assets.uploaded[entry.assetId]);
+}
+/**
+ * 부팅 뒤 도착한 참고문서를 보강한다. 부팅 정규화가 이미 돌린 공용 자료 설치는 다시 하지 않는다 —
+ * 실측(2026-09-26) 다시 하면 프로젝트 복제와 합쳐 부팅 직후 1.65s 를 더 썼다.
+ */
+export function applySharedTileReferenceEntries(project: Project, source = snapshot): boolean {
+  let changed = false;
   for (const entry of source.entries) {
     const tile = project.tilesets[entry.id], asset = project.assets.uploaded[entry.assetId];
     if (!tile || !asset || tile.tileSize !== entry.tileSize || tile.tilesPerRow !== entry.tilesPerRow || tile.count !== entry.count

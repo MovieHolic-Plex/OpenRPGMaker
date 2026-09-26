@@ -1,4 +1,4 @@
-import { ensureSharedTileReferences } from "./sharedTileReferences";
+import { applySharedTileReferenceEntries, ensureSharedTileReferences, sharedTileReferencesTouch } from "./sharedTileReferences";
 import { externalizeBundledReferenceImages } from "./bundledReferenceImages";
 import { canWriteTeamProject } from './teamAccess';
 import { mergeTeamProject } from "./persistence/core/teamMerge";
@@ -1605,6 +1605,23 @@ class ProjectStore {
         this.scheduleAutoSave();
       }
     }
+  }
+
+  /**
+   * 부팅 뒤 도착한 공용 타일 참고문서를 현재 프로젝트에 보강한다. 부팅 정규화와 같은 함수를 쓰고, 바뀐 것이
+   * 있을 때만 시스템 변경으로 남기고 자동저장한다. 로드 전이거나 읽기 전용이면 손대지 않는다 — 다음 로드의 정규화가 한다.
+   */
+  applySharedReferenceRefresh(): boolean {
+    if (!this.loaded || this.currentValue === null || !canWriteTeamProject() || this.readOnlyProjectSnapshot) return false;
+    // 보강할 타일셋이 없으면 프로젝트를 복제하지 않는다(대부분의 프로젝트가 이 경우다).
+    if (!sharedTileReferencesTouch(this.current)) return false;
+    const draft = cloneProjectSharingReferenceDocuments(this.current);
+    if (!applySharedTileReferenceEntries(draft)) return false;
+    this.current = draft;
+    this.markLocalMutation({ scope: "system", origin: "system", label: "공용 타일 참고문서 갱신", fields: [{ path: "sharedTileReferences", after: true }] });
+    this.emit({ scope: "project", origin: "system" });
+    if (this.remotePersistenceEnabled) this.scheduleAutoSave();
+    return true;
   }
 
   /** 주소창에 ?project=&name= 반영 (공유/북마크). 로컬 폴더 대상에서는 주소가 아니라 폴더가 정본이다. */
