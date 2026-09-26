@@ -22,8 +22,8 @@ export const TILE_LAYER_NOS: readonly TileLayerNo[] = [1, 2, 3, 4];
 export type TileLayerGroup = "lower" | "upper";
 export const EXTRA_LAYER_KEYS = ["lowerOverlayTiles", "upperOverlayTiles", "shadowBits"] as const;
 type ExtraLayerKey = (typeof EXTRA_LAYER_KEYS)[number];
-/** 선택 층만 가진 맵 모양. 옮기기 도우미는 이 셋만 읽고 쓴다. */
-export type ExtraLayerFields = Pick<GameMap, ExtraLayerKey>;
+/** 선택 층만 가진 맵 모양. 옮기기 도우미는 이 셋과 높이 지형(relief)만 읽고 쓴다. */
+export type ExtraLayerFields = Pick<GameMap, ExtraLayerKey | "relief">;
 
 export function layerGroup(layer: TileLayerNo): TileLayerGroup {
   return layer <= 2 ? "lower" : "upper";
@@ -99,12 +99,13 @@ export function malformedExtraLayerKeys(map: Readonly<Record<string, unknown>>, 
 }
 
 /** 선택 칸의 깊은 복사. 없는 칸은 결과에도 없다(스프레드로 붙이면 옛 맵 모양이 그대로다). */
-export function cloneExtraLayers(map: GameMap): Pick<GameMap, ExtraLayerKey> {
-  const out: Pick<GameMap, ExtraLayerKey> = {};
+export function cloneExtraLayers(map: GameMap): ExtraLayerFields {
+  const out: ExtraLayerFields = {};
   for (const key of EXTRA_LAYER_KEYS) {
     const values = map[key];
     if (values) out[key] = values.slice();
   }
+  if (map.relief) out.relief = { ...map.relief, levels: map.relief.levels.slice() };
   return out;
 }
 
@@ -124,6 +125,17 @@ export function remapExtraLayers(map: ExtraLayerFields, width: number, height: n
     }
     if (isEmptyExtra(key, next)) delete map[key];
     else map[key] = next;
+  }
+  // 높이 지형도 같은 칸 번호로 옮긴다(원본 맵과 크기가 같다고 본다 — 불러오기 정규화가 맞춰 둔다).
+  const relief = map.relief;
+  if (relief) {
+    const levels = new Array<number>(width * height).fill(0);
+    for (let target = 0; target < levels.length; target += 1) {
+      const from = sourceIndex(target);
+      if (from >= 0) levels[target] = relief.levels[from] ?? 0;
+    }
+    if (levels.some((v) => v > 0)) map.relief = { width, height, levels };
+    else delete map.relief;
   }
 }
 

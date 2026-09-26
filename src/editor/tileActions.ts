@@ -1,4 +1,5 @@
 import { store, type ProjectChangeCell } from "@/project/store";
+import { brushRelief, emptyRelief, reliefIsFlat, type ReliefBrushMode } from "@/project/relief/edit";
 import { TILE } from "@/project/defaults";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { autotileEditTriggersGroup, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
@@ -205,6 +206,28 @@ export function paintTilesBulk(
       });
     }
   }, { cells: changedTileCellsForPlannedEdits(mapId, edits, shapeAutotile) });
+}
+
+/**
+ * 「높이」 붓 한 번 — map.relief 를 원형 붓으로 고친다. 모두 0 이 되면 필드를 지운다(평지 맵은 relief 없음).
+ * 바뀐 칸이 없으면 store 를 건드리지 않는다(드래그 중 빈 통지·빈 되돌리기 방지).
+ */
+export function paintRelief(
+  mapId: MapId,
+  x: number,
+  y: number,
+  mode: ReliefBrushMode,
+  opts: { radius?: number; level?: number; flattenTo?: number } = {},
+): boolean {
+  const map = store.getCurrent().maps[mapId];
+  if (!map || !inMap(map, x, y)) return false;
+  const next = map.relief ? { ...map.relief, levels: map.relief.levels.slice() } : emptyRelief(map.width, map.height);
+  if (!brushRelief(next, x, y, mode, opts)) return false;
+  store.updateMap(mapId, (draft) => {
+    if (reliefIsFlat(next)) delete draft.relief;
+    else draft.relief = next;
+  }, { label: "높이 붓" });
+  return true;
 }
 
 export function toggleCollision(mapId: MapId, x: number, y: number): void {

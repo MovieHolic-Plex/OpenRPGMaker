@@ -2,6 +2,21 @@
 
 # Editor Pre-edit Routing & Cautions
 
+## 「높이」 붓 — 절벽 높이 지형 (2026-09-26)
+
+타일 도구 줄의 `tool-relief`(「높이 (절벽)」)가 `map.relief` 를 칠한다. 경로:
+
+| 층 | 파일 |
+|---|---|
+| 도구 상태 | `editorState.ts` — `tool: "relief"`, `reliefMode: raise\|lower\|flatten\|set`, `reliefLevel` |
+| 캔버스 포인터 소유 | `canvasPointerOwnership.ts` (relief 는 페인트 도구처럼 드래그를 가진다) |
+| 스트로크 | `TilePaintEngine.ts` `case "relief"` — 붓 크기 N = 반지름 max(1, N-1) 원 — 1칸 폭 돌기는 렌더 규칙이 깎아 안 보이므로 1×1 도 3칸 폭으로 칠한다. 올리기/내리기는 **스트로크 첫 칸 높이 ±1** 이 상한(드래그로 계속 쌓이지 않음), 평탄은 첫 칸 높이로 |
+| 액션 | `tileActions.ts` `paintRelief` → `store.updateMap(..., {label:"높이 붓"})`. 바뀐 칸 없으면 store 를 안 건드린다 |
+| 옵션 UI | `tilePaletteStampStatus.ts` `makeReliefBrushControls` (`relief-brush-controls`, 칩 `relief-mode-*`, 지정 모드일 때 `relief-level-select`) |
+| 렌더 | `EditScene.ts` — relief 가 바뀔 때 절벽 그림을 다시 굽는다 |
+
+주의: 높이는 **그림만** 바꾼다. 윗단 위 타일·통행·이벤트는 들어 올리지 않는다(스키마 쪽 한계는 `runtime-project-schema.md` 「높이 지형」). 조수 도구는 `editor-ai-tools.md` 「절벽 높이 도구」.
+
 ## 맵별 16/32/48px 좌표
 
 타일 크기 관련 수정은 [tile-geometry.md](tile-geometry.md)를 먼저 읽는다. 원본 아틀라스 슬라이싱과 맵 월드 좌표, 미리보기 표시 크기를 구분한다.

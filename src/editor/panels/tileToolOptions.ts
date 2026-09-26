@@ -25,7 +25,7 @@ export function makeTileToolsMenu(model: TileToolbarModel): HTMLElement {
   return makeSidebarSurface({ id: 'tools', label: '도구', triggerId: 'sidebar-tools-menu', rerender: model.rerender, body: () => {
     const body = el('div', { class: 'sidebar-tool-options', dataset: { testid: 'tool-grid' } });
     // 칠하기 모양은 사이드바 옵션줄이 소유한다(advanced 게이트로 여기 중복 노출하지 않는다).
-    for (const [id, label] of [['eyedropper', '타일 집기 (I)'], ['pan', '화면 밀기 (4)'], ['collision', '통행 표시 (6)']] as const) {
+    for (const [id, label] of [['eyedropper', '타일 집기 (I)'], ['pan', '화면 밀기 (4)'], ['collision', '통행 표시 (6)'], ['relief', '높이 (절벽)']] as const) {
       body.append(el('button', { class: 'oprn-option-item', text: label,
         attrs: { type: 'button', title: label, 'aria-pressed': String(model.state.tool === id) }, dataset: { testid: `tool-${id}` },
         on: { click: () => { selectMapModeTool(id); closeSidebarSurface(true); model.rerender(); } } }));

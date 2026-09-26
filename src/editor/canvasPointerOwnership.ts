@@ -18,7 +18,7 @@ export type CanvasOwnershipInput = {
   readonly pastePreviewActive: boolean;
   /** 스페이스 팬이 켜졌거나 팬이 진행 중인가(CameraPanController.armed()). */
   readonly panArmed: boolean;
-  readonly tool: "paint" | "fill" | "collision" | "event" | "erase" | "select" | "eyedropper" | "pan";
+  readonly tool: "paint" | "fill" | "collision" | "event" | "erase" | "select" | "eyedropper" | "pan" | "relief";
   readonly selectionActive: boolean;
   readonly paletteStampActive: boolean;
   readonly deferCameraFocus: boolean;

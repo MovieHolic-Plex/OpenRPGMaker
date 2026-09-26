@@ -45,6 +45,7 @@ export {
   paintTile,
   paintTilesBulk,
   toggleCollision,
+  paintRelief,
 } from "@/editor/tileActions";
 export type { TileStrokeCell } from "@/editor/tileActions";
 import type { EncounterTableEntry, FieldSpawnDef, MapBackground, MapBgmSetting, MapCloudShadowSetting, MapId, MapMinimapSetting, TilesetDef, TroopId } from "@/project/types";
