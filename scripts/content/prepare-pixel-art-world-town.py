@@ -668,7 +668,7 @@ for (vx, vy) in ((58, 60), (70, 60)):
 print('vends', vends)
 
 # shotengai sidewalk: 1-tile potted plants (TN 204) at shop boundaries; the walk is 1 tile, so nothing taller
-for px in (60, 65, 70, 77, 83, 89):
+for px in (60, 67, 71, 80, 86, 91):
     if (px, 33) in APPR or (px, 32) in {(e['x'], e['y']) for e in entrances} or up[33][px] or owner[33][px]: continue
     put(px, 33, T(TN, 204), 'up', True); owner[33][px] = f'pot@{px}'
 
