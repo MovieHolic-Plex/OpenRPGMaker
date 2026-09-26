@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { defaultAiConfig, loadAiConfig, saveAiConfig } from "@/ai/llmClient";
 import { configForUltrabrain, ULTRABRAIN_REVIEW_MAX_TOKENS } from "@/ai/ultrabrainConfig";
-import { mapScopeNote, parseHarmonyReview, reviewMapHarmony, unresolvedReviewSignature, unusableReviewReason } from "@/ai/ultrabrainReview";
+import { HARMONY_REVIEW_CONCURRENCY, mapScopeNote, parseHarmonyReview, reviewMapHarmony, unresolvedReviewSignature, unusableReviewReason } from "@/ai/ultrabrainReview";
 import { appendToTree } from "@/project/mapTree";
 
 const mocks = vi.hoisted(() => ({ chat: vi.fn(), render: vi.fn() }));
@@ -120,8 +120,12 @@ describe("Ultrabrain whole-map review", () => {
     });
     const reviews = await reviewMapHarmony(before, after, "…", defaultAiConfig());
     expect(reviews.map(review => review.mapId)).toEqual(Object.keys(after.maps));
+    // 상한 계약: 동시에 묻되 상수를 넘지 않고, 맵이 상한보다 적으면 전부 동시에 뜬다.
+    // (2026-09-26 실측으로 상한을 3 → 6 으로 올렸다 — 6 동시가 직렬화되지 않음을 확인했다.
+    //  숫자를 박아 두면 상수를 바꿀 때마다 계약이 아니라 픽스처가 깨진다.)
     expect(peak).toBeGreaterThan(1);
-    expect(peak).toBeLessThanOrEqual(3);
+    expect(peak).toBeLessThanOrEqual(HARMONY_REVIEW_CONCURRENCY);
+    expect(peak).toBe(Math.min(HARMONY_REVIEW_CONCURRENCY, Object.keys(after.maps).length));
   });
 
   it("unresolvedReviewSignature 는 통과한 맵을 빼고 순서에 흔들리지 않는다", () => {

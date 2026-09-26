@@ -120,12 +120,28 @@ async function runProvider(args) {
     for (const effort of efforts) {
       for (const size of sizes) {
         for (let rep = 1; rep <= reps; rep += 1) {
+          // --image 를 주면 검수 호출 모양(텍스트 + 이미지)을 그대로 흉내낸다 — 실제 검수는
+          // 맵 PNG 한 장(detail high)을 high 강도로 물으므로, 그 비용을 같은 자로 재기 위한 것이다.
+          const imagePart = [];
+          if (args.image) {
+            // 쉼표로 여러 장을 주면 한 호출에 여러 이미지를 싱는다 — 검수 묶기(맵 K장/콜)의 비용을
+            // 재기 위한 것이다. 한 장 비용 대비 K장 비용이 어떻게 늘는지가 묶기 이득을 정한다.
+            for (const one of String(args.image).split(",").map((s) => s.trim()).filter(Boolean)) {
+              const bytes = readFileSync(resolve(ROOT, one));
+              imagePart.push({ type: "image_url", image_url: { url: `data:image/png;base64,${bytes.toString("base64")}` } });
+            }
+          }
           const body = {
             model,
             stream,
             max_tokens: 8192,
             messages: [
-              { role: "user", content: `${fillerFor(size)}\n\n위 목록에서 단어 하나만 그대로 답하세요.` },
+              {
+                role: "user",
+                content: imagePart.length > 0
+                  ? [{ type: "text", text: imagePart.length > 1 ? `아래 ${imagePart.length}장의 맵 그림 각각에서 타일이 어색한 곳이 있으면 맵별로 한 줄씩만 지적하세요.` : "이 맵 그림에서 타일이 어색한 곳이 있으면 한 줄로만 지적하세요." }, ...imagePart]
+                  : `${fillerFor(size)}\n\n위 목록에서 단어 하나만 그대로 답하세요.`,
+              },
             ],
             // effort "off" 는 필드 자체를 보내지 않는다 — 실제 클라이언트(configForLiteModel)와 같은 모양.
             ...(effort === "off" ? {} : { reasoning: { effort } }),
