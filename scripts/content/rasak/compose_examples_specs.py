@@ -1114,6 +1114,31 @@ def ex_castle_court(ctx):
 
 
 
+def sheet_block(c, slot, x, y, sx0=0, sy0=0, sw=16, sh=16, deck_floor=(), layer=3):
+    """시트 영역(sx0..,sy0..,sw×sh)의 비지 않은 칸을 그대로 맵 (x,y) 에 3층으로 옮긴다 — 두 시트에 걸친 배 선체처럼
+    조각 이름표보다 원래 그림 배치가 중요한 경우. deck_floor = 1층으로 까는 이름표 물체 id(갑판)들."""
+    st = next(s['start'] for s in c.ctx.man[c.b]['sections'] if s['slot'] == slot)
+    floor_ids = set()
+    for oid in deck_floor:
+        o = c.ctx.object(c.b, oid)
+        floor_ids |= {v for row in o['cells'] for v in row if v >= 0}
+    ents = c.ctx.man[c.b]['entries']
+    for yy in range(sh):
+        for xx in range(sw):
+            gx, gy = sx0 + xx, sy0 + yy
+            t = st + (gx // 8) * 128 + gy * 8 + gx % 8
+            if not ents[t]:
+                continue
+            mx, my = x + xx, y + yy
+            if not c.ok(mx, my):
+                continue
+            if t in floor_ids:
+                c.tile(1, t, mx, my)
+            else:
+                c.tile(layer, t, mx, my)
+                c.owner[(layer, my * c.w + mx)] = f'sheet:{slot}'
+
+
 @example
 def ex_elf_village(ctx):
     """엘프 숲 마을 36×26 — 거대 엘프 나무 둘(수관은 4층) · 초록·붉은 목조 집(완성 물체)과 A3 조립 집 · 나무 위 오두막 ·
@@ -1122,13 +1147,13 @@ def ex_elf_village(ctx):
     c.kind(1, 'A2:0', rect(0, 0, 36, 26))
     c.kind(1, 'A2:8', blob(0, 0, [(0, 9), (0, 8), (0, 7), (0, 5), (0, 4)]) + blob(27, 18, [(2, 7), (1, 8), (0, 9), (0, 9), (0, 9), (0, 9), (0, 9), (0, 9)]))
     # ── 거대 엘프 나무 둘: 시트 왼쪽 세로줄이 한 그루(수관 0,0 · 윗줄기 1,6 · 껍질 머리 0,9 · 밑동 2,13) — 그 상대 위치 그대로 쌓는다
-    def elf_tree(x, y, col='green1'):
-        c.obj(f'elftree_{col}_canopy_round', x, y, layer=4)
-        c.obj(f'elftree_{col}_trunk_upper', x + 1, y + 6)
-        c.obj(f'elftree_{col}_bark_crown_lower', x, y + 9, layer=4)
-        c.obj(f'elftree_{col}_trunk_base', x + 2, y + 13)
-    elf_tree(0, 0)
-    elf_tree(29, 0)
+    def elf_tree(x, y, col_slot='X1', sx0=0, top=9):
+        # 시트 8열 16줄이 나무 한 그루(수관 위 → 줄기 → 밑동·뿌리). 원본 배치 그대로 옮긴다:
+        # 윗 top 줄(수관·줄기 윗부분)은 4층 = 캐릭터 위로 덮고, 나머지(밑동·뿌리)는 3층 = 막힘.
+        sheet_block(c, col_slot, x, y, sx0, 0, 8, top, layer=4)
+        sheet_block(c, col_slot, x, y + top, sx0, top, 8, 16 - top)
+    elf_tree(-1, -2)                     # 초록 배치1(둥근 수관 나무)
+    elf_tree(29, 1, 'X10')               # 노랑 배치1 — 색·높이 다르게
     # 수관 그늘 밑 풀숲(2층) — 수관은 4층이라 밑이 비면 빈 땅이 된다
     c.kind(2, 'A2:7', blob(1, 1, [(0, 5), (1, 4), (0, 5), (1, 3)]) + blob(30, 1, [(0, 5), (1, 4), (0, 5), (1, 3)]))
     # ── 흙길(가운데 굽이) · 집마다 문 앞에서 끝남
@@ -1145,9 +1170,9 @@ def ex_elf_village(ctx):
     c.obj('elf_yellow_treehouse_short', 25, 19)
     # ── 흰 돌 가로등(길 한쪽만, 간격 다르게)
     for x, o in ((6, 'elf_green_lamp_post_r'), (15, 'elf_green_lamp_post_l'), (22, 'elf_green_lamp_post_r'), (27, 'elf_green_lamp_post_l')):
-        c.obj(o, x, 12 if x < 20 else 15)
+        c.try_obj(o, x, 12 if x < 20 else 15)
     # ── 연못
-    c.kind(1, 'A1:0', blob(7, 21, [(0, 4), (-1, 6), (0, 5)]))
+    c.kind(1, 'A1:0', blob(6, 20, [(1, 3), (0, 5), (-1, 7), (0, 6), (2, 3)]))
     # ── 사냥꾼 야영지(오른쪽 아래 숲가)
     c.obj('hunter_tent_white_cone', 29, 20)
     c.obj('hunter_hut_leaf_cone', 32, 19)
@@ -1155,13 +1180,12 @@ def ex_elf_village(ctx):
     c.obj('hunter_fork_hang_carcass', 33, 22)
     c.obj('hunter_fork_hang_small_leaf', 31, 23)
     c.obj('hunter_buckets_pair', 27, 21)
-    # ── 빈 풀밭 채움: 덤불·들풀·꽃·가로등 사이 잎 덩이
-    for (x, y) in [(8, 1), (11, 3), (22, 2), (26, 1), (18, 10), (27, 11), (3, 21), (12, 22), (22, 23), (6, 24), (19, 3)]:
-        c.obj('elftree_green1_leaf_48', x, y)
+    # ── 남서 숲가: 무너진 옛 엘프 사원 돌기둥 무리 · 연못가 사냥 장대 덩이
+    for oid, x, y in (('outtemple_obelisk_ruin', 1, 21), ('outtemple_column_seg_a', 3, 20), ('outtemple_obelisk_short', 4, 23),
+                      ('outtemple_pillar_block_l', 0, 17), ('hunter_pole_leafy_bundle_a', 12, 21), ('hunter_rack_empty', 12, 23),
+                      ('hunter_stack_goods', 14, 22), ('hunter_fork_post_leaf', 22, 21), ('hunter_buckets_pair', 24, 22)):
+        c.try_obj(oid, x, y)
     # ── 숲 가장자리·흩뿌림
-    edge = ('elftree_green1_leaf_48',)
-    for (x, y) in [(13, 1), (16, 2), (24, 4), (5, 5), (33, 10), (0, 18), (20, 22), (10, 24), (1, 23), (24, 24)]:
-        c.obj('elftree_green1_leaf_48', x, y)
     c.kind(2, 'A2:13', [(10, 13), (18, 12), (26, 13), (3, 18), (14, 16), (22, 20), (11, 20), (29, 14), (6, 9), (15, 4)])
     c.kind(2, 'A2:7', [(8, 3), (9, 3), (17, 5), (25, 5), (4, 15), (19, 23), (12, 25), (26, 25)])
     c.kind(2, 'A2:23', [(12, 3), (21, 4), (34, 13), (2, 20), (16, 11)])
@@ -1187,7 +1211,13 @@ def ex_snow_village(ctx):
     house(c, 3, 13, 6, 'A3:2', 'A3:9', roof_h=2, wall_h=2)
     house(c, 24, 4, 9, 'A3:0', 'A3:14', roof_h=3, wall_h=2)
     c.obj('vikingsnow_beam_two_shields', 29, 6, over=True)
-    c.kind(1, DIRT, path([(6, 8), (6, 12)], 1) + path([(5, 17), (5, 19)], 1) + path([(27, 9), (27, 13)], 1))
+    # 긴 집마다 문(벽 아래 두 줄)·창 둘(민벽 칸) + 문 아래에서 시작하는 길
+    for hx, hy, hw, rh, door, wins in ((2, 3, 8, 3, 4, (1, 6)), (3, 13, 6, 2, 2, (4,)), (24, 4, 9, 3, 5, (1, 3, 7))):
+        base = hy + rh + 1
+        c.obj('snowvillage_door_arch', hx + door, base - 1, over=True)
+        for wx in wins:
+            c.obj('snowvillage_window_shutter', hx + wx, base, over=True)
+    c.kind(1, DIRT, path([(6, 9), (6, 12)], 1) + path([(5, 17), (5, 19)], 1) + path([(29, 10), (29, 13)], 1))
     # ── A자 박공 회관(마을 가운데에서 비킴)
     c.obj('vikingsnow_timber_frame_post', 21, 15)
     # ── 부두(나무 단)와 난간
@@ -1226,7 +1256,7 @@ def ex_snow_village(ctx):
     for _ in range(500):
         x, y = rnd.randrange(0, 36), rnd.randrange(0, 26)
         i = y * c.w + x
-        if c.ground(x, y) == 'floor' and c.L[3][i] is None and c.L[2][i] is None and isinstance(c.L[1][i], tuple) and c.L[1][i][1] == 'A2' and rnd.random() < 0.3:
+        if c.ground(x, y) == 'floor' and c.L[3][i] is None and c.L[2][i] is None and isinstance(c.L[1][i], tuple) and c.L[1][i][1] == 'A2' and rnd.random() < 0.12:
             c.kind(2, ['A2:28', 'A2:20', 'A2:13', 'A2:29'][rnd.randrange(4)], [(x, y)])
     c.try_obj('barbarian_wood_stake_tall_80', 11, 14)
     c.try_obj('vikingsnow_picket_rail', 30, 11)
@@ -1255,73 +1285,54 @@ def sheet_obj(c, oid, slot, x, y, layer=None):
     c.obj(oid, x + ox, y + oy, layer=layer)
 
 
-def sheet_block(c, slot, x, y, sx0=0, sy0=0, sw=16, sh=16, deck_floor=()):
-    """시트 영역(sx0..,sy0..,sw×sh)의 비지 않은 칸을 그대로 맵 (x,y) 에 3층으로 옮긴다 — 두 시트에 걸친 배 선체처럼
-    조각 이름표보다 원래 그림 배치가 중요한 경우. deck_floor = 1층으로 까는 이름표 물체 id(갑판)들."""
-    st = next(s['start'] for s in c.ctx.man[c.b]['sections'] if s['slot'] == slot)
-    floor_ids = set()
-    for oid in deck_floor:
-        o = c.ctx.object(c.b, oid)
-        floor_ids |= {v for row in o['cells'] for v in row if v >= 0}
-    ents = c.ctx.man[c.b]['entries']
-    for yy in range(sh):
-        for xx in range(sw):
-            gx, gy = sx0 + xx, sy0 + yy
-            t = st + (gx // 8) * 128 + gy * 8 + gx % 8
-            if not ents[t]:
-                continue
-            mx, my = x + xx, y + yy
-            if not c.ok(mx, my):
-                continue
-            if t in floor_ids:
-                c.tile(1, t, mx, my)
-            else:
-                c.tile(3, t, mx, my)
-                c.owner[(3, my * c.w + mx)] = f'sheet:{slot}'
-
-
 @example
 def ex_port(ctx):
-    """항구 36×26 — 바다(A1) · 돌 부두와 나무 잔교 · 정박한 큰 배 한 척(왼쪽 시트 16칸 + 오른쪽 시트 10칸 이어 붙임, 돛대 둘) ·
-    갑판 소품(대포·통·밧줄·키) · 부두 창고 A3 집 둘 · 화물 더미 · 해변 야자수와 초가·통나무배. 좌우 대칭 금지."""
-    c = Canvas(ctx, 'rasak_port', 36, 26, 'ex_port', 'Rasak 예제 · 항구(정박한 배·부두·창고·해변)')
+    """항구 36×24 — 바다(A1) · 돌 포장 부두(북) · 나무 잔교 둘 · 정박한 배 한 척(왼쪽 선체 시트 16열 + 오른쪽 선체 시트 고물 10열, 위 9줄) ·
+    돛대 둘은 갑판 위 · 창고 둘(문·문 앞 길) · 화물은 덩이로 · 동쪽 해변(야자수·초가·통나무배). 좌우 대칭 금지."""
+    c = Canvas(ctx, 'rasak_port', 36, 21, 'ex_port', 'Rasak 예제 · 항구(정박한 배·부두·창고·해변)')
     c.ctx.load('rasak_port')
-    c.kind(1, 'A1:0', rect(0, 0, 36, 26))
-    # 뭍(북쪽 마을 · 동쪽 해변) — 돌 포장 부두와 모래
-    c.kind(1, 'A5#16', rect(0, 0, 36, 7))
-    c.kind(1, 'A5#16', rect(27, 7, 9, 19))
-    # 나무 잔교(부두에서 남쪽으로)
-    c.kind(1, 'A2:3', rect(10, 7, 2, 5) + rect(22, 7, 2, 4))
-    # ── 정박한 배: 왼쪽 시트 16열 + 오른쪽 시트 16열을 그대로 잇는다(시트 두 장이 배 한 척). 갑판 칸만 1층.
-    X, Y = 0, 11
-    sheet_block(c, 'B', X, Y, 0, 0, 16, 11, deck_floor=('ship_l_deck',))
-    sheet_block(c, 'C', X + 16, Y, 0, 0, 16, 11, deck_floor=('ship_r_deck',))
-    # 돛대 둘(갑판 위, 4층 — 선체 위에 겹침)
-    c.obj('sails_mast_full_a', X + 6, Y - 6, layer=4)
-    c.obj('sails_mast_full_b', X + 15, Y - 4, layer=4)
-    # 갑판 소품
-    for oid, dx, dy in (('shipdeco_steering_wheel', 22, 3), ('shipdeco_cannon_row', 4, 4), ('shipdeco_barrel_stack', 11, 4), ('shipdeco_rope_coils', 18, 4), ('shipdeco_cargo_crates', 8, 3)):
+    c.kind(1, 'A1:0', rect(0, 0, 36, 21))
+    PAVE = 'A5#16'
+    c.kind(1, PAVE, rect(0, 0, 30, 8))                       # 북쪽 부두
+    c.kind(1, 'A5#16', rect(30, 0, 6, 21))                   # 동쪽 뭍
+    c.kind(1, 'A2:3', rect(8, 8, 2, 3) + rect(20, 8, 2, 3))   # 잔교 둘(배 난간까지)
+    # ── 배: 위 9줄 = 선체. 갑판(y+3..y+6)만 1층, 나머지 3층
+    X, Y = 0, 10
+    sheet_block(c, 'B', X, Y, 0, 0, 16, 9, deck_floor=('ship_l_deck',))
+    sheet_block(c, 'C', X + 16, Y, 6, 0, 10, 9, deck_floor=('ship_r_deck',))
+    # 돛대 둘: 밑동이 갑판 가운데 줄에 오게(돛은 4층으로 선체·바다 위로)
+    # 돛대는 돛 시트(E) 왼쪽의 돛대 두 벌(0..3열 0..10줄 / 4..6열 0..9줄)을 원본 그대로 4층에 — 밑동이 갑판 가운데 줄
+    sheet_block(c, 'E', X + 6, Y + 5 - 10, 0, 0, 3, 11, layer=4)
+    sheet_block(c, 'E', X + 15, Y + 5 - 9, 4, 0, 3, 10, layer=4)
+    # 갑판 소품은 갑판 칸에만, 소수
+    for oid, dx, dy in (('shipdeco_steering_wheel', 22, 4), ('shipdeco_barrel_stack', 3, 4), ('shipdeco_rope_coils', 11, 5)):
         c.try_obj(oid, X + dx, Y + dy)
-    # ── 부두 창고 A3 둘(폭·지붕 다름) + 화물 더미
-    house(c, 2, 0, 7, 'A3:0', 'A3:10', roof_h=2, wall_h=2)
-    house(c, 14, 0, 6, 'A3:16', 'A3:25', roof_h=2, wall_h=2)
-    for oid, x, y in (('shipdeco_sacks_row', 30, 1), ('shipdeco_barrel_stack_b', 9, 4), ('shipdeco_crate_table', 21, 4), ('shipdeco_anchor', 26, 5),
-                      ('beach_rope_fence', 12, 6), ('shipdeco_rope_coils', 3, 5), ('shipdeco_barrel_stack', 24, 1), ('shipdeco_cannon_single', 31, 5),
-                      ('shipdeco_sacks_row', 0, 5)):
+    # ── 창고 둘(폭·지붕 다름) + 문 + 문 앞에서 끝나는 길
+    house(c, 1, 0, 7, 'A3:0', 'A3:10', roof_h=2, wall_h=2)
+    house(c, 13, 0, 6, 'A3:16', 'A3:25', roof_h=2, wall_h=2)
+    c.obj('shipdeco_cabin_door', 4, 1, over=True)
+    c.obj('shipdeco_cabin_door', 15, 1, over=True)
+    c.kind(1, 'A2:3', path([(4, 5), (4, 7)], 1) + path([(15, 5), (15, 7)], 1) + path([(0, 7), (29, 7)], 1))
+    # ── 화물은 덩이 셋(창고 옆·잔교 머리·동쪽)
+    for oid, x, y in (('shipdeco_cargo_crates', 9, 1), ('shipdeco_sacks_row', 9, 4), ('shipdeco_barrel_stack_b', 20, 1), ('shipdeco_crate_table', 19, 4),
+                      ('shipdeco_anchor', 27, 5), ('shipdeco_rope_coils', 21, 4), ('beach_rope_fence', 11, 6)):
         c.try_obj(oid, x, y)
-    # ── 동쪽 해변: 야자수 · 초가 · 기둥 오두막 · 통나무배
-    for (x, y, o) in [(28, 9, 'beach_palm_tall'), (33, 8, 'beach_palm_leaning'), (30, 14, 'beach_palm_small'), (34, 17, 'beach_palm_bush'),
-                      (28, 20, 'beach_palm_tall_b'), (32, 23, 'beach_palm_small_b')]:
+    # 부두 물가 계류 말뚝 줄(잔교 자리는 비움) · 서쪽 부두 화물 · 갑판 해치·대포·화물
+    for x in (0, 11, 14, 24):
+        c.try_obj('beach_rope_fence', x, 7)
+    for oid, x, y in (('shipdeco_cargo_crates', 0, 4), ('shipdeco_sacks_row', 26, 5) , ('shipdeco_barrel_stack', 12, 5)):
+        c.try_obj(oid, x, y)
+    for oid, dx, dy in (('ship_l_hatch_open_a', 6, 4), ('shipdeco_cannon_row', 17, 5), ('shipdeco_cargo_crates', 13, 3), ('shipdeco_barrel_stack_b', 20, 3)):
+        c.try_obj(oid, X + dx, Y + dy)
+    # ── 동쪽 해변(모래 섬 위): 야자수 무리 · 초가 · 통나무배
+    for (x, y, o) in [(31, 1, 'beach_palm_tall'), (34, 3, 'beach_palm_leaning'), (32, 9, 'beach_palm_small'), (34, 12, 'beach_palm_bush'),
+                      (31, 16, 'beach_palm_tall_b'), (34, 17, 'beach_palm_small_b')]:
         c.try_obj(o, x, y)
-    c.try_obj('beach_thatch_hut_small', 31, 11)
-    c.try_obj('beach_thatch_hut_front', 29, 16) or c.try_obj('beach_thatch_hut_front', 32, 18)
-    c.obj('beach_dugout_canoe', 24, 23)
-    # 뭍 흩뿌림
-    import random
-    rnd = random.Random(5)
-    for _ in range(600):
-        x, y = rnd.randrange(0, 36), rnd.randrange(0, 26)
-        if c.ground(x, y) == 'floor' and c.L[3][y * c.w + x] is None and rnd.random() < 0.8:
-            props = [o['id'] for o in c.ctx.names['bundles'][c.b]['objects'] if o['id'].startswith(('shipdeco_deck_prop_', 'beach_shore_prop_')) and o['size'] == [1, 1]]
-            c.try_obj(props[rnd.randrange(len(props))], x, y)
+    c.try_obj('beach_thatch_hut_small', 31, 5)
+    c.try_obj('beach_thatch_hut_front', 31, 12) or c.try_obj('beach_thatch_hut_front', 33, 14)
+    c.obj('beach_dugout_canoe', 27, 19)
+    # 셋째 창고(동쪽 부두) + 문 + 길
+    house(c, 23, 0, 6, 'A3:1', 'A3:9', roof_h=2, wall_h=2)
+    c.obj('shipdeco_cabin_door', 25, 1, over=True)
+    c.kind(1, 'A2:3', path([(25, 5), (25, 7)], 1))
     return c
