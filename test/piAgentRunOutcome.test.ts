@@ -33,6 +33,8 @@ const h = vi.hoisted(() => ({
   confirmAnswer: true,
   /** true 면 시공 실행이 도구마다 체크포인트를 올린다 — 실시간 반영(publication.count > 0) 경로. */
   checkpoint: false,
+  /** 저장된 역할 모델(Deep). 2026-09-26 리뷰 R2: 이 값이 «폴백과 다른가»가 다이얼 게이트를 정한다. */
+  roleModels: undefined as { deep?: { provider: string; model: string; thinkingLevel: "off" | "low" | "medium" | "high" } } | undefined,
 }));
 
 vi.mock("@/editor/panels/aiPendingReview", () => ({ createPendingReviewPrompt: () => ({ root: { remove() {} }, setBusy() {} }) }));
@@ -101,7 +103,7 @@ vi.mock("@/project/authoredProjectBaseline", () => ({ AuthoredProjectBaseline: c
 vi.mock("@/project/store", () => ({ store: { getCurrent: () => h.project, getProjectIdentity: () => ({ kind: "local-session", id: "outcome-fixture" }), subscribe: () => () => {} } }));
 // 실제 모달을 띄우지 않는다. 맵 소실 확인은 별도 케이스에서 반환값을 갈아 끼워 검사한다.
 vi.mock("@/editor/ui/modal", () => ({ showConfirm: async () => h.confirmAnswer }));
-vi.mock("@/ai/llmClient", () => ({ loadAiConfig: () => ({ providerId: "google-antigravity", model: "m", piApply: h.piApply }) }));
+vi.mock("@/ai/llmClient", () => ({ loadAiConfig: () => ({ providerId: "google-antigravity", model: "m", piApply: h.piApply, roleModels: h.roleModels }) }));
 vi.mock("@/editor/tools/changeset", () => ({ summarizeChanges: () => ({}) }));
 vi.mock("@/editor/tools/applyChangesetToStore", () => ({
   captureProposalBase: () => ({}),
@@ -374,11 +376,21 @@ describe("model role routing", () => {
     expect(h.process.some(text => text.includes("plan failed"))).toBe(true);
   });
   it("plans with Ultrabrain before Deep edits", async () => {
-    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface());
+    // 다이얼 값을 싣는다 — 안 실으면 실행 요청은 역할 폴백(이제 "low")을 쓴다. 이 케이스는
+    // 「다이얼이 실행 런까지 실제로 도달한다」를 지키는 자리다(2026-09-26 리뷰 R2: 이 배선을 아무 테스트도 안 덮었다).
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface(), { thinkingLevel: "high" });
     expect(h.requests).toHaveLength(2);
     expect(h.requests[0]).toMatchObject({ model: "gemini-3.8-flash", thinkingLevel: "high", readOnly: true });
     expect(h.requests[1]).toMatchObject({ model: "m", thinkingLevel: "high" });
     expect(h.requests[1]!.task).toContain("Ultrabrain 실행 계획");
+  });
+  it("사용자가 Deep 역할을 폴백과 다르게 저장했으면 그 강도가 다이얼을 이긴다", async () => {
+    h.roleModels = { deep: { provider: "google-antigravity", model: "m", thinkingLevel: "medium" } };
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface(), { thinkingLevel: "low" });
+    // 계획 턴은 Ultrabrain(high), 실행 턴은 저장된 역할 강도(medium) — 다이얼 low 가 아니다.
+    expect(h.requests[0]).toMatchObject({ thinkingLevel: "high", readOnly: true });
+    expect(h.requests[1]).toMatchObject({ thinkingLevel: "medium" });
+    h.roleModels = undefined;
   });
   it("planOnly always disables writes and never starts Deep", async () => {
     await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "계획" }, harness().surface(), { planOnly: true });

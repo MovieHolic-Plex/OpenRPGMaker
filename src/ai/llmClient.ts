@@ -103,13 +103,32 @@ export function companionRequestBaseUrl(): string {
 }
 export const DEFAULT_CHATGPT_BASE_URL = companionCompletionsBaseUrl();
 // 공장 기본은 Antigravity Gemini 3.8 Flash — 에디터 툴콜이 Codex 보다 안정적이다.
+/**
+ * 2026-09-26 이전에 설정 모달을 한 번이라도 저장한 사용자의 \`roleModels.deep\` 을 **미설정으로 본다.**
+ *
+ * 왜: 모달의 collect() 는 저장마다 역할 3개를 전부 쓰므로(aiSettingsModal), 당시 폴백이던
+ * \`{providerId, liteModel||model, "high"}\` 가 그대로 박혀 있다. 폴백이 지금 «low» 로 내려갔으니 그 값은
+ * «사용자가 고른 것»이 아니라 «당시 기본값을 적어 둔 것»인데, 그대로 두면 다이얼 게이트가 그것을
+ * «명시 설정»으로 읽어 **다이얼이 영영 죽는다**(리뷰 R2 실측 — 문제를 보고한 사용자가 이 집단이다).
+ * \`LEGACY_DEFAULT_MAX_TOKENS\` 승격과 같은 해석이다: 옛 공장 기본이면 미설정으로 본다.
+ * 대가: 그 시절에 «높음»을 일부러 골라 둔 사용자는 그 선택을 한 번 잃는다 — 설정에서 다시 고르면 된다.
+ * 디스크에는 쓰지 않는다(load* 가 몰래 쓰면 안 된다는 규칙 그대로 — 다음 저장 때 자연히 정리된다).
+ */
+function withoutLegacySeededDeepRole(roles: SpecialistModels, providerId: string, model: string): SpecialistModels {
+  const deep = roles.deep;
+  if (!deep || deep.provider !== providerId || deep.model !== model || deep.thinkingLevel !== "high") return roles;
+  const { deep: _legacySeeded, ...rest } = roles;
+  return rest;
+}
 // 3.7 이 아니라 3.8 인 이유는 **지연 우위가 아니라 일관성**이다: Ultrabrain 역할(계획·검수)이 이미
-// 3.8-flash 를 쓰고, 우리가 기본으로 보내는 사고 강도 집합(minimal/low/medium/high)도 이 모델의 것이다 —
-// 기본값만 3.7 로 남기면 한 턴 안에서 두 모델이 섞인다.
-// 3.7 대 3.8 의 지연 비교(2026-09-26, 동반 서비스 직결, 각 셀 n=3 중앙값, provider-37.json 대 provider-reps3.json):
-// low@2k 2452 vs 2080ms(3.8 우세), low@30k 2923 vs 4101ms·high@30k 4243 vs 6344ms(3.7 우세) —
-// **일관된 우위가 없다**(분산이 크다). 측정으로 확정된 축은 모델 세대가 아니라 사고 강도다:
-// 같은 모델에서 high/low 중앙값 1.54×(2k)·1.55×(30k), 실제 Pi 런 1.36~1.43×.
+// 3.8-flash 를 쓰므로, 기본값만 3.7 로 남기면 한 턴 안에서 두 모델이 섞인다.
+// 3.7 대 3.8 을 실제로 쟀다(2026-09-26, 동반 서비스 직결, 각 셀 n=3 중앙값, provider-37.json 대
+// provider-reps3.json) — **3.8 이 더 빠르지 않다.** 4셀 중 3셀에서 3.7 이 같거나 빨랐다:
+// low@2k 2080(3.8) vs 2452(3.7) 만 3.8 우세, high@2k 3196 vs 3009 · low@30k 4101 vs 2923 ·
+// high@30k 6344 vs 4243 은 3.7 우세(같은 시각 두 arm 을 동시에 돌려 서로 부하를 나눠 가진 조건이다).
+// agent-low 도 3.7 중앙값 5666ms 가 3.8 6883ms 보다 짧았다(조건이 다른 시점 측정이라 지표 수준).
+// 측정으로 확정된 축은 모델 세대가 아니라 **사고 강도**다: 같은 모델에서 high/low 중앙값 1.54×(2k)·
+// 1.55×(30k), 실제 Pi 런은 중앙값 기준 1.28~1.36×.
 // 제공자는 Antigravity·Codex 둘 중 하나이고, 저장된 선택은 존중된다. providerId 가 없는
 // 옛 blob 은 기본 제공자(Antigravity)로 읽히므로 이 상수가 그 blob 의 모델 기본값이기도 하다.
 export const DEFAULT_MODEL = "gemini-3.8-flash";
@@ -268,7 +287,7 @@ export function loadAiConfig(): AiConfig {
       baseUrl: base.baseUrl,
       model,
       liteModel,
-      roleModels: parseRoleModels(parsed.roleModels),
+      roleModels: withoutLegacySeededDeepRole(parseRoleModels(parsed.roleModels), providerId, liteModel || model),
       ultrabrainProviderId: parseOhMyPiProvider(parsed.ultrabrainProviderId, DEFAULT_ULTRABRAIN_PROVIDER),
       ultrabrainModel: typeof parsed.ultrabrainModel === "string" && parsed.ultrabrainModel.trim()
         ? parsed.ultrabrainModel.trim() : DEFAULT_ULTRABRAIN_MODEL,
