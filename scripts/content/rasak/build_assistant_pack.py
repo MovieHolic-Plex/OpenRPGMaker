@@ -23,7 +23,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 T = 48
 COLS = 96
-BUNDLES = ['rasak_field', 'rasak_swamp', 'rasak_cave', 'rasak_town', 'rasak_interior', 'rasak_dungeon', 'rasak_castle']
+BUNDLES = ['rasak_field', 'rasak_swamp', 'rasak_cave', 'rasak_town', 'rasak_interior', 'rasak_dungeon', 'rasak_castle', 'rasak_forestfolk', 'rasak_snow', 'rasak_port']
 N, E, S, W, NE, SE, SW, NW = 1, 2, 4, 8, 16, 32, 64, 128
 DIRS = [(0, -1, N), (1, 0, E), (0, 1, S), (-1, 0, W), (1, -1, NE), (1, 1, SE), (-1, 1, SW), (-1, -1, NW)]
 # p27b 둘레 암반(A4 kind 7)은 2022 옛 그림을 현재 시트로 맞춘 결과라 안쪽이 모양 15 로 재구성된다(names-review). 표 검증·예제에서 뺀다.
@@ -210,6 +210,59 @@ PURPOSES = {
 4. **성문**: 벽면 두 줄에 `castle_wall_arch_gate_open`(3×2). 앞에 해자(A1 돌 수로 물)를 두르고 성문 앞만 비워 도개교(`castle_drawbridge_chain`, 2×4)와 돌길.
 5. **성탑**: 성벽 양끝에 `castle_round_tower_gray_3`(3×3) + 그 위 **지붕 색이 다른** 원뿔 지붕(`castle_tower_roof_cone_red`/`_blue`/`_green`, 3×4, 탑 위로 1줄 겹침).
 6. **나무 요새·폐허는 성과 다른 구역**에: 말뚝 벽(`fort_palisade_*`)·망루(`fort_watchtower_*`)·열린 성문 틀 / 무너진 아치 문·벽 토막·돌 더미(`ruins*`). 폐허 주변은 마른 덤불·낙엽 2층과 앙상한 나무.
+""",
+    },
+    'elf_village': {
+        'bundle': 'rasak_forestfolk', 'preview': 'ex_elf_village', 'name': '엘프 숲 마을',
+        'desc': '거대 엘프 나무 둘(수관 4층)·초록·붉은 완성 목조 집·A3 조립 집 하나·나무 위 오두막·흰 돌 가로등·흙길·연못·사냥꾼 야영지(움막·건조대·매단 사냥감). 조립 예제 ex_elf_village(36×26) 기준.',
+        'windows': [(0, 0, 18, 13), (18, 0, 18, 13), (0, 12, 18, 14), (18, 12, 18, 14)],
+        'cross': (8, 5, 10, 8),
+        'path': (('A2', 0), ('A2', 1)), 'cave': False,
+        'main_ground': ('A2', 0),
+        'alts': [('A2', 1), ('A2', 8), ('A1', 0), ('A3', 0), ('A3', 9), ('A3', 16), ('A3', 25), ('A3', 20), ('A3', 29)],
+        'recipe': 'castle',
+        'room_notes': """## 엘프 숲 마을 — 짓는 순서(예제 ex_elf_village)
+1. **거대 엘프 나무는 네 조각을 세로로 쌓는다**(시트 왼쪽 세로줄 = 한 그루): 수관 `elftree_<색><n>_canopy_round`(7×6, **4층**) 을 (x,y) 에, 윗줄기 `_trunk_upper`(4×3) 를 (x+1,y+6), 껍질 머리 `_bark_crown_lower`(7×4, 4층) 를 (x,y+9), 밑동 `_trunk_base`(3×3) 를 (x+2,y+13). 수관 아래 빈 땅은 2층 풀숲(A2 무성한 풀숲)으로 채운다.
+2. **집은 완성 물체가 먼저**: `elf_<색>_house_gable_a`(6×6) · `_house_gable_b`(5×6) · `_house_large`(8×5) · `_long_hall`(7×4) · 나무 위 오두막 `_treehouse_*`. 색(green/blue/red/yellow)을 집마다 다르게.
+3. **A3 조립 집**은 모자라는 자리에만: 지붕 kind(초록 0·청록 4·붉은 16·노랑 20) 2~3줄 + 벽 kind(같은 색 8·12·24·28) 2줄, 문은 `elf_<색>_wall_door`(1×2) 를 벽 두 줄에.
+4. **흰 돌 가로등**(`elf_*_lamp_post_l/_r`)은 길 **한쪽**에 간격을 다르게. 흙길은 집 문 아래 칸에서 끝낸다.
+5. **사냥꾼 야영지**(`hunter_*`)는 숲가 한 구석: 원뿔 움막·흰 가죽 천막·가죽 건조대·갈래 기둥에 매단 사냥감·통. 서리(`_frost`)·잎(`_leaf`) 변형을 계절에 맞춘다.
+""",
+    },
+    'snow_village': {
+        'bundle': 'rasak_snow', 'preview': 'ex_snow_village', 'name': '설원 바이킹 마을',
+        'desc': '눈밭·얼어붙은 물가·A3 긴 집 셋(지붕 종류·폭 다름)·용머리 방패 들보·A자 박공 회관·나무 단 부두·야만족 가죽 천막 야영지·목책·앙상한 나무·눈 더미. 조립 예제 ex_snow_village(36×26) 기준.',
+        'windows': [(0, 0, 18, 12), (18, 0, 18, 12), (0, 11, 18, 15), (18, 11, 18, 15)],
+        'cross': (1, 2, 10, 8),
+        'path': (('A2', 16), ('A2', 18)), 'cave': False,
+        'main_ground': ('A2', 16),
+        'alts': [('A2', 18), ('A2', 17), ('A2', 0), ('A1', 0), ('A3', 0), ('A3', 2), ('A3', 4), ('A3', 7), ('A3', 9), ('A3', 10), ('A3', 14)],
+        'recipe': 'castle',
+        'room_notes': """## 설원 바이킹 마을 — 짓는 순서(예제 ex_snow_village)
+1. **바탕은 흰 눈밭**(A2 눈밭 kind), 길은 **갈색 흙(눈 가장자리)** kind 2칸 폭. 물가는 A1 눈 물가 물을 들쭉날쭉 덩이로.
+2. **긴 집 = A3 지붕 3줄 + 벽 2줄**: 지붕은 집마다 다른 kind(갈색 널 0 · 짚 2 · 눈 덮인 4·5 · 눈 얹힌 널 7), 벽은 통나무·널 kind(8~15). 폭 6~9칸으로 다르게. 낡은 지붕·벽(16~31)은 폐가에만.
+3. **벽 장식**: 용머리 방패 들보 `vikingsnow_beam_dragon_shields`(5×2)·방패 둘 `_beam_two_shields`(2×2)는 이름에 「벽 장식」 — **벽 윗줄**에 3층으로 붙인다.
+4. **회관**: A자 박공 앞면(`vikingsnow_aframe_gable_*`, 5×8·6×10)을 공터에. **부두**: 나무 단(`vikingsnow_plank_deck` 7×7)을 물가에 붙이고 난간.
+5. **야만족 야영지**(`barbarian_*`)는 마을 밖 한쪽: 큰 원뿔 천막·가죽 천막·가죽 건조대·전리품 기둥·창과 방패·목책. 눈 없는 판(`viking_*`)과 눈 덮인 판(`vikingsnow_*`)은 같은 모양이다 — 계절에 맞춰 하나만.
+6. **흩뿌림**: 앙상한 나무는 3칸 이상 띄워 10~15그루, 나머지 빈 눈밭은 2층 눈 더미·흙 얼룩·마른 덤불로 1/4 쯤.
+""",
+    },
+    'port_harbor': {
+        'bundle': 'rasak_port', 'preview': 'ex_port', 'name': '항구·배',
+        'desc': '바다(A1)·돌 포장 부두·나무 잔교·정박한 큰 배 한 척(왼쪽 선체 시트 + 오른쪽 선체 시트를 그대로 이어 붙임, 돛대 둘·키·대포·통)·부두 창고 A3 둘·화물 더미·동쪽 해변(야자수·초가·통나무배). 조립 예제 ex_port(36×26) 기준.',
+        'windows': [(0, 0, 18, 12), (16, 0, 20, 12), (0, 10, 18, 16), (16, 10, 20, 16)],
+        'cross': (2, 12, 10, 8),
+        'path': (('A2', 3), ('A2', 9)), 'cave': False,
+        'main_ground': ('A2', 3),
+        'alts': [('A2', 9), ('A2', 16), ('A2', 24), ('A1', 0), ('A3', 0), ('A3', 10), ('A3', 16), ('A3', 25)],
+        'recipe': 'castle',
+        'room_notes': """## 항구 — 짓는 순서(예제 ex_port)
+1. **바다를 먼저** A1 물 kind 로 맵 전체, 그 위에 뭍(돌 포장 A5·모래)을 칠하고 나무 잔교(갑판 널 kind)를 물 쪽으로 2칸 폭 뻗는다.
+2. **배 한 척 = 선체 시트 두 장을 그대로**: 왼쪽 선체 시트(`ship_l_*`, 16열) 를 (X,Y) 에, 오른쪽 선체 시트(`ship_r_*`, 16열) 를 (X+16,Y) 에 **시트 배치 그대로** 옮긴다(위 11줄). 갑판(`ship_l_deck`·`ship_r_deck`)은 1층, 나머지 선체(뱃머리·난간·현측)는 3층. 조각을 따로따로 흩어 놓지 않는다.
+   붉은 칠(`ship_l_red`·`ship_r_red`)·낡은 배(`shipold_l`·`shipold_r`)는 같은 배치의 색 변형이다.
+3. **돛대**: `sails_mast_full_a`(3×11)·`_b`(3×9)를 갑판 위 **4층**에 — 선체 위로 올라간다. 검은 돛(`sails_black_*`)은 해적선.
+4. **갑판 소품**(3층, 갑판 칸 위): 조타륜 `shipdeco_steering_wheel`(뱃고물 쪽) · 대포 줄 · 통 더미 · 밧줄 뭉치 · 화물 상자. 고물 선실 앞면(`shipdeco_stern_cabin_*`)은 배 끝.
+5. **부두**: 창고는 A3 지붕 2줄 + 벽 2줄, 앞에 화물(상자·자루 줄·통·닻)을 덩이로. 해변은 야자수(`beach_palm_*`)·초가(`beach_thatch_*`)·기둥 오두막·통나무배.
 """,
     },
 }

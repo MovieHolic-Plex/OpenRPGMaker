@@ -62,7 +62,7 @@ class Canvas:
             prev = self.owner.get((ly, cy * self.w + cx))
             if prev and not over:
                 self.errors.append(f'{where}: {ly}층 ({cx},{cy}) 에서 {prev} 를 덮어씀')
-            if ly == 4 and self.L[3][cy * self.w + cx] is None and not oid.startswith(('building_', 'trees_', 'sb_')) and self.ground(cx, cy) != 'table':
+            if ly == 4 and self.L[3][cy * self.w + cx] is None and not oid.startswith(('building_', 'trees_', 'sb_', 'elftree_', 'sails_')) and self.ground(cx, cy) != 'table':
                 self.errors.append(f'{where}: 4층 소품 밑 ({cx},{cy}) 에 3층 물체가 없음')
         if ly == 2:
             for cx, cy, _ in cells:
@@ -70,7 +70,7 @@ class Canvas:
                     self.errors.append(f'{where}: 2층 바닥 장식이 ({cx},{cy}) {self.ground(cx, cy)} 위')
         if ly == 3 and cells:
             wall_mount = '벽걸이' in o['name']
-            in_wall = '벽 아랫줄에 놓음' in o['name'] or '벽돌 포함' in o['name']   # 벽 속 화덕처럼 벽면 칸에 박는 물체
+            in_wall = '벽 아랫줄에 놓음' in o['name'] or '벽돌 포함' in o['name'] or '벽 장식' in o['name']   # 벽 속 화덕처럼 벽면 칸에 박는 물체
             bottom = max(cy for _, cy, _ in cells)
             for cx, cy, _ in cells:
                 if not self.ok(cx, cy):
@@ -88,6 +88,16 @@ class Canvas:
                 self.tile(ly, t, cx, cy)
                 self.owner[(ly, cy * self.w + cx)] = oid
         return o
+
+    def try_obj(self, oid, x, y):
+        """흩뿌림용: 물체 칸이 맵 안이고 같은 층 다른 물체와 겹치지 않고 바닥(floor) 위일 때만 찍는다. 찍었으면 True."""
+        o = self.ctx.object(self.b, oid)
+        ly = o['layer']
+        cells = [(x + c, y + r) for r, row in enumerate(o['cells']) for c, t in enumerate(row) if t >= 0]
+        if not all(self.ok(cx, cy) and (ly, cy * self.w + cx) not in self.owner and self.ground(cx, cy) == 'floor' for cx, cy in cells):
+            return False
+        self.obj(oid, x, y)
+        return True
 
     def ground(self, x, y):
         """1층 칸 성격: 'wall'(A4 벽면·A3 벽) · 'roof'(A3 지붕) · 'ceiling'(A4 윗면) · 'water'(A1) · 'floor'."""
