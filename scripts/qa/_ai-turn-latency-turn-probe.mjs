@@ -78,7 +78,9 @@ function formatTiming(row) {
 
 const browser = await chromium.launch({
   // 부하 건 박스에서 실제 턴(맵 렌더 + 후속 검수 이미지)을 돌리면 탭이 죽는 일이 있었다(실측 2026-09-26:
-  // page.evaluate Target crashed). /dev/shm 이 작은 환경에서 흔한 원인이라 그 회피만 명시한다.
+  // page.evaluate Target crashed). /dev/shm 이 작은 환경에서 흔한 원인이라 그 회피를 명시하고,
+  // --headed 면 Xvfb 아래 headed 로 띄운다(headless+swiftshader 가 크래시 의심 지점이라 다른 경로를 한 번 쓴다).
+  headless: !args.headed,
   args: ["--disable-dev-shm-usage", "--js-flags=--max-old-space-size=4096"],
 });
 const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } });

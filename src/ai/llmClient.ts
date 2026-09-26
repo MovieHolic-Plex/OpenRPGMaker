@@ -230,12 +230,6 @@ export function scrubStoredAiCredentials(): {
   }
 }
 
-// localStorage 로드. 저장된 값이 없거나 깨졌으면 기본값. 저장값은 기본값 위에 병합.
-//
-// **인증은 무조건 OAuth 다.** 저장값이 authMode 를 apiKey 로 되돌리지 못한다. 예전 판정은
-// 저장된 baseUrl 이나 apiKey 가 있으면 apiKey 모드로 추론했는데, 그러면 감독이 한 번이라도
-// 게이트웨이를 저장한 브라우저는 env 를 고쳐도 계속 죽은 경로를 쳤다 — 이번 장애의 절반이
-// 이것이다(실측: 저장된 baseUrl `/api/cliproxy` 가 POST 404).
 /**
  * 스탬프 없는 옛 저장(roleModelsPolicyVersion !== 1)에서, 모달이 적어 둔 «당시 폴백 모양» 의
  * 역할 Deep 을 미설정으로 본다.
@@ -253,6 +247,12 @@ function withoutLegacySeededDeepRole(roles: SpecialistModels, providerId: string
   return rest;
 }
 
+// localStorage 로드. 저장된 값이 없거나 깨졌으면 기본값. 저장값은 기본값 위에 병합.
+//
+// **인증은 무조건 OAuth 다.** 저장값이 authMode 를 apiKey 로 되돌리지 못한다. 예전 판정은
+// 저장된 baseUrl 이나 apiKey 가 있으면 apiKey 모드로 추론했는데, 그러면 감독이 한 번이라도
+// 게이트웨이를 저장한 브라우저는 env 를 고쳐도 계속 죽은 경로를 쳤다 — 이번 장애의 절반이
+// 이것이다(실측: 저장된 baseUrl `/api/cliproxy` 가 POST 404).
 export function loadAiConfig(): AiConfig {
   const base = defaultAiConfig();
   if (typeof localStorage === "undefined") return base;
