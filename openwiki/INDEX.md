@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **105쪽 / 3693KB / 약 1,059,058 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **105쪽 / 3695KB / 약 1,059,480 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -22,7 +22,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-event-commands.md` | 63KB | 32KB | 268 | ~17,227 |
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 467 | ~28,297 |
 | `openwiki/editor-pre-edit-routing.md` | 159KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 989 | ~46,424 |
-| `openwiki/editor-workflows-misc.md` | 70KB | 32KB | 492 | ~19,239 |
+| `openwiki/editor-workflows-misc.md` | 70KB | 32KB | 492 | ~19,346 |
 | `openwiki/runtime-battle.md` | 185KB | 31KB | 944 | ~53,187 |
 | `openwiki/runtime-pre-edit-routing.md` | 54KB | 34KB | 366 | ~15,889 |
 | `openwiki/runtime-project-schema.md` | 173KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1274 | ~47,535 |
@@ -832,7 +832,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L245` 손붓이 hard 클러스터에 막혔을 때의 복구 경로 (2026-09-10, OPRN-OUT-017)
   - `L291` `bAlt`/`aAlt` 패리티 — 별도 리뷰 결과: **실제 결함이었고 고쳤다** (2026-09-10)
 
-### `openwiki/editor-workflows-misc.md` — 70KB · 492줄 · ~19,239 토큰 · 통째읽기 잘림
+### `openwiki/editor-workflows-misc.md` — 70KB · 492줄 · ~19,346 토큰 · 통째읽기 잘림
 
 - `L9` Other Editor Workflows
   - `L11` New-project name and player title (2026-09-07)
@@ -1521,7 +1521,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L179` Exact connection cleanup
 - `L248` Verification and remaining integration
 
-### `openwiki/spatial-catalog-ui.md` — 23KB · 235줄 · ~6,490 토큰
+### `openwiki/spatial-catalog-ui.md` — 24KB · 243줄 · ~6,805 토큰
 
 - `L5` 목록은 축소 그림만 그린다 (2026-09-24)
 - `L14` Concept and selection contract (2026-09-12)
@@ -1537,10 +1537,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L176` 2026-09-24 — bundled fallback for all 31 interiors
 - `L180` 공용 장소 웹 배포 계약 (2026-09-24)
   - `L184` 부팅 범위와 미리보기 주소 (2026-09-26)
-- `L201` 호스트 전용 장소의 목록 썸네일 (2026-09-24)
-- `L205` 2026-09-24 — 공간 소유자의 참고문서 표시
-- `L218` RPG 판타지 장소 70곳 공용 DB 등록 (2026-09-25)
-- `L229` 공용 DB 게시 도우미 `scripts/content/lib/shared-library.mjs` (2026-09-25)
+- `L209` 호스트 전용 장소의 목록 썸네일 (2026-09-24)
+- `L213` 2026-09-24 — 공간 소유자의 참고문서 표시
+- `L226` RPG 판타지 장소 70곳 공용 DB 등록 (2026-09-25)
+- `L237` 공용 DB 게시 도우미 `scripts/content/lib/shared-library.mjs` (2026-09-25)
 
 ### `openwiki/spatial-geography-compiler.md` — 9KB · 158줄 · ~2,420 토큰
 

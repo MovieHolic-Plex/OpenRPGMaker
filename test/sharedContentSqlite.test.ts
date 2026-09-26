@@ -4,7 +4,7 @@ import { gunzipSync } from "node:zlib";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { encodedSharedContent, publishSharedContent, readSharedContent, readSharedContentForEditor, readSharedContentPreview, readSharedReferenceImage } from "../scripts/lib/sharedContentSqlite";
+import { encodedSharedContent, publishSharedContent, readSharedContent, readSharedContentForEditor, readSharedContentPreview, readSharedReferenceImage, sharedContentEtag, encodedSharedContentWithRevision } from "../scripts/lib/sharedContentSqlite";
 import { isSharedReferenceImage } from "@/project/bundledReferenceImagePath";
 import { validateTilesetReferences } from "@/project/tilesetReferences";
 import type { SharedContentLibrary } from "@/project/sharedContentSchema";
@@ -83,5 +83,24 @@ describe("encoded editor response", () => {
     const second = encodedSharedContent("defaults", file);
     expect(second).not.toBe(first);
     expect(JSON.parse(gunzipSync(second).toString()).libraries.defaults.sourceProjectId).toBe("changed");
+  });
+
+  it("splits the catalog so defaults + rest is the whole, all sharing one revision", () => {
+    const defaults = readSharedContentForEditor("defaults", file);
+    const rest = readSharedContentForEditor("rest", file);
+    const all = readSharedContentForEditor("all", file);
+    expect(Object.keys(defaults.libraries)).toEqual(["defaults"]);
+    expect(Object.keys(rest.libraries)).toEqual(["catalog"]);
+    expect({ ...defaults.libraries, ...rest.libraries }).toEqual(all.libraries);
+    expect(new Set([defaults.revision, rest.revision, all.revision]).size).toBe(1);
+  });
+
+  it("changes the scope ETag exactly when a library is republished", () => {
+    const before = sharedContentEtag("all", encodedSharedContentWithRevision("all", file).revision);
+    expect(sharedContentEtag("all", encodedSharedContentWithRevision("all", file).revision)).toBe(before);
+    expect(sharedContentEtag("rest", encodedSharedContentWithRevision("rest", file).revision)).not.toBe(before);
+    const old = readSharedContent(file).libraries.catalog!;
+    publishSharedContent("catalog", { ...library(false), sourceProjectId: "moved" }, hashLibrary(old), file);
+    expect(sharedContentEtag("all", encodedSharedContentWithRevision("all", file).revision)).not.toBe(before);
   });
 });
