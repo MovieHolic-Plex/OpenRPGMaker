@@ -1,4 +1,5 @@
-// 모든 모델 슬롯의 기본값을 gemini-3.7-flash 하나로 강제한다 (감독 지시 2026-08-26).
+// 모든 모델 슬롯의 기본값을 gemini-3.8-flash 하나로 강제한다 (2026-09-26 이동 — 실행 루프 기본
+// 사고 강도가 low 가 되면서 저지연 모델을 기본으로 당겼다. 2026-08-26 강제의 이유는 그대로다).
 //
 // 왜 계약으로 고정하는가: 기본 모델이 여러 곳에서 각자 정해지면(llmClient 의 DEFAULT_MODEL /
 // DEFAULT_LITE_MODEL, modelCatalog 의 제공자별 추천 첫 항목, ohMyPiProviders 의 제공자 기본값)
@@ -10,7 +11,7 @@ import { DEFAULT_LITE_MODEL, DEFAULT_MODEL, defaultAiConfig } from "@/ai/llmClie
 import { defaultModelForAuthMode, modelCatalogForAuthMode } from "@/ai/modelCatalog";
 import { DEFAULT_OH_MY_PI_PROVIDER, getOhMyPiProvider } from "@/ai/ohMyPiProviders";
 
-const FORCED_DEFAULT = "gemini-3.7-flash";
+const FORCED_DEFAULT = "gemini-3.8-flash";
 
 describe("강제 기본 모델", () => {
   it("감독 모델과 실행(lite) 모델 상수가 모두 강제 기본값이다", () => {

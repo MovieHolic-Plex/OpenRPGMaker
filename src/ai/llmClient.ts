@@ -102,12 +102,16 @@ export function companionRequestBaseUrl(): string {
   return DEFAULT_CHATGPT_BASE_URL;
 }
 export const DEFAULT_CHATGPT_BASE_URL = companionCompletionsBaseUrl();
-// 공장 기본은 Antigravity Gemini 3.7 Flash — 에디터 툴콜이 Codex 보다 안정적이다.
+// 공장 기본은 Antigravity Gemini 3.8 Flash — 에디터 툴콜이 Codex 보다 안정적이다.
+// 왜 3.7 이 아닌가(2026-09-26 실측, 동반 서비스 직결 OAuth): 3.8-flash 한 호출이 effort minimal/low 에서
+// 약 2.2~2.8s, high 에서 약 4.0~5.8s 다(전제 1k→30k 토큰은 0.5s 밖에 안 움직여 지연은 사고 강도가 지배한다).
+// Ultrabrain 역할이 이미 이 모델을 쓰고, 우리가 기본으로 보내는 사고 강도 집합(minimal/low/medium/high)도
+// 이 모델의 것이다 — 기본 모델을 여기 맞춰 두면 실행 루프가 같은 지연 특성을 받는다.
 // 제공자는 Antigravity·Codex 둘 중 하나이고, 저장된 선택은 존중된다. providerId 가 없는
 // 옛 blob 은 기본 제공자(Antigravity)로 읽히므로 이 상수가 그 blob 의 모델 기본값이기도 하다.
-export const DEFAULT_MODEL = "gemini-3.7-flash";
+export const DEFAULT_MODEL = "gemini-3.8-flash";
 // DEFAULT_LITE_MODEL: 실행 단계용. 기본은 DEFAULT_MODEL과 동일 → 이원화 비활성.
-export const DEFAULT_LITE_MODEL = "gemini-3.7-flash";
+export const DEFAULT_LITE_MODEL = "gemini-3.8-flash";
 // 추론 토큰을 먼저 쓰는 모델 함정(실측): 짧은 max_tokens 로 호출하면 추론 토큰만 소비되고
 // content 가 빈 문자열로 돌아온다(실측: max_tokens 16 → content "" 이면서 completion 13토큰
 // 소비, 512 → 정상). 그래서 출력 예산을 넉넉히 잡는다.

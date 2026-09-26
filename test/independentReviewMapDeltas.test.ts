@@ -35,7 +35,9 @@ describe("independent review map deltas", () => {
     after.maps[target.id] = renamed;
     const input = reviewInput(before, after);
     const config = defaultAiConfig();
-    expect(config.model).toBe("gemini-3.7-flash");
+    // 공장 기본 모델은 2026-09-26 에 3.8-flash 로 바뀌었다 — Ultrabrain 역할이 이미 그 모델을 쓰고,
+    // 실행 루프의 기본 사고 강도(minimal/low)도 그 모델의 지원 집합이다(실측: low 가 high 의 약 2/3 지연).
+    expect(config.model).toBe("gemini-3.8-flash");
 
     // Both whole-collection deltas and unconditional preset map closure overflow here.
     const request = buildIndependentReviewRequest(config, input);

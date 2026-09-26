@@ -24,8 +24,8 @@ const CODEX_MODELS: readonly string[] = [
  *
  * `getBundledModels("google-antigravity")` 실측(2026-08-27) 결과를 그대로 쓴다. pi-catalog 가
  * 제공자 전송 계층이 실제로 해석하는 모델 목록이므로, gemini 밖 네임스페이스(Claude·gpt-oss·
- * tab_*)도 여기서는 **Antigravity 소속 모델**이다. 첫 항목만 제품 기본값(gemini-3.7-flash)에
- * 맞춰 앞으로 옮겼다.
+ * tab_*)도 여기서는 **Antigravity 소속 모델**이다. 첫 항목만 제품 기본값(gemini-3.8-flash)에
+ * 맞춰 앞으로 옮겼다(2026-09-26: 실행 루프 기본 사고 강도가 low 로 내려가면서 저지연 모델을 기본으로 당겼다).
  *
  * `gemini-3.7-flash-high` 는 없다 — 실측(2026-08-26) 결과 Cloud Code Assist 가 그 ID 를 404
  * `Requested entity was not found` 로 거부한다. Antigravity 에서 `-high`/`-medium`/`-low` 는
@@ -35,8 +35,8 @@ const CODEX_MODELS: readonly string[] = [
  * OAuth wire gemini-3.8-flash-high / HIGH verified 2026-09-14.
  */
 const ANTIGRAVITY_MODELS: readonly string[] = [
-  "gemini-3.7-flash",
   "gemini-3.8-flash",
+  "gemini-3.7-flash",
   "claude-opus-4-5",
   "claude-opus-4-6",
   "claude-sonnet-4-5",
