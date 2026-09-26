@@ -1,5 +1,6 @@
 import { normalizeGallerySettings } from "./gallery";
 import { normalizeChapterSettings, normalizeNewGamePlusSettings } from "./newGamePlus";
+import { normalizeVehicleConfigs } from "./vehicles";
 import { normalizeFieldHud } from "./fieldHud";
 import { assertPromotionExtensions } from '@/project/growth/requirements';
 import {
@@ -206,6 +207,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
       ? { atbSpeed: clampInteger(system.atbSpeed, 1, 8) }
       : {}),
     ...(system.battleBackdrop === "field" ? { battleBackdrop: "field" as const } : {}),
+    ...(system.battlePresentation === "onField" ? { battlePresentation: "onField" as const } : {}),
     ...(system.battleCommandCss?.trim() ? { battleCommandCss: system.battleCommandCss } : {}),
     // 기본 스킨(DEFAULT_BATTLE_SKIN_ID = rm2000)만 저장하지 않는다. 그 밖의 명시적 선택은 반드시
     // 보존해야 한다 — 기본이 바뀐 뒤에 명시값을 생략하면 왕복 후 다른 스킨으로 바뀌어버린다
@@ -259,6 +261,10 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     ...(() => {
       const chapter = normalizeChapterSettings(system.chapter);
       return chapter ? { chapter } : {};
+    })(),
+    ...(() => {
+      const vehicles = normalizeVehicleConfigs(system.vehicles);
+      return vehicles ? { vehicles } : {};
     })(),
     ...(typeChart ? { typeChart } : {}),
     ...(timeSystem ? { timeSystem } : {}),

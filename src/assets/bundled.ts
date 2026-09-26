@@ -43,6 +43,7 @@ import {
   LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY,
 } from "@/project/defaults/constants";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
+import { VEHICLE_CHARSET_TEXTURE_KEY } from "@/project/vehicles";
 import { EASYRPG_PICTURE_ASSETS } from "@/assets/easyrpgRtp";
 import { FARMING_CROP_SPRITE_ASSETS } from "@/assets/farmingSprites";
 import { generatedMonsterSpriteUrl, isGeneratedMonsterSprite } from "@/assets/generatedMonsterSprites";
@@ -627,6 +628,8 @@ function projectBundledTextureKeys(project: Project): Set<string> {
   for (const asset of BUNDLED_EASYRPG_CHARSET_ASSETS) {
     if (strings.has(asset.id) || strings.has(asset.textureKey)) keys.add(asset.textureKey);
   }
+  // 탈것 그림은 system.vehicles 가 있으면 쓴다(id 만 저장하므로 문자열 수집에 안 걸린다).
+  if (project.system.vehicles?.length) keys.add(VEHICLE_CHARSET_TEXTURE_KEY);
   // 자동 배선된 작물 그래픽은 프로젝트 문자열에 없다(저장하지 않는다) — 그래서 해석해서 더한다.
   const cropAssetIds = new Set<string>();
   for (const crop of project.database.crops ?? []) {

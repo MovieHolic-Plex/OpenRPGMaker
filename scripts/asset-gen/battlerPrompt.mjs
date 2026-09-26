@@ -180,6 +180,14 @@ export const POSES = [
     row: 1,
     beat: "Pose: knocked out of the fight and collapsed on the ground, lying on the side with the torso down near the ground and the head lowest of all, one arm sprawled out limp and the legs folded loosely beneath, eyes closed and face slack with no tension anywhere in the body, the weapon fallen from the hand and lying on the ground beside the figure. The silhouette is wide and low and horizontal — the figure must NOT be standing, kneeling upright or holding itself up. Because this pose is wide, draw the figure SMALLER: the whole body from the top of the head to the feet, and the fallen weapon, must fit well inside the frame with clear empty magenta margin on all four sides. The body must never touch the left or right edge of the image.",
   },
+  // 행 1 열 2 (2026-09-26). 런타임 victoryFrameFor 가 셀을 재서 비어 있으면 idle 로
+  // 떨어진다 — 그림이 생기면 승리 포즈가 전투 화면에 보인다. idle 과 실루엣이 달라야 한다.
+  {
+    id: "victory",
+    col: 2,
+    row: 1,
+    beat: "Pose: triumphant victory celebration after winning the battle, still in a left-facing side view. The weapon or main item is thrust straight up high overhead at full arm extension, or planted firmly point-down on the ground beside the body, and the other hand is clenched in a raised fist pump at shoulder height. Chest puffed out, back straight and chin lifted proudly, a big open-mouthed grin with the eyes bright. The raised arm makes the silhouette clearly taller and more vertical than a battle-ready stance — it must not look like the ready idle pose. Keep the whole figure, including the raised weapon, well inside the frame with clear empty magenta margin on all four sides.",
+  },
 ];
 
 /** 얼굴/직업은 기본 DB(defaultDatabasePartyRecords.ts)의 액터들과 짝을 맞춘다. */

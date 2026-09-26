@@ -65,6 +65,8 @@ export const OP_KINDS = [
   "waitForLift",
   "waitForGrounded",
   "captureShadowSample",
+  // 필드 위 전투(ct-onfield): 전투 전 주인공·동료·심볼 스프라이트의 **화면** 발끝 좌표를 기록한다.
+  "captureFieldAnchors",
 ];
 
 const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -535,6 +537,24 @@ export function evaluateExpect(expected, observed) {
         }
       }
     }
+  }
+
+  // 탈것: 주인공 텍스처 키(탑승하면 탈것 시트), 동료 스프라이트 수(탑승 중 0), 탑승 중인 탈것 id,
+  // 세워 둔 탈것 스프라이트 — 모두 런타임이 직접 그린 값이다.
+  if (expected.playerTextureKey !== undefined && observed.playerSpriteTextureKey !== expected.playerTextureKey) {
+    failures.push(`playerTextureKey: 기대 ${expected.playerTextureKey}, 실제 ${observed.playerSpriteTextureKey ?? "없음"}`);
+  }
+  if (expected.followerSpriteCount !== undefined && observed.followerSpriteCount !== expected.followerSpriteCount) {
+    failures.push(`followerSpriteCount: 기대 ${expected.followerSpriteCount}, 실제 ${observed.followerSpriteCount ?? "훅 없음"}`);
+  }
+  if (expected.vehicleBoarded !== undefined) {
+    const actual = state?.vehicle?.boardedId ?? null;
+    if (actual !== expected.vehicleBoarded) failures.push(`vehicleBoarded: 기대 ${expected.vehicleBoarded}, 실제 ${actual}`);
+  }
+  for (const id of expected.parkedVehicleSprites ?? []) {
+    const sprite = observed.vehicleSprites?.[id];
+    if (!sprite) failures.push(`parkedVehicleSprites: ${id} 스프라이트가 필드에 없다`);
+    else if (sprite.textureKey !== "tex_easyrpg_charset_vehicles") failures.push(`parkedVehicleSprites: ${id} 텍스처 ${sprite.textureKey}`);
   }
 
   if (expected.playerSpriteResourceNonEmpty && !playerSpriteResourceId) {

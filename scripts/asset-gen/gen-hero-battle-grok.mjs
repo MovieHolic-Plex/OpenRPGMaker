@@ -20,7 +20,8 @@
 //   144×384 PNG = 48px 셀 3열 × 8행. backgroundSize 가 (프레임×3)×(프레임×8) 이므로
 //   **PNG 크기는 144×384 를 유지해야 한다**.
 //   행 0: col 0 idle, col 1 attack, col 2 hit
-//   행 1: col 0 defend, col 1 dead, col 2 예약(victory — 비워 둔다)
+//   행 1: col 0 defend, col 1 dead, col 2 victory (2026-09-26 부터 채운다 — 비어 있으면
+//         런타임 victoryFrameFor 가 idle 로 떨어진다)
 //   행 2~7 은 투명하게 남긴다 — 런타임이 샘플링하지 않고, 뭔가 그려 두면 시트를 읽는
 //   사람만 속는다. test/heroBattleSheetContract.test.ts 가 이 범위를 검사한다.
 import { existsSync, mkdirSync, rmSync } from "node:fs";

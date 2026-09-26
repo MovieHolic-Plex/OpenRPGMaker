@@ -9,6 +9,7 @@ import type { M2RuntimeState, PlaySessionLike, RuntimeEventLocation, RuntimePict
 import { executeModernCommand } from "./m2ModernRuntime";
 import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";
 import { terrainTagAt } from "@/project/terrainAt";
+import { boardedVehicleId, isVehicleId, setParkedVehicleLocation } from "@/project/vehicles";
 import { runtimeEventViewById, runtimeEventViewsForMap, type RuntimeEventPositions } from "@/project/runtimeEventState";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
 import { ensureM2Runtime } from "./m2RuntimeState";
@@ -132,6 +133,14 @@ function executeByTitle(
       y: fieldNumber(fields, "y", 0),
       value: "",
     };
+    // 세워 둔 자리를 옮긴다. 맵을 비우면 지금 맵이다. 타고 있는 탈것은 주인공과 한 몸이라 옮기지 않는다.
+    if (isVehicleId(vehicle) && boardedVehicleId(session) !== vehicle) {
+      setParkedVehicleLocation(session, vehicle, {
+        mapId: fieldString(fields, "mapId", "") || session.currentMapId,
+        x: Math.trunc(fieldNumber(fields, "x", 0)),
+        y: Math.trunc(fieldNumber(fields, "y", 0)),
+      });
+    }
     return;
   }
   if (title === "Set Event Location" || title === "Swap Event Location") {

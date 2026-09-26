@@ -5,6 +5,7 @@ import type {
   BattleSnapshot,
   TargetedActorCommand,
 } from "@/battle/runtime";
+import { mountOnFieldBackdrop, type OnFieldAnchors } from "@/player/battleOnField";
 import { concreteTargetCommand } from "@/battle/runtime";
 import { waitForEventKey } from "@/player/eventInput";
 import type { BattleEventChoiceSnapshot, BattleEventPauseSnapshot } from "@/battle/types";
@@ -55,6 +56,8 @@ export interface BattleDomOptions {
   readonly onError?: (error: unknown) => void;
   /** system.battleBackdrop === "field" 일 때 필드 화면 스냅샷(dataURL). 없으면 트룹/지형 배경. */
   readonly fieldBackdropUrl?: string;
+  /** system.battlePresentation === "onField": 배틀러를 필드 스프라이트 자리에 세우고 스냅샷을 캔버스와 1:1 로 깐다. */
+  readonly onField?: OnFieldAnchors;
 }
 
 export interface BattleDomController {
@@ -196,6 +199,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   if (options.fieldBackdropUrl) {
     applyFieldBackdrop(field, options.fieldBackdropUrl, initialSnapshot.backdropResourceId);
     root.dataset.battleBackdropKind = "field";
+  }
+  if (options.onField) {
+    root.dataset.battlePresentation = "onField";
+    // 스테이지 전체에 스냅샷을 캔버스 사각형 그대로 깐다 — 필드 배경(cover)은 전장 박스에 맞춰 잘리므로
+    // 필드 위 전투에서는 전장 배경을 비우고 스테이지 뒤판이 캔버스와 같은 자리에 그린다.
+    if (options.fieldBackdropUrl) mountOnFieldBackdrop(stage, options.onField.canvas, options.fieldBackdropUrl);
   }
 
   function toggleAutoBattle(): void {
@@ -918,6 +927,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       hitTargetId: lastDamageFeedback && !lastDamageFeedback.healing && !lastDamageFeedback.miss
         ? lastDamageFeedback.targetId
         : undefined,
+      onField: options.onField,
     };
     syncBattleField(field, snapshot, lastDamageFeedback, fieldPresentation);
     syncBattleParty(partyPanel, snapshot, fieldPresentation);

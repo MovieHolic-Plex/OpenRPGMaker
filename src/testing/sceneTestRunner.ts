@@ -1363,6 +1363,7 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         break;
       case "spawnEvent":
       case "removeEvent":
+      case "vehicle":
       case "setEventGraphicPattern":
       case "changeTile":
       case "timer":

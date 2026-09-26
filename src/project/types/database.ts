@@ -1295,6 +1295,9 @@ export interface SystemRecords {
   atbSpeed?: number;
   /** field 면 전투 배경이 주인공 주변 필드 화면의 스냅숏이고 진입은 제자리 페이드. 생략 = 트룹/지형 배경. */
   battleBackdrop?: "field";
+  /** onField 면 전투가 **필드 위에서** 벌어진다(크로노식): 전환 연출 없이, 적은 부딪힌 심볼 자리에, 아군은 파티가 선 자리에
+   *  선다. 배경은 필드 스냅샷 그대로(확대·자르기 없음). battleBackdrop 과 무관하게 필드 배경을 쓴다. 생략 = 전환 후 전투장. */
+  battlePresentation?: "onField";
   battleUiStyle?: BattleUiStyle;
   /** ESC(X) 게임 메뉴 디자인. 생략 = workbench(작업대, 지금 화면). */
   menuUiStyle?: MenuUiStyle;
@@ -1338,6 +1341,8 @@ export interface SystemRecords {
   newGamePlus?: import("@/project/newGamePlus").NewGamePlusSettings;
   /** 변수 값 → 장(시대) 이름. ESC 메뉴·저장 칸에 보인다. 생략 = 표시 없음. */
   chapter?: import("@/project/newGamePlus").ChapterSettings;
+  /** 소형선·대형선·비행선. 생략 = 탈것 없음(기존 프로젝트). 계약은 `src/project/vehicles.ts`. */
+  vehicles?: import("@/project/vehicles").VehicleConfig[];
   typeChart?: TypeChartRecord;
   timeSystem?: TimeSystemConfig;
   /** Opt-in 실시간 액션 전투 패키지. 생략 시 필드 스폰 접촉은 기존 턴제 전투로 라우팅된다. */

@@ -10,6 +10,7 @@ import { join } from "node:path";
 //   battle-scene[data-battle-revive-seen]             — the auto-revive entry was played
 //   enemy-1 --battle-node-x/y                          — rendered position after moveEnemy (30,30 → 9.375%/12.5%)
 //   battle-actor-actor_hero[data-battle-pose]          — "victory" after winning
+//   battle-actor-actor_hero[data-battle-pose-frame]    — "victory" (sheet cell drawn, not the idle fallback)
 //   battle-backdrop[data-backdrop-source]              — "field" snapshot backdrop
 mkdirSync(".omo/runtime-qa", { recursive: true });
 const temporary = mkdtempSync(".omo/runtime-qa/ct-engine-");
@@ -68,6 +69,8 @@ export default {
     { id: "victory-pose", note: "keep attacking until the enemy falls — the living hero shows the victory pose", ops: [
       { kind: "repeatUntil", testid: "battle-result-panel", state: "present", maxRounds: 12, ops: attack },
       { kind: "waitForAttr", testid: "battle-actor-actor_hero", attr: "data-battle-pose", value: "victory", timeoutMs: 30_000 },
+      // 승리 칸 그림이 있어 idle 폴백이 아니라 victory 칸을 쓴다(battleFieldDom.victoryFrameFor).
+      { kind: "waitForAttr", testid: "battle-actor-actor_hero", attr: "data-battle-pose-frame", value: "victory", timeoutMs: 10_000 },
     ], expect: { testidPresent: ["battle-result-panel"] }, shot: true },
   ],
 };
