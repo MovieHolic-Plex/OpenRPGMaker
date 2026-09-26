@@ -1,5 +1,7 @@
 import { tileAt } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
+import { MV_PACK_PRESETS } from "@/project/rpgmakerMv/packs";
+import { checkTownMap } from "@/editor/tools/packTownTools";
 
 // 조수가 칠한 맵의 배치 품질(빈 바닥·빈 정사각형·좌우 대칭)을 끝에서 한 번 잰다.
 // 문서·예제만으로는 전체 배치가 옮겨지지 않았다(2026-09-25 Rasak 시험: 문서를 세 번 고쳐도 마을 빈 바닥 44%,
@@ -34,6 +36,15 @@ export interface LayoutQualityIssue {
   readonly mapId: string;
   readonly stats: LayoutQualityStats;
   readonly problems: readonly string[];
+  /** 팩 도시 타일셋 맵이면 check_town_map 의 좌표 달린 항목(거부 위반 먼저). */
+  readonly town?: readonly string[];
+}
+
+/** 마을 짜임 재료가 있는 팩 타일셋 맵이면 check_town_map 결과를, 아니면 빈 배열. */
+function packTownProblems(project: Project, map: GameMap): string[] {
+  const presetId = project.tilesets[map.tilesetId]?.mvPack?.presetId;
+  if (!MV_PACK_PRESETS.some((preset) => preset.id === presetId && preset.town)) return [];
+  return [...checkTownMap(project, map).issues];
 }
 
 export function measureLayoutQuality(project: Project, map: GameMap): LayoutQualityStats | null {
@@ -161,7 +172,8 @@ export function inspectPiLayoutQuality(project: Project, baseline: Project, scop
     const stats = measureLayoutQuality(project, map);
     if (!stats || stats.floorCells < MIN_FLOOR) continue;
     const problems = layoutProblems(stats);
-    if (problems.length) issues.push({ mapId, stats, problems });
+    const town = packTownProblems(project, map);
+    if (problems.length || town.length) issues.push({ mapId, stats, problems, ...(town.length ? { town } : {}) });
   }
   return issues;
 }
@@ -169,12 +181,17 @@ export function inspectPiLayoutQuality(project: Project, baseline: Project, scop
 export function piLayoutRepairPrompt(issues: readonly LayoutQualityIssue[]): string {
   const lines = issues.map(issue => {
     const windows = issue.stats.emptiestWindows.map(r => `(${r.x},${r.y}) ${r.w}×${r.h}칸 중 빈 칸 ${r.emptyCells}`).join(" · ");
-    return `- ${issue.mapId}: ${issue.problems.join(" / ")}${windows ? `. 가장 빈 곳: ${windows}` : ""}`;
+    const head = issue.problems.length ? `- ${issue.mapId}: ${issue.problems.join(" / ")}${windows ? `. 가장 빈 곳: ${windows}` : ""}` : `- ${issue.mapId}:`;
+    const town = issue.town?.length
+      ? `\n  도시 점검(check_town_map, [거부] 는 도구가 실패로 돌려주는 확실한 위반 — 먼저 고친다):\n` + issue.town.map(line => `  · ${line}`).join("\n")
+      : "";
+    return head + town;
   });
   return "[배치 품질 검사] 칠한 맵이 제작자 예제 기준보다 비어 있거나 좌우 대칭이다. 끝내기 전에 한 번 고쳐라.\n"
     + lines.join("\n") + "\n"
     + "고치는 법: 먼저 show_map_region 으로 위 좌표를 본다. 그 자리에 무엇이 있을 곳인지(집 마당·밭·숲 가장자리·방의 용도)를 정하고 "
     + "그 용도에 맞는 덩이(가구 한 벌, 집 곁 생활 소품 묶음, 나무 2~3그루+덤불, 바닥 장식 2층)를 놓는다. "
     + "1×1 소품·바닥 얼룩·풀 한 칸을 고르게 흩뿌리지 마라 — 숫자만 맞추는 흩뿌림은 빈 바닥보다 나쁘다. 좌우 대칭이면 한쪽 덩이를 옮기거나 바꿔 비대칭으로 만든다. "
-    + "길·문 앞·통로는 막지 않는다. 사용자가 넓은 빈터를 요청했다면 고치지 말고 그 이유를 보고에 적는다.";
+    + "길·문 앞·통로는 막지 않는다. 사용자가 넓은 빈터를 요청했다면 고치지 말고 그 이유를 보고에 적는다."
+    + (issues.some(issue => issue.town?.length) ? " 도시 맵은 고친 뒤 check_town_map 이 실패 없이 돌아올 때까지 다시 부른다." : "");
 }
