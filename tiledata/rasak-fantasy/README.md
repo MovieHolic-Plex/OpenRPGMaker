@@ -131,6 +131,8 @@ node /tmp/mzai/apply.mjs export --project ~/third-party-assets/rasak/study-proje
 - 참고문서 용도 둘: `dungeon_crypt`(9문서·그림 8) · `castle_court`(8문서·그림 8, 레시피 `castle` = 성벽 짓는 순서 6단계).
 - 연구 프로젝트에 새 묶음 넣기: `apply-assistant-pack.mts add --baked <굽기>` 가 bundles.json 에만 있는 묶음을 타일셋·자산으로 더하고 다시 열어 확인한다
   (굽기 → 타일셋 변환은 `study-tileset.mjs`, `publish-study-project.mjs` 와 같이 쓴다). `apply --example-maps` 는 없는 예제 맵을 새로 단다.
+- 헤드리스 시험 G1(빈 30×20, 문서 있음): 던전 — 방 나눔·석관·쇠창살·제단, 빈 바닥 9% · 정사각형 2 · 대칭 1.7 통과(벽 없는 그림자 7칸 알림).
+  성곽 — 성벽·흉벽·성탑·해자·요새·폐허 모두 있음, 빈 바닥 32% 로 기준 30% 넘음(남쪽 풀밭 빔). 비교 그림 http://mdc-server:18301/rasak-dungeon-castle.html
 
 ## 프리뷰 재현 결과 (2026-09-24, 두 층 렌더 기준)
 
