@@ -49,8 +49,14 @@ import {
   TITLE_EFFECT_KINDS,
   TITLE_LOGO_STYLES,
   TITLE_MENU_STYLES,
+  TITLE_LOGO_SHINES,
   TITLE_OPENING_PRESETS,
+  TITLE_SEQUENCE_LOGO_REVEALS,
+  TITLE_TRANSITION_KINDS,
   findTitleOpeningPreset,
+  normalizeTitleLogoShine,
+  normalizeTitleOpeningSequence,
+  normalizeTitleTransition,
   normalizeTitleBackgroundFit,
   normalizeTitleBackgroundRendering,
   normalizeTitleEffects,
@@ -1783,7 +1789,7 @@ const setTitleScreen: ToolDefinition = {
       openingPreset: {
         type: "string",
         enum: TITLE_OPENING_PRESETS.map((preset) => preset.id),
-        description: "오프닝 프리셋. effects·logoStyle·menuStyle 을 프리셋 값으로 채운다(같은 호출의 명시 인자가 이긴다). 좌표는 프리셋 구도 기준이라 배경 그림이 다르면 effects 를 직접 맞춰라.",
+        description: "오프닝 프리셋. effects·logoStyle·menuStyle·sequence·logoShine·transition 을 프리셋 값으로 채운다(같은 호출의 명시 인자가 이긴다). 좌표는 프리셋 구도 기준이라 배경 그림이 다르면 effects 를 직접 맞춰라.",
       },
       effects: {
         type: "array",
@@ -1816,6 +1822,32 @@ const setTitleScreen: ToolDefinition = {
       logoStyle: { type: "string", enum: TITLE_LOGO_STYLES, description: "제목 글자 질감. 지정하면 기본 편집 문구(A NEW ADVENTURE)를 숨긴다." },
       logoSubtitle: { type: "string", description: "로고 밑 작은 부제(예: OATH OF THE BLADE). 빈 문자열이면 해제." },
       menuStyle: { type: "string", enum: TITLE_MENU_STYLES, description: "window(창) | plain(키아트 위 글자 메뉴)" },
+      sequence: {
+        type: ["object", "null"],
+        description:
+          "첫 진입 입장 시퀀스: 검은 화면이 fadeMs 에 걸쳐 걷히고, 배경이 (1+push)배에서 1배로 밀려 들어오고, 로고 직전 빛 띠(sweep)가 훑고, logoAtMs 에 로고(logoReveal), menuAtMs 에 메뉴. "
+          + "아무 키·클릭이면 건너뛴다. {} = 전부 기본값(1600ms·0.08·bloom·로고 1100ms·메뉴 2200ms). null 이면 끈다(레거시 intro 만).",
+        properties: {
+          fadeMs: { type: "integer", minimum: 0, maximum: 6000 },
+          push: { type: "number", minimum: 0, maximum: 0.3 },
+          sweep: { type: "boolean" },
+          logoAtMs: { type: "integer", minimum: 0, maximum: 10000 },
+          logoReveal: { type: "string", enum: TITLE_SEQUENCE_LOGO_REVEALS },
+          menuAtMs: { type: "integer", minimum: 0, maximum: 12000 },
+        },
+        additionalProperties: false,
+      },
+      logoShine: { type: "string", enum: TITLE_LOGO_SHINES, description: "로고 표면 반사광. once = 등장 직후 한 번, loop = 6초마다, none = 끔." },
+      transition: {
+        type: ["object", "null"],
+        description: "「새 게임」을 고른 뒤 게임으로 넘어가는 전환. flash(흰 섬광) | fade(검게) | zoom(화면 속으로 빨려 듦) | mist(안개). null 이면 끈다.",
+        properties: {
+          kind: { type: "string", enum: TITLE_TRANSITION_KINDS },
+          durationMs: { type: "integer", minimum: 200, maximum: 3000 },
+        },
+        required: ["kind"],
+        additionalProperties: false,
+      },
       intro: {
         type: "object",
         properties: {
@@ -1952,6 +1984,10 @@ function applyTitleOpeningArgs(current: TitleScreenSettings, args: Record<string
     current.effects = titleOpeningPresetEffects(preset);
     current.logoStyle = preset.logoStyle;
     current.menuStyle = preset.menuStyle;
+    current.sequence = { ...preset.sequence };
+    if (preset.logoShine === "none") delete current.logoShine;
+    else current.logoShine = preset.logoShine;
+    current.transition = { ...preset.transition };
     notes.push(`프리셋 ${preset.label}`);
   }
   if ("effects" in args) {
@@ -1986,6 +2022,23 @@ function applyTitleOpeningArgs(current: TitleScreenSettings, args: Record<string
     const style = normalizeTitleMenuStyle(args.menuStyle);
     if (style) current.menuStyle = style;
     else delete current.menuStyle;
+  }
+  if ("sequence" in args) {
+    const sequence = normalizeTitleOpeningSequence(args.sequence);
+    if (sequence) current.sequence = sequence;
+    else delete current.sequence;
+    notes.push(sequence ? "입장 시퀀스 켬" : "입장 시퀀스 끔");
+  }
+  if ("logoShine" in args) {
+    const shine = normalizeTitleLogoShine(args.logoShine);
+    if (shine) current.logoShine = shine;
+    else delete current.logoShine;
+  }
+  if ("transition" in args) {
+    const transition = normalizeTitleTransition(args.transition);
+    if (transition) current.transition = transition;
+    else delete current.transition;
+    notes.push(transition ? `새 게임 전환 ${transition.kind}` : "새 게임 전환 끔");
   }
   if (current.effects?.length && !current.backgroundResourceId) {
     notes.push("주의: 배경 그림이 없으면 효과는 보이지 않는다");

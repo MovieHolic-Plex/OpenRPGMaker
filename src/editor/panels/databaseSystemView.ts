@@ -2253,12 +2253,16 @@ function titleScreenOpeningFieldset(titleScreen: TitleScreenSettings, rerender: 
     if (!preset) return;
     const current = store.getCurrent().system.titleScreen;
     if ((current?.effects?.length ?? 0) > 0 && !globalThis.confirm(
-      "지금 효과·로고 스타일·메뉴 스타일·배경 맞춤을 프리셋 값으로 바꿉니다. 계속할까요? (되돌리기로 복구할 수 있습니다)",
+      "지금 효과·로고·메뉴 스타일·입장 시퀀스·전환·배경 맞춤을 프리셋 값으로 바꿉니다. 계속할까요? (되돌리기로 복구할 수 있습니다)",
     )) return;
     updateTitleScreen((settings) => {
       settings.effects = titleOpeningPresetEffects(preset);
       settings.logoStyle = preset.logoStyle;
       settings.menuStyle = preset.menuStyle;
+      settings.sequence = { ...preset.sequence };
+      if (preset.logoShine === "none") delete settings.logoShine;
+      else settings.logoShine = preset.logoShine;
+      settings.transition = { ...preset.transition };
       settings.backgroundFit = "cover";
       settings.backgroundRendering = "smooth";
     });
