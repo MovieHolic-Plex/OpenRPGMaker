@@ -805,10 +805,13 @@ function restorePaletteScroll(container: HTMLElement, palette: HTMLElement, scro
 }
 
 function applyPaletteScroll(container: HTMLElement, palette: HTMLElement, scroll: PaletteScroll): void {
-  palette.scrollLeft = scroll.sheetLeft;
-  palette.scrollTop = scroll.sheetTop;
-  container.scrollLeft = scroll.containerLeft;
-  container.scrollTop = scroll.containerTop;
+  // 방금 붙인 트리의 scrollLeft/Top 을 **읽으면** 레이아웃을 강제한다 — 레이어 전환 재생성 89ms 중 46ms 가
+  // 이 읽기였다(2026-09-27 실측, "get scrollLeft"). 새 노드는 0 에서 시작하므로 0 은 쓸 필요가 없고,
+  // 0 이 아닌 축만 쓴다. 쓰기도 레이아웃을 잴지만 스크롤을 옮긴 때만 치른다.
+  if (scroll.sheetLeft) palette.scrollLeft = scroll.sheetLeft;
+  if (scroll.sheetTop) palette.scrollTop = scroll.sheetTop;
+  if (scroll.containerLeft) container.scrollLeft = scroll.containerLeft;
+  if (scroll.containerTop) container.scrollTop = scroll.containerTop;
 }
 
 function currentMapId(): string {
