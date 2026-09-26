@@ -15,6 +15,7 @@
 import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { TILE } from "@/project/defaults/constants";
 import { ensureWalkableCanopy, forestCanopyTiles } from "@/project/defaults/forestGrove";
+import { setLayerTileAt } from "@/project/mapLayers";
 import type { AutotileGroup, GameMap, Rect, TilesetDef } from "@/project/types";
 import { mulberry32 } from "@/util/rng";
 import { shadeForestCanopy } from "./forestContour";
@@ -197,6 +198,15 @@ export function carveSecretCanopyPaths(map: GameMap, area: Rect, grove: Autotile
       map.upperTiles[i] = twin.get(map.upperTiles[i]!) ?? map.upperTiles[i]!;
       used.add(i);
       cells++;
+    }
+    // 캐릭터 그림은 한 칸보다 크고 머리가 윗 칸에 걸친다. 윗 칸이 막힌(x) 수관이면 캐릭터와 y 정렬돼 머리가 잎 위로 나온다.
+    // 같은 그림의 ★ 쌍둥이를 4층에 겹쳐 둔다 — 통행은 3층(막힘)이 그대로 정하고 그림만 항상 캐릭터 위다.
+    for (const p of path) {
+      if (p.y === 0) continue;
+      const above = (p.y - 1) * W + p.x;
+      const tile = map.upperTiles[above]!;
+      if (!canopy.has(tile)) continue;
+      setLayerTileAt(map, 4, above, twin.get(tile) ?? tile);
     }
     spots.push(pocket);
   }
