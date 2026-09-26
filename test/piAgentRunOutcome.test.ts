@@ -397,6 +397,10 @@ describe("Pi 경로 실행 결과 4축", () => {
 
     expect(h.applyCalls).toBe(0);
     expect(h.bubbles.some((line) => line.includes("완성되지 않은 결과"))).toBe(true);
+    // 실패 원인만 말하고 적용 지시는 섞지 않는다 — 적용 여부는 상태 줄·영수증·검토 카드가 말한다.
+    // (그대로 두면 사용자가 검토 카드에서 적용한 뒤에도 「직접 확인하고 적용해 주세요」 가 「적용 완료」 와 함께 남는다.)
+    const incompleteBubble = h.bubbles.find((line) => line.includes("완성되지 않은 결과"));
+    expect(incompleteBubble).not.toMatch(/적용해 주세요|적용하세요/);
     // 원인과 해법을 사람 말로 — 영문 원문(Request was aborted)이 그대로 나가던 자리다.
     expect(h.bubbles.some((line) => line.includes("Request was aborted"))).toBe(false);
   });

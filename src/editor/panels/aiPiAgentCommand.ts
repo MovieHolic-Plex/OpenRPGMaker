@@ -728,9 +728,14 @@ export async function runPiCommand(
   if (villageIncomplete) surface.appendProcess?.(`마을 완료 검사 미통과\n${villageCompletion.issues.join("\n")}`);
   const builderFailed = stoppedByLimit || villageIncomplete;
   if (builderFailed) {
+    // 끝내지 «못한» 원인만 말한다 — 적용 여부는 적용 시점의 표면(상태 줄·영수증·검토 카드)이
+    // 말한다. 여기서 「직접 확인하고 적용해 주세요」 를 함께 적으면 사용자가 검토 카드에서 적용한
+    // 뒤에도 그 줄이 채팅에 남아 「적용 완료」 와 동시에 보이고, yolo 에서는 바로 아래 자동 적용이
+    // 돌아 「직접 적용해 주세요」 와 「적용 완료」 가 한 화면에 같이 나온다.
+    // (2026-09-25 PR #1569 검토 지적, 회귀 test/piAgentRunOutcome.test.ts)
     surface.appendBubble(
       "system",
-      publication.count ? "작업을 끝까지 마치지 못했어요. 이미 반영한 부분 결과가 남아 있으니 확인하거나 되돌려 주세요." : "작업을 끝까지 마치지 못했어요. 아래 변경은 **완성되지 않은 결과**예요. 직접 확인하고 적용해 주세요.",
+      publication.count ? "작업을 끝까지 마치지 못했어요. 이미 반영한 부분 결과가 남아 있으니 확인하거나 되돌려 주세요." : "작업을 끝까지 마치지 못했어요. 아래 변경은 **완성되지 않은 결과**예요.",
     );
   }
   harmonyManualReview = (needsHarmonyReview && !harmonyApproved) || builderFailed;

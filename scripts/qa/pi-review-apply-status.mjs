@@ -1,6 +1,8 @@
 // 실브라우저 검증: 조화 검수가 실패한 런에서 사용자가 검토 카드로 적용한 뒤,
 // 「아직 적용하지 않았으니 …」 안내가 「적용됨」 과 동시에 남지 않는지 본다.
 // (2026-09-25 회귀. 스크립트 모델만 쓰고 원격 쓰기는 없다 — rest/v1·ai-activity 를 가로챈다.)
+// 상황: 이 하네스는 아직 끝까지 돌지 않는다 — 검토 카드를 기다리는 사이 페이지가 죽어 거기서 멈췄다.
+// 그건 별도로 고칠 일이고, 단정문은 «운에 따라» 통과하지 않게 상태 신호로만 적어 둔다.
 import { chromium } from 'playwright';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -78,12 +80,16 @@ try {
 
   const before = await page.evaluate(() => document.body.innerText);
   check('검수를 못 한 원인이 채팅에 남는다', before.includes('끝까지 확인하지 못했어요'));
-  check('적용 전에는 「아직 적용하지 않았으니」 안내가 있다', before.includes('아직 적용하지 않았으니'));
+  // 적용 전 상태는 「검토 카드가 보인다」 로 알려진다 — 채팅에 다시 「아직 적용하지 않았으니」 를
+  // 적는 것이 이 회귀의 결함이다(사용자가 적용한 뒤에도 그 줄이 「적용됨」 과 함께 남는다).
+  check('적용 전엔 검토 카드가 보인다', await reviewApply.isVisible());
+  check('적용 전에도 채팅엔 「아직 적용하지 않았으니」 안내가 없다', !before.includes('아직 적용하지 않았으니'));
   await page.screenshot({ path: resolve(out, '01-before-apply.png') });
 
   await page.getByTestId('ai-pending-review-apply').click();
   await page.waitForFunction(() => /적용 완료|적용됨|반영/.test(document.body.innerText), null, { timeout: 60000 });
-  await page.waitForTimeout(1500);
+  // 고정 잠들기 없이 진짜 신호를 기다린다 — 적용이 끝나면 검토 카드가 사라진다.
+  await reviewApply.waitFor({ state: 'hidden', timeout: 60000 });
   const after = await page.evaluate(() => document.body.innerText);
   check('적용 표시가 화면에 있다', /적용 완료|적용됨|반영/.test(after));
   check('적용 뒤에도 「아직 적용하지 않았으니」 가 남지 않는다', !after.includes('아직 적용하지 않았으니'));
