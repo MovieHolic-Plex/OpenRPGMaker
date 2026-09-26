@@ -753,3 +753,73 @@ html[data-ai-render="off"] {
 .ai-right-dock > .ai-chat-float-host.ai-chat-sidebar-host {
   position: relative; inset: auto; flex: 1; min-width: 0; min-height: 0; pointer-events: auto; z-index: 40; display: flex;
 }
+
+
+/* ── 왼쪽 활동 막대 패널: 즐겨찾기 · 진행 · 연결 (2026-09-27) ───────────────────── */
+.left-favorites-pane, .left-progress-pane, .left-links-pane {
+  flex: 1; min-width: 0; min-height: 0; overflow-y: auto; padding: 12px 14px 16px;
+  display: flex; flex-direction: column; gap: 14px; font: 400 12px/1.5 var(--font-ui); color: var(--text-1);
+}
+.left-favorites-pane[hidden], .left-progress-pane[hidden], .left-links-pane[hidden] { display: none; }
+.left-favorites-title { display: flex; align-items: center; justify-content: space-between; margin: 0 0 8px; font: 600 12px var(--font-ui); color: var(--text-2); }
+.left-favorites-count, .left-progress-count { font: 600 11px var(--font-ui); color: var(--text-3); }
+.left-favorites-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.left-favorites-cell {
+  position: relative; flex: none; padding: 0; border: 1px solid var(--border-subtle); border-radius: var(--radius-s);
+  background-color: var(--bg-inset); background-repeat: no-repeat; image-rendering: pixelated; cursor: pointer;
+}
+.left-favorites-cell:hover { border-color: var(--border-default); }
+.left-favorites-cell.is-selected { outline: 2px solid var(--accent); outline-offset: 1px; }
+.left-favorites-star { position: absolute; top: -5px; right: -5px; font-size: 11px; line-height: 1; color: var(--warning, var(--accent)); text-shadow: 0 0 2px var(--bg-raised); }
+.left-favorites-empty, .left-links-hint { margin: 0; color: var(--text-3); font-size: 11.5px; line-height: 1.6; }
+
+.left-progress-head, .left-links-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.left-progress-head strong, .left-links-head strong { font: 600 13px var(--font-ui); }
+.left-progress-bar { height: 4px; border-radius: 2px; background: var(--bg-inset); overflow: hidden; }
+.left-progress-bar > span { display: block; height: 100%; background: var(--accent); }
+.left-progress-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.left-progress-step { display: flex; align-items: flex-start; gap: 10px; padding: 8px; border-radius: var(--radius-m); }
+.left-progress-step.is-next { background: var(--accent-muted); }
+.left-progress-mark {
+  flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
+  border: 1px solid var(--border-default); font: 600 11px var(--font-ui); color: var(--text-2);
+}
+.left-progress-step.is-done .left-progress-mark { background: var(--success, var(--accent)); border-color: transparent; color: var(--on-accent); }
+.left-progress-step.is-next .left-progress-mark { border-color: var(--accent); color: var(--accent); }
+.left-progress-copy { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.left-progress-copy strong { font: 600 12.5px var(--font-ui); }
+.left-progress-detail { color: var(--text-3); font-size: 11.5px; overflow-wrap: anywhere; }
+.left-progress-hint { color: var(--text-2); font-size: 11.5px; }
+.left-progress-go, .left-progress-ack {
+  flex: none; min-height: 24px; padding: 0 8px; border: 1px solid var(--border-default); border-radius: var(--radius-s);
+  background: var(--bg-raised); color: var(--text-1); font: 500 11.5px var(--font-ui); cursor: pointer;
+}
+.left-progress-step.is-next .left-progress-go { background: var(--accent); border-color: transparent; color: var(--on-accent); }
+.left-progress-ack[aria-pressed="true"] { color: var(--text-3); }
+
+.left-links-summary { font: 500 11.5px var(--font-ui); color: var(--text-3); }
+.left-links-summary.has-problems { color: var(--danger); }
+.left-links-list { display: flex; flex-direction: column; gap: 6px; }
+.left-links-card { border: 1px solid var(--border-subtle); border-radius: var(--radius-m); overflow: hidden; }
+.left-links-card.is-current { border-color: var(--accent); }
+.left-links-card.is-isolated, .left-links-card.is-unreachable { border-color: color-mix(in srgb, var(--danger) 45%, var(--border-subtle)); }
+.left-links-name {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px; width: 100%; min-height: 32px; padding: 6px 10px;
+  border: 0; background: transparent; color: var(--text-1); text-align: left; cursor: pointer; font: inherit;
+}
+.left-links-name:hover { background: var(--bg-hover); }
+.left-links-name strong { font: 600 12.5px var(--font-ui); }
+.left-links-counts { margin-left: auto; color: var(--text-3); font-size: 11px; }
+.left-links-flag { padding: 1px 6px; border-radius: 8px; font: 600 11px var(--font-ui); }
+.left-links-flag.is-start { background: var(--accent-muted); color: var(--accent); }
+.left-links-flag.is-warn { background: var(--danger-muted); color: var(--danger); }
+.left-links-edges { display: flex; flex-direction: column; gap: 2px; padding: 4px 6px 8px; border-top: 1px solid var(--border-subtle); background: var(--bg-inset); }
+.left-links-edges .left-links-hint { padding: 4px 6px; }
+.left-links-edge {
+  display: flex; align-items: center; gap: 6px; min-height: 26px; padding: 2px 6px; border: 0; border-radius: var(--radius-s);
+  background: transparent; color: var(--text-1); font: inherit; text-align: left; cursor: pointer;
+}
+.left-links-edge:hover { background: var(--bg-hover); }
+.left-links-arrow { flex: none; color: var(--text-3); }
+.left-links-target { font-weight: 500; }
+.left-links-via { margin-left: auto; color: var(--text-3); font-size: 11px; }
