@@ -1,7 +1,6 @@
 import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
 // 타일 지식 통합 조회 — 활성 LLM 툴 (core 노출).
 // 구 v2 지식 쓰기 래퍼(tile_metadata/group/…)는 제거. 쓰기는 propose_tile_vocabulary.
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { approvedVocabulary, suggestMaterialsByLabel, unapprovedVocabulary } from "@/project/tileVocabulary";
 import type { Project } from "@/project/types";
 import { requireMap } from "./mapHelpers";
@@ -87,7 +86,7 @@ const tileQuery: ToolDefinition = {
     if (ask === "unapproved") {
       const tilesetId = resolveQueryTilesetId(draft, args);
       const tileset = draft.tilesets[tilesetId];
-      if (!tileset) failWithExample(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { ask, tilesetId: DEFAULT_TILESET_ID, mapId: draft.startMapId });
+      if (!tileset) failWithExample(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { ask, tilesetId: defaultOutdoorTilesetId(draft), mapId: draft.startMapId });
       const limit = typeof args.limit === "number" && Number.isInteger(args.limit) && args.limit > 0 ? args.limit : 10;
       const summary = unapprovedVocabulary(tileset, limit);
       return {
@@ -100,7 +99,7 @@ const tileQuery: ToolDefinition = {
     if (ask === "vocab") {
       const tilesetId = resolveQueryTilesetId(draft, args);
       const tileset = draft.tilesets[tilesetId];
-      if (!tileset) failWithExample(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { ask, tilesetId: DEFAULT_TILESET_ID, mapId: draft.startMapId });
+      if (!tileset) failWithExample(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { ask, tilesetId: defaultOutdoorTilesetId(draft), mapId: draft.startMapId });
       const vocab = approvedVocabulary(tileset);
       const byRole = new Map<string, number>();
       for (const group of vocab.groups) byRole.set(group.role, (byRole.get(group.role) ?? 0) + 1);
@@ -128,7 +127,7 @@ const tileQuery: ToolDefinition = {
     if (ask === "labels") {
       const tilesetId = resolveQueryTilesetId(draft, args);
       const tileset = draft.tilesets[tilesetId];
-      if (!tileset) failWithExample(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { ask, tilesetId: DEFAULT_TILESET_ID, mapId: draft.startMapId });
+      if (!tileset) failWithExample(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { ask, tilesetId: defaultOutdoorTilesetId(draft), mapId: draft.startMapId });
       const limit = typeof args.limit === "number" && Number.isInteger(args.limit) && args.limit > 0 ? Math.min(args.limit, 80) : 40;
       const query = typeof args.query === "string" ? args.query : "";
       const materials = suggestMaterialsByLabel(tileset, query, limit);

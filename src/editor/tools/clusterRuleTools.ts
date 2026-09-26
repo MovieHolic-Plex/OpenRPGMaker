@@ -1,11 +1,11 @@
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { defaultToolTilesetId } from "@/project/defaults/forestHarmony";
 import {
   asPlacementFacing,
   asPlacementZone,
   PLACEMENT_FACINGS,
   PLACEMENT_ZONES,
 } from "@/project/placementSurface";
-import type { ClusterRule, ClusterRuleStrength, TilesetDef } from "@/project/types";
+import type { ClusterRule, ClusterRuleStrength, Project, TilesetDef } from "@/project/types";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
 const CLUSTER_RULE_KINDS: readonly ClusterRule["kind"][] = ["adjacency", "spacing", "count", "surface"];
@@ -33,8 +33,8 @@ export const CLUSTER_RULE_SCHEMA = {
   additionalProperties: true,
 } satisfies JsonSchema;
 
-function requireTileset(project: { readonly tilesets: Record<string, TilesetDef> }, tilesetId: unknown): TilesetDef {
-  const id = typeof tilesetId === "string" && tilesetId.trim() ? tilesetId.trim() : DEFAULT_TILESET_ID;
+function requireTileset(project: Pick<Project, "tilesets" | "maps" | "startMapId">, tilesetId: unknown): TilesetDef {
+  const id = typeof tilesetId === "string" && tilesetId.trim() ? tilesetId.trim() : defaultToolTilesetId(project);
   const tileset = project.tilesets[id];
   if (!tileset) throw new ToolError(`타일셋을 찾을 수 없습니다: ${id}`, { code: "tileset-not-found" });
   return tileset;
