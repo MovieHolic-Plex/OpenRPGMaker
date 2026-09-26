@@ -19,9 +19,19 @@ function harness(options: {
   readonly ready?: boolean;
   readonly chatError?: Error;
   readonly fail?: (call: Call) => string | null;
+  /** 맵 이름을 바꾸고 조우를 비운다 — 이름만으로 마을 성격을 추정하게. */
+  readonly mapName?: string;
 }) {
   const project = createBlankProject();
   const mapId = project.startMapId;
+  if (options.mapName) {
+    const map = project.maps[mapId]!;
+    map.name = options.mapName;
+    map.encounterRate = 0;
+    map.encounterTable = [];
+    map.troopIds = [];
+    map.fieldSpawns = [];
+  }
   const requests: ChatRequest[] = [];
   const applied: Call[][] = [];
   const queue = [...(options.replies ?? [])];
@@ -212,6 +222,31 @@ describe("runStampPlaceWith", () => {
     const result = await runStampPlaceWith({ text: "몬스터", mapId: h.mapId, selection: null }, h.deps);
     expect(result).toMatchObject({ ok: false, applied: 0 });
     expect(result.lines[0]).toContain("적 그룹");
+  });
+
+  it("in a town, drops unrequested traps and blockers but keeps townsfolk", async () => {
+    const h = harness({ mapName: "조용한 마을", replies: [JSON.stringify({ steps: [
+      { tool: "place_trap", args: { at: { x: 4, y: 4 } } },
+      { tool: "place_signpost", args: { at: { x: 6, y: 6 }, lines: ["북쪽: 동굴"] } },
+    ] })] });
+    const result = await runStampPlaceWith({ text: "", mapId: h.mapId, selection: null }, h.deps);
+    const names = h.applied[0]!.map((call) => call.name);
+    expect(names).toEqual(["place_npc"]);
+    expect(result.lines.some((line) => line.includes("마을이라 요청 없이 함정을"))).toBe(true);
+  });
+
+  it("in a town, keeps a trap the sentence asks for", async () => {
+    const h = harness({ mapName: "조용한 마을", replies: [JSON.stringify({ steps: [{ tool: "place_trap", args: { at: { x: 4, y: 4 } } }] })] });
+    await runStampPlaceWith({ text: "마을 입구에 함정 하나", mapId: h.mapId, selection: null }, h.deps);
+    expect(h.applied[0]!.map((call) => call.name)).toEqual(["place_trap"]);
+  });
+
+  it("clamps an inn price to the map's basis", async () => {
+    const h = harness({ mapName: "조용한 마을", replies: [JSON.stringify({ steps: [{ tool: "place_inn", args: { at: { x: 5, y: 5 }, price: 99999 } }] })] });
+    await runStampPlaceWith({ text: "여관", mapId: h.mapId, selection: null }, h.deps);
+    const page = (h.applied[0]![0]!.args.pages as { commands: { kind: string; price: number }[] }[])[0]!;
+    expect(page.commands[0]!.kind).toBe("inn");
+    expect(page.commands[0]!.price).toBeLessThan(99999);
   });
 
   it("keeps model rects inside the selection", async () => {

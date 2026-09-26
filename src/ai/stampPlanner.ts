@@ -29,7 +29,9 @@ export type StampTool =
   | "arrange_tall_grass"
   | "set_start_position"
   | "move_event"
-  | "remove_event";
+  | "remove_event"
+  | "place_inn"
+  | "place_signpost";
 
 export const STAMP_TOOLS: readonly StampTool[] = [
   "fill_region",
@@ -51,6 +53,8 @@ export const STAMP_TOOLS: readonly StampTool[] = [
   "set_start_position",
   "move_event",
   "remove_event",
+  "place_inn",
+  "place_signpost",
 ];
 
 /** 한 번에 받을 단계 상한. 바로 깔기는 한 문장이라 이보다 많으면 모델이 쪼개기에 빠진 것이다. */
@@ -105,6 +109,8 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "- Trees/forest use place_props with density: 숲/나무/숲길 → \"dense\" (walkable forest with water, small trees, rocks and hidden canopy paths), 울창/빽빽/통행 불가/막힌 → \"impassable\", 성글게 → \"normal\", 드문드문/가로수 → \"sparse\". Decorative crates/boxes (장식 상자·나무 상자) are place_props with count.",
   "- Game objects: 보물상자/상자(열어서 얻는) → place_chest; 사람/주민/상인/NPC/경비 → place_npc (one step per person, give each a fitting Korean name and 1-2 short lines); 세이브/저장 → place_savepoint; 조사/살펴보기/표지판/비석 → place_examine_hotspots. Put them on walkable ground inside the target, not on trees, water or walls.",
   "- More game objects: 상인(물건 파는) → place_npc with merchant:true and stock:[itemId...] from facts.placement.rewardItems / existing shops; 보관 상자/창고 → place_storage_chest; 함정/가시/즉사 → place_trap; 길막 몬스터/보스 앞 적 → place_battle_blocker with troopId from facts.placement.encounterTroops (skip it if that list is empty); 비·눈·폭풍·안개 → set_scene_mood; 키큰 풀/수풀 → arrange_tall_grass; 시작 위치 → set_start_position; 기존 것 옮기기/지우기 → move_event/remove_event with an eventId from facts.placement.existing.occupied.",
+  "- facts.placement.role says what this map is. TOWN (마을): prefer townsfolk with lines, merchants with stock, an inn keeper (place_inn, price from facts.placement.innPrice), signposts at road forks and entrances (place_signpost), a savepoint near the inn, examine hotspots on wells/boards; put people beside roads and doors, never inside houses or on the road itself; chests are rare and small. No traps or blocking monsters in a town unless the sentence asks. INTERIOR: a few NPCs/props, no monsters. DUNGEON/FIELD: chests, blockers from encounterTroops, traps on corridors.",
+  "- Empty sentence in a TOWN means: fill it like a lived-in village (2~4 townsfolk, 1 merchant if no shop exists yet, 1 signpost), not treasure and monsters.",
   "- Do not put a new object on or right above/below a cell in facts.placement.existing.occupied, nor on another new object; code moves overlapping ones but choose free cells first.",
   "- facts.placement describes THIS map (its fights, existing chests, shops, NPCs, wiki). It is the main reference. Chest gold MUST be inside facts.placement.chestGold.min..max; prefer an item from facts.placement.rewardItems (use its id) when the sentence asks for items. Never invent item ids. NPC names must not repeat facts.placement.existing.npcs. Match NPC lines to the map name, locations and wiki.",
   "- An empty sentence (\"(빈 입력) …\") means: decorate the target sensibly for this map (terrain first); add at most one game object and only if it clearly fits.",
@@ -124,6 +130,8 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "place_savepoint {at:{x,y}}",
   "place_examine_hotspots {spots:[{at:{x,y}, name, lines:[\"...\"]}]}",
   "place_storage_chest {at:{x,y}}",
+  "place_inn {at:{x,y}, name?, price?:number, greeting?:string}",
+  "place_signpost {at:{x,y}, lines:[\"북쪽: 어둠 동굴\"]}",
   "place_trap {at:{x,y}, trigger?:\"touch\"|\"action\", message?:string}",
   "place_battle_blocker {at:{x,y}, troopId, intro?:[\"...\"]}",
   "set_scene_mood {weather:{kind:\"none\"|\"rain\"|\"storm\"|\"snow\"|\"fog\", intensity?:0..1}}",
@@ -263,6 +271,8 @@ const TOOL_KO: Record<StampTool, string> = {
   set_start_position: "시작 위치",
   move_event: "옮기기",
   remove_event: "지우기",
+  place_inn: "여관",
+  place_signpost: "표지판",
 };
 
 /**
@@ -283,6 +293,10 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
   const labelText = stringArg(raw.label);
   const label = labelText ?? `${material ? `${material} ` : ""}${TOOL_KO[stampTool]}`;
   const dropped = (reason: string): StampStepCheck => ({ dropped: `${stampTool}: ${reason}` });
+  // 마을·실내에서 함정·길막 몬스터는 문장이 직접 요청할 때만(「알아서」에 섞여 나오지 않게).
+  if ((stampTool === "place_trap" || stampTool === "place_battle_blocker") && isSafeArea(facts) && !asksForHostile(facts.text)) {
+    return dropped(`${facts.placement?.map.name ?? "이 맵"}은 ${facts.placement?.role.role === "town" ? "마을" : "실내"}이라 요청 없이 ${stampTool === "place_trap" ? "함정을" : "몬스터를"} 두지 않습니다(${facts.placement?.role.reason})`);
+  }
   switch (stampTool) {
     case "fill_region": {
       if (!rect) return dropped("영역이 대상 밖입니다");
@@ -428,6 +442,45 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
     }
     case "make_villager":
       return dropped("상인은 place_npc merchant:true 로 보낸다");
+    case "place_inn": {
+      const at = pointOrCenter(args.at, rect, target);
+      if (!at) return dropped("여관 주인 위치가 없습니다");
+      const basis = facts.placement?.innPrice ?? { gold: 20, reason: "기본" };
+      const asked = typeof args.price === "number" && Number.isFinite(args.price) ? Math.round(args.price) : undefined;
+      // 요청 금액은 기준의 1/3~3배 안에서만 받는다.
+      const price = asked === undefined ? basis.gold : Math.max(Math.ceil(basis.gold / 3), Math.min(basis.gold * 3, asked));
+      const name = stringArg(args.name) ?? "여관 주인";
+      const greeting = stringArg(args.greeting)?.slice(0, 80) ?? `어서 오세요. 하룻밤 ${price}G 입니다.`;
+      const existingInn = facts.placement?.existing.occupied.find((entry) => entry.kind === "inn");
+      const priceNote = asked !== undefined && asked !== price ? `요금 ${asked}G → ${price}G(${basis.reason})` : `요금 ${price}G(${basis.reason})`;
+      // 2026-09-27 라이브: 「상자 하나랑 여관 주인」이 이미 여관 있는 마을에 두 번째 주인을 세웠다 — 요청이라 막지 않고 알린다.
+      const note = existingInn ? `${priceNote} · 이 맵에 이미 여관이 있습니다(${existingInn.name} ${existingInn.x},${existingInn.y})` : priceNote;
+      return {
+        step: {
+          tool: "place_npc",
+          label: labelText ?? `${name}(여관)`,
+          note,
+          args: {
+            mapId, x: at.x, y: at.y, name,
+            graphic: { query: stringArg(args.role) ?? "innkeeper" },
+            pages: [{ commands: [{ kind: "inn", price, note: greeting }] }],
+          },
+        },
+      };
+    }
+    case "place_signpost": {
+      const at = pointOrCenter(args.at, rect, target);
+      if (!at) return dropped("표지판 위치가 없습니다");
+      const lines = stringList(args.lines, 3);
+      if (lines.length === 0) return dropped("표지판 글이 없습니다");
+      return {
+        step: {
+          tool: "place_npc",
+          label: labelText ?? "표지판",
+          args: { mapId, x: at.x, y: at.y, name: stringArg(args.name) ?? "표지판", graphic: SIGNPOST_GRAPHIC, movement: "fixed", pages: [{ lines }] },
+        },
+      };
+    }
     case "place_storage_chest": {
       const at = pointOrCenter(args.at, rect, target);
       if (!at) return dropped("보관 상자 위치가 없습니다");
@@ -481,6 +534,19 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
       return { step: { tool: stampTool, label: labelText ?? `${known.name} 옮기기`, args: { mapId, eventId, x: at.x, y: at.y } } };
     }
   }
+}
+
+/** 기존 마을 표지판(dew-village ev_sign, object1 frame 25 = characterIndex 0)과 같은 그림. query 「signpost」 는 주민 그림을 골랐다(2026-09-27 헤드리스). */
+const SIGNPOST_GRAPHIC = { textureKey: "tex_easyrpg_charset_object1", characterIndex: 0 } as const;
+
+function isSafeArea(facts: StampPlanFacts): boolean {
+  const role = facts.placement?.role.role;
+  return role === "town" || role === "interior";
+}
+
+/** 문장이 적대 배치를 직접 말하는가 — 마을 습격·함정 방 같은 의도적 요청은 통과. */
+function asksForHostile(text: string): boolean {
+  return /함정|트랩|가시|몬스터|적|습격|보스|전투|길막|괴물|trap|monster|enemy|boss|ambush/i.test(text);
 }
 
 /** 상인 재고 — 실제 id 만, 값이 이 맵 상자 범위의 두 배를 넘는 것은 뺀다. 비면 이 맵 보상 후보로 채운다. */
