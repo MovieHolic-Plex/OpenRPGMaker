@@ -547,12 +547,11 @@ for bx in (57, 65): place_kit('park-bench-back', bx, 60)
 # temple graveyard (寺の墓地) east of the bridge: gravel yard, grave blocks, bell; graves belong to a temple, never the shrine
 ground(76, 56, 20, 7, T(TN, 22))
 chip(78, 56, 'ohaka.png', 4, 0, 4, 6, 'graves-78')
-chip(83, 57, 'ohaka.png', 4, 12, 4, 3, 'graves-83')   # second block: only the lower half of the sheet (different stones), one row lower
+chip(83, 57, 'ohaka.png', 4, 0, 4, 6, 'graves-83')   # whole block (a half block reads as cut stones), one row lower
 # no temple hall fits beside it: a walled community cemetery (共同墓地), no bell
 for wy in range(56, 63): put(76, wy, T(TN, 24 if wy < 62 else 40), 'up', True)
 put(76, 56, T(TN, 16), 'up', True)
 for tx, ty in ((90, 56), (92, 55), (94, 56)): stamp(tx, ty, TN, 5, 16, 2, 3, 'up', True, f'tgrove{tx}')   # evergreen screen behind the graves, staggered
-chip(91, 59, 'ume.png', 6, 3, 3, 3, 'cemetery-ume')
 
 
 # ================================================================= block-wall lots (gravel yard + wall ring)
