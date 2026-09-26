@@ -286,6 +286,48 @@
         "Ship/Tileset_BlackSails_Rasak.png",
         "Outposts/Tileset_Beach_Rasak.png"
       ]
+    },
+    {
+      "id": "rasak_seasons",
+      "name": "Rasak · 계절 숲(가을·겨울·버섯·거목)",
+      "previews": [
+        "계절 숲(분위기 참고)"
+      ],
+      "sheets": {
+        "A1": "Nature/A1_Nature_Rasak.png",
+        "A2": "Nature/A2_Nature_Rasak.png",
+        "A3": "Town/A3_City1_Rasak.png",
+        "A5": "Nature/A5_Nature2_Rasak.png",
+        "B": "Nature/Tileset_Nature_TreesFall_Rasak.png",
+        "C": "Nature/Tileset_Nature_ForrestFloorFall_Rasak.png",
+        "D": "Nature/Tileset_Nature_TreesWinter_Rasak.png",
+        "E": "Nature/Tileset_Nature_ForrestFloorWinter_Rasak.png"
+      },
+      "extraSheets": [
+        "Nature/Tileset_Nature_ForrestFloorSpring_Rasak.png",
+        "Nature/Tileset_MushroomForrest_Rasak.png",
+        "Nature/Tileset_MushroomForrestWinter_Rasak.png",
+        "Nature/Tileset_Nature_GiantTrees_Rasak.png",
+        "Nature/Tileset_Nature_PinkDream_Rasak.png"
+      ]
+    },
+    {
+      "id": "rasak_town2",
+      "name": "Rasak · 정원 마을·판타지 도시·겨울 장터",
+      "previews": [
+        "겨울 장터(분위기 참고)"
+      ],
+      "sheets": {
+        "A1": "Town/A1_City_Rasak.png",
+        "A2": "Town/A2_Village_Rasak.png",
+        "A3": "Town/A3_CityFantasy_Rasak.png",
+        "A5": "Town/A5_City_Rasak.png",
+        "B": "Town/Tileset_Christmas_Market.png",
+        "C": "Town/Tileset_Tannery_Painting_Laundry_Rasak.png",
+        "D": "Town/Tileset_Market_Rasak.png",
+        "E": "Town/Tileset_Town_Rasak.png"
+      },
+      "extraSheets": []
     }
   ],
   "sourceSha256": {
