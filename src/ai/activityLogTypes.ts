@@ -100,6 +100,8 @@ export type AiActivityLogRecord = {
   /** 사람이 AI 표면에서 누른 것(src/ai/uiEventLog.ts). 턴 구간만 잘라 싣는다. */
   readonly uiActions?: readonly AiUiEvent[];
   readonly diagnostics: AiActivityDiagnostics;
+  /** 이 턴의 단계별 벽시계. 패널이 기록하고 `npm run ai:trace` 가 표로 찍는다. */
+  readonly timing?: import("./turnTiming").TurnTimingRecord;
   /**
    * 평탄 색인 — payload 안을 뒤지지 않고 SQL 로 찾기 위한 배열들. jsonb containment
    * (`payload_json->toolNames=cs.["set_event"]`) 가 이 키들을 직접 짚는다. 이게 없어서
