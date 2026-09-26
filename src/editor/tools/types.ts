@@ -6,7 +6,7 @@ import type { LintIssue } from "@/project/lint/projectLint";
 import type { ChangeSummary, Project } from "@/project/types";
 
 // 최소 JSON Schema(OpenAI function calling 파라미터). 손으로 쓰되 object 타입을 강제한다.
-export type JsonSchemaType = "object" | "array" | "string" | "number" | "integer" | "boolean";
+export type JsonSchemaType = "object" | "array" | "string" | "number" | "integer" | "boolean" | "null";
 
 export interface JsonSchema {
   readonly type?: JsonSchemaType | readonly JsonSchemaType[];

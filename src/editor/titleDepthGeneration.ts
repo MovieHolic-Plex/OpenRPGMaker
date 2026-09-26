@@ -79,8 +79,7 @@ export async function finalizeDepthMap(depthDataUrl: string, width: number, heig
 export async function generateTitleDepthMap(artDataUrl: string, options: { signal?: AbortSignal } = {}): Promise<TitleDepthResult> {
   const art = await loadImage(artDataUrl);
   const generated = await generateAiImage(
-    { prompt: buildTitleDepthPrompt(), referenceImages: [splitDataUrl(artDataUrl)] },
-    options.signal ? { signal: options.signal } : {},
+    { prompt: buildTitleDepthPrompt(), referenceImages: [splitDataUrl(artDataUrl)], ...(options.signal ? { signal: options.signal } : {}) },
   );
   // 깊이 지도는 흐릿해도 되므로 긴 변 512 로 줄여 저장한다.
   const scale = Math.min(1, 512 / Math.max(art.naturalWidth, art.naturalHeight));
