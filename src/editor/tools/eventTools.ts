@@ -23,6 +23,7 @@ import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/projectLint";
 import { genId } from "@/util/id";
 import { chestOpenCommands, chestOpenedGraphic, lootGrantCommands } from "@/editor/lootFeedback";
+import { buildMapPlacementContext } from "@/ai/mapPlacementContext";
 import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
 import {
   canonicalizeSayBeatAliases,
@@ -3035,6 +3036,11 @@ const placeChest: ToolDefinition = {
     }
     const warnings: string[] = [];
     if (adjusted) warnings.push(placementAdjustedWarning("보물상자", { x: requestedX, y: requestedY }, placement));
+    // 금액은 이 맵의 진행도(전투 보상·기존 상자·상점)와 견준다. 막지는 않는다 — 일부러 적은 상자도 있다.
+    const basis = gold ? buildMapPlacementContext(draft, map.id)?.chestGold : undefined;
+    if (gold && basis && (gold < basis.min || gold > basis.max)) {
+      warnings.push(`보상 ${gold}G 는 이 맵 기준 ${basis.min}~${basis.max}G(${basis.reason}) 밖입니다 — 의도가 아니면 그 범위로 다시 놓으세요`);
+    }
     const itemRecord = itemId
       ? draft.database.items.find((item) => item.id === itemId) ?? draft.database.equipment.find((record) => record.id === itemId)
       : undefined;
