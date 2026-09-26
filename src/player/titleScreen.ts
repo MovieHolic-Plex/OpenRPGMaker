@@ -2,9 +2,21 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { applySystemWindowSkinVariable, applyTitleScreenBackground } from "@/player/systemGraphics";
 import { createTitleParticlesCanvas } from "@/player/titleParticles";
 import { createTitleEffectsCanvas, titleEffectsSignature, updateTitleEffectsCanvas } from "@/player/titleEffects/renderer";
-import { activeTitleEffects } from "@/project/titleEffects";
+import {
+  activeTitleEffects,
+  normalizeTitleLogoShine,
+  resolveTitleOpeningSequence,
+  TITLE_LOGO_SHINE_PERIOD_MS,
+  titleTransitionDurationMs,
+} from "@/project/titleEffects";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
-import type { Project, TitleBackgroundLayer, TitleIntroSettings, TitleScreenSettings } from "@/project/types";
+import type {
+  Project,
+  TitleBackgroundLayer,
+  TitleIntroSettings,
+  TitleLogoShine,
+  TitleScreenSettings,
+} from "@/project/types";
 import { el } from "@/util/dom";
 
 const TITLE_SCREEN_LOGICAL_WIDTH = 320;
@@ -140,7 +152,10 @@ export function renderTitleScreen(
   // canvas 상태(rAF/프레임)를 보존한다(방향키 전체 re-render 대응).
   const fx = renderTitleFxStack(settings, project, context?.reuseFx ?? null);
   if (fx) title.append(fx);
-  const playIntro = (context?.playIntro ?? true) && settings.intro !== undefined;
+  const firstEntry = context?.playIntro ?? true;
+  // 입장 시퀀스가 있으면 레거시 intro 를 대신한다(둘을 겹치면 등장이 두 번 일어난다).
+  const playSequence = firstEntry && settings.sequence !== undefined;
+  const playIntro = firstEntry && !playSequence && settings.intro !== undefined;
   const titleNodes = renderTitleNodes(settings, project);
   if (settings.logoStyle) {
     for (const node of titleNodes) node.dataset.logoStyle = settings.logoStyle;
@@ -160,7 +175,185 @@ export function renderTitleScreen(
     title.append(renderTitleEditorialCopy());
   }
   title.append(titleSelectionDebug(clampedIndex));
+  const logoAtMs = playSequence ? resolveTitleOpeningSequence(settings.sequence ?? {}).logoAtMs : 0;
+  applyTitleLogoShine(title, titleNodes, settings.logoShine, firstEntry, playSequence ? logoAtMs : 0);
+  if (playSequence) applyTitleOpeningSequence(title, titleNodes, menu, settings);
   return title;
+}
+
+const SEQ_ANIMATION_PREFIX = "rm-title-seq";
+
+function seqAnimation(name: string, durationMs: number, delayMs: number, easing = "cubic-bezier(.2,.7,.2,1)"): string {
+  return `${SEQ_ANIMATION_PREFIX}-${name} ${Math.max(1, Math.round(durationMs))}ms ${easing} ${Math.max(0, Math.round(delayMs))}ms both`;
+}
+
+function appendAnimation(node: HTMLElement, animation: string): void {
+  node.style.animation = node.style.animation ? `${node.style.animation}, ${animation}` : animation;
+}
+
+/**
+ * 입장 시퀀스: 검은 막 → 배경 페이드 + 카메라 밀기 → 빛 쓸기 → 로고 등장 → 메뉴.
+ * 모두 CSS 애니메이션이고 이름이 rm-title-seq- 로 시작한다 — 건너뛰기는 그 이름만 finish() 한다.
+ * 로고 그래픽은 이미 transform(translate -50%) 을 쓰므로 개별 속성(scale·translate)만 움직인다.
+ */
+function applyTitleOpeningSequence(
+  title: HTMLElement,
+  logoNodes: readonly HTMLElement[],
+  menu: HTMLElement,
+  settings: TitleScreenSettings,
+): void {
+  const seq = resolveTitleOpeningSequence(settings.sequence ?? {});
+  title.classList.add("rm-title-seq");
+  title.dataset.seqState = "playing";
+  // 카메라 밀기 대상: 효과 canvas·fx 스택. 둘 다 없으면 루트 배경을 복제한 층을 깐다.
+  const pushTargets = Array.from(title.querySelectorAll<HTMLElement>(":scope > .rm-title-effects, :scope > .rm-title-fx"));
+  if (pushTargets.length === 0 && title.style.backgroundImage) {
+    const bg = el("div", { class: "rm-title-seq-bg" });
+    for (const prop of ["backgroundImage", "backgroundSize", "backgroundPosition", "backgroundRepeat", "imageRendering"] as const) {
+      bg.style[prop] = title.style[prop];
+    }
+    title.prepend(bg);
+    pushTargets.push(bg);
+  }
+  if (seq.push > 0) {
+    for (const node of pushTargets) {
+      node.style.setProperty("--seq-push", String(round3(1 + seq.push)));
+      appendAnimation(node, seqAnimation("push", seq.fadeMs + seq.logoAtMs, 0, "cubic-bezier(.16,.8,.24,1)"));
+    }
+  }
+  const veil = el("div", { class: "rm-title-seq-veil", attrs: { "aria-hidden": "true" } });
+  veil.style.animation = seqAnimation("veil", seq.fadeMs, 0, "ease-out");
+  if (seq.sweep) {
+    const sweep = el("div", { class: "rm-title-seq-sweep", attrs: { "aria-hidden": "true" } });
+    sweep.style.animation = seqAnimation("sweep", 1200, Math.max(0, seq.logoAtMs - 300), "cubic-bezier(.4,0,.2,1)");
+    title.append(sweep);
+  }
+  const revealMs = seq.logoReveal === "wipe" ? 900 : 1000;
+  for (const node of logoNodes) {
+    appendAnimation(node, seqAnimation(`logo-${seq.logoReveal}`, revealMs, seq.logoAtMs));
+  }
+  const options = Array.from(menu.querySelectorAll<HTMLElement>(".rm-title-menu-button"));
+  menu.style.animation = seqAnimation("fade", 500, seq.menuAtMs, "ease-out");
+  for (const [index, option] of options.entries()) {
+    option.style.animation = seqAnimation("item", 420, seq.menuAtMs + index * 90);
+  }
+  for (const extra of title.querySelectorAll<HTMLElement>(":scope > .rm-title-logo-subtitle, :scope > .rm-title-editorial-copy")) {
+    extra.style.animation = seqAnimation("fade", 700, seq.logoAtMs + 400, "ease-out");
+  }
+  title.append(veil);
+  wireTitleSequenceSkip(title, seq.menuAtMs + 90 * options.length + 500);
+}
+
+/** 첫 입력(키·클릭)은 메뉴를 확정하지 않고 시퀀스만 끝낸다. */
+function wireTitleSequenceSkip(title: HTMLElement, totalMs: number): void {
+  let done = false;
+  let swallowClick = false;
+  const finish = (): void => {
+    if (done) return;
+    done = true;
+    title.classList.add("rm-title-seq-skipped");
+    for (const animation of title.getAnimations?.({ subtree: true }) ?? []) {
+      const name = (animation as CSSAnimation).animationName;
+      if (typeof name === "string" && name.startsWith(SEQ_ANIMATION_PREFIX)) {
+        try { animation.finish(); } catch { /* 무한 반복은 finish 불가 — 클래스가 대신 멈춘다 */ }
+      }
+    }
+    cleanup();
+  };
+  const onKey = (event: KeyboardEvent): void => {
+    if (!title.isConnected) { cleanup(); return; }
+    if (event.repeat || ["Shift", "Control", "Alt", "Meta"].includes(event.key)) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    finish();
+  };
+  const onPointer = (event: Event): void => {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    swallowClick = true;
+    finish();
+  };
+  const onClick = (event: Event): void => {
+    if (!swallowClick && done) return;
+    swallowClick = false;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    finish();
+  };
+  const timer = setTimeout(() => {
+    done = true;
+    cleanup();
+  }, totalMs);
+  function cleanup(): void {
+    clearTimeout(timer);
+    window.removeEventListener("keydown", onKey, true);
+    title.removeEventListener("pointerdown", onPointer, true);
+    // pointerdown 뒤따르는 click 은 pointerup 이후에 오므로 잠시 더 붙여 두고 삼킨다.
+    setTimeout(() => title.removeEventListener("click", onClick, true), 800);
+    title.dataset.seqState = "done";
+  }
+  window.addEventListener("keydown", onKey, true);
+  title.addEventListener("pointerdown", onPointer, true);
+  title.addEventListener("click", onClick, true);
+}
+
+/**
+ * 로고 반짝임. 생략 = 기존 CSS 반복(하위 호환). none 은 끈다. once 는 최초 진입에만 한 번,
+ * loop 는 6초마다. 글자 로고는 배경 그라디언트를, 그림 로고는 로고 모양으로 가린 자식 띠를 움직인다.
+ */
+function applyTitleLogoShine(
+  title: HTMLElement,
+  nodes: readonly HTMLElement[],
+  shine: TitleLogoShine | undefined,
+  firstEntry: boolean,
+  delayMs: number,
+): void {
+  if (shine === undefined) return;
+  title.dataset.logoShine = shine;
+  if (shine === "none") return;
+  const mode = normalizeTitleLogoShine(shine);
+  if (mode === "once" && !firstEntry) return;
+  const start = firstEntry ? delayMs + 900 : 0;
+  const shineAnimation = mode === "once"
+    ? `rm-title-logo-shine-once 1400ms ease-in-out ${start}ms 1 both`
+    : `rm-title-logo-shine ${TITLE_LOGO_SHINE_PERIOD_MS}ms ease-in-out ${start}ms infinite`;
+  for (const node of nodes) {
+    if (node.classList.contains("rm-title-screen-logo")) {
+      const match = /url\(["']?(.*?)["']?\)/.exec(node.style.backgroundImage);
+      if (!match) continue;
+      const band = el("span", { class: "rm-title-shine", attrs: { "aria-hidden": "true" } });
+      band.style.setProperty("--logo-mask", `url("${match[1]}")`);
+      band.style.animation = mode === "once"
+        ? `rm-title-shine-band-once 1400ms ease-in-out ${start}ms 1 both`
+        : `rm-title-shine-band ${TITLE_LOGO_SHINE_PERIOD_MS}ms ease-in-out ${start}ms infinite`;
+      node.append(band);
+    } else {
+      node.dataset.logoShine = mode;
+      appendAnimation(node, shineAnimation);
+    }
+  }
+}
+
+/**
+ * 「새 게임」 확정 전환. 루트에 전환 막을 얹고 재생 시간(ms)을 돌려준다.
+ * 설정이 없으면 null — 호출자는 기존 짧은 확정 연출을 쓴다.
+ */
+export function playTitleTransition(title: HTMLElement | null, settings: TitleScreenSettings | undefined): number | null {
+  const transition = settings?.transition;
+  if (!title || !transition) return null;
+  const duration = titleTransitionDurationMs(transition);
+  const reduced = typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const ms = reduced ? Math.min(duration, 300) : duration;
+  title.classList.add("rm-title-transitioning");
+  title.dataset.transition = transition.kind;
+  title.style.setProperty("--transition-ms", `${ms}ms`);
+  const overlay = el("div", {
+    class: "rm-title-transition",
+    dataset: { kind: transition.kind, testid: "title-transition" },
+    attrs: { "aria-hidden": "true" },
+  });
+  title.append(overlay);
+  return ms;
 }
 
 /** 영역 효과 canvas. 켜진 효과나 배경 그림이 없으면 null(레거시 DOM 불변). */

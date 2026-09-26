@@ -90,8 +90,35 @@ WebGL 한 장으로 얹는다. 그림은 이미지 모델로 만들고, 생성 �
   plain 커서는 `border: 0` 등으로 전부 덮어야 한다 — 안 덮으면 커서가 24px 마름모로 부푼다.
   금속 로고는 `background-clip: text` 라 상자를 넘친 글자는 칠해지지 않는다 → `width: max-content`.
 
+## 입장 시퀀스 · 로고 반짝임 · 「새 게임」 전환 (2026-09-26)
+
+- 데이터: `TitleScreenSettings.sequence?`(`fadeMs`·`push`·`sweep`·`logoAtMs`·`logoReveal` bloom|rise|fade|wipe·`menuAtMs`),
+  `logoShine?`(none|once|loop), `transition?`(`kind` flash|fade|zoom|mist, `durationMs`). **필드가 없으면 그 기능은 꺼짐**이다 —
+  `sequence: {}` 는 「켜짐 + 전부 기본값」(`resolveTitleOpeningSequence`: 암전 1600ms, 밀기 0.08, 로고 1100ms, 메뉴 +1100ms).
+  전환 기본 길이는 `TITLE_TRANSITION_DEFAULT_MS`(flash 700·fade 800·zoom 1000·mist 1100). 프리셋 10종이 셋 다 값을 들고 있고
+  `set_title_screen` 의 `preset` 도 같이 채운다.
+- 런타임(`titleScreen.ts` `applyTitleOpeningSequence`): 검은 막 → 배경 페이드+카메라 밀기 → 빛 쓸기 → 로고 등장 → 메뉴 항목 차례.
+  전부 CSS 애니메이션이고 이름이 `rm-title-seq-` 로 시작한다. 루트 `data-seq-state` = playing|done.
+  **첫 입력(키·클릭)은 메뉴를 확정하지 않고 시퀀스만 끝낸다**(해당 이름의 애니메이션만 `finish()`).
+  최초 진입(`playIntro`)에만 재생하고 방향키 이동 재렌더에는 재생하지 않는다.
+- 로고 그래픽은 이미 `transform: translate(-50%,-50%)` 를 쓰므로 등장 애니메이션은 개별 속성(`scale`·`translate`)만 움직인다.
+- 전환: `player.ts` `confirmTitleThen(…, true)` 가 「새 게임」에서 `playTitleTransition` 을 불러 `.rm-title-transition` 막을 얹고,
+  돌려준 ms 만큼 기다린 뒤 맵으로 넘어간다. 설정이 없으면 기존 짧은 확정 연출 그대로.
+- AI 로고(`src/editor/titleLogoGeneration.ts`): 모델이 투명 배경을 약속하지 않아 **흰 바탕에 그리게 하고**, 가장자리와 이어진
+  밝은 무채색만 flood fill 로 지운 뒤(글자 속 흰색은 남는다) 6px 여백으로 자른다. 등록은 키아트와 같은 도구 묶음
+  (`upsert_resource` kind title → `set_title_screen titleGraphic graphic`).
+- 편집기: 「오프닝 효과」 ① 에 「로고 그림 만들기」(`db-title-opening-logo-generate`, 상태 `db-title-opening-logo-status`,
+  다시 누르면 취소). ③ 입장·전환(`db-title-opening-entrance`)에 입장 연출 켜기/끄기·로고 등장·로고 반짝임·새 게임 전환 선택.
+  **편집기 무대 미리보기는 효과만 그리고 시퀀스를 재생하지 않는다.** 「오프닝 다시 보기」(`db-title-opening-preview`)가
+  `preloadRuntimeStyles()` 뒤 `.player-layout.system-shell` 안에 `renderTitleScreen(…, {playIntro:true})` 를 그대로 띄운다.
+  런타임 `.title-screen` 은 부모의 100% 라 셸을 320×240 으로 고정하고 transform 으로 키운다. 「새 게임」은 전환을 재생한 뒤 처음으로 되감는다.
+  **크기는 인라인으로 못 박는다**(셸 `display:block`, 타이틀 320×240). `title-workbench.css` 는 `layer(database)` 로 들어가고
+  런타임의 `.player-layout.system-shell { display:grid }` 는 뒤 레이어(`runtime`)라 CSS 로는 못 이긴다 — CSS 만 고치면 타이틀 폭 0 인 빈 창이 된다(실측).
+  창은 `document.body` 에 붙어 자료집 `.btn` 색을 못 받으므로 아래 막대 버튼(「처음부터」·「닫기」)은 어두운 바탕용으로 직접 칠한다.
+
 ## 범위 밖 (이번에 안 한 것)
 
 - 오프닝 컷신(`system.opening`) 과 이벤트 컷신에 같은 효과 층을 얹는 것. 효과 모델이 그림 좌표 기준이라
   스틸 한 장짜리 오프닝 장면에는 그대로 붙일 수 있지만, 배선·편집 UI 는 아직 없다.
+- 시퀀스 타이밍(ms)은 편집기에서 숫자로 고치지 않는다(프리셋·도구 인자만). 스크러버·비전 채점·원근 시차·소리 박자 맞춤은 다음 단계.
 - 효과 추가는 목록의 종류 선택으로만 한다. 무대에서 영역 꼭짓점을 새로 찍거나 지우는 것은 아직 없다(옮기기만 된다).

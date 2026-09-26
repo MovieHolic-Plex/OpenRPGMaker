@@ -66,7 +66,16 @@ import { playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { DEFAULT_MENU_SKIN_ID, listMenuSkinIds, MENU_SKINS, resolveMenuSkinId } from "@/player/menuSkins/registry";
 import type { MenuSkinId } from "@/player/menuSkins/types";
 import { calculatePlaySurfaceScale } from "@/player/playSurfaceScale";
-import { listTitleMenuOptions, renderTitleEffectsLayer, renderTitleFxStack, titleIntroClass, titleMenuTop } from "@/player/titleScreen";
+import {
+  listTitleMenuOptions,
+  playTitleTransition,
+  renderTitleEffectsLayer,
+  renderTitleFxStack,
+  renderTitleScreen,
+  titleIntroClass,
+  titleMenuTop,
+} from "@/player/titleScreen";
+import { preloadRuntimeStyles } from "@/app/runtimeStyles";
 import {
   TITLE_OPENING_FREE_PRESET,
   mountTitleEffectOverlay,
@@ -2253,12 +2262,16 @@ function titleScreenOpeningFieldset(titleScreen: TitleScreenSettings, rerender: 
     if (!preset) return;
     const current = store.getCurrent().system.titleScreen;
     if ((current?.effects?.length ?? 0) > 0 && !globalThis.confirm(
-      "지금 효과·로고 스타일·메뉴 스타일·배경 맞춤을 프리셋 값으로 바꿉니다. 계속할까요? (되돌리기로 복구할 수 있습니다)",
+      "지금 효과·로고·메뉴 스타일·입장 시퀀스·전환·배경 맞춤을 프리셋 값으로 바꿉니다. 계속할까요? (되돌리기로 복구할 수 있습니다)",
     )) return;
     updateTitleScreen((settings) => {
       settings.effects = titleOpeningPresetEffects(preset);
       settings.logoStyle = preset.logoStyle;
       settings.menuStyle = preset.menuStyle;
+      settings.sequence = { ...preset.sequence };
+      if (preset.logoShine === "none") delete settings.logoShine;
+      else settings.logoShine = preset.logoShine;
+      settings.transition = { ...preset.transition };
       settings.backgroundFit = "cover";
       settings.backgroundRendering = "smooth";
     });
@@ -2289,6 +2302,31 @@ function titleScreenOpeningFieldset(titleScreen: TitleScreenSettings, rerender: 
     });
   });
 
+  const logoStatus = el("p", { class: "db-system-help", dataset: { testid: "db-title-opening-logo-status" } });
+  const logoButton = el("button", {
+    class: "btn small",
+    text: "로고 그림 만들기",
+    attrs: { type: "button", title: "게임 타이틀 글자를 투명 배경 로고 그림으로 그려 타이틀에 겁니다" },
+    dataset: { testid: "db-title-opening-logo-generate" },
+  }) as HTMLButtonElement;
+  let logoAbort: AbortController | null = null;
+  logoButton.addEventListener("click", () => {
+    if (logoAbort) {
+      logoAbort.abort();
+      return;
+    }
+    const current = store.getCurrent().system.titleScreen;
+    if (current?.titleGraphic?.mode === "graphic" && current.titleGraphic.resourceId && !globalThis.confirm(
+      "지금 로고 그림을 새 그림으로 바꿉니다. 계속할까요? (되돌리기로 복구할 수 있습니다)",
+    )) return;
+    logoAbort = new AbortController();
+    logoButton.textContent = "로고 생성 취소";
+    void runTitleLogoGeneration(promptInput.value, logoStatus, rerender, logoAbort.signal).finally(() => {
+      logoAbort = null;
+      logoButton.textContent = "로고 그림 만들기";
+    });
+  });
+
   const chips = titleOpeningPresetChips(titleOpeningPresetId, (presetId) => {
     titleOpeningPresetId = presetId;
     syncMode();
@@ -2307,12 +2345,15 @@ function titleScreenOpeningFieldset(titleScreen: TitleScreenSettings, rerender: 
           chips,
           presetDescription,
           field("장면 설명", promptInput),
-          el("div", { class: "db-title-opening-actions", children: [aiButton, applyPreset] }),
+          el("div", { class: "db-title-opening-actions", children: [aiButton, applyPreset, logoButton] }),
           aiStatus,
+          logoStatus,
         ],
       }),
       el("h4", { class: "db-title-opening-step", text: "② 효과 다듬기 — 무대 위 손잡이를 끌어 위치를 옮깁니다" }),
       titleOpeningEffectsEditor(titleScreen, titleOpeningHost(rerender)),
+      el("h4", { class: "db-title-opening-step", text: "③ 입장·전환 — 처음 켤 때와 「새 게임」을 누를 때" }),
+      titleOpeningEntranceControls(titleScreen, rerender),
     ],
   });
 }
@@ -2366,6 +2407,230 @@ async function runTitleArtGeneration(
   }
 }
 
+async function runTitleLogoGeneration(
+  mood: string,
+  status: HTMLElement,
+  rerender: SystemRefresh,
+  signal: AbortSignal,
+): Promise<void> {
+  const title = store.getCurrent().system.titleScreen?.title?.trim() ?? "";
+  if (!title) {
+    status.dataset.state = "error";
+    status.textContent = "게임 타이틀이 비어 있습니다. 위 「타이틀」 칸을 먼저 채우세요.";
+    return;
+  }
+  status.dataset.state = "running";
+  status.textContent = `「${title}」 로고를 그리는 중입니다… (수십 초 걸릴 수 있습니다)`;
+  try {
+    const { generateTitleLogo, titleLogoToolCalls } = await import("@/editor/titleLogoGeneration");
+    const logo = await generateTitleLogo({ title, mood: mood.trim() || undefined }, { signal });
+    signal.throwIfAborted();
+    if (!logo.ok) {
+      status.dataset.state = "error";
+      status.textContent = logo.summary;
+      return;
+    }
+    const results = applyToolSequenceToStore(titleLogoToolCalls(logo), { summary: "AI 타이틀 로고", source: "agent" });
+    const failed = results.find((result) => !result.ok);
+    if (failed) {
+      status.dataset.state = "error";
+      status.textContent = failed.summary;
+      return;
+    }
+    status.dataset.state = "done";
+    status.textContent = "로고 그림을 만들어 타이틀에 걸었습니다. 글자가 틀렸으면 다시 누르세요.";
+    rerender();
+  } catch (error) {
+    if (signal.aborted) {
+      status.dataset.state = "idle";
+      status.textContent = "생성을 취소했습니다. 바뀐 것은 없습니다.";
+      return;
+    }
+    status.dataset.state = "error";
+    status.textContent = error instanceof Error ? error.message : String(error);
+  }
+}
+
+const TITLE_LOGO_REVEAL_OPTIONS = [
+  { id: "bloom", name: "피어남" },
+  { id: "rise", name: "떠오름" },
+  { id: "fade", name: "서서히" },
+  { id: "wipe", name: "걷힘" },
+] as const;
+const TITLE_LOGO_SHINE_OPTIONS = [
+  { id: "none", name: "없음" },
+  { id: "once", name: "한 번" },
+  { id: "loop", name: "반복" },
+] as const;
+const TITLE_TRANSITION_OPTIONS = [
+  { id: "none", name: "없음" },
+  { id: "flash", name: "섬광" },
+  { id: "fade", name: "암전" },
+  { id: "zoom", name: "빨려 듦" },
+  { id: "mist", name: "안개" },
+] as const;
+
+/** 입장 시퀀스·로고 반짝임·새 게임 전환. 값은 런타임과 같은 필드를 쓰고, 미리보기는 실제 런타임 렌더를 띄운다. */
+function titleOpeningEntranceControls(titleScreen: TitleScreenSettings, rerender: SystemRefresh): HTMLElement {
+  const sequenceOn = Boolean(titleScreen.sequence);
+  const sequence = koreanSelectField(
+    "입장 연출",
+    "db-title-opening-sequence",
+    sequenceOn ? "on" : "off",
+    [{ id: "on", name: "켜기 — 암전에서 밀고 들어온다" }, { id: "off", name: "끄기 — 바로 메뉴" }] as const,
+    (next) => {
+      updateTitleScreen((settings) => {
+        if (next === "off") delete settings.sequence;
+        else settings.sequence ??= {};
+      });
+      rerender();
+    },
+  );
+  const reveal = koreanSelectField(
+    "로고 등장",
+    "db-title-opening-logo-reveal",
+    titleScreen.sequence?.logoReveal ?? "bloom",
+    TITLE_LOGO_REVEAL_OPTIONS,
+    (next) => {
+      updateTitleScreen((settings) => {
+        settings.sequence = { ...(settings.sequence ?? {}), logoReveal: next };
+      });
+      rerender();
+    },
+  );
+  const shine = koreanSelectField(
+    "로고 반짝임",
+    "db-title-opening-logo-shine",
+    titleScreen.logoShine ?? "none",
+    TITLE_LOGO_SHINE_OPTIONS,
+    (next) => {
+      updateTitleScreen((settings) => {
+        if (next === "none") delete settings.logoShine;
+        else settings.logoShine = next;
+      });
+      rerender();
+    },
+  );
+  const transition = koreanSelectField(
+    "새 게임 전환",
+    "db-title-opening-transition",
+    titleScreen.transition?.kind ?? "none",
+    TITLE_TRANSITION_OPTIONS,
+    (next) => {
+      updateTitleScreen((settings) => {
+        if (next === "none") delete settings.transition;
+        else settings.transition = { kind: next };
+      });
+      rerender();
+    },
+  );
+  const preview = el("button", {
+    class: "btn small primary",
+    text: "오프닝 다시 보기",
+    attrs: { type: "button", title: "게임과 같은 렌더로 입장부터 재생합니다. 「새 게임」을 누르면 전환도 봅니다." },
+    dataset: { testid: "db-title-opening-preview" },
+  }) as HTMLButtonElement;
+  preview.addEventListener("click", () => void openTitleOpeningPreview());
+  return el("div", {
+    class: "db-title-opening-entrance",
+    dataset: { testid: "db-title-opening-entrance" },
+    children: [
+      el("div", { class: "db-title-opening-entrance-grid", children: [sequence, reveal, shine, transition] }),
+      el("p", {
+        class: "db-system-help",
+        text: "무대 미리보기는 효과만 보여 줍니다. 입장 순서와 전환은 「오프닝 다시 보기」로 게임 화면 그대로 확인하세요.",
+      }),
+      el("div", { class: "db-title-opening-actions", children: [preview] }),
+    ],
+  });
+}
+
+/** 런타임 타이틀을 그대로 렌더해 띄운다. 편집기 무대와 달리 입장 시퀀스·전환까지 재생된다. */
+async function openTitleOpeningPreview(): Promise<void> {
+  document.querySelector(".db-title-opening-preview-backdrop")?.remove();
+  await preloadRuntimeStyles();
+  const project = store.getCurrent();
+  const backdrop = el("div", {
+    class: "db-title-opening-preview-backdrop",
+    attrs: { role: "dialog", "aria-modal": "true", "aria-label": "오프닝 미리보기" },
+    dataset: { testid: "db-title-opening-preview-dialog" },
+  });
+  const frame = el("div", { class: "db-title-opening-preview-frame" });
+  const fitScale = () => {
+    const scale = Math.max(1, Math.min(3, (window.innerWidth - 48) / 320, (window.innerHeight - 120) / 240));
+    frame.style.setProperty("--preview-scale", scale.toFixed(3));
+  };
+  fitScale();
+  const shell = el("div", { class: "player-layout system-shell db-title-opening-preview-shell" });
+  // 런타임 레이어의 system-shell grid 규칙이 database 레이어보다 뒤라 CSS 로는 못 이긴다. 인라인으로 무대를 못 박는다.
+  shell.style.display = "block";
+  frame.append(shell);
+  let transitionTimer: number | null = null;
+  const close = () => {
+    if (transitionTimer !== null) clearTimeout(transitionTimer);
+    document.removeEventListener("keydown", onKey, true);
+    window.removeEventListener("resize", fitScale);
+    backdrop.remove();
+  };
+  const mount = () => {
+    if (transitionTimer !== null) clearTimeout(transitionTimer);
+    transitionTimer = null;
+    const noop = () => {};
+    const title = renderTitleScreen(project, {
+      onNewGame: () => {
+        const ms = playTitleTransition(shell.querySelector<HTMLElement>(".title-screen"), project.system.titleScreen);
+        // 전환 끝을 조금 보여 준 뒤 처음으로 되감는다 — 게임이면 여기서 맵으로 넘어간다.
+        transitionTimer = window.setTimeout(mount, (ms ?? 0) + 700);
+      },
+      onResume: noop,
+      onContinue: noop,
+      onCredits: noop,
+      onQuit: close,
+    }, 0, { playIntro: true });
+    title.style.width = "320px";
+    title.style.height = "240px";
+    shell.replaceChildren(title);
+  };
+  const onKey = (event: KeyboardEvent) => {
+    if (event.key !== "Escape") return;
+    event.preventDefault();
+    event.stopPropagation();
+    close();
+  };
+  const replay = el("button", {
+    class: "btn small",
+    text: "처음부터",
+    attrs: { type: "button" },
+    dataset: { testid: "db-title-opening-preview-replay" },
+  });
+  replay.addEventListener("click", mount);
+  const closeButton = el("button", {
+    class: "btn small",
+    text: "닫기",
+    attrs: { type: "button" },
+    dataset: { testid: "db-title-opening-preview-close" },
+  });
+  closeButton.addEventListener("click", close);
+  backdrop.addEventListener("click", (event) => {
+    if (event.target === backdrop) close();
+  });
+  backdrop.append(
+    frame,
+    el("div", {
+      class: "db-title-opening-preview-bar",
+      children: [
+        el("span", { text: "클릭하면 입장을 건너뜁니다 · 「새 게임」을 누르면 전환 · Esc 닫기" }),
+        replay,
+        closeButton,
+      ],
+    }),
+  );
+  document.body.append(backdrop);
+  document.addEventListener("keydown", onKey, true);
+  window.addEventListener("resize", fitScale);
+  mount();
+}
+
 function koreanSelectField<T extends string>(
   label: string,
   testid: string,
@@ -2373,10 +2638,13 @@ function koreanSelectField<T extends string>(
   options: readonly { readonly id: T; readonly name: string }[],
   onChange: (value: T) => void,
 ): HTMLElement {
-  return selectField(label, testid, value, options, (next) => {
+  const field = selectField(label, testid, value, options, (next) => {
     const match = options.find((option) => option.id === next);
     if (match) onChange(match.id);
   });
+  // 타이틀 선택지는 모두 기본값이 있어 「(없음)」을 골라도 아무 일이 없다. 헷갈리지 않게 뺀다.
+  field.querySelector<HTMLSelectElement>("select")?.querySelector('option[value=""]')?.remove();
+  return field;
 }
 
 function titleLayerRow(layer: TitleBackgroundLayer, index: number, rerender: SystemRefresh): HTMLElement {

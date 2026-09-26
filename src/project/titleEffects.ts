@@ -11,9 +11,14 @@ import type {
   TitleEffect,
   TitleEffectKind,
   TitleEffectPoint,
+  TitleLogoShine,
   TitleLogoStyle,
   TitleMenuStyle,
+  TitleOpeningSequence,
   TitleScreenSettings,
+  TitleSequenceLogoReveal,
+  TitleTransitionKind,
+  TitleTransitionSettings,
 } from "@/project/types";
 
 export const MAX_TITLE_EFFECTS = 12;
@@ -223,16 +228,121 @@ export function normalizeTitleLogoSubtitle(value: unknown): string | undefined {
   return trimmed || undefined;
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// 입장 시퀀스·반사광·새 게임 전환 — 첫 진입 연출과 게임으로 넘어가는 순간.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const TITLE_SEQUENCE_LOGO_REVEALS: readonly TitleSequenceLogoReveal[] = ["bloom", "rise", "fade", "wipe"];
+export const TITLE_LOGO_SHINES: readonly TitleLogoShine[] = ["none", "once", "loop"];
+export const TITLE_TRANSITION_KINDS: readonly TitleTransitionKind[] = ["flash", "fade", "zoom", "mist"];
+
+export const DEFAULT_TITLE_SEQUENCE_FADE_MS = 1600;
+export const DEFAULT_TITLE_SEQUENCE_PUSH = 0.08;
+export const DEFAULT_TITLE_SEQUENCE_LOGO_AT_MS = 1100;
+/** 로고 등장 후 메뉴가 뜨기까지. */
+export const DEFAULT_TITLE_SEQUENCE_MENU_GAP_MS = 1100;
+export const TITLE_TRANSITION_DEFAULT_MS: Readonly<Record<TitleTransitionKind, number>> = {
+  flash: 700,
+  fade: 800,
+  zoom: 1000,
+  mist: 1100,
+};
+/** 반사광 loop 한 바퀴. */
+export const TITLE_LOGO_SHINE_PERIOD_MS = 6000;
+
+function clampInt(value: unknown, min: number, max: number): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value)) return undefined;
+  return Math.round(Math.min(max, Math.max(min, value)));
+}
+
+/** 필드가 하나도 없어도 `{}` 를 돌려준다 — 「시퀀스 켬, 전부 기본값」을 뜻한다. 객체가 아니면 undefined(끔). */
+export function normalizeTitleOpeningSequence(value: unknown): TitleOpeningSequence | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const raw = value as Record<string, unknown>;
+  const fadeMs = clampInt(raw.fadeMs, 0, 6000);
+  const pushRaw = typeof raw.push === "number" && Number.isFinite(raw.push) ? Math.min(0.3, Math.max(0, raw.push)) : undefined;
+  const push = pushRaw === undefined ? undefined : Math.round(pushRaw * 1000) / 1000;
+  const logoAtMs = clampInt(raw.logoAtMs, 0, 10000);
+  const menuAtMs = clampInt(raw.menuAtMs, 0, 12000);
+  const logoReveal = TITLE_SEQUENCE_LOGO_REVEALS.includes(raw.logoReveal as TitleSequenceLogoReveal)
+    ? (raw.logoReveal as TitleSequenceLogoReveal)
+    : undefined;
+  return {
+    ...(fadeMs !== undefined && fadeMs !== DEFAULT_TITLE_SEQUENCE_FADE_MS ? { fadeMs } : {}),
+    ...(push !== undefined && push !== DEFAULT_TITLE_SEQUENCE_PUSH ? { push } : {}),
+    ...(raw.sweep === false ? { sweep: false } : {}),
+    ...(logoAtMs !== undefined && logoAtMs !== DEFAULT_TITLE_SEQUENCE_LOGO_AT_MS ? { logoAtMs } : {}),
+    ...(logoReveal && logoReveal !== "bloom" ? { logoReveal } : {}),
+    ...(menuAtMs !== undefined ? { menuAtMs } : {}),
+  };
+}
+
+/** 런타임이 쓰는 확정 값. */
+export interface ResolvedTitleOpeningSequence {
+  fadeMs: number;
+  push: number;
+  sweep: boolean;
+  logoAtMs: number;
+  logoReveal: TitleSequenceLogoReveal;
+  menuAtMs: number;
+}
+
+export function resolveTitleOpeningSequence(sequence: TitleOpeningSequence): ResolvedTitleOpeningSequence {
+  const logoAtMs = sequence.logoAtMs ?? DEFAULT_TITLE_SEQUENCE_LOGO_AT_MS;
+  return {
+    fadeMs: sequence.fadeMs ?? DEFAULT_TITLE_SEQUENCE_FADE_MS,
+    push: sequence.push ?? DEFAULT_TITLE_SEQUENCE_PUSH,
+    sweep: sequence.sweep !== false,
+    logoAtMs,
+    logoReveal: sequence.logoReveal ?? "bloom",
+    menuAtMs: sequence.menuAtMs ?? logoAtMs + DEFAULT_TITLE_SEQUENCE_MENU_GAP_MS,
+  };
+}
+
+export function normalizeTitleLogoShine(value: unknown): TitleLogoShine | undefined {
+  return value === "once" || value === "loop" ? value : undefined;
+}
+
+export function normalizeTitleTransition(value: unknown): TitleTransitionSettings | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const raw = value as Record<string, unknown>;
+  if (!TITLE_TRANSITION_KINDS.includes(raw.kind as TitleTransitionKind)) return undefined;
+  const kind = raw.kind as TitleTransitionKind;
+  const durationMs = clampInt(raw.durationMs, 200, 3000);
+  return {
+    kind,
+    ...(durationMs !== undefined && durationMs !== TITLE_TRANSITION_DEFAULT_MS[kind] ? { durationMs } : {}),
+  };
+}
+
+export function titleTransitionDurationMs(transition: TitleTransitionSettings): number {
+  return transition.durationMs ?? TITLE_TRANSITION_DEFAULT_MS[transition.kind];
+}
+
 /** normalizeTitleScreenSettings 가 펼쳐 넣는 오프닝 확장 필드 묶음(전부 omit-when-empty). */
 export function normalizeTitleOpeningFields(
   settings: Partial<TitleScreenSettings> | undefined,
-): Pick<TitleScreenSettings, "backgroundFit" | "backgroundRendering" | "effects" | "logoStyle" | "logoSubtitle" | "menuStyle"> {
+): Pick<
+  TitleScreenSettings,
+  | "backgroundFit"
+  | "backgroundRendering"
+  | "effects"
+  | "logoStyle"
+  | "logoSubtitle"
+  | "menuStyle"
+  | "sequence"
+  | "logoShine"
+  | "transition"
+> {
   const backgroundFit = normalizeTitleBackgroundFit(settings?.backgroundFit);
   const backgroundRendering = normalizeTitleBackgroundRendering(settings?.backgroundRendering);
   const effects = normalizeTitleEffects(settings?.effects);
   const logoStyle = normalizeTitleLogoStyle(settings?.logoStyle);
   const logoSubtitle = normalizeTitleLogoSubtitle(settings?.logoSubtitle);
   const menuStyle = normalizeTitleMenuStyle(settings?.menuStyle);
+  const sequence = normalizeTitleOpeningSequence(settings?.sequence);
+  const logoShine = normalizeTitleLogoShine(settings?.logoShine);
+  const transition = normalizeTitleTransition(settings?.transition);
   return {
     ...(backgroundFit ? { backgroundFit } : {}),
     ...(backgroundRendering ? { backgroundRendering } : {}),
@@ -240,6 +350,9 @@ export function normalizeTitleOpeningFields(
     ...(logoStyle ? { logoStyle } : {}),
     ...(logoSubtitle ? { logoSubtitle } : {}),
     ...(menuStyle ? { menuStyle } : {}),
+    ...(sequence ? { sequence } : {}),
+    ...(logoShine ? { logoShine } : {}),
+    ...(transition ? { transition } : {}),
   };
 }
 
@@ -291,6 +404,10 @@ export interface TitleOpeningPreset {
   logoStyle: TitleLogoStyle;
   menuStyle: TitleMenuStyle;
   effects: TitleEffect[];
+  /** 입장 시퀀스·반사광·새 게임 전환 기본값. 분위기에 맞춘 속도와 전환 종류. */
+  sequence: TitleOpeningSequence;
+  logoShine: TitleLogoShine;
+  transition: TitleTransitionSettings;
 }
 
 export const TITLE_OPENING_PRESETS: readonly TitleOpeningPreset[] = [
@@ -305,6 +422,9 @@ export const TITLE_OPENING_PRESETS: readonly TitleOpeningPreset[] = [
       "The sun sits just above the top edge at about 80% from the left, its rays falling down-left. The swords lean on the tree trunk at about 70-78% from the left, blades running from 34% to 83% of the height. The river and bridge sit at about 52-63% from the left and 54-61% of the height. Mountains and mist span the upper middle (17-42% of the height). The lower-left foreground is a sunlit forest floor.",
     logoStyle: "metal",
     menuStyle: "plain",
+    sequence: { logoReveal: "bloom" },
+    logoShine: "once",
+    transition: { kind: "flash" },
     effects: [
       { kind: "camera", intensity: 0.8 },
       { kind: "mist", region: [[0.37, 0.19], [0.8, 0.17], [0.82, 0.4], [0.36, 0.42]] },
@@ -326,6 +446,9 @@ export const TITLE_OPENING_PRESETS: readonly TitleOpeningPreset[] = [
       "The moon sits at about 72% from the left and 12% from the top. The castle stands at 55-70% from the left with lit windows around 36-42% of the height. The moat fills the bottom fifth. Fog lies at 58-80% of the height.",
     logoStyle: "stone",
     menuStyle: "window",
+    sequence: { fadeMs: 2200, push: 0.06, logoAtMs: 1500, logoReveal: "fade" },
+    logoShine: "loop",
+    transition: { kind: "fade", durationMs: 1200 },
     effects: [
       { kind: "camera", intensity: 0.6 },
       { kind: "godRays", source: [0.72, 0.12], toward: [0.6, 0.9], intensity: 0.55, color: "#bcd4ff", spread: 0.3 },
@@ -347,6 +470,9 @@ export const TITLE_OPENING_PRESETS: readonly TitleOpeningPreset[] = [
       "Warm windows glow around 55% and 72% from the left at 56-60% of the height. Hazy mountains span 28-55% of the height. The village fills the right two thirds; the left third is open snowy field and sky.",
     logoStyle: "glow",
     menuStyle: "window",
+    sequence: { fadeMs: 1800, push: 0.05, logoReveal: "rise" },
+    logoShine: "once",
+    transition: { kind: "fade" },
     effects: [
       { kind: "camera", intensity: 0.5 },
       { kind: "glow", source: [0.55, 0.6], spread: 0.06 },
@@ -366,6 +492,9 @@ export const TITLE_OPENING_PRESETS: readonly TitleOpeningPreset[] = [
       "The light shaft enters from the top edge at about 35% from the left and falls down-right. Pillars stand in the right two thirds. Thick fog fills 40-100% of the height.",
     logoStyle: "gold",
     menuStyle: "plain",
+    sequence: { fadeMs: 2400, push: 0.1, logoAtMs: 1600, logoReveal: "fade", sweep: false },
+    logoShine: "none",
+    transition: { kind: "mist" },
     effects: [
       { kind: "camera", intensity: 0.7 },
       { kind: "godRays", source: [0.35, -0.1], toward: [0.55, 0.8], intensity: 0.7, color: "#f2eedd" },
@@ -385,6 +514,9 @@ export const TITLE_OPENING_PRESETS: readonly TitleOpeningPreset[] = [
       "The sun sits on the horizon at about 62% from the left and 44% of the height. The sea fills the bottom half (48-100% of the height). A lighthouse stands at about 84% from the left with its lamp at 30% of the height. Ships sit around 40-55% from the left. The upper left is open warm sky.",
     logoStyle: "gold",
     menuStyle: "window",
+    sequence: { logoReveal: "wipe" },
+    logoShine: "once",
+    transition: { kind: "flash" },
     effects: [
       { kind: "camera", intensity: 0.6 },
       { kind: "godRays", source: [0.62, 0.44], toward: [0.62, 1.1], intensity: 0.8, color: "#ffb070", spread: 0.45 },
@@ -405,6 +537,9 @@ export const TITLE_OPENING_PRESETS: readonly TitleOpeningPreset[] = [
       "The largest cyan crystal cluster glows at about 68% from the left and 45% of the height; a violet cluster glows at about 40% from the left and 58%. The lake fills 72-100% of the height across the middle. The left third is darker rock wall.",
     logoStyle: "glow",
     menuStyle: "window",
+    sequence: { fadeMs: 1400, logoReveal: "bloom" },
+    logoShine: "loop",
+    transition: { kind: "zoom" },
     effects: [
       { kind: "camera", intensity: 0.5 },
       { kind: "glow", source: [0.68, 0.45], spread: 0.1, color: "#7ee0ff", intensity: 1.2, speed: 0.5 },
@@ -425,6 +560,9 @@ export const TITLE_OPENING_PRESETS: readonly TitleOpeningPreset[] = [
       "The fortress stands at 50-78% from the left. A lava river glows across the bottom (78-100% of the height) and pools at about 60% from the left and 85% of the height. The volcano crater glows at about 70% from the left and 12% of the height. Smoke hangs across 20-45% of the height. The left third is dark rock.",
     logoStyle: "stone",
     menuStyle: "plain",
+    sequence: { fadeMs: 1000, push: 0.12, logoAtMs: 800, logoReveal: "wipe" },
+    logoShine: "once",
+    transition: { kind: "flash", durationMs: 600 },
     effects: [
       { kind: "camera", intensity: 0.9, speed: 1.2 },
       { kind: "glow", source: [0.6, 0.86], spread: 0.16, color: "#ff6a2a", intensity: 1.3, speed: 0.6 },
@@ -445,6 +583,9 @@ export const TITLE_OPENING_PRESETS: readonly TitleOpeningPreset[] = [
       "The cherry tree canopy fills the upper right (55-100% from the left, 0-50% of the height). The shrine gate stands at about 60-75% from the left. A stone lantern glows at about 82% from the left and 62% of the height. The pond sits at 40-70% from the left, 80-95% of the height. Soft light enters from the upper left corner.",
     logoStyle: "plain",
     menuStyle: "window",
+    sequence: { fadeMs: 2000, push: 0.05, logoReveal: "rise" },
+    logoShine: "once",
+    transition: { kind: "mist" },
     effects: [
       { kind: "camera", intensity: 0.5 },
       { kind: "godRays", source: [0.1, -0.1], toward: [0.5, 0.8], intensity: 0.5, color: "#fff0e0", spread: 0.3 },
@@ -465,6 +606,9 @@ export const TITLE_OPENING_PRESETS: readonly TitleOpeningPreset[] = [
       "The sun sits at about 82% from the left just below the top edge. The oasis pool sits at 45-70% from the left, 68-82% of the height. Distant ruins and the horizon lie around 40-50% of the height. Dunes fill the foreground.",
     logoStyle: "gold",
     menuStyle: "plain",
+    sequence: { push: 0.07, logoReveal: "wipe" },
+    logoShine: "once",
+    transition: { kind: "fade" },
     effects: [
       { kind: "camera", intensity: 0.4 },
       { kind: "godRays", source: [0.82, 0.02], toward: [0.5, 0.9], intensity: 0.9, color: "#fff2c4", spread: 0.25 },
@@ -484,6 +628,9 @@ export const TITLE_OPENING_PRESETS: readonly TitleOpeningPreset[] = [
       "Sunbeams break through at about 55% from the left above the top edge and fan downward. The largest island floats at 50-85% from the left, 25-60% of the height, with a waterfall at about 62% from the left falling from 55% to 80%. A sea of clouds fills 70-100% of the height.",
     logoStyle: "metal",
     menuStyle: "window",
+    sequence: { fadeMs: 1800, push: 0.1, logoAtMs: 1300, logoReveal: "bloom" },
+    logoShine: "loop",
+    transition: { kind: "zoom" },
     effects: [
       { kind: "camera", intensity: 0.7, speed: 0.8 },
       { kind: "godRays", source: [0.55, -0.12], toward: [0.5, 0.9], intensity: 0.8, color: "#fffbe8", spread: 0.35 },

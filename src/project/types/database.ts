@@ -1023,6 +1023,38 @@ export interface TitleIntroSettings {
   staggerMs?: number;
 }
 
+/** 로고가 처음 드러나는 방식. bloom = 빛 번짐에서 초점이 잡힌다, wipe = 왼→오 빛 커튼. */
+export type TitleSequenceLogoReveal = "fade" | "rise" | "bloom" | "wipe";
+/** 로고 표면을 훑는 반사광. once = 등장 직후 한 번, loop = 몇 초마다. */
+export type TitleLogoShine = "none" | "once" | "loop";
+
+/**
+ * 입장 시퀀스(첫 진입 한 번). 검은 화면 → 페이드 → 카메라 밀기 → 빛 훑기 → 로고 → 메뉴.
+ * 아무 키·클릭이면 즉시 끝 상태로 건너뛴다. 모든 필드 생략 = 런타임 기본값. 필드 자체가 없으면 시퀀스 없음(레거시 intro 만).
+ */
+export interface TitleOpeningSequence {
+  /** 검은 화면이 걷히는 시간 ms (0..6000). 기본 1600. */
+  fadeMs?: number;
+  /** 카메라 밀기 폭 0..0.3 (1+push 배에서 1배로). 기본 0.08. 0 = 끔. */
+  push?: number;
+  /** 로고 직전 화면을 가로지르는 빛 띠. false 만 저장. */
+  sweep?: boolean;
+  /** 로고 등장 시각 ms (0..10000). 기본 1100. */
+  logoAtMs?: number;
+  /** 기본 bloom. */
+  logoReveal?: TitleSequenceLogoReveal;
+  /** 메뉴 등장 시각 ms (0..12000). 기본 logoAtMs + 1100. */
+  menuAtMs?: number;
+}
+
+/** 「새 게임」을 고른 뒤 게임으로 넘어가는 전환. */
+export type TitleTransitionKind = "flash" | "fade" | "zoom" | "mist";
+export interface TitleTransitionSettings {
+  kind: TitleTransitionKind;
+  /** 200..3000. 생략 = 종류별 기본(flash 700, fade 800, zoom 1000, mist 1100). */
+  durationMs?: number;
+}
+
 /**
  * 배경 그림 맞춤. 생략 = 레거시 "stretch"(100% 100% 로 늘림) — 구 JSON 은 필드가 없고 화면도 그대로다.
  * cover = 비율 유지로 화면을 채우고 넘치는 쪽을 자른다, contain = 비율 유지로 전부 보인다.
@@ -1105,6 +1137,12 @@ export interface TitleScreenSettings {
   particles?: TitleParticleSettings;
   /** 로고/메뉴 등장 연출. 유효한 연출이 하나도 없으면 normalize 가 필드를 생략한다. */
   intro?: TitleIntroSettings;
+  /** 입장 시퀀스. 있으면 intro 의 로고/메뉴 연출보다 우선한다. */
+  sequence?: TitleOpeningSequence;
+  /** 로고 반사광. 생략 = none. */
+  logoShine?: TitleLogoShine;
+  /** 새 게임 전환. 생략 = 기존 짧은 확인 연출(180ms)만. */
+  transition?: TitleTransitionSettings;
 }
 
 /** Project-authored logical viewport used by the map runtime and its DOM stage. */
