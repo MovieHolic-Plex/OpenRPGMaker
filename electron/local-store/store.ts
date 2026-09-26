@@ -6,7 +6,8 @@ import { canonicalJsonString } from "../../src/project/persistence/core/canonica
 import { deserializeStoredProjectJson } from "../../src/project/persistence/core/loadRepair";
 import { mergeTeamProject, validateMergedTeamProject } from "../../src/project/persistence/core/teamMerge";
 import type { MapSaveConflict } from "../../src/project/persistence/core/mapMerge";
-import { projectWire, type ProjectWire } from "../../src/project/persistence/core/projectWire";
+import type { ProjectWire } from "../../src/project/persistence/core/projectWire";
+import { serialize } from "../../src/project/io/serialize";
 import type { GameMap, Project, UploadedAsset, UploadedAssetRef } from "../../src/project/types";
 import { applyStorePragmas, openNodeSqliteDriver, readDataVersion, type Driver, type DriverValue } from "./driver";
 import { LocalStoreError } from "./errors";
@@ -200,6 +201,18 @@ function sha256HexOfText(value: string): string {
   return createHash("sha256").update(value, "utf8").digest("hex");
 }
 
+/** 호스트가 쓰는 와이어. 파싱한 JSON 은 쓰지 않으므로 만들지 않는다(81MB 문서에서 파싱 약 0.4s). */
+type HostWire = Pick<ProjectWire, "serialized" | "sha256">;
+
+/**
+ * 직렬화 + 네이티브 SHA-256. 공용 projectWire 는 브라우저와 같은 JS 해시를 쓰고 JSON 도 다시 파싱한다.
+ * 실측(2026-09-26, 81MB 새 프로젝트): 호스트 패치 한 번의 projectWire 2.7s 중 파싱·JS 해시가 약 1s.
+ */
+function hostWire(project: Project): HostWire {
+  const serialized = serialize(project);
+  return { serialized, sha256: sha256HexOfText(serialized) };
+}
+
 function readMeta(driver: Driver, key: string): string | null {
   const row = driver.prepare("SELECT value FROM meta WHERE key = ?").get([key]);
   if (!row) return null;
@@ -281,7 +294,7 @@ function replaceMapMirrors(driver: Driver, projectId: string, project: Project, 
   }
 }
 
-function writeProjectRow(driver: Driver, project: Project, wire: ProjectWire, projectId: string, now: string): number {
+function writeProjectRow(driver: Driver, project: Project, wire: HostWire, projectId: string, now: string): number {
   const revision = (readProjectMeta(driver)?.revision ?? 0) + 1;
   driver.prepare(
     `INSERT INTO project (id, project_id, title, document_version, current_json, current_sha256, revision, updated_at)
@@ -431,7 +444,7 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
       return { project: deserializeStoredProjectJson(JSON.parse(serialized)), sha256: meta.sha256, revision: meta.revision };
     },
     async saveProject(project: Project): Promise<LocalStoreSaveResult> {
-      const wire = await projectWire(project);
+      const wire = hostWire(project);
       const saved = driver.transaction(() => ({
         kind: "saved" as const,
         sha256: wire.sha256,
@@ -443,11 +456,7 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
     async saveSerialized(serialized: string, expectedSha?: string | null): Promise<LocalStoreSaveResult> {
       const json = JSON.parse(serialized);
       const parsed = deserializeStoredProjectJson(json, serialized);
-      const wire: ProjectWire = {
-        serialized,
-        json,
-        sha256: sha256HexOfText(serialized),
-      };
+      const wire: HostWire = { serialized, sha256: sha256HexOfText(serialized) };
       const result = driver.transaction((): LocalStoreSaveResult => {
         if (expectedSha !== undefined && (readProjectMeta(driver)?.sha256 ?? null) !== expectedSha) {
           return { kind: "conflict", conflicts: [{ mapId: "project", name: "프로젝트가 다른 사용자에 의해 변경되었습니다" }] };
@@ -481,7 +490,7 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
         // Never trust a caller-supplied map-id list: all changed roots must participate.
         if (plan.kind === "conflict") return plan;
         validateMergedTeamProject(plan.project);
-        const wire = await projectWire(plan.project);
+        const wire = hostWire(plan.project);
         const written = driver.transaction((): LocalStoreSaveResult | null => {
           if ((readProjectMeta(driver)?.sha256 ?? null) !== (planned?.sha256 ?? null)) return null;
           const revision = writeProjectRow(driver, plan.project, wire, projectId, clock());
@@ -705,7 +714,7 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
         return { changed: false, migratedAssetIds: [], project, sha256: current?.sha256 ?? null, revision: current?.revision ?? 0 };
       }
       const nextProject: Project = { ...project, assets: { ...project.assets, uploaded } };
-      const wire = await projectWire(nextProject);
+      const wire = hostWire(nextProject);
       const revision = driver.transaction(() => writeProjectRow(driver, nextProject, wire, projectId, clock()));
       insertCommit(
         driver,
