@@ -1,5 +1,20 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 보수·단계 요청 전용 도구 — repair_fence, improve_title_screen (2026-09-26)
+
+사용자 프롬프트 코퍼스에서 도구가 없던 두 문형을 메운다.
+
+- `repair_fence` (`src/editor/tools/fenceRepairTools.ts`, 로직 `village/fenceRepair.ts`): 「담장이 엉망, 새로 만들지 말고 손봐줘」.
+  울타리 칸 집합은 그대로 두고 이웃 연결(N/S/E/W)로 조각을 다시 고른다(`canonicalFenceTile`, fences.ts 둘레 세트 정본과 같은 번호).
+  이웃 없는 외톨이만 걷는다. 칸을 늘리는 건 `fillGaps:true`(같은 줄 1칸 구멍만, 3칸 게이트 유지)뿐이다.
+  합본 마을 호환 칩셋이 아니면 `fence-tileset-mismatch`. 실측: author_village 4채 마을 울타리 116칸을 반은 틀린 조각으로,
+  외톨이 3개를 섞어 어긋난 이음 58 → 0, 추가 0칸, 제거 3칸(전부 주입한 외톨이) — `verify-shots/gap-fixes/c2-*`.
+  **발견:** 시공기 자체가 남기는 비정본 이음 5개(세로만 있는 모서리 438/378/380, 한쪽 이웃뿐인 가로대 379)도 이 도구가 정규화한다.
+- `improve_title_screen` (`src/editor/tools/titleImproveTools.ts`): 「타이틀을 N단계로 개선해줘」. stage 누적 —
+  1=intro(riseIn/slideUp)·logoStyle·backgroundFit, 2=particles·타이틀 BGM(스타터 곡이 등록돼 있을 때만), 3=오프닝 프리셋 effects·menuStyle.
+  비어 있는 칸만 채우고 유지한 항목을 요약에 적는다. 런타임 증거: `npm run qa:runtime -- --scenario title-improve`
+  (`TITLE_STAGE=0|3`), stage 0 은 `title-effects` 부재, stage 3 은 WebGL 효과 레이어 동작.
+
 ## 조수 쓰기 도구의 네 층 — 1~4층·그림자 (MZ식 4층, 2026-09-25)
 
 조수가 2층(바닥 장식)·4층(물체 위 물체)·그림자를 쓴다. 층 번호와 맵 칸 이름의 대응은 `src/project/mapLayers.ts` 가 정본이고,

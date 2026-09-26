@@ -24,6 +24,15 @@ checklist. Static configuration checks system/map opt-in, a spawn whose first
 troop enemy has an action profile, lint errors, and reference integrity.
 It does not certify real combat playability.
 
+`adventure-jrpg` selects `adventure-system` (2026-09-26). Before, it applied only
+`system.genre`, so the gear (no AI) produced a blank project with a label. It now
+fills `battleParty: "actors"`, `battleUiStyle: "ff"` (side view, ally sprites),
+`menuUiStyle: "party-first"` and `companions {maxCompanions:3, formation:"line"}`
+only when those fields are empty (`??=`), so applying the poster to an open
+project keeps an author's choice. Requirements add `battle-troops`, `lint-errors`
+and `reference-integrity`. Evidence: `verify-shots/gap-fixes/c1-before.json`,
+`c1-after.json`, `c4-report.json`.
+
 `createGenreBlankProjectSystemPresetPlan(packId, recipeId)` validates a selection without touching project state. Recipes declare `starterKind: "blank-project-system-preset"` plus the exact shared `system.*` fields they apply; they do not carry fictional executable adapter IDs. `materializeGenreBlankProjectSystemPreset(plan)` returns a detached `createBlankProject()` on the normal `Project` schema with the selected `system.genre` and shared system opt-ins. `authoredContentSeeded` is always `false`: a card label such as adventure village, gallery horror, or farm life is inspiration, not a promise that authored maps/events/records exist.
 
 The live welcome DOM keeps AI creation and manual system setup separate. An illustrated preset poster opens the shared interview, then awaits `applyWelcomeGenreSystemPresetPlan` through `applySystemPreset(plan, brief)`. The detached seed includes the confirmed brief before adoption. The shell already owns the target SQLite folder; the action replaces the in-memory project and requires a successful flush before focusing the start map or releasing an AI prompt. A failed save keeps welcome visible with an inline alert and never starts generation; the candidate may already be in memory. The gear keeps an explicit confirmation, applies only the system preset, and returns no AI prompt. Free-text input and additional free-text world posters use the current project.

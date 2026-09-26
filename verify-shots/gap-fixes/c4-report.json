@@ -1,0 +1,38 @@
+{
+ "setOk": true,
+ "setSummary": "타이틀 화면 설정: \"저자 타이틀\" · 효과 1개",
+ "improve": "타이틀 3단계 개선(1.등장 연출 → 2.분위기 → 3.영역 효과) — 새로 채운 항목 4개, 이미 정해져 있어 유지한 항목: logoStyle, musicResourceId, effects.",
+ "music": "cc0-bgm-rtp-uix-001",
+ "effects": [
+  {
+   "kind": "glow",
+   "source": [
+    0.5,
+    0.5
+   ]
+  }
+ ],
+ "logoStyle": "gold",
+ "filled": {
+  "intro": {
+   "logo": "riseIn",
+   "menu": "slideUp",
+   "delayMs": 300,
+   "staggerMs": 120
+  },
+  "particles": {
+   "preset": "fireflies",
+   "density": 40
+  },
+  "menuStyle": "plain"
+ },
+ "stage4": {
+  "ok": false,
+  "code": "invalid-args"
+ },
+ "jrpgKeepsAuthor": {
+  "battleUiStyle": "dragonquest",
+  "menuUiStyle": "retro-2000",
+  "battleParty": "actors"
+ }
+}
