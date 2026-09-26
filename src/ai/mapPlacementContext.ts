@@ -13,6 +13,8 @@ import type { Command, GameEvent, GameMap, Project } from "@/project/types";
 
 export type RewardScope = "map" | "neighbor" | "project" | "none";
 
+export type PlacedKind = "chest" | "shop" | "npc" | "savepoint" | "exit" | "other";
+
 export interface GoldRange {
   readonly min: number;
   readonly med: number;
@@ -61,13 +63,19 @@ export interface MapPlacementContext {
     readonly npcs: readonly string[];
     readonly savepoints: number;
     readonly exits: readonly { readonly x: number; readonly y: number; readonly toMapId: string; readonly toName: string }[];
+    /** 이미 이벤트가 선 칸 — 새 이벤트는 이 칸과 그 바로 위아래(두 칸 높이 그림)를 피한다. move/remove 는 이 id 만. */
+    readonly occupied: readonly { readonly id: string; readonly x: number; readonly y: number; readonly kind: PlacedKind; readonly name: string }[];
   };
+  /** 이 맵에서 실제로 나오는 트룹 — 길막 몬스터는 이 id 만 쓴다. */
+  readonly encounterTroops: readonly { readonly id: string; readonly name: string; readonly gold: number }[];
   /** 이 맵에 걸린 설정집 문서(id·이름·요약). */
   readonly wiki: readonly { readonly id: string; readonly name: string; readonly summary: string }[];
   /** 상자에 넣어도 되는 실제 아이템 후보(이 맵 드롭·상점 → 없으면 이웃 → 프로젝트 싼 소모품). */
   readonly rewardItems: readonly PlacementItemRef[];
   /** 프로젝트에 실제로 있는 아이템·장비 id — 모델이 지어낸 id 를 거르는 데만 쓴다(모델에게 보내지 않는다). */
   readonly knownItemIds: readonly string[];
+  /** 실제 아이템·장비 가격표(id → 가격) — 상인 재고를 거르는 데만 쓴다(모델에게 보내지 않는다). */
+  readonly itemPrices: Readonly<Record<string, number>>;
   readonly chestGold: ChestRewardBasis;
 }
 
@@ -285,12 +293,20 @@ export function buildMapPlacementContext(project: Project, mapId: string): MapPl
     ...(here.drops.length + here.shopItems.length === 0 && !neighborFacts?.drops.length && !neighborFacts?.shopItems.length ? priceFits : []),
   ]).slice(0, MAX_LIST);
 
+  const occupied: { id: string; x: number; y: number; kind: PlacedKind; name: string }[] = [];
   const chests: { x: number; y: number; gold?: number; item?: string }[] = [];
   const shops: { eventName: string; items: PlacementItemRef[] }[] = [];
   const npcs: string[] = [];
   let savepoints = 0;
   for (const event of map.events) {
     const reward = chestReward(event);
+    const kindCommands = eventCommands(event);
+    const kind: PlacedKind = reward ? "chest"
+      : kindCommands.some((command) => command.kind === "shop") ? "shop"
+        : isSavepoint(kindCommands) ? "savepoint"
+          : kindCommands.some((command) => command.kind === "transfer") ? "exit"
+            : isNpcLike(event) ? "npc" : "other";
+    occupied.push({ id: event.id, x: event.x, y: event.y, kind, name: eventLabel(event).slice(0, 40) });
     if (reward) {
       const item = reward.itemId ? itemRef(project, reward.itemId)?.name ?? reward.itemId : undefined;
       chests.push({ x: event.x, y: event.y, ...(reward.gold ? { gold: reward.gold } : {}), ...(item ? { item } : {}) });
@@ -332,10 +348,18 @@ export function buildMapPlacementContext(project: Project, mapId: string): MapPl
         drops: here.drops.slice(0, MAX_LIST),
       }
       : null,
-    existing: { chests: chests.slice(0, MAX_LIST), shops: shops.slice(0, 4), npcs: npcs.slice(0, MAX_LIST), savepoints, exits: exits.slice(0, MAX_LIST) },
+    existing: { chests: chests.slice(0, MAX_LIST), shops: shops.slice(0, 4), npcs: npcs.slice(0, MAX_LIST), savepoints, exits: exits.slice(0, MAX_LIST), occupied: occupied.slice(0, 60) },
+    encounterTroops: mapTroopIds(map).flatMap((id) => {
+      const troop = project.database.troops.find((record) => record.id === id);
+      if (!troop) return [];
+      const enemyIds = troop.members?.length ? troop.members.map((member) => member.enemyId) : troop.enemyIds;
+      const gold = enemyIds.reduce((sum, enemyId) => sum + (project.database.enemies.find((enemy) => enemy.id === enemyId)?.rewards?.gold ?? 0), 0);
+      return [{ id: troop.id, name: troop.name, gold }];
+    }).slice(0, MAX_LIST),
     wiki,
     rewardItems,
     knownItemIds: [...project.database.items.map((item) => item.id), ...project.database.equipment.map((item) => item.id)],
+    itemPrices: Object.fromEntries([...project.database.items, ...project.database.equipment].map((item) => [item.id, item.price ?? 0])),
     chestGold,
   };
 }

@@ -20,7 +20,16 @@ export type StampTool =
   | "place_chest"
   | "place_npc"
   | "place_savepoint"
-  | "place_examine_hotspots";
+  | "place_examine_hotspots"
+  | "make_villager"
+  | "place_storage_chest"
+  | "place_trap"
+  | "place_battle_blocker"
+  | "set_scene_mood"
+  | "arrange_tall_grass"
+  | "set_start_position"
+  | "move_event"
+  | "remove_event";
 
 export const STAMP_TOOLS: readonly StampTool[] = [
   "fill_region",
@@ -34,6 +43,14 @@ export const STAMP_TOOLS: readonly StampTool[] = [
   "place_npc",
   "place_savepoint",
   "place_examine_hotspots",
+  "place_storage_chest",
+  "place_trap",
+  "place_battle_blocker",
+  "set_scene_mood",
+  "arrange_tall_grass",
+  "set_start_position",
+  "move_event",
+  "remove_event",
 ];
 
 /** 한 번에 받을 단계 상한. 바로 깔기는 한 문장이라 이보다 많으면 모델이 쪼개기에 빠진 것이다. */
@@ -87,6 +104,8 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "- A circle needs a square box: give circle steps a sub-rectangle with w == h (the largest square that fits its part); use ellipse only when the user says 타원/길쭉하게.",
   "- Trees/forest use place_props with density: 숲/나무/숲길 → \"dense\" (walkable forest with water, small trees, rocks and hidden canopy paths), 울창/빽빽/통행 불가/막힌 → \"impassable\", 성글게 → \"normal\", 드문드문/가로수 → \"sparse\". Decorative crates/boxes (장식 상자·나무 상자) are place_props with count.",
   "- Game objects: 보물상자/상자(열어서 얻는) → place_chest; 사람/주민/상인/NPC/경비 → place_npc (one step per person, give each a fitting Korean name and 1-2 short lines); 세이브/저장 → place_savepoint; 조사/살펴보기/표지판/비석 → place_examine_hotspots. Put them on walkable ground inside the target, not on trees, water or walls.",
+  "- More game objects: 상인(물건 파는) → place_npc with merchant:true and stock:[itemId...] from facts.placement.rewardItems / existing shops; 보관 상자/창고 → place_storage_chest; 함정/가시/즉사 → place_trap; 길막 몬스터/보스 앞 적 → place_battle_blocker with troopId from facts.placement.encounterTroops (skip it if that list is empty); 비·눈·폭풍·안개 → set_scene_mood; 키큰 풀/수풀 → arrange_tall_grass; 시작 위치 → set_start_position; 기존 것 옮기기/지우기 → move_event/remove_event with an eventId from facts.placement.existing.occupied.",
+  "- Do not put a new object on or right above/below a cell in facts.placement.existing.occupied, nor on another new object; code moves overlapping ones but choose free cells first.",
   "- facts.placement describes THIS map (its fights, existing chests, shops, NPCs, wiki). It is the main reference. Chest gold MUST be inside facts.placement.chestGold.min..max; prefer an item from facts.placement.rewardItems (use its id) when the sentence asks for items. Never invent item ids. NPC names must not repeat facts.placement.existing.npcs. Match NPC lines to the map name, locations and wiki.",
   "- An empty sentence (\"(빈 입력) …\") means: decorate the target sensibly for this map (terrain first); add at most one game object and only if it clearly fits.",
   "- Order steps ground first (fill_region / paint_road), then walls/houses, then props, so props land on finished ground.",
@@ -101,9 +120,17 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "place_door {at:{x,y}, material}",
   "author_house {wings:[{x,y,w,h}] (w>=3,h>=5), interior?:\"exterior-only\"|\"linked-interior\"}",
   "place_chest {at:{x,y}, gold?:int, itemId?:string, why?:\"short basis\"}",
-  "place_npc {at:{x,y}, name, role?:string, lines?:[\"...\"], merchant?:boolean}",
+  "place_npc {at:{x,y}, name, role?:string, lines?:[\"...\"], merchant?:boolean, stock?:[itemId]}",
   "place_savepoint {at:{x,y}}",
   "place_examine_hotspots {spots:[{at:{x,y}, name, lines:[\"...\"]}]}",
+  "place_storage_chest {at:{x,y}}",
+  "place_trap {at:{x,y}, trigger?:\"touch\"|\"action\", message?:string}",
+  "place_battle_blocker {at:{x,y}, troopId, intro?:[\"...\"]}",
+  "set_scene_mood {weather:{kind:\"none\"|\"rain\"|\"storm\"|\"snow\"|\"fog\", intensity?:0..1}}",
+  "arrange_tall_grass {rect:{x,y,w,h}}",
+  "set_start_position {at:{x,y}}",
+  "move_event {eventId, at:{x,y}}",
+  "remove_event {eventId}",
 ].join("\n");
 
 export function buildStampPlannerUserPayload(facts: StampPlanFacts): string {
@@ -121,8 +148,8 @@ export function buildStampPlannerUserPayload(facts: StampPlanFacts): string {
 }
 
 /** 모델에게 보내는 맵 사실 — 거르는 데만 쓰는 id 목록은 뺀다(토큰만 먹는다). */
-function placementForModel(placement: MapPlacementContext): Omit<MapPlacementContext, "knownItemIds"> {
-  const { knownItemIds: _known, ...rest } = placement;
+function placementForModel(placement: MapPlacementContext): Omit<MapPlacementContext, "knownItemIds" | "itemPrices"> {
+  const { knownItemIds: _known, itemPrices: _prices, ...rest } = placement;
   return rest;
 }
 
@@ -227,6 +254,15 @@ const TOOL_KO: Record<StampTool, string> = {
   place_npc: "NPC",
   place_savepoint: "세이브 포인트",
   place_examine_hotspots: "조사 지점",
+  make_villager: "상인",
+  place_storage_chest: "보관 상자",
+  place_trap: "함정",
+  place_battle_blocker: "길막 몬스터",
+  set_scene_mood: "분위기",
+  arrange_tall_grass: "키큰 풀",
+  set_start_position: "시작 위치",
+  move_event: "옮기기",
+  remove_event: "지우기",
 };
 
 /**
@@ -343,6 +379,24 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
       const role = stringArg(args.role);
       const lines = stringList(args.lines, 3);
       const body = lines.length > 0 ? lines : [`${name}: 안녕하세요.`];
+      if (args.merchant === true || Array.isArray(args.stock)) {
+        const stock = merchantStock(args.stock, facts);
+        if (stock.itemIds.length > 0) {
+          return {
+            step: {
+              tool: "make_villager",
+              label: labelText ?? `${name} 상인`,
+              ...(stock.note ? { note: stock.note } : {}),
+              args: {
+                mapId, name, home: at,
+                graphic: { query: role ?? "merchant" },
+                pages: [{ lines: body }],
+                shop: { stock: stock.itemIds.map((itemId) => ({ itemId })) },
+              },
+            },
+          };
+        }
+      }
       return {
         step: {
           tool: stampTool,
@@ -372,7 +426,156 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
       if (hotspots.length === 0) return dropped("조사 지점이 없습니다");
       return { step: { tool: stampTool, label: labelText ?? `조사 지점 ${hotspots.length}곳`, args: { mapId, hotspots } } };
     }
+    case "make_villager":
+      return dropped("상인은 place_npc merchant:true 로 보낸다");
+    case "place_storage_chest": {
+      const at = pointOrCenter(args.at, rect, target);
+      if (!at) return dropped("보관 상자 위치가 없습니다");
+      return { step: { tool: stampTool, label: labelText ?? "보관 상자", args: { mapId, x: at.x, y: at.y } } };
+    }
+    case "place_trap": {
+      const at = pointOrCenter(args.at, rect, target);
+      if (!at) return dropped("함정 위치가 없습니다");
+      const trigger = enumArg(args.trigger, ["touch", "action"] as const) ?? "touch";
+      const message = stringArg(args.message)?.slice(0, 120);
+      return { step: { tool: stampTool, label: labelText ?? "함정", args: { mapId, at, trigger, ...(message ? { message } : {}) } } };
+    }
+    case "place_battle_blocker": {
+      const troops = facts.placement?.encounterTroops ?? [];
+      if (troops.length === 0) return dropped("이 맵에 나오는 적 그룹이 없어 몬스터를 둘 수 없습니다(조우를 먼저 정하세요)");
+      const at = pointOrCenter(args.at, rect, target);
+      if (!at) return dropped("몬스터 위치가 없습니다");
+      const asked = stringArg(args.troopId);
+      const troop = troops.find((entry) => entry.id === asked) ?? troops[0]!;
+      const intro = stringList(args.intro, 2);
+      const note = asked && asked !== troop.id ? `이 맵에 없는 적 그룹 ${asked} 대신 ${troop.name}` : `이 맵 적 그룹 ${troop.name}`;
+      return { step: { tool: stampTool, label: labelText ?? `${troop.name} 길막`, note, args: { mapId, x: at.x, y: at.y, troopId: troop.id, ...(intro.length ? { intro } : {}) } } };
+    }
+    case "set_scene_mood": {
+      const weatherRaw = isRecord(args.weather) ? args.weather : args;
+      const kind = enumArg(weatherRaw.kind ?? args.kind, ["none", "rain", "storm", "snow", "fog"] as const);
+      if (!kind) return dropped("날씨 종류가 없습니다(none/rain/storm/snow/fog)");
+      const intensityRaw = typeof weatherRaw.intensity === "number" ? weatherRaw.intensity : 0.6;
+      const intensity = Math.max(0.1, Math.min(1, intensityRaw));
+      return { step: { tool: stampTool, label: labelText ?? "분위기", args: { mapId, weather: { kind, intensity }, applyMode: "map" } } };
+    }
+    case "arrange_tall_grass": {
+      if (!rect) return dropped("영역이 대상 밖입니다");
+      return { step: { tool: stampTool, label: labelText ?? "키큰 풀", args: { mapId, rect } } };
+    }
+    case "set_start_position": {
+      const at = pointOrCenter(args.at, rect, target);
+      if (!at) return dropped("시작 위치가 없습니다");
+      return { step: { tool: stampTool, label: labelText ?? "시작 위치", args: { mapId, x: at.x, y: at.y } } };
+    }
+    case "move_event":
+    case "remove_event": {
+      const eventId = stringArg(args.eventId);
+      const known = facts.placement?.existing.occupied.find((entry) => entry.id === eventId);
+      if (!eventId || !known) return dropped(`이 맵에 없는 이벤트 ${eventId ?? "(없음)"}`);
+      if (stampTool === "remove_event") {
+        return { step: { tool: stampTool, label: labelText ?? `${known.name} 지우기`, args: { mapId, eventId } } };
+      }
+      const at = clampPointToTarget(args.at, target);
+      if (!at) return dropped("옮길 위치가 없습니다");
+      return { step: { tool: stampTool, label: labelText ?? `${known.name} 옮기기`, args: { mapId, eventId, x: at.x, y: at.y } } };
+    }
   }
+}
+
+/** 상인 재고 — 실제 id 만, 값이 이 맵 상자 범위의 두 배를 넘는 것은 뺀다. 비면 이 맵 보상 후보로 채운다. */
+function merchantStock(raw: unknown, facts: StampPlanFacts): { readonly itemIds: readonly string[]; readonly note?: string } {
+  const placement = facts.placement;
+  if (!placement) return { itemIds: [] };
+  const ceiling = placement.chestGold.max * 2;
+  const asked = Array.isArray(raw) ? raw.map((entry) => (isRecord(entry) ? stringArg(entry.itemId) : stringArg(entry))).filter((id): id is string => Boolean(id)) : [];
+  const priceOf = (id: string): number | undefined => placement.itemPrices[id];
+  const kept = [...new Set(asked)].filter((id) => priceOf(id) !== undefined && priceOf(id)! <= ceiling).slice(0, 8);
+  const removed = asked.filter((id) => !kept.includes(id));
+  if (kept.length > 0) return { itemIds: kept, ...(removed.length ? { note: `재고에서 뺌: ${removed.join(", ")}(없는 id 이거나 ${ceiling}G 초과)` } : {}) };
+  const fallback = placement.rewardItems.filter((item) => item.price > 0 && item.price <= ceiling).slice(0, 4).map((item) => item.id);
+  return { itemIds: fallback, ...(fallback.length ? { note: `재고는 이 맵 보상 후보로 채움(${ceiling}G 이하)` } : {}) };
+}
+
+/** 칸에 서는 도구 — 겹침 해소 대상. set_start_position 은 이벤트가 아니라 칸만 피한다. */
+function stepPoints(step: StampStep): { readonly get: () => { x: number; y: number }[]; readonly set: (points: { x: number; y: number }[]) => StampStep } | null {
+  const args = step.args;
+  const xy = (): { x: number; y: number }[] => [{ x: args.x as number, y: args.y as number }];
+  const withXY = (points: { x: number; y: number }[]): StampStep => ({ ...step, args: { ...args, x: points[0]!.x, y: points[0]!.y } });
+  switch (step.tool) {
+    case "place_chest": case "place_npc": case "place_savepoint": case "place_storage_chest":
+    case "place_battle_blocker": case "set_start_position": case "move_event":
+      return { get: xy, set: withXY };
+    case "make_villager":
+      return { get: () => [args.home as { x: number; y: number }], set: (points) => ({ ...step, args: { ...args, home: points[0] } }) };
+    case "place_trap":
+      return { get: () => [args.at as { x: number; y: number }], set: (points) => ({ ...step, args: { ...args, at: points[0] } }) };
+    case "place_examine_hotspots": {
+      const spots = args.hotspots as { at: { x: number; y: number } }[];
+      return { get: () => spots.map((spot) => spot.at), set: (points) => ({ ...step, args: { ...args, hotspots: spots.map((spot, index) => ({ ...spot, at: points[index] })) } }) };
+    }
+    default:
+      return null;
+  }
+}
+
+export interface OverlapResult {
+  readonly steps: readonly StampStep[];
+  readonly dropped: readonly string[];
+}
+
+/**
+ * 새 이벤트가 기존 이벤트 칸·그 바로 위아래(두 칸 높이 그림)·같은 계획의 다른 새 이벤트와 겹치면
+ * 가까운 통행 가능 빈 칸으로 옮긴다(반경 6). 옮길 칸이 없으면 그 단계를 버린다.
+ * 2026-09-27 실측: 모델이 맵 한가운데 기존 표지판 칸 위에 상인을 세웠다.
+ */
+export function resolveStampOverlaps(
+  steps: readonly StampStep[],
+  facts: StampPlanFacts,
+  isLanding: (x: number, y: number) => boolean,
+): OverlapResult {
+  const occupied = facts.placement?.existing.occupied ?? [];
+  const removed = new Set(steps.filter((step) => step.tool === "remove_event").map((step) => step.args.eventId as string));
+  const moved = new Set(steps.filter((step) => step.tool === "move_event").map((step) => step.args.eventId as string));
+  const blocked = new Set<string>();
+  const block = (x: number, y: number): void => { for (const dy of [-1, 0, 1]) blocked.add(`${x},${y + dy}`); };
+  for (const entry of occupied) if (!removed.has(entry.id) && !moved.has(entry.id)) block(entry.x, entry.y);
+  const free = (x: number, y: number): boolean =>
+    x >= 0 && y >= 0 && x < facts.mapWidth && y < facts.mapHeight && !blocked.has(`${x},${y}`) && isLanding(x, y);
+  const nearest = (from: { x: number; y: number }): { x: number; y: number } | null => {
+    if (free(from.x, from.y)) return from;
+    for (let radius = 1; radius <= 6; radius++) {
+      const ring: { x: number; y: number; d: number }[] = [];
+      for (let dy = -radius; dy <= radius; dy++) for (let dx = -radius; dx <= radius; dx++) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
+        ring.push({ x: from.x + dx, y: from.y + dy, d: Math.abs(dx) + Math.abs(dy) });
+      }
+      ring.sort((a, b) => a.d - b.d || a.y - b.y || a.x - b.x);
+      const hit = ring.find((cell) => free(cell.x, cell.y));
+      if (hit) return { x: hit.x, y: hit.y };
+    }
+    return null;
+  };
+  const out: StampStep[] = [];
+  const dropped: string[] = [];
+  for (const step of steps) {
+    const points = stepPoints(step);
+    if (!points) { out.push(step); continue; }
+    const next: { x: number; y: number }[] = [];
+    const notes: string[] = [];
+    let failed = false;
+    for (const point of points.get()) {
+      const landed = nearest(point);
+      if (!landed) { failed = true; break; }
+      if (landed.x !== point.x || landed.y !== point.y) notes.push(`겹쳐서 (${point.x},${point.y})→(${landed.x},${landed.y})`);
+      if (step.tool !== "set_start_position") block(landed.x, landed.y);
+      next.push(landed);
+    }
+    if (failed) { dropped.push(`${step.label}: 근처에 겹치지 않는 빈 칸이 없습니다`); continue; }
+    const placed = points.set(next);
+    out.push(notes.length ? { ...placed, note: [step.note, ...notes].filter(Boolean).join(" · ") } : placed);
+  }
+  return { steps: out, dropped };
 }
 
 function stringList(value: unknown, limit: number): string[] {
