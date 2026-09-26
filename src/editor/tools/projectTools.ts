@@ -132,6 +132,9 @@ const setProjectSettings: ToolDefinition = {
           uiStyle: { type: "string" },
           activeSlots: { type: "integer", minimum: 1 },
           initialTroopId: { type: "string" },
+          atbMode: { type: "string", enum: ["active", "wait"], description: "gauge 흐름 전용. active = 명령 메뉴가 열려 있어도 적이 행동한다(크로노 트리거 Active). 기본 wait" },
+          atbSpeed: { type: "integer", minimum: 1, maximum: 8, description: "ATB 속도 1(빠름)~8(느림), 4 = 기존 속도" },
+          backdrop: { type: "string", enum: ["field", "default"], description: "field = 전투 배경을 주인공 주변 필드 화면으로(제자리 페이드 진입). default = 트룹/지형 배경" },
         },
         additionalProperties: false,
       },
@@ -247,6 +250,18 @@ const setProjectSettings: ToolDefinition = {
       if (battle.flow === "gauge" || battle.flow === "strict") draft.system.battleFlow = battle.flow;
       if (typeof battle.uiStyle === "string") draft.system.battleUiStyle = battle.uiStyle as BattleUiStyle;
       if (typeof battle.activeSlots === "number") draft.system.activeSlots = Math.trunc(battle.activeSlots);
+      // 기본값은 저장하지 않는다 — normalizeSystemRecords 와 같은 계약.
+      if (battle.atbMode === "active") draft.system.atbMode = "active";
+      else if (battle.atbMode === "wait") delete draft.system.atbMode;
+      if (battle.atbSpeed !== undefined) {
+        if (typeof battle.atbSpeed !== "number" || !Number.isInteger(battle.atbSpeed) || battle.atbSpeed < 1 || battle.atbSpeed > 8) {
+          throw new ToolError(`battle.atbSpeed 는 1~8 정수여야 합니다(받은 값 ${JSON.stringify(battle.atbSpeed)}).`, { code: "invalid-args" });
+        }
+        if (battle.atbSpeed === 4) delete draft.system.atbSpeed;
+        else draft.system.atbSpeed = battle.atbSpeed;
+      }
+      if (battle.backdrop === "field") draft.system.battleBackdrop = "field";
+      else if (battle.backdrop === "default") delete draft.system.battleBackdrop;
       if (typeof battle.initialTroopId === "string") {
         if (!draft.database.troops.some((troop) => troop.id === battle.initialTroopId)) throw new ToolError(`초기 적 그룹을 찾을 수 없습니다: ${battle.initialTroopId}`, { code: "troop-not-found" });
         draft.system.initialTroopId = battle.initialTroopId;

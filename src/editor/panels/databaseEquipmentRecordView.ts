@@ -70,7 +70,7 @@ export type EquipmentActorComparison = {
 };
 
 // 아이템 탭 equipmentEffectFields(databaseItemRecordView.ts)와 동일한 9종 플래그.
-const LEGACY_EFFECT_FLAG_FIELDS: readonly { readonly key: keyof ItemEquipmentEffectFlags; readonly label: string; readonly testid: string }[] = [
+const LEGACY_EFFECT_FLAG_FIELDS: readonly { readonly key: Exclude<keyof ItemEquipmentEffectFlags, "autoRevive">; readonly label: string; readonly testid: string }[] = [
   { key: "preemptive", label: "선제 공격", testid: "db-field-equipment-effect-preemptive" },
   { key: "doubleAttack", label: "2회 공격", testid: "db-field-equipment-effect-double" },
   { key: "attackAll", label: "전체 공격", testid: "db-field-equipment-effect-all" },

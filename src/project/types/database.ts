@@ -133,6 +133,8 @@ export interface ClassOptions {
 }
 
 export type BattleFlow = "gauge" | "strict";
+/** ATB 대기 방식(Chrono Trigger 설정의 Active/Wait). 생략 = wait — 명령·대상 메뉴가 열려 있는 동안 시간이 멈춘다. */
+export type BattleAtbMode = "active" | "wait";
 
 /** 전투 화면 UI 스킨 — @/battle/skins/registry 의 11-스킨 union + legacy 별칭 2종.
  *  "rm2003" 은 정면 전투 스킨의 옛 id(2026-09-03 개명 전) 이고 "classic" 은 그보다 앞선 별칭이다.
@@ -386,6 +388,8 @@ export interface ItemEquipmentEffectFlags {
   halfMpCost: boolean;
   negateTerrainDamage: boolean;
   fixedEquipment: boolean;
+  /** 전투 불능이 되면 최대 HP 의 이 %(1~100)로 한 번 일어난다(전투당 1회). 생략 = 없음. */
+  autoRevive?: number;
 }
 
 export interface EquipmentRecord {
@@ -455,6 +459,15 @@ export interface EnemyRecord {
   factionId?: string;
   stateRates: Record<string, ActorRateGrade>;
   elementRates: Record<string, ActorRateGrade>;
+  /** 반격. 피격 후 살아 있으면 skillId 를 차례 밖에서 쓴다(게이지 유지, 타격당 최대 1회). 생략 = 없음. */
+  reactions?: EnemyReaction[];
+}
+
+/** trigger: physical(공격 계열) · magic(마력 계열) · 그 밖의 문자열은 속성 id. skillId "" = 통상 공격. chance 0~100. */
+export interface EnemyReaction {
+  trigger: string;
+  skillId: SkillId;
+  chance: number;
 }
 
 export interface EnemyActionAttack {
@@ -598,6 +611,8 @@ export interface EnemyActionPattern {
   condition: EnemyActionCondition;
   switchOnAfterAction: EnemyActionSwitchEffect;
   switchOffAfterAction: EnemyActionSwitchEffect;
+  /** 이 행동을 하기 전에 전투장 좌표(트룹 members 와 같은 좌표계)로 옮겨 간다. 생략 = 제자리. */
+  moveTo?: { x: number; y: number };
 }
 
 export interface TroopMemberRecord {
@@ -678,6 +693,16 @@ export interface StateRuntimeEffects {
   defenseMultiplier?: number;
   agilityMultiplier?: number;
   removeOnBattleEnd?: boolean;
+  /** 스톱: ATB 게이지가 멈추고(gauge) 행동하지 못한다(strict). */
+  freezesGauge?: boolean;
+  /** 프로텍트: 공격(attack) 계열 피해에만 곱하는 방어 배율. */
+  physicalDefenseMultiplier?: number;
+  /** 실드: 마력(mind) 계열 피해에만 곱하는 방어 배율. */
+  magicDefenseMultiplier?: number;
+  /** 버서크: 명령 없이 무작위 상대를 통상 공격한다. */
+  forcedAction?: "attackRandom";
+  /** 이 상태인 동안 속성 등급을 덮어쓴다(속성 id → A~E). */
+  elementRates?: Record<string, ActorRateGrade>;
 }
 
 export interface BattleAnimationRecord {
@@ -1264,6 +1289,12 @@ export interface SystemRecords {
   battleEscapeSeResourceId?: string;
   initialTroopId?: TroopId;
   battleFlow?: BattleFlow;
+  /** gauge 흐름 전용. active 면 명령 메뉴가 열려 있어도 적 게이지가 차고 적이 행동한다. 생략 = wait. */
+  atbMode?: BattleAtbMode;
+  /** ATB 속도 1~8(4 = 기존 속도). 생략 = 기존 속도. */
+  atbSpeed?: number;
+  /** field 면 전투 배경이 주인공 주변 필드 화면의 스냅숏이고 진입은 제자리 페이드. 생략 = 트룹/지형 배경. */
+  battleBackdrop?: "field";
   battleUiStyle?: BattleUiStyle;
   /** ESC(X) 게임 메뉴 디자인. 생략 = workbench(작업대, 지금 화면). */
   menuUiStyle?: MenuUiStyle;

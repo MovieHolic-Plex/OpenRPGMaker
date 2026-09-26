@@ -7,6 +7,8 @@ export const BATTLE_TRANSITION_EXIT_MS = 300;
 export const BATTLE_TRANSITION_RETURN_MS = 460;
 
 export const BATTLE_TRANSITION_COVER_MS = BATTLE_TRANSITION_FLASH_MS + BATTLE_TRANSITION_CLOSE_MS;
+/** 제자리 페이드 진입의 커버 구간. 전투 UI 페이드 인은 CSS 가 이어서 그린다. */
+export const BATTLE_TRANSITION_IN_PLACE_MS = 180;
 
 export type BattleTransitionPhase = "flash" | "close" | "reveal" | "exit";
 
@@ -59,8 +61,15 @@ export function createBattleTransition(
   host: HTMLElement,
   schedule: (callback: () => void, delayMs: number) => number = (callback, delayMs) => window.setTimeout(callback, delayMs),
   field?: HTMLElement,
+  inPlace = false,
 ): BattleTransition {
   const overlay = battleTransitionOverlayNode();
+  // 제자리 페이드(system.battleBackdrop === "field"): 필드가 공간이라 화면이 빨려 들지 않고 막대도 닫지 않는다.
+  // 진입 커버는 짧게 지나고, 전투 UI 가 필드 스냅샷 위에 페이드 인한다(23-entry-exit.css).
+  if (inPlace) {
+    overlay.classList.add("battle-transition--in-place");
+    overlay.querySelector(".battle-transition-blinds")?.remove();
+  }
   const timers = new Map<number, () => void>();
   let destroyed = false;
   let lastPhase: BattleTransitionPhase | undefined;
@@ -102,6 +111,11 @@ export function createBattleTransition(
 
   return {
     async cover() {
+      if (inPlace) {
+        setPhase("close");
+        await wait(BATTLE_TRANSITION_IN_PLACE_MS);
+        return;
+      }
       setPhase("flash");
       setFieldMotion("battle-encounter-swirl");
       await wait(BATTLE_TRANSITION_FLASH_MS);
@@ -153,9 +167,10 @@ export function createSkinBattleTransition(
   transition: string | undefined,
   schedule: (callback: () => void, delayMs: number) => number = (callback, delayMs) => window.setTimeout(callback, delayMs),
   field?: HTMLElement,
+  inPlace = false,
 ): BattleTransition {
-  const skinClass = transition ? (SKIN_TRANSITION_CLASS[transition] ?? "") : "";
-  const base = createBattleTransition(host, schedule, field);
+  const skinClass = transition && !inPlace ? (SKIN_TRANSITION_CLASS[transition] ?? "") : "";
+  const base = createBattleTransition(host, schedule, inPlace ? undefined : field, inPlace);
   if (skinClass && host.lastElementChild instanceof HTMLElement) {
     const overlay = host.lastElementChild as HTMLElement;
     if (overlay.classList.contains("battle-transition-overlay")) {

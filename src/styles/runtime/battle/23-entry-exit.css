@@ -153,6 +153,23 @@
   100% { box-shadow: 0 0 0 14px transparent; opacity: 1; scale: 1; }
 }
 
+/* ---- 필드 배경 제자리 진입(system.battleBackdrop === "field") ------------------------------------------
+   배경이 방금 보던 필드 스냅샷이라 막대·소용돌이를 건너뛴다. 화면은 살짝 어두워졌다가
+   전투 UI 만 페이드 인한다 — 같은 자리에서 싸움이 시작된 것처럼 읽힌다. */
+.battle-transition-overlay.battle-transition--in-place[data-battle-transition-phase="close"] {
+  animation: battle-in-place-dim 180ms ease-out both;
+  background: rgb(5 7 12 / 0.35);
+}
+.battle-transition-overlay.battle-transition--in-place[data-battle-transition-phase="reveal"] {
+  animation: battle-transition-exit-reveal 300ms ease-out both;
+  background: rgb(5 7 12 / 0.35);
+}
+@keyframes battle-in-place-dim { from { opacity: 0; } to { opacity: 1; } }
+.battle-scene[data-battle-backdrop-kind="field"] > :not(.battle-field) {
+  animation: battle-in-place-ui 420ms ease-out both;
+}
+@keyframes battle-in-place-ui { from { opacity: 0; } to { opacity: 1; } }
+
 /* ---- 복귀: 검은 커버로 닫고, 필드가 제자리로 내려앉는다 --------------------------------------
    스킨 커버 색(정면 파랑 등)은 진입 막대에만 쓴다. 끝날 때는 항상 검정. */
 .battle-transition-overlay.battle-transition-overlay[data-battle-transition-phase="exit"] {

@@ -38,6 +38,12 @@ export interface StateBehavior {
   // 자연 회복 시작 턴 / 확률(%).
   readonly recoverNaturallyFromTurn: number;
   readonly recoverNaturallyChance: number;
+  // Chrono 계열 상태(스톱·프로텍트/실드·버서크·속성 덮어쓰기). 모두 runtimeEffects 에서만 온다.
+  readonly freezesGauge: boolean;
+  readonly physicalDefenseMultiplier: number;
+  readonly magicDefenseMultiplier: number;
+  readonly forcedAction?: "attackRandom";
+  readonly elementRates?: Readonly<Record<string, string>>;
 }
 
 // hpTurn 문자열/숫자에서 매 턴 HP 변화 비율(부호 포함)을 추출.
@@ -83,6 +89,11 @@ export function stateBehavior(record: StateRecord): StateBehavior {
     recoverWhenHitChance: resolved.recoverWhenHitChance,
     recoverNaturallyFromTurn: resolved.recoverNaturallyFromTurn,
     recoverNaturallyChance: resolved.recoverNaturallyChance,
+    freezesGauge: runtime?.freezesGauge === true,
+    physicalDefenseMultiplier: runtime?.physicalDefenseMultiplier ?? 1,
+    magicDefenseMultiplier: runtime?.magicDefenseMultiplier ?? 1,
+    ...(runtime?.forcedAction === "attackRandom" ? { forcedAction: "attackRandom" as const } : {}),
+    ...(runtime?.elementRates ? { elementRates: runtime.elementRates } : {}),
   };
 }
 
@@ -223,9 +234,12 @@ export function runStateUpkeep(project: Project, battler: MutableBattler, rng: R
   return { hpDamage, hpHealing, removedStateIds };
 }
 
-// 행동 가능 여부. 행동 불가 상태가 하나라도 있으면 false.
+// 행동 가능 여부. 행동 불가 상태(스톱 포함)가 하나라도 있으면 false.
 export function canBattlerAct(project: Project, battler: { readonly stateIds: readonly string[] }): boolean {
-  return !battler.stateIds.some((stateId) => behaviorFor(project, stateId)?.restrictsAction);
+  return !battler.stateIds.some((stateId) => {
+    const behavior = behaviorFor(project, stateId);
+    return behavior?.restrictsAction === true || behavior?.freezesGauge === true;
+  });
 }
 
 export function stateBlocksSkillUse(project: Project, battler: { readonly stateIds?: readonly string[] }): boolean {
@@ -274,4 +288,42 @@ export function agilityMultiplierForStates(project: Project, battler: { readonly
 export function defenseMultiplierForStates(project: Project, battler: { readonly stateIds: readonly string[] }): number {
   const raw = battler.stateIds.reduce((factor, stateId) => factor * (behaviorFor(project, stateId)?.defenseMultiplier ?? 1), 1);
   return clampStateMultiplier(raw);
+}
+
+/**
+ * 피해 계열(공격=물리, 마력=마법)별 방어 배율. 공용 defenseMultiplier 에 프로텍트/실드 같은 한쪽 배율을 곱한다.
+ * 한쪽 배율이 없는 상태만 있으면 defenseMultiplierForStates 와 같은 값이다(기존 동작 그대로).
+ */
+export function defenseMultiplierForStatesByKind(
+  project: Project,
+  battler: { readonly stateIds: readonly string[] },
+  kind: "attack" | "mind",
+): number {
+  const raw = battler.stateIds.reduce((factor, stateId) => {
+    const behavior = behaviorFor(project, stateId);
+    if (!behavior) return factor;
+    const split = kind === "mind" ? behavior.magicDefenseMultiplier : behavior.physicalDefenseMultiplier;
+    return factor * behavior.defenseMultiplier * split;
+  }, 1);
+  return clampStateMultiplier(raw);
+}
+
+/** 스톱: 게이지가 멈추는 상태가 하나라도 있으면 true. */
+export function gaugeFrozenByStates(project: Project, battler: { readonly stateIds: readonly string[] }): boolean {
+  return battler.stateIds.some((stateId) => behaviorFor(project, stateId)?.freezesGauge === true);
+}
+
+/** 버서크: 강제 행동 상태가 있으면 그 종류. */
+export function forcedActionForStates(project: Project, battler: { readonly stateIds: readonly string[] }): "attackRandom" | undefined {
+  return battler.stateIds.some((stateId) => behaviorFor(project, stateId)?.forcedAction === "attackRandom") ? "attackRandom" : undefined;
+}
+
+/** 활성 상태가 덮어쓰는 속성 등급. 나중에 걸린 상태가 이긴다. 없으면 undefined. */
+export function stateElementRateOverride(project: Project, battler: { readonly stateIds: readonly string[] }, elementId: string): string | undefined {
+  let grade: string | undefined;
+  for (const stateId of battler.stateIds) {
+    const override = behaviorFor(project, stateId)?.elementRates?.[elementId];
+    if (override) grade = override;
+  }
+  return grade;
 }

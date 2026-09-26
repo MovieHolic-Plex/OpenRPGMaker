@@ -262,6 +262,14 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
         { key: "color", label: "색상", type: "select", defaultValue: "white", options: SCREEN_COLOR_OPTIONS },
         { key: "value", label: "색(R,G,B 또는 hex)", type: "text", defaultValue: "" },
       ];
+    case "Move Enemy":
+      // 좌표는 트룹 members 와 같은 전투장 좌표계(x 0~320, y 0~240).
+      return [
+        { key: "target", label: "적(enemy-1 또는 적 id)", type: "text", defaultValue: "enemy-1" },
+        { key: "x", label: "X", type: "number", defaultValue: 80, min: 0, max: 320 },
+        { key: "y", label: "Y", type: "number", defaultValue: 100, min: 0, max: 240 },
+        { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 400, min: 0, max: 5000, step: 100 },
+      ];
     case "Data Query":
       return [
         { key: "query", label: "조회", type: "select", defaultValue: "gold", options: DATA_QUERY_OPTIONS },

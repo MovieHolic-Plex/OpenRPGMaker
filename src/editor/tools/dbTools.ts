@@ -451,6 +451,7 @@ const enemyActionSchema = objectSchema({
   condition: combatConditionSchema,
   switchOnAfterAction: enemyActionSwitchSchema,
   switchOffAfterAction: enemyActionSwitchSchema,
+  moveTo: objectSchema({ x: integerSchema("전투장 X 0~320"), y: integerSchema("전투장 Y 0~240") }, "이 행동 전에 이 좌표(트룹 members 좌표계)로 이동한다. 위치 범위기가 새 위치를 본다"),
 });
 const troopMemberSchema = objectSchema({ enemyId: stringSchema(), x: integerSchema(), y: integerSchema(), hidden: booleanSchema() });
 const stateRuntimeEffectsSchema = objectSchema({
@@ -462,6 +463,11 @@ const stateRuntimeEffectsSchema = objectSchema({
   defenseMultiplier: numberSchema(),
   agilityMultiplier: numberSchema(),
   removeOnBattleEnd: booleanSchema(),
+  freezesGauge: booleanSchema("스톱 — ATB 게이지가 멈추고 행동하지 못한다"),
+  physicalDefenseMultiplier: numberSchema("프로텍트 — 공격(attack) 계열 피해에만 곱하는 방어 배율(예 2 = 반감보다 단단)"),
+  magicDefenseMultiplier: numberSchema("실드 — 마력(mind) 계열 피해에만 곱하는 방어 배율"),
+  forcedAction: { type: "string", enum: ["attackRandom"], description: "버서크 — 명령 없이 무작위 상대를 통상 공격" },
+  elementRates: { ...rateMapSchema, description: "이 상태인 동안 덮어쓸 속성 등급(속성 id → A~E)" },
 });
 
 const itemRecordSchema = objectSchema({
@@ -514,6 +520,11 @@ const enemyRecordSchema = objectSchema({
   stats: enemyStatsSchema,
   rewards: enemyRewardsSchema,
   actions: arrayOf(enemyActionSchema),
+  reactions: arrayOf(objectSchema({
+    trigger: stringSchema("physical(공격 계열) | magic(마력 계열) | 속성 id"),
+    skillId: stringSchema("반격 스킬 id. 빈 문자열이면 통상 공격"),
+    chance: integerSchema("발동 확률 0~100(생략 100)"),
+  }), "반격: 피격 후 살아 있으면 차례 밖에서 skillId 를 쓴다(타격당 최대 1회, 게이지 유지). 빈 배열이면 해제"),
   stateRates: rateMapSchema,
   elementRates: rateMapSchema,
 }) as RecordSchema;
@@ -667,6 +678,7 @@ const equipmentRecordSchema = objectSchema({
     halfMpCost: booleanSchema(),
     negateTerrainDamage: booleanSchema(),
     fixedEquipment: booleanSchema(),
+    autoRevive: integerSchema("전투 불능 시 최대 HP 의 이 %(1~100)로 한 번 부활(전투당 1회). 0 이면 해제"),
   }),
   elementalDefenseIds: stringArraySchema(),
   stateDefenseIds: stringArraySchema(),
@@ -1006,6 +1018,11 @@ function rejectUnknownEnemyReferences(draft: Project, patch: unknown): void {
       if (enabled === true && typeof switchId === "string" && switchId) requestedSwitchIds.add(switchId);
     }
   }
+  const reactions = Array.isArray(record.reactions) ? record.reactions : [];
+  for (const reaction of reactions) {
+    const skillId = reaction && typeof reaction === "object" ? (reaction as { skillId?: unknown }).skillId : undefined;
+    if (typeof skillId === "string" && skillId) requestedSkillIds.add(skillId);
+  }
   const skillIds = new Set(draft.database.skills.map((skill) => skill.id));
   const missingSkills = [...requestedSkillIds].filter((skillId) => !skillIds.has(skillId));
   const hints: string[] = [];
@@ -1075,6 +1092,35 @@ function requirePositiveTp(value: unknown, label: string): void {
   }
 }
 
+/** 반격 패치 검사. trigger 는 physical/magic/실재 속성 id, chance 는 0~100. 정규화가 조용히 버리지 않게 거부한다. */
+function validateEnemyReactions(draft: Project, patch: unknown): void {
+  const reactions = patch && typeof patch === "object" ? (patch as { reactions?: unknown }).reactions : undefined;
+  if (reactions === undefined) return;
+  if (!Array.isArray(reactions)) throw new ToolError("enemy.reactions 는 배열이어야 합니다. 예: [{trigger:\"physical\", skillId:\"skill_attack\", chance:100}]", { code: "invalid-enemy-reactions" });
+  const elementIds = (draft.database.elements ?? []).map((element) => element.id);
+  reactions.forEach((raw, index) => {
+    const entry = (raw && typeof raw === "object" ? raw : {}) as { trigger?: unknown; skillId?: unknown; chance?: unknown };
+    const label = `enemy.reactions[${index}]`;
+    if (typeof entry.trigger !== "string" || !(entry.trigger === "physical" || entry.trigger === "magic" || elementIds.includes(entry.trigger))) {
+      throw new ToolError(`${label}.trigger 는 physical · magic · 속성 id 중 하나여야 합니다(받은 값 ${JSON.stringify(entry.trigger)}). 속성: ${elementIds.slice(0, 8).join(", ") || "없음"}`, { code: "invalid-enemy-reactions" });
+    }
+    if (typeof entry.skillId !== "string") throw new ToolError(`${label}.skillId(문자열, 통상 공격은 "")가 필요합니다.`, { code: "invalid-enemy-reactions" });
+    if (entry.chance !== undefined && (typeof entry.chance !== "number" || entry.chance < 0 || entry.chance > 100)) {
+      throw new ToolError(`${label}.chance 는 0~100 이어야 합니다(받은 값 ${JSON.stringify(entry.chance)}).`, { code: "invalid-enemy-reactions" });
+    }
+  });
+}
+
+/** 자동 부활은 1~100% (0 은 해제). 범위 밖은 거부한다. */
+function validateAutoRevive(patch: unknown): void {
+  const flags = patch && typeof patch === "object" ? (patch as { effectFlags?: { autoRevive?: unknown } }).effectFlags : undefined;
+  const value = flags?.autoRevive;
+  if (value === undefined) return;
+  if (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 100) {
+    throw new ToolError(`equipment.effectFlags.autoRevive 는 0~100 정수(최대 HP %, 0=해제)여야 합니다(받은 값 ${JSON.stringify(value)}).`, { code: "invalid-auto-revive" });
+  }
+}
+
 function validateActorTechPoints(patch: unknown): void {
   const learned = patch && typeof patch === "object" ? (patch as { learnedSkills?: unknown }).learnedSkills : undefined;
   if (!Array.isArray(learned)) return;
@@ -1102,6 +1148,7 @@ const upsertEnemy: ToolDefinition = {
   }),
   run(draft, args): ToolExecResult {
     validateEnemyCombatPatch(args.enemy);
+    validateEnemyReactions(draft, args.enemy);
     requirePositiveTp((args.enemy as { rewards?: { tp?: unknown } } | undefined)?.rewards?.tp, "enemy.rewards.tp");
     const merged = mergeRecord(draft.database.enemies, args.enemy, "enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임" });
     rejectUnknownEnemyReferences(draft, args.enemy);
@@ -1472,6 +1519,7 @@ const upsertEquipment: ToolDefinition = {
   mode: "write",
   parameters: parametersForRecord("equipment", equipmentRecordSchema, { id: "equip_sword", name: "철검", slot: "weapon", statBonuses: { attack: 8 } }),
   run(draft, args): ToolExecResult {
+    validateAutoRevive(args.equipment);
     const merged = mergeRecord(draft.database.equipment, args.equipment, "equipment", equipmentRecordSchema, { id: "equip_sword", name: "철검", slot: "weapon" });
     const record = normalizeEquipmentRecord(merged as Partial<EquipmentRecord> & Pick<EquipmentRecord, "id" | "name">);
     if (!hasEquipmentSlot(draft, record.slot)) throw new Error(`Unknown equipment slot: ${record.slot}`);

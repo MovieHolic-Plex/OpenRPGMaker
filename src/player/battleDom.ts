@@ -27,7 +27,7 @@ import {
   type BattleDirectorState,
 } from "@/player/battleDirectorDom";
 import { battleSkinFamily, getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
-import { applyActionMotion, battleField, battlePartyStatus, blinkBattlerNode, findBattlerNode, playCaptureCinematic, spawnHitSparks, syncBattleField, syncBattleParty, syncSceneBackdropVar } from "@/player/battleFieldDom";
+import { applyActionMotion, applyFieldBackdrop, battleField, battlePartyStatus, blinkBattlerNode, findBattlerNode, playCaptureCinematic, spawnHitSparks, syncBattleField, syncBattleParty, syncSceneBackdropVar } from "@/player/battleFieldDom";
 import { emitBattleJuice as emitContextBattleJuice, flashBattleField, playBattleCue as playContextBattleCue, preloadBattleJuiceSamples, type BattleAudioContext, type BattleJuiceEvent } from "@/player/battleJuice";
 import { ensureBattleFlashFilter } from "@/player/battleFlashFilter";
 import { applyHitIntensity, battlerMaxHp } from "@/player/battleHitIntensityDom";
@@ -53,6 +53,8 @@ export interface BattleDomOptions {
   readonly showEventChoices?: (request: BattleEventChoiceSnapshot, signal: AbortSignal) => Promise<number>;
   readonly onDestroy?: () => void;
   readonly onError?: (error: unknown) => void;
+  /** system.battleBackdrop === "field" 일 때 필드 화면 스냅샷(dataURL). 없으면 트룹/지형 배경. */
+  readonly fieldBackdropUrl?: string;
 }
 
 export interface BattleDomController {
@@ -113,6 +115,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   root.dataset.battleTransition = skin.transition;
   root.dataset.battleHud = skin.hudTemplate;
   root.dataset.battleLayout = skin.layout;
+  // Active ATB(system.atbMode) — gauge 흐름에서만 켜진다. CSS·QA 가 이 속성으로 구분한다.
+  const activeAtb = store.getCurrent().system.atbMode === "active" && options.runtime.snapshot().battleFlow === "gauge";
+  root.dataset.battleAtbMode = activeAtb ? "active" : "wait";
   // 대상 플래시가 실루엣만 물들이도록 SVG 필터 정의를 루트에 심는다(05-poses-motion.css 가 url(#…) 로 참조).
   ensureBattleFlashFilter(root);
   for (const [key, value] of Object.entries(skin.themeVars)) {
@@ -188,6 +193,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   });
   // 필드가 루트에 붙은 뒤에만 배경 변수를 비출 수 있다(battleField 생성 시점에는 부모가 없다).
   syncSceneBackdropVar(field);
+  if (options.fieldBackdropUrl) {
+    applyFieldBackdrop(field, options.fieldBackdropUrl, initialSnapshot.backdropResourceId);
+    root.dataset.battleBackdropKind = "field";
+  }
 
   function toggleAutoBattle(): void {
     autoBattle = !autoBattle;
@@ -326,6 +335,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     },
     onDirectorState(state) {
       directorState = state;
+    },
+    onTimelineEntry(entry) {
+      // 연출이 화면에 도달한 반격·부활의 흔적 — QA 와 스킨 CSS 가 읽는다.
+      if (entry.kind === "counter") root.dataset.battleCounterSeen = "true";
+      if (entry.kind === "revive") root.dataset.battleReviveSeen = "true";
     },
     onSyncView() {
       syncView();
@@ -1240,7 +1254,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     if (sequenceBusy) return;
     const before = options.runtime.snapshot();
     if (before.result) return;
-    if (before.phase !== "charging") {
+    // Active ATB: 명령·대상 메뉴가 열려 있어도 시간이 흐른다. 런타임이 적만 행동시키고 메뉴를 되돌려 준다.
+    const menuTime = activeAtb && (before.phase === "actorCommand" || before.phase === "targetSelect") && !eventSurfaceOpen;
+    if (before.phase !== "charging" && !menuTime) {
       if (before.phase === "actorCommand") syncView();
       return;
     }
@@ -1249,6 +1265,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const timelineKey = `${before.timeline.length}:${after.timeline.length}`;
     if ((after.timeline.length > before.timeline.length && timelineKey !== lastEnemyActionKey) || after.eventChoice || after.eventPause || after.result) {
       lastEnemyActionKey = timelineKey;
+      // QA 증거: 메뉴가 열린 채로 적이 행동했다(Active ATB).
+      if (menuTime) root.dataset.battleEnemyActedDuringMenu = "true";
       presentation = createPresentationLedger(before);
       sequencer.runAfterEnemyAdvance(before, after);
       return;

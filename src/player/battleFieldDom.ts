@@ -9,12 +9,13 @@ import {
   type BattlerIdleAnimation,
 } from "@/assets/battlerIdleAnimations";
 import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/runtime";
-import { POSE_FRAME } from "@/battle/battlePose";
+import { POSE_FRAME, VICTORY_POSE_FRAME } from "@/battle/battlePose";
 import { skinPartySpriteUrl } from "@/battle/partySpriteResources";
 import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
 import type { BattleSkin } from "@/battle/skins/types";
 import {
   BATTLER_PLACEMENTS,
+  resolveSkinEnemyPosition,
   resolveSkinEnemyPositions,
 } from "@/battle/battlerPlacements";
 export {
@@ -315,6 +316,12 @@ function effectiveBackdropId(resourceId: string | undefined): string | undefined
 function syncBackdrop(field: HTMLElement, resourceId: string | undefined): void {
   const backdrop = field.querySelector<HTMLElement>("[data-testid='battle-backdrop']");
   if (!backdrop) return;
+  // 필드 스냅샷 배경은 전투 이벤트가 배경을 바꾸기(changeBattleback) 전까지 유지한다.
+  if (backdrop.dataset.backdropSource === "field") {
+    if ((resourceId ?? "") === (backdrop.dataset.fieldBaseResourceId ?? "")) return;
+    delete backdrop.dataset.backdropSource;
+    delete backdrop.dataset.backdropResourceId;
+  }
   const effectiveId = effectiveBackdropId(resourceId);
   if (effectiveId && backdrop.dataset.backdropResourceId !== effectiveId) {
     backdrop.dataset.backdropResourceId = effectiveId;
@@ -322,6 +329,20 @@ function syncBackdrop(field: HTMLElement, resourceId: string | undefined): void 
     backdrop.style.backgroundImage = url ? battleBackdropImage(url) : "";
     syncSceneBackdropVar(field);
   }
+}
+
+/** 전투 배경을 필드 화면 스냅샷(system.battleBackdrop === "field")으로 갈아끼운다. 스킨 그라데이션은 얻지 않는다 —
+ *  같은 화면이 그대로 이어져야 제자리 전투로 읽힌다. baseResourceId 는 런타임이 고른 배경(바뀌면 이벤트가 바꾼 것). */
+export function applyFieldBackdrop(field: HTMLElement, url: string, baseResourceId: string | undefined): void {
+  const backdrop = field.querySelector<HTMLElement>("[data-testid='battle-backdrop']");
+  if (!backdrop) return;
+  backdrop.dataset.backdropSource = "field";
+  backdrop.dataset.fieldBaseResourceId = baseResourceId ?? "";
+  delete backdrop.dataset.backdropFallback;
+  backdrop.style.backgroundImage = `url("${url}")`;
+  backdrop.style.backgroundSize = "cover";
+  backdrop.style.backgroundPosition = "center";
+  syncSceneBackdropVar(field);
 }
 
 /** 필드의 배경 그림을 씬 루트(.battle-scene)에 `--battle-backdrop-url` 로 비춘다.
@@ -356,6 +377,11 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     if (!node) continue;
     syncEnemyNode(node, enemy, snapshot, presentation);
     const position = fitBattleEnemy(field, node, positions[index]);
+    // 옮겨진 적: 새 좌표로 미끄러지게 이동 시간을 노드에 싣는다(01-scene-base.css 의 left/top 트랜지션).
+    if (enemy.moved && node.dataset.battleMoveSequence !== String(enemy.moved.sequence)) {
+      node.dataset.battleMoveSequence = String(enemy.moved.sequence);
+      node.style.setProperty("--battle-move-ms", `${enemy.moved.durationMs}ms`);
+    }
     positionBattleNode(node, position.x, position.y);
     node.style.setProperty("--battle-depth", String(1 + Math.round(position.y / 16)));
   }
@@ -484,7 +510,9 @@ function applyBattlerPose(node: HTMLElement, pose: BattleBattlerSnapshot["pose"]
   node.classList.toggle("battle-pose-hit", pose === "hit");
   node.classList.toggle("battle-pose-defend", pose === "defend");
   node.classList.toggle("battle-pose-dead", pose === "dead");
+  node.classList.toggle("battle-pose-victory", pose === "victory");
   const sprite = node.querySelector<HTMLElement>(".battle-actor-sprite, .battle-enemy-image, .battle-actor-image");
+  if (pose !== "victory") delete node.dataset.battlePoseFrame;
   if (sprite?.classList.contains("battle-actor-sprite")) {
     // 생성 전투 시트는 5포즈가 (열, 행) 좌표를 갖는다 — POSE_FRAME 이 정본이다.
     // 2026-08-29 까지는 X 만 움직여 defend 가 idle 칸을, dead 가 hit 칸을 돌려 썼다.
@@ -501,7 +529,7 @@ function applyBattlerPose(node: HTMLElement, pose: BattleBattlerSnapshot["pose"]
       return;
     }
     clearIdleAnimationOnSheetSprite(sprite);
-    const frame = POSE_FRAME[pose] ?? POSE_FRAME.idle;
+    const frame = pose === "victory" ? victoryFrameFor(node, sprite) : POSE_FRAME[pose] ?? POSE_FRAME.idle;
     // 0 에는 음수 부호를 붙이지 않는다 — CSSOM 이 "-0px" 를 "0px" 로 정규화하므로 그대로 두면
     // 우리가 쓴 값과 읽히는 값이 달라진다(실측: happy-dom).
     const offset = (value: number) => (value === 0 ? "0px" : `-${value}px`);
@@ -510,6 +538,46 @@ function applyBattlerPose(node: HTMLElement, pose: BattleBattlerSnapshot["pose"]
 }
 
 const POP_SCALE: Readonly<Record<string, number>> = { graze: 0.85, normal: 1, heavy: 1.3, crushing: 1.6 };
+
+/**
+ * 승리 칸(VICTORY_POSE_FRAME)이 그려져 있으면 그 칸, 비었거나 아직 모르면 idle 칸.
+ * 기존 생성 시트는 승리 칸이 비어 있다(heroBattleSheetContract) — 빈 칸을 그리면 배틀러가 사라진다.
+ * 판정은 시트 URL 당 한 번 실측하고, 결과는 data-battle-pose-frame(victory|idle)에 남는다.
+ */
+function victoryFrameFor(node: HTMLElement, sprite: HTMLElement): { readonly col: number; readonly row: number } {
+  const url = sprite.dataset.battlerSheetUrl;
+  const known = url ? victoryCellDrawn.get(url) : false;
+  node.dataset.battlePoseFrame = known === true ? "victory" : "idle";
+  if (url && known === undefined) {
+    victoryCellDrawn.set(url, false);
+    void measureVictoryCell(url, Number(sprite.dataset.battlerSheetCell) || BATTLE_SHEET_CELL).then((drawn) => {
+      victoryCellDrawn.set(url, drawn);
+      if (drawn && node.isConnected && node.dataset.battlePose === "victory") applyBattlerPose(node, "victory");
+    });
+  }
+  return known === true ? VICTORY_POSE_FRAME : POSE_FRAME.idle;
+}
+
+const victoryCellDrawn = new Map<string, boolean>();
+
+async function measureVictoryCell(url: string, cell: number): Promise<boolean> {
+  try {
+    const image = new Image();
+    image.src = url;
+    await image.decode();
+    const canvas = document.createElement("canvas");
+    canvas.width = cell;
+    canvas.height = cell;
+    const context = canvas.getContext("2d");
+    if (!context) return false;
+    context.drawImage(image, VICTORY_POSE_FRAME.col * cell, VICTORY_POSE_FRAME.row * cell, cell, cell, 0, 0, cell, cell);
+    const alpha = context.getImageData(0, 0, cell, cell).data;
+    for (let index = 3; index < alpha.length; index += 4) if (alpha[index] > 16) return true;
+    return false;
+  } catch {
+    return false;
+  }
+}
 
 function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void {
   const layer = field.querySelector<HTMLElement>(".battle-effects-layer")
@@ -645,11 +713,17 @@ function resolveEnemyRowPositions(
   const skinId = activeSkin().id;
   const autoAlign =
     store.getCurrent().database.troops.find((troop) => troop.id === snapshot.troopId)?.autoAlign ?? true;
-  return resolveSkinEnemyPositions(
+  const positions = resolveSkinEnemyPositions(
     skinId,
     enemies.map((enemy) => ({ x: enemy.authoredX, y: enemy.authoredY })),
     autoAlign,
   );
+  // 전투 중 옮겨진 적은 자동 진형·충돌 회피를 건너뛰고 옮긴 좌표에 선다 — 위치 범위기가 보는 좌표와 같아야 한다.
+  return positions.map((position, index) => {
+    const enemy = enemies[index];
+    if (!enemy?.moved) return position;
+    return resolveSkinEnemyPosition(skinId, { x: enemy.authoredX, y: enemy.authoredY }, index, enemies.length, false);
+  });
 }
 
 function enemyButton(

@@ -13,8 +13,10 @@ export function nextReadyBattler(
   hasteMultiplier = 1,
   battlerMultiplier: BattlerRateMultiplier = () => 1
 ): ReadyBattler | undefined {
-  const readyActors = actors.filter((entry) => entry.hp > 0).map((battler) => readyActor(battler, hasteMultiplier * battlerMultiplier(battler)));
-  const readyEnemies = enemies.filter((entry) => entry.hp > 0).map((battler) => readyEnemy(battler, hasteMultiplier * battlerMultiplier(battler)));
+  // 배율 0 은 스톱(게이지 정지)이다 — 게이지가 차 있어도 차례가 오지 않는다.
+  const live = (entry: MutableBattler): boolean => entry.hp > 0 && battlerMultiplier(entry) > 0;
+  const readyActors = actors.filter(live).map((battler) => readyActor(battler, hasteMultiplier * battlerMultiplier(battler)));
+  const readyEnemies = enemies.filter(live).map((battler) => readyEnemy(battler, hasteMultiplier * battlerMultiplier(battler)));
   const ordered = [...readyActors, ...readyEnemies].sort((left, right) => {
     const delta = left.timeMs - right.timeMs;
     if (delta !== 0) return delta;

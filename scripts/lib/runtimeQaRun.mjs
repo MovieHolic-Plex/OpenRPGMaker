@@ -398,6 +398,32 @@ async function applyOp(page, op, runState) {
         { timeout: op.timeoutMs ?? 30_000 },
       );
       return;
+    case "repeatUntil": {
+      // 하위 op 묶음을 조건이 설 때까지 되풀이한다(예: 적이 쓰러질 때까지 공격). 매 회 전에 조건을 본다.
+      const max = op.maxRounds ?? 8;
+      for (let round = 0; round < max; round += 1) {
+        if (await testidMatches(page, op)) return;
+        for (const inner of op.ops) {
+          try { await applyOp(page, inner, runState); } catch (error) {
+            if (await testidMatches(page, op)) return;
+            throw error;
+          }
+        }
+      }
+      if (!(await testidMatches(page, op))) throw new Error(`repeatUntil: ${max}회 뒤에도 ${op.testid} 가 ${op.state} 가 되지 않았다`);
+      return;
+    }
+    case "waitForStyleVar":
+      // 인라인 CSS 사용자 속성(예: --battle-node-x) 값 대기 — 렌더된 위치를 좌표계 그대로 단정한다.
+      await page.waitForFunction(
+        ([testid, prop, value]) => {
+          const node = document.querySelector(`[data-testid="${testid}"]`);
+          return node instanceof HTMLElement && node.style.getPropertyValue(prop).trim() === value;
+        },
+        [op.testid, op.prop, op.value],
+        { timeout: op.timeoutMs ?? 30_000 },
+      );
+      return;
     case "pressUntil": {
       // 매 입력 후 조건을 확인하므로 초과 입력이 구조적으로 불가능하다.
       // 정해진 횟수만 누르면 대사가 닫힌 뒤 남은 입력이 이벤트를 재발동시킨다.

@@ -122,6 +122,8 @@ export type BattleEventRuntimeOptions = {
   readonly state: BattleEventRuntimeState;
   readonly revealEnemy?: (target: string) => void;
   readonly changeBattleback?: (resourceId: string) => void;
+  // moveEnemy(m2-218): 적을 전투장 좌표로 옮긴다. 옮겨졌으면 true.
+  readonly moveEnemy?: (target: string, x: number, y: number, durationMs: number) => boolean;
   // m2-103 Show Animation: 런타임 lastAnimation 세팅을 위한 콜백.
   readonly showBattleAnimation?: (target: string, animationId: string) => void;
   // m2-105 Abort Battle: 전투 즉시 중단(런타임이 result/phase 갱신).
@@ -756,6 +758,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
           context,
           revealEnemy: options.revealEnemy,
           changeBattleback: options.changeBattleback,
+          moveEnemy: options.moveEnemy,
           addExtraActorAction,
           showBattleAnimation: options.showBattleAnimation,
           abortBattle: options.abortBattle,
