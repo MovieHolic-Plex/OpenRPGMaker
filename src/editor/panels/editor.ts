@@ -139,7 +139,6 @@ let authoringJourneyRoot: HTMLElement | null = null;
 let persistenceBannerHost: HTMLElement | null = null;
 let authoringJourneyOpen = false;
 let authoringJourneyReferenceIssues: readonly string[] | null = null;
-let projectExportNode: HTMLElement | null = null;
 let unsubStore: (() => void) | null = null;
 let unsubEditor: (() => void) | null = null;
 let lastEditorPanelState = editorState.get();
@@ -507,7 +506,6 @@ export function teardownEditor(): void {
   persistenceBannerHost = null;
   authoringJourneyOpen = false;
   authoringJourneyReferenceIssues = null;
-  projectExportNode = null;
   projectExportMirror.clear();
   document.body.classList.remove("ai-chat-dock-float", "editor-ui-beginner", "editor-ui-standard", "editor-ui-expert");
 }
@@ -634,7 +632,6 @@ function projectExportNodeElement(): HTMLElement {
     ),
     set: () => {},
   });
-  projectExportNode = node;
   return node;
 }
 
