@@ -16,7 +16,21 @@ def door(m, name, x, y, fw=32, fh=64):
 
 S = 'ST-Convi-I01.png'
 m = Map('m35_konbini', '편의점 내부', 16, 12, 'interior', '냉장 진열·계산대·ATM·잡지대·과자 선반, 계산대 위 도시락/컵라면')
-room(m, S, (17, 25), tile(S, 1), doors=(7, 8))
+# L-shaped shop: staff backroom notch in the NE corner (ceiling mass) pushes the east wall down,
+# windbreak vestibule jutting south at the entrance.
+rows = ['################',
+        '#..............#',
+        '#..............#',
+        '#..............#',
+        '#..............#',
+        '#..............#',
+        '#..............#',
+        '#..............#',
+        '#..............#',
+        '####...........#',
+        '####.........###',
+        '#######DD#######']
+m.layout(rows, {'.': tile(S, 1)}, CEIL, [tile(S, 17), tile(S, 25)])
 m.fill(7, 10, 2, 1, auto('SA-FloorM01.png'))           # entrance mat
 m.recipe(S, 'conveni-rice-meals', 1, 2)
 m.recipe(S, 'conveni-desserts', 3, 2)
@@ -34,6 +48,6 @@ m.recipe(S, 'conveni-dry-goods', 8, 6)
 m.recipe(S, 'conveni-magazines', 12, 6)
 m.recipe(S, 'conveni-snacks', 4, 9)
 m.recipe(S, 'conveni-cosmetics', 10, 9)
-m.recipe(S, 'conveni-basket', 14, 10)
+m.recipe(S, 'conveni-basket', 13, 9)
 m.fill(1, 8, 4, 1, auto('SA-FloorS01.png'))          # staff mat behind the counter
 m.save()

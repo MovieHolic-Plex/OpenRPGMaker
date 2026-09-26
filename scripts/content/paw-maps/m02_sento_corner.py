@@ -192,14 +192,23 @@ def finish(m):
     m.save()
 # ---- end helpers ----
 
-m = Map('m02_sento_corner', '목욕탕 골목 모퉁이', 34, 24, 'exterior', '宝湯 목욕탕이 두 골목이 만나는 모퉁이에 선다. 서쪽 주택·목조 상가, 동쪽 여관, 남쪽 수로와 목욕탕 자전거 자리.')
+m = Map('m02_sento_corner', '목욕탕 골목 모퉁이', 34, 24, 'exterior', '宝湯 목욕탕이 두 골목이 만나는 모퉁이에 선다. 서쪽 주택·목조 상가, 동쪽 여관, 남쪽은 굽어 흐르는 수로와 목욕탕 자전거 자리.')
+def blob(rows, x0, y0): return [(x0 + dx, y0 + dy) for dy, r in enumerate(rows) for dx, c in enumerate(r) if c == 'x']
 m.fill(0, 0, 34, 24, auto('SA-GroundG03.png'))           # sandy yards
 m.fill(0, 13, 34, 1, auto('SA-Concrete02.png'))          # north sidewalk
 m.fill(0, 17, 34, 1, auto('SA-Concrete02.png'))          # south sidewalk
 m.fill(0, 14, 34, 3, auto('SA-Asphalt02.png'))           # E-W lane
 m.fill(14, 0, 3, 24, auto('SA-Asphalt02.png'))           # N-S lane
+m.cells([(13, 13), (17, 13), (13, 17), (17, 17)], auto('SA-Asphalt02.png'))   # cut kerb corners at the crossing
 m.fill(17, 18, 17, 6, auto('SA-GrassE03.png'))           # canal bank
-m.fill(0, 18, 14, 6, auto('SA-Concrete03.png'))          # sento bicycle yard
+# sento bicycle yard: concrete apron with a chamfered corner, sand left where the yard runs out
+m.cells(blob(['xxxxxxxxxxxxx',
+              'xxxxxxxxxxxxx',
+              'xxxxxxxxxxxxx',
+              '.xxxxxxxxxxx.',
+              '..xxxxxxxx...',
+              '...xxxxxx....'], 0, 18), auto('SA-Concrete03.png'))
+m.cells(blob(['x..', 'xx.', 'xxx'], 0, 21) + [(10, 22), (11, 22), (12, 22), (10, 23), (11, 23), (12, 23), (11, 21), (12, 21)], auto('SA-GrassE03.png'))
 # ---- north block
 pine(m, 0, 0, 'pine-a'); pine(m, 11, 0, 'pine-b')
 jhouse(m, 1, 3, 2, 'nw-house', roof='light', front='plaster')          # genkan approach (3,13)
@@ -211,17 +220,21 @@ rtown(m, 27, 5, 'inn', sh=SE, roof='dark', front='paper', awning=False, fire=Fal
 R(m, SE, 4, 47, 2, 1, 28, 9, False)                                    # 月光館 sign on the inn wall under the eave
 rec(m, SE, 'retro-sento-bamboo', 33, 10, 'bamboo')
 R(m, 'yukiyanagi.png', 0, 0, 2, 2, 26, 0, 'shrub')
-# ---- lane furniture
-pole(m, 0, 13); pole(m, 20, 17); pole(m, 31, 17)
-# ---- south: sento bicycle yard (west), canal (east)
+# ---- lane furniture: whole streetlamps standing on the sidewalks
+loose(m, 'streetlamp.png', 2, 0, 10, 'lamp-nw'); loose(m, 'streetlamp.png', 2, 20, 14, 'lamp-s1'); loose(m, 'streetlamp.png', 2, 31, 14, 'lamp-s2')
+# ---- south-west: sento bicycle yard
 rec(m, CV, 'vending-red', 1, 18, 'vending')
-R(m, 'gomi.png', 0, 0, 2, 3, 11, 18, 'gomi')
-loose(m, 'bicycle01.png', 0, 4, 19, 'b1'); loose(m, 'bicycle01.png', 3, 5, 19, 'b2'); loose(m, 'bicycle01.png', 6, 7, 19, 'b3')
-loose(m, 'bicycle02.png', 2, 5, 22, 'b4')
-m.fill(18, 20, 16, 3, auto('SA-Ditch02.png'))            # canal (animated ditch, frame 0)
-for i, x in enumerate(range(18, 34)):
-    t = 32 if i == 0 else (33 if i % 2 else 34)
-    T1(m, 'guardrail.png', t, x, 19, 'rail-n')
-for x in range(18, 34): claim(m, x, 20, 1, 3, 'canal')
-R(m, 'suiren.png', 0, 0, 2, 2, 24, 20, False)
+R(m, 'gomi.png', 0, 0, 2, 3, 10, 18, 'gomi')
+loose(m, 'bicycle01.png', 0, 4, 18, 'b1'); loose(m, 'bicycle01.png', 3, 5, 19, 'b2'); loose(m, 'bicycle01.png', 6, 7, 18, 'b3')
+loose(m, 'bicycle02.png', 2, 4, 21, 'b4')
+# ---- south-east: canal bends from the east edge down to the south edge, width 2-3
+canal = blob(['.........xxxxxxx',
+              '....xxxxxxxxxxxx',
+              '.xxxxxxxxxxxxxx.',
+              'xxxxxxx.........',
+              'xxxx............'], 18, 19)
+m.cells(canal, auto('SA-Ditch02.png'))
+for c in canal: claim(m, c[0], c[1], 1, 1, 'canal')
+for i_, x in enumerate(range(18, 34)): T1(m, 'guardrail.png', 32 if i_ == 0 else (33 if i_ % 2 else 34), x, 18, 'rail-n')
+R(m, 'suiren.png', 0, 0, 2, 2, 27, 20, False)
 finish(m)

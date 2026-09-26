@@ -192,44 +192,105 @@ def finish(m):
     m.save()
 # ---- end helpers ----
 
-m = Map('m13_riverside_festival', '강변 계절 축제', 44, 30, 'exterior', '벚꽃 둑길의 봄꽃놀이 자리와 여름 칠석 장식·빙수 가게 노점이 강을 따라 늘어선다. 북쪽 돌담 너머 창고 줄, 남쪽 강.')
+def brush(pts, w=2):
+    """cells swept by a w x w brush along a polyline (winding paths; autotiles join on any cell set)"""
+    out = set()
+    for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+        n = max(abs(x1 - x0), abs(y1 - y0), 1)
+        for i in range(n + 1):
+            cx, cy = round(x0 + (x1 - x0) * i / n), round(y0 + (y1 - y0) * i / n)
+            out |= {(cx + a, cy + b) for a in range(w) for b in range(w)}
+    return {(x, y) for x, y in out if 0 <= x < 44 and 0 <= y < 30}
+KEEP = set()                                   # path / water cells no object may stand on
+def ok(x, y, w, h): assert not any((xx, yy) in KEEP for xx in range(x, x + w) for yy in range(y, y + h)), ('on path/water', x, y)
+
+m = Map('m13_riverside_festival', '강변 계절 축제', 44, 30, 'exterior', '벚꽃 둑길의 봄꽃놀이 자리와 여름 칠석 장식·빙수 가게 노점이 굽은 산책길을 따라 엇갈려 선다. 북쪽 돌담 너머 크기가 제각각인 창고들, 남쪽은 모래톱이 있는 굽이치는 강.')
 m.fill(0, 0, 44, 30, auto('SA-GrassE02.png'))
-m.fill(0, 0, 44, 6, auto('SA-DSRoad01.png'))                        # old stone-paved back street
-m.fill(0, 9, 44, 3, auto('SA-SRoad02.png'))                         # festival promenade on the bank
-m.fill(0, 19, 44, 2, auto('SA-SRoad01.png'))                        # lower riverside path
-m.fill(0, 21, 44, 1, auto('SA-GroundG04.png'))                      # sandy shore
-m.fill(0, 22, 44, 8, auto('SA-GroundG05.png'))                      # river bed
-m.fill(0, 23, 44, 7, auto('SA-Pool01.png'), 'up'); claim(m, 0, 23, 44, 7, 'river')
-m.fill(2, 13, 40, 5, auto('SA-Ground01.png'), 'up')                 # worn grass on the hanami lawn
-# ---- north: storehouse row behind a stone fence, dark doorways (Dway backdrops) in open booths
-for i, (x, dw) in enumerate(((1, 'SA-DwayA01.png'), (9, 'SA-DwayB01.png'), (17, 'SA-DwayC01.png'), (25, 'SA-DwayD01.png'), (33, 'SA-DwayA02.png'))):
-    w = 6 if i < 4 else 8
-    claim(m, x, 0, w, 5, f'kura{i}')
-    m.fill(x, 0, w, 2, auto('SA-WallA01.png' if i % 2 == 0 else 'SA-WallA02.png'), 'up')  # flat dark roof mass
-    for dx in range(w):
-        m.put(x + dx, 2, tile(RT, 232 if dx == 0 else 234 if dx == w - 1 else 233)); m.put(x + dx, 3, tile(RT, 240 if dx == 0 else 242 if dx == w - 1 else 241))
-        m.put(x + dx, 4, tile(RT, 240 if dx == 0 else 242 if dx == w - 1 else 241))
-    m.fill(x + 2, 3, 2, 2, auto(dw), 'up')                            # open doorway
-m.cells([(x, 7) for x in range(44) if x not in (7, 8, 23, 24, 39, 40)], auto('SA-StFence01.png'))
+# ---- river: per-column north water line (bend + jogs), south bank only on the narrow east reach, sandbar in the wide west reach
+TOP = {}
+for a, b, t in ((0, 5, 23), (6, 11, 22), (12, 19, 21), (20, 26, 22), (27, 33, 24), (34, 43, 23)):
+    for x in range(a, b + 1): TOP[x] = t
+BOT = {}                                                             # last water row: south bank swings in and out, west reach runs off the edge
+for a, b, t in ((13, 16, 27), (17, 22, 26), (23, 27, 27), (28, 31, 26), (32, 36, 26), (37, 43, 27)):
+    for x in range(a, b + 1): BOT[x] = t
+BAR = {(x, y) for y, (a, b) in {25: (5, 8), 26: (3, 9), 27: (4, 8)}.items() for x in range(a, b + 1)}   # sandbar core
+BARRIM = {(x + i, y + j) for x, y in BAR for i in (-1, 0, 1) for j in (-1, 0, 1)} - BAR                # exposed mud around it
+water, bed, shore, sbank = set(), set(), set(), set()
 for x in range(44):
-    if x not in (7, 8, 23, 24, 39, 40): claim(m, x, 7, 1, 1, 'stfence')
-# ---- promenade stalls (y8..10 against the fence line) and summer decorations
-m.fill(0, 8, 44, 1, auto('SA-GrassE02.png'))
-loose(m, 'kakigooriya.png', 5, 10, 8, 'kakigoori-stand')          # 3x3
-loose(m, 'kakigooriya.png', 2, 13, 8, 'kakigoori-sign')
-R(m, 'kingyocho.png', 0, 0, 1, 1, 14, 9, 'kingyo')
-claim(m, 18, 8, 4, 5, 'tanabata'); m.image('tanabata.png', 18, 8, None)
-loose(m, 'flag.png', 0, 30, 9, 'flag')
-R(m, 'nastu1.png', 0, 1, 2, 1, 33, 10, 'summer-props')
-# ---- hanami lawn: cherry trees on the bank, parasol + red benches, sweets
-loose(m, 'sakura.png', 0, 1, 12, 'sakura-1'); loose(m, 'sakura2.png', 0, 36, 12, 'sakura-2')
-loose(m, 'hanami.png', 0, 10, 13, 'parasol'); loose(m, 'hanami.png', 1, 16, 14, 'red-bench')
-R(m, 'hanami.png', 3, 2, 1, 1, 20, 16, 'tea'); R(m, 'hanami.png', 4, 2, 1, 1, 21, 16, 'sweets')
-loose(m, 'sakura.png', 0, 24, 12, 'sakura-3')
-loose(m, 'ume.png', 0, 31, 13, 'ume')
-# ---- riverside path: fishing guardrail, lantern, jizo by the steps
-for i, x in enumerate(range(0, 44)):
-    if 20 <= x <= 22: continue
-    T1(m, 'guardrail.png', 32 + (0 if x in (0, 23) else 3 if x in (19, 43) else 1 + x % 2), x, 21, 'rail')
-R(m, 'suiren.png', 0, 0, 2, 2, 8, 25, False); R(m, 'suiren.png', 0, 0, 2, 2, 33, 26, False)
+    t, b = TOP[x], BOT.get(x, 29)
+    shore.add((x, t - 2)); bed.add((x, t - 1))
+    for y in range(t, b + 1): (bed if (x, y) in BARRIM else water).add((x, y)) if (x, y) not in BAR else None
+    if x in BOT: bed.add((x, b + 1)); sbank |= {(x, y) for y in range(b + 2, 30)}
+path = set()                                                          # lower riverside path hugging the bank, widening at each jog
+for x in range(44):
+    lo_ = min(TOP[xx] for xx in (x - 1, x, x + 1) if xx in TOP) - 4; hi = max(TOP[xx] for xx in (x - 1, x, x + 1) if xx in TOP) - 3
+    path |= {(x, y) for y in range(lo_, hi + 1)}
+path -= shore | bed | water
+m.cells(path, auto('SA-SRoad01.png'))
+m.cells(shore | BAR | {c for c in sbank if c[1] == min(y for (xx, y) in sbank if xx == c[0])}, auto('SA-GroundG04.png'))
+m.cells(bed | water, auto('SA-GroundG05.png'))
+m.cells(water, auto('SA-Pool01.png'), 'up')
+for x, y in water: claim(m, x, y, 1, 1, 'river')
+KEEP |= path | water | bed
+# ---- north: back street and five storehouses of different width, roof height and setback (roof mass always over its wall face)
+street = {(x, y) for x in range(44) for y in range(6)}
+KURA = ((1, 6, 0, 2, 2, 'SA-DwayA01.png', 'SA-WallA01.png'), (9, 5, 1, 2, 1, 'SA-DwayB01.png', 'SA-WallA02.png'),
+        (15, 7, 0, 3, 3, 'SA-DwayC01.png', 'SA-WallA02.png'), (25, 6, 0, 2, 1, 'SA-DwayD01.png', 'SA-WallA01.png'),
+        (33, 8, 1, 2, 4, 'SA-DwayA02.png', 'SA-WallA01.png'))
+for x, w, y0, rh, door, dw, roof in KURA:
+    fy = y0 + rh + 2                                                   # front (lowest) wall row
+    if fy >= 5: street |= {(x + door + i, fy + 1) for i in range(2)}   # forecourt in front of a set-forward door
+m.cells(street, auto('SA-DSRoad01.png'))
+for i, (x, w, y0, rh, door, dw, roof) in enumerate(KURA):
+    claim(m, x, y0, w, rh + 3, f'kura{i}')
+    m.fill(x, y0, w, rh, auto(roof), 'up')                            # dark roof mass
+    wy = y0 + rh
+    for dx in range(w):
+        k = 0 if dx == 0 else 2 if dx == w - 1 else 1
+        m.put(x + dx, wy, tile(RT, 232 + k)); m.put(x + dx, wy + 1, tile(RT, 240 + k)); m.put(x + dx, wy + 2, tile(RT, 240 + k))
+    m.fill(x + door, wy + 1, 2, 2, auto(dw), 'up')                    # open doorway
+GAPS = (7, 8, 23, 24, 41, 42)
+m.cells([(x, 7) for x in range(44) if x not in GAPS], auto('SA-StFence01.png'))
+for x in range(44):
+    if x not in GAPS: claim(m, x, 7, 1, 1, 'stfence')
+# ---- festival promenade: winding stone walk, stalls staggered on both sides
+prom = brush([(0, 10), (5, 10), (8, 9), (13, 9), (16, 11), (22, 11), (25, 10), (30, 10), (33, 12), (38, 12), (41, 10), (43, 10)])
+prom |= brush([(7, 7), (7, 9)]) | brush([(23, 7), (23, 11)]) | brush([(41, 7), (41, 10)])       # through the fence gaps
+prom |= brush([(19, 12), (18, 15), (17, 17)]) | brush([(36, 13), (37, 16), (38, 18)])           # down to the riverside path
+prom -= KEEP; m.cells(prom - {(x, 7) for x in GAPS}, auto('SA-SRoad02.png')); m.cells({(x, 7) for x in GAPS}, auto('SA-SRoad02.png'))
+KEEP |= prom
+lawn = {(x, y) for y, (a, b) in {12: (8, 13), 13: (3, 15), 14: (2, 16), 15: (4, 15), 16: (6, 12), 17: (7, 10)}.items() for x in range(a, b + 1)}
+lawn |= {(x, y) for y, (a, b) in {14: (25, 31), 15: (23, 33), 16: (24, 34), 17: (26, 32)}.items() for x in range(a, b + 1)}
+m.cells(lawn - KEEP, auto('SA-Ground01.png'), 'up')                   # worn grass where the hanami mats go
+def L(fn, i, x, y, w, h, name): ok(x, y, w, h); loose(m, fn, i, x, y, name)
+def Rk(sh, sx, sy, w, h, x, y, name): ok(x, y, w, h); R(m, sh, sx, sy, w, h, x, y, name)
+def img(x, y, w, h, box, name): ok(x, y, w, h); claim(m, x, y, w, h, name); m.image('tanabata.png', x, y, box)
+# stalls and decorations alternate sides of the winding walk (whole bamboo pieces only; the sheet's loose confetti bits are left out)
+Rk('kingyocho.png', 0, 0, 1, 1, 14, 8, 'kingyo')                      # north side
+img(17, 8, 2, 3, (0, 0, 64, 80), 'tanabata-a')
+L('kakigooriya.png', 5, 9, 11, 3, 3, 'kakigoori-stand')              # south side, set back from the walk
+L('kakigooriya.png', 2, 12, 12, 1, 1, 'kakigoori-sign')
+img(21, 13, 2, 3, (64, 80, 128, 160), 'tanabata-b')
+L('flag.png', 0, 31, 8, 3, 2, 'flag')
+Rk('nastu1.png', 0, 1, 2, 1, 39, 14, 'summer-props')
+# hanami lawn: cherry trees on the bank, parasol + red bench on worn grass, sweets
+L('sakura.png', 0, 0, 12, 6, 6, 'sakura-1'); L('sakura2.png', 0, 25, 12, 6, 6, 'sakura-2')
+L('hanami.png', 0, 6, 14, 3, 3, 'parasol'); L('hanami.png', 1, 12, 14, 3, 3, 'red-bench')
+Rk('hanami.png', 3, 2, 1, 1, 9, 16, 'tea'); Rk('hanami.png', 4, 2, 1, 1, 10, 16, 'sweets')
+L('ume.png', 0, 31, 14, 3, 3, 'ume')
+# ---- riverside guardrail: one railed segment per straight run of shore, gaps at the jogs and at the fishing steps
+runs, cur = [], []
+for x in range(44):
+    if cur and (TOP[x] != TOP[cur[-1]] or x in (16, 17)): runs.append(cur); cur = []
+    if x not in (16, 17): cur.append(x)
+runs.append(cur)
+for r in runs:
+    r = [x for x in r if (x - 1 in r or x + 1 in r)]
+    if len(r) < 2: continue
+    for x in r:
+        t = 32 if x == r[0] else 35 if x == r[-1] else 33 + x % 2
+        T1(m, 'guardrail.png', t, x, TOP[x] - 2, 'rail')
+for x, y in ((14, 24), (33, 25)):
+    assert all((x + i, y + j) in water for i in (0, 1) for j in (0, 1)), ('lily off water', x, y)
+    R(m, 'suiren.png', 0, 0, 2, 2, x, y, False)
 finish(m)

@@ -194,32 +194,84 @@ def finish(m):
 
 V = 'p'; SH = 'ST-MsionP-E01.png'
 def mx(rid, x, y, name=None): rec(m, SH, f'msex-p-' + rid, x, y, name or f'{rid}@{x},{y}')
-m = Map('m04_mansion_p_teagarden', '양관 P 차 정원', 36, 26, 'exterior', '분홍 양관. 돌담 안쪽 동쪽 차 정원(원형 탁자와 찻잔), 서쪽 벽돌 장미 화단, 남쪽 꽃밭.')
+def blob(rows, x0, y0): return [(x0 + dx, y0 + dy) for dy, r in enumerate(rows) for dx, c in enumerate(r) if c == 'x']
+m = Map('m04_mansion_p_teagarden', '양관 P 차 정원', 36, 26, 'exterior', '분홍 양관. 모서리를 꺾은 돌담과 남쪽 대문, 대문에서 현관까지 굽은 길. 동쪽 ㄱ자 잔디의 차 정원, 서쪽 벽돌 장미 화단 무리, 남서 꽃밭.')
 m.fill(0, 0, 36, 26, auto('SA-GroundG01.png'))
-# hedge ring with a south gate gap (x16..18)
-for x in range(36):
-    for y in (0, 25):
-        if y == 25 and 16 <= x <= 18: continue
-        m.cells([(x, y)], auto('SA-StFence01.png')); claim(m, x, y, 1, 1, 'hedge')
-for y in range(1, 25):
-    for x in (0, 35): m.cells([(x, y)], auto('SA-StFence01.png')); claim(m, x, y, 1, 1, 'hedge')
-# paths: gate -> porch, and an east-west garden walk
-m.fill(16, 11, 3, 15, auto('SA-GRoad01.png'))
-m.fill(3, 17, 30, 2, auto('SA-GRoad01.png'))
-comp(m, 'msex-p-whole-house', 14, 1, 'house')          # 7x10, porch (17,10) -> approach (17,11)
-
-# P: tea garden east of the house, stone lanterns replaced by pedestals; roses along the fence
-comp(m, 'msex-p-tea-table-cups', 26, 6, 'tea')
-mx('tea-stool', 25, 8, 'stool-l'); mx('tea-stool', 28, 8, 'stool-r')
-mx('bench-front', 26, 2, 'bench-n')
-m.fill(23, 11, 11, 1, auto('SA-GRoad01.png'))
-mx('topiary-round', 2, 2, 'rnd-1'); mx('topiary-round', 5, 4, 'rnd-2'); mx('topiary-tall', 9, 1, 'tall-1')
-# west: kitchen rose garden in brick beds
-m.fill(2, 9, 10, 3, auto('SA-Kadan02.png')); claim(m, 2, 9, 10, 3, 'bed-w')
-for i, x in enumerate((3, 6, 9)): R(m, SH, (2, 0, 2)[i], 9, 2, 2, x, 9, False)
-# south lawn: flower meadow and pedestals flanking the gate, back-view benches facing the walk
-m.fill(3, 20, 10, 4, auto('SA-Flower01.png'), 'up')
-mx('bench-back', 22, 20, 'bench-s'); mx('bench-back', 27, 20, 'bench-s2')
-mx('flower-pedestal', 15, 23, 'ped-l'); mx('flower-pedestal', 19, 23, 'ped-r')
-mx('rose-red', 30, 13, 'rose-e'); mx('rose-pink', 3, 13, 'rose-w'); mx('rose-red', 7, 13, 'rose-w2')
+F = ['xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+     'x..................................x',
+     'x..................................x',
+     'x..................................x',
+     'x..................................x',
+     'x..................................x',
+     'x..................................x',
+     'x...............................xxxx',
+     'x...............................x...',
+     'x...............................x...',
+     'x...............................x...',
+     'x...............................xxxx',
+     'x..................................x',
+     'x..................................x',
+     'x..................................x',
+     'x..................................x',
+     'x..................................x',
+     'xxxx...............................x',
+     '...x...............................x',
+     '...x...............................x',
+     '...x.........................xxxxxxx',
+     '...xxxxxxxxxxxxx...xxxxxxxxxxx......',
+     '....................................',
+     '....................................',
+     '....................................',
+     '....................................']
+fence = blob(F, 0, 0)
+m.cells(fence, auto('SA-StFence01.png'))
+for c in fence: claim(m, c[0], c[1], 1, 1, 'fence')
+m.fill(0, 22, 36, 4, auto('SA-GRoad01.png'))                     # lane outside the gate
+# L-shaped lawn: east tea garden + strip along the south-east
+lawn = blob(['....xxxxxxxx',
+             '..xxxxxxxxxx',
+             '.xxxxxxxxxxx',
+             'xxxxxxxxxxxx',
+             'xxxxxxxxxxx.',
+             'xxxxxxxxxx..',
+             'xxxxxxxxxxxx',
+             'xxxxxxxxxxxx',
+             'xxxxxxxxxxxx',
+             '.......xxxxx',
+             '.........xxx'], 21, 1)
+lawn += blob(['.xxxxxxxxxxxx', 'xxxxxxxxxxxx.', 'xxxxxxxxxx...'], 20, 13)
+m.cells(lawn, auto('SA-GrassD01.png'))
+comp(m, 'msex-p-whole-house', 14, 1, 'house')          # porch (17,10) -> approach (17,11)
+# path: porch -> jogs west round a rose bed -> gate (16..18) -> lane
+walk = blob(['...xxx...',   # y11
+             '...xxx...',   # y12
+             '..xxxx...',   # y13
+             '.xxxx....',   # y14
+             'xxxx.....',   # y15
+             'xxxx.....',   # y16
+             '.xxxx....',   # y17
+             '..xxxx...',   # y18
+             '...xxx...',   # y19
+             '...xxx...',   # y20
+             '...xxx...'], 13, 11)
+walk += blob(['xxxxx', 'xx...'], 19, 12)     # spur to the tea garden
+m.cells(walk, auto('SA-GRoad01.png'))
+# east: tea garden on the lawn, bench and topiaries staggered, not in a row
+comp(m, 'msex-p-tea-table-cups', 26, 5, 'tea')
+mx('tea-stool', 25, 7, 'stool-l'); mx('tea-stool', 28, 7, 'stool-r')
+mx('bench-front', 29, 2, 'bench-n'); mx('topiary-round', 24, 2, 'rnd-e1')
+mx('topiary-tall', 32, 12, 'tall-e'); mx('bench-back', 24, 15, 'bench-s'); mx('rose-red', 29, 16, 'rose-e')
+# west: rose beds in a staggered group, each bed a different shape
+beds = [('bed-w1', blob(['xxxxx', 'xxxxx', 'xx...'], 3, 9)),
+        ('bed-w2', blob(['.xxxx', 'xxxxx'], 8, 12)),
+        ('bed-w3', blob(['xxxx.', 'xxxxx', '..xxx'], 3, 14))]
+for nm, b in beds:
+    m.cells(b, auto('SA-Kadan02.png')); [claim(m, x, y, 1, 1, nm) for x, y in b]
+for (x, y, v) in ((3, 9, 2), (6, 9, 0), (10, 12, 2), (3, 14, 0), (5, 15, 2)): R(m, SH, v, 9, 2, 2, x, y, False)
+mx('topiary-round', 2, 2, 'rnd-1'); mx('topiary-round', 6, 4, 'rnd-2'); mx('topiary-tall', 10, 1, 'tall-1')
+# south-west flower meadow drift and pedestals flanking the gate inside the fence
+fl = blob(['.xxxx...', 'xxxxxxx.', 'xxxxxxxx', '..xxxxx.'], 4, 17)
+m.cells(fl, auto('SA-Flower01.png'), 'up'); [claim(m, x, y, 1, 1, 'meadow') for x, y in fl]
+mx('flower-pedestal', 14, 19, 'ped-l'); mx('flower-pedestal', 20, 19, 'ped-r')
+mx('rose-pink', 12, 9, 'rose-porch')
 finish(m)

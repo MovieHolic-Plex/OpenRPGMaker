@@ -203,17 +203,19 @@ pine(m, 13, 2, 'nw-pine'); T1(m, TN, 155, 13, 8); T1(m, TN, 156, 14, 8)
 R(m, 'yukiyanagi.png', 0, 0, 2, 2, 15, 9, 'nw-shrub')
 # ---- NE lots: apartment x21..31, red-gable house x32..39
 kit(m, 'apartment-dark-roof', 22, 2, 'ne-apt'); path(27, 11, 12); bwall(m, 21, 0, 32, 12, gates=(27,), name='ne-wall-a')
-kit(m, 'home-red-gable', 34, 2, 'ne-home'); path(36, 11, 12); bwall(m, 33, 0, 40, 12, gates=(36,), name='ne-wall-b')
+kit(m, 'home-red-gable', 34, 3, 'ne-home'); path(36, 12, 12); bwall(m, 33, 2, 40, 12, gates=(36,), name='ne-wall-b')   # set back 2 rows
+R(m, 'yukiyanagi.png', 0, 0, 2, 2, 36, 0, 'ne-shrub')
 
 # ---- SW lots y15..27, gates on the south lane
 ax, ay = jhouse(m, 1, 16, 2, 'sw-house', wall='plaster', roof='light', side='left', front='plaster')
 path(ax, ay, 27); bwall(m, 0, 15, 9, 27, gates=(ax,), name='sw-wall-a')
-kit(m, 'home-red-gable', 11, 17, 'sw-home'); path(13, 26, 27); bwall(m, 10, 15, 18, 27, gates=(13,), name='sw-wall-b')
-T1(m, TN, 155, 16, 16); T1(m, TN, 156, 17, 16)
+kit(m, 'home-red-gable', 11, 18, 'sw-home'); path(13, 27, 27); bwall(m, 10, 17, 18, 27, gates=(13,), name='sw-wall-b')   # narrower lot set back from the north lane
+R(m, 'yukiyanagi.png', 0, 0, 2, 2, 11, 15, 'sw-shrub'); T1(m, TN, 155, 15, 15); T1(m, TN, 156, 16, 15)
 # ---- SE: house x21..32, vacant lot (空き地) with the pipe stack x33..39
 ax, ay = jhouse(m, 22, 16, 5, 'se-house', wall='wood', roof='light', side='left')
 path(ax, ay, 27); bwall(m, 21, 15, 32, 27, gates=(ax,), name='se-wall')
-m.fill(33, 15, 9, 13, auto('SA-GroundG05.png'))
+lot = ['..xxxxxxx', '.xxxxxxxx', 'xxxxxxxxx', 'xxxxxxxxx', 'xxxxxxxxx', 'xxxxxxxxx', 'xxxxxxxxx', 'xxxxxxxxx', 'xxxxxxxx.', 'xxxxxxxx.', 'xxxxxxxxx', '.xxxxxxxx', '..xxxxxxx']
+m.cells([(33 + dx, 15 + dy) for dy, r in enumerate(lot) for dx, c in enumerate(r) if c == 'x'], auto('SA-GroundG05.png'))   # worn vacant lot, ragged edge
 loose(m, 'koji2.png', 0, 34, 17, 'pipes'); loose(m, 'koji2.png', 3, 36, 23, 'pipe-pile')
 loose(m, 'koji2.png', 6, 38, 18, 'stones')
 # ---- lane furniture: poles, jizo at the crossing, postbox, garbage station

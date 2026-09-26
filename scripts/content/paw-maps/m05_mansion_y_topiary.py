@@ -194,30 +194,63 @@ def finish(m):
 
 V = 'y'; SH = 'ST-MsionY-E01.png'
 def mx(rid, x, y, name=None): rec(m, SH, f'msex-y-' + rid, x, y, name or f'{rid}@{x},{y}')
-m = Map('m05_mansion_y_topiary', '양관 Y 정원수 길', 36, 26, 'exterior', '노란 양관. 생울타리 안 정원수 줄과 자갈 관리로, 동서 화단.')
-m.fill(0, 0, 36, 26, auto('SA-GrassC01.png'))
-# hedge ring with a south gate gap (x16..18)
-for x in range(36):
-    for y in (0, 25):
-        if y == 25 and 16 <= x <= 18: continue
-        m.cells([(x, y)], auto('SA-GBorderB01.png')); claim(m, x, y, 1, 1, 'hedge')
-for y in range(1, 25):
-    for x in (0, 35): m.cells([(x, y)], auto('SA-GBorderB01.png')); claim(m, x, y, 1, 1, 'hedge')
-# paths: gate -> porch, and an east-west garden walk
-m.fill(16, 11, 3, 15, auto('SA-SRoad02.png'))
-m.fill(3, 17, 30, 2, auto('SA-SRoad02.png'))
-comp(m, 'msex-y-whole-house', 14, 1, 'house')          # 7x10, porch (17,10) -> approach (17,11)
+m = Map('m05_mansion_y_topiary', '양관 Y 정원수 길', 36, 26, 'exterior', '노란 양관. 두꺼운 생울타리 안, 남문에서 굽이치며 현관으로 오르는 자갈 관리로, 곡선으로 깎은 정원수 생울타리 줄과 동서 화단.')
 
-# Y: topiary maintenance garden - gravel walks between clipped hedge rows (BorderG) and tall topiaries
-for (x, y, w) in ((2, 20, 12), (22, 20, 12)):
-    m.fill(x, y, w, 2, auto('SA-BorderG02.png')); claim(m, x, y, w, 2, f'hrow{x}')
-m.fill(2, 22, 12, 1, auto('SA-Stone01.png')); m.fill(22, 22, 12, 1, auto('SA-Stone01.png'))
-for x in (2, 5, 8, 11): mx('topiary-tall', x, 2, f'tall{x}')
-for x in (23, 26, 29, 32): mx('topiary-round', x, 3, f'rnd{x}') if x < 32 else mx('topiary-tall', 32, 2, 'tall32')
-m.fill(3, 9, 8, 3, auto('SA-Kadan03.png')); claim(m, 3, 9, 8, 3, 'bed-w')
-m.fill(25, 9, 8, 3, auto('SA-Kadan03.png')); claim(m, 25, 9, 8, 3, 'bed-e')
-m.fill(4, 10, 6, 1, auto('SA-Flower01.png'), 'up'); m.fill(26, 10, 6, 1, auto('SA-Flower01.png'), 'up')
-mx('bench-front', 5, 13, 'bench-w'); mx('bench-front', 28, 13, 'bench-e')
-mx('flower-pedestal', 15, 13, 'ped-l'); mx('flower-pedestal', 19, 13, 'ped-r')
-mx('rose-pink', 4, 23, 'rose-sw'); mx('rose-red', 30, 23, 'rose-se')
+def box(x, y, w, h): return {(xx, yy) for yy in range(y, y + h) for xx in range(x, x + w)}
+def octo(cx, cy, rows): return {(cx + dx, cy + dy) for dy, hw in rows for dx in range(-hw, hw + 1)}
+def mir(cells, axis=34): return {(axis - x, y) for x, y in cells}
+def ring(inside, gate=()):
+    """1-cell hedge/fence following the 8-neighbour outline of an arbitrary inside cell set"""
+    return {(x, y) for y in range(m.h) for x in range(m.w) if (x, y) not in inside and (x, y) not in gate
+            and any((x + a, y + b) in inside for a in (-1, 0, 1) for b in (-1, 0, 1))}
+def core(cells): return {c for c in cells if all((c[0] + a, c[1] + b) in cells for a, b in ((1, 0), (-1, 0), (0, 1), (0, -1)))}
+def paint(cells, ref, name=None):
+    m.cells(sorted(cells), ref)
+    if name:
+        for x, y in cells: claim(m, x, y, 1, 1, name)
+def onbed(rid, x, y, name):
+    """standing plant on a bed: every cell must be bed (then the bed claim is handed over)"""
+    q = CATALOG['recipes'][SH][f'msex-{V}-' + rid]['rect']
+    cs = box(x, y, q['width'], q['height'])
+    assert all(OWN.get(c) == 'bed' for c in cs), (name, 'not on bed')
+    for c in cs: del OWN[c]
+    mx(rid, x, y, name)
+
+m.fill(0, 0, 36, 26, auto('SA-GrassC01.png'))
+# boundary hedge: a 2-row north mass that steps down beside the house, stepped east/west sides, south gate
+inside = (box(2, 2, 32, 21) | box(4, 1, 28, 1) | box(4, 23, 10, 1) | box(21, 23, 11, 1)) - \
+         {(2, 2), (33, 2), (2, 3), (33, 3), (2, 22), (33, 22), (2, 21), (33, 21), (3, 22), (32, 22)}
+inside |= box(14, 23, 7, 1) | box(14, 1, 7, 1)
+gate = box(16, 24, 3, 2)
+inside -= box(4, 1, 10, 1) | box(21, 1, 11, 1)          # north hedge is 2 rows deep beside the house
+inside |= box(14, 0, 7, 1)                                  # lawn strip behind the house, no 1-tile hedge strip on the edge
+paint(ring(inside, gate), auto('SA-GBorderB01.png'), 'hedge')
+m.cells(sorted(box(0, 0, 36, 26) - inside - gate - {c for c in OWN if OWN[c] == 'hedge'}), auto('SA-GBorderB01.png'))
+for c in sorted(box(0, 0, 36, 26) - inside - gate):
+    if c not in OWN: claim(m, *c, 1, 1, 'hedge')
+# gravel walk: gate -> jogs west -> climbs back to the porch; side loops round each hedge garden
+walk = (box(16, 21, 3, 5) | box(14, 18, 4, 3) | box(13, 15, 3, 3) | box(14, 13, 3, 2) | box(15, 11, 5, 2)) - {(13, 15), (19, 12), (15, 12)}
+walk |= box(17, 19, 2, 2)
+def dil(c): return {(x + a, y + b) for x, y in c for a in (-1, 0, 1) for b in (-1, 0, 1)}
+stw = octo(8, 18, [(-2, 2), (-1, 3), (0, 4), (1, 3), (2, 2)]); ste = octo(26, 17, [(-2, 2), (-1, 3), (0, 4), (1, 3)])
+hw, he = dil(stw) - stw, dil(ste) - ste                       # clipped hedge ring round a stone court
+loopw, loope = dil(dil(stw)) - dil(stw), dil(dil(ste)) - dil(ste)   # gravel loop round each hedge garden, 4-connected
+walk |= box(19, 16, 2, 2)
+paint(walk | loopw | loope, auto('SA-SRoad02.png'))
+comp(m, 'msex-y-whole-house', 14, 1, 'house')          # 7x10, porch (17,10) -> approach (17,11)
+paint(hw, auto('SA-BorderG02.png'), 'hrow-w'); paint(he, auto('SA-BorderG02.png'), 'hrow-e')
+paint(stw, auto('SA-Stone01.png')); paint(ste, auto('SA-Stone01.png'))
+mx('flower-pedestal', 8, 17, 'ped-w'); mx('flower-pedestal', 26, 16, 'ped-e')
+# north beds flanking the house: notched outlines, flowers only inside, topiaries behind
+bw = box(4, 8, 8, 3) - {(4, 8), (11, 10), (4, 10)} | {(5, 7), (6, 7)}
+be = mir(bw)
+paint(bw | be, auto('SA-Kadan03.png'))
+for x, y in bw | be: claim(m, x, y, 1, 1, 'bed')
+onbed('rose-pink', 6, 8, 'rose-w'); onbed('rose-red', 27, 8, 'rose-e')
+m.cells(sorted({c for c in core(bw) | core(be) | {(9, 9), (10, 9), (24, 9), (25, 9)} if OWN.get(c) == 'bed'}), auto('SA-Flower01.png'), 'up')
+mx('topiary-tall', 4, 3, 'tall-a'); mx('topiary-round', 8, 3, 'rnd-a'); mx('topiary-tall', 11, 2, 'tall-b')
+mx('topiary-round', 22, 3, 'rnd-b'); mx('topiary-tall', 25, 2, 'tall-c'); mx('topiary-round', 29, 4, 'rnd-c')
+# benches off the walk, staggered
+mx('bench-front', 23, 11, 'bench-e'); mx('flower-pedestal', 15, 22, 'ped-gate-l'); mx('flower-pedestal', 19, 22, 'ped-gate-r'); mx('bench-front', 7, 11, 'bench-w')
+mx('topiary-round', 30, 21, 'rnd-se'); mx('topiary-round', 11, 12, 'rnd-mid')
 finish(m)

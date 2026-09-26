@@ -33,26 +33,56 @@ grass = vx('WorldMap-A2.png', 0, 0); sand = vx('WorldMap-A2.png', 2, 0); snow = 
 forest = vx('WorldMap-A2.png', 5, 0); hills = vx('WorldMap-A2.png', 4, 0); mount = vx('WorldMap-A2.png', 4, 2)
 isle_grass = vx('WorldMap-A202.png', 0, 0); isle_forest = vx('WorldMap-A202.png', 5, 0)
 def blob(cx, cy, rx, ry):
-    return [(x, y) for y in range(H) for x in range(W) if ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1 + 0.18 * rnd.random()]
+    return {(x, y) for y in range(H) for x in range(W) if ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1 + 0.18 * rnd.random()}
+N4 = ((1, 0), (-1, 0), (0, 1), (0, -1))
+def ok(x, y): return 0 <= x < W and 0 <= y < H
+def clean(cells, inside=None):
+    """VX autotile cells with < 2 same-family 4-neighbours render as odd lone blocks: drop them, fill 1-cell holes,
+    repeat to a fixed point. `inside` limits growth to a parent region."""
+    s = set(cells) if inside is None else set(cells) & inside
+    for _ in range(10):
+        drop = {c for c in s if sum((c[0] + dx, c[1] + dy) in s for dx, dy in N4) < 2}
+        add = {(x, y) for y in range(H) for x in range(W) if (x, y) not in s and (inside is None or (x, y) in inside)
+               and sum((x + dx, y + dy) in s for dx, dy in N4) >= 3}
+        if not drop and not add: break
+        s = (s - drop) | add
+    return s
+def ring(cells, r=1):
+    """cells within Chebyshev distance r of `cells`, excluding them (continuous shoal band)"""
+    out = set()
+    for x, y in cells:
+        for dy in range(-r, r + 1):
+            for dx in range(-r, r + 1):
+                if ok(x + dx, y + dy): out.add((x + dx, y + dy))
+    return out - set(cells)
 m.fill(0, 0, W, H, sea)
-land = blob(18, 15, 14, 11); L = set(land)
-m.cells(blob(18, 15, 16, 13), shoal)
-m.cells(land, grass)
-m.cells(blob(27, 21, 5, 3), sand)
-m.cells(blob(11, 8, 5, 3), snow)
-m.cells(blob(19, 19, 2.2, 1.6), lake)
-m.cells([c for c in blob(10, 18, 5, 4) if c in L], forest, 'up')
-m.cells([c for c in blob(21, 8, 6, 2.5) if c in L], mount, 'up')
-m.cells([c for c in blob(25, 14, 3, 2) if c in L], hills, 'up')
-# eastern island (A202 variant greens)
-m.cells(blob(35, 7, 3.2, 3.2), shoal); isle = blob(35, 7, 2.5, 2.5); m.cells(isle, isle_grass)
-m.cells([c for c in blob(36, 8, 1.4, 1.2)], isle_forest, 'up')
-# place icons (single-cell world symbols)
-m.put(16, 14, tile('WorldMap-B.png', 1, 0))      # town
-m.put(26, 20, tile('WorldMap-B.png', 3, 0))      # desert town
-m.put(13, 22, tile('WorldMap-B.png', 2, 0))      # village in forest edge
-m.put(20, 12, tile('WorldMap-B.png', 5, 0))      # castle below mountains
-m.put(11, 7, tile('WorldMap-B.png', 7, 0))       # snow shrine
-m.put(34, 6, tile('WorldMap-C.png', 2, 0))       # island tower
-m.put(23, 16, tile('WorldMap-D.png', 1, 0))      # landmark
+land = clean(blob(18, 15, 14, 11))
+isle = clean(blob(35, 7, 2.5, 2.5))
+# shoal = unbroken band around every coast (1 cell, 2 on the exposed south/east shore)
+shoal = clean(ring(land, 1) | {c for c in ring(land, 2) if c[0] > 22 or c[1] > 20} | ring(isle, 1))
+m.cells(shoal, shoal_ref := vx('WorldMap-A1.png', 1, 0))
+m.cells(land, grass); m.cells(isle, isle_grass)
+lakec = clean(blob(19, 19, 2.2, 1.6), land)
+inner = {c for c in land if all((c[0] + dx, c[1] + dy) in land for dx, dy in N4)}   # keep biomes off the coastline
+sandc = clean(blob(27, 21, 5, 3) - lakec, inner)
+snowc = clean(blob(11, 8, 5, 3) - lakec, inner)
+m.cells(sandc, sand); m.cells(snowc, snow); m.cells(lakec, lake)
+forestc = clean(blob(10, 18, 5, 4) - lakec - sandc - snowc, land)
+mountc = clean(blob(21, 8, 6, 2.5) - lakec - forestc, land)
+hillc = clean(blob(25, 14, 3, 2) - lakec - forestc - mountc - sandc, land)
+isleforest = clean(blob(36, 8, 1.4, 1.2), isle)
+m.cells(forestc, forest, 'up'); m.cells(mountc, mount, 'up'); m.cells(hillc, hills, 'up'); m.cells(isleforest, isle_forest, 'up')
+over = forestc | mountc | hillc | isleforest
+# place icons (single-cell world symbols) - each asserted to sit on open ground of the intended biome
+def icon(x, y, t, biome):
+    assert (x, y) in biome and (x, y) not in over and (x, y) not in lakec, ('icon off biome', x, y)
+    m.put(x, y, t)
+grassland = (land - sandc - snowc) | isle
+icon(16, 14, tile('WorldMap-B.png', 1, 0), grassland)       # town on the central plain
+icon(27, 21, tile('WorldMap-B.png', 3, 0), sandc)           # desert town
+icon(14, 22, tile('WorldMap-B.png', 2, 0), grassland)       # village at the forest edge
+icon(20, 11, tile('WorldMap-B.png', 5, 0), grassland)       # castle below the mountains
+icon(11, 8, tile('WorldMap-B.png', 7, 0), snowc)            # snow shrine
+icon(34, 6, tile('WorldMap-C.png', 2, 0), isle)             # island tower
+icon(22, 16, tile('WorldMap-D.png', 1, 0), grassland)       # landmark
 m.save()

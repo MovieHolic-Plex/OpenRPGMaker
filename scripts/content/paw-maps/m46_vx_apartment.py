@@ -2,14 +2,6 @@ import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pawlib import *
 
 CEIL = auto('SA-WallA01.png')
-def room(m, sheet, walls, floor, doors=()):
-    """XP ceiling ring, north wall face rows (walls = tile ids top->bottom), floor, south door gap columns."""
-    m.fill(0, 0, m.w, m.h, CEIL)
-    for i, t in enumerate(walls): m.fill(1, 1 + i, m.w - 2, 1, tile(sheet, t))
-    top = 1 + len(walls)
-    m.fill(1, top, m.w - 2, m.h - top - 1, floor)
-    for x in doors: m.fill(x, m.h - 1, 1, 1, floor)
-    return top
 def door(m, name, x, y, fw=32, fh=64):
     """closed frame 0 of a PAW door sprite sheet at cell (x,y); bottom row sits on the wall base"""
     m.image(name, x, y, (0, 0, fw, fh))
@@ -35,40 +27,56 @@ class vxauto(auto):
     def image(self, mask): return pawlib_xp(self._xp, mask)
 def pawlib_xp(img, mask):
     import pawlib; return pawlib._xp_piece(img, mask)
-def vx_wall_face(m, name, bx, face_y, x, y, w):
-    """A4 wall face (64x64 block = 2 tiles tall) spread over w tiles: end quarters on the ends, middles repeated"""
-    s = sheet(name); ox = bx * 64
-    for i in range(w):
+class vxwall(auto):
+    """one tile row (k=0 top, 1 bottom) of an A4 wall face block; horizontal ends close where the run stops"""
+    def __init__(self, name, bx, face_y, k):
+        self.name, self.cx, self.cy, self.k, self.ox, self.fy = name, bx, face_y + k, k, bx * 64, face_y; sheet(name)
+    def image(self, mask):
+        s = sheet(self.name); o = _I.new('RGBA', (32, 32))
         for half in (0, 1):
-            q = 2 * i + half
-            qx = 0 if q == 0 else (3 if q == 2 * w - 1 else 1 + (q + 1) % 2)
-            for qy in range(4):
-                m.over.append(((x + i) * 32 + half * 16, y * 32 + qy * 16, s.crop((ox + qx * 16, face_y + qy * 16, ox + qx * 16 + 16, face_y + qy * 16 + 16))))
-    m.used.add(name)
+            qx = (1 if mask & 2 else 3) if half else (2 if mask & 8 else 0)
+            for r in (0, 1):
+                qy = 2 * self.k + r
+                o.alpha_composite(s.crop((self.ox + qx * 16, self.fy + qy * 16, self.ox + qx * 16 + 16, self.fy + qy * 16 + 16)), (half * 16, r * 16))
+        return o
 
 A2, A4, A5 = 'A2I-Modern01.png', 'A4I-Modern01.png', 'A5I-Modern01.png'
 F, B, SS = 'BI-ModernF01.png', 'BI-ModernB01.png', 'BI-ModernS01.png'
 m = Map('m46_vx_apartment', '현대식 아파트 (VX Ace 샘플 타일)', 20, 14, 'interior', 'A2 마루·주방 타일, A4 벽, 서쪽 침실·중앙 거실·동쪽 주방; VX A2/A4 는 맵 안 변환기로 XP 규격화')
-m.fill(0, 0, 20, 14, vxauto(A4, 0, 0))                    # ceiling
-m.fill(1, 3, 18, 10, vxauto(A2, 0, 0))                    # wood floor
-m.fill(13, 3, 6, 10, vxauto(A2, 2, 96))                   # kitchen tiles
-m.fill(9, 13, 2, 1, vxauto(A2, 0, 0))                     # front door gap
-m.fill(4, 8, 5, 4, vxauto(A2, 4, 0))                      # living-room rug
-vx_wall_face(m, A4, 0, 96, 1, 1, 18)
+# bedroom (x1..3) behind a partition stub (x4, rows 5-7 open to the living room); living room with
+# the TV wall; kitchen to the east under a lower wall (bathroom block in the NE), SW entry notch.
+rows = ['####################',
+        '#...........########',
+        '#...........########',
+        '#...#..............#',
+        '#...#..............#',
+        '#..................#',
+        '#..................#',
+        '#..................#',
+        '#..................#',
+        '#..................#',
+        '#..................#',
+        '#..................#',
+        '##.................#',
+        '#########DD#########']
+WOOD, KTILE = vxauto(A2, 0, 0), vxauto(A2, 2, 96)
+m.layout(rows, {'.': lambda x, y: KTILE if x >= 13 else WOOD}, vxauto(A4, 0, 0),
+         [vxwall(A4, 0, 96, 0), vxwall(A4, 0, 96, 1)])
+m.fill(5, 8, 5, 4, vxauto(A2, 4, 0))                      # living-room rug
 # bedroom (west)
 m.rect(F, 8, 0, 2, 3, 1, 2)                               # bed
-m.rect(F, 0, 8, 1, 2, 3, 2)                               # wardrobe
+m.rect(F, 0, 8, 1, 2, 3, 3)                               # wardrobe against the partition stub
 m.rect(F, 6, 11, 1, 2, 1, 6)                              # floor lamp
 # living room
-m.rect(F, 0, 10, 6, 2, 4, 1)                              # wall shelves / tv sideboard strip
-m.rect(B, 3, 9, 3, 3, 5, 8)                               # sofa
-m.rect(F, 12, 14, 2, 2, 5, 11)                            # low table
-m.rect(F, 11, 9, 1, 2, 10, 2)                             # plant
+m.rect(F, 0, 10, 6, 2, 5, 1)                              # wall shelves / tv sideboard strip
+m.rect(F, 11, 9, 1, 2, 11, 3)                             # plant beside the TV strip
+m.rect(B, 3, 9, 3, 3, 6, 8)                               # sofa
+m.rect(F, 12, 14, 2, 2, 6, 11)                            # low table
 # kitchen (east)
-m.rect(B, 8, 3, 3, 2, 13, 2)                              # kitchen counter
-m.rect(F, 12, 10, 2, 4, 17, 2)                            # fridge
+m.rect(B, 8, 3, 3, 2, 13, 4)                              # kitchen counter
+m.rect(F, 12, 10, 2, 4, 17, 3)                            # fridge
 m.rect(B, 8, 9, 3, 2, 14, 8)                              # dining table
 m.rect(SS, 4, 4, 1, 2, 13, 8)
 m.rect(SS, 5, 4, 1, 2, 17, 8)
-m.rect(A5, 0, 14, 1, 1, 9, 12)
+m.fill(9, 12, 2, 1, tile(A5, 0, 14))                      # entrance mat (floor layer, walkable)
 m.save()

@@ -5,35 +5,40 @@ SW = 'ST-Sewer-01.png'
 def T(i): return tile(SW, i)
 W, H = 32, 20
 m = Map('m50_sewer_tunnels', '지하 하수도 수로 터널', W, H, 'interior',
-        'ST-Sewer-01 정비 통로: 북벽57/65, 발판113, 계단, 수면304/물312, 남쪽 통로. SC-Water01 배수 물줄기.')
-# north wall block (2 rows) and upper catwalk
-m.fill(0, 0, W, 1, T(57)); m.fill(0, 1, W, 1, T(65))
-m.fill(0, 2, W, 1, T(0))
-m.fill(0, 2, 1, 1, T(112), 'up'); m.fill(1, 2, W - 2, 1, T(113), 'up'); m.fill(W - 1, 2, 1, 1, T(114), 'up')
-# vertical drop face under catwalk (rows 3-5), two stairs down
-m.fill(0, 3, W, 2, T(57)); m.fill(0, 5, W, 1, T(65))
-m.fill(0, 3, W, 1, T(145), 'up'); m.fill(0, 4, W, 2, T(8), 'up')
-for sx in (5, 22):
-    m.fill(sx, 3, 3, 3, T(0))
-    for dy, row in enumerate(((192, 193, 194), (200, 201, 202), (208, 209, 210))):
-        for dx, t in enumerate(row):
-            m.cells([(sx + dx, 3 + dy)], T(t), 'up')
-# maintenance doors on north wall
-m.cells([(2, 0)], T(79), 'up'); m.cells([(2, 1)], T(87), 'up')
-m.cells([(28, 0)], T(79), 'up'); m.cells([(28, 1)], T(87), 'up')
-# lower walkway, water channel, south walkway
-m.fill(0, 6, W, 2, T(0))
-m.fill(0, 8, W, 1, T(304)); m.fill(0, 9, W, 6, T(312))
-m.fill(0, 15, W, 5, T(0))
-# transparent arch partition over the dry south walkway (source 3x2 block 72..82 whole)
-m.rect(SW, 0, 9, 3, 2, 8, 16)
-m.rect(SW, 0, 9, 3, 2, 25, 16)
-# drums on walkway
-m.cells([(12, 6)], T(178), 'up'); m.cells([(12, 7)], T(186), 'up')
-m.cells([(18, 15)], T(178), 'up'); m.cells([(18, 16)], T(186), 'up')
-# water spout from north wall face into channel (SC-Water01 phase 0: rows 0,1,2,3)
-# box = (x0, y0, x1, y1) pixels; drain+lip rows 0-1, column row 2 repeated, splash row 3 on the water line
-m.image('SC-Water01.png', 15, 4, (0, 0, 32, 64))
-m.image('SC-Water01.png', 15, 6, (0, 64, 32, 96)); m.image('SC-Water01.png', 15, 7, (0, 64, 32, 96))
-m.image('SC-Water01.png', 15, 8, (0, 96, 32, 128))
+        'ST-Sewer-01 정비 통로: 가로 본류 수로 + 북쪽 지류 터널, 북서 ㄱ자 펌프실, 남동 문 달린 곁방, 남서 계단 터널. 벽57/65 자동, 수면304/물312, SC-Water01 배수 물줄기.')
+g = [['#'] * W for _ in range(H)]
+def carve(x0, y0, x1, y1, c='.'):
+    for y in range(y0, y1 + 1):
+        for x in range(x0, x1 + 1): g[y][x] = c
+# ceiling bottom per column on the north side: walls take the next two rows
+for x0, x1, cb in ((0, 1, 5), (2, 4, 3), (5, 10, 1), (11, 14, 5), (19, 21, 5)): carve(x0, cb, x1, 8)
+carve(15, 0, 18, 8); carve(16, 0, 17, 8, '~')           # north branch tunnel, water down the middle into the main channel
+carve(22, 7, 31, 8, '~')                                  # east: tunnel wall drops straight into the water
+carve(0, 9, 31, 11, '~')                                  # main channel
+carve(0, 12, 31, 13)                                      # south walkway
+carve(6, 14, 8, 19)                                       # south stair tunnel
+carve(19, 17, 30, 18); carve(19, 15, 23, 16); carve(26, 15, 30, 16)   # south-east side room (walls fill 15-16)
+g[14][24] = 'D'; g[14][25] = 'D'                           # its doorway
+g[15][24] = g[15][25] = g[16][24] = g[16][25] = '.'
+carve(29, 17, 30, 18, '#'); carve(27, 19, 30, 19, '#')     # notch: room is not a box
+rows = [''.join(r) for r in g]
+m.layout(rows, {'.': T(0), '~': T(312)}, auto('SA-WallA02.png'), [T(57), T(65)])
+for y in range(H):                                         # waterline under anything that is not water
+    for x in range(W):
+        if rows[y][x] == '~' and m.cls[y][x] == 'F' and (y == 0 or rows[y - 1][x] != '~' or m.cls[y - 1][x] == 'W'):
+            m.cells([(x, y)], T(304))
+# maintenance doors on the generated wall rows
+for x, y in ((6, 1), (13, 5)): m.cells([(x, y)], T(79), 'up'); m.cells([(x, y + 1)], T(87), 'up')
+m.cells([(26, 15)], T(79), 'up'); m.cells([(26, 16)], T(87), 'up')
+# stairs going down out of the south tunnel
+for dy, row in enumerate(((192, 193, 194), (200, 201, 202), (208, 209, 210))):
+    for dx, t in enumerate(row): m.cells([(6 + dx, 17 + dy)], T(t), 'up')
+# arch frame over the mouth of the stair tunnel
+m.rect(SW, 0, 9, 3, 2, 6, 14)
+# drums in the pump room and the side room, one on the walkway
+for x, y in ((3, 5), (4, 5), (9, 3), (20, 17), (28, 17), (13, 12)):
+    m.cells([(x, y)], T(178), 'up'); m.cells([(x, y + 1)], T(186), 'up')
+# drain spouts from the east tunnel wall into the channel
+for x in (23, 30):
+    m.image('SC-Water01.png', x, 7, (0, 0, 32, 64)); m.image('SC-Water01.png', x, 9, (0, 96, 32, 128))
 m.save()

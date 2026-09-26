@@ -192,39 +192,46 @@ def finish(m):
     m.save()
 # ---- end helpers ----
 
-m = Map('m01_showa_shotengai', '쇼와 상점가 거리', 40, 26, 'exterior', '상점 두 줄. 북쪽 줄은 벽돌 상점가 길(y10-12), 남쪽 줄은 뒷골목 아스팔트에 가게 앞을 낸다.')
-m.fill(0, 0, 40, 26, auto('SA-Concrete01.png'))          # sidewalks
+m = Map('m01_showa_shotengai', '쇼와 상점가 거리', 40, 26, 'exterior', '상점 두 줄. 북쪽 줄은 벽돌 상점가 길(y10-12)에 앞을 내고 가운데 자판기·벤치 쉼터가 있다. 남쪽 줄은 뒷골목 아스팔트에 가게 앞을 낸다.')
+def blob(rows, x0, y0): return [(x0 + dx, y0 + dy) for dy, r in enumerate(rows) for dx, c in enumerate(r) if c == 'x']
+m.fill(0, 0, 40, 26, auto('SA-Concrete01.png'))          # sidewalks / forecourts
 m.fill(0, 10, 40, 3, auto('SA-Road02.png'))              # brick-tiled shotengai street
 m.fill(0, 24, 40, 2, auto('SA-AsphaltRoad01.png'))       # back lane
-m.fill(0, 0, 40, 2, auto('SA-GrassE02.png'))             # back yards behind the north row
-# north row (buildings y1..8, fronts on the y9 sidewalk)
-rtown(m, 1, 1, 'n-rtown-1')
-roofshop(m, 7, 2, 5, 'glass', 'SA-Roof02.png', 'n-shop-2')
+# back yards behind the north row: ragged grass, not a band
+m.cells(blob(['xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+              'x......xxxxx......xxxxxx......xxxxxxxxxx',
+              '..............................xxxxx.....',
+              '..............................xxxxx.....'], 0, 0), auto('SA-GrassE02.png'))
+# north row: fronts staggered (rtown to y8, shops set back to y7 or pushed to y8)
+rtown(m, 1, 1, 'n-rtown-1', fire=False)
+roofshop(m, 7, 1, 5, 'glass', 'SA-Roof02.png', 'n-shop-2')                 # set back: forecourt y8
 rtown(m, 12, 1, 'n-rtown-3', wall='grey', roof='dark', fire=False)
 roofshop(m, 18, 2, 6, 'shutter', 'SA-Roof04.png', 'n-shop-4')
-rtown(m, 24, 1, 'n-rtown-5', wall='plaster', roof='light', front='paper', awning=False)
-roofshop(m, 30, 2, 5, 'glass', 'SA-Roof03.png', 'n-shop-6')
-roofshop(m, 35, 2, 5, 'shutter', 'SA-Roof01.png', 'n-shop-7')
-# south row (y15..22, fronts on the y23 sidewalk)
-roofshop(m, 0, 16, 6, 'glass', 'SA-Roof04.png', 's-shop-1')
-rtown(m, 6, 15, 's-rtown-2', roof='mid')
-roofshop(m, 12, 16, 5, 'shutter', 'SA-Roof02.png', 's-shop-3')
-rtown(m, 17, 15, 's-rtown-4', wall='grey', roof='light', awning=False, window=False)
-roofshop(m, 23, 16, 6, 'glass', 'SA-Roof01.png', 's-shop-5')
-rtown(m, 29, 15, 's-rtown-6', wall='plaster', roof='dark')
-roofshop(m, 35, 16, 5, 'glass', 'SA-Roof03.png', 's-shop-7')
-# north sidewalk y9: 1-tile planters at party walls, dustbin, umbrella stand (low props only on a 1-tile walk)
-for px in (7, 18, 30):
-    T1(m, TN, 204, px, 9, f'pot{px}')
-# south sidewalk of the street y13 and back-hedge y14
-pole(m, 4, 13); pole(m, 21, 13); pole(m, 36, 13)
-# street-side furniture in the gaps of the hedge row, standing on y13-14
+rtown(m, 24, 1, 'n-rtown-5', wall='plaster', roof='light', front='paper', awning=False, fire=False)
+roofshop(m, 35, 2, 5, 'glass', 'SA-Roof03.png', 'n-shop-6')
+# pocket rest spot between rtown-5 and shop-6: brick paving opening onto the street, tree behind
+m.cells(blob(['.xxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx', 'xxxxx'], 30, 4), auto('SA-Road02.png'))
+rec(m, RT, 'retro-rtown-tree', 30, 0, 'plaza-tree')
+rec(m, CV, 'vending-red', 33, 4, 'vending')
+rec(m, RT, 'retro-rtown-plant-planter', 30, 5, 'plaza-planter')
+rec(m, CV, 'street-bench', 30, 8, 'plaza-bench')
+# south row (y15.., fronts on the y22-23 lane sidewalk); shops end a row higher -> forecourt notches
+roofshop(m, 0, 15, 6, 'glass', 'SA-Roof04.png', 's-shop-1')
+rtown(m, 6, 15, 's-rtown-2', roof='mid', fire=False)
+roofshop(m, 12, 15, 5, 'shutter', 'SA-Roof02.png', 's-shop-3')
+rtown(m, 17, 15, 's-rtown-4', wall='grey', roof='light', awning=False, window=False, fire=False)
+roofshop(m, 23, 15, 6, 'glass', 'SA-Roof01.png', 's-shop-5')
+rtown(m, 29, 15, 's-rtown-6', wall='plaster', roof='dark', fire=False)
+roofshop(m, 35, 15, 4, 'shutter', 'SA-Roof03.png', 's-shop-7')
+# street furniture on the 2-row south sidewalk (y13-14): whole streetlamps at uneven spacing, post, dustbin, bikes
+for lx in (3, 16, 27, 38): loose(m, 'streetlamp.png', 2, lx, 11, f'lamp{lx}')
 R(m, 'post.png', 0, 0, 1, 2, 9, 13, 'post')
+rec(m, RT, 'retro-rtown-dustbin', 21, 13, 'dustbin')
 R(m, 'bicycle01.png', 0, 0, 1, 2, 31, 13, 'bike1'); R(m, 'bicycle01.png', 0, 2, 1, 2, 32, 13, 'bike2')
-rec(m, RT, 'retro-rtown-dustbin', 14, 13, 'dustbin')
-for x in range(40):
-    if free(x, 14): m.put(x, 14, tile(TN, 167 if x % 2 else 159)); OWN[(x, 14)] = 'hedge'
-# back lane sidewalk y23: pots at doors, a bus stop at the lane end
-for px in (12, 23, 35): T1(m, TN, 204, px, 23, f'pot-s{px}')
-R(m, 'busstop.png', 1, 0, 1, 3, 39, 23, 'busstop')
+rec(m, RT, 'retro-rtown-flower-planter', 12, 13, 'planter-a'); rec(m, RT, 'retro-rtown-flower-planter', 13, 13, 'planter-b')
+# north sidewalk pots only at the set-back forecourt
+T1(m, TN, 204, 7, 8, 'pot-n1'); T1(m, TN, 204, 11, 8, 'pot-n2')
+# lane side: pots beside doors, bus stop in the side passage at the lane end
+T1(m, TN, 204, 12, 22, 'pot-s12'); T1(m, TN, 204, 28, 22, 'pot-s28')
+R(m, 'busstop.png', 1, 0, 1, 3, 39, 21, 'busstop')
 finish(m)

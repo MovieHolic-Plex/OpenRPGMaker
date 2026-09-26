@@ -191,33 +191,86 @@ def finish(m):
     assert not holes, f'unfilled ground {holes[:5]}'
     m.save()
 # ---- end helpers ----
-
-m = Map('m11_farm_road', '시골 밭길', 40, 30, 'exterior', '흙 농로가 밭 사이를 지나고 동쪽으로 수로가 흐른다. 이랑마다 다른 작물, 허수아비, 유채꽃 둑과 기복 있는 언덕, 농가 한 채.')
-m.fill(0, 0, 40, 30, auto('SA-Grass01.png'))
-m.fill(0, 0, 14, 10, auto('SA-Undulation01.png'))                  # rolling hill NW
-m.fill(1, 1, 12, 8, auto('SA-Undulation02.png'), 'up')
-m.fill(0, 12, 40, 2, auto('SA-GRoad02.png'))                       # paved farm road E-W
-m.fill(18, 0, 2, 30, auto('SA-GroundG05.png'))                     # dirt track N-S
-m.fill(33, 0, 3, 30, auto('SA-Ditch04.png')); claim(m, 33, 0, 3, 12, 'ditch-n'); claim(m, 33, 14, 3, 16, 'ditch-s')
-m.fill(33, 12, 3, 2, auto('SA-GRoad02.png'))                       # culvert crossing
-m.fill(31, 0, 2, 12, auto('SA-Nanohana01.png'), 'up'); m.fill(36, 14, 3, 16, auto('SA-Nanohana01.png'), 'up')
-# fields: each plot a different Hatake family, crops on the furrows (vege chip), one scarecrow
-plots = [(1, 15, 7, 6, 'SA-Hatake01.png', 4), (9, 15, 8, 6, 'SA-Hatake02.png', 16),
-         (1, 22, 7, 7, 'SA-HatakeB01.png', None), (9, 22, 8, 7, 'SA-Hatake05.png', 20),
-         (21, 15, 10, 6, 'SA-HatakeB03.png', 8), (21, 22, 10, 7, 'SA-Hatake04.png', 12),
-         (21, 1, 9, 5, 'SA-HatakeB05.png', None), (21, 7, 9, 4, 'SA-Hatake06.png', 24)]
-for (x, y, w, h, f, crop) in plots:
-    m.fill(x, y, w, h, auto(f)); claim(m, x, y, w, h, f'field{x},{y}')
-    if crop is not None:
-        for i, xx in enumerate(range(x + 1, x + w - 1)):
-            if i % 3 == 2: continue
-            m.put(xx, y + h // 2, tile('vege.png', crop + (i % 2)))
-m.image('vege.png', 26, 16, (64, 0, 96, 64))                       # scarecrow (whole 32x64) in the wheat plot
-m.image('vege.png', 4, 23, (96, 0, 128, 64))
-# farmhouse on the hill edge, pine, persimmon-like ume, chestnut
-ax, ay = jhouse(m, 2, 1, 4, 'farmhouse', wall='wood', roof='light') if False else (None, None)
-kit(m, 'home-red-gable', 6, 1, 'farmhouse')
-m.fill(8, 10, 1, 2, auto('SA-GroundG05.png'))
-pine(m, 1, 1, 'pine'); loose(m, 'ume.png', 2, 13, 1, 'ume')
-loose(m, 'himawari.png', 2, 36, 1, 'sunflowers')
+import math, random
+W_, H_ = 40, 30
+m = Map('m11_farm_road', '시골 밭길', W_, H_, 'exterior', '굽은 포장 농로가 서쪽에서 동쪽으로 비스듬히 지나고, 수로는 북쪽 끝에서 남쪽 끝까지 휘어 흐르며 농로 밑 암거로 빠진다. 크기와 방향이 제각각인 밭, 허수아비, 유채꽃 둑, 남서 기복 언덕, 생울타리·물통·항아리·손수레가 있는 농가 마당.')
+def ell(cx, cy, rx, ry): return {(x, y) for y in range(H_) for x in range(W_) if ((x + .5 - cx) / rx) ** 2 + ((y + .5 - cy) / ry) ** 2 <= 1}
+def box(x, y, w, h): return {(xx, yy) for yy in range(y, y + h) for xx in range(x, x + w)}
+def dil(s, r=1): return {(x + dx, y + dy) for (x, y) in s for dx in range(-r, r + 1) for dy in range(-r, r + 1) if 0 <= x + dx < W_ and 0 <= y + dy < H_}
+def seg(p, q, c):
+    (ax, ay), (bx, by) = p, q; vx, vy = bx - ax, by - ay; L2 = vx * vx + vy * vy
+    t = max(0, min(1, ((c[0] - ax) * vx + (c[1] - ay) * vy) / L2)) if L2 else 0
+    return math.hypot(ax + t * vx - c[0], ay + t * vy - c[1])
+def walk(pts, w=1.0):
+    return {(x, y) for y in range(H_) for x in range(W_) if min(seg(pts[i], pts[i + 1], (x + .5, y + .5)) for i in range(len(pts) - 1)) <= w}
+def claimset(s, name):
+    for (x, y) in sorted(s): claim(m, x, y, 1, 1, name)
+m.fill(0, 0, W_, H_, auto('SA-Grass01.png'))
+# ---- channels: paved road bends W->E, the ditch meanders N edge -> S edge and passes under the road (culvert)
+road = walk([(-1, 12.2), (9, 12.4), (15, 13.6), (22, 15.2), (30, 15.4), (41, 14.2)], 1.0)
+ditch = walk([(31.2, -1), (30.6, 6), (32.4, 11), (33.2, 17), (35.6, 23), (35.0, 31)], 1.15)
+# the ditch stays continuous on the ground layer and the road deck is drawn over it on the upper layer, so the
+# channel passes under the road (culvert) and both ends run off the map edges - no autotile end caps anywhere
+road_ref = auto('SA-GRoad02.png')
+m.cells(ditch, auto('SA-Ditch04.png')); m.cells(road - ditch, road_ref); m.cells(road, road_ref, 'up')
+claimset(road, 'road'); ditch -= road; claimset(ditch, 'ditch')
+bank = dil(ditch) - ditch - road
+# ---- dirt tracks: one bends south from the road to the bottom edge, one climbs north to the top edge
+track = walk([(18.8, 14.6), (18.2, 19), (16.4, 24), (16.8, 31)], 0.7) | walk([(20.5, 14.2), (21.6, 8), (20.6, 3), (21.2, -1)], 0.7)
+track -= road
+# ---- farmhouse yard (NW): packed-earth yard of uneven outline, house, hedge on two sides, well-bucket, jars, barrow
+yard = (box(1, 9, 11, 2) | box(2, 8, 3, 1) | box(8, 8, 3, 1) | ell(10.5, 10.2, 2.4, 1.6) | box(4, 11, 3, 1)) - road
+yardpath = walk([(5.5, 11.0), (6.2, 12)], 0.6) - road
+m.cells(yard | yardpath | track, auto('SA-GroundG05.png')); claimset(track, 'track'); claimset(yardpath, 'yardpath')
+stones = {(5, 9), (5, 10), (6, 11)} | yardpath                     # stone approach from the genkan to the road
+m.cells(stones, auto('SA-Stone01.png'))
+kbed = {(7, 9), (8, 9), (7, 10), (8, 10), (9, 10)}                   # kitchen-garden bed beside the house
+m.cells(kbed, auto('SA-HatakeB02.png')); claimset(kbed, 'kbed')
+for c in ((7, 9), (8, 10)): m.put(*c, tile('vege.png', 16 + c[0] % 2))
+tuft = {(1, 9), (1, 10), (11, 9), (12, 10)} & yard
+m.cells(tuft, auto('SA-Grass01.png'))
+kit(m, 'home-red-gable', 3, 0, 'farmhouse')                         # door (5,8), approach (5,9) on the yard
+R(m, TN, 0, 17, 3, 2, 0, 5, 'hedge-w'); R(m, 'yukiyanagi.png', 0, 0, 2, 2, 9, 2, 'shrub-n'); R(m, TN, 0, 17, 3, 2, 10, 5, 'hedge-e')
+rec(m, SE, 'retro-sento-water-bucket', 2, 9, 'bucket'); rec(m, RT, 'retro-rtown-lidded-jar', 9, 8, 'jar-a'); rec(m, RT, 'retro-rtown-open-jar', 10, 8, 'jar-b')
+loose(m, 'koji1.png', 7, 11, 10, 'barrow')
+pine(m, 0, 1, 'pine'); loose(m, 'ume.png', 2, 11, 0, 'ume')
+# ---- rolling hill (SW) and its brow
+hill = (ell(3.2, 27.0, 5.4, 3.6) | ell(9.0, 30.0, 4.2, 1.9)) - road - track
+m.cells(hill, auto('SA-Undulation01.png')); m.cells(ell(3.0, 27.4, 3.6, 2.2) & hill, auto('SA-Undulation02.png'), 'up')
+claimset(hill, 'hill')
+# ---- fields: sizes, orientation and outline differ; each a different Hatake family
+rng = random.Random(11)
+fields = [
+    ('SA-Hatake01.png', box(14, 2, 6, 4) | box(15, 6, 5, 3), 4, 'row'),                  # tall, notched SW
+    ('SA-HatakeB05.png', box(23, 1, 6, 3), None, None),                                  # narrow strip N
+    ('SA-Hatake06.png', box(23, 5, 5, 6) - {(27, 10)}, 24, 'col'),                        # upright plot, columns
+    ('SA-Hatake02.png', box(1, 15, 9, 3) | box(1, 18, 5, 3), 16, 'row'),                 # L-shape
+    ('SA-HatakeB01.png', box(10, 16, 5, 5) - box(13, 16, 2, 1), None, None),             # trimmed by the road bend
+    ('SA-Hatake05.png', box(6, 22, 8, 3) | box(11, 25, 4, 3), 20, 'row'),                 # stepped
+    ('SA-HatakeB03.png', box(20, 18, 11, 4) - box(27, 18, 4, 1), 8, 'row'),               # wide, bitten NE
+    ('SA-Hatake04.png', box(21, 23, 5, 6) | box(26, 25, 5, 4), 12, 'col'),                # two-tier
+]
+SCARE = {(26, 19), (26, 20), (3, 18), (3, 19)}
+for i, (f, s, crop, orient) in enumerate(fields):
+    s = {c for c in s if c not in OWN} - bank
+    m.cells(s, auto(f)); claimset(s, f'field{i}')
+    if crop is None: continue
+    xs = sorted({x for x, _ in s}); ys = sorted({y for _, y in s})
+    lines = ys[1:-1:2] if orient == 'row' else xs[1:-1:2]
+    for k, ln in enumerate(lines):
+        run = sorted(c for c in s if (c[1] if orient == 'row' else c[0]) == ln)
+        gap = rng.randrange(2, 5)
+        for j, (x, y) in enumerate(run[1:-1]):
+            if j == gap or rng.random() < 0.18: gap = j + rng.randrange(3, 7); continue
+            if (x, y) not in SCARE: m.put(x, y, tile('vege.png', crop + rng.randrange(2)))
+m.image('vege.png', 26, 19, (64, 0, 96, 64)); m.image('vege.png', 3, 18, (96, 0, 128, 64))   # two scarecrows
+# ---- rape blossom on stretches of the ditch bank (not all of it), sunflowers east of the ditch
+nano = {c for c in bank if c[1] < 9 or 18 <= c[1] <= 25} - set(OWN)
+m.cells(nano, auto('SA-Nanohana01.png'), 'up'); claimset(nano, 'nanohana')
+loose(m, 'himawari.png', 2, 36, 2, 'sunflowers'); loose(m, 'ume.png', 3, 35, 8, 'ume-e')
+patch = (box(37, 18, 3, 5) | box(38, 23, 2, 4)) - set(OWN)
+m.cells(patch, auto('SA-Hatake03.png')); claimset(patch, 'field-e')
+for y in (19, 21, 24):
+    for x in (38,) if y != 21 else (38, 37):
+        if (x, y) in patch: m.put(x, y, tile('vege.png', 6 + (x + y) % 2))
 finish(m)

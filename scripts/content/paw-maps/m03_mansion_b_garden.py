@@ -194,32 +194,85 @@ def finish(m):
 
 V = 'b'; SH = 'ST-MsionB-E01.png'
 def mx(rid, x, y, name=None): rec(m, SH, f'msex-b-' + rid, x, y, name or f'{rid}@{x},{y}')
-m = Map('m03_mansion_b_garden', '양관 B 정원', 36, 26, 'exterior', '푸른 지붕 양관. 생울타리로 둘러싼 정원, 남문에서 현관까지 포장길, 서쪽 티 테라스와 벽돌 화단의 장미.')
+def blob(rows, x0, y0): return [(x0 + dx, y0 + dy) for dy, r in enumerate(rows) for dx, c in enumerate(r) if c == 'x']
+m = Map('m03_mansion_b_garden', '양관 B 정원', 36, 26, 'exterior', '푸른 지붕 양관. 들쭉날쭉한 생울타리, 남문에서 원형 화단을 돌아 현관으로 가는 길, 서쪽 티 테라스, 동쪽 벤치 정자, 모서리를 깎은 장미 화단.')
 m.fill(0, 0, 36, 26, auto('SA-GrassD01.png'))
-# hedge ring with a south gate gap (x16..18)
-for x in range(36):
-    for y in (0, 25):
-        if y == 25 and 16 <= x <= 18: continue
-        m.cells([(x, y)], auto('SA-GBorderA01.png')); claim(m, x, y, 1, 1, 'hedge')
-for y in range(1, 25):
-    for x in (0, 35): m.cells([(x, y)], auto('SA-GBorderA01.png')); claim(m, x, y, 1, 1, 'hedge')
-# paths: gate -> porch, and an east-west garden walk
-m.fill(16, 11, 3, 15, auto('SA-Road01.png'))
-m.fill(3, 17, 30, 2, auto('SA-Road01.png'))
+# ---- hedge outline: chamfered corners, west notch, east inset bay, south gate (x16..18)
+H = ['..xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx..',
+     '.xx..............................xx.',
+     'xx................................xx',
+     'x..................................x',
+     'x..................................x',
+     'x..................................x',
+     'x..................................x',
+     'x..................................x',
+     'x..................................x',
+     'x................................xxx',
+     'x................................x..',
+     'x................................x..',
+     'xxx..............................x..',
+     '..x..............................x..',
+     '..x..............................xxx',
+     '..x................................x',
+     '..x................................x',
+     '..x................................x',
+     '..x................................x',
+     'xxx................................x',
+     'x..................................x',
+     'xx................................xx',
+     '.xxxxxxxxxxxxxxx...xxxxxxxxxxxxxxxx.',
+     '....................................',
+     '....................................',
+     '....................................']
+hedge = blob(H, 0, 0)
+m.cells(hedge, auto('SA-GBorderA01.png'))
+for c in hedge: claim(m, c[0], c[1], 1, 1, 'hedge')
+# lane outside the south gate
+m.fill(0, 23, 36, 3, auto('SA-Road01.png'))
 comp(m, 'msex-b-whole-house', 14, 1, 'house')          # 7x10, porch (17,10) -> approach (17,11)
-
-# west lawn: tea terrace
-mx('tea-table', 5, 8); mx('tea-stool', 4, 10, 'stool-l'); mx('tea-stool', 7, 10, 'stool-r')
-mx('topiary-tall', 2, 1, 'top-nw'); mx('topiary-tall', 32, 1, 'top-ne')
-mx('topiary-round', 11, 1, 'rnd-a'); mx('topiary-round', 23, 1, 'rnd-b')
-# brick flowerbeds with roses along the walk
-m.fill(3, 13, 9, 3, auto('SA-Kadan01.png')); claim(m, 3, 13, 9, 3, 'bed-w')
-m.fill(24, 13, 9, 3, auto('SA-Kadan01.png')); claim(m, 24, 13, 9, 3, 'bed-e')
-for i, x in enumerate((4, 7, 9)): R(m, SH, (0, 2, 0)[i], 9, 2, 2, x, 13, False)
-for i, x in enumerate((25, 28, 30)): R(m, SH, (2, 0, 2)[i], 9, 2, 2, x, 13, False)
-# south lawn: benches facing the walk, flower pedestals at the gate
-mx('bench-back', 6, 20, 'bench-w'); mx('bench-back', 27, 20, 'bench-e')
-mx('flower-pedestal', 14, 22, 'ped-l'); mx('flower-pedestal', 20, 22, 'ped-r')
-m.fill(2, 21, 3, 3, auto('SA-Flower01.png'), 'up'); m.fill(31, 21, 3, 3, auto('SA-Flower01.png'), 'up')
-mx('rose-red', 22, 11, 'rose-porch-r'); mx('rose-pink', 12, 11, 'rose-porch-l')
+# ---- paths: porch -> ring round the parterre -> gate -> lane; side walks jog to terrace and arbour
+walk = blob(['...xxx...',          # y11
+             '..xxxxx..',          # y12
+             '.xxxxxxx.',          # y13
+             'xxx...xxx',          # y14
+             'xx.....xx',          # y15
+             'xx.....xx',          # y16
+             'xx.....xx',          # y17
+             'xxx...xxx',          # y18
+             '.xxxxxxx.',          # y19
+             '..xxxxx..',          # y20
+             '...xxx...',          # y21
+             '...xxx...',          # y22
+             '...xxx...'], 13, 11) # y23
+walk += blob(['.xxx........',       # west walk: terrace -> ring, stepping down
+              '.xxxxxxx....',
+              '......xxxxxx'], 3, 13)
+walk += blob(['......xxxxx',        # east walk: ring -> arbour, stepping up
+              '..xxxxxx...',
+              'xxxx.......'], 21, 12)
+terrace = blob(['.xxxxx.', 'xxxxxxx', 'xxxxxxx', 'xxxxxx.', '.xxxx..'], 3, 8)
+arbour = blob(['..xxxx', '.xxxxx', 'xxxxxx', 'xxxxx.'], 26, 8)
+m.cells(walk + terrace + arbour, auto('SA-Road01.png'))
+# ---- parterre: round brick bed inside the ring, flower pedestal as its centrepiece
+bed_c = blob(['.xxx.', 'xxxxx', 'xxxxx', 'xxxxx', '.xxx.'], 15, 14)
+m.cells(bed_c, auto('SA-Kadan01.png')); [claim(m, x, y, 1, 1, 'parterre') for x, y in bed_c]
+m.cells([(16, 15), (18, 15), (16, 17), (18, 17), (16, 16), (18, 16)], auto('SA-Flower01.png'), 'up')
+q = CATALOG['recipes'][SH]['msex-b-flower-pedestal']['rect']; m.rect(SH, q['x'], q['y'], 1, 2, 17, 15)
+# ---- tea terrace (west) and bench arbour (east)
+mx('tea-table', 5, 9); mx('tea-stool', 4, 10, 'stool-l'); mx('tea-stool', 7, 10, 'stool-r')
+mx('bench-front', 28, 8, 'bench-arb'); mx('topiary-round', 32, 6, 'rnd-arb')
+mx('topiary-tall', 3, 2, 'top-nw'); mx('topiary-tall', 31, 1, 'top-ne')
+mx('topiary-round', 10, 2, 'rnd-a'); mx('topiary-round', 23, 2, 'rnd-b')
+mx('rose-pink', 12, 9, 'rose-porch-l'); mx('rose-red', 21, 9, 'rose-porch-r')
+# ---- rose beds: L-shaped / notched, roses stand on the brick
+bed_w = blob(['xxxxxxx.', 'xxxxxxxx', '....xxxx'], 4, 17)
+bed_e = blob(['.xxxxxxx', 'xxxxxxxx', 'xxxxx...'], 22, 16)
+for nm, b in (('bed-w', bed_w), ('bed-e', bed_e)):
+    m.cells(b, auto('SA-Kadan01.png')); [claim(m, x, y, 1, 1, nm) for x, y in b]
+for (x, y, v) in ((4, 17, 0), (8, 18, 2), (23, 16, 2), (27, 16, 0)): R(m, SH, v, 9, 2, 2, x, y, False)
+# ---- flower drifts in the south corners (grouped, not dots) and benches facing the parterre
+fl = blob(['xxx..', 'xxxxx', '.xxx.'], 3, 19) + blob(['..xxx', 'xxxxx', '.xxx.'], 28, 19)
+m.cells(fl, auto('SA-Flower01.png'), 'up'); [claim(m, x, y, 1, 1, 'flowers') for x, y in fl]
+mx('bench-back', 10, 20, 'bench-w'); mx('bench-back', 23, 20, 'bench-e')
+mx('flower-pedestal', 14, 20, 'ped-l'); mx('flower-pedestal', 20, 20, 'ped-r')
 finish(m)

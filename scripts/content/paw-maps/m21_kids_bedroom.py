@@ -14,31 +14,22 @@ class vx(auto):
             for c in range(6): xp.alpha_composite(s.crop((q[c] * 16, 32 + q[r] * 16, q[c] * 16 + 16, 48 + q[r] * 16)), (c * 16, 32 + r * 16))
         self._xp = xp
     def image(self, mask): return pawlib._xp_piece(self._xp, mask)
-def plan(m, rows, mats, ceil, wall_sheet, walls):
-    """rows: '#' ceiling autotile, 'D' open doorway (no wall face), other chars -> mats[c] (lower layer).
-    Wall faces (len(walls) rows) drop under every ceiling cell whose south cell is open; they stop at the next '#'."""
-    m.grid, m.wallc, m.occ = rows, set(), {}
-    for y, r in enumerate(rows):
-        assert len(r) == m.w, ('row width', y, len(r))
-        for x, c in enumerate(r):
-            v = ceil if c == '#' else mats[mats.get('D') and c or ('.' if c == 'D' else c)]
-            m.cells([(x, y)], v(x, y) if callable(v) else v)
-    for x in range(m.w):
-        for y in range(1, m.h):
-            if rows[y][x] not in '#D' and rows[y - 1][x] == '#':
-                k = 0; ws = walls(x) if callable(walls) else walls
-                while k < len(ws) and y + k < m.h and rows[y + k][x] not in '#D':
-                    wt = ws[k] if not isinstance(ws[k], int) else tile(wall_sheet(x) if callable(wall_sheet) else wall_sheet, ws[k])
-                    m.cells([(x, y + k)], wt); m.wallc.add((x, y + k)); k += 1
+def wl(name, ids):
+    """wall-face rows (top->bottom) as tiles of one sheet, for m.layout(walls=...)"""
+    return [tile(name, t) for t in ids]
 def claim(m, x, y, w, h, wall, label):
-    """checks: in bounds, no '#'/doorway cell, standing bottom row on floor, wall-mounted fully on wall face, no overlap per layer"""
+    """checks on m.cls (set by m.layout): in bounds, never on ceiling 'C' or doorway 'D', wall-mounted fully on wall face 'W',
+    standing base row on floor 'F', no overlap per layer"""
+    occ = m.__dict__.setdefault('occ', {})
     for yy in range(y, y + h):
         for xx in range(x, x + w):
-            assert 0 <= xx < m.w and 0 <= yy < m.h and m.grid[yy][xx] not in '#D', ('blocked cell', label, xx, yy)
-            if wall: assert (xx, yy) in m.wallc, ('wall item off wall', label, xx, yy)
-            k = (xx, yy, wall); assert k not in m.occ, ('overlap', label, xx, yy, m.occ[k]); m.occ[k] = label
+            assert 0 <= xx < m.w and 0 <= yy < m.h, ('out of map', label, xx, yy)
+            c = m.cls[yy][xx]
+            assert c not in 'CD', ('on ceiling/doorway', label, xx, yy, c)
+            if wall: assert c == 'W', ('wall item off wall face', label, xx, yy)
+            k = (xx, yy, wall); assert k not in occ, ('overlap', label, xx, yy, occ[k]); occ[k] = label
     if not wall:
-        for xx in range(x, x + w): assert (xx, y + h - 1) not in m.wallc, ('standing base on wall', label, xx)
+        for xx in range(x, x + w): assert m.cls[y + h - 1][xx] == 'F', ('standing base not on floor', label, xx, y + h - 1)
 def place(m, name, sx, sy, w, h, x, y, wall=False, label=''):
     claim(m, x, y, w, h, wall, label or name); m.rect(name, sx, sy, w, h, x, y)
 def obj(m, name, box, x, y, wall=False, label=''):
@@ -54,6 +45,27 @@ def door(m, name, x, y, col=0):
     fw = sheet(name).width // 4; fh = sheet(name).height // 4
     claim(m, x, y, 1, 2, True, name)
     m.image(name, x, y, (col * fw, 0, col * fw + fw, fh))
+def finish(m):
+    """every doorway and every free floor cell must be reachable on foot (floor/door cells not under standing furniture)"""
+    occ = m.__dict__.get('occ', {})
+    free = {(x, y) for y in range(m.h) for x in range(m.w) if m.cls[y][x] in 'FD' and (x, y, False) not in occ}
+    doors = sorted(p for p in free if m.cls[p[1]][p[0]] == 'D')
+    assert doors, ('no doorway', m.id)
+    seen, st = {doors[0]}, [doors[0]]
+    while st:
+        a, b = st.pop()
+        for q in ((a + 1, b), (a - 1, b), (a, b + 1), (a, b - 1)):
+            if q in free and q not in seen: seen.add(q); st.append(q)
+    rest, big = free - seen, []
+    while rest:                                    # 1-2 cell pockets beside chairs/tables are natural; larger dead floor is not
+        comp, st = set(), [rest.pop()]
+        while st:
+            p = st.pop(); comp.add(p)
+            for q in ((p[0] + 1, p[1]), (p[0] - 1, p[1]), (p[0], p[1] + 1), (p[0], p[1] - 1)):
+                if q in rest: rest.discard(q); st.append(q)
+        if len(comp) > 2 or any(m.cls[y][x] == 'D' for x, y in comp): big += sorted(comp)
+    assert not big, ('unreachable floor/doorway', m.id, big[:10])
+    m.save()
 
 def stamp(name, sx, sy, w, h):
     """repeating lower-layer pattern of a w x h block of sheet tiles (e.g. tatami 2x3): returns f(x,y)->tile"""
@@ -75,14 +87,25 @@ def a4(name, bx, band):
     return c, [cut(name, bx * 64 + 16, top + 96), cut(name, bx * 64 + 16, top + 128)]
 
 S = 'ST-Room-I01.png'
-m = Map('m21_kids_bedroom', '아이 방', 14, 11, 'interior', '이층침대·옷장·책상, 가운데 놀이 러그와 장난감, 남문 x6')
-rows = ['##############'] + ['#' + 'f' * 12 + '#'] * 5 + ['#ff' + 'r' * 7 + 'fff#'] * 3 + ['#' + 'f' * 12 + '#', '######D#######']
-plan(m, rows, {'.': tile(S, 1), 'f': tile(S, 1), 'r': auto('SA-Carpet12.png')}, auto('SA-Wall03.png'), S, [17, 25, 33])
+m = Map('m21_kids_bedroom', '아이 방', 14, 11, 'interior', '이층침대·옷장·책상 북벽, 가운데 놀이 러그, 남동 붙박이장 벽체로 ㄱ자 평면, 남서 모서리 따냄, 남문 x6')
+# L-shaped room: a built-in closet mass fills the SE corner (x10-12, rows 7-9), the SW corner is notched (x1, rows 8-9).
+rows = ['##############',
+        '#............#',
+        '#............#',
+        '#............#',
+        '#............#',
+        '#............#',
+        '#..rrrrrr....#',
+        '#..rrrrrr.####',
+        '##.rrrrrr.####',
+        '##........####',
+        '######D#######']
+m.layout(rows, {'.': tile(S, 1), 'r': auto('SA-Carpet12.png')}, auto('SA-Wall03.png'), wl(S, [17, 25, 33]))
 obj(m, 'nidanbed.png', (0, 1, 59, 109), 1, 1, label='bunk')
 R(m, S, 'personal-m-wardrobe', 3, 2); R(m, S, 'personal-m-window', 5, 1); R(m, S, 'personal-m-drawers', 7, 3)
 R(m, S, 'personal-m-clock', 8, 1); R(m, S, 'personal-m-desk', 9, 3); R(m, S, 'personal-m-chair-back', 10, 5)
 obj(m, 'wmap.png', (6, 3, 58, 38), 11, 1, wall=True, label='worldmap')
 obj(m, 'toy.png', (72, 40, 125, 82), 4, 6, label='toy-a'); obj(m, 'toy.png', (0, 0, 33, 33), 7, 7, label='toy-b')
-obj(m, 'toy.png', (4, 34, 31, 72), 9, 6, label='toy-c'); obj(m, 'doll.png', (36, 13, 59, 49), 1, 7, label='doll')
-obj(m, 'bear.png', (19, 18, 80, 95), 11, 6, label='bear')
-m.save()
+obj(m, 'toy.png', (4, 34, 31, 72), 12, 3, label='toy-c'); obj(m, 'doll.png', (36, 13, 59, 49), 1, 6, label='doll')
+obj(m, 'bear.png', (19, 18, 80, 95), 2, 7, label='bear')
+finish(m)

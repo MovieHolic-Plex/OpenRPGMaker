@@ -192,39 +192,60 @@ def finish(m):
     m.save()
 # ---- end helpers ----
 
-m = Map('m07_school_front', '학교 앞마당', 44, 32, 'exterior', '2층 본관과 체육관이 운동장을 향한다. 정문은 남쪽 생울타리 가운데, 자전거 보관소와 철봉·타이어, 은행나무와 큰 교목.')
-m.fill(0, 0, 44, 32, auto('SA-GroundG04.png'))   # school yard dirt
-m.fill(0, 0, 44, 13, auto('SA-Concrete02.png'))           # paved apron in front of the buildings
-m.fill(0, 29, 44, 3, auto('SA-Asphalt02.png'))            # street outside the gate
-dr = school_main(m, 1, 0, 26, floors=2, roof='SA-Roof01.png')   # 26x12, door approach (13,12)
-# gym (x29..40): SC gym roof nine-slice + wall with windows and double door (TOWN.md)
-GX, GY_, GW = 30, 1, 10
+m = Map('m07_school_front', '학교 앞마당', 44, 32, 'exterior', '2층 본관과 체육관이 운동장을 향한다. 정문은 남쪽 생울타리, 본관 앞 좁은 포장 띠와 현관 광장에서 정문까지 포장길, 보도·연석 너머 스쿨존 횡단보도.')
+def cells(ranges):
+    """ranges: {y: [(x0, x1), ...]} inclusive -> cell list"""
+    return [(x, y) for y, rs in ranges.items() for a, b in rs for x in range(a, b + 1)]
+GRASS, DIRT, CONC, WALK, ROAD = auto('SA-GrassE01.png'), auto('SA-GroundG04.png'), auto('SA-Concrete02.png'), auto('SA-Concrete01.png'), auto('SA-Asphalt02.png')
+m.fill(0, 0, 44, 28, GRASS)                                   # planted margins, beds, the gap between the buildings
+# yard dirt: irregular outline, pulled away from the west ginkgo bed and the east big-tree bed
+m.cells(cells({14: [(5, 38)], 15: [(5, 38)], 16: [(5, 38)], 17: [(5, 38)], 18: [(5, 36)], 19: [(5, 36)], 20: [(5, 36)],
+               21: [(5, 36)], 22: [(5, 36)], 23: [(3, 36)], 24: [(3, 34)], 25: [(4, 32)]}), DIRT)
+# paved apron: a narrow strip along the main building, wider porch at the gym, a plaza at the entrance, path to the gate
+m.cells(cells({12: [(1, 41)], 13: [(2, 9), (11, 18), (21, 26), (32, 39)], 14: [(11, 17)], 15: [(12, 16)]}), CONC)
+m.cells(cells({y: [(13, 14)] for y in range(16, 24)}), CONC)
+m.cells(cells({24: [(11, 16)], 25: [(11, 16)], 26: [(13, 14)], 27: [(13, 14)]}), CONC)
+m.fill(0, 28, 44, 2, WALK)                                    # sidewalk with its kerb edge against the street
+m.fill(0, 30, 44, 2, ROAD)                                    # street outside the gate
+dr = school_main(m, 2, 0, 26, floors=2, roof='SA-Roof01.png')   # 26x12, x2..27, door x14-15, approach (14,12)
+# gym (x31..40, y1..11): SC gym roof nine-slice + wall with two-row windows and double door (TOWN.md)
+GX, GY_, GW = 31, 1, 10
 claim(m, GX, GY_, GW, 11, 'gym')
 nine(m, GX, GY_, GW, 6, SC, 0, 39, cols=(0, 1, 1, 2), rows=(0, 1, 3))
 for dy in range(6, 11): m.fill(GX, GY_ + dy, GW, 1, tile(SC, 249 if dy == 10 else 241), 'up')
-for dx in range(1, GW - 1): m.put(GX + dx, GY_ + 7, tile(SC, 266 + (dx % 2 == 0)))
+for dx in range(1, GW - 1):
+    m.put(GX + dx, GY_ + 7, tile(SC, 266 + (dx % 2 == 0))); m.put(GX + dx, GY_ + 8, tile(SC, 274 + (dx % 2 == 0)))
 for dx, t in ((4, 280), (5, 281)): m.put(GX + dx, GY_ + 9, tile(SC, t)); m.put(GX + dx, GY_ + 10, tile(SC, t + 8))
-rec(m, SC, 'school-shrub', 28, 10, 'shrub1'); rec(m, SC, 'school-shrub', 41, 10, 'shrub2')
-# yard: track loop, backstop, iron bars, tires, trees
-for ly in (15, 24):
-    for xx in range(6, 34): T1(m, SC, 14, xx, ly, False)
-for xx in (6, 33):
-    for yy in range(15, 25): T1(m, SC, 6, xx, yy, False)
-R(m, SC, 5, 49, 2, 4, 1, 14, 'backstop')
-R(m, SC, 0, 53, 4, 2, 36, 14, 'iron-bars')
-R(m, SC, 3, 55, 2, 2, 37, 18, 'tires')
-rec(m, SC, 'school-large-tree', 38, 21, 'big-tree')
-loose(m, 'icho2.png', 0, 0, 20, 'ginkgo')
-rec(m, SC, 'school-bench', 12, 26, 'bench-1'); rec(m, SC, 'school-bench', 26, 26, 'bench-2')
-# gym side: basketball balls cage by the gym door
-rec(m, GY, 'gym-cone', 16, 20, 'cone1'); rec(m, GY, 'gym-cone', 22, 20, 'cone2')
-# south hedge with the gate (SC 0,48 / 2,48 posts), bikes, stele
-gate = 20
-for dx in range(0, 44):
+# planting between and beside the buildings: mixed species, staggered heights
+rec(m, SC, 'school-conifer', 28, 1, 'conifer')
+rec(m, SC, 'school-bare-tree', 28, 7, 'bare-tree')
+rec(m, SC, 'school-shrub', 30, 9, 'shrub1')
+rec(m, SC, 'school-shrub', 42, 4, 'shrub2'); rec(m, SC, 'school-shrub', 41, 9, 'shrub3')
+pine(m, 0, 2, 'pine-w')
+# bicycle parking on the apron by the west end of the main building (mixed models, uneven gaps)
+for bx, by, t in ((3, 12, 0), (4, 12, 3), (6, 12, 6), (8, 12, 0)): loose(m, 'bicycle01.png', t, bx, by, f'bike{bx}')
+# yard: running-track loop east of the path, backstop and iron bars at the edges, cones inside the loop
+for ly in (16, 23):
+    for xx in range(17, 35): T1(m, SC, 14, xx, ly, False)
+for xx in (17, 34):
+    for yy in range(16, 24): T1(m, SC, 6, xx, yy, False)
+R(m, SC, 5, 49, 2, 4, 6, 14, 'backstop')
+R(m, SC, 0, 53, 3, 2, 35, 15, 'iron-bars')            # 3 cols: col 3 of the sheet belongs to another object
+R(m, SC, 3, 55, 2, 2, 35, 19, 'tires')
+rec(m, GY, 'gym-cone', 22, 19, 'cone1'); rec(m, GY, 'gym-cone', 28, 21, 'cone2')
+# trees: ginkgo in the west bed, the big school tree in the east bed, at different heights
+loose(m, 'icho2.png', 0, 0, 16, 'ginkgo')
+rec(m, SC, 'school-large-tree', 39, 18, 'big-tree')
+rec(m, SC, 'school-bench', 8, 25, 'bench-1'); rec(m, SC, 'school-bench', 23, 14, 'bench-2')
+# south hedge with the gate on the path (SC 0,48 / 2,48 posts); west corner left as a grass bed with the pole
+gate = 12
+for dx in range(3, 44):
     if gate <= dx <= gate + 3: continue
-    c = 0 if dx == 0 else 2 if dx == 43 else 1
-    R(m, SC, c, 16, 1, 2, dx, 27, 'hedge-s')
-R(m, SC, 0, 48, 1, 2, gate, 27, 'gate-l'); R(m, SC, 2, 48, 1, 2, gate + 3, 27, 'gate-r')
-for bx, t in ((4, 0), (5, 3), (7, 6), (8, 0)): loose(m, 'bicycle01.png', t, bx, 13 + 12, f'bike{bx}')
-pole(m, 30, 31); R(m, 'post.png', 0, 0, 1, 2, 26, 29, 'post')
+    c = 0 if dx in (3, gate + 4) else 2 if dx in (43, gate - 1) else 1
+    R(m, SC, c, 16, 1, 2, dx, 26, 'hedge-s')
+R(m, SC, 0, 48, 1, 2, gate, 26, 'gate-l'); R(m, SC, 2, 48, 1, 2, gate + 3, 26, 'gate-r')
+pole(m, 1, 29); R(m, 'post.png', 0, 0, 1, 2, 19, 28, 'post')
+# school-zone crossing in front of the gate (N-S walk: CV 14 two columns)
+for yy in (30, 31):
+    for xx in (13, 14): T1(m, CV, 14, xx, yy, False)
 finish(m)

@@ -192,38 +192,79 @@ def finish(m):
     m.save()
 # ---- end helpers ----
 
-m = Map('m12_shrine_temple', '신사와 절 경내', 44, 32, 'exterior', '서쪽은 이나리 신사: 붉은 도리이 줄을 지나 여우상과 사당. 동쪽은 절: 이끼 정원, 종루의 범종, 돌담 안 묘지와 지장보살. 남쪽 참배길로 이어진다.')
+def spans(rows):
+    """{y: (x0, x1)} -> cell set (irregular outline row by row)"""
+    return {(x, y) for y, (a, b) in rows.items() for x in range(a, b + 1)}
+def brush(pts, w=2):
+    """cells swept by a w x w brush along a polyline (winding paths; autotiles join on any cell set)"""
+    out = set()
+    for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+        n = max(abs(x1 - x0), abs(y1 - y0), 1)
+        for i in range(n + 1):
+            cx, cy = round(x0 + (x1 - x0) * i / n), round(y0 + (y1 - y0) * i / n)
+            out |= {(cx + a, cy + b) for a in range(w) for b in range(w)}
+    return out
+def ring(inner):
+    """1-cell wall ring = 8-neighbour boundary of an interior cell set"""
+    return {(x + a, y + b) for x, y in inner for a in (-1, 0, 1) for b in (-1, 0, 1)} - inner
+PATH = set()
+def onpath(x, y, w, h): assert not any((xx, yy) in PATH for xx in range(x, x + w) for yy in range(y, y + h)), ('on path', x, y)
+
+m = Map('m12_shrine_temple', '신사와 절 경내', 44, 32, 'exterior', '서쪽은 이나리 신사: 돌 기단 위 사당과 붉은 도리이 줄. 동쪽은 절: 이끼 정원, 돌 기단의 범종, 굽은 돌길로 들어가는 돌담 묘지와 지장보살. 남쪽 참배길로 이어진다.')
 m.fill(0, 0, 44, 32, auto('SA-GrassD02.png'))
-m.fill(0, 28, 44, 4, auto('SA-Ground-St01.png'))                     # stone approach road
-m.fill(2, 12, 16, 16, auto('SA-GroundY01.png'))                      # shrine gravel yard
-m.fill(8, 12, 4, 16, auto('SA-SRoad01.png'))
-m.fill(24, 2, 18, 24, auto('SA-GroundG06.png'))                      # temple yard
-m.fill(25, 14, 8, 7, auto('SA-Moss02.png'))                          # moss garden
-m.fill(26, 15, 6, 5, auto('SA-Moss01.png'))
-# ---- shrine (west)
+# ---- south stone approach road, with small forecourts where each precinct opens onto it
+road = {(x, y) for x in range(44) for y in range(28, 32)} | {(x, 27) for x in range(6, 13)} | {(x, 27) for x in range(29, 35)} | {(x, 26) for x in range(30, 34)}
+m.cells(road, auto('SA-Ground-St01.png'))
+# ---- shrine (west): gravel precinct with a ragged edge, stone platform under the hall, straight torii approach
+yard = spans({9: (4, 14), 10: (2, 16), 11: (2, 17), 12: (3, 17), 13: (4, 17), 14: (4, 16), 15: (4, 16), 16: (3, 16), 17: (3, 16), 18: (3, 17),
+              19: (4, 17), 20: (4, 17), 21: (4, 16), 22: (5, 16), 23: (5, 16), 24: (5, 15), 25: (4, 15), 26: (4, 14), 27: (3, 13)})
+m.cells(yard - road, auto('SA-GroundY01.png'))
+base = {(x, y) for x in range(4, 15) for y in range(2, 9)} - {(x, y) for x in (4, 5, 13, 14) for y in (2, 3)} - {(4, 8), (14, 8)}
+m.cells(base, auto('SA-Ground-St01.png'))                           # stepped stone platform (kidan) under the hall
+m.cells({(x, y) for x in range(8, 11) for y in range(8, 27)}, auto('SA-SRoad01.png'))   # sando, centred on the hall (x9)
 loose(m, 'oinarisama.png', 0, 7, 2, 'shrine')                        # closed hall 5x6 (x7..11, y2..7)
-m.fill(7, 8, 5, 4, auto('SA-SRoad01.png'))
 loose(m, 'oinarisama.png', 8, 5, 6, 'fox-l'); loose(m, 'oinarisama.png', 9, 13, 6, 'fox-r')
 loose(m, 'oinarisama.png', 7, 9, 8, 'offering-box')
 loose(m, 'oinarisama.png', 12, 3, 9, 'banner-l'); loose(m, 'oinarisama.png', 13, 15, 9, 'banner-r')
 for i, y in enumerate((12, 16, 20)): loose(m, 'torii01.png', 1 + (i % 2), 8, y, f'torii{y}')     # red torii tunnel over the path
 loose(m, 'torii01.png', 0, 7, 24, 'torii-big')
-rec(m, SE, 'retro-sento-stone-lantern', 5, 14, 'lantern-l'); rec(m, SE, 'retro-sento-stone-lantern', 14, 14, 'lantern-r')
-pine(m, 0, 0, 'pine-a'); pine(m, 15, 0, 'pine-b'); pine(m, 2, 20, 'pine-c'); loose(m, 'momiji.png', 0, 13, 19, 'maple')
+rec(m, SE, 'retro-sento-stone-lantern', 5, 14, 'lantern-l'); rec(m, SE, 'retro-sento-stone-lantern', 13, 14, 'lantern-r')
+# precinct edge: trees and hedges clustered unevenly along the ragged gravel line (grass side)
+pine(m, 0, 0, 'pine-a'); pine(m, 15, 1, 'pine-b'); pine(m, 0, 10, 'pine-c'); pine(m, 1, 19, 'pine-d'); pine(m, 18, 5, 'pine-e')
+rec(m, SE, 'retro-sento-tree', 0, 14, 'tree-w')
+loose(m, 'momiji.png', 0, 13, 19, 'maple')
+R(m, TN, 0, 17, 3, 2, 1, 24, 'hedge-sw'); R(m, TN, 0, 17, 3, 2, 17, 22, 'hedge-se'); R(m, TN, 0, 17, 3, 2, 1, 6, 'hedge-nw')
 # ---- boundary between precincts: bamboo fence
 loose(m, 'takezaku.png', 0, 19, 12, 'bamboo-fence')
-# ---- temple (east): bell, stone wall graveyard, jizo, lantern
-loose(m, 'kane.png', 0, 35, 15, 'bell')
-m.cells([(x, y) for x in range(24, 42) for y in (2, 12) ] + [(x, y) for y in range(3, 12) for x in (24, 41)], auto('SA-StFence02.png'))
-for x in range(24, 42):
-    claim(m, x, 2, 1, 1, 'stwall'); 
-    if not 31 <= x <= 33: claim(m, x, 12, 1, 1, 'stwall')
-m.fill(31, 12, 3, 1, auto('SA-GroundG06.png'))                       # gate gap in the south wall
-for y in range(3, 12): claim(m, 24, y, 1, 1, 'stwall'); claim(m, 41, y, 1, 1, 'stwall')
-for (gx, gy, idx) in ((26, 4, 3), (28, 4, 4), (30, 4, 6), (35, 4, 5), (37, 4, 3), (26, 8, 7), (36, 8, 6), (38, 8, 4)):
+# ---- temple (east): irregular walled graveyard entered by a gate, winding stone path, bell on a stone base, moss garden
+grave_in = {(x, y) for x in range(25, 33) for y in range(4, 12)} | {(x, y) for x in range(29, 41) for y in range(2, 9)} | {(x, y) for x in range(33, 40) for y in range(9, 11)}
+grave_in -= {(25, 4), (26, 4), (25, 5)}                               # clipped NW corner
+wall = ring(grave_in); GATE = {(30, 12), (31, 12)}
+tyard = spans({12: (23, 42), 13: (23, 42), 14: (24, 42), 15: (23, 41), 16: (23, 41), 17: (24, 42), 18: (24, 41), 19: (23, 41), 20: (23, 40),
+               21: (24, 41), 22: (24, 41), 23: (25, 40), 24: (26, 39), 25: (27, 38), 26: (28, 36)})
+m.cells(tyard - road, auto('SA-GroundG06.png'))
+m.cells(grave_in, auto('SA-GroundG06.png'))
+moss2 = spans({15: (26, 29), 16: (24, 30), 17: (24, 30), 18: (25, 30), 19: (24, 29), 20: (25, 29), 21: (26, 28)})
+moss1 = spans({16: (26, 28), 17: (25, 29), 18: (26, 29), 19: (26, 28)})
+m.cells(moss2, auto('SA-Moss02.png')); m.cells(moss1, auto('SA-Moss01.png'))
+bell_base = {(x, y) for x in range(35, 39) for y in range(14, 18)} - {(35, 14), (38, 17)}
+m.cells(bell_base, auto('SA-Ground-St01.png'))
+PATH |= brush([(31, 26), (31, 24), (33, 22), (33, 19), (32, 17), (30, 15), (30, 12)])        # from the road forecourt to the gate
+PATH |= brush([(33, 17), (35, 16)], 1)                                                   # spur to the bell base
+PATH |= brush([(30, 11), (30, 9), (32, 7), (35, 6), (38, 5)], 1) | brush([(31, 9), (27, 8), (27, 6)], 1)   # inside: forks between the plots
+PATH -= wall - GATE; PATH -= road
+m.cells(PATH, auto('SA-SRoad01.png'))
+m.cells(wall - GATE, auto('SA-StFence02.png'))
+for c in wall - GATE: claim(m, c[0], c[1], 1, 1, 'stwall')
+rec(m, SE, 'retro-sento-stone-lantern', 29, 13, 'gate-lantern-l'); rec(m, SE, 'retro-sento-stone-lantern', 32, 13, 'gate-lantern-r')
+graves = ((26, 6, 3), (28, 5, 5), (26, 9, 7), (28, 10, 4), (30, 3, 6), (32, 3, 4), (34, 2, 7), (36, 3, 3), (39, 2, 5), (39, 6, 4), (36, 7, 6), (38, 8, 3))
+for gx, gy, idx in graves:
+    onpath(gx, gy, 1, {3: 2, 4: 2, 5: 3, 6: 2, 7: 3}[idx])
     loose(m, 'ohaka.png', idx, gx, gy, f'grave{gx},{gy}')
-loose(m, 'ohaka.png', 8, 28, 8, 'grave-fence')
-loose(m, 'ohaka.png', 2, 33, 10, 'bucket')
+onpath(33, 9, 3, 2); loose(m, 'ohaka.png', 8, 33, 9, 'grave-fence')
+onpath(27, 11, 1, 1); loose(m, 'ohaka.png', 2, 27, 11, 'bucket')
+loose(m, 'kane.png', 0, 36, 15, 'bell')
 loose(m, 'jizo.png', 0, 37, 20, 'jizo')
-rec(m, SE, 'retro-sento-stone-lantern', 30, 22, 'lantern-t')
+onpath(35, 22, 1, 2); rec(m, SE, 'retro-sento-stone-lantern', 35, 22, 'lantern-t')
+pine(m, 41, 14, 'pine-f'); rec(m, SE, 'retro-sento-tree', 40, 22, 'tree-e'); pine(m, 22, 20, 'pine-g'); R(m, TN, 0, 17, 3, 2, 24, 24, 'hedge-t')
 finish(m)

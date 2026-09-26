@@ -192,36 +192,56 @@ def finish(m):
     m.save()
 # ---- end helpers ----
 
-m = Map('m10_konbini_parking', '편의점과 주차장 거리', 40, 28, 'exterior', '길가형 편의점: 남향 가게 앞에 주차장, 그 남쪽으로 보도와 4차선 대로·횡단보도·신호등. 동쪽은 작은 사무소.')
+m = Map('m10_konbini_parking', '편의점과 주차장 거리', 40, 28, 'exterior', '길가형 편의점: 남향 가게 앞에 모서리를 따낸 주차장(정문 앞 보행 줄무늬, 빈 칸이 섞인 주차 칸), 그 남쪽으로 보도와 대로·횡단보도·신호등. 동쪽은 작은 사무소와 앞뜰.')
+def cells(ranges): return [(x, y) for y, rs in ranges.items() for a, b in rs for x in range(a, b + 1)]
+GR = auto('SA-GrassE01.png')
 m.fill(0, 0, 40, 28, auto('SA-Concrete02.png'))                    # sidewalks / lot apron
-m.fill(0, 0, 40, 2, auto('SA-GrassE01.png'))                       # verge behind the buildings
-m.fill(1, 10, 26, 8, auto('SA-Asphalt02.png'))                     # car park
+m.fill(0, 0, 40, 2, GR)                                            # verge behind the buildings
+# car park: NE corner cut for a planter bed by the pole sign, SW corner cut for a corner bed at the kerb
+m.cells(cells({11: [(1, 22)], 12: [(1, 22)], 13: [(1, 26)], 14: [(1, 26)], 15: [(1, 26)], 16: [(4, 26)], 17: [(4, 26)]}), auto('SA-Asphalt02.png'))
+m.cells(cells({10: [(24, 26)], 11: [(23, 26)], 12: [(23, 26)]}), GR)
+m.cells(cells({16: [(1, 3)], 17: [(1, 3)]}), GR)
+# office forecourt: a notched lawn east of the office path, the path from the office door (33,9) down to the signal corner
+m.cells(cells({11: [(29, 31), (36, 38)], 12: [(28, 31), (36, 39)], 13: [(28, 31), (36, 39)], 14: [(28, 31), (37, 39)], 15: [(29, 31)]}), GR)
 m.fill(0, 20, 40, 5, auto('SA-AsphaltRoad01.png'))                 # main road
 m.fill(0, 25, 40, 3, auto('SA-Concrete01.png'))                    # far sidewalk
-d = konbini(m, 3, 2, 14, 'SA-Roof03.png')                          # door approach (9,9)
+m.cells(cells({26: [(0, 3), (19, 29), (37, 39)], 27: [(0, 5), (18, 30), (36, 39)]}), GR)   # far verge, broken by the bus-stop pad and crossing landing
+d = konbini(m, 3, 2, 14, 'SA-Roof03.png')                          # door (9..10, 8), approach (9,9)
 rec(m, CV, 'vending-red', 18, 6, 'vend-1'); rec(m, CV, 'vending-red', 20, 6, 'vend-2')
-R(m, CV, 5, 44, 3, 3, 22, 3, 'pole-sign'); R(m, CV, 6, 47, 1, 3, 23, 6, 'pole-sign-post')
-# east: small office (school wall recolour kit)
-kit(m, 'clinic-small', 29, 2, 'office')
+# pole sign: box CV 5..7,44..46 (its bottom row carries the magenta/blue stripe) + post CV 6,47..49 under the box centre
+claim(m, 22, 3, 3, 6, 'pole-sign'); m.rect(CV, 5, 44, 3, 3, 22, 3); m.rect(CV, 6, 47, 1, 3, 23, 6)
+kit(m, 'clinic-small', 29, 2, 'office')                            # door (33..34, 8), approach (33,9)
 R(m, 'kasatate.png', 0, 0, 1, 3, 28, 6, 'umbrellas')
-# parking bays: white lines (CV 6) every 4 cols, the bay at the door left open
-for sx in (2, 6, 10, 14, 18, 22, 26):
-    for yy in range(10, 14): T1(m, CV, 6, sx, yy, False)
-loose(m, 'car.png', 0, 3, 10, 'car-1')          # front view 3x4
-loose(m, 'car.png', 1, 15, 10, 'car-2')         # rear view
-loose(m, 'patcar.png', 0, 19, 10, 'patrol')
-loose(m, 'bicycle02.png', 0, 23, 12, 'cycle')
-loose(m, 'car.png', 2, 30, 20, 'car-road')      # side view on the road
+# parking bays (CV 6 = vertical white line): a bay west of the door, pedestrian stripes on the door line, three bays east
+for sx in (2, 6, 12, 16, 20):
+    for yy in range(11, 15): T1(m, CV, 6, sx, yy, False)
+for yy in range(11, 17):
+    for xx in (9, 10): T1(m, CV, 14, xx, yy, False)              # walkway from the door across the aisle
+loose(m, 'car.png', 0, 3, 11, 'car-1')                             # nosed-in customer (front view)
+loose(m, 'bicycle02.png', 2, 7, 12, 'cycle-1')                     # bike left in the narrow bay by the stripes
+loose(m, 'car.png', 1, 13, 11, 'car-2')                            # rear view; bay x17..19 left empty
+loose(m, 'patcar.png', 0, 21, 11, 'patrol')                        # parked off the lines, nose by the planter
+loose(m, 'car.png', 3, 16, 15, 'car-moving')                       # side view, pulling out along the aisle
+loose(m, 'bicycle02.png', 0, 1, 9, 'cycle-2')                      # by the store's west corner
+rec(m, SC, 'school-shrub', 25, 10, 'shrub-ne'); rec(m, SC, 'school-shrub', 2, 16, 'shrub-sw')
 # kerb: guardrail along the lot's south edge, gap as the driveway
-for i, x in enumerate(range(1, 27)):
-    if 10 <= x <= 16: continue
-    T1(m, 'guardrail.png', 32 + (0 if x in (1, 17) else 3 if x in (9, 26) else 1 + x % 2), x, 18, 'rail')
-# road: crosswalk (CV 14, 2 wide x 5 rows for a N-S crossing), centre line
+for x in list(range(1, 9)) + list(range(17, 27)):
+    T1(m, 'guardrail.png', 32 + (0 if x in (1, 17) else 3 if x in (8, 26) else 1 + x % 2), x, 18, 'rail')
+# office forecourt planting: plum on the west lawn, shrubs on the east lawn
+loose(m, 'ume.png', 0, 28, 11, 'ume')
+rec(m, SC, 'school-shrub', 37, 11, 'shrub-e1'); rec(m, SC, 'school-shrub', 39, 12, 'shrub-e2')
+# road: crosswalk (CV 14, N-S walk), centre dashes (2 on / 2 off, clear of the crossing)
 for yy in range(20, 25):
     for xx in (32, 33, 34): T1(m, CV, 14, xx, yy, False)
-for xx in range(0, 30, 2): m.put(xx, 22, tile(SC, 14))
-# traffic light (CITY-KITS sparse 3x4: 192/200/208/216 pole, 201 arm, 202 lamps)
-for dy, t in enumerate((192, 200, 208, 216)): T1(m, CV, t, 35, 16 + dy, 'signal')
-T1(m, CV, 201, 36, 17, 'signal-arm'); T1(m, CV, 202, 37, 17, 'signal-lamp')
-pole(m, 28, 19); loose(m, 'busstop.png', 2, 8, 25, 'busstop'); R(m, 'post.png', 1, 0, 1, 2, 14, 25, 'post')
+for xx in list(range(0, 30, 4)) + [36, 37]:
+    for k in (0, 1):
+        if xx + k < 31 or xx + k > 35: m.put(xx + k, 22, tile(SC, 14))
+# traffic light: the CITY-KITS sparse 3x4 (192/200/208/216 pole, 201 arm, 202 lamps) claimed as one object;
+# the catalog rect CV 0,24 3x4 also contains 193/194 (loose white board) and 209/210 (a back-facing lamp), so it is not copied whole
+claim(m, 35, 16, 3, 4, 'signal')
+for dy, t in enumerate((192, 200, 208, 216)): m.put(35, 16 + dy, tile(CV, t))
+m.put(36, 17, tile(CV, 201)); m.put(37, 17, tile(CV, 202))
+pole(m, 28, 19)
+loose(m, 'busstop.png', 2, 8, 25, 'busstop'); R(m, 'post.png', 1, 0, 1, 2, 14, 25, 'post')
+rec(m, SC, 'school-shrub', 2, 26, 'shrub-far1'); rec(m, SC, 'school-shrub', 23, 26, 'shrub-far2')
 finish(m)

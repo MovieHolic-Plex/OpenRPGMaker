@@ -2,26 +2,36 @@ import sys, os; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from pawlib import *
 
 CEIL = auto('SA-WallA01.png')
-def room(m, sheet, walls, floor, doors=()):
-    """XP ceiling ring, north wall face rows (walls = tile ids top->bottom), floor, south door gap columns."""
-    m.fill(0, 0, m.w, m.h, CEIL)
-    for i, t in enumerate(walls): m.fill(1, 1 + i, m.w - 2, 1, tile(sheet, t))
-    top = 1 + len(walls)
-    m.fill(1, top, m.w - 2, m.h - top - 1, floor)
-    for x in doors: m.fill(x, m.h - 1, 1, 1, floor)
-    return top
 def door(m, name, x, y, fw=32, fh=64):
     """closed frame 0 of a PAW door sprite sheet at cell (x,y); bottom row sits on the wall base"""
     m.image(name, x, y, (0, 0, fw, fh))
 
 S = 'ST-Icecream-I01.png'
 m = Map('m47_food_court', '파티 홀과 푸드코트', 22, 16, 'interior', '북쪽 뷔페 카운터, 중앙 파티 테이블(파티 요리·케이크·음료), 남쪽 중화·라멘·도시락·초밥 테이블')
-room(m, S, (17, 25), auto('SA-Floor-T10.png'), doors=(10, 11))
+# central structural pillar between the two table rows (wall faces run down its south side),
+# chamfered south corners, service door on the kitchen side of the north wall.
+rows = ['######################',
+        '#....................#',
+        '#....................#',
+        '#....................#',
+        '#....................#',
+        '#....................#',
+        '#....................#',
+        '#....................#',
+        '#....................#',
+        '#..........#.........#',
+        '#....................#',
+        '#....................#',
+        '#....................#',
+        '#....................#',
+        '##..................##',
+        '##########DD##########']
+m.layout(rows, {'.': auto('SA-Floor-T10.png')}, CEIL, [tile(S, 17), tile(S, 25)])
 m.fill(5, 3, 12, 2, auto('SA-Floor-T07.png'))           # buffet service strip
 m.recipe(S, 'icecream-window', 2, 1)
-m.recipe(S, 'icecream-window', 17, 1)
-m.recipe(S, 'icecream-menu', 7, 1)
-m.recipe(S, 'icecream-menu', 14, 1)
+m.recipe(S, 'icecream-window', 15, 1)
+m.recipe(S, 'icecream-menu', 9, 1)
+m.recipe(S, 'icecream-menu', 12, 1)
 m.fill(6, 4, 10, 1, auto('Autotile-MarbleCounter01.png'), 'up')   # buffet counter
 for i, (sh, t) in enumerate((('SC-F-Party01.png', 0), ('SC-F-Party01.png', 5), ('SC-F-Party01.png', 7), ('F-Party02.png', None),
                               ('SC-F-Party02.png', 6), ('SC-F-Party02.png', 0), ('SC-F-Party01.png', 12), ('SC-F-Juice01.png', 8), ('Cupnoodle.png', None), ('SC-F-Party02.png', 2))):

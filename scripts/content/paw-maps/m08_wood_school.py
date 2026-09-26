@@ -206,26 +206,40 @@ def wschool(x, y, w, name):
         for dx in (0, 1): m.put(wx + dx, y + 3, tile(WE, 240 + dx)); m.put(wx + dx, y + 4, tile(WE, 248 + dx))
     for dx in (0, 1): m.put(door + dx, y + 3, tile(WE, 256 + dx)); m.put(door + dx, y + 4, tile(WE, 264 + dx))
     return door
-m = Map('m08_wood_school', '목조 분교 교정', 32, 22, 'exterior', '기와 지붕 목조 분교. 남쪽 석축 담 가운데로 흙길이 교사 양문까지 이어지고, 교정에는 벚나무와 철봉, 뒤쪽 대숲.')
+def blob(rows, x0, y0):
+    return [(x0 + dx, y0 + dy) for dy, r in enumerate(rows) for dx, c in enumerate(r) if c == 'x']
+m = Map('m08_wood_school', '목조 분교 교정', 32, 22, 'exterior', '기와 지붕 목조 분교. 남쪽 석축 담의 문에서 흙길이 꺾여 교사 양문까지 이어지고, 교정 한쪽은 꽃밭, 서쪽 벚나무와 동쪽 겹벚꽃, 뒤쪽 대숲.')
+def cells(ranges): return [(x, y) for y, rs in ranges.items() for a, b in rs for x in range(a, b + 1)]
 m.fill(0, 0, 32, 22, auto('SA-Grass07.png'))
-m.fill(3, 9, 26, 7, auto('SA-GroundG02.png'))         # packed-earth schoolyard
-door = wschool(4, 3, 24, 'school')
-m.fill(door, 8, 2, 14, auto('SA-GroundG06.png'))       # earth path from the door (y8) to the south gate
-m.fill(4, 8, 24, 1, auto('SA-GroundG02.png'))          # drip line in front of the hall
-# south stone wall (56/57/58 top, 72/73/74 foot), opening door..door+1
+# packed-earth schoolyard: notched outline (sakura bed west, cherry lawn east, garden bed south-east)
+m.cells(cells({8: [(4, 27)], 9: [(4, 27)], 10: [(3, 28)], 11: [(3, 28)], 12: [(6, 27)], 13: [(6, 26)],
+               14: [(6, 25)], 15: [(7, 20)], 16: [(8, 19)], 17: [(10, 17)]}), auto('SA-GroundG02.png'))
+door = wschool(4, 3, 24, 'school')                       # door x15-16, hall y3..7
+GATE = 13                                                # opening in the south wall, x13-14
+m.cells(cells({8: [(15, 16)], 9: [(15, 16)], 10: [(14, 16)], 11: [(13, 15)], **{y: [(13, 14)] for y in range(12, 20)}}),
+        auto('SA-GroundG06.png'))                          # earth path: door -> jog west -> gate
+# flower garden corner (east of the path, against the wall): kadan bed with flowers on the upper layer
+bed = cells({15: [(22, 26)], 16: [(21, 27)], 17: [(20, 28)]})
+m.cells(bed, auto('SA-Kadan01.png'))
+m.cells([c for c in bed if c[1] >= 16 and 21 < c[0] < 28 and c != (25, 16)], auto('SA-Flower01.png'), 'up')
+for c in bed: OWN[c] = 'garden-bed'
+# south stone wall (56/57/58 top, 72/73/74 foot), opening at the gate
 for x in range(1, 31):
-    if door <= x <= door + 1: continue
-    left = x == 1 or x == door + 2; right = x == 30 or x == door - 1
+    if GATE <= x <= GATE + 1: continue
+    left = x == 1 or x == GATE + 2; right = x == 30 or x == GATE - 1
     T1(m, WE, 56 if left else 58 if right else 57, x, 18, 'wall'); T1(m, WE, 72 if left else 74 if right else 73, x, 19, 'wall')
-# back grove of bamboo and pines behind the hall
-for x in range(0, 32, 2):
-    if x in (8, 20): pine(m, x, 0, f'pine{x}')
-for x in (1, 3, 5, 11, 13, 16, 18, 24, 26, 29): rec(m, RT, 'retro-rtown-bamboo', x, 0, f'bamboo{x}')
-# yard: cherry by the gate, iron bars, a bell stand is a temple thing -> none; stone stele and pots
-loose(m, 'sakura.png', 0, 2, 11, 'sakura')
-R(m, SC, 0, 53, 4, 2, 24, 11, 'iron-bars')
-R(m, SC, 3, 55, 2, 2, 25, 15, 'tires')
-rec(m, SC, 'school-bench', 12, 14, 'bench')
-rec(m, RT, 'retro-rtown-flower-planter', door + 3, 16, 'planter')
+rec(m, RT, 'retro-rtown-stone-lantern', 12, 16, 'lantern-l'); rec(m, RT, 'retro-rtown-stone-lantern', 15, 16, 'lantern-r')
+# back grove: bamboo clumps and pines in uneven groups (hall roof starts at y3; corners drop lower)
+pine(m, 0, 1, 'pine-w'); rec(m, RT, 'retro-rtown-bamboo', 2, 3, 'bamboo-w1'); rec(m, RT, 'retro-rtown-bamboo', 3, 0, 'bamboo-w2')
+for x in (5, 6, 12, 17, 18, 19, 25): rec(m, RT, 'retro-rtown-bamboo', x, 0, f'bamboo{x}')
+pine(m, 9, 0, 'pine9'); pine(m, 22, 0, 'pine22')
+pine(m, 28, 0, 'pine-e'); rec(m, RT, 'retro-rtown-bamboo', 30, 1, 'bamboo-e1'); rec(m, RT, 'retro-rtown-bamboo', 28, 3, 'bamboo-e2')
+# yard: cherry trees of two kinds at different depths, iron bars, tires, bench, planters by the door
+loose(m, 'sakura.png', 0, 0, 11, 'sakura')
+loose(m, 'sakura2.png', 0, 26, 9, 'sakura2')
+R(m, SC, 0, 53, 3, 2, 21, 10, 'iron-bars')
+R(m, SC, 3, 55, 2, 2, 23, 13, 'tires')
+rec(m, SC, 'school-bench', 7, 12, 'bench')
+rec(m, RT, 'retro-rtown-flower-planter', 13, 8, 'planter-1'); rec(m, RT, 'retro-rtown-plant-planter', 18, 8, 'planter-2')
 m.fill(0, 20, 32, 2, auto('SA-GRoad02.png'))           # village road outside the wall
 finish(m)

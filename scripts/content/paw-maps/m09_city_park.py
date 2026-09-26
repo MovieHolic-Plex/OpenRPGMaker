@@ -191,35 +191,71 @@ def finish(m):
     assert not holes, f'unfilled ground {holes[:5]}'
     m.save()
 # ---- end helpers ----
-
-m = Map('m09_city_park', '연못이 있는 도시 공원', 42, 30, 'exterior', '북쪽 놀이 마당(그네·미끄럼틀·모래놀이터), 가운데 연못과 수련, 남쪽 벽돌 화단 산책로. 생울타리 테두리 두 군데 입구.')
-m.fill(0, 0, 42, 30, auto('SA-Grass10.png'))
-# hedge border (GBorderC) with gates west (y14-15) and south (x20-21)
-ring = [(x, y) for x in range(42) for y in (0, 29)] + [(x, y) for y in range(1, 29) for x in (0, 41)]
-ring = [(x, y) for (x, y) in ring if not ((x == 0 and 14 <= y <= 15) or (y == 29 and 20 <= x <= 21))]
-m.cells(ring, auto('SA-GBorderC02.png'))
-for c in ring: claim(m, c[0], c[1], 1, 1, 'hedge')
-# paths
-m.fill(0, 14, 42, 2, auto('SA-GRoad01.png'))
-m.fill(20, 14, 2, 16, auto('SA-GRoad01.png'))
-m.fill(3, 2, 18, 11, auto('SA-GroundG03.png'))       # play yard sand
-# play yard (north-west)
-rec(m, PK, 'park-swings', 4, 3, 'swings'); rec(m, PK, 'park-slide', 9, 3, 'slide')
-rec(m, PK, 'park-sandpit-compact', 16, 3, 'sandpit')
-rec(m, PK, 'park-bench-back', 5, 10, 'bench-a'); rec(m, PK, 'park-bench-back', 13, 10, 'bench-b')
-rec(m, PK, 'park-lamp', 19, 9, 'lamp-a')
-# pond (north-east): Pool water over a dark lower basin, stone edge
-m.fill(24, 2, 15, 10, auto('SA-GroundG05.png'))
-m.fill(25, 3, 13, 8, auto('SA-Pool02.png'), 'up'); claim(m, 25, 3, 13, 8, 'pond')
-R(m, 'suiren.png', 0, 0, 2, 2, 28, 5, False); R(m, 'suiren.png', 0, 0, 2, 2, 33, 7, False)
-rec(m, PK, 'park-lamp', 23, 9, 'lamp-b')
-# south: brick flowerbeds along the walk, trees in round planters
-for x0 in (3, 9, 26, 32):
-    m.fill(x0, 18, 5, 3, auto('SA-Kadan02.png')); claim(m, x0, 18, 5, 3, f'bed{x0}')
-    m.fill(x0 + 1, 19, 3, 1, auto('SA-Flower01.png'), 'up')
-rec(m, PK, 'park-tree-planter', 23, 22, 'tree-e')
-m.fill(3, 23, 16, 1, auto('SA-GRoad01.png'))
-rec(m, PK, 'park-bench-front', 5, 24, 'bench-s1'); rec(m, PK, 'park-bench-front', 12, 24, 'bench-s2')
-loose(m, 'sakura2.png', 0, 33, 22, 'sakura')
-rec(m, PK, 'park-lamp', 18, 24, 'lamp-c')
+import math
+W_, H_ = 42, 30
+m = Map('m09_city_park', '연못이 있는 도시 공원', W_, H_, 'exterior', '북서 놀이 마당(그네·미끄럼틀·모래놀이터), 북동 굽은 연못과 수련, 휘어 도는 산책로, 남쪽 모양이 제각각인 벽돌 화단과 나무 무리. 생울타리는 두께가 들쭉날쭉하고 남동 모서리를 비스듬히 잘라 광장 입구를 낸다.')
+def ell(cx, cy, rx, ry): return {(x, y) for y in range(H_) for x in range(W_) if ((x + .5 - cx) / rx) ** 2 + ((y + .5 - cy) / ry) ** 2 <= 1}
+def box(x, y, w, h): return {(xx, yy) for yy in range(y, y + h) for xx in range(x, x + w)}
+def dil(s, r=1): return {(x + dx, y + dy) for (x, y) in s for dx in range(-r, r + 1) for dy in range(-r, r + 1) if 0 <= x + dx < W_ and 0 <= y + dy < H_}
+def seg(p, q, c):
+    (ax, ay), (bx, by) = p, q; vx, vy = bx - ax, by - ay; L2 = vx * vx + vy * vy
+    t = max(0, min(1, ((c[0] - ax) * vx + (c[1] - ay) * vy) / L2)) if L2 else 0
+    return math.hypot(ax + t * vx - c[0], ay + t * vy - c[1])
+def walk(pts, w=1.0):
+    return {(x, y) for y in range(H_) for x in range(W_) if min(seg(pts[i], pts[i + 1], (x + .5, y + .5)) for i in range(len(pts) - 1)) <= w}
+def inner(s): return {(x, y) for (x, y) in s if sum((x + a, y + b) in s for a, b in ((1, 0), (-1, 0), (0, 1), (0, -1))) >= 4}
+def claimset(s, name):
+    for (x, y) in sorted(s): claim(m, x, y, 1, 1, name)
+m.fill(0, 0, W_, H_, auto('SA-Grass10.png'))
+# ---- hedge: map-edge ring, thickened in uneven runs, rounded NW, SE corner cut on a stair diagonal
+SE = {(x, y) for y in range(H_) for x in range(W_) if x + y > 61}          # outside the cut -> concrete corner plaza
+stair = {(x, y) for y in range(H_) for x in range(W_) if x + y in (60, 61)} - SE
+hedge = ({(x, y) for x in range(W_) for y in (0, H_ - 1)} | {(x, y) for y in range(H_) for x in (0, W_ - 1)}) - SE
+hedge |= stair
+hedge |= box(1, 1, 2, 1) | {(1, 2)} | box(5, 1, 8, 1) | box(7, 2, 4, 1) | box(24, 1, 3, 1)
+hedge |= box(1, 16, 1, 5) | box(2, 17, 1, 2) | box(39, 12, 2, 1) | box(40, 11, 1, 6) | box(39, 13, 1, 3)
+hedge -= box(0, 14, 1, 2)                     # west gate
+hedge -= box(20, 29, 2, 1)                    # south gate
+hedge -= {(36, 25), (37, 24), (36, 24), (37, 23), (38, 23), (35, 25)}       # SE diagonal gate onto the plaza
+m.cells(SE, auto('SA-Concrete02.png')); m.cells(hedge, auto('SA-GBorderC02.png')); claimset(hedge, 'hedge')
+# ---- pond: two overlapping lobes, a bitten NE notch and a small east cove; stone-dirt basin one cell wide
+pond = (ell(31.5, 6.2, 7.2, 3.6) | ell(26.2, 8.6, 3.1, 2.0) | ell(34.6, 9.0, 2.6, 1.5) | box(37, 6, 2, 2)) - ell(36.8, 2.6, 2.4, 1.6) - {(29, 10), (30, 10)}
+basin = dil(pond) - pond
+m.cells(dil(pond), auto('SA-GroundG05.png')); m.cells(pond, auto('SA-Pool02.png'), 'up')
+claimset(dil(pond), 'pond')
+R(m, 'suiren.png', 0, 0, 2, 2, 27, 4, False); R(m, 'suiren.png', 0, 0, 2, 2, 34, 7, False)
+# ---- walks: bent GRoad strips (autotile over arbitrary cell sets) from each gate, skirting the pond
+path = walk([(0, 15), (5, 15.6), (10, 16.8), (15, 16.6), (19.5, 15), (23, 13.6), (28, 13.3), (33, 14.2), (36.5, 17), (37.8, 20.5), (37.3, 23.8)])
+path |= walk([(15, 16.6), (17.6, 19.5), (19.5, 23), (20.8, 26.5), (21, 29.5)])
+path |= walk([(19.5, 15), (18.2, 13.2), (16.6, 11.8)], 0.8)
+path -= hedge | SE | dil(pond)
+path |= {(0, 14), (0, 15)} | box(20, 29, 2, 1) | {(36, 24), (37, 24), (36, 25), (35, 25), (37, 23), (38, 23)}
+m.cells(path, auto('SA-GRoad01.png')); claimset(path, 'path')
+# ---- play yard: an uneven sand blob (GroundG03) with the equipment staggered, not in a row
+sand = (ell(10.5, 6.0, 8.2, 4.4) | ell(5.0, 9.2, 3.2, 2.2)) - ell(17.4, 10.2, 2.6, 1.6) - hedge - path
+m.cells(sand, auto('SA-GroundG03.png'))
+rec(m, PK, 'park-swings', 3, 3, 'swings'); rec(m, PK, 'park-slide', 8, 6, 'slide')
+rec(m, PK, 'park-sandpit-compact', 13, 2, 'sandpit')
+rec(m, PK, 'park-bench-back', 14, 9, 'bench-yard'); rec(m, PK, 'park-lamp', 18, 5, 'lamp-yard')
+rec(m, PK, 'park-bench-front', 22, 2, 'bench-north')
+# ---- beds: four different outlines (L, oval, stepped, crescent) of brick Kadan, flowers only on the inner cells
+beds = {
+    'bed-L': box(3, 17, 6, 3) | box(3, 20, 3, 2),
+    'bed-oval': ell(12.5, 21.0, 3.6, 1.8),
+    'bed-step': box(23, 20, 4, 3) | box(25, 22, 4, 3),
+    'bed-kidney': (ell(29.8, 17.6, 4.4, 1.9) | box(33, 17, 1, 2)) - {(25, 17), (26, 17), (26, 18)},
+}
+for n, s in beds.items():
+    s -= path; m.cells(s, auto('SA-Kadan02.png')); claimset(s, n)
+    m.cells(inner(s), auto('SA-Flower01.png'), 'up')
+# ---- tree clusters instead of rows: SW grove, south-centre planter group, east pond-side
+loose(m, 'sakura2.png', 0, 1, 22, 'sakura'); loose(m, 'momiji.png', 0, 9, 24, 'momiji'); loose(m, 'ume.png', 0, 13, 25, 'ume-sw')
+rec(m, PK, 'park-tree-planter', 29, 21, 'tree-e'); loose(m, 'ume.png', 2, 23, 25, 'ume-s')
+R(m, 'yukiyanagi.png', 0, 0, 2, 2, 33, 20, 'shrub-se'); R(m, 'yukiyanagi.png', 0, 0, 2, 2, 2, 12, 'shrub-w')
+loose(m, 'ume.png', 1, 36, 11, 'ume-e')
+# ---- furniture: bench facing the pond, benches by the beds, lamps at the bends (uneven spacing)
+rec(m, PK, 'park-bench-back', 25, 14, 'bench-pond'); rec(m, PK, 'park-bench-back', 6, 13, 'bench-w')
+rec(m, PK, 'park-bench-front', 16, 23, 'bench-s')
+rec(m, PK, 'park-lamp', 13, 12, 'lamp-w'); rec(m, PK, 'park-lamp', 38, 15, 'lamp-e'); rec(m, PK, 'park-lamp', 18, 25, 'lamp-s')
+rec(m, PK, 'park-lamp', 40, 23, 'lamp-plaza'); rec(m, PK, 'park-bench-front', 38, 26, 'bench-plaza')
 finish(m)

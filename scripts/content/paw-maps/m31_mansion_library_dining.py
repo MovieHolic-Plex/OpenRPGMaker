@@ -14,31 +14,22 @@ class vx(auto):
             for c in range(6): xp.alpha_composite(s.crop((q[c] * 16, 32 + q[r] * 16, q[c] * 16 + 16, 48 + q[r] * 16)), (c * 16, 32 + r * 16))
         self._xp = xp
     def image(self, mask): return pawlib._xp_piece(self._xp, mask)
-def plan(m, rows, mats, ceil, wall_sheet, walls):
-    """rows: '#' ceiling autotile, 'D' open doorway (no wall face), other chars -> mats[c] (lower layer).
-    Wall faces (len(walls) rows) drop under every ceiling cell whose south cell is open; they stop at the next '#'."""
-    m.grid, m.wallc, m.occ = rows, set(), {}
-    for y, r in enumerate(rows):
-        assert len(r) == m.w, ('row width', y, len(r))
-        for x, c in enumerate(r):
-            v = ceil if c == '#' else mats[mats.get('D') and c or ('.' if c == 'D' else c)]
-            m.cells([(x, y)], v(x, y) if callable(v) else v)
-    for x in range(m.w):
-        for y in range(1, m.h):
-            if rows[y][x] not in '#D' and rows[y - 1][x] == '#':
-                k = 0; ws = walls(x) if callable(walls) else walls
-                while k < len(ws) and y + k < m.h and rows[y + k][x] not in '#D':
-                    wt = ws[k] if not isinstance(ws[k], int) else tile(wall_sheet(x) if callable(wall_sheet) else wall_sheet, ws[k])
-                    m.cells([(x, y + k)], wt); m.wallc.add((x, y + k)); k += 1
+def wl(name, ids):
+    """wall-face rows (top->bottom) as tiles of one sheet, for m.layout(walls=...)"""
+    return [tile(name, t) for t in ids]
 def claim(m, x, y, w, h, wall, label):
-    """checks: in bounds, no '#'/doorway cell, standing bottom row on floor, wall-mounted fully on wall face, no overlap per layer"""
+    """checks on m.cls (set by m.layout): in bounds, never on ceiling 'C' or doorway 'D', wall-mounted fully on wall face 'W',
+    standing base row on floor 'F', no overlap per layer"""
+    occ = m.__dict__.setdefault('occ', {})
     for yy in range(y, y + h):
         for xx in range(x, x + w):
-            assert 0 <= xx < m.w and 0 <= yy < m.h and m.grid[yy][xx] not in '#D', ('blocked cell', label, xx, yy)
-            if wall: assert (xx, yy) in m.wallc, ('wall item off wall', label, xx, yy)
-            k = (xx, yy, wall); assert k not in m.occ, ('overlap', label, xx, yy, m.occ[k]); m.occ[k] = label
+            assert 0 <= xx < m.w and 0 <= yy < m.h, ('out of map', label, xx, yy)
+            c = m.cls[yy][xx]
+            assert c not in 'CD', ('on ceiling/doorway', label, xx, yy, c)
+            if wall: assert c == 'W', ('wall item off wall face', label, xx, yy)
+            k = (xx, yy, wall); assert k not in occ, ('overlap', label, xx, yy, occ[k]); occ[k] = label
     if not wall:
-        for xx in range(x, x + w): assert (xx, y + h - 1) not in m.wallc, ('standing base on wall', label, xx)
+        for xx in range(x, x + w): assert m.cls[y + h - 1][xx] == 'F', ('standing base not on floor', label, xx, y + h - 1)
 def place(m, name, sx, sy, w, h, x, y, wall=False, label=''):
     claim(m, x, y, w, h, wall, label or name); m.rect(name, sx, sy, w, h, x, y)
 def obj(m, name, box, x, y, wall=False, label=''):
@@ -54,6 +45,27 @@ def door(m, name, x, y, col=0):
     fw = sheet(name).width // 4; fh = sheet(name).height // 4
     claim(m, x, y, 1, 2, True, name)
     m.image(name, x, y, (col * fw, 0, col * fw + fw, fh))
+def finish(m):
+    """every doorway and every free floor cell must be reachable on foot (floor/door cells not under standing furniture)"""
+    occ = m.__dict__.get('occ', {})
+    free = {(x, y) for y in range(m.h) for x in range(m.w) if m.cls[y][x] in 'FD' and (x, y, False) not in occ}
+    doors = sorted(p for p in free if m.cls[p[1]][p[0]] == 'D')
+    assert doors, ('no doorway', m.id)
+    seen, st = {doors[0]}, [doors[0]]
+    while st:
+        a, b = st.pop()
+        for q in ((a + 1, b), (a - 1, b), (a, b + 1), (a, b - 1)):
+            if q in free and q not in seen: seen.add(q); st.append(q)
+    rest, big = free - seen, []
+    while rest:                                    # 1-2 cell pockets beside chairs/tables are natural; larger dead floor is not
+        comp, st = set(), [rest.pop()]
+        while st:
+            p = st.pop(); comp.add(p)
+            for q in ((p[0] + 1, p[1]), (p[0] - 1, p[1]), (p[0], p[1] + 1), (p[0], p[1] - 1)):
+                if q in rest: rest.discard(q); st.append(q)
+        if len(comp) > 2 or any(m.cls[y][x] == 'D' for x, y in comp): big += sorted(comp)
+    assert not big, ('unreachable floor/doorway', m.id, big[:10])
+    m.save()
 
 def stamp(name, sx, sy, w, h):
     """repeating lower-layer pattern of a w x h block of sheet tiles (e.g. tatami 2x3): returns f(x,y)->tile"""
@@ -75,20 +87,36 @@ def a4(name, bx, band):
     return c, [cut(name, bx * 64 + 16, top + 96), cut(name, bx * 64 + 16, top + 128)]
 
 W, Rs = 'ST-MsionW-I01.png', 'ST-MsionR-I01.png'
-m = Map('m31_mansion_library_dining', '저택 서재와 만찬실', 24, 14, 'interior', '서쪽 W 흰 서재(서가·책상·현미경), 동쪽 R 붉은 만찬실(식탁 둘·벽난로·진열장), 벽문 (11,8), 남문 x17')
-rows = ['#' * 24] + ['#' + 'l' * 10 + '#' + 'd' * 11 + '#'] * 12 + ['#' * 17 + 'D' + '#' * 6]
-for y in range(1, 13): rows[y] = rows[y][:1] + ''.join('L' if (3 <= x <= 8 and 7 <= y <= 11) else c for x, c in enumerate(rows[y][1:11], 1)) + rows[y][11:]
-for y in range(5, 13): rows[y] = rows[y][:13] + 'C' * 8 + rows[y][21:]
-rows[8] = rows[8][:11] + 'D' + rows[8][12:]
-plan(m, rows, {'.': tile(W, 0), 'l': tile(W, 0), 'd': tile(Rs, 0), 'L': auto('SA-Carpet13.png'), 'C': auto('SA-Carpet14.png')},
-     auto('SA-Wall01.png'), lambda x: W if x <= 11 else Rs, [17, 17, 25])
+m = Map('m31_mansion_library_dining', '저택 서재와 만찬실', 24, 14, 'interior', '서쪽 W 흰 ㄱ자 서재(서가·책상·현미경, 남서 서고 벽체), 동쪽 R 붉은 만찬실(식탁 둘·벽난로 벽감·진열장), 칸막이 북단 통로 (11,4-5), 남문 x17')
+# The library/dining partition (x11) rises from the south wall to row 6; the passage is (11,4-5).
+# Library is L-shaped: the SW corner (x1-2, rows 11-12) is a closed stack room. Dining room: the fireplace sits in a
+# chimney recess (north wall one row deeper at x18-21); its SE corner (x22, rows 11-12) is a service hatch mass.
+lib = lambda x, y: 'L' if (3 <= x <= 8 and 7 <= y <= 11) else 'l'
+rows = ['#' * 24,
+        '#lllllllllll######....##',
+        '#llllllllll.ddddddddddd#',
+        '#llllllllll.ddddddddddd#',
+        '#llllllllll.ddddddddddd#',
+        '#llllllllll.dCCCCCCCCdd#',
+        '#llllllllll#dCCCCCCCCdd#',
+        '#llllllllll#dCCCCCCCCdd#',
+        '#llllllllll#dCCCCCCCCdd#',
+        '#llllllllll#dCCCCCCCCdd#',
+        '#llllllllll#dCCCCCCCCdd#',
+        '###llllllll#dddddddddd##',
+        '###llllllll#dddddddddd##',
+        '#' * 17 + 'D' + '#' * 6]
+rows = [r if i in (0, 13) else ''.join(lib(x, i) if c == 'l' else c for x, c in enumerate(r)) for i, r in enumerate(rows)]
+wall_of = lambda x, y: [tile(W if x <= 11 else Rs, t) for t in (17, 17, 25)]
+m.layout(rows, {'.': tile(W, 0), 'l': tile(W, 0), 'd': tile(Rs, 0), 'L': auto('SA-Carpet13.png'), 'C': auto('SA-Carpet14.png')},
+         auto('SA-Wall01.png'), wall_of)
 R(m, W, 'msion-w-bookcase', 1, 2); R(m, W, 'msion-w-bookcase', 3, 2); R(m, W, 'msion-w-arched-window', 5, 1); R(m, W, 'msion-w-glass-cabinet', 8, 3)
-R(m, W, 'msion-w-landscape', 8, 1); R(m, W, 'msion-w-grand-clock', 10, 2)
-R(m, W, 'msion-w-writing-desk', 4, 8); R(m, W, 'msion-w-armchair-back', 5, 10); R(m, W, 'msion-w-plant', 1, 6)
-obj(m, 'kenbikyou.png', (9, 0, 27, 27), 9, 6, label='microscope')
-R(m, W, 'msion-w-armchair', 9, 10)
-R(m, Rs, 'msion-r-wide-display', 12, 3); R(m, Rs, 'msion-r-arched-window', 15, 1); R(m, Rs, 'msion-r-fireplace', 19, 2)
+R(m, W, 'msion-w-grand-clock', 10, 2)
+R(m, W, 'msion-w-plant', 1, 6); R(m, W, 'msion-w-writing-desk', 4, 8); R(m, W, 'msion-w-armchair-back', 5, 10)
+obj(m, 'kenbikyou.png', (9, 0, 27, 27), 9, 7, label='microscope'); R(m, W, 'msion-w-armchair', 9, 9)
+R(m, W, 'msion-w-landscape', 8, 1)
+R(m, Rs, 'msion-r-wide-display', 13, 4); R(m, Rs, 'msion-r-arched-window', 14, 2); R(m, Rs, 'msion-r-fireplace', 19, 2)
 R(m, Rs, 'msion-r-dining-table', 15, 6); R(m, Rs, 'msion-r-chair-east', 14, 7); R(m, Rs, 'msion-r-chair-west', 18, 7)
-R(m, Rs, 'msion-r-dining-table', 15, 10); R(m, Rs, 'msion-r-chair-east', 14, 10); R(m, Rs, 'msion-r-chair-west', 18, 10)
-R(m, Rs, 'msion-r-vertical-display', 22, 5); R(m, Rs, 'msion-r-crown-pedestal', 22, 10); R(m, Rs, 'msion-r-vase-pedestal', 12, 11)
-m.save()
+R(m, Rs, 'msion-r-dining-table', 15, 9); R(m, Rs, 'msion-r-chair-east', 14, 10); R(m, Rs, 'msion-r-chair-west', 18, 10)
+R(m, Rs, 'msion-r-vertical-display', 22, 5); R(m, Rs, 'msion-r-crown-pedestal', 21, 10); R(m, Rs, 'msion-r-vase-pedestal', 12, 11)
+finish(m)
