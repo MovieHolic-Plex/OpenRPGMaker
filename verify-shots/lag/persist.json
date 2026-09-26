@@ -1,0 +1,27 @@
+{
+ "beforePaint": {
+  "revision": 2,
+  "counts": {
+   "240": 300
+  }
+ },
+ "afterPaint": {
+  "revision": 3,
+  "counts": {
+   "240": 296,
+   "390": 1,
+   "420": 2,
+   "450": 1
+  }
+ },
+ "afterReloadRow": {
+  "revision": 4,
+  "counts": {
+   "240": 296,
+   "390": 1,
+   "420": 2,
+   "450": 1
+  }
+ },
+ "errors": []
+}

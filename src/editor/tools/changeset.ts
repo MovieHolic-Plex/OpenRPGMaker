@@ -209,6 +209,8 @@ function diffDatabase(before: Project, after: Project, summary: ChangeSummary): 
     "homeDecorationTypes",
   ];
   for (const key of keys) {
+    // 같은 배열 객체면 내용도 같다 — 저장 기준본은 바뀌지 않은 가지를 공유한다(electronRepository accepted).
+    if (before.database[key] === after.database[key]) continue;
     const beforeList = (before.database[key] ?? []) as Array<{ id: string }>;
     const afterList = (after.database[key] ?? []) as Array<{ id: string }>;
     const beforeById = new Map(beforeList.map((record) => [record.id, JSON.stringify(record)]));
@@ -239,6 +241,7 @@ function countNamedDefChanges(
 }
 
 function diffWorld(before: Project, after: Project, summary: ChangeSummary): void {
+  if (before.world === after.world) return;
   const beforeEntities = before.world?.entities ?? [];
   const afterEntities = after.world?.entities ?? [];
   const beforeById = new Map(beforeEntities.map((entity) => [entity.id, JSON.stringify(entity)]));
@@ -253,6 +256,7 @@ function diffWorld(before: Project, after: Project, summary: ChangeSummary): voi
 function diffPalettePresets(before: Project, after: Project, summary: ChangeSummary): void {
   for (const [tilesetId, afterTileset] of Object.entries(after.tilesets)) {
     const beforeTileset = before.tilesets[tilesetId];
+    if (beforeTileset === afterTileset) continue;
     const beforePresets = beforeTileset?.palettePresets ?? [];
     const afterPresets = afterTileset.palettePresets ?? [];
     const beforeById = new Map(beforePresets.map((preset) => [preset.id, JSON.stringify(preset)]));
@@ -277,6 +281,7 @@ export function summarizeChanges(before: Project, after: Project): ChangeSummary
   }
   for (const [id, afterMap] of Object.entries(after.maps)) {
     const beforeMap = before.maps[id];
+    if (beforeMap === afterMap) continue;
     if (beforeMap) {
       summary.tilesChanged += countTileChanges(beforeMap, afterMap);
       if (comparableMapProperties(beforeMap) !== comparableMapProperties(afterMap)) {
@@ -300,8 +305,8 @@ export function summarizeChanges(before: Project, after: Project): ChangeSummary
   diffWorld(before, after, summary);
   diffPalettePresets(before, after, summary);
   summary.endingsChanged = countRecordChanges(before.endings ?? [], after.endings ?? []);
-  summary.sessionChanged = JSON.stringify(before.session) !== JSON.stringify(after.session);
-  summary.systemChanged = JSON.stringify(before.system) !== JSON.stringify(after.system);
+  summary.sessionChanged = before.session !== after.session && JSON.stringify(before.session) !== JSON.stringify(after.session);
+  summary.systemChanged = before.system !== after.system && JSON.stringify(before.system) !== JSON.stringify(after.system);
   summary.audioDescriptionsChanged = countAudioDescriptionChanges(before.audioDescriptions, after.audioDescriptions);
   summary.monsterMetadataChanged = countMonsterMetadataChanges(before.monsterMetadata, after.monsterMetadata);
   return summary;
