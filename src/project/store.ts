@@ -43,7 +43,7 @@ import type { ProjectRepository } from "./persistence/types";
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
 import { repairMapTreeOrphans } from "@/project/mapTree";
 import { cloneExtraLayers } from "@/project/mapLayers";
-import { sha256HexText } from "@/util/sha256";
+import { sha256HexText, sha256HexTextSync } from "@/util/sha256";
 import { jsonEqual, normalizationFingerprint } from "@/util/structuralJson";
 import { randomUuid } from "@/util/id";
 import { createLogger } from "@/util/logger";
@@ -114,12 +114,18 @@ export type AutoSaveState =
       readonly code?: "session-not-persisted";
     };
 
+/** contentIdentity prefix for an accepted save whose content could not be normalized; never equals a real SHA-256. */
+const UNAVAILABLE_CONTENT_IDENTITY = "unavailable:";
+
 /** In-memory accepted-save token; contains no credentials or mutable project data. */
 export type ProjectPersistenceReceipt = {
   readonly revisionId: string;
   readonly projectId: string;
   readonly mutationGeneration: number;
-  /** SHA-256 of the existing normalized comparison, not the wire/server hash. */
+  /**
+   * SHA-256 of the existing normalized comparison, not the wire/server hash.
+   * Computed on first read from the accepted (never-mutated) baseline — see persistCurrent.
+   */
   readonly contentIdentity: string;
   readonly sha256?: string;
   readonly serverRevision?: number;
@@ -1005,6 +1011,9 @@ class ProjectStore {
       if (!this.remotePersistenceEnabled) return { kind: "disabled", receipt };
       if (!read) return { kind: "failed", receipt, message: "Saved project not found" };
       if (read.projectId !== receipt.projectId) return { kind: "mismatch", receipt, reason: "target" };
+      if (receipt.contentIdentity.startsWith(UNAVAILABLE_CONTENT_IDENTITY)) {
+        return { kind: "failed", receipt, message: "Accepted project could not produce a content identity" };
+      }
       const observedIdentity = await sha256HexText(serializeForComparison(projectWithoutEventDrafts(read.project)));
       if (options.signal?.aborted) return { kind: "cancelled", receipt };
       if (!this.remotePersistenceEnabled) return { kind: "disabled", receipt };
@@ -1410,23 +1419,33 @@ class ProjectStore {
     // 아래 mergeTeamProject · 기준본 교체는 savedProject !== submittedProject 인 경우에만 돌고,
     // delta 결과는 대입 전에 structuredClone 된다. 에쿠가 오면(팀 및합) 그때만 복제한다.
     const acceptedBaseline = savedProject === submittedProject ? submittedProject : projectWithoutEventDrafts(savedProject);
-    let receipt: ProjectPersistenceReceipt | undefined;
-    try {
-      // Capture accepted content before the hash await; never derive it from live getCurrent().
-      const acceptedContent = serializeForComparison(acceptedBaseline);
-      receipt = Object.freeze({
-        revisionId: randomUuid(),
-        projectId: target.projectId,
-        mutationGeneration: generationAtSubmit,
-        contentIdentity: await sha256HexText(acceptedContent),
-        ...(result.sha256 ? { sha256: result.sha256 } : {}),
-        ...(result.authority?.mode === "canonical" && result.authority.revision !== undefined ? { serverRevision: result.authority.revision } : {}),
-      });
-      this.persistenceTargets.set(receipt, { target, contentLineage: lineageAtSubmit, projectAtSubmit });
-    } catch (error) {
-      // Intermediate projects may save but cannot supply normalized proof. Preserve flush compatibility.
-      log.warn("Accepted project could not produce a persistence receipt", error);
-    }
+    // 영수증의 contentIdentity 는 처음 읽힐 때 계산한다. 읽는 곳은 조수 실행의 저장 증명·체크포인트뿐이고,
+    // 사람의 자동저장은 한 번도 읽지 않는다. 예전에는 저장마다 `serializeForComparison`(전체 stringify →
+    // parse → 검사 → 정렬 재-stringify) + 해시를 돌렸다 — 2026-09-26 실측, 82MB 문서에서 2,560ms + 570ms 가
+    // 자동저장 한 번마다 메인 스레드를 멈췄다. 대상은 제출 시점에 떼어 낸 acceptedBaseline 이고, 이 객체는
+    // persistedBaseline 으로 교체만 될 뿐 제자리 수정되지 않으므로 늦게 계산해도 같은 값이다.
+    // 계산이 실패하면(정규화할 수 없는 중간 문서) 어느 읽기와도 맞지 않는 표식을 돌려 증명을 실패시킨다.
+    const revisionId = randomUuid();
+    let contentIdentity: string | undefined;
+    const receipt: ProjectPersistenceReceipt = Object.freeze({
+      revisionId,
+      projectId: target.projectId,
+      mutationGeneration: generationAtSubmit,
+      get contentIdentity(): string {
+        if (contentIdentity === undefined) {
+          try {
+            contentIdentity = sha256HexTextSync(serializeForComparison(acceptedBaseline));
+          } catch (error) {
+            log.warn("Accepted project could not produce a content identity", error);
+            contentIdentity = `${UNAVAILABLE_CONTENT_IDENTITY}${revisionId}`;
+          }
+        }
+        return contentIdentity;
+      },
+      ...(result.sha256 ? { sha256: result.sha256 } : {}),
+      ...(result.authority?.mode === "canonical" && result.authority.revision !== undefined ? { serverRevision: result.authority.revision } : {}),
+    });
+    this.persistenceTargets.set(receipt, { target, contentLineage: lineageAtSubmit, projectAtSubmit });
     recordManualProjectCommitAfterSave(savedProject, commitBaseline);
     // Historical saves retain proof, but cannot adopt a baseline, metadata or dirty state
     // into a replacement project (including a replacement during the hash await).

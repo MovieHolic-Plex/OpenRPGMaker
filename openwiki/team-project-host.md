@@ -293,3 +293,18 @@ Manual wire check used the actual109MB canonical document plus its asset patch: 
 
 남은 비용: 참고문서 이미지가 여전히 프로젝트 문서 안에 있다(`tilesets[].referenceDocuments`).
 문서를 가볍게 하려면 에셋으로 분리해야 한다 — 스키마 변경이라 별도 작업이다.
+
+### 저장마다 도는 전체 직렬화 제거 (2026-09-26)
+
+82MB 문서(타일셋 354칸)에서 자동저장 한 번을 재 보니, 나머지 비용은 이 둘이었다.
+
+- 저장 영수증 `contentIdentity` 를 저장마다 미리 계산했다(`serializeForComparison` 2,560ms + 해시 570ms).
+  읽는 곳은 조수 실행의 저장 증명·체크포인트뿐이다. 이제 영수증의 getter 가 처음 읽힐 때
+  `acceptedBaseline` 으로 계산한다. 이 기준본은 교체만 되고 제자리 수정이 없으므로 값은 예전과 같다.
+  정규화에 실패하면 `unavailable:` 표식을 돌려주고 `verifyPersistedRevision` 이 `failed` 로 끝난다.
+- `saveMapPatch` 는 매번 새로 복제한 제출본을 기준본과 비교해 타일셋 요약 기억이 늘 비어 있었다
+  (diff 3.3–7.4s). 이제 비교 전에 `shareContentDigests(base.tilesets, submitted.tilesets)` 로
+  기억을 옮긴다. 기억은 값으로 대조되므로 바뀐 타일셋은 그대로 잡힌다.
+
+두 경로 모두 웹(HTTP 브리지)과 Electron(IPC)이 같은 `electronRepository`·`store` 코드를 탄다.
+앱으로 옮겨도 이 비용은 사라지지 않았다는 뜻이다.
