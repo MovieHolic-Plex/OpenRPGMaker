@@ -1,7 +1,7 @@
 import { z, type ZodType } from "zod";
 import { deserializeStoredProjectJson } from "../../src/project/persistence/core/loadRepair";
 import { canonicalJsonString } from "../../src/project/persistence/core/canonicalJson";
-import { resolveMapPatchDocuments } from "../../src/project/persistence/core/projectPatch";
+import { resolveMapPatchDocuments, applyProjectDocumentPatch } from "../../src/project/persistence/core/projectPatch";
 import type { Project } from "../../src/project/types";
 import { OPRN_CHANNELS } from "../shared/channels";
 import {
@@ -66,9 +66,20 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
     // 혼자 칠하는 흔한 경로에서는 읽히지 않는다 — 실측(2026-09-26, 81MB) 패치마다 약 1.6s.
     let base: Project | undefined;
     const baseJson = resolved.baseJson;
+    // 패치 경로의 로컬 트리는 기준 트리와 가지를 공유하므로 그대로 복구하면 기준본이 더러워진다.
+    // 기준 트리를 이 자리에서 직접 파싱했으면(저장 행·보낸 기준 문서) 그 글을 한 번 더 파싱해 로컬 트리를
+    // 따로 만들고 제자리에서 복구한다 — 복구 전 전체 structuredClone(약 0.4s)보다 파싱(약 0.1s)이 싸다.
+    // 복구가 실패하면 손대지 않은 로컬 문서 글로 돌아간다(loadRepair 계약, 글은 그때만 만든다).
+    const baseText = input.patch ? (input.baseSerialized ?? stored.exportSerialized()) : null;
+    const project = input.patch && baseText
+      ? (() => {
+        const privateLocal = applyProjectDocumentPatch(JSON.parse(baseText) as unknown, input.patch!);
+        return deserializeStoredProjectJson(privateLocal, () => JSON.stringify(resolved.localJson));
+      })()
+      : deserializeStoredProjectJson(resolved.localJson);
     const ready: PreparedPatch = {
       getBase: () => (base ??= deserializeStoredProjectJson(baseJson)),
-      project: deserializeStoredProjectJson(resolved.localJson),
+      project,
       ...(input.changedMapIds ? { changedMapIds: input.changedMapIds } : {}),
       // The base came from the stored row only when the client's hash matched it.
       ...(input.baseSerialized === undefined && input.patch && info.sha256 && input.baseSha === info.sha256 ? { baseSha: info.sha256 } : {}),
