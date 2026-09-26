@@ -404,13 +404,12 @@ stamp(YX0, YY0 + 3, SC, 5, 49, 2, 4, 'up', True, 'backstop')
 stamp(31, 27, SC, 3, 55, 2, 2, 'up', True, 'tires')
 stamp(31, 17, SC, 0, 53, 4, 2, 'up', True, 'iron-bars')
 stamp(35, 22, SC, 4, 24, 4, 6, 'up', True, 'school-tree-a')
-stamp(40, 22, SC, 4, 24, 4, 6, 'up', True, 'school-tree-b')
+chip(40, 22, 'icho2.png', 4, 0, 4, 6, 'school-tree-b')   # ginkgo, not a twin of tree-a
 # bicycle racks: front-facing bikes (bicycle01 col 0, 1x2), colours cycle red/blue/green
-for bx in list(range(22, 28)) + list(range(36, 42)):
-    c = (0, 10, 20)[(bx * 7) % 3]
-    chip(bx, 29, 'bicycle01.png', 5, c, 1, 2, f'bike{bx}')
-for px in (5, 9, 13, 29):
-    stamp(px, 29, SC, 2, 28, 2, 2, 'up', True, f'pots{px}')
+# 駐輪場 by the gate: five bikes, colours and facing mixed, one gap — not a stamped row
+for bx, t0 in ((22, 0), (23, 10), (25, 20), (26, 1), (27, 10)):
+    chip(bx, 29, 'bicycle01.png', 5, t0, 1, 2, f'bike{bx}')
+stamp(14, 29, SC, 2, 28, 2, 2, 'up', True, 'pots-gate-w')
 
 def hedge_h(x, y, w, name):
     claim(x, y, w, 2, name)
@@ -438,7 +437,7 @@ signal(50, 30, 'signal-ne')
 # plaza: lamp + postbox at the north end, bus shelter bench beside the stop pole at the kerb end; middle kept open
 chip(51, 25, 'streetlamp.png', 3, 2, 1, 4, 'lamp-plaza')
 chip(53, 25, 'post.png', 2, 0, 1, 2, 'post-plaza')
-chip(51, 30, 'streetlamp.png', 3, 0, 2, 2, 'bench-plaza')   # bench waiting for the bus
+chip(52, 28, 'streetlamp.png', 3, 0, 2, 2, 'bench-plaza')   # bench waiting for the bus, clear of the signal tiles
 chip(53, 30, 'busstop.png', 4, 2, 1, 3, 'busstop-plaza')   # pole foot y32 = plaza kerb line; y33 walk kept clear for pedestrians
 place_comp('retro-rtown-whole-building', 54, 25, 'rtown-shop-1')
 shop(60, 26, 5, name='shop-2', style='shutter', roof=R2)
@@ -465,8 +464,11 @@ for bx in (76, 82, 88): place_kit('park-bench-back', bx, 22)
 chip(51, 4, 'oinarisama.png', 10, 0, 10, 10, 'shrine-ne')
 placements.append({'id': 'shrine-ne', 'kit': 'chip:oinarisama', 'x': 51, 'y': 4, 'width': 10, 'height': 10})
 ground(56, 14, 3, 2, T(TN, 22))   # 参道: gravel approach under the chip's stone steps (chip cols 5-7) down to the lane
-for tx in (61, 63, 65, 67):   # 鎮守の森: dense grove east of the shrine
-    stamp(tx, 4, TN, 5, 16, 2, 3, 'up', True, f'grove{tx},4')
+# 鎮守の森: dense grove east of the shrine, staggered, evergreen + one maple
+stamp(61, 4, TN, 5, 16, 2, 3, 'up', True, 'grove61,4')
+stamp(63, 3, TN, 5, 16, 2, 3, 'up', True, 'grove63,3')
+stamp(65, 4, TN, 5, 16, 2, 3, 'up', True, 'grove65,4')
+stamp(67, 3, TN, 5, 16, 2, 3, 'up', True, 'grove67,3')
 entrance('shrine-ne', 57, 13, 57, 14)
 place_kit('clinic-small', 61, 7, 'clinic-ne')
 # clinic front car park (2 bays) onto the y16 lane
@@ -481,11 +483,12 @@ for tx in (55, 57, 63, 65):
     stamp(tx, 0, TN, 5, 16, 2, 3, 'up', True, f'tree{tx},0')
 stamp(68, 0, TN, 5, 16, 2, 3, 'up', True, 'tree68,0')   # ゴミ集積所 at the lane corner (x70 lane meets y16 lane), not in the woods
 # back-hill canopy east: mixed evergreen + chestnut + maple, not one clone repeated
-for tx in range(72, 95, 2):
-    if 76 <= tx <= 81 or 86 <= tx <= 91: continue
-    stamp(tx, 0, TN, 5, 16, 2, 3, 'up', True, f'tree{tx},0')
-chip(77, 0, 'momiji.png', 4, 0, 4, 4, 'momiji-hill-1')
-chip(87, 0, 'momiji.png', 4, 0, 4, 4, 'momiji-hill-2')
+# east hill edge: the house-ne-1 lot (x79-94) owns y2 (its back wall) -> trees stop 1 row above it, species mixed, staggered
+stamp(72, 0, TN, 5, 16, 2, 3, 'up', True, 'tree72,0')
+chip(75, 0, 'ume.png', 6, 0, 3, 3, 'ume-hill-1')
+for tx in range(78, 96, 2):   # continuous canopy behind the lot's back wall: tree crowns only (TN 133/134 over 141/142), trunks hidden by the wall
+    if tx + 1 >= W: break
+    stamp(tx, 0, TN, 5, 16, 2, 2, 'up', True, f'hillcanopy{tx}')
 
 # ================================================================= SW x0..44, y39..63
 signal(44, 39, 'signal-sw'); ground(43, 39, 2, 4, WALK)
@@ -515,7 +518,7 @@ for sx in (52, 56, 60, 64):
     for yy in range(48, 51): put(sx, yy, T(CV, 6), 'up', False)
 # parked cars (car.png: front view cols 0-2, rear view cols 3-5, 3x4); bay in front of the door (x57-59) left empty
 chip(53, 48, 'car.png', 11, 3, 3, 4, 'car-1')
-chip(61, 48, 'patcar.png', 11, 3, 3, 4, 'car-2')   # both nose-in toward the store (rear view), same orientation
+chip(61, 48, 'car.png', 11, 4, 3, 4, 'car-2') if False else chip(61, 48, 'car.png', 11, 3, 3, 4, 'car-2')   # ordinary customer car, nose-in (rear view)
 rtown(67, 46, 'rtown-se', wall='plaster', roof='dark', awning=False)
 kit_variant('clinic-small', 77, 45, 'clinic-se', sub={'xp-roof01': R3}, label='roof03')
 ground(77, 52, 9, 2, ASPH)   # clinic front car park onto the y54 lane
@@ -531,7 +534,7 @@ for i, x in enumerate(range(77, 83)):
 put(80, 40, T(CH + 'vege.png', 2), 'up', False); put(80, 41, T(CH + 'vege.png', 6), 'up', False)
 # jizo at the corner where the x74 lane leaves the arterial; big sakura inside the lot line, off the sidewalk
 chip(71, 40, 'jizo.png', 3, 0, 3, 4, 'jizo-se')
-chip(87, 39, 'sakura2.png', 6, 0, 6, 6, 'sakura-se')   # lone roadside cherry with 3 tiles of grass to the field
+chip(89, 40, 'ume.png', 6, 3, 3, 3, 'ume-se')   # small plum with grass around it, clear of both lot walls
 # riverside park y56..62
 ground(51, 56, 23, 7, GRASS); ground(76, 56, 20, 7, GRASS)
 ground(51, 62, 23, 1, SOIL)
@@ -542,12 +545,13 @@ for i, sx in enumerate((51, 59, 67)):
 for bx in (57, 65): place_kit('park-bench-back', bx, 60)
 # temple graveyard (寺の墓地) east of the bridge: gravel yard, grave blocks, bell; graves belong to a temple, never the shrine
 ground(76, 56, 20, 7, T(TN, 22))
-for gx in (78, 83): chip(gx, 56, 'ohaka.png', 4, 0, 4, 6, f'graves-{gx}')   # two grave blocks with a 1-tile aisle
+chip(78, 56, 'ohaka.png', 4, 0, 4, 6, 'graves-78')
+chip(83, 57, 'ohaka.png', 4, 0, 4, 6, 'graves-83')   # second block one row lower: not a mirror copy
 # no temple hall fits beside it: a walled community cemetery (共同墓地), no bell
 for wy in range(56, 63): put(76, wy, T(TN, 24 if wy < 62 else 40), 'up', True)
 put(76, 56, T(TN, 16), 'up', True)
 for tx in (90, 92, 94): stamp(tx, 56, TN, 5, 16, 2, 3, 'up', True, f'tgrove{tx}')   # evergreen screen behind the graves
-for tx in (90, 92, 94): stamp(tx, 59, TN, 5, 16, 2, 3, 'up', True, f'tgrove{tx}b')
+chip(91, 59, 'ume.png', 6, 3, 3, 3, 'cemetery-ume')
 
 
 # ================================================================= block-wall lots (gravel yard + wall ring)
@@ -618,6 +622,18 @@ if all(owner[y][44] and owner[y][44].endswith('-yard') and not up[y][44] for y i
     put(44, 55, T(CH + 'bicycle01.png', 0), 'up', True); put(44, 56, T(CH + 'bicycle01.png', 5), 'up', True)
     owner[55][44] = owner[56][44] = 'bike-sw-7'
 yard_prop(35, 60, 204, 'pot-sw-7'); yard_prop(11, 60, 204, 'pot-sw-6'); yard_prop(0, 48, 204, 'pot-sw-1')
+# machiya back gardens (the deep lots behind the SW shops): laundry pole + one garden shrub each
+yard_prop(8, 40, 155, 'laundry-sw2-a'); yard_prop(9, 40, 156, 'laundry-sw2-b')
+if all(owner[y][x] == 'rtown-sw-2-yard' and not up[y][x] for x in (12, 13) for y in (40, 41)):
+    for dx in (0, 1):
+        for dy in (0, 1): owner[40 + dy][12 + dx] = None
+    chip(12, 40, 'yukiyanagi.png', 2, 0, 2, 2, 'shrub-sw2')
+yard_prop(38, 40, 155, 'laundry-sw5-a'); yard_prop(39, 40, 156, 'laundry-sw5-b')
+if all(owner[y][x] == 'rtown-sw-5-yard' and not up[y][x] for x in (40, 41) for y in (41, 42)):
+    for dx in (0, 1):
+        for dy in (0, 1): owner[41 + dy][40 + dx] = None
+    chip(40, 41, 'yukiyanagi.png', 2, 0, 2, 2, 'shrub-sw5')
+yard_prop(18, 50, 204, 'pot-sw-3'); yard_prop(35, 50, 204, 'pot-sw-4')
 
 # a back-wall run with no corner post that stops mid-garden is a floating plank: pull it
 TOPW = {T(TN, t) for t in (16, 17, 18)}
@@ -656,18 +672,24 @@ def bank_field(x0, x1, f):
     claim(x0, 69, x1 - x0 + 1, 3, f'bankfield{x0}')
     xpcells(cells, f, 'lo', True)
     if f == 'SA-Hatake01.png':   # crop rows on the upper and lower furrow, like the SE field
+        crop = ((4, 5, 8, 9), (16, 17, 18, 19), (4, 8), (17, 19))[(x0 // 7) % 4]   # a different crop per field
         for i, x in enumerate(range(x0 + 1, x1)):
-            put(x, 70, T(CH + 'vege.png', (4, 5, 8, 9)[i % 4]), 'up', False)   # one crop row down the middle furrow
+            put(x, 70, T(CH + 'vege.png', crop[i % len(crop)]), 'up', False)   # one crop row down the middle furrow
 bank_field(0, 7, 'SA-Hatake01.png')
-for tx in (9, 11): stamp(tx, 69, TN, 5, 16, 2, 3, 'up', True, f'bank{tx}')
+stamp(9, 69, TN, 5, 16, 2, 3, 'up', True, 'bank9')
+chip(11, 69, 'ume.png', 6, 18, 3, 3, 'bank-ume-w')
 bank_field(14, 20, 'SA-Hatake03.png')
 bank_field(25, 34, 'SA-Hatake01.png')
 chip(36, 69, 'ume.png', 6, 18, 3, 3, 'bank-ume')
 bank_field(40, 43, 'SA-Hatake03.png')
-for tx in (52, 54, 58): stamp(tx, 69, TN, 5, 16, 2, 3, 'up', True, f'bank{tx}')
+stamp(52, 69, TN, 5, 16, 2, 3, 'up', True, 'bank52')
+chip(55, 69, 'ume.png', 6, 21, 3, 3, 'bank-ume-c')
+stamp(58, 69, TN, 5, 16, 2, 3, 'up', True, 'bank58')
 bank_field(61, 72, 'SA-Hatake01.png')
 bank_field(77, 85, 'SA-Hatake03.png')
-for tx in (88, 90, 93): stamp(tx, 69, TN, 5, 16, 2, 3, 'up', True, f'bank{tx}')
+stamp(88, 69, TN, 5, 16, 2, 3, 'up', True, 'bank88')
+chip(90, 69, 'ume.png', 6, 18, 3, 3, 'bank-ume-e')
+stamp(94, 69, TN, 5, 16, 2, 3, 'up', True, 'bank94')
 
 # ---------------------------------------------------------------- vending machines (自販機) on private frontage facing a walk, 2x3 CV stamp
 def vend_ok(x, y):
@@ -685,7 +707,8 @@ for (vx, vy) in ():   # vending machines only on private frontage: none in the p
 print('vends', vends)
 
 # shotengai sidewalk: 1-tile potted plants (TN 204) at shop boundaries; the walk is 1 tile, so nothing taller
-for px in (60, 67, 71, 80, 86, 91):
+SHOPROW = sorted(p['x'] for p in placements if 25 <= p['y'] <= 26 and p['x'] >= 54)
+for px in [sx for sx in SHOPROW[1:]]:   # a planter at each party wall (first column of the next shop), none elsewhere
     if (px, 33) in APPR or (px, 32) in {(e['x'], e['y']) for e in entrances} or up[33][px] or owner[33][px]: continue
     put(px, 33, T(TN, 204), 'up', False); owner[33][px] = f'pot@{px}'   # low planter: walkable edge, never blocks the 1-tile walk
 
@@ -697,6 +720,7 @@ def pole(x, y):
     if lo[y][x] != [WALK]: return False                               # base only on a sidewalk, never in a traffic lane
     if owner[y][x] is not None or (x, y) in APPR or any(up[y + d][x] for d in (0, -1, -2)): return False   # top rows must not draw over anything
     if any(abs(px - x) + abs(py - y) < 4 for px, py in pole_at): return False   # no twin poles
+    if any(p['x'] <= x < p['x'] + p['width'] and p['y'] <= y + d < p['y'] + p['height'] for p in placements for d in (-1, -2)): return False   # kit/composite images paste over up[]: top would vanish
     if any((x, y + d) in APPR for d in (1, -1)) or any((x + d, y) in APPR for d in (1, -1)): return False
     for dy, t in ((-2, 85), (-1, 93), (0, 101)): put(x, y + dy, T(TN, t), 'up', dy == 0)
     owner[y][x] = f'pole@{x},{y}'; pole_at.append((x, y))
