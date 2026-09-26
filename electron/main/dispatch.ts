@@ -45,11 +45,12 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
   const store = (key: SessionKey) => sessions.require(key).store;
   /** 임대를 빼앗긴 `resource\0session`. 이 세션은 해당 자원을 혼자 모드에서도 자동 회수하지 않는다. */
   const displacedLeases = new Set<string>();
-  const preparedPatches = new WeakMap<object, { base: Project; project: Project; changedMapIds?: readonly string[]; baseSha?: string }>();
+  type PreparedPatch = { readonly getBase: () => Project; readonly project: Project; readonly changedMapIds?: readonly string[]; readonly baseSha?: string };
+  const preparedPatches = new WeakMap<object, PreparedPatch>();
 
   function prepareMapPatch(key: SessionKey, payload: unknown):
     | { readonly kind: "stale-base" }
-    | { readonly kind: "ready"; readonly base: Project; readonly project: Project; readonly changedMapIds?: readonly string[]; readonly baseSha?: string } {
+    | ({ readonly kind: "ready" } & PreparedPatch) {
     if (payload !== null && typeof payload === "object" && preparedPatches.has(payload)) {
       return { kind: "ready", ...preparedPatches.get(payload)! };
     }
@@ -61,8 +62,12 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
       sha256: info.sha256 ?? null,
     });
     if (resolved.kind === "stale-base") return resolved;
-    const ready = {
-      base: deserializeStoredProjectJson(resolved.baseJson),
+    // 기준본 역직렬화는 쓸 때만 한다(다른 세션 잠금 충돌 검사·기준이 다를 때의 3자 병합).
+    // 혼자 칠하는 흔한 경로에서는 읽히지 않는다 — 실측(2026-09-26, 81MB) 패치마다 약 1.6s.
+    let base: Project | undefined;
+    const baseJson = resolved.baseJson;
+    const ready: PreparedPatch = {
+      getBase: () => (base ??= deserializeStoredProjectJson(baseJson)),
       project: deserializeStoredProjectJson(resolved.localJson),
       ...(input.changedMapIds ? { changedMapIds: input.changedMapIds } : {}),
       // The base came from the stored row only when the client's hash matched it.
@@ -160,7 +165,7 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
       const prepared = prepareMapPatch(key, payload);
       if (prepared.kind === "stale-base") return prepared;
       return await store(key).saveMapPatch({
-        baseProject: prepared.base,
+        getBaseProject: prepared.getBase,
         project: prepared.project,
         ...(prepared.changedMapIds ? { changedMapIds: prepared.changedMapIds } : {}),
         ...(prepared.baseSha ? { baseSha: prepared.baseSha } : {}),
@@ -299,20 +304,28 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
       if (channel === OPRN_CHANNELS.assetsPruneUnused && sessions.require(key).team.list().length > 1) throw new Error('팀 작업 중에는 미사용 에셋 정리를 실행할 수 없습니다');
       if ([OPRN_CHANNELS.assetsPruneUnused, OPRN_CHANNELS.projectSeparateMedia, OPRN_CHANNELS.projectBackup].some(candidate => candidate === channel)) requireOwner(key);
       if (channel === OPRN_CHANNELS.projectSave || channel === OPRN_CHANNELS.projectSaveMapPatch) {
-        let base: Project | undefined;
-        let local: Project;
-        if (channel === OPRN_CHANNELS.projectSave) {
-          local = projectFromSerialized(saveProjectSchema.parse(payload).serialized);
-          base = store(key).loadSnapshot()?.project;
-        } else {
+        // 다른 세션이 지금 쥐고 있는 임대가 있을 때만 문서를 열어 비교한다. 혼자 쓰는 흔한 경우에는
+        // 역직렬화를 하지 않는다 — 실측(2026-09-26, 81MB 새 프로젝트) 전체 저장마다 저장 행 파싱+역직렬화 약 2s.
+        let documents: { readonly base: Project | undefined; readonly local: Project } | null = null;
+        if (channel === OPRN_CHANNELS.projectSaveMapPatch) {
           const prepared = prepareMapPatch(key, payload);
           if (prepared.kind === "stale-base") return prepared;
-          base = prepared.base;
-          local = prepared.project;
         }
+        const readDocuments = (): { readonly base: Project | undefined; readonly local: Project } => {
+          if (documents) return documents;
+          if (channel === OPRN_CHANNELS.projectSave) {
+            documents = { local: projectFromSerialized(saveProjectSchema.parse(payload).serialized), base: store(key).loadSnapshot()?.project };
+          } else {
+            const prepared = prepareMapPatch(key, payload);
+            if (prepared.kind === "stale-base") throw new Error("stale base after preparation");
+            documents = { base: prepared.getBase(), local: prepared.project };
+          }
+          return documents;
+        };
         const session = sessions.require(key);
         const conflicts = [...session.locks].filter(([resource, lease]) => {
           if (lease.session === key || lease.expiresAt <= Date.now()) return false;
+          const { base, local } = readDocuments();
           const value = (project: Project | undefined): unknown => resource.startsWith('map:')
             ? project?.maps[resource.slice(4)] : resource === 'database' ? project?.database : project;
           return canonicalJsonString(value(base) ?? null) !== canonicalJsonString(value(local) ?? null);
