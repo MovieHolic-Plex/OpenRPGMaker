@@ -62,7 +62,6 @@ import { isMapPanelCollapsed, subscribeMapPanel } from "@/editor/workspace/mapPa
 import type { PanelId } from "@/editor/workspace/panelRegistry";
 import { getWorkspaceLayout, subscribeWorkspace } from "@/editor/workspace/workspaceStore";
 import { ProjectExportMirror } from "@/editor/projectExportMirror";
-import { runWhenPointerReleased } from "@/editor/pointerStrokeGate";
 import { isSaveSkippedLocation } from "@/project/devProjectPersistence";
 import { store, type ProjectChangeDescriptor } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
@@ -509,8 +508,6 @@ export function teardownEditor(): void {
   authoringJourneyOpen = false;
   authoringJourneyReferenceIssues = null;
   projectExportNode = null;
-  if (projectExportTimer) clearTimeout(projectExportTimer);
-  projectExportTimer = null;
   projectExportMirror.clear();
   document.body.classList.remove("ai-chat-dock-float", "editor-ui-beginner", "editor-ui-standard", "editor-ui-expert");
 }
@@ -623,11 +620,22 @@ export function persistenceModeBannerText(reason: string, saveSkipped: boolean):
 }
 
 function projectExportNodeElement(): HTMLElement {
-  projectExportNode = el("pre", {
+  const node = el("pre", {
     attrs: { hidden: "true" },
     dataset: { testid: "project-export-json" },
   });
-  return projectExportNode;
+  // 자동화 미러는 **읽을 때** 직렬화한다. 예전에는 편집이 끝날 때마다 프로젝트 전체를 JSON 으로 바꿔
+  // 숨은 <pre> 에 넣었다 — 타일셋이 큰 프로젝트(114MB)에서 획을 뗄 때마다 809ms 긴 작업이었다(2026-09-26 실측).
+  // e2e·스크립트는 textContent 로만 읽으므로 그 읽기를 가로채 최신 상태를 돌려준다(버전 토큰 캐시 재사용).
+  Object.defineProperty(node, "textContent", {
+    configurable: true,
+    get: () => projectExportMirror.serialize(
+      store.getCurrent(), store.getVersionToken(), editorState.get(), getMapEditHistoryState(),
+    ),
+    set: () => {},
+  });
+  projectExportNode = node;
+  return node;
 }
 
 function onWindowResize(): void {
@@ -902,21 +910,15 @@ function refreshPanels(change?: ProjectChangeDescriptor, editorStateOnly = false
   if (change?.scope === "map" && change.cells?.length) {
     renderCanvasToolbar(canvasToolbarRoot);
     renderMapEditLockBanner(mapLockBannerRoot);
-    // Tile painting can emit once per pointer sample. The hidden export is an
-    // automation oracle, not a live UI surface; give a stroke time to settle
-    // so a large project is serialized once after the burst.
-    updateProjectExport(500);
     return;
   }
   if (change?.scope === "database" || change?.scope === "system") {
     renderMapEditLockBanner(mapLockBannerRoot);
-    updateProjectExport();
     return;
   }
   renderLeftDockPanels();
   renderCanvasToolbar(canvasToolbarRoot);
   renderMapEditLockBanner(mapLockBannerRoot);
-  if (!editorStateOnly) updateProjectExport();
   scheduleFitCanvas();
 }
 
@@ -1092,35 +1094,9 @@ function isRandomBattleTestRequest(value: unknown): value is { readonly kind: "r
   if (typeof value !== "object" || value === null) return false;
   return "kind" in value && value.kind === "random-battle";
 }
-// 콘텐츠 변경의 clone+stringify는 trailing 디바운스로 합친다. UI 상태만 바뀌면
-// ProjectExportMirror가 내용 버전별 JSON을 재사용하고 editor/history만 다시 직렬화한다.
-// 맵 타일 버스트는 500ms, 그 밖의 콘텐츠는 150ms로 숨은 <pre> 관측 비용을 묶는다.
-let projectExportTimer: ReturnType<typeof setTimeout> | null = null;
+// 숨은 `project-export-json` 미러는 읽을 때 직렬화한다(projectExportNodeElement) — 편집 후 미리 쓰지 않는다.
+// ProjectExportMirror 는 내용 버전별 JSON 을 재사용하고 editor/history 만 다시 직렬화한다.
 const projectExportMirror = new ProjectExportMirror();
-
-// 숨은 `project-export-json` 미러는 프로젝트 전체를 JSON.stringify 한다. 선행 잠금
-// (`if (timer) return`)이면 버스트 중 150ms 마다 타이머가 재무장되어 반복 직렬화됐다 —
-// 우클릭 드래그 2초에 열 번 넘게 돌았다. 후행 엣지로 바꿔 버스트가 끝난 뒤 한 번만 돈다.
-function updateProjectExport(delayOverride?: number): void {
-  if (projectExportTimer) clearTimeout(projectExportTimer);
-  // The first export is a full JSON stringify of the loaded project. Let the canvas and map
-  // shell get a paint opportunity before doing that hidden automation work; ordinary edits keep
-  // the shorter debounce while tile bursts pass an explicit longer delay.
-  const delay = delayOverride ?? (projectExportNode?.textContent ? 150 : 500);
-  projectExportTimer = setTimeout(() => {
-    projectExportTimer = null;
-    // 천천히 끄는 스트로크는 칸 사이가 500ms 를 넘기도 한다 — 칠하는 도중 프로젝트 전체를
-    // 직렬화하지 않고 뗄 때 한 번 한다(pointerStrokeGate).
-    runWhenPointerReleased(writeProjectExport);
-  }, delay);
-}
-
-function writeProjectExport(): void {
-  if (!projectExportNode) return;
-  projectExportNode.textContent = projectExportMirror.serialize(
-    store.getCurrent(), store.getVersionToken(), editorState.get(), getMapEditHistoryState(),
-  );
-}
 
 function bindLeftResizer(): void {
   if (!leftResizer) return;
