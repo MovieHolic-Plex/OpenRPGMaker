@@ -228,6 +228,13 @@ lane(0, 52, 45, 2); lane(22, 39, 2, 33)          # SW
 lane(51, 54, 45, 2); lane(74, 39, 2, 33)         # SE
 
 for xx in range(46, 50): put(xx, 32, T(CV, 6), 'up', False); put(xx, 39, T(CV, 6), 'up', False)
+# centre lines (dashed white, keep-left 2-lane arterials); gap through the junction and the crossings
+for xx in range(0, W, 2):
+    if 44 <= xx <= 51: continue
+    put(xx, 36, T(SC, 14), 'lo', None)
+for yy in range(0, H, 2):
+    if 31 <= yy <= 40 or 63 <= yy <= 68: continue
+    put(48, yy, T(CV, 6), 'lo', None)
 for yy in range(34, 38): put(44, yy, T(CV, 14), 'up', False); put(51, yy, T(CV, 14), 'up', False)
 
 def signal(x, y, name):
@@ -238,18 +245,21 @@ def signal(x, y, name):
 # ---------------------------------------------------------------- canal y64-67, walks y63 / y68
 CANAL_Y = 64
 bridges = [(22, 23), (45, 50), (74, 75)]
-canal = [(x, y) for y in range(CANAL_Y, CANAL_Y + 4) for x in range(W) if not any(a <= x <= b for a, b in bridges)]
-for (x, y) in canal: lo[y][x] = [SOIL]
-xpcells(canal, DITCH)
+canal_all = [(x, y) for y in range(CANAL_Y, CANAL_Y + 4) for x in range(W)]   # one continuous channel: water runs under the bridges
+canal = [(x, y) for (x, y) in canal_all if not any(a <= x <= b for a, b in bridges)]
+for (x, y) in canal_all: lo[y][x] = [SOIL]
+xpcells(canal_all, DITCH)
 ground(0, 63, W, 1, WALK); ground(0, 68, W, 1, WALK)
 for a, b in bridges:
-    for y in range(63, 69):
-        for x in range(a, b + 1): lo[y][x] = [WALK if x in (45, 50) else ASPH]
+    for x in range(a, b + 1): lo[63][x] = [WALK if x in (45, 50) else ASPH]; lo[68][x] = [WALK if x in (45, 50) else ASPH]
 CH = 'by-source/sozai/chips/'
 GR = CH + 'guardrail.png'
 # water in the inner two rows of the ditch (SA-Pool01 translucent water autotile)
-for c in canal:
+for c in canal_all:
     if c[1] in (65, 66): put(c[0], c[1], ('x', 'SA-Pool01.png', 255), 'lo', True)  # interior water piece only: no rounded pool corners
+for a, b in bridges:   # deck drawn over the channel on the upper layer, walkable
+    for y in range(CANAL_Y, CANAL_Y + 4):
+        for x in range(a, b + 1): put(x, y, WALK if x in (45, 50) else ASPH, 'up', False)
 # white guardrail along the canal lip (guardrail chip 32..35), segments between bridges
 edges = sorted({x for (x, y) in canal if y == CANAL_Y})
 segs, cur = [], []
@@ -262,10 +272,10 @@ for seg in segs:
         t = 32 if i == 0 else 35 if i == len(seg) - 1 else (33 if i % 2 else 34)
         put(x, CANAL_Y, T(GR, t), 'up', True)
 # vertical guardrails on both sides of every bridge (guardrail chip col 6 / col 7, 4 tall)
-for a, b in bridges:
+for a, b in bridges:   # rails on the channel cells just outside the deck, so the deck stays full width
     for i, y in enumerate(range(CANAL_Y, CANAL_Y + 4)):
-        put(a, y, T(GR, 38 + 8 * i), 'up', False)
-        put(b, y, T(GR, 39 + 8 * i), 'up', False)
+        put(a - 1, y, T(GR, 39 + 8 * i), 'up', True)
+        put(b + 1, y, T(GR, 38 + 8 * i), 'up', True)
 
 def chip(x, y, f, cols, t0, w, h, name=None, s=True, layer='up'):
     if name: claim(x, y, w, h, name)
@@ -331,7 +341,7 @@ for yy in range(0, 31):   # hedge columns on the west and east campus edges
 claim(1, 0, 1, 31, 'hedge-w'); claim(44, 0, 1, 31, 'hedge-e')
 
 def school_main(x, y, w):
-    roof_h, floors = 5, 4
+    roof_h, floors = 5, 3
     h = roof_h + 1 + floors * 3
     claim(x, y, w, h, 'school-main')
     xpcells(rect(x, y, w, roof_h), R1)
@@ -354,8 +364,11 @@ def school_main(x, y, w):
             entrance('school-main', door, fy + 2, door, fy + 3)
     placements.append({'id': 'school-main', 'x': x, 'y': y, 'width': w, 'height': h})
 
-MX, MY, MW = 3, 1, 32
-school_main(MX, MY, MW)   # x3..34, y1..18; door x18-19
+MX, MY, MW = 3, 1, 26
+school_main(MX, MY, MW)   # x3..28, y1..15 (3 floors); door x15-16
+# 校庭の桜: cherry trees in the pocket east of the main building
+chip(29, 2, 'sakura2.png', 6, 0, 6, 5, 'school-sakura-1')
+chip(29, 9, 'sakura2.png', 6, 0, 6, 5, 'school-sakura-2')
 
 GX, GYy, GW = 36, 2, 8
 claim(GX, GYy, GW, 11, 'school-gym')
@@ -375,16 +388,16 @@ for dx in range(8):
     if dx in (3, 4): continue
     stamp(PX + dx, PY + 5, SC, 5 + (0 if dx == 0 else 2 if dx == 7 else 1), 55, 1, 2, 'up', True)
 
-# yard y21..28 (dirt), paved strip y29-30 with bikes, hedge y31-32 with the gate
-YX0, YY0, YX1, YY1 = 3, 21, 34, 28
+# yard y17..28 (dirt, 32x12: larger than the 26x15 main building), paved strip y29-30 with bikes, hedge y31-32 with the gate
+YX0, YY0, YX1, YY1 = 3, 17, 34, 28
 ground(YX0, YY0, YX1 - YX0 + 1, YY1 - YY0 + 1, DIRT)
-for ly in (23, 25, 27):
+for ly in (19, 26):   # running track: one closed loop of white line tiles (corners included)
     for xx in range(YX0 + 4, YX1 - 3): put(xx, ly, T(SC, 14), 'up', False)
 for xx in (YX0 + 4, YX1 - 4):
-    for yy in range(22, 28): put(xx, yy, T(SC, 6), 'up', False)
-stamp(YX0, YY0, SC, 5, 49, 2, 4, 'up', True, 'backstop')
+    for yy in range(19, 27): put(xx, yy, T(SC, 6), 'up', False)
+stamp(YX0, YY0 + 3, SC, 5, 49, 2, 4, 'up', True, 'backstop')
 stamp(31, 27, SC, 3, 55, 2, 2, 'up', True, 'tires')
-stamp(31, 21, SC, 0, 53, 4, 2, 'up', True, 'iron-bars')
+stamp(31, 17, SC, 0, 53, 4, 2, 'up', True, 'iron-bars')
 stamp(35, 22, SC, 4, 24, 4, 6, 'up', True, 'school-tree-a')
 stamp(40, 22, SC, 4, 24, 4, 6, 'up', True, 'school-tree-b')
 # bicycle racks: front-facing bikes (bicycle01 col 0, 1x2), colours cycle red/blue/green
@@ -410,7 +423,8 @@ for fx in (3, 4, 7, 8, 11, 12, 15):
     put(fx, 30, T(SC, (149, 150, 157, 156)[fx % 4]), 'up', False)
 
 # west margin x0: trees
-for ty in range(0, 31, 3): put(0, ty + 1, T(TN, 159), 'up', True)
+for ty in range(0, 31):   # west margin: continuous hedge, matching the x1 column
+    put(0, ty, T(TN, 167 if ty % 2 else 159), 'up', True)
 
 # ================================================================= NE x51..95, y0..32
 # shotengai: shops y26..32 facing the y33 sidewalk; plaza x51-53 with a signal
@@ -430,15 +444,27 @@ shop(89, 26, 7, name='shop-7', style='shutter', roof=R4)
 # park y18..24 between the back lane and the shop roofs
 ground(51, 18, 19, 7, GRASS); ground(72, 18, 24, 7, GRASS)
 ground(52, 21, 17, 1, SOIL); ground(73, 21, 22, 1, SOIL)
+# NE park, path row y21 kept clear: play equipment north of it, benches/lamps/trees south or beside it
 place_kit('park-swings', 52, 18); place_kit('park-slide', 56, 18); place_kit('park-sandpit', 62, 18)
-place_kit('park-bench-front', 53, 22); place_kit('park-bench-front', 58, 22); place_kit('park-lamp', 61, 21)
-place_kit('park-tree-planter', 66, 19)
-place_kit('park-tree-planter', 73, 18); place_kit('park-bench-front', 78, 22); place_kit('park-lamp', 81, 20)
-place_kit('park-bench-front', 83, 22); place_kit('park-tree-planter', 86, 18); place_kit('park-sandpit', 91, 18)
-place_kit('park-bench-back', 91, 22)
+place_kit('park-bench-front', 53, 22)
+place_kit('park-bench-front', 58, 22)
+chip(67, 18, 'yukiyanagi.png', 2, 0, 2, 2, 'yukiyanagi-ne')
+chip(73, 15 + 3, 'ume.png', 6, 12, 3, 3, 'ume-ne')   # plum: ume.png rows 2-4 col 0-2 = one tree
+place_kit('park-bench-front', 78, 22); place_kit('park-bench-back', 83, 22)
+place_kit('park-sandpit', 91, 22)
+chip(87, 18, 'ume.png', 6, 15, 3, 3, 'ume-ne-2')
 # north of the back lane: apartment + clinic west, mansion + houses east
-place_kit('apartment-dark-roof', 51, 6, 'apartment-ne')
-place_kit('clinic-small', 61, 8, 'clinic-ne')
+# hillside inari shrine (稲荷神社) against the back-hill grove, approach down to the y16 lane
+chip(51, 4, 'oinarisama.png', 10, 0, 10, 10, 'shrine-ne')
+placements.append({'id': 'shrine-ne', 'kit': 'chip:oinarisama', 'x': 51, 'y': 4, 'width': 10, 'height': 10})
+ground(55, 14, 2, 2, SOIL)   # 参道 gravel-earth approach to the lane
+for tx in (61, 63, 65, 67):   # 鎮守の森: dense grove east of the shrine
+    stamp(tx, 4, TN, 5, 16, 2, 3, 'up', True, f'grove{tx},4')
+entrance('shrine-ne', 55, 13, 55, 14)
+place_kit('clinic-small', 61, 7, 'clinic-ne')
+# clinic front car park (2 bays) onto the y16 lane
+ground(61, 14, 9, 2, ASPH)
+for sx in (62, 67): put(sx, 14, T(CV, 6), 'up', False)
 place_comp('msex-b-whole-house', 72, 5, 'mansion-ne')
 house(81, 4, 7, 'house-ne-1')
 # back-hill grove behind the NE lots: maples + dense trees + a garbage station, all existing chips
@@ -446,9 +472,13 @@ chip(51, 0, 'momiji.png', 4, 0, 4, 4, 'momiji-ne-1')
 chip(59, 0, 'momiji.png', 4, 0, 4, 4, 'momiji-ne-2')
 for tx in (55, 57, 63, 65):
     stamp(tx, 0, TN, 5, 16, 2, 3, 'up', True, f'tree{tx},0')
-chip(68, 0, 'gomi.png', 2, 0, 2, 3, 'gomi-ne')
+stamp(68, 0, TN, 5, 16, 2, 3, 'up', True, 'tree68,0')   # ゴミ集積所 at the lane corner (x70 lane meets y16 lane), not in the woods
+# back-hill canopy east: mixed evergreen + chestnut + maple, not one clone repeated
 for tx in range(72, 95, 2):
+    if tx in (78, 88): continue
     stamp(tx, 0, TN, 5, 16, 2, 3, 'up', True, f'tree{tx},0')
+chip(78, 0, 'momiji.png', 4, 0, 2, 3, 'momiji-hill-1')
+chip(88, 0, 'momiji.png', 4, 2, 2, 3, 'momiji-hill-2')
 
 # ================================================================= SW x0..44, y39..63
 signal(44, 39, 'signal-sw'); ground(43, 39, 2, 4, WALK)
@@ -464,41 +494,52 @@ house(12, 54, 5, 'house-sw-6', 'wood', 'light', stones=False, side='left', front
 kit_variant('apartment-dark-roof', 25, 54, 'apartment-sw-2', APT['wood'], label='wood-wall')
 house(36, 54, 3, 'house-sw-7', 'plaster', 'light', stones=False)
 
+
+chip(51, 22, 'gomi.png', 2, 0, 2, 3, 'gomi-ne')   # ゴミ集積所 at the park corner, facing the plaza walk
+
 # ================================================================= SE x51..95, y39..63
 signal(51, 39, 'signal-se'); ground(51, 39, 3, 7, WALK)
+# konbini: storefront faces south onto its own car park, which opens west onto the x50 sidewalk of the N-S arterial (ロードサイド型)
 shop(54, 39, 10, name='konbini')
 stamp(64, 43, CV, 0, 29, 2, 3, 'up', True, 'vending')
 stamp(66, 40, CV, 5, 44, 3, 3, 'up', True, 'pole-sign')       # sign box spans 3 cols; pole is only col 6
 stamp(67, 43, CV, 6, 47, 1, 3, 'up', True, 'pole-sign-post')
 ground(51, 46, 16, 8, ASPH)
-for sx in range(52, 65, 4):
-    for yy in range(47, 50): put(sx, yy, T(CV, 6), 'up', False)
-# parked cars (car.png: front view cols 0-2, rear view cols 3-5, 3x4)
-chip(53, 47, 'car.png', 11, 0, 3, 4, 'car-1')
-chip(57, 47, 'patcar.png', 11, 3, 3, 4, 'car-2')
-chip(61, 47, 'car.png', 11, 3, 3, 4, 'car-3')
+for sx in (52, 56, 60, 64):
+    for yy in range(48, 51): put(sx, yy, T(CV, 6), 'up', False)
+# parked cars (car.png: front view cols 0-2, rear view cols 3-5, 3x4); bay in front of the door (x57-59) left empty
+chip(53, 48, 'car.png', 11, 0, 3, 4, 'car-1')
+chip(61, 48, 'patcar.png', 11, 3, 3, 4, 'car-2')
 rtown(67, 46, 'rtown-se', wall='plaster', roof='dark', awning=False)
-kit_variant('clinic-small', 77, 47, 'clinic-se', sub={'xp-roof01': R3}, label='roof03')
+kit_variant('clinic-small', 77, 45, 'clinic-se', sub={'xp-roof01': R3}, label='roof03')
+ground(77, 52, 9, 2, ASPH)   # clinic front car park onto the y54 lane
+for sx in (78, 84): put(sx, 52, T(CV, 6), 'up', False)
 kit_variant('apartment-dark-roof', 86, 45, 'apartment-se', APT['light-glass'], label='light-roof-glass')
 # vegetable field behind the konbini (SA-Hatake01 soil + vege chips + scarecrow)
-field = [(x, y) for y in range(39, 44) for x in range(69, 79)]
-claim(69, 39, 10, 5, 'field-se')
+field = [(x, y) for y in range(39, 44) for x in range(76, 84)]   # east of the x74 lane, never over its asphalt
+claim(76, 39, 8, 5, 'field-se')
 xpcells(field, 'SA-Hatake01.png', 'lo', True)
-for i, x in enumerate(range(70, 78)):
+for i, x in enumerate(range(77, 83)):
     put(x, 40, T(CH + 'vege.png', (4, 5, 8, 9)[i % 4]), 'up', False)
     put(x, 42, T(CH + 'vege.png', (16, 17, 18, 19)[i % 4]), 'up', False)
-put(74, 40, T(CH + 'vege.png', 2), 'up', False); put(74, 41, T(CH + 'vege.png', 6), 'up', False)
-# roadside jizo + big sakura
-chip(80, 40, 'jizo.png', 3, 0, 3, 4, 'jizo-se')
-chip(84, 38, 'sakura2.png', 6, 0, 6, 5, 'sakura-se')
+put(80, 40, T(CH + 'vege.png', 2), 'up', False); put(80, 41, T(CH + 'vege.png', 6), 'up', False)
+# jizo at the corner where the x74 lane leaves the arterial; big sakura inside the lot line, off the sidewalk
+chip(71, 40, 'jizo.png', 3, 0, 3, 4, 'jizo-se')
+chip(84, 39, 'sakura2.png', 6, 0, 6, 5, 'sakura-se')
 chip(91, 39, 'momiji.png', 4, 0, 4, 4, 'momiji-se')
 # riverside park y56..62
 ground(51, 56, 23, 7, GRASS); ground(76, 56, 20, 7, GRASS)
-ground(51, 60, 23, 1, SOIL); ground(76, 60, 20, 1, SOIL)
-place_kit('park-tree-planter', 52, 56); place_kit('park-bench-front', 57, 58); place_kit('park-lamp', 60, 56)
-place_kit('park-tree-planter', 63, 56); place_kit('park-bench-front', 68, 58)
-place_kit('park-tree-planter', 77, 56); place_kit('park-bench-front', 82, 58); place_kit('park-lamp', 85, 56)
-place_kit('park-tree-planter', 88, 56); place_kit('park-bench-front', 93, 58)
+ground(51, 61, 23, 1, SOIL)
+# riverside park west of the bridge, path row y60 kept clear
+chip(52, 56, 'sakura2.png', 6, 0, 6, 5, 'sakura-river')   # y56..60; the park path runs on y61
+place_kit('park-bench-front', 58, 58)
+place_kit('park-swings', 64, 56); place_kit('park-bench-back', 68, 58)
+chip(71, 58, 'yukiyanagi.png', 2, 0, 2, 2, 'yukiyanagi-river')
+# temple graveyard (寺の墓地) east of the bridge: gravel yard, grave blocks, bell; graves belong to a temple, never the shrine
+ground(76, 56, 20, 7, T(TN, 22))
+for gx in (77, 81, 85): chip(gx, 56, 'ohaka.png', 4, 0, 4, 6, f'graves-{gx}')
+chip(90, 57, 'kane.png', 2, 0, 2, 2, 'temple-bell')
+for tx in (92, 94): stamp(tx, 56, TN, 5, 16, 2, 3, 'up', True, f'tgrove{tx}')
 
 
 # ================================================================= block-wall lots (gravel yard + wall ring)
@@ -547,9 +588,18 @@ def lot(name, pl=1, pt=1, pr=1, pb=1):
 
 lot('rtown-sw-2', pt=3); lot('rtown-sw-5', pt=3)   # shops sit 3 rows below the houses' top: align their back wall with the houses'
 for n in ('house-sw-1', 'house-sw-3', 'house-sw-4', 'house-sw-6', 'house-sw-7',
-          'apartment-sw', 'apartment-sw-2', 'house-ne-1', 'mansion-ne', 'apartment-ne',
+          'apartment-sw', 'apartment-sw-2', 'house-ne-1', 'mansion-ne', 'clinic-ne',
           'rtown-se', 'clinic-se', 'apartment-se'):
     lot(n)
+
+# SW house row: one continuous rear block wall along y39 (the arterial sidewalk side), posts at run ends
+def rear_wall(y, x0, x1, name):
+    for x in range(x0, x1 + 1):
+        if owner[y][x] and owner[y][x].endswith('-wall'): continue
+        if not (owner[y][x] is None or owner[y][x].endswith('-yard')) or up[y][x]: continue
+        t = 16 if x == x0 else 18 if x == x1 else 17
+        put(x, y, T(TN, t), 'up', True); owner[y][x] = name + '-wall'
+rear_wall(39, 0, 21, 'sw-rear-a'); rear_wall(39, 32, 42, 'sw-rear-b')
 
 # a back-wall run with no corner post that stops mid-garden is a floating plank: pull it
 TOPW = {T(TN, t) for t in (16, 17, 18)}
@@ -582,9 +632,65 @@ for x in range(W):
         y = y1 + 1
 
 # ================================================================= south of canal y69..71: tree row
-for tx in range(0, W, 3):
-    if any(a - 1 <= tx + d <= b for a, b in bridges for d in (0, 1)): continue
-    stamp(tx, 69, TN, 5, 16, 2, 3, 'up', True, f'bank{tx}')
+# farmland edge past the canal (田園): field plots of two kinds between bridges, tree clumps, not one clone row
+def bank_field(x0, x1, f):
+    cells = [(x, y) for y in range(69, 72) for x in range(x0, x1 + 1)]
+    claim(x0, 69, x1 - x0 + 1, 3, f'bankfield{x0}')
+    xpcells(cells, f, 'lo', True)
+    if f == 'SA-Hatake01.png':   # crop rows on the upper and lower furrow, like the SE field
+        for i, x in enumerate(range(x0 + 1, x1)):
+            put(x, 69, T(CH + 'vege.png', (4, 5, 8, 9)[i % 4]), 'up', False)
+            put(x, 71, T(CH + 'vege.png', (16, 17, 18, 19)[i % 4]), 'up', False)
+bank_field(0, 7, 'SA-Hatake01.png')
+for tx in (9, 11): stamp(tx, 69, TN, 5, 16, 2, 3, 'up', True, f'bank{tx}')
+bank_field(14, 20, 'SA-Hatake03.png')
+bank_field(25, 34, 'SA-Hatake01.png')
+chip(36, 69, 'ume.png', 6, 12, 3, 3, 'bank-ume')
+bank_field(40, 43, 'SA-Hatake03.png')
+for tx in (52, 54, 58): stamp(tx, 69, TN, 5, 16, 2, 3, 'up', True, f'bank{tx}')
+bank_field(61, 72, 'SA-Hatake01.png')
+bank_field(77, 85, 'SA-Hatake03.png')
+for tx in (88, 90, 93): stamp(tx, 69, TN, 5, 16, 2, 3, 'up', True, f'bank{tx}')
+
+# ---------------------------------------------------------------- vending machines (自販機) on private frontage facing a walk, 2x3 CV stamp
+def vend_ok(x, y):
+    cells = [(x + dx, y + dy) for dy in range(3) for dx in range(2)]
+    if not all(0 <= a < W and 0 <= b < H and owner[b][a] in (None,) + tuple(o for o in [owner[b][a]] if o and o.endswith('-yard')) and not up[b][a] for a, b in cells): return False
+    below = [(x, y + 3), (x + 1, y + 3)]
+    return all(0 <= b < H and not solid[b][a] for a, b in below)
+vends = 0
+for (vx, vy) in ((58, 60), (70, 60)):
+    if vend_ok(vx, vy):
+        for dy in range(3):
+            for dx in range(2): owner[vy + dy][vx + dx] = f'vend@{vx},{vy}'
+        stamp(vx, vy, CV, 0, 29, 2, 3, 'up', True); vends += 1
+    else: print('vend skipped', vx, vy)
+print('vends', vends)
+
+# shotengai sidewalk: 1-tile potted plants (TN 204) at shop boundaries; the walk is 1 tile, so nothing taller
+for px in (60, 65, 70, 77, 83, 89):
+    if (px, 33) in APPR or (px, 32) in {(e['x'], e['y']) for e in entrances} or up[33][px] or owner[33][px]: continue
+    put(px, 33, T(TN, 204), 'up', True); owner[33][px] = f'pot@{px}'
+
+# ---------------------------------------------------------------- utility poles (電柱): TN 85/93/101, base on the sidewalk, ~10-14 tiles apart, irregular
+APPR = {(e['approach']['x'], e['approach']['y']) for e in entrances}
+def pole(x, y):
+    if not (0 <= x < W and 2 <= y < H): return False
+    if owner[y][x] is not None or (x, y) in APPR or up[y][x]: return False
+    if any((x, y + d) in APPR for d in (1, -1)) or any((x + d, y) in APPR for d in (1, -1)): return False
+    for dy, t in ((-2, 85), (-1, 93), (0, 101)): put(x, y + dy, T(TN, t), 'up', dy == 0)
+    owner[y][x] = f'pole@{x},{y}'
+    return True
+poles = 0
+for y, xs in ((38, range(3, 95, 12)), (63, range(6, 95, 13)), (33, range(9, 95, 14))):
+    for x0 in xs:
+        for dx in (0, 1, -1, 2, -2):
+            if pole(x0 + dx, y): poles += 1; break
+for x, ys in ((45, range(6, 70, 13)), (50, range(12, 70, 13))):
+    for y0 in ys:
+        for dy in (0, 1, -1, 2):
+            if pole(x, y0 + dy): poles += 1; break
+print('poles', poles)
 
 # ---------------------------------------------------------------- checks
 def passable(x, y): return 0 <= x < W and 0 <= y < H and not solid[y][x]
