@@ -130,6 +130,8 @@ export interface MvTownRecipe {
   readonly parkingLine?: string;
   readonly shops: readonly MvTownFacade[];
   readonly offices: readonly MvTownFacade[];
+  /** 주택가 블록의 벽 맞댄 중층 주거(1층은 문 + 세로창, 쇼윈도 없음). 없으면 shops 를 쓴다. */
+  readonly apartments?: readonly MvTownFacade[];
   readonly houses: readonly { readonly roof: string; readonly wall: string }[];
   readonly objects: {
     readonly lamp: string;
@@ -152,6 +154,17 @@ export interface MvTownRecipe {
     /** 골목·뒷마당에 두는 것(분리수거함·배전함·상자). */
     readonly backProps: readonly string[];
     readonly houseDoor: string;
+    /** 주택 현관문 여러 종(없으면 houseDoor 하나). 이웃 집끼리 다르게 고른다. */
+    readonly houseDoors?: readonly string[];
+    /** 마당 경계 생울타리(3칸 폭, 가로로 잇는다). 없으면 덤불로. */
+    readonly hedge?: string;
+    /** 가게 1층 부품: 1줄 문·1줄 쇼윈도(+양끝)·2줄 문·2줄 통유리·1칸 차양. 파사드가 자기 부품이 없을 때 빌려 쓴다. */
+    readonly doorRow?: string;
+    readonly doorTall?: string;
+    readonly shopfrontRow?: string;
+    readonly shopfrontRowEnds?: readonly [left: string, right: string];
+    readonly shopfrontTall?: string;
+    readonly awningSmall?: string;
     readonly houseWindows: readonly string[];
     readonly roofProps: readonly string[];
     /** 옥상 설비(환기구·실외기, 1칸 높이). 옥상 줄 위에 건물마다 0~2개. 없으면 안 둔다. */
