@@ -449,7 +449,9 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   preload(): void {
-    loadBundledAssets(this, store.getCurrent());
+    // 편집 화면은 맵이 쓰는 업로드 타일셋만 올린다. 다른 타일셋은 그 타일셋을 쓰는 맵이 생기면
+    // redrawForStoreChange 의 ensureUploadedTilesetTextures 가 올린다.
+    loadBundledAssets(this, store.getCurrent(), { onlyMapTilesets: true });
   }
 
   create(): void {
@@ -895,7 +897,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (change.scope !== "map") {
       ensureUploadedCharsetTextures(this, store.getCurrent(), () => this.redraw());
       ensureUploadedEventSpriteTextures(this, store.getCurrent(), () => this.redraw());
-      ensureUploadedTilesetTextures(this, store.getCurrent(), () => this.redraw());
+      ensureUploadedTilesetTextures(this, store.getCurrent(), () => this.redraw(), { onlyMapTilesets: true });
       ensureBundledProjectTextures(this, store.getCurrent(), () => this.redraw());
     }
     const mapId = this.mapId();
@@ -2076,6 +2078,9 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!mid) return;
     const mapChanged = this.lastRenderedMapId !== mid;
     if (mapChanged) {
+      // 다른 맵으로 넘어갔다 — 그 맵의 업로드 타일셋은 아직 안 올렸을 수 있다(부팅은 쓰는 맵 것만 올린다).
+      // 맵 전환은 editorState 변경이라 redrawForStoreChange 를 타지 않는다.
+      ensureUploadedTilesetTextures(this, store.getCurrent(), () => this.redraw(), { onlyMapTilesets: true });
       this.navigationGeometry = null;
       this.lastNavGeometryKey = "";
       this.lastPointerTile = null;

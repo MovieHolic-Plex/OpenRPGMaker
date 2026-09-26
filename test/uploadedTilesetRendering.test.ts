@@ -49,6 +49,23 @@ describe('uploaded tilesets in Phaser editor and player', () => {
     expect(ensureTilesetTexture(scene, tileset)).toBe(key);
   });
 
+  it('editor preload queues only the uploaded atlases a map uses; the player keeps every atlas for transfers', () => {
+    const { project, tileset } = fixture();
+    const unused: TilesetDef = { ...tileset, id: 'unused', image: { type: 'uploaded', id: 'unused-atlas' } };
+    project.tilesets[unused.id] = unused;
+    project.assets.uploaded['unused-atlas'] = { ...project.assets.uploaded['field-atlas']!, id: 'unused-atlas' };
+    project.maps[project.startMapId]!.tilesetId = tileset.id;
+    const queue = (options?: { onlyMapTilesets?: boolean }) => {
+      const keys: string[] = [];
+      loadBundledAssets({ load: { image: (key: string) => { keys.push(key); }, on: vi.fn() } as never }, project, options);
+      return keys;
+    };
+    const editor = queue({ onlyMapTilesets: true });
+    expect(editor).toContain(uploadedTilesetTextureKey(tileset));
+    expect(editor).not.toContain(uploadedTilesetTextureKey(unused));
+    expect(queue()).toContain(uploadedTilesetTextureKey(unused));
+  });
+
   it('preserves the authored atlas geometry and registers tiles beyond the old 480-frame limit', () => {
     const { project, tileset } = fixture();
     const key = uploadedTilesetTextureKey(tileset);
