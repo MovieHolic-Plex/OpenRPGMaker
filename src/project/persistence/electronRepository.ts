@@ -1,6 +1,7 @@
 import { deserialize, serialize } from "../io";
 import { projectWireView } from "../io/serialize";
 import { diffProjectDocuments, withWirePatchValues, type ProjectDocumentPatch } from "./core/projectPatch";
+import { shareContentDigests } from "./core/contentDigest";
 import { projectWithoutEventDrafts } from "../eventDrafts";
 import { setUploadedAssetResolver } from "./assetAccessors";
 import type { ProjectWriteAuthority } from "../spatial/saveRouting";
@@ -218,6 +219,11 @@ export function createElectronRepository(): ElectronRepository {
       // (2026-09-25 실측: 42MB 문서 토한 프로젝트에서 한 번에 563ms).
       const baseProject = input.baseProject;
       const persisted = input.project;
+      // 제출본은 매 저장 새로 복제된 객체라 타일셋 노드마다 요약 기억이 없다. 기준본의 기억을 먼저 붙이면
+      // 바뀌지 않은 가지는 값 대조만 하고 다시 직렬화·해시하지 않는다. 기억은 값으로 검증되므로 짝이 틀려도
+      // 판정은 그대로다(contentDigest.shareContentDigests 머리말). 2026-09-26 실측, 82MB 문서·타일셋 354칸:
+      // 저장당 diff 3.3–7.4s → 공유 0.3–0.5s + diff 1.2s.
+      shareContentDigests(baseProject.tilesets, persisted.tilesets);
       // 버려진 `terrainTemplates` 만 떼는 얕은 보기로 비교한다 — 이것이 예전의
       // `JSON.parse(serialize(x))` 왕부가 «보기» 로 샀던 유일한 것이다. 복사 없이 같은 판정을 늨는다.
       const patch = withWirePatchValues(diffProjectDocuments(projectWireView(baseProject), projectWireView(persisted)));
