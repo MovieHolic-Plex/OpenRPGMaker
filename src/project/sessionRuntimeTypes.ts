@@ -298,6 +298,7 @@ export interface PlaySessionLike {
   dailyGifts?: Record<string, string>;
   followers?: RuntimeFollowerLike[];
   followerTrail?: RuntimeFollowerTrailPointLike[];
+  vehicle?: import("@/project/vehicles").VehicleSessionState;
   playTimeSeconds?: number;
   gameTime?: GameTime;
   currentMapId: MapId;

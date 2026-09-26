@@ -102,6 +102,7 @@ import { applyDailyWeatherForDate } from "@/project/dailyWeather";
 import { weatherToRuntimeString } from "@/player/weather/weatherModel";
 import { validProgress, type CollectionProgress } from "@/project/collections";
 import { placeableDropItemId, placeableKey, type PlaceableObjectState } from "@/project/placeables";
+import { parseVehicleSessionState } from "@/project/vehicles";
 export {
   createSystemShellState,
   reduceSystemShell,
@@ -213,6 +214,7 @@ export type SaveSnapshot = {
     readonly placeables?: PlaySession["placeables"];
     readonly followers?: PlaySession["followers"];
     readonly followerTrail?: PlaySession["followerTrail"];
+    readonly vehicle?: PlaySession["vehicle"];
     readonly currentMapId: string;
     readonly x: number;
     readonly y: number;
@@ -450,6 +452,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       placeables: restorePlaceables(project, session.placeables),
       followers: structuredClone(session.followers),
       followerTrail: structuredClone(session.followerTrail),
+      ...(session.vehicle ? { vehicle: structuredClone(session.vehicle) } : {}),
       currentMapId: session.currentMapId,
       x: session.x,
       y: session.y,
@@ -682,6 +685,9 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   if (snapshot.session.homeDecorationPlacements !== undefined) session.homeDecorationPlacements = structuredClone(snapshot.session.homeDecorationPlacements);
   if (snapshot.session.followers) session.followers = structuredClone(snapshot.session.followers);
   if (snapshot.session.followerTrail) session.followerTrail = structuredClone(snapshot.session.followerTrail);
+  // 세이브에 없으면 걷는 상태다 — 이전 세션의 탑승을 끌고 오지 않는다.
+  if (snapshot.session.vehicle) session.vehicle = structuredClone(snapshot.session.vehicle);
+  else delete session.vehicle;
   session.currentMapId = snapshot.session.currentMapId;
   session.x = snapshot.session.x;
   session.y = snapshot.session.y;
@@ -1116,6 +1122,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       placeables: session.placeables && typeof session.placeables === "object" ? structuredClone(session.placeables) as Record<string, any> : undefined,
       followers: isRuntimeFollowerArray(session.followers) ? session.followers : undefined,
       followerTrail: isRuntimeFollowerTrail(session.followerTrail) ? session.followerTrail : undefined,
+      vehicle: parseVehicleSessionState(session.vehicle),
       currentMapId: session.currentMapId,
       x: session.x,
       y: session.y,

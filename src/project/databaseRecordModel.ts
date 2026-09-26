@@ -1,5 +1,6 @@
 import { normalizeGallerySettings } from "./gallery";
 import { normalizeChapterSettings, normalizeNewGamePlusSettings } from "./newGamePlus";
+import { normalizeVehicleConfigs } from "./vehicles";
 import { normalizeFieldHud } from "./fieldHud";
 import { assertPromotionExtensions } from '@/project/growth/requirements';
 import {
@@ -259,6 +260,10 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     ...(() => {
       const chapter = normalizeChapterSettings(system.chapter);
       return chapter ? { chapter } : {};
+    })(),
+    ...(() => {
+      const vehicles = normalizeVehicleConfigs(system.vehicles);
+      return vehicles ? { vehicles } : {};
     })(),
     ...(typeChart ? { typeChart } : {}),
     ...(timeSystem ? { timeSystem } : {}),

@@ -1338,6 +1338,8 @@ export interface SystemRecords {
   newGamePlus?: import("@/project/newGamePlus").NewGamePlusSettings;
   /** 변수 값 → 장(시대) 이름. ESC 메뉴·저장 칸에 보인다. 생략 = 표시 없음. */
   chapter?: import("@/project/newGamePlus").ChapterSettings;
+  /** 소형선·대형선·비행선. 생략 = 탈것 없음(기존 프로젝트). 계약은 `src/project/vehicles.ts`. */
+  vehicles?: import("@/project/vehicles").VehicleConfig[];
   typeChart?: TypeChartRecord;
   timeSystem?: TimeSystemConfig;
   /** Opt-in 실시간 액션 전투 패키지. 생략 시 필드 스폰 접촉은 기존 턴제 전투로 라우팅된다. */

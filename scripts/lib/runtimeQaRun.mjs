@@ -542,7 +542,7 @@ async function readObserved(page, {
           y: full.y,
           gold: full.gold,
           battleResult: full.battleResult ?? null,
-          ...Object.fromEntries(["farmPlots", "energy", "makerInstances", "farmAnimals", "farmBuildingPlacements", "lifeRecovery", "actionReceipt"]
+          ...Object.fromEntries(["farmPlots", "energy", "makerInstances", "farmAnimals", "farmBuildingPlacements", "lifeRecovery", "actionReceipt", "vehicle"]
             .filter((key) => full[key] !== undefined).map((key) => [key, full[key]])),
           // 전량은 여전히 싣지 않는다(노이즈). 시나리오가 이름을 댄 항목만 싣는다 —
           // 싣지 않으면 expect 가 없는 값을 0 으로 읽어 정상을 결함으로, 결함을 정상으로
@@ -643,6 +643,8 @@ async function readObserved(page, {
       ),
       playerSpriteResourceId: sprite ? sprite.resourceId : null,
       playerSpriteTextureKey: sprite ? sprite.textureKey : null,
+      followerSpriteCount: characters ? Object.keys(characters.followers).length : null,
+      vehicleSprites: characters ? (characters.vehicles ?? {}) : null,
       emotes: window.__oprnEmotes ? window.__oprnEmotes() : null,
       audioObserved: Array.isArray(window.__oprnAudioObserved) ? [...window.__oprnAudioObserved] : null,
       battlers: window.__oprnReadBattlerGeometry ? window.__oprnReadBattlerGeometry() : null,

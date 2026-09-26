@@ -1,6 +1,7 @@
 import { createDefeatRecovery } from "@/player/defeatRecovery";
 import { mapTileSize } from "@/project/tileGeometry";
 import { syncPlayerCharacterScale } from "@/player/playerCharacterScale";
+import { syncVehicleSprites } from "@/player/playSceneVehicles";
 import { ACTION_STAMINA_MAX } from "@/player/actionCombatTypes";
 import type Phaser from "phaser";
 import { clearAllSceneEmotes, syncSceneEmotes } from "@/player/playSceneEmotes";
@@ -422,6 +423,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean; readonly applyMapBgm?: boolean }): void {
     clearAllSceneEmotes(this);
     loadSceneMap(this, mapId, options);
+    syncVehicleSprites(this);
     syncMapBackgroundLayers(this);
     initializeActionCombatForScene(this);
     resetEncounterCounter();
@@ -458,6 +460,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     syncPlayerCharacterScale(this);
     syncPartyFollowers(project, this.session);
     syncFollowerSprites(this);
+    syncVehicleSprites(this);
     applyStoredCameraState(this);
     syncWeatherLayer(this);
     installTimeTintLayer(this);

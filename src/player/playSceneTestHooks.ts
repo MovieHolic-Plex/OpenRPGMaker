@@ -17,6 +17,7 @@ import {
 } from "@/player/cloudShadows";
 import { inBounds, isPassable } from "@/project/collision";
 import { store } from "@/project/store";
+import { vehicleSpritesDebug } from "@/player/playSceneVehicles";
 import { PLAYER_COMBATANT_ID, type ActionEnemyState } from "@/player/actionCombatTypes";
 import { ACTION_COMBAT_OUTCOMES, type ActionCombatObservation, type ActionCombatRuntimeResult } from "@/testing/actionCombatProof";
 
@@ -51,6 +52,7 @@ export type RuntimeDebugHook = {
     monsterParty: PlaySession["monsterParty"];
     monsterBox: PlaySession["monsterBox"];
     partyActorIds: string[];
+    vehicle?: PlaySession["vehicle"];
     gameTime: PlaySession["gameTime"];
     npcActivities: PlaySession["npcActivities"];
     friendship: PlaySession["friendship"];
@@ -174,6 +176,8 @@ type CharacterSpriteDebug = {
     readonly depth: number;
     readonly liftPx: number;
   }>;
+  /** 세워 둔 탈것 스프라이트(탄 탈것은 주인공 스프라이트다). */
+  readonly vehicles: ReturnType<typeof vehicleSpritesDebug>;
 };
 
 type CameraDebug = {
@@ -342,6 +346,7 @@ export function installPlaySceneTestHooks(
         monsterParty: [...session.monsterParty],
         monsterBox: [...session.monsterBox],
         partyActorIds: [...session.partyActorIds],
+        ...(session.vehicle ? { vehicle: structuredClone(session.vehicle) } : {}),
         gameTime: session.gameTime ? { ...session.gameTime } : undefined,
         npcActivities: { ...(session.npcActivities ?? {}) },
         friendship: { ...(session.friendship ?? {}) },
@@ -709,6 +714,7 @@ function characterSpritesDebug(scene: Phaser.Scene): CharacterSpriteDebug | null
     followers,
     shadows,
     events,
+    vehicles: vehicleSpritesDebug(scene),
   };
 }
 

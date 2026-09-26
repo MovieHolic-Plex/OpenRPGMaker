@@ -52,6 +52,8 @@ import { diagnosticObserved, publishDiagnostic } from "@/util/diagnosticObserver
 import { tryChestInteraction } from "@/player/playSceneChest";
 import { tryActionCombatSwing, tryActionSkillCast } from "@/player/playSceneActionCombat";
 import { applyBattleDefeat } from "@/player/playSceneDefeat";
+import { boardedVehicleId, vehicleCanEnter, vehicleSpeedFactor } from "@/project/vehicles";
+import { tryBoardVehicle, tryGetOffVehicle } from "@/player/playSceneVehicles";
 
 type ActionEventSceneContext = Pick<
   PlaySceneContext,
@@ -119,7 +121,12 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
     // Z 는 조사로 남아 결정 키가 둘로 쪼개져 있었다).
     let interacted = false;
     const airborne = scene.playerHop !== null;
-    if (!pushingAtFrameStart && !cutsceneInputLocked && input.actionPressed && !scene.moving && !airborne) interacted = handleAction(scene, event => tryStartFurniturePush(scene, event));
+    if (!pushingAtFrameStart && !cutsceneInputLocked && input.actionPressed && !scene.moving && !airborne) {
+      // 탄 채로는 확인 키가 내리기뿐이다(RM 관례). 걷는 중에는 정면의 탈것이 조사보다 먼저다.
+      interacted = boardedVehicleId(scene.session)
+        ? (tryGetOffVehicle(scene), true)
+        : tryBoardVehicle(scene) || handleAction(scene, event => tryStartFurniturePush(scene, event));
+    }
     if (!cutsceneInputLocked && input.attackPressed && !interacted && !airborne) tryActionCombatSwing(scene);
     if (!cutsceneInputLocked && input.skillPressed && !airborne) tryActionSkillCast(scene);
     scene.input_.resetEdges();
@@ -161,8 +168,8 @@ function framesForDuration(durationMs: number): number {
   return Math.max(1, Math.round(durationMs / LOGIC_TICK_MS));
 }
 
-function stepFrames(scene: Pick<PlaySceneContext, "dashing" | "moveDurationMs" | "playerRoute">): number {
-  return framesForDuration((scene.playerRoute?.moveDurationMs ?? scene.moveDurationMs) / (scene.dashing ? DASH_SPEED_FACTOR : 1));
+function stepFrames(scene: Pick<PlaySceneContext, "dashing" | "moveDurationMs" | "playerRoute" | "session">): number {
+  return framesForDuration((scene.playerRoute?.moveDurationMs ?? scene.moveDurationMs) / (scene.dashing ? DASH_SPEED_FACTOR : 1) / vehicleSpeedFactor(scene.session));
 }
 
 /**
@@ -231,7 +238,9 @@ function advancePlayerStepFrame(scene: PlaySceneContext): void {
     const project = store.getCurrent();
     applyWalkCareTicks(project, scene.session, 1);
     applyGen1FieldPoisonStep(project, scene.session);
-    applyTerrainStepDamage(scene);
+    // 비행선은 땅에 닿지 않는다 — 지형 피해·접촉 트리거·인카운트를 건너뛴다.
+    const flying = boardedVehicleId(scene.session) === "airship";
+    if (!flying) applyTerrainStepDamage(scene);
     scene.moving = false;
     scene.player.x = footprintSpriteX(scene.tileX, footprint, mapTileSize(scene.map));
     scene.player.y = characterSpriteY(scene.tileY, mapTileSize(scene.map));
@@ -247,6 +256,7 @@ function advancePlayerStepFrame(scene: PlaySceneContext): void {
     // 부를 이유는 없지만, 접촉 트리거가 running 을 썼으면 드나듦은 기록만 남기고
     // 생략되므로 이 순서를 명시해 둔다(자리가 바뀌면 생략 대상이 바뀐다).
     fireLocationTransitionTriggers(scene);
+    if (flying) return;
     fireTouchTriggers(scene);
     maybeTriggerRandomEncounter(scene);
     return;
@@ -314,6 +324,7 @@ function beginPlayerStep(scene: PlaySceneContext, toX: number, toY: number): voi
 }
 
 function tryStartMove(scene: PlaySceneContext, input: InputState): void {
+  if (tryStartVehicleStep(scene, input)) return;
   const project = store.getCurrent();
   const body = resolvePlayerBody(project, scene.session);
   const canStep = (dx: number, dy: number): boolean => playerCanStep(scene, body, dx, dy);
@@ -350,6 +361,33 @@ function tryStartMove(scene: PlaySceneContext, input: InputState): void {
   scene.dashing = input.dash;
   beginPlayerStep(scene, nx, ny);
   scene.lastActionTargetKey = "";
+}
+
+/**
+ * 탄 채로 한 걸음. 통행은 지형의 vehiclePassage 가 정하고(비행선은 맵 안 어디든), 턱·밀기·반복 맵
+ * 접기는 쓰지 않는다. 배는 같은 층 이벤트에 막히지만 접촉 트리거는 발동하지 않는다. 걷는 중이면 false.
+ */
+function tryStartVehicleStep(scene: PlaySceneContext, input: InputState): boolean {
+  const id = boardedVehicleId(scene.session);
+  if (!id) return false;
+  const project = store.getCurrent();
+  const body = resolvePlayerBody(project, scene.session);
+  const canStep = (dx: number, dy: number): boolean => {
+    const x = scene.tileX + dx;
+    const y = scene.tileY + dy;
+    if (!vehicleCanEnter(project, scene.map, id, x, y)) return false;
+    return id === "airship" || !findBlockingEventForPlayerBody(scene, body, x, y);
+  };
+  const step = resolveDiagonalStep(input.x, input.y, canStep);
+  if (!step) {
+    if (input.dir) scene.facing = input.dir;
+    return true;
+  }
+  scene.facing = facingForStep(step.dx, step.dy);
+  scene.dashing = false;
+  beginPlayerStep(scene, scene.tileX + step.dx, scene.tileY + step.dy);
+  scene.lastActionTargetKey = "";
+  return true;
 }
 
 /** 턱 넘기 거리(칸). 턱 칸을 건너 그 너머에 착지한다 — 포켓몬·크로노 트리거의 한 방향 턱. */
