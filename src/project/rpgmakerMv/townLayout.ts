@@ -64,6 +64,24 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
   const kit = (id: string) => tileset.structureKits?.find((entry) => entry.id === id);
   const used = new Set<number>(map.upperTiles.flatMap((tile, i) => (tile >= 0 ? [i] : [])));
   const paint = (name: string, x: number, y: number, w: number, h: number) => paintMaterial(tileset, map, name, x, y, w, h);
+  /** A3 지붕은 종류 n(0~7)과 n+16 이 한 쌍 — 위칸이 뒷면, 아랫칸이 앞면이라 겹쳐 칠해야 용마루가 있는 박공으로 읽힌다. */
+  const gablePair = (name: string): { back: string; front: string } | null => {
+    const group = tileset.autotileGroups?.find((entry) => entry.name === name);
+    const match = group?.id.match(/^(.*-A3-[^-]+-)(\d+)$/);
+    if (!match) return null;
+    const kind = Number(match[2]);
+    const row = Math.floor(kind / 8);
+    if (row !== 0 && row !== 2) return null;
+    const other = tileset.autotileGroups?.find((entry) => entry.id === `${match[1]}${row === 0 ? kind + 16 : kind - 16}`);
+    if (!other) return null;
+    return row === 0 ? { back: name, front: other.name } : { back: other.name, front: name };
+  };
+  const paintHouseRoof = (name: string, x: number, top: number, w: number, rows: number) => {
+    const pair = gablePair(name);
+    if (!pair || rows < 2) { paint(name, x, top, w, rows); return; }
+    paint(pair.back, x, top, w, 1);
+    paint(pair.front, x, top + 1, w, rows - 1);
+  };
   /** 위층이 비어 있고 맵 안이면 찍는다. 겹치면 건너뛴다(자리를 못 잡은 소품은 버린다). */
   const place = (id: string, x: number, baseY: number, opts: { keepDoors?: boolean; force?: boolean } = {}): boolean => {
     const k = kit(id);
@@ -175,7 +193,7 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
   const doorCols = new Set<number>(); // 가게 앞 보도에서 비워 둘 열
   const busyFront = new Set<number>(); // 자판기 금지 열(문·차양·쇼윈도)
   let passageLeft = 1;
-  let prev: { w: number; h: number; style: MvTownFacade; dish?: boolean } | null = null;
+  let prev: { w: number; h: number; storeys: number; style: MvTownFacade; dish?: boolean } | null = null;
   for (const seg of shopSegments) {
     let x = seg.x;
     const end = seg.x + seg.w;
@@ -191,17 +209,21 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
       if (w > 11) w = int(rng, 5, 6);
       const corner = x === seg.x || x + w >= end;
       const office = rng() < 0.22;
+      // 층수: 작가 예시엔 1층 가게가 없다(가장 낮아도 창 벽 여러 줄). 사무실은 3층 이상, 4층은 모퉁이 위주.
+      const pickStoreys = () => (office || corner ? int(rng, 3, 4) : pick(rng, [2, 2, 3, 3, 3, 4]));
       let style = pick(rng, office ? recipe.offices : recipe.shops);
-      let storeys = corner ? int(rng, 3, 4) : pick(rng, [1, 2, 2, 3, 3, 4]);
-      for (let tries = 0; prev && tries < 6 && (style === prev.style || (w === prev.w && storeys + 3 === prev.h)); tries += 1) {
+      let storeys = pickStoreys();
+      for (let tries = 0; prev && tries < 8 && (style === prev.style || (w === prev.w && storeys === prev.storeys)); tries += 1) {
         style = pick(rng, office ? recipe.offices : recipe.shops);
-        storeys = corner ? int(rng, 3, 4) : pick(rng, [1, 2, 2, 3, 3, 4]);
+        storeys = pickStoreys();
       }
       let ground: number = storeys === 1 || (!office && style.shopfront && rng() < 0.6) ? 2 : 1;
-      let roof = 2;
-      while (roof + (storeys - 1) + ground > bMax) {
-        if (roof > 1) roof -= 1; else if (ground > 1) ground -= 1; else storeys -= 1;
-      }
+      // 층 문법: 1층 띠는 언제나 2줄(문·쇼윈도 높이), 그 위 창 줄 하나 = 한 층, 옥상은 1~3줄.
+      // 옥상은 남는 깊이를 채운다 — 건물 뒤에 빈 아스팔트 주차장이 넓게 남지 않게(가끔 1줄은 뒷마당으로 남긴다).
+      ground = 2;
+      while (1 + (storeys - 1) + ground > bMax && storeys > 2) storeys -= 1;
+      const room = bMax - (storeys - 1) - ground;
+      const roof = Math.max(1, Math.min(3, room - (room > 1 && rng() < 0.3 ? 1 : 0)));
       const height: number = roof + (storeys - 1) + ground;
       const top = frontY - height;
       paint(style.roof, x, top, w, roof);
@@ -212,16 +234,18 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
       place(style.door, doorX, frontY - 1, { force: true });
       doorCols.add(doorX);
       busyFront.add(doorX);
-      if (!office && style.awning && w >= 3 && rng() < 0.65) {
-        const ax = Math.min(Math.max(doorX - 1, x), x + w - 3);
-        place(style.awning, ax, frontY - 1, { keepDoors: true, force: true });
-        for (let i = ax; i < ax + 3; i += 1) busyFront.add(i);
-      }
-      if (!office && ground === 2 && style.shopfront) {
+      // 1층 띠: 문 옆으로 쇼윈도를 잇는다(넓은 가게는 양 끝 기둥 한 칸씩 남긴다).
+      if (!office && style.shopfront) {
         for (let gx = x; gx < x + w; gx += 1) {
           if (busyFront.has(gx) || (w >= 6 && (gx === x || gx === x + w - 1))) continue;
           if (place(style.shopfront, gx, frontY - 1)) busyFront.add(gx);
         }
+      }
+      // 차양은 1층 바로 위: 윗줄이 2층 창 줄 맨 아래에, 그늘 줄이 1층 띠 윗줄에 걸린다(문·쇼윈도는 그늘이 덮지 않는다).
+      if (!office && style.awning && w >= 3 && rng() < 0.65) {
+        const ax = Math.min(Math.max(doorX - 1, x), x + w - 3);
+        place(style.awning, ax, frontY - 2, { keepDoors: true, force: true });
+        for (let i = ax; i < ax + 3; i += 1) busyFront.add(i);
       }
       if (roof >= 2 && w >= 4 && !prev?.dish && rng() < 0.25) dish = place(pick(rng, recipe.objects.roofProps), x + int(rng, 0, w - 2), top + 1);
       // 뒤: 건물 바로 위 골목에 분리수거함·배전함을 1~3개 모아 둔다.
@@ -231,7 +255,7 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
         for (let i = 0; i < n; i += 1, bx += 1) place(pick(rng, recipe.objects.backProps), bx, top - 1);
       }
       lots.push({ kind: office ? "office" : "shop", x, y: top, w, h: height, storeys, door: { x: doorX, y: frontY - 1 } });
-      prev = { w, h: height, style, dish };
+      prev = { w, h: height, storeys, style, dish };
       x += w;
     }
     prev = null;
@@ -275,6 +299,7 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
         if (atRight) end = parkX; else x = parkX + pw;
       }
       let prevGap = -1;
+      let prevHouse: (typeof recipe.houses)[number] | null = null;
       // 독일식 줄집: 한 블록만, 벽을 맞댄 좁은 집 3~4채(색은 집마다 다르게). 진입로 없이 현관길만.
       if (!terraceDone && band !== bands[0] && end - x >= 14 && rng() < 0.6) {
         terraceDone = true;
@@ -288,7 +313,7 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
           for (let k = 0; k < 4 && style === last; k += 1) style = pick(rng, recipe.houses);
           last = style;
           const wallY = band.houseY + 3;
-          paint(style.roof, tx, band.houseY + 1, tw, 2);
+          paintHouseRoof(style.roof, tx, band.houseY + 1, tw, 2);
           paint(style.wall, tx, wallY, tw, 2);
           const doorX = tx + int(rng, 1, tw - 2);
           place(recipe.objects.houseDoor, doorX, wallY + 1, { force: true });
@@ -311,11 +336,13 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
         if (gap === prevGap && lotW - hw - 2 > 1) gap = gap === 1 ? 2 : gap - 1;
         prevGap = gap;
         const hx = x + gap;
-        const style = pick(rng, recipe.houses);
+        let style = pick(rng, recipe.houses);
+        for (let k = 0; k < 4 && style === prevHouse; k += 1) style = pick(rng, recipe.houses);
+        prevHouse = style;
         const roofRows = rng() < 0.5 ? 3 : 2;
         const hTop = band.houseY + (3 - roofRows);
         const wallY = band.houseY + 3;
-        paint(style.roof, hx, hTop, hw, roofRows);
+        paintHouseRoof(style.roof, hx, hTop, hw, roofRows);
         paint(style.wall, hx, wallY, hw, 2);
         const doorX = hx + int(rng, 1, hw - 2);
         place(recipe.objects.houseDoor, doorX, wallY + 1, { force: true });
