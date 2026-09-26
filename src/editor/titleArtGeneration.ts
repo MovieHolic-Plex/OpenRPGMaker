@@ -6,7 +6,7 @@ import { buildTitleArtPrompt, prepareTitleArtRequest, type TitleArtRequest } fro
 import { fitTitleArtEffects, type TitleArtFitResult } from "@/editor/titleArtFitting";
 import { ToolError } from "@/editor/tools/types";
 import type { TitleOpeningPreset } from "@/project/titleEffects";
-import type { TitleEffect } from "@/project/types";
+import type { TitleEffect, TitleLogoStyle } from "@/project/types";
 import { genId } from "@/util/id";
 
 const IMAGE_DATA_URL = /^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/u;
@@ -15,7 +15,7 @@ export type TitleArtGenerationOptions = {
   readonly signal?: AbortSignal;
   readonly generateImage?: (request: GenerateAiImageRequest) => Promise<GeneratedImageAsset>;
   /** 생성된 그림에 효과 좌표를 맞춘다. 기본은 비전 모델 맞춤, `false` 면 프리셋 좌표 그대로. */
-  readonly fitEffects?: false | ((preset: TitleOpeningPreset, dataUrl: string, signal?: AbortSignal) => Promise<TitleArtFitResult>);
+  readonly fitEffects?: false | ((preset: TitleOpeningPreset | undefined, dataUrl: string, signal?: AbortSignal, brief?: string) => Promise<TitleArtFitResult>);
 };
 
 export type TitleArtGenerationResult =
@@ -24,8 +24,10 @@ export type TitleArtGenerationResult =
     readonly request: TitleArtRequest;
     readonly resourceId: string;
     readonly dataUrl: string;
-    /** 그림에 맞춘 효과. 맞춤이 하나도 안 됐으면 없다(프리셋 좌표를 쓴다). */
+    /** 그림에 맞춘 효과. 프리셋 모드에서 맞춤이 하나도 안 됐으면 없다(프리셋 좌표를 쓴다). 자유 모드는 늘 있다. */
     readonly effects?: TitleEffect[];
+    /** 자유 모드에서 비전 모델이 고른 로고 질감. */
+    readonly logoStyle?: TitleLogoStyle;
   }
   | { readonly ok: false; readonly summary: string; readonly code: string };
 
@@ -49,10 +51,11 @@ export async function generateTitleArt(
     }
     const fit = options.fitEffects === false
       ? undefined
-      : await (options.fitEffects ?? ((preset, dataUrl, signal) => fitTitleArtEffects(preset, dataUrl, { signal })))(
+      : await (options.fitEffects ?? ((preset, dataUrl, signal, brief) => fitTitleArtEffects(preset, dataUrl, { signal, brief })))(
         request.preset,
         image.dataUrl,
         options.signal,
+        request.prompt,
       ).catch((error: unknown) => {
         if (options.signal?.aborted) throw error;
         return undefined;
@@ -63,7 +66,10 @@ export async function generateTitleArt(
       request,
       resourceId: genId("title_art"),
       dataUrl: image.dataUrl,
-      ...(fit && fit.fitted.length > 0 ? { effects: fit.effects } : {}),
+      ...(fit && (fit.fitted.length > 0 || !request.preset) ? { effects: fit.effects } : {}),
+      // 자유 모드에서 맞춤이 통째로 실패하면 카메라 호흡 하나라도 건다 — 프리셋 효과가 없으므로.
+      ...(!request.preset && !fit ? { effects: [{ kind: "camera" } satisfies TitleEffect] } : {}),
+      ...(!request.preset && fit?.logoStyle ? { logoStyle: fit.logoStyle } : {}),
     };
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") throw error;
@@ -72,12 +78,21 @@ export async function generateTitleArt(
   }
 }
 
-/** set_title_screen 에 넘길 인자 — 키아트를 배경으로 걸고 프리셋 효과를 적용한다. 맞춘 효과가 있으면 그것이 이긴다. */
-export function titleArtScreenArgs(request: TitleArtRequest, resourceId: string, effects?: readonly TitleEffect[]): Record<string, unknown> {
+/**
+ * set_title_screen 에 넘길 인자 — 키아트를 배경으로 걸고 프리셋 효과를 적용한다. 맞춘 효과가 있으면 그것이 이긴다.
+ * 자유 모드는 프리셋 없이 맞춘 효과와 고른 로고 질감만 건다.
+ */
+export function titleArtScreenArgs(
+  request: TitleArtRequest,
+  resourceId: string,
+  effects?: readonly TitleEffect[],
+  logoStyle?: TitleLogoStyle,
+): Record<string, unknown> {
   return {
     backgroundResourceId: resourceId,
-    openingPreset: request.preset.id,
+    ...(request.preset ? { openingPreset: request.preset.id } : {}),
     ...(effects && effects.length > 0 ? { effects } : {}),
+    ...(!request.preset && logoStyle ? { logoStyle } : {}),
     backgroundFit: "cover",
     backgroundRendering: "smooth",
     ...(request.title ? { title: request.title } : {}),
@@ -94,6 +109,6 @@ export function titleArtToolCalls(
       name: "upsert_resource",
       args: { resource: { id: art.resourceId, name: art.request.name, kind: "title", dataUrl: art.dataUrl } },
     },
-    { name: "set_title_screen", args: titleArtScreenArgs(art.request, art.resourceId, art.effects) },
+    { name: "set_title_screen", args: titleArtScreenArgs(art.request, art.resourceId, art.effects, art.logoStyle) },
   ];
 }

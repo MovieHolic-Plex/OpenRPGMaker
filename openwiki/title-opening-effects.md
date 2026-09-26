@@ -17,7 +17,11 @@ WebGL 한 장으로 얹는다. 그림은 이미지 모델로 만들고, 생성 �
 
 ## 프리셋
 
-`TITLE_OPENING_PRESETS`: `forestMorning`(숲 아침 햇살+바위에 꽂힌 칼+강+산 안개), `moonlitCastle`, `snowyVillage`, `mistyRuins`.
+`TITLE_OPENING_PRESETS` 10종: `forestMorning`(숲 아침 햇살+바위에 꽂힌 칼+강+산 안개), `moonlitCastle`, `snowyVillage`, `mistyRuins`,
+`sunsetHarbor`, `crystalCave`, `volcanicFortress`, `blossomShrine`, `desertOasis`, `skyIslands`.
+편집기에는 여기에 **「자유」** 칩(`TITLE_OPENING_FREE_PRESET = "free"`, `titleOpeningEditor.ts`)이 더 붙는다 — 프리셋 없이
+장면 설명(필수, 4자 이상)만으로 그리고, 비전 모델이 그림을 보고 효과 종류와 좌표를 고른다(`runTitleArtGeneration(undefined, …)`).
+맞춤이 실패하면 효과는 `camera` 하나만 남는다. 「지금 그림에 효과만 입히기」는 자유 모드에서 숨긴다.
 프리셋마다 이미지 프롬프트의 구도(`layout`, 그림 퍼센트)와 효과 좌표·로고/메뉴 질감을 함께 들고 있다.
 
 ## 런타임
@@ -31,8 +35,22 @@ WebGL 한 장으로 얹는다. 그림은 이미지 모델로 만들고, 생성 �
 
 ## 저작 경로
 
-- 편집기: 자료집 → 시스템 → 타이틀의 「오프닝 연출」 필드셋(testid `db-title-opening`) — 프리셋·효과 목록·로고/메뉴 질감,
-  AI 버튼 `db-title-opening-ai-generate` 가 키아트까지 만든다.
+- 편집기: 자료집 → 시스템 → 타이틀. 오른쪽 칸 맨 위 바로가기(`db-title-workbench-jump`: 오프닝 효과/글자·배경/메뉴/연출/소리),
+  그다음 「오프닝 효과」 필드셋(testid `db-title-opening`)이 두 단계로 나뉜다.
+  - ① 분위기 칩(프리셋 10 + 자유) → 장면 설명 → AI 버튼 `db-title-opening-ai-generate`(primary)가 키아트까지 만든다.
+  - ② 효과 다듬기(`src/editor/panels/titleOpeningEditor.ts`): 켜진 효과 목록 + 고른 효과의 인스펙터.
+  로고/배경/메뉴 질감 선택은 각각 「글자·배경」「메뉴」 묶음으로 옮겼다.
+- **무대 손잡이**(`mountTitleEffectOverlay`): 무대 위 SVG(`viewBox 0 0 100 100`, `preserveAspectRatio=none`)에
+  `TITLE_EFFECT_GEOMETRY` 로 고른 효과의 `source`/`toward`/`line` 끝점과 `region` 꼭짓점 손잡이(`g.db-title-effect-handle[data-handle]`)를 그린다.
+  그림 밖(-0.5..1.5) 근원은 무대 가장자리에 붙여 점선(`.outside`)으로 보인다. 끌기 리스너는 `window` 에 단다 —
+  끄는 동안 오버레이를 다시 그려 대상 요소가 바뀌기 때문이다.
+- **인스펙터 실시간 조절**: 세기(0..2)·속도(0..4)·퍼짐 슬라이더와 색(+「기본색」)은 `input` 마다 반영한다.
+  되돌리기는 `updateTitleScreen(mutator, "system:title-screen:effect-<i>-<이름>")` 키로 합쳐져 한 번에 한 단계만 쌓인다.
+  끌기·슬라이더는 `host.liveEffects()` → `refreshTitleEffectsLayer` 로 **효과 canvas 만** 갈아 끼우고(`renderer.ts`
+  `updateTitleEffectsCanvas`), 추가·삭제만 패널 전체를 다시 그린다. `SystemRefresh("effects")` 도 같은 뜻이다.
+- CSS 함정: database CSS 는 전부 `layer(database)` 안이고, 일반 규칙
+  `.database-modal-backdrop .database-modal-window .database-modal-body .db-field`(클래스 4개)가 이긴다.
+  인스펙터 한 줄 슬라이더·primary 버튼 규칙은 같은 접두어를 붙여야 먹는다(`title-workbench.css`).
 - AI 도구:
   - `set_title_screen` 에 `openingPreset` + `effects` 등 새 필드. 명시한 `effects` 가 프리셋 효과를 이긴다.
   - `generate_title_art(preset, prompt?, title?, logoSubtitle?)` (`src/editor/tools/titleArtTools.ts`). 헤드리스 `run` 은
@@ -52,7 +70,7 @@ WebGL 한 장으로 얹는다. 그림은 이미지 모델로 만들고, 생성 �
   - 배경 그림을 바꾸면 효과가 옛 그림 좌표이므로 「효과를 지울까요」를 묻고, 예면 같은 갱신에서 `effects` 를 지운다.
   - AI 버튼은 실행 중 「생성 취소」로 바뀌어 `AbortController` 로 끊는다. 기존 배경·효과가 있으면 덮기 전에 묻는다.
     결과 문구는 비전 맞춤 성공과 「맞춤 실패, 프리셋 좌표 사용」을 구분하고, 취소는 「바뀐 것은 없습니다」로 끝낸다.
-  - 세기 슬라이더는 `change` 에서만 커밋한다(드래그마다 undo 가 쌓이지 않게). 0..2 로 자른다.
+  - 슬라이더는 합치기 키로 undo 를 한 단계로 묶는다(위 「인스펙터 실시간 조절」). 세기는 0..2 로 자른다.
 
 ## 표본과 검증
 
@@ -76,7 +94,4 @@ WebGL 한 장으로 얹는다. 그림은 이미지 모델로 만들고, 생성 �
 
 - 오프닝 컷신(`system.opening`) 과 이벤트 컷신에 같은 효과 층을 얹는 것. 효과 모델이 그림 좌표 기준이라
   스틸 한 장짜리 오프닝 장면에는 그대로 붙일 수 있지만, 배선·편집 UI 는 아직 없다.
-- **효과 좌표 편집 UI 가 없다.** 편집기에서는 효과별 켜기/끄기·세기·삭제만 된다. 좌표(`source`/`toward`/`line`/`region`)와
-  색·속도 같은 매개변수는 프리셋, AI 비전 맞춤, `set_title_screen` 도구로만 바뀐다.
-  `TITLE_EFFECT_GEOMETRY` 는 위치 오버레이·드래그 핸들용으로 남아 있지만 아직 아무도 쓰지 않는다.
-- 세기 슬라이더의 실시간 미리보기(놓아야 반영된다).
+- 효과 추가는 목록의 종류 선택으로만 한다. 무대에서 영역 꼭짓점을 새로 찍거나 지우는 것은 아직 없다(옮기기만 된다).
