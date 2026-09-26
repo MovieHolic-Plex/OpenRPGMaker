@@ -23,7 +23,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 T = 48
 COLS = 96
-BUNDLES = ['rasak_field', 'rasak_swamp', 'rasak_cave', 'rasak_town', 'rasak_interior']
+BUNDLES = ['rasak_field', 'rasak_swamp', 'rasak_cave', 'rasak_town', 'rasak_interior', 'rasak_dungeon', 'rasak_castle']
 N, E, S, W, NE, SE, SW, NW = 1, 2, 4, 8, 16, 32, 64, 128
 DIRS = [(0, -1, N), (1, 0, E), (0, 1, S), (-1, 0, W), (1, -1, NE), (1, 1, SE), (-1, 1, SW), (-1, -1, NW)]
 # p27b 둘레 암반(A4 kind 7)은 2022 옛 그림을 현재 시트로 맞춘 결과라 안쪽이 모양 15 로 재구성된다(names-review). 표 검증·예제에서 뺀다.
@@ -175,6 +175,41 @@ PURPOSES = {
 - **서재**: 뒷벽에 넓은 책장(2×2, 아랫줄 바닥) 줄 + 긴 아치 창 · 벽시계 · 풍경화, 가운데 책상(2×2, 의자 달림) 둘 · 천구의 · 지구의, 남색 융단.
 - **왕의 침실**: 커튼 창 둘, 벽에 붙인 침대 둘(나란히 = 큰 침대) + 양쪽 협탁, 큰 옷장(3×3), 곰 가죽 깔개, 식탁보 덮은 탁자와 발받침, 소파, 여신상.
 - **근위대 방·식당**: 방패·창 걸이·무기대·투구 받침·침대·궤짝·걸상 / 러너 깐 긴 탁자와 음식·찬장·술통.
+""",
+    },
+    'dungeon_crypt': {
+        'bundle': 'rasak_dungeon', 'preview': 'ex_dungeon', 'name': '지하 묘지 던전',
+        'desc': '지하 묘지 방 여섯 — 묘실(석관·묘비·유골 단지·벽 선반)/감옥(쇠창살·형틀·족쇄·핏자국)/의식실(제단 보석·붉은 깔개·검은 석상)/창고(궤·상자·자루)/입구 홀(돌기둥·횃대·긴 탁자)/옆 굴(세운 관·관 더미). 조립 예제 ex_dungeon(32×22) 기준.',
+        'windows': [(0, 0, 13, 11), (12, 0, 20, 11), (0, 10, 11, 12), (10, 9, 22, 13)],
+        'cross': (12, 1, 9, 8),
+        'path': (('A2', 0), ('A2', 1)), 'cave': False, 'interior': True,
+        'main_ground': ('A2', 0),
+        'alts': [('A2', 1), ('A2', 2), ('A4', 0), ('A4', 8), ('A4', 9), ('A4', 1), ('A4', 10), ('A4', 3), ('A4', 11)],
+        'recipe': 'room',
+        'room_notes': """## 지하 묘지 — 방마다 할 일(예제 ex_dungeon)
+- **틀은 실내와 같다**: 맵 전체를 A4 윗면(검은 천장)으로 덮고, 방마다 벽면 2줄 + 바닥을 판다. 방끼리 벽 색을 바꾼다(짙은 회색 큰 돌 / 주황 흙벽). 바닥은 방마다 다른 A2 돌.
+- **묘실**: 벽면에 벽걸이 선반, 바닥에 석관(가로 2×2) 여럿 — 모양이 다른 것(`crypt_sarcophagus_*`, 큰 석관 4×3)을 섞는다. 묘비·둥근 비석·유골 단지·쏟아진 항아리를 벽 쪽 덩이로.
+- **감옥**: 쇠창살 칸(`dungeon_iron_grate`)을 한 줄로 세워 감방을 가르고, 안에 앉은 해골·족쇄·핏자국. 밖에 형틀(2×4)·뼈 놓인 긴 의자·초.
+- **의식실**: 붉은 세로 깔개(`temple_carpet_red_v`)를 제단 축으로 잇고, 보석 제단(`dungeon_frame_*_orb` 붉은·녹색 — 색 다르게)·검은 석상 한 쌍·긴 초·해골 초.
+- **흩뿌림은 2층**: 뼈 조각·핏방울·돌 부스러기·금(`dungeon_crack_*`)을 1~2칸마다. 같은 조각을 줄 세우지 않는다.
+""",
+    },
+    'castle_court': {
+        'bundle': 'rasak_castle', 'preview': 'ex_castle_court', 'name': '성곽·안뜰·폐허',
+        'desc': '성 밖 풍경 — 북쪽 성벽(A4 윗면 2줄 + 벽면 2줄, 흉벽 줄·창 리듬·아치 성문)·지붕 색 다른 둥근 성탑 둘·해자와 도개교·안뜰 돌길·동쪽 나무 요새(말뚝 벽·망루·성문)·서남쪽 무너진 폐허(아치 문·벽 토막·돌 더미)·숲. 조립 예제 ex_castle_court(36×26) 기준.',
+        'windows': [(0, 0, 18, 10), (18, 0, 18, 14), (0, 8, 18, 10), (0, 16, 24, 10)],
+        'cross': (8, 1, 10, 8),
+        'path': (('A2', 0), ('A2', 3)), 'cave': False,
+        'main_ground': ('A2', 0),
+        'alts': [('A2', 3), ('A2', 8), ('A2', 1), ('A1', 8), ('A4', 0), ('A4', 8), ('A4', 16), ('A4', 24), ('A5', 'cobble_road'), ('A5', 'stone_slab_floor')],
+        'recipe': 'castle',
+        'room_notes': """## 성곽 — 짓는 순서(예제 ex_castle_court)
+1. **성벽 = A4 두 kind**: 윗면(통로) kind 를 2줄, 그 아래 벽면 kind 를 2줄 rect 로 칠한다. 오른쪽 옆 칸에 그림자(5).
+2. **윗면 먼 끝에 흉벽**: `castle_battlement_gray`(4×1)를 윗면 첫 줄에 간격을 두고 여러 번.
+3. **벽면 리듬**: 벽면 아랫줄에 화살 구멍·덧문·불 켜진 창(`castle_slit_*`·`castle_window_wood_slit_*`, 1칸)을 3~4칸 간격으로 섞는다. 같은 창을 되풀이하지 않는다.
+4. **성문**: 벽면 두 줄에 `castle_wall_arch_gate_open`(3×2). 앞에 해자(A1 돌 수로 물)를 두르고 성문 앞만 비워 도개교(`castle_drawbridge_chain`, 2×4)와 돌길.
+5. **성탑**: 성벽 양끝에 `castle_round_tower_gray_3`(3×3) + 그 위 **지붕 색이 다른** 원뿔 지붕(`castle_tower_roof_cone_red`/`_blue`/`_green`, 3×4, 탑 위로 1줄 겹침).
+6. **나무 요새·폐허는 성과 다른 구역**에: 말뚝 벽(`fort_palisade_*`)·망루(`fort_watchtower_*`)·열린 성문 틀 / 무너진 아치 문·벽 토막·돌 더미(`ruins*`). 폐허 주변은 마른 덤불·낙엽 2층과 앙상한 나무.
 """,
     },
 }
@@ -1310,6 +1345,9 @@ def recipe_md(P, b, cat):
     rep = lambda slot, kind: b.kinds[(slot, kind)]['representativeTile']
     nm = lambda slot, kind: b.kinds[(slot, kind)]['name']
     c = cat[1:-1]
+    if r == 'castle':
+        # 성곽(야외 성벽·요새·폐허): 짓는 순서는 용도의 room_notes 에 있다 — 집·방 틀은 이 묶음 번호와 맞지 않는다.
+        return P.get('room_notes', '') + '\n'
     if r in ('house', 'city'):
         combos = [(('A3', 0), ('A3', 10)), (('A3', 16), ('A3', 25)), (('A3', 4), ('A3', 12)), (('A3', 19), ('A3', 27)), (('A3', 1), ('A3', 28)), (('A3', 5), ('A3', 9))]
         combo_txt = ' · '.join(f"{nm(*a)[:10]} {rep(*a)} + {nm(*w)[:12]} {rep(*w)}" for a, w in combos)

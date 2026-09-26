@@ -119,6 +119,21 @@ node /tmp/mzai/apply.mjs export --project ~/third-party-assets/rasak/study-proje
   사전 대표 번호(석판 3088 = 흰 벽돌 무늬, 막돌 3120)가 성에 맞지 않아 성 조리법(`room_notes`)에 실제 번호(석판 3091·아치 3124·벽돌 3104)를 적었다.
 - 「벽 속 화덕」(`smith_furnace_wall_*`, 이름에 「벽돌 포함」·「벽 아랫줄에 놓음」)은 벽면 칸에 박는 물체라 조립 검사에서 벽 위 허용.
 
+## 던전·성곽 묶음 (2026-09-26)
+
+- 새 묶음 둘: `rasak_dungeon` "Rasak · 던전·지하묘지"(A1·A2·A4·A5 던전 + Dungeon·Crypt·Crypt2·SpiderRuin·Horror·Chaos·Temple 안) ·
+  `rasak_castle` "Rasak · 성곽·폐허"(마을 A1·A5 + 자연 A2 + 성 A4 + Castle·Fort·Ruins·Ruins2·Battlefield·Old_World 1·2·여름 나무). A-슬롯이 묶음당 하나라 둘로 나눴다.
+- 이름표: 던전 물체 730 · kind 121, 성곽 물체 371 · kind 107, 자동 분할 넓은 이름 0. 기존 다섯 묶음 이름표는 그대로다.
+  Ruins·Ruins2 는 이름표 서브에이전트 둘이 그림을 못 받아(빈 첨부) 감독자가 직접 붙였다.
+- 조립 예제: `ex_dungeon`(32×22 — 묘실·감옥·의식실·창고·입구 홀·옆 굴, 빈 바닥 5% · 빈 정사각형 2 · 대칭 1.9) ·
+  `ex_castle_court`(36×26 — 흉벽 성벽·지붕 색 다른 성탑 둘·해자와 도개교·안뜰 돌길·나무 요새·폐허, 19% · 5 · 1.1).
+  조립기는 성벽 부품 시트(`castle_*` — 흉벽·성문·탑)를 건물 부품처럼 성벽 윗면·벽면 위에 허용한다. `forest(edge=…)` 로 묶음마다 가장자리 덤불을 고른다.
+- 참고문서 용도 둘: `dungeon_crypt`(9문서·그림 8) · `castle_court`(8문서·그림 8, 레시피 `castle` = 성벽 짓는 순서 6단계).
+- 연구 프로젝트에 새 묶음 넣기: `apply-assistant-pack.mts add --baked <굽기>` 가 bundles.json 에만 있는 묶음을 타일셋·자산으로 더하고 다시 열어 확인한다
+  (굽기 → 타일셋 변환은 `study-tileset.mjs`, `publish-study-project.mjs` 와 같이 쓴다). `apply --example-maps` 는 없는 예제 맵을 새로 단다.
+- 헤드리스 시험 G1(빈 30×20, 문서 있음): 던전 — 방 나눔·석관·쇠창살·제단, 빈 바닥 9% · 정사각형 2 · 대칭 1.7 통과(벽 없는 그림자 7칸 알림).
+  성곽 — 성벽·흉벽·성탑·해자·요새·폐허 모두 있음, 빈 바닥 32% 로 기준 30% 넘음(남쪽 풀밭 빔). 비교 그림 http://mdc-server:18301/rasak-dungeon-castle.html
+
 ## 프리뷰 재현 결과 (2026-09-24, 두 층 렌더 기준)
 
 | 프리뷰 | 묶음 | 완전 일치 | ±32 이내 | 남은 차이 |
