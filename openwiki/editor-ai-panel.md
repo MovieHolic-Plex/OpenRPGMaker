@@ -653,6 +653,11 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
   `place_storage_chest`, `place_trap`, `place_battle_blocker`(troopId 는 `encounterTroops`=이 맵 조우 트룹만, 없는 id 는 이 맵 첫 트룹으로, 조우가 없으면 버림),
   `set_scene_mood`(날씨 none/rain/storm/snow/fog, applyMode map), `arrange_tall_grass`, `set_start_position`, `move_event`·`remove_event`(`occupied` 에 있는 id 만).
   `knownItemIds`·`itemPrices` 는 거르는 데만 쓰고 모델에게 보내지 않는다.
+- **마을 (2026-09-27)**: 맵에 「마을」 필드가 없어 `guessMapRole`(`mapPlacementContext.ts`)이 신호로 추정한다 — 조우·필드 스폰이 있으면 던전/필드(이름이 「불타는 마을」이어도),
+  없으면 레이아웃 종류(village/town/houses…) → 이름(마을·촌·시장·항구…) → 실내 설정/이름 → 상점·여관 수·주민 3명 이상·safeZones 순. 근거는 `role.reason` 에 남는다.
+  마을·실내면: 상자 범위는 이 맵 기존 상자 → 이 맵 상점 물가 → **이웃 맵 기준의 1/4** → 프로젝트 기준의 절반(마을 상자에 던전급 금액 방지), 보상 후보에서 이웃 던전 드롭 제외,
+  함정·길막 몬스터는 문장에 함정/몬스터/습격 같은 말이 있을 때만(「알아서」에 섞이지 않게). 새 도구 `place_inn`(여관 주인 NPC + `inn` 명령, 요금은 이 맵 여관 → 이웃 전투 1회의 절반 → 상자 상한 1/10, 요청값은 기준의 1/3~3배로 보정),
+  `place_signpost`(기존 마을 표지판과 같은 object1 frame 25 — query 「signpost」 는 주민 그림을 골랐다). 빈 문장 + 마을이면 모델에게 "사람 사는 마을처럼(주민 2~4·상점 없으면 상인 1·표지판 1)"을 준다.
 - **채팅 조수도 같은 기준**: 컨텍스트 footer 에 `formatChestRewardHint` 한 줄(범위·근거·아이템 후보), `place_chest` 는 범위 밖 금액이면 막지 않고 경고한다.
 - **속도 (측정, 미해결)**: 도구 `run` 은 1ms 인데 `runTool` 한 번이 ~700ms — `createDraft` 의 `structuredClone`(프로젝트 25.9MB 중 타일셋 25.0MB) 367ms + `summarizeChanges` 타일셋 `JSON.stringify` 비교 334ms.
   타일셋을 참조 공유(copy-on-write)하면 줄지만 드래프트에서 타일셋을 직접 고치는 도구가 21파일이라 이번 변경에서 하지 않았다.
