@@ -53,7 +53,7 @@ for (const m of pack.maps) {
 }
 
 const summary = { id: LIBRARY_ID, tileset: TILESET_ID, tiles: count, atlasSha: pack.atlasSha, places: lib.roots.length,
-  placeRecords: Object.keys(lib.places).length, maps: Object.fromEntries(pack.maps.map((m) => [m.id, `${m.width}×${m.height}`])),
+  placeRecords: Object.keys(lib.places).length, rebuildMaxChannelDiff: pack.rebuildMaxChannelDiff ?? null, maps: Object.fromEntries(pack.maps.map((m) => [m.id, `${m.width}×${m.height}`])),
   bytes: JSON.stringify(lib).length };
 if (DRY) { console.log(JSON.stringify(summary, null, 1)); process.exit(0); }
 await withTsModule("scripts/lib/sharedContentSqlite.ts", "publish-paw-maps.mjs", async (api) => {

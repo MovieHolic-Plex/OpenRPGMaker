@@ -74,7 +74,21 @@ cols = 8; rows = -(-len(atlas_cells) // cols)
 sheet = Image.new('RGBA', (cols * 32, rows * 32), (0, 0, 0, 0))
 for i, c in enumerate(atlas_cells): sheet.alpha_composite(c, ((i % cols) * 32, (i // cols) * 32))
 buf = io.BytesIO(); sheet.save(buf, 'PNG', optimize=True); raw = buf.getvalue()
+
+# 아틀라스+칸 번호만으로 맵을 다시 그려 원래 렌더와 비교한다 (위층 반투명 합성 반올림만 허용, 채널당 4/255 이하)
+def cell_at(i): return sheet.crop(((i % cols) * 32, (i // cols) * 32, (i % cols) * 32 + 32, (i // cols) * 32 + 32))
+max_diff = 0
+for rec, om in zip(maps, out_maps):
+    w, h = om['width'], om['height']; img = Image.new('RGBA', (w * 32, h * 32), (0, 0, 0, 255))
+    for k in range(w * h):
+        pos = ((k % w) * 32, (k // w) * 32)
+        img.alpha_composite(cell_at(om['lowerTiles'][k]), pos)
+        if om['upperTiles'][k] >= 0: img.alpha_composite(cell_at(om['upperTiles'][k]), pos)
+    d = max(b[1] for b in ImageChops.difference(img.convert('RGB'), rec['full'].convert('RGB')).getextrema())
+    if d > 4: raise AssertionError(f"{om['id']} rebuild differs by {d}/255")
+    max_diff = max(max_diff, d)
+
 os.makedirs(os.path.dirname(OUT), exist_ok=True)
 json.dump({'atlas': 'data:image/png;base64,' + base64.b64encode(raw).decode(), 'atlasSha': hashlib.sha256(raw).hexdigest(),
-           'count': len(tiles), 'tiles': tiles, 'maps': out_maps}, open(OUT, 'w'), ensure_ascii=False)
-print(f'pack {len(out_maps)} maps, {len(tiles)} tiles, atlas {cols * 32}x{rows * 32} {len(raw) // 1024}KB -> {OUT}')
+           'count': len(tiles), 'tiles': tiles, 'maps': out_maps, 'rebuildMaxChannelDiff': max_diff}, open(OUT, 'w'), ensure_ascii=False)
+print(f'pack {len(out_maps)} maps, {len(tiles)} tiles, atlas {cols * 32}x{rows * 32} {len(raw) // 1024}KB, rebuild max diff {max_diff}/255 -> {OUT}')

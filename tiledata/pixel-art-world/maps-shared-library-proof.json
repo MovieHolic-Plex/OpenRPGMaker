@@ -1,10 +1,11 @@
 {
   "id": "pixel-art-world-maps-51-local",
   "tileset": "shared_paw_maps51",
-  "tiles": 5208,
-  "atlasSha": "b0ff7623af9648a0fa110e1ae5a53d2f55c268c5182ca0c1e87e154d019ba36e",
+  "tiles": 5192,
+  "atlasSha": "f175a329080b52344ff74792b26914ed2773f83451f0755d48ced73ec88614e3",
   "places": 51,
   "placeRecords": 102,
+  "rebuildMaxChannelDiff": 4,
   "maps": {
     "m01_showa_shotengai": "40×26",
     "m02_sento_corner": "34×24",
@@ -58,9 +59,9 @@
     "m60_ufo_crash": "32×24",
     "m61_event_hall": "26×16"
   },
-  "bytes": 20100818,
+  "bytes": 20061986,
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "ad7149435a2b30e9a6d8992534ce37f737fea2af0651e30c87f932f52a201685",
+  "revision": "6e853342d86d1ed73e519ddce5ad11efc96f4f00c4720eb26c183d3f5e01a736",
   "reloaded": true,
-  "publishedAt": "2026-09-26T19:04:19.576Z"
+  "publishedAt": "2026-09-26T19:43:59.397Z"
 }

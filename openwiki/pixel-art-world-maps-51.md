@@ -13,7 +13,7 @@
 ## 공용 DB 등록 (2026-09-27)
 
 1. `python3 scripts/content/paw-maps/pack.py` — 51맵을 아래층(바닥·벽·천장)과 위층(물건, 투명 배경)으로 따로 렌더해 32px 칸으로 자르고,
-   같은 그림 칸을 합쳐 아틀라스 하나(8열, 5,205칸)로 굽는다. 결과 `output/paw-maps-pack.json` 은 gitignore 이다.
+   같은 그림 칸을 합쳐 아틀라스 하나(8열, 5,187칸)로 굽는다. 결과 `output/paw-maps-pack.json` 은 gitignore 이다.
    천장·벽 칸과 불투명 부분이 400px 을 넘는 위층 칸은 통행 불가(`solid`)로 둔다.
 2. `node scripts/content/publish-pixel-art-world-maps.mjs [--dry]` — 호스트 공용 SQLite 라이브러리
    `pixel-art-world-maps-51-local` 한 개로 올린다. 맵마다 root 장소 → 층 장소 → `raster_paw51_<id>` 구획 키트이며,
@@ -21,5 +21,7 @@
    구성 메모와 사용 시트 목록을 붙인다. 같은 id 에 비교 교환으로 덮으므로, 맵을 고치면 1→2 를 다시 돌린다.
 3. 증명은 `tiledata/pixel-art-world/maps-shared-library-proof.json`. 게시 직후 다시 읽은 본문이 게시본과 같아야 성공이다.
 
-아틀라스로 되살린 51장은 갤러리 PNG 와 같다. 16장은 반투명 픽셀의 합성 반올림 때문에 채널 값이 최대 4/255 차이 난다(눈으로는 구분 불가).
+`pack.py` 는 굽는 즉시 아틀라스+칸 번호만으로 51장을 되살려 원래 렌더와 비교하고, 채널 차이가 4/255 를 넘으면 실패한다
+(반투명 픽셀 합성 반올림만 허용, 눈으로는 구분 불가). 최대 차이는 팩과 증명의 `rebuildMaxChannelDiff` 에 남는다.
+맵 스크립트를 고친 뒤 1→2 를 다시 돌리지 않으면 공용 DB 가 옛 판으로 남으니, 고친 뒤에는 반드시 재발행한다.
 등록 전 DB 는 `~/.local/share/oprn/backups/shared-content-before-paw51-*.sqlite` 로 떠 두었고, 이전 판은 `content_history` 에도 남는다.
