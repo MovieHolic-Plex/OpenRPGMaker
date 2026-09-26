@@ -418,9 +418,19 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
     async saveMapPatch(input: LocalMapPatchInput): Promise<LocalStoreSaveResult> {
       for (let attempt = 0; attempt < MAP_PATCH_MAX_ATTEMPTS; attempt += 1) {
         const planned = readProjectRow(driver);
-        const latest = planned ? deserializeStoredProjectJson(JSON.parse(planned.serialized)) : input.baseProject;
+        // 호출자의 기준이 저장 행 그대로면(baseSha 일치) 그 뒤로 쓴 사람이 없다 — latest ≡ base 라 3자 병합은
+        // 언제나 local 이다. 병합을 건너뛴다. 실측(2026-09-26, 81MB 새 프로젝트 문서, 칠하기 한 칸): 저장 행
+        // 역직렬화 1.9s + 타일셋마다 정렬 직렬화 비교하는 mergeTeamProject 5.3s 가 매 패치에 돌았다(호스트 15s).
+        // 검증·와이어·CAS 쓰기는 그대로라 그 사이 다른 저장이 끼면 아래에서 다시 병합 경로를 탄다.
+        const baseIsStored = input.baseSha != null && planned?.sha256 === input.baseSha;
+        const plan = baseIsStored
+          ? { kind: "merged" as const, project: input.project }
+          : mergeTeamProject(
+            input.baseProject,
+            input.project,
+            planned ? deserializeStoredProjectJson(JSON.parse(planned.serialized)) : input.baseProject,
+          );
         // Never trust a caller-supplied map-id list: all changed roots must participate.
-        const plan = mergeTeamProject(input.baseProject, input.project, latest);
         if (plan.kind === "conflict") return plan;
         validateMergedTeamProject(plan.project);
         const wire = await projectWire(plan.project);
