@@ -1,0 +1,18 @@
+# EuropeanI-C01.png 16x16 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 
+   0 .  +o +g .  .  .  .  .  ~l ~l +o +g +o .  .  .  
+   1 +l #o #l +o #o #c ~o ~o +o +o +o +o +o +o +g +o 
+   2 ~c +l ~l ~o +o ~o +o +o +G +G +o +o +o +o +g +g 
+   3 +l #g +g +o #g +g ~g ~o ~w ~l ~o ~o ~o ~o ~o ~o 
+   4 ~l ~g ~g ~g ~g ~g ~g +o +l +l +o #l +o #o #o #o 
+   5 ~o #l ~o ~o +o +r +r +r +g +g ~o #r ~o #o +o +o 
+   6 ~o +o ~o #o #o #r #r #r +o +o +l +o +o +l ~c ~o 
+   7 #o #o +o +o ~g +r +r +r #o +o #g #o #o #o #o #o 
+   8 +o +o +o ~o +r +r +r +r +g +r .  .  .  ~l ~l ~o 
+   9 +o +o +o +o +o +o ~o ~o +g +b +g +l +l +o ~g +o 
+  10 #o #o #g #o #o #o #o +o +G +b +g +b ~g ~o ~g +o 
+  11 +o +o +o +o +o +o +o +o +b +b ~b +b +g +o ~g .  
+  12 +o +o .  .  #G #o +o ~w +b +b +b +b .  .  ~g ~l 
+  13 #o #o +l +g +o +o #o #w #b #g #g #g +o +g #g ~g 
+  14 #o #o #G #G #G #o ~w +o #b +b +b +b #w +g #g #g 
+  15 #o #o +G +G +G +l #w #o #g #g #g #g #g +k #r +k 

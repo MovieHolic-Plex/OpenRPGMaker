@@ -1,0 +1,18 @@
+# ModernI-A501.png 8x16 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  3  4  5  6  7  
+   0 .  #o #o #o #g #l #g #w 
+   1 #o #o #o #o #r #o #o #l 
+   2 #o #o #o #o .  .  .  .  
+   3 #o #o #o #o .  .  .  .  
+   4 #o #o #o #o #o #g #b #b 
+   5 #o #r #o #G #G #r #o #G 
+   6 #l #l #g #b #l #l #o #l 
+   7 #l #l #o #o #o #o #o #l 
+   8 #c #b #b #o #o #l #o #l 
+   9 #o #o #o #l #o #c #o #l 
+  10 #o #o #l #c #o #c #g #g 
+  11 #o #o #o #o #w .  #o #c 
+  12 #g #g #l #o .  #c #c #c 
+  13 #o #o #g #o .  #b #b #b 
+  14 #o #g #o #g #k #c #c #c 
+  15 #k #o #o #o #k #b #b #b 

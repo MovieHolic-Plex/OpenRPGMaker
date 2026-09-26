@@ -1,0 +1,37 @@
+# ST-Room-I01.png 8x35 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  3  4  5  6  7  
+   0 #o #o #o #o #o #o #o ~w 
+   1 #b #o #o #l #g #b #b ~w 
+   2 #o #o #o #o #o #o #o #w 
+   3 #w #w #w #w #l #l #l #w 
+   4 #l #l #l #l #l #l #l ~o 
+   5 #w #w #w #w #l #l #l #w 
+   6 #l #l #l #l #l #l #l #w 
+   7 +b +b +b +b +l +l #l ~o 
+   8 #b #b ~l ~l +l +l #l ~l 
+   9 ~o +g +g ~g ~l ~l +l ~g 
+  10 +g +g +g ~o ~o ~o #b #l 
+  11 #g #g #g ~o #o +o +o +l 
+  12 +g +g +g ~o +o ~g #b #l 
+  13 +o #g +l ~c +o ~c +b +l 
+  14 +g +g +g +c #o +c +b +b 
+  15 +g +g +g +c +c +c +b +b 
+  16 +g +g +g +g ~o ~g ~g ~o 
+  17 #g #g #g #g #l ~g ~g +o 
+  18 #g +g +g +g ~b ~g #o #o 
+  19 #g +o +o +o +o +o +o ~o 
+  20 +g +o #o +o #o #o #o +b 
+  21 #g ~l ~l ~l #o ~o ~o ~o 
+  22 #g +o +o ~o ~b +l +o +r 
+  23 ~l ~l ~b ~c +o +l #g #c 
+  24 ~o ~g ~b ~b +g #g +g +g 
+  25 +o +o #g ~m +l +g +g +g 
+  26 +o +o +g +g #g #g +g +g 
+  27 ~g ~g +b ~g #g +g #g #g 
+  28 #g #g +g ~g +g +g #g #g 
+  29 +o +b +l +l #l +l +b +b 
+  30 #o +b #g #l ~b ~b ~o ~o 
+  31 ~g +l +l +l +l #c #c #c 
+  32 ~g #l #l +l +l #l +l #c 
+  33 ~G ~g ~l ~l +l ~l +l #c 
+  34 ~o ~g ~g ~l #l #l #l #c 

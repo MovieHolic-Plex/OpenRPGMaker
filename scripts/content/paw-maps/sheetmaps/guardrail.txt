@@ -1,0 +1,11 @@
+# guardrail.png 8x9 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  3  4  5  6  7  
+   0 +o ~G #c ~G ~G #c ~G .  
+   1 ~o ~c #c ~c ~c #c ~c .  
+   2 ~r ~l #b +g ~l #b +g .  
+   3 ~r ~l +b +g ~l +l +g .  
+   4 +l +l +l +l ~m ~o ~l ~l 
+   5 +l +l +l +l +l +o ~l ~g 
+   6 #l #o #l #o #o .  ~g ~g 
+   7 #o #o #o #o #o .  ~l ~g 
+   8 #l #l #l .  .  .  .  .  

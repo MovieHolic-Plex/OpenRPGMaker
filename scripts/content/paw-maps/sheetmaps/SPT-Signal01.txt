@@ -1,0 +1,10 @@
+# SPT-Signal01.png 4x8 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  3  
+   0 ~l .  .  .  
+   1 ~g .  .  ~l 
+   2 +l ~g .  +l 
+   3 +l .  .  ~l 
+   4 ~l .  .  ~l 
+   5 ~g ~k ~l +l 
+   6 ~k .  .  ~l 
+   7 ~k .  ~k ~g 

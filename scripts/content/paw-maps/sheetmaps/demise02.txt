@@ -1,0 +1,5 @@
+# demise02.png 6x3 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  3  4  5  
+   0 #b #b #b #w #w #w 
+   1 #g #g #g #g #b #l 
+   2 #o #c #b #c #b #b 

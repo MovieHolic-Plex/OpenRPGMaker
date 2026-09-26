@@ -1,0 +1,11991 @@
+{
+"sheets": {
+"!$D-ChTree01.png": {
+"path": "sample-game-images/dotartworld_vxasample/Sample Map VX Ace/Graphics/Characters/!$D-ChTree01.png",
+"w": 288,
+"h": 512,
+"cols": 9,
+"rows": 16
+},
+"!$DC-Lama01.png": {
+"path": "sample-game-images/dotartworld_vxasample/Sample Map VX Ace/Graphics/Characters/!$DC-Lama01.png",
+"w": 144,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"!$DLight01.png": {
+"path": "sample-game-images/dotartworld_vxasample/Sample Map VX Ace/Graphics/Characters/!$DLight01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"!$DPointer01.png": {
+"path": "sample-game-images/dotartworld_vxasample/Sample Map VX Ace/Graphics/Characters/!$DPointer01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"!$DUnko01.png": {
+"path": "sample-game-images/dotartworld_vxasample/Sample Map VX Ace/Graphics/Characters/!$DUnko01.png",
+"w": 72,
+"h": 96,
+"cols": 2,
+"rows": 3
+},
+"!$Gate-Euro03.png": {
+"path": "by-source/vx/sozai/!$Gate-Euro03.png",
+"w": 240,
+"h": 256,
+"cols": 7,
+"rows": 8
+},
+"!$PCandle01.png": {
+"path": "archive-images/European-StyleHouseSet/European-StyleHouseSet/Characters/!$PCandle01.png",
+"w": 96,
+"h": 256,
+"cols": 3,
+"rows": 8
+},
+"!$PCandle02.png": {
+"path": "archive-images/European-StyleHouseSet/European-StyleHouseSet/Characters/!$PCandle02.png",
+"w": 96,
+"h": 256,
+"cols": 3,
+"rows": 8
+},
+"!$PCandle03.png": {
+"path": "archive-images/European-StyleHouseSet/European-StyleHouseSet/Characters/!$PCandle03.png",
+"w": 96,
+"h": 256,
+"cols": 3,
+"rows": 8
+},
+"!$PCandle04.png": {
+"path": "archive-images/European-StyleHouseSet/European-StyleHouseSet/Characters/!$PCandle04.png",
+"w": 96,
+"h": 256,
+"cols": 3,
+"rows": 8
+},
+"!$PClock01.png": {
+"path": "by-source/sozai/vx/vx-chara/!$PClock01.png",
+"w": 96,
+"h": 320,
+"cols": 3,
+"rows": 10
+},
+"!$PEdoinu01.png": {
+"path": "by-source/sozai/vx/vx-chara/!$PEdoinu01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"!$PFire01.png": {
+"path": "archive-images/European-StyleHouseSet/European-StyleHouseSet/Characters/!$PFire01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"!$PLight01.png": {
+"path": "archive-images/European-StyleHouseSet/European-StyleHouseSet/Characters/!$PLight01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"!$PMirror01.png": {
+"path": "by-source/sozai/vx/vx-chara/!$PMirror01.png",
+"w": 288,
+"h": 320,
+"cols": 9,
+"rows": 10
+},
+"!$PMirror02.png": {
+"path": "by-source/sozai/vx/vx-chara/!$PMirror02.png",
+"w": 288,
+"h": 320,
+"cols": 9,
+"rows": 10
+},
+"!$Wallrion01.png": {
+"path": "sample-game-images/dotartworld_vxasample/Sample Map VX Ace/Graphics/Characters/!$Wallrion01.png",
+"w": 96,
+"h": 384,
+"cols": 3,
+"rows": 12
+},
+"!DDoor-Home01.png": {
+"path": "sample-game-images/dotartworld_vxasample/Sample Map VX Ace/Graphics/Characters/!DDoor-Home01.png",
+"w": 384,
+"h": 512,
+"cols": 12,
+"rows": 16
+},
+"$DC-Lama01.png": {
+"path": "sample-game-images/dotartworld_vxasample/Sample Map VX Ace/Graphics/Characters/$DC-Lama01.png",
+"w": 144,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"$PManekineko01.png": {
+"path": "by-source/sozai/chara/$PManekineko01.png",
+"w": 288,
+"h": 384,
+"cols": 9,
+"rows": 12
+},
+"A2I-Modern01.png": {
+"path": "sample-game-images/dotartworld_vxasample/Sample Map VX Ace/Graphics/Tilesets/A2I-Modern01.png",
+"w": 512,
+"h": 384,
+"cols": 16,
+"rows": 12
+},
+"A4I-Modern01.png": {
+"path": "sample-game-images/dotartworld_vxasample/Sample Map VX Ace/Graphics/Tilesets/A4I-Modern01.png",
+"w": 512,
+"h": 480,
+"cols": 16,
+"rows": 15
+},
+"A5I-Modern01.png": {
+"path": "sample-game-images/dotartworld_vxasample/Sample Map VX Ace/Graphics/Tilesets/A5I-Modern01.png",
+"w": 256,
+"h": 512,
+"cols": 8,
+"rows": 16
+},
+"ArmillarySphere.png": {
+"path": "by-source/sozai/chips/ArmillarySphere.png",
+"w": 96,
+"h": 96,
+"cols": 3,
+"rows": 3
+},
+"Autotile-FloorHR01.png": {
+"path": "by-source/vx/sozai/chips/Autotile-FloorHR01.png",
+"w": 256,
+"h": 192,
+"cols": 8,
+"rows": 6
+},
+"Autotile-Kotatsu.png": {
+"path": "by-source/vx/sozai/chips/Autotile-Kotatsu.png",
+"w": 256,
+"h": 192,
+"cols": 8,
+"rows": 6
+},
+"Autotile-MarbleCounter01.png": {
+"path": "by-source/sozai/vx/vx-autotile/Autotile-MarbleCounter01.png",
+"w": 192,
+"h": 128,
+"cols": 6,
+"rows": 4
+},
+"Autotile-MarbleCounterMV01.png": {
+"path": "by-source/sozai/vx/Autotile-MarbleCounterMV01.png",
+"w": 288,
+"h": 192,
+"cols": 9,
+"rows": 6
+},
+"Autotile-Wa01.png": {
+"path": "by-source/vx/sozai/chips/Autotile-Wa01.png",
+"w": 256,
+"h": 96,
+"cols": 8,
+"rows": 3
+},
+"Autotile-WorldMapLava.png": {
+"path": "by-source/vx/sozai/mod_outside1/Autotile-WorldMapLava.png",
+"w": 192,
+"h": 96,
+"cols": 6,
+"rows": 3
+},
+"Autotile-WorldMapMontain01.png": {
+"path": "by-source/vx/sozai/mod_outside1/Autotile-WorldMapMontain01.png",
+"w": 128,
+"h": 96,
+"cols": 4,
+"rows": 3
+},
+"Autotile-WorldMapRiver01.png": {
+"path": "by-source/vx/sozai/mod_outside1/Autotile-WorldMapRiver01.png",
+"w": 192,
+"h": 96,
+"cols": 6,
+"rows": 3
+},
+"Autotile-WorldMapRiver02.png": {
+"path": "by-source/vx/sozai/mod_outside1/Autotile-WorldMapRiver02.png",
+"w": 192,
+"h": 96,
+"cols": 6,
+"rows": 3
+},
+"Autotile-WorldMapSimple.png": {
+"path": "by-source/vx/sozai/mod_outside1/Autotile-WorldMapSimple.png",
+"w": 448,
+"h": 288,
+"cols": 14,
+"rows": 9
+},
+"Autotile-WorldMapTree01.png": {
+"path": "by-source/vx/sozai/mod_outside1/Autotile-WorldMapTree01.png",
+"w": 128,
+"h": 96,
+"cols": 4,
+"rows": 3
+},
+"Autotile-bath.png": {
+"path": "by-source/sozai/vx/vx-autotile/Autotile-bath.png",
+"w": 128,
+"h": 96,
+"cols": 4,
+"rows": 3
+},
+"BI-Bath01.png": {
+"path": "sample-game-images/dotartworld_vxasample/Sample Map VX Ace/Graphics/Tilesets/BI-Bath01.png",
+"w": 512,
+"h": 512,
+"cols": 16,
+"rows": 16
+},
+"BI-Bath02.png": {
+"path": "sample-game-images/dotartworld_vxasample/Sample Map VX Ace/Graphics/Tilesets/BI-Bath02.png",
+"w": 512,
+"h": 512,
+"cols": 16,
+"rows": 16
+},
+"BI-ModernB01.png": {
+"path": "sample-game-images/dotartworld_vxasample/Sample Map VX Ace/Graphics/Tilesets/BI-ModernB01.png",
+"w": 512,
+"h": 512,
+"cols": 16,
+"rows": 16
+},
+"BI-ModernF01.png": {
+"path": "sample-game-images/dotartworld_vxasample/Sample Map VX Ace/Graphics/Tilesets/BI-ModernF01.png",
+"w": 512,
+"h": 512,
+"cols": 16,
+"rows": 16
+},
+"BI-ModernS01.png": {
+"path": "sample-game-images/dotartworld_vxasample/Sample Map VX Ace/Graphics/Tilesets/BI-ModernS01.png",
+"w": 512,
+"h": 512,
+"cols": 16,
+"rows": 16
+},
+"Bath-D01.png": {
+"path": "by-source/vx/sozai/tilesets/Bath-D01.png",
+"w": 512,
+"h": 512,
+"cols": 16,
+"rows": 16
+},
+"BlackMagic01.png": {
+"path": "by-source/sozai/chips/BlackMagic01.png",
+"w": 192,
+"h": 352,
+"cols": 6,
+"rows": 11
+},
+"BlackMagic02.png": {
+"path": "by-source/sozai/chips/BlackMagic02.png",
+"w": 192,
+"h": 256,
+"cols": 6,
+"rows": 8
+},
+"Bloodstain01.png": {
+"path": "by-source/sozai/chips/Bloodstain01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"Bophomet.png": {
+"path": "by-source/sozai/chips/Bophomet.png",
+"w": 96,
+"h": 64,
+"cols": 3,
+"rows": 2
+},
+"Botticelli.png": {
+"path": "by-source/sozai/chips/Botticelli.png",
+"w": 96,
+"h": 64,
+"cols": 3,
+"rows": 2
+},
+"Cakes01.png": {
+"path": "by-source/sozai/chips/Cakes01.png",
+"w": 224,
+"h": 256,
+"cols": 7,
+"rows": 8
+},
+"Chandelier.png": {
+"path": "by-source/sozai/chips/Chandelier.png",
+"w": 96,
+"h": 80,
+"cols": 3,
+"rows": 2
+},
+"Cupnoodle.png": {
+"path": "by-source/vx/sozai/Cupnoodle.png",
+"w": 256,
+"h": 128,
+"cols": 8,
+"rows": 4
+},
+"Edoinu.png": {
+"path": "by-source/sozai/vx/vx-chara/Edoinu.png",
+"w": 64,
+"h": 32,
+"cols": 2,
+"rows": 1
+},
+"Eu-Cage01.png": {
+"path": "by-source/sozai/chips/Eu-Cage01.png",
+"w": 288,
+"h": 256,
+"cols": 9,
+"rows": 8
+},
+"Eu-Cage02.png": {
+"path": "by-source/sozai/chips/Eu-Cage02.png",
+"w": 288,
+"h": 256,
+"cols": 9,
+"rows": 8
+},
+"Eu-Easel01.png": {
+"path": "by-source/sozai/chips/Eu-Easel01.png",
+"w": 96,
+"h": 96,
+"cols": 3,
+"rows": 3
+},
+"Eu-FurnitureMV01.png": {
+"path": "by-source/sozai/chips/Eu-FurnitureMV01.png",
+"w": 240,
+"h": 288,
+"cols": 7,
+"rows": 9
+},
+"Eu-GlandPiano.png": {
+"path": "by-source/sozai/chips/Eu-GlandPiano.png",
+"w": 224,
+"h": 224,
+"cols": 7,
+"rows": 7
+},
+"Eu-Lace01.png": {
+"path": "by-source/sozai/chips/Eu-Lace01.png",
+"w": 144,
+"h": 160,
+"cols": 4,
+"rows": 5
+},
+"Eu-Pillar01.png": {
+"path": "by-source/sozai/chips/Eu-Pillar01.png",
+"w": 192,
+"h": 96,
+"cols": 6,
+"rows": 3
+},
+"Eu-PillarMV01.png": {
+"path": "by-source/sozai/chips/Eu-PillarMV01.png",
+"w": 240,
+"h": 144,
+"cols": 7,
+"rows": 4
+},
+"Eu-Sofa01.png": {
+"path": "by-source/sozai/chips/Eu-Sofa01.png",
+"w": 720,
+"h": 495,
+"cols": 22,
+"rows": 15
+},
+"Eu-Sofa02.png": {
+"path": "by-source/sozai/chips/Eu-Sofa02.png",
+"w": 256,
+"h": 240,
+"cols": 8,
+"rows": 7
+},
+"Eu-Statue01.png": {
+"path": "by-source/sozai/chips/Eu-Statue01.png",
+"w": 192,
+"h": 128,
+"cols": 6,
+"rows": 4
+},
+"EuropeanI-A201.png": {
+"path": "archive-images/European-StyleHouseSet/European-StyleHouseSet/EuropeanI-A201.png",
+"w": 512,
+"h": 384,
+"cols": 16,
+"rows": 12
+},
+"EuropeanI-A401.png": {
+"path": "archive-images/European-StyleHouseSet/European-StyleHouseSet/EuropeanI-A401.png",
+"w": 512,
+"h": 480,
+"cols": 16,
+"rows": 15
+},
+"EuropeanI-B01.png": {
+"path": "archive-images/European-StyleHouseSet/European-StyleHouseSet/EuropeanI-B01.png",
+"w": 512,
+"h": 512,
+"cols": 16,
+"rows": 16
+},
+"EuropeanI-C01.png": {
+"path": "archive-images/European-StyleHouseSet/European-StyleHouseSet/EuropeanI-C01.png",
+"w": 512,
+"h": 512,
+"cols": 16,
+"rows": 16
+},
+"EuropeanI-D01.png": {
+"path": "archive-images/European-StyleHouseSet/European-StyleHouseSet/EuropeanI-D01.png",
+"w": 512,
+"h": 512,
+"cols": 16,
+"rows": 16
+},
+"EuropeanI-E01.png": {
+"path": "archive-images/European-StyleHouseSet/European-StyleHouseSet/EuropeanI-E01.png",
+"w": 512,
+"h": 512,
+"cols": 16,
+"rows": 16
+},
+"F-Party02.png": {
+"path": "by-source/sozai/food/F-Party02.png",
+"w": 128,
+"h": 96,
+"cols": 4,
+"rows": 3
+},
+"Halloween.png": {
+"path": "by-source/sozai/chips/Halloween.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"Jukebox01.png": {
+"path": "by-source/sozai/chips/Jukebox01.png",
+"w": 64,
+"h": 64,
+"cols": 2,
+"rows": 2
+},
+"Kagamimochi.png": {
+"path": "by-source/vx/sozai/Kagamimochi.png",
+"w": 160,
+"h": 64,
+"cols": 5,
+"rows": 2
+},
+"Le Penseur.png": {
+"path": "by-source/sozai/chips/Le Penseur.png",
+"w": 32,
+"h": 64,
+"cols": 1,
+"rows": 2
+},
+"Millais-Ophelia01.png": {
+"path": "by-source/sozai/chips/Millais-Ophelia01.png",
+"w": 80,
+"h": 64,
+"cols": 2,
+"rows": 2
+},
+"Millais-Ophelia02.png": {
+"path": "by-source/sozai/chips/Millais-Ophelia02.png",
+"w": 80,
+"h": 64,
+"cols": 2,
+"rows": 2
+},
+"ModernI-A501.png": {
+"path": "archive-images/European-StyleHouseSet/European-StyleHouseSet/ModernI-A501.png",
+"w": 256,
+"h": 512,
+"cols": 8,
+"rows": 16
+},
+"Olympia.png": {
+"path": "by-source/sozai/chips/Olympia.png",
+"w": 80,
+"h": 64,
+"cols": 2,
+"rows": 2
+},
+"Organs.png": {
+"path": "by-source/sozai/chips/Organs.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"Ozen.png": {
+"path": "by-source/sozai/food/Ozen.png",
+"w": 160,
+"h": 128,
+"cols": 5,
+"rows": 4
+},
+"Pantocrator.png": {
+"path": "by-source/sozai/chips/Pantocrator.png",
+"w": 96,
+"h": 64,
+"cols": 3,
+"rows": 2
+},
+"PikoC-Girl01.png": {
+"path": "by-source/sozai/chara/RTP/PikoC-Girl01.png",
+"w": 128,
+"h": 192,
+"cols": 4,
+"rows": 6
+},
+"PikoC-Teddy005.png": {
+"path": "by-source/sozai/chara/RTP/PikoC-Teddy005.png",
+"w": 128,
+"h": 192,
+"cols": 4,
+"rows": 6
+},
+"SA-Asphalt01.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-Asphalt01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Asphalt02.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-Asphalt02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-AsphaltBase.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-AsphaltBase.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-AsphaltRoad01.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-AsphaltRoad01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-BSheet01.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-BSheet01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-BorderG01.png": {
+"path": "archive-images/autotile-old/autotile/SA-BorderG01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-BorderG02.png": {
+"path": "archive-images/autotile-old/autotile/SA-BorderG02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-BorderG03.png": {
+"path": "archive-images/autotile-old/autotile/SA-BorderG03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-BorderG04.png": {
+"path": "archive-images/autotile-old/autotile/SA-BorderG04.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-BorderG05.png": {
+"path": "archive-images/autotile-old/autotile/SA-BorderG05.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Carpet-Rose01.png": {
+"path": "archive-images/autotile-in/autotile-in/SA-Carpet-Rose01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Carpet01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Carpet01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Carpet02.png": {
+"path": "archive-images/autotile-old/autotile/SA-Carpet02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Carpet03.png": {
+"path": "archive-images/autotile-old/autotile/SA-Carpet03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Carpet04.png": {
+"path": "archive-images/autotile-old/autotile/SA-Carpet04.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Carpet05.png": {
+"path": "archive-images/autotile-old/autotile/SA-Carpet05.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Carpet06.png": {
+"path": "archive-images/autotile-old/autotile/SA-Carpet06.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Carpet07.png": {
+"path": "archive-images/autotile-old/autotile/SA-Carpet07.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Carpet08.png": {
+"path": "archive-images/autotile-old/autotile/SA-Carpet08.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Carpet08ST.png": {
+"path": "archive-images/autotile-old/autotile/SA-Carpet08ST.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Carpet09.png": {
+"path": "archive-images/autotile-old/autotile/SA-Carpet09.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Carpet09ST.png": {
+"path": "archive-images/autotile-old/autotile/SA-Carpet09ST.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Carpet10.png": {
+"path": "archive-images/autotile-old/autotile/SA-Carpet10.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Carpet11.png": {
+"path": "archive-images/autotile-old/autotile/SA-Carpet11.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Carpet12.png": {
+"path": "archive-images/autotile-old/autotile/SA-Carpet12.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Carpet13.png": {
+"path": "archive-images/autotile-in/autotile-in/SA-Carpet13.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Carpet14.png": {
+"path": "SA-Carpet14.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Carpet15.png": {
+"path": "SA-Carpet15.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Carpet16.png": {
+"path": "SA-Carpet16.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Carpet17.png": {
+"path": "SA-Carpet17.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Cartain01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Cartain01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Cartain02.png": {
+"path": "archive-images/autotile-old/autotile/SA-Cartain02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Concrete01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Concrete01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Concrete02.png": {
+"path": "archive-images/autotile-old/autotile/SA-Concrete02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Concrete03.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Autotiles/SA-Concrete03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-DSRoad01.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-DSRoad01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Ditch01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Autotiles/SA-Ditch01.png",
+"w": 384,
+"h": 128,
+"cols": 12,
+"rows": 4
+},
+"SA-Ditch02.png": {
+"path": "archive-images/autotile-old/autotile/SA-Ditch02.png",
+"w": 384,
+"h": 128,
+"cols": 12,
+"rows": 4
+},
+"SA-Ditch03.png": {
+"path": "archive-images/autotile-old/autotile/SA-Ditch03.png",
+"w": 384,
+"h": 128,
+"cols": 12,
+"rows": 4
+},
+"SA-Ditch04.png": {
+"path": "archive-images/autotile-old/autotile/SA-Ditch04.png",
+"w": 384,
+"h": 128,
+"cols": 12,
+"rows": 4
+},
+"SA-Dway01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Dway01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Dway02.png": {
+"path": "archive-images/autotile-old/autotile/SA-Dway02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Dway03.png": {
+"path": "archive-images/autotile-old/autotile/SA-Dway03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Dway04.png": {
+"path": "archive-images/autotile-old/autotile/SA-Dway04.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Dway05.png": {
+"path": "archive-images/autotile-old/autotile/SA-Dway05.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Dway06.png": {
+"path": "archive-images/autotile-old/autotile/SA-Dway06.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-DwayA01.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-DwayA01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-DwayA02.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-DwayA02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-DwayB01.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-DwayB01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-DwayB02.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-DwayB02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-DwayC01.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-DwayC01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-DwayC02.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-DwayC02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-DwayD01.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-DwayD01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-DwayEX01.png": {
+"path": "archive-images/autotile-old/autotile/SA-DwayEX01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Floor-M01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Floor-M01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Floor-Stone01.png": {
+"path": "archive-images/autotile-in/autotile-in/SA-Floor-Stone01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Floor-T01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Floor-T01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Floor-T02.png": {
+"path": "archive-images/autotile-old/autotile/SA-Floor-T02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Floor-T03.png": {
+"path": "archive-images/autotile-old/autotile/SA-Floor-T03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Floor-T04.png": {
+"path": "archive-images/autotile-old/autotile/SA-Floor-T04.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Floor-T05.png": {
+"path": "archive-images/autotile-old/autotile/SA-Floor-T05.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Floor-T06.png": {
+"path": "archive-images/autotile-in/autotile-in/SA-Floor-T06.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Floor-T07.png": {
+"path": "archive-images/autotile-in/autotile-in/SA-Floor-T07.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Floor-T08.png": {
+"path": "archive-images/autotile-in/autotile-in/SA-Floor-T08.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Floor-T09.png": {
+"path": "archive-images/autotile-in/autotile-in/SA-Floor-T09.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Floor-T10.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Autotiles/SA-Floor-T10.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Floor-T11.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Autotiles/SA-Floor-T11.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Floor-T12.png": {
+"path": "archive-images/autotile-in/autotile-in/SA-Floor-T12.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Floor01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Floor01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Floor02.png": {
+"path": "archive-images/autotile-old/autotile/SA-Floor02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Floor03.png": {
+"path": "archive-images/autotile-old/autotile/SA-Floor03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Floor04.png": {
+"path": "archive-images/autotile-old/autotile/SA-Floor04.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Floor05.png": {
+"path": "archive-images/autotile-old/autotile/SA-Floor05.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Floor06.png": {
+"path": "archive-images/autotile-old/autotile/SA-Floor06.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-FloorM01.png": {
+"path": "archive-images/autotile-in/autotile-in/SA-FloorM01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-FloorM02.png": {
+"path": "archive-images/autotile-in/autotile-in/SA-FloorM02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-FloorM03.png": {
+"path": "archive-images/autotile-in/autotile-in/SA-FloorM03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-FloorS01.png": {
+"path": "archive-images/autotile-in/autotile-in/SA-FloorS01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-FloorS02.png": {
+"path": "archive-images/autotile-in/autotile-in/SA-FloorS02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-FloorS03.png": {
+"path": "archive-images/autotile-in/autotile-in/SA-FloorS03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-FloorS04.png": {
+"path": "archive-images/autotile-in/autotile-in/SA-FloorS04.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-FloorS05.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Autotiles/SA-FloorS05.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-FloorT01.png": {
+"path": "archive-images/autotile-in/autotile-in/SA-FloorT01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-FloorT02.png": {
+"path": "archive-images/autotile-in/autotile-in/SA-FloorT02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-FloorT03.png": {
+"path": "archive-images/autotile-in/autotile-in/SA-FloorT03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-FloorT04.png": {
+"path": "archive-images/autotile-in/autotile-in/SA-FloorT04.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Flower01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Flower01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Fur01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Fur01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Fur02.png": {
+"path": "archive-images/autotile-old/autotile/SA-Fur02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Fur03.png": {
+"path": "archive-images/autotile-old/autotile/SA-Fur03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GBorderA01.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-GBorderA01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GBorderA02.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-GBorderA02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GBorderB01.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-GBorderB01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GBorderB02.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-GBorderB02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GBorderC01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Autotiles/SA-GBorderC01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GBorderC02.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-GBorderC02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GBorderC03.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-GBorderC03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GRoad01.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-GRoad01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GRoad02.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-GRoad02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Goza01.png": {
+"path": "archive-images/autotile-in/autotile-in/SA-Goza01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Goza02.png": {
+"path": "archive-images/autotile-in/autotile-in/SA-Goza02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Goza03.png": {
+"path": "archive-images/autotile-in/autotile-in/SA-Goza03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Grass01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Grass01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Grass02.png": {
+"path": "archive-images/autotile-old/autotile/SA-Grass02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Grass03.png": {
+"path": "archive-images/autotile-old/autotile/SA-Grass03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Grass04.png": {
+"path": "archive-images/autotile-old/autotile/SA-Grass04.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Grass05.png": {
+"path": "archive-images/autotile-old/autotile/SA-Grass05.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Grass06.png": {
+"path": "archive-images/autotile-old/autotile/SA-Grass06.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Grass07.png": {
+"path": "archive-images/autotile-old/autotile/SA-Grass07.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Grass08.png": {
+"path": "archive-images/autotile-old/autotile/SA-Grass08.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Grass09.png": {
+"path": "archive-images/autotile-old/autotile/SA-Grass09.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Grass10.png": {
+"path": "archive-images/autotile-old/autotile/SA-Grass10.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Grass11.png": {
+"path": "archive-images/autotile-old/autotile/SA-Grass11.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Grass12.png": {
+"path": "archive-images/autotile-old/autotile/SA-Grass12.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GrassC01.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-GrassC01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GrassC02.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-GrassC02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GrassC03.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-GrassC03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GrassD01.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-GrassD01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GrassD02.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-GrassD02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GrassD03.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-GrassD03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GrassE01.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-GrassE01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GrassE02.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-GrassE02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GrassE03.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-GrassE03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GrassE04.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-GrassE04.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GrassE05.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Autotiles/SA-GrassE05.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GrassE06.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Autotiles/SA-GrassE06.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Ground-St01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Ground-St01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Ground01.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-Ground01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Ground02.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-Ground02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Ground03.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Autotiles/SA-Ground03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GroundBase01.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-GroundBase01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GroundG01.png": {
+"path": "archive-images/autotile-old/autotile/autotile2/SA-GroundG01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GroundG02.png": {
+"path": "archive-images/autotile-old/autotile/autotile2/SA-GroundG02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GroundG03.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Autotiles/SA-GroundG03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GroundG04.png": {
+"path": "archive-images/autotile-old/autotile/autotile2/SA-GroundG04.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GroundG05.png": {
+"path": "archive-images/autotile-old/autotile/autotile2/SA-GroundG05.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GroundG06.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-GroundG06.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GroundGS01.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-GroundGS01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-GroundY01.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-GroundY01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Hatake01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Hatake01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Hatake02.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-Hatake02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Hatake03.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-Hatake03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Hatake04.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-Hatake04.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Hatake05.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-Hatake05.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Hatake06.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-Hatake06.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-HatakeB01.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-HatakeB01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-HatakeB02.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-HatakeB02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-HatakeB03.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-HatakeB03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-HatakeB04.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-HatakeB04.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-HatakeB05.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-HatakeB05.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-HatakeB06.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-HatakeB06.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Ivy01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Ivy01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Kadan01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Kadan01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Kadan02.png": {
+"path": "archive-images/autotile-old/autotile/SA-Kadan02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Kadan03.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Autotiles/SA-Kadan03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Kotatsu01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Kotatsu01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Kotatsu02.png": {
+"path": "archive-images/autotile-old/autotile/SA-Kotatsu02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Kyodan01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Autotiles/SA-Kyodan01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Map-Mountain01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Map-Mountain01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Map-Mountain02.png": {
+"path": "archive-images/autotile-old/autotile/SA-Map-Mountain02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Map-Mountain03.png": {
+"path": "archive-images/autotile-old/autotile/SA-Map-Mountain03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Map-Mountain04.png": {
+"path": "archive-images/autotile-old/autotile/SA-Map-Mountain04.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Map-Mountain05.png": {
+"path": "archive-images/autotile-old/autotile/SA-Map-Mountain05.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Map-Tree01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Map-Tree01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Map-Tree02.png": {
+"path": "archive-images/autotile-old/autotile/SA-Map-Tree02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Map-water01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Map-water01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Mapbase01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Mapbase01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Mapbase02.png": {
+"path": "archive-images/autotile-old/autotile/SA-Mapbase02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Mapbase03.png": {
+"path": "archive-images/autotile-old/autotile/SA-Mapbase03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-MapbaseF01.png": {
+"path": "archive-images/autotile-old/autotile/SA-MapbaseF01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-MapbaseF04.png": {
+"path": "archive-images/autotile-old/autotile/SA-MapbaseF04.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-MapbaseF05.png": {
+"path": "archive-images/autotile-old/autotile/SA-MapbaseF05.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-MapbaseF06.png": {
+"path": "archive-images/autotile-old/autotile/SA-MapbaseF06.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Mat01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Mat01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Moss01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Moss01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Moss02.png": {
+"path": "archive-images/autotile-old/autotile/SA-Moss02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Mpbase-FW03.png": {
+"path": "archive-images/autotile-old/autotile/SA-Mpbase-FW03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Mpbase-W01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Mpbase-W01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Mpbase-W02.png": {
+"path": "archive-images/autotile-old/autotile/SA-Mpbase-W02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Mpbase01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Mpbase01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Mpbase02.png": {
+"path": "archive-images/autotile-old/autotile/SA-Mpbase02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Mpbase03.png": {
+"path": "archive-images/autotile-old/autotile/SA-Mpbase03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-MpbaseFW01.png": {
+"path": "archive-images/autotile-old/autotile/SA-MpbaseFW01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-MpbaseFW02.png": {
+"path": "archive-images/autotile-old/autotile/SA-MpbaseFW02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Nanohana01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Autotiles/SA-Nanohana01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Pool01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Pool01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Pool02.png": {
+"path": "archive-images/autotile-old/autotile/SA-Pool02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Pumkin01.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-Pumkin01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Pumkin02.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-Pumkin02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Pumkin03.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-Pumkin03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Pumkin04.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-Pumkin04.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Road01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Road01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Road02.png": {
+"path": "archive-images/autotile-old/autotile/SA-Road02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-RoadT01.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-RoadT01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Roof01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Autotiles/SA-Roof01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Roof02.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Autotiles/SA-Roof02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Roof03.png": {
+"path": "archive-images/autotile-old/autotile/SA-Roof03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Roof04.png": {
+"path": "archive-images/autotile-old/autotile/SA-Roof04.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-SRoad01.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-SRoad01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-SRoad02.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-SRoad02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Saku01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Saku01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Seawds01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Seawds01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-StFence01.png": {
+"path": "archive-images/autotile-old/autotile/SA-StFence01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-StFence02.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-StFence02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-StFence03.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-StFence03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-StFenceBase.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-StFenceBase.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Stone01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Stone01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Sunoko01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Sunoko01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Sunoko02.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Autotiles/SA-Sunoko02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Sunoko03.png": {
+"path": "archive-images/autotile-old/autotile/SA-Sunoko03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Undulation01.png": {
+"path": "archive-images/autotile-ex/autotile-ex/SA-Undulation01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Undulation02.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Autotiles/SA-Undulation02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Wall01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Wall01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Wall02.png": {
+"path": "archive-images/autotile-old/autotile/SA-Wall02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Wall03.png": {
+"path": "archive-images/autotile-old/autotile/SA-Wall03.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-WallA01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Autotiles/SA-WallA01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-WallA02.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Autotiles/SA-WallA02.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-WallD01.png": {
+"path": "archive-images/autotile-in/autotile-in/SA-WallD01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SA-Window01.png": {
+"path": "archive-images/autotile-old/autotile/SA-Window01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"SB-Spider01.png": {
+"path": "by-source/sozai/chips/SB-Spider01.png",
+"w": 256,
+"h": 160,
+"cols": 8,
+"rows": 5
+},
+"SB-Spider04.png": {
+"path": "by-source/sozai/chips/SB-Spider04.png",
+"w": 128,
+"h": 80,
+"cols": 4,
+"rows": 2
+},
+"SC-Bd02.png": {
+"path": "by-source/sozai/chara/SC-Bd02.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-Bd03.png": {
+"path": "by-source/sozai/chara/SC-Bd03.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"SC-Book02.png": {
+"path": "by-source/sozai/chara/SC-Book02.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-CFundosi01.png": {
+"path": "by-source/sozai/chara/SC-CFundosi01.png",
+"w": 128,
+"h": 192,
+"cols": 4,
+"rows": 6
+},
+"SC-CTsunagi01.png": {
+"path": "by-source/sozai/chara/SC-CTsunagi01.png",
+"w": 128,
+"h": 192,
+"cols": 4,
+"rows": 6
+},
+"SC-Candle01.png": {
+"path": "by-source/sozai/chara/SC-Candle01.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"SC-Candle03.png": {
+"path": "by-source/sozai/chara/SC-Candle03.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"SC-Candle04.png": {
+"path": "by-source/sozai/chara/SC-Candle04.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-Car01.png": {
+"path": "by-source/sozai/chara/SC-Car01.png",
+"w": 640,
+"h": 384,
+"cols": 20,
+"rows": 12
+},
+"SC-Car02.png": {
+"path": "by-source/sozai/chara/SC-Car02.png",
+"w": 384,
+"h": 512,
+"cols": 12,
+"rows": 16
+},
+"SC-Car03.png": {
+"path": "by-source/sozai/chara/SC-Car03.png",
+"w": 640,
+"h": 384,
+"cols": 20,
+"rows": 12
+},
+"SC-Carp01.png": {
+"path": "by-source/sozai/chara/SC-Carp01.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-ChristmasTree01.png": {
+"path": "by-source/sozai/chara/SC-ChristmasTree01.png",
+"w": 384,
+"h": 512,
+"cols": 12,
+"rows": 16
+},
+"SC-CtainH01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Characters/SC-CtainH01.png",
+"w": 384,
+"h": 384,
+"cols": 12,
+"rows": 12
+},
+"SC-Cupboard01.png": {
+"path": "by-source/sozai/chara/SC-Cupboard01.png",
+"w": 384,
+"h": 384,
+"cols": 12,
+"rows": 12
+},
+"SC-Cupboard02.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Characters/SC-Cupboard02.png",
+"w": 128,
+"h": 384,
+"cols": 4,
+"rows": 12
+},
+"SC-Door-Arch01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Characters/SC-Door-Arch01.png",
+"w": 384,
+"h": 384,
+"cols": 12,
+"rows": 12
+},
+"SC-Door-AutoAM.png": {
+"path": "by-source/sozai/door/SC-Door-AutoAM.png",
+"w": 384,
+"h": 256,
+"cols": 12,
+"rows": 8
+},
+"SC-Door-AutoAS.png": {
+"path": "by-source/sozai/door/SC-Door-AutoAS.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"SC-Door-AutoAW.png": {
+"path": "by-source/sozai/door/SC-Door-AutoAW.png",
+"w": 512,
+"h": 256,
+"cols": 16,
+"rows": 8
+},
+"SC-Door-AutoBM.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Characters/SC-Door-AutoBM.png",
+"w": 384,
+"h": 384,
+"cols": 12,
+"rows": 12
+},
+"SC-Door-AutoBS.png": {
+"path": "by-source/sozai/door/SC-Door-AutoBS.png",
+"w": 128,
+"h": 384,
+"cols": 4,
+"rows": 12
+},
+"SC-Door-AutoBW.png": {
+"path": "by-source/sozai/door/SC-Door-AutoBW.png",
+"w": 512,
+"h": 384,
+"cols": 16,
+"rows": 12
+},
+"SC-Door-Cl01.png": {
+"path": "by-source/sozai/door/SC-Door-Cl01.png",
+"w": 384,
+"h": 256,
+"cols": 12,
+"rows": 8
+},
+"SC-Door-Convi01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Characters/SC-Door-Convi01.png",
+"w": 384,
+"h": 256,
+"cols": 12,
+"rows": 8
+},
+"SC-Door-Convi02.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Characters/SC-Door-Convi02.png",
+"w": 512,
+"h": 256,
+"cols": 16,
+"rows": 8
+},
+"SC-Door-Dg01.png": {
+"path": "by-source/sozai/door/SC-Door-Dg01.png",
+"w": 384,
+"h": 256,
+"cols": 12,
+"rows": 8
+},
+"SC-Door-Entce01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Characters/SC-Door-Entce01.png",
+"w": 384,
+"h": 256,
+"cols": 12,
+"rows": 8
+},
+"SC-Door-Entce02.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Characters/SC-Door-Entce02.png",
+"w": 384,
+"h": 256,
+"cols": 12,
+"rows": 8
+},
+"SC-Door-Entce03.png": {
+"path": "by-source/sozai/door/SC-Door-Entce03.png",
+"w": 384,
+"h": 256,
+"cols": 12,
+"rows": 8
+},
+"SC-Door-Entce04.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Characters/SC-Door-Entce04.png",
+"w": 384,
+"h": 256,
+"cols": 12,
+"rows": 8
+},
+"SC-Door-Entce05.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Characters/SC-Door-Entce05.png",
+"w": 384,
+"h": 256,
+"cols": 12,
+"rows": 8
+},
+"SC-Door-Ev01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Characters/SC-Door-Ev01.png",
+"w": 384,
+"h": 256,
+"cols": 12,
+"rows": 8
+},
+"SC-Door-Ev02.png": {
+"path": "by-source/sozai/door/SC-Door-Ev02.png",
+"w": 384,
+"h": 256,
+"cols": 12,
+"rows": 8
+},
+"SC-Door-Evs01.png": {
+"path": "by-source/sozai/door/SC-Door-Evs01.png",
+"w": 256,
+"h": 128,
+"cols": 8,
+"rows": 4
+},
+"SC-Door-JP01.png": {
+"path": "by-source/sozai/door/SC-Door-JP01.png",
+"w": 384,
+"h": 256,
+"cols": 12,
+"rows": 8
+},
+"SC-Door-JP02.png": {
+"path": "by-source/sozai/door/SC-Door-JP02.png",
+"w": 384,
+"h": 256,
+"cols": 12,
+"rows": 8
+},
+"SC-Door-Metal01.png": {
+"path": "by-source/sozai/door/SC-Door-Metal01.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"SC-Door-Metal02.png": {
+"path": "by-source/sozai/door/SC-Door-Metal02.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"SC-Door-Metal03.png": {
+"path": "by-source/sozai/door/SC-Door-Metal03.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"SC-Door-Pri01.png": {
+"path": "by-source/sozai/door/SC-Door-Pri01.png",
+"w": 384,
+"h": 256,
+"cols": 12,
+"rows": 8
+},
+"SC-Door-Ruins01.png": {
+"path": "by-source/sozai/door/SC-Door-Ruins01.png",
+"w": 384,
+"h": 384,
+"cols": 12,
+"rows": 12
+},
+"SC-Door-Schl01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Characters/SC-Door-Schl01.png",
+"w": 384,
+"h": 256,
+"cols": 12,
+"rows": 8
+},
+"SC-Door-Schl02.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Characters/SC-Door-Schl02.png",
+"w": 384,
+"h": 256,
+"cols": 12,
+"rows": 8
+},
+"SC-Door-SchlG01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Characters/SC-Door-SchlG01.png",
+"w": 384,
+"h": 256,
+"cols": 12,
+"rows": 8
+},
+"SC-Door-SchlW01.png": {
+"path": "by-source/sozai/door/SC-Door-SchlW01.png",
+"w": 384,
+"h": 256,
+"cols": 12,
+"rows": 8
+},
+"SC-Door-SchlW02.png": {
+"path": "by-source/sozai/door/SC-Door-SchlW02.png",
+"w": 384,
+"h": 256,
+"cols": 12,
+"rows": 8
+},
+"SC-Door-Tolt01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Characters/SC-Door-Tolt01.png",
+"w": 128,
+"h": 384,
+"cols": 4,
+"rows": 12
+},
+"SC-Door-Tolt02.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Characters/SC-Door-Tolt02.png",
+"w": 128,
+"h": 384,
+"cols": 4,
+"rows": 12
+},
+"SC-Door-U01.png": {
+"path": "by-source/sozai/door/SC-Door-U01.png",
+"w": 384,
+"h": 256,
+"cols": 12,
+"rows": 8
+},
+"SC-Door-WF01.png": {
+"path": "by-source/sozai/door/SC-Door-WF01.png",
+"w": 384,
+"h": 256,
+"cols": 12,
+"rows": 8
+},
+"SC-Door-WF02.png": {
+"path": "by-source/sozai/door/SC-Door-WF02.png",
+"w": 512,
+"h": 256,
+"cols": 16,
+"rows": 8
+},
+"SC-Door-WS01.png": {
+"path": "by-source/sozai/door/SC-Door-WS01.png",
+"w": 384,
+"h": 256,
+"cols": 12,
+"rows": 8
+},
+"SC-Door-WS02.png": {
+"path": "by-source/sozai/door/SC-Door-WS02.png",
+"w": 384,
+"h": 256,
+"cols": 12,
+"rows": 8
+},
+"SC-Door-WS03.png": {
+"path": "by-source/sozai/door/SC-Door-WS03.png",
+"w": 512,
+"h": 256,
+"cols": 16,
+"rows": 8
+},
+"SC-Door01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Characters/SC-Door01.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"SC-Door02.png": {
+"path": "by-source/sozai/door/SC-Door02.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"SC-Door03.png": {
+"path": "by-source/sozai/door/SC-Door03.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"SC-Door04.png": {
+"path": "by-source/sozai/door/SC-Door04.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"SC-Door05.png": {
+"path": "by-source/sozai/door/SC-Door05.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"SC-Door06.png": {
+"path": "by-source/sozai/door/SC-Door06.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"SC-Door07.png": {
+"path": "by-source/sozai/door/SC-Door07.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"SC-Door08.png": {
+"path": "by-source/sozai/door/SC-Door08.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"SC-Door09.png": {
+"path": "by-source/sozai/door/SC-Door09.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"SC-DoorI01.png": {
+"path": "by-source/sozai/door/SC-DoorI01.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"SC-F-Cninese01.png": {
+"path": "by-source/sozai/food/SC-F-Cninese01.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-F-Cninese02.png": {
+"path": "by-source/sozai/food/SC-F-Cninese02.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-F-IstNudle01.png": {
+"path": "by-source/sozai/food/SC-F-IstNudle01.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-F-Juice01.png": {
+"path": "by-source/sozai/food/SC-F-Juice01.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-F-Obento01.png": {
+"path": "by-source/sozai/food/SC-F-Obento01.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-F-Party01.png": {
+"path": "by-source/sozai/food/SC-F-Party01.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-F-Party02.png": {
+"path": "by-source/sozai/food/SC-F-Party02.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-F-Vegetable01.png": {
+"path": "by-source/sozai/food/SC-F-Vegetable01.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-Labo01.png": {
+"path": "by-source/sozai/chara/SC-Labo01.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-Labo02.png": {
+"path": "by-source/sozai/chara/SC-Labo02.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-Labo03.png": {
+"path": "by-source/sozai/chara/SC-Labo03.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-Lama01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Characters/SC-Lama01.png",
+"w": 192,
+"h": 256,
+"cols": 6,
+"rows": 8
+},
+"SC-Lamp01.png": {
+"path": "by-source/sozai/chara/SC-Lamp01.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-Mushroom01.png": {
+"path": "by-source/sozai/chara/SC-Mushroom01.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-Nobori01.png": {
+"path": "by-source/sozai/chara/SC-Nobori01.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"SC-Nobori02.png": {
+"path": "by-source/sozai/chara/SC-Nobori02.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"SC-Nobori03.png": {
+"path": "by-source/sozai/chara/SC-Nobori03.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"SC-Noren01.png": {
+"path": "by-source/sozai/chara/SC-Noren01.png",
+"w": 384,
+"h": 128,
+"cols": 12,
+"rows": 4
+},
+"SC-Noren02.png": {
+"path": "by-source/sozai/chara/SC-Noren02.png",
+"w": 384,
+"h": 128,
+"cols": 12,
+"rows": 4
+},
+"SC-Owl-Mail.png": {
+"path": "by-source/sozai/chara/SC-Owl-Mail.png",
+"w": 256,
+"h": 192,
+"cols": 8,
+"rows": 6
+},
+"SC-Owl01.png": {
+"path": "by-source/sozai/chara/SC-Owl01.png",
+"w": 256,
+"h": 192,
+"cols": 8,
+"rows": 6
+},
+"SC-Owl02.png": {
+"path": "by-source/sozai/chara/SC-Owl02.png",
+"w": 256,
+"h": 256,
+"cols": 8,
+"rows": 8
+},
+"SC-Owl03.png": {
+"path": "by-source/sozai/chara/SC-Owl03.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-Pictures01.png": {
+"path": "by-source/sozai/chara/SC-Pictures01.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-Pointer01.png": {
+"path": "by-source/sozai/chara/SC-Pointer01.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-Polesign.png": {
+"path": "by-source/sozai/chara/SC-Polesign.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"SC-Santa01.png": {
+"path": "by-source/sozai/chara/SC-Santa01.png",
+"w": 128,
+"h": 192,
+"cols": 4,
+"rows": 6
+},
+"SC-Santa02.png": {
+"path": "by-source/sozai/chara/SC-Santa02.png",
+"w": 128,
+"h": 192,
+"cols": 4,
+"rows": 6
+},
+"SC-SantaC01.png": {
+"path": "by-source/sozai/chara/SC-SantaC01.png",
+"w": 128,
+"h": 224,
+"cols": 4,
+"rows": 7
+},
+"SC-SantaC02.png": {
+"path": "by-source/sozai/chara/SC-SantaC02.png",
+"w": 128,
+"h": 224,
+"cols": 4,
+"rows": 7
+},
+"SC-SantaF01.png": {
+"path": "by-source/sozai/chara/SC-SantaF01.png",
+"w": 128,
+"h": 224,
+"cols": 4,
+"rows": 7
+},
+"SC-SantaF02.png": {
+"path": "by-source/sozai/chara/SC-SantaF02.png",
+"w": 128,
+"h": 224,
+"cols": 4,
+"rows": 7
+},
+"SC-Set-Schl01.png": {
+"path": "by-source/sozai/chara/SC-Set-Schl01.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-Set-Schl02.png": {
+"path": "by-source/sozai/chara/SC-Set-Schl02.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"SC-Skeleton01.png": {
+"path": "by-source/sozai/chara/SC-Skeleton01.png",
+"w": 256,
+"h": 384,
+"cols": 8,
+"rows": 12
+},
+"SC-Stone01.png": {
+"path": "by-source/sozai/chara/SC-Stone01.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-Turtle01.png": {
+"path": "by-source/sozai/chara/SC-Turtle01.png",
+"w": 208,
+"h": 128,
+"cols": 6,
+"rows": 4
+},
+"SC-VdgMacine01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Characters/SC-VdgMacine01.png",
+"w": 128,
+"h": 384,
+"cols": 4,
+"rows": 12
+},
+"SC-WallLion01.png": {
+"path": "by-source/sozai/chara/SC-WallLion01.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-WallLion02.png": {
+"path": "by-source/sozai/chara/SC-WallLion02.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-Water01.png": {
+"path": "by-source/sozai/chara/SC-Water01.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"SC-Water02.png": {
+"path": "by-source/sozai/chara/SC-Water02.png",
+"w": 384,
+"h": 640,
+"cols": 12,
+"rows": 20
+},
+"SI-Ffood01.png": {
+"path": "by-source/sozai/icon/SI-Ffood01.png",
+"w": 72,
+"h": 48,
+"cols": 2,
+"rows": 1
+},
+"SI-Unko01.png": {
+"path": "by-source/sozai/icon/SI-Unko01.png",
+"w": 96,
+"h": 48,
+"cols": 3,
+"rows": 1
+},
+"SPT-Gym01.png": {
+"path": "by-source/sozai/parts/SPT-Gym01.png",
+"w": 64,
+"h": 64,
+"cols": 2,
+"rows": 2
+},
+"SPT-Signal01.png": {
+"path": "by-source/sozai/parts/SPT-Signal01.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"SPT-WSchool01.png": {
+"path": "by-source/sozai/parts/SPT-WSchool01.png",
+"w": 256,
+"h": 128,
+"cols": 8,
+"rows": 4
+},
+"SPT-kitchen01.png": {
+"path": "by-source/sozai/parts/SPT-kitchen01.png",
+"w": 192,
+"h": 256,
+"cols": 6,
+"rows": 8
+},
+"ST-Bakery-I01.png": {
+"path": "ST-Bakery-I01.png",
+"w": 256,
+"h": 704,
+"cols": 8,
+"rows": 22
+},
+"ST-Bath-I01.png": {
+"path": "ST-Bath-I01.png",
+"w": 256,
+"h": 768,
+"cols": 8,
+"rows": 24
+},
+"ST-Convi-E01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Tilesets/ST-Convi-E01.png",
+"w": 256,
+"h": 1728,
+"cols": 8,
+"rows": 54
+},
+"ST-Convi-I01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Tilesets/ST-Convi-I01.png",
+"w": 256,
+"h": 1280,
+"cols": 8,
+"rows": 40
+},
+"ST-Fdshop-I01.png": {
+"path": "ST-Fdshop-I01.png",
+"w": 256,
+"h": 1440,
+"cols": 8,
+"rows": 45
+},
+"ST-Geru-E01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Tilesets/ST-Geru-E01.png",
+"w": 256,
+"h": 608,
+"cols": 8,
+"rows": 19
+},
+"ST-Geru-I01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Tilesets/ST-Geru-I01.png",
+"w": 256,
+"h": 992,
+"cols": 8,
+"rows": 31
+},
+"ST-Hospital-I01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Tilesets/ST-Hospital-I01.png",
+"w": 256,
+"h": 1856,
+"cols": 8,
+"rows": 58
+},
+"ST-Icecream-I01.png": {
+"path": "ST-Icecream-I01.png",
+"w": 256,
+"h": 640,
+"cols": 8,
+"rows": 20
+},
+"ST-Izakaya-I01.png": {
+"path": "ST-Izakaya-I01.png",
+"w": 256,
+"h": 1600,
+"cols": 8,
+"rows": 50
+},
+"ST-Libry-I01.png": {
+"path": "ST-Libry-I01.png",
+"w": 256,
+"h": 1600,
+"cols": 8,
+"rows": 50
+},
+"ST-MsionB-E01.png": {
+"path": "ST-MsionB-E01.png",
+"w": 256,
+"h": 1632,
+"cols": 8,
+"rows": 51
+},
+"ST-MsionB-I01.png": {
+"path": "ST-MsionB-I01.png",
+"w": 256,
+"h": 1760,
+"cols": 8,
+"rows": 55
+},
+"ST-MsionP-E01.png": {
+"path": "ST-MsionP-E01.png",
+"w": 256,
+"h": 1632,
+"cols": 8,
+"rows": 51
+},
+"ST-MsionP-I01.png": {
+"path": "ST-MsionP-I01.png",
+"w": 256,
+"h": 1760,
+"cols": 8,
+"rows": 55
+},
+"ST-MsionR-I01.png": {
+"path": "ST-MsionR-I01.png",
+"w": 256,
+"h": 1760,
+"cols": 8,
+"rows": 55
+},
+"ST-MsionW-I01.png": {
+"path": "ST-MsionW-I01.png",
+"w": 256,
+"h": 1760,
+"cols": 8,
+"rows": 55
+},
+"ST-MsionY-E01.png": {
+"path": "ST-MsionY-E01.png",
+"w": 256,
+"h": 1632,
+"cols": 8,
+"rows": 51
+},
+"ST-MsionY-I01.png": {
+"path": "ST-MsionY-I01.png",
+"w": 256,
+"h": 1760,
+"cols": 8,
+"rows": 55
+},
+"ST-Office-I01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Tilesets/ST-Office-I01.png",
+"w": 256,
+"h": 1856,
+"cols": 8,
+"rows": 58
+},
+"ST-Outside-Test01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Tilesets/ST-Outside-Test01.png",
+"w": 256,
+"h": 1728,
+"cols": 8,
+"rows": 54
+},
+"ST-Park-E01.png": {
+"path": "ST-Park-E01.png",
+"w": 256,
+"h": 1600,
+"cols": 8,
+"rows": 50
+},
+"ST-RTown-E01.png": {
+"path": "ST-RTown-E01.png",
+"w": 256,
+"h": 1600,
+"cols": 8,
+"rows": 50
+},
+"ST-Room-I01.png": {
+"path": "ST-Room-I01.png",
+"w": 256,
+"h": 1120,
+"cols": 8,
+"rows": 35
+},
+"ST-Room-I02.png": {
+"path": "ST-Room-I02.png",
+"w": 256,
+"h": 1120,
+"cols": 8,
+"rows": 35
+},
+"ST-Schl-E01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Tilesets/ST-Schl-E01.png",
+"w": 256,
+"h": 1824,
+"cols": 8,
+"rows": 57
+},
+"ST-Schl-Gym.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Tilesets/ST-Schl-Gym.png",
+"w": 256,
+"h": 1600,
+"cols": 8,
+"rows": 50
+},
+"ST-Schl-I01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Tilesets/ST-Schl-I01.png",
+"w": 256,
+"h": 1600,
+"cols": 8,
+"rows": 50
+},
+"ST-Schl-I02.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Tilesets/ST-Schl-I02.png",
+"w": 256,
+"h": 1600,
+"cols": 8,
+"rows": 50
+},
+"ST-Schl-WE01.png": {
+"path": "ST-Schl-WE01.png",
+"w": 256,
+"h": 1600,
+"cols": 8,
+"rows": 50
+},
+"ST-Schl-WI01.png": {
+"path": "ST-Schl-WI01.png",
+"w": 256,
+"h": 1600,
+"cols": 8,
+"rows": 50
+},
+"ST-Schl-WI02.png": {
+"path": "ST-Schl-WI02.png",
+"w": 256,
+"h": 1600,
+"cols": 8,
+"rows": 50
+},
+"ST-Sento-E01.png": {
+"path": "ST-Sento-E01.png",
+"w": 256,
+"h": 1600,
+"cols": 8,
+"rows": 50
+},
+"ST-Sento-I02.png": {
+"path": "ST-Sento-I02.png",
+"w": 256,
+"h": 1440,
+"cols": 8,
+"rows": 45
+},
+"ST-Sewer-01.png": {
+"path": "ST-Sewer-01.png",
+"w": 256,
+"h": 1504,
+"cols": 8,
+"rows": 47
+},
+"ST-Toilet-I01.png": {
+"path": "sample-game-images/sample-map-xp03/sample-map-xp03/Graphics/Tilesets/ST-Toilet-I01.png",
+"w": 256,
+"h": 1376,
+"cols": 8,
+"rows": 43
+},
+"ST-Town-E01.png": {
+"path": "ST-Town-E01.png",
+"w": 256,
+"h": 1600,
+"cols": 8,
+"rows": 50
+},
+"ST-Town-I01.png": {
+"path": "ST-Town-I01.png",
+"w": 256,
+"h": 1600,
+"cols": 8,
+"rows": 50
+},
+"ST-Washitu-I01.png": {
+"path": "ST-Washitu-I01.png",
+"w": 256,
+"h": 1600,
+"cols": 8,
+"rows": 50
+},
+"Showcase01.png": {
+"path": "by-source/sozai/chips/Showcase01.png",
+"w": 160,
+"h": 208,
+"cols": 5,
+"rows": 6
+},
+"Skull.png": {
+"path": "by-source/sozai/chips/Skull.png",
+"w": 64,
+"h": 64,
+"cols": 2,
+"rows": 2
+},
+"Statue02.png": {
+"path": "by-source/sozai/chips/Statue02.png",
+"w": 96,
+"h": 96,
+"cols": 3,
+"rows": 3
+},
+"Statue02MV.png": {
+"path": "by-source/sozai/chips/Statue02MV.png",
+"w": 144,
+"h": 96,
+"cols": 4,
+"rows": 3
+},
+"UFO-Light01.png": {
+"path": "by-source/sozai/chips/UFO-Light01.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"UFO01.png": {
+"path": "by-source/sozai/chips/UFO01.png",
+"w": 224,
+"h": 160,
+"cols": 7,
+"rows": 5
+},
+"Vermeer.png": {
+"path": "by-source/sozai/chips/Vermeer.png",
+"w": 64,
+"h": 64,
+"cols": 2,
+"rows": 2
+},
+"WSA-GroundG01.png": {
+"path": "archive-images/autotile-old/autotile/autotile2/WSA-GroundG01.png",
+"w": 32,
+"h": 160,
+"cols": 1,
+"rows": 5
+},
+"WSA-GroundG02.png": {
+"path": "archive-images/autotile-old/autotile/autotile2/WSA-GroundG02.png",
+"w": 32,
+"h": 160,
+"cols": 1,
+"rows": 5
+},
+"WSA-GroundG03.png": {
+"path": "archive-images/autotile-old/autotile/autotile2/WSA-GroundG03.png",
+"w": 32,
+"h": 160,
+"cols": 1,
+"rows": 5
+},
+"WSA-GroundG04.png": {
+"path": "archive-images/autotile-old/autotile/autotile2/WSA-GroundG04.png",
+"w": 32,
+"h": 160,
+"cols": 1,
+"rows": 5
+},
+"WSA-GroundG05.png": {
+"path": "archive-images/autotile-old/autotile/autotile2/WSA-GroundG05.png",
+"w": 32,
+"h": 160,
+"cols": 1,
+"rows": 5
+},
+"Wa-Futon01.png": {
+"path": "by-source/vx/sozai/chips/Wa-Futon01.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"Wa-Kakejiku01.png": {
+"path": "by-source/vx/sozai/chips/Wa-Kakejiku01.png",
+"w": 160,
+"h": 64,
+"cols": 5,
+"rows": 2
+},
+"Wa-Kakejiku02.png": {
+"path": "by-source/vx/sozai/chips/Wa-Kakejiku02.png",
+"w": 160,
+"h": 96,
+"cols": 5,
+"rows": 3
+},
+"Wa-KakejikuBase01.png": {
+"path": "by-source/vx/sozai/chips/Wa-KakejikuBase01.png",
+"w": 160,
+"h": 128,
+"cols": 5,
+"rows": 4
+},
+"Wa-Season01.png": {
+"path": "by-source/vx/sozai/Wa-Season01.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"Wa-Season04.png": {
+"path": "by-source/vx/sozai/chips/Wa-Season04.png",
+"w": 192,
+"h": 256,
+"cols": 6,
+"rows": 8
+},
+"Wa-Tokonoma01.png": {
+"path": "by-source/vx/sozai/chips/Wa-Tokonoma01.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"Wa-Tsubo01.png": {
+"path": "by-source/vx/sozai/chips/Wa-Tsubo01.png",
+"w": 256,
+"h": 128,
+"cols": 8,
+"rows": 4
+},
+"Wa-Yoroi01.png": {
+"path": "by-source/sozai/chips/Wa-Yoroi01.png",
+"w": 128,
+"h": 64,
+"cols": 4,
+"rows": 2
+},
+"Wall-MV01.png": {
+"path": "by-source/vx/sozai/Wall-MV01.png",
+"w": 192,
+"h": 240,
+"cols": 6,
+"rows": 7
+},
+"Wall01.png": {
+"path": "by-source/vx/sozai/Wall01.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"WorldMap-A1.png": {
+"path": "by-source/vx/sozai/tilesets/WorldMap-A1.png",
+"w": 512,
+"h": 384,
+"cols": 16,
+"rows": 12
+},
+"WorldMap-A102.png": {
+"path": "by-source/vx/sozai/tilesets/WorldMap-A102.png",
+"w": 512,
+"h": 384,
+"cols": 16,
+"rows": 12
+},
+"WorldMap-A2.png": {
+"path": "by-source/vx/sozai/tilesets/WorldMap-A2.png",
+"w": 512,
+"h": 384,
+"cols": 16,
+"rows": 12
+},
+"WorldMap-A202.png": {
+"path": "by-source/vx/sozai/tilesets/WorldMap-A202.png",
+"w": 512,
+"h": 384,
+"cols": 16,
+"rows": 12
+},
+"WorldMap-B.png": {
+"path": "by-source/vx/sozai/tilesets/WorldMap-B.png",
+"w": 512,
+"h": 512,
+"cols": 16,
+"rows": 16
+},
+"WorldMap-C.png": {
+"path": "by-source/vx/sozai/tilesets/WorldMap-C.png",
+"w": 512,
+"h": 512,
+"cols": 16,
+"rows": 16
+},
+"WorldMap-D.png": {
+"path": "by-source/vx/sozai/tilesets/WorldMap-D.png",
+"w": 512,
+"h": 512,
+"cols": 16,
+"rows": 16
+},
+"WorldMapBridge.png": {
+"path": "by-source/vx/sozai/mod_outside1/WorldMapBridge.png",
+"w": 160,
+"h": 128,
+"cols": 5,
+"rows": 4
+},
+"WorldMapRoad01.png": {
+"path": "by-source/vx/sozai/mod_outside1/WorldMapRoad01.png",
+"w": 96,
+"h": 160,
+"cols": 3,
+"rows": 5
+},
+"ajisai.png": {
+"path": "by-source/sozai/chips/ajisai.png",
+"w": 128,
+"h": 144,
+"cols": 4,
+"rows": 4
+},
+"antiqueitem.png": {
+"path": "by-source/sozai/chips/antiqueitem.png",
+"w": 128,
+"h": 96,
+"cols": 4,
+"rows": 3
+},
+"bear.png": {
+"path": "by-source/sozai/chips/bear.png",
+"w": 96,
+"h": 96,
+"cols": 3,
+"rows": 3
+},
+"bicycle01.png": {
+"path": "by-source/sozai/chips/bicycle01.png",
+"w": 160,
+"h": 192,
+"cols": 5,
+"rows": 6
+},
+"bicycle02.png": {
+"path": "by-source/sozai/chips/bicycle02.png",
+"w": 128,
+"h": 192,
+"cols": 4,
+"rows": 6
+},
+"billiard1.png": {
+"path": "by-source/sozai/chips/billiard1.png",
+"w": 256,
+"h": 160,
+"cols": 8,
+"rows": 5
+},
+"botan.png": {
+"path": "by-source/sozai/chips/botan.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"busstop.png": {
+"path": "by-source/sozai/chips/busstop.png",
+"w": 128,
+"h": 96,
+"cols": 4,
+"rows": 3
+},
+"byobu.png": {
+"path": "by-source/sozai/chips/byobu.png",
+"w": 96,
+"h": 192,
+"cols": 3,
+"rows": 6
+},
+"car.png": {
+"path": "by-source/sozai/chips/car.png",
+"w": 352,
+"h": 192,
+"cols": 11,
+"rows": 6
+},
+"chair.png": {
+"path": "by-source/sozai/chips/chair.png",
+"w": 64,
+"h": 64,
+"cols": 2,
+"rows": 2
+},
+"christmasdeco.png": {
+"path": "by-source/sozai/chips/christmasdeco.png",
+"w": 96,
+"h": 96,
+"cols": 3,
+"rows": 3
+},
+"danbo-ru.png": {
+"path": "by-source/vx/sozai/chips/danbo-ru.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"demise01.png": {
+"path": "by-source/sozai/chips/demise01.png",
+"w": 192,
+"h": 96,
+"cols": 6,
+"rows": 3
+},
+"demise02.png": {
+"path": "by-source/sozai/chips/demise02.png",
+"w": 192,
+"h": 96,
+"cols": 6,
+"rows": 3
+},
+"doll.png": {
+"path": "by-source/sozai/chips/doll.png",
+"w": 160,
+"h": 64,
+"cols": 5,
+"rows": 2
+},
+"ehomaki.png": {
+"path": "by-source/sozai/chips/ehomaki.png",
+"w": 96,
+"h": 64,
+"cols": 3,
+"rows": 2
+},
+"flag.png": {
+"path": "by-source/sozai/chips/flag.png",
+"w": 96,
+"h": 64,
+"cols": 3,
+"rows": 2
+},
+"gomi.png": {
+"path": "by-source/sozai/chips/gomi.png",
+"w": 64,
+"h": 96,
+"cols": 2,
+"rows": 3
+},
+"gpiano.png": {
+"path": "by-source/sozai/chips/gpiano.png",
+"w": 192,
+"h": 128,
+"cols": 6,
+"rows": 4
+},
+"gtaible.png": {
+"path": "by-source/sozai/chips/gtaible.png",
+"w": 160,
+"h": 96,
+"cols": 5,
+"rows": 3
+},
+"guardrail.png": {
+"path": "by-source/sozai/chips/guardrail.png",
+"w": 256,
+"h": 288,
+"cols": 8,
+"rows": 9
+},
+"hakusei.png": {
+"path": "by-source/sozai/chips/hakusei.png",
+"w": 192,
+"h": 96,
+"cols": 6,
+"rows": 3
+},
+"hanami.png": {
+"path": "by-source/sozai/chips/hanami.png",
+"w": 192,
+"h": 224,
+"cols": 6,
+"rows": 7
+},
+"hayabusa1300.png": {
+"path": "by-source/sozai/chips/hayabusa1300.png",
+"w": 192,
+"h": 160,
+"cols": 6,
+"rows": 5
+},
+"himawari.png": {
+"path": "by-source/sozai/chips/himawari.png",
+"w": 96,
+"h": 192,
+"cols": 3,
+"rows": 6
+},
+"hina01.png": {
+"path": "by-source/sozai/chips/hina01.png",
+"w": 192,
+"h": 256,
+"cols": 6,
+"rows": 8
+},
+"hina02.png": {
+"path": "by-source/sozai/chips/hina02.png",
+"w": 192,
+"h": 192,
+"cols": 6,
+"rows": 6
+},
+"hinanset01.png": {
+"path": "by-source/sozai/chips/hinanset01.png",
+"w": 128,
+"h": 160,
+"cols": 4,
+"rows": 5
+},
+"hinanset02.png": {
+"path": "by-source/sozai/chips/hinanset02.png",
+"w": 128,
+"h": 160,
+"cols": 4,
+"rows": 5
+},
+"horrorbear.png": {
+"path": "by-source/sozai/chips/horrorbear.png",
+"w": 64,
+"h": 64,
+"cols": 2,
+"rows": 2
+},
+"icho2.png": {
+"path": "by-source/sozai/chips/icho2.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"jizo.png": {
+"path": "by-source/sozai/chips/jizo.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"kakigooriya.png": {
+"path": "by-source/sozai/chips/kakigooriya.png",
+"w": 96,
+"h": 160,
+"cols": 3,
+"rows": 5
+},
+"kane.png": {
+"path": "by-source/sozai/chips/kane.png",
+"w": 64,
+"h": 64,
+"cols": 2,
+"rows": 2
+},
+"kasatate.png": {
+"path": "by-source/sozai/chips/kasatate.png",
+"w": 128,
+"h": 96,
+"cols": 4,
+"rows": 3
+},
+"kenbikyou.png": {
+"path": "by-source/sozai/chips/kenbikyou.png",
+"w": 64,
+"h": 32,
+"cols": 2,
+"rows": 1
+},
+"kimono.png": {
+"path": "by-source/sozai/chips/kimono.png",
+"w": 64,
+"h": 64,
+"cols": 2,
+"rows": 2
+},
+"kingyocho.png": {
+"path": "by-source/sozai/chips/kingyocho.png",
+"w": 32,
+"h": 32,
+"cols": 1,
+"rows": 1
+},
+"kodomonohi.png": {
+"path": "by-source/sozai/chips/kodomonohi.png",
+"w": 64,
+"h": 64,
+"cols": 2,
+"rows": 2
+},
+"koji1.png": {
+"path": "by-source/sozai/chips/koji1.png",
+"w": 288,
+"h": 160,
+"cols": 9,
+"rows": 5
+},
+"koji2.png": {
+"path": "by-source/sozai/chips/koji2.png",
+"w": 288,
+"h": 160,
+"cols": 9,
+"rows": 5
+},
+"kuri.png": {
+"path": "by-source/sozai/chips/kuri.png",
+"w": 64,
+"h": 64,
+"cols": 2,
+"rows": 2
+},
+"manekineko2.png": {
+"path": "by-source/sozai/chips/manekineko2.png",
+"w": 96,
+"h": 96,
+"cols": 3,
+"rows": 3
+},
+"moai.png": {
+"path": "by-source/sozai/chips/moai.png",
+"w": 256,
+"h": 192,
+"cols": 8,
+"rows": 6
+},
+"momiji.png": {
+"path": "by-source/sozai/chips/momiji.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"monnalisa.png": {
+"path": "by-source/sozai/chips/monnalisa.png",
+"w": 128,
+"h": 64,
+"cols": 4,
+"rows": 2
+},
+"nastu1.png": {
+"path": "by-source/sozai/chips/nastu1.png",
+"w": 128,
+"h": 96,
+"cols": 4,
+"rows": 3
+},
+"nidanbed.png": {
+"path": "by-source/vx/sozai/chips/nidanbed.png",
+"w": 128,
+"h": 112,
+"cols": 4,
+"rows": 3
+},
+"nihonningyo01.png": {
+"path": "by-source/vx/sozai/chips/nihonningyo01.png",
+"w": 64,
+"h": 64,
+"cols": 2,
+"rows": 2
+},
+"nomen.png": {
+"path": "by-source/sozai/chips/nomen.png",
+"w": 160,
+"h": 192,
+"cols": 5,
+"rows": 6
+},
+"odalisque.png": {
+"path": "by-source/sozai/chips/odalisque.png",
+"w": 64,
+"h": 64,
+"cols": 2,
+"rows": 2
+},
+"ohaka.png": {
+"path": "by-source/sozai/chips/ohaka.png",
+"w": 128,
+"h": 192,
+"cols": 4,
+"rows": 6
+},
+"oinarisama.png": {
+"path": "by-source/sozai/chips/oinarisama.png",
+"w": 320,
+"h": 320,
+"cols": 10,
+"rows": 10
+},
+"okame.png": {
+"path": "by-source/sozai/chips/okame.png",
+"w": 96,
+"h": 96,
+"cols": 3,
+"rows": 3
+},
+"osechi.png": {
+"path": "by-source/sozai/chips/osechi.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"oshiro.png": {
+"path": "by-source/sozai/chips/oshiro.png",
+"w": 256,
+"h": 128,
+"cols": 8,
+"rows": 4
+},
+"oshiromv.png": {
+"path": "by-source/sozai/chips/oshiromv.png",
+"w": 384,
+"h": 192,
+"cols": 12,
+"rows": 6
+},
+"otukimi.png": {
+"path": "by-source/sozai/chips/otukimi.png",
+"w": 64,
+"h": 96,
+"cols": 2,
+"rows": 3
+},
+"patcar.png": {
+"path": "by-source/sozai/chips/patcar.png",
+"w": 352,
+"h": 192,
+"cols": 11,
+"rows": 6
+},
+"pierrot2.png": {
+"path": "by-source/sozai/chips/pierrot2.png",
+"w": 160,
+"h": 160,
+"cols": 5,
+"rows": 5
+},
+"post.png": {
+"path": "by-source/sozai/chips/post.png",
+"w": 64,
+"h": 64,
+"cols": 2,
+"rows": 2
+},
+"pot.png": {
+"path": "by-source/sozai/chips/pot.png",
+"w": 144,
+"h": 160,
+"cols": 4,
+"rows": 5
+},
+"present.png": {
+"path": "by-source/sozai/chips/present.png",
+"w": 64,
+"h": 64,
+"cols": 2,
+"rows": 2
+},
+"present2.png": {
+"path": "by-source/sozai/chips/present2.png",
+"w": 96,
+"h": 32,
+"cols": 3,
+"rows": 1
+},
+"road.png": {
+"path": "by-source/sozai/chips/road.png",
+"w": 160,
+"h": 192,
+"cols": 5,
+"rows": 6
+},
+"saku.png": {
+"path": "by-source/sozai/chips/saku.png",
+"w": 192,
+"h": 160,
+"cols": 6,
+"rows": 5
+},
+"sakura.png": {
+"path": "by-source/sozai/chips/sakura.png",
+"w": 192,
+"h": 192,
+"cols": 6,
+"rows": 6
+},
+"sakura2.png": {
+"path": "by-source/sozai/chips/sakura2.png",
+"w": 192,
+"h": 192,
+"cols": 6,
+"rows": 6
+},
+"set-mansion-in.png": {
+"path": "archive-images/set-mansion-in/set-mansion-in.png",
+"w": 1440,
+"h": 1760,
+"cols": 45,
+"rows": 55
+},
+"sf.png": {
+"path": "by-source/sozai/chips/sf.png",
+"w": 192,
+"h": 256,
+"cols": 6,
+"rows": 8
+},
+"skull01.png": {
+"path": "by-source/sozai/chips/skull01.png",
+"w": 96,
+"h": 96,
+"cols": 3,
+"rows": 3
+},
+"skull02.png": {
+"path": "by-source/sozai/chips/skull02.png",
+"w": 96,
+"h": 96,
+"cols": 3,
+"rows": 3
+},
+"sofa-skull.png": {
+"path": "by-source/sozai/chips/sofa-skull.png",
+"w": 128,
+"h": 192,
+"cols": 4,
+"rows": 6
+},
+"sofa03.png": {
+"path": "by-source/sozai/chips/sofa03.png",
+"w": 96,
+"h": 160,
+"cols": 3,
+"rows": 5
+},
+"streetlamp.png": {
+"path": "by-source/sozai/chips/streetlamp.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"studio.png": {
+"path": "by-source/sozai/chips/studio.png",
+"w": 192,
+"h": 224,
+"cols": 6,
+"rows": 7
+},
+"suiren.png": {
+"path": "by-source/sozai/chips/suiren.png",
+"w": 64,
+"h": 64,
+"cols": 2,
+"rows": 2
+},
+"susi.png": {
+"path": "by-source/sozai/food/susi.png",
+"w": 128,
+"h": 128,
+"cols": 4,
+"rows": 4
+},
+"sword.png": {
+"path": "by-source/sozai/chips/sword.png",
+"w": 192,
+"h": 96,
+"cols": 6,
+"rows": 3
+},
+"syakanyorai.png": {
+"path": "by-source/sozai/chips/syakanyorai.png",
+"w": 192,
+"h": 128,
+"cols": 6,
+"rows": 4
+},
+"syakanyorai2.png": {
+"path": "by-source/sozai/chips/syakanyorai2.png",
+"w": 192,
+"h": 128,
+"cols": 6,
+"rows": 4
+},
+"syomeisyasinki.png": {
+"path": "by-source/sozai/chips/syomeisyasinki.png",
+"w": 192,
+"h": 80,
+"cols": 6,
+"rows": 2
+},
+"table.png": {
+"path": "by-source/sozai/chips/table.png",
+"w": 128,
+"h": 96,
+"cols": 4,
+"rows": 3
+},
+"takezaku.png": {
+"path": "by-source/sozai/chips/takezaku.png",
+"w": 192,
+"h": 160,
+"cols": 6,
+"rows": 5
+},
+"tana_base01.png": {
+"path": "by-source/vx/sozai/edit/tana_base01.png",
+"w": 128,
+"h": 96,
+"cols": 4,
+"rows": 3
+},
+"tanabata.png": {
+"path": "by-source/sozai/chips/tanabata.png",
+"w": 128,
+"h": 160,
+"cols": 4,
+"rows": 5
+},
+"tigermat2.png": {
+"path": "by-source/sozai/chips/tigermat2.png",
+"w": 96,
+"h": 96,
+"cols": 3,
+"rows": 3
+},
+"torii01.png": {
+"path": "by-source/sozai/chips/torii01.png",
+"w": 192,
+"h": 224,
+"cols": 6,
+"rows": 7
+},
+"torii02.png": {
+"path": "by-source/sozai/chips/torii02.png",
+"w": 288,
+"h": 96,
+"cols": 9,
+"rows": 3
+},
+"toy.png": {
+"path": "by-source/sozai/chips/toy.png",
+"w": 128,
+"h": 96,
+"cols": 4,
+"rows": 3
+},
+"tree01.png": {
+"path": "by-source/sozai/chips/tree01.png",
+"w": 192,
+"h": 256,
+"cols": 6,
+"rows": 8
+},
+"treeMV.png": {
+"path": "by-source/sozai/chips/treeMV.png",
+"w": 96,
+"h": 144,
+"cols": 3,
+"rows": 4
+},
+"tubo.png": {
+"path": "by-source/sozai/chips/tubo.png",
+"w": 64,
+"h": 64,
+"cols": 2,
+"rows": 2
+},
+"ume.png": {
+"path": "by-source/sozai/chips/ume.png",
+"w": 192,
+"h": 192,
+"cols": 6,
+"rows": 6
+},
+"unko.png": {
+"path": "by-source/sozai/chips/unko.png",
+"w": 192,
+"h": 64,
+"cols": 6,
+"rows": 2
+},
+"vege.png": {
+"path": "by-source/sozai/chips/vege.png",
+"w": 128,
+"h": 256,
+"cols": 4,
+"rows": 8
+},
+"whiteboard.png": {
+"path": "by-source/sozai/chips/whiteboard.png",
+"w": 96,
+"h": 64,
+"cols": 3,
+"rows": 2
+},
+"wmap.png": {
+"path": "by-source/sozai/chips/wmap.png",
+"w": 64,
+"h": 64,
+"cols": 2,
+"rows": 2
+},
+"yaranaika.png": {
+"path": "by-source/sozai/chips/yaranaika.png",
+"w": 96,
+"h": 128,
+"cols": 3,
+"rows": 4
+},
+"yukiyanagi.png": {
+"path": "by-source/sozai/chips/yukiyanagi.png",
+"w": 64,
+"h": 64,
+"cols": 2,
+"rows": 2
+},
+"zakuro.png": {
+"path": "by-source/sozai/chips/zakuro.png",
+"w": 32,
+"h": 32,
+"cols": 1,
+"rows": 1
+}
+},
+"recipes": {
+"ST-Bath-I01.png": {
+"bath-toilet-closed": {
+"rect": {
+"x": 0,
+"y": 9,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "양변기 · 뚜껑 닫힘",
+"layer": null,
+"passable": null
+},
+"bath-toilet-open": {
+"rect": {
+"x": 1,
+"y": 9,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "양변기 · 변좌 열림",
+"layer": null,
+"passable": null
+},
+"bath-vanity-ivory": {
+"rect": {
+"x": 4,
+"y": 11,
+"width": 4,
+"height": 3
+},
+"kind": "standing",
+"name": "아이보리 세면대 2개와 중앙 수납장 전체",
+"layer": null,
+"passable": null
+},
+"bath-vanity-blue": {
+"rect": {
+"x": 4,
+"y": 14,
+"width": 4,
+"height": 3
+},
+"kind": "standing",
+"name": "파란 세면대 2개와 중앙 수납장 전체",
+"layer": null,
+"passable": null
+},
+"bath-washer-front": {
+"rect": {
+"x": 0,
+"y": 15,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "세탁기 · 정면",
+"layer": null,
+"passable": null
+},
+"bath-tub-horizontal": {
+"rect": {
+"x": 4,
+"y": 19,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "가로 욕조 · 수면과 전면 포함",
+"layer": null,
+"passable": null
+},
+"bath-tub-vertical": {
+"rect": {
+"x": 0,
+"y": 19,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "세로 욕조 · 전체 외곽 포함",
+"layer": null,
+"passable": null
+},
+"bath-shower": {
+"rect": {
+"x": 6,
+"y": 22,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "벽 샤워기와 혼합 수전 전체",
+"layer": null,
+"passable": null
+},
+"bath-window": {
+"rect": {
+"x": 0,
+"y": 6,
+"width": 1,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "작은 욕실 창",
+"layer": null,
+"passable": null
+},
+"bath-stool": {
+"rect": {
+"x": 1,
+"y": 17,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "녹색 목욕 의자",
+"layer": null,
+"passable": null
+},
+"bath-basin": {
+"rect": {
+"x": 1,
+"y": 18,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "빈 목욕 대야",
+"layer": null,
+"passable": null
+},
+"bath-linen-basket": {
+"rect": {
+"x": 7,
+"y": 17,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "2단 수건 바구니",
+"layer": null,
+"passable": null
+},
+"bath-laundry-basket": {
+"rect": {
+"x": 5,
+"y": 18,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "세탁물 바구니",
+"layer": null,
+"passable": null
+}
+},
+"ST-Schl-Gym.png": {
+"gym-hoop-wall": {
+"rect": {
+"x": 6,
+"y": 38,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "벽걸이 농구 골대 · 백보드와 그물 전체",
+"layer": null,
+"passable": null
+},
+"gym-window": {
+"rect": {
+"x": 4,
+"y": 8,
+"width": 2,
+"height": 3
+},
+"kind": "wall-mounted",
+"name": "2열 체육관 창 · 창 아래 면 포함",
+"layer": null,
+"passable": null
+},
+"gym-ball-cage": {
+"rect": {
+"x": 2,
+"y": 39,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "농구공 보관함",
+"layer": null,
+"passable": null
+},
+"gym-volleyball-cage": {
+"rect": {
+"x": 0,
+"y": 39,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "배구공 보관함",
+"layer": null,
+"passable": null
+},
+"gym-vault-six": {
+"rect": {
+"x": 6,
+"y": 23,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "가로 6단 뜀틀",
+"layer": null,
+"passable": null
+},
+"gym-mat": {
+"rect": {
+"x": 0,
+"y": 36,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "펼친 체조 매트 · 아이보리",
+"layer": null,
+"passable": null
+},
+"gym-folded-mat": {
+"rect": {
+"x": 0,
+"y": 33,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "접은 체조 매트",
+"layer": null,
+"passable": null
+},
+"gym-chair-front": {
+"rect": {
+"x": 6,
+"y": 40,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "접이 의자 · 정면",
+"layer": null,
+"passable": null
+},
+"gym-chair-back": {
+"rect": {
+"x": 4,
+"y": 41,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "접이 의자 · 뒷면",
+"layer": null,
+"passable": null
+},
+"gym-cone": {
+"rect": {
+"x": 5,
+"y": 23,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "훈련용 콘",
+"layer": null,
+"passable": null
+},
+"gym-table-tennis": {
+"rect": {
+"x": 0,
+"y": 47,
+"width": 4,
+"height": 3
+},
+"kind": "standing",
+"name": "탁구대 · 네트와 다리 포함",
+"layer": null,
+"passable": null
+},
+"gym-piano": {
+"rect": {
+"x": 0,
+"y": 43,
+"width": 3,
+"height": 4
+},
+"kind": "standing",
+"name": "그랜드피아노 · 뚜껑과 다리 전체",
+"layer": null,
+"passable": null
+}
+},
+"ST-Libry-I01.png": {
+"bookcase": {
+"rect": {
+"x": 1,
+"y": 40,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "정면 3열 책장",
+"layer": null,
+"passable": null
+},
+"low-books": {
+"rect": {
+"x": 3,
+"y": 48,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "낮은 3열 책장",
+"layer": null,
+"passable": null
+},
+"magazines": {
+"rect": {
+"x": 3,
+"y": 45,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "잡지 진열대",
+"layer": null,
+"passable": null
+},
+"sofa-front": {
+"rect": {
+"x": 2,
+"y": 33,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "가로 소파 · 정면",
+"layer": null,
+"passable": null
+},
+"sofa-back": {
+"rect": {
+"x": 2,
+"y": 36,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "가로 소파 · 뒷면",
+"layer": null,
+"passable": null
+},
+"loan-counter": {
+"rect": {
+"x": 0,
+"y": 22,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "대출·반납 카운터",
+"layer": null,
+"passable": null
+},
+"reading-table": {
+"rect": {
+"x": 5,
+"y": 20,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "목재 독서 테이블",
+"layer": null,
+"passable": null
+},
+"reading-chair-back": {
+"rect": {
+"x": 4,
+"y": 23,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "독서 의자 · 뒷면",
+"layer": null,
+"passable": null
+},
+"librarian-chair": {
+"rect": {
+"x": 3,
+"y": 23,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "사서 의자 · 정면",
+"layer": null,
+"passable": null
+}
+},
+"ST-Office-I01.png": {
+"desk-white": {
+"rect": {
+"x": 1,
+"y": 17,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "흰색 사무용 책상",
+"layer": null,
+"passable": null
+},
+"desk-wood": {
+"rect": {
+"x": 5,
+"y": 17,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "목재 사무용 책상",
+"layer": null,
+"passable": null
+},
+"bookcase": {
+"rect": {
+"x": 3,
+"y": 49,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "자료실 책장",
+"layer": null,
+"passable": null
+},
+"chair-blue": {
+"rect": {
+"x": 3,
+"y": 24,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "파란 사무용 의자 · 정면",
+"layer": null,
+"passable": null
+},
+"desk-executive": {
+"rect": {
+"x": 3,
+"y": 33,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "임원용 목재 책상",
+"layer": null,
+"passable": null
+},
+"chair-blue-back": {
+"rect": {
+"x": 4,
+"y": 24,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "파란 사무용 의자 · 뒷면",
+"layer": null,
+"passable": null
+}
+},
+"ST-Hospital-I01.png": {
+"clinic-window": {
+"rect": {
+"x": 0,
+"y": 8,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "2칸 병원 창문",
+"layer": null,
+"passable": null
+},
+"clinic-reception": {
+"rect": {
+"x": 0,
+"y": 14,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "접수대 3칸",
+"layer": null,
+"passable": null
+},
+"clinic-waiting-bench": {
+"rect": {
+"x": 5,
+"y": 17,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "대기 의자 · 정면 단품",
+"layer": null,
+"passable": null
+},
+"clinic-exam-couch": {
+"rect": {
+"x": 1,
+"y": 39,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "진찰 침상",
+"layer": null,
+"passable": null
+},
+"clinic-monitor": {
+"rect": {
+"x": 0,
+"y": 35,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "진찰 모니터",
+"layer": null,
+"passable": null
+},
+"clinic-medicine": {
+"rect": {
+"x": 0,
+"y": 47,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "약품장 · 상단 유리와 하단 서랍 완전체",
+"layer": null,
+"passable": null
+},
+"clinic-stool": {
+"rect": {
+"x": 4,
+"y": 28,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "진찰 회전 의자",
+"layer": null,
+"passable": null
+},
+"clinic-poster": {
+"rect": {
+"x": 3,
+"y": 28,
+"width": 1,
+"height": 1
+},
+"kind": "wall-mounted",
+"name": "건강 안내판",
+"layer": null,
+"passable": null
+},
+"clinic-clock": {
+"rect": {
+"x": 6,
+"y": 10,
+"width": 1,
+"height": 1
+},
+"kind": "wall-mounted",
+"name": "작은 벽시계",
+"layer": null,
+"passable": null
+},
+"clinic-plant": {
+"rect": {
+"x": 7,
+"y": 5,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "병원 화분",
+"layer": null,
+"passable": null
+},
+"clinic-tv": {
+"rect": {
+"x": 0,
+"y": 16,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "대기실 TV와 받침장",
+"layer": null,
+"passable": null
+},
+"clinic-privacy": {
+"rect": {
+"x": 1,
+"y": 24,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "진찰실 이동 가림막",
+"layer": null,
+"passable": null
+},
+"clinic-privacy-side": {
+"rect": {
+"x": 0,
+"y": 22,
+"width": 1,
+"height": 4
+},
+"kind": "standing",
+"name": "측면 가림막 전체 4칸",
+"layer": null,
+"passable": null
+},
+"clinic-waiting-chair-back": {
+"rect": {
+"x": 6,
+"y": 31,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "대기 의자 · 북향 뒷면",
+"layer": null,
+"passable": null
+}
+},
+"ST-Convi-I01.png": {
+"conveni-rice-meals": {
+"rect": {
+"x": 2,
+"y": 24,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "도시락과 삼각김밥 냉장 진열",
+"layer": null,
+"passable": null
+},
+"conveni-desserts": {
+"rect": {
+"x": 4,
+"y": 24,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "샌드위치와 디저트 냉장 진열",
+"layer": null,
+"passable": null
+},
+"conveni-drinks": {
+"rect": {
+"x": 6,
+"y": 24,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "음료 냉장 진열",
+"layer": null,
+"passable": null
+},
+"conveni-fridge": {
+"rect": {
+"x": 0,
+"y": 24,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "유리문 냉장고",
+"layer": null,
+"passable": null
+},
+"conveni-register": {
+"rect": {
+"x": 0,
+"y": 15,
+"width": 1,
+"height": 2
+},
+"kind": "countertop",
+"name": "계산대 POS",
+"layer": null,
+"passable": null
+},
+"conveni-warm-food": {
+"rect": {
+"x": 4,
+"y": 14,
+"width": 2,
+"height": 2
+},
+"kind": "countertop",
+"name": "따뜻한 음식 진열",
+"layer": null,
+"passable": null
+},
+"conveni-bread": {
+"rect": {
+"x": 6,
+"y": 14,
+"width": 1,
+"height": 2
+},
+"kind": "countertop",
+"name": "빵 보온 진열",
+"layer": null,
+"passable": null
+},
+"conveni-wine": {
+"rect": {
+"x": 4,
+"y": 26,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "와인과 병음료 선반",
+"layer": null,
+"passable": null
+},
+"conveni-dry-goods": {
+"rect": {
+"x": 2,
+"y": 26,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "생활식품 선반",
+"layer": null,
+"passable": null
+},
+"conveni-snacks": {
+"rect": {
+"x": 0,
+"y": 28,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "과자와 가공식품 선반",
+"layer": null,
+"passable": null
+},
+"conveni-cosmetics": {
+"rect": {
+"x": 2,
+"y": 28,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "잡화와 세정용품 선반",
+"layer": null,
+"passable": null
+},
+"conveni-magazines": {
+"rect": {
+"x": 5,
+"y": 33,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "3칸 잡지 진열대",
+"layer": null,
+"passable": null
+},
+"conveni-basket": {
+"rect": {
+"x": 5,
+"y": 18,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "장바구니",
+"layer": null,
+"passable": null
+},
+"conveni-clock": {
+"rect": {
+"x": 7,
+"y": 19,
+"width": 1,
+"height": 1
+},
+"kind": "wall-mounted",
+"name": "편의점 벽시계",
+"layer": null,
+"passable": null
+},
+"conveni-service-counter": {
+"rect": {
+"x": 0,
+"y": 11,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "가로 고객 응대 카운터 완전체",
+"layer": null,
+"passable": null
+},
+"conveni-atm": {
+"rect": {
+"x": 4,
+"y": 19,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "독립형 ATM",
+"layer": null,
+"passable": null
+}
+},
+"ST-Fdshop-I01.png": {
+"diner-menu-burger": {
+"rect": {
+"x": 5,
+"y": 14,
+"width": 1,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "버거 메뉴판",
+"layer": null,
+"passable": null
+},
+"diner-menu-sandwich": {
+"rect": {
+"x": 6,
+"y": 14,
+"width": 1,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "샌드위치 메뉴판",
+"layer": null,
+"passable": null
+},
+"diner-menu-drink": {
+"rect": {
+"x": 7,
+"y": 14,
+"width": 1,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "음료 메뉴판",
+"layer": null,
+"passable": null
+},
+"diner-register": {
+"rect": {
+"x": 3,
+"y": 15,
+"width": 1,
+"height": 2
+},
+"kind": "countertop",
+"name": "계산대 POS",
+"layer": null,
+"passable": null
+},
+"diner-till": {
+"rect": {
+"x": 3,
+"y": 17,
+"width": 1,
+"height": 2
+},
+"kind": "countertop",
+"name": "두 번째 계산대",
+"layer": null,
+"passable": null
+},
+"diner-sink": {
+"rect": {
+"x": 6,
+"y": 42,
+"width": 1,
+"height": 1
+},
+"kind": "countertop",
+"name": "싱크볼 · 조리대 위 소품",
+"layer": null,
+"passable": null
+},
+"diner-table": {
+"rect": {
+"x": 3,
+"y": 22,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "2인용 좁은 식탁",
+"layer": null,
+"passable": null
+},
+"diner-chair-east": {
+"rect": {
+"x": 5,
+"y": 22,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "오른쪽을 향한 의자",
+"layer": null,
+"passable": null
+},
+"diner-chair-west": {
+"rect": {
+"x": 5,
+"y": 23,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "왼쪽을 향한 의자",
+"layer": null,
+"passable": null
+},
+"diner-waste": {
+"rect": {
+"x": 6,
+"y": 22,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "분리수거함 · 큰 갈색/녹색 두 통",
+"layer": null,
+"passable": null
+},
+"diner-plant": {
+"rect": {
+"x": 7,
+"y": 8,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "식당 큰 화분",
+"layer": null,
+"passable": null
+},
+"diner-poster": {
+"rect": {
+"x": 4,
+"y": 27,
+"width": 1,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "버거 포스터",
+"layer": null,
+"passable": null
+},
+"diner-window": {
+"rect": {
+"x": 0,
+"y": 8,
+"width": 3,
+"height": 3
+},
+"kind": "wall-mounted",
+"name": "식당 3칸 창문",
+"layer": null,
+"passable": null
+},
+"diner-counter": {
+"rect": {
+"x": 0,
+"y": 14,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "가로 주문대 · 완전한 3칸 상판과 앞면",
+"layer": null,
+"passable": null
+},
+"diner-oven": {
+"rect": {
+"x": 6,
+"y": 36,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "주방 보온 진열장 · 후드와 하부 포함",
+"layer": null,
+"passable": null
+},
+"diner-kitchen-unit": {
+"rect": {
+"x": 4,
+"y": 39,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "금속 조리대 · 작업면과 하부장 완전체",
+"layer": null,
+"passable": null
+}
+},
+"SC-F-Juice01.png": {
+"paw-food-juice-00": {
+"rect": {
+"x": 0,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "주황 음료 잔",
+"layer": null,
+"passable": null
+},
+"paw-food-juice-01": {
+"rect": {
+"x": 1,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "크림색 음료 잔",
+"layer": null,
+"passable": null
+},
+"paw-food-juice-02": {
+"rect": {
+"x": 2,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "초록 음료 잔",
+"layer": null,
+"passable": null
+},
+"paw-food-juice-03": {
+"rect": {
+"x": 3,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "거품 있는 초록 음료 잔",
+"layer": null,
+"passable": null
+},
+"paw-food-juice-04": {
+"rect": {
+"x": 0,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "갈색 음료 잔",
+"layer": null,
+"passable": null
+},
+"paw-food-juice-05": {
+"rect": {
+"x": 1,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "연파랑 음료 잔",
+"layer": null,
+"passable": null
+},
+"paw-food-juice-06": {
+"rect": {
+"x": 2,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "갈색 음료 잔과 뚜껑",
+"layer": null,
+"passable": null
+},
+"paw-food-juice-07": {
+"rect": {
+"x": 3,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "거품 있는 갈색 음료 잔",
+"layer": null,
+"passable": null
+},
+"paw-food-juice-08": {
+"rect": {
+"x": 0,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "다색 장식 음료",
+"layer": null,
+"passable": null
+},
+"paw-food-juice-09": {
+"rect": {
+"x": 1,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "레몬 장식 음료",
+"layer": null,
+"passable": null
+},
+"paw-food-juice-10": {
+"rect": {
+"x": 2,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "크림색 음료 잔과 뚜껑",
+"layer": null,
+"passable": null
+},
+"paw-food-juice-11": {
+"rect": {
+"x": 3,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "주황 음료 잔과 뚜껑",
+"layer": null,
+"passable": null
+},
+"paw-food-juice-12": {
+"rect": {
+"x": 0,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "빈 짧은 잔",
+"layer": null,
+"passable": null
+},
+"paw-food-juice-13": {
+"rect": {
+"x": 1,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "빈 긴 잔",
+"layer": null,
+"passable": null
+},
+"paw-food-juice-14": {
+"rect": {
+"x": 2,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "빈 긴 잔과 뚜껑",
+"layer": null,
+"passable": null
+},
+"paw-food-juice-15": {
+"rect": {
+"x": 3,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "빈 장식 잔",
+"layer": null,
+"passable": null
+}
+},
+"SC-F-Party01.png": {
+"paw-food-party-meals-00": {
+"rect": {
+"x": 0,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "구운 고기 큰 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-party-meals-01": {
+"rect": {
+"x": 1,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "구운 고기 한 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-party-meals-02": {
+"rect": {
+"x": 2,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "세로 고기 접시 A",
+"layer": null,
+"passable": null
+},
+"paw-food-party-meals-03": {
+"rect": {
+"x": 3,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "세로 고기 접시 B",
+"layer": null,
+"passable": null
+},
+"paw-food-party-meals-04": {
+"rect": {
+"x": 0,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "먹고 남은 큰 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-party-meals-05": {
+"rect": {
+"x": 1,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "곁들임 있는 고기 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-party-meals-06": {
+"rect": {
+"x": 2,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "작은 고기 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-party-meals-07": {
+"rect": {
+"x": 3,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "링 케이크",
+"layer": null,
+"passable": null
+},
+"paw-food-party-meals-08": {
+"rect": {
+"x": 0,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "딸기 장식 케이크",
+"layer": null,
+"passable": null
+},
+"paw-food-party-meals-09": {
+"rect": {
+"x": 1,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "조각 케이크 A",
+"layer": null,
+"passable": null
+},
+"paw-food-party-meals-10": {
+"rect": {
+"x": 2,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "조각 케이크 B",
+"layer": null,
+"passable": null
+},
+"paw-food-party-meals-11": {
+"rect": {
+"x": 3,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "빈 접시와 포크",
+"layer": null,
+"passable": null
+},
+"paw-food-party-meals-12": {
+"rect": {
+"x": 0,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "빵 바구니",
+"layer": null,
+"passable": null
+},
+"paw-food-party-meals-13": {
+"rect": {
+"x": 1,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "빈 바구니",
+"layer": null,
+"passable": null
+},
+"paw-food-party-meals-14": {
+"rect": {
+"x": 2,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "음료 컵과 받침",
+"layer": null,
+"passable": null
+},
+"paw-food-party-meals-15": {
+"rect": {
+"x": 3,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "빈 컵과 받침",
+"layer": null,
+"passable": null
+}
+},
+"SC-F-Party02.png": {
+"paw-food-party-tableware-00": {
+"rect": {
+"x": 0,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "붉은 음료 3잔 쟁반",
+"layer": null,
+"passable": null
+},
+"paw-food-party-tableware-01": {
+"rect": {
+"x": 1,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "빈 3잔 쟁반",
+"layer": null,
+"passable": null
+},
+"paw-food-party-tableware-02": {
+"rect": {
+"x": 2,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "노란 음료 3잔 쟁반",
+"layer": null,
+"passable": null
+},
+"paw-food-party-tableware-03": {
+"rect": {
+"x": 3,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "빈 긴 3잔 쟁반",
+"layer": null,
+"passable": null
+},
+"paw-food-party-tableware-04": {
+"rect": {
+"x": 0,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "갈색 음료 컵",
+"layer": null,
+"passable": null
+},
+"paw-food-party-tableware-05": {
+"rect": {
+"x": 1,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "빈 작은 컵",
+"layer": null,
+"passable": null
+},
+"paw-food-party-tableware-06": {
+"rect": {
+"x": 2,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "병이 든 얼음통",
+"layer": null,
+"passable": null
+},
+"paw-food-party-tableware-07": {
+"rect": {
+"x": 3,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "병 없는 얼음통",
+"layer": null,
+"passable": null
+},
+"paw-food-party-tableware-08": {
+"rect": {
+"x": 0,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "음료와 고기 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-party-tableware-09": {
+"rect": {
+"x": 1,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "음료와 노란 요리 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-party-tableware-10": {
+"rect": {
+"x": 2,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "빈 잔과 빈 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-party-tableware-11": {
+"rect": {
+"x": 3,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "붉은 음료 3잔",
+"layer": null,
+"passable": null
+},
+"paw-food-party-tableware-12": {
+"rect": {
+"x": 0,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "맥주와 고기 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-party-tableware-13": {
+"rect": {
+"x": 1,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "빈 맥주잔과 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-party-tableware-14": {
+"rect": {
+"x": 2,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "엎어진 잔과 흘린 음료",
+"layer": null,
+"passable": null
+},
+"paw-food-party-tableware-15": {
+"rect": {
+"x": 3,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "빈 원형 쟁반",
+"layer": null,
+"passable": null
+}
+},
+"SC-F-Vegetable01.png": {
+"paw-food-ingredients-00": {
+"rect": {
+"x": 0,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "꼬치 2개 묶음",
+"layer": null,
+"passable": null
+},
+"paw-food-ingredients-01": {
+"rect": {
+"x": 1,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "hanging-prop",
+"name": "매달린 고기",
+"layer": null,
+"passable": null
+},
+"paw-food-ingredients-02": {
+"rect": {
+"x": 2,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "hanging-prop",
+"name": "매달린 소시지",
+"layer": null,
+"passable": null
+},
+"paw-food-ingredients-03": {
+"rect": {
+"x": 3,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "달걀 묶음",
+"layer": null,
+"passable": null
+},
+"paw-food-ingredients-04": {
+"rect": {
+"x": 0,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "잎채소",
+"layer": null,
+"passable": null
+},
+"paw-food-ingredients-05": {
+"rect": {
+"x": 1,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "토마토와 가지",
+"layer": null,
+"passable": null
+},
+"paw-food-ingredients-06": {
+"rect": {
+"x": 2,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "감자와 당근",
+"layer": null,
+"passable": null
+},
+"paw-food-ingredients-07": {
+"rect": {
+"x": 3,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "병과 양념 묶음",
+"layer": null,
+"passable": null
+},
+"paw-food-ingredients-08": {
+"rect": {
+"x": 0,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "채소와 당근",
+"layer": null,
+"passable": null
+},
+"paw-food-ingredients-09": {
+"rect": {
+"x": 1,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "감자 묶음",
+"layer": null,
+"passable": null
+},
+"paw-food-ingredients-10": {
+"rect": {
+"x": 2,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "팬과 뒤집개",
+"layer": null,
+"passable": null
+},
+"paw-food-ingredients-11": {
+"rect": {
+"x": 3,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "hanging-prop",
+"name": "매달린 주방 장갑",
+"layer": null,
+"passable": null
+},
+"paw-food-ingredients-12": {
+"rect": {
+"x": 0,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "갑각류 요리 재료",
+"layer": null,
+"passable": null
+},
+"paw-food-ingredients-13": {
+"rect": {
+"x": 1,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "만두 모양 식품 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-ingredients-14": {
+"rect": {
+"x": 2,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "붉은 식품 쟁반",
+"layer": null,
+"passable": null
+},
+"paw-food-ingredients-15": {
+"rect": {
+"x": 3,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "과일 바구니",
+"layer": null,
+"passable": null
+}
+},
+"SC-F-Cninese01.png": {
+"paw-food-chinese-a-00": {
+"rect": {
+"x": 0,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "달걀 국수 A",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-a-01": {
+"rect": {
+"x": 1,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "달걀 국수 B",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-a-02": {
+"rect": {
+"x": 2,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "달걀 국수 C",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-a-03": {
+"rect": {
+"x": 3,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "붉은 국물 그릇",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-a-04": {
+"rect": {
+"x": 0,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "붉은 고명 국수",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-a-05": {
+"rect": {
+"x": 1,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "연한 고명 국수",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-a-06": {
+"rect": {
+"x": 2,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "초록 고명 국수",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-a-07": {
+"rect": {
+"x": 3,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "갈색 국물 그릇",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-a-08": {
+"rect": {
+"x": 0,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "세로 만두와 소스",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-a-09": {
+"rect": {
+"x": 1,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "세로 빈 접시와 소스",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-a-10": {
+"rect": {
+"x": 2,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "볶음밥 모양 요리",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-a-11": {
+"rect": {
+"x": 3,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "먹고 남은 밥 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-a-12": {
+"rect": {
+"x": 0,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "가로 만두와 소스",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-a-13": {
+"rect": {
+"x": 1,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "가로 빈 접시와 소스",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-a-14": {
+"rect": {
+"x": 2,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "고기와 곁들임 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-a-15": {
+"rect": {
+"x": 3,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "먹고 남은 고기 접시",
+"layer": null,
+"passable": null
+}
+},
+"SC-F-Cninese02.png": {
+"paw-food-chinese-b-00": {
+"rect": {
+"x": 0,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "큰 밥그릇",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-b-01": {
+"rect": {
+"x": 1,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "가로 주황 요리",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-b-02": {
+"rect": {
+"x": 2,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "가로 갈색 요리",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-b-03": {
+"rect": {
+"x": 3,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "가로 채소 요리",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-b-04": {
+"rect": {
+"x": 0,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "작은 사각 요리",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-b-05": {
+"rect": {
+"x": 1,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "세로 주황 요리",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-b-06": {
+"rect": {
+"x": 2,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "세로 갈색 요리",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-b-07": {
+"rect": {
+"x": 3,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "세로 채소 요리",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-b-08": {
+"rect": {
+"x": 0,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "비운 큰 그릇",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-b-09": {
+"rect": {
+"x": 1,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "먹고 남은 작은 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-b-10": {
+"rect": {
+"x": 2,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "작은 사각 음식",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-b-11": {
+"rect": {
+"x": 3,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "빈 작은 사각 그릇",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-b-12": {
+"rect": {
+"x": 0,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "먹고 남은 가로 접시 A",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-b-13": {
+"rect": {
+"x": 1,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "먹고 남은 세로 접시 A",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-b-14": {
+"rect": {
+"x": 2,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "먹고 남은 세로 접시 B",
+"layer": null,
+"passable": null
+},
+"paw-food-chinese-b-15": {
+"rect": {
+"x": 3,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "먹고 남은 가로 접시 B",
+"layer": null,
+"passable": null
+}
+},
+"SC-F-IstNudle01.png": {
+"paw-food-cup-noodles-00": {
+"rect": {
+"x": 0,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "빨강 컵라면 닫힘",
+"layer": null,
+"passable": null
+},
+"paw-food-cup-noodles-01": {
+"rect": {
+"x": 1,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "빨강 컵라면 젓가락",
+"layer": null,
+"passable": null
+},
+"paw-food-cup-noodles-02": {
+"rect": {
+"x": 2,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "빨강 컵라면 열림",
+"layer": null,
+"passable": null
+},
+"paw-food-cup-noodles-03": {
+"rect": {
+"x": 3,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "빨강 컵라면 비움",
+"layer": null,
+"passable": null
+},
+"paw-food-cup-noodles-04": {
+"rect": {
+"x": 0,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "파랑 컵라면 닫힘",
+"layer": null,
+"passable": null
+},
+"paw-food-cup-noodles-05": {
+"rect": {
+"x": 1,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "파랑 컵라면 젓가락",
+"layer": null,
+"passable": null
+},
+"paw-food-cup-noodles-06": {
+"rect": {
+"x": 2,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "파랑 컵라면 열림",
+"layer": null,
+"passable": null
+},
+"paw-food-cup-noodles-07": {
+"rect": {
+"x": 3,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "파랑 컵라면 비움",
+"layer": null,
+"passable": null
+},
+"paw-food-cup-noodles-08": {
+"rect": {
+"x": 0,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "노랑 컵라면 닫힘",
+"layer": null,
+"passable": null
+},
+"paw-food-cup-noodles-09": {
+"rect": {
+"x": 1,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "노랑 컵라면 젓가락",
+"layer": null,
+"passable": null
+},
+"paw-food-cup-noodles-10": {
+"rect": {
+"x": 2,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "노랑 컵라면 열림",
+"layer": null,
+"passable": null
+},
+"paw-food-cup-noodles-11": {
+"rect": {
+"x": 3,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "노랑 컵라면 비움",
+"layer": null,
+"passable": null
+},
+"paw-food-cup-noodles-12": {
+"rect": {
+"x": 0,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "초록 용기 덮임",
+"layer": null,
+"passable": null
+},
+"paw-food-cup-noodles-13": {
+"rect": {
+"x": 1,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "초록 용기 젓가락",
+"layer": null,
+"passable": null
+},
+"paw-food-cup-noodles-14": {
+"rect": {
+"x": 2,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "초록 용기 열림",
+"layer": null,
+"passable": null
+},
+"paw-food-cup-noodles-15": {
+"rect": {
+"x": 3,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "초록 용기 식후",
+"layer": null,
+"passable": null
+}
+},
+"SC-F-Obento01.png": {
+"paw-food-bento-00": {
+"rect": {
+"x": 0,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "도시락 포장 A",
+"layer": null,
+"passable": null
+},
+"paw-food-bento-01": {
+"rect": {
+"x": 1,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "도시락 개봉 A",
+"layer": null,
+"passable": null
+},
+"paw-food-bento-02": {
+"rect": {
+"x": 2,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "도시락 포장 B",
+"layer": null,
+"passable": null
+},
+"paw-food-bento-03": {
+"rect": {
+"x": 3,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "도시락 개봉 B",
+"layer": null,
+"passable": null
+},
+"paw-food-bento-04": {
+"rect": {
+"x": 0,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "도시락 포장 C",
+"layer": null,
+"passable": null
+},
+"paw-food-bento-05": {
+"rect": {
+"x": 1,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "도시락 개봉 C",
+"layer": null,
+"passable": null
+},
+"paw-food-bento-06": {
+"rect": {
+"x": 2,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "도시락 포장 D",
+"layer": null,
+"passable": null
+},
+"paw-food-bento-07": {
+"rect": {
+"x": 3,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "도시락 개봉 D",
+"layer": null,
+"passable": null
+},
+"paw-food-bento-08": {
+"rect": {
+"x": 0,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "도시락 포장 E",
+"layer": null,
+"passable": null
+},
+"paw-food-bento-09": {
+"rect": {
+"x": 1,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "도시락 개봉 E",
+"layer": null,
+"passable": null
+},
+"paw-food-bento-10": {
+"rect": {
+"x": 2,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "작은 도시락 포장 A",
+"layer": null,
+"passable": null
+},
+"paw-food-bento-11": {
+"rect": {
+"x": 3,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "작은 도시락 개봉 A",
+"layer": null,
+"passable": null
+},
+"paw-food-bento-12": {
+"rect": {
+"x": 0,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "작은 도시락 포장 B",
+"layer": null,
+"passable": null
+},
+"paw-food-bento-13": {
+"rect": {
+"x": 1,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "작은 도시락 개봉 B",
+"layer": null,
+"passable": null
+},
+"paw-food-bento-14": {
+"rect": {
+"x": 2,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "작은 도시락 식후",
+"layer": null,
+"passable": null
+},
+"paw-food-bento-15": {
+"rect": {
+"x": 3,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "큰 도시락 식후",
+"layer": null,
+"passable": null
+}
+},
+"susi.png": {
+"paw-food-sushi-00": {
+"rect": {
+"x": 0,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "갈색 초밥 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-sushi-01": {
+"rect": {
+"x": 1,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "흰 초밥 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-sushi-02": {
+"rect": {
+"x": 2,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "붉은 초밥 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-sushi-03": {
+"rect": {
+"x": 3,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "줄무늬 초밥 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-sushi-04": {
+"rect": {
+"x": 0,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "달걀 초밥 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-sushi-05": {
+"rect": {
+"x": 1,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "초록 초밥 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-sushi-06": {
+"rect": {
+"x": 2,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "주황 초밥 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-sushi-07": {
+"rect": {
+"x": 3,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "김말이 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-sushi-08": {
+"rect": {
+"x": 0,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "초밥 나무상자와 젓가락",
+"layer": null,
+"passable": null
+},
+"paw-food-sushi-09": {
+"rect": {
+"x": 1,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "초밥 원형 큰 쟁반",
+"layer": null,
+"passable": null
+},
+"paw-food-sushi-10": {
+"rect": {
+"x": 2,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "붉은 초밥 작은 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-sushi-11": {
+"rect": {
+"x": 3,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "갈색 초밥 작은 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-sushi-12": {
+"rect": {
+"x": 0,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "빈 나무상자와 젓가락",
+"layer": null,
+"passable": null
+},
+"paw-food-sushi-13": {
+"rect": {
+"x": 1,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "빈 원형 큰 쟁반",
+"layer": null,
+"passable": null
+},
+"paw-food-sushi-14": {
+"rect": {
+"x": 2,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "빈 검은 작은 접시",
+"layer": null,
+"passable": null
+},
+"paw-food-sushi-15": {
+"rect": {
+"x": 3,
+"y": 3,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "빈 파란 작은 접시",
+"layer": null,
+"passable": null
+}
+},
+"F-Party02.png": {
+"paw-food-legacy-pizza-00": {
+"rect": {
+"x": 0,
+"y": 0,
+"width": 2,
+"height": 2
+},
+"kind": "surface-prop",
+"name": "열린 피자 상자 전체",
+"layer": null,
+"passable": null
+},
+"paw-food-legacy-pizza-01": {
+"rect": {
+"x": 2,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "음료 캔",
+"layer": null,
+"passable": null
+},
+"paw-food-legacy-pizza-02": {
+"rect": {
+"x": 3,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "병과 캔 묶음",
+"layer": null,
+"passable": null
+},
+"paw-food-legacy-pizza-03": {
+"rect": {
+"x": 2,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "피자 한 판",
+"layer": null,
+"passable": null
+},
+"paw-food-legacy-pizza-04": {
+"rect": {
+"x": 3,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "파티 고깔과 장식 묶음",
+"layer": null,
+"passable": null
+},
+"paw-food-legacy-pizza-05": {
+"rect": {
+"x": 0,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "닫힌 피자 상자",
+"layer": null,
+"passable": null
+},
+"paw-food-legacy-pizza-06": {
+"rect": {
+"x": 1,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "조각이 빠진 피자 상자",
+"layer": null,
+"passable": null
+},
+"paw-food-legacy-pizza-07": {
+"rect": {
+"x": 2,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "접시 위 피자 조각 A",
+"layer": null,
+"passable": null
+},
+"paw-food-legacy-pizza-08": {
+"rect": {
+"x": 3,
+"y": 2,
+"width": 1,
+"height": 1
+},
+"kind": "surface-prop",
+"name": "접시 위 피자 조각 B",
+"layer": null,
+"passable": null
+}
+},
+"ST-Town-I01.png": {
+"home-blue-kitchen": {
+"rect": {
+"x": 0,
+"y": 36,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "파란 상부장·싱크대·하부장",
+"layer": null,
+"passable": null
+},
+"home-stove": {
+"rect": {
+"x": 2,
+"y": 38,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "2구 레인지와 하부장",
+"layer": null,
+"passable": null
+},
+"home-window": {
+"rect": {
+"x": 0,
+"y": 8,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "거실 2칸 창",
+"layer": null,
+"passable": null
+},
+"home-clock": {
+"rect": {
+"x": 0,
+"y": 10,
+"width": 1,
+"height": 1
+},
+"kind": "wall-mounted",
+"name": "벽시계",
+"layer": null,
+"passable": null
+},
+"home-tv": {
+"rect": {
+"x": 2,
+"y": 16,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "평면 TV",
+"layer": null,
+"passable": null
+},
+"home-coffee-table": {
+"rect": {
+"x": 2,
+"y": 13,
+"width": 3,
+"height": 1
+},
+"kind": "standing",
+"name": "유리 거실 테이블",
+"layer": null,
+"passable": null
+},
+"home-sofa-back": {
+"rect": {
+"x": 2,
+"y": 14,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "북향 3칸 소파",
+"layer": null,
+"passable": null
+},
+"home-bed": {
+"rect": {
+"x": 3,
+"y": 30,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "싱글 침대 · 머리부터 발치까지",
+"layer": null,
+"passable": null
+},
+"home-wardrobe": {
+"rect": {
+"x": 0,
+"y": 33,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "침실 유리장과 옷장",
+"layer": null,
+"passable": null
+},
+"home-dining-table": {
+"rect": {
+"x": 0,
+"y": 24,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "목재 식탁",
+"layer": null,
+"passable": null
+},
+"home-chair-east": {
+"rect": {
+"x": 6,
+"y": 25,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "식탁 의자 · 오른쪽 방향",
+"layer": null,
+"passable": null
+},
+"home-chair-west": {
+"rect": {
+"x": 5,
+"y": 25,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "식탁 의자 · 왼쪽 방향",
+"layer": null,
+"passable": null
+}
+},
+"ST-Icecream-I01.png": {
+"icecream-showcase": {
+"rect": {
+"x": 5,
+"y": 14,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "3칸 아이스크림 쇼케이스",
+"layer": null,
+"passable": null
+},
+"icecream-window": {
+"rect": {
+"x": 5,
+"y": 4,
+"width": 3,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "3칸 유리창",
+"layer": null,
+"passable": null
+},
+"icecream-menu": {
+"rect": {
+"x": 4,
+"y": 14,
+"width": 1,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "아이스크림 메뉴판",
+"layer": null,
+"passable": null
+},
+"icecream-plant": {
+"rect": {
+"x": 7,
+"y": 9,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "화분",
+"layer": null,
+"passable": null
+},
+"icecream-table-wide": {
+"rect": {
+"x": 0,
+"y": 16,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "3칸 테이블",
+"layer": null,
+"passable": null
+},
+"icecream-table-small": {
+"rect": {
+"x": 3,
+"y": 16,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "작은 테이블",
+"layer": null,
+"passable": null
+},
+"icecream-chair-south": {
+"rect": {
+"x": 3,
+"y": 6,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "의자 · 정면",
+"layer": null,
+"passable": null
+},
+"icecream-chair-north": {
+"rect": {
+"x": 3,
+"y": 7,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "의자 · 뒷면",
+"layer": null,
+"passable": null
+},
+"icecream-chair-east": {
+"rect": {
+"x": 4,
+"y": 6,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "의자 · 오른쪽 방향",
+"layer": null,
+"passable": null
+},
+"icecream-chair-west": {
+"rect": {
+"x": 4,
+"y": 7,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "의자 · 왼쪽 방향",
+"layer": null,
+"passable": null
+}
+},
+"ST-Sento-I02.png": {
+"sento-pool-large": {
+"rect": {
+"x": 0,
+"y": 33,
+"width": 4,
+"height": 5
+},
+"kind": "standing",
+"name": "고정 큰 욕조",
+"layer": null,
+"passable": null
+},
+"sento-pool-small": {
+"rect": {
+"x": 4,
+"y": 33,
+"width": 2,
+"height": 4
+},
+"kind": "standing",
+"name": "고정 작은 욕조",
+"layer": null,
+"passable": null
+},
+"sento-wash-station": {
+"rect": {
+"x": 0,
+"y": 38,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "거울과 3연 수전",
+"layer": null,
+"passable": null
+},
+"sento-wash-kit": {
+"rect": {
+"x": 0,
+"y": 40,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "대야와 목욕 의자",
+"layer": null,
+"passable": null
+},
+"sento-lockers": {
+"rect": {
+"x": 0,
+"y": 21,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "3칸 목재 수납장",
+"layer": null,
+"passable": null
+},
+"sento-shoe-rack": {
+"rect": {
+"x": 3,
+"y": 5,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "3칸 신발 선반",
+"layer": null,
+"passable": null
+},
+"sento-bench": {
+"rect": {
+"x": 0,
+"y": 23,
+"width": 3,
+"height": 1
+},
+"kind": "standing",
+"name": "등받이 없는 3칸 벤치",
+"layer": null,
+"passable": null
+},
+"sento-milk-machine": {
+"rect": {
+"x": 3,
+"y": 11,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "음료 냉장 판매기",
+"layer": null,
+"passable": null
+},
+"sento-mural": {
+"rect": {
+"x": 0,
+"y": 30,
+"width": 5,
+"height": 3
+},
+"kind": "wall-mounted",
+"name": "후지산 목욕탕 벽화",
+"layer": null,
+"passable": null
+},
+"sento-double-sink": {
+"rect": {
+"x": 3,
+"y": 25,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "2칸 세면대",
+"layer": null,
+"passable": null
+}
+},
+"ST-Izakaya-I01.png": {
+"izakaya-table": {
+"rect": {
+"x": 0,
+"y": 11,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "목재 식탁 · 다리 포함",
+"layer": null,
+"passable": null
+},
+"izakaya-chair-front": {
+"rect": {
+"x": 2,
+"y": 14,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "목재 의자 · 정면",
+"layer": null,
+"passable": null
+},
+"izakaya-chair-back": {
+"rect": {
+"x": 1,
+"y": 14,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "목재 의자 · 뒷면",
+"layer": null,
+"passable": null
+},
+"izakaya-chair-east": {
+"rect": {
+"x": 1,
+"y": 15,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "목재 의자 · 동향",
+"layer": null,
+"passable": null
+},
+"izakaya-chair-west": {
+"rect": {
+"x": 2,
+"y": 15,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "목재 의자 · 서향",
+"layer": null,
+"passable": null
+},
+"izakaya-counter": {
+"rect": {
+"x": 0,
+"y": 20,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "3열 서빙 카운터",
+"layer": null,
+"passable": null
+},
+"izakaya-fridge": {
+"rect": {
+"x": 0,
+"y": 31,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "업소용 냉장고",
+"layer": null,
+"passable": null
+},
+"izakaya-kitchen": {
+"rect": {
+"x": 2,
+"y": 31,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "스테인리스 조리대 · 하부장",
+"layer": null,
+"passable": null
+},
+"izakaya-stove": {
+"rect": {
+"x": 6,
+"y": 33,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "2구 조리용 가스레인지",
+"layer": null,
+"passable": null
+},
+"izakaya-tea": {
+"rect": {
+"x": 2,
+"y": 29,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "셀프 급차기",
+"layer": null,
+"passable": null
+},
+"izakaya-partition": {
+"rect": {
+"x": 4,
+"y": 15,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "목재 칸막이 · 상단창과 하단판",
+"layer": null,
+"passable": null
+}
+},
+"ST-Washitu-I01.png": {
+"washitu-shoji-front": {
+"rect": {
+"x": 0,
+"y": 11,
+"width": 4,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "쇼지 · 목재 격자 앞면4장",
+"layer": null,
+"passable": null
+},
+"washitu-shoji-back": {
+"rect": {
+"x": 0,
+"y": 13,
+"width": 4,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "쇼지 · 회색 격자 뒷면4장",
+"layer": null,
+"passable": null
+},
+"washitu-fusuma": {
+"rect": {
+"x": 4,
+"y": 15,
+"width": 4,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "산수화 후스마4장",
+"layer": null,
+"passable": null
+},
+"washitu-kotatsu": {
+"rect": {
+"x": 0,
+"y": 26,
+"width": 4,
+"height": 4
+},
+"kind": "standing",
+"name": "코타츠 · 덮개와 상판 전체",
+"layer": null,
+"passable": null
+},
+"washitu-round-table": {
+"rect": {
+"x": 4,
+"y": 27,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "둥근 좌식 탁자",
+"layer": null,
+"passable": null
+},
+"washitu-futon-red": {
+"rect": {
+"x": 5,
+"y": 40,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "붉은 이불 · 북쪽 베개/남쪽 발끝",
+"layer": null,
+"passable": null
+},
+"washitu-futon-blue": {
+"rect": {
+"x": 6,
+"y": 40,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "파란 이불 · 북쪽 베개/남쪽 발끝",
+"layer": null,
+"passable": null
+},
+"washitu-chest": {
+"rect": {
+"x": 1,
+"y": 40,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "2열 서랍장",
+"layer": null,
+"passable": null
+},
+"washitu-bookcase": {
+"rect": {
+"x": 3,
+"y": 43,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "문 달린 목재 책장",
+"layer": null,
+"passable": null
+},
+"washitu-cushion-blue": {
+"rect": {
+"x": 4,
+"y": 25,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "파란 방석",
+"layer": null,
+"passable": null
+},
+"washitu-cushion-pattern": {
+"rect": {
+"x": 5,
+"y": 25,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "문양 방석",
+"layer": null,
+"passable": null
+},
+"washitu-clock": {
+"rect": {
+"x": 0,
+"y": 19,
+"width": 1,
+"height": 1
+},
+"kind": "wall-mounted",
+"name": "벽시계",
+"layer": null,
+"passable": null
+}
+},
+"ST-MsionB-E01.png": {
+"msex-b-roof-whole": {
+"rect": {
+"x": 0,
+"y": 28,
+"width": 5,
+"height": 5
+},
+"kind": "building-part",
+"name": "곡면 지붕 · 상단/양측/전면처마 전체",
+"layer": null,
+"passable": null
+},
+"msex-b-wall-bay": {
+"rect": {
+"x": 0,
+"y": 33,
+"width": 5,
+"height": 3
+},
+"kind": "building-part",
+"name": "기둥과 석축을 포함한 외벽 전체",
+"layer": null,
+"passable": null
+},
+"msex-b-facade-door-window": {
+"rect": {
+"x": 5,
+"y": 36,
+"width": 3,
+"height": 5
+},
+"kind": "building-part",
+"name": "2층 아치창과 1층 현관 · 전면 전체",
+"layer": null,
+"passable": null
+},
+"msex-b-arched-window-small": {
+"rect": {
+"x": 6,
+"y": 23,
+"width": 1,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "작은 아치창",
+"layer": null,
+"passable": null
+},
+"msex-b-arched-window-tall": {
+"rect": {
+"x": 7,
+"y": 23,
+"width": 1,
+"height": 3
+},
+"kind": "wall-mounted",
+"name": "키큰 아치창",
+"layer": null,
+"passable": null
+},
+"msex-b-arched-window-wide": {
+"rect": {
+"x": 5,
+"y": 26,
+"width": 3,
+"height": 3
+},
+"kind": "wall-mounted",
+"name": "3열 아치창",
+"layer": null,
+"passable": null
+},
+"msex-b-balcony-enclosure": {
+"rect": {
+"x": 0,
+"y": 41,
+"width": 3,
+"height": 4
+},
+"kind": "building-part",
+"name": "발코니 난간 앞뒤·측면과 전면토대",
+"layer": null,
+"passable": null
+},
+"msex-b-bench-front": {
+"rect": {
+"x": 0,
+"y": 13,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "정원벤치 정면",
+"layer": null,
+"passable": null
+},
+"msex-b-bench-back": {
+"rect": {
+"x": 0,
+"y": 15,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "정원벤치 뒷면",
+"layer": null,
+"passable": null
+},
+"msex-b-street-lamp": {
+"rect": {
+"x": 2,
+"y": 13,
+"width": 1,
+"height": 4
+},
+"kind": "standing",
+"name": "쌍등 가로등 전체",
+"layer": null,
+"passable": null
+},
+"msex-b-tea-table": {
+"rect": {
+"x": 4,
+"y": 9,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "원형 티테이블 전체",
+"layer": null,
+"passable": null
+},
+"msex-b-tea-stool": {
+"rect": {
+"x": 6,
+"y": 11,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "등받이 없는 원형 정원스툴",
+"layer": null,
+"passable": null
+},
+"msex-b-rose-red": {
+"rect": {
+"x": 0,
+"y": 9,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "붉은 장미 전체",
+"layer": null,
+"passable": null
+},
+"msex-b-rose-pink": {
+"rect": {
+"x": 2,
+"y": 9,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "분홍 장미 전체",
+"layer": null,
+"passable": null
+},
+"msex-b-flower-pedestal": {
+"rect": {
+"x": 5,
+"y": 13,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "꽃과 원형 화분 받침",
+"layer": null,
+"passable": null
+},
+"msex-b-topiary-round": {
+"rect": {
+"x": 4,
+"y": 15,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "둥근 정원수",
+"layer": null,
+"passable": null
+},
+"msex-b-topiary-tall": {
+"rect": {
+"x": 6,
+"y": 13,
+"width": 2,
+"height": 4
+},
+"kind": "standing",
+"name": "긴 정원수",
+"layer": null,
+"passable": null
+},
+"msex-b-garden-gate-closed": {
+"rect": {
+"x": 0,
+"y": 2,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "닫힌 철제 정원문",
+"layer": null,
+"passable": null
+}
+},
+"ST-MsionP-E01.png": {
+"msex-p-roof-whole": {
+"rect": {
+"x": 0,
+"y": 28,
+"width": 5,
+"height": 5
+},
+"kind": "building-part",
+"name": "곡면 지붕 · 상단/양측/전면처마 전체",
+"layer": null,
+"passable": null
+},
+"msex-p-wall-bay": {
+"rect": {
+"x": 0,
+"y": 33,
+"width": 5,
+"height": 3
+},
+"kind": "building-part",
+"name": "기둥과 석축을 포함한 외벽 전체",
+"layer": null,
+"passable": null
+},
+"msex-p-facade-door-window": {
+"rect": {
+"x": 5,
+"y": 36,
+"width": 3,
+"height": 5
+},
+"kind": "building-part",
+"name": "2층 아치창과 1층 현관 · 전면 전체",
+"layer": null,
+"passable": null
+},
+"msex-p-arched-window-small": {
+"rect": {
+"x": 6,
+"y": 23,
+"width": 1,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "작은 아치창",
+"layer": null,
+"passable": null
+},
+"msex-p-arched-window-tall": {
+"rect": {
+"x": 7,
+"y": 23,
+"width": 1,
+"height": 3
+},
+"kind": "wall-mounted",
+"name": "키큰 아치창",
+"layer": null,
+"passable": null
+},
+"msex-p-arched-window-wide": {
+"rect": {
+"x": 5,
+"y": 26,
+"width": 3,
+"height": 3
+},
+"kind": "wall-mounted",
+"name": "3열 아치창",
+"layer": null,
+"passable": null
+},
+"msex-p-balcony-enclosure": {
+"rect": {
+"x": 0,
+"y": 41,
+"width": 3,
+"height": 4
+},
+"kind": "building-part",
+"name": "발코니 난간 앞뒤·측면과 전면토대",
+"layer": null,
+"passable": null
+},
+"msex-p-bench-front": {
+"rect": {
+"x": 0,
+"y": 13,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "정원벤치 정면",
+"layer": null,
+"passable": null
+},
+"msex-p-bench-back": {
+"rect": {
+"x": 0,
+"y": 15,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "정원벤치 뒷면",
+"layer": null,
+"passable": null
+},
+"msex-p-street-lamp": {
+"rect": {
+"x": 2,
+"y": 13,
+"width": 1,
+"height": 4
+},
+"kind": "standing",
+"name": "쌍등 가로등 전체",
+"layer": null,
+"passable": null
+},
+"msex-p-tea-table": {
+"rect": {
+"x": 4,
+"y": 9,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "원형 티테이블 전체",
+"layer": null,
+"passable": null
+},
+"msex-p-tea-stool": {
+"rect": {
+"x": 6,
+"y": 11,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "등받이 없는 원형 정원스툴",
+"layer": null,
+"passable": null
+},
+"msex-p-rose-red": {
+"rect": {
+"x": 0,
+"y": 9,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "붉은 장미 전체",
+"layer": null,
+"passable": null
+},
+"msex-p-rose-pink": {
+"rect": {
+"x": 2,
+"y": 9,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "분홍 장미 전체",
+"layer": null,
+"passable": null
+},
+"msex-p-flower-pedestal": {
+"rect": {
+"x": 5,
+"y": 13,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "꽃과 원형 화분 받침",
+"layer": null,
+"passable": null
+},
+"msex-p-topiary-round": {
+"rect": {
+"x": 4,
+"y": 15,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "둥근 정원수",
+"layer": null,
+"passable": null
+},
+"msex-p-topiary-tall": {
+"rect": {
+"x": 6,
+"y": 13,
+"width": 2,
+"height": 4
+},
+"kind": "standing",
+"name": "긴 정원수",
+"layer": null,
+"passable": null
+},
+"msex-p-garden-gate-closed": {
+"rect": {
+"x": 0,
+"y": 2,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "닫힌 철제 정원문",
+"layer": null,
+"passable": null
+}
+},
+"ST-MsionY-E01.png": {
+"msex-y-roof-whole": {
+"rect": {
+"x": 0,
+"y": 28,
+"width": 5,
+"height": 5
+},
+"kind": "building-part",
+"name": "곡면 지붕 · 상단/양측/전면처마 전체",
+"layer": null,
+"passable": null
+},
+"msex-y-wall-bay": {
+"rect": {
+"x": 0,
+"y": 33,
+"width": 5,
+"height": 3
+},
+"kind": "building-part",
+"name": "기둥과 석축을 포함한 외벽 전체",
+"layer": null,
+"passable": null
+},
+"msex-y-facade-door-window": {
+"rect": {
+"x": 5,
+"y": 36,
+"width": 3,
+"height": 5
+},
+"kind": "building-part",
+"name": "2층 아치창과 1층 현관 · 전면 전체",
+"layer": null,
+"passable": null
+},
+"msex-y-arched-window-small": {
+"rect": {
+"x": 6,
+"y": 23,
+"width": 1,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "작은 아치창",
+"layer": null,
+"passable": null
+},
+"msex-y-arched-window-tall": {
+"rect": {
+"x": 7,
+"y": 23,
+"width": 1,
+"height": 3
+},
+"kind": "wall-mounted",
+"name": "키큰 아치창",
+"layer": null,
+"passable": null
+},
+"msex-y-arched-window-wide": {
+"rect": {
+"x": 5,
+"y": 26,
+"width": 3,
+"height": 3
+},
+"kind": "wall-mounted",
+"name": "3열 아치창",
+"layer": null,
+"passable": null
+},
+"msex-y-balcony-enclosure": {
+"rect": {
+"x": 0,
+"y": 41,
+"width": 3,
+"height": 4
+},
+"kind": "building-part",
+"name": "발코니 난간 앞뒤·측면과 전면토대",
+"layer": null,
+"passable": null
+},
+"msex-y-bench-front": {
+"rect": {
+"x": 0,
+"y": 13,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "정원벤치 정면",
+"layer": null,
+"passable": null
+},
+"msex-y-bench-back": {
+"rect": {
+"x": 0,
+"y": 15,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "정원벤치 뒷면",
+"layer": null,
+"passable": null
+},
+"msex-y-street-lamp": {
+"rect": {
+"x": 2,
+"y": 13,
+"width": 1,
+"height": 4
+},
+"kind": "standing",
+"name": "쌍등 가로등 전체",
+"layer": null,
+"passable": null
+},
+"msex-y-tea-table": {
+"rect": {
+"x": 4,
+"y": 9,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "원형 티테이블 전체",
+"layer": null,
+"passable": null
+},
+"msex-y-tea-stool": {
+"rect": {
+"x": 6,
+"y": 11,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "등받이 없는 원형 정원스툴",
+"layer": null,
+"passable": null
+},
+"msex-y-rose-red": {
+"rect": {
+"x": 0,
+"y": 9,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "붉은 장미 전체",
+"layer": null,
+"passable": null
+},
+"msex-y-rose-pink": {
+"rect": {
+"x": 2,
+"y": 9,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "분홍 장미 전체",
+"layer": null,
+"passable": null
+},
+"msex-y-flower-pedestal": {
+"rect": {
+"x": 5,
+"y": 13,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "꽃과 원형 화분 받침",
+"layer": null,
+"passable": null
+},
+"msex-y-topiary-round": {
+"rect": {
+"x": 4,
+"y": 15,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "둥근 정원수",
+"layer": null,
+"passable": null
+},
+"msex-y-topiary-tall": {
+"rect": {
+"x": 6,
+"y": 13,
+"width": 2,
+"height": 4
+},
+"kind": "standing",
+"name": "긴 정원수",
+"layer": null,
+"passable": null
+},
+"msex-y-garden-gate-closed": {
+"rect": {
+"x": 0,
+"y": 2,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "닫힌 철제 정원문",
+"layer": null,
+"passable": null
+}
+},
+"ST-MsionB-I01.png": {
+"msion-b-arched-window": {
+"rect": {
+"x": 0,
+"y": 4,
+"width": 3,
+"height": 3
+},
+"kind": "wall-mounted",
+"name": "아치창 전체",
+"layer": null,
+"passable": null
+},
+"msion-b-blue-curtain-window": {
+"rect": {
+"x": 4,
+"y": 11,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "청색커튼과 창 전체",
+"layer": null,
+"passable": null
+},
+"msion-b-landscape": {
+"rect": {
+"x": 1,
+"y": 18,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "금장 풍경화",
+"layer": null,
+"passable": null
+},
+"msion-b-grand-clock": {
+"rect": {
+"x": 7,
+"y": 13,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "바닥 괘종시계",
+"layer": null,
+"passable": null
+},
+"msion-b-writing-desk": {
+"rect": {
+"x": 0,
+"y": 16,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "3열 목재 상판·전면 패널 가구",
+"layer": null,
+"passable": null
+},
+"msion-b-bookcase": {
+"rect": {
+"x": 6,
+"y": 18,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "2열 장식 서가",
+"layer": null,
+"passable": null
+},
+"msion-b-vase-pedestal": {
+"rect": {
+"x": 0,
+"y": 20,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "꽃꽂이와 목재 받침 전체",
+"layer": null,
+"passable": null
+},
+"msion-b-fireplace": {
+"rect": {
+"x": 0,
+"y": 27,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "화로와 기둥·상부 선반 전체",
+"layer": null,
+"passable": null
+},
+"msion-b-glass-cabinet": {
+"rect": {
+"x": 6,
+"y": 32,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "2열 유리 수납장",
+"layer": null,
+"passable": null
+},
+"msion-b-dresser": {
+"rect": {
+"x": 6,
+"y": 29,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "2열 서랍장",
+"layer": null,
+"passable": null
+},
+"msion-b-sofa-front": {
+"rect": {
+"x": 0,
+"y": 32,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "3열 소파 정면",
+"layer": null,
+"passable": null
+},
+"msion-b-sofa-back": {
+"rect": {
+"x": 0,
+"y": 35,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "3열 소파 뒷면",
+"layer": null,
+"passable": null
+},
+"msion-b-coffee-table": {
+"rect": {
+"x": 0,
+"y": 34,
+"width": 3,
+"height": 1
+},
+"kind": "standing",
+"name": "목재 거실 탁자",
+"layer": null,
+"passable": null
+},
+"msion-b-armchair": {
+"rect": {
+"x": 3,
+"y": 32,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "1인 소파 정면",
+"layer": null,
+"passable": null
+},
+"msion-b-armchair-back": {
+"rect": {
+"x": 3,
+"y": 35,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "1인 소파 뒷면",
+"layer": null,
+"passable": null
+},
+"msion-b-canopy-bed": {
+"rect": {
+"x": 0,
+"y": 41,
+"width": 2,
+"height": 4
+},
+"kind": "standing",
+"name": "천개·커튼·침구 전체",
+"layer": null,
+"passable": null
+},
+"msion-b-double-bed": {
+"rect": {
+"x": 2,
+"y": 42,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "2인 침구 · 머리판과 발끝",
+"layer": null,
+"passable": null
+},
+"msion-b-vanity": {
+"rect": {
+"x": 7,
+"y": 42,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "거울과 화장대 전체",
+"layer": null,
+"passable": null
+},
+"msion-b-grand-piano": {
+"rect": {
+"x": 3,
+"y": 37,
+"width": 3,
+"height": 4
+},
+"kind": "standing",
+"name": "그랜드피아노 · 뚜껑·건반·다리",
+"layer": null,
+"passable": null
+},
+"msion-b-harp": {
+"rect": {
+"x": 0,
+"y": 38,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "하프 전체",
+"layer": null,
+"passable": null
+},
+"msion-b-plant": {
+"rect": {
+"x": 6,
+"y": 22,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "큰 화분 · 잎과 밑동",
+"layer": null,
+"passable": null
+},
+"msion-b-doll": {
+"rect": {
+"x": 2,
+"y": 30,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "드레스 인형",
+"layer": null,
+"passable": null
+},
+"msion-b-dining-table": {
+"rect": {
+"x": 0,
+"y": 13,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "3열 식탁 전체",
+"layer": null,
+"passable": null
+},
+"msion-b-chair-east": {
+"rect": {
+"x": 6,
+"y": 13,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "식탁 의자 동향",
+"layer": null,
+"passable": null
+},
+"msion-b-chair-west": {
+"rect": {
+"x": 5,
+"y": 13,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "식탁 의자 서향",
+"layer": null,
+"passable": null
+}
+},
+"ST-MsionP-I01.png": {
+"msion-p-arched-window": {
+"rect": {
+"x": 0,
+"y": 4,
+"width": 3,
+"height": 3
+},
+"kind": "wall-mounted",
+"name": "아치창 전체",
+"layer": null,
+"passable": null
+},
+"msion-p-blue-curtain-window": {
+"rect": {
+"x": 4,
+"y": 11,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "청색커튼과 창 전체",
+"layer": null,
+"passable": null
+},
+"msion-p-landscape": {
+"rect": {
+"x": 1,
+"y": 18,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "금장 풍경화",
+"layer": null,
+"passable": null
+},
+"msion-p-grand-clock": {
+"rect": {
+"x": 7,
+"y": 13,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "바닥 괘종시계",
+"layer": null,
+"passable": null
+},
+"msion-p-writing-desk": {
+"rect": {
+"x": 0,
+"y": 16,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "3열 목재 상판·전면 패널 가구",
+"layer": null,
+"passable": null
+},
+"msion-p-bookcase": {
+"rect": {
+"x": 6,
+"y": 18,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "2열 장식 서가",
+"layer": null,
+"passable": null
+},
+"msion-p-vase-pedestal": {
+"rect": {
+"x": 0,
+"y": 20,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "꽃꽂이와 목재 받침 전체",
+"layer": null,
+"passable": null
+},
+"msion-p-fireplace": {
+"rect": {
+"x": 0,
+"y": 27,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "화로와 기둥·상부 선반 전체",
+"layer": null,
+"passable": null
+},
+"msion-p-glass-cabinet": {
+"rect": {
+"x": 6,
+"y": 32,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "2열 유리 수납장",
+"layer": null,
+"passable": null
+},
+"msion-p-dresser": {
+"rect": {
+"x": 6,
+"y": 29,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "2열 서랍장",
+"layer": null,
+"passable": null
+},
+"msion-p-sofa-front": {
+"rect": {
+"x": 0,
+"y": 32,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "3열 소파 정면",
+"layer": null,
+"passable": null
+},
+"msion-p-sofa-back": {
+"rect": {
+"x": 0,
+"y": 35,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "3열 소파 뒷면",
+"layer": null,
+"passable": null
+},
+"msion-p-coffee-table": {
+"rect": {
+"x": 0,
+"y": 34,
+"width": 3,
+"height": 1
+},
+"kind": "standing",
+"name": "목재 거실 탁자",
+"layer": null,
+"passable": null
+},
+"msion-p-armchair": {
+"rect": {
+"x": 3,
+"y": 32,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "1인 소파 정면",
+"layer": null,
+"passable": null
+},
+"msion-p-armchair-back": {
+"rect": {
+"x": 3,
+"y": 35,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "1인 소파 뒷면",
+"layer": null,
+"passable": null
+},
+"msion-p-canopy-bed": {
+"rect": {
+"x": 0,
+"y": 41,
+"width": 2,
+"height": 4
+},
+"kind": "standing",
+"name": "천개·커튼·침구 전체",
+"layer": null,
+"passable": null
+},
+"msion-p-double-bed": {
+"rect": {
+"x": 2,
+"y": 42,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "2인 침구 · 머리판과 발끝",
+"layer": null,
+"passable": null
+},
+"msion-p-vanity": {
+"rect": {
+"x": 7,
+"y": 42,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "거울과 화장대 전체",
+"layer": null,
+"passable": null
+},
+"msion-p-grand-piano": {
+"rect": {
+"x": 3,
+"y": 37,
+"width": 3,
+"height": 4
+},
+"kind": "standing",
+"name": "그랜드피아노 · 뚜껑·건반·다리",
+"layer": null,
+"passable": null
+},
+"msion-p-harp": {
+"rect": {
+"x": 0,
+"y": 38,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "하프 전체",
+"layer": null,
+"passable": null
+},
+"msion-p-plant": {
+"rect": {
+"x": 6,
+"y": 22,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "큰 화분 · 잎과 밑동",
+"layer": null,
+"passable": null
+},
+"msion-p-doll": {
+"rect": {
+"x": 2,
+"y": 30,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "드레스 인형",
+"layer": null,
+"passable": null
+},
+"msion-p-dining-table": {
+"rect": {
+"x": 0,
+"y": 13,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "3열 식탁 전체",
+"layer": null,
+"passable": null
+},
+"msion-p-chair-east": {
+"rect": {
+"x": 6,
+"y": 13,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "식탁 의자 동향",
+"layer": null,
+"passable": null
+},
+"msion-p-chair-west": {
+"rect": {
+"x": 5,
+"y": 13,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "식탁 의자 서향",
+"layer": null,
+"passable": null
+}
+},
+"ST-MsionY-I01.png": {
+"msion-y-arched-window": {
+"rect": {
+"x": 0,
+"y": 4,
+"width": 3,
+"height": 3
+},
+"kind": "wall-mounted",
+"name": "아치창 전체",
+"layer": null,
+"passable": null
+},
+"msion-y-blue-curtain-window": {
+"rect": {
+"x": 4,
+"y": 11,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "청색커튼과 창 전체",
+"layer": null,
+"passable": null
+},
+"msion-y-landscape": {
+"rect": {
+"x": 1,
+"y": 18,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "금장 풍경화",
+"layer": null,
+"passable": null
+},
+"msion-y-grand-clock": {
+"rect": {
+"x": 7,
+"y": 13,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "바닥 괘종시계",
+"layer": null,
+"passable": null
+},
+"msion-y-writing-desk": {
+"rect": {
+"x": 0,
+"y": 16,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "3열 목재 상판·전면 패널 가구",
+"layer": null,
+"passable": null
+},
+"msion-y-bookcase": {
+"rect": {
+"x": 6,
+"y": 18,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "2열 장식 서가",
+"layer": null,
+"passable": null
+},
+"msion-y-vase-pedestal": {
+"rect": {
+"x": 0,
+"y": 20,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "꽃꽂이와 목재 받침 전체",
+"layer": null,
+"passable": null
+},
+"msion-y-fireplace": {
+"rect": {
+"x": 0,
+"y": 27,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "화로와 기둥·상부 선반 전체",
+"layer": null,
+"passable": null
+},
+"msion-y-glass-cabinet": {
+"rect": {
+"x": 6,
+"y": 32,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "2열 유리 수납장",
+"layer": null,
+"passable": null
+},
+"msion-y-dresser": {
+"rect": {
+"x": 6,
+"y": 29,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "2열 서랍장",
+"layer": null,
+"passable": null
+},
+"msion-y-sofa-front": {
+"rect": {
+"x": 0,
+"y": 32,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "3열 소파 정면",
+"layer": null,
+"passable": null
+},
+"msion-y-sofa-back": {
+"rect": {
+"x": 0,
+"y": 35,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "3열 소파 뒷면",
+"layer": null,
+"passable": null
+},
+"msion-y-coffee-table": {
+"rect": {
+"x": 0,
+"y": 34,
+"width": 3,
+"height": 1
+},
+"kind": "standing",
+"name": "목재 거실 탁자",
+"layer": null,
+"passable": null
+},
+"msion-y-armchair": {
+"rect": {
+"x": 3,
+"y": 32,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "1인 소파 정면",
+"layer": null,
+"passable": null
+},
+"msion-y-armchair-back": {
+"rect": {
+"x": 3,
+"y": 35,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "1인 소파 뒷면",
+"layer": null,
+"passable": null
+},
+"msion-y-canopy-bed": {
+"rect": {
+"x": 0,
+"y": 41,
+"width": 2,
+"height": 4
+},
+"kind": "standing",
+"name": "천개·커튼·침구 전체",
+"layer": null,
+"passable": null
+},
+"msion-y-double-bed": {
+"rect": {
+"x": 2,
+"y": 42,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "2인 침구 · 머리판과 발끝",
+"layer": null,
+"passable": null
+},
+"msion-y-vanity": {
+"rect": {
+"x": 7,
+"y": 42,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "거울과 화장대 전체",
+"layer": null,
+"passable": null
+},
+"msion-y-grand-piano": {
+"rect": {
+"x": 3,
+"y": 37,
+"width": 3,
+"height": 4
+},
+"kind": "standing",
+"name": "그랜드피아노 · 뚜껑·건반·다리",
+"layer": null,
+"passable": null
+},
+"msion-y-harp": {
+"rect": {
+"x": 0,
+"y": 38,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "하프 전체",
+"layer": null,
+"passable": null
+},
+"msion-y-plant": {
+"rect": {
+"x": 6,
+"y": 22,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "큰 화분 · 잎과 밑동",
+"layer": null,
+"passable": null
+},
+"msion-y-doll": {
+"rect": {
+"x": 2,
+"y": 30,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "드레스 인형",
+"layer": null,
+"passable": null
+},
+"msion-y-dining-table": {
+"rect": {
+"x": 0,
+"y": 13,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "3열 식탁 전체",
+"layer": null,
+"passable": null
+},
+"msion-y-chair-east": {
+"rect": {
+"x": 6,
+"y": 13,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "식탁 의자 동향",
+"layer": null,
+"passable": null
+},
+"msion-y-chair-west": {
+"rect": {
+"x": 5,
+"y": 13,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "식탁 의자 서향",
+"layer": null,
+"passable": null
+}
+},
+"ST-MsionW-I01.png": {
+"msion-w-arched-window": {
+"rect": {
+"x": 0,
+"y": 4,
+"width": 3,
+"height": 3
+},
+"kind": "wall-mounted",
+"name": "아치창 전체",
+"layer": null,
+"passable": null
+},
+"msion-w-blue-curtain-window": {
+"rect": {
+"x": 4,
+"y": 11,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "청색커튼과 창 전체",
+"layer": null,
+"passable": null
+},
+"msion-w-landscape": {
+"rect": {
+"x": 1,
+"y": 18,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "금장 풍경화",
+"layer": null,
+"passable": null
+},
+"msion-w-grand-clock": {
+"rect": {
+"x": 7,
+"y": 13,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "바닥 괘종시계",
+"layer": null,
+"passable": null
+},
+"msion-w-writing-desk": {
+"rect": {
+"x": 0,
+"y": 16,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "3열 목재 상판·전면 패널 가구",
+"layer": null,
+"passable": null
+},
+"msion-w-bookcase": {
+"rect": {
+"x": 6,
+"y": 18,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "2열 장식 서가",
+"layer": null,
+"passable": null
+},
+"msion-w-vase-pedestal": {
+"rect": {
+"x": 0,
+"y": 20,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "꽃꽂이와 목재 받침 전체",
+"layer": null,
+"passable": null
+},
+"msion-w-fireplace": {
+"rect": {
+"x": 0,
+"y": 27,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "화로와 기둥·상부 선반 전체",
+"layer": null,
+"passable": null
+},
+"msion-w-glass-cabinet": {
+"rect": {
+"x": 6,
+"y": 32,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "2열 유리 수납장",
+"layer": null,
+"passable": null
+},
+"msion-w-dresser": {
+"rect": {
+"x": 6,
+"y": 29,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "2열 서랍장",
+"layer": null,
+"passable": null
+},
+"msion-w-sofa-front": {
+"rect": {
+"x": 0,
+"y": 32,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "3열 소파 정면",
+"layer": null,
+"passable": null
+},
+"msion-w-sofa-back": {
+"rect": {
+"x": 0,
+"y": 35,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "3열 소파 뒷면",
+"layer": null,
+"passable": null
+},
+"msion-w-coffee-table": {
+"rect": {
+"x": 0,
+"y": 34,
+"width": 3,
+"height": 1
+},
+"kind": "standing",
+"name": "목재 거실 탁자",
+"layer": null,
+"passable": null
+},
+"msion-w-armchair": {
+"rect": {
+"x": 3,
+"y": 32,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "1인 소파 정면",
+"layer": null,
+"passable": null
+},
+"msion-w-armchair-back": {
+"rect": {
+"x": 3,
+"y": 35,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "1인 소파 뒷면",
+"layer": null,
+"passable": null
+},
+"msion-w-canopy-bed": {
+"rect": {
+"x": 0,
+"y": 41,
+"width": 2,
+"height": 4
+},
+"kind": "standing",
+"name": "천개·커튼·침구 전체",
+"layer": null,
+"passable": null
+},
+"msion-w-double-bed": {
+"rect": {
+"x": 2,
+"y": 42,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "2인 침구 · 머리판과 발끝",
+"layer": null,
+"passable": null
+},
+"msion-w-vanity": {
+"rect": {
+"x": 7,
+"y": 42,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "거울과 화장대 전체",
+"layer": null,
+"passable": null
+},
+"msion-w-grand-piano": {
+"rect": {
+"x": 3,
+"y": 37,
+"width": 3,
+"height": 4
+},
+"kind": "standing",
+"name": "그랜드피아노 · 뚜껑·건반·다리",
+"layer": null,
+"passable": null
+},
+"msion-w-harp": {
+"rect": {
+"x": 0,
+"y": 38,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "하프 전체",
+"layer": null,
+"passable": null
+},
+"msion-w-plant": {
+"rect": {
+"x": 6,
+"y": 22,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "큰 화분 · 잎과 밑동",
+"layer": null,
+"passable": null
+},
+"msion-w-doll": {
+"rect": {
+"x": 2,
+"y": 30,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "드레스 인형",
+"layer": null,
+"passable": null
+},
+"msion-w-dining-table": {
+"rect": {
+"x": 0,
+"y": 13,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "3열 식탁 전체",
+"layer": null,
+"passable": null
+},
+"msion-w-chair-east": {
+"rect": {
+"x": 6,
+"y": 13,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "식탁 의자 동향",
+"layer": null,
+"passable": null
+},
+"msion-w-chair-west": {
+"rect": {
+"x": 5,
+"y": 13,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "식탁 의자 서향",
+"layer": null,
+"passable": null
+}
+},
+"ST-MsionR-I01.png": {
+"msion-r-arched-window": {
+"rect": {
+"x": 0,
+"y": 4,
+"width": 3,
+"height": 3
+},
+"kind": "wall-mounted",
+"name": "아치창 전체",
+"layer": null,
+"passable": null
+},
+"msion-r-blue-curtain-window": {
+"rect": {
+"x": 4,
+"y": 11,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "청색커튼과 창 전체",
+"layer": null,
+"passable": null
+},
+"msion-r-landscape": {
+"rect": {
+"x": 1,
+"y": 18,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "금장 풍경화",
+"layer": null,
+"passable": null
+},
+"msion-r-grand-clock": {
+"rect": {
+"x": 7,
+"y": 13,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "바닥 괘종시계",
+"layer": null,
+"passable": null
+},
+"msion-r-writing-desk": {
+"rect": {
+"x": 0,
+"y": 16,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "3열 목재 상판·전면 패널 가구",
+"layer": null,
+"passable": null
+},
+"msion-r-bookcase": {
+"rect": {
+"x": 6,
+"y": 18,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "2열 장식 서가",
+"layer": null,
+"passable": null
+},
+"msion-r-vase-pedestal": {
+"rect": {
+"x": 0,
+"y": 20,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "꽃꽂이와 목재 받침 전체",
+"layer": null,
+"passable": null
+},
+"msion-r-fireplace": {
+"rect": {
+"x": 0,
+"y": 27,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "화로와 기둥·상부 선반 전체",
+"layer": null,
+"passable": null
+},
+"msion-r-glass-cabinet": {
+"rect": {
+"x": 6,
+"y": 32,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "2열 유리 수납장",
+"layer": null,
+"passable": null
+},
+"msion-r-dresser": {
+"rect": {
+"x": 6,
+"y": 29,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "2열 서랍장",
+"layer": null,
+"passable": null
+},
+"msion-r-sofa-front": {
+"rect": {
+"x": 0,
+"y": 32,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "3열 소파 정면",
+"layer": null,
+"passable": null
+},
+"msion-r-sofa-back": {
+"rect": {
+"x": 0,
+"y": 35,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "3열 소파 뒷면",
+"layer": null,
+"passable": null
+},
+"msion-r-coffee-table": {
+"rect": {
+"x": 0,
+"y": 34,
+"width": 3,
+"height": 1
+},
+"kind": "standing",
+"name": "목재 거실 탁자",
+"layer": null,
+"passable": null
+},
+"msion-r-armchair": {
+"rect": {
+"x": 3,
+"y": 32,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "1인 소파 정면",
+"layer": null,
+"passable": null
+},
+"msion-r-armchair-back": {
+"rect": {
+"x": 3,
+"y": 35,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "1인 소파 뒷면",
+"layer": null,
+"passable": null
+},
+"msion-r-canopy-bed": {
+"rect": {
+"x": 0,
+"y": 41,
+"width": 2,
+"height": 4
+},
+"kind": "standing",
+"name": "천개·커튼·침구 전체",
+"layer": null,
+"passable": null
+},
+"msion-r-double-bed": {
+"rect": {
+"x": 2,
+"y": 42,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "2인 침구 · 머리판과 발끝",
+"layer": null,
+"passable": null
+},
+"msion-r-vanity": {
+"rect": {
+"x": 7,
+"y": 42,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "거울과 화장대 전체",
+"layer": null,
+"passable": null
+},
+"msion-r-grand-piano": {
+"rect": {
+"x": 3,
+"y": 37,
+"width": 3,
+"height": 4
+},
+"kind": "standing",
+"name": "그랜드피아노 · 뚜껑·건반·다리",
+"layer": null,
+"passable": null
+},
+"msion-r-harp": {
+"rect": {
+"x": 0,
+"y": 38,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "하프 전체",
+"layer": null,
+"passable": null
+},
+"msion-r-plant": {
+"rect": {
+"x": 6,
+"y": 22,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "큰 화분 · 잎과 밑동",
+"layer": null,
+"passable": null
+},
+"msion-r-doll": {
+"rect": {
+"x": 2,
+"y": 30,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "드레스 인형",
+"layer": null,
+"passable": null
+},
+"msion-r-dining-table": {
+"rect": {
+"x": 0,
+"y": 13,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "3열 식탁 전체",
+"layer": null,
+"passable": null
+},
+"msion-r-chair-east": {
+"rect": {
+"x": 6,
+"y": 13,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "식탁 의자 동향",
+"layer": null,
+"passable": null
+},
+"msion-r-chair-west": {
+"rect": {
+"x": 5,
+"y": 13,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "식탁 의자 서향",
+"layer": null,
+"passable": null
+},
+"msion-r-wide-display": {
+"rect": {
+"x": 3,
+"y": 45,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "가로 유리 진열장 전체",
+"layer": null,
+"passable": null
+},
+"msion-r-vertical-display": {
+"rect": {
+"x": 6,
+"y": 46,
+"width": 1,
+"height": 4
+},
+"kind": "standing",
+"name": "세로 유리 진열장 전체",
+"layer": null,
+"passable": null
+},
+"msion-r-crown-pedestal": {
+"rect": {
+"x": 5,
+"y": 48,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "왕관과 진열 받침 전체",
+"layer": null,
+"passable": null
+}
+},
+"ST-Room-I01.png": {
+"personal-m-window": {
+"rect": {
+"x": 0,
+"y": 7,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "세로 2칸 창문",
+"layer": null,
+"passable": null
+},
+"personal-m-bed": {
+"rect": {
+"x": 6,
+"y": 11,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "단일 침대 · 첫 번째 침구",
+"layer": null,
+"passable": null
+},
+"personal-m-bed-alt": {
+"rect": {
+"x": 7,
+"y": 11,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "단일 침대 · 두 번째 침구",
+"layer": null,
+"passable": null
+},
+"personal-m-wardrobe": {
+"rect": {
+"x": 0,
+"y": 10,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "높은 옷장",
+"layer": null,
+"passable": null
+},
+"personal-m-drawers": {
+"rect": {
+"x": 1,
+"y": 11,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "2칸 서랍장",
+"layer": null,
+"passable": null
+},
+"personal-m-bookcase": {
+"rect": {
+"x": 1,
+"y": 16,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "3칸 책장",
+"layer": null,
+"passable": null
+},
+"personal-m-desk": {
+"rect": {
+"x": 1,
+"y": 19,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "정면 책상",
+"layer": null,
+"passable": null
+},
+"personal-m-chair-back": {
+"rect": {
+"x": 7,
+"y": 14,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "회전의자 · 등받이 뒷면",
+"layer": null,
+"passable": null
+},
+"personal-m-table": {
+"rect": {
+"x": 3,
+"y": 10,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "낮은 정사각 테이블",
+"layer": null,
+"passable": null
+},
+"personal-m-table-rug": {
+"rect": {
+"x": 3,
+"y": 13,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "러그와 낮은 테이블",
+"layer": null,
+"passable": null
+},
+"personal-m-kitchen": {
+"rect": {
+"x": 6,
+"y": 24,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "정면 싱크대와 가스레인지",
+"layer": null,
+"passable": null
+},
+"personal-m-fridge": {
+"rect": {
+"x": 5,
+"y": 24,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "정면 냉장고",
+"layer": null,
+"passable": null
+},
+"personal-m-clock": {
+"rect": {
+"x": 0,
+"y": 9,
+"width": 1,
+"height": 1
+},
+"kind": "wall-mounted",
+"name": "벽시계",
+"layer": null,
+"passable": null
+},
+"personal-m-door": {
+"rect": {
+"x": 0,
+"y": 29,
+"width": 1,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "갈색 고정문",
+"layer": null,
+"passable": null
+},
+"personal-m-chair-front": {
+"rect": {
+"x": 6,
+"y": 14,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "회전의자 · 정면",
+"layer": null,
+"passable": null
+},
+"personal-m-chair-left": {
+"rect": {
+"x": 6,
+"y": 15,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "회전의자 · 왼쪽 방향",
+"layer": null,
+"passable": null
+},
+"personal-m-chair-right": {
+"rect": {
+"x": 7,
+"y": 15,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "회전의자 · 오른쪽 방향",
+"layer": null,
+"passable": null
+}
+},
+"ST-Room-I02.png": {
+"personal-f-window": {
+"rect": {
+"x": 0,
+"y": 7,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "세로 2칸 창문",
+"layer": null,
+"passable": null
+},
+"personal-f-bed": {
+"rect": {
+"x": 6,
+"y": 11,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "단일 침대 · 첫 번째 침구",
+"layer": null,
+"passable": null
+},
+"personal-f-wardrobe": {
+"rect": {
+"x": 0,
+"y": 10,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "높은 옷장",
+"layer": null,
+"passable": null
+},
+"personal-f-drawers": {
+"rect": {
+"x": 1,
+"y": 11,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "2칸 서랍장",
+"layer": null,
+"passable": null
+},
+"personal-f-bookcase": {
+"rect": {
+"x": 0,
+"y": 16,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "2칸 책장",
+"layer": null,
+"passable": null
+},
+"personal-f-table": {
+"rect": {
+"x": 3,
+"y": 10,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "낮은 정사각 테이블",
+"layer": null,
+"passable": null
+},
+"personal-f-kitchen": {
+"rect": {
+"x": 6,
+"y": 24,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "정면 싱크대와 가스레인지",
+"layer": null,
+"passable": null
+},
+"personal-f-fridge": {
+"rect": {
+"x": 5,
+"y": 23,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "정면 냉장고",
+"layer": null,
+"passable": null
+},
+"personal-f-clock": {
+"rect": {
+"x": 0,
+"y": 9,
+"width": 1,
+"height": 1
+},
+"kind": "wall-mounted",
+"name": "벽시계",
+"layer": null,
+"passable": null
+},
+"personal-f-door": {
+"rect": {
+"x": 0,
+"y": 29,
+"width": 1,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "갈색 고정문",
+"layer": null,
+"passable": null
+},
+"personal-f-bed-alt": {
+"rect": {
+"x": 7,
+"y": 11,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "단일 침대 · 두 번째 침구",
+"layer": null,
+"passable": null
+},
+"personal-f-desk": {
+"rect": {
+"x": 1,
+"y": 19,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "정면 책상",
+"layer": null,
+"passable": null
+},
+"personal-f-chair-back": {
+"rect": {
+"x": 7,
+"y": 14,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "회전의자 · 등받이 뒷면",
+"layer": null,
+"passable": null
+},
+"personal-f-chair-front": {
+"rect": {
+"x": 6,
+"y": 14,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "회전의자 · 정면",
+"layer": null,
+"passable": null
+},
+"personal-f-chair-left": {
+"rect": {
+"x": 6,
+"y": 15,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "회전의자 · 왼쪽 방향",
+"layer": null,
+"passable": null
+},
+"personal-f-chair-right": {
+"rect": {
+"x": 7,
+"y": 15,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "회전의자 · 오른쪽 방향",
+"layer": null,
+"passable": null
+},
+"personal-f-table-rug": {
+"rect": {
+"x": 3,
+"y": 13,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "러그와 낮은 테이블",
+"layer": null,
+"passable": null
+}
+},
+"ST-Toilet-I01.png": {
+"restroom-toilet-open": {
+"rect": {
+"x": 3,
+"y": 8,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "양변기 · 뚜껑 열림",
+"layer": null,
+"passable": null
+},
+"restroom-toilet-closed": {
+"rect": {
+"x": 4,
+"y": 8,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "양변기 · 뚜껑 닫힘",
+"layer": null,
+"passable": null
+},
+"restroom-urinal": {
+"rect": {
+"x": 0,
+"y": 8,
+"width": 1,
+"height": 3
+},
+"kind": "wall-mounted",
+"name": "벽면 소변기",
+"layer": null,
+"passable": null
+},
+"restroom-squat-horizontal": {
+"rect": {
+"x": 0,
+"y": 11,
+"width": 2,
+"height": 1
+},
+"kind": "standing",
+"name": "바닥형 변기 · 가로",
+"layer": null,
+"passable": null
+},
+"restroom-sinks": {
+"rect": {
+"x": 5,
+"y": 22,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "흰색 세면대 3칸",
+"layer": null,
+"passable": null
+},
+"restroom-mirror": {
+"rect": {
+"x": 5,
+"y": 16,
+"width": 3,
+"height": 1
+},
+"kind": "wall-mounted",
+"name": "세면대 위 가로 거울",
+"layer": null,
+"passable": null
+},
+"restroom-utility-sink": {
+"rect": {
+"x": 5,
+"y": 14,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "깊은 청소용 싱크",
+"layer": null,
+"passable": null
+},
+"restroom-partition": {
+"rect": {
+"x": 0,
+"y": 12,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "흰색 칸막이 측면 3칸",
+"layer": null,
+"passable": null
+},
+"restroom-closed-front": {
+"rect": {
+"x": 0,
+"y": 15,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "흰색 칸막이와 닫힌 문 전면",
+"layer": null,
+"passable": null
+},
+"restroom-bucket": {
+"rect": {
+"x": 4,
+"y": 0,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "빈 청소 양동이",
+"layer": null,
+"passable": null
+},
+"restroom-wet-bucket": {
+"rect": {
+"x": 4,
+"y": 1,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "물 양동이",
+"layer": null,
+"passable": null
+},
+"restroom-mop": {
+"rect": {
+"x": 6,
+"y": 8,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "대걸레",
+"layer": null,
+"passable": null
+},
+"restroom-broom": {
+"rect": {
+"x": 5,
+"y": 8,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "빗자루",
+"layer": null,
+"passable": null
+},
+"restroom-privacy-panel": {
+"rect": {
+"x": 2,
+"y": 17,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "흰색 막힌 칸막이 전면",
+"layer": null,
+"passable": null
+}
+},
+"ST-Sento-E01.png": {
+"retro-sento-plaster-wood-wall": {
+"rect": {
+"x": 0,
+"y": 27,
+"width": 3,
+"height": 4
+},
+"kind": "building-part",
+"name": "백벽과 목조 하부 · 기둥 포함",
+"layer": null,
+"passable": null
+},
+"retro-sento-awning-shutter-window": {
+"rect": {
+"x": 4,
+"y": 40,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "차양과 덧문창 전체",
+"layer": null,
+"passable": null
+},
+"retro-sento-awning-paper-window": {
+"rect": {
+"x": 6,
+"y": 40,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "차양과 종이창 전체",
+"layer": null,
+"passable": null
+},
+"retro-sento-wood-grille": {
+"rect": {
+"x": 2,
+"y": 42,
+"width": 2,
+"height": 1
+},
+"kind": "wall-mounted",
+"name": "가로 격자창",
+"layer": null,
+"passable": null
+},
+"retro-sento-small-vent": {
+"rect": {
+"x": 1,
+"y": 39,
+"width": 1,
+"height": 1
+},
+"kind": "wall-mounted",
+"name": "작은 목재 환기창",
+"layer": null,
+"passable": null
+},
+"retro-sento-bamboo": {
+"rect": {
+"x": 0,
+"y": 31,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "대나무 전체",
+"layer": null,
+"passable": null
+},
+"retro-sento-tree": {
+"rect": {
+"x": 4,
+"y": 21,
+"width": 4,
+"height": 4
+},
+"kind": "standing",
+"name": "수관과 줄기 전체 정원수",
+"layer": null,
+"passable": null
+},
+"retro-sento-stone-lantern": {
+"rect": {
+"x": 1,
+"y": 25,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "기단 있는 석등",
+"layer": null,
+"passable": null
+},
+"retro-sento-tanuki": {
+"rect": {
+"x": 0,
+"y": 25,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "너구리 장식상",
+"layer": null,
+"passable": null
+},
+"retro-sento-flower-planter": {
+"rect": {
+"x": 3,
+"y": 25,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "낮은 꽃화분",
+"layer": null,
+"passable": null
+},
+"retro-sento-plant-planter": {
+"rect": {
+"x": 2,
+"y": 25,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "사각 식물화분",
+"layer": null,
+"passable": null
+},
+"retro-sento-bamboo-pot": {
+"rect": {
+"x": 4,
+"y": 25,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "대나무 화분",
+"layer": null,
+"passable": null
+},
+"retro-sento-fern-pot": {
+"rect": {
+"x": 4,
+"y": 26,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "붉은 꽃 화분",
+"layer": null,
+"passable": null
+},
+"retro-sento-lidded-jar": {
+"rect": {
+"x": 0,
+"y": 23,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "뚜껑 있는 항아리",
+"layer": null,
+"passable": null
+},
+"retro-sento-open-jar": {
+"rect": {
+"x": 1,
+"y": 23,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "열린 항아리",
+"layer": null,
+"passable": null
+},
+"retro-sento-entrance-whole": {
+"rect": {
+"x": 4,
+"y": 43,
+"width": 4,
+"height": 4
+},
+"kind": "building-part",
+"name": "곡선 지붕·기둥·유 노렌 목욕탕 입구",
+"layer": null,
+"passable": null
+},
+"retro-sento-sento-sign": {
+"rect": {
+"x": 6,
+"y": 47,
+"width": 2,
+"height": 1
+},
+"kind": "wall-mounted",
+"name": "宝湯 목욕탕 간판",
+"layer": null,
+"passable": null
+},
+"retro-sento-inn-sign": {
+"rect": {
+"x": 4,
+"y": 47,
+"width": 2,
+"height": 1
+},
+"kind": "wall-mounted",
+"name": "月光館 여관 간판",
+"layer": null,
+"passable": null
+},
+"retro-sento-chimney": {
+"rect": {
+"x": 2,
+"y": 47,
+"width": 1,
+"height": 3
+},
+"kind": "building-part",
+"name": "상단·몸통·밑동 전체 굴뚝",
+"layer": null,
+"passable": null
+},
+"retro-sento-water-bucket": {
+"rect": {
+"x": 1,
+"y": 32,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "목재 물통",
+"layer": null,
+"passable": null
+},
+"retro-sento-slatted-door": {
+"rect": {
+"x": 0,
+"y": 43,
+"width": 3,
+"height": 3
+},
+"kind": "building-part",
+"name": "기둥 포함 닫힌 격자문 전체",
+"layer": null,
+"passable": null
+}
+},
+"ST-RTown-E01.png": {
+"retro-rtown-plaster-wood-wall": {
+"rect": {
+"x": 0,
+"y": 27,
+"width": 3,
+"height": 4
+},
+"kind": "building-part",
+"name": "백벽과 목조 하부 · 기둥 포함",
+"layer": null,
+"passable": null
+},
+"retro-rtown-awning-shutter-window": {
+"rect": {
+"x": 4,
+"y": 40,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "차양과 덧문창 전체",
+"layer": null,
+"passable": null
+},
+"retro-rtown-awning-paper-window": {
+"rect": {
+"x": 6,
+"y": 40,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "차양과 종이창 전체",
+"layer": null,
+"passable": null
+},
+"retro-rtown-wood-grille": {
+"rect": {
+"x": 2,
+"y": 42,
+"width": 2,
+"height": 1
+},
+"kind": "wall-mounted",
+"name": "가로 격자창",
+"layer": null,
+"passable": null
+},
+"retro-rtown-small-vent": {
+"rect": {
+"x": 1,
+"y": 39,
+"width": 1,
+"height": 1
+},
+"kind": "wall-mounted",
+"name": "작은 목재 환기창",
+"layer": null,
+"passable": null
+},
+"retro-rtown-bamboo": {
+"rect": {
+"x": 0,
+"y": 31,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "대나무 전체",
+"layer": null,
+"passable": null
+},
+"retro-rtown-tree": {
+"rect": {
+"x": 4,
+"y": 21,
+"width": 4,
+"height": 4
+},
+"kind": "standing",
+"name": "수관과 줄기 전체 정원수",
+"layer": null,
+"passable": null
+},
+"retro-rtown-stone-lantern": {
+"rect": {
+"x": 1,
+"y": 25,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "기단 있는 석등",
+"layer": null,
+"passable": null
+},
+"retro-rtown-tanuki": {
+"rect": {
+"x": 0,
+"y": 25,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "너구리 장식상",
+"layer": null,
+"passable": null
+},
+"retro-rtown-flower-planter": {
+"rect": {
+"x": 3,
+"y": 25,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "낮은 꽃화분",
+"layer": null,
+"passable": null
+},
+"retro-rtown-plant-planter": {
+"rect": {
+"x": 2,
+"y": 25,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "사각 식물화분",
+"layer": null,
+"passable": null
+},
+"retro-rtown-bamboo-pot": {
+"rect": {
+"x": 4,
+"y": 25,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "대나무 화분",
+"layer": null,
+"passable": null
+},
+"retro-rtown-fern-pot": {
+"rect": {
+"x": 4,
+"y": 26,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "잎 화분",
+"layer": null,
+"passable": null
+},
+"retro-rtown-lidded-jar": {
+"rect": {
+"x": 0,
+"y": 23,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "뚜껑 있는 항아리",
+"layer": null,
+"passable": null
+},
+"retro-rtown-open-jar": {
+"rect": {
+"x": 1,
+"y": 23,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "열린 항아리",
+"layer": null,
+"passable": null
+},
+"retro-rtown-glass-doors": {
+"rect": {
+"x": 6,
+"y": 43,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "위 환기창 포함 유리문 2열",
+"layer": null,
+"passable": null
+},
+"retro-rtown-bonsai-stand": {
+"rect": {
+"x": 4,
+"y": 45,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "화분과 목재 받침 전체",
+"layer": null,
+"passable": null
+},
+"retro-rtown-mailboxes": {
+"rect": {
+"x": 6,
+"y": 45,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "우편함 2열 전체",
+"layer": null,
+"passable": null
+},
+"retro-rtown-dustbin": {
+"rect": {
+"x": 2,
+"y": 45,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "뚜껑 포함 파란 쓰레기통",
+"layer": null,
+"passable": null
+},
+"retro-rtown-fire-notice": {
+"rect": {
+"x": 4,
+"y": 44,
+"width": 1,
+"height": 1
+},
+"kind": "wall-mounted",
+"name": "화재 주의 안내",
+"layer": null,
+"passable": null
+}
+},
+"ST-Schl-I01.png": {
+"school-blackboard": {
+"rect": {
+"x": 0,
+"y": 25,
+"width": 3,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "정면 3칸 칠판",
+"layer": null,
+"passable": null
+},
+"school-grid-board": {
+"rect": {
+"x": 3,
+"y": 25,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "정면 격자 칠판",
+"layer": null,
+"passable": null
+},
+"school-notice": {
+"rect": {
+"x": 3,
+"y": 28,
+"width": 1,
+"height": 1
+},
+"kind": "wall-mounted",
+"name": "학급 게시판",
+"layer": null,
+"passable": null
+},
+"school-window": {
+"rect": {
+"x": 0,
+"y": 8,
+"width": 3,
+"height": 3
+},
+"kind": "wall-mounted",
+"name": "교실 3칸 창문과 창 아래 벽",
+"layer": null,
+"passable": null
+},
+"school-student-desk": {
+"rect": {
+"x": 0,
+"y": 31,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "학생용 책상",
+"layer": null,
+"passable": null
+},
+"school-chair-back": {
+"rect": {
+"x": 5,
+"y": 31,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "학생 의자 · 등받이 뒷면",
+"layer": null,
+"passable": null
+},
+"school-chair-front": {
+"rect": {
+"x": 4,
+"y": 31,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "학생 의자 · 정면",
+"layer": null,
+"passable": null
+},
+"school-lectern": {
+"rect": {
+"x": 4,
+"y": 27,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "교사용 교탁",
+"layer": null,
+"passable": null
+},
+"school-shoe-locker": {
+"rect": {
+"x": 2,
+"y": 18,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "신발장 3칸",
+"layer": null,
+"passable": null
+},
+"school-cleaning-locker": {
+"rect": {
+"x": 5,
+"y": 21,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "청소도구함",
+"layer": null,
+"passable": null
+},
+"school-clock": {
+"rect": {
+"x": 7,
+"y": 17,
+"width": 1,
+"height": 1
+},
+"kind": "wall-mounted",
+"name": "벽시계",
+"layer": null,
+"passable": null
+},
+"school-plant": {
+"rect": {
+"x": 7,
+"y": 34,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "화분",
+"layer": null,
+"passable": null
+},
+"school-classroom-door": {
+"rect": {
+"x": 6,
+"y": 8,
+"width": 1,
+"height": 3
+},
+"kind": "wall-mounted",
+"name": "학교 실내문 · 정면 고정문",
+"layer": null,
+"passable": null
+}
+},
+"ST-Schl-E01.png": {
+"school-bench": {
+"rect": {
+"x": 4,
+"y": 21,
+"width": 3,
+"height": 1
+},
+"kind": "standing",
+"name": "교정 벤치",
+"layer": null,
+"passable": null
+},
+"school-conifer": {
+"rect": {
+"x": 0,
+"y": 20,
+"width": 2,
+"height": 4
+},
+"kind": "standing",
+"name": "교정 침엽수",
+"layer": null,
+"passable": null
+},
+"school-bare-tree": {
+"rect": {
+"x": 2,
+"y": 21,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "교정 낙엽수",
+"layer": null,
+"passable": null
+},
+"school-shrub": {
+"rect": {
+"x": 7,
+"y": 18,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "독립 원뿔 관목",
+"layer": null,
+"passable": null
+},
+"school-long-hedge": {
+"rect": {
+"x": 4,
+"y": 22,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "가로 생울타리",
+"layer": null,
+"passable": null
+},
+"school-large-tree": {
+"rect": {
+"x": 4,
+"y": 24,
+"width": 4,
+"height": 6
+},
+"kind": "standing",
+"name": "큰 교목 · 밑동 포함",
+"layer": null,
+"passable": null
+},
+"school-exterior-clock": {
+"rect": {
+"x": 3,
+"y": 24,
+"width": 1,
+"height": 1
+},
+"kind": "wall-mounted",
+"name": "교사 외벽 시계",
+"layer": null,
+"passable": null
+},
+"school-exterior-window": {
+"rect": {
+"x": 2,
+"y": 33,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "교사 2칸 창문",
+"layer": null,
+"passable": null
+}
+},
+"ST-Schl-I02.png": {
+"special-window": {
+"rect": {
+"x": 0,
+"y": 5,
+"width": 3,
+"height": 3
+},
+"kind": "wall-mounted",
+"name": "특별교실 3칸 창과 창 아래 벽",
+"layer": null,
+"passable": null
+},
+"special-medical-cabinet": {
+"rect": {
+"x": 6,
+"y": 8,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "의약품 수납장과 위 화분",
+"layer": null,
+"passable": null
+},
+"special-scale": {
+"rect": {
+"x": 3,
+"y": 9,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "보건실 체중계",
+"layer": null,
+"passable": null
+},
+"special-bed": {
+"rect": {
+"x": 5,
+"y": 14,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "가로 진찰 침대",
+"layer": null,
+"passable": null
+},
+"special-screen": {
+"rect": {
+"x": 3,
+"y": 16,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "진찰실 가림막",
+"layer": null,
+"passable": null
+},
+"special-eye-chart": {
+"rect": {
+"x": 4,
+"y": 27,
+"width": 1,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "시력표",
+"layer": null,
+"passable": null
+},
+"special-worktable": {
+"rect": {
+"x": 0,
+"y": 42,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "흰색 독립 실험대",
+"layer": null,
+"passable": null
+},
+"special-stool": {
+"rect": {
+"x": 5,
+"y": 33,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "파란 실험용 의자",
+"layer": null,
+"passable": null
+},
+"special-skeleton": {
+"rect": {
+"x": 1,
+"y": 14,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "전신 골격 표본",
+"layer": null,
+"passable": null
+},
+"special-bookcase": {
+"rect": {
+"x": 2,
+"y": 18,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "과학 자료 책장",
+"layer": null,
+"passable": null
+},
+"special-microscope": {
+"rect": {
+"x": 2,
+"y": 44,
+"width": 1,
+"height": 1
+},
+"kind": "countertop",
+"name": "현미경",
+"layer": null,
+"passable": null
+},
+"special-specimen": {
+"rect": {
+"x": 0,
+"y": 44,
+"width": 1,
+"height": 1
+},
+"kind": "countertop",
+"name": "원통 표본병",
+"layer": null,
+"passable": null
+},
+"special-test-tubes": {
+"rect": {
+"x": 0,
+"y": 46,
+"width": 1,
+"height": 1
+},
+"kind": "countertop",
+"name": "시험관대",
+"layer": null,
+"passable": null
+},
+"special-plant": {
+"rect": {
+"x": 7,
+"y": 34,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "실내 화분",
+"layer": null,
+"passable": null
+},
+"special-counter-front": {
+"rect": {
+"x": 4,
+"y": 43,
+"width": 4,
+"height": 1
+},
+"kind": "standing",
+"name": "붙박이 실험대 4칸 전면",
+"layer": null,
+"passable": null
+}
+},
+"ST-Schl-WI01.png": {
+"wood-school-blackboard": {
+"rect": {
+"x": 0,
+"y": 25,
+"width": 3,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "목조 · 정면 3칸 칠판",
+"layer": null,
+"passable": null
+},
+"wood-school-grid-board": {
+"rect": {
+"x": 3,
+"y": 25,
+"width": 2,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "목조 · 정면 격자 칠판",
+"layer": null,
+"passable": null
+},
+"wood-school-notice": {
+"rect": {
+"x": 3,
+"y": 28,
+"width": 1,
+"height": 1
+},
+"kind": "wall-mounted",
+"name": "목조 · 학급 게시판",
+"layer": null,
+"passable": null
+},
+"wood-school-window": {
+"rect": {
+"x": 0,
+"y": 8,
+"width": 3,
+"height": 3
+},
+"kind": "wall-mounted",
+"name": "목조 · 교실 3칸 창문과 창 아래 벽",
+"layer": null,
+"passable": null
+},
+"wood-school-student-desk": {
+"rect": {
+"x": 0,
+"y": 31,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "목조 · 학생용 책상",
+"layer": null,
+"passable": null
+},
+"wood-school-chair-back": {
+"rect": {
+"x": 5,
+"y": 31,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "목조 · 학생 의자 · 등받이 뒷면",
+"layer": null,
+"passable": null
+},
+"wood-school-chair-front": {
+"rect": {
+"x": 4,
+"y": 31,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "목조 · 학생 의자 · 정면",
+"layer": null,
+"passable": null
+},
+"wood-school-lectern": {
+"rect": {
+"x": 4,
+"y": 27,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "목조 · 교사용 교탁",
+"layer": null,
+"passable": null
+},
+"wood-school-shoe-locker": {
+"rect": {
+"x": 2,
+"y": 18,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "목조 · 신발장 3칸",
+"layer": null,
+"passable": null
+},
+"wood-school-cleaning-locker": {
+"rect": {
+"x": 5,
+"y": 21,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "목조 · 청소도구함",
+"layer": null,
+"passable": null
+},
+"wood-school-clock": {
+"rect": {
+"x": 7,
+"y": 17,
+"width": 1,
+"height": 1
+},
+"kind": "wall-mounted",
+"name": "목조 · 벽시계",
+"layer": null,
+"passable": null
+},
+"wood-school-plant": {
+"rect": {
+"x": 7,
+"y": 34,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "목조 · 화분",
+"layer": null,
+"passable": null
+},
+"wood-school-classroom-door": {
+"rect": {
+"x": 6,
+"y": 8,
+"width": 1,
+"height": 3
+},
+"kind": "wall-mounted",
+"name": "목조 · 학교 실내문 · 정면 고정문",
+"layer": null,
+"passable": null
+}
+},
+"ST-Schl-WI02.png": {
+"wood-special-window": {
+"rect": {
+"x": 0,
+"y": 5,
+"width": 3,
+"height": 3
+},
+"kind": "wall-mounted",
+"name": "목조 · 특별교실 3칸 창과 창 아래 벽",
+"layer": null,
+"passable": null
+},
+"wood-special-medical-cabinet": {
+"rect": {
+"x": 6,
+"y": 8,
+"width": 2,
+"height": 3
+},
+"kind": "standing",
+"name": "목조 · 의약품 수납장과 위 화분",
+"layer": null,
+"passable": null
+},
+"wood-special-scale": {
+"rect": {
+"x": 3,
+"y": 9,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "목조 · 보건실 체중계",
+"layer": null,
+"passable": null
+},
+"wood-special-bed": {
+"rect": {
+"x": 5,
+"y": 14,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "목조 · 가로 진찰 침대",
+"layer": null,
+"passable": null
+},
+"wood-special-screen": {
+"rect": {
+"x": 3,
+"y": 16,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "목조 · 진찰실 가림막",
+"layer": null,
+"passable": null
+},
+"wood-special-eye-chart": {
+"rect": {
+"x": 4,
+"y": 27,
+"width": 1,
+"height": 2
+},
+"kind": "wall-mounted",
+"name": "목조 · 시력표",
+"layer": null,
+"passable": null
+},
+"wood-special-worktable": {
+"rect": {
+"x": 0,
+"y": 42,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "목조 · 갈색 독립 실험대",
+"layer": null,
+"passable": null
+},
+"wood-special-stool": {
+"rect": {
+"x": 5,
+"y": 33,
+"width": 1,
+"height": 1
+},
+"kind": "standing",
+"name": "목조 · 갈색 실험용 의자",
+"layer": null,
+"passable": null
+},
+"wood-special-skeleton": {
+"rect": {
+"x": 1,
+"y": 14,
+"width": 1,
+"height": 3
+},
+"kind": "standing",
+"name": "목조 · 전신 골격 표본",
+"layer": null,
+"passable": null
+},
+"wood-special-bookcase": {
+"rect": {
+"x": 2,
+"y": 18,
+"width": 3,
+"height": 2
+},
+"kind": "standing",
+"name": "목조 · 과학 자료 책장",
+"layer": null,
+"passable": null
+},
+"wood-special-microscope": {
+"rect": {
+"x": 2,
+"y": 44,
+"width": 1,
+"height": 1
+},
+"kind": "countertop",
+"name": "목조 · 현미경",
+"layer": null,
+"passable": null
+},
+"wood-special-specimen": {
+"rect": {
+"x": 0,
+"y": 44,
+"width": 1,
+"height": 1
+},
+"kind": "countertop",
+"name": "목조 · 원통 표본병",
+"layer": null,
+"passable": null
+},
+"wood-special-test-tubes": {
+"rect": {
+"x": 0,
+"y": 46,
+"width": 1,
+"height": 1
+},
+"kind": "countertop",
+"name": "목조 · 시험관대",
+"layer": null,
+"passable": null
+},
+"wood-special-plant": {
+"rect": {
+"x": 7,
+"y": 34,
+"width": 1,
+"height": 2
+},
+"kind": "standing",
+"name": "목조 · 실내 화분",
+"layer": null,
+"passable": null
+},
+"wood-special-counter-front": {
+"rect": {
+"x": 4,
+"y": 43,
+"width": 4,
+"height": 1
+},
+"kind": "standing",
+"name": "목조 · 붙박이 실험대 4칸 전면",
+"layer": null,
+"passable": null
+}
+},
+"ST-Park-E01.png": {
+"park-swings": {
+"rect": {
+"x": 0,
+"y": 43,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "그네",
+"layer": null,
+"passable": null
+},
+"park-slide": {
+"rect": {
+"x": 3,
+"y": 43,
+"width": 5,
+"height": 3
+},
+"kind": "standing",
+"name": "미끄럼틀",
+"layer": null,
+"passable": null
+},
+"park-bench-front": {
+"rect": {
+"x": 3,
+"y": 39,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "벤치 · 정면",
+"layer": null,
+"passable": null
+},
+"park-bench-back": {
+"rect": {
+"x": 3,
+"y": 41,
+"width": 2,
+"height": 2
+},
+"kind": "standing",
+"name": "벤치 · 뒷면",
+"layer": null,
+"passable": null
+},
+"park-lamp": {
+"rect": {
+"x": 7,
+"y": 39,
+"width": 1,
+"height": 4
+},
+"kind": "standing",
+"name": "가로등",
+"layer": null,
+"passable": null
+},
+"park-sandpit-compact": {
+"rect": {
+"x": 0,
+"y": 39,
+"width": 3,
+"height": 3
+},
+"kind": "standing",
+"name": "작은 모래놀이터 · 원본 3칸",
+"layer": null,
+"passable": null
+},
+"park-tree-planter": {
+"rect": {
+"x": 4,
+"y": 21,
+"width": 4,
+"height": 6
+},
+"kind": "standing",
+"name": "원형 화단과 나무",
+"layer": null,
+"passable": null
+}
+},
+"ST-Convi-E01.png": {
+"store-front": {
+"rect": {
+"x": 0,
+"y": 44,
+"width": 4,
+"height": 3
+},
+"kind": null,
+"name": "편의점 전면 유리",
+"layer": null,
+"passable": null
+},
+"store-door": {
+"rect": {
+"x": 4,
+"y": 47,
+"width": 2,
+"height": 3
+},
+"kind": null,
+"name": "넓은 상점 출입구",
+"layer": null,
+"passable": null
+},
+"vending-red": {
+"rect": {
+"x": 0,
+"y": 29,
+"width": 2,
+"height": 3
+},
+"kind": null,
+"name": "빨간 자판기",
+"layer": null,
+"passable": null
+},
+"street-bench": {
+"rect": {
+"x": 4,
+"y": 21,
+"width": 3,
+"height": 1
+},
+"kind": null,
+"name": "거리 벤치",
+"layer": null,
+"passable": null
+},
+"traffic-light": {
+"rect": {
+"x": 0,
+"y": 24,
+"width": 3,
+"height": 4
+},
+"kind": null,
+"name": "가로 신호등",
+"layer": null,
+"passable": null
+},
+"small-window": {
+"rect": {
+"x": 3,
+"y": 38,
+"width": 3,
+"height": 2
+},
+"kind": null,
+"name": "건물 창문",
+"layer": null,
+"passable": null
+}
+},
+"ST-Town-E01.png": {
+"sliding-window": {
+"rect": {
+"x": 5,
+"y": 30,
+"width": 3,
+"height": 2
+},
+"kind": null,
+"name": "가로 미닫이 창",
+"layer": null,
+"passable": null
+},
+"blue-window": {
+"rect": {
+"x": 6,
+"y": 32,
+"width": 2,
+"height": 2
+},
+"kind": null,
+"name": "파란 2칸 창",
+"layer": null,
+"passable": null
+},
+"gray-door": {
+"rect": {
+"x": 4,
+"y": 32,
+"width": 1,
+"height": 2
+},
+"kind": null,
+"name": "회색 주택 문",
+"layer": null,
+"passable": null
+},
+"bicycle": {
+"rect": {
+"x": 0,
+"y": 22,
+"width": 3,
+"height": 1
+},
+"kind": null,
+"name": "자전거",
+"layer": null,
+"passable": null
+},
+"hedge": {
+"rect": {
+"x": 0,
+"y": 17,
+"width": 3,
+"height": 2
+},
+"kind": null,
+"name": "3칸 관목",
+"layer": null,
+"passable": null
+},
+"striped-awning": {
+"rect": {
+"x": 0,
+"y": 30,
+"width": 3,
+"height": 2
+},
+"kind": null,
+"name": "줄무늬 어닝",
+"layer": null,
+"passable": null
+}
+}
+}
+}

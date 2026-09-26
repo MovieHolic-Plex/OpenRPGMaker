@@ -1,0 +1,6 @@
+# SC-Stone01.png 4x4 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  3  
+   0 ~b ~b ~b ~b 
+   1 ~m ~m ~m ~m 
+   2 ~c ~c ~c ~c 
+   3 ~o ~o ~o ~o 

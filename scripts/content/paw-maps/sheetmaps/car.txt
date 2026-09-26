@@ -1,0 +1,8 @@
+# car.png 11x6 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  3  4  5  6  7  8  9  10 
+   0 +l #l +l +w #w +w ~l ~b +w +w ~l 
+   1 +l #w +l #l #w #l #w #b #l #l #l 
+   2 +l #l +l +l #b +l +g #g #l #g #g 
+   3 +g #l +g +l #l +l ~l +w +w ~b ~l 
+   4 .  .  .  .  .  .  #l #l #l #b #w 
+   5 .  .  .  .  .  .  +g #g #l #g #g 
