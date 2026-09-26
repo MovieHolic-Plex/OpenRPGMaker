@@ -217,7 +217,6 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
     const seg = pick(wrng, segs);
     return { x: seg.x + int(wrng, 6, seg.w - RW - 6), y0: south2 ? south2.alleyY : bands[0]!.backY };
   })();
-  const inRiver = (x: number) => !!river && x >= river.x && x < river.x + RW;
   /** 블록 조각을 강 열에서 둘로 나눈다(건물은 강을 건너지 않는다). */
   const cutRiver = (segs: { x: number; w: number }[]) => (!river ? segs : segs.flatMap((s) => {
     if (river.x + RW <= s.x || river.x >= s.x + s.w) return [s];
@@ -339,7 +338,6 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
   const busyFront = new Set<number>(); // 자판기 금지 열(문·차양·쇼윈도)
   let passageLeft = 1;
   let civicDone = false;
-  let civicLot: { x: number; w: number; sign: string } | null = null;
   const mainFrontY = frontY;
   const buildShopRow = (frontY: number, bMax: number, rowSegments: readonly { x: number; w: number }[], curbRow: number) => {
   let prev: { w: number; h: number; storeys: number; style: MvTownFacade; dish?: boolean } | null = null;
@@ -488,7 +486,6 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
       if (civicPick) {
         // 간판(2칸)은 1층 띠 바로 위 위층 벽 맨 아랫줄, 문 위 또는 가운데.
         for (const sx of [doorX, doorX - 1, x + Math.floor((w - 2) / 2)]) if (sx >= x && sx + 2 <= x + w && place(civicPick.sign, sx, frontY - ground - 1, { force: true })) break;
-        civicLot = { x, w, sign: civicPick.sign };
       }
       prev = { w, h: height, storeys, style, dish };
       x += w;
