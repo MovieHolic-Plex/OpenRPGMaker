@@ -8,7 +8,7 @@
 //
 // 입력 자체를 disabled 로 만들지는 않는다: 쓰다가 로그인하면 그대로 이어 쓸 수 있어야 하고,
 // 무엇보다 "왜 못 쓰는지" 를 읽는 동안 커서가 살아 있으면 다시 눌러 보게 된다.
-import { getAiConnectionStatus, refreshAiConnectionStatus } from "./aiConnectionStatus";
+import { AI_CONNECTION_STATUS_CHANGED_EVENT, getAiConnectionStatus, refreshAiConnectionStatus } from "./aiConnectionStatus";
 import { isAiConfigReady } from "./aiChatPanelHelpers";
 import { AI_SETTINGS_CLOSED_EVENT } from "./aiSettingsModal";
 import { loadAiConfig } from "@/ai/llmClient";
@@ -95,6 +95,9 @@ export function createAiLockScrim(options: {
   // 토큰 만료 등)를 위한 보조 계기다. 폴링은 붙이지 않는다: 감시할 시점이 둘로 좁혀졌다.
   const onSettingsClosed = (): void => { revalidate(); };
   window.addEventListener(AI_SETTINGS_CLOSED_EVENT, onSettingsClosed);
+  // 다른 호출부(부팅 warm-up·설정 모달·칩)가 한 조회로 캐시가 바뀌어도 막을 다시 칠한다.
+  const onStatusChanged = (): void => { sync(); };
+  window.addEventListener(AI_CONNECTION_STATUS_CHANGED_EVENT, onStatusChanged);
   const reevaluate = (): void => { revalidate(); };
   element.addEventListener("click", reevaluate);
   element.addEventListener("focusin", reevaluate);
@@ -104,6 +107,7 @@ export function createAiLockScrim(options: {
     sync,
     dispose: () => {
       window.removeEventListener(AI_SETTINGS_CLOSED_EVENT, onSettingsClosed);
+      window.removeEventListener(AI_CONNECTION_STATUS_CHANGED_EVENT, onStatusChanged);
       element.removeEventListener("click", reevaluate);
       element.removeEventListener("focusin", reevaluate);
     },
