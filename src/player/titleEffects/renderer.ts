@@ -130,6 +130,7 @@ function nowMs(): number {
 export interface TitleEffectsCanvasOptions {
   readonly effects: readonly TitleEffect[];
   readonly imageUrl: string;
+  /** 생략 = "stretch" — 배경(applyTitleScreenBackground)의 기본과 같아야 효과를 켜도 그림이 안 움직인다. */
   readonly fit?: TitleBackgroundFit;
   /** 고정 시각(초). 주면 애니메이션하지 않고 그 순간만 그린다(QA·미리보기 썸네일). */
   readonly freezeAtSec?: number;
@@ -210,7 +211,7 @@ function startTitleEffects(canvas: HTMLCanvasElement, uniforms: TitleEffectUnifo
     context.useProgram(program);
     context.uniform1i(loc.image, 0);
     context.uniform2f(loc.imageSize, image.naturalWidth || 1, image.naturalHeight || 1);
-    context.uniform1i(loc.fit, FIT_ID[options.fit ?? "cover"]);
+    context.uniform1i(loc.fit, FIT_ID[options.fit ?? "stretch"]);
     context.uniform1i(loc.count, uniforms.count);
     context.uniform1iv(loc.kind, uniforms.kind);
     context.uniform4fv(loc.a, uniforms.a);
@@ -305,5 +306,5 @@ function buildProgram(gl: WebGL2RenderingContext): WebGLProgram | null {
 
 /** 재사용 판정용 서명 — 같으면 기존 캔버스(진행 중 애니메이션)를 그대로 쓴다. */
 export function titleEffectsSignature(options: TitleEffectsCanvasOptions): string {
-  return JSON.stringify({ e: options.effects, u: options.imageUrl, f: options.fit ?? "cover", z: options.freezeAtSec });
+  return JSON.stringify({ e: options.effects, u: options.imageUrl, f: options.fit ?? "stretch", z: options.freezeAtSec });
 }

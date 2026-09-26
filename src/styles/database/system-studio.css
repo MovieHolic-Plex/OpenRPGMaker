@@ -546,6 +546,7 @@
 .database-modal-backdrop .database-modal-window .db-system-form .db-title-workbench-fields { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }
 .database-modal-backdrop .database-modal-window .db-system-form .db-title-menu-option-row { display: grid; grid-template-columns: minmax(0, 1fr) 76px; gap: 12px; align-items: center; }
 .database-modal-backdrop .database-modal-window .db-system-form .db-title-menu-option-row > .db-field:last-child { grid-template-columns: auto auto; gap: 8px; }
+.database-modal-backdrop .database-modal-window .db-system-form .db-title-menu-option-note { color: var(--text-3); font-size: 11px; line-height: 1.3; }
 .database-modal-backdrop .database-modal-window .db-system-form .db-title-layer-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; background: var(--db-studio-inset); padding: 12px; border-radius: 6px; }
 .database-modal-backdrop .database-modal-window .db-system-form .db-title-workbench-audio { gap: 8px; }
 .database-modal-backdrop .database-modal-window .db-system-form .db-title-workbench-music-id { flex-basis: 100%; }

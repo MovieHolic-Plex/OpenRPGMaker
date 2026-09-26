@@ -258,6 +258,7 @@ describe("runtime play window skins — 메시지 창과 타이틀", () => {
       onNewGame: () => {},
       onResume: () => {},
       onContinue: () => {},
+      onCredits: () => {},
       onQuit: () => {},
     });
 

@@ -23,7 +23,7 @@ try {
   await page.goto(server.url+'/player.html',{waitUntil:'domcontentloaded'});
   await page.getByTestId('title-screen').waitFor({timeout:60000}).catch(async error=>{await page.screenshot({path:out+'/'+theme+'-capture-failure.png'});console.error('CAPTURE_BOOT_FAILED',JSON.stringify({errors,text:await page.locator('body').innerText()}));throw error;});
   // Exercise the attribution button through the real runtime pointer handler.
-  await page.getByTestId('title-license-notice').click();
+  await page.getByTestId('title-credits').click();
   await page.locator('dialog.rm-license-dialog').waitFor();
   assert.match(await page.locator('.rm-license-dialog-body').innerText(),/Opening mood stills/);
   await page.getByRole('button',{name:'닫기',exact:true}).click();

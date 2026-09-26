@@ -1706,10 +1706,12 @@ const setTitleScreen: ToolDefinition = {
       title: { type: "string" },
       menuLabels: {
         type: "object",
-        description: "{ newGame, continueGame, quit }",
+        description: "{ newGame, continueGame, resume, credits, quit } — credits 는 저작자 표기 창을 여는 항목(항상 보임)",
         properties: {
           newGame: { type: "string" },
           continueGame: { type: "string" },
+          resume: { type: "string" },
+          credits: { type: "string" },
           quit: { type: "string" },
         },
       },
@@ -1753,7 +1755,6 @@ const setTitleScreen: ToolDefinition = {
       },
       backgroundResourceId: { type: "string", description: "titleScreen.background only; does not clear system.titleResourceId" },
       musicResourceId: { type: "string" },
-      showInputHint: { type: "boolean" },
       backgroundLayers: {
         type: "array",
         description: `무한 스크롤 배경 레이어. 최대 ${MAX_TITLE_BACKGROUND_LAYERS}개`,
@@ -1798,13 +1799,13 @@ const setTitleScreen: ToolDefinition = {
             intensity: { type: "number", minimum: 0, maximum: 2 },
             speed: { type: "number", minimum: 0, maximum: 4 },
             color: { type: "string", description: "#rrggbb" },
-            source: { type: "array", items: { type: "number" }, minItems: 2, maxItems: 2 },
-            toward: { type: "array", items: { type: "number" }, minItems: 2, maxItems: 2 },
-            spread: { type: "number", minimum: 0, maximum: 1 },
-            line: { type: "array", items: { type: "array", items: { type: "number" }, minItems: 2, maxItems: 2 }, minItems: 2, maxItems: 2 },
-            periodSec: { type: "number", minimum: 0.5, maximum: 60 },
-            region: { type: "array", items: { type: "array", items: { type: "number" }, minItems: 2, maxItems: 2 }, minItems: 3, maxItems: MAX_TITLE_EFFECT_REGION_POINTS },
-            count: { type: "integer", minimum: 1, maximum: MAX_TITLE_MOTES },
+            source: { type: "array", items: { type: "number" }, description: "[x, y] 그림 기준 0..1(빛 근원은 -0.5..1.5)" },
+            toward: { type: "array", items: { type: "number" }, description: "[x, y]" },
+            spread: { type: "number", minimum: 0.02, maximum: 1 },
+            line: { type: "array", items: { type: "array", items: { type: "number" } }, description: "[[x, y], [x, y]] 칼날 두 끝" },
+            periodSec: { type: "number", minimum: 1, maximum: 60 },
+            region: { type: "array", items: { type: "array", items: { type: "number" } }, description: `[[x, y], ...] 꼭짓점 3~${MAX_TITLE_EFFECT_REGION_POINTS}개` },
+            count: { type: "integer", minimum: 0, maximum: MAX_TITLE_MOTES },
           },
           required: ["kind"],
           additionalProperties: false,
@@ -1859,9 +1860,6 @@ const setTitleScreen: ToolDefinition = {
       else delete current.musicResourceId;
     }
 
-    if (typeof args.showInputHint === "boolean") {
-      current.showInputHint = args.showInputHint;
-    }
 
     const layout = args.layout as Partial<typeof current.layout> | undefined;
     if (layout && typeof layout === "object") {

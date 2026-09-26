@@ -249,7 +249,8 @@ export function activeTitleEffects(effects: readonly TitleEffect[] | undefined):
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 프리셋 — 구도가 비슷한 그림에 바로 얹을 수 있는 출발점. 좌표는 편집기에서 끌어 맞춘다.
+// 프리셋 — 구도가 비슷한 그림에 바로 얹을 수 있는 출발점. 좌표는 AI 맞춤(titleArtFitting)이나
+// set_title_screen 도구로 고친다. 편집기에는 아직 효과 좌표를 끌어 옮기는 손잡이가 없다.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface TitleOpeningPreset {

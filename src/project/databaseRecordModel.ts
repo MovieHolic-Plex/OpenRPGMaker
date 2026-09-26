@@ -356,6 +356,9 @@ function normalizeTitleScreenSettings(
       ...(typeof settings?.menuLabels?.resume === "string" && settings.menuLabels.resume.trim()
         ? { resume: settings.menuLabels.resume.trim() }
         : {}),
+      ...(typeof settings?.menuLabels?.credits === "string" && settings.menuLabels.credits.trim()
+        ? { credits: settings.menuLabels.credits.trim().slice(0, 24) }
+        : {}),
     },
     menuVisibility,
     ...(sounds ? { sounds } : {}),

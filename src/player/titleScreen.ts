@@ -3,11 +3,9 @@ import { applySystemWindowSkinVariable, applyTitleScreenBackground } from "@/pla
 import { createTitleParticlesCanvas } from "@/player/titleParticles";
 import { createTitleEffectsCanvas, titleEffectsSignature } from "@/player/titleEffects/renderer";
 import { activeTitleEffects } from "@/project/titleEffects";
-import { createLicenseNotice } from "@/player/titleLicenseNotice";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import type { Project, TitleBackgroundLayer, TitleIntroSettings, TitleScreenSettings } from "@/project/types";
 import { el } from "@/util/dom";
-import { TITLE_KEY_PROMPT } from "@/player/keyBindings";
 
 const TITLE_SCREEN_LOGICAL_WIDTH = 320;
 const TITLE_SCREEN_LOGICAL_HEIGHT = 240;
@@ -19,18 +17,21 @@ export type TitleScreenActions = {
   readonly onNewGame: () => void;
   readonly onResume: () => void;
   readonly onContinue: () => void;
+  /** 크레딧(에셋 저작자 표기) 창을 연다. 확정 연출·BGM 정지 없이 타이틀 위에 뜬다. */
+  readonly onCredits: () => void;
   readonly onQuit: () => void;
 };
 
-export type TitleMenuOptionId = "newGame" | "resume" | "continueGame" | "quit";
+export type TitleMenuOptionId = "newGame" | "resume" | "continueGame" | "credits" | "quit";
 
 export type TitleMenuOption = {
   readonly id: TitleMenuOptionId;
-  readonly testId: "title-new-game" | "title-resume-game" | "title-load-game" | "title-quit-game";
+  readonly testId: "title-new-game" | "title-resume-game" | "title-load-game" | "title-credits" | "title-quit-game";
   readonly elementId:
     | "title-option-new-game"
     | "title-option-resume-game"
     | "title-option-load-game"
+    | "title-option-credits"
     | "title-option-quit-game";
   readonly label: string;
 };
@@ -47,9 +48,11 @@ export type TitleMenuContext = {
 };
 
 const DEFAULT_RESUME_LABEL = "이어하기";
+export const DEFAULT_CREDITS_LABEL = "크레딧";
 
 /**
- * Visible title options in fixed order New → Resume → Continue → Quit. newGame is always present.
+ * Visible title options in fixed order New → Resume → Continue → Credits → Quit. newGame is always present.
+ * 크레딧은 숨길 수 없다 — CC BY 계열 에셋의 저작자 표기를 여는 유일한 입구다(예전 하단 한 줄 표기를 대신한다).
  * "이어하기"(resume)는 오토세이브가 실제로 존재하고 menuVisibility.resume !== false 일 때만 노출된다.
  */
 export function listTitleMenuOptions(settings: TitleScreenSettings, context?: TitleMenuContext): TitleMenuOption[] {
@@ -78,6 +81,12 @@ export function listTitleMenuOptions(settings: TitleScreenSettings, context?: Ti
       label: settings.menuLabels.continueGame,
     });
   }
+  options.push({
+    id: "credits",
+    testId: "title-credits",
+    elementId: "title-option-credits",
+    label: settings.menuLabels.credits?.trim() || DEFAULT_CREDITS_LABEL,
+  });
   if (visibility?.quit !== false) {
     options.push({
       id: "quit",
@@ -139,8 +148,8 @@ export function renderTitleScreen(
   }
   if (playIntro) applyTitleIntroToLogoNodes(titleNodes, settings.intro);
   title.append(...titleNodes);
-  const showInputHint = settings.showInputHint !== false;
-  const menu = renderMenu(settings, options, clampedIndex, showInputHint);
+  // 조작 안내 줄은 그리지 않는다 — 키아트 하단을 가리고, 메뉴 커서가 이미 선택을 보여 준다.
+  const menu = renderMenu(settings, options, clampedIndex, false);
   wireTitleOptionClicks(menu, options, actions);
   if (playIntro) applyTitleIntroToMenu(menu, settings.intro);
   title.append(menu);
@@ -149,10 +158,6 @@ export function renderTitleScreen(
     if (settings.logoSubtitle) title.append(renderTitleLogoSubtitle(settings));
   } else {
     title.append(renderTitleEditorialCopy());
-  }
-  title.append(createLicenseNotice());
-  if (showInputHint) {
-    title.append(renderInputHint());
   }
   title.append(titleSelectionDebug(clampedIndex));
   return title;
@@ -169,7 +174,7 @@ export function renderTitleEffectsLayer(
   if (!effects.length || !backgroundResourceId) return null;
   const imageUrl = resolveAssetResourceUrl(backgroundResourceId, { project });
   if (!imageUrl) return null;
-  const options = { effects, imageUrl, fit: settings.backgroundFit ?? "cover" };
+  const options = { effects, imageUrl, fit: settings.backgroundFit ?? "stretch" };
   const signature = titleEffectsSignature(options);
   if (reuse && reuse.dataset.titleEffectsSignature === signature) return reuse;
   const canvas = createTitleEffectsCanvas(options);
@@ -389,6 +394,7 @@ const TITLE_MENU_PADDING_Y = 4;
 const TITLE_MENU_BORDER_Y = 12;
 // 안내 창 자리(하단 여백 8 + 높이 29) + 숨 쉴 틈 3.
 const TITLE_INPUT_HINT_RESERVE = 40;
+const TITLE_MENU_BOTTOM_MARGIN = 8;
 
 export function titleMenuHeight(optionCount: number): number {
   if (optionCount <= 0) return 0;
@@ -401,8 +407,10 @@ export function titleMenuHeight(optionCount: number): number {
 }
 
 export function titleMenuTop(menuY: number, optionCount: number, hintVisible: boolean): number {
-  if (!hintVisible || optionCount <= 0) return menuY;
-  const maxTop = TITLE_SCREEN_LOGICAL_HEIGHT - TITLE_INPUT_HINT_RESERVE - titleMenuHeight(optionCount);
+  if (optionCount <= 0) return menuY;
+  // 안내 창이 없어도 크레딧까지 4~5 항목이면 기본 menuY(148)에서 무대 밖으로 나간다 — 아래 여백만 남긴다.
+  const reserve = hintVisible ? TITLE_INPUT_HINT_RESERVE : TITLE_MENU_BOTTOM_MARGIN;
+  const maxTop = TITLE_SCREEN_LOGICAL_HEIGHT - reserve - titleMenuHeight(optionCount);
   return Math.max(0, Math.min(menuY, maxTop));
 }
 
@@ -442,6 +450,7 @@ function wireTitleOptionClicks(
     newGame: actions.onNewGame,
     resume: actions.onResume,
     continueGame: actions.onContinue,
+    credits: actions.onCredits,
     quit: actions.onQuit,
   };
   buttons.forEach((button, index) => {
@@ -471,14 +480,6 @@ function titleOption(
     text: label,
     attrs,
     dataset: { testid: testId },
-  });
-}
-
-function renderInputHint(): HTMLElement {
-  return el("div", {
-    class: "rm-title-input-hint",
-    text: TITLE_KEY_PROMPT,
-    dataset: { testid: "title-input-hint" },
   });
 }
 

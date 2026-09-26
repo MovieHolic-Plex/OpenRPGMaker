@@ -50,24 +50,19 @@ test("test play opens windowed and toggles fullscreen with Alt+Enter", async ({ 
     const title = document.querySelector("[data-testid='title-screen']");
     const titleText = document.querySelector(".rm-title-screen-title");
     const menu = document.querySelector(".rm-title-menu");
-    const hint = document.querySelector("[data-testid='title-input-hint']");
     if (!(body instanceof HTMLElement)) throw new Error("missing test play body");
     if (!(title instanceof HTMLElement)) throw new Error("missing title screen");
     if (!(titleText instanceof HTMLElement)) throw new Error("missing title text");
     if (!(menu instanceof HTMLElement)) throw new Error("missing title menu");
-    if (!(hint instanceof HTMLElement)) throw new Error("missing title input hint");
     const bodyRect = body.getBoundingClientRect();
     const titleRect = title.getBoundingClientRect();
     const titleTextRect = titleText.getBoundingClientRect();
     const menuRect = menu.getBoundingClientRect();
-    const hintRect = hint.getBoundingClientRect();
     return {
       bodyHeight: bodyRect.height,
       bodyLeft: bodyRect.left,
       bodyTop: bodyRect.top,
       bodyWidth: bodyRect.width,
-      hintBottom: hintRect.bottom,
-      hintTop: hintRect.top,
       menuBottom: menuRect.bottom,
       menuTop: menuRect.top,
       titleTextBottom: titleTextRect.bottom,
@@ -89,9 +84,9 @@ test("test play opens windowed and toggles fullscreen with Alt+Enter", async ({ 
   expect(titleSurface.titleTop).toBeGreaterThanOrEqual(titleSurface.bodyTop);
   expect(titleSurface.titleTop + titleSurface.titleHeight).toBeLessThanOrEqual(titleSurface.bodyTop + titleSurface.bodyHeight);
   expect(titleSurface.titleTextTop).toBeGreaterThanOrEqual(titleSurface.bodyTop);
-  expect(titleSurface.hintBottom).toBeLessThanOrEqual(titleSurface.titleTop + titleSurface.titleHeight);
   expect(titleSurface.titleTextBottom).toBeLessThan(titleSurface.menuTop);
-  expect(titleSurface.menuBottom).toBeLessThan(titleSurface.hintTop);
+  // 조작 안내 줄은 없어졌다 — 크레딧까지 늘어난 메뉴가 무대 안에서 끝나는지만 본다.
+  expect(titleSurface.menuBottom).toBeLessThanOrEqual(titleSurface.titleTop + titleSurface.titleHeight);
 
   await page.keyboard.press("Enter");
   await expect(page.getByTestId("play-canvas").locator("canvas")).toBeVisible();
