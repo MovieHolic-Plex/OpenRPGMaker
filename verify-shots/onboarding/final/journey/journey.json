@@ -1,0 +1,67 @@
+{
+  "steps": [
+    {
+      "name": "01-welcome",
+      "t": 32311,
+      "dialogs": [
+        "editor-welcome-stage"
+      ],
+      "toasts": [],
+      "save": "",
+      "topbar": "✦ OPRN Studio 새 프로젝트 저장 중 도구 소재 높이 바닥 상위 이벤트 ▶ 테스트 스튜디오 보기 도움말 게스트 AI 설정 Google 연결됨"
+    },
+    {
+      "name": "02-after-skip",
+      "t": 52205,
+      "dialogs": [],
+      "toasts": [],
+      "save": "",
+      "topbar": "✦ OPRN Studio 새 프로젝트 저장 중 도구 소재 높이 바닥 상위 이벤트 ▶ 테스트 스튜디오 보기 도움말 게스트 AI 설정 Google 연결됨"
+    },
+    {
+      "name": "03-editor-clear",
+      "t": 52668,
+      "dialogs": [],
+      "toasts": [],
+      "save": "",
+      "topbar": "✦ OPRN Studio 새 프로젝트 저장 중 도구 소재 높이 바닥 상위 이벤트 ▶ 테스트 스튜디오 보기 도움말 게스트 AI 설정 Google 연결됨"
+    },
+    {
+      "name": "04-after-paint",
+      "t": 57423,
+      "dialogs": [],
+      "toasts": [],
+      "save": "",
+      "topbar": "✦ OPRN Studio 새 프로젝트 저장 중 도구 소재 높이 바닥 상위 이벤트 ▶ 테스트 스튜디오 보기 도움말 게스트 AI 설정 Google 연결됨"
+    },
+    {
+      "name": "05-testplay",
+      "t": 89924,
+      "dialogs": [
+        "test-play-modal-backdrop"
+      ],
+      "toasts": [],
+      "save": "",
+      "topbar": "✦ OPRN Studio 새 프로젝트 저장 중 도구 소재 높이 바닥 상위 이벤트 ▶ 테스트 스튜디오 보기 도움말 게스트 AI 설정 Google 연결됨"
+    },
+    {
+      "name": "06-after-esc",
+      "t": 91806,
+      "dialogs": [
+        "test-play-modal-backdrop"
+      ],
+      "toasts": [],
+      "save": "",
+      "topbar": "✦ OPRN Studio 새 프로젝트 저장 중 도구 소재 높이 바닥 상위 이벤트 ▶ 테스트 스튜디오 보기 도움말 게스트 AI 설정 Google 연결됨"
+    },
+    {
+      "name": "07-reload",
+      "t": 139009,
+      "dialogs": [],
+      "toasts": [],
+      "save": "",
+      "topbar": "✦ OPRN Studio 새 프로젝트 저장 중 도구 소재 높이 바닥 상위 이벤트 ▶ 테스트 스튜디오 보기 도움말 게스트 AI 설정 Google 확인 중…"
+    }
+  ],
+  "errs": []
+}

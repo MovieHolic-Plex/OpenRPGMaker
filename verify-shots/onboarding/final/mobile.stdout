@@ -1,0 +1,11 @@
+{
+  "state": {
+    "welcome": false,
+    "coach": [],
+    "modals": [],
+    "toasts": [],
+    "title": "OPRN Studio",
+    "bodyText": "OPRN Studio\n\n맵·이벤트 편집\n\nAI 어시스턴트\n\n자동 저장\n\n불러오는 중…"
+  },
+  "log": []
+}

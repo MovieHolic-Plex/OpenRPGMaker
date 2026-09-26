@@ -1,0 +1,94 @@
+{
+  "editorAt": 26545,
+  "welcomeAt": null,
+  "state": {
+    "welcome": true,
+    "coach": [],
+    "dialogs": [
+      "editor-welcome-stage",
+      "database-modal-parked",
+      "database-modal-window"
+    ],
+    "toasts": [],
+    "text": "✦\nOPRN Studio\n새 프로젝트\n저장 중\n도구\n소재\n높이\n바닥\n상위\n이벤트\n▶\n테스트\n스튜디오\n보기\n도움말\n게스트\nAI 설정\nGoogle 연결됨\n맵\n그리기\nAI\nAI\n빈 맵\n작업 표시\n간단히\n실행 기록\n−\n2x\n+\n1\n\n새 게임\n\n어떤 게임을 만들까요?\n\n만들고 싶은 게임을 한 문장으로 적어 주세요. AI가 맵과 인물, 이야기를 만들어 드려요.\n\n만들기\n몬스터 수집\n수집 · 조우 · 도감\n⚙\n회상 스토리\n회상 · 컷신 · 엔딩\n⚙\n모험 JRPG\n파티 · 던전\n⚙\n\n포스터 오른쪽 위 ⚙ 는 AI 생성 없이 그 장르의 시스템 설정만 적용합니다.\n\n빈 맵으로 시작"
+  },
+  "slow": [
+    {
+      "url": "/__oprn/shared-tile-references",
+      "ms": 22188,
+      "size": 68095760,
+      "end": 25940
+    },
+    {
+      "url": "/__oprn/shared-content?scope=defaults",
+      "ms": 13209,
+      "size": 20438436,
+      "end": 16961
+    },
+    {
+      "url": "/assets/EditScene-wLubYpJ8.js",
+      "ms": 6520,
+      "size": 41293,
+      "end": 35960
+    },
+    {
+      "url": "/assets/playSceneMapBackground-kZUzGgPJ.js",
+      "ms": 6519,
+      "size": 1792,
+      "end": 35959
+    },
+    {
+      "url": "/assets/phaser.min-CwlHMuXa.js",
+      "ms": 1961,
+      "size": 318115,
+      "end": 28474
+    },
+    {
+      "url": "/auth/status?provider=google-antigravity",
+      "ms": 1958,
+      "size": 124,
+      "end": 28471
+    },
+    {
+      "url": "/assets/forest-harmony/house-parts.png",
+      "ms": 1912,
+      "size": 6890,
+      "end": 28425
+    },
+    {
+      "url": "/assets/forest-harmony/atlas-town-parts.png",
+      "ms": 1911,
+      "size": 26425,
+      "end": 28424
+    },
+    {
+      "url": "/assets/forest-harmony/treetop-parts.png",
+      "ms": 1909,
+      "size": 7999,
+      "end": 28422
+    },
+    {
+      "url": "/assets/tibo-interior/interior-expanded.png",
+      "ms": 1908,
+      "size": 420058,
+      "end": 28421
+    },
+    {
+      "url": "/assets/main-BhIwsVxr.js",
+      "ms": 1669,
+      "size": 6555654,
+      "end": 1706
+    },
+    {
+      "url": "/__oprn/edit-activity",
+      "failed": "net::ERR_ABORTED",
+      "end": 28427
+    }
+  ],
+  "log": [
+    "36.2s log: %c %c %c %c %c Phaser v3.90.0 (WebGL | Web Audio) %c https://phaser.io/v390 background: #ff0000 background: #ffff00 background: #00ff00 background: #00ffff color: #ffffff; background: #000000 backgrou",
+    "36.5s warning: [.WebGL-0x28bc076c1c00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "36.7s warning: [.WebGL-0x28bc076c1c00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "36.9s warning: [.WebGL-0x28bc076c1c00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels"
+  ]
+}

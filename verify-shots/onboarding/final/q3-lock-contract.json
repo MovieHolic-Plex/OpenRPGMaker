@@ -1,0 +1,27 @@
+{
+ "pass": true,
+ "results": {
+  "soloA": "held",
+  "soloB": "held",
+  "soloAagain": {
+   "kind": "locked",
+   "ownerLabel": "호스트",
+   "expiresAt": 1790418122360,
+   "canTakeover": true
+  },
+  "soloAtakeover": "held",
+  "teamEditor": "held",
+  "teamOwner": {
+   "kind": "locked",
+   "ownerLabel": "편집자",
+   "expiresAt": 1790418122370,
+   "canTakeover": true
+  },
+  "teamSameMemberOtherTab": {
+   "kind": "locked",
+   "ownerLabel": "편집자",
+   "expiresAt": 1790418122370,
+   "canTakeover": true
+  }
+ }
+}

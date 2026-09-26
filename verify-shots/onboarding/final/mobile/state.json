@@ -1,0 +1,29 @@
+{
+  "state": {
+    "welcome": false,
+    "coach": [],
+    "modals": [],
+    "toasts": [],
+    "title": "OPRN Studio",
+    "bodyText": "OPRN Studio\n\n맵·이벤트 편집\n\nAI 어시스턴트\n\n자동 저장\n\n불러오는 중…"
+  },
+  "log": [],
+  "shots": [
+    {
+      "name": "t1500",
+      "ms": 4502
+    },
+    {
+      "name": "t4000",
+      "ms": 4529
+    },
+    {
+      "name": "t9000",
+      "ms": 9065
+    },
+    {
+      "name": "t16000",
+      "ms": 16031
+    }
+  ]
+}

@@ -300,3 +300,15 @@ Manual wire check used the actual109MB canonical document plus its asset patch: 
 
 남은 비용: 참고문서 이미지가 여전히 프로젝트 문서 안에 있다(`tilesets[].referenceDocuments`).
 문서를 가볍게 하려면 에셋으로 분리해야 한다 — 스키마 변경이라 별도 작업이다.
+
+### 새 프로젝트 첫 칠하기 저장 (2026-09-26)
+
+새 폴더의 빈 프로젝트 문서는 81MB다(타일셋 68MB · 공용 그림 dataURL 16MB, 공용 번들 계약으로 복사).
+실측(oprn-serve 새 폴더 + Playwright, 박스 load 15~50):
+
+- 타일 참고문서 응답만 인라인 dataURL 이라, 늦게 적용되면 295개 타일셋 문서가 인라인으로 되돌아가
+  첫 저장이 60초 넘게 안 끝났다. 이제 카탈로그와 같은 `/__oprn/shared-content/image/` 주소로 보낸다(늦은 적용 no-op).
+- `store.saveMapPatch` 는 `baseSha` 가 저장 행과 같으면 3자 병합을 건너뛴다(15.1s → 5.0s, 같은 문서 bun).
+- 렌더러 `persistCurrent` 는 제출본에 기준본의 요약 기억을 넘긴다(`shareContentDigests`, diff 3.8s → 1.1s).
+- 그래도 첫 칠하기 → 「자동 저장됨」은 부하에서 20초 이상이다. 저장 한 번이 문서 크기(81MB)에 비례하므로
+  남은 바닥은 위 스키마 분리다. 그 전에 새로고침하면 마지막 칠하기가 사라질 수 있다.
