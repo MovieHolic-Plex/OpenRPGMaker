@@ -160,6 +160,10 @@ export interface MvTownRecipe {
     readonly streetProps?: readonly string[];
     /** 큰길 남쪽 보도의 버스 정류장(한 곳). 없으면 안 둔다. */
     readonly busStop?: string;
+    /** 가로 승용차 [왼쪽 보기, 오른쪽 보기] 색마다 한 쌍(4×3, onRoad). 뒷마당 주차·길가 주차·차선. 없으면 차를 두지 않는다. */
+    readonly carsHorizontal?: readonly (readonly [left: string, right: string])[];
+    /** 세로 승용차 [아래 보기, 위 보기] 색마다 한 쌍(2×3, onRoad). 주차 칸 줄·세로 차선. */
+    readonly carsVertical?: readonly (readonly [down: string, up: string])[];
     readonly laneHorizontal: string;
     /** 세로 차도를 건너는 횡단보도(1칸, 가로로 이어 찍기) — T 교차로 입구. */
     readonly crosswalkVertical: string;

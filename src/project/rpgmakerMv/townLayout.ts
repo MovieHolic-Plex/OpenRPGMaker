@@ -555,6 +555,75 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
     place(recipe.objects.arrowLeft, c.x + 11, mainY + 1, { force: true });
   }
 
+  // ── 7b. 자동차: 가게 뒤 주차 칸(세로 차), 주택가 로컬 도로 연석 쪽 길가 주차·큰길 차선(가로 차, 오른쪽 통행) ──
+  // 차는 차도·주차장 안에만 둔다 — 세 줄 모두 같은 차도 띠 안, 교차로·횡단보도·진입로 앞 열에서 1칸 떼고,
+  // 차선·화살표·빗물받이 같은 기존 물체와 겹치면 place 가 건너뛴다.
+  const carsV = recipe.objects.carsVertical ?? [];
+  const carsH = recipe.objects.carsHorizontal ?? [];
+  /** x..x+w-1 열이 row 행에서 세로 골목길 복도(교차로·옆 보도)에서 1칸 이상 떨어졌나. */
+  const clearOfCross = (x: number, w: number, row: number) => [...Array(w + 2).keys()].every((i) => !inCorridorAt(x - 1 + i, row));
+  if (carsV.length) {
+    // 가게 사이 통로(rear-lot, 폭 2~3, 골목 포장): 세로 차 한 대를 앞코가 보도에 닿게 세운다(작가 맵의 건물 사이 주차).
+    // 뒷마당은 옥상이 깊이를 채워 0~2줄뿐이라 3칸 길이 차가 들어가지 않는다.
+    for (const lot of lots) {
+      if (lot.kind !== "rear-lot" || lot.w < 2 || rng() < 0.2) continue;
+      const [down, up] = pick(rng, carsV);
+      place(rng() < 0.6 ? up : down, lot.x + (lot.w > 2 ? int(rng, 0, lot.w - 2) : 0), frontY - 1);
+    }
+    // 세로 골목길(차도 5칸 c+2~c+6) 연석 쪽 길가 주차: 오른쪽 통행 — 서쪽 차선(c+2) 은 남쪽으로(_down), 동쪽 차선(c+5) 은 북쪽으로(_up).
+    // 가로 차도·교차로 줄과 그 위아래 1줄(횡단보도 자리)은 비운다.
+    const nearCrossRow = (r: number) => roadRows.has(r) || roadRows.has(r - 1) || roadRows.has(r + 1);
+    for (const c of corridors) {
+      for (const [lane, dirIndex] of [[c.x + 2, 0], [c.x + 5, 1]] as const) {
+        for (let top = Math.max(c.y0, frontY) + int(rng, 1, 3); top + 3 <= c.y1; top += 1) {
+          if ([0, 1, 2].some((dy) => nearCrossRow(top + dy))) continue;
+          if (rng() < 0.5) { top += 2; continue; }
+          if (place(pick(rng, carsV)[dirIndex], lane, top + 2)) top += 2 + int(rng, 3, 8);
+        }
+      }
+    }
+  }
+  if (carsH.length) {
+    // 로컬 도로 5줄: 북쪽 차선(서쪽으로, _left)은 roadY~+2, 남쪽 차선(동쪽으로, _right)은 +2~+4 — 연석에 붙여 세운다.
+    // 북쪽 연석은 진입로 앞 열을 피한다. 같은 열에 양쪽이 겹치지 않게 한 열에는 한 쪽만.
+    for (const band of bands) {
+      if (band.roadY === null || band.roadY + 5 > H) continue;
+      const taken = new Set<number>();
+      for (let cx = int(rng, 2, 8); cx + 4 <= W; cx += int(rng, 6, 12)) {
+        const north = rng() < 0.4;
+        const baseY = north ? band.roadY + 2 : band.roadY + 4;
+        if (!clearOfCross(cx, 4, band.roadY)) continue;
+        if (north && [...Array(6).keys()].some((i) => drivewayCols.has(cx - 1 + i))) continue;
+        if ([...Array(4).keys()].some((i) => taken.has(cx + i))) continue;
+        const [left, right] = pick(rng, carsH);
+        if (place(north ? left : right, cx, baseY)) for (let i = 0; i < 4; i += 1) taken.add(cx + i);
+      }
+    }
+    // 큰길 7줄일 때만 1~2대: 북쪽 차로(mainY~+2, _left) · 남쪽 차로(+4~+6, _right). 5줄 큰길은 차가 중앙선을 덮는다.
+    if (mainH === 7) {
+      const want = int(rng, 1, 2);
+      for (let n = 0, tries = 0; n < want && tries < 20; tries += 1) {
+        const cx = int(rng, 1, W - 5);
+        const north = n === 0 ? rng() < 0.5 : rng() < 0.5;
+        if (!clearOfCross(cx - 1, 6, mainY)) continue;
+        const [left, right] = pick(rng, carsH);
+        if (place(north ? left : right, cx, north ? mainY + 2 : mainY + 6)) n += 1;
+      }
+    } else if (mainH === 5) {
+      // 5줄 큰길: 남쪽 차로(_right) 한 대만. 맨 윗줄(지붕 끝 조각)이 중앙선 줄에 걸려 점선을 덮는다 — 나머지 두 줄은 비어 있어야 한다.
+      for (let tries = 0; tries < 20; tries += 1) {
+        const cx = int(rng, 1, W - 5);
+        if (!clearOfCross(cx - 1, 6, mainY)) continue;
+        const id = pick(rng, carsH)[1];
+        const k = kit(id);
+        if (!k) break;
+        const body = [...Array(4).keys()].flatMap((dx) => [(laneY + 1) * W + cx + dx, (laneY + 2) * W + cx + dx]);
+        if (body.some((cell) => used.has(cell))) continue;
+        if (place(id, cx, laneY + 2, { force: true })) break;
+      }
+    }
+  }
+
   // ── 8. 빈 바닥 메우기: check_town_map 과 같은 셈(위층이 빈 같은 재료 칸의 4방향 덩어리)으로 큰 빈 잔디·빈 골목을 찾아,
   // 덩어리에서 가장 빈 칸(둘레에서 먼 칸)부터 물체로 끊는다. 잔디는 구역에 맞는 나무·덤불·화단·벤치, 골목은 분리수거함·상자·쓰레기통.
   // 물체가 덩어리 안에 통째로 들어갈 때만 둔다 — 산책로·현관길·진입로·울타리는 건드리지 않는다.
