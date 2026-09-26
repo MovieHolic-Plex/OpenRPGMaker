@@ -249,4 +249,20 @@ describe("background suggestion lifecycle", () => {
     expect(t.ui.root.textContent).toContain("기본 확인 결과");
     expect(t.ui.root.querySelectorAll("article")).toHaveLength(rendered(t)); t.ui.dispose();
   });
+  it("reuses local findings for an unchanged content version and rescans on a new one", async () => {
+    const t = setup();
+    t.set({ ...t.get(), version: "1:1" });
+    await vi.advanceTimersByTimeAsync(20);
+    const before = cardIds(t.ui.root);
+    expect(before).toContain("transfer:door.0");
+    // 같은 버전에서는 다시 훑지 않는다 — 제자리 변형은 버전 토큰 없이는 보이지 않는다.
+    t.get().project.maps[t.get().mapId]!.events[0]!.commands = [];
+    await vi.advanceTimersByTimeAsync(40);
+    expect(cardIds(t.ui.root)).toEqual(before);
+    // store 는 내용이 바뀔 때마다 버전을 올린다 — 그때는 고친 문이 카드에서 빠진다.
+    t.set({ ...t.get(), version: "1:2" });
+    await vi.advanceTimersByTimeAsync(20);
+    expect(cardIds(t.ui.root)).not.toContain("transfer:door.0");
+    t.ui.dispose();
+  });
 });

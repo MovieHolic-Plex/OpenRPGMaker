@@ -134,7 +134,7 @@ tool_call.visuals → AiRunSurface`가 같은 수집기를 쓴다. 팀/후속 �
 
 ## 첫 페인트 스타일 소유권 (2026-09-19)
 
-에디터 부트 때 `aiSidebarWorkspace`가 왼쪽 AI 표면과 오른쪽 팀 사이드바를 먼저
+에디터 부트 때 `aiSidebarWorkspace`(왼쪽 활동 막대)와 오른쪽 AI 도크·팀 사이드바를 먼저
 마운트한다. 따라서 이 표면의 스타일은 데이터베이스 모달을 열 때 지연 로드하면 안 된다.
 `src/styles/database/editor-startup-ai.css`가 기존 기능별 시트
 (`assistant-*`, `tabs-b-assistant-panel/01–12`, `18–25` 및 각 `part-*`)를 원래 순서대로
@@ -241,7 +241,27 @@ x=8, y=278, 300×383으로 화면 안에 놓인다. 설정 변경·팀 메뉴 �
   사용하므로 라이브 모델의 자발적 분업·협의 품질을 증명하는 테스트는 아니다.
 
 
-## 왼쪽 AI 대화 + 오른쪽 팀원 아바타 (2026-09-18)
+## 오른쪽 AI 도크 + 왼쪽 활동 막대 (2026-09-26, 아래 2026-09-18 절을 대체)
+
+사용자 결정: AI 는 **오른쪽**에 항상 보이고, 왼쪽은 그리기·맵 만 단다. 예전 「맵 | 그리기 | AI」 가로 탭은
+AI 를 여는 순간 팔레트가 사라져 "시키고 바로 손보기"가 한 화면에서 안 됐다.
+
+- 배치(`editor.ts` `renderEditor`): `[활동 막대 48px + 패널] [리사이저] [캠버스] [aside.ai-right-dock (editor-ai-dock)] [팀 레일]`.
+  `#ai-panel` 은 `chat-float-host` 를 통해 오른쪽 도크에 붙는다. `is-left-sidebar` 클래스는 이름만 남은
+  "고정 도크 패널" 표식이다 — 모든 도크 스타일이 이 클래스에 걸려 있어 바꾸지 않았다.
+- 폭 예산(`applyLayout`): 도크 = 뷰포트 26% 를 280~420px 로 자른 값, 왼쪽 = `min(340, leftWidth,
+  남은 폭 − 도크 − 팀 레일 − MIN_CANVAS_WIDTH(520))` 를 220px 이상. 실측(2026-09-26): 1440 → 왼 340 · 캠버스 676 ·
+  도크 374, 1280 → 340·557·333, 1024 → 220·474·280. 가로 넘침 0.
+- `aiSidebarWorkspace.ts`: 세로 활동 막대(`left-activity-bar`) — `sidebar-tools`(그리기) · `sidebar-maps`(맵) ·
+  아래 `sidebar-inspect`(검사). 켜진 항목을 다시 누르면 48px 로 접히고, 다른 항목은 그 패널로 바꾸며 편다.
+  마지막 패널은 `oprn:left-activity-pane`, 접힘은 `oprn:ai-sidebar-collapsed` 에 저장한다. 처음은 그리기.
+  검사는 패널이 아니라 명령: 그리기를 펴고 `openSidebarInspection("ruleAudit")`. 배지는
+  `ruleAuditViolationCountCached()` (도구줄 ⋯ 배지와 같은 수)이며 `RULE_AUDIT_UPDATED_EVENT` 로 갱신한다.
+  `oprn:ai-sidebar-tools` 는 그리기 패널을 연다. `oprn:ai-sidebar-show` 는 더 듣는 곳이 없다(도크는 항상 보인다).
+  회귀: `test/leftActivityBar.test.ts`.
+- 스타일: `18-assistant-deck.css` 끝 「왼쪽 활동 막대 + 오른쪽 조수 도크」 절.
+
+## 왼쪽 AI 대화 + 오른쪽 팀원 아바타 (2026-09-18, 위 절이 배치를 대체)
 
 사용자가 승인한 배치: 왼쪽 **AI** 주 대화, 중앙 맵, 오른쪽 원형 팀원 아바타.
 기본 편집기에서 우하단 float 데크와 「조수가 한 일」 가로 띠는 더 이상 만들지 않는다.

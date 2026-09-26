@@ -273,8 +273,12 @@ Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식�
   일반 `updateMap` 대신 `store.updateMapTiles`를 사용한다. 기존 경로는 포인터 샘플마다
   `structuredClone(currentMap)`으로 이벤트와 선택적 맵 메타데이터까지 복사했지만, 새 경로는
   타일 배열과 레거시 스택만 복제해 같은 불변성·undo/감사/자동저장 계약을 유지한다.
-  맵 셀 변경의 숨은 `project-export-json` 직렬화도 500ms 후행 debounce로 묶어 한 번의
-  스트로크에서 전체 프로젝트를 반복 직렬화하지 않는다.
+  맵 셀 변경의 숨은 `project-export-json` 직렬화는 **읽을 때만** 한다(2026-09-26). `editor.ts`
+  `projectExportNodeElement` 가 그 `<pre>` 의 `textContent` 를 게터로 바꿔 `ProjectExportMirror`(버전 토큰
+  캐시)를 부른다. 예전에는 획을 뗄 때마다 전체를 미리 썼고, 타일셋이 큰 프로젝트(JSON 81~114MB)에서 809ms 긴
+  작업이었다. e2e·스크립트는 `textContent` 로만 읽으므로 계약은 같다 — `innerText`·`toHaveText` 는 게터를 안
+  거치므로 미러를 그렇게 읽지 마라. 획이 끝난 뒤 도구줄 배지·되돌리기 갱신은
+  `TileToolbarModel.refreshChrome`(표준 팔레트: `syncMountedPaletteToolPick`)으로 도구줄만 간다.
 - **우클릭 영역 드래그 (2026-09-19):** 드래그 중에는 선택 사각형·크기 배지만 갱신하고,
   `selection-action-chips` DOM은 pointerup의 최종 영역에서 한 번만 만든다. 이전에는
   pointermove마다 버튼을 만들고 `getBoundingClientRect`로 레이아웃을 강제했다.
