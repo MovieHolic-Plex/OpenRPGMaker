@@ -515,7 +515,7 @@ describe("펼쳐보기 폭 규칙의 캐스케이드 승자", () => {
     return found;
   }
 
-  it("좌패널 안에서 펼쳐보기 폭은 15px 규칙이 이긴다", async () => {
+  it("좌패널 안에서 펼쳐보기 폭은 24px(최소 과녀) 규칙이 이긴다", async () => {
     const { makeTileHistoryControls } = await import("@/editor/panels/tileHistoryMenu");
     const layout = document.createElement("div");
     layout.className = "editor-layout";
@@ -537,7 +537,7 @@ describe("펼쳐보기 폭 규칙의 캐스케이드 승자", () => {
       { value: winner.value, selector: winner.selector },
       `승자가 뒤집혔다 — 걸린 규칙: ${declarations.map((entry) => `${entry.source} ${entry.selector} → ${entry.value}`).join(" | ")}`,
     ).toEqual({
-      value: "15px",
+      value: "var(--space-5)",
       selector: '.left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool.oprn-tile-history-toggle',
     });
   });

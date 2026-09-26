@@ -92,9 +92,9 @@
   background: var(--bg-raised);
   border: 1px solid var(--border-default);
   color: var(--text-2);
-  font: 700 9px/1 var(--font-ui);
-  height: 14px;
-  min-width: 14px;
+  font: 700 11px/1 var(--font-ui);
+  height: 16px;
+  min-width: 16px;
   padding: 0 3px;
   right: -4px;
   top: -4px;
