@@ -122,6 +122,16 @@ export interface MvTownRecipe {
   readonly alley: string;
   readonly driveway: string;
   readonly path: string;
+  /** 공원 바닥 잔디(가로 잔디 띠와 다른 결). 없으면 lawn. */
+  readonly parkLawn?: string;
+  /** 공원 꽃밭 덩어리(바닥 재료). 없으면 안 칠한다. */
+  readonly meadow?: string;
+  /** 산책로 가장자리·벤치 밑 닳은 흙 자갈(바닥 재료). 없으면 안 칠한다. */
+  readonly worn?: string;
+  /** 나무 무리 밑 긴 풀(잔디 위에 겹쳐 까는 재료). 없으면 안 칠한다. */
+  readonly tallGrass?: string;
+  /** 큰 공원 산책로 가운데 작은 광장 바닥. 없으면 path. */
+  readonly plaza?: string;
   /** 겹침 울타리(위층 선). */
   readonly fence: string;
   /** 뒷마당 텃밭(흙·밭). 없으면 안 만든다. */

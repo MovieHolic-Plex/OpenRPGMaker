@@ -16,6 +16,9 @@ export const DEFAULT_SEED = 1;
 /** 시나리오가 쓸 수 있는 op 종류. 목록 밖은 정규화 단계에서 거부한다. */
 export const OP_KINDS = [
   "audioAction",
+  // 파티 동료 수·키와 선두 교대를 상태로 기다린다(ct-field).
+  "waitForFollowers",
+  "waitForLeader",
   "seed",
   "setVitals",
   "dir",

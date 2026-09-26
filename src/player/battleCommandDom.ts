@@ -16,10 +16,11 @@ import { resolveTerms, type ResolvedTerms } from "@/project/terms";
 import { isCaptureTool } from "@/project/itemUsage";
 import { activeActor } from "@/battle/battlePredict";
 import { battleCommandsForActor, type RuntimeBattleCommand } from "@/battle/battleCommands";
-import { battleSkillMpCost, battleSkillUseFailure, battleSkillUseFailureLabel } from "@/battle/battleSkillUse";
+import { battleActorSkillFailure, battleSkillMpCost, battleSkillUseFailure, battleSkillUseFailureLabel, comboActorIdsOf, comboParticipantsFromSnapshot, comboSkillIdsFor } from "@/battle/battleSkillUse";
 import { targetScopeForCommand } from "@/battle/battleTargetResolver";
 import { BATTLE_KEY_PROMPT } from "@/player/keyBindings";
 import { mountBattleCommandCss } from "@/project/battleCommandCss";
+import { withJosa } from "@/util/josa";
 
 export type BattleCommandSubmenu =
   | { readonly kind: "skill"; readonly command: RuntimeBattleCommand }
@@ -261,11 +262,11 @@ function commandControl(
         gen1Blocked ? "사용 가능한 기술이 있어 통상 공격을 쓸 수 없습니다." : undefined);
     }
     case "skill": {
-      const skillIds = listedSkillIds(actor, command);
+      const skillIds = listedSkillIds(actor, command, snapshot);
       const project = store.getCurrent();
-      const usable = skillIds.filter((skillId) => actor && !battleSkillUseFailure(project, actor, skillId));
+      const usable = skillIds.filter((skillId) => actor && !actorSkillFailure(snapshot, actor, skillId));
       const onlySkill = skillIds.length === 1 ? project.database.skills.find((skill) => skill.id === skillIds[0]) : undefined;
-      const failure = onlySkill && actor ? battleSkillUseFailure(project, actor, onlySkill.id) : undefined;
+      const failure = onlySkill && actor ? actorSkillFailure(snapshot, actor, onlySkill.id) : undefined;
       const reason = failure && actor ? battleSkillUseFailureLabel(failure, onlySkill, actor) : skillIds.length === 0 ? "사용 가능한 스킬이 없습니다." : undefined;
       return commandButton(label, commandTestId(command), "fire", skillIds.length === 0 ? "없음" : "", () => {
         if (targetMode || skillIds.length === 0) return;
@@ -426,11 +427,15 @@ function syncEnemyListName(
 // 여기서 다시 내보내 기존 소비자(battleDirectorDom·battleSequencer)의 경로를 유지한다.
 export { disambiguatedBattlerName };
 
-function listedSkillIds(actor: BattleBattlerSnapshot | undefined, command?: RuntimeBattleCommand): SkillId[] {
+function listedSkillIds(actor: BattleBattlerSnapshot | undefined, command?: RuntimeBattleCommand, snapshot?: BattleSnapshot): SkillId[] {
   if (!actor) return command?.skillId ? [command.skillId] : [];
   if (command?.skillId) return [command.skillId];
   const project = store.getCurrent();
-  return actor.skillIds.filter((id) => {
+  // 연계기는 배우지 않아도 연계 멤버의 목록에 뜬다 — 동료가 참전 중일 때만.
+  const combos = snapshot
+    ? comboSkillIdsFor(project, actor.recordId, snapshot.actors.map((entry) => entry.recordId), actor.skillIds)
+    : [];
+  return [...actor.skillIds, ...combos].filter((id) => {
     const skill = project.database.skills.find((record) => record.id === id);
     if (!skill) return true;
     if (command?.skillSubsetName) return skill.type === skillTypeForSubsetName(command.skillSubsetName);
@@ -520,11 +525,12 @@ function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
   const actor = activeActor(snapshot);
   const project = store.getCurrent();
   const command = options.submenu?.kind === "skill" ? options.submenu.command : undefined;
-  for (const skillId of listedSkillIds(actor, command)) {
+  for (const skillId of listedSkillIds(actor, command, snapshot)) {
     const skill = project.database.skills.find((record) => record.id === skillId);
-    const failure = actor ? battleSkillUseFailure(project, actor, skillId) : "notLearned";
+    const failure = actor ? actorSkillFailure(snapshot, actor, skillId) : "notLearned";
     const reason = failure && actor ? battleSkillUseFailureLabel(failure, skill, actor) : failure ? "사용자가 없습니다." : undefined;
-    const detail = skill && actor ? skillMpDetail(project, skill, terms, actor) : "";
+    const partners = skill && actor ? comboPartnerNames(snapshot, skill, actor.recordId) : "";
+    const detail = [skill && actor ? skillMpDetail(project, skill, terms, actor) : "", partners ? `${withJosa(partners, "와/과")} 연계` : ""].filter(Boolean).join(" · ");
     const hint = skill && actor ? skillDetailFor(project, skill, terms, actor) : reason ?? terms.skill;
     const button = commandButton(skill?.name ?? skillId, `actor-skill-${skillId}`, "fire", detail, () => {
       options.beginTargetCommand({ kind: "skill", skillId });
@@ -587,6 +593,22 @@ function appendSkillTypeBadge(
   badge.textContent = label;
   // 제목(strong) 다음, 상세(small) 앞. 상세 문장 안에 섞으면 배지로 읽히지 않는다.
   button.querySelector(".battle-command-text")?.querySelector("strong")?.after(badge);
+}
+
+/** 전투 메뉴의 기술 사용 가능 판정 — 연계기는 런타임과 같은 동료 준비 규칙을 쓴다. */
+function actorSkillFailure(snapshot: BattleSnapshot, actor: BattleBattlerSnapshot, skillId: SkillId) {
+  return battleActorSkillFailure(store.getCurrent(), actor, skillId, comboParticipantsFromSnapshot(snapshot));
+}
+
+/** 연계기면 시전자를 됼 동료 이름(·로 잇는다), 아니면 빈 문자열. */
+function comboPartnerNames(snapshot: BattleSnapshot, skill: { comboActorIds?: readonly string[] }, actorRecordId: string): string {
+  const combo = comboActorIdsOf(skill as Parameters<typeof comboActorIdsOf>[0]);
+  if (!combo) return "";
+  const project = store.getCurrent();
+  return combo
+    .filter((id) => id !== actorRecordId)
+    .map((id) => snapshot.actors.find((entry) => entry.recordId === id)?.name ?? project.database.actors.find((entry) => entry.id === id)?.name ?? id)
+    .join("·");
 }
 
 function skillMpDetail(

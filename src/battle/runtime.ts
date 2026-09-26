@@ -25,7 +25,7 @@ import {
 } from "@/battle/battleDamage";
 import { createBattleEventRuntime, type BattleEventRuntimeResult, type BattleEventRuntimeState } from "@/battle/battleEvents";
 import { collectBattleRewards } from "@/battle/battleRewards";
-import { computeActorLevelUp } from "@/battle/battleLevelUp";
+import { computeActorLevelUp, computeTechPointLearning } from "@/battle/battleLevelUp";
 import { battlerTypes, gen1CanonicalTypeForId, gen1ElementIdForCanonical, gen1TypeModifiersForTypes, typeChartMultiplierForTypes } from "@/battle/typeChart";
 import type { BattleLevelUpResult } from "@/battle/battleLevelUp";
 import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
@@ -76,8 +76,9 @@ import {
   normalizeBattleFieldBackgroundId,
 } from "@/project/databaseEnemyTroopRecordModel";
 import { mulberry32, type Rng } from "@/util/rng";
-import { battleSkillMpCost, battleSkillUseFailure, consumeBattleSkillResource } from "@/battle/battleSkillUse";
+import { battleActorSkillFailure, battleSkillMpCost, battleSkillUseFailure, comboActorIdsOf, consumeBattleSkillResource, type BattleComboParticipant } from "@/battle/battleSkillUse";
 import {
+  areaTargets,
   requestedTargetId,
   resolveBattleTargets,
   targetIdFor,
@@ -356,6 +357,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     enemyLevel?: number;
     levelUps: BattleLevelUpResult[];
     monsterLevelUps: MonsterLevelUpPreview[];
+    tp?: number;
+    techLearned?: { actorId: string; actorName: string; skillIds: SkillId[] }[];
   } = { exp: 0, gold: 0, items: [], levelUps: [], monsterLevelUps: [] };
   // Mutable battle authority is detached from the live session seed.
   const battleEventState: BattleEventRuntimeState = {
@@ -815,6 +818,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       phase = "resolved";
       return;
     }
+    // 연계기는 동료의 행동 슬롯도 소비한다 — 게이지를 비우고 이번 사이클에 행동한 것으로 센다.
+    for (const partner of comboPartners(actor, command)) {
+      partner.gauge = 0;
+      gaugeCycleActed.add(partner.id);
+    }
     // 사이클 계수는 효과 적용 뒤에 — 이번 행동으로 쓰러진 배틀러는 대기 목록에서 빠진다.
     applyTroopEvents(() => finishGaugeActorCommand(actor), markGaugeActionCycle(actor));
   }
@@ -866,6 +874,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       actors: activeActors(),
       enemies: visibleEnemies(),
       requestedTargetId: requestedTargetId(command),
+      area: command.kind === "skill" ? lookupSkill(command.skillId)?.area : undefined,
     });
     // 직접 실행 경로(테스트/헤드리스)에서 ally 계열 대상이 명시되지 않으면
     // 가장 아픈 생존 동료를 자동 선택한다(전투 UI 의 beginTargetSelection 은 그대로).
@@ -892,7 +901,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       case "switch":
         return canSwitchActor(actor.recordId, command.targetActorId);
       case "skill":
-        return battleSkillUseFailure(options.project, actor, command.skillId) === undefined;
+        return battleActorSkillFailure(options.project, actor, command.skillId, comboParticipants()) === undefined;
       case "item": {
         const item = options.project.database.items.find((record) => record.id === command.itemId);
         // actor/class 제한 체크 — 불일치 시 커맨드 자체를 거부한다 (무효 턴으로 소모 안 함)
@@ -940,6 +949,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         if (!prepareGen1CombatAction(actor)) break;
         const targets = resolvedCommandTargets(actor, command).targets;
         consumeBattleSkillResource(options.project, actor, command.skillId);
+        // 연계기: 참가 배우 각자의 MP 를 똑같이 소비한다(위력은 시전자 능력치).
+        for (const partner of comboPartners(actor, command)) consumeSkillMp(partner, command.skillId);
         for (const target of targets) applySkill(actor, target, command.skillId, "skill");
         applyGen1Residual(actor);
         break;
@@ -1306,7 +1317,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (!actor || actor.hp <= 0) return;
     if (command.kind === "switch" && !canSwitchActor(actor.recordId, command.targetActorId)) return;
     strictActorCommands = [...strictActorCommands, { actorId: actor.recordId, command }];
-    strictPendingActorIds = strictPendingActorIds.filter((actorId) => actorId !== actor.recordId);
+    // 연계기는 동료의 이번 라운드 명령을 대신한다 — 동료는 따로 명령하지 않는다.
+    const partnerIds = comboPartners(actor, command).map((partner) => partner.recordId);
+    for (const partner of comboPartners(actor, command)) partner.gauge = 0;
+    strictPendingActorIds = strictPendingActorIds.filter((actorId) => actorId !== actor.recordId && !partnerIds.includes(actorId));
     actor.gauge = 0;
     activeActorId = strictPendingActorIds[0];
     if (activeActorId) return;
@@ -1344,7 +1358,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         const beforeResult = lastActionResult;
         if (action.side === "actor") {
           if (action.actor.hp <= 0) continue;
-          if (action.command.kind === "skill" && battleSkillUseFailure(options.project, action.actor, action.command.skillId)) continue;
+          if (action.command.kind === "skill" && battleActorSkillFailure(options.project, action.actor, action.command.skillId, comboParticipants(true))) continue;
           activeActorId = action.actor.recordId;
           applyActorCommandEffect(action.actor, action.command);
         } else {
@@ -1634,6 +1648,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         actors: activeActors(),
         enemies: visibleEnemies(),
         requestedTargetId,
+        area: skill.area,
       });
       const targets = resolution.requiresSelection
         ? resolution.targets
@@ -1690,6 +1705,22 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function lookupSkill(skillId: SkillId) {
     return options.project.database.skills.find((record) => record.id === skillId);
+  }
+
+  /** 연계 판정용 참전 배우. allReady 는 이미 턴을 소비한 strict 해결 단계용(생존·MP 만 본다). */
+  function comboParticipants(allReady = false): BattleComboParticipant[] {
+    return activeActors().map((battler) => ({
+      recordId: battler.recordId, hp: battler.hp, mp: battler.mp, maxMp: battler.maxMp, stateIds: battler.stateIds,
+      ready: allReady || battler.gauge >= 100,
+    }));
+  }
+
+  /** 연계기 명령이면 시전자를 됼 동료 배틀러, 아니면 빈 배열. */
+  function comboPartners(user: MutableBattler, command: ActorCommand): MutableBattler[] {
+    if (command.kind !== "skill") return [];
+    const combo = comboActorIdsOf(lookupSkill(command.skillId));
+    if (!combo) return [];
+    return activeActors().filter((battler) => battler !== user && combo.includes(battler.recordId as ActorId));
   }
 
   function applyItem(itemId: ItemId, target: MutableBattler, user: MutableBattler): void {
@@ -1956,7 +1987,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         }
         const target = pickBestByUtility(resolution.candidates, (candidate) => enemySkillUtility(enemy, candidate, skill));
         if (!target) return [];
-        const utility = enemySkillUtility(enemy, target, skill);
+        const utility = areaTargets(target, resolution.candidates, skill.area).reduce((sum, hit) => sum + enemySkillUtility(enemy, hit, skill), 0);
         const score = utility > 0 ? Math.max(1, action.priority) * 10 + utility : -1000 + Math.max(1, action.priority);
         return [{ action: { ...action, targetIds: [target.id] }, score }];
       });
@@ -2587,6 +2618,28 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     rewards.items = [...collected.items];
     rewards.levelUps = usePartyMonsters ? [] : computeLevelUpPreview(collected.exp, collected.enemyLevel);
     rewards.monsterLevelUps = computeMonsterLevelUpPreview(collected.exp);
+    if (collected.tp && !usePartyMonsters) {
+      rewards.tp = collected.tp;
+      const techLearned = computeTechLearnedPreview(collected.tp, rewards.levelUps);
+      if (techLearned.length > 0) rewards.techLearned = techLearned;
+    }
+  }
+
+  // TP 습득 미리보기 — 세션 적립(applyBattleRewardsToSession)과 같은 대상(살아남은 보상 대상)·같은 함수.
+  function computeTechLearnedPreview(earnedTp: number, levelUps: readonly BattleLevelUpResult[]) {
+    const learned: { actorId: string; actorName: string; skillIds: SkillId[] }[] = [];
+    const actorIds = rewardActorIds(options.project, battleEventState.partyActorIds ?? actors.map((actor) => actor.recordId), [...participatingActorIds]);
+    for (const actorId of new Set(actorIds)) {
+      const battler = actors.find((entry) => entry.recordId === actorId);
+      if (!battler || battler.hp <= 0) continue;
+      const levelUp = levelUps.find((entry) => entry.actorId === actorId);
+      const level = levelUp?.toLevel ?? battleEventState.actorLevels?.[actorId] ?? battler.level ?? 1;
+      const totalTp = (sessionState.actorTechPoints?.[actorId] ?? 0) + earnedTp;
+      const known = [...battler.skillIds, ...(levelUp?.learnedSkillIds ?? [])];
+      const skillIds = computeTechPointLearning(options.project, actorId, level, totalTp, known);
+      if (skillIds.length > 0) learned.push({ actorId, actorName: battler.name, skillIds });
+    }
+    return learned;
   }
 
   // 몬스터 배틀은 실제 보상과 같은 참가자 원장을 쓰고, 일반 액터 배틀은 동행 몬스터 전원을 미리 본다.

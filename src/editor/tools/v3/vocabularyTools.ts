@@ -11,7 +11,7 @@
 // UI 카드(인라인 편집)는 V3B 몫 — 여기서는 카드 렌더용 데이터만 반환한다.
 
 import { tileLayerHome } from "@/editor/tileLayerClassification";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { defaultToolTilesetId } from "@/project/defaults/forestHarmony";
 import type { LintIssue } from "@/project/lint/projectLint";
 import type { VocabLayerHome } from "@/project/tileVocabulary";
 import { isBlockedPassage } from "@/project/tilesetPassage";
@@ -69,7 +69,7 @@ export interface VocabularyProposalCard {
 }
 
 function requireTileset(project: Project, tilesetId: unknown): TilesetDef {
-  const id = typeof tilesetId === "string" && tilesetId.length > 0 ? tilesetId : DEFAULT_TILESET_ID;
+  const id = typeof tilesetId === "string" && tilesetId.length > 0 ? tilesetId : defaultToolTilesetId(project);
   const tileset = project.tilesets[id];
   if (!tileset) throw new ToolError(`타일셋을 찾을 수 없습니다: ${id}`, { code: "tileset-not-found" });
   return tileset;
@@ -197,7 +197,7 @@ const proposeTileVocabulary: ToolDefinition = {
   parameters: {
     type: "object",
     properties: {
-      tilesetId: { type: "string", description: "생략 시 기본 타일셋" },
+      tilesetId: { type: "string", description: "생략 시 시작 맵의 타일셋(없으면 숲마을)" },
       items: {
         type: "array",
         description: "제안 항목 목록(1개 이상)",

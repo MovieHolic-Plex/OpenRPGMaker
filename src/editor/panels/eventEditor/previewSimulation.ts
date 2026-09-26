@@ -402,6 +402,8 @@ function applyCommandToState(command: Command, state: PreviewSimState, hostEvent
         if (!state.partyActorIds.includes(command.actorId)) {
           state.partyActorIds.push(command.actorId);
         }
+      } else if (command.action === "lead") {
+        state.partyActorIds = [command.actorId, ...state.partyActorIds.filter((id) => id !== command.actorId)];
       } else {
         state.partyActorIds = state.partyActorIds.filter((id) => id !== command.actorId);
       }

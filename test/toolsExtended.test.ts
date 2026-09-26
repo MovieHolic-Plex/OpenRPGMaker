@@ -82,7 +82,7 @@ describe("DB upsert 확장 툴", () => {
     });
 
     expect(result.ok, result.summary).toBe(true);
-    expect(result.summary).toContain("미지원 커맨드 1건");
+    expect(result.summary).toContain("런타임 제한 커맨드 1건");
     expect(result.data).toMatchObject({ unsupportedCommands: 1 });
     expect(result.issues?.some((issue) => issue.severity === "warning" && issue.code === "runtime-support:m2-088-comment")).toBe(true);
 

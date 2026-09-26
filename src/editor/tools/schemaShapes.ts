@@ -77,7 +77,7 @@ const COMMAND_LEAF_SCHEMA: JsonSchema = {
     canEscape: { type: "boolean", description: "battleProcessing: 도망 허용" },
     canLose: { type: "boolean", description: "battleProcessing: 져도 게임 오버 없이 계속" },
     actorId: { type: "string", description: "changeParty/changeExp/changeLevel/learnSkill/changeActorHp 등: 조회한 actor ID(몬스터 종 ID 아님)" },
-    action: { type: "string", description: "changeParty: add|remove. learnSkill: learn|forget." },
+    action: { type: "string", description: "changeParty: add|remove|lead(선두 교대 — 그 배우를 맨 앞으로, 필드 주인공 그림이 바뀐다). learnSkill: learn|forget." },
     skillId: { type: "string", description: "learnSkill: 조회한 skill ID" },
     eventId: { type: "string", description: "moveEvent/callMapEvent: 대상 이벤트 ID" },
     commonEventId: { type: "string", description: "callCommonEvent: 공통 이벤트 ID" },

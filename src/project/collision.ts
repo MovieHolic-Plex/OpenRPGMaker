@@ -137,10 +137,36 @@ export function canMove(
   // 칸 밖 from 은 tileAt 처럼 네 층 모두 빈칸 → 막힘.
   const fromPass = inBounds(map, fromX, fromY) ? cellPassOrNull(tileset, map, fromY * map.width + fromX) : null;
   const toPass = cellPassOrNull(tileset, map, toY * map.width + toX);
+  // 한 방향 턱: 정해진 방향이 아니면 턱 칸으로 들어설 수 없다. 정해진 방향의 진입은 주인공 이동이
+  // 2칸 뛰어넘기로 가로챈다(playSceneMovement). 턱이 없는 타일셋은 이 검사가 항상 null 이다.
+  const ledge = ledgeDirectionAt(tileset, map, toX, toY);
+  if (ledge !== null && ledge !== dir) return false;
   // from에서 해당 방향으로 나갈 수 있고, to에 해당 방향으로 들어올 수 있어야 함.
   // RM2K3 관례: from의 나가는 방향 + to의 들어오는 방향(반대) 체크.
   // 단순화: from과 to 양쪽의 해당 방향 비트가 열려있으면 통과.
   return dirPassable(fromPass ?? BLOCKED, dir) && dirPassable(toPass ?? BLOCKED, oppositeDir(dir));
+}
+
+/**
+ * 칸 (x,y) 가 한 방향 턱이면 뛰어내릴 수 있는 방향, 아니면 null. 위층부터 보고 처음 만난 턱 타일이 정한다.
+ * `tileset.ledgeDirections` 가 없으면(옛 프로젝트) 곧바로 null — 기존 통행 판정과 같다.
+ */
+export function ledgeDirectionAt(tileset: TilesetDef, map: GameMap, x: number, y: number): Dir | null {
+  const ledges = tileset.ledgeDirections;
+  if (!ledges || !inBounds(map, x, y)) return null;
+  const i = y * map.width + x;
+  const tiles = [
+    map.upperOverlayTiles?.[i] ?? -1,
+    topTileInStack(map, "upper", i) ?? map.upperTiles[i] ?? -1,
+    map.lowerOverlayTiles?.[i] ?? -1,
+    topTileInStack(map, "lower", i) ?? map.lowerTiles[i] ?? -1,
+  ];
+  for (const tile of tiles) {
+    if (tile < 0) continue;
+    const dir = ledges[String(tile)];
+    if (dir) return dir;
+  }
+  return null;
 }
 
 function oppositeDir(dir: Dir): Dir {

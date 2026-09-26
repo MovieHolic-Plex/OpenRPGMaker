@@ -12,6 +12,7 @@ import { isGrowthProgress } from "@/project/growth/validation";
 import { refreshGrowthVitals } from '@/project/growth/vitals';
 import type { ActorInitialEquipment, CharacterFootprint, Project } from "@/project/types";
 import { normalizeGalleryUnlocks } from "@/project/gallery";
+import { currentChapterLabel } from "@/project/newGamePlus";
 import { normalizeRelationships } from "@/project/relationshipState";
 import { normalizeCharacterFootprint } from "@/project/footprint";
 import {
@@ -33,7 +34,7 @@ import {
   sanitizeShopShelf,
   sanitizeShopTradeCounts,
 } from "@/project/economyValues";
-import { syncMonsterPartyFollowers } from "@/project/followers";
+import { syncMonsterPartyFollowers, syncPartyFollowers } from "@/project/followers";
 import { normalizeMonsterInstanceBattleState } from "@/project/monsterCollection";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
@@ -128,6 +129,8 @@ export type SaveSnapshot = {
   readonly savedAt: string;
   readonly mapName?: string;
   readonly partyLevel?: number;
+  /** 저장 당시 장(시대) 이름. system.chapter 가 없거나 이름표 없는 값이면 생략. */
+  readonly chapterLabel?: string;
   readonly playTimeSeconds?: number;
   /** Optional metadata shared by supported Save4 and Save5 snapshots. */
   readonly savedBy?: SaveOrigin;
@@ -178,6 +181,7 @@ export type SaveSnapshot = {
     readonly actorSkillPp?: PlaySession["actorSkillPp"];
     readonly actorBattleCommands?: PlaySession["actorBattleCommands"];
     readonly actorExperience?: Record<string, number>;
+    readonly actorTechPoints?: Record<string, number>;
     readonly actorLevels?: Record<string, number>;
     readonly actorVitals?: Record<string, ActorVitals>;
     readonly horror?: PlaySession["horror"];
@@ -284,6 +288,13 @@ function legacySaveKey(slot: SaveSlotIndex | "auto"): string {
   return `${saveSlotStorageNamespace ?? "oprn"}:save-slot:${slot}`;
 }
 
+/** 클리어 기록(강하게 다시 하기) 키 — 세이브와 같은 게임별 네임스페이스를 쓴다. */
+export function clearRecordKey(): string {
+  const pinned = publicationSaveKey("auto");
+  if (pinned) return pinned.replace(/:save-slot:v6:auto$/u, ":clear-record:v1");
+  return `${saveSlotStorageNamespace ?? "oprn"}:clear-record:v1`;
+}
+
 export function writeAutosave(storage: Storage, snapshot: SaveSnapshot): void {
   if (saveScopeBlocker(snapshot.identity)) throw new PublicationError("save-incompatible");
   storage.setItem(autosaveKey(), JSON.stringify(snapshot));
@@ -351,6 +362,10 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
     savedAt: new Date().toISOString(),
     mapName: project.maps[session.currentMapId]?.name ?? "",
     partyLevel: leadPartyLevel(project, session),
+    ...(() => {
+      const chapterLabel = currentChapterLabel(project, session);
+      return chapterLabel ? { chapterLabel } : {};
+    })(),
     playTimeSeconds: Math.floor(session.playTimeSeconds ?? 0),
     session: {
       switches: structuredClone(session.switches),
@@ -404,6 +419,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       actorSkillPp: structuredClone(session.actorSkillPp),
       actorBattleCommands: structuredClone(session.actorBattleCommands),
       actorExperience: structuredClone(session.actorExperience),
+      ...(session.actorTechPoints && Object.keys(session.actorTechPoints).length > 0 ? { actorTechPoints: structuredClone(session.actorTechPoints) } : {}),
       actorLevels: structuredClone(session.actorLevels),
       actorVitals: structuredClone(session.actorVitals),
       horror: session.horror ? structuredClone(session.horror) : undefined,
@@ -623,6 +639,7 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   if (snapshot.session.actorSkillPp) session.actorSkillPp = structuredClone(snapshot.session.actorSkillPp);
   if (snapshot.session.actorBattleCommands) session.actorBattleCommands = structuredClone(snapshot.session.actorBattleCommands);
   if (snapshot.session.actorExperience) session.actorExperience = structuredClone(snapshot.session.actorExperience);
+  if (snapshot.session.actorTechPoints) session.actorTechPoints = structuredClone(snapshot.session.actorTechPoints);
   if (snapshot.session.actorLevels) session.actorLevels = structuredClone(snapshot.session.actorLevels);
   if (snapshot.session.actorVitals) session.actorVitals = structuredClone(snapshot.session.actorVitals);
   if (snapshot.session.horror) session.horror = structuredClone(snapshot.session.horror);
@@ -738,6 +755,7 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
     if (!makers.ok && makers.reason !== "disabled") throw new LifeReconciliationError("makerInstances", makers.instanceId ?? "makers", makers.reason);
   }
   syncMonsterPartyFollowers(project, reconciled);
+  syncPartyFollowers(project, reconciled);
   return reconciled;
 }
 
@@ -859,6 +877,7 @@ function parseSnapshotValue(value: unknown): ParsedSnapshotResult {
       savedAt: value.savedAt,
       mapName: typeof value.mapName === "string" ? value.mapName : undefined,
       partyLevel: typeof value.partyLevel === "number" ? Math.floor(value.partyLevel) : undefined,
+      ...(typeof value.chapterLabel === "string" && value.chapterLabel ? { chapterLabel: value.chapterLabel } : {}),
       playTimeSeconds: typeof value.playTimeSeconds === "number" ? Math.floor(value.playTimeSeconds) : undefined,
       savedBy: isSaveOrigin(value.savedBy) ? value.savedBy : undefined,
       autosaveTrigger: isAutosaveTrigger(value.autosaveTrigger) ? value.autosaveTrigger : undefined,
@@ -1062,6 +1081,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorSkillPp: isActorSkillPpRecord(session.actorSkillPp) ? session.actorSkillPp : undefined,
       actorBattleCommands: isActorSkillIdsRecord(session.actorBattleCommands) ? session.actorBattleCommands : undefined,
       actorExperience: isNumberRecord(session.actorExperience) ? session.actorExperience : undefined,
+      actorTechPoints: isNumberRecord(session.actorTechPoints) ? session.actorTechPoints : undefined,
       actorLevels: isNumberRecord(session.actorLevels) ? session.actorLevels : undefined,
       actorVitals: isActorVitalsRecord(session.actorVitals) ? session.actorVitals : undefined,
       horror: isHorrorState(session.horror) ? session.horror : undefined,

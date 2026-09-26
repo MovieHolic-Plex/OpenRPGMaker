@@ -245,6 +245,11 @@ const TOWN: MvTownRecipe = {
   alley: "짙은 아스팔트",
   driveway: "밝은 콘크리트 바닥",
   path: "회색 판석 산책로",
+  parkLawn: "긴 풀 초원",
+  meadow: "흰 꽃 잔디",
+  worn: "흙 자갈 잔디",
+  tallGrass: "긴 풀 덤불",
+  plaza: "베이지 광장 타일",
   fence: "철망 울타리",
   parkingLine: "흰 주차선",
   garden: "갈아 놓은 밭",
@@ -280,7 +285,8 @@ const TOWN: MvTownRecipe = {
   ],
   objects: {
     lamp: "street_lamp_left", lampAlt: "street_lamp_right", planterTree: "cone_tree_pot", streetTree: "cone_tree",
-    streetTrees: ["cone_tree", "poplar_tree", "cone_tree_planter"],
+    // 잔디 띠 가로수는 맨 나무만 — 화분 나무는 포장된 보도에만(DEFECTS r2-14).
+    streetTrees: ["cone_tree", "poplar_tree"],
     yardTrees: ["cone_tree", "round_tree_small", "poplar_tree"],
     parkTrees: ["round_tree", "round_tree_small", "cone_tree", "poplar_tree"],
     hydrant: "fire_hydrant", trash: "trash_can", bench: "park_bench", benchLong: "park_bench_long",
@@ -323,7 +329,7 @@ const GUIDE = `# Rasak Modern 도시 — 까는 순서
 - 가게 뒤는 뒷골목과 **뒷주차**(주차 칸 선). 주차장을 가게와 큰길 사이에 두지 않는다.
 - 주택: 필지 8~12칸, 집 5~8칸, 앞마당 3~5칸, 이웃과 틈 1~4칸(쌍마다 다르게). 문 → 보도 현관길 1칸, 집 옆 진입로 2칸.
   앞마당엔 화단·덤불·나무 중 2가지 이상, 뒷마당엔 울타리·나무·텃밭. 빈 잔디 네모로 두지 않는다.
-- 차도 옆은 **연석 → 잔디 띠 1칸 → 보도**(주택가). 가로수는 잔디 띠에 4~6칸 간격, 가로등 6~10칸 간격(길 건너와 엇갈리게).
+- 차도 옆은 **연석 → 잔디 띠 1칸 → 보도**(주택가). 가로수는 잔디 띠에 3~7칸 불규칙 간격, 가로등 6~10칸 간격(길 건너와 엇갈리게).
 - 같은 바닥이 물체 없이 **6×6(36칸)을 넘지 않게**. 보도는 맵의 25% 이하. **맵 끝 2줄 이상을 빈 띠로 두지 않는다**(맨 윗줄도).
 - 좌우 대칭·같은 간격 격자를 피한다. 랜드마크(분수 공원 등) 하나를 큰길에서 보이게, 한가운데를 조금 비켜.
 
@@ -377,7 +383,8 @@ const GUIDE = `# Rasak Modern 도시 — 까는 순서
 - 가게 앞 보도에는 가게마다 다른 것을 가끔: \`ad_column\`(원통 광고탑), \`hotdog_cart\`·\`popcorn_cart\`·\`icecream_cart\`, \`round_kiosk\`.
 - 큰길 보도에 \`bus_shelter\`(버스 정류장 3×2) 한 곳 — 교차로에서 2칸 이상 떼어.
 - 자동차 \`car_<색>_left/_right\`(가로 4×3, 아래 두 줄이 막힘)·\`car_<색>_down/_up\`(세로 2×3). 색: red·white·blue·black·green. 차도·주차장 위에만 둔다 — 보도·횡단보도·교차로 위 금지. 오른쪽 통행: 가로 길 북쪽 차선은 _left, 남쪽 차선은 _right. 캐릭터 시트 \`!Car1.png\`(Animations/Vehicles/ModernCars)를 같이 올려야 보인다.
-- 나무는 수종을 섞는다. 가로수(잔디 띠 1칸)는 거리마다 한 수종 — \`cone_tree\`·\`poplar_tree\`(키 큰 미루나무 1×4)·\`cone_tree_planter\`.
+- 나무는 수종을 섞는다(한 수종이 나무의 45%를 넘지 않게). 가로수(잔디 띠 1칸)는 \`cone_tree\`·\`poplar_tree\`(키 큰 미루나무 1×4)·\`round_tree_small\` —
+  간격은 3~7칸으로 흔들고 모통이·진입로·공원 입구 앞에서 끊는다. 화분 나무(\`cone_tree_pot\`·\`cone_tree_planter\`)는 포장된 보도·광장에만.
   공원·넓은 마당은 \`round_tree\`(2×4)·\`round_tree_small\`(2×2)를 섞고, 가장자리에 \`bush_wide\`·\`hedge_horizontal\`.
 - 물체 밑칸은 막힌다. 길을 막지 않게 보도 폭의 절반 이상을 비워 둔다.
 

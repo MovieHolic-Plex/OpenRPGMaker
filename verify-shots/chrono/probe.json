@@ -1,0 +1,154 @@
+{
+ "probes": {
+  "afterBoot": {
+   "mapId": "map_era_present",
+   "x": 20,
+   "y": 23,
+   "followerSprites": 2,
+   "followerPositions": {
+    "follower:actor:actor_mage": {
+     "x": 312,
+     "y": 384,
+     "frame": 13,
+     "depth": 200384
+    },
+    "follower:actor:actor_cleric": {
+     "x": 328,
+     "y": 384,
+     "frame": 25,
+     "depth": 200384
+    }
+   },
+   "sessionFollowers": [
+    {
+     "id": "actor:actor_mage",
+     "eventId": "actor_mage",
+     "graphic": {
+      "sprite": {
+       "type": "bundled",
+       "id": "tex_easyrpg_charset_actor3"
+      },
+      "direction": "down",
+      "pattern": 25
+     },
+     "name": "루카 합류",
+     "kind": "actor"
+    },
+    {
+     "id": "actor:actor_cleric",
+     "eventId": "actor_cleric",
+     "graphic": {
+      "sprite": {
+       "type": "bundled",
+       "id": "tex_easyrpg_charset_actor1"
+      },
+      "direction": "down",
+      "pattern": 25
+     },
+     "name": "마루 합류",
+     "kind": "actor"
+    }
+   ],
+   "party": [
+    "actor_hero",
+    "actor_mage",
+    "actor_cleric"
+   ],
+   "hp": {
+    "actor_hero": 522,
+    "actor_mage": 522,
+    "actor_cleric": 522
+   },
+   "switches": [
+    "sw_ev_companion_3f4894cb-bba3-4214-b49d-159f4192a3ac_done",
+    "sw_ev_companion_d304aae7-9751-4168-959d-dc76a5484637_done"
+   ]
+  },
+  "followersAfterWalk": {
+   "mapId": "map_era_present",
+   "x": 4,
+   "y": 4,
+   "followerSprites": 2,
+   "followerPositions": {
+    "follower:actor:actor_mage": {
+     "x": 56,
+     "y": 80,
+     "frame": 13,
+     "depth": 200080
+    },
+    "follower:actor:actor_cleric": {
+     "x": 88,
+     "y": 80,
+     "frame": 37,
+     "depth": 200080
+    }
+   },
+   "sessionFollowers": [
+    {
+     "id": "actor:actor_mage",
+     "eventId": "actor_mage",
+     "graphic": {
+      "sprite": {
+       "type": "bundled",
+       "id": "tex_easyrpg_charset_actor3"
+      },
+      "direction": "down",
+      "pattern": 25
+     },
+     "name": "루카 합류",
+     "kind": "actor"
+    },
+    {
+     "id": "actor:actor_cleric",
+     "eventId": "actor_cleric",
+     "graphic": {
+      "sprite": {
+       "type": "bundled",
+       "id": "tex_easyrpg_charset_actor1"
+      },
+      "direction": "down",
+      "pattern": 25
+     },
+     "name": "마루 합류",
+     "kind": "actor"
+    }
+   ],
+   "party": [
+    "actor_hero",
+    "actor_mage",
+    "actor_cleric"
+   ],
+   "hp": {
+    "actor_hero": 522,
+    "actor_mage": 522,
+    "actor_cleric": 522
+   },
+   "switches": [
+    "sw_ev_companion_3f4894cb-bba3-4214-b49d-159f4192a3ac_done",
+    "sw_ev_companion_d304aae7-9751-4168-959d-dc76a5484637_done"
+   ]
+  },
+  "savepointEvent": {
+   "id": "ev_save_db11625a-36cb-40ab-b729-ca33901ef100",
+   "x": 30,
+   "y": 20
+  },
+  "savepoint": {
+   "hpBefore": {
+    "actor_hero": 522,
+    "actor_mage": 522,
+    "actor_cleric": 522
+   },
+   "hpAfter": {
+    "actor_hero": 522,
+    "actor_mage": 522,
+    "actor_cleric": 522
+   },
+   "uiShown": 1
+  },
+  "battle": {
+   "commands": []
+  }
+ },
+ "errors": []
+}

@@ -5,7 +5,7 @@ import { advanceFurniturePush, beginFurniturePush, clearFurniturePush, furniture
 import { advancePursuitDoors, isPlayerHiding, pushObject, toggleHiding } from "./horrorRuntime";
 import { refreshRuntimeEntities } from "./playSceneMapRuntime";
 import { conditionWaitScenes } from "@/player/runtimeConditionWait";
-import { canMoveFootprint, inBounds, isPassable } from "@/project/collision";
+import { canMoveFootprint, inBounds, isPassable, ledgeDirectionAt } from "@/project/collision";
 import { loopStepTarget, wrapLoopPosition } from "@/project/mapLoop";
 // 경로 세팅은 잎 모듈에 있다(가벼운 소비자가 이 파일 전체를 끌어오지 않도록) — 기존
 // 임포트 경로를 깨지 않기 위해 여기서 다시 내보낸다.
@@ -226,6 +226,8 @@ function advancePlayerStepFrame(scene: PlaySceneContext): void {
     scene.session.y = scene.tileY;
     if (diagnosticObserved("movement")) publishDiagnostic({ category: "movement", phase: "completed", x: scene.tileX, y: scene.tileY });
     recordFollowerPlayerStep(scene.session, { x: scene.movingFrom.x, y: scene.movingFrom.y, direction: scene.facing });
+    // 턱을 넘은 체공은 중간 칸도 궤적에 넣는다 — 동료가 턱 칸을 건너뛰지 않고 한 칸씩 따라온다.
+    if (hopState?.via) recordFollowerPlayerStep(scene.session, { x: hopState.via.x, y: hopState.via.y, direction: scene.facing });
     const project = store.getCurrent();
     applyWalkCareTicks(project, scene.session, 1);
     applyGen1FieldPoisonStep(project, scene.session);
@@ -333,6 +335,7 @@ function tryStartMove(scene: PlaySceneContext, input: InputState): void {
   scene.facing = facingForStep(step.dx, step.dy);
   const nx = scene.tileX + step.dx;
   const ny = scene.tileY + step.dy;
+  if (tryStartLedgeHop(scene, body, step.dx, step.dy)) return;
   const blockingEvent = findBlockingEventForPlayerBody(scene, body, nx, ny);
   if (blockingEvent) {
     scene.facing = facingForStep(step.dx, step.dy);
@@ -347,6 +350,34 @@ function tryStartMove(scene: PlaySceneContext, input: InputState): void {
   scene.dashing = input.dash;
   beginPlayerStep(scene, nx, ny);
   scene.lastActionTargetKey = "";
+}
+
+/** 턱 넘기 거리(칸). 턱 칸을 건너 그 너머에 착지한다 — 포켓몬·크로노 트리거의 한 방향 턱. */
+const LEDGE_HOP_DISTANCE = 2;
+
+/**
+ * 한 방향 턱(tileset.ledgeDirections). 허용 방향으로 턱 칸에 들어서면 걷는 대신 2칸 뛰어 넘는다.
+ * 다른 방향은 collision.canMove 가 이미 막았으므로 여기 오지 않는다. 착지 칸이 맵 밖·통행 불가·
+ * 솔리드 이벤트면 넘지 않고 제자리에 선다(턱 위에 멈추면 되돌아올 수 없다). 1칸 몸만.
+ */
+function tryStartLedgeHop(scene: PlaySceneContext, body: PlayerBody, dx: number, dy: number): boolean {
+  if ((dx === 0) === (dy === 0) || body.footprint.width !== 1 || body.footprint.height !== 1) return false;
+  const project = store.getCurrent();
+  const tileset = project.tilesets[scene.map.tilesetId];
+  if (!tileset?.ledgeDirections) return false;
+  const via = { x: scene.tileX + dx, y: scene.tileY + dy };
+  if (ledgeDirectionAt(tileset, scene.map, via.x, via.y) !== facingForStep(dx, dy)) return false;
+  const landX = scene.tileX + dx * LEDGE_HOP_DISTANCE;
+  const landY = scene.tileY + dy * LEDGE_HOP_DISTANCE;
+  const landable = isPassable(project, scene.map, landX, landY)
+    && ledgeDirectionAt(tileset, scene.map, landX, landY) === null
+    && !findBlockingEventForPlayerBody(scene, body, landX, landY);
+  if (!landable) return true;
+  scene.dashing = false;
+  beginPlayerStep(scene, landX, landY);
+  scene.playerHop = { hop: jumpHop({}), elapsedFrames: 0, countsAsStep: true, via };
+  scene.lastActionTargetKey = "";
+  return true;
 }
 
 /**

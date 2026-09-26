@@ -122,6 +122,7 @@ export async function playBattle(
         partyActorIds: scene.session.partyActorIds,
         actorSkillIds: scene.session.actorSkillIds,
         actorExperience: scene.session.actorExperience,
+        actorTechPoints: scene.session.actorTechPoints,
         actorLevels: scene.session.actorLevels,
         actorBattleCommands: scene.session.actorBattleCommands,
         // Step 3d: 전투 이벤트 changeEquipment/promoteActor 의 기준 상태(오버레이 시드).

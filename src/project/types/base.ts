@@ -502,6 +502,11 @@ export interface TilesetDef {
   tilesPerRow: number;
   count: number;
   passability: PassFlag[];
+  /**
+   * 한 방향 턱(ledge). 타일 인덱스(문자열) → 뛰어내릴 수 있는 방향. 그 방향으로 턱 칸에 들어서면
+   * 주인공이 2칸 뛰어 넘고, 다른 방향으로는 막힌다. 생략 = 턱 없음(기존 동작).
+   */
+  ledgeDirections?: Record<string, "up" | "down" | "left" | "right">;
   priority: ("lower" | "upper")[];
   terrain: number[];
   // 타일 이식 목록. 렌더는 베이크(캔버스 합성)로 처리 — tileGrafts.ts / tilesetImage.ts 참고.

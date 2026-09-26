@@ -1,6 +1,6 @@
 import type { BattleBattlerSnapshot, TargetedActorCommand } from "@/battle/types";
 import type { MutableBattler } from "@/battle/battleBattlers";
-import type { Project, SkillRecord } from "@/project/types";
+import type { Project, SkillArea, SkillRecord } from "@/project/types";
 
 export type BattleTargetScope = SkillRecord["scope"];
 export type BattleTargetSide = "actor" | "enemy";
@@ -42,6 +42,8 @@ export function resolveBattleTargets<T extends BattleTarget>(options: {
   readonly enemies: readonly T[];
   readonly requestedTargetId?: string;
   readonly includeDefeatedAllies?: boolean;
+  /** 위치 범위기(SkillRecord.area). 단일 대상 스코프에서 주 대상이 정해진 뒤에만 넓힌다. */
+  readonly area?: SkillArea;
 }): BattleTargetResolution<T> {
   const userSide: BattleTargetSide = options.actors.some((entry) => sameBattler(entry, options.user)) ? "actor" : "enemy";
   const allies = (userSide === "actor" ? options.actors : options.enemies).filter(target => options.includeDefeatedAllies || isLiving(target));
@@ -66,9 +68,26 @@ export function resolveBattleTargets<T extends BattleTarget>(options: {
     scope: options.scope,
     side,
     candidates,
-    targets: selected ? [selected] : [],
+    targets: selected ? areaTargets(selected, candidates, options.area) : [],
     requiresSelection: true,
   };
+}
+
+/**
+ * 주 대상 + 같은 편에서 범위 안에 있는 살아 있는 배틀러. 주 대상이 항상 첫째다.
+ * 좌표는 배틀러 battleX/battleY(전투장 픽셀) — 좌표가 없는 배틀러는 범위에 들지 않는다.
+ */
+export function areaTargets<T extends BattleTarget>(primary: T, candidates: readonly T[], area: SkillArea | undefined): T[] {
+  if (!area || area.radius <= 0) return [primary];
+  const px = primary.battleX;
+  const py = primary.battleY;
+  if (px === undefined || py === undefined) return [primary];
+  const splash = candidates.filter((entry) => {
+    if (entry === primary || !isLiving(entry) || entry.battleX === undefined || entry.battleY === undefined) return false;
+    if (area.shape === "line") return Math.abs(entry.battleY - py) <= area.radius / 2;
+    return Math.hypot(entry.battleX - px, entry.battleY - py) <= area.radius;
+  });
+  return [primary, ...splash];
 }
 
 export function targetIdFor(target: BattleTarget): string {

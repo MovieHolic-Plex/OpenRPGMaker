@@ -94,20 +94,24 @@ export function partyChipStage(
   const target = project.database.actors.find((actor) => actor.id === cmd.actorId);
   const currentIds = deps.simPartyActorIds ?? project.session?.partyActorIds ?? [];
   const before = currentIds.flatMap((id) => project.database.actors.find((actor) => actor.id === id) ?? []);
-  const joining = cmd.action === "add";
-  const after = joining
-    ? [...before.filter((actor) => actor.id !== cmd.actorId), ...(target ? [target] : [])]
-    : before.filter((actor) => actor.id !== cmd.actorId);
+  const leading = cmd.action === "lead";
+  const joining = cmd.action === "add" || leading;
+  const others = before.filter((actor) => actor.id !== cmd.actorId);
+  const after = leading
+    ? [...(target ? [target] : []), ...others]
+    : joining
+      ? [...others, ...(target ? [target] : [])]
+      : others;
   const stage = el("div", {
     class: "ecp-stage ecp-party-stage",
-    dataset: { testid: "ecp-party-stage", partyAction: joining ? "add" : "remove" },
+    dataset: { testid: "ecp-party-stage", partyAction: leading ? "lead" : joining ? "add" : "remove" },
   });
   stage.append(
     el("div", {
       class: "ecp-party-focus",
       children: [
         actorFaceChip(target, {
-          caption: joining ? "합류" : "이탈",
+          caption: leading ? "선두" : joining ? "합류" : "이탈",
           state: joining ? "join" : "leave",
           size: 72,
         }),
@@ -127,7 +131,7 @@ export function partyChipStage(
         el("div", {
           class: "ecp-party-column",
           children: [
-            el("div", { class: "ecp-party-column-title", text: joining ? "합류 후" : "이탈 후" }),
+            el("div", { class: "ecp-party-column-title", text: leading ? "선두 교대 후" : joining ? "합류 후" : "이탈 후" }),
             partyChipRow(after, "ecp-party-after"),
           ],
         }),

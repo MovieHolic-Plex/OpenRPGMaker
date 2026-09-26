@@ -1,0 +1,56 @@
+{
+ "system": {
+  "genre": "adventure-jrpg",
+  "battleUiStyle": "ff",
+  "battleParty": "actors",
+  "battleFlow": "gauge",
+  "menuUiStyle": "party-first",
+  "dialogueStyle": null,
+  "companions": {
+   "maxCompanions": 3,
+   "formation": "line"
+  },
+  "rewardPolicy": null
+ },
+ "appliesSystemFields": [
+  "system.genre",
+  "system.battleParty",
+  "system.battleUiStyle",
+  "system.menuUiStyle",
+  "system.companions"
+ ],
+ "requirements": [
+  "world-map",
+  "quest-event",
+  "battle-troops",
+  "lint-errors",
+  "reference-integrity"
+ ],
+ "blankConfig": [
+  {
+   "id": "world-map",
+   "configured": true,
+   "runtimeCapability": "map-runtime"
+  },
+  {
+   "id": "quest-event",
+   "configured": false,
+   "runtimeCapability": "event-interpreter"
+  },
+  {
+   "id": "battle-troops",
+   "configured": true,
+   "runtimeCapability": "battle-runtime"
+  },
+  {
+   "id": "lint-errors",
+   "configured": true,
+   "runtimeCapability": "project-lint"
+  },
+  {
+   "id": "reference-integrity",
+   "configured": true,
+   "runtimeCapability": "reference-validation"
+  }
+ ]
+}

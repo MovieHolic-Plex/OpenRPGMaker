@@ -47,6 +47,12 @@ export type CommandGuarantee = {
   readonly completion: CommandCompletionExpectation;
   readonly authoringSurfaces: readonly CommandAuthoringSurface[];
   readonly replacementKind?: CommandKind;
+  /**
+   * 런타임은 맵/공통에서 온전히 실행하지만, 저작은 네이티브 선택창 행이 아니라 다른 길(명령 목록 삽입·
+   * 빠른 저작·모던 카탈로그 행·AI 도구)로만 한다. 선택창 행을 새로 열면 같은 이름 행이 겹친다
+   * (체크포인트 저장·엔딩). 이 표시가 있으면 map/common full 의 mainPicker/common 표면 요구를 면제한다.
+   */
+  readonly indirectAuthoring?: true;
 };
 
 type GuaranteeOverrides = {
@@ -59,6 +65,7 @@ type GuaranteeOverrides = {
   // direct:false 라 mainPicker/common/troop 묶음 표면이 빠진 명령이라도,
   // 배틀 executor 가 실제 실행하는 troop-full 명령은 troop 저작 표면을 개별 선언한다.
   readonly troopAuthoring?: boolean;
+  readonly indirectAuthoring?: true;
   readonly support?: Readonly<Partial<Record<CommandContext, CommandSupport>>>;
 };
 
@@ -90,12 +97,16 @@ function guarantee(family: CommandFamily, overrides: GuaranteeOverrides = {}): C
     executionOwner: overrides.executionOwner ?? "interpreter",
     completion: overrides.completion ?? "continue",
     authoringSurfaces,
+    ...(overrides.indirectAuthoring ? { indirectAuthoring: true as const } : {}),
   };
 }
 
 const playerPause = { executionOwner: "player", completion: "pause" } as const;
 const troopFull = { troop: "full" } as const;
 const scopedPartial = { map: "partial", common: "partial", troop: "partial" } as const;
+// 맵/공통 인터프리터가 온전히 실행하고(commandCatalog.ts) 전투에서는 실행하지 않는 명령.
+// 저작 길은 그대로(direct:false) 두고 런타임 등급만 정직하게 올린다.
+const mapCommonFull = { indirectAuthoring: true, support: { map: "full", common: "full", troop: "partial" } } as const;
 
 export const COMMAND_GUARANTEES = {
   text: guarantee("dialogue", { ...playerPause, quick: true, support: troopFull }),
@@ -126,7 +137,7 @@ export const COMMAND_GUARANTEES = {
     quick: true,
   }),
   moveEvent: guarantee("map", { ...playerPause, quick: true }),
-  setEventGraphicPattern: guarantee("map", { ...playerPause, direct: false, support: scopedPartial }),
+  setEventGraphicPattern: guarantee("map", { ...playerPause, direct: false, ...mapCommonFull }),
   changeTile: guarantee("map", playerPause),
   callCommonEvent: guarantee("controlFlow", { support: troopFull }),
   callMapEvent: guarantee("controlFlow", { direct: false, support: scopedPartial }),
@@ -221,11 +232,11 @@ export const COMMAND_GUARANTEES = {
   // 기록하고 false 를 돌린다(2026-08-30 실측). troopFull 로 적어 두면 전투 페이지 저작 표면이
   // "전투에서도 그대로 돈다"고 거짓 표시한다. showAnimation 과 달리 전투 실행기가 아직 없다.
   playMovie: guarantee("media", { ...playerPause, quick: true }),
-  cutsceneControl: guarantee("controlFlow", { direct: false, support: scopedPartial }),
+  cutsceneControl: guarantee("controlFlow", { direct: false, ...mapCommonFull }),
   displayTextSettings: guarantee("dialogue", { support: troopFull }),
   shop: guarantee("commerce", playerPause),
   inn: guarantee("commerce", playerPause),
-  checkpointSave: guarantee("system", { direct: false, quick: true, support: scopedPartial }),
+  checkpointSave: guarantee("system", { direct: false, quick: true, ...mapCommonFull }),
   // killPlayer: battleEvents.ts 가 액터 HP 0 + endBattleAsDefeat 로 defeat 종결(Step 3).
   // map/common 은 종전 partial 유지, troop 저작 표면은 개별 선언(direct:false 유지).
   killPlayer: guarantee("system", {
@@ -241,7 +252,7 @@ export const COMMAND_GUARANTEES = {
     completion: "terminalHandoff",
     direct: false,
     quick: true,
-    support: scopedPartial,
+    ...mapCommonFull,
   }),
   // gameOver: battleEvents.ts 가 endBattleAsDefeat 콜백으로 defeat 결과 매핑(Step 3).
   gameOver: guarantee("system", {
@@ -268,11 +279,12 @@ export const COMMAND_GUARANTEES = {
   }),
   // setSelfSwitch: battleEvents.ts 가 ownerEventId(전투 기동 이벤트)의 셀프 스위치를
   // 스냅샷에 실제 기록하고 전투 종료 시 세션에 되돌려 쓴다(troop-full, Step 2 2026-08-20).
-  // map/common 은 종전 partial 유지, troop 저작 표면은 개별 선언(direct:false 유지).
+  // map/common 도 commandCatalog.ts 가 셀프 스위치를 실제로 기록한다(full). troop 저작 표면은 개별 선언.
   setSelfSwitch: guarantee("state", {
     direct: false,
     troopAuthoring: true,
-    support: { ...scopedPartial, troop: "full" },
+    indirectAuthoring: true,
+    support: { map: "full", common: "full", troop: "full" },
   }),
   m2Command: guarantee("compatibility", {
     ai: false,
@@ -333,6 +345,7 @@ export function commandGuaranteeIssues(
     } as const satisfies Record<CommandContext, CommandAuthoringSurface>;
     for (const context of COMMAND_CONTEXTS) {
       const requiredSurface = requiredSurfaceByContext[context];
+      if (entry.indirectAuthoring && context !== "troop") continue;
       if (entry.supportByContext[context] === "full" && !surfaces.has(requiredSurface)) {
         issues.push(`${kind}: ${context} full support requires ${requiredSurface} authoring`);
       }

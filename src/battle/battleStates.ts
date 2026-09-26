@@ -224,7 +224,7 @@ export function runStateUpkeep(project: Project, battler: MutableBattler, rng: R
 }
 
 // 행동 가능 여부. 행동 불가 상태가 하나라도 있으면 false.
-export function canBattlerAct(project: Project, battler: MutableBattler): boolean {
+export function canBattlerAct(project: Project, battler: { readonly stateIds: readonly string[] }): boolean {
   return !battler.stateIds.some((stateId) => behaviorFor(project, stateId)?.restrictsAction);
 }
 

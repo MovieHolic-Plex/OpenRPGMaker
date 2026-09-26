@@ -24,6 +24,12 @@ export function defaultOutdoorTilesetId(project: Pick<Project, "tilesets">): str
     ? FOREST_HARMONY_ID : DEFAULT_TILESET_ID;
 }
 
+/** tilesetId 생략 도구의 대상: 시작 맵 타일셋, 없으면 새 야외 기본(숲마을). 합본 마을로 폴백하지 않는다. */
+export function defaultToolTilesetId(project: Pick<Project, "tilesets" | "maps" | "startMapId">): string {
+  const start = project.maps[project.startMapId]?.tilesetId;
+  return start && project.tilesets[start] ? start : defaultOutdoorTilesetId(project);
+}
+
 export function isForestHarmonyTileset(tileset: Pick<TilesetDef, "image"> | undefined): boolean {
   return tileset?.image.type === "bundled" && tileset.image.id === FOREST_HARMONY_TEXTURE;
 }

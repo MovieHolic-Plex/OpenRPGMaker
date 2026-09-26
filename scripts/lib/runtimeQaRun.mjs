@@ -39,6 +39,7 @@ const HOOK_OPS = new Set([
   "pauseFrames", "stepFrames", "resumeFrames",
   // 체공 op 은 __oprnDebug / __oprnCharacterSprites 를 직접 읽는다.
   "playerRoute", "waitForLift", "waitForGrounded", "captureShadowSample",
+  "waitForFollowers", "waitForLeader",
 ]);
 
 async function freePort() {
@@ -326,6 +327,33 @@ async function applyOp(page, op, runState) {
           return Boolean(sprites) && !sprites.player.airborne;
         },
         undefined,
+        { timeout: op.timeoutMs ?? 30_000 },
+      );
+      return;
+    case "waitForFollowers":
+      // 동료 스프라이트 수(와 선택적으로 그 키)를 상태로 기다린다 — 파티 동료는 씬 생성·명령 뒤 한 프레임에 붙는다.
+      await page.waitForFunction(
+        ([count, ids]) => {
+          const sprites = window.__oprnCharacterSprites ? window.__oprnCharacterSprites() : null;
+          if (!sprites) return false;
+          const keys = Object.keys(sprites.followers);
+          return keys.length === count && (ids === null || ids.every((id) => keys.includes(`follower:${id}`)));
+        },
+        [op.count, op.ids ?? null],
+        { timeout: op.timeoutMs ?? 30_000 },
+      );
+      return;
+    case "waitForLeader":
+      // 선두 교대는 파티 순서와 필드 주인공 그림이 함께 바뀌어야 끝난 것이다.
+      await page.waitForFunction(
+        ([actorId, resourceId]) => {
+          const state = window.__oprnDebug?.readState?.();
+          if (!state || state.partyActorIds[0] !== actorId) return false;
+          if (resourceId === null) return true;
+          const sprite = window.__oprnPlayerSprite ? window.__oprnPlayerSprite() : null;
+          return sprite?.resourceId === resourceId;
+        },
+        [op.actorId, op.spriteResourceId ?? null],
         { timeout: op.timeoutMs ?? 30_000 },
       );
       return;

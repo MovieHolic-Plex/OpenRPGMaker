@@ -81,6 +81,8 @@ export type RuntimeFollower = {
   /** Omitted or "actor" = legacy actor/script follower. "monster" = overworld train from monsterParty. */
   readonly kind?: "actor" | "monster";
   readonly monsterInstanceId?: string;
+  /** "party" = system.companions.fromParty 가 파티에서 파생한 동료. 파티가 바뀌면 다시 계산된다. */
+  readonly source?: "party";
 };
 
 export type RuntimeFollowerTrailPoint = {
@@ -273,6 +275,8 @@ export interface PlaySession {
   // 런타임 전투 메뉴 오버라이드(Change Battle Commands). actorId → battleCommand ids.
   actorBattleCommands?: Record<ActorId, string[]>;
   actorExperience: Record<string, number>;
+  /** 배우별 누적 기술 포인트(TP). 승리 시 얻고 learnedSkills[].tp 문턱으로 기술을 배운다. 생략 = 없음. */
+  actorTechPoints?: Record<string, number>;
   actorLevels: Record<string, number>;
   actorVitals: Record<string, ActorVitals>;
   eventLocations: Record<string, RuntimeEventLocation>;
@@ -648,9 +652,20 @@ export function changeItemsAtomically(
 export function changeParty(
   session: PlaySessionLike,
   actorId: string,
-  action: "add" | "remove",
+  action: "add" | "remove" | "lead",
   project?: Project
 ): void {
+  if (action === "lead") {
+    // 선두 교대(크로노 트리거식): 파티에 있는 배우를 맨 앞으로. 파티에 없으면 합류시키며 앞에 세운다.
+    if (typeof actorId !== "string" || !actorId.trim()
+      || (project && !project.database.actors.some((actor) => actor.id === actorId))) {
+      console.warn(`[changeParty] 배우가 아닌 값이라 선두 교대를 건너뜁니다: ${JSON.stringify(actorId)}`);
+      return;
+    }
+    session.partyActorIds = [actorId, ...session.partyActorIds.filter((id) => id !== actorId)];
+    if (project) syncActorVitals(project, session.actorVitals, actorId);
+    return;
+  }
   if (action === "add") {
     // 배우가 아닌 값(빈 actorId·몬스터 speciesId)을 넣으면 파티에 null 이 남아 다음 전투가
     // 「Missing actor」로 멈춘다(2026-09-24 등대지기 3차). 합류를 건너뛰고 알린다.

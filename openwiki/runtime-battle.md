@@ -521,6 +521,25 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - Battle entry copies `session.roguelikeRun` into the battle-event read snapshot, so troop forks/pages may evaluate `run` conditions consistently with map events.
 - `runControl` is intentionally unsupported in troop command execution in Phase 1 and is classified runtime-partial there. Run lifecycle mutations belong to map/common events until an explicit battle-result bridge is designed.
 
+## 연계기 · 위치 범위기 · 기술 포인트 (Chrono Trigger 계열, 2026-09-26)
+
+세 필드 모두 **값이 있을 때만 저장**한다(없는 옛 프로젝트·세이브는 동작·바이트 그대로).
+
+- **연계기** `SkillRecord.comboActorIds`(2~3명, 시전자 포함). 판정 단일 권위는 `battleActorSkillFailure`(`src/battle/battleSkillUse.ts`) —
+  런타임 명령 적법성·전투 메뉴·자동 전투가 같은 함수를 쓴다. 동료 전원이 참전·생존·행동 가능·침묵 아님·MP 충분이고
+  **준비**(gauge: 게이지 100 / strict: 이번 라운드 미명령)여야 한다. 연계 멤버는 따로 배우지 않아도 목록에 뜬다(`comboSkillIdsFor`),
+  동료가 참전하지 않으면 숨고 준비 안 됨이면 사유와 함께 비활성. 사용 시 각자 `mpCost` 소비, 동료 게이지 0 + gauge 사이클 행동 처리,
+  strict 는 동료의 대기 명령을 지운다. 위력·명중은 시전자 능력치. 대사는 `A·B의 연계기 — 기술명!`(battleDirectorDom `commandLine`).
+- **위치 범위기** `SkillRecord.area {shape: circle|line, radius}`(전투장 px). 단일 대상 스코프(enemy/ally)에서 주 대상이 정해진 뒤
+  `areaTargets`(`battleTargetResolver.ts`)가 같은 편 생존 배틀러를 더한다 — circle 은 battleX/battleY 유클리드 거리, line 은 |dy| ≤ radius/2.
+  아군 명령·적 AI 실행·적 AI 효용·자동 전투 점수가 모두 이 함수를 쓴다. 좌표는 트룹 `members[].x/y`(>150 은 진형으로 재배치됨 주의).
+- **기술 포인트** `EnemyRewards.tp` → `BattleRewardsSnapshot.tp`(트룹 합계). `ActorLearnedSkill.tp`(배우 전용, 직업·종족 습득표에는 없음)가 있으면
+  **레벨만으로는 배우지 않고** 누적 TP ≥ tp 이고 level 도 채워야 배운다(`computeTechPointLearning`, `battleLevelUp.ts`). 승리 시 살아남은 보상 대상이
+  TP 를 받아 `PlaySession.actorTechPoints` 에 쌓이고(`applyBattleRewardsToSession`, 레벨업 뒤) 배운 기술은 `actorSkillIds` 로 들어간다.
+  결과 화면은 `rewards.techLearned` 미리보기로 「기술 포인트 +N」「○○ 기술 습득」 행을 띄운다. 세이브는 `actorTechPoints` 를 저장·복원한다.
+- 저작: `upsert_skill` 의 `comboActorIds`·`area`, `upsert_enemy` 의 `rewards.tp`, `upsert_actor` 의 `learnedSkills[].tp`(없는 배우·인원 수·반경·음수 TP 는 ToolError).
+- 검증 증거: `node scripts/runtime-qa.mjs --scenario ct-techs`(`scripts/qa/runtime/ct-techs*.m*`), 헤드리스 TP 는 `scripts/qa/runtime/ct-techs-tp.mts`.
+
 ## Battle rules & runtime
 - Battle rules belong in `src/battle`; scene or DOM code should render/bridge them rather than becoming the source of truth.
 - **전투를 시작하는 모든 재진입 경로는 `scene.running = true` + `setInputEnabled(false)` 를 직접 걸고

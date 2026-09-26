@@ -335,6 +335,10 @@ Session state, save slots, farming, friendship, calendar, lighting, weather, fie
 - `adjacentFollowerCandidates` 는 **인접 4칸만** 돌려준다. 이전에는 마지막 원소로 플레이어 칸 자체를 폴백으로 넣고 있었고, 그 때문에 `beside` 5번째 동료가 플레이어 위에 겹쳐 안 보였다(궤적 초기화도 5칸마다 플레이어 칸을 깔았다). 겹침 폴백이 필요한 자리는 `resetFollowerTrailNearPlayer` 의 out-of-bounds 분기뿐이다.
 - 추종 회귀는 `test/companionRules.test.ts`(간격 수학·상한 정책·대형·프레임)와 `test/e2e/companion-follow-runtime.spec.ts` 가 함께 고정한다. e2e 는 인페이지에서 `applyToolToStore` 로 `add_companion`(autorun) 2건 + `configure_companion_rules {gap:4}` 를 적용하고, 테스트 플레이에서 12칸 걸은 뒤 `runtime-state-json` 의 `followerTrail` 로 간격을 단정하며 `reports/shots/companion/gap4-follow.png` 를 남긴다. **워크트리에서 돌릴 때는 `DEV_SERVER_PORT` 를 자기 dev 서버 포트로 지정해야 한다** — playwright 는 `PLAYWRIGHT_BASE_URL` 을 무시하고 기본 9173 을 재사용하는데, 그 포트를 메인 레포 서버가 잡고 있으면 다른 코드베이스를 검증하게 된다(실측: 등록한 툴이 "알 수 없는 툴" 로 나왔다).
 - 동료 그래픽의 `pattern` 은 "0~3 패턴"이 아니라 **시트 프레임 인덱스**다. 런타임이 `resolveEventSpriteTexture` → `charsetIdleFrameIndex` → `decodeCharsetFrameIndex` 로 characterIndex 를 역산하므로, 원시 숫자를 손으로 넣으면 캐릭터가 0번으로 고정된다(실측: 편집기 "강아지 펫" 프리셋이 `pattern: 1` 이라 고양이 프리셋과 똑같은 animal 시트 0번을 렌더했고, 애초에 번들 charset 에는 개가 없다). 어떤 저작 경로도 `charsetFollowerGraphic(textureKey, characterIndex)` 를 우회하지 않는다.
+- **크로노 트리거식 필드 (2026-09-26).** `system.companions.fromParty: true` 면 `syncPartyFollowers`(`src/project/followers.ts`)가 `partyActorIds.slice(1, system.activeSlots ?? 4)` 를 `source:"party"` 동료로 맞춘다. 새 게임·불러오기(`PlayScene.create`, `saveSlots` 복원)·`changeParty`·`refreshRuntimeSurfaces` 마다 멱등으로 다시 부르고, 저작 `addFollower` 로 이미 붙은 배우는 중복하지 않는다. 플래그가 없으면 파티 파생 동료가 없으므로 옛 프로젝트는 그대로다.
+- 액터 동료 그림은 주인공 스프라이트와 같은 규칙이다: 외형 세트 → `characterResourceId` + `characterIndex` → `defaultActorCharacterResourceId` → 기본 주민 시트. 예전에는 `characterIndex` 를 버리고 걷기 그림 없는 배우를 조용히 null 로 떨궜다. 여전히 못 붙이면(배우 없음·상한 reject) `console.warn` 에 이유를 남긴다.
+- `changeParty` 의 `action:"lead"` 는 그 배우를 `partyActorIds[0]` 으로 옮긴다(없으면 합류시키며 앞에 세운다). 이벤트가 끝나며 부르는 `refreshRuntimeSurfaces` 가 주인공 그림과 동료를 다시 맞춘다. 전투 쪽(`src/battle/battleEvents.ts`)은 `lead` 를 모른다 — 전투 이벤트에서는 무시된다.
+- **한 방향 턱.** `TilesetDef.ledgeDirections: Record<타일, Dir>`. `collision.canMove` 는 턱 칸에 정해진 방향이 아닌 진입을 막고, 주인공이 정해진 방향으로 들어서면 `tryStartLedgeHop`(`playSceneMovement.ts`)이 기존 점프 연출(`jumpHop`)로 2칸 넘는다. 착지 칸이 막혔으면 넘지 않는다. 체공 상태의 `via` 칸을 동료 궤적에 끼워 동료가 한 칸씩 따라온다. 저작은 `set_tile_rules {entries:[{tile, ledge}]}`. 증거: `node scripts/runtime-qa.mjs --scenario ct-field`.
 - Runtime lighting lives on `PlaySession.lighting` as `{ ambient, color?, sources }` and is included in save slots/checkpoint snapshots. Maps can author `defaultLighting`, which is applied on map entry/transfer and persists until another map default or explicit command / tool changes it. `LightSource.at` may be a fixed tile, `"player"`, or `{eventId}`; player/event/follower/chase positions are resolved at render/test time, and `flicker` uses deterministic fixed-step math rather than RNG.
 - Play mode draws lighting through `src/player/playSceneLighting.ts` using one reusable `CanvasTexture` mask image above the scene. The mask recomposes only when the lighting signature changes and cuts simple radial light holes from the ambient darkness; wall/line-of-sight occlusion is intentionally out of scope for the Phase 6a lighting layer.
 - Day/night phase tint is owned by `src/player/playSceneTime.ts` and layered below the Phase 6a darkness mask rather than being added into lighting ambient. Time advances on a fixed timestep from `minutesPerRealSecond`, pauses during menu, battle, and cutscene lock, and can force `sleepUntilMorning` at `dayEndHour` when `forceSleep` is enabled.
@@ -496,3 +500,24 @@ buyOnly/sellOnly; real item comparison and purchase/sale handlers remain authori
 `text.voiceResourceId` 는 그 줄이 열릴 때 음성 파일을 한 번 재생한다. 배경음·효과음 채널은
 건드리지 않고, 설정 「대사 목소리」 음량을 쓴다. 파일이 있으면 글자 삑 소리는 내지 않는다.
 줄이 바뀌거나 대사창이 닫히면 멈춘다.
+
+## 강하게 다시 하기(New Game+)와 장 표시 (2026-09-26)
+
+- **클리어 기록.** `triggerEnding` 이 엔딩을 실제로 열 때(이름 있는 호출의 조건이 거짓이면 기록하지 않는다)
+  인터프리터는 `returnToTitle` 스텝에 `clear: { endingId }` 만 싣는다. 에필로그가 있으면 그 끝의 합성 `ending`
+  명령이 같은 값을 싣는다(모듈 WeakMap 표식 — 저작된 `ending` 명령은 클리어가 아니다). 인터프리터는 저장소를 모른다.
+  씬(`playSceneInterpreter`·`playSceneSchedulers`)은 `reportEndingClear` 로 레지스트리 콜백 `recordEndingClear` 를
+  부르고, 플레이어가 `src/player/clearRecord.ts` 로 localStorage 에 `ClearRecord { endingIds, clearedAt, carry }` 를 쓴다.
+- **키.** `clearRecordKey()`(saveSlots.ts) — 세이브와 같은 게임별 규칙: 발행 게임은 `…:lineage:<id>:clear-record:v1`,
+  내보낸 게임은 `<saveNamespace>:clear-record:v1`, 편집기는 `oprn:clear-record:v1`. 내보낸 게임끼리 섞이지 않는다.
+- **타이틀.** `system.newGamePlus.enabled` 이고 기록이 있으면 `title-new-game-plus` 가 「새 게임」 바로 뒤에 선다.
+  이름은 `menuLabels.newGamePlus` > `newGamePlus.label` > 「강하게 다시 하기」. 고르면 `startGame({ newGamePlus: true })`
+  → 새 세션에 `applyClearCarry`(project/newGamePlus.ts): carry 로 고른 레벨·경험치/스킬/장비/소지품/소지금만 입히고
+  (삭제된 배우·아이템 id 는 버림, 레벨이 오르면 최대 HP/MP 재계산) `session.flags.ngplus = true`.
+  스위치·변수·상자·맵 상태·위치는 새 게임 그대로다.
+- **엔딩 조건** `{ kind: "newGamePlus", value }` 는 `EndingCondition` 전용(일반 `Condition`/`CONDITION_KINDS` 에는 없다)이고
+  트리거 시점의 `flags.ngplus` 를 본다.
+- **장 표시.** `system.chapter = { variableId, labels }` — 현재 변수 값의 이름이 ESC 메뉴 머리 `status-menu-chapter` 에 보이고,
+  저장 스냅샷 메타 `chapterLabel`(선택, 스키마 버전 그대로 — 옛 세이브는 필드 없이 읽힌다)로 남아 불러오기 카드
+  `save-slot-N-chapter` 에 보인다.
+- 검증: `node scripts/runtime-qa.mjs --scenario ct-ngplus`(픽스처 `scripts/qa/runtime/ct-ngplus-fixture.mts` 는 runTool 만 쓴다).
