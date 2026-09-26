@@ -1692,12 +1692,6 @@ function titleScreenDisplayFieldset(
       }, "system:title-screen:menu-y");
       rerender("values");
     }, { min: 0, max: 240 }),
-    checkboxField("조작 힌트 표시", "db-field-title-screen-show-input-hint", titleScreen.showInputHint !== false, (checked) => {
-      updateTitleScreen((settings) => {
-        settings.showInputHint = checked;
-      });
-      rerender();
-    }),
   );
 
   return el("fieldset", {
@@ -1842,6 +1836,19 @@ function titleScreenMenuFieldset(titleScreen: TitleScreenSettings, rerender: Sys
             });
             rerender();
           }),
+        ],
+      }),
+      el("div", {
+        class: "db-title-menu-option-row",
+        dataset: { testid: "db-title-menu-option-credits" },
+        children: [
+          textControl("크레딧", titleScreen.menuLabels.credits ?? "크레딧", (value) => {
+            updateTitleScreen((settings) => {
+              settings.menuLabels.credits = value;
+            }, "system:title-screen:menu-credits");
+            rerender("values");
+          }, "db-field-title-screen-credits"),
+          el("span", { class: "db-title-menu-option-note", text: "저작자 표기 창 · 항상 표시" }),
         ],
       }),
       el("div", {

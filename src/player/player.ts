@@ -68,6 +68,7 @@ import {
   renderTitleScreen,
   type TitleMenuOptionId,
 } from "@/player/titleScreen";
+import { openLicenseDialog } from "@/player/titleLicenseNotice";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { AUDIO_HANDOFF_REGISTRY_KEY, getAudioEngine, playAudioCommand, stopAudioCommand, stopAllAudio } from "@/player/audio";
 import { installPlayPointerBlocker } from "@/player/playInputBlocker";
@@ -681,6 +682,11 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     }
     if (!isConfirmKey(key)) return false;
     const selected = options[titleMenuIndex];
+    // 크레딧은 타이틀을 떠나지 않는다 — 확정 연출·BGM 정지 없이 창만 띄운다.
+    if (selected?.id === "credits") {
+      openTitleCredits();
+      return true;
+    }
     confirmTitleThen(() => activateTitleOption(selected?.id));
     return true;
   };
@@ -801,6 +807,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       onNewGame: () => confirmTitleThen(() => activateTitleOption("newGame")),
       onResume: () => confirmTitleThen(() => activateTitleOption("resume")),
       onContinue: () => confirmTitleThen(() => activateTitleOption("continueGame")),
+      onCredits: () => openTitleCredits(),
       onQuit: () => confirmTitleThen(() => activateTitleOption("quit")),
     }, titleMenuIndex, titleContext);
     layout.append(surface.viewport);
@@ -810,6 +817,14 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     surface.sync();
     startTitleBgm(project);
     if (firstEnter) emitTitleJuice("title-enter");
+  };
+
+  const openTitleCredits = (): void => {
+    emitTitleJuice("title-select");
+    openLicenseDialog(() => {
+      const titleEl = layout.querySelector<HTMLElement>("[data-testid='title-screen']");
+      if (titleEl) focusSelectedTitleOption(titleEl);
+    });
   };
 
   const activateTitleOption = (id: TitleMenuOptionId | undefined): void => {
@@ -822,6 +837,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
         return;
       case "continueGame":
         renderLoad(true);
+        return;
+      case "credits":
+        openTitleCredits();
         return;
       case "quit":
         exitPlayer();

@@ -964,6 +964,8 @@ export interface TitleScreenMenuLabels {
   quit: string;
   /** 오토세이브 "이어하기" 라벨. 생략 시 런타임 기본 라벨("이어하기"). */
   resume?: string;
+  /** 크레딧(저작자 표기) 라벨. 생략 시 "크레딧". 항목 자체는 숨길 수 없다. */
+  credits?: string;
 }
 export interface TitleScreenMenuVisibility {
   newGame: boolean;
@@ -1095,7 +1097,7 @@ export interface TitleScreenSettings {
   sounds?: TitleScreenSounds;
   /** Omitted when text-only with no logo resource (legacy compact JSON). */
   titleGraphic?: TitleScreenGraphic;
-  /** Default true after normalize. */
+  /** 레거시 필드. 타이틀은 더 이상 조작 안내 줄을 그리지 않는다(2026-09-25) — 옛 JSON 호환으로만 남는다. */
   showInputHint?: boolean;
   /** 배경 스크롤 레이어(최대 4). 빈/무효면 normalize 가 필드를 생략한다(레거시 JSON byte-stable). */
   backgroundLayers?: TitleBackgroundLayer[];
