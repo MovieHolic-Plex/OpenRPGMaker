@@ -487,10 +487,10 @@ stamp(68, 0, TN, 5, 16, 2, 3, 'up', True, 'tree68,0')   # ゴミ集積所 at the
 stamp(72, 0, TN, 5, 16, 2, 3, 'up', True, 'tree72,0')
 chip(75, 0, 'ume.png', 6, 0, 3, 3, 'ume-hill-1')
 # canopy behind the lot's back wall (y2): crowns only, three species, uneven 2-3 tile steps
-for tx, kind in ((78, 'pine'), (80, 'ume'), (83, 'momiji'), (86, 'pine'), (89, 'ume'), (92, 'pine'), (94, 'momiji')):
+for tx, kind in ((78, 'pine'), (80, 'ume'), (83, 'pine'), (86, 'ume'), (89, 'pine'), (91, 'ume'), (94, 'pine')):
     if kind == 'pine': stamp(tx, 0, TN, 5, 16, 2, 2, 'up', True, f'hillcanopy{tx}')
     elif kind == 'ume': chip(tx, 0, 'ume.png', 6, 3, 3, 2, f'hillcanopy{tx}')
-    else: chip(tx, 0, 'momiji.png', 4, 0, 2, 2, f'hillcanopy{tx}') if tx + 1 < W else None
+    else: chip(tx, 0, 'kuri.png', 2, 0, 2, 2, f'hillcanopy{tx}')   # chestnut: a whole 2x2 chip, no cut edge
 
 # ================================================================= SW x0..44, y39..63
 signal(44, 39, 'signal-sw'); ground(43, 39, 2, 4, WALK)
