@@ -836,7 +836,13 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   const query = new URLSearchParams(scenario.query ?? {}).toString();
   const playerUrl = `${opts.serverUrl}/player.html${query ? `?${query}` : ""}`;
   await page.goto(playerUrl, { waitUntil: "domcontentloaded" });
-  await page.waitForSelector("[data-testid='title-screen']", { timeout: 120_000 });
+  try {
+    await page.waitForSelector("[data-testid='title-screen']", { timeout: 120_000 });
+  } catch (error) {
+    // 부팅 실패는 리포트가 남기 전에 죽는다 — 그때까지 모은 페이지 오류를 같이 던져 원인을 남긴다.
+    if (errors.length > 0) console.error(JSON.stringify({ qaBootErrors: errors.slice(0, 20) }));
+    throw error;
+  }
 
   // --out 이 절대 경로면 저장소 밖도 된다. 통째로 지우므로 루트·홈·임시 폴더 자체는 거절한다.
   const outAbs = resolve(outDir);
