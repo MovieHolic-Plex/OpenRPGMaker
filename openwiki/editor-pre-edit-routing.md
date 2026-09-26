@@ -4,10 +4,16 @@
 
 ## 「높이」 붓 — 절벽 높이 지형 (2026-09-26)
 
-타일 도구 줄의 `tool-relief`(「높이 (절벽)」)가 `map.relief` 를 칠한다. 경로:
+머리줄 레이어 줄 **맨 왼쪽** 「높이」(`layer-relief`, [높이 | 바닥 | 상위 | 이벤트])가 `tool: "relief"` 로 바꿔 `map.relief` 를 칠한다.
+높이는 레이어가 아니라 붓이므로 `leftLayerSwitcher.ts` 의 `LayerSwitcherKey = Layer | "relief"` 와 `layerSwitcherKey(state)`(tool 이 relief 면 "relief")로
+활성 표시를 가른다. 바닥·상위를 누르면 relief/event 도구에서 칠하기로 돌아온다.
+
+옛 타일 도구 줄의 「도구」 메뉴(`sidebar-tools-menu`: 복사·붙여넣기·집기·밀기·통행·높이)는 **삭제됐다**(2026-09-26, 사용자 결정 — 거의 안 보고 쓸모가 없었다).
+복사·붙여넣기는 Ctrl+C/V 와 선택 칩, 집기·밀기·통행은 단축키(I·4·6)로 남는다. 경로:
 
 | 층 | 파일 |
 |---|---|
+| 진입 버튼 | `leftLayerSwitcher.ts` `LAYER_ROWS[0]` · `selectSwitcherKey` → `selectMapModeTool("relief")`, `menu.ts` 구독이 활성 표시 |
 | 도구 상태 | `editorState.ts` — `tool: "relief"`, `reliefMode: raise\|lower\|flatten\|set`, `reliefLevel` |
 | 캔버스 포인터 소유 | `canvasPointerOwnership.ts` (relief 는 페인트 도구처럼 드래그를 가진다) |
 | 스트로크 | `TilePaintEngine.ts` `case "relief"` — 붓 크기 N = 반지름 max(1, N-1) 원 — 1칸 폭 돌기는 렌더 규칙이 깎아 안 보이므로 1×1 도 3칸 폭으로 칠한다. 올리기/내리기는 **스트로크 첫 칸 높이 ±1** 이 상한(드래그로 계속 쌓이지 않음), 평탄은 첫 칸 높이로 |

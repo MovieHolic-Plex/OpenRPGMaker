@@ -152,9 +152,7 @@ describe("mode-specific sidebar painting workflow", () => {
     for (const id of ["tool-paint", "tool-erase", "tool-fill", "tool-select", "oprn-tool-undo"]) {
       control(id);
     }
-    control('sidebar-tools-menu').click();
-    control('tool-eyedropper').click();
-    expect(editorState.get().tool).toBe('eyedropper');
+    expect(find('sidebar-tools-menu')).toBeNull();
     // 검사 3종은 핀 없이는 오버플로 안에 한 번씩만 있다(표준이 전문가 capability 흡수).
     for (const [id] of advanced) expect(find(id)).toBeNull();
     control("oprn-tool-overflow").click();
