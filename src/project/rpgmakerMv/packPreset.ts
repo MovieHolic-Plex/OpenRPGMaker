@@ -260,6 +260,14 @@ export interface MvTownDecor {
   readonly dirt?: string;
   /** 공원 연못 물(바닥)·수련(겹침). */
   readonly pond?: string;
+  /** 강·수로의 흐르는 물(폭포형 오토타일, 다리 사이 구간마다 하나). 없으면 강을 두지 않는다. */
+  readonly flowingWater?: readonly string[];
+  /** 광장 가운데 2×2 평타일 포장(둘레가 같은 광장 오토타일일 때만 이음매가 맞는다). */
+  readonly plazaCore?: readonly string[];
+  /** 다리 난간(걹침 재료) — 물에 맞닿은 데크 줄. */
+  readonly bridgeRailing?: string;
+  /** 특수 건물(경찰서·소방서·병원) 한 벌: 간판 id 와 파사드. 큰 맵 가게 줄에 하나. */
+  readonly civic?: readonly { readonly sign: string; readonly facade: MvTownFacade }[];
   readonly lily?: string;
   readonly play: readonly string[];
   readonly longBenches: readonly string[];
