@@ -1,4 +1,5 @@
 import { isGalleryEnabled, recordGalleryUnlock } from "@/project/gallery";
+import { NEW_GAME_PLUS_FLAG } from "@/project/newGamePlus";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { resolveAppearancePortrait } from "@/project/characterAppearances";
 import {
@@ -388,13 +389,18 @@ function killParty(state: InterpreterState): void {
   }
 }
 
+// 에필로그 끝에 붙는 합성 ending 명령 → 실제로 본 엔딩 id. 저작된 ending 명령은 클리어가 아니다.
+const ENDING_CLEAR_COMMANDS = new WeakMap<Command, string>();
+
 function endingConditionsMet(state: InterpreterState, ending: EndingDef): boolean {
-  return ending.conditions.every((condition) => evalCondition(
-    state.session,
-    condition,
-    resolveSocialHost(state) ?? state.currentEventId,
-    locationEvalContext(state),
-  ));
+  return ending.conditions.every((condition) => condition.kind === "newGamePlus"
+    ? (state.session.flags[NEW_GAME_PLUS_FLAG] === true) === condition.value
+    : evalCondition(
+      state.session,
+      condition,
+      resolveSocialHost(state) ?? state.currentEventId,
+      locationEvalContext(state),
+    ));
 }
 
 function triggerEnding(
@@ -418,12 +424,14 @@ function triggerEnding(
   }
 
   state.session.flags[`ending:${ending.id}`] = true;
+  const clear = { endingId: ending.id };
   const finalCommand: Command = { kind: "ending", title: ending.name, message: "", ...(ending.presentation ? { presentation: ending.presentation } : {}) };
+  ENDING_CLEAR_COMMANDS.set(finalCommand, ending.id);
   const epilogueCommands = compileEndingEpilogue(state, ending);
   if (epilogueCommands.length > 0 && pushFrame(state, [...epilogueCommands, finalCommand])) {
     return { kind: "continue" };
   }
-  return pause("returnToTitle", { kind: "returnToTitle", title: ending.name, message: "", ...(ending.presentation ? { presentation: ending.presentation } : {}) });
+  return pause("returnToTitle", { kind: "returnToTitle", title: ending.name, message: "", clear, ...(ending.presentation ? { presentation: ending.presentation } : {}) });
 }
 
 function selectEnding(
@@ -757,13 +765,16 @@ export function executeCommand(
       return triggerEnding(state, frame, command.endingId);
     case "gameOver":
       return pause("gameOver", { kind: "gameOver", ...(command.gameOverId ? { gameOverId: command.gameOverId } : {}) });
-    case "ending":
+    case "ending": {
+      const clearedEndingId = ENDING_CLEAR_COMMANDS.get(command);
       return pause("returnToTitle", {
         kind: "returnToTitle",
         title: command.title,
         message: command.message,
+        ...(clearedEndingId ? { clear: { endingId: clearedEndingId } } : {}),
         ...(command.presentation ? { presentation: command.presentation } : {}),
       });
+    }
     case "returnToTitle":
       return pause("returnToTitle", { kind: "returnToTitle" });
     case "callCommonEvent":

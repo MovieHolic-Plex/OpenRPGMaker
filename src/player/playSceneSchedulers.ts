@@ -28,6 +28,7 @@ import { playPathfindMove } from "@/player/playScenePathfinding";
 import { playMovieOverlay } from "@/player/playSceneMovies";
 import { applyWeatherStep } from "@/player/playSceneWeather";
 import { applyEventRelocationStep } from "@/player/playSceneMapCommands";
+import { reportEndingClear } from "@/player/playSceneOverlays";
 import { applyAdvanceTimeStep, applySetTimeStep, observeScheduledTimeTransition } from "@/player/playSceneTime";
 
 type AutonomousMoverSceneContext = Pick<PlaySceneContext, "map" | "autonomousNPCs" | "eventPositions" | "session">;
@@ -381,6 +382,7 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       scene.showGameOverScreen(step.message, step.gameOverId);
       return true;
     case "returnToTitle":
+      reportEndingClear(scene, step.clear);
       if (step.title !== undefined || step.message !== undefined || step.presentation) scene.showEndingScreen(step.title ?? "", step.message ?? "", step.presentation);
       else scene.returnToTitle();
       return true;

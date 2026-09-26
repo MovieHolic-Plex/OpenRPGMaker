@@ -1,4 +1,5 @@
 import { normalizeGallerySettings } from "./gallery";
+import { normalizeChapterSettings, normalizeNewGamePlusSettings } from "./newGamePlus";
 import { normalizeFieldHud } from "./fieldHud";
 import { assertPromotionExtensions } from '@/project/growth/requirements';
 import {
@@ -240,6 +241,14 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
       const gallery = normalizeGallerySettings(system.gallery);
       return gallery ? { gallery } : {};
     })(),
+    ...(() => {
+      const newGamePlus = normalizeNewGamePlusSettings(system.newGamePlus);
+      return newGamePlus ? { newGamePlus } : {};
+    })(),
+    ...(() => {
+      const chapter = normalizeChapterSettings(system.chapter);
+      return chapter ? { chapter } : {};
+    })(),
     ...(typeChart ? { typeChart } : {}),
     ...(timeSystem ? { timeSystem } : {}),
     ...(system.worldGen ? { worldGen: normalizeWorldGenRulesForStorage(system.worldGen) } : {}),
@@ -355,6 +364,9 @@ function normalizeTitleScreenSettings(
       // resume 은 optional 확장 — 저작된 값이 있을 때만 유지해 구 JSON 을 그대로 보존한다.
       ...(typeof settings?.menuLabels?.resume === "string" && settings.menuLabels.resume.trim()
         ? { resume: settings.menuLabels.resume.trim() }
+        : {}),
+      ...(typeof settings?.menuLabels?.newGamePlus === "string" && settings.menuLabels.newGamePlus.trim()
+        ? { newGamePlus: settings.menuLabels.newGamePlus.trim() }
         : {}),
     },
     menuVisibility,

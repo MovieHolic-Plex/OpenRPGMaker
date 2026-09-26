@@ -332,9 +332,14 @@ function validateEndings(value: unknown): void {
     requireString(`endings[${index}].id`, ending.id);
     requireString(`endings[${index}].name`, ending.name);
     for (const [conditionIndex, condition] of requireArray(`endings[${index}].conditions`, ending.conditions).entries()) {
-      validateConditionShape(`endings[${index}].conditions[${conditionIndex}]`, condition);
+      const label = `endings[${index}].conditions[${conditionIndex}]`;
+      if ((condition as { kind?: unknown } | null)?.kind === "newGamePlus") {
+        requireBoolean(`${label}.value`, requireRecord(label, condition).value);
+        continue;
+      }
+      validateConditionShape(label, condition);
       const kind = (condition as { kind?: unknown }).kind;
-      assert(kind === "switch" || kind === "variable", `endings[${index}].conditions[${conditionIndex}]는 switch 또는 variable 조건이어야 합니다.`);
+      assert(kind === "switch" || kind === "variable", `${label}는 switch, variable 또는 newGamePlus 조건이어야 합니다.`);
     }
     if (ending.presentation !== undefined) validateEndingPresentation(ending.presentation, `endings[${index}].presentation`);
     if (ending.priority !== undefined) requireNumber(`endings[${index}].priority`, ending.priority);

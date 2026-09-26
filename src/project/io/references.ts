@@ -379,6 +379,7 @@ function validateEndings(
     if (seen.has(ending.id)) issues.push(`ending ${ending.id}: duplicate id.`);
     seen.add(ending.id);
     for (const condition of ending.conditions) {
+      if (condition.kind === "newGamePlus") continue;
       capture(issues, () => validateCondition(condition, switchIds, variableIds));
       capture(issues, () => validateMonsterSpeciesReferences(condition, { speciesIds: new Set((project.database.monsterSpecies ?? []).map(s => s.id)) }));
     }

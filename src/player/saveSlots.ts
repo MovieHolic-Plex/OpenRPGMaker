@@ -12,6 +12,7 @@ import { isGrowthProgress } from "@/project/growth/validation";
 import { refreshGrowthVitals } from '@/project/growth/vitals';
 import type { ActorInitialEquipment, CharacterFootprint, Project } from "@/project/types";
 import { normalizeGalleryUnlocks } from "@/project/gallery";
+import { currentChapterLabel } from "@/project/newGamePlus";
 import { normalizeRelationships } from "@/project/relationshipState";
 import { normalizeCharacterFootprint } from "@/project/footprint";
 import {
@@ -128,6 +129,8 @@ export type SaveSnapshot = {
   readonly savedAt: string;
   readonly mapName?: string;
   readonly partyLevel?: number;
+  /** 저장 당시 장(시대) 이름. system.chapter 가 없거나 이름표 없는 값이면 생략. */
+  readonly chapterLabel?: string;
   readonly playTimeSeconds?: number;
   /** Optional metadata shared by supported Save4 and Save5 snapshots. */
   readonly savedBy?: SaveOrigin;
@@ -284,6 +287,13 @@ function legacySaveKey(slot: SaveSlotIndex | "auto"): string {
   return `${saveSlotStorageNamespace ?? "oprn"}:save-slot:${slot}`;
 }
 
+/** 클리어 기록(강하게 다시 하기) 키 — 세이브와 같은 게임별 네임스페이스를 쓴다. */
+export function clearRecordKey(): string {
+  const pinned = publicationSaveKey("auto");
+  if (pinned) return pinned.replace(/:save-slot:v6:auto$/u, ":clear-record:v1");
+  return `${saveSlotStorageNamespace ?? "oprn"}:clear-record:v1`;
+}
+
 export function writeAutosave(storage: Storage, snapshot: SaveSnapshot): void {
   if (saveScopeBlocker(snapshot.identity)) throw new PublicationError("save-incompatible");
   storage.setItem(autosaveKey(), JSON.stringify(snapshot));
@@ -351,6 +361,10 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
     savedAt: new Date().toISOString(),
     mapName: project.maps[session.currentMapId]?.name ?? "",
     partyLevel: leadPartyLevel(project, session),
+    ...(() => {
+      const chapterLabel = currentChapterLabel(project, session);
+      return chapterLabel ? { chapterLabel } : {};
+    })(),
     playTimeSeconds: Math.floor(session.playTimeSeconds ?? 0),
     session: {
       switches: structuredClone(session.switches),
@@ -859,6 +873,7 @@ function parseSnapshotValue(value: unknown): ParsedSnapshotResult {
       savedAt: value.savedAt,
       mapName: typeof value.mapName === "string" ? value.mapName : undefined,
       partyLevel: typeof value.partyLevel === "number" ? Math.floor(value.partyLevel) : undefined,
+      ...(typeof value.chapterLabel === "string" && value.chapterLabel ? { chapterLabel: value.chapterLabel } : {}),
       playTimeSeconds: typeof value.playTimeSeconds === "number" ? Math.floor(value.playTimeSeconds) : undefined,
       savedBy: isSaveOrigin(value.savedBy) ? value.savedBy : undefined,
       autosaveTrigger: isAutosaveTrigger(value.autosaveTrigger) ? value.autosaveTrigger : undefined,

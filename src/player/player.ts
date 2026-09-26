@@ -20,6 +20,8 @@ import {
 } from "@/player/playBootRecovery";
 import { isEngineModuleLoadFailure } from "@/util/dynamicImport";
 import { startSession, type PlaySession } from "@/project/session";
+import { applyClearCarry, newGamePlusMenuLabel } from "@/project/newGamePlus";
+import { readClearRecord, recordEndingClear } from "@/player/clearRecord";
 import { applyStatePreset, testHerePreset } from "@/testing/debugSession";
 import { el, clearChildren } from "@/util/dom";
 import {
@@ -139,6 +141,8 @@ type PlayBootRequest = {
   readonly spawn?: { readonly mapId: string; readonly x: number; readonly y: number };
   readonly eventTestId?: string;
   readonly safeMode?: boolean;
+  /** 클리어 기록의 이월 필드를 입힌 새 세션(강하게 다시 하기). */
+  readonly newGamePlus?: boolean;
 };
 
 const MENU_CLOSE_JUICE_MS = 250;
@@ -323,6 +327,10 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     }
     // 세션은 고친 프로젝트에서 만든다(요청이 세션을 들고 왔으면 그것을 그대로 쓴다).
     const session = request.session ?? newSession(effectiveSpawn(request, bootProject), bootProject);
+    if (!request.session && request.newGamePlus) {
+      const clear = readClearRecord(window.localStorage);
+      if (clear) applyClearCarry(bootProject, session, clear.carry);
+    }
     void bootPlayGame(surface.phaserContainer, session, eventTestId, loading, run, startedAt, repairs);
   };
 
@@ -450,6 +458,13 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       game.registry.set("dialogue", dialogue);
       game.registry.set("dialogueHost", playStage);
       game.registry.set("returnToTitle", () => renderTitle());
+      game.registry.set("recordEndingClear", (endingId: string, endedSession: PlaySession) => {
+        try {
+          recordEndingClear(window.localStorage, store.getCurrent(), endedSession, endingId);
+        } catch (error) {
+          console.error("[player] 클리어 기록을 저장하지 못했습니다:", error);
+        }
+      });
       game.registry.set("openSaveMenu", () => openEventMenu(layout, statusMenu.openSaveMenu));
       game.registry.set("openMenuScreen", () => openEventMenu(layout, () => {
         statusMenu.reset();
@@ -589,6 +604,17 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     }
   };
 
+  // 켜 두었고 클리어 기록이 있을 때만 타이틀 항목 이름을 돌려준다(없으면 항목이 숨는다).
+  const newGamePlusTitleLabel = (): string | undefined => {
+    const project = store.getCurrent();
+    if (project.system.newGamePlus?.enabled !== true) return undefined;
+    try {
+      return readClearRecord(window.localStorage) ? newGamePlusMenuLabel(project) : undefined;
+    } catch {
+      return undefined;
+    }
+  };
+
   const renderLoad = (fromTitle: boolean, message?: string): void => {
     if (fromTitle) {
       stopGame();
@@ -669,7 +695,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     if (titleConfirming) return true;
     const project = store.getCurrent();
     const settings = project.system.titleScreen ?? defaultTitleScreenSettings();
-    const options = listTitleMenuOptions(settings, { autosaveAvailable: isAutosaveAvailable() });
+    const options = listTitleMenuOptions(settings, { autosaveAvailable: isAutosaveAvailable(), newGamePlusLabel: newGamePlusTitleLabel() });
     const visibleCount = options.length;
     titleMenuIndex = clampTitleMenuIndex(titleMenuIndex, visibleCount);
     const titleDir = directionForKey(key);
@@ -782,6 +808,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const settings = project.system.titleScreen ?? defaultTitleScreenSettings();
     const titleContext = {
       autosaveAvailable: isAutosaveAvailable(),
+      newGamePlusLabel: newGamePlusTitleLabel(),
       // intro 등장 연출은 최초 진입에만 — 방향키 이동(emitEnterJuice:false)에는 재생하지 않는다.
       playIntro: firstEnter,
       reuseFx: previousFx,
@@ -799,6 +826,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     // 타이틀 확정은 키보드와 메뉴 클릭이 같은 activateTitleOption 으로 모인다.
     const title = renderTitleScreen(project, {
       onNewGame: () => confirmTitleThen(() => activateTitleOption("newGame")),
+      onNewGamePlus: () => confirmTitleThen(() => activateTitleOption("newGamePlus")),
       onResume: () => confirmTitleThen(() => activateTitleOption("resume")),
       onContinue: () => confirmTitleThen(() => activateTitleOption("continueGame")),
       onQuit: () => confirmTitleThen(() => activateTitleOption("quit")),
@@ -816,6 +844,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     switch (id) {
       case "newGame":
         startGame({ safeMode: options.safeMode === true });
+        return;
+      case "newGamePlus":
+        startGame({ safeMode: options.safeMode === true, newGamePlus: true });
         return;
       case "resume":
         loadAutosave(true);

@@ -1,5 +1,15 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 강하게 다시 하기·장 표시 선택 필드 (2026-09-26)
+
+`SystemRecords.newGamePlus?: { enabled; label?; carry: ("levels"|"skills"|"equipment"|"inventory"|"gold")[] }` 와
+`SystemRecords.chapter?: { variableId; labels: Record<정수 문자열, 이름> }` 는 추가형 선택 필드다. `normalizeSystemRecords`
+화이트리스트가 `normalizeNewGamePlusSettings`/`normalizeChapterSettings` 로 거르고, 꺼져 있고 이름·이월이 없으면(또는 이름표가 없으면)
+필드를 생략해 옛 JSON 바이트를 지킨다. `validateSystem` 이 모양을 검사한다. `TitleScreenMenuLabels.newGamePlus?` 도 선택이다.
+`EndingCondition` 에 `{ kind: "newGamePlus"; value: boolean }` 이 더해졌고 `validateEndings`·참조 검증이 받아들인다.
+편집 도구: `set_project_settings({ newGamePlus, chapter })`(chapter.variableId 는 기존 변수여야 한다), `define_ending` 조건.
+버전 증가·마이그레이션 없음. 런타임 계약은 [runtime-sessions.md](runtime-sessions.md) 의 같은 날짜 절.
+
 ## 맵 칸 2층·4층·그림자 — 선택 필드 (MZ식 4층 PR ①, 2026-09-24)
 
 설계: `docs/superpowers/specs/2026-09-24-mz-four-layer-design.md`. `GameMap` 에 선택 필드 셋이 붙었다.

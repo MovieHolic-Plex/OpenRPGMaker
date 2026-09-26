@@ -964,6 +964,8 @@ export interface TitleScreenMenuLabels {
   quit: string;
   /** 오토세이브 "이어하기" 라벨. 생략 시 런타임 기본 라벨("이어하기"). */
   resume?: string;
+  /** "강하게 다시 하기"(New Game+) 라벨. system.newGamePlus.label 보다 우선한다. */
+  newGamePlus?: string;
 }
 export interface TitleScreenMenuVisibility {
   newGame: boolean;
@@ -1243,6 +1245,10 @@ export interface SystemRecords {
     readonly enabled: boolean;
     readonly label?: string;
   };
+  /** 클리어 후 타이틀의 "강하게 다시 하기". 생략 = 없음. */
+  newGamePlus?: import("@/project/newGamePlus").NewGamePlusSettings;
+  /** 변수 값 → 장(시대) 이름. ESC 메뉴·저장 칸에 보인다. 생략 = 표시 없음. */
+  chapter?: import("@/project/newGamePlus").ChapterSettings;
   typeChart?: TypeChartRecord;
   timeSystem?: TimeSystemConfig;
   /** Opt-in 실시간 액션 전투 패키지. 생략 시 필드 스폰 접촉은 기존 턴제 전투로 라우팅된다. */

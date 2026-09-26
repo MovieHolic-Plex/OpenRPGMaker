@@ -496,3 +496,24 @@ buyOnly/sellOnly; real item comparison and purchase/sale handlers remain authori
 `text.voiceResourceId` 는 그 줄이 열릴 때 음성 파일을 한 번 재생한다. 배경음·효과음 채널은
 건드리지 않고, 설정 「대사 목소리」 음량을 쓴다. 파일이 있으면 글자 삑 소리는 내지 않는다.
 줄이 바뀌거나 대사창이 닫히면 멈춘다.
+
+## 강하게 다시 하기(New Game+)와 장 표시 (2026-09-26)
+
+- **클리어 기록.** `triggerEnding` 이 엔딩을 실제로 열 때(이름 있는 호출의 조건이 거짓이면 기록하지 않는다)
+  인터프리터는 `returnToTitle` 스텝에 `clear: { endingId }` 만 싣는다. 에필로그가 있으면 그 끝의 합성 `ending`
+  명령이 같은 값을 싣는다(모듈 WeakMap 표식 — 저작된 `ending` 명령은 클리어가 아니다). 인터프리터는 저장소를 모른다.
+  씬(`playSceneInterpreter`·`playSceneSchedulers`)은 `reportEndingClear` 로 레지스트리 콜백 `recordEndingClear` 를
+  부르고, 플레이어가 `src/player/clearRecord.ts` 로 localStorage 에 `ClearRecord { endingIds, clearedAt, carry }` 를 쓴다.
+- **키.** `clearRecordKey()`(saveSlots.ts) — 세이브와 같은 게임별 규칙: 발행 게임은 `…:lineage:<id>:clear-record:v1`,
+  내보낸 게임은 `<saveNamespace>:clear-record:v1`, 편집기는 `oprn:clear-record:v1`. 내보낸 게임끼리 섞이지 않는다.
+- **타이틀.** `system.newGamePlus.enabled` 이고 기록이 있으면 `title-new-game-plus` 가 「새 게임」 바로 뒤에 선다.
+  이름은 `menuLabels.newGamePlus` > `newGamePlus.label` > 「강하게 다시 하기」. 고르면 `startGame({ newGamePlus: true })`
+  → 새 세션에 `applyClearCarry`(project/newGamePlus.ts): carry 로 고른 레벨·경험치/스킬/장비/소지품/소지금만 입히고
+  (삭제된 배우·아이템 id 는 버림, 레벨이 오르면 최대 HP/MP 재계산) `session.flags.ngplus = true`.
+  스위치·변수·상자·맵 상태·위치는 새 게임 그대로다.
+- **엔딩 조건** `{ kind: "newGamePlus", value }` 는 `EndingCondition` 전용(일반 `Condition`/`CONDITION_KINDS` 에는 없다)이고
+  트리거 시점의 `flags.ngplus` 를 본다.
+- **장 표시.** `system.chapter = { variableId, labels }` — 현재 변수 값의 이름이 ESC 메뉴 머리 `status-menu-chapter` 에 보이고,
+  저장 스냅샷 메타 `chapterLabel`(선택, 스키마 버전 그대로 — 옛 세이브는 필드 없이 읽힌다)로 남아 불러오기 카드
+  `save-slot-N-chapter` 에 보인다.
+- 검증: `node scripts/runtime-qa.mjs --scenario ct-ngplus`(픽스처 `scripts/qa/runtime/ct-ngplus-fixture.mts` 는 runTool 만 쓴다).

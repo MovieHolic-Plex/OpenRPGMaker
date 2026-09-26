@@ -149,6 +149,9 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       children: [
         el("span", { class: "status-menu-heading", text: "메뉴" }),
         el("span", { class: "status-menu-location", text: options.project.maps[options.session.currentMapId]?.name ?? "" }),
+        ...(snapshot.chapterLabel
+          ? [el("span", { class: "status-menu-chapter", text: snapshot.chapterLabel, dataset: { testid: "status-menu-chapter" } })]
+          : []),
         el("span", { class: "status-menu-gold", text: snapshot.goldLabel, dataset: { testid: "status-menu-gold" } }),
         el("span", { class: "status-menu-time", text: snapshot.timeLabel, dataset: { testid: "status-menu-time" } }),
       ],

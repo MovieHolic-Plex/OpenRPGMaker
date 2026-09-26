@@ -191,7 +191,7 @@ export type StepResult =
       branchOnNotEnoughGold?: boolean;
     }
   | { kind: "gameOver"; message?: string; gameOverId?: string }
-  | { kind: "returnToTitle"; title?: string; message?: string; presentation?: import("@/project/cinematicSettings").EndingPresentation };
+  | { kind: "returnToTitle"; title?: string; message?: string; presentation?: import("@/project/cinematicSettings").EndingPresentation; clear?: { readonly endingId: string } };
 
 export type ResumeValue = number | boolean | string | undefined | void | "failed";
 export type PendingStep = Exclude<StepResult["kind"], "done"> | "waitUntil";

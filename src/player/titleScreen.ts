@@ -17,18 +17,20 @@ const TITLE_SCREEN_LOGICAL_HEIGHT = 240;
  */
 export type TitleScreenActions = {
   readonly onNewGame: () => void;
+  readonly onNewGamePlus?: () => void;
   readonly onResume: () => void;
   readonly onContinue: () => void;
   readonly onQuit: () => void;
 };
 
-export type TitleMenuOptionId = "newGame" | "resume" | "continueGame" | "quit";
+export type TitleMenuOptionId = "newGame" | "newGamePlus" | "resume" | "continueGame" | "quit";
 
 export type TitleMenuOption = {
   readonly id: TitleMenuOptionId;
-  readonly testId: "title-new-game" | "title-resume-game" | "title-load-game" | "title-quit-game";
+  readonly testId: "title-new-game" | "title-new-game-plus" | "title-resume-game" | "title-load-game" | "title-quit-game";
   readonly elementId:
     | "title-option-new-game"
+    | "title-option-new-game-plus"
     | "title-option-resume-game"
     | "title-option-load-game"
     | "title-option-quit-game";
@@ -38,6 +40,8 @@ export type TitleMenuOption = {
 /** 오토세이브 유무 등 세션 밖 상태. 순수 함수 유지를 위해 호출자가 주입한다. */
 export type TitleMenuContext = {
   readonly autosaveAvailable?: boolean;
+  /** 클리어 기록이 있고 강하게 다시 하기가 켜졌을 때만 주는 항목 이름. 생략 = 항목 없음. */
+  readonly newGamePlusLabel?: string;
   /** intro 등장 연출 재생 여부 — 최초 진입만 true. 생략 = true. 방향키 재렌더는 false 로 넘긴다. */
   readonly playIntro?: boolean;
   /** 설정 서명이 같으면 재사용할 기존 fx 스택(파티클 canvas 상태/rAF 보존). */
@@ -49,7 +53,7 @@ export type TitleMenuContext = {
 const DEFAULT_RESUME_LABEL = "이어하기";
 
 /**
- * Visible title options in fixed order New → Resume → Continue → Quit. newGame is always present.
+ * Visible title options in fixed order New → New Game+ → Resume → Continue → Quit. newGame is always present.
  * "이어하기"(resume)는 오토세이브가 실제로 존재하고 menuVisibility.resume !== false 일 때만 노출된다.
  */
 export function listTitleMenuOptions(settings: TitleScreenSettings, context?: TitleMenuContext): TitleMenuOption[] {
@@ -62,6 +66,14 @@ export function listTitleMenuOptions(settings: TitleScreenSettings, context?: Ti
       label: settings.menuLabels.newGame,
     },
   ];
+  if (context?.newGamePlusLabel) {
+    options.push({
+      id: "newGamePlus",
+      testId: "title-new-game-plus",
+      elementId: "title-option-new-game-plus",
+      label: context.newGamePlusLabel,
+    });
+  }
   if (context?.autosaveAvailable === true && visibility?.resume !== false) {
     options.push({
       id: "resume",
@@ -440,6 +452,7 @@ function wireTitleOptionClicks(
   const buttons = Array.from(menu.querySelectorAll<HTMLElement>(".rm-title-menu-button"));
   const run: Record<TitleMenuOptionId, () => void> = {
     newGame: actions.onNewGame,
+    newGamePlus: actions.onNewGamePlus ?? actions.onNewGame,
     resume: actions.onResume,
     continueGame: actions.onContinue,
     quit: actions.onQuit,

@@ -48,6 +48,13 @@ export function returnToTitle(scene: PlaySceneContext): void {
   scene.showRuntimeOverlay("title-scene", "타이틀");
 }
 
+/** 엔딩 클리어를 호스트(플레이어)에 알린다. 저장은 호스트가 한다 — 인터프리터는 저장소를 모른다. */
+export function reportEndingClear(scene: PlaySceneContext, clear: { readonly endingId: string } | undefined): void {
+  if (!clear) return;
+  const callback: unknown = scene.game.registry.get("recordEndingClear");
+  if (typeof callback === "function") callback(clear.endingId, scene.session);
+}
+
 function textNode(tag: string, className: string, text: string): HTMLElement {
   const node = document.createElement(tag);
   node.className = className;
