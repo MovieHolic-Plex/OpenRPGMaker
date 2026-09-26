@@ -368,9 +368,12 @@ def school_main(x, y, w):
 MX, MY, MW = 3, 1, 24
 school_main(MX, MY, MW)   # x3..28, y1..15 (3 floors); door x15-16
 # 校庭の桜: cherry trees in the pocket east of the main building
-for fy in range(3, 15, 3): stamp(27, fy, SC, 2, 28, 2, 2, 'up', True, f'school-pots{fy}')   # flower planters in the strip beside the main building
-chip(29, 2, 'sakura2.png', 6, 0, 6, 6, 'school-sakura-1')
-chip(29, 9, 'sakura2.png', 6, 0, 6, 6, 'school-sakura-2')
+# east of the main building: one big cherry by the gym path + a low hedge row along the building's east wall
+chip(28, 1, 'sakura2.png', 6, 0, 6, 6, 'school-sakura-1')
+for hy in range(8, 16):
+    put(27, hy, T(TN, 167 if hy % 2 else 159), 'up', True)
+claim(27, 8, 1, 8, 'school-hedge-e')
+chip(30, 8, 'icho2.png', 4, 0, 4, 6, 'school-icho')   # ginkgo, the classic 校庭の木
 
 GX, GYy, GW = 36, 2, 8
 claim(GX, GYy, GW, 11, 'school-gym')
@@ -432,9 +435,10 @@ for ty in range(0, 31):   # west margin: continuous hedge, matching the x1 colum
 # shotengai: shops y26..32 facing the y33 sidewalk; plaza x51-53 with a signal
 ground(51, 25, 3, 8, WALK)
 signal(50, 30, 'signal-ne')
+# plaza: lamp + postbox at the north end, bus shelter bench beside the stop pole at the kerb end; middle kept open
 chip(51, 25, 'streetlamp.png', 3, 2, 1, 4, 'lamp-plaza')
-chip(52, 26, 'streetlamp.png', 3, 0, 2, 2, 'bench-plaza')
-chip(51, 30, 'post.png', 2, 0, 1, 2, 'post-plaza')
+chip(53, 25, 'post.png', 2, 0, 1, 2, 'post-plaza')
+chip(51, 30, 'streetlamp.png', 3, 0, 2, 2, 'bench-plaza')   # bench waiting for the bus
 chip(53, 30, 'busstop.png', 4, 2, 1, 3, 'busstop-plaza')   # pole foot y32 = plaza kerb line; y33 walk kept clear for pedestrians
 place_comp('retro-rtown-whole-building', 54, 25, 'rtown-shop-1')
 shop(60, 26, 5, name='shop-2', style='shutter', roof=R2)
@@ -446,23 +450,24 @@ shop(89, 26, 7, name='shop-7', style='shutter', roof=R4)
 # park y18..24 between the back lane and the shop roofs
 ground(51, 18, 19, 7, GRASS); ground(72, 18, 24, 7, GRASS)
 ground(52, 21, 17, 1, SOIL); ground(73, 21, 22, 1, SOIL)
-# NE park, path row y21 kept clear: play equipment north of it, benches/lamps/trees south or beside it
-place_kit('park-swings', 52, 18); place_kit('park-slide', 56, 18); place_kit('park-sandpit', 62, 18)
-place_kit('park-bench-front', 55, 22)
-place_kit('park-bench-front', 58, 22)
-chip(67, 18, 'yukiyanagi.png', 2, 0, 2, 2, 'yukiyanagi-ne')
-chip(73, 18, 'ume.png', 6, 0, 3, 3, 'ume-ne')   # plum: ume.png rows 0-2 cols 0-2 = one whole tree
-place_kit('park-bench-front', 78, 22); place_kit('park-bench-back', 83, 22)
-place_kit('park-sandpit', 91, 22)
-chip(87, 18, 'ume.png', 6, 3, 3, 3, 'ume-ne-2')
+# NE park (児童公園 west of the x70 lane, 緑地 east of it). Path y21 clear.
+# west: play equipment in one row north of the path, two benches facing it from the south, gomi station at the lane corner
+place_kit('park-swings', 53, 18); place_kit('park-slide', 57, 18); place_kit('park-sandpit', 63, 18)
+place_kit('park-bench-back', 55, 22); place_kit('park-bench-back', 60, 22)
+chip(67, 22, 'gomi.png', 2, 0, 2, 3, 'gomi-ne')   # ゴミ集積所 on the lane edge at x68-69 facing the x70 lane
+# east green: a row of trees north of the path at even spacing, benches under them facing the path
+for i, tx in enumerate((73, 79, 85, 91)):
+    if i % 2 == 0: chip(tx, 18, 'ume.png', 6, 0, 3, 3, f'ume-ne-{i}')
+    else: stamp(tx, 18, TN, 5, 16, 2, 3, 'up', True, f'parktree{tx}')
+for bx in (76, 82, 88): place_kit('park-bench-back', bx, 22)
 # north of the back lane: apartment + clinic west, mansion + houses east
 # hillside inari shrine (稲荷神社) against the back-hill grove, approach down to the y16 lane
 chip(51, 4, 'oinarisama.png', 10, 0, 10, 10, 'shrine-ne')
 placements.append({'id': 'shrine-ne', 'kit': 'chip:oinarisama', 'x': 51, 'y': 4, 'width': 10, 'height': 10})
-ground(55, 14, 2, 2, SOIL)   # 参道 gravel-earth approach to the lane
+ground(56, 14, 3, 2, T(TN, 22))   # 参道: gravel approach under the chip's stone steps (chip cols 5-7) down to the lane
 for tx in (61, 63, 65, 67):   # 鎮守の森: dense grove east of the shrine
     stamp(tx, 4, TN, 5, 16, 2, 3, 'up', True, f'grove{tx},4')
-entrance('shrine-ne', 55, 13, 55, 14)
+entrance('shrine-ne', 57, 13, 57, 14)
 place_kit('clinic-small', 61, 7, 'clinic-ne')
 # clinic front car park (2 bays) onto the y16 lane
 ground(61, 14, 9, 2, ASPH)
@@ -497,7 +502,6 @@ kit_variant('apartment-dark-roof', 25, 54, 'apartment-sw-2', APT['wood'], label=
 house(36, 54, 3, 'house-sw-7', 'plaster', 'light', stones=False)
 
 
-chip(51, 22, 'gomi.png', 2, 0, 2, 3, 'gomi-ne')   # ゴミ集積所 at the park corner, facing the plaza walk
 
 # ================================================================= SE x51..95, y39..63
 signal(51, 39, 'signal-se'); ground(51, 39, 3, 7, WALK)
@@ -510,8 +514,8 @@ ground(51, 46, 16, 8, ASPH)
 for sx in (52, 56, 60, 64):
     for yy in range(48, 51): put(sx, yy, T(CV, 6), 'up', False)
 # parked cars (car.png: front view cols 0-2, rear view cols 3-5, 3x4); bay in front of the door (x57-59) left empty
-chip(53, 48, 'car.png', 11, 0, 3, 4, 'car-1')
-chip(61, 48, 'patcar.png', 11, 3, 3, 4, 'car-2')
+chip(53, 48, 'car.png', 11, 3, 3, 4, 'car-1')
+chip(61, 48, 'patcar.png', 11, 3, 3, 4, 'car-2')   # both nose-in toward the store (rear view), same orientation
 rtown(67, 46, 'rtown-se', wall='plaster', roof='dark', awning=False)
 kit_variant('clinic-small', 77, 45, 'clinic-se', sub={'xp-roof01': R3}, label='roof03')
 ground(77, 52, 9, 2, ASPH)   # clinic front car park onto the y54 lane
@@ -527,24 +531,23 @@ for i, x in enumerate(range(77, 83)):
 put(80, 40, T(CH + 'vege.png', 2), 'up', False); put(80, 41, T(CH + 'vege.png', 6), 'up', False)
 # jizo at the corner where the x74 lane leaves the arterial; big sakura inside the lot line, off the sidewalk
 chip(71, 40, 'jizo.png', 3, 0, 3, 4, 'jizo-se')
-chip(84, 39, 'sakura2.png', 6, 0, 6, 6, 'sakura-se')
-chip(91, 39, 'momiji.png', 4, 0, 4, 4, 'momiji-se')
+chip(87, 39, 'sakura2.png', 6, 0, 6, 6, 'sakura-se')   # lone roadside cherry with 3 tiles of grass to the field
 # riverside park y56..62
 ground(51, 56, 23, 7, GRASS); ground(76, 56, 20, 7, GRASS)
-ground(51, 61, 23, 1, SOIL)
-# riverside park west of the bridge, path row y60 kept clear
-chip(52, 56, 'sakura2.png', 6, 0, 6, 5, 'sakura-river')   # y56..60; the park path runs on y61
-place_kit('park-bench-front', 58, 58)
-place_kit('park-swings', 64, 56); place_kit('park-bench-back', 68, 58)
-chip(71, 58, 'yukiyanagi.png', 2, 0, 2, 2, 'yukiyanagi-river')
+ground(51, 62, 23, 1, SOIL)
+# riverside park west of the bridge: a cherry-lined promenade (桜並木) — 3 cherries at even spacing,
+# benches between them facing the canal (back view), path on y62 along the canal walk
+for i, sx in enumerate((51, 59, 67)):
+    chip(sx, 56, 'sakura2.png', 6, 0, 6, 6, f'sakura-river-{i}')
+for bx in (57, 65): place_kit('park-bench-back', bx, 60)
 # temple graveyard (寺の墓地) east of the bridge: gravel yard, grave blocks, bell; graves belong to a temple, never the shrine
 ground(76, 56, 20, 7, T(TN, 22))
-for gx in (78, 82, 86): chip(gx, 56, 'ohaka.png', 4, 0, 4, 6, f'graves-{gx}')
+for gx in (78, 83): chip(gx, 56, 'ohaka.png', 4, 0, 4, 6, f'graves-{gx}')   # two grave blocks with a 1-tile aisle
 # no temple hall fits beside it: a walled community cemetery (共同墓地), no bell
 for wy in range(56, 63): put(76, wy, T(TN, 24 if wy < 62 else 40), 'up', True)
 put(76, 56, T(TN, 16), 'up', True)
-chip(90, 57, 'yukiyanagi.png', 2, 0, 2, 2, 'cemetery-shrub')
-for tx in (92, 94): stamp(tx, 56, TN, 5, 16, 2, 3, 'up', True, f'tgrove{tx}')
+for tx in (90, 92, 94): stamp(tx, 56, TN, 5, 16, 2, 3, 'up', True, f'tgrove{tx}')   # evergreen screen behind the graves
+for tx in (90, 92, 94): stamp(tx, 59, TN, 5, 16, 2, 3, 'up', True, f'tgrove{tx}b')
 
 
 # ================================================================= block-wall lots (gravel yard + wall ring)
@@ -606,6 +609,16 @@ def rear_wall(y, x0, x1, name):
         put(x, y, T(TN, t), 'up', True); owner[y][x] = name + '-wall'
 rear_wall(39, 0, 21, 'sw-rear-a'); rear_wall(39, 24, 42, 'sw-rear-b')
 
+# lived-in yards (few, deliberate): laundry pole in a back garden, a bicycle by a side door, a pot by the genkan
+def yard_prop(x, y, t, name, solid_=True, f=TN):
+    if not (owner[y][x] and owner[y][x].endswith('-yard')) or up[y][x] or (x, y) in APPR: return False
+    put(x, y, T(f, t), 'up', solid_); owner[y][x] = name; return True
+yard_prop(88, 3, 155, 'laundry-ne-a'); yard_prop(89, 3, 156, 'laundry-ne-b')
+if all(owner[y][44] and owner[y][44].endswith('-yard') and not up[y][44] for y in (55, 56)):
+    put(44, 55, T(CH + 'bicycle01.png', 0), 'up', True); put(44, 56, T(CH + 'bicycle01.png', 5), 'up', True)
+    owner[55][44] = owner[56][44] = 'bike-sw-7'
+yard_prop(35, 60, 204, 'pot-sw-7'); yard_prop(11, 60, 204, 'pot-sw-6'); yard_prop(0, 48, 204, 'pot-sw-1')
+
 # a back-wall run with no corner post that stops mid-garden is a floating plank: pull it
 TOPW = {T(TN, t) for t in (16, 17, 18)}
 def topw(x, y): return 0 <= x < W and 0 <= y < H and owner[y][x] and owner[y][x].endswith('-wall') and any(r in TOPW for r in up[y][x])
@@ -644,8 +657,7 @@ def bank_field(x0, x1, f):
     xpcells(cells, f, 'lo', True)
     if f == 'SA-Hatake01.png':   # crop rows on the upper and lower furrow, like the SE field
         for i, x in enumerate(range(x0 + 1, x1)):
-            put(x, 69, T(CH + 'vege.png', (4, 5, 8, 9)[i % 4]), 'up', False)
-            put(x, 71, T(CH + 'vege.png', (16, 17, 18, 19)[i % 4]), 'up', False)
+            put(x, 70, T(CH + 'vege.png', (4, 5, 8, 9)[i % 4]), 'up', False)   # one crop row down the middle furrow
 bank_field(0, 7, 'SA-Hatake01.png')
 for tx in (9, 11): stamp(tx, 69, TN, 5, 16, 2, 3, 'up', True, f'bank{tx}')
 bank_field(14, 20, 'SA-Hatake03.png')
@@ -664,7 +676,7 @@ def vend_ok(x, y):
     below = [(x, y + 3), (x + 1, y + 3)]
     return all(0 <= b < H and not solid[b][a] for a, b in below)
 vends = 0
-for (vx, vy) in ((60, 56), (72, 56)):
+for (vx, vy) in ():   # vending machines only on private frontage: none in the park
     if vend_ok(vx, vy):
         for dy in range(3):
             for dx in range(2): owner[vy + dy][vx + dx] = f'vend@{vx},{vy}'
