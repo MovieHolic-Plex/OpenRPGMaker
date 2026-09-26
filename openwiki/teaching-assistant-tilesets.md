@@ -227,6 +227,14 @@ itch.io 의 [Rasak Modern](https://rasak.itch.io/rasak-modern)처럼 「사용·
   합성 패널이라 팩 시트 좌표가 아니다 — 프리셋에 넣지 않는다.
   `MvTownRecipe` 의 선택 필드: `MvTownFacade.shopfrontEnds`(1×1 쇼윈도 줄 양끝), `objects.streetTrees`(거리마다 한 수종),
   `parkTrees`, `roofGear`(건물마다 0~2), `streetProps`(가게 앞 보도 가운데 줄 35%), `busStop`(큰길 남쪽 보도 한 곳). 비어 있으면 이전 동작 그대로.
+- **자동차(2026-09-26, cars 레인).** 타일 시트에는 승용차가 없다 — PublicTransportation 3장은 버스·전차 차체뿐이고
+  Slums 판 13~15,13~15 는 부서진 폐차 더미다. 그래서 캐릭터 시트 `Animations/Vehicles/ModernCars/!Car1.png`(2304×1152, 8색)를
+  프리셋 `sheets` **맨 끝**에 물체 시트로 붙였다(앞 시트 칸 번호는 그대로 — 기존 물체 100개 칸 번호 불변 확인).
+  색 블록(12×12칸)마다 가운데 정지 프레임: 가로 4×3(x4~7, 왼쪽 y3~5·오른쪽 y6~8, 아래 두 줄만 막힘), 세로 2×3(x5~6, 아래 y0~2·위 y9~11).
+  `car_{red,white,blue,black,green}_{left,right,down,up}` 20개, 모두 `onRoad`. 조립 필드 `objects.carsHorizontal`·`carsVertical`.
+  townLayout 배선: 가게 사이 통로(rear-lot) 세로 차, 세로 골목길 양 차선 길가 주차(서쪽 _down·동쪽 _up),
+  로컬 도로 연석 쪽(북 _left·남 _right, 진입로 앞 제외), 큰길 1~2대. 교차로·그 위아래 1줄은 비운다.
+  뒷마당 주차 칸은 옥상이 깊이를 채워 0~2줄뿐이라 3칸 차가 들어가지 않는다.
 
 **마을·실내 묶음(2026-09-25).** `rasak_town`(A1~A5 City + Town·Building·Structure·Market + 울타리·정원·밭·작물·여름 나무)과
 `rasak_interior`(A2_Inside·A4/A5_House + HouseInterieur·LivingRoom·Tavern·Storage + 대장간·재봉·왕실). 제작자 프리뷰가 없으므로
