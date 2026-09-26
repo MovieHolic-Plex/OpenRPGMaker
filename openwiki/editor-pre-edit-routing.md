@@ -303,6 +303,11 @@ Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식�
   바꾼다면**(객체 생성·파괴 없이 setTint/setPosition 등) 그 경로에서 `requestEditRenderFrame(scene.game)` 을 불러라 —
   안 부르면 최대 1초 늦게 보인다. `loop.sleep()` 으로 바꾸지 마라: 트윈·물 애니메이션·키보드 큐가 같이 멈추고
   테스트 플레이 잠재우기(`editorGameSuspension`)와 같은 스위치를 두고 다툰다. 관측: `editRenderGateStats(game)`.
+  테스트 플레이 잠재우기(`editorGameSuspension`)와 같은 스위치를 두고 다투다. 관측: `editRenderGateStats(game)`.
+  **입력 깨우기는 캠버스 기원만 (2026-09-26).** 눌린 포인터는 캠버스에서 `pointerdown` 한 획일 때만 깨운다(획이
+  캠버스 밖으로 나가도 유지). 사이드바 클릭·스크롤바 드래그와 `INPUT`/`TEXTAREA`/`SELECT`/contenteditable 안의 키는
+  깨우지 않는다 — 예전에는 사이드바 클릭마다 맵 전체를 500ms 매 프레임 다시 그렸다. 그 클릭이 상태를 바꾸면
+  EditScene 의 store/editorState 구독이 깨운다. 검증: `test/editRenderGate.test.ts` 「window input wake」.
 - **지연 창 문턱 2_048칸 (2026-09-25).** `LAZY_EDIT_MAP_CELL_THRESHOLD` 가 8_192 였을 때는 90×90 까지 모든 칸을
   만들었다. 창이 맵 전체를 덮으면(축소·카메라 없는 테스트) lazy 경로도 전부 그리므로 작은 맵 결과는 같다.
 - **격자는 카메라 근처 청크만 긋는다 (2026-09-25).** `repaintEditGrid(…, bounds)` + `editGridTileWindow` 가 카메라 창을
@@ -338,7 +343,11 @@ Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식�
 초보 레일은 동일 칩셋·이미지·검색 조건에서 팔레트 DOM을 재사용한다. 선택 시 2,000개 이상의
 셀을 다시 만들면 지연 생성 중인 뒷부분이 사라지거나 키보드/드래그 상태가 끊긴다.
 표준 팔레트도 같다. `selectedTile` 만 바뀐 에디터 통지는 `syncMountedPaletteSelection` 이
-활성 칸과 선택 칩만 옮긴다. 도구·붓·스탬프만 바뀌면 시트 노드는 `retainKey`(타일셋·그림·레이어·필터)가
+활성 칸과 선택 칩만 옮긴다. **도구·붓 모양·붓 크기만 바뀐 통지**(`editorStateChangedOnlyToolPick`)는
+`syncMountedPaletteToolPick` 이 도구줄·붓 옵션 줄만 갈고 시트·필터 줄은 건드리지 않는다(2026-09-26 실측: 전체
+재생성은 클릭당 약 120ms, 그중 60% 가 붙이기 직후 focus 복원과 옛 트리 떼기). 도구줄 단추·모양 선택은
+`editorState` 만 바꾸고 스스로 `rerender()` 하지 않는다 — 부르면 클릭 한 번에 팔레트가 두 번 지어진다.
+타일 검색은 입력이 120ms 멈춘 뒤 한 번 다시 그린다. 도장만 바뀌면 시트 노드는 `retainKey`(타일셋·그림·레이어·필터)가
 같을 때 그대로 두고 크롬만 다시 그린다. 레이어·필터·검색·타일셋 그림이 바뀌거나 보조 창이 열려
 선택 동기화가 실패하면 시트를 다시 그린다. 초보 레일의 되돌리기 기록은 단추만 갱신한다.
 DOM 미리보기는 이식 PNG의 공유 Blob URL을 쓰고 증거·내보내기는 data URL을 유지한다.
