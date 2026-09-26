@@ -105,7 +105,7 @@ describe("Ultrabrain whole-map review", () => {
     first.lowerTiles[0] = (first.lowerTiles[0] ?? 0) + 1;
     // **상한보다 맵을 하나 더 만든다** — 그래야 «상한 제거» 회귀가 peak 로 드러난다(2026-09-26 리뷰 R1).
     // 상한(6) 이하의 맵만 두면 `Promise.all(targets.map(reviewOne))` 같은 회귀가 두 단언을 모두 통과한다
-    // (예전에는 상한 3 + 맵 4 였아서 우연히 잡혔는데, 상수를 올리자 그 커버리지가 조용히 사라졌다).
+    // (예전에는 상한 3 + 맵 4 였어서 우연히 잡혔는데, 상수를 올리자 그 커버리지가 조용히 사라졌다).
     const targetMaps = HARMONY_REVIEW_CONCURRENCY + 1;
     for (let i = Object.keys(after.maps).length; i < targetMaps; i += 1) {
       const copy = structuredClone(first);
