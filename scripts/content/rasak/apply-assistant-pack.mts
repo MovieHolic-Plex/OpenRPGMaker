@@ -226,8 +226,10 @@ async function main() {
       for (const id of RASAK) {
         const ts = project.tilesets[id]!;
         const variant = existsSync(join(atlasDir, id, "manifest.layers.json")) ? "layers." : "";
-        const manifest = JSON.parse(readFileSync(join(atlasDir, id, `manifest.${variant}json`), "utf8")) as { count: number; tilesPerRow: number; tileSize: number };
+        const manifest = JSON.parse(readFileSync(join(atlasDir, id, `manifest.${variant}json`), "utf8")) as { count: number; tilesPerRow: number; tileSize: number; animationStrips: { baseTile: number; frames: number; fps: number }[] };
         if (manifest.count === ts.count) continue;
+        // 뒤에 붙인 애니 시트(Animations → N 구역, 2026-09-27)는 칸마다 strip 을 단다 — 그림과 함께 strip 목록도 갈아 끼운다.
+        ts.animationStrips = manifest.animationStrips;
         if (manifest.count < ts.count) throw new Error(`${id}: 굽기 칸 수 ${manifest.count} 가 프로젝트 ${ts.count} 보다 적습니다 — 뒤에 붙인 경우만 갈아 끼운다`);
         const asset = project.assets.uploaded[ts.image.id];
         if (!asset) throw new Error(`${id}: 아틀라스 자산 ${ts.image.id} 이 없습니다`);
