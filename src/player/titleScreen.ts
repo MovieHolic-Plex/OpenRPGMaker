@@ -367,7 +367,9 @@ export function renderTitleEffectsLayer(
   if (!effects.length || !backgroundResourceId) return null;
   const imageUrl = resolveAssetResourceUrl(backgroundResourceId, { project });
   if (!imageUrl) return null;
-  const options = { effects, imageUrl, fit: settings.backgroundFit ?? "stretch" };
+  const depthResourceId = effects.find((effect) => effect.kind === "parallax")?.depthResourceId;
+  const depthUrl = depthResourceId ? resolveAssetResourceUrl(depthResourceId, { project }) ?? undefined : undefined;
+  const options = { effects, imageUrl, fit: settings.backgroundFit ?? "stretch", depthUrl };
   const signature = titleEffectsSignature(options);
   if (reuse && reuse.dataset.titleEffectsSignature === signature) return reuse;
   // 같은 그림·맞춤에서 효과 값만 바뀌면 WebGL 문맥을 새로 만들지 않고 값만 바꾼다(편집기 드래그·슬라이더).
@@ -375,6 +377,7 @@ export function renderTitleEffectsLayer(
     reuse instanceof HTMLCanvasElement &&
     reuse.dataset.titleEffectsImage === imageUrl &&
     reuse.dataset.titleEffectsFit === options.fit &&
+    (reuse.dataset.titleEffectsDepthUrl ?? "") === (depthUrl ?? "") &&
     updateTitleEffectsCanvas(reuse, effects)
   ) {
     reuse.dataset.titleEffectsSignature = signature;
@@ -384,6 +387,7 @@ export function renderTitleEffectsLayer(
   canvas.dataset.titleEffectsSignature = signature;
   canvas.dataset.titleEffectsImage = imageUrl;
   canvas.dataset.titleEffectsFit = options.fit;
+  if (depthUrl) canvas.dataset.titleEffectsDepthUrl = depthUrl;
   return canvas;
 }
 
