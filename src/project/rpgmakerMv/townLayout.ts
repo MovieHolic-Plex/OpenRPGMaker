@@ -1349,12 +1349,14 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
       for (const [tx, ty] of [[x + dx, y], [x, y + dy]] as const) if (walkable(tx, ty)) overlay(dc.tactile, tx, ty);
     };
     const cross = (ix: number, iy: number, h: number, kind: "light" | "stopN" | "stopS" | "stopBoth") => {
-      const NW = [ix - 1, iy - 1, -1, -1] as const, NE = [ix + 5, iy - 1, 1, -1] as const, SW = [ix - 1, iy + h, -1, 1] as const, SE = [ix + 5, iy + h, 1, 1] as const;
+      type Corner = readonly [number, number, number, number];
+      const NW: Corner = [ix - 1, iy - 1, -1, -1], NE: Corner = [ix + 5, iy - 1, 1, -1], SW: Corner = [ix - 1, iy + h, -1, 1], SE: Corner = [ix + 5, iy + h, 1, 1];
       if (kind === "light") { let i = 0; for (const c of [NW, NE, SW, SE]) corner(lights[i++ % lights.length], ...c); }
       else {
         if (kind !== "stopS") corner(dc.stopSign, ...NW);
         if (kind !== "stopN") corner(dc.stopSign, ...SE);
-        for (const c of kind === "stopN" ? [NE] : kind === "stopS" ? [SW] : [NE, SW]) corner(undefined, ...c);
+        const rest: Corner[] = kind === "stopN" ? [NE] : kind === "stopS" ? [SW] : [NE, SW];
+        for (const c of rest) corner(undefined, ...c);
       }
       const mh = dc.manholes.filter(has);
       if (mh.length) place(pick(drng, mh), ix + int(drng, 1, 3), iy + int(drng, 1, h - 2));
