@@ -62,7 +62,6 @@ import { isMapPanelCollapsed, subscribeMapPanel } from "@/editor/workspace/mapPa
 import type { PanelId } from "@/editor/workspace/panelRegistry";
 import { getWorkspaceLayout, subscribeWorkspace } from "@/editor/workspace/workspaceStore";
 import { ProjectExportMirror } from "@/editor/projectExportMirror";
-import { runWhenPointerReleased } from "@/editor/pointerStrokeGate";
 import { isSaveSkippedLocation } from "@/project/devProjectPersistence";
 import { store, type ProjectChangeDescriptor } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
@@ -492,8 +491,6 @@ export function teardownEditor(): void {
   authoringJourneyOpen = false;
   authoringJourneyReferenceIssues = null;
   projectExportNode = null;
-  if (projectExportTimer) clearTimeout(projectExportTimer);
-  projectExportTimer = null;
   projectExportMirror.clear();
   document.body.classList.remove("ai-chat-dock-float", "editor-ui-beginner", "editor-ui-standard", "editor-ui-expert");
 }
@@ -610,7 +607,18 @@ function projectExportNodeElement(): HTMLElement {
     attrs: { hidden: "true" },
     dataset: { testid: "project-export-json" },
   });
-  return projectExportNode;
+  // 이 미러는 자동화(e2e·캡처 스크립트)만 `textContent` 로 읽는다. 미리 채우면 획을 뗄 때마다
+  // 프로젝트 전체를 직렬화한다 — 실측(2026-09-26, 81MB 새 프로젝트) 획마다 0.9s 메인 스레드 정지.
+  // 읽는 순간에만 직렬화한다. 값은 읽는 시점의 store 상태라 예전보다 늦지 않다.
+  const node = projectExportNode;
+  Object.defineProperty(node, "textContent", {
+    configurable: true,
+    get: () => projectExportMirror.serialize(
+      store.getCurrent(), store.getVersionToken(), editorState.get(), getMapEditHistoryState(),
+    ),
+    set: () => undefined,
+  });
+  return node;
 }
 
 function onWindowResize(): void {
@@ -1070,34 +1078,11 @@ function isRandomBattleTestRequest(value: unknown): value is { readonly kind: "r
   if (typeof value !== "object" || value === null) return false;
   return "kind" in value && value.kind === "random-battle";
 }
-// 콘텐츠 변경의 clone+stringify는 trailing 디바운스로 합친다. UI 상태만 바뀌면
-// ProjectExportMirror가 내용 버전별 JSON을 재사용하고 editor/history만 다시 직렬화한다.
-// 맵 타일 버스트는 500ms, 그 밖의 콘텐츠는 150ms로 숨은 <pre> 관측 비용을 묶는다.
-let projectExportTimer: ReturnType<typeof setTimeout> | null = null;
+// 숨은 `project-export-json` 미러. 내용 버전별 JSON 은 ProjectExportMirror 가 재사용하고, 직렬화는 읽을 때만 한다.
 const projectExportMirror = new ProjectExportMirror();
 
-// 숨은 `project-export-json` 미러는 프로젝트 전체를 JSON.stringify 한다. 선행 잠금
-// (`if (timer) return`)이면 버스트 중 150ms 마다 타이머가 재무장되어 반복 직렬화됐다 —
-// 우클릭 드래그 2초에 열 번 넘게 돌았다. 후행 엣지로 바꿔 버스트가 끝난 뒤 한 번만 돈다.
-function updateProjectExport(delayOverride?: number): void {
-  if (projectExportTimer) clearTimeout(projectExportTimer);
-  // The first export is a full JSON stringify of the loaded project. Let the canvas and map
-  // shell get a paint opportunity before doing that hidden automation work; ordinary edits keep
-  // the shorter debounce while tile bursts pass an explicit longer delay.
-  const delay = delayOverride ?? (projectExportNode?.textContent ? 150 : 500);
-  projectExportTimer = setTimeout(() => {
-    projectExportTimer = null;
-    // 천천히 끄는 스트로크는 칸 사이가 500ms 를 넘기도 한다 — 칠하는 도중 프로젝트 전체를
-    // 직렬화하지 않고 뗄 때 한 번 한다(pointerStrokeGate).
-    runWhenPointerReleased(writeProjectExport);
-  }, delay);
-}
-
-function writeProjectExport(): void {
-  if (!projectExportNode) return;
-  projectExportNode.textContent = projectExportMirror.serialize(
-    store.getCurrent(), store.getVersionToken(), editorState.get(), getMapEditHistoryState(),
-  );
+function updateProjectExport(_delayOverride?: number): void {
+  // 미러는 읽을 때 직렬화한다(projectExportNodeElement). 여기서 미리 만들지 않는다.
 }
 
 function bindLeftResizer(): void {
