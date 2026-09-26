@@ -22,9 +22,9 @@ describe("M2 persisted runtime classification completeness", () => {
     // When: membership is counted across the four mutually exclusive classes.
     const membershipCounts = countMemberships(classifiedIds);
 
-    // Then: the union is exactly the 125 catalog IDs, with no duplicate membership.
+    // Then: the union is exactly the 126 catalog IDs, with no duplicate membership.
     expect(new Set(classifiedIds)).toEqual(new Set(catalogIds));
-    expect(classifiedIds).toHaveLength(125);
+    expect(classifiedIds).toHaveLength(126);
     expect([...membershipCounts].filter(([, count]) => count > 1)).toEqual([]);
   });
 

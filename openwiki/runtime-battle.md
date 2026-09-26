@@ -540,6 +540,49 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - 저작: `upsert_skill` 의 `comboActorIds`·`area`, `upsert_enemy` 의 `rewards.tp`, `upsert_actor` 의 `learnedSkills[].tp`(없는 배우·인원 수·반경·음수 TP 는 ToolError).
 - 검증 증거: `node scripts/runtime-qa.mjs --scenario ct-techs`(`scripts/qa/runtime/ct-techs*.m*`), 헤드리스 TP 는 `scripts/qa/runtime/ct-techs-tp.mts`.
 
+## Chrono Trigger 전투 엔진: Active ATB · 상태 · 반격 · 자동 부활 · 적 이동 · 승리 포즈 · 필드 배경 (2026-09-26)
+
+전부 **값이 있을 때만 저장**한다(정규화가 기본값을 생략). 옛 프로젝트는 바이트·동작 그대로다.
+
+- **ATB 방식·속도** `system.atbMode?: "active"|"wait"`(기본 wait), `system.atbSpeed?: 1..8`(4 = 기존, 작을수록 빠름 — `atbSpeedMultiplier`, 1 = ×1.45, 8 = ×0.4, 스킨 가속과 곱한다).
+  Active 는 **gauge 흐름에서만** 켜진다. 런타임 `tick` 이 `actorCommand`/`targetSelect` 국면에서도 `tickDuringMenu` 로 적 게이지를 채우고
+  적만 차례를 받는다(메뉴 주인이 아닌 아군은 게이지만 찬다). 적 행동 뒤 `restoreMenuAfterEnemy` 가 메뉴(대상 선택이면 살아 있는 후보로 좁힌 선택)를 되돌리고,
+  메뉴 주인이 쓰러지거나 행동 불가가 되면 명령을 거둔다. 표시 계층 `battleDom` 의 200ms 틱이 메뉴 중에도 `tick` 을 부르고, 그렇게 적이 움직이면
+  `battle-scene[data-battle-enemy-acted-during-menu="true"]` 를 남긴다. `data-battle-atb-mode` 로 방식이 보인다. 저작: `set_project_settings battle.atbMode / battle.atbSpeed`.
+- **상태 런타임 효과**(`StateRuntimeEffects`, `battleStates.ts`):
+  - `freezesGauge`(스톱): 충전 배율 0 — `nextReadyBattler` 는 배율 0 배틀러에게 차례를 주지 않는다. `canBattlerAct` 도 false 라 strict 에서는 행동 불가.
+    gauge 사이클 계수(`markGaugeActionCycle`)는 멈춘 배틀러를 기다리지 않고, 사이클이 닫힐 때 멈춘 배틀러의 상태 처리(자연 회복)를 한 번 돌린다.
+  - `physicalDefenseMultiplier` / `magicDefenseMultiplier`(프로텍트/실드): `defenseMultiplierForStatesByKind(project, target, "attack"|"mind")` 가 공용 `defenseMultiplier` 에 곱한다.
+    통상 공격(아군·적)과 `applySkillHit` 이 스킬의 `effect.statistic` 으로 고른다. 예측·gen1 경로는 공용 배율 그대로다.
+  - `forcedAction: "attackRandom"`(버서크): gauge 는 차례가 오면 명령 없이 무작위 적 통상 공격(`berserkAttackCommand`), strict 는 라운드 시작 때 그 명령을 대기열에 넣는다(`queueBerserkStrictCommands`), 적은 `chooseEnemyAction` 이 무작위 아군 통상 공격을 고른다.
+  - `elementRates`: 활성 상태의 등급이 레코드 등급을 덮는다(나중에 걸린 상태가 이김, `stateElementRateOverride`). `elementMultiplierFor` 만 읽는다.
+  - 저작: `upsert_state` 의 `runtimeEffects` 에 위 필드.
+- **반격** `EnemyRecord.reactions?: { trigger: "physical"|"magic"|속성 id; skillId("" = 통상 공격); chance }[]`. 아군의 피해 타격이 **살아 있는** 적에게 명중하면
+  (`applySingleActorAttack`·`applySkillHit` → `queueCounter`) 첫 번째로 맞는 반응 하나를 예약한다(타격당 최대 1회). 행동의 모든 타격이 끝난 뒤
+  `drainCounters` 가 차례 밖에서 `executeEnemyAction` 으로 쓴다 — 게이지·행동 사이클은 건드리지 않는다. 대상은 때린 배우(없으면 기본 표적).
+  타임라인 `counter` 엔트리(대사 「○○의 반격! — 기술」) 뒤에 피해 엔트리가 온다. 반격은 반격을 부르지 않는다(적→아군). 저작: `upsert_enemy.reactions`(trigger·skillId·chance 를 도구가 검증).
+- **자동 부활** 장비 `effectFlags.autoRevive?: 1..100`(최대 HP %). 여러 장비면 최댓값(`EquipmentRuntimeEffects.autoRevive`). `resolveOutcome` 첫머리의
+  `applyAutoRevives` 가 전투당 배우 1회 되살린다 — 전멸 판정보다 먼저라 패배를 막는다. 타임라인 `revive`(amount = 되살아난 HP), 시퀀서가 회복 피드백으로
+  원장(`battlePresentation`)의 쓰러짐을 걷는다. 저작: `upsert_equipment.effectFlags.autoRevive`(0~100 정수, 0 = 해제).
+- **적 이동** m2 `m2-218-move-enemy` fields `{target: "enemy-N"|적 id, x, y, durationMs?}`(카탈로그 모던 행, 전투 전용 → 피커 2탭 「전투」, troop 컨텍스트 full)
+  와 행동 `EnemyActionPattern.moveTo?: {x, y}`(행동 직전 이동, 400ms). 둘 다 `moveBattler` 로 `battleX/battleY`(위치 범위기가 읽는 값)와 `authoredX/authoredY`
+  를 같이 바꾸고 `moved {durationMs, sequence}` 를 단다. 타임라인 `move`. 표시(`resolveEnemyRowPositions`)는 moved 적만 자동 진형·충돌 회피를 건너뛰고
+  `resolveSkinEnemyPosition(…, autoAlign=false)` 좌표에 세우며, `.battle-enemy[data-battle-move-sequence]` 의 left/top 트랜지션(`--battle-move-ms`)으로 미끄러진다.
+  좌표계는 트룹 `members` 와 같다(측면 스킨 y 는 ×2/3). 저작: `upsert_troop_battle_page` commands 의 m2Command.
+  **카탈로그 규모가 125 → 126** 이다 — `test/m2EventCommandCatalog.test.ts`·`test/m2RuntimeSupportCompleteness.test.ts` 의 125 고정값과
+  `test/fixtures/m2AliasCoverage.json`·M2 표면 기준선에 새 행이 반영돼야 한다(이 변경에서 테스트는 돌리지 않았다 — 감독자 게이트 몫).
+- **승리 포즈** `BattleBattlerPose` 에 `victory`. 승리 결과면 살아 있는 아군 스냅샷이 `victory`(쓰러진 아군은 dead). 칸은 `VICTORY_POSE_FRAME`(행 1 열 2)이고
+  `POSE_FRAME` 에는 넣지 않았다(시트 계약 테스트가 POSE_FRAME 칸마다 그림을 요구한다). 기존 생성 시트는 그 칸이 비어 있어 `battleFieldDom.victoryFrameFor` 가
+  시트 URL 당 한 번 칸을 실측하고 비었으면 idle 칸을 그린다(`data-battle-pose-frame="victory"|"idle"`). 노드는 `data-battle-pose="victory"`·`.battle-pose-victory`.
+- **필드 배경** `system.battleBackdrop?: "field"`. `playSceneBattle` 이 진입 직전 Phaser `renderer.snapshot`(WebGL 버퍼가 비기 전 다음 프레임, 250ms 제한, 실패하면
+  트룹 배경)으로 현재 필드 화면(주인공 주변 카메라 시야)을 jpeg dataURL 로 찍어 `mountBattleScene({ fieldBackdropUrl })` 로 넘긴다. `applyFieldBackdrop` 이
+  `battle-backdrop[data-backdrop-source="field"]` 로 갈아끼우고, 전투 이벤트가 배경을 바꾸면(changeBattleback) 그쪽이 이긴다.
+  진입은 **제자리 페이드**: `createSkinBattleTransition(…, inPlace=true)` 가 막대·소용돌이·스킨 커버를 빼고 180ms 어두워진 뒤 전투 UI 만 페이드 인
+  (`battle-scene[data-battle-backdrop-kind="field"]`, 23-entry-exit.css). 필드 위에 전투를 직접 그리는 온맵 전투는 범위 밖이다. 저작: `set_project_settings battle.backdrop: "field"|"default"`.
+- 검증 증거: `node scripts/runtime-qa.mjs --scenario ct-engine`(`scripts/qa/runtime/ct-engine*.m*`, 하네스에 `waitForStyleVar`·`repeatUntil` op 추가) —
+  필드 배경 · 메뉴를 연 채 적 행동 · 물리 반격 · 자동 부활 · moveEnemy 뒤 렌더 좌표 · 승리 포즈. 헤드리스 수치는
+  `scripts/qa/runtime/ct-engine-numbers.mts`(스톱 게이지 0 · 버서크 자동 공격 · 프로텍트/실드 계열별 피해 · 상태 속성 덮어쓰기 · 행동 moveTo 좌표).
+
 ## Battle rules & runtime
 - Battle rules belong in `src/battle`; scene or DOM code should render/bridge them rather than becoming the source of truth.
 - **전투를 시작하는 모든 재진입 경로는 `scene.running = true` + `setInputEnabled(false)` 를 직접 걸고

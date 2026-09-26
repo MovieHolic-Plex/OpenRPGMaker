@@ -6,6 +6,7 @@ import type {
   EnemyActionSwitchEffect,
   EnemyCritical,
   EnemyOptions,
+  EnemyReaction,
   EnemyRecord,
   EnemyRewards,
   EnemyStats,
@@ -51,7 +52,24 @@ export function normalizeEnemyRecord(
       ? { state_death: "C" }
       : normalizeRates(record.stateRates),
     elementRates: defaultElementRates(record.elementRates),
+    ...(() => {
+      const reactions = normalizeEnemyReactions(record.reactions);
+      return reactions.length > 0 ? { reactions } : {};
+    })(),
   };
+}
+
+/** 반격 목록. trigger 가 비었거나 skillId 가 문자열이 아닌 항목은 버린다. 빈 목록은 저장하지 않는다. */
+function normalizeEnemyReactions(reactions: readonly Partial<EnemyReaction>[] | undefined): EnemyReaction[] {
+  if (!Array.isArray(reactions)) return [];
+  return reactions
+    .filter((entry): entry is Partial<EnemyReaction> & { trigger: string; skillId: string } =>
+      typeof entry?.trigger === "string" && entry.trigger.trim().length > 0 && typeof entry.skillId === "string")
+    .map((entry) => ({
+      trigger: entry.trigger.trim(),
+      skillId: entry.skillId.trim(),
+      chance: clampInteger(typeof entry.chance === "number" && Number.isFinite(entry.chance) ? entry.chance : 100, 0, 100),
+    }));
 }
 
 /** Side-view battle field art. EasyRPG "backdrop" pack is mostly sky panoramas — not usable as JRPG battlebacks. */
@@ -167,6 +185,9 @@ function normalizeEnemyActions(actions: readonly Partial<EnemyActionPattern>[] |
       condition: normalizeActionCondition(action.condition),
       switchOnAfterAction: normalizeActionSwitchEffect(action.switchOnAfterAction),
       switchOffAfterAction: normalizeActionSwitchEffect(action.switchOffAfterAction),
+      ...(action.moveTo && Number.isFinite(action.moveTo.x) && Number.isFinite(action.moveTo.y)
+        ? { moveTo: { x: clampInteger(action.moveTo.x, 0, 320), y: clampInteger(action.moveTo.y, 0, 240) } }
+        : {}),
     }));
 }
 

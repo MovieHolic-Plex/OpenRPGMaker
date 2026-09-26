@@ -18,8 +18,8 @@ describe("m2 event command catalog", () => {
     const pdfEntries = M2_COMMAND_CATALOG.filter((entry) => entry.index <= 108);
 
     expect(pdfEntries).toHaveLength(108);
-    expect(M2_COMMAND_CATALOG).toHaveLength(125);
-    expect(new Set(M2_COMMAND_CATALOG.map((entry) => entry.id)).size).toBe(125);
+    expect(M2_COMMAND_CATALOG).toHaveLength(126);
+    expect(new Set(M2_COMMAND_CATALOG.map((entry) => entry.id)).size).toBe(126);
     // 주석은 탭 1 저작면의 1급 카드가 아니다 — 시스템·도구 탭으로 옮겼다.
     expect(pageCount(1)).toBe(34);
     expect(pageCount(2)).toBeGreaterThan(0);

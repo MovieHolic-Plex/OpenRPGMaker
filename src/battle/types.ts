@@ -244,6 +244,8 @@ export interface BattleBattlerSnapshot {
   readonly battleY?: number;
   readonly authoredX?: number;
   readonly authoredY?: number;
+  /** 전투 중 옮겨진 적(moveEnemy/moveTo). 있으면 표시는 자동 진형 대신 authoredX/Y 로 미끄러진다. */
+  readonly moved?: { readonly durationMs: number; readonly sequence: number };
   readonly defeated: boolean;
   readonly defending: boolean;
   /** Side-view pose for the current resolve beat (idle/attack/hit/defend/dead). */
@@ -305,6 +307,12 @@ export type BattleTimelineEntryKind =
   | "stateRemoved"
   | "incapacitated"
   | "stalemate"
+  /** 적 반격 선언(이어서 피해 엔트리가 온다). */
+  | "counter"
+  /** 장비 자동 부활. amount = 되살아난 HP. */
+  | "revive"
+  /** 적 위치 이동(moveEnemy/moveTo). */
+  | "move"
   /** 배틀 이벤트 `wait` 가 요청한 연출 일시정지(strict 흐름). `waitMs` 를 들고 있다. */
   | "wait";
 

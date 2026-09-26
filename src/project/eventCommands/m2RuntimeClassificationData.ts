@@ -68,6 +68,7 @@ export const M2_PERSISTED_BEHAVIOR_IDS = {
     "m2-106-call-common-event",
     "m2-107-force-escape",
     "m2-108-action-times",
+    "m2-218-move-enemy",
     "m2-201-camera-control",
     "m2-203-spawn-event",
     "m2-204-remove-event",
@@ -187,4 +188,5 @@ export const M2_TROOP_FULL_IDS = [
   "m2-106-call-common-event",
   "m2-107-force-escape",
   "m2-108-action-times",
+  "m2-218-move-enemy",
 ] as const;

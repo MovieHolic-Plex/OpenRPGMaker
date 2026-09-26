@@ -11,6 +11,7 @@ export type M2BattleCommandExecutorOptions = {
   readonly context: BattleEventContext;
   readonly revealEnemy?: (target: string) => void;
   readonly changeBattleback?: (resourceId: string) => void;
+  readonly moveEnemy?: (target: string, x: number, y: number, durationMs: number) => boolean;
   readonly addExtraActorAction: (actorId: string, amount: number) => void;
   // m2-103: 전투 애니메이션을 필드에 띄운다. runtime 이 lastAnimation 을 세팅하도록 콜백.
   readonly showBattleAnimation?: (target: string, animationId: string) => void;
@@ -64,6 +65,11 @@ export function executeM2BattleCommand(command: M2Command, options: M2BattleComm
       const resourceId = parsed.resourceId.trim();
       if (resourceId) options.changeBattleback?.(resourceId);
       return { handled: true, forceEscape: false };
+    }
+    case "moveEnemy": {
+      // 없는 적·쓰러진 적은 처리하지 않은 것으로 남겨 이벤트 로그에 unsupported 로 보인다.
+      const moved = options.moveEnemy?.(parsed.target, parsed.x, parsed.y, parsed.durationMs) === true;
+      return { handled: moved, forceEscape: false };
     }
     case "showAnimation":
       if (parsed.animationId) options.showBattleAnimation?.(parsed.target, parsed.animationId);

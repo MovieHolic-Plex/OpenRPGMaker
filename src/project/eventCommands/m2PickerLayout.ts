@@ -81,8 +81,12 @@ export const M2_COMMAND_PICKER_GROUP_ORDER: readonly M2CommandPickerGroup[] = [
 /** 전투 이벤트에서만 의미가 있는 PDF 행 구간. 페이지/그룹 판정보다 먼저 걸러진다. */
 const BATTLE_ONLY_INDEX_RANGE = { first: 98, last: 108 } as const;
 
+/** 모던 명령 중 전투 이벤트에서만 의미가 있는 행. */
+const BATTLE_ONLY_MODERN_TITLES: ReadonlySet<string> = new Set(["Move Enemy"]);
+
 function isBattleOnlyRow(row: M2PdfCommandRow): boolean {
-  return row.index >= BATTLE_ONLY_INDEX_RANGE.first && row.index <= BATTLE_ONLY_INDEX_RANGE.last;
+  return (row.index >= BATTLE_ONLY_INDEX_RANGE.first && row.index <= BATTLE_ONLY_INDEX_RANGE.last)
+    || BATTLE_ONLY_MODERN_TITLES.has(row.title);
 }
 
 const QUICK_AUTHORING_PAGE_TITLES: ReadonlySet<string> = new Set([

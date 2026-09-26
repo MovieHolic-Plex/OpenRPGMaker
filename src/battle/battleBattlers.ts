@@ -78,10 +78,13 @@ export interface MutableBattler {
   skillPp?: Record<SkillId, number>;
   skillCooldowns?: Record<SkillId, number>;
   readonly enemyActions?: readonly EnemyActionPattern[];
-  readonly battleX?: number;
-  readonly battleY?: number;
-  readonly authoredX?: number;
-  readonly authoredY?: number;
+  // 전투 중 moveEnemy(m2)·행동 moveTo 가 옮긴다 — 위치 범위기가 새 좌표를 본다.
+  battleX?: number;
+  battleY?: number;
+  authoredX?: number;
+  authoredY?: number;
+  /** 전투 중 옮겨진 적. 표시 계층은 자동 진형 대신 이 좌표를 쓰고 durationMs 동안 미끄러지듯 옮긴다. */
+  moved?: { readonly durationMs: number; readonly sequence: number };
   hidden: boolean;
   captured?: boolean;
   hp: number;
@@ -293,6 +296,8 @@ export function learnedSkillIds(
 export interface EquipmentRuntimeEffects {
   readonly doubleAttack: boolean;
   readonly attackAll?: boolean;
+  /** 전투당 1회 자동 부활(최대 HP %). 여러 장비면 가장 큰 값. */
+  readonly autoRevive?: number;
   readonly accuracy?: number;
   readonly criticalRate?: number;
   readonly attackElementIds?: readonly string[];
@@ -322,6 +327,7 @@ function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipm
   const stateDefenseIds = new Set<string>();
   let doubleAttack = false;
   let attackAll = false;
+  let autoRevive = 0;
   let accuracy = 100;
   let criticalRate = 0;
   let stateResistanceChance = 0;
@@ -332,6 +338,7 @@ function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipm
     if (!record) continue;
     if (record.effectFlags.doubleAttack) doubleAttack = true;
     if (record.effectFlags.attackAll) attackAll = true;
+    if ((record.effectFlags.autoRevive ?? 0) > autoRevive) autoRevive = record.effectFlags.autoRevive ?? 0;
     accuracy = Math.round((accuracy * record.accuracy) / 100);
     criticalRate += record.criticalRate;
     for (const elementId of record.attackElementIds) attackElementIds.add(elementId);
@@ -344,6 +351,7 @@ function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipm
   return {
     doubleAttack,
     attackAll,
+    ...(autoRevive > 0 ? { autoRevive } : {}),
     accuracy: Math.max(0, Math.min(100, accuracy)),
     criticalRate: Math.max(0, Math.min(100, criticalRate)),
     attackElementIds: [...attackElementIds],
@@ -488,6 +496,7 @@ export function battlerSnapshot(
   poseContext?: {
     readonly lastActionResult?: BattleActionResultSnapshot;
     readonly showActionPose?: boolean;
+    readonly victory?: boolean;
   }
 ): BattleBattlerSnapshot {
   const base: BattleBattlerSnapshot = {
@@ -510,6 +519,7 @@ export function battlerSnapshot(
     battleY: position?.battleY ?? battler.battleY,
     authoredX: battler.authoredX,
     authoredY: battler.authoredY,
+    ...(battler.moved ? { moved: battler.moved } : {}),
     defeated: battler.hp <= 0,
     defending: battler.defending,
     stateIds: [...battler.stateIds],
@@ -528,8 +538,20 @@ export function battlerSnapshot(
       battler: base,
       lastActionResult: poseContext?.lastActionResult,
       showActionPose: poseContext?.showActionPose,
+      victory: poseContext?.victory,
     }),
   };
+}
+
+/** 전투장 좌표(트룹 members 좌표계)로 배틀러를 옮긴다. 위치 범위기(battleX/Y)와 표시(authoredX/Y)가 같은 값을 본다. */
+export function moveBattler(battler: MutableBattler, x: number, y: number, durationMs: number): void {
+  const clampedX = Math.max(0, Math.min(320, Math.round(x)));
+  const clampedY = Math.max(0, Math.min(240, Math.round(y)));
+  battler.battleX = clampedX;
+  battler.battleY = clampedY;
+  battler.authoredX = clampedX;
+  battler.authoredY = clampedY;
+  battler.moved = { durationMs: Math.max(0, Math.min(5000, Math.round(durationMs))), sequence: (battler.moved?.sequence ?? 0) + 1 };
 }
 
 function chargeRateFor(agility: number): number {

@@ -200,6 +200,12 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     battleEscapeSeResourceId: cleanOptionalId(system.battleEscapeSeResourceId),
     initialTroopId: cleanOptionalId(system.initialTroopId),
     battleFlow: normalizeBattleFlow(system.battleFlow),
+    // ATB 대기 방식·속도·필드 배경 — 기본(wait·기존 속도·트룹 배경)은 저장하지 않는다(옛 JSON 바이트 유지).
+    ...(system.atbMode === "active" ? { atbMode: "active" as const } : {}),
+    ...(typeof system.atbSpeed === "number" && Number.isFinite(system.atbSpeed)
+      ? { atbSpeed: clampInteger(system.atbSpeed, 1, 8) }
+      : {}),
+    ...(system.battleBackdrop === "field" ? { battleBackdrop: "field" as const } : {}),
     ...(system.battleCommandCss?.trim() ? { battleCommandCss: system.battleCommandCss } : {}),
     // 기본 스킨(DEFAULT_BATTLE_SKIN_ID = rm2000)만 저장하지 않는다. 그 밖의 명시적 선택은 반드시
     // 보존해야 한다 — 기본이 바뀐 뒤에 명시값을 생략하면 왕복 후 다른 스킨으로 바뀌어버린다
@@ -906,6 +912,9 @@ function normalizeItemEquipmentEffectFlags(flags: Partial<ItemEquipmentEffectFla
     halfMpCost: flags?.halfMpCost ?? false,
     negateTerrainDamage: flags?.negateTerrainDamage ?? false,
     fixedEquipment: flags?.fixedEquipment ?? false,
+    ...(typeof flags?.autoRevive === "number" && Number.isFinite(flags.autoRevive) && flags.autoRevive > 0
+      ? { autoRevive: clampInteger(flags.autoRevive, 1, 100) }
+      : {}),
   };
 }
 

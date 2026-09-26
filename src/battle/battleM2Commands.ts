@@ -10,6 +10,7 @@ export type M2BattleCommand =
   | { readonly kind: "changeEnemyState"; readonly target: string; readonly operation: M2StateOperation; readonly stateId: string }
   | { readonly kind: "enemyEncounter"; readonly target: string }
   | { readonly kind: "changeBattleback"; readonly resourceId: string }
+  | { readonly kind: "moveEnemy"; readonly target: string; readonly x: number; readonly y: number; readonly durationMs: number }
   | { readonly kind: "showAnimation"; readonly target: string; readonly animationId: string }
   | { readonly kind: "abortBattle" }
   | { readonly kind: "battleEvents"; readonly target: string }
@@ -47,6 +48,17 @@ export function parseM2BattleCommand(command: M2Command): M2BattleCommand | unde
       return { kind: "enemyEncounter", target: stringField(command, "target") };
     case "m2-102-change-battleback":
       return { kind: "changeBattleback", resourceId: stringField(command, "resourceId") };
+    case "m2-218-move-enemy": {
+      // target = 슬롯 id(enemy-1) 또는 적 레코드 id. 좌표가 없으면 명령을 거부한다(0,0 으로 날아가지 않게).
+      if (!hasNumber(command, "x") || !hasNumber(command, "y")) return undefined;
+      return {
+        kind: "moveEnemy",
+        target: stringField(command, "target"),
+        x: numberField(command, "x"),
+        y: numberField(command, "y"),
+        durationMs: Math.max(0, numberField(command, "durationMs", 400)),
+      };
+    }
     case "m2-103-show-animation":
       return {
         kind: "showAnimation",
@@ -77,6 +89,12 @@ export function parseM2BattleCommand(command: M2Command): M2BattleCommand | unde
 function stringField(command: M2Command, key: string): string {
   const value = command.fields[key];
   return typeof value === "string" ? value : "";
+}
+
+function hasNumber(command: M2Command, key: string): boolean {
+  const value = command.fields[key];
+  if (typeof value === "number") return Number.isFinite(value);
+  return typeof value === "string" && value.trim() !== "" && Number.isFinite(Number(value));
 }
 
 function numberField(command: M2Command, key: string, fallback = 0): number {

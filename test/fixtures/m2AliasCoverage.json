@@ -1,8 +1,8 @@
 {
  "note": "M2 카탈로그 별칭/스냅샷 분할 정본. 스냅샷 제외 기준은 선언된 bodyStrategy 가 아니라 **렌더 측정**이다: 전용 폼 없이 m2-command-body-<id> 폴백 래퍼만 나오고 컨트롤이 0개인 항목(shellAliasIds 38종)만 뺀다. 이전에는 bodyStrategy === \"existing\" 42종을 통째로 뺐는데, 그 중 4종(aliasesWithOwnBody)은 renderPage3M2CommandBody 가 entry.title 로 잡아 전용 폼을 낸다 — 실측으로 m2-067-key-input-processing 의 .actor-m2-keycap* 7종이 CSS 실사용 정본에서 사라진 뒤 발견했다. 이 파일은 스냅샷이 아니라 하드 계약이다 — *_SURFACE_UPDATE 로 덮을 수 없고, 카탈로그가 바뀌면 손으로 고쳐 커밋해야 한다. 그게 축이 조용히 좁아지는 걸 막는 유일한 방법이다.",
- "catalogCount": 125,
+ "catalogCount": 126,
  "aliasCount": 42,
- "snapshotCount": 87,
+ "snapshotCount": 88,
  "aliasesWithOwnBody": [
   "m2-051-show-picture",
   "m2-053-erase-picture",

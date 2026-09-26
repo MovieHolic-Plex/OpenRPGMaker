@@ -165,6 +165,15 @@
   text-shadow: none;
 }
 
+/* 전투 중 옮겨진 적(moveEnemy · 행동 moveTo). 시간은 battleFieldDom 이 스냅샷의 durationMs 로 싣는다. */
+.battle-enemy[data-battle-move-sequence] {
+  transition: left var(--battle-move-ms, 400ms) ease-in-out, top var(--battle-move-ms, 400ms) ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .battle-enemy[data-battle-move-sequence] { transition: none; }
+}
+
 .battle-enemy-group {
   min-width: 0;
   padding: 0;
