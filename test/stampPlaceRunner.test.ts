@@ -176,6 +176,44 @@ describe("runStampPlaceWith", () => {
     expect(result.lines.some((line) => line.includes("item_made_up"))).toBe(true);
   });
 
+  it("moves new events off existing events and off each other", async () => {
+    const h = harness({ replies: [JSON.stringify({ steps: [
+      { tool: "place_chest", args: { at: { x: 5, y: 5 }, gold: 60 }, label: "A" },
+      { tool: "place_chest", args: { at: { x: 5, y: 5 }, gold: 60 }, label: "B" },
+    ] })] });
+    const result = await runStampPlaceWith({ text: "상자 둘", mapId: h.mapId, selection: null }, h.deps);
+    const calls = h.applied[0]!;
+    const a = calls[0]!.args as { x: number; y: number };
+    const b = calls[1]!.args as { x: number; y: number };
+    expect(a.x === b.x && Math.abs(a.y - b.y) <= 1).toBe(false);
+    expect(result.lines.some((line) => line.includes("겹쳐서"))).toBe(true);
+  });
+
+  it("turns a merchant into make_villager with real, affordable stock only", async () => {
+    const h = harness({ replies: [JSON.stringify({ steps: [
+      { tool: "place_npc", args: { at: { x: 8, y: 8 }, name: "상인", merchant: true, stock: ["item_potion", "item_made_up"] } },
+    ] })] });
+    await runStampPlaceWith({ text: "상인", mapId: h.mapId, selection: null }, h.deps);
+    const call = h.applied[0]![0]!;
+    expect(call.name).toBe("make_villager");
+    const stock = (call.args.shop as { stock: { itemId: string }[] }).stock.map((entry) => entry.itemId);
+    expect(stock).toContain("item_potion");
+    expect(stock).not.toContain("item_made_up");
+  });
+
+  it("drops a battle blocker when the map has no encounters, and unknown event ids", async () => {
+    const h = harness({ replies: [
+      JSON.stringify({ steps: [
+        { tool: "place_battle_blocker", args: { at: { x: 4, y: 4 }, troopId: "tr_x" } },
+        { tool: "remove_event", args: { eventId: "ev_missing" } },
+      ] }),
+      JSON.stringify({ steps: [] }),
+    ] });
+    const result = await runStampPlaceWith({ text: "몬스터", mapId: h.mapId, selection: null }, h.deps);
+    expect(result).toMatchObject({ ok: false, applied: 0 });
+    expect(result.lines[0]).toContain("적 그룹");
+  });
+
   it("keeps model rects inside the selection", async () => {
     const h = harness({ replies: [JSON.stringify({ steps: [{ tool: "fill_region", args: { rect: { x: 0, y: 0, w: 99, h: 99 }, material: "물" } }] })] });
     await runStampPlaceWith({ text: "물", mapId: h.mapId, selection: { mapId: h.mapId, x: 2, y: 3, width: 4, height: 5 } }, h.deps);

@@ -646,6 +646,13 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
 - **상자 금액 범위 `chestGold`**: 전투 1회분 ×0.5~×4, 기존 상자 ×0.5~×2(둘 다 있으면 합친 범위), 전투·상자가 없고 상점만 있으면 상점가 ×0.5~ 중앙 ×3.
   현재 맵에 신호가 없을 때만 출입구 이웃 맵(scope `neighbor`), 그다음 프로젝트 적 보상 분포(`project`), 적도 없으면 20~100G(`none`).
   바로 깔기 검증기가 모델 금액을 이 범위로 맞추고(`clampChestGold`) 결과 줄에 근거를 붙인다. 없는 `itemId` 는 버리고 금액으로 대신한다.
+- **겹침 해소 (2026-09-27 라이브 QA)**: 모델이 맵 한가운데 기존 표지판 칸 위에 상인을 세웠다. 이제 맵 사실에 `existing.occupied`(기존 이벤트 id·칸·종류·이름)를 싣고,
+  검증 뒤 `resolveStampOverlaps`(`stampPlanner.ts`, 순수)가 새 이벤트를 기존 이벤트 칸과 그 **바로 위아래**(두 칸 높이 그림)·같은 계획의 다른 새 이벤트에서
+  반경 6 안의 가장 가까운 `isPassableLanding` 칸으로 옮긴다. 결과 줄에 「겹쳐서 (a,b)→(c,d)」, 빈 칸이 없으면 그 단계를 버린다. 수리 라운드는 방금 깔린 이벤트까지 다시 읽는다.
+- **추가 도구**: 상인(`place_npc` merchant:true + stock → `make_villager({shop})` 한 번, 재고는 실제 id·가격이 상자 범위 상한의 2배 이하만, 비면 이 맵 보상 후보),
+  `place_storage_chest`, `place_trap`, `place_battle_blocker`(troopId 는 `encounterTroops`=이 맵 조우 트룹만, 없는 id 는 이 맵 첫 트룹으로, 조우가 없으면 버림),
+  `set_scene_mood`(날씨 none/rain/storm/snow/fog, applyMode map), `arrange_tall_grass`, `set_start_position`, `move_event`·`remove_event`(`occupied` 에 있는 id 만).
+  `knownItemIds`·`itemPrices` 는 거르는 데만 쓰고 모델에게 보내지 않는다.
 - **채팅 조수도 같은 기준**: 컨텍스트 footer 에 `formatChestRewardHint` 한 줄(범위·근거·아이템 후보), `place_chest` 는 범위 밖 금액이면 막지 않고 경고한다.
 - **속도 (측정, 미해결)**: 도구 `run` 은 1ms 인데 `runTool` 한 번이 ~700ms — `createDraft` 의 `structuredClone`(프로젝트 25.9MB 중 타일셋 25.0MB) 367ms + `summarizeChanges` 타일셋 `JSON.stringify` 비교 334ms.
   타일셋을 참조 공유(copy-on-write)하면 줄지만 드래프트에서 타일셋을 직접 고치는 도구가 21파일이라 이번 변경에서 하지 않았다.

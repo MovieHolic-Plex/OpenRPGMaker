@@ -26,6 +26,7 @@ import {
   buildStampPlannerUserPayload,
   buildStampRepairPrompt,
   parseStampPlan,
+  resolveStampOverlaps,
   STAMP_PLANNER_SYSTEM_PROMPT,
   type StampPlanFacts,
   type StampRect,
@@ -36,6 +37,7 @@ import { applyToolSequenceToStore } from "@/editor/tools/applyChangesetToStore";
 import type { ToolResult } from "@/editor/tools/types";
 import { fillableMaterialSuggestions, suggestMaterialsByLabel } from "@/project/tileVocabulary";
 import { store } from "@/project/store";
+import { isPassableLanding } from "@/project/collision";
 import type { Project } from "@/project/types";
 
 /** 계획 호출 하나에 허용하는 벽시계(의도 선언과 같다). 수리 호출도 같은 값을 따로 쓴다. */
@@ -244,8 +246,13 @@ export async function runStampPlaceWith(input: StampRunInput, deps: StampRunDeps
     return { ok: false, lines: [`모델이 깔 계획을 내지 못해 아무것도 깔지 않았습니다(${lastProblem}).`], applied: 0, usedModel: true };
   }
 
+  // 새 이벤트가 기존 이벤트·서로와 겹치지 않게 코드가 옮긴다(모델이 빈 칸을 잘못 고른 경우).
+  const landing = landingCheck(deps, input.mapId);
+  const settled = resolveStampOverlaps(plan.steps, facts, landing);
+  plan = { ...plan, steps: settled.steps, dropped: [...plan.dropped, ...settled.dropped] };
   const lines: string[] = [];
   if (plan.dropped.length > 0) lines.push(`버린 단계: ${plan.dropped.join(", ")}`);
+  if (plan.steps.length === 0) return { ok: false, lines, applied: 0, usedModel: true };
   input.onPhase?.("applying");
   const firstResults = deps.apply(plan.steps.map(toCall));
   let applied = 0;
@@ -271,8 +278,11 @@ export async function runStampPlaceWith(input: StampRunInput, deps: StampRunDeps
       { role: "assistant", content: planRaw },
       { role: "user", content: buildStampRepairPrompt(failures) },
     ], input.signal);
-    const parsed = parseStampPlan(repairRaw, facts);
-    repaired = parsed.steps;
+    const repairFacts = refreshFacts(deps, facts);
+    const parsed = parseStampPlan(repairRaw, repairFacts);
+    const repairedSettled = resolveStampOverlaps(parsed.steps, repairFacts, landingCheck(deps, input.mapId));
+    repaired = repairedSettled.steps;
+    if (repairedSettled.dropped.length > 0) lines.push(`버린 단계: ${repairedSettled.dropped.join(", ")}`);
     if (parsed.error) repairError = parsed.error;
   } catch (cause) {
     if (cause instanceof StampAborted) {
@@ -304,6 +314,19 @@ export async function runStampPlaceWith(input: StampRunInput, deps: StampRunDeps
   });
   applied += repairedOk;
   return { ok: applied > 0 && repairedOk > 0 && repairedFailed === 0, lines, applied, usedModel: true };
+}
+
+/** 이벤트가 설 수 있는 칸인가 — 런타임과 같은 통행 권위(isPassableLanding). */
+function landingCheck(deps: StampRunDeps, mapId: string): (x: number, y: number) => boolean {
+  const project = deps.getProject();
+  const map = project.maps[mapId];
+  return (x, y) => Boolean(map) && isPassableLanding(project, map!, x, y);
+}
+
+/** 첫 라운드가 적용된 뒤의 맵 사실 — 수리 단계가 방금 깔린 이벤트와도 겹치지 않게. */
+function refreshFacts(deps: StampRunDeps, facts: StampPlanFacts): StampPlanFacts {
+  const placement = buildMapPlacementContext(deps.getProject(), facts.mapId);
+  return placement ? { ...facts, placement } : facts;
 }
 
 function toCall(step: StampStep): ToolCall {
