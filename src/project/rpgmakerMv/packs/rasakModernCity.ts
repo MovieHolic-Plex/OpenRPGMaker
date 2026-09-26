@@ -98,6 +98,26 @@ const AUTOTILES: MvPackAutotile[] = [
 ];
 
 type O = readonly [id: string, sheet: string, x: number, y: number, w: number, h: number, kind: MvPackObject["kind"], name: string, extra?: Partial<MvPackObject>];
+// 주차·길가 자동차 — 타일 시트(PublicTransportation 은 버스·전차뿐)에는 승용차가 없어서 캐릭터 시트 !Car1 의
+// 가운데(정지) 프레임을 물체로 쓴다. 한 캐릭터 블록 = 12×12칸, 8색이 4×2 로 놓였고 방향 줄은 아래·왼쪽·오른쪽·위.
+// 모든 색이 같은 자리: 가로 차 4×3 (x4~7, 왼쪽 y3~5 · 오른쪽 y6~8), 세로 차 2×3 (x5~6, 아래 y0~2 · 위 y9~11).
+// 가로 차의 맨 윗줄은 지붕 끝 한 조각뿐이라 캐릭터 위에 그리고, 아래 두 줄(차체·바퀴)이 막힌다.
+const CAR_SHEET = "!Car1.png";
+const CARS: readonly O[] = ([
+  ["red", "빨간", 1, 0], ["white", "흰", 0, 1], ["blue", "파란", 1, 1], ["black", "검은", 3, 0], ["green", "초록", 2, 1],
+] as const).flatMap(([id, word, bx, by]): O[] => {
+  const x = bx * 12, y = by * 12;
+  const side = { onRoad: true, solid: [0, 1, 2, 3].flatMap((dx) => [[dx, 1], [dx, 2]] as [number, number][]) };
+  const long = { onRoad: true };
+  return [
+    [`car_${id}_left`, CAR_SHEET, x + 4, y + 3, 4, 3, "tall", `${word} 승용차(왼쪽 보기)`, { ...side, description: "가로 차 4×3. 동→서로 가는 차선(오른쪽 통행: 길 북쪽 차선)·가로 주차" }],
+    [`car_${id}_right`, CAR_SHEET, x + 4, y + 6, 4, 3, "tall", `${word} 승용차(오른쪽 보기)`, { ...side, description: "가로 차 4×3. 서→동으로 가는 차선(오른쪽 통행: 길 남쪽 차선)·가로 주차" }],
+    [`car_${id}_down`, CAR_SHEET, x + 5, y + 0, 2, 3, "prop", `${word} 승용차(아래 보기)`, { ...long, description: "세로 차 2×3. 주차 칸(세로 줄)·남쪽으로 가는 차선(오른쪽 통행: 길 서쪽 차선)" }],
+    [`car_${id}_up`, CAR_SHEET, x + 5, y + 9, 2, 3, "prop", `${word} 승용차(위 보기)`, { ...long, description: "세로 차 2×3. 주차 칸(세로 줄)·북쪽으로 가는 차선(오른쪽 통행: 길 동쪽 차선)" }],
+  ];
+});
+const CAR_COLORS = ["red", "white", "blue", "black", "green"] as const;
+
 const OBJECTS: MvPackObject[] = ([
   // ── 거리 (Tileset_Modern_Street) ──
   ["street_lamp_left", STREET, 8, 2, 1, 3, "tall", "가로등(팔이 오른쪽)"],
@@ -209,6 +229,7 @@ const OBJECTS: MvPackObject[] = ([
   ["bush_wide", PARK, 11, 0, 3, 2, "prop", "넓은 덤불(3칸)", { description: "공원 가장자리·마당 울타리 안쪽" }],
   // ── 거리 소품 (Tileset_Modern_PublicTransportation_Clean) ──
   ["bus_shelter", "Tileset_Modern_PublicTransportation_Clean_Rasak.png", 0, 6, 3, 3, "tall", "버스 정류장 쉼터", { description: "큰길 보도 바깥쪽(3×3). 위 두 줄은 캐릭터 위, 맨 아래 줄이 막힌다" }],
+  ...CARS,
 ] as readonly O[]).map(([id, sheet, x, y, w, h, kind, name, extra]) => ({ id, sheet, x, y, w, h, kind, name, ...(extra ?? {}) }));
 
 // 마을 짜임 도구 재료 — 작가 참고 맵의 건물 짝(옥상·창 난 위층·창 없는 1층)과 사용자 맵의 거리 짜임에서 골랐다.
@@ -257,6 +278,8 @@ const TOWN: MvTownRecipe = {
     roofGear: ["roof_vent", "roof_fan", "roof_vent_slat", "roof_ac_large"],
     streetProps: ["ad_column", "hotdog_cart", "popcorn_cart", "icecream_cart"],
     busStop: "bus_shelter",
+    carsHorizontal: CAR_COLORS.map((c) => [`car_${c}_left`, `car_${c}_right`] as const),
+    carsVertical: CAR_COLORS.map((c) => [`car_${c}_down`, `car_${c}_up`] as const),
     laneHorizontal: "lane_line_horizontal", crosswalkVertical: "crosswalk_for_vertical_road", arrowLeft: "arrow_left", arrowRight: "arrow_right",
   },
 };
@@ -336,6 +359,7 @@ const GUIDE = `# Rasak Modern 도시 — 까는 순서
 - 쓰레기통·소화전·자판기는 보도 안쪽(건물 쪽). 벤치·분수·덤불은 공원.
 - 가게 앞 보도에는 가게마다 다른 것을 가끔: \`ad_column\`(원통 광고탑), \`hotdog_cart\`·\`popcorn_cart\`·\`icecream_cart\`, \`round_kiosk\`.
 - 큰길 보도에 \`bus_shelter\`(버스 정류장 3×2) 한 곳 — 교차로에서 2칸 이상 떼어.
+- 자동차 \`car_<색>_left/_right\`(가로 4×3, 아래 두 줄이 막힘)·\`car_<색>_down/_up\`(세로 2×3). 색: red·white·blue·black·green. 차도·주차장 위에만 둔다 — 보도·횡단보도·교차로 위 금지. 오른쪽 통행: 가로 길 북쪽 차선은 _left, 남쪽 차선은 _right. 캐릭터 시트 \`!Car1.png\`(Animations/Vehicles/ModernCars)를 같이 올려야 보인다.
 - 나무는 수종을 섞는다. 가로수(잔디 띠 1칸)는 거리마다 한 수종 — \`cone_tree\`·\`poplar_tree\`(키 큰 미루나무 1×4)·\`cone_tree_planter\`.
   공원·넓은 마당은 \`round_tree\`(2×4)·\`round_tree_small\`(2×2)를 섞고, 가장자리에 \`bush_wide\`·\`hedge_horizontal\`.
 - 물체 밑칸은 막힌다. 길을 막지 않게 보도 폭의 절반 이상을 비워 둔다.
@@ -379,6 +403,8 @@ export const RASAK_MODERN_CITY: MvPackPreset = {
     { file: "Tileset_Modern_PublicTransportation_Clean_Rasak.png", folder: "Tilesets/City", sha256: "5719e05429835bcb6175a3bcf009a0b19eb4668d542c94d2ed83d32099990e92" },
     { file: "Tileset_Modern_PublicTransportation_Dirty_Rasak.png.png", folder: "Tilesets/City", sha256: "9b442ce9ba7624f921b898d70ba6272cb23f847a28601bbf0f06db1750dcd4da" },
     { file: "Tileset_Modern_PublicTransportation_Slums_Rasak.png.png", folder: "Tilesets/City", sha256: "e92c3b4609ad56ed9e60b9d63e8ab46a684bfe95c8322d233e905923cc41e4ca" },
+    // 맨 끝에 붙인다 — 앞 시트들의 아틀라스 칸 번호가 그대로 남는다(layout.ts 는 앞에서부터 쌓는다).
+    { file: CAR_SHEET, folder: "Animations/Vehicles/ModernCars", sha256: "98905fbac219f4fa57e5251c1d2e3cbc129599c40ec0d7c64566f7bbad5dd9d1" },
   ],
   autotiles: AUTOTILES,
   flats: [
