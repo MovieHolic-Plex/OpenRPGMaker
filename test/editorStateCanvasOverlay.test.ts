@@ -3,6 +3,7 @@ import {
   editorState,
   editorStateChangedOnlyCanvasOverlay,
   editorStateChangedOnlySelectedTile,
+  editorStateChangedOnlyToolPick,
   editorStateNeedsEventEditorRefresh,
   editorStateNeedsMapTreeRefresh,
   editorStateNeedsPaletteRefresh,
@@ -81,6 +82,35 @@ describe("에디터 상태와 맵 트리 갱신", () => {
     const next = snapshot({ zoom: 1 });
     expect(editorStateNeedsMapTreeRefresh(previous, next)).toBe(false);
     expect(editorStateNeedsPaletteRefresh(previous, next)).toBe(false);
+  });
+});
+
+describe("editorStateChangedOnlyToolPick", () => {
+  it("도구·붓 모양·크기(선택 해제 포함)만 바뀌면 true", () => {
+    const previous = snapshot({ layer: "lower", tool: "paint", paintShape: "pen", brushSize: 1 });
+    expect(editorStateChangedOnlyToolPick(previous, snapshot({ layer: "lower", tool: "fill", paintShape: "pen", brushSize: 1 }))).toBe(true);
+    expect(editorStateChangedOnlyToolPick(previous, snapshot({ layer: "lower", tool: "paint", paintShape: "rect", brushSize: 1 }))).toBe(true);
+    expect(editorStateChangedOnlyToolPick(previous, snapshot({ layer: "lower", tool: "paint", paintShape: "pen", brushSize: 3 }))).toBe(true);
+    expect(editorStateChangedOnlyToolPick(
+      snapshot({ layer: "lower", tool: "select", selection: { mapId: "m", x: 0, y: 0, width: 1, height: 1 } }),
+      snapshot({ layer: "lower", tool: "paint", selection: null }),
+    )).toBe(true);
+  });
+
+  it("레이어·도장·타일이 같이 바뀌거나 이벤트 레이어면 false", () => {
+    const previous = snapshot({ layer: "lower", tool: "paint", selectedTile: 1, activePaletteStamp: null });
+    expect(editorStateChangedOnlyToolPick(previous, snapshot({ layer: "upper", tool: "fill", selectedTile: 1, activePaletteStamp: null }))).toBe(false);
+    expect(editorStateChangedOnlyToolPick(previous, snapshot({ layer: "lower", tool: "fill", selectedTile: 2, activePaletteStamp: null }))).toBe(false);
+    expect(editorStateChangedOnlyToolPick(previous, snapshot({
+      layer: "lower", tool: "paint", selectedTile: 1,
+      activePaletteStamp: { width: 1, height: 1, source: { startTile: 1, endTile: 1 }, cells: [] },
+    }))).toBe(false);
+    expect(editorStateChangedOnlyToolPick(snapshot({ layer: "event", tool: "event" }), snapshot({ layer: "event", tool: "paint" }))).toBe(false);
+    // 선택 사각형만 바뀐 통지는 도구 변경이 아니다.
+    expect(editorStateChangedOnlyToolPick(previous, snapshot({
+      layer: "lower", tool: "paint", selectedTile: 1, activePaletteStamp: null,
+      selection: { mapId: "m", x: 0, y: 0, width: 1, height: 1 },
+    }))).toBe(false);
   });
 });
 

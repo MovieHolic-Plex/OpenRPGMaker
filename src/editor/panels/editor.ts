@@ -7,6 +7,7 @@ import {
   editorStateChangedOnlyCanvasOverlay,
   editorStateChangedOnlySelectedTile,
   editorStateChangedOnlySelectedTileAndLayer,
+  editorStateChangedOnlyToolPick,
   editorStateNeedsMapTreeRefresh,
   editorStateNeedsPaletteRefresh,
 } from "@/editor/editorState";
@@ -54,7 +55,7 @@ import {
 } from "@/editor/panels/testPlayModal";
 // 좌측 패널 본문(팔레트·맵 트리)은 이제 패널 레지스트리가 그린다 — 여기서 직접 import 하지 않는다.
 // 선택 타일만 바뀐 경우는 시트를 다시 그리지 않도록 팔레트가 활성 칸만 옮긴다.
-import { syncMountedPaletteLayerSelection, syncMountedPaletteSelection } from "@/editor/panels/tilePalette";
+import { syncMountedPaletteLayerSelection, syncMountedPaletteSelection, syncMountedPaletteToolPick } from "@/editor/panels/tilePalette";
 import { dockSignature, mountDock, renderDockPanels, type DockMount } from "@/editor/workspace/dockHost";
 import { resolveLeftDockPanels } from "@/editor/workspace/leftDockPanels";
 import { isMapPanelCollapsed, subscribeMapPanel } from "@/editor/workspace/mapPanelSection";
@@ -290,6 +291,8 @@ export function renderEditor(main: HTMLElement): void {
       if (editorStateChangedOnlySelectedTile(previous, state) && syncMountedPaletteSelection()) return;
       // 레이어 단추는 탑바(menu.ts)가 제자리에서 바꾸고, 캔버스 툴바는 배율만 그린다.
       if (editorStateChangedOnlySelectedTileAndLayer(previous, state) && syncMountedPaletteLayerSelection()) return;
+      // 도구·붓 모양·크기만 바꾸면 시트는 그대로다 — 도구줄·붓 옵션 줄만 간다. 캔버스 툴바는 도구를 읽지 않는다.
+      if (editorStateChangedOnlyToolPick(previous, state) && syncMountedPaletteToolPick()) return;
       schedulePaletteOnlyRefresh();
       return;
     }

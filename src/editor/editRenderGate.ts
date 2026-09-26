@@ -126,16 +126,30 @@ export function installEditRenderGate(game: EditRenderGateGame, events: EditRend
   if (game.loop.started) game.loop.callback = gatedStep;
 
   const wake = (): void => markEditRenderActive(game);
+  // 눌린 채 움직이는 포인터는 캠버스에서 시작한 드래그일 때만 깨운다 — 칠하다 캠버스 밖으로 나가도
+  // 계속 그리지만, 사이드바 클릭·스크롤바 드래그마다 맵 전체를 500ms 동안 매 프레임 다시 그리지는 않는다
+  // (2026-09-26 실측). 상태를 바꾸는 클릭은 EditScene 의 store/editorState 구독이 따로 깨운다.
+  let strokeFromCanvas = false;
   const onPointer = (event: Event): void => {
     const canvas = game.canvas;
     const host = canvas?.parentElement ?? canvas;
     const target = event.target instanceof Node ? event.target : null;
+    const inside = Boolean(host && target && host.contains(target));
+    if (event.type === "pointerdown") strokeFromCanvas = inside;
     const pressed = "buttons" in event && typeof event.buttons === "number" && event.buttons !== 0;
-    if (pressed || (host && target && host.contains(target))) wake();
+    if (inside || (pressed && strokeFromCanvas) || (strokeFromCanvas && (event.type === "pointerup" || event.type === "pointercancel"))) wake();
+    if (event.type === "pointerup" || event.type === "pointercancel") strokeFromCanvas = false;
+  };
+  // 글자 입력칸(타일 검색·조수 입력창)의 타이핑은 캠버스를 깨우지 않는다. 단축키는 본문이 받고,
+  // 그 결과의 상태 변화·카메라 이동은 EditScene 이 스스로 깨운다.
+  const onKey = (event: Event): void => {
+    const target = event.target;
+    if (target instanceof HTMLElement && (target.isContentEditable || target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.tagName === "SELECT")) return;
+    wake();
   };
   if (typeof window !== "undefined") {
     for (const type of POINTER_EVENTS) window.addEventListener(type, onPointer, { capture: true, passive: true });
-    for (const type of KEY_EVENTS) window.addEventListener(type, wake, { capture: true, passive: true });
+    for (const type of KEY_EVENTS) window.addEventListener(type, onKey, { capture: true, passive: true });
     window.addEventListener("resize", wake, { passive: true });
   }
   const canvasListeners = (canvas: HTMLCanvasElement | null | undefined, add: boolean): void => {
@@ -150,7 +164,7 @@ export function installEditRenderGate(game: EditRenderGateGame, events: EditRend
   game.events.once(events.DESTROY, () => {
     if (typeof window !== "undefined") {
       for (const type of POINTER_EVENTS) window.removeEventListener(type, onPointer, { capture: true });
-      for (const type of KEY_EVENTS) window.removeEventListener(type, wake, { capture: true });
+      for (const type of KEY_EVENTS) window.removeEventListener(type, onKey, { capture: true });
       window.removeEventListener("resize", wake);
     }
     canvasListeners(boundCanvas, false);

@@ -95,10 +95,9 @@ export function makeTileToolbar(model: TileToolbarModel): HTMLElement {
       children: [makeSvgIcon(item.icon)],
       dataset: { testid: item.testid },
       on: {
-        click: () => {
-          selectTileTool(item.id);
-          model.rerender();
-        },
+        // 다시 그리기는 editorState 구독(editor.ts)이 맡는다. 여기서도 rerender 하면 클릭 한 번에
+        // 팔레트가 두 번 지어진다(2026-09-26 실측 클릭당 약 120ms × 2).
+        click: () => selectTileTool(item.id),
       },
     }));
   }
@@ -135,10 +134,7 @@ function makeMapModeGroup(model: TileToolbarModel): HTMLElement {
         children: [makeSvgIcon(item.icon)],
         dataset: { testid: `tool-${item.id}` },
         on: {
-          click: () => {
-            selectMapModeTool(item.id);
-            model.rerender();
-          },
+          click: () => selectMapModeTool(item.id),
         },
       })
     );
