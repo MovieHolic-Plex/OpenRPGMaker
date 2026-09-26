@@ -38,7 +38,7 @@
 `editorZoomToolbar.ts`의 맵 도구바는 아이콘 중심이다. 걷기 전투·구역 그리기·배경 보기,
 만들기·다듬기·검사·AI 요청, PNG 저장에 기존 지연 툴팁을 명시 설치한다.
 토글은 `aria-pressed` 및 색으로 상태를 유지하며 배율 숫자는 계속 표시한다.
-`aiSidebarWorkspace.ts`의 AI/맵 탭과 접기 버튼도 같은 설치기를 쓴다.
+`aiSidebarWorkspace.ts`의 왼쪽 활동 막대(그리기·맵·검사)도 같은 설치기를 쓴다.
 조수의 `ai-wide-open`은 `크게 보기` 글자가 보이는 버튼이므로 지연 툴팁 대상에서 제외한다(2026-09-21).
 브라우저 확인: `scripts/qa/ai-team-sidebar.mjs` (설정 열기, 토글 상태, 초점 툴팁, 접힘 폭·초안 유지).
 

@@ -81,6 +81,10 @@ const LEFT_PANEL_DEFAULT_WIDTH = 526;
 const LEFT_PANEL_MIN_WIDTH = 184;
 const LEFT_PANEL_MAX_WIDTH = 640;
 const MIN_CANVAS_WIDTH = 520;
+/** 오른쪽 조수 도크 폭 범위. 뷰포트의 26% 를 이 범위로 자른다 — 1440px 에서 374px, 1024px 에서 280px. */
+const AI_DOCK_MIN_WIDTH = 280;
+const AI_DOCK_MAX_WIDTH = 420;
+const LEFT_ACTIVITY_BAR_WIDTH = 48;
 const MAP_TREE_DEFAULT_HEIGHT = 300;
 const MAP_TREE_MIN_HEIGHT = 80;
 const MAP_TREE_MAX_HEIGHT = 480;
@@ -127,6 +131,8 @@ let canvasToolbarRoot: HTMLElement | null = null;
 let chatFloatRoot: HTMLElement | null = null;
 let aiChatPanelRoot: HTMLElement | null = null;
 let aiSidebarWorkspace: ReturnType<typeof createAiSidebarWorkspace> | null = null;
+let aiDockRoot: HTMLElement | null = null;
+let aiTeamRailRoot: HTMLElement | null = null;
 let mapLockBannerRoot: HTMLElement | null = null;
 let authoringJourneyRoot: HTMLElement | null = null;
 // 저장 모드 배너 호스트는 항상 DOM에 두고 내용만 갈아 끼운다 — 공용 데모 → 사본 전환처럼
@@ -221,10 +227,19 @@ export function renderEditor(main: HTMLElement): void {
   paintPersistenceBanner();
   canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, authoringJourney, cursorDiagnostics);
   aiSidebarWorkspace?.dispose();
-  aiSidebarWorkspace = createAiSidebarWorkspace(left, chatFloatHost, () => { applyLayout(); scheduleFitCanvas(); });
-  layout.append(aiSidebarWorkspace.root, leftResizer, canvasArea);
+  aiSidebarWorkspace = createAiSidebarWorkspace(left, null, () => { applyLayout(); scheduleFitCanvas(); });
+  // 조수는 오른쪽 도크에 항상 떠 있다 — 왼쪽 팔레트와 동시에 쓴다(2026-09-26). 폭은 applyLayout 이 정한다.
+  const aiDock = el("aside", {
+    class: "ai-right-dock",
+    attrs: { "aria-label": "조수" },
+    dataset: { testid: "editor-ai-dock" },
+    children: [chatFloatHost],
+  });
+  aiDockRoot = aiDock;
+  layout.append(aiSidebarWorkspace.root, leftResizer, canvasArea, aiDock);
   const aiPanel = renderAiChatPanel();
   const teamSidebar = aiPanel.querySelector<HTMLElement>(".ai-team-sidebar");
+  aiTeamRailRoot = teamSidebar;
   if (teamSidebar) layout.append(teamSidebar);
   // 조수 느낌표 버튼은 **캔버스 영역 안**에 놓는다. 오른쪽 아래는 팀 레일(84px)이 이미 쓰고
   // 있는데, absolute 로 canvas-area 안에 두면 레일이 시작하는 곳에서 자동으로 끝나
@@ -485,6 +500,8 @@ export function teardownEditor(): void {
   phaserHost = null;
   canvasToolbarRoot = null;
   chatFloatRoot = null;
+  aiDockRoot = null;
+  aiTeamRailRoot = null;
   aiChatPanelRoot = null;
   mapLockBannerRoot = null;
   authoringJourneyRoot = null;
@@ -639,7 +656,12 @@ function applyLayout(): void {
   const resizerWidth = leftResizer.offsetWidth || 6;
   if (aiSidebarWorkspace) {
     const collapsed = aiSidebarWorkspace.isCollapsed();
-    const width = collapsed ? 48 : Math.max(280, Math.min(340, leftWidth, Math.max(280, usableWidth - 420)));
+    // 오른쪽 조수 도크 폭을 먼저 잡고 남은 폭에서 왼쪽을 잡는다 — 캔버스가 MIN_CANVAS_WIDTH 아래로 눌리지 않게.
+    const dockWidth = aiDockRoot ? Math.round(Math.max(AI_DOCK_MIN_WIDTH, Math.min(AI_DOCK_MAX_WIDTH, usableWidth * 0.26))) : 0;
+    if (aiDockRoot) aiDockRoot.style.width = `${dockWidth}px`;
+    const teamRailWidth = aiTeamRailRoot ? visibleWidth(aiTeamRailRoot) : 0;
+    const room = usableWidth - dockWidth - teamRailWidth - MIN_CANVAS_WIDTH - resizerWidth;
+    const width = collapsed ? LEFT_ACTIVITY_BAR_WIDTH : Math.max(220, Math.min(340, leftWidth, room));
     aiSidebarWorkspace.root.style.width = `${width}px`;
     leftRoot.style.width = "100%";
     leftRoot.style.setProperty("--map-tree-height", `${effectiveMapTreeHeight()}px`);

@@ -67,7 +67,7 @@ describe("패널 접기", () => {
     } finally { vi.unstubAllGlobals(); }
   });
 
-  it("이전 하단 덱의 접힘 설정이 있어도 왼쪽 AI는 펼쳐서 부팅한다", () => {
+  it("이전 하단 덱의 접힘 설정이 있어도 도크의 AI는 펼쳐서 부팅한다", () => {
     storage.set("oprn:ai-panel-collapsed", "1");
     const panel = renderPanel();
     expect(panel.classList.contains("is-collapsed")).toBe(false);

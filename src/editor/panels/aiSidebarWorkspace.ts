@@ -1,71 +1,114 @@
 import { el } from "@/util/dom";
 import { deckIcon, type DeckIconName } from "./aiDeckIcons";
 import { installDelayedTooltips } from "@/editor/delayedTooltipRollout";
+import { ruleAuditViolationCountCached, RULE_AUDIT_UPDATED_EVENT } from "@/editor/panels/ruleAuditPanel";
+import { openSidebarInspection } from "@/editor/panels/tileToolbarMenus";
 
 import { createMapSidebarSection } from "./mapSidebarSection";
 
 const COLLAPSED_KEY = "oprn:ai-sidebar-collapsed";
-type Pane = "ai" | "maps" | "tools";
+const PANE_KEY = "oprn:left-activity-pane";
+type Pane = "maps" | "tools";
 
-/** Keep both panes mounted so collapsing never discards an input or conversation. */
-export function createAiSidebarWorkspace(tools: HTMLElement, host: HTMLElement, onResize: () => void = () => {}): { root: HTMLElement; isCollapsed(): boolean; dispose(): void } {
+/**
+ * 왼쪽 활동 막대(48px 세로) + 패널 하나. 조수는 오른쪽 도크(editor.ts)에 있어 팔레트와 동시에 쓴다.
+ * 켜진 아이콘을 다시 누르면 접히고, 「검사」는 패널이 아니라 규칙 감사를 여는 명령이다.
+ */
+export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement | null = null, onResize: () => void = () => {}): { root: HTMLElement; isCollapsed(): boolean; dispose(): void } {
   let collapsed = false;
-  try { collapsed = localStorage.getItem(COLLAPSED_KEY) === "1"; } catch { /* restricted storage */ }
+  let pane: Pane = "tools";
+  try {
+    collapsed = localStorage.getItem(COLLAPSED_KEY) === "1";
+    if (localStorage.getItem(PANE_KEY) === "maps") pane = "maps";
+  } catch { /* restricted storage */ }
   const maps = createMapSidebarSection();
   tools.classList.add("ai-chat-sidebar-tools");
-  // 탭 하나 = 질문 하나: 맵(어느 맵?) · 그리기(무엇으로?) · AI(뭐라고 할까?). 이름은 레이어에 따라
-  // 바뀌지 않는다 — 예전 「타일」↔「이벤트」 전환은 탭이 사라진 것처럼 읽혔다.
-  const tab = (pane: Pane, icon: DeckIconName, label: string, testid: string): HTMLButtonElement => el("button", {
-    class: "ai-chat-sidebar-tab",
+  const item = (icon: DeckIconName, label: string, testid: string, onClick: () => void): HTMLButtonElement => el("button", {
+    class: "ai-chat-sidebar-tab left-activity-item",
     children: [deckIcon(icon), el("span", { class: "ai-chat-sidebar-tab-label", text: label })],
-    attrs: { type: "button", "aria-pressed": "false", "aria-label": label },
-    dataset: { testid, sidebarPane: pane },
-    on: { click: () => show(pane) },
+    attrs: { type: "button", "aria-label": label, title: label },
+    dataset: { testid },
+    on: { click: onClick },
   }) as HTMLButtonElement;
-  const mapsButton = tab("maps", "map", "맵", "sidebar-maps");
-  const toolsButton = tab("tools", "brush", "그리기", "sidebar-tools");
-  const aiButton = tab("ai", "spark", "AI", "sidebar-ai");
-  const toggle = el("button", { class: "ai-chat-sidebar-collapse", attrs: { type: "button", "aria-controls": "ai-sidebar-content" }, dataset: { testid: "sidebar-collapse" }, on: { click: () => setCollapsed(!collapsed) } });
-  const tabs = el("div", { class: "ai-chat-sidebar-segments", attrs: { role: "group", "aria-label": "왼쪽 패널 보기" }, children: [mapsButton, toolsButton, aiButton] });
-  const content = el("div", { class: "ai-chat-sidebar-content", attrs: { id: "ai-sidebar-content" }, children: [tools, maps.root, host] });
-  const root = el("aside", {
-    class: "ai-chat-sidebar", dataset: { testid: "editor-ai-sidebar" },
-    children: [el("nav", { class: "ai-chat-sidebar-tabs", attrs: { "aria-label": "왼쪽 패널" }, children: [tabs, toggle] }), content],
+  const toolsButton = item("brush", "그리기", "sidebar-tools", () => activate("tools"));
+  const mapsButton = item("map", "맵", "sidebar-maps", () => activate("maps"));
+  const badge = el("span", { class: "left-activity-badge", attrs: { "aria-hidden": "true" }, dataset: { testid: "sidebar-inspect-badge" } });
+  const inspectButton = item("alert", "검사", "sidebar-inspect", () => {
+    show("tools");
+    openSidebarInspection("ruleAudit");
   });
+  inspectButton.append(badge);
+  for (const button of [toolsButton, mapsButton]) button.setAttribute("aria-pressed", "false");
+  const content = el("div", { class: "ai-chat-sidebar-content", attrs: { id: "ai-sidebar-content" }, children: [tools, maps.root] });
+  const bar = el("nav", {
+    class: "ai-chat-sidebar-tabs left-activity-bar",
+    attrs: { "aria-label": "왼쪽 활동 막대" },
+    dataset: { testid: "left-activity-bar" },
+    children: [
+      el("div", { class: "left-activity-group", attrs: { role: "group", "aria-label": "왼쪽 패널 보기" }, children: [toolsButton, mapsButton] }),
+      el("div", { class: "left-activity-spacer", attrs: { "aria-hidden": "true" } }),
+      inspectButton,
+    ],
+  });
+  const root = el("aside", {
+    class: "ai-chat-sidebar has-activity-bar", dataset: { testid: "editor-ai-sidebar" },
+    children: [bar, content],
+  });
+  function syncBadge(): void {
+    const count = ruleAuditViolationCountCached();
+    badge.textContent = count > 0 ? String(count > 99 ? "99+" : count) : "";
+    badge.hidden = count === 0;
+    inspectButton.setAttribute("aria-label", count > 0 ? `검사 — 규칙 위반 ${count}건` : "검사");
+    inspectButton.dataset.count = String(count);
+  }
   function sync(): void {
     root.classList.toggle("is-collapsed", collapsed);
     content.hidden = collapsed;
-    toggle.setAttribute("aria-expanded", String(!collapsed));
-    toggle.replaceChildren(deckIcon("sidebar"));
-    // 접힌 레일에서는 탭 글자가 숨으므로 이름을 도구설명으로 보인다.
-    for (const button of [mapsButton, toolsButton, aiButton]) {
-      if (collapsed) button.title = button.getAttribute("aria-label") ?? "";
-      else button.removeAttribute("title");
-    }
-  }
-  function setCollapsed(next: boolean): void {
-    collapsed = next; sync();
-    try { localStorage.setItem(COLLAPSED_KEY, next ? "1" : "0"); } catch { /* restricted storage */ }
-    onResize();
-  }
-  function show(pane: Pane): void {
-    tools.hidden = pane !== "tools"; host.hidden = pane !== "ai"; maps.root.hidden = pane !== "maps";
+    tools.hidden = pane !== "tools";
+    maps.root.hidden = pane !== "maps";
     root.dataset.pane = pane;
-    aiButton.setAttribute("aria-pressed", String(pane === "ai"));
-    mapsButton.setAttribute("aria-pressed", String(pane === "maps"));
-    toolsButton.setAttribute("aria-pressed", String(pane === "tools"));
-    if (collapsed) setCollapsed(false);
-    if (pane === "maps") maps.show();
+    toolsButton.setAttribute("aria-pressed", String(!collapsed && pane === "tools"));
+    mapsButton.setAttribute("aria-pressed", String(!collapsed && pane === "maps"));
+    toolsButton.setAttribute("aria-expanded", String(!collapsed && pane === "tools"));
+    mapsButton.setAttribute("aria-expanded", String(!collapsed && pane === "maps"));
   }
-  const showAi = (): void => show("ai");
+  function persist(): void {
+    try {
+      localStorage.setItem(COLLAPSED_KEY, collapsed ? "1" : "0");
+      localStorage.setItem(PANE_KEY, pane);
+    } catch { /* restricted storage */ }
+  }
+  function show(next: Pane): void {
+    const wasCollapsed = collapsed;
+    pane = next;
+    collapsed = false;
+    sync();
+    persist();
+    if (pane === "maps") maps.show();
+    if (wasCollapsed) onResize();
+  }
+  function activate(next: Pane): void {
+    if (!collapsed && pane === next) {
+      collapsed = true;
+      sync();
+      persist();
+      onResize();
+      return;
+    }
+    show(next);
+  }
   const showTools = (): void => show("tools");
-  window.addEventListener("oprn:ai-sidebar-show", showAi);
   window.addEventListener("oprn:ai-sidebar-tools", showTools);
-  tools.hidden = true; host.hidden = false; root.dataset.pane = "ai"; aiButton.setAttribute("aria-pressed", "true");
-  sync(); installDelayedTooltips(root);
+  window.addEventListener(RULE_AUDIT_UPDATED_EVENT, syncBadge);
+  sync();
+  // 배지는 규칙 감사가 끝났다고 알릴 때(RULE_AUDIT_UPDATED_EVENT) 채운다. 올리면서 직접 세지 않는다 —
+  // 도구줄 ⋯ 배지가 같은 캐시를 데우고 그 알림을 낸다.
+  badge.hidden = true;
+  if (!collapsed && pane === "maps") maps.show();
+  installDelayedTooltips(root);
   return { root, isCollapsed: () => collapsed, dispose: () => {
     maps.dispose();
-    window.removeEventListener("oprn:ai-sidebar-show", showAi);
     window.removeEventListener("oprn:ai-sidebar-tools", showTools);
+    window.removeEventListener(RULE_AUDIT_UPDATED_EVENT, syncBadge);
   } };
 }
