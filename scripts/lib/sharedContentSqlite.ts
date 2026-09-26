@@ -6,7 +6,8 @@ import { createHash } from 'node:crypto';
 import { gunzipSync, gzipSync } from 'node:zlib';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { SHARED_CONTENT_ENDPOINT, SHARED_CONTENT_PREVIEW_ENDPOINT, type SharedContentLibrary, type SharedContentScope, type SharedContentSnapshot } from '../../src/project/sharedContentSchema';
-import { validateTilesetReferences } from '../../src/project/tilesetReferences';
+import { validateTilesetReferences, type TilesetReferenceCategory } from '../../src/project/tilesetReferences';
+import { parseSharedReferenceImage, sharedReferenceImageAddress, SHARED_REFERENCE_IMAGE_PREFIX } from '../../src/project/bundledReferenceImagePath';
 export const sharedContentFile = () => process.env.OPRN_SHARED_CONTENT_SQLITE || join(process.env.XDG_DATA_HOME || join(homedir(), '.local', 'share'), 'oprn', 'shared-content.sqlite');
 const hash = (text: string) => createHash('sha256').update(text).digest('hex');
 function open(file: string) {
@@ -36,8 +37,52 @@ export function readSharedContentForEditor(scope: SharedContentScope, file = sha
     const rows = (scope === 'defaults'
       ? db.prepare("SELECT id, revision, payload FROM content_libraries WHERE json_extract(payload, '$.projectDefaults') = 1 ORDER BY id").all()
       : db.prepare('SELECT id, revision, payload FROM content_libraries ORDER BY id').all()) as { id: string; revision: string; payload: string }[];
-    return { revision: snapshotRevision(all), libraries: Object.fromEntries(rows.map(r => [r.id, linkPreviews(r.id, r.revision, JSON.parse(r.payload) as SharedContentLibrary)])) };
+    return { revision: snapshotRevision(all), libraries: Object.fromEntries(rows.map(r => [r.id, linkReferenceImages(linkPreviews(r.id, r.revision, JSON.parse(r.payload) as SharedContentLibrary), referenceImageIndexFor(file, snapshotRevision(all)))])) };
   } finally { db.close(); }
+}
+/**
+ * 타일셋 참고문서 이미지(타일셋·구조 킷)를 내용 주소로 바꾼다. 이 타일셋들은 프로젝트에 복사되는데,
+ * 실측(2026-09-26) 기본 라이브러리 97MB 중 33.6MB 가 이 이미지 7,550장이었다. 장소·지역 문서는 복사되지 않아 그대로 둔다.
+ * 주소 → 원본 dataURL 은 색인에 남겨 이미지 요청이 SQLite 를 다시 파싱하지 않게 한다.
+ */
+function linkReferenceImages(library: SharedContentLibrary, index: Map<string, string>): SharedContentLibrary {
+  const link = (categories: TilesetReferenceCategory[] | undefined): void => {
+    for (const category of categories ?? []) for (const image of category.images) {
+      const address = sharedReferenceImageAddress(image.dataUrl);
+      if (!address) continue;
+      if (!index.has(address)) index.set(address, image.dataUrl);
+      image.dataUrl = address;
+    }
+  };
+  for (const tileset of Object.values(library.tilesets)) {
+    link(tileset.referenceDocuments);
+    for (const kit of tileset.structureKits ?? []) link(kit.referenceDocuments);
+  }
+  return library;
+}
+const referenceImageIndexes = new Map<string, { revision: string; images: Map<string, string> }>();
+function referenceImageIndexFor(file: string, revision: string): Map<string, string> {
+  const current = referenceImageIndexes.get(file);
+  if (current?.revision === revision) return current.images;
+  const images = new Map<string, string>();
+  referenceImageIndexes.set(file, { revision, images });
+  return images;
+}
+/** Bytes behind a shared reference image address. Builds the index from every library once per catalog revision. */
+export function readSharedReferenceImage(address: string, file = sharedContentFile()): { mime: string; bytes: Buffer } | null {
+  const parsed = parseSharedReferenceImage(address);
+  if (!parsed) return null;
+  const db = open(file);
+  let revision: string;
+  try { revision = snapshotRevision(db.prepare('SELECT id, revision FROM content_libraries ORDER BY id').all() as { id: string; revision: string }[]); }
+  finally { db.close(); }
+  const index = referenceImageIndexFor(file, revision);
+  if (!index.has(address)) {
+    for (const library of Object.values(readSharedContent(file).libraries)) linkReferenceImages(library, index);
+  }
+  const dataUrl = index.get(address);
+  if (!dataUrl) return null;
+  return { mime: parsed.mime, bytes: Buffer.from(dataUrl.slice(dataUrl.indexOf(',') + 1), 'base64') };
 }
 function previewUrl(library: string, revision: string, kind: 'place' | 'region', id: string): string {
   return `${SHARED_CONTENT_PREVIEW_ENDPOINT}?${new URLSearchParams({ library, kind, id, v: revision.slice(0, 16) })}`;
@@ -125,10 +170,24 @@ export function sharedContentPreviewResponse(method: string, url: URL): { status
     return found ? { status: 200, ...found } : { status: 404 };
   } catch { return { status: 500 }; }
 }
-/** 미리보기 주소에는 라이브러리 판본(v)이 들어 있어 판본이 바뀌면 주소도 바뀐다 — 길게 캐시해도 된다. */
+/** 미리보기 주소에는 라이브러리 판본(v)이 들어 있어 판본이 바뀌면 주소도 바뀐다 — 길게 캐시해도 된다.
+ * 참고 이미지 주소는 내용 다이제스트라 같은 주소는 같은 바이트다. */
 export const SHARED_CONTENT_PREVIEW_CACHE = 'private, max-age=31536000, immutable';
+export function sharedReferenceImageResponse(method: string, url: URL): { status: number; mime?: string; bytes?: Buffer } {
+  if (method !== 'GET') return { status: 405 };
+  try {
+    const found = readSharedReferenceImage(url.pathname);
+    return found ? { status: 200, ...found } : { status: 404 };
+  } catch { return { status: 500 }; }
+}
 export function sharedContentMiddleware(req: IncomingMessage,res: ServerResponse,next:()=>void) {
   const url = new URL(req.url ?? '/', 'http://localhost');
+  if (url.pathname.startsWith(SHARED_REFERENCE_IMAGE_PREFIX)) {
+    const result = sharedReferenceImageResponse(req.method ?? 'GET', url);
+    if (!result.bytes) { res.writeHead(result.status).end(); return; }
+    res.writeHead(200, { 'content-type': result.mime!, 'content-length': result.bytes.length, 'cache-control': SHARED_CONTENT_PREVIEW_CACHE }).end(result.bytes);
+    return;
+  }
   if (url.pathname === SHARED_CONTENT_PREVIEW_ENDPOINT) {
     const result = sharedContentPreviewResponse(req.method ?? 'GET', url);
     if (!result.bytes) { res.writeHead(result.status).end(); return; }

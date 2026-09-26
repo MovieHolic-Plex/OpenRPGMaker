@@ -246,7 +246,7 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
           content.push({ type: "image", mimeType: image.dataUrl.slice(5, image.dataUrl.indexOf(";")), data: image.dataUrl.slice(comma + 1) });
         }
       }
-      if (tool.name === 'read_spatial_reference') for (const image of spatialReferenceImages(ctx.project,args,result.data)) {
+      if (tool.name === 'read_spatial_reference') for (const image of await spatialReferenceImages(ctx.project,args,result.data)) {
         content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
       }
       return { content, details: result };

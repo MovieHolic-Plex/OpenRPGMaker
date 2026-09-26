@@ -1,5 +1,5 @@
 import type { Project, TilesetDef } from "./types";
-import { isBundledReferenceImage } from "./bundledReferenceImagePath";
+import { isBundledReferenceImage, isSharedReferenceImage } from "./bundledReferenceImagePath";
 import { SHARED_CONTENT_PREVIEW_ENDPOINT } from "./sharedContentSchema";
 
 /** Authored, portable reference material. Uploaded image bytes travel with the project;
@@ -119,7 +119,7 @@ export function validateTilesetReferences(value: unknown): asserts value is Tile
       if (!string(img.name, 200).trim()) fail("이미지 이름이 필요합니다.");
       string(img.caption, 4000);
       const src = string(img.dataUrl, Math.ceil(REFERENCE_LIMITS.imageBytes * 4 / 3) + 64);
-      if (!REFERENCE_IMAGE_PATTERN.test(src) && !isBundledReferenceImage(src)) fail("PNG/JPEG/WebP 이미지 데이터가 필요합니다.");
+      if (!REFERENCE_IMAGE_PATTERN.test(src) && !isBundledReferenceImage(src) && !isSharedReferenceImage(src)) fail("PNG/JPEG/WebP 이미지 데이터가 필요합니다.");
     }
   }
 }
