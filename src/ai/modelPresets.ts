@@ -34,7 +34,7 @@ export interface ModelPreset {
  * fast: 각 제공자의 기본 모델(레지스트리 defaultModel 과 일치), strong: 최상위 모델.
  */
 const PROVIDER_TIER_MODELS: Readonly<Record<string, Readonly<Record<ModelTier, string>>>> = {
-  [ANTIGRAVITY_PROVIDER_ID]: { fast: "gemini-3.7-flash", strong: "gemini-3-pro" },
+  [ANTIGRAVITY_PROVIDER_ID]: { fast: "gemini-3.8-flash", strong: "gemini-3-pro" },
   [CODEX_PROVIDER_ID]: { fast: "gpt-5.4-mini", strong: "gpt-5.6-sol" },
 };
 
