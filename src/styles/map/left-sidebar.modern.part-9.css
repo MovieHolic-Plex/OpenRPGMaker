@@ -394,7 +394,11 @@
 /* 「높이」 붓 방식 칩(2026-09-26)은 크기 칩 옆에 들어가지 않는다 — 한 줄 아래로 내린다. */
 .basic-rail-status:has(.relief-brush-controls),
 .basic-rail-status > .sidebar-brush-controls:has(.relief-brush-controls) { flex-wrap: wrap; }
-.sidebar-brush-controls > .relief-brush-controls { flex: 1 0 100%; }
+/* 부모 줄이 `flex: 0 0 auto` 라 방식 칩 8개가 한 줄로 늘어 판(258px) 밖으로 잘렸다 — 높이 붓일 때는 줄 폭에 맞춘다. */
+.sidebar-brush-controls:has(> .relief-brush-controls) { flex: 1 1 100%; min-width: 0; }
+.sidebar-brush-controls > .relief-brush-controls { flex: 1 0 100%; min-width: 0; flex-wrap: wrap; row-gap: 2px; }
+/* 높이 붓 8방식은 두 줄로 감싸고, 왼·오른쪽 버튼이 하는 일을 한 줄로 말한다. */
+.relief-brush-controls .relief-brush-hint { flex: 1 0 100%; font: 500 11px/1.3 var(--font-ui); color: var(--text-2); padding-inline: 2px; }
 .basic-rail-status .sidebar-brush-sizes .tile-brush-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .editor-layout .basic-rail-status .sidebar-brush-sizes .tile-brush-chip {
   min-width: 24px; min-height: 22px; padding: 0; border: 0; border-radius: var(--radius-s); background: transparent;

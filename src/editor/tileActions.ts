@@ -229,6 +229,8 @@ function upperAutotileGroupsTriggered(
 /**
  * 「높이」 붓 한 번 — map.relief 를 원형 붓으로 고친다. 모두 0 이 되면 필드를 지운다(평지 맵은 relief 없음).
  * 바뀐 칸이 없으면 store 를 건드리지 않는다(드래그 중 빈 통지·빈 되돌리기 방지).
+ * 포인터 표본마다 불리므로 타일 붓과 같은 싼 경로(updateMapTiles)를 타고 `relief: true` 로 알린다 —
+ * 구독자는 맵 전체 재렌더·패널 재조립 대신 절벽 그림만 다시 그린다.
  */
 export function paintRelief(
   mapId: MapId,
@@ -241,10 +243,10 @@ export function paintRelief(
   if (!map || !inMap(map, x, y)) return false;
   const next = map.relief ? { ...map.relief, levels: map.relief.levels.slice() } : emptyRelief(map.width, map.height);
   if (!brushRelief(next, x, y, mode, opts)) return false;
-  store.updateMap(mapId, (draft) => {
+  store.updateMapTiles(mapId, (draft) => {
     if (reliefIsFlat(next)) delete draft.relief;
     else draft.relief = next;
-  }, { label: "높이 붓" });
+  }, { label: "높이 붓", relief: true });
   return true;
 }
 
@@ -804,7 +806,7 @@ function installProtectedCellsInvalidator(): void {
   if (protectedCellsInvalidatorInstalled) return;
   protectedCellsInvalidatorInstalled = true;
   store.subscribe((_project, change) => {
-    if (change.scope === "map" && change.cells?.length) return;
+    if (change.scope === "map" && (change.cells?.length || change.relief)) return;
     protectedCellsCache = null;
   });
 }
