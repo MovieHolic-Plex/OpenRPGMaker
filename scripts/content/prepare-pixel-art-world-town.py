@@ -486,11 +486,10 @@ stamp(68, 0, TN, 5, 16, 2, 3, 'up', True, 'tree68,0')   # ゴミ集積所 at the
 # east hill edge: the house-ne-1 lot (x79-94) owns y2 (its back wall) -> trees stop 1 row above it, species mixed, staggered
 stamp(72, 0, TN, 5, 16, 2, 3, 'up', True, 'tree72,0')
 chip(75, 0, 'ume.png', 6, 0, 3, 3, 'ume-hill-1')
-# canopy behind the lot's back wall (y2): crowns only, three species, uneven 2-3 tile steps
-for tx, kind in ((78, 'pine'), (80, 'ume'), (83, 'pine'), (86, 'ume'), (89, 'pine'), (91, 'ume'), (94, 'pine')):
-    if kind == 'pine': stamp(tx, 0, TN, 5, 16, 2, 2, 'up', True, f'hillcanopy{tx}')
-    elif kind == 'ume': chip(tx, 0, 'ume.png', 6, 3, 3, 2, f'hillcanopy{tx}')
-    else: chip(tx, 0, 'kuri.png', 2, 0, 2, 2, f'hillcanopy{tx}')   # chestnut: a whole 2x2 chip, no cut edge
+# east hill edge above house-ne-1 (its back wall is on y3): WHOLE trees only, rows y0-2, pine 2x3 / plum 3x3 alternating
+for tx, kind in ((78, 'pine'), (80, 'ume'), (84, 'pine'), (86, 'ume'), (90, 'pine'), (92, 'ume')):
+    if kind == 'pine': stamp(tx, 0, TN, 5, 16, 2, 3, 'up', True, f'hilltree{tx}')
+    else: chip(tx, 0, 'ume.png', 6, 0 if tx % 4 else 3, 3, 3, f'hilltree{tx}')
 
 # ================================================================= SW x0..44, y39..63
 signal(44, 39, 'signal-sw'); ground(43, 39, 2, 4, WALK)
@@ -604,7 +603,7 @@ lot('rtown-sw-2', pt=3); lot('rtown-sw-5', pt=3)   # shops sit 3 rows below the 
 for n in ('house-sw-1', 'house-sw-3', 'house-sw-4', 'house-sw-6', 'house-sw-7',
           'apartment-sw', 'apartment-sw-2', 'house-ne-1', 'mansion-ne',
           'rtown-se', 'clinic-se', 'apartment-se'):
-    lot(n)
+    lot(n, pt=0) if n == 'house-ne-1' else lot(n)   # house-ne-1: back wall on y3 so the hill trees above get their full 3 rows
 
 # SW house row: one continuous rear block wall along y39 (the arterial sidewalk side), posts at run ends
 def rear_wall(y, x0, x1, name):
