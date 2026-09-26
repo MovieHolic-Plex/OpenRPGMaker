@@ -226,27 +226,44 @@ def chip(x, y, f, cols, t0, w, h, name=None, s=True, layer='up'):
             put(x + dx, y + dy, T(CH + f, t0 + dy * cols + dx), layer, s)
 
 
-# ---------------------------------------------------------------- tiled houses (ST-Town-E01, wall under every overlay)
-WT_, WM_, WB_ = [216,217,217,217,217,218], [224,225,225,225,225,226], [232,233,233,233,233,234]
-HOUSE = {
- 'kawara': [[273,274,274,274,274,275],[281,282,282,282,282,283],[289,290,290,290,290,291],
-            (WT_,[297,298,298,298,298,299]),(WM_,[None,334,335,None,339,None]),(WM_,[None,None,350,351,None,None]),(WB_,[None,None,358,359,None,None])],
- 'gable':  [[None,None,222,None,None,None],[None,229,230,231,None,None],WT_,(WM_,[None,340,341,None,262,None]),
-            (WM_,[None,None,None,None,270,None]),(WM_,[None,None,259,None,None,None]),(WB_,[None,None,267,None,None,None])],
- 'grey':   [[273,284,284,284,284,275],[281,292,292,292,292,283],[289,300,300,300,300,291],
-            (WT_,[297,308,308,308,308,299]),(WM_,[None,262,None,None,343,None]),(WM_,[None,270,260,None,None,None]),(WB_,[None,None,268,None,None,None])],
-}
-def house(x, y, style, name):
-    """6x9 lot slot: 2 back-yard rows + 7-row house; door at (x+2, y+8)."""
-    claim(x, y, 6, 9, name)
-    for dx in range(6): put(x + dx, y, T(TN, 167), 'up', True)   # back hedge
-    for dy, r in enumerate(HOUSE[style]):
-        base, ov = (r if isinstance(r, tuple) else (r, [None] * 6))
-        for dx in range(6):
-            yy = y + 2 + dy
-            if base[dx] is not None: put(x + dx, yy, T(TN, base[dx]), 'up', True)
-            if ov[dx] is not None: put(x + dx, yy, T(TN, ov[dx]), 'up', True)
-    placements.append({'id': name, 'kind': 'house-' + style, 'x': x, 'y': y, 'width': 6, 'height': 9})
+# ---------------------------------------------------------------- Japanese houses (author sample s15: gable wing + side wing)
+_=None
+def jgrid(L, wall='wood', roof='dark'):
+    """Japanese house after author sample s15: 5-wide gable wing + L-wide side wing. 10 rows, door at (2,8)."""
+    R2, R3, R5 = (284, 292, 308) if roof == 'dark' else (286, 294, 318)
+    W = 5 + L
+    g = [[None] * W for _r in range(10)]
+    gable = [[_,273,274,275,_],[273,281,282,283,275],[281,281,282,283,283],[281,281,282,283,283],
+             [281,(57,297),(57,298),(57,299),283],[(57,297),(57,305),(57,304),(57,307),(57,299)],
+             [216,(217,316),(217,316),(217,316),218],[224,349,350,351,226],[232,357,358,359,234],
+             [204,237,238,239,206]]
+    for y, r in enumerate(gable):
+        for x, c in enumerate(r): g[y][x] = c
+    if L:
+        if wall == 'wood': top, mid, bot = (227, 225, 226), (235, 233, 234), None
+        else: top, mid = (57, 57, 58), (65, 65, 66)
+        for i in range(L):
+            x = 5 + i; k = 0 if i == 0 else (2 if i == L - 1 else 1)
+            g[2][x] = R2; g[3][x] = R3; g[4][x] = R3
+            g[5][x] = ((216, 217, 218)[k], R5)
+            g[6][x] = top[k]; g[7][x] = mid[k]
+        if L >= 5:            # shoji window + engawa step
+            for j, (a, b) in enumerate(((344, 352), (345, 353), (346, 354))):
+                g[6][6 + j] = a; g[7][6 + j] = b
+            g[8][7] = 360; g[8][8] = 360
+            g[6][5] = (g[6][5], 330); g[7][5] = (g[7][5], 338)
+        if L >= 3: g[6][W - 2] = (g[6][W - 2], 340)
+    return g
+
+def house(x, y, L, name, wall='wood', roof='dark'):
+    """(5+L)x10 house: 5-wide kawara gable wing with the genkan, L-wide side wing; door at (x+2, y+8)."""
+    g = jgrid(L, wall, roof); w = len(g[0])
+    claim(x, y, w, 10, name)
+    for dy, r in enumerate(g):
+        for dx, c in enumerate(r):
+            for t in (c if isinstance(c, tuple) else (c,)):
+                if t is not None: put(x + dx, y + dy, T(TN, t), 'up', not (dy == 9 and 1 <= dx <= 3))
+    placements.append({'id': name, 'kind': f'house-j{L}-{wall}-{roof}', 'x': x, 'y': y, 'width': w, 'height': 10})
     entrance(name, x + 2, y + 8, x + 2, y + 9)
 
 # ================================================================= SCHOOL (NW) campus x2..44, y0..32
@@ -366,8 +383,7 @@ place_kit('park-bench-back', 91, 22)
 place_kit('apartment-dark-roof', 51, 6, 'apartment-ne')
 place_kit('clinic-small', 61, 8, 'clinic-ne')
 place_comp('msex-b-whole-house', 72, 5, 'mansion-ne')
-house(81, 6, 'kawara', 'house-ne-1')
-house(88, 6, 'grey', 'house-ne-2')
+house(81, 4, 7, 'house-ne-1')
 # back-hill grove behind the NE lots: maples + dense trees + a garbage station, all existing chips
 chip(51, 0, 'momiji.png', 4, 0, 4, 4, 'momiji-ne-1')
 chip(59, 0, 'momiji.png', 4, 0, 4, 4, 'momiji-ne-2')
@@ -379,17 +395,16 @@ for tx in range(72, 95, 2):
 
 # ================================================================= SW x0..44, y39..63
 signal(44, 39, 'signal-sw'); ground(43, 39, 2, 4, WALK)
-house(1, 42, 'gable', 'house-sw-1')
+house(1, 41, 0, 'house-sw-1', 'plaster')
 place_comp('retro-rtown-whole-building', 8, 43, 'rtown-sw-2')
-house(15, 42, 'kawara', 'house-sw-3')
+house(15, 41, 3, 'house-sw-3', 'plaster', 'light')
 place_comp('retro-sento-whole-building', 25, 40, 'sento')
-house(33, 42, 'grey', 'house-sw-4')
+house(33, 41, 0, 'house-sw-4')
 place_comp('retro-rtown-whole-building', 37 + 2, 43, 'rtown-sw-5')
 place_kit('apartment-dark-roof', 1, 54, 'apartment-sw')
-house(12, 54, 'gable', 'house-sw-6')
-place_comp('retro-rtown-paper-doors', 19, 60, 'shed-sw')
+house(12, 53, 5, 'house-sw-6', 'wood', 'light')
 place_kit('apartment-dark-roof', 25, 54, 'apartment-sw-2')
-house(36, 54, 'kawara', 'house-sw-7')
+house(36, 53, 3, 'house-sw-7')
 
 # ================================================================= SE x51..95, y39..63
 signal(51, 39, 'signal-se'); ground(51, 39, 3, 7, WALK)
@@ -474,7 +489,7 @@ def lot(name, pl=1, pt=1, pr=1, pb=1):
 
 lot('rtown-sw-2', pt=2); lot('rtown-sw-5', pt=2)   # shops sit a row lower: align their back wall with the houses'
 for n in ('house-sw-1', 'house-sw-3', 'house-sw-4', 'house-sw-6', 'house-sw-7',
-          'apartment-sw', 'apartment-sw-2', 'house-ne-1', 'house-ne-2', 'mansion-ne', 'apartment-ne',
+          'apartment-sw', 'apartment-sw-2', 'house-ne-1', 'mansion-ne', 'apartment-ne',
           'rtown-se', 'clinic-se', 'apartment-se'):
     lot(n)
 
@@ -540,5 +555,5 @@ for (x, y, l, u) in kitpaste:
     if u: out.alpha_composite(u, (x * 32, y * 32))
 import os; os.makedirs('/home/main/claude-viz/paw-town', exist_ok=True)
 out.save('/home/main/claude-viz/paw-town/town.png')
-json.dump({'width': W, 'height': H, 'placements': placements, 'entrances': entrances}, open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../tiledata/pixel-art-world/town.json'), 'w'), ensure_ascii=False)
+json.dump({'width': W, 'height': H, 'placements': placements, 'entrances': entrances}, open(TD + '/town.json', 'w'), ensure_ascii=False)
 print('ok', len(placements))
