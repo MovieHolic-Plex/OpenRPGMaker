@@ -134,7 +134,7 @@ const buildPackTown: ToolDefinition = {
     const check = checkTownMap(draft, map);
     return {
       summary: `${map.name}에 마을 뼈대를 깔았음(seed ${result.seed}) — 가게 ${count("shop")}·사무실 ${count("office")}·주택 ${count("house")}·공원 ${count("park")}, 길 ${result.roads.length}개`,
-      ...(check.issues.length ? { warnings: check.issues } : {}),
+      ...(check.issues.length ? { warnings: [...check.issues] } : {}),
       data: {
         seed: result.seed,
         lots: result.lots.map((lot) => ({ ...lot })),
@@ -159,7 +159,7 @@ const checkTownMapTool: ToolDefinition = {
     const check = checkTownMap(draft, map);
     return {
       summary: check.issues.length ? `${map.name}: 고칠 곳 ${check.issues.length}개` : `${map.name}: 빈 바닥·빈 띠·보도 비율 모두 기준 안`,
-      ...(check.issues.length ? { warnings: check.issues } : {}),
+      ...(check.issues.length ? { warnings: [...check.issues] } : {}),
       data: check,
     };
   },
