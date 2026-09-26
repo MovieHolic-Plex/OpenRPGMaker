@@ -1,0 +1,4769 @@
+{
+ "steps": [
+  {
+   "criterion": "C01",
+   "tool": "set_project_settings",
+   "ok": true,
+   "summary": "프로젝트 설정 변경 — 제목, 전투",
+   "data": {
+    "changed": [
+     "제목",
+     "전투"
+    ]
+   }
+  },
+  {
+   "criterion": "C04",
+   "tool": "upsert_skill",
+   "ok": true,
+   "summary": "스킬 '회전베기' 추가",
+   "data": {
+    "id": "skill_cyclone",
+    "name": "회전베기",
+    "scope": "allEnemies",
+    "power": 24,
+    "description": "주변 적 전부를 벤다",
+    "type": "normal",
+    "mpCost": {
+     "flat": 2,
+     "percentMax": 0
+    },
+    "successRate": 100,
+    "variance": 0,
+    "hitRate": 100,
+    "effect": {
+     "kind": "damage",
+     "statistic": "attack",
+     "affects": "hp"
+    },
+    "elementId": "sword",
+    "stateEffects": []
+   }
+  },
+  {
+   "criterion": "C04",
+   "tool": "upsert_skill",
+   "ok": true,
+   "summary": "스킬 '파이어' 추가",
+   "data": {
+    "id": "skill_fire_ring",
+    "name": "파이어",
+    "scope": "allEnemies",
+    "power": 20,
+    "description": "불꽃이 적 전부를 덮는다",
+    "type": "normal",
+    "mpCost": {
+     "flat": 3,
+     "percentMax": 0
+    },
+    "successRate": 100,
+    "variance": 0,
+    "hitRate": 100,
+    "effect": {
+     "kind": "damage",
+     "statistic": "attack",
+     "affects": "hp"
+    },
+    "elementId": "fire",
+    "stateEffects": []
+   }
+  },
+  {
+   "criterion": "C04",
+   "tool": "upsert_skill",
+   "ok": true,
+   "summary": "스킬 '오라' 추가",
+   "data": {
+    "id": "skill_aura",
+    "name": "오라",
+    "scope": "ally",
+    "power": 30,
+    "description": "아군 하나 회복",
+    "type": "normal",
+    "mpCost": {
+     "flat": 1,
+     "percentMax": 0
+    },
+    "successRate": 100,
+    "variance": 0,
+    "hitRate": 100,
+    "effect": {
+     "kind": "healing",
+     "statistic": "mind",
+     "affects": "hp"
+    },
+    "stateEffects": []
+   }
+  },
+  {
+   "criterion": "C02",
+   "tool": "upsert_actor",
+   "ok": true,
+   "summary": "액터 '크로' 수정",
+   "data": {
+    "id": "actor_hero",
+    "name": "크로",
+    "nickname": "없음",
+    "classId": "class_hero",
+    "initialLevel": 5,
+    "maxLevel": 99,
+    "faceResourceId": "easyrpg-faceset-actor1-00",
+    "characterResourceId": "easyrpg-charset-actor1",
+    "characterTransparent": false,
+    "battleCharacterResourceId": "generated-actor-hero-01-battle",
+    "critical": {
+     "enabled": true,
+     "chanceDenominator": 30
+    },
+    "parameterCurves": {
+     "maxHp": [
+      514,
+      514,
+      516,
+      518,
+      522,
+      526,
+      531,
+      538,
+      545,
+      553,
+      562,
+      572,
+      583,
+      595,
+      608,
+      622,
+      637,
+      653,
+      670,
+      688,
+      707,
+      726,
+      747,
+      769,
+      791,
+      815,
+      840,
+      865,
+      892,
+      919,
+      948,
+      977,
+      1007,
+      1039,
+      1071,
+      1104,
+      1138,
+      1173,
+      1210,
+      1247,
+      1285,
+      1324,
+      1364,
+      1405,
+      1447,
+      1489,
+      1533,
+      1578,
+      1624,
+      1671,
+      1718,
+      1767,
+      1816,
+      1867,
+      1919,
+      1971,
+      2025,
+      2079,
+      2134,
+      2191,
+      2248,
+      2306,
+      2366,
+      2426,
+      2487,
+      2549,
+      2612,
+      2676,
+      2741,
+      2807,
+      2874,
+      2942,
+      3011,
+      3081,
+      3152,
+      3223,
+      3296,
+      3370,
+      3445,
+      3520,
+      3597,
+      3674,
+      3753,
+      3832,
+      3913,
+      3994,
+      4076,
+      4160,
+      4244,
+      4329,
+      4416,
+      4503,
+      4591,
+      4680,
+      4770,
+      4861,
+      4953,
+      5046,
+      5140
+     ],
+     "maxMp": [
+      43,
+      43,
+      43,
+      43,
+      44,
+      44,
+      44,
+      45,
+      46,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      55,
+      56,
+      58,
+      59,
+      61,
+      63,
+      64,
+      66,
+      68,
+      70,
+      72,
+      75,
+      77,
+      79,
+      82,
+      84,
+      87,
+      90,
+      92,
+      95,
+      98,
+      101,
+      104,
+      107,
+      111,
+      114,
+      118,
+      121,
+      125,
+      128,
+      132,
+      136,
+      140,
+      144,
+      148,
+      152,
+      156,
+      161,
+      165,
+      169,
+      174,
+      179,
+      183,
+      188,
+      193,
+      198,
+      203,
+      208,
+      213,
+      219,
+      224,
+      229,
+      235,
+      240,
+      246,
+      252,
+      258,
+      264,
+      270,
+      276,
+      282,
+      288,
+      294,
+      301,
+      307,
+      314,
+      321,
+      327,
+      334,
+      341,
+      348,
+      355,
+      362,
+      369,
+      377,
+      384,
+      392,
+      399,
+      407,
+      414,
+      422,
+      430
+     ],
+     "attack": [
+      45,
+      45,
+      45,
+      45,
+      46,
+      46,
+      46,
+      47,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      58,
+      59,
+      61,
+      62,
+      64,
+      66,
+      67,
+      69,
+      71,
+      73,
+      76,
+      78,
+      80,
+      83,
+      85,
+      88,
+      90,
+      93,
+      96,
+      98,
+      101,
+      104,
+      107,
+      111,
+      114,
+      117,
+      121,
+      124,
+      128,
+      131,
+      135,
+      139,
+      143,
+      147,
+      151,
+      155,
+      159,
+      163,
+      167,
+      172,
+      176,
+      181,
+      186,
+      190,
+      195,
+      200,
+      205,
+      210,
+      215,
+      220,
+      226,
+      231,
+      236,
+      242,
+      247,
+      253,
+      259,
+      265,
+      271,
+      277,
+      283,
+      289,
+      295,
+      301,
+      308,
+      314,
+      321,
+      327,
+      334,
+      341,
+      347,
+      354,
+      361,
+      368,
+      375,
+      383,
+      390,
+      397,
+      405,
+      412,
+      420
+     ],
+     "defense": [
+      59,
+      59,
+      59,
+      59,
+      60,
+      60,
+      60,
+      61,
+      61,
+      62,
+      62,
+      63,
+      64,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      72,
+      73,
+      74,
+      76,
+      77,
+      79,
+      80,
+      82,
+      84,
+      85,
+      87,
+      89,
+      91,
+      93,
+      95,
+      97,
+      100,
+      102,
+      104,
+      107,
+      109,
+      112,
+      114,
+      117,
+      120,
+      122,
+      125,
+      128,
+      131,
+      134,
+      137,
+      141,
+      144,
+      147,
+      150,
+      154,
+      157,
+      161,
+      164,
+      168,
+      172,
+      176,
+      179,
+      183,
+      187,
+      191,
+      196,
+      200,
+      204,
+      208,
+      213,
+      217,
+      221,
+      226,
+      231,
+      235,
+      240,
+      245,
+      250,
+      255,
+      260,
+      265,
+      270,
+      275,
+      280,
+      285,
+      291,
+      296,
+      302,
+      307,
+      313,
+      319,
+      324,
+      330,
+      336,
+      342,
+      348,
+      354,
+      360
+     ],
+     "mind": [
+      45,
+      45,
+      45,
+      45,
+      45,
+      46,
+      46,
+      47,
+      47,
+      47,
+      48,
+      49,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      59,
+      60,
+      61,
+      63,
+      64,
+      66,
+      67,
+      69,
+      71,
+      73,
+      75,
+      76,
+      78,
+      81,
+      83,
+      85,
+      87,
+      89,
+      92,
+      94,
+      97,
+      99,
+      102,
+      104,
+      107,
+      110,
+      113,
+      116,
+      119,
+      122,
+      125,
+      128,
+      131,
+      135,
+      138,
+      141,
+      145,
+      148,
+      152,
+      156,
+      159,
+      163,
+      167,
+      171,
+      175,
+      179,
+      183,
+      187,
+      191,
+      196,
+      200,
+      204,
+      209,
+      213,
+      218,
+      222,
+      227,
+      232,
+      237,
+      242,
+      247,
+      252,
+      257,
+      262,
+      267,
+      272,
+      277,
+      283,
+      288,
+      294,
+      299,
+      305,
+      311,
+      316,
+      322,
+      328,
+      334,
+      340
+     ],
+     "agility": [
+      43,
+      43,
+      43,
+      43,
+      43,
+      44,
+      44,
+      44,
+      45,
+      45,
+      46,
+      46,
+      47,
+      48,
+      49,
+      49,
+      50,
+      51,
+      52,
+      53,
+      55,
+      56,
+      57,
+      58,
+      60,
+      61,
+      62,
+      64,
+      66,
+      67,
+      69,
+      71,
+      73,
+      74,
+      76,
+      78,
+      80,
+      82,
+      85,
+      87,
+      89,
+      91,
+      94,
+      96,
+      99,
+      101,
+      104,
+      107,
+      109,
+      112,
+      115,
+      118,
+      121,
+      124,
+      127,
+      130,
+      133,
+      137,
+      140,
+      143,
+      147,
+      150,
+      154,
+      157,
+      161,
+      165,
+      169,
+      172,
+      176,
+      180,
+      184,
+      188,
+      193,
+      197,
+      201,
+      205,
+      210,
+      214,
+      218,
+      223,
+      228,
+      232,
+      237,
+      242,
+      247,
+      251,
+      256,
+      261,
+      266,
+      271,
+      277,
+      282,
+      287,
+      292,
+      298,
+      303,
+      309,
+      314,
+      320
+     ]
+    },
+    "expCurve": {
+     "base": 1,
+     "extra": 677,
+     "acceleration": 40
+    },
+    "initialEquipment": {
+     "weapon": "equip_sword",
+     "shield": "equip_oak_shield",
+     "armor": "equip_leather_armor",
+     "helmet": "equip_traveler_hat",
+     "accessory": "equip_focus_charm"
+    },
+    "unarmedAnimationId": "anim_gen_tackle_impact",
+    "options": {
+     "dualWield": false,
+     "autoBattle": false,
+     "fixedEquipment": false,
+     "mightyGuard": false
+    },
+    "learnedSkills": [
+     {
+      "level": 1,
+      "skillId": "skill_attack"
+     },
+     {
+      "level": 3,
+      "skillId": "skill_cyclone"
+     }
+    ],
+    "stateRates": {
+     "state_poison": "C"
+    },
+    "elementRates": {
+     "sword": "C",
+     "spear": "C",
+     "hit": "C",
+     "bow": "C",
+     "fire": "C",
+     "ice": "C",
+     "thunder": "C",
+     "water": "C",
+     "earth": "C",
+     "wind": "C",
+     "holy": "C",
+     "dark": "C"
+    }
+   }
+  },
+  {
+   "criterion": "C02",
+   "tool": "upsert_actor",
+   "ok": true,
+   "summary": "액터 '루카' 수정",
+   "data": {
+    "id": "actor_mage",
+    "name": "루카",
+    "nickname": "별빛",
+    "classId": "class_mage",
+    "initialLevel": 5,
+    "maxLevel": 99,
+    "faceResourceId": "easyrpg-faceset-people1-00",
+    "characterResourceId": "easyrpg-charset-actor3",
+    "characterTransparent": false,
+    "battleCharacterResourceId": "generated-actor-hero-03-battle",
+    "critical": {
+     "enabled": true,
+     "chanceDenominator": 30
+    },
+    "parameterCurves": {
+     "maxHp": [
+      514,
+      514,
+      516,
+      518,
+      522,
+      526,
+      531,
+      538,
+      545,
+      553,
+      562,
+      572,
+      583,
+      595,
+      608,
+      622,
+      637,
+      653,
+      670,
+      688,
+      707,
+      726,
+      747,
+      769,
+      791,
+      815,
+      840,
+      865,
+      892,
+      919,
+      948,
+      977,
+      1007,
+      1039,
+      1071,
+      1104,
+      1138,
+      1173,
+      1210,
+      1247,
+      1285,
+      1324,
+      1364,
+      1405,
+      1447,
+      1489,
+      1533,
+      1578,
+      1624,
+      1671,
+      1718,
+      1767,
+      1816,
+      1867,
+      1919,
+      1971,
+      2025,
+      2079,
+      2134,
+      2191,
+      2248,
+      2306,
+      2366,
+      2426,
+      2487,
+      2549,
+      2612,
+      2676,
+      2741,
+      2807,
+      2874,
+      2942,
+      3011,
+      3081,
+      3152,
+      3223,
+      3296,
+      3370,
+      3445,
+      3520,
+      3597,
+      3674,
+      3753,
+      3832,
+      3913,
+      3994,
+      4076,
+      4160,
+      4244,
+      4329,
+      4416,
+      4503,
+      4591,
+      4680,
+      4770,
+      4861,
+      4953,
+      5046,
+      5140
+     ],
+     "maxMp": [
+      43,
+      43,
+      43,
+      43,
+      44,
+      44,
+      44,
+      45,
+      46,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      55,
+      56,
+      58,
+      59,
+      61,
+      63,
+      64,
+      66,
+      68,
+      70,
+      72,
+      75,
+      77,
+      79,
+      82,
+      84,
+      87,
+      90,
+      92,
+      95,
+      98,
+      101,
+      104,
+      107,
+      111,
+      114,
+      118,
+      121,
+      125,
+      128,
+      132,
+      136,
+      140,
+      144,
+      148,
+      152,
+      156,
+      161,
+      165,
+      169,
+      174,
+      179,
+      183,
+      188,
+      193,
+      198,
+      203,
+      208,
+      213,
+      219,
+      224,
+      229,
+      235,
+      240,
+      246,
+      252,
+      258,
+      264,
+      270,
+      276,
+      282,
+      288,
+      294,
+      301,
+      307,
+      314,
+      321,
+      327,
+      334,
+      341,
+      348,
+      355,
+      362,
+      369,
+      377,
+      384,
+      392,
+      399,
+      407,
+      414,
+      422,
+      430
+     ],
+     "attack": [
+      45,
+      45,
+      45,
+      45,
+      46,
+      46,
+      46,
+      47,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      58,
+      59,
+      61,
+      62,
+      64,
+      66,
+      67,
+      69,
+      71,
+      73,
+      76,
+      78,
+      80,
+      83,
+      85,
+      88,
+      90,
+      93,
+      96,
+      98,
+      101,
+      104,
+      107,
+      111,
+      114,
+      117,
+      121,
+      124,
+      128,
+      131,
+      135,
+      139,
+      143,
+      147,
+      151,
+      155,
+      159,
+      163,
+      167,
+      172,
+      176,
+      181,
+      186,
+      190,
+      195,
+      200,
+      205,
+      210,
+      215,
+      220,
+      226,
+      231,
+      236,
+      242,
+      247,
+      253,
+      259,
+      265,
+      271,
+      277,
+      283,
+      289,
+      295,
+      301,
+      308,
+      314,
+      321,
+      327,
+      334,
+      341,
+      347,
+      354,
+      361,
+      368,
+      375,
+      383,
+      390,
+      397,
+      405,
+      412,
+      420
+     ],
+     "defense": [
+      59,
+      59,
+      59,
+      59,
+      60,
+      60,
+      60,
+      61,
+      61,
+      62,
+      62,
+      63,
+      64,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      72,
+      73,
+      74,
+      76,
+      77,
+      79,
+      80,
+      82,
+      84,
+      85,
+      87,
+      89,
+      91,
+      93,
+      95,
+      97,
+      100,
+      102,
+      104,
+      107,
+      109,
+      112,
+      114,
+      117,
+      120,
+      122,
+      125,
+      128,
+      131,
+      134,
+      137,
+      141,
+      144,
+      147,
+      150,
+      154,
+      157,
+      161,
+      164,
+      168,
+      172,
+      176,
+      179,
+      183,
+      187,
+      191,
+      196,
+      200,
+      204,
+      208,
+      213,
+      217,
+      221,
+      226,
+      231,
+      235,
+      240,
+      245,
+      250,
+      255,
+      260,
+      265,
+      270,
+      275,
+      280,
+      285,
+      291,
+      296,
+      302,
+      307,
+      313,
+      319,
+      324,
+      330,
+      336,
+      342,
+      348,
+      354,
+      360
+     ],
+     "mind": [
+      45,
+      45,
+      45,
+      45,
+      45,
+      46,
+      46,
+      47,
+      47,
+      47,
+      48,
+      49,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      59,
+      60,
+      61,
+      63,
+      64,
+      66,
+      67,
+      69,
+      71,
+      73,
+      75,
+      76,
+      78,
+      81,
+      83,
+      85,
+      87,
+      89,
+      92,
+      94,
+      97,
+      99,
+      102,
+      104,
+      107,
+      110,
+      113,
+      116,
+      119,
+      122,
+      125,
+      128,
+      131,
+      135,
+      138,
+      141,
+      145,
+      148,
+      152,
+      156,
+      159,
+      163,
+      167,
+      171,
+      175,
+      179,
+      183,
+      187,
+      191,
+      196,
+      200,
+      204,
+      209,
+      213,
+      218,
+      222,
+      227,
+      232,
+      237,
+      242,
+      247,
+      252,
+      257,
+      262,
+      267,
+      272,
+      277,
+      283,
+      288,
+      294,
+      299,
+      305,
+      311,
+      316,
+      322,
+      328,
+      334,
+      340
+     ],
+     "agility": [
+      43,
+      43,
+      43,
+      43,
+      43,
+      44,
+      44,
+      44,
+      45,
+      45,
+      46,
+      46,
+      47,
+      48,
+      49,
+      49,
+      50,
+      51,
+      52,
+      53,
+      55,
+      56,
+      57,
+      58,
+      60,
+      61,
+      62,
+      64,
+      66,
+      67,
+      69,
+      71,
+      73,
+      74,
+      76,
+      78,
+      80,
+      82,
+      85,
+      87,
+      89,
+      91,
+      94,
+      96,
+      99,
+      101,
+      104,
+      107,
+      109,
+      112,
+      115,
+      118,
+      121,
+      124,
+      127,
+      130,
+      133,
+      137,
+      140,
+      143,
+      147,
+      150,
+      154,
+      157,
+      161,
+      165,
+      169,
+      172,
+      176,
+      180,
+      184,
+      188,
+      193,
+      197,
+      201,
+      205,
+      210,
+      214,
+      218,
+      223,
+      228,
+      232,
+      237,
+      242,
+      247,
+      251,
+      256,
+      261,
+      266,
+      271,
+      277,
+      282,
+      287,
+      292,
+      298,
+      303,
+      309,
+      314,
+      320
+     ]
+    },
+    "expCurve": {
+     "base": 1,
+     "extra": 677,
+     "acceleration": 40
+    },
+    "initialEquipment": {
+     "weapon": "equip_mage_staff",
+     "armor": "equip_mystic_robe",
+     "helmet": "equip_traveler_hat",
+     "accessory": "equip_focus_charm"
+    },
+    "unarmedAnimationId": "anim_gen_tackle_impact",
+    "options": {
+     "dualWield": false,
+     "autoBattle": false,
+     "fixedEquipment": false,
+     "mightyGuard": false
+    },
+    "learnedSkills": [
+     {
+      "level": 1,
+      "skillId": "skill_fire_ring"
+     }
+    ],
+    "stateRates": {
+     "state_poison": "C"
+    },
+    "elementRates": {
+     "sword": "C",
+     "spear": "C",
+     "hit": "C",
+     "bow": "C",
+     "fire": "C",
+     "ice": "C",
+     "thunder": "C",
+     "water": "C",
+     "earth": "C",
+     "wind": "C",
+     "holy": "C",
+     "dark": "C"
+    }
+   }
+  },
+  {
+   "criterion": "C02",
+   "tool": "upsert_actor",
+   "ok": true,
+   "summary": "액터 '마루' 수정",
+   "data": {
+    "id": "actor_cleric",
+    "name": "마루",
+    "nickname": "치유",
+    "classId": "class_cleric",
+    "initialLevel": 5,
+    "maxLevel": 99,
+    "faceResourceId": "easyrpg-faceset-people1-00",
+    "characterResourceId": "easyrpg-charset-actor1",
+    "characterTransparent": false,
+    "battleCharacterResourceId": "generated-actor-hero-05-battle",
+    "critical": {
+     "enabled": true,
+     "chanceDenominator": 30
+    },
+    "parameterCurves": {
+     "maxHp": [
+      514,
+      514,
+      516,
+      518,
+      522,
+      526,
+      531,
+      538,
+      545,
+      553,
+      562,
+      572,
+      583,
+      595,
+      608,
+      622,
+      637,
+      653,
+      670,
+      688,
+      707,
+      726,
+      747,
+      769,
+      791,
+      815,
+      840,
+      865,
+      892,
+      919,
+      948,
+      977,
+      1007,
+      1039,
+      1071,
+      1104,
+      1138,
+      1173,
+      1210,
+      1247,
+      1285,
+      1324,
+      1364,
+      1405,
+      1447,
+      1489,
+      1533,
+      1578,
+      1624,
+      1671,
+      1718,
+      1767,
+      1816,
+      1867,
+      1919,
+      1971,
+      2025,
+      2079,
+      2134,
+      2191,
+      2248,
+      2306,
+      2366,
+      2426,
+      2487,
+      2549,
+      2612,
+      2676,
+      2741,
+      2807,
+      2874,
+      2942,
+      3011,
+      3081,
+      3152,
+      3223,
+      3296,
+      3370,
+      3445,
+      3520,
+      3597,
+      3674,
+      3753,
+      3832,
+      3913,
+      3994,
+      4076,
+      4160,
+      4244,
+      4329,
+      4416,
+      4503,
+      4591,
+      4680,
+      4770,
+      4861,
+      4953,
+      5046,
+      5140
+     ],
+     "maxMp": [
+      43,
+      43,
+      43,
+      43,
+      44,
+      44,
+      44,
+      45,
+      46,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      55,
+      56,
+      58,
+      59,
+      61,
+      63,
+      64,
+      66,
+      68,
+      70,
+      72,
+      75,
+      77,
+      79,
+      82,
+      84,
+      87,
+      90,
+      92,
+      95,
+      98,
+      101,
+      104,
+      107,
+      111,
+      114,
+      118,
+      121,
+      125,
+      128,
+      132,
+      136,
+      140,
+      144,
+      148,
+      152,
+      156,
+      161,
+      165,
+      169,
+      174,
+      179,
+      183,
+      188,
+      193,
+      198,
+      203,
+      208,
+      213,
+      219,
+      224,
+      229,
+      235,
+      240,
+      246,
+      252,
+      258,
+      264,
+      270,
+      276,
+      282,
+      288,
+      294,
+      301,
+      307,
+      314,
+      321,
+      327,
+      334,
+      341,
+      348,
+      355,
+      362,
+      369,
+      377,
+      384,
+      392,
+      399,
+      407,
+      414,
+      422,
+      430
+     ],
+     "attack": [
+      45,
+      45,
+      45,
+      45,
+      46,
+      46,
+      46,
+      47,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      58,
+      59,
+      61,
+      62,
+      64,
+      66,
+      67,
+      69,
+      71,
+      73,
+      76,
+      78,
+      80,
+      83,
+      85,
+      88,
+      90,
+      93,
+      96,
+      98,
+      101,
+      104,
+      107,
+      111,
+      114,
+      117,
+      121,
+      124,
+      128,
+      131,
+      135,
+      139,
+      143,
+      147,
+      151,
+      155,
+      159,
+      163,
+      167,
+      172,
+      176,
+      181,
+      186,
+      190,
+      195,
+      200,
+      205,
+      210,
+      215,
+      220,
+      226,
+      231,
+      236,
+      242,
+      247,
+      253,
+      259,
+      265,
+      271,
+      277,
+      283,
+      289,
+      295,
+      301,
+      308,
+      314,
+      321,
+      327,
+      334,
+      341,
+      347,
+      354,
+      361,
+      368,
+      375,
+      383,
+      390,
+      397,
+      405,
+      412,
+      420
+     ],
+     "defense": [
+      59,
+      59,
+      59,
+      59,
+      60,
+      60,
+      60,
+      61,
+      61,
+      62,
+      62,
+      63,
+      64,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      72,
+      73,
+      74,
+      76,
+      77,
+      79,
+      80,
+      82,
+      84,
+      85,
+      87,
+      89,
+      91,
+      93,
+      95,
+      97,
+      100,
+      102,
+      104,
+      107,
+      109,
+      112,
+      114,
+      117,
+      120,
+      122,
+      125,
+      128,
+      131,
+      134,
+      137,
+      141,
+      144,
+      147,
+      150,
+      154,
+      157,
+      161,
+      164,
+      168,
+      172,
+      176,
+      179,
+      183,
+      187,
+      191,
+      196,
+      200,
+      204,
+      208,
+      213,
+      217,
+      221,
+      226,
+      231,
+      235,
+      240,
+      245,
+      250,
+      255,
+      260,
+      265,
+      270,
+      275,
+      280,
+      285,
+      291,
+      296,
+      302,
+      307,
+      313,
+      319,
+      324,
+      330,
+      336,
+      342,
+      348,
+      354,
+      360
+     ],
+     "mind": [
+      45,
+      45,
+      45,
+      45,
+      45,
+      46,
+      46,
+      47,
+      47,
+      47,
+      48,
+      49,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      59,
+      60,
+      61,
+      63,
+      64,
+      66,
+      67,
+      69,
+      71,
+      73,
+      75,
+      76,
+      78,
+      81,
+      83,
+      85,
+      87,
+      89,
+      92,
+      94,
+      97,
+      99,
+      102,
+      104,
+      107,
+      110,
+      113,
+      116,
+      119,
+      122,
+      125,
+      128,
+      131,
+      135,
+      138,
+      141,
+      145,
+      148,
+      152,
+      156,
+      159,
+      163,
+      167,
+      171,
+      175,
+      179,
+      183,
+      187,
+      191,
+      196,
+      200,
+      204,
+      209,
+      213,
+      218,
+      222,
+      227,
+      232,
+      237,
+      242,
+      247,
+      252,
+      257,
+      262,
+      267,
+      272,
+      277,
+      283,
+      288,
+      294,
+      299,
+      305,
+      311,
+      316,
+      322,
+      328,
+      334,
+      340
+     ],
+     "agility": [
+      43,
+      43,
+      43,
+      43,
+      43,
+      44,
+      44,
+      44,
+      45,
+      45,
+      46,
+      46,
+      47,
+      48,
+      49,
+      49,
+      50,
+      51,
+      52,
+      53,
+      55,
+      56,
+      57,
+      58,
+      60,
+      61,
+      62,
+      64,
+      66,
+      67,
+      69,
+      71,
+      73,
+      74,
+      76,
+      78,
+      80,
+      82,
+      85,
+      87,
+      89,
+      91,
+      94,
+      96,
+      99,
+      101,
+      104,
+      107,
+      109,
+      112,
+      115,
+      118,
+      121,
+      124,
+      127,
+      130,
+      133,
+      137,
+      140,
+      143,
+      147,
+      150,
+      154,
+      157,
+      161,
+      165,
+      169,
+      172,
+      176,
+      180,
+      184,
+      188,
+      193,
+      197,
+      201,
+      205,
+      210,
+      214,
+      218,
+      223,
+      228,
+      232,
+      237,
+      242,
+      247,
+      251,
+      256,
+      261,
+      266,
+      271,
+      277,
+      282,
+      287,
+      292,
+      298,
+      303,
+      309,
+      314,
+      320
+     ]
+    },
+    "expCurve": {
+     "base": 1,
+     "extra": 677,
+     "acceleration": 40
+    },
+    "initialEquipment": {
+     "weapon": "equip_mage_staff",
+     "shield": "equip_oak_shield",
+     "armor": "equip_mystic_robe",
+     "helmet": "equip_traveler_hat",
+     "accessory": "equip_focus_charm"
+    },
+    "unarmedAnimationId": "anim_gen_tackle_impact",
+    "options": {
+     "dualWield": false,
+     "autoBattle": false,
+     "fixedEquipment": false,
+     "mightyGuard": false
+    },
+    "learnedSkills": [
+     {
+      "level": 1,
+      "skillId": "skill_aura"
+     }
+    ],
+    "stateRates": {
+     "state_poison": "C"
+    },
+    "elementRates": {
+     "sword": "C",
+     "spear": "C",
+     "hit": "C",
+     "bow": "C",
+     "fire": "C",
+     "ice": "C",
+     "thunder": "C",
+     "water": "C",
+     "earth": "C",
+     "wind": "C",
+     "holy": "C",
+     "dark": "C"
+    }
+   }
+  },
+  {
+   "criterion": "C02",
+   "tool": "set_party",
+   "ok": true,
+   "summary": "시작 파티 설정 — 3명",
+   "data": {
+    "scope": "start",
+    "actorIds": [
+     "actor_hero",
+     "actor_mage",
+     "actor_cleric"
+    ]
+   }
+  },
+  {
+   "criterion": "C05",
+   "tool": "upsert_skill",
+   "ok": false,
+   "summary": "'upsert_skill' 실행 실패: skill.requiredActorIds는 허용되지 않는 필드입니다. 허용 필드: damageFormula, criticalRate, criticalMultiplier, cooldownTurns, hitSequence, actionSkill, id, name, scope, power, animationId, description, type, mpCost, …",
+   "issues": [
+    "unknown-db-field: skill.requiredActorIds는 허용되지 않는 필드입니다. 허용 필드: damageFormula, criticalRate, criticalMultiplier, cooldownTurns, hitSequence, actionSkill, id, name, scope, power, animationId, description, type, mpCost, successRate, variance, hitRate, effect, elementId, stateEffects, maxPp, gen1Critic"
+   ]
+  },
+  {
+   "criterion": "C06",
+   "tool": "upsert_enemy",
+   "ok": true,
+   "summary": "적 '얼음 임프' 추가",
+   "data": {
+    "id": "enemy_ice_imp",
+    "name": "얼음 임프",
+    "monsterResourceId": "generated-enemy-bat-01",
+    "graphicHue": 0,
+    "transparent": false,
+    "flying": false,
+    "criticalHit": {
+     "enabled": false,
+     "oneIn": 30
+    },
+    "attackOptions": {
+     "normalAttacksMiss": false
+    },
+    "skillIds": [],
+    "stats": {
+     "maxHp": 80,
+     "maxMp": 10,
+     "attack": 14,
+     "defense": 8,
+     "mind": 8,
+     "agility": 12
+    },
+    "rewards": {
+     "exp": 20,
+     "gold": 30,
+     "dropRatePercent": 0
+    },
+    "actions": [],
+    "stateRates": {
+     "state_death": "C"
+    },
+    "elementRates": {
+     "sword": "C",
+     "spear": "C",
+     "hit": "C",
+     "bow": "C",
+     "fire": "A",
+     "ice": "E",
+     "thunder": "C",
+     "water": "C",
+     "earth": "C",
+     "wind": "C",
+     "holy": "C",
+     "dark": "C"
+    }
+   }
+  },
+  {
+   "criterion": "C06",
+   "tool": "upsert_troop",
+   "ok": true,
+   "summary": "트룹 '임프 무리'(2마리) 추가 — 밸런스 경고: 적이 시작 파티에게 거의 피해를 주지 못함",
+   "data": {
+    "id": "troop_imps",
+    "name": "임프 무리",
+    "enemyIds": [
+     "enemy_ice_imp",
+     "enemy_ice_imp"
+    ],
+    "members": [
+     {
+      "enemyId": "enemy_ice_imp",
+      "x": 104,
+      "y": 96,
+      "hidden": false
+     },
+     {
+      "enemyId": "enemy_ice_imp",
+      "x": 160,
+      "y": 96,
+      "hidden": false
+     }
+    ],
+    "autoAlign": true,
+    "uncapturable": false,
+    "battleEventPages": []
+   }
+  },
+  {
+   "criterion": "C07",
+   "tool": "upsert_enemy",
+   "ok": true,
+   "summary": "적 '시간의 포식자' 추가 — 보스 위협 하한 적용(경고 참고)",
+   "data": {
+    "id": "enemy_boss_lavos",
+    "name": "시간의 포식자",
+    "monsterResourceId": "generated-enemy-golem-01",
+    "graphicHue": 0,
+    "transparent": false,
+    "flying": false,
+    "criticalHit": {
+     "enabled": false,
+     "oneIn": 30
+    },
+    "attackOptions": {
+     "normalAttacksMiss": false
+    },
+    "skillIds": [],
+    "stats": {
+     "maxHp": 1296,
+     "maxMp": 99,
+     "attack": 92,
+     "defense": 18,
+     "mind": 92,
+     "agility": 41
+    },
+    "rewards": {
+     "exp": 300,
+     "gold": 500,
+     "dropRatePercent": 0
+    },
+    "actions": [],
+    "stateRates": {
+     "state_death": "C"
+    },
+    "elementRates": {
+     "sword": "C",
+     "spear": "C",
+     "hit": "C",
+     "bow": "C",
+     "fire": "C",
+     "ice": "C",
+     "thunder": "C",
+     "water": "C",
+     "earth": "C",
+     "wind": "C",
+     "holy": "C",
+     "dark": "C"
+    }
+   }
+  },
+  {
+   "criterion": "C07",
+   "tool": "upsert_troop",
+   "ok": true,
+   "summary": "트룹 '포식자'(2마리) 추가",
+   "data": {
+    "id": "troop_boss",
+    "name": "포식자",
+    "enemyIds": [
+     "enemy_boss_lavos",
+     "enemy_ice_imp"
+    ],
+    "members": [
+     {
+      "enemyId": "enemy_boss_lavos",
+      "x": 96,
+      "y": 96,
+      "hidden": false
+     },
+     {
+      "enemyId": "enemy_ice_imp",
+      "x": 40,
+      "y": 120,
+      "hidden": true
+     }
+    ],
+    "autoAlign": true,
+    "uncapturable": false,
+    "battleEventPages": []
+   }
+  },
+  {
+   "criterion": "C07",
+   "tool": "author_boss_phases",
+   "ok": true,
+   "summary": "보스 '시간의 포식자' 페이즈 2개 저작(60% → 25%)",
+   "data": {
+    "troopId": "troop_boss",
+    "enemyId": "enemy_boss_lavos",
+    "pages": [
+     {
+      "id": "troop_boss_phase1",
+      "name": "껍질이 벗겨진다",
+      "commands": 2
+     },
+     {
+      "id": "troop_boss_phase2",
+      "name": "핵 노출",
+      "commands": 3
+     }
+    ],
+    "pageCount": 2,
+    "unsupportedCommands": 0
+   }
+  },
+  {
+   "criterion": "C07",
+   "tool": "simulate_battle",
+   "ok": true,
+   "summary": "전투 시뮬(troop_boss, Lv12, n=20): 승률 100%, 평균 22.3타, 페이즈 2/2 발동",
+   "data": {
+    "winRate": 1,
+    "avgTurns": 22.3,
+    "avgPotionsUsed": 0,
+    "avgHpRemaining": 999.55,
+    "samples": 20,
+    "battleFlow": "gauge",
+    "participatingActorIds": [
+     "actor_hero",
+     "actor_mage",
+     "actor_cleric"
+    ],
+    "roundLogs": [],
+    "eventLogs": [
+     {
+      "pageId": "troop_boss_phase1",
+      "round": 3,
+      "triggerId": "troop_boss_phase1",
+      "kind": "fired"
+     },
+     {
+      "pageId": "troop_boss_phase1",
+      "round": 3,
+      "triggerId": "troop_boss_phase1",
+      "kind": "message",
+      "detail": "시간의 포식자: 껍질이 갈라진다…!"
+     },
+     {
+      "pageId": "troop_boss_phase2",
+      "round": 5,
+      "triggerId": "troop_boss_phase2",
+      "kind": "fired"
+     },
+     {
+      "pageId": "troop_boss_phase2",
+      "round": 5,
+      "triggerId": "troop_boss_phase2",
+      "kind": "message",
+      "detail": "시간의 포식자: 시간이 비명을 지른다!"
+     }
+    ],
+    "phaseCoverage": [
+     {
+      "pageId": "troop_boss_phase1",
+      "name": "껍질이 벗겨진다",
+      "firedRuns": 20,
+      "firstRound": 3,
+      "unsupported": 0
+     },
+     {
+      "pageId": "troop_boss_phase2",
+      "name": "핵 노출",
+      "firedRuns": 20,
+      "firstRound": 5,
+      "unsupported": 0
+     }
+    ],
+    "capturedMonsters": [],
+    "capturedCount": 0,
+    "firstRewards": {
+     "exp": 320,
+     "gold": 530,
+     "items": [],
+     "levelUps": [],
+     "monsterLevelUps": [],
+     "enemyLevel": 1
+    }
+   }
+  },
+  {
+   "criterion": "C10",
+   "tool": "author_village",
+   "ok": true,
+   "summary": "Village authored: 5/5 houses on map_era_present.",
+   "data": {
+    "construction": {
+     "executionOk": true,
+     "applied": true,
+     "outcome": "applied",
+     "requestedEntrypoint": "author_village",
+     "canonicalRoute": "author_village",
+     "selectedImplementation": "buildVillageDomain",
+     "routeChanges": [],
+     "activityPersistence": "not-recorded",
+     "projectPersistence": "not-requested",
+     "target": {
+      "kind": "new",
+      "mapId": "map_era_present"
+     },
+     "counts": {
+      "requested": 5,
+      "actual": 5
+     },
+     "diff": {
+      "tilesChanged": 0,
+      "mapPropertiesChanged": 1,
+      "audioDescriptionsChanged": 0,
+      "monsterMetadataChanged": 0,
+      "eventsAdded": 3,
+      "eventsModified": 0,
+      "eventsRemoved": 0,
+      "mapsAdded": 1,
+      "mapsRemoved": 0,
+      "dbRecordsChanged": 0,
+      "tilesetsChanged": 1,
+      "switchesAdded": 0,
+      "variablesAdded": 0,
+      "worldEntitiesAdded": 0,
+      "worldEntitiesModified": 0,
+      "palettePresetsAdded": 0,
+      "palettePresetsModified": 0,
+      "endingsChanged": 0,
+      "sessionChanged": false,
+      "systemChanged": false
+     },
+     "warnings": [
+      "형태 마을 계획: 광장촌 보충 시도 5 / 광장촌 렌즈 29×11 / morphology=green 집 5 길 7획 밭 0 출구 2",
+      "형태 마을 연못 실패: layer is not defined",
+      "상점가 지정: 2:shop, 1:shop, 3:inn (광장 근접순)",
+      "시간 시스템이 꺼져 있어 이 시간표는 실행되지 않습니다 — NPC 가 제자리에 머무릅니다. system.timeSystem.enabled 를 켜면 시간표대로 이동합니다.",
+      "시간 시스템이 꺼져 있어 이 시간표는 실행되지 않습니다 — NPC 가 제자리에 머무릅니다. system.timeSystem.enabled 를 켜면 시간표대로 이동합니다.",
+      "시간 시스템이 꺼져 있어 이 시간표는 실행되지 않습니다 — NPC 가 제자리에 머무릅니다. system.timeSystem.enabled 를 켜면 시간표대로 이동합니다.",
+      "주민 시간표를 저장했지만 시간 시스템이 꺼져 있어 실행되지 않습니다 — 주민이 제자리에 머무릅니다. system.timeSystem.enabled 를 켜면 시간표대로 이동합니다.",
+      "[vperf] houses=0.1s finishing=0.0s roads=0.0s trees=0.0s decoration=0.0s audit=0.0s"
+     ]
+    },
+    "village": {
+     "exteriorMapId": "map_era_present",
+     "interiorMapIds": [],
+     "actualHouseCount": 5,
+     "npcCount": 3,
+     "doorFronts": [
+      {
+       "x": 8,
+       "y": 11
+      },
+      {
+       "x": 16,
+       "y": 9
+      },
+      {
+       "x": 24,
+       "y": 9
+      },
+      {
+       "x": 33,
+       "y": 10
+      },
+      {
+       "x": 4,
+       "y": 25
+      }
+     ],
+     "residentEventIds": [
+      "ev_village_3_map_era_present_1",
+      "ev_village_3_map_era_present_2",
+      "ev_village_3_map_era_present_3"
+     ],
+     "structuralQa": {
+      "ok": true,
+      "doorsConnected": 5,
+      "doorsIntact": 5,
+      "roadComponents": 1,
+      "ridgeInvaded": 0,
+      "critiqueOk": true
+     }
+    },
+    "changes": {
+     "changedMapIds": [
+      "map_era_present"
+     ],
+     "addedMapIds": [
+      "map_era_present"
+     ],
+     "changedCells": 0,
+     "addedEventIds": [
+      "ev_village_3_map_era_present_1",
+      "ev_village_3_map_era_present_2",
+      "ev_village_3_map_era_present_3"
+     ]
+    }
+   }
+  },
+  {
+   "criterion": "C10",
+   "tool": "make_villager",
+   "ok": true,
+   "summary": "트루스 마을 (현대)에 주민 '무기상' 생성 (20, 15) — characterId=char_무기상, 스케줄 0개, 대사 페이지 1개",
+   "data": {
+    "eventId": "ev_weapon_shop",
+    "characterId": "char_무기상",
+    "x": 20,
+    "y": 15,
+    "scheduleCount": 0,
+    "pageCount": 1,
+    "shopStockCount": 0,
+    "reused": false
+   }
+  },
+  {
+   "criterion": "C10",
+   "tool": "set_shop_stock",
+   "ok": true,
+   "summary": "트루스 마을 (현대) 이벤트 'ev_weapon_shop' 상점 재고 3개 추가",
+   "data": {
+    "eventId": "ev_weapon_shop",
+    "stockCount": 3,
+    "outcome": "added"
+   }
+  },
+  {
+   "criterion": "C11",
+   "tool": "build_castle",
+   "ok": true,
+   "summary": "가르디아 성 성채 시공 — 지붕 484 / 성벽 172 / 타워 32 · 남문 x=20 w=8 · 원형타워 (18,30) h=8 · 평가 100 · 경고 1",
+   "data": {
+    "mapId": "map_castle",
+    "outer": {
+     "x": 1,
+     "y": 1,
+     "w": 46,
+     "h": 30
+    },
+    "courtyard": {
+     "x": 4,
+     "y": 11,
+     "w": 40,
+     "h": 17
+    },
+    "keep": {
+     "x": 16,
+     "y": 1,
+     "w": 16,
+     "h": 9
+    },
+    "gate": {
+     "x": 20,
+     "y": 30,
+     "w": 8
+    },
+    "roundTowerAt": {
+     "x": 18,
+     "y": 30,
+     "h": 8
+    },
+    "stats": {
+     "roofCells": 484,
+     "wallCells": 172,
+     "towerCells": 32
+    },
+    "evaluation": {
+     "ok": true,
+     "score": 100,
+     "issues": [],
+     "grammar": {
+      "pass": true,
+      "checks": [
+       {
+        "key": "a",
+        "label": "정면 열 위 데크(109·49·19) 존재 + 51×n+81 구성",
+        "pass": true,
+        "detail": "정면 세로 런 74개 전수 통과"
+       },
+       {
+        "key": "b",
+        "label": "타일 21(정면 상단 구본) 사용 0회",
+        "pass": true,
+        "detail": "21 출현 0회"
+       },
+       {
+        "key": "c",
+        "label": "데크 상변·보행면 행 무절단(타워 열 상부 무결)",
+        "pass": true,
+        "detail": "타워 2기 × 2열 전수 통과"
+       },
+       {
+        "key": "d",
+        "label": "캡·베이스 아래 lower 보존(잔디 강제 금지)",
+        "pass": true,
+        "detail": "타워 2기 보존 확인"
+       },
+       {
+        "key": "e",
+        "label": "타워 스택(캡·목·몸/창 교대·베이스) 정본 일치",
+        "pass": true,
+        "detail": "타워 2기 스택 전수 일치"
+       },
+       {
+        "key": "f",
+        "label": "배너 179+209 세로 페어 완전성",
+        "pass": true,
+        "detail": "페어 23쌍 — 반쪽 배너 0"
+       },
+       {
+        "key": "g",
+        "label": "성문 전 층 관통(계단 열 잔재 0 · 회랑 포석)",
+        "pass": true,
+        "detail": "대계단 문 1개 전수 통과"
+       },
+       {
+        "key": "h",
+        "label": "데크 명암 변형 48/79/50 사용 0 — 단일톤",
+        "pass": true,
+        "detail": "출현 0회"
+       }
+      ]
+     },
+     "metrics": {
+      "gateOpen": true,
+      "courtyardReachable": true,
+      "reachableGrass": 890,
+      "roofCells": 484,
+      "wallCells": 172,
+      "towerCells": 32
+     }
+    },
+    "warnings": [
+     "타일셋을 easyrpg_chipset_combined_town로 맞췄습니다 (성채 모듈 전용)."
+    ]
+   }
+  },
+  {
+   "criterion": "C12",
+   "tool": "run_dungeon_room_pipeline",
+   "ok": true,
+   "summary": "dungeon-room-v1 파이프라인 완료 map_cave",
+   "data": {
+    "kitId": "dungeon-room-v1",
+    "mapId": "map_cave",
+    "plan": {
+     "mapId": "map_cave",
+     "name": "잊힌 동굴",
+     "width": 48,
+     "height": 40,
+     "theme": "stone",
+     "hazard": true,
+     "layout": "connected",
+     "seed": 9,
+     "character": "cavern",
+     "graph": {
+      "rooms": [
+       {
+        "id": "room_0",
+        "role": "crystal",
+        "x": 12,
+        "y": 9,
+        "width": 11,
+        "height": 8
+       },
+       {
+        "id": "room_1",
+        "role": "collapse",
+        "x": 35,
+        "y": 8,
+        "width": 9,
+        "height": 8
+       },
+       {
+        "id": "room_2",
+        "role": "crystal",
+        "x": 14,
+        "y": 20,
+        "width": 11,
+        "height": 8
+       },
+       {
+        "id": "room_3",
+        "role": "crystal",
+        "x": 35,
+        "y": 20,
+        "width": 14,
+        "height": 11
+       },
+       {
+        "id": "room_4",
+        "role": "entrance",
+        "x": 15,
+        "y": 31,
+        "width": 11,
+        "height": 8
+       },
+       {
+        "id": "room_5",
+        "role": "crystal",
+        "x": 35,
+        "y": 31,
+        "width": 11,
+        "height": 8
+       }
+      ],
+      "connections": [
+       {
+        "from": "room_2",
+        "to": "room_4",
+        "width": 6.987997207790613,
+        "via": [
+         {
+          "x": 14,
+          "y": 26
+         }
+        ]
+       },
+       {
+        "from": "room_1",
+        "to": "room_3",
+        "width": 7.699620731174946,
+        "via": [
+         {
+          "x": 35,
+          "y": 14
+         }
+        ]
+       },
+       {
+        "from": "room_0",
+        "to": "room_2",
+        "width": 7.42054027679842,
+        "via": [
+         {
+          "x": 12,
+          "y": 15
+         }
+        ]
+       },
+       {
+        "from": "room_3",
+        "to": "room_5",
+        "width": 7.4848971356404945,
+        "via": [
+         {
+          "x": 35,
+          "y": 26
+         }
+        ]
+       },
+       {
+        "from": "room_4",
+        "to": "room_5",
+        "width": 6.7696271082386374,
+        "via": [
+         {
+          "x": 25,
+          "y": 31
+         }
+        ]
+       },
+       {
+        "from": "room_1",
+        "to": "room_2",
+        "width": 7.395369543461129,
+        "via": [
+         {
+          "x": 23,
+          "y": 11
+         }
+        ]
+       }
+      ]
+     }
+    },
+    "log": [
+     "[plan] connected graph: 6 rooms, 6 links",
+     "[ceiling] room-and-corridor silhouette",
+     "[wall] straight supported walls under ceiling boundaries",
+     "[floor] preserved room floors and variable-width passages",
+     "[hazard] local relief, reserved circulation, 15 contextual props (3 free-standing)",
+     "[critique] 연결·지형·소품 지지 검사 통과. 전체 맵 시각 검토는 별도로 수행하세요."
+    ],
+    "warnings": [],
+    "ok": true
+   }
+  },
+  {
+   "criterion": "C13",
+   "tool": "duplicate_map",
+   "ok": true,
+   "summary": "맵 '트루스 마을 (현대)' 복제 → '트루스 마을 (미래 폐허)' (map_era_future)",
+   "data": {
+    "mapId": "map_era_future"
+   }
+  },
+  {
+   "criterion": "C13",
+   "tool": "set_scene_mood",
+   "ok": true,
+   "summary": "트루스 마을 (미래 폐허) 분위기 설정 — 날씨 fog, ambient 0.55",
+   "data": {
+    "mapId": "map_era_future",
+    "applyMode": "map",
+    "weatherKind": "fog",
+    "lightCount": 0,
+    "eventIds": [
+     "ev_scene_mood_map_era_future"
+    ]
+   }
+  },
+  {
+   "criterion": "C13",
+   "tool": "create_transfer_pair",
+   "ok": true,
+   "summary": "출입구 쌍 생성: 트루스 마을 (현대)(2,3) ↔ 트루스 마을 (미래 폐허)(2,3)",
+   "data": {
+    "eventIdA": "ev_gate_5f2135f1-7528-427f-a011-b67ee604f896",
+    "eventIdB": "ev_gate_990a412b-727b-457f-8a89-51728b1d066a",
+    "gateA": {
+     "x": 2,
+     "y": 3
+    },
+    "gateB": {
+     "x": 2,
+     "y": 3
+    },
+    "landingA": {
+     "x": 2,
+     "y": 4
+    },
+    "landingB": {
+     "x": 2,
+     "y": 4
+    },
+    "adjustedA": true,
+    "adjustedB": true
+   }
+  },
+  {
+   "criterion": "C14",
+   "tool": "create_transfer_pair",
+   "ok": true,
+   "summary": "출입구 쌍 생성: 트루스 마을 (현대)(37,27) ↔ 가르디아 성(24,39)",
+   "data": {
+    "eventIdA": "ev_gate_f4df569f-5df4-4b5a-8879-a3dc94adcafa",
+    "eventIdB": "ev_gate_9628116d-5db3-41b9-b9b3-92cb679b819a",
+    "gateA": {
+     "x": 37,
+     "y": 27
+    },
+    "gateB": {
+     "x": 24,
+     "y": 39
+    },
+    "landingA": {
+     "x": 37,
+     "y": 28
+    },
+    "landingB": {
+     "x": 24,
+     "y": 38
+    },
+    "adjustedA": true,
+    "adjustedB": true
+   }
+  },
+  {
+   "criterion": "C14",
+   "tool": "create_transfer_pair",
+   "ok": true,
+   "summary": "출입구 쌍 생성: 트루스 마을 (현대)(1,27) ↔ 잊힌 동굴(8,9)",
+   "data": {
+    "eventIdA": "ev_gate_37cf6c4b-b86b-4270-92a1-c627187440c2",
+    "eventIdB": "ev_gate_83542697-80eb-41d8-86eb-02326de27bd4",
+    "gateA": {
+     "x": 1,
+     "y": 27
+    },
+    "gateB": {
+     "x": 8,
+     "y": 9
+    },
+    "landingA": {
+     "x": 1,
+     "y": 28
+    },
+    "landingB": {
+     "x": 8,
+     "y": 10
+    },
+    "adjustedA": true,
+    "adjustedB": false
+   }
+  },
+  {
+   "criterion": "C17",
+   "tool": "declare_story_flag",
+   "ok": true,
+   "summary": "서사 플래그 등록: S1 · boss-defeated — 시간의 포식자를 쓰러뜨렸다",
+   "data": {
+    "flag": {
+     "id": "boss-defeated",
+     "kind": "switch",
+     "targetId": "sw_0001",
+     "description": "시간의 포식자를 쓰러뜨렸다"
+    }
+   }
+  },
+  {
+   "criterion": "C08",
+   "tool": "place_battle_blocker",
+   "ok": true,
+   "summary": "잊힌 동굴에 전투 블로커 'troop_imps' 배치 (12, 12)",
+   "data": {
+    "eventId": "ev_cave_imps",
+    "clearSwitchId": "sw_ev_cave_imps_clear",
+    "x": 12,
+    "y": 12,
+    "adjusted": false
+   }
+  },
+  {
+   "criterion": "C08",
+   "tool": "place_battle_blocker",
+   "ok": true,
+   "summary": "잊힌 동굴에 전투 블로커 'troop_boss' 배치 (33, 20)",
+   "data": {
+    "eventId": "ev_boss",
+    "clearSwitchId": "sw_boss_down",
+    "x": 33,
+    "y": 20,
+    "adjusted": false
+   }
+  },
+  {
+   "criterion": "C15",
+   "tool": "place_savepoint",
+   "ok": true,
+   "summary": "잊힌 동굴에 세이브 포인트 '세이브 포인트' 배치 (30, 20)",
+   "data": {
+    "eventId": "ev_save_329345ab-252e-4b97-9cbf-3eb24e60715c",
+    "x": 30,
+    "y": 20,
+    "adjusted": false
+   }
+  },
+  {
+   "criterion": "C16",
+   "tool": "place_chest",
+   "ok": true,
+   "summary": "잊힌 동굴에 보물상자 '보물상자' 배치 (9, 8) — 보상 마력약 · 200G",
+   "data": {
+    "eventId": "ev_cave_chest",
+    "x": 9,
+    "y": 8,
+    "adjusted": false
+   }
+  },
+  {
+   "criterion": "C17",
+   "tool": "create_quest",
+   "ok": true,
+   "summary": "퀘스트 '펜던트 찾기' 컴파일 — 이벤트 2개, 단계 1개",
+   "data": {
+    "questId": "pendant",
+    "kind": "steps",
+    "stepCount": 1,
+    "flags": {
+     "started": "sw_pendant_started",
+     "done": "sw_pendant_done",
+     "progress": "var_pendant_progress",
+     "stepSwitches": [
+      "sw_pendant_step0"
+     ]
+    },
+    "eventsCreated": 2
+   }
+  },
+  {
+   "criterion": "C18",
+   "tool": "script_cutscene",
+   "ok": true,
+   "summary": "트루스 마을 (현대)에 컷신 'ev_millennial_fair' 생성 — beat 2개, 명령 6개, 미지원 커맨드 3건",
+   "data": {
+    "eventId": "ev_millennial_fair",
+    "pageId": "ev_millennial_fair_cutscene_1",
+    "commandCount": 6,
+    "unsupportedCommands": 3
+   }
+  },
+  {
+   "criterion": "C19",
+   "tool": "define_ending",
+   "ok": true,
+   "summary": "엔딩 '새로운 시대' 정의 추가 — 조건 1개, priority 10. 이벤트 commands의 triggerEnding 호출이 있어야 실행됩니다.",
+   "data": {
+    "ending": {
+     "id": "ending_true",
+     "name": "새로운 시대",
+     "conditions": [
+      {
+       "kind": "switch",
+       "switchId": "sw_boss_down",
+       "value": true
+      }
+     ],
+     "priority": 10,
+     "epilogue": [
+      {
+       "kind": "say",
+       "speaker": "크로",
+       "text": "미래는 바뀌었다."
+      }
+     ]
+    },
+    "warnings": [
+     "아직 어떤 이벤트도 triggerEnding 을 부르지 않습니다 — 마지막 사건(보스 승리 후 대화 등)의 commands 끝에 {kind:\"triggerEnding\",endingId:\"ending_true\"} 를 넣어야 이 엔딩이 실행됩니다. 호출할 때도 위 조건이 참이어야 엔딩이 열립니다.",
+     "정의한 엔딩 '새로운 시대'(ending_true) 을 부르는 triggerEnding 이 아직 없습니다 — 이대로면 그 결말을 볼 수 없습니다. 실패·거절 분기나 마지막 사건 commands 에 {kind:\"triggerEnding\",endingId:\"ending_true\"} 를 넣으세요. endingId 없는 triggerEnding 으로 조건 선택형을"
+    ]
+   }
+  },
+  {
+   "criterion": "C19",
+   "tool": "define_ending",
+   "ok": true,
+   "summary": "엔딩 '멸망의 날' 정의 추가 — 조건 0개, priority 1. 이벤트 commands의 triggerEnding 호출이 있어야 실행됩니다.",
+   "data": {
+    "ending": {
+     "id": "ending_doom",
+     "name": "멸망의 날",
+     "conditions": [],
+     "priority": 1,
+     "epilogue": [
+      {
+       "kind": "say",
+       "speaker": "해설",
+       "text": "그리고 하늘이 붉게 물들었다."
+      }
+     ]
+    },
+    "warnings": [
+     "아직 어떤 이벤트도 triggerEnding 을 부르지 않습니다 — 마지막 사건(보스 승리 후 대화 등)의 commands 끝에 {kind:\"triggerEnding\",endingId:\"ending_doom\"} 를 넣어야 이 엔딩이 실행됩니다.",
+     "정의한 엔딩 '멸망의 날'(ending_doom) 을 부르는 triggerEnding 이 아직 없습니다 — 이대로면 그 결말을 볼 수 없습니다. 실패·거절 분기나 마지막 사건 commands 에 {kind:\"triggerEnding\",endingId:\"ending_doom\"} 를 넣으세요. endingId 없는 triggerEnding 으로 조건 선택형을 "
+    ]
+   }
+  },
+  {
+   "criterion": "C19",
+   "tool": "place_npc",
+   "ok": true,
+   "summary": "가르디아 성에 NPC '왕' 배치 (24, 10) — 페이지 2개 — SimplePage 정규화 경고 1건",
+   "data": {
+    "eventId": "ev_king",
+    "x": 24,
+    "y": 10,
+    "adjusted": false,
+    "reused": false,
+    "pageCount": 2
+   }
+  },
+  {
+   "criterion": "C20",
+   "tool": "set_opening",
+   "ok": true,
+   "summary": "오프닝 장면 2개를 저장했습니다(텍스트 2), 사용 켜짐, 건너뛰기 가능.",
+   "data": {
+    "opening": {
+     "enabled": true,
+     "skippable": true,
+     "musicResourceId": "cc0-bgm-rtp-ttl-001",
+     "scenes": [
+      {
+       "id": "opening-scene-1",
+       "narration": "1000년, 가르디아 왕국.",
+       "durationMs": 2500,
+       "kind": "text"
+      },
+      {
+       "id": "opening-scene-2",
+       "narration": "시간의 문이 열리기 전 마지막 아침.",
+       "durationMs": 2500,
+       "kind": "text"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "criterion": "C20",
+   "tool": "set_title_screen",
+   "ok": true,
+   "summary": "타이틀 화면 설정: \"시간의 문\""
+  },
+  {
+   "criterion": "C20",
+   "tool": "improve_title_screen",
+   "ok": true,
+   "summary": "타이틀 3단계 개선(1.등장 연출 → 2.분위기 → 3.영역 효과) — 새로 채운 항목 7개.",
+   "data": {
+    "stage": 3,
+    "applied": [
+     {
+      "stage": 1,
+      "field": "intro",
+      "value": {
+       "logo": "riseIn",
+       "menu": "slideUp",
+       "delayMs": 300,
+       "staggerMs": 120
+      }
+     },
+     {
+      "stage": 1,
+      "field": "logoStyle",
+      "value": "metal"
+     },
+     {
+      "stage": 1,
+      "field": "backgroundFit",
+      "value": "cover"
+     },
+     {
+      "stage": 2,
+      "field": "particles",
+      "value": {
+       "preset": "fireflies",
+       "density": 40
+      }
+     },
+     {
+      "stage": 2,
+      "field": "musicResourceId",
+      "value": "cc0-bgm-rtp-ttl-001"
+     },
+     {
+      "stage": 3,
+      "field": "effects",
+      "value": "moonlitCastle 6개"
+     },
+     {
+      "stage": 3,
+      "field": "menuStyle",
+      "value": "plain"
+     }
+    ],
+    "kept": []
+   }
+  },
+  {
+   "criterion": "C21",
+   "tool": "configure_companion_rules",
+   "ok": true,
+   "summary": "동료 규칙 — 간격 1칸, 상한 3, 초과 시 거부, 맵 이동 시 유지.",
+   "data": {
+    "gap": 1,
+    "maxCompanions": 3,
+    "overflow": "reject",
+    "formation": "line",
+    "clearOnTransfer": false
+   }
+  },
+  {
+   "criterion": "C21",
+   "tool": "add_companion",
+   "ok": true,
+   "summary": "트루스 마을 (현대) (2, 2)에 자동 합류 동료 이벤트 '루카 합류 합류' 배치",
+   "data": {
+    "eventId": "ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09",
+    "mapId": "map_era_present",
+    "x": 2,
+    "y": 2,
+    "trigger": "autorun",
+    "action": "add",
+    "name": "루카 합류"
+   }
+  },
+  {
+   "criterion": "C21",
+   "tool": "add_companion",
+   "ok": true,
+   "summary": "트루스 마을 (현대) (3, 2)에 자동 합류 동료 이벤트 '마루 합류 합류' 배치",
+   "data": {
+    "eventId": "ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c",
+    "mapId": "map_era_present",
+    "x": 3,
+    "y": 2,
+    "trigger": "autorun",
+    "action": "add",
+    "name": "마루 합류"
+   }
+  },
+  {
+   "criterion": "C22",
+   "tool": "set_project_settings",
+   "ok": false,
+   "summary": "'set_project_settings' 인자 검증 실패",
+   "issues": [
+    "invalid-args: 허용되지 않은 인자: newGamePlus"
+   ]
+  },
+  {
+   "criterion": "C09",
+   "tool": "place_battle_blocker",
+   "ok": true,
+   "summary": "트루스 마을 (현대)에 전투 블로커 'troop_imps' 배치 (20, 22)",
+   "data": {
+    "eventId": "ev_field_imps",
+    "clearSwitchId": "sw_ev_field_imps_clear",
+    "x": 20,
+    "y": 22,
+    "adjusted": false
+   }
+  },
+  {
+   "criterion": "C00",
+   "tool": "set_start_position",
+   "ok": true,
+   "summary": "시작 위치 설정: 트루스 마을 (현대) (20, 23)"
+  },
+  {
+   "criterion": "C19",
+   "tool": "remove_map",
+   "ok": true,
+   "summary": "맵 '빈 맵'(map_blank_start) 삭제됨",
+   "data": {
+    "mapId": "map_blank_start",
+    "impact": {
+     "mapId": "map_blank_start",
+     "mapName": "빈 맵",
+     "worldRefCount": 0,
+     "worldGraphEdgeCount": 0,
+     "eventCount": 0,
+     "isStartMap": false,
+     "isTreeRoot": true,
+     "treeChildCount": 4,
+     "incomingCommandCount": 0,
+     "incomingScheduleRows": [],
+     "connectionCount": 0,
+     "villageInfoCount": 0,
+     "questCount": 0,
+     "testPresetCount": 0,
+     "farmAnimalBuildingCount": 0,
+     "farmAnimalBuildingIds": [],
+     "farmBuildingPlacementCount": 0,
+     "farmBuildingPlacementIds": [],
+     "homeDecorationPlacementCount": 0,
+     "homeDecorationPlacementIds": [],
+     "fishingSpotCount": 0,
+     "fishingSpotIds": [],
+     "forageAreaCount": 0,
+     "forageAreaIds": []
+    }
+   }
+  },
+  {
+   "criterion": "C19",
+   "tool": "place_npc",
+   "ok": true,
+   "summary": "트루스 마을 (미래 폐허)에 NPC '기록 장치' 배치 (19, 14) — 페이지 1개 — SimplePage 정규화 경고 1건",
+   "data": {
+    "eventId": "ev_doom_record",
+    "x": 19,
+    "y": 14,
+    "adjusted": false,
+    "reused": false,
+    "pageCount": 1
+   }
+  },
+  {
+   "criterion": "V1",
+   "tool": "play_walkthrough",
+   "ok": true,
+   "summary": "완주 성공 (6/6 스텝, 엔딩=false)",
+   "data": {
+    "ok": true,
+    "stepsRun": 6,
+    "totalSteps": 6,
+    "reachedEnding": false,
+    "finalState": {
+     "currentMapId": "map_cave",
+     "x": 8,
+     "y": 9,
+     "gold": 530,
+     "switchesOn": [
+      "sw_boss_down"
+     ],
+     "inventory": {
+      "item_ether": 1
+     }
+    },
+    "log": [
+     "  ⚠ moveTo 다른 맵(map_cave) — 직접 이동",
+     "interact ev_cave_chest (page ev_cave_chest_closed)",
+     "interact ev_boss (page ev_boss_fight)",
+     "  ⚔ 전투 troop_boss: victory"
+    ]
+   }
+  },
+  {
+   "criterion": "V2",
+   "tool": "evaluate_game_quality",
+   "ok": true,
+   "summary": "무결성 점검(참조·빈 맵·미호출 엔딩): 이상 없음",
+   "data": {
+    "verdict": {
+     "blocked": false,
+     "objectiveErrorCount": 0
+    },
+    "integrity": {
+     "objective": {
+      "issues": [
+       {
+        "severity": "warning",
+        "code": "runtime-support:setSelfSwitch",
+        "mapId": "map_era_present",
+        "x": 24,
+        "y": 12,
+        "message": "맵 이벤트 ev_pendant_talk0/ev_pendant_talk0_talk에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+       },
+       {
+        "severity": "warning",
+        "code": "runtime-support:cutsceneControl",
+        "mapId": "map_era_present",
+        "x": 20,
+        "y": 20,
+        "message": "맵 이벤트 ev_millennial_fair/ev_millennial_fair_cutscene_1에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): cutsceneControl"
+       },
+       {
+        "severity": "warning",
+        "code": "runtime-support:setSelfSwitch",
+        "mapId": "map_era_present",
+        "x": 20,
+        "y": 20,
+        "message": "맵 이벤트 ev_millennial_fair/ev_millennial_fair_cutscene_1에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+       },
+       {
+        "severity": "warning",
+        "code": "runtime-support:cutsceneControl",
+        "mapId": "map_era_present",
+        "x": 20,
+        "y": 20,
+        "message": "맵 이벤트 ev_millennial_fair/ev_millennial_fair_cutscene_1에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): cutsceneControl"
+       },
+       {
+        "severity": "warning",
+        "code": "runtime-support:addFollower",
+        "mapId": "map_era_present",
+        "x": 2,
+        "y": 2,
+        "message": "맵 이벤트 ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09/ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+       },
+       {
+        "severity": "warning",
+        "code": "runtime-support:addFollower",
+        "mapId": "map_era_present",
+        "x": 3,
+        "y": 2,
+        "message": "맵 이벤트 ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c/ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+       },
+       {
+        "severity": "warning",
+        "code": "runtime-support:triggerEnding",
+        "mapId": "map_castle",
+        "x": 24,
+        "y": 10,
+        "message": "맵 이벤트 ev_king/ev_king_p1에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): triggerEnding"
+       },
+       {
+        "severity": "warning",
+        "code": "runtime-support:checkpointSave",
+        "mapId": "map_cave",
+        "x": 30,
+        "y": 20,
+        "message": "맵 이벤트 ev_save_329345ab-252e-4b97-9cbf-3eb24e60715c/ev_save_329345ab-252e-4b97-9cbf-3eb24e60715c_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): checkpointSave"
+       },
+       {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_cave",
+        "x": 9,
+        "y": 8,
+        "message": "맵 이벤트 ev_cave_chest/ev_cave_chest_closed에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+       },
+       {
+        "severity": "warning",
+        "code": "runtime-support:setEventGraphicPattern",
+        "mapId": "map_cave",
+        "x": 9,
+        "y": 8,
+        "message": "맵 이벤트 ev_cave_chest/ev_cave_chest_closed에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+       },
+       {
+        "severity": "warning",
+        "code": "runtime-support:setSelfSwitch",
+        "mapId": "map_cave",
+        "x": 9,
+        "y": 8,
+        "message": "맵 이벤트 ev_cave_chest/ev_cave_chest_closed에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+       },
+       {
+        "severity": "warning",
+        "code": "runtime-support:triggerEnding",
+        "mapId": "map_era_future",
+        "x": 19,
+        "y": 14,
+        "message": "맵 이벤트 ev_doom_record/ev_doom_record_p0에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): triggerEnding"
+       },
+       {
+        "severity": "warning",
+        "code": "story-flag:undeclared",
+        "message": "레지스트리 밖 스위치/변수 사용: switch:sw_pendant_started (map:map_era_present event:ev_pendant_talk0/page2 pages[1].conditions[0])"
+       },
+       {
+        "severity": "warning",
+        "code": "story-flag:undeclared",
+        "message": "레지스트리 밖 스위치/변수 사용: switch:sw_pendant_step0 (map:map_era_present event:ev_pendant_talk0/page2 pages[1].commands[1])"
+       },
+       {
+        "severity": "warning",
+        "code": "story-flag:undeclared",
+        "message": "레지스트리 밖 스위치/변수 사용: variable:var_pendant_progress (map:map_era_present event:ev_pendant_talk0/page2 pages[1].commands[2])"
+       },
+       {
+        "severity": "warning",
+        "code": "story-flag:undeclared",
+        "message": "레지스트리 밖 스위치/변수 사용: switch:sw_pendant_done (map:map_era_present event:ev_pendant_giver/page2 pages[1].commands[0].then[0].condition)"
+       },
+       {
+        "severity": "warning",
+        "code": "story-flag:undeclared",
+        "message": "레지스트리 밖 스위치/변수 사용: switch:sw_ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_done (map:map_era_present event:ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09/page1 pages[0].conditions[0])"
+       },
+       {
+        "severity": "warning",
+        "code": "story-flag:undeclared",
+        "message": "레지스트리 밖 스위치/변수 사용: switch:sw_ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_done (map:map_era_present event:ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c/page1 pages[0].conditions[0])"
+       },
+       {
+        "severity": "warning",
+        "code": "story-flag:undeclared",
+        "message": "레지스트리 밖 스위치/변수 사용: switch:sw_ev_field_imps_clear (map:map_era_present event:ev_field_imps/page1 pages[0].commands[2].then[0])"
+       },
+       {
+        "severity": "warning",
+        "code": "story-flag:undeclared",
+        "message": "레지스트리 밖 스위치/변수 사용: switch:sw_boss_down (map:map_castle event:ev_king/page2 pages[1].conditions[0])"
+       },
+       {
+        "severity": "warning",
+        "code": "story-flag:undeclared",
+        "message": "레지스트리 밖 스위치/변수 사용: switch:sw_ev_cave_imps_clear (map:map_cave event:ev_cave_imps/page1 pages[0].commands[2].then[0])"
+       },
+       {
+        "severity": "info",
+        "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+        "mapId": "map_era_present",
+        "x": 22,
+        "y": 7,
+        "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+       },
+       {
+        "severity": "info",
+        "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+        "mapId": "map_era_present",
+        "x": 21,
+        "y": 8,
+        "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+       },
+       {
+        "severity": "info",
+        "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+        "mapId": "map_era_present",
+        "x": 1,
+        "y": 23,
+        "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+       },
+       {
+        "severity": "info",
+        "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+        "mapId": "map_era_present",
+        "x": 0,
+        "y": 24,
+        "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+       },
+       {
+        "severity": "warning",
+        "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+        "mapId": "map_era_present",
+        "x": 21,
+        "y": 7,
+        "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+       },
+       {
+        "severity": "warning",
+        "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+        "mapId": "map_era_present",
+        "x": 22,
+        "y": 8,
+        "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+       },
+       {
+        "severity": "warning",
+        "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+        "mapId": "map_era_present",
+        "x": 0,
+        "y": 23,
+        "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+       },
+       {
+        "severity": "warning",
+        "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+        "mapId": "map_era_present",
+        "x": 1,
+        "y": 24,
+        "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+       },
+       {
+        "severity": "info",
+        "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+        "mapId": "map_era_present",
+        "x": 13,
+        "y": 9,
+        "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+       },
+       {
+        "severity": "info",
+        "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+        "mapId": "map_era_present",
+        "x": 13,
+        "y": 10,
+        "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+       },
+       {
+        "severity": "info",
+        "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+        "mapId": "map_era_future",
+        "x": 22,
+        "y": 7,
+        "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+       },
+       {
+        "severity": "info",
+        "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+        "mapId": "map_era_future",
+        "x": 21,
+        "y": 8,
+        "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+       },
+       {
+        "severity": "info",
+        "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+        "mapId": "map_era_future",
+        "x": 1,
+        "y": 23,
+        "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+       },
+       {
+        "severity": "info",
+        "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+        "mapId": "map_era_future",
+        "x": 0,
+        "y": 24,
+        "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+       },
+       {
+        "severity": "warning",
+        "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+        "mapId": "map_era_future",
+        "x": 21,
+        "y": 7,
+        "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+       },
+       {
+        "severity": "warning",
+        "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+        "mapId": "map_era_future",
+        "x": 22,
+        "y": 8,
+        "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+       },
+       {
+        "severity": "warning",
+        "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+        "mapId": "map_era_future",
+        "x": 0,
+        "y": 23,
+        "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+       },
+       {
+        "severity": "warning",
+        "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+        "mapId": "map_era_future",
+        "x": 1,
+        "y": 24,
+        "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+       },
+       {
+        "severity": "info",
+        "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+        "mapId": "map_era_future",
+        "x": 13,
+        "y": 9,
+        "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+       },
+       {
+        "severity": "info",
+        "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+        "mapId": "map_era_future",
+        "x": 13,
+        "y": 10,
+        "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+       },
+       {
+        "severity": "warning",
+        "code": "opt-in:schedule-without-time",
+        "message": "NPC 일정이 있으나 시간 시스템이 꺼져 일정이 돌지 않습니다."
+       }
+      ]
+     },
+     "palette": {
+      "issues": []
+     }
+    },
+    "coverage": {
+     "commandOwners": {
+      "legacyEvent": 0,
+      "eventPage": 1,
+      "commonEvent": 0,
+      "troopPage": 1
+     },
+     "nestedBranches": {
+      "choiceOption": 3,
+      "choiceCancel": 0,
+      "presentOption": 0,
+      "presentOtherwise": 0,
+      "presentCancel": 0,
+      "forkThen": 13,
+      "forkElse": 1,
+      "loopBody": 0,
+      "shopTransaction": 0,
+      "shopFailure": 0,
+      "innNotEnough": 0,
+      "promotionSuccess": 0,
+      "promotionFailure": 0,
+      "evolutionSuccess": 0,
+      "evolutionFailure": 0,
+      "battleVictory": 0,
+      "battleDefeat": 0,
+      "battleEscape": 0
+     },
+     "content": {
+      "maps": 4,
+      "emptyMaps": 0,
+      "events": 29,
+      "commonEvents": 0,
+      "commandKinds": 22
+     },
+     "branches": {
+      "choices": 1,
+      "forks": 5,
+      "loops": 0
+     },
+     "quests": {
+      "defined": 1
+     },
+     "battles": {
+      "commands": 3,
+      "troops": 9
+     },
+     "endings": {
+      "defined": 2,
+      "triggers": 2,
+      "uninvokedIds": []
+     }
+    },
+    "storyFlags": {
+     "declared": 1,
+     "reads": 11,
+     "writes": 9,
+     "usage": {
+      "switches": {
+       "sw_pendant_started": {
+        "reads": [
+         {
+          "access": "read",
+          "kind": "switch",
+          "targetId": "sw_pendant_started",
+          "source": "map-event",
+          "mapId": "map_era_present",
+          "eventId": "ev_pendant_talk0",
+          "pageId": "ev_pendant_talk0_talk",
+          "pageNumber": 2,
+          "conditionPath": "pages[1].conditions[0]",
+          "label": "map:map_era_present event:ev_pendant_talk0/page2 pages[1].conditions[0]",
+          "detail": "event page condition"
+         },
+         {
+          "access": "read",
+          "kind": "switch",
+          "targetId": "sw_pendant_started",
+          "source": "map-event",
+          "mapId": "map_era_present",
+          "eventId": "ev_pendant_giver",
+          "pageId": "ev_pendant_giver_active",
+          "pageNumber": 2,
+          "conditionPath": "pages[1].conditions[0]",
+          "label": "map:map_era_present event:ev_pendant_giver/page2 pages[1].conditions[0]",
+          "detail": "event page condition"
+         }
+        ],
+        "writes": [
+         {
+          "access": "write",
+          "kind": "switch",
+          "targetId": "sw_pendant_started",
+          "source": "map-event",
+          "mapId": "map_era_present",
+          "eventId": "ev_pendant_giver",
+          "pageId": "ev_pendant_giver_offer",
+          "pageNumber": 1,
+          "commandPath": "pages[0].commands[1].options[0].branch[0]",
+          "label": "map:map_era_present event:ev_pendant_giver/page1 pages[0].commands[1].options[0].branch[0]",
+          "detail": "setSwitch"
+         }
+        ]
+       },
+       "sw_pendant_step0": {
+        "reads": [
+         {
+          "access": "read",
+          "kind": "switch",
+          "targetId": "sw_pendant_step0",
+          "source": "map-event",
+          "mapId": "map_era_present",
+          "eventId": "ev_pendant_giver",
+          "pageId": "ev_pendant_giver_active",
+          "pageNumber": 2,
+          "commandPath": "pages[1].commands[0].condition",
+          "label": "map:map_era_present event:ev_pendant_giver/page2 pages[1].commands[0].condition",
+          "detail": "conditional branch"
+         }
+        ],
+        "writes": [
+         {
+          "access": "write",
+          "kind": "switch",
+          "targetId": "sw_pendant_step0",
+          "source": "map-event",
+          "mapId": "map_era_present",
+          "eventId": "ev_pendant_talk0",
+          "pageId": "ev_pendant_talk0_talk",
+          "pageNumber": 2,
+          "commandPath": "pages[1].commands[1]",
+          "label": "map:map_era_present event:ev_pendant_talk0/page2 pages[1].commands[1]",
+          "detail": "setSwitch"
+         }
+        ]
+       },
+       "sw_pendant_done": {
+        "reads": [
+         {
+          "access": "read",
+          "kind": "switch",
+          "targetId": "sw_pendant_done",
+          "source": "map-event",
+          "mapId": "map_era_present",
+          "eventId": "ev_pendant_giver",
+          "pageId": "ev_pendant_giver_active",
+          "pageNumber": 2,
+          "commandPath": "pages[1].commands[0].then[0].condition",
+          "label": "map:map_era_present event:ev_pendant_giver/page2 pages[1].commands[0].then[0].condition",
+          "detail": "conditional branch"
+         },
+         {
+          "access": "read",
+          "kind": "switch",
+          "targetId": "sw_pendant_done",
+          "source": "map-event",
+          "mapId": "map_era_present",
+          "eventId": "ev_pendant_giver",
+          "pageId": "ev_pendant_giver_done",
+          "pageNumber": 3,
+          "conditionPath": "pages[2].conditions[0]",
+          "label": "map:map_era_present event:ev_pendant_giver/page3 pages[2].conditions[0]",
+          "detail": "event page condition"
+         }
+        ],
+        "writes": [
+         {
+          "access": "write",
+          "kind": "switch",
+          "targetId": "sw_pendant_done",
+          "source": "map-event",
+          "mapId": "map_era_present",
+          "eventId": "ev_pendant_giver",
+          "pageId": "ev_pendant_giver_active",
+          "pageNumber": 2,
+          "commandPath": "pages[1].commands[0].then[0].then[1]",
+          "label": "map:map_era_present event:ev_pendant_giver/page2 pages[1].commands[0].then[0].then[1]",
+          "detail": "setSwitch"
+         }
+        ]
+       },
+       "sw_ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_done": {
+        "reads": [
+         {
+          "access": "read",
+          "kind": "switch",
+          "targetId": "sw_ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_done",
+          "source": "map-event",
+          "mapId": "map_era_present",
+          "eventId": "ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09",
+          "pageId": "ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_page",
+          "pageNumber": 1,
+          "conditionPath": "pages[0].conditions[0]",
+          "label": "map:map_era_present event:ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09/page1 pages[0].conditions[0]",
+          "detail": "event page condition"
+         }
+        ],
+        "writes": [
+         {
+          "access": "write",
+          "kind": "switch",
+          "targetId": "sw_ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_done",
+          "source": "map-event",
+          "mapId": "map_era_present",
+          "eventId": "ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09",
+          "pageId": "ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_page",
+          "pageNumber": 1,
+          "commandPath": "pages[0].commands[1]",
+          "label": "map:map_era_present event:ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09/page1 pages[0].commands[1]",
+          "detail": "setSwitch"
+         }
+        ]
+       },
+       "sw_ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_done": {
+        "reads": [
+         {
+          "access": "read",
+          "kind": "switch",
+          "targetId": "sw_ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_done",
+          "source": "map-event",
+          "mapId": "map_era_present",
+          "eventId": "ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c",
+          "pageId": "ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_page",
+          "pageNumber": 1,
+          "conditionPath": "pages[0].conditions[0]",
+          "label": "map:map_era_present event:ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c/page1 pages[0].conditions[0]",
+          "detail": "event page condition"
+         }
+        ],
+        "writes": [
+         {
+          "access": "write",
+          "kind": "switch",
+          "targetId": "sw_ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_done",
+          "source": "map-event",
+          "mapId": "map_era_present",
+          "eventId": "ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c",
+          "pageId": "ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_page",
+          "pageNumber": 1,
+          "commandPath": "pages[0].commands[1]",
+          "label": "map:map_era_present event:ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c/page1 pages[0].commands[1]",
+          "detail": "setSwitch"
+         }
+        ]
+       },
+       "sw_ev_field_imps_clear": {
+        "reads": [
+         {
+          "access": "read",
+          "kind": "switch",
+          "targetId": "sw_ev_field_imps_clear",
+          "source": "map-event",
+          "mapId": "map_era_present",
+          "eventId": "ev_field_imps",
+          "pageId": "ev_field_imps_cleared",
+          "pageNumber": 2,
+          "conditionPath": "pages[1].conditions[0]",
+          "label": "map:map_era_present event:ev_field_imps/page2 pages[1].conditions[0]",
+          "detail": "event page condition"
+         }
+        ],
+        "writes": [
+         {
+          "access": "write",
+          "kind": "switch",
+          "targetId": "sw_ev_field_imps_clear",
+          "source": "map-event",
+          "mapId": "map_era_present",
+          "eventId": "ev_field_imps",
+          "pageId": "ev_field_imps_fight",
+          "pageNumber": 1,
+          "commandPath": "pages[0].commands[2].then[0]",
+          "label": "map:map_era_present event:ev_field_imps/page1 pages[0].commands[2].then[0]",
+          "detail": "setSwitch"
+         }
+        ]
+       },
+       "sw_boss_down": {
+        "reads": [
+         {
+          "access": "read",
+          "kind": "switch",
+          "targetId": "sw_boss_down",
+          "source": "map-event",
+          "mapId": "map_castle",
+          "eventId": "ev_king",
+          "pageId": "ev_king_p1",
+          "pageNumber": 2,
+          "conditionPath": "pages[1].conditions[0]",
+          "label": "map:map_castle event:ev_king/page2 pages[1].conditions[0]",
+          "detail": "event page condition"
+         },
+         {
+          "access": "read",
+          "kind": "switch",
+          "targetId": "sw_boss_down",
+          "source": "map-event",
+          "mapId": "map_cave",
+          "eventId": "ev_boss",
+          "pageId": "ev_boss_cleared",
+          "pageNumber": 2,
+          "conditionPath": "pages[1].conditions[0]",
+          "label": "map:map_cave event:ev_boss/page2 pages[1].conditions[0]",
+          "detail": "event page condition"
+         }
+        ],
+        "writes": [
+         {
+          "access": "write",
+          "kind": "switch",
+          "targetId": "sw_boss_down",
+          "source": "map-event",
+          "mapId": "map_cave",
+          "eventId": "ev_boss",
+          "pageId": "ev_boss_fight",
+          "pageNumber": 1,
+          "commandPath": "pages[0].commands[2].then[0]",
+          "label": "map:map_cave event:ev_boss/page1 pages[0].commands[2].then[0]",
+          "detail": "setSwitch"
+         }
+        ]
+       },
+       "sw_ev_cave_imps_clear": {
+        "reads": [
+         {
+          "access": "read",
+          "kind": "switch",
+          "targetId": "sw_ev_cave_imps_clear",
+          "source": "map-event",
+          "mapId": "map_cave",
+          "eventId": "ev_cave_imps",
+          "pageId": "ev_cave_imps_cleared",
+          "pageNumber": 2,
+          "conditionPath": "pages[1].conditions[0]",
+          "label": "map:map_cave event:ev_cave_imps/page2 pages[1].conditions[0]",
+          "detail": "event page condition"
+         }
+        ],
+        "writes": [
+         {
+          "access": "write",
+          "kind": "switch",
+          "targetId": "sw_ev_cave_imps_clear",
+          "source": "map-event",
+          "mapId": "map_cave",
+          "eventId": "ev_cave_imps",
+          "pageId": "ev_cave_imps_fight",
+          "pageNumber": 1,
+          "commandPath": "pages[0].commands[2].then[0]",
+          "label": "map:map_cave event:ev_cave_imps/page1 pages[0].commands[2].then[0]",
+          "detail": "setSwitch"
+         }
+        ]
+       }
+      },
+      "variables": {
+       "var_pendant_progress": {
+        "reads": [],
+        "writes": [
+         {
+          "access": "write",
+          "kind": "variable",
+          "targetId": "var_pendant_progress",
+          "source": "map-event",
+          "mapId": "map_era_present",
+          "eventId": "ev_pendant_talk0",
+          "pageId": "ev_pendant_talk0_talk",
+          "pageNumber": 2,
+          "commandPath": "pages[1].commands[2]",
+          "label": "map:map_era_present event:ev_pendant_talk0/page2 pages[1].commands[2]",
+          "detail": "setVariable"
+         }
+        ]
+       }
+      },
+      "sites": [
+       {
+        "access": "read",
+        "kind": "switch",
+        "targetId": "sw_pendant_started",
+        "source": "map-event",
+        "mapId": "map_era_present",
+        "eventId": "ev_pendant_talk0",
+        "pageId": "ev_pendant_talk0_talk",
+        "pageNumber": 2,
+        "conditionPath": "pages[1].conditions[0]",
+        "label": "map:map_era_present event:ev_pendant_talk0/page2 pages[1].conditions[0]",
+        "detail": "event page condition"
+       },
+       {
+        "access": "write",
+        "kind": "switch",
+        "targetId": "sw_pendant_step0",
+        "source": "map-event",
+        "mapId": "map_era_present",
+        "eventId": "ev_pendant_talk0",
+        "pageId": "ev_pendant_talk0_talk",
+        "pageNumber": 2,
+        "commandPath": "pages[1].commands[1]",
+        "label": "map:map_era_present event:ev_pendant_talk0/page2 pages[1].commands[1]",
+        "detail": "setSwitch"
+       },
+       {
+        "access": "write",
+        "kind": "variable",
+        "targetId": "var_pendant_progress",
+        "source": "map-event",
+        "mapId": "map_era_present",
+        "eventId": "ev_pendant_talk0",
+        "pageId": "ev_pendant_talk0_talk",
+        "pageNumber": 2,
+        "commandPath": "pages[1].commands[2]",
+        "label": "map:map_era_present event:ev_pendant_talk0/page2 pages[1].commands[2]",
+        "detail": "setVariable"
+       },
+       {
+        "access": "write",
+        "kind": "switch",
+        "targetId": "sw_pendant_started",
+        "source": "map-event",
+        "mapId": "map_era_present",
+        "eventId": "ev_pendant_giver",
+        "pageId": "ev_pendant_giver_offer",
+        "pageNumber": 1,
+        "commandPath": "pages[0].commands[1].options[0].branch[0]",
+        "label": "map:map_era_present event:ev_pendant_giver/page1 pages[0].commands[1].options[0].branch[0]",
+        "detail": "setSwitch"
+       },
+       {
+        "access": "read",
+        "kind": "switch",
+        "targetId": "sw_pendant_started",
+        "source": "map-event",
+        "mapId": "map_era_present",
+        "eventId": "ev_pendant_giver",
+        "pageId": "ev_pendant_giver_active",
+        "pageNumber": 2,
+        "conditionPath": "pages[1].conditions[0]",
+        "label": "map:map_era_present event:ev_pendant_giver/page2 pages[1].conditions[0]",
+        "detail": "event page condition"
+       },
+       {
+        "access": "read",
+        "kind": "switch",
+        "targetId": "sw_pendant_step0",
+        "source": "map-event",
+        "mapId": "map_era_present",
+        "eventId": "ev_pendant_giver",
+        "pageId": "ev_pendant_giver_active",
+        "pageNumber": 2,
+        "commandPath": "pages[1].commands[0].condition",
+        "label": "map:map_era_present event:ev_pendant_giver/page2 pages[1].commands[0].condition",
+        "detail": "conditional branch"
+       },
+       {
+        "access": "read",
+        "kind": "switch",
+        "targetId": "sw_pendant_done",
+        "source": "map-event",
+        "mapId": "map_era_present",
+        "eventId": "ev_pendant_giver",
+        "pageId": "ev_pendant_giver_active",
+        "pageNumber": 2,
+        "commandPath": "pages[1].commands[0].then[0].condition",
+        "label": "map:map_era_present event:ev_pendant_giver/page2 pages[1].commands[0].then[0].condition",
+        "detail": "conditional branch"
+       },
+       {
+        "access": "write",
+        "kind": "switch",
+        "targetId": "sw_pendant_done",
+        "source": "map-event",
+        "mapId": "map_era_present",
+        "eventId": "ev_pendant_giver",
+        "pageId": "ev_pendant_giver_active",
+        "pageNumber": 2,
+        "commandPath": "pages[1].commands[0].then[0].then[1]",
+        "label": "map:map_era_present event:ev_pendant_giver/page2 pages[1].commands[0].then[0].then[1]",
+        "detail": "setSwitch"
+       },
+       {
+        "access": "read",
+        "kind": "switch",
+        "targetId": "sw_pendant_done",
+        "source": "map-event",
+        "mapId": "map_era_present",
+        "eventId": "ev_pendant_giver",
+        "pageId": "ev_pendant_giver_done",
+        "pageNumber": 3,
+        "conditionPath": "pages[2].conditions[0]",
+        "label": "map:map_era_present event:ev_pendant_giver/page3 pages[2].conditions[0]",
+        "detail": "event page condition"
+       },
+       {
+        "access": "read",
+        "kind": "switch",
+        "targetId": "sw_ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_done",
+        "source": "map-event",
+        "mapId": "map_era_present",
+        "eventId": "ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09",
+        "pageId": "ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_page",
+        "pageNumber": 1,
+        "conditionPath": "pages[0].conditions[0]",
+        "label": "map:map_era_present event:ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09/page1 pages[0].conditions[0]",
+        "detail": "event page condition"
+       },
+       {
+        "access": "write",
+        "kind": "switch",
+        "targetId": "sw_ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_done",
+        "source": "map-event",
+        "mapId": "map_era_present",
+        "eventId": "ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09",
+        "pageId": "ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_page",
+        "pageNumber": 1,
+        "commandPath": "pages[0].commands[1]",
+        "label": "map:map_era_present event:ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09/page1 pages[0].commands[1]",
+        "detail": "setSwitch"
+       },
+       {
+        "access": "read",
+        "kind": "switch",
+        "targetId": "sw_ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_done",
+        "source": "map-event",
+        "mapId": "map_era_present",
+        "eventId": "ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c",
+        "pageId": "ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_page",
+        "pageNumber": 1,
+        "conditionPath": "pages[0].conditions[0]",
+        "label": "map:map_era_present event:ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c/page1 pages[0].conditions[0]",
+        "detail": "event page condition"
+       },
+       {
+        "access": "write",
+        "kind": "switch",
+        "targetId": "sw_ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_done",
+        "source": "map-event",
+        "mapId": "map_era_present",
+        "eventId": "ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c",
+        "pageId": "ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_page",
+        "pageNumber": 1,
+        "commandPath": "pages[0].commands[1]",
+        "label": "map:map_era_present event:ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c/page1 pages[0].commands[1]",
+        "detail": "setSwitch"
+       },
+       {
+        "access": "write",
+        "kind": "switch",
+        "targetId": "sw_ev_field_imps_clear",
+        "source": "map-event",
+        "mapId": "map_era_present",
+        "eventId": "ev_field_imps",
+        "pageId": "ev_field_imps_fight",
+        "pageNumber": 1,
+        "commandPath": "pages[0].commands[2].then[0]",
+        "label": "map:map_era_present event:ev_field_imps/page1 pages[0].commands[2].then[0]",
+        "detail": "setSwitch"
+       },
+       {
+        "access": "read",
+        "kind": "switch",
+        "targetId": "sw_ev_field_imps_clear",
+        "source": "map-event",
+        "mapId": "map_era_present",
+        "eventId": "ev_field_imps",
+        "pageId": "ev_field_imps_cleared",
+        "pageNumber": 2,
+        "conditionPath": "pages[1].conditions[0]",
+        "label": "map:map_era_present event:ev_field_imps/page2 pages[1].conditions[0]",
+        "detail": "event page condition"
+       },
+       {
+        "access": "read",
+        "kind": "switch",
+        "targetId": "sw_boss_down",
+        "source": "map-event",
+        "mapId": "map_castle",
+        "eventId": "ev_king",
+        "pageId": "ev_king_p1",
+        "pageNumber": 2,
+        "conditionPath": "pages[1].conditions[0]",
+        "label": "map:map_castle event:ev_king/page2 pages[1].conditions[0]",
+        "detail": "event page condition"
+       },
+       {
+        "access": "write",
+        "kind": "switch",
+        "targetId": "sw_ev_cave_imps_clear",
+        "source": "map-event",
+        "mapId": "map_cave",
+        "eventId": "ev_cave_imps",
+        "pageId": "ev_cave_imps_fight",
+        "pageNumber": 1,
+        "commandPath": "pages[0].commands[2].then[0]",
+        "label": "map:map_cave event:ev_cave_imps/page1 pages[0].commands[2].then[0]",
+        "detail": "setSwitch"
+       },
+       {
+        "access": "read",
+        "kind": "switch",
+        "targetId": "sw_ev_cave_imps_clear",
+        "source": "map-event",
+        "mapId": "map_cave",
+        "eventId": "ev_cave_imps",
+        "pageId": "ev_cave_imps_cleared",
+        "pageNumber": 2,
+        "conditionPath": "pages[1].conditions[0]",
+        "label": "map:map_cave event:ev_cave_imps/page2 pages[1].conditions[0]",
+        "detail": "event page condition"
+       },
+       {
+        "access": "write",
+        "kind": "switch",
+        "targetId": "sw_boss_down",
+        "source": "map-event",
+        "mapId": "map_cave",
+        "eventId": "ev_boss",
+        "pageId": "ev_boss_fight",
+        "pageNumber": 1,
+        "commandPath": "pages[0].commands[2].then[0]",
+        "label": "map:map_cave event:ev_boss/page1 pages[0].commands[2].then[0]",
+        "detail": "setSwitch"
+       },
+       {
+        "access": "read",
+        "kind": "switch",
+        "targetId": "sw_boss_down",
+        "source": "map-event",
+        "mapId": "map_cave",
+        "eventId": "ev_boss",
+        "pageId": "ev_boss_cleared",
+        "pageNumber": 2,
+        "conditionPath": "pages[1].conditions[0]",
+        "label": "map:map_cave event:ev_boss/page2 pages[1].conditions[0]",
+        "detail": "event page condition"
+       }
+      ]
+     }
+    },
+    "walkthroughs": [],
+    "limitations": [
+     "Cannot measure fun.",
+     "Cannot measure originality.",
+     "Cannot measure emotional impact.",
+     "Cannot measure pacing quality.",
+     "Cannot determine a player's preferred difficulty."
+    ]
+   }
+  },
+  {
+   "criterion": "V3",
+   "tool": "run_lint",
+   "ok": true,
+   "summary": "lint: error 0건 / warning 40건 / info 12건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것.",
+   "data": {
+    "counts": {
+     "errors": 0,
+     "infos": 12,
+     "warnings": 40
+    },
+    "issues": [
+     {
+      "severity": "warning",
+      "code": "runtime-support:setSelfSwitch",
+      "mapId": "map_era_present",
+      "x": 24,
+      "y": 12,
+      "message": "맵 이벤트 ev_pendant_talk0/ev_pendant_talk0_talk에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+     },
+     {
+      "severity": "warning",
+      "code": "runtime-support:cutsceneControl",
+      "mapId": "map_era_present",
+      "x": 20,
+      "y": 20,
+      "message": "맵 이벤트 ev_millennial_fair/ev_millennial_fair_cutscene_1에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): cutsceneControl"
+     },
+     {
+      "severity": "warning",
+      "code": "runtime-support:setSelfSwitch",
+      "mapId": "map_era_present",
+      "x": 20,
+      "y": 20,
+      "message": "맵 이벤트 ev_millennial_fair/ev_millennial_fair_cutscene_1에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+     },
+     {
+      "severity": "warning",
+      "code": "runtime-support:cutsceneControl",
+      "mapId": "map_era_present",
+      "x": 20,
+      "y": 20,
+      "message": "맵 이벤트 ev_millennial_fair/ev_millennial_fair_cutscene_1에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): cutsceneControl"
+     },
+     {
+      "severity": "warning",
+      "code": "runtime-support:addFollower",
+      "mapId": "map_era_present",
+      "x": 2,
+      "y": 2,
+      "message": "맵 이벤트 ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09/ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+     },
+     {
+      "severity": "warning",
+      "code": "runtime-support:addFollower",
+      "mapId": "map_era_present",
+      "x": 3,
+      "y": 2,
+      "message": "맵 이벤트 ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c/ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): addFollower"
+     },
+     {
+      "severity": "warning",
+      "code": "runtime-support:triggerEnding",
+      "mapId": "map_castle",
+      "x": 24,
+      "y": 10,
+      "message": "맵 이벤트 ev_king/ev_king_p1에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): triggerEnding"
+     },
+     {
+      "severity": "warning",
+      "code": "runtime-support:checkpointSave",
+      "mapId": "map_cave",
+      "x": 30,
+      "y": 20,
+      "message": "맵 이벤트 ev_save_329345ab-252e-4b97-9cbf-3eb24e60715c/ev_save_329345ab-252e-4b97-9cbf-3eb24e60715c_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): checkpointSave"
+     },
+     {
+      "severity": "warning",
+      "code": "runtime-support:setEventGraphicPattern",
+      "mapId": "map_cave",
+      "x": 9,
+      "y": 8,
+      "message": "맵 이벤트 ev_cave_chest/ev_cave_chest_closed에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+     },
+     {
+      "severity": "warning",
+      "code": "runtime-support:setEventGraphicPattern",
+      "mapId": "map_cave",
+      "x": 9,
+      "y": 8,
+      "message": "맵 이벤트 ev_cave_chest/ev_cave_chest_closed에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setEventGraphicPattern"
+     },
+     {
+      "severity": "warning",
+      "code": "runtime-support:setSelfSwitch",
+      "mapId": "map_cave",
+      "x": 9,
+      "y": 8,
+      "message": "맵 이벤트 ev_cave_chest/ev_cave_chest_closed에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): setSelfSwitch"
+     },
+     {
+      "severity": "warning",
+      "code": "runtime-support:triggerEnding",
+      "mapId": "map_era_future",
+      "x": 19,
+      "y": 14,
+      "message": "맵 이벤트 ev_doom_record/ev_doom_record_p0에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): triggerEnding"
+     },
+     {
+      "severity": "warning",
+      "code": "story-flag:undeclared",
+      "message": "레지스트리 밖 스위치/변수 사용: switch:sw_pendant_started (map:map_era_present event:ev_pendant_talk0/page2 pages[1].conditions[0])"
+     },
+     {
+      "severity": "warning",
+      "code": "story-flag:undeclared",
+      "message": "레지스트리 밖 스위치/변수 사용: switch:sw_pendant_step0 (map:map_era_present event:ev_pendant_talk0/page2 pages[1].commands[1])"
+     },
+     {
+      "severity": "warning",
+      "code": "story-flag:undeclared",
+      "message": "레지스트리 밖 스위치/변수 사용: variable:var_pendant_progress (map:map_era_present event:ev_pendant_talk0/page2 pages[1].commands[2])"
+     },
+     {
+      "severity": "warning",
+      "code": "story-flag:undeclared",
+      "message": "레지스트리 밖 스위치/변수 사용: switch:sw_pendant_done (map:map_era_present event:ev_pendant_giver/page2 pages[1].commands[0].then[0].condition)"
+     },
+     {
+      "severity": "warning",
+      "code": "story-flag:undeclared",
+      "message": "레지스트리 밖 스위치/변수 사용: switch:sw_ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09_done (map:map_era_present event:ev_companion_fe340c8a-2bd5-40af-9e66-9755bbea8d09/page1 pages[0].conditions[0])"
+     },
+     {
+      "severity": "warning",
+      "code": "story-flag:undeclared",
+      "message": "레지스트리 밖 스위치/변수 사용: switch:sw_ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c_done (map:map_era_present event:ev_companion_7a3959ea-428b-43b4-9fdf-8961f5cfed9c/page1 pages[0].conditions[0])"
+     },
+     {
+      "severity": "warning",
+      "code": "story-flag:undeclared",
+      "message": "레지스트리 밖 스위치/변수 사용: switch:sw_ev_field_imps_clear (map:map_era_present event:ev_field_imps/page1 pages[0].commands[2].then[0])"
+     },
+     {
+      "severity": "warning",
+      "code": "story-flag:undeclared",
+      "message": "레지스트리 밖 스위치/변수 사용: switch:sw_boss_down (map:map_castle event:ev_king/page2 pages[1].conditions[0])"
+     },
+     {
+      "severity": "warning",
+      "code": "story-flag:undeclared",
+      "message": "레지스트리 밖 스위치/변수 사용: switch:sw_ev_cave_imps_clear (map:map_cave event:ev_cave_imps/page1 pages[0].commands[2].then[0])"
+     },
+     {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "map_era_present",
+      "x": 22,
+      "y": 7,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+     },
+     {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "map_era_present",
+      "x": 21,
+      "y": 8,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+     },
+     {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "map_era_present",
+      "x": 1,
+      "y": 23,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+     },
+     {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "map_era_present",
+      "x": 0,
+      "y": 24,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+     },
+     {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "map_era_present",
+      "x": 21,
+      "y": 7,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+     },
+     {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "map_era_present",
+      "x": 22,
+      "y": 8,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+     },
+     {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "map_era_present",
+      "x": 0,
+      "y": 23,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+     },
+     {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "map_era_present",
+      "x": 1,
+      "y": 24,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+     },
+     {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "map_era_present",
+      "x": 13,
+      "y": 9,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+     },
+     {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "map_era_present",
+      "x": 13,
+      "y": 10,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+     },
+     {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "map_era_future",
+      "x": 22,
+      "y": 7,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+     },
+     {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "map_era_future",
+      "x": 21,
+      "y": 8,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+     },
+     {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "map_era_future",
+      "x": 1,
+      "y": 23,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+     },
+     {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-bush-props",
+      "mapId": "map_era_future",
+      "x": 0,
+      "y": 24,
+      "message": "덤불은 서로 너무 붙지 않게 2칸 이상 띄우면 자연스럽습니다."
+     },
+     {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "map_era_future",
+      "x": 21,
+      "y": 7,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+     },
+     {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "map_era_future",
+      "x": 22,
+      "y": 8,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+     },
+     {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "map_era_future",
+      "x": 0,
+      "y": 23,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+     },
+     {
+      "severity": "warning",
+      "code": "cluster-rule:spacing:harness-combined-town-flower-props",
+      "mapId": "map_era_future",
+      "x": 1,
+      "y": 24,
+      "message": "꽃은 서로 2칸 이상 띄워 배치하기를 권장합니다."
+     },
+     {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "map_era_future",
+      "x": 13,
+      "y": 9,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+     },
+     {
+      "severity": "info",
+      "code": "cluster-rule:spacing:harness-combined-town-house-yard-props",
+      "mapId": "map_era_future",
+      "x": 13,
+      "y": 10,
+      "message": "집 앞 마당 소품은 집 입구·전면 근처 2~4칸 안쪽에 두는 것이 자연스럽습니다."
+     },
+     {
+      "severity": "warning",
+      "code": "opt-in:schedule-without-time",
+      "message": "NPC 일정이 있으나 시간 시스템이 꺼져 일정이 돌지 않습니다."
+     },
+     {
+      "severity": "warning",
+      "code": "post-roof-incomplete",
+      "mapId": "map_era_present",
+      "x": 13,
+      "y": 7,
+      "message": "지붕 미완성: 벽 3칸 중 2칸이 지붕 밖에 있습니다. 벽 전체를 덮도록 wallRect를 넓히세요."
+     },
+     {
+      "severity": "warning",
+      "code": "post-roof-incomplete",
+      "mapId": "map_era_present",
+      "x": 17,
+      "y": 7,
+      "message": "지붕 미완성: 벽 3칸 중 2칸이 지붕 밖에 있습니다. 벽 전체를 덮도록 wallRect를 넓히세요."
+     },
+     {
+      "severity": "warning",
+      "code": "post-roof-incomplete",
+      "mapId": "map_era_present",
+      "x": 30,
+      "y": 8,
+      "message": "지붕 미완성: 벽 3칸 중 2칸이 지붕 밖에 있습니다. 벽 전체를 덮도록 wallRect를 넓히세요."
+     },
+     {
+      "severity": "warning",
+      "code": "post-roof-incomplete",
+      "mapId": "map_era_present",
+      "x": 34,
+      "y": 8,
+      "message": "지붕 미완성: 벽 3칸 중 2칸이 지붕 밖에 있습니다. 벽 전체를 덮도록 wallRect를 넓히세요."
+     },
+     {
+      "severity": "warning",
+      "code": "post-roof-incomplete",
+      "mapId": "map_era_present",
+      "x": 4,
+      "y": 22,
+      "message": "지붕 미완성: 벽 3칸 중 1칸이 지붕 밖에 있습니다. 벽 전체를 덮도록 wallRect를 넓히세요."
+     },
+     {
+      "severity": "warning",
+      "code": "post-roof-incomplete",
+      "mapId": "map_era_future",
+      "x": 13,
+      "y": 7,
+      "message": "지붕 미완성: 벽 3칸 중 2칸이 지붕 밖에 있습니다. 벽 전체를 덮도록 wallRect를 넓히세요."
+     },
+     {
+      "severity": "warning",
+      "code": "post-roof-incomplete",
+      "mapId": "map_era_future",
+      "x": 17,
+      "y": 7,
+      "message": "지붕 미완성: 벽 3칸 중 2칸이 지붕 밖에 있습니다. 벽 전체를 덮도록 wallRect를 넓히세요."
+     },
+     {
+      "severity": "warning",
+      "code": "post-roof-incomplete",
+      "mapId": "map_era_future",
+      "x": 30,
+      "y": 8,
+      "message": "지붕 미완성: 벽 3칸 중 2칸이 지붕 밖에 있습니다. 벽 전체를 덮도록 wallRect를 넓히세요."
+     },
+     {
+      "severity": "warning",
+      "code": "post-roof-incomplete",
+      "mapId": "map_era_future",
+      "x": 34,
+      "y": 8,
+      "message": "지붕 미완성: 벽 3칸 중 2칸이 지붕 밖에 있습니다. 벽 전체를 덮도록 wallRect를 넓히세요."
+     },
+     {
+      "severity": "warning",
+      "code": "post-roof-incomplete",
+      "mapId": "map_era_future",
+      "x": 4,
+      "y": 22,
+      "message": "지붕 미완성: 벽 3칸 중 1칸이 지붕 밖에 있습니다. 벽 전체를 덮도록 wallRect를 넓히세요."
+     }
+    ]
+   }
+  },
+  {
+   "criterion": "V4",
+   "tool": "check_export_readiness",
+   "ok": true,
+   "summary": "내보내기 점검 완료(파일 생성 없음) — 맵 4개, 에셋 1947개, 추정 21.08 MB, 직렬화 왕복 일치",
+   "data": {
+    "mapCount": 4,
+    "assetCount": 1947,
+    "uploadedAssetCount": 0,
+    "publicAssetCount": 1947,
+    "estimatedSizeBytes": 22105953,
+    "projectJsonBytes": 22105953,
+    "projectTitle": "시간의 문",
+    "shapeRoundTrip": true,
+    "producedFile": false
+   }
+  }
+ ],
+ "facts": {
+  "battleUiStyle": "chrono",
+  "battleFlow": "gauge",
+  "party": [
+   "actor_hero",
+   "actor_mage",
+   "actor_cleric"
+  ],
+  "xStrikeStored": null,
+  "maps": [
+   {
+    "id": "map_era_present",
+    "name": "트루스 마을 (현대)",
+    "w": 40,
+    "h": 30,
+    "events": 13,
+    "tileset": "easyrpg_chipset_combined_town"
+   },
+   {
+    "id": "map_castle",
+    "name": "가르디아 성",
+    "w": 48,
+    "h": 40,
+    "events": 4,
+    "tileset": "easyrpg_chipset_combined_town"
+   },
+   {
+    "id": "map_cave",
+    "name": "잊힌 동굴",
+    "w": 48,
+    "h": 40,
+    "events": 5,
+    "tileset": "easyrpg_chipset_dungeon"
+   },
+   {
+    "id": "map_era_future",
+    "name": "트루스 마을 (미래 폐허)",
+    "w": 40,
+    "h": 30,
+    "events": 7,
+    "tileset": "easyrpg_chipset_combined_town"
+   }
+  ],
+  "newGamePlus": null,
+  "bossSwitch": "sw_boss_down",
+  "bossTroopPages": 2,
+  "start": {
+   "mapId": "map_era_present",
+   "x": 20,
+   "y": 23,
+   "blocker": {
+    "x": 20,
+    "y": 22
+   }
+  }
+ }
+}
