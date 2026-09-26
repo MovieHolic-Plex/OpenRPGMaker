@@ -642,7 +642,7 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  background: rgb(0 0 0 / 82%);
+  background: rgb(6 8 12 / 96%);
 }
 .db-title-opening-preview-frame {
   --preview-scale: 2;
@@ -665,4 +665,18 @@
   gap: 8px;
   color: rgb(255 255 255 / 78%);
   font-size: 12px;
+}
+/* body 에 붙는 창이라 자료집 안의 .btn 색을 못 받는다. 어두운 바탕용으로 직접 칠한다. */
+.db-title-opening-preview-bar > button {
+  white-space: nowrap;
+  padding: 4px 12px;
+  border: 1px solid rgb(255 255 255 / 32%);
+  border-radius: 6px;
+  background: rgb(255 255 255 / 10%);
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+.db-title-opening-preview-bar > button:hover {
+  background: rgb(255 255 255 / 20%);
 }

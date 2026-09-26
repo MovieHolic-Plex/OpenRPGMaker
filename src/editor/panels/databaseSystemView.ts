@@ -2562,6 +2562,8 @@ async function openTitleOpeningPreview(): Promise<void> {
   };
   fitScale();
   const shell = el("div", { class: "player-layout system-shell db-title-opening-preview-shell" });
+  // 런타임 레이어의 system-shell grid 규칙이 database 레이어보다 뒤라 CSS 로는 못 이긴다. 인라인으로 무대를 못 박는다.
+  shell.style.display = "block";
   frame.append(shell);
   let transitionTimer: number | null = null;
   const close = () => {
@@ -2585,6 +2587,8 @@ async function openTitleOpeningPreview(): Promise<void> {
       onCredits: noop,
       onQuit: close,
     }, 0, { playIntro: true });
+    title.style.width = "320px";
+    title.style.height = "240px";
     shell.replaceChildren(title);
   };
   const onKey = (event: KeyboardEvent) => {
@@ -2634,10 +2638,13 @@ function koreanSelectField<T extends string>(
   options: readonly { readonly id: T; readonly name: string }[],
   onChange: (value: T) => void,
 ): HTMLElement {
-  return selectField(label, testid, value, options, (next) => {
+  const field = selectField(label, testid, value, options, (next) => {
     const match = options.find((option) => option.id === next);
     if (match) onChange(match.id);
   });
+  // 타이틀 선택지는 모두 기본값이 있어 「(없음)」을 골라도 아무 일이 없다. 헷갈리지 않게 뺀다.
+  field.querySelector<HTMLSelectElement>("select")?.querySelector('option[value=""]')?.remove();
+  return field;
 }
 
 function titleLayerRow(layer: TitleBackgroundLayer, index: number, rerender: SystemRefresh): HTMLElement {

@@ -112,6 +112,9 @@ WebGL 한 장으로 얹는다. 그림은 이미지 모델로 만들고, 생성 �
   **편집기 무대 미리보기는 효과만 그리고 시퀀스를 재생하지 않는다.** 「오프닝 다시 보기」(`db-title-opening-preview`)가
   `preloadRuntimeStyles()` 뒤 `.player-layout.system-shell` 안에 `renderTitleScreen(…, {playIntro:true})` 를 그대로 띄운다.
   런타임 `.title-screen` 은 부모의 100% 라 셸을 320×240 으로 고정하고 transform 으로 키운다. 「새 게임」은 전환을 재생한 뒤 처음으로 되감는다.
+  **크기는 인라인으로 못 박는다**(셸 `display:block`, 타이틀 320×240). `title-workbench.css` 는 `layer(database)` 로 들어가고
+  런타임의 `.player-layout.system-shell { display:grid }` 는 뒤 레이어(`runtime`)라 CSS 로는 못 이긴다 — CSS 만 고치면 타이틀 폭 0 인 빈 창이 된다(실측).
+  창은 `document.body` 에 붙어 자료집 `.btn` 색을 못 받으므로 아래 막대 버튼(「처음부터」·「닫기」)은 어두운 바탕용으로 직접 칠한다.
 
 ## 범위 밖 (이번에 안 한 것)
 
