@@ -76,15 +76,50 @@ function formatTiming(row) {
   return `total=${timing.totalMs}ms · ${stages}`;
 }
 
-const browser = await chromium.launch();
+const browser = await chromium.launch({
+  // 부하 건 박스에서 실제 턴(맵 렌더 + 후속 검수 이미지)을 돌리면 탭이 죽는 일이 있었다(실측 2026-09-26:
+  // page.evaluate Target crashed). /dev/shm 이 작은 환경에서 흔한 원인이라 그 회피만 명시한다.
+  args: ["--disable-dev-shm-usage", "--js-flags=--max-old-space-size=4096"],
+});
 const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } });
 page.on("pageerror", (error) => log(`[page error] ${String(error.message).slice(0, 200)}`));
+page.on("crash", () => log("[page CRASH] renderer died"));
 page.on("console", (message) => { if (message.type() === "error") log(`[page console] ${message.text().slice(0, 200)}`); });
 
 const record = { base, prompt, startedAt: new Date().toISOString(), bootMs: null, turnMs: null, ok: null, status: null, error: null, timing: null, mirrorRow: null };
 
 try {
   const bootStarted = Date.now();
+  // --script: Pi 런 전송만 NDJSON 대본으로 고정한다(의도 단계는 실제 모델 그대로).
+  //
+  // 왜 필요한가(실측 2026-09-26, 이 박스): 실제 전송으로 편집기 턴을 돌리면 렌더러가 죽는다 —
+  // 3회 연속 `page.evaluate: Target crashed` / 무진행(pending·toolCalls 0) / `[page CRASH] renderer died`.
+  // S4 가 요구하는 것은 «단계별 소요가 기록되고 조회된다» 이므로, 기록 경로는 실제 패널 코드로 돌리되
+  // 전송만 대본으로 고정한다 — 저장소의 기존 `test/e2e/_ai-*.spec.ts` 들과 같은 방식이다.
+  if (args.script) {
+    // 대본 응답은 저장소의 공식 QA 스크립트(scripts/qa/ai-routine-edit.mjs)가 쓰는 모양을 그대로 쓴다.
+    await page.route("**/v1/chat/completions", async (route) => {
+      let first = "";
+      try { first = String(route.request().postDataJSON()?.messages?.[0]?.content ?? ""); } catch { /* 본문 없음 */ }
+      const content = first.startsWith("REQUEST_COVERAGE_AUDIT")
+        ? JSON.stringify({ requirements: [{ text: "맵 좌상단에 흙길 한 칸", criteria: [{ kind: "functionalUnresolved", reason: "변경 카드에서 확인" }] }], clarifies: [] })
+        : JSON.stringify({ mode: "modify", space: "none", facility: null, targetMapId: null, useSelection: false, clarify: null, clarifyOptions: [], needsPlan: false, resetsContext: false, tools: [], summary: "흙길 한 칸" });
+      await route.fulfill({ json: { choices: [{ finish_reason: "stop", message: { role: "assistant", content } }] } });
+    });
+    await page.route("**/v1/agent/run**", async (route) => {
+      let project; 
+      try { const payload = route.request().postDataJSON(); project = payload?.request?.project ?? payload?.project; } catch { /* 본문 없음 */ }
+      const lines = [
+        { type: "start", provider: "google-antigravity", model: "gemini-3.8-flash", toolCount: 0 },
+        { type: "turn", index: 1 },
+        { type: "checkpoint", label: "대본 단계", toolName: "paint_tiles", project, unchangedKeys: [] },
+        { type: "assistant", text: "대본: 계측 경로 확인용 응답입니다." },
+        { type: "done", project, changedKeys: [], spills: [], conflicts: [], stats: { ms: 1200, turns: 1, toolCalls: 0, toolErrors: 0 } },
+      ].map((event) => JSON.stringify(event)).join("\n") + "\n";
+      await route.fulfill({ status: 200, headers: { "Content-Type": "application/x-ndjson; charset=utf-8" }, body: lines });
+    });
+    log("[script] /v1/agent/run 을 대본 NDJSON 으로 고정했다(의도 단계는 실제 모델)");
+  }
   await page.goto(`${base}/?blankProject=1`, { waitUntil: "domcontentloaded", timeout: 180_000 });
   await page.waitForFunction(() => typeof window.__oprnAiBridge?.status === "function" && window.__oprnAiBridge.status().panelMounted === true, null, { timeout: 180_000 });
   record.bootMs = Date.now() - bootStarted;
@@ -106,6 +141,8 @@ try {
   while (Date.now() - started < timeoutMs) {
     const status = await page.evaluate(() => window.__oprnAiBridge?.status?.() ?? null);
     if (status?.turnBusy === true) sawBusy = true;
+    // 20초마다 «어디에 서 있는지» 를 남긴다 — 멈춘 턴을 사후에 추정하지 않기 위해서다.
+    if ((Date.now() - started) % 20_000 < 1_100) log(`  … turnBusy=${status?.turnBusy} lastStatus=${status?.lastStatus} elapsed=${Math.round((Date.now() - started) / 1000)}s`);
     if (sawBusy && status?.turnBusy === false) { finishedAt = Date.now(); record.status = status; break; }
     if (!sawBusy && Date.now() - started > 30_000) {
       // 30초 안에 busy 가 안 서면 전송이 거부된 것이다(설정 미비·슬롯 점유).
