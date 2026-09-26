@@ -174,7 +174,7 @@ export function renderTitleEffectsLayer(
   if (!effects.length || !backgroundResourceId) return null;
   const imageUrl = resolveAssetResourceUrl(backgroundResourceId, { project });
   if (!imageUrl) return null;
-  const options = { effects, imageUrl, fit: settings.backgroundFit ?? "cover" };
+  const options = { effects, imageUrl, fit: settings.backgroundFit ?? "stretch" };
   const signature = titleEffectsSignature(options);
   if (reuse && reuse.dataset.titleEffectsSignature === signature) return reuse;
   const canvas = createTitleEffectsCanvas(options);

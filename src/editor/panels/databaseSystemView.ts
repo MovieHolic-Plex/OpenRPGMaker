@@ -66,7 +66,7 @@ import { playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { DEFAULT_MENU_SKIN_ID, listMenuSkinIds, MENU_SKINS, resolveMenuSkinId } from "@/player/menuSkins/registry";
 import type { MenuSkinId } from "@/player/menuSkins/types";
 import { calculatePlaySurfaceScale } from "@/player/playSurfaceScale";
-import { listTitleMenuOptions, renderTitleEffectsLayer, renderTitleFxStack, titleIntroClass } from "@/player/titleScreen";
+import { listTitleMenuOptions, renderTitleEffectsLayer, renderTitleFxStack, titleIntroClass, titleMenuTop } from "@/player/titleScreen";
 import {
   MAX_TITLE_LOGO_SUBTITLE_LENGTH,
   TITLE_EFFECT_LABELS,
@@ -1657,8 +1657,15 @@ function titleScreenDisplayFieldset(
       dialogTitle: "타이틀 배경",
       onChange: (result) => {
         // Background writes only touch titleScreen.backgroundResourceId — never clear system.titleResourceId.
+        const previous = store.getCurrent().system.titleScreen;
+        const changed = (previous?.backgroundResourceId ?? "") !== (result.resourceId ?? "");
+        // 효과 좌표는 그림 UV 기준이라 그림이 바뀌면 빛내림·칼날 위치가 엉뚱한 곳에 남는다.
+        const dropEffects = changed && (previous?.effects?.length ?? 0) > 0 && globalThis.confirm(
+          "오프닝 효과 좌표는 이전 그림에 맞춰져 있습니다. 새 그림에서는 엉뚱한 곳에 보일 수 있습니다.\n효과를 지울까요? (취소하면 그대로 둡니다)",
+        );
         updateTitleScreen((settings) => {
           settings.backgroundResourceId = emptyToUndefined(result.resourceId);
+          if (dropEffects) delete settings.effects;
         }, "system:title-screen:background");
       },
       rerender,
@@ -2098,6 +2105,10 @@ function titleScreenOpeningFieldset(titleScreen: TitleScreenSettings, rerender: 
       click: () => {
         const preset = findTitleOpeningPreset(presetSelect.value);
         if (!preset) return;
+        const current = store.getCurrent().system.titleScreen;
+        if ((current?.effects?.length ?? 0) > 0 && !globalThis.confirm(
+          "지금 효과·로고 스타일·메뉴 스타일·배경 맞춤을 프리셋 값으로 바꿉니다. 계속할까요? (되돌리기로 복구할 수 있습니다)",
+        )) return;
         updateTitleScreen((settings) => {
           settings.effects = titleOpeningPresetEffects(preset);
           settings.logoStyle = preset.logoStyle;
@@ -2226,8 +2237,22 @@ function titleScreenOpeningFieldset(titleScreen: TitleScreenSettings, rerender: 
     attrs: { type: "button" },
     dataset: { testid: "db-title-opening-ai-generate" },
   }) as HTMLButtonElement;
+  let aiAbort: AbortController | null = null;
   aiButton.addEventListener("click", () => {
-    void runTitleArtGeneration(presetSelect.value, promptInput.value, aiButton, aiStatus, rerender);
+    if (aiAbort) {
+      aiAbort.abort();
+      return;
+    }
+    const current = store.getCurrent().system.titleScreen;
+    if ((current?.backgroundResourceId || (current?.effects?.length ?? 0) > 0) && !globalThis.confirm(
+      "지금 타이틀 배경과 효과·스타일을 새 키아트로 바꿉니다. 계속할까요? (되돌리기로 복구할 수 있습니다)",
+    )) return;
+    aiAbort = new AbortController();
+    aiButton.textContent = "생성 취소";
+    void runTitleArtGeneration(presetSelect.value, promptInput.value, aiStatus, rerender, aiAbort.signal).finally(() => {
+      aiAbort = null;
+      aiButton.textContent = "AI로 오프닝 만들기";
+    });
   });
 
   return el("fieldset", {
@@ -2261,17 +2286,20 @@ function titleScreenOpeningFieldset(titleScreen: TitleScreenSettings, rerender: 
 async function runTitleArtGeneration(
   presetId: string,
   prompt: string,
-  button: HTMLButtonElement,
   status: HTMLElement,
   rerender: SystemRefresh,
+  signal: AbortSignal,
 ): Promise<void> {
-  button.disabled = true;
   status.dataset.state = "running";
   status.textContent = "키아트를 생성하는 중입니다… (수십 초 걸릴 수 있습니다)";
   try {
     const { generateTitleArt, titleArtToolCalls } = await import("@/editor/titleArtGeneration");
     const title = store.getCurrent().system.titleScreen?.title;
-    const art = await generateTitleArt({ preset: presetId, ...(prompt.trim() ? { prompt: prompt.trim() } : {}), ...(title ? { title } : {}) });
+    const art = await generateTitleArt(
+      { preset: presetId, ...(prompt.trim() ? { prompt: prompt.trim() } : {}), ...(title ? { title } : {}) },
+      { signal },
+    );
+    signal.throwIfAborted();
     if (!art.ok) {
       status.dataset.state = "error";
       status.textContent = art.summary;
@@ -2285,13 +2313,19 @@ async function runTitleArtGeneration(
       return;
     }
     status.dataset.state = "done";
-    status.textContent = "키아트를 배경에 걸고 효과를 적용했습니다.";
+    // 맞춤이 실패하면 프리셋 좌표가 그대로 들어간다 — 그림과 어긋날 수 있다는 사실을 숨기지 않는다.
+    status.textContent = art.effects
+      ? "키아트를 배경에 걸고, 그림을 보고 위치를 맞춘 효과를 적용했습니다."
+      : "키아트를 배경에 걸었습니다. 효과 위치 맞춤은 실패해 프리셋 좌표를 그대로 썼으니 그림과 어긋날 수 있습니다.";
     rerender();
   } catch (error) {
+    if (signal.aborted) {
+      status.dataset.state = "idle";
+      status.textContent = "생성을 취소했습니다. 바뀐 것은 없습니다.";
+      return;
+    }
     status.dataset.state = "error";
     status.textContent = error instanceof Error ? error.message : String(error);
-  } finally {
-    button.disabled = false;
   }
 }
 
@@ -2492,6 +2526,8 @@ function titleScreenWorkbenchPreview(
         : {},
     });
     stage.style.aspectRatio = `${resolutionAnalysis.aspectWidth} / ${resolutionAnalysis.aspectHeight}`;
+    // 런타임과 같은 조건: 로고 질감을 고른 경우에만 무대에 표시한다(없으면 기본 제목 글꼴).
+    if (titleScreen.logoStyle) stage.dataset.logoStyle = titleScreen.logoStyle;
 
     // 영역 효과(빛내림·물결·안개…)도 런타임과 같은 WebGL 레이어. 켜진 효과가 없으면 null.
     const effectsLayer = renderTitleEffectsLayer(titleScreen, backgroundResourceId, project, null);
@@ -2519,6 +2555,15 @@ function titleScreenWorkbenchPreview(
         if (introDelayMs > 0) titleNode.style.animationDelay = `${introDelayMs}ms`;
       }
       stage.append(titleNode);
+      if (titleScreen.logoStyle && titleScreen.logoSubtitle) {
+        const subtitle = el("div", {
+          class: "db-title-workbench-subtitle",
+          text: titleScreen.logoSubtitle,
+          dataset: { testid: "db-title-workbench-subtitle", logoStyle: titleScreen.logoStyle },
+        });
+        placeTitleSubtitle(subtitle, titleScreen);
+        stage.append(subtitle);
+      }
     };
 
     if (showText) appendTitleText();
@@ -2562,7 +2607,8 @@ function titleScreenWorkbenchPreview(
       dataset: { testid: "db-title-workbench-menu-preview" },
       children: visibleOptions.map((option, index) => {
         const item = el("div", {
-          class: "db-title-workbench-menu-item",
+          // 런타임은 첫 항목에 커서가 놓인 채로 열린다 — 미리보기도 같은 모습으로.
+          class: index === 0 ? "db-title-workbench-menu-item selected" : "db-title-workbench-menu-item",
           text: option.label,
           dataset: { titleMenuOption: option.id },
         });
@@ -2574,8 +2620,8 @@ function titleScreenWorkbenchPreview(
         return item;
       }),
     });
-    menu.style.left = `${(titleScreen.layout.menuX / 320) * 100}%`;
-    menu.style.top = `${(titleScreen.layout.menuY / 240) * 100}%`;
+    if (titleScreen.menuStyle) menu.dataset.menuStyle = titleScreen.menuStyle;
+    placeTitleMenu(menu, titleScreen, visibleOptions.length);
     stage.append(menu);
     return stage;
   };
@@ -2754,6 +2800,18 @@ function synchronizeSystemNumbers(root: HTMLElement): void {
 }
 
 /** Values and Replay share the live stage; transport controls never reparent. */
+// 런타임 renderTitleLogoSubtitle 과 같은 자리: 제목 기준점 아래 3.4em.
+function placeTitleSubtitle(node: HTMLElement, title: TitleScreenSettings): void {
+  node.style.left = `${title.layout.titleX / 320 * 100}%`;
+  node.style.top = `calc(${title.layout.titleY / 240 * 100}% + 3.4em)`;
+}
+
+// 런타임 renderMenu 와 같은 위치 계산 — 항목이 많으면 무대 아래로 넘치지 않게 끌어올린다.
+function placeTitleMenu(node: HTMLElement, title: TitleScreenSettings, optionCount: number): void {
+  node.style.left = `${title.layout.menuX / 320 * 100}%`;
+  node.style.top = `${titleMenuTop(title.layout.menuY, optionCount, false) / 240 * 100}%`;
+}
+
 function refreshTitleStageValues(stage: HTMLElement, project: Project): void {
   const resolution = resolvePlayResolution(project.system);
   const analysis = analyzePlayResolution(resolution, project.maps);
@@ -2771,11 +2829,16 @@ function refreshTitleStageValues(stage: HTMLElement, project: Project): void {
     logo.style.left = `${title.titleGraphic.x / 320 * 100}%`;
     logo.style.top = `${title.titleGraphic.y / 240 * 100}%`;
   }
+  const subtitle = stage.querySelector<HTMLElement>('[data-testid="db-title-workbench-subtitle"]');
+  if (subtitle) {
+    subtitle.textContent = title.logoSubtitle ?? "";
+    placeTitleSubtitle(subtitle, title);
+  }
   const menu = stage.querySelector<HTMLElement>('[data-testid="db-title-workbench-menu-preview"]');
   if (menu) {
-    menu.style.left = `${title.layout.menuX / 320 * 100}%`;
-    menu.style.top = `${title.layout.menuY / 240 * 100}%`;
-    for (const option of listTitleMenuOptions(title, { autosaveAvailable: true })) {
+    const options = listTitleMenuOptions(title, { autosaveAvailable: true });
+    placeTitleMenu(menu, title, options.length);
+    for (const option of options) {
       const item = menu.querySelector<HTMLElement>(`[data-title-menu-option="${option.id}"]`);
       if (item) item.textContent = option.label;
     }

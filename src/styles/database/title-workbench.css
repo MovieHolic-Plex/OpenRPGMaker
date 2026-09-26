@@ -70,6 +70,8 @@
   border: 1px solid var(--db-studio-border-subtle);
   border-radius: 8px;
   box-sizing: border-box;
+  /* 글자·메뉴 크기를 무대 너비(논리 320px)에 비례시켜 런타임 비율과 맞춘다. */
+  container-type: inline-size;
   height: auto;
   min-height: 164px;
   min-width: 1px;
@@ -105,6 +107,16 @@
   pointer-events: none;
   position: absolute;
   z-index: 0;
+}
+
+.database-modal-backdrop .db-title-workbench-stage .rm-title-effects {
+  display: block;
+  height: 100%;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
 }
 
 .database-modal-backdrop .db-title-workbench-stage .rm-title-fx {
@@ -181,27 +193,97 @@
   text-align: right;
 }
 
+/* 아래 크기는 런타임(src/styles/runtime/title.css) 논리 px ÷ 320 이다 — 18px → 5.625cqw.
+   런타임처럼 제목·메뉴는 왼쪽 위가 기준점이고, 로고 그림만 가운데 기준이다. */
 .database-modal-backdrop .db-title-workbench-title {
   color: #fff8e7;
-  font: 700 16px/1.15 var(--font-ui);
-  max-width: 90%;
+  font: 400 5.625cqw/1.2 var(--runtime-ui-font, var(--font-ui));
+  letter-spacing: -0.04em;
+  max-width: 72%;
   position: absolute;
-  text-align: center;
-  text-shadow: 0 1px 0 #000, 0 0 6px rgba(60, 48, 32, 0.18);
-  transform: translate(-50%, -50%);
+  text-align: left;
+  text-shadow: 0 0.625cqw 3.125cqw rgb(0 0 0 / 55%);
+  word-break: keep-all;
+}
+
+.database-modal-backdrop .db-title-workbench-stage[data-logo-style] .db-title-workbench-title[data-logo-style] {
+  --oprn-logo-fill: linear-gradient(180deg, #ffffff 0%, #d7dde6 38%, #7c8796 52%, #eef2f6 64%, #9aa4b1 100%);
+  --oprn-logo-edge: rgb(10 14 24 / 85%);
+  --oprn-logo-glow: rgb(0 0 0 / 55%);
+  animation: rm-title-logo-shine 6s ease-in-out 1.2s infinite;
+  background-image:
+    linear-gradient(105deg, transparent 0 40%, rgb(255 255 255 / 85%) 48%, transparent 56% 100%),
+    var(--oprn-logo-fill);
+  background-clip: text;
+  -webkit-background-clip: text;
+  background-position: 130% 0, 0 0;
+  background-repeat: no-repeat;
+  background-size: 250% 100%, 100% 100%;
+  color: transparent;
+  filter: drop-shadow(0 0.625cqw 0 var(--oprn-logo-edge)) drop-shadow(0 1.25cqw 3.125cqw var(--oprn-logo-glow));
+  font-family: "Cinzel", "Trajan Pro", "Cormorant SC", Georgia, "Noto Serif KR", serif;
+  font-size: 7.1875cqw;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  max-width: 88%;
+  text-shadow: none;
+  -webkit-text-stroke: 0.1875cqw var(--oprn-logo-edge);
+  width: max-content;
+}
+
+.database-modal-backdrop .db-title-workbench-stage[data-logo-style] .db-title-workbench-title[data-logo-style="plain"] {
+  --oprn-logo-fill: linear-gradient(#fff, #fff);
+  animation: none;
+  background-image: var(--oprn-logo-fill);
+  background-size: 100% 100%;
+}
+
+.database-modal-backdrop .db-title-workbench-stage[data-logo-style] .db-title-workbench-title[data-logo-style="gold"] {
+  --oprn-logo-fill: linear-gradient(180deg, #fff6d0 0%, #f2c75c 36%, #9b6a1c 52%, #ffe08a 66%, #b8812a 100%);
+  --oprn-logo-edge: rgb(40 22 4 / 90%);
+}
+
+.database-modal-backdrop .db-title-workbench-stage[data-logo-style] .db-title-workbench-title[data-logo-style="stone"] {
+  --oprn-logo-fill: linear-gradient(180deg, #d9d4c8 0%, #a8a193 45%, #6f695d 55%, #b9b2a3 100%);
+  --oprn-logo-edge: rgb(20 18 14 / 90%);
+  animation: none;
+  background-image: var(--oprn-logo-fill);
+  background-size: 100% 100%;
+}
+
+.database-modal-backdrop .db-title-workbench-stage[data-logo-style] .db-title-workbench-title[data-logo-style="glow"] {
+  --oprn-logo-fill: linear-gradient(180deg, #ffffff 0%, #d8f3ff 50%, #9fdcff 100%);
+  --oprn-logo-edge: rgb(20 60 110 / 60%);
+  --oprn-logo-glow: rgb(140 210 255 / 75%);
+}
+
+.database-modal-backdrop .db-title-workbench-subtitle {
+  color: rgb(236 240 246 / 88%);
+  font-family: "Cinzel", "Trajan Pro", Georgia, "Noto Serif KR", serif;
+  font-size: 2.5cqw;
+  letter-spacing: 0.32em;
+  pointer-events: none;
+  position: absolute;
+  text-shadow: 0 0.3125cqw 1.25cqw rgb(0 0 0 / 80%);
+  text-transform: uppercase;
   white-space: nowrap;
+  z-index: 2;
+}
+
+.database-modal-backdrop .db-title-workbench-subtitle[data-logo-style="gold"] {
+  color: rgb(255 230 170 / 92%);
 }
 
 .database-modal-backdrop .db-title-workbench-logo {
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
-  height: 56px;
+  height: 21.875cqw;
   image-rendering: pixelated;
-  max-width: 72%;
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 140px;
+  width: 93.75cqw;
 }
 
 .database-modal-backdrop .db-title-workbench-menu {
@@ -209,17 +291,56 @@
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 4px;
   display: grid;
-  gap: 2px;
-  min-width: 96px;
-  padding: 6px 10px;
+  gap: 0.625cqw;
+  min-width: 30cqw;
+  padding: 0.9375cqw 1.25cqw;
   position: absolute;
-  transform: translate(-50%, 0);
 }
 
 .database-modal-backdrop .db-title-workbench-menu-item {
   color: #f3f6ff;
-  font: 500 12px/1.35 var(--font-ui);
+  font: 400 3.4375cqw/1.35 var(--runtime-ui-font, var(--font-ui));
+  padding: 0.625cqw 1.875cqw 0.625cqw 3.125cqw;
+  position: relative;
   white-space: nowrap;
+}
+
+.database-modal-backdrop .db-title-workbench-menu-item.selected {
+  background: rgb(255 255 255 / 14%);
+}
+
+.database-modal-backdrop .db-title-workbench-menu[data-menu-style="plain"] {
+  background: none;
+  border: 0;
+  gap: 0.9375cqw;
+  padding: 0;
+}
+
+.database-modal-backdrop .db-title-workbench-menu[data-menu-style="plain"] .db-title-workbench-menu-item {
+  color: rgb(226 232 240 / 78%);
+  font-family: "Cinzel", "Trajan Pro", Georgia, var(--runtime-ui-font, var(--font-ui)), serif;
+  letter-spacing: 0.08em;
+  padding: 0.3125cqw 1.25cqw 0.3125cqw 3.75cqw;
+  text-shadow: 0 0.3125cqw 0.9375cqw rgb(0 0 0 / 90%), 0 0 2.5cqw rgb(0 0 0 / 60%);
+}
+
+.database-modal-backdrop .db-title-workbench-menu[data-menu-style="plain"] .db-title-workbench-menu-item.selected {
+  background: linear-gradient(90deg, rgb(255 236 180 / 22%), transparent 85%);
+  color: #fff8e6;
+  text-shadow: 0 0 1.875cqw rgb(255 214 130 / 85%), 0 0.3125cqw 0.9375cqw rgb(0 0 0 / 90%);
+}
+
+.database-modal-backdrop .db-title-workbench-menu[data-menu-style="plain"] .db-title-workbench-menu-item.selected::before {
+  background: #ffe7a8;
+  box-shadow: 0 0 1.5cqw rgb(255 214 130 / 90%);
+  content: "";
+  height: 1.25cqw;
+  left: 0.9375cqw;
+  margin-top: -0.625cqw;
+  position: absolute;
+  top: 50%;
+  transform: rotate(45deg);
+  width: 1.25cqw;
 }
 
 .database-modal-backdrop .db-title-workbench-audio {
