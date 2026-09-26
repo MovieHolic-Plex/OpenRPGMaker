@@ -407,7 +407,7 @@ stamp(35, 22, SC, 4, 24, 4, 6, 'up', True, 'school-tree-a')
 chip(40, 22, 'icho2.png', 4, 0, 4, 6, 'school-tree-b')   # ginkgo, not a twin of tree-a
 # bicycle racks: front-facing bikes (bicycle01 col 0, 1x2), colours cycle red/blue/green
 # 駐輪場 by the gate: five bikes, colours and facing mixed, one gap — not a stamped row
-for bx, t0 in ((22, 0), (23, 10), (25, 20), (26, 1), (27, 10)):
+for bx, t0 in ((22, 0), (23, 10), (25, 20), (26, 1), (27, 11)):
     chip(bx, 29, 'bicycle01.png', 5, t0, 1, 2, f'bike{bx}')
 stamp(14, 29, SC, 2, 28, 2, 2, 'up', True, 'pots-gate-w')
 
@@ -486,9 +486,11 @@ stamp(68, 0, TN, 5, 16, 2, 3, 'up', True, 'tree68,0')   # ゴミ集積所 at the
 # east hill edge: the house-ne-1 lot (x79-94) owns y2 (its back wall) -> trees stop 1 row above it, species mixed, staggered
 stamp(72, 0, TN, 5, 16, 2, 3, 'up', True, 'tree72,0')
 chip(75, 0, 'ume.png', 6, 0, 3, 3, 'ume-hill-1')
-for tx in range(78, 96, 2):   # continuous canopy behind the lot's back wall: tree crowns only (TN 133/134 over 141/142), trunks hidden by the wall
-    if tx + 1 >= W: break
-    stamp(tx, 0, TN, 5, 16, 2, 2, 'up', True, f'hillcanopy{tx}')
+# canopy behind the lot's back wall (y2): crowns only, three species, uneven 2-3 tile steps
+for tx, kind in ((78, 'pine'), (80, 'ume'), (83, 'momiji'), (86, 'pine'), (89, 'ume'), (92, 'pine'), (94, 'momiji')):
+    if kind == 'pine': stamp(tx, 0, TN, 5, 16, 2, 2, 'up', True, f'hillcanopy{tx}')
+    elif kind == 'ume': chip(tx, 0, 'ume.png', 6, 3, 3, 2, f'hillcanopy{tx}')
+    else: chip(tx, 0, 'momiji.png', 4, 0, 2, 2, f'hillcanopy{tx}') if tx + 1 < W else None
 
 # ================================================================= SW x0..44, y39..63
 signal(44, 39, 'signal-sw'); ground(43, 39, 2, 4, WALK)
@@ -518,7 +520,7 @@ for sx in (52, 56, 60, 64):
     for yy in range(48, 51): put(sx, yy, T(CV, 6), 'up', False)
 # parked cars (car.png: front view cols 0-2, rear view cols 3-5, 3x4); bay in front of the door (x57-59) left empty
 chip(53, 48, 'car.png', 11, 3, 3, 4, 'car-1')
-chip(61, 48, 'car.png', 11, 4, 3, 4, 'car-2') if False else chip(61, 48, 'car.png', 11, 3, 3, 4, 'car-2')   # ordinary customer car, nose-in (rear view)
+chip(61, 48, 'car.png', 11, 0, 3, 4, 'car-2')   # backed-in customer car (front view): not a twin of car-1
 rtown(67, 46, 'rtown-se', wall='plaster', roof='dark', awning=False)
 kit_variant('clinic-small', 77, 45, 'clinic-se', sub={'xp-roof01': R3}, label='roof03')
 ground(77, 52, 9, 2, ASPH)   # clinic front car park onto the y54 lane
@@ -546,11 +548,11 @@ for bx in (57, 65): place_kit('park-bench-back', bx, 60)
 # temple graveyard (寺の墓地) east of the bridge: gravel yard, grave blocks, bell; graves belong to a temple, never the shrine
 ground(76, 56, 20, 7, T(TN, 22))
 chip(78, 56, 'ohaka.png', 4, 0, 4, 6, 'graves-78')
-chip(83, 57, 'ohaka.png', 4, 0, 4, 6, 'graves-83')   # second block one row lower: not a mirror copy
+chip(83, 57, 'ohaka.png', 4, 12, 4, 3, 'graves-83')   # second block: only the lower half of the sheet (different stones), one row lower
 # no temple hall fits beside it: a walled community cemetery (共同墓地), no bell
 for wy in range(56, 63): put(76, wy, T(TN, 24 if wy < 62 else 40), 'up', True)
 put(76, 56, T(TN, 16), 'up', True)
-for tx in (90, 92, 94): stamp(tx, 56, TN, 5, 16, 2, 3, 'up', True, f'tgrove{tx}')   # evergreen screen behind the graves
+for tx, ty in ((90, 56), (92, 55), (94, 56)): stamp(tx, ty, TN, 5, 16, 2, 3, 'up', True, f'tgrove{tx}')   # evergreen screen behind the graves, staggered
 chip(91, 59, 'ume.png', 6, 3, 3, 3, 'cemetery-ume')
 
 
@@ -632,7 +634,7 @@ yard_prop(38, 40, 155, 'laundry-sw5-a'); yard_prop(39, 40, 156, 'laundry-sw5-b')
 if all(owner[y][x] == 'rtown-sw-5-yard' and not up[y][x] for x in (40, 41) for y in (41, 42)):
     for dx in (0, 1):
         for dy in (0, 1): owner[41 + dy][40 + dx] = None
-    chip(40, 41, 'yukiyanagi.png', 2, 0, 2, 2, 'shrub-sw5')
+    put(40, 41, T(TN, 204), 'up', True); put(41, 42, T(TN, 204), 'up', True)   # two pots here, not a second yukiyanagi
 yard_prop(18, 50, 204, 'pot-sw-3'); yard_prop(35, 50, 204, 'pot-sw-4')
 
 # a back-wall run with no corner post that stops mid-garden is a floating plank: pull it
