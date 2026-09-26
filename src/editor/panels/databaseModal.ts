@@ -184,7 +184,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   let opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   // Topbar rerenders can replace the opener while the modal remains mounted.
   let openerTestId = opener?.dataset.testid;
-  const dirtySession = createDatabaseModalDirtySession();
+  const dirtySession = createDatabaseModalDirtySession({ deferred: parkingModal });
   // 사이드 도킹(M8): 모달⇄우측 도크 토글 상태. localStorage 에 저장돼 다음 오픈 시 복원된다.
   let dockMode = false;
   // 창 모드에서만 설치되는 Tab 트랩의 해제자. 도크 모드·닫기에서 반드시 호출한다.
@@ -712,6 +712,8 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     activeModal = null;
     parkedModal = {
       show: (showOptions) => {
+        // 숨겨 둔 창의 되돌리기 기준은 보이는 순간이다 — 부팅 시점이 아니다.
+        dirtySession.begin();
         const current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
         if (current && !backdrop.contains(current)) {
           opener = current;

@@ -2146,6 +2146,13 @@ ID·타일 크기·열 수·개수·업로드 이미지 ID와 SHA256이 모두 �
 HTTP 경로가 없는 환경(현재 Electron 직접 실행 등)은 저장된 문서를 유지한다. 공유문서 자동 갱신은
 현재 로컬/팀 웹 호스트 경로에서 제공하며 다른 실행 경로까지 지원했다고 보고하지 않는다.
 
+부팅 경로 (2026-09-26): 부팅은 이 응답을 기다리지 않는다. 편집기가 뜬 뒤 `store.applySharedReferenceRefresh()` 가
+보강할 타일셋이 있을 때만(`sharedTileReferencesTouch`) 시스템 변경으로 적용하고 자동저장한다. 팀 호스트 응답은
+참고 이미지를 `/__oprn/shared-content/image/...`, 지역 미리보기를 미리보기 주소로 바꾸고 gzip 해서 카탈로그 판본마다
+한 번 만든다(`encodedSharedTileReferences`). 워커(`piAgentRuntime`)는 인라인 원본 `readSharedTileReferences()` 를 쓴다.
+실측: 원본 183MB 를 매번 4.7s 에 만들어 10s 제한을 넘겨 항상 실패했고 팀 호스트 부팅이 10s 늘었다.
+지금은 19.6MB, 캐시 응답 1ms.
+
 
 ## 실제 타일 규칙 수정 도구 노출 (2026-09-23)
 

@@ -1,4 +1,4 @@
-import { ensureSharedTileReferences } from "./sharedTileReferences";
+import { applySharedTileReferenceEntries, ensureSharedTileReferences, sharedTileReferencesTouch } from "./sharedTileReferences";
 import { externalizeBundledReferenceImages } from "./bundledReferenceImages";
 import { canWriteTeamProject } from './teamAccess';
 import { mergeTeamProject } from "./persistence/core/teamMerge";
@@ -219,7 +219,17 @@ export function setDevProjectFactory(factory: DevProjectFactory | null): void {
   devProjectFactory = factory;
 }
 class ProjectStore {
-  private current: Project;
+  private currentValue: Project | null = null;
+  /**
+   * 로드 전 자리표시 프로젝트는 처음 읽을 때 만든다. 생성자에서 만들면 부팅마다 load() 가
+   * 곧바로 버리는 빈 프로젝트를 한 벌 더 지었다(2026-09-26 실측 약 0.4~1s, 타일셋 30여 벌).
+   */
+  private get current(): Project {
+    return this.currentValue ??= createBlankProject();
+  }
+  private set current(project: Project) {
+    this.currentValue = project;
+  }
   private listeners = new Set<Listener>();
   private autoSaveListeners = new Set<AutoSaveListener>();
   private autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
@@ -272,7 +282,6 @@ class ProjectStore {
   }
 
   constructor() {
-    this.current = createBlankProject();
     this.boundOnlineHandler = () => this.onNetworkRestored();
     // 존재만 보지 않고 **능력**을 본다. 테스트가 심는 부분 스텁 window 에는 addEventListener 가
     // 없어서 `typeof window !== "undefined"` 만으로는 생성자가 던졌고, 그 결과 저장/로드
@@ -1596,6 +1605,23 @@ class ProjectStore {
         this.scheduleAutoSave();
       }
     }
+  }
+
+  /**
+   * 부팅 뒤 도착한 공용 타일 참고문서를 현재 프로젝트에 보강한다. 부팅 정규화와 같은 함수를 쓰고, 바뀐 것이
+   * 있을 때만 시스템 변경으로 남기고 자동저장한다. 로드 전이거나 읽기 전용이면 손대지 않는다 — 다음 로드의 정규화가 한다.
+   */
+  applySharedReferenceRefresh(): boolean {
+    if (!this.loaded || this.currentValue === null || !canWriteTeamProject() || this.readOnlyProjectSnapshot) return false;
+    // 보강할 타일셋이 없으면 프로젝트를 복제하지 않는다(대부분의 프로젝트가 이 경우다).
+    if (!sharedTileReferencesTouch(this.current)) return false;
+    const draft = cloneProjectSharingReferenceDocuments(this.current);
+    if (!applySharedTileReferenceEntries(draft)) return false;
+    this.current = draft;
+    this.markLocalMutation({ scope: "system", origin: "system", label: "공용 타일 참고문서 갱신", fields: [{ path: "sharedTileReferences", after: true }] });
+    this.emit({ scope: "project", origin: "system" });
+    if (this.remotePersistenceEnabled) this.scheduleAutoSave();
+    return true;
   }
 
   /** 주소창에 ?project=&name= 반영 (공유/북마크). 로컬 폴더 대상에서는 주소가 아니라 폴더가 정본이다. */

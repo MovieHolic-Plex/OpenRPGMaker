@@ -828,6 +828,12 @@ export function resolveEventPlacement(
     readonly steppable?: boolean;
     readonly ignoreEventId?: string;
     readonly reserved?: ReadonlySet<string>;
+    /**
+     * 호출자가 같은 칸의 자동 조사 이벤트(ev_inspect_*)를 displaceAutoInspectEvents 로 걷어낸다.
+     * 점유 칸 회피(2026-09-24)가 그 자리표시도 점유로 봐서, 가구 위 상자가 옆 칸으로 밀리고
+     * 조사 이벤트는 남았다. 걷어내지 않는 호출자는 켜면 안 된다 — 같은 칸에 겹친다.
+     */
+    readonly replacesAutoInspect?: boolean;
     readonly label: string;
     readonly code: string;
   },
@@ -855,7 +861,8 @@ export function resolveEventPlacement(
   // 겹쳐 생겨 앞 이벤트가 그림자진다(2026-09-24 몬스터 수집 r2: NPC 위에 ev_starters 가 겹쳐
   // autoplay 의 「첫 파트너 받기」 조사가 NPC 를 집고 실패했다). 조정 경로의 nearestPassableCell 은
   // 이미 점유를 피하므로, 점유 칸 요청은 조정 경로로 보낸다.
-  const occupiedRequested = map.events.some((event) => event.id !== options.ignoreEventId && event.x === x && event.y === y);
+  const occupiedRequested = map.events.some((event) => event.id !== options.ignoreEventId && event.x === x && event.y === y
+    && !(options.replacesAutoInspect === true && isAutoInspectEvent(event)));
   const keepRequested = !requestedReserved && !occupiedRequested;
   if (keepRequested && isPassable(project, map, x, y)) return { x, y, adjusted: false };
   if (keepRequested && !mustStandOnPassable && passableLanding(project, map, x, y)) return { x, y, adjusted: false };
@@ -3014,6 +3021,7 @@ const placeChest: ToolDefinition = {
       kind: "interaction",
       label: "보물상자",
       code: "chest-impassable",
+      replacesAutoInspect: true,
     });
     const { x, y, adjusted } = placement;
     assertChestDrySurface(draft, map, x, y);
@@ -3124,6 +3132,7 @@ const placeStorageChest: ToolDefinition = {
       kind: "interaction",
       label: "보관 상자",
       code: "storage-chest-impassable",
+      replacesAutoInspect: true,
     });
     const { x, y, adjusted } = placement;
     const graphic = resolveGraphic({ query: "서랍장" }, { overrides: draft.charsetLabels });
@@ -3202,6 +3211,7 @@ const placeSavepoint: ToolDefinition = {
       kind: "interaction",
       label: "세이브 포인트",
       code: "savepoint-impassable",
+      replacesAutoInspect: true,
     });
     const { x, y, adjusted } = placement;
     const graphic = resolveGraphic({ query: "크리스탈" }, { overrides: draft.charsetLabels });

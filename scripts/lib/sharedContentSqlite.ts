@@ -68,6 +68,25 @@ function referenceImageIndexFor(file: string, revision: string): Map<string, str
   referenceImageIndexes.set(file, { revision, images });
   return images;
 }
+/**
+ * 같은 주소 규칙·색인으로 다른 호스트 응답(공용 타일 참고문서)의 참고 이미지를 주소로 바꾸는 함수를 돌려준다.
+ * 판본은 한 번만 읽는다 — 호출자는 문서 수천 개를 돌린다.
+ */
+export function sharedReferenceImageLinker(file = sharedContentFile()): (categories: TilesetReferenceCategory[] | undefined) => void {
+  const db = open(file);
+  let revision: string;
+  try { revision = snapshotRevision(db.prepare('SELECT id, revision FROM content_libraries ORDER BY id').all() as { id: string; revision: string }[]); }
+  finally { db.close(); }
+  const index = referenceImageIndexFor(file, revision);
+  return (categories) => {
+    for (const category of categories ?? []) for (const image of category.images) {
+      const address = sharedReferenceImageAddress(image.dataUrl);
+      if (!address) continue;
+      if (!index.has(address)) index.set(address, image.dataUrl);
+      image.dataUrl = address;
+    }
+  };
+}
 /** Bytes behind a shared reference image address. Builds the index from every library once per catalog revision. */
 export function readSharedReferenceImage(address: string, file = sharedContentFile()): { mime: string; bytes: Buffer } | null {
   const parsed = parseSharedReferenceImage(address);
@@ -84,15 +103,15 @@ export function readSharedReferenceImage(address: string, file = sharedContentFi
   if (!dataUrl) return null;
   return { mime: parsed.mime, bytes: Buffer.from(dataUrl.slice(dataUrl.indexOf(',') + 1), 'base64') };
 }
-function previewUrl(library: string, revision: string, kind: 'place' | 'region', id: string): string {
+export function sharedContentPreviewUrl(library: string, revision: string, kind: 'place' | 'region', id: string): string {
   return `${SHARED_CONTENT_PREVIEW_ENDPOINT}?${new URLSearchParams({ library, kind, id, v: revision.slice(0, 16) })}`;
 }
 function linkPreviews(libraryId: string, revision: string, library: SharedContentLibrary): SharedContentLibrary {
   for (const [id, value] of Object.entries(library.previews ?? {})) {
-    if (value.startsWith('data:')) library.previews[id] = previewUrl(libraryId, revision, 'place', id);
+    if (value.startsWith('data:')) library.previews[id] = sharedContentPreviewUrl(libraryId, revision, 'place', id);
   }
   for (const [id, region] of Object.entries(library.regions ?? {})) {
-    if (region.preview.startsWith('data:')) region.preview = previewUrl(libraryId, revision, 'region', id);
+    if (region.preview.startsWith('data:')) region.preview = sharedContentPreviewUrl(libraryId, revision, 'region', id);
   }
   return library;
 }
