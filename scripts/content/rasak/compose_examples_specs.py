@@ -1478,3 +1478,219 @@ def ex_winter_market(ctx):
     for cx, cy in [(1, 7), (9, 5), (15, 7), (22, 6), (30, 7), (13, 11), (8, 16), (17, 17), (24, 12)]:
         c.kind(2, 'A2:20' if cx % 2 else 'A2:28', [(cx + dx, cy) for dx in (0, 1) if c.ground(cx + dx, cy) == 'floor' and c.L[3][cy * c.w + cx + dx] is None])
     return c
+
+
+
+@example
+def ex_garden_village(ctx):
+    """정원 마을 34×22 — 막돌 포장 길 · 가운데 생울타리 정원(분수·화단·가지친 나무·정원 탁자) · 집 셋(A3, 문·창) 각각 앞마당 텃밭 ·
+    잔디 깎기·갈퀴·낙엽 더미 같은 정원 일 소품 · 가장자리 여름 나무. 좌우 대칭 금지."""
+    c = Canvas(ctx, 'rasak_garden', 34, 22, 'ex_garden_village', 'Rasak 예제 · 정원 마을(생울타리 정원·화단·텃밭)')
+    c.kind(1, 'A2:0', rect(0, 0, 34, 22))
+    c.kind(1, 'A2:2', path([(0, 9), (33, 9)], width=2) + path([(16, 10), (16, 21)], width=2))
+    # 집 셋(문·창) — 길 북쪽 둘, 남동 하나
+    house(c, 2, 1, 7, 'A3:3', 'A3:9', roof_h=3, wall_h=2, door=3, windows=(1, 5))
+    house(c, 22, 2, 8, 'A3:5', 'A3:13', roof_h=2, wall_h=2, door=2, windows=(5,))
+    house(c, 25, 13, 6, 'A3:1', 'A3:11', roof_h=3, wall_h=2, door=3, windows=(1,))
+    c.kind(1, 'A2:2', path([(5, 6), (5, 8)], 1) + path([(24, 6), (24, 8)], 1) + path([(28, 18), (28, 21)], 1) + path([(18, 20), (28, 20)], 1))
+    # 앞마당 텃밭(흙 밭 2층 + 작물) — 집마다 옆
+    c.kind(2, 'A2:22', rect(10, 3, 4, 3)); c.kind(2, 'A2:23', [(10, 3), (12, 4), (13, 3)])
+    c.kind(2, 'A2:30', rect(19, 3, 3, 3)); c.kind(2, 'A2:31', [(19, 4), (21, 3)])
+    c.kind(2, 'A2:22', rect(20, 14, 3, 3))
+    # 가운데 생울타리 정원(길 남서): 생울타리 벽 · 분수 · 화단 · 가지친 나무 · 정원 탁자
+    c.kind(1, 'A2:18', rect(2, 12, 11, 8))                             # 정원 판석 마당
+    for oid, x, y in (('garden_hedge_wide', 2, 12), ('garden_hedge_wide', 10, 12), ('garden_hedge_column', 2, 14), ('garden_hedge_column', 12, 14),
+                      ('garden_hedge_u', 5, 17), ('garden_table_set_four', 8, 16), ('garden_topiary_column', 5, 13), ('garden_topiary_column', 9, 13),
+                      ('garden_planter_stone_long', 5, 14)):
+        c.try_obj(oid, x, y)
+    c.obj('garden_wall_fountain_water', 28, 4, over=True)          # 벽걸이 분수 = 동쪽 집 벽면
+    # 집 앞 꽃 화단 줄·낙엽·장작 덩이 · 정원 남쪽 채움
+    for oid, x, y in (('garden_flowers_yellow_row', 6, 7), ('garden_flowers_red_row', 26, 7), ('garden_planter_stone_row', 9, 7),
+                      ('garden_hedge_block_small', 1, 1), ('garden_hedge_block_small', 31, 1), ('garden_leaf_pile_low', 20, 7),
+                      ('garden_hedge_t_maze', 20, 17), ('garden_table_round', 13, 13), ('garden_planter_stone_tall_b', 10, 20),
+                      ('garden_flowers_blue_row', 3, 20), ('garden_mower_up', 24, 19), ('garden_leaf_pile_big', 12, 18)):
+        c.try_obj(oid, x, y)
+    for oid, x, y in ():
+        c.try_obj(oid, x, y)
+    for oid, x, y, ly in (('garden_flowers_red_row', 5, 14, 4),):
+        c.try_obj(oid, x, y)
+    # 정원 일 소품: 잔디 깎기·갈퀴·낙엽 더미·호스·물통
+    for oid, x, y in (('garden_mower_right', 13, 7), ('garden_rake_standing', 23, 7), ('garden_leaf_pile_big', 30, 7), ('garden_hose_stand', 1, 7),
+                      ('garden_leaf_pile_rake', 18, 16), ('garden_planter_stone_row', 18, 12), ('garden_trough_stone_horizontal', 22, 11)):
+        c.try_obj(oid, x, y)
+    # 꽃 줄(세로) · 가지친 나무 화분 — 길 가장자리 한쪽
+    for oid, x, y in (('garden_flowers_blue_vertical', 14, 11), ('garden_flowers_yellow_vertical', 14, 16), ('garden_topiary_in_planter', 19, 11),
+                      ('garden_flowers_mixed_vertical', 31, 10), ('garden_planter_stone_tall_a', 23, 12)):
+        c.try_obj(oid, x, y)
+    # 가장자리 여름 나무 무리(북서·남서·동)
+    import random
+    rnd = random.Random(4)
+    trees = [o['id'] for o in c.ctx.names['bundles'][c.b]['objects'] if o['id'].startswith('trees_summer') and o['size'][0] >= 2 and 'bare' not in o['id']]
+    for gx, gy, gw, gh in [(0, 18, 2, 4), (31, 13, 3, 9), (11, 0, 10, 3), (0, 10, 2, 5), (18, 12, 5, 4)]:
+        for _ in range(30):
+            c.try_obj(trees[rnd.randrange(len(trees))], gx + rnd.randrange(gw), gy + rnd.randrange(gh))
+    for gx, gy, gw, gh in [(33, 0, 1, 10), (26, 18, 5, 4)]:
+        for _ in range(20):
+            c.try_obj(trees[rnd.randrange(len(trees))], gx + rnd.randrange(gw), gy + rnd.randrange(gh))
+    # 잔디 결: 풀·흙 얼룩(2층) 덩이 — 길 가장자리와 빈 잔디에
+    for cx, cy in [(10, 7), (21, 7), (3, 20), (14, 20), (23, 18), (30, 11), (5, 10), (11, 10), (17, 10), (27, 10), (8, 20), (29, 19), (26, 0)]:
+        c.kind(2, 'A2:13', [(cx + dx, cy + dy) for dx, dy in ((0, 0), (1, 0), (0, 1)) if c.ok(cx + dx, cy + dy) and c.ground(cx + dx, cy + dy) == 'floor' and c.L[3][(cy + dy) * c.w + cx + dx] is None])
+    return c
+
+
+
+@example
+def ex_desert_town(ctx):
+    """서부 사막 마을 34×22 — 노란 모래 바탕 · 흙 큰길(동서) · 길 북쪽 목조 건물 정면 둘(서부 조립 판을 시트 배치 그대로) + A3 판자 집 둘(문·창) ·
+    물탱크 탑 · 풍차 · 짐수레 · 나무 보도 난간 · 선인장 무리(가장자리) · 바위·마른 덤불. 좌우 대칭 금지."""
+    c = Canvas(ctx, 'rasak_desert', 34, 22, 'ex_desert_town', 'Rasak 예제 · 서부 사막 마을(목조 정면·물탱크·선인장)')
+    c.kind(1, 'A2:0', rect(0, 0, 34, 22))
+    c.kind(1, 'A2:2', path([(0, 11), (33, 11)], width=3) + path([(21, 14), (21, 21)], width=2))
+    # 목조 건물 정면(서부 조립 판 = B 시트 안): 판 두 덩이를 원본 배치 그대로(아랫줄이 큰길 바로 위)
+    # 서부 시트 위쪽은 정면이 아니라 판벽·지붕·계단 조각 모음이라 통째로 옮기면 뒤죽박죽이 된다 — 집은 A3 로 짓고 시트에서는 소품만 쓴다.
+    house(c, 1, 3, 7, 'A3:7', 'A3:13', roof_h=3, wall_h=3)
+    house(c, 9, 5, 6, 'A3:21', 'A3:29', roof_h=3, wall_h=2)
+    # A3 판자 집 둘(문·창) — 폭·지붕 다르게
+    house(c, 18, 5, 6, 'A3:3', 'A3:24', roof_h=3, wall_h=2)
+    house(c, 26, 15, 7, 'A3:2', 'A3:11', roof_h=3, wall_h=2)
+    for oid, x, y in (('wildwest_porch_awning', 19, 8), ('wildwest_porch_awning', 2, 7), ('wildwest_boardwalk_rail', 8, 10), ('wildwest_bench_long', 19, 10), ('wildwest_bench_long', 4, 10)):
+        c.try_obj(oid, x, y)
+    # 물탱크 탑 · 풍차 · 짐수레 · 상자·통 덩이(큰길 남쪽)
+    for oid, x, y in (('wildwest_water_tower', 3, 14), ('wildwest_windmill_frame', 29, 1), ('wildwest_wagon', 10, 15), ('wildwest_crates_stack', 14, 15),
+                      ('wildwest_barrels_pair', 16, 15), ('wildwest_hitching_post_tall', 8, 14), ('wildwest_fence_rail', 23, 15)):
+        c.try_obj(oid, x, y)
+    # 선인장 무리·바위·마른 덤불(가장자리, 무리로)
+    import random
+    rnd = random.Random(9)
+    for gx, gy, gw, gh in [(0, 18, 9, 4), (12, 18, 8, 4), (25, 0, 4, 5), (30, 7, 4, 3), (0, 0, 2, 3), (15, 0, 3, 5), (23, 16, 3, 6)]:
+        for _ in range(20):
+            c.try_obj(('wildwest_cactus_big', 'wildwest_cactus_tall')[rnd.randrange(2)], gx + rnd.randrange(gw), gy + rnd.randrange(gh))
+    smalls = [o['id'] for o in c.ctx.names['bundles'][c.b]['objects'] if o['id'].startswith(('wildwest_post_prop', 'wildwest_small_prop'))]
+    for cx, cy in [(6, 14), (13, 13), (24, 13), (31, 13), (9, 20), (17, 20), (27, 10)]:
+        for dx, dy in ((0, 0), (1, 0), (0, 1)):
+            c.try_obj(smalls[rnd.randrange(len(smalls))], cx + dx, cy + dy)
+    # 북쪽 모래 언덕(짙은 모래 땅 덩이 + 바위) · 큰길 남쪽 우물터 · 동쪽 집 앞 울타리 마당
+    c.kind(1, 'A2:3', blob(4, 0, [(0, 6), (-1, 7), (1, 5)]) + blob(20, 0, [(0, 4), (-1, 5), (0, 4)]))
+    for oid, x, y in (('wildwest_crates_stack', 10, 3), ('wildwest_barrels_pair', 12, 3), ('wildwest_fence_rail', 26, 13), ('wildwest_fence_rail', 29, 13),
+                      ('wildwest_hitching_post_tall', 17, 11), ('wildwest_wagon', 1, 12), ('wildwest_bench_long', 27, 20), ('wildwest_crates_stack', 31, 20)):
+        c.try_obj(oid, x, y)
+    for cx, cy in [(2, 12), (8, 9), (16, 13), (25, 12), (30, 11), (5, 17), (19, 18), (28, 20), (12, 1), (22, 2), (5, 1), (8, 3), (20, 13), (0, 7), (15, 8), (24, 8), (32, 16)]:
+        c.kind(2, ('A2:13', 'A2:5', 'A2:4')[(cx + cy) % 3], [(cx + dx, cy + dy) for dx, dy in ((0, 0), (1, 0), (0, 1)) if c.ok(cx + dx, cy + dy) and c.ground(cx + dx, cy + dy) == 'floor' and c.L[3][(cy + dy) * c.w + cx + dx] is None])
+    return c
+
+
+
+@example
+def ex_skull_crypt(ctx):
+    """해골 지하묘지 30×20 — 회색 돌·검갈색 흙벽(A4, 방마다 다름) · 모자이크 바닥 · 벽감 석관 묘실 / 뼈 무더기 납골실 / 붉은 살덩이 혼돈의 방 / 입구 복도.
+    바닥 격자 덮개·모자이크 조각은 2층 덩이로. 좌우 대칭 금지."""
+    c = Canvas(ctx, 'rasak_crypt', 30, 20, 'ex_skull_crypt', 'Rasak 예제 · 해골 지하묘지(묘실·납골실·혼돈의 방)')
+    TOP = 'A4:0'
+    interior(c, TOP, [
+        (1, 1, 12, 9, 'A4:27', 'A2:0'),     # 벽감 묘실(회색 돌)
+        (14, 1, 28, 8, 'A4:11', 'A2:1'),    # 납골실(검갈색)
+        (1, 11, 11, 18, 'A4:43', 'A2:2'),   # 혼돈의 방(짙은 벽돌)
+        (13, 10, 28, 18, 'A4:25', 'A2:3'),  # 입구 복도
+    ], doors=door_v(13, 5, 'A2:0') + door_h(6, 10, 'A2:2') + door_h(20, 9, 'A2:1') + door_v(12, 14, 'A2:3') + [(20, 19, 'A2:3')])
+    import random
+    rnd = random.Random(13)
+    ids = {o['id'] for o in c.ctx.names['bundles'][c.b]['objects']}
+    pick = lambda pre: [i for i in ids if i.startswith(pre)]
+    # 벽감 묘실: 석관 줄 · 묘비 · 유골 단지 · 벽 선반
+    for oid, x, y in (('crypt_sarcophagus_a', 2, 3), ('crypt_sarcophagus_c', 5, 3), ('crypt2_stone_sarcophagus_big', 8, 5), ('crypt_tomb_tall_a', 1, 6),
+                      ('crypt_headstone_round_b', 11, 3), ('crypt_urn_large_56', 9, 3), ('crypt_bones_pile_a', 5, 7), ('crypt_wall_shelf_38', 2, 2), ('crypt_wall_shelf_54', 8, 1)):
+        oid in ids and c.try_obj(oid, x, y)
+    # 납골실: 관 더미 · 뼈 무더기 · 해골 선반 · 촛불
+    for oid, x, y in (('crypt2_coffin_stack_wood', 15, 3), ('crypt2_coffin_lid_open', 19, 3), ('crypt2_skeleton_sitting', 23, 3), ('crypt2_candle_tall', 26, 3),
+                      ('crypt_bones_pile_a', 17, 6), ('crypt2_bone_long_18', 22, 6), ('crypt_urn_bones_spill', 25, 6)):
+        oid in ids and c.try_obj(oid, x, y)
+    # 혼돈의 방: 붉은 살덩이·가시·알
+    chaos = sorted(pick('chaos_'), key=lambda i: -c.ctx.object(c.b, i)['size'][0] * c.ctx.object(c.b, i)['size'][1])
+    for _ in range(80):
+        if not chaos: break
+        c.try_obj(chaos[rnd.randrange(min(12, len(chaos)))], 2 + rnd.randrange(9), 12 + rnd.randrange(6))
+    # 입구 복도: 석상 · 촛대 · 뼈 조각 · 핏자국
+    for oid, x, y in (('crypt_dark_statue_a', 14, 11), ('crypt_dark_statue_b', 27, 11), ('crypt2_candle_tall', 17, 12), ('crypt2_candle_tall', 24, 12),
+                      ('dungeon_blood_pool', 21, 15), ('crypt_bones_pile_a', 15, 16), ('dungeon_skull_small', 26, 16)):
+        oid in ids and c.try_obj(oid, x, y)
+    # 방마다 소품 풀에서 무리로 채운다(없는 id 는 건너뜀)
+    def fill(pools, box, n):
+        x0, y0, x1, y1 = box
+        items = [i for pre in pools for i in ids if i.startswith(pre)]
+        for _ in range(n):
+            if items: c.try_obj(items[rnd.randrange(len(items))], x0 + rnd.randrange(x1 - x0), y0 + rnd.randrange(y1 - y0))
+    # 통로(문과 문을 잇는 줄)는 비운다 — 먼저 표시해 두고 채운 뒤 다시 비운다
+    lanes = {(x, 5) for x in range(2, 29)} | {(6, y) for y in range(3, 18)} | {(20, y) for y in range(3, 19)} | {(x, 14) for x in range(2, 29)}
+    for (lx, ly) in lanes:
+        c.owner.setdefault((3, ly * c.w + lx), '__lane__')
+    fill(('crypt_urn_', 'crypt_bones_pile', 'crypt_tomb', 'crypt_headstone', 'crypt_sarcophagus', 'crypt2_stone_sarcophagus'), (2, 3, 12, 9), 25)
+    fill(('crypt2_coffin_', 'crypt2_skeleton_', 'crypt2_torch', 'crypt_bones_pile'), (15, 3, 28, 8), 22)
+    fill(('crypt2_candle_skull', 'crypt_dark_statue', 'crypt2_torch', 'crypt_urn_tall'), (14, 11, 28, 18), 14)
+    for k_ in [k_ for k_, v in c.owner.items() if v == '__lane__']:
+        del c.owner[k_]
+    small = [i for i in pick('dungeon_pebble') + pick('crypt_pebbles') + pick('dungeon_blood_spots') + pick('crypt2_bone') if c.ctx.object(c.b, i)['size'] == [1, 1]]
+    for _ in range(120):
+        x, y = rnd.randrange(30), rnd.randrange(20)
+        if small and rnd.random() < 0.4: c.try_obj(small[rnd.randrange(len(small))], x, y)
+    for cx, cy in [(3, 8), (9, 7), (16, 5), (25, 5), (18, 14), (23, 16)]:
+        c.kind(2, ('A2:4', 'A2:7')[(cx + cy) % 2], [(cx + dx, cy + dy) for dx, dy in ((0, 0), (1, 0), (0, 1), (1, 1)) if c.ok(cx + dx, cy + dy) and c.ground(cx + dx, cy + dy) == 'floor' and c.L[3][(cy + dy) * c.w + cx + dx] is None])
+    return c
+
+
+
+@example
+def ex_temple_hall(ctx):
+    """사암 신전·동양 실내 30×20 — 사암 벽(A4) · 방마다 다른 판석 바닥 · 옥좌가 있는 본전(붉은 융단·기둥 줄·제단) / 회색 돌 명상실(돌 옥좌·탁자) /
+    다다미 객실(장지문 벽·이불·낮은 탁자) / 입구 회랑(기둥·등). 기둥은 줄로, 융단은 본전 가운데 길에만. 좌우 대칭 금지."""
+    c = Canvas(ctx, 'rasak_temple', 30, 20, 'ex_temple_hall', 'Rasak 예제 · 사암 신전과 동양 실내(본전·명상실·다다미 객실)')
+    interior(c, 'A4:0', [
+        (1, 1, 15, 11, 'A4:27', 'A2:0'),    # 본전
+        (17, 1, 28, 8, 'A4:24', 'A2:16'),   # 회색 돌 명상실
+        (17, 10, 28, 18, 'A4:40', 'A2:8'),  # 다다미 객실
+        (1, 13, 15, 18, 'A4:10', 'A2:1'),   # 입구 회랑
+    ], doors=door_v(16, 5, 'A2:0') + door_h(8, 12, 'A2:0') + door_v(16, 15, 'A2:1') + door_h(22, 9, 'A2:16') + [(8, 19, 'A2:1')])
+    ids = {o['id'] for o in c.ctx.names['bundles'][c.b]['objects']}
+    put = lambda oid, x, y: oid in ids and c.try_obj(oid, x, y)
+    # 본전: 가운데 붉은 융단 길(2층) · 기둥 줄 양옆(간격 다르게) · 옥좌 · 제단 · 향로
+    c.kind(2, 'A2:7', [(8, y) for y in range(4, 12)] + [(7, y) for y in range(4, 12)])
+    for x, y in ((3, 4), (3, 8), (12, 4), (12, 7)):
+        put('temple_pillar_wood_a' if 'temple_pillar_wood_a' in ids else 'temple2_pillar_stone_a', x, y)
+    for oid, x, y in (('temple_throne_altar', 6, 1), ('temple_table_long_runner', 10, 2), ('temple_bench_low', 2, 2), ('temple_table_round', 12, 9)):
+        put(oid, x, y)
+    # 명상실(회색 돌): 돌 옥좌 · 돌 탁자 · 돌 기둥 · 돌 난간
+    for oid, x, y in (('temple2_throne_altar', 21, 1), ('temple2_table_plain', 18, 4), ('temple2_pillar_stone_a', 26, 3), ('temple2_railing_stone', 24, 6), ('temple2_bench_low', 18, 7)):
+        put(oid, x, y)
+    # 다다미 객실: 장지문 벽(북쪽 벽 아래) · 이불 · 낮은 탁자 · 걸어 둔 천
+    jp = sorted(i for i in ids if i.startswith('japanese_'))
+    for oid, x, y in (('japanese_shoji_wall_a', 18, 11), ('japanese_futon_folded', 18, 14), ('japanese_futon_h', 21, 16), ('japanese_lacquer_wide', 24, 14),
+                      ('japanese_wood_rack_wide', 26, 16)):
+        put(oid, x, y)
+    import random
+    rnd = random.Random(17)
+    smalls = [i for i in jp if c.ctx.object(c.b, i)['size'] == [1, 1] and c.ctx.object(c.b, i)['layer'] == 3]
+    for _ in range(25):
+        if smalls: c.try_obj(smalls[rnd.randrange(len(smalls))], 18 + rnd.randrange(10), 13 + rnd.randrange(5))
+    # 입구 회랑: 기둥 줄 · 등 · 붉은 끈
+    for x in (3, 7, 11, 14):
+        put('temple2_post_stone_short_a', x, 14)
+    for oid, x, y in (('temple_cord_red_long', 5, 13), ('temple_cord_red_long', 12, 13)):
+        put(oid, x, y)
+    # 방별 풀 채우기 — 문을 잇는 통로는 예약해 비운다
+    lanes = {(x, 5) for x in range(2, 29)} | {(8, y) for y in range(3, 19)} | {(22, y) for y in range(3, 18)} | {(x, 15) for x in range(2, 29)}
+    for (lx, ly) in lanes:
+        c.owner.setdefault((3, ly * c.w + lx), '__lane__')
+    def fill(pools, box, n):
+        x0, y0, x1, y1 = box
+        items = [i for pre in pools for i in ids if i.startswith(pre) and c.ctx.object(c.b, i)['layer'] == 3]
+        for _ in range(n):
+            if items: c.try_obj(items[rnd.randrange(len(items))], x0 + rnd.randrange(x1 - x0), y0 + rnd.randrange(y1 - y0))
+    fill(('temple_table', 'temple_bench', 'temple_post', 'temple_pillar_wood', 'temple_railing', 'temple_stand', 'temple_frame'), (2, 3, 15, 11), 45)
+    fill(('temple2_table', 'temple2_bench', 'temple2_post', 'temple2_pillar', 'temple2_stand', 'temple2_railing'), (18, 3, 28, 8), 35)
+    fill(('japanese_',), (18, 12, 28, 18), 45)
+    fill(('temple_post', 'temple2_post', 'temple_bench', 'temple_stand'), (2, 14, 15, 18), 25)
+    for k_ in [k_ for k_, v in c.owner.items() if v == '__lane__']:
+        del c.owner[k_]
+    # 바닥 결: 사암 네모 판(2층) 덩이
+    for cx, cy in [(2, 10), (13, 11), (19, 6), (25, 3), (5, 16), (12, 16)]:
+        c.kind(2, 'A2:5', [(cx + dx, cy) for dx in (0, 1) if c.ok(cx + dx, cy) and c.ground(cx + dx, cy) == 'floor' and c.L[3][cy * c.w + cx + dx] is None])
+    return c
