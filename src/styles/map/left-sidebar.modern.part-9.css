@@ -144,6 +144,16 @@
   min-width: var(--space-5);
 }
 
+/* 연결·구조 보조 토글과 그 이름표는 왼쪽 패널에서 제일 작은 글자였다(10px, 버튼 22px) —
+   패널 최소 글자 11px · 최소 과녀 24px 에 맞춘다(2026-09-27). */
+.editor-layout .left-panel-stack .sidebar-paint-options .tile-brush-label,
+.editor-layout .left-panel-stack .sidebar-paint-options .tile-brush-chip {
+  font-size: 11px;
+}
+.editor-layout .left-panel-stack .sidebar-paint-options .tile-brush-chip {
+  line-height: 22px;
+}
+
 /* Focus modes: fixed task chrome, one growing sheet, bounded auxiliary surfaces. */
 .editor-layout .left-panel:has(> .left-panel-stack:only-child) {
   grid-template-rows: minmax(0, 1fr);
@@ -291,7 +301,8 @@
    붙여 명시도로 이기지 않는 이유: 클래식 셸(08-rm-…)은 그 접두 없이 같은 좌패널을 그린다. */
 .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool.oprn-tile-history-toggle {
   color: var(--text-3);
-  width: 15px;
+  /* 24px — 포인터 과녀 최소 크기(WCAG 2.5.8). 15px 일 때는 겨냥하기 어려웠다(2026-09-27). */
+  width: var(--space-5);
 }
 
 .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-history-toggle > svg {
