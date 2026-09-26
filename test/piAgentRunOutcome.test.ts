@@ -141,6 +141,7 @@ beforeEach(() => {
   h.villageIssues.length = 0;
   h.planError = false; h.verdicts.length = 0; h.findings.length = 0;
   h.reviewCalls = 0; h.applyCalls = 0; h.outcomes.length = 0;
+  h.roleModels = undefined;
   h.requests.length = 0; h.results.length = 0; h.bubbles.length = 0; h.process.length = 0;
   h.assistantTexts.length = 0; h.boardStates.length = 0; h.reviewActions.length = 0;
   h.project = projectWith("A");

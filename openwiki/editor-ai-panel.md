@@ -3106,7 +3106,7 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 - 읽기 전용 3턴 도구 사용 Pi 실행: thinking low 6.36s / 7.41s, high 9.09s / 8.47s → 턴당 약 2.1s(low) 대 약 2.9s(high). 로컬 도구 실행은 ~0ms 라 턴 벽시계는 사실상 모델 호출의 합이다.
 - **n=3 재실측(2026-09-26T01:06–01:07Z, `provider-reps3.json` · `agent-reps3.json`) — high는 low의 「2배」가 아니다.**
   셀당 3회 중앙값: 모델 호출 1회 low 2080ms(2k) / 4101ms(30k), high 3196ms(2k) / 6344ms(30k) → **1.54× · 1.55×**.
-  실제 Pi 런(1턴·툴 0회) low 3957ms, high 5365ms → **1.36×**. 정직한 범위는 약 1.4~1.6배다 — 반값이 아니다.
+  실제 Pi 런(1턴·툴 0회) low 3957ms, high 5365ms → **1.36×**. 정직한 값은 **약 1.28~1.36배(Pi 런) · 1.54~1.55배(모델 호출 1회)** 다 — 반값이 아니다.
   표본 분산이 크다(low @30k 가 2832~6413ms) — 이 박스는 부하를 나눠 쓰므로 중앙값만 인용한다. n=3 에이전트 런 6행은 전부 `turns=1 · tools=0` 으로 끝나서 위 3턴 실측(3턴·툴 2회)과 조건이 다르다 — 두 실측을 섞어 평균하지 않는다.
 - 프롬프트 캐시: 같은 접두를 다시 보낸 실행이 cacheRead 12,021 토큰을 보고했다 — 공급자의 암묵 접두 캐시가 실행 사이에도 이미 듣는다. 세션 id 를 바꿀 필요는 없다.
 - 프로브: `scripts/qa/_ai-turn-latency-probe.mjs` (`provider` / `agent` 모드), 증거 `verify-shots/ai-turn-latency/`.

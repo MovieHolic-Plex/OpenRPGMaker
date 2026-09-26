@@ -99,6 +99,13 @@ describe("aiConfig 저장/로드", () => {
       roleModels: { deep: { provider: "google-antigravity", model: "gemini-3.8-flash", thinkingLevel: "medium" } },
     }));
     expect(loadAiConfig().roleModels?.deep?.thinkingLevel).toBe("medium");
+    // 스탬프가 찍힌 저장(이 PR 이후 저장분)은 손대지 않는다 — 프리셋 「균형」·「최고 품질」 이 쓰는
+    // {providerId, liteModel, "high"} 모양이 «일부러 고른 높음» 일 수 있기 때문이다(리뷰 R3 N5).
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      authMode: "chatgpt", model: "gemini-3.8-flash", liteModel: "gemini-3.8-flash", roleModelsPolicyVersion: 1,
+      roleModels: { deep: { provider: "google-antigravity", model: "gemini-3.8-flash", thinkingLevel: "high" } },
+    }));
+    expect(loadAiConfig().roleModels?.deep?.thinkingLevel).toBe("high");
   });
 
   it("옛 공장 기본 토큰·툴콜은 새 기본으로 승격하고, 사용자가 고른 값은 존중한다", async () => {
