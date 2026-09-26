@@ -51,7 +51,6 @@ def comp_image(cid):
     for p in c['parts']:
         r=p['sourceRect']; o.alpha_composite(s.crop((r['x'],r['y'],r['x']+r['width'],r['y']+r['height'])),(p['offset']['x'],p['offset']['y']))
     return o
-
 import sys, json
 from collections import deque
 
@@ -137,10 +136,59 @@ def place_comp(cid, x, y, name=None, door=True):
     placements.append({'id': name, 'composite': cid, 'x': x, 'y': y, 'width': w, 'height': h})
     if door: entrance(name, x + w // 2, y + h - 1, x + w // 2, y + h)
 
-def shop(x, y, w, diner=False, name=None, style=None):
+# ---------------------------------------------------------------- variants: same kit/composite, other tiles from the SAME sheet
+def _rt_rect(t): return {'x': t % 8 * 32, 'y': t // 8 * 32, 'width': 32, 'height': 32}
+def comp_var_image(cid, wall=None, roof=None, awning=True, front='shop', window=True, fire=True):
+    """composite with its wall / roof tiles remapped and optional parts dropped (paper doors replace the shop front)."""
+    fn, c = COMP[cid]; s = img(fn)
+    o = Image.new('RGBA', (c['canvas']['width'], c['canvas']['height']))
+    for p in c['parts']:
+        r, off, role = dict(p['sourceRect']), dict(p['offset']), p['role']
+        t = r['y'] // 32 * 8 + r['x'] // 32
+        if r['width'] == 32 and role.startswith('wood-wall') and wall: r = _rt_rect(wall.get(t, t))
+        if r['width'] == 32 and role.startswith('roof') and roof: r = _rt_rect(roof.get(t, t))
+        if role == 'native-striped-awning-section' and not awning: continue
+        if role == 'whole-window-under-eave' and not window: continue
+        if role == 'whole-fire-warning' and not fire: continue
+        if role.startswith('complete-shop-front') and front == 'paper':
+            r = {'x': 0, 'y': 1376, 'width': 64, 'height': 68}; off = {'x': 64, 'y': 188}   # cols 2-3: door col w//2 = 3
+        o.alpha_composite(s.crop((r['x'], r['y'], r['x'] + r['width'], r['y'] + r['height'])), (off['x'], off['y']))
+    return o
+
+RT_WALL = {'grey': {232: 266, 233: 267, 234: 266, 240: 266, 241: 267, 242: 266},
+           'plaster': {232: 250, 233: 251, 234: 252, 240: 250, 241: 251, 242: 252}}
+RT_ROOF = {'dark': {274: 283, 282: 291, 302: 299}, 'light': {274: 286, 282: 294, 302: 302}, 'mid': {274: 281, 282: 289, 302: 292}}
+
+def rtown(x, y, name, wall=None, roof=None, **kw):
+    """retro-rtown-whole-building with a wall material / roof tone / front variant."""
+    cid = 'retro-rtown-whole-building'
+    place_comp(cid, x, y, name)
+    kitpaste[-1] = (x, y, comp_var_image(cid, RT_WALL.get(wall), RT_ROOF.get(roof), **kw), None)
+    placements[-1]['variant'] = {'wall': wall or 'wood', 'roof': roof or 'orig', **kw}
+
+def kit_var_images(kid, remap=None, sub=None):
+    """kit with tile ids remapped on its own sheet, and xp-autotile sources swapped for another roof sheet."""
+    k = KITS[kid]; w, h = k['width'], k['height']; remap = remap or {}; sub = sub or {}
+    l_, u_ = Image.new('RGBA', (w * 32, h * 32)), Image.new('RGBA', (w * 32, h * 32))
+    for layer, im in (('lowerTiles', l_), ('upperTiles', u_)):
+        for i, r in enumerate(k.get(layer) or []):
+            if r is None or (isinstance(r, dict) and r.get('tile', -1) < 0) or r == -1: continue
+            s = SRCS[r['source']]; fn = sub.get(r['source'], s['filename'])
+            c = xp(fn, s['variantMasks'][r['tile']]) if s['format'] == 'xp-autotile' else tile(fn, remap.get(r['tile'], r['tile']))
+            im.alpha_composite(c, (i % w * 32, i // w * 32))
+    return l_, u_
+
+APT = {'light': {284: 286, 292: 294, 300: 302, 308: 318}, 'wood': {57: 225, 65: 233},
+       'light-glass': {284: 286, 292: 294, 300: 302, 308: 318, 245: 262, 253: 270}}
+def kit_variant(kid, x, y, name, remap=None, sub=None, label=None):
+    place_kit(kid, x, y, name)
+    kitpaste[-1] = (x, y, *kit_var_images(kid, remap, sub))
+    placements[-1]['variant'] = label
+
+def shop(x, y, w, diner=False, name=None, style=None, roof=R1):
     h = 7; name = name or f'shop@{x}'
     claim(x, y, w, h, name)
-    xpcells(rect(x, y, w, 3), R1)
+    xpcells(rect(x, y, w, 3), roof)
     for dy in range(3, h):
         for dx in range(w): put(x + dx, y + dy, T(CV, 289), 'lo', True)
     door = w // 2 - 1
@@ -228,8 +276,10 @@ def chip(x, y, f, cols, t0, w, h, name=None, s=True, layer='up'):
 
 # ---------------------------------------------------------------- Japanese houses (author sample s15: gable wing + side wing)
 _=None
-def jgrid(L, wall='wood', roof='dark'):
-    """Japanese house after author sample s15: 5-wide gable wing + L-wide side wing. 10 rows, door at (2,8)."""
+def jgrid(L, wall='wood', roof='dark', side='right', front='wood'):
+    """Japanese house after author sample s15: 5-wide gable wing + L-wide side wing. 10 rows.
+    side='right': door at (2,8); side='left' puts the wing west of the gable, door at (L+2,8).
+    front='plaster' gives the gable wing a plaster ground floor instead of the wood one."""
     R2, R3, R5 = (284, 292, 308) if roof == 'dark' else (286, 294, 318)
     W = 5 + L
     g = [[None] * W for _r in range(10)]
@@ -239,8 +289,11 @@ def jgrid(L, wall='wood', roof='dark'):
              [204,237,238,239,206]]
     for y, r in enumerate(gable):
         for x, c in enumerate(r): g[y][x] = c
+    if front == 'plaster':
+        g[7][0], g[7][4] = 57, 58; g[8][0], g[8][4] = 65, 66
+        for x in (1, 2, 3): g[7][x] = (57, g[7][x]); g[8][x] = (65, g[8][x])
     if L:
-        if wall == 'wood': top, mid, bot = (227, 225, 226), (235, 233, 234), None
+        if wall == 'wood': top, mid = (227, 225, 226), (235, 233, 234)
         else: top, mid = (57, 57, 58), (65, 65, 66)
         for i in range(L):
             x = 5 + i; k = 0 if i == 0 else (2 if i == L - 1 else 1)
@@ -253,18 +306,22 @@ def jgrid(L, wall='wood', roof='dark'):
             g[8][7] = 360; g[8][8] = 360
             g[6][5] = (g[6][5], 330); g[7][5] = (g[7][5], 338)
         if L >= 3: g[6][W - 2] = (g[6][W - 2], 340)
+    if side == 'left' and L:
+        g = [r[5:] + r[:5] for r in g]
     return g
-
-def house(x, y, L, name, wall='wood', roof='dark'):
-    """(5+L)x10 house: 5-wide kawara gable wing with the genkan, L-wide side wing; door at (x+2, y+8)."""
-    g = jgrid(L, wall, roof); w = len(g[0])
-    claim(x, y, w, 10, name)
+def house(x, y, L, name, wall='wood', roof='dark', stones=True, side='right', front='wood'):
+    """(5+L)x10 house: 5-wide kawara gable wing with the genkan, L-wide side wing (east or west of the gable).
+    stones=False drops the step-stone row so the genkan opens straight onto the sidewalk below (9 rows)."""
+    g = jgrid(L, wall, roof, side, front); w = len(g[0])
+    dx0 = L if side == 'left' else 0
+    if not stones: g = g[:9]
+    claim(x, y, w, len(g), name)
     for dy, r in enumerate(g):
         for dx, c in enumerate(r):
             for t in (c if isinstance(c, tuple) else (c,)):
-                if t is not None: put(x + dx, y + dy, T(TN, t), 'up', not (dy == 9 and 1 <= dx <= 3))
-    placements.append({'id': name, 'kind': f'house-j{L}-{wall}-{roof}', 'x': x, 'y': y, 'width': w, 'height': 10})
-    entrance(name, x + 2, y + 8, x + 2, y + 9)
+                if t is not None: put(x + dx, y + dy, T(TN, t), 'up', not (dy == 9 and dx0 + 1 <= dx <= dx0 + 3))
+    placements.append({'id': name, 'kind': f'house-j{L}-{wall}-{roof}-{side}-{front}', 'x': x, 'y': y, 'width': w, 'height': len(g)})
+    entrance(name, x + dx0 + 2, y + 8, x + dx0 + 2, y + 9)
 
 # ================================================================= SCHOOL (NW) campus x2..44, y0..32
 ground(2, 0, 43, 33, PAVE)
@@ -364,12 +421,12 @@ chip(52, 26, 'streetlamp.png', 3, 0, 2, 2, 'bench-plaza')
 chip(51, 30, 'post.png', 2, 0, 1, 2, 'post-plaza')
 chip(53, 30, 'busstop.png', 4, 2, 1, 3, 'busstop-plaza')
 place_comp('retro-rtown-whole-building', 54, 25, 'rtown-shop-1')
-shop(60, 26, 5, name='shop-2', style='shutter')
+shop(60, 26, 5, name='shop-2', style='shutter', roof=R2)
 shop(65, 26, 5, diner=True, name='diner-3')
-shop(72, 26, 5, diner=True, name='diner-4')
-place_comp('retro-rtown-whole-building', 77, 25, 'rtown-shop-5')
-shop(83, 26, 6, name='shop-6', style='glass')
-shop(89, 26, 7, diner=True, name='diner-7')
+shop(72, 26, 5, name='shop-4', style='glass', roof=R4)
+rtown(77, 25, 'rtown-shop-5', wall='grey', roof='dark', fire=False)
+shop(83, 26, 6, name='shop-6', style='glass', roof=R3)
+shop(89, 26, 7, name='shop-7', style='shutter', roof=R4)
 # park y18..24 between the back lane and the shop roofs
 ground(51, 18, 19, 7, GRASS); ground(72, 18, 24, 7, GRASS)
 ground(52, 21, 17, 1, SOIL); ground(73, 21, 22, 1, SOIL)
@@ -395,16 +452,17 @@ for tx in range(72, 95, 2):
 
 # ================================================================= SW x0..44, y39..63
 signal(44, 39, 'signal-sw'); ground(43, 39, 2, 4, WALK)
-house(1, 41, 0, 'house-sw-1', 'plaster')
-place_comp('retro-rtown-whole-building', 8, 43, 'rtown-sw-2')
-house(15, 41, 3, 'house-sw-3', 'plaster', 'light')
+# houses one row up (y40..49) so the front block wall lands on y51, not on the y52 lane
+house(1, 40, 0, 'house-sw-1', roof='light', front='plaster')
+rtown(8, 43, 'rtown-sw-2', wall='plaster', roof='light', front='paper', awning=False)   # old machiya: paper doors, no awning
+house(15, 40, 2, 'house-sw-3', 'plaster', 'dark', side='left')   # L=2: x15..21, clear of the x22 lane
 place_comp('retro-sento-whole-building', 25, 40, 'sento')
-house(33, 41, 0, 'house-sw-4')
-place_comp('retro-rtown-whole-building', 37 + 2, 43, 'rtown-sw-5')
-place_kit('apartment-dark-roof', 1, 54, 'apartment-sw')
-house(12, 53, 5, 'house-sw-6', 'wood', 'light')
-place_kit('apartment-dark-roof', 25, 54, 'apartment-sw-2')
-house(36, 53, 3, 'house-sw-7')
+house(33, 40, 0, 'house-sw-4')
+rtown(37 + 2, 43, 'rtown-sw-5', wall='grey', roof='mid', front='paper', awning=False, window=False)
+kit_variant('apartment-dark-roof', 1, 54, 'apartment-sw', APT['light'], label='light-roof')
+house(12, 54, 5, 'house-sw-6', 'wood', 'light', stones=False, side='left', front='plaster')   # y54..62 between the lane and the y63 sidewalk
+kit_variant('apartment-dark-roof', 25, 54, 'apartment-sw-2', APT['wood'], label='wood-wall')
+house(36, 54, 3, 'house-sw-7', 'plaster', 'light', stones=False)
 
 # ================================================================= SE x51..95, y39..63
 signal(51, 39, 'signal-se'); ground(51, 39, 3, 7, WALK)
@@ -419,9 +477,9 @@ for sx in range(52, 65, 4):
 chip(53, 47, 'car.png', 11, 0, 3, 4, 'car-1')
 chip(57, 47, 'patcar.png', 11, 3, 3, 4, 'car-2')
 chip(61, 47, 'car.png', 11, 3, 3, 4, 'car-3')
-place_comp('retro-rtown-whole-building', 67, 46, 'rtown-se')
-place_kit('clinic-small', 77, 47, 'clinic-se')
-place_kit('apartment-dark-roof', 86, 45, 'apartment-se')
+rtown(67, 46, 'rtown-se', wall='plaster', roof='dark', awning=False)
+kit_variant('clinic-small', 77, 47, 'clinic-se', sub={'xp-roof01': R3}, label='roof03')
+kit_variant('apartment-dark-roof', 86, 45, 'apartment-se', APT['light-glass'], label='light-roof-glass')
 # vegetable field behind the konbini (SA-Hatake01 soil + vege chips + scarecrow)
 field = [(x, y) for y in range(39, 44) for x in range(69, 79)]
 claim(69, 39, 10, 5, 'field-se')
@@ -487,7 +545,7 @@ def lot(name, pl=1, pt=1, pr=1, pb=1):
     put_mail = (gx + 2, wy1) if gx + 2 < wx1 else None
     if put_mail and any(r == T(TN, 44) for r in up[wy1][gx + 2]): up[wy1][gx + 2] = [T(TN, 54)]
 
-lot('rtown-sw-2', pt=2); lot('rtown-sw-5', pt=2)   # shops sit a row lower: align their back wall with the houses'
+lot('rtown-sw-2', pt=3); lot('rtown-sw-5', pt=3)   # shops sit 3 rows below the houses' top: align their back wall with the houses'
 for n in ('house-sw-1', 'house-sw-3', 'house-sw-4', 'house-sw-6', 'house-sw-7',
           'apartment-sw', 'apartment-sw-2', 'house-ne-1', 'mansion-ne', 'apartment-ne',
           'rtown-se', 'clinic-se', 'apartment-se'):
