@@ -42,6 +42,8 @@ export interface PiRunFacts {
   readonly error?: string;
   /** 실행이 끝난 이유(중단·변경 없음·검토 대기·버림·적용됨). */
   readonly stoppedReason?: string;
+  /** 이 실행의 단계별 벽시계(`createTurnTiming().snapshot()`). `npm run ai:trace` 가 이 필드만 읽는다. */
+  readonly timing?: import("../turnTiming").TurnTimingRecord;
 }
 
 export interface PiRunLogHandle {
@@ -87,7 +89,7 @@ export function startPiRunLog(context: PiRunContext): PiRunLogHandle {
           ...(facts.board.report ? { assistantText: facts.board.report } : {}),
           ...(boardUsage(facts.board) ? { usage: boardUsage(facts.board) } : {}),
         },
-        { toolCalls: agentToolCalls(facts.board), audit },
+        { toolCalls: agentToolCalls(facts.board), audit, ...(facts.timing ? { timing: facts.timing } : {}) },
       );
       return audit;
     },

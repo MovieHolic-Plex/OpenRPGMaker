@@ -1,0 +1,258 @@
+{
+  "mode": "agent",
+  "base": "http://127.0.0.1:17832",
+  "measuredAt": "2026-09-25T23:39:27.039Z",
+  "commit": "aac5d54c1",
+  "project": "test/fixtures/projects/glass-ui-qa-v3.json",
+  "task": "get_project_summary 를 한 번 호출해 맵 목록만 한 줄로 보고하세요. 프로젝트는 수정하지 마세요.",
+  "rows": [
+    {
+      "model": "gemini-3.8-flash",
+      "thinking": "minimal",
+      "rep": 1,
+      "maxTurns": 4,
+      "ms": 8736,
+      "status": 200,
+      "error": null,
+      "firstLineMs": 92,
+      "firstAssistantMs": 8734,
+      "turns": 2,
+      "toolCalls": 1,
+      "timeline": [
+        {
+          "type": "turn",
+          "atMs": 113,
+          "index": 1
+        },
+        {
+          "type": "tool_start",
+          "atMs": 6552,
+          "name": "get_project_summary"
+        },
+        {
+          "type": "tool_end",
+          "atMs": 6552,
+          "name": "get_project_summary",
+          "ok": true
+        },
+        {
+          "type": "turn",
+          "atMs": 6559,
+          "index": 2
+        },
+        {
+          "type": "assistant",
+          "atMs": 8734
+        }
+      ],
+      "cacheRead": 0,
+      "stats": {
+        "ms": 8647,
+        "turns": 2,
+        "toolCalls": 1,
+        "toolErrors": 0,
+        "usage": {
+          "input": 14410,
+          "output": 42,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "totalTokens": 14452,
+          "cost": {
+            "input": 0.010807500000000001,
+            "output": 0.0001575,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0.010965
+          }
+        }
+      },
+      "changedKeys": []
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "thinking": "minimal",
+      "rep": 2,
+      "maxTurns": 4,
+      "ms": 3614,
+      "status": 200,
+      "error": null,
+      "firstLineMs": 24,
+      "firstAssistantMs": 3613,
+      "turns": 2,
+      "toolCalls": 1,
+      "timeline": [
+        {
+          "type": "turn",
+          "atMs": 30,
+          "index": 1
+        },
+        {
+          "type": "tool_start",
+          "atMs": 1921,
+          "name": "get_project_summary"
+        },
+        {
+          "type": "tool_end",
+          "atMs": 1921,
+          "name": "get_project_summary",
+          "ok": true
+        },
+        {
+          "type": "turn",
+          "atMs": 1927,
+          "index": 2
+        },
+        {
+          "type": "assistant",
+          "atMs": 3613
+        }
+      ],
+      "cacheRead": 12021,
+      "stats": {
+        "ms": 3590,
+        "turns": 2,
+        "toolCalls": 1,
+        "toolErrors": 0,
+        "usage": {
+          "input": 2389,
+          "output": 42,
+          "cacheRead": 12021,
+          "cacheWrite": 0,
+          "totalTokens": 14452,
+          "cost": {
+            "input": 0.00179175,
+            "output": 0.0001575,
+            "cacheRead": 0.000901575,
+            "cacheWrite": 0,
+            "total": 0.002850825
+          }
+        }
+      },
+      "changedKeys": []
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "thinking": "low",
+      "rep": 1,
+      "maxTurns": 4,
+      "ms": 19580,
+      "status": 200,
+      "error": null,
+      "firstLineMs": 24,
+      "firstAssistantMs": 19579,
+      "turns": 2,
+      "toolCalls": 1,
+      "timeline": [
+        {
+          "type": "turn",
+          "atMs": 28,
+          "index": 1
+        },
+        {
+          "type": "tool_start",
+          "atMs": 3357,
+          "name": "get_project_summary"
+        },
+        {
+          "type": "tool_end",
+          "atMs": 3357,
+          "name": "get_project_summary",
+          "ok": true
+        },
+        {
+          "type": "turn",
+          "atMs": 3364,
+          "index": 2
+        },
+        {
+          "type": "assistant",
+          "atMs": 19579
+        }
+      ],
+      "cacheRead": 12021,
+      "stats": {
+        "ms": 19558,
+        "turns": 2,
+        "toolCalls": 1,
+        "toolErrors": 0,
+        "usage": {
+          "input": 2389,
+          "output": 42,
+          "cacheRead": 12021,
+          "cacheWrite": 0,
+          "totalTokens": 14452,
+          "cost": {
+            "input": 0.00179175,
+            "output": 0.0001575,
+            "cacheRead": 0.000901575,
+            "cacheWrite": 0,
+            "total": 0.002850825
+          }
+        }
+      },
+      "changedKeys": []
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "thinking": "low",
+      "rep": 2,
+      "maxTurns": 4,
+      "ms": 4898,
+      "status": 200,
+      "error": null,
+      "firstLineMs": 21,
+      "firstAssistantMs": 4897,
+      "turns": 2,
+      "toolCalls": 1,
+      "timeline": [
+        {
+          "type": "turn",
+          "atMs": 27,
+          "index": 1
+        },
+        {
+          "type": "tool_start",
+          "atMs": 1821,
+          "name": "get_project_summary"
+        },
+        {
+          "type": "tool_end",
+          "atMs": 1821,
+          "name": "get_project_summary",
+          "ok": true
+        },
+        {
+          "type": "turn",
+          "atMs": 1827,
+          "index": 2
+        },
+        {
+          "type": "assistant",
+          "atMs": 4897
+        }
+      ],
+      "cacheRead": 12021,
+      "stats": {
+        "ms": 4876,
+        "turns": 2,
+        "toolCalls": 1,
+        "toolErrors": 0,
+        "usage": {
+          "input": 2389,
+          "output": 42,
+          "cacheRead": 12021,
+          "cacheWrite": 0,
+          "totalTokens": 14452,
+          "cost": {
+            "input": 0.00179175,
+            "output": 0.0001575,
+            "cacheRead": 0.000901575,
+            "cacheWrite": 0,
+            "total": 0.002850825
+          }
+        }
+      },
+      "changedKeys": []
+    }
+  ]
+}

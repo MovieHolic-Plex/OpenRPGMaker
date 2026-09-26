@@ -52,7 +52,7 @@ describe("oh-my-pi provider catalog", () => {
   it("레코드의 라벨·기본 모델이 계약대로다", () => {
     const antigravity = getOhMyPiProvider(ANTIGRAVITY_PROVIDER_ID);
     expect(antigravity?.label).toBe("Google");
-    expect(antigravity?.defaultModel).toBe("gemini-3.7-flash");
+    expect(antigravity?.defaultModel).toBe("gemini-3.8-flash");
 
     const codex = getOhMyPiProvider(CODEX_PROVIDER_ID);
     expect(codex?.label).toBe("ChatGPT");

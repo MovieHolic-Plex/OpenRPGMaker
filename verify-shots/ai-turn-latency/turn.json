@@ -1,0 +1,20 @@
+{
+  "base": "http://127.0.0.1:9901",
+  "prompt": "현재 맵의 좌상단 빈 칸 하나에 흙길 한 칸만 놓고, 무엇을 했는지 한 줄로 보고하세요.",
+  "startedAt": "2026-09-25T23:46:36.377Z",
+  "bootMs": 25559,
+  "turnMs": null,
+  "ok": true,
+  "status": {
+    "ready": true,
+    "turnBusy": false,
+    "configReady": true,
+    "lastStatus": "대기",
+    "bridgeConnected": false,
+    "panelMounted": true
+  },
+  "error": null,
+  "timing": null,
+  "mirrorRow": null,
+  "finishedAt": "2026-09-25T23:47:02.203Z"
+}

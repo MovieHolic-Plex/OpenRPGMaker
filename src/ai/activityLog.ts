@@ -458,6 +458,7 @@ export function buildAiActivityLogRecord(input: AiActivityLogInput): AiActivityL
     }),
     ...(input.uiEvents ? { uiEvents: input.uiEvents.slice(-120) } : {}),
     ...(uiActions.length > 0 ? { uiActions } : {}),
+    ...(input.timing ? { timing: input.timing } : {}),
     ...(Object.keys(truncated).length > 0 ? { truncated } : {}),
   };
 }

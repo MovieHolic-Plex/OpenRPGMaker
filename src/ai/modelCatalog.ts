@@ -24,8 +24,8 @@ const CODEX_MODELS: readonly string[] = [
  *
  * `getBundledModels("google-antigravity")` 실측(2026-08-27) 결과를 그대로 쓴다. pi-catalog 가
  * 제공자 전송 계층이 실제로 해석하는 모델 목록이므로, gemini 밖 네임스페이스(Claude·gpt-oss·
- * tab_*)도 여기서는 **Antigravity 소속 모델**이다. 첫 항목만 제품 기본값(gemini-3.7-flash)에
- * 맞춰 앞으로 옮겼다.
+ * tab_*)도 여기서는 **Antigravity 소속 모델**이다. 첫 항목만 제품 기본값(gemini-3.8-flash)에
+ * 맞춰 앞으로 옮겼다(2026-09-26: 실행 루프 기본 사고 강도가 low 로 내려가면서 저지연 모델을 기본으로 당겼다).
  *
  * `gemini-3.7-flash-high` 는 없다 — 실측(2026-08-26) 결과 Cloud Code Assist 가 그 ID 를 404
  * `Requested entity was not found` 로 거부한다. Antigravity 에서 `-high`/`-medium`/`-low` 는
@@ -35,8 +35,8 @@ const CODEX_MODELS: readonly string[] = [
  * OAuth wire gemini-3.8-flash-high / HIGH verified 2026-09-14.
  */
 const ANTIGRAVITY_MODELS: readonly string[] = [
-  "gemini-3.7-flash",
   "gemini-3.8-flash",
+  "gemini-3.7-flash",
   "claude-opus-4-5",
   "claude-opus-4-6",
   "claude-sonnet-4-5",
@@ -85,8 +85,8 @@ export function modelCatalogForAuthMode(
 
 /**
  * 해당 제공자의 권장 기본 모델. 카탈로그 첫 그룹의 첫 항목을 기준으로 한다.
- * 공장 기본은 Antigravity 의 gemini-3.7-flash — 모든 모델 슬롯이 이 값을 기본으로 쓴다
- * (감독 지시 2026-08-26, 계약은 test/aiDefaultModelForced.test.ts 가 고정한다).
+ * 공장 기본은 Antigravity 의 gemini-3.8-flash — 모든 모델 슬롯이 이 값을 기본으로 쓴다
+ * (감독 지시 2026-08-26, 기본 모델 이동 2026-09-26. 계약은 test/aiDefaultModelForced.test.ts 가 고정한다).
  * Codex 카탈로그 첫 항목은 gpt-5.6-sol.
  * 카탈로그가 비어 있을 리 없지만(방어), 비어 있으면 빈 문자열을 돌려 호출자가 자기 폴백을 쓰게 한다.
  */

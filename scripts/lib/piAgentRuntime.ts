@@ -43,6 +43,7 @@ import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
 import { createModernTilesetPolicy, modernTilesetPolicyPrompt, requestsModernMap } from '../../src/ai/modernTilesetPolicy.ts';
 import { isTransientProviderStreamError, PI_PROVIDER_STREAM_RETRY_LIMIT, providerStreamResumePrompt } from "../../src/ai/piAgent/providerRetry.ts";
 import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
+import { normalizePiThinkingLevel } from "../../src/ai/piAgent/thinkingLevel.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
 import { searchWebWithCodex } from "./codexWebSearchRuntime.ts";
 import { WEB_SEARCH_TOOL } from "../../src/editor/tools/webSearchTool.ts";
@@ -406,11 +407,15 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   if (request.applyMode === "yolo") systemPrompt.push("YOLO: 별도 검수·승인 요청 없이 요청한 변경을 최대한 실행하라. 사용자 범위와 데이터 형식은 지켜라.");
   if (writer && tools.some(tool => tool.name === "consult_writer")) systemPrompt.push("You are Deep, responsible for careful implementation and validation. For story, lore, NPC dialogue or quest prose, consult_writer delegates authorship to Writer. Pass relevant context, then apply its output using project tools. Do not call Writer for mechanical work.");
   const apiKey = options.providerApiKeys ? options.providerApiKeys[request.provider] : options.apiKey;
+  // 사고 강도는 여기서 한 번 낮춘다 — 레인·팀·CLI 호출자가 자기 요청을 짜도 antigravity 실행이 죽지 않게 한다.
+  // 실측(2026-09-26): "off" 를 보내면 HTTP 200 스트림에 error 이벤트 `Thinking effort off is not supported by
+  // google-antigravity/gemini-3.8-flash. Supported efforts: minimal, low, medium, high` 가 실려 첫 턴에서 끝난다.
+  const thinkingLevel = normalizePiThinkingLevel(request.provider, request.thinkingLevel);
   const agent = new Agent({
     initialState: {
       systemPrompt,
       model,
-      ...(request.thinkingLevel ? { thinkingLevel: request.thinkingLevel as never } : {}),
+      ...(thinkingLevel ? { thinkingLevel: thinkingLevel as never } : {}),
       tools: tools as never,
     },
     ...(apiKey ? { getApiKey: () => apiKey as never } : {}),

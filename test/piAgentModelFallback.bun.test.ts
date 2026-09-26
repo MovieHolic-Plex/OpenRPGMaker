@@ -12,7 +12,7 @@ describe("piAgent resolvePiModel fallback", () => {
   });
 
   test("빈 모델은 제공자 기본 모델이다", () => {
-    expect(resolvePiModel("google-antigravity", undefined).id).toBe("gemini-3.7-flash");
+    expect(resolvePiModel("google-antigravity", undefined).id).toBe("gemini-3.8-flash");
     expect(resolvePiModel("openai-codex", undefined).id).toBe("gpt-5.6-sol");
   });
 
