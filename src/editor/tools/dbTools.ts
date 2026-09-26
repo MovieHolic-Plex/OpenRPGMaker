@@ -379,6 +379,12 @@ const actorInitialEquipmentSchema: JsonSchema = {
 };
 const actorOptionsSchema = objectSchema({ dualWield: booleanSchema(), autoBattle: booleanSchema(), fixedEquipment: booleanSchema(), mightyGuard: booleanSchema() });
 const learnedSkillSchema = objectSchema({ level: integerSchema(), skillId: stringSchema() });
+// 배우 전용: tp 는 배우 learnedSkills 에만 있다(직업·종족 습득표는 레벨만).
+const actorLearnedSkillSchema = objectSchema({
+  level: integerSchema(),
+  skillId: stringSchema(),
+  tp: integerSchema("기술 포인트 문턱(1 이상). 있으면 누적 TP 와 level 을 모두 채운 승리 뒤에 배운다. 생략하면 레벨만"),
+});
 const promotionRequiresSchema = objectSchema({
   level: integerSchema(),
   switchId: stringSchema(),
@@ -431,7 +437,7 @@ const captureProfileSchema = objectSchema({
   ballClass: { type: "string", enum: ["poke", "great", "ultra", "master"] },
 });
 const enemyStatsSchema = objectSchema({ maxHp: integerSchema(), maxMp: integerSchema(), attack: integerSchema(), defense: integerSchema(), mind: integerSchema(), agility: integerSchema() });
-const enemyRewardsSchema = objectSchema({ exp: integerSchema(), gold: integerSchema(), dropItemId: stringSchema(), dropRatePercent: integerSchema(), drops: conditionalDropsSchema });
+const enemyRewardsSchema = objectSchema({ exp: integerSchema(), gold: integerSchema(), tp: integerSchema("기술 포인트. 승리 시 살아남은 파티원 전원이 트룹 합계를 받는다"), dropItemId: stringSchema(), dropRatePercent: integerSchema(), drops: conditionalDropsSchema });
 const enemyActionSwitchSchema = objectSchema({ enabled: booleanSchema(), switchId: stringSchema() });
 const enemyActionSchema = objectSchema({
   skillId: stringSchema(),
@@ -593,7 +599,7 @@ const actorRecordSchema = objectSchema({
   initialEquipment: actorInitialEquipmentSchema,
   unarmedAnimationId: stringSchema(),
   options: actorOptionsSchema,
-  learnedSkills: arrayOf(learnedSkillSchema),
+  learnedSkills: arrayOf(actorLearnedSkillSchema),
   skillIds: stringArraySchema("legacy alias for learnedSkills"),
   stateRates: rateMapSchema,
   elementRates: rateMapSchema,
@@ -618,6 +624,11 @@ const skillRecordSchema = objectSchema({
   maxPp: integerSchema("Gen1 기술별 최대 PP. 1~99"),
   gen1CriticalRate: { type: "string", enum: ["normal", "high"] },
   movePriority: numberSchema("기술 우선도 -7~7 (strict 턴제에서 속도보다 먼저 비교, 퀵어택=+1)"),
+  comboActorIds: stringArraySchema("연계기(듀얼·트리플 테크) 참가 배우 2~3명. 전원이 참전·생존·준비 상태여야 메뉴에 열리고, 각자 mpCost 와 턴을 소비한다. 멤버는 따로 배우지 않아도 된다. 빈 배열이면 해제"),
+  area: objectSchema({
+    shape: { type: "string", enum: ["circle", "line"] },
+    radius: numberSchema("전투장 픽셀(>0). circle=주 대상에서 거리, line=주 대상과 세로 차 ≤ radius/2 인 가로 띠"),
+  }, "위치 범위기. scope enemy/ally 에서 주 대상 둘레의 같은 편도 맞힌다"),
 }) as RecordSchema;
 
 const equipmentRecordSchema = objectSchema({
@@ -1018,6 +1029,52 @@ function rejectUnknownEnemyReferences(draft: Project, patch: unknown): void {
   }
 }
 
+/**
+ * 연계기·위치 범위기 패치 검사. 정규화가 조용히 버리면 모델은 「연계기를 넣었다」고 보고하고 실제로는 일반 기술이 된다 —
+ * 없는 배우·인원 수·반경은 사유와 허용 예시를 담아 거부한다.
+ */
+function validateSkillTechPatch(draft: Project, patch: unknown): void {
+  if (!patch || typeof patch !== "object" || Array.isArray(patch)) return;
+  const record = patch as Record<string, unknown>;
+  if (record.comboActorIds !== undefined) {
+    const ids = Array.isArray(record.comboActorIds) ? record.comboActorIds : null;
+    if (!ids || ids.some((id) => typeof id !== "string" || !id.trim())) {
+      throw new ToolError("skill.comboActorIds 는 배우 id 문자열 배열이어야 합니다. 예: [\"actor_hero\", \"actor_mage\"]", { code: "invalid-combo-actors" });
+    }
+    const unique = [...new Set((ids as string[]).map((id) => id.trim()))];
+    if (unique.length > 0 && (unique.length < 2 || unique.length > 3)) {
+      throw new ToolError(`skill.comboActorIds 는 서로 다른 배우 2~3명이어야 합니다(받은 ${unique.length}명). 해제하려면 빈 배열을 주세요.`, { code: "invalid-combo-actors" });
+    }
+    const missing = unique.filter((id) => !draft.database.actors.some((actor) => actor.id === id));
+    if (missing.length > 0) {
+      throw new ToolError(`존재하지 않는 comboActorIds: ${missing.join(", ")} — 허용 예시: ${knownIds(draft.database.actors)}`, { code: "actor-not-found" });
+    }
+  }
+  if (record.area !== undefined) {
+    const area = record.area as { shape?: unknown; radius?: unknown } | null;
+    if (!area || typeof area !== "object" || (area.shape !== "circle" && area.shape !== "line")) {
+      throw new ToolError("skill.area.shape 는 circle 또는 line 이어야 합니다. 예: {shape:\"circle\", radius:48}", { code: "invalid-skill-area" });
+    }
+    if (typeof area.radius !== "number" || !Number.isFinite(area.radius) || area.radius <= 0) {
+      throw new ToolError(`skill.area.radius 는 0보다 큰 전투장 픽셀이어야 합니다(받은 값 ${String(area.radius)}). 예: 48`, { code: "invalid-skill-area" });
+    }
+  }
+}
+
+/** 배우 learnedSkills[].tp 와 적 rewards.tp 는 양의 정수만 받는다. 음수·0 은 정규화가 조용히 버린다. */
+function requirePositiveTp(value: unknown, label: string): void {
+  if (value === undefined) return;
+  if (typeof value !== "number" || !Number.isInteger(value) || value <= 0) {
+    throw new ToolError(`${label} 는 1 이상의 정수여야 합니다(받은 값 ${JSON.stringify(value)}). TP 없이 레벨로만 배우려면 필드를 빼세요.`, { code: "invalid-tech-points" });
+  }
+}
+
+function validateActorTechPoints(patch: unknown): void {
+  const learned = patch && typeof patch === "object" ? (patch as { learnedSkills?: unknown }).learnedSkills : undefined;
+  if (!Array.isArray(learned)) return;
+  learned.forEach((entry, index) => requirePositiveTp((entry as { tp?: unknown } | null)?.tp, `actor.learnedSkills[${index}].tp`));
+}
+
 function skillDamagesFoe(project: Project, skillId: string): boolean {
   const skill = project.database.skills.find((entry) => entry.id === skillId);
   return skill?.effect?.kind === "damage" && (skill.scope === "enemy" || skill.scope === "allEnemies");
@@ -1039,6 +1096,7 @@ const upsertEnemy: ToolDefinition = {
   }),
   run(draft, args): ToolExecResult {
     validateEnemyCombatPatch(args.enemy);
+    requirePositiveTp((args.enemy as { rewards?: { tp?: unknown } } | undefined)?.rewards?.tp, "enemy.rewards.tp");
     const merged = mergeRecord(draft.database.enemies, args.enemy, "enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임" });
     rejectUnknownEnemyReferences(draft, args.enemy);
     const record = normalizeEnemyRecord(merged as Partial<EnemyRecord> & Pick<EnemyRecord, "id" | "name">);
@@ -1373,6 +1431,7 @@ const upsertActor: ToolDefinition = {
       throw new ToolError(`공유 캐릭터 외형을 찾을 수 없습니다: ${actorPatch.appearanceId}`, { code: "appearance-not-found" });
     }
     const record = normalizeActorRecord(merged as Parameters<typeof normalizeActorRecord>[0]);
+    validateActorTechPoints(args.actor);
     dropUnknownElementRates(draft, record, "actor", warnings);
     const outcome = upsertById(draft.database.actors, record satisfies ActorRecord);
     return {
@@ -1390,6 +1449,7 @@ const upsertSkill: ToolDefinition = {
   parameters: parametersForRecord("skill", skillRecordSchema, { id: "skill_fire", name: "화염", power: 35, elementId: "fire" }, actionSkillClearProperties),
   run(draft, args): ToolExecResult {
     validateSkillCombatPatch(args.skill);
+    validateSkillTechPatch(draft, args.skill);
     const merged = mergeRecord(draft.database.skills, args.skill, "skill", skillRecordSchema, { id: "skill_fire", name: "화염" });
     finalizeSkillCombatPatch(merged as unknown as Record<string, unknown>, args.skill, args);
     const record = normalizeSkillRecord(merged as Partial<SkillRecord> & Pick<SkillRecord, "id" | "name">);

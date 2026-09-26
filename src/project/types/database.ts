@@ -89,6 +89,8 @@ export interface ActorOptions {
 export interface ActorLearnedSkill {
   level: number;
   skillId: SkillId;
+  /** 기술 포인트(TP) 습득 문턱. 있으면 레벨만으로는 배우지 않고, 누적 TP 와 레벨을 모두 채운 승리 뒤에 배운다(배우 전용). */
+  tp?: number;
 }
 
 export interface ClassRecord {
@@ -245,6 +247,16 @@ export interface SkillRecord {
   movePriority?: number;
   /** 실시간 액션 전투에서 캐스트 가능한 액션 스킬. 생략 시 턴제 전용. */
   actionSkill?: ActionSkillProfile;
+  /** 연계기(듀얼·트리플 테크): 함께 쓰는 배우 2~3명(시전자 포함). 모두 준비돼야 쓸 수 있고 각자 MP·턴을 소비한다. */
+  comboActorIds?: ActorId[];
+  /** 위치 범위기: 단일 대상 스코프에서 주 대상 둘레의 같은 편도 함께 맞힌다(전투장 픽셀). */
+  area?: SkillArea;
+}
+
+export interface SkillArea {
+  /** circle: 주 대상에서 유클리드 거리 radius 이내. line: 주 대상과 |dy| <= radius/2 인 가로 띠. */
+  shape: "circle" | "line";
+  radius: number;
 }
 
 export interface SkillMpCost {
@@ -554,6 +566,8 @@ export interface EnemyRewards {
   gold: number;
   dropItemId?: ItemId;
   dropRatePercent: number;
+  /** 기술 포인트. 승리 시 살아남은 파티원 전원이 트룹 합계를 받는다. 생략 = 0. */
+  tp?: number;
   /** When present, replaces the legacy single drop (including an explicitly empty list). */
   drops?: { itemId: ItemId; ratePercent: number; quantity: number; condition: EnemyActionCondition }[];
 }

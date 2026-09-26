@@ -275,6 +275,8 @@ export interface PlaySession {
   // 런타임 전투 메뉴 오버라이드(Change Battle Commands). actorId → battleCommand ids.
   actorBattleCommands?: Record<ActorId, string[]>;
   actorExperience: Record<string, number>;
+  /** 배우별 누적 기술 포인트(TP). 승리 시 얻고 learnedSkills[].tp 문턱으로 기술을 배운다. 생략 = 없음. */
+  actorTechPoints?: Record<string, number>;
   actorLevels: Record<string, number>;
   actorVitals: Record<string, ActorVitals>;
   eventLocations: Record<string, RuntimeEventLocation>;

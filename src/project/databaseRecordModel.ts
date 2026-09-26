@@ -583,6 +583,15 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
       const actionSkill = normalizeActionSkillProfile(record.actionSkill);
       return actionSkill ? { actionSkill } : {};
     })(),
+    // 연계기·범위기는 값이 있을 때만 남긴다 — 없는 옆 프로젝트는 바이트 그대로.
+    ...(() => {
+      const comboActorIds = uniqueCleanIds(record.comboActorIds).slice(0, 3);
+      return comboActorIds.length >= 2 ? { comboActorIds } : {};
+    })(),
+    ...(record.area && (record.area.shape === "circle" || record.area.shape === "line")
+      && Number.isFinite(record.area.radius) && record.area.radius > 0
+      ? { area: { shape: record.area.shape, radius: clampNumber(record.area.radius, 1, 640) } }
+      : {}),
   };
 }
 
@@ -704,15 +713,6 @@ function normalizeBattleFlow(value: BattleFlow | undefined): BattleFlow {
   return value === "strict" ? "strict" : "gauge";
 }
 
-function normalizeOptionalPositiveInteger(value: number | undefined): number | undefined {
-  if (typeof value !== "number" || !Number.isFinite(value)) return undefined;
-  return Math.max(1, Math.min(99, Math.trunc(value)));
-}
-
-function positiveNumber(value: number | undefined, fallback: number): number {
-  if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) return fallback;
-  return value;
-}
 function normalizeCompanionConfig(value: CompanionConfig | undefined): CompanionConfig | undefined {
   if (!value || typeof value !== "object") return undefined;
   const out: CompanionConfig = {};
@@ -725,6 +725,15 @@ function normalizeCompanionConfig(value: CompanionConfig | undefined): Companion
   return Object.keys(out).length > 0 ? out : undefined;
 }
 
+function normalizeOptionalPositiveInteger(value: number | undefined): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value)) return undefined;
+  return Math.max(1, Math.min(99, Math.trunc(value)));
+}
+
+function positiveNumber(value: number | undefined, fallback: number): number {
+  if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) return fallback;
+  return value;
+}
 
 function normalizeLearnedSkills(skills: readonly Partial<ActorLearnedSkill>[] | undefined, legacy: readonly string[] = []): ActorLearnedSkill[] {
   const source = skills ?? legacy.map((skillId) => ({ level: 1, skillId }));

@@ -283,7 +283,8 @@ export function learnedSkillIds(
 ): SkillId[] {
   const growth = growthEffects(project, { variables: {}, classOverrides: effectiveClassId ? { [actor.id]: effectiveClassId } : undefined, growthProgress, promotionLineage }, actor.id);
   const ids = new Set<SkillId>([...(sessionSkillIds ?? []), ...growth.skillIds]);
-  for (const entry of actor.learnedSkills) if (entry.level <= level) ids.add(entry.skillId);
+  // TP 문턱 항목은 레벨만으로 열리지 않는다 — 배우면 세션 actorSkillIds 로 들어온다.
+  for (const entry of actor.learnedSkills) if (entry.tp === undefined && entry.level <= level) ids.add(entry.skillId);
   const classId = overrideClassSkills ? effectiveClassId : actor.classId;
   for (const skillId of classLearnedSkillIdsUpToLevel(project, classId ?? actor.classId, level)) ids.add(skillId);
   return [...ids];

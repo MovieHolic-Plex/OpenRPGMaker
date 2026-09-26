@@ -155,7 +155,7 @@ export function actorCommandDirectorState(
     ? { healing: commandEntry.kind === "healing" || (commandEntry.amount ?? 0) < 0, resource: commandEntry.resource ?? "hp" as const }
     : undefined;
   const lines = [
-    commandLine(command, actor),
+    commandLine(command, actor, before),
     impactLine(command, target, impact, result, after, effect),
   ];
   return {
@@ -500,14 +500,22 @@ function commandTarget(
   }
 }
 
-function commandLine(command: ActorCommand, actor: BattleBattlerSnapshot | undefined): string {
+function commandLine(command: ActorCommand, actor: BattleBattlerSnapshot | undefined, before?: BattleSnapshot): string {
   const actorName = actor?.name ?? "아군";
   const subject = withJosa(actorName, "이/가");
   switch (command.kind) {
     case "attack":
       return `${actorName}의 공격!`;
-    case "skill":
+    case "skill": {
+      // 연계기는 참가자 전원의 이름을 부른다(시전자 먼저).
+      const combo = store.getCurrent().database.skills.find((skill) => skill.id === command.skillId)?.comboActorIds;
+      if (combo && combo.length >= 2 && actor) {
+        const names = [actor.name, ...combo.filter((id) => id !== actor.recordId)
+          .map((id) => before?.actors.find((entry) => entry.recordId === id)?.name ?? id)];
+        return `${names.join("·")}의 연계기 — ${skillName(command.skillId)}!`;
+      }
       return `${subject} ${withJosa(skillName(command.skillId), "을/를")} 사용했다!`;
+    }
     case "item":
       return `${subject} ${withJosa(itemName(command.itemId), "을/를")} 사용했다!`;
     case "capture":
@@ -632,6 +640,11 @@ function rewardRows(snapshot: BattleSnapshot): readonly { readonly kind: string;
   // 레벨업이 발생한 액터별로 "레벨 업!" 행을 추가.
   for (const levelUp of snapshot.rewards.levelUps ?? []) {
     rows.push({ kind: "levelup", label: `${levelUp.actorName} 레벨 업!`, value: `Lv.${levelUp.fromLevel}→${levelUp.toLevel}` });
+  }
+  // 기술 포인트 — 저작된 TP 가 있는 전투에서만 행이 생긴다. 배운 기술은 배우별로 한 행.
+  if (snapshot.rewards.tp) rows.push({ kind: "tp", label: "기술 포인트", value: `+${snapshot.rewards.tp}` });
+  for (const tech of snapshot.rewards.techLearned ?? []) {
+    for (const skillId of tech.skillIds) rows.push({ kind: "skill", label: `${tech.actorName} 기술 습득`, value: skillName(skillId) });
   }
   // 파티 몬스터가 싸운 전투(battleParty: "monsters")는 위 액터 루프가 항상 비어서
   // 성장 피드백이 하나도 없었다 — 몬스터 레벨업/습득 기술 행을 같은 형식으로 추가한다.
