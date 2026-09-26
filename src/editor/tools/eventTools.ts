@@ -23,6 +23,7 @@ import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/projectLint";
 import { genId } from "@/util/id";
 import { chestOpenCommands, chestOpenedGraphic, lootGrantCommands } from "@/editor/lootFeedback";
+import { buildMapPlacementContext } from "@/ai/mapPlacementContext";
 import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
 import {
   canonicalizeSayBeatAliases,
@@ -828,6 +829,12 @@ export function resolveEventPlacement(
     readonly steppable?: boolean;
     readonly ignoreEventId?: string;
     readonly reserved?: ReadonlySet<string>;
+    /**
+     * 호출자가 같은 칸의 자동 조사 이벤트(ev_inspect_*)를 displaceAutoInspectEvents 로 걷어낸다.
+     * 점유 칸 회피(2026-09-24)가 그 자리표시도 점유로 봐서, 가구 위 상자가 옆 칸으로 밀리고
+     * 조사 이벤트는 남았다. 걷어내지 않는 호출자는 켜면 안 된다 — 같은 칸에 겹친다.
+     */
+    readonly replacesAutoInspect?: boolean;
     readonly label: string;
     readonly code: string;
   },
@@ -855,7 +862,8 @@ export function resolveEventPlacement(
   // 겹쳐 생겨 앞 이벤트가 그림자진다(2026-09-24 몬스터 수집 r2: NPC 위에 ev_starters 가 겹쳐
   // autoplay 의 「첫 파트너 받기」 조사가 NPC 를 집고 실패했다). 조정 경로의 nearestPassableCell 은
   // 이미 점유를 피하므로, 점유 칸 요청은 조정 경로로 보낸다.
-  const occupiedRequested = map.events.some((event) => event.id !== options.ignoreEventId && event.x === x && event.y === y);
+  const occupiedRequested = map.events.some((event) => event.id !== options.ignoreEventId && event.x === x && event.y === y
+    && !(options.replacesAutoInspect === true && isAutoInspectEvent(event)));
   const keepRequested = !requestedReserved && !occupiedRequested;
   if (keepRequested && isPassable(project, map, x, y)) return { x, y, adjusted: false };
   if (keepRequested && !mustStandOnPassable && passableLanding(project, map, x, y)) return { x, y, adjusted: false };
@@ -1137,7 +1145,7 @@ const upsertEvent: ToolDefinition = {
     }
     const unsupportedCommands = countLimitedRuntimeSupportCommandsForEvent(event);
     return {
-      summary: `${map.name}에 이벤트 '${event.id}' ${outcome === "added" ? "추가" : "수정"} — 미지원 커맨드 ${unsupportedCommands}건${adjusted ? ` — 위치 자동 조정 (${event.x}, ${event.y})` : ""}`,
+      summary: `${map.name}에 이벤트 '${event.id}' ${outcome === "added" ? "추가" : "수정"} — 런타임 제한 커맨드 ${unsupportedCommands}건${adjusted ? ` — 위치 자동 조정 (${event.x}, ${event.y})` : ""}`,
       data: { eventId: event.id, unsupportedCommands, x: event.x, y: event.y, adjusted },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
@@ -3014,6 +3022,7 @@ const placeChest: ToolDefinition = {
       kind: "interaction",
       label: "보물상자",
       code: "chest-impassable",
+      replacesAutoInspect: true,
     });
     const { x, y, adjusted } = placement;
     assertChestDrySurface(draft, map, x, y);
@@ -3027,6 +3036,11 @@ const placeChest: ToolDefinition = {
     }
     const warnings: string[] = [];
     if (adjusted) warnings.push(placementAdjustedWarning("보물상자", { x: requestedX, y: requestedY }, placement));
+    // 금액은 이 맵의 진행도(전투 보상·기존 상자·상점)와 견준다. 막지는 않는다 — 일부러 적은 상자도 있다.
+    const basis = gold ? buildMapPlacementContext(draft, map.id)?.chestGold : undefined;
+    if (gold && basis && (gold < basis.min || gold > basis.max)) {
+      warnings.push(`보상 ${gold}G 는 이 맵 기준 ${basis.min}~${basis.max}G(${basis.reason}) 밖입니다 — 의도가 아니면 그 범위로 다시 놓으세요`);
+    }
     const itemRecord = itemId
       ? draft.database.items.find((item) => item.id === itemId) ?? draft.database.equipment.find((record) => record.id === itemId)
       : undefined;
@@ -3124,6 +3138,7 @@ const placeStorageChest: ToolDefinition = {
       kind: "interaction",
       label: "보관 상자",
       code: "storage-chest-impassable",
+      replacesAutoInspect: true,
     });
     const { x, y, adjusted } = placement;
     const graphic = resolveGraphic({ query: "서랍장" }, { overrides: draft.charsetLabels });
@@ -3185,6 +3200,7 @@ const placeSavepoint: ToolDefinition = {
       y: { type: "integer" },
       name: { type: "string" },
       id: { type: "string" },
+      heal: { type: "boolean", description: "true 면 저장 전에 파티 전원 회복(recoverAll). 기본 false — 크로노 트리거의 세이브 포인트는 회복하지 않는다." },
     },
     required: ["mapId", "x", "y"],
   },
@@ -3192,6 +3208,7 @@ const placeSavepoint: ToolDefinition = {
     const map = requireMap(draft, args.mapId as string);
     const requestedX = args.x as number;
     const requestedY = args.y as number;
+    const heal = args.heal === true;
     if (!inMapBounds(map, requestedX, requestedY)) {
       throw new ToolError(`세이브 포인트 위치가 맵 밖입니다: (${requestedX}, ${requestedY})`, { code: "savepoint-out-of-bounds", mapId: map.id, x: requestedX, y: requestedY });
     }
@@ -3200,6 +3217,7 @@ const placeSavepoint: ToolDefinition = {
       kind: "interaction",
       label: "세이브 포인트",
       code: "savepoint-impassable",
+      replacesAutoInspect: true,
     });
     const { x, y, adjusted } = placement;
     const graphic = resolveGraphic({ query: "크리스탈" }, { overrides: draft.charsetLabels });
@@ -3224,8 +3242,9 @@ const placeSavepoint: ToolDefinition = {
           animationType: "fixedGraphic",
           movement: PASSIVE,
           commands: [
+            ...(heal ? [{ kind: "recoverAll" } as Command] : []),
             { kind: "checkpointSave", label: "savepoint" },
-            { kind: "text", body: "이곳에 모험을 기록했다." },
+            { kind: "text", body: heal ? "기운이 돌아왔다. 이곳에 모험을 기록했다." : "이곳에 모험을 기록했다." },
           ],
         },
       ],
@@ -3233,8 +3252,8 @@ const placeSavepoint: ToolDefinition = {
     assertEventShape(event);
     upsertEventIntoMap(map, event);
     return {
-      summary: `${map.name}에 세이브 포인트 '${name}' 배치 (${x}, ${y})${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}`,
-      data: { eventId: id, x, y, adjusted },
+      summary: `${map.name}에 세이브 포인트 '${name}' 배치 (${x}, ${y})${heal ? " — 전원 회복 포함" : ""}${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}`,
+      data: { eventId: id, x, y, adjusted, heal },
       ...(adjusted ? { warnings: [placementAdjustedWarning("세이브 포인트", { x: requestedX, y: requestedY }, placement)] } : {}),
     };
   },
@@ -3812,7 +3831,7 @@ const scriptCutscene: ToolDefinition = {
     assertEventPartyActorReferences(draft, event);
     const unsupportedCommands = countLimitedRuntimeSupportCommandsForEvent(event);
     return {
-      summary: `${map.name}에 컷신 '${eventId}' ${outcome === "added" ? "생성" : "페이지 추가"} — beat ${beats.length}개, 명령 ${commands.length}개, 미지원 커맨드 ${unsupportedCommands}건`,
+      summary: `${map.name}에 컷신 '${eventId}' ${outcome === "added" ? "생성" : "페이지 추가"} — beat ${beats.length}개, 명령 ${commands.length}개, 런타임 제한 커맨드 ${unsupportedCommands}건`,
       data: { eventId, pageId: page.id, commandCount: commands.length, unsupportedCommands },
       ...(warnings.length > 0 ? { warnings } : {}),
     };

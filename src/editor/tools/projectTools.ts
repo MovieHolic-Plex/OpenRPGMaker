@@ -6,6 +6,15 @@ import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import type { BattleUiStyle, Terms } from "@/project/types";
 import { DEFAULT_DIALOGUE_STYLE_ID, DIALOGUE_PROJECT_SPEED_LIMITS, DIALOGUE_STYLE_IDS, DIALOGUE_STYLES, dialogueStyleGuideLines, isDialogueStyleId, recommendedDialogueStyleForPreset } from "@/project/dialogueStyles";
 import { FONT_REGISTRY, isFontFamilyId } from "@/project/fontRegistry";
+import {
+  CHAPTER_LABEL_MAX,
+  DEFAULT_NEW_GAME_PLUS_LABEL,
+  NEW_GAME_PLUS_CARRY_FIELDS,
+  NEW_GAME_PLUS_LABEL_MAX,
+  isNewGamePlusCarryField,
+  normalizeChapterSettings,
+  normalizeNewGamePlusSettings,
+} from "@/project/newGamePlus";
 
 const TERM_KEYS = ["attack", "skill", "item", "defend", "escape", "capture", "back", "target", "shopGreeting", "shopBuy", "shopSell", "shopCancel", "shopSellPrompt", "innTitle", "yes", "no", "notEnoughGold", "gold", "goldPrefix", "level", "hp", "mp"] as const;
 const termSchema = Object.fromEntries(TERM_KEYS.map((key) => [key, { type: "string" as const }])) as Record<(typeof TERM_KEYS)[number], { readonly type: "string" }>;
@@ -76,7 +85,7 @@ const resetProject: ToolDefinition = {
 
 const setProjectSettings: ToolDefinition = {
   name: "set_project_settings",
-  description: "프로젝트 설정(project settings): 제목(title)·저자(author)·용어(terms)·화면 해상도(playResolution)·기본 음악/시스템 리소스·초기 파티·전투 기본값·대화창 스타일(dialogue.style)을 한 번에 설정한다. 해상도는 픽셀 밀도이고 시야는 카메라 배율이 정한다 — 둘을 같이 맞춰야 한다.",
+  description: "프로젝트 설정(project settings): 제목(title)·저자(author)·용어(terms)·화면 해상도(playResolution)·기본 음악/시스템 리소스·초기 파티·전투 기본값·대화창 스타일(dialogue.style)·강하게 다시 하기(newGamePlus)·장 표시(chapter)를 한 번에 설정한다. 해상도는 픽셀 밀도이고 시야는 카메라 배율이 정한다 — 둘을 같이 맞춰야 한다.",
   mode: "write",
   domains: ["system", "database"],
   parameters: {
@@ -123,6 +132,9 @@ const setProjectSettings: ToolDefinition = {
           uiStyle: { type: "string" },
           activeSlots: { type: "integer", minimum: 1 },
           initialTroopId: { type: "string" },
+          atbMode: { type: "string", enum: ["active", "wait"], description: "gauge 흐름 전용. active = 명령 메뉴가 열려 있어도 적이 행동한다(크로노 트리거 Active). 기본 wait" },
+          atbSpeed: { type: "integer", minimum: 1, maximum: 8, description: "ATB 속도 1(빠름)~8(느림), 4 = 기존 속도" },
+          backdrop: { type: "string", enum: ["field", "default"], description: "field = 전투 배경을 주인공 주변 필드 화면으로(제자리 페이드 진입). default = 트룹/지형 배경" },
         },
         additionalProperties: false,
       },
@@ -142,11 +154,67 @@ const setProjectSettings: ToolDefinition = {
         },
         additionalProperties: false,
       },
+      newGamePlus: {
+        type: "object",
+        description:
+          "강하게 다시 하기(New Game+, 크로노 트리거 식). 엔딩을 한 번 본 뒤 타이틀에 항목이 생기고, 고르면 carry 로 고른 것만 들고 처음부터 시작한다."
+          + " 스위치·변수·상자·맵 상태는 넘어가지 않는다. 새 회차는 session.flags.ngplus=true 이고 엔딩 조건 {kind:\"newGamePlus\",value:true} 로 가를 수 있다.",
+        properties: {
+          enabled: { type: "boolean" },
+          label: { type: "string", maxLength: NEW_GAME_PLUS_LABEL_MAX, description: `타이틀 항목 이름. 생략 = 「${DEFAULT_NEW_GAME_PLUS_LABEL}」` },
+          carry: { type: "array", items: { type: "string", enum: [...NEW_GAME_PLUS_CARRY_FIELDS] }, description: "넘길 것: levels(레벨·경험치), skills, equipment, inventory, gold" },
+        },
+        additionalProperties: false,
+      },
+      chapter: {
+        type: "object",
+        description: "장(시대) 표시. variableId 의 현재 값에 맞는 이름이 ESC 메뉴 머리와 저장 칸에 보인다. 이야기가 진행되면 이벤트에서 그 변수를 올린다.",
+        properties: {
+          variableId: { type: "string", description: "이미 있는 변수 id" },
+          labels: { type: "object", description: `변수 값(정수 문자열) → 이름(최대 ${CHAPTER_LABEL_MAX}자). 예 {"1":"1장 · 서기 1000년","2":"2장 · 종말의 날"}` },
+        },
+        required: ["variableId", "labels"],
+        additionalProperties: false,
+      },
     },
     additionalProperties: false,
   },
   run(draft, args): ToolExecResult {
     const changed: string[] = [];
+    if (args.newGamePlus !== undefined) {
+      if (typeof args.newGamePlus !== "object" || args.newGamePlus === null || Array.isArray(args.newGamePlus)) {
+        throw new ToolError("newGamePlus는 객체여야 합니다.", { code: "invalid-args" });
+      }
+      const input = args.newGamePlus as Record<string, unknown>;
+      const carry = input.carry ?? draft.system.newGamePlus?.carry ?? [];
+      if (!Array.isArray(carry)) throw new ToolError("newGamePlus.carry는 배열이어야 합니다.", { code: "invalid-args" });
+      const unknownCarry = carry.filter((field) => !isNewGamePlusCarryField(field));
+      if (unknownCarry.length > 0) {
+        throw new ToolError(`newGamePlus.carry 에 알 수 없는 값: ${unknownCarry.map(String).join(", ")}. 가능: ${NEW_GAME_PLUS_CARRY_FIELDS.join(", ")}`, { code: "invalid-args" });
+      }
+      const next = normalizeNewGamePlusSettings({
+        enabled: input.enabled ?? draft.system.newGamePlus?.enabled,
+        label: input.label ?? draft.system.newGamePlus?.label,
+        carry,
+      });
+      if (next) draft.system.newGamePlus = next;
+      else delete draft.system.newGamePlus;
+      changed.push(`강하게 다시 하기=${next?.enabled ? "켬" : "끔"}`);
+    }
+    if (args.chapter !== undefined) {
+      if (typeof args.chapter !== "object" || args.chapter === null || Array.isArray(args.chapter)) {
+        throw new ToolError("chapter는 객체여야 합니다.", { code: "invalid-args" });
+      }
+      const input = args.chapter as Record<string, unknown>;
+      const variableId = typeof input.variableId === "string" ? input.variableId.trim() : "";
+      if (!draft.variables.some((variable) => variable.id === variableId)) {
+        throw new ToolError(`chapter.variableId 변수를 찾을 수 없습니다: ${variableId || "(비어 있음)"}. 먼저 manage_flag_slot 으로 변수를 만드세요.`, { code: "variable-not-found" });
+      }
+      const next = normalizeChapterSettings({ variableId, labels: input.labels });
+      if (!next) throw new ToolError("chapter.labels 에 정수 값 → 이름이 하나 이상 있어야 합니다.", { code: "invalid-args" });
+      draft.system.chapter = next;
+      changed.push(`장 표시=${Object.keys(next.labels).length}개`);
+    }
     if (typeof args.title === "string" && args.title.trim()) {
       draft.meta.title = args.title.trim();
       if (draft.system.titleScreen) draft.system.titleScreen.title = draft.meta.title;
@@ -182,6 +250,18 @@ const setProjectSettings: ToolDefinition = {
       if (battle.flow === "gauge" || battle.flow === "strict") draft.system.battleFlow = battle.flow;
       if (typeof battle.uiStyle === "string") draft.system.battleUiStyle = battle.uiStyle as BattleUiStyle;
       if (typeof battle.activeSlots === "number") draft.system.activeSlots = Math.trunc(battle.activeSlots);
+      // 기본값은 저장하지 않는다 — normalizeSystemRecords 와 같은 계약.
+      if (battle.atbMode === "active") draft.system.atbMode = "active";
+      else if (battle.atbMode === "wait") delete draft.system.atbMode;
+      if (battle.atbSpeed !== undefined) {
+        if (typeof battle.atbSpeed !== "number" || !Number.isInteger(battle.atbSpeed) || battle.atbSpeed < 1 || battle.atbSpeed > 8) {
+          throw new ToolError(`battle.atbSpeed 는 1~8 정수여야 합니다(받은 값 ${JSON.stringify(battle.atbSpeed)}).`, { code: "invalid-args" });
+        }
+        if (battle.atbSpeed === 4) delete draft.system.atbSpeed;
+        else draft.system.atbSpeed = battle.atbSpeed;
+      }
+      if (battle.backdrop === "field") draft.system.battleBackdrop = "field";
+      else if (battle.backdrop === "default") delete draft.system.battleBackdrop;
       if (typeof battle.initialTroopId === "string") {
         if (!draft.database.troops.some((troop) => troop.id === battle.initialTroopId)) throw new ToolError(`초기 적 그룹을 찾을 수 없습니다: ${battle.initialTroopId}`, { code: "troop-not-found" });
         draft.system.initialTroopId = battle.initialTroopId;

@@ -122,6 +122,16 @@ export interface MvTownRecipe {
   readonly alley: string;
   readonly driveway: string;
   readonly path: string;
+  /** 공원 바닥 잔디(가로 잔디 띠와 다른 결). 없으면 lawn. */
+  readonly parkLawn?: string;
+  /** 공원 꽃밭 덩어리(바닥 재료). 없으면 안 칠한다. */
+  readonly meadow?: string;
+  /** 산책로 가장자리·벤치 밑 닳은 흙 자갈(바닥 재료). 없으면 안 칠한다. */
+  readonly worn?: string;
+  /** 나무 무리 밑 긴 풀(잔디 위에 겹쳐 까는 재료). 없으면 안 칠한다. */
+  readonly tallGrass?: string;
+  /** 큰 공원 산책로 가운데 작은 광장 바닥. 없으면 path. */
+  readonly plaza?: string;
   /** 겹침 울타리(위층 선). */
   readonly fence: string;
   /** 뒷마당 텃밭(흙·밭). 없으면 안 만든다. */
@@ -130,6 +140,8 @@ export interface MvTownRecipe {
   readonly parkingLine?: string;
   readonly shops: readonly MvTownFacade[];
   readonly offices: readonly MvTownFacade[];
+  /** 주택가 블록의 벽 맞댄 중층 주거(1층은 문 + 세로창, 쇼윈도 없음). 없으면 shops 를 쓴다. */
+  readonly apartments?: readonly MvTownFacade[];
   readonly houses: readonly { readonly roof: string; readonly wall: string }[];
   readonly objects: {
     readonly lamp: string;
@@ -152,6 +164,17 @@ export interface MvTownRecipe {
     /** 골목·뒷마당에 두는 것(분리수거함·배전함·상자). */
     readonly backProps: readonly string[];
     readonly houseDoor: string;
+    /** 주택 현관문 여러 종(없으면 houseDoor 하나). 이웃 집끼리 다르게 고른다. */
+    readonly houseDoors?: readonly string[];
+    /** 마당 경계 생울타리(3칸 폭, 가로로 잇는다). 없으면 덤불로. */
+    readonly hedge?: string;
+    /** 가게 1층 부품: 1줄 문·1줄 쇼윈도(+양끝)·2줄 문·2줄 통유리·1칸 차양. 파사드가 자기 부품이 없을 때 빌려 쓴다. */
+    readonly doorRow?: string;
+    readonly doorTall?: string;
+    readonly shopfrontRow?: string;
+    readonly shopfrontRowEnds?: readonly [left: string, right: string];
+    readonly shopfrontTall?: string;
+    readonly awningSmall?: string;
     readonly houseWindows: readonly string[];
     readonly roofProps: readonly string[];
     /** 옥상 설비(환기구·실외기, 1칸 높이). 옥상 줄 위에 건물마다 0~2개. 없으면 안 둔다. */
@@ -169,5 +192,84 @@ export interface MvTownRecipe {
     readonly crosswalkVertical: string;
     readonly arrowLeft: string;
     readonly arrowRight: string;
+    /** 세로 차도 화살표(우측통행: 위 = 동쪽 차로, 아래 = 서쪽 차로). 없으면 세로 길엔 화살표를 안 둔다. */
+    readonly arrowUp?: string;
+    readonly arrowDown?: string;
   };
+  /** 꾸밈 재료(간판·카페 가구·신호등·옥상·놀이터 등). 없으면 뼈대만 깐다. 물체 id 는 objects, 나머지는 재료 이름. */
+  readonly decor?: MvTownDecor;
+}
+
+/** 마을 꾸밈 — 실제 거리 규칙대로 둘 자리가 정해진 부품 목록(townLayout 「꾸밈」 절). */
+export interface MvTownDecor {
+  /** 가게 간판(위층 벽 맨 아랫줄, 가게마다 하나). */
+  readonly signs: readonly string[];
+  /** 세로 깃발 간판(위층 벽 가장자리). */
+  readonly banners: readonly string[];
+  readonly civicSigns: readonly string[];
+  readonly shopWindowLarge?: string;
+  /** 닫힌 가게 1층 셔터(평타일 재료 이름). */
+  readonly shutter?: string;
+  /** 창 없는 위층 벽에 다는 넓은 창(3×2)·세로로 긴 창(1×3). */
+  readonly upperWindows: readonly string[];
+  readonly upperWindowsTall: readonly string[];
+  readonly fireEscape?: string;
+  readonly wallLadder?: string;
+  readonly backDoor?: string;
+  /** 뒷문 옆 뒷길·뒷골목 설비(대형 쓰레기통·바퀴 쓰레기통·봉투·설비함·상자). 뒷문마다 2~3개 무리. */
+  readonly service?: readonly string[];
+  /** 뒷벽에 붙이는 벽걸이 실외기. */
+  readonly acWall?: string;
+  /** 옥상 윗면 설비(건물마다 1~3종). */
+  readonly roofTop: readonly string[];
+  readonly helipad?: string;
+  /** 사무실 옥상 앞 가장자리 난간(겹침 재료). */
+  readonly roofRailing?: string;
+  readonly cafeTables: readonly string[];
+  readonly vending: readonly string[];
+  readonly atm?: string;
+  readonly carts: readonly string[];
+  readonly kiosk?: string;
+  readonly trafficLights: readonly string[];
+  readonly stopSign?: string;
+  readonly manholes: readonly string[];
+  readonly drainVertical?: string;
+  /** 점자 보도블록(겹침 재료) — 횡단보도 끝 보도 칸. */
+  readonly tactile?: string;
+  readonly cones: readonly string[];
+  readonly bollard?: string;
+  readonly guardrail?: string;
+  /** 세로 골목길·공원의 높은 가로등. */
+  readonly tallLamps: readonly string[];
+  /** 가게 앞 보도 재료 변주. */
+  readonly walkways: readonly string[];
+  readonly cobbles: readonly string[];
+  /** 카페 테라스 바닥(타일 평타일). */
+  readonly terraces?: readonly string[];
+  /** 불 켜진 가로등(2칸, 큰길 보도에 한두 개). */
+  readonly litLamps?: readonly string[];
+  /** 세로 골목길 가운데 차선. */
+  readonly laneVertical?: string;
+  /** 뒷골목 바닥 얼룩·균열(겹침 재료). */
+  readonly stains: readonly string[];
+  readonly planterBed?: string;
+  readonly planterTrees: readonly string[];
+  readonly yardShrubs: readonly string[];
+  /** 앞마당 텃밭(바닥 재료). */
+  readonly plowed?: string;
+  readonly dirt?: string;
+  /** 공원 연못 물(바닥)·수련(겹침). */
+  readonly pond?: string;
+  /** 강·수로의 흐르는 물(폭포형 오토타일, 다리 사이 구간마다 하나). 없으면 강을 두지 않는다. */
+  readonly flowingWater?: readonly string[];
+  /** 광장 가운데 2×2 평타일 포장(둘레가 같은 광장 오토타일일 때만 이음매가 맞는다). */
+  readonly plazaCore?: readonly string[];
+  /** 다리 난간(걹침 재료) — 물에 맞닿은 데크 줄. */
+  readonly bridgeRailing?: string;
+  /** 특수 건물(경찰서·소방서·병원) 한 벌: 간판 id 와 파사드. 큰 맵 가게 줄에 하나. */
+  readonly civic?: readonly { readonly sign: string; readonly facade: MvTownFacade }[];
+  readonly lily?: string;
+  readonly play: readonly string[];
+  readonly longBenches: readonly string[];
+  readonly picnic?: string;
 }

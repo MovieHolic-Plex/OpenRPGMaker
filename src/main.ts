@@ -100,16 +100,17 @@ void bootEditorWithOpenedProject(app)
 async function bootEditorWithOpenedProject(host: HTMLElement): Promise<void> {
   await adoptElectronOpenProject();
   await initializeTeamAccess();
-  // 공용 타일 참고문서는 기다리지 않는다. 실측(2026-09-26): 183MB · 호스트 24.8s 라 부팅이 10s 씩 멈췄다.
-  // 로드 전에 오면 로드 정규화가, 뒤에 오면 applySharedTileReferences 가 열린 프로젝트에 반영한다.
+  // 공용 타일 참고문서는 프로젝트에 이미 있는 업로드 타일셋만 보강하고 타일셋을 새로 설치하지 않는다(설치는
+  // shared-content 가 한다). 부팅이 기다릴 이유가 없다 — 실측(2026-09-26): 191MB 응답이 10s 제한에 걸려 팀 호스트 부팅이 +10s.
   const tileReferences = loadSharedTileReferences();
   await loadSharedContent({ scope: "defaults" });
   await bootApp(host);
   startTeamSession();
-  void tileReferences.then((installed) => { if (installed) store.applySharedTileReferences(); });
+  void tileReferences.then(() => store.applySharedReferenceRefresh());
   // 장소·지역 카탈로그 전체는 편집기가 뜬 뒤 받는다. 기본 라이브러리는 위에서 이미 설치됐으므로
   // 정규화 결과(프로젝트에 들어가는 shared_* 타일셋)는 바뀌지 않는다.
-  void loadSharedContent();
+  // 나머지(rest)만 받아 합친다 — 전체(all)를 받으면 위에서 받은 기본 20MB(gzip)가 두 번 온다(2026-09-27 실측).
+  void loadSharedContent({ scope: "rest" });
 }
 
 async function registerPwaIfEnabled(): Promise<void> {

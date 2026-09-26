@@ -6,7 +6,6 @@ import type { LintIssue } from "@/project/lint/projectLint";
 import type { ChangeSummary, Project } from "@/project/types";
 
 // 최소 JSON Schema(OpenAI function calling 파라미터). 손으로 쓰되 object 타입을 강제한다.
-// "null" 은 `["object", "null"]` 처럼 끌 수 있는 설정(예: 타이틀 sequence·transition)에 쓴다.
 export type JsonSchemaType = "object" | "array" | "string" | "number" | "integer" | "boolean" | "null";
 
 export interface JsonSchema {

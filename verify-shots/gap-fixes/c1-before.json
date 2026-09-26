@@ -1,0 +1,31 @@
+{
+ "system": {
+  "genre": "adventure-jrpg",
+  "battleUiStyle": null,
+  "battleParty": null,
+  "battleFlow": "gauge",
+  "menuUiStyle": null,
+  "dialogueStyle": null,
+  "companions": null,
+  "rewardPolicy": null
+ },
+ "appliesSystemFields": [
+  "system.genre"
+ ],
+ "requirements": [
+  "world-map",
+  "quest-event"
+ ],
+ "blankConfig": [
+  {
+   "id": "world-map",
+   "configured": true,
+   "runtimeCapability": "map-runtime"
+  },
+  {
+   "id": "quest-event",
+   "configured": false,
+   "runtimeCapability": "event-interpreter"
+  }
+ ]
+}

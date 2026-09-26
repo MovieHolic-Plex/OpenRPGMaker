@@ -94,6 +94,8 @@ function shaderKind(effect: TitleEffect): number {
       return effect.source ? TITLE_EFFECT_SHADER_KIND.glow : TITLE_EFFECT_SHADER_KIND.none;
     case "camera":
       return TITLE_EFFECT_SHADER_KIND.camera;
+    case "parallax":
+      return TITLE_EFFECT_SHADER_KIND.parallax;
     default:
       return TITLE_EFFECT_SHADER_KIND.none;
   }
@@ -132,6 +134,8 @@ export interface TitleEffectsCanvasOptions {
   readonly imageUrl: string;
   /** 생략 = "stretch" — 배경(applyTitleScreenBackground)의 기본과 같아야 효과를 켜도 그림이 안 움직인다. */
   readonly fit?: TitleBackgroundFit;
+  /** 깊이 시차용 깊이 지도(흰색 = 가까움). 없거나 못 읽으면 셰이더가 「아래가 가깝다」 기본값을 쓴다. */
+  readonly depthUrl?: string;
   /** 고정 시각(초). 주면 애니메이션하지 않고 그 순간만 그린다(QA·미리보기 썸네일). */
   readonly freezeAtSec?: number;
 }
@@ -227,9 +231,13 @@ function startTitleEffects(canvas: HTMLCanvasElement, initialUniforms: TitleEffe
       ptsN: location("uPtsN"),
       pts: location("uPts"),
       image: location("uImage"),
+      depth: location("uDepth"),
+      hasDepth: location("uHasDepth"),
     };
     context.useProgram(program);
     context.uniform1i(loc.image, 0);
+    context.uniform1i(loc.depth, 1);
+    context.uniform1i(loc.hasDepth, 0);
     context.uniform2f(loc.imageSize, image.naturalWidth || 1, image.naturalHeight || 1);
     context.uniform1i(loc.fit, FIT_ID[options.fit ?? "stretch"]);
     const applyUniforms = (): void => {
@@ -242,6 +250,31 @@ function startTitleEffects(canvas: HTMLCanvasElement, initialUniforms: TitleEffe
       context.uniform2fv(loc.pts, uniforms.pts);
     };
     applyUniforms();
+    // 깊이 지도는 두 번째 텍스처 단위에 따로 올린다 — 늦게 와도 그다음 프레임부터 쓴다.
+    if (options.depthUrl) {
+      const depthImage = new Image();
+      depthImage.decoding = "async";
+      depthImage.onload = () => {
+        const depthTexture = context.createTexture();
+        context.activeTexture(context.TEXTURE1);
+        context.bindTexture(context.TEXTURE_2D, depthTexture);
+        context.texParameteri(context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.LINEAR);
+        context.texParameteri(context.TEXTURE_2D, context.TEXTURE_MAG_FILTER, context.LINEAR);
+        context.texParameteri(context.TEXTURE_2D, context.TEXTURE_WRAP_S, context.CLAMP_TO_EDGE);
+        context.texParameteri(context.TEXTURE_2D, context.TEXTURE_WRAP_T, context.CLAMP_TO_EDGE);
+        try {
+          context.texImage2D(context.TEXTURE_2D, 0, context.RGBA, context.RGBA, context.UNSIGNED_BYTE, depthImage);
+        } catch {
+          context.activeTexture(context.TEXTURE0);
+          return;
+        }
+        context.activeTexture(context.TEXTURE0);
+        context.uniform1i(loc.hasDepth, 1);
+        canvas.dataset.titleEffectsDepth = "loaded";
+        draw(lastSeconds);
+      };
+      depthImage.src = options.depthUrl;
+    }
 
     const draw = (seconds: number) => {
       resizeCanvas(canvas, context);
@@ -337,5 +370,5 @@ function buildProgram(gl: WebGL2RenderingContext): WebGLProgram | null {
 
 /** 재사용 판정용 서명 — 같으면 기존 캔버스(진행 중 애니메이션)를 그대로 쓴다. */
 export function titleEffectsSignature(options: TitleEffectsCanvasOptions): string {
-  return JSON.stringify({ e: options.effects, u: options.imageUrl, f: options.fit ?? "stretch", z: options.freezeAtSec });
+  return JSON.stringify({ e: options.effects, u: options.imageUrl, f: options.fit ?? "stretch", d: options.depthUrl, z: options.freezeAtSec });
 }

@@ -121,6 +121,7 @@ import { createCollapsedUndoButton, createDirectorRestoreButton, setRestoreButto
 import { getEditorUiMode } from "@/editor/editorUiMode";
 import { openAiSettingsModal, registerAiSettingsPanel } from "./aiSettingsModal";
 import { runStampPlace } from "@/editor/stampPlaceRunner";
+import { buildMapPlacementContext, formatChestRewardHint } from "@/ai/mapPlacementContext";
 import { getTool } from "@/editor/tools/toolRegistry";
 import {
   formatComposerPlaceholder,
@@ -1426,6 +1427,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 재료 라벨 예시는 현재 맵 타일셋의 사실이다 — 빠지면 모델이 그룹 id 를 재료로 쓰는 실수로 돌아간다.
     const tileset = tilesetForTurn(scopeMapId);
     if (tileset) parts.push(formatMaterialLabelHint(tileset).replace(/^- /, ""));
+    // 상자 보상은 현재 맵의 진행도로 정한다 — 바로 깔기와 같은 기준(mapPlacementContext).
+    const placement = ctx.mapId ? buildMapPlacementContext(store.getCurrent(), ctx.mapId) : null;
+    if (placement) parts.push(formatChestRewardHint(placement));
     // 선택 영역은 '현재 맵의 것'이고 맵 범위 안에 있을 때만 첨부한다.
     // 맵을 전환해도 남아 있던 이전 맵의 선택(예: 10×10 맵에 (11,9))이 모델에 새 좌표로 오인되던 문제(BUG F) 방지.
     const sel = ctx.selection;
@@ -2326,7 +2330,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 여러 줄 입력 자동 성장 — 고정 높이 창에 30줄이 갇혀 끝부분만 보이던 결함(적대 평가 P1).
   // 내용 높이에 맞춰 늘리고, 상한(요소 max-height)부터는 스크롤로 전환한다.
   // 바 높이가 변하는 유일한 경로이므로 여기서만 clearance 를 다시 잰다.
+  // 글자마다 height=auto → 재기 → 되돌리기를 하면 키 하나에 강제 레이아웃이 3번이다(2026-09-26 실측:
+  // 20자에 레이아웃 60회·스타일 74회). 줄 수가 늘 때는 scrollHeight 가 지금 높이를 넘는다 — 그때만 늘리고,
+  // 줄이 줄어들 수 있는 삭제·붙여넣기·비우기에서만 전체를 다시 잰다.
+  let lastInputLength = 0;
   const syncInputHeight = (): void => {
+    const length = input.value.length;
+    const shrinking = length < lastInputLength;
+    lastInputLength = length;
+    if (!shrinking && input.style.height && input.scrollHeight <= input.clientHeight) return;
     input.style.height = "auto";
     const minHeight = typeof getComputedStyle === "function"
       ? Number.parseFloat(getComputedStyle(input).minHeight) || 0
@@ -2354,7 +2366,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       toast("맵을 연 뒤 바로 깔 수 있습니다", "info");
       return;
     }
-    appendBubble("user", text.trim() || "숲");
+    appendBubble("user", text.trim() || "(알아서 깔기)");
     const controller = new AbortController();
     stampController = controller;
     activeAbortController = controller;
@@ -2389,7 +2401,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   const refreshComposerPlaceholder = (): void => {
     if (stampPlaceOn) {
-      input.setAttribute("placeholder", "바로 깔기 — 무엇을 어떻게 깔지 한 문장으로. 비우면 숲.");
+      input.setAttribute("placeholder", "바로 깔기 — 무엇을 어떻게 깔지 한 문장으로(상자·NPC도). 비우면 알아서.");
       syncConversationState();
       return;
     }
@@ -3100,6 +3112,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const suggestions = createProjectSuggestions({
     snapshot: () => ({
       project: store.getCurrent(), projectId: store.getProjectIdentity().id,
+      version: (({ lineage, generation }) => `${lineage}:${generation}`)(store.getVersionToken()),
       mapId: mapContext().mapId ?? "",
       // 모델 호출의 조건. 로컬 탐지·배지는 닫혀 있어도 돌아야 하므로(느낌표가 알림이다)
       // 이 값은 **비싼 원격 턴**만 막는다. 팝오버가 열려 있고 턴 중이 아니어야 한다.
@@ -3215,13 +3228,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 하단 여백(--ai-command-bar-inset)도 같은 실측에서 나온다 — 144px 하드코딩은 실제
   // 바 높이와 어긋나 있었고, 두 값이 서로 다른 소스를 보면 반드시 갈라진다.
   // 데크가 표면 하나이므로 clearance 도 데크 사각형 하나에서 나온다(열린 팝오버 포함).
+  let lastClearance = "";
+  let lastInset = "";
   syncCommandBarClearance = (): void => {
     const rect = deck.getBoundingClientRect();
     if (rect.height <= 0 || typeof window === "undefined") return;
     const top = Math.min(rect.top, composerShell.measuredTop());
-    const clearance = Math.max(60, Math.ceil(window.innerHeight - top) + 12);
-    panel.style.setProperty("--ai-command-bar-clearance", `${clearance}px`);
-    document.body?.style.setProperty("--ai-command-bar-inset", `${Math.max(72, Math.ceil(rect.height) + 24)}px`);
+    const clearance = `${Math.max(60, Math.ceil(window.innerHeight - top) + 12)}px`;
+    const inset = `${Math.max(72, Math.ceil(rect.height) + 24)}px`;
+    // 같은 값을 다시 쓰지 않는다 — body 의 사용자 변수는 문서 전체 스타일을 무효화한다.
+    if (clearance !== lastClearance) { lastClearance = clearance; panel.style.setProperty("--ai-command-bar-clearance", clearance); }
+    if (inset !== lastInset) { lastInset = inset; document.body?.style.setProperty("--ai-command-bar-inset", inset); }
   };
   const commandBarClearanceObserver =
     typeof ResizeObserver !== "undefined" ? new ResizeObserver(syncCommandBarClearance) : null;

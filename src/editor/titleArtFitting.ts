@@ -137,7 +137,7 @@ function applyAnchor(effect: TitleEffect, anchor: Anchor, allowRegionMotes = fal
     effect.source = round(source);
     return true;
   }
-  return effect.kind === "camera";
+  return effect.kind === "camera" || effect.kind === "parallax";
 }
 
 function parseJsonObject(raw: string): unknown {
@@ -154,6 +154,7 @@ export function applyTitleArtFreeFit(raw: string): TitleArtFitResult {
   const logoStyle = normalizeTitleLogoStyle(parsed?.logoStyle);
   const effects: TitleEffect[] = [];
   let camera = false;
+  let parallax = false;
   for (const entry of Array.isArray(parsed?.effects) ? parsed.effects : []) {
     if (effects.length >= MAX_TITLE_EFFECTS) break;
     if (!entry || typeof entry !== "object") continue;
@@ -162,6 +163,10 @@ export function applyTitleArtFreeFit(raw: string): TitleArtFitResult {
     if (kind === "camera") {
       if (camera) continue;
       camera = true;
+    }
+    if (kind === "parallax") {
+      if (parallax) continue;
+      parallax = true;
     }
     const effect = defaultTitleEffect(kind);
     if (!applyAnchor(effect, entry as Anchor, true)) continue;

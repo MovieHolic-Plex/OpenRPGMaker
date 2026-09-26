@@ -259,9 +259,9 @@ export function findBundledImageAsset(textureKey: string): BundledImageAsset | u
 }
 
 const RAW_CHARSET_TEXTURE_SUFFIX = "__raw";
-export function loadBundledAssets(scene: { readonly load: Pick<Phaser.Loader.LoaderPlugin, "image" | "on"> }, project?: Project): void {
+export function loadBundledAssets(scene: { readonly load: Pick<Phaser.Loader.LoaderPlugin, "image" | "on"> }, project?: Project, options: { readonly onlyMapTilesets?: boolean } = {}): void {
   const usedTextures = project ? projectBundledTextureKeys(project) : null;
-  loadUploadedTilesets(scene, project);
+  loadUploadedTilesets(scene, project, options);
   loadUploadedEventSprites(scene, project, project ? collectPlayReferencedStrings(project) : undefined);
   scene.load.image(TEX_TILESET, withInlineAsset(ASSET_TILESET));
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {

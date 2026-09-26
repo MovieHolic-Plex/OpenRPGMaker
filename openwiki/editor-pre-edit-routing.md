@@ -273,8 +273,12 @@ Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식�
   일반 `updateMap` 대신 `store.updateMapTiles`를 사용한다. 기존 경로는 포인터 샘플마다
   `structuredClone(currentMap)`으로 이벤트와 선택적 맵 메타데이터까지 복사했지만, 새 경로는
   타일 배열과 레거시 스택만 복제해 같은 불변성·undo/감사/자동저장 계약을 유지한다.
-  맵 셀 변경의 숨은 `project-export-json` 직렬화도 500ms 후행 debounce로 묶어 한 번의
-  스트로크에서 전체 프로젝트를 반복 직렬화하지 않는다.
+  맵 셀 변경의 숨은 `project-export-json` 직렬화는 **읽을 때만** 한다(2026-09-26). `editor.ts`
+  `projectExportNodeElement` 가 그 `<pre>` 의 `textContent` 를 게터로 바꿔 `ProjectExportMirror`(버전 토큰
+  캐시)를 부른다. 예전에는 획을 뗄 때마다 전체를 미리 썼고, 타일셋이 큰 프로젝트(JSON 81~114MB)에서 809ms 긴
+  작업이었다. e2e·스크립트는 `textContent` 로만 읽으므로 계약은 같다 — `innerText`·`toHaveText` 는 게터를 안
+  거치므로 미러를 그렇게 읽지 마라. 획이 끝난 뒤 도구줄 배지·되돌리기 갱신은
+  `TileToolbarModel.refreshChrome`(표준 팔레트: `syncMountedPaletteToolPick`)으로 도구줄만 간다.
 - **우클릭 영역 드래그 (2026-09-19):** 드래그 중에는 선택 사각형·크기 배지만 갱신하고,
   `selection-action-chips` DOM은 pointerup의 최종 영역에서 한 번만 만든다. 이전에는
   pointermove마다 버튼을 만들고 `getBoundingClientRect`로 레이아웃을 강제했다.
@@ -350,6 +354,10 @@ Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식�
 타일 검색은 입력이 120ms 멈춘 뒤 한 번 다시 그린다. 도장만 바뀌면 시트 노드는 `retainKey`(타일셋·그림·레이어·필터)가
 같을 때 그대로 두고 크롬만 다시 그린다. 레이어·필터·검색·타일셋 그림이 바뀌거나 보조 창이 열려
 선택 동기화가 실패하면 시트를 다시 그린다. 초보 레일의 되돌리기 기록은 단추만 갱신한다.
+**스크롤 복원은 읽지 않고 쓴다 (2026-09-27).** `applyPaletteScroll` 은 0 이 아닌 축만 쓴다 — 막 붙인 시트의
+`scrollLeft/Top` 을 읽으면 레이아웃이 강제된다(레이어 전환 재생성 89ms 중 46ms). 결과: 89 → 67ms/전환, 스크롤 300·0 보존.
+**좌패널 최소 크기:** 글자 11px, 누르는 것 24px(`--space-5`). 되돌리기·다시실행 펼쳐보기 폭도 24px 이다
+(`test/tileToolbarHistoryMenus.test.ts` 캐스케이드 승자가 이 값을 잡는다).
 DOM 미리보기는 이식 PNG의 공유 Blob URL을 쓰고 증거·내보내기는 data URL을 유지한다.
 같은 맵에서 도구·선택만 바뀌면 프로젝트 전체 참조 감사와 JSON 내보내기를 다시 하지 않는다.
 

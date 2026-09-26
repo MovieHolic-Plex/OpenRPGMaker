@@ -1,0 +1,5 @@
+# gtaible.png 5x3 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  3  4  
+   0 ~b +w +w +b ~w 
+   1 #w #b #w #l +l 
+   2 +g #l +g ~b ~b 

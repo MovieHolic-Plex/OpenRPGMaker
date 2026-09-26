@@ -161,6 +161,14 @@ export function validateTileset(id: string, value: unknown): void {
   if (tileset.grammarProfile !== undefined) {
     requireString(`tileset ${id}.grammarProfile`, tileset.grammarProfile);
   }
+  if (tileset.ledgeDirections !== undefined) {
+    const ledges = requireRecord(`tileset ${id}.ledgeDirections`, tileset.ledgeDirections);
+    for (const [tile, dir] of Object.entries(ledges)) {
+      const index = Number(tile);
+      assert(Number.isInteger(index) && index >= 0 && index < count, `tileset ${id}: ledgeDirections 타일 ${tile} 범위 밖`);
+      assert(dir === "up" || dir === "down" || dir === "left" || dir === "right", `tileset ${id}: ledgeDirections[${tile}] 방향 오류`);
+    }
+  }
   if (tileset.suppressedHarnessGroupIds !== undefined) {
     for (const groupId of requireArray(`tileset ${id}.suppressedHarnessGroupIds`, tileset.suppressedHarnessGroupIds)) {
       requireString(`tileset ${id}.suppressedHarnessGroupIds[]`, groupId);

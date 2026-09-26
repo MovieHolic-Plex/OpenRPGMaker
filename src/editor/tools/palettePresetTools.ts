@@ -1,4 +1,4 @@
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { defaultToolTilesetId } from "@/project/defaults/forestHarmony";
 import { isPaletteSlotRole, normalizePalettePresetId } from "@/project/tilesetPalette";
 import type { PalettePreset, PaletteSlot, PaletteSlotRole, TilesetDef } from "@/project/types";
 import { genId } from "@/util/id";
@@ -13,7 +13,7 @@ const upsertPalettePreset: ToolDefinition = {
   parameters: {
     type: "object",
     properties: {
-      tilesetId: { type: "string", description: "대상 타일셋 id(기본 tiles_default)" },
+      tilesetId: { type: "string", description: "대상 타일셋 id(생략 시 시작 맵의 타일셋, 없으면 숲마을)" },
       preset: {
         type: "object",
         description: "신규는 id 생략(name/slots 필요). tileIds는 이 타일셋의 타일 인덱스 — 모르면 먼저 query_tiles/get_tile_info로 조회하라.",
@@ -39,7 +39,7 @@ const upsertPalettePreset: ToolDefinition = {
     required: ["preset"],
   },
   run(draft, args): ToolExecResult {
-    const tilesetId = typeof args.tilesetId === "string" ? args.tilesetId : DEFAULT_TILESET_ID;
+    const tilesetId = typeof args.tilesetId === "string" ? args.tilesetId : defaultToolTilesetId(draft);
     const tileset = draft.tilesets[tilesetId];
     if (!tileset) throw new ToolError(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { code: "tileset-not-found" });
     const record = requireRecord(args.preset, "preset");

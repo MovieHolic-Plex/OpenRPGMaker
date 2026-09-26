@@ -148,6 +148,8 @@ export interface PlayerHopState {
   elapsedFrames: number;
   /** 이 체공이 끝나면 걸음 이동 부수효과(발소리·인카운터·독)를 한 걸음으로 셀지. */
   readonly countsAsStep: boolean;
+  /** 턱 넘기처럼 중간 칸을 건너뛴 체공이면 그 칸. 동료 궤적에 끼워 넣어 한 칸씩 따라오게 한다. */
+  readonly via?: { readonly x: number; readonly y: number };
 }
 
 export interface PlaySceneContext extends Phaser.Scene {

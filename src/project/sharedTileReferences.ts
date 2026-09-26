@@ -14,7 +14,7 @@ export interface SharedTileReferenceSnapshot { revision: string; entries: Shared
 let snapshot: SharedTileReferenceSnapshot = { revision: '', entries: [] };
 /**
  * Host-wide documents. No project ID, tile installation or map mutation.
- * 설치하면 true — 이미 열린 프로젝트에는 호출자가 store.applySharedTileReferences() 로 늦게 반영한다.
+ * 설치하면 true — 이미 열린 프로젝트에는 main.ts 가 store.applySharedReferenceRefresh() 로 늦게 반영한다.
  * 부팅은 이 응답을 기다리지 않으므로 시간 제한을 두지 않는다. 실측(2026-09-26): 응답 183MB,
  * 호스트 첫 직렬화 24.8s 라 예전 10s abort 는 매 부팅 실패를 보장했다. 실패는 경고만 남긴다.
  */
@@ -42,6 +42,18 @@ export async function loadSharedTileReferences(): Promise<boolean> {
 export function ensureSharedTileReferences(project: Project, source = snapshot): boolean {
   let changed = ensureSharedContent(project);
   changed = ensureSharedSpatialReferences(project) || changed;
+  return applySharedTileReferenceEntries(project, source) || changed;
+}
+/** 이 참고문서가 보강할 타일셋이 프로젝트에 하나라도 있는가(타일셋·업로드 자산 id 만 본다). */
+export function sharedTileReferencesTouch(project: Project, source = snapshot): boolean {
+  return source.entries.some(entry => project.tilesets[entry.id] && project.assets.uploaded[entry.assetId]);
+}
+/**
+ * 부팅 뒤 도착한 참고문서를 보강한다. 부팅 정규화가 이미 돌린 공용 자료 설치는 다시 하지 않는다 —
+ * 실측(2026-09-26) 다시 하면 프로젝트 복제와 합쳐 부팅 직후 1.65s 를 더 썼다.
+ */
+export function applySharedTileReferenceEntries(project: Project, source = snapshot): boolean {
+  let changed = false;
   for (const entry of source.entries) {
     const tile = project.tilesets[entry.id], asset = project.assets.uploaded[entry.assetId];
     if (!tile || !asset || tile.tileSize !== entry.tileSize || tile.tilesPerRow !== entry.tilesPerRow || tile.count !== entry.count

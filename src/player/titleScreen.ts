@@ -27,6 +27,7 @@ const TITLE_SCREEN_LOGICAL_HEIGHT = 240;
  */
 export type TitleScreenActions = {
   readonly onNewGame: () => void;
+  readonly onNewGamePlus?: () => void;
   readonly onResume: () => void;
   readonly onContinue: () => void;
   /** 크레딧(에셋 저작자 표기) 창을 연다. 확정 연출·BGM 정지 없이 타이틀 위에 뜬다. */
@@ -34,13 +35,14 @@ export type TitleScreenActions = {
   readonly onQuit: () => void;
 };
 
-export type TitleMenuOptionId = "newGame" | "resume" | "continueGame" | "credits" | "quit";
+export type TitleMenuOptionId = "newGame" | "newGamePlus" | "resume" | "continueGame" | "credits" | "quit";
 
 export type TitleMenuOption = {
   readonly id: TitleMenuOptionId;
-  readonly testId: "title-new-game" | "title-resume-game" | "title-load-game" | "title-credits" | "title-quit-game";
+  readonly testId: "title-new-game" | "title-new-game-plus" | "title-resume-game" | "title-load-game" | "title-credits" | "title-quit-game";
   readonly elementId:
     | "title-option-new-game"
+    | "title-option-new-game-plus"
     | "title-option-resume-game"
     | "title-option-load-game"
     | "title-option-credits"
@@ -51,6 +53,8 @@ export type TitleMenuOption = {
 /** 오토세이브 유무 등 세션 밖 상태. 순수 함수 유지를 위해 호출자가 주입한다. */
 export type TitleMenuContext = {
   readonly autosaveAvailable?: boolean;
+  /** 클리어 기록이 있고 강하게 다시 하기가 켜졌을 때만 주는 항목 이름. 생략 = 항목 없음. */
+  readonly newGamePlusLabel?: string;
   /** intro 등장 연출 재생 여부 — 최초 진입만 true. 생략 = true. 방향키 재렌더는 false 로 넘긴다. */
   readonly playIntro?: boolean;
   /** 설정 서명이 같으면 재사용할 기존 fx 스택(파티클 canvas 상태/rAF 보존). */
@@ -63,7 +67,7 @@ const DEFAULT_RESUME_LABEL = "이어하기";
 export const DEFAULT_CREDITS_LABEL = "크레딧";
 
 /**
- * Visible title options in fixed order New → Resume → Continue → Credits → Quit. newGame is always present.
+ * Visible title options in fixed order New → New Game+ → Resume → Continue → Credits → Quit. newGame is always present.
  * 크레딧은 숨길 수 없다 — CC BY 계열 에셋의 저작자 표기를 여는 유일한 입구다(예전 하단 한 줄 표기를 대신한다).
  * "이어하기"(resume)는 오토세이브가 실제로 존재하고 menuVisibility.resume !== false 일 때만 노출된다.
  */
@@ -77,6 +81,14 @@ export function listTitleMenuOptions(settings: TitleScreenSettings, context?: Ti
       label: settings.menuLabels.newGame,
     },
   ];
+  if (context?.newGamePlusLabel) {
+    options.push({
+      id: "newGamePlus",
+      testId: "title-new-game-plus",
+      elementId: "title-option-new-game-plus",
+      label: context.newGamePlusLabel,
+    });
+  }
   if (context?.autosaveAvailable === true && visibility?.resume !== false) {
     options.push({
       id: "resume",
@@ -367,7 +379,9 @@ export function renderTitleEffectsLayer(
   if (!effects.length || !backgroundResourceId) return null;
   const imageUrl = resolveAssetResourceUrl(backgroundResourceId, { project });
   if (!imageUrl) return null;
-  const options = { effects, imageUrl, fit: settings.backgroundFit ?? "stretch" };
+  const depthResourceId = effects.find((effect) => effect.kind === "parallax")?.depthResourceId;
+  const depthUrl = depthResourceId ? resolveAssetResourceUrl(depthResourceId, { project }) ?? undefined : undefined;
+  const options = { effects, imageUrl, fit: settings.backgroundFit ?? "stretch", depthUrl };
   const signature = titleEffectsSignature(options);
   if (reuse && reuse.dataset.titleEffectsSignature === signature) return reuse;
   // 같은 그림·맞춤에서 효과 값만 바뀌면 WebGL 문맥을 새로 만들지 않고 값만 바꾼다(편집기 드래그·슬라이더).
@@ -375,6 +389,7 @@ export function renderTitleEffectsLayer(
     reuse instanceof HTMLCanvasElement &&
     reuse.dataset.titleEffectsImage === imageUrl &&
     reuse.dataset.titleEffectsFit === options.fit &&
+    (reuse.dataset.titleEffectsDepthUrl ?? "") === (depthUrl ?? "") &&
     updateTitleEffectsCanvas(reuse, effects)
   ) {
     reuse.dataset.titleEffectsSignature = signature;
@@ -384,6 +399,7 @@ export function renderTitleEffectsLayer(
   canvas.dataset.titleEffectsSignature = signature;
   canvas.dataset.titleEffectsImage = imageUrl;
   canvas.dataset.titleEffectsFit = options.fit;
+  if (depthUrl) canvas.dataset.titleEffectsDepthUrl = depthUrl;
   return canvas;
 }
 
@@ -653,6 +669,7 @@ function wireTitleOptionClicks(
   const buttons = Array.from(menu.querySelectorAll<HTMLElement>(".rm-title-menu-button"));
   const run: Record<TitleMenuOptionId, () => void> = {
     newGame: actions.onNewGame,
+    newGamePlus: actions.onNewGamePlus ?? actions.onNewGame,
     resume: actions.onResume,
     continueGame: actions.onContinue,
     credits: actions.onCredits,

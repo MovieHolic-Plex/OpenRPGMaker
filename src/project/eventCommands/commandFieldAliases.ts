@@ -199,7 +199,7 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
   const command = raw as RecordValue;
   if (command.kind === "changeParty") {
     const actorFix = canonicalizePartyActorAlias(command);
-    if (command.action === "add" || command.action === "remove") {
+    if (command.action === "add" || command.action === "remove" || command.action === "lead") {
       if ("op" in command) { delete command.op; return joinFixes(actorFix, `changeParty.op 는 쓰이지 않아 지웠습니다(action:"${command.action}" 유지).`); }
       return actorFix;
     }

@@ -1,6 +1,6 @@
 import { buildGroupSample, type GroupSample, type GroupSampleInput } from "@/ai/groupSampleBuilder";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
-import type { TileGroupMetadata, TileGroupRole, TilesetDef } from "@/project/types";
+import { defaultToolTilesetId } from "@/project/defaults/forestHarmony";
+import type { Project, TileGroupMetadata, TileGroupRole, TilesetDef } from "@/project/types";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
 const TILE_GROUP_ROLES: readonly TileGroupRole[] = ["building", "castle", "fence", "roof", "terrain", "water", "wall", "prop"];
@@ -131,7 +131,7 @@ const renderGroupSample: ToolDefinition = {
     required: ["tilesetId"],
   },
   run(project, args): ToolExecResult {
-    const tileset = requireTileset(project.tilesets, args.tilesetId);
+    const tileset = requireTileset(project, args.tilesetId);
     const groupId = stringValue(args.groupId);
     const group = groupId ? tileset.tileGroups?.find((candidate) => candidate.id === groupId) : undefined;
     if (groupId && !group) throw new ToolError(`그룹을 찾을 수 없습니다: ${groupId}`, { code: "group-not-found" });
@@ -158,9 +158,9 @@ const renderGroupSample: ToolDefinition = {
 
 export const GROUP_SAMPLE_TOOLS: readonly ToolDefinition[] = [renderGroupSample];
 
-function requireTileset(tilesets: Record<string, TilesetDef>, idValue: unknown): TilesetDef {
-  const id = stringValue(idValue) ?? DEFAULT_TILESET_ID;
-  const tileset = tilesets[id];
+function requireTileset(project: Pick<Project, "tilesets" | "maps" | "startMapId">, idValue: unknown): TilesetDef {
+  const id = stringValue(idValue) ?? defaultToolTilesetId(project);
+  const tileset = project.tilesets[id];
   if (!tileset) throw new ToolError(`타일셋을 찾을 수 없습니다: ${id}`, { code: "tileset-not-found" });
   return tileset;
 }

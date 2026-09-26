@@ -1,0 +1,10 @@
+# SC-Door08.png 4x8 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  3  
+   0 +o +o +l +l 
+   1 #o #l #l #l 
+   2 +w +w +w +w 
+   3 #w #l #l #l 
+   4 +w +w +w +w 
+   5 #w #w #w #w 
+   6 +w +w +w +w 
+   7 #w #w #w #w 

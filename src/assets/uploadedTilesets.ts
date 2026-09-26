@@ -36,10 +36,13 @@ export function uploadedGraftSourceIds(project?: Project): string[] {
 export function loadUploadedTilesets(
   scene: { readonly load: Pick<Phaser.Loader.LoaderPlugin, "image"> },
   project?: Project,
+  options: { readonly onlyMapTilesets?: boolean } = {},
 ): void {
   const queued = new Set<string>();
+  const used = options.onlyMapTilesets && project ? mapTilesetIds(project) : null;
   for (const tileset of Object.values(project?.tilesets ?? {})) {
     if (tileset.image.type !== "uploaded") continue;
+    if (used && !used.has(tileset.id)) continue;
     const asset = project?.assets.uploaded[tileset.image.id];
     const imageUrl = asset ? uploadedAssetUrl(asset) : "";
     if (!imageUrl) continue;
@@ -86,12 +89,23 @@ export function registerUploadedTilesets(scene: Phaser.Scene, project?: Project)
 
 const pendingSceneTilesets = new WeakMap<Phaser.Scene, Set<string>>();
 
+/**
+ * 맵이 쓰는 타일셋. 편집기는 이것만 올리고 나머지는 그 타일셋을 쓰는 맵이 생길 때 올린다.
+ * 실측(2026-09-26): 공용 지역 타일셋 21벌이 설치된 팀 호스트 프로젝트에서 쓰지 않는 텍스처 업로드가
+ * 부팅 직후 메인 스레드를 잡아 데이터베이스 첫 클릭이 2~3s 늦었다.
+ */
+export function mapTilesetIds(project: Project): Set<string> {
+  return new Set(Object.values(project.maps).map(map => map.tilesetId));
+}
+
 /** Import and geometry changes happen after preload. Queue once per atlas, not once per cell. */
-export function ensureUploadedTilesetTextures(scene: Phaser.Scene, project: Project, onReady: () => void): void {
+export function ensureUploadedTilesetTextures(scene: Phaser.Scene, project: Project, onReady: () => void, options: { readonly onlyMapTilesets?: boolean } = {}): void {
   const pending = pendingSceneTilesets.get(scene) ?? new Set<string>();
   pendingSceneTilesets.set(scene, pending);
+  const used = options.onlyMapTilesets ? mapTilesetIds(project) : null;
   for (const tileset of Object.values(project.tilesets)) {
     if (tileset.image.type !== "uploaded") continue;
+    if (used && !used.has(tileset.id)) continue;
     const key = uploadedTilesetTextureKey(tileset);
     if (scene.textures.exists(key) || pending.has(key)) continue;
     const asset = project.assets.uploaded[tileset.image.id];

@@ -16,6 +16,7 @@ export type GenrePresetId = GenrePackId;
  * - monster-collect: genre, monsterCollection, monsterBattleParty, battleParty, battleFlow, battleUiStyle, battleModel, monsterCare
  * - farm-life: genre, timeSystem, giftSystem, skillSystem
  * - horror-chase: genre 만 설정 (공포 장르는 system.* 토글이 필요 없다)
+ * - adventure-jrpg: genre, battleParty, battleUiStyle, menuUiStyle, companions (비어 있을 때만)
  */
 export function applyGenrePreset(project: Project, id: GenrePresetId): void {
   const { system } = project;
@@ -49,6 +50,13 @@ export function applyGenrePreset(project: Project, id: GenrePresetId): void {
       // system.* 토글이 필요 없다. 없는 토글을 발명하지 않는다.
       break;
     case "adventure-jrpg":
+      // 파티 모험 JRPG 의 결정론 기본값(2026-09-26). 예전엔 장르 라벨만 박혀 ⚙(AI 없이) 결과가
+      // 빈 프로젝트와 같았다. 열린 프로젝트에 적용될 때 저작자가 고른 값은 덮지 않는다(??=).
+      system.battleParty ??= "actors";
+      system.battleUiStyle ??= "ff"; // 측면 전투 · 아군 스프라이트 표시 — 파티가 보이는 고전 JRPG
+      system.menuUiStyle ??= "party-first";
+      system.companions ??= { maxCompanions: 3, formation: "line" };
+      break;
     case "story-cutscene":
       break;
   }

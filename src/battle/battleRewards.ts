@@ -11,9 +11,12 @@ export function collectBattleRewards(project: Project, enemies: readonly Mutable
   // Pity: 연속 미드랍 시 확률 가산 — 5회 천장 근접 시 +15%p 보정(최대 100%).
   // battleRewards는 stateless라 pity는 호출 단위에서 enemy 수만큼 누적 보정한다.
   let pityBonus = 0;
+  const tp = rewardedEnemies.reduce((sum, enemy) => sum + (enemyReward(project, enemy).tp ?? 0), 0);
   return {
     exp: rewardedEnemies.reduce((sum, enemy) => sum + enemyReward(project, enemy).exp, 0),
     gold: rewardedEnemies.reduce((sum, enemy) => sum + enemyReward(project, enemy).gold, 0),
+    // 기술 포인트는 저작된 적이 있을 때만 실는다(없는 옛 프로젝트는 스냅샷 모양 그대로).
+    ...(tp > 0 ? { tp } : {}),
     enemyLevel: rewardedEnemies.reduce((level, enemy) => Math.max(level, enemyLevel(project, enemy)), 1),
     items: rewardedEnemies.flatMap((enemy) => {
       const reward = enemyReward(project, enemy);
@@ -38,7 +41,7 @@ export function collectBattleRewards(project: Project, enemies: readonly Mutable
 
 function enemyReward(project: Project, enemy: MutableBattler) {
   const record = project.database.enemies.find((item) => item.id === enemy.recordId);
-  return record ? normalizeEnemyRecord(record).rewards : { exp: 0, gold: 0, dropRatePercent: 0, drops: undefined };
+  return record ? normalizeEnemyRecord(record).rewards : { exp: 0, gold: 0, dropRatePercent: 0, drops: undefined, tp: undefined };
 }
 
 function enemyLevel(project: Project, enemy: MutableBattler): number {

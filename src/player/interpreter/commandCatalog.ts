@@ -1,4 +1,5 @@
 import { isGalleryEnabled, recordGalleryUnlock } from "@/project/gallery";
+import { NEW_GAME_PLUS_FLAG } from "@/project/newGamePlus";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { resolveAppearancePortrait } from "@/project/characterAppearances";
 import {
@@ -42,7 +43,7 @@ import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
 import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
 import { saveSessionCheckpoint } from "@/player/checkpoints";
 import { compileCutscene, CutsceneValidationError, withoutEndingBeats, type CutsceneBeat } from "@/editor/cutscene";
-import { addFollowerToSession, removeFollowerFromSession } from "@/project/followers";
+import { addFollowerToSession, removeFollowerFromSession, syncPartyFollowers } from "@/project/followers";
 import { addSessionLight, removeSessionLight, setSessionLighting } from "@/project/lightingRules";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
 import { evolveMonster, giveMonster, moveMonster } from "@/project/monsterCollection";
@@ -388,13 +389,18 @@ function killParty(state: InterpreterState): void {
   }
 }
 
+// 에필로그 끝에 붙는 합성 ending 명령 → 실제로 본 엔딩 id. 저작된 ending 명령은 클리어가 아니다.
+const ENDING_CLEAR_COMMANDS = new WeakMap<Command, string>();
+
 function endingConditionsMet(state: InterpreterState, ending: EndingDef): boolean {
-  return ending.conditions.every((condition) => evalCondition(
-    state.session,
-    condition,
-    resolveSocialHost(state) ?? state.currentEventId,
-    locationEvalContext(state),
-  ));
+  return ending.conditions.every((condition) => condition.kind === "newGamePlus"
+    ? (state.session.flags[NEW_GAME_PLUS_FLAG] === true) === condition.value
+    : evalCondition(
+      state.session,
+      condition,
+      resolveSocialHost(state) ?? state.currentEventId,
+      locationEvalContext(state),
+    ));
 }
 
 function triggerEnding(
@@ -418,12 +424,14 @@ function triggerEnding(
   }
 
   state.session.flags[`ending:${ending.id}`] = true;
+  const clear = { endingId: ending.id };
   const finalCommand: Command = { kind: "ending", title: ending.name, message: "", ...(ending.presentation ? { presentation: ending.presentation } : {}) };
+  ENDING_CLEAR_COMMANDS.set(finalCommand, ending.id);
   const epilogueCommands = compileEndingEpilogue(state, ending);
   if (epilogueCommands.length > 0 && pushFrame(state, [...epilogueCommands, finalCommand])) {
     return { kind: "continue" };
   }
-  return pause("returnToTitle", { kind: "returnToTitle", title: ending.name, message: "", ...(ending.presentation ? { presentation: ending.presentation } : {}) });
+  return pause("returnToTitle", { kind: "returnToTitle", title: ending.name, message: "", clear, ...(ending.presentation ? { presentation: ending.presentation } : {}) });
 }
 
 function selectEnding(
@@ -757,13 +765,16 @@ export function executeCommand(
       return triggerEnding(state, frame, command.endingId);
     case "gameOver":
       return pause("gameOver", { kind: "gameOver", ...(command.gameOverId ? { gameOverId: command.gameOverId } : {}) });
-    case "ending":
+    case "ending": {
+      const clearedEndingId = ENDING_CLEAR_COMMANDS.get(command);
       return pause("returnToTitle", {
         kind: "returnToTitle",
         title: command.title,
         message: command.message,
+        ...(clearedEndingId ? { clear: { endingId: clearedEndingId } } : {}),
         ...(command.presentation ? { presentation: command.presentation } : {}),
       });
+    }
     case "returnToTitle":
       return pause("returnToTitle", { kind: "returnToTitle" });
     case "callCommonEvent":
@@ -893,6 +904,7 @@ export function executeCommand(
       return resumeNext(frame);
     case "changeParty":
       changeParty(state.session, command.actorId, command.action, state.project);
+      if (state.project) syncPartyFollowers(state.project, state.session as PlaySession);
       return resumeNext(frame);
     case "giveMonster":
       if (state.project) giveMonster(state.project, state.session as PlaySession, command);

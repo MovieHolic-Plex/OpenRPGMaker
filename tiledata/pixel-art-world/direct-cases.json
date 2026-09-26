@@ -1,0 +1,2942 @@
+{
+ "note": "Per-type acceptance cards for live direct-authoring runs. A card is a brief plus inspect_interior_layout requirements — never a target layout. Object ids are the family dictionary ids.",
+ "cases": [
+  {
+   "id": "apartment-1k",
+   "family": "living",
+   "name": "원룸 1K",
+   "wall": "wall-room-m",
+   "width": 12,
+   "height": 14,
+   "brief": "1인 원룸 1K. 남쪽 현관으로 들어와 좁은 부엌 통로를 지나 방 하나에 닿는다. 방에는 침대·책상·의자·옷장, 부엌에는 싱크대·냉장고, 별도 독립된 화장실(변기)을 둔다.",
+   "requirements": {
+    "roomIds": [
+     "toilet"
+    ],
+    "maxArea": 168,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "personal-m-bed",
+       "personal-m-bed-alt"
+      ],
+      "min": 1,
+      "max": 1
+     },
+     {
+      "ids": [
+       "personal-m-desk"
+      ],
+      "min": 1,
+      "max": 1
+     },
+     {
+      "ids": [
+       "personal-m-chair-back"
+      ],
+      "min": 1,
+      "max": 1
+     },
+     {
+      "ids": [
+       "personal-m-wardrobe"
+      ],
+      "min": 1,
+      "max": 1
+     },
+     {
+      "ids": [
+       "personal-m-kitchen"
+      ],
+      "min": 1,
+      "max": 1
+     },
+     {
+      "ids": [
+       "personal-m-fridge"
+      ],
+      "min": 1,
+      "max": 1
+     },
+     {
+      "ids": [
+       "bath-toilet-closed",
+       "bath-toilet-open"
+      ],
+      "min": 1,
+      "max": 1,
+      "roomId": "toilet"
+     }
+    ]
+   }
+  },
+  {
+   "id": "fastfood",
+   "family": "food",
+   "name": "패스트푸드점",
+   "wall": "wall-diner",
+   "width": 16,
+   "height": 14,
+   "brief": "동네 패스트푸드점. 북쪽에 벽으로 구획한 주방(보온 진열장·금속 조리대), 그 앞에 주문 카운터, 남쪽 홀에 2인 식탁 3개와 마주보는 의자 6개, 메뉴판을 북벽에 건다. 남쪽 정문.",
+   "requirements": {
+    "roomIds": [
+     "kitchen"
+    ],
+    "maxArea": 240,
+    "maxEmptySquare": 4,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 5
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "diner-oven"
+      ],
+      "min": 1,
+      "roomId": "kitchen"
+     },
+     {
+      "ids": [
+       "diner-kitchen-unit"
+      ],
+      "min": 1,
+      "roomId": "kitchen"
+     },
+     {
+      "ids": [
+       "diner-counter"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "diner-table"
+      ],
+      "min": 3
+     },
+     {
+      "ids": [
+       "diner-chair-east",
+       "diner-chair-west"
+      ],
+      "min": 6
+     },
+     {
+      "ids": [
+       "diner-menu-burger",
+       "diner-menu-sandwich",
+       "diner-menu-drink"
+      ],
+      "min": 2
+     }
+    ]
+   }
+  },
+  {
+   "id": "convenience-store",
+   "family": "retail",
+   "name": "편의점",
+   "wall": "wall-conveni",
+   "width": 16,
+   "height": 14,
+   "brief": "일본 편의점. 북벽을 따라 음료·도시락 냉장 진열, 가운데 상품 선반 두 줄(과자·생활식품·잡화), 입구 옆 계산 카운터와 ATM, 뒤쪽에 벽으로 구획한 창고. 남쪽 자동문 자리.",
+   "requirements": {
+    "roomIds": [
+     "stockroom"
+    ],
+    "maxArea": 240,
+    "maxEmptySquare": 4,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 5
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "conveni-drinks",
+       "conveni-fridge"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "conveni-rice-meals",
+       "conveni-desserts"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "conveni-snacks",
+       "conveni-dry-goods",
+       "conveni-cosmetics",
+       "conveni-wine"
+      ],
+      "min": 4
+     },
+     {
+      "ids": [
+       "conveni-service-counter"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "conveni-atm"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "conveni-magazines"
+      ],
+      "min": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "bookstore",
+   "family": "retail",
+   "name": "동네 서점",
+   "wall": "wall-library",
+   "width": 14,
+   "height": 14,
+   "brief": "동네 서점. 벽을 따라 높은 책장, 가운데 낮은 책장 줄, 입구 가까이 계산 카운터와 점원 의자, 잡지 진열대. 손님 통로는 1~2칸. 남쪽 정문.",
+   "requirements": {
+    "maxArea": 196,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "bookcase"
+      ],
+      "min": 3
+     },
+     {
+      "ids": [
+       "low-books"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "loan-counter"
+      ],
+      "min": 1,
+      "max": 1
+     },
+     {
+      "ids": [
+       "librarian-chair"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "magazines"
+      ],
+      "min": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "police-box",
+   "family": "public",
+   "name": "파출소 (고반)",
+   "wall": "wall-office",
+   "width": 12,
+   "height": 12,
+   "brief": "작은 파출소. 입구 앞 민원 카운터(접수대) 뒤에 경찰관 책상 2개와 의자, 벽쪽 자료 책장, 뒤쪽에 벽으로 구획한 휴게실(소파 또는 책상). 남쪽 정문.",
+   "requirements": {
+    "roomIds": [
+     "back"
+    ],
+    "maxArea": 144,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "clinic-reception"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "desk-white",
+       "desk-wood"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "chair-blue",
+       "chair-blue-back"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "bookcase",
+       "library-bookcase"
+      ],
+      "min": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "bank",
+   "family": "public",
+   "name": "은행 지점",
+   "wall": "wall-office",
+   "width": 16,
+   "height": 14,
+   "brief": "은행 지점. 입구 옆 ATM 2대, 고객 대기석(대기 의자 뒷면 6석)이 창구를 바라본다. 창구 카운터 뒤 행원 책상 2개와 의자, 뒤쪽 벽으로 구획한 지점장실(임원 책상). 남쪽 정문.",
+   "requirements": {
+    "roomIds": [
+     "manager"
+    ],
+    "maxArea": 240,
+    "maxEmptySquare": 4,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 5
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "conveni-atm"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "clinic-waiting-chair-back"
+      ],
+      "min": 6
+     },
+     {
+      "ids": [
+       "clinic-reception",
+       "conveni-service-counter"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "desk-white",
+       "desk-wood"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "desk-executive"
+      ],
+      "min": 1,
+      "roomId": "manager"
+     }
+    ]
+   }
+  },
+  {
+   "id": "classroom",
+   "family": "school",
+   "name": "교실",
+   "wall": "wall-school",
+   "width": 14,
+   "height": 14,
+   "brief": "일본 학교 교실. 북벽에 칠판, 그 앞 교탁, 학생 책상과 의자 12세트가 칠판을 향한다(책상 1x2 뒤에 의자). 뒷벽 쪽 청소도구함·신발장, 복도로 나가는 남쪽 출입구.",
+   "requirements": {
+    "maxArea": 196,
+    "maxEmptySquare": 4,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 5
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "school-blackboard"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "school-lectern"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "school-student-desk"
+      ],
+      "min": 12
+     },
+     {
+      "ids": [
+       "school-chair-back"
+      ],
+      "min": 12
+     },
+     {
+      "ids": [
+       "school-cleaning-locker",
+       "school-shoe-locker"
+      ],
+      "min": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "ryokan",
+   "family": "leisure",
+   "name": "료칸 (객실 2개)",
+   "wall": "wall-washitu",
+   "width": 16,
+   "height": 14,
+   "brief": "작은 료칸. 남쪽 현관과 신발 선반, 접수 통로에서 벽으로 독립된 다다미 객실 2개로 들어간다. 각 객실에 좌식 탁자·방석 2개·이불 2채. 복도는 1~2칸.",
+   "requirements": {
+    "roomIds": [
+     "room-a",
+     "room-b"
+    ],
+    "maxArea": 240,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "washitu-round-table",
+       "washitu-kotatsu"
+      ],
+      "min": 1,
+      "roomId": "room-a"
+     },
+     {
+      "ids": [
+       "washitu-round-table",
+       "washitu-kotatsu"
+      ],
+      "min": 1,
+      "roomId": "room-b"
+     },
+     {
+      "ids": [
+       "washitu-futon-red",
+       "washitu-futon-blue"
+      ],
+      "min": 2,
+      "roomId": "room-a"
+     },
+     {
+      "ids": [
+       "washitu-futon-red",
+       "washitu-futon-blue"
+      ],
+      "min": 2,
+      "roomId": "room-b"
+     },
+     {
+      "ids": [
+       "washitu-cushion-blue",
+       "washitu-cushion-pattern"
+      ],
+      "min": 4
+     },
+     {
+      "ids": [
+       "sento-shoe-rack"
+      ],
+      "min": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "apartment-1dk",
+   "family": "living",
+   "name": "1DK 아파트",
+   "wall": "wall-room-f",
+   "width": 14,
+   "height": 16,
+   "brief": "1DK 아파트. 남쪽 현관 → 식사 겸 부엌(DK: 싱크대·냉장고·식탁 대신 낮은 테이블) → 벽으로 독립된 침실(침대·옷장·책상·의자). 독립 화장실(변기)과 욕실(욕조) 따로.",
+   "requirements": {
+    "roomIds": [
+     "bedroom",
+     "toilet",
+     "bath"
+    ],
+    "maxArea": 224,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "personal-f-bed",
+       "personal-f-bed-alt"
+      ],
+      "min": 1,
+      "roomId": "bedroom"
+     },
+     {
+      "ids": [
+       "personal-f-wardrobe"
+      ],
+      "min": 1,
+      "roomId": "bedroom"
+     },
+     {
+      "ids": [
+       "personal-f-desk"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "personal-f-kitchen"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "personal-f-fridge"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "personal-f-table",
+       "personal-f-table-rug"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "bath-toilet-closed",
+       "bath-toilet-open"
+      ],
+      "min": 1,
+      "roomId": "toilet"
+     },
+     {
+      "ids": [
+       "bath-tub-horizontal",
+       "bath-tub-vertical"
+      ],
+      "min": 1,
+      "roomId": "bath"
+     }
+    ]
+   }
+  },
+  {
+   "id": "tatami-house",
+   "family": "living",
+   "name": "다다미 주택",
+   "wall": "wall-washitu",
+   "width": 16,
+   "height": 16,
+   "brief": "전통 일본 주택. 남쪽 현관 목재 복도에서 쇼지·후스마로 둘러싼 다다미 거실(코타츠 또는 좌식 탁자·방석)과 다다미 침실(이불 2채·서랍장)로 각각 들어간다. 다다미는 floor-washitu-tatami 블록을 통째 반복. 독립 화장실.",
+   "requirements": {
+    "roomIds": [
+     "living",
+     "bedroom",
+     "toilet"
+    ],
+    "maxArea": 256,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "washitu-kotatsu",
+       "washitu-round-table"
+      ],
+      "min": 1,
+      "roomId": "living"
+     },
+     {
+      "ids": [
+       "washitu-cushion-blue",
+       "washitu-cushion-pattern"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "washitu-futon-red",
+       "washitu-futon-blue"
+      ],
+      "min": 2,
+      "roomId": "bedroom"
+     },
+     {
+      "ids": [
+       "washitu-chest",
+       "washitu-bookcase"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "restroom-toilet-closed",
+       "restroom-toilet-open",
+       "bath-toilet-closed"
+      ],
+      "min": 1,
+      "roomId": "toilet"
+     }
+    ]
+   }
+  },
+  {
+   "id": "izakaya",
+   "family": "food",
+   "name": "이자카야",
+   "wall": "wall-izakaya",
+   "width": 16,
+   "height": 18,
+   "brief": "동네 이자카야. 벽과 통로로 분리한 조리실(조리대·냉장고·레인지), 조리실 앞 바 카운터와 카운터를 보는 의자 3개, 홀에 4인 테이블 2개(의자가 동서로 마주봄), 다다미 개인실(좌식 탁자·방석) 하나를 벽으로 독립. 남쪽 정문.",
+   "requirements": {
+    "roomIds": [
+     "kitchen",
+     "zashiki"
+    ],
+    "maxArea": 288,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "izakaya-kitchen"
+      ],
+      "min": 1,
+      "roomId": "kitchen"
+     },
+     {
+      "ids": [
+       "izakaya-fridge"
+      ],
+      "min": 1,
+      "roomId": "kitchen"
+     },
+     {
+      "ids": [
+       "izakaya-stove"
+      ],
+      "min": 1,
+      "roomId": "kitchen"
+     },
+     {
+      "ids": [
+       "izakaya-counter"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "izakaya-chair-back"
+      ],
+      "min": 3
+     },
+     {
+      "ids": [
+       "izakaya-table"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "izakaya-chair-east",
+       "izakaya-chair-west"
+      ],
+      "min": 4
+     }
+    ]
+   }
+  },
+  {
+   "id": "cafe",
+   "family": "food",
+   "name": "카페",
+   "wall": "wall-icecream",
+   "width": 14,
+   "height": 14,
+   "brief": "작은 카페. 북쪽 벽으로 구획한 주방(파란 부엌 싱크대·레인지), 주방 앞 진열 쇼케이스 카운터, 홀에 넓은 테이블 1개와 작은 테이블 2개, 테이블을 향한 의자, 창과 화분. 남쪽 정문.",
+   "requirements": {
+    "roomIds": [
+     "kitchen"
+    ],
+    "maxArea": 196,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "home-blue-kitchen",
+       "home-stove"
+      ],
+      "min": 1,
+      "roomId": "kitchen"
+     },
+     {
+      "ids": [
+       "icecream-showcase"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "icecream-table-wide"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "icecream-table-small"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "icecream-chair-south",
+       "icecream-chair-north",
+       "icecream-chair-east",
+       "icecream-chair-west"
+      ],
+      "min": 6
+     },
+     {
+      "ids": [
+       "icecream-window"
+      ],
+      "min": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "pharmacy",
+   "family": "retail",
+   "name": "약국",
+   "wall": "wall-clinic",
+   "width": 14,
+   "height": 14,
+   "brief": "동네 약국. 북벽을 따라 약품장 여러 개, 매장 가운데 생활용품·세정 선반, 조제 카운터(접수대) 뒤에 벽으로 구획한 조제실(약품장), 입구 옆 대기 의자 2개. 남쪽 정문.",
+   "requirements": {
+    "roomIds": [
+     "dispensary"
+    ],
+    "maxArea": 196,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "clinic-medicine"
+      ],
+      "min": 4
+     },
+     {
+      "ids": [
+       "conveni-cosmetics",
+       "conveni-dry-goods"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "clinic-reception"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "clinic-medicine"
+      ],
+      "min": 1,
+      "roomId": "dispensary"
+     },
+     {
+      "ids": [
+       "clinic-waiting-bench",
+       "clinic-waiting-chair-back"
+      ],
+      "min": 2
+     }
+    ]
+   }
+  },
+  {
+   "id": "jewelry",
+   "family": "retail",
+   "name": "보석점",
+   "wall": "wall-mansion-r",
+   "width": 14,
+   "height": 12,
+   "brief": "고급 보석점. 가로 유리 진열장과 세로 진열장, 왕관 진열 받침을 손님 통로를 따라 두고, 안쪽 벽으로 구획한 상담실(1인 소파 2개와 탁자). 괘종시계·화분·그림으로 장식. 남쪽 정문.",
+   "requirements": {
+    "roomIds": [
+     "salon"
+    ],
+    "maxArea": 168,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "msion-r-wide-display"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "msion-r-vertical-display"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "msion-r-crown-pedestal"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "msion-r-armchair",
+       "msion-r-armchair-back"
+      ],
+      "min": 2,
+      "roomId": "salon"
+     },
+     {
+      "ids": [
+       "msion-r-coffee-table"
+      ],
+      "min": 1,
+      "roomId": "salon"
+     }
+    ]
+   }
+  },
+  {
+   "id": "post-office",
+   "family": "public",
+   "name": "우체국",
+   "wall": "wall-office",
+   "width": 16,
+   "height": 13,
+   "brief": "동네 우체국. 입구 앞 창구 카운터 2개(접수대·고객응대 카운터), 카운터 뒤 직원 책상 2개와 의자, 벽쪽 자료 책장, 고객 대기 의자 4개가 창구를 바라본다. 뒤쪽 벽으로 구획한 우편 분류실(책상). 입구 옆 ATM 1대. 남쪽 정문.",
+   "requirements": {
+    "roomIds": [
+     "sorting"
+    ],
+    "maxArea": 208,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "clinic-reception",
+       "conveni-service-counter"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "desk-white",
+       "desk-wood"
+      ],
+      "min": 3
+     },
+     {
+      "ids": [
+       "clinic-waiting-chair-back"
+      ],
+      "min": 4
+     },
+     {
+      "ids": [
+       "conveni-atm"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "desk-white",
+       "desk-wood"
+      ],
+      "min": 1,
+      "roomId": "sorting"
+     }
+    ]
+   }
+  },
+  {
+   "id": "nurse-office",
+   "family": "school",
+   "name": "보건실",
+   "wall": "wall-school-special",
+   "width": 12,
+   "height": 12,
+   "brief": "학교 보건실. 진찰 침대 2개를 가림막으로 나누고, 의약품 수납장·체중계·시력표, 보건 선생님 자리(실험 의자). 복도로 나가는 남쪽 출입구.",
+   "requirements": {
+    "maxArea": 144,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "special-bed"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "special-screen"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "special-medical-cabinet"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "special-scale"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "special-eye-chart"
+      ],
+      "min": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "detached-house",
+   "family": "living",
+   "name": "단독주택",
+   "wall": "wall-home",
+   "width": 16,
+   "height": 16,
+   "brief": "가족용 단독주택 1층. 남쪽 현관, 거실(TV·소파·유리 테이블), 식당(식탁과 동서 의자), 부엌(파란 부엌·레인지), 벽으로 독립된 침실(침대·옷장), 독립 화장실과 욕실.",
+   "requirements": {
+    "roomIds": [
+     "bedroom",
+     "toilet",
+     "bath"
+    ],
+    "maxArea": 320,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "home-tv"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "home-sofa-back"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "home-dining-table"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "home-chair-east",
+       "home-chair-west"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "home-blue-kitchen"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "home-stove"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "home-bed",
+       "personal-m-bed"
+      ],
+      "min": 1,
+      "roomId": "bedroom"
+     },
+     {
+      "ids": [
+       "bath-toilet-closed",
+       "bath-toilet-open",
+       "restroom-toilet-closed",
+       "restroom-toilet-open"
+      ],
+      "min": 1,
+      "roomId": "toilet"
+     },
+     {
+      "ids": [
+       "bath-tub-horizontal",
+       "bath-tub-vertical"
+      ],
+      "min": 1,
+      "roomId": "bath"
+     }
+    ]
+   }
+  },
+  {
+   "id": "two-storey-1f",
+   "family": "living",
+   "name": "2층 주택 · 1층",
+   "wall": "wall-home",
+   "width": 14,
+   "height": 14,
+   "brief": "2층 주택의 1층. 남쪽 현관, 거실(TV·소파), 부엌(파란 부엌·냉장고·식탁과 의자), 독립 화장실. 북동쪽 구석에 위층 계단 자리로 2×3 빈 바닥 칸을 남긴다(계단 그림은 별도).",
+   "requirements": {
+    "roomIds": [
+     "toilet"
+    ],
+    "maxArea": 245,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "home-tv"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "home-sofa-back"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "home-blue-kitchen"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "personal-m-fridge",
+       "personal-f-fridge"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "home-dining-table"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "home-chair-east",
+       "home-chair-west"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "bath-toilet-closed",
+       "bath-toilet-open",
+       "restroom-toilet-closed",
+       "restroom-toilet-open"
+      ],
+      "min": 1,
+      "roomId": "toilet"
+     }
+    ]
+   }
+  },
+  {
+   "id": "two-storey-2f",
+   "family": "living",
+   "name": "2층 주택 · 2층",
+   "wall": "wall-room-f",
+   "width": 14,
+   "height": 12,
+   "brief": "2층 주택의 2층. 남쪽 계단참(출입)에서 복도로 벽으로 독립된 아이방 2개(각 침대·책상·의자·옷장)에 들어간다.",
+   "requirements": {
+    "roomIds": [
+     "room-a",
+     "room-b"
+    ],
+    "maxArea": 210,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "personal-f-bed",
+       "personal-f-bed-alt"
+      ],
+      "min": 1,
+      "roomId": "room-a"
+     },
+     {
+      "ids": [
+       "personal-m-bed",
+       "personal-m-bed-alt"
+      ],
+      "min": 1,
+      "roomId": "room-b"
+     },
+     {
+      "ids": [
+       "personal-f-desk",
+       "personal-m-desk"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "personal-f-chair-back",
+       "personal-m-chair-back"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "personal-f-wardrobe",
+       "personal-m-wardrobe"
+      ],
+      "min": 2
+     }
+    ]
+   }
+  },
+  {
+   "id": "nagaya",
+   "family": "living",
+   "name": "나가야 (목조 연립)",
+   "wall": "wall-washitu",
+   "width": 16,
+   "height": 12,
+   "brief": "목조 연립주택 두 세대. 각 세대는 남쪽 현관에서 들어오는 다다미 방 하나(이불·좌식 탁자·서랍장)이며 가운데 벽으로 서로 분리한다. 세대마다 남쪽 출입구.",
+   "requirements": {
+    "roomIds": [
+     "unit-a",
+     "unit-b"
+    ],
+    "maxArea": 240,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "washitu-futon-red",
+       "washitu-futon-blue"
+      ],
+      "min": 1,
+      "roomId": "unit-a"
+     },
+     {
+      "ids": [
+       "washitu-futon-red",
+       "washitu-futon-blue"
+      ],
+      "min": 1,
+      "roomId": "unit-b"
+     },
+     {
+      "ids": [
+       "washitu-round-table",
+       "washitu-kotatsu"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "washitu-chest",
+       "washitu-bookcase"
+      ],
+      "min": 2
+     }
+    ]
+   }
+  },
+  {
+   "id": "dormitory",
+   "family": "living",
+   "name": "기숙사",
+   "wall": "wall-room-m",
+   "width": 18,
+   "height": 14,
+   "brief": "학생 기숙사 한 층. 가운데 복도, 벽으로 독립된 1인실 3개(각 침대·책상·의자), 공용 화장실(변기 2·세면대).",
+   "requirements": {
+    "roomIds": [
+     "room-1",
+     "room-2",
+     "room-3",
+     "washroom"
+    ],
+    "maxArea": 315,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "personal-m-bed",
+       "personal-m-bed-alt",
+       "personal-f-bed",
+       "personal-f-bed-alt"
+      ],
+      "min": 3
+     },
+     {
+      "ids": [
+       "personal-m-desk",
+       "personal-f-desk"
+      ],
+      "min": 3
+     },
+     {
+      "ids": [
+       "personal-m-chair-back",
+       "personal-f-chair-back"
+      ],
+      "min": 3
+     },
+     {
+      "ids": [
+       "bath-toilet-closed",
+       "bath-toilet-open",
+       "restroom-toilet-closed",
+       "restroom-toilet-open"
+      ],
+      "min": 2,
+      "roomId": "washroom"
+     },
+     {
+      "ids": [
+       "restroom-sinks"
+      ],
+      "min": 1,
+      "roomId": "washroom"
+     }
+    ]
+   }
+  },
+  {
+   "id": "laundromat",
+   "family": "living",
+   "name": "코인 세탁소",
+   "wall": "wall-bath",
+   "width": 12,
+   "height": 10,
+   "brief": "동네 코인 세탁소. 벽을 따라 세탁기 6대, 가운데 빨래 바구니와 수건 바구니, 기다리는 의자. 남쪽 정문.",
+   "requirements": {
+    "maxArea": 150,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "bath-washer-front"
+      ],
+      "min": 6
+     },
+     {
+      "ids": [
+       "bath-laundry-basket",
+       "bath-linen-basket"
+      ],
+      "min": 2
+     }
+    ]
+   }
+  },
+  {
+   "id": "ramen",
+   "family": "food",
+   "name": "라멘집",
+   "wall": "wall-izakaya",
+   "width": 14,
+   "height": 12,
+   "brief": "골목 라멘집. 북쪽 벽 쪽에 조리대·레인지·냉장고, 그 앞 긴 바 카운터와 카운터를 보는 의자 5개, 남쪽 가까이 2인 테이블 1개. 남쪽 정문.",
+   "requirements": {
+    "maxArea": 210,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "izakaya-kitchen"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "izakaya-stove"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "izakaya-fridge"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "izakaya-counter"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "izakaya-chair-back"
+      ],
+      "min": 5
+     },
+     {
+      "ids": [
+       "izakaya-table"
+      ],
+      "min": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "family-restaurant",
+   "family": "food",
+   "name": "패밀리레스토랑",
+   "wall": "wall-diner",
+   "width": 18,
+   "height": 15,
+   "brief": "교외 패밀리레스토랑. 벽으로 구획한 주방(보온 진열장·금속 조리대), 계산 주문대, 넓은 홀에 식탁 5개와 마주보는 의자 10개, 화분과 창. 남쪽 정문.",
+   "requirements": {
+    "roomIds": [
+     "kitchen"
+    ],
+    "maxArea": 337,
+    "maxEmptySquare": 4,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 5
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "diner-oven"
+      ],
+      "min": 1,
+      "roomId": "kitchen"
+     },
+     {
+      "ids": [
+       "diner-kitchen-unit"
+      ],
+      "min": 1,
+      "roomId": "kitchen"
+     },
+     {
+      "ids": [
+       "diner-counter"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "diner-table"
+      ],
+      "min": 5
+     },
+     {
+      "ids": [
+       "diner-chair-east",
+       "diner-chair-west"
+      ],
+      "min": 10
+     },
+     {
+      "ids": [
+       "diner-plant"
+      ],
+      "min": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "sushi",
+   "family": "food",
+   "name": "초밥집",
+   "wall": "wall-izakaya",
+   "width": 14,
+   "height": 14,
+   "brief": "초밥집. 벽으로 분리한 조리실(조리대·냉장고), 조리실 앞 초밥 카운터와 의자 4개, 벽으로 독립된 다다미 개인실(floor-izakaya-tatami, 좌식 탁자는 izakaya-table). 남쪽 정문.",
+   "requirements": {
+    "roomIds": [
+     "kitchen",
+     "zashiki"
+    ],
+    "maxArea": 245,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "izakaya-kitchen"
+      ],
+      "min": 1,
+      "roomId": "kitchen"
+     },
+     {
+      "ids": [
+       "izakaya-fridge"
+      ],
+      "min": 1,
+      "roomId": "kitchen"
+     },
+     {
+      "ids": [
+       "izakaya-counter"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "izakaya-chair-back"
+      ],
+      "min": 4
+     },
+     {
+      "ids": [
+       "izakaya-table"
+      ],
+      "min": 1,
+      "roomId": "zashiki"
+     }
+    ]
+   }
+  },
+  {
+   "id": "icecream",
+   "family": "food",
+   "name": "아이스크림점",
+   "wall": "wall-icecream",
+   "width": 12,
+   "height": 12,
+   "brief": "아이스크림 가게. 북쪽에 쇼케이스 2개와 메뉴판, 그 뒤 직원 통로, 홀에 작은 테이블 3개와 의자, 창과 화분. 남쪽 정문.",
+   "requirements": {
+    "maxArea": 180,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "icecream-showcase"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "icecream-menu"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "icecream-table-small",
+       "icecream-table-wide"
+      ],
+      "min": 3
+     },
+     {
+      "ids": [
+       "icecream-chair-south",
+       "icecream-chair-north",
+       "icecream-chair-east",
+       "icecream-chair-west"
+      ],
+      "min": 5
+     }
+    ]
+   }
+  },
+  {
+   "id": "bakery",
+   "family": "food",
+   "name": "빵집 (대체 재료)",
+   "wall": "wall-icecream",
+   "width": 12,
+   "height": 12,
+   "brief": "동네 빵집. 빵집 전용 시트는 배포 종료라 없다. 보온 진열장(diner-oven)을 빵 진열로, 쇼케이스 카운터를 계산대로 쓰고, 뒤쪽 벽으로 구획한 굽는 곳(금속 조리대·파란 부엌). 남쪽 정문.",
+   "requirements": {
+    "roomIds": [
+     "bakehouse"
+    ],
+    "maxArea": 180,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "diner-oven"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "icecream-showcase"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "diner-kitchen-unit",
+       "home-blue-kitchen"
+      ],
+      "min": 1,
+      "roomId": "bakehouse"
+     }
+    ]
+   }
+  },
+  {
+   "id": "supermarket",
+   "family": "retail",
+   "name": "슈퍼마켓",
+   "wall": "wall-conveni",
+   "width": 20,
+   "height": 16,
+   "brief": "동네 슈퍼마켓. 북벽 냉장 진열 4개 이상, 가운데 상품 선반 세 줄(각 줄 선반 3개 이상), 입구 옆 계산 카운터 2개, 장바구니, 뒤쪽 창고. 통로는 2칸.",
+   "requirements": {
+    "roomIds": [
+     "stockroom"
+    ],
+    "maxArea": 400,
+    "maxEmptySquare": 4,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 6
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "conveni-drinks",
+       "conveni-fridge",
+       "conveni-rice-meals",
+       "conveni-desserts"
+      ],
+      "min": 4
+     },
+     {
+      "ids": [
+       "conveni-snacks",
+       "conveni-dry-goods",
+       "conveni-cosmetics",
+       "conveni-wine"
+      ],
+      "min": 9
+     },
+     {
+      "ids": [
+       "conveni-service-counter"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "conveni-basket"
+      ],
+      "min": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "flower-shop",
+   "family": "retail",
+   "name": "꽃집",
+   "wall": "wall-home",
+   "width": 12,
+   "height": 10,
+   "brief": "꽃집. 벽을 따라 큰 화분과 꽃꽂이 받침을 빽빽이, 안쪽에 작업 테이블(식탁)과 계산 카운터, 냉장 진열 1개. 남쪽 정문.",
+   "requirements": {
+    "maxArea": 150,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "clinic-plant",
+       "msion-r-plant"
+      ],
+      "min": 5
+     },
+     {
+      "ids": [
+       "msion-r-vase-pedestal"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "conveni-service-counter",
+       "clinic-reception"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "conveni-fridge",
+       "conveni-drinks"
+      ],
+      "min": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "candy-shop",
+   "family": "retail",
+   "name": "과자가게 (다가시야)",
+   "wall": "wall-home",
+   "width": 12,
+   "height": 10,
+   "brief": "옛날 과자가게. 과자 선반 여러 개, 캡슐 기계, 마네키네코, 가게 안쪽 계산 카운터. 좁은 통로. 남쪽 정문.",
+   "requirements": {
+    "maxArea": 150,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "conveni-snacks"
+      ],
+      "min": 4
+     },
+     {
+      "ids": [
+       "paw-loose-065-04"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "paw-loose-012-00"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "conveni-service-counter",
+       "clinic-reception"
+      ],
+      "min": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "general-store",
+   "family": "retail",
+   "name": "잡화점",
+   "wall": "wall-home",
+   "width": 12,
+   "height": 12,
+   "brief": "생활 잡화점. 잡화·세정용품·생활식품 선반, 우산 보관함, 흔들 목마와 곰 인형 진열, 계산 카운터. 남쪽 정문.",
+   "requirements": {
+    "maxArea": 180,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "conveni-cosmetics",
+       "conveni-dry-goods"
+      ],
+      "min": 4
+     },
+     {
+      "ids": [
+       "paw-loose-082-00"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "paw-loose-065-06",
+       "paw-loose-066-00"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "conveni-service-counter",
+       "clinic-reception"
+      ],
+      "min": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "antique-shop",
+   "family": "retail",
+   "name": "골동품점",
+   "wall": "wall-mansion-r",
+   "width": 12,
+   "height": 12,
+   "brief": "골동품점. 괘종시계, 병풍, 장식 항아리, 유리 수납장, 인형, 오르골을 통로를 따라 두고 안쪽 계산대(서재 책상). 남쪽 정문.",
+   "requirements": {
+    "maxArea": 180,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "msion-r-grand-clock"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "paw-loose-000-00",
+       "paw-loose-000-01"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "paw-loose-009-00"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "msion-r-glass-cabinet"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "paw-loose-063-00",
+       "paw-loose-063-02",
+       "msion-r-doll"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "paw-loose-053-03"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "msion-r-writing-desk"
+      ],
+      "min": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "boutique",
+   "family": "retail",
+   "name": "옷가게 (부티크)",
+   "wall": "wall-mansion-r",
+   "width": 12,
+   "height": 12,
+   "brief": "옷가게. 옷 전용 가구가 적어 옷장·서랍장·기모노 옷걸이·거울 화장대를 진열에 쓴다. 벽으로 구획한 탈의실 1개, 계산 카운터. 남쪽 정문.",
+   "requirements": {
+    "roomIds": [
+     "fitting"
+    ],
+    "maxArea": 180,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "home-wardrobe",
+       "msion-r-dresser"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "paw-loose-008-00"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "msion-r-vanity"
+      ],
+      "min": 1,
+      "roomId": "fitting"
+     },
+     {
+      "ids": [
+       "conveni-service-counter",
+       "msion-r-writing-desk"
+      ],
+      "min": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "clinic",
+   "family": "public",
+   "name": "동네의원",
+   "wall": "wall-clinic",
+   "width": 16,
+   "height": 14,
+   "brief": "동네의원. 서쪽 대기실(TV를 보는 대기 의자 6)과 접수대, 동쪽에 벽으로 분리한 진찰실(진찰 침상·모니터·의자·약장)과 처치실(침상·약장). 남쪽 정문.",
+   "requirements": {
+    "roomIds": [
+     "exam",
+     "treatment"
+    ],
+    "maxArea": 280,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "clinic-reception"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "clinic-waiting-chair-back"
+      ],
+      "min": 6
+     },
+     {
+      "ids": [
+       "clinic-tv"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "clinic-exam-couch"
+      ],
+      "min": 1,
+      "roomId": "exam"
+     },
+     {
+      "ids": [
+       "clinic-monitor"
+      ],
+      "min": 1,
+      "roomId": "exam"
+     },
+     {
+      "ids": [
+       "clinic-exam-couch"
+      ],
+      "min": 1,
+      "roomId": "treatment"
+     },
+     {
+      "ids": [
+       "clinic-medicine"
+      ],
+      "min": 2
+     }
+    ]
+   }
+  },
+  {
+   "id": "hospital-ward",
+   "family": "public",
+   "name": "병원 병동",
+   "wall": "wall-clinic",
+   "width": 16,
+   "height": 14,
+   "brief": "입원 병동. 가운데 복도, 벽으로 독립된 4인 병실 2개(각 진찰 침상 4개를 가림막으로 나눔), 간호사 접수대. 남쪽 복도 출입.",
+   "requirements": {
+    "roomIds": [
+     "ward-a",
+     "ward-b"
+    ],
+    "maxArea": 280,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "clinic-exam-couch"
+      ],
+      "min": 4,
+      "roomId": "ward-a"
+     },
+     {
+      "ids": [
+       "clinic-exam-couch"
+      ],
+      "min": 4,
+      "roomId": "ward-b"
+     },
+     {
+      "ids": [
+       "clinic-privacy",
+       "clinic-privacy-side"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "clinic-reception"
+      ],
+      "min": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "library",
+   "family": "public",
+   "name": "도서관",
+   "wall": "wall-library",
+   "width": 18,
+   "height": 16,
+   "brief": "동네 도서관. 벽을 따라 높은 책장, 가운데 낮은 책장 줄, 독서 테이블 2개와 의자, 대출·반납 카운터와 사서 의자, 잡지 진열과 소파. 남쪽 정문.",
+   "requirements": {
+    "maxArea": 360,
+    "maxEmptySquare": 4,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 5
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "library-bookcase"
+      ],
+      "min": 5
+     },
+     {
+      "ids": [
+       "low-books"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "reading-table"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "reading-chair-back"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "loan-counter"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "librarian-chair"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "sofa-front",
+       "sofa-back"
+      ],
+      "min": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "city-hall",
+   "family": "public",
+   "name": "구청 민원실",
+   "wall": "wall-office",
+   "width": 18,
+   "height": 14,
+   "brief": "구청 민원실. 민원 창구 카운터 3개, 창구를 보는 대기 의자 8석, 창구 뒤 직원 책상 3개와 의자, 게시판 역할 화이트보드, 뒤쪽 벽으로 구획한 과장실(임원 책상). 남쪽 정문.",
+   "requirements": {
+    "roomIds": [
+     "chief"
+    ],
+    "maxArea": 315,
+    "maxEmptySquare": 4,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 5
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "clinic-reception",
+       "conveni-service-counter"
+      ],
+      "min": 3
+     },
+     {
+      "ids": [
+       "clinic-waiting-chair-back"
+      ],
+      "min": 8
+     },
+     {
+      "ids": [
+       "desk-white",
+       "desk-wood"
+      ],
+      "min": 3
+     },
+     {
+      "ids": [
+       "paw-loose-080-00"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "desk-executive"
+      ],
+      "min": 1,
+      "roomId": "chief"
+     }
+    ]
+   }
+  },
+  {
+   "id": "public-restroom",
+   "family": "public",
+   "name": "공중화장실",
+   "wall": "wall-restroom",
+   "width": 14,
+   "height": 10,
+   "brief": "공원 공중화장실. 벽으로 나눈 남자 화장실(소변기 2·칸막이 변기 1·세면대)과 여자 화장실(칸막이 변기 2·세면대), 청소도구함 자리. 남쪽 두 입구.",
+   "requirements": {
+    "roomIds": [
+     "men",
+     "women"
+    ],
+    "maxArea": 175,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "restroom-urinal"
+      ],
+      "min": 2,
+      "roomId": "men"
+     },
+     {
+      "ids": [
+       "restroom-toilet-closed",
+       "restroom-toilet-open"
+      ],
+      "min": 1,
+      "roomId": "men"
+     },
+     {
+      "ids": [
+       "restroom-toilet-closed",
+       "restroom-toilet-open"
+      ],
+      "min": 2,
+      "roomId": "women"
+     },
+     {
+      "ids": [
+       "restroom-sinks"
+      ],
+      "min": 2
+     }
+    ]
+   }
+  },
+  {
+   "id": "office",
+   "family": "public",
+   "name": "사무실",
+   "wall": "wall-office",
+   "width": 16,
+   "height": 12,
+   "brief": "회사 사무실. 사무용 책상 6개가 두 섬으로 마주보고 의자, 벽쪽 자료 책장, 화이트보드, 벽으로 구획한 회의실 또는 사장실(임원 책상). 남쪽 출입구.",
+   "requirements": {
+    "roomIds": [
+     "boss"
+    ],
+    "maxArea": 240,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "desk-white",
+       "desk-wood"
+      ],
+      "min": 6
+     },
+     {
+      "ids": [
+       "chair-blue",
+       "chair-blue-back"
+      ],
+      "min": 6
+     },
+     {
+      "ids": [
+       "bookcase",
+       "library-bookcase"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "paw-loose-080-00"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "desk-executive"
+      ],
+      "min": 1,
+      "roomId": "boss"
+     }
+    ]
+   }
+  },
+  {
+   "id": "park-office",
+   "family": "public",
+   "name": "공원 관리소",
+   "wall": "wall-office",
+   "width": 10,
+   "height": 10,
+   "brief": "공원 관리 사무소. 창구 카운터, 직원 책상 2개와 의자, 세계지도, 우산 보관함, 대기 의자 2개. 남쪽 정문.",
+   "requirements": {
+    "maxArea": 125,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "clinic-reception",
+       "conveni-service-counter"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "desk-white",
+       "desk-wood"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "paw-loose-083-00"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "paw-loose-082-00"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "clinic-waiting-chair-back",
+       "clinic-waiting-bench"
+      ],
+      "min": 2
+     }
+    ]
+   }
+  },
+  {
+   "id": "staff-room",
+   "family": "school",
+   "name": "교무실",
+   "wall": "wall-school",
+   "width": 16,
+   "height": 12,
+   "brief": "학교 교무실. 교사 책상 6개가 섬으로 마주보고 의자, 화이트보드, 자료 책장, 교감 책상(임원 책상)이 섬을 바라본다. 남쪽 복도 출입.",
+   "requirements": {
+    "maxArea": 240,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "desk-white",
+       "desk-wood"
+      ],
+      "min": 6
+     },
+     {
+      "ids": [
+       "chair-blue",
+       "chair-blue-back"
+      ],
+      "min": 6
+     },
+     {
+      "ids": [
+       "paw-loose-080-00"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "special-bookcase",
+       "bookcase"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "desk-executive"
+      ],
+      "min": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "science-lab",
+   "family": "school",
+   "name": "과학실",
+   "wall": "wall-school-special",
+   "width": 16,
+   "height": 14,
+   "brief": "학교 과학실. 칠판(격자 칠판), 실험대 4개와 둘레 실험 의자, 벽쪽 과학 자료 책장, 골격 표본. 남쪽 출입.",
+   "requirements": {
+    "maxArea": 280,
+    "maxEmptySquare": 4,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 5
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "school-grid-board",
+       "school-blackboard"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "special-worktable"
+      ],
+      "min": 4
+     },
+     {
+      "ids": [
+       "special-stool"
+      ],
+      "min": 8
+     },
+     {
+      "ids": [
+       "special-bookcase"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "special-skeleton"
+      ],
+      "min": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "gym",
+   "family": "school",
+   "name": "체육관",
+   "wall": "wall-gym",
+   "width": 20,
+   "height": 16,
+   "brief": "학교 체육관. 북벽 농구 골대 2개, 중앙 코트는 비워 두되 가장자리에 공 보관함 2개·뜀틀·매트·접이 의자 줄, 벽으로 구획한 체육 창고. 남쪽 출입.",
+   "requirements": {
+    "roomIds": [
+     "storage"
+    ],
+    "maxArea": 400,
+    "maxEmptySquare": 8,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 12
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "gym-hoop-wall"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "gym-ball-cage",
+       "gym-volleyball-cage"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "gym-vault-six"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "gym-mat",
+       "gym-folded-mat"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "gym-chair-front",
+       "gym-chair-back"
+      ],
+      "min": 4
+     }
+    ]
+   }
+  },
+  {
+   "id": "wood-classroom",
+   "family": "school",
+   "name": "목조 교실",
+   "wall": "wall-wood-school",
+   "width": 14,
+   "height": 14,
+   "brief": "옛 목조학교 교실. 목조 칠판과 교탁, 학생 책상·의자 9세트가 칠판을 향한다, 뒤쪽 청소도구함과 신발장, 창. 남쪽 출입.",
+   "requirements": {
+    "maxArea": 245,
+    "maxEmptySquare": 4,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 5
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "wood-school-blackboard"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "wood-school-lectern"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "wood-school-student-desk"
+      ],
+      "min": 9
+     },
+     {
+      "ids": [
+       "wood-school-chair-back"
+      ],
+      "min": 9
+     },
+     {
+      "ids": [
+       "wood-school-cleaning-locker",
+       "wood-school-shoe-locker"
+      ],
+      "min": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "sento",
+   "family": "leisure",
+   "name": "센토 (대중목욕탕)",
+   "wall": "wall-sento",
+   "width": 18,
+   "height": 16,
+   "brief": "동네 센토. 남쪽 입구 신발 선반, 탈의실(수납장·벤치·음료 판매기·세면대), 벽으로 나눈 욕실(큰 욕조·거울 수전 3개·대야 의자), 욕실 북벽에 후지산 벽화.",
+   "requirements": {
+    "roomIds": [
+     "bath"
+    ],
+    "maxArea": 360,
+    "maxEmptySquare": 4,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 5
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "sento-shoe-rack"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "sento-lockers"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "sento-bench"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "sento-milk-machine"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "sento-pool-large"
+      ],
+      "min": 1,
+      "roomId": "bath"
+     },
+     {
+      "ids": [
+       "sento-wash-station"
+      ],
+      "min": 2,
+      "roomId": "bath"
+     },
+     {
+      "ids": [
+       "sento-mural"
+      ],
+      "min": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "table-tennis",
+   "family": "leisure",
+   "name": "탁구장",
+   "wall": "wall-gym",
+   "width": 16,
+   "height": 14,
+   "brief": "동네 탁구장. 탁구대 2개(양 끝 3칸 비움), 벽쪽 접이 의자 줄, 접수 카운터 자리(서재 책상), 벽으로 구획한 탈의실(수납장). 남쪽 정문.",
+   "requirements": {
+    "roomIds": [
+     "changing"
+    ],
+    "maxArea": 280,
+    "maxEmptySquare": 6,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 8
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "gym-table-tennis"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "gym-chair-front",
+       "gym-chair-back"
+      ],
+      "min": 4
+     },
+     {
+      "ids": [
+       "sento-lockers"
+      ],
+      "min": 1,
+      "roomId": "changing"
+     }
+    ]
+   }
+  },
+  {
+   "id": "billiards",
+   "family": "leisure",
+   "name": "당구장",
+   "wall": "wall-mansion-b",
+   "width": 16,
+   "height": 12,
+   "brief": "당구장. 당구대 3개(사방 1칸 이상 큐 공간), 벽쪽 소파와 낮은 탁자, 벽걸이 박제, 계산 카운터(서재 책상). 남쪽 정문.",
+   "requirements": {
+    "maxArea": 240,
+    "maxEmptySquare": 4,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 5
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "paw-loose-073-00"
+      ],
+      "min": 3
+     },
+     {
+      "ids": [
+       "paw-loose-050-00",
+       "paw-loose-050-04",
+       "msion-b-sofa-front"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "paw-loose-050-02"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "paw-loose-070-11",
+       "paw-loose-070-05"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "msion-b-writing-desk"
+      ],
+      "min": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "art-museum",
+   "family": "leisure",
+   "name": "미술관",
+   "wall": "wall-mansion-w",
+   "width": 18,
+   "height": 14,
+   "brief": "작은 미술관. 벽에 명화 5점(모나리자·베르메르·보티첼리·올랭피아·오달리스크)을 간격 두고 걸고, 가운데 조각(생각하는 사람)·천구 모형, 관람 소파, 입구 안내 카운터. 벽으로 구획한 두 번째 전시실. 남쪽 정문.",
+   "requirements": {
+    "roomIds": [
+     "gallery-2"
+    ],
+    "maxArea": 315,
+    "maxEmptySquare": 4,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 5
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "paw-loose-085-00",
+       "paw-loose-086-00",
+       "paw-loose-087-00",
+       "paw-loose-088-00",
+       "paw-loose-089-00"
+      ],
+      "min": 5
+     },
+     {
+      "ids": [
+       "paw-loose-067-00"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "paw-loose-068-00"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "msion-w-sofa-front",
+       "msion-w-sofa-back",
+       "paw-loose-050-00"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "msion-w-writing-desk"
+      ],
+      "min": 1
+     }
+    ]
+   }
+  },
+  {
+   "id": "mansion",
+   "family": "leisure",
+   "name": "서양 저택 (1층)",
+   "wall": "wall-mansion-b",
+   "width": 20,
+   "height": 16,
+   "brief": "서양식 저택 1층. 남쪽 현관 홀(괘종시계·화분), 거실(벽난로·소파·거실 탁자·그랜드피아노), 벽으로 나눈 식당(3열 식탁과 동서 의자 4), 서재(책상·장식 서가).",
+   "requirements": {
+    "roomIds": [
+     "living",
+     "dining",
+     "study"
+    ],
+    "maxArea": 400,
+    "maxEmptySquare": 4,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 5
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "msion-b-fireplace"
+      ],
+      "min": 1,
+      "roomId": "living"
+     },
+     {
+      "ids": [
+       "msion-b-sofa-front",
+       "msion-b-sofa-back"
+      ],
+      "min": 1,
+      "roomId": "living"
+     },
+     {
+      "ids": [
+       "msion-b-grand-piano"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "msion-b-dining-table"
+      ],
+      "min": 1,
+      "roomId": "dining"
+     },
+     {
+      "ids": [
+       "msion-b-chair-east",
+       "msion-b-chair-west"
+      ],
+      "min": 4,
+      "roomId": "dining"
+     },
+     {
+      "ids": [
+       "msion-b-writing-desk"
+      ],
+      "min": 1,
+      "roomId": "study"
+     },
+     {
+      "ids": [
+       "msion-b-bookcase"
+      ],
+      "min": 1,
+      "roomId": "study"
+     }
+    ]
+   }
+  },
+  {
+   "id": "shrine-hall",
+   "family": "leisure",
+   "name": "신사 (배전 실내)",
+   "wall": "wall-washitu",
+   "width": 14,
+   "height": 12,
+   "brief": "작은 신사의 배전 안. 다다미 바닥, 북쪽 제단 자리에 작은 신사 본체, 양옆 여우상 한 쌍, 앞에 봉헌함, 옆에 병풍, 참배자 방석. 남쪽 입구.",
+   "requirements": {
+    "maxArea": 210,
+    "maxEmptySquare": 3,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 4
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "paw-loose-023-00"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "paw-loose-023-08",
+       "paw-loose-023-09"
+      ],
+      "min": 2
+     },
+     {
+      "ids": [
+       "paw-loose-023-07"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "paw-loose-000-00"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "washitu-cushion-blue",
+       "washitu-cushion-pattern"
+      ],
+      "min": 2
+     }
+    ]
+   }
+  },
+  {
+   "id": "temple-hall",
+   "family": "leisure",
+   "name": "절 본당",
+   "wall": "wall-washitu",
+   "width": 16,
+   "height": 12,
+   "brief": "절 본당. 다다미 바닥, 북쪽 중앙에 금색 불상, 양옆 녹색 불상과 병풍, 한쪽에 범종, 참배 방석 6개가 불상을 향해 줄지어. 남쪽 입구.",
+   "requirements": {
+    "maxArea": 240,
+    "maxEmptySquare": 4,
+    "maxEmptyStrip": {
+     "width": 3,
+     "length": 5
+    },
+    "southExit": true,
+    "objects": [
+     {
+      "ids": [
+       "paw-loose-019-00"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "paw-loose-020-00"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "paw-loose-007-00"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "paw-loose-000-00"
+      ],
+      "min": 1
+     },
+     {
+      "ids": [
+       "washitu-cushion-blue",
+       "washitu-cushion-pattern"
+      ],
+      "min": 6
+     }
+    ]
+   }
+  }
+ ]
+}

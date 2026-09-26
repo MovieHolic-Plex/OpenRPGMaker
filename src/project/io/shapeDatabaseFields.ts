@@ -136,6 +136,17 @@ export function validateSystem(value: unknown): void {
     if (gallery.enabled !== undefined) requireBoolean("system.gallery.enabled", gallery.enabled);
     if (gallery.label !== undefined) requireString("system.gallery.label", gallery.label);
   }
+  if (system.newGamePlus !== undefined) {
+    const newGamePlus = requireRecord("system.newGamePlus", system.newGamePlus);
+    if (newGamePlus.enabled !== undefined) requireBoolean("system.newGamePlus.enabled", newGamePlus.enabled);
+    if (newGamePlus.label !== undefined) requireString("system.newGamePlus.label", newGamePlus.label);
+    if (newGamePlus.carry !== undefined) requireArray("system.newGamePlus.carry", newGamePlus.carry);
+  }
+  if (system.chapter !== undefined) {
+    const chapter = requireRecord("system.chapter", system.chapter);
+    requireString("system.chapter.variableId", chapter.variableId);
+    requireRecord("system.chapter.labels", chapter.labels);
+  }
   if (system.timeSystem !== undefined) validateTimeSystem(system.timeSystem);
   if (system.worldGen !== undefined) {
     const worldGen = requireRecord("system.worldGen", system.worldGen);

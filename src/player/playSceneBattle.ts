@@ -45,6 +45,28 @@ export function showBattleScene(scene: PlaySceneContext, troopId: string): void 
   scene.showRuntimeOverlay("battle-scene", troopId || "battle");
 }
 
+/**
+ * 필드 캔버스의 다음 프레임을 dataURL 로 찍는다. WebGL 은 프레임이 끝나면 버퍼가 비므로(preserveDrawingBuffer 없음)
+ * 캔버스를 직접 읽지 않고 Phaser renderer.snapshot 을 쓴다. 실패하거나 250ms 안에 오지 않으면 undefined(트룹 배경으로 폴백).
+ */
+function captureFieldSnapshot(game: unknown): Promise<string | undefined> {
+  const renderer = game && typeof game === "object" ? Reflect.get(game, "renderer") : undefined;
+  const snapshot = renderer && typeof renderer === "object" ? Reflect.get(renderer, "snapshot") : undefined;
+  if (typeof snapshot !== "function") return Promise.resolve(undefined);
+  return new Promise((resolve) => {
+    const timer = window.setTimeout(() => resolve(undefined), 250);
+    try {
+      snapshot.call(renderer, (image: unknown) => {
+        window.clearTimeout(timer);
+        resolve(image instanceof HTMLImageElement && image.src ? image.src : undefined);
+      }, "image/jpeg", 0.85);
+    } catch {
+      window.clearTimeout(timer);
+      resolve(undefined);
+    }
+  });
+}
+
 type BattleHostScene = Pick<PlaySceneContext, "session" | "tileY" | "battleAbortController" | "showGameOverScreen">
   & Parameters<typeof dialogueHost>[0]
   & Partial<Pick<PlaySceneContext, "events" | "runtimeTimers">>
@@ -122,6 +144,7 @@ export async function playBattle(
         partyActorIds: scene.session.partyActorIds,
         actorSkillIds: scene.session.actorSkillIds,
         actorExperience: scene.session.actorExperience,
+        actorTechPoints: scene.session.actorTechPoints,
         actorLevels: scene.session.actorLevels,
         actorBattleCommands: scene.session.actorBattleCommands,
         // Step 3d: 전투 이벤트 changeEquipment/promoteActor 의 기준 상태(오버레이 시드).
@@ -178,7 +201,10 @@ export async function playBattle(
       // 필드 캔버스: 진입 때 빨려 들어가고 복귀 때 내려앉는다(battleTransition.setFieldMotion).
       const gameCanvas: unknown = Reflect.get(scene.game, "canvas");
       const fieldCanvas = gameCanvas instanceof HTMLElement ? gameCanvas : undefined;
-      const entryTransition = createSkinBattleTransition(host, entrySkin.transition, undefined, fieldCanvas);
+      // 필드 배경(system.battleBackdrop === "field"): 지금 보이는 필드(주인공 주변)를 전투 배경으로 찍고 제자리 페이드로 들어간다.
+      const fieldBackdrop = project.system.battleBackdrop === "field";
+      const fieldSnapshot = fieldBackdrop ? captureFieldSnapshot(scene.game) : Promise.resolve(undefined);
+      const entryTransition = createSkinBattleTransition(host, entrySkin.transition, undefined, fieldCanvas, fieldBackdrop);
       const cleanup = (): void => {
         signal?.removeEventListener("abort", abort);
         scene.events?.off("shutdown", onShutdown);
@@ -211,10 +237,11 @@ export async function playBattle(
       scene.events?.once("shutdown", onShutdown);
       scene.events?.once("destroy", onShutdown);
       scene.events?.on("update", checkOwner);
-      void Promise.resolve().then(() => entryTransition.cover()).then(() => {
+      void fieldSnapshot.then(async (fieldBackdropUrl) => { await entryTransition.cover(); return fieldBackdropUrl; }).then((fieldBackdropUrl) => {
         if (!current()) { abort(); return; }
         battleScene = mountBattleScene({
           host, runtime,
+          fieldBackdropUrl,
           audioContext: { project, session },
           showEventText: (request, inputSignal) => {
             if (!current()) { abort(); return Promise.reject(new DOMException("Battle cancelled", "AbortError")); }
@@ -245,7 +272,7 @@ export async function playBattle(
             if (exiting) return;
             exiting = true;
             try {
-              const transition = createSkinBattleTransition(host, entrySkin.transition, undefined, fieldCanvas);
+              const transition = createSkinBattleTransition(host, entrySkin.transition, undefined, fieldCanvas, fieldBackdrop);
               exitTransition = transition;
               void transition.exit().then(async () => {
                 if (!current()) { abort(); return; }

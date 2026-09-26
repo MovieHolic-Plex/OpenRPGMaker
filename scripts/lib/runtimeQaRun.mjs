@@ -39,6 +39,7 @@ const HOOK_OPS = new Set([
   "pauseFrames", "stepFrames", "resumeFrames",
   // 체공 op 은 __oprnDebug / __oprnCharacterSprites 를 직접 읽는다.
   "playerRoute", "waitForLift", "waitForGrounded", "captureShadowSample",
+  "waitForFollowers", "waitForLeader",
 ]);
 
 async function freePort() {
@@ -329,6 +330,33 @@ async function applyOp(page, op, runState) {
         { timeout: op.timeoutMs ?? 30_000 },
       );
       return;
+    case "waitForFollowers":
+      // 동료 스프라이트 수(와 선택적으로 그 키)를 상태로 기다린다 — 파티 동료는 씬 생성·명령 뒤 한 프레임에 붙는다.
+      await page.waitForFunction(
+        ([count, ids]) => {
+          const sprites = window.__oprnCharacterSprites ? window.__oprnCharacterSprites() : null;
+          if (!sprites) return false;
+          const keys = Object.keys(sprites.followers);
+          return keys.length === count && (ids === null || ids.every((id) => keys.includes(`follower:${id}`)));
+        },
+        [op.count, op.ids ?? null],
+        { timeout: op.timeoutMs ?? 30_000 },
+      );
+      return;
+    case "waitForLeader":
+      // 선두 교대는 파티 순서와 필드 주인공 그림이 함께 바뀌어야 끝난 것이다.
+      await page.waitForFunction(
+        ([actorId, resourceId]) => {
+          const state = window.__oprnDebug?.readState?.();
+          if (!state || state.partyActorIds[0] !== actorId) return false;
+          if (resourceId === null) return true;
+          const sprite = window.__oprnPlayerSprite ? window.__oprnPlayerSprite() : null;
+          return sprite?.resourceId === resourceId;
+        },
+        [op.actorId, op.spriteResourceId ?? null],
+        { timeout: op.timeoutMs ?? 30_000 },
+      );
+      return;
     case "waitFor":
       await waitForTestid(page, op);
       return;
@@ -367,6 +395,32 @@ async function applyOp(page, op, runState) {
           return node.getAttribute(attr) === value;
         },
         [op.testid, op.attr, op.value],
+        { timeout: op.timeoutMs ?? 30_000 },
+      );
+      return;
+    case "repeatUntil": {
+      // 하위 op 묶음을 조건이 설 때까지 되풀이한다(예: 적이 쓰러질 때까지 공격). 매 회 전에 조건을 본다.
+      const max = op.maxRounds ?? 8;
+      for (let round = 0; round < max; round += 1) {
+        if (await testidMatches(page, op)) return;
+        for (const inner of op.ops) {
+          try { await applyOp(page, inner, runState); } catch (error) {
+            if (await testidMatches(page, op)) return;
+            throw error;
+          }
+        }
+      }
+      if (!(await testidMatches(page, op))) throw new Error(`repeatUntil: ${max}회 뒤에도 ${op.testid} 가 ${op.state} 가 되지 않았다`);
+      return;
+    }
+    case "waitForStyleVar":
+      // 인라인 CSS 사용자 속성(예: --battle-node-x) 값 대기 — 렌더된 위치를 좌표계 그대로 단정한다.
+      await page.waitForFunction(
+        ([testid, prop, value]) => {
+          const node = document.querySelector(`[data-testid="${testid}"]`);
+          return node instanceof HTMLElement && node.style.getPropertyValue(prop).trim() === value;
+        },
+        [op.testid, op.prop, op.value],
         { timeout: op.timeoutMs ?? 30_000 },
       );
       return;

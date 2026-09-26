@@ -134,7 +134,7 @@ tool_call.visuals → AiRunSurface`가 같은 수집기를 쓴다. 팀/후속 �
 
 ## 첫 페인트 스타일 소유권 (2026-09-19)
 
-에디터 부트 때 `aiSidebarWorkspace`가 왼쪽 AI 표면과 오른쪽 팀 사이드바를 먼저
+에디터 부트 때 `aiSidebarWorkspace`(왼쪽 활동 막대)와 오른쪽 AI 도크·팀 사이드바를 먼저
 마운트한다. 따라서 이 표면의 스타일은 데이터베이스 모달을 열 때 지연 로드하면 안 된다.
 `src/styles/database/editor-startup-ai.css`가 기존 기능별 시트
 (`assistant-*`, `tabs-b-assistant-panel/01–12`, `18–25` 및 각 `part-*`)를 원래 순서대로
@@ -241,7 +241,34 @@ x=8, y=278, 300×383으로 화면 안에 놓인다. 설정 변경·팀 메뉴 �
   사용하므로 라이브 모델의 자발적 분업·협의 품질을 증명하는 테스트는 아니다.
 
 
-## 왼쪽 AI 대화 + 오른쪽 팀원 아바타 (2026-09-18)
+## 오른쪽 AI 도크 + 왼쪽 활동 막대 (2026-09-26, 아래 2026-09-18 절을 대체)
+
+사용자 결정: AI 는 **오른쪽**에 항상 보이고, 왼쪽은 그리기·맵 만 단다. 예전 「맵 | 그리기 | AI」 가로 탭은
+AI 를 여는 순간 팔레트가 사라져 "시키고 바로 손보기"가 한 화면에서 안 됐다.
+
+- 배치(`editor.ts` `renderEditor`): `[활동 막대 48px + 패널] [리사이저] [캠버스] [aside.ai-right-dock (editor-ai-dock)] [팀 레일]`.
+  `#ai-panel` 은 `chat-float-host` 를 통해 오른쪽 도크에 붙는다. `is-left-sidebar` 클래스는 이름만 남은
+  "고정 도크 패널" 표식이다 — 모든 도크 스타일이 이 클래스에 걸려 있어 바꾸지 않았다.
+- 폭 예산(`applyLayout`): 도크 = 뷰포트 26% 를 280~420px 로 자른 값, 왼쪽 = `min(340, leftWidth,
+  남은 폭 − 도크 − 팀 레일 − MIN_CANVAS_WIDTH(520))` 를 220px 이상. 실측(2026-09-26): 1440 → 왼 340 · 캠버스 676 ·
+  도크 374, 1280 → 340·557·333, 1024 → 220·474·280. 가로 넘침 0.
+- `aiSidebarWorkspace.ts`: 세로 활동 막대(`left-activity-bar`) — `sidebar-tools`(그리기) · `sidebar-maps`(맵) ·
+  아래 `sidebar-inspect`(검사). 켜진 항목을 다시 누르면 48px 로 접히고, 다른 항목은 그 패널로 바꾸며 편다.
+  마지막 패널은 `oprn:left-activity-pane`, 접힘은 `oprn:ai-sidebar-collapsed` 에 저장한다. 처음은 그리기.
+  검사는 패널이 아니라 명령: 그리기를 펴고 `openSidebarInspection("ruleAudit")`. 배지는
+  `ruleAuditViolationCountCached()` (도구줄 ⋯ 배지와 같은 수)이며 `RULE_AUDIT_UPDATED_EVENT` 로 갱신한다.
+  `oprn:ai-sidebar-tools` 는 그리기 패널을 연다. `oprn:ai-sidebar-show` 는 더 듣는 곳이 없다(도크는 항상 보인다).
+  회귀: `test/leftActivityBar.test.ts`.
+- 막대 항목(2026-09-27): 그리기 · 맵 · **즐겨찾기**(`leftFavoritesPane.ts`) · **진행**(`leftProgressPane.ts`) · **연결**(`leftLinksPane.ts`) … 검사.
+  패널은 펼쳐질 때만 그린다(`show()`), 숨은 패널은 `root.hidden` 에서 돌아선다. 마지막 패널은 `oprn:left-activity-pane` 에 저장.
+  - 즐겨찾기: 별표한 타일과 최근 고른 타일 18개. 최근 목록은 `tileBrushTools.recordRecentTile` 로 옮겼다(팔레트 「최근」 분류와 공유).
+    칸 클릭 = `selectPaletteTile`(팔레트와 같은 경로), 우클릭 = 즐겨찾기 토글. 변경 알림 `TILE_SHORTCUTS_CHANGED_EVENT`.
+  - 진행: 캔버스 여정 띠와 같은 `evaluateAuthoringJourney`·진행 저장소. 첫 미완료 단계가 「다음」, 「시작/열기」는 `runAuthoringTask`.
+  - 연결: `mapLinkStats.collectMapLinkGraph`(같은 명령 순회) — 시작 맵에서 너비 우선으로 닿는지 판정해 「고립/도달 불가」를 위에 모은다.
+    양방향 이동은 ↔ 한 줄로 합친다(마을 하나에 집 15채 = 15줄). 이동 행 클릭 = 그 이벤트로 카메라.
+- 스타일: `18-assistant-deck.css` 끝 「왼쪽 활동 막대 + 오른쪽 조수 도크」 절.
+
+## 왼쪽 AI 대화 + 오른쪽 팀원 아바타 (2026-09-18, 위 절이 배치를 대체)
 
 사용자가 승인한 배치: 왼쪽 **AI** 주 대화, 중앙 맵, 오른쪽 원형 팀원 아바타.
 기본 편집기에서 우하단 float 데크와 「조수가 한 일」 가로 띠는 더 이상 만들지 않는다.
@@ -607,7 +634,33 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
 - 단계는 `applyToolSequenceToStore(..., {continueOnError:true})` 로 한 undo 체크포인트에 적용한다 — 한 단계가 실패해도 나머지는 깔린다.
   실패한 단계만 도구 오류(가까운 라벨 제안 포함)와 함께 **한 번** 되물어 대체 단계를 받는다(최대 모델 호출 2회).
 - 순수 계획·검증은 `src/ai/stampPlanner.ts`: 허용 도구만, 좌표는 대상 안으로 자르고, 키는 허용 목록만 옮긴다. 단계 상한 8.
-- 빈 문장(=숲), AI 미연결, 모델 실패·시간 초과(20s)면 옛 낱말 규칙 `planStampPlace`(`src/ai/stampPlace.ts`)로 떨어지고 그 사실을 한 줄로 말한다.
+- **반드시 모델을 거친다 (2026-09-27, 사용자 판단).** 낱말 규칙 폴백(`stampPlace.ts`)은 삭제했다 — 「숲」을 통행 불가로 올려 덤불만 깔던 경로였다.
+  빈 문장도 모델에 보낸다(`EMPTY_SENTENCE`: 이 자리에 어울리는 것을 알아서). AI 미연결이면 **아무것도 깔지 않고** 연결이 필요하다고 말한다.
+  계획 호출이 실패·시간 초과(20s)이거나 쓸 단계가 없으면 **한 번만** 다시 묻고, 그래도 없으면 아무것도 깔지 않고 이유를 말한다.
+- **게임 오브젝트도 깐다**: `place_chest`·`place_npc`(이름·그래픽 질의·대사 1~3줄 → `pages:[{lines}]`)·`place_savepoint`·`place_examine_hotspots`.
+  숲 규칙: 숲/나무 → `dense`(물·작은 나무·숨은 수관 길), 울창/빽빽/통행 불가 → `impassable`.
+- **현재 맵 사실이 1순위** — `src/ai/mapPlacementContext.ts` `buildMapPlacementContext(project, mapId)`(순수).
+  이 맵의 조우(`encounterTable`·`troopIds`(조우율>0)·`fieldSpawns`) → 트룹 적 합계 = 전투 1회 골드·경험치·드롭,
+  이미 깔린 상자(닫힘 페이지 selfSwitch A=false 의 `changeGold`/`changeItem`)·상점 재고와 가격·NPC 이름·세이브 수·출입구(`transfer`·`worldGraph` 간선),
+  이 맵에 걸린 설정집 문서(`projectWikiContext` mapId). 계획 사실(`facts.placement`)로 모델에 간다(`knownItemIds` 는 빼고).
+- **상자 금액 범위 `chestGold`**: 전투 1회분 ×0.5~×4, 기존 상자 ×0.5~×2(둘 다 있으면 합친 범위), 전투·상자가 없고 상점만 있으면 상점가 ×0.5~ 중앙 ×3.
+  현재 맵에 신호가 없을 때만 출입구 이웃 맵(scope `neighbor`), 그다음 프로젝트 적 보상 분포(`project`), 적도 없으면 20~100G(`none`).
+  바로 깔기 검증기가 모델 금액을 이 범위로 맞추고(`clampChestGold`) 결과 줄에 근거를 붙인다. 없는 `itemId` 는 버리고 금액으로 대신한다.
+- **겹침 해소 (2026-09-27 라이브 QA)**: 모델이 맵 한가운데 기존 표지판 칸 위에 상인을 세웠다. 이제 맵 사실에 `existing.occupied`(기존 이벤트 id·칸·종류·이름)를 싣고,
+  검증 뒤 `resolveStampOverlaps`(`stampPlanner.ts`, 순수)가 새 이벤트를 기존 이벤트 칸과 그 **바로 위아래**(두 칸 높이 그림)·같은 계획의 다른 새 이벤트에서
+  반경 6 안의 가장 가까운 `isPassableLanding` 칸으로 옮긴다. 결과 줄에 「겹쳐서 (a,b)→(c,d)」, 빈 칸이 없으면 그 단계를 버린다. 수리 라운드는 방금 깔린 이벤트까지 다시 읽는다.
+- **추가 도구**: 상인(`place_npc` merchant:true + stock → `make_villager({shop})` 한 번, 재고는 실제 id·가격이 상자 범위 상한의 2배 이하만, 비면 이 맵 보상 후보),
+  `place_storage_chest`, `place_trap`, `place_battle_blocker`(troopId 는 `encounterTroops`=이 맵 조우 트룹만, 없는 id 는 이 맵 첫 트룹으로, 조우가 없으면 버림),
+  `set_scene_mood`(날씨 none/rain/storm/snow/fog, applyMode map), `arrange_tall_grass`, `set_start_position`, `move_event`·`remove_event`(`occupied` 에 있는 id 만).
+  `knownItemIds`·`itemPrices` 는 거르는 데만 쓰고 모델에게 보내지 않는다.
+- **마을 (2026-09-27)**: 맵에 「마을」 필드가 없어 `guessMapRole`(`mapPlacementContext.ts`)이 신호로 추정한다 — 조우·필드 스폰이 있으면 던전/필드(이름이 「불타는 마을」이어도),
+  없으면 레이아웃 종류(village/town/houses…) → 이름(마을·촌·시장·항구…) → 실내 설정/이름 → 상점·여관 수·주민 3명 이상·safeZones 순. 근거는 `role.reason` 에 남는다.
+  마을·실내면: 상자 범위는 이 맵 기존 상자 → 이 맵 상점 물가 → **이웃 맵 기준의 1/4** → 프로젝트 기준의 절반(마을 상자에 던전급 금액 방지), 보상 후보에서 이웃 던전 드롭 제외,
+  함정·길막 몬스터는 문장에 함정/몬스터/습격 같은 말이 있을 때만(「알아서」에 섞이지 않게). 새 도구 `place_inn`(여관 주인 NPC + `inn` 명령, 요금은 이 맵 여관 → 이웃 전투 1회의 절반 → 상자 상한 1/10, 요청값은 기준의 1/3~3배로 보정),
+  `place_signpost`(기존 마을 표지판과 같은 object1 frame 25 — query 「signpost」 는 주민 그림을 골랐다). 빈 문장 + 마을이면 모델에게 "사람 사는 마을처럼(주민 2~4·상점 없으면 상인 1·표지판 1)"을 준다.
+- **채팅 조수도 같은 기준**: 컨텍스트 footer 에 `formatChestRewardHint` 한 줄(범위·근거·아이템 후보), `place_chest` 는 범위 밖 금액이면 막지 않고 경고한다.
+- **속도 (측정, 미해결)**: 도구 `run` 은 1ms 인데 `runTool` 한 번이 ~700ms — `createDraft` 의 `structuredClone`(프로젝트 25.9MB 중 타일셋 25.0MB) 367ms + `summarizeChanges` 타일셋 `JSON.stringify` 비교 334ms.
+  타일셋을 참조 공유(copy-on-write)하면 줄지만 드래프트에서 타일셋을 직접 고치는 도구가 21파일이라 이번 변경에서 하지 않았다.
 - 실측(워크트리 dev, Google 연결): 「왼쪽에 땅을 동그랗게, 가운데 물을 동그랗게, 오른쪽 옆에 나무」 12s·3단계 성공, 「땅으로 깔아줘」 → 흙길 오토타일 채움.
   증거 `verify-shots/stamp-llm/`.
 

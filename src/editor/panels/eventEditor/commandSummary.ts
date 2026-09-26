@@ -321,7 +321,7 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     valuePart(String(cmd.value)),
   ),
   getFriendship: (cmd) => commandLine("호감도 읽기", valuePart(cmd.npcKey || "이 이벤트"), plainPart(" → "), valuePart(recordName("variable", cmd.variableId))),
-  changeParty: (cmd) => commandLine("파티 멤버 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), valuePart(cmd.action === "add" ? "추가" : "제외")),
+  changeParty: (cmd) => commandLine("파티 멤버 변경", valuePart(actorName(cmd.actorId)), plainPart(" "), valuePart(cmd.action === "add" ? "추가" : cmd.action === "lead" ? "선두로" : "제외")),
   giveMonster: (cmd) => commandLine(
     "몬스터 지급",
     valuePart(monsterSpeciesName(cmd.speciesId)),

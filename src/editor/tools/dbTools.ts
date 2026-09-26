@@ -385,6 +385,12 @@ const actorInitialEquipmentSchema: JsonSchema = {
 };
 const actorOptionsSchema = objectSchema({ dualWield: booleanSchema(), autoBattle: booleanSchema(), fixedEquipment: booleanSchema(), mightyGuard: booleanSchema() });
 const learnedSkillSchema = objectSchema({ level: integerSchema(), skillId: stringSchema() });
+// 배우 전용: tp 는 배우 learnedSkills 에만 있다(직업·종족 습득표는 레벨만).
+const actorLearnedSkillSchema = objectSchema({
+  level: integerSchema(),
+  skillId: stringSchema(),
+  tp: integerSchema("기술 포인트 문턱(1 이상). 있으면 누적 TP 와 level 을 모두 채운 승리 뒤에 배운다. 생략하면 레벨만"),
+});
 const promotionRequiresSchema = objectSchema({
   level: integerSchema(),
   switchId: stringSchema(),
@@ -437,7 +443,7 @@ const captureProfileSchema = objectSchema({
   ballClass: { type: "string", enum: ["poke", "great", "ultra", "master"] },
 });
 const enemyStatsSchema = objectSchema({ maxHp: integerSchema(), maxMp: integerSchema(), attack: integerSchema(), defense: integerSchema(), mind: integerSchema(), agility: integerSchema() });
-const enemyRewardsSchema = objectSchema({ exp: integerSchema(), gold: integerSchema(), dropItemId: stringSchema(), dropRatePercent: integerSchema(), drops: conditionalDropsSchema });
+const enemyRewardsSchema = objectSchema({ exp: integerSchema(), gold: integerSchema(), tp: integerSchema("기술 포인트. 승리 시 살아남은 파티원 전원이 트룹 합계를 받는다"), dropItemId: stringSchema(), dropRatePercent: integerSchema(), drops: conditionalDropsSchema });
 const enemyActionSwitchSchema = objectSchema({ enabled: booleanSchema(), switchId: stringSchema() });
 const enemyActionSchema = objectSchema({
   skillId: stringSchema(),
@@ -445,6 +451,7 @@ const enemyActionSchema = objectSchema({
   condition: combatConditionSchema,
   switchOnAfterAction: enemyActionSwitchSchema,
   switchOffAfterAction: enemyActionSwitchSchema,
+  moveTo: objectSchema({ x: integerSchema("전투장 X 0~320"), y: integerSchema("전투장 Y 0~240") }, "이 행동 전에 이 좌표(트룹 members 좌표계)로 이동한다. 위치 범위기가 새 위치를 본다"),
 });
 const troopMemberSchema = objectSchema({ enemyId: stringSchema(), x: integerSchema(), y: integerSchema(), hidden: booleanSchema() });
 const stateRuntimeEffectsSchema = objectSchema({
@@ -456,6 +463,11 @@ const stateRuntimeEffectsSchema = objectSchema({
   defenseMultiplier: numberSchema(),
   agilityMultiplier: numberSchema(),
   removeOnBattleEnd: booleanSchema(),
+  freezesGauge: booleanSchema("스톱 — ATB 게이지가 멈추고 행동하지 못한다"),
+  physicalDefenseMultiplier: numberSchema("프로텍트 — 공격(attack) 계열 피해에만 곱하는 방어 배율(예 2 = 반감보다 단단)"),
+  magicDefenseMultiplier: numberSchema("실드 — 마력(mind) 계열 피해에만 곱하는 방어 배율"),
+  forcedAction: { type: "string", enum: ["attackRandom"], description: "버서크 — 명령 없이 무작위 상대를 통상 공격" },
+  elementRates: { ...rateMapSchema, description: "이 상태인 동안 덮어쓸 속성 등급(속성 id → A~E)" },
 });
 
 const itemRecordSchema = objectSchema({
@@ -508,6 +520,11 @@ const enemyRecordSchema = objectSchema({
   stats: enemyStatsSchema,
   rewards: enemyRewardsSchema,
   actions: arrayOf(enemyActionSchema),
+  reactions: arrayOf(objectSchema({
+    trigger: stringSchema("physical(공격 계열) | magic(마력 계열) | 속성 id"),
+    skillId: stringSchema("반격 스킬 id. 빈 문자열이면 통상 공격"),
+    chance: integerSchema("발동 확률 0~100(생략 100)"),
+  }), "반격: 피격 후 살아 있으면 차례 밖에서 skillId 를 쓴다(타격당 최대 1회, 게이지 유지). 빈 배열이면 해제"),
   stateRates: rateMapSchema,
   elementRates: rateMapSchema,
 }) as RecordSchema;
@@ -599,7 +616,7 @@ const actorRecordSchema = objectSchema({
   initialEquipment: actorInitialEquipmentSchema,
   unarmedAnimationId: stringSchema(),
   options: actorOptionsSchema,
-  learnedSkills: arrayOf(learnedSkillSchema),
+  learnedSkills: arrayOf(actorLearnedSkillSchema),
   skillIds: stringArraySchema("legacy alias for learnedSkills"),
   stateRates: rateMapSchema,
   elementRates: rateMapSchema,
@@ -624,6 +641,11 @@ const skillRecordSchema = objectSchema({
   maxPp: integerSchema("Gen1 기술별 최대 PP. 1~99"),
   gen1CriticalRate: { type: "string", enum: ["normal", "high"] },
   movePriority: numberSchema("기술 우선도 -7~7 (strict 턴제에서 속도보다 먼저 비교, 퀵어택=+1)"),
+  comboActorIds: stringArraySchema("연계기(듀얼·트리플 테크) 참가 배우 2~3명. 전원이 참전·생존·준비 상태여야 메뉴에 열리고, 각자 mpCost 와 턴을 소비한다. 멤버는 따로 배우지 않아도 된다. 빈 배열이면 해제"),
+  area: objectSchema({
+    shape: { type: "string", enum: ["circle", "line"] },
+    radius: numberSchema("전투장 픽셀(>0). circle=주 대상에서 거리, line=주 대상과 세로 차 ≤ radius/2 인 가로 띠"),
+  }, "위치 범위기. scope enemy/ally 에서 주 대상 둘레의 같은 편도 맞힌다"),
 }) as RecordSchema;
 
 const equipmentRecordSchema = objectSchema({
@@ -656,6 +678,7 @@ const equipmentRecordSchema = objectSchema({
     halfMpCost: booleanSchema(),
     negateTerrainDamage: booleanSchema(),
     fixedEquipment: booleanSchema(),
+    autoRevive: integerSchema("전투 불능 시 최대 HP 의 이 %(1~100)로 한 번 부활(전투당 1회). 0 이면 해제"),
   }),
   elementalDefenseIds: stringArraySchema(),
   stateDefenseIds: stringArraySchema(),
@@ -995,6 +1018,11 @@ function rejectUnknownEnemyReferences(draft: Project, patch: unknown): void {
       if (enabled === true && typeof switchId === "string" && switchId) requestedSwitchIds.add(switchId);
     }
   }
+  const reactions = Array.isArray(record.reactions) ? record.reactions : [];
+  for (const reaction of reactions) {
+    const skillId = reaction && typeof reaction === "object" ? (reaction as { skillId?: unknown }).skillId : undefined;
+    if (typeof skillId === "string" && skillId) requestedSkillIds.add(skillId);
+  }
   const skillIds = new Set(draft.database.skills.map((skill) => skill.id));
   const missingSkills = [...requestedSkillIds].filter((skillId) => !skillIds.has(skillId));
   const hints: string[] = [];
@@ -1024,6 +1052,81 @@ function rejectUnknownEnemyReferences(draft: Project, patch: unknown): void {
   }
 }
 
+/**
+ * 연계기·위치 범위기 패치 검사. 정규화가 조용히 버리면 모델은 「연계기를 넣었다」고 보고하고 실제로는 일반 기술이 된다 —
+ * 없는 배우·인원 수·반경은 사유와 허용 예시를 담아 거부한다.
+ */
+function validateSkillTechPatch(draft: Project, patch: unknown): void {
+  if (!patch || typeof patch !== "object" || Array.isArray(patch)) return;
+  const record = patch as Record<string, unknown>;
+  if (record.comboActorIds !== undefined) {
+    const ids = Array.isArray(record.comboActorIds) ? record.comboActorIds : null;
+    if (!ids || ids.some((id) => typeof id !== "string" || !id.trim())) {
+      throw new ToolError("skill.comboActorIds 는 배우 id 문자열 배열이어야 합니다. 예: [\"actor_hero\", \"actor_mage\"]", { code: "invalid-combo-actors" });
+    }
+    const unique = [...new Set((ids as string[]).map((id) => id.trim()))];
+    if (unique.length > 0 && (unique.length < 2 || unique.length > 3)) {
+      throw new ToolError(`skill.comboActorIds 는 서로 다른 배우 2~3명이어야 합니다(받은 ${unique.length}명). 해제하려면 빈 배열을 주세요.`, { code: "invalid-combo-actors" });
+    }
+    const missing = unique.filter((id) => !draft.database.actors.some((actor) => actor.id === id));
+    if (missing.length > 0) {
+      throw new ToolError(`존재하지 않는 comboActorIds: ${missing.join(", ")} — 허용 예시: ${knownIds(draft.database.actors)}`, { code: "actor-not-found" });
+    }
+  }
+  if (record.area !== undefined) {
+    const area = record.area as { shape?: unknown; radius?: unknown } | null;
+    if (!area || typeof area !== "object" || (area.shape !== "circle" && area.shape !== "line")) {
+      throw new ToolError("skill.area.shape 는 circle 또는 line 이어야 합니다. 예: {shape:\"circle\", radius:48}", { code: "invalid-skill-area" });
+    }
+    if (typeof area.radius !== "number" || !Number.isFinite(area.radius) || area.radius <= 0) {
+      throw new ToolError(`skill.area.radius 는 0보다 큰 전투장 픽셀이어야 합니다(받은 값 ${String(area.radius)}). 예: 48`, { code: "invalid-skill-area" });
+    }
+  }
+}
+
+/** 배우 learnedSkills[].tp 와 적 rewards.tp 는 양의 정수만 받는다. 음수·0 은 정규화가 조용히 버린다. */
+function requirePositiveTp(value: unknown, label: string): void {
+  if (value === undefined) return;
+  if (typeof value !== "number" || !Number.isInteger(value) || value <= 0) {
+    throw new ToolError(`${label} 는 1 이상의 정수여야 합니다(받은 값 ${JSON.stringify(value)}). TP 없이 레벨로만 배우려면 필드를 빼세요.`, { code: "invalid-tech-points" });
+  }
+}
+
+/** 반격 패치 검사. trigger 는 physical/magic/실재 속성 id, chance 는 0~100. 정규화가 조용히 버리지 않게 거부한다. */
+function validateEnemyReactions(draft: Project, patch: unknown): void {
+  const reactions = patch && typeof patch === "object" ? (patch as { reactions?: unknown }).reactions : undefined;
+  if (reactions === undefined) return;
+  if (!Array.isArray(reactions)) throw new ToolError("enemy.reactions 는 배열이어야 합니다. 예: [{trigger:\"physical\", skillId:\"skill_attack\", chance:100}]", { code: "invalid-enemy-reactions" });
+  const elementIds = (draft.database.elements ?? []).map((element) => element.id);
+  reactions.forEach((raw, index) => {
+    const entry = (raw && typeof raw === "object" ? raw : {}) as { trigger?: unknown; skillId?: unknown; chance?: unknown };
+    const label = `enemy.reactions[${index}]`;
+    if (typeof entry.trigger !== "string" || !(entry.trigger === "physical" || entry.trigger === "magic" || elementIds.includes(entry.trigger))) {
+      throw new ToolError(`${label}.trigger 는 physical · magic · 속성 id 중 하나여야 합니다(받은 값 ${JSON.stringify(entry.trigger)}). 속성: ${elementIds.slice(0, 8).join(", ") || "없음"}`, { code: "invalid-enemy-reactions" });
+    }
+    if (typeof entry.skillId !== "string") throw new ToolError(`${label}.skillId(문자열, 통상 공격은 "")가 필요합니다.`, { code: "invalid-enemy-reactions" });
+    if (entry.chance !== undefined && (typeof entry.chance !== "number" || entry.chance < 0 || entry.chance > 100)) {
+      throw new ToolError(`${label}.chance 는 0~100 이어야 합니다(받은 값 ${JSON.stringify(entry.chance)}).`, { code: "invalid-enemy-reactions" });
+    }
+  });
+}
+
+/** 자동 부활은 1~100% (0 은 해제). 범위 밖은 거부한다. */
+function validateAutoRevive(patch: unknown): void {
+  const flags = patch && typeof patch === "object" ? (patch as { effectFlags?: { autoRevive?: unknown } }).effectFlags : undefined;
+  const value = flags?.autoRevive;
+  if (value === undefined) return;
+  if (typeof value !== "number" || !Number.isInteger(value) || value < 0 || value > 100) {
+    throw new ToolError(`equipment.effectFlags.autoRevive 는 0~100 정수(최대 HP %, 0=해제)여야 합니다(받은 값 ${JSON.stringify(value)}).`, { code: "invalid-auto-revive" });
+  }
+}
+
+function validateActorTechPoints(patch: unknown): void {
+  const learned = patch && typeof patch === "object" ? (patch as { learnedSkills?: unknown }).learnedSkills : undefined;
+  if (!Array.isArray(learned)) return;
+  learned.forEach((entry, index) => requirePositiveTp((entry as { tp?: unknown } | null)?.tp, `actor.learnedSkills[${index}].tp`));
+}
+
 function skillDamagesFoe(project: Project, skillId: string): boolean {
   const skill = project.database.skills.find((entry) => entry.id === skillId);
   return skill?.effect?.kind === "damage" && (skill.scope === "enemy" || skill.scope === "allEnemies");
@@ -1045,6 +1148,8 @@ const upsertEnemy: ToolDefinition = {
   }),
   run(draft, args): ToolExecResult {
     validateEnemyCombatPatch(args.enemy);
+    validateEnemyReactions(draft, args.enemy);
+    requirePositiveTp((args.enemy as { rewards?: { tp?: unknown } } | undefined)?.rewards?.tp, "enemy.rewards.tp");
     const merged = mergeRecord(draft.database.enemies, args.enemy, "enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임" });
     rejectUnknownEnemyReferences(draft, args.enemy);
     const record = normalizeEnemyRecord(merged as Partial<EnemyRecord> & Pick<EnemyRecord, "id" | "name">);
@@ -1379,6 +1484,7 @@ const upsertActor: ToolDefinition = {
       throw new ToolError(`공유 캐릭터 외형을 찾을 수 없습니다: ${actorPatch.appearanceId}`, { code: "appearance-not-found" });
     }
     const record = normalizeActorRecord(merged as Parameters<typeof normalizeActorRecord>[0]);
+    validateActorTechPoints(args.actor);
     dropUnknownElementRates(draft, record, "actor", warnings);
     const outcome = upsertById(draft.database.actors, record satisfies ActorRecord);
     return {
@@ -1396,6 +1502,7 @@ const upsertSkill: ToolDefinition = {
   parameters: parametersForRecord("skill", skillRecordSchema, { id: "skill_fire", name: "화염", power: 35, elementId: "fire" }, actionSkillClearProperties),
   run(draft, args): ToolExecResult {
     validateSkillCombatPatch(args.skill);
+    validateSkillTechPatch(draft, args.skill);
     const merged = mergeRecord(draft.database.skills, args.skill, "skill", skillRecordSchema, { id: "skill_fire", name: "화염" });
     finalizeSkillCombatPatch(merged as unknown as Record<string, unknown>, args.skill, args);
     const record = normalizeSkillRecord(merged as Partial<SkillRecord> & Pick<SkillRecord, "id" | "name">);
@@ -1412,6 +1519,7 @@ const upsertEquipment: ToolDefinition = {
   mode: "write",
   parameters: parametersForRecord("equipment", equipmentRecordSchema, { id: "equip_sword", name: "철검", slot: "weapon", statBonuses: { attack: 8 } }),
   run(draft, args): ToolExecResult {
+    validateAutoRevive(args.equipment);
     const merged = mergeRecord(draft.database.equipment, args.equipment, "equipment", equipmentRecordSchema, { id: "equip_sword", name: "철검", slot: "weapon" });
     const record = normalizeEquipmentRecord(merged as Partial<EquipmentRecord> & Pick<EquipmentRecord, "id" | "name">);
     if (!hasEquipmentSlot(draft, record.slot)) throw new Error(`Unknown equipment slot: ${record.slot}`);
@@ -1550,7 +1658,7 @@ const upsertCommonEvent: ToolDefinition = {
     const outcome = upsertById(draft.commonEvents, record);
     const unsupportedCommands = countLimitedRuntimeSupportCommands(record.commands, "common");
     return {
-      summary: `커먼 이벤트 '${record.name}'(${trigger}) ${outcome === "added" ? "추가" : "수정"} — 미지원 커맨드 ${unsupportedCommands}건`,
+      summary: `커먼 이벤트 '${record.name}'(${trigger}) ${outcome === "added" ? "추가" : "수정"} — 런타임 제한 커맨드 ${unsupportedCommands}건`,
       data: { id: record.id, unsupportedCommands },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
@@ -1796,7 +1904,8 @@ const setTitleScreen: ToolDefinition = {
         description:
           `배경 그림 위 영역 효과(WebGL). 최대 ${MAX_TITLE_EFFECTS}개, 목록 순서대로 칠한다. 좌표는 배경 그림 기준 0..1 (화면 밖 광원은 -0.5..1.5). `
           + "godRays/motes: source(광원)+toward(빛 방향), spread(반폭 각). motes 는 region 으로도 된다. glint: line [[x,y],[x,y]] 칼날 따라 반사광, periodSec. "
-          + "water/mist/dapple: region 다각형(3~8점). glow: source 한 점 깜빡임, spread 반지름. camera: 전체 화면 느린 흔들림. 빈 배열이면 효과를 지운다.",
+          + "water/mist/dapple: region 다각형(3~8점). glow: source 한 점 깜빡임, spread 반지름. camera: 전체 화면 느린 흔들림. "
+          + "parallax: 깊이 시차 — depthResourceId(흑백 깊이 지도, 흰색=가까움)로 가까운 것과 먼 것을 다르게 움직인다. 없으면 아래쪽을 가깝게 본다. 빈 배열이면 효과를 지운다.",
         items: {
           type: "object",
           properties: {
@@ -1812,6 +1921,7 @@ const setTitleScreen: ToolDefinition = {
             periodSec: { type: "number", minimum: 1, maximum: 60 },
             region: { type: "array", items: { type: "array", items: { type: "number" } }, description: `[[x, y], ...] 꼭짓점 3~${MAX_TITLE_EFFECT_REGION_POINTS}개` },
             count: { type: "integer", minimum: 0, maximum: MAX_TITLE_MOTES },
+            depthResourceId: { type: "string", description: "parallax 전용: 깊이 지도 리소스 id(흰색=가까움)" },
           },
           required: ["kind"],
           additionalProperties: false,

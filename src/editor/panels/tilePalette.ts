@@ -2,6 +2,7 @@ import { el, clearChildren } from "@/util/dom";
 import { editorState } from "@/editor/editorState";
 import type { Layer } from "@/editor/editorState";
 import { getEditorChrome } from "@/editor/editorUiMode";
+import { recentTilesView, recordRecentTile } from "@/editor/panels/tileBrushTools";
 import { renderBasicLeftRail, syncBasicRailBrushStatus } from "@/editor/panels/basicLeftRail";
 import { basicTileLabel } from "@/editor/panels/basicTilePalette";
 import { renderEventEditor } from "@/editor/panels/eventEditor";
@@ -64,7 +65,6 @@ let showQuickTileNumbers = false;
 /** 맵 우클릭 스포이트 후 팔레트 타일 그림판 셀로 스크롤 (전문가 모드). */
 let pendingRevealSelectedTile = false;
 let resetChipsetScroll = false;
-const recentTiles: number[] = [];
 
 type PaletteScroll = {
   readonly containerLeft: number;
@@ -276,7 +276,7 @@ function makePaletteSurface(input: {
 
   const model = { map, rerender: renderPalettePreservingViewport, state, tileset };
   root.append(makeSidebarMapHeader(map, renderPalettePreservingViewport));
-  root.append(makeTileToolbar(model));
+  root.append(makeTileToolbar({ ...model, refreshChrome: refreshPaletteChrome }));
   const assist = makeBrushAssistSection(map.id, state, tileset);
   const options = el('div', { class: 'sidebar-paint-options' });
   options.append(makeTileBrushControls(state, renderPalettePreservingViewport));
@@ -491,6 +491,11 @@ function renderPalettePreservingViewport(): void {
   preservePaletteViewport(renderCurrentPalette);
 }
 
+/** 도구줄 배지·되돌리기만 다시 그린다. 보조 창이 열려 있거나 자리가 없으면 전체로 돌아간다. */
+function refreshPaletteChrome(): void {
+  if (!syncMountedPaletteToolPick()) renderPalettePreservingViewport();
+}
+
 
 
 // combined_town 전용 정적 테이블(describeChipsetTile)을 다른 칩셋에 쓰면 오답 —
@@ -520,7 +525,7 @@ function filteredTileIdSet(tileset: TilesetDef): ReadonlySet<number> | null {
  */
 function categoryVisibleTileSet(tileset: TilesetDef, category: TileCategoryId): ReadonlySet<number> {
   if (category === "all") return new Set(Array.from({ length: tileset.count }, (_, index) => index));
-  return new Set(filterTileIndexes(tileset, { category, query: "", recent: recentTiles }));
+  return new Set(filterTileIndexes(tileset, { category, query: "", recent: recentTilesView() }));
 }
 
 /**
@@ -563,7 +568,7 @@ function filteredTileIndexes(tileset: TilesetDef): readonly number[] {
   return filterTileIndexes(tileset, {
     category: activeTileCategory,
     query: tileSearchQuery,
-    recent: recentTiles,
+    recent: recentTilesView(),
   });
 }
 
@@ -642,7 +647,7 @@ export function syncMountedPaletteToolPick(): boolean {
   if (!map || !tileset) return false;
   const focusSnapshot = captureFocus(root);
   const model = { map, rerender: renderPalettePreservingViewport, state, tileset };
-  toolbar.replaceWith(makeTileToolbar(model));
+  toolbar.replaceWith(makeTileToolbar({ ...model, refreshChrome: refreshPaletteChrome }));
   const shape = options.querySelector<HTMLElement>(".sidebar-shape-select");
   const nextControls = makeTileBrushControls(state, renderPalettePreservingViewport);
   controls.replaceWith(nextControls);
@@ -676,10 +681,7 @@ export function selectPaletteTile(index: number): void {
   // 에는 아래 editorState 변화가 tool 을 건드리지 않아 감시자가 못 잡는다 — 여기서 끊는다.
   dismissLocationDrawModeForTool("paint");
   preservePaletteViewport(() => {
-    const existingIndex = recentTiles.indexOf(index);
-    if (existingIndex >= 0) recentTiles.splice(existingIndex, 1);
-    recentTiles.unshift(index);
-    if (recentTiles.length > 18) recentTiles.length = 18;
+    recordRecentTile(index);
     const state = editorState.get();
     const tileset = currentTilesetForPalette();
     let nextLayer = state.layer;
@@ -800,10 +802,13 @@ function restorePaletteScroll(container: HTMLElement, palette: HTMLElement, scro
 }
 
 function applyPaletteScroll(container: HTMLElement, palette: HTMLElement, scroll: PaletteScroll): void {
-  palette.scrollLeft = scroll.sheetLeft;
-  palette.scrollTop = scroll.sheetTop;
-  container.scrollLeft = scroll.containerLeft;
-  container.scrollTop = scroll.containerTop;
+  // 방금 붙인 트리의 scrollLeft/Top 을 **읽으면** 레이아웃을 강제한다 — 레이어 전환 재생성 89ms 중 46ms 가
+  // 이 읽기였다(2026-09-27 실측, "get scrollLeft"). 새 노드는 0 에서 시작하므로 0 은 쓸 필요가 없고,
+  // 0 이 아닌 축만 쓴다. 쓰기도 레이아웃을 잴지만 스크롤을 옮긴 때만 치른다.
+  if (scroll.sheetLeft) palette.scrollLeft = scroll.sheetLeft;
+  if (scroll.sheetTop) palette.scrollTop = scroll.sheetTop;
+  if (scroll.containerLeft) container.scrollLeft = scroll.containerLeft;
+  if (scroll.containerTop) container.scrollTop = scroll.containerTop;
 }
 
 function currentMapId(): string {

@@ -138,6 +138,8 @@ export const MODERN_COMMAND_ROWS: readonly M2PdfCommandRow[] = [
   { index: 215, title: "Debug Log", pdfTitle: "[Debug Log]", pdfFile: "internal_modern_commands", sourcePages: "modern" },
   { index: 216, title: "Evaluate Expression", pdfTitle: "[Evaluate Expression]", pdfFile: "internal_modern_commands", sourcePages: "modern" },
   { index: 217, title: "Data Query", pdfTitle: "[Data Query]", pdfFile: "internal_modern_commands", sourcePages: "modern" },
+  // Chrono Trigger 계열 적 이동 — 전투 이벤트 전용. 위치 범위기가 새 좌표를 본다.
+  { index: 218, title: "Move Enemy", pdfTitle: "[Move Enemy]", pdfFile: "internal_modern_commands", sourcePages: "modern" },
 ];
 
 export const KOREAN_LABEL_BY_TITLE: Readonly<Record<string, string>> = {
@@ -161,6 +163,7 @@ export const KOREAN_LABEL_BY_TITLE: Readonly<Record<string, string>> = {
   "Change EXP": "경험치 변경",
   "Change Enemy HP": "적 HP 변경",
   "Change Enemy MP": "적 MP 변경",
+  "Move Enemy": "적 이동",
   "Change Enemy State": "적 상태 변경",
   "Change Equipment": "장비 변경",
   "Change Escape Access": "탈출 허가 변경",

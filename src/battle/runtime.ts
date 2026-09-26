@@ -14,7 +14,7 @@ import { transitionItemState } from "@/project/itemTransitions";
 import { isBattleItemUserEligible } from "@/battle/battleItemEligibility";
 import { DEFAULT_ANIMATION_ID, DEFAULT_SKILL_ID } from "@/project/defaults/constants";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
-import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, refreshActorBattlerDerivedStats, type MutableBattler } from "@/battle/battleBattlers";
+import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, moveBattler, refreshActorBattlerDerivedStats, type MutableBattler } from "@/battle/battleBattlers";
 import {
   accuracyByteFromPercent,
   applySkillLike,
@@ -25,7 +25,7 @@ import {
 } from "@/battle/battleDamage";
 import { createBattleEventRuntime, type BattleEventRuntimeResult, type BattleEventRuntimeState } from "@/battle/battleEvents";
 import { collectBattleRewards } from "@/battle/battleRewards";
-import { computeActorLevelUp } from "@/battle/battleLevelUp";
+import { computeActorLevelUp, computeTechPointLearning } from "@/battle/battleLevelUp";
 import { battlerTypes, gen1CanonicalTypeForId, gen1ElementIdForCanonical, gen1TypeModifiersForTypes, typeChartMultiplierForTypes } from "@/battle/typeChart";
 import type { BattleLevelUpResult } from "@/battle/battleLevelUp";
 import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
@@ -37,9 +37,13 @@ import {
   canBattlerAct,
   clearBattleEndStates,
   defenseMultiplierForStates,
+  defenseMultiplierForStatesByKind,
+  forcedActionForStates,
+  gaugeFrozenByStates,
   recoverStatesWhenHit,
   runStateUpkeep,
   stateBehavior,
+  stateElementRateOverride,
 } from "@/battle/battleStates";
 import { chargeBattlers, nextReadyBattler } from "@/battle/battleTurnGauge";
 import { resolveSkinId } from "@/battle/skins/registry";
@@ -76,8 +80,9 @@ import {
   normalizeBattleFieldBackgroundId,
 } from "@/project/databaseEnemyTroopRecordModel";
 import { mulberry32, type Rng } from "@/util/rng";
-import { battleSkillMpCost, battleSkillUseFailure, consumeBattleSkillResource } from "@/battle/battleSkillUse";
+import { battleActorSkillFailure, battleSkillMpCost, battleSkillUseFailure, comboActorIdsOf, consumeBattleSkillResource, type BattleComboParticipant } from "@/battle/battleSkillUse";
 import {
+  areaTargets,
   requestedTargetId,
   resolveBattleTargets,
   targetIdFor,
@@ -146,13 +151,35 @@ const STRICT_MAX_ROUNDS = 200;
 // 같은 이유의 가드다: 행동마다 다시 발화하는 배틀 이벤트 페이지(라운드 중복 제거 밖 조건)가
 // 매번 +1 을 주면 한 라운드 루프가 끝나지 않는다.
 const STRICT_MAX_EXTRA_ACTIONS_PER_ROUND = 20;
+// 행동 moveTo 의 기본 이동 시간. m2 moveEnemy 는 durationMs 로 직접 준다.
+const ENEMY_MOVE_DEFAULT_MS = 400;
 
 type EnemyActionChoice = {
   readonly skillId: SkillId;
   readonly switchOnAfterAction: { readonly enabled: boolean; readonly switchId?: string };
   readonly switchOffAfterAction: { readonly enabled: boolean; readonly switchId?: string };
   readonly targetIds?: readonly string[];
+  readonly moveTo?: { readonly x: number; readonly y: number };
 };
+
+/** ATB 속도 1~8 → 충전 배율. Chrono Trigger 처럼 숫자가 작을수록 빠르다(4 = 1.0, 1 = 1.45, 8 = 0.4). */
+export function atbSpeedMultiplier(speed: number | undefined): number {
+  if (typeof speed !== "number" || !Number.isFinite(speed)) return 1;
+  const clamped = Math.max(1, Math.min(8, Math.round(speed)));
+  return Math.round((1 + (4 - clamped) * 0.15) * 100) / 100;
+}
+
+/** 반격·부활 확률 판정. 100 이상은 rng 를 소비하지 않는다(시드 고정 밸런스가 바뀌지 않게). */
+function rollChance(chance: number, rng: Rng): boolean {
+  if (chance >= 100) return true;
+  if (chance <= 0) return false;
+  return rng() * 100 < chance;
+}
+
+/** 자동 부활 HP: 최대 HP 의 percent%, 최소 1. */
+export function autoReviveHp(maxHp: number, percent: number): number {
+  return Math.max(1, Math.floor((maxHp * Math.max(1, Math.min(100, percent))) / 100));
+}
 
 type StrictQueuedActorCommand = {
   readonly actorId: ActorId;
@@ -203,9 +230,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     try {
       const skinId = resolveSkinId((options.project as unknown as { system?: { battleUiStyle?: string } }).system?.battleUiStyle) as BattleSkinId;
       const map: Record<string, number> = { chrono: 1.18, bravely: 1.08, octopath: 1.06, ff: 1.04, rm2000: 1.02, dragonquest: 0.92, mother: 0.88 };
-      return map[skinId] ?? 1;
+      return (map[skinId] ?? 1) * atbSpeedMultiplier(options.project.system.atbSpeed);
     } catch { return 1; }
   })();
+  // Active ATB: gauge 흐름에서만 의미가 있다. strict 는 라운드제라 메뉴가 시간을 멈추지 않는다.
+  const activeAtb = battleFlow === "gauge" && options.project.system.atbMode === "active";
 
   /* 포켓몬 스킨은 1:1 대치 문법이다 — 상대가 하나뿐인데 「슬라임 / 뒤로」 목록을 띄우고 확인키를
      한 번 더 받는 것이 이 스킨에서 가장 눈에 띄던 군더더기였다(감독 지적, 실측 A-03-target).
@@ -356,6 +385,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     enemyLevel?: number;
     levelUps: BattleLevelUpResult[];
     monsterLevelUps: MonsterLevelUpPreview[];
+    tp?: number;
+    techLearned?: { actorId: string; actorName: string; skillIds: SkillId[] }[];
   } = { exp: 0, gold: 0, items: [], levelUps: [], monsterLevelUps: [] };
   // Mutable battle authority is detached from the live session seed.
   const battleEventState: BattleEventRuntimeState = {
@@ -454,6 +485,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     },
     playAudio: options.playAudio,
     stopAudio: options.stopAudio,
+    moveEnemy: moveEnemyByTarget,
   });
   markActiveParticipants();
 
@@ -718,19 +750,98 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function markGaugeActionCycle(battler: MutableBattler): number {
     rewardTurn = turn + 1;
     gaugeCycleActed.add(battler.id);
+    // 스톱(게이지 정지)은 차례가 오지 않으므로 사이클 대기에서 뺀다 — 안 빼면 turn 이 영원히 멈춘다.
     const pending = [...activeActors(), ...visibleEnemies()].some(
-      (candidate) => candidate.hp > 0 && !gaugeCycleActed.has(candidate.id)
+      (candidate) => candidate.hp > 0 && !gaugeCycleActed.has(candidate.id) && !gaugeFrozenByStates(options.project, candidate)
     );
     if (pending) return turn + 1;
     gaugeCycleActed.clear();
     turn += 1;
     advanceBattleSkillCooldowns([...actors, ...enemies]);
+    // 멈춘 배틀러는 자기 차례의 상태 처리를 못 받는다. 사이클이 닫힐 때 한 번 돌려 스톱이 자연 회복할 수 있게 한다.
+    if (!gen1) {
+      for (const frozen of [...activeActors(), ...visibleEnemies()]) {
+        if (frozen.hp > 0 && gaugeFrozenByStates(options.project, frozen)) applyUpkeep(frozen);
+      }
+    }
     return turn;
+  }
+
+  /** 버서크 대상: 살아 있는 상대 중 무작위 하나. */
+  function randomOpponent(battler: MutableBattler): MutableBattler | undefined {
+    const pool = (battlerSide(battler) === "actor" ? visibleEnemies() : activeActors()).filter((entry) => entry.hp > 0);
+    if (pool.length === 0) return undefined;
+    return pool[Math.min(pool.length - 1, Math.floor(rng() * pool.length))];
+  }
+
+  function berserkAttackCommand(actor: MutableBattler): ActorCommand | undefined {
+    if (gen1 || !forcedActionForStates(options.project, actor)) return undefined;
+    const target = randomOpponent(actor);
+    return target ? { kind: "attack", targetEnemyId: target.id } : undefined;
+  }
+
+  // Active ATB 메뉴가 열려 있는 동안의 시간 진행: 적만 차례를 받고, 다른 아군은 게이지만 찬다.
+  function tickDuringMenu(deltaMs: number): void {
+    const menuActor = actors.find((entry) => entry.recordId === activeActorId);
+    const enemiesInBattle = visibleEnemies();
+    const others = activeActors().filter((entry) => entry !== menuActor);
+    const rate = (battler: MutableBattler): number => gaugeFrozenByStates(options.project, battler) ? 0 : agilityMultiplierForStates(options.project, battler);
+    const ready = nextReadyBattler([], enemiesInBattle, deltaMs, skinHasteMultiplier, rate);
+    const elapsed = ready ? ready.timeMs : deltaMs;
+    chargeBattlers(others, enemiesInBattle, elapsed, skinHasteMultiplier, rate);
+    if (!ready) return;
+    ready.battler.gauge = 100;
+    const menuPhase = phase;
+    const menuTargets = targetSelection;
+    performEnemyTurn(ready.battler, () => restoreMenuAfterEnemy(menuActor, menuPhase, menuTargets));
+  }
+
+  /** 메뉴 도중 행동한 적의 뒤처리. 메뉴 주인이 쓰러졌거나 멈췄으면 명령을 거둔다. */
+  function restoreMenuAfterEnemy(
+    menuActor: MutableBattler | undefined,
+    menuPhase: BattlePhase,
+    menuTargets: BattleTargetSelectionSnapshot | undefined,
+  ): void {
+    resolveOutcome();
+    if (result) { phase = "resolved"; return; }
+    if (beginForcedSwitchIfNeeded()) return;
+    if (!menuActor || menuActor.hp <= 0 || !canBattlerAct(options.project, menuActor)) {
+      if (menuActor) menuActor.gauge = 0;
+      activeActorId = undefined;
+      targetSelection = undefined;
+      phase = "charging";
+      return;
+    }
+    activeActorId = menuActor.recordId;
+    if (menuPhase === "targetSelect" && menuTargets) {
+      const alive = new Set([...activeActors(), ...visibleEnemies(), ...actors].filter((entry) => entry.hp > 0 || menuTargets.side === "actor").map(targetIdFor));
+      const targetIds = menuTargets.targetIds.filter((id) => alive.has(id));
+      if (targetIds.length > 0) {
+        const selectedTargetId = targetIds.includes(menuTargets.selectedTargetId ?? "") ? menuTargets.selectedTargetId : targetIds[0];
+        targetSelection = {
+          ...menuTargets,
+          targetIds,
+          selectedTargetId,
+          targetEnemyIds: menuTargets.side === "enemy" ? targetIds : [],
+          selectedEnemyId: menuTargets.side === "enemy" ? selectedTargetId : undefined,
+        };
+        phase = "targetSelect";
+        return;
+      }
+    }
+    targetSelection = undefined;
+    phase = "actorCommand";
   }
 
   function tick(deltaMs: number): void {
     if (battleFlow === "strict") return;
-    if (phase !== "charging" || result) return;
+    if (result) return;
+    const menuOpen = activeAtb && (phase === "actorCommand" || phase === "targetSelect") && Boolean(activeActorId) && !forcedSwitchActor();
+    if (menuOpen) {
+      tickDuringMenu(deltaMs);
+      return;
+    }
+    if (phase !== "charging") return;
     if (turn >= STRICT_MAX_ROUNDS) {
       recordTimeline({ kind: "stalemate", reason: "strictCap", side: "actor" });
       escaped = true;
@@ -740,7 +851,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
     if (beginForcedSwitchIfNeeded()) return;
     const enemiesInBattle = visibleEnemies();
-    const battlerAgilityMultiplier = (battler: MutableBattler): number => agilityMultiplierForStates(options.project, battler);
+    const battlerAgilityMultiplier = (battler: MutableBattler): number =>
+      gaugeFrozenByStates(options.project, battler) ? 0 : agilityMultiplierForStates(options.project, battler);
     const ready = nextReadyBattler(activeActors(), enemiesInBattle, deltaMs, skinHasteMultiplier, battlerAgilityMultiplier);
     if (!ready) {
       chargeBattlers(activeActors(), enemiesInBattle, deltaMs, skinHasteMultiplier, battlerAgilityMultiplier);
@@ -761,6 +873,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           // 행동 불가 스킵도 행동 슬롯을 소비한다 — 적 스킵(performEnemyTurn)과 같은
           // 사이클 계수·트룹 이벤트 발화를 적용한다.
           applyTroopEvents(finishGaugeTurnSlot, markGaugeActionCycle(ready.battler));
+          return;
+        }
+        // 버서크: 명령 메뉴 없이 무작위 적을 통상 공격한다.
+        const forced = berserkAttackCommand(ready.battler);
+        if (forced) {
+          activeActorId = ready.battler.recordId;
+          applyActorCommandEffect(ready.battler, forced);
+          applyTroopEvents(() => finishGaugeActorCommand(ready.battler), markGaugeActionCycle(ready.battler));
           return;
         }
       }
@@ -815,6 +935,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       phase = "resolved";
       return;
     }
+    // 연계기는 동료의 행동 슬롯도 소비한다 — 게이지를 비우고 이번 사이클에 행동한 것으로 센다.
+    for (const partner of comboPartners(actor, command)) {
+      partner.gauge = 0;
+      gaugeCycleActed.add(partner.id);
+    }
     // 사이클 계수는 효과 적용 뒤에 — 이번 행동으로 쓰러진 배틀러는 대기 목록에서 빠진다.
     applyTroopEvents(() => finishGaugeActorCommand(actor), markGaugeActionCycle(actor));
   }
@@ -866,6 +991,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       actors: activeActors(),
       enemies: visibleEnemies(),
       requestedTargetId: requestedTargetId(command),
+      area: command.kind === "skill" ? lookupSkill(command.skillId)?.area : undefined,
     });
     // 직접 실행 경로(테스트/헤드리스)에서 ally 계열 대상이 명시되지 않으면
     // 가장 아픈 생존 동료를 자동 선택한다(전투 UI 의 beginTargetSelection 은 그대로).
@@ -892,7 +1018,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       case "switch":
         return canSwitchActor(actor.recordId, command.targetActorId);
       case "skill":
-        return battleSkillUseFailure(options.project, actor, command.skillId) === undefined;
+        return battleActorSkillFailure(options.project, actor, command.skillId, comboParticipants()) === undefined;
       case "item": {
         const item = options.project.database.items.find((record) => record.id === command.itemId);
         // actor/class 제한 체크 — 불일치 시 커맨드 자체를 거부한다 (무효 턴으로 소모 안 함)
@@ -925,6 +1051,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function applyActorCommandEffect(actor: MutableBattler, command: ActorCommand): void {
+    applyActorCommandEffectCore(actor, command);
+    // 반격은 행동의 모든 타격이 끝난 뒤에 온다(다단히트 사이에 끼어들지 않는다).
+    drainCounters();
+  }
+
+  function applyActorCommandEffectCore(actor: MutableBattler, command: ActorCommand): void {
     currentActorCommandKind = command.kind;
     lastCaptureResult = undefined;
     // 방어 자세는 "다음 행동까지"다 — 액터가 새 명령을 실행하면 해제된다.
@@ -940,6 +1072,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         if (!prepareGen1CombatAction(actor)) break;
         const targets = resolvedCommandTargets(actor, command).targets;
         consumeBattleSkillResource(options.project, actor, command.skillId);
+        // 연계기: 참가 배우 각자의 MP 를 똑같이 소비한다(위력은 시전자 능력치).
+        for (const partner of comboPartners(actor, command)) consumeSkillMp(partner, command.skillId);
         for (const target of targets) applySkill(actor, target, command.skillId, "skill");
         applyGen1Residual(actor);
         break;
@@ -997,7 +1131,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       variance: 20,
       elementMultiplier: normalAttackElementMultiplier(actor, target),
       attackerStatMultiplier: attackMultiplierForStates(options.project, actor),
-      targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
+      targetDefenseMultiplier: defenseMultiplierForStatesByKind(options.project, target, "attack"),
       gen1AttackerLevel: gen1AttackerLevel(actor),
       rng,
     });
@@ -1013,6 +1147,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, animationId, target.id);
       attachAnimationToLatestTimeline(lastAnimation);
     }
+    if (result.hit) queueCounter(actor, target, "attack", actor.equipmentEffects?.attackElementIds?.[0]);
   }
 
   function normalAttackAnimationId(actor: MutableBattler): string | undefined {
@@ -1150,6 +1285,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     actor.defending = false;
     const actionCycle = battleFlow === "strict" ? undefined : markGaugeActionCycle(actor);
     for (const skillTarget of targets) applySkill(actor, skillTarget, skill.id);
+    drainCounters();
     applyTroopEvents(() => {
       resolveOutcome();
       actor.gauge = 0;
@@ -1271,6 +1407,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       .filter((actor) => actor.hp > 0 && (gen1 || canBattlerAct(options.project, actor)))
       .map((actor) => actor.recordId);
     for (const actor of actors) actor.gauge = strictPendingActorIds.includes(actor.recordId) ? 100 : 0;
+    queueBerserkStrictCommands();
     if (strictPendingActorIds.length > 0) {
       activeActorId = strictPendingActorIds[0];
       phase = "actorCommand";
@@ -1292,6 +1429,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       .filter((actor) => actor.hp > 0 && (gen1 || canBattlerAct(options.project, actor)))
       .map((actor) => actor.recordId);
     for (const actor of actors) actor.gauge = strictPendingActorIds.includes(actor.recordId) ? 100 : 0;
+    queueBerserkStrictCommands();
     if (strictPendingActorIds.length > 0) {
       activeActorId = strictPendingActorIds[0];
       phase = "actorCommand";
@@ -1300,13 +1438,28 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     resolveStrictRound();
   }
 
+  // 버서크(strict): 명령을 받지 않고 무작위 적 통상 공격을 이번 라운드 명령으로 넣는다.
+  function queueBerserkStrictCommands(): void {
+    for (const actorId of [...strictPendingActorIds]) {
+      const actor = actors.find((entry) => entry.recordId === actorId);
+      const forced = actor ? berserkAttackCommand(actor) : undefined;
+      if (!actor || !forced) continue;
+      strictActorCommands = [...strictActorCommands, { actorId: actor.recordId, command: forced }];
+      strictPendingActorIds = strictPendingActorIds.filter((id) => id !== actorId);
+      actor.gauge = 0;
+    }
+  }
+
   function collectStrictActorCommand(command: ActorCommand): void {
     if (phase !== "actorCommand" || !activeActorId || result) return;
     const actor = actors.find((entry) => entry.recordId === activeActorId);
     if (!actor || actor.hp <= 0) return;
     if (command.kind === "switch" && !canSwitchActor(actor.recordId, command.targetActorId)) return;
     strictActorCommands = [...strictActorCommands, { actorId: actor.recordId, command }];
-    strictPendingActorIds = strictPendingActorIds.filter((actorId) => actorId !== actor.recordId);
+    // 연계기는 동료의 이번 라운드 명령을 대신한다 — 동료는 따로 명령하지 않는다.
+    const partnerIds = comboPartners(actor, command).map((partner) => partner.recordId);
+    for (const partner of comboPartners(actor, command)) partner.gauge = 0;
+    strictPendingActorIds = strictPendingActorIds.filter((actorId) => actorId !== actor.recordId && !partnerIds.includes(actorId));
     actor.gauge = 0;
     activeActorId = strictPendingActorIds[0];
     if (activeActorId) return;
@@ -1344,7 +1497,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         const beforeResult = lastActionResult;
         if (action.side === "actor") {
           if (action.actor.hp <= 0) continue;
-          if (action.command.kind === "skill" && battleSkillUseFailure(options.project, action.actor, action.command.skillId)) continue;
+          if (action.command.kind === "skill" && battleActorSkillFailure(options.project, action.actor, action.command.skillId, comboParticipants(true))) continue;
           activeActorId = action.actor.recordId;
           applyActorCommandEffect(action.actor, action.command);
         } else {
@@ -1550,6 +1703,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // Action poses while lastActionResult is live (cleared when the next command phase begins).
     const showActionPose = Boolean(lastActionResult);
     const poseContext = { lastActionResult, showActionPose };
+    // 승리: 살아 있는 아군만 victory 포즈(쓰러진 아군은 resolveBattlerPose 가 dead 를 우선한다).
+    const actorPoseContext = result === "victory" ? { ...poseContext, victory: true } : poseContext;
     return {
       nextReadyBattlerId: nextReady?.battler.id,
       phase,
@@ -1561,7 +1716,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       forcedSwitchActorId: forcedActor?.recordId,
       switchCandidateActorIds: switchCandidateActors().map((actor) => actor.recordId),
       participatingActorIds: [...participatingActorIds],
-      actors: activeActors().map((actor, index) => battlerSnapshot(actor, activeActorPosition(index), poseContext)),
+      actors: activeActors().map((actor, index) => battlerSnapshot(actor, activeActorPosition(index), actorPoseContext)),
       reserveActors: reserveActors().map((actor) => battlerSnapshot(actor, undefined, { showActionPose: false })),
       enemies: enemiesInBattle.map((enemy) => battlerSnapshot(enemy, undefined, poseContext)),
       lastAnimation,
@@ -1588,7 +1743,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     };
   }
 
-  function performEnemyTurn(enemy: MutableBattler): void {
+  function performEnemyTurn(enemy: MutableBattler, finish: () => void = finishGaugeTurnSlot): void {
     rewardTurn = turn + 1;
     // 턴 시작 상태 처리(지속 피해/자연 회복).
     if (!gen1) {
@@ -1602,7 +1757,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (!canBattlerAct(options.project, enemy)) {
       recordIncapacitated(enemy);
       enemy.gauge = 0;
-      applyTroopEvents(finishGaugeTurnSlot, markGaugeActionCycle(enemy));
+      applyTroopEvents(finish, markGaugeActionCycle(enemy));
       return;
     }
     }
@@ -1612,7 +1767,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // 해제 지점은 액터가 새 명령을 실행하는 applyActorCommandEffect 다. 예전에는
     // 적 행동 1회마다 전원의 방어가 풀려, strict(라운드 종료 해제)와 의미가 갈리고
     // 적 3체 기준 방어가 첫 적 공격만 막는 1/3 성능이었다(적대 리뷰).
-    applyTroopEvents(finishGaugeTurnSlot, markGaugeActionCycle(enemy));
+    applyTroopEvents(finish, markGaugeActionCycle(enemy));
   }
 
   function finishGaugeTurnSlot(): void {
@@ -1622,6 +1777,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function executeEnemyAction(enemy: MutableBattler, action: EnemyActionChoice | undefined): void {
+    if (action?.moveTo && enemy.hp > 0) moveEnemyBattler(enemy, action.moveTo.x, action.moveTo.y, ENEMY_MOVE_DEFAULT_MS);
     const skillId = action?.skillId;
     if (skillId) {
       const skill = lookupSkill(skillId);
@@ -1634,6 +1790,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         actors: activeActors(),
         enemies: visibleEnemies(),
         requestedTargetId,
+        area: skill.area,
       });
       const targets = resolution.requiresSelection
         ? resolution.targets
@@ -1668,7 +1825,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       // 통상공격 분산 ±20% — 아군 공격(applySingleActorAttack)과 동일 규칙.
       variance: 20,
       attackerStatMultiplier: attackMultiplierForStates(options.project, enemy),
-      targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
+      targetDefenseMultiplier: defenseMultiplierForStatesByKind(options.project, target, "attack"),
       gen1AttackerLevel: gen1AttackerLevel(enemy),
       rng,
     });
@@ -1678,6 +1835,72 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       result.hit ? "damage" : "miss",
       "enemyAttack",
     );
+  }
+
+  // ── 반격(EnemyRecord.reactions) ──
+  // 아군의 피해 타격이 살아 있는 적에 명중하면 조건이 맞는 첫 반응 하나를 예약한다(타격당 최대 1회).
+  // 예약은 행동이 끝난 뒤 drainCounters 가 차례 밖에서 실행한다 — 게이지·행동 사이클은 건드리지 않는다.
+  const pendingCounters: { enemy: MutableBattler; attacker: MutableBattler; skillId: SkillId }[] = [];
+
+  function queueCounter(attacker: MutableBattler, target: MutableBattler, statistic: "attack" | "mind", elementId: string | undefined): void {
+    if (gen1 || target.hp <= 0 || battlerSide(target) !== "enemy" || battlerSide(attacker) !== "actor") return;
+    const reactions = options.project.database.enemies.find((record) => record.id === target.recordId)?.reactions;
+    if (!reactions?.length) return;
+    const reaction = reactions.find((entry) =>
+      entry.trigger === (statistic === "mind" ? "magic" : "physical") || (elementId !== undefined && entry.trigger === elementId));
+    if (!reaction || !rollChance(reaction.chance, rng)) return;
+    pendingCounters.push({ enemy: target, attacker, skillId: reaction.skillId });
+  }
+
+  function drainCounters(): void {
+    while (pendingCounters.length > 0 && !result) {
+      const { enemy, attacker, skillId } = pendingCounters.shift()!;
+      if (enemy.hp <= 0 || !canBattlerAct(options.project, enemy)) continue;
+      const target = attacker.hp > 0 && activeActors().includes(attacker) ? attacker : chooseBasicEnemyTarget(enemy);
+      if (!target) continue;
+      recordTimeline({
+        kind: "counter",
+        side: "enemy",
+        userRecordId: enemy.recordId,
+        userId: enemy.id,
+        targetId: target.id,
+        skillName: skillId ? lookupSkill(skillId)?.name : undefined,
+      });
+      executeEnemyAction(enemy, {
+        skillId,
+        switchOnAfterAction: { enabled: false },
+        switchOffAfterAction: { enabled: false },
+        targetIds: [target.id],
+      });
+    }
+    pendingCounters.length = 0;
+  }
+
+  // ── 장비 자동 부활(effectFlags.autoRevive) ── 전투당 배우 1회. 승패 판정 직전에 돌아 패배를 막는다.
+  const autoRevivedIds = new Set<string>();
+
+  function applyAutoRevives(): void {
+    if (gen1) return;
+    for (const actor of actors) {
+      const percent = actor.equipmentEffects?.autoRevive;
+      if (actor.hp > 0 || !percent || autoRevivedIds.has(actor.id)) continue;
+      autoRevivedIds.add(actor.id);
+      actor.hp = autoReviveHp(actor.maxHp, percent);
+      recordTimeline({ kind: "revive", side: "actor", userRecordId: actor.recordId, targetId: actor.id, amount: actor.hp });
+    }
+  }
+
+  // ── 적 위치 이동(m2 moveEnemy · 행동 moveTo) ──
+  function moveEnemyBattler(enemy: MutableBattler, x: number, y: number, durationMs: number): void {
+    moveBattler(enemy, x, y, durationMs);
+    recordTimeline({ kind: "move", side: "enemy", userRecordId: enemy.recordId, userId: enemy.id, targetId: enemy.id });
+  }
+
+  function moveEnemyByTarget(target: string, x: number, y: number, durationMs: number): boolean {
+    const enemy = enemies.find((entry) => entry.id === target || entry.recordId === target);
+    if (!enemy || enemy.hidden || enemy.hp <= 0) return false;
+    moveEnemyBattler(enemy, x, y, durationMs);
+    return true;
   }
 
   function refreshedEnemyTargetId(enemy: MutableBattler, requestedTargetId: string | undefined): string | undefined {
@@ -1690,6 +1913,22 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function lookupSkill(skillId: SkillId) {
     return options.project.database.skills.find((record) => record.id === skillId);
+  }
+
+  /** 연계 판정용 참전 배우. allReady 는 이미 턴을 소비한 strict 해결 단계용(생존·MP 만 본다). */
+  function comboParticipants(allReady = false): BattleComboParticipant[] {
+    return activeActors().map((battler) => ({
+      recordId: battler.recordId, hp: battler.hp, mp: battler.mp, maxMp: battler.maxMp, stateIds: battler.stateIds,
+      ready: allReady || battler.gauge >= 100,
+    }));
+  }
+
+  /** 연계기 명령이면 시전자를 됼 동료 배틀러, 아니면 빈 배열. */
+  function comboPartners(user: MutableBattler, command: ActorCommand): MutableBattler[] {
+    if (command.kind !== "skill") return [];
+    const combo = comboActorIdsOf(lookupSkill(command.skillId));
+    if (!combo) return [];
+    return activeActors().filter((battler) => battler !== user && combo.includes(battler.recordId as ActorId));
   }
 
   function applyItem(itemId: ItemId, target: MutableBattler, user: MutableBattler): void {
@@ -1926,6 +2165,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function chooseEnemyAction(enemy: MutableBattler): EnemyActionChoice | undefined {
+    // 버서크: 저작 행동 대신 무작위 아군을 통상 공격한다.
+    if (!gen1 && forcedActionForStates(options.project, enemy)) {
+      const target = randomOpponent(enemy);
+      return target ? { skillId: "" as SkillId, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false }, targetIds: [target.id] } : undefined;
+    }
     const actionTurn = turn + 1;
     const plans = (enemy.enemyActions ?? [])
       .filter((action) => combatConditionMet(action.condition, enemy, actionTurn, visibleEnemies().filter(ally => ally.id !== enemy.id && ally.hp > 0).length, battleEventState.switches))
@@ -1956,7 +2200,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         }
         const target = pickBestByUtility(resolution.candidates, (candidate) => enemySkillUtility(enemy, candidate, skill));
         if (!target) return [];
-        const utility = enemySkillUtility(enemy, target, skill);
+        const utility = areaTargets(target, resolution.candidates, skill.area).reduce((sum, hit) => sum + enemySkillUtility(enemy, hit, skill), 0);
         const score = utility > 0 ? Math.max(1, action.priority) * 10 + utility : -1000 + Math.max(1, action.priority);
         return [{ action: { ...action, targetIds: [target.id] }, score }];
       });
@@ -2122,7 +2366,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       criticalRate: skill?.criticalRate ?? criticalRateFor(user),
       elementMultiplier: elementMultiplierFor(skill?.elementId, user, target),
       attackerStatMultiplier: attackMultiplierForStates(options.project, user),
-      targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
+      targetDefenseMultiplier: defenseMultiplierForStatesByKind(options.project, target, statistic),
       useMagicalDefense: isMagicalElement(skill?.elementId),
       gen1AttackerLevel: gen1AttackerLevel(user),
       rng,
@@ -2156,9 +2400,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       // RM2K3 스위치형 스킬: 명중 시 지정 스위치를 ON으로 만든다.
       battleEventState.switches[skill.effect.switchId] = true;
     }
+    if (result.hit && effectKind === "damage") queueCounter(user, target, statistic, skill?.elementId);
   }
-
-  // 스킬 명중률(hitRate)과 성공률(successRate)을 곱해 0~100 판정 확률로 합성한다.
   // successRate 는 감사 A12 에서 "편집만 되고 전투에 미반영"으로 확인된 필드다.
   function applyGen1Skill(
     user: MutableBattler,
@@ -2321,14 +2564,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       battlerTypes(options.project, target),
     );
     if (!element?.damageMultipliers) return typeMultiplier;
-    // target 이 enemy 인지 actor 인지 원본 레코드에서 elementRates 를 찾는다.
+    // target 이 enemy 인지 actor 인지 원본 레코드에서 elementRates 를 찾는다. 활성 상태의 elementRates 가 이긴다.
     const enemy = options.project.database.enemies.find((entry) => entry.id === target.recordId);
     const actor = options.project.database.actors.find((entry) => entry.id === target.recordId);
     const rates = enemy?.elementRates ?? actor?.elementRates;
-    if (!rates) return typeMultiplier;
-    const grade = rates[elementId];
+    const grade = stateElementRateOverride(options.project, target, elementId) ?? rates?.[elementId];
     if (!grade) return typeMultiplier;
-    const multiplier = element.damageMultipliers[grade];
+    const multiplier = element.damageMultipliers[grade as keyof typeof element.damageMultipliers];
     if (typeof multiplier !== "number" || !Number.isFinite(multiplier)) return typeMultiplier;
     // damageMultipliers 는 퍼센트 스케일(A=200,B=150,C=100,D=50,E=0)로 저장된다.
     // 데미지 배율로 쓰려면 100으로 나눈다: C=1.0(중립), A=2.0(약점), D=0.5(내성), E=0(무효),
@@ -2534,6 +2776,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function resolveOutcome(): void {
     if (result) return;
+    applyAutoRevives();
     // Recoil and event effects can wipe out both sides in the same resolution.
     // Defeat must win before either the Gen1 or the ordinary victory path pays rewards.
     if (actors.every((actor) => actor.hp <= 0)) {
@@ -2587,6 +2830,28 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     rewards.items = [...collected.items];
     rewards.levelUps = usePartyMonsters ? [] : computeLevelUpPreview(collected.exp, collected.enemyLevel);
     rewards.monsterLevelUps = computeMonsterLevelUpPreview(collected.exp);
+    if (collected.tp && !usePartyMonsters) {
+      rewards.tp = collected.tp;
+      const techLearned = computeTechLearnedPreview(collected.tp, rewards.levelUps);
+      if (techLearned.length > 0) rewards.techLearned = techLearned;
+    }
+  }
+
+  // TP 습득 미리보기 — 세션 적립(applyBattleRewardsToSession)과 같은 대상(살아남은 보상 대상)·같은 함수.
+  function computeTechLearnedPreview(earnedTp: number, levelUps: readonly BattleLevelUpResult[]) {
+    const learned: { actorId: string; actorName: string; skillIds: SkillId[] }[] = [];
+    const actorIds = rewardActorIds(options.project, battleEventState.partyActorIds ?? actors.map((actor) => actor.recordId), [...participatingActorIds]);
+    for (const actorId of new Set(actorIds)) {
+      const battler = actors.find((entry) => entry.recordId === actorId);
+      if (!battler || battler.hp <= 0) continue;
+      const levelUp = levelUps.find((entry) => entry.actorId === actorId);
+      const level = levelUp?.toLevel ?? battleEventState.actorLevels?.[actorId] ?? battler.level ?? 1;
+      const totalTp = (sessionState.actorTechPoints?.[actorId] ?? 0) + earnedTp;
+      const known = [...battler.skillIds, ...(levelUp?.learnedSkillIds ?? [])];
+      const skillIds = computeTechPointLearning(options.project, actorId, level, totalTp, known);
+      if (skillIds.length > 0) learned.push({ actorId, actorName: battler.name, skillIds });
+    }
+    return learned;
   }
 
   // 몬스터 배틀은 실제 보상과 같은 참가자 원장을 쓰고, 일반 액터 배틀은 동행 몬스터 전원을 미리 본다.

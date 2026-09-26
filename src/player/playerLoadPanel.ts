@@ -33,6 +33,8 @@ type SlotButtonOptions = {
 export type SaveSlotCardModel = {
   readonly title: string;
   readonly mapName?: string;
+  /** 저장 당시 장(시대) 이름. */
+  readonly chapter?: string;
   readonly level?: string;
   readonly playTime?: string;
   readonly savedAt?: string;
@@ -152,6 +154,7 @@ function renderCardButton(
   const head = el("span", { class: "oprn-load-slot-row oprn-load-slot-head" });
   head.append(el("span", { class: "oprn-load-slot-title", text: model.title }));
   if (model.mapName) head.append(el("span", { class: "oprn-load-slot-map", text: model.mapName }));
+  if (model.chapter) head.append(el("span", { class: "oprn-load-slot-chapter", text: model.chapter, dataset: { testid: `${testId}-chapter` } }));
   button.append(head);
   const metaParts = [
     { className: "oprn-load-slot-trigger", text: model.trigger },
@@ -172,6 +175,7 @@ export function autosaveCardModel(snapshot: SaveSnapshot): SaveSlotCardModel {
   return {
     title: "자동 저장",
     mapName: snapshot.mapName || snapshot.projectTitle || undefined,
+    ...(snapshot.chapterLabel ? { chapter: snapshot.chapterLabel } : {}),
     level: typeof snapshot.partyLevel === "number" ? `Lv ${snapshot.partyLevel}` : undefined,
     playTime: typeof snapshot.playTimeSeconds === "number" ? formatPlayTime(snapshot.playTimeSeconds) : undefined,
     savedAt: formatSavedAt(snapshot.savedAt) || undefined,
@@ -201,6 +205,7 @@ export function saveSlotCardModel(slot: SaveSlotReadResult): SaveSlotCardModel {
         title,
         // 맵 이름이 비어 있으면 프로젝트 제목으로 대체해 1행이 허전하지 않게 한다.
         mapName: snapshot.mapName || snapshot.projectTitle || undefined,
+        ...(snapshot.chapterLabel ? { chapter: snapshot.chapterLabel } : {}),
         level: typeof snapshot.partyLevel === "number" ? `Lv ${snapshot.partyLevel}` : undefined,
         playTime: typeof snapshot.playTimeSeconds === "number" ? formatPlayTime(snapshot.playTimeSeconds) : undefined,
         savedAt: formatSavedAt(snapshot.savedAt) || undefined,

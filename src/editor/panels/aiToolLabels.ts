@@ -37,6 +37,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   build_house: build("집 세우기", "house"),
   build_castle: build("성 짓기", "house"),
   build_wall: build("벽 쌓기", "wall"),
+  repair_fence: build("울타리 손보기", "wall"),
   paint_road: build("길 놓기", "road"),
   paint_tiles: build("타일 칠하기", "grid"),
   fill_region: build("영역 채우기", "grid"),
@@ -85,6 +86,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   duplicate_event: people("이벤트 복제", "flag"),
   link_maps: people("맵 연결", "link"),
   create_transfer_pair: people("맵 연결", "link"),
+  create_time_gate: people("시간의 문 잇기", "link"),
   // ── 보기·검사 ──
   // 웹 검색은 프로젝트 조회가 아니라 바깥 검색이다 — inspect(도구 그룹·돋보기 아이콘)으로 둔다.
   // 사전에 없으면 영문 원문이 그대로 보인다(2026-09-21 실측).
@@ -298,6 +300,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   generate_game_over_image: build("게임오버 그림 만들기", "spark"),
   generate_image_asset: build("그림 만들기", "spark"),
   generate_title_art: build("타이틀 아트 만들기", "spark"),
+  improve_title_screen: system("타이틀 단계 개선"),
   play_walkthrough: inspect("명령 흐름 검사", "shield"),
   run_scene_test: inspect("장면 검사", "shield"),
   find_switch_usage: inspect("스위치 사용처 찾기", "flag"),

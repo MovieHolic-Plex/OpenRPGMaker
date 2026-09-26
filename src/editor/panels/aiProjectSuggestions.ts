@@ -6,7 +6,11 @@ import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { deckIcon } from "./aiDeckIcons";
 
-export interface SuggestionSnapshot { project: Project; projectId: string; mapId: string; active: boolean }
+export interface SuggestionSnapshot {
+  project: Project; projectId: string; mapId: string; active: boolean;
+  /** 프로젝트 내용 버전(store.getVersionToken). 있으면 같은 버전·맵의 로컬 탐지를 다시 하지 않는다. */
+  version?: string;
+}
 export function createProjectSuggestions(options: {
   snapshot: () => SuggestionSnapshot;
   request: (suggestion: ProjectSuggestion) => void;
@@ -59,6 +63,17 @@ export function createProjectSuggestions(options: {
     return answer;
   });
   const identity = (s: SuggestionSnapshot, c: ProjectSuggestion) => s.projectId + ":" + s.mapId + ":" + c.id;
+  // 로컬 탐지는 (프로젝트 내용 버전, 맵) 의 순수 함수다 — 버전이 같으면 1.5초 틱마다 모든 맵의 이벤트와
+  // DB 를 다시 훑지 않는다(2026-09-26 실측: 유휴 5초에 13ms). 버전이 없는 호출자는 매번 탐지한다.
+  let inspected: { project: Project; version: string; mapId: string; result: ProjectSuggestion[] } | null = null;
+  const inspect = (snapshot: SuggestionSnapshot): ProjectSuggestion[] => {
+    const { project, mapId, version } = snapshot;
+    if (version === undefined) return inspectProjectSuggestions(project, mapId);
+    if (inspected?.project !== project || inspected.version !== version || inspected.mapId !== mapId) {
+      inspected = { project, version, mapId, result: inspectProjectSuggestions(project, mapId) };
+    }
+    return inspected.result;
+  };
   /** 배지에 보이는 카드 수를 알린다 — 「넘기기」로 줄어드는 것도 즉시 반영돼야 한다. */
   const reportCount = (): void => {
     options.onCountChange?.(cards.childElementCount);
@@ -72,7 +87,7 @@ export function createProjectSuggestions(options: {
       const current = () => {
         const now = options.snapshot();
         return now.projectId === snapshot.projectId && now.mapId === c.mapId
-          && inspectProjectSuggestions(now.project, now.mapId).some(n => n.id === c.id && n.fingerprint === c.fingerprint);
+          && inspect(now).some(n => n.id === c.id && n.fingerprint === c.fingerprint);
       };
       card.append(el("strong", { text: c.title }), el("p", { text: c.evidence }),
         el("div", { class: "ai-chat-suggestion-actions", children: [
@@ -90,7 +105,7 @@ export function createProjectSuggestions(options: {
     if (disposed) return;
     const snapshot = options.snapshot();
     if (paused) { if (pending) { generation++; pending.abort(); pending = null; } key = ""; renderKey = ""; return; }
-    const candidates = inspectProjectSuggestions(snapshot.project, snapshot.mapId);
+    const candidates = inspect(snapshot);
     const nextKey = JSON.stringify([snapshot.projectId, snapshot.mapId, candidates.map(c => [c.id, c.fingerprint])]);
     const remaining = candidates.filter(c => dismissed.get(identity(snapshot, c)) !== c.fingerprint);
     // 로컬 탐지·렌더·배지는 팝오버가 **닫혀 있어도** 돈다.
@@ -133,7 +148,7 @@ export function createProjectSuggestions(options: {
     const controller = new AbortController();
     pending = controller;
     const owns = () => !disposed && owner === generation && !controller.signal.aborted && options.snapshot().active
-      && (() => { const now = options.snapshot(); return nextKey === JSON.stringify([now.projectId, now.mapId, inspectProjectSuggestions(now.project, now.mapId).map(c => [c.id, c.fingerprint])]); })();
+      && (() => { const now = options.snapshot(); return nextKey === JSON.stringify([now.projectId, now.mapId, inspect(now).map(c => [c.id, c.fingerprint])]); })();
     void analyze(snapshot, remaining, controller.signal, text => { if (owns()) status.textContent = text; })
       .then(answer => {
         if (!owns()) return;

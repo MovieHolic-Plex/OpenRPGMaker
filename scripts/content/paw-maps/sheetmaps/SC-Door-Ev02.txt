@@ -1,0 +1,10 @@
+# SC-Door-Ev02.png 12x8 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  3  4  5  6  7  8  9  10 11 
+   0 +l +l +l +g +g +l +o +o +o .  .  .  
+   1 +l #l +l +g #g +g +o #o +o .  .  .  
+   2 +l +g +l +g +g +l +o +g +o .  .  .  
+   3 +l #g +l +g #g +g +o #g +o .  .  .  
+   4 +g +k +g +g +k +g +o +k +o .  .  .  
+   5 +g #g +g +g #g +g +o #g +o .  .  .  
+   6 +k +k +g +k +k +g +k +k +g .  .  .  
+   7 +g #g +g +g #g +g +g #g +g .  .  .  

@@ -6,7 +6,7 @@ import { validateConditionShape } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { Command, EndingCondition, EndingDef, Project } from "@/project/types";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
-import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { CONDITION_SCHEMA, CUTSCENE_BEAT_SCHEMA } from "./schemaShapes";
 
@@ -79,6 +79,14 @@ function endingIsReachable(project: Project, endingId: string): boolean {
     (troop.battleEventPages ?? []).some(page => commandsCallEndingId(page.commands, endingId)));
 }
 
+const ENDING_CONDITION_SCHEMA: JsonSchema = {
+  ...CONDITION_SCHEMA,
+  properties: {
+    ...CONDITION_SCHEMA.properties,
+    kind: { type: "string", enum: [...(CONDITION_SCHEMA.properties?.kind?.enum ?? []), "newGamePlus"] },
+  },
+};
+
 const defineEnding: ToolDefinition = {
   name: "define_ending",
   description:
@@ -94,7 +102,11 @@ const defineEnding: ToolDefinition = {
     properties: {
       id: { type: "string" },
       name: { type: "string" },
-      conditions: { type: "array", description: "switch/variable 조건", items: CONDITION_SCHEMA },
+      conditions: {
+        type: "array",
+        description: 'switch/variable 조건. 강하게 다시 하기 회차만(또는 첫 회차만) 여는 엔딩은 {"kind":"newGamePlus","value":true|false}.',
+        items: ENDING_CONDITION_SCHEMA,
+      },
       priority: { type: "integer", description: "높을수록 우선. 기본 0" },
       presentation: {
         type: "object", additionalProperties: false,
@@ -193,11 +205,19 @@ function cleanName(value: unknown): string {
 }
 
 function parseEndingConditions(project: Project, value: unknown, warnings: string[]): EndingCondition[] {
-  if (!Array.isArray(value)) throw new ToolError("conditions는 switch/variable 조건 배열이어야 합니다.", { code: "ending-conditions" });
+  if (!Array.isArray(value)) throw new ToolError("conditions는 switch/variable/newGamePlus 조건 배열이어야 합니다.", { code: "ending-conditions" });
   return value.map((entry, index) => parseEndingCondition(project, entry, index, warnings));
 }
 
 function parseEndingCondition(project: Project, value: unknown, index: number, warnings: string[]): EndingCondition {
+  // 강하게 다시 하기 판정 — 트리거 시점에 이번 회차가 NG+ 인지 본다. 일반 조건 목록(CONDITION_KINDS)에는 없다.
+  if (typeof value === "object" && value !== null && (value as { kind?: unknown }).kind === "newGamePlus") {
+    const flag = (value as { value?: unknown }).value;
+    if (typeof flag !== "boolean") {
+      throw new ToolError(`conditions[${index}].value는 boolean이어야 합니다(newGamePlus).`, { code: "ending-condition-shape" });
+    }
+    return { kind: "newGamePlus", value: flag };
+  }
   try {
     validateConditionShape(`conditions[${index}]`, value);
   } catch (cause) {
@@ -207,7 +227,7 @@ function parseEndingCondition(project: Project, value: unknown, index: number, w
   }
   const condition = value as EndingCondition;
   if (condition.kind !== "switch" && condition.kind !== "variable") {
-    throw new ToolError(`conditions[${index}]는 switch 또는 variable 조건이어야 합니다.`, { code: "ending-condition-kind" });
+    throw new ToolError(`conditions[${index}]는 switch, variable 또는 newGamePlus 조건이어야 합니다.`, { code: "ending-condition-kind" });
   }
   // 아직 없는 플래그를 참조하면 만들어 준다. 엔딩 조건은 보통 "앞으로 켜질" 플래그를 가리키므로
   // 존재 여부로 막으면 순서 교착이 생긴다(2026-08-23 실측: 존재하지 않는 sw_clear 로 define_ending 거부).

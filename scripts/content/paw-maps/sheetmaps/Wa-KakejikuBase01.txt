@@ -1,0 +1,6 @@
+# Wa-KakejikuBase01.png 5x4 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  3  4  
+   0 +g #g +g +o #o 
+   1 +o #o +o +o #o 
+   2 +g +l +o +o +g 
+   3 +g +g +o +o +g 

@@ -1,0 +1,6 @@
+# Halloween.png 3x4 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  
+   0 #r #g #r 
+   1 #r #m +r 
+   2 #b #l #b 
+   3 #b #g +b 

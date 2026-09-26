@@ -3,6 +3,7 @@ import type { PlaySession } from "@/project/session";
 import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
 import { effectiveActorClassId } from "@/project/sessionClass";
 import { isGalleryEnabled, galleryMenuLabel, listGalleryUnlocks } from "@/project/gallery";
+import { currentChapterLabel } from "@/project/newGamePlus";
 import { isGiftSystemEnabled } from "@/project/friendship";
 import { resolveTerms } from "@/project/terms";
 import type { Project } from "@/project/types";
@@ -211,6 +212,8 @@ export type PlayerStatusMenuSnapshot = {
   readonly partyRows: readonly PlayerStatusMenuPartyRow[];
   readonly goldLabel: string;
   readonly timeLabel: string;
+  /** system.chapter 가 있고 현재 값에 이름표가 있을 때만. */
+  readonly chapterLabel?: string;
   readonly emptyPartyLabel: string | null;
 };
 
@@ -304,6 +307,7 @@ export function createPlayerStatusMenuSnapshot(
     partyRows,
     goldLabel: `${terms.goldPrefix}${session.gold}${terms.gold}`,
     timeLabel: formatElapsedTime(options.elapsedMs ?? 0),
+    chapterLabel: currentChapterLabel(project, session),
     emptyPartyLabel: partyRows.length === 0 ? "파티원이 없습니다" : null,
   };
 }

@@ -219,7 +219,7 @@ export function createBattleSequencer(
     const amount = Math.abs(entry.amount ?? 0);
     // 상태 유지 회복(stateRecovery)도 같은 부호 계약을 탄다 — 여기서 빼면 회복량이
     // 양수 피해로 재생되어 팝업 -8 / HP 50→42 / 메시지 "8 회복" 이 한 화면에 겹친다.
-    const healing = entry.kind === "healing" || entry.kind === "stateRecovery" || (entry.amount ?? 0) < 0;
+    const healing = entry.kind === "healing" || entry.kind === "stateRecovery" || entry.kind === "revive" || (entry.amount ?? 0) < 0;
     if (amount === 0) {
       // 예전에는 여기서 undefined 를 돌려줘 0 피해가 화면에 **아무 흔적도** 남기지
       // 않았다. 실측에서 기본 적 24종 중 12종이 정확히 0 을 주고 있었으니, 초반 전투의
@@ -408,6 +408,21 @@ export function createBattleSequencer(
       : actionEntryDirectorState(entry, snapshot)
         ?? (resultEntry ? enemyActionDirectorState(resultEntry, snapshot, { resource: entry.resource ?? "hp", healing: entry.kind === "healing" || (entry.amount ?? 0) < 0 }) : timelineDirectorState(entry, snapshot));
     const feedback = feedbackFromTimeline(entry);
+    // 적 이동: 대사 없이 스냅샷의 새 좌표로 미끄러지는 동안만 기다린다(CSS 트랜지션이 그린다).
+    if (entry.kind === "move") {
+      hooks.onSyncView();
+      const moved = snapshot.enemies.find((enemy) => enemy.id === entry.targetId)?.moved;
+      delay(continueNext, moved?.durationMs ?? 0);
+      return;
+    }
+    // 자동 부활: 원장을 되살려(회복 피드백) 쓰러진 표시를 걷고 대사를 읽을 시간을 준다.
+    if (entry.kind === "revive") {
+      hooks.onDirectorState(directorBase);
+      hooks.onDamageFeedback(feedback);
+      hooks.onSyncView();
+      delay(() => { hooks.onDamageFeedback(undefined); continueNext(); }, BATTLE_LOG_MS);
+      return;
+    }
     const visual = entry.kind === "damage" || entry.kind === "healing" || entry.kind === "miss"
       || entry.kind === "action" || entry.kind === "capture" || entry.kind === "stateUpkeep" || entry.kind === "stateRecovery";
     if (!visual) {
@@ -486,6 +501,16 @@ export function createBattleSequencer(
     entry: BattleTimelineEntrySnapshot,
     snapshot: BattleSnapshot,
   ): BattleDirectorState | undefined {
+    if (entry.kind === "counter") {
+      const user = snapshot.enemies.find((enemy) => enemy.id === entry.userId || enemy.recordId === entry.userRecordId);
+      const name = user ? disambiguatedBattlerName(user, snapshot.enemies) : "적";
+      return { step: "acting", lines: [`${name}의 반격!${entry.skillName ? ` — ${entry.skillName}` : ""}`], targetId: entry.targetId };
+    }
+    if (entry.kind === "revive") {
+      const actor = snapshot.actors.find((candidate) => candidate.id === entry.targetId || candidate.recordId === entry.targetId);
+      return { step: "acting", lines: [`${withJosa(actor?.name ?? "아군", "이/가")} 다시 일어섰다! (HP ${entry.amount ?? 0})`], targetId: entry.targetId };
+    }
+    if (entry.kind === "move") return { step: "acting", lines: [], targetId: entry.targetId };
     if (entry.kind !== "action") return undefined;
     const user = snapshot.actors.find((actor) => actor.recordId === entry.userRecordId)
       ?? snapshot.enemies.find((enemy) => enemy.recordId === entry.userRecordId);

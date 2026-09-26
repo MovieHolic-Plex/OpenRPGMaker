@@ -23,9 +23,13 @@ on:
   pull_request:
 
 concurrency:
-  # The push and pull_request events for one branch must share the memory budget.
+  # push 와 pull_request 가 같은 브랜치면 메모리 예산을 같이 쓴다.
+  # PR 브랜치는 새 푸시가 옛 잡을 끊는다.
+  # main 은 끊지 않는다. 2026-09-26 에 머지 간격이 잡(타입체크만 약 3분)보다 짧아서,
+  # 타입체크가 통과한 main 잡이 parity 도중에 취소되고 완료된 체크가 하나도 남지 않았다.
+  # 진행 중인 main 잡은 끝내고, 아직 시작 전인 대기 잡만 최신 커밋으로 바뀐다.
   group: ci-fast-${{ github.head_ref || github.ref_name }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   fast:

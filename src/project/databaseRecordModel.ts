@@ -1,4 +1,5 @@
 import { normalizeGallerySettings } from "./gallery";
+import { normalizeChapterSettings, normalizeNewGamePlusSettings } from "./newGamePlus";
 import { normalizeFieldHud } from "./fieldHud";
 import { assertPromotionExtensions } from '@/project/growth/requirements';
 import {
@@ -55,7 +56,7 @@ import {
   normalizeFarmBuildingTypes,
   normalizeHomeDecorationTypes,
 } from "@/project/spatialPlacements";
-import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
+import type { ActorExperienceCurve, CompanionConfig, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 import { normalizeCharacterFootprint, normalizePassRows } from "@/project/footprint";
 import { normalizePlayResolution } from "@/project/playResolution";
 import { normalizeCameraZoom } from "@/project/cameraZoom";
@@ -199,6 +200,12 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     battleEscapeSeResourceId: cleanOptionalId(system.battleEscapeSeResourceId),
     initialTroopId: cleanOptionalId(system.initialTroopId),
     battleFlow: normalizeBattleFlow(system.battleFlow),
+    // ATB 대기 방식·속도·필드 배경 — 기본(wait·기존 속도·트룹 배경)은 저장하지 않는다(옛 JSON 바이트 유지).
+    ...(system.atbMode === "active" ? { atbMode: "active" as const } : {}),
+    ...(typeof system.atbSpeed === "number" && Number.isFinite(system.atbSpeed)
+      ? { atbSpeed: clampInteger(system.atbSpeed, 1, 8) }
+      : {}),
+    ...(system.battleBackdrop === "field" ? { battleBackdrop: "field" as const } : {}),
     ...(system.battleCommandCss?.trim() ? { battleCommandCss: system.battleCommandCss } : {}),
     // 기본 스킨(DEFAULT_BATTLE_SKIN_ID = rm2000)만 저장하지 않는다. 그 밖의 명시적 선택은 반드시
     // 보존해야 한다 — 기본이 바뀐 뒤에 명시값을 생략하면 왕복 후 다른 스킨으로 바뀌어버린다
@@ -225,6 +232,11 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     // 기본(rm2k3)은 저장하지 않고, 명시적 gen1 선택만 보존한다(무효값도 rm2k3로 정규화).
     ...(system.battleModel === "gen1" ? { battleModel: "gen1" as const } : {}),
     activeSlots: normalizeOptionalPositiveInteger(system.activeSlots),
+    // 동료 규칙도 화이트리스트에 있어야 왕복 1회에 사라지지 않는다(없던 동안 gap·formation·fromParty 가 로드마다 지워졌다).
+    ...(() => {
+      const companions = normalizeCompanionConfig(system.companions);
+      return companions ? { companions } : {};
+    })(),
     rewardPolicy: normalizeRewardPolicy(system.rewardPolicy),
     // 생활 스킬 시스템 옵트인 플래그. 화이트리스트 방식 정규화라 여기에 없으면 저장/로드 1회 왕복에
     // 사라진다 — 실제로 누락되어 사용자가 켠 플래그가 영속되지 않았다. 기본(미설정)은 생략 유지.
@@ -239,6 +251,14 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     ...(() => {
       const gallery = normalizeGallerySettings(system.gallery);
       return gallery ? { gallery } : {};
+    })(),
+    ...(() => {
+      const newGamePlus = normalizeNewGamePlusSettings(system.newGamePlus);
+      return newGamePlus ? { newGamePlus } : {};
+    })(),
+    ...(() => {
+      const chapter = normalizeChapterSettings(system.chapter);
+      return chapter ? { chapter } : {};
     })(),
     ...(typeChart ? { typeChart } : {}),
     ...(timeSystem ? { timeSystem } : {}),
@@ -355,6 +375,9 @@ function normalizeTitleScreenSettings(
       // resume 은 optional 확장 — 저작된 값이 있을 때만 유지해 구 JSON 을 그대로 보존한다.
       ...(typeof settings?.menuLabels?.resume === "string" && settings.menuLabels.resume.trim()
         ? { resume: settings.menuLabels.resume.trim() }
+        : {}),
+      ...(typeof settings?.menuLabels?.newGamePlus === "string" && settings.menuLabels.newGamePlus.trim()
+        ? { newGamePlus: settings.menuLabels.newGamePlus.trim() }
         : {}),
       ...(typeof settings?.menuLabels?.credits === "string" && settings.menuLabels.credits.trim()
         ? { credits: settings.menuLabels.credits.trim().slice(0, 24) }
@@ -569,6 +592,15 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
       const actionSkill = normalizeActionSkillProfile(record.actionSkill);
       return actionSkill ? { actionSkill } : {};
     })(),
+    // 연계기·범위기는 값이 있을 때만 남긴다 — 없는 옆 프로젝트는 바이트 그대로.
+    ...(() => {
+      const comboActorIds = uniqueCleanIds(record.comboActorIds).slice(0, 3);
+      return comboActorIds.length >= 2 ? { comboActorIds } : {};
+    })(),
+    ...(record.area && (record.area.shape === "circle" || record.area.shape === "line")
+      && Number.isFinite(record.area.radius) && record.area.radius > 0
+      ? { area: { shape: record.area.shape, radius: clampNumber(record.area.radius, 1, 640) } }
+      : {}),
   };
 }
 
@@ -688,6 +720,18 @@ function normalizeBattleCommandKind(kind: ClassBattleCommand["kind"] | undefined
 
 function normalizeBattleFlow(value: BattleFlow | undefined): BattleFlow {
   return value === "strict" ? "strict" : "gauge";
+}
+
+function normalizeCompanionConfig(value: CompanionConfig | undefined): CompanionConfig | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const out: CompanionConfig = {};
+  if (typeof value.gap === "number" && Number.isFinite(value.gap)) out.gap = Math.trunc(value.gap);
+  if (typeof value.maxCompanions === "number" && Number.isFinite(value.maxCompanions)) out.maxCompanions = Math.trunc(value.maxCompanions);
+  if (value.overflow === "reject" || value.overflow === "replaceOldest") out.overflow = value.overflow;
+  if (value.formation === "line" || value.formation === "beside") out.formation = value.formation;
+  if (value.clearOnTransfer === true) out.clearOnTransfer = true;
+  if (value.fromParty === true) out.fromParty = true;
+  return Object.keys(out).length > 0 ? out : undefined;
 }
 
 function normalizeOptionalPositiveInteger(value: number | undefined): number | undefined {
@@ -868,6 +912,9 @@ function normalizeItemEquipmentEffectFlags(flags: Partial<ItemEquipmentEffectFla
     halfMpCost: flags?.halfMpCost ?? false,
     negateTerrainDamage: flags?.negateTerrainDamage ?? false,
     fixedEquipment: flags?.fixedEquipment ?? false,
+    ...(typeof flags?.autoRevive === "number" && Number.isFinite(flags.autoRevive) && flags.autoRevive > 0
+      ? { autoRevive: clampInteger(flags.autoRevive, 1, 100) }
+      : {}),
   };
 }
 

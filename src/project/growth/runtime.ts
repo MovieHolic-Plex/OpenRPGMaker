@@ -60,7 +60,7 @@ export function permanentActorSkillIds(project: Project, session: GrowthSession,
   const actor = normalizeActorRecord(record);
   const level = session.actorLevels?.[actorId] ?? actor.initialLevel;
   const klass = project.database.classes.find(c => c.id === effectiveActorClassId(project, session, actorId));
-  return [...new Set([...(session.actorSkillIds?.[actorId] ?? []), ...actor.learnedSkills.filter(s => s.level <= level).map(s => s.skillId), ...(klass?.learnedSkills ?? []).filter(s => s.level <= level).map(s => s.skillId)])];
+  return [...new Set([...(session.actorSkillIds?.[actorId] ?? []), ...actor.learnedSkills.filter(s => s.tp === undefined && s.level <= level).map(s => s.skillId), ...(klass?.learnedSkills ?? []).filter(s => s.level <= level).map(s => s.skillId)])];
 }
 export function actorOwnedSkillIds(project: Project, session: GrowthSession, actorId: string): string[] {
   return [...new Set([...permanentActorSkillIds(project, session, actorId), ...growthEffects(project, session, actorId).skillIds])];

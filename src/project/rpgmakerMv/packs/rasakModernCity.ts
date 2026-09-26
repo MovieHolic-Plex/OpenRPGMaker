@@ -16,6 +16,8 @@ const STREET = "Tileset_Modern_Street_Rasak.png";
 const SHOP = "Tileset_Modern_CityShopping_Rasak.png";
 const PARK = "Tileset_Modern_Park_Rasak.png";
 const EXTRAS = "Tileset_Modern_BuildingExtras.png";
+const GARBAGE = "Tileset_Modern_Garbage_Rasak.png";
+const SLUMS = "Tileset_Modern_Slums_Rasak.png";
 
 type Row = readonly [kind: number, name: string, role: MvPackAutotile["role"], description?: string];
 const autos = (sheet: string, rows: readonly Row[]): MvPackAutotile[] =>
@@ -208,6 +210,10 @@ const OBJECTS: MvPackObject[] = ([
   // ── 작가 예시 건물에 쓰인 층 부품 (2026-09-25 사용 예 조사) ──
   ["window_tall", STREET, 8, 0, 1, 2, "wallmount", "세로창", { description: "창 없는 외벽(주택·2층 가게 위층)에 1~2칸 띄워 단다. 벽 2줄 = 한 층" }],
   ["window_tall_small", STREET, 9, 0, 1, 2, "wallmount", "세로창과 작은 창", { description: "주택 벽에 다는 세로창 + 아래 작은 창" }],
+  // 주택 현관문 — 작가 주택(p4·p6)은 철문이 아니라 창살 달린 나무·색 현관문이다(Street 시트 10·11·13열 윗줄 — 12열 아랫칸은 traffic_cones_pair 와 칸이 겹쳐 뺐다).
+  ["house_door_a", STREET, 10, 0, 1, 2, "door", "주택 현관문 1", { description: "주택 벽 2줄에 붙이는 현관문(문 아랫칸 = 벽 맨 아래 줄)" }],
+  ["house_door_b", STREET, 11, 0, 1, 2, "door", "주택 현관문 2"],
+  ["house_door_d", STREET, 13, 0, 1, 2, "door", "주택 현관문 4"],
   ["shopfront_glass", A5, 7, 12, 1, 2, "wallmount", "1층 통유리(1칸)", { growth: "horizontal", description: "1층 띠 2줄에 문 옆으로 이어 붙이는 쇼윈도(작가 2층 벽돌 가게)" }],
   ["shopfront_glass_lit", A5, 5, 12, 1, 2, "wallmount", "1층 불 켜진 통유리(1칸)", { growth: "horizontal", description: "밤·가게 안 불빛이 비치는 쇼윈도" }],
   // ── 1줄짜리 1층 띠 부품 (작가 city-intersection 회색 상가 y6: 1줄 쇼윈도 ×2 + 1줄 문, 위에 차양) ──
@@ -227,6 +233,49 @@ const OBJECTS: MvPackObject[] = ([
   ["round_tree", PARK, 11, 2, 2, 4, "tall", "큰 둥근 나무", { description: "공원·넓은 앞마당. 밑동 줄 2칸이 막힌다" }],
   ["round_tree_small", PARK, 14, 0, 2, 2, "tall", "작은 둥근 나무", { description: "앞마당·공원 가장자리" }],
   ["bush_wide", PARK, 11, 0, 3, 2, "prop", "넓은 덤불(3칸)", { description: "공원 가장자리·마당 울타리 안쪽" }],
+  // ── 3라운드 꾸밈 부품 (2026-09-26 시트 해독 + 칸 불투명도 확인) ──
+  // 가게 간판(1×1·2×1): 1층 띠 바로 위 위층 벽 맨 아랫줄에 단다 — 문 위 또는 쇼윈도 위, 가게마다 하나.
+  ["sign_mode", SHOP, 12, 8, 1, 1, "wallmount", "옷가게 간판(MODE)"],
+  ["sign_fashion", SHOP, 11, 9, 2, 1, "wallmount", "패션 간판(2칸)"],
+  ["sign_tailor", SHOP, 10, 10, 1, 1, "wallmount", "양복점 간판"],
+  ["sign_barber", SHOP, 10, 11, 1, 1, "wallmount", "이발소 간판"],
+  ["sign_salon", SHOP, 11, 11, 1, 1, "wallmount", "미용실 간판"],
+  ["sign_pharmacy", SHOP, 12, 11, 1, 1, "wallmount", "약국 간판"],
+  ["sign_hardware", SHOP, 13, 11, 1, 1, "wallmount", "철물점 간판"],
+  ["sign_pizza", SHOP, 8, 12, 1, 1, "wallmount", "피자 가게 간판"],
+  ["sign_food", SHOP, 9, 13, 1, 1, "wallmount", "식당 간판"],
+  ["sign_store247", SHOP, 14, 14, 1, 1, "wallmount", "24시 편의점 간판"],
+  ["sign_burger", SHOP, 8, 8, 1, 1, "wallmount", "버거 가게 간판"],
+  ["sign_mall", SHOP, 5, 4, 1, 1, "wallmount", "몰 간판"],
+  ["sign_24hrs", SHOP, 0, 11, 1, 1, "wallmount", "24시간 네온 간판"],
+  ["banner_store", SHOP, 15, 13, 1, 1, "wallmount", "세로 가게 깃발(STORE)"],
+  ["banner_shop_red", SHOP, 14, 15, 1, 1, "wallmount", "세로 가게 깃발(빨강)"],
+  // 옥상 설비 더: 태양광 판(2×2)·물탱크·안테나 — 옥상 윗면 위에 얹는다.
+  ["roof_solar", EXTRAS, 0, 6, 2, 2, "wallmount", "옥상 태양광 판", { description: "평지붕 옥상 2×2. 주거·사무실 옥상" }],
+  ["roof_water_tank", EXTRAS, 5, 4, 1, 1, "wallmount", "옥상 물탱크"],
+  ["roof_antenna", EXTRAS, 6, 4, 1, 1, "wallmount", "옥상 안테나 무리"],
+  // 공원 놀이·쉼터
+  ["swing", PARK, 6, 9, 1, 2, "tall", "그네"],
+  ["picnic_table", PARK, 8, 14, 2, 2, "tall", "피크닉 탁자"],
+  ["traffic_light_red", STREET, 12, 14, 1, 2, "tall", "신호등(빨강)"],
+  ["bollard", STREET, 4, 7, 1, 1, "prop", "흰 볼라드"],
+  // ── 4라운드 뒷골목 설비 (2026-09-26 칸 알파 경계 실측: 부품 픽셀이 모두 적힌 칸 안에 든다) ──
+  // 대형 쓰레기통(Slums 2×2, 위 줄은 뚜껑) · 바퀴 쓰레기통·봉투·드럼통·설비함·타이어·상자(Garbage 1×1) · 벽걸이 실외기.
+  ["dumpster_green", SLUMS, 0, 12, 2, 2, "tall", "초록 대형 쓰레기통", { description: "뒷문 옆 뒷길·뒷골목. 아래 줄이 막힌다" }],
+  ["dumpster_green_2", SLUMS, 2, 12, 2, 2, "tall", "초록 대형 쓰레기통 2"],
+  ["dumpster_open", SLUMS, 0, 8, 2, 2, "tall", "뚜껑 열린 대형 쓰레기통"],
+  ["crate_large", SLUMS, 6, 14, 2, 2, "tall", "큰 나무 상자"],
+  ["wheelie_bin_green", GARBAGE, 9, 3, 1, 1, "prop", "초록 바퀴 쓰레기통"],
+  ["wheelie_bin_black", GARBAGE, 12, 3, 1, 1, "prop", "검정 바퀴 쓰레기통"],
+  ["wheelie_bins_green_black", GARBAGE, 13, 3, 1, 1, "prop", "초록·검정 바퀴 쓰레기통 한 쌍"],
+  ["wheelie_bins_yellow_red", GARBAGE, 14, 3, 1, 1, "prop", "노랑·빨강 바퀴 쓰레기통 한 쌍"],
+  ["trash_bags", GARBAGE, 5, 11, 1, 1, "prop", "쓰레기 봉투 두 개"],
+  ["trash_bags_2", GARBAGE, 7, 11, 1, 1, "prop", "쓰레기 봉투 더미"],
+  ["barrels_gray", GARBAGE, 6, 3, 1, 1, "prop", "회색 드럼통 무리"],
+  ["utility_meter", GARBAGE, 8, 3, 1, 1, "prop", "회색 설비함(계량기)", { description: "뒷벽에 붙여 세운다" }],
+  ["tire_stack", GARBAGE, 4, 14, 1, 1, "prop", "타이어 더미"],
+  ["box_stack", GARBAGE, 6, 15, 1, 1, "prop", "쌓인 상자"],
+  ["ac_unit_wall", "Tileset_Modern_PublicTransportation_Slums_Rasak.png.png", 7, 0, 1, 1, "wallmount", "벽걸이 실외기", { description: "뒷벽·옆벽 외벽에 붙인다" }],
   // ── 거리 소품 (Tileset_Modern_PublicTransportation_Clean) ──
   ["bus_shelter", "Tileset_Modern_PublicTransportation_Clean_Rasak.png", 0, 6, 3, 3, "tall", "버스 정류장 쉼터", { description: "큰길 보도 바깥쪽(3×3). 위 두 줄은 캐릭터 위, 맨 아래 줄이 막힌다" }],
   ...CARS,
@@ -241,6 +290,11 @@ const TOWN: MvTownRecipe = {
   alley: "짙은 아스팔트",
   driveway: "밝은 콘크리트 바닥",
   path: "회색 판석 산책로",
+  parkLawn: "긴 풀 초원",
+  meadow: "흰 꽃 잔디",
+  worn: "흙 자갈 잔디",
+  tallGrass: "긴 풀 덤불",
+  plaza: "베이지 광장 타일",
   fence: "철망 울타리",
   parkingLine: "흰 주차선",
   garden: "갈아 놓은 밭",
@@ -256,17 +310,28 @@ const TOWN: MvTownRecipe = {
   ],
   offices: [
     { roof: "사각 옥상 검은 벽돌(짙은 갈색)", upper: "사각 외벽 짙은 갈색 유리창 줄", ground: "사각 외벽 회색 유리 상가", door: "glass_door_dark" },
-    { roof: "밝은 회색 평지붕", upper: "밝은 회색 외벽 유리창 줄", ground: "회색 콘크리트 외벽", door: "metal_door" },
+    // 작가 river-bridge: 회색 유리 상가 외벽 + glass_door_bright — 민 콘크리트 1층(창고처럼 보인다) 대신.
+    { roof: "밝은 회색 평지붕", upper: "밝은 회색 외벽 유리창 줄", ground: "회색 유리 상가 외벽", door: "glass_door_bright" },
     { roof: "갈색 평지붕", upper: "갈색 외벽 유리창 줄", ground: "갈색 타일 외벽", door: "glass_door_dark" },
+  ],
+  // 주택가 중층 주거 줄(1층 문 + 세로창, 쇼윈도·차양 없음).
+  apartments: [
+    { roof: "붉은 벽돌 옥상", upper: "붉은 벽돌 외벽 창문", ground: "붉은 벽돌 외벽", door: "house_door_b" },
+    { roof: "사각 옥상 검은 기와", upper: "사각 외벽 갈색 벽돌 창문", ground: "사각 외벽 갈색 벽돌", door: "house_door_d" },
+    { roof: "사각 옥상 비늘", upper: "밝은 판자 외벽", ground: "밝은 판자 외벽", door: "house_door_a" },
+    { roof: "짙은 옥상(주황 벽돌 테두리)", upper: "주황 벽돌 외벽 창문", ground: "주황 벽돌 외벽", door: "house_door_d" },
+    { roof: "사각 옥상 갈색 타일", upper: "갈색 판자 외벽", ground: "갈색 판자 외벽", door: "house_door_b" },
   ],
   houses: [
     { roof: "붉은 기와 지붕", wall: "흰 벽" }, { roof: "검은 기와 지붕", wall: "노란 벽" },
     { roof: "갈색 기와 지붕", wall: "회갈색 벽" }, { roof: "검은 슁글 지붕", wall: "초록 벽" },
-    { roof: "붉은 슁글 지붕", wall: "흰 벽" }, { roof: "갈색 슁글 지붕", wall: "짙은 회색 벽" },
+    { roof: "붉은 슁글 지붕", wall: "노란 벽" }, { roof: "갈색 슁글 지붕", wall: "흰 벽" },
+    { roof: "검은 비늘 지붕", wall: "흰 철판 벽" }, { roof: "태양광 붉은 지붕", wall: "초록 벽" },
   ],
   objects: {
     lamp: "street_lamp_left", lampAlt: "street_lamp_right", planterTree: "cone_tree_pot", streetTree: "cone_tree",
-    streetTrees: ["cone_tree", "poplar_tree", "cone_tree_planter"],
+    // 잔디 띠 가로수는 맨 나무만 — 화분 나무는 포장된 보도에만(DEFECTS r2-14).
+    streetTrees: ["cone_tree", "poplar_tree"],
     yardTrees: ["cone_tree", "round_tree_small", "poplar_tree"],
     parkTrees: ["round_tree", "round_tree_small", "cone_tree", "poplar_tree"],
     hydrant: "fire_hydrant", trash: "trash_can", bench: "park_bench", benchLong: "park_bench_long",
@@ -274,13 +339,56 @@ const TOWN: MvTownRecipe = {
     flowerBeds: ["flower_bed_red", "flower_bed_yellow", "flower_bed_blue", "flower_bed_pink"],
     vending: ["vending_soda", "vending_coffee", "vending_snacks", "atm"],
     backProps: ["recycle_bin_green", "recycle_bin_yellow", "recycle_bin_red", "power_box", "cardboard_box", "trash_can_full"],
-    houseDoor: "metal_door", houseWindows: ["window_tall", "window_tall_small"], roofProps: ["satellite_dish"],
+    houseDoor: "house_door_a", houseDoors: ["house_door_a", "house_door_b", "house_door_d"], houseWindows: ["window_tall", "window_tall_small"], roofProps: ["satellite_dish"],
     roofGear: ["roof_vent", "roof_fan", "roof_vent_slat", "roof_ac_large"],
     streetProps: ["ad_column", "hotdog_cart", "popcorn_cart", "icecream_cart"],
     busStop: "bus_shelter",
+    hedge: "hedge_horizontal",
+    doorRow: "door_row_bright", doorTall: "glass_door_bright", shopfrontRow: "shopfront_row",
+    shopfrontRowEnds: ["shopfront_row_left", "shopfront_row_right"], shopfrontTall: "shopfront_glass", awningSmall: "awning_red_small",
     carsHorizontal: CAR_COLORS.map((c) => [`car_${c}_left`, `car_${c}_right`] as const),
     carsVertical: CAR_COLORS.map((c) => [`car_${c}_down`, `car_${c}_up`] as const),
     laneHorizontal: "lane_line_horizontal", crosswalkVertical: "crosswalk_for_vertical_road", arrowLeft: "arrow_left", arrowRight: "arrow_right",
+    arrowUp: "arrow_up", arrowDown: "arrow_down",
+  },
+  // 3라운드 꾸밈 — 파사드·보도·교차로·옥상·마당·공원에 규칙대로 둔다(townLayout 「꾸밈」 절).
+  decor: {
+    signs: ["sign_mode", "sign_fashion", "sign_tailor", "sign_barber", "sign_salon", "sign_pharmacy", "sign_hardware", "sign_pizza", "sign_food", "sign_store247", "sign_burger", "sign_mall", "sign_24hrs"],
+    banners: ["banner_store", "banner_shop_red"],
+    civicSigns: ["sign_police", "sign_fire", "sign_hospital"],
+    shopWindowLarge: "shop_window_large",
+    shutter: "셔터 벽",
+    upperWindows: ["window_lit_wide", "window_dark_wide"],
+    upperWindowsTall: ["window_lit_tall", "window_dark_tall"],
+    fireEscape: "fire_escape", wallLadder: "wall_ladder", backDoor: "metal_door",
+    service: ["dumpster_green", "dumpster_green_2", "dumpster_open", "crate_large", "wheelie_bin_green", "wheelie_bin_black", "wheelie_bins_green_black", "wheelie_bins_yellow_red", "trash_bags", "trash_bags_2", "barrels_gray", "utility_meter", "tire_stack", "box_stack", "power_box"],
+    acWall: "ac_unit_wall",
+    roofTop: ["roof_solar", "roof_water_tank", "roof_antenna", "satellite_dish", "roof_ac_large", "roof_vent", "roof_vent_slat"],
+    helipad: "helipad", roofRailing: "유리 난간",
+    cafeTables: ["round_table_red_chairs", "white_round_table", "wood_table"],
+    vending: ["vending_soda", "vending_coffee", "vending_snacks"], atm: "atm",
+    carts: ["parasol_hotdog_cart", "food_cart", "hotdog_cart", "popcorn_cart", "icecream_cart"], kiosk: "round_kiosk",
+    trafficLights: ["traffic_light_green", "traffic_light_red", "traffic_light_yellow", "traffic_light_off"],
+    stopSign: "stop_sign", manholes: ["manhole", "manhole_2"], drainVertical: "drain_vertical",
+    tactile: "점자 보도블록", cones: ["traffic_cone", "traffic_cones_pair"], bollard: "bollard", guardrail: "guardrail",
+    tallLamps: ["tall_lamp", "tall_lamp_lit"],
+    walkways: ["붉은 벽돌 섞인 보도", "밝은 회색 보도 타일", "회색 벽돌 보도"], cobbles: ["회색 조약돌 포장", "주황 조약돌 포장", "회색 블록 포장"],
+    terraces: ["붉은 타일 바닥", "베이지 타일 바닥", "파란 타일 바닥"], litLamps: ["street_lamp_lit_left", "street_lamp_lit_right"], laneVertical: "lane_line_vertical",
+    stains: ["바닥 얼룩", "바닥 균열"],
+    planterBed: "콘크리트 틀 화단", planterTrees: ["cone_tree_pot", "cone_tree_planter"],
+    yardShrubs: ["bush_wide", "bush_large", "bush_small"], plowed: "갈아 놓은 밭", dirt: "흙 공터",
+    pond: "잔디 둘레 연못 물", lily: "수련잎",
+    flowingWater: ["흐르는 물", "흐르는 깊은 물", "흐르는 밝은 물", "흐르는 짙은 물", "흐르는 초록 물"],
+    bridgeRailing: "콘크리트 난간",
+    plazaCore: ["회색 조약돌 포장", "주황 조약돌 포장", "회색 블록 포장"],
+    // 특수 건물: 간판 짝은 작가 예시의 공공 건물 재료(회색 사무실·붉은 벽돌·흰 타일).
+    civic: [
+      { sign: "sign_police", facade: { roof: "짙은 옥상(회색 테두리)", upper: "회색 외벽 검은 창 줄", ground: "회색 콘크리트 외벽", door: "glass_door_dark" } },
+      { sign: "sign_fire", facade: { roof: "짙은 옥상(붉은 벽돌 테두리)", upper: "붉은 벽돌 외벽 창문", ground: "붉은 벽돌 외벽", door: "metal_door" } },
+      { sign: "sign_hospital", facade: { roof: "밝은 타일 옥상", upper: "밝은 회색 외벽 유리창 줄", ground: "밝은 회색 타일 외벽", door: "glass_door_bright" } },
+    ],
+    play: ["seesaw", "basketball_hoop", "soccer_goal", "swing"],
+    longBenches: ["park_bench_long", "wood_bench_long", "long_bench_wood"], picnic: "picnic_table",
   },
 };
 
@@ -306,7 +414,7 @@ const GUIDE = `# Rasak Modern 도시 — 까는 순서
 - 가게 뒤는 뒷골목과 **뒷주차**(주차 칸 선). 주차장을 가게와 큰길 사이에 두지 않는다.
 - 주택: 필지 8~12칸, 집 5~8칸, 앞마당 3~5칸, 이웃과 틈 1~4칸(쌍마다 다르게). 문 → 보도 현관길 1칸, 집 옆 진입로 2칸.
   앞마당엔 화단·덤불·나무 중 2가지 이상, 뒷마당엔 울타리·나무·텃밭. 빈 잔디 네모로 두지 않는다.
-- 차도 옆은 **연석 → 잔디 띠 1칸 → 보도**(주택가). 가로수는 잔디 띠에 4~6칸 간격, 가로등 6~10칸 간격(길 건너와 엇갈리게).
+- 차도 옆은 **연석 → 잔디 띠 1칸 → 보도**(주택가). 가로수는 잔디 띠에 3~7칸 불규칙 간격, 가로등 6~10칸 간격(길 건너와 엇갈리게).
 - 같은 바닥이 물체 없이 **6×6(36칸)을 넘지 않게**. 보도는 맵의 25% 이하. **맵 끝 2줄 이상을 빈 띠로 두지 않는다**(맨 윗줄도).
 - 좌우 대칭·같은 간격 격자를 피한다. 랜드마크(분수 공원 등) 하나를 큰길에서 보이게, 한가운데를 조금 비켜.
 
@@ -360,7 +468,8 @@ const GUIDE = `# Rasak Modern 도시 — 까는 순서
 - 가게 앞 보도에는 가게마다 다른 것을 가끔: \`ad_column\`(원통 광고탑), \`hotdog_cart\`·\`popcorn_cart\`·\`icecream_cart\`, \`round_kiosk\`.
 - 큰길 보도에 \`bus_shelter\`(버스 정류장 3×2) 한 곳 — 교차로에서 2칸 이상 떼어.
 - 자동차 \`car_<색>_left/_right\`(가로 4×3, 아래 두 줄이 막힘)·\`car_<색>_down/_up\`(세로 2×3). 색: red·white·blue·black·green. 차도·주차장 위에만 둔다 — 보도·횡단보도·교차로 위 금지. 오른쪽 통행: 가로 길 북쪽 차선은 _left, 남쪽 차선은 _right. 캐릭터 시트 \`!Car1.png\`(Animations/Vehicles/ModernCars)를 같이 올려야 보인다.
-- 나무는 수종을 섞는다. 가로수(잔디 띠 1칸)는 거리마다 한 수종 — \`cone_tree\`·\`poplar_tree\`(키 큰 미루나무 1×4)·\`cone_tree_planter\`.
+- 나무는 수종을 섞는다(한 수종이 나무의 45%를 넘지 않게). 가로수(잔디 띠 1칸)는 \`cone_tree\`·\`poplar_tree\`(키 큰 미루나무 1×4)·\`round_tree_small\` —
+  간격은 3~7칸으로 흔들고 모통이·진입로·공원 입구 앞에서 끊는다. 화분 나무(\`cone_tree_pot\`·\`cone_tree_planter\`)는 포장된 보도·광장에만.
   공원·넓은 마당은 \`round_tree\`(2×4)·\`round_tree_small\`(2×2)를 섞고, 가장자리에 \`bush_wide\`·\`hedge_horizontal\`.
 - 물체 밑칸은 막힌다. 길을 막지 않게 보도 폭의 절반 이상을 비워 둔다.
 
@@ -396,10 +505,10 @@ export const RASAK_MODERN_CITY: MvPackPreset = {
     { file: A5S, folder: "Tilesets/City", sha256: "db4b601ed126dea96e8ad504fa1c1aebebb595d481cd66b9152495f551979d64" },
     { file: STREET, folder: "Tilesets/City", sha256: "afa13ba0627ac3a5a73464de93234dd90c98fef22f0368e5e05bbf2f6d0125aa" },
     { file: SHOP, folder: "Tilesets/City", sha256: "0adc90d5e9da7b9d266575216862eb3c698ced7460e58ba8488dd8e6cd1cbbf2" },
-    { file: "Tileset_Modern_Garbage_Rasak.png", folder: "Tilesets/City", sha256: "ce499b8544c99bbf93c85d617be0cbcd14a8521ea8876b3ffaf892c3a038ecea" },
+    { file: GARBAGE, folder: "Tilesets/City", sha256: "ce499b8544c99bbf93c85d617be0cbcd14a8521ea8876b3ffaf892c3a038ecea" },
     { file: EXTRAS, folder: "Tilesets/City", sha256: "e327ac6819478a86ac688239cd161a6fa4b26b9ef543bfa72aa29232cbb8962c" },
     { file: PARK, folder: "Tilesets/City", sha256: "98485957a640b182d7f25bb41f755c70e909fd8e87a2042b008571382b842a02" },
-    { file: "Tileset_Modern_Slums_Rasak.png", folder: "Tilesets/City", sha256: "33b5162f00a34c0469bc7007ce5a0dc17c682f508657f61f495e8c4f57d98fe9" },
+    { file: SLUMS, folder: "Tilesets/City", sha256: "33b5162f00a34c0469bc7007ce5a0dc17c682f508657f61f495e8c4f57d98fe9" },
     { file: "Tileset_Modern_PublicTransportation_Clean_Rasak.png", folder: "Tilesets/City", sha256: "5719e05429835bcb6175a3bcf009a0b19eb4668d542c94d2ed83d32099990e92" },
     { file: "Tileset_Modern_PublicTransportation_Dirty_Rasak.png.png", folder: "Tilesets/City", sha256: "9b442ce9ba7624f921b898d70ba6272cb23f847a28601bbf0f06db1750dcd4da" },
     { file: "Tileset_Modern_PublicTransportation_Slums_Rasak.png.png", folder: "Tilesets/City", sha256: "e92c3b4609ad56ed9e60b9d63e8ab46a684bfe95c8322d233e905923cc41e4ca" },

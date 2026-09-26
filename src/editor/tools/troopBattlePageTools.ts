@@ -260,7 +260,8 @@ const upsertTroopBattlePage: ToolDefinition = {
   description:
     "트룹의 전투 이벤트 페이지(보스 페이즈/전투 스크립트)를 페이지 단위로 등록·수정한다. " +
     "조건·커맨드·무한반복을 검증하며, 저작 후 simulate_battle 의 phaseCoverage 로 실제 발동을 확인해야 한다. " +
-    "여러 페이즈를 한 번에 깔려면 author_boss_phases 를 먼저 보라.",
+    "여러 페이즈를 한 번에 깔려면 author_boss_phases 를 먼저 보라. " +
+    "적 이동: {kind:\"m2Command\", commandId:\"m2-218-move-enemy\", fields:{target:\"enemy-1\"(또는 적 id), x, y, durationMs}} — 좌표는 트룹 members 와 같고 위치 범위기가 새 위치를 본다.",
   mode: "write",
   domains: ["battle", "database"],
   parameters: {

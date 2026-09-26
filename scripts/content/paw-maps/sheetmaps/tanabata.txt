@@ -1,0 +1,7 @@
+# tanabata.png 4x5 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  3  
+   0 ~G ~G ~G ~G 
+   1 +G ~G +G ~c 
+   2 ~k ~m ~G ~G 
+   3 ~b ~r +G +G 
+   4 ~G .  ~G ~G 

@@ -1,0 +1,18 @@
+# WorldMap-B.png 16x16 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 
+   0 .  ~o ~o +o +o +l +l +G .  .  .  .  .  .  .  .  
+   1 +G +m #G #G +G +m .  .  .  .  .  .  .  .  .  .  
+   2 +G +b ~o +g +o +o ~b ~b .  .  .  .  .  .  .  .  
+   3 +o +G ~G ~b +o +o ~b ~b .  .  .  .  .  .  .  .  
+   4 +g +g +o +o +b +b +l +l .  .  .  .  .  .  .  .  
+   5 #l #l #o #o #w #b #l #l .  .  .  .  .  .  .  .  
+   6 +l #l ~w ~w ~l ~l ~o ~l .  .  .  .  .  .  .  .  
+   7 +l +l +l +l +g #g +o #o .  .  .  .  .  .  .  .  
+   8 #l #l #l #l #g #g #o #o .  .  .  .  .  .  .  .  
+   9 +l #l .  #l #l ~w #w +w .  .  .  .  .  .  .  .  
+  10 ~g ~g ~o .  .  ~l #w ~l .  .  .  .  .  .  .  .  
+  11 ~r ~r ~o ~o +g +l #l +l .  .  .  .  .  .  .  .  
+  12 +o +o ~o ~o #g ~g #l ~g .  .  .  .  .  .  .  .  
+  13 ~o ~o ~g ~g +g ~g ~g ~g .  .  .  .  .  .  .  .  
+  14 +g +g ~g ~g .  .  .  .  .  .  .  .  .  .  .  .  
+  15 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .  

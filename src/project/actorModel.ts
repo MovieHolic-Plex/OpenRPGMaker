@@ -256,7 +256,12 @@ function normalizeLearnedSkills(
   const source = learnedSkills ?? skillIds.map((skillId) => ({ level: ACTOR_LEVEL_MIN, skillId }));
   return source
     .filter((entry): entry is ActorLearnedSkill => typeof entry.skillId === "string" && entry.skillId.length > 0)
-    .map((entry) => ({ level: clampLevel(entry.level ?? ACTOR_LEVEL_MIN), skillId: entry.skillId }))
+    // tp(기술 포인트 문턱)는 양수일 때만 남긴다 — 없는 옛 레코드는 레벨 습득 그대로.
+    .map((entry) => ({
+      level: clampLevel(entry.level ?? ACTOR_LEVEL_MIN),
+      skillId: entry.skillId,
+      ...(typeof entry.tp === "number" && Number.isFinite(entry.tp) && entry.tp > 0 ? { tp: clampInteger(entry.tp, 1, 999999) } : {}),
+    }))
     .sort((left, right) => left.level - right.level || left.skillId.localeCompare(right.skillId));
 }
 

@@ -1,7 +1,7 @@
 import { isMapLoop, mapLoopLabel, mapLoopsX, mapLoopsY, MAP_LOOP_VALUES } from "@/project/mapLoop";
 import { ensureDocumentedTileset } from "@/project/defaults/dungeonSheetTilesets";
 import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness";
-import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
+import { defaultOutdoorTilesetId, defaultToolTilesetId } from "@/project/defaults/forestHarmony";
 import { validateMapClimateInput } from "./combatAuthoringValidation";
 import { mapClimateSchema } from "./combatAuthoringSchemas";
 import { normalizeMapClimate } from "@/project/mapClimate";
@@ -10,7 +10,7 @@ import { normalizeMapClimate } from "@/project/mapClimate";
 
 import { isPassable } from "@/project/collision";
 import { normalizeCloudShadowParams } from "@/player/cloudShadows";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { TILE } from "@/project/defaults/constants";
 import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { autotileGroupsForTileset, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
@@ -1318,14 +1318,14 @@ const setTilePassability: ToolDefinition = {
   parameters: {
     type: "object",
     properties: {
-      tilesetId: { type: "string", description: "생략 시 기본 타일셋" },
+      tilesetId: { type: "string", description: "생략 시 시작 맵의 타일셋(없으면 숲마을)" },
       tile: { type: "integer", description: "타일 인덱스" },
       passable: { type: "boolean" },
     },
     required: ["tile", "passable"],
   },
   run(draft, args): ToolExecResult {
-    const tilesetId = (args.tilesetId as string | undefined) ?? DEFAULT_TILESET_ID;
+    const tilesetId = (args.tilesetId as string | undefined) ?? defaultToolTilesetId(draft);
     const tileset = draft.tilesets[tilesetId];
     if (!tileset) throw new ToolError(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { code: "tileset-not-found" });
     const tile = args.tile as number;

@@ -89,6 +89,8 @@ export interface ActorOptions {
 export interface ActorLearnedSkill {
   level: number;
   skillId: SkillId;
+  /** 기술 포인트(TP) 습득 문턱. 있으면 레벨만으로는 배우지 않고, 누적 TP 와 레벨을 모두 채운 승리 뒤에 배운다(배우 전용). */
+  tp?: number;
 }
 
 export interface ClassRecord {
@@ -131,6 +133,8 @@ export interface ClassOptions {
 }
 
 export type BattleFlow = "gauge" | "strict";
+/** ATB 대기 방식(Chrono Trigger 설정의 Active/Wait). 생략 = wait — 명령·대상 메뉴가 열려 있는 동안 시간이 멈춘다. */
+export type BattleAtbMode = "active" | "wait";
 
 /** 전투 화면 UI 스킨 — @/battle/skins/registry 의 11-스킨 union + legacy 별칭 2종.
  *  "rm2003" 은 정면 전투 스킨의 옛 id(2026-09-03 개명 전) 이고 "classic" 은 그보다 앞선 별칭이다.
@@ -245,6 +249,16 @@ export interface SkillRecord {
   movePriority?: number;
   /** 실시간 액션 전투에서 캐스트 가능한 액션 스킬. 생략 시 턴제 전용. */
   actionSkill?: ActionSkillProfile;
+  /** 연계기(듀얼·트리플 테크): 함께 쓰는 배우 2~3명(시전자 포함). 모두 준비돼야 쓸 수 있고 각자 MP·턴을 소비한다. */
+  comboActorIds?: ActorId[];
+  /** 위치 범위기: 단일 대상 스코프에서 주 대상 둘레의 같은 편도 함께 맞힌다(전투장 픽셀). */
+  area?: SkillArea;
+}
+
+export interface SkillArea {
+  /** circle: 주 대상에서 유클리드 거리 radius 이내. line: 주 대상과 |dy| <= radius/2 인 가로 띠. */
+  shape: "circle" | "line";
+  radius: number;
 }
 
 export interface SkillMpCost {
@@ -374,6 +388,8 @@ export interface ItemEquipmentEffectFlags {
   halfMpCost: boolean;
   negateTerrainDamage: boolean;
   fixedEquipment: boolean;
+  /** 전투 불능이 되면 최대 HP 의 이 %(1~100)로 한 번 일어난다(전투당 1회). 생략 = 없음. */
+  autoRevive?: number;
 }
 
 export interface EquipmentRecord {
@@ -443,6 +459,15 @@ export interface EnemyRecord {
   factionId?: string;
   stateRates: Record<string, ActorRateGrade>;
   elementRates: Record<string, ActorRateGrade>;
+  /** 반격. 피격 후 살아 있으면 skillId 를 차례 밖에서 쓴다(게이지 유지, 타격당 최대 1회). 생략 = 없음. */
+  reactions?: EnemyReaction[];
+}
+
+/** trigger: physical(공격 계열) · magic(마력 계열) · 그 밖의 문자열은 속성 id. skillId "" = 통상 공격. chance 0~100. */
+export interface EnemyReaction {
+  trigger: string;
+  skillId: SkillId;
+  chance: number;
 }
 
 export interface EnemyActionAttack {
@@ -554,6 +579,8 @@ export interface EnemyRewards {
   gold: number;
   dropItemId?: ItemId;
   dropRatePercent: number;
+  /** 기술 포인트. 승리 시 살아남은 파티원 전원이 트룹 합계를 받는다. 생략 = 0. */
+  tp?: number;
   /** When present, replaces the legacy single drop (including an explicitly empty list). */
   drops?: { itemId: ItemId; ratePercent: number; quantity: number; condition: EnemyActionCondition }[];
 }
@@ -584,6 +611,8 @@ export interface EnemyActionPattern {
   condition: EnemyActionCondition;
   switchOnAfterAction: EnemyActionSwitchEffect;
   switchOffAfterAction: EnemyActionSwitchEffect;
+  /** 이 행동을 하기 전에 전투장 좌표(트룹 members 와 같은 좌표계)로 옮겨 간다. 생략 = 제자리. */
+  moveTo?: { x: number; y: number };
 }
 
 export interface TroopMemberRecord {
@@ -664,6 +693,16 @@ export interface StateRuntimeEffects {
   defenseMultiplier?: number;
   agilityMultiplier?: number;
   removeOnBattleEnd?: boolean;
+  /** 스톱: ATB 게이지가 멈추고(gauge) 행동하지 못한다(strict). */
+  freezesGauge?: boolean;
+  /** 프로텍트: 공격(attack) 계열 피해에만 곱하는 방어 배율. */
+  physicalDefenseMultiplier?: number;
+  /** 실드: 마력(mind) 계열 피해에만 곱하는 방어 배율. */
+  magicDefenseMultiplier?: number;
+  /** 버서크: 명령 없이 무작위 상대를 통상 공격한다. */
+  forcedAction?: "attackRandom";
+  /** 이 상태인 동안 속성 등급을 덮어쓴다(속성 id → A~E). */
+  elementRates?: Record<string, ActorRateGrade>;
 }
 
 export interface BattleAnimationRecord {
@@ -964,6 +1003,8 @@ export interface TitleScreenMenuLabels {
   quit: string;
   /** 오토세이브 "이어하기" 라벨. 생략 시 런타임 기본 라벨("이어하기"). */
   resume?: string;
+  /** "강하게 다시 하기"(New Game+) 라벨. system.newGamePlus.label 보다 우선한다. */
+  newGamePlus?: string;
   /** 크레딧(저작자 표기) 라벨. 생략 시 "크레딧". 항목 자체는 숨길 수 없다. */
   credits?: string;
 }
@@ -1076,8 +1117,10 @@ export type TitleEffectPoint = [number, number];
  * - dapple:  region 안의 나뭇잎 그림자 흔들림
  * - glow:    source 둘레의 깜빡이는 불빛(횃불·창문), spread = 반경
  * - camera:  화면 전체의 느린 호흡 줌(intensity = 폭)
+ * - parallax: 깊이 지도로 가까운 것과 먼 것을 다르게 움직이는 2.5D 시차(intensity = 폭).
+ *             depthResourceId 가 없으면 「아래가 가깝다」는 기본 깊이를 쓴다.
  */
-export type TitleEffectKind = "godRays" | "motes" | "glint" | "water" | "mist" | "dapple" | "glow" | "camera";
+export type TitleEffectKind = "godRays" | "motes" | "glint" | "water" | "mist" | "dapple" | "glow" | "camera" | "parallax";
 
 export interface TitleEffect {
   kind: TitleEffectKind;
@@ -1100,6 +1143,8 @@ export interface TitleEffect {
   region?: TitleEffectPoint[];
   /** motes 개수(0..96). */
   count?: number;
+  /** parallax 깊이 지도 그림 id(흰색 = 가까움, 검정 = 멂). 배경 그림과 같은 구도여야 한다. */
+  depthResourceId?: string;
 }
 
 export type TitleLogoStyle = "plain" | "metal" | "gold" | "stone" | "glow";
@@ -1244,6 +1289,12 @@ export interface SystemRecords {
   battleEscapeSeResourceId?: string;
   initialTroopId?: TroopId;
   battleFlow?: BattleFlow;
+  /** gauge 흐름 전용. active 면 명령 메뉴가 열려 있어도 적 게이지가 차고 적이 행동한다. 생략 = wait. */
+  atbMode?: BattleAtbMode;
+  /** ATB 속도 1~8(4 = 기존 속도). 생략 = 기존 속도. */
+  atbSpeed?: number;
+  /** field 면 전투 배경이 주인공 주변 필드 화면의 스냅숏이고 진입은 제자리 페이드. 생략 = 트룹/지형 배경. */
+  battleBackdrop?: "field";
   battleUiStyle?: BattleUiStyle;
   /** ESC(X) 게임 메뉴 디자인. 생략 = workbench(작업대, 지금 화면). */
   menuUiStyle?: MenuUiStyle;
@@ -1283,6 +1334,10 @@ export interface SystemRecords {
     readonly enabled: boolean;
     readonly label?: string;
   };
+  /** 클리어 후 타이틀의 "강하게 다시 하기". 생략 = 없음. */
+  newGamePlus?: import("@/project/newGamePlus").NewGamePlusSettings;
+  /** 변수 값 → 장(시대) 이름. ESC 메뉴·저장 칸에 보인다. 생략 = 표시 없음. */
+  chapter?: import("@/project/newGamePlus").ChapterSettings;
   typeChart?: TypeChartRecord;
   timeSystem?: TimeSystemConfig;
   /** Opt-in 실시간 액션 전투 패키지. 생략 시 필드 스폰 접촉은 기존 턴제 전투로 라우팅된다. */
@@ -1380,6 +1435,11 @@ export interface CompanionConfig {
   formation?: "line" | "beside";
   /** true 면 맵 이동 시 액터 동료를 해제한다. 생략 시 유지(기존 동작). */
   clearOnTransfer?: boolean;
+  /**
+   * true 면 파티 선두 뒤의 활성 멤버(partyActorIds[1..activeSlots|4))가 addFollower 없이 자동으로
+   * 따라온다(크로노 트리거식). 새 게임·불러오기·changeParty 마다 다시 맞춘다. 생략 = 기존 동작.
+   */
+  fromParty?: boolean;
 }
 
 export interface MonsterCareConfig {

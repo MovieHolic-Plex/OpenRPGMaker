@@ -33,6 +33,7 @@ import {
   treeFootprintCells,
 } from "../forestDensity";
 import { paintForestGroves } from "../village/forestGroves";
+import { finishForestHarmonyForest, forestWaterKindFor, paintForestWater, planForestWater } from "../village/forestDressing";
 import { prepareVillageTreeKit } from "../village/treeKit";
 import {
   FOUR_LAYER_GUIDANCE_SHORT,
@@ -773,7 +774,8 @@ function bareBoardWarnings(map: GameMap, filledCells: number, layer: string): st
   ];
 }
 
-/** 숲마을 칩의 숲은 침엽수 260/290이 아니라 굽이숲 수관이다. 군락이 없으면 null. */
+/** 숲마을 칩의 숲은 침엽수 260/290이 아니라 굽이숲 수관이다. 군락이 없으면 null.
+ * 순서: 물 예약·칠하기(수관이 피해 가게) → 수관·밑동 → 숨은 ★ 수관 길(dense) → 풀밭 꾸밈(forestDressing.ts). */
 function placeGroveCanopy(
   draft: Project,
   map: GameMap,
@@ -782,7 +784,8 @@ function placeGroveCanopy(
   density: "dense" | "impassable",
   seed: number,
 ): ToolExecResult | null {
-  const grove = prepareVillageTreeKit(tileset).grove;
+  const kit = prepareVillageTreeKit(tileset);
+  const grove = kit.grove;
   if (!grove) return null;
   const blocked = new Set(protectedHouseCells(map).map(({ x, y }) => `${x},${y}`));
   for (const event of map.events) blocked.add(`${event.x},${event.y}`);
@@ -796,12 +799,22 @@ function placeGroveCanopy(
     const pass = tilePassability(tileset, lower, TILE.EMPTY);
     return pass.up || pass.down || pass.left || pass.right;
   };
-  const painted = paintForestGroves(map, area, grove, free, seed, forestCoverageTarget(density), undefined, true);
+  const water = planForestWater(map, area, forestWaterKindFor(area, density), seed, free);
+  const waterCells = paintForestWater(map, tileset, water);
+  const dry = (x: number, y: number): boolean => free(x, y) && !water.cells.has(y * map.width + x);
+  const painted = paintForestGroves(map, area, grove, dry, seed, forestCoverageTarget(density), undefined, true);
+  const dressed = finishForestHarmonyForest({ map, tileset, area, density, seed, kit, water, waterCells, free: dry });
   const reachable = reachableCellCount(draft, map, area);
+  const waterText = dressed.water === "stream" ? `개울 ${waterCells}칸` : dressed.water === "pond" ? `연못 ${waterCells}칸` : "물 없음";
+  const secretText = dressed.secretSpots.length > 0
+    ? ` 숨은 수관 길 ${dressed.secretSpots.length}곳(★ ${dressed.secretPathCells}칸) — 보물상자는 place_chest 로`
+      + ` ${dressed.secretSpots.map(({ x, y }) => `(${x},${y})`).join("·")} 에 둔다.`
+    : "";
   return {
     summary: `${map.name} (${area.x},${area.y}) ${area.w}×${area.h} 굽이숲 수관(density=${density})`
-      + ` — 수관 ${painted.canopyCells}칸, 밑동 ${painted.trunkRuns}줄,`
-      + ` 밖에서 걸어 들어올 수 있는 칸 ${reachable}.`,
+      + ` — 수관 ${painted.canopyCells}칸, 밑동 ${painted.trunkRuns}줄, ${waterText},`
+      + ` 작은 나무 ${dressed.smallTrees}·덤불 ${dressed.shrubs}·돌 ${dressed.stones},`
+      + ` 밖에서 걸어 들어올 수 있는 칸 ${reachable}.${secretText}`,
     data: {
       placed: painted.canopyCells,
       density,
@@ -809,6 +822,13 @@ function placeGroveCanopy(
       canopyCells: painted.canopyCells,
       trunkRuns: painted.trunkRuns,
       reachableCells: reachable,
+      water: dressed.water,
+      waterCells,
+      smallTrees: dressed.smallTrees,
+      shrubs: dressed.shrubs,
+      stones: dressed.stones,
+      secretPathCells: dressed.secretPathCells,
+      secretSpots: dressed.secretSpots,
     },
   };
 }

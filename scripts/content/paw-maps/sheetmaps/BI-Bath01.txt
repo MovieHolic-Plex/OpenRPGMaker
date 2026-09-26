@@ -1,0 +1,18 @@
+# BI-Bath01.png 16x16 tiles. per cell: alpha class (.=empty, ~<35%, +<75%, #>=75%) + colour (k black g grey l light w white r red o orange/brown m magenta G green c cyan b blue)
+     0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 
+   0 .  ~b ~b ~b ~b +o +l +g #w #w ~g +l ~l ~l ~G ~o 
+   1 ~w ~w ~w ~w ~w ~w ~l ~l +l +l ~r ~b ~b ~o ~G ~o 
+   2 #l #w #w #c #c #c #G ~g #w #w #l #l +b +l #G #G 
+   3 #w #w #w #c #c #c +G ~g #l #l #l #l #l ~c #o #o 
+   4 +l +l +l +l +l +l +G +G +l +l #o #c +k ~l ~l ~l 
+   5 ~o ~o ~o ~o ~o ~o +G +G ~o ~l ~o ~c ~r ~b ~g ~g 
+   6 #o #o #o #l #c #l +k ~l +l ~G ~o ~o +o +o ~o ~g 
+   7 #o #o #o #l #c #l +k ~l ~o ~o ~l ~b ~l ~b +o +l 
+   8 +o +o +o +o +o +o #b #b #c #l +l ~l +g +l ~o ~o 
+   9 ~b ~b ~b ~g ~g ~g #b #b +l +o ~o ~c +b ~o +o +o 
+  10 #b #b #b #b #b #b #b #b +o +o +g +l #c #l ~g ~g 
+  11 #b #b #b #b #b #b #b #b +o +G +o +g +c +o +w +l 
+  12 #b #b #b #b #b #b #b #b +G +G ~o ~o ~o ~o ~g +o 
+  13 #c #l #l ~b ~b ~b ~b +l #g #g +l #g ~g +l #o #o 
+  14 #l #o #o #b #b #b #b +o +l +l +l +o ~b #o +o #o 
+  15 #b #b #b ~b ~b ~b ~b +b #l +l #l +o +b +o +o ~o 

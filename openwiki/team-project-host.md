@@ -301,14 +301,22 @@ Manual wire check used the actual109MB canonical document plus its asset patch: 
 남은 비용: 참고문서 이미지가 여전히 프로젝트 문서 안에 있다(`tilesets[].referenceDocuments`).
 문서를 가볍게 하려면 에셋으로 분리해야 한다 — 스키마 변경이라 별도 작업이다.
 
-### 새 프로젝트 첫 칠하기 저장 (2026-09-26)
+### 저장 경로의 전체 복제·직렬화 제거 (2026-09-26~27)
 
-새 폴더의 빈 프로젝트 문서는 81MB다(타일셋 68MB · 공용 그림 dataURL 16MB, 공용 번들 계약으로 복사).
-실측(oprn-serve 새 폴더 + Playwright, 박스 load 15~50):
+82MB 문서(타일셋 354칸, 새 폴더 빈 프로젝트는 81MB — 공용 번들 계약으로 복사)에서 자동저장 한 번을 재며 걷어낸 것.
 
-- 타일 참고문서 응답만 인라인 dataURL 이라, 늦게 적용되면 295개 타일셋 문서가 인라인으로 되돌아가
-  첫 저장이 60초 넘게 안 끝났다. 이제 카탈로그와 같은 `/__oprn/shared-content/image/` 주소로 보낸다(늦은 적용 no-op).
-- `store.saveMapPatch` 는 `baseSha` 가 저장 행과 같으면 3자 병합을 건너뛴다(15.1s → 5.0s, 같은 문서 bun).
-- 렌더러 `persistCurrent` 는 제출본에 기준본의 요약 기억을 넘긴다(`shareContentDigests`, diff 3.8s → 1.1s).
-- 그래도 첫 칠하기 → 「자동 저장됨」은 부하에서 20초 이상이다. 저장 한 번이 문서 크기(81MB)에 비례하므로
-  남은 바닥은 위 스키마 분리다. 그 전에 새로고침하면 마지막 칠하기가 사라질 수 있다.
+- 저장 영수증 `contentIdentity` 는 처음 읽힐 때 `acceptedBaseline` 으로 계산한다(읽는 곳은 조수 실행의
+  저장 증명·체크포인트뿐). 값은 `jsonContentDigest`(저장 보기) — 재로드 검증도 같은 함수를 쓴다.
+  정규화에 실패하면 `unavailable:` 표식을 돌려주고 `verifyPersistedRevision` 이 `failed` 로 끝난다.
+- 로컬 어댑터(`electronRepository`, `returnsSubmittedCopy`)에는 스토어가 **복제 없는 보기**를 넘긴다.
+  어댑터는 옛 기준본 + 와이어 패치 값으로 제출 내용의 사적 사본(`submitted`)을 만든다 — 비용이 변경량에
+  비례하고 `serialize` 결과는 호스트 행과 같다. 스토어는 가지를 **교체**만 하므로 보기가 가리키는 내용은
+  제출 때 그대로다(세대 없는 제자리 편집도 값 비교라 다음 저장에 잡힌다).
+- 맵 패치 비교는 `diffProjectDocumentsSliced` 로 12ms 조각씩 돈다(한 번에 약 1.1s 정지였다). 동기 판과 같은 코드다.
+- `projectWireView` 는 버려진 키가 없는 타일셋을 같은 객체로 둔다 — 같은-객체 단축이 살아 비교가 거의 공짜다.
+- 호스트: `store.saveMapPatch` 는 `baseSha` 가 저장 행과 같으면 3자 병합을 건너뛴다. 메타만 읽는 쿼리와
+  문서 문자열 캐시로 `info()` 가 81MB 를 끌어오지 않는다. 패치 로컬 문서는 저장 행을 새로 파싱해 제자리 복구한다.
+
+실측(새 폴더 · oprn-serve · Playwright, 박스 load 22~35): 칠하기 획의 최장 메인 스레드 정지 12~13s → 0.1~0.46s.
+「자동 저장됨」까지는 7~11s 이고 대부분 호스트 쓰기(81MB 직렬화·해시·SQLite)다 — 남은 바닥은 문서 분리다.
+두 경로 모두 웹(HTTP 브리지)과 Electron(IPC)이 같은 `electronRepository`·`store` 코드를 탄다.

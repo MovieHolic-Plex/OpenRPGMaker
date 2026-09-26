@@ -1,4 +1,4 @@
-import { ensureSharedTileReferences } from "./sharedTileReferences";
+import { applySharedTileReferenceEntries, ensureSharedTileReferences, sharedTileReferencesTouch } from "./sharedTileReferences";
 import { externalizeBundledReferenceImages } from "./bundledReferenceImages";
 import { canWriteTeamProject } from './teamAccess';
 import { mergeTeamProject } from "./persistence/core/teamMerge";
@@ -45,6 +45,7 @@ import type { ProjectRepository } from "./persistence/types";
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
 import { repairMapTreeOrphans } from "@/project/mapTree";
 import { cloneExtraLayers } from "@/project/mapLayers";
+
 import { jsonEqual, normalizationFingerprint } from "@/util/structuralJson";
 import { randomUuid } from "@/util/id";
 import { createLogger } from "@/util/logger";
@@ -115,12 +116,18 @@ export type AutoSaveState =
       readonly code?: "session-not-persisted";
     };
 
+/** contentIdentity prefix for an accepted save whose content could not be normalized; never equals a real SHA-256. */
+const UNAVAILABLE_CONTENT_IDENTITY = "unavailable:";
+
 /** In-memory accepted-save token; contains no credentials or mutable project data. */
 export type ProjectPersistenceReceipt = {
   readonly revisionId: string;
   readonly projectId: string;
   readonly mutationGeneration: number;
-  /** Content digest of the saved form (drafts dropped, wire view). Same value ⇔ same saved JSON (key order ignored). */
+  /**
+   * Content digest of the saved form (drafts dropped, wire view). Same value ⇔ same saved JSON (key order ignored).
+   * Computed on first read from the accepted (never-mutated) baseline — see persistCurrent.
+   */
   readonly contentIdentity: string;
   readonly sha256?: string;
   readonly serverRevision?: number;
@@ -220,7 +227,17 @@ export function setDevProjectFactory(factory: DevProjectFactory | null): void {
   devProjectFactory = factory;
 }
 class ProjectStore {
-  private current: Project;
+  private currentValue: Project | null = null;
+  /**
+   * 로드 전 자리표시 프로젝트는 처음 읽을 때 만든다. 생성자에서 만들면 부팅마다 load() 가
+   * 곧바로 버리는 빈 프로젝트를 한 벌 더 지었다(2026-09-26 실측 약 0.4~1s, 타일셋 30여 벌).
+   */
+  private get current(): Project {
+    return this.currentValue ??= createBlankProject();
+  }
+  private set current(project: Project) {
+    this.currentValue = project;
+  }
   private listeners = new Set<Listener>();
   private autoSaveListeners = new Set<AutoSaveListener>();
   private autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
@@ -275,7 +292,6 @@ class ProjectStore {
   }
 
   constructor() {
-    this.current = createBlankProject();
     this.boundOnlineHandler = () => this.onNetworkRestored();
     // 존재만 보지 않고 **능력**을 본다. 테스트가 심는 부분 스텁 window 에는 addEventListener 가
     // 없어서 `typeof window !== "undefined"` 만으로는 생성자가 던졌고, 그 결과 저장/로드
@@ -818,29 +834,6 @@ class ProjectStore {
     });
   }
 
-  /**
-   * 부팅 뒤 늦게 도착한 공용 타일 참고문서를 열린 프로젝트에 반영한다(main.ts 가 부팅을 막지 않으려 뒤로 뺐다).
-   * 로드 정규화의 sharedTileReferences 단계와 같은 결과를 같은 system 표식으로 남기고, 바뀐 게 없으면
-   * 변이·자동저장을 만들지 않는다 — 응답이 로드 전에 와서 정규화가 이미 반영했으면 여기서는 no-op 이다.
-   */
-  applySharedTileReferences(): void {
-    if (!this.loaded || !canWriteTeamProject()) return;
-    const draft: Project = cloneProjectSharingReferenceDocuments(this.current);
-    if (!ensureSharedTileReferences(draft)) return;
-    assertCanonicalReplacement(draft, this.writeAuthority);
-    this.current = draft;
-    syncEventDraftVaultFromProject(this.current);
-    const change: ProjectChangeDescriptor = {
-      scope: "system",
-      label: "프로젝트 정규화 (공용 타일 참고문서 늦은 적용)",
-      origin: "system",
-      fields: [{ path: "sharedTileReferences", after: true }],
-    };
-    this.markLocalMutation(change);
-    this.emit(change);
-    this.scheduleAutoSave();
-  }
-
   update(mutator: (draft: Project) => void, change: ProjectChangeDescriptor = { scope: "project" }): void {
     if (!canWriteTeamProject()) return;
     const draft: Project = cloneProjectSharingReferenceDocuments(this.current);
@@ -1038,6 +1031,9 @@ class ProjectStore {
       if (!this.remotePersistenceEnabled) return { kind: "disabled", receipt };
       if (!read) return { kind: "failed", receipt, message: "Saved project not found" };
       if (read.projectId !== receipt.projectId) return { kind: "mismatch", receipt, reason: "target" };
+      if (receipt.contentIdentity.startsWith(UNAVAILABLE_CONTENT_IDENTITY)) {
+        return { kind: "failed", receipt, message: "Accepted project could not produce a content identity" };
+      }
       const observedIdentity = persistedContentIdentity(read.project);
       if (options.signal?.aborted) return { kind: "cancelled", receipt };
       if (!this.remotePersistenceEnabled) return { kind: "disabled", receipt };
@@ -1454,30 +1450,31 @@ class ProjectStore {
     // 아래 mergeTeamProject · 기준본 교체는 savedProject !== submittedProject 인 경우에만 돌고,
     // delta 결과는 대입 전에 structuredClone 된다. 에쿠가 오면(팀 및합) 그때만 복제한다.
     const acceptedBaseline = savedProject === submittedPrivate ? submittedPrivate : projectWithoutEventDrafts(savedProject);
-    let receipt: ProjectPersistenceReceipt | undefined;
-    try {
-      // Capture accepted content before the hash await; never derive it from live getCurrent().
-      // 요약 캐시(jsonContentDigest)는 바뀜 가지만 다시 계산한다. 예전의 전체 정렬 직렬화 + SHA-256 은
-      // 저장마다 문서 전체를 다시 돌았다(2026-09-26 실측, 81MB 새 프로젝트 부하 시 수 초).
-      // 정체성은 처음 읽힐 때 만든다(AI 실행 증명·체크포인트만 읽는다). 기준본은 사적이고 바뀌지 않으므로
-      // 늦게 계산해도 같은 값이다 — 저장마다 요약 한 번(실측 약 0.3s 메인 스레드)을 아낀다.
-      let identity: string | undefined;
-      const fields = {
-        revisionId: randomUuid(),
-        projectId: target.projectId,
-        mutationGeneration: generationAtSubmit,
-        ...(result.sha256 ? { sha256: result.sha256 } : {}),
-        ...(result.authority?.mode === "canonical" && result.authority.revision !== undefined ? { serverRevision: result.authority.revision } : {}),
-      };
-      receipt = Object.freeze(Object.defineProperty(fields, "contentIdentity", {
-        enumerable: true,
-        get: () => (identity ??= persistedContentIdentity(acceptedBaseline)),
-      }) as ProjectPersistenceReceipt);
-      this.persistenceTargets.set(receipt, { target, contentLineage: lineageAtSubmit, projectAtSubmit });
-    } catch (error) {
-      // Intermediate projects may save but cannot supply normalized proof. Preserve flush compatibility.
-      log.warn("Accepted project could not produce a persistence receipt", error);
-    }
+    // 영수증의 contentIdentity 는 처음 읽힐 때 계산한다. 읽는 곳은 조수 실행의 저장 증명·체크포인트뿐이고,
+    // 사람의 자동저장은 한 번도 읽지 않는다. 대상 acceptedBaseline 은 persistedBaseline 으로 교체만 될 뿐
+    // 제자리 수정되지 않으므로 늦게 계산해도 같은 값이다. 요약 캐시(jsonContentDigest)라 바뀐 가지만 다시 계산한다.
+    // 계산이 실패하면(정규화할 수 없는 중간 문서) 어느 읽기와도 맞지 않는 표식을 돌려 증명을 실패시킨다.
+    const revisionId = randomUuid();
+    let contentIdentity: string | undefined;
+    const receipt: ProjectPersistenceReceipt = Object.freeze({
+      revisionId,
+      projectId: target.projectId,
+      mutationGeneration: generationAtSubmit,
+      get contentIdentity(): string {
+        if (contentIdentity === undefined) {
+          try {
+            contentIdentity = persistedContentIdentity(acceptedBaseline);
+          } catch (error) {
+            log.warn("Accepted project could not produce a content identity", error);
+            contentIdentity = `${UNAVAILABLE_CONTENT_IDENTITY}${revisionId}`;
+          }
+        }
+        return contentIdentity;
+      },
+      ...(result.sha256 ? { sha256: result.sha256 } : {}),
+      ...(result.authority?.mode === "canonical" && result.authority.revision !== undefined ? { serverRevision: result.authority.revision } : {}),
+    });
+    this.persistenceTargets.set(receipt, { target, contentLineage: lineageAtSubmit, projectAtSubmit });
     recordManualProjectCommitAfterSave(savedProject, commitBaseline);
     // Historical saves retain proof, but cannot adopt a baseline, metadata or dirty state
     // into a replacement project (including a replacement during the hash await).
@@ -1656,6 +1653,23 @@ class ProjectStore {
         this.scheduleAutoSave();
       }
     }
+  }
+
+  /**
+   * 부팅 뒤 도착한 공용 타일 참고문서를 현재 프로젝트에 보강한다. 부팅 정규화와 같은 함수를 쓰고, 바뀐 것이
+   * 있을 때만 시스템 변경으로 남기고 자동저장한다. 로드 전이거나 읽기 전용이면 손대지 않는다 — 다음 로드의 정규화가 한다.
+   */
+  applySharedReferenceRefresh(): boolean {
+    if (!this.loaded || this.currentValue === null || !canWriteTeamProject() || this.readOnlyProjectSnapshot) return false;
+    // 보강할 타일셋이 없으면 프로젝트를 복제하지 않는다(대부분의 프로젝트가 이 경우다).
+    if (!sharedTileReferencesTouch(this.current)) return false;
+    const draft = cloneProjectSharingReferenceDocuments(this.current);
+    if (!applySharedTileReferenceEntries(draft)) return false;
+    this.current = draft;
+    this.markLocalMutation({ scope: "system", origin: "system", label: "공용 타일 참고문서 갱신", fields: [{ path: "sharedTileReferences", after: true }] });
+    this.emit({ scope: "project", origin: "system" });
+    if (this.remotePersistenceEnabled) this.scheduleAutoSave();
+    return true;
   }
 
   /** 주소창에 ?project=&name= 반영 (공유/북마크). 로컬 폴더 대상에서는 주소가 아니라 폴더가 정본이다. */

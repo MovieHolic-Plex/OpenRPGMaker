@@ -402,6 +402,19 @@ export function isThemePackTileset(tileset: Pick<TilesetDef, "image">): boolean 
   return tileset.image.type === "bundled" && THEME_PACKS.some((pack) => pack.textureKey === tileset.image.id);
 }
 
+/** Tiles whose layer the theme pack writes on every harness pass, or null for tilesets without a pack. */
+export function themePackContractTiles(tileset: Pick<TilesetDef, "image">): ReadonlySet<number> | null {
+  const pack = themePackForTileset(tileset);
+  if (!pack) return null;
+  let tiles = contractTilesByPack.get(pack.id);
+  if (!tiles) {
+    tiles = new Set(pack.groups.flatMap(group => group.tileIds));
+    contractTilesByPack.set(pack.id, tiles);
+  }
+  return tiles;
+}
+const contractTilesByPack = new Map<string, ReadonlySet<number>>();
+
 function themePackForTileset(tileset: Pick<TilesetDef, "image">): ThemeMetadataPack | null {
   if (tileset.image.type !== "bundled") return null;
   return THEME_PACKS.find((pack) => pack.textureKey === tileset.image.id) ?? null;

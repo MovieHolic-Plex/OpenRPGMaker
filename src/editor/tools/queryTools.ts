@@ -12,6 +12,7 @@ import { cellLayerTiles } from "@/project/mapLayers";
 import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness/combinedTown";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { defaultToolTilesetId } from "@/project/defaults/forestHarmony";
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import { checkReachability, type Point as ReachPoint } from "@/project/lint/reachability";
@@ -495,7 +496,7 @@ const queryTiles: ToolDefinition = {
   parameters: {
     type: "object",
     properties: {
-      tilesetId: { type: "string", description: "생략 시 시작 맵의 타일셋" },
+      tilesetId: { type: "string", description: "생략 시 시작 맵의 타일셋(없으면 숲마을)" },
       role: { type: "string", description: "palette role 또는 tileMeta.role" },
       category: { type: "string", description: "tileMeta category/role 또는 tileGroup role" },
       presetId: { type: "string", description: "pp_ 프리셋 id(prefix 생략 가능)" },
@@ -505,7 +506,7 @@ const queryTiles: ToolDefinition = {
     },
   },
   run(project, args): ToolExecResult {
-    const tilesetId = typeof args.tilesetId === "string" ? args.tilesetId : project.maps[project.startMapId]?.tilesetId ?? DEFAULT_TILESET_ID;
+    const tilesetId = typeof args.tilesetId === "string" ? args.tilesetId : defaultToolTilesetId(project);
     const tileset = project.tilesets[tilesetId];
     if (!tileset) throw new ToolError(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { code: "tileset-not-found" });
     const presetId = typeof args.presetId === "string" && args.presetId.trim().length > 0 ? normalizePalettePresetId(args.presetId) : undefined;

@@ -16,6 +16,13 @@ export const DEFAULT_SEED = 1;
 /** 시나리오가 쓸 수 있는 op 종류. 목록 밖은 정규화 단계에서 거부한다. */
 export const OP_KINDS = [
   "audioAction",
+  // 인라인 CSS 사용자 속성 값 대기(ct-engine: 적 이동 뒤 렌더 좌표).
+  "waitForStyleVar",
+  // 하위 op 묶음을 조건이 설 때까지 되풀이(ct-engine: 적이 쓰러질 때까지 공격).
+  "repeatUntil",
+  // 파티 동료 수·키와 선두 교대를 상태로 기다린다(ct-field).
+  "waitForFollowers",
+  "waitForLeader",
   "seed",
   "setVitals",
   "dir",
