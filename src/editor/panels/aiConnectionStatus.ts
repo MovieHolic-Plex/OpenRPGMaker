@@ -61,7 +61,24 @@ function isUsableCredential(status: CachedOAuthStatus): boolean {
 
 let aiOAuthCachedStatus: CachedOAuthStatus | null = null;
 let refreshInFlightProviderId: string | null = null;
+let refreshInFlight: Promise<void> | null = null;
 let refreshGeneration = 0;
+/** 캐시가 바뀔 때마다 오른다 — 진행 중인 조회에 합류한 호출부가 변화를 알아채는 데 쓴다. */
+let cacheVersion = 0;
+
+/**
+ * 캐시가 바뀌면 window 에 알린다. 조회를 시작한 호출부의 onChange 만 부르면, 다른 호출부
+ * (부팅 warm-up·설정 모달)가 받은 결과를 잠금 막·칩이 영영 모른다 — 2026-09-26 실측:
+ * Google 에 로그인돼 있는데 첫 조회가 실패한 뒤 막이 「AI 연결이 필요합니다」 로 남았다.
+ */
+export const AI_CONNECTION_STATUS_CHANGED_EVENT = "oprn:ai-connection-status-changed";
+
+function markCacheChanged(): void {
+  cacheVersion += 1;
+  if (typeof window !== "undefined" && typeof window.dispatchEvent === "function") {
+    window.dispatchEvent(new CustomEvent(AI_CONNECTION_STATUS_CHANGED_EVENT));
+  }
+}
 
 type AiConnectionStatusCore = Omit<AiConnectionStatus, "providerId" | "providerLabel">;
 
@@ -228,14 +245,27 @@ export async function refreshAiConnectionStatus(onChange?: () => void): Promise<
     // 모드 전환 시 이전 OAuth 캐시가 남아 ready 로 오인되지 않도록 초기화.
     if (aiOAuthCachedStatus) {
       aiOAuthCachedStatus = null;
+      markCacheChanged();
       onChange?.();
     }
     return;
   }
   const providerId = parseOhMyPiProvider(config.providerId);
-  const generation = refreshGeneration;
-  if (refreshInFlightProviderId === providerId) return;
+  if (refreshInFlightProviderId === providerId && refreshInFlight) {
+    // 합류: 곧바로 돌아가면 호출부가 낡은 캐시로 다시 칠하고 결과를 영영 못 받는다.
+    const before = cacheVersion;
+    await refreshInFlight;
+    if (cacheVersion !== before) onChange?.();
+    return;
+  }
   refreshInFlightProviderId = providerId;
+  const run = runRefresh(providerId, onChange);
+  refreshInFlight = run;
+  await run;
+}
+
+async function runRefresh(providerId: string, onChange?: () => void): Promise<void> {
+  const generation = refreshGeneration;
   try {
     const auth = await fetchChatGptAuthStatus(providerId);
     // 로그인/로그아웃이 reset 뒤 새 조회를 시작했다면, 그보다 먼저 시작한 부팅 조회가 늦게 와도
@@ -259,7 +289,10 @@ export async function refreshAiConnectionStatus(onChange?: () => void): Promise<
       aiOAuthCachedStatus.serverMessage !== undefined;
     aiOAuthCachedStatus = next;
     consecutiveTimeouts = 0;
-    if (changed) onChange?.();
+    if (changed) {
+      markCacheChanged();
+      onChange?.();
+    }
   } catch (error) {
     if (generation !== refreshGeneration || parseOhMyPiProvider(loadAiConfig().providerId) !== providerId) return;
     // (B) 서버가 응답했지만 실패(4xx/5xx) — 서버가 알려준 원인을 캐시에 담아 툴팁에 노출한다.
@@ -291,12 +324,16 @@ export async function refreshAiConnectionStatus(onChange?: () => void): Promise<
       aiOAuthCachedStatus.serverMessage !== serverMessage ||
       aiOAuthCachedStatus.connected !== false;
     aiOAuthCachedStatus = next;
-    if (changed) onChange?.();
+    if (changed) {
+      markCacheChanged();
+      onChange?.();
+    }
   } finally {
     // 무효화된 옛 요청의 finally 가 같은 제공자의 새 요청을 in-flight 목록에서 지우면 중복 조회가
     // 다시 허용된다. 시작 세대가 아직 현재일 때만 자기 슬롯을 반납한다.
     if (generation === refreshGeneration && refreshInFlightProviderId === providerId) {
       refreshInFlightProviderId = null;
+      refreshInFlight = null;
     }
   }
 }
@@ -309,4 +346,5 @@ export function resetAiConnectionStatusCache(): void {
   // 폐기하고 슬롯을 비워야 applyStatus 직후의 재조회가 실제로 시작된다.
   refreshGeneration += 1;
   refreshInFlightProviderId = null;
+  refreshInFlight = null;
 }

@@ -16,6 +16,7 @@ vi.mock("@/ai/llmClient", async (importOriginal) => {
 });
 vi.mock("@/editor/panels/aiChatPanelHelpers", () => ({ isAiConfigReady: () => state.ready }));
 vi.mock("@/editor/panels/aiConnectionStatus", () => ({
+  AI_CONNECTION_STATUS_CHANGED_EVENT: "oprn:ai-connection-status-changed",
   getAiConnectionStatus: () => ({ kind: state.ready ? "ready" : "disconnected" }),
   // revalidate 가 캐시를 새로 읽는 경로 — mock 에서는 동기적으로 콜백만 부른다.
   refreshAiConnectionStatus: async (onChange?: () => void) => { onChange?.(); },
