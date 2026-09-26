@@ -15,6 +15,11 @@ import type { PiApplyMode } from "./applyMode";
 import { buildPiIntentNote, resolvePiRunPlan, type PiRunPlan } from "./executionRoute";
 import type { PiAgentMode, PiAgentRequest, PiAgentThinkingLevel } from "./protocol";
 import type { PiTeamSpec } from "./teamSpec";
+// 정의는 잎 모듈(`./thinkingLevel`)에 둔다 — Bun 워커가 같은 함수를 권위 경계에서 부르는데, 이 파일은
+// 편집기 모듈(sessionToolExposure·authorVillageScope)을 끌고 와서 워커가 임포트하면 그 프로세스가 깨질 수 있다.
+// 기존 호출자·테스트가 이 모듈에서 쓰던 이름을 그대로 쓰도록 다시 내보낸다.
+export { normalizePiThinkingLevel } from "./thinkingLevel";
+import { normalizePiThinkingLevel } from "./thinkingLevel";
 import { resolveVillageContract, type VillageContract } from "./villageContract";
 import { MODERN_MAP_INITIAL_TOOLS, requestsModernMap } from '../modernTilesetPolicy';
 
@@ -173,8 +178,16 @@ export function buildPiRunRequest(input: {
   readonly toolDomains?: readonly string[];
   readonly initialToolNames?: readonly string[];
   readonly teamSpec?: PiTeamSpec;
+  /** 자율성 다이얼이 푼 사고 강도(`resolvePiRunPlan(...).thinkingLevel`). `preferCallerThinking` 없이는 쓰이지 않는다. */
+  readonly callerThinkingLevel?: PiAgentThinkingLevel;
+  /** 다이얼을 역할·Ultrabrain 설정보다 앞세운다. 두 입력을 다 비운 옛 호출자는 예전 그대로 역할 값을 쓴다. */
+  readonly preferCallerThinking?: boolean;
 }): PiAgentRequest {
   const brainRun = input.planOnly || input.team;
+  const effectiveProvider = brainRun ? input.brain.providerId! : input.deep.provider;
+  // 다이얼을 안 실은 턴은 여전히 역할 값이다 — 계획·팀 턴은 Ultrabrain 강도로 돌아서 계획을 몰래 낮추지 않는다.
+  const roleLevel = (brainRun ? input.brain.reasoningEffort : input.deep.thinkingLevel) as PiAgentThinkingLevel;
+  const level = input.preferCallerThinking && input.callerThinkingLevel ? input.callerThinkingLevel : roleLevel;
   return {
     mode: input.team ? "team" : "single",
     applyMode: input.applyMode,
@@ -192,7 +205,7 @@ export function buildPiRunRequest(input: {
     ...(input.mapBundleMerge ? { mapBundleMerge: true } : {}),
     ...(input.readOnly ? { readOnly: true } : {}),
     ...(input.maxTurns === undefined ? {} : { maxTurns: input.maxTurns }),
-    thinkingLevel: (brainRun ? input.brain.reasoningEffort : input.deep.thinkingLevel) as PiAgentThinkingLevel,
+    thinkingLevel: normalizePiThinkingLevel(effectiveProvider, level),
     ...(input.toolDomains && input.toolDomains.length > 0 ? { toolDomains: input.toolDomains } : {}),
     ...(input.initialToolNames ? { initialToolNames: input.initialToolNames } : {}),
     ...(input.teamSpec ? { team: input.teamSpec } : {}),
