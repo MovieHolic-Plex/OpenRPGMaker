@@ -1336,3 +1336,145 @@ def ex_port(ctx):
     c.obj('shipdeco_cabin_door', 25, 1, over=True)
     c.kind(1, 'A2:3', path([(25, 5), (25, 7)], 1))
     return c
+
+
+
+@example
+def ex_autumn_forest(ctx):
+    """가을 숲 오솔길 34×24 — 단풍 든 숲(큰 참나무·전나무 쌍·자작·과실수 섞음) · 굽은 흙 오솔길 · 연못과 개울 · 작은 A3 오두막 하나(문·창·장작) ·
+    숲 바닥은 가을 낙엽·버섯·고사리(2층·3층). 나무는 덩이로 모으고 오솔길 양옆은 비운다. 좌우 대칭 금지."""
+    c = Canvas(ctx, 'rasak_seasons', 34, 24, 'ex_autumn_forest', 'Rasak 예제 · 가을 숲 오솔길(단풍 숲·연못·오두막)')
+    c.kind(1, 'A2:8', rect(0, 0, 34, 24))                                   # 짙은 풀밭(가을 숲 바닥)
+    c.kind(1, 'A2:16', blob(2, 2, [(0, 6), (-1, 8), (0, 7), (1, 5)]) + blob(22, 15, [(1, 7), (0, 9), (0, 10), (1, 8), (2, 6)]))   # 흙 숲바닥 얼룩
+    trail = path([(0, 12), (6, 12), (9, 9), (15, 9), (18, 13), (25, 13), (28, 10), (33, 10)], width=2)
+    c.kind(1, 'A2:9', trail)
+    c.kind(1, 'A1:0', blob(10, 16, [(1, 4), (0, 6), (-1, 7), (0, 6), (2, 3)]))   # 연못
+    c.kind(1, 'A1:0', path([(13, 21), (14, 23)], 1))                          # 개울(맵 밖으로)
+    # 오두막(문·창·장작) — 오솔길 북쪽
+    house(c, 19, 2, 6, 'A3:18', 'A3:25', roof_h=2, wall_h=2)
+    c.kind(1, 'A2:9', path([(22, 7), (22, 12)], 1))
+    # 오두막 앞마당: 쓰러진 통나무 · 그루터기 · 버섯 무리 · 낙엽 덩이(길 양옆)
+    for oid, x, y in (('trees_fall_log_diag', 19, 9), ('trees_fall_broken_stump', 24, 8), ('trees_fall_hollow_base', 19, 11),
+                      ('floor_fall_stump_moss', 24, 11), ('trees_fall_log_moss', 20, 12), ('floor_fall_mushrooms_scatter', 23, 10)):
+        c.try_obj(oid, x, y)
+    c.kind(2, 'A2:13', [(20, 8), (21, 8), (23, 8), (20, 10), (24, 10), (21, 11), (23, 12), (18, 10), (25, 9)])
+    # 숲 덩이: 큰 나무를 먼저 네 무리로, 오솔길·연못·오두막 앞은 비움
+    import random
+    rnd = random.Random(21)
+    groves = [(0, 0, 9, 8), (26, 0, 8, 9), (0, 15, 8, 9), (24, 16, 10, 8), (12, 0, 6, 6), (16, 17, 7, 7), (10, 11, 5, 3), (28, 12, 6, 3)]
+    bigs = ['trees_fall_oak_big', 'trees_fall_fir_pair_a', 'trees_fall_fir_pair_b', 'trees_fall_gnarled_leafy', 'trees_fall_tall_leafy']
+    mids = ['trees_fall_birch_leafy', 'trees_fall_round_small', 'trees_fall_small_leafy_a', 'trees_fall_small_leafy_b', 'trees_fall_sparse_leafy', 'trees_fall_fruit_a']
+    for gx, gy, gw, gh in groves:
+        for _ in range(40):
+            c.try_obj(bigs[rnd.randrange(len(bigs))], gx + rnd.randrange(gw), gy + rnd.randrange(gh))
+        for _ in range(60):
+            c.try_obj(mids[rnd.randrange(len(mids))], gx + rnd.randrange(gw), gy + rnd.randrange(gh))
+    # 숲 바닥 소품: 낙엽·버섯·고사리 — 나무 무리 가장자리에 덩이로
+    floor = [o['id'] for o in c.ctx.names['bundles'][c.b]['objects'] if o['id'].startswith('floor_fall_') and o['size'] in ([1, 1], [2, 1], [1, 2])]
+    for _ in range(260):
+        x, y = rnd.randrange(34), rnd.randrange(24)
+        near_tree = any((3, (y + dy) * c.w + x + dx) in c.owner for dx in (-2, -1, 1, 2) for dy in (-1, 0, 1) if 0 <= x + dx < 34 and 0 <= y + dy < 24)
+        if near_tree and rnd.random() < 0.6:
+            c.try_obj(floor[rnd.randrange(len(floor))], x, y)
+    # 낙엽(2층)은 오솔길 가장자리와 나무 사이 빈 풀에 덩이로 — 1칸씩 흩지 않고 3~5칸 붙여서
+    for cx, cy in [(3, 10), (8, 14), (12, 7), (16, 11), (21, 15), (26, 11), (30, 8), (6, 6), (18, 5), (25, 7), (2, 14), (31, 15)]:
+        c.kind(2, 'A2:13', [(cx + dx, cy + dy) for dx, dy in ((0, 0), (1, 0), (0, 1), (-1, 0), (1, 1)) if 0 <= cx + dx < 34 and 0 <= cy + dy < 24 and c.ground(cx + dx, cy + dy) == 'floor'])
+    return c
+
+
+
+@example
+def ex_mushroom_forest(ctx):
+    """버섯 숲 32×22 — 짙은 숲바닥 · 거대 버섯(색 다른 무리) · 분홍 꿈 꽃나무 한 구석 · 거목 그루터기 · 굽은 오솔길 · 작은 연못.
+    버섯은 색끼리 무리 짓고, 1칸 버섯은 큰 버섯 발치에만. 좌우 대칭 금지."""
+    c = Canvas(ctx, 'rasak_seasons', 32, 22, 'ex_mushroom_forest', 'Rasak 예제 · 버섯 숲(거대 버섯·분홍 꽃나무·거목 그루터기)')
+    c.kind(1, 'A2:8', rect(0, 0, 32, 22))                  # 짙은 풀 숲바닥
+    c.kind(1, 'A2:16', blob(0, 0, [(0, 8), (0, 7), (0, 6), (0, 4)]) + blob(10, 14, [(1, 7), (0, 9), (0, 9), (1, 8), (2, 6), (3, 4), (4, 2)]))  # 흙 얼룩(버섯 무리 밑)
+    c.kind(1, 'A2:0', blob(18, 0, [(0, 9), (-2, 12), (-3, 14), (-2, 13), (0, 10), (3, 6)]))   # 밝은 풀 덩이(분홍 꿈 구석)
+    c.kind(1, 'A2:17', path([(0, 10), (7, 10), (11, 7), (19, 7), (23, 12), (31, 12)], width=2))
+    c.kind(1, 'A1:6', blob(4, 15, [(1, 4), (0, 6), (0, 5), (2, 2)]))
+    import random
+    rnd = random.Random(8)
+    BIG = ['mushroom_brown_mound_a', 'mushroom_brown_mound_b', 'mushroom_brown_mound_c', 'mushroom_brown_mound_d', 'mushroom_yellow_cap_lean', 'mushroom_yellow_cap_tall', 'mushroom_yellow_cap_cluster', 'mushroom_blue_cap_lean', 'mushroom_blue_cap_tall', 'mushroom_blue_cap_cluster', 'mushroom_orange_cap_lean', 'mushroom_orange_cap_tall', 'mushroom_orange_cap_cluster', 'mushroom_green_cap_lean', 'mushroom_green_cap_tall', 'mushroom_green_cap_cluster', 'mushroom_giant_brown_pair', 'mushroom_brown_mush_2x2', 'mushroom_brown_mush_2x3', 'mushroom_giant_brown_a', 'mushroom_giant_brown_b', 'mushroom_spore_ring', 'mushroom_spore_ring_stone', 'mushroom_spore_ring_red', 'mushroom_spore_ring_blue', 'mushroom_brown_mush_patch']
+    SMALL = ['mushroom_shadow_4', 'mushroom_shadow_11', 'mushroom_shadow_12', 'mushroom_shadow_13', 'mushroom_shadow_19', 'mushroom_shadow_20', 'mushroom_shadow_21', 'mushroom_pale_mush_a', 'mushroom_pale_mush_shadow', 'mushroom_pale_mush_b', 'mushroom_pale_mush_c', 'mushroom_pale_mush_d', 'mushroom_pale_mush_e', 'mushroom_pale_mush_f', 'mushroom_pale_mush_g', 'mushroom_pale_mush_h', 'mushroom_pale_mush_i', 'mushroom_brown_lump', 'mushroom_brown_lump_flat', 'mushroom_brown_lump_b', 'mushroom_purple_mush_pair', 'mushroom_blue_mush_pair', 'mushroom_green_mush_pair', 'mushroom_purple_mush_38', 'mushroom_purple_mush_39', 'mushroom_purple_mush_46', 'mushroom_purple_mush_47', 'mushroom_purple_mush_54', 'mushroom_blue_mush_55', 'mushroom_blue_mush_70', 'mushroom_blue_mush_71', 'mushroom_blue_mush_78', 'mushroom_blue_mush_79', 'mushroom_green_mush_86', 'mushroom_green_mush_87', 'mushroom_green_mush_102', 'mushroom_green_mush_103', 'mushroom_green_mush_111', 'mushroom_stalk_base_a', 'mushroom_stalk_base_b', 'mushroom_brown_mush_small_a', 'mushroom_brown_mush_small_b', 'mushroom_brown_cap_flat', 'mushroom_brown_mush_thin', 'mushroom_brown_mush_bunch', 'mushroom_blue_lamp_mush', 'mushroom_orange_lamp_mush', 'mushroom_green_lamp_mush', 'mushroom_brown_twig', 'mushroom_brown_mush_stub', 'mushroom_orange_mush_glow', 'mushroom_green_mush_glow', 'mushroom_blue_mush_glow', 'mushroom_brown_mush_tiny', 'mushroom_brown_mush_cluster', 'mushroom_brown_mush_group', 'mushroom_brown_mush_group_b', 'mushroom_brown_speck', 'mushroom_red_mush_a', 'mushroom_red_mush_b', 'mushroom_red_mush_tiny', 'mushroom_red_mush_c', 'mushroom_red_mush_d', 'mushroom_yellow_mush_tiny']
+    # 색 무리: 무리마다 한 색 계열만(이름의 색 낱말로 고름)
+    for (gx, gy, gw, gh, colour) in [(0, 0, 9, 8, 'orange'), (9, 12, 9, 10, 'blue'), (24, 14, 8, 8, 'yellow'), (11, 0, 7, 6, 'purple')]:
+        pool = [b for b in BIG if colour in b] or BIG
+        for _ in range(60):
+            c.try_obj(pool[rnd.randrange(len(pool))], gx + rnd.randrange(gw), gy + rnd.randrange(gh))
+        spool = [s_ for s_ in SMALL if colour in s_] or SMALL
+        for _ in range(80):
+            x, y = gx + rnd.randrange(gw), gy + rnd.randrange(gh)
+            if any((3, (y + dy) * c.w + x + dx) in c.owner for dx in (-1, 0, 1) for dy in (-1, 1) if 0 <= x + dx < c.w and 0 <= y + dy < c.h):
+                c.try_obj(spool[rnd.randrange(len(spool))], x, y)
+    # 분홍 꿈 구석(북동): 꽃나무 셋(색 다름) + 꽃 덤불
+    for oid, x, y in (('pinkdream_tree_magenta_a', 20, 0), ('pinkdream_cherry_pink_a', 26, 1), ('pinkdream_cherry_red', 22, 4),
+                      ('pinkdream_bush_pink_small_b', 18, 4), ('pinkdream_bush_pink_small_b', 29, 5), ('pinkdream_tree_magenta_b', 27, 7)):
+        c.try_obj(oid, x, y)
+    # 거목 그루터기 둘(오솔길 옆)
+    stumps = [o['id'] for o in c.ctx.names['bundles'][c.b]['objects'] if o['id'].startswith('gianttree_stump')]
+    for i, (x, y) in enumerate([(13, 9), (1, 12), (26, 15), (18, 17), (5, 18)]):
+        if stumps: c.try_obj(stumps[i % len(stumps)], x, y)
+    # 2층 덩이: 낙엽·풀숲을 버섯 무리 가장자리와 오솔길 양옆에 3~5칸씩
+    for cx, cy in [(8, 8), (3, 12), (15, 10), (20, 9), (25, 10), (29, 14), (22, 17), (13, 19), (6, 21), (28, 20), (17, 13), (1, 8)]:
+        c.kind(2, 'A2:13' if (cx + cy) % 2 else 'A2:7', [(cx + dx, cy + dy) for dx, dy in ((0, 0), (1, 0), (0, 1), (-1, 0), (1, 1)) if 0 <= cx + dx < c.w and 0 <= cy + dy < c.h and c.ground(cx + dx, cy + dy) == 'floor' and c.L[3][(cy + dy) * c.w + cx + dx] is None])
+    return c
+
+
+
+def shop_row(c, specs, door_obj, base_y):
+    """집 줄: specs = [(x, w, roof, wall, door_dx, sign)] — 벽 아랫줄 = base_y. 문은 벽 두 줄에(벽 아랫줄에 놓는 문 물체), 간판은 문 옆 벽걸이."""
+    for x, w, roof, wall, ddx, sign in specs:
+        house(c, x, base_y - 5, w, roof, wall, roof_h=3, wall_h=2)     # 벽 맨 아랫줄 = base_y - 1 (길 바로 윗줄)
+        c.obj(door_obj, x + ddx, base_y - 2, over=True)
+        if sign:
+            c.obj(sign, x + ddx + 1, base_y - 2, over=True)
+
+
+@example
+def ex_winter_market(ctx):
+    """겨울 장터 광장 34×24 — 판타지 도시 A3 집 줄(비늘 기와 색 다름, 문·간판) · 판석 큰길과 치우친 광장 ·
+    줄무늬 지붕 노점 셋 + 선물 더미 · 크리스마스 나무 · 장식 가로등(한쪽) · 남쪽 가죽 공방 뒤뜰(빨랫줄·무두질 통·가죽 틀). 좌우 대칭 금지."""
+    c = Canvas(ctx, 'rasak_town2', 34, 21, 'ex_winter_market', 'Rasak 예제 · 겨울 장터 광장(판타지 도시·노점·가죽 공방)')
+    PAVE = 'A2:19'
+    c.kind(1, 'A2:8', rect(0, 0, 34, 21))
+    c.kind(1, PAVE, rect(0, 5, 34, 3))                                                   # 큰길
+    c.kind(1, PAVE, blob(9, 8, [(0, 12), (-1, 14), (0, 13), (2, 10), (4, 6)]))           # 광장(남쪽으로 치우침)
+    c.kind(1, 'A2:16', rect(20, 14, 14, 7))                                              # 공방 뒤뜰 흙
+    c.kind(1, PAVE, rect(5, 8, 1, 5) + rect(26, 8, 1, 6))                              # 골목
+    shop_row(c, [(0, 6, 'A3:3', 'A3:25', 2, 'town_sign_inn'), (6, 5, 'A3:0', 'A3:9', 1, 'town_sign_item'),
+                 (11, 7, 'A3:17', 'A3:27', 3, 'town_sign_tavern'), (18, 6, 'A3:1', 'A3:12', 2, 'town_sign_armor'),
+                 (24, 5, 'A3:19', 'A3:26', 1, None), (29, 5, 'A3:4', 'A3:8', 2, 'town_sign_jewel')], 'market_door_frame_wood', 5)
+    # 남서 집(광장 옆) — 문이 광장을 본다
+    house(c, 1, 13, 5, 'A3:18', 'A3:28', roof_h=3, wall_h=2)
+    c.obj('market_door_frame_wood', 3, 16, over=True)
+    c.kind(1, PAVE, rect(3, 18, 1, 3))
+    # 광장: 노점 셋(색·물건 다름) · 선물 더미 · 크리스마스 나무 · 우물 · 긴 의자 · 장식 가로등(서쪽 줄만)
+    for oid, x, y in (('market_stall_striped_open', 8, 9), ('market_stall_striped_backwall', 14, 9), ('xmas_stall_counter', 17, 13),
+                      ('xmas_gift_pile', 12, 15), ('xmas_xmas_tree_small', 20, 9), ('town_well_roofed', 9, 15), ('town_log_bench', 15, 17),
+                      ('market_crates_pile_bread', 12, 12), ('market_crates_pile_mixed', 22, 12), ('xmas_snowman_sled', 6, 14)):
+        c.try_obj(oid, x, y)
+    for x, y in ((7, 8), (19, 8), (24, 10)):
+        c.try_obj('xmas_lamp_post_garland', x, y)
+    # 남동 가죽 공방 뒤뜰: 빨랫줄 · 무두질 통 · 가죽 틀 · 이젤
+    for oid, x, y in (('tannery_laundry_line_long', 25, 14), ('tannery_tanning_vat', 21, 17), ('tannery_hide_rack_row', 27, 18),
+                      ('tannery_hide_stretch_a', 21, 14), ('tannery_washtub', 24, 18), ('tannery_easel_a', 31, 15)):
+        c.try_obj(oid, x, y)
+    # 광장 보강: 노점 몸체 둘(과일·물약) · 수레 · 상자 · 게시 기둥
+    for oid, x, y in (('market_stall_body_fruit', 17, 10), ('market_stall_body_potions', 14, 15), ('market_cart_empty_handle', 19, 17),
+                      ('market_crates_pile_grapes', 11, 18), ('town_notice_pole', 23, 8), ('market_crates_empty_stack', 21, 15)):
+        c.try_obj(oid, x, y)
+    # 큰길 동쪽 끝·뒤뜰 북쪽 빈 곳: 우물·장작·나무 울타리·널판 더미
+    for oid, x, y in (('town_well_plain', 28, 9), ('town_bin_firewood', 31, 9), ('town_planks_stacked', 25, 11), ('town_wattle_fence_h4', 29, 12),
+                      ('town_planks_scattered', 32, 11), ('tannery_laundry_line_a', 27, 16), ('tannery_tanning_vat_b', 30, 19), ('town_wattle_fence_v4', 33, 14)):
+        c.try_obj(oid, x, y)
+    # 남서 풀밭: 울타리 두른 텃밭(흙) + 빨래 걸이
+    c.kind(1, 'A2:16', rect(0, 10, 4, 3))
+    for oid, x, y in (('town_wattle_fence_h4', 0, 9), ('town_laundry_rack', 4, 10), ('town_wattle_fence_h3', 6, 19), ('town_planks_upright', 8, 20)):
+        c.try_obj(oid, x, y)
+    # 뒤뜰 울타리(돌 울타리 kind, 2층) · 길 결
+    c.kind(2, 'A2:4', [(20, y) for y in range(14, 21)])
+    # 큰길·광장 결: 돌 조각 무더기(2층)를 길 가장자리에 2~3칸 덩이로
+    for cx, cy in [(1, 7), (9, 5), (15, 7), (22, 6), (30, 7), (13, 11), (8, 16), (17, 17), (24, 12)]:
+        c.kind(2, 'A2:20' if cx % 2 else 'A2:28', [(cx + dx, cy) for dx in (0, 1) if c.ground(cx + dx, cy) == 'floor' and c.L[3][cy * c.w + cx + dx] is None])
+    return c
