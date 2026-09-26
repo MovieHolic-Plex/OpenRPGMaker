@@ -295,7 +295,7 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
   const dropped = (reason: string): StampStepCheck => ({ dropped: `${stampTool}: ${reason}` });
   // 마을·실내에서 함정·길막 몬스터는 문장이 직접 요청할 때만(「알아서」에 섞여 나오지 않게).
   if ((stampTool === "place_trap" || stampTool === "place_battle_blocker") && isSafeArea(facts) && !asksForHostile(facts.text)) {
-    return dropped(`${facts.placement?.map.name ?? "이 맵"}은 ${facts.placement?.role.role === "town" ? "마을" : "실내"}이라 요청 없이 ${stampTool === "place_trap" ? "함정을" : "몬스터를"} 두지 않습니다(${facts.placement?.role.reason})`);
+    return dropped(`${facts.placement?.map.name ?? "이 맵"}: ${facts.placement?.role.role === "town" ? "마을" : "실내"}이라 요청 없이 ${stampTool === "place_trap" ? "함정을" : "몬스터를"} 두지 않습니다(${facts.placement?.role.reason})`);
   }
   switch (stampTool) {
     case "fill_region": {
