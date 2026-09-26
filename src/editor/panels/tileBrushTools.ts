@@ -27,23 +27,49 @@ type SelectUsedLocationInput = UsedTileLocation & {
 
 const FAVORITE_LIMIT = 12;
 const favoriteTiles: number[] = [];
+/** 즐겨찾기·최근 타일이 바뀔 때 왓쪽 활동 막대의 「즐겨찾기」 패널이 다시 그린다. */
+export const TILE_SHORTCUTS_CHANGED_EVENT = "oprn:tile-shortcuts-changed";
+function notifyTileShortcutsChanged(): void {
+  if (typeof window !== "undefined" && typeof window.dispatchEvent === "function") window.dispatchEvent(new Event(TILE_SHORTCUTS_CHANGED_EVENT));
+}
 
 export function toggleFavoriteTile(tile: number): void {
   const existingIndex = favoriteTiles.indexOf(tile);
   if (existingIndex >= 0) {
     favoriteTiles.splice(existingIndex, 1);
+    notifyTileShortcutsChanged();
     return;
   }
   favoriteTiles.unshift(tile);
   if (favoriteTiles.length > FAVORITE_LIMIT) favoriteTiles.length = FAVORITE_LIMIT;
+  notifyTileShortcutsChanged();
 }
 
 export function favoriteTilesSnapshot(): readonly number[] {
   return [...favoriteTiles];
 }
 
+const RECENT_LIMIT = 18;
+const recentTiles: number[] = [];
+
+/** 팔레트에서 고른 타일을 맨 앞에 둔다(중복은 앞으로). 팔레트 「최근」 분류와 즐겨찾기 패널이 같은 목록을 본다. */
+export function recordRecentTile(tile: number): void {
+  const existingIndex = recentTiles.indexOf(tile);
+  if (existingIndex === 0) return;
+  if (existingIndex > 0) recentTiles.splice(existingIndex, 1);
+  recentTiles.unshift(tile);
+  if (recentTiles.length > RECENT_LIMIT) recentTiles.length = RECENT_LIMIT;
+  notifyTileShortcutsChanged();
+}
+
+/** 살아 있는 배열이다 — 팔레트 필터가 매 렌더 복사하지 않고 읽는다. 쓰기는 recordRecentTile 로만. */
+export function recentTilesView(): readonly number[] {
+  return recentTiles;
+}
+
 export function clearFavoriteTilesForTest(): void {
   favoriteTiles.length = 0;
+  recentTiles.length = 0;
 }
 
 export function isFavoriteTile(tile: number): boolean {

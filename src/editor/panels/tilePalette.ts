@@ -2,6 +2,7 @@ import { el, clearChildren } from "@/util/dom";
 import { editorState } from "@/editor/editorState";
 import type { Layer } from "@/editor/editorState";
 import { getEditorChrome } from "@/editor/editorUiMode";
+import { recentTilesView, recordRecentTile } from "@/editor/panels/tileBrushTools";
 import { renderBasicLeftRail, syncBasicRailBrushStatus } from "@/editor/panels/basicLeftRail";
 import { basicTileLabel } from "@/editor/panels/basicTilePalette";
 import { renderEventEditor } from "@/editor/panels/eventEditor";
@@ -64,7 +65,6 @@ let showQuickTileNumbers = false;
 /** 맵 우클릭 스포이트 후 팔레트 타일 그림판 셀로 스크롤 (전문가 모드). */
 let pendingRevealSelectedTile = false;
 let resetChipsetScroll = false;
-const recentTiles: number[] = [];
 
 type PaletteScroll = {
   readonly containerLeft: number;
@@ -525,7 +525,7 @@ function filteredTileIdSet(tileset: TilesetDef): ReadonlySet<number> | null {
  */
 function categoryVisibleTileSet(tileset: TilesetDef, category: TileCategoryId): ReadonlySet<number> {
   if (category === "all") return new Set(Array.from({ length: tileset.count }, (_, index) => index));
-  return new Set(filterTileIndexes(tileset, { category, query: "", recent: recentTiles }));
+  return new Set(filterTileIndexes(tileset, { category, query: "", recent: recentTilesView() }));
 }
 
 /**
@@ -568,7 +568,7 @@ function filteredTileIndexes(tileset: TilesetDef): readonly number[] {
   return filterTileIndexes(tileset, {
     category: activeTileCategory,
     query: tileSearchQuery,
-    recent: recentTiles,
+    recent: recentTilesView(),
   });
 }
 
@@ -681,10 +681,7 @@ export function selectPaletteTile(index: number): void {
   // 에는 아래 editorState 변화가 tool 을 건드리지 않아 감시자가 못 잡는다 — 여기서 끊는다.
   dismissLocationDrawModeForTool("paint");
   preservePaletteViewport(() => {
-    const existingIndex = recentTiles.indexOf(index);
-    if (existingIndex >= 0) recentTiles.splice(existingIndex, 1);
-    recentTiles.unshift(index);
-    if (recentTiles.length > 18) recentTiles.length = 18;
+    recordRecentTile(index);
     const state = editorState.get();
     const tileset = currentTilesetForPalette();
     let nextLayer = state.layer;

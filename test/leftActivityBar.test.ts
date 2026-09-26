@@ -5,6 +5,8 @@ import { editorState } from "@/editor/editorState";
 import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
+import { selectPaletteTile } from "@/editor/panels/tilePalette";
+import { clearFavoriteTilesForTest } from "@/editor/panels/tileBrushTools";
 
 describe("left activity bar", () => {
   let tools: HTMLElement;
@@ -17,6 +19,7 @@ describe("left activity bar", () => {
   };
   beforeEach(() => {
     localStorage.clear();
+    clearFavoriteTilesForTest();
     resetEditorUiModeForTests("standard");
     store.replace(createBlankProject());
     editorState.set({ currentMapId: store.getCurrent().startMapId });
@@ -71,5 +74,41 @@ describe("left activity bar", () => {
     window.dispatchEvent(new Event("oprn:ai-sidebar-tools"));
     expect(workspace.root.dataset.pane).toBe("tools");
     expect(workspace.isCollapsed()).toBe(false);
+  });
+
+  it("lists all five panes, renders a pane only when it is opened, and restores the saved one", () => {
+    mount();
+    const bar = [...workspace.root.querySelectorAll<HTMLElement>('[data-testid="left-activity-bar"] button')].map((b) => b.dataset.testid);
+    expect(bar).toEqual(["sidebar-tools", "sidebar-maps", "sidebar-favorites", "sidebar-progress", "sidebar-links", "sidebar-inspect"]);
+    expect(find("left-progress-pane")?.childElementCount).toBe(0);
+    find("sidebar-progress")?.click();
+    expect(workspace.root.dataset.pane).toBe("progress");
+    expect(find("left-progress-pane")?.hidden).toBe(false);
+    expect(find("left-progress-count")?.textContent).toMatch(/^\d\/5$/);
+    expect(tools.hidden).toBe(true);
+    find("sidebar-links")?.click();
+    expect(find("left-links-summary")?.textContent).toContain("맵");
+    expect(find("left-progress-pane")?.hidden).toBe(true);
+    workspace.dispose();
+    workspace.root.remove();
+    mount();
+    expect(workspace.root.dataset.pane).toBe("links");
+    expect(find("left-links-pane")?.hidden).toBe(false);
+  });
+
+  it("collects picked tiles as recent and moves a right-clicked tile to favorites", () => {
+    selectPaletteTile(4);
+    selectPaletteTile(7);
+    mount();
+    find("sidebar-favorites")?.click();
+    const recent = () => [...workspace.root.querySelectorAll<HTMLElement>('[data-testid="left-favorites-recent"] .left-favorites-cell')].map((c) => c.dataset.tile);
+    const starred = () => [...workspace.root.querySelectorAll<HTMLElement>('[data-testid="left-favorites-starred"] .left-favorites-cell')].map((c) => c.dataset.tile);
+    expect(recent()).toEqual(["7", "4"]);
+    expect(starred()).toEqual([]);
+    find("left-favorites-recent-4")?.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true }));
+    expect(starred()).toEqual(["4"]);
+    expect(recent()).toEqual(["7"]);
+    find("left-favorites-star-4")?.click();
+    expect(editorState.get().selectedTile).toBe(4);
   });
 });
