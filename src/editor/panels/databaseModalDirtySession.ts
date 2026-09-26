@@ -68,12 +68,6 @@ export function createDatabaseModalDirtySession(options: { readonly deferred?: b
   };
 }
 
-function cloneCurrentProject(): Project {
-  // Reference document arrays are replaced atomically by their editors, as in store.update.
-  // Reuse that clone contract instead of duplicating their large image/MD payload on modal open.
-  return cloneProjectSharingReferenceDocuments(store.getCurrent());
-}
-
 /**
  * 맵을 뺀 서명. 맵을 넣으면 도크 중 타일 한 칸만 칠해도 dirty 가 되어, 되돌리지도 않을
  * 변경을 두고 「저장할까요?」를 묻게 된다.
