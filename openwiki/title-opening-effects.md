@@ -13,7 +13,7 @@ WebGL 한 장으로 얹는다. 그림은 이미지 모델로 만들고, 생성 �
 - **좌표는 배경 그림 전체 기준 0..1** 이다(화면이 아니다). cover 로 4:3 가운데를 잘라도 효과가 그림에 붙어 있다.
   빛 근원은 그림 밖(-0.5..1.5)도 허용한다.
 - 효과 모양: godRays/motes = `source`+`toward`(motes 는 `region` 도 가능), glint = `line`, water/mist/dapple = `region`,
-  glow = `source`, camera = 모양 없음. `intensity` 0..2.
+  glow = `source`, camera·parallax = 모양 없음. `intensity` 0..2. parallax 는 선택 필드 `depthResourceId`(깊이 지도 리소스)를 더 갖는다.
 
 ## 프리셋
 
@@ -116,9 +116,27 @@ WebGL 한 장으로 얹는다. 그림은 이미지 모델로 만들고, 생성 �
   런타임의 `.player-layout.system-shell { display:grid }` 는 뒤 레이어(`runtime`)라 CSS 로는 못 이긴다 — CSS 만 고치면 타이틀 폭 0 인 빈 창이 된다(실측).
   창은 `document.body` 에 붙어 자료집 `.btn` 색을 못 받으므로 아래 막대 버튼(「처음부터」·「닫기」)은 어두운 바탕용으로 직접 칠한다.
 
+## 깊이 시차 `parallax` (2026-09-26)
+
+한 장의 키아트를 여러 겹처럼 움직이는 2.5D 카메라. 레이어를 손으로 자르지 않는다.
+
+- **깊이 지도**: 흑백, 흰색=가까움·검정=멂. `src/editor/titleDepthGeneration.ts` `generateTitleDepthMap` 이 키아트를 참조 그림으로
+  `generateAiImage` 에 넘겨 같은 구도의 깊이 그림을 받고, 명도 한 채널로 바꿔 0..255 로 늘린 PNG 로 만든다.
+  편집기(`databaseSystemView.ts` `attachTitleDepthMap`)는 이를 `kind:"title"` 리소스로 `upsert_resource` 하고 켜진 parallax 효과의 `depthResourceId` 에 건다.
+- **셰이더**(`shader.ts` kind 9): 두 번째 텍스처 유닛 `uDepth` 를 읽는다. 카메라가 약 27.3초 주기로 원을 그리며,
+  픽셀마다 깊이 k 만큼 밀고 `1-0.03k` 로 확대한다. 변위가 깊이에 의존하므로 고정점을 5회 반복으로 푼다(가까운 물체 가장자리가 찢어지지 않게).
+  `uHasDepth` 가 0 이면 `smoothstep(0.25,1.05,q.y)` — **「아래쪽이 가까움」 기본 기울기**로 움직인다. 지도가 없거나 못 읽어도 멈추지 않는다.
+- **렌더러**: `createTitleEffectsCanvas({ depthUrl })` 가 TEXTURE1 로 싣고 dataset `titleEffectsDepth` = `loaded` 를 남긴다.
+  `titleScreen.ts` 가 `depthResourceId` 를 URL 로 풀고, `resourceReferenceValidation.ts` 가 참조를 검사한다.
+- **프리셋 10종 모두** `{kind:"parallax", intensity:0.8}` 를 포함한다. 효과가 한 번에 하나만 의미 있으므로 `applyTitleArtFreeFit` 은 camera 처럼 중복을 버린다.
+- **저작**: 효과 인스펙터에 세기·속도와 깊이 지도 상태(`db-title-opening-depth-status`), 「키아트로 깊이 지도 만들기」(`-depth-generate`), 지우기(`-depth-clear`).
+  카메라·시차는 색을 안 쓰므로 모양 `none` 효과에는 색 칸을 그리지 않는다. 「이 분위기로 키아트 만들기」 뒤 parallax 가 켜져 있으면 깊이 지도를 **자동으로 이어서** 만든다(실패해도 키아트는 유지).
+- **함정(실측)**: `defaultTitleEffect` 에 새 종류 case 를 빠뜨리면 undefined 를 돌려 「효과 추가」 순간 편집 창 전체가 흰 화면이 된다. 새 kind 를 넣을 때 `defaultTitleEffect`·`applyTitleArtFreeFit`·인스펙터 색 기본값 세 곳을 같이 본다.
+- 표본: `scripts/content/generate-title-depth-samples.mts` → `verify-shots/title-opening/art/*.depth.png`, 움직임 비교 webp(깊이/평면/전체) → `verify-shots/title-opening/parallax/`.
+
 ## 범위 밖 (이번에 안 한 것)
 
 - 오프닝 컷신(`system.opening`) 과 이벤트 컷신에 같은 효과 층을 얹는 것. 효과 모델이 그림 좌표 기준이라
   스틸 한 장짜리 오프닝 장면에는 그대로 붙일 수 있지만, 배선·편집 UI 는 아직 없다.
-- 시퀀스 타이밍(ms)은 편집기에서 숫자로 고치지 않는다(프리셋·도구 인자만). 스크러버·비전 채점·원근 시차·소리 박자 맞춤은 다음 단계.
+- 시퀀스 타이밍(ms)은 편집기에서 숫자로 고치지 않는다(프리셋·도구 인자만). 스크러버·비전 채점·소리 박자 맞춤은 다음 단계. 깊이 시차는 한 장 변형이라 가려졌던 뒤쪽을 새로 그리지 않는다(세기 2 근처에서 가장자리 번짐).
 - 효과 추가는 목록의 종류 선택으로만 한다. 무대에서 영역 꼭짓점을 새로 찍거나 지우는 것은 아직 없다(옮기기만 된다).
