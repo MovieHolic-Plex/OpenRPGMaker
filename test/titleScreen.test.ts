@@ -7,7 +7,6 @@ import {
   titleMenuHeight,
   titleMenuTop,
 } from "@/player/titleScreen";
-import { TITLE_KEY_PROMPT } from "@/player/keyBindings";
 import { createBlankProject } from "@/project/defaults";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import type { TitleScreenSettings } from "@/project/types";
@@ -36,6 +35,7 @@ describe("title screen", () => {
           onNewGame: () => undefined,
           onResume: () => undefined,
           onContinue: () => undefined,
+          onCredits: () => undefined,
           onQuit: () => undefined,
         }),
       );
@@ -74,6 +74,7 @@ describe("title screen", () => {
           onNewGame: () => undefined,
           onResume: () => undefined,
           onContinue: () => undefined,
+          onCredits: () => undefined,
           onQuit: () => undefined,
         }),
       );
@@ -81,12 +82,15 @@ describe("title screen", () => {
       const newGame = findByTestId(screen, "title-new-game");
       const continueGame = findByTestId(screen, "title-load-game");
       const quit = findByTestId(screen, "title-quit-game");
-      const hint = findByTestId(screen, "title-input-hint");
+      const credits = findByTestId(screen, "title-credits");
       expect(screen.textContent).toContain("용사의 밤");
       expect(newGame?.textContent).toBe("처음부터");
       expect(continueGame?.textContent).toBe("이어하기");
       expect(quit?.textContent).toBe("끝내기");
-      expect(hint?.textContent).toBe(TITLE_KEY_PROMPT);
+      expect(credits?.textContent).toBe("크레딧");
+      // 조작 안내 줄과 하단 라이선스 한 줄은 더 이상 그리지 않는다(크레딧 항목이 대신한다).
+      expect(findByTestId(screen, "title-input-hint")).toBeNull();
+      expect(findByTestId(screen, "title-license-notice")).toBeNull();
       expect(newGame?.attrs["aria-current"]).toBe("true");
       expect(continueGame?.attrs["aria-current"]).toBeUndefined();
       expect(screen.style.backgroundImage).toContain("default-title-blue.png");
@@ -98,10 +102,9 @@ describe("title screen", () => {
       expect(title.style.left).toBe("45%");
       expect(title.style.top).toBe("26.6667%");
       expect(menu.style.left).toBe("27.5%");
-      // 저작값 menuY=132 는 그대로 쓰이지 않는다. 항목 3개 + 조작 안내 창이 함께 보이면
-      // 마지막 항목이 안내 창에 가려지므로 titleMenuTop 이 116 으로 끌어올린다(=48.3333%).
-      // 규칙 자체는 아래 "clamps the menu above the input hint" 테스트가 담당한다.
-      expect(menu.style.top).toBe("48.3333%");
+      // 저작값 menuY=132 는 그대로 쓰이지 않는다. 크레딧까지 항목 4개(108px)면 무대 아래(240)를
+      // 넘으므로 titleMenuTop 이 아래 여백 8px 을 남기고 124 로 끌어올린다(=51.6667%).
+      expect(menu.style.top).toBe("51.6667%");
     } finally {
       restoreDom();
     }
@@ -120,6 +123,7 @@ describe("title screen", () => {
           onNewGame: () => undefined,
           onResume: () => undefined,
           onContinue: () => undefined,
+          onCredits: () => undefined,
           onQuit: () => undefined,
         }),
       );
@@ -135,13 +139,22 @@ describe("title screen", () => {
   it("clamps the menu above the input hint only when it would overlap", () => {
     // 회귀 방지: 이 규칙에 단위 커버리지가 없어서 위 레이아웃 테스트가 조용히 낡았다.
     const optionCount = 3;
-    // 안내 창이 없으면 저작값을 그대로 존중한다.
+    // 안내 창이 없고 무대 안에 들어가면 저작값을 그대로 존중한다.
     expect(titleMenuTop(132, optionCount, false)).toBe(132);
     // 들어갈 자리가 있으면 저작값을 그대로 존중한다.
     expect(titleMenuTop(60, optionCount, true)).toBe(60);
     // 겹치면 메뉴 아래끝이 안내 영역 위에서 끝나도록 끌어올린다.
     expect(titleMenuTop(132, optionCount, true)).toBe(240 - 40 - titleMenuHeight(optionCount));
     expect(titleMenuTop(132, optionCount, true)).toBe(116);
+    // 안내 창이 없어도 무대 밖으로는 못 나간다(크레딧까지 4~5 항목).
+    expect(titleMenuTop(148, 5, false)).toBe(240 - 8 - titleMenuHeight(5));
+  });
+
+  it("always lists credits before quit and uses the authored label", () => {
+    const settings = { ...defaultTitleScreenSettings(), menuVisibility: { newGame: true, continueGame: false, quit: true } };
+    expect(listTitleMenuOptions(settings).map((option) => option.id)).toEqual(["newGame", "credits", "quit"]);
+    const labelled = { ...settings, menuLabels: { ...settings.menuLabels, credits: "만든 사람들" } };
+    expect(listTitleMenuOptions(labelled).find((option) => option.id === "credits")?.label).toBe("만든 사람들");
   });
 
   it("uses the legacy title resource when the new title-screen background is unset", () => {
@@ -169,6 +182,7 @@ describe("title screen", () => {
           onNewGame: () => undefined,
           onResume: () => undefined,
           onContinue: () => undefined,
+          onCredits: () => undefined,
           onQuit: () => undefined,
         }),
       );
@@ -189,6 +203,7 @@ describe("title screen", () => {
           onNewGame: () => undefined,
           onResume: () => undefined,
           onContinue: () => undefined,
+          onCredits: () => undefined,
           onQuit: () => undefined,
         }),
       );
@@ -201,7 +216,7 @@ describe("title screen", () => {
       expect(screen.style.backgroundImage).toContain("oprn-title-field.png");
       expect(title.style.left).toBe("10%");
       expect(menu.style.left).toBe("10.625%");
-      expect(findByTestId(screen, "title-input-hint")?.textContent).toBe(TITLE_KEY_PROMPT);
+      expect(findByTestId(screen, "title-input-hint")).toBeNull();
     } finally {
       restoreDom();
     }
@@ -247,6 +262,7 @@ describe("title screen", () => {
           onNewGame: () => undefined,
           onResume: () => undefined,
           onContinue: () => undefined,
+          onCredits: () => undefined,
           onQuit: () => undefined,
         }, 1),
       );
@@ -494,6 +510,7 @@ describe("title screen", () => {
           onNewGame: () => undefined,
           onResume: () => undefined,
           onContinue: () => undefined,
+          onCredits: () => undefined,
           onQuit: () => undefined,
         }),
       );
@@ -526,6 +543,7 @@ describe("title screen", () => {
           onNewGame: () => undefined,
           onResume: () => undefined,
           onContinue: () => undefined,
+          onCredits: () => undefined,
           onQuit: () => undefined,
         }),
       );
@@ -550,6 +568,7 @@ describe("title screen", () => {
           onNewGame: () => undefined,
           onResume: () => undefined,
           onContinue: () => undefined,
+          onCredits: () => undefined,
           onQuit: () => undefined,
         }),
       );
@@ -665,6 +684,7 @@ describe("title screen", () => {
           onNewGame: () => undefined,
           onResume: () => undefined,
           onContinue: () => undefined,
+          onCredits: () => undefined,
           onQuit: () => undefined,
         }),
       );

@@ -78,6 +78,16 @@ export interface AiConfig {
   // 적용 모드는 DEFAULT가 기본. 이전 review 공장값은 정책 버전으로 구분한다.
   piApply?: PiApplyMode;
   piApplyPolicyVersion?: 1;
+  /**
+   * 역할 모델 정책 버전. 1 = 2026-09-26 이동 이후 저장분.
+   *
+   * 왜 필요한가(리뷰 R3 N5): 옛 모달이 적어 둔 «폴백 모양(providerId·liteModel·high)» 과 사용자가
+   * «일부러 고른 높음» 은 blob 안에서 구별되지 않는다. 모양만 보고 버리면 후자를 매 로드마다
+   * 잃는다(프리셋 「균형」·「최고 품질」 이 정확히 그 모양을 쓴다). 그래서 «이 버전이 찍힌 저장» 은
+   * 손대지 않고, 안 찍힌 옛 저장만 한 번 승격한다 — piApplyPolicyVersion 과 같은 패턴이되, 그 값은
+   * 이 PR 이전에도 이미 찍혀 있었으므로 재사용하지 않는다.
+   */
+  roleModelsPolicyVersion?: 1;
 }
 
 // 기본값. apiKey는 localStorage 우선, 비어 있으면 dev env(VITE_LLM_API_KEY 등) 폴백.
@@ -102,12 +112,20 @@ export function companionRequestBaseUrl(): string {
   return DEFAULT_CHATGPT_BASE_URL;
 }
 export const DEFAULT_CHATGPT_BASE_URL = companionCompletionsBaseUrl();
-// 공장 기본은 Antigravity Gemini 3.7 Flash — 에디터 툴콜이 Codex 보다 안정적이다.
+// 3.7 이 아니라 3.8 인 이유는 **지연 우위가 아니라 일관성**이다: Ultrabrain 역할(계획·검수)이 이미
+// 3.8-flash 를 쓰므로, 기본값만 3.7 로 남기면 한 턴 안에서 두 모델이 섞인다.
+// 3.7 대 3.8 을 실제로 쟀다(2026-09-26, 동반 서비스 직결, 각 셀 n=3 중앙값, provider-37.json 대
+// provider-reps3.json) — **3.8 이 더 빠르지 않다.** 4셀 중 3셀에서 3.7 이 같거나 빨랐다:
+// low@2k 2080(3.8) vs 2452(3.7) 만 3.8 우세, high@2k 3196 vs 3009 · low@30k 4101 vs 2923 ·
+// high@30k 6344 vs 4243 은 3.7 우세(같은 시각 두 arm 을 동시에 돌려 서로 부하를 나눠 가진 조건이다).
+// agent-low 도 3.7 중앙값 5666ms 가 3.8 6883ms 보다 짧았다(조건이 다른 시점 측정이라 지표 수준).
+// 측정으로 확정된 축은 모델 세대가 아니라 **사고 강도**다: 같은 모델에서 high/low 중앙값 1.54×(2k)·
+// 1.55×(30k), 실제 Pi 런은 중앙값 기준 1.28~1.36×.
 // 제공자는 Antigravity·Codex 둘 중 하나이고, 저장된 선택은 존중된다. providerId 가 없는
 // 옛 blob 은 기본 제공자(Antigravity)로 읽히므로 이 상수가 그 blob 의 모델 기본값이기도 하다.
-export const DEFAULT_MODEL = "gemini-3.7-flash";
+export const DEFAULT_MODEL = "gemini-3.8-flash";
 // DEFAULT_LITE_MODEL: 실행 단계용. 기본은 DEFAULT_MODEL과 동일 → 이원화 비활성.
-export const DEFAULT_LITE_MODEL = "gemini-3.7-flash";
+export const DEFAULT_LITE_MODEL = "gemini-3.8-flash";
 // 추론 토큰을 먼저 쓰는 모델 함정(실측): 짧은 max_tokens 로 호출하면 추론 토큰만 소비되고
 // content 가 빈 문자열로 돌아온다(실측: max_tokens 16 → content "" 이면서 completion 13토큰
 // 소비, 512 → 정상). 그래서 출력 예산을 넉넉히 잡는다.
@@ -212,6 +230,23 @@ export function scrubStoredAiCredentials(): {
   }
 }
 
+/**
+ * 스탬프 없는 옛 저장(roleModelsPolicyVersion !== 1)에서, 모달이 적어 둔 «당시 폴백 모양» 의
+ * 역할 Deep 을 미설정으로 본다.
+ *
+ * 왜 필요한가: 2026-09-26 이전 모달의 collect() 는 저장마다 역할 3개를 전부 썼으므로 당시 폴백이던
+ * \`{providerId, liteModel||model, "high"}\` 가 그대로 박혀 있다. 폴백이 지금 «low» 로 내려간 뒤
+ * 그 값을 «명시 설정» 으로 읽으면 다이얼이 영영 죽는다(리뷰 R2 실측 — 문제를 보고한 사용자가 이 집단이다).
+ * 스탬프가 찍힌 저장은 건드리지 않는다 — 그때의 high 는 사용자가 고른 값일 수 있다(리뷰 R3 N5).
+ * 디스크에는 쓰지 않는다(load* 가 몰래 쓰지 않는다는 규칙 그대로 — 다음 저장이 스탬프를 찍는다).
+ */
+function withoutLegacySeededDeepRole(roles: SpecialistModels, providerId: string, model: string): SpecialistModels {
+  const deep = roles.deep;
+  if (!deep || deep.provider !== providerId || deep.model !== model || deep.thinkingLevel !== "high") return roles;
+  const { deep: _legacySeeded, ...rest } = roles;
+  return rest;
+}
+
 // localStorage 로드. 저장된 값이 없거나 깨졌으면 기본값. 저장값은 기본값 위에 병합.
 //
 // **인증은 무조건 OAuth 다.** 저장값이 authMode 를 apiKey 로 되돌리지 못한다. 예전 판정은
@@ -261,7 +296,9 @@ export function loadAiConfig(): AiConfig {
       baseUrl: base.baseUrl,
       model,
       liteModel,
-      roleModels: parseRoleModels(parsed.roleModels),
+      roleModels: parsed.roleModelsPolicyVersion === 1
+        ? parseRoleModels(parsed.roleModels)
+        : withoutLegacySeededDeepRole(parseRoleModels(parsed.roleModels), providerId, liteModel || model),
       ultrabrainProviderId: parseOhMyPiProvider(parsed.ultrabrainProviderId, DEFAULT_ULTRABRAIN_PROVIDER),
       ultrabrainModel: typeof parsed.ultrabrainModel === "string" && parsed.ultrabrainModel.trim()
         ? parsed.ultrabrainModel.trim() : DEFAULT_ULTRABRAIN_MODEL,
@@ -294,6 +331,7 @@ export function loadAiConfig(): AiConfig {
       piApply: parsed.piApplyPolicyVersion !== 1 && parsed.piApply === "review"
         ? DEFAULT_PI_APPLY : normalizePiApplyMode(parsed.piApply),
       piApplyPolicyVersion: 1,
+      roleModelsPolicyVersion: 1,
     };
   } catch {
     return base;
@@ -305,7 +343,7 @@ export function saveAiConfig(config: AiConfig): void {
   // 제공자는 저장 시점에도 레지스트리 값으로 정규화한다. 프로그램 경로(설정 저장·마이그레이션)가
   // 레지스트리 밖 id 를 디스크에 남기면 다음 판독이 흔들리기 때문 — 두 제공자 중 하나로 못박되,
   // 사용자가 고른 Codex 를 Antigravity 로 되돌리지는 않는다.
-  const normalized: AiConfig = { ...config, piApplyPolicyVersion: 1, providerId: parseOhMyPiProvider(config.providerId) };
+  const normalized: AiConfig = { ...config, piApplyPolicyVersion: 1, roleModelsPolicyVersion: 1, providerId: parseOhMyPiProvider(config.providerId) };
   localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify(normalized));
 }
 

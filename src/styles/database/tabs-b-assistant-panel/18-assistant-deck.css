@@ -711,3 +711,45 @@ html[data-ai-render="off"] {
 .ai-chat-sidebar.is-collapsed .ai-chat-sidebar-segments { flex-direction: column; flex: none; background: transparent; padding: 0; gap: 8px; }
 .ai-chat-sidebar.is-collapsed .ai-chat-sidebar-tabs .ai-chat-sidebar-segments > button { flex: none; width: 36px; height: 36px; padding: 8px; }
 .ai-chat-sidebar.is-collapsed .ai-chat-sidebar-tabs .ai-chat-sidebar-segments > button[aria-pressed="true"] { background: var(--accent-muted); box-shadow: none; color: var(--accent); }
+
+
+/* ── 왼쪽 활동 막대 + 오른쪽 조수 도크 (2026-09-26) ──────────────────────────────
+   왼쪽은 48px 세로 막대(그리기·맵 … 검사)와 패널 하나다. 조수는 캔버스 오른쪽 도크에 항상 있어
+   팔레트와 동시에 쓴다. 막대는 접혀도 같은 자리·같은 모양이다(가로 탭 → 세로 레일 전환 없음). */
+.ai-chat-sidebar.has-activity-bar { flex-direction: row; min-width: 48px; }
+.ai-chat-sidebar.has-activity-bar.is-collapsed { min-width: 48px; max-width: 48px; }
+.ai-chat-sidebar.has-activity-bar > .left-activity-bar {
+  flex: 0 0 48px; width: 48px; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 8px 0; border: 0; border-right: 1px solid var(--border-subtle); background: var(--bg-inset);
+}
+.ai-chat-sidebar.is-collapsed > .left-activity-bar { flex-direction: column; padding: 8px 0; gap: 4px; border-right: 0; }
+.left-activity-group { display: flex; flex-direction: column; gap: 4px; }
+.left-activity-spacer { flex: 1; }
+.ai-chat-sidebar.has-activity-bar .left-activity-bar .left-activity-item {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  width: 40px; height: 44px; padding: 0; border: 0; border-radius: var(--radius-s); box-shadow: none;
+  background: transparent; color: var(--text-2); font: 500 11px var(--font-ui);
+}
+.ai-chat-sidebar.has-activity-bar .left-activity-bar .left-activity-item svg { width: 18px; height: 18px; flex: none; }
+.ai-chat-sidebar.has-activity-bar .left-activity-bar .left-activity-item:hover { background: var(--bg-hover); color: var(--text-1); }
+.ai-chat-sidebar.has-activity-bar .left-activity-bar .left-activity-item[aria-pressed="true"] {
+  background: var(--bg-raised); color: var(--text-1); box-shadow: none;
+}
+.ai-chat-sidebar.has-activity-bar .left-activity-bar .left-activity-item[aria-pressed="true"]::before {
+  content: ""; position: absolute; left: -4px; top: 10px; bottom: 10px; width: 3px; border-radius: 2px; background: var(--accent);
+}
+.ai-chat-sidebar.has-activity-bar .left-activity-bar .ai-chat-sidebar-tab-label { display: block; font-size: 11px; line-height: 1; }
+.left-activity-badge {
+  position: absolute; top: 2px; right: 0; min-width: 16px; height: 14px; padding: 0 4px; border-radius: 7px;
+  background: var(--warning, var(--accent)); color: var(--on-accent); font: 700 10px/14px var(--font-ui); text-align: center;
+}
+.left-activity-badge[hidden] { display: none; }
+.ai-chat-sidebar.has-activity-bar > .ai-chat-sidebar-content { flex: 1; min-width: 0; }
+
+.ai-right-dock {
+  position: relative; display: flex; flex: 0 0 auto; min-width: 0; min-height: 0;
+  border-left: 1px solid var(--border-subtle); background: var(--bg-raised);
+}
+.ai-right-dock > .ai-chat-float-host.ai-chat-sidebar-host {
+  position: relative; inset: auto; flex: 1; min-width: 0; min-height: 0; pointer-events: auto; z-index: 40; display: flex;
+}

@@ -17,6 +17,10 @@ const h = vi.hoisted(() => ({
   requests: [] as Record<string, unknown>[],
   results: [] as { project: unknown; toolCalls?: number; toolErrors?: number; villageCompletion?: { mapIds: string[]; issues: string[] } }[],
   errorEvents: [] as string[],
+  /** 실행 턴이 start 직후에 그대로 흘려보낼 도구 이벤트. 검색처럼 긴 도구의 상태 표시를 굴린다. */
+  toolEvents: [] as Record<string, unknown>[],
+  /** surface.setStatus 로 지나간 상태 문장 — 순서 보존. */
+  statuses: [] as string[],
   assistantTexts: [] as string[],
   outcomes: [] as (Record<string, unknown> | null)[], // 호출 순서 보존
   boardStates: [] as { phase?: string; applied?: string | null }[],
@@ -33,6 +37,8 @@ const h = vi.hoisted(() => ({
   confirmAnswer: true,
   /** true 면 시공 실행이 도구마다 체크포인트를 올린다 — 실시간 반영(publication.count > 0) 경로. */
   checkpoint: false,
+  /** 저장된 역할 모델(Deep). 2026-09-26 리뷰 R2: 이 값이 «폴백과 다른가»가 다이얼 게이트를 정한다. */
+  roleModels: undefined as { deep?: { provider: string; model: string; thinkingLevel: "off" | "low" | "medium" | "high" } } | undefined,
 }));
 
 vi.mock("@/editor/panels/aiPendingReview", () => ({ createPendingReviewPrompt: () => ({ root: { remove() {} }, setBusy() {} }) }));
@@ -59,6 +65,7 @@ vi.mock("@/ai/piAgent/client", () => ({
     const next = h.results.shift() ?? { project: request.project };
     for (const message of h.errorEvents.splice(0)) options?.onEvent?.({ type: "error", message });
     options?.onEvent?.({ type: "start", provider: "p", model: "m", toolCount: 1 });
+    for (const event of h.toolEvents.splice(0)) options?.onEvent?.(event);
     if ((next.toolCalls ?? 1) > 0) {
       options?.onEvent?.({ type: "tool_end", id: "t1", name: "paint", ok: (next.toolErrors ?? 0) === 0, summary: (next.toolErrors ?? 0) > 0 ? "OAuth token expired before request — please retry; AuthStorage will refresh on the next attempt." : "칠함" });
     }
@@ -101,7 +108,7 @@ vi.mock("@/project/authoredProjectBaseline", () => ({ AuthoredProjectBaseline: c
 vi.mock("@/project/store", () => ({ store: { getCurrent: () => h.project, getProjectIdentity: () => ({ kind: "local-session", id: "outcome-fixture" }), subscribe: () => () => {} } }));
 // 실제 모달을 띄우지 않는다. 맵 소실 확인은 별도 케이스에서 반환값을 갈아 끼워 검사한다.
 vi.mock("@/editor/ui/modal", () => ({ showConfirm: async () => h.confirmAnswer }));
-vi.mock("@/ai/llmClient", () => ({ loadAiConfig: () => ({ providerId: "google-antigravity", model: "m", piApply: h.piApply }) }));
+vi.mock("@/ai/llmClient", () => ({ loadAiConfig: () => ({ providerId: "google-antigravity", model: "m", piApply: h.piApply, roleModels: h.roleModels }) }));
 vi.mock("@/editor/tools/changeset", () => ({ summarizeChanges: () => ({}) }));
 vi.mock("@/editor/tools/applyChangesetToStore", () => ({
   captureProposalBase: () => ({}),
@@ -128,7 +135,7 @@ const harness = () => {
     appendBubble: (role: string, text: string) => { h.bubbles.push(`${role}:${text}`); return null; },
     appendProcess: (text: string) => { h.process.push(text); },
     appendCard: () => {},
-    setStatus: () => {},
+    setStatus: (text: string) => { h.statuses.push(text); },
     getCurrentMapId: () => "map_a",
     setRunOutcome: (outcome: Record<string, unknown> | null) => { outcomeCalls.push(outcome); },
   });
@@ -139,6 +146,7 @@ beforeEach(() => {
   h.villageIssues.length = 0;
   h.planError = false; h.verdicts.length = 0; h.findings.length = 0;
   h.reviewCalls = 0; h.applyCalls = 0; h.outcomes.length = 0;
+  h.roleModels = undefined;
   h.requests.length = 0; h.results.length = 0; h.bubbles.length = 0; h.process.length = 0;
   h.assistantTexts.length = 0; h.boardStates.length = 0; h.reviewActions.length = 0;
   h.project = projectWith("A");
@@ -146,6 +154,7 @@ beforeEach(() => {
   // 예전에는 mergeMapBundles 목이 매 턴 splice 로 비워 줘서 눈에 안 띄었다. 평문 턴이 더 이상
   // 병합을 타지 않으므로(2026-09-17) 여기서 직접 비우지 않으면 다음 케이스로 샌다.
   h.spills.length = 0; h.errorEvents.length = 0; h.confirmAnswer = true; h.checkpoint = false;
+  h.toolEvents.length = 0; h.statuses.length = 0;
 });
 
 describe("Pi 경로 실행 결과 4축", () => {
@@ -157,6 +166,27 @@ describe("Pi 경로 실행 결과 4축", () => {
     await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "마을을 지어라" }, surface());
     expect(outcomeCalls.at(-1)).toMatchObject({ goal: "incomplete", delivery: mode === "yolo" ? "applied" : "draft" });
     expect(h.applyCalls).toBe(mode === "yolo" ? 1 : 0);
+  });
+
+  // 깨질 것(2026-09-25, UX-005): 검색 상태가 「십 초 정도 걸릴 수 있어요」라고 약속했는데 바로 위
+  // 주석의 실측은 31초였고, tool_end 를 아무도 듣지 않아 검색이 끝난 뒤에도 그 문장이 다음 모델
+  // 턴까지 남았다. 사용자는 화면만 보고는 검색이 끝났는지 알 수 없었다.
+  it("웹 검색 상태는 걸리는 시간을 약속하지 않고, 끝나면 작업 상태로 돌아온다", async () => {
+    h.results.push({ project: projectWith("검색"), toolErrors: 0 });
+    h.toolEvents.push(
+      { type: "tool_start", id: "s1", name: "web_search", args: {} },
+      { type: "tool_end", id: "s1", name: "web_search", ok: true, summary: "참고 3건" },
+    );
+    const { surface } = harness();
+
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "참고 작품 보고 지어라" }, surface(), { routineEdit: true });
+
+    const searching = h.statuses.filter(text => text.includes("찾는 중"));
+    expect(searching.length).toBeGreaterThan(0);
+    expect(searching.some(text => text.includes("십 초"))).toBe(false);
+    // tool_end 뒤에는 검색 상태를 떠나야 한다 — 마지막 검색 문장 다음에 평소 작업 상태가 온다.
+    const lastSearching = h.statuses.lastIndexOf(searching.at(-1)!);
+    expect(h.statuses.slice(lastSearching + 1).some(text => text.includes("작업 중"))).toBe(true);
   });
 
   it("passes initial schema candidates into the companion request", async () => {
@@ -203,6 +233,31 @@ describe("Pi 경로 실행 결과 4축", () => {
     expect(outcomeCalls.at(-1)).toMatchObject({ delivery: "draft" });
     expect(h.boardStates.at(-1)?.phase).not.toBe("적용됨");
   });
+  // 깨질 것(2026-09-25 재확인): 검수 호출이 실패한 런은 「아직 적용하지 않았으니 직접 확인하고
+  // 적용해 주세요」 를 채팅에 영구히 남긴다. 그 뒤 사용자가 검토 카드에서 적용하면 화면은
+  // 「적용 완료」·「적용됨」 인데 그 줄만 그대로 남아 서로 모순된다(사용자 QA 원장
+  // 「AI 검수 실패와 적용 후 안내가 모순됨」). 검수 실패 «원인» 은 남기고 «적용 상태» 는
+  // 적용 시점 표면(:810/:817 의 상태·영수증)이 말한다.
+  it("검수 실패 뒤 적용하면 「아직 적용하지 않았으니」 안내가 남지 않는다", async () => {
+    h.piApply = "review";
+    h.harmonyError = true;
+    h.results.push({ project: projectWith("바뀜") });
+    const receipt = vi.fn();
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "바꿔라" },
+      { ...harness().surface(), showChangeReceipt: receipt });
+
+    // 검수를 하지 못했다는 사실 자체는 남아야 한다 — 지우면 자동 적용이 왜 안 됐는지 알 수 없다.
+    expect(h.bubbles.some(line => line.includes("끝까지 확인하지 못했어요"))).toBe(true);
+
+    const review = h.outcomes.at(-1) as unknown as { onApply: () => void };
+    expect(typeof review.onApply).toBe("function");
+    review.onApply();
+    await vi.waitFor(() => expect(receipt).toHaveBeenCalledOnce());
+
+    // 적용이 끝난 뒤에도 「아직 적용하지 않았으니」 가 남으면 화면이 거짓말을 한다.
+    expect(h.bubbles.some(line => line.includes("아직 적용하지 않았으니"))).toBe(false);
+  });
+
   it("검토 대기는 draft, 버리면 no-change로 갈아엎는다", async () => {
     h.piApply = "review";
     h.results.push({ project: projectWith("검토"), toolErrors: 0 });
@@ -345,6 +400,10 @@ describe("Pi 경로 실행 결과 4축", () => {
 
     expect(h.applyCalls).toBe(0);
     expect(h.bubbles.some((line) => line.includes("완성되지 않은 결과"))).toBe(true);
+    // 실패 원인만 말하고 적용 지시는 섞지 않는다 — 적용 여부는 상태 줄·영수증·검토 카드가 말한다.
+    // (그대로 두면 사용자가 검토 카드에서 적용한 뒤에도 「직접 확인하고 적용해 주세요」 가 「적용 완료」 와 함께 남는다.)
+    const incompleteBubble = h.bubbles.find((line) => line.includes("완성되지 않은 결과"));
+    expect(incompleteBubble).not.toMatch(/적용해 주세요|적용하세요/);
     // 원인과 해법을 사람 말로 — 영문 원문(Request was aborted)이 그대로 나가던 자리다.
     expect(h.bubbles.some((line) => line.includes("Request was aborted"))).toBe(false);
   });
@@ -374,11 +433,21 @@ describe("model role routing", () => {
     expect(h.process.some(text => text.includes("plan failed"))).toBe(true);
   });
   it("plans with Ultrabrain before Deep edits", async () => {
-    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface());
+    // 다이얼 값을 싣는다 — 안 실으면 실행 요청은 역할 폴백(이제 "low")을 쓴다. 이 케이스는
+    // 「다이얼이 실행 런까지 실제로 도달한다」를 지키는 자리다(2026-09-26 리뷰 R2: 이 배선을 아무 테스트도 안 덮었다).
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface(), { thinkingLevel: "high" });
     expect(h.requests).toHaveLength(2);
     expect(h.requests[0]).toMatchObject({ model: "gemini-3.8-flash", thinkingLevel: "high", readOnly: true });
     expect(h.requests[1]).toMatchObject({ model: "m", thinkingLevel: "high" });
     expect(h.requests[1]!.task).toContain("Ultrabrain 실행 계획");
+  });
+  it("사용자가 Deep 역할을 폴백과 다르게 저장했으면 그 강도가 다이얼을 이긴다", async () => {
+    h.roleModels = { deep: { provider: "google-antigravity", model: "m", thinkingLevel: "medium" } };
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface(), { thinkingLevel: "low" });
+    // 계획 턴은 Ultrabrain(high), 실행 턴은 저장된 역할 강도(medium) — 다이얼 low 가 아니다.
+    expect(h.requests[0]).toMatchObject({ thinkingLevel: "high", readOnly: true });
+    expect(h.requests[1]).toMatchObject({ thinkingLevel: "medium" });
+    h.roleModels = undefined;
   });
   it("planOnly always disables writes and never starts Deep", async () => {
     await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "계획" }, harness().surface(), { planOnly: true });

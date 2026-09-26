@@ -67,9 +67,11 @@ import {
   clampTitleMenuIndex,
   focusSelectedTitleOption,
   listTitleMenuOptions,
+  playTitleTransition,
   renderTitleScreen,
   type TitleMenuOptionId,
 } from "@/player/titleScreen";
+import { openLicenseDialog } from "@/player/titleLicenseNotice";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { AUDIO_HANDOFF_REGISTRY_KEY, getAudioEngine, playAudioCommand, stopAudioCommand, stopAllAudio } from "@/player/audio";
 import { installPlayPointerBlocker } from "@/player/playInputBlocker";
@@ -707,7 +709,12 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     }
     if (!isConfirmKey(key)) return false;
     const selected = options[titleMenuIndex];
-    confirmTitleThen(() => activateTitleOption(selected?.id));
+    // 크레딧은 타이틀을 떠나지 않는다 — 확정 연출·BGM 정지 없이 창만 띄운다.
+    if (selected?.id === "credits") {
+      openTitleCredits();
+      return true;
+    }
+    confirmTitleThen(() => activateTitleOption(selected?.id), selected?.id === "newGame");
     return true;
   };
 
@@ -825,10 +832,11 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     cleanupPlaySurface = surface.cleanup;
     // 타이틀 확정은 키보드와 메뉴 클릭이 같은 activateTitleOption 으로 모인다.
     const title = renderTitleScreen(project, {
-      onNewGame: () => confirmTitleThen(() => activateTitleOption("newGame")),
-      onNewGamePlus: () => confirmTitleThen(() => activateTitleOption("newGamePlus")),
+      onNewGame: () => confirmTitleThen(() => activateTitleOption("newGame"), true),
+      onNewGamePlus: () => confirmTitleThen(() => activateTitleOption("newGamePlus"), true),
       onResume: () => confirmTitleThen(() => activateTitleOption("resume")),
       onContinue: () => confirmTitleThen(() => activateTitleOption("continueGame")),
+      onCredits: () => openTitleCredits(),
       onQuit: () => confirmTitleThen(() => activateTitleOption("quit")),
     }, titleMenuIndex, titleContext);
     layout.append(surface.viewport);
@@ -838,6 +846,14 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     surface.sync();
     startTitleBgm(project);
     if (firstEnter) emitTitleJuice("title-enter");
+  };
+
+  const openTitleCredits = (): void => {
+    emitTitleJuice("title-select");
+    openLicenseDialog(() => {
+      const titleEl = layout.querySelector<HTMLElement>("[data-testid='title-screen']");
+      if (titleEl) focusSelectedTitleOption(titleEl);
+    });
   };
 
   const activateTitleOption = (id: TitleMenuOptionId | undefined): void => {
@@ -853,6 +869,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
         return;
       case "continueGame":
         renderLoad(true);
+        return;
+      case "credits":
+        openTitleCredits();
         return;
       case "quit":
         exitPlayer();
@@ -878,17 +897,24 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     });
   };
 
-  const confirmTitleThen = (callback: () => void): void => {
+  // withTransition: 「새 게임」은 설정된 전환 연출(섬광·암전·확대·안개)이 끝난 뒤 게임으로 넘어간다.
+  const confirmTitleThen = (callback: () => void, withTransition = false): void => {
     if (titleConfirming) return;
     titleConfirming = true;
     emitTitleJuice("title-confirm");
     stopTitleBgm();
+    const transitionMs = withTransition
+      ? playTitleTransition(
+          layout.querySelector<HTMLElement>("[data-testid='title-screen']"),
+          store.getCurrent().system.titleScreen ?? defaultTitleScreenSettings(),
+        )
+      : null;
     titleConfirmTimer = setTimeout(() => {
       titleConfirmTimer = undefined;
       if (!shellActive) return;
       titleConfirming = false;
       callback();
-    }, TITLE_CONFIRM_JUICE_MS);
+    }, transitionMs ?? TITLE_CONFIRM_JUICE_MS);
   };
 
   const exitPlayer = (): void => {

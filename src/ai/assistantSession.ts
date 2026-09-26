@@ -5252,12 +5252,12 @@ export class AssistantSession {
               if (!registered.ok) {
                 toolResult = registered;
               } else {
-                const linked = runTool(this.ctx, "set_title_screen", titleArtScreenArgs(art.request, art.resourceId, art.effects), { dryRun: false });
+                const linked = runTool(this.ctx, "set_title_screen", titleArtScreenArgs(art.request, art.resourceId, art.effects, art.logoStyle), { dryRun: false });
                 toolResult = linked.ok
                   ? {
                     ...linked,
-                    summary: `타이틀 키아트 ${art.resourceId} 를 만들어 배경으로 걸고 「${art.request.preset.label}」 효과를 ${art.effects ? "그림에 맞춰 " : ""}적용했습니다. ${linked.summary}`,
-                    data: { status: "generated", resourceId: art.resourceId, name: art.request.name, preset: art.request.preset.id, fittedToArt: Boolean(art.effects) },
+                    summary: `타이틀 키아트 ${art.resourceId} 를 만들어 배경으로 걸고 ${art.request.preset ? `「${art.request.preset.label}」 효과를 ${art.effects ? "그림에 맞춰 " : ""}적용했습니다.` : `그림을 보고 고른 효과 ${art.effects?.length ?? 0}개를 적용했습니다(자유 모드).`} ${linked.summary}`,
+                    data: { status: "generated", resourceId: art.resourceId, name: art.request.name, preset: art.request.preset?.id ?? "free", fittedToArt: Boolean(art.effects) },
                   }
                   : { ...linked, summary: `그림 ${art.resourceId} 는 등록했지만 타이틀 연결에 실패했습니다: ${linked.summary}` };
               }
@@ -5468,7 +5468,7 @@ export class AssistantSession {
             roundImages.push(...await operation.wait(this.readEvidence.tilesetReferences.imagesForRead(this.ctx.project, toolResult)));
           }
           if (name === 'read_spatial_reference' && toolResult.ok) {
-            roundImages.push(...spatialReferenceImages(this.ctx.project, args, toolResult.data));
+            roundImages.push(...await operation.wait(spatialReferenceImages(this.ctx.project, args, toolResult.data)));
           }
 
           // 비전(BUG C): '보여줘' 계열 툴이면 이미지를 렌더해 모아둔다. 렌더 실패는 무시(텍스트로 진행).

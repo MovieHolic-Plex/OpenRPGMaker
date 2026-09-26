@@ -68,6 +68,7 @@ import { createInlineWorkCard } from "./aiInlineWorkCard";
 import { currentTeamActivity, setTeamStopHandler } from "@/ai/piAgent/teamActivity";
 import { DEFAULT_PI_TEAM, resolvePiRunPlan, type PiRunPlan } from "@/ai/piAgent/executionRoute";
 import { classifyPlainPiTurn } from "@/ai/piAgent/plainTurn";
+import { createTurnTiming, type TurnTimingRecorder } from "@/ai/turnTiming";
 import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
@@ -1456,8 +1457,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const next = pendingSends.shift();
     refreshQueueIndicator();
     if (next) {
-      void plainPiTurn(next.text).then(({ command, plan, questionPromoted, initialToolNames, intentNote }) =>
-        runPiTurn(command, next.displayAs ?? next.text, plan, { questionPromoted, initialToolNames, intentNote }));
+      void plainPiTurn(next.text).then(({ command, plan, questionPromoted, initialToolNames, intentNote, timing }) =>
+        runPiTurn(command, next.displayAs ?? next.text, plan, { questionPromoted, initialToolNames, intentNote, timing }));
     }
   };
 
@@ -1994,7 +1995,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     /** 보낸 문장 말풍선을 send() 가 분류 전에 이미 붙였다. */
     readonly echoed?: boolean;
     /** 모델에 보낸 전체 지시문 — 말풍선(displayText)과 다를 때만. 입력창을 되살릴 때 함께 되살린다. */
-    readonly sentText?: string }): Promise<void> => {
+    readonly sentText?: string;
+    /** 평문 턴의 단계 기록기 — 의도 선언까지 한 기록기에 담아야 total 이 턴 벽시계 전체를 덮는다.
+     *  단계는 서로 중첩된다(checkpoint 는 exec·review 안에서 돌고, 병렬 그룹은 겹친다) —
+     *  단계 합은 total 과 맞지 않는다. 표에서 더하지 마라. */
+    readonly timing?: TurnTimingRecorder }): Promise<void> => {
     // slotClaimed: 호출자(평문 경로)가 의도 분류 전에 이미 슬롯을 잡았다. 그 경우 turnBusy=true 는
     // «다른 턴이 점유 중» 이 아니라 «이 턴의 분류 단계» 다 — 여기서 다시 거부하면 자기 턴을 죽인다.
     if (turnBusy && opts?.slotClaimed !== true) {
@@ -2066,6 +2071,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
 
     // 기존 턴과 같은 중단 버튼을 쓴다 — 컨트롤러를 활성 자리에 앉히고 실행 중 표시(turnBusy)를 켠다.
+    // 다음 턴은 지난 턴의 종료 4축을 물고 가지 않는다 — 세션 경로 beginWorkPlanTurn 의 슬롯 클리어와 같은 수명이다.
+    piRunOutcome = null;
+    refreshRunOutcome();
     piRunController = new AbortController();
     activeAbortController = piRunController;
     abortNoticeShown = false;
@@ -2120,6 +2128,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         // 숫자만으로 역추론하지 않는다 — 레인·팀도 같은 maxTurns 를 다른 출처로 보낸다.
         ...(currentAutonomyLabel() ? { autonomyLabel: currentAutonomyLabel()! } : {}),
         thinkingLevel: plan.thinkingLevel,
+        ...(opts?.timing ? { timing: opts.timing } : {}),
         ...(opts?.initialToolNames ? { initialToolNames: opts.initialToolNames } : {}),
         ...(opts?.intentNote ? { intentNote: opts.intentNote } : {}),
       } : {});
@@ -2156,26 +2165,38 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 분류가 지연·실패하면 다이얼 그대로 두는 쪽이 안전하므로 타임아웃을 짧게 둔다.
   let piIntentDeclarer: IntentDeclarer | null = null;
   /** 평문 한 줄 → Pi 명령 + 실행 계획. 팀 비트는 설정에서, 읽기 전용·계획은 자율성 다이얼에서 온다. */
-  type PlainPiTurn = { readonly command: ParsedPiCommand; readonly plan: PiRunPlan; readonly questionPromoted: boolean; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null };
+  type PlainPiTurn = { readonly command: ParsedPiCommand; readonly plan: PiRunPlan; readonly questionPromoted: boolean; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null; readonly timing: TurnTimingRecorder };
   const plainPiTurn = async (text: string): Promise<PlainPiTurn> => {
+    // 기록기는 턴당 하나고 의도 선언부터 산다 — 사용자가 기다리는 시간은 엔터를 누른 순간부터고, 선언 한 번이
+    // 실제로 1.2~7.5s 를 삼킨다(2026-09-16 실측). 이걸 벽시계 밖에 두면 표의 total 이 그만큼 짧게 나와
+    // 「어느 단계도 오래 안 걸렸는데 턴은 느렸다」는 모순이 생긴다.
+    const timing = createTurnTiming();
+    timing.start("intent");
     // 순수 부분(선언 → 계획·노출 툴·의도 노트)은 plainTurn.ts 가 소유한다 — 헤드리스 생성기(scripts/qa-game/gen.mts)와 같은 함수다.
-    const classified = await classifyPlainPiTurn({
-      project: store.getCurrent(),
-      text,
-      currentMapId: editorState.get().currentMapId ?? null,
-      selection: mapContext().selection ?? null,
-      hasActivePlan: workPlanSurfaceState?.active === true,
-      autonomy: currentAutonomy(),
-      declarer: () => (piIntentDeclarer ??= createLlmIntentDeclarer({ timeoutMs: 30_000 })),
-      piTeam: loadAiConfig().piTeam ?? DEFAULT_PI_TEAM,
-      onDeclaring: () => setStatus("의도 읽는 중…"),
-    });
+    let classified: Awaited<ReturnType<typeof classifyPlainPiTurn>>;
+    try {
+      classified = await classifyPlainPiTurn({
+        project: store.getCurrent(),
+        text,
+        currentMapId: editorState.get().currentMapId ?? null,
+        selection: mapContext().selection ?? null,
+        hasActivePlan: workPlanSurfaceState?.active === true,
+        autonomy: currentAutonomy(),
+        declarer: () => (piIntentDeclarer ??= createLlmIntentDeclarer({ timeoutMs: 30_000 })),
+        piTeam: loadAiConfig().piTeam ?? DEFAULT_PI_TEAM,
+        onDeclaring: () => setStatus("의도 읽는 중…"),
+      });
+    } finally {
+      // 선언이 던진 턴도 그 구간이 얼마였는지 남긴다 — 해석 실패가 그 턴의 지연 전부인 경우가 있다.
+      timing.end("intent");
+    }
     return {
       command: plainPiCommand(text, classified.mode, editorState.get().currentMapId ?? null),
       plan: classified.plan,
       questionPromoted: classified.questionPromoted,
       ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}),
       intentNote: classified.intentNote,
+      timing,
     };
   };
   const send = async (): Promise<void> => {
@@ -2255,7 +2276,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       appendBubble("system", `지시를 해석하지 못했습니다: ${error instanceof Error ? error.message : String(error)}`);
       return;
     }
-    await runPiTurn(classified.command, shown, classified.plan, { questionPromoted: classified.questionPromoted, slotClaimed: true, echoed: true, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: classified.intentNote, ...(handoff ? { sentText: text } : {}) });
+    await runPiTurn(classified.command, shown, classified.plan, { questionPromoted: classified.questionPromoted, slotClaimed: true, echoed: true, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: classified.intentNote, timing: classified.timing, ...(handoff ? { sentText: text } : {}) });
     // 턴이 카드를 끝내지 않고 빠져나간 갈래(선택지 제시·거절 등)에서 시계가 영영 돌지 않게 한다.
     if (!turnBusy) finishWorkCard({ ok: true });
   };
@@ -2305,7 +2326,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 여러 줄 입력 자동 성장 — 고정 높이 창에 30줄이 갇혀 끝부분만 보이던 결함(적대 평가 P1).
   // 내용 높이에 맞춰 늘리고, 상한(요소 max-height)부터는 스크롤로 전환한다.
   // 바 높이가 변하는 유일한 경로이므로 여기서만 clearance 를 다시 잰다.
+  // 글자마다 height=auto → 재기 → 되돌리기를 하면 키 하나에 강제 레이아웃이 3번이다(2026-09-26 실측:
+  // 20자에 레이아웃 60회·스타일 74회). 줄 수가 늘 때는 scrollHeight 가 지금 높이를 넘는다 — 그때만 늘리고,
+  // 줄이 줄어들 수 있는 삭제·붙여넣기·비우기에서만 전체를 다시 잰다.
+  let lastInputLength = 0;
   const syncInputHeight = (): void => {
+    const length = input.value.length;
+    const shrinking = length < lastInputLength;
+    lastInputLength = length;
+    if (!shrinking && input.style.height && input.scrollHeight <= input.clientHeight) return;
     input.style.height = "auto";
     const minHeight = typeof getComputedStyle === "function"
       ? Number.parseFloat(getComputedStyle(input).minHeight) || 0
@@ -3079,6 +3108,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const suggestions = createProjectSuggestions({
     snapshot: () => ({
       project: store.getCurrent(), projectId: store.getProjectIdentity().id,
+      version: (({ lineage, generation }) => `${lineage}:${generation}`)(store.getVersionToken()),
       mapId: mapContext().mapId ?? "",
       // 모델 호출의 조건. 로컬 탐지·배지는 닫혀 있어도 돌아야 하므로(느낌표가 알림이다)
       // 이 값은 **비싼 원격 턴**만 막는다. 팝오버가 열려 있고 턴 중이 아니어야 한다.
@@ -3194,13 +3224,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 하단 여백(--ai-command-bar-inset)도 같은 실측에서 나온다 — 144px 하드코딩은 실제
   // 바 높이와 어긋나 있었고, 두 값이 서로 다른 소스를 보면 반드시 갈라진다.
   // 데크가 표면 하나이므로 clearance 도 데크 사각형 하나에서 나온다(열린 팝오버 포함).
+  let lastClearance = "";
+  let lastInset = "";
   syncCommandBarClearance = (): void => {
     const rect = deck.getBoundingClientRect();
     if (rect.height <= 0 || typeof window === "undefined") return;
     const top = Math.min(rect.top, composerShell.measuredTop());
-    const clearance = Math.max(60, Math.ceil(window.innerHeight - top) + 12);
-    panel.style.setProperty("--ai-command-bar-clearance", `${clearance}px`);
-    document.body?.style.setProperty("--ai-command-bar-inset", `${Math.max(72, Math.ceil(rect.height) + 24)}px`);
+    const clearance = `${Math.max(60, Math.ceil(window.innerHeight - top) + 12)}px`;
+    const inset = `${Math.max(72, Math.ceil(rect.height) + 24)}px`;
+    // 같은 값을 다시 쓰지 않는다 — body 의 사용자 변수는 문서 전체 스타일을 무효화한다.
+    if (clearance !== lastClearance) { lastClearance = clearance; panel.style.setProperty("--ai-command-bar-clearance", clearance); }
+    if (inset !== lastInset) { lastInset = inset; document.body?.style.setProperty("--ai-command-bar-inset", inset); }
   };
   const commandBarClearanceObserver =
     typeof ResizeObserver !== "undefined" ? new ResizeObserver(syncCommandBarClearance) : null;
@@ -3590,8 +3624,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       toast("AI 분석을 시작할 수 없습니다.", "error");
       return;
     }
-    void plainPiTurn(kickoff.prompt).then(({ command, plan, questionPromoted, initialToolNames, intentNote }) =>
-      runPiTurn(command, kickoff.displayAs, plan, { questionPromoted, initialToolNames, intentNote }));
+    void plainPiTurn(kickoff.prompt).then(({ command, plan, questionPromoted, initialToolNames, intentNote, timing }) =>
+      runPiTurn(command, kickoff.displayAs, plan, { questionPromoted, initialToolNames, intentNote, timing }));
   };
 
   if (typeof window !== "undefined") {
@@ -3808,8 +3842,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         appendBubble("system", `지시를 해석하지 못했습니다: ${error instanceof Error ? error.message : String(error)}`);
         return;
       }
-      const { command, plan, questionPromoted, initialToolNames, intentNote } = classified;
-      await runPiTurn(command, shown, plan, { questionPromoted, initialToolNames, intentNote, ...(shown !== text ? { sentText: text } : {}) });
+      const { command, plan, questionPromoted, initialToolNames, intentNote, timing } = classified;
+      await runPiTurn(command, shown, plan, { questionPromoted, initialToolNames, intentNote, timing, ...(shown !== text ? { sentText: text } : {}) });
     },
   });
   // 부팅 복원 — 이 프로젝트 범위의 최신 대화를 이어받는다. 전역 최신 하나만 집어 스코프를 대조하는

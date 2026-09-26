@@ -380,6 +380,10 @@
 .basic-rail-status > .sidebar-brush-controls { flex: 1; min-width: 0; flex-wrap: nowrap; padding-block: 0; }
 .basic-rail-status .sidebar-brush-state { order: -1; margin-left: 0; margin-right: auto; color: var(--text-1); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .basic-rail-status .sidebar-brush-sizes { flex-wrap: nowrap; gap: 2px; padding: 2px; border-radius: calc(var(--radius-s) + 1px); background: var(--bg-well, var(--bg-inset)); }
+/* 「높이」 붓 방식 칩(2026-09-26)은 크기 칩 옆에 들어가지 않는다 — 한 줄 아래로 내린다. */
+.basic-rail-status:has(.relief-brush-controls),
+.basic-rail-status > .sidebar-brush-controls:has(.relief-brush-controls) { flex-wrap: wrap; }
+.sidebar-brush-controls > .relief-brush-controls { flex: 1 0 100%; }
 .basic-rail-status .sidebar-brush-sizes .tile-brush-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .editor-layout .basic-rail-status .sidebar-brush-sizes .tile-brush-chip {
   min-width: 24px; min-height: 22px; padding: 0; border: 0; border-radius: var(--radius-s); background: transparent;

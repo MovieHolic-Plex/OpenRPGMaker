@@ -2,6 +2,27 @@
 
 # Editor Pre-edit Routing & Cautions
 
+## 「높이」 붓 — 절벽 높이 지형 (2026-09-26)
+
+머리줄 레이어 줄 **맨 왼쪽** 「높이」(`layer-relief`, [높이 | 바닥 | 상위 | 이벤트])가 `tool: "relief"` 로 바꿔 `map.relief` 를 칠한다.
+높이는 레이어가 아니라 붓이므로 `leftLayerSwitcher.ts` 의 `LayerSwitcherKey = Layer | "relief"` 와 `layerSwitcherKey(state)`(tool 이 relief 면 "relief")로
+활성 표시를 가른다. 바닥·상위를 누르면 relief/event 도구에서 칠하기로 돌아온다.
+
+옛 타일 도구 줄의 「도구」 메뉴(`sidebar-tools-menu`: 복사·붙여넣기·집기·밀기·통행·높이)는 **삭제됐다**(2026-09-26, 사용자 결정 — 거의 안 보고 쓸모가 없었다).
+복사·붙여넣기는 Ctrl+C/V 와 선택 칩, 집기·밀기·통행은 단축키(I·4·6)로 남는다. 경로:
+
+| 층 | 파일 |
+|---|---|
+| 진입 버튼 | `leftLayerSwitcher.ts` `LAYER_ROWS[0]` · `selectSwitcherKey` → `selectMapModeTool("relief")`, `menu.ts` 구독이 활성 표시 |
+| 도구 상태 | `editorState.ts` — `tool: "relief"`, `reliefMode: raise\|lower\|flatten\|set`, `reliefLevel` |
+| 캔버스 포인터 소유 | `canvasPointerOwnership.ts` (relief 는 페인트 도구처럼 드래그를 가진다) |
+| 스트로크 | `TilePaintEngine.ts` `case "relief"` — 붓 크기 N = 반지름 max(1, N-1) 원 — 1칸 폭 돌기는 렌더 규칙이 깎아 안 보이므로 1×1 도 3칸 폭으로 칠한다. 올리기/내리기는 **스트로크 첫 칸 높이 ±1** 이 상한(드래그로 계속 쌓이지 않음), 평탄은 첫 칸 높이로 |
+| 액션 | `tileActions.ts` `paintRelief` → `store.updateMap(..., {label:"높이 붓"})`. 바뀐 칸 없으면 store 를 안 건드린다 |
+| 옵션 UI | `tilePaletteStampStatus.ts` `makeReliefBrushControls` (`relief-brush-controls`, 칩 `relief-mode-*`, 지정 모드일 때 `relief-level-select`) |
+| 렌더 | `EditScene.ts` — relief 가 바뀔 때 절벽 그림을 다시 굽는다 |
+
+주의: 높이는 **그림만** 바꾼다. 윗단 위 타일·통행·이벤트는 들어 올리지 않는다(스키마 쪽 한계는 `runtime-project-schema.md` 「높이 지형」). 조수 도구는 `editor-ai-tools.md` 「절벽 높이 도구」.
+
 ## 맵별 16/32/48px 좌표
 
 타일 크기 관련 수정은 [tile-geometry.md](tile-geometry.md)를 먼저 읽는다. 원본 아틀라스 슬라이싱과 맵 월드 좌표, 미리보기 표시 크기를 구분한다.
@@ -252,8 +273,12 @@ Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식�
   일반 `updateMap` 대신 `store.updateMapTiles`를 사용한다. 기존 경로는 포인터 샘플마다
   `structuredClone(currentMap)`으로 이벤트와 선택적 맵 메타데이터까지 복사했지만, 새 경로는
   타일 배열과 레거시 스택만 복제해 같은 불변성·undo/감사/자동저장 계약을 유지한다.
-  맵 셀 변경의 숨은 `project-export-json` 직렬화도 500ms 후행 debounce로 묶어 한 번의
-  스트로크에서 전체 프로젝트를 반복 직렬화하지 않는다.
+  맵 셀 변경의 숨은 `project-export-json` 직렬화는 **읽을 때만** 한다(2026-09-26). `editor.ts`
+  `projectExportNodeElement` 가 그 `<pre>` 의 `textContent` 를 게터로 바꿔 `ProjectExportMirror`(버전 토큰
+  캐시)를 부른다. 예전에는 획을 뗄 때마다 전체를 미리 썼고, 타일셋이 큰 프로젝트(JSON 81~114MB)에서 809ms 긴
+  작업이었다. e2e·스크립트는 `textContent` 로만 읽으므로 계약은 같다 — `innerText`·`toHaveText` 는 게터를 안
+  거치므로 미러를 그렇게 읽지 마라. 획이 끝난 뒤 도구줄 배지·되돌리기 갱신은
+  `TileToolbarModel.refreshChrome`(표준 팔레트: `syncMountedPaletteToolPick`)으로 도구줄만 간다.
 - **우클릭 영역 드래그 (2026-09-19):** 드래그 중에는 선택 사각형·크기 배지만 갱신하고,
   `selection-action-chips` DOM은 pointerup의 최종 영역에서 한 번만 만든다. 이전에는
   pointermove마다 버튼을 만들고 `getBoundingClientRect`로 레이아웃을 강제했다.
@@ -282,6 +307,11 @@ Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식�
   바꾼다면**(객체 생성·파괴 없이 setTint/setPosition 등) 그 경로에서 `requestEditRenderFrame(scene.game)` 을 불러라 —
   안 부르면 최대 1초 늦게 보인다. `loop.sleep()` 으로 바꾸지 마라: 트윈·물 애니메이션·키보드 큐가 같이 멈추고
   테스트 플레이 잠재우기(`editorGameSuspension`)와 같은 스위치를 두고 다툰다. 관측: `editRenderGateStats(game)`.
+  테스트 플레이 잠재우기(`editorGameSuspension`)와 같은 스위치를 두고 다투다. 관측: `editRenderGateStats(game)`.
+  **입력 깨우기는 캠버스 기원만 (2026-09-26).** 눌린 포인터는 캠버스에서 `pointerdown` 한 획일 때만 깨운다(획이
+  캠버스 밖으로 나가도 유지). 사이드바 클릭·스크롤바 드래그와 `INPUT`/`TEXTAREA`/`SELECT`/contenteditable 안의 키는
+  깨우지 않는다 — 예전에는 사이드바 클릭마다 맵 전체를 500ms 매 프레임 다시 그렸다. 그 클릭이 상태를 바꾸면
+  EditScene 의 store/editorState 구독이 깨운다. 검증: `test/editRenderGate.test.ts` 「window input wake」.
 - **지연 창 문턱 2_048칸 (2026-09-25).** `LAZY_EDIT_MAP_CELL_THRESHOLD` 가 8_192 였을 때는 90×90 까지 모든 칸을
   만들었다. 창이 맵 전체를 덮으면(축소·카메라 없는 테스트) lazy 경로도 전부 그리므로 작은 맵 결과는 같다.
 - **격자는 카메라 근처 청크만 긋는다 (2026-09-25).** `repaintEditGrid(…, bounds)` + `editGridTileWindow` 가 카메라 창을
@@ -317,7 +347,11 @@ Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식�
 초보 레일은 동일 칩셋·이미지·검색 조건에서 팔레트 DOM을 재사용한다. 선택 시 2,000개 이상의
 셀을 다시 만들면 지연 생성 중인 뒷부분이 사라지거나 키보드/드래그 상태가 끊긴다.
 표준 팔레트도 같다. `selectedTile` 만 바뀐 에디터 통지는 `syncMountedPaletteSelection` 이
-활성 칸과 선택 칩만 옮긴다. 도구·붓·스탬프만 바뀌면 시트 노드는 `retainKey`(타일셋·그림·레이어·필터)가
+활성 칸과 선택 칩만 옮긴다. **도구·붓 모양·붓 크기만 바뀐 통지**(`editorStateChangedOnlyToolPick`)는
+`syncMountedPaletteToolPick` 이 도구줄·붓 옵션 줄만 갈고 시트·필터 줄은 건드리지 않는다(2026-09-26 실측: 전체
+재생성은 클릭당 약 120ms, 그중 60% 가 붙이기 직후 focus 복원과 옛 트리 떼기). 도구줄 단추·모양 선택은
+`editorState` 만 바꾸고 스스로 `rerender()` 하지 않는다 — 부르면 클릭 한 번에 팔레트가 두 번 지어진다.
+타일 검색은 입력이 120ms 멈춘 뒤 한 번 다시 그린다. 도장만 바뀌면 시트 노드는 `retainKey`(타일셋·그림·레이어·필터)가
 같을 때 그대로 두고 크롬만 다시 그린다. 레이어·필터·검색·타일셋 그림이 바뀌거나 보조 창이 열려
 선택 동기화가 실패하면 시트를 다시 그린다. 초보 레일의 되돌리기 기록은 단추만 갱신한다.
 DOM 미리보기는 이식 PNG의 공유 Blob URL을 쓰고 증거·내보내기는 data URL을 유지한다.

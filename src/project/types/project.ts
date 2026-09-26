@@ -1,3 +1,4 @@
+import type { ReliefData } from "@/project/relief/types";
 import type {
   AssetSet,
   ActorId,
@@ -55,6 +56,12 @@ export interface GameMap {
   upperOverlayTiles?: number[];
   /** 그림자 비트 0..15(bit0 왼위·bit1 오른위·bit2 왼아래·bit3 오른아래, MZ 와 같음). 선택 — 없으면 0. */
   shadowBits?: number[];
+  /**
+   * 높이 지형(칸마다 0~14단). 선택 — 없으면 평지. 렌더러가 절벽을 그려 1층과 3층 사이에 깐다.
+   * 크기는 맵과 같다(불러오기 `normalizeProjectRelief` 가 맞춘다). 크기 바꾸기·밀기·잘라내기는
+   * `src/project/mapLayers.ts` 의 remap/crop 이 같이 옮긴다. 권위: `src/project/relief/`.
+   */
+  relief?: ReliefData;
   lowerTileStacks?: Record<number, number[]>;
   upperTileStacks?: Record<number, number[]>;
   events: GameEvent[];

@@ -56,7 +56,7 @@ try{
   await page.route('https://fixture-cdn.invalid/**',r=>r.abort());
   await page.goto('http://127.0.0.1:'+port+'/games/'+theme+'/player.html');
   await page.getByTestId('title-screen').waitFor({timeout:60000}).catch(async error=>{await page.screenshot({path:out+'/'+theme+'-export-failure.png'});console.error('EXPORT_BOOT_FAILED',JSON.stringify({errors,badAssets,text:await page.locator('body').innerText()}));throw error;});
-  await page.getByTestId('title-license-notice').click();
+  await page.getByTestId('title-credits').click();
   await page.locator('dialog.rm-license-dialog').waitFor();
   assert.match(await page.locator('.rm-license-dialog-body').innerText(),/Opening still release pack v1/);
   await page.screenshot({path:out+'/'+theme+'-export-license.png'});

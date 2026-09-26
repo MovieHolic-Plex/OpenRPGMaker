@@ -1,0 +1,289 @@
+{
+  "mode": "agent",
+  "base": "http://127.0.0.1:17832",
+  "measuredAt": "2026-09-26T01:07:08.280Z",
+  "commit": "effffd3fd",
+  "project": "test/fixtures/projects/glass-ui-qa-v3.json",
+  "task": "지금 맵을 어떤 숲 쉼터로 꾸밀지, 도구 조회 없이 두 항목으로 짧게 계획만 제안하세요.",
+  "rows": [
+    {
+      "model": "gemini-3.8-flash",
+      "thinking": "low",
+      "rep": 1,
+      "maxTurns": 4,
+      "ms": 3904,
+      "status": 200,
+      "error": null,
+      "firstLineMs": 70,
+      "firstAssistantMs": 3903,
+      "turns": 1,
+      "toolCalls": 0,
+      "timeline": [
+        {
+          "type": "turn",
+          "atMs": 105,
+          "index": 1
+        },
+        {
+          "type": "assistant",
+          "atMs": 3903
+        }
+      ],
+      "cacheRead": 0,
+      "stats": {
+        "ms": 3839,
+        "turns": 1,
+        "toolCalls": 0,
+        "toolErrors": 0,
+        "usage": {
+          "input": 14134,
+          "output": 170,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "totalTokens": 14304,
+          "cost": {
+            "input": 0.0106005,
+            "output": 0.0006375,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0.011238000000000001
+          }
+        }
+      },
+      "changedKeys": []
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "thinking": "low",
+      "rep": 2,
+      "maxTurns": 4,
+      "ms": 3957,
+      "status": 200,
+      "error": null,
+      "firstLineMs": 25,
+      "firstAssistantMs": 3957,
+      "turns": 1,
+      "toolCalls": 0,
+      "timeline": [
+        {
+          "type": "turn",
+          "atMs": 32,
+          "index": 1
+        },
+        {
+          "type": "assistant",
+          "atMs": 3957
+        }
+      ],
+      "cacheRead": 12024,
+      "stats": {
+        "ms": 3933,
+        "turns": 1,
+        "toolCalls": 0,
+        "toolErrors": 0,
+        "usage": {
+          "input": 2110,
+          "output": 149,
+          "cacheRead": 12024,
+          "cacheWrite": 0,
+          "totalTokens": 14283,
+          "cost": {
+            "input": 0.0015825000000000001,
+            "output": 0.00055875,
+            "cacheRead": 0.0009017999999999999,
+            "cacheWrite": 0,
+            "total": 0.00304305
+          }
+        }
+      },
+      "changedKeys": []
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "thinking": "low",
+      "rep": 3,
+      "maxTurns": 4,
+      "ms": 4172,
+      "status": 200,
+      "error": null,
+      "firstLineMs": 23,
+      "firstAssistantMs": 4171,
+      "turns": 1,
+      "toolCalls": 0,
+      "timeline": [
+        {
+          "type": "turn",
+          "atMs": 29,
+          "index": 1
+        },
+        {
+          "type": "assistant",
+          "atMs": 4171
+        }
+      ],
+      "cacheRead": 12024,
+      "stats": {
+        "ms": 4149,
+        "turns": 1,
+        "toolCalls": 0,
+        "toolErrors": 0,
+        "usage": {
+          "input": 2110,
+          "output": 151,
+          "cacheRead": 12024,
+          "cacheWrite": 0,
+          "totalTokens": 14285,
+          "cost": {
+            "input": 0.0015825000000000001,
+            "output": 0.00056625,
+            "cacheRead": 0.0009017999999999999,
+            "cacheWrite": 0,
+            "total": 0.00305055
+          }
+        }
+      },
+      "changedKeys": []
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "thinking": "high",
+      "rep": 1,
+      "maxTurns": 4,
+      "ms": 4320,
+      "status": 200,
+      "error": null,
+      "firstLineMs": 11,
+      "firstAssistantMs": 4320,
+      "turns": 1,
+      "toolCalls": 0,
+      "timeline": [
+        {
+          "type": "turn",
+          "atMs": 21,
+          "index": 1
+        },
+        {
+          "type": "assistant",
+          "atMs": 4320
+        }
+      ],
+      "cacheRead": 0,
+      "stats": {
+        "ms": 4309,
+        "turns": 1,
+        "toolCalls": 0,
+        "toolErrors": 0,
+        "usage": {
+          "input": 14134,
+          "output": 387,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "totalTokens": 14521,
+          "reasoningTokens": 249,
+          "cost": {
+            "input": 0.0106005,
+            "output": 0.00145125,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0.01205175
+          }
+        }
+      },
+      "changedKeys": []
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "thinking": "high",
+      "rep": 2,
+      "maxTurns": 4,
+      "ms": 5365,
+      "status": 200,
+      "error": null,
+      "firstLineMs": 20,
+      "firstAssistantMs": 5364,
+      "turns": 1,
+      "toolCalls": 0,
+      "timeline": [
+        {
+          "type": "turn",
+          "atMs": 25,
+          "index": 1
+        },
+        {
+          "type": "assistant",
+          "atMs": 5364
+        }
+      ],
+      "cacheRead": 12024,
+      "stats": {
+        "ms": 5345,
+        "turns": 1,
+        "toolCalls": 0,
+        "toolErrors": 0,
+        "usage": {
+          "input": 2110,
+          "output": 413,
+          "cacheRead": 12024,
+          "cacheWrite": 0,
+          "totalTokens": 14547,
+          "reasoningTokens": 242,
+          "cost": {
+            "input": 0.0015825000000000001,
+            "output": 0.00154875,
+            "cacheRead": 0.0009017999999999999,
+            "cacheWrite": 0,
+            "total": 0.00403305
+          }
+        }
+      },
+      "changedKeys": []
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "thinking": "high",
+      "rep": 3,
+      "maxTurns": 4,
+      "ms": 5781,
+      "status": 200,
+      "error": null,
+      "firstLineMs": 24,
+      "firstAssistantMs": 5781,
+      "turns": 1,
+      "toolCalls": 0,
+      "timeline": [
+        {
+          "type": "turn",
+          "atMs": 52,
+          "index": 1
+        },
+        {
+          "type": "assistant",
+          "atMs": 5781
+        }
+      ],
+      "cacheRead": 0,
+      "stats": {
+        "ms": 5757,
+        "turns": 1,
+        "toolCalls": 0,
+        "toolErrors": 0,
+        "usage": {
+          "input": 14134,
+          "output": 541,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "totalTokens": 14675,
+          "reasoningTokens": 385,
+          "cost": {
+            "input": 0.0106005,
+            "output": 0.00202875,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0.012629250000000002
+          }
+        }
+      },
+      "changedKeys": []
+    }
+  ]
+}

@@ -4,6 +4,7 @@
 // (`scripts/qa-game/gen.mts`)가 **같은 함수**를 부른다. 문장·상수를 두 곳에 베끼면 헤드리스 결과가
 // 브라우저 결과를 대표하지 못한다 — 여기 하나만 고치면 두 경로가 같이 바뀐다.
 
+import { packTownTargetFor } from "./packTownRoute";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
 import type { IntentSelectionFact } from "@/ai/intentDeclaration";
 import { buildIntentFacts, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
@@ -15,6 +16,11 @@ import type { PiApplyMode } from "./applyMode";
 import { buildPiIntentNote, resolvePiRunPlan, type PiRunPlan } from "./executionRoute";
 import type { PiAgentMode, PiAgentRequest, PiAgentThinkingLevel } from "./protocol";
 import type { PiTeamSpec } from "./teamSpec";
+// 정의는 잎 모듈(`./thinkingLevel`)에 둔다 — Bun 워커가 같은 함수를 권위 경계에서 부르는데, 이 파일은
+// 편집기 모듈(sessionToolExposure·authorVillageScope)을 끌고 와서 워커가 임포트하면 그 프로세스가 깨질 수 있다.
+// 기존 호출자·테스트가 이 모듈에서 쓰던 이름을 그대로 쓰도록 다시 내보낸다.
+export { normalizePiThinkingLevel } from "./thinkingLevel";
+import { normalizePiThinkingLevel } from "./thinkingLevel";
 import { resolveVillageContract, type VillageContract } from "./villageContract";
 import { MODERN_MAP_INITIAL_TOOLS, requestsModernMap } from '../modernTilesetPolicy';
 
@@ -76,8 +82,11 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     // Pi 이관(2026-09-11)에서 빠져 author_village·권장 크기·선택 사각형 지시가 모델에 닿지 않았다(2026-09-17 실측).
     const noteTargetMapId = declared.intent.targetMapId ?? currentMapId;
     const noteTargetMap = noteTargetMapId ? project.maps[noteTargetMapId] : undefined;
+    // 선언이 숲마을 도구를 고른 «마을» 요청일 때만 — 팩 맵에서 가로등 하나 고치는 요청에 마을 노트를 붙이지 않는다.
+    const packTown = declared.intent.tools.includes("author_village") ? packTownTargetFor(project, text, noteTargetMapId) : null;
     intentNote = buildPiIntentNote({
       project,
+      packTown,
       intent: declared.intent,
       targetMap: noteTargetMap
         ? { id: noteTargetMap.id, width: noteTargetMap.width, height: noteTargetMap.height, lived: isLivedMap(noteTargetMap) }
@@ -146,6 +155,19 @@ export function buildUltrabrainPlanRequest(input: {
   };
 }
 
+/**
+ * 자율성 다이얼이 역할 저장값(Deep)을 이겨도 되는가. 「저장값이 있나」로는 판정할 수 없다 —
+ * 설정 모달의 `collect()` 가 저장마다 역할 3개를 모두 쓰므로(aiSettingsModal), 설정을 한 번이라도
+ * 만진 사용자는 전원 `roleModels.deep` 을 갖는다. 그래서 「저장값이 폴백과 다른가」로 본다:
+ * 세 항목(공급자·모델·사고 강도)이 폴백과 같으면 사용자가 고른 것이 아니라 모달이 적어 준 값이다.
+ * `derived` 는 호출자가 `modelForRole({ ...config, roleModels: undefined }, "deep")` 로 넘긴다.
+ */
+export function prefersCallerThinking(stored: RoleModel | undefined, derived: RoleModel): boolean {
+  if (!stored) return true;
+  return stored.provider === derived.provider && stored.model === derived.model
+    && stored.thinkingLevel === derived.thinkingLevel;
+}
+
 /** 실행 턴이 읽는 지시문 = 모델 지시 + Ultrabrain 계획. */
 export function withUltrabrainPlan(modelTask: string, plan: string): string {
   return `${modelTask}\n\nUltrabrain 실행 계획:\n${plan}`;
@@ -173,8 +195,20 @@ export function buildPiRunRequest(input: {
   readonly toolDomains?: readonly string[];
   readonly initialToolNames?: readonly string[];
   readonly teamSpec?: PiTeamSpec;
+  /** 자율성 다이얼이 푼 사고 강도(`resolvePiRunPlan(...).thinkingLevel`). `preferCallerThinking` 없이는 쓰이지 않는다. */
+  readonly callerThinkingLevel?: PiAgentThinkingLevel;
+  /** 다이얼을 역할·Ultrabrain 설정보다 앞세운다. 두 입력을 다 비운 옛 호출자는 예전 그대로 역할 값을 쓴다. */
+  readonly preferCallerThinking?: boolean;
 }): PiAgentRequest {
   const brainRun = input.planOnly || input.team;
+  const effectiveProvider = brainRun ? input.brain.providerId! : input.deep.provider;
+  // 다이얼을 안 실은 턴은 여전히 역할 값이다 — 계획·팀 턴은 Ultrabrain 강도로 돌아서 계획을 몰래 낮추지 않는다.
+  const roleLevel = (brainRun ? input.brain.reasoningEffort : input.deep.thinkingLevel) as PiAgentThinkingLevel;
+  // 다이얼은 **실행 턴만** 움직인다 — brainRun(계획 턴·팀 턴)은 다이얼을 실어도 Ultrabrain 강도를 지킨다.
+  // 자율성 「확인」은 planOnly + reasoningEffort "low" 로 풀리고 패널은 그때도 preferCallerThinking 을
+  // 같이 실으므로(aiPiAgentCommand 의 실행 턴 요청), brainRun 을 안 빼면 Ultrabrain 계획이 high → low 로
+  // 조용히 떨어진다(2026-09-26 리뷰 실측). 두 입력을 다 비운 옛 호출자는 여전히 역할 값 그대로다.
+  const level = !brainRun && input.preferCallerThinking && input.callerThinkingLevel ? input.callerThinkingLevel : roleLevel;
   return {
     mode: input.team ? "team" : "single",
     applyMode: input.applyMode,
@@ -192,7 +226,7 @@ export function buildPiRunRequest(input: {
     ...(input.mapBundleMerge ? { mapBundleMerge: true } : {}),
     ...(input.readOnly ? { readOnly: true } : {}),
     ...(input.maxTurns === undefined ? {} : { maxTurns: input.maxTurns }),
-    thinkingLevel: (brainRun ? input.brain.reasoningEffort : input.deep.thinkingLevel) as PiAgentThinkingLevel,
+    thinkingLevel: normalizePiThinkingLevel(effectiveProvider, level),
     ...(input.toolDomains && input.toolDomains.length > 0 ? { toolDomains: input.toolDomains } : {}),
     ...(input.initialToolNames ? { initialToolNames: input.initialToolNames } : {}),
     ...(input.teamSpec ? { team: input.teamSpec } : {}),

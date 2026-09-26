@@ -120,7 +120,7 @@ describe("loadAiConfig — 제공자는 Antigravity·Codex 둘뿐이다", () => 
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ authMode: "chatgpt" }));
     const config = loadAiConfig();
     expect(config.providerId).toBe("google-antigravity");
-    expect(config.model).toBe("gemini-3.7-flash");
+    expect(config.model).toBe("gemini-3.8-flash");
   });
 
   it("providerId 없이 gpt 모델만 남은 옛 blob 도 Antigravity 로 마이그레이션한다", () => {

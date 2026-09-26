@@ -30,6 +30,7 @@ import { assert, cloneJson, sanitize, type JsonRecord, requireArray, requireBool
 import { repairProjectReferences, validateProjectReferences } from "./references";
 import { validateConditionShape } from "./shapeCommandFields";
 import { stampCharacterIdsForSocialEvents } from "../characterIdStamp";
+import { normalizeRelief } from "@/project/relief/edit";
 import { validateCharacters } from "./shapeCharacterFields";
 import {
   requirePosition,
@@ -178,6 +179,7 @@ function normalizeProjectV4(data: JsonRecord, adoptParsed = false): Project {
   normalizeStoryFlags(project);
   normalizeProjectPlanningItems(project);
   normalizeProjectMapBackgrounds(project);
+  normalizeProjectRelief(project);
   for (const map of Object.values(project.maps)) {
     const climate = normalizeMapClimate(map.climate);
     if (climate) map.climate = climate;
@@ -292,6 +294,16 @@ function normalizeProjectPlanningItems(project: Project): void {
     const normalized = normalizeMapPlanningItems(map.planningItems);
     if (normalized) map.planningItems = normalized;
     else delete map.planningItems;
+  }
+}
+
+/** 높이 지형 정리 — 맵 크기에 맞추고 0~14단으로 자른다. 전부 평지거나 모양이 틀리면 필드를 지운다. */
+function normalizeProjectRelief(project: Project): void {
+  for (const map of Object.values(project.maps)) {
+    if (map.relief === undefined) continue;
+    const normalized = normalizeRelief(map.relief, map.width, map.height);
+    if (normalized) map.relief = normalized;
+    else delete map.relief;
   }
 }
 

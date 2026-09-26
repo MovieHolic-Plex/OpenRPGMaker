@@ -49,8 +49,14 @@ import {
   TITLE_EFFECT_KINDS,
   TITLE_LOGO_STYLES,
   TITLE_MENU_STYLES,
+  TITLE_LOGO_SHINES,
   TITLE_OPENING_PRESETS,
+  TITLE_SEQUENCE_LOGO_REVEALS,
+  TITLE_TRANSITION_KINDS,
   findTitleOpeningPreset,
+  normalizeTitleLogoShine,
+  normalizeTitleOpeningSequence,
+  normalizeTitleTransition,
   normalizeTitleBackgroundFit,
   normalizeTitleBackgroundRendering,
   normalizeTitleEffects,
@@ -1766,10 +1772,12 @@ const setTitleScreen: ToolDefinition = {
       title: { type: "string" },
       menuLabels: {
         type: "object",
-        description: "{ newGame, continueGame, quit }",
+        description: "{ newGame, continueGame, resume, credits, quit } — credits 는 저작자 표기 창을 여는 항목(항상 보임)",
         properties: {
           newGame: { type: "string" },
           continueGame: { type: "string" },
+          resume: { type: "string" },
+          credits: { type: "string" },
           quit: { type: "string" },
         },
       },
@@ -1813,7 +1821,6 @@ const setTitleScreen: ToolDefinition = {
       },
       backgroundResourceId: { type: "string", description: "titleScreen.background only; does not clear system.titleResourceId" },
       musicResourceId: { type: "string" },
-      showInputHint: { type: "boolean" },
       backgroundLayers: {
         type: "array",
         description: `무한 스크롤 배경 레이어. 최대 ${MAX_TITLE_BACKGROUND_LAYERS}개`,
@@ -1842,14 +1849,15 @@ const setTitleScreen: ToolDefinition = {
       openingPreset: {
         type: "string",
         enum: TITLE_OPENING_PRESETS.map((preset) => preset.id),
-        description: "오프닝 프리셋. effects·logoStyle·menuStyle 을 프리셋 값으로 채운다(같은 호출의 명시 인자가 이긴다). 좌표는 프리셋 구도 기준이라 배경 그림이 다르면 effects 를 직접 맞춰라.",
+        description: "오프닝 프리셋. effects·logoStyle·menuStyle·sequence·logoShine·transition 을 프리셋 값으로 채운다(같은 호출의 명시 인자가 이긴다). 좌표는 프리셋 구도 기준이라 배경 그림이 다르면 effects 를 직접 맞춰라.",
       },
       effects: {
         type: "array",
         description:
           `배경 그림 위 영역 효과(WebGL). 최대 ${MAX_TITLE_EFFECTS}개, 목록 순서대로 칠한다. 좌표는 배경 그림 기준 0..1 (화면 밖 광원은 -0.5..1.5). `
           + "godRays/motes: source(광원)+toward(빛 방향), spread(반폭 각). motes 는 region 으로도 된다. glint: line [[x,y],[x,y]] 칼날 따라 반사광, periodSec. "
-          + "water/mist/dapple: region 다각형(3~8점). glow: source 한 점 깜빡임, spread 반지름. camera: 전체 화면 느린 흔들림. 빈 배열이면 효과를 지운다.",
+          + "water/mist/dapple: region 다각형(3~8점). glow: source 한 점 깜빡임, spread 반지름. camera: 전체 화면 느린 흔들림. "
+          + "parallax: 깊이 시차 — depthResourceId(흑백 깊이 지도, 흰색=가까움)로 가까운 것과 먼 것을 다르게 움직인다. 없으면 아래쪽을 가깝게 본다. 빈 배열이면 효과를 지운다.",
         items: {
           type: "object",
           properties: {
@@ -1858,13 +1866,14 @@ const setTitleScreen: ToolDefinition = {
             intensity: { type: "number", minimum: 0, maximum: 2 },
             speed: { type: "number", minimum: 0, maximum: 4 },
             color: { type: "string", description: "#rrggbb" },
-            source: { type: "array", items: { type: "number" }, minItems: 2, maxItems: 2 },
-            toward: { type: "array", items: { type: "number" }, minItems: 2, maxItems: 2 },
-            spread: { type: "number", minimum: 0, maximum: 1 },
-            line: { type: "array", items: { type: "array", items: { type: "number" }, minItems: 2, maxItems: 2 }, minItems: 2, maxItems: 2 },
-            periodSec: { type: "number", minimum: 0.5, maximum: 60 },
-            region: { type: "array", items: { type: "array", items: { type: "number" }, minItems: 2, maxItems: 2 }, minItems: 3, maxItems: MAX_TITLE_EFFECT_REGION_POINTS },
-            count: { type: "integer", minimum: 1, maximum: MAX_TITLE_MOTES },
+            source: { type: "array", items: { type: "number" }, description: "[x, y] 그림 기준 0..1(빛 근원은 -0.5..1.5)" },
+            toward: { type: "array", items: { type: "number" }, description: "[x, y]" },
+            spread: { type: "number", minimum: 0.02, maximum: 1 },
+            line: { type: "array", items: { type: "array", items: { type: "number" } }, description: "[[x, y], [x, y]] 칼날 두 끝" },
+            periodSec: { type: "number", minimum: 1, maximum: 60 },
+            region: { type: "array", items: { type: "array", items: { type: "number" } }, description: `[[x, y], ...] 꼭짓점 3~${MAX_TITLE_EFFECT_REGION_POINTS}개` },
+            count: { type: "integer", minimum: 0, maximum: MAX_TITLE_MOTES },
+            depthResourceId: { type: "string", description: "parallax 전용: 깊이 지도 리소스 id(흰색=가까움)" },
           },
           required: ["kind"],
           additionalProperties: false,
@@ -1875,6 +1884,32 @@ const setTitleScreen: ToolDefinition = {
       logoStyle: { type: "string", enum: TITLE_LOGO_STYLES, description: "제목 글자 질감. 지정하면 기본 편집 문구(A NEW ADVENTURE)를 숨긴다." },
       logoSubtitle: { type: "string", description: "로고 밑 작은 부제(예: OATH OF THE BLADE). 빈 문자열이면 해제." },
       menuStyle: { type: "string", enum: TITLE_MENU_STYLES, description: "window(창) | plain(키아트 위 글자 메뉴)" },
+      sequence: {
+        type: ["object", "null"],
+        description:
+          "첫 진입 입장 시퀀스: 검은 화면이 fadeMs 에 걸쳐 걷히고, 배경이 (1+push)배에서 1배로 밀려 들어오고, 로고 직전 빛 띠(sweep)가 훑고, logoAtMs 에 로고(logoReveal), menuAtMs 에 메뉴. "
+          + "아무 키·클릭이면 건너뛴다. {} = 전부 기본값(1600ms·0.08·bloom·로고 1100ms·메뉴 2200ms). null 이면 끈다(레거시 intro 만).",
+        properties: {
+          fadeMs: { type: "integer", minimum: 0, maximum: 6000 },
+          push: { type: "number", minimum: 0, maximum: 0.3 },
+          sweep: { type: "boolean" },
+          logoAtMs: { type: "integer", minimum: 0, maximum: 10000 },
+          logoReveal: { type: "string", enum: TITLE_SEQUENCE_LOGO_REVEALS },
+          menuAtMs: { type: "integer", minimum: 0, maximum: 12000 },
+        },
+        additionalProperties: false,
+      },
+      logoShine: { type: "string", enum: TITLE_LOGO_SHINES, description: "로고 표면 반사광. once = 등장 직후 한 번, loop = 6초마다, none = 끔." },
+      transition: {
+        type: ["object", "null"],
+        description: "「새 게임」을 고른 뒤 게임으로 넘어가는 전환. flash(흰 섬광) | fade(검게) | zoom(화면 속으로 빨려 듦) | mist(안개). null 이면 끈다.",
+        properties: {
+          kind: { type: "string", enum: TITLE_TRANSITION_KINDS },
+          durationMs: { type: "integer", minimum: 200, maximum: 3000 },
+        },
+        required: ["kind"],
+        additionalProperties: false,
+      },
       intro: {
         type: "object",
         properties: {
@@ -1919,9 +1954,6 @@ const setTitleScreen: ToolDefinition = {
       else delete current.musicResourceId;
     }
 
-    if (typeof args.showInputHint === "boolean") {
-      current.showInputHint = args.showInputHint;
-    }
 
     const layout = args.layout as Partial<typeof current.layout> | undefined;
     if (layout && typeof layout === "object") {
@@ -2014,6 +2046,10 @@ function applyTitleOpeningArgs(current: TitleScreenSettings, args: Record<string
     current.effects = titleOpeningPresetEffects(preset);
     current.logoStyle = preset.logoStyle;
     current.menuStyle = preset.menuStyle;
+    current.sequence = { ...preset.sequence };
+    if (preset.logoShine === "none") delete current.logoShine;
+    else current.logoShine = preset.logoShine;
+    current.transition = { ...preset.transition };
     notes.push(`프리셋 ${preset.label}`);
   }
   if ("effects" in args) {
@@ -2048,6 +2084,23 @@ function applyTitleOpeningArgs(current: TitleScreenSettings, args: Record<string
     const style = normalizeTitleMenuStyle(args.menuStyle);
     if (style) current.menuStyle = style;
     else delete current.menuStyle;
+  }
+  if ("sequence" in args) {
+    const sequence = normalizeTitleOpeningSequence(args.sequence);
+    if (sequence) current.sequence = sequence;
+    else delete current.sequence;
+    notes.push(sequence ? "입장 시퀀스 켬" : "입장 시퀀스 끔");
+  }
+  if ("logoShine" in args) {
+    const shine = normalizeTitleLogoShine(args.logoShine);
+    if (shine) current.logoShine = shine;
+    else delete current.logoShine;
+  }
+  if ("transition" in args) {
+    const transition = normalizeTitleTransition(args.transition);
+    if (transition) current.transition = transition;
+    else delete current.transition;
+    notes.push(transition ? `새 게임 전환 ${transition.kind}` : "새 게임 전환 끔");
   }
   if (current.effects?.length && !current.backgroundResourceId) {
     notes.push("주의: 배경 그림이 없으면 효과는 보이지 않는다");

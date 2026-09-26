@@ -2,6 +2,21 @@
 
 # 타일셋 참고문서 — 프로젝트 데이터
 
+## 공용 타일셋 참고 이미지는 호스트 주소다 (2026-09-26)
+
+호스트 공용 SQLite 의 `shared_*` 타일셋은 프로젝트로 복사된다(`ensureSharedContent`). 편집기 카탈로그 응답은
+그 타일셋과 구조 킷의 참고문서 이미지 dataURL 을 `/__oprn/shared-content/image/<다이제스트>.<png|jpg|webp>` 로
+바꾼다(`scripts/lib/sharedContentSqlite.ts` `linkReferenceImages`). 다이제스트는 `referenceImageDigest` 라 같은 그림은 같은 주소다.
+
+- 프로젝트에는 주소가 저장된다. 호스트가 없는 곳(언라인 파일만 옮긴 경우)에서는 그림이 빈다.
+  게임 내보내기는 참고문서를 못끼어낸다(`webExport.ts`). 사용자가 올린 참고 이미지는 그대로 dataURL 이다.
+- 이미 인라인으로 저장된 옛 프로젝트는 다음 로드에서 `ensureSharedContent` 가 호스트 원본(주소)으로 덮는다.
+- 모델 입력은 `resolveReferenceImageDataUrl` 이 주소를 바이트로 바꾼다(`read_tileset_reference`, `read_spatial_reference`).
+- 워커·게시 스크립트는 `readSharedContent()` 로 인라인 원본을 그대로 쓴다.
+- vite·Electron `app://`·팀 호스트 세 경로가 같은 핸들러를 쓴다. 주소→바이트 색인은 카탈로그 판본당 한 번 만든다.
+- 실측(2026-09-26): 기본 라이브러리 응답 압축 45MB → 20MB(이미지 7,550장 → 주소 4,095개), 부팅 전송 55.5 → 30.8MB,
+  heap 1.28 → 1.0GB, 로더 해제 교대 4회 평균 11.3 → 10.5s.
+
 ## 공용 SQLite 지역 참고문서 조회 (2026-09-24)
 
 `shared-content`에 저장된 지역과 옛 `shared-tile-references.spatial`은 서로 다른 저장 경로다.

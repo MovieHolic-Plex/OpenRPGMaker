@@ -1,5 +1,5 @@
 import { editorState } from "@/editor/editorState";
-import { makeLeftLayerSwitcher } from "./leftLayerSwitcher";
+import { layerSwitcherKey, makeLeftLayerSwitcher } from "./leftLayerSwitcher";
 import { captureFocus, restoreFocus } from "./sidebarFocus";
 import { getMode, toggleMode } from "@/app/mode";
 import { PRODUCT_TAGLINE } from "@/brand";
@@ -160,12 +160,13 @@ export function renderTopbar(topbar: HTMLElement): void {
       resources = toolButton({ testId: "toolbar-resource-manager", icon: "image", label: headerLabel("resources"), title: headerLabel("resourceLibrary"), onClick: () => openResourceModal() });
       lead.append(resources);
     }
-    const layers = makeLeftLayerSwitcher(editorState.get().layer);
+    const layers = makeLeftLayerSwitcher(layerSwitcherKey(editorState.get()));
     layers.classList.add("header-layer-switcher");
-    disposeLayerSwitcher = editorState.subscribe(({ layer }) => {
+    disposeLayerSwitcher = editorState.subscribe((state) => {
+      const key = layerSwitcherKey(state);
       const keepFocus = layers.contains(document.activeElement);
       for (const button of layers.querySelectorAll<HTMLButtonElement>("button")) {
-        const active = button.dataset.sidebarLayer === layer;
+        const active = button.dataset.sidebarLayer === key;
         button.classList.toggle("is-active", active);
         if (active) button.setAttribute("aria-current", "true");
         else button.removeAttribute("aria-current");

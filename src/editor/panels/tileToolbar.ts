@@ -7,7 +7,6 @@ import type { SvgIconName } from "@/editor/panels/tileToolbarIcons";
 import { isTileToolbarItemActive, selectMapModeTool, selectTileTool } from "@/editor/panels/tileToolbarActions";
 import type { TileToolId } from "@/editor/panels/tileToolbarActions";
 import { getEditorChrome } from "@/editor/editorUiMode";
-import { makeTileToolsMenu } from "@/editor/panels/tileToolOptions";
 import { makeInspectionControls, RULE_AUDIT_UPDATED_EVENT, type TileToolbarModel } from "@/editor/panels/tileToolbarMenus";
 import { installPointerStrokeGate, runWhenPointerReleased } from "@/editor/pointerStrokeGate";
 import { store } from "@/project/store";
@@ -70,7 +69,7 @@ let toolbarBadgeRefreshInstalled = false;
  * the labelled Tools surface; inspection utilities live below the sheet.
  */
 export function makeTileToolbar(model: TileToolbarModel): HTMLElement {
-  installToolbarBadgeRefresh(model.rerender);
+  installToolbarBadgeRefresh(model.refreshChrome ?? model.rerender);
   const { state } = model;
   const row = el("div", {
     class: "oprn-tile-toolbar",
@@ -96,17 +95,15 @@ export function makeTileToolbar(model: TileToolbarModel): HTMLElement {
       children: [makeSvgIcon(item.icon)],
       dataset: { testid: item.testid },
       on: {
-        click: () => {
-          selectTileTool(item.id);
-          model.rerender();
-        },
+        // 다시 그리기는 editorState 구독(editor.ts)이 맡는다. 여기서도 rerender 하면 클릭 한 번에
+        // 팔레트가 두 번 지어진다(2026-09-26 실측 클릭당 약 120ms × 2).
+        click: () => selectTileTool(item.id),
       },
     }));
   }
 
   if (state.layer !== "event" && getEditorChrome().advancedSidebarControls) scroll.append(makeMapModeGroup(model));
   row.append(scroll);
-  if (state.layer !== "event") row.append(makeTileToolsMenu(model));
   // 「검사·기록」 ⋯ 메뉴(인스펙터·규칙 감사·작업 기록)는 사이드바 맨 아래 줄에서 여기로 왔다(2026-09-17).
   // 잘 안 보는 옵션이라 상단 도구막대 끝의 ⋯ 하나로 치운다. 이벤트 레이어에서도 같은 자리다.
   row.append(makeInspectionControls(model));
@@ -137,10 +134,7 @@ function makeMapModeGroup(model: TileToolbarModel): HTMLElement {
         children: [makeSvgIcon(item.icon)],
         dataset: { testid: `tool-${item.id}` },
         on: {
-          click: () => {
-            selectMapModeTool(item.id);
-            model.rerender();
-          },
+          click: () => selectMapModeTool(item.id),
         },
       })
     );

@@ -16,7 +16,11 @@ import { summarizeChanges } from "@/editor/tools/changeset";
 import { takeEditActivitySince, type EditActivityCommitAttachment } from "@/editor/editActivityLog";
 import { createLogger } from "@/util/logger";
 import { currentHumanEditorIdentity, type EditorIdentity } from "./editorIdentity";
-import { projectViewWithoutEventDrafts, projectWithoutEventDrafts } from "./eventDrafts";
+// `projectWithoutEventDrafts` 를 더 쓰지 않는다 — 두 호출부가 복제 없는 투영
+// (`projectViewWithoutEventDrafts`)으로 바뀌었는데 import 만 남아 typecheck:app 이 TS6133 으로 죽었다
+// (2026-09-26 실측: main 의 ci-fast 로그가 13건 기준선 + 이 1건 = 14건. PR 레인의 typecheck 는
+//  이미 기준선에서 빨강이라 새 오류 하나가 그 속에 묻힌다).
+import { projectViewWithoutEventDrafts } from "./eventDrafts";
 import { projectWireView } from "./io/serialize";
 import { jsonContentDigest } from "./persistence/core/contentDigest";
 import type { CommitReviewStatus } from "./persistence/types";
@@ -139,7 +143,10 @@ export function recordProjectCommitFireAndForget(input: CommitLogInput): void {
 export function recordManualProjectCommitAfterSave(project: Project, baseline?: Project | null): void {
   const digest = manualCommitDigest(project);
   if (digest === lastManualDigest) return;
-  const persistedProject = projectWithoutEventDrafts(project);
+  // 복제 없는 투영을 쓴다: 이 값은 `summarizeChanges` 와 `commits.record` 가 읽기만 하고,
+  // 인자 `project` 는 이미 사적 객체다(저장이 넘긴 savedProject). 실측(2026-09-25):
+  // 42MB 문서 토한 프로젝트에서 전역 딥클로이가 한 번에 약 0.5s 다.
+  const persistedProject = projectViewWithoutEventDrafts(project);
   // 첫 저장/프로젝트 전환 직후에는 비교 대상이 없다. 기존 동작(systemChanged)으로 떨어뜨리되
   // summary 가 왜 "시스템" 인지 로그에 남긴다 — 안 남기면 예전 버그와 구분이 안 된다.
   const diff = baseline ? manualDiffFromBaseline(baseline, persistedProject) : manualDiffSummary();
@@ -254,7 +261,8 @@ export function combineDiffs(diffs: readonly (ChangeSummary | undefined)[]): Cha
  * 라이브 프로젝트를 받는 것과 같은 방어를 여기서도 유지한다.
  */
 function manualDiffFromBaseline(baseline: Project, saved: Project): ChangeSummary {
-  return summarizeChanges(projectWithoutEventDrafts(baseline), saved);
+  // 읽기 전용 투영 — `summarizeChanges` 는 둘 다 읽기만 하고, baseline 은 store 가 들고 있는 사적 객체다.
+  return summarizeChanges(projectViewWithoutEventDrafts(baseline), saved);
 }
 
 function manualDiffSummary(): ChangeSummary {

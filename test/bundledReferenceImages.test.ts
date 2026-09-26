@@ -1,5 +1,5 @@
 import { readFileSync, readdirSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import manifest from "@/assets/bundledReferenceImageManifest.json";
 import {
   externalizeBundledReferenceImages,
@@ -8,6 +8,7 @@ import {
   resolveReferenceImageDataUrl,
 } from "@/project/bundledReferenceImages";
 import { validateTilesetReferences } from "@/project/tilesetReferences";
+import { isSharedReferenceImage, sharedReferenceImageAddress } from "@/project/bundledReferenceImagePath";
 import type { Project } from "@/project/types";
 
 const paths = Object.values(manifest as Record<string, string>);
@@ -73,5 +74,19 @@ describe("bundled reference images", () => {
     expect(isBundledReferenceImage("/assets/../secret.png")).toBe(false);
     expect(isBundledReferenceImage("https://example.com/a.png")).toBe(false);
     expect(isBundledReferenceImage("/assets/reference-images/abc.png")).toBe(true);
+  });
+
+  it("resolves a shared host address to the host's bytes for model input", async () => {
+    const authored = "data:image/png;base64,iVBORw0KGgo=";
+    const address = sharedReferenceImageAddress(authored)!;
+    expect(isSharedReferenceImage(address)).toBe(true);
+    expect(address.endsWith(".png")).toBe(true);
+    const bytes = Uint8Array.from(atob(authored.slice(authored.indexOf(",") + 1)), c => c.charCodeAt(0));
+    const fetchMock = vi.fn(async () => new Response(bytes));
+    vi.stubGlobal("fetch", fetchMock);
+    try {
+      expect(await resolveReferenceImageDataUrl(address)).toBe(authored);
+      expect(fetchMock).toHaveBeenCalledWith(address);
+    } finally { vi.unstubAllGlobals(); }
   });
 });

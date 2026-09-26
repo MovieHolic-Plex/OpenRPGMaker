@@ -1,0 +1,324 @@
+{
+  "mode": "agent",
+  "base": "http://127.0.0.1:17832",
+  "measuredAt": "2026-09-25T23:37:57.946Z",
+  "commit": "aac5d54c1",
+  "project": "test/fixtures/projects/glass-ui-qa-v3.json",
+  "task": "get_project_summary 를 한 번 호출해 맵 목록을 확인하고, 그다음 get_map_region 으로 첫 맵의 좌상단 8x8 영역만 읽어서 어떤 타일이 몇 칸인지 두 줄로 보고하세요. 프로젝트는 수정하지 마세요.",
+  "rows": [
+    {
+      "model": "gemini-3.8-flash",
+      "thinking": "low",
+      "rep": 1,
+      "maxTurns": 4,
+      "ms": 6356,
+      "status": 200,
+      "error": null,
+      "firstLineMs": 72,
+      "firstAssistantMs": 6354,
+      "turns": 3,
+      "toolCalls": 2,
+      "timeline": [
+        {
+          "type": "turn",
+          "atMs": 105,
+          "index": 1
+        },
+        {
+          "type": "tool_start",
+          "atMs": 1635,
+          "name": "get_project_summary"
+        },
+        {
+          "type": "tool_end",
+          "atMs": 1635,
+          "name": "get_project_summary",
+          "ok": true
+        },
+        {
+          "type": "turn",
+          "atMs": 1695,
+          "index": 2
+        },
+        {
+          "type": "tool_start",
+          "atMs": 3754,
+          "name": "get_map_region"
+        },
+        {
+          "type": "tool_end",
+          "atMs": 3754,
+          "name": "get_map_region",
+          "ok": true
+        },
+        {
+          "type": "turn",
+          "atMs": 3797,
+          "index": 3
+        },
+        {
+          "type": "assistant",
+          "atMs": 6354
+        }
+      ],
+      "cacheRead": 0,
+      "stats": {
+        "ms": 6287,
+        "turns": 3,
+        "toolCalls": 2,
+        "toolErrors": 0,
+        "usage": {
+          "input": 14813,
+          "output": 86,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "totalTokens": 14899,
+          "cost": {
+            "input": 0.01110975,
+            "output": 0.00032250000000000003,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0.01143225
+          }
+        }
+      },
+      "changedKeys": []
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "thinking": "low",
+      "rep": 2,
+      "maxTurns": 4,
+      "ms": 7409,
+      "status": 200,
+      "error": null,
+      "firstLineMs": 34,
+      "firstAssistantMs": 7408,
+      "turns": 3,
+      "toolCalls": 2,
+      "timeline": [
+        {
+          "type": "turn",
+          "atMs": 47,
+          "index": 1
+        },
+        {
+          "type": "tool_start",
+          "atMs": 1777,
+          "name": "get_project_summary"
+        },
+        {
+          "type": "tool_end",
+          "atMs": 1777,
+          "name": "get_project_summary",
+          "ok": true
+        },
+        {
+          "type": "turn",
+          "atMs": 1794,
+          "index": 2
+        },
+        {
+          "type": "tool_start",
+          "atMs": 3418,
+          "name": "get_map_region"
+        },
+        {
+          "type": "tool_end",
+          "atMs": 3418,
+          "name": "get_map_region",
+          "ok": true
+        },
+        {
+          "type": "turn",
+          "atMs": 3427,
+          "index": 3
+        },
+        {
+          "type": "assistant",
+          "atMs": 7408
+        }
+      ],
+      "cacheRead": 12020,
+      "stats": {
+        "ms": 7377,
+        "turns": 3,
+        "toolCalls": 2,
+        "toolErrors": 0,
+        "usage": {
+          "input": 2793,
+          "output": 79,
+          "cacheRead": 12020,
+          "cacheWrite": 0,
+          "totalTokens": 14892,
+          "cost": {
+            "input": 0.0020947500000000003,
+            "output": 0.00029625,
+            "cacheRead": 0.0009015,
+            "cacheWrite": 0,
+            "total": 0.0032925000000000003
+          }
+        }
+      },
+      "changedKeys": []
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "thinking": "high",
+      "rep": 1,
+      "maxTurns": 4,
+      "ms": 9094,
+      "status": 200,
+      "error": null,
+      "firstLineMs": 26,
+      "firstAssistantMs": 9093,
+      "turns": 3,
+      "toolCalls": 2,
+      "timeline": [
+        {
+          "type": "turn",
+          "atMs": 36,
+          "index": 1
+        },
+        {
+          "type": "tool_start",
+          "atMs": 2619,
+          "name": "get_project_summary"
+        },
+        {
+          "type": "tool_end",
+          "atMs": 2619,
+          "name": "get_project_summary",
+          "ok": true
+        },
+        {
+          "type": "turn",
+          "atMs": 2631,
+          "index": 2
+        },
+        {
+          "type": "tool_start",
+          "atMs": 5453,
+          "name": "get_map_region"
+        },
+        {
+          "type": "tool_end",
+          "atMs": 5453,
+          "name": "get_map_region",
+          "ok": true
+        },
+        {
+          "type": "turn",
+          "atMs": 5465,
+          "index": 3
+        },
+        {
+          "type": "assistant",
+          "atMs": 9093
+        }
+      ],
+      "cacheRead": 0,
+      "stats": {
+        "ms": 9063,
+        "turns": 3,
+        "toolCalls": 2,
+        "toolErrors": 0,
+        "usage": {
+          "input": 15123,
+          "output": 579,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "totalTokens": 15702,
+          "reasoningTokens": 507,
+          "cost": {
+            "input": 0.01134225,
+            "output": 0.00217125,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0.0135135
+          }
+        }
+      },
+      "changedKeys": []
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "thinking": "high",
+      "rep": 2,
+      "maxTurns": 4,
+      "ms": 8470,
+      "status": 200,
+      "error": null,
+      "firstLineMs": 65,
+      "firstAssistantMs": 8470,
+      "turns": 3,
+      "toolCalls": 2,
+      "timeline": [
+        {
+          "type": "turn",
+          "atMs": 65,
+          "index": 1
+        },
+        {
+          "type": "tool_start",
+          "atMs": 2565,
+          "name": "get_project_summary"
+        },
+        {
+          "type": "tool_end",
+          "atMs": 2565,
+          "name": "get_project_summary",
+          "ok": true
+        },
+        {
+          "type": "turn",
+          "atMs": 2571,
+          "index": 2
+        },
+        {
+          "type": "tool_start",
+          "atMs": 4661,
+          "name": "get_map_region"
+        },
+        {
+          "type": "tool_end",
+          "atMs": 4661,
+          "name": "get_map_region",
+          "ok": true
+        },
+        {
+          "type": "turn",
+          "atMs": 4667,
+          "index": 3
+        },
+        {
+          "type": "assistant",
+          "atMs": 8470
+        }
+      ],
+      "cacheRead": 0,
+      "stats": {
+        "ms": 8441,
+        "turns": 3,
+        "toolCalls": 2,
+        "toolErrors": 0,
+        "usage": {
+          "input": 15163,
+          "output": 727,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "totalTokens": 15890,
+          "reasoningTokens": 655,
+          "cost": {
+            "input": 0.01137225,
+            "output": 0.00272625,
+            "cacheRead": 0,
+            "cacheWrite": 0,
+            "total": 0.0140985
+          }
+        }
+      },
+      "changedKeys": []
+    }
+  ]
+}

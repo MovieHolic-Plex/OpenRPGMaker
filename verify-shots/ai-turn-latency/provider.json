@@ -1,0 +1,75 @@
+{
+  "mode": "provider",
+  "base": "http://127.0.0.1:17832",
+  "measuredAt": "2026-09-25T23:34:17.431Z",
+  "commit": "aac5d54c1",
+  "stream": false,
+  "rows": [
+    {
+      "model": "gemini-3.8-flash",
+      "effort": "off",
+      "targetTokens": 1000,
+      "rep": 1,
+      "ms": 2390,
+      "status": 200,
+      "usage": null,
+      "error": null,
+      "firstTokenMs": null
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "effort": "off",
+      "targetTokens": 8000,
+      "rep": 1,
+      "ms": 2814,
+      "status": 200,
+      "usage": null,
+      "error": null,
+      "firstTokenMs": null
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "effort": "off",
+      "targetTokens": 30000,
+      "rep": 1,
+      "ms": 2835,
+      "status": 200,
+      "usage": null,
+      "error": null,
+      "firstTokenMs": null
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "effort": "high",
+      "targetTokens": 1000,
+      "rep": 1,
+      "ms": 4565,
+      "status": 200,
+      "usage": null,
+      "error": null,
+      "firstTokenMs": null
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "effort": "high",
+      "targetTokens": 8000,
+      "rep": 1,
+      "ms": 4000,
+      "status": 200,
+      "usage": null,
+      "error": null,
+      "firstTokenMs": null
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "effort": "high",
+      "targetTokens": 30000,
+      "rep": 1,
+      "ms": 5803,
+      "status": 200,
+      "usage": null,
+      "error": null,
+      "firstTokenMs": null
+    }
+  ]
+}

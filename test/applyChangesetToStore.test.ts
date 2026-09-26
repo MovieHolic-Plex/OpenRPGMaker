@@ -6,9 +6,13 @@ import * as applyChangesetToStore from "@/editor/tools/applyChangesetToStore";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { createBlankProject } from "@/project/defaults";
+import { createMemoryRepository } from "@/project/persistence/memoryRepository";
+import { setProjectRepositoryForTest } from "@/project/persistence/repository";
 import { recordProjectCommit } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
 import type { ProposedCall } from "@/ai/assistantSession";
+import type { ProjectTarget } from "@/project/persistence/target";
+import type { CommitInput, CommitListItem } from "@/project/persistence/types";
 
 const TEST_ENV = {
   VITE_LEGACY_DB_ANON_KEY: "test-anon-key",
@@ -22,7 +26,47 @@ function stubLegacyDbEnv(values: Partial<typeof TEST_ENV> = TEST_ENV): void {
   vi.stubEnv("VITE_LEGACY_DB_URL", values.VITE_LEGACY_DB_URL ?? "");
 }
 
+/** 커밋을 실제로 영속하는 대상. 로컬 폴더 정본과 같은 모양(자격증명 없음). */
+const COMMIT_TARGET: ProjectTarget = {
+  kind: "local",
+  projectDir: "/tmp/oprn-commit-log-test",
+  projectId: "uuid-commit-log-test",
+};
+
+let disposeCommitRepository: (() => void) | null = null;
+
+/**
+ * 커밋 영속 포트를 이 테스트에 붙인다.
+ *
+ * 정본 경로는 `projectRepository().commits.record(...)` 다 — 은퇴한 Supabase 전송
+ * (VITE_LEGACY_DB_* + `/rest/v1/project_commits` fetch, a931de829 에서 제거)이 아니다.
+ * 메모리 저장소는 대상이 있으면 `{ kind: "saved", commitId }` 를 돌려주므로
+ * 단위 테스트에서도 강한 계약(persisted:true + commitId)을 그대로 검증할 수 있다.
+ * `recorded` 는 포트에 실제로 넘어간 payload(요약·diff·toolNames)를 그대로 들고 있다.
+ */
+function installCommitRepository(): {
+  readonly recorded: CommitInput[];
+  readonly listCommits: (limit: number) => readonly CommitListItem[];
+} {
+  const memory = createMemoryRepository({ target: COMMIT_TARGET });
+  const recorded: CommitInput[] = [];
+  setProjectRepositoryForTest({
+    ...memory,
+    commits: {
+      ...memory.commits,
+      record: (input, target) => {
+        recorded.push(input);
+        return memory.commits.record(input, target);
+      },
+    },
+  });
+  disposeCommitRepository = () => setProjectRepositoryForTest(null);
+  return { recorded, listCommits: (limit) => memory.commits.listSync(limit) };
+}
+
 afterEach(() => {
+  disposeCommitRepository?.();
+  disposeCommitRepository = null;
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
@@ -97,14 +141,8 @@ describe("recordProjectCommit awaited variant", () => {
     expect(Number.isNaN(Date.parse(row.recordedAt))).toBe(false);
   });
 
-  it("(d) legacyDb 설정 + 정상 응답이면 커밋 row를 영속하고 commitId를 돌려준다", async () => {
-    const calls: { input: RequestInfo | URL; init: RequestInit | undefined }[] = [];
-    stubLegacyDbEnv();
-    vi.stubGlobal("fetch", (async (input, init) => {
-      calls.push({ input, init });
-      return new Response(null, { status: 201 });
-    }) satisfies typeof fetch);
-    store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: true, disabledReason: null });
+  it("(d) 저장소 대상이 설정돼 있으면 커밋 row를 영속하고 commitId를 돌려준다", async () => {
+    const repository = installCommitRepository();
 
     const row = await recordProjectCommit({
       project: createBlankProject(),
@@ -118,8 +156,16 @@ describe("recordProjectCommit awaited variant", () => {
     expect(row.commitId?.length).toBeGreaterThan(0);
     expect(row.summary).toBe("마일스톤: 원격");
     expect(row.toolNames).toEqual(["set_title_screen", "place_npc"]);
-    const commitCall = calls.find((call) => String(call.input).includes("/rest/v1/project_commits"));
-    expect(commitCall).toBeTruthy();
+    // 포트에 넘어간 payload와 저장된 커밋 row 양쪽을 본다 — row 만 보면 기록 없이 id 만 만들어도 통과한다.
+    expect(repository.recorded).toHaveLength(1);
+    expect(repository.recorded[0]).toMatchObject({
+      reviewStatus: "approved",
+      summary: "마일스톤: 원격",
+      toolNames: ["set_title_screen", "place_npc"],
+    });
+    expect(repository.listCommits(5)).toEqual([
+      expect.objectContaining({ commitId: row.commitId, reviewStatus: "approved", summary: "마일스톤: 원격" }),
+    ]);
   });
 });
 
@@ -130,12 +176,7 @@ describe("applyProposedProject shared apply path", () => {
   });
 
   it("스냅샷 → store.replace → await 커밋 순서로 제안 프로젝트를 적용한다", async () => {
-    const calls: { input: RequestInfo | URL; init: RequestInit | undefined }[] = [];
-    stubLegacyDbEnv();
-    vi.stubGlobal("fetch", (async (input, init) => {
-      calls.push({ input, init });
-      return new Response(null, { status: 201 });
-    }) satisfies typeof fetch);
+    const repository = installCommitRepository();
     const base = createBlankProject();
     store.replace(base);
     const proposalBase = applyChangesetToStore.captureProposalBase(store.getCurrent());
@@ -159,8 +200,14 @@ describe("applyProposedProject shared apply path", () => {
     expect(store.getCurrent().meta?.title).toBe("적용된 제목");
     // 마일스톤 1개 = undo 스냅샷 1개 + 커밋 row 1개(await 확정).
     expect(getMapEditHistoryEntries()).toHaveLength(1);
-    expect(calls.filter((call) => String(call.input).includes("/rest/v1/project_commits"))).toHaveLength(1);
-    expect(calls.filter((call) => String(call.input).includes("/rest/v1/project_changes"))).toHaveLength(1);
+    expect(repository.listCommits(5)).toEqual([
+      expect.objectContaining({ commitId: result.commit.commitId, summary: "마일스톤: 제목" }),
+    ]);
+    // 커밋 payload 는 변경 내역(diff)과 도구 목록을 실어야 한다 — 은퇴한 전송에서 project_changes row 1건이 증명했던 몫.
+    expect(repository.recorded).toHaveLength(1);
+    expect(repository.recorded[0]?.toolNames).toEqual(["set_title_screen"]);
+    expect(repository.recorded[0]?.diff).toBeDefined();
+    expect(repository.recorded[0]?.project.meta?.title).toBe("적용된 제목");
   });
 
   it("린트 차단 제안은 스토어를 건드리지 않고 commit-rejected를 돌려준다", async () => {

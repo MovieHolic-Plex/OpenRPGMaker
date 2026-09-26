@@ -373,6 +373,9 @@ function normalizeTitleScreenSettings(
       ...(typeof settings?.menuLabels?.newGamePlus === "string" && settings.menuLabels.newGamePlus.trim()
         ? { newGamePlus: settings.menuLabels.newGamePlus.trim() }
         : {}),
+      ...(typeof settings?.menuLabels?.credits === "string" && settings.menuLabels.credits.trim()
+        ? { credits: settings.menuLabels.credits.trim().slice(0, 24) }
+        : {}),
     },
     menuVisibility,
     ...(sounds ? { sounds } : {}),

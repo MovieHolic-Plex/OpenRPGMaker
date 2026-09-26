@@ -58,6 +58,8 @@ import { captureFocus, restoreFocus, applyRovingTabindex } from "@/editor/panels
 
 let activeTileCategory: TileCategoryId = "all";
 let tileSearchQuery = "";
+const TILE_SEARCH_RENDER_DELAY_MS = 120;
+let tileSearchRenderTimer: ReturnType<typeof setTimeout> | null = null;
 let showQuickTileNumbers = false;
 /** 맵 우클릭 스포이트 후 팔레트 타일 그림판 셀로 스크롤 (전문가 모드). */
 let pendingRevealSelectedTile = false;
@@ -274,7 +276,7 @@ function makePaletteSurface(input: {
 
   const model = { map, rerender: renderPalettePreservingViewport, state, tileset };
   root.append(makeSidebarMapHeader(map, renderPalettePreservingViewport));
-  root.append(makeTileToolbar(model));
+  root.append(makeTileToolbar({ ...model, refreshChrome: refreshPaletteChrome }));
   const assist = makeBrushAssistSection(map.id, state, tileset);
   const options = el('div', { class: 'sidebar-paint-options' });
   options.append(makeTileBrushControls(state, renderPalettePreservingViewport));
@@ -373,7 +375,12 @@ function makePaletteFilterBar(
         const target = event.currentTarget;
         if (!(target instanceof HTMLInputElement)) return;
         tileSearchQuery = target.value;
-        renderPalettePreservingViewport();
+        // 글자마다 시트를 다시 짓지 않는다 — 한 번에 60~130ms(2026-09-26 실측)라 빠르게 치면 입력이 밀렸다.
+        if (tileSearchRenderTimer !== null) clearTimeout(tileSearchRenderTimer);
+        tileSearchRenderTimer = setTimeout(() => {
+          tileSearchRenderTimer = null;
+          renderPalettePreservingViewport();
+        }, TILE_SEARCH_RENDER_DELAY_MS);
       },
     },
   });
@@ -482,6 +489,11 @@ function renderCurrentPalette(): void {
 
 function renderPalettePreservingViewport(): void {
   preservePaletteViewport(renderCurrentPalette);
+}
+
+/** 도구줄 배지·되돌리기만 다시 그린다. 보조 창이 열려 있거나 자리가 없으면 전체로 돌아간다. */
+function refreshPaletteChrome(): void {
+  if (!syncMountedPaletteToolPick()) renderPalettePreservingViewport();
 }
 
 
@@ -611,6 +623,42 @@ export function syncMountedPaletteLayerSelection(): boolean {
   const controls = document.querySelector<HTMLElement>('[data-testid="left-palette-root"] [data-testid="tile-brush-controls"]');
   if (!controls) return false;
   controls.replaceWith(makeTileBrushControls(editorState.get(), renderPalettePreservingViewport));
+  return true;
+}
+
+/**
+ * 도구·붓 모양·붓 크기만 바뀐 경우. 칸 195~2,000개짜리 시트는 이 값을 읽지 않는다 — 도구줄과
+ * 붓 옵션 줄만 갈아끼운다. 전체 재생성은 클릭당 약 120ms 였다(2026-09-26 실측, 절반 이상이
+ * 붙이기 직후 focus 복원과 옛 트리 떼기). 보조 창이 열려 있거나 자리가 없으면 false.
+ */
+export function syncMountedPaletteToolPick(): boolean {
+  if (typeof document === "undefined" || getEditorChrome().paletteRail) return false;
+  const root = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
+  const pane = root?.querySelector<HTMLElement>('[data-testid="palette-work-pane-paint"]');
+  if (!root || !pane || root.querySelector("[data-sidebar-surface]")) return false;
+  const toolbar = pane.querySelector<HTMLElement>('[data-testid="oprn-tile-toolbar"]');
+  const options = pane.querySelector<HTMLElement>(".sidebar-paint-options");
+  const controls = options?.querySelector<HTMLElement>('[data-testid="tile-brush-controls"]');
+  const state = editorState.get();
+  if (state.layer === "event" || !toolbar || !options || !controls) return false;
+  const project = store.getCurrent();
+  const map = project.maps[currentMapId()];
+  const tileset = map ? project.tilesets[map.tilesetId] : undefined;
+  if (!map || !tileset) return false;
+  const focusSnapshot = captureFocus(root);
+  const model = { map, rerender: renderPalettePreservingViewport, state, tileset };
+  toolbar.replaceWith(makeTileToolbar({ ...model, refreshChrome: refreshPaletteChrome }));
+  const shape = options.querySelector<HTMLElement>(".sidebar-shape-select");
+  const nextControls = makeTileBrushControls(state, renderPalettePreservingViewport);
+  controls.replaceWith(nextControls);
+  const wantsShape = state.tool === "paint" && !state.activePaletteStamp && getEditorChrome().advancedSidebarControls;
+  if (wantsShape) {
+    const nextShape = makePaintShapeSelect(model);
+    if (shape) shape.replaceWith(nextShape);
+    else nextControls.after(nextShape);
+  } else shape?.remove();
+  applyRovingTabindex(root);
+  restoreFocus(root, focusSnapshot);
   return true;
 }
 

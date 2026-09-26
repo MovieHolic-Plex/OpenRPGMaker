@@ -1,9 +1,9 @@
 /** @vitest-environment happy-dom */
 import { selectSidebarLayer } from "@/editor/panels/leftLayerSwitcher";
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { editorState } from '@/editor/editorState';
+import { editorState, editorStateChangedOnlyToolPick } from '@/editor/editorState';
 import { chromeForMode, resetEditorUiModeForTests, setEditorUiMode, subscribeEditorUiMode } from '@/editor/editorUiMode';
-import { renderTilePalette } from '@/editor/panels/tilePalette';
+import { renderTilePalette, syncMountedPaletteToolPick } from '@/editor/panels/tilePalette';
 import { resetTileToolbarMenusForTests } from '@/editor/panels/tileToolbarMenus';
 import { createBlankProject } from '@/project/defaults';
 import { store } from '@/project/store';
@@ -78,19 +78,6 @@ describe('focused standard and expert sidebar', () => {
     expect(find('sidebar-map-surface')).toBeNull();
     expect(document.activeElement).toBe(find('sidebar-map-switcher'));
     expect(editorState.get().currentMapId).toBe(mapId);
-  });
-  it.each(['rect', 'round'] as const)('selects %s from Standard Tools and keeps the shape when closing', shape => {
-    find('sidebar-tools-menu')?.click();
-    const select = find('paint-shape-select');
-    if (!(select instanceof HTMLSelectElement)) throw new Error('missing shape selector');
-    select.value = shape;
-    select.dispatchEvent(new Event('change', { bubbles: true }));
-    expect(editorState.get()).toMatchObject({ tool: 'paint', paintShape: shape, activePaletteStamp: null });
-    expect(find('brush-size-select')).toBeNull();
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
-    expect(find('sidebar-tools-surface')).toBeNull();
-    expect(editorState.get().paintShape).toBe(shape);
-    expect(document.activeElement).toBe(find('sidebar-tools-menu'));
   });
   it('filters real tiles through the native category selector without changing the picked tile', () => {
     const selectedTile = editorState.get().selectedTile;
@@ -175,19 +162,6 @@ describe('focused standard and expert sidebar', () => {
     setEditorUiMode('standard', null);
     expect(find('sidebar-assist-surface')).toBeNull();
   });
-  it('keeps an outside pointer target mounted so the same click can activate it', () => {
-    editorState.set({ tool: 'erase' });
-    find('sidebar-tools-menu')?.click();
-    const paint = find('tool-paint');
-    if (!paint) throw new Error('missing paint tool');
-    paint.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, button: 0 }));
-    expect(paint.isConnected).toBe(true);
-    paint.click();
-    expect(editorState.get().tool).toBe('paint');
-    expect(find('sidebar-tools-surface')).toBeNull();
-    find('sidebar-tools-menu')?.click();
-    expect(find('sidebar-tools-surface')).not.toBeNull();
-  });
   it('keeps a map surface behind a child modal and lets Escape close only the child', () => {
     find('sidebar-map-switcher')?.click();
     const properties = find('map-inspector-action-properties');
@@ -204,5 +178,64 @@ describe('focused standard and expert sidebar', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
     expect(find('sidebar-map-surface')).toBeNull();
     expect(document.activeElement).toBe(find('sidebar-map-switcher'));
+  });
+
+  it('switches tools in place: the sheet node survives and the toolbar shows the new tool', () => {
+    // 본 편집기(editor.ts) 경로와 같은 분기: 도구만 바뀌면 제자리 동기화, 아니면 전체 재생성.
+    unsubscribe();
+    let previous = editorState.get();
+    let rebuilds = 0;
+    unsubscribe = editorState.subscribe((state) => {
+      const before = previous;
+      previous = state;
+      if (editorStateChangedOnlyToolPick(before, state) && syncMountedPaletteToolPick()) return;
+      rebuilds += 1;
+      renderTilePalette(host);
+    });
+    const sheet = find('tile-palette');
+    expect(sheet).not.toBeNull();
+    find('tool-fill')?.click();
+    expect(editorState.get().tool).toBe('fill');
+    expect(rebuilds).toBe(0);
+    expect(find('tile-palette')).toBe(sheet);
+    expect(find('tool-fill')?.getAttribute('aria-pressed')).toBe('true');
+    expect(find('tool-paint')?.getAttribute('aria-pressed')).toBe('false');
+    expect(find('tile-brush-state')?.dataset.tool).toBe('fill');
+    expect(find('brush-size-select')).toBeNull();
+    expect(host.querySelectorAll('[data-testid="oprn-tile-toolbar"]')).toHaveLength(1);
+    find('tool-paint')?.click();
+    expect(rebuilds).toBe(0);
+    expect(find('tile-palette')).toBe(sheet);
+    expect(find('brush-size-select')).not.toBeNull();
+    // 레이어를 바꾸면 보이는 칸이 달라지므로 전체 재생성이다.
+    selectSidebarLayer('upper');
+    expect(rebuilds).toBe(1);
+  });
+
+  it('filters the sheet once after typing settles, not per keystroke', () => {
+    // 필터 상태는 모듈 전역이다 — 앞 테스트가 남긴 분류를 먼저 걷어 낸다.
+    const category = find('tile-category-select');
+    if (!(category instanceof HTMLSelectElement)) throw new Error('missing category selector');
+    category.value = 'all';
+    category.dispatchEvent(new Event('change', { bubbles: true }));
+    const search = find('tile-search-input');
+    if (!(search instanceof HTMLInputElement)) throw new Error('missing tile search');
+    search.value = '';
+    search.dispatchEvent(new Event('input', { bubbles: true }));
+    vi.runOnlyPendingTimers();
+    const sheet = find('tile-palette');
+    for (const value of ['집', '집의']) {
+      search.value = value;
+      search.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    // 입력 중에는 시트를 건드리지 않는다.
+    expect(find('tile-palette')).toBe(sheet);
+    expect(find('palette-filter-status')).toBeNull();
+    vi.runOnlyPendingTimers();
+    // 멈춘 뒤 한 번 필터가 걸린 시트로 바뀐다 — 입력칸 값은 마지막 글자까지 그대로다.
+    expect(find('tile-palette')).not.toBe(sheet);
+    expect(find('palette-filter-status')).not.toBeNull();
+    expect(find('tile-search-input')).toHaveProperty('value', '집의');
+    find('palette-filter-clear')?.click();
   });
 });

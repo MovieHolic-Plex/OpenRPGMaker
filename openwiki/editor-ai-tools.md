@@ -15,6 +15,22 @@
   비어 있는 칸만 채우고 유지한 항목을 요약에 적는다. 런타임 증거: `npm run qa:runtime -- --scenario title-improve`
   (`TITLE_STAGE=0|3`), stage 0 은 `title-effects` 부재, stage 3 은 WebGL 효과 레이어 동작.
 
+## 절벽 높이 도구 — read_relief · sculpt_relief · check_relief (2026-09-26)
+
+`src/editor/tools/reliefTools.ts`, 레지스트리에는 `withDomain(RELIEF_TOOLS, "map")`. 왜: 절벽을 타일 번호로 깔면 윗단·몸통·대각선 모서리를 칸마다
+골라야 해서 조수가 거의 항상 틀렸다. 높이 칸만 정하면 렌더러가 벽·대각선·가림을 그린다 — 조수는 「어디가 몇 단인가」만 말한다.
+
+| 도구 | 인자 | 동작 |
+|---|---|---|
+| `read_relief` (읽기) | `mapId` | `data.matrix` 36진수 행렬(한 줄=한 행, 0~9·a=10…e=14) + `data.check` 검사 글. relief 없는 맵은 전부 0 |
+| `sculpt_relief` (쓰기) | `mapId`, `ops[]`, `seed?`, `reset?` | ops DSL(`src/project/relief/ops.ts` `RELIEF_OPS_SPEC` — fill·rect·plateau·mountain·ridge·canyon·terraces·rough·smooth)을 **지금 높이 위에** 차례로 적용(`reset:true` 면 0단에서). 모르는 op 은 `warnings`. 결과가 평지면 `relief` 삭제. 검사 글을 `data.check` 로 돌려준다 |
+| `check_relief` (읽기) | `mapId` | 규칙에 깎인 칸·남쪽 땅에 가려진 구역·12칸 이상 일직선 벽 + 고칠 방향 |
+
+- `ops` 가 `{op:string}` 객체 배열이 아니면 `ToolError` `invalid-args`(예시 포함).
+- `sculpt_relief` 는 `MAP_ONLY_WRITE_TOOLS`(`applyChangesetToStore.ts`·`editorToolHook.ts`)에 있어 맵 단위 체크포인트를 쓴다. 변경은 맵 속성 변경으로 잡혀 검토 대상이다.
+- 타일을 고르지 않으므로 `tilesetReferenceTools` 의 WRITERS/TILE_CHOOSERS, 패널 `MAP_TILE_TOOLS` 에는 넣지 않았다.
+- `docs/tool-catalog.md` 는 손으로 세 줄을 넣었다(생성 스크립트가 vitest 를 돌려 실행하지 않음) — 다음 재생성 때 확인.
+
 ## 조수 쓰기 도구의 네 층 — 1~4층·그림자 (MZ식 4층, 2026-09-25)
 
 조수가 2층(바닥 장식)·4층(물체 위 물체)·그림자를 쓴다. 층 번호와 맵 칸 이름의 대응은 `src/project/mapLayers.ts` 가 정본이고,

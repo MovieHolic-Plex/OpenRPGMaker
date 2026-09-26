@@ -154,8 +154,12 @@ import type { GameMap, MapId } from "@/project/types";
 import { clearMapDissolveVeil } from "@/editor/mapDissolveVeil";
 import { prefersReducedMotion } from "@/util/reducedMotion";
 import { toast } from "@/util/toast";
+import { effectiveHeights, renderRelief } from "@/project/relief/render";
+import { gridFromRelief, RELIEF_TILE } from "@/project/relief/types";
+import { reliefIsFlat } from "@/project/relief/edit";
 
 const PhaserRuntime = getLoadedPhaser();
+const RELIEF_TEXTURE_KEY = "__oprn_edit_relief";
 
 type EventLayerClick = {
   readonly at: number;
@@ -230,6 +234,9 @@ export class EditScene extends PhaserRuntime.Scene {
   private tileLayer: Phaser.GameObjects.Container | null = null;
   /** 상위(덧그림) 타일 컨테이너 — tileLayer 뒤에 와서 upper가 항상 lower 위에 그려진다. */
   private upperTileLayer: Phaser.GameObjects.Container | null = null;
+  /** 높이(relief) 절벽 그림 — 하층 타일 위, 상층 타일 아래. 맵에 relief 가 없으면 비어 있다. */
+  private reliefLayer: Phaser.GameObjects.Container | null = null;
+  private reliefRenderKey = "";
   private hoverPreviewLayer: Phaser.GameObjects.Container | null = null;
   private selectionLayer: Phaser.GameObjects.Container | null = null;
   private overlayLayer: Phaser.GameObjects.Container | null = null;
@@ -456,6 +463,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.cameras.main.roundPixels = false;
 
     this.tileLayer = this.add.container(0, 0);
+    this.reliefLayer = this.add.container(0, 0);
     this.upperTileLayer = this.add.container(0, 0);
     // tileLayer(기본 depth 0)와 upperTileLayer(기본 depth 0)는 add 순서대로 그려진다 —
     // 같은 depth면 display list 등록 순서가 드로 순서다. 명시 depth는 붙이지 않는다:
@@ -611,6 +619,9 @@ export class EditScene extends PhaserRuntime.Scene {
     this.deferredCameraFocus = null;
     // 컬링 추적 목록을 풀어 씬이 내려가도 객체를 붙잡지 않게 한다.
     resetCullableTiles(this);
+    // 씬을 다시 만들면 relief 도 다시 그려야 한다 — 키를 비워 둔다.
+    this.reliefRenderKey = "";
+    if (this.textures.exists(RELIEF_TEXTURE_KEY)) this.textures.remove(RELIEF_TEXTURE_KEY);
 
     this.mapEdgeBand?.destroy();
     this.mapEdgeBand = null;
@@ -2113,6 +2124,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.renderEventLayerClickFeedback();
     // 배경 미리보기는 타일 렌더와 별개다 — 토글·맵·그림이 바뀔 때만 스프라이트를 다시 만든다.
     this.renderMapBackgroundPreview();
+    this.renderReliefLayer();
     this.renderAgentGhostPreview();
     // 청사진도 고스트와 같이 다시 그린다 — 청사진 스토어 구독만으로는 부족하다. 맵 전환은
     // editorState/store 만 흔들므로, 다시 그리지 않으면 A 맵의 "2/7 집" 사각형이 B 맵의 같은
@@ -2208,7 +2220,36 @@ export class EditScene extends PhaserRuntime.Scene {
     });
   }
 
-    private layoutMapBackgroundPreview(): void {
+    /**
+   * 높이 절벽 그림. 16px 칸으로 그린 뒤 맵 칸 크기에 맞춰 늘린다. 윗면이 들리는 만큼(pad) 위로 올린다.
+   * 0단 칸은 투명이라 타일이 그대로 보인다. relief 가 같으면(키) 다시 그리지 않는다.
+   */
+  private renderReliefLayer(): void {
+    const layer = this.reliefLayer;
+    if (!layer) return;
+    const mapId = this.mapId();
+    const relief = mapId ? store.getCurrent().maps[mapId]?.relief : undefined;
+    const tileSize = this.activeTileSize();
+    const key = relief ? `${mapId}|${tileSize}|${relief.width}x${relief.height}|${relief.levels.join(",")}` : "";
+    if (key === this.reliefRenderKey) return;
+    this.reliefRenderKey = key;
+    layer.removeAll(true);
+    if (this.textures.exists(RELIEF_TEXTURE_KEY)) this.textures.remove(RELIEF_TEXTURE_KEY);
+    if (!relief || reliefIsFlat(relief)) return;
+    const r = renderRelief(effectiveHeights(gridFromRelief(relief)), { transparentGround: true });
+    const canvas = document.createElement("canvas");
+    canvas.width = r.PW;
+    canvas.height = r.SH;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.putImageData(new ImageData(new Uint8ClampedArray(r.rgba), r.PW, r.SH), 0, 0);
+    const texture = this.textures.addCanvas(RELIEF_TEXTURE_KEY, canvas);
+    texture?.setFilter(PhaserRuntime.Textures.FilterMode.NEAREST);
+    const scale = tileSize / RELIEF_TILE;
+    layer.add(this.add.image(0, -r.pad * scale, RELIEF_TEXTURE_KEY).setOrigin(0, 0).setScale(scale));
+  }
+
+  private layoutMapBackgroundPreview(): void {
     const specs = this.mapBackgroundPreviewSpecs;
     for (const [index, sprite] of this.mapBackgroundSprites.entries()) {
       if (!sprite.visible) continue;

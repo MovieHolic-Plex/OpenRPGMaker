@@ -107,7 +107,8 @@ Herd New worktree 훅은 `npm run wt adopt -- --path <checkout>` (또는 `WT_WOR
    가 `../rpg-zzu/node_modules` 를 허용하는데 이 상대 경로가 워크트리 루트 기준으로 풀리기 때문이다.
 3. **node_modules 정션** — 윈도우 junction (관리자 권한 불필요). 수 GB 중복 방지.
 4. **`.env` / `.env.local` 복사** — gitignored 라 워크트리에 따라오지 않는다.
-5. **`DEV_SERVER_PORT` 고유 배정** — 9801부터(9888 preview·9999 메인 dev 는 예약). 메인이 `--port 9999 --strictPort` 를 점유한다.
+5. **`DEV_SERVER_PORT` 고유 배정** — 9801~9998(198칸, 9888 preview·9999 메인 dev 는 예약). 메인이 `--port 9999 --strictPort` 를 점유한다.
+   100칸이던 시절 등록 워크트리 98개에서 꽉 차 **새 워크트리가 배정 실패**했다(2026-09-25 실측) — 그래서 상한을 9998 로 늘렸다.
 
 워크트리에서 dev 서버는 반드시 **`npm run dev:worktree`** 로 띄운다. 두 스크립트는 `scripts/dev-server.mjs`
 를 지나며(2026-09-17), 거기서 포트가 고정된다:
@@ -157,7 +158,9 @@ for t in task-a task-b task-c; do npm run wt create "$t" & done; wait
 - `npm run wt create` 로 만든 워크트리는 9801부터 고유 포트를 받으므로 이 함정에 걸리지 않는다.
 - **손으로 만든 워크트리**(`.claude/worktrees/*`, Paseo, codex, `git worktree add` 직접 호출 등)도
   `npm run dev:worktree` 가 첫 실행에서 배정한다. `node_modules` 정션·env 복사까지 필요하면
-  `npm run wt adopt -- --path <checkout>`.
+  `npm run wt adopt -- --path <checkout>` — **2026-09-25부터는 `npm run dev:worktree` 가
+  `node_modules` 가 없는 것을 보고 그 보정을 스스로 돌린다**(`scripts/dev-server.mjs`).
+  보정만 먼저 해 두고 싶거나 dev 서버 없이 tsc/vitest 만 돌릴 거면 `adopt` 를 직접 부른다.
 - 이 실패 모드는 **조용하다**. 운이 나쁘면 실패가 아니라 "통과"로 보인다 — 남의 워크트리가
   같은 기능을 이미 갖고 있으면 내 변경을 검증하지 않고 초록이 뜬다. 확인 방법:
   `ss -tlnp | grep <port>` 로 pid 를 얻고 `ls -l /proc/<pid>/cwd` 로 그 서버의 워크트리를 본다.
@@ -173,8 +176,11 @@ for t in task-a task-b task-c; do npm run wt create "$t" & done; wait
   `import('/src/project/store.ts')`는 다른 인스턴스를 읽을 수 있다. 실측: UI와 실제 store는
   X=23·셀 2개인데 테스트 import는 X=0을 반환했다. 최종 코드가 정해지면 자기 QA 서버를
   재시작하고 `E2E_FREEZE_DEV_SERVER=1`로 검증한다. 기대값이나 제품 코드를 바꿀 문제가 아니다.
-- `npm run wt`의 배정 포트도 실행 중인 프로세스와 충돌할 수 있다. `ss`로 확인하고 자기 서버에만
+- `npm run wt`의 배정 포트도 실행 중인 프로세스와 충돌할 수 있다. 자기 서버에만
   명시적 포트를 준다. 남의 서버를 종료하거나 다른 워크트리의 서버를 재사용하지 않는다.
+  **2026-09-25부터는 배정기가 listen 중인 포트를 건너뛴다** — 파일 스캔만 보면 못 잡는
+  「지운 워크트리의 유령 서버」를 잡기 위해서다(실측: 삭제된 codex 워크트리 4개가 9806·9807·9817·9818 을
+  계속 listen 했고, 9807 이 배정돼 `npm run dev:worktree` 가 죽었다). 안내문에 점유 프로세스의 cwd·pid 가 나온다.
 
 ```bash
 npm run gates                    # 실행 + 기준선 대비 회귀 판정
@@ -220,8 +226,17 @@ npm run gates -- --only typecheck
   `git add -A` 가 통째로 죽고 스냅샷이 차단된다. `.gitignore` 에 등록돼 있으나, 다른 형태의
   예약명(`con`, `aux`, `prn`)이 생기면 같은 증상이 난다.
 - **Herd New worktree** — 브랜치+체크아웃만 만든다. `worktree-hooks` 플러그인이 create/open 때
-  `wt adopt --path` 를 돌린다. 업스트림 플러그인은 Linux/macOS·`python3` 전제라 Windows 에서는
-  Git bash + `python.exe` 로 링크한 로컬 사본을 쓴다.
+  `wt adopt --path` 를 돌린다. **2026-09-25 이 박스에 설치됨**:
+  `herdr plugin install m1sk9/herdr-worktree-hooks-plugin` (0.1.3, herdr 0.8.2) +
+  설정 `~/.config/herdr/plugins/config/m1sk9.worktree-hooks/config.toml` 의
+  `[repos."/home/main/z-project/rpg-zzu"] run = ["npm run wt -- adopt --path \"$WORKTREE\""]`.
+  키가 절대경로라 다른 저장소에는 안 돌아간다. 실측: herdr 로 만든 워크트리에 node_modules 정션·
+  `.env.local`·고유 포트가 생성 직후 채워졌다. 단 **그 워크트리가 체크아웃한 브랜치의 `scripts/` 를 쓴다** —
+  보정 로직 수정은 메인에 병합되기 전까지 새 워크트리에 적용되지 않는다.
+  `[[startup]]` 훅은 **이미 있던 워크트리를 처리하지 않는다**(설치 로그에 기존 것들의 보정 기록이 없다) —
+  설치 전에 만든 워크트리는 `npm run wt adopt` 로 따로 돌린다. 생성 시 herdr 은 `workspace.created` 와
+  `worktree.created` 를 둘 다 내지만, 플러그인이 claim 으로 하나만 적용한다(실측 로그: 하나 `succeeded`,
+  다른 하나 `skip:`).
   `.qoder/`, `.senpi/` 등 다른 툴이 메인 트리에 붙어 있으면 그대로 충돌한다. 병렬 작업 전에
   다른 세션이 도는지 확인한다.
 - **워크트리는 베이스 시점의 스냅샷** — 생성 후 메인에 들어온 변경은 반영되지 않는다.

@@ -980,6 +980,8 @@ export interface TitleScreenMenuLabels {
   resume?: string;
   /** "강하게 다시 하기"(New Game+) 라벨. system.newGamePlus.label 보다 우선한다. */
   newGamePlus?: string;
+  /** 크레딧(저작자 표기) 라벨. 생략 시 "크레딧". 항목 자체는 숨길 수 없다. */
+  credits?: string;
 }
 export interface TitleScreenMenuVisibility {
   newGame: boolean;
@@ -1037,6 +1039,38 @@ export interface TitleIntroSettings {
   staggerMs?: number;
 }
 
+/** 로고가 처음 드러나는 방식. bloom = 빛 번짐에서 초점이 잡힌다, wipe = 왼→오 빛 커튼. */
+export type TitleSequenceLogoReveal = "fade" | "rise" | "bloom" | "wipe";
+/** 로고 표면을 훑는 반사광. once = 등장 직후 한 번, loop = 몇 초마다. */
+export type TitleLogoShine = "none" | "once" | "loop";
+
+/**
+ * 입장 시퀀스(첫 진입 한 번). 검은 화면 → 페이드 → 카메라 밀기 → 빛 훑기 → 로고 → 메뉴.
+ * 아무 키·클릭이면 즉시 끝 상태로 건너뛴다. 모든 필드 생략 = 런타임 기본값. 필드 자체가 없으면 시퀀스 없음(레거시 intro 만).
+ */
+export interface TitleOpeningSequence {
+  /** 검은 화면이 걷히는 시간 ms (0..6000). 기본 1600. */
+  fadeMs?: number;
+  /** 카메라 밀기 폭 0..0.3 (1+push 배에서 1배로). 기본 0.08. 0 = 끔. */
+  push?: number;
+  /** 로고 직전 화면을 가로지르는 빛 띠. false 만 저장. */
+  sweep?: boolean;
+  /** 로고 등장 시각 ms (0..10000). 기본 1100. */
+  logoAtMs?: number;
+  /** 기본 bloom. */
+  logoReveal?: TitleSequenceLogoReveal;
+  /** 메뉴 등장 시각 ms (0..12000). 기본 logoAtMs + 1100. */
+  menuAtMs?: number;
+}
+
+/** 「새 게임」을 고른 뒤 게임으로 넘어가는 전환. */
+export type TitleTransitionKind = "flash" | "fade" | "zoom" | "mist";
+export interface TitleTransitionSettings {
+  kind: TitleTransitionKind;
+  /** 200..3000. 생략 = 종류별 기본(flash 700, fade 800, zoom 1000, mist 1100). */
+  durationMs?: number;
+}
+
 /**
  * 배경 그림 맞춤. 생략 = 레거시 "stretch"(100% 100% 로 늘림) — 구 JSON 은 필드가 없고 화면도 그대로다.
  * cover = 비율 유지로 화면을 채우고 넘치는 쪽을 자른다, contain = 비율 유지로 전부 보인다.
@@ -1058,8 +1092,10 @@ export type TitleEffectPoint = [number, number];
  * - dapple:  region 안의 나뭇잎 그림자 흔들림
  * - glow:    source 둘레의 깜빡이는 불빛(횃불·창문), spread = 반경
  * - camera:  화면 전체의 느린 호흡 줌(intensity = 폭)
+ * - parallax: 깊이 지도로 가까운 것과 먼 것을 다르게 움직이는 2.5D 시차(intensity = 폭).
+ *             depthResourceId 가 없으면 「아래가 가깝다」는 기본 깊이를 쓴다.
  */
-export type TitleEffectKind = "godRays" | "motes" | "glint" | "water" | "mist" | "dapple" | "glow" | "camera";
+export type TitleEffectKind = "godRays" | "motes" | "glint" | "water" | "mist" | "dapple" | "glow" | "camera" | "parallax";
 
 export interface TitleEffect {
   kind: TitleEffectKind;
@@ -1082,6 +1118,8 @@ export interface TitleEffect {
   region?: TitleEffectPoint[];
   /** motes 개수(0..96). */
   count?: number;
+  /** parallax 깊이 지도 그림 id(흰색 = 가까움, 검정 = 멂). 배경 그림과 같은 구도여야 한다. */
+  depthResourceId?: string;
 }
 
 export type TitleLogoStyle = "plain" | "metal" | "gold" | "stone" | "glow";
@@ -1111,7 +1149,7 @@ export interface TitleScreenSettings {
   sounds?: TitleScreenSounds;
   /** Omitted when text-only with no logo resource (legacy compact JSON). */
   titleGraphic?: TitleScreenGraphic;
-  /** Default true after normalize. */
+  /** 레거시 필드. 타이틀은 더 이상 조작 안내 줄을 그리지 않는다(2026-09-25) — 옛 JSON 호환으로만 남는다. */
   showInputHint?: boolean;
   /** 배경 스크롤 레이어(최대 4). 빈/무효면 normalize 가 필드를 생략한다(레거시 JSON byte-stable). */
   backgroundLayers?: TitleBackgroundLayer[];
@@ -1119,6 +1157,12 @@ export interface TitleScreenSettings {
   particles?: TitleParticleSettings;
   /** 로고/메뉴 등장 연출. 유효한 연출이 하나도 없으면 normalize 가 필드를 생략한다. */
   intro?: TitleIntroSettings;
+  /** 입장 시퀀스. 있으면 intro 의 로고/메뉴 연출보다 우선한다. */
+  sequence?: TitleOpeningSequence;
+  /** 로고 반사광. 생략 = none. */
+  logoShine?: TitleLogoShine;
+  /** 새 게임 전환. 생략 = 기존 짧은 확인 연출(180ms)만. */
+  transition?: TitleTransitionSettings;
 }
 
 /** Project-authored logical viewport used by the map runtime and its DOM stage. */

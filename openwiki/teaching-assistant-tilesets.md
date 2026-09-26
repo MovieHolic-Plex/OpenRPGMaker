@@ -214,8 +214,27 @@ itch.io 의 [Rasak Modern](https://rasak.itch.io/rasak-modern)처럼 「사용·
 - **`check_town_map`**(읽기): 물체 없이 36칸 넘게 이어진 같은 바닥, 맵 끝 2줄 이상 빈 띠, 보도 25% 초과를 issues 로.
 - 참고문서 「까는 순서」 0절이 「마을은 build_pack_town 부터 + 손으로 고칠 때 규칙」. 참고문서는 올릴 때 구워지므로
   `refreshMvPackGuide`(ensureBundledTilesets 에서 호출)가 이미 올린 프로젝트의 지침 글만 지금 프리셋으로 바꾼다.
+- **편집기 경로의 숲마을 가로채기.** 편집기 채팅은 의도 선언이 「마을」에 author_village 를 고르면 마을 계약(author_village 외 쓰기 거부)을
+  건다 — Rasak 타일셋을 문장에 적어도 68×44 숲마을(forest_harmony)이 지어졌다(헤드리스 pi-agent 는 계약이 없어 멀쩡했다).
+  `src/ai/piAgent/packTownRoute.ts` 가 요청이 부른(또는 대상 맵이 쓰는) 팩 도시 타일셋을 찾으면 계약을 걸지 않고
+  의도 노트를 「create_map(그 타일셋) → build_pack_town → check_town_map」 으로 바꾼다.
 - 헤드리스 실측(t1, 50×40 한 문장 요청): 조수가 첫 호출로 build_pack_town → 참고문서 읽기 → check_town_map 과 화단·나무를
   번갈아 issues 0 까지. 연구 정리 원본: 세션 산출 `/tmp/town-layout-research.md`(요지는 이 절).
+- **부품 보강(2026-09-26, kits 레인).** 작가 건물에 쓰였는데 이름이 없던 칸에 이름을 붙였다 —
+  1줄 1층 띠(`door_row_*`, `shopfront_row_left/_row/_right` = CityShopping 0~4,8), 옥상 설비(`roof_vent`·`roof_fan`·`roof_vent_slat`·`roof_ac_large`,
+  BuildingExtras 13~14,0~2), `wall_ladder`, 나무 수종(`poplar_tree`·`round_tree`·`round_tree_small`·`bush_wide`, Park), `bus_shelter`(PublicTransportation 0,6 3×3).
+  좌표는 구운 아틀라스 칸과 원본 시트를 픽셀 비교(불일치 0)로 확인했다. 작가 맵의 `scene-composites(…)` 칸은 복원 아틀라스의
+  합성 패널이라 팩 시트 좌표가 아니다 — 프리셋에 넣지 않는다.
+  `MvTownRecipe` 의 선택 필드: `MvTownFacade.shopfrontEnds`(1×1 쇼윈도 줄 양끝), `objects.streetTrees`(거리마다 한 수종),
+  `parkTrees`, `roofGear`(건물마다 0~2), `streetProps`(가게 앞 보도 가운데 줄 35%), `busStop`(큰길 남쪽 보도 한 곳). 비어 있으면 이전 동작 그대로.
+- **자동차(2026-09-26, cars 레인).** 타일 시트에는 승용차가 없다 — PublicTransportation 3장은 버스·전차 차체뿐이고
+  Slums 판 13~15,13~15 는 부서진 폐차 더미다. 그래서 캐릭터 시트 `Animations/Vehicles/ModernCars/!Car1.png`(2304×1152, 8색)를
+  프리셋 `sheets` **맨 끝**에 물체 시트로 붙였다(앞 시트 칸 번호는 그대로 — 기존 물체 100개 칸 번호 불변 확인).
+  색 블록(12×12칸)마다 가운데 정지 프레임: 가로 4×3(x4~7, 왼쪽 y3~5·오른쪽 y6~8, 아래 두 줄만 막힘), 세로 2×3(x5~6, 아래 y0~2·위 y9~11).
+  `car_{red,white,blue,black,green}_{left,right,down,up}` 20개, 모두 `onRoad`. 조립 필드 `objects.carsHorizontal`·`carsVertical`.
+  townLayout 배선: 가게 사이 통로(rear-lot) 세로 차, 세로 골목길 양 차선 길가 주차(서쪽 _down·동쪽 _up),
+  로컬 도로 연석 쪽(북 _left·남 _right, 진입로 앞 제외), 큰길 1~2대. 교차로·그 위아래 1줄은 비운다.
+  뒷마당 주차 칸은 옥상이 깊이를 채워 0~2줄뿐이라 3칸 차가 들어가지 않는다.
 
 **마을·실내 묶음(2026-09-25).** `rasak_town`(A1~A5 City + Town·Building·Structure·Market + 울타리·정원·밭·작물·여름 나무)과
 `rasak_interior`(A2_Inside·A4/A5_House + HouseInterieur·LivingRoom·Tavern·Storage + 대장간·재봉·왕실). 제작자 프리뷰가 없으므로
@@ -241,6 +260,11 @@ itch.io 의 [Rasak Modern](https://rasak.itch.io/rasak-modern)처럼 「사용·
 헤드리스 조수가 세 곳 모두 방을 나누고 방마다 맞는 가구 한 벌(화덕+풀무+모루+담금통 / 마네킹 줄+재봉 책상+베틀 / 왕좌 축+융단+서재)을 깔았다.
 남은 약점은 예전과 같다 — 예제 방 구성을 거의 그대로 옮기고, 맵이 예제보다 크면 한 방을 늘려 깔개를 흩어 채운다. 성은 칩셋 A4 에 돌벽이 없어
 **A5 평면 벽면 3줄**로 짓는다 — 조립기·검사기·오류 그림이 A5 막힌 벽면 그룹을 벽으로 봐야 했고, 사전 대표 번호가 성에 맞지 않아 조리법에 실제 번호를 적었다.
+
+**새 묶음은 이름표 → 예제 → 용도 순서로 한 번에 — 던전·성곽(2026-09-26).** A-슬롯이 묶음당 하나라 던전 A4·성 A4 를 한 묶음에 못 넣어
+`rasak_dungeon`·`rasak_castle` 두 묶음을 새로 만들었다. 기존 연구 프로젝트에는 `apply-assistant-pack.mts add` 로 타일셋만 더하고(다시 열어 확인), 그 뒤 팩 `apply --example-maps`.
+이름표를 서브에이전트에 나눠 맡길 때 그림 첨부가 비어 오는 세션이 있다 — 첫 단계에서 그림이 보이는지 확인하게 하고, 안 보이면 지어내지 말고 멈추게 한다(Ruins 두 장이 그랬다).
+참고문서 용도 하나는 그림 8장이 한도라 예제 창은 넷 이하로 둔다.
 
 **문서·예제만으로는 전체 배치가 옮겨지지 않는다 → 끝에서 한 번 수리 권고(2026-09-25).** 예제를 고친 뒤에도 조수 마을은 빈 바닥 44%였다.
 Pi 런타임(`scripts/lib/piAgentRuntime.ts`)은 모델이 끝났다고 할 때 `src/ai/piAgent/layoutQuality.ts` 로 이번 실행이 1층을 25% 넘게 칠한 맵

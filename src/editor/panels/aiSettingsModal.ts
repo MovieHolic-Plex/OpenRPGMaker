@@ -339,7 +339,7 @@ export function renderAiSettingsForm(options: {
     ),
   }) as HTMLSelectElement;
   autonomySelect.value = initialAutonomyLevel;
-  const autonomyDescription = "계획만 제안할지 직접 작업할지와 작업 예산을 조정합니다. 역할별 모델과 추론 강도는 유지됩니다.";
+  const autonomyDescription = "계획만 제안할지 직접 작업할지와 작업 예산을 조정합니다. 대화 조수의 실행 단계는 이 다이얼의 추론 강도를 쓰고, 아래 역할 표에서 Deep 추론을 기본값(낮음)과 다르게 저장했으면 그 값이 이깁니다.";
   // 다이얼이 덮어쓰는 파생값(추론 강도·작업 모드·플랜 게이트)을 셀렉트 아래 한 줄로 노출한다 —
   // 예전에는 세 컨트롤이 나란히 놓여 "누가 누구를 덮는지"가 보이지 않았다.
   const autonomyDerived = el("span", {
@@ -372,7 +372,7 @@ export function renderAiSettingsForm(options: {
     ],
   }) as HTMLSelectElement;
   reasoningSelect.value = config.reasoningEffort ?? "medium";
-  const reasoningDescription = "기존 영역 작업 경로의 추론 설정입니다. 대화 조수는 위에서 선택한 역할별 추론 강도를 사용합니다.";
+  const reasoningDescription = "기존 영역 작업 경로의 추론 설정입니다. 대화 조수의 실행 단계는 위 다이얼(자율성)의 추론 강도를 쓰므로, 아래 역할 표에서 Deep 추론을 기본값(낮음)과 다르게 저장한 경우에만 그 값이 우선합니다.";
   const reasoningRow = settingsRow("영역 작업 추론", reasoningDescription, reasoningSelect);
   reasoningRow.setAttribute("title", reasoningDescription);
 

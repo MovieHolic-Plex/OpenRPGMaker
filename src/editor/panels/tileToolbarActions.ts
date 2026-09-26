@@ -8,7 +8,7 @@ import type { TilesetDef } from "@/project/types";
 
 export type TileToolId = "select" | "pen" | "rect" | "round" | "fill" | "erase";
 
-export type MapModeToolId = Extract<Tool, "eyedropper" | "pan" | "collision" | "event">;
+export type MapModeToolId = Extract<Tool, "eyedropper" | "pan" | "collision" | "event" | "relief">;
 
 const TOOL_PATCHES: Record<TileToolId, { readonly tool: Tool; readonly paintShape: PaintShape }> = {
   erase: { tool: "erase", paintShape: "pen" },

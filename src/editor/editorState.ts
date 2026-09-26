@@ -3,10 +3,11 @@
 // Project 데이터(store)와 분리된 에디터 세션 전용 UI 상태.
 // 상세 설계: docs/specs/2026-06-18-oprn-overhaul-design.md 3.1.
 
+import type { ReliefBrushMode } from "@/project/relief/edit";
 import type { MapId } from "@/project/types";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 
-export type Tool = "paint" | "fill" | "collision" | "event" | "erase" | "select" | "eyedropper" | "pan";
+export type Tool = "paint" | "fill" | "collision" | "event" | "erase" | "select" | "eyedropper" | "pan" | "relief";
 export type PaintShape = "pen" | "rect" | "round";
 export type Layer = "lower" | "upper" | "event";
 export type AutoConnectMode = boolean;
@@ -69,6 +70,10 @@ export interface EditorState {
   clusterAssistMode: ClusterAssistMode;
   activePaletteStamp: ActivePaletteStamp;
   brushSize: EditorBrushSize;
+  /** 「높이」 붓 방식 — 올리기/내리기/단 지정/평탄. map.relief 를 고친다. */
+  reliefMode: ReliefBrushMode;
+  /** 「단 지정」 붓이 맞출 단(0~14). */
+  reliefLevel: number;
   selectedEventPageId: string | null;
   selection: TileSelection | null;
   pendingEventCoordinate: PendingEventCoordinate | null;
@@ -100,6 +105,8 @@ class EditorStateStore {
     clusterAssistMode: true,
     activePaletteStamp: null,
     brushSize: 1,
+    reliefMode: "raise",
+    reliefLevel: 2,
     selectedEventId: null,
     selectedEventPageId: null,
     selection: null,
@@ -183,6 +190,8 @@ const PALETTE_REFRESH_KEYS = [
   "clusterAssistMode",
   "activePaletteStamp",
   "brushSize",
+  "reliefMode",
+  "reliefLevel",
   "selectedEventId",
   "selectedEventPageId",
   "pendingEventCoordinate",
@@ -249,6 +258,29 @@ export function editorStateNeedsEventEditorRefresh(previous: EditorState, next: 
     if (previous[key] !== next[key] && !EVENT_EDITOR_IGNORED_KEYS.has(key)) return true;
   }
   return false;
+}
+
+/**
+ * 도구·붓 모양·붓 크기만 바뀐 통지인가(선택 사각형·고스트는 함께 지워질 수 있다).
+ * 팔레트 칸은 이 셋을 읽지 않는다 — 도구줄 눌림 상태와 붓 옵션 줄만 바꾸면 된다.
+ * 레이어·도장이 같이 바뀌면 보이는 칸·선반이 달라지므로 전체 갱신이다.
+ */
+const TOOL_PICK_KEYS: ReadonlySet<keyof EditorState> = new Set<keyof EditorState>([
+  ...CANVAS_OVERLAY_EDITOR_KEYS,
+  "tool",
+  "paintShape",
+  "brushSize",
+]);
+
+export function editorStateChangedOnlyToolPick(previous: EditorState, next: EditorState): boolean {
+  if (previous === next || previous.layer === "event" || next.layer === "event") return false;
+  let toolChanged = false;
+  for (const key of Object.keys(next) as (keyof EditorState)[]) {
+    if (previous[key] === next[key]) continue;
+    if (!TOOL_PICK_KEYS.has(key)) return false;
+    if (!CANVAS_OVERLAY_EDITOR_KEYS.has(key)) toolChanged = true;
+  }
+  return toolChanged;
 }
 
 export function editorStateChangedOnlyPaintPick(previous: EditorState, next: EditorState): boolean {

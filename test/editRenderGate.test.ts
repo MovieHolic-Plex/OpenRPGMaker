@@ -142,4 +142,92 @@ describe("editRenderGate", () => {
     expect(() => requestEditRenderFrame(undefined)).not.toThrow();
     expect(editRenderGateStats({})).toBeNull();
   });
+
+  describe("window input wake", () => {
+    type Listener = (event: Event) => void;
+    let listeners: Map<string, Listener[]>;
+    const originalWindow = (globalThis as { window?: unknown }).window;
+    const originalHTMLElement = (globalThis as { HTMLElement?: unknown }).HTMLElement;
+    const originalNode = (globalThis as { Node?: unknown }).Node;
+
+    class FakeNode {
+      constructor(readonly parent: FakeNode | null = null, readonly tagName = "DIV") {}
+      contains(other: FakeNode | null): boolean {
+        for (let at = other; at; at = at.parent) if (at === this) return true;
+        return false;
+      }
+    }
+    class FakeElement extends FakeNode { isContentEditable = false; }
+
+    beforeEach(() => {
+      listeners = new Map();
+      (globalThis as { window?: unknown }).window = {
+        addEventListener: (type: string, fn: Listener) => { listeners.set(type, [...(listeners.get(type) ?? []), fn]); },
+        removeEventListener: () => undefined,
+      };
+      (globalThis as { Node?: unknown }).Node = FakeNode;
+      (globalThis as { HTMLElement?: unknown }).HTMLElement = FakeElement;
+    });
+    afterEach(() => {
+      (globalThis as { window?: unknown }).window = originalWindow;
+      (globalThis as { HTMLElement?: unknown }).HTMLElement = originalHTMLElement;
+      (globalThis as { Node?: unknown }).Node = originalNode;
+    });
+
+    const fire = (type: string, target: FakeNode, buttons = 0): void => {
+      for (const fn of listeners.get(type) ?? []) fn({ type, target, buttons } as unknown as Event);
+    };
+
+    function idleGameWithCanvas() {
+      const { game, calls } = fakeGame();
+      const host = new FakeElement();
+      const canvas = new FakeElement(host, "CANVAS");
+      const withCanvas = Object.assign(game, { canvas: Object.assign(canvas, { parentElement: host, addEventListener: () => undefined, removeEventListener: () => undefined }) });
+      installEditRenderGate(withCanvas as unknown as EditRenderGateGame, EVENTS);
+      frame(withCanvas);
+      clock += EDIT_RENDER_IDLE_MS;
+      frame(withCanvas);
+      expect(calls.render).toBe(1);
+      return { game: withCanvas, calls, host, canvas };
+    }
+
+    it("does not wake for a pressed pointer that started in the sidebar", () => {
+      const { game, calls } = idleGameWithCanvas();
+      const sidebarButton = new FakeElement();
+      fire("pointerdown", sidebarButton, 1);
+      fire("pointermove", sidebarButton, 1);
+      fire("pointerup", sidebarButton, 0);
+      frame(game);
+      expect(calls.render).toBe(1);
+    });
+
+    it("keeps waking while a canvas-started stroke leaves the canvas", () => {
+      const { game, calls, canvas } = idleGameWithCanvas();
+      const outside = new FakeElement();
+      fire("pointerdown", canvas, 1);
+      clock += EDIT_RENDER_IDLE_MS;
+      fire("pointermove", outside, 1);
+      frame(game);
+      expect(calls.render).toBe(2);
+      clock += EDIT_RENDER_IDLE_MS;
+      fire("pointerup", outside, 0);
+      frame(game);
+      expect(calls.render).toBe(3);
+      // 획이 끝난 뒤 바깥에서 누른 포인터는 다시 깨우지 않는다.
+      clock += EDIT_RENDER_IDLE_MS;
+      fire("pointermove", outside, 1);
+      frame(game);
+      expect(calls.render).toBe(3);
+    });
+
+    it("ignores typing in text fields but wakes for shortcut keys", () => {
+      const { game, calls } = idleGameWithCanvas();
+      fire("keydown", new FakeElement(null, "INPUT"));
+      frame(game);
+      expect(calls.render).toBe(1);
+      fire("keydown", new FakeElement(null, "BODY"));
+      frame(game);
+      expect(calls.render).toBe(2);
+    });
+  });
 });

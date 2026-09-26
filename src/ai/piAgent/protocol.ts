@@ -15,7 +15,9 @@ import type { PiMapDelta } from "./mapDelta";
 import type { PiTeamSpec } from "./teamSpec";
 import { jsonEqual } from "../../util/structuralJson";
 
-export type PiAgentThinkingLevel = "off" | "low" | "medium" | "high";
+// "minimal" 은 antigravity 가 "off" 를 거부할 때 낮추는 자리다(`normalizePiThinkingLevel`). 실측(2026-09-26):
+// off 로 보내면 스트림 error 이벤트 `Supported efforts: minimal, low, medium, high` 로 실행이 시작부터 죽는다.
+export type PiAgentThinkingLevel = "off" | "minimal" | "low" | "medium" | "high";
 
 export type PiAgentMode = "single" | "team";
 

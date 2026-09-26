@@ -8,6 +8,7 @@ export type UiCopyKey =
   | "database"
   | "databaseShort"
   | "tilesetMissing"
+  | "layerRelief"
   | "layerLower"
   | "layerUpper"
   | "layerEvent"
@@ -38,6 +39,8 @@ const UI_COPY: Record<UiCopyKey, Record<UiCopyStyle, string>> = {
   // 두 글자가 겹쳐 서로 다른 두 개념이 한 이름처럼 보였다. `자료집`은 4글자라 툴바에 들어간다.
   databaseShort: { plain: "자료집", technical: "DB" },
   tilesetMissing: { plain: "그림이 없습니다", technical: "타일 그림판이 없습니다" },
+  // 레이어가 아니라 높이 붓이지만 레이어 전환 줄 맨 왼쪽에 함께 선다(2026-09-26).
+  layerRelief: { plain: "높이", technical: "높이" },
   layerLower: { plain: "바닥", technical: "바닥" },
   layerUpper: { plain: "상위", technical: "상위" },
   layerEvent: { plain: "이벤트", technical: "이벤트" },

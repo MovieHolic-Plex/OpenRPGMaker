@@ -1,5 +1,7 @@
 import { comboBrushBadge, isComboBrush } from "@/editor/comboBrush";
-import { EDITOR_BRUSH_SIZES, type EditorState } from "@/editor/editorState";
+import { EDITOR_BRUSH_SIZES, editorState, type EditorState } from "@/editor/editorState";
+import type { ReliefBrushMode } from "@/project/relief/edit";
+import { RELIEF_MAX_LEVEL } from "@/project/relief/types";
 import { setTileBrushSize, selectTileTool } from "@/editor/panels/tileToolbarActions";
 import { el } from "@/util/dom";
 import { getEditorChrome } from "@/editor/editorUiMode";
@@ -27,12 +29,12 @@ export function makeTileBrushControls(state: EditorState, rerender: () => void):
   const shape = { pen: "칠하기", rect: "사각형", round: "타원" }[state.paintShape];
   const action = state.tool === "paint"
     ? tileBrushActionLabel(stamp) ?? shape
-    : { erase: "지우기", fill: "채우기", select: "선택", eyedropper: "집기", pan: "화면 밀기", collision: "통행 표시", event: "이벤트" }[state.tool];
+    : { erase: "지우기", fill: "채우기", select: "선택", eyedropper: "집기", pan: "화면 밀기", collision: "통행 표시", event: "이벤트", relief: "높이" }[state.tool];
   const composite = isComboBrush(stamp);
   const layer = layerUiLabel(state.layer);
   const row = el("div", { class: "sidebar-brush-controls", dataset: { testid: "tile-brush-controls" } });
   // 크기는 같은 타일을 되풀이하는 붓(칠하기 · 자유선)과 지우기에서만 뜻이 있다 — 다른 도구에선 숨긴다.
-  const applicable = state.layer !== "event" && (state.tool === "erase" || (state.tool === "paint" && state.paintShape === "pen" && !stamp));
+  const applicable = state.layer !== "event" && (state.tool === "erase" || state.tool === "relief" || (state.tool === "paint" && state.paintShape === "pen" && !stamp));
   if (!getEditorChrome().paletteRail) {
     if (applicable) {
       const select = el("select", {
@@ -54,6 +56,7 @@ export function makeTileBrushControls(state: EditorState, rerender: () => void):
         stampWidth: String(stamp?.width ?? 0), stampHeight: String(stamp?.height ?? 0), stampCells: String(stamp?.cells.length ?? 0) } }));
     if (stamp) row.append(el("button", { class: "btn", text: composite ? "조합 붓 해제" : "도장 해제", dataset: { testid: "palette-stamp-clear" },
       on: { click: () => { selectTileTool("pen"); rerender(); } } }));
+    if (state.tool === "relief") row.append(makeReliefBrushControls(state, rerender));
     return row;
   }
   const brushState = el("span", {
@@ -86,5 +89,44 @@ export function makeTileBrushControls(state: EditorState, rerender: () => void):
     class: "btn", text: composite ? "조합 붓 해제" : "도장 해제", attrs: { type: "button" }, dataset: { testid: "palette-stamp-clear" },
     on: { click: () => { selectTileTool("pen"); rerender(); } },
   }));
+  if (state.tool === "relief") row.append(makeReliefBrushControls(state, rerender));
   return row;
+}
+
+const RELIEF_MODES: readonly (readonly [ReliefBrushMode, string, string])[] = [
+  ["raise", "올리기", "누른 칸보다 한 단 높게 — 드래그해도 한 단까지만 쌓인다"],
+  ["lower", "내리기", "누른 칸보다 한 단 낮게"],
+  ["flatten", "평탄", "누른 칸 높이로 고른다"],
+  ["set", "단 지정", "고른 단으로 맞춘다"],
+];
+
+/** 「높이」 붓 방식 · 단 — map.relief(절벽 높이)를 칠한다. 크기 칩은 위 공통 줄을 쓴다. */
+function makeReliefBrushControls(state: EditorState, rerender: () => void): HTMLElement {
+  const group = el("div", {
+    class: "sidebar-brush-sizes relief-brush-controls", attrs: { role: "group", "aria-label": "높이 붓 방식" },
+    dataset: { testid: "relief-brush-controls", roving: "true" },
+  });
+  group.append(el("span", { class: "tile-brush-label", text: "방식" }));
+  for (const [mode, label, title] of RELIEF_MODES) {
+    group.append(el("button", {
+      class: "btn tile-brush-chip" + (state.reliefMode === mode ? " active" : ""), text: label,
+      attrs: { type: "button", title, "aria-pressed": String(state.reliefMode === mode) },
+      dataset: { testid: `relief-mode-${mode}` },
+      on: { click: () => { editorState.set({ reliefMode: mode }); rerender(); } },
+    }));
+  }
+  if (state.reliefMode === "set") {
+    const select = el("select", {
+      attrs: { "aria-label": "맞출 단" }, dataset: { testid: "relief-level-select" },
+      on: { change: (event) => {
+        if (!(event.currentTarget instanceof HTMLSelectElement)) return;
+        editorState.set({ reliefLevel: Number(event.currentTarget.value) || 0 });
+        rerender();
+      } },
+    });
+    for (let level = 0; level <= RELIEF_MAX_LEVEL; level++) select.append(el("option", { value: String(level), text: `${level}단` }));
+    select.value = String(state.reliefLevel);
+    group.append(select);
+  }
+  return group;
 }

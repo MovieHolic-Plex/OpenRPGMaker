@@ -1,6 +1,8 @@
-import { sharedContentResponse } from '../../scripts/lib/sharedContentSqlite';
-import { SHARED_CONTENT_ENDPOINT } from '../../src/project/sharedContentSchema';
+import { SHARED_CONTENT_PREVIEW_CACHE, sharedContentPreviewResponse, sharedContentResponse, sharedReferenceImageResponse } from '../../scripts/lib/sharedContentSqlite';
+import { SHARED_CONTENT_ENDPOINT, SHARED_CONTENT_PREVIEW_ENDPOINT } from '../../src/project/sharedContentSchema';
+import { SHARED_REFERENCE_IMAGE_PREFIX } from '../../src/project/bundledReferenceImagePath';
 import { existsSync, readFileSync } from "node:fs";
+import { gunzipSync } from "node:zlib";
 import { extname, normalize, resolve, sep } from "node:path";
 import { protocol } from "electron";
 import { ASSET_RESPONSE_CSP, assetCacheControl, safeAssetContentType } from "../shared/assetMime";
@@ -58,7 +60,17 @@ export function registerAppProtocol(rendererDir: string, activityLogBaseDir: () 
       const body = request.method === "GET" || request.method === "HEAD" ? undefined : await request.arrayBuffer();
       return fetch(new URL(`${url.pathname}${url.search}`, origin), { method: request.method, headers, body });
     }
-    if (url.pathname === SHARED_CONTENT_ENDPOINT) { const r = sharedContentResponse(request.method); return Response.json(r.body, {status:r.status,headers:{'cache-control':'no-store'}}); }
+    if (url.pathname === SHARED_CONTENT_ENDPOINT) {
+      const r = sharedContentResponse(request.method, url);
+      // app:// 는 프로세스 안 전달이라 압축 이득이 없고, 사용자 프로토콜 응답의 content-encoding 해제는 확인되지 않았다.
+      return r.gzip
+        ? new Response(new Uint8Array(gunzipSync(r.gzip)), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } })
+        : Response.json(r.body, { status: r.status, headers: { 'cache-control': 'no-store' } });
+    }
+    if (url.pathname === SHARED_CONTENT_PREVIEW_ENDPOINT || url.pathname.startsWith(SHARED_REFERENCE_IMAGE_PREFIX)) {
+      const r = url.pathname === SHARED_CONTENT_PREVIEW_ENDPOINT ? sharedContentPreviewResponse(request.method, url) : sharedReferenceImageResponse(request.method, url);
+      return r.bytes ? new Response(new Uint8Array(r.bytes), { headers: { 'content-type': r.mime!, 'cache-control': SHARED_CONTENT_PREVIEW_CACHE } }) : new Response(null, { status: r.status });
+    }
     if (url.pathname === SHARED_CHARACTER_GRAPHICS_ENDPOINT) {
       if (request.method === "POST" && (request.headers.get("x-oprn-shared-catalog") !== "1" || Number(request.headers.get("content-length") ?? 0) > 2 * 1024 * 1024)) return new Response(null, { status: 403 });
       try {

@@ -128,33 +128,7 @@
   }
 }
 
-/* 라이선스 한 줄 표기 — 조작 안내 창(하단 고정, 40px 여유) 위에 얹는다. */
-.rm-title-screen [data-play-input-owner="license-notice"].rm-title-license {
-  pointer-events: auto;
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 40px;
-  z-index: 3;
-  border: 0;
-  padding: 0;
-  background: none;
-  color: rgb(255 255 255 / 72%);
-  font: inherit;
-  font-size: 9px;
-  line-height: 1.4;
-  text-align: center;
-  text-shadow: 0 1px 3px var(--oprn-title-shadow);
-  cursor: pointer;
-}
-
-.rm-title-screen [data-play-input-owner="license-notice"].rm-title-license:hover,
-.rm-title-screen [data-play-input-owner="license-notice"].rm-title-license:focus-visible {
-  color: var(--runtime-window-text);
-  text-decoration: underline;
-}
-
-/* 타이틀에서 연다 — 편집기 셸 위에 떠도 동작은 같다(dialog는 문서 레이어를 쓴다). */
+/* 타이틀 메뉴 「크레딧」이 연다 — 편집기 셸 위에 떠도 동작은 같다(dialog는 문서 레이어를 쓴다). */
 .rm-license-dialog {
   width: min(560px, 86vw);
   max-height: 78vh;
@@ -163,6 +137,12 @@
   background: var(--bg-canvas);
   border: 1px solid rgb(255 255 255 / 22%);
   box-shadow: 0 18px 48px rgb(0 0 0 / 55%);
+}
+
+.rm-license-dialog-title {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 600;
 }
 
 .rm-license-dialog::backdrop {
@@ -610,6 +590,216 @@
 
 @media (prefers-reduced-motion: reduce) {
   .rm-title-screen .rm-title-screen-title[data-logo-style] {
+    animation: none !important;
+  }
+}
+
+/* ── 로고 반짝임 설정(logoShine) ─────────────────────────────────────────────
+   설정이 있으면 루트에 data-logo-shine 이 붙고 CSS 기본 반복은 끈다 — 재생은 인라인 animation 이 맡는다. */
+.rm-title-screen.rm-title-screen-editorial[data-logo-shine][data-logo-style] .rm-title-screen-title[data-logo-style] {
+  animation: none;
+}
+
+.rm-title-screen .rm-title-screen-title[data-logo-style][data-logo-shine] {
+  background-image:
+    linear-gradient(105deg, transparent 0 40%, rgb(255 255 255 / 85%) 48%, transparent 56% 100%),
+    var(--oprn-logo-fill);
+  background-size: 250% 100%, 100% 100%;
+  background-position: 130% 0, 0 0;
+}
+
+@keyframes rm-title-logo-shine-once {
+  0% { background-position: 130% 0, 0 0; }
+  100% { background-position: -30% 0, 0 0; }
+}
+
+/* 그림 로고: 로고 알파로 가린 띠가 지나간다. */
+.rm-title-screen .rm-title-screen-logo .rm-title-shine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 0 40%, rgb(255 255 255 / 80%) 48%, transparent 56% 100%);
+  background-size: 250% 100%;
+  background-position: 130% 0;
+  background-repeat: no-repeat;
+  -webkit-mask-image: var(--logo-mask);
+  mask-image: var(--logo-mask);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  mix-blend-mode: screen;
+}
+
+@keyframes rm-title-shine-band {
+  0%, 62% { background-position: 130% 0; }
+  100% { background-position: -30% 0; }
+}
+
+@keyframes rm-title-shine-band-once {
+  0% { background-position: 130% 0; }
+  100% { background-position: -30% 0; }
+}
+
+/* ── 입장 시퀀스(sequence) ───────────────────────────────────────────────────
+   모든 키프레임 이름은 rm-title-seq- 로 시작한다(건너뛰기가 이 접두사만 finish 한다).
+   로고 그림은 transform 을 이미 쓰므로 scale·translate 개별 속성만 움직인다. */
+.rm-title-screen .rm-title-seq-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.rm-title-screen .rm-title-seq-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: #000;
+  pointer-events: none;
+}
+
+.rm-title-screen .rm-title-seq-sweep {
+  position: absolute;
+  inset: -10% -40%;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(100deg, transparent 38%, rgb(255 244 214 / 42%) 50%, transparent 62%);
+  mix-blend-mode: screen;
+}
+
+@keyframes rm-title-seq-veil {
+  from { opacity: 1; }
+  to { opacity: 0; visibility: hidden; }
+}
+
+@keyframes rm-title-seq-push {
+  from { scale: var(--seq-push, 1.08); }
+  to { scale: 1; }
+}
+
+@keyframes rm-title-seq-sweep {
+  from { translate: -70% 0; opacity: 0; }
+  20% { opacity: 1; }
+  to { translate: 70% 0; opacity: 0; visibility: hidden; }
+}
+
+@keyframes rm-title-seq-logo-bloom {
+  from { opacity: 0; scale: 1.08; filter: blur(6px) brightness(2.2); }
+  55% { opacity: 1; filter: blur(0) brightness(1.5); }
+  to { opacity: 1; scale: 1; }
+}
+
+@keyframes rm-title-seq-logo-rise {
+  from { opacity: 0; translate: 0 8px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@keyframes rm-title-seq-logo-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes rm-title-seq-logo-wipe {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes rm-title-seq-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes rm-title-seq-item {
+  from { opacity: 0; translate: 0 6px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+/* 건너뛰기 폴백: finish() 가 못 잡은 것도 끝 상태로. */
+.rm-title-screen.rm-title-seq-skipped .rm-title-seq-veil,
+.rm-title-screen.rm-title-seq-skipped .rm-title-seq-sweep {
+  display: none;
+}
+
+/* ── 「새 게임」 전환(transition) ──────────────────────────────────────────── */
+.rm-title-screen.rm-title-transitioning .rm-title-menu,
+.rm-title-screen.rm-title-transitioning .rm-title-logo-subtitle {
+  transition: opacity calc(var(--transition-ms, 800ms) * 0.4) ease-out;
+  opacity: 0;
+}
+
+.rm-title-screen .rm-title-transition {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  animation: rm-title-transition-fade var(--transition-ms, 800ms) ease-in both;
+  background: #000;
+}
+
+.rm-title-screen .rm-title-transition[data-kind="flash"] {
+  animation-name: rm-title-transition-flash;
+  animation-timing-function: linear;
+}
+
+.rm-title-screen .rm-title-transition[data-kind="mist"] {
+  animation-name: rm-title-transition-mist;
+  background: rgb(230 236 244);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+
+.rm-title-screen .rm-title-transition[data-kind="zoom"] {
+  animation-name: rm-title-transition-zoom-veil;
+  animation-timing-function: cubic-bezier(.6, 0, .9, .4);
+}
+
+.rm-title-screen.rm-title-transitioning[data-transition="zoom"] > :not(.rm-title-transition) {
+  animation: rm-title-transition-zoom var(--transition-ms, 1000ms) cubic-bezier(.5, 0, .9, .5) both;
+}
+
+@keyframes rm-title-transition-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes rm-title-transition-flash {
+  0% { opacity: 0; background: #fff; }
+  12% { opacity: 1; background: #fff; }
+  45% { opacity: 1; background: #fff4dc; }
+  100% { opacity: 1; background: #000; }
+}
+
+@keyframes rm-title-transition-mist {
+  0% { opacity: 0; background: rgb(230 236 244); }
+  60% { opacity: 0.92; background: rgb(230 236 244); }
+  100% { opacity: 1; background: #000; }
+}
+
+@keyframes rm-title-transition-zoom-veil {
+  0%, 55% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes rm-title-transition-zoom {
+  from { scale: 1; filter: blur(0); }
+  to { scale: 1.25; filter: blur(3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rm-title-screen.rm-title-seq *,
+  .rm-title-screen.rm-title-seq {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+  }
+  .rm-title-screen .rm-title-seq-veil,
+  .rm-title-screen .rm-title-seq-sweep,
+  .rm-title-screen .rm-title-shine {
+    display: none !important;
+  }
+  .rm-title-screen.rm-title-transitioning[data-transition="zoom"] > :not(.rm-title-transition) {
     animation: none !important;
   }
 }
