@@ -24,6 +24,7 @@ import { runPiAgentViaCompanion } from "@/ai/piAgent/client";
 import { deriveRunOutcome } from "@/ai/runOutcome";
 import type { RunOutcome, RunOutcomeFacts } from "@/ai/runOutcome";
 import { startPiRunLog, type PiRunContext, type PiRunFacts } from "@/ai/piAgent/activityLog";
+import type { TurnTimingRecorder } from "@/ai/turnTiming";
 import type { AuditEntry } from "@/ai/session/types";
 import type { TilesetChangeQuestion } from "@/editor/tools/tilesetChangeTools";
 import { tilesetQuestionFromEvent } from "./aiTilesetChangeCard";
@@ -162,6 +163,11 @@ export interface PiRunOptions {
   /** Legacy caller hint. Role-specific reasoning takes precedence in Pi execution. */
   readonly thinkingLevel?: PiAgentThinkingLevel;
   /**
+   * 이 턴의 단계별 벽시계 기록기(패널이 턴마다 하나 만든다). 없으면 계측만 빠지고 실행은 같다 —
+   * 명시 `/pi` 나 헤드리스 호출자는 기록기를 안 싣는다.
+   */
+  readonly timing?: TurnTimingRecorder;
+  /**
    * Legacy/domain-scoped callers may seed domains. Normal chat sends initialToolNames.
    * Both are exposure hints; discovery may expand them.
    */
@@ -243,6 +249,26 @@ export async function runPiCommand(
   });
   const brain = configForUltrabrain(config);
   const deep = modelForRole(config, "deep");
+  // 실행 루프의 사고 강도는 자율성 다이얼이 정한다 — 단, 역할 모델(Deep)을 직접 저장한 사용자는 그대로 이긴다.
+  // 실측(2026-09-26, 읽기 전용 3턴 도구 사용 실행): thinking high 는 턴당 약 2.9s, low 는 약 2.1s 이고
+  // 전제가 1k→30k 토큰으로 커져도 0.5s 밖에 안 밀린다. 즉 다이얼을 「빠르게」로 내린 턴이 강도를 못 받으면
+  // 매 왕복마다 0.8s 를 그대로 더 낸다.
+  const preferCallerThinking = !config.roleModels?.deep;
+  /** 수리 실행은 `buildPiRunRequest` 를 안 거쳐 요청을 직접 짜는다 — 실행 턴과 같은 강도를 들도록 같은 판정을 한 번 더 한다. */
+  const execThinkingLevel: PiAgentThinkingLevel = preferCallerThinking && options.thinkingLevel ? options.thinkingLevel : deep.thinkingLevel;
+  /**
+   * 단계 하나를 계측한다. finally 로 닫는 이유: 실행이 중간에 던져도(중단·턴 상한·프로바이더 오류) 그
+   * 단계는 닫혀야 한다 — 열린 채 남으면 그 구간이 표에서 통째로 빠져, 정작 알아야 하는 「실패한 턴이 어디서
+   * 시간을 먹었나」가 사라진다.
+   */
+  const stage = async <T>(name: string, run: () => Promise<T>): Promise<T> => {
+    options.timing?.start(name);
+    try {
+      return await run();
+    } finally {
+      options.timing?.end(name);
+    }
+  };
   const effective = options.planOnly || (command.mode === "team" && !options.readOnly)
     ? { provider: brain.providerId!, model: brain.model } : deep;
   const provider = effective.provider;
@@ -313,7 +339,10 @@ export async function runPiCommand(
   const runLog = startPiRunLog(logContext);
   // boardState 는 push 마다 새 객체로 갈아 끼워지므로 호출 시점의 것을 싣는다.
   const finishLog = (facts: Omit<PiRunFacts, "board">): void => {
-    void runLog.finish({ ...facts, board: boardState }).then(
+    // 단계 기록은 이 행에 실린다 — 행을 만드는 자리가 하나라(startPiRunLog), 계측 때문에 두 번째 행을
+    // 만들면 `npm run ai:log` 가 같은 실행을 두 건으로 세게 된다. 스냅숏은 읽기 전용이라 몇 번 찍어도 같다.
+    const timing = options.timing?.snapshot();
+    void runLog.finish({ ...facts, board: boardState, ...(timing ? { timing } : {}) }).then(
       (rows) => surface.onRunAudit?.(rows),
       () => { /* 기록 실패는 이미 삼켜진다 — 감사 전달도 실행을 막지 않는다 */ },
     );
@@ -434,7 +463,7 @@ export async function runPiCommand(
       let plan = "";
       let planError = "";
       push({ type: "agent_spawn", agentId: "ultrabrain-plan", role: "orchestrator", mapId: null, mapName: null, task: command.task, label: "Ultrabrain · 계획" });
-      const planned = await runPiAgentViaCompanion(buildUltrabrainPlanRequest({
+      const planned = await stage("plan", () => runPiAgentViaCompanion(buildUltrabrainPlanRequest({
         brain, modelTask, mapIds: command.mapIds, ...here, project: base,
         scopedByUser: command.scopedByUser === true,
         ...(options.maxTurns === undefined ? {} : { maxTurns: options.maxTurns }),
@@ -455,7 +484,7 @@ export async function runPiCommand(
         }
         if (event.type === "assistant") plan = event.text;
         if (event.type === "error") planError = event.message;
-      } });
+      } }));
       surface.signal?.throwIfAborted();
       if (planError || !plan.trim() || planned.changedKeys.length) throw new Error(planError || "Ultrabrain 계획을 완료하지 못했습니다.");
       spendStats.push(planned.stats);
@@ -464,7 +493,7 @@ export async function runPiCommand(
       (surface.appendProcess ?? ((text: string) => surface.appendBubble("assistant", text)))(`계획\n${plan}`);
       executionTask = withUltrabrainPlan(modelTask, plan);
     }
-    results = await Promise.all(groups.map((mapIds, index) => runPiAgentViaCompanion(
+    results = await stage("exec", () => Promise.all(groups.map((mapIds, index) => runPiAgentViaCompanion(
       buildPiRunRequest({
         team, planOnly: options.planOnly, readOnly, applyMode, villageContract: options.villageContract,
         brain, deep, writer: modelForRole(config, "writer"),
@@ -474,18 +503,20 @@ export async function runPiCommand(
         ...(options.toolDomains ? { toolDomains: options.toolDomains } : {}),
         ...(options.initialToolNames ? { initialToolNames: options.initialToolNames } : {}),
         ...(teamSpec ? { teamSpec } : {}),
+        preferCallerThinking,
+        ...(options.thinkingLevel ? { callerThinkingLevel: options.thinkingLevel } : {}),
       }),
       { signal: surface.signal, onEvent: wrap(mapIds, index),
-        onCheckpoint: options.villageContract || readOnly || applyMode === "review" ? undefined : async checkpoint => {
+        onCheckpoint: options.villageContract || readOnly || applyMode === "review" ? undefined : async checkpoint => stage("checkpoint", async () => {
           // Parallel explicit map requests publish only their owned bundle on the latest accepted base.
           if (mergedFromBundles) {
             const next = mergeMapBundles(publication.project, [{ mapIds, project: checkpoint.project }]).project;
             authorMergedSpatialProposal(next, publication.project);
             return publication.publish({ ...checkpoint, project: next, spatialProof: exportSpatialToolProof(next) });
           } else return publication.publish(checkpoint);
-        },
+        }),
       },
-    )));
+    ))));
     spendStats.push(...results.map((done) => done.stats));
     reportSpend();
   } catch (error) {
@@ -630,7 +661,7 @@ export async function runPiCommand(
       const harmonyTargets = teamApprovedMaps.size
         ? new Set(Object.keys(merged.project.maps).filter(id => !teamApprovedMaps.has(id)))
         : undefined;
-      let reviews = await reviewMapHarmony(base, merged.project, command.task, config, {
+      let reviews = await stage("review", () => reviewMapHarmony(base, merged.project, command.task, config, {
         ...(harmonyTargets ? { mapIds: harmonyTargets } : {}),
         signal: surface.signal,
         onStatus: text => { surface.appendProcess?.(text); surface.setStatus("바뀐 내용이 잘 맞는지 확인하고 있어요."); },
@@ -640,7 +671,7 @@ export async function runPiCommand(
           (surface.appendProcess ?? ((text: string) => surface.appendBubble("assistant", text)))(`확인 기록 · ${merged.project.maps[review.mapId]?.name ?? review.mapId}\n${review.summary}${review.findings.length ? "\n" + review.findings.map(f => `• ${f}`).join("\n") : ""}`);
           push({ type: "review", agentId: `ultrabrain-${review.mapId}`, mapId: review.mapId, ok: review.harmonious, findings: [...review.findings] });
         },
-      });
+      }));
       harmonyApproved = reviews.every(review => review.harmonious);
       // AUTO owns bounded repair; unresolved changes never masquerade as reviewed success.
       for (let attempt = 0; applyMode === "auto" && !harmonyApproved && attempt < 2; attempt++) {
@@ -648,14 +679,14 @@ export async function runPiCommand(
         const before = unresolvedReviewSignature(reviews);
         const repairBase = publication.count ? publication.project : merged.project;
         surface.setStatus(`AI가 검수 문제를 수정하고 있어요 (${attempt + 1}/2).`);
-        const repaired = await runPiAgentViaCompanion({
+        const repaired = await stage("review", () => runPiAgentViaCompanion({
           mode: "single", provider: deep.provider, model: deep.model, project: repairBase,
           mapIds: command.mapIds, ...here, scopeStrict: command.scopedByUser === true,
           task: `사용자 요청: ${command.task}\n기존 요청 범위를 유지하며 다음 검수 문제만 수정하세요.\n${reviews.filter(r => !r.harmonious).map(r => `${r.mapId}: ${r.summary} ${r.findings.join("; ")}`).join("\n")}`,
-          applyMode: "auto", maxTurns: options.maxTurns, thinkingLevel: deep.thinkingLevel,
+          applyMode: "auto", maxTurns: options.maxTurns, thinkingLevel: execThinkingLevel,
           // 수리 실행도 같은 의도 선별 목록에서 시작한다 — 없으면 새 Agent 가 전체 카탈로그(≈113k 토큰)를 매 호출 받는다.
           ...(options.initialToolNames ? { initialToolNames: options.initialToolNames } : {}),
-        }, { signal: surface.signal, onEvent: wrap(command.mapIds, 0), onCheckpoint: c => publication.publish(c) });
+        }, { signal: surface.signal, onEvent: wrap(command.mapIds, 0), onCheckpoint: c => stage("checkpoint", () => publication.publish(c)) }));
         const preRepair = merged.project;
         for (const id of repaired.villageCompletion?.mapIds ?? []) villageMapIds.add(id);
         merged = { ...merged, project: repaired.project };
@@ -668,7 +699,7 @@ export async function runPiCommand(
             .filter(key => key.startsWith("maps."))
             .map(key => key.slice("maps.".length)),
         ]);
-        const fresh = await reviewMapHarmony(base, merged.project, command.task, config, { signal: surface.signal, mapIds: recheck });
+        const fresh = await stage("review", () => reviewMapHarmony(base, merged.project, command.task, config, { signal: surface.signal, mapIds: recheck }));
         reviews = [...reviews.filter(review => !recheck.has(review.mapId)), ...fresh];
         harmonyApproved = reviews.every(review => review.harmonious);
         // 수리가 지적을 한 글자도 못 바꿨으면 다음 라운드도 못 바꾼다 — 같은 값을 내려고
@@ -736,7 +767,7 @@ export async function runPiCommand(
   }
   // 명세는 한 번만 계산해 검토 카드와 영수증이 **같은 것**을 쓴다 — 두 번 만들면 두 화면이 갈라진다.
   const receiptLedger = buildChangeLedger(base, merged.project);
-  const apply = async (): Promise<boolean> => {
+  const applyNow = async (): Promise<boolean> => {
     surface.signal?.throwIfAborted();
     // 맵·이벤트가 사라지는 적용만 사람이 한 번 더 본다. 근거는 툴 이름이 아니라 base ↔ 제안의
     // 실제 차이다. 검토 카드가 아니라 apply() 안에 두는 이유: 자동 적용(piApply="auto")에는 카드
@@ -821,6 +852,8 @@ export async function runPiCommand(
     });
     return true;
   };
+  // 적용은 한 턴에 여러 번 부려질 수 있다(단계 모드·검토 카드 다시 누르기) — 기록기가 같은 이름을 합산하므로 그 전부가 한 칸에 모인다.
+  const apply = (): Promise<boolean> => stage("apply", applyNow);
   // 정책에 따라 자동 반영하거나 미적용 초안을 검토 카드에 남긴다.
   // 기준(base)이 그 사이 바뀌면 applyProposedProject 가 stale-base 로 거절한다.
   if ((!(options.villageContract ? builderFailed : villageIncomplete) && applyMode === "yolo") || (isLiveApplyMode(applyMode) && !harmonyManualReview)

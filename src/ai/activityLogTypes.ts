@@ -138,6 +138,8 @@ export type AiActivityLogInput = {
   readonly audit?: readonly AuditEntry[];
   readonly uiEvents?: readonly unknown[];
   readonly uiActions?: readonly AiUiEvent[];
+  /** 이 턴의 단계별 벽시계. 기록하는 자리는 턴을 도는 표면 하나다(패널→`startPiRunLog`). */
+  readonly timing?: import("./turnTiming").TurnTimingRecord;
   readonly id?: string;
   /** 생략하면 이 탭의 런 식별자가 자동으로 붙는다. 테스트에서만 명시한다. */
   readonly runId?: string;

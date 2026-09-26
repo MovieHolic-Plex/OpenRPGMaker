@@ -3068,3 +3068,36 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 - 남은 것: `regionTaskModal.ts` 와 `regionTask/*` UI 조각은 e2e 브리지(`editorToolHook` `openModal`)만 쓴다 — 삭제는 후속.
   `test/aiActivityLiveRow` 는 옛 영역 경로로 라이브 행을 몰았으므로 격리했다(Pi 경로로 다시 써야 한다).
 - 증거: `verify-shots/drag-toolbar-handoff/` (02: Enter 뒤 창 0개·채팅 말풍선, 06: 바로 깔기로 숲이 바로 깔림).
+
+## 턴 단계 계측과 실행 추론 강도 (2026-09-26)
+
+「프롬프트 하나에 몇 분」의 원인을 짐작하지 않고 읽기 위해, 평문 턴 하나를 단계별 벽시계로 쪼개 활동 로그 행에 싣는다.
+그리고 자율성 다이얼이 고른 사고 강도를 **실행 루프**까지 내려보낸다 — 예전에는 다이얼을 「빠르게」로 내려도 실행 턴은 역할 기본값(Deep=high)으로 돌았다.
+
+### 기록은 어디서 만들고 어디에 쓰이나
+
+- 기록기: `src/ai/turnTiming.ts` `createTurnTiming()`. 계약은 **같은 이름의 누적 합**이다 — 쓰기 도구마다 체크포인트 하나, 맵마다 검수 하나가
+  한 턴에서 여러 번 돌기 때문이다. 덮어쓰기로 적으면 12번 돈 단계가 1번짜리로 보여 병목이 표에서 사라진다. `snapshot()` 은 읽기 전용이다.
+- 만드는 자리: `src/editor/panels/aiChatPanel.ts` 의 `plainPiTurn` — 턴당 하나를 만들고 `"intent"` 를 의도 선언 앞에서 열어 `finally` 로 닫는다.
+  선언 한 번이 실제로 1.2~7.5s 를 쓰므로(2026-09-16 실측) 이걸 빼면 표의 total 이 거짓으로 짧아진다. 기록기는 `runPiTurn` → `runPiCommand` 의 `options.timing` 으로 넘어간다.
+- 단계 이름(`src/editor/panels/aiPiAgentCommand.ts` 의 `stage(name, run)`, 던져도 `finally` 로 닫는다):
+  `plan`(Ultrabrain 계획 턴) · `exec`(실행 런의 `Promise.all`) · `checkpoint`(발행 하나마다) · `review`(맵 조화 검수 + 수리·재검수 루프) · `apply`(`apply()` 경로).
+- 쓰는 자리: `finishLog` 가 만드는 **그 활동 로그 행 하나**다(`PiRunFacts.timing` → `startPiRunLog` → `AiActivityLogInput.timing` → `AiActivityLogRecord.timing`).
+  계측 때문에 두 번째 행을 만들지 않는다 — 그러면 `npm run ai:log` 가 한 실행을 두 건으로 센다.
+- 읽는 자리: `npm run ai:trace` (`scripts/list-ai-turn-timing.mjs`). 디스크 미러 `output/ai-activity` 만 읽고, `timing` 없는 행은 건너뛴다.
+  `--last N` `--json`. 출력은 `total=턴 벽시계ms` 와 `단계=ms`(처음 열린 순서, 같은 이름은 합)다.
+
+### 다이얼이 실행 루프의 사고 강도를 정한다
+
+- `runPiCommand` 는 `preferCallerThinking = !config.roleModels?.deep` 를 세우고, 실행 런과 수리 런에 다이얼 값(`options.thinkingLevel` = `resolvePiRunPlan(...).thinkingLevel`)을 싣는다.
+- **명시적으로 저장한 Deep 역할 모델이 이긴다.** 사용자가 설정에서 역할 모델을 고정했으면 `preferCallerThinking` 이 꺼져 예전 그대로 역할 값을 쓴다.
+- 계획 턴·팀 턴은 예전 그대로 Ultrabrain 강도로 돈다(`buildPiRunRequest` 의 `brainRun`) — 계획을 몰래 낮추지 않는다.
+- `normalizePiThinkingLevel`(`src/ai/piAgent/thinkingLevel.ts`) 은 google-antigravity 에서만 `off` → `minimal` 로 낮춘다.
+  실측: `off` 를 보내면 HTTP 200 스트림에 error 이벤트 `Thinking effort off is not supported by google-antigravity/gemini-3.8-flash. Supported efforts: minimal, low, medium, high` 가 실려 실행이 첫 호출에서 죽는다.
+
+### 실측 (2026-09-26, 동반 서비스 127.0.0.1:17832 직결 · 실제 OAuth · gemini-3.8-flash)
+
+- 작은 프롬프트 모델 호출 1회: effort minimal/low 약 2.2~2.8s, high 약 4.0~5.8s. 전제를 1k→30k 토큰으로 키워도 약 0.5s 밖에 안 움직인다 — **payload 는 지연의 원인이 아니다.**
+- 읽기 전용 3턴 도구 사용 Pi 실행: thinking low 6.36s / 7.41s, high 9.09s / 8.47s → 턴당 약 2.1s(low) 대 약 2.9s(high). 로컬 도구 실행은 ~0ms 라 턴 벽시계는 사실상 모델 호출의 합이다.
+- 프롬프트 캐시: 같은 접두를 다시 보낸 실행이 cacheRead 12,021 토큰을 보고했다 — 공급자의 암묵 접두 캐시가 실행 사이에도 이미 듣는다. 세션 id 를 바꿀 필요는 없다.
+- 프로브: `scripts/qa/_ai-turn-latency-probe.mjs` (`provider` / `agent` 모드), 증거 `verify-shots/ai-turn-latency/`.
