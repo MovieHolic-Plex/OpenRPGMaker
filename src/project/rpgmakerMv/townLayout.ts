@@ -235,11 +235,17 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
       doorCols.add(doorX);
       busyFront.add(doorX);
       // 1층 띠: 문 옆으로 쇼윈도를 잇는다(넓은 가게는 양 끝 기둥 한 칸씩 남긴다).
+      // shopfrontEnds 가 있으면 이어진 쇼윈도 덩어리의 첫·끝 칸을 테두리 조각으로 바꾼다.
       if (!office && style.shopfront) {
-        for (let gx = x; gx < x + w; gx += 1) {
-          if (busyFront.has(gx) || (w >= 6 && (gx === x || gx === x + w - 1))) continue;
-          if (place(style.shopfront, gx, frontY - 1)) busyFront.add(gx);
-        }
+        const glass: number[] = [];
+        for (let gx = x; gx < x + w; gx += 1) if (!busyFront.has(gx) && !(w >= 6 && (gx === x || gx === x + w - 1))) glass.push(gx);
+        const ends = style.shopfrontEnds;
+        glass.forEach((gx, i) => {
+          const runStart = i === 0 || glass[i - 1] !== gx - 1;
+          const runEnd = i === glass.length - 1 || glass[i + 1] !== gx + 1;
+          const id = ends && runStart !== runEnd ? (runStart ? ends[0] : ends[1]) : style.shopfront!;
+          if (place(id, gx, frontY - 1)) busyFront.add(gx);
+        });
       }
       // 차양은 1층 바로 위: 윗줄이 2층 창 줄 맨 아래에, 그늘 줄이 1층 띠 윗줄에 걸린다(문·쇼윈도는 그늘이 덮지 않는다).
       if (!office && style.awning && w >= 3 && rng() < 0.65) {
@@ -248,6 +254,9 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
         for (let i = ax; i < ax + 3; i += 1) busyFront.add(i);
       }
       if (roof >= 2 && w >= 4 && !prev?.dish && rng() < 0.25) dish = place(pick(rng, recipe.objects.roofProps), x + int(rng, 0, w - 2), top + 1);
+      // 옥상 설비: 환기구·실외기를 건물마다 0~2개(위성 안테나와 겹치면 건너뛴다).
+      const gear = recipe.objects.roofGear ?? [];
+      if (gear.length && w >= 3) for (let i = 0, n = int(rng, 0, w >= 6 ? 2 : 1); i < n; i += 1) place(pick(rng, gear), x + int(rng, 0, w - 1), top + int(rng, 0, roof - 1));
       // 뒤: 건물 바로 위 골목에 분리수거함·배전함을 1~3개 모아 둔다.
       if (top >= 2 && rng() < 0.6) {
         const n = int(rng, 1, 3);
@@ -407,7 +416,7 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
       for (let i = 0, tries = 0; i < count && tries < 30; tries += 1) {
         const tx = rng() < 0.6 ? pick(rng, [q.x0, q.x1]) : int(rng, q.x0, q.x1);
         const ty = int(rng, q.y0 + 1, q.y1);
-        if (place(pick(rng, recipe.objects.yardTrees), tx, ty)) i += 1;
+        if (place(pick(rng, recipe.objects.parkTrees ?? recipe.objects.yardTrees), tx, ty)) i += 1;
       }
       for (let i = 0; i < 2; i += 1) place(pick(rng, recipe.objects.bushes), int(rng, q.x0, q.x1), int(rng, q.y0, q.y1));
     }
@@ -442,19 +451,42 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
         if (place(pick(rng, recipe.objects.vending), vx, frontY)) break;
       }
     }
+    // 가게 앞 보도 가운데 줄에 노점·광고탑을 가끔 하나(문 앞·차양 밑 열은 피한다).
+    const props = recipe.objects.streetProps ?? [];
+    if (props.length && rng() < 0.35) {
+      const id = pick(rng, props);
+      const pw = kit(id)?.width ?? 1;
+      for (let px = lot.x; px + pw <= lot.x + lot.w; px += 1) {
+        if ([...Array(pw).keys()].some((i) => doorCols.has(px + i) || inCorridorAt(px + i, frontY + 1))) continue;
+        if (place(id, px, frontY + 1)) break;
+      }
+    }
   }
   for (const c of corridors) {
     if (c.y0 === 0) place(recipe.objects.hydrant, c.x - 2, curb);
     place(recipe.objects.hydrant, c.x + 10, southWalkY + 1);
   }
   // 큰길 남쪽: 잔디 띠에 가로수, 보도 바깥 줄에 가로등(북쪽과 엇갈리게).
-  for (let tx = int(rng, 2, 5); tx < W; tx += int(rng, 4, 6)) if (!inCorridor(tx)) place(recipe.objects.streetTree, tx, southLawnY);
+  // 가로수는 거리마다 한 수종(실제 가로수 식재처럼) — 거리끼리는 다르게 고른다.
+  const streetTreeFor = () => pick(rng, recipe.objects.streetTrees ?? [recipe.objects.streetTree]);
+  const southTree = streetTreeFor();
+  for (let tx = int(rng, 2, 5); tx < W; tx += int(rng, 4, 6)) if (!inCorridor(tx)) place(southTree, tx, southLawnY);
+  // 버스 정류장: 큰길 남쪽 보도 한 곳, 교차로에서 조금 떨어진 곳.
+  if (recipe.objects.busStop) {
+    const bw = kit(recipe.objects.busStop)?.width ?? 3;
+    for (let tries = 0; tries < 12; tries += 1) {
+      const bx = int(rng, 1, Math.max(1, W - bw - 1));
+      if ([...Array(bw).keys()].some((i) => inCorridor(bx + i) || inCorridor(bx + i - 2) || inCorridor(bx + i + 2))) continue;
+      if (place(recipe.objects.busStop, bx, southWalkY + 1)) break;
+    }
+  }
   for (let lx = int(rng, 5, 9); lx < W; lx += int(rng, 7, 10)) if (!inCorridor(lx)) place(recipe.objects.lampAlt ?? recipe.objects.lamp, lx, southWalkY + 1);
   for (const band of bands) {
     if (band.roadY === null) continue;
+    const bandTree = streetTreeFor();
     for (let tx = int(rng, 1, 4); tx < W; tx += int(rng, 4, 6)) {
       if (inCorridor(tx) || drivewayCols.has(tx)) continue;
-      place(recipe.objects.streetTree, tx, band.lawnY);
+      place(bandTree, tx, band.lawnY);
     }
   }
 

@@ -190,6 +190,25 @@ const OBJECTS: MvPackObject[] = ([
   ["window_tall_small", STREET, 9, 0, 1, 2, "wallmount", "세로창과 작은 창", { description: "주택 벽에 다는 세로창 + 아래 작은 창" }],
   ["shopfront_glass", A5, 7, 12, 1, 2, "wallmount", "1층 통유리(1칸)", { growth: "horizontal", description: "1층 띠 2줄에 문 옆으로 이어 붙이는 쇼윈도(작가 2층 벽돌 가게)" }],
   ["shopfront_glass_lit", A5, 5, 12, 1, 2, "wallmount", "1층 불 켜진 통유리(1칸)", { growth: "horizontal", description: "밤·가게 안 불빛이 비치는 쇼윈도" }],
+  // ── 1줄짜리 1층 띠 부품 (작가 city-intersection 회색 상가 y6: 1줄 쇼윈도 ×2 + 1줄 문, 위에 차양) ──
+  ["door_row_dark", SHOP, 0, 8, 1, 1, "door", "1줄 유리문(어두운)", { description: "1층 띠가 1줄일 때 쓰는 한 칸짜리 문. 차양은 바로 윗줄에" }],
+  ["door_row_bright", SHOP, 1, 8, 1, 1, "door", "1줄 유리문(밝은)", { description: "1층 띠가 1줄일 때 쓰는 한 칸짜리 문" }],
+  ["shopfront_row_left", SHOP, 2, 8, 1, 1, "wallmount", "1줄 쇼윈도 왼끝"],
+  ["shopfront_row", SHOP, 3, 8, 1, 1, "wallmount", "1줄 쇼윈도(가운데)", { growth: "horizontal", description: "1줄 1층 띠에 문 옆으로 이어 붙이는 통유리. 양끝은 _left·_right" }],
+  ["shopfront_row_right", SHOP, 4, 8, 1, 1, "wallmount", "1줄 쇼윈도 오른끝"],
+  // ── 옥상 설비 (Tileset_Modern_BuildingExtras 오른쪽 위) ──
+  ["roof_vent", EXTRAS, 13, 0, 1, 1, "wallmount", "옥상 환기구", { description: "옥상 윗면 위에 얹는다. 한 건물에 1~3개" }],
+  ["roof_fan", EXTRAS, 14, 0, 1, 1, "wallmount", "옥상 실외기(팬)", { description: "옥상 윗면 위에 얹는다" }],
+  ["roof_vent_slat", EXTRAS, 13, 1, 1, 1, "wallmount", "옥상 환기구(살창)", { description: "옥상 윗면 위에 얹는다" }],
+  ["roof_ac_large", EXTRAS, 13, 2, 2, 1, "wallmount", "옥상 큰 공조기(2칸)", { description: "폭 5칸 이상 옥상에 얹는다" }],
+  ["wall_ladder", EXTRAS, 12, 7, 1, 3, "wallmount", "벽 사다리", { description: "건물 뒷면·옆면 외벽에 옥상까지 단다" }],
+  // ── 나무 종류 (Tileset_Modern_Park) — 원뿔 나무만 쓰면 한 수종 숲이 된다 ──
+  ["poplar_tree", PARK, 10, 0, 1, 4, "tall", "키 큰 미루나무", { description: "가로수·뒷마당. 1칸 폭이라 좁은 잔디 띠에 맞는다" }],
+  ["round_tree", PARK, 11, 2, 2, 4, "tall", "큰 둥근 나무", { description: "공원·넓은 앞마당. 밑동 줄 2칸이 막힌다" }],
+  ["round_tree_small", PARK, 14, 0, 2, 2, "tall", "작은 둥근 나무", { description: "앞마당·공원 가장자리" }],
+  ["bush_wide", PARK, 11, 0, 3, 2, "prop", "넓은 덤불(3칸)", { description: "공원 가장자리·마당 울타리 안쪽" }],
+  // ── 거리 소품 (Tileset_Modern_PublicTransportation_Clean) ──
+  ["bus_shelter", "Tileset_Modern_PublicTransportation_Clean_Rasak.png", 0, 6, 3, 3, "tall", "버스 정류장 쉼터", { description: "큰길 보도 바깥쪽(3×3). 위 두 줄은 캐릭터 위, 맨 아래 줄이 막힌다" }],
 ] as readonly O[]).map(([id, sheet, x, y, w, h, kind, name, extra]) => ({ id, sheet, x, y, w, h, kind, name, ...(extra ?? {}) }));
 
 // 마을 짜임 도구 재료 — 작가 참고 맵의 건물 짝(옥상·창 난 위층·창 없는 1층)과 사용자 맵의 거리 짜임에서 골랐다.
@@ -210,6 +229,9 @@ const TOWN: MvTownRecipe = {
     { roof: "짙은 옥상(회색 벽돌 테두리)", upper: "회색 벽돌 외벽 창문", ground: "회색 벽돌 외벽", door: "glass_door_dark", awning: "awning_red", shopfront: "shopfront_glass_lit" },
     { roof: "검은 벽돌 옥상", upper: "검은 벽돌 외벽 창문", ground: "검은 벽돌 외벽", door: "glass_door_dark", awning: "awning_red", shopfront: "shopfront_glass" },
     { roof: "사각 옥상 회색", upper: "사각 외벽 회색 세로창", ground: "사각 외벽 회색 유리 상가", door: "glass_door_bright", awning: "awning_red" },
+    // 작가 city-intersection x14~18: 유리 지붕 → 회색 상가 벽 → 1층 1줄 쇼윈도 줄 + 1줄 문.
+    { roof: "사각 유리 지붕", upper: "사각 외벽 회색 상가", ground: "사각 외벽 회색 유리 상가", door: "door_row_bright", awning: "awning_red", shopfront: "shopfront_row", shopfrontEnds: ["shopfront_row_left", "shopfront_row_right"] },
+    { roof: "사각 옥상 짙은(갈색 테두리)", upper: "사각 외벽 갈색 벽돌 창문", ground: "사각 외벽 갈색 벽돌", door: "door_row_dark", awning: "awning_red", shopfront: "shopfront_row", shopfrontEnds: ["shopfront_row_left", "shopfront_row_right"] },
   ],
   offices: [
     { roof: "사각 옥상 검은 벽돌(짙은 갈색)", upper: "사각 외벽 짙은 갈색 유리창 줄", ground: "사각 외벽 회색 유리 상가", door: "glass_door_dark" },
@@ -223,12 +245,18 @@ const TOWN: MvTownRecipe = {
   ],
   objects: {
     lamp: "street_lamp_left", lampAlt: "street_lamp_right", planterTree: "cone_tree_pot", streetTree: "cone_tree",
-    yardTrees: ["cone_tree"], hydrant: "fire_hydrant", trash: "trash_can", bench: "park_bench", benchLong: "park_bench_long",
-    fountain: "fountain_large", bushes: ["bush_small", "bush_large"],
+    streetTrees: ["cone_tree", "poplar_tree", "cone_tree_planter"],
+    yardTrees: ["cone_tree", "round_tree_small", "poplar_tree"],
+    parkTrees: ["round_tree", "round_tree_small", "cone_tree", "poplar_tree"],
+    hydrant: "fire_hydrant", trash: "trash_can", bench: "park_bench", benchLong: "park_bench_long",
+    fountain: "fountain_large", bushes: ["bush_small", "bush_large", "bush_wide"],
     flowerBeds: ["flower_bed_red", "flower_bed_yellow", "flower_bed_blue", "flower_bed_pink"],
     vending: ["vending_soda", "vending_coffee", "vending_snacks", "atm"],
     backProps: ["recycle_bin_green", "recycle_bin_yellow", "recycle_bin_red", "power_box", "cardboard_box", "trash_can_full"],
     houseDoor: "metal_door", houseWindows: ["window_tall", "window_tall_small"], roofProps: ["satellite_dish"],
+    roofGear: ["roof_vent", "roof_fan", "roof_vent_slat", "roof_ac_large"],
+    streetProps: ["ad_column", "hotdog_cart", "popcorn_cart", "icecream_cart"],
+    busStop: "bus_shelter",
     laneHorizontal: "lane_line_horizontal", crosswalkVertical: "crosswalk_for_vertical_road", arrowLeft: "arrow_left", arrowRight: "arrow_right",
   },
 };
@@ -283,6 +311,10 @@ const GUIDE = `# Rasak Modern 도시 — 까는 순서
 
 문·차양 자리:
 - 문(1×2)은 \`base\` = 외벽 **맨 아래 줄**. 쇼윈도는 \`shopfront_glass\`(1×2)를 문 옆에 \`repeat\` 로.
+- **1줄 1층 띠**(작가 회색 상가·갈색 벽돌 가게): 맨 아래 줄에 \`door_row_bright\`·\`door_row_dark\`(1×1 문) 하나와
+  \`shopfront_row_left\` → \`shopfront_row\` ×N → \`shopfront_row_right\`(1×1 쇼윈도 줄)를 잇는다. 그 윗줄에 차양의 그늘 줄이 온다.
+  문 옆에 쇼윈도를 붙이면 쇼윈도 한 덩어리마다 양끝 조각을 다시 쓴다(끝이 끊긴 유리창이 되지 않게).
+- 위층 세로창은 \`window_tall\`(1×2, 벽 2줄 = 한 층). 벽돌·판자 벽에 1~2칸씩 띄운다.
 - 차양은 **문 윗칸 줄**에 단다 — \`awning_red_small\` 은 at=(문 x, 맨 아래 줄-1), 3칸 \`awning_red\` 는 at=(문 x-1, 맨 아래 줄-1).
   차양 줄무늬가 문 윗칸을 덮고 문 아랫칸은 차양 그늘 위에 그려진다(찍는 순서는 상관없다). 위층 줄에 차양을 달지 않는다.
 
@@ -290,14 +322,22 @@ const GUIDE = `# Rasak Modern 도시 — 까는 순서
 - 모텔 4층: 옥상 \`"짙은 옥상(주황 벽돌 테두리)"\` 2줄 → \`"주황 벽돌 외벽 창문"\` 3줄 → \`"주황 벽돌 외벽"\` 1줄(문·차양·자판기).
 - 2층 벽돌 가게: 지붕 \`"검은 비늘 지붕"\` 3줄 → \`"붉은 벽돌 외벽"\` 2줄 + 세로창 → 처마 \`"검은 비늘 지붕"\` 1줄 → \`"붉은 벽돌 외벽"\` 2줄(문 + 통유리).
 - 유리 상가 3층: \`"유리 지붕"\` 2줄 → \`"회색 상가 외벽(유리·셔터)"\` 2줄 → \`"회색 유리 상가 외벽"\` 1줄(차양 + 문).
+- 회색 상가(작가 교차로, 폭 5): \`"사각 유리 지붕"\` 3줄 → \`"사각 외벽 회색 상가"\` 3줄 → 1층 \`"사각 외벽 회색 유리 상가"\` 1줄에
+  \`shopfront_row_left\`·\`shopfront_row\`·\`shopfront_row_right\` + \`door_row_bright\`, 그 윗줄에 \`awning_red\`.
 
 주택(A3 기와·벽): 지붕 2~3줄 + 벽 2줄. 벽 2줄이 한 층이다. 문 옆에 \`window_tall\`·\`window_lit_wide\` 를 1~2개 달고,
 집마다 지붕·벽 색을 바꾼다. 마당은 문 앞으로 둔다.
-- 외벽 맨 아래 줄 문 칸만 걸을 수 있다 — 이동 이벤트는 문 칸에. 옥상에는 \`satellite_dish\` 정도만.
+- 외벽 맨 아래 줄 문 칸만 걸을 수 있다 — 이동 이벤트는 문 칸에.
+- 옥상에는 설비를 건물마다 0~2개: \`roof_vent\`·\`roof_vent_slat\`(환기구), \`roof_fan\`(실외기), \`roof_ac_large\`(2칸, 폭 5칸 이상),
+  \`satellite_dish\`(2×2). 모든 옥상에 같은 것을 같은 자리에 두지 않는다. 뒷면·옆면 외벽에 \`wall_ladder\`(1×3)·\`fire_escape\`.
 
 ## 3. 물체 (위층)
 - 가로등은 보도 바깥쪽(차도 쪽) 줄을 따라 6~8칸 간격. 신호등은 교차로 네 모서리.
 - 쓰레기통·소화전·자판기는 보도 안쪽(건물 쪽). 벤치·분수·덤불은 공원.
+- 가게 앞 보도에는 가게마다 다른 것을 가끔: \`ad_column\`(원통 광고탑), \`hotdog_cart\`·\`popcorn_cart\`·\`icecream_cart\`, \`round_kiosk\`.
+- 큰길 보도에 \`bus_shelter\`(버스 정류장 3×2) 한 곳 — 교차로에서 2칸 이상 떼어.
+- 나무는 수종을 섞는다. 가로수(잔디 띠 1칸)는 거리마다 한 수종 — \`cone_tree\`·\`poplar_tree\`(키 큰 미루나무 1×4)·\`cone_tree_planter\`.
+  공원·넓은 마당은 \`round_tree\`(2×4)·\`round_tree_small\`(2×2)를 섞고, 가장자리에 \`bush_wide\`·\`hedge_horizontal\`.
 - 물체 밑칸은 막힌다. 길을 막지 않게 보도 폭의 절반 이상을 비워 둔다.
 
 ## 4. 겹침 오토타일 (위층)

@@ -101,8 +101,10 @@ export interface MvTownFacade {
   readonly door: string;
   /** 가게면 문 위 차양(3칸 overhead). 없으면 사무실·아파트. */
   readonly awning?: string;
-  /** 1층 띠가 2줄일 때 문 옆에 잇는 쇼윈도(1×2 wallmount). */
+  /** 문 옆에 잇는 쇼윈도(wallmount). 1×2 는 1층 띠 두 줄을, 1×1 은 맨 아래 줄만 채운다(윗줄은 차양 그늘). */
   readonly shopfront?: string;
+  /** 1×1 쇼윈도 줄의 양끝 조각 [왼끝, 오른끝]. 이어진 쇼윈도 한 덩어리의 첫 칸·끝 칸을 이것으로 바꾼다. */
+  readonly shopfrontEnds?: readonly [left: string, right: string];
 }
 
 /**
@@ -134,7 +136,11 @@ export interface MvTownRecipe {
     readonly lampAlt?: string;
     readonly planterTree: string;
     readonly streetTree: string;
+    /** 가로수 수종 여럿(없으면 streetTree 하나). 잔디 띠 1칸 폭에 맞는 1칸 폭 나무만. */
+    readonly streetTrees?: readonly string[];
     readonly yardTrees: readonly string[];
+    /** 공원 나무(없으면 yardTrees). 2칸 폭 큰 나무를 섞어도 된다. */
+    readonly parkTrees?: readonly string[];
     readonly hydrant: string;
     readonly trash: string;
     readonly bench: string;
@@ -148,6 +154,12 @@ export interface MvTownRecipe {
     readonly houseDoor: string;
     readonly houseWindows: readonly string[];
     readonly roofProps: readonly string[];
+    /** 옥상 설비(환기구·실외기, 1칸 높이). 옥상 줄 위에 건물마다 0~2개. 없으면 안 둔다. */
+    readonly roofGear?: readonly string[];
+    /** 가게 앞 보도에 가끔 세우는 것(노점·광고탑). 맨 아래 줄 = 보도 가운데 줄. 없으면 안 둔다. */
+    readonly streetProps?: readonly string[];
+    /** 큰길 남쪽 보도의 버스 정류장(한 곳). 없으면 안 둔다. */
+    readonly busStop?: string;
     readonly laneHorizontal: string;
     /** 세로 차도를 건너는 횡단보도(1칸, 가로로 이어 찍기) — T 교차로 입구. */
     readonly crosswalkVertical: string;
