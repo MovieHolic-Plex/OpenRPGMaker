@@ -191,6 +191,9 @@ The same 31 shared root IDs and their 33 floor rasters are also included in `rev
   `/__oprn/shared-content/preview?library=&kind=place|region&id=&v=` 주소로 바꾼다. 바이트는 SQLite `json_extract` 로 그 칸만 꺼낸다.
   `v` 는 라이브러리 판본이라 불변 캐시다. 게시 스크립트가 쓰는 `readSharedContent()` 는 원본 그대로다.
 - 실측(2026-09-26, 26개 라이브러리): 전체 응답 395MB 중 미리보기 dataURL 185MB. 부팅이 이걸 기다려 로더 해제까지 약 40초였다.
+- 카탈로그 응답은 gzip(level 1)으로 보내고, 카탈로그 판본이 같으면 압축본을 재사용한다(`encodedSharedContent`).
+  defaults 103MB → 45MB, 캐시 적중 응답 0.05s. `accept-encoding` 에 gzip 이 없으면 풀어서 보낸다.
+  Electron `app://` 는 프로세스 안 전달이라 풀어서 돌려준다.
   vite/Electron `app://`/팀 호스트 세 경로는 모두 `scripts/lib/sharedContentSqlite.ts` 의 같은 핸들러를 쓴다.
 
 등록 완료는 DB 저장만으로 판정하지 않는다. 해당 변경을 main에 병합하고, main의 커밋으로 빌드한 배포 파일에서 공용 로더와 장소 31종을 확인한 뒤 실제 hostProject URL의 자료집 → 맵 → 장소에서 재확인한다. 미커밋 파일로 빌드한 결과는 다음 배포에서 사라질 수 있다.

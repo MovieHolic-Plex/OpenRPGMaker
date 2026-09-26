@@ -1,11 +1,14 @@
 import { mkdtempSync, rmSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { gunzipSync } from "node:zlib";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { publishSharedContent, readSharedContent, readSharedContentForEditor, readSharedContentPreview } from "../scripts/lib/sharedContentSqlite";
+import { encodedSharedContent, publishSharedContent, readSharedContent, readSharedContentForEditor, readSharedContentPreview } from "../scripts/lib/sharedContentSqlite";
 import type { SharedContentLibrary } from "@/project/sharedContentSchema";
 
 const PIXEL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+const hashLibrary = (value: unknown) => createHash("sha256").update(JSON.stringify(value)).digest("hex");
 
 function library(projectDefaults: boolean): SharedContentLibrary {
   return { version: 1, ...(projectDefaults ? { projectDefaults: true } : {}), roots: [], places: {}, tilesets: {}, assets: {}, maps: {}, sourceProjectId: "test", previews: { shared_room: PIXEL } };
@@ -42,5 +45,18 @@ describe("editor shared-content snapshot", () => {
     expect(readSharedContent(file).libraries.catalog!.previews.shared_room).toBe(PIXEL);
     expect(readSharedContentPreview("catalog", "place", "missing", file)).toBeNull();
     expect(readSharedContentPreview("catalog", "tileset", "shared_room", file)).toBeNull();
+  });
+});
+
+describe("encoded editor response", () => {
+  it("decodes to the editor snapshot and is rebuilt after a library is republished", () => {
+    const first = encodedSharedContent("defaults", file);
+    expect(JSON.parse(gunzipSync(first).toString())).toEqual(readSharedContentForEditor("defaults", file));
+    expect(encodedSharedContent("defaults", file)).toBe(first);
+    const old = readSharedContent(file).libraries.defaults!;
+    publishSharedContent("defaults", { ...library(true), roots: [], sourceProjectId: "changed" }, hashLibrary(old), file);
+    const second = encodedSharedContent("defaults", file);
+    expect(second).not.toBe(first);
+    expect(JSON.parse(gunzipSync(second).toString()).libraries.defaults.sourceProjectId).toBe("changed");
   });
 });
