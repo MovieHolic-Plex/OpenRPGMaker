@@ -324,6 +324,9 @@ async function main() {
       ["elf_trial", "시험 · 엘프 숲 마을", "rasak_forestfolk", 3072],
       ["snow_trial", "시험 · 설원 바이킹 마을", "rasak_snow", 3840],
       ["port_trial", "시험 · 항구", "rasak_port", 0],
+      ["autumn_trial", "시험 · 가을 숲", "rasak_seasons", 3456],
+      ["mushroom_trial", "시험 · 버섯 숲", "rasak_seasons", 3456],
+      ["market_trial", "시험 · 겨울 장터", "rasak_town2", 3456],
     ];
     for (const [id, name, ts, ground] of trials) {
       if (!project.tilesets[ts]) continue;

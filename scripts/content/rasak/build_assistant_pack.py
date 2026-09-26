@@ -23,7 +23,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 T = 48
 COLS = 96
-BUNDLES = ['rasak_field', 'rasak_swamp', 'rasak_cave', 'rasak_town', 'rasak_interior', 'rasak_dungeon', 'rasak_castle', 'rasak_forestfolk', 'rasak_snow', 'rasak_port']
+BUNDLES = ['rasak_field', 'rasak_swamp', 'rasak_cave', 'rasak_town', 'rasak_interior', 'rasak_dungeon', 'rasak_castle', 'rasak_forestfolk', 'rasak_snow', 'rasak_port', 'rasak_seasons', 'rasak_town2']
 N, E, S, W, NE, SE, SW, NW = 1, 2, 4, 8, 16, 32, 64, 128
 DIRS = [(0, -1, N), (1, 0, E), (0, 1, S), (-1, 0, W), (1, -1, NE), (1, 1, SE), (-1, 1, SW), (-1, -1, NW)]
 # p27b 둘레 암반(A4 kind 7)은 2022 옛 그림을 현재 시트로 맞춘 결과라 안쪽이 모양 15 로 재구성된다(names-review). 표 검증·예제에서 뺀다.
@@ -275,6 +275,58 @@ PURPOSES = {
 7. **공통 금지(시험 H2 에서 나온 결함)**: ① 큰 물체·나무 덩이·건물을 **맵 가장자리에서 잘리게** 놓지 않는다 — 그림 전체가 맵 안에 들어오게 좌표를 잡는다.
    ② 시트 범위를 옮길 때 **범위를 예제 그대로**(나무 8열×16줄, 선체 위 9줄) — 반쪽만 옮기면 잘린 줄기·토막이 남는다.
    ③ 나무·천막·건조대는 **벽·지붕에서 1칸 띄우고**, 서로 겹치게 놓지 않는다. ④ 그림자는 벽·지붕·큰 물체 바로 오른쪽 칸에만.
+""",
+    },
+    'forest_autumn': {
+        'bundle': 'rasak_seasons', 'preview': 'ex_autumn_forest', 'name': '가을 숲 오솔길',
+        'desc': '단풍 든 숲(큰 참나무·전나무 쌍·자작·과실수를 무리로)·굽은 흙 오솔길·연못과 개울·작은 오두막(앞마당 통나무·그루터기·낙엽). 조립 예제 ex_autumn_forest(34×24) 기준.',
+        'windows': [(0, 0, 17, 12), (17, 0, 17, 12), (0, 12, 17, 12), (17, 12, 17, 12)],
+        'cross': (17, 6, 10, 8),
+        'path': (('A2', 8), ('A2', 9)), 'cave': False,
+        'main_ground': ('A2', 8),
+        'alts': [('A2', 9), ('A2', 16), ('A2', 0), ('A1', 0), ('A3', 18), ('A3', 25)],
+        'recipe': 'castle',
+        'room_notes': """## 가을 숲 — 짓는 순서(예제 ex_autumn_forest)
+1. 바탕 짙은 풀밭, 흙 숲바닥 얼룩 둘, 굽은 흙 오솔길(2칸 폭, 맵 양끝으로).
+2. **나무는 무리로**: 큰 나무(`trees_fall_oak_big`·`_fir_pair_*`·`_gnarled_leafy`·`_tall_leafy`)를 먼저 네다섯 무리로 놓고, 그 사이를 중간 나무(`_birch_leafy`·`_round_small`·`_small_leafy_*`·`_fruit_*`)로 채운다. 오솔길·연못·오두막 앞은 비운다.
+3. **숲 바닥 소품**(`floor_fall_*`, 고사리·버섯·낙엽·통나무)은 나무 무리 **가장자리**에만. 낙엽(A2 흩어진 낙엽 kind, 2층)은 1칸씩 흩지 말고 3~5칸 덩이로 오솔길 옆에.
+4. 오두막(A3 지붕 2줄 + 벽 2줄) 앞마당은 쓰러진 통나무·그루터기·버섯으로 채운다(빈 마당 금지).
+5. 봄 숲바닥(`floor_spring_*`)·여름판과 같은 배치 — 계절만 바꾸려면 접두어만 바꾼다. 겨울 나무(`trees_winter_*`)는 이 묶음에 눈 바닥이 없으니 **설원 묶음**에서 쓴다.
+""",
+    },
+    'forest_mushroom': {
+        'bundle': 'rasak_seasons', 'preview': 'ex_mushroom_forest', 'name': '버섯 숲·분홍 꿈 숲',
+        'desc': '짙은 풀 숲바닥·거대 버섯(색별 무리)·분홍 꿈 꽃나무 구석·거목 그루터기·굽은 오솔길·작은 연못. 조립 예제 ex_mushroom_forest(32×22) 기준.',
+        'windows': [(0, 0, 16, 11), (16, 0, 16, 11), (0, 11, 16, 11), (16, 11, 16, 11)],
+        'cross': (0, 0, 10, 8),
+        'path': (('A2', 8), ('A2', 17)), 'cave': False,
+        'main_ground': ('A2', 8),
+        'alts': [('A2', 16), ('A2', 17), ('A2', 0), ('A1', 6)],
+        'recipe': 'castle',
+        'room_notes': """## 버섯 숲 — 짓는 순서(예제 ex_mushroom_forest)
+1. 바탕 짙은 풀, 버섯 무리 밑은 흙 얼룩. 오솔길 2칸.
+2. **거대 버섯은 색끼리 무리**(`mushroom_<색>_cap_*`·`_brown_mound_*`): 무리마다 한 색 계열 — 주황·파랑·노랑·보라를 다른 구석에. 1칸 버섯은 큰 버섯 **발치에만**.
+3. **분홍 꿈 구석**(`pinkdream_*`): 꽃나무 셋(색 다름: 자홍·연분홍·붉은) + 꽃 덤불, 바닥은 밝은 풀.
+4. **거목 그루터기**(`gianttree_stump_*`, 나이테 윗면)는 오솔길 옆 2~5개. 이 시트에는 수관이 없다 — 살아 있는 거목이 아니라 베어 낸 거대 그루터기다.
+5. 겨울판(`mushroom_winter_*`)은 같은 배치에 눈만 얹혔다 — 설원 묶음 바닥과 함께 쓴다.
+""",
+    },
+    'town_winter_market': {
+        'bundle': 'rasak_town2', 'preview': 'ex_winter_market', 'name': '겨울 장터 광장(판타지 도시)',
+        'desc': '판타지 도시 A3 집 줄(비늘 기와 색 다름·문틀·간판)·판석 큰길과 치우친 광장·줄무늬 지붕 노점·선물 더미·크리스마스 나무·장식 가로등·우물·가죽 공방 뒤뜰(빨랫줄·무두질 통·가죽 틀). 조립 예제 ex_winter_market(34×21) 기준.',
+        'windows': [(0, 0, 17, 11), (17, 0, 17, 11), (0, 8, 17, 13), (17, 8, 17, 13)],
+        'cross': (0, 0, 12, 8),
+        'path': (('A2', 8), ('A2', 19)), 'cave': False,
+        'main_ground': ('A2', 8),
+        'alts': [('A2', 19), ('A2', 16), ('A2', 3), ('A3', 0), ('A3', 3), ('A3', 17), ('A3', 9), ('A3', 25), ('A3', 27)],
+        'recipe': 'castle',
+        'room_notes': """## 겨울 장터 광장 — 짓는 순서(예제 ex_winter_market)
+1. **집 줄**: A3 지붕 3줄 + 벽 2줄, 집마다 **기와 색이 다른** 지붕 kind(선명 0~7 · 탁한 16~23)와 회벽 kind(8~15·24~31). 벽 맨 아랫줄이 큰길 바로 윗줄에 닿게 벽을 맞대 붙인다.
+2. **문** = `market_door_frame_wood`(1×2, 이름에 「벽 아랫줄에 놓음」) 를 벽 두 줄에, 옆 칸에 벽걸이 간판(`town_sign_*`).
+3. **큰길·광장·골목은 같은 판석 kind**. 광장은 한쪽으로 치우친 들쭉날쭉 덩이. 길 가장자리에 돌 조각 무더기(2층)를 2~3칸 덩이로.
+4. **겨울 장터**: 줄무늬 노점(`market_stall_striped_*`)·노점 몸체(`market_stall_body_*`)·장터 가판(`xmas_stall_counter*`)·선물 더미·작은 크리스마스 나무·장식 가로등(`xmas_lamp_post_garland`, 한쪽 줄만)·우물·수레·상자 더미.
+5. **가죽 공방 뒤뜰**(흙 바닥, 돌 울타리로 구분): 빨랫줄(`tannery_laundry_line_*`)·무두질 통·가죽 틀·빨래 통·이젤. 벽걸이 그림 액자(`tannery_painting_wall*`)는 집 벽에.
+6. 맵 위쪽에 빈 풀밭 줄을 남기지 않는다 — 집 줄 지붕이 맵 위 끝에서 시작해도 된다.
 """,
     },
 }
