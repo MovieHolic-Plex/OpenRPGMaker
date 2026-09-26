@@ -1,4 +1,4 @@
-import { createElectronRepository, hasElectronBridge } from "./electronRepository";
+import { createElectronRepository, hasElectronBridge, type ElectronRepository } from "./electronRepository";
 import { createMemoryRepository } from "./memoryRepository";
 import { isRemoteTarget, type RemoteProjectTarget } from "./target";
 import type { ProjectRepository } from "./types";
@@ -36,11 +36,17 @@ export function setProjectRepositoryForTest(repository: ProjectRepository | null
   override = repository;
 }
 
-/** 시작 화면이 주 프로세스에 열어 둔 폴더를 이 렌더러 세션에 붙인다. 웹 빌드에서는 no-op. */
+/**
+ * 시작 화면이 주 프로세스에 열어 둔 폴더를 이 렌더러 세션에 붙인다. 웹 빌드에서는 no-op.
+ * store 가 쓰는 같은 인스턴스(projectRepository)에 붙인다. 새 인스턴스에 붙이면 true 를 돌려도
+ * 편집기는 폴더를 모른다(2026-09-17 되돌린 병합 이후 test/persistence/localFolderBoot.test.ts 가 잡았다).
+ */
 export async function adoptElectronOpenProject(): Promise<boolean> {
   if (!hasElectronBridge()) return false;
+  const repository = projectRepository();
+  if (!("adoptOpenProject" in repository)) return false;
   try {
-    return await createElectronRepository().adoptOpenProject();
+    return await (repository as ElectronRepository).adoptOpenProject();
   } catch (error) {
     console.error("[persistence] 열린 프로젝트 폴더 채택에 실패했습니다:", error);
     return false;
