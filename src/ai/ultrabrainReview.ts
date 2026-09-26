@@ -15,6 +15,14 @@ export interface HarmonyReview {
 /** 조화 검수 호출의 시도 횟수. 읽기 전용 판정이라 재시도가 안전하다. */
 export const HARMONY_REVIEW_ATTEMPTS = 2;
 const HARMONY_REVIEW_RETRY_BACKOFF_MS = 1_200;
+/**
+ * 재시도 대기 = 고정 + 지터.
+ *
+ * 지터가 필요한 이유(2026-09-26 리뷰 R1 관찰): 동시성을 6 으로 올리면서 한도(429)에 걸리면
+ * 여섯 호출이 **같은 시각에** 다시 물어 온다(이 경로는 `disableTransientRetry: true` 라
+ * 클라이언트 자체 재시도가 꺼져 있고, 고정 1200ms 만 쓴다). 흩어 놓으면 그때의 추가 부하가 사라진다.
+ */
+const harmonyReviewRetryDelayMs = (): number => HARMONY_REVIEW_RETRY_BACKOFF_MS + Math.round(Math.random() * 400);
 
 /** 본문이 비어있지 않은 문자열임이 확인된 완료 응답. `unusableReviewReason` 이 보장한다. */
 export type UsableReviewCompletion = ChatResult & { readonly message: ChatResult["message"] & { readonly content: string } };
@@ -68,7 +76,7 @@ export async function requestUsableReviewCompletion(
     if (last.startsWith("finish=length")) {
       attemptConfig = { ...attemptConfig, maxTokens: Math.min(GEMINI_MAX_OUTPUT_TOKENS, attemptConfig.maxTokens * 2) };
     }
-    if (attempt < HARMONY_REVIEW_ATTEMPTS) await sleep(HARMONY_REVIEW_RETRY_BACKOFF_MS);
+    if (attempt < HARMONY_REVIEW_ATTEMPTS) await sleep(harmonyReviewRetryDelayMs());
   }
   throw new Error(`${label}: 검수 응답을 받지 못했습니다 (${last}) — ${HARMONY_REVIEW_ATTEMPTS}회 시도`);
 }
@@ -137,7 +145,9 @@ export function mapScopeNote(project: Project, mapId: string): string {
  * - 단독 호출 3회 12645 / 10388 / 9079 ms → 중앙값 **10.4초**. 텍스트만인 콜(~3초)의 3배 이상이라
  *   맵 수가 많은 턴에서 이 단계가 지배한다(13맵이면 5웨이브 ≈ 52초).
  * - **6장을 진짜 동시에** 보낸 6콜: 8665 / 14868 / 18522 / 7506 / 8840 / 6490 ms → 중앙값 **8.8초**, 전부 200.
- *   즉 제공자는 6 동시를 직렬화하지 않는다 — 상수를 올리면 웨이브 수만 줄어든다(13맵 3웨이브 ≈ 30초).
+ *   즉 제공자는 6 동시를 직렬화하지 않는다 — 상수를 올리면 웨이브 수만 줄어든다.
+ *   꼬리를 감안한 추정: 13맵 3웨이브 ≈ **30~45초**(관측된 6콜이 6.5~18.5초로 흩어져 마지막 웨이브의 최대가 지배한다).
+ *   원자료: `verify-shots/ai-turn-latency/review-concurrent-6/c6-{1..6}.json`(6프로세스 각 1회) · 1장 대조 `review-cost.json`.
  * - 같은 조건으로 **4장을 한 호출에 묶는 것**도 시도했다: 33210 / 36705 / 33469 ms(1장의 3.22배) →
  *   맵당 8.4초로 묶기 이득이 거의 없고, 동시성과 곱하면 13맵 기준 67초로 **오히려 손해**다. 그래서 묶지 않는다.
  * 실패 시에는 기존 재시도(HARMONY_REVIEW_ATTEMPTS=2 + 백오프)가 그대로 받쳐 준다. */
