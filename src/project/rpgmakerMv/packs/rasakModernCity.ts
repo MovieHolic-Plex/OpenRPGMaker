@@ -208,6 +208,10 @@ const OBJECTS: MvPackObject[] = ([
   // ── 작가 예시 건물에 쓰인 층 부품 (2026-09-25 사용 예 조사) ──
   ["window_tall", STREET, 8, 0, 1, 2, "wallmount", "세로창", { description: "창 없는 외벽(주택·2층 가게 위층)에 1~2칸 띄워 단다. 벽 2줄 = 한 층" }],
   ["window_tall_small", STREET, 9, 0, 1, 2, "wallmount", "세로창과 작은 창", { description: "주택 벽에 다는 세로창 + 아래 작은 창" }],
+  // 주택 현관문 — 작가 주택(p4·p6)은 철문이 아니라 창살 달린 나무·색 현관문이다(Street 시트 10·11·13열 윗줄 — 12열 아랫칸은 traffic_cones_pair 와 칸이 겹쳐 뺐다).
+  ["house_door_a", STREET, 10, 0, 1, 2, "door", "주택 현관문 1", { description: "주택 벽 2줄에 붙이는 현관문(문 아랫칸 = 벽 맨 아래 줄)" }],
+  ["house_door_b", STREET, 11, 0, 1, 2, "door", "주택 현관문 2"],
+  ["house_door_d", STREET, 13, 0, 1, 2, "door", "주택 현관문 4"],
   ["shopfront_glass", A5, 7, 12, 1, 2, "wallmount", "1층 통유리(1칸)", { growth: "horizontal", description: "1층 띠 2줄에 문 옆으로 이어 붙이는 쇼윈도(작가 2층 벽돌 가게)" }],
   ["shopfront_glass_lit", A5, 5, 12, 1, 2, "wallmount", "1층 불 켜진 통유리(1칸)", { growth: "horizontal", description: "밤·가게 안 불빛이 비치는 쇼윈도" }],
   // ── 1줄짜리 1층 띠 부품 (작가 city-intersection 회색 상가 y6: 1줄 쇼윈도 ×2 + 1줄 문, 위에 차양) ──
@@ -256,13 +260,23 @@ const TOWN: MvTownRecipe = {
   ],
   offices: [
     { roof: "사각 옥상 검은 벽돌(짙은 갈색)", upper: "사각 외벽 짙은 갈색 유리창 줄", ground: "사각 외벽 회색 유리 상가", door: "glass_door_dark" },
-    { roof: "밝은 회색 평지붕", upper: "밝은 회색 외벽 유리창 줄", ground: "회색 콘크리트 외벽", door: "metal_door" },
+    // 작가 river-bridge: 회색 유리 상가 외벽 + glass_door_bright — 민 콘크리트 1층(창고처럼 보인다) 대신.
+    { roof: "밝은 회색 평지붕", upper: "밝은 회색 외벽 유리창 줄", ground: "회색 유리 상가 외벽", door: "glass_door_bright" },
     { roof: "갈색 평지붕", upper: "갈색 외벽 유리창 줄", ground: "갈색 타일 외벽", door: "glass_door_dark" },
+  ],
+  // 주택가 중층 주거 줄(1층 문 + 세로창, 쇼윈도·차양 없음).
+  apartments: [
+    { roof: "붉은 벽돌 옥상", upper: "붉은 벽돌 외벽 창문", ground: "붉은 벽돌 외벽", door: "house_door_b" },
+    { roof: "사각 옥상 검은 기와", upper: "사각 외벽 갈색 벽돌 창문", ground: "사각 외벽 갈색 벽돌", door: "house_door_d" },
+    { roof: "사각 옥상 비늘", upper: "밝은 판자 외벽", ground: "밝은 판자 외벽", door: "house_door_a" },
+    { roof: "짙은 옥상(주황 벽돌 테두리)", upper: "주황 벽돌 외벽 창문", ground: "주황 벽돌 외벽", door: "house_door_d" },
+    { roof: "사각 옥상 갈색 타일", upper: "갈색 판자 외벽", ground: "갈색 판자 외벽", door: "house_door_b" },
   ],
   houses: [
     { roof: "붉은 기와 지붕", wall: "흰 벽" }, { roof: "검은 기와 지붕", wall: "노란 벽" },
     { roof: "갈색 기와 지붕", wall: "회갈색 벽" }, { roof: "검은 슁글 지붕", wall: "초록 벽" },
-    { roof: "붉은 슁글 지붕", wall: "흰 벽" }, { roof: "갈색 슁글 지붕", wall: "짙은 회색 벽" },
+    { roof: "붉은 슁글 지붕", wall: "노란 벽" }, { roof: "갈색 슁글 지붕", wall: "흰 벽" },
+    { roof: "검은 비늘 지붕", wall: "흰 철판 벽" }, { roof: "태양광 붉은 지붕", wall: "초록 벽" },
   ],
   objects: {
     lamp: "street_lamp_left", lampAlt: "street_lamp_right", planterTree: "cone_tree_pot", streetTree: "cone_tree",
@@ -274,10 +288,13 @@ const TOWN: MvTownRecipe = {
     flowerBeds: ["flower_bed_red", "flower_bed_yellow", "flower_bed_blue", "flower_bed_pink"],
     vending: ["vending_soda", "vending_coffee", "vending_snacks", "atm"],
     backProps: ["recycle_bin_green", "recycle_bin_yellow", "recycle_bin_red", "power_box", "cardboard_box", "trash_can_full"],
-    houseDoor: "metal_door", houseWindows: ["window_tall", "window_tall_small"], roofProps: ["satellite_dish"],
+    houseDoor: "house_door_a", houseDoors: ["house_door_a", "house_door_b", "house_door_d"], houseWindows: ["window_tall", "window_tall_small"], roofProps: ["satellite_dish"],
     roofGear: ["roof_vent", "roof_fan", "roof_vent_slat", "roof_ac_large"],
     streetProps: ["ad_column", "hotdog_cart", "popcorn_cart", "icecream_cart"],
     busStop: "bus_shelter",
+    hedge: "hedge_horizontal",
+    doorRow: "door_row_bright", doorTall: "glass_door_bright", shopfrontRow: "shopfront_row",
+    shopfrontRowEnds: ["shopfront_row_left", "shopfront_row_right"], shopfrontTall: "shopfront_glass", awningSmall: "awning_red_small",
     carsHorizontal: CAR_COLORS.map((c) => [`car_${c}_left`, `car_${c}_right`] as const),
     carsVertical: CAR_COLORS.map((c) => [`car_${c}_down`, `car_${c}_up`] as const),
     laneHorizontal: "lane_line_horizontal", crosswalkVertical: "crosswalk_for_vertical_road", arrowLeft: "arrow_left", arrowRight: "arrow_right",
