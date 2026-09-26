@@ -76,12 +76,6 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
     if (!other) return null;
     return row === 0 ? { back: name, front: other.name } : { back: other.name, front: name };
   };
-  const paintHouseRoof = (name: string, x: number, top: number, w: number, rows: number) => {
-    const pair = gablePair(name);
-    if (!pair || rows < 2) { paint(name, x, top, w, rows); return; }
-    paint(pair.back, x, top, w, 1);
-    paint(pair.front, x, top + 1, w, rows - 1);
-  };
   /** 위층이 비어 있고 맵 안이면 찍는다. 겹치면 건너뛴다(자리를 못 잡은 소품은 버린다). */
   const place = (id: string, x: number, baseY: number, opts: { keepDoors?: boolean; force?: boolean } = {}): boolean => {
     const k = kit(id);
