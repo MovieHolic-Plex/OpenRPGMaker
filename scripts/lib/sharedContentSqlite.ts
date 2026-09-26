@@ -3,6 +3,7 @@ import { mkdirSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { createHash } from 'node:crypto';
+import { gunzipSync, gzipSync } from 'node:zlib';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { SHARED_CONTENT_ENDPOINT, SHARED_CONTENT_PREVIEW_ENDPOINT, type SharedContentLibrary, type SharedContentScope, type SharedContentSnapshot } from '../../src/project/sharedContentSchema';
 import { validateTilesetReferences } from '../../src/project/tilesetReferences';
@@ -93,11 +94,29 @@ export function publishSharedContent(id: string, value: SharedContentLibrary, ex
   if(hash(JSON.stringify(reloaded)) !== revision) throw new Error('Shared SQLite reload mismatch');
   return {file,id,revision,reloaded};
 }
-export function sharedContentResponse(method: string, url: URL) {
+export function sharedContentResponse(method: string, url: URL): { status: number; gzip?: Buffer; body?: { error: string } } {
   if(method !== 'GET') return {status:405,body:{error:'공용 콘텐츠는 호스트 등록 절차에서 수정합니다.'}};
   const scope: SharedContentScope = url.searchParams.get('scope') === 'defaults' ? 'defaults' : 'all';
-  try {return {status:200,body:readSharedContentForEditor(scope)};}
+  try {return {status:200,gzip:encodedSharedContent(scope)};}
   catch {return {status:500,body:{error:'공용 SQLite 자료를 읽지 못했습니다.'}};}
+}
+/**
+ * 부팅 응답은 매번 같다 — 카탈로그 판본이 같으면 압축본을 재사용한다.
+ * 실측(2026-09-26): defaults 104.7MB → gzip(1) 46MB, 압축 1.6s. 캐시가 없으면 부팅마다 SQLite 읽기·파싱(약 1.4s)과
+ * 압축을 다시 한다. 판본 확인은 payload 없는 SELECT 라 1ms 대다. 압축본만 들고 있어 상주 메모리를 줄인다.
+ */
+const encodedCache = new Map<string, { revision: string; gzip: Buffer }>();
+export function encodedSharedContent(scope: SharedContentScope, file = sharedContentFile()): Buffer {
+  const db = open(file);
+  let revision: string;
+  try { revision = snapshotRevision(db.prepare('SELECT id, revision FROM content_libraries ORDER BY id').all() as { id: string; revision: string }[]); }
+  finally { db.close(); }
+  const key = file + '\n' + scope, cached = encodedCache.get(key);
+  if (cached?.revision === revision) return cached.gzip;
+  const snapshot = readSharedContentForEditor(scope, file);
+  const gzip = gzipSync(JSON.stringify(snapshot), { level: 1 });
+  encodedCache.set(key, { revision: snapshot.revision, gzip });
+  return gzip;
 }
 export function sharedContentPreviewResponse(method: string, url: URL): { status: number; mime?: string; bytes?: Buffer } {
   if (method !== 'GET') return { status: 405 };
@@ -118,5 +137,8 @@ export function sharedContentMiddleware(req: IncomingMessage,res: ServerResponse
   }
   if(url.pathname!==SHARED_CONTENT_ENDPOINT) return next();
   const result=sharedContentResponse(req.method??'GET', url);
-  res.writeHead(result.status,{'content-type':'application/json; charset=utf-8','cache-control':'no-store'});res.end(JSON.stringify(result.body));
+  if (!result.gzip) { res.writeHead(result.status,{'content-type':'application/json; charset=utf-8','cache-control':'no-store'}).end(JSON.stringify(result.body)); return; }
+  const gzip = /\bgzip\b/.test(String(req.headers['accept-encoding'] ?? ''));
+  const bytes = gzip ? result.gzip : gunzipSync(result.gzip);
+  res.writeHead(200,{'content-type':'application/json; charset=utf-8','cache-control':'no-store','content-length':bytes.length,...(gzip?{'content-encoding':'gzip',vary:'accept-encoding'}:{})}).end(bytes);
 }
