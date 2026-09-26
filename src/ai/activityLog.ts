@@ -246,7 +246,11 @@ export function deriveAiActivityDiagnostics(
     return `${base} — ${clipText(head.join(" / "), 400)}${rest > 0 ? ` (+${rest}건)` : ""}`;
   };
 
-  if (!input.result.ok) {
+  // 진행 중(pending)인 턴은 실패가 아니다 — 아직 끝나지 않았을 뿐이다.
+  // 예전에는 `pending:true` 행에도 `turn-error` + "턴 실패: unknown" + `severity:"error"` 가 붙어,
+  // 살아 있는 워커가 실패로 집계됐다(사용자 QA 원장 LOG-004, docs/qa/saesol-three-hour-ai-authoring.md:135-142).
+  // 사람이 읽는 요약(activityLogText 의 "진행 중")과 진단이 같은 판단을 하게 맞춘다.
+  if (!input.result.ok && !input.result.pending) {
     kinds.add("turn-error");
     messages.push(
       clipText(

@@ -2066,6 +2066,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
 
     // 기존 턴과 같은 중단 버튼을 쓴다 — 컨트롤러를 활성 자리에 앉히고 실행 중 표시(turnBusy)를 켠다.
+    // 다음 턴은 지난 턴의 종료 4축을 물고 가지 않는다 — 세션 경로 beginWorkPlanTurn 의 슬롯 클리어와 같은 수명이다.
+    piRunOutcome = null;
+    refreshRunOutcome();
     piRunController = new AbortController();
     activeAbortController = piRunController;
     abortNoticeShown = false;

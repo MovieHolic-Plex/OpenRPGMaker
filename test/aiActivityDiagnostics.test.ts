@@ -36,6 +36,22 @@ describe("AI activity diagnostics", () => {
   });
 
 
+  // 진행 중(pending)인 턴을 실패로 진단하면 아직 끝나지 않은 작업이 오류로 집계된다 —
+  // 사용자 QA 원장 LOG-004 는 같은 행에 `result.pending:true` 와 `diagnostics.severity:error`,
+  // `턴 실패: unknown` 이 함께 기록된 것을 실측으로 남겼다(docs/qa/saesol-three-hour-ai-authoring.md:135-142).
+  // 사람이 읽는 요약은 이미 "진행 중" 이다(activityLogText.ts 의 pending 분기) — 진단도 같아야 한다.
+  it("진행 중인 턴은 실패 진단을 만들지 않는다", () => {
+    const record = buildAiActivityLogRecord({
+      channel: "chat",
+      instruction: "마을을 만들어줘",
+      result: { ok: false, pending: true },
+    });
+
+    expect(record.diagnostics.severity).toBe("ok");
+    expect(record.diagnostics.kinds).not.toContain("turn-error");
+    expect(record.diagnostics.messages.some(message => message.includes("턴 실패"))).toBe(false);
+  });
+
   it("실패한 완료 게이트는 WorkPlan 오류로 분류한다", () => {
     const record = buildAiActivityLogRecord({
       channel: "chat",
