@@ -16,7 +16,11 @@ import { summarizeChanges } from "@/editor/tools/changeset";
 import { takeEditActivitySince, type EditActivityCommitAttachment } from "@/editor/editActivityLog";
 import { createLogger } from "@/util/logger";
 import { currentHumanEditorIdentity, type EditorIdentity } from "./editorIdentity";
-import { projectViewWithoutEventDrafts, projectWithoutEventDrafts } from "./eventDrafts";
+// `projectWithoutEventDrafts` 를 더 쓰지 않는다 — 두 호출부가 복제 없는 투영
+// (`projectViewWithoutEventDrafts`)으로 바뀌었는데 import 만 남아 typecheck:app 이 TS6133 으로 죽었다
+// (2026-09-26 실측: main 의 ci-fast 로그가 13건 기준선 + 이 1건 = 14건. PR 레인의 typecheck 는
+//  이미 기준선에서 빨강이라 새 오류 하나가 그 속에 묻힌다).
+import { projectViewWithoutEventDrafts } from "./eventDrafts";
 import { projectWireView } from "./io/serialize";
 import { jsonContentDigest } from "./persistence/core/contentDigest";
 import type { CommitReviewStatus } from "./persistence/types";
