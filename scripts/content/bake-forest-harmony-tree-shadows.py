@@ -148,11 +148,12 @@ def main():
         (trunk if kind == "trunk" else foot)[str(tile)] = index
         label = "나무 밑 그림자" if kind == "trunk" else "나무 발치 그림자"
         slots.append({
-            "passability": open_, "priority": "lower", "terrain": 0,
+            # ★(통행 + 상위): 2층 그림자가 ○ 면 통행 판정에서 1층 밑동의 × 를 덮어 나무를 걸어 지나간다.
+            "passability": open_, "priority": "upper", "terrain": 0,
             "tileMeta": {
                 "role": "decoration", "label": f"{label} · {tile}",
                 "description": f"밑동 {tile} {'칸' if kind == 'trunk' else '바로 아래 칸'}의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
-                "source": "user", "passage": "passable", "userLocked": True, "defaultLayer": "lower", "layerBacking": "none",
+                "source": "user", "passage": "star", "userLocked": True, "defaultLayer": "lower", "layerBacking": "none",
             },
         })
     data = {
