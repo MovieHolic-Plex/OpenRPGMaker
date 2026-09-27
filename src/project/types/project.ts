@@ -221,6 +221,13 @@ export interface MapBackground {
    */
   fit?: MapBackgroundFit;
   /**
+   * 카메라를 얼마나 따라 움직이는가(깊이). 0(기본) = 화면 고정 — 카메라가 움직여도 제자리,
+   * 1 = 타일과 똑같이 움직인다, 1 초과 = 타일보다 빨리 지나간다(앞 전경).
+   * 층마다 값을 다르게 주면 시차(패럴랙스) 스크롤이 된다 — 먼 산 0.1, 가까운 숲 0.6 처럼.
+   * 자동 흐름(scrollX/Y)과 더해진다. `@/project/mapBackground` 의 상한을 따른다.
+   */
+  cameraFollow?: number;
+  /**
    * 배경 위에 얹는 추가 레이어(최대 8장). 첫 장은 이 객체의 imageId 다 — 레이어
    * 배열(앞이 아래)과 함께 그려진다. CraftPix 레이어 팩 같은 다중 배경용이고,
    * 생략하면 단일 그림 저작(레거시 JSON)과 같다.
@@ -245,6 +252,8 @@ export interface MapBackgroundLayer {
   loopY?: boolean;
   /** 그림 맞추기 방식(기본 native). */
   fit?: MapBackgroundFit;
+  /** 카메라 따라가기 비율(깊이). 뜻은 MapBackground.cameraFollow 와 같다. */
+  cameraFollow?: number;
 }
 
 /** 맵 BGM 설정 — RM2003 BGM 탭 대응. */

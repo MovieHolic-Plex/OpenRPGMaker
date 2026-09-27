@@ -975,8 +975,17 @@ function page3M2SummaryParts(
       return commandLine(labelOf("맵 그림 세트"), valuePart(tileset));
     }
     case "Change Parallax Back": {
-      const resource = str("value") || str("resourceId") || str("target") || "(먼 배경)";
-      return commandLine(labelOf("먼 배경 변경"), valuePart(resource));
+      const flow = str("flowPercent");
+      const resource = str("value") || str("resourceId") || str("target") || (flow ? "(그림 유지)" : "(먼 배경)");
+      if (!flow || flow === "100") return commandLine(labelOf("먼 배경 변경"), valuePart(resource));
+      const duration = str("flowDurationMs");
+      return commandLine(
+        labelOf("먼 배경 변경"),
+        valuePart(resource),
+        plainPart(" · 흐름 "),
+        valuePart(`${flow}%`),
+        ...(duration && duration !== "0" ? [plainPart(" / "), valuePart(`${duration}ms`)] : []),
+      );
     }
     case "Set Encounter Rate": {
       const rate = str("value") || str("rate") || str("target") || "0";

@@ -41,7 +41,7 @@ import { kitIdForSmallHouseMaterial, type SmallHouseMaterial } from "@/editor/co
 import { recommendMapBgm } from "@/assets/bgmThemeRecommendation";
 import { genId } from "@/util/id";
 import { resolveWikiCombatMode } from "@/ai/projectWikiContext";
-import { MAP_BACKGROUND_SCROLL_LIMIT, normalizeMapBackground } from "@/project/mapBackground";
+import { MAP_BACKGROUND_CAMERA_FOLLOW_LIMIT, MAP_BACKGROUND_SCROLL_LIMIT, normalizeMapBackground } from "@/project/mapBackground";
 import { isActionCombatMap } from "@/project/actionCombat";
 import type { EncounterTableEntry, FieldSpawnDef, GameEvent, GameMap, PaletteSlotRole, Project, Rect, RoguelikeRoomDef, TilesetDef } from "@/project/types";
 import { mapLocations, resolveLocation } from "@/project/mapNamedLocations";
@@ -1740,6 +1740,12 @@ const backgroundSchema: JsonSchema = {
     scrollY: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
     loopX: { type: "boolean" },
     loopY: { type: "boolean" },
+    cameraFollow: {
+      type: "number",
+      minimum: 0,
+      maximum: MAP_BACKGROUND_CAMERA_FOLLOW_LIMIT,
+      description: "카메라 따라가기(깊이). 0=화면 고정(기본), 1=타일과 함께. 층마다 다르게 주면 시차 스크롤(먼 산 0.1, 가까운 숲 0.6).",
+    },
     layers: {
       type: "array",
       description: "\ucd94\uac00 \ubc30\uacbd \ub808\uc774\uc5b4(\ucd5c\ub300 3\uc7a5, \uc55e\uc774 \uc544\ub798). CraftPix \uacc4\uce35 \ubc30\uacbd\uc744 \u00ab\uc138\ud2b8 \uae30\ubcf8 \ub808\uc774\uc5b4\u00bb\ub85c \uac00\uc838 \uc62c\ub54c \uc4f0\ub294\ub2e4.",
@@ -1751,6 +1757,7 @@ const backgroundSchema: JsonSchema = {
           scrollY: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
           loopX: { type: "boolean" },
           loopY: { type: "boolean" },
+          cameraFollow: { type: "number", minimum: 0, maximum: MAP_BACKGROUND_CAMERA_FOLLOW_LIMIT },
         },
         required: ["imageId"],
         additionalProperties: false,

@@ -36,6 +36,63 @@ export function normalizeMapBackgroundScroll(value: unknown): number | undefined
  */
 export const MAP_BACKGROUND_EXTRA_LAYER_LIMIT = 8;
 
+/**
+ * 카메라 따라가기(깊이) 상한. 0 = 화면 고정, 1 = 타일과 같이, 2 = 타일의 두 배로 지나가는 전경.
+ * 음수는 받지 않는다 — 카메라 반대로 흐르는 배경은 깊이감이 아니라 멀미다.
+ */
+export const MAP_BACKGROUND_CAMERA_FOLLOW_LIMIT = 2;
+
+/** 카메라 따라가기 비율. 유한한 수가 아니면 `undefined`, 범위 밖은 클램프, 0 은 «기본값» 이라 생략한다. */
+export function normalizeMapBackgroundCameraFollow(value: unknown): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value)) return undefined;
+  const clamped = Math.min(MAP_BACKGROUND_CAMERA_FOLLOW_LIMIT, Math.max(0, value));
+  return clamped === 0 ? undefined : clamped;
+}
+
+/**
+ * 레이어 세트를 불러올 때 층마다 주는 기본 깊이(아래→위 = 먼→가까운).
+ *
+ * 맨 아래(하늘)는 0 으로 화면에 고정하고, 위로 갈수록 0.7 까지 커진다. 1 을 주지 않는 이유:
+ * 세트의 맨 앞 층도 타일보다는 뒤에 있는 풍경이다 — 1 이면 타일과 붙어 움직여 「벽지」 처럼 보인다.
+ * 값은 0.05 단위로 반올림해 편집기 입력과 같은 눈금에 둔다.
+ */
+export function defaultLayerCameraFollow(index: number, count: number): number {
+  if (count <= 1 || index <= 0) return 0;
+  const raw = (Math.min(index, count - 1) / (count - 1)) * 0.7;
+  return Math.round(raw * 20) / 20;
+}
+
+/**
+ * 이벤트 명령 「먼 배경 변경」 의 흐름 배율(%) 상한. 100 = 저작한 속도 그대로, 0 = 멈춤,
+ * 200 = 두 배. 회상 연출의 「구름이 서서히 멈춘다」 가 이 값을 전환 시간에 걸쳐 바꾸는 것이다.
+ */
+export const MAP_BACKGROUND_FLOW_PERCENT_LIMIT = 400;
+
+/** 세션에 적힌 흐름 명령 — 목표 배율과 전환 시간. 값 문자열은 `"<percent>|<durationMs>"`. */
+export type MapBackgroundFlowCommand = {
+  readonly percent: number;
+  readonly durationMs: number;
+};
+
+export function encodeMapBackgroundFlow(percent: number, durationMs: number): string {
+  const safePercent = Math.min(MAP_BACKGROUND_FLOW_PERCENT_LIMIT, Math.max(0, Number.isFinite(percent) ? percent : 100));
+  const safeDuration = Math.max(0, Number.isFinite(durationMs) ? Math.round(durationMs) : 0);
+  return `${safePercent}|${safeDuration}`;
+}
+
+/** 못 읽는 값은 `undefined`(= 저작 속도 그대로). 세이브에 남은 깨진 값이 배경을 멈추게 두지 않는다. */
+export function decodeMapBackgroundFlow(value: string | undefined): MapBackgroundFlowCommand | undefined {
+  if (!value) return undefined;
+  const [percentText, durationText] = value.split("|");
+  const percent = Number(percentText);
+  if (!Number.isFinite(percent)) return undefined;
+  const duration = Number(durationText ?? 0);
+  return {
+    percent: Math.min(MAP_BACKGROUND_FLOW_PERCENT_LIMIT, Math.max(0, percent)),
+    durationMs: Number.isFinite(duration) ? Math.max(0, duration) : 0,
+  };
+}
+
 /** 그림 맞추기 기본값. 생략 = native(1:1) 이 옛 JSON 바이트를 유지한다. */
 export function normalizeMapBackgroundFit(value: unknown): MapBackgroundFit | undefined {
   return value === "cover" || value === "native" ? value : undefined;
@@ -50,6 +107,7 @@ function normalizeMapBackgroundLayer(value: unknown): MapBackgroundLayer | undef
   const scrollX = normalizeMapBackgroundScroll(record.scrollX);
   const scrollY = normalizeMapBackgroundScroll(record.scrollY);
   const fit = normalizeMapBackgroundFit(record.fit);
+  const cameraFollow = normalizeMapBackgroundCameraFollow(record.cameraFollow);
   return {
     imageId,
     ...(scrollX !== undefined ? { scrollX } : {}),
@@ -57,6 +115,7 @@ function normalizeMapBackgroundLayer(value: unknown): MapBackgroundLayer | undef
     ...(record.loopX === false ? { loopX: false } : {}),
     ...(record.loopY === false ? { loopY: false } : {}),
     ...(fit !== undefined ? { fit } : {}),
+    ...(cameraFollow !== undefined ? { cameraFollow } : {}),
   };
 }
 
@@ -86,11 +145,13 @@ export function normalizeMapBackground(value: unknown): MapBackground | undefine
   const scrollY = normalizeMapBackgroundScroll(record.scrollY);
   const layers = normalizeMapBackgroundLayers(record.layers);
   const fit = normalizeMapBackgroundFit(record.fit);
+  const cameraFollow = normalizeMapBackgroundCameraFollow(record.cameraFollow);
   return {
     imageId: record.imageId.trim(),
     ...(scrollX !== undefined ? { scrollX } : {}),
     ...(scrollY !== undefined ? { scrollY } : {}),
     ...(fit !== undefined ? { fit } : {}),
+    ...(cameraFollow !== undefined ? { cameraFollow } : {}),
     // 반복이 기본값이다 — «끈 것» 만 적어 옛 JSON 과 바이트를 맞춘다.
     ...(record.loopX === false ? { loopX: false } : {}),
     ...(record.loopY === false ? { loopY: false } : {}),
