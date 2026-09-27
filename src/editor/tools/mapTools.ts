@@ -2012,7 +2012,16 @@ const setMapProperties: ToolDefinition = {
       map.background = resolveBackgroundArgs(args.background as Record<string, unknown>, map.id);
       const layerCount = map.background.layers?.length ?? 0;
       const setId = (args.background as { layerSet?: unknown }).layerSet;
-      changed.push(`배경=${typeof setId === "string" ? `세트 ${setId}` : map.background.imageId}${layerCount > 0 ? ` + 레이어 ${layerCount}장` : ""}`);
+      // 조수가 결과만 보고 시차가 걸렸는지 알 수 있게 층별 깊이·흐름·맞춤을 요약한다(2026-09-27 조수 시험: 「레이어 6장」 만으로는 확인 불가).
+      const stack = [map.background, ...(map.background.layers ?? [])];
+      const depths = stack.map((layer) => Math.round((layer.cameraFollow ?? 0) * 100));
+      const drifting = stack.filter((layer) => (layer.scrollX ?? 0) !== 0 || (layer.scrollY ?? 0) !== 0).length;
+      const covered = stack.filter((layer) => layer.fit === "cover").length;
+      changed.push(
+        `배경=${typeof setId === "string" ? `세트 ${setId}` : map.background.imageId}${layerCount > 0 ? ` + 레이어 ${layerCount}장` : ""}`
+        + ` (층별 깊이 ${depths.join("/")}%${drifting > 0 ? `, 흐르는 층 ${drifting}` : ""}${covered > 0 ? `, cover ${covered}/${stack.length}` : ""}`
+        + `${map.background.showInEmptyCells ? ", 빈 칸에도 보임" : ""})`,
+      );
     }
     if (args.clearForBackground && typeof args.clearForBackground === "object") {
       const cleared = clearTilesForBackground(map, args.clearForBackground as { x: number; y: number; width: number; height: number });

@@ -157,7 +157,7 @@ describe("M2 persisted runtime classification completeness", () => {
   // --- 배지 정직성 회귀(2026-08-20): catalogRowRuntimeSupport 가 컨텍스트를 반영한다 ---
 
   it("demotes full-class commands outside M2_MAP_COMMON_FULL_IDS to runtime-partial in the map context", () => {
-    // Twelve player-verified commands now join the map/common full set.
+    // Player-verified commands join the map/common full set (2026-09-27: m2-069 먼 배경 변경 — 그림 교체·흐름 배율).
     const demotedIds = M2_PERSISTED_BEHAVIOR_IDS.full.filter(
       (commandId) => !M2_MAP_COMMON_FULL_IDS.some((fullId) => fullId === commandId)
     );
@@ -172,7 +172,7 @@ describe("M2 persisted runtime classification completeness", () => {
       expect(catalogRowRuntimeSupport(commandId, undefined), commandId).toBe("runtime-partial");
     }
 
-    expect(M2_MAP_COMMON_FULL_IDS).toHaveLength(31);
+    expect(M2_MAP_COMMON_FULL_IDS).toHaveLength(32);
     for (const commandId of M2_MAP_COMMON_FULL_IDS) {
       expect(catalogRowRuntimeSupport(commandId, undefined, "map"), commandId).toBe("runtime-full");
     }

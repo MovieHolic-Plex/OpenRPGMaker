@@ -10,6 +10,7 @@ import { craftpixDefaultLayers } from "@/assets/ogaCraftpixBackgrounds";
 import { createBlankProject } from "@/project/defaults";
 import { mapBackgroundFromLayerSet } from "@/project/mapBackground";
 import type { Command } from "@/project/types";
+import { parseTintColor } from "@/player/screen/tintModel";
 
 function context(): { ctx: ToolContext; mapId: string } {
   const ctx: ToolContext = { project: createBlankProject() };
@@ -40,6 +41,7 @@ describe("set_map_properties.background — 조수용 배경", () => {
     }
     expect(background.showInEmptyCells).toBe(true);
     expect(result.summary).toContain("하늘 자리 15칸 비움");
+    expect(result.summary).toContain("층별 깊이 0/10/25/35/45/60/70%");
     expect((result.diff?.warnings ?? []).join(" ")).not.toContain("0칸");
   });
 
@@ -124,5 +126,12 @@ describe("script_cutscene background 비트", () => {
     const event = ctx.project.maps[mapId]!.events.find((entry) => entry.id === "ev_flashback")!;
     const commands = event.pages?.flatMap((page) => page.commands) ?? [];
     expect(parallax(commands).length).toBeGreaterThanOrEqual(1);
+  });
+});
+
+describe("회상 색조 이름", () => {
+  it("sepia 는 흰색으로 떨어지지 않는다 — 조수 시험에서 value:\"sepia\" 가 화면을 하얗게 바랬다", () => {
+    const tint = parseTintColor("sepia");
+    expect([tint.r, tint.g, tint.b]).toEqual([160, 115, 60]);
   });
 });
