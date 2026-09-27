@@ -1,6 +1,13 @@
 /** Team authoring recipes: dependencies and acceptance contracts, not keyword-only routing. */
 export const TEAM_WORKFLOWS = [
   {
+    id: "new-project", request: "새 게임을 처음부터 만들어줘(새 프로젝트 마법사의 장르 기획)",
+    split: "월드 뼈대 / 맵별 시공 / 공통 DB·오프닝 / 통합 검수",
+    sequence: "먼저 assign_task_agent(mode=project) 하나로 월드 뼈대를 만든다: build_world 로 노드(mapId·role·크기)와 transfer edge 를 한 번에 선언하고 빈 맵과 출입구 이벤트를 만든다. 기존 시작 맵을 쓸 거면 그 mapId 를 노드에 넣는다. 뼈대가 끝나면 맵마다 assign_map_agent 를 한 턴에 병렬 배정한다 — 각 담당은 자기 맵의 출입구·도착 칸을 연결 계약으로 받는다. 공통 DB·오프닝·타이틀은 맵 시공이 모두 끝난 뒤 project 작업으로 하나씩 한다.",
+    coordinate: "맵 담당은 출입구를 옮겨야 할 때만 팀장에게 새 좌표를 알리고, 팀장은 양쪽 맵 담당(또는 link_maps project 작업)으로 고친다. 좌표 합의를 문장으로만 끝내지 않는다 — 실제 출입구 이벤트가 계약이다.",
+    verify: "finish 가 병합본의 worldGraph 를 검사한다(출입구 누락·착지 통행 불가·시작 맵에서 닿지 않는 맵). 거절되면 해당 맵 담당에게 수정을 맡긴다",
+  },
+  {
     id: "dungeon", request: "던전 만들어줘",
     split: "전체 진행 설계 / 구역별 시공 / 퍼즐·함정 / 보스 설계",
     sequence: "진행 그래프·구역 맵 ID·열쇠/문/보스 ID를 먼저 합의한다. 퍼즐·보스 설계는 읽기 작업으로 병렬 진행하고, 공유 DB 정의와 빈 구역 맵은 project 작업으로 준비한 뒤 구역별 map 작업을 병렬 배정한다. 같은 맵의 퍼즐 이벤트는 시공 뒤 적용한다.",
