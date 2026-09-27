@@ -22,6 +22,8 @@ import { authorMergedSpatialProposal, exportSpatialToolProof } from "../../src/e
 import { addPiAgentUsage, changedProjectKeys, restoreCheckpointProject, slimCheckpointProject, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentUsage, type PiAgentEvent, type PiAgentRequest, type PiTeamRoleId } from "../../src/ai/piAgent/protocol.ts";
 import { createModernTilesetPolicy, modernTilesetViolation, requestsModernMap } from '../../src/ai/modernTilesetPolicy.ts';
 import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
+import { PRESET_FIRST_BUILD_MEMBER_TURNS } from "../../src/ai/piAgent/team.ts";
+import { isGenrePresetBriefRequest } from "../../src/ai/genrePresetBrief.ts";
 import {
   claimAssignment,
   createTeamAssignmentLedger,
@@ -110,7 +112,12 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   let subUsage: PiAgentUsage | undefined;
   let finished: string | null = null;
 
-  const team = request.team ? normalizeTeamSpec(request.team) : defaultTeamSpec();
+  const baseTeam = request.team ? normalizeTeamSpec(request.team) : defaultTeamSpec();
+  // 프리셋 첫 생성은 가장 작은 플레이 구간만 만든다 — 팀원 한 배정의 턴을 줄인다(PRESET_FIRST_BUILD_RULES 와 짝).
+  // 사용자가 팀원마다 정한 값이 더 작으면 그 값을 쓴다.
+  const team = isGenrePresetBriefRequest(request.task)
+    ? { ...baseTeam, members: baseTeam.members.map((member) => ({ ...member, maxTurns: Math.min(member.maxTurns, PRESET_FIRST_BUILD_MEMBER_TURNS) })) }
+    : baseTeam;
   const builders = enabledMembers(team, "builder");
   const reviewers = enabledMembers(team, "reviewer");
   if (team.reviewAfterWork && reviewers.length === 0) throw Object.assign(new Error("완료 후 검토 담당이 없습니다. 팀 구성에서 검수 담당을 켜거나 완료 후 검토를 꺼 주세요."), { status: 400 });
