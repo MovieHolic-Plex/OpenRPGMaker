@@ -154,7 +154,8 @@ function bossBattleProject(options: { maxHp: number; attack: number; growCurves?
   const tyrant = structuredClone(project.database.enemies.find((enemy) => enemy.id === "enemy_dragon")!);
   tyrant.id = "enemy_ember_tyrant";
   tyrant.name = "잿불 폭군";
-  tyrant.stats = { ...tyrant.stats, maxHp: options.maxHp, attack: options.attack, agility: 30 };
+  // mind 도 고정한다: 기본 드래곤의 mind 가 리밸런스로 바뀌어도 화염 위협은 이 픽스처가 정한 값을 따른다.
+  tyrant.stats = { ...tyrant.stats, maxHp: options.maxHp, attack: options.attack, mind: 77, agility: 30 };
   project.database.enemies.push(tyrant);
   const base = structuredClone(project.database.troops.find((troop) => troop.id === "troop_slime")!);
   project.database.troops.push({ ...base, id: "troop_boss_tyrant", name: "잿불 폭군", enemyIds: [tyrant.id], members: [{ enemyId: tyrant.id, x: 100, y: 100, hidden: false }] });

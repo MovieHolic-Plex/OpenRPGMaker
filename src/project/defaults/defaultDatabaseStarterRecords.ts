@@ -47,32 +47,32 @@ type BattleAnimationFlashSeed = {
 export function defaultSkillRecords(): SkillRecord[] {
   const records = [
     skill(DEFAULT_SKILL_ID, "공격", "enemy", 10, DEFAULT_ANIMATION_ID, "기본 무기 공격입니다.", "attack", "hp"),
-    skill("skill_sword_slash", "검격", "enemy", 22, "anim_sword", "검으로 적 하나를 강하게 베어냅니다.", "attack", "hp", { variance: 15, hitRate: 95 }),
-    skill("skill_arcane_bolt", "마법탄", "enemy", 28, "anim_arrow", "정신력으로 만든 파동을 적에게 날립니다.", "mind", "hp", {
+    skill("skill_sword_slash", "검격", "enemy", 67, "anim_sword", "검으로 적 하나를 강하게 베어냅니다.", "attack", "hp", { variance: 15, hitRate: 95 }),
+    skill("skill_arcane_bolt", "마법탄", "enemy", 73, "anim_arrow", "정신력으로 만든 파동을 적에게 날립니다.", "mind", "hp", {
       mpCost: 4,
       variance: 10,
     }),
-    skill("skill_fire", "화염", "enemy", 30, "anim_magic", "불 속성 공격에 대응하는 기본 마법입니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "fire" }),
-    skill("skill_water", "물대포", "enemy", 28, "anim_magic", "물 타입 공격에 대응하는 기본 기술입니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "water" }),
+    skill("skill_fire", "화염", "enemy", 75, "anim_magic", "불 속성 공격에 대응하는 기본 마법입니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "fire" }),
+    skill("skill_water", "물대포", "enemy", 73, "anim_magic", "물 타입 공격에 대응하는 기본 기술입니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "water" }),
     // 적 전용 속성 공격. 적마다 11개씩 저작된 속성 저항은 적이 속성 공격을 해야만
     // 의미를 갖는데, 기존에는 fire/water/grass 3종뿐이라 나머지 저항이 전부 사문이었다.
     // 아이템 효과 스킬(skill_item_thunder_stone = "뇌전석 효과")을 적 기술로 재사용하면
     // 드래곤의 기술 이름이 "뇌전석 효과"로 뜬다. 그래서 별도 레코드를 둔다.
-    skill("skill_ice", "빙결", "enemy", 30, "anim_gen_ice_shatter", "얼음 속성으로 적을 얼립니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "ice" }),
-    skill("skill_thunder", "낙뢰", "enemy", 30, "anim_gen_thunder_strike", "번개 속성으로 적을 내리칩니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "thunder" }),
-    skill("skill_earth", "암석 파쇄", "enemy", 30, "anim_gen_earth_spike", "대지 속성으로 적을 짓누릅니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "earth" }),
-    skill("skill_wind", "질풍참", "enemy", 28, "anim_gen_wind_slice", "바람 속성으로 적을 베어냅니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "wind" }),
-    skill("skill_dark", "암흑 파동", "enemy", 30, "anim_gen_shadow_pulse", "어둠 속성으로 적을 침식합니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "dark" }),
-    skill("skill_holy", "성광", "enemy", 30, "anim_gen_holy_beam", "신성 속성으로 적을 정화합니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "holy" }),
-    skill("skill_item_holy_water", "성수 효과", "enemy", 30, "anim_magic", "성수 계열 아이템이 사용하는 신성 피해 효과입니다.", "mind", "hp", { variance: 10, elementId: "holy" }),
-    skill("skill_item_thunder_stone", "뇌전석 효과", "enemy", 34, "anim_magic", "뇌전석 계열 아이템이 사용하는 번개 피해 효과입니다.", "mind", "hp", { variance: 10, elementId: "thunder" }),
-    skill("skill_item_frost_vial", "서리병 효과", "enemy", 32, "anim_magic", "서리병 계열 아이템이 사용하는 얼음 피해 효과입니다.", "mind", "hp", { variance: 10, elementId: "ice" }),
-    skill("skill_item_quake_stone", "지진석 효과", "enemy", 38, "anim_magic", "지진석 계열 아이템이 사용하는 대지 피해 효과입니다.", "mind", "hp", { variance: 10, elementId: "earth" }),
-    skill("skill_item_gale_fan", "질풍 부채 효과", "enemy", 29, "anim_magic", "질풍 부채 계열 아이템이 사용하는 바람 피해 효과입니다.", "mind", "hp", { variance: 10, elementId: "wind" }),
-    skill("skill_item_shadow_dust", "그림자 가루 효과", "enemy", 36, "anim_magic", "그림자 가루 계열 아이템이 사용하는 어둠 피해 효과입니다.", "mind", "hp", { variance: 10, elementId: "dark" }),
-    skill("skill_leaf", "잎날", "enemy", 28, "anim_arrow", "풀 타입 공격에 대응하는 기본 기술입니다.", "attack", "hp", { mpCost: 3, variance: 10, elementId: "grass" }),
+    skill("skill_ice", "빙결", "enemy", 75, "anim_gen_ice_shatter", "얼음 속성으로 적을 얼립니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "ice" }),
+    skill("skill_thunder", "낙뢰", "enemy", 75, "anim_gen_thunder_strike", "번개 속성으로 적을 내리칩니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "thunder" }),
+    skill("skill_earth", "암석 파쇄", "enemy", 75, "anim_gen_earth_spike", "대지 속성으로 적을 짓누릅니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "earth" }),
+    skill("skill_wind", "질풍참", "enemy", 73, "anim_gen_wind_slice", "바람 속성으로 적을 베어냅니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "wind" }),
+    skill("skill_dark", "암흑 파동", "enemy", 75, "anim_gen_shadow_pulse", "어둠 속성으로 적을 침식합니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "dark" }),
+    skill("skill_holy", "성광", "enemy", 75, "anim_gen_holy_beam", "신성 속성으로 적을 정화합니다.", "mind", "hp", { mpCost: 4, variance: 10, elementId: "holy" }),
+    skill("skill_item_holy_water", "성수 효과", "enemy", 75, "anim_magic", "성수 계열 아이템이 사용하는 신성 피해 효과입니다.", "mind", "hp", { variance: 10, elementId: "holy" }),
+    skill("skill_item_thunder_stone", "뇌전석 효과", "enemy", 79, "anim_magic", "뇌전석 계열 아이템이 사용하는 번개 피해 효과입니다.", "mind", "hp", { variance: 10, elementId: "thunder" }),
+    skill("skill_item_frost_vial", "서리병 효과", "enemy", 77, "anim_magic", "서리병 계열 아이템이 사용하는 얼음 피해 효과입니다.", "mind", "hp", { variance: 10, elementId: "ice" }),
+    skill("skill_item_quake_stone", "지진석 효과", "enemy", 83, "anim_magic", "지진석 계열 아이템이 사용하는 대지 피해 효과입니다.", "mind", "hp", { variance: 10, elementId: "earth" }),
+    skill("skill_item_gale_fan", "질풍 부채 효과", "enemy", 74, "anim_magic", "질풍 부채 계열 아이템이 사용하는 바람 피해 효과입니다.", "mind", "hp", { variance: 10, elementId: "wind" }),
+    skill("skill_item_shadow_dust", "그림자 가루 효과", "enemy", 81, "anim_magic", "그림자 가루 계열 아이템이 사용하는 어둠 피해 효과입니다.", "mind", "hp", { variance: 10, elementId: "dark" }),
+    skill("skill_leaf", "잎날", "enemy", 73, "anim_arrow", "풀 타입 공격에 대응하는 기본 기술입니다.", "attack", "hp", { mpCost: 3, variance: 10, elementId: "grass" }),
     skill("skill_heal", "치유", "ally", 32, "anim_heal", "아군 하나의 HP를 회복합니다.", "mind", "hp", { mpCost: 3, kind: "healing" }),
-    skill("skill_poison_sting", "독침", "enemy", 8, "anim_poison", "독 상태를 노리는 찌르기 기술입니다.", "mind", "hp", {
+    skill("skill_poison_sting", "독침", "enemy", 53, "anim_poison", "독 상태를 노리는 찌르기 기술입니다.", "mind", "hp", {
       successRate: 85,
       hitRate: 90,
       stateEffects: [{ stateId: DEFAULT_STATE_ID, chance: 85, operation: "add" }],
@@ -90,11 +90,11 @@ export function defaultSkillRecords(): SkillRecord[] {
     skill("skill_item_hi_potion", "상급 회복약 효과", "ally", 80, "anim_heal", "상급 회복약이 사용하는 HP 회복 효과입니다.", "mind", "hp", { kind: "healing" }),
     skill("skill_item_ether", "마력약 효과", "ally", 24, "anim_magic", "마력약이 사용하는 MP 회복 효과입니다.", "mind", "mp", { kind: "healing" }),
     skill("skill_item_elixir", "엘릭서 효과", "ally", 100, "anim_magic", "엘릭서가 사용하는 HP 회복 효과입니다. MP는 아이템 회복 필드로 처리합니다.", "mind", "hp", { kind: "healing" }),
-    skill("skill_throwing_knife", "투척 단검", "enemy", 18, "anim_arrow", "투척 단검이 사용하는 물리 피해 효과입니다.", "attack", "hp", {
+    skill("skill_throwing_knife", "투척 단검", "enemy", 63, "anim_arrow", "투척 단검이 사용하는 물리 피해 효과입니다.", "attack", "hp", {
       variance: 10,
       hitRate: 95,
     }),
-    skill("skill_item_poison_vial", "독병 효과", "enemy", 6, "anim_poison", "독병이 사용하는 독 부여 공격입니다.", "mind", "hp", {
+    skill("skill_item_poison_vial", "독병 효과", "enemy", 51, "anim_poison", "독병이 사용하는 독 부여 공격입니다.", "mind", "hp", {
       successRate: 90,
       hitRate: 95,
       stateEffects: [{ stateId: DEFAULT_STATE_ID, chance: 85, operation: "add" }],
