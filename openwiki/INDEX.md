@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **108쪽 / 3785KB / 약 1,086,364 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **108쪽 / 3788KB / 약 1,087,329 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -22,9 +22,9 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-event-commands.md` | 63KB | 32KB | 268 | ~17,227 |
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 467 | ~28,297 |
 | `openwiki/editor-pre-edit-routing.md` | 165KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1033 | ~48,429 |
-| `openwiki/editor-workflows-misc.md` | 74KB | 32KB | 513 | ~20,272 |
+| `openwiki/editor-workflows-misc.md` | 74KB | 33KB | 513 | ~20,302 |
 | `openwiki/runtime-battle.md` | 197KB | 31KB | 1039 | ~56,719 |
-| `openwiki/runtime-pre-edit-routing.md` | 62KB | 36KB | 429 | ~18,331 |
+| `openwiki/runtime-pre-edit-routing.md` | 64KB | 38KB | 443 | ~18,916 |
 | `openwiki/runtime-project-schema.md` | 179KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1316 | ~49,349 |
 | `openwiki/runtime-sessions.md` | 115KB | 50KB | 566 | ~31,125 |
 | `openwiki/testing.md` | 206KB | 48KB | 1923 | ~56,967 |
@@ -842,7 +842,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L245` 손붓이 hard 클러스터에 막혔을 때의 복구 경로 (2026-09-10, OPRN-OUT-017)
   - `L291` `bAlt`/`aAlt` 패리티 — 별도 리뷰 결과: **실제 결함이었고 고쳤다** (2026-09-10)
 
-### `openwiki/editor-workflows-misc.md` — 74KB · 513줄 · ~20,272 토큰 · 통째읽기 잘림
+### `openwiki/editor-workflows-misc.md` — 74KB · 513줄 · ~20,302 토큰 · 통째읽기 잘림
 
 - `L9` Other Editor Workflows
   - `L11` New-project name and player title (2026-09-07)
@@ -1127,14 +1127,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L175` 4. 위키를 읽는 법
 - `L187` 5. 끝났다고 말할 수 있는 조건
 
-### `openwiki/refmap-town-outside.md` — 9KB · 101줄 · ~2,707 토큰
+### `openwiki/refmap-town-outside.md` — 10KB · 104줄 · ~2,895 토큰
 
 - `L7` 어디에 무엇이 있나
 - `L20` 게시
 - `L36` 변환 규칙과 함정
 - `L50` 확인 (2026-09-27)
 - `L56` 세트 8개 더 (2026-09-27)
-  - `L93` 세트 맵 기술 (maps/*.json)
+  - `L96` 세트 맵 기술 (maps/*.json)
 
 ### `openwiki/release-and-version.md` — 14KB · 220줄 · ~4,282 토큰
 
@@ -1248,19 +1248,19 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L247` Genre ambience presets and sound pairing (2026-09-21)
   - `L271` Thirty audiovisual presets — evidence (2026-09-21)
 
-### `openwiki/runtime-pre-edit-routing.md` — 62KB · 429줄 · ~18,331 토큰 · 통째읽기 잘림
+### `openwiki/runtime-pre-edit-routing.md` — 64KB · 443줄 · ~18,916 토큰 · 통째읽기 잘림
 
-- `L221` 게임 화면의 2층·그림자·4층 (MZ식 4층, 2026-09-24)
-- `L241` 맵별 16/32/48px 좌표
-- `L245` ESC skill thumbnails (2026-09-06)
-- `L256` Recovered head emotes (2026-09-05)
-- `L262` 메뉴 입력·불러오기 배율 (2026-09-05)
-- `L270` 가구 밀기 애니메이션 (2026-09-05)
-- `L279` Recovered head emotes (2026-09-05)
-- `L285` Saved uploaded tilesets in the actual player (2026-09-14)
-- `L306` 맵 배경(패럴랙스) 렌더 (2026-09-14)
-- `L333` 맵 배경 다중 레이어 (2026-09-21)
-- `L385` 맵 배경 깊이(카메라 따라가기)·흐름 배율 — 회상 파노라마 (2026-09-27)
+- `L235` 게임 화면의 2층·그림자·4층 (MZ식 4층, 2026-09-24)
+- `L255` 맵별 16/32/48px 좌표
+- `L259` ESC skill thumbnails (2026-09-06)
+- `L270` Recovered head emotes (2026-09-05)
+- `L276` 메뉴 입력·불러오기 배율 (2026-09-05)
+- `L284` 가구 밀기 애니메이션 (2026-09-05)
+- `L293` Recovered head emotes (2026-09-05)
+- `L299` Saved uploaded tilesets in the actual player (2026-09-14)
+- `L320` 맵 배경(패럴랙스) 렌더 (2026-09-14)
+- `L347` 맵 배경 다중 레이어 (2026-09-21)
+- `L399` 맵 배경 깊이(카메라 따라가기)·흐름 배율 — 회상 파노라마 (2026-09-27)
 
 ### `openwiki/runtime-project-schema.md` — 179KB · 1316줄 · ~49,349 토큰 · 통째읽기 잘림 · 깨진 줄 1
 
@@ -1843,7 +1843,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L108` 브라우저 근거
 - `L121` Slates 참고 맵 3종
 
-### `openwiki/tile-layer-policy.md` — 30KB · 374줄 · ~9,253 토큰
+### `openwiki/tile-layer-policy.md` — 30KB · 374줄 · ~9,279 토큰
 
 - `L13` 다섯 부류
 - `L26` 층 번호 ↔ 맵 칸 ↔ 도구 인자 (MZ 네 층, 2026-09-25)
@@ -1960,19 +1960,19 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L191` 조밀한 소형 주택 마을로 수정 (2026-09-13)
 - `L210` 저장된 소규모 집 구성 (2026-09-13)
 
-### `openwiki/village-layout-research.md` — 18KB · 193줄 · ~5,625 토큰
+### `openwiki/village-layout-research.md` — 18KB · 196줄 · ~5,761 토큰
 
 - `L5` 현재 적용한 변경과 범위
 - `L36` 울타리와 숲마을 칩셋 기본값 (2026-09-21 후속)
-- `L54` 누락된 작업 복원과 연결 숲 통합 (2026-09-21)
-- `L64` 굽은 외곽 숲과 생활 소품 기본 꾸밈 (2026-09-21)
-- `L80` 연속 경계장과 다중 스케일 제어 (2026-09-21 후속)
-- `L105` 연구에서 확인한 원칙과 한계
-- `L120` 장기 설계 방향: 강을 따라 자란 마을
-- `L141` 구현 경로와 소유권
-- `L162` 수용 기준과 다음 검증
-- `L177` 장소 라이브러리의 기준 도안
-- `L185` 공용 세 마을 · 굽은 지형과 출입구 (2026-09-23)
+- `L57` 누락된 작업 복원과 연결 숲 통합 (2026-09-21)
+- `L67` 굽은 외곽 숲과 생활 소품 기본 꾸밈 (2026-09-21)
+- `L83` 연속 경계장과 다중 스케일 제어 (2026-09-21 후속)
+- `L108` 연구에서 확인한 원칙과 한계
+- `L123` 장기 설계 방향: 강을 따라 자란 마을
+- `L144` 구현 경로와 소유권
+- `L165` 수용 기준과 다음 검증
+- `L180` 장소 라이브러리의 기준 도안
+- `L188` 공용 세 마을 · 굽은 지형과 출입구 (2026-09-23)
 
 ### `openwiki/world-generation-rules.md` — 9KB · 116줄 · ~2,645 토큰
 
