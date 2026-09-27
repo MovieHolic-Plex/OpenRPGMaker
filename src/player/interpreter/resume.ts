@@ -1,3 +1,4 @@
+import { teleportMenuEntries } from "@/project/teleportPoints";
 import type { InterpreterState, PendingStep, ResumeAdvance, ResumeValue } from "@/player/interpreter/types";
 import { pushFrame, topFrame } from "@/player/interpreter/stack";
 import { presentItemBranch } from "@/player/interpreter/presentItem";
@@ -98,6 +99,14 @@ export function advanceResume(
       if (resultVariableId) state.session.variables[resultVariableId] = result;
       const resultSwitchId = typeof command.fields.resultSwitchId === "string" ? command.fields.resultSwitchId : "";
       if (resultSwitchId && pending === "quickTimeEvent") state.session.switches[resultSwitchId] = result > 0;
+      // 순간이동 메뉴: 고른 지점으로 옮기는 것은 일반 transfer 명령으로 한다 — 이동 뒤 이벤트 이어짐
+      // (continueAfterTransfer)·페이드·맵 로드가 기존 경로를 그대로 탄다. 결과 변수는 이동 전에 이미 적혔다.
+      if (pending === "teleportMenu" && result > 0 && command.fields.transfer !== false && command.fields.transfer !== "false") {
+        const point = teleportMenuEntries(state.session, state.project?.maps ?? {})[result - 1]?.point;
+        frame.pc += 1;
+        if (point) pushFrame(state, [{ kind: "transfer", mapId: point.mapId, x: point.x, y: point.y, fade: "black" }]);
+        return "continue";
+      }
     }
     frame.pc += 1;
   } else if (pending === "inputWait") {

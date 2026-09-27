@@ -9,7 +9,7 @@ import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { createInterpreter } from "@/player/interpreter";
 import { applyHighScore, applyKeyPoll, judgeQuickTime, quickTimeStep } from "@/player/interpreter/minigameCommands";
 import { prepareFieldAbility } from "@/player/fieldAbility";
-import { pointerTile } from "@/player/playScenePointerMove";
+import { clientToWorld, pointerTile } from "@/player/playScenePointerMove";
 import type { Command, Project, SkillRecord, StateRecord } from "@/project/types";
 
 function poisonProject(state: Partial<StateRecord>): Project {
@@ -162,5 +162,14 @@ describe("#32 클릭 이동", () => {
     expect(pointerTile(scene, 40, 20)).toEqual({ x: 2, y: 1 });
     expect(pointerTile(scene, -1, 5)).toBeUndefined();
     expect(pointerTile(scene, 16 * 10, 5)).toBeUndefined();
+  });
+
+  it("화면 좌표를 캔버스 배율·스크롤·줌으로 월드 좌표로 되돌리고 캔버스 밖은 버린다", () => {
+    // 캔버스 CSS 960x720 에 논리 320x240(3배), 왼쪽·위 32·24 px 여백.
+    const rect = { left: 32, top: 24, width: 960, height: 720 };
+    const camera = { scrollX: 0, scrollY: 0, zoom: 1, width: 320, height: 240 };
+    expect(clientToWorld(rect, camera, 32 + 12.5 * 16 * 3, 24 + 8.5 * 16 * 3)).toEqual({ x: 200, y: 136 });
+    expect(clientToWorld(rect, { ...camera, scrollX: 48, zoom: 2 }, 32 + 96, 24)).toEqual({ x: 64, y: 0 });
+    expect(clientToWorld(rect, camera, 10, 10)).toBeUndefined();
   });
 });

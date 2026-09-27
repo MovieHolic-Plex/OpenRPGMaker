@@ -112,7 +112,7 @@ export function playQuickTimeEvent(scene: PlaySceneContext, step: QuickTimeStep)
   });
 }
 
-/** 고른 번호(1부터), 취소·후보 없음 0. transfer=true 면 고른 곳으로 옮긴다. */
+/** 고른 번호(1부터), 취소·후보 없음 0. 실제 이동은 resume 가 transfer 명령으로 한다. */
 export async function playTeleportMenu(scene: PlaySceneContext, step: TeleportMenuStep): Promise<number> {
   const dialogue = dialogueUi(scene);
   if (!dialogue || step.entries.length === 0) return 0;
@@ -126,8 +126,5 @@ export async function playTeleportMenu(scene: PlaySceneContext, step: TeleportMe
     mapHeight: scene.map.height,
   });
   dialogue.hide();
-  const entry = index >= 0 ? step.entries[index] : undefined;
-  if (!entry) return 0;
-  if (step.transfer) await scene.transferTo({ mapId: entry.point.mapId, x: entry.point.x, y: entry.point.y, fade: "black" });
-  return index + 1;
+  return index >= 0 && step.entries[index] ? index + 1 : 0;
 }

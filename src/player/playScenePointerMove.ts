@@ -22,24 +22,71 @@ export function pointerMovementEnabled(): boolean {
   return store.getCurrent().system.pointerMovement === true;
 }
 
-/** 클릭 한 번을 처리한다. 걷기를 시작했으면 true. */
-export function handlePointerMove(scene: PlaySceneContext, tile: { x: number; y: number }): boolean {
-  if (!pointerMovementEnabled()) return false;
-  if (scene.running || scene.moving || isCutsceneInputLocked(scene.session)) return false;
-  if (tile.x === scene.tileX && tile.y === scene.tileY) return false;
+export type PointerMoveOutcome = "disabled" | "busy" | "here" | "noPath" | "walking";
+
+/** 클릭 한 번을 처리한다. 결과는 호출측이 QA 영수증(data-pointer-move)으로 남긴다. */
+export function handlePointerMove(scene: PlaySceneContext, tile: { x: number; y: number }): PointerMoveOutcome {
+  if (!pointerMovementEnabled()) return "disabled";
+  if (scene.running || scene.moving || isCutsceneInputLocked(scene.session)) return "busy";
+  if (tile.x === scene.tileX && tile.y === scene.tileY) return "here";
   const plan = planPathfindMove(scene, { kind: "pathfindMove", target: "player", x: tile.x, y: tile.y, speed: 4, wait: false }, undefined);
-  if (!plan || plan.moves.length === 0) return false;
+  if (!plan || plan.moves.length === 0) return "noPath";
   startPlayerRoute(scene, plan.moves, false);
-  return true;
+  return "walking";
 }
 
-/** PlayScene.create 에서 한 번. Phaser 포인터를 월드 좌표로 바꿔 넘긴다. */
-type PointerLike = { readonly worldX: number; readonly worldY: number };
-type PointerInputHost = { input?: { on?: (event: string, fn: (pointer: PointerLike) => void) => void } };
+type CameraLike = { readonly scrollX: number; readonly scrollY: number; readonly zoom: number; readonly width: number; readonly height: number };
+type PointerInputHost = {
+  cameras?: { main?: CameraLike };
+  game?: { canvas?: HTMLCanvasElement; registry?: { get?: (key: string) => unknown } };
+  events?: { once?: (event: string, fn: () => void) => void };
+};
 
+/** 화면(client) 좌표 → 월드 좌표. 캔버스 CSS 상자와 카메라 스크롤·줌으로 되돌린다(QA clickTile 의 역변환). */
+export function clientToWorld(
+  rect: { readonly left: number; readonly top: number; readonly width: number; readonly height: number },
+  camera: CameraLike,
+  clientX: number,
+  clientY: number,
+): { x: number; y: number } | undefined {
+  if (rect.width <= 0 || rect.height <= 0 || camera.width <= 0 || camera.height <= 0 || camera.zoom <= 0) return undefined;
+  const localX = clientX - rect.left;
+  const localY = clientY - rect.top;
+  if (localX < 0 || localY < 0 || localX >= rect.width || localY >= rect.height) return undefined;
+  return {
+    x: camera.scrollX + localX / (rect.width / camera.width) / camera.zoom,
+    y: camera.scrollY + localY / (rect.height / camera.height) / camera.zoom,
+  };
+}
+
+// 메뉴·대사·선택지·터치 컨트롤·단추 위의 누름은 그 UI 의 것이다 — 걷기로 가로채지 않는다.
+// 터치패드 컨테이너(.touch-pad)는 무대 전체를 덮는 inset:0 통과막이라 고르면 안 된다 — 실제 컨트롤만 본다.
+const UI_TARGET_SELECTOR = "button, input, textarea, select, a, .dialogue-box, .choice-list, .touch-dpad, .touch-actions, [data-testid='main-menu'], [data-testid='battle-scene']";
+
+/**
+ * PlayScene.create 에서 한 번. 출하 플레이어는 Phaser 마우스·터치 입력을 끄고(createPlayGame keyboardOnly)
+ * 캔버스를 pointer-events:none 으로 두므로, 문서의 pointerdown 을 캔버스 상자로 걸러 받는다.
+ */
 export function installPointerMove(scene: PlaySceneContext & PointerInputHost): void {
-  scene.input?.on?.("pointerdown", (pointer: PointerLike) => {
-    const tile = pointerTile(scene, pointer.worldX, pointer.worldY);
-    if (tile) handlePointerMove(scene, tile);
-  });
+  if (typeof document === "undefined") return;
+  const onPointerDown = (event: PointerEvent): void => {
+    const host = scene.game?.registry?.get?.("dialogueHost");
+    const receipt = (value: string): void => {
+      if (host instanceof HTMLElement) host.dataset.pointerMove = value;
+    };
+    if (!pointerMovementEnabled() || event.button !== 0) return;
+    const target = event.target instanceof Element ? event.target : null;
+    if (target?.closest(UI_TARGET_SELECTOR)) return receipt("ui");
+    const canvas = scene.game?.canvas;
+    const camera = scene.cameras?.main;
+    if (!canvas || !camera) return receipt("noCanvas");
+    const world = clientToWorld(canvas.getBoundingClientRect(), camera, event.clientX, event.clientY);
+    if (!world) return receipt("outside");
+    const tile = pointerTile(scene, world.x, world.y);
+    receipt(tile ? `${handlePointerMove(scene, tile)}:${tile.x},${tile.y}` : "outside");
+  };
+  document.addEventListener("pointerdown", onPointerDown);
+  const remove = (): void => document.removeEventListener("pointerdown", onPointerDown);
+  scene.events?.once?.("shutdown", remove);
+  scene.events?.once?.("destroy", remove);
 }

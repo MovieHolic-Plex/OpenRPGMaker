@@ -224,6 +224,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     ...(system.battlePresentation === "onField" ? { battlePresentation: "onField" as const } : {}),
     // 진형 굴림·도주 가산 — 기본(굴림 없음·+10%p)은 저장하지 않는다(옛 JSON 바이트 유지).
     ...(system.battleFormationRoll === true ? { battleFormationRoll: true } : {}),
+    ...(system.pointerMovement === true ? { pointerMovement: true } : {}),
     ...(typeof system.escapeBonusPercent === "number" && Number.isFinite(system.escapeBonusPercent) && system.escapeBonusPercent !== 10
       ? { escapeBonusPercent: clampInteger(system.escapeBonusPercent, 0, 100) }
       : {}),
