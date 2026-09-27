@@ -62,6 +62,9 @@ MID_TREES = ['trees_summer_tall_leafy', 'trees_summer_gnarled_leafy', 'trees_sum
              'trees_summer_birch_leafy_b', 'trees_summer_small_leafy_b', 'trees_summer_small_leafy_a']
 
 
+THIN_TREES = ('trees_summer_tall_leafy', 'trees_summer_gnarled_leafy')
+
+
 def forest(c, cells, seed, edge=('garden_bush_green', 'garden_bush_green', 'garden_bush_roses')):
     """숲 벽: 큰 나무(4×4·3×4)를 빈틈없이 채우고(3층), 그 사이를 반 칸씩 어긋난 나무로 한 번 더 덮는다(4층 — 겹쳐 그림).
     수관까지 숲 칸 안에만 심는다(마을 물체를 덮지 않음). 가장자리 빈 칸만 초록 덤불로 마감한다.
@@ -82,21 +85,47 @@ def forest(c, cells, seed, edge=('garden_bush_green', 'garden_bush_green', 'gard
         return True
 
     xs = [x for x, _ in cells]; ys = [y for _, y in cells]
-    for layer, pool, step, off in ((3, BIG_TREES + MID_TREES[:2], 1, 0), (4, MID_TREES + BIG_TREES[:2], 1, 1)):
-        for y in range(min(ys), max(ys) + 1, step):
-            for x in range(min(xs) - off, max(xs) + 1, step):
-                big = [o for o in pool if o in BIG_TREES]
+    # 왼위부터 차례로 채우면 같은 크기 나무가 격자로 나란히 선다(확대 QA 2026-09-27 2차: 맵 가장자리 나무 줄이
+    # 같은 간격·같은 높이로 심은 것처럼 보임). 칸 순서를 섞고, 큰 나무는 옆 나무와 꼭짓점이 맞지 않게
+    # 반 칸쯤 어긋난 자리를 먼저 고른다. 3층은 섞인 순서로 한 번, 남은 틈은 작은 나무로 다시 메운다.
+    # 큰 나무부터 왼위→오른아래로 채우면 4×4 나무가 4칸 간격 격자로 줄지어 선다(확대 QA 2026-09-27 2차: 가장자리 나무 줄이
+    # 같은 간격·같은 높이로 심은 것처럼 보임). 촘촘한 줄 스캔은 그대로 두되, 크기를 섞어 뽑고 나무마다 위아래로 0~1칸 흔든다.
+    for layer, pool, off in ((3, BIG_TREES + MID_TREES[:3], 0), (4, MID_TREES + BIG_TREES[:2], 1)):
+        for y in range(min(ys) - 1, max(ys) + 1):
+            for x in range(min(xs) - off, max(xs) + 1):
                 recent = prev_in_row.setdefault((layer, y), [])
-                order = rnd.sample(big, len(big)) + rnd.sample([o for o in pool if o not in big], len(pool) - len(big))
-                # 같은 나무가 한 줄에 연달아(또는 ABAB 로) 서면 울타리처럼 보인다(확대 QA 2026-09-27) — 직전 두 나무는 맨 뒤 후보로
-                order = [o for o in order if o not in recent[-2:]] + [o for o in order if o in recent[-2:]]
+                order = rnd.sample(pool, len(pool))
+                # 키 큰 나무·옹이 나무(2×3)는 줄기가 길고 수관이 작아 얕은 띠(아래 칸이 숲 밖)에 줄지어 서면 기둥 울타리처럼 보인다
+                # (확대 QA 2026-09-27 2차: 검은 지붕 집 위 띠) — 아래 두 칸이 숲 안일 때만 쓴다
+                if not ((x + off, y + off + 3) in cells and (x + off, y + off + 4) in cells):
+                    order = [o for o in order if o not in THIN_TREES] + [o for o in order if o in THIN_TREES][:0]
+                side = {c.owner.get((layer, (y + dy) * c.w + x + dx)) for dx in range(-5, 6) for dy in range(-4, 3)
+                        if 0 <= x + dx < c.w and 0 <= y + dy < c.h}
+                # 같은 나무가 한 줄에 연달아(또는 ABAB 로) 서면 울타리처럼 보인다 — 직전 두 나무·좌우 이웃과 같은 종은 뒤로
+                order = [o for o in order if o not in recent[-2:] and o not in side] + [o for o in order if o in recent[-2:] or o in side]
+                jitter = rnd.choice((0, 0, 1))
                 for oid in order:
-                    if try_place(oid, x + off, y + off, layer):
+                    if try_place(oid, x + off, y + off + jitter, layer) or (jitter and try_place(oid, x + off, y + off, layer)):
                         recent.append(oid)
                         break
+    # 빈틈 메우기: 섞은 순서로 심으면 큰 나무 사이에 풀밭이 남아 공원처럼 보인다 — 비어 있는 칸마다 4층에 한 번 더 심는다
+    for (x, y) in sorted(cells - (taken[3] | taken[4]), key=lambda p: (p[1], p[0])):
+        if (x, y) in taken[3] | taken[4]:
+            continue
+        pool = rnd.sample(MID_TREES, len(MID_TREES))
+        for oid in pool:
+            w, h = c.ctx.object(c.b, oid)['size']
+            if any(try_place(oid, x - dx, y - dy, 4) for dx in range(w) for dy in range(h)):
+                break
     covered = taken[3] | taken[4]
     for (x, y) in sorted(cells - covered):
         near_village = any((x + dx, y + dy) not in cells for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+        if not near_village and c.L[3][y * c.w + x] is None:
+            # 숲 안쪽 한 칸 틈은 나무가 안 들어가 풀밭 구멍이 된다 — 덤불로 덮는다
+            nb = {c.owner.get((3, (y + dy) * c.w + x + dx)) for dx, dy in ((0, -1), (-1, 0)) if 0 <= x + dx < c.w and 0 <= y + dy < c.h}
+            opts = [e for e in edge if e not in nb] or list(edge)
+            c.obj(opts[rnd.randrange(len(opts))], x, y)
+            continue
         if near_village and c.L[3][y * c.w + x] is None:
             # 가장자리 마감도 같은 덤불이 한 줄로 이어지지 않게 — 위·왼쪽 이웃과 다른 것을 먼저 고른다
             nb = {c.owner.get((3, (y + dy) * c.w + x + dx)) for dx, dy in ((0, -1), (-1, 0)) if 0 <= x + dx < c.w and 0 <= y + dy < c.h}
@@ -124,6 +153,8 @@ def ex_village(ctx):
     c.kind(1, 'A2:1', path([(17, 11), (17, 10), (22, 10), (22, 9)]))            # 집 B 문(22,8) 아래
     c.kind(1, 'A2:1', path([(20, 13), (25, 13), (25, 12), (29, 12)]))           # 집 C 문(29,11) 아래
     c.kind(1, 'A2:1', path([(16, 18), (22, 18), (22, 21), (22, 23)]))           # 집 D 문(22,20) 아래 — 맵 아래 끝까지(끊긴 1칸 섬 해소)
+    # 집 D 문 앞 길이 마을 길과 끊긴 3칸 섬이었다(확대 QA 2026-09-27 2차) — 문 앞에서 큰길(15,21)까지 잇는다
+    c.kind(1, 'A2:1', path([(16, 21), (22, 21)]))
     # 집 넷
     house(c, 6, 5, 7, 'A3:0', 'A3:10', door=1, windows=(3, 5), chimney=5, gable=('building_gable_red_window', 3))
     house(c, 17, 3, 8, 'A3:19', 'A3:27', roof_h=3, wall_h=3, door=5, windows=(1, 3), upper_windows=(1, 3, 6), chimney=2)
@@ -159,19 +190,23 @@ def ex_village(ctx):
     c.obj('town_bin_carrot', 18, 20)
     c.obj('town_crate_low', 23, 21)
     c.obj('town_wagon', 23, 22)
-    # 밭: 갈색 흙 + 작물 두 줄(가운데 흙길 한 줄) + 울타리 세 면(아래쪽이 입구) + 허수아비
-    c.kind(1, 'A2:16', rect(4, 16, 8, 5))
+    # 밭: 갈색 흙 + 작물 두 줄(가운데 흙길 한 줄) + 울타리 네 면(아래 가운데 두 칸이 입구) + 허수아비
+    # 오른쪽·아래 울타리가 없어 밭이 열려 보였다(확대 QA 2026-09-27 2차)
+    # 밭 4줄(y16~19) — 세로 울타리 v4(4칸)와 딱 맞게. 5줄이던 때 아래 모서리가 비어 열려 보였다.
+    c.kind(1, 'A2:16', rect(4, 16, 8, 4))
     for i in range(8):
         c.obj(CROP_ROW_A[(i * 5 + 2) % 7], 4 + i, 16)
         c.obj(CROP_ROW_B[(i * 3 + 1) % 7], 4 + i, 18)
         if i not in (3, 4):
-            c.obj('crops_seed_mounds_six', 4 + i, 20)
+            c.obj('crops_seed_mounds_six', 4 + i, 19)
     c.obj('town_scarecrow', 8, 17)
     c.obj('town_wattle_fence_h4', 3, 15)
     c.obj('town_wattle_fence_h4', 7, 15)
     c.obj('town_wattle_fence_h2', 11, 15)
     c.obj('town_wattle_fence_v4', 3, 16)
     c.obj('town_wattle_fence_v4', 12, 16)
+    c.obj('town_wattle_fence_h4', 3, 20)   # 아래 울타리 — 가운데 7·8 두 칸이 입구
+    c.obj('town_wattle_fence_h4', 9, 20)
     # 연못(들쭉날쭉) + 물가 덤불·디딤돌
     c.kind(1, 'A1:0', blob(27, 13, [(2, 3), (0, 5), (1, 4)]))
     for x, y in ((26, 14), (25, 15), (26, 16)):
@@ -180,7 +215,7 @@ def ex_village(ctx):
     c.obj('garden_bush_roses', 32, 14)
     # 풀밭 곳곳: 덤불·꽃·어린나무·열매(빈 풀밭 3×3 이 남지 않게)
     for oid, x, y in [('garden_flowers_red_row', 18, 14),
-                      ('garden_bush_green', 11, 21), ('trees_summer_round_small', 7, 21), ('crops_fallen_berries_small_red', 9, 22),
+                      ('garden_bush_green', 10, 23), ('trees_summer_round_small', 4, 22), ('crops_fallen_berries_small_red', 9, 22),
                       ('garden_bush_roses', 13, 20), ('trees_summer_small_leafy_c', 12, 22), 
                       ('garden_flowers_yellow_row', 19, 12), ('garden_bush_green', 26, 5),
                       ('garden_bush_green', 15, 5), ('garden_flowerpot_red', 16, 8),
@@ -233,6 +268,9 @@ def ex_town_buildings(ctx):
     smith = building(c, 'sb_common_smith_small', 29, 5)
     for ex, ey in inn[:1] + store[:1] + smith[:1]:
         c.kind(1, 'A2:1', line_v(ex, ey + 1, 14 - (ey + 1)))
+    # 가게 판매대 앞 길이 한 칸짜리 흙 꼬투리로만 보였다(확대 QA 2026-09-27 2차) — 판매대 앞 칸까지 두 칸 폭으로 닿게
+    sx0, sy0 = store[0]
+    c.kind(1, 'A2:1', rect(sx0 - 1, sy0, 2, 14 - sy0))
     # 남쪽 창고(데크 입구) — 큰길에서 내려와 입구 밑에서 끝
     storage = building(c, 'sb_common_storage_small_rasak', 30, 17)
     sx, sy = storage[0]
@@ -271,11 +309,16 @@ def ex_town_buildings(ctx):
     c.obj('town_wattle_fence_h4', 8, 17)
     c.obj('town_wattle_fence_h2', 12, 17)
     c.obj('town_wattle_fence_v4', 4, 18)
+    c.obj('town_wattle_fence_v2_l', 4, 22)
+    # 오른쪽 면이 통째로 비어 밭이 덜 지은 것처럼 보였다(확대 QA 2026-09-27 2차) — 위·아래를 막고 가운데 두 칸(20·21)만 입구로
+    c.obj('town_wattle_fence_v2_r', 14, 18)
+    c.obj('town_wattle_fence_v2_r', 14, 22)
     c.obj('town_wattle_fence_h4', 4, 24)
     c.obj('town_wattle_fence_h4', 8, 24)
     c.obj('town_wattle_fence_h2', 12, 24)
     # 연못(들쭉날쭉) + 물가 덤불
-    c.kind(1, 'A1:0', blob(23, 23, [(1, 3), (0, 5), (1, 4)]))
+    # 연못 동쪽 끝(27열)이 창고 가는 길을 끊어 길이 섬이 됐다(확대 QA 2026-09-27 2차) — 한 칸 줄임
+    c.kind(1, 'A1:0', blob(23, 23, [(1, 3), (0, 4), (1, 3)]))
     c.obj('garden_bush_green', 22, 23)
     c.obj('garden_bush_roses', 28, 24)
     c.obj('garden_stepping_stones_94', 27, 22)
@@ -315,6 +358,10 @@ def ex_city(ctx):
     c.kind(1, PAVE, rect(18, 20, 9, 2))                                      # 남동쪽 집 앞마당 — 광장과 이어짐
     c.kind(1, PAVE, [(18, 15), (19, 15), (19, 16)])                          # 광장과 집 사이에 풀 3칸이 섬처럼 남던 것 메움(확대 QA 2026-09-27)
     c.kind(1, PAVE, rect(14, 4, 1, 8))                                       # 집 줄 사이 골목(뒤뜰로)
+    # 골목이 풀밭 한가운데 장작 궤짝 옆에서 뚝 끊겼다(확대 QA 2026-09-27 2차) — 빨래 걸이·장작이 놓인 뒤뜰 포장으로 받는다
+    c.kind(1, PAVE, rect(12, 4, 5, 2))
+    # 노점 몸체 아래가 광장 바깥 풀밭이라 판매대 안쪽으로 풀이 비쳤다(확대 QA 2026-09-27 2차) — 노점 칸 전체와 한 칸 둘레를 포장
+    c.kind(1, PAVE, rect(4, 17, 5, 6))
     # 포장 결: 흙 낀 판석 조각(2층)을 드문드문
     c.kind(2, 'A2:12', [(3, 13), (9, 12), (10, 12), (21, 14), (28, 13), (7, 18), (12, 21), (16, 16)])
     # 집 줄(북쪽, 벽 맨 아랫줄 = y11 → 정면이 큰길 y12 에 바로 닿는다)
@@ -1078,7 +1125,9 @@ def ex_castle_court(ctx):
     c = Canvas(ctx, 'rasak_castle', 36, 26, 'ex_castle_court', 'Rasak 예제 · 성 안뜰과 폐허(성벽·성문·망루·폐허·해자)')
     c.kind(1, 'A2:0', rect(0, 0, 36, 26))
     # 들풀 얼룩과 짙은 풀
-    c.kind(1, 'A2:8', blob(26, 18, [(0, 5), (-1, 7), (0, 8), (1, 6)]) + blob(0, 20, [(0, 6), (0, 7), (0, 6), (0, 5), (0, 4), (0, 3)]))
+    # 왼아래 짙은 풀 얼룩이 한 줄에 한 칸씩 줄어드는 계단 모양이었다(확대 QA 2026-09-27 2차) — 줄마다 들쭉날쭉한 둥근 덩이로
+    dark = blob(26, 18, [(0, 5), (-1, 7), (0, 8), (1, 6)]) + blob(0, 20, [(0, 4), (0, 6), (0, 7), (0, 5), (0, 6), (0, 3)])
+    c.kind(1, 'A2:8', dark)
     # ── 북쪽 성벽(y=2..5) · 서쪽 탑 · 동쪽 탑
     rampart(c, 3, 2, 20)
     c.obj('castle_battlement_gray', 4, 2)
@@ -1132,6 +1181,8 @@ def ex_castle_court(ctx):
     c.obj('fort_watchtower_narrow_a', 33, 16)
     c.obj('fort_ladder_narrow', 32, 18)
     c.kind(1, 'A2:1', path([(34, 15), (34, 24)], width=1) + path([(22, 17), (34, 17)], width=1))
+    # 목책 벽의 작은 문 둘(29·31열) 앞이 풀밭이라 문이 어디로도 안 이어졌다(확대 QA 2026-09-27 2차) — 문 밑에서 흙길(y17)까지
+    c.kind(1, 'A2:1', path([(29, 15), (29, 16)], width=1) + path([(31, 15), (31, 16)], width=1))
     # ── 서남쪽 폐허(무너진 탑·아치 문·잔해·돌 더미)
     c.obj('ruins2_arch_gate_grey', 1, 18)
     c.obj('ruins2_wall_piece_dark', 6, 19)
@@ -1190,7 +1241,8 @@ def ex_elf_village(ctx):
     흰 돌 가로등 줄 · 흙길 · 연못 · 사냥꾼 야영지(움막·건조대·매단 사냥감). 좌우 대칭 금지."""
     c = Canvas(ctx, 'rasak_forestfolk', 36, 26, 'ex_elf_village', 'Rasak 예제 · 엘프 숲 마을(거대 나무·목조 집·사냥꾼 야영지)')
     c.kind(1, 'A2:0', rect(0, 0, 36, 26))
-    c.kind(1, 'A2:8', blob(0, 0, [(0, 9), (0, 8), (0, 7), (0, 5), (0, 4)]) + blob(27, 18, [(2, 7), (1, 8), (0, 9), (0, 9), (0, 9), (0, 9), (0, 9), (0, 9)]))
+    dark = blob(0, 0, [(0, 9), (0, 8), (0, 7), (0, 5), (0, 4)]) + blob(27, 18, [(2, 7), (1, 8), (0, 9), (0, 9), (0, 9), (0, 9), (0, 9), (0, 9)])
+    c.kind(1, 'A2:8', dark)
     # ── 거대 엘프 나무 둘: 시트 왼쪽 세로줄이 한 그루(수관 0,0 · 윗줄기 1,6 · 껍질 머리 0,9 · 밑동 2,13) — 그 상대 위치 그대로 쌓는다
     def elf_tree(x, y, col_slot='X1', sx0=0, top=9):
         # 시트 8열 16줄이 나무 한 그루(수관 위 → 줄기 → 밑동·뿌리). 원본 배치 그대로 옮긴다:
@@ -1211,6 +1263,8 @@ def ex_elf_village(ctx):
     house(c, 13, 18, 7, 'A3:16', 'A3:25', roof_h=3, wall_h=2, door=None)
     c.obj('elf_red_wall_door', 17, 22, over=True)
     c.kind(1, 'A2:1', path([(17, 24), (17, 25)], 1) + path([(17, 23), (17, 22)], 1))   # 문 아래 길(확대 QA: 끊긴 1칸 섬 → 문 앞 줄과 이음)
+    # 문 앞 길이 맵 아래 끝으로만 나가고 마을 길과는 끊겨 있었다(확대 QA 2026-09-27 2차) — 집 동쪽으로 돌아 큰길(21,18)에 잇는다
+    c.kind(1, 'A2:1', path([(17, 24), (21, 24), (21, 19)], 1))
     c.obj('elf_green_treehouse_ladder', 5, 17)
     c.obj('elf_yellow_treehouse_short', 25, 19)
     # ── 흰 돌 가로등(길 한쪽만, 간격 다르게)
@@ -1509,6 +1563,8 @@ def ex_winter_market(ctx):
     house(c, 1, 13, 5, 'A3:18', 'A3:28', roof_h=3, wall_h=2)
     c.obj('market_door_frame_wood', 3, 16, over=True)
     c.kind(1, PAVE, rect(3, 18, 1, 3) + rect(4, 20, 16, 1))   # 문길을 광장 쪽으로 이어 1×3 섬이 되지 않게(확대 QA 2026-09-27)
+    # 문길·아랫길(y20)이 광장·큰길 어디와도 안 닿는 19칸 섬이었다(확대 QA 2026-09-27 2차) — 집 동쪽 골목(6열)으로 광장(y12)까지 올린다
+    c.kind(1, PAVE, rect(6, 12, 1, 8))
     # 광장: 노점 셋(색·물건 다름) · 선물 더미 · 크리스마스 나무 · 우물 · 긴 의자 · 장식 가로등(서쪽 줄만)
     for oid, x, y in (('market_stall_striped_open', 8, 9), ('market_stall_striped_backwall', 14, 9), ('xmas_stall_counter', 17, 13),
                       ('xmas_gift_pile', 12, 15), ('xmas_xmas_tree_small', 20, 9), ('town_well_roofed', 9, 15), ('town_log_bench', 15, 17),
@@ -1589,7 +1645,8 @@ def ex_garden_village(ctx):
     for gx, gy, gw, gh in [(0, 18, 2, 4), (31, 13, 3, 9), (11, 0, 10, 3), (0, 10, 2, 5), (18, 12, 5, 4)]:
         for _ in range(30):
             c.try_obj(trees[rnd.randrange(len(trees))], gx + rnd.randrange(gw), gy + rnd.randrange(gh))
-    for gx, gy, gw, gh in [(33, 0, 1, 10), (26, 18, 5, 4)]:
+    # 남동 무리(26~30열)가 집 문(28,17) 앞 길 위에 나무를 세웠다(확대 QA 2026-09-27 2차) — 문길(28열) 동쪽으로만
+    for gx, gy, gw, gh in [(33, 0, 1, 10), (29, 18, 2, 4)]:
         for _ in range(20):
             c.try_obj(trees[rnd.randrange(len(trees))], gx + rnd.randrange(gw), gy + rnd.randrange(gh))
     # 잔디 결: 풀·흙 얼룩(2층) 덩이 — 길 가장자리와 빈 잔디에
