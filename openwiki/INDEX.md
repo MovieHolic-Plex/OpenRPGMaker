@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **108쪽 / 3788KB / 약 1,087,329 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **108쪽 / 3797KB / 약 1,090,259 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 529KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3172 | ~152,879 |
+| `openwiki/editor-ai-panel.md` | 535KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3211 | ~154,742 |
 | `openwiki/editor-ai-tools.md` | 283KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 2393 | ~80,934 |
 | `openwiki/editor-database.md` | 361KB | 61KB ⚠상한 초과 — 절을 더 쪼개라 | 2172 | ~105,323 |
 | `openwiki/editor-event-authoring.md` | 158KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 899 | ~45,991 |
@@ -26,7 +26,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/runtime-battle.md` | 197KB | 31KB | 1039 | ~56,719 |
 | `openwiki/runtime-pre-edit-routing.md` | 64KB | 38KB | 443 | ~18,916 |
 | `openwiki/runtime-project-schema.md` | 179KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1316 | ~49,349 |
-| `openwiki/runtime-sessions.md` | 115KB | 50KB | 566 | ~31,125 |
+| `openwiki/runtime-sessions.md` | 119KB | 50KB | 595 | ~32,192 |
 | `openwiki/testing.md` | 206KB | 48KB | 1923 | ~56,967 |
 | `openwiki/tileset-reference-documents.md` | 54KB | 4KB | 558 | ~16,396 |
 
@@ -92,7 +92,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/runtime-battle.md` | 10 | `_dragonquest.css`, `_mv.css`, `_octopath/_chrono/_bravely/_dragonquest/_ff/_mother/_goldensun/_mv/_vxace/_hud-templates.css`, `battle.css`, `hero-03-battle-idle.png`, `output/evidence/event-command-completion/battle/VERIFICATION.md`, `raw.png`, `scripts/legacy-db-resource-root/catalog.mjs`, `src/styles/runtime/battle/18-pokemon-layout-redesign.css`, `starter/hires/hero-0N-battle.png` |
 | `openwiki/runtime-m2-flow-controls.md` | 3 | `test/runtimePictureStacking.test.ts`, `verify-shots/runtime-qa/cloud-shadows/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md` |
 | `openwiki/runtime-pre-edit-routing.md` | 4 | `editor/core.part-1.css`, `test/playerInputCss.test.ts`, `test/runtimeQaInstrumentationBoundary.test.ts`, `verify-shots/runtime-qa/emote/SUMMARY.md` |
-| `openwiki/runtime-project-schema.md` | 27 | `.json`, `.png`, `20260827000000_ai_log_anon_delete_revoke.sql`, `DRAFT_20260706_auth_rls.sql`, `devMediaPromotion.test.ts`, `dist-electron/main.cjs`, `interiorLoadConsistency.test.ts`, `mediaImportDurability.test.ts`, `output/evidence/event-command-completion/legacy-persistence/ledger.json`, `scripts/lib/legacyDb-database-ops.mjs`, `scripts/publish-first-visit-demo.mts`, `scripts/qa/issue693-media.mjs`, `src/project/legacyDbProjectSync.ts`, `storeLifecycleReentrancy.test.ts`, `storePersistenceLineage.test.ts`, `test/aiBlockedEventRelocation.test.ts`, `test/audioDescriptionConcurrentPersistence.test.ts`, `test/io.test.ts`, `test/legacyDbCanonicalRoundtrip.live.test.ts`, `test/legacyDbDatabaseOps.node.test.mjs`, `test/legacyDbMapPatchRecovery.test.ts`, `test/legacyDbProjectSync.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/mapPlanningReuse.test.ts`, `test/sharedDemoStore.test.ts`, `test/transactionalNewRemoteProject.test.ts`, `transactionalRemoteSourceLineage.test.ts` |
+| `openwiki/runtime-project-schema.md` | 26 | `.json`, `.png`, `20260827000000_ai_log_anon_delete_revoke.sql`, `DRAFT_20260706_auth_rls.sql`, `devMediaPromotion.test.ts`, `interiorLoadConsistency.test.ts`, `mediaImportDurability.test.ts`, `output/evidence/event-command-completion/legacy-persistence/ledger.json`, `scripts/lib/legacyDb-database-ops.mjs`, `scripts/publish-first-visit-demo.mts`, `scripts/qa/issue693-media.mjs`, `src/project/legacyDbProjectSync.ts`, `storeLifecycleReentrancy.test.ts`, `storePersistenceLineage.test.ts`, `test/aiBlockedEventRelocation.test.ts`, `test/audioDescriptionConcurrentPersistence.test.ts`, `test/io.test.ts`, `test/legacyDbCanonicalRoundtrip.live.test.ts`, `test/legacyDbDatabaseOps.node.test.mjs`, `test/legacyDbMapPatchRecovery.test.ts`, `test/legacyDbProjectSync.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/mapPlanningReuse.test.ts`, `test/sharedDemoStore.test.ts`, `test/transactionalNewRemoteProject.test.ts`, `transactionalRemoteSourceLineage.test.ts` |
 | `openwiki/runtime-sessions.md` | 4 | `output/evidence/stardew/stardew-legacyDb.json`, `verify-shots/runtime-qa/feature16-player/SUMMARY.md`, `verify-shots/runtime-qa/menu-design/SUMMARY.md`, `verify-shots/runtime-qa/weather-after/SUMMARY.md` |
 | `openwiki/se-catalog.md` | 8 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `labels.json`, `placed.json`, `test/audioDescriptionCommandSurfaces.test.ts` |
 | `openwiki/slates-assembly-playbook.md` | 1 | `ville_0.png` |
@@ -315,7 +315,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L55` 설치 지점
 - `L61` 테스트
 
-### `openwiki/editor-ai-panel.md` — 529KB · 3172줄 · ~152,879 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 535KB · 3211줄 · ~154,742 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L5` 도구 사용량 (2026-09-25)
 - `L12` 새 프로젝트 게임 기획 전달 (2026-09-22)
@@ -404,14 +404,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L3027` Pi 시공 연출과 공간 밑그림 복구 (2026-09-21)
 - `L3058` 실시간 맵 연출 헤드리스 (2026-09-22)
 - `L3068` 조수 적용은 바뀐 칸만 다시 그린다 (2026-09-22)
-- `L3072` 큰 프로젝트의 Pi 요청 전송 (2026-09-24)
-- `L3080` 대형 프로젝트의 AI 적용 기준선 메모리 (2026-09-24)
-- `L3091` 체크포인트 적용 권위는 노드 요약으로 비교한다 (2026-09-25)
-- `L3113` 우클릭 드래그 바 → 채팅 한 경로 («영역 작업» 창 폐기, 2026-09-25)
-- `L3131` 턴 단계 계측과 실행 추론 강도 (2026-09-26)
-  - `L3136` 기록은 어디서 만들고 어디에 쓰이나
-  - `L3153` 다이얼이 실행 루프의 사고 강도를 정한다
-  - `L3161` 실측 (2026-09-26, 동반 서비스 127.0.0.1:17832 직결 · 실제 OAuth · gemini-3.8-flash)
+- `L3111` 큰 프로젝트의 Pi 요청 전송 (2026-09-24)
+- `L3119` 대형 프로젝트의 AI 적용 기준선 메모리 (2026-09-24)
+- `L3130` 체크포인트 적용 권위는 노드 요약으로 비교한다 (2026-09-25)
+- `L3152` 우클릭 드래그 바 → 채팅 한 경로 («영역 작업» 창 폐기, 2026-09-25)
+- `L3170` 턴 단계 계측과 실행 추론 강도 (2026-09-26)
+  - `L3175` 기록은 어디서 만들고 어디에 쓰이나
+  - `L3192` 다이얼이 실행 루프의 사고 강도를 정한다
+  - `L3200` 실측 (2026-09-26, 동반 서비스 127.0.0.1:17832 직결 · 실제 OAuth · gemini-3.8-flash)
 
 ### `openwiki/editor-ai-tools.md` — 283KB · 2393줄 · ~80,934 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
@@ -1331,7 +1331,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1297` 타일셋 참고문서 데이터 (2026-09-21)
 - `L1301` 몬스터 보유 조건 연결 작업 (2026-09-25, 진행 중)
 
-### `openwiki/runtime-sessions.md` — 115KB · 566줄 · ~31,125 토큰 · 통째읽기 잘림
+### `openwiki/runtime-sessions.md` — 119KB · 595줄 · ~32,192 토큰 · 통째읽기 잘림
 
 - `L3` 여러 게임 오버의 실행과 미리보기 (2026-09-23)
 - `L21` 장르별 패배와 엔딩 흐름 (2026-09-22)
@@ -1358,12 +1358,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L392` Game menu designs and information ownership (2026-09-18)
   - `L422` Four era-inspired menu windows (2026-09-18 follow-up)
 - `L446` Player options, inventory views and honest shop services (feature16, 2026-09-21)
-- `L474` Persistent battle reports and formation (2026-09-21)
-- `L482` 퀘스트 일지의 긴 문장과 키보드 읽기 (2026-09-24)
-- `L492` 갤러리와 줄 음성 (2026-09-25)
-- `L504` 강하게 다시 하기(New Game+)와 장 표시 (2026-09-26)
-- `L525` 탈것 — 소형선·대형선·비행선 (2026-09-26)
-- `L549` 명작 공백 G3 — 난이도·타이틀 변형·파티 묶음·스킬 장착·조합·몬스터 교환 (2026-09-27)
+- `L475` 도트 비교 상점 — 상점 UI 기본값 (2026-09-27)
+- `L503` Persistent battle reports and formation (2026-09-21)
+- `L511` 퀘스트 일지의 긴 문장과 키보드 읽기 (2026-09-24)
+- `L521` 갤러리와 줄 음성 (2026-09-25)
+- `L533` 강하게 다시 하기(New Game+)와 장 표시 (2026-09-26)
+- `L554` 탈것 — 소형선·대형선·비행선 (2026-09-26)
+- `L578` 명작 공백 G3 — 난이도·타이틀 변형·파티 묶음·스킬 장착·조합·몬스터 교환 (2026-09-27)
 
 ### `openwiki/se-catalog.md` — 15KB · 257줄 · ~3,910 토큰
 
