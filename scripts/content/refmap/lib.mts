@@ -187,7 +187,7 @@ export type Op =
   | { layer: 1 | 2; rows: string[]; legend: Record<string, Mat>; at?: [number, number] }
   | { erase: 1 | 2 | 3 | 4; rect: [number, number, number, number] }
   | { obj: string; at: [number, number]; layer?: 3 | 4 }
-  | { tile: { sheet: string; x: number; y: number; w?: number; h?: number }; at: [number, number]; layer?: 3 | 4 };
+  | { tile: { sheet: string; x: number; y: number; w?: number; h?: number }; at: [number, number]; layer?: 3 | 4; pass?: boolean };
 export interface MapSpec {
   id: string; name: string; note: string; tags: string[]; usage: string; w: number; h: number; ops: Op[];
   entry?: [number, number];
@@ -240,10 +240,14 @@ export function convertSpec(set: LoadedSet, spec: MapSpec): Converted {
       placed.push({ o, x: op.at[0], y: op.at[1], cells });
     } else if ("tile" in op) {
       const tw = op.tile.w ?? 1, th = op.tile.h ?? 1;
+      const id = `tile:${op.tile.sheet}(${op.tile.x},${op.tile.y})`;
+      const cells: [number, number][] = [];
       for (let dy = 0; dy < th; dy += 1) for (let dx = 0; dx < tw; dx += 1) {
         const t = set.flatTile(op.tile.sheet, op.tile.x + dx, op.tile.y + dy);
-        if (opaque(t)) put(op.at[0] + dx, op.at[1] + dy, t, op.layer ?? 3, `${op.tile.sheet}(${op.tile.x},${op.tile.y})`);
+        if (opaque(t)) { put(op.at[0] + dx, op.at[1] + dy, t, op.layer ?? 3, id); cells.push([dx, dy]); }
       }
+      // 낱장 조각은 막힘으로 본다. 지나가는 무늬(계단 조각·바닥 그림)는 op 에 pass: true.
+      placed.push({ o: { id, sheet: op.tile.sheet, x: op.tile.x, y: op.tile.y, w: tw, h: th, kind: op.pass ? "decal" : "prop", name: id }, x: op.at[0], y: op.at[1], cells });
     } else {
       const keys = op.layer === 1 ? k1 : k2;
       if ("rows" in op) {
@@ -280,7 +284,7 @@ type ObjDef = LoadedSet["presetJson"]["objects"][number];
 export interface Placed { o: ObjDef; x: number; y: number; cells: [number, number][] }
 const PASSWAY = /stair|step|bridge|ladder|entrance|gate|passage|plank|hatch|doorway|arch_door|cave/;
 const NATURE = /tree|conifer|palm|rock|stalag|boulder|spire|bush|stump|mound|pine|broadleaf|fern|grass|flower|mushroom|log|drift|pile/;
-const WALL_FURNITURE = /shelf|bookshelf|cupboard|dresser|cabinet|clock|fireplace|stove|wardrobe|armor|banner|curtain/;
+const WALL_FURNITURE = /shelf|bookshelf|cupboard|dresser|cabinet|clock|fireplace|stove|wardrobe|armor|banner|curtain|_bed|^bed/;
 export function lintPassage(set: LoadedSet, spec: MapSpec, k1: (string | null)[], k2: (string | null)[], placed: Placed[]): string[] {
   const { w, h } = spec;
   const info = new Map(set.presetJson.autotiles.map((a) => [`${a.sheet}:${a.kind}`, a]));
@@ -324,6 +328,20 @@ export function lintPassage(set: LoadedSet, spec: MapSpec, k1: (string | null)[]
       if (!against) loose.push(`${o.id}(${p.x},${p.y})`);
     }
   }
+  // 큰 물체끼리 겹침(탁자 위 소품·1칸 물체는 뺀다)
+  const owner = new Map<number, string>(); const overlaps: string[] = [];
+  for (const p of placed) {
+    if ((p.o.kind !== "prop" && p.o.kind !== "tall") || p.cells.length < 2 || p.o.id.startsWith("tile:") || /quilt|blanket/.test(p.o.id)) continue;
+    const blocking = p.o.solid ?? (p.o.kind === "tall" ? p.cells.filter(([, dy]) => dy === p.o.h - 1) : p.cells);
+    for (const [dx, dy] of blocking) {
+      const x = p.x + dx, y = p.y + dy; if (x < 0 || y < 0 || x >= w || y >= h) continue;
+      const i = y * w + x, k = k2[i]; if (k && !k.startsWith("#") && info.get(k)?.role === "fence") continue;
+      const prev = owner.get(i); const me = `${p.o.id}(${p.x},${p.y})`;
+      if (prev && prev !== me) { overlaps.push(`${prev}×${me}`); break; }
+      owner.set(i, me);
+    }
+  }
+  if (overlaps.length) out.push(`겹침: 큰 물체끼리 겹침 ${overlaps.length} — ${overlaps.slice(0, 6).join(" ")}`);
   if (hung.length) out.push(`벽걸이: 벽면 밖에 건 물체 ${hung.length} — ${hung.slice(0, 8).join(" ")}`);
   if (loose.length) out.push(`벽걸이: 벽에 안 붙은 벽 가구 ${loose.length} — ${loose.slice(0, 8).join(" ")}`);
   const seen = new Array<boolean>(w * h).fill(false);
