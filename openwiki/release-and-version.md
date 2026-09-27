@@ -142,9 +142,11 @@ Node 쪽 `aiAuthRuntime.ts` 라 워커 없이 된다). 워커는 `@oh-my-pi/pi-n
 - 윈도우 애드온은 리눅스 호스트의 `node_modules` 에 설치되지 않는다(os 필터). `package-lock.json` 의
   `resolved`·`integrity` 로 tarball 을 받아 검증하고 `node_modules/.cache/oprn-pi-natives/` 에 캐시한다.
 - `scripts/electron-builder.config.mjs` 는 애드온을 `asarUnpack` 하고, `linux.files`/`win.files` 로 다른 OS 의
-  워커·애드온을 뺀다(각 150~200MB). **플랫폼 `files` 는 최상위 `files` 에 더해지지 않고 대체한다** — 제외 패턴만
-  주면 빌더가 `**/*` 로 읽어 저장소 전체를 싣는다(실측: app.asar 4.9GB, AppImage 3.5GB). 그래서 공용 목록
-  `APP_FILES` 를 펼친 뒤 제외를 붙인다.
+  워커·애드온을 뺀다(각 150~200MB). **최상위 `files` 를 두지 않는다.** 최상위와 플랫폼
+  `files` 는 별개 매처라 합집합이 된다 — 플랫폼 쪽 제외가 최상위 `dist-electron/**` 를 못 이겨 두 OS 에 워커
+  4개가 다 실렸다. 반대로 제외 패턴만 주면 빌더가 `**/*` 로 읽어 저장소 전체를 싣는다(app.asar 4.9GB).
+  그래서 OS 마다 공용 목록 `APP_FILES` 를 펼친 뒤 제외를 붙인다. 확인: `--linux dir --win dir` 뒤
+  `*-unpacked/resources/app.asar.unpacked/dist-electron/` 에 자기 OS 워커와 애드온 둘만 있어야 한다.
 - 검증: 패키지에서 꺼낸 워커를 **빈 HOME** 으로 띄워 `READY <port>` 가 나오는지 본다. 개발 머신의
   `~/.omp/natives` 가 있으면 가짜 통과가 된다. 윈도우는 `wine` 으로 `oh-my-pi-worker.exe` 를 같은 방식으로 띄운다.
 

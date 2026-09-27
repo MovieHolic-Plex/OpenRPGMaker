@@ -14,17 +14,18 @@ export default {
   appId: `com.${PRODUCT_SLUG}.studio`,
   productName: PRODUCT_BRAND,
   directories: { output: "dist-packages" },
-  files: APP_FILES,
+  // files 는 최상위에 두지 않는다. 최상위와 플랫폼 files 는 별개 매처로 합집합이 돼서, 플랫폼 쪽
+  // 제외 패턴이 최상위의 dist-electron/** 를 못 이긴다(실측 2026-09-27: 두 OS 패키지 모두 워커 4개).
+  // 각 OS 가 자기 전체 목록을 갖는다.
   // AI 워커는 실행 파일이라 asar 밖에 있어야 하고, 워커가 require 하는 pi_natives 애드온은 로더가
   // 워커 옆 폴더에서 찾는다(scripts/build-electron.mjs). 둘 다 풀어 둔다.
   asarUnpack: ["scripts/**", "dist-electron/oh-my-pi-worker", "dist-electron/oh-my-pi-worker.exe", "dist-electron/pi_natives.*.node"],
   extraMetadata: { main: "dist-electron/main.cjs" },
   asar: true,
   // 맥을 먼저 낸다(설계서 7.5). 리눅스는 서명이 필요 없는 AppImage 로 도그푸딩한다.
-  mac: { target: ["dmg", "zip"], category: "public.app-category.developer-tools" },
-  // 다른 OS 의 워커·애드온(각 약 150~200MB)을 뺀다. 플랫폼 files 에는 전체 목록을 다시 준다 —
-  // 제외 패턴만 주면 빌더가 «무엇이든 포함»(`**/*`)으로 읽어 저장소 전체를 싣는다(실측 2026-09-27:
-  // app.asar 4.9GB, AppImage 3.5GB).
+  mac: { target: ["dmg", "zip"], category: "public.app-category.developer-tools", files: APP_FILES },
+  // 다른 OS 의 워커·애드온(각 약 150~200MB)을 뺀다. 제외 패턴만 주면 빌더가 «무엇이든 포함»(`**/*`)으로
+  // 읽어 저장소 전체를 싣는다(실측: app.asar 4.9GB, AppImage 3.5GB) — 그래서 APP_FILES 를 펼친다.
   linux: {
     target: ["AppImage"],
     category: "Development",
