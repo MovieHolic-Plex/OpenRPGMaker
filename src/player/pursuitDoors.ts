@@ -11,6 +11,34 @@ import { pursuitPass, pursuitState, type PursuitWorld } from './pursuitNavigatio
 
 type Destination = { mapId: string; x: number; y: number };
 
+/**
+ * 프로젝트 전체 이벤트의 id 색인. 문 이동 대기 추적자마다 매 프레임
+ * `Object.values(maps).flatMap(events).find` 로 프로젝트 전체를 새 배열로 펴던 것을 대신한다.
+ * 프로젝트 객체가 바뀌면(편집·교체) 새로 만든다 — maps 객체 정체성을 키로 쓴다.
+ */
+type ProjectEventIndex = {
+  readonly sources: readonly (readonly unknown[])[];
+  readonly lengths: readonly number[];
+  readonly byId: Map<string, import('@/project/types').GameEvent>;
+};
+const eventIndexByMaps = new WeakMap<object, ProjectEventIndex>();
+function projectEventById(project: PursuitWorld['project'], id: string): import('@/project/types').GameEvent | undefined {
+  const maps = Object.values(project.maps);
+  let index = eventIndexByMaps.get(project.maps);
+  // 맵별 이벤트 배열의 정체성과 길이로 낡음을 잡는다 — 맵 수에 비례하는 비교뿐이라 싸다.
+  const stale = !index || index.sources.length !== maps.length
+    || maps.some((map, i) => index!.sources[i] !== map.events || index!.lengths[i] !== map.events.length);
+  if (stale) {
+    const byId = new Map<string, import('@/project/types').GameEvent>();
+    for (const map of maps) {
+      for (const event of map.events) if (!byId.has(event.id)) byId.set(event.id, event);
+    }
+    index = { sources: maps.map(map => map.events), lengths: maps.map(map => map.events.length), byId };
+    eventIndexByMaps.set(project.maps, index);
+  }
+  return index!.byId.get(id);
+}
+
 function travelMs(steps: number, movement: EventPageMovement, mover?: AutonomousMover): number {
   const duration = mover?.moveDurationMs ?? npcMoveDurationMs(movement.speed);
   const interval = mover?.moveIntervalMs ?? npcPageMoveIntervalMs(movement);
@@ -41,7 +69,7 @@ export function carryPursuitThroughDoor(world: PursuitWorld, movers: Map<string,
   for (const [id, state] of Object.entries(world.session.horror?.pursuits ?? {})) {
     const last = state.doors.at(-1);
     if (last?.mapId !== world.map.id || state.doors.length >= 64 || interrupted) continue;
-    const event = Object.values(world.project.maps).flatMap(m => m.events).find(e => e.id === id);
+    const event = projectEventById(world.project, id);
     if (!event || world.session.erasedEventIds.includes(id)
       || Object.values(world.session.removedEventIds ?? {}).some(ids => ids.includes(id))) continue;
     const view = runtimeEventView(event, world.session, {});
@@ -59,7 +87,7 @@ export function advancePursuitDoors(world: PursuitWorld, deltaMs: number): boole
   let changed = false;
   for (const [id, state] of Object.entries(world.session.horror?.pursuits ?? {})) {
     if (!state.doors.length) continue;
-    const event = Object.values(world.project.maps).flatMap(m => m.events).find(e => e.id === id);
+    const event = projectEventById(world.project, id);
     const view = event ? runtimeEventView(event, world.session, {}) : undefined;
     if (!view || view.movement.type !== 'chase' || view.movement.pursuit?.scope !== 'connected'
       || world.session.erasedEventIds.includes(id) || Object.values(world.session.removedEventIds ?? {}).some(ids => ids.includes(id))) {

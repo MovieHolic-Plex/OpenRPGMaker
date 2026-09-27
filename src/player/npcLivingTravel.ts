@@ -76,6 +76,37 @@ export function routeForLivingMovement(context: RouteContext): LivingRoute | nul
   );
 }
 
+/**
+ * 경로 탐색 없이 지금 향하는 목표만 문자열로 낸다(`livingRoute` 키의 `->` 뒤와 같은 모양).
+ * 이미 그 목표로 걷고 있는 무버가 있으면 호출부가 BFS 를 건너뛸 수 있게 하려는 것이다 —
+ * registerPageMoveRoutes 는 표면 갱신마다 불리고, 그때마다 생활 NPC 전원이 맵 전체 BFS 를 돌았다.
+ * 목표에 이미 도착했으면(목적지 전진이 필요한 경우) null 을 내서 전체 경로 계산으로 넘긴다.
+ */
+export function livingRouteTargetKey(context: RouteContext): string | null {
+  const movement = context.view.movement;
+  if (movement.type !== "living" || !movement.living || movement.living.destinations.length === 0) return null;
+  const destination = activeDestination(context);
+  if (!destination) return null;
+  const current = { x: context.view.x, y: context.view.y };
+  if (context.map.id === destination.mapId) {
+    const point = clampPoint(context.map, destination);
+    return samePoint(current, point) ? null : `${destination.mapId}:${point.x},${point.y}`;
+  }
+  const connectionPath = firstConnectionToward(context.project.mapConnections ?? [], context.map.id, destination.mapId);
+  if (!connectionPath) return null;
+  const to = connectionPath.first.to;
+  return `${to.mapId}:${to.x},${to.y}`;
+}
+
+/** `livingRoute` 키에서 목표 부분을 떼어 낸다. 생활 경로 키가 아니면 null. */
+export function livingRouteKeyTarget(key: string): string | null {
+  if (!key.startsWith("living:")) return null;
+  const arrow = key.indexOf("->");
+  const lengthSeparator = key.lastIndexOf(":");
+  if (arrow < 0 || lengthSeparator <= arrow) return null;
+  return key.slice(arrow + 2, lengthSeparator);
+}
+
 function activeDestination(context: RouteContext): NonNullable<RuntimeEventView["movement"]["living"]>["destinations"][number] | null {
   const living = context.view.movement.living;
   if (!living || living.destinations.length === 0) return null;

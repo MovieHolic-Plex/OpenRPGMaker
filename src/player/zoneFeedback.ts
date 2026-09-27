@@ -70,7 +70,8 @@ export function updateZoneFeedback(model: ZoneFeedbackModel, input: ZoneFeedback
     return updateZoneFeedback(createZoneFeedbackModel(input.entries, mode), input);
   }
 
-  const seen = new Set(model.seen);
+  // 새 항목이 없는 프레임(거의 전부)에서는 누적 Set 을 복사하지 않는다.
+  const seen = input.entries.length > model.cursor ? new Set(model.seen) : model.seen as Set<string>;
   const effects: ZoneFeedbackEffect[] = [];
   let banner = activeMessage(model.banner, input.nowMs);
   let toast = activeMessage(model.toast, input.nowMs);

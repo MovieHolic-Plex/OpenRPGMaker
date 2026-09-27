@@ -68,7 +68,7 @@ import { renderPlaceableOverlays, syncForageWarnings } from "@/player/playSceneP
 import { initialRuntimeEventPositions,
 runtimeEventViewsForMap,
 type RuntimeEventView, } from "@/project/runtimeEventState"
-import { buildLifeRuntimeSnapshot, type RuntimeEventSnapshot } from "@/player/runtimeDom";
+import { buildLifeRuntimeSnapshot, type RuntimeEventSnapshot, type RuntimeStateSnapshot } from "@/player/runtimeDom";
 import { resetCullableTiles, trackCullableTile } from "@/player/playSceneTileCulling";
 import { bumpPerfCounter, type RuntimePerfCounters } from "@/player/runtimePerfCounters";
 
@@ -677,19 +677,41 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
   // mover snapshots) exists only for QA instrumentation. A shipped player syncs the visible
   // HUD and picture layer directly and never builds or serializes that payload.
   if (!scene.runtimeDom.instrumented) {
-    const timed = resolveTimeSystem(project);
-    scene.runtimeDom.syncVisibleHud({
-      timers: scene.session.timers,
-      timerActive: runtimeTimerActivity(scene.runtimeTimers),
-      gameTime: timed ? scene.session.gameTime : undefined,
-      timePhase: timed ? timePhaseFor(scene.session.gameTime) : undefined,
-      lifeCalendarHudLines: timed ? lifeCalendarHudLines(project, scene.session) : undefined,
-    });
+    syncVisibleRuntimeHud(scene, project);
     scene.runtimeDom.syncPictureLayer(scene.session.pictures);
     return;
   }
+  // 계측 부팅(편집기 테스트 플레이·QA)의 상태 미러는 **읽을 때만** 만든다. 매 프레임 이벤트 뷰 전체를
+  // 페이지 조건까지 평가하고 생활 상태를 structuredClone 하고 세션 전체를 JSON.stringify 하던 것이
+  // 편집기에서만 렉이 심한 주원인이었다. 보이는 HUD 는 출하 경로와 똑같이 매 프레임 맞춘다.
+  if (typeof scene.runtimeDom.syncRuntimeStateSource === "function") {
+    scene.runtimeDom.syncRuntimeStateSource(() => runtimeStateSnapshot(scene), {
+      mapId: scene.getMapId(), x: scene.tileX, y: scene.tileY, inputEnabled: scene.inputEnabled, running: scene.running,
+    });
+    syncVisibleRuntimeHud(scene, project);
+  } else {
+    scene.runtimeDom.syncRuntimeState(runtimeStateSnapshot(scene));
+  }
+  scene.runtimeDom.syncAudioState(scene.session.audio);
+  scene.runtimeDom.syncPictureLayer(scene.session.pictures);
+}
+
+function syncVisibleRuntimeHud(scene: PlaySceneContext, project: ReturnType<typeof store.getCurrent>): void {
+  const timed = resolveTimeSystem(project);
+  scene.runtimeDom.syncVisibleHud({
+    timers: scene.session.timers,
+    timerActive: runtimeTimerActivity(scene.runtimeTimers),
+    gameTime: timed ? scene.session.gameTime : undefined,
+    timePhase: timed ? timePhaseFor(scene.session.gameTime) : undefined,
+    lifeCalendarHudLines: timed ? lifeCalendarHudLines(project, scene.session) : undefined,
+  });
+}
+
+/** QA 상태 미러 한 장. 지연 미러가 읽을 때, 또는 지연 출처가 없는 스텁에서 즉시 부른다. */
+function runtimeStateSnapshot(scene: PlaySceneContext): RuntimeStateSnapshot {
+  const project = store.getCurrent();
   const events: Record<string, RuntimeEventSnapshot> = {};
-  for (const view of runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)) {
+  for (const view of runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)) {
     events[view.event.id] = {
       x: view.x,
       y: view.y,
@@ -705,7 +727,7 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
       passRect: view.passRect,
     };
   }
-  scene.runtimeDom.syncRuntimeState({
+  return {
     ...buildLifeRuntimeSnapshot(scene.session),
     ...(scene.runtimeDom.actionReceipt ? { actionReceipt: scene.runtimeDom.actionReceipt } : {}),
     mapId: scene.getMapId(),
@@ -749,9 +771,7 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
     gameTime: resolveTimeSystem(project) ? scene.session.gameTime : undefined,
     timePhase: resolveTimeSystem(project) ? timePhaseFor(scene.session.gameTime) : undefined,
     lifeCalendarHudLines: resolveTimeSystem(project) ? lifeCalendarHudLines(project, scene.session) : undefined,
-  });
-  scene.runtimeDom.syncAudioState(scene.session.audio);
-  scene.runtimeDom.syncPictureLayer(scene.session.pictures);
+  };
 }
 
 type CutsceneHudHost = {

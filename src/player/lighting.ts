@@ -52,21 +52,12 @@ export function lightingGradientParams(
 }
 
 export function lightingMaskSignature(params: LightingMaskParams): string {
-  return JSON.stringify({
-    ambient: round(params.ambient),
-    color: params.color,
-    width: params.width,
-    height: params.height,
-    gradients: params.gradients.map((entry) => ({
-      id: entry.id,
-      x: round(entry.centerX),
-      y: round(entry.centerY),
-      r: round(entry.radiusPx),
-      i: round(entry.intensity),
-      color: entry.color,
-      flicker: round(entry.flicker),
-    })),
-  });
+  // 매 프레임 불린다. 중간 객체·JSON 없이 같은 정보를 이어 붙인다(값·정밀도는 예전과 같다).
+  let signature = `${round(params.ambient)}|${params.color}|${params.width}x${params.height}`;
+  for (const entry of params.gradients) {
+    signature += `|${entry.id}:${round(entry.centerX)},${round(entry.centerY)},${round(entry.radiusPx)},${round(entry.intensity)},${entry.color ?? ""},${round(entry.flicker)}`;
+  }
+  return signature;
 }
 
 export function drawLightingMask(canvas: HTMLCanvasElement, params: LightingMaskParams): void {

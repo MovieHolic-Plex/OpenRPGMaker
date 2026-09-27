@@ -168,6 +168,16 @@ function consumeParallelSteps(
   process: ParallelProcess,
   firstResult: StepResult
 ): void {
+  // 한 번의 소비에서 비블로킹 명령이 여러 개 이어지면 예전에는 명령마다 refreshRuntimeSurfaces
+  // (이벤트 스프라이트 전부 파괴·재생성 + 타일 서명 해시 + 이동 경로 등록 + 자동 트리거 검색)를
+  // 불렀다. 병렬 하나당 한 프레임에 최대 16번이다. 표면은 소비가 끝날 때 한 번만 맞추면 된다 —
+  // 중간 상태는 어차피 같은 프레임 안이라 화면에 그려지지 않는다.
+  let surfacesDirty = false;
+  const flushSurfaces = (): void => {
+    if (!surfacesDirty) return;
+    surfacesDirty = false;
+    scene.refreshRuntimeSurfaces();
+  };
   // Async parallel work may settle after another event has opened the terminal.
   if (dialogueHost(scene)?.querySelector('[data-testid="game-over-screen"], [data-testid="ending-screen"]')) return;
   let result = firstResult;
@@ -175,14 +185,17 @@ function consumeParallelSteps(
   while (result.kind !== "done" && guard < 16) {
     guard += 1;
     if (result.kind === "wait") {
+      flushSurfaces();
       process.waitMs = result.ms;
       return;
     }
     if (result.kind === "battleProcessing") {
+      flushSurfaces();
       queueScheduledBattle(scene, key, process, result, consumeParallelSteps);
       return;
     }
     if (result.kind === "pathfindMove") {
+      flushSurfaces();
       const step = result;
       const move = playPathfindMove(scene, step, process.currentEventId);
       const pending = move.then(() => true);
@@ -211,12 +224,13 @@ function consumeParallelSteps(
       continue;
     }
     if (result.kind === "advanceTime" || result.kind === "sleepUntilMorning") {
+      flushSurfaces();
       startParallelTimeTransition(scene, key, process, result);
       return;
     }
     if (applyNonBlockingStep(scene, result, process.currentEventId)) {
       result = process.interpreter.resume(undefined);
-      scene.refreshRuntimeSurfaces();
+      surfacesDirty = true;
       continue;
     }
     // 병렬 이벤트는 블로킹 사용자 대기(text/inputWait/inputNumber/choices/화면효과)를
@@ -224,12 +238,14 @@ function consumeParallelSteps(
     if (isParallelBlockingStep(result)) {
       console.warn(`[player] 병렬 이벤트 ${process.currentEventId ?? "?"}의 블로킹 명령(${result.kind})을 건너뜁니다`);
       result = process.interpreter.skip();
-      scene.refreshRuntimeSurfaces();
+      surfacesDirty = true;
       continue;
     }
+    flushSurfaces();
     process.waitMs = 100;
     return;
   }
+  flushSurfaces();
   if (result.kind === "done") {
     releaseCutsceneControlForOwner(scene.session, process.currentEventId);
     scene.parallelProcesses.delete(key);

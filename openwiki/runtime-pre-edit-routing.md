@@ -1,3 +1,21 @@
+- **런타임 프레임 예산 (2026-09-27, 렉 조사):** 매 프레임·주기 경로에서 아래를 다시 넣지 않는다.
+  회귀는 `test/runtimeLagFixes.test.ts`(예전 구현과 같은 답을 내는지 대조한다).
+  - QA 상태 미러(`runtime-state-json`)는 **읽을 때만** 만든다(`RuntimeDomOverlay.syncRuntimeStateSource`).
+    편집기 테스트 플레이는 항상 계측 부팅이라, 매 프레임 이벤트 뷰 전체·생활 상태 복제·세션 JSON.stringify 가
+    편집기에서만 렉이 심한 원인이었다. 매 프레임 몇 값만 필요한 소비자는 노드의 `data-live-flags` 를 읽는다
+    (`runtimeDebugPanel`). textContent 를 매 프레임 읽는 코드를 새로 만들지 않는다.
+  - 자연 시계는 같은 날 안이면 `reconcileLifeState`(세션 structuredClone)를 건너뛴다(`dayTransition.ts`
+    §advanceClockWithinDay). 제작 작업이 사라진 정의·바뀐 시간 기준을 가리키면 예전 경로로 간다.
+  - 병렬 이벤트는 한 번의 소비에서 `refreshRuntimeSurfaces` 를 **한 번만** 부른다(명령마다 아니다).
+  - `runtimeEventViewById` 는 그 id 하나만 뷰로 만든다. 사각 질의(`findEventOverlappingRect`·`findBlocking*`)는
+    앵커가 사각에 닿을 수 없는 이벤트를 뷰 없이 건너뛴다 — 몸 사각 상한(축 8)에서 파생한 범위라, 상한을 바꾸면
+    `anchorMayOverlap` 이 따라 바뀐다.
+  - 생활 NPC 는 같은 목표로 걷는 중이면 BFS 를 다시 돌리지 않는다(`reusableLivingRouteKey`). 호러 수색이 막히면
+    500ms 동안 다시 훑지 않는다(`SEARCH_RETRY_MS`). `nearestPassableTile` 은 고리만 훑는다(결과 순서는 같다).
+  - 조명은 어둠 0 이면 마스크를 그리지 않는다. 천둥 잡음 버퍼는 한 번 만들어 재사용한다. 필드 HUD·타이머·시계 HUD·
+    픽처 층은 값이 바뀔 때만 DOM 을 쓴다. 구역 안내의 정면 조사 안내는 칸·방향이 같으면 250ms 동안 재사용한다.
+  - 남은 후보(이번에 고치지 않음): 맵 이동의 `structuredClone(map)` + 타일 전체 재생성, 자동저장의 동기
+    localStorage 직렬화, 첫 사용 시 색키·구름·안개 텍스처 생성, 날씨 입자 Graphics 재작성.
 - **플레이 프리로드는 카탈로그가 아니라 맵이 쓰는 그림만 싣는다 (2026-09-22):**
   `loadBundledAssets` / `collectPlayReferencedStrings` 는 `resourceProfiles` 와, 어떤 맵·명령도
   가리키지 않는 `tilesets` 레코드를 훑지 않는다. 빈 프로젝트도 `ensureBundledTilesets` 로 칩셋
