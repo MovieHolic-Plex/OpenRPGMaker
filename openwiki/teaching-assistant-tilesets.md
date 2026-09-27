@@ -158,6 +158,8 @@ itch.io 의 [Rasak Modern](https://rasak.itch.io/rasak-modern)처럼 「사용·
 팩이 소유한 것만 갈아 끼운다 — 참고문서는 팩의 용도 id, `tileGroups`·`autotileGroups` 는 `rasak_` 접두어 id. 저자가 쓴 용도·그룹은 남는다. 판본은 `tiledata/rasak-fantasy/bundles.json` sha256,
 이름·번호 같은 텍스트만 `tiledata/rasak-fantasy/` 에 둔다. 작업물은 `~/third-party-assets/rasak/`.
 
+> REFMAP 「町の外観」 프리셋과 그 타일로 깐 맵 3장의 공용 DB 게시(장소·오브젝트)는 `openwiki/refmap-town-outside.md`.
+
 ### MV/MZ 팩 프리셋 — 구현 (2026-09-24, Rasak Modern 도시 야외)
 
 사용자가 팩 시트 여러 장을 자원 관리자(칩셋)에 **한꺼번에** 올리면 알려진 프리셋과 해시로 맞춰 타일셋 하나로 굽는다.
