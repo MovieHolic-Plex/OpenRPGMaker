@@ -8,7 +8,7 @@ import { battleTroopError } from '@/project/battleAdmission';
 import { activeItemEffects, isCaptureTool, itemAllowsBattle } from "@/project/itemUsage";
 // SIZE_OK: Battle runtime keeps turn state, troop-event callbacks, and snapshot
 // assembly together so battle-event regressions can verify one state machine.
-import type { ActorId, EnemyId, ItemId, ItemRecord, SkillId } from "@/project/types";
+import type { ActorId, EnemyId, ItemId, ItemRecord, Project, SkillId } from "@/project/types";
 import { startStateOf } from "@/project/session";
 import { transitionItemState } from "@/project/itemTransitions";
 import { isBattleItemUserEligible } from "@/battle/battleItemEligibility";
@@ -34,7 +34,7 @@ import {
   applyStateEffects,
   agilityMultiplierForStates,
   attackMultiplierForStates,
-  canBattlerAct,
+  canBattlerAct as stateAllowsAction,
   clearBattleEndStates,
   defenseMultiplierForStates,
   defenseMultiplierForStatesByKind,
@@ -192,6 +192,17 @@ export function escapeChance(actorAgility: number, enemyAgility: number, failedA
   const bonus = Math.max(0, Number.isFinite(bonusPercent) ? bonusPercent! : DEFAULT_ESCAPE_BONUS_PERCENT);
   if (failedAttempts <= 0 || bonus === 0) return base;
   return Math.min(1, base + (failedAttempts * bonus) / 100);
+}
+
+/** 석화처럼 전투 불능으로 치는 상태(runtimeEffects.incapacitates)에 걸렸는가. */
+export function isBattlerIncapacitated(project: Pick<Project, "database">, battler: { readonly stateIds: readonly string[] }): boolean {
+  return battler.stateIds.some((stateId) =>
+    project.database.states.find((state) => state.id === stateId)?.runtimeEffects?.incapacitates === true);
+}
+
+/** 전투 불능 상태는 행동도 막는다. 그 밖은 상태 규칙(battleStates.canBattlerAct) 그대로. */
+function canBattlerAct(project: Project, battler: { readonly stateIds: readonly string[] }): boolean {
+  return stateAllowsAction(project, battler) && !isBattlerIncapacitated(project, battler);
 }
 
 type StrictQueuedActorCommand = {
@@ -1892,12 +1903,22 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   // ── 반격(EnemyRecord.reactions) ──
   // 아군의 피해 타격이 살아 있는 적에 명중하면 조건이 맞는 첫 반응 하나를 예약한다(타격당 최대 1회).
   // 예약은 행동이 끝난 뒤 drainCounters 가 차례 밖에서 실행한다 — 게이지·행동 사이클은 건드리지 않는다.
-  const pendingCounters: { enemy: MutableBattler; attacker: MutableBattler; skillId: SkillId }[] = [];
+  // 최후의 일격(trigger onDeath): 아군의 타격으로 쓰러진 적이 전투당 한 번, 쓰러진 채로 skillId 를 쓴다.
+  const pendingCounters: { enemy: MutableBattler; attacker: MutableBattler; skillId: SkillId; lastStand?: boolean }[] = [];
+  const lastStandUsedIds = new Set<string>();
 
   function queueCounter(attacker: MutableBattler, target: MutableBattler, statistic: "attack" | "mind", elementId: string | undefined): void {
-    if (gen1 || target.hp <= 0 || battlerSide(target) !== "enemy" || battlerSide(attacker) !== "actor") return;
+    if (gen1 || battlerSide(target) !== "enemy" || battlerSide(attacker) !== "actor") return;
     const reactions = options.project.database.enemies.find((record) => record.id === target.recordId)?.reactions;
     if (!reactions?.length) return;
+    if (target.hp <= 0) {
+      if (lastStandUsedIds.has(target.id)) return;
+      const lastStand = reactions.find((entry) => entry.trigger === "onDeath");
+      if (!lastStand) return;
+      lastStandUsedIds.add(target.id);
+      if (rollChance(lastStand.chance, rng)) pendingCounters.push({ enemy: target, attacker, skillId: lastStand.skillId, lastStand: true });
+      return;
+    }
     const reaction = reactions.find((entry) =>
       entry.trigger === (statistic === "mind" ? "magic" : "physical") || (elementId !== undefined && entry.trigger === elementId));
     if (!reaction || !rollChance(reaction.chance, rng)) return;
@@ -1906,8 +1927,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function drainCounters(): void {
     while (pendingCounters.length > 0 && !result) {
-      const { enemy, attacker, skillId } = pendingCounters.shift()!;
-      if (enemy.hp <= 0 || !canBattlerAct(options.project, enemy)) continue;
+      const { enemy, attacker, skillId, lastStand } = pendingCounters.shift()!;
+      if ((!lastStand && enemy.hp <= 0) || enemy.captured || !canBattlerAct(options.project, enemy)) continue;
       const target = attacker.hp > 0 && activeActors().includes(attacker) ? attacker : chooseBasicEnemyTarget(enemy);
       if (!target) continue;
       recordTimeline({
@@ -1918,12 +1939,18 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         targetId: target.id,
         skillName: skillId ? lookupSkill(skillId)?.name : undefined,
       });
-      executeEnemyAction(enemy, {
-        skillId,
-        switchOnAfterAction: { enabled: false },
-        switchOffAfterAction: { enabled: false },
-        targetIds: [target.id],
-      });
+      // 쓰러진 적의 최후의 일격은 행동 경로(시전자 HP>0 가드)를 통과하도록 행동하는 동안만 HP 1 로 세운다.
+      if (lastStand) enemy.hp = 1;
+      try {
+        executeEnemyAction(enemy, {
+          skillId,
+          switchOnAfterAction: { enabled: false },
+          switchOffAfterAction: { enabled: false },
+          targetIds: [target.id],
+        });
+      } finally {
+        if (lastStand) enemy.hp = 0;
+      }
     }
     pendingCounters.length = 0;
   }
@@ -2831,7 +2858,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     applyAutoRevives();
     // Recoil and event effects can wipe out both sides in the same resolution.
     // Defeat must win before either the Gen1 or the ordinary victory path pays rewards.
-    if (actors.every((actor) => actor.hp <= 0)) {
+    // 석화처럼 incapacitates 상태인 배우도 쓰러진 것으로 센다 — 전원이 그렇다면 패배.
+    if (actors.every((actor) => actor.hp <= 0 || isBattlerIncapacitated(options.project, actor))) {
       result = "defeat";
       phase = "resolved";
       clearEndOfBattleStates();

@@ -463,7 +463,7 @@ export interface EnemyRecord {
   reactions?: EnemyReaction[];
 }
 
-/** trigger: physical(공격 계열) · magic(마력 계열) · 그 밖의 문자열은 속성 id. skillId "" = 통상 공격. chance 0~100. */
+/** trigger: physical(공격 계열) · magic(마력 계열) · onDeath(쓰러질 때 최후의 일격, 전투당 1회) · 그 밖의 문자열은 속성 id. skillId "" = 통상 공격. chance 0~100. */
 export interface EnemyReaction {
   trigger: string;
   skillId: SkillId;
@@ -703,6 +703,8 @@ export interface StateRuntimeEffects {
   forcedAction?: "attackRandom";
   /** 이 상태인 동안 속성 등급을 덮어쓴다(속성 id → A~E). */
   elementRates?: Record<string, ActorRateGrade>;
+  /** 석화처럼 전투 불능으로 친다 — 아군 전원이 쓰러졌거나 이 상태면 패배. 이 상태로는 행동하지 못한다. */
+  incapacitates?: boolean;
 }
 
 export interface BattleAnimationRecord {

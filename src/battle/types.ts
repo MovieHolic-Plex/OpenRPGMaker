@@ -309,7 +309,7 @@ export type BattleTimelineEntryKind =
   | "stateRemoved"
   | "incapacitated"
   | "stalemate"
-  /** 적 반격 선언(이어서 피해 엔트리가 온다). */
+  /** 적 반격 선언(이어서 피해 엔트리가 온다). 쓰러지는 적의 최후의 일격(trigger onDeath)도 이 엔트리로 선언한다. */
   | "counter"
   /** 장비 자동 부활. amount = 되살아난 HP. */
   | "revive"
