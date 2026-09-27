@@ -17,7 +17,7 @@ import { compactMapLayers, EXTRA_LAYER_KEYS, hasExtraLayers } from "@/project/ma
 import { formatTreePairRepairSummary, repairTreePairsOnProject } from "@/project/lint/repairTreePairs";
 import { applyForestTreeShadows } from "@/project/defaults/forestHarmonyTreeShadows";
 import { resolveForestCanopyReplacementExemptTileIds } from "./forestComposition";
-import { commitChangeset, createDraft, shareUnchangedTilesets, summarizeChanges, tileBuffersDiffer, tileChangedMapIds } from "./changeset";
+import { commitChangeset, createDraft, finishDraftTilesets, shareUnchangedTilesets, summarizeChanges, tileBuffersDiffer, tileChangedMapIds } from "./changeset";
 import { normalizeArgsForSchema, validateArgs } from "./jsonSchema";
 import { getTool } from "./toolRegistry";
 import { ToolError, type ToolContext, type ToolDefinition, type ToolResult } from "./types";
@@ -271,6 +271,8 @@ export function runToolDefinition(
     }
     assertHouseProtection(protectedHouses, draft, builtHouses);
 
+    // 지연 타일셋 사전을 확정한다 — 아래 비교·커밋은 모든 타일셋을 훑으므로, 확정 전이면 전부 복제된다.
+    finishDraftTilesets(draft);
     const diff = summarizeChanges(before, draft);
     if (exec.warnings) diff.warnings.push(...exec.warnings);
     if (treeRepairNote) diff.warnings.push(treeRepairNote);

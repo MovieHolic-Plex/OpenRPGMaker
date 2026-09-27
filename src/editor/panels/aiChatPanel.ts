@@ -35,7 +35,7 @@ import {
 } from "@/editor/aiApplyCompletion";
 import type { ChangeSummary, Project, TilesetDef } from "@/project/types";
 import { computeAssistantToolMode } from "@/editor/assistantToolMode";
-import { editorState, editorStateChangedOnlyPaintPick } from "@/editor/editorState";
+import { editorState, editorStateChangedOnlyCanvasOverlay, editorStateChangedOnlyPaintPick } from "@/editor/editorState";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
 import { AI_REGION_HANDOFF_EVENT, aiRegionHandoffDetail } from "@/editor/aiRegionHandoff";
 import { isStampPlaceOn, setStampPlaceOn, subscribeStampPlace } from "@/editor/stampPlaceMode";
@@ -2521,6 +2521,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 타일·붓만 고른 클릭은 안내문 한 줄만 바뀐다 — 칩·레일·패널 크기는 그대로다.
     if (editorStateChangedOnlyPaintPick(previous, state)) {
       refreshComposerPlaceholder();
+      return;
+    }
+    // 선택 사각형·붙여넣기 고스트·클립보드만 바뀐 통지(우클릭 드래그는 pointermove 마다 여기로 온다).
+    // 컨텍스트 칩 하나만 달라진다 — 패널 크기 재측정(applyAssistantViewPolicy)과 스튜디오 장면·모니터 재구축은
+    // 강제 레이아웃을 여러 번 불렀다(2026-09-28 트레이스: 드래그 10걸음에 1.1s, 걸음마다 약 120ms).
+    if (editorStateChangedOnlyCanvasOverlay(previous, state)) {
+      if (previous.selection !== state.selection) refreshContextChips();
       return;
     }
     // 맵을 바꾸면 재사용 선택은 그 맵의 것이 아니다 — 칩보다 먼저 범위를 갈아끈는다.

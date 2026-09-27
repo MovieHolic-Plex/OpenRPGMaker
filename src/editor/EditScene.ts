@@ -232,6 +232,16 @@ export function regionTaskBadgeText(phase: "running" | "pending"): string | null
   return phase === "pending" ? "✓ 변경 확인 대기" : null;
 }
 
+/** 캔버스·호스트의 화면 사각형(뷰포트 좌표). DOM 배지 배치가 읽는다. */
+type HostGeometry = {
+  readonly canvasLeft: number;
+  readonly canvasTop: number;
+  readonly canvasWidth: number;
+  readonly canvasHeight: number;
+  readonly hostLeft: number;
+  readonly hostTop: number;
+};
+
 export class EditScene extends PhaserRuntime.Scene {
   private tileLayer: Phaser.GameObjects.Container | null = null;
   /** 상위(덧그림) 타일 컨테이너 — tileLayer 뒤에 와서 upper가 항상 lower 위에 그려진다. */
@@ -381,6 +391,16 @@ export class EditScene extends PhaserRuntime.Scene {
   private cachedCanvasRect: CanvasRect | null = null;
   private cachedUnoccludedRect: CanvasRect | null = null;
   private overlayGeometryReadAtMs = 0;
+  /**
+   * DOM 배지·선택 바 배치용 캔버스/호스트 사각형 캐시(hostGeometry 주석). null 이면 다음 읽기에서 잰다.
+   */
+  private hostGeometryCache: HostGeometry | null = null;
+  /** DOM 오버레이 배치를 다음 프레임 한 번으로 모은다(scheduleDomOverlayLayout). */
+  private domOverlayLayoutQueued = false;
+  private domOverlayLayoutDisposed = false;
+  private readonly invalidateHostGeometry = (): void => {
+    this.hostGeometryCache = null;
+  };
   /** 마지막 우클릭 드래그가 끝난 화면 좌표 — 칩 바를 놓은 자리에 띄우기 위한 anchor. */
   private lastRightDragScreen: { readonly x: number; readonly y: number } | null = null;
   private focusSelectionPromptOnRender = false;
@@ -391,6 +411,9 @@ export class EditScene extends PhaserRuntime.Scene {
   private suppressBrowserContextMenuUntil = 0;
   private buildPalettePopup: HTMLElement | null = null;
   private buildPalettePopupKey = "";
+  /** 지금 떠 있는 선택 바의 잰 크기. 바가 스스로 크기를 바꾸면(입력 줄 수) ResizeObserver 가 지운다. */
+  private buildPalettePopupSize: { readonly popup: HTMLElement; readonly key: string; readonly width: number; readonly height: number } | null = null;
+  private buildPalettePopupObserver: ResizeObserver | null = null;
   private readonly handleBuildPaletteVisibilityChange = (): void => this.renderBuildPaletteOverlay();
   private readonly handleLiveCanvas = (): void => {
     this.renderAgentGhostPreview();
@@ -565,6 +588,10 @@ export class EditScene extends PhaserRuntime.Scene {
 
     this.scale.on("resize", this.handleResize, this);
     window.addEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
+    // 캔버스 화면 사각형 캐시는 창 크기·스크롤이 바뀌면 버린다(캡처: 안쪽 스크롤 컨테이너까지).
+    window.addEventListener("resize", this.invalidateHostGeometry);
+    window.addEventListener("scroll", this.invalidateHostGeometry, true);
+    this.domOverlayLayoutDisposed = false;
     window.addEventListener(AI_LIVE_CANVAS_EVENT, this.handleLiveCanvas);
     window.addEventListener(REGION_TASK_STATUS_EVENT, this.handleRegionTaskStatus);
     // 편집기가 닫히면 「편집 위치 x,y」 배너를 거둔다 — 결과물이 아니라 편집 중 크롬이다(2026-09-17 리뷰 P0-4).
@@ -665,6 +692,16 @@ export class EditScene extends PhaserRuntime.Scene {
     this.stampOrderRenderer?.clear();
     this.clearAgentFocusHighlight();
     window.removeEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
+    window.removeEventListener("resize", this.invalidateHostGeometry);
+    window.removeEventListener("scroll", this.invalidateHostGeometry, true);
+    this.domOverlayLayoutDisposed = true;
+    this.domOverlayLayoutQueued = false;
+    this.hostGeometryObserver?.disconnect();
+    this.hostGeometryObserver = null;
+    this.hostGeometryHost = null;
+    this.hostGeometryCache = null;
+    this.buildPalettePopupObserver?.disconnect();
+    this.buildPalettePopupObserver = null;
     window.removeEventListener(AI_LIVE_CANVAS_EVENT, this.handleLiveCanvas);
     window.removeEventListener(REGION_TASK_STATUS_EVENT, this.handleRegionTaskStatus);
     window.removeEventListener(EVENT_EDITOR_CLOSED_WINDOW_EVENT, this.handleEventEditorClosed);
@@ -701,6 +738,7 @@ export class EditScene extends PhaserRuntime.Scene {
   private handleResize(): void {
     // 다음 기하 읽기를 강제한다 — 캔버스 사각형이 바뀌었으므로 캐시는 낡았다.
     this.overlayGeometryReadAtMs = 0;
+    this.hostGeometryCache = null;
     this.lastNavGeometryKey = "";
     markEditRenderActive(this.game);
     this.syncNavigationGeometry();
@@ -1279,7 +1317,8 @@ export class EditScene extends PhaserRuntime.Scene {
       // 드래그 중에 이미 같은 사각형이 선택돼 있어 위 selectTileRegion 은 통지 없이 끝난다.
       // 여기서 직접 그리지 않으면 바는 다음 우연한 redraw(포인터 이동·팬)까지 뜨지 않는다.
       this.focusSelectionPromptOnRender = true;
-      this.renderBuildPaletteOverlay();
+      // 놓는 순간 바가 떠야 하므로 다음 프레임을 기다리지 않는다.
+      this.flushDomOverlayLayout();
       return;
     }
 
@@ -1294,7 +1333,7 @@ export class EditScene extends PhaserRuntime.Scene {
     ) {
       this.lastRightDragScreen = screen;
       this.focusSelectionPromptOnRender = true;
-      this.renderBuildPaletteOverlay();
+      this.flushDomOverlayLayout();
       return;
     }
 
@@ -2451,7 +2490,12 @@ export class EditScene extends PhaserRuntime.Scene {
     ].join("|");
   }
 
-  /** AI 어시스턴트용: 현재 카메라가 비추는 타일 뷰포트를 게시한다. */
+  /**
+   * AI 어시스턴트용: 현재 카메라가 비추는 타일 뷰포트를 게시한다.
+   * 캔버스·조수 카드 가림 사각형은 250ms 캐시를 쓴다(cachedOverlayGeometry — 캔버스 크기 변화는 즉시 무효화).
+   * 왜(2026-09-28 트레이스): redraw·팬 프레임·스토어 변경마다 여기서 캔버스와 조수 카드를 다시 재서, 바로 깔기
+   * 적용 한 번에 강제 레이아웃이 6회·0.5s 였다. 카메라 좌표(worldView)는 매번 새로 읽으므로 팬은 그대로 따라간다.
+   */
   private publishMapViewport(): void {
     const mapId = this.mapId();
     const project = store.getCurrent();
@@ -2460,7 +2504,7 @@ export class EditScene extends PhaserRuntime.Scene {
       setEditorMapViewport(null);
       return;
     }
-    const area = this.cameraVisibleArea();
+    const area = this.cameraVisibleArea({ cachedGeometry: true });
     if (!area) {
       setEditorMapViewport(null);
       return;
@@ -2920,7 +2964,78 @@ export class EditScene extends PhaserRuntime.Scene {
     return mergeNearbyRects(filterAssistantOverlayRects(canvas, rects));
   }
 
+  /**
+   * 선택 바·크기 배지·작업 배지 배치를 다음 애니메이션 프레임 한 번으로 모은다.
+   *
+   * 왜(2026-09-28 트레이스): 이 함수는 redraw·카메라 이동·스토어 변경·편집기 상태 통지 모두에서 불리고,
+   * 불릴 때마다 캔버스·호스트 getBoundingClientRect 로 문서 전체(노드 약 5,500)의 스타일을 다시 계산했다.
+   * 바로 깔기 적용 한 번에 26회·1.6s, 우클릭 드래그 10걸음에 10회·0.64s. 같은 프레임 안의 호출은 결과가
+   * 같으므로 마지막 한 번만 그리면 된다. 사각형은 hostGeometry 가 캐시한다.
+   * 예외: 우클릭을 놓는 순간(바를 띄우고 입력창에 초점을 줄 때)은 기다리지 않는다 — flushDomOverlayLayout.
+   */
   private renderBuildPaletteOverlay(): void {
+    if (typeof document === "undefined") return;
+    if (this.domOverlayLayoutQueued || this.domOverlayLayoutDisposed) return;
+    if (typeof requestAnimationFrame !== "function") {
+      this.layoutDomOverlays();
+      return;
+    }
+    this.domOverlayLayoutQueued = true;
+    requestAnimationFrame(() => {
+      if (!this.domOverlayLayoutQueued || this.domOverlayLayoutDisposed) return;
+      this.domOverlayLayoutQueued = false;
+      this.layoutDomOverlays();
+    });
+  }
+
+  /** 밀린 배치를 지금 한다(우클릭을 놓은 직후처럼 사용자가 바로 볼 때). */
+  private flushDomOverlayLayout(): void {
+    this.domOverlayLayoutQueued = false;
+    if (this.domOverlayLayoutDisposed) return;
+    this.layoutDomOverlays();
+  }
+
+  /**
+   * 캔버스·호스트 화면 사각형. 한 번 재면 무효화될 때까지 쓴다 — 무효화: 캔버스·호스트 크기 변화(ResizeObserver),
+   * 창 크기·스크롤, 스튜디오 입양처럼 캔버스가 다른 부모로 옮겨질 때(host 가 바뀜).
+   * 조수 패널 스트리밍처럼 캔버스 밖 DOM 이 흔들려도 캔버스 자리는 그대로라 다시 재지 않는다.
+   */
+  private hostGeometry(): HostGeometry | null {
+    const canvas = this.game?.canvas;
+    const host = canvas?.parentElement;
+    if (!canvas || !host || typeof canvas.getBoundingClientRect !== "function") return null;
+    const cached = this.hostGeometryCache;
+    if (cached && this.hostGeometryHost === host) return cached;
+    const canvasRect = canvas.getBoundingClientRect();
+    const hostRect = host.getBoundingClientRect();
+    const next: HostGeometry = {
+      canvasLeft: canvasRect.left,
+      canvasTop: canvasRect.top,
+      canvasWidth: canvasRect.width || canvas.width,
+      canvasHeight: canvasRect.height || canvas.height,
+      hostLeft: hostRect.left,
+      hostTop: hostRect.top,
+    };
+    // 크기 0(숨김·아직 배치 전)은 캐시하지 않는다 — 보이는 순간 다시 잰다.
+    this.hostGeometryCache = canvasRect.width > 0 && canvasRect.height > 0 ? next : null;
+    if (this.hostGeometryHost !== host) this.watchHostGeometry(host);
+    return next;
+  }
+
+  private hostGeometryHost: HTMLElement | null = null;
+  private hostGeometryObserver: ResizeObserver | null = null;
+
+  private watchHostGeometry(host: HTMLElement): void {
+    this.hostGeometryHost = host;
+    this.hostGeometryObserver?.disconnect();
+    if (typeof ResizeObserver === "undefined") return;
+    this.hostGeometryObserver = new ResizeObserver(this.invalidateHostGeometry);
+    this.hostGeometryObserver.observe(host);
+    const canvas = this.game?.canvas;
+    if (canvas) this.hostGeometryObserver.observe(canvas);
+  }
+
+  private layoutDomOverlays(): void {
     if (typeof document === "undefined") return;
     const selection = editorState.get().selection;
     const mapId = this.mapId();
@@ -2978,6 +3093,19 @@ export class EditScene extends PhaserRuntime.Scene {
       host.append(popup);
       this.buildPalettePopup = popup;
       this.buildPalettePopupKey = popupKey;
+      this.buildPalettePopupSize = null;
+      this.buildPalettePopupObserver?.disconnect();
+      if (typeof ResizeObserver !== "undefined") {
+        // 입력 줄이 늘어 바가 커지면 크기를 다시 재고 위치를 맞춘다(첫 관찰 통지는 크기 기록만 한다).
+        let first = true;
+        this.buildPalettePopupObserver = new ResizeObserver(() => {
+          if (first) { first = false; return; }
+          if (this.buildPalettePopup !== popup) return;
+          this.buildPalettePopupSize = null;
+          this.renderBuildPaletteOverlay();
+        });
+        this.buildPalettePopupObserver.observe(popup);
+      }
     }
     this.positionBuildPaletteOverlay(selection);
     if (wantPromptFocus && kind === "chips" && this.buildPalettePopup) {
@@ -2992,22 +3120,34 @@ export class EditScene extends PhaserRuntime.Scene {
     const canvas = this.game.canvas;
     const host = canvas.parentElement;
     if (!host) return;
+    const geometry = this.hostGeometry();
+    if (!geometry) return;
     const isChips = popup.classList.contains("selection-action-chips");
     const camera = this.cameras.main;
     const selectionRect = tileRectToScreenRect(selection, {
       worldView: { x: camera.worldView.x, y: camera.worldView.y },
       zoom: camera.zoom,
     }, this.activeTileSize());
-    const canvasRect = canvas.getBoundingClientRect();
-    const hostRect = host.getBoundingClientRect();
+    const canvasRect = { left: geometry.canvasLeft, top: geometry.canvasTop, width: geometry.canvasWidth, height: geometry.canvasHeight };
+    const hostRect = { left: geometry.hostLeft, top: geometry.hostTop };
     // Bound the wrapping selection toolbar before measuring and anchoring it.
-    if (isChips) popup.style.maxWidth = `${Math.max(1, Math.min(640, canvasRect.width - 16))}px`;
+    if (isChips) {
+      const maxWidth = `${Math.max(1, Math.min(640, canvasRect.width - 16))}px`;
+      if (popup.style.maxWidth !== maxWidth) popup.style.maxWidth = maxWidth;
+    }
     // visibility:hidden 첫 프레임에서 0 크기가 나올 수 있어 칩/팔레트 기본값을 다르게 둔다.
     const fallback = isChips ? { width: 420, height: 44 } : { width: 228, height: 140 };
-    const popupRect = popup.getBoundingClientRect();
+    // 바 크기는 내용(입력 줄 수)이 정한다. 위치만 바뀌는 호출은 지난 크기를 쓴다 — 매번 재면 강제 레이아웃이다.
+    const measured = this.buildPalettePopupSize && this.buildPalettePopupSize.popup === popup && this.buildPalettePopupSize.key === this.buildPalettePopupKey
+      ? this.buildPalettePopupSize
+      : null;
+    const popupRect = measured ?? popup.getBoundingClientRect();
+    if (!measured && popupRect.width >= 8 && popupRect.height >= 8) {
+      this.buildPalettePopupSize = { popup, key: this.buildPalettePopupKey, width: popupRect.width, height: popupRect.height };
+    }
     const popupSize = {
-      width: Math.max(1, popupRect.width || popup.offsetWidth || fallback.width),
-      height: Math.max(1, popupRect.height || popup.offsetHeight || fallback.height),
+      width: Math.max(1, popupRect.width || fallback.width),
+      height: Math.max(1, popupRect.height || fallback.height),
     };
     const canvasSize = {
       width: Math.max(1, canvasRect.width || canvas.width),
@@ -3028,19 +3168,23 @@ export class EditScene extends PhaserRuntime.Scene {
             : undefined,
         })
       : anchoredBuildPalettePosition({ selectionRect, popupSize, canvasSize });
+    // 같은 값은 다시 쓰지 않는다 — 인라인 스타일 대입은 값이 같아도 스타일 재계산을 예약한다.
+    const setStyle = (key: "position" | "left" | "top" | "right" | "bottom" | "visibility", value: string): void => {
+      if (popup.style[key] !== value) popup.style[key] = value;
+    };
     if (isChips) {
       // overflow:hidden 호스트/상태바 클리핑을 피하려고 viewport fixed 로 올린다.
-      popup.style.position = "fixed";
-      popup.style.left = `${Math.round(canvasRect.left + point.x)}px`;
-      popup.style.top = `${Math.round(canvasRect.top + point.y)}px`;
-      popup.style.right = "auto";
-      popup.style.bottom = "auto";
+      setStyle("position", "fixed");
+      setStyle("left", `${Math.round(canvasRect.left + point.x)}px`);
+      setStyle("top", `${Math.round(canvasRect.top + point.y)}px`);
+      setStyle("right", "auto");
+      setStyle("bottom", "auto");
     } else {
-      popup.style.position = "absolute";
-      popup.style.left = `${Math.round(canvasRect.left - hostRect.left + point.x)}px`;
-      popup.style.top = `${Math.round(canvasRect.top - hostRect.top + point.y)}px`;
+      setStyle("position", "absolute");
+      setStyle("left", `${Math.round(canvasRect.left - hostRect.left + point.x)}px`);
+      setStyle("top", `${Math.round(canvasRect.top - hostRect.top + point.y)}px`);
     }
-    popup.style.visibility = "";
+    setStyle("visibility", "");
     // 실제 렌더 크기로 한 번 더 맞춤(칩 바가 가로로 늘어난 뒤 중앙 정렬 보정).
     if (isChips && (popupRect.width < 8 || popupRect.height < 8)) {
       requestAnimationFrame(() => {
@@ -3055,6 +3199,9 @@ export class EditScene extends PhaserRuntime.Scene {
     this.buildPalettePopup?.remove();
     this.buildPalettePopup = null;
     this.buildPalettePopupKey = "";
+    this.buildPalettePopupSize = null;
+    this.buildPalettePopupObserver?.disconnect();
+    this.buildPalettePopupObserver = null;
   }
 
   /**
@@ -3081,16 +3228,19 @@ export class EditScene extends PhaserRuntime.Scene {
       host.append(badge);
       this.regionSizeBadge = badge;
     }
-    this.regionSizeBadge.textContent = `${selection.width}×${selection.height}`;
+    const label = `${selection.width}×${selection.height}`;
+    if (this.regionSizeBadge.textContent !== label) this.regionSizeBadge.textContent = label;
     const rect = tileRectToScreenRect(
       { x: selection.x, y: selection.y, width: selection.width, height: selection.height },
       { worldView: { x: camera.worldView.x, y: camera.worldView.y }, zoom: camera.zoom }, this.activeTileSize()
     );
-    const canvasRect = this.game.canvas.getBoundingClientRect();
-    const hostRect = host.getBoundingClientRect();
+    const geometry = this.hostGeometry();
+    if (!geometry) return;
     // 작업 진행 배지(region-task-badge)와 같은 자리를 쓰지 않도록 왼쪽 위 모서리에 붙인다.
-    this.regionSizeBadge.style.left = `${Math.round(canvasRect.left - hostRect.left + rect.x)}px`;
-    this.regionSizeBadge.style.top = `${Math.round(canvasRect.top - hostRect.top + rect.y - 22)}px`;
+    const left = `${Math.round(geometry.canvasLeft - geometry.hostLeft + rect.x)}px`;
+    const top = `${Math.round(geometry.canvasTop - geometry.hostTop + rect.y - 22)}px`;
+    if (this.regionSizeBadge.style.left !== left) this.regionSizeBadge.style.left = left;
+    if (this.regionSizeBadge.style.top !== top) this.regionSizeBadge.style.top = top;
   }
 
   private renderRegionTaskBadge(): void {
@@ -3117,10 +3267,12 @@ export class EditScene extends PhaserRuntime.Scene {
       { x: task.region.x, y: task.region.y, width: task.region.width, height: task.region.height },
       { worldView: { x: camera.worldView.x, y: camera.worldView.y }, zoom: camera.zoom }, this.activeTileSize()
     );
-    const canvasRect = this.game.canvas.getBoundingClientRect();
-    const hostRect = host.getBoundingClientRect();
-    this.regionTaskBadge.style.left = `${Math.round(canvasRect.left - hostRect.left + rect.x)}px`;
-    this.regionTaskBadge.style.top = `${Math.round(canvasRect.top - hostRect.top + rect.y - 26)}px`;
+    const geometry = this.hostGeometry();
+    if (!geometry) return;
+    const left = `${Math.round(geometry.canvasLeft - geometry.hostLeft + rect.x)}px`;
+    const top = `${Math.round(geometry.canvasTop - geometry.hostTop + rect.y - 26)}px`;
+    if (this.regionTaskBadge.style.left !== left) this.regionTaskBadge.style.left = left;
+    if (this.regionTaskBadge.style.top !== top) this.regionTaskBadge.style.top = top;
   }
 }
 
