@@ -325,9 +325,10 @@ function measureWalk(field: HTMLElement, entry: BattleTimelineEntrySnapshot): Re
   const enemies = [...field.querySelectorAll<HTMLElement>(".battle-enemy:not(.defeated)")];
   const target = enemies.find((node) => node.dataset.testid === entry.targetId || node.dataset.recordId === entry.targetId) ?? enemies[0];
   if (!user || !target) return undefined;
-  const scene = field.closest<HTMLElement>(".battle-scene");
-  const scale = Number.parseFloat(scene?.style.getPropertyValue("--battle-stage-scale") ?? "") || 1;
   const userRect = user.getBoundingClientRect();
+  // 화면 px → 배틀러 translate 단위. 무대 배율(--battle-stage-scale) 위에 필드 zoom 이 한 번 더 걸려 있어
+  // 변수 하나로는 모자란다(실측: 걸음이 1.6배 넘쳐 화면 밖으로 나갔다). 노드 자신의 레이아웃 폭 대비 화면 폭으로 잰다.
+  const scale = user.offsetWidth > 0 ? userRect.width / user.offsetWidth : 1;
   const image = target.querySelector<HTMLElement>(".battle-enemy-image") ?? target;
   const enemyRect = image.getBoundingClientRect();
   if (userRect.width === 0 || enemyRect.width === 0) return undefined;

@@ -260,7 +260,8 @@ try {
       full = await encode(rawPath, offset, 'battle', { start: 0, duration }, colors);
     }
     if (full.bytes > 8_000_000) full = await encode(rawPath, offset, 'battle', { start: 0, duration }, 32, Math.min(fps, 10));
-    if (full.bytes > 8_000_000) throw new Error('전체 GIF 8 MB 초과: --fps 또는 --width를 줄이세요.');
+    // 전체 GIF 가 넘쳐도 구간 GIF 는 만든다(구간이 검토의 본체다). 초과는 메모로 남긴다.
+    if (full.bytes > 8_000_000) report.notes.push(`전체 GIF ${(full.bytes / 1e6).toFixed(1)} MB — 8 MB 초과. --fps 또는 --width 를 줄이세요.`);
     report.clips.push(full);
     for (const [name, segment] of Object.entries(segments)) {
       if (name === 'intro') continue;

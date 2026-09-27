@@ -16,13 +16,10 @@ export async function recordingFixture(projectPath) {
       const sheet = actor.characterResourceId?.match(/actor([1-4])/i)?.[1] ?? '1';
       const index = Math.max(0, Math.min(7, actor.characterIndex ?? 0));
       const id = `actor${sheet}-${index}`;
-      const resourceId = `generated-actor-charset-${id}-battle`;
-      const bytes = await readFile(new URL(`../../../public/assets/generated/charset-battlers/${id}.png`, import.meta.url));
-      project.assets.uploaded[resourceId] = {
-        id: resourceId, name: `걷기 칩 전투 ${id}`, kind: 'battleCharset',
-        dataUrl: `data:image/png;base64,${bytes.toString('base64')}`,
-        meta: { width: 144, height: 384, frameWidth: 48, frameHeight: 48, frames: 24 },
-      };
+      // 번들 카탈로그 id 를 그대로 쓴다. 업로드 사본으로 바꾸면 런타임이 걷기 칩 시트로 알아보지 못해
+      // 24포즈 칸 순환·마법 시전 시트가 꺼진다(2026-09-28 실측: GIF 에 걷기·시전 칸이 안 나왔다).
+      const resourceId = `charset-battler-${id}`;
+      await readFile(new URL(`../../../public/assets/generated/charset-battlers/${id}.png`, import.meta.url));
       actor.battleCharacterResourceId = resourceId;
       actor.characterResourceId = `easyrpg-charset-actor${sheet}`;
       replacements.push({ actor: actor.id, sheet: id });
