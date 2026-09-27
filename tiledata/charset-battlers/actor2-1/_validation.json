@@ -1,0 +1,243 @@
+{
+  "character": "actor2-1",
+  "poses": 24,
+  "redrawn": [
+    "idle",
+    "attack",
+    "hit",
+    "defend",
+    "dead",
+    "victory",
+    "attack_windup",
+    "attack_strike",
+    "attack_follow",
+    "cast_charge",
+    "cast_raise",
+    "cast_release",
+    "item",
+    "weak",
+    "evade",
+    "guard_hit",
+    "skill",
+    "victory_b",
+    "dying",
+    "revive"
+  ],
+  "preserved_source_frames": [
+    "walk_a",
+    "walk_b",
+    "walk_c",
+    "front"
+  ],
+  "extra_colors": [
+    [
+      96,
+      217,
+      232
+    ],
+    [
+      113,
+      69,
+      39
+    ],
+    [
+      172,
+      248,
+      236
+    ],
+    [
+      190,
+      213,
+      223
+    ],
+    [
+      209,
+      158,
+      71
+    ],
+    [
+      242,
+      250,
+      246
+    ]
+  ],
+  "alpha": [
+    0,
+    255
+  ],
+  "last_opaque_row": 44,
+  "sheet_size": [
+    144,
+    384
+  ],
+  "sheet_sha256": "0488c8064f6523ec0cfb727fad84290e6a06c1614314b8256f7075b5d7b7809e",
+  "motion_frames": [
+    "walk_a",
+    "walk_b",
+    "walk_c",
+    "walk_b",
+    "attack_windup",
+    "attack_strike",
+    "attack",
+    "attack_follow",
+    "cast_charge",
+    "cast_raise",
+    "cast_release",
+    "idle",
+    "hit",
+    "idle",
+    "victory",
+    "victory_b"
+  ],
+  "motion_duration_ms": 120,
+  "motion_scale": 4,
+  "motion_filter": "nearest",
+  "bounds": {
+    "idle": [
+      8,
+      21,
+      34,
+      45
+    ],
+    "attack": [
+      2,
+      21,
+      35,
+      45
+    ],
+    "hit": [
+      19,
+      21,
+      42,
+      45
+    ],
+    "defend": [
+      13,
+      24,
+      36,
+      45
+    ],
+    "dead": [
+      2,
+      31,
+      41,
+      45
+    ],
+    "victory": [
+      12,
+      11,
+      34,
+      45
+    ],
+    "walk_a": [
+      16,
+      22,
+      32,
+      45
+    ],
+    "walk_b": [
+      17,
+      21,
+      31,
+      45
+    ],
+    "walk_c": [
+      18,
+      22,
+      31,
+      45
+    ],
+    "attack_windup": [
+      17,
+      18,
+      43,
+      45
+    ],
+    "attack_strike": [
+      8,
+      15,
+      36,
+      45
+    ],
+    "attack_follow": [
+      6,
+      22,
+      36,
+      45
+    ],
+    "cast_charge": [
+      13,
+      21,
+      34,
+      45
+    ],
+    "cast_raise": [
+      7,
+      5,
+      34,
+      45
+    ],
+    "cast_release": [
+      0,
+      17,
+      36,
+      45
+    ],
+    "item": [
+      16,
+      18,
+      34,
+      45
+    ],
+    "weak": [
+      7,
+      25,
+      36,
+      45
+    ],
+    "evade": [
+      17,
+      21,
+      42,
+      45
+    ],
+    "guard_hit": [
+      16,
+      24,
+      39,
+      45
+    ],
+    "skill": [
+      0,
+      12,
+      35,
+      45
+    ],
+    "victory_b": [
+      12,
+      9,
+      34,
+      45
+    ],
+    "dying": [
+      17,
+      25,
+      42,
+      45
+    ],
+    "revive": [
+      12,
+      23,
+      36,
+      45
+    ],
+    "front": [
+      16,
+      21,
+      32,
+      45
+    ]
+  },
+  "runtime_qa": "미실행: 아트 저작 역할 범위 밖",
+  "canonical_project_write": "미실행: 감독 통합 대상"
+}
