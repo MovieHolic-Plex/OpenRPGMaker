@@ -332,9 +332,13 @@ def build_group(key, gname, recs):
              'used': bool(u), 'source': 'imported' if lab else 'unknown'}
         if lab and lab[0] == 'sheet' and lab[1] in shared_of:
             lid, tid, sd = shared_of[lab[1]]; j = lab[2]
-            # 이미 검토된 공용 타일셋의 칸 규칙을 그대로 가져온다(같은 원본 칸 번호)
-            t.update(sharedTileset=tid, sharedTile=j, passability=sd['passability'][j], priority=sd['priority'][j],
-                     meta=(sd.get('tileMeta') or [None] * (j + 1))[j] if j < len(sd.get('tileMeta') or []) else None)
+            sm = (sd.get('tileMeta') or [])[j] if j < len(sd.get('tileMeta') or []) else None
+            t.update(sharedTileset=tid, sharedTile=j)
+            # 공용 타일셋이 검토한 칸만 그 통행·층을 따른다. 미검토 칸의 기본값(막힘)은 맵 사용으로 정한 값을 둔다.
+            if sm and sm.get('source') not in (None, 'unknown'):
+                p = sd['passability'][j]
+                t.update(passability=p, priority=sd['priority'][j], meta=sm,
+                         passage='passable' if any(p.values()) else 'solid')
         tiles.append(t)
     autotiles = []
     for k, ids in auto_id.items():

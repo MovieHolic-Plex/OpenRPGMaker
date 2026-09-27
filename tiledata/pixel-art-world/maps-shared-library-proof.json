@@ -72,14 +72,14 @@
     "m60_ufo_crash": "32×24 · shared_paw51_spec",
     "m61_event_hall": "26×16 · shared_paw51_spec"
   },
-  "bytes": 36344623,
+  "bytes": 35920171,
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "a954dc9f1db6064b4d681704cfa3836512fb7d86742308ae2baed82236005c81",
+  "revision": "8df875d9490d02f9bb3b9e18156f683199095f48dc26622facb9614f015735ac",
   "reloaded": true,
-  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-paw51-native-2026-09-26T23-35-13-277Z.sqlite",
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-paw51-native-2026-09-27T00-43-28-535Z.sqlite",
   "otherLibraries": 26,
   "otherLibrariesUnchanged": true,
-  "publishedAt": "2026-09-26T23:36:03.728Z",
+  "publishedAt": "2026-09-27T00:44:40.927Z",
   "publishedRerender": {
     "maps": 51,
     "worstChannelDiff": 1,
@@ -98,7 +98,7 @@
       "쇼와 상점가": 1,
       "양관": 3
     },
-    "pageErrors": 0,
-    "script": "output/paw51-shot.mjs (untracked)"
-  }
+    "pageErrors": 0
+  },
+  "passabilityRule": "공용 타일셋에서 검토된 칸(source≠unknown)만 그 통행·층을 따르고, 미검토 칸은 맵 사용으로 정한다"
 }
