@@ -504,6 +504,8 @@ export interface BattleSnapshot {
   readonly canEscape: boolean;
   /** 이 전투의 개시 진형. 보통 개시는 "normal". */
   readonly formation?: import("@/battle/battleFormation").BattleStartFormation;
+  /** 지금까지 실패한 도주 횟수(다음 도주 확률 가산의 근거). */
+  readonly failedEscapeAttempts?: number;
   readonly canLose: boolean;
   readonly troopId: TroopId;
   readonly backdropResourceId?: string;

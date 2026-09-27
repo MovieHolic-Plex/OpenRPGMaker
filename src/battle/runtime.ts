@@ -181,6 +181,19 @@ export function autoReviveHp(maxHp: number, percent: number): number {
   return Math.max(1, Math.floor((maxHp * Math.max(1, Math.min(100, percent))) / 100));
 }
 
+/** 도주 실패 1회당 가산 %p. 생략 = 10. */
+export const DEFAULT_ESCAPE_BONUS_PERCENT = 10;
+
+/**
+ * 도주 확률(0~1). 기존 민첩 식(상한 95%)에 실패 횟수 × 가산을 더한다. 실패 0회면 예전 값 그대로.
+ */
+export function escapeChance(actorAgility: number, enemyAgility: number, failedAttempts: number, bonusPercent: number | undefined): number {
+  const base = Math.min(0.95, 0.5 + (actorAgility - enemyAgility) / Math.max(1, enemyAgility) * 0.25);
+  const bonus = Math.max(0, Number.isFinite(bonusPercent) ? bonusPercent! : DEFAULT_ESCAPE_BONUS_PERCENT);
+  if (failedAttempts <= 0 || bonus === 0) return base;
+  return Math.min(1, base + (failedAttempts * bonus) / 100);
+}
+
 type StrictQueuedActorCommand = {
   readonly actorId: ActorId;
   readonly command: ActorCommand;
@@ -319,6 +332,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     for (const enemy of enemies) enemy.gauge = formation === "surprise" ? 100 : 0;
     formationRoundPending = false;
   }
+  let failedEscapeAttempts = 0;
   // 이번 strict 라운드에서 쉬는 쪽(진형 첫 라운드 전용).
   let strictFormationSkipSide: "actor" | "enemy" | undefined;
 
@@ -1326,11 +1340,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function attemptEscape(): void {
     if (!options.canEscape) return;
     // RM2K3 도주: 민첩성 기반 확률(파티 평균 vs 적 평균). 단순화해 절반 확률 + 우위 보정.
+    // 실패할 때마다 system.escapeBonusPercent(기본 10)%p 씩 쉬워진다.
     const actorAgi = average(activeActors().filter((a) => a.hp > 0).map((a) => a.agility));
     const enemyAgi = average(visibleEnemies().filter((e) => e.hp > 0).map((e) => e.agility));
-    const chance = Math.min(0.95, 0.5 + (actorAgi - enemyAgi) / Math.max(1, enemyAgi) * 0.25);
+    const chance = escapeChance(actorAgi, enemyAgi, failedEscapeAttempts, options.project.system.escapeBonusPercent);
     if (rng() < chance) {
       escaped = true;
+    } else {
+      failedEscapeAttempts += 1;
     }
   }
 
@@ -1763,6 +1780,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       rewards,
       canEscape: options.canEscape,
       formation,
+      failedEscapeAttempts,
       canLose: options.canLose,
       troopId: options.troopId,
       backdropResourceId,
