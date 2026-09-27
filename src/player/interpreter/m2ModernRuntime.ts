@@ -7,6 +7,7 @@ import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";
 import { coordinateAxisSpec, resolveDestination } from "@/project/eventCommands/coordinateDestination";
 import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
 import { planScreenEffect } from "./screenEffectPlan";
+import { pushM2History } from "./m2RuntimeState";
 import { calendarOptionsOf, sessionQueryValue } from "@/project/conditionActorQueries";
 
 type M2ModernRuntimeContext = { readonly currentEventId?: string; readonly project?: Project };
@@ -46,7 +47,7 @@ export function executeModernCommand(
         x: coordinateAxisSpec(fields, "x"),
         y: coordinateAxisSpec(fields, "y"),
       };
-      runtime.pathfinding.push({
+      pushM2History(runtime.pathfinding, {
         target: fieldString(fields, "target", "this-event"),
         x: destination.ok ? destination.x : authored.x.fixedValue,
         y: destination.ok ? destination.y : authored.y.fixedValue,
@@ -65,7 +66,7 @@ export function executeModernCommand(
       recordQuestObjective(session, runtime, fields);
       return true;
     case "Advanced Dialogue":
-      runtime.dialogue.push({
+      pushM2History(runtime.dialogue, {
         speaker: fieldString(fields, "speaker", ""),
         portraitId: fieldString(fields, "portraitId", ""),
         emotion: fieldString(fields, "emotion", "neutral"),
@@ -89,7 +90,7 @@ export function executeModernCommand(
       recordUiCommand(session, runtime, fields);
       return true;
     case "Debug Log":
-      runtime.debug.push({ level: fieldString(fields, "level", "info"), message: fieldString(fields, "message", "") });
+      pushM2History(runtime.debug, { level: fieldString(fields, "level", "info"), message: fieldString(fields, "message", "") });
       session.flags[`debug:${fieldString(fields, "level", "info")}`] = true;
       return true;
     case "Evaluate Expression":
@@ -110,7 +111,7 @@ function recordWaitUntil(session: PlaySessionLike, runtime: M2RuntimeState, fiel
     value: fieldString(fields, "value", ""),
     timeoutMs: fieldNumber(fields, "timeoutMs", 0),
   };
-  runtime.waits.push(waitState);
+  pushM2History(runtime.waits, waitState);
   session.flags[`m2-wait:${waitState.condition}:${waitState.target}`] = waitConditionMet(session, waitState);
 }
 
@@ -167,7 +168,7 @@ function recordCheckpoint(session: PlaySessionLike, runtime: M2RuntimeState, fie
     label: fieldString(fields, "label", ""),
     restoreOnGameOver: fieldBoolean(fields, "restoreOnGameOver", true),
   };
-  runtime.checkpoints.push(checkpoint);
+  pushM2History(runtime.checkpoints, checkpoint);
   session.flags[`checkpoint:${checkpoint.slotId}`] = true;
 }
 
@@ -197,7 +198,7 @@ function applyScreenEffect(session: PlaySessionLike, runtime: M2RuntimeState, fi
   const durationMs = fieldNumber(fields, "durationMs", 300);
 
   // 기존 계약 유지: 상태 조회기·증거 스펙이 이 큐와 플래그를 읽는다.
-  runtime.screenEffects.push({ effect, value, durationMs });
+  pushM2History(runtime.screenEffects, { effect, value, durationMs });
   session.flags[`screen-effect:${effect}`] = true;
 
   const plan = planScreenEffect(effect, value, durationMs);
@@ -311,7 +312,7 @@ function selectWeightedIndex(session: PlaySessionLike, table: string): number {
 function recordExpression(session: PlaySessionLike, runtime: M2RuntimeState, fields: M2CommandFields): void {
   const resultVariableId = fieldString(fields, "resultVariableId", "");
   const expression = fieldString(fields, "expression", "");
-  runtime.expressions.push({ expression, resultVariableId, evaluated: true });
+  pushM2History(runtime.expressions, { expression, resultVariableId, evaluated: true });
   if (resultVariableId) session.variables[resultVariableId] = evaluateM2Expression(expression, session);
 }
 
