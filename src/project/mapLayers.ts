@@ -134,7 +134,7 @@ export function remapExtraLayers(map: ExtraLayerFields, width: number, height: n
       const from = sourceIndex(target);
       if (from >= 0) levels[target] = relief.levels[from] ?? 0;
     }
-    if (levels.some((v) => v > 0)) map.relief = { width, height, levels };
+    if (levels.some((v) => v > 0)) map.relief = { width, height, levels, ...(relief.baked ? { baked: true } : {}) };
     else delete map.relief;
   }
 }

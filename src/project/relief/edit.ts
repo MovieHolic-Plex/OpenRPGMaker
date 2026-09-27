@@ -24,6 +24,7 @@ export function normalizeRelief(raw: unknown, mapWidth: number, mapHeight: numbe
   const out = src.width === mapWidth && src.height === mapHeight && src.levels.length === mapWidth * mapHeight
     ? src
     : resizeRelief(src, mapWidth, mapHeight);
+  if (r.baked === true) out.baked = true;
   return out.levels.some((v) => v > 0) ? out : undefined;
 }
 

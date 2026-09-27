@@ -922,6 +922,8 @@ export class EditScene extends PhaserRuntime.Scene {
     }
     if (plan.kind === "cells") {
       this.redrawCells(plan.cells);
+      // 높이 붓이 절벽을 타일로 구운 칸 — 옛 덧그림이 남아 있으면 걷어 낸다.
+      if (change.scope === "map" && change.relief) this.scheduleReliefRender();
       return;
     }
     this.redraw();
@@ -2268,11 +2270,11 @@ export class EditScene extends PhaserRuntime.Scene {
     const mapId = this.mapId();
     const relief = mapId ? store.getCurrent().maps[mapId]?.relief : undefined;
     const tileSize = this.activeTileSize();
-    const key = relief ? `${mapId}|${tileSize}|${relief.width}x${relief.height}|${relief.levels.join(",")}` : "";
+    const key = relief ? `${mapId}|${tileSize}|${relief.width}x${relief.height}|${relief.baked ? "baked" : relief.levels.join(",")}` : "";
     if (key === this.reliefRenderKey) return;
     this.reliefRenderKey = key;
     layer.removeAll(true);
-    if (!relief || reliefIsFlat(relief)) {
+    if (!relief || reliefIsFlat(relief) || relief.baked) {
       if (this.textures.exists(RELIEF_TEXTURE_KEY)) this.textures.remove(RELIEF_TEXTURE_KEY);
       return;
     }
