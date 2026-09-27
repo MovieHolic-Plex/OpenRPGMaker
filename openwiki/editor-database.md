@@ -1,5 +1,18 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 자료집 개선안 1단계 — 그룹 띠·쿨 인디고 팔레트·흰 카드 (2026-09-27)
+
+목업(`visualizations/…/database-ui-proposal.html`, 사용자 확인)의 레일·색·면 구성을 실제 창에 옮겼다.
+
+- **그룹 띠(`.db-group-strip`, `db-group-strip-<slug>`)** 는 `.db-tabs` 의 **앞 형제**다. 레일 DOM 계약(검색 → 개요 → 그룹 머리·탭 번갈아, 머리는 DIV)은 그대로고, 띠는 그 밖에 붙는다. 보이는 구획은 `.db-tabs[data-view-group]` 하나가 정하고 행마다 `data-in-view="0|1"` 이 붙는다(`markViewedSection`). 숨김은 CSS 가 한다 — 탭 버튼의 `hidden`(빈 탭 접기·검색)과 섞이지 않는다.
+- 보는 그룹은 **활성 탭이 속한 그룹을 따라간다**(`syncGroupStrip` 이 `updateTabButtons` 끝에서). 조수 점프·딥링크가 다른 그룹 탭을 열면 띠도 옮겨 간다. 개요는 그룹 밖이라 보던 그룹을 둔다. 그룹 머리(`db-tab-group-*`) 클릭도 그 구획으로 옮긴다 — 옛 e2e 헬퍼가 머리를 누르고 탭을 누르는 경로가 그대로 닿는다.
+- 탭 검색 중(`.db-tabs[data-searching]`)에는 구획 제한을 푼다. 좁은 창(799px 이하)·도크 모드는 띠를 접고 제한도 걸지 않는다 — 기존 56/48px 아이콘 레일이 전 구획을 보인다. 컨테이너 쿼리와 미디어 폴백은 **쌍**이다.
+- 레일 폭은 220 → 196px(띠 64px 가 곁에 선다). `test/databaseSidebarCss.test.ts` 가 `width: 220px` 문자열을 찾으므로 주석 없이 남은 선언을 지우지 마라.
+- **팔레트**: `studio-theme.css` 의 `--db-studio-*` 값만 바꿨다(canvas `#F5F6FA`, accent `#4F46E5`, 선택 바탕 `#EEF0FF` 불투명). 새 토큰은 `--db-studio-accent-text`(= accent-active, 선택 행·활성 탭 글자) 하나. text-3 대비는 흰·inset·선택행·바탕 네 면에서 5.2:1 이상.
+- **면 구성**(`studio-refresh.css`, index.css 맨 끝): 레일·목록은 흰 기둥, 편집 영역은 청회색 바탕, 묶음 카드는 흰 칸 + 헤어라인. studio-v2 는 반대(창 전체 흰 면, 카드 회색)였다. 카드 안 카드는 테두리 한 겹. 목록 발의 삭제는 평소 중립이고 `.confirming`(두 번째 누름)에서만 붉다.
+- CSS 예산은 main 과 같다(hex 1648, !important 285). `.db-tabs > .db-tab` 의 강제 `font` 단축을 `font-size`·`line-height` 로 나눈 이유: `!important` 단축은 font-weight 까지 잠가 활성 행의 600 이 진다.
+- 기준선 실패(이 변경 전부터): `databaseSidebarKeyboard` Space 케이스(fake DOM 에 ResizeObserver 없음), `databaseSidebarNav` 지역 배지 수(12 vs 9).
+
 ## 맵 그룹 목록 수리 — 출처·썸네일·레일 (2026-09-27)
 
 - **공용 킷 판정에 성채를 넣었다.** `spatialCatalog.isBundledFurniturePackKit` 가 번들 `opengameart_castle`(`tex_opengameart_castle`) 의 `castle-measured-*` 14종(잔디 중심·분수 전체…)을 몰라 「내가 만든 항목」으로 내보냈다. 새 번들 킷 시드를 추가하면 이 함수에도 같은 변경에서 넣어라. `test/spatialCatalog.test.ts` 는 전에 이 타일셋을 필터로 빼고 검사해서 결함을 못 봤다 — 지금은 「내 설계」에 없고 기본에 있음을 직접 단언한다.

@@ -41,7 +41,7 @@ import {
   renderTerrainTab,
 } from "@/editor/panels/databaseUtilityRecordViews";
 import { renderOverviewTab } from "@/editor/panels/databaseOverviewView";
-import { makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
+import { makeDatabaseGroupIcon, makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
 import { renderStructureKitsTab } from "@/editor/panels/structureKitDbTab";
 import { applyTilesetFolderFacet } from "@/editor/panels/tilesetMetadataEditor";
 import { getSelectedTilesetId, renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
@@ -385,6 +385,8 @@ function applyEmptyTabFold(header: HTMLElement): void {
 
 /** 그룹 머리·「빈 탭」 줄 — 숨은 빈 탭을 펼친다. 이미 다 보이면 아무것도 하지 않는다(접지 않는다). */
 function revealGroupEmptyTabs(slug: string, header: HTMLElement): void {
+  // 그룹 머리를 누르면 그 구획을 본다 — 띠를 거치지 않는 옛 경로(e2e 헬퍼·키보드)도 같은 곳에 닿는다.
+  if (viewedGroupSlug !== slug && TAB_GROUPS.some((candidate) => candidate.slug === slug)) viewGroup(header, slug);
   const group = TAB_GROUPS.find((candidate) => candidate.slug === slug);
   if (!group || foldedEmptyTabs(group).length === 0) return;
   revealedEmptyGroupSlugs().add(slug);
@@ -555,7 +557,12 @@ export function renderDatabasePanel(container: HTMLElement): void {
   }
 
   renderActiveTab(body, container);
-  container.append(header, body);
+  if (chrome.databaseNav === "grouped") {
+    container.append(buildGroupStrip(header), header, body);
+    syncGroupStrip(header);
+  } else {
+    container.append(header, body);
+  }
   revealActiveTab(header);
   if (typeof ResizeObserver !== "undefined") {
     // 헤더가 교체되면(탭 레일 재구성) 이전 옵저버는 할 일이 없다. GC 로 수거될 "가능성"에
@@ -767,6 +774,9 @@ function appendTabSearch(header: HTMLElement, body: HTMLElement, container: HTML
 
 function applyTabFilter(header: HTMLElement, rawQuery: string): void {
   const query = rawQuery.trim().toLowerCase();
+  // 검색은 모든 구획을 가로지른다 — 보던 그룹 제한(data-in-view)을 CSS 에서 푼다.
+  if (query === "") delete header.dataset.searching;
+  else header.dataset.searching = "1";
   if (query === "") {
     for (const child of railChildren(header)) child.hidden = false;
     applyEmptyTabFold(header);
@@ -877,7 +887,82 @@ function updateTabButtons(header: HTMLElement): void {
     if (isActive) button.setAttribute("aria-current", "page");
     else button.removeAttribute("aria-current");
   }
+  syncGroupStrip(header);
   revealActiveTab(header);
+}
+
+// ── 그룹 띠 (2026-09-27 자료집 개선안) ───────────────────────────────────────────
+// 레일 왼쪽 64px 세로 띠에 그룹 7개를 아이콘+짧은 이름으로 세우고, 옆 목록(.db-tabs)은
+// **보고 있는 그룹 구획만** 보인다. 30개 넘는 탭이 한 줄로 쌓여 늘 스크롤되던 레일이
+// 그룹당 4~8줄이 된다.
+//
+// .db-tabs 의 평평한 DOM 계약(검색 → 개요 → 그룹 머리·탭 번갈아)은 그대로 둔다 — 띠는 형제다.
+// 어떤 그룹을 보일지는 레일의 data-view-group 한 속성이 정하고, 구획을 숨기는 것은 CSS 다.
+// 그래서 탭 버튼의 hidden(빈 탭 접기·검색)과 섞이지 않고, 검색 중에는 CSS 가 구획 제한을 푼다.
+let viewedGroupSlug: string | null = null;
+
+function groupStripOf(header: HTMLElement): HTMLElement | null {
+  const strip = header.previousElementSibling;
+  return strip instanceof HTMLElement && strip.classList.contains("db-group-strip") ? strip : null;
+}
+
+function currentViewedGroup(): string {
+  return viewedGroupSlug ?? groupForTab(activeTab)?.slug ?? TAB_GROUPS[0]!.slug;
+}
+
+function syncGroupStrip(header: HTMLElement): void {
+  // 활성 탭이 바뀌면(조수 점프·딥링크 포함) 그 탭의 그룹을 본다. 개요는 그룹 밖이라 보던 그룹을 둔다.
+  const owner = groupForTab(activeTab)?.slug;
+  if (owner) viewedGroupSlug = owner;
+  const slug = currentViewedGroup();
+  header.dataset.viewGroup = slug;
+  markViewedSection(header, slug);
+  const strip = groupStripOf(header);
+  if (!strip) return;
+  for (const button of Array.from(strip.children)) {
+    if (!(button instanceof HTMLElement)) continue;
+    const on = button.dataset.groupSlug === slug;
+    button.classList.toggle("active", on);
+    button.setAttribute("aria-pressed", String(on));
+  }
+}
+
+/** 구획 소속을 행마다 data-in-view 로 적는다 — CSS 가 이것만 보고 다른 구획을 숨긴다. */
+function markViewedSection(header: HTMLElement, slug: string): void {
+  let current: string | null = null;
+  for (const child of railChildren(header)) {
+    const classes = child.classList;
+    if (!classes) continue;
+    if (classes.contains("db-tab-group")) current = child.dataset.groupSlug ?? null;
+    else if (!classes.contains("db-tab") && !classes.contains("db-tab-fold")) continue;
+    // 개요와 검색 결과 보조 목적지는 구획 밖이다 — 늘 보인다.
+    if (current === null || child.dataset.searchSecondary) {
+      delete child.dataset.inView;
+      continue;
+    }
+    child.dataset.inView = current === slug ? "1" : "0";
+  }
+}
+
+function viewGroup(header: HTMLElement, slug: string): void {
+  viewedGroupSlug = slug;
+  syncGroupStrip(header);
+  header.scrollTop = 0;
+}
+
+function buildGroupStrip(header: HTMLElement): HTMLElement {
+  return el("nav", {
+    class: "db-group-strip",
+    attrs: { "aria-label": "자료 분류" },
+    dataset: { testid: "db-group-strip" },
+    children: TAB_GROUPS.map((group) => el("button", {
+      class: "db-group-strip-btn",
+      attrs: { type: "button", title: group.label, "aria-pressed": "false" },
+      dataset: { testid: `db-group-strip-${group.slug}`, groupSlug: group.slug },
+      children: [makeDatabaseGroupIcon(group.slug), el("span", { class: "db-group-strip-label", text: group.label })],
+      on: { click: () => viewGroup(header, group.slug) },
+    })),
+  });
 }
 
 function revealActiveTab(header: HTMLElement): void {
