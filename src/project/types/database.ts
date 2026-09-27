@@ -724,9 +724,28 @@ export interface TroopRecord {
   /** Distinguishes trainer battles from wild encounters without guessing from troop ids. */
   trainerBattle?: boolean;
   previewBackgroundResourceId?: string;
+  /** 전투 배경 움직임(스크롤·물결·색 순환). 생략 = 정지 배경(기존). project/battleBackdropAnimation.ts 가 정규화한다. */
+  backdropAnimation?: BattleBackdropAnimation;
   battleFlow?: BattleFlow;
   activeSlots?: number;
   battleEventPages: BattleEventPageRecord[];
+}
+
+/**
+ * 마더2식 움직이는 전투 배경. 모든 값은 선택이며 0/생략이면 그 효과가 꺼진다.
+ * prefers-reduced-motion 이면 런타임이 전부 멈추고 정지 배경을 보인다.
+ */
+export interface BattleBackdropAnimation {
+  /** 가로 스크롤 속도(px/초, -400~400). 양수 = 오른쪽. */
+  scrollX?: number;
+  /** 세로 스크롤 속도(px/초, -400~400). 양수 = 아래. */
+  scrollY?: number;
+  /** 물결 왜곡 진폭(px, 0~24). */
+  waveAmplitude?: number;
+  /** 물결 주파수(초당 흔들림 횟수, 0~8). 진폭이 있고 주파수가 0 이면 1 로 본다. */
+  waveFrequency?: number;
+  /** 색 순환 주기(초, 0~60). 0 = 끔. 주기마다 색상이 한 바퀴(hue-rotate 360°) 돈다. */
+  paletteCycleSeconds?: number;
 }
 
 export interface StateRecord {
@@ -1398,6 +1417,12 @@ export interface SystemRecords {
   escapeBonusPercent?: number;
   /** field 면 전투 배경이 주인공 주변 필드 화면의 스냅숏이고 진입은 제자리 페이드. 생략 = 트룹/지형 배경. */
   battleBackdrop?: "field";
+  /** true 면 전투 HP 가 마더(EarthBound)식 롤링 미터로 표시된다: 표시 HP 가 실제 HP 쪽으로 초당
+   *  battleRollingHpPerSecond 만큼 흘러가고, 치명타를 받은 아군은 미터가 0 에 닿기 전까지 「쓰러지는 중」이다.
+   *  그 사이 전투가 승리·도주로 끝나면 미터에 남은 HP 로 살아남는다. 생략 = 즉시 표시(기존). */
+  battleRollingHp?: boolean;
+  /** 롤링 미터 속도(HP/초, 1~999). 생략 = DEFAULT_ROLLING_HP_PER_SECOND. */
+  battleRollingHpPerSecond?: number;
   /** onField 면 전투가 **필드 위에서** 벌어진다(크로노식): 전환 연출 없이, 적은 부딪힌 심볼 자리에, 아군은 파티가 선 자리에
    *  선다. 배경은 필드 스냅샷 그대로(확대·자르기 없음). battleBackdrop 과 무관하게 필드 배경을 쓴다. 생략 = 전환 후 전투장. */
   battlePresentation?: "onField";

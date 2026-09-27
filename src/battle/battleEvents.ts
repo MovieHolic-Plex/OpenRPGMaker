@@ -18,6 +18,8 @@ import type { BattleEventCondition, BattleEventPageRecord, TroopRecord } from "@
 
 export type BattleEventRuntimeState = {
   gameOverRequest?: { gameOverId: string; message?: string };
+  // m2-046 Tint Screen 이 쓰는 전투 화면 상태(색조·색 필터). 전투 화면 전용이다.
+  screen?: import("@/battle/types").BattleScreenState;
   messageWindowSettings?: MessageWindowSettings;
   readonly switches: Record<string, boolean>;
   readonly variables: Record<string, number>;
@@ -332,6 +334,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
   function snapshot(): BattleEventStateSnapshot {
     return {
       ...(options.state.gameOverRequest ? { gameOverRequest: { ...options.state.gameOverRequest } } : {}),
+      ...(options.state.screen ? { screen: { ...options.state.screen, filter: { ...options.state.screen.filter } } } : {}),
       messageWindowSettings: settingsChanged && options.state.messageWindowSettings ? { ...options.state.messageWindowSettings } : undefined,
       switches: options.state.switches,
       variables: options.state.variables,
@@ -782,6 +785,10 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
           abortBattle: options.abortBattle,
           executeCommonEvent: (commonEventId) => executeCommonEventById(page, commonEventId, context, depth + 1),
           executeTroopPage: (pageId) => executeTroopPageById(page, pageId, context, depth + 1),
+          setScreen: (screen) => {
+            options.state.screen = screen;
+            logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `tintScreen ${screen.tint}` });
+          },
         });
         if (!result.handled) logUnsupported(page, context, command.commandId);
         return result.forceEscape;

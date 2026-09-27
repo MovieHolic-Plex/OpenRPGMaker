@@ -162,6 +162,8 @@ const setProjectSettings: ToolDefinition = {
             description: "감정 상성표. 상태의 emotion.family 끼리 공격자→대상 피해 배율. 빈 배열이면 해제",
             items: { type: "object", properties: { attackerFamily: { type: "string" }, targetFamily: { type: "string" }, multiplier: { type: "number" } }, required: ["attackerFamily", "targetFamily", "multiplier"], additionalProperties: false },
           },
+          rollingHp: { type: "boolean", description: "true = 마더식 롤링 HP 미터: 표시 HP 가 서서히 실제 HP 로 흐르고, 치명타를 받아도 미터가 0 에 닿기 전에 이기면 살아남는다. false = 즉시 표시(기본)" },
+          rollingHpPerSecond: { type: "integer", minimum: 1, maximum: 999, description: "롤링 HP 속도(HP/초). 생략 = 40" },
         },
         additionalProperties: false,
       },
@@ -309,6 +311,14 @@ const setProjectSettings: ToolDefinition = {
       if (Array.isArray(battle.emotionCycle)) {
         if (battle.emotionCycle.length > 0) draft.system.emotionCycle = battle.emotionCycle as NonNullable<typeof draft.system.emotionCycle>;
         else delete draft.system.emotionCycle;
+      }
+      if (battle.rollingHp === true) draft.system.battleRollingHp = true;
+      else if (battle.rollingHp === false) delete draft.system.battleRollingHp;
+      if (battle.rollingHpPerSecond !== undefined) {
+        if (typeof battle.rollingHpPerSecond !== "number" || !Number.isInteger(battle.rollingHpPerSecond) || battle.rollingHpPerSecond < 1 || battle.rollingHpPerSecond > 999) {
+          throw new ToolError(`battle.rollingHpPerSecond 는 1~999 정수여야 합니다(받은 값 ${JSON.stringify(battle.rollingHpPerSecond)}).`, { code: "invalid-args" });
+        }
+        draft.system.battleRollingHpPerSecond = battle.rollingHpPerSecond;
       }
       if (typeof battle.initialTroopId === "string") {
         if (!draft.database.troops.some((troop) => troop.id === battle.initialTroopId)) throw new ToolError(`초기 적 그룹을 찾을 수 없습니다: ${battle.initialTroopId}`, { code: "troop-not-found" });

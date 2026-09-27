@@ -37,6 +37,8 @@ import { defaultActorFaceResourceId } from "@/project/actorFaceDefaults";
 import { store } from "@/project/store";
 import { scheduleBattleTimer } from "@/player/battleTimerScope";
 import { LIMIT_GAUGE_MAX, limitGaugeConfig, partyGaugeConfig, partyGaugeMax, resource2Config, resource2Max } from "@/battle/battleGauges";
+import { applyBattleBackdropMotion, clearBattleBackdropMotion } from "@/player/battleBackdropMotion";
+import type { RollingHpMeter } from "@/player/rollingHp";
 
 /** 같은 이름이 둘 이상이면 1-base 순번을 붙여 구분한다("초원 슬라임 1/2").
  *  필드 이름표·대상 목록·전투 로그가 **같은 문자열**을 쓰도록 이 함수 하나만 쓴다 —
@@ -169,13 +171,20 @@ export function battleField(snapshot: BattleSnapshot): HTMLElement {
   const field = document.createElement("div");
   field.className = "battle-field";
   field.dataset.testid = "battle-field";
+  const backdrop = battleBackdrop(snapshot.backdropResourceId);
   field.append(
-    battleBackdrop(snapshot.backdropResourceId),
+    backdrop,
     battleTitle(snapshot.troopId),
     enemyGroup(snapshot.enemies, snapshot),
     actorSpriteGroup(snapshot.actors)
   );
+  applyBattleBackdropMotion(backdrop, troopBackdropAnimation(snapshot.troopId));
   return field;
+}
+
+/** 트룹이 저작한 배경 움직임(스크롤·물결·색 순환). 없으면 정지 배경. */
+function troopBackdropAnimation(troopId: string) {
+  return store.getCurrent().database.troops.find((troop) => troop.id === troopId)?.backdropAnimation;
 }
 
 export interface BattleFieldPresentation {
@@ -188,6 +197,21 @@ export interface BattleFieldPresentation {
   readonly hitTargetId?: string;
   /** 필드 위 전투(battlePresentation onField): 배틀러가 필드 스프라이트 자리에 선다(battleOnField.ts). */
   readonly onField?: OnFieldAnchors;
+  /** system.battleRollingHp: 아군 HP 표시가 이 미터를 따라 굴러간다(rollingHp.ts). 없으면 즉시 표시. */
+  readonly rollingHp?: RollingHpMeter;
+}
+
+/** 롤링 미터가 있으면 아군 HP 표시값과 「쓰러지는 중」 여부를 미터에서 얻는다. */
+function rollingVitals(
+  actor: BattleBattlerSnapshot,
+  presented: { hp: number; defeated: boolean },
+  presentation: BattleFieldPresentation | undefined,
+): { hp: number; defeated: boolean; dying: boolean } {
+  const meter = presentation?.rollingHp;
+  if (!meter) return { hp: presented.hp, defeated: presented.defeated, dying: false };
+  const hp = meter.setTarget(actor.recordId, presented.hp, actor.maxHp);
+  const dying = meter.isDying(actor.recordId);
+  return { hp, defeated: presented.defeated && !dying, dying };
 }
 
 export function syncBattleField(
@@ -255,7 +279,10 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot, pr
     if (!row) continue;
     const level = row.querySelector(".battle-actor-level .battle-vital-value");
     if (level && actor.level !== undefined) level.textContent = ` ${actor.level}`;
-    const presented = presentedState(actor, presentation);
+    const presented = rollingVitals(actor, presentedState(actor, presentation), presentation);
+    // 롤링 미터: 치명타를 맞고 미터가 아직 0 에 닿지 않은 아군. 스킨이 붉게 깜빡이게 그릴 수 있다.
+    if (presented.dying) row.dataset.rollingHpDying = "true";
+    else delete row.dataset.rollingHpDying;
     const hp = row.querySelector(".battle-actor-hp");
     if (hp) setVitalNode(hp, "hp", presented.hp, actor.maxHp);
     const mp = row.querySelector(".battle-actor-mp");
@@ -347,6 +374,8 @@ export function applyFieldBackdrop(field: HTMLElement, url: string, baseResource
   if (!backdrop) return;
   backdrop.dataset.backdropSource = "field";
   backdrop.dataset.fieldBaseResourceId = baseResourceId ?? "";
+  // 필드 스냅샷은 지금 보이던 화면 그대로다 — 트룹 배경 움직임을 얹지 않는다.
+  clearBattleBackdropMotion(backdrop);
   delete backdrop.dataset.backdropFallback;
   backdrop.style.backgroundImage = `url("${url}")`;
   backdrop.style.backgroundSize = "cover";
@@ -449,7 +478,10 @@ function syncActorGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     } else if (!selected) {
       brackets?.remove();
     }
-    const presented = presentedState(actor, presentation);
+    const ledgerState = presentedState(actor, presentation);
+    const presented = { ...ledgerState, defeated: rollingVitals(actor, ledgerState, presentation).defeated };
+    // 쓰러지는 중인 아군은 아직 dead 포즈로 눕지 않는다.
+    if (!presented.defeated && presented.pose === "dead") presented.pose = "hit";
     node.classList.toggle("defeated", presented.defeated);
     applyBattlerPose(node, presented.pose);
     // KO 배지는 연출 원장(presented)을 따른다 — 스냅샷은 명령 즉시 해결돼 타격 연출 전에 이미 죽어 있다.

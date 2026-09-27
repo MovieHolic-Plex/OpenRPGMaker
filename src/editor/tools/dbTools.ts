@@ -552,6 +552,13 @@ const troopRecordSchema = objectSchema({
   uncapturable: booleanSchema(),
   trainerBattle: booleanSchema(),
   previewBackgroundResourceId: stringSchema(),
+  backdropAnimation: objectSchema({
+    scrollX: { type: "number", minimum: -400, maximum: 400, description: "가로 스크롤 px/초(양수 = 오른쪽)" },
+    scrollY: { type: "number", minimum: -400, maximum: 400, description: "세로 스크롤 px/초(양수 = 아래)" },
+    waveAmplitude: { type: "number", minimum: 0, maximum: 24, description: "물결 왜곡 진폭 px" },
+    waveFrequency: { type: "number", minimum: 0, maximum: 8, description: "물결 흔들림 횟수/초" },
+    paletteCycleSeconds: { type: "number", minimum: 0, maximum: 60, description: "색 순환 한 바퀴 초(0 = 끔)" },
+  }, "움직이는 전투 배경(마더식). 0/생략 = 그 효과 끔. 움직임 줄이기 설정이면 정지 배경"),
   battleFlow: { type: "string", enum: ["gauge", "strict"] },
   activeSlots: integerSchema(),
   // battleEventPages 는 여기서 받지 않는다 — 자유 객체(additionalProperties:true)로 통과시키면

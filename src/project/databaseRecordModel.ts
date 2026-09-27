@@ -223,6 +223,11 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
       ? { atbSpeed: clampInteger(system.atbSpeed, 1, 8) }
       : {}),
     ...(system.battleBackdrop === "field" ? { battleBackdrop: "field" as const } : {}),
+    // 롤링 HP 미터(마더식). 기본(끔)과 기본 속도는 저장하지 않는다 — 화이트리스트라 여기 없으면 왕복 1회에 사라진다.
+    ...(system.battleRollingHp === true ? { battleRollingHp: true } : {}),
+    ...(typeof system.battleRollingHpPerSecond === "number" && Number.isFinite(system.battleRollingHpPerSecond)
+      ? { battleRollingHpPerSecond: clampInteger(system.battleRollingHpPerSecond, 1, 999) }
+      : {}),
     ...(system.battlePresentation === "onField" ? { battlePresentation: "onField" as const } : {}),
     // 진형 굴림·도주 가산 — 기본(굴림 없음·+10%p)은 저장하지 않는다(옛 JSON 바이트 유지).
     ...(system.battleFormationRoll === true ? { battleFormationRoll: true } : {}),

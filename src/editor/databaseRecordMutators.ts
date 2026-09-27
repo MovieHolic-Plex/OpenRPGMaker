@@ -183,6 +183,7 @@ export function updateTroopRecord(database: DatabaseRecords, id: string, patch: 
   if ("uncapturable" in patch && patch.uncapturable !== undefined) record.uncapturable = patch.uncapturable;
   if ("trainerBattle" in patch) record.trainerBattle = patch.trainerBattle;
   if ("previewBackgroundResourceId" in patch) record.previewBackgroundResourceId = patch.previewBackgroundResourceId;
+  if ("backdropAnimation" in patch) record.backdropAnimation = patch.backdropAnimation;
   if ("battleFlow" in patch) record.battleFlow = patch.battleFlow;
   if ("activeSlots" in patch) record.activeSlots = patch.activeSlots;
   if ("battleEventPages" in patch && patch.battleEventPages !== undefined) record.battleEventPages = patch.battleEventPages;

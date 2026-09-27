@@ -46,6 +46,8 @@ import { openBattleTimerScope, clearBattleTimerScope, scheduleBattleTimer } from
 import { applyBattleSystemGraphic } from "@/player/systemGraphics";
 import { store } from "@/project/store";
 import { bindBattleStageScale } from "@/player/battleStageScale";
+import { applyRollingHpSurvival, createRollingHpMeter, startRollingHpTicker } from "@/player/rollingHp";
+import { syncBattleScreenFilter } from "@/player/battleScreenFilter";
 
 export interface BattleDomOptions {
   readonly host: HTMLElement;
@@ -169,6 +171,22 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
   const field = battleField(initialSnapshot);
   field.dataset.testid = "battle-field";
+  // 롤링 HP(system.battleRollingHp): 아군 HP 표시가 미터처럼 굴러간다. 규칙 엔진은 건드리지 않고,
+  // 결과 확정 때 applyRollingHpSurvival 이 미터에 남은 HP 로 결산한다.
+  const rollingHpSystem = store.getCurrent().system;
+  const rollingHp = rollingHpSystem.battleRollingHp === true
+    ? createRollingHpMeter({ perSecond: rollingHpSystem.battleRollingHpPerSecond })
+    : undefined;
+  if (rollingHp) root.dataset.battleRollingHp = "true";
+  let lastFieldPresentation: Parameters<typeof syncBattleParty>[2];
+  const rollingHpTicker = rollingHp
+    ? startRollingHpTicker(rollingHp, () => {
+      if (destroyed) return;
+      const snapshot = options.runtime.snapshot();
+      syncBattleField(field, snapshot, undefined, lastFieldPresentation);
+      syncBattleParty(partyPanel, snapshot, lastFieldPresentation);
+    })
+    : undefined;
   const animationLayer = document.createElement("div");
   animationLayer.className = "battle-animation-layer";
   animationLayer.dataset.testid = "battle-animation-layer";
@@ -490,7 +508,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (directorState.step === "result" && !resultSent) {
         if (revealAllResultRows(snapshot)) return;
         resultSent = true;
-        options.onResult(snapshot.result, snapshot);
+        options.onResult(snapshot.result, applyRollingHpSurvival(snapshot.result, snapshot, rollingHp));
       }
       return;
     }
@@ -541,7 +559,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         if (directorState.step === "result" && !resultSent) {
           if (revealAllResultRows(snapshot)) return;
           resultSent = true;
-          options.onResult(snapshot.result, snapshot);
+          options.onResult(snapshot.result, applyRollingHpSurvival(snapshot.result, snapshot, rollingHp));
         }
       }
       return;
@@ -953,9 +971,16 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         ? lastDamageFeedback.targetId
         : undefined,
       onField: options.onField,
+      rollingHp,
     };
+    // 결과 화면이 뜨면 미터를 멈춘다 — 이 순간 남은 HP 가 결산 값이다.
+    if (showingResult) rollingHp?.freeze();
+    lastFieldPresentation = fieldPresentation;
     syncBattleField(field, snapshot, lastDamageFeedback, fieldPresentation);
     syncBattleParty(partyPanel, snapshot, fieldPresentation);
+    rollingHpTicker?.kick();
+    // 전투 이벤트의 Tint Screen(색조·채도·흑백·세피아).
+    syncBattleScreenFilter(field, snapshot.eventState.screen);
     syncBattleMessageWindow(messageWindow, directorState);
     if (!snapshot.eventPause && !snapshot.eventChoice) eventSurfaceOpen = false;
     // The event surface takes over only after preceding action beats have drained.
@@ -1387,6 +1412,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (destroyed) return;
       destroyed = true;
       clearBattleTimerScope();
+      rollingHpTicker?.stop();
       choiceController?.abort();
       options.runtime.cancel();
       window.clearInterval(tickInterval);

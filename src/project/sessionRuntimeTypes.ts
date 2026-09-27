@@ -42,6 +42,8 @@ export type M2ScreenRuntimeState = {
   tint?: string;
   // 색조 전환에 걸릴 시간(ms). 0/미지정이면 즉시 적용.
   tintDurationMs?: number;
+  /** Tint Screen 의 색 필터(채도·흑백·세피아, %). 미지정 = 필터 없음. 전환은 tintDurationMs 를 따른다. */
+  filter?: { saturation: number; grayscale: number; sepia: number };
   weather?: string;
 };
 

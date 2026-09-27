@@ -1,4 +1,5 @@
 import { normalizeBattleReports, type BattleReport } from "@/project/battleReports";
+import { isNeutralScreenFilter, normalizeScreenFilter } from "@/project/eventCommands/screenFilter";
 import { LifeReconciliationError, parseLifeState, preserveUnresolvedLifeSource, reconcileLifeState } from "@/project/lifeRecovery";
 import { isLocalSaveSourceKey, isSaveIdentity, publicationSaveKey, requireSaveIdentity, saveIdentity, saveIdentityBlocker, saveScopeBlocker, type SaveIdentity } from "./savePublication";
 import { legacyExportSaveNamespace } from "./exportSaveNamespacePrefix";
@@ -261,6 +262,8 @@ export type SaveScreenState = {
   readonly weather?: string;
   readonly hidden?: boolean;
   readonly tintDurationMs?: number;
+  /** Tint Screen 색 필터(채도·흑백·세피아). 없으면 필터 없음. */
+  readonly filter?: { readonly saturation: number; readonly grayscale: number; readonly sepia: number };
 };
 
 export type SaveWriteResult =
@@ -506,11 +509,11 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
 function pickScreenState(session: PlaySession): SaveScreenState | undefined {
   const screen = session.m2Runtime?.screen;
   if (!screen) return undefined;
-  const { tint, weather, hidden, tintDurationMs } = screen;
-  if (tint === undefined && weather === undefined && hidden === undefined && tintDurationMs === undefined) {
+  const { tint, weather, hidden, tintDurationMs, filter } = screen;
+  if (tint === undefined && weather === undefined && hidden === undefined && tintDurationMs === undefined && filter === undefined) {
     return undefined;
   }
-  return { tint, weather, hidden, tintDurationMs };
+  return { tint, weather, hidden, tintDurationMs, ...(filter ? { filter: { ...filter } } : {}) };
 }
 
 // 저장 실패(quota 초과·프라이빗 모드)를 던지면 호출부의 클릭 핸들러가 그대로 끊겨
@@ -870,6 +873,7 @@ function applyScreenState(session: PlaySession, screen: SaveScreenState): void {
   if (screen.weather !== undefined) runtime.screen.weather = screen.weather;
   if (screen.hidden !== undefined) runtime.screen.hidden = screen.hidden;
   if (screen.tintDurationMs !== undefined) runtime.screen.tintDurationMs = screen.tintDurationMs;
+  if (screen.filter !== undefined) runtime.screen.filter = { ...screen.filter };
 }
 
 function parseSaveSnapshot(value: unknown, slot: SaveSlotIndex): SaveSlotReadResult {
@@ -1197,11 +1201,15 @@ function parseItemUseCharges(value: unknown): Record<string, number> {
 // 저장된 화면 상태를 방어적으로 파싱(모든 필드 선택). 유효 필드가 없으면 undefined.
 function parseScreenState(value: unknown): SaveScreenState | undefined {
   if (!isRecord(value)) return undefined;
-  const result: { tint?: string; weather?: string; hidden?: boolean; tintDurationMs?: number } = {};
+  const result: { tint?: string; weather?: string; hidden?: boolean; tintDurationMs?: number; filter?: SaveScreenState["filter"] } = {};
   if (typeof value.tint === "string") result.tint = value.tint;
   if (typeof value.weather === "string") result.weather = value.weather;
   if (typeof value.hidden === "boolean") result.hidden = value.hidden;
   if (typeof value.tintDurationMs === "number") result.tintDurationMs = value.tintDurationMs;
+  if (isRecord(value.filter)) {
+    const filter = normalizeScreenFilter(value.filter);
+    if (!isNeutralScreenFilter(filter)) result.filter = filter;
+  }
   return Object.keys(result).length > 0 ? result : undefined;
 }
 
