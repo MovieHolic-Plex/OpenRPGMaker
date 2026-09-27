@@ -3,6 +3,7 @@ import { validateEndingPresentation } from "./shapeDatabaseFields";
 import { isEquipmentSlotId } from "@/project/equipmentSlots";
 import { isEmoteKind } from "@/project/emotes";
 import { SHOP_MESSAGE_TYPES } from "@/project/shopMessages";
+import { isShopUiPreset } from "@/project/shopUiPresets";
 import { ProjectFormatError } from "./errors";
 import { assert, commandKinds, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { validateLightSource } from "./shapeLightingFields";
@@ -411,7 +412,7 @@ function validateCommandShape(label: string, value: unknown): void {
       }
       if (command.shopUiPreset !== undefined) {
         const preset = requireString(`${label}.shopUiPreset`, command.shopUiPreset);
-        if (!["classic", "tabs", "grid", "compare", "split", "cart", "stock", "story", "baram"].includes(preset)) {
+        if (!isShopUiPreset(preset)) {
           throw new ProjectFormatError(`${label}.shopUiPreset가 잘못되었습니다.`);
         }
       }
