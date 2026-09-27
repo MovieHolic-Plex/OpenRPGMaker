@@ -6,17 +6,15 @@ export interface AiModelCatalogGroup {
   readonly models: readonly string[];
 }
 
-/** OAuth model choices. The companion resolves exactly and rejects unknown IDs.
- * Keep these in sync with pi-catalog plus verified local entries in ohMyPiModel.ts. */
+/** ChatGPT(Codex) 구독으로 고를 수 있는 모델 — **이 넷만** 지원한다(감독 지시 2026-09-27).
+ * 예전엔 pi-catalog 번들 8종(gpt-5.4-mini·codex-spark·daybreak …)을 다 떠서 보여 줘 고를 이유가 없는
+ * 선택지가 목록을 덮었다. 순서가 공장 기본 우선순위다(첫 항목 = 기본, ohMyPiProviders 와 일치).
+ * gpt-6-* 는 설치 번들(17.4.0) 밖이라 동반 서비스가 scripts/lib/ohMyPiModel.ts 의 로컬 확장으로 풀어 준다. */
 const CODEX_MODELS: readonly string[] = [
   "gpt-5.6-sol",
-  "gpt-5.6-terra",
-  "gpt-5.6-luna",
-  "gpt-5.5",
-  "gpt-5.4",
-  "gpt-5.4-mini",
-  "gpt-5.3-codex-spark",
-  "gpt-daybreak-blue-latest",
+  "gpt-6-astra",
+  "gpt-6-sol",
+  "gpt-6-luna",
 ];
 
 /**

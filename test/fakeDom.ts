@@ -706,9 +706,13 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
   // document 레벨 키다운/포인터다운 리스너(Escape·바깥 클릭 처리용)를 등록/해제/발화할 수 있도록
   // 최소 EventTarget 동작을 흉내낸다(FakeElement.addEventListener 와 동일한 패턴).
   documentListeners = {};
+  // 루트 요소 — 프로덕션 코드가 document.documentElement.dataset 에 전역 표시 상태를 쓴다
+  // (aiPanelLayout.applyAiRenderWeight). 없으면 설정 폼 렌더가 TypeError 로 멈춘다.
+  const documentElement = new FakeElement("html");
   defineDomGlobal("document", {
     activeElement: null,
     body,
+    documentElement,
     get children(): readonly FakeElement[] {
       return body.children;
     },

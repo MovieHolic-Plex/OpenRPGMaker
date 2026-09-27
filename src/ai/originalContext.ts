@@ -44,7 +44,12 @@ export const ORIGINAL_MODEL_WINDOWS: Readonly<Record<string, Readonly<Record<str
     "gpt-5.6-luna": 1000000,
     "gpt-5.6-sol": 1000000,
     "gpt-5.6-terra": 1000000,
-    "gpt-daybreak-blue-latest": 272000
+    "gpt-daybreak-blue-latest": 272000,
+    // GPT-6 계열은 설치 번들 밖 로컬 확장이다(scripts/lib/ohMyPiModel.ts, pi-catalog 18.3.2 값). 명시하지 않으면
+    // 기본 모델(gpt-5.6-sol, 1M) 창으로 떨어져 실제(272k)보다 크게 본다.
+    "gpt-6-astra": 272000,
+    "gpt-6-sol": 272000,
+    "gpt-6-luna": 272000
   }
 };
 

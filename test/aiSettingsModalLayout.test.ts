@@ -83,7 +83,7 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
       ["presets", "품질 프리셋", "역할별 모델과 추론 강도를 한 번에 맞춥니다."],
       ["image", "이미지 생성", "그림을 생성하는 모델"],
       ["behavior", "동작", "응답 예산과 작업 진행 방식을 조정합니다."],
-      ["display", "표시", "AI 패널의 읽기 환경을 조정합니다."],
+      ["display", "표시", "AI 패널의 읽기 환경과 화면 무게를 조정합니다."],
     ] as const;
 
     for (const [id, title, description] of expected) {
@@ -133,7 +133,7 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
     for (const description of [
       "목록에서 고르거나 공급자별 모델 ID를 직접 입력하세요.",
       "한 요청에서 AI가 쓸 수 있는 출력 토큰 예산",
-      "대화 조수는 위에서 선택한 역할별 추론 강도를 사용합니다.",
+      "기존 영역 작업 경로의 추론 설정입니다.",
       "자율 모드는 요청을 작업 계획으로 나누고, 채팅 모드는 대화 중심으로 진행합니다.",
       "채팅 로그, 제안 카드, 도구 로그의 글자 크기입니다.",
     ]) {
@@ -152,6 +152,26 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
     await Promise.resolve();
     await Promise.resolve();
     expect(fetchChatGptAuthStatus).toHaveBeenCalledWith("google-antigravity");
+  });
+
+  it("헤더 요약은 연결 패널과 같은 상태를 말한다", async () => {
+    // 옛 헤더는 열 때 따로 한 번 조회해서 패널과 다른 말을 했다(패널 「로그인 대기 중」, 헤더 「로그인이 필요합니다」).
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: false });
+    const modal = await openModal();
+    await vi.waitFor(() => {
+      expect(findByTestId(modal, "ai-oauth-status")?.textContent).toBe("로그인 필요");
+    });
+    const summary = findByTestId(modal, "ai-settings-connection-summary");
+    expect(summary?.textContent).toBe("Google · 로그인 필요");
+    expect(summary?.dataset.tone).toBe("warning");
+
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: true, authKind: "oauth" });
+    findByTestId(modal, "ai-settings-connection-check")?.click();
+    await vi.waitFor(() => {
+      expect(summary?.textContent).toBe("Google · 연결됨");
+    });
+    expect(summary?.dataset.tone).toBe("ready");
+    expect(findByTestId(modal, "ai-oauth-status")?.textContent).toBe("연결됨");
   });
 
   it("자동 저장이 유일한 저장 모델이고 푸터는 상태만 보여 준다", async () => {
@@ -175,9 +195,14 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
     const maxTokens = findByTestId(modal, "ai-config-maxtokens");
     const close = findByTestId(modal, "ai-settings-close");
     if (!maxTokens || !close) throw new Error("AI settings controls missing");
+    // 닫힘 신호(notifyAiSettingsClosed)가 window.dispatchEvent 를 부른다 — 빠지면 afterEach 의
+    // closeAiSettingsModal 이 던져 뒤 정리(unstub·restoreDom)가 건너뛰어지고 다음 테스트까지 깨진다.
     vi.stubGlobal("window", {
       setTimeout: globalThis.setTimeout.bind(globalThis),
       clearTimeout: globalThis.clearTimeout.bind(globalThis),
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+      dispatchEvent: () => true,
     });
 
     maxTokens.value = "54321";

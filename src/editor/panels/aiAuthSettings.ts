@@ -34,7 +34,6 @@ import {
 } from "@/ai/aiConnectionKind";
 import type { AiConfig } from "@/ai/llmClient";
 import {
-  OH_MY_PI_AUTH_KIND_LABEL,
   getOhMyPiProvider,
   ohMyPiAuthKind,
   parseOhMyPiProvider,
@@ -54,9 +53,18 @@ export interface AiAuthSettingsChange {
   readonly providerId: string;
 }
 
+export interface AiAuthStatusSnapshot {
+  readonly providerId: string;
+  readonly providerLabel: string;
+  readonly text: string;
+  readonly tone: "connected" | "disconnected" | "offline" | "checking";
+}
+
 export interface AiAuthSettingsView {
   readonly element: HTMLElement;
   readonly focus: () => void;
+  /** 헤더 「연결 확인」 — 패널의 같은 상태 경로로 다시 조회한다(로그인 대기 중이면 끊지 않는다). */
+  readonly recheck: () => void;
   /** 폴링 타이머·진행 중 요청을 정리한다. 모달을 닫을 때 반드시 부른다. */
   readonly dispose: () => void;
 }
@@ -75,17 +83,6 @@ const WAITING_COPY = "로그인을 기다리는 중…";
 const TIMEOUT_COPY = "시간이 지나 로그인을 멈췄어요. 다시 시도해 주세요.";
 
 type Tone = "connected" | "disconnected" | "offline" | "checking";
-
-const KIND_COPY: Record<AiConnectionKindId, { label: string; hint: string }> = {
-  oauth: {
-    label: "구독 로그인",
-    hint: "구독 계정으로 로그인합니다. 키를 입력하지 않습니다.",
-  },
-  apiKey: {
-    label: "API 키",
-    hint: "지원 제공자가 없습니다. 아래 두 제공자는 모두 구독 로그인입니다.",
-  },
-};
 
 /**
  * OAuth 제공자 두 개의 빠른 선택 카드. 제목은 로그인하는 계정(「Google 계정」·「ChatGPT 계정」),
@@ -116,6 +113,12 @@ function accountName(id: string): string {
 export function renderAiAuthSettings(
   config: AiConfig,
   onChange: (next: AiAuthSettingsChange) => void,
+  /**
+   * 패널 상태 줄이 바뀔 때마다 부른다 — 모달 헤더 요약이 패널과 **같은 한 상태**를 보이게 한다.
+   * 옛 헤더는 열 때 한 번만 따로 조회해서, 패널이 「로그인 대기 중」·「연결됨」 으로 바뀌어도
+   * 「로그인이 필요합니다」 에 머물렀고, 제공자를 바꾸면 「확인 중」 에서 영영 멈췄다(2026-09-26 실측).
+   */
+  onStatus?: (next: AiAuthStatusSnapshot) => void,
 ): AiAuthSettingsView {
   // 연결 종류 선택 UI 는 없다 — 이 레지스트리의 제공자는 전부 oauth 이고, 예전 「API 키」
   // 카드는 지원 제공자가 없는 죽은 선택지였다(고르면 같은 두 제공자만 다시 보였다).
@@ -139,14 +142,11 @@ export function renderAiAuthSettings(
     attrs: { role: "status" },
     dataset: { testid: "ai-oauth-status", tone: "checking" },
   });
-  const kindBadge = el("span", {
-    class: "ai-auth-kind-badge",
-    dataset: { testid: "ai-auth-kind-badge" },
-  });
   /** 상태 문구와 색을 **함께** 쓴다 — 하나만 바꾸면 색이 이전 상태로 남는다(옛 결함 ⑥). */
   const setStatus = (text: string, tone: Tone): void => {
     status.textContent = text;
     status.dataset.tone = tone;
+    onStatus?.({ providerId, providerLabel: accountName(providerId), text, tone });
   };
 
   // ── 제공자 카드(radiogroup) ─────────────────────────────────────────────
@@ -324,9 +324,11 @@ export function renderAiAuthSettings(
       el("div", { class: "ai-auth-actions", children: [envScanAllow, envScanDeny] }),
     ],
   });
+  // 로그인 흐름의 주 동작이 아니다 — 버튼 줄에 나란히 두면 「로그인」 과 같은 무게로 읽혀
+  // 구독 로그인 사용자가 키를 찾아야 하나 헷갈렸다(2026-09-26 스샷). 조용한 글자 버튼으로 둔다.
   const envScanAgain = el("button", {
-    class: "ai-assistant-action",
-    text: "환경 변수에서 키 찾기",
+    class: "ai-auth-link-action",
+    text: "서버 환경 변수의 키 쓰기",
     attrs: { type: "button", hidden: "" },
     dataset: { testid: "ai-env-scan-again" },
   }) as HTMLButtonElement;
@@ -337,6 +339,11 @@ export function renderAiAuthSettings(
     attrs: { type: "button", hidden: "" },
     dataset: { testid: "ai-auth-disconnect" },
   }) as HTMLButtonElement;
+  const actionsRow = el("div", {
+    class: "ai-auth-actions",
+    dataset: { testid: "ai-auth-actions" },
+    children: [loginButton, disconnectButton],
+  });
 
   // ── 기기 로그인 블록 ───────────────────────────────────────────────────────
   // 로그인 주소는 **본문 글자로 보여 주지 않는다.** Google 인가 주소는 600자에 가까워 패널을
@@ -464,16 +471,19 @@ export function renderAiAuthSettings(
     const providerKind = ohMyPiAuthKind(providerId);
     // 두 제공자는 모두 oauth 이므로 키 입력 분기가 없다. 안내도 providerId 하드코딩 대신
     // 레지스트리 authKind 를 따라가 새 제공자를 추가할 때 잘못된 키 안내가 생기지 않게 한다.
-    providerHelp.textContent = providerKind === "oauth"
-      ? `${meta?.label ?? providerId} 계정으로 로그인합니다. 키는 입력하지 않습니다.`
-      : `${meta?.label ?? providerId} 는 이 에디터에서 지원하지 않는 자격 종류입니다.`;
-    kindBadge.textContent = stored
-      ? OH_MY_PI_AUTH_KIND_LABEL[providerKind]
-      : KIND_COPY[kind].label;
+    // 카드 설명을 그대로 되풀이하지 않는다 — 패널 안내는 **다음에 무슨 일이 일어나는지**를 말한다.
+    const label = meta?.label ?? providerId;
+    providerHelp.textContent = providerKind !== "oauth"
+      ? `${label} 는 이 에디터에서 지원하지 않는 자격 종류입니다.`
+      : stored
+        ? `${label} 계정으로 연결되어 있어요. 다른 계정을 쓰려면 연결 해제 후 다시 로그인하세요.`
+        : `로그인을 누르면 새 창이 열리고 ${label} 계정으로 로그인합니다. API 키는 필요 없어요.`;
     loginButton.textContent = stored
       ? "다시 확인"
       : providerKind === "oauth" ? "로그인" : "연결 확인";
     disconnectButton.hidden = !stored;
+    // 로그인 전에는 「로그인」 이 이 화면의 유일한 다음 단계다 — 다른 회색 버튼과 같은 무게로 두지 않는다.
+    loginButton.classList.toggle("is-primary", !stored && providerKind === "oauth");
     // 퀵 카드의 보이기/체크·탭 순서도 같은 크롬 갱신 경로에서 맞춘다.
     applyQuickChrome();
   };
@@ -734,7 +744,18 @@ export function renderAiAuthSettings(
     pollAttempt = 0;
     stopPasteWatch?.();
     pasteSubmitted = "";
-    deviceBlock.hidden = true;
+    setDeviceFlowVisible(false);
+  }
+
+  /**
+   * 기기 로그인 블록을 열고 닫는 유일한 경로. 대기 중에는 버튼 줄(「로그인」)과 환경 변수 글자 버튼을
+   * 숨긴다 — 옛 화면은 대기 블록의 「로그인 창 다시 열기」·「취소」 위에 「로그인」 이 그대로 남아
+   * 무엇을 눌러야 하는지 두 갈래로 보였다. 다시 시작하려면 「취소」 뒤 「로그인」 이다.
+   */
+  function setDeviceFlowVisible(visible: boolean): void {
+    deviceBlock.hidden = !visible;
+    actionsRow.hidden = visible;
+    envScanAgain.dataset.flowHidden = visible ? "true" : "false";
   }
 
   /**
@@ -887,7 +908,7 @@ export function renderAiAuthSettings(
           hint.hidden = false;
           return;
         }
-        deviceBlock.hidden = false;
+        setDeviceFlowVisible(true);
         loginUrl = login.verificationUrl || "";
         // 주소는 href 에만 둔다(본문 글자 금지 — 위 기기 로그인 블록 주석).
         // setAttribute 로 쓴다 — 속성으로 남아야 테스트·접근성 도구가 같은 값을 읽는다.
@@ -994,6 +1015,7 @@ export function renderAiAuthSettings(
 
   fillProviders();
   applyChrome();
+  setStatus("연결 확인 중…", "checking");
   void refreshStatus();
   // 선택되지 않은 카드도 실제 자격 상태를 보여 준다 — 카드가 곧 상태 표시이므로 둘 다 조회한다.
   // 선택 카드는 위 refreshStatus 경로가 담당한다.
@@ -1020,12 +1042,12 @@ export function renderAiAuthSettings(
       children: [
         quickBlock,
         el("div", { class: "ai-auth-panel", dataset: { testid: "ai-auth-connection" }, children: [
+          el("div", { class: "ai-auth-state", children: [status] }),
           providerHelp,
-          el("div", { class: "ai-auth-state", children: [status, kindBadge] }),
           envScanBox,
-          envScanAgain,
-          el("div", { class: "ai-auth-actions", children: [loginButton, disconnectButton] }),
+          actionsRow,
           deviceBlock,
+          envScanAgain,
           timeoutNotice,
           hint,
           serverError,
@@ -1038,6 +1060,27 @@ export function renderAiAuthSettings(
       // 폼의 첫 컨트롤로 보낸다 — 로그인 버튼에 포커스를 주면 Enter 한 번에 로그인이 발사된다.
       // API 키 입력은 두 제공자 모두에게 존재하지 않는다.
       quickButtons.get(providerId)?.focus();
+    },
+    recheck: () => {
+      if (disposed) return;
+      if (!deviceBlock.hidden) {
+        // 로그인 대기 중에는 흐름을 끊지 않는다 — 이미 끝났는지만 확인하고, 아니면 그대로 기다린다.
+        const gen = opGeneration;
+        const provider = providerId;
+        void fetchChatGptAuthStatus(provider)
+          .then((auth) => {
+            if (disposed || gen !== opGeneration || provider !== providerId) return;
+            if (hasStoredCompanionCredential(auth)) {
+              stopPolling();
+              applyStatus(auth);
+            }
+          })
+          .catch(() => undefined);
+        return;
+      }
+      opGeneration += 1;
+      setStatus("연결 확인 중…", "checking");
+      void refreshStatus();
     },
     dispose: () => {
       disposed = true;
