@@ -1,4 +1,4 @@
-import { EXTENDED_POSE_FRAME, type ExtendedBattlerPose } from "@/battle/battlePose";
+import { CAST_TYPES, EXTENDED_POSE_FRAME, castTypeForSkill, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
 import { store } from "@/project/store";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
 import type { BattleSnapshot } from "@/battle/runtime";
@@ -42,6 +42,17 @@ export function retroMotionPose(node: HTMLElement, pose: Pose, paint: PaintPose)
 
 function paint(node: HTMLElement, pose: Pose): void { painters.get(node)?.(node, pose); }
 
+/**
+ * 지금 그릴 칸이 시전 칸(cast_charge/raise/release, skill 제외)이고 이 행동에 마법 종류가 붙어 있으면
+ * 시전 시트의 (종류, 단계)를 돌려준다. 준비=1, 영창=2, 방출=3. 표시 계층(applyBattlerPose)이 시전 시트로 그린다.
+ */
+export function retroCastFrameFor(node: HTMLElement, pose: Pose): { readonly type: CastType; readonly step: 1 | 2 | 3 } | undefined {
+  const type = node.dataset.retroCast as CastType | undefined;
+  if (!type || !CAST_TYPES.includes(type) || !node.dataset.retroBeat) return undefined;
+  const step = pose === "cast_charge" ? 1 : pose === "cast_raise" ? 2 : pose === "cast_release" ? 3 : undefined;
+  return step ? { type, step } : undefined;
+}
+
 /** 시퀀서가 실제로 소비하는 시각 엔트리만 따라간다. 마지막 결과는 이미 다음 행동일 수 있다. */
 export function initRetroMotion(field: HTMLElement, snapshot: BattleSnapshot): void {
   cursors.set(field, snapshot.timeline.at(-1)?.sequence ?? -1);
@@ -79,10 +90,20 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
     user.dataset.retroAction = user.classList.contains("battle-enemy") ? "enemy"
       : entry?.commandKind === "defend" ? "defend"
         : entry?.commandKind === "item" && user.dataset.battlerExtended === "true" ? "item"
-          : entry?.commandKind === "skill" || entry?.commandKind === "item" ? "cast" : "attack";
+          // 공격력으로 치는 기술(검격 등)은 걸어가서 벤다. 나머지 기술은 제자리 시전.
+          : entry && entry.commandKind === "skill" && isMeleeEntry(entry) ? "attack"
+            : entry?.commandKind === "skill" || entry?.commandKind === "item" ? "cast" : "attack";
+    // 마법 종류별 시전 칸(cast 시트). 걷기 칩 시트가 아니면 기존 시전 칸으로 떨어진다.
+    const castType = user.dataset.retroAction === "cast" && skill ? castTypeForSkill(skill) : undefined;
+    if (castType) user.dataset.retroCast = castType;
+    else delete user.dataset.retroCast;
     // 차례의 반 걸음 위치에서 출발한다. 화면 배율을 이동 거리에 다시 곱하지 않는다.
-    user.style.setProperty("--retro-start", user.dataset.retroCommand === "true" ? "16px" : "0px");
-    user.style.setProperty("--retro-travel", user.dataset.retroAction === "defend" ? "0px" : ["cast", "item"].includes(user.dataset.retroAction) ? "16px" : "72px");
+    user.style.setProperty("--retro-start", user.dataset.retroCommand === "true" ? "-16px" : "0px");
+    // 근접 공격은 대상 적 앞까지 실제로 걸어간다(retroWalk 가 DOM 좌표로 잰다). 못 재면 72px.
+    const walk = entry && user.dataset.retroAction === "attack" && user.classList.contains("battle-actor") ? retroWalk(field, entry) : undefined;
+    user.style.setProperty("--retro-travel", user.dataset.retroAction === "defend" ? "0px"
+      : ["cast", "item"].includes(user.dataset.retroAction) ? "-16px"
+        : `${-(walk?.distance ?? 72)}px`);
   }
   user.dataset.retroBeat = beat.kind;
   user.style.setProperty("--retro-beat-ms", `${Math.max(1, beat.durationMs)}ms`);
@@ -162,9 +183,18 @@ function animateExtendedBeat(node: HTMLElement, beat: BattleActionBeat): void {
       : beat.kind === "impact" ? [[0, finisher ? "skill" : "cast_release"]]
         : [[0, finisher ? "skill" : "cast_release"], [0.6, "idle"]];
   } else if (beat.kind === "approach") {
+    // 걸어가는 동안 걷기 칸을 돌리고, 적 앞에 도착한 마지막 구간(약 240ms)에 젖힘 → 휘두름. 착탄(impact)에서 attack 칸.
+    // impact 비트는 히트스톱 길이(약 110ms)뿐이라 휘두름을 거기 다 넣으면 세 칸이 안 보였다.
     const walk: Pose[] = ["walk_a", "walk_b", "walk_c", "walk_b"];
-    frames = Array.from({ length: Math.max(1, Math.ceil(length / 90)) }, (_, i) => [i * 90 / Math.max(1, length), walk[i % 4]]);
-  } else if (beat.kind === "impact") frames = [[0, "attack_windup"], [0.3, "attack_strike"], [0.65, "attack"]];
+    const swingMs = Math.min(240, length * 0.4);
+    const walkMs = Math.max(0, length - swingMs);
+    const steps = Math.max(1, Math.ceil(walkMs / 110));
+    frames = [
+      ...Array.from({ length: steps }, (_, i): [number, Pose] => [(i * walkMs / steps) / Math.max(1, length), walk[i % 4]!]),
+      [walkMs / Math.max(1, length), "attack_windup"],
+      [(walkMs + swingMs * 0.55) / Math.max(1, length), "attack_strike"],
+    ];
+  } else if (beat.kind === "impact") frames = [[0, "attack"]];
   else frames = [[0, "attack_follow"], [0.18, "evade"], [0.86, "idle"]];
   // 감속 모드와 길이 0 비트에서는 대표 칸만 내보내고 뒤늦은 칸 전환을 예약하지 않는다.
   if (reduced() || length === 0) {
@@ -252,4 +282,67 @@ export function retroCommandPose(node: HTMLElement, active: boolean): void {
 /** 시퀀서가 소비 중인 엔트리 자체를 쓴다. 같은 사용자의 과거 피해를 재검색하지 않는다. */
 export function retroTimelineEntry(field: HTMLElement, entry: BattleTimelineEntrySnapshot): void {
   currentEntries.set(field, entry);
+}
+
+// ── 걸어가서 때리기 ─────────────────────────────────────────────────────────────────────
+// 근접 공격(통상 공격·attack 계열 스킬)은 approach 비트 동안 대상 적 **바로 앞**까지 걷는다.
+// 거리는 실제 DOM 좌표에서 잰다: 아군 몸 앞(왼쪽) 가장자리 → 적 그림 오른쪽 가장자리 + 여유.
+// 시퀀서가 비트 길이를 정하기 전에(actorApproachMs) 한 번, 전진을 걸 때 한 번 부르므로 엔트리별로 기억한다.
+const WALK_PX_PER_MS = 0.26;
+const RETURN_PX_PER_MS = 0.36;
+const WALK_GAP_PX = 6;
+const walkCache = new WeakMap<HTMLElement, Map<number, RetroWalk | null>>();
+
+export interface RetroWalk {
+  /** 걸어가는 거리(무대 논리 px, 왼쪽이 양수). */
+  readonly distance: number;
+  readonly approachMs: number;
+  readonly recoverMs: number;
+}
+
+/** 이 엔트리가 걸어가서 때리는 행동인가 — 아군의 통상 공격, 또는 공격력으로 치는 피해 스킬. */
+function isMeleeEntry(entry: BattleTimelineEntrySnapshot): boolean {
+  if (entry.side === "enemy") return false;
+  if (entry.commandKind === "attack") return true;
+  if (entry.commandKind !== "skill") return false;
+  const skill = store.getCurrent().database.skills.find((row) => row.name === entry.skillName);
+  return skill?.effect.kind === "damage" && skill.effect.statistic === "attack";
+}
+
+export function retroWalk(field: HTMLElement, entry: BattleTimelineEntrySnapshot): RetroWalk | undefined {
+  let cache = walkCache.get(field);
+  if (!cache) walkCache.set(field, cache = new Map());
+  if (cache.has(entry.sequence)) return cache.get(entry.sequence) ?? undefined;
+  const result = measureWalk(field, entry);
+  cache.set(entry.sequence, result ?? null);
+  return result;
+}
+
+function measureWalk(field: HTMLElement, entry: BattleTimelineEntrySnapshot): RetroWalk | undefined {
+  if (!isMeleeEntry(entry) || reduced()) return undefined;
+  const userId = entry.userRecordId ?? entry.userId;
+  const user = [...field.querySelectorAll<HTMLElement>(".battle-actor")].find((node) => node.dataset.recordId === userId);
+  const enemies = [...field.querySelectorAll<HTMLElement>(".battle-enemy:not(.defeated)")];
+  const target = enemies.find((node) => node.dataset.testid === entry.targetId || node.dataset.recordId === entry.targetId) ?? enemies[0];
+  if (!user || !target) return undefined;
+  const scene = field.closest<HTMLElement>(".battle-scene");
+  const scale = Number.parseFloat(scene?.style.getPropertyValue("--battle-stage-scale") ?? "") || 1;
+  const userRect = user.getBoundingClientRect();
+  const image = target.querySelector<HTMLElement>(".battle-enemy-image") ?? target;
+  const enemyRect = image.getBoundingClientRect();
+  if (userRect.width === 0 || enemyRect.width === 0) return undefined;
+  // 지금 걸린 translate(명령 차례의 반 걸음)는 빼고 제자리 기준으로 잰다.
+  const current = Number.parseFloat(getComputedStyle(user).translate.split(" ")[0] ?? "0") || 0;
+  // 96px 셀 안에서 몸은 가운데 약 40px 이다 — 몸 앞 가장자리 = 셀 가운데 − 20px.
+  const bodyFront = (userRect.left + userRect.width / 2) / scale - current - 20;
+  // 몬스터 그림은 투명 여백이 가장자리에 있다(실측 오른쪽 약 15%).
+  const enemyFront = (enemyRect.right - enemyRect.width * 0.15) / scale;
+  const distance = Math.round(bodyFront - enemyFront - WALK_GAP_PX);
+  if (!Number.isFinite(distance) || distance < 24) return undefined;
+  const clamp = (value: number, min: number, max: number) => Math.round(Math.max(min, Math.min(max, value)));
+  return {
+    distance,
+    approachMs: clamp(distance / WALK_PX_PER_MS, 420, 1100),
+    recoverMs: clamp(distance / RETURN_PX_PER_MS, 420, 900),
+  };
 }

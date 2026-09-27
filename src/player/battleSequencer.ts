@@ -93,6 +93,11 @@ export interface BattleSequencerHooks {
   /** 결과가 정해진 뒤 결과 패널이 뜨기 전(BATTLE_RESULT_HOLD_MS) 한 번. 이 홀드는 예전엔 빈 필드만
    *  보이는 정적 구간이었다 — 표시 계층이 승리/전멸 도장을 찍는다. */
   readonly onResultPending?: (result: NonNullable<BattleSnapshot["result"]>) => void;
+  /** 아군 행동의 접근(approach) 비트 길이를 표시 계층이 정한다(도트 측면 전투: 적 앞까지 걷는 거리에 비례).
+   *  undefined 를 돌려주면 BATTLE_ACTING_MS 그대로 — 이 훅이 없는 스킨의 시간은 바뀌지 않는다. */
+  readonly actorApproachMs?: (entry: BattleTimelineEntrySnapshot) => number | undefined;
+  /** 아군 행동의 회복(recover) 비트 최소 길이(걸어간 거리만큼 뛰어 돌아오는 시간). */
+  readonly actorRecoverMs?: (entry: BattleTimelineEntrySnapshot) => number | undefined;
 }
 
 export interface BattleSequencer {
@@ -458,10 +463,13 @@ export function createBattleSequencer(
           userId: entry.userRecordId ?? entry.userId ?? "actor",
           targetId: entry.targetId,
           feedback,
-          actingMs: Math.max(BATTLE_ACTING_MS, cinematicMs),
+          actingMs: Math.max(hooks.actorApproachMs?.(entry) ?? BATTLE_ACTING_MS, cinematicMs),
           hitStopMs: BATTLE_HITSTOP_MS,
           // 후속 애니메이션(연기·잔광)이 비트보다 길면 recover 를 늘려 잘리지 않게 한다.
-          impactMs: recoverMsForAnimation(entry.animation?.durationMs, Math.max(BATTLE_ACTING_MS, cinematicMs), BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
+          impactMs: Math.max(
+            hooks.actorRecoverMs?.(entry) ?? 0,
+            recoverMsForAnimation(entry.animation?.durationMs, Math.max(hooks.actorApproachMs?.(entry) ?? BATTLE_ACTING_MS, cinematicMs), BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
+          ),
           weight,
         });
     // 이펙트 마운트 시점: 착탄 프레임이 임팩트 비트와 같은 순간에 오도록 approach 길이에서

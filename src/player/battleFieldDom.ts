@@ -1,5 +1,5 @@
 import { charsetBattler, resolvePartyBattleCharset } from "@/assets/charsetBattlers";
-import { retroMotionPose } from "@/player/battleRetroMotion";
+import { retroCastFrameFor, retroMotionPose } from "@/player/battleRetroMotion";
 import { battleTypeBadges } from "@/player/battleTypeBadges";
 import type { BattleActionBeat } from "@/player/battleActionBeats";
 import { fitBattleEnemy } from "@/player/battleEnemyFit";
@@ -11,7 +11,7 @@ import {
   type BattlerIdleAnimation,
 } from "@/assets/battlerIdleAnimations";
 import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/runtime";
-import { EXTENDED_POSE_FRAME, type ExtendedBattlerPose, POSE_FRAME, VICTORY_POSE_FRAME } from "@/battle/battlePose";
+import { CAST_SHEET_ROWS, EXTENDED_POSE_FRAME, castFrame, type ExtendedBattlerPose, POSE_FRAME, VICTORY_POSE_FRAME } from "@/battle/battlePose";
 import { skinPartySpriteUrl } from "@/battle/partySpriteResources";
 import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
 import type { BattleSkin } from "@/battle/skins/types";
@@ -596,6 +596,23 @@ function applyBattlerPose(node: HTMLElement, pose: ExtendedBattlerPose): void {
     }
     clearIdleAnimationOnSheetSprite(sprite);
     const extended = node.dataset.battlerExtended === "true";
+    // 마법 시전 칸: 걷기 칩 시트는 마법 종류별 시전 시트(cast/<id>.png)를 따로 갖는다. 그 칸을 그릴 때만 배경 그림을
+    // 시전 시트로 바꾸고, 다른 포즈로 돌아오면 전투 시트로 되돌린다. 시트를 못 읽으면(castSheetReady false) 기존 시전 칸.
+    const cast = extended ? retroCastFrameFor(node, pose) : undefined;
+    const castUrl = cast ? castSheetUrl(sprite) : undefined;
+    if (cast && castUrl) {
+      sprite.style.backgroundImage = `url("${castUrl}")`;
+      sprite.style.backgroundSize = `${frameW * BATTLE_SHEET_COLUMNS}px ${frameH * CAST_SHEET_ROWS}px`;
+      node.dataset.battlePoseFrame = `cast_${cast.type}_${cast.step}`;
+      const castFrameOffset = (value: number) => (value === 0 ? "0px" : `-${value}px`);
+      const at = castFrame(cast.type, cast.step);
+      sprite.style.backgroundPosition = `${castFrameOffset(at.col * frameW)} ${castFrameOffset(at.row * frameH)}`;
+      return;
+    }
+    if (extended && sprite.dataset.battlerSheetUrl && !sprite.style.backgroundImage.includes(sprite.dataset.battlerSheetUrl)) {
+      sprite.style.backgroundImage = `url("${sprite.dataset.battlerSheetUrl}")`;
+      if (sprite.dataset.battlerSheetSize) sprite.style.backgroundSize = sprite.dataset.battlerSheetSize;
+    }
     const frame = extended ? EXTENDED_POSE_FRAME[pose]
       : pose === "victory" ? victoryFrameFor(node, sprite) : POSE_FRAME[pose as keyof typeof POSE_FRAME] ?? POSE_FRAME.idle;
     if (extended) node.dataset.battlePoseFrame = pose;
@@ -869,7 +886,7 @@ function enemyButton(
   enemyNode.style.setProperty("--enemy-index", String(index));
   enemyNode.dataset.testid = enemy.id;
   enemyNode.dataset.recordId = enemy.recordId;
-  enemyNode.dataset.facing = activeSkin().id === "retro2003" ? "left" : "right";
+  enemyNode.dataset.facing = "right";
   if (snapshot.targetSelection?.side === "enemy" && snapshot.targetSelection.targetIds.includes(enemy.id)) {
     enemyNode.dataset.battleTargetable = "true";
     enemyNode.classList.add("battle-target-candidate");
@@ -1008,7 +1025,7 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0, count = 4): HTMLElem
   node.dataset.partyFacing = place.partyFacing;
   node.dataset.testid = `battle-actor-${actor.recordId}`;
   node.dataset.recordId = actor.recordId;
-  node.dataset.facing = activeSkin().id === "retro2003" ? "right" : "left";
+  node.dataset.facing = "left";
   node.dataset.battlerWeak = String(actor.hp > 0 && actor.hp <= actor.maxHp / 4);
   node.dataset.battlerDefending = String(actor.defending);
   node.setAttribute("aria-label", actor.name);
@@ -1600,6 +1617,7 @@ function actorBattleImage(name: string, resourceId: string, url: string): HTMLEl
     sprite.style.backgroundSize = `${frameW * BATTLE_SHEET_COLUMNS}px ${frameH * BATTLE_SHEET_ROWS}px`;
     sprite.dataset.battlerSheetSize = sprite.style.backgroundSize;
     sprite.style.backgroundImage = `url("${sheetUrl}")`;
+    if (charsetBattler(resourceId)) preloadCastSheet(sprite);
     return sprite;
   }
   const image = document.createElement("img");
@@ -1610,6 +1628,29 @@ function actorBattleImage(name: string, resourceId: string, url: string): HTMLEl
 }
 
 const BATTLE_SHEET_CELL = 48;
+
+/** 시전 시트 URL(걷기 칩 전투 시트에만 있다). 한 번 불러 보고 실패하면 기억해서 다시 쓰지 않는다. */
+const castSheetState = new Map<string, "loading" | "ready" | "missing">();
+function castSheetUrl(sprite: HTMLElement): string | undefined {
+  const entry = charsetBattler(sprite.dataset.battlerResourceId);
+  if (!entry) return undefined;
+  const url = resolveAssetResourceUrl(`${entry.resourceId}-cast`, { project: store.getCurrent() }) ?? `/${entry.castPath}`;
+  const state = castSheetState.get(url);
+  if (state === "ready") return url;
+  if (state === undefined && typeof Image !== "undefined") {
+    castSheetState.set(url, "loading");
+    const probe = new Image();
+    probe.onload = () => castSheetState.set(url, "ready");
+    probe.onerror = () => castSheetState.set(url, "missing");
+    probe.src = url;
+  }
+  return undefined;
+}
+
+/** 시전 시트를 미리 받아 둔다 — 첫 마법 때 칸이 비지 않게(마운트 때 한 번). */
+export function preloadCastSheet(sprite: HTMLElement): void {
+  castSheetUrl(sprite);
+}
 const BATTLE_SHEET_COLUMNS = 3;
 const BATTLE_SHEET_ROWS = 8;
 

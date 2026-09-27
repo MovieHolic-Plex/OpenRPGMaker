@@ -22,6 +22,8 @@ const out = resolve(values.out ?? process.env.QA_OUT_DIR ?? 'verify-shots/runtim
 await mkdir(out, { recursive: true });
 const report = { options: { fps, width, maxSeconds, project: values.project ?? 'demo-v3 (녹화용 사본)' }, clips: [], actions: [], errors: [], notes: [], hud: {} };
 const segments = {};
+const castSkillsUsed = new Set();
+const castActors = new Set();
 let fixture, server, browser, context, page, video, crop, started, stopped, enemyStart;
 const id = (value) => `[data-testid="${value}"]`;
 const elapsed = () => (performance.now() - started) / 1000;
@@ -76,18 +78,23 @@ async function choose(testId, confirm = true) {
   throw new Error(`키보드 커서 도달 실패: ${testId}`);
 }
 
-async function finishAction(name, command) {
+async function finishAction(name, command, wantedSkill) {
   const start = elapsed();
   await choose(command);
-  if (name === 'magic') {
+  if (name.startsWith('magic')) {
     await page.waitForSelector('[data-testid^="actor-skill-"]', { timeout: Math.min(5000, remaining()) });
     const candidates = await page.locator('[data-testid^="actor-skill-"]:not([aria-disabled="true"])').evaluateAll((nodes) => nodes.map((node) => node.dataset.testid));
-    const skill = candidates.find((entry) => entry === 'actor-skill-skill_arcane_bolt') ?? candidates.find((entry) => entry !== 'actor-skill-skill_attack');
+    const skill = (wantedSkill && candidates.find((entry) => entry === `actor-skill-${wantedSkill}`))
+      ?? candidates.find((entry) => !castSkillsUsed.has(entry) && !/skill_attack|skill_sword_slash/.test(entry));
     if (!skill) { await page.keyboard.press('x'); return false; }
-    await auditHud('magic-menu');
-    await choose('actor-command-back', false);
-    await auditHud('magic-menu-bottom');
+    castSkillsUsed.add(skill);
+    if (name === 'magic') {
+      await auditHud('magic-menu');
+      await choose('actor-command-back', false);
+      await auditHud('magic-menu-bottom');
+    }
     await choose(skill);
+    report.notes.push(`${name}: ${skill.replace('actor-skill-', '')}`);
   } else if (name === 'item') {
     const items = page.locator('[data-testid^="actor-item-"]:not([aria-disabled="true"])');
     if (!await items.count()) { await page.keyboard.press('x'); report.notes.push('소모품 없음: 아이템 구간 생략'); return false; }
@@ -182,8 +189,13 @@ try {
   await finishAction('attack', 'actor-command-attack');
 
   let magic = false, defended = false, enemy = false, item = false;
+  // 마법은 종류마다 시전 동작이 다르다 — 서로 다른 마법을 최대 세 번 찍는다(마도사 화염·비전, 성직자 치유 등).
+  let casts = 0;
+  const party = fixture.project.system.startActorIds ?? [];
+  const castCapable = fixture.project.database.actors.filter((actor) => party.includes(actor.id)
+    && actor.learnedSkills?.some((skill) => !/skill_attack|skill_sword_slash/.test(skill.skillId))).length;
   const enemyNames = fixture.project.database.enemies.map((entry) => entry.name);
-  while (!(magic && defended && enemy && item)) {
+  while (!(magic && casts >= Math.min(3, castCapable) && defended && enemy && item)) {
     budget();
     const state = await measure();
     enemy ||= Boolean(segments.enemy);
@@ -199,9 +211,11 @@ try {
     }
     if (state.phase === 'actorCommand' && state.busy === 'false' && await page.locator(id('actor-command-defend')).isVisible()) {
       const actor = fixture.project.database.actors.find((entry) => entry.id === state.actor);
-      if (!magic && actor?.learnedSkills?.some((skill) => skill.skillId !== 'skill_attack')) {
-        magic = await finishAction('magic', 'actor-command-skill');
-        if (!magic) { await finishAction('defend', 'actor-command-defend'); defended = true; }
+      const castable = actor?.learnedSkills?.some((skill) => !/skill_attack|skill_sword_slash/.test(skill.skillId));
+      if (casts < 3 && castable && !castActors.has(actor.id)) {
+        castActors.add(actor.id);
+        const ok = await finishAction(casts === 0 ? 'magic' : `magic-${casts + 1}`, 'actor-command-skill', actor.id === 'actor_mage' && casts === 0 ? 'skill_fire' : undefined);
+        if (ok) { casts += 1; magic = true; } else { await finishAction('defend', 'actor-command-defend'); defended = true; }
       } else if (magic && defended && enemy && !item) {
         if (await page.locator(`${id('actor-command-item')}:not([aria-disabled="true"])`).count()) await finishAction('item', 'actor-command-item');
         else report.notes.push('사용 가능한 아이템 명령 없음: 구간 생략');

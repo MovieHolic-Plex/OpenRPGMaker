@@ -44,7 +44,7 @@ const SIDEVIEW: SkinBattlerPlacement = {
   party: (i) => ({ x: 196 + i * 32, y: 84 + i * 25 }),
 };
 
-/** 도트 측면: 발끝은 접지 띠 안에, 네 아군은 왼쪽 위 오른편에서 아래 왼편으로 내려선다. */
+/** 도트 측면: 적은 왼쪽 접지 띠, 아군은 오른쪽 사선(뒤=위·왼쪽 → 앞=아래·오른쪽). 아군 도트는 왼쪽을 본다. */
 const RETRO_SIDEVIEW: SkinBattlerPlacement = {
   partyFacing: "front",
   enemy: (i, n) => {
@@ -52,10 +52,11 @@ const RETRO_SIDEVIEW: SkinBattlerPlacement = {
     // 세 마리까지 한 줄, 그 이상은 최대 두 줄로 나눈다.
     const seats = n <= 3 ? n : columns;
     const column = n <= 3 ? i : i % columns;
-    return { x: seats <= 1 ? 240 : Math.round(192 + column * 96 / (seats - 1)),
+    return { x: seats <= 1 ? 88 : Math.round(40 + column * 96 / (seats - 1)),
       y: n <= 3 ? 128 + (i % 2) * 12 : 118 + Math.floor(i / columns) * 22 };
   },
-  party: (i) => ({ x: 124 - i * 30, y: 82 + i * 20 }),
+  // 96px(정수 2배) 도트 넷이 크게 겹치지 않게 가로 24·세로 18 간격. 마지막 발 y 136 은 HUD 위다.
+  party: (i) => ({ x: 222 + i * 24, y: 82 + i * 18 }),
 };
 
 export const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
@@ -101,7 +102,7 @@ export function resolveSkinEnemyPosition(
   // 옛 트룹의 0..240 y를 그대로 쓰면 새 접지 띠 위에 뜬다. 이 스킨만 안전 구간에 맞춘다.
   if (skinId === "retro2003") {
     const cy = canonical?.y;
-    return { x: Math.max(180, Math.min(288, 320 - cx)),
+    return { x: Math.max(32, Math.min(150, cx)),
       y: cy != null && Number.isFinite(cy) ? Math.max(118, Math.min(140, cy * 2 / 3)) : fallback.y };
   }
   const layout = BATTLE_SKINS[skinId]?.layout;

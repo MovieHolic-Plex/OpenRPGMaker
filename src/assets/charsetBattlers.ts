@@ -7,6 +7,8 @@ export const CHARSET_BATTLERS = Array.from({ length: 32 }, (_, index) => {
   return {
     resourceId: `charset-battler-${actor}-${characterIndex}`,
     path: `assets/generated/charset-battlers/${actor}-${characterIndex}.png`,
+    /** 마법 시전 시트(battlePose.CAST_TYPES 7행 × 3단계). */
+    castPath: `assets/generated/charset-battlers/cast/${actor}-${characterIndex}.png`,
     characterResourceId: `easyrpg-charset-${actor}`,
     characterIndex,
     label: `걷기 칩 전투 · ${findCharsetSemantic(`tex_easyrpg_charset_${actor}`, characterIndex)?.label ?? `${actor} ${characterIndex + 1}`}`,

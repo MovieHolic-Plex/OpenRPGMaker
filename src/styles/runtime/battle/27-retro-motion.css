@@ -7,7 +7,7 @@
   transition: translate 120ms ease-out;
 }
 .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-command="true"] {
-  translate: 16px 0;
+  translate: -16px 0;
 }
 .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-beat] {
   animation: retro-walk var(--retro-beat-ms) linear both;
@@ -22,6 +22,17 @@
 }
 .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-action="cast"][data-retro-beat="impact"] {
   animation-name: retro-cast-hold;
+}
+/* 걸어가서 때리기: 적 앞까지 걸음(비트의 앞부분) → 도착해서 제자리 휘두름. retroWalk 가 --retro-travel 을 실측 거리로 심는다. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-action="attack"][data-retro-beat="approach"] {
+  animation-name: retro-walk-up;
+}
+/* 도트 시전 칸이 동작을 보여 주므로 빛 고리·기울임은 걷기 칩 시트에서 끈다. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-actor[data-battler-extended="true"][data-retro-beat="approach"][data-retro-action="cast"]::before {
+  content: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-actor[data-battler-extended="true"][data-retro-beat="approach"][data-retro-action="attack"] .battle-actor-sprite {
+  rotate: none;
 }
 .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-actor[data-retro-beat="approach"][data-retro-action="attack"] .battle-actor-sprite {
   rotate: -4deg;
@@ -57,7 +68,7 @@
 .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-action="cast"][data-retro-beat="recover"] {
   animation-name: retro-cast-return;
 }
-@keyframes retro-cast-return { from { translate: 16px 0; } to { translate: 0 0; } }
+@keyframes retro-cast-return { from { translate: -16px 0; } to { translate: 0 0; } }
 /* 바깥 발 위치를 따라가는 그림자는 점프 높이만 반대로 보정한다. */
 .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-actor[data-retro-action="attack"][data-retro-beat="recover"] .battle-actor-platform {
   animation: retro-shadow-return var(--retro-beat-ms) linear both;
@@ -109,7 +120,17 @@
 }
 @keyframes retro-thrust {
   0%, 100% { translate: var(--retro-travel) 0; }
-  40% { translate: calc(var(--retro-travel) + 8px) 0; }
+  40% { translate: calc(var(--retro-travel) - 8px) 0; }
+}
+/* 걸음 구간 = 비트의 앞 60% 안팎(battleRetroMotion 의 swingMs 240ms 를 뺀 나머지). 도착 뒤에는 서서 휘두른다. */
+@keyframes retro-walk-up {
+  0% { translate: var(--retro-start, 0px) 0; }
+  10% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.14) -2px; }
+  20% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.3) 0; }
+  30% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.46) -2px; }
+  40% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.62) 0; }
+  50% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.78) -2px; }
+  62%, 100% { translate: var(--retro-travel) 0; }
 }
 @keyframes retro-cast-hold { from, to { translate: var(--retro-travel) 0; } }
 @keyframes retro-return {
@@ -129,7 +150,7 @@
   100% { opacity: 0; scale: 1.3; }
 }
 @keyframes retro-hurt {
-  0%, 40% { translate: -6px 0; filter: sepia(1) saturate(6) hue-rotate(320deg); }
+  0%, 40% { translate: 6px 0; filter: sepia(1) saturate(6) hue-rotate(320deg); }
   20%, 60% { filter: none; }
   100% { translate: 0 0; filter: none; }
 }
@@ -149,7 +170,7 @@
 }
 @keyframes retro-enemy-strike {
   0%, 100% { translate: 0 0; }
-  40% { translate: -10px 0; }
+  40% { translate: 10px 0; }
 }
 @keyframes retro-enemy-dissolve {
   0% { opacity: 1; clip-path: inset(0); filter: sepia(1) saturate(5) hue-rotate(320deg); }
@@ -187,23 +208,9 @@
   image-rendering: pixelated;
   animation: none;
 }
-/* 원본은 왼쪽 보기다. 이동하는 바깥 노드·그림자·숫자는 뒤집지 않는다. */
-.battle-scene[data-battle-skin="retro2003"][data-battle-motion][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-actor-group .battle-actor[data-battler-extended="true"] .battle-actor-sprite[data-rendering="pixelated"] {
-  transform: scaleX(-1);
-}
 .battle-scene[data-battle-skin="retro2003"][data-battle-motion][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-actor-group .battle-actor[data-battler-extended="true"] {
   width: 96px;
   height: 96px;
-  --hit-dir-x: -1;
-  --hit-dir-y: 0;
-}
-.battle-scene[data-battle-skin="retro2003"][data-battle-motion][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-actor {
-  --hit-dir-x: -1;
-  --hit-dir-y: 0;
-}
-.battle-scene[data-battle-skin="retro2003"][data-battle-motion][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-enemy {
-  --hit-dir-x: 1;
-  --hit-dir-y: 0;
 }
 /* 아이템도 영창처럼 반 걸음만 나왔다 돌아온다. */
 .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-action="item"][data-retro-beat="impact"] {

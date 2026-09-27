@@ -29,7 +29,12 @@ export async function recordingFixture(projectPath) {
     }
     // 데모 적의 원래 HP 18은 첫 공격에 사라진다. 모든 수동 구간을 찍을 만큼만 늘린다.
     if (!projectPath) for (const enemy of project.database.enemies) {
-      if (['enemy_slime', 'enemy_cave_bat'].includes(enemy.id)) enemy.stats.maxHp = 110;
+      if (['enemy_slime', 'enemy_cave_bat'].includes(enemy.id)) enemy.stats.maxHp = 220;
+    }
+    // 마법마다 시전 동작이 다르다 — 녹화에서 마도사가 화염(fire)과 비전(arcane)을 둘 다 쓸 수 있게 한다.
+    const mage = project.database.actors.find((actor) => actor.id === 'actor_mage');
+    if (mage && project.database.skills.some((skill) => skill.id === 'skill_fire') && !mage.learnedSkills.some((row) => row.skillId === 'skill_fire')) {
+      mage.learnedSkills = [...mage.learnedSkills, { level: 1, skillId: 'skill_fire' }];
     }
     const candidates = [];
     for (const [mapId, map] of Object.entries(project.maps)) for (const event of map.events ?? []) {

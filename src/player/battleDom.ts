@@ -1,4 +1,5 @@
-import { retroTimelineEntry, retroCommandPose, initRetroMotion, retroActionMotion, retroDamage, retroHitRelease, retroVictory } from "@/player/battleRetroMotion";
+import { retroTimelineEntry, retroCommandPose, initRetroMotion, retroActionMotion, retroDamage, retroHitRelease, retroVictory, retroWalk } from "@/player/battleRetroMotion";
+import type { BattleTimelineEntrySnapshot } from "@/battle/types";
 import type {
   ActorCommand,
   BattleResult,
@@ -408,7 +409,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       activeAnimation?.destroy();
       activeAnimation = syncBattleAnimationLayer(
         animationLayer,
-        { ...options.runtime.snapshot(), lastAnimation: animation },
+        { ...options.runtime.snapshot(), lastAnimation: retroMotion && isTravellingEffect(animation) ? undefined : animation },
         root,
       );
     },
@@ -521,6 +522,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (retroMotion && result === "victory") retroVictory(field);
       showFinaleStamp(result);
     },
+    // 도트 측면 전투: 근접 공격은 대상 적 앞까지 실제로 걸어간다. 비트 길이를 걸음 거리에 맞춘다.
+    ...(retroMotion ? {
+      actorApproachMs: (entry: BattleTimelineEntrySnapshot) => retroWalk(field, entry)?.approachMs,
+      actorRecoverMs: (entry: BattleTimelineEntrySnapshot) => retroWalk(field, entry)?.recoverMs,
+    } : {}),
     onResultStage(stage) {
       // 사용자가 확인키로 전부 공개했으면(revealAllResultRows) 늦게 도착한 낮은 단계가 되감지 않는다.
       resultRevealStage = Math.max(resultRevealStage, stage);
@@ -1496,4 +1502,16 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 function prefersReducedMotion(): boolean {
   return typeof window !== "undefined" && typeof window.matchMedia === "function"
     && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+/**
+ * 도트 측면 전투에서는 **날아가는 이펙트(화살·투사체)를 그리지 않는다** — 마법은 캐릭터가 도트로 시전하는 모습이 주인공이다
+ * (사용자 지시, 2026-09-28). 판정: 애니메이션의 그림 리소스·이름에 화살/투사체 낱말이 있으면 날아가는 것으로 본다
+ * (EasyRPG Arrow 시트 easyrpg-battle-arrow, 생성 이펙트 projectile-shot · 이름 「화살」「투사체」「독침」).
+ * 대상 위에서 제자리로 터지는 이펙트(불꽃·치유 빛·베기)는 남는다.
+ */
+function isTravellingEffect(animation: { readonly resourceId?: string; readonly name?: string; readonly animationId?: string } | undefined): boolean {
+  if (!animation) return false;
+  const text = `${animation.resourceId ?? ""} ${animation.animationId ?? ""} ${animation.name ?? ""}`;
+  return /arrow|projectile|missile|bolt-shot|화살|투사체|독침|탄환/i.test(text);
 }

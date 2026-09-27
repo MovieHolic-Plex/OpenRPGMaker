@@ -100,3 +100,43 @@ export const EXTENDED_POSE_FRAME = {
 } as const;
 
 export type ExtendedBattlerPose = keyof typeof EXTENDED_POSE_FRAME;
+
+/**
+ * 마법 시전 칸(2026-09-28 2차). 마법 종류마다 캐릭터가 **다르게 움직인다** — 종류 7개 × 3단계(준비·영창·방출).
+ * 시트는 전투 시트와 따로 둔다: 144×336 = 48px 셀 3열 × 7행, 행 = 종류, 열 = 단계.
+ * 짝: scripts/asset-gen/charset-battler/cb_lib.py 의 CAST_TYPES(순서가 곧 행 번호). 둘이 어긋나면 엉뚱한 마법 칸을 그린다.
+ */
+export const CAST_TYPES = ["fire", "ice", "thunder", "heal", "dark", "arcane", "support"] as const;
+export type CastType = typeof CAST_TYPES[number];
+export const CAST_SHEET_ROWS = CAST_TYPES.length;
+
+export function castFrame(type: CastType, step: 1 | 2 | 3): { readonly col: number; readonly row: number } {
+  return { col: step - 1, row: CAST_TYPES.indexOf(type) };
+}
+
+const CAST_BY_ELEMENT: Readonly<Record<string, CastType>> = {
+  fire: "fire", ice: "ice", water: "ice", thunder: "thunder", wind: "thunder",
+  holy: "heal", dark: "dark", absorb: "dark", earth: "arcane",
+};
+const CAST_BY_WORD: readonly [RegExp, CastType][] = [
+  [/화염|불꽃|불|파이어|fire|flame/i, "fire"],
+  [/얼음|냉기|눈보라|빙|ice|frost|blizzard/i, "ice"],
+  [/번개|전격|뇌|썬더|thunder|bolt|spark/i, "thunder"],
+  [/치유|회복|힐|빛|성스|heal|cure|holy/i, "heal"],
+  [/독|어둠|저주|흡수|poison|dark|curse|drain/i, "dark"],
+  [/수면|약화|강화|집중|안개|보호|sleep|weaken|focus|mist|guard/i, "support"],
+];
+
+/** 기술 → 시전 종류. 속성 → 효과 종류 → 이름 낱말 → 공격 마법 기본(비전) 순서. */
+export function castTypeForSkill(skill: {
+  readonly elementId?: string;
+  readonly name?: string;
+  readonly effect?: { readonly kind?: string };
+}): CastType {
+  const byElement = skill.elementId ? CAST_BY_ELEMENT[skill.elementId] : undefined;
+  if (byElement) return byElement;
+  for (const [pattern, type] of CAST_BY_WORD) if (pattern.test(skill.name ?? "")) return type;
+  if (skill.effect?.kind === "healing") return "heal";
+  if (skill.effect?.kind === "support") return "support";
+  return "arcane";
+}
