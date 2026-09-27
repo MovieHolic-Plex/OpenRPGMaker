@@ -74,3 +74,29 @@ export function enemyDropFields(record: EnemyRecord): HTMLElement {
   };
   render(); return host;
 }
+
+/** 훔치기 표(stealItems). 위에서부터 차례로 굴려 첫 성공 하나를 준다. 적마다 한 번만 훔칠 수 있다. */
+export function enemyStealFields(record: EnemyRecord): HTMLElement {
+  const host = el('div', { dataset: { testid: 'mg-enemy-steal-items' } });
+  const current = () => store.getCurrent().database.enemies.find(enemy => enemy.id === record.id) ?? record;
+  const rows = () => current().stealItems ?? [];
+  const save = (stealItems: NonNullable<EnemyRecord['stealItems']>): void => updateDatabaseRecord('enemies', record.id, { stealItems: stealItems.length ? stealItems : undefined });
+  const render = (): void => {
+    host.replaceChildren(el('p', { class: 'db-skill-card-note', text: '훔치기 기술이 위에서부터 차례로 확률을 굴립니다. 한 번 훔치면 그 적에게서는 더 훔칠 수 없습니다.' }));
+    rows().forEach((entry, index) => {
+      const patch = (value: Partial<typeof entry>): void => save(rows().map((row, i) => i === index ? { ...row, ...value } : row));
+      host.append(el('fieldset', { class: 'db-advanced-panel', dataset: { testid: `mg-enemy-steal-${index}` }, children: [
+        el('legend', { text: `훔칠 아이템 ${index + 1}` }),
+        selectField('아이템', `mg-enemy-steal-${index}-item`, entry.itemId, store.getCurrent().database.items, itemId => { if (itemId) patch({ itemId }); }),
+        numberField('확률 %', `mg-enemy-steal-${index}-rate`, entry.rate, rate => patch({ rate }), { min: 0, max: 100 }),
+        el('button', { text: '삭제', attrs: { type: 'button' }, dataset: { testid: `mg-enemy-steal-${index}-remove` }, on: { click: () => { save(rows().filter((_, i) => i !== index)); render(); } } }),
+      ] }));
+    });
+    host.append(el('button', { text: '훔칠 아이템 추가', attrs: { type: 'button' }, dataset: { testid: 'mg-enemy-steal-add' }, on: { click: () => {
+      const itemId = store.getCurrent().database.items[0]?.id;
+      if (itemId) save([...rows(), { itemId, rate: 50 }]);
+      render();
+    } } }));
+  };
+  render(); return host;
+}

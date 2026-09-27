@@ -607,6 +607,7 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
       && Number.isFinite(record.area.radius) && record.area.radius > 0
       ? { area: { shape: record.area.shape, radius: clampNumber(record.area.radius, 1, 640) } }
       : {}),
+    ...(record.learnable === true ? { learnable: true } : {}),
   };
 }
 
@@ -791,6 +792,7 @@ function normalizeRecovery(cost: Partial<SkillMpCost> | undefined): SkillMpCost 
 }
 
 function normalizeSkillEffect(effect: SkillEffect | undefined): SkillEffect {
+  if (effect?.kind === "randomSkillFrom") return { kind: "randomSkillFrom", skillIds: uniqueCleanIds(effect.skillIds).slice(0, 16) };
   return effect ?? { kind: "damage", statistic: "attack", affects: "hp" };
 }
 

@@ -1,5 +1,6 @@
 import { DEFAULT_ELEMENT_RATE_LABELS } from "@/project/actorModel";
 import { normalizeEnemyActionProfile } from "@/project/actionCombat";
+import { normalizeStealItems } from "@/battle/battleSpecialEffects";
 import type {
   EnemyActionCondition,
   EnemyActionPattern,
@@ -55,6 +56,10 @@ export function normalizeEnemyRecord(
     ...(() => {
       const reactions = normalizeEnemyReactions(record.reactions);
       return reactions.length > 0 ? { reactions } : {};
+    })(),
+    ...(() => {
+      const stealItems = normalizeStealItems(record.stealItems);
+      return stealItems.length > 0 ? { stealItems } : {};
     })(),
   };
 }

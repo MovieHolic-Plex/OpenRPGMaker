@@ -87,6 +87,8 @@ export interface MutableBattler {
   moved?: { readonly durationMs: number; readonly sequence: number };
   hidden: boolean;
   captured?: boolean;
+  /** 라이브라로 탐색됨. */
+  scanned?: boolean;
   hp: number;
   mp: number;
   gauge: number;
@@ -529,6 +531,7 @@ export function battlerSnapshot(
     skillPp: battler.skillPp ? { ...battler.skillPp } : undefined,
     equipmentEffects: battler.equipmentEffects,
     captured: battler.captured === true ? true : undefined,
+    ...(battler.scanned ? { scanned: true } : {}),
     effectiveStats: { attack: battler.attackPower, defense: battler.defense, mind: battler.mind, agility: battler.agility },
     pose: "idle" as unknown as BattleBattlerSnapshot["pose"],
   };

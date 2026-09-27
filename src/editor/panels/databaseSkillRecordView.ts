@@ -18,7 +18,7 @@ import { skillCombatRuleCard } from "@/editor/panels/databaseCombatRuleFields";
 // 실제로 잘려 나갔다(clientWidth 87 / scrollWidth 119). 라벨을 `최대 PP` 로 줄이고
 // 부연은 카드 힌트로 옮겼다. 재발 방지용 줄바꿈 허용 규칙은 modern/skills.css 에 있다.
 
-import { emptyToUndefined, field, numberField, selectField, selectLiteral, textField } from "@/editor/panels/databaseControls";
+import { emptyToUndefined, field, numberField, selectField, selectLiteral, textField, toggleSwitch } from "@/editor/panels/databaseControls";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
 import { setSelectedMonsterSpeciesId } from "@/editor/panels/databaseMonsterSpeciesView";
 import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
@@ -37,8 +37,9 @@ import { store } from "@/project/store";
 import type { DatabaseStateEffect, Project, SkillEffect, SkillRecord } from "@/project/types";
 import { getEditorUiMode } from "@/editor/editorUiMode";
 import { el } from "@/util/dom";
+import { specialSkillEffectLabel } from "@/battle/battleSpecialEffects";
 
-const SKILL_EFFECT_KINDS = ["damage", "healing", "support", "switch"] as const satisfies readonly SkillEffect["kind"][];
+const SKILL_EFFECT_KINDS = ["damage", "healing", "support", "switch", "steal", "scan", "learnEnemySkill", "randomSkillFrom"] as const satisfies readonly SkillEffect["kind"][];
 const SKILL_EFFECT_AFFECTS = ["hp", "mp"] as const satisfies readonly SkillEffectAffects[];
 const SKILL_DAMAGE_STATS = ["attack", "mind"] as const satisfies readonly SkillDamageStatistic[];
 const STATE_EFFECT_OPERATIONS = ["add", "remove"] as const satisfies readonly DatabaseStateEffect["operation"][];
@@ -257,6 +258,8 @@ export function skillSentenceFragments(project: Project, record: SkillRecord): {
         return `지원 효과${accuracy}`;
       case "switch":
         return "스위치를 켭니다";
+      default:
+        return `${specialSkillEffectLabel(record.effect)}${accuracy}`;
     }
   })();
   const element = record.elementId
@@ -425,6 +428,15 @@ function effectFields(record: SkillRecord, rerender: () => void): HTMLElement[] 
       )
     );
   }
+  controls.push(toggleSwitch("적이 쓰면 배울 수 있음(청마법)", "db-field-skill-learnable", record.learnable === true, (learnable) =>
+    updateDatabaseRecord("skills", record.id, { learnable: learnable || undefined })
+  ));
+  if (record.effect.kind === "randomSkillFrom") {
+    const skillIds = record.effect.skillIds;
+    controls.push(textField("무작위 후보 기술 ID(쉼표)", "db-field-skill-effect-random-skills", skillIds.join(", "), (value) =>
+      updateDatabaseRecord("skills", record.id, { effect: { kind: "randomSkillFrom", skillIds: value.split(",").map((id) => id.trim()).filter(Boolean) } })
+    ));
+  }
   if (record.effect.kind === "switch") {
     controls.push(
       selectField("스위치", "db-field-skill-effect-switch", record.effect.switchId ?? "", switchOptions(), (switchId) =>
@@ -451,6 +463,14 @@ function updateSkillEffectKind(record: SkillRecord, kind: SkillEffect["kind"]): 
       return;
     case "switch":
       updateDatabaseRecord("skills", record.id, { effect: { kind, switchId: effect.kind === "switch" ? effect.switchId : undefined } });
+      return;
+    case "steal":
+    case "scan":
+    case "learnEnemySkill":
+      updateDatabaseRecord("skills", record.id, { effect: { kind } });
+      return;
+    case "randomSkillFrom":
+      updateDatabaseRecord("skills", record.id, { effect: { kind, skillIds: effect.kind === "randomSkillFrom" ? effect.skillIds : [] } });
       return;
     default:
       assertNever(kind);

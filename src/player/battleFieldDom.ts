@@ -487,7 +487,7 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
   // 그 결과 "한 방 더면 죽는다" 는 판단이 구조적으로 불가능해 모든 턴이 같은 무게가
   // 됐다. 아직 안 때린 적은 그대로 감추고(정보 수집도 플레이다), 때린 순간부터 남은
   // 체력을 노출한다. CSS 가 [data-battle-hp-revealed="true"] 로 HUD 를 펼친다.
-  node.dataset.battleHpRevealed = presented.hp < enemy.maxHp ? "true" : "false";
+  node.dataset.battleHpRevealed = presented.hp < enemy.maxHp || enemy.scanned ? "true" : "false";
   const hpText = node.querySelector<HTMLElement>(".battle-enemy-hp-text");
   if (hpText) hpText.textContent = `${presented.hp}/${enemy.maxHp}`;
   const hpBar = node.querySelector<HTMLElement>(".battle-enemy-hp-bar");

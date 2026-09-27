@@ -253,6 +253,10 @@ export interface SkillRecord {
   comboActorIds?: ActorId[];
   /** 위치 범위기: 단일 대상 스코프에서 주 대상 둘레의 같은 편도 함께 맞힌다(전투장 픽셀). */
   area?: SkillArea;
+  /** 청마법: 적이 이 기술로 배우를 맞히면(또는 learnEnemySkill 로 훔쳐보면) 배울 수 있다. */
+  learnable?: boolean;
+  /** 입력 커맨드: 성공/실패에 따라 위력이 달라진다. 생략 = 입력 없음. */
+  inputSequence?: SkillInputSequence;
 }
 
 export interface SkillArea {
@@ -270,7 +274,31 @@ export type SkillEffect =
   | { kind: "damage"; statistic: "attack" | "mind"; affects: "hp" | "mp" }
   | { kind: "healing"; statistic: "mind"; affects: "hp" | "mp" }
   | { kind: "support" }
-  | { kind: "switch"; switchId?: string };
+  | { kind: "switch"; switchId?: string }
+  /** 훔치기: 대상 적의 stealItems 를 rate(0~100)로 차례로 굴려 하나를 빼앗는다. 적마다 한 번만 성공한다. */
+  | { kind: "steal" }
+  /** 라이브라: 대상의 HP/MP·약점 속성을 전투 메시지로 알리고 HP 바를 드러낸다. */
+  | { kind: "scan" }
+  /** 청마법 습득(라젠): 대상 적의 learnable 기술 중 모르는 것 하나를 배운다. 이 기술을 아는 배우는 learnable 기술에 맞아도 배운다. */
+  | { kind: "learnEnemySkill" }
+  /** 흉내·춤·슬롯: skillIds 중 하나를 무작위로 골라 그 기술을 대신 쓴다. */
+  | { kind: "randomSkillFrom"; skillIds: SkillId[] };
+
+/** 입력 커맨드 기술: 전투 UI 가 keys 를 순서대로 요구하고, timeLimitMs 안에 성공하면 successMultiplier, 실패하면 failMultiplier 로 위력이 바뀐다. */
+export interface SkillInputSequence {
+  keys: SkillInputKey[];
+  timeLimitMs: number;
+  successMultiplier?: number;
+  failMultiplier?: number;
+}
+
+export type SkillInputKey = "up" | "down" | "left" | "right" | "confirm" | "cancel";
+
+/** 액션 스킬 홀드 차지 단계: holdMs 이상 누르고 떼면 multiplier 배 피해. */
+export interface ActionChargeTier {
+  holdMs: number;
+  multiplier: number;
+}
 
 export interface ActionWeaponProfile {
   /** 스윙 부채꼴 reach. 생략 시 시스템 기본(1). */
@@ -294,6 +322,8 @@ export interface ActionSkillProfile {
   speedTilesPerSec?: number;
   /** 발사 시 인벤토리에서 소비하는 탄약 아이템. 부족하면 캐스트가 불발한다. mpCost와 병용 가능(둘 다 필요). */
   itemCost?: { itemId: ItemId; amount: number };
+  /** 홀드 차지: 캐스트 키를 누른 시간에 따라 피해 배율. 생략 = 즉시 발동(기존과 같음). */
+  chargeTiers?: ActionChargeTier[];
 }
 
 export interface ItemRecord {
@@ -461,6 +491,13 @@ export interface EnemyRecord {
   elementRates: Record<string, ActorRateGrade>;
   /** 반격. 피격 후 살아 있으면 skillId 를 차례 밖에서 쓴다(게이지 유지, 타격당 최대 1회). 생략 = 없음. */
   reactions?: EnemyReaction[];
+  /** 훔치기 표. rate 0~100. 생략 = 훔칠 것 없음. */
+  stealItems?: EnemyStealItem[];
+}
+
+export interface EnemyStealItem {
+  itemId: ItemId;
+  rate: number;
 }
 
 /** trigger: physical(공격 계열) · magic(마력 계열) · 그 밖의 문자열은 속성 id. skillId "" = 통상 공격. chance 0~100. */
@@ -613,6 +650,8 @@ export interface EnemyActionPattern {
   switchOffAfterAction: EnemyActionSwitchEffect;
   /** 이 행동을 하기 전에 전투장 좌표(트룹 members 와 같은 좌표계)로 옮겨 간다. 생략 = 제자리. */
   moveTo?: { x: number; y: number };
+  /** 부위 행동: 이 태그의 부위(TroopMemberRecord.partTag)가 파괴되면 쓰지 않는다. */
+  requiresPart?: string;
 }
 
 export interface TroopMemberRecord {
@@ -620,6 +659,10 @@ export interface TroopMemberRecord {
   x: number;
   y: number;
   hidden?: boolean;
+  /** 다부위 적: 본체 멤버의 트룹 내 인덱스(0부터). 본체가 쓰러지면 이 부위도 쓰러진다. */
+  partOf?: number;
+  /** 부위 태그. 이 부위가 쓰러지면 본체의 requiresPart 가 같은 행동이 막힌다. */
+  partTag?: string;
 }
 
 export type BattleEventSpan = "battle" | "turn" | "moment";
@@ -703,6 +746,8 @@ export interface StateRuntimeEffects {
   forcedAction?: "attackRandom";
   /** 이 상태인 동안 속성 등급을 덮어쓴다(속성 id → A~E). */
   elementRates?: Record<string, ActorRateGrade>;
+  /** 부위 손실: 이 상태인 동안 해당 장비 슬롯(weapon/shield/armor/helmet/accessory)의 능력치 보너스를 잃는다. */
+  disablesEquipSlot?: string;
 }
 
 export interface BattleAnimationRecord {

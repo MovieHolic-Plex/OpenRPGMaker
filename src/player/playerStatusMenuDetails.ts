@@ -738,6 +738,10 @@ function skillKindLabel(skill: SkillRecord): string {
     case "healing": return "회복";
     case "support": return "보조";
     case "switch": return "스위치";
+    case "steal": return "훔치기";
+    case "scan": return "탐색";
+    case "learnEnemySkill": return "습득";
+    case "randomSkillFrom": return "무작위";
     default: return assertNever(skill.effect);
   }
 }

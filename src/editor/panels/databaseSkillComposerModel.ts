@@ -1,5 +1,6 @@
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import type { Project, SkillRecord } from "@/project/types";
+import { specialSkillEffectLabel } from "@/battle/battleSpecialEffects";
 
 export type SkillComposerChipKind = "activation" | "target" | "cost";
 export type SkillComposerEffectKind = "primary" | "element" | "states" | "animation";
@@ -91,6 +92,8 @@ function primaryEffectSummary(project: Project, record: SkillRecord): string {
       const label = target ? target.name || target.id : switchId;
       return label ? `스위치 ON · ${label} · ${accuracy}` : `스위치 ON · 대상 미지정 · ${accuracy}`;
     }
+    default:
+      return `${specialSkillEffectLabel(record.effect)} · ${accuracy}`;
   }
 }
 
