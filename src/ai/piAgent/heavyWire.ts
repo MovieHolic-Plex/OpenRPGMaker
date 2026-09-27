@@ -1,0 +1,95 @@
+// 브라우저 → 호스트 Pi 실행 요청의 무거운 키 해시 전송.
+//
+// 요청마다 프로젝트 전체를 싣던 것을, 타일셋·DB·에셋은 SHA-256 해시로만 보내고 호스트가 처음 보는 내용만 받게 바꾼다
+// (호스트 캐시: scripts/lib/piRunRelay.mjs). 2026-09-27 실측: 새 몬스터 수집 프로젝트 첫 요청 151MB 중 150MB 가 이 셋이었다.
+// 브라우저는 보낸 해시를 기억한다 — 같은 호스트에 같은 내용이면 두 번째 요청부터 몸통이 수 MB 로 준다.
+// 호스트가 캐시를 잃었으면(재시작·축출) 409 heavy-missing 을 돌려주고, 그 해시의 내용만 다시 보낸다.
+
+import type { Project } from "@/project/types";
+
+export const PI_HEAVY_PROJECT_KEYS = ["tilesets", "database", "assets"] as const;
+export type PiHeavyProjectKey = (typeof PI_HEAVY_PROJECT_KEYS)[number];
+
+/** 이 크기보다 작은 키는 해시로 바꾸지 않는다 — 해시 계산·왕복이 몸통보다 비싸다. */
+const MIN_HEAVY_BYTES = 256 * 1024;
+
+export interface HeavyWireBody {
+  readonly [key: string]: unknown;
+  readonly project: Project;
+  readonly heavy?: Partial<Record<PiHeavyProjectKey, string>>;
+  readonly heavyBlobs?: Record<string, string>;
+}
+
+export interface HeavyWirePlan {
+  /** 무거운 키를 비운 요청 몸통의 뼈대. */
+  readonly body: HeavyWireBody;
+  /** 해시 → JSON. 호스트가 모른다고 하면 여기서 꺼내 보낸다. */
+  readonly blobs: ReadonlyMap<string, string>;
+}
+
+/** 호스트(오리진)별로 이미 보낸 해시. 호스트가 잃었으면 409 로 알려 준다 — 이 표는 추측일 뿐 권위가 아니다. */
+const sentByOrigin = new Map<string, Set<string>>();
+
+async function sha256Hex(text: string): Promise<string> {
+  const bytes = new TextEncoder().encode(text);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+/**
+ * 요청을 해시 전송으로 바꾼다. crypto.subtle 이 없는 환경(비보안 컨텍스트)이면 그대로 둔다 — 예전 전송과 같다.
+ * 같은 객체를 두 번 해시하지 않게 WeakMap 에 기억한다(체크포인트가 무거운 키 객체를 그대로 물려준다).
+ */
+const hashMemo = new WeakMap<object, { hash: string; json: string }>();
+
+export async function planHeavyWire<T extends { project: Project }>(request: T): Promise<HeavyWirePlan | null> {
+  if (typeof crypto === "undefined" || !crypto.subtle) return null;
+  const project = { ...request.project } as Record<string, unknown>;
+  const heavy: Partial<Record<PiHeavyProjectKey, string>> = {};
+  const blobs = new Map<string, string>();
+  for (const key of PI_HEAVY_PROJECT_KEYS) {
+    const value = project[key];
+    if (!value || typeof value !== "object") continue;
+    let entry = hashMemo.get(value);
+    if (!entry) {
+      const json = JSON.stringify(value);
+      if (json.length < MIN_HEAVY_BYTES) continue;
+      entry = { hash: await sha256Hex(json), json };
+      hashMemo.set(value, entry);
+    }
+    heavy[key] = entry.hash;
+    blobs.set(entry.hash, entry.json);
+    project[key] = key === "database" ? {} : {};
+  }
+  if (Object.keys(heavy).length === 0) return null;
+  return { body: { ...request, project: project as unknown as Project, heavy }, blobs };
+}
+
+/** 이 호스트가 아직 모를 법한 해시의 내용만 싣는다. */
+export function withHeavyBlobs(plan: HeavyWirePlan, origin: string, force?: readonly string[]): HeavyWireBody {
+  const sent = sentByOrigin.get(origin) ?? new Set<string>();
+  const heavyBlobs: Record<string, string> = {};
+  for (const [hash, json] of plan.blobs) {
+    if (force ? force.includes(hash) : !sent.has(hash)) heavyBlobs[hash] = json;
+  }
+  return Object.keys(heavyBlobs).length ? { ...plan.body, heavyBlobs } : plan.body;
+}
+
+/** 호스트가 받아 준 해시를 기억한다. */
+export function markHeavySent(origin: string, plan: HeavyWirePlan): void {
+  const sent = sentByOrigin.get(origin) ?? new Set<string>();
+  for (const hash of plan.blobs.keys()) sent.add(hash);
+  sentByOrigin.set(origin, sent);
+}
+
+/** 호스트가 잃었다고 한 해시를 잊는다. */
+export function forgetHeavySent(origin: string, hashes: readonly string[]): void {
+  const sent = sentByOrigin.get(origin);
+  if (!sent) return;
+  for (const hash of hashes) sent.delete(hash);
+}
+
+/** 테스트 전용. */
+export function resetHeavyWireForTests(): void {
+  sentByOrigin.clear();
+}

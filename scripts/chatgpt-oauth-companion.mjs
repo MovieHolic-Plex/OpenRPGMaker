@@ -51,7 +51,8 @@ const server = createServer(async (request, response) => {
       { method: request.method, url: request.url, headers: request.headers, body },
       adapters,
     );
-    writeCompanionResult(response, result, { "Access-Control-Allow-Origin": cors, Vary: "Origin" });
+    // X-Oprn-Run-Id 는 교차 출처에서 노출해야 브라우저가 읽고 끊긴 실행을 이어 받는다.
+    writeCompanionResult(response, result, { "Access-Control-Allow-Origin": cors, "Access-Control-Expose-Headers": "X-Oprn-Run-Id", Vary: "Origin" });
   } catch (error) {
     const status = Number(error?.status) || 500;
     return sendJson(response, status, { error: error instanceof Error ? error.message : "OAuth companion failed" }, origin);

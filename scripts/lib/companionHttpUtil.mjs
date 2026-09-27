@@ -25,6 +25,7 @@ export function writeCompanionResult(res, result, extraHeaders = {}) {
       "Content-Type": "application/x-ndjson; charset=utf-8",
       "Cache-Control": "no-cache",
       Connection: "keep-alive",
+      ...(result.headers ?? {}),
       ...extraHeaders,
     });
     pipeWebStream(result.ndjson, res);
@@ -61,14 +62,16 @@ export function writeCompanionResult(res, result, extraHeaders = {}) {
 
 async function pipeWebStream(readable, res) {
   const reader = readable.getReader();
+  // 브라우저가 끊으면 이 리더만 취소한다. 실행 기록 스트림(piRunRelay)이면 실행 자체는 계속되고, 브라우저가 이어 받는다.
+  res.on("close", () => { if (!res.writableFinished) void reader.cancel().catch(() => undefined); });
   try {
     for (;;) {
       const { value, done } = await reader.read();
       if (done) break;
-      if (value) res.write(Buffer.from(value));
+      if (value && !res.destroyed) res.write(Buffer.from(value));
     }
   } catch (error) {
-    res.write(`${JSON.stringify({ type: "error", message: error instanceof Error ? error.message : String(error) })}\n`);
+    if (!res.destroyed) res.write(`${JSON.stringify({ type: "error", message: error instanceof Error ? error.message : String(error) })}\n`);
   } finally {
     res.end();
   }

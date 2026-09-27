@@ -50,8 +50,9 @@ describe("/pi 명령 파서", () => {
 });
 
 describe("동반 라우터 /v1/agent/run", () => {
-  it("경로를 인식하고 어댑터의 NDJSON 스트림을 그대로 넘긴다", async () => {
+  it("경로를 인식하고 어댑터의 NDJSON 을 실행 기록을 거쳐 seq 를 붙여 넘긴다", async () => {
     expect(isCompanionPath("/v1/agent/run?provider=openai-codex")).toBe(true);
+    expect(isCompanionPath("/v1/agent/cancel")).toBe(true);
     const seen: unknown[] = [];
     const ndjson = new ReadableStream<Uint8Array>({ start(c) { c.enqueue(new TextEncoder().encode('{"type":"turn","index":1}\n')); c.close(); } });
     const adapters = { runAgent: async (provider: string, body: unknown, options: unknown) => { seen.push([provider, body, options]); return { stream: true, ndjson }; } };
@@ -60,8 +61,15 @@ describe("동반 라우터 /v1/agent/run", () => {
       adapters,
     );
     expect(result).toMatchObject({ status: 200, stream: true });
-    expect(result.ndjson).toBe(ndjson);
-    expect(seen).toEqual([["openai-codex", { task: "x", mapIds: [], project: {} }, {}]]);
+    // runId 를 안 보낸 옛 클라이언트도 호스트가 번호를 매겨 헤더로 알려 준다.
+    expect(result.headers?.["X-Oprn-Run-Id"]).toMatch(/^[A-Za-z0-9-]{8,64}$/);
+    const text = await new Response(result.ndjson).text();
+    expect(text.trim().split("\n").map((line) => JSON.parse(line))).toEqual([{ seq: 0, type: "turn", index: 1 }]);
+    expect(seen).toHaveLength(1);
+    const [provider, body, options] = seen[0] as [string, unknown, { signal?: AbortSignal }];
+    expect(provider).toBe("openai-codex");
+    expect(body).toEqual({ task: "x", mapIds: [], project: {} });
+    expect(options.signal).toBeInstanceOf(AbortSignal);
   });
   it("어댑터가 없으면 501", async () => {
     const result = await handleCompanionRequest({ method: "POST", url: "/v1/agent/run", headers: {}, body: {} }, {});

@@ -34,6 +34,8 @@ export function createCompanionMiddleware(options = {}) {
     // 일렉트론 렌더러는 app:// 출처라 루프백 동반 서버와 교차 출처다 — 허용 출처를 명시해야 fetch 가 통과한다.
     if (allowedOrigin) {
       res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
+      // 실행 번호 헤더는 CORS 안전 목록 밖이다 — 노출하지 않으면 app:// 렌더러가 못 읽어 이어 받기 없이 옛 경로로 돈다.
+      res.setHeader("Access-Control-Expose-Headers", "X-Oprn-Run-Id");
       res.setHeader("Vary", "Origin");
     }
     const pathname = (req.url ?? "").split("?")[0];

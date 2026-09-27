@@ -2,6 +2,7 @@
 // Missing provider falls back to Antigravity (same factory default as src/ai/ohMyPiProviders.ts).
 
 import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
+import { cancelRelayedRun, resumeRelayedRun, startRelayedRun } from "./piRunRelay.mjs";
 
 applyLegacyEnvAliases();
 
@@ -36,6 +37,7 @@ export function isCompanionPath(url = "") {
     || path === "/v1/chat/completions"
     || path === "/v1/images/generations"
     || path === "/v1/agent/run"
+    || path === "/v1/agent/cancel"
     || path === "/v1/agent/render"
     || path === "/v1/agent/checkpoint"
   );
@@ -243,8 +245,20 @@ export async function handleCompanionRequest(req, adapters) {
     if (typeof adapters.runAgent !== "function") {
       return json(501, { error: "이 동반 서비스는 Pi 에이전트 실행을 지원하지 않습니다." });
     }
-    const result = await adapters.runAgent(provider, body, req.signal ? { signal: req.signal } : {});
-    return { status: 200, stream: true, ndjson: result.ndjson, body: null };
+    // 실행은 브라우저 연결이 아니라 호스트의 실행 기록에 묶인다(piRunRelay). 연결이 끊겨도 에이전트는 계속 돌고,
+    // 브라우저가 GET 으로 이어 받는다. 중단 버튼은 /v1/agent/cancel 로 온다.
+    const result = await startRelayedRun(body, (request, signal) => adapters.runAgent(provider, request, { signal }));
+    if (!result.stream) return json(result.status, result.body);
+    return { status: 200, stream: true, ndjson: result.ndjson, headers: result.headers, body: null };
+  }
+  if (method === "GET" && path === "/v1/agent/run") {
+    const query = new URL(req.url ?? "", "http://companion.local").searchParams;
+    const result = resumeRelayedRun(query.get("runId") ?? "", Number(query.get("after") ?? "0"));
+    if (!result.stream) return json(result.status, result.body);
+    return { status: 200, stream: true, ndjson: result.ndjson, headers: result.headers, body: null };
+  }
+  if (method === "POST" && path === "/v1/agent/cancel") {
+    return json(200, { ok: cancelRelayedRun(typeof body.runId === "string" ? body.runId : "") });
   }
 
   if (method === "POST" && path === "/v1/chat/completions") {
