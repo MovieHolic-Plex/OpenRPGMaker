@@ -37,6 +37,7 @@ import { buildSvgIcon, type SvgNodeSpec } from "@/editor/panels/tileToolbarIcons
 import { diffDatabaseRecords, type DatabaseRecordChange } from "@/project/databaseRecordDiff";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
+import { sourceTextOf } from "@/i18n/domTranslator";
 
 export type DatabaseAiRecordRef = { readonly name: string; readonly id: string };
 
@@ -536,7 +537,7 @@ export function createDatabaseAiBar(options: DatabaseAiBarOptions): DatabaseAiBa
   const paintSummary = (summary: DatabaseAiTurnSummary): void => {
     // 폴링마다 같은 문장을 다시 쓰면 role=status 가 400ms 마다 재낭독한다 — 바뀔 때만 쓴다.
     if (status.dataset.phase !== summary.phase) status.dataset.phase = summary.phase;
-    if (statusText.textContent !== summary.statusText) statusText.textContent = summary.statusText;
+    if (sourceTextOf(statusText) !== summary.statusText) statusText.textContent = summary.statusText;
     if (paintedPhase !== summary.phase) {
       paintedPhase = summary.phase;
       statusIcon.replaceChildren(summary.phase === "done" || summary.phase === "review"

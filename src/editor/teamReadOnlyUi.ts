@@ -1,4 +1,5 @@
 import { canWriteTeamProject } from '@/project/teamAccess';
+import { sourceAttributeOf } from "@/i18n/domTranslator";
 
 const HEADING_SELECTOR = '.database-modal-heading';
 const FIELD_SELECTOR = '.db-body input:not([type="search"]), .db-body textarea, .db-body select, [data-testid="db-add-record"], [data-testid="db-duplicate-record"], [data-testid="db-delete-selected"], [data-testid="db-ai-generate-open"], [data-testid="db-install-generated-effects"], [data-testid="database-footer-apply"], [data-testid="database-footer-ok"], '
@@ -8,6 +9,12 @@ const FIELD_SELECTOR = '.db-body input:not([type="search"]), .db-body textarea, 
 const ANY_TARGET_SELECTOR = `${HEADING_SELECTOR}, ${FIELD_SELECTOR}`;
 
 let observer: MutationObserver | undefined;
+
+function isSearchField(field: Element): boolean {
+  if (field.getAttribute("role") === "searchbox") return true;
+  const placeholder = sourceAttributeOf(field, "placeholder") ?? "";
+  return placeholder.includes("검색") || placeholder.includes("찾기");
+}
 let scheduled = false;
 
 function disable(): void {
@@ -22,7 +29,7 @@ function disable(): void {
     }
   }
   for (const field of document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | HTMLButtonElement>(FIELD_SELECTOR)) {
-    if (!field.disabled && !field.matches('[placeholder*="검색"], [placeholder*="찾기"], [role="searchbox"]')) {
+    if (!field.disabled && !isSearchField(field)) {
       field.dataset.teamDisabled = 'true'; field.disabled = true;
     }
   }
