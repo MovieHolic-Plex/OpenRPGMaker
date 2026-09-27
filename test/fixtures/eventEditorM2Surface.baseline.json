@@ -8484,6 +8484,8 @@
    "change-parallax-back-ai-queue",
    "change-parallax-back-ai-queue-list",
    "change-parallax-back-command-body",
+   "change-parallax-back-flow-duration-input",
+   "change-parallax-back-flow-input",
    "change-parallax-back-intent",
    "change-parallax-back-preview",
    "change-parallax-back-preview-empty",
@@ -8524,6 +8526,8 @@
   "controls": {
    "change-parallax-back-ai-generate": "button{}",
    "change-parallax-back-ai-prompt": "input[text]{}",
+   "change-parallax-back-flow-duration-input": "input[number]{}",
+   "change-parallax-back-flow-input": "input[number]{}",
    "change-parallax-back-resource-picker": "button{}",
    "change-parallax-back-resource-select": "select{}"
   },
@@ -8544,11 +8548,12 @@
   ],
   "tags": {
    "button": 2,
-   "div": 17,
-   "input": 1,
+   "div": 20,
+   "input": 3,
    "option": 7,
-   "p": 5,
-   "select": 1
+   "p": 6,
+   "select": 1,
+   "span": 1
   },
   "tagByTestid": {
    "change-parallax-back-ai-generate": "button",
@@ -8556,6 +8561,8 @@
    "change-parallax-back-ai-queue": "div",
    "change-parallax-back-ai-queue-list": "div",
    "change-parallax-back-command-body": "div",
+   "change-parallax-back-flow-duration-input": "input",
+   "change-parallax-back-flow-input": "input",
    "change-parallax-back-intent": "div",
    "change-parallax-back-preview": "div",
    "change-parallax-back-preview-empty": "p",
@@ -8566,13 +8573,13 @@
   },
   "texts": {
    "change-parallax-back-intent": "먼 배경 변경맵 뒤에 깔리는 먼 풍경을 바꿉니다.",
-   "change-parallax-back-preview": "먼 배경을 선택하면 여기에 표시됩니다.먼 배경 → (선택 없음)맵 원경(parallax) 이미지를 교체합니다.",
+   "change-parallax-back-preview": "먼 배경을 선택하면 여기에 표시됩니다.먼 배경 → (지금 그림 유지)흐름 #%그림을 비워 두면 흐름 속도만 바꿉니다. #% 는 멈춤, #% 는 맵에 저작한 속도입니다.",
    "change-parallax-back-preview-empty": "먼 배경을 선택하면 여기에 표시됩니다.",
    "change-parallax-back-preview-image": "먼 배경을 선택하면 여기에 표시됩니다.",
    "event-command-edit-summary": "기타 명령"
   },
-  "testidCount": 12,
-  "controlCount": 4
+  "testidCount": 14,
+  "controlCount": 6
  },
  "m2-070-set-encounter-rate": {
   "testids": [
@@ -12577,7 +12584,21 @@
     "playerX",
     "playerY",
     "switch",
-    "variable"
+    "variable",
+    "actorLevel",
+    "actorHp",
+    "actorMp",
+    "actorMaxHp",
+    "actorHpPercent",
+    "actorHasState",
+    "partyLeaderIndex",
+    "partySize",
+    "playerFacing",
+    "playtimeSeconds",
+    "steps",
+    "clearCount",
+    "weekday",
+    "stringLength"
    ],
    "m2-command-variableId-record-select": [
     "",
@@ -12614,7 +12635,7 @@
    "div": 10,
    "input": 1,
    "label": 3,
-   "option": 27,
+   "option": 41,
    "select": 2,
    "span": 1
   },
@@ -12705,5 +12726,276 @@
   },
   "testidCount": 10,
   "controlCount": 4
+ },
+ "m2-219-key-poll": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-219-key-poll",
+   "m2-command-cancelSwitchId-input",
+   "m2-command-confirmSwitchId-input",
+   "m2-command-dashSwitchId-input",
+   "m2-command-dirVariableId-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-cancelSwitchId-input": "input[text]{}",
+   "m2-command-confirmSwitchId-input": "input[text]{}",
+   "m2-command-dashSwitchId-input": "input[text]{}",
+   "m2-command-dirVariableId-input": "input[text]{}"
+  },
+  "selectOptions": {},
+  "labels": [
+   "결정 키 스위치",
+   "달리기 키 스위치",
+   "방향 변수(0/2/4/6/8)",
+   "취소 키 스위치"
+  ],
+  "tags": {
+   "div": 9,
+   "input": 4,
+   "label": 4
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-219-key-poll": "div",
+   "m2-command-cancelSwitchId-input": "input",
+   "m2-command-confirmSwitchId-input": "input",
+   "m2-command-dashSwitchId-input": "input",
+   "m2-command-dirVariableId-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 6,
+  "controlCount": 4
+ },
+ "m2-220-timed-choice": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-220-timed-choice",
+   "m2-command-options-textarea",
+   "m2-command-prompt-input",
+   "m2-command-resultVariableId-input",
+   "m2-command-timeLimitMs-input",
+   "m2-command-timeLimitMs-note"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body",
+   "m2-field-note",
+   "m2-number-field"
+  ],
+  "controls": {
+   "m2-command-options-textarea": "textarea{}",
+   "m2-command-prompt-input": "input[text]{}",
+   "m2-command-resultVariableId-input": "input[text]{}",
+   "m2-command-timeLimitMs-input": "input[number]{}"
+  },
+  "selectOptions": {},
+  "labels": [
+   "결과 변수(1부터, 시간 초과 0)",
+   "선택지(줄마다)",
+   "제한 시간(ms)",
+   "질문"
+  ],
+  "tags": {
+   "div": 11,
+   "input": 3,
+   "label": 4,
+   "textarea": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-220-timed-choice": "div",
+   "m2-command-options-textarea": "textarea",
+   "m2-command-prompt-input": "input",
+   "m2-command-resultVariableId-input": "input",
+   "m2-command-timeLimitMs-input": "input",
+   "m2-command-timeLimitMs-note": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "m2-command-timeLimitMs-note": "적용 범위 #~#"
+  },
+  "testidCount": 7,
+  "controlCount": 4
+ },
+ "m2-221-quick-time-event": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-221-quick-time-event",
+   "m2-command-keys-input",
+   "m2-command-mode-option-select",
+   "m2-command-resultSwitchId-input",
+   "m2-command-resultVariableId-input",
+   "m2-command-windowMs-input",
+   "m2-command-windowMs-note"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body",
+   "m2-field-note",
+   "m2-number-field"
+  ],
+  "controls": {
+   "m2-command-keys-input": "input[text]{}",
+   "m2-command-mode-option-select": "select{}",
+   "m2-command-resultSwitchId-input": "input[text]{}",
+   "m2-command-resultVariableId-input": "input[text]{}",
+   "m2-command-windowMs-input": "input[number]{}"
+  },
+  "selectOptions": {
+   "m2-command-mode-option-select": [
+    "sequence",
+    "mash"
+   ]
+  },
+  "labels": [
+   "결과 변수(성공 1·실패 0·연타 수)",
+   "방식",
+   "성공 스위치",
+   "순서(예: up,down,z)",
+   "키 하나당 시간(ms) / 연타 시간"
+  ],
+  "tags": {
+   "div": 12,
+   "input": 4,
+   "label": 5,
+   "option": 2,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-221-quick-time-event": "div",
+   "m2-command-keys-input": "input",
+   "m2-command-mode-option-select": "select",
+   "m2-command-resultSwitchId-input": "input",
+   "m2-command-resultVariableId-input": "input",
+   "m2-command-windowMs-input": "input",
+   "m2-command-windowMs-note": "div"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령",
+   "m2-command-windowMs-note": "적용 범위 #~#"
+  },
+  "testidCount": 8,
+  "controlCount": 5
+ },
+ "m2-222-high-score": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-action-option-select",
+   "m2-command-body-m2-222-high-score",
+   "m2-command-recordSwitchId-input",
+   "m2-command-resultVariableId-input",
+   "m2-command-scoreId-input",
+   "m2-command-valueVariableId-input"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-action-option-select": "select{}",
+   "m2-command-recordSwitchId-input": "input[text]{}",
+   "m2-command-resultVariableId-input": "input[text]{}",
+   "m2-command-scoreId-input": "input[text]{}",
+   "m2-command-valueVariableId-input": "input[text]{}"
+  },
+  "selectOptions": {
+   "m2-command-action-option-select": [
+    "submit",
+    "submitLow",
+    "read",
+    "reset"
+   ]
+  },
+  "labels": [
+   "동작",
+   "새 기록이면 켤 스위치",
+   "점수 변수",
+   "점수 이름",
+   "최고 점수를 쓸 변수"
+  ],
+  "tags": {
+   "div": 10,
+   "input": 4,
+   "label": 5,
+   "option": 4,
+   "select": 1
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-action-option-select": "select",
+   "m2-command-body-m2-222-high-score": "div",
+   "m2-command-recordSwitchId-input": "input",
+   "m2-command-resultVariableId-input": "input",
+   "m2-command-scoreId-input": "input",
+   "m2-command-valueVariableId-input": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 7,
+  "controlCount": 5
+ },
+ "m2-223-teleport-menu": {
+  "testids": [
+   "event-command-edit-summary",
+   "m2-command-body-m2-223-teleport-menu",
+   "m2-command-prompt-input",
+   "m2-command-resultVariableId-input",
+   "m2-command-transfer-checkbox"
+  ],
+  "classes": [
+   "cream-command-form",
+   "cream-command-form-head",
+   "empty-hint",
+   "field",
+   "m2-command-body"
+  ],
+  "controls": {
+   "m2-command-prompt-input": "input[text]{}",
+   "m2-command-resultVariableId-input": "input[text]{}",
+   "m2-command-transfer-checkbox": "input[checkbox]{checked}"
+  },
+  "selectOptions": {},
+  "labels": [
+   "결과 변수(고른 번호, 취소 0, 금지 -1)",
+   "고르면 바로 이동",
+   "질문"
+  ],
+  "tags": {
+   "div": 8,
+   "input": 3,
+   "label": 3
+  },
+  "tagByTestid": {
+   "event-command-edit-summary": "div",
+   "m2-command-body-m2-223-teleport-menu": "div",
+   "m2-command-prompt-input": "input",
+   "m2-command-resultVariableId-input": "input",
+   "m2-command-transfer-checkbox": "input"
+  },
+  "texts": {
+   "event-command-edit-summary": "기타 명령"
+  },
+  "testidCount": 5,
+  "controlCount": 3
  }
 }
