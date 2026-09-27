@@ -337,7 +337,7 @@ export function lintPassage(set: LoadedSet, spec: MapSpec, k1: (string | null)[]
   // 막혀야 할 물체 칸(prop 전부·tall 밑줄·solid)이 엔진에서 뚫린 곳 — 같은 칸을 다른 kind 로 잡았거나 위에 통행 그림을 얹은 경우.
   const holes: string[] = [];
   for (const p of placed) {
-    if (p.o.id.startsWith("tile:")) continue;
+    // 낱장 tile 조각도 막힘으로 두었으면(pass 없음) 엔진에서도 막혀야 한다 — 탁자·책상 끝을 낱장으로 찍으면 그 칸이 통행 타일일 수 있다.
     const want = p.o.solid ?? (p.o.kind === "prop" ? p.cells : p.o.kind === "tall" ? p.cells.filter(([, dy]) => dy === p.o.h - 1) : []);
     for (const [dx, dy] of want) { const x = p.x + dx, y = p.y + dy; if (x >= 0 && y >= 0 && x < w && y < h && open(y * w + x)) holes.push(`${p.o.id}(${x},${y})`); }
   }
