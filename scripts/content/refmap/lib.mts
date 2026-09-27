@@ -366,7 +366,9 @@ export function lintPassage(set: LoadedSet, spec: MapSpec, k1: (string | null)[]
     if (o.kind === "wallmount" && p.cells.some(([dx, dy]) => { const x = p.x + dx, y = p.y + dy; return x >= 0 && y >= 0 && x < w && y < h && !hangable(x, y); })) hung.push(`${o.id}(${p.x},${p.y})`);
     if ((o.kind === "tall" || o.kind === "prop") && WALL_FURNITURE.test(o.id)) {
       const top = Math.min(...p.cells.map(([, dy]) => dy));
-      const against = p.cells.filter(([, dy]) => dy === top).every(([dx]) => wallish(p.x + dx, p.y + top - 1) || face(p.x + dx, p.y + top));
+      // 가로 침대(_h)는 머리판이 서쪽 끝이다 — 윗변 대신 머리 쪽 옆 칸이 벽이면 붙은 것으로 본다.
+      const headWest = /bed.*_h$/.test(o.id) && p.cells.filter(([dx]) => dx === 0).every(([, dy]) => wallish(p.x - 1, p.y + dy));
+      const against = headWest || p.cells.filter(([, dy]) => dy === top).every(([dx]) => wallish(p.x + dx, p.y + top - 1) || face(p.x + dx, p.y + top));
       if (!against) loose.push(`${o.id}(${p.x},${p.y})`);
     }
   }
