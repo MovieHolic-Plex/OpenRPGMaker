@@ -15,6 +15,7 @@ import { tilesetImageUrl } from "@/editor/tilesetImage";
 import { passageMarkForTile, type PassageMark } from "@/project/tilesetPassage";
 import type { TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
+import { sourceAttributeOf } from "@/i18n/domTranslator";
 
 type ChipsetPreviewModel = {
   readonly tileset: TilesetDef;
@@ -537,7 +538,7 @@ function paintPassageCell(tile: number, mark: PassageMark): void {
   cell.classList.add(`mark-${mark}`);
   cell.textContent = passageGlyph(mark);
   // 칠하는 즉시 접근 가능한 이름도 새 통행 상태로 바꾼다.
-  const previous = cell.getAttribute("aria-label") ?? "";
+  const previous = sourceAttributeOf(cell, "aria-label") ?? "";
   const next = previous.replace(/(^타일 \d+, )(통과|막힘|위 지나감)/, `$1${PASSAGE_SPOKEN[mark]}`);
   if (next !== previous) cell.setAttribute("aria-label", next);
 }

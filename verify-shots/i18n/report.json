@@ -1,0 +1,163 @@
+{
+  "en-US": {
+    "htmlLang": "en",
+    "dataLocale": "en",
+    "viewMenu": "View",
+    "saved": null,
+    "topbarHangulLeft": [
+      "한국어"
+    ],
+    "topbarHangulCount": 1
+  },
+  "ja-JP": {
+    "htmlLang": "ja",
+    "dataLocale": "ja",
+    "viewMenu": "表示",
+    "saved": null,
+    "topbarHangulLeft": [
+      "한국어"
+    ],
+    "topbarHangulCount": 1
+  },
+  "zh-CN": {
+    "htmlLang": "zh-CN",
+    "dataLocale": "zh",
+    "viewMenu": "查看",
+    "saved": null,
+    "topbarHangulLeft": [
+      "한국어"
+    ],
+    "topbarHangulCount": 1
+  },
+  "ko-KR": {
+    "htmlLang": "ko",
+    "dataLocale": "ko",
+    "viewMenu": "보기",
+    "saved": null,
+    "topbarHangulLeft": [
+      "새 프로젝트",
+      "이 세션은 저장 안 됨",
+      "도구",
+      "소재",
+      "높이",
+      "바닥",
+      "상위",
+      "이벤트",
+      "테스트",
+      "스튜디오",
+      "보기",
+      "편집 모드",
+      "초보",
+      "이름 붙은 큰 도구 레일 · 첫 사용 안내",
+      "표준"
+    ],
+    "topbarHangulCount": 24
+  },
+  "fr-FR": {
+    "htmlLang": "en",
+    "dataLocale": "en",
+    "viewMenu": "View",
+    "saved": null,
+    "topbarHangulLeft": [
+      "한국어"
+    ],
+    "topbarHangulCount": 1
+  },
+  "zh-TW": {
+    "htmlLang": "zh-CN",
+    "dataLocale": "zh",
+    "viewMenu": "查看",
+    "saved": null,
+    "topbarHangulLeft": [
+      "한국어"
+    ],
+    "topbarHangulCount": 1
+  },
+  "automation-guard-en-US": {
+    "htmlLang": "ko",
+    "dataLocale": "ko",
+    "viewMenu": "보기",
+    "saved": null,
+    "topbarHangulLeft": [
+      "새 프로젝트",
+      "이 세션은 저장 안 됨",
+      "도구",
+      "소재",
+      "높이",
+      "바닥",
+      "상위",
+      "이벤트",
+      "도움말",
+      "게스트",
+      "AI 설정",
+      "Google 확인 중…"
+    ],
+    "topbarHangulCount": 12
+  },
+  "switcher": {
+    "before": {
+      "htmlLang": "ko",
+      "dataLocale": "ko",
+      "viewMenu": "보기",
+      "saved": null,
+      "topbarHangulLeft": [
+        "새 프로젝트",
+        "이 세션은 저장 안 됨",
+        "도구",
+        "소재",
+        "높이",
+        "바닥",
+        "상위",
+        "이벤트",
+        "테스트",
+        "스튜디오",
+        "보기",
+        "도움말",
+        "게스트",
+        "AI 설정",
+        "Google 확인 중…"
+      ],
+      "topbarHangulCount": 15
+    },
+    "afterSwitch": {
+      "htmlLang": "ja",
+      "dataLocale": "ja",
+      "viewMenu": "表示",
+      "saved": "ja",
+      "topbarHangulLeft": [],
+      "topbarHangulCount": 0
+    },
+    "afterReload": {
+      "htmlLang": "ja",
+      "dataLocale": "ja",
+      "viewMenu": "表示",
+      "saved": "ja",
+      "topbarHangulLeft": [],
+      "topbarHangulCount": 0
+    },
+    "backToKo": {
+      "htmlLang": "ko",
+      "dataLocale": "ko",
+      "viewMenu": "보기",
+      "saved": "ko",
+      "topbarHangulLeft": [
+        "새 프로젝트",
+        "이 세션은 저장 안 됨",
+        "도구",
+        "소재",
+        "높이",
+        "바닥",
+        "상위",
+        "이벤트",
+        "테스트",
+        "스튜디오",
+        "보기",
+        "도움말",
+        "게스트",
+        "AI 설정",
+        "Google 연결됨"
+      ],
+      "topbarHangulCount": 15
+    }
+  }
+}

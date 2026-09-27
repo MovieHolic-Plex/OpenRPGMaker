@@ -8,6 +8,7 @@ import {
   type GameBriefSlot, type GameDesignAnswers, type GameDesignBrief, type GamePresetId,
 } from "@/project/gameDesignBrief";
 import "@/styles/shell/dialogs/project-interview.css";
+import { sourceTextOf } from "@/i18n/domTranslator";
 
 export interface ProjectInterviewOptions {
   initialBrief?: GameDesignBrief;
@@ -86,7 +87,7 @@ export function showProjectInterview(presetId: GamePresetId, options: ProjectInt
         advance.disabled = !selected.trim();
         const sync = (): void => {
           advance.disabled = busy || !selected.trim();
-          choices.querySelectorAll<HTMLButtonElement>("button").forEach(b => b.setAttribute("aria-pressed", String(b.textContent === selected)));
+          choices.querySelectorAll<HTMLButtonElement>("button").forEach(b => b.setAttribute("aria-pressed", String(sourceTextOf(b) === selected)));
         };
         current.choices.forEach((text, index) => {
           const option = button(text, `project-interview-option-${index}`, () => {

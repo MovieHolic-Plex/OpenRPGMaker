@@ -24,6 +24,7 @@ import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { store } from "@/project/store";
 import { hasElectronBridge } from "@/project/persistence/electronRepository";
 import { adoptElectronOpenProject } from "@/project/persistence/repository";
+import { initI18n } from "@/i18n";
 
 // 첫 import 에서 이미 설치됐다(idempotent). 진입점에 남겨두는 이유는 부팅 순서에서
 // 이게 1번이라는 사실을 코드로 읽히게 하려는 것 — 누가 import 를 정리해도 의도가 남는다.
@@ -98,6 +99,7 @@ void bootEditorWithOpenedProject(app)
  * 부팅 전에 브리지로 조회해 세션을 이어받는다(설계 7.3). 브라우저에서는 no-op 이다.
  */
 async function bootEditorWithOpenedProject(host: HTMLElement): Promise<void> {
+  await initI18n();
   await adoptElectronOpenProject();
   await initializeTeamAccess();
   // 공용 타일 참고문서는 프로젝트에 이미 있는 업로드 타일셋만 보강하고 타일셋을 새로 설치하지 않는다(설치는

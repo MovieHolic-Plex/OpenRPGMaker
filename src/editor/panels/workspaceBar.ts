@@ -25,6 +25,7 @@ import { dockZoneHasHost } from "@/editor/workspace/leftDockPanels";
 import { dockOf, type WorkspaceLayout } from "@/editor/workspace/workspaceLayout";
 import { getWorkspaceLayout, moveWorkspacePanel, toggleWorkspacePanel } from "@/editor/workspace/workspaceStore";
 import { el } from "@/util/dom";
+import { getLocale, LOCALE_NATIVE_NAMES, setLocale, SUPPORTED_LOCALES } from "@/i18n";
 
 const ZONE_LABEL: Record<DockZone, string> = { left: "왼쪽", right: "오른쪽", bottom: "아래" };
 
@@ -140,6 +141,29 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
             event.stopPropagation();
             setEditorUiMode(option.id);
             close();
+          },
+        },
+      }),
+    );
+  }
+  menu.append(el("div", { class: "workspace-menu-group", text: "언어" }));
+  for (const locale of SUPPORTED_LOCALES) {
+    const active = getLocale() === locale;
+    // 언어 이름은 그 언어로 쓴다 — 못 읽는 언어로 바뀐 화면에서도 자기 언어를 찾을 수 있어야 한다.
+    menu.append(
+      el("button", {
+        class: `oprn-menu-command workspace-ui-mode-item workspace-locale-item${active ? " is-active" : ""}`,
+        attrs: { type: "button", role: "menuitemradio", "aria-checked": active ? "true" : "false", lang: locale, translate: "no" },
+        dataset: { testid: `workspace-locale-${locale}`, locale },
+        children: [
+          el("span", { class: "workspace-ui-mode-radio", attrs: { "aria-hidden": "true" } }),
+          el("span", { class: "workspace-ui-mode-text", children: [el("span", { class: "workspace-ui-mode-label", text: LOCALE_NATIVE_NAMES[locale] })] }),
+        ],
+        on: {
+          click: (event) => {
+            event.stopPropagation();
+            close();
+            void setLocale(locale);
           },
         },
       }),

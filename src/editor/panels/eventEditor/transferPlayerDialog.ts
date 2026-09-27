@@ -3,6 +3,7 @@ import type { Command, MapId, MapTreeNode, Project, TransferDirection, TransferF
 import { clearChildren, el } from "@/util/dom";
 import { openEventSubdialog } from "./subdialog";
 import { drawTransferFallback, drawTransferMapPreview } from "./transferMapPreview";
+import { sourceTextOf } from "@/i18n/domTranslator";
 
 type TransferCommand = Extract<Command, { kind: "transfer" }> & { direction?: TransferDirection; fade?: TransferFade };
 
@@ -136,7 +137,7 @@ export function renderTransferPicker(body: HTMLElement, request: TransferPickerR
   const rerenderFooter = () => {
     status.textContent = targetLabel(project, draft);
     for (const button of zoomControls.querySelectorAll("button")) {
-      button.classList.toggle("active", button.textContent === zoomLabel(draft.zoom));
+      button.classList.toggle("active", sourceTextOf(button) === zoomLabel(draft.zoom));
     }
     applyDraft();
   };

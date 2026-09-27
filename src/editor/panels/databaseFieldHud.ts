@@ -6,6 +6,7 @@ import { FieldHud } from "@/player/fieldHud";
 import { renderRegionSnapshot } from "@/editor/regionSnapshot";
 import { resourcePickerControl } from "./databaseResourcePickerDialog";
 import "./databaseFieldHud.css";
+import { sourceTextOf } from "@/i18n/domTranslator";
 const node = (tag: string, className: string, text?: string): HTMLElement => {
   const element = document.createElement(tag); element.className = className;
   if (text !== undefined) element.textContent = text;
@@ -166,7 +167,7 @@ export function fieldHudEditor(project: Project, save: (config: FieldHudConfig) 
   for (const [key,label] of Object.entries({ normal:"시작 상태", low:"저체력 예시", action:"전투 예시", edge:"화면 아래 접근", dialogue:"대화 중" })) scenarios.append(button(label, () => {
     scenario=key; previewSession=startSession(project,1);
     if(key==="low") for(const vitals of Object.values(previewSession.actorVitals)) vitals.hp=Math.round(vitals.maxHp*.2);
-    for(const child of scenarios.children) child.setAttribute("aria-pressed",String(child.textContent===label)); paint();
+    for(const child of scenarios.children) child.setAttribute("aria-pressed",String(sourceTextOf(child)===label)); paint();
   }, `hud-preview-${key}`));
   center.append(node("h3","hud-studio-heading","배치 미리보기"),viewport,scenarios,node("p","hud-studio-hint","시작 맵 배경 · 시작 파티 데이터. 드래그 또는 방향키로 이동합니다. 흐린 요소는 현재 상태에서 숨겨집니다. 예시 상태는 저장되지 않습니다."));
   const objective = document.createElement("input"); objective.type="checkbox"; objective.checked=config.objective; objective.dataset.testid="hud-objective";
