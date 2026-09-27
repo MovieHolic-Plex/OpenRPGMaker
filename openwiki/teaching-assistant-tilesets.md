@@ -165,6 +165,13 @@ itch.io 의 [Rasak Modern](https://rasak.itch.io/rasak-modern)처럼 「사용·
 사용자가 팩 시트 여러 장을 자원 관리자(칩셋)에 **한꺼번에** 올리면 알려진 프리셋과 해시로 맞춰 타일셋 하나로 굽는다.
 그림은 사용자 원본에서만 만든다. 저장소에는 이름·좌표·해시뿐이다.
 
+**내부 브라우저로 받기(2026-09-27, 데스크톱 앱).** 자원 관리자 → 칩셋 → 「제작자 페이지」 머리줄에 프리셋마다 바로가기 버튼
+(`asset-source-pack-<프리셋 id>`)이 있다. itch 페이지에서 사용자가 Download 를 누르면 `electron/main/assetBrowser.ts` 가 받고,
+RAR(Rasak Modern 은 RAR5 한 파일 15MB)이면 `electron/main/rarPack.ts` 가 `node-unrar-js`(2.0.2 고정, wasm 은 `dist-electron/unrar.wasm`)로
+그림만 꺼내 무압축 zip 으로 렌더러에 넘긴다. `assetSourceBrowser.ts` 는 zip 안에서 프리셋 시트(폴더/파일명)를 절반 이상 찾으면
+시트 한 장 고르기 대신 `importMvPackFiles` 로 통째로 굽는다. 다운로드 상한 64MB·풀린 그림 합계 96MB. 그림은 사용자 PC 에서만 풀린다(재배포 없음).
+실측: xvfb 의 실제 Electron 앱에서 바로가기 → Download → 「타일셋 추가됨: Rasak Modern · 도시 야외 — 재료 208종·물체 157개」.
+
 | 파일 | 하는 일 |
 |---|---|
 | `src/project/rpgmakerMv/autotile.ts` | rpg_core 쿼터 표(FLOOR 48·WALL 16·WATERFALL 4), 이웃 마스크 → MV 모양 번호, `autotileVariantMap` |
