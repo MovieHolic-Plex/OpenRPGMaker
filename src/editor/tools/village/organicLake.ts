@@ -1,7 +1,5 @@
 import { TILE } from "@/project/defaults/constants";
 import { LAKE_AUTOTILE_TILE } from "@/project/defaults/lakeAutotile";
-import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
-import { FOREST_HARMONY_TEXTURE } from "@/project/defaults/forestHarmony";
 import { footprintBounds, normalizeCharacterFootprint } from "@/project/footprint";
 import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness";
 import type { GameMap, Project, Rect } from "@/project/types";
@@ -130,19 +128,10 @@ export function paintOrganicVillageLake(project: Project, map: GameMap, plan: Or
     if (reason) throw new ToolError(`호수 예약 칸(${p.x},${p.y})에 ${reason}이 있습니다. 예약과 배치를 다시 확인하세요.`,
       { code: "village-water-conflict", mapId: map.id, x: p.x, y: p.y });
   }
-  // Forest Harmony owns a baked 47-variant shoreline; raw town tile 0 is not
-  // a render-time water autotile on that chipset. Respect its saved definition.
-  const forest = tileset.image.type === "bundled" && tileset.image.id === FOREST_HARMONY_TEXTURE;
-  const water = forest ? tileset.autotileGroups?.find(group => group.id === "forest_harmony_lake_47") : undefined;
-  if (forest && (!water || !water.memberTileIds.length)) {
-    throw new ToolError("숲마을 칩셋에 자연 물가 조립 정의가 없습니다.", { code: "village-tileset-mismatch", mapId: map.id });
-  }
+  // 숲마을도 같은 0번 물을 쓴다 — 숲마을 시트는 0~212 물 블록을 합본 마을과 같은 칸에 두고, 렌더가 물가 쿼터를
+  // 합성하며 3프레임으로 움직인다. 예전에 쓰던 1517~1563 호수는 프레임이 한 장이라 강이 멈춰 보였다(2026-09-27).
   // No clipping, clearing, global autotile repair or shared project mutation.
-  for (const p of plan.cells) map.lowerTiles[p.y * map.width + p.x] = water?.memberTileIds[0] ?? LAKE_AUTOTILE_TILE.OUTER_CORNER;
-  if (water) {
-    const reserved = new Set(plan.cells.map(key));
-    shapeAutotileGroupAround(map, water, plan.cells, (x, y) => reserved.has(key({ x, y })));
-  }
+  for (const p of plan.cells) map.lowerTiles[p.y * map.width + p.x] = LAKE_AUTOTILE_TILE.OUTER_CORNER;
   return plan.cells.length;
 }
 

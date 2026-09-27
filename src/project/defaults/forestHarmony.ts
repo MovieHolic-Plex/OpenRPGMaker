@@ -91,6 +91,18 @@ export function ensureForestHarmonyReferences(tileset: TilesetDef): boolean {
     if (doc.id === "public-village-rules" && doc.markdown.includes(wrong)) {
       doc.markdown = doc.markdown.replace(wrong, "남향 외곽에는 나무 줄기가 있어야 한다. 줄기 시작 행은 부품별 하위/상위 배열을 따른다. 반복 본체 하위 줄기는 3행째, 마감은 4행째부터 시작한다. 전체 줄기와 뿌리를 유지한다."); changed = true;
     }
+    // 물 안내(2026-09-27): 1517~1563 호수는 프레임이 한 장이라 멈춰 보였다. 번들 그대로인 문장만 바꾼다.
+    if (doc.id === "public-village-rules" && doc.markdown.includes(STATIC_LAKE_RULE)) {
+      doc.markdown = doc.markdown.replace(STATIC_LAKE_RULE, ANIMATED_WATER_RULE); changed = true;
+    }
+    if (doc.id === "public-village-gallery" && doc.markdown.includes(STATIC_LAKE_ROW)) {
+      doc.markdown = doc.markdown.replace(STATIC_LAKE_ROW, STATIC_LAKE_ROW_RETIRED); changed = true;
+    }
   }
   return changed;
 }
+
+const STATIC_LAKE_RULE = "길 `forest_harmony_road_47`, 물 `forest_harmony_lake_47`는 이웃 상태에 따라 자동 연결한다.";
+const ANIMATED_WATER_RULE = "길 `forest_harmony_road_47`은 이웃 상태에 따라 자동 연결한다. 물은 0번 「애니메이션 물 오토타일」로 칠한다 — 렌더가 이웃을 보고 물가를 합성하고 3프레임으로 움직인다. `forest_harmony_lake_47`(1517~1563)은 프레임이 한 장뿐이라 멈춰 보이므로 새로 쓰지 않는다.";
+const STATIC_LAKE_ROW = "|forest_harmony_lake_47|1517–1563|1563|";
+const STATIC_LAKE_ROW_RETIRED = "|forest_harmony_lake_47 (옛 정지 호수, 새로 쓰지 않음)|1517–1563|1563|";

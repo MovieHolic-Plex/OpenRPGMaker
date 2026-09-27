@@ -1014,21 +1014,17 @@ function assertFillRegionGroup(tileset: TilesetDef, group: TileGroupMetadata, au
   );
 }
 
-const WATER_MATERIAL = /^(물|맑은 물|호수|호수 물|연못|못|물웅덩이|water|lake|pond)$/iu;
-/** A sheet's own lake autotile (id `*_lake_47`) for a plain water material; null when the sheet has none. */
-function ownLakeAutotile(tileset: TilesetDef, material: unknown): { group: TileGroupMetadata; autotile: AutotileGroup } | null {
-  if (typeof material !== "string" || !WATER_MATERIAL.test(material.trim())) return null;
-  const autotile = (tileset.autotileGroups ?? []).find((candidate) => /_lake_47$/u.test(candidate.id));
-  if (!autotile) return null;
-  const group: TileGroupMetadata = { id: autotile.id, name: autotile.name ?? "호수", role: "water", defaultLayer: "lower",
-    tileIds: [...autotile.memberTileIds], description: "", placementRules: "" };
-  return { group, autotile };
+const PLAIN_WATER_MATERIAL = /^(물|맑은 물|호수|호수 물|연못|못|물웅덩이|water|lake|pond)$/iu;
+/** 흔한 물 낱말 → 시트의 움직이는 물 오토타일 어휘(animated_terrain 수역). 없으면 null(라벨 검색으로 간다). */
+function plainWaterMaterialGroup(tileset: TilesetDef, material: unknown): TileGroupMetadata | null {
+  if (typeof material !== "string" || !PLAIN_WATER_MATERIAL.test(material.trim())) return null;
+  return (tileset.tileGroups ?? []).find((group) => group.role === "water" && group.patternGrammar?.kind === "animated_terrain") ?? null;
 }
 
 const fillRegion: ToolDefinition = {
   name: "fill_region",
   description:
-    "material(타일 라벨/설명, 예: \"물\"/\"잔디\")로 영역을 채운다(v3). 그룹 id 금지. 숲마을·기후 시트에서 \"물\"·\"호수\"·\"연못\"은 시트 자신의 호수 오토타일(1517~1563)로 물가까지 깐다. shape: rect(기본·사각형 전체)|ellipse(rect 안 타원)|circle(rect 안 내접 원). 원형/둥근 호수는 반드시 shape=circle(또는 ellipse). rect만 쓰면 네모 호수가 된다. 호수·강·바닥·지면 면 작업용(실내 나무 바닥·돌바닥·카펫처럼 오토타일이 아닌 통행 바닥도 채운다 — 3×3 테두리 카펫은 가장자리에 테두리). 나무/바위/꽃은 place_props. lower 기본. 벽과 1칸 틈이 있으면 그 틈을 메워 벽에 붙인다(맵 가장자리 1칸은 그대로). transfer/시작 위치 보호 칸은 제외+warning. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의. 타원=ellipse. 물·잔디·바닥 면은 이 툴, 벽은 build_wall, 길은 paint_road. " + FOUR_LAYER_GUIDANCE_SHORT + " 1층을 칠하면 그 칸의 2층 장식을 비운다.",
+    "material(타일 라벨/설명, 예: \"물\"/\"잔디\")로 영역을 채운다(v3). 그룹 id 금지. 숲마을·기후 시트의 \"물\"·\"호수\"·\"연못\"도 움직이는 물 오토타일(0~212, 물가 자동 합성)로 깐다. shape: rect(기본·사각형 전체)|ellipse(rect 안 타원)|circle(rect 안 내접 원). 원형/둥근 호수는 반드시 shape=circle(또는 ellipse). rect만 쓰면 네모 호수가 된다. 호수·강·바닥·지면 면 작업용(실내 나무 바닥·돌바닥·카펫처럼 오토타일이 아닌 통행 바닥도 채운다 — 3×3 테두리 카펫은 가장자리에 테두리). 나무/바위/꽃은 place_props. lower 기본. 벽과 1칸 틈이 있으면 그 틈을 메워 벽에 붙인다(맵 가장자리 1칸은 그대로). transfer/시작 위치 보호 칸은 제외+warning. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의. 타원=ellipse. 물·잔디·바닥 면은 이 툴, 벽은 build_wall, 길은 paint_road. " + FOUR_LAYER_GUIDANCE_SHORT + " 1층을 칠하면 그 칸의 2층 장식을 비운다.",
   mode: "write",
   version: 3,
   invalidArgsExample: FILL_CIRCLE_EXAMPLE,
@@ -1065,12 +1061,16 @@ const fillRegion: ToolDefinition = {
     const requestedLayer = args.layer === undefined ? "lower" : args.layer;
     const parsedLayer = parseToolLayer(requestedLayer);
     if (parsedLayer === null) failWithExample(`layer는 ${TOOL_LAYER_ENUM.join("/")} 중 하나여야 합니다(lower=1층, upper=3층)`, shapeExample);
-    // 숲마을 계열 시트의 물은 시트 자신의 호수 오토타일(forest_harmony_lake_47, 1517~1563)이다. 어휘에 남은 합본 마을
-    // 「애니메이션 물」(0~/120)을 고르면 물가 없는 남색 판이 됐다(2026-09-25 조수 시험).
-    const ownLake = ownLakeAutotile(tileset, args.material);
-    const { group, softConfirm } = ownLake ? { group: ownLake.group, softConfirm: undefined }
+    // 숲마을·기후 시트도 어휘의 「애니메이션 물 오토타일」(0~212)로 칠한다. 이 시트들은 합본 마을과 같은 칸에 물 블록을
+    // 두고 렌더가 물가 쿼터를 합성해 3프레임으로 움직인다(tilesetImage.COMBINED_TOWN_WATER_BLOCK_TEXTURES).
+    // 2026-09-25 에 1517~1563 호수로 돌렸던 것은 그 합성이 들어가기 전의 「물가 없는 남색 판」 때문이었고,
+    // 그 호수는 프레임이 한 장이라 물이 멈춰 보였다(2026-09-27 사용자 보고).
+    // 「물」·「호수」·「연못」은 라벨 검색에 맡기지 않는다 — 화산 시트는 물 칸 라벨이 「용암 · 물 오토타일」이라 「물」이
+    // 단일 타일로 잡혀 fill-needs-group 으로 실패했다(2026-09-27 실측). 시트의 물 오토타일 그룹으로 바로 간다.
+    const waterGroup = plainWaterMaterialGroup(tileset, args.material);
+    const { group, softConfirm } = waterGroup ? { group: waterGroup, softConfirm: undefined }
       : requireMaterialGroup(tileset, args.material, shapeExample, { preferRoles: ["water", "terrain"], requireAutotileGroup: true });
-    const autotile = ownLake ? ownLake.autotile : autotileGroupForVocab(tileset, group);
+    const autotile = autotileGroupForVocab(tileset, group);
     // 겹침 오토타일(울타리·주차선)은 3층이 집이다 — layer 를 안 주면 거기에 깐다(바닥을 지우지 않는다).
     const layerNo: TileLayerNo = args.layer === undefined && autotile && autotileGroupLayer(autotile) === "upper" ? 3 : parsedLayer;
     assertFillRegionGroup(tileset, group, autotile);

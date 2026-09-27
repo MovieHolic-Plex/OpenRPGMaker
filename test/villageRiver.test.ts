@@ -7,6 +7,7 @@ import { planVillageRiver } from "@/editor/tools/village/riverPlan";
 import { assertRiverVillage } from "@/editor/tools/village/riverValidation";
 import { morphologyDebugSink } from "@/editor/tools/village/morphologyBuild";
 import { scrubPlacementConflicts, validateLayoutPlacement } from "@/project/lint/layoutPlacementValidate";
+import { animationKeyForTile } from "@/project/defaults/chipsetAnimation";
 
 const key = (p: { x: number; y: number }) => `${p.x},${p.y}`;
 
@@ -51,8 +52,10 @@ describe("river village", () => {
     expect(river).toBeDefined();
     expect(map.tilesetId).toBe("forest_harmony");
     expect(map.layoutPlan!.regions.filter(r => r.role === "house").every(r => !r.hasFence)).toBe(true);
-    const water = new Set(p.tilesets[map.tilesetId]!.autotileGroups!.find(g => g.id === "forest_harmony_lake_47")!.memberTileIds);
-    expect(river.cells.every(cell => water.has(map.lowerTiles[cell.y * map.width + cell.x]!))).toBe(true);
+    // 강은 움직이는 0번 물로 칠한다 — 1517~1563 호수는 프레임이 한 장이라 멈춰 보였다(2026-09-27).
+    const riverTiles = river.cells.map(cell => map.lowerTiles[cell.y * map.width + cell.x]!);
+    expect(riverTiles.every(tile => animationKeyForTile(tile) !== null)).toBe(true);
+    expect(riverTiles.some(tile => tile >= 1517 && tile <= 1563)).toBe(false);
     const oldTrees = new Set([260, 261, 262, 263, 290, 291, 292, 293]);
     expect([...map.lowerTiles, ...map.upperTiles].some(tile => oldTrees.has(tile))).toBe(false);
     const fronts = map.layoutPlan!.regions.filter(r => r.role === "house").map(r => r.front!);

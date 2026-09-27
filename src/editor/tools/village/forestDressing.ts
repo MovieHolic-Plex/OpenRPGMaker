@@ -12,7 +12,6 @@
 //    밑동(아래층 막힘 칩) 칸은 절대 지나가지 않는다 — 밑동을 지우면 나무가 반 토막 난다.
 // 3. 꾸밈은 마지막에, 수관·밑동·물·길·이벤트가 없는 맨 풀밭에만 놓는다.
 
-import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { TILE } from "@/project/defaults/constants";
 import { ensureWalkableCanopy, forestCanopyTiles } from "@/project/defaults/forestGrove";
 import { setLayerTileAt } from "@/project/mapLayers";
@@ -21,10 +20,10 @@ import { mulberry32 } from "@/util/rng";
 import { shadeForestCanopy } from "./forestContour";
 import { FOREST_TRUNK_TILES } from "./forestTrunkTiles";
 import { stampTree, treeStampCells, type TreeKit, type TreeStamp } from "./treeKit";
+import { VILLAGE_ANIMATED_WATER_TILE } from "./waterTiles";
 
 type Point = { readonly x: number; readonly y: number };
 
-export const FOREST_LAKE_GROUP = "forest_harmony_lake_47";
 /** 숲 바닥 소품(상위·통행 불가). 29 돌 무더기, 537 회백색 바위 더미, 768 꽃 둥근 관목 — wildRouteForest 와 같은 칩. */
 const STONES = [29, 537] as const;
 const FLOWER_SHRUB = 768;
@@ -108,17 +107,13 @@ export function planForestWater(map: GameMap, area: Rect, kind: ForestWaterKind,
   return { kind: cells.size > 0 ? kind : "none", cells };
 }
 
-export function paintForestWater(map: GameMap, tileset: TilesetDef, plan: ForestWaterPlan): number {
-  const lake = tileset.autotileGroups?.find(group => group.id === FOREST_LAKE_GROUP);
-  if (!lake || plan.cells.size === 0) return 0;
-  const W = map.width;
-  const points: Point[] = [];
+/** 물은 0번 애니메이션 물로 칠한다 — 렌더가 물가를 합성하고 움직인다(waterTiles.VILLAGE_ANIMATED_WATER_TILE). */
+export function paintForestWater(map: GameMap, _tileset: TilesetDef, plan: ForestWaterPlan): number {
+  if (plan.cells.size === 0) return 0;
   for (const index of plan.cells) {
-    map.lowerTiles[index] = lake.memberTileIds[0]!;
+    map.lowerTiles[index] = VILLAGE_ANIMATED_WATER_TILE;
     map.upperTiles[index] = TILE.EMPTY;
-    points.push({ x: index % W, y: Math.floor(index / W) });
   }
-  shapeAutotileGroupAround(map, lake, points, (x, y) => plan.cells.has(y * W + x));
   return plan.cells.size;
 }
 
