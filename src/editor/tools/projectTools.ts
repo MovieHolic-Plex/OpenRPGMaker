@@ -139,7 +139,7 @@ const setProjectSettings: ToolDefinition = {
           backdrop: { type: "string", enum: ["field", "default"], description: "field = 전투 배경을 주인공 주변 필드 화면으로(제자리 페이드 진입). default = 트룹/지형 배경" },
           presentation: { type: "string", enum: ["onField", "default"], description: "onField = 크로노식 필드 위 전투: 전환 없이 적은 부딪힌 심볼 자리, 아군은 파티 자리에 서고 끝나면 그 자리로 돌아온다(배경은 필드 그대로). default = 전환 후 전투장" },
           formationRoll: { type: "boolean", description: "true = 전투마다 선제·기습·백어택·협공을 민첩으로 굴리고 심볼 인카운트는 접촉 방향으로 정한다. false = 항상 보통 개시" },
-          escapeBonusPercent: { type: "integer", minimum: 0, maximum: 100, description: "도주 실패 1회마다 다음 도주 확률에 더하는 %p(기본 10, 0 = 가산 없음)" },
+          escapeBonusPercent: { type: "integer", minimum: 0, maximum: 100, description: "도주 실패 1회마다 다음 도주 확률에 더하는 %p(생략·0 = 가산 없음, 예전 식 그대로. 명작식으로 쓰려면 10 정도)" },
           limitGauge: {
             type: "object",
             description: "배우별 리미트 게이지(0~100). 맞으면 차고, limitSkill 스킬은 가득 찼을 때만 쓴다",
@@ -305,7 +305,7 @@ const setProjectSettings: ToolDefinition = {
         if (typeof battle.escapeBonusPercent !== "number" || !Number.isInteger(battle.escapeBonusPercent) || battle.escapeBonusPercent < 0 || battle.escapeBonusPercent > 100) {
           throw new ToolError(`battle.escapeBonusPercent 는 0~100 정수여야 합니다(받은 값 ${JSON.stringify(battle.escapeBonusPercent)}).`, { code: "invalid-args" });
         }
-        if (battle.escapeBonusPercent === 10) delete draft.system.escapeBonusPercent;
+        if (battle.escapeBonusPercent === 0) delete draft.system.escapeBonusPercent;
         else draft.system.escapeBonusPercent = battle.escapeBonusPercent;
       }
       // 전투 자원·감정 — 저장 계약(생략 = 없음)은 normalizeSystemRecords 가 정규화한다.

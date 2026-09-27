@@ -470,10 +470,10 @@ function systemSectionNodes(
             else delete draft.system.battleFormationRoll;
           });
         }),
-        numberField("도주 실패마다 확률 가산 (%p)", "db-field-system-escape-bonus", () => store.getCurrent().system.escapeBonusPercent ?? 10, (value) => {
+        numberField("도주 실패마다 확률 가산 (%p)", "db-field-system-escape-bonus", () => store.getCurrent().system.escapeBonusPercent ?? 0, (value) => {
           updateSystem((draft) => {
             const next = Math.max(0, Math.min(100, Math.round(value)));
-            if (!Number.isFinite(value) || next === 10) delete draft.system.escapeBonusPercent;
+            if (!Number.isFinite(value) || next === 0) delete draft.system.escapeBonusPercent;
             else draft.system.escapeBonusPercent = next;
           }, "system:escape-bonus");
         }, { min: 0, max: 100 }),
