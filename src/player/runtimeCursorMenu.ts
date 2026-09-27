@@ -31,6 +31,12 @@ export type CursorMenuOptions = {
    */
   readonly sound?: boolean;
   readonly audioContext?: Pick<RuntimeJuiceOptions, "project" | "session">;
+  /**
+   * 호출부가 **방금 새로 만든** DOM 에 붙인다고 보장할 때 true. 그러면 첫 선택이 첫 행일 때 scrollIntoView 를
+   * 건너뛴다(새 목록은 맨 위에서 시작하므로 결과가 같다). 방금 만든 DOM 의 레이아웃을 강제해 상점 첫 진입 키
+   * 처리 한 번에 26~60ms 를 썼다(브라우저 실측). 기존 컨테이너를 재사용하면 스크롤이 남아 있을 수 있으니 주지 마라.
+   */
+  readonly freshDom?: boolean;
 };
 
 /** setIndex 를 부른 원인. 커서음은 키보드 이동에만 울린다 — 마우스가 스칠 때마다 삑삑거리면 못 쓴다. */
@@ -47,13 +53,14 @@ export function attachCursorMenu(root: HTMLElement, opts: CursorMenuOptions): ()
 
   for (const el of items) el.classList.add(NAV_ITEM_CLASS);
 
-  const applySelection = (): void => {
+  // 첫 선택의 스크롤 생략은 호출부가 새 DOM 을 보장할 때만(opts.freshDom).
+  const applySelection = (initial = false): void => {
     items.forEach((el, i) => {
       const selected = i === index;
       if (selected) {
         el.classList.add("selected");
         el.setAttribute("aria-current", "true");
-        el.scrollIntoView?.({ block: "nearest" });
+        if (!(initial && i === 0 && opts.freshDom)) el.scrollIntoView?.({ block: "nearest" });
       } else {
         el.classList.remove("selected");
         el.removeAttribute?.("aria-current");
@@ -142,7 +149,7 @@ export function attachCursorMenu(root: HTMLElement, opts: CursorMenuOptions): ()
     );
   }
 
-  applySelection();
+  applySelection(true);
   if (items.length) opts.onSelect?.(index);
   focusSilently(root);
 

@@ -68,6 +68,7 @@ import {
   setManualJourneyStage,
 } from "@/editor/authoringJourney";
 import { renderAuthoringJourney } from "@/editor/panels/authoringJourneyStrip";
+import { mountEventAiQueueView, unmountEventAiQueueView } from "@/editor/eventAiQueue/eventAiQueueView";
 
 const LEFT_PANEL_DEFAULT_WIDTH = 526;
 const LEFT_PANEL_MIN_WIDTH = 184;
@@ -261,6 +262,8 @@ export function renderEditor(main: HTMLElement): void {
   unsubLayoutBbox = installLayoutBboxOverlay();
   // 명명 로케이션 레이어. 꺼져 있으면 포인터를 받지 않으므로 타일 편집과 겹치지 않는다.
   unsubLocationLayer = installMapLocationLayer();
+  // AI 이벤트 작업함(맵 핀 + 캔버스 오른쪽 작업함). 작업이 없으면 보이지 않는다.
+  mountEventAiQueueView();
   // 켠 뒤의 도구 전이는 감시자 하나가 잡는다 — 팔레트·사이드바·구조 킷이 각자 끄지 않는다.
   unsubLocationDrawGuard = installLocationDrawModeGuard();
   // 툴바의 로케이션 토글이 눌린 상태를 그대로 보여야 한다 — 레이어 상태 변화에 토글도 다시 그린다.
@@ -439,6 +442,7 @@ export function teardownEditor(): void {
   unsubMapLocks?.();
   unsubLayoutBbox?.();
   unsubLocationLayer?.();
+  unmountEventAiQueueView();
   unsubLocationToggle?.();
   unsubMapBackgroundPreview?.();
   unsubLocationDrawGuard?.();

@@ -23,6 +23,11 @@ import { startSession } from "@/project/session";
 import { createBlockingEventQuery, findBlockingEventOverlappingRect, initialRuntimeEventPositions } from "@/project/runtimeEventState";
 import { footprintBounds } from "@/project/footprint";
 import { TILE } from "@/project/defaults/constants";
+import { registerPageMoveRoutes } from "@/player/playScenePageMoveRoutes";
+import { applyChangeTileStep } from "@/player/playSceneMapCommands";
+import { firstConnectionToward } from "@/player/npcLivingTravel";
+import { pointRect } from "@/project/footprint";
+import type { GameMap, MapConnection, Project } from "@/project/types";
 import type { TileGraft, TilesetDef } from "@/project/types";
 
 afterEach(() => {
@@ -394,6 +399,188 @@ describe("3차: 분위기 소리 합성 예산", () => {
     expect(progress()).toBeLessThanOrEqual(100_000);
     expect(baking().size).toBe(1);
     audio.stop();
+  });
+});
+
+
+describe("4차: 지형 성분 색인은 해시 충돌에 속지 않는다", () => {
+  it("32비트 해시가 같던 두 통행 배열에서도 열린 길을 도달 불가로 막지 않는다", () => {
+    // 무작위 퍼징 반례(시드 0xf1a62026). 예전 FNV 지문은 두 배열에 같은 값(1204537343)을 냈다.
+    const before = [3, 14, 0, 3, 6, 11, 0, 1, 3];
+    const after = [3, 3, 3, 15, 14, 7, 7, 8, 15];
+    const flags = (n: number) => ({ up: !!(n & 1), down: !!(n & 2), left: !!(n & 4), right: !!(n & 8) });
+    const tileset = { passability: before.map(flags), priority: Array(9).fill("lower") } as unknown as TilesetDef;
+    const map = { id: "m", width: 3, height: 3, tilesetId: "t", lowerTiles: [0, 1, 2, 3, 4, 5, 6, 7, 8], upperTiles: Array(9).fill(-1) } as unknown as GameMap;
+    const project = { maps: { m: map }, tilesets: { t: tileset } } as unknown as Project;
+    armTerrainComponents(project, map);
+    after.forEach((n, index) => Object.assign(tileset.passability[index]!, flags(n)));
+    expect(terrainMayReach(project, map, 0, 0, 2, 2)).toBe(true);
+    expect(findChasePath(project, map, { x: 0, y: 0 }, { x: 2, y: 2 }).length).toBeGreaterThan(0);
+  });
+});
+
+describe("4차: 지형이 바뀌면 생활 NPC 는 남은 경로를 다시 짠다", () => {
+  it("changeTile 로 길이 막히면 막힌 경로를 재사용하지 않고 우회한다", () => {
+    const project = createBlankProject();
+    const base = project.tilesets[Object.keys(project.tilesets)[0]!]!;
+    project.tilesets.t = { ...base, id: "t", count: 2,
+      passability: [{ up: true, down: true, left: true, right: true }, { up: false, down: false, left: false, right: false }],
+      priority: ["lower", "lower"], ledgeDirections: undefined } as TilesetDef;
+    const livingPage = { id: "p", name: "p", conditions: [], graphic: {}, trigger: { kind: "action" as const }, priority: "same" as const, commands: [],
+      movement: { type: "living" as const, speed: 3, frequency: 3, living: { destinations: [{ mapId: "m", x: 2, y: 0 }], repeat: false } } };
+    const map = { ...createBlankMap("m", 3, 2, "t"), id: "m", lowerTiles: [0, 0, 0, 0, 0, 0], upperTiles: Array(6).fill(-1),
+      events: [{ id: "npc", x: 0, y: 0, trigger: { kind: "action" }, commands: [], pages: [livingPage] }] } as unknown as GameMap;
+    project.maps = { m: map };
+    project.startMapId = "m";
+    store.replace(project);
+    const live = store.getCurrent().maps.m!;
+    const session = startSession(store.getCurrent());
+    session.currentMapId = "m";
+    const movers = new Map<string, { moves: unknown[]; step: number }>();
+    const scene = {
+      map: live, session, eventPositions: { npc: { x: 0, y: 0 } },
+      pageMoveRouteKeys: new Set<string>(), pageMoveRouteEventIds: new Set<string>(), commandMoveRouteEventIds: new Set<string>(),
+      autonomousNPCs: movers,
+      getMapId: () => "m",
+      registerAutonomousMover(id: string, moves: unknown[], repeat: boolean) {
+        movers.set(id, { moves, repeat, step: 0, timer: 0, activeMove: null, facing: "down", animationEnabled: true, opacity: 255 } as never);
+      },
+    };
+    registerPageMoveRoutes(scene as never);
+    expect(movers.get("npc")?.moves).toEqual([{ kind: "move", dir: "right" }, { kind: "move", dir: "right" }]);
+    applyChangeTileStep(scene as never, { kind: "changeTile", mapId: "m", layer: "lower", x: 1, y: 0, tile: 1 } as never);
+    registerPageMoveRoutes(scene as never);
+    expect(movers.get("npc")?.moves.map((move) => (move as { dir: string }).dir)).toEqual(["down", "right", "right", "up"]);
+  });
+});
+
+describe("4차: 칸 격자 막힘 판정기", () => {
+  it("무작위 몸 크기·위치에서 모든 질의 사각이 원본 질의와 같다", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId]!;
+    let seed = 0x5eed4;
+    const rand = () => { seed = (Math.imul(seed ^ (seed >>> 15), 0x2c1b3c6d) + 0x9e3779b9) >>> 0; return seed / 4294967296; };
+    map.events = Array.from({ length: 40 }, (_, index) => ({
+      id: "e" + index, x: Math.floor(rand() * 14) - 1, y: Math.floor(rand() * 14) - 1, trigger: { kind: "action" }, commands: [],
+      pages: [{ id: "p" + index, name: "p", conditions: [], graphic: {}, trigger: { kind: "action" }, priority: rand() < 0.7 ? "same" : "below",
+        movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [],
+        footprint: { width: 1 + Math.floor(rand() * 4), height: 1 + Math.floor(rand() * 4) }, passRows: 1 + Math.floor(rand() * 3) }],
+    })) as never;
+    const session = startSession(project);
+    const positions = initialRuntimeEventPositions(map.events);
+    const query = createBlockingEventQuery(project, map, session, positions, "e3");
+    for (let trial = 0; trial < 600; trial += 1) {
+      const x = Math.floor(rand() * 16) - 2;
+      const y = Math.floor(rand() * 16) - 2;
+      const rect = footprintBounds(x, y, { width: 1 + Math.floor(rand() * 3), height: 1 + Math.floor(rand() * 3) });
+      expect(query(rect), JSON.stringify(rect)).toBe(!!findBlockingEventOverlappingRect(project, map, session, positions, rect, "e3"));
+    }
+  });
+});
+
+
+describe("4차 리뷰 반례", () => {
+  it("소수 좌표 이벤트도 칸 격자 판정기가 놓치지 않는다", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId]!;
+    map.events = [{ id: "half", x: 1.5, y: 1, trigger: { kind: "action" }, commands: [],
+      pages: [{ id: "p", name: "p", conditions: [], graphic: {}, trigger: { kind: "action" }, priority: "same",
+        movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [], footprint: { width: 2, height: 1 } }] }] as never;
+    const session = startSession(project);
+    const positions = initialRuntimeEventPositions(map.events);
+    const query = createBlockingEventQuery(project, map, session, positions);
+    for (const rect of [pointRect(2, 1), pointRect(1, 1), pointRect(3, 1), pointRect(2, 2)]) {
+      expect(query(rect), JSON.stringify(rect)).toBe(!!findBlockingEventOverlappingRect(project, map, session, positions, rect));
+    }
+  });
+
+  it("같은 길이의 우회로도 지형이 바뀐 뒤에는 새로 깐다", () => {
+    const project = createBlankProject();
+    const base = project.tilesets[Object.keys(project.tilesets)[0]!]!;
+    project.tilesets.t = { ...base, id: "t", count: 2,
+      passability: [{ up: true, down: true, left: true, right: true }, { up: false, down: false, left: false, right: false }],
+      priority: ["lower", "lower"], ledgeDirections: undefined } as TilesetDef;
+    const livingPage = { id: "p", name: "p", conditions: [], graphic: {}, trigger: { kind: "action" as const }, priority: "same" as const, commands: [],
+      movement: { type: "living" as const, speed: 3, frequency: 3, living: { destinations: [{ mapId: "m", x: 2, y: 2 }], repeat: false } } };
+    const map = { ...createBlankMap("m", 3, 3, "t"), id: "m", lowerTiles: Array(9).fill(0), upperTiles: Array(9).fill(-1),
+      events: [{ id: "npc", x: 0, y: 0, trigger: { kind: "action" }, commands: [], pages: [livingPage] }] } as unknown as GameMap;
+    project.maps = { m: map };
+    project.startMapId = "m";
+    store.replace(project);
+    const session = startSession(store.getCurrent());
+    session.currentMapId = "m";
+    const movers = new Map<string, { moves: { dir: string }[] }>();
+    const scene = {
+      map: store.getCurrent().maps.m!, session, eventPositions: { npc: { x: 0, y: 0 } },
+      pageMoveRouteKeys: new Set<string>(), pageMoveRouteEventIds: new Set<string>(), commandMoveRouteEventIds: new Set<string>(),
+      autonomousNPCs: movers, getMapId: () => "m",
+      registerAutonomousMover(id: string, moves: { dir: string }[], repeat: boolean) {
+        movers.set(id, { moves, repeat, step: 0, timer: 0, activeMove: null, facing: "down", animationEnabled: true, opacity: 255 } as never);
+      },
+    };
+    registerPageMoveRoutes(scene as never);
+    const first = movers.get("npc")!.moves.map((move) => move.dir);
+    expect(first).toEqual(["down", "down", "right", "right"]);
+    applyChangeTileStep(scene as never, { kind: "changeTile", mapId: "m", layer: "lower", x: 0, y: 1, tile: 1 } as never);
+    registerPageMoveRoutes(scene as never);
+    expect(movers.get("npc")!.moves.map((move) => move.dir)).toEqual(["right", "down", "down", "right"]);
+  });
+
+  it("맵 id 에 구분자가 있어도 연결 기억이 제자리 편집을 놓치지 않는다", () => {
+    const connection = { id: "c", from: { mapId: "a|b", x: 1, y: 1 }, to: { mapId: "c", x: 0, y: 0, direction: "down" }, npcEnabled: true, playerEnabled: true };
+    const connections = [connection] as never as MapConnection[];
+    expect(firstConnectionToward(connections, "a|b", "c")?.first).toBe(connection);
+    connection.from.mapId = "a";
+    connection.to.mapId = "b|c";
+    expect(firstConnectionToward(connections, "a", "b|c")?.first).toBe(connection);
+    expect(firstConnectionToward(connections, "a|b", "c")).toBeNull();
+  });
+});
+
+
+describe("4차 2차 리뷰 반례", () => {
+  it("지형이 바뀌어 경로를 다시 짜도 진행 중인 걸음과 방향은 그대로다", () => {
+    const project = createBlankProject();
+    const base = project.tilesets[Object.keys(project.tilesets)[0]!]!;
+    project.tilesets.t = { ...base, id: "t", count: 2,
+      passability: [{ up: true, down: true, left: true, right: true }, { up: false, down: false, left: false, right: false }],
+      priority: ["lower", "lower"], ledgeDirections: undefined } as TilesetDef;
+    const livingPage = { id: "p", name: "p", conditions: [], graphic: {}, trigger: { kind: "action" as const }, priority: "same" as const, commands: [],
+      movement: { type: "living" as const, speed: 3, frequency: 3, living: { destinations: [{ mapId: "m", x: 4, y: 0 }], repeat: false } } };
+    const map = { ...createBlankMap("m", 5, 2, "t"), id: "m", lowerTiles: Array(10).fill(0), upperTiles: Array(10).fill(-1),
+      events: [{ id: "npc", x: 0, y: 0, trigger: { kind: "action" }, commands: [], pages: [livingPage] }] } as unknown as GameMap;
+    project.maps = { m: map };
+    project.startMapId = "m";
+    store.replace(project);
+    const session = startSession(store.getCurrent());
+    session.currentMapId = "m";
+    const movers = new Map<string, Record<string, unknown>>();
+    const scene = {
+      map: store.getCurrent().maps.m!, session, eventPositions: { npc: { x: 0, y: 0 } },
+      pageMoveRouteKeys: new Set<string>(), pageMoveRouteEventIds: new Set<string>(), commandMoveRouteEventIds: new Set<string>(),
+      autonomousNPCs: movers, getMapId: () => "m",
+      registerAutonomousMover(id: string, moves: unknown[], repeat: boolean) {
+        movers.set(id, { moves, repeat, step: 0, timer: 0, activeMove: null, facing: "down", animationEnabled: true, opacity: 255 });
+      },
+    };
+    registerPageMoveRoutes(scene as never);
+    const mover = movers.get("npc")!;
+    // 한 칸 걷는 중: 논리 위치는 이미 (1,0), 보간은 반쯤.
+    const walking = { fromX: 0, fromY: 0, toX: 1, toY: 0, elapsedMs: 100, durationMs: 400 };
+    mover.activeMove = walking;
+    mover.facing = "right";
+    mover.step = 1;
+    mover.timer = 55;
+    scene.eventPositions.npc = { x: 1, y: 0 };
+    applyChangeTileStep(scene as never, { kind: "changeTile", mapId: "m", layer: "lower", x: 3, y: 0, tile: 1 } as never);
+    registerPageMoveRoutes(scene as never);
+    const after = movers.get("npc")!;
+    expect(after).toBe(mover);
+    expect(after.activeMove).toBe(walking);
+    expect(after.facing).toBe("right");
+    expect(after.timer).toBe(55);
+    expect(after.step).toBe(0);
+    expect((after.moves as { dir: string }[]).map((move) => move.dir)).toEqual(["down", "right", "right", "right", "up"]);
   });
 });
 

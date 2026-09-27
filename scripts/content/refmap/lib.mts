@@ -337,7 +337,7 @@ export function lintPassage(set: LoadedSet, spec: MapSpec, k1: (string | null)[]
   // 막혀야 할 물체 칸(prop 전부·tall 밑줄·solid)이 엔진에서 뚫린 곳 — 같은 칸을 다른 kind 로 잡았거나 위에 통행 그림을 얹은 경우.
   const holes: string[] = [];
   for (const p of placed) {
-    if (p.o.id.startsWith("tile:")) continue;
+    // 낱장 tile 조각도 막힘으로 두었으면(pass 없음) 엔진에서도 막혀야 한다 — 탁자·책상 끝을 낱장으로 찍으면 그 칸이 통행 타일일 수 있다.
     const want = p.o.solid ?? (p.o.kind === "prop" ? p.cells : p.o.kind === "tall" ? p.cells.filter(([, dy]) => dy === p.o.h - 1) : []);
     for (const [dx, dy] of want) { const x = p.x + dx, y = p.y + dy; if (x >= 0 && y >= 0 && x < w && y < h && open(y * w + x)) holes.push(`${p.o.id}(${x},${y})`); }
   }
@@ -366,7 +366,9 @@ export function lintPassage(set: LoadedSet, spec: MapSpec, k1: (string | null)[]
     if (o.kind === "wallmount" && p.cells.some(([dx, dy]) => { const x = p.x + dx, y = p.y + dy; return x >= 0 && y >= 0 && x < w && y < h && !hangable(x, y); })) hung.push(`${o.id}(${p.x},${p.y})`);
     if ((o.kind === "tall" || o.kind === "prop") && WALL_FURNITURE.test(o.id)) {
       const top = Math.min(...p.cells.map(([, dy]) => dy));
-      const against = p.cells.filter(([, dy]) => dy === top).every(([dx]) => wallish(p.x + dx, p.y + top - 1) || face(p.x + dx, p.y + top));
+      // 가로 침대(_h)는 머리판이 서쪽 끝이다 — 윗변 대신 머리 쪽 옆 칸이 벽이면 붙은 것으로 본다.
+      const headWest = /bed.*_h$/.test(o.id) && p.cells.filter(([dx]) => dx === 0).every(([, dy]) => wallish(p.x - 1, p.y + dy));
+      const against = headWest || p.cells.filter(([, dy]) => dy === top).every(([dx]) => wallish(p.x + dx, p.y + top - 1) || face(p.x + dx, p.y + top));
       if (!against) loose.push(`${o.id}(${p.x},${p.y})`);
     }
   }

@@ -30,8 +30,12 @@ interface ComponentIndex {
   readonly width: number;
   readonly height: number;
   readonly tileset: TilesetDef;
-  /** 타일 내용 지문. 제자리 수정(applyMapOverrides 등)을 결론 시점에 잡는다. */
-  readonly fingerprint: number;
+  /**
+   * 통행 입력의 **정확한 사본**(정수 배열). 제자리 수정(applyMapOverrides·통행 표시 편집 등)을 결론 시점에 잡는다.
+   * 예전에는 32비트 해시였다 — 서로 다른 통행 비트가 같은 해시를 내는 반례가 무작위 퍼징에서 나왔고
+   * (3×3 맵, 시드 0xf1a62026), 그 경우 열린 길을 "확정 도달 불가" 로 막았다. 비교 비용은 해시와 같은 선형이다.
+   */
+  readonly fingerprint: Int32Array;
 }
 
 const indexByMap = new WeakMap<GameMap, ComponentIndex>();
@@ -119,6 +123,16 @@ export function armTerrainComponents(project: Project, map: GameMap, scannedCell
 /** 캐시를 버린다. 지문이 이미 막아주지만, 타일을 고친 자리에서 뜻을 밝혀 두는 값이 있다. */
 export function invalidateTilePassabilityComponents(map: GameMap): void {
   indexByMap.delete(map);
+  terrainRevisions.set(map, terrainRevision(map) + 1);
+}
+
+/**
+ * 맵 지형이 **런타임에서** 바뀐 횟수(changeTile 등 → applyMapOverrides → 위 무효화). 지문 비교와 달리
+ * 충돌이 없다. 걷는 중인 생활 NPC 의 경로 재사용이 "그 뒤로 지형이 바뀌지 않았다" 를 확인할 때 쓴다.
+ */
+const terrainRevisions = new WeakMap<GameMap, number>();
+export function terrainRevision(map: GameMap): number {
+  return terrainRevisions.get(map) ?? 0;
 }
 
 function withinIndex(index: ComponentIndex, x: number, y: number): boolean {
@@ -140,7 +154,7 @@ function validIndex(project: Project, map: GameMap, index: ComponentIndex): bool
   if (index.width !== map.width || index.height !== map.height) return false;
   const tileset = getTileset(project, map);
   if (index.tileset !== tileset) return false;
-  return index.fingerprint === passabilityFingerprint(map, tileset);
+  return sameInts(index.fingerprint, passabilityFingerprint(map, tileset));
 }
 
 function rebuildIndex(project: Project, map: GameMap): ComponentIndex | null {
@@ -226,8 +240,8 @@ function unite(parent: Int32Array, rank: Int32Array, a: number, b: number): void
 }
 
 /**
- * 통행 판정에 들어가는 모든 입력의 32비트 지문 — 맵의 1~4층 타일과 타일 스택,
- * 그리고 **타일셋의 통행 정의**. FNV-1a 변형.
+ * 통행 판정에 들어가는 모든 입력의 정확한 사본 — 맵의 1~4층 타일과 타일 스택,
+ * 그리고 **타일셋의 통행 정의**. 해시가 아니라 값 그대로라 충돌이 없다.
  *
  * 타일셋을 왜 넣는가: identity 비교만으로는 부족하다. `setPassageMark` 는 같은 TilesetDef
  * 객체의 `passability[tile]` 과 `priority[tile]` 을 **제자리에서** 바꾼다
@@ -239,76 +253,70 @@ function unite(parent: Int32Array, rank: Int32Array, a: number, b: number): void
  * 사실상 돌지 않는다). 그래도 `tileAt` 이 스택을 거치므로 지문에 넣어 둔다 — 스택이
  * 되살아나도 캐시가 조용히 낡지 않는다.
  */
-function passabilityFingerprint(map: GameMap, tileset: TilesetDef | null): number {
-  const lower = map.lowerTiles;
-  const upper = map.upperTiles;
-  let hash = 0x811c9dc5 | 0;
-  for (let index = 0; index < lower.length; index += 1) {
-    hash = Math.imul(hash ^ (lower[index] as number), 0x01000193);
+function passabilityFingerprint(map: GameMap, tileset: TilesetDef | null): Int32Array {
+  const out: number[] = [];
+  const push = (value: number) => { out.push(value | 0); };
+  pushTiles(push, 1, map.lowerTiles);
+  pushTiles(push, 3, map.upperTiles);
+  // 2·4층(선택 칸)도 칸 통행을 바꾼다(collision.ts §layeredPassability).
+  pushTiles(push, 2, map.lowerOverlayTiles);
+  pushTiles(push, 4, map.upperOverlayTiles);
+  pushStacks(push, 5, map.lowerTileStacks);
+  pushStacks(push, 6, map.upperTileStacks);
+  pushTilesetPassage(push, tileset);
+  return Int32Array.from(out);
+}
+
+function sameInts(left: Int32Array, right: Int32Array): boolean {
+  if (left.length !== right.length) return false;
+  for (let index = 0; index < left.length; index += 1) if (left[index] !== right[index]) return false;
+  return true;
+}
+
+/** 구획 표식 + 길이 + 내용. 표식과 길이가 있어 서로 다른 입력이 같은 배열로 이어 붙지 않는다. */
+function pushTiles(push: (value: number) => void, tag: number, tiles: readonly number[] | undefined): void {
+  if (!tiles) { push(-tag); return; }
+  push(tag);
+  push(tiles.length);
+  for (let index = 0; index < tiles.length; index += 1) push(tiles[index] as number);
+}
+
+function pushStacks(push: (value: number) => void, tag: number, stacks: Record<number, number[]> | undefined): void {
+  if (!stacks) { push(-tag); return; }
+  const keys = Object.keys(stacks);
+  push(tag);
+  push(keys.length);
+  for (const key of keys) {
+    const stack = stacks[key as unknown as number] ?? [];
+    push(Number(key));
+    push(stack.length);
+    for (let index = 0; index < stack.length; index += 1) push(stack[index] as number);
   }
-  for (let index = 0; index < upper.length; index += 1) {
-    hash = Math.imul(hash ^ (upper[index] as number), 0x01000193);
-  }
-  // 2·4층(선택 칸)도 칸 통행을 바꾼다(collision.ts §layeredPassability). 없으면 섞지 않아 옛 맵 지문은 그대로다.
-  hash = mixOptionalTiles(hash, 2, map.lowerOverlayTiles);
-  hash = mixOptionalTiles(hash, 4, map.upperOverlayTiles);
-  hash = mixStacks(hash, map.lowerTileStacks);
-  hash = mixStacks(hash, map.upperTileStacks);
-  return mixTilesetPassage(hash, tileset) | 0;
 }
 
 /**
- * 타일셋의 통행 관련 필드만 섞는다 — 4방향 통행 비트와 우선도(★ 판정에 쓰인다,
- * collision.ts §layeredPassability). 그림·이름 같은 통행 무관 필드는 넣지 않는다.
+ * 타일셋의 통행 관련 필드만 넣는다 — 4방향 통행 비트와 우선도(★ 판정에 쓰인다,
+ * collision.ts §layeredPassability), 한 방향 턱. 그림·이름 같은 통행 무관 필드는 넣지 않는다.
  */
-function mixTilesetPassage(hash: number, tileset: TilesetDef | null): number {
-  if (!tileset) return hash;
-  let mixed = hash;
+function pushTilesetPassage(push: (value: number) => void, tileset: TilesetDef | null): void {
+  if (!tileset) { push(-7); return; }
   const flags = tileset.passability;
+  push(7);
+  push(flags.length);
   for (let index = 0; index < flags.length; index += 1) {
     const flag = flags[index];
-    const bits = flag
-      ? (flag.up ? 1 : 0) | (flag.down ? 2 : 0) | (flag.left ? 4 : 0) | (flag.right ? 8 : 0)
-      : 16;
-    mixed = Math.imul(mixed ^ bits, 0x01000193);
+    push(flag ? (flag.up ? 1 : 0) | (flag.down ? 2 : 0) | (flag.left ? 4 : 0) | (flag.right ? 8 : 0) : 16);
   }
   const priority = tileset.priority;
-  for (let index = 0; index < priority.length; index += 1) {
-    mixed = Math.imul(mixed ^ (priority[index] === "upper" ? 1 : 0), 0x01000193);
-  }
-  // 한 방향 턱도 통행을 바꾼다(canMove 가 진입 방향을 막는다). 제자리 편집을 잡으려고 내용을 섞는다.
+  push(priority.length);
+  for (let index = 0; index < priority.length; index += 1) push(priority[index] === "upper" ? 1 : 0);
   const ledges = tileset.ledgeDirections;
-  if (ledges) {
-    mixed = Math.imul(mixed ^ 0x1ed6e, 0x01000193);
-    for (const key in ledges) {
-      const dir = ledges[key];
-      if (!dir) continue;
-      mixed = Math.imul(mixed ^ Number(key), 0x01000193);
-      mixed = Math.imul(mixed ^ dir.charCodeAt(0), 0x01000193);
-    }
+  if (!ledges) { push(-8); return; }
+  const keys = Object.keys(ledges).filter((key) => ledges[key]);
+  push(8);
+  push(keys.length);
+  for (const key of keys) {
+    push(Number(key));
+    push((ledges[key] as string).charCodeAt(0));
   }
-  return mixed;
-}
-
-function mixOptionalTiles(hash: number, layer: number, tiles: readonly number[] | undefined): number {
-  if (!tiles) return hash;
-  let mixed = Math.imul(hash ^ (0x4c00 | layer), 0x01000193);
-  for (let index = 0; index < tiles.length; index += 1) {
-    mixed = Math.imul(mixed ^ (tiles[index] as number), 0x01000193);
-  }
-  return mixed;
-}
-
-function mixStacks(hash: number, stacks: Record<number, number[]> | undefined): number {
-  if (!stacks) return hash;
-  let mixed = hash;
-  for (const key in stacks) {
-    mixed = Math.imul(mixed ^ Number(key), 0x01000193);
-    const stack = stacks[key as unknown as number];
-    if (!stack) continue;
-    for (let index = 0; index < stack.length; index += 1) {
-      mixed = Math.imul(mixed ^ (stack[index] as number), 0x01000193);
-    }
-  }
-  return mixed;
 }

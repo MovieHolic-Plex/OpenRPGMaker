@@ -3,6 +3,7 @@ import { store } from "@/project/store";
 import type { AutonomousMover, PlaySceneContext } from "@/player/playSceneTypes";
 import { livingRouteKeyTarget, livingRouteTargetKey, routeForLivingMovement } from "@/player/npcLivingTravel";
 import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
+import { terrainRevision } from "@/project/tilePassabilityComponents";
 
 type PageMoveRouteSceneContext = Pick<
   PlaySceneContext,
@@ -42,8 +43,26 @@ export function registerPageMoveRoutes(scene: PageMoveRouteSceneContext): void {
     const key = "key" in route ? route.key : `${view.event.id}:${view.pageId ?? "legacy"}`;
     activeKeys.add(key);
     activePageRouteEventIds.add(view.event.id);
+    // 지형이 바뀐 뒤 새로 짠 생활 경로는 키가 같아도(같은 길이의 우회로) 무버를 다시 깔아야 한다.
+    const livingStale = movement.type === "living" && livingRouteRevisionsOf(scene)[view.event.id] !== terrainRevision(scene.map);
+    const existingMover = scene.autonomousNPCs.get(view.event.id);
+    if (livingStale && existingMover && scene.pageMoveRouteEventIds.has(view.event.id)) {
+      // 같은 NPC 의 생활 경로를 지형 변경 뒤 다시 짠 경우: 무버를 새로 만들지 않고 남은 걸음만 갈아 끼운다.
+      // 새로 만들면 진행 중인 걸음(activeMove 보간)·타이머·방향이 초기화돼 NPC 가 제자리에 멈췄다가 튄다.
+      // 새 경로는 이미 걸음의 목적지(논리 좌표)에서 짰으므로, 진행 중인 걸음이 끝난 뒤 이어서 소비하면 된다.
+      for (const stale of [...scene.pageMoveRouteKeys]) if (stale.startsWith(`living:${view.event.id}:`)) scene.pageMoveRouteKeys.delete(stale);
+      scene.pageMoveRouteKeys.add(key);
+      existingMover.moves = route.moves;
+      existingMover.step = 0;
+      existingMover.repeat = route.repeat;
+      existingMover.blockedSteps = 0;
+      configurePageMover(existingMover, movement, route.strategy, view.animationType);
+      livingRouteRevisions.set(scene, { ...livingRouteRevisionsOf(scene), [view.event.id]: terrainRevision(scene.map) });
+      continue;
+    }
     if (
-      scene.pageMoveRouteKeys.has(key)
+      !livingStale
+      && scene.pageMoveRouteKeys.has(key)
       && scene.pageMoveRouteEventIds.has(view.event.id)
       && scene.autonomousNPCs.has(view.event.id)
     ) {
@@ -59,6 +78,8 @@ export function registerPageMoveRoutes(scene: PageMoveRouteSceneContext): void {
     scene.pageMoveRouteKeys.add(key);
     scene.pageMoveRouteEventIds.add(view.event.id);
     scene.registerAutonomousMover(view.event.id, route.moves, route.repeat);
+    // 실제로 깐 생활 경로에만 그때의 지형 판을 기록한다.
+    if (movement.type === "living") livingRouteRevisions.set(scene, { ...livingRouteRevisionsOf(scene), [view.event.id]: terrainRevision(scene.map) });
     const mover = scene.autonomousNPCs.get(view.event.id);
     if (mover) {
       // 신규 무버만 페이지 그래픽의 초기 방향으로 세팅한다.
@@ -89,6 +110,8 @@ function reusableLivingRouteKey(
 ): string | undefined {
   const eventId = view.event.id;
   if (!scene.pageMoveRouteEventIds.has(eventId)) return undefined;
+  // 경로를 짠 뒤로 지형이 바뀌었으면(changeTile 로 길이 막혔을 수 있다) 남은 경로를 믿지 않는다.
+  if (livingRouteRevisionsOf(scene)[eventId] !== terrainRevision(scene.map)) return undefined;
   const mover = scene.autonomousNPCs.get(eventId);
   if (!mover || mover.moves.length === 0 || mover.step >= mover.moves.length) return undefined;
   const prefix = `living:${eventId}:${view.pageId ?? "legacy"}:`;
@@ -99,6 +122,12 @@ function reusableLivingRouteKey(
   if (!existing) return undefined;
   const target = livingRouteTargetKey({ project, map: scene.map, session: scene.session, view });
   return target !== null && target === livingRouteKeyTarget(existing) ? existing : undefined;
+}
+
+/** 생활 NPC 경로를 짤 때의 지형 판(revision). 씬마다, 맵이 바뀌면 판이 달라 자연히 무효다. */
+const livingRouteRevisions = new WeakMap<object, Readonly<Record<string, number>>>();
+function livingRouteRevisionsOf(scene: object): Readonly<Record<string, number>> {
+  return livingRouteRevisions.get(scene) ?? {};
 }
 
 export function clampNpcSetting(value: number): number {
