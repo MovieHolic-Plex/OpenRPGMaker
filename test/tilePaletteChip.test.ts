@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { renderTilePalette } from "@/editor/panels/tilePalette";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -23,7 +22,6 @@ describe("타일 팔레트 선택 칩", () => {
     restore = installFakeDom();
     openMapPropertiesDialog.mockClear();
     store.replace(createBlankProject());
-    resetEditorUiModeForTests("standard");
     container = document.createElement("div");
     document.body.append(container);
     editorState.set({ tool: "paint", layer: "lower", currentMapId: store.getCurrent().startMapId, selectedTile: 0 });

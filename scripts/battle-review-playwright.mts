@@ -39,7 +39,7 @@ async function main() {
   // Check what's available
   const hasEditor = await page.evaluate(() => {
     return {
-      hasStore: typeof (window as any).__oprnEditorUiMode !== "undefined",
+      hasStore: document.querySelector("[data-testid='editor-layout']") !== null,
       bodyClasses: document.body.className,
       mainContent: document.querySelector("[data-testid]")?.getAttribute("data-testid") ?? "none",
     };

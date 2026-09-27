@@ -327,8 +327,7 @@ async function reopenDatabase(page: Page): Promise<void> {
   if (await visible(toolbar, 1_000)) {
     await toolbar.click();
   } else {
-    await page.getByTestId("menu-tools").click();
-    await page.getByTestId("menu-tools-database").click();
+    await page.getByTestId("toolbar-database").click();
   }
   await expect(modal).toBeVisible({ timeout: 15_000 });
 }

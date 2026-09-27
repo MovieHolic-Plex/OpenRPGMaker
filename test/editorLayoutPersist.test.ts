@@ -182,15 +182,6 @@ afterEach(() => {
   vi.resetModules();
 });
 
-/**
- * 표준 모드를 심는다. 저장값이 없는 첫 방문은 **초보**로 떨어지고(applyFirstVisitEditorUiMode),
- * 초보의 아이콘 레일(`chrome.paletteRail`)은 `applyLayout` 을 폭/맵트리 높이 적용 **전에**
- * early-return 시킨다 — 그러면 복원값이 DOM 에 닿는지 볼 수 없다.
- */
-function useStandardUiMode(): void {
-  storage.setItem("oprn:editor-ui-mode", "standard");
-}
-
 /** fake DOM 의 style 은 Record 라 커스텀 프로퍼티를 인덱스로 읽는다. */
 function cssVar(node: FakeElement | null, name: string): string {
   return node?.style[name] ?? "";
@@ -217,7 +208,6 @@ describe("에디터 레이아웃 크기 저장", () => {
   // `applyLayout` 이 읽지 않는 죽은 상태였고(.omo/plans/sidebar-ux.md §1-1 B-7), 되살리면
   // "좌측 사이드바는 절대 비지 않는다" 불변식과 싸운다. 그래서 크기만 저장한다.
   it("리사이저 mouseup 시 크기를 저장하고 모듈 재로드 후 복원한다 (접힘 상태·도크는 저장하지 않는다)", async () => {
-    storage.setItem("oprn:editor-ui-mode", "expert");
     const { renderEditor } = await import("@/editor/panels/editor");
     const main = document.createElement("main");
     renderEditor(main);
@@ -267,7 +257,6 @@ describe("에디터 레이아웃 크기 저장", () => {
   it("저장된 크기를 기존 범위로 clamp해서 복원하고 잘못된 JSON은 기본값으로 무시한다", async () => {
     // 낡은 `chatDock` 키를 일부러 남겨 둔다 — 로더가 모르는 키를 무시하고 크기만 읽어야 한다
     // (마이그레이션 없이 다음 저장에서 자연히 사라지는 설계).
-    useStandardUiMode();
     storage.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({ leftWidth: 9999, mapTreeHeight: -1, leftCollapsed: false, chatDock: "float" }));
     vi.resetModules();
     mockEditorDependencies();
@@ -297,7 +286,6 @@ describe("에디터 레이아웃 크기 저장", () => {
   }, 120_000);
 
   it("맵 트리 높이는 기본이 자동이고, 리사이저를 끌면 수동으로 저장되며 더블클릭이 자동으로 되돌린다", async () => {
-    storage.setItem("oprn:editor-ui-mode", "expert");
     const { renderEditor } = await import("@/editor/panels/editor");
     const main = document.createElement("main");
     renderEditor(main);
@@ -319,7 +307,6 @@ describe("에디터 레이아웃 크기 저장", () => {
   }, 120_000);
 
   it("자동 플래그가 없는 옛 저장본은 높이가 기본값이면 자동, 다른 값이면 수동으로 읽는다", async () => {
-    useStandardUiMode();
     storage.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({ leftWidth: 526, mapTreeHeight: 154 }));
     vi.resetModules();
     mockEditorDependencies();

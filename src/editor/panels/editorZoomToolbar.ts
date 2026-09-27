@@ -1,7 +1,6 @@
 import { makeSvgIcon } from "./tileToolbarIcons";
 import { installDelayedTooltips } from "@/editor/delayedTooltipRollout";
 import { EDITOR_ZOOM_LEVELS, editorState, type EditorZoom } from "@/editor/editorState";
-import { getEditorChrome } from "@/editor/editorUiMode";
 import { createMapScreenshot, MapScreenshotError, type MapScreenshot } from "@/editor/mapScreenshot";
 import { renderCanvasAiWorkbench } from "@/editor/panels/canvasAiWorkbench";
 import { store } from "@/project/store";
@@ -16,16 +15,6 @@ let mapScreenshotRequestSeq = 0;
 
 export const CANVAS_TOOLBAR_EXPANDED_KEY = "oprn:canvas-toolbar-expanded";
 
-// 기본 모드는 자주 쓰는 배율만 노출한다 — 7컨트롤(라벨+6버튼)은 초보에게 소음.
-// 현재 배율이 목록 밖(0.25/0.5/3/6/8x)이면 활성 표시를 위해 끼워 넣는다.
-const BASIC_ZOOM_LEVELS: readonly EditorZoom[] = [1, 2, 4];
-
-export function visibleZoomLevels(dense: boolean, currentZoom: EditorZoom): readonly EditorZoom[] {
-  if (dense) return EDITOR_ZOOM_LEVELS;
-  if (BASIC_ZOOM_LEVELS.includes(currentZoom)) return BASIC_ZOOM_LEVELS;
-  return [...BASIC_ZOOM_LEVELS, currentZoom].sort((a, b) => a - b);
-}
-
 export function stepEditorZoom(delta: number, levels: readonly EditorZoom[], current: EditorZoom): EditorZoom {
   const index = Math.max(0, levels.indexOf(current));
   const next = index + delta;
@@ -36,24 +25,14 @@ export function stepEditorZoom(delta: number, levels: readonly EditorZoom[], cur
 
 export function renderCanvasToolbar(container: HTMLElement): void {
   clearChildren(container);
-  const chrome = getEditorChrome();
   const currentZoom = editorState.get().zoom;
-  container.dataset.uiDensity = chrome.canvasChromeDense ? "expert" : "beginner";
+  container.dataset.uiDensity = "expert";
   container.classList.add("is-zoom-stepper", "is-icon-toolbar");
   container.setAttribute("role", "toolbar");
   container.setAttribute("aria-label", "맵 도구바");
-  if (!chrome.canvasChromeDense) {
-    container.classList.add("is-basic-chrome");
-    container.classList.add("is-docked-chrome");
-    // is-expanded를 항상 켜둘 때 줄 목록(1x/2x/4x)이 스테퍼와 상시 중복 노출됐다
-    // (2026-08-18 UX 리뷜 P2-11) — 목록은 배율 버튼(is-menu-open)으로만 연다.
-  } else {
-    container.classList.remove("is-basic-chrome");
-    container.classList.remove("is-docked-chrome");
-    container.classList.toggle("is-expanded", readCanvasToolbarExpanded());
-  }
+  container.classList.toggle("is-expanded", readCanvasToolbarExpanded());
 
-  const levels = visibleZoomLevels(chrome.canvasChromeDense, currentZoom);
+  const levels = EDITOR_ZOOM_LEVELS;
   const zoomGroup = el("div", {
     class: "canvas-toolbar-zoom-group is-stepper",
     attrs: { "aria-label": "캔버스 확대", role: "group" },
@@ -142,12 +121,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
     dataset: { testid: "map-background-preview-toggle" },
     on: { click: () => toggleMapBackgroundPreview() },
   }));
-  // Basic: zoom only (always expanded). Expert: ⋯ expand + build palette + map screenshot.
-  if (!chrome.canvasChromeDense) {
-    container.append(zoomGroup);
-    installDelayedTooltips(container);
-    return;
-  }
+  // 배율 · ⋯ 펼치기 · AI 빠른 작업 · 맵 저장.
   const saveAction = el("div", {
     class: "canvas-toolbar-save-group",
     attrs: { "aria-label": "맵 이미지 저장", role: "group" },

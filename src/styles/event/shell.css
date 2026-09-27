@@ -426,10 +426,6 @@ body.event-editor-modal-open {
   overflow: hidden;
 }
 
-body.event-editor-modal-open .coach-mark-card {
-  display: none;
-}
-
 .event-editor-modal-window {
   --event-modern-accent: var(--accent);
   --event-modern-accent-soft: var(--accent-muted);

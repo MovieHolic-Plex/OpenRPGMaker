@@ -1,7 +1,6 @@
 /** @vitest-environment happy-dom */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
 import { clearCommandInspector } from "@/editor/panels/eventEditor/commandInspector";
 import { activeEventRailGroup, openEventConditions, openEventMovement } from "@/editor/panels/eventEditor/eventEditorOpenState";
@@ -59,7 +58,6 @@ describe("event editor UI density", () => {
   let host: HTMLElement;
 
   beforeEach(() => {
-    resetEditorUiModeForTests("standard");
     clearCommandInspector();
     openEventConditions.clear();
     openEventMovement.clear();
@@ -74,7 +72,6 @@ describe("event editor UI density", () => {
   });
 
   afterEach(() => {
-    resetEditorUiModeForTests("standard");
     clearCommandInspector();
     host.remove();
     openEventConditions.clear();
@@ -145,8 +142,7 @@ describe("event editor UI density", () => {
     expect(host.querySelector('[data-testid="event-editor-diff"]')).toBeNull();
   });
 
-  it.each(["beginner", "expert"] as const)("keeps core controls direct and removes optional legend chrome in %s mode", (mode) => {
-    resetEditorUiModeForTests(mode);
+  it("keeps core controls direct and removes optional legend chrome", () => {
     renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
 
     expect(host.querySelector('[data-testid="event-character-id-details"]')).toBeNull();

@@ -35,7 +35,6 @@ import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import type { DatabaseStateEffect, Project, SkillEffect, SkillRecord } from "@/project/types";
-import { getEditorUiMode } from "@/editor/editorUiMode";
 import { el } from "@/util/dom";
 import { specialSkillEffectLabel } from "@/battle/battleSpecialEffects";
 
@@ -320,9 +319,9 @@ function gen1BattleModel(): boolean {
   return store.getCurrent().system.battleModel === "gen1";
 }
 
-/** 고급 카드를 펼칠지. 전문가 모드는 모두 펼치고, 그 밖에는 값이 들어 있을 때만 편다. */
+/** 고급 카드를 펼칠지. 값이 들어 있을 때만 편다. */
 function advancedOpen(inUse: boolean): boolean {
-  return inUse || getEditorUiMode() === "expert";
+  return inUse;
 }
 
 function composerChip(kind: "activation" | "target" | "cost", label: string): HTMLElement {

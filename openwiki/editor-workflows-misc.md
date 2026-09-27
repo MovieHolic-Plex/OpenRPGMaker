@@ -367,6 +367,8 @@ browser setup and separate exported-player evidence.
 
 ## 초보 맵 사이드바 «목록 | 상세» 2단 탐색기 (2026-08-30, PR #311)
 
+> 2026-09-27 편집 모드 삭제로 초보 레일은 없어졌다. `mapList.ts` 의 `switcher` 변형(`is-basic-flyout` / `map-item-basic`)은 사이드바 맵 스위처가 계속 쓴다.
+
 초보 모드 맵 사이드바는 이제 두 칸이다 — 왼쪽 목록(`renderMapList(host, { variant: "basic" })`),
 오른쪽 상세(`src/editor/panels/mapInspectorPane.ts`, 데이터는 `src/project/mapInspection.ts`).
 
@@ -412,6 +414,8 @@ keydown 을 document **캡처** 단계에서 잡아 `stopPropagation` 하므로(
 - 미니맵 이미지는 플레이 중 미니맵을 재현한 것이 아니라 맵 참고 이미지임을 표시하고 `fitDisplay` 240×180px 안에 맞춘다. 구현 계획(`fog v1` 등)은 제품 안내에서 제거했다.
 - 브라우저 회귀: `DEV_SERVER_PORT=<워크트리 포트> npx playwright test test/e2e/map-settings-ux.spec.ts`. 초보/전문가 각각 1024×768·1280×800·1440×900에서 모든 바로가기와 글자/헤더/스크롤을 측정한다. 별도 시나리오는 미적용 입력 보존, 키보드 초점, 연속 제한 설정, 출현 조건과 그림 선택, 축소 취소를 검증한다. 실제 출현 행을 추가한 상태에서 그룹 선택/가중치/비율/삭제의 카드 내부 배치도 측정한다. `freshProject`는 순수 UI 검증용으로만 사용하며 게임 콘텐츠를 납품하는 작업이 아니다.
 ## 왼쪽 사이드바 3모드 적대적 리뷰 (2026-09-05)
+
+> 2026-09-27 편집 모드 삭제: `basicTilePalette.ts`·초보 레일·모드 왕복은 없어졌다. 아래 초보 항목은 기록이다. `left-sidebar-adversarial.spec.ts` 는 이제 한 화면을 세 뷰포트에서 확인한다.
 
 - **초보 타일 창은 전체 공용 팔레트다.** `basicTilePalette.ts`가 `makeGridPalette` / `makeCustomPalette`를 사용한다. 앞 48칸만 자르던 목록은 삭제했다. RPG2K 팔레트는 레이어 분류·오토타일 대표 축약을 따르고, 커스텀 시트는 원본 행·열과 저작 라벨을 보존한다. 검색과 2차원 roving 탐색도 공용 구현이다. 초보 `basic-tile-*` testid는 유지한다.
 - **초보 복귀 시 이전 폭을 지운다.** `applyLayout`의 초보 분기는 표준·전문가가 남긴 인라인 `width`를 비운 뒤 CSS의 72px 레일 폭을 측정한다. `min-width:72px !important`는 기존 `width:300px`를 덮지 못한다. 새 컨텍스트로 모드별 부팅만 하면 못 잡히므로 실제 모드 왕복에서 패널 폭과 캔버스 시작점을 단정한다.

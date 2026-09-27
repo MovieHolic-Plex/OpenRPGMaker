@@ -1,10 +1,7 @@
 import { el, clearChildren } from "@/util/dom";
 import { editorState } from "@/editor/editorState";
 import type { Layer } from "@/editor/editorState";
-import { getEditorChrome, getEditorUiMode } from "@/editor/editorUiMode";
 import { recentTilesView, recordRecentTile } from "@/editor/panels/tileBrushTools";
-import { renderBasicLeftRail, syncBasicRailBrushStatus } from "@/editor/panels/basicLeftRail";
-import { basicTileLabel } from "@/editor/panels/basicTilePalette";
 import { renderEventEditor } from "@/editor/panels/eventEditor";
 import { makeTileToolbar } from "@/editor/panels/tileToolbar";
 import { makePaintShapeSelect } from "@/editor/panels/tileToolOptions";
@@ -115,7 +112,6 @@ function paletteRenderInputs(): readonly unknown[] | null {
   const tileset = map ? project.tilesets[map.tilesetId] : undefined;
   if (!map || !tileset) return null;
   return [
-    getEditorUiMode(),
     // 맵 헤더는 맵 도크가 있는지에 따라 모양이 다르다(sidebarMapHeader.ts).
     document.querySelector('[data-testid="left-map-root"]') !== null,
     map.id,
@@ -144,7 +140,7 @@ function paletteRenderInputs(): readonly unknown[] | null {
  * 아무것도 하지 않는다. 보조 창이 열려 있으면(사용 위치 등 맵 내용을 보여 준다) 그대로 그린다.
  */
 export function refreshTilePalette(container: HTMLElement): void {
-  if (!getEditorChrome().paletteRail && !container.querySelector("[data-sidebar-surface]")) {
+  if (!container.querySelector("[data-sidebar-surface]")) {
     const rendered = renderedPaletteInputs.get(container);
     const inputs = rendered && rendered.shell.parentElement === container ? paletteRenderInputs() : null;
     if (rendered && inputs && inputs.length === rendered.inputs.length && inputs.every((value, index) => value === rendered.inputs[index])) return;
@@ -164,12 +160,6 @@ if (typeof window !== "undefined" && typeof window.addEventListener === "functio
 
 export function renderTilePalette(container: HTMLElement): void {
   renderedPaletteInputs.delete(container);
-  // The rail owns its focus and flyout snapshots. Do not detach its focused node
-  // before it can capture them (the real browser moves focus to body on removal).
-  if (getEditorChrome().paletteRail) {
-    renderBasicLeftRail(container);
-    return;
-  }
   const focusSnapshot = captureFocus(container);
   const previousPaletteScroll = readPaletteScroll(container);
   const state = editorState.get();
@@ -351,7 +341,7 @@ function makePaletteSurface(input: {
   const assist = makeBrushAssistSection(map.id, state, tileset);
   const options = el('div', { class: 'sidebar-paint-options' });
   options.append(makeTileBrushControls(state, renderPalettePreservingViewport));
-  if (state.tool === 'paint' && !state.activePaletteStamp && getEditorChrome().advancedSidebarControls) options.append(makePaintShapeSelect(model));
+  if (state.tool === 'paint' && !state.activePaletteStamp) options.append(makePaintShapeSelect(model));
   if (assist.modeRow) options.append(assist.modeRow);
   // 구조 보조는 이웃 연결과 나란히 보인다 — 두 계약이 따로 있다는 사실 자체가 UI 정보다.
   if (assist.clusterRow) options.append(assist.clusterRow);
@@ -650,27 +640,13 @@ function filteredTileIndexes(tileset: TilesetDef): readonly number[] {
 export function syncMountedPaletteSelection(): boolean {
   if (typeof document === "undefined") return false;
   const root = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
-  if (!root?.querySelector("[data-testid='tile-palette'], [data-testid='basic-tile-grid']")) return false;
+  if (!root?.querySelector("[data-testid='tile-palette']")) return false;
   if (root.querySelector("[data-sidebar-surface]")) return false;
   const state = editorState.get();
   if (state.layer === "event") return false;
   const tileset = currentTilesetForPalette();
   if (!tileset) return false;
   const displayTile = isCustomTileset(tileset) ? state.selectedTile : gridPaletteDisplayTile(tileset, state.selectedTile);
-
-  const basicSheet = root.querySelector<HTMLElement>('[data-testid="basic-tile-grid"]');
-  if (basicSheet) {
-    const search = root.querySelector<HTMLInputElement>('[data-testid="basic-tile-search"]');
-    if (search && search.value.trim().length > 0) return false;
-    if (!movePaletteActiveCell(basicSheet, displayTile)) return false;
-    const status = root.querySelector<HTMLElement>('[data-testid="selected-tile-status"]');
-    if (status) {
-      const layerLabel = state.layer === "lower" ? "바닥" : "상위";
-      status.textContent = `${layerLabel} · ${basicTileLabel(tileset, state.selectedTile)}`;
-    }
-    rememberMountedPaletteInputs(root);
-    return true;
-  }
 
   if (isFilterActive()) return false;
   const sheet = root.querySelector<HTMLElement>('[data-testid="tile-palette"]');
@@ -704,7 +680,6 @@ export function syncMountedPaletteLayerSelection(): boolean {
   const tileset = currentTilesetForPalette();
   if (!tileset || !isCustomTileset(tileset)) return false;
   if (!syncMountedPaletteSelection()) return false;
-  if (getEditorChrome().paletteRail) return syncBasicRailBrushStatus();
   const controls = document.querySelector<HTMLElement>('[data-testid="left-palette-root"] [data-testid="tile-brush-controls"]');
   if (!controls) return false;
   controls.replaceWith(makeTileBrushControls(editorState.get(), renderPalettePreservingViewport));
@@ -719,7 +694,7 @@ export function syncMountedPaletteLayerSelection(): boolean {
  * 붙이기 직후 focus 복원과 옛 트리 떼기). 보조 창이 열려 있거나 자리가 없으면 false.
  */
 export function syncMountedPaletteToolPick(): boolean {
-  if (typeof document === "undefined" || getEditorChrome().paletteRail) return false;
+  if (typeof document === "undefined") return false;
   const root = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
   const pane = root?.querySelector<HTMLElement>('[data-testid="palette-work-pane-paint"]');
   if (!root || !pane || root.querySelector("[data-sidebar-surface]")) return false;
@@ -738,7 +713,7 @@ export function syncMountedPaletteToolPick(): boolean {
   const shape = options.querySelector<HTMLElement>(".sidebar-shape-select");
   const nextControls = makeTileBrushControls(state, renderPalettePreservingViewport);
   controls.replaceWith(nextControls);
-  const wantsShape = state.tool === "paint" && !state.activePaletteStamp && getEditorChrome().advancedSidebarControls;
+  const wantsShape = state.tool === "paint" && !state.activePaletteStamp;
   if (wantsShape) {
     const nextShape = makePaintShapeSelect(model);
     if (shape) shape.replaceWith(nextShape);
@@ -797,7 +772,6 @@ export function selectPaletteTile(index: number): void {
 
 export function revealPaletteTileFromMap(tile: number): void {
   if (typeof document === "undefined") return;
-  if (getEditorChrome().paletteRail) return;
   if (tile < 0) return;
   // 예전에는 여기서 작업 탭을 "칠하기"로 강제하고 localStorage 에도 썼다 — 맵에서
   // 스포이트를 쓰면 감독이 고른 탭이 조용히 덮였다. 이제 탭이 없으니 스크롤 리빌만 한다.

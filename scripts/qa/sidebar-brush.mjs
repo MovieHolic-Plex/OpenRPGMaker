@@ -40,8 +40,6 @@ export async function runSidebarBrushQa({ browser, baseUrl, outputDir, scope = "
         },
       });
     });
-    localStorage.setItem("oprn:editor-ui-mode", "standard");
-    localStorage.setItem("oprn:coachmarks-basic-v1", "1");
     localStorage.setItem("oprn:standard-welcome-seen", "1");
     localStorage.setItem("oprn:ai-panel-collapsed", "1");
   });
@@ -52,10 +50,6 @@ export async function runSidebarBrushQa({ browser, baseUrl, outputDir, scope = "
     const value = store.getCurrent().maps[state.get().currentMapId];
     return { lower: [...value.lowerTiles], upper: [...value.upperTiles], width: value.width };
   });
-  const mode = async value => {
-    await page.getByTestId("workspace-panels-button").click();
-    await page.getByTestId(`workspace-ui-mode-${value}`).click();
-  };
   const size = async value => {
     const control = page.getByTestId(`brush-size-${value}`);
     if (!(await control.isVisible())) await page.getByTestId("oprn-tool-overflow").click();
@@ -227,12 +221,12 @@ export async function runSidebarBrushQa({ browser, baseUrl, outputDir, scope = "
       });
     }
     if (scope !== "core") {
-      await scenario("C4-modes-and-viewports", async () => {
+      await scenario("C4-viewports", async () => {
         await paint();
         await size(4);
         const layouts = [];
-        for (const value of ["beginner", "standard", "expert"]) {
-          await mode(value);
+        {
+          const value = "editor";
           for (const [width, height] of [[1440, 900], [1280, 800], [1024, 768]]) {
             await page.setViewportSize({ width, height });
             await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
@@ -251,12 +245,10 @@ export async function runSidebarBrushQa({ browser, baseUrl, outputDir, scope = "
           }
         }
         await page.setViewportSize({ width: 1440, height: 900 });
-        await mode("standard");
         return layouts;
       });
       await scenario("C5-representative-selection", async () => {
         await page.setViewportSize({ width: 1440, height: 900 });
-        await mode("standard");
         await page.getByTestId("layer-lower").click();
         const target = await visibleAnchor();
         await page.evaluate(({ x, y }) => {
@@ -276,23 +268,7 @@ export async function runSidebarBrushQa({ browser, baseUrl, outputDir, scope = "
         assert.equal(await representative.getAttribute("aria-pressed"), "true");
         return { picked: (await state()).selectedTile, representative: 363, pressed: true };
       });
-      await scenario("C7-beginner-search", async () => {
-        await mode("standard");
-        await page.getByTestId("tile-search-input").fill("");
-        await paint();
-        await mode("beginner");
-        await page.getByTestId("basic-tile-search").fill("zzzz-no-match");
-        const feedback = page.getByTestId("basic-tile-search-feedback");
-        assert.equal(await feedback.isVisible(), true, "unmatched search needs feedback");
-        assert.equal(await feedback.getAttribute("data-match-count"), "0");
-        assert.equal(await page.getByTestId("basic-tile-search-reset").isVisible(), true);
-        await page.getByTestId("basic-tile-search-reset").click();
-        assert.equal(await page.getByTestId("basic-tile-search").inputValue(), "");
-        assert.equal(await page.getByTestId("basic-tile-search").evaluate(e => e === document.activeElement), true);
-        return { matchCount: 0, reset: true, focusRestored: true };
-      });
       await scenario("C8a-custom-atlas-stamp", async () => {
-        await mode("standard");
         await page.getByTestId("tile-search-input").fill("");
         await page.getByTestId("tool-paint").click();
         await page.evaluate(() => {
@@ -329,7 +305,6 @@ export async function runSidebarBrushQa({ browser, baseUrl, outputDir, scope = "
         return { sourceCells: [7, 8, 37, 38], placed: true };
       });
       await scenario("C8-mixed-layers", async () => {
-        await mode("standard");
         await page.getByTestId("tile-search-input").fill("");
         await page.getByTestId("tool-paint").click();
         await page.evaluate(() => {

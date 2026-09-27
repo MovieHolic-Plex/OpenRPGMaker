@@ -27,8 +27,7 @@ async function main() {
   const eventLayerBtn = page.locator('[data-testid="layer-event"]');
   console.log("layer-event testid:", await eventLayerBtn.count());
   
-  // Try the basic left rail
-  const leftRail = page.locator('.basic-left-rail, .editor-left-rail, [class*="left-rail"]');
+  const leftRail = page.locator('.editor-left-rail, [class*="left-rail"]');
   console.log("Left rail:", await leftRail.count());
 
   await page.screenshot({ path: "output/evidence/preview-qa-debug-01.png" });

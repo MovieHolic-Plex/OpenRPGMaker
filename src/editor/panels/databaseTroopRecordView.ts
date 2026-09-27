@@ -29,7 +29,6 @@ import { requestDatabaseModalClose } from "@/editor/panels/databaseModal";
 import { renderTroopBattleEventPanel } from "@/editor/panels/databaseTroopBattleEventPanel";
 import { troopIntentPanel } from "@/editor/panels/databaseTroopIntentPanel";
 import { imageThumbnail } from "@/editor/panels/databaseRecordThumbnails";
-import { uxLevel } from "@/editor/panels/databaseUxLevel";
 import {
   emptyState,
   listToolbar,
@@ -306,15 +305,15 @@ function configurationPanel(record: TroopRecord, rerender: () => void): HTMLElem
               }),
             ],
           }),
-          modeGated(activeSlotsField(record, rerender), "advanced"),
+          activeSlotsField(record, rerender),
         ],
       }),
       backdropField(record, rerender),
-      modeGated(backdropAnimationField(record, rerender), "advanced"),
-      modeGated(el("div", {
+      backdropAnimationField(record, rerender),
+      el("div", {
         class: "db-troop-check-row",
         children: [trainerBattleField(record, rerender), uncapturableField(record, rerender)],
-      }), "advanced"),
+      }),
     ],
     testid: "db-troop-config-card",
     extraClass: "db-troop-card-config",
@@ -579,7 +578,7 @@ function memberEditor(
         textField("부위 태그", "db-field-troop-member-part-tag", member.partTag ?? "", (partTag) => {
           updateSelectedMember(record, selectedIndex, { ...member, partTag: emptyToUndefined(partTag.trim()) });
         }),
-        modeGated(el("div", {
+        el("div", {
           class: "db-troop-xy-row",
           children: [
             numberField("X", "db-field-troop-member-x", member.x, (x) => {
@@ -591,7 +590,7 @@ function memberEditor(
               rerender();
             }),
           ],
-        }), "expert"),
+        }),
         openEnemyButton(member.enemyId),
       ]
       // 슬롯이 없을 때의 안내는 아래 목록의 빈 상태 하나가 맡는다(같은 말을 두 번 하지 않는다).
@@ -680,8 +679,7 @@ function troopBattlePreview(record: TroopRecord, selectedIndex: number, rerender
             : [
               legendChip("db-troop-legend-party", "현재 전투 스킨 기준 배치 미리보기"),
               ...(manualDivergenceCount(record, skinId) > 0
-                // 좌표는 전문가 모드에서만 보이므로 좌표 어긋남 안내도 같이 숨긴다.
-                ? [modeGated(legendChip("db-troop-legend-recenter", "표시 위치가 저작 좌표와 다릅니다"), "expert")]
+                ? [legendChip("db-troop-legend-recenter", "표시 위치가 저작 좌표와 다릅니다")]
                 : []),
             ],
       }),
@@ -793,7 +791,7 @@ function memberRows(record: TroopRecord, selectedIndex: number, rerender: () => 
               el("span", { class: "db-troop-member-index", text: String(index + 1) }),
               el("span", { class: "db-troop-member-name", text: enemyName || "(적 없음)" }),
               ...(member.hidden ? [el("span", { class: "db-troop-member-flag", text: "숨김" })] : []),
-              uxLevel(el("span", { class: "db-troop-member-coords", text: coords }), "expert"),
+              el("span", { class: "db-troop-member-coords", text: coords }),
             ],
             on: {
               click: () => {
@@ -947,11 +945,6 @@ function checkboxField(label: string, testid: string, checked: boolean, onInput:
   input.checked = checked;
   input.addEventListener("change", () => onInput(input.checked));
   return el("label", { class: `actor-check db-troop-check${checked ? " active" : ""}`, children: [input, el("span", { text: label })] });
-}
-
-/** `uxLevel` 로 숨길 칸을 클래스 없는 상자에 담는다 — 칸 여럿을 한 번에 가리고, 칸 자체의 레이아웃 규칙과 섞이지 않게 한다. */
-function modeGated(node: HTMLElement, level: "advanced" | "expert"): HTMLElement {
-  return uxLevel(el("div", { class: "db-troop-mode-gate", children: [node] }), level);
 }
 
 function optionalPositiveInteger(value: number): number | undefined {

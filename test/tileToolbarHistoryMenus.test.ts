@@ -12,7 +12,6 @@ import { readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import {
   getMapEditHistoryEntries,
   getMapEditRedoEntries,
@@ -104,7 +103,6 @@ beforeEach(() => {
   });
   resetTileToolbarMenusForTests();
   resetTileHistoryMenusForTests();
-  resetEditorUiModeForTests("standard");
   lintMock.issues = [];
   const project = createBlankProject();
   store.replace(project);

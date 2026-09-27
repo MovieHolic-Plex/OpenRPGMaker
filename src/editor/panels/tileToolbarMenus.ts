@@ -1,4 +1,3 @@
-import { subscribeEditorUiMode } from "@/editor/editorUiMode";
 import type { EditorState } from "@/editor/editorState";
 import { mapHistoryEntryCount, renderMapHistoryPanel } from "@/editor/panels/mapHistoryPanel";
 import { renderRuleAuditPanel, ruleAuditViolationCountCached } from "@/editor/panels/ruleAuditPanel";
@@ -37,7 +36,7 @@ export type TileToolbarModel = {
 
 let openMenu: ToolbarMenuId = null;
 // 열림 상태는 모듈에 남긴다(재렌더 생존). 닫는 길은 밖에서 들어오므로 재렌더 콜백과
-// 문서 리스너가 필요하고, 리스너는 렌더마다 쌓이지 않게 1회만 설치한다(basicLeftRail 과 동일).
+// 문서 리스너가 필요하고, 리스너는 렌더마다 쌓이지 않게 1회만 설치한다.
 let openAnchor: { readonly menu: HTMLElement; readonly trigger: HTMLElement } | null = null;
 let anchorKeepersInstalled = false;
 let latestRerender: (() => void) | null = null;
@@ -93,9 +92,7 @@ function installDocumentListeners(): void {
     if (event instanceof CustomEvent && event.detail !== 'inspection') closeMenuFromOutside(false);
   };
   document.addEventListener(SIDEBAR_SURFACE_OPEN, onSurfaceOpen);
-  const unsubscribeMode = subscribeEditorUiMode(() => closeMenuFromOutside(false));
   detachDocumentListeners = () => {
-    unsubscribeMode();
     document.removeEventListener("pointerdown", onPointerDown);
     document.removeEventListener("keydown", onKeyDown);
     document.removeEventListener(SIDEBAR_SURFACE_OPEN, onSurfaceOpen);

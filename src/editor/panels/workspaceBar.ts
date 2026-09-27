@@ -1,5 +1,5 @@
 // editor/panels/workspaceBar.ts
-// 톱바의 「보기 ▾」 메뉴 — 패널 표시와 편집 모드(초보/표준/전문가).
+// 톱바의 「보기 ▾」 메뉴 — 패널 표시와 언어.
 //
 // 2026-09-03 개편 전 이 파일은 셋을 그렸다: 저작 작업 칩 4개(맵/이벤트/데이터/테스트), ▤ 메뉴
 // (패널·밀도·편집 모드), Ctrl K 칩. 칩 4개는 사이드바 레이어 전환·자료집 버튼·▶ 테스트의 두 번째
@@ -12,12 +12,9 @@
 // 옮기기·닫기는 톱바 메뉴에서 처리한다.
 //
 // 소유권 — 한 명령의 집은 하나다. 두 번째 표면은 첫 번째가 그 모드에서 렌더되지 않을 때만 둔다.
-//  • 패널 도크 멤버십(타일·맵) = 초보에서는 제공하지 않는다. 타일은 아이콘 레일의 고정 호스트이고
-//    맵 도크는 `mapTree=false`라 렌더되지 않는다. 초보의 맵은 사이드바 「맵」 탭이 집이다.
-//    표준·전문가에서는 이 메뉴가 도크 토글을 소유한다.
-//  • 편집 모드 = 이 메뉴가 유일한 화면 진입점이다(Ctrl+K 팔레트는 전체 검색이라 예외).
+//  • 패널 도크 멤버십(타일·맵) = 이 메뉴가 도크 토글을 소유한다.
+// 초보/표준/전문가 편집 모드 라디오는 2026-09-27 에 모드와 함께 없앴다 — 편집기 화면은 하나다.
 
-import { getEditorUiMode, setEditorUiMode, getEditorChrome, type EditorUiMode } from "@/editor/editorUiMode";
 import { makeSvgIcon } from "@/editor/panels/tileToolbarIcons";
 import { uiLabel } from "@/editor/uiCopy";
 import { allPanels, type DockZone, type PanelId } from "@/editor/workspace/panelRegistry";
@@ -29,15 +26,6 @@ import { getLocale, LOCALE_NATIVE_NAMES, setLocale, SUPPORTED_LOCALES } from "@/
 
 const ZONE_LABEL: Record<DockZone, string> = { left: "왼쪽", right: "오른쪽", bottom: "아래" };
 
-// 편집 모드는 2026-08-26 에 이 메뉴로 이사했다. 전에는 standard 전용 ⋯ 메뉴에만 있었고,
-// 그 메뉴는 `.open` 클래스를 붙이지 않아 실제로는 열리지 않았다 — 초보 모드 사용자는 Ctrl+K 없이
-// 모드를 바꿀 방법이 아예 없었다. 힌트는 모드가 실제로 바꾸는 것만 말한다(밀도·용어·노출).
-export const UI_MODE_OPTIONS: readonly { readonly id: EditorUiMode; readonly label: string; readonly hint: string }[] = [
-  { id: "beginner", label: "초보", hint: "이름 붙은 큰 도구 레일 · 첫 사용 안내" },
-  { id: "standard", label: "표준", hint: "타일 팔레트와 맵 트리 · 쉬운 용어" },
-  { id: "expert", label: "전문가", hint: "촘촘한 배치 · 기술 용어 · 도구 창 1클릭 · 배율 6단" },
-];
-
 /**
  * 「보기 ▾」 버튼과 그 메뉴. `.oprn-menu-popup` 이 형제 기준으로 위치를 잡으므로 감싸면 CSS 를
  * 함께 고쳐야 한다.
@@ -47,17 +35,15 @@ export function renderWorkspaceBar(): readonly [HTMLElement, HTMLElement] {
 }
 
 function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
-  const paletteRail = getEditorChrome().paletteRail;
-  const menuName = paletteRail ? "보기 — 편집 모드" : "보기 — 패널과 편집 모드";
+  const menuName = "보기 — 패널과 언어";
   const menu = el("div", {
     class: "oprn-menu-popup workspace-panels-menu",
     attrs: { role: "menu", "aria-label": menuName },
     dataset: { testid: "workspace-panels-menu" },
   });
   menu.hidden = true;
-  // 글리프 + 글자 라벨. 「▤」 하나만 있던 2026-08-26~09-03 사이에는 편집 모드(초보/표준/전문가)의
-  // 유일한 진입점이 장식으로 읽혔다 — 실제로 사용자가 "진입점이 없다"고 했다. 화면 글자는
-  // uiCopy 정본에서 가져온다.
+  // 글리프 + 글자 라벨. 「▤」 하나만 있던 2026-08-26~09-03 사이에는 이 메뉴가 장식으로 읽혔다 —
+  // 실제로 사용자가 "진입점이 없다"고 했다. 화면 글자는 uiCopy 정본에서 가져온다.
   const button = el("button", {
     class: "oprn-menu-item workspace-panels-button",
     attrs: {
@@ -70,7 +56,7 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
     dataset: { testid: "workspace-panels-button" },
     children: [
       el("span", { class: "workspace-panels-icon", attrs: { "aria-hidden": "true" }, children: [makeSvgIcon("panels")] }),
-      el("span", { class: "workspace-panels-label", text: uiLabel("viewMenu", getEditorChrome().jargonStyle) }),
+      el("span", { class: "workspace-panels-label", text: uiLabel("viewMenu") }),
       el("span", { class: "oprn-menu-item-chevron", attrs: { "aria-hidden": "true" }, children: [makeSvgIcon("chevronDown")] }),
     ],
   });
@@ -109,43 +95,11 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
   });
 
   const layout = getWorkspaceLayout();
-  // 「패널」 그룹은 **좌측 레일이 없는 모드에서만** 이 메뉴의 것이다. 초보의 타일은 레일
-  // 호스트라 고정이고 맵 도크는 렌더되지 않는다(맵은 사이드바 「맵」 탭). 그래서 초보에는
-  // 도크 그룹 자체를 내놓지 않는다.
-  if (!paletteRail) {
-    menu.append(el("div", { class: "workspace-menu-group", text: "패널" }));
-    for (const panel of allPanels().filter((candidate) => candidate.id !== "assistant")) {
-      menu.append(renderPanelRow(panel.id, panel.title, layout, close));
-    }
+  menu.append(el("div", { class: "workspace-menu-group", text: "패널" }));
+  for (const panel of allPanels().filter((candidate) => candidate.id !== "assistant")) {
+    menu.append(renderPanelRow(panel.id, panel.title, layout, close));
   }
-  menu.append(el("div", { class: "workspace-menu-group", text: "편집 모드" }));
-  for (const option of UI_MODE_OPTIONS) {
-    const active = getEditorUiMode() === option.id;
-    menu.append(
-      el("button", {
-        class: `oprn-menu-command workspace-ui-mode-item${active ? " is-active" : ""}`,
-        attrs: { type: "button", role: "menuitemradio", "aria-checked": active ? "true" : "false", title: `${option.label} — ${option.hint}` },
-        dataset: { testid: `workspace-ui-mode-${option.id}`, editorUiMode: option.id },
-        children: [
-          el("span", { class: "workspace-ui-mode-radio", attrs: { "aria-hidden": "true" } }),
-          el("span", {
-            class: "workspace-ui-mode-text",
-            children: [
-              el("span", { class: "workspace-ui-mode-label", text: option.label }),
-              el("span", { class: "workspace-ui-mode-hint", text: option.hint }),
-            ],
-          }),
-        ],
-        on: {
-          click: (event) => {
-            event.stopPropagation();
-            setEditorUiMode(option.id);
-            close();
-          },
-        },
-      }),
-    );
-  }
+  // 언어 항목은 예전 편집 모드 라디오의 모양(workspace-ui-mode-*)을 그대로 빌려 쓴다.
   menu.append(el("div", { class: "workspace-menu-group", text: "언어" }));
   for (const locale of SUPPORTED_LOCALES) {
     const active = getLocale() === locale;
@@ -174,9 +128,6 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
 
 /**
  * 패널 한 줄 = 표시 토글 + 도크 이동 칩.
- *
- * 초보 모드는 이 행을 아예 그리지 않는다(`renderPanelsMenu` 가 그룹째로 건너뛴다). 타일은
- * 고정 레일 호스트이고 맵 도크는 렌더되지 않으므로 설명만 남은 비활성 행도 만들지 않는다.
  */
 function renderPanelRow(id: PanelId, title: string, layout: WorkspaceLayout, close: () => void): HTMLElement {
   const zone = dockOf(layout, id);

@@ -150,14 +150,12 @@
 }
 
 /* 자료 묶음은 저장 버튼 뒤 헤어라인 하나로 나눈다. */
-.studio-bar-lead > [data-testid="toolbar-database"],
-.studio-bar-lead > [data-testid="menu-tools"]:first-of-type {
+.studio-bar-lead > [data-testid="toolbar-database"] {
   margin-left: 10px;
   position: relative;
 }
 
-.studio-bar-lead > [data-testid="toolbar-database"]::before,
-.studio-bar-lead > [data-testid="menu-tools"]:first-of-type::before {
+.studio-bar-lead > [data-testid="toolbar-database"]::before {
   background: var(--border-subtle);
   bottom: 8px;
   content: "";
@@ -770,34 +768,9 @@
   color: var(--accent);
 }
 
-.workspace-ui-mode-hint {
-  color: var(--text-3);
-  font-size: 11.5px;
-  font-weight: 500;
-  line-height: 1.35;
-}
-
 /* ── 10. 캔버스 플로팅 툴바(배율 · ⋯ · AI 빠른 작업 · 맵 저장) ──────────────────────────── */
 
 /* ── 11. 전문가 = 촘촘하게 ───────────────────────────────────────────────────────────── */
-body.editor-ui-expert .oprn-menu-bar.studio-bar {
-  column-gap: 8px;
-}
-
-body.editor-ui-expert .studio-bar-lead {
-  gap: 2px;
-}
-
-body.editor-ui-expert .studio-bar .oprn-menu-item,
-body.editor-ui-expert .studio-tool-button {
-  font-size: 12.5px;
-  padding-left: 8px;
-  padding-right: 8px;
-}
-
-body.editor-ui-expert .studio-bar .editor-topbar-trailing {
-  gap: 4px;
-}
 
 /* ── 12. 좁은 뷰포트(1024~1439) — 폭은 줄이고 클릭 경로는 남긴다 ───────────────────────── */
 @media (max-width: 1439px) {
@@ -862,10 +835,6 @@ body.editor-ui-expert .studio-bar .editor-topbar-trailing {
 
   .studio-bar .workspace-panels-button .oprn-menu-item-chevron {
     display: none;
-  }
-
-  body.editor-ui-expert .studio-bar .workspace-panels-button {
-    padding: 0;
   }
 
 }

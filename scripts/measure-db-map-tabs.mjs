@@ -45,14 +45,12 @@ const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } });
 page.on("pageerror", (error) => console.log("PAGEERROR", error.message));
 
 await page.goto(ORIGIN, { waitUntil: "domcontentloaded" });
-await page.waitForSelector("[data-testid='menu-tools']", { timeout: 60_000 }).catch(() => {});
+await page.waitForSelector("[data-testid='toolbar-database']", { timeout: 60_000 }).catch(() => {});
 await page.waitForTimeout(6000);
 
 await mkdir(OUT, { recursive: true });
 
-await page.locator("button:has-text('도구')").first().click();
-await page.waitForTimeout(500);
-await page.locator("[data-testid='menu-tools-database']").first().click();
+await page.locator("[data-testid='toolbar-database']").first().click();
 await page.waitForSelector("[data-testid^='db-tab-']", { timeout: 30_000 });
 await page.waitForTimeout(2000);
 

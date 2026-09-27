@@ -59,7 +59,6 @@ import {
   type PlaceBrowseActions,
 } from "./spatialPlaceBrowse";
 import type { SpatialGalleryCard as GalleryCard } from "@/editor/panels/spatialCatalog";
-import { getEditorUiMode } from "@/editor/editorUiMode";
 import { el } from "@/util/dom";
 
 /** 세계 탭 이름 검색. 셸을 다시 그리지 않으므로 한글 조합 중에도 입력 칸이 유지된다. */
@@ -374,7 +373,7 @@ export function renderSpatialAuthoringShell(
     // 본문이 암시 행으로 밀려 잘린다 — 둘을 한 래퍼로 묶어 둘째 행에 넣는다.
     children: [chrome, placesGallery || regionGallery
       ? el("div", { class: "spatial-shell-main", children: [
-        ...(getEditorUiMode() === "expert" ? [] : [purposeBand(regionGallery ? "regions" : "places")]),
+        purposeBand(regionGallery ? "regions" : "places"),
         ...(libraryControls ? [libraryControls] : []),
         el("div", { class: `spatial-body${libraryOnly ? " is-library-only" : ""}`, children: [gallery, stage] }),
       ] })

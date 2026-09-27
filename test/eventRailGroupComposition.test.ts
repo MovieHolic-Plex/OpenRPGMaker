@@ -5,7 +5,6 @@ import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import type { EventPage } from "@/project/types";
 
 function seed(pageOverrides: Partial<EventPage> = {}): string {
@@ -44,14 +43,12 @@ describe("이벤트 편집기 좌측 레일 그룹 소속", () => {
   let host: HTMLElement;
 
   beforeEach(() => {
-    resetEditorUiModeForTests("expert");
     host = document.createElement("div");
     document.body.append(host);
   });
 
   afterEach(() => {
     host.remove();
-    resetEditorUiModeForTests("standard");
   });
 
   it("겹침 체크박스는 memory 그룹이 소유한다", () => {

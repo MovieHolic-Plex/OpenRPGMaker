@@ -2,7 +2,6 @@
 import { selectSidebarLayer } from "@/editor/panels/leftLayerSwitcher";
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { editorState, editorStateChangedOnlyToolPick } from '@/editor/editorState';
-import { chromeForMode, resetEditorUiModeForTests, setEditorUiMode, subscribeEditorUiMode } from '@/editor/editorUiMode';
 import { renderTilePalette, syncMountedPaletteToolPick } from '@/editor/panels/tilePalette';
 import { resetTileToolbarMenusForTests } from '@/editor/panels/tileToolbarMenus';
 import { createBlankProject } from '@/project/defaults';
@@ -11,37 +10,32 @@ import { resetInspectionPinsForTests, SIDEBAR_PINS_KEY } from '@/editor/panels/s
 import { listEditorCommands } from '@/editor/commandRegistry';
 import { resetModalStackForTest } from '@/editor/ui/modalStack';
 
-describe('focused standard and expert sidebar', () => {
+describe('focused sidebar', () => {
   let host: HTMLElement;
   let unsubscribe: () => void;
-  let unsubscribeMode: () => void;
   const find = (id: string) => host.querySelector<HTMLElement>(`[data-testid="${id}"]`);
   beforeEach(() => {
     vi.useFakeTimers();
-    resetEditorUiModeForTests('standard');
     resetTileToolbarMenusForTests();
     resetModalStackForTest();
-    localStorage.removeItem(SIDEBAR_PINS_KEY + 'expert');
+    localStorage.removeItem(SIDEBAR_PINS_KEY);
     resetInspectionPinsForTests();
     store.replace(createBlankProject());
     editorState.set({ currentMapId: store.getCurrent().startMapId, layer: 'lower', tool: 'paint', paintShape: 'pen', brushSize: 1, activePaletteStamp: null });
     host = document.createElement('div');
     host.dataset.testid = 'left-palette-root';
     document.body.append(host);
-    unsubscribeMode = subscribeEditorUiMode(() => renderTilePalette(host));
     renderTilePalette(host);
     unsubscribe = editorState.subscribe(() => renderTilePalette(host));
   });
   afterEach(() => {
     unsubscribe();
-    unsubscribeMode();
     resetTileToolbarMenusForTests();
     host.remove();
     vi.clearAllTimers();
     vi.useRealTimers();
   });
-  it('opens a real map tree from the current map without reserving a standard dock', () => {
-    expect(chromeForMode('standard').mapTree).toBe(false);
+  it('opens a real map tree from the current map without reserving a map dock', () => {
     const trigger = find('sidebar-map-switcher');
     expect(trigger).not.toBeNull();
     trigger?.click();
@@ -128,21 +122,18 @@ describe('focused standard and expert sidebar', () => {
     expect(hint).toContain('바닥 레이어 전용');
     expect(hint).toContain('전체');
   });
-  it('persists expert inspection pins without exposing or resetting them in Standard', () => {
-    setEditorUiMode('expert', null);
+  it('persists inspection pins across a session reset', () => {
     find('oprn-tool-overflow')?.click();
     find('sidebar-pin-history')?.click();
-    expect(JSON.parse(localStorage.getItem(SIDEBAR_PINS_KEY + 'expert') ?? '[]')).toEqual(['history']);
+    expect(JSON.parse(localStorage.getItem(SIDEBAR_PINS_KEY) ?? '[]')).toEqual(['history']);
     expect(find('toolbar-toggle-history')?.closest('[data-testid="toolbar-overflow-dropdown"]')).toBeNull();
     expect(host.querySelectorAll('[data-testid="toolbar-toggle-history"]')).toHaveLength(1);
-    setEditorUiMode('standard', null);
     expect(find('toolbar-toggle-history')).toBeNull();
     resetInspectionPinsForTests();
-    setEditorUiMode('expert', null);
     expect(find('toolbar-toggle-history')).not.toBeNull();
     find('oprn-tool-overflow')?.click();
     find('sidebar-pin-history')?.click();
-    expect(JSON.parse(localStorage.getItem(SIDEBAR_PINS_KEY + 'expert') ?? '[]')).toEqual([]);
+    expect(JSON.parse(localStorage.getItem(SIDEBAR_PINS_KEY) ?? '[]')).toEqual([]);
     expect(find('toolbar-toggle-history')?.closest('[data-testid="toolbar-overflow-dropdown"]')).not.toBeNull();
   });
   it('opens inspection through the command registry and restores the menu trigger on Escape', () => {
@@ -154,13 +145,6 @@ describe('focused standard and expert sidebar', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
     expect(find('toolbar-overflow-dropdown')).toBeNull();
     expect(document.activeElement).toBe(find('oprn-tool-overflow'));
-  });
-  it('does not reopen auxiliary work when returning to a mode', () => {
-    find('palette-brush-assist-toggle')?.click();
-    expect(find('sidebar-assist-surface')).not.toBeNull();
-    setEditorUiMode('expert', null);
-    setEditorUiMode('standard', null);
-    expect(find('sidebar-assist-surface')).toBeNull();
   });
   it('keeps a map surface behind a child modal and lets Escape close only the child', () => {
     find('sidebar-map-switcher')?.click();

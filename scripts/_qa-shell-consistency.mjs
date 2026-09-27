@@ -39,7 +39,7 @@ async function snap() {
     const main = q(".ai-chat-main");
 
     // 왼쪽 아이콘 레일 / 오른쪽 사이드바 후보
-    const railSel = [".basic-left-rail", ".editor-left-rail", "[data-testid='basic-left-rail']", ".editor-rail"];
+    const railSel = [".editor-left-rail", ".editor-rail"];
     const rail = railSel.map(q).find(Boolean) ?? null;
     const sideSel = [".editor-sidebar", ".editor-right", "[data-testid='editor-sidebar']", ".editor-layout > aside"];
     const side = sideSel.map(q).find(Boolean) ?? null;

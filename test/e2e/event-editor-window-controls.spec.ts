@@ -5,12 +5,8 @@ test.setTimeout(120_000);
 for (const viewport of [{ width: 1024, height: 768 }, { width: 1280, height: 800 }, { width: 1440, height: 900 }]) {
   test(`event editor window lifecycle at ${viewport.width}`, async ({ page }, testInfo) => {
     await page.setViewportSize(viewport);
-    await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "standard"));
     await page.goto("/?blankProject=1", { waitUntil: "domcontentloaded" });
     await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 90_000 });
-    // Select the mode through its real surface, independent of storage migrations.
-    await page.getByTestId("workspace-panels-button").click();
-    await page.getByTestId("workspace-ui-mode-standard").click();
     await page.getByTestId("layer-event").click();
     const canvas = page.getByTestId("edit-canvas").locator("canvas").last();
     const canvasBox = await canvas.boundingBox();

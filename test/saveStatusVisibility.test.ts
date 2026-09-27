@@ -12,7 +12,6 @@
 // 계약: 실패·충돌은 톱바에 뜨고, saved 로 돌아가면 사라지고, 톱바 재렌더가 구독을 누적시키지 않는다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { createBlankProject } from "@/project/defaults";
 import { store, type AutoSaveState } from "@/project/store";
 import { _resetLoggerForTest, getLogEntries } from "@/util/logger";
@@ -129,7 +128,6 @@ beforeEach(() => {
     tool: "paint",
     selectedEventId: null,
   });
-  resetEditorUiModeForTests("expert");
 });
 
 afterEach(async () => {
@@ -140,7 +138,6 @@ afterEach(async () => {
   restoreDom = null;
   Reflect.deleteProperty(globalThis, "localStorage");
   Object.defineProperty(globalThis, "window", { configurable: true, writable: true, value: previousWindow });
-  resetEditorUiModeForTests("standard");
   vi.restoreAllMocks();
   _resetLoggerForTest();
 });

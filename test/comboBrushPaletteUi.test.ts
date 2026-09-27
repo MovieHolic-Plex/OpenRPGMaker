@@ -16,7 +16,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { comboBrushBadge } from "@/editor/comboBrush";
 import { CURATED_COMBO_BRUSHES } from "@/editor/comboBrushCatalog";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { comboBrushShelfEntries, makeComboBrushShelf } from "@/editor/panels/comboBrushShelf";
 import { gridPaletteDisplayOrder, makeCustomPalette, makeGridPalette } from "@/editor/panels/tilePaletteGrid";
 import { makeTileBrushControls } from "@/editor/panels/tilePaletteStampStatus";
@@ -59,7 +58,6 @@ function dragBetween(root: HTMLElement, fromTestId: string, toTestId: string): v
 
 beforeEach(() => {
   document.body.innerHTML = "";
-  resetEditorUiModeForTests("beginner");
   store.replace(createBlankProject());
   editorState.set({
     activePaletteStamp: null,
@@ -222,7 +220,6 @@ describe("sidebar separates composite combo brush from repeated brush size", () 
 
   it("keeps repeated-tile brush size as its own concept when no combo brush is active", () => {
     // 전문가 크롬 = 크기 선택기가 있는 표면. 초보 레일은 같은 개념을 칩으로 낸다.
-    resetEditorUiModeForTests("expert");
     editorState.set({ activePaletteStamp: null, brushSize: 3, layer: "lower", tool: "paint", paintShape: "pen" });
     const row = makeTileBrushControls(editorState.get(), () => {});
     const state = row.querySelector<HTMLElement>('[data-testid="tile-brush-state"]')!;
@@ -233,7 +230,6 @@ describe("sidebar separates composite combo brush from repeated brush size", () 
   });
 
   it("hides the repeated-size select while a composite combo brush is active (expert chrome)", () => {
-    resetEditorUiModeForTests("expert");
     const tileset = defaultTileset();
     const entry = comboBrushShelfEntries(tileset)[0]!;
     const shelf = makeComboBrushShelf({ rerender: () => {}, tileset })!;

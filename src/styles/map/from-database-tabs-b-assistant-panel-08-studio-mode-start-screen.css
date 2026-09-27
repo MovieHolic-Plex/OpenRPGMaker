@@ -4,9 +4,7 @@
    각 규칙 앞 주석은 원본 파일:줄 이다. */
 
 /* database/tabs-b-assistant-panel/08-studio-mode-start-screen.css:552-570 */
-.ai-studio-monitor-chrome .canvas-toolbar,
-.ai-studio-monitor-chrome .canvas-toolbar.is-basic-chrome,
-.ai-studio-monitor-chrome .canvas-toolbar.is-docked-chrome {
+.ai-studio-monitor-chrome .canvas-toolbar {
   backdrop-filter: none;
   background: var(--bg-inset);
   border: 0;

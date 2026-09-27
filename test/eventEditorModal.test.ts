@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { eventDisplayName } from "@/project/eventDisplayName";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { renderEventEditor } from "@/editor/panels/eventEditor";
 import { openEventCommandPicker } from "@/editor/panels/eventEditor/commandPicker";
 import { renderEventEditorContent } from "@/editor/panels/eventEditor/content";
@@ -60,7 +59,6 @@ describe("RPG Maker style event editor entry points", () => {
   beforeEach(() => {
     _resetEventDraftVaultForTest();
     restoreFakeDom = installFakeDom();
-    resetEditorUiModeForTests("expert");
     store.replaceProject(createBlankProject());
   });
 
@@ -68,7 +66,6 @@ describe("RPG Maker style event editor entry points", () => {
     document.querySelector<HTMLElement>('[data-testid="event-list-tooltip"]')?.remove();
     document.querySelector<HTMLElement>('[data-testid="event-editor-modal"]')?.remove();
     _resetEventDraftVaultForTest();
-    resetEditorUiModeForTests("standard");
     restoreFakeDom();
   });
 

@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 const mocks = vi.hoisted(() => ({
@@ -132,14 +131,12 @@ afterEach(() => {
   restoreDom = null;
   Reflect.deleteProperty(globalThis, "localStorage");
   restoreWindow(previousWindow);
-  resetEditorUiModeForTests("standard");
   vi.clearAllMocks();
 });
 
 describe("에디터 헤더 복구", () => {
   it("스튜디오 바의 정해진 집들을 유지한다", () => {
     // Break: a bottom-bar cleanup accidentally removes established top/editor chrome again.
-    resetEditorUiModeForTests("expert");
     const topbar = document.createElement("div");
 
     renderTopbar(topbar);

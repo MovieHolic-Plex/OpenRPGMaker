@@ -128,14 +128,6 @@ check(state.panels.length === 0, "좌측 도크가 빈다");
 check(canvasAfter > canvasBefore, "캔버스가 실제로 넓어진다(빈 열이 남지 않았다)");
 await page.screenshot({ path: join(OUT, "preset-data.png"), fullPage: false });
 
-// ── 계약 6: 프리셋이 밀도를 흡수했다 (body 클래스로 확인) ─────────────────
-const bodyClassData = await page.evaluate(() => document.body.className);
-check(/editor-ui-expert/.test(bodyClassData), `자료 밸런싱 → 촘촘 밀도 (body: ${bodyClassData.trim()})`);
-await page.getByTestId("workspace-preset-map").click();
-await page.waitForTimeout(600);
-const bodyClassMap = await page.evaluate(() => document.body.className);
-check(/editor-ui-standard/.test(bodyClassMap), `맵 그리기 → 보통 밀도 (body: ${bodyClassMap.trim()})`);
-
 // ── 계약 7: 패널 메뉴에서 도크를 옮길 수 있다 ────────────────────────────
 await page.getByTestId("workspace-panels-button").click();
 await page.getByTestId("workspace-panels-menu").waitFor({ state: "visible", timeout: 5_000 });

@@ -7,7 +7,6 @@
 // 아래 테스트는 그 재렌더를 실제로 한 번 더 태워서 확인한다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { resetEventAiStagedForTest } from "@/editor/panels/eventEditor/aiAssist";
 import { clearCommandInspector } from "@/editor/panels/eventEditor/commandInspector";
 import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
@@ -59,7 +58,6 @@ function seedProject(withEvent: boolean): { mapId: string; x: number; y: number 
 
 describe("AI 이벤트 저작 우클릭 진입점", () => {
   beforeEach(() => {
-    resetEditorUiModeForTests("standard");
     resetEventAiStagedForTest();
     clearCommandInspector();
     vi.clearAllMocks();
@@ -113,7 +111,6 @@ describe("AI 이벤트 저작 우클릭 진입점", () => {
 
 describe("AI 도크 열림 예약", () => {
   beforeEach(() => {
-    resetEditorUiModeForTests("standard");
     resetEventAiStagedForTest();
     clearCommandInspector();
     vi.clearAllMocks();

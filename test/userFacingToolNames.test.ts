@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { createConversationLogHost } from "@/editor/panels/aiConversationLog";
 import { sanitizeUserFacingToolId } from "@/editor/uiCopy";
 import { installFakeDom } from "./fakeDom";
@@ -8,7 +7,6 @@ let restoreDom: (() => void) | null = null;
 
 beforeEach(() => {
   restoreDom = installFakeDom();
-  resetEditorUiModeForTests("standard");
 });
 
 afterEach(() => {
@@ -35,8 +33,7 @@ describe("sanitizeUserFacingToolId", () => {
 });
 
 describe("tool command-row titles", () => {
-  function appendTool(mode: "standard" | "expert"): HTMLElement {
-    resetEditorUiModeForTests(mode);
+  function appendTool(): HTMLElement {
     const log = document.createElement("div");
     const host = createConversationLogHost({
       log,
@@ -48,13 +45,9 @@ describe("tool command-row titles", () => {
     return entry;
   }
 
-  it("hides raw ids in standard plain-language titles", () => {
-    const text = appendTool("standard").textContent ?? "";
+  it("hides raw ids behind plain-language titles", () => {
+    const text = appendTool().textContent ?? "";
     expect(text).toContain("길 그리기");
     expect(text).not.toContain("paint_road");
-  });
-
-  it("keeps raw ids in expert titles", () => {
-    expect(appendTool("expert").textContent).toContain("paint_road");
   });
 });

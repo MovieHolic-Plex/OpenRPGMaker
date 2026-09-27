@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { writeFile } from 'node:fs/promises';
 
 /** Real DOM interactions against the local-only project; no remote content writes. */
-export async function sidebarFocusInteractions({ page, output, mode }) {
+export async function sidebarFocusInteractions({ page, output }) {
   const results = [];
   const click = id => page.getByTestId(id).click({ noWaitAfter: true });
   const state = () => page.evaluate(() => window.sidebarQa.state.get());
@@ -19,7 +19,6 @@ export async function sidebarFocusInteractions({ page, output, mode }) {
     await page.evaluate(() => window.sidebarChanged);
   }
   await page.setViewportSize({ width: 1440, height: 900 });
-  await mode('standard');
   await click('tool-erase');
   await click('sidebar-tools-menu');
   const paintTarget = await page.getByTestId('tool-paint').boundingBox();
@@ -111,8 +110,6 @@ export async function sidebarFocusInteractions({ page, output, mode }) {
   await page.keyboard.press('Escape');
   await click('tool-paint');
   results.push({ assistPreservesSheet: beforeAssist, kitPreservesSheet: beforeKit, stampCells: 2 });
-
-  await mode('expert');
   await click('oprn-tool-overflow');
   await click('sidebar-pin-history');
   await page.keyboard.press('Escape');
@@ -120,10 +117,6 @@ export async function sidebarFocusInteractions({ page, output, mode }) {
   assert.equal(await page.getByTestId('tile-history-dropdown').count(), 1);
   await page.keyboard.press('Escape');
   assert.equal(await page.evaluate(() => document.activeElement?.dataset.testid), 'toolbar-toggle-history');
-  await mode('standard');
-  assert.equal(await page.getByTestId('toolbar-toggle-history').count(), 0);
-  await mode('expert');
-  assert.equal(await page.getByTestId('toolbar-toggle-history').count(), 1);
   await click('oprn-tool-overflow');
   await click('sidebar-pin-inspector');
   await click('sidebar-pin-ruleAudit');
@@ -149,7 +142,6 @@ export async function sidebarFocusInteractions({ page, output, mode }) {
     if (store.remotePersistenceEnabled !== false) throw new Error('Reload must remain local-only');
     window.sidebarQa = { store, state: editorState };
   });
-  await mode('expert');
   assert.equal(await page.getByTestId('toolbar-toggle-history').count(), 1);
   const tree = await page.getByTestId('left-map-root').boundingBox();
   await click('map-tree-section-toggle');
@@ -159,9 +151,7 @@ export async function sidebarFocusInteractions({ page, output, mode }) {
   const previousTree = await page.getByTestId('left-map-root').boundingBox();
   await page.keyboard.press('ArrowUp');
   assert.notEqual((await page.getByTestId('left-map-root').boundingBox()).height, previousTree.height);
-  results.push({ inspectionPinsAcrossModesAndReload: true, expertTreeCollapseResize: true });
-
-  await mode('standard');
+  results.push({ inspectionPinsAcrossReload: true, expertTreeCollapseResize: true });
   await page.evaluate(() => {
     const { store, state } = window.sidebarQa;
     store.update(project => {
@@ -189,15 +179,6 @@ export async function sidebarFocusInteractions({ page, output, mode }) {
   await click('oprn-tool-undo');
   assert.deepEqual(await page.evaluate(() => [...window.sidebarQa.store.getCurrent().maps[window.sidebarQa.state.get().currentMapId].lowerTiles]), before);
   results.push({ actualCanvasPaintUndo: true });
-  await mode('beginner');
-  assert.equal(await page.getByTestId('basic-tile-grid').count(), 1);
-  await click('basic-tile-7');
-  assert.equal((await state()).selectedTile, 7);
-  await click('layer-event');
-  assert.equal(await page.getByTestId('basic-tile-grid').count(), 0);
-  await click('layer-lower');
-  assert.equal(await page.getByTestId('basic-tile-grid').count(), 1);
-  results.push({ beginnerSelectionAndLayers: true });
   await writeFile(`${output}/interactions.json`, JSON.stringify(results, null, 2));
   return results;
 }

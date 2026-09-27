@@ -9,7 +9,6 @@
 //  D5 팝오버가 열린 채 Escape 를 누르면 에디터 전체가 닫혔다 — 팝오버가 Escape 층에 없었다.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { clearCommandInspector } from "@/editor/panels/eventEditor/commandInspector";
 import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
 import { resetEventViewSession } from "@/editor/panels/eventEditor/storyboardView";
@@ -73,7 +72,6 @@ describe("이벤트 에디터 3뷰 토글", () => {
   let mapId: string;
 
   beforeEach(() => {
-    resetEditorUiModeForTests("standard");
     resetModalStackForTest();
     clearCommandInspector();
     resetEventViewSession();

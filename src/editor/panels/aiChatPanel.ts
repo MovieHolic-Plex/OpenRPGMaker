@@ -118,7 +118,6 @@ import { regionFromToolCall, renderMapChip } from "./aiMapChip";
 import { toolIconKey } from "./aiToolLabels";
 import { renderPreferenceMemorySettings } from "./aiPreferenceMemorySettings";
 import { createCollapsedUndoButton, createDirectorRestoreButton, setRestoreButtonState } from "./aiDirectorChrome";
-import { getEditorUiMode } from "@/editor/editorUiMode";
 import { openAiSettingsModal, registerAiSettingsPanel } from "./aiSettingsModal";
 import { runStampPlace } from "@/editor/stampPlaceRunner";
 import { buildMapPlacementContext, formatChestRewardHint } from "@/ai/mapPlacementContext";
@@ -2931,10 +2930,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 하단 컴포저: 입력 + 고정 액션 행 한 줄(세로 레일 없음).
   // 추천 칩·액션 메뉴·성향은 흐름 밖 팝오버 — 바 높이는 입력 줄 수만 따른다.
   let deckRoot: HTMLElement | null = null;
-  // 모델 칩(제안서 D4): 초보 모드에서는 숨기고 표준·전문가에서 현재 모델 id 를 보인다.
+  // 모델 칩(제안서 D4): 현재 모델 id 를 보인다.
   // 다이얼 명시 시 레벨 라벨을 함께 싣는다(읽기 전용 표시 — 동작은 세션 배선이 정한다).
   const modelChipLabel = (): string | null => {
-    if (getEditorUiMode() === "beginner") return null;
     const config = loadAiConfig();
     const model = config.model.trim();
     if (model.length === 0) return null;

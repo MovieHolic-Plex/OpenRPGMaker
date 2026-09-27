@@ -1,14 +1,5 @@
 /* 진영 탭. 공용 셸/카드/버튼은 workspace-modern.css 에 맡기고, 제목줄·관계 목록·행렬만 정의한다. */
 
-/* 모드별 숨김(monster-ux.css)은 특이도가 낮아 이 탭의 display 규칙에 진다. 탭 안에서만 같은 규칙을
-   한 번 더 건다 — !important 없이 특이도로 이긴다. */
-body.editor-ui-beginner .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-workspace [data-db-ux="advanced"],
-body.editor-ui-beginner .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-workspace [data-db-ux="expert"],
-body.editor-ui-standard .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-workspace [data-db-ux="expert"],
-body.editor-ui-expert .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-workspace [data-db-ux="guide"] {
-  display: none;
-}
-
 .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-detail {
   container: db-faction-detail / inline-size;
   display: grid;

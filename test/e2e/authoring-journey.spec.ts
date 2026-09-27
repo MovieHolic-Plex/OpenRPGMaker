@@ -38,9 +38,7 @@ test("1024px launcher reaches real surfaces and journey stays a corner chip", as
   expect(closedBox!.height).toBeLessThanOrEqual(48);
   expect(closedBox!.x + closedBox!.width).toBeLessThanOrEqual(1024);
 
-  await page.getByTestId("menu-tools").click();
-  await page.getByTestId("menu-tools-database").click();
-  await expect(page.locator("body")).toHaveClass(/editor-ui-beginner/);
+  await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("database-modal")).toBeVisible();
   await page.getByTestId("database-modal-close").click();
 

@@ -12,7 +12,7 @@ applyLegacyEnvAliases();
 
 const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:9999";
 const OUT = join(process.cwd(), "output", "evidence", "left-sidebar-review", "shots");
-type Mode = "beginner" | "standard" | "expert";
+type Mode = "editor";
 
 type Shot = { readonly file: string; readonly mode: Mode; readonly caption: string; readonly kind: string };
 const shots: Shot[] = [];
@@ -32,9 +32,6 @@ async function snap(page: Page, name: string, mode: Mode, caption: string, kind:
 
 async function boot(page: Page, mode: Mode): Promise<void> {
   await page.addInitScript((m) => {
-    localStorage.setItem("oprn:editor-ui-mode", m as string);
-    // 온보딩 오버레이는 도구 레일을 가리므로 '본 것'으로 표시한다 (coachMarks.ts 키).
-    localStorage.setItem("oprn:coachmarks-basic-v1", "1");
     localStorage.setItem("oprn:standard-welcome-seen", "1");
     // AI 패널을 접어 캔버스를 드러낸다 (aiPanelLayout.ts 키).
     localStorage.setItem("oprn:ai-panel-collapsed", "1");
@@ -77,7 +74,7 @@ async function captureTool(page: Page, mode: Mode, testid: string, label: string
 async function run(): Promise<void> {
   mkdirSync(OUT, { recursive: true });
   const only = process.argv[2] as Mode | undefined;
-  const modes: readonly Mode[] = only ? [only] : ["beginner", "standard", "expert"];
+  const modes: readonly Mode[] = only ? [only] : ["editor"];
   const browser = await chromium.launch({ args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu"] });
 
   for (const mode of modes) {
@@ -89,42 +86,7 @@ async function run(): Promise<void> {
     await snap(page, `${mode}-shell`, mode, `${mode} 모드 전체 화면 (1440x900)`, "shell");
     await snap(page, `${mode}-sidebar`, mode, `${mode} 모드 좌측 사이드바 전체`, "sidebar", ".left-panel");
 
-    if (mode === "beginner") {
-      for (const [testid, label] of [
-        ["tool-select", "선택 (V)"],
-        ["tool-paint", "칠하기 (B)"],
-        ["tool-erase", "지우기 (E)"],
-        ["tool-fill", "채우기 (G)"],
-        ["tool-event", "장면 (N)"],
-        ["tool-eyedropper", "집기 (I)"],
-      ] as const) {
-        await captureTool(page, mode, testid, label);
-      }
-      // 레이어
-      for (const [testid, label] of [["layer-lower", "바닥"], ["layer-upper", "상위"], ["layer-event", "이벤트"]] as const) {
-        const btn = page.getByTestId(testid).first();
-        if (await btn.isVisible().catch(() => false)) {
-          await btn.click();
-          await snap(page, `${mode}-layer-${testid}`, mode, `레이어 ${label} 선택`, "layer", ".left-panel");
-        }
-      }
-      await page.getByTestId("layer-lower").first().click().catch(() => {});
-      // 타일 플라이아웃
-      const tiles = page.getByTestId("basic-rail-toggle-tiles");
-      if (await tiles.isVisible().catch(() => false)) {
-        await tiles.click();
-        await page.getByTestId("basic-tile-grid").waitFor({ timeout: 5_000 }).catch(() => {});
-        await snap(page, `${mode}-flyout-tiles`, mode, "타일 플라이아웃 — 캔버스 위 오버레이, 48칸 상한", "flyout");
-        await tiles.click();
-      }
-      const maps = page.getByTestId("basic-rail-toggle-maps");
-      if (await maps.isVisible().catch(() => false)) {
-        await maps.click();
-        await page.getByTestId("basic-map-list-host").waitFor({ timeout: 5_000 }).catch(() => {});
-        await snap(page, `${mode}-flyout-maps`, mode, "맵 플라이아웃 — 맵 트리", "flyout");
-        await maps.click();
-      }
-    } else {
+    {
       // 되돌리기 버튼이 살아 있는 상태를 찍으려면 편집 이력이 하나 필요하다 — 캔버스를 한 번 칠한다.
       const paintBtn = page.getByTestId("tool-paint").first();
       if (await paintBtn.isVisible().catch(() => false)) await paintBtn.click();

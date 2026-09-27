@@ -3,7 +3,6 @@ import { getMapEditHistoryState, resetMapEditHistory, undoMapEdit } from "@/edit
 import { captureDifficulty } from "@/editor/panels/databaseCapturePreview";
 import { setMonsterSpeciesSection } from "@/editor/panels/databaseMonsterSpeciesSections";
 import { renderMonsterSpeciesTab } from "@/editor/panels/databaseMonsterSpeciesView";
-import { setEditorUiMode } from "@/editor/editorUiMode";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
@@ -20,7 +19,6 @@ function stubWindowTimers(): void {
         return 0;
       },
       clearTimeout,
-      // setEditorUiMode() announces the mode on window; the stub has no listeners to notify.
       dispatchEvent: () => true,
     },
   });
@@ -50,7 +48,6 @@ describe("database monster species view", () => {
     store.replace(createBlankProject());
     resetMapEditHistory();
     setMonsterSpeciesSection("basic");
-    setEditorUiMode("expert", null);
   });
 
   afterEach(() => {
@@ -278,7 +275,6 @@ describe("database monster species view", () => {
     const tabs = ["basic", "capture", "growth", "evolution", "links"].map((id) => findByTestId(host, `db-monster-species-section-tab-${id}`)!);
     expect(tabs.map((tab) => tab.getAttribute("role"))).toEqual(["tab", "tab", "tab", "tab", "tab"]);
     expect(tabs.map((tab) => tab.getAttribute("aria-selected"))).toEqual(["true", "false", "false", "false", "false"]);
-    expect(findByTestId(host, "db-monster-species-section-tab-links")?.dataset.dbUx).toBe("advanced");
     // Hidden panels still own their fields — tests and saved paths reach them without a tab click.
     for (const testid of ["db-monster-species-name", "db-monster-species-capture-rate", "db-monster-species-hp", "db-monster-species-evo-add", "db-monster-species-linked-enemies"]) {
       expect(findByTestId(host, testid), testid).toBeTruthy();
@@ -299,14 +295,6 @@ describe("database monster species view", () => {
     expect(findByTestId(rerendered, "db-monster-species-section-tab-evolution")?.getAttribute("aria-selected")).toBe("true");
   });
 
-  it("falls back to 기본 when the remembered section is hidden in beginner mode", () => {
-    setMonsterSpeciesSection("links");
-    setEditorUiMode("beginner", null);
-    const host = renderUtility(renderMonsterSpeciesTab);
-    expect(findByTestId(host, "db-monster-species-section-tab-basic")?.getAttribute("aria-selected")).toBe("true");
-    expect(findByTestId(host, "db-monster-species-section-links")?.hidden).toBe(true);
-  });
-
   // Break caught: 「기본 포획 계수 0.45」 said nothing about how hard the monster is to catch.
   it("names capture difficulty and lets a difficulty step set the representative rate", () => {
     expect(captureDifficulty(1).label).toBe("매우 쉬움");
@@ -320,7 +308,6 @@ describe("database monster species view", () => {
     findByTestId(host, "db-monster-species-add")!.click();
     const id = store.getCurrent().database.monsterSpecies!.at(-1)!.id;
     expect(findByTestId(host, "db-monster-species-capture-difficulty")?.textContent).toBe("보통");
-    expect(findByTestId(host, "db-monster-species-capture-rate")?.closest("[data-db-ux]")?.dataset.dbUx).toBe("expert");
     findByTestId(host, "db-monster-species-capture-step-hard")!.click();
     expect(store.getCurrent().database.monsterSpecies!.find((row) => row.id === id)!.captureRate).toBe(0.15);
     expect(findByTestId(host, "db-monster-species-capture-difficulty")?.textContent).toBe("어려움");
@@ -361,7 +348,7 @@ describe("database monster species view", () => {
   it("marks the fill-order checklist from real data and jumps to the item's section", () => {
     const host = renderUtility(renderMonsterSpeciesTab);
     findByTestId(host, "db-monster-species-add")!.click();
-    expect(findByTestId(host, "db-monster-species-checklist")?.dataset.dbUx).toBe("guide");
+    expect(findByTestId(host, "db-monster-species-checklist")).not.toBeNull();
     expect(findByTestId(host, "db-monster-species-check-identity")?.dataset.done).toBe("false");
     expect(findByTestId(host, "db-monster-species-check-graphic")?.dataset.done).toBe("false");
     expect(findByTestId(host, "db-monster-species-check-capture")?.dataset.done).toBe("false");

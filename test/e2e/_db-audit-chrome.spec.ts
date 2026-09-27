@@ -229,8 +229,7 @@ async function reopenDatabase(page: Page): Promise<void> {
   if (await toolbar.isVisible().catch(() => false)) {
     await toolbar.click();
   } else {
-    await page.getByTestId("menu-tools").click();
-    await page.getByTestId("menu-tools-database").click();
+    await page.getByTestId("toolbar-database").click();
   }
   await expect(page.getByTestId("database-modal")).toBeVisible();
 }
@@ -431,14 +430,13 @@ test.describe("DB audit — chrome + overview", () => {
     await runProbe(page, errors, "X7", ["actors"], () => probeX7(page, errors));
   });
 
-  test("beginner lane X1/X2/X5/X9/X10 + R2–R4 + G + help/coach", async ({ page }) => {
+  test("beginner lane X1/X2/X5/X9/X10 + R2–R3 + G + help/coach", async ({ page }) => {
     test.slow();
     const errors = collectConsoleErrors(page);
     await bootDbLane(page, { mode: "beginner", viewport: { width: 1024, height: 768 } });
     await expect(page.getByTestId("database-modal")).toBeVisible();
 
     await runProbe(page, errors, "G1", ["overview"], () => probeG1(page));
-    await runProbe(page, errors, "R4", ["overview"], () => probeR4(page));
     await runProbe(page, errors, "R3", [...COMMON_DB_TAB_TEST_IDS], () => probeR3Compare(page));
     await runProbe(page, errors, "G4", ["actors"], () => probeHelpAndCoach(page));
     await runProbe(page, errors, "X2", ["actors"], () => probeX2(page, "beginner"));
@@ -1920,37 +1918,6 @@ async function probeR3Compare(page: Page): Promise<void> {
   emitClean("R3-jargon-differs", "R3", [...COMMON_DB_TAB_TEST_IDS], "R3: beginner/expert tab labels differ", repro, [evidence, table]);
 }
 
-async function probeR4(page: Page): Promise<void> {
-  const rail = page.getByTestId("basic-left-rail");
-  const railVisible = await rail.isVisible().catch(() => false);
-  const toolbarHidden = await page.getByTestId("toolbar-database").isHidden().catch(() => true);
-  const railDb = railVisible
-    ? await rail.getByText(/자료집|데이터베이스|^자료$|^DB$/).count()
-    : -1;
-  const evidence = await shot(page, "r4-entry");
-  const repro = [
-    "bootDbLane beginner",
-    `basic-left-rail visible=${railVisible}`,
-    `toolbar-database hidden=${toolbarHidden}`,
-    `rail text matches for 자료집/데이터베이스/자료/DB count=${railDb}`,
-    "only remaining path: menu-tools → menu-tools-database",
-  ];
-  if (railVisible && toolbarHidden && railDb === 0) {
-    emitDefect({
-      id: "R4-no-rail-entry",
-      probeId: "R4",
-      tabs: ["overview"],
-      S: 2,
-      B: 3,
-      title: "R4: beginner icon rail has no Database entry; toolbar-database is hidden (Tools menu is the only path)",
-      repro,
-      evidence: [evidence],
-    });
-    return;
-  }
-  emitClean("R4-entry-present", "R4", ["overview"], "R4: beginner Database entry is on the rail or toolbar", repro, [evidence]);
-}
-
 async function probeG1(page: Page): Promise<void> {
   const direct = await page.locator(".db-tabs > .db-tab").evaluateAll((nodes) =>
     nodes.map((node) => (node as HTMLElement).dataset.testid ?? ""),
@@ -1985,8 +1952,7 @@ async function probeG2(page: Page): Promise<void> {
   await expect(page.getByTestId("db-tab-elements")).toHaveClass(/active/);
   await page.getByTestId("database-footer-apply").click().catch(() => undefined);
   await closeModalClean(page);
-  await page.getByTestId("menu-tools").click();
-  await page.getByTestId("menu-tools-database").click();
+  await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("database-modal")).toBeVisible();
   const stored = await page.evaluate((key) => localStorage.getItem(key), ACTIVE_TAB_KEY);
   const active = (await page.locator(".db-tab.active").getAttribute("data-testid")) ?? "";

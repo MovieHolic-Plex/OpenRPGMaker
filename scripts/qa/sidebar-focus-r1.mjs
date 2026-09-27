@@ -8,12 +8,11 @@ await mkdir(output, { recursive: true });
 const browser = await firefox.launch({ headless: true });
 const results = [];
 
-async function boot(initialMode) {
+async function boot() {
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   const page = await context.newPage();
   page.setDefaultTimeout(90000);
-  await page.addInitScript(initialMode => {
-    if (!localStorage.getItem('oprn:editor-ui-mode')) localStorage.setItem('oprn:editor-ui-mode', initialMode);
+  await page.addInitScript(() => {
     localStorage.setItem('oprn:ai-panel-collapsed', '1');
     window.r1Ready = new Promise((resolve, reject) => {
       const timer = setTimeout(() => reject(new Error('EditScene readiness missing')), 120000);
@@ -21,7 +20,7 @@ async function boot(initialMode) {
       Object.defineProperty(window, '__oprnEditWorldToClient', { configurable: true, get: () => hook,
         set: value => { hook = value; clearTimeout(timer); resolve(); } });
     });
-  }, initialMode);
+  });
   async function ready() {
     await page.evaluate(() => window.r1Ready);
     await page.evaluate(() => document.fonts.ready);
@@ -39,26 +38,6 @@ async function boot(initialMode) {
     await page.keyboard.press('Control+k');
     await page.getByTestId('command-palette-search').fill(query);
     await click(`command-palette-item-command-${id}`);
-  }
-  async function mode(value, viaCommand = false) {
-    console.log(`mode ${value} via ${viaCommand ? 'command' : 'view'}`);
-    if (viaCommand) {
-      await page.keyboard.press('Control+k');
-      await page.getByTestId('command-palette-search').fill(value);
-    } else await click('workspace-panels-button');
-    // Subscribe immediately before the mode-changing action, not before the
-    // unrelated work of opening and searching the command palette.
-    await page.evaluate(value => {
-      window.r1Mode = new Promise((resolve, reject) => {
-        const timer = setTimeout(() => reject(new Error('Mode event missing')), 30000);
-        window.addEventListener('oprn:editor-ui-mode', event => {
-          clearTimeout(timer);
-          event.detail.mode === value ? resolve() : reject(new Error('Wrong mode'));
-        }, { once: true });
-      });
-    }, value);
-    await click(viaCommand ? `command-palette-item-command-editor-ui-mode-${value}` : `workspace-ui-mode-${value}`);
-    await page.evaluate(() => window.r1Mode);
   }
   const mapId = () => page.evaluate(() => window.r1.state.get().currentMapId);
   async function openContextMenu(id) {
@@ -80,11 +59,11 @@ async function boot(initialMode) {
     await page.evaluate(() => window.r1ContextMenu);
   }
   const reload = async () => { await page.reload({ waitUntil: 'domcontentloaded', timeout: 120000 }); await ready(); };
-  return { page, context, click, command, mode, mapId, reload, openContextMenu };
+  return { page, context, click, command, mapId, reload, openContextMenu };
 }
 
-async function scenario(name, initialMode, run) {
-  const harness = await boot(initialMode);
+async function scenario(name, run) {
+  const harness = await boot();
   try {
     const observed = await run(harness);
     await harness.page.screenshot({ path: `${output}/${name}.png` });
@@ -102,7 +81,7 @@ async function scenario(name, initialMode, run) {
 }
 
 try {
-  await scenario('context-menu-pointer', 'standard', async ({ page, click, mapId, openContextMenu }) => {
+  await scenario('context-menu-pointer', async ({ page, click, mapId, openContextMenu }) => {
     const id = await mapId();
     const observations = [];
     for (const [width, height] of [[1440, 900], [1280, 800], [1024, 768]]) {
@@ -153,7 +132,7 @@ try {
     }
     return observations;
   });
-  await scenario('context-menu-keyboard', 'standard', async ({ page, click, mapId }) => {
+  await scenario('context-menu-keyboard', async ({ page, click, mapId }) => {
     const id = await mapId();
     const observed = [];
     for (const [width, height] of [[1440, 900], [1280, 800], [1024, 768]]) {
@@ -179,19 +158,13 @@ try {
     }
     return observed;
   });
-  for (const initial of ['beginner', 'standard']) await scenario(`mode-lifecycle-${initial}`, initial, async ({ page, click, mode }) => {
-    if (initial === 'beginner') await mode('standard');
+  await scenario('surface-lifecycle', async ({ page, click }) => {
     for (const [trigger, id] of [['sidebar-tools-menu', 'tools'], ['palette-brush-assist-toggle', 'assist']]) {
       await click(trigger);
       assert.equal(await page.locator(`[data-sidebar-surface="${id}"]`).count(), 1);
-      await mode('expert', true);
-      assert.equal(await page.locator('[data-sidebar-surface]').count(), 0, 'mode notification must remove old surface');
-      assert.equal(await page.getByTestId(trigger).getAttribute('aria-expanded'), 'false');
-      await click(trigger);
       await page.keyboard.press('Escape');
       assert.equal(await page.locator('[data-sidebar-surface]').count(), 0);
       assert.equal(await page.evaluate(() => document.activeElement?.dataset.testid), trigger);
-      await mode('standard');
     }
     await click('sidebar-tools-menu');
     await page.evaluate(async () => {
@@ -206,9 +179,9 @@ try {
     assert.equal(await page.locator('[data-sidebar-surface]').count(), 0, 'remount must not restore old open state');
     await click('sidebar-tools-menu'); await click('sidebar-tools-close');
     assert.equal(await page.getByTestId('sidebar-tools-menu').getAttribute('aria-expanded'), 'false');
-    return { initial, toolsAndAssist: true, teardownRemount: true };
+    return { toolsAndAssist: true, teardownRemount: true };
   });
-  await scenario('expert-header-reveal', 'expert', async ({ page, click, mapId, reload }) => {
+  await scenario('header-reveal', async ({ page, click, mapId, reload }) => {
     const id = await mapId();
     for (const persisted of [false, true]) {
       await click('map-tree-section-toggle');
@@ -232,7 +205,7 @@ try {
     assert.notEqual((await page.getByTestId('left-map-root').boundingBox()).height, beforePointer.height);
     return { collapsedAndReloaded: true, keyboardResize: true, pointerResize: true };
   });
-  await scenario('inspection-host-activation', 'expert', async ({ page, click, command, mapId, reload }) => {
+  await scenario('inspection-host-activation', async ({ page, click, command, mapId, reload }) => {
     const id = await mapId();
     const observed = [];
     for (const pinned of [false, true]) for (const inspection of ['inspector', 'ruleAudit', 'history']) {

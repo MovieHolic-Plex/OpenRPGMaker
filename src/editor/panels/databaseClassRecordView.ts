@@ -4,7 +4,6 @@ import { editableClassCommands, finalizeClassBattleCommands, moveEditableClassCo
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { charsetFrameSource, EASYRPG_CHARSET_ASSETS } from "@/assets/easyrpgRtp";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
-import { getEditorUiMode } from "@/editor/editorUiMode";
 import { store } from "@/project/store";
 import type { ActorRateGrade, ClassBattleCommand, ClassBattleCommandKind, ClassRecord } from "@/project/types";
 import { el } from "@/util/dom";
@@ -137,11 +136,11 @@ const CLASS_VIEWS = [
 export type ClassView = (typeof CLASS_VIEWS)[number]["key"];
 
 // 레코드를 바꿔도 보던 보기를 유지한다 — 전사의 스킬을 보다가 마도사로 넘어가면 마도사의 스킬을 본다.
-// 고르기 전에는 모드가 정한다: 전문가는 예전 3단 「전체」, 그 밖은 「개요」.
+// 고르기 전에는 「개요」를 보인다.
 let chosenClassView: ClassView | null = null;
 
 function currentClassView(): ClassView {
-  return chosenClassView ?? (getEditorUiMode() === "expert" ? "all" : "overview");
+  return chosenClassView ?? "overview";
 }
 
 export function resetClassViewForTests(): void {

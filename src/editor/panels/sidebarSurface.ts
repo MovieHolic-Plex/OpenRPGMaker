@@ -1,4 +1,3 @@
-import { subscribeEditorUiMode } from '@/editor/editorUiMode';
 import { el } from '@/util/dom';
 import { hasOpenModalLayer } from '@/editor/ui/modalStack';
 import { closeMapContextMenu } from '@/editor/panels/mapContextMenu';
@@ -40,7 +39,6 @@ export function closeSidebarSurface(restore = false): void {
 
 function installListeners(): void {
   if (detachListeners) return;
-  const unsubscribeMode = subscribeEditorUiMode(() => closeSidebarSurface());
   const onSurfaceOpen = (event: Event) => {
     if (event instanceof CustomEvent && event.detail !== opened) closeSidebarSurface();
   };
@@ -60,7 +58,6 @@ function installListeners(): void {
   document.addEventListener('keydown', onKeyDown);
   if (typeof window !== 'undefined') window.addEventListener('resize', positionCurrent);
   detachListeners = () => {
-    unsubscribeMode();
     document.removeEventListener(SIDEBAR_SURFACE_OPEN, onSurfaceOpen);
     document.removeEventListener('pointerdown', onPointerDown);
     document.removeEventListener('keydown', onKeyDown);

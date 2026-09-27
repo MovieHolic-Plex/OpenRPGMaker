@@ -22,8 +22,7 @@ await waitForApp(page);
 await page.waitForTimeout(2200);
 await capture("editor");
 
-await click("menu-tools", 800);
-await click("menu-tools-database", 3000);
+await click("toolbar-database", 3000);
 await capture("db-actors");
 
 for (const [testid, name] of [

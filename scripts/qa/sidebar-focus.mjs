@@ -24,7 +24,6 @@ page.on('pageerror', error => errors.push(error.message));
 page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
 page.on('requestfailed', request => errors.push(`${request.url()}: ${request.failure()?.errorText}`));
 await page.addInitScript(() => {
-  localStorage.setItem('oprn:editor-ui-mode', 'standard');
   localStorage.setItem('oprn:ai-panel-collapsed', '1');
   window.sidebarReady = new Promise((resolve, reject) => {
     const timeout = setTimeout(() => reject(new Error('EditScene readiness missing')), 120000);
@@ -35,22 +34,6 @@ await page.addInitScript(() => {
     });
   });
 });
-async function mode(value) {
-  await page.evaluate(value => {
-    window.sidebarModeChanged = new Promise((resolve, reject) => {
-      const timeout = setTimeout(() => reject(new Error('Mode event missing')), 10000);
-      window.addEventListener('oprn:editor-ui-mode', event => {
-        clearTimeout(timeout);
-        if (event.detail.mode === value) resolve();
-        else reject(new Error('Wrong mode event'));
-      }, { once: true });
-    });
-  }, value);
-  await page.getByTestId('workspace-panels-button').click({ noWaitAfter: true });
-  await page.getByTestId(`workspace-ui-mode-${value}`).click({ noWaitAfter: true });
-  await page.evaluate(() => window.sidebarModeChanged);
-  assert.equal(await page.locator('body').getAttribute('data-editor-ui-mode'), value);
-}
 const measurements = [];
 try {
   await page.goto(`${baseUrl}/?freshProject=1`, { waitUntil: 'domcontentloaded', timeout: 120000 });
@@ -70,8 +53,8 @@ try {
     await writeFile(`${output}/outside-pointer.json`, JSON.stringify({ expected: 'paint', actual }));
     assert.equal(actual, 'paint', 'outside pointer click must not merely dismiss Tools');
   }
-  for (const value of ['standard', 'expert', 'beginner']) {
-    await mode(value);
+  {
+    const value = 'editor';
     for (const [width, height] of [[1440, 900], [1280, 800], [1024, 768]]) {
       await page.setViewportSize({ width, height });
       await page.evaluate(() => document.fonts.ready);
@@ -98,7 +81,7 @@ try {
         });
         return {
           sidebar, sheet, sheetRatio: sheet?.height / sidebar.height,
-          canvas: rect('.canvas-area'), layers: rect('[data-testid="left-layer-switcher"], [data-testid="basic-layer-list"]'),
+          canvas: rect('.canvas-area'), layers: rect('[data-testid="left-layer-switcher"]'),
           toolbarScroll: toolbar ? toolbar.scrollWidth > toolbar.clientWidth : false,
           mainToolbarScroll: mainToolbar ? mainToolbar.scrollWidth > mainToolbar.clientWidth : false,
           clippedControls,
@@ -113,12 +96,11 @@ try {
         assert(!measured.pageOverflow && !measured.toolbarScroll, `${value} ${width}: horizontal overflow`);
         assert(!measured.mainToolbarScroll, `${value} ${width}: main toolbar scroll`);
         assert.deepEqual(measured.clippedControls, [], `${value} ${width}: controls clipped or covered`);
-        if (value === 'standard' && width === 1440) assert(measured.sheetRatio >= .7, 'standard sheet must own 70% of sidebar');
-        if (value === 'expert' && width === 1440) assert(measured.sheetRatio >= .4, 'expert sheet must own 40% of sidebar');
+        if (width === 1440) assert(measured.sheetRatio >= .4, 'sheet must own 40% of sidebar');
       }
     }
   }
-  if (phase === 'after') await sidebarFocusInteractions({ page, output, mode });
+  if (phase === 'after') await sidebarFocusInteractions({ page, output });
 } finally {
   await writeFile(`${output}/layout-ancestry.json`, JSON.stringify(await page.evaluate(() => {
     const result = [];
