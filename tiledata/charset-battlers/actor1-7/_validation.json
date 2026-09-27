@@ -8,6 +8,9 @@
     "defend",
     "dead",
     "victory",
+    "walk_a",
+    "walk_b",
+    "walk_c",
     "attack_windup",
     "attack_strike",
     "attack_follow",
@@ -24,9 +27,6 @@
     "revive"
   ],
   "preserved_source_frames": [
-    "walk_a",
-    "walk_b",
-    "walk_c",
     "front"
   ],
   "extra_colors": [
@@ -65,7 +65,7 @@
     144,
     384
   ],
-  "sheet_sha256": "59740f08a468682dda61c447678eb2c1b773bba7047604c5ed7daa02d2bcfaa3",
+  "sheet_sha256": "ab8ffbf7e6db960141ce971589ae4c53520836273c20d77caf0d73da9e336f49",
   "motion_frames": [
     "walk_a",
     "walk_b",
@@ -125,19 +125,19 @@
       45
     ],
     "walk_a": [
-      16,
+      9,
       21,
       33,
       45
     ],
     "walk_b": [
-      16,
+      9,
       20,
       33,
       45
     ],
     "walk_c": [
-      16,
+      9,
       20,
       33,
       45
@@ -161,21 +161,21 @@
       45
     ],
     "cast_charge": [
-      13,
-      20,
-      34,
+      11,
+      19,
+      32,
       45
     ],
     "cast_raise": [
+      13,
       8,
-      3,
-      34,
+      37,
       45
     ],
     "cast_release": [
-      0,
-      14,
-      36,
+      1,
+      20,
+      33,
       45
     ],
     "item": [
@@ -234,5 +234,7 @@
     ]
   },
   "runtime_qa": "미실행: 아트 저작 역할 범위 밖",
-  "canonical_project_write": "미실행: 감독 통합 대상"
+  "canonical_project_write": "미실행: 감독 통합 대상",
+  "revision": "시전 2차: 무기 보유 걷기, 비전 공통 시전",
+  "cast_validation": "_cast_validation.json"
 }
