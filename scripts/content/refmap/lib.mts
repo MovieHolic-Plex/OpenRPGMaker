@@ -334,6 +334,14 @@ export function lintPassage(set: LoadedSet, spec: MapSpec, k1: (string | null)[]
     const base = passabilityOf(ts, layers[0][i]!, -1, -1, -1);
     if (!(base.up || base.down || base.left || base.right)) leaks.push(`(${i % w},${Math.floor(i / w)})`);
   }
+  // 막혀야 할 물체 칸(prop 전부·tall 밑줄·solid)이 엔진에서 뚫린 곳 — 같은 칸을 다른 kind 로 잡았거나 위에 통행 그림을 얹은 경우.
+  const holes: string[] = [];
+  for (const p of placed) {
+    if (p.o.id.startsWith("tile:")) continue;
+    const want = p.o.solid ?? (p.o.kind === "prop" ? p.cells : p.o.kind === "tall" ? p.cells.filter(([, dy]) => dy === p.o.h - 1) : []);
+    for (const [dx, dy] of want) { const x = p.x + dx, y = p.y + dy; if (x >= 0 && y >= 0 && x < w && y < h && open(y * w + x)) holes.push(`${p.o.id}(${x},${y})`); }
+  }
+  if (holes.length) out.push(`통행: 막혀야 할 물체 칸이 뚫림 ${holes.length} — ${holes.slice(0, 8).join(" ")}`);
   if (leaks.length) out.push(`통행: 막힌 땅(물·벽·천장) 위를 걷게 만든 칸 ${leaks.length} — ${leaks.slice(0, 10).join(" ")}${leaks.length > 10 ? " …" : ""}`);
   const onTop = new Array<number>(w * h).fill(0);
   for (const p of placed) {
