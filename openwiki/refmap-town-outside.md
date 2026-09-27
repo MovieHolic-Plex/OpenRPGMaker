@@ -61,7 +61,7 @@ bun scripts/content/refmap/publish-refmap-places.mts         # 공용 SQLite 에
 | 세트 | 원본 글 | 시트 | 맵 |
 |---|---|---|---|
 | `refmap-snow` 설원 마을 | 雪マップ | A1 A2 A3 A4 B C D | 설원 마을 · 설산 숲길 |
-| `refmap-interior` 실내 + 마녀의 방 | 内装用データ + 魔女の部屋 | A1 A2 A4 B C(마녀) A5 | 여관 1층 · 마녀의 집 |
+| `refmap-interior` 실내 + 마녀의 방 | 内装用データ + 魔女の部屋 | A1 A2 A4 B C(마녀) A5 | 여관 1층 · 마녀의 집 · 농가 · 잡화점 · 저택 서재 · 겨울 축제 집 · 성 알현실 · 성 지하 감옥 · 저택 객실동 · 연회장 (10곳) |
 | `refmap-dungeon-extra` 던전 칩 추가 | 中間データ ダンジョンチップ追加 | A1 A2 A4 B | 바위 동굴 · 지하 호수 |
 | `refmap-south-island` 남쪽 섬 | 南の島 | A1 A2 A4 B A5 | 야자수 해변 · 정글 언덕 |
 | `refmap-volcano` 화산 | 火山タイルまとめ | A1 A2 A4 B A5 | 용암 동굴 · 화산 기슭 |

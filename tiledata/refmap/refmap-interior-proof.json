@@ -3,18 +3,74 @@
   "tileset": "shared_refmap_interior",
   "tiles": 6144,
   "atlas": "3072×4608",
-  "places": 2,
+  "places": 10,
   "objectKits": 194,
   "houseKits": 0,
   "autotileGroups": 85,
-  "bytes": 10707030,
+  "bytes": 12105732,
   "maps": {
+    "refmap_banquet_hall": {
+      "place": "shared_refmap_interior_refmap_banquet_hall",
+      "size": "38×28",
+      "objects": 90,
+      "houses": 0,
+      "renderSha": "51835ce1587a08d7f251d48315ae53422a26a6eeae8b6a8ba975919635fb0ccd"
+    },
+    "refmap_castle_jail": {
+      "place": "shared_refmap_interior_refmap_castle_jail",
+      "size": "36×25",
+      "objects": 64,
+      "houses": 0,
+      "renderSha": "0a031cd8cb4e28fe39de57bd66f9efd75e0a722792f7de84745ff361373608ca"
+    },
+    "refmap_farmhouse": {
+      "place": "shared_refmap_interior_refmap_farmhouse",
+      "size": "27×24",
+      "objects": 51,
+      "houses": 0,
+      "renderSha": "bfd20a5c1fbe0dea90c93d15297cc208bbe5abb9d8707532517403a667411f17"
+    },
+    "refmap_general_store": {
+      "place": "shared_refmap_interior_refmap_general_store",
+      "size": "28×24",
+      "objects": 59,
+      "houses": 0,
+      "renderSha": "7ab704427635d6efc495e22067b4c046d32d3b3d9d396d649470d2294dcbbfab"
+    },
     "refmap_inn_1f": {
       "place": "shared_refmap_interior_refmap_inn_1f",
       "size": "30×22",
       "objects": 63,
       "houses": 0,
       "renderSha": "286d9afd417ba965576db6711c9062726b0af1335b48b0f67612d6ee4e598de0"
+    },
+    "refmap_manor_guest_wing": {
+      "place": "shared_refmap_interior_refmap_manor_guest_wing",
+      "size": "37×28",
+      "objects": 97,
+      "houses": 0,
+      "renderSha": "2087dc2e7f85feeadfd9e470882ad8e241188a099e7cb2bb75f25bea74ca7ca7"
+    },
+    "refmap_manor_library": {
+      "place": "shared_refmap_interior_refmap_manor_library",
+      "size": "31×25",
+      "objects": 75,
+      "houses": 0,
+      "renderSha": "54bec58a30a62feb941e19f104b48b31870e28c288ca69d2ad95f220db1989c6"
+    },
+    "refmap_throne_hall": {
+      "place": "shared_refmap_interior_refmap_throne_hall",
+      "size": "36×30",
+      "objects": 79,
+      "houses": 0,
+      "renderSha": "cb7f4f210481a26a86ca71a6ad3cbeaadd29abe4645639cb2c895b6e84d80dea"
+    },
+    "refmap_winter_home": {
+      "place": "shared_refmap_interior_refmap_winter_home",
+      "size": "30×24",
+      "objects": 63,
+      "houses": 0,
+      "renderSha": "30ea0e5941a7366813a1f7e799fb538f855949794fbcfa27f1d51dc6f7f66de9"
     },
     "refmap_witch_house": {
       "place": "shared_refmap_interior_refmap_witch_house",
@@ -25,10 +81,10 @@
     }
   },
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "d40bb8770f9e8dd47af5a7e1754ad10f2263f358ebb60d763a1d053311040b97",
+  "revision": "a46a633ecd8912f345f87efdd7f8d5839232e209e33eb9fd0ac9361206463dfd",
   "reloaded": true,
-  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-interior-2026-09-27T09-15-36-796Z.sqlite",
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-interior-2026-09-27T10-51-21-788Z.sqlite",
   "otherLibraries": 36,
   "otherLibrariesUnchanged": true,
-  "publishedAt": "2026-09-27T09:15:50.585Z"
+  "publishedAt": "2026-09-27T10:51:35.891Z"
 }
