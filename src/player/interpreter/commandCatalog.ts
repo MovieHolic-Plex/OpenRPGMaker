@@ -1011,6 +1011,9 @@ const SCREEN_COLOR_RGB: Record<string, { red: number; green: number; blue: numbe
   purple: { red: 180, green: 0, blue: 255 },
   black: { red: 0, green: 0, blue: 0 },
   neutral: { red: 200, green: 200, blue: 200 },
+  // 회상 색조. 조수가 value:"sepia" 를 쓰는데(2026-09-27 조수 시험) 모르는 이름은 흰색 45% 로 떨어져
+  // 화면이 하얗게 바랬다 — 가장 흔한 회상 표현이라 이름으로 받는다.
+  sepia: { red: 160, green: 115, blue: 60 },
 };
 
 // 이름으로 지원하는 화면 색인가. 에디터가 "이 값을 알아볼 수 있는가"를 런타임과

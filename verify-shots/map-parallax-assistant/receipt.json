@@ -1,0 +1,30 @@
+{
+  "frames": 227,
+  "frameMs": 64,
+  "walkY": 12,
+  "samples": [
+    {
+      "label": "start",
+      "x": 2,
+      "y": 12
+    },
+    {
+      "label": "walked",
+      "x": 30,
+      "y": 12
+    },
+    {
+      "label": "settled",
+      "x": 30,
+      "y": 12
+    }
+  ],
+  "flow": null,
+  "errors": [
+    "warning: [.WebGL-0x26840015ca00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "warning: [.WebGL-0x26840015ca00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "warning: [.WebGL-0x26840015ca00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "warning: [.WebGL-0x26840015ca00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+    "warning: [audio] 오디오 로드/디코딩 실패: cc0-bgm-rtp-vrt-005. 파일 형식과 경로를 확인하세요. 카탈로그 BGM은 npm run bgm:install 후 서버를 다시 시작하세요."
+  ]
+}

@@ -232,6 +232,17 @@ export interface PlaySceneContext extends Phaser.Scene {
   mapBackgroundPendingSignature?: string;
   /** 로드 경쟁 무효화 토큰 — 맵이나 그림이 바뀌면 증가한다. */
   mapBackgroundToken?: number;
+  /** 맵에 들어온 순간의 카메라 스크롤 — 배경 깊이(카메라 따라가기)의 기준점. `playSceneMapBackground`. */
+  mapBackgroundCameraAnchor?: { x: number; y: number };
+  /** 배경 흐름 배율 전환 상태(이벤트 명령 「먼 배경 변경」 의 흐름 %). `playSceneMapBackground`. */
+  mapBackgroundFlow?: {
+    key: string;
+    from: number;
+    target: number;
+    current: number;
+    elapsedMs: number;
+    durationMs: number;
+  };
   /** 체공 그림자 풀. 키는 `PLAYER_SHADOW_KEY` 또는 이벤트 id — 스프라이트 풀과 1:1. */
   characterShadows?: Map<string, import("@/player/characterShadow").ShadowImage>;
   /** 체공 스쿼시의 기준 배율 풀. 그림자 풀과 같은 키·같은 수명이다. */

@@ -3,8 +3,13 @@ import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
 import { validateProjectReferences } from "@/project/io/references";
 import {
+  MAP_BACKGROUND_CAMERA_FOLLOW_LIMIT,
   MAP_BACKGROUND_SCROLL_LIMIT,
+  decodeMapBackgroundFlow,
+  defaultLayerCameraFollow,
+  encodeMapBackgroundFlow,
   normalizeMapBackground,
+  normalizeMapBackgroundCameraFollow,
   normalizeMapBackgroundScroll,
 } from "@/project/mapBackground";
 
@@ -110,5 +115,38 @@ describe("맵 배경 참조 검증", () => {
   it("실재하는 배경 id 는 통과한다", () => {
     const project = deserialize(projectJsonWithBackground({ imageId: "easyrpg-backdrop-sky1" }));
     expect(() => validateProjectReferences(project)).not.toThrow();
+  });
+});
+
+describe("맵 배경 깊이(카메라 따라가기)와 흐름 배율", () => {
+  it("깊이는 0..상한으로 클램프하고, 0 은 기본값이라 생략한다", () => {
+    expect(normalizeMapBackgroundCameraFollow(0.4)).toBe(0.4);
+    expect(normalizeMapBackgroundCameraFollow(99)).toBe(MAP_BACKGROUND_CAMERA_FOLLOW_LIMIT);
+    expect(normalizeMapBackgroundCameraFollow(-1)).toBeUndefined();
+    expect(normalizeMapBackgroundCameraFollow(0)).toBeUndefined();
+    expect(normalizeMapBackgroundCameraFollow("0.5")).toBeUndefined();
+  });
+
+  it("층마다의 깊이가 저장·로드를 거쳐 그대로 남는다", () => {
+    const background = backgroundOf(projectJsonWithBackground({
+      imageId: "",
+      cameraFollow: 0.1,
+      layers: [{ imageId: "easyrpg-backdrop-sky1", cameraFollow: 0.6 }, { imageId: "easyrpg-backdrop-sky1" }],
+    }));
+    expect(background?.cameraFollow).toBe(0.1);
+    expect(background?.layers?.[0]?.cameraFollow).toBe(0.6);
+    expect(background?.layers?.[1]).not.toHaveProperty("cameraFollow");
+  });
+
+  it("레이어 세트 기본 깊이는 하늘 0 에서 맨 앞 0.7 까지 커진다", () => {
+    expect([0, 1, 2].map((index) => defaultLayerCameraFollow(index, 3))).toEqual([0, 0.35, 0.7]);
+    expect(defaultLayerCameraFollow(0, 1)).toBe(0);
+  });
+
+  it("흐름 배율 기록은 왕복하고, 깨진 값은 무시한다", () => {
+    expect(decodeMapBackgroundFlow(encodeMapBackgroundFlow(25, 1500))).toEqual({ percent: 25, durationMs: 1500 });
+    expect(decodeMapBackgroundFlow(encodeMapBackgroundFlow(9999, -5))).toEqual({ percent: 400, durationMs: 0 });
+    expect(decodeMapBackgroundFlow("abc|10")).toBeUndefined();
+    expect(decodeMapBackgroundFlow("")).toBeUndefined();
   });
 });

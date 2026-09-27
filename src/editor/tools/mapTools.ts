@@ -13,7 +13,7 @@ import { isPassable } from "@/project/collision";
 import { normalizeCloudShadowParams } from "@/player/cloudShadows";
 import { TILE } from "@/project/defaults/constants";
 import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
-import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
+import { DIRT_ROAD_TILE, isPanoramaWindowTile, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { autotileGroupsForTileset, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 import { autotileGroupLayer, autotileGroupLayerView, autotileLayerView, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { applyMapDeletion, planMapDeletion } from "@/project/mapDeletion";
@@ -41,9 +41,16 @@ import { kitIdForSmallHouseMaterial, type SmallHouseMaterial } from "@/editor/co
 import { recommendMapBgm } from "@/assets/bgmThemeRecommendation";
 import { genId } from "@/util/id";
 import { resolveWikiCombatMode } from "@/ai/projectWikiContext";
-import { MAP_BACKGROUND_SCROLL_LIMIT, normalizeMapBackground } from "@/project/mapBackground";
+import {
+  MAP_BACKGROUND_CAMERA_FOLLOW_LIMIT,
+  MAP_BACKGROUND_EXTRA_LAYER_LIMIT,
+  MAP_BACKGROUND_SCROLL_LIMIT,
+  mapBackgroundFromLayerSet,
+  normalizeMapBackground,
+} from "@/project/mapBackground";
+import { craftpixDefaultLayers, OGA_CRAFTPIX_BACKDROP_SETS } from "@/assets/ogaCraftpixBackgrounds";
 import { isActionCombatMap } from "@/project/actionCombat";
-import type { EncounterTableEntry, FieldSpawnDef, GameEvent, GameMap, PaletteSlotRole, Project, Rect, RoguelikeRoomDef, TilesetDef } from "@/project/types";
+import type { EncounterTableEntry, FieldSpawnDef, GameEvent, GameMap, MapBackground, PaletteSlotRole, Project, Rect, RoguelikeRoomDef, TilesetDef } from "@/project/types";
 import { mapLocations, resolveLocation } from "@/project/mapNamedLocations";
 import { applyMapShift } from "@/editor/mapShiftActions";
 import { visitProjectCommands } from "./commandTraversal";
@@ -1730,19 +1737,52 @@ const bgmSchema: JsonSchema = {
   additionalProperties: false,
 };
 
+const BACKGROUND_FIT_SCHEMA: JsonSchema = {
+  type: "string",
+  enum: ["native", "cover"],
+  description: "native=원본 1:1(게임 해상도용 파노라마), cover=화면을 덮게 축소·확대(1920×1080 레이어 아트는 반드시 cover).",
+};
+
 const backgroundSchema: JsonSchema = {
   type: "object",
+  description:
+    "맵 뒤 먼 배경(파노라마). 가장 쉬운 길은 layerSet 하나 — 층 순서·cover·층별 깊이(시차)가 자동으로 들어간다. "
+    + "배경은 **타일이 없는 칸으로만** 보인다: showInEmptyCells:true + clearForBackground 로 하늘 자리를 비우거나, "
+    + "합본 마을 칩셋이면 파노라마 창 타일(#233·#258)을 깐다. 회상·꿈·하늘 장면에서 구름을 멈추거나 느리게 하려면 "
+    + "script_cutscene 의 background 비트(flowPercent).",
   properties: {
-    imageId: { type: "string" },
+    layerSet: {
+      type: "string",
+      enum: OGA_CRAFTPIX_BACKDROP_SETS.map((set) => set.id),
+      description: `CraftPix 다층 배경 세트(주면 imageId·layers 를 대신 채운다). ${OGA_CRAFTPIX_BACKDROP_SETS.map((set) => `${set.id}: ${set.summary}`).join(" / ")}`,
+    },
+    cloudDrift: {
+      type: "number",
+      minimum: -MAP_BACKGROUND_SCROLL_LIMIT,
+      maximum: MAP_BACKGROUND_SCROLL_LIMIT,
+      description: "layerSet 전용: 구름·새 층만 이 속도(px/프레임)로 흐른다. 0.3~0.8 이 잔잔하다.",
+    },
+    imageId: { type: "string", description: "첫 장(맨 아래) 그림 — list_resources(kind:\"backdrop\") 의 id. layerSet 을 주면 생략." },
     // 상한은 편집기 입력·로드 정규화와 같은 값이어야 한다 — 툴로만 들어가는 값이 생기면
     // 저장한 뒤 다시 열 때 조용히 잘린다.
     scrollX: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
     scrollY: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
     loopX: { type: "boolean" },
     loopY: { type: "boolean" },
+    fit: BACKGROUND_FIT_SCHEMA,
+    cameraFollow: {
+      type: "number",
+      minimum: 0,
+      maximum: MAP_BACKGROUND_CAMERA_FOLLOW_LIMIT,
+      description: "카메라 따라가기(깊이). 0=화면 고정(기본), 1=타일과 함께. 층마다 다르게 주면 시차 스크롤(먼 산 0.1, 가까운 숲 0.6).",
+    },
+    showInEmptyCells: {
+      type: "boolean",
+      description: "true 면 빈 칸(타일 없음)에도 배경이 보인다. 기본은 파노라마 창 타일 칸에서만 — 창 타일이 없는 칩셋은 true 가 필요하다.",
+    },
     layers: {
       type: "array",
-      description: "\ucd94\uac00 \ubc30\uacbd \ub808\uc774\uc5b4(\ucd5c\ub300 3\uc7a5, \uc55e\uc774 \uc544\ub798). CraftPix \uacc4\uce35 \ubc30\uacbd\uc744 \u00ab\uc138\ud2b8 \uae30\ubcf8 \ub808\uc774\uc5b4\u00bb\ub85c \uac00\uc838 \uc62c\ub54c \uc4f0\ub294\ub2e4.",
+      description: `추가 배경 레이어(최대 ${MAP_BACKGROUND_EXTRA_LAYER_LIMIT}장, 앞이 아래 = 먼 것부터). layerSet 을 주면 생략.`,
       items: {
         type: "object",
         properties: {
@@ -1751,13 +1791,27 @@ const backgroundSchema: JsonSchema = {
           scrollY: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
           loopX: { type: "boolean" },
           loopY: { type: "boolean" },
+          fit: BACKGROUND_FIT_SCHEMA,
+          cameraFollow: { type: "number", minimum: 0, maximum: MAP_BACKGROUND_CAMERA_FOLLOW_LIMIT },
         },
         required: ["imageId"],
         additionalProperties: false,
       },
     },
   },
-  required: ["imageId"],
+  additionalProperties: false,
+};
+
+const clearForBackgroundSchema: JsonSchema = {
+  type: "object",
+  description: "이 사각형의 모든 타일 층을 비운다(하늘 자리 만들기). background.showInEmptyCells 를 같이 켜야 배경이 보인다.",
+  properties: {
+    x: { type: "integer", minimum: 0 },
+    y: { type: "integer", minimum: 0 },
+    width: { type: "integer", minimum: 1 },
+    height: { type: "integer", minimum: 1 },
+  },
+  required: ["x", "y", "width", "height"],
   additionalProperties: false,
 };
 
@@ -1788,6 +1842,67 @@ const cloudShadowSchema: JsonSchema = {
   additionalProperties: false,
 };
 
+/**
+ * `background` 인자 → 저작값. `layerSet` 이 있으면 세트를 펴고(`mapBackgroundFromLayerSet`), 같이 준
+ * 개별 값(scrollX·fit·showInEmptyCells 등)은 첫 장에 덮어쓴다. 없으면 예전처럼 그대로 정규화한다.
+ */
+function resolveBackgroundArgs(raw: Record<string, unknown>, mapId: string): MapBackground {
+  const { layerSet, cloudDrift, ...rest } = raw;
+  let candidate: Record<string, unknown> = rest;
+  if (layerSet !== undefined) {
+    const layers = typeof layerSet === "string" ? craftpixDefaultLayers(layerSet) : [];
+    if (layers.length === 0) {
+      throw new ToolError(
+        `없는 배경 세트: ${String(layerSet)} — ${OGA_CRAFTPIX_BACKDROP_SETS.map((set) => set.id).join(", ")} 중 하나.`,
+        { code: "invalid-args", mapId },
+      );
+    }
+    const expanded = mapBackgroundFromLayerSet(layers.map((entry) => entry.id), {
+      cloudDrift: typeof cloudDrift === "number" ? cloudDrift : undefined,
+    });
+    candidate = { ...expanded, ...rest, ...(rest.imageId === undefined ? { imageId: expanded!.imageId } : {}), layers: rest.layers ?? expanded!.layers };
+  }
+  if (typeof candidate.imageId !== "string") {
+    throw new ToolError("background 에는 layerSet 또는 imageId 가 필요합니다.", { code: "invalid-args", mapId });
+  }
+  const normalized = normalizeMapBackground(candidate);
+  if (!normalized) throw new ToolError("background 는 { layerSet } 또는 { imageId, scrollX?, layers? … } 여야 합니다.", { code: "invalid-args", mapId });
+  return normalized;
+}
+
+/** 사각형의 모든 타일 층을 비운다. 맵 밖은 잘라 낸다. 비운 칸 수를 돌려준다. */
+function clearTilesForBackground(map: GameMap, rect: { x: number; y: number; width: number; height: number }): number {
+  const x0 = Math.max(0, Math.floor(rect.x));
+  const y0 = Math.max(0, Math.floor(rect.y));
+  const x1 = Math.min(map.width, x0 + Math.max(0, Math.floor(rect.width)));
+  const y1 = Math.min(map.height, y0 + Math.max(0, Math.floor(rect.height)));
+  let cleared = 0;
+  for (let y = y0; y < y1; y += 1) {
+    for (let x = x0; x < x1; x += 1) {
+      const index = y * map.width + x;
+      map.lowerTiles[index] = TILE.EMPTY;
+      map.upperTiles[index] = TILE.EMPTY;
+      if (map.lowerOverlayTiles) map.lowerOverlayTiles[index] = TILE.EMPTY;
+      if (map.upperOverlayTiles) map.upperOverlayTiles[index] = TILE.EMPTY;
+      cleared += 1;
+    }
+  }
+  return cleared;
+}
+
+/** 플레이에서 배경이 실제로 비칠 칸 수 — 렌더러 `renderEmptyCellCover` 와 같은 판정. */
+function backgroundVisibleCells(map: GameMap): number {
+  const showEmpty = map.background?.showInEmptyCells === true;
+  let visible = 0;
+  for (let index = 0; index < map.lowerTiles.length; index += 1) {
+    const lower = map.lowerTiles[index] ?? TILE.EMPTY;
+    const upper = map.upperTiles[index] ?? TILE.EMPTY;
+    if (isPanoramaWindowTile(lower) || isPanoramaWindowTile(upper)) visible += 1;
+    else if (showEmpty && lower < 0) visible += 1;
+  }
+  return visible;
+}
+
 /** 반복 축 가장자리에서 양쪽 칸이 모두 통행 가능한 줄 수(넘어갈 수 있는 자리). */
 function loopEdgeOpenings(project: Project, map: GameMap): number {
   let open = 0;
@@ -1799,7 +1914,7 @@ function loopEdgeOpenings(project: Project, map: GameMap): number {
 // 맵 속성 설정. 크기 변경은 resize_map, 트리 위치는 manage_map_tree로 분리.
 const setMapProperties: ToolDefinition = {
   name: "set_map_properties",
-  description: "맵 편집기의 전체 속성을 설정한다: 이름·타일셋·인카운트·BGM·배경·전투 배경·저장/이동/도주 제한·미니맵·구름 그림자·기후(실내 차단/고정/상속)·반복 맵(loop: 가장자리가 반대편으로 이어짐 — 끝없는 숲·꿈 세계·반복 복도는 가장자리 이동 이벤트 대신 이것).",
+  description: "맵 편집기의 전체 속성을 설정한다: 이름·타일셋·인카운트·BGM·배경(먼 풍경 파노라마·parallax background — 회상·꿈·하늘 장면은 background.layerSet 한 칸 + showInEmptyCells + clearForBackground 로 하늘 자리 비우기, 층마다 깊이가 달라 시차 스크롤이 된다)·전투 배경·저장/이동/도주 제한·미니맵·구름 그림자·기후(실내 차단/고정/상속)·반복 맵(loop: 가장자리가 반대편으로 이어짐 — 끝없는 숲·꿈 세계·반복 복도는 가장자리 이동 이벤트 대신 이것).",
   mode: "write",
   parameters: {
     type: "object",
@@ -1813,6 +1928,7 @@ const setMapProperties: ToolDefinition = {
       clearBgm: { type: "boolean" },
       background: backgroundSchema,
       clearBackground: { type: "boolean" },
+      clearForBackground: clearForBackgroundSchema,
       battleBackground: { type: "string" },
       clearBattleBackground: { type: "boolean" },
       mapRole: {
@@ -1839,6 +1955,7 @@ const setMapProperties: ToolDefinition = {
     const map = requireMap(draft, args.mapId as string);
     const changed: string[] = [];
     const loopWarnings: string[] = [];
+    const backgroundWarnings: string[] = [];
     const saveWarnings: string[] = [];
     if (typeof args.name === "string" && args.name.trim()) {
       const nextName = args.name.trim();
@@ -1892,11 +2009,36 @@ const setMapProperties: ToolDefinition = {
       delete map.background;
       changed.push("배경=기본");
     } else if (args.background && typeof args.background === "object" && !Array.isArray(args.background)) {
-      const normalized = normalizeMapBackground(args.background);
-      if (!normalized) throw new ToolError("background는 { imageId, scrollX?, scrollY? } 여야 합니다.", { code: "invalid-args" });
-      map.background = normalized;
+      map.background = resolveBackgroundArgs(args.background as Record<string, unknown>, map.id);
       const layerCount = map.background.layers?.length ?? 0;
-      changed.push(`배경=${map.background.imageId}${layerCount > 0 ? ` + 레이어 ${layerCount}장` : ""}`);
+      const setId = (args.background as { layerSet?: unknown }).layerSet;
+      // 조수가 결과만 보고 시차가 걸렸는지 알 수 있게 층별 깊이·흐름·맞춤을 요약한다(2026-09-27 조수 시험: 「레이어 6장」 만으로는 확인 불가).
+      const stack = [map.background, ...(map.background.layers ?? [])];
+      const depths = stack.map((layer) => Math.round((layer.cameraFollow ?? 0) * 100));
+      const drifting = stack.filter((layer) => (layer.scrollX ?? 0) !== 0 || (layer.scrollY ?? 0) !== 0).length;
+      const covered = stack.filter((layer) => layer.fit === "cover").length;
+      changed.push(
+        `배경=${typeof setId === "string" ? `세트 ${setId}` : map.background.imageId}${layerCount > 0 ? ` + 레이어 ${layerCount}장` : ""}`
+        + ` (층별 깊이 ${depths.join("/")}%${drifting > 0 ? `, 흐르는 층 ${drifting}` : ""}${covered > 0 ? `, cover ${covered}/${stack.length}` : ""}`
+        + `${map.background.showInEmptyCells ? ", 빈 칸에도 보임" : ""})`,
+      );
+    }
+    if (args.clearForBackground && typeof args.clearForBackground === "object") {
+      const cleared = clearTilesForBackground(map, args.clearForBackground as { x: number; y: number; width: number; height: number });
+      changed.push(`하늘 자리 ${cleared}칸 비움`);
+    }
+    if (map.background && (args.background || args.clearForBackground)) {
+      const visible = backgroundVisibleCells(map);
+      if (visible === 0) {
+        backgroundWarnings.push(
+          map.background.showInEmptyCells
+            ? "배경이 보일 빈 칸이 0칸입니다 — clearForBackground 로 하늘 자리(예: 위쪽 몇 줄)를 비우세요."
+            : "배경이 보일 칸이 0칸입니다 — 기본 규칙은 파노라마 창 타일(#233·#258, 합본 마을 칩셋)을 깐 칸에서만 비칩니다. "
+              + "background.showInEmptyCells:true 를 켜고 clearForBackground 로 하늘 자리를 비우세요.",
+        );
+      } else {
+        changed.push(`배경이 보이는 칸 ${visible}`);
+      }
     }
     if (args.clearBattleBackground === true) {
       delete map.battleBackground;
@@ -1971,7 +2113,7 @@ const setMapProperties: ToolDefinition = {
       changed.push(`구름 그림자=${map.cloudShadows.enabled ? "켬" : "끔"}`);
     }
     if (changed.length === 0) throw new ToolError("바꿀 맵 속성이 없습니다.", { code: "invalid-args", mapId: map.id });
-    return { summary: `${map.name} 속성 변경 — ${changed.join(", ")}`, data: { mapId: map.id }, ...(loopWarnings.length || saveWarnings.length ? { warnings: [...loopWarnings, ...saveWarnings] } : {}) };
+    return { summary: `${map.name} 속성 변경 — ${changed.join(", ")}`, data: { mapId: map.id }, ...(loopWarnings.length || saveWarnings.length || backgroundWarnings.length ? { warnings: [...backgroundWarnings, ...loopWarnings, ...saveWarnings] } : {}) };
   },
 };
 

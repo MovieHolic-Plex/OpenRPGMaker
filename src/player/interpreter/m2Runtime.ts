@@ -1,6 +1,7 @@
 import { formatActorGraphicOverride, parseActorGraphicOverride } from "@/project/actorGraphicOverride";
 import type { M2CommandCatalogEntry } from "@/project/eventCommands/m2Catalog";
 import { tintDurationMs } from "@/project/eventCommands/tintDuration";
+import { encodeMapBackgroundFlow } from "@/project/mapBackground";
 import { showPictureState } from "@/project/session";
 import { ACTOR_PARAMETER_KEYS } from "@/project/actorModel";
 import { changeActorClass } from "@/project/sessionClass";
@@ -180,12 +181,21 @@ function executeByTitle(
   if (title === "Change Parallax Back") {
     // 이 명령은 **그때 서 있던 맵**의 먼 배경을 바꾼다(RM2K3). 어느 맵인지 적어 두지 않으면
     // 다른 맵으로 걸어간 뒤에도 이전 맵의 하늘이 따라온다 — 세션이 현재 맵을 알고 있다.
-    runtime.map["parallax_override"] = {
-      mapId: session.currentMapId ?? "",
-      x: 0,
-      y: 0,
-      value: commandResourceId(fields),
-    };
+    const mapId = session.currentMapId ?? "";
+    const resourceId = commandResourceId(fields);
+    // 흐름 배율(회상 연출): 필드가 있는 명령만 속도를 건드린다 — 예전 명령은 그림만 바꾼다.
+    // 흐름을 적은 명령에서 그림을 비워 두면 «지금 그림 유지» 다(속도만 바꾸는 명령).
+    const hasFlow = fields.flowPercent !== undefined && fields.flowPercent !== "";
+    if (hasFlow) {
+      runtime.map["parallax_flow"] = {
+        mapId,
+        x: 0,
+        y: 0,
+        value: encodeMapBackgroundFlow(fieldNumber(fields, "flowPercent", 100), (fields.flowDurationMs === undefined ? 0 : fieldNumber(fields, "flowDurationMs", 0))),
+      };
+    }
+    if (hasFlow && resourceId === "") return;
+    runtime.map["parallax_override"] = { mapId, x: 0, y: 0, value: resourceId };
     return;
   }
   if (title === "Set Encounter Rate") {

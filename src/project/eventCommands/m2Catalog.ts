@@ -550,7 +550,12 @@ function page3FieldsFor(title: string): readonly M2CommandFieldSpec[] | undefine
     case "Change Tileset":
       return [{ key: "value", label: "타일셋 ID", type: "text", defaultValue: "" }];
     case "Change Parallax Back":
-      return [{ key: "resourceId", label: "파노라마 리소스", type: "text", defaultValue: "" }];
+      // 흐름 배율·전환은 회상 연출용(2026-09-27) — 100 = 저작 속도, 0 = 멈춤. 런타임 규칙은 m2Runtime.
+      return [
+        { key: "resourceId", label: "파노라마 리소스", type: "text", defaultValue: "" },
+        { key: "flowPercent", label: "흐름 배율(%)", type: "number", defaultValue: 100 },
+        { key: "flowDurationMs", label: "전환 시간(ms)", type: "number", defaultValue: 0 },
+      ];
     case "Set Encounter Rate":
       return [{ key: "value", label: "인카운트율", type: "number", defaultValue: 25 }];
     case "Change Tile":

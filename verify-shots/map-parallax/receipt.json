@@ -1,0 +1,29 @@
+{
+  "frames": 227,
+  "frameMs": 64,
+  "walkY": 29,
+  "samples": [
+    {
+      "label": "start",
+      "x": 3,
+      "y": 29
+    },
+    {
+      "label": "walked",
+      "x": 59,
+      "y": 29
+    },
+    {
+      "label": "settled",
+      "x": 59,
+      "y": 29
+    }
+  ],
+  "flow": null,
+  "errors": [
+    "warning: [.WebGL-0x206405ca4800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "warning: [.WebGL-0x206405ca4800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "warning: [.WebGL-0x206405ca4800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+    "warning: [.WebGL-0x206405ca4800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+  ]
+}

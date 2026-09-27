@@ -11,7 +11,14 @@ import { appendGroupedTilesetOptions } from "@/editor/tilesetSelectOptions";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { audioPlayback } from "@/editor/panels/audioResourcePresentation";
 import { AudioPreviewSession } from "@/editor/panels/audioPreviewSession";
-import { MAP_BACKGROUND_SCROLL_LIMIT, MAP_BACKGROUND_EXTRA_LAYER_LIMIT, normalizeMapBackgroundScroll } from "@/project/mapBackground";
+import {
+  MAP_BACKGROUND_CAMERA_FOLLOW_LIMIT,
+  MAP_BACKGROUND_EXTRA_LAYER_LIMIT,
+  MAP_BACKGROUND_SCROLL_LIMIT,
+  mapBackgroundFromLayerSet,
+  normalizeMapBackgroundCameraFollow,
+  normalizeMapBackgroundScroll,
+} from "@/project/mapBackground";
 import { OGA_CRAFTPIX_BACKDROP_SETS, craftpixDefaultLayers } from "@/assets/ogaCraftpixBackgrounds";
 import { openDatabaseResourcePickerDialog, listDatabaseResourceOptions, type DatabaseResourcePickerKind } from "@/editor/panels/databaseResourcePickerDialog";
 import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
@@ -29,7 +36,7 @@ import {
   CLOUD_SHADOW_AMOUNT_RANGE,
   normalizeCloudShadowParams,
 } from "@/player/cloudShadows";
-import type { EncounterTableEntry, FieldSpawnDef, MapBgmSetting } from "@/project/types";
+import type { EncounterTableEntry, FieldSpawnDef, MapBackgroundLayer, MapBgmSetting } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { showConfirm } from "@/editor/ui/modal";
 import { toast } from "@/util/toast";
@@ -468,12 +475,9 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
     const applyLayerSet = (setId: string): void => {
       const defaults = craftpixDefaultLayers(setId);
       if (defaults.length === 0) return;
-      const current = store.getCurrent().maps[map.id]!.background!;
-      const next = {
-        ...current,
-        imageId: defaults[0]!.id,
-        layers: defaults.slice(1).map((entry) => ({ imageId: entry.id })),
-      };
+      // 층 순서·cover·기본 깊이(하늘 0 → 맨 앞 0.7)는 조수 도구와 같은 규칙(`mapBackgroundFromLayerSet`).
+      const next = mapBackgroundFromLayerSet(defaults.map((entry) => entry.id));
+      if (!next) return;
       setMapBackground(map.id, next);
       rerender(host, "map-bg-layer-set");
     };
@@ -528,15 +532,71 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
     syInput.addEventListener("change", () => updateScroll("scrollY", syInput));
     section.append(fieldRow("스크롤 속도", scrollLine));
 
-    // 추가 레이어 목록 표시 — 세트 선택이 교체의 정규 경로다.
+    // 깊이(카메라 따라가기) — 층마다 다르게 주면 시차 스크롤. 입력은 %, 저장은 0..2 비율.
+    const followInput = (value: number | undefined, label: string, testid: string, onCommit: (next: number | undefined) => void): HTMLInputElement => {
+      const input = el("input", {
+        attrs: { type: "number", min: "0", max: String(MAP_BACKGROUND_CAMERA_FOLLOW_LIMIT * 100), step: "5", "aria-label": label },
+        value: String(Math.round((value ?? 0) * 100)),
+        dataset: { testid },
+      }) as HTMLInputElement;
+      input.addEventListener("change", () => {
+        const next = normalizeMapBackgroundCameraFollow(Number(input.value) / 100);
+        input.value = String(Math.round((next ?? 0) * 100));
+        onCommit(next);
+      });
+      return input;
+    };
+    const baseFollowLine = el("div", { class: "map-props-size-row" });
+    baseFollowLine.append(
+      followInput(bg.cameraFollow, "첫 장 깊이(%)", "map-bg-camera-follow", (next) => {
+        const current = { ...store.getCurrent().maps[map.id]!.background! };
+        if (next === undefined) delete current.cameraFollow;
+        else current.cameraFollow = next;
+        setMapBackground(map.id, current);
+      }),
+      el("span", { text: "% (0 = 화면 고정, 100 = 타일과 함께)" }),
+    );
+    section.append(fieldRow("깊이", baseFollowLine));
+
+    // 추가 레이어 목록 — 세트 선택이 교체의 정규 경로이고, 층마다 흐름·깊이를 여기서 고친다.
     const extraLayers = bg.layers ?? [];
     if (extraLayers.length > 0) {
       const layerList = el("div", { class: "map-bg-layer-list", dataset: { testid: "map-bg-layer-list" } });
+      const updateLayer = (index: number, patch: (layer: MapBackgroundLayer) => MapBackgroundLayer): void => {
+        const current = store.getCurrent().maps[map.id]!.background!;
+        const layers = (current.layers ?? []).map((layer, at) => (at === index ? patch({ ...layer }) : layer));
+        setMapBackground(map.id, { ...current, layers });
+      };
       for (const [index, layer] of extraLayers.entries()) {
-        layerList.append(el("div", {
-          class: "map-bg-layer-row",
-          text: "레이어 " + (index + 2) + ": " + layer.imageId,
-        }));
+        const row = el("div", { class: "map-bg-layer-row", dataset: { testid: `map-bg-layer-row-${index}` } });
+        const flowInput = el("input", {
+          attrs: { type: "number", min: String(-MAP_BACKGROUND_SCROLL_LIMIT), max: String(MAP_BACKGROUND_SCROLL_LIMIT), step: "0.1", "aria-label": `레이어 ${index + 2} 가로 흐름` },
+          value: String(layer.scrollX ?? 0),
+          dataset: { testid: `map-bg-layer-scroll-x-${index}` },
+        }) as HTMLInputElement;
+        flowInput.addEventListener("change", () => {
+          const next = normalizeMapBackgroundScroll(Number(flowInput.value));
+          flowInput.value = String(next ?? 0);
+          updateLayer(index, (entry) => {
+            if (next === undefined || next === 0) delete entry.scrollX;
+            else entry.scrollX = next;
+            return entry;
+          });
+        });
+        row.append(
+          el("span", { class: "map-bg-layer-name", text: `${index + 2}. ${layer.imageId}`, attrs: { title: layer.imageId } }),
+          el("span", { text: "흐름" }),
+          flowInput,
+          el("span", { text: "깊이%" }),
+          followInput(layer.cameraFollow, `레이어 ${index + 2} 깊이(%)`, `map-bg-layer-camera-follow-${index}`, (next) => {
+            updateLayer(index, (entry) => {
+              if (next === undefined) delete entry.cameraFollow;
+              else entry.cameraFollow = next;
+              return entry;
+            });
+          }),
+        );
+        layerList.append(row);
       }
       const removeBtn = el("button", {
         class: "btn", text: "레이어 지우기", attrs: { type: "button" },
@@ -573,6 +633,22 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
     };
     loopRow.append(loopBox("loopX", "가로 반복"), loopBox("loopY", "세로 반복"));
     section.append(loopRow);
+
+    // 빈 칸에도 배경 — 기본은 RM2K 규칙(창 타일에서만 비침). 창 타일이 없는 칩셋은 이것을 켜야 보인다.
+    const emptyBox = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "map-bg-show-in-empty" } }) as HTMLInputElement;
+    emptyBox.checked = bg.showInEmptyCells === true;
+    emptyBox.addEventListener("change", () => {
+      const next = { ...store.getCurrent().maps[map.id]!.background! };
+      if (emptyBox.checked) next.showInEmptyCells = true;
+      else delete next.showInEmptyCells;
+      setMapBackground(map.id, next);
+    });
+    const emptyRow = el("label", {
+      class: "map-props-check-row",
+      attrs: { title: "끄면 파노라마 창 타일(합본 마을 #233·#258)을 깐 칸에서만 배경이 보이고 빈 칸은 검게 가려집니다." },
+    });
+    emptyRow.append(emptyBox, el("span", { text: "빈 칸에도 배경 보이기" }));
+    section.append(emptyRow);
   }
 
   host.append(section);
@@ -618,7 +694,7 @@ function openLayerSetPicker(input: {
   }
 
   openDialog("map-bg-layer-set-dialog", "레이어 세트 선택", [
-    el("p", { class: "map-bg-layer-set-hint", text: "세트를 고르면 첫 장이 배경 그림이 되고 나머지 레이어가 위에 얻힍니다. 각 레이어는 맵 속성에서 스크롤 속도를 조절할 수 있습니다." }),
+    el("p", { class: "map-bg-layer-set-hint", text: "세트를 고르면 첫 장이 배경 그림이 되고 나머지 레이어가 위에 얹힙니다. 먼 층일수록 카메라를 덜 따라가도록 깊이가 자동으로 들어가며, 층마다 흐름·깊이는 맵 속성에서 고칠 수 있습니다." }),
     grid,
   ], [
     { label: "취소", testid: "map-bg-layer-set-dialog-cancel" },
