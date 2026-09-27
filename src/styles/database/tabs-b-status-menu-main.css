@@ -382,11 +382,13 @@
    (2026-09-17 이전 주석은 "이 파일은 unlayered 라 레이어드 규칙을 전부 이긴다"고
    설명했지만 이 파일은 layer(runtime) 으로 들어온다. 결론은 맞고 이유가 틀렸다 —
    그 틀린 이유를 믿고 pictures.css 의 @layer 래퍼를 지우면 버그가 돌아온다.) */
+/* 화면 효과(색조·플래시·페이드)는 그림 위·UI 아래 — 대사창(39)을 물들이지 않는다.
+   인라인 값(playSceneScreenEffects.ts SCREEN_EFFECT_Z_INDEX)과 같게 둔다. */
 .runtime-screen-effect {
   inset: 0;
   pointer-events: none;
   position: absolute;
-  z-index: 30;
+  z-index: 27;
 }
 .runtime-audio-state-json {
   bottom: 26px;

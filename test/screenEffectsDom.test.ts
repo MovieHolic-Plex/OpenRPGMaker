@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { syncScreenEffects } from "@/player/playSceneScreenEffects";
+import { readFileSync } from "node:fs";
+import { SCREEN_EFFECT_Z_INDEX, syncScreenEffects } from "@/player/playSceneScreenEffects";
 import { FakeElement, installFakeDom, findByTestId } from "./fakeDom";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
@@ -88,6 +89,27 @@ describe("syncScreenEffects — DOM 오버레이", () => {
     expect(layer).not.toBeNull();
     expect(layer!.style.background).toContain("255,0,0");
     expect(layer!.dataset.mode).toBe("screen-tint");
+  });
+
+  it("색조는 대사창 아래에 깔린다 — 회상 세피아가 대사까지 물들이면 안 된다", () => {
+    const session = mkSession();
+    session.m2Runtime!.screen.tint = "sepia";
+    const scene = mkScene(session);
+
+    syncScreenEffects(scene);
+
+    const layer = findByTestId(hostOf(scene), "runtime-screen-effect")!;
+    const zOf = (file: string, selector: string): number => {
+      const css = readFileSync(file, "utf8");
+      const block = css.slice(css.indexOf(`${selector} {`));
+      return Number(/z-index:\s*(\d+)/.exec(block.slice(0, block.indexOf("}")))?.[1]);
+    };
+    const dialogueZ = zOf("src/styles/dialogue.css", ".dialogue-overlay");
+    const pictureZ = zOf("src/styles/database/tabs-b-status-menu-main.css", ".picture-layer");
+    expect(Number(layer.style.zIndex)).toBe(SCREEN_EFFECT_Z_INDEX);
+    expect(zOf("src/styles/database/tabs-b-status-menu-main.css", ".runtime-screen-effect")).toBe(SCREEN_EFFECT_Z_INDEX);
+    expect(SCREEN_EFFECT_Z_INDEX).toBeLessThan(dialogueZ);
+    expect(SCREEN_EFFECT_Z_INDEX).toBeGreaterThan(pictureZ);
   });
 
   it("hidden 이 true 면 검정 오버레이로 덮는다", () => {

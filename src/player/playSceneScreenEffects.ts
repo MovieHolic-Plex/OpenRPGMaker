@@ -168,6 +168,9 @@ function renderColor(host: HTMLElement, color: Rgba, mode: string): void {
   upsertScreenLayer(host, rgbaToCss(color), mode);
 }
 
+/** 화면 효과 층의 z-index — `.runtime-screen-effect`(tabs-b-status-menu-main.css)와 같은 값. */
+export const SCREEN_EFFECT_Z_INDEX = 27;
+
 function upsertScreenLayer(host: HTMLElement, background: string, mode: string): void {
   let layer = host.querySelector<HTMLElement>("[data-testid='runtime-screen-effect']");
   if (!layer) {
@@ -179,7 +182,10 @@ function upsertScreenLayer(host: HTMLElement, background: string, mode: string):
   }
   layer.style.position = "absolute";
   layer.style.inset = "0";
-  layer.style.zIndex = "40";
+  // 화면 효과(색조·플래시·페이드·숨기기)는 **그림 위, UI 아래**다(RM 규칙 — 색조는 메시지 창을 물들이지 않는다).
+  // 밴드는 dialogue.css 머리 주석: 픽처 26 < 화면 효과 27 < 타이머 29 < 미니맵·HUD 30 < 대사창 39.
+  // 예전 인라인 40 은 CSS(30)를 덮어 대사창 위로 올라가, 회상 세피아가 대사까지 뿌옇게 했다(2026-09-27).
+  layer.style.zIndex = String(SCREEN_EFFECT_Z_INDEX);
   layer.style.pointerEvents = "none";
   layer.style.background = background;
   layer.dataset.mode = mode;
