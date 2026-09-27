@@ -655,9 +655,28 @@ export interface TroopRecord {
   /** Distinguishes trainer battles from wild encounters without guessing from troop ids. */
   trainerBattle?: boolean;
   previewBackgroundResourceId?: string;
+  /** 전투 배경 움직임(스크롤·물결·색 순환). 생략 = 정지 배경(기존). project/battleBackdropAnimation.ts 가 정규화한다. */
+  backdropAnimation?: BattleBackdropAnimation;
   battleFlow?: BattleFlow;
   activeSlots?: number;
   battleEventPages: BattleEventPageRecord[];
+}
+
+/**
+ * 마더2식 움직이는 전투 배경. 모든 값은 선택이며 0/생략이면 그 효과가 꺼진다.
+ * prefers-reduced-motion 이면 런타임이 전부 멈추고 정지 배경을 보인다.
+ */
+export interface BattleBackdropAnimation {
+  /** 가로 스크롤 속도(px/초, -400~400). 양수 = 오른쪽. */
+  scrollX?: number;
+  /** 세로 스크롤 속도(px/초, -400~400). 양수 = 아래. */
+  scrollY?: number;
+  /** 물결 왜곡 진폭(px, 0~24). */
+  waveAmplitude?: number;
+  /** 물결 주파수(초당 흔들림 횟수, 0~8). 진폭이 있고 주파수가 0 이면 1 로 본다. */
+  waveFrequency?: number;
+  /** 색 순환 주기(초, 0~60). 0 = 끔. 주기마다 색상이 한 바퀴(hue-rotate 360°) 돈다. */
+  paletteCycleSeconds?: number;
 }
 
 export interface StateRecord {

@@ -39,7 +39,8 @@ import {
 } from "@/editor/panels/databaseWorkspace";
 import { openTroopBattleTestModal } from "@/editor/panels/testPlayModal";
 import { store } from "@/project/store";
-import type { EnemyRecord, TroopMemberRecord, TroopRecord } from "@/project/types";
+import type { BattleBackdropAnimation, EnemyRecord, TroopMemberRecord, TroopRecord } from "@/project/types";
+import { BATTLE_BACKDROP_ANIMATION_LIMITS, type BattleBackdropAnimationKey } from "@/project/battleBackdropAnimation";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { classicEnemyFormation } from "@/battle/battleBattlers";
@@ -309,6 +310,7 @@ function configurationPanel(record: TroopRecord, rerender: () => void): HTMLElem
         ],
       }),
       backdropField(record, rerender),
+      modeGated(backdropAnimationField(record, rerender), "advanced"),
       modeGated(el("div", {
         class: "db-troop-check-row",
         children: [trainerBattleField(record, rerender), uncapturableField(record, rerender)],
@@ -845,6 +847,47 @@ function enemyList(record: TroopRecord, selectedIndex: number, selectedEnemyId: 
 // ---------------------------------------------------------------------------
 // 설정 필드
 // ---------------------------------------------------------------------------
+
+/** 움직이는 전투 배경(마더식) — 스크롤·물결·색 순환. 0 이면 그 효과가 꺼진다. */
+function backdropAnimationField(record: TroopRecord, rerender: () => void): HTMLElement {
+  const current = (): BattleBackdropAnimation =>
+    store.getCurrent().database.troops.find((troop) => troop.id === record.id)?.backdropAnimation ?? {};
+  const row = (
+    key: BattleBackdropAnimationKey,
+    label: string,
+    step: number,
+  ): HTMLElement => {
+    const { min, max } = BATTLE_BACKDROP_ANIMATION_LIMITS[key];
+    return numberField(label, `db-field-troop-backdrop-${key}`, current()[key] ?? 0, (value) => {
+      // 정규화(normalizeTroopRecord)가 0 과 범위 밖 값을 걸러 키를 지운다.
+      updateDatabaseRecord("troops", record.id, { backdropAnimation: { ...current(), [key]: value } });
+      rerender();
+    }, { min, max, step });
+  };
+  const hasMotion = Object.keys(current()).length > 0;
+  return el("div", {
+    class: "db-troop-backdrop-motion",
+    dataset: { testid: "db-troop-backdrop-motion" },
+    attrs: { title: "움직임 줄이기를 켠 플레이어에게는 정지 배경으로 보입니다." },
+    children: [
+      el("span", { class: "db-troop-field-label", text: "배경 움직임" }),
+      el("div", {
+        class: "db-troop-config-grid",
+        children: [
+          row("scrollX", "가로 스크롤 (px/초)", 5),
+          row("scrollY", "세로 스크롤 (px/초)", 5),
+          row("waveAmplitude", "물결 세기 (px)", 1),
+          row("waveFrequency", "물결 빠르기 (회/초)", 0.5),
+          row("paletteCycleSeconds", "색 순환 주기 (초, 0=끔)", 1),
+        ],
+      }),
+      el("small", {
+        class: "db-ws-usage",
+        text: hasMotion ? "전투 배경이 움직입니다. 움직임 줄이기 설정에서는 멈춥니다." : "모두 0이면 정지 배경입니다.",
+      }),
+    ],
+  });
+}
 
 function activeSlotsField(record: TroopRecord, rerender: () => void): HTMLElement {
   const field = numberField("아군 인원 (0=기본)", "db-field-troop-active-slots", record.activeSlots ?? 0, (activeSlots) => {

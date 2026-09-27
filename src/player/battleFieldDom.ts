@@ -36,6 +36,7 @@ import { onFieldEnemyPoint, onFieldPartyPoint, onFieldPointToAuthored, type OnFi
 import { defaultActorFaceResourceId } from "@/project/actorFaceDefaults";
 import { store } from "@/project/store";
 import { scheduleBattleTimer } from "@/player/battleTimerScope";
+import { applyBattleBackdropMotion, clearBattleBackdropMotion } from "@/player/battleBackdropMotion";
 import type { RollingHpMeter } from "@/player/rollingHp";
 
 /** 같은 이름이 둘 이상이면 1-base 순번을 붙여 구분한다("초원 슬라임 1/2").
@@ -169,13 +170,20 @@ export function battleField(snapshot: BattleSnapshot): HTMLElement {
   const field = document.createElement("div");
   field.className = "battle-field";
   field.dataset.testid = "battle-field";
+  const backdrop = battleBackdrop(snapshot.backdropResourceId);
   field.append(
-    battleBackdrop(snapshot.backdropResourceId),
+    backdrop,
     battleTitle(snapshot.troopId),
     enemyGroup(snapshot.enemies, snapshot),
     actorSpriteGroup(snapshot.actors)
   );
+  applyBattleBackdropMotion(backdrop, troopBackdropAnimation(snapshot.troopId));
   return field;
+}
+
+/** 트룹이 저작한 배경 움직임(스크롤·물결·색 순환). 없으면 정지 배경. */
+function troopBackdropAnimation(troopId: string) {
+  return store.getCurrent().database.troops.find((troop) => troop.id === troopId)?.backdropAnimation;
 }
 
 export interface BattleFieldPresentation {
@@ -360,6 +368,8 @@ export function applyFieldBackdrop(field: HTMLElement, url: string, baseResource
   if (!backdrop) return;
   backdrop.dataset.backdropSource = "field";
   backdrop.dataset.fieldBaseResourceId = baseResourceId ?? "";
+  // 필드 스냅샷은 지금 보이던 화면 그대로다 — 트룹 배경 움직임을 얹지 않는다.
+  clearBattleBackdropMotion(backdrop);
   delete backdrop.dataset.backdropFallback;
   backdrop.style.backgroundImage = `url("${url}")`;
   backdrop.style.backgroundSize = "cover";

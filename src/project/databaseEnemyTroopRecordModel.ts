@@ -1,5 +1,6 @@
 import { DEFAULT_ELEMENT_RATE_LABELS } from "@/project/actorModel";
 import { normalizeEnemyActionProfile } from "@/project/actionCombat";
+import { normalizeBattleBackdropAnimation } from "@/project/battleBackdropAnimation";
 import type {
   EnemyActionCondition,
   EnemyActionPattern,
@@ -96,6 +97,11 @@ export function normalizeTroopRecord(record: Partial<TroopRecord> & Pick<TroopRe
     uncapturable: record.uncapturable === true,
     ...(record.trainerBattle === true ? { trainerBattle: true } : {}),
     previewBackgroundResourceId: normalizeBattleFieldBackgroundId(record.previewBackgroundResourceId),
+    // 움직이는 전투 배경. 효과가 하나도 없으면 키를 만들지 않는다(옛 JSON 바이트 유지).
+    ...(() => {
+      const backdropAnimation = normalizeBattleBackdropAnimation(record.backdropAnimation);
+      return backdropAnimation ? { backdropAnimation } : {};
+    })(),
     battleFlow: normalizeBattleFlow(record.battleFlow),
     activeSlots: normalizeOptionalPositiveInteger(record.activeSlots),
     battleEventPages: uniqueBattleEventPages(record.battleEventPages ?? []),
