@@ -77,6 +77,9 @@ export function forestTreeKindFromResolvedMaterial(input: {
   const id = input.groupId ?? "";
   if (id.includes("broadleaf-tree")) return "활엽수";
   if (id.includes("conifer-tree") || id.includes("dry-tree")) return "침엽수";
+  // 숲 나무 확장 띠(forest-trees:*)의 물체도 숲 재료다 — 「숲 나무 · 숲 벽」에 density 를 주면 숲을 원한 것이므로
+  // 굽이숲 수관으로 보낸다(2026-09-27: density 를 거절당한 모델이 밑동뿐인 숲 벽을 낱개로 뿌렸다).
+  if (id.startsWith("forest-trees:") && !id.includes("bush")) return "활엽수";
   const name = input.groupName ?? "";
   if (name === "활엽수") return "활엽수";
   if (name === "침엽수" || name === "마른나무") return "침엽수";

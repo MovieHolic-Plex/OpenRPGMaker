@@ -1,6 +1,7 @@
 import { isPassable, tileAt, tilePassability } from "@/project/collision";
 import { roleCapabilities } from "@/project/tileRoles";
 import { TILE } from "@/project/defaults/constants";
+import { TRUNK_ONLY_FOREST_GROUPS, TRUNK_ONLY_FOREST_GUIDANCE } from "@/project/defaults/forestTrunkOnlyParts";
 import {
   resolveMaterialByLabel,
   suggestMaterialsByLabel,
@@ -97,6 +98,17 @@ function placePropsOnDraftOnce(draft: Project, input: PlacePropsInput): ToolExec
       `「${input.material}」은(는) ${NON_PROP_ROLE_LABELS[propRole] ?? propRole} 재료라 소품으로 산포할 수 없습니다. `
         + "바닥·지형 면은 fill_region(오토타일 재료) 또는 paint_tiles, 벽은 build_wall 을 쓰세요.",
       { code: "material-not-prop", mapId: map.id },
+    );
+  }
+  // 숲 벽·숲 기둥은 잎 없는 줄기 덩어리다(첫 줄도 줄기 윗단). 위에 숲 천장을 덮어야 숲으로 보이는 부품이라
+  // 낱개 산포는 풀밭 위 줄기 띠가 된다(2026-09-27 「숲속 오두막」: 수관 없이 밑동 줄만 남았다).
+  const trunkOnlyForestPart = access.kind === "group"
+    ? TRUNK_ONLY_FOREST_GROUPS.has(access.group.id)
+    : tileset.tileGroups?.some((group) => TRUNK_ONLY_FOREST_GROUPS.has(group.id) && group.tileIds.includes(access.tileId)) === true;
+  if (trunkOnlyForestPart) {
+    throw new ToolError(
+      `「${input.material}」은(는) ${TRUNK_ONLY_FOREST_GUIDANCE}`,
+      { code: "material-trunk-only", mapId: map.id },
     );
   }
   if (access.kind === "group" && access.group.patternGrammar) {

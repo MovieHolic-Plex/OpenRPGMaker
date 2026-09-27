@@ -158,7 +158,8 @@ describe("dungeon-room-v1 pipeline", () => {
     const project = createBlankProject();
     // r0735 녹화 그대로: create_map 뒤 single-room + landmark.
     const tool = getTool("run_dungeon_room_pipeline")!;
-    for (const [landmark, center] of [["altar", 145], ["beacon", 263]] as const) {
+    // 제단은 여신상(145)이 아니라 촛불 마법진 3×3 의 가운데 윗칸(442)이다(2026-09-27 그림 대조).
+    for (const [landmark, center] of [["altar", 442], ["beacon", 263]] as const) {
       const mapId = `map_top_${landmark}`;
       const res = tool.run(project, { mapId, name: "침묵의 등대 꼭대기", width: 20, height: 16, theme: "stone", layout: "single-room", hazard: false, landmark });
       expect(res.summary).toContain(mapId);
@@ -173,6 +174,12 @@ describe("dungeon-room-v1 pipeline", () => {
       if (landmark === "beacon") {
         expect(upper[at + map.width]).toBe(293);
         expect([upper[at - 2], upper[at + 2]]).toEqual([446, 446]);
+      }
+      if (landmark === "altar") {
+        expect([upper[at - 1], upper[at + 1]]).toEqual([441, 443]);
+        expect(upper[at + map.width]).toBe(472);
+        expect(upper[at + map.width * 2]).toBe(28);
+        expect(upper).not.toContain(145);
       }
       expect(evaluateDungeonRoom(map, { mapId, name: "t", width: 20, height: 16, theme: "stone", layout: "single-room", hazard: false } as DungeonRoomPlan).ok).toBe(true);
     }

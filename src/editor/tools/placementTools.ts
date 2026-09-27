@@ -598,6 +598,11 @@ function sourceRectFootprint(group: TileGroupMetadata, tileset: TilesetDef): Foo
   const layered = treeLayeredFootprint(group, tileset);
   if (layered) return layered;
   if (group.patternGrammar?.kind !== "source_rect") return null;
+  // 저작된 배치가 있으면 그대로 찍는다. 번들 숲 나무(forest-trees:*)의 sourceRect 는 **픽셀** 단위라
+  // (160×96 = 10×6칸) 아래 칸 단위 분기가 null 을 내고, 표본 빌더가 타일 앞 6개를 가로 한 줄로 늘어놓았다.
+  // 그래서 큰 참나무·활엽수가 수관 조각 한 줄로, 숲 벽이 밑동 한 줄로 깔렸다(2026-09-27 「숲속 오두막」).
+  const preview = previewMapFootprint(group);
+  if (preview) return preview;
   const rect = group.sourceRect;
   if (rect && rect.width > 0 && rect.height > 0) {
     const w = rect.width;
@@ -646,6 +651,24 @@ function sourceRectFootprint(group: TileGroupMetadata, tileset: TilesetDef): Foo
     }
   }
   return { h: 2, lower, upper, w: 2 };
+}
+
+/**
+ * previewMap(칸 단위 하위·상위 배열)을 발자국으로 쓴다. 칸 수가 tileIds 와 일치하는 배치만 믿는다 —
+ * 미리보기가 받침(잔디)만 더 깐 것은 괜찮고, 물체 타일이 빠졌거나 모자라면 기존 경로로 둔다.
+ * 하위의 받침 칸(물체 타일이 아닌 lower)은 비워 둔다: 산포는 기존 지면 위에 수관만 얹어야 한다.
+ */
+function previewMapFootprint(group: TileGroupMetadata): Footprint | null {
+  const preview = group.previewMap;
+  if (!preview || preview.width < 1 || preview.height < 1) return null;
+  const size = preview.width * preview.height;
+  if (preview.lowerTiles.length !== size || preview.upperTiles.length !== size) return null;
+  const members = new Set(group.tileIds);
+  const lower = preview.lowerTiles.map((tile) => (members.has(tile) ? tile : TILE.EMPTY));
+  const upper = preview.upperTiles.map((tile) => (members.has(tile) ? tile : TILE.EMPTY));
+  const placed = new Set([...lower, ...upper].filter((tile) => tile !== TILE.EMPTY));
+  if (placed.size === 0 || group.tileIds.some((tile) => !placed.has(tile))) return null;
+  return { w: preview.width, h: preview.height, lower, upper };
 }
 
 function waterAtlasFootprint(group: TileGroupMetadata, tileset: TilesetDef): Footprint | null {
@@ -759,8 +782,11 @@ function treeLayeredFootprint(group: TileGroupMetadata, _tileset: TilesetDef): F
     };
   }
 
+  // 아래 세 모양은 합본 마을 칸 번호가 박혀 있다. 그룹 칸이 정확히 그 번호일 때만 쓴다 —
+  // id 에 「table-horizontal」만 들어 있으면 다른 칩셋·사용자 그룹도 234~236 을 찍었다(2026-09-27 전수 조사).
+  const exactly = (tiles: readonly number[]) => group.tileIds.length === tiles.length && tiles.every((tile, index) => group.tileIds[index] === tile);
   // 가로 탁자 234|235|236 (산포 시 최소 3칸)
-  if (id.includes("table-horizontal")) {
+  if (id.includes("table-horizontal") && exactly([234, 235, 236])) {
     return {
       w: 3,
       h: 1,
@@ -770,7 +796,7 @@ function treeLayeredFootprint(group: TileGroupMetadata, _tileset: TilesetDef): F
   }
 
   // 세로 탁자 144/174/204
-  if (id.includes("table-vertical")) {
+  if (id.includes("table-vertical") && exactly([144, 174, 204])) {
     return {
       w: 1,
       h: 3,
@@ -780,7 +806,7 @@ function treeLayeredFootprint(group: TileGroupMetadata, _tileset: TilesetDef): F
   }
 
   // 과일박스 202|203
-  if (id.includes("fruit-box")) {
+  if (id.includes("fruit-box") && exactly([202, 203])) {
     return {
       w: 2,
       h: 1,

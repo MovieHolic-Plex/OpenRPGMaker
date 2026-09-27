@@ -1,5 +1,17 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 배치 매칭은 대체하지 않고 거절한다 (2026-09-27 전수 조사)
+
+「고대 진실의 제단」이 보석 그림으로 저장된 일을 계기로 물건·NPC·타일 배치의 이름→그림 해석을 전수 조사했다. 같은 결함이 네 단계(캐릭터 그림 검색·재료 라벨→타일·조립 물건·자동 생성기)에 있었다. 공통 원인은 이름에 맞는 그림이 없거나 애매할 때 다른 그림으로 대체하고 경고만 남긴 것이다. 조수는 경고를 읽지 않는다.
+
+- **캐릭터 그림(`charsetQuery.ts`, `eventCompile.resolveGraphicQuery`)**: 여러 낱말 질의는 낱말마다 그 칸에 맞아야 한다(「고양이 석상」≠ 고양이). 한 글자 질의는 부분 일치를 주지 않는다(「용」≠ 청년 용사). 라벨과 같은 칸은 의도 필터보다 먼저 답이 되고, 중복 회피가 라벨 일치 칸을 밀어내지 않는다(「왕」≠ 여왕). 못 찾으면 주민 그림으로 대체하지 않고 `graphic-not-found` 로 거절한다(2026-09-18 대체 정책 철회). textureKey 자리의 라벨은 칸까지 해석한다.
+- **조사 이벤트(`investigationTools`, `upsert_event`)**: graphic 생략 시 보석 표식(object2#6)을 붙이던 규칙을 뺐다. 투명 + 「바닥에서 보이지 않는다」 경고. 그림은 그 칸의 물건 타일로 낸다.
+- **재료 라벨(`tileVocabulary.resolveMaterialByLabel`)**: 질의가 라벨로 **시작**하는 경우(뒤 조건을 버림)는 약매칭 60, 역할 가산점은 강매칭(70↑)에만. 물건 동의어는 질의 전체가 그 낱말일 때만 넓힌다. 「황금 나무 상자」「우편함 없는 제단」은 자동 시공되지 않고 후보를 받는다.
+- **타일 검색(`resourceSearch.bundledTileSemantics`, `tileMetadataTools.bundledTileLabels`)**: 표 없는 번들 시트에 합본 마을 라벨을 통째로 씌우지 않는다. 파생 시트는 합본 마을과 픽셀이 같은 칸만(`src/assets/combinedTownSharedCells.json`, 파생 시트를 다시 구우면 재생성) 그 라벨을 쓴다. tileMeta 빈 칸 때문에 숲마을·기후·바이옴 17종의 타일 검색이 TypeError 로 죽던 것을 고쳤다. `list_resources(kind:"tile")` 는 mapId/tilesetId 의 타일셋(생략 시 시작 맵)에서 찾는다.
+- **고정 그림 도구**: `place_battle_blocker` 는 부대 선두 적 이름으로, `place_storage_chest` 는 이름·템플릿(금고)으로 고른다. `add_companion` 은 그림 없는 액터를 거절한다. `scatter_object` 는 그룹 칸이 합본 마을 번호와 정확히 같을 때만 박힌 모양을 쓴다. `build_castle` 은 기존 맵의 타일셋을 바꾸지 않고 거절한다.
+- **그림 대조로 고친 라벨**: 던전 시트 441~443·471~473·27~29 = 촛불 마법진(예전 「황금 새장」·「황금 아치」), 444·445·474·475 = 1×1 계단(하네스 stairs-single), 446·476 = 석주, 447~449·477~479 = 왕좌(447 = 왼쪽 위), 118 = 수정, 117 = 레일, 54~56·84~86 = 레일 고리. 사용자 확정(2026-09-28): 배 444·445 올라가는 계단·474·475 내려가는 계단(475 = 오른쪽으로 내려감), 배 262·289·293·319·322·323·349·410 = 선체 일부, 월드 282 = 큰 바위, 레트로 바깥/집 268·269(+298·299) = 올라가는 계단, 434·435·464(+465) = 성벽 조각, 레트로 월드 444·445 올라가는·474·475 내려가는 계단, 레트로 월드 293 = 판독 보류. 레트로 바깥 350 우체통·359 동굴 입구 하단·382 우물·실내 357 피아노 좌·447 왕좌 왼쪽 위는 원래 라벨이 맞다(감사 에이전트 오판 — 그림 대조만으로 계단을 오르간으로, 보완 작화 칸을 빈칸으로 읽었다). 던전 생성기의 `landmark:"altar"` 는 모든 테마에서 마법진 3×3을 찍고, 자리가 없을 때만 여신상(경고)으로 물러난다.
+- 남은 과제(그림 대조가 애매해 코드에 반영하지 않은 칸)와 전체 대조표는 감사 산출물에 있다. 마을 생성기의 꽃 348·우물 382 는 사용자 확정(2026-07-16) 이력이 있어 이번에 바꾸지 않았다.
+
 ## 탈것 배치 도구 — place_vehicle (2026-09-26)
 
 - `place_vehicle {vehicle: boat|ship|airship, mapId, x, y, characterIndex?}` (`src/editor/tools/vehicleTools.ts`, 도메인 event,
@@ -223,6 +235,40 @@ DEFAULT/AUTO/YOLO/단계별 적용에서는 검색까지 직렬 실행됐다. �
   타일셋을 명시해 본래 검사 대상을 유지한다. 이번 세션에서는 vitest/gates/typecheck 미실행.
   브라우저 관측: `reports/2026-09-21-ai-forest-default.md`.
 
+
+## 숲 나무 물체 산포 — 수관이 빠지던 문제 (2026-09-27)
+
+「작은 숲속에 오두막 하나」 런에서 맵에 잎 없는 밑동 줄만 남았다. 원인과 계약:
+
+- `forest-trees:*` 그룹의 `sourceRect` 는 **픽셀** 단위(숲 벽 160×96 = 10×6칸)다. `placementTools.ts`
+  `sourceRectFootprint` 가 칸 단위로 읽어 실패했고, 표본 빌더가 타일 앞 6개를 가로 한 줄로 늘어놓았다.
+  이제 `previewMap`(칸 단위 하위·상위 배열)이 있고 물체 타일을 전부 담으면 그 모양 그대로 찍는다.
+  받침(잔디) 칸은 비워 기존 지면을 덮지 않는다.
+- 숲 벽·숲 기둥은 첫 줄까지 줄기 그림이다(천장을 덮어야 숲이 되는 띠 시공 부품). `place_props` 낱개 산포는
+  `material-trunk-only` 로 거절하고 굽이숲 수관 경로를 안내한다. 숲 나무 물체(덤불 제외)에 `density` 를 주면
+  `forestTreeKindFromResolvedMaterial` 이 활엽수로 보고 굽이숲 수관을 깐다.
+- Tests: `test/forestTreeObjectPlacement.test.ts`. 조수 실측: gemini-3.8-flash 헤드리스 `scripts/pi-agent.mts`,
+  50×50 맵 수관 779칸(31%), 게이트 통과. 사각형 area 경계에서 수관이 곧게 끊기는 문제는 별개로 남아 있다.
+- 숲 벽·숲 기둥은 `stamp_object`(`group:forest_harmony/forest-trees:forest-wall`)로도 거절하고 공용 오브젝트 목록에서 뺀다.
+  같은 목록은 `src/project/defaults/forestTrunkOnlyParts.ts` 한 곳에 있다. 실측 2차: place_props 가 막히자 모델이
+  stamp_object 로 숲 벽을 29번 찍어 풀밭 위 줄기 벽이 되었다.
+
+## 나무 밑 그림자 (2026-09-27)
+
+밑동(굽이숲 3행 조립·낱그루 밑동)이 받침 잔디 위에 그대로 앉아 수관 아래와 뿌리 둘레가 밝은 풀밭이었다.
+
+- 그림은 `scripts/content/bake-forest-harmony-tree-shadows.py` → `public/assets/forest-harmony/tree-shadows.png`(51칸) +
+  `src/assets/forestHarmonyTreeShadows.json`. 칸마다 원본 밑동 칸의 **투명 부분**에만 숲 그늘색 한 가지를 알파 3단 + 4×4
+  순서 디더로 칠한다. 원본 칩셋 픽셀은 바꾸지 않는다. 굽이숲은 수관 그늘(위 행일수록 진함, 조립 양끝은 바깥으로 옅어짐),
+  낱그루는 뿌리 아래 가로 타원. 밑동 바로 아래 바닥 칸용 발치 칸이 따로 있다.
+- `src/project/defaults/forestHarmonyTreeShadows.ts` 의 `applyForestTreeShadows(map, tileset)` 가 밑동 칸과 발치 칸의
+  **2층**(`lowerOverlayTiles`)에 그림자 칸을 맞춘다. 2층에 사람이 놓은 다른 타일이 있으면 건드리지 않고, 밑동이 사라진 칸의
+  그림자는 지운다. 반복 호출해도 바뀌지 않는다.
+- 칸 번호는 고정하지 않는다. 필요할 때 **마지막 이식 뒤 새 줄**에 이식하고(굽이숲 수관·지나가는 수관과 같은 방식),
+  이식 원본(`tex_forest_harmony_tree_shadows`#n)으로 다시 찾는다. 고정 3611~ 은 지나가는 수관 쌍둥이·탈것 이식이 먼저 차지할 수 있다.
+- 호출 지점: `toolRunner.runToolDefinition` 이 타일을 바꾼 맵마다(나무 짝 수리와 같은 조건 — `spatialAuthoring`·
+  `preservesAuthoredRaster` 도구는 제외), 그리고 `stamp_object` 가 찍은 뒤 직접. 편집기 붓질 경로에는 아직 붙이지 않았다.
+- Tests: `test/forestTreeShadows.test.ts`.
 
 ## 마을 군락 — 굽이숲 절벽마을 조립 (2026-09-21)
 

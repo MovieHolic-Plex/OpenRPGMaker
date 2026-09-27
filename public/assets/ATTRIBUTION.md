@@ -501,3 +501,11 @@ claim; existing forest-harmony component notices still apply.
 - Fountain, striped market stalls, flames, smoke, ash, charred beams, scaffolding, bunting, lantern string and post,
   hot-spring steam, totem and war banner are new pixels drawn in code by the script (no source image). Provenance, not a
   new licence claim.
+
+## Forest harmony tree shadows (2026-09-27)
+
+- File: `forest-harmony/tree-shadows.png` (16px cells, 51 shadow-only cells), built by
+  `scripts/content/bake-forest-harmony-tree-shadows.py`; grafted onto forest_harmony after its last graft
+  (`src/assets/forestHarmonyTreeShadows.json`, `src/project/defaults/forestHarmonyTreeShadows.ts`).
+- Each cell is a single shade colour (#10261a) at stepped alpha, shaped only by the transparency mask of an existing
+  `forest-harmony/chipset.png` trunk cell. No pixels are copied from any source; the chipset's own notice applies.

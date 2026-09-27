@@ -78,6 +78,10 @@ export type OprnBridgeStart = {
   readonly suggestProjectDir?: (input: { readonly title?: string; readonly root?: string }) => Promise<import("../../../electron/shared/start").SuggestedProjectDir>;
   /** 데스크톱 전용 — 새 게임을 만들 상위 위치 대화상자. 취소하면 null. */
   readonly chooseProjectRoot?: () => Promise<string | null>;
+  /** 데스크톱 전용 — 최근 목록 프로젝트의 카드 그림 재료. 목록에 없는 경로·빈 폴더는 null. */
+  readonly coverSource?: (input: { readonly projectDir: string }) => Promise<import("../../../electron/shared/start").ProjectCoverSource | null>;
+  /** 데스크톱 전용 — 시작 화면이 구운 카드 그림 저장. 목록에 없는 경로면 false. */
+  readonly saveCover?: (input: { readonly projectDir: string; readonly dataUrl: string }) => Promise<boolean>;
 };
 
 export type OprnAssetBrowser = {

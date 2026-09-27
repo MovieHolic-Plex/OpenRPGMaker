@@ -58,12 +58,12 @@ import {
   bindEventSectionOpenState,
   eventEditorOpenKey,
   openEventConditions,
-  openEventMovement,
 } from "./eventEditorOpenState";
 
 import { relationshipStateName } from "@/project/relationshipState";
 import { commitAfterPointerGesture } from "./commitAfterPointerGesture";
-import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
+import { scrollIntoNearestScroller } from "./scrollIntoNearestScroller";
+import { isTopModal, registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { appearanceBindingControl } from "../appearanceBindingControl";
 import { getCharacterAppearance } from "@/project/characterAppearances";
 import { insideLocationSentence, mapLocationLabel } from "@/editor/mapLocationLabels";
@@ -942,6 +942,7 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
   page = normalizeEventPage(page);
   const wrap = el("div", { class: "event-page-props", dataset: { testid: "event-page-props" } });
   const trigger = selectWithOptions(TRIGGER_OPTIONS, eventEditorTriggerKind(page.trigger), "event-page-trigger-select");
+  trigger.setAttribute("aria-label", "시작 방식");
   trigger.addEventListener("change", () => {
     const kind = selectedOptionValue(trigger, TRIGGER_OPTIONS, eventEditorTriggerKind(page.trigger));
     updateEventPage(mapId, eventId, page.id, {
@@ -962,6 +963,7 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
   }
 
   const priority = selectWithOptions(EVENT_PRIORITY_OPTIONS, page.priority, "event-page-priority-select");
+  priority.setAttribute("aria-label", "우선순위");
   priority.addEventListener("change", () => {
     updateEventPage(mapId, eventId, page.id, {
       priority: selectedOptionValue(priority, EVENT_PRIORITY_OPTIONS, page.priority),
@@ -1063,22 +1065,22 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
         ),
       ],
     }),
-    collapsibleSection({
-      title: "움직임",
-      testId: "event-classic-movement-section",
-      openSet: openEventMovement,
-      openKey,
-      summaryExtra: renderMovementSummaryChips(page),
-      body: el("div", {
-        class: "event-page-movement-stack",
-        children: [
-          rm2k3Fieldset("물체 동작", renderObjectInteraction(mapId, eventId, page), "event-classic-object-interaction"),
-          rm2k3Fieldset("플레이어 발견", renderDetectionEncounter(mapId, eventId, page), "event-classic-detection"),
-          rm2k3Fieldset("이동 유형", renderPageMovement(mapId, eventId, page), "event-classic-movement-type"),
-          rm2k3Fieldset("애니메이션 유형", renderPageAnimationType(mapId, eventId, page), "event-classic-animation-type"),
-          rm2k3Fieldset("이동 속도", movementSpeedSelect(mapId, eventId, page), "event-classic-movement-speed"),
-        ],
-      }),
+    // 레일 그룹 「움직임과 속도」가 이미 접힘·제목·요약을 소유한다. 예전에는 그 안에 또 한 겹
+    // 「▸ 움직임」 접이식(details→div 로 바뀌어 눌러도 안 열리는 죽은 표식)과 필드마다 테두리
+    // 상자를 두어 제목이 네 겹(그룹 → 움직임 → 물체 동작 → 물체 상호작용)이었고, 155px 남은
+    // 폭에서 값이 잘렸다(2026-09-27 적대적 시각 QA). 이제 한 겹짜리 섹션 목록이다.
+    // testid 는 그대로 둔다 — e2e·검증기 앵커가 같은 이름으로 찾는다.
+    // 자주 쓰는 순서(이동 → 걷기 모습 → 속도 → 물체 → 발견)로 둔다.
+    el("div", {
+      class: "event-page-movement-stack",
+      dataset: { testid: "event-classic-movement-section" },
+      children: [
+        rm2k3Fieldset("이동 유형", renderPageMovement(mapId, eventId, page), "event-classic-movement-type"),
+        rm2k3Fieldset("애니메이션 유형", renderPageAnimationType(mapId, eventId, page), "event-classic-animation-type"),
+        rm2k3Fieldset("이동 속도", movementSpeedSelect(mapId, eventId, page), "event-classic-movement-speed"),
+        rm2k3Fieldset("물체 동작", renderObjectInteraction(mapId, eventId, page), "event-classic-object-interaction"),
+        rm2k3Fieldset("플레이어 발견", renderDetectionEncounter(mapId, eventId, page), "event-classic-detection"),
+      ],
     })
   );
   return wrapPageSettingsAsAccordion(wrap, page, conditions, openKey);
@@ -1116,6 +1118,8 @@ type EventRailGroupSpec = {
    * 열어 보지 않고 알 수 있어야 한다.
    */
   readonly authored?: boolean;
+  /** 요약 칸에 문자열 대신 넣을 노드(같은 글자에 testid 가 따로 걸린 경우). */
+  readonly summaryNode?: HTMLElement;
 };
 
 /**
@@ -1132,7 +1136,10 @@ type EventRailGroupSpec = {
 function railGroup(spec: EventRailGroupSpec, body: HTMLElement, openKey: string): HTMLElement {
   const header = el("button", {
     class: "event-editor-settings-accordion-header event-editor-settings-accordion-summary",
-    attrs: { type: "button", "aria-expanded": spec.open ? "true" : "false" },
+    // 「언제 보이나요」 는 레일에서 펼치지 않고 창을 연다 — 보조기기에도 그렇게 알린다.
+    attrs: spec.slug === "when"
+      ? { type: "button", "aria-expanded": spec.open ? "true" : "false", "aria-haspopup": "dialog" }
+      : { type: "button", "aria-expanded": spec.open ? "true" : "false" },
     children: [
       el("span", {
         class: "event-editor-settings-accordion-title",
@@ -1149,7 +1156,7 @@ function railGroup(spec: EventRailGroupSpec, body: HTMLElement, openKey: string)
       }),
       el("span", {
         class: "event-editor-settings-accordion-meta",
-        text: spec.summary,
+        ...(spec.summaryNode ? { children: [spec.summaryNode] } : { text: spec.summary }),
         dataset: { testid: `evt-rail-meta-${spec.slug}` },
       }),
     ],
@@ -1161,29 +1168,132 @@ function railGroup(spec: EventRailGroupSpec, body: HTMLElement, openKey: string)
   });
   header.addEventListener("click", () => {
     if (spec.slug === "when") {
-      openConditionsModal(body);
+      openEventRailGroupFor(header);
       return;
     }
     selectRailGroup(group, spec.slug, openKey);
+    // 아래쪽 그룹을 누르면(스크롤해서 닿은 자리) 위 그룹이 접히며 레일이 짧아진다. 스크롤 위치는
+    // 그대로라 방금 누른 헤더가 화면 위로 밀려 사라졌다(2026-09-27 실측: 레일 윗단 -116px).
+    scrollIntoNearestScroller(header, "nearest");
   });
   return group;
 }
 
-function openConditionsModal(body: HTMLElement): void {
-  if (document.querySelector("[data-testid='event-condition-modal']")) return;
-  const conditions = body.querySelector<HTMLDetailsElement>("[data-testid='event-classic-conditions']");
-  if (conditions) conditions.open = true;
+const CONDITION_MODAL_TEST_ID = "event-condition-modal";
+
+function conditionModalOpen(): boolean {
+  return typeof document !== "undefined" && document.querySelector(`[data-testid='${CONDITION_MODAL_TEST_ID}']`) !== null;
+}
+
+/** 지금 화면에 붙어 있는 레일 중 이 페이지(openKey)의 것. 편집기는 값이 바뀔 때마다 레일을 새로 그린다. */
+function liveRail(openKey: string): HTMLElement | null {
+  return Array.from(document.querySelectorAll<HTMLElement>(".event-editor-settings-accordion"))
+    .find((rail) => (rail.dataset.railKey ?? "") === openKey) ?? null;
+}
+
+function liveRailGroup(openKey: string, slug: string): HTMLElement | null {
+  const rail = liveRail(openKey);
+  if (!rail) return null;
+  return Array.from(rail.children).find(
+    (child): child is HTMLElement => child instanceof HTMLElement && child.dataset.railGroup === slug,
+  ) ?? null;
+}
+
+function railGroupBody(group: HTMLElement): HTMLElement | null {
+  return Array.from(group.children).find(
+    (child): child is HTMLElement => child instanceof HTMLElement && child.classList.contains("event-editor-settings-accordion-body"),
+  ) ?? null;
+}
+
+/**
+ * 「언제 보이나요」 편집 창.
+ *
+ * 조건 칸은 레일 폭(≈260px)에 들어가지 않으므로 레일 본문을 이 창으로 옮겨 보여 준다.
+ * 2026-09-27 실측 결함 셋을 고쳤다:
+ *  1. **낡은 사본.** 칩을 누르면 store 가 바뀌고 편집기가 레일을 새로 그리는데, 창은 처음 옮겨 온
+ *     (이제 떨어져 나간) 본문을 계속 보여 줬다. 뒤 레일에는 「계절」 이 켜졌는데 창의 칩은 꺼진 채였다.
+ *     이제 store 가 바뀔 때마다 새로 그려진 본문으로 갈아 끼운다.
+ *  2. **맨 select.** 창을 document.body 에 붙여 편집기 사용자 지정 select 영역 밖이었다 — 「스위치」
+ *     고급 조건 select 가 브라우저 기본 모양이었다. 편집기 backdrop 안에 붙인다.
+ *  3. **가짜 저장 버튼.** 「조건 저장」 과 「닫기」 가 같은 함수였다. 조건은 누르는 즉시 반영되므로
+ *     그 사실을 말하고 「완료」 하나만 둔다.
+ */
+function openConditionsModal(group: HTMLElement, openKey: string, previousSlug: string): void {
+  if (conditionModalOpen()) return;
+  const initialBody = railGroupBody(group);
+  if (!initialBody) return;
+  // 편집기 창(.event-editor-modal-window)은 끌기로 transform 이 걸려 fixed 자식의 기준이 바뀐다 —
+  // 그 바깥 backdrop 에 붙인다. backdrop 은 본문을 다시 그려도 살아남는다. 창 없이 그려진
+  // 편집면(테스트)에서는 다시 그릴 때 버려지지 않는 body 에 붙인다.
+  const host = group.closest<HTMLElement>(".event-editor-modal-backdrop") ?? document.body;
   const backdrop = el("div", {
     class: "event-condition-modal-backdrop",
-    dataset: { testid: "event-condition-modal" },
+    dataset: { testid: CONDITION_MODAL_TEST_ID },
   });
   const dialog = el("section", {
     class: "event-condition-modal",
     attrs: { role: "dialog", "aria-modal": "true", "aria-labelledby": "event-condition-modal-title" },
   });
+  const bodyHost = el("div", { class: "event-condition-modal-body" });
+  let mounted: HTMLElement | null = null;
+  const mount = (body: HTMLElement): void => {
+    if (body === mounted) return;
+    const active = document.activeElement instanceof HTMLElement && bodyHost.contains(document.activeElement)
+      ? document.activeElement
+      : null;
+    const focusFor = active?.dataset.customSelectFor;
+    const focusTestId = active?.dataset.testid;
+    const conditions = body.querySelector<HTMLDetailsElement>(".event-collapsible-section");
+    if (conditions && "open" in conditions) conditions.open = true;
+    bodyHost.replaceChildren(body);
+    mounted = body;
+    const next = focusFor
+      ? body.querySelector<HTMLElement>(`[data-custom-select-for="${focusFor}"]`)
+      : focusTestId
+        ? body.querySelector<HTMLElement>(`[data-testid="${focusTestId}"]`)
+        : null;
+    next?.focus({ preventScroll: true });
+  };
+  let closed = false;
+  let syncQueued = false;
+  const unsubscribe = store.subscribe(() => {
+    if (syncQueued) return;
+    syncQueued = true;
+    // 편집기의 store 구독자가 먼저 레일을 다시 그린다. 그 뒤에 새 본문을 가져온다.
+    queueMicrotask(() => {
+      syncQueued = false;
+      if (closed) return;
+      // 편집면이 통째로 버려졌으면(편집기 닫힘·다른 이벤트) 창도 끝났다. 남은 구독이 새 레일의
+      // 본문을 떼어 가지 않게 여기서 끊는다.
+      if (!backdrop.isConnected) {
+        closed = true;
+        unsubscribe();
+        unregisterModal(backdrop);
+        return;
+      }
+      const liveGroup = liveRailGroup(openKey, "when");
+      if (!liveGroup) {
+        close();
+        return;
+      }
+      const liveBody = railGroupBody(liveGroup);
+      if (liveBody) mount(liveBody);
+    });
+  });
   const close = () => {
+    if (closed) return;
+    closed = true;
+    unsubscribe();
     unregisterModal(backdrop);
     backdrop.remove();
+    // 다시 그려지지 않았다면 레일 그룹은 본문을 잃은 상태다 — 돌려놓아야 다음 클릭에 창이 다시 열린다.
+    const whenGroup = liveRailGroup(openKey, "when");
+    if (whenGroup && mounted && !railGroupBody(whenGroup)) whenGroup.append(mounted);
+    // 창이 열려 있는 동안 레일은 「언제 보이나요」 를 활성으로 표시한다. 닫으면 원래 그룹으로 돌아간다.
+    const restore = liveRailGroup(openKey, previousSlug);
+    if (restore) selectRailGroup(restore, previousSlug, openKey);
+    else activeEventRailGroup.set(openKey, previousSlug);
+    whenGroup?.querySelector<HTMLElement>(".event-editor-settings-accordion-header")?.focus({ preventScroll: true });
   };
   const closeButton = el("button", {
     class: "event-condition-modal-close",
@@ -1202,14 +1312,14 @@ function openConditionsModal(body: HTMLElement): void {
     el("div", {
       class: "event-condition-modal-layout",
       children: [
-        el("div", { class: "event-condition-modal-body", children: [body] }),
+        bodyHost,
         el("aside", {
           class: "event-condition-modal-help",
           children: [
-            el("h3", { text: "판정 미리보기" }),
+            el("h3", { text: "판정 방식" }),
             el("p", { class: "event-condition-modal-help-card", text: "게임은 이 조건들을 매 순간 확인합니다. 조건을 모두 만족할 때 이 페이지가 등장합니다." }),
             el("h3", { text: "조건은 어떻게 작동하나요?" }),
-            el("p", { text: "조건을 여러 개 추가하면 기본적으로 모두 만족해야 합니다. 현재 페이지의 등장 규칙을 오른쪽에서 확인하세요." }),
+            el("p", { text: "조건을 여러 개 추가하면 기본적으로 모두 만족해야 합니다. 현재 페이지의 등장 규칙은 왼쪽 위 문장으로 확인하세요." }),
             el("h3", { text: "예시" }),
             el("p", { class: "event-condition-modal-help-card", text: "낮 시간대이고 마을 광장 안에 있으며 퀘스트 스위치가 켜졌을 때 NPC가 나타납니다." }),
           ],
@@ -1219,14 +1329,38 @@ function openConditionsModal(body: HTMLElement): void {
     el("footer", {
       class: "event-condition-modal-footer",
       children: [
-        el("button", { class: "btn", text: "닫기", attrs: { type: "button" }, on: { click: close } }),
-        el("button", { class: "btn primary", text: "조건 저장", attrs: { type: "button" }, on: { click: close } }),
+        el("p", { class: "event-condition-modal-note", text: "변경은 바로 적용됩니다." }),
+        el("button", {
+          class: "btn primary",
+          text: "완료",
+          attrs: { type: "button" },
+          dataset: { testid: "event-condition-modal-done" },
+          on: { click: close },
+        }),
       ],
     }),
   );
   backdrop.append(dialog);
-  document.body.append(backdrop);
+  mount(initialBody);
+  host.append(backdrop);
   registerModal(backdrop, close);
+  // aria-modal 창이다 — Tab 이 뒤 편집기로 새지 않게 창 안에서 돈다. 위에 다른 창(피커)이 뜨면 손을 뗀다.
+  backdrop.addEventListener("keydown", (event) => {
+    if (event.key !== "Tab" || !isTopModal(backdrop)) return;
+    const focusable = Array.from(dialog.querySelectorAll<HTMLElement>(
+      "button:not(:disabled), input:not(:disabled):not([type=hidden]), textarea:not(:disabled), [tabindex]:not([tabindex='-1'])",
+    )).filter((node) => node.getClientRects().length > 0);
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (!first || !last) return;
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
   closeButton.focus();
 }
 
@@ -1254,7 +1388,12 @@ export function openEventRailGroupFor(target: HTMLElement): void {
   const group = target.closest<HTMLElement>(".event-editor-settings-accordion-group");
   const slug = group?.dataset.railGroup;
   if (!group || !slug) return;
-  selectRailGroup(group, slug, group.parentElement?.dataset.railKey ?? "");
+  const openKey = group.parentElement?.dataset.railKey ?? "";
+  // 「언제 보이나요」 본문은 레일에서 펼치지 않는다(CSS 가 감춘다) — 창으로 연다. 검증 이슈가
+  // 조건 칸을 가리켜도 같은 창이 떠야 초점이 보이는 곳에 간다.
+  const previous = activeRailGroupSlug(openKey, "look-talk");
+  selectRailGroup(group, slug, openKey);
+  if (slug === "when") openConditionsModal(group, openKey, previous === "when" ? "look-talk" : previous);
 }
 
 export function appendEventRailGroup(
@@ -1280,7 +1419,10 @@ function wrapPageSettingsAsAccordion(
   conditions: EventPageCondition[],
   openKey: string,
 ): HTMLElement {
-  const look = Array.from(source.querySelectorAll<HTMLElement>(".presence, [data-testid='event-classic-graphic']"));
+  // 「시작 방식」(말을 걸면/닿으면/자동…)은 «이 NPC 와 어떻게 대화가 시작되는가» 라 「모습과 대화」가
+  // 소유한다. 2026-09-19 조건 모달 재설계가 이 묶음을 when 에서 뺀 뒤 아무도 claim 하지 않아
+  // 새 이벤트마다 「기타 · 분류 없음 1개」 가 생겼고 핵심 설정이 그 안에 숨었다(2026-09-27 실측).
+  const look = Array.from(source.querySelectorAll<HTMLElement>(".presence, [data-testid='event-classic-graphic'], [data-testid='event-page-trigger-priority-stack']"));
   // 등장 조건만 모달로 옮긴다. 시작 방식·우선순위·통행은 다른 설정 그룹의 책임이다.
   const when = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-conditions']"));
   const move = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-classic-movement-section']"));
@@ -1288,15 +1430,17 @@ function wrapPageSettingsAsAccordion(
   // 「크기와 통행」도 같은 그룹이다 — 미분류로 남기면 "기타" 그룹이 생겨 레일이 4칸 계약을
   // 깬다(eventRailGroupComposition.test.ts 가 그 계약을 고정한다).
   const memory = Array.from(source.querySelectorAll<HTMLElement>("[data-testid='event-page-priority-overlap-stack'], [data-testid='event-classic-overlap'], [data-testid='event-classic-footprint'], [data-testid='event-page-fact-overlap']"));
-  // 레일은 한 번에 한 그룹만 연다. 조건이 작성된 페이지는 처음 열었을 때
-  // 「언제 보이나요」를 먼저 보여 줘야 등장 조건을 숨기지 않는다. 사용자가
-  // 다른 그룹을 고른 뒤에는 저장된 활성 slug 를 그대로 존중한다.
-  const activeSlug = activeRailGroupSlug(openKey, conditions.length > 0 ? "when" : "look-talk");
+  // 레일은 한 번에 한 그룹만 연다. 「언제 보이나요」 본문은 레일에서 펼치지 않고 창으로 연다
+  // (openConditionsModal) — 그래서 기본 활성 그룹이 될 수 없다. 등장 조건은 헤더 요약
+  // 「조건 N개」 와 점이 접힌 채로 알린다. 창이 떠 있는 동안에만 when 이 활성이다.
+  const activeSlug = activeRailGroupSlug(openKey, "look-talk");
   const groups = [
     { slug: "look-talk", title: "모습과 대화", summary: page.graphic.sprite ? "그래픽 있음" : "그래픽 없음", authored: Boolean(page.graphic.sprite), nodes: look },
     { slug: "when", title: "언제 보이나요", summary: conditions.length === 0 ? "조건 없음" : `조건 ${conditions.length}개`, authored: conditions.length > 0, nodes: when },
     // RM 계약상 새 이벤트의 기본 이동은 «정지»다. 그 밖이면 저작자가 고른 값이다.
-    { slug: "move", title: "움직임과 속도", summary: movementSummaryText(page), authored: page.movement.type !== "fixed", nodes: move },
+    // 요약 글자는 예전 안쪽 「▸ 움직임」 접이식의 칩(event-movement-summary-chips)이 들고 있었다.
+    // 그 접이식을 걷어냈으므로 같은 노드를 헤더 요약 칸으로 올린다 — 글자는 movementSummaryText 와 같다.
+    { slug: "move", title: "움직임과 속도", summary: movementSummaryText(page), summaryNode: renderMovementSummaryChips(page), authored: page.movement.type !== "fixed", nodes: move },
     // 기본값은 «캐릭터와 같은 층 + 겹침 금지 + 1x1 몸». 통행을 허용했거나 층을 옮겼거나
     // 몸을 키웠다면 손댄 것이다.
     {
@@ -1635,7 +1779,10 @@ function rm2k3Fieldset(title: string, content: HTMLElement, testId?: string): HT
 }
 
 function movementSpeedSelect(mapId: MapId, eventId: string, page: EventPage): HTMLSelectElement {
-  const select = el("select", { dataset: { testid: "event-page-movement-speed-select" } }) as HTMLSelectElement;
+  const select = el("select", {
+    attrs: { "aria-label": "이동 속도" },
+    dataset: { testid: "event-page-movement-speed-select" },
+  }) as HTMLSelectElement;
   for (let speed = 1; speed <= 8; speed += 1) {
     select.append(el("option", { attrs: { value: String(speed) }, text: movementSpeedLabel(speed) }));
   }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { START_SCREEN_INTENT_KEY, takeStartScreenIntent, writeStartScreenIntent } from "@/start/startIntent";
-import { formatRelativeTime, partitionRecentEntries } from "@/start/startScreen";
+import { entriesNeedingCover, formatRelativeTime, partitionRecentEntries } from "@/start/startScreen";
 import { startScreenPrompt } from "@/editor/startScreenHandoff";
 import { projectCoverSchema } from "../electron/shared/schemas";
 
@@ -72,6 +72,17 @@ describe("시작 화면 최근 목록", () => {
     expect(formatRelativeTime("2026-09-27T10:00:00Z", now)).toBe("2시간 전");
     expect(formatRelativeTime("2026-09-26T09:00:00Z", now)).toBe("어제");
     expect(formatRelativeTime(null, now)).toBe("");
+  });
+
+  it("그림이 없거나 낡은 보이는 항목만 시작 화면이 다시 굽는다", () => {
+    const picked = entriesNeedingCover([
+      { projectDir: "/a", title: "그림 없음" },
+      { projectDir: "/b", title: "그림 있음", cover: "data:image/jpeg;base64,/9j/" },
+      { projectDir: "/c", title: "낡음", cover: "data:image/jpeg;base64,/9j/", coverStale: true },
+      { projectDir: "/tmp/x", title: "임시", hiddenReason: "temporary" },
+      { projectDir: "/gone", title: "사라짐", hiddenReason: "missing" },
+    ]);
+    expect(picked.map((entry) => entry.projectDir)).toEqual(["/a", "/c"]);
   });
 });
 

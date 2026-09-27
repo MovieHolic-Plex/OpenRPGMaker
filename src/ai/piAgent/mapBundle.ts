@@ -159,7 +159,50 @@ export function mapBundleSpill(base: Project, result: Project, mapIds: readonly 
   return spill.sort();
 }
 
-function replaceOrAttachSubtree(mergedRoot: MapTreeNode, resultRoot: MapTreeNode | undefined, mapId: string): void {
+/**
+ * 부분 트리 3방향 병합. 기준은 이 에이전트가 출발한 사본(started)이다.
+ *
+ * 예전에는 결과의 부분 트리로 통째로 갈아 끼웠다. 묶음 뿌리가 트리 루트(빈 프로젝트의 시작 맵)면
+ * 부분 트리가 곧 전체 트리라서, 늦게 끝난 시작 맵 담당이 그 사이 다른 담당이 단 맵 노드를
+ * 출발 사본의 옛 트리로 지웠다. 이제 «이 에이전트가 바꾼 것» 만 옮긴다: 결과에만 있는 자식은 더하고,
+ * 출발 사본에 있었는데 결과에서 뺀 자식은 빼고, 출발 뒤 남이 더한 자식은 그대로 둔다.
+ */
+function mergeTreeNode(mergedRoot: MapTreeNode, target: MapTreeNode, started: MapTreeNode | null, result: MapTreeNode): void {
+  if (result.kind !== (started ?? target).kind) target.kind = result.kind;
+  if (result.name !== (started ?? target).name) target.name = result.name;
+  const startedIds = new Set((started?.children ?? []).map((child) => child.mapId));
+  const resultIds = new Set(result.children.map((child) => child.mapId));
+  const next: MapTreeNode[] = [];
+  for (const resultChild of result.children) {
+    const existing = target.children.find((child) => child.mapId === resultChild.mapId);
+    const startedChild = started?.children.find((child) => child.mapId === resultChild.mapId) ?? null;
+    if (existing) {
+      mergeTreeNode(mergedRoot, existing, startedChild, resultChild);
+      next.push(existing);
+      continue;
+    }
+    // 출발 사본엔 여기 있었는데 지금 병합본엔 없다 — 그 사이 남이 옮기거나 뺐다. 남의 결정을 따른다.
+    if (startedChild) continue;
+    // 이 에이전트가 새로 단 자식. 병합본 다른 자리에 있으면 이 에이전트가 이리로 옮긴 것이다.
+    const elsewhere = findMapTreeParent(mergedRoot, resultChild.mapId);
+    if (elsewhere) elsewhere.children = elsewhere.children.filter((child) => child.mapId !== resultChild.mapId);
+    next.push(clone(resultChild));
+  }
+  for (const child of target.children) {
+    if (resultIds.has(child.mapId)) continue;
+    // 출발 사본에 있었는데 결과에서 빠졌다 — 이 에이전트가 뺐다. 출발 뒤 남이 더한 것은 남긴다.
+    if (startedIds.has(child.mapId)) continue;
+    next.push(child);
+  }
+  target.children = next;
+}
+
+function replaceOrAttachSubtree(
+  mergedRoot: MapTreeNode,
+  startedRoot: MapTreeNode | undefined,
+  resultRoot: MapTreeNode | undefined,
+  mapId: string,
+): void {
   const resultNode = findMapTreeNode(resultRoot, mapId);
   const mergedParent = findMapTreeParent(mergedRoot, mapId);
   if (!resultNode) {
@@ -167,19 +210,15 @@ function replaceOrAttachSubtree(mergedRoot: MapTreeNode, resultRoot: MapTreeNode
     if (mergedParent) mergedParent.children = mergedParent.children.filter((child) => child.mapId !== mapId);
     return;
   }
-  const replacement = clone(resultNode);
-  if (mergedParent) {
-    mergedParent.children = mergedParent.children.map((child) => (child.mapId === mapId ? replacement : child));
-    return;
-  }
-  if (mergedRoot.mapId === mapId) {
-    mergedRoot.children = replacement.children;
+  const mergedNode = findMapTreeNode(mergedRoot, mapId);
+  if (mergedNode) {
+    mergeTreeNode(mergedRoot, mergedNode, findMapTreeNode(startedRoot, mapId), resultNode);
     return;
   }
   // base 트리에 없던 맵: 결과 트리의 부모가 병합 트리에 있으면 그 밑에, 아니면 루트에 단다.
   const resultParent = findMapTreeParent(resultRoot, mapId);
   const target = (resultParent && findMapTreeNode(mergedRoot, resultParent.mapId)) ?? mergedRoot;
-  target.children = [...(target.children ?? []), replacement];
+  target.children = [...(target.children ?? []), clone(resultNode)];
 }
 
 /** id 로 식별되는 레코드(id 를 가진 객체). 스위치·DB 레코드·엔딩 등 프로젝트 컬렉션의 공통 형태. */
@@ -379,7 +418,15 @@ function droppedFromMerge(merged: Project, result: Project, key: string): boolea
   return !same(read(merged), read(result));
 }
 
-/** base 에 각 결과의 맵 묶음만 얹는다. 같은 맵을 두 결과가 주장하면 뒤의 것이 이긴다. */
+/**
+ * base 에 각 결과의 맵 묶음만 얹는다. 같은 맵을 두 결과가 주장하면 뒤의 것이 이기고 conflicts 로 알린다.
+ *
+ * 묶음 안에서도 **이 결과가 출발 사본에서 바꾼 맵만** 옮긴다(3방향). 묶음은 부분 트리 전체라서
+ * 뿌리가 트리 루트면(빈 프로젝트의 시작 맵) 묶음이 곧 모든 맵이다. 예전처럼 묶음의 모든 행을 옮기면
+ * 시작 맵 담당이 끝날 때 그 사이 다른 담당이 병합한 맵을 출발 사본의 옛 행으로 덮었고 충돌 보고도 없었다
+ * (2026-09-28 재현: 팀 모드에서 들판 담당의 결과가 시작 맵 담당 병합 뒤 사라짐). 바꾼 맵이 그 사이
+ * 남에게도 바뀌었으면 뒤의 것이 이기고 conflicts 로 알린다.
+ */
 export function mergeMapBundles(base: Project, results: readonly MapBundleResult[]): MergeMapBundlesResult {
   const merged = clone(base);
   const spills: MapBundleSpill[] = [];
@@ -395,15 +442,18 @@ export function mergeMapBundles(base: Project, results: readonly MapBundleResult
       for (const bid of mapBundleIds(base, id)) bundle.add(bid);
     }
     for (const id of bundle) {
-      if (claimed.has(id)) conflicts.add(id);
-      claimed.add(id);
       const row = result.project.maps?.[id];
+      const startedRow = started.maps?.[id];
+      // 이 결과가 손대지 않은 맵 — 출발 사본의 옛 행으로 병합본을 덮지 않는다.
+      if (same(row, startedRow)) continue;
+      if (claimed.has(id) || !same(merged.maps?.[id], startedRow)) conflicts.add(id);
+      claimed.add(id);
       if (row) merged.maps[id] = clone(row);
       else delete merged.maps[id];
     }
     carryStartPosition(merged, started, result.project, bundle);
     if (merged.mapTree) {
-      for (const id of result.mapIds) replaceOrAttachSubtree(merged.mapTree, result.project.mapTree, id);
+      for (const id of result.mapIds) replaceOrAttachSubtree(merged.mapTree, started.mapTree, result.project.mapTree, id);
     }
     // 보고는 병합이 끝난 **뒤** 에 한다. 이 결과까지 얹은 병합본과 대조해, 끝내 반영되지 않은
     // 키만 남긴다 — 그래야 「버렸다」가 사실이 된다. 앞으로 `carryCreatedEntries` 가 무엇을 더

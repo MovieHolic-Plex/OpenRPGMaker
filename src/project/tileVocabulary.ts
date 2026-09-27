@@ -150,15 +150,17 @@ const MATERIAL_QUERY_SYNONYMS: readonly (readonly [RegExp, readonly string[]])[]
   [/활엽수|broadleaf/, ["활엽수"]],
   [/마른나무/, ["마른나무"]],
   [/^나무$|수목/, ["침엽수", "나무", "수목"]],
-  [/울타리|담장/, ["울타리"]],
+  // 물건 이름 동의어는 질의 **전체**가 그 낱말일 때만 넓힌다. 부분 일치로 넓히면 「황금 나무 상자」가
+  // 「나무 상자」로, 「돌 벤치 없는 광장」이 「벤치」로 풀려 수식어가 사라진다(2026-09-27 전수 조사).
+  [/^(?:울타리|담장)$/, ["울타리"]],
   [/지붕|roof/, ["지붕"]],
   [/^문$|입구|door/, ["문", "입구", "나무 문"]],
   [/창문|window/, ["창문"]],
   [/^잔디$|풀밭|^grass$/, ["잔디"]],
   [/키큰\s*풀|tall\s*grass|dark\s*grass|짙은\s*잔디|인카운터\s*풀/, ["키큰 풀"]],
-  [/나무\s*상자|나무상자/, ["나무 상자", "상자"]],
-  [/과일\s*박스|과일박스/, ["과일박스", "과일"]],
-  [/벤치/, ["벤치"]],
+  [/^나무\s*상자$/, ["나무 상자", "상자"]],
+  [/^과일\s*박스$/, ["과일박스", "과일"]],
+  [/^벤치$/, ["벤치"]],
   [/^꽃$|꽃\/|꽃·/, ["꽃"]],
   // 모호한 요청만 확장. "가로 탁자 중" 같은 구체 라벨 문자열에 bare 탁자가 매칭되면 안 됨.
   // (동의어는 오케스트레이션 대체재가 아님 — 맵 타일셋 조회 + successTools 가드가 본선.)
@@ -240,7 +242,11 @@ function scoreTextMatch(haystack: string, terms: readonly string[]): number {
   for (const term of terms) {
     if (!term) continue;
     if (text === term) best = Math.max(best, 100);
-    else if (text.startsWith(term) || term.startsWith(text)) best = Math.max(best, 80);
+    // 라벨이 질의로 시작하면 강매칭이다(「침엽수」→「침엽수 하단」). 반대로 **질의가 라벨로 시작하는** 경우는
+    // 뒤의 조건을 버리게 되므로 약매칭으로 낮춘다 — 「우편함 없는 제단」이 우편함, 「황금 나무 상자」가 나무 상자로
+    // 자동 시공되던 원인이다(2026-09-27 전수 조사). 후보로는 계속 보인다.
+    else if (text.startsWith(term)) best = Math.max(best, 80);
+    else if (term.startsWith(text)) best = Math.max(best, 60);
     else if (text.includes(term)) best = Math.max(best, 55);
     else if (term.length >= 2 && term.includes(text) && text.length >= 2) best = Math.max(best, 40);
     else best = Math.max(best, tokenCoverageScore(text, term));
@@ -420,7 +426,9 @@ export function resolveMaterialByLabel(
     const descScore = scoreTextMatch(description, terms);
     let score = Math.max(labelScore, descScore > 0 ? descScore - 5 : 0);
     if (score <= 0) continue;
-    if (options.preferRoles?.length && role && options.preferRoles.includes(role)) score += 12;
+    // 역할 가산점은 이미 강매칭(70 이상)인 후보끼리의 순서만 바꾼다. 약매칭 60 에 12 를 얹어 자동 시공선을
+    // 넘기면 「우편함 없는 제단」이 우편함으로 깔린다(2026-09-27 전수 조사).
+    if (score >= 70 && options.preferRoles?.length && role && options.preferRoles.includes(role)) score += 12;
     scored.push({ tileId, score, label, description, role });
   }
   scored.sort((a, b) => b.score - a.score || a.tileId - b.tileId);

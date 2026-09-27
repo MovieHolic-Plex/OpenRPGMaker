@@ -889,6 +889,10 @@ function updateTabButtons(header: HTMLElement): void {
 // 어떤 그룹을 보일지는 레일의 data-view-group 한 속성이 정하고, 구획을 숨기는 것은 CSS 다.
 // 그래서 탭 버튼의 hidden(빈 탭 접기·검색)과 섞이지 않고, 검색 중에는 CSS 가 구획 제한을 푼다.
 let viewedGroupSlug: string | null = null;
+// 띠가 마지막으로 따라간 활성 탭. 활성 탭이 **바뀐 때만** 그 그룹으로 옮긴다 — 매번 옮기면
+// 띠 클릭(viewGroup)이 고른 그룹을 syncGroupStrip 이 곧바로 활성 탭의 그룹으로 되돌린다
+// (2026-09-28 사용자 보고: 「사이드바 눌러도 메뉴가 안 바뀐다」).
+let groupFollowedTab: DatabaseTab | null = null;
 
 function groupStripOf(header: HTMLElement): HTMLElement | null {
   const strip = header.previousElementSibling;
@@ -901,8 +905,11 @@ function currentViewedGroup(): string {
 
 function syncGroupStrip(header: HTMLElement): void {
   // 활성 탭이 바뀌면(조수 점프·딥링크 포함) 그 탭의 그룹을 본다. 개요는 그룹 밖이라 보던 그룹을 둔다.
-  const owner = groupForTab(activeTab)?.slug;
-  if (owner) viewedGroupSlug = owner;
+  if (groupFollowedTab !== activeTab) {
+    groupFollowedTab = activeTab;
+    const owner = groupForTab(activeTab)?.slug;
+    if (owner) viewedGroupSlug = owner;
+  }
   const slug = currentViewedGroup();
   header.dataset.viewGroup = slug;
   markViewedSection(header, slug);

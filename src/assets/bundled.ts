@@ -6,6 +6,7 @@ import forestHarmonyHouseParts from "./forestHarmonyHouseParts.json";
 import forestHarmonyTreetopParts from "./forestHarmonyTreetopParts.json";
 import atlasVehicles from "./atlasVehiclesTileset.json";
 import forestHarmonyAtlasTownParts from "./forestHarmonyAtlasTownParts.json";
+import forestHarmonyTreeShadows from "./forestHarmonyTreeShadows.json";
 import climateSheets from "../../tiledata/climate-villages/sheets.json";
 import atlasBiomeSheets from "./atlasBiomeSheets.json";
 import tiboRecovered from "./tiboRecoveredTileset.json";
@@ -132,6 +133,9 @@ export const BUNDLED_REFERENCE_CHIPSET_ASSETS = [
   // 마을·도시 부품(범선·분수·차양 노점·불길·비계·축제 등롱·온천 김·가죽 천막·토템) — forest_harmony 가 tileGrafts 로 3311~ 에 붙인다.
   // 재생성: scripts/content/bake-atlas-town-parts.py, 정의는 project/defaults/forestHarmonyAtlasTownParts.ts. 범선은 EasyRPG 배 칩셋(CC0).
   { textureKey: "tex_forest_harmony_atlas_town_parts", path: "assets/forest-harmony/atlas-town-parts.png", name: "숲마을 · 마을·도시 부품" },
+  // 나무 밑 그림자(밑동 칸 투명부·발치 칸의 숲 그늘) — forest_harmony 가 tileGrafts 로 3611~ 에 붙인다.
+  // 재생성: scripts/content/bake-forest-harmony-tree-shadows.py, 정의는 project/defaults/forestHarmonyTreeShadows.ts.
+  { textureKey: "tex_forest_harmony_tree_shadows", path: "assets/forest-harmony/tree-shadows.png", name: "숲마을 · 나무 밑 그림자" },
   // 던전 칩셋을 칸 번호 그대로 다시 칠한 네 장(scripts/content/build-rpg-dungeon-sheets.py) — 던전 장소(tiledata/rpg-dungeons) 사본만 쓴다.
   { textureKey: "tex_oprn_dungeon_desert", path: "assets/rpg-dungeons/desert-chipset.png", name: "던전 · 사암 피라미드 (재칠)" },
   { textureKey: "tex_oprn_dungeon_sea", path: "assets/rpg-dungeons/sea-chipset.png", name: "던전 · 해저 동굴 (재칠)" },
@@ -218,6 +222,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_forest_harmony_treetop_parts") return forestHarmonyTreetopParts.frames;
   if (key === "tex_oprn_atlas_vehicles") return atlasVehicles.count;
   if (key === "tex_forest_harmony_atlas_town_parts") return forestHarmonyAtlasTownParts.frames;
+  if (key === "tex_forest_harmony_tree_shadows") return forestHarmonyTreeShadows.frames;
   if (key === "tex_forest_harmony_grass_joins") return 10;
   if (key === "tex_forest_harmony_snow") return climateSheets.snow.count;
   if (key === "tex_forest_harmony_volcano") return climateSheets.volcano.count;
