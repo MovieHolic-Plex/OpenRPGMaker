@@ -342,6 +342,22 @@ export function lintPassage(set: LoadedSet, spec: MapSpec, k1: (string | null)[]
     for (const [dx, dy] of want) { const x = p.x + dx, y = p.y + dy; if (x >= 0 && y >= 0 && x < w && y < h && open(y * w + x)) holes.push(`${p.o.id}(${x},${y})`); }
   }
   if (holes.length) out.push(`통행: 막혀야 할 물체 칸이 뚫림 ${holes.length} — ${holes.slice(0, 8).join(" ")}`);
+  // 네모 물: 물 덩이가 바운딩 상자를 거의 꽉 채우면(80% 이상, 6칸 이상) 욕조처럼 보인다.
+  // 돌테 수조·수로처럼 일부러 네모인 물은 뺀다.
+  const isWater = (i: number) => [k1[i], k2[i]].some((k) => !!k && !k.startsWith("#") && info.get(k)?.role === "water" && !/수조|수로|분수|욕탕/.test(info.get(k)?.name ?? ""));
+  const wseen = new Array<boolean>(w * h).fill(false); const boxes: string[] = [];
+  for (let i = 0; i < w * h; i += 1) {
+    if (wseen[i] || !isWater(i)) continue;
+    const st = [i]; wseen[i] = true; let n = 0, x0 = w, y0 = h, x1 = 0, y1 = 0;
+    while (st.length) {
+      const j = st.pop()!, x = j % w, y = Math.floor(j / w); n += 1;
+      x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y);
+      for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]] as const) { const k = ny * w + nx; if (nx >= 0 && ny >= 0 && nx < w && ny < h && !wseen[k] && isWater(k)) { wseen[k] = true; st.push(k); } }
+    }
+    const touchesEdge = x0 === 0 || y0 === 0 || x1 === w - 1 || y1 === h - 1;
+    if (n >= 6 && !touchesEdge && n / ((x1 - x0 + 1) * (y1 - y0 + 1)) >= 0.8) boxes.push(`${x1 - x0 + 1}×${y1 - y0 + 1}@(${x0},${y0})`);
+  }
+  if (boxes.length) out.push(`모양: 네모난 물 덩이 ${boxes.length} — ${boxes.join(" ")}`);
   if (leaks.length) out.push(`통행: 막힌 땅(물·벽·천장) 위를 걷게 만든 칸 ${leaks.length} — ${leaks.slice(0, 10).join(" ")}${leaks.length > 10 ? " …" : ""}`);
   const onTop = new Array<number>(w * h).fill(0);
   for (const p of placed) {
