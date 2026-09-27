@@ -1,4 +1,5 @@
 import { renderDetectionEncounter } from "./pageNpcBehavior";
+import { difficultyDisplayName } from "@/project/difficulty";
 import { renderObjectInteraction } from "./pageHorror";
 import { hasRecursivePageCondition, type EventDraftValidation } from "@/editor/eventDraftValidator";
 import { el } from "@/util/dom";
@@ -517,6 +518,10 @@ function pageConditionSummary(condition: EventPageCondition): string {
       return `전투 ${condition.result === "victory" ? "승리" : condition.result === "defeat" ? "패배" : "도망"}`;
     case "run":
       return runConditionText(condition);
+    case "difficulty":
+      return `난이도 ${difficultyDisplayName(store.getCurrent().system, condition.difficultyId)}`;
+    case "itemUsed":
+      return `${recordName(store.getCurrent().database.items, condition.itemId)} 사용`;
     case "all":
       return condition.conditions.length ? `모두 맞을 때(${condition.conditions.length})` : "모두 맞을 때(없음)";
     case "any":
@@ -1459,6 +1464,10 @@ function pageConditionBadgeText(condition: EventPageCondition): string {
       return `전투${condition.result === "victory" ? "승" : condition.result === "defeat" ? "패" : "도"}`;
     case "run":
       return runConditionText(condition);
+    case "difficulty":
+      return truncateBadgeToken(difficultyDisplayName(store.getCurrent().system, condition.difficultyId), 10);
+    case "itemUsed":
+      return `${truncateBadgeToken(recordName(store.getCurrent().database.items, condition.itemId), 8)} 사용`;
     case "all":
       return condition.conditions.length ? `모두 맞을 때 ${condition.conditions.length}` : "모두 맞을 때";
     case "any":

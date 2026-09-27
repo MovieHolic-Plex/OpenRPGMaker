@@ -13,6 +13,8 @@ import {
   renderInsideLocationCondition,
   renderNpcActivityCondition,
   renderRunCondition,
+  renderDifficultyCondition,
+  renderItemUsedCondition,
   renderSeasonCondition,
   renderSelfSwitchCondition,
   renderTimePhaseCondition,
@@ -54,6 +56,8 @@ const LEAF_CONDITION_OPTIONS = [
   { value: "relationshipAtLeast", label: "관계" },
   { value: "battleResult", label: "전투 결과" },
   { value: "run", label: "탐험" },
+  { value: "difficulty", label: "난이도" },
+  { value: "itemUsed", label: "아이템을 사용했을 때" },
 ] as const satisfies readonly { readonly value: AdvancedConditionKind; readonly label: string }[];
 
 // 고급 목록도 방향(꺼짐/보유 안 함/파티에 없음)을 저작할 수 있어야 한다.
@@ -477,6 +481,10 @@ function renderAdvancedConditionContent(
       });
     case "run":
       return renderRunCondition(condition, onChange);
+    case "difficulty":
+      return renderDifficultyCondition(condition, onChange, `event-page-advanced-condition-difficulty-${suffix}`);
+    case "itemUsed":
+      return renderItemUsedCondition(condition, onChange, `event-page-advanced-condition-item-used-${suffix}`);
   }
   return document.createElement("div");
 }
@@ -524,6 +532,10 @@ function defaultAdvancedCondition(kind: AdvancedConditionKind): EventPageConditi
       return { kind: "battleResult", result: "victory" };
     case "run":
       return { kind: "run", query: "active", value: true };
+    case "difficulty":
+      return { kind: "difficulty", difficultyId: project.system.difficulties?.[0]?.id ?? "" };
+    case "itemUsed":
+      return { kind: "itemUsed", itemId: "" };
     // 빈 묶음은 조용히 참(all)·거짓(any) 이 되어 저작자를 속인다 — 하위 하나를 심어서 낸다.
     case "all":
       return { kind: "all", conditions: [defaultAdvancedCondition("switch")] };

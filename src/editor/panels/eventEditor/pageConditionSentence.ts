@@ -9,6 +9,7 @@
 // 활용을 달리해야 한다. 명사구로 통일하면 활용 로직이 아예 없어도 된다.
 import { ordinalLabel } from "@/editor/panels/databaseDisplay";
 import { store } from "@/project/store";
+import { difficultyDisplayName } from "@/project/difficulty";
 import type { EventPageCondition, Project } from "@/project/types";
 
 export type SentencePart = {
@@ -87,6 +88,10 @@ function clauseParts(condition: EventPageCondition, project: Project): SentenceP
       return [text("전투 "), value(battleResultLabel(condition.result))];
     case "run":
       return runClauseParts(condition);
+    case "difficulty":
+      return [text("난이도 "), value(difficultyDisplayName(project.system, condition.difficultyId))];
+    case "itemUsed":
+      return [text("사용한 아이템 "), value(project.database.items.find((item) => item.id === condition.itemId)?.name ?? (condition.itemId || "(아이템 선택)"))];
     case "all":
       return [text("하위 조건 "), value(`${condition.conditions.length}개 모두 참`)];
     case "any":

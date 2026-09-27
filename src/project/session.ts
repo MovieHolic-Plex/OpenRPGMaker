@@ -1,4 +1,5 @@
 import { ownsMonsterSpecies } from "@/project/monsterOwnership";
+import { initialDifficultyId } from "@/project/difficulty";
 // project/session.ts
 // PlaySession: 플레이 중 런타임 상태. Project는 읽기 전용, 가변 상태는 여기에.
 // v2: switches/variables/timers/mapOverrides 포함.
@@ -269,6 +270,8 @@ export interface PlaySession {
   monsterInstances: Record<MonsterInstanceId, MonsterInstance>;
   monsterParty: MonsterInstanceId[];
   monsterBox: MonsterInstanceId[];
+  /** 놓아주기·교환·합성으로 지운 개체 번호 중 가장 큰 값. 새 개체 id 가 지운 id 를 다시 쓰지 않게 한다. 생략 = 지운 적 없음. */
+  retiredMonsterInstanceSeq?: number;
   actorSkillIds: Record<ActorId, SkillId[]>;
   /** Remaining Gen1 PP for the legacy actor-party fallback path. */
   actorSkillPp?: Record<ActorId, Record<SkillId, number>>;
@@ -378,6 +381,24 @@ export interface PlaySession {
   gameTime?: GameTime;
   /** Optional roguelike run lifecycle. Authored project data never lives here. */
   roguelikeRun?: RoguelikeRunState;
+  /** 현재 난이도 id(system.difficulties). 생략 = 난이도 없음 또는 목록 첫 줄. */
+  difficultyId?: string;
+  /** 이름 붙은 파티 묶음(storeParty/recallParty). 생략 = 없음. */
+  partySets?: Record<string, PartySetState>;
+  /** 지금 조작 중인 파티 묶음 이름. recallParty 가 전환 전에 현재 파티를 이 이름으로 저장한다. */
+  activePartySetId?: string;
+  /** 메뉴 «바라보는 대상에 사용»이 발동 중인 아이템 id. 그 한 번의 페이지 판정·실행 동안만 있고 저장하지 않는다. */
+  itemUsedId?: string;
+  /** 배우별 장착 스킬(ActorRecord.loadoutSlots 가 있는 배우만). 생략 = 아직 장착 안 함. */
+  actorSkillLoadouts?: Record<ActorId, SkillId[]>;
+}
+
+/** 파티 묶음 하나 — 구성원과 선 자리. */
+export interface PartySetState {
+  readonly actorIds: string[];
+  readonly mapId: MapId;
+  readonly x: number;
+  readonly y: number;
 }
 
 // 프로젝트 "시작 상태"(에디터가 정의하는 초기 스위치/변수/골드/인벤토리/파티)를
@@ -493,6 +514,10 @@ export function startSession(project: Project, seed?: number): PlaySession {
     playTimeSeconds: 0,
     rng: createRngState(seed),
     gameTime,
+    ...(() => {
+      const difficultyId = initialDifficultyId(project.system);
+      return difficultyId ? { difficultyId } : {};
+    })(),
   };
   const weather = applyDailyWeatherForDate(project, session, gameTime);
   if (weather) {
@@ -914,6 +939,10 @@ export function evalCondition(
       return session.battleResult === condition.result;
     case "run":
       return evalRoguelikeRunCondition(session, condition);
+    case "difficulty":
+      return session.difficultyId !== undefined && session.difficultyId === condition.difficultyId;
+    case "itemUsed":
+      return session.itemUsedId !== undefined && session.itemUsedId === condition.itemId;
     case "all":
       return condition.conditions.every((child) => evalCondition(session, child, host, context));
     case "any":

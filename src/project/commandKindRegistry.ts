@@ -91,6 +91,12 @@ export const COMMAND_KINDS = [
   "setFlag",
   "setSelfSwitch",
   "m2Command",
+  "setDifficulty",
+  "storeParty",
+  "recallParty",
+  "removeMonster",
+  "tradeMonster",
+  "fuseMonsters",
 ] as const satisfies readonly Command["kind"][];
 
 export type CommandKind = (typeof COMMAND_KINDS)[number];
@@ -120,6 +126,8 @@ export const CONDITION_KINDS = [
   "relationshipAtLeast",
   "battleResult",
   "run",
+  "difficulty",
+  "itemUsed",
   "all",
   "any",
   "not",

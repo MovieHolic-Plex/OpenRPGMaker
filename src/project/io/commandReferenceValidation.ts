@@ -327,6 +327,11 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       return;
     case "moveMonster":
       return;
+    case "tradeMonster":
+      // 빈 종은 편집기 초안(새로 넣은 명령)이다 — 초안 검증이 잡고, 런타임은 missingSpecies 로 실패한다.
+      if (command.fromSpeciesId.trim()) assert(context.speciesIds.has(command.fromSpeciesId), `tradeMonster: fromSpeciesId가 존재하지 않습니다: ${command.fromSpeciesId}`);
+      if (command.toSpeciesId.trim()) assert(context.speciesIds.has(command.toSpeciesId), `tradeMonster: toSpeciesId가 존재하지 않습니다: ${command.toSpeciesId}`);
+      return;
     case "evolveMonster":
       if (command.toSpeciesId && command.toSpeciesId.trim().length > 0) {
         assert(context.speciesIds.has(command.toSpeciesId), `evolveMonster: toSpeciesId가 존재하지 않습니다: ${command.toSpeciesId}`);

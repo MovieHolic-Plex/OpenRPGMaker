@@ -138,4 +138,10 @@ export const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
     commandId: M2_FIXTURE_COMMAND_ID,
     fields: createDefaultM2Fields(m2FixtureEntry),
   },
+  setDifficulty: { kind: "setDifficulty", difficultyId: "normal" },
+  storeParty: { kind: "storeParty", partySetId: "party_a" },
+  recallParty: { kind: "recallParty", partySetId: "party_a" },
+  removeMonster: { kind: "removeMonster", instanceId: "monster_1" },
+  tradeMonster: { kind: "tradeMonster", fromSpeciesId: "species1", toSpeciesId: "species2" },
+  fuseMonsters: { kind: "fuseMonsters", instanceIdA: "monster_1", instanceIdB: "monster_2" },
 };

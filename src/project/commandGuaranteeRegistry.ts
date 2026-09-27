@@ -308,6 +308,13 @@ export const COMMAND_GUARANTEES = {
     quick: true,
   }),
   runControl: guarantee("system", { quick: true }),
+  setDifficulty: guarantee("system"),
+  // recallParty: 자리 이동은 transfer pause 로 플레이어가 소유한다(같은 맵이면 계속).
+  storeParty: guarantee("actor"),
+  recallParty: guarantee("actor", { completion: "conditionalPause" }),
+  removeMonster: guarantee("monster"),
+  tradeMonster: guarantee("monster"),
+  fuseMonsters: guarantee("monster"),
 } satisfies Record<CommandKind, CommandGuarantee>;
 
 export function commandGuarantee(kind: CommandKind): CommandGuarantee {

@@ -115,6 +115,12 @@ const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   setFlag: { kind: "setFlag", flag: "flag1", value: true },
   setSelfSwitch: { kind: "setSelfSwitch", key: "A", value: true },
   m2Command: { kind: "m2Command", commandId: "m2_test", fields: {} },
+  setDifficulty: { kind: "setDifficulty", difficultyId: "normal" },
+  storeParty: { kind: "storeParty", partySetId: "party_a" },
+  recallParty: { kind: "recallParty", partySetId: "party_a" },
+  removeMonster: { kind: "removeMonster", instanceId: "monster_1" },
+  tradeMonster: { kind: "tradeMonster", fromSpeciesId: "species1", toSpeciesId: "species2" },
+  fuseMonsters: { kind: "fuseMonsters", instanceIdA: "monster_1", instanceIdB: "monster_2" },
 };
 
 // kind별 최소 유효 Condition 인스턴스. 라운드트립 테스트에서는 참조 검증까지 통과해야 하므로
@@ -141,6 +147,8 @@ function buildMinimalConditions(ids: {
     relationshipAtLeast: { kind: "relationshipAtLeast", state: "dating" },
     battleResult: { kind: "battleResult", result: "victory" },
     run: { kind: "run", query: "active", value: true },
+    difficulty: { kind: "difficulty", difficultyId: "normal" },
+    itemUsed: { kind: "itemUsed", itemId: ids.itemId },
     all: {
       kind: "all",
       conditions: [

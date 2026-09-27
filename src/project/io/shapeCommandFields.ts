@@ -462,6 +462,26 @@ function validateCommandShape(label: string, value: unknown): void {
     case "m2Command":
       validateM2CommandShape(label, command);
       return;
+    case "setDifficulty":
+      requireString(`${label}.difficultyId`, command.difficultyId);
+      return;
+    case "storeParty":
+    case "recallParty":
+      requireString(`${label}.partySetId`, command.partySetId);
+      return;
+    case "removeMonster":
+      requireString(`${label}.instanceId`, command.instanceId);
+      return;
+    case "tradeMonster":
+      requireString(`${label}.fromSpeciesId`, command.fromSpeciesId);
+      requireString(`${label}.toSpeciesId`, command.toSpeciesId);
+      if (command.level !== undefined) requireNumber(`${label}.level`, command.level);
+      if (command.nickname !== undefined) requireString(`${label}.nickname`, command.nickname);
+      return;
+    case "fuseMonsters":
+      requireString(`${label}.instanceIdA`, command.instanceIdA);
+      requireString(`${label}.instanceIdB`, command.instanceIdB);
+      return;
     default:
       return;
   }
@@ -703,6 +723,12 @@ export function validateConditionShape(label: string, value: unknown): void {
       }
       throw new ProjectFormatError(`${label}.query가 잘못되었습니다.`);
     }
+    case "difficulty":
+      requireString(`${label}.difficultyId`, condition.difficultyId);
+      return;
+    case "itemUsed":
+      requireString(`${label}.itemId`, condition.itemId);
+      return;
     case "all":
     case "any": {
       const children = requireArray(`${label}.conditions`, condition.conditions);

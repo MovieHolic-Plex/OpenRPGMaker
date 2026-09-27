@@ -184,6 +184,18 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "setSelfSwitch", key: "A", value: true };
     case "m2Command":
       return newM2Command(M2_COMMAND_CATALOG[0]?.id ?? "m2-unknown");
+    case "setDifficulty":
+      return { kind: "setDifficulty", difficultyId: "" };
+    case "storeParty":
+      return { kind: "storeParty", partySetId: "party_a" };
+    case "recallParty":
+      return { kind: "recallParty", partySetId: "party_a" };
+    case "removeMonster":
+      return { kind: "removeMonster", instanceId: "" };
+    case "tradeMonster":
+      return { kind: "tradeMonster", fromSpeciesId: "", toSpeciesId: "" };
+    case "fuseMonsters":
+      return { kind: "fuseMonsters", instanceIdA: "", instanceIdB: "" };
     default: {
       const _exhaustive: never = kind;
       void _exhaustive;

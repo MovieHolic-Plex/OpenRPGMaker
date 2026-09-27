@@ -271,6 +271,8 @@ function conditionNeedsUnsimulatedState(condition: Condition): boolean {
     case "relationshipAtLeast":
     case "battleResult":
     case "run":
+    case "difficulty":
+    case "itemUsed":
       return true;
     case "all":
     case "any":

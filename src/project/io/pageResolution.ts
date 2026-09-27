@@ -15,6 +15,8 @@ type EventPageSession = Pick<ProjectSession, "switches" | "variables"> &
     readonly relationships?: Record<string, RelationshipState>;
     readonly battleResult?: "victory" | "defeat" | "escape";
     readonly roguelikeRun?: RoguelikeRunState;
+    readonly difficultyId?: string;
+    readonly itemUsedId?: string;
     /** 주인공 타일 좌표. `insideLocation` 조건이만 사용한다. */
     readonly x?: number;
     readonly y?: number;
@@ -97,6 +99,10 @@ function evalPageCondition(
       return session.battleResult === condition.result;
     case "run":
       return evalRoguelikeRunCondition(session, condition);
+    case "difficulty":
+      return session.difficultyId !== undefined && session.difficultyId === condition.difficultyId;
+    case "itemUsed":
+      return session.itemUsedId !== undefined && session.itemUsedId === condition.itemId;
     case "all":
       return condition.conditions.every((child) => evalPageCondition(child, session, event, context));
     case "any":

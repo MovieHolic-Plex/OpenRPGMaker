@@ -29,6 +29,8 @@ const CONDITION_MODE_OPTIONS = [
   { value: "relationshipAtLeast", label: "관계" },
   { value: "battleResult", label: "전투 결과" },
   { value: "run", label: "탐험" },
+  { value: "difficulty", label: "난이도" },
+  { value: "itemUsed", label: "아이템을 사용했을 때" },
   { value: "all", label: "모두 맞을 때" },
   { value: "any", label: "하나라도 맞을 때" },
   { value: "not", label: "아닐 때" },
@@ -122,6 +124,12 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
       case "run":
         onChange({ kind: "run", query: "active", value: true });
         return;
+      case "difficulty":
+        onChange({ kind: "difficulty", difficultyId: store.getCurrent().system.difficulties?.[0]?.id ?? "" });
+        return;
+      case "itemUsed":
+        onChange({ kind: "itemUsed", itemId: "" });
+        return;
       case "all":
         onChange({ kind: "all", conditions: [{ kind: "switch", switchId: "", value: true }] });
         return;
@@ -186,6 +194,12 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
       break;
     case "run":
       wrap.append(labeledRun(cond, onChange));
+      break;
+    case "difficulty":
+      wrap.append(renderDifficultyCondition(cond, onChange));
+      break;
+    case "itemUsed":
+      wrap.append(renderItemUsedCondition(cond, onChange));
       break;
     case "all":
     case "any":
@@ -507,6 +521,36 @@ function labeledRun(
   return box;
 }
 
+export function renderDifficultyCondition(
+  cond: Extract<Condition, { kind: "difficulty" }>,
+  onChange: (condition: Condition) => void,
+  testid = "event-condition-difficulty",
+): HTMLElement {
+  const rows = store.getCurrent().system.difficulties ?? [];
+  const box = el("div", { class: "event-condition-detail" });
+  if (rows.length === 0) {
+    box.append(el("p", { class: "event-condition-warning", text: "난이도가 없습니다 — 데이터베이스 「시스템 → 난이도」에서 먼저 만드세요. 지금은 항상 거짓입니다.", dataset: { testid: `${testid}-empty` } }));
+    return box;
+  }
+  const select = el("select", { dataset: { testid } }) as HTMLSelectElement;
+  for (const row of rows) select.append(el("option", { text: row.name, attrs: { value: row.id } }));
+  if (!rows.some((row) => row.id === cond.difficultyId)) select.append(el("option", { text: cond.difficultyId ? `(없는 난이도: ${cond.difficultyId})` : "(선택)", attrs: { value: cond.difficultyId } }));
+  select.value = cond.difficultyId;
+  select.addEventListener("change", () => onChange({ kind: "difficulty", difficultyId: select.value }));
+  box.append(field("난이도", select));
+  return box;
+}
+
+export function renderItemUsedCondition(
+  cond: Extract<Condition, { kind: "itemUsed" }>,
+  onChange: (condition: Condition) => void,
+  testid = "event-condition-item-used",
+): HTMLElement {
+  const box = el("div", { class: "event-condition-detail" });
+  box.append(field("사용한 아이템", itemPickerControl(cond.itemId, (itemId) => onChange({ kind: "itemUsed", itemId }), testid)));
+  return box;
+}
+
 export function renderRunCondition(
   cond: Extract<Condition, { kind: "run" }>,
   onChange: (condition: Condition) => void
@@ -647,6 +691,10 @@ function conditionHint(kind: Condition["kind"]): string {
       return "직전 전투 결과에 따라 분기합니다. 맵에서는 방금 끝난 전투를 보지만, 전투 중(트룹 페이지)에서는 지금 싸우는 전투가 아니라 그 전 전투를 봅니다.";
     case "run":
       return "지금 탐험 중인지, 몇 층인지, 기억과 결과를 검사합니다.";
+    case "difficulty":
+      return "지금 난이도가 이것인지 검사합니다. 난이도는 데이터베이스 「시스템 → 난이도」에서 만들고, 새 게임에서 고르거나 「난이도 변경」 명령으로 바꿉니다.";
+    case "itemUsed":
+      return "메뉴에서 이 아이템을 골라 「바라보는 대상에 사용」했을 때만 참입니다. 이 조건을 단 페이지가 그때 실행됩니다.";
     case "all":
       return "하위 조건을 모두 맞아야 참입니다.";
     case "any":

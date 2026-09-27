@@ -20,7 +20,9 @@ export function monsterSpeciesReferenceMessage(speciesId: string): string | null
     (record) => record.id !== speciesId && (record.evolutions ?? []).some((evolution) => evolution.toSpeciesId === speciesId)
   );
   if (referrers.length) return namedReferenceMessage("종족", referrers, "이 종족으로 진화합니다.");
-  // giveMonster/evolveMonster 이벤트 명령도 종족 id 를 들고 있다.
+  const fusion = (project.system.monsterFusions ?? []).find((row) => row.speciesA === speciesId || row.speciesB === speciesId || row.resultSpeciesId === speciesId);
+  if (fusion) return "몬스터 합성 표(시스템 → 몬스터 합성)가 이 종족을 사용 중입니다.";
+  // giveMonster/evolveMonster/tradeMonster 이벤트 명령도 종족 id 를 들고 있다.
   return commandLocationMessage(project, "monsterSpecies", speciesId, "종족");
 }
 

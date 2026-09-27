@@ -85,6 +85,13 @@ export type Condition =
   | RelationshipCondition
   | { kind: "battleResult"; result: "victory" | "defeat" | "escape" }
   | RoguelikeRunCondition
+  /** 현재 난이도(system.difficulties 의 id)가 이것일 때 참. 난이도 목록이 없는 프로젝트에서는 항상 거짓. */
+  | { kind: "difficulty"; difficultyId: string }
+  /**
+   * 메뉴에서 아이템을 «바라보는 이벤트에 사용»해 이 페이지가 발동됐고 그 아이템이 itemId 일 때 참.
+   * 평소 조사·접촉 발동에서는 거짓이다 — 아이템 사용 전용 페이지를 만든다.
+   */
+  | { kind: "itemUsed"; itemId: ItemId }
   | { kind: "all"; conditions: Condition[] }
   | { kind: "any"; conditions: Condition[] }
   | { kind: "not"; condition: Condition };
@@ -526,7 +533,25 @@ export type Command =
   | { kind: "returnToTitle" }
   | { kind: "setFlag"; flag: FlagName; value: boolean }
   | { kind: "setSelfSwitch"; key: SelfSwitchKey; value: boolean }
-  | { kind: "m2Command"; commandId: string; fields: M2CommandFields };
+  | { kind: "m2Command"; commandId: string; fields: M2CommandFields }
+  /** 난이도 변경(system.difficulties 의 id). 없는 id 는 무시한다. */
+  | { kind: "setDifficulty"; difficultyId: string }
+  /** 현재 파티(구성원·위치)를 이름 붙은 파티 묶음으로 저장한다. 같은 이름은 덮어쓴다. */
+  | { kind: "storeParty"; partySetId: string }
+  /**
+   * 저장한 파티 묶음으로 조작을 바꾼다. 지금 파티는 activePartySetId 로 자동 저장되고,
+   * 불러온 묶음의 위치로 이동한다(맵이 같으면 제자리 교체). 없는 묶음이면 flags.recallPartySuccess=false.
+   */
+  | { kind: "recallParty"; partySetId: string }
+  /** 몬스터 놓아주기. instanceId 를 비우면 보관함의 첫 개체. 결과는 flags.removeMonsterSuccess. */
+  | { kind: "removeMonster"; instanceId: string }
+  /** NPC 교환: 파티·보관함에서 fromSpeciesId 종 한 마리를 내주고 toSpeciesId 종을 받는다. 결과는 flags.tradeMonsterSuccess. */
+  | { kind: "tradeMonster"; fromSpeciesId: MonsterSpeciesId; toSpeciesId: MonsterSpeciesId; level?: number; nickname?: string }
+  /**
+   * 두 개체를 합성해 system.monsterFusions 표의 결과 종 하나로 만든다. 표에 없는 조합이면 실패.
+   * 결과는 flags.fuseMonstersSuccess.
+   */
+  | { kind: "fuseMonsters"; instanceIdA: string; instanceIdB: string };
 
 export type EventPriority = "below" | "same" | "above";
 export type AutonomousMovement = "fixed" | "random" | "approach" | "custom" | "living" | "chase";

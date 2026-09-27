@@ -312,4 +312,7 @@ export interface PlaySessionLike {
   roguelikeRun?: RoguelikeRunState;
   // 직전 전투 처리 결과. battleProcessing 이 종료된 뒤 인터프리터/필드 스폰/페이지 조건에서 사용.
   battleResult?: BattleResult;
+  difficultyId?: string;
+  /** 메뉴 «바라보는 대상에 사용»이 발동 중인 아이템 id. 그 한 번의 페이지 판정 동안만 있다. */
+  itemUsedId?: string;
 }

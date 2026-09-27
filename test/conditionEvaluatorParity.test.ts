@@ -24,7 +24,11 @@ const PARITY_LOCATION_ID = "loc_parity";
 // battleResult 는 여기서 «같은 스냅샷 입력 → 같은 판정» 만 고정한다. 실전 시간 의미는
 // 표면마다 다르다(맵 fork = 방금 끝난 전투, 전투 중 fork/페이지 = 전투 개시 시점의 직전
 // 전투) — 상태-패리티와 시간-패리티를 혼동하지 말 것. fork 폼 힌트가 시간 의미를 설명한다.
-const ALLOWLISTED_DIVERGENCES = {} satisfies Partial<Record<ConditionKind, string>>;
+const ALLOWLISTED_DIVERGENCES = {
+  // «바라보는 대상에 사용»은 필드 메뉴 전용 입력이다 — 전투 이벤트에는 사용 중인 아이템이라는 입력 자체가 없어
+  // 항상 거짓이다(페이지·맵 분기는 session.itemUsedId 로 참이 된다). 상태가 아니라 입력 경로의 차이다.
+  itemUsed: "field-menu-only input; battle events have no item-in-use state and evaluate false",
+} satisfies Partial<Record<ConditionKind, string>>;
 
 type StateMutation = (state: PlaySession) => void;
 type ParityCase = {
@@ -120,6 +124,16 @@ const CASES = {
     condition: { kind: "run", query: "active", value: true },
     satisfying: (state) => { state.roguelikeRun = structuredClone(RUN_ACTIVE); },
     nonSatisfying: (state) => { state.roguelikeRun = { ...structuredClone(RUN_ACTIVE), status: "completed" }; },
+  },
+  difficulty: {
+    condition: { kind: "difficulty", difficultyId: "hard" },
+    satisfying: (state) => { state.difficultyId = "hard"; },
+    nonSatisfying: (state) => { state.difficultyId = "easy"; },
+  },
+  itemUsed: {
+    condition: { kind: "itemUsed", itemId: "item_potion" },
+    satisfying: (state) => { state.itemUsedId = "item_potion"; },
+    nonSatisfying: (state) => { state.itemUsedId = "item_ether"; },
   },
   all: {
     condition: {
