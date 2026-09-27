@@ -1955,6 +1955,11 @@
     "file": "A5_REFMAP_Interior.png",
     "folder": "refmap-interior",
     "sha256": "1216e8268a91289b18819f767e0b5999119ce3cbca1cfa055903a8b611c19b34"
+   },
+   {
+    "file": "D_REFMAP_Interior_Extra.png",
+    "folder": "refmap-interior",
+    "sha256": "b22c62851d0044d10410970ac23a75935891f5b818fc2680c3349fc3342926e7"
    }
   ],
   "autotiles": [
@@ -5128,9 +5133,755 @@
     "h": 1,
     "kind": "prop",
     "name": "작은 초록 호박"
+   },
+   {
+    "id": "smith_forge",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 0,
+    "y": 0,
+    "w": 2,
+    "h": 3,
+    "kind": "tall",
+    "name": "대장간 화로(달군 숯)",
+    "description": "벽돌 화로 위에 벌건 숯, 앞에 불 아궁이. 북벽에 붙여 윗칸이 벽면에 걸리게. 아래 두 줄이 막힌다",
+    "solid": [
+     [
+      0,
+      1
+     ],
+     [
+      1,
+      1
+     ],
+     [
+      0,
+      2
+     ],
+     [
+      1,
+      2
+     ]
+    ]
+   },
+   {
+    "id": "anvil",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 2,
+    "y": 0,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "모루(나무 밑둥)",
+    "description": "화로 앞 한두 칸 떨어진 바닥 가운데. 곁에 담금질 통"
+   },
+   {
+    "id": "smith_tool_rack",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 3,
+    "y": 0,
+    "w": 1,
+    "h": 1,
+    "kind": "wallmount",
+    "name": "벽 공구걸이(집게·망치·줄)",
+    "description": "화로 곁 벽면에"
+   },
+   {
+    "id": "quench_tub",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 4,
+    "y": 0,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "물 담은 나무통(담금질 통)",
+    "description": "모루 옆. 부엌·빨래터 물통으로도"
+   },
+   {
+    "id": "coal_pile",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 5,
+    "y": 0,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "숯 더미",
+    "description": "화로 옆 바닥 구석"
+   },
+   {
+    "id": "blade_rack",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 6,
+    "y": 0,
+    "w": 1,
+    "h": 2,
+    "kind": "tall",
+    "name": "벼린 칼 세워 둔 거치대",
+    "description": "대장간 벽 앞. 초소 무기 벽 대신 대장간 표지로",
+    "solid": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "spear_rack_wall",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 7,
+    "y": 0,
+    "w": 2,
+    "h": 1,
+    "kind": "wallmount",
+    "name": "벽에 가로로 건 창 네 자루",
+    "description": "대장간·무기점 벽면"
+   },
+   {
+    "id": "dagger_wall",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 9,
+    "y": 0,
+    "w": 1,
+    "h": 1,
+    "kind": "wallmount",
+    "name": "벽에 건 단검 셋",
+    "description": "대장간·무기점 벽면"
+   },
+   {
+    "id": "armor_repair_crates",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 10,
+    "y": 0,
+    "w": 1,
+    "h": 2,
+    "kind": "prop",
+    "name": "수리할 갑옷 상자 두 개",
+    "description": "대장간 구석. 투구·건틀릿이 담긴 상자"
+   },
+   {
+    "id": "bread_oven",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 11,
+    "y": 0,
+    "w": 2,
+    "h": 2,
+    "kind": "tall",
+    "name": "벽돌 빵 가마(쇠문)",
+    "description": "북벽에 붙인다. 윗줄이 벽면, 아랫줄 쇠문 앞이 바닥 첫 줄. 아랫줄만 막힌다",
+    "solid": [
+     [
+      0,
+      1
+     ],
+     [
+      1,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "bread_counter",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 13,
+    "y": 0,
+    "w": 2,
+    "h": 1,
+    "kind": "prop",
+    "name": "빵 광주리 얹은 벽돌 진열대",
+    "description": "가게 칸 앞쪽 카운터 자리. 2칸 막힌다"
+   },
+   {
+    "id": "bread_table",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 15,
+    "y": 0,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "빵 광주리 둘 얹은 작은 탁자",
+    "description": "가마 곁 작업대"
+   },
+   {
+    "id": "bread_basket",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 2,
+    "y": 1,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "둥근 빵 광주리",
+    "description": "탁자·카운터 위에 겹쳐 둔다"
+   },
+   {
+    "id": "flour_sack",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 3,
+    "y": 1,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "밀가루 자루",
+    "description": "가마 곁·창고. 두세 개 덩이로"
+   },
+   {
+    "id": "flour_barrel",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 4,
+    "y": 1,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "밀가루 통",
+    "description": "가마 곁·창고"
+   },
+   {
+    "id": "dough_tub",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 5,
+    "y": 1,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "빵 반죽 통",
+    "description": "작업대 곁 바닥"
+   },
+   {
+    "id": "stone_counter",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 7,
+    "y": 1,
+    "w": 2,
+    "h": 1,
+    "kind": "prop",
+    "name": "흰 돌 벽돌 조리대(2칸)",
+    "description": "부엌 벽 앞. 2칸 막힌다"
+   },
+   {
+    "id": "burner_counter",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 13,
+    "y": 1,
+    "w": 2,
+    "h": 1,
+    "kind": "prop",
+    "name": "화구 달린 벽돌 조리대(2칸)",
+    "description": "부엌 벽 앞. 조리대 곁에 잇는다"
+   },
+   {
+    "id": "sink_counter",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 9,
+    "y": 1,
+    "w": 1,
+    "h": 2,
+    "kind": "tall",
+    "name": "개수대 조리대",
+    "description": "부엌 북벽. 수도꼭지가 벽면에 걸린다. 아랫칸만 막힌다",
+    "solid": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "stock_pots",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 15,
+    "y": 1,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "큰 솥 두 개",
+    "description": "조리대 위나 부엌 바닥"
+   },
+   {
+    "id": "pan_kettle",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 2,
+    "y": 2,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "프라이팬과 주전자",
+    "description": "조리대·화덕 위에"
+   },
+   {
+    "id": "egg_pan",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 3,
+    "y": 2,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "달걀 부치는 팬과 주전자",
+    "description": "조리대 위에"
+   },
+   {
+    "id": "cutting_board",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 4,
+    "y": 2,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "도마와 채소",
+    "description": "조리대·탁자 위에"
+   },
+   {
+    "id": "plates",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 5,
+    "y": 2,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "흰 접시 더미",
+    "description": "탁자·찬장 위에"
+   },
+   {
+    "id": "hanging_pans",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 6,
+    "y": 2,
+    "w": 1,
+    "h": 1,
+    "kind": "wallmount",
+    "name": "벽에 건 프라이팬 둘",
+    "description": "부엌 벽면"
+   },
+   {
+    "id": "hanging_ladles",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 7,
+    "y": 2,
+    "w": 1,
+    "h": 1,
+    "kind": "wallmount",
+    "name": "벽에 건 국자·주걱",
+    "description": "부엌 벽면"
+   },
+   {
+    "id": "log_stack",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 8,
+    "y": 2,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "쌓은 통나무 장작",
+    "description": "화덕 곁·겨울 채비. 나무꾼 집"
+   },
+   {
+    "id": "fishing_net_wall",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 10,
+    "y": 2,
+    "w": 2,
+    "h": 1,
+    "kind": "wallmount",
+    "name": "벽에 늘어뜨린 그물(부표)",
+    "description": "어부 집 벽면 2칸"
+   },
+   {
+    "id": "drying_fish",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 12,
+    "y": 2,
+    "w": 2,
+    "h": 1,
+    "kind": "wallmount",
+    "name": "줄에 꿰어 말리는 생선",
+    "description": "어부 집 벽면·처마 밑"
+   },
+   {
+    "id": "fishing_rods",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 14,
+    "y": 2,
+    "w": 1,
+    "h": 2,
+    "kind": "tall",
+    "name": "기대 세운 낚싯대·뜰채",
+    "description": "벽 앞 구석. 아랫칸만 막힌다",
+    "solid": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "fish_basket",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 15,
+    "y": 2,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "생선 담은 바구니",
+    "description": "어부 집 문가·부엌"
+   },
+   {
+    "id": "fish_tub",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 0,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "생선·천 담긴 나무통",
+    "description": "어부 집·빨래통"
+   },
+   {
+    "id": "wood_tub",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 1,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "빈 나무통",
+    "description": "어디든"
+   },
+   {
+    "id": "pick_shovel",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 2,
+    "y": 3,
+    "w": 1,
+    "h": 2,
+    "kind": "tall",
+    "name": "기대 세운 곡괭이·삽",
+    "description": "광부 집 벽 앞 구석. 아랫칸만 막힌다",
+    "solid": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "miner_lantern",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 3,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "wallmount",
+    "name": "갓 달린 광부 등",
+    "description": "광부 집 벽면·현관"
+   },
+   {
+    "id": "ore_crate",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 4,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "광석 담은 나무 상자",
+    "description": "광부 집 현관·창고"
+   },
+   {
+    "id": "glowing_ore",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 5,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "붉게 빛나는 광석 덩이",
+    "description": "광부 집 탁자 곁·상자 옆 한 점"
+   },
+   {
+    "id": "iron_bucket",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 6,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "빈 양철 양동이",
+    "description": "부엌·셋방 구석"
+   },
+   {
+    "id": "water_bucket",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 7,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "물 담은 양철 양동이",
+    "description": "부엌·셋방 구석"
+   },
+   {
+    "id": "empty_wood_bucket",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 8,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "빈 나무 들통",
+    "description": "부엌·헛간"
+   },
+   {
+    "id": "broom_dustpan",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 9,
+    "y": 3,
+    "w": 1,
+    "h": 2,
+    "kind": "tall",
+    "name": "빗자루와 쓰레받기",
+    "description": "벽 앞 구석. 아랫칸만 막힌다",
+    "solid": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "mop",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 10,
+    "y": 3,
+    "w": 1,
+    "h": 2,
+    "kind": "tall",
+    "name": "기대 세운 걸레 자루",
+    "description": "벽 앞 구석. 아랫칸만 막힌다",
+    "solid": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "empty_sack",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 11,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "빈 자루",
+    "description": "셋방·창고"
+   },
+   {
+    "id": "empty_barrel",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 12,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "빈 나무통(뚜껑 없음)",
+    "description": "셋방·창고"
+   },
+   {
+    "id": "cloth_rolls",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 13,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "천 두루마리 더미",
+    "description": "재봉·옷가게·혼수 방"
+   },
+   {
+    "id": "cloth_shelf",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 15,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "천 두루마리 얹은 낮은 선반",
+    "description": "재봉집 벽 앞"
+   },
+   {
+    "id": "cloth_table",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 0,
+    "y": 4,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "흰 천 덮은 작은 탁자",
+    "description": "침실·거실"
+   },
+   {
+    "id": "plain_table",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 1,
+    "y": 4,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "다리 보이는 작은 나무 탁자",
+    "description": "어디든"
+   },
+   {
+    "id": "wood_bed_pink_h",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 3,
+    "y": 4,
+    "w": 3,
+    "h": 1,
+    "kind": "prop",
+    "name": "가로 나무 침대(분홍 이불)",
+    "description": "3×1. 머리를 서쪽 벽에 붙인다(세로 침대만 쓰지 말 것)"
+   },
+   {
+    "id": "wood_bed_h",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 6,
+    "y": 4,
+    "w": 3,
+    "h": 1,
+    "kind": "prop",
+    "name": "가로 나무 침대",
+    "description": "3×1. 머리를 서쪽 벽에 붙인다"
+   },
+   {
+    "id": "gold_bed_green_h",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 11,
+    "y": 4,
+    "w": 3,
+    "h": 1,
+    "kind": "prop",
+    "name": "가로 금장 침대(초록 누비이불)",
+    "description": "3×1. 머리를 서쪽 벽에 붙인다"
+   },
+   {
+    "id": "window_wood_lit",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 14,
+    "y": 4,
+    "w": 1,
+    "h": 2,
+    "kind": "wallmount",
+    "name": "밝은 나무 네모창",
+    "description": "벽면 2줄에"
+   },
+   {
+    "id": "window_wood_dark",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 15,
+    "y": 4,
+    "w": 1,
+    "h": 2,
+    "kind": "wallmount",
+    "name": "어두운 나무 네모창",
+    "description": "벽면 2줄에(밤)"
+   },
+   {
+    "id": "window_red_curtain_lit",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 0,
+    "y": 5,
+    "w": 1,
+    "h": 2,
+    "kind": "wallmount",
+    "name": "붉은 커튼 밝은 창",
+    "description": "벽면 2줄에"
+   },
+   {
+    "id": "window_red_curtain_dark",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 1,
+    "y": 5,
+    "w": 1,
+    "h": 2,
+    "kind": "wallmount",
+    "name": "붉은 커튼 어두운 창",
+    "description": "벽면 2줄에(밤)"
+   },
+   {
+    "id": "red_curtain_closed",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 2,
+    "y": 5,
+    "w": 1,
+    "h": 2,
+    "kind": "wallmount",
+    "name": "닫힌 붉은 커튼",
+    "description": "벽면 2줄에"
+   },
+   {
+    "id": "harvest_crates",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 3,
+    "y": 5,
+    "w": 2,
+    "h": 2,
+    "kind": "prop",
+    "name": "기대 세운 수확 상자 넷(가을)",
+    "description": "2×2. 가을 부엌·광 벽 앞"
+   },
+   {
+    "id": "apple_crate",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 5,
+    "y": 5,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "사과 상자(가을)",
+    "description": "부엌·광"
+   },
+   {
+    "id": "veg_crates",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 6,
+    "y": 5,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "채소·당근 작은 상자",
+    "description": "부엌·광"
+   },
+   {
+    "id": "fruit_bowls",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 7,
+    "y": 5,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "사과·귤 담은 그릇",
+    "description": "탁자 위에"
+   },
+   {
+    "id": "garlic_pepper_crates",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 8,
+    "y": 5,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "마늘·고추 작은 상자",
+    "description": "부엌·광"
+   },
+   {
+    "id": "onion_crate",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 9,
+    "y": 5,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "양파 상자",
+    "description": "부엌·광"
    }
   ],
-  "guide": "# REFMAP 실내 + 마녀의 방 조립법\n\n작가(REFMAP)의 판타지 실내 팩과 「마녀의 방」 추가 시트(C). 칸 48px. 방은 A4 천장 테로 둘러싸고, 북쪽 벽면 2줄 아래가 바닥이다.\n\n## 1. 바닥\n- 방 밖(맵 전체)을 먼저 천장 재료로 칠한다. 천장 속은 검게 보이고 방과 닿는 곳에 테가 그려진다.\n  - 여관·민가: `\"짙은 나무 천장\"` / 저택·마녀의 방: `\"짙은 갈색 천장\"` / 성·신전: `\"석벽돌 천장\"`·`\"청회색 천장\"` / 지하: `\"그늘 천장\"`.\n- 방 자리를 바닥으로 판다. 기본 바닥은 `\"쪽마루 바닥\"`(나무)·`\"판석 바닥\"`(돌). A5 평타일 `\"밝은 가로 마루\"`+`\"밝은 가로 마루(아랫단)\"`, `\"보라 문양 카펫\"`, `\"흑백 체크 타일\"` 등으로 방마다 바닥을 바꾼다.\n- 방 사이 통로는 1~2칸 폭으로 바닥을 이어 판다. 통로의 벽면도 위쪽 2줄에 댄다.\n\n## 2. 벽\n- 방 사각형의 맨 위 2줄 = 벽면(천장 테 바로 아래). 천장과 짝을 맞춘다:\n  `\"짙은 나무 천장\"`↔`\"흰 회벽\"`, `\"나무·회색 천장\"`↔`\"분홍 벽지\"`, `\"짙은 갈색 천장\"`↔`\"노란 무늬 벽지\"`·`\"흰 회벽(짙은 나무 틀)\"`, `\"밝은 나무 천장\"`↔`\"나무 판자 벽\"`, `\"석벽돌 천장\"`↔`\"밝은 석벽돌 벽\"`.\n- 방 안에 튀어나온 칸막이 벽은 천장 재료 덩이(1~2칸 폭)를 세우고 그 바로 아래 2줄에 벽면을 단다.\n- 옆방으로 가는 가로 통로(세로 칸막이를 뚫는 문)는 통로 2줄 위 2줄에 벽면(문 인방)을 남기고 그 위는 천장으로 둔다 — 천장 바로 밑이 바닥이면 안 된다.\n- 방을 모두 직사각형으로 두지 말 것: 구석에 천장 덩이를 들여 ㄱ·ㄷ자 방, 알코브, 튀어나온 벽 기둥을 만들고 칸막이 두께를 1~3칸으로 섞는다. 통로 바닥은 이어지는 방 바닥 한 가지로.\n- 벽면 평타일(`\"짙은 기둥 회벽 위/아래\"` 등)을 벽면 줄에 덧칠하면 기둥 무늬가 생긴다.\n- 문: 벽면 2줄 자리에 `doorway_dark`·`doorway_lit`·`arch_door_lit`. 바깥 출구는 남쪽 벽 천장 테를 1~2칸 비워 바닥을 맵 끝까지 잇는다.\n\n## 3. 물\n- 실내 수조·목욕탕은 `\"돌테 수조 물\"`, 지하 수로는 `\"돌 수로 물\"`·`\"짙은 물(돌바닥)\"`.\n\n## 4. 큰 가구\n- 탁자·카운터: A2 `\"나무 카운터\"`·`\"짙은 나무 탁자\"`를 **2층**에 2칸 이상 덩이로 깐다(막힘). 위에 `teapot_set`·`wine_set`·`candelabra`·`open_book`, 마녀 방이면 `potion_clutter`·`jars_papers`·`root_herbs`·`green_books` 을 올린다.\n- 식탁: `big_table`(3×3) 둘레에 `chair_s`(위)·`chair_n`(아래)·`chair_e`(왼쪽)·`chair_w`(오른쪽).\n- 벽에 붙는 가구(높이 2~3칸)는 윗칸이 벽면에 걸리게: `light_bookshelf`·`dark_bookshelf`·`light_dresser`·`glass_cabinet`·`fireplace`·`iron_stove`·`pendulum_clock`.\n- 창·액자·화환은 벽면 2줄에만: `window_lit`·`window_blue_lit`·`tall_window_lit`·`lattice_window_lit`·`ivy_window_lit`·`purple_window_lit`·`flower_painting`·`portrait`·`wreath_*`·`hanging_herbs`·`herb_shelf`·`jar_shelf`.\n- 계단: 위층 계단은 **옆벽을 따라 비스듬히** 놓는다 — 방 왼쪽 아래 구석이면 `wood_stairs_up_left`(높은 끝이 왼쪽 벽), 오른쪽 아래 구석이면 `wood_stairs_up_right`. 북쪽 벽 가운데에 붙여 벽 속으로 오르게 두지 않는다. `wood_stairs_wide` 는 두 계단이 붙은 Λ 조각이라 벽 계단으로 쓰지 않는다. 돌 실내는 `stone_stairs_up_left/right`, 벽을 타는 좁은 계단은 `wood_ladder_stairs`, 지하는 `floor_hatch`·`stairwell_down`.\n- 침실: `wood_bed`·`gold_bed` 에 `pink_quilt`·`green_quilt` 를 겹치면 누운 이불이 된다. 곁에 `table_lamp`·`washbasin`.\n\n## 5. 소품\n- 여관·술집: 카운터 뒤 `light_goods_shelf`·`barrel_stack`·`kitchen_cupboard`, 식당에 `big_table` 여러 벌과 `stool_round`, 구석에 `potted_plant`·`crate`·`sack`.\n- 마녀의 방: 가운데 `big_cauldron` 또는 `cauldron_stand` 와 `magic_circle`, 벽에 `hanging_herbs`·`laundry_garland`·`antler_branch`·`pinned_notes`, 점술 방은 `\"보라 문양 카펫\"` 위 `fortune_table`+`crystal_ball`, 창고에 `ingredient_crates`·`barrel_upright`·`lidded_jar`·`herb_box_scales`·`crystals_bones`, 침실 `witch_bed`+`red_blanket`.\n- 계절 장식: 겨울은 `xmas_tree`·`gift_pile`·`wreath_*`, 가을은 `jackolantern_stack`·`pumpkins`·`big_pumpkin`.\n- 같은 물체를 한 줄로 늘어놓지 말고 벽 쪽 덩이 + 빈 동선을 섞는다.\n"
+  "guide": "# REFMAP 실내 + 마녀의 방 조립법\n\n작가(REFMAP)의 판타지 실내 팩과 「마녀의 방」 추가 시트(C). 칸 48px. 방은 A4 천장 테로 둘러싸고, 북쪽 벽면 2줄 아래가 바닥이다.\n\n## 1. 바닥\n- 방 밖(맵 전체)을 먼저 천장 재료로 칠한다. 천장 속은 검게 보이고 방과 닿는 곳에 테가 그려진다.\n  - 여관·민가: `\"짙은 나무 천장\"` / 저택·마녀의 방: `\"짙은 갈색 천장\"` / 성·신전: `\"석벽돌 천장\"`·`\"청회색 천장\"` / 지하: `\"그늘 천장\"`.\n- 방 자리를 바닥으로 판다. 기본 바닥은 `\"쪽마루 바닥\"`(나무)·`\"판석 바닥\"`(돌). A5 평타일 `\"밝은 가로 마루\"`+`\"밝은 가로 마루(아랫단)\"`, `\"보라 문양 카펫\"`, `\"흑백 체크 타일\"` 등으로 방마다 바닥을 바꾼다.\n- 방 사이 통로는 1~2칸 폭으로 바닥을 이어 판다. 통로의 벽면도 위쪽 2줄에 댄다.\n\n## 2. 벽\n- 방 사각형의 맨 위 2줄 = 벽면(천장 테 바로 아래). 천장과 짝을 맞춘다:\n  `\"짙은 나무 천장\"`↔`\"흰 회벽\"`, `\"나무·회색 천장\"`↔`\"분홍 벽지\"`, `\"짙은 갈색 천장\"`↔`\"노란 무늬 벽지\"`·`\"흰 회벽(짙은 나무 틀)\"`, `\"밝은 나무 천장\"`↔`\"나무 판자 벽\"`, `\"석벽돌 천장\"`↔`\"밝은 석벽돌 벽\"`.\n- 방 안에 튀어나온 칸막이 벽은 천장 재료 덩이(1~2칸 폭)를 세우고 그 바로 아래 2줄에 벽면을 단다.\n- 옆방으로 가는 가로 통로(세로 칸막이를 뚫는 문)는 통로 2줄 위 2줄에 벽면(문 인방)을 남기고 그 위는 천장으로 둔다 — 천장 바로 밑이 바닥이면 안 된다.\n- 방을 모두 직사각형으로 두지 말 것: 구석에 천장 덩이를 들여 ㄱ·ㄷ자 방, 알코브, 튀어나온 벽 기둥을 만들고 칸막이 두께를 1~3칸으로 섞는다. 통로 바닥은 이어지는 방 바닥 한 가지로.\n- 벽면 평타일(`\"짙은 기둥 회벽 위/아래\"` 등)을 벽면 줄에 덧칠하면 기둥 무늬가 생긴다.\n- 문: 벽면 2줄 자리에 `doorway_dark`·`doorway_lit`·`arch_door_lit`. 바깥 출구는 남쪽 벽 천장 테를 1~2칸 비워 바닥을 맵 끝까지 잇는다.\n\n## 3. 물\n- 실내 수조·목욕탕은 `\"돌테 수조 물\"`, 지하 수로는 `\"돌 수로 물\"`·`\"짙은 물(돌바닥)\"`.\n\n## 4. 큰 가구\n- 탁자·카운터: A2 `\"나무 카운터\"`·`\"짙은 나무 탁자\"`를 **2층**에 2칸 이상 덩이로 깐다(막힘). 위에 `teapot_set`·`wine_set`·`candelabra`·`open_book`, 마녀 방이면 `potion_clutter`·`jars_papers`·`root_herbs`·`green_books` 을 올린다.\n- 식탁: `big_table`(3×3) 둘레에 `chair_s`(위)·`chair_n`(아래)·`chair_e`(왼쪽)·`chair_w`(오른쪽).\n- 벽에 붙는 가구(높이 2~3칸)는 윗칸이 벽면에 걸리게: `light_bookshelf`·`dark_bookshelf`·`light_dresser`·`glass_cabinet`·`fireplace`·`iron_stove`·`pendulum_clock`.\n- 창·액자·화환은 벽면 2줄에만: `window_lit`·`window_blue_lit`·`tall_window_lit`·`lattice_window_lit`·`ivy_window_lit`·`purple_window_lit`·`flower_painting`·`portrait`·`wreath_*`·`hanging_herbs`·`herb_shelf`·`jar_shelf`.\n- 계단: 위층 계단은 **옆벽을 따라 비스듬히** 놓는다 — 방 왼쪽 아래 구석이면 `wood_stairs_up_left`(높은 끝이 왼쪽 벽), 오른쪽 아래 구석이면 `wood_stairs_up_right`. 북쪽 벽 가운데에 붙여 벽 속으로 오르게 두지 않는다. `wood_stairs_wide` 는 두 계단이 붙은 Λ 조각이라 벽 계단으로 쓰지 않는다. 돌 실내는 `stone_stairs_up_left/right`, 벽을 타는 좁은 계단은 `wood_ladder_stairs`, 지하는 `floor_hatch`·`stairwell_down`.\n- 침실: `wood_bed`·`gold_bed` 에 `pink_quilt`·`green_quilt` 를 겹치면 누운 이불이 된다. 곁에 `table_lamp`·`washbasin`.\n\n## 5. 소품\n- 여관·술집: 카운터 뒤 `light_goods_shelf`·`barrel_stack`·`kitchen_cupboard`, 식당에 `big_table` 여러 벌과 `stool_round`, 구석에 `potted_plant`·`crate`·`sack`.\n- 마녀의 방: 가운데 `big_cauldron` 또는 `cauldron_stand` 와 `magic_circle`, 벽에 `hanging_herbs`·`laundry_garland`·`antler_branch`·`pinned_notes`, 점술 방은 `\"보라 문양 카펫\"` 위 `fortune_table`+`crystal_ball`, 창고에 `ingredient_crates`·`barrel_upright`·`lidded_jar`·`herb_box_scales`·`crystals_bones`, 침실 `witch_bed`+`red_blanket`.\n- 계절 장식: 겨울은 `xmas_tree`·`gift_pile`·`wreath_*`, 가을은 `jackolantern_stack`·`pumpkins`·`big_pumpkin`.\n- 같은 물체를 한 줄로 늘어놓지 말고 벽 쪽 덩이 + 빈 동선을 섞는다.\n\n## 6. 작은 집 직업·살림 조립법 (확장 시트 D_Extra)\n직업은 대용품으로 흉내 내지 말고 그 직업의 물체로 읽히게 한다. 같은 무기 벽·같은 침대 자세를 여러 집에 돌려 쓰지 않는다.\n- **대장간**: 북벽에 `smith_forge`(2×3, 윗줄 벽면) → 그 앞 1~2칸 띄워 `anvil` → 모루 옆 `quench_tub` → 화로 곁 바닥 `coal_pile`, 벽면에 `smith_tool_rack`. 완성품은 `blade_rack`·`dagger_wall`·`spear_rack_wall`, 구석에 `armor_repair_crates`. `crossed_swords`·`shield_deco`·`knight_armor` 무기 벽 세트는 초소·성 전용이다. 거실용 `fireplace` 를 화덕 대신 쓰지 말 것.\n- **빵집**: 북벽에 `bread_oven`(2×2) → 곁에 `bread_table`(작업대)·`dough_tub` → 가마 옆·창고에 `flour_sack` 2~3개 덩이 + `flour_barrel` → 가게 칸 앞쪽에 `bread_counter`, 탁자·카운터 위에 `bread_basket`. 약 저울 `herb_box_scales`·약병은 쓰지 않는다.\n- **부엌(모든 집)**: 벽 앞에 `stone_counter`·`burner_counter`·`sink_counter` 를 이어 조리대 줄을 만들고 위에 `stock_pots`·`pan_kettle`·`egg_pan`·`cutting_board`·`plates`, 벽면에 `hanging_pans`·`hanging_ladles`. 냄비를 맨바닥에 두지 않는다.\n- **어부**: 벽면에 `fishing_net_wall`(2칸)과 `drying_fish`, 벽 앞 구석에 `fishing_rods`, 문가·부엌에 `fish_basket`·`fish_tub`. 나무꾼 집과 다르게 판자 벽 + 짙은 물빛 소품으로.\n- **광부**: 벽 앞 구석 `pick_shovel`, 벽면·현관에 `miner_lantern`, 현관·창고에 `ore_crate` + `glowing_ore` 한 점, `log_stack` 대신 `crate`·`sack`. 전투도끼 `wall_axe` 는 쓰지 않는다.\n- **나무꾼**: `log_stack`·`firewood`·`wood_trestle`, 도끼는 `wall_axe` 하나만. 어부 집과 벽·바닥 재료를 다르게.\n- **재봉·혼수**: `cloth_shelf`·`cloth_rolls`, `cloth_table`.\n- **가난한 셋방**: 물체 수를 줄이고 `iron_bucket`·`water_bucket`·`empty_sack`·`empty_barrel`·`mop`·`broom_dustpan`, 불빛은 `table_lamp` 하나. 금촛대 `candelabra` 는 쓰지 않는다.\n- **침대 자세를 섞는다**: 세로 침대(`wood_bed` 등, 머리 북벽)만 쓰지 말고 두세 집은 가로 침대 `wood_bed_h`·`wood_bed_pink_h`·`gold_bed_green_h`(3×1, 머리를 서쪽 벽)로. 방 가운데로 밀거나 창 밑 벽에 붙이는 자리도 쓴다.\n- **창을 바꾼다**: `window_wood_lit/dark`·`window_red_curtain_lit/dark`·`red_curtain_closed` 로 집마다 창 모양을 다르게.\n- **계절**: 가을 집은 벽 앞 `harvest_crates`(2×2)·`apple_crate`·`onion_crate`·`veg_crates`·`garlic_pepper_crates`, 탁자 위 `fruit_bowls`, 호박류. 겨울 집은 화덕 곁 `log_stack` 과 `wreath_*`·`xmas_tree`·`gift_pile`.\n"
  },
  {
   "id": "refmap-mz-ground",
