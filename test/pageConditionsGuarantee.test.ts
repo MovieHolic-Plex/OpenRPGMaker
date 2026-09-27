@@ -127,7 +127,7 @@ function sampleCondition(kind: (typeof CONDITION_KINDS)[number]): EventPageCondi
     case "partySize":
       return { kind: "partySize", op: ">=", value: 1 };
     case "facing":
-      return { kind: "facing", subject: "player", dir: "up" };
+      return { kind: "facing", subject: "player", dir: "left" };
     case "relativeFacing":
       return { kind: "relativeFacing", relation: "playerBehindEvent" };
     case "hiding":
@@ -141,7 +141,7 @@ function sampleCondition(kind: (typeof CONDITION_KINDS)[number]): EventPageCondi
     case "newGamePlus":
       return { kind: "newGamePlus", value: true };
     case "weekday":
-      return { kind: "weekday", weekdays: [0, 6] };
+      return { kind: "weekday", weekdays: [0, 1, 2, 3, 4, 5, 6] };
     case "stringVariable":
       return { kind: "stringVariable", stringVariableId: "prayer", op: "==", value: "빛" };
     case "difficulty":
@@ -451,7 +451,20 @@ describe("page conditions working guarantee (all kinds)", () => {
       roguelikeRun: RUN_STATE,
       difficultyId: "normal",
       itemUsedId: DEFAULT_ITEM_ID,
-    };
+      // 조회 조건(명작 공백 G1) 이 읽는 세션 칸.
+      actorLevels: { [DEFAULT_ACTOR_ID]: 5 },
+      actorVitals: {},
+      actorStateIds: { [DEFAULT_ACTOR_ID]: [store.getCurrent().database.states[0]?.id ?? "state_1"] },
+      playerFacing: "left" as const,
+      currentMapId: "m",
+      eventLocations: { ev_runtime: { mapId: "m", x: 1, y: 0, direction: "up" as const } },
+      horror: { hiding: { mapId: "m", eventId: "closet", witnessedBy: [] }, pursuits: { chaser: { active: true } } },
+      flags: { ngplus: true },
+      stringVariables: { prayer: "빛" },
+      clearHistory: { count: 1, endingIds: ["ending_1"] },
+      monsterInstances: { mon1: { id: "mon1", speciesId: store.getCurrent().database.monsterSpecies?.[0]?.id ?? "species_1" } },
+      monsterParty: ["mon1"],
+    } as unknown as Parameters<typeof resolveEventPage>[1];
     event.characterId = "ev_runtime";
     // fill variable id from actual sample
     const varCond = conditions.find((c) => c.kind === "variable");
@@ -624,10 +637,65 @@ describe("page conditions working guarantee (all kinds)", () => {
           // 내부 조건(sw_absent)이 거짓인 기본 세션에서 NOT 은 참이다.
           break;
       }
+      // 조회 조건(명작 공백 G1)은 세션의 다른 칸을 읽는다 — 조건 값에 맞춰 채운다.
+      const query: Record<string, unknown> = { x: 0, y: 0 };
+      switch (condition.kind) {
+        case "monsterSpecies":
+          query.monsterInstances = { mon1: { id: "mon1", speciesId: condition.speciesId } };
+          query.monsterParty = ["mon1"];
+          break;
+        case "actorStat":
+          query.partyActorIds = [condition.actorId];
+          query.actorLevels = { [condition.actorId]: condition.value };
+          break;
+        case "actorState":
+          query.partyActorIds = [DEFAULT_ACTOR_ID];
+          query.actorStateIds = { [DEFAULT_ACTOR_ID]: [condition.stateId] };
+          break;
+        case "partyLeader":
+          query.partyActorIds = [condition.actorId];
+          break;
+        case "partySize":
+          query.partyActorIds = Array.from({ length: condition.value }, (_, i) => `a${i}`);
+          break;
+        case "facing":
+          query.playerFacing = condition.dir;
+          break;
+        case "relativeFacing":
+          // 이벤트가 위를 보고 주인공은 그 아래(등 뒤)에 있다.
+          query.eventLocations = { [event.id]: { mapId: "m", x: 0, y: 0, direction: "up" } };
+          query.y = 1;
+          query.currentMapId = "m";
+          break;
+        case "hiding":
+          query.horror = { pursuits: {}, hiding: { mapId: "m", eventId: "closet", witnessedBy: [] } };
+          break;
+        case "pursuitActive":
+          query.horror = { pursuits: { chaser: { active: true } } };
+          break;
+        case "clearCount":
+          query.clearHistory = { count: condition.value, endingIds: [] };
+          break;
+        case "endingSeen":
+          query.clearHistory = { count: 1, endingIds: [condition.endingId] };
+          break;
+        case "newGamePlus":
+          query.flags = { ngplus: true };
+          break;
+        case "weekday":
+          query.gameTime = { minute: 0, hour: 12, day: 1, season: "spring", year: 1 };
+          break;
+        case "stringVariable":
+          query.stringVariables = { [condition.stringVariableId]: condition.value };
+          break;
+        default:
+          delete query.x;
+          delete query.y;
+      }
       const locationContext = condition.kind === "insideLocation"
         ? { locations: [{ id: "loc1", x: 0, y: 0, w: 4, h: 4 }] }
         : undefined;
-      expect(resolveEventPage(event, pass, locationContext)?.id, `${kind} should pass matching session`).toBe("only");
+      expect(resolveEventPage(event, { ...pass, ...query } as typeof pass, locationContext)?.id, `${kind} should pass matching session`).toBe("only");
     }
   });
 });

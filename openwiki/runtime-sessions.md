@@ -545,3 +545,21 @@ buyOnly/sellOnly; real item comparison and purchase/sale handlers remain authori
   (다른 맵으로 옮겨도 boardedId 는 유지되고 주인공이 그 모습으로 도착한다).
 - 검증: `node scripts/runtime-qa.mjs --scenario ct-vehicle` (픽스처 `scripts/qa/runtime/ct-vehicle-fixture.mts`). 관측 축
   `playerTextureKey`·`followerSpriteCount`·`vehicleBoarded`·`parkedVehicleSprites` 는 `scripts/lib/runtimeQa.mjs` 에 있다.
+
+## 명작 공백 G3 — 난이도·타이틀 변형·파티 묶음·스킬 장착·조합·몬스터 교환 (2026-09-27)
+
+쯔꾸르·JRPG 명작 20편 대조 공백(#12 #14 #17 #18 #19 #22)을 채웠다. 모두 옵트인이라 새 필드가 없는 옛 프로젝트는 그대로다.
+
+- **난이도(#19)** — `system.difficulties: DifficultyRecord[]`(적 HP·공격·EXP·골드·인카운트 배율, 1 = 그대로, 0.1~10으로 자른다)와 `defaultDifficultyId`.
+  두 줄 이상이면 새 게임이 선택 창(`title-screen[data-screen=difficulty]`, `difficulty-option-<id>`)을 연다. 세션은 `difficultyId`를 들고 다니며
+  명령 `setDifficulty`로 바꾸고, 페이지·분기 조건 `difficulty`로 읽는다. 배율은 `src/project/difficulty.ts`에서 전투 개시·보상·인카운트에 곱한다.
+- **타이틀 변형(#17)** — `system.titleScreen.variants: TitleScreenVariant[]`. `when`은 `endingSeen` / `clearCount(atLeast)` / `saveMapId`이고 **위에서부터 처음 맞는 줄**이
+  배경·음악을 덮는다(`src/project/titleVariants.ts`). `titleScreen.resumeOnLaunch`면 가장 최근 저장(자동 저장 포함)으로 타이틀을 건너뛰고, 불러오지 못하면 타이틀로 떨어진다.
+- **파티 묶음(#22)** — 명령 `storeParty` / `recallParty`(`partySetId`). 멤버와 맵 위치를 함께 저장하고, 지금 파티는 `activePartySetId`로 자동 저장된 뒤 바뀐다(FF6 3분할, 콥스파티 분기).
+- **스킬 장착(#18)** — `ActorRecord.loadoutSlots`(1~12). 있으면 전투는 **장착한 스킬만** 쓰고(`applySkillLoadoutsToBattlers`), 메뉴 스킬 화면에서 장착을 바꾼다. 생략 = 배운 스킬 전부.
+- **아이템 조합·대상 사용(#12)** — 메뉴 아이템 화면의 「조합」이 `craftRecipes`를 두 재료로 찾는다(`combineItems`). 「바라보는 대상에 사용」은 정면 이벤트를 실행하며
+  세션 `itemUsedId`를 걸어 두고, 그 이벤트 페이지가 조건 `itemUsed`로 반응한다(`src/player/itemUseOnTarget.ts`).
+- **몬스터 방출·교환·합체(#14)** — 명령 `removeMonster`(인스턴스 놓아주기), `tradeMonster`(종 A 한 마리 → 종 B), `fuseMonsters`(`system.monsterFusions` 규칙으로 둘을 하나로).
+  세 명령 모두 저장 왕복을 고정하는 계약 테스트가 `test/commandContracts/`에 있다.
+
+검증: `test/mgL7sys*.test.ts` 6개와 계약 테스트 6개. 출하 플레이어 화면 증거는 `scripts/qa/runtime/masterpiece-system.scenario.mjs`(난이도 선택 → 흑백 필터 → 롤링 HP·움직이는 배경 → 라이브라).

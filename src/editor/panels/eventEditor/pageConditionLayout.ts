@@ -87,6 +87,8 @@ export function advancedConditionEntries(page: Pick<EventPage, "conditions">): A
       condition.kind === "monsterSpecies" ||
       condition.kind === "run" ||
       condition.kind === "battleResult" ||
+      condition.kind === "difficulty" ||
+      condition.kind === "itemUsed" ||
       isActorQueryConditionKind(condition.kind) ||
       condition.kind === "all" ||
       condition.kind === "any" ||
