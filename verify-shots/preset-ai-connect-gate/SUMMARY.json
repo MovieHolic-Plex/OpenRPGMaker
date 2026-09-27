@@ -1,0 +1,33 @@
+{
+  "gateText": "몬스터 수집 프리셋\nAI 를 먼저 연결해 주세요\n프리셋으로 시작하면 AI 팀이 첫 마을과 이벤트를 함께 만듭니다. 연결을 마치면 이 자리에서 바로 이어서 기획을 정해요.\n팀장\n기획을 나눠 맡긴다\n시공\n맵·이벤트·DB 를 만든다\n검수\n결과를 확인하고 고친다\n\n지금 상태 · Google 로그인 필요\n\n나중에\nAI 연결하기",
+  "interviewBeforeConnect": 0,
+  "dialogStillOpen": 1,
+  "gateHiddenWhileSettings": true,
+  "settingsOnTop": true,
+  "gateGoneAfterConnect": true,
+  "gateCalls": [
+    {
+      "presetLabel": "몬스터 수집",
+      "ok": false
+    },
+    {
+      "presetLabel": "몬스터 수집",
+      "ok": true
+    }
+  ],
+  "narrow": {
+    "width": 390,
+    "scrollWidth": 390,
+    "card": {
+      "x": 24,
+      "y": 180.046875,
+      "width": 342,
+      "height": 419.890625,
+      "top": 180.046875,
+      "right": 366,
+      "bottom": 599.9375,
+      "left": 24
+    }
+  },
+  "errors": []
+}

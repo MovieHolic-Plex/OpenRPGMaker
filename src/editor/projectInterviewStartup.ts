@@ -43,7 +43,8 @@ export async function prepareProjectInterviewStartup(): Promise<void> {
     if (!stillCurrent()) return;
     const config = resolveSurfaceAiConfig("chat");
     const autoSend = isAssistantEndpointReady(config, getAiConnectionStatus(config));
-    setPendingAiBootIntent(buildWelcomeGenrePresetPrompt(preset, brief), { autoSend, displayText: welcomeGenrePresetDisplayText(preset, brief) });
+    // 프리셋 첫 생성은 팀(팀장·시공·검수)이 맡는다 — 이 한 턴만이다. 사용자 팀 설정은 바꾸지 않는다.
+    setPendingAiBootIntent(buildWelcomeGenrePresetPrompt(preset, brief), { autoSend, displayText: welcomeGenrePresetDisplayText(preset, brief), team: true });
     if (!autoSend) toast("게임 기획을 저장하고 조수 입력창에 담았습니다. AI 연결 후 보낼 수 있습니다.", "info");
   } catch {
     if (stillCurrent()) {
