@@ -3,6 +3,7 @@ import { BATTLE_SKINS, DEFAULT_BATTLE_SKIN_ID, battleSkinFamily, getBattleSkin, 
 import { builtinGeneratedResourceIds, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { createBlankProject } from "@/project/defaults";
 import { BATTLER_PLACEMENTS } from "@/battle/battlerPlacements";
+import { defaultSystem } from "@/project/defaults/defaultDatabase";
 import { normalizeSystemRecords } from "@/project/databaseRecordModel";
 
 describe("battle skin registry", () => {
@@ -13,7 +14,7 @@ describe("battle skin registry", () => {
 
   it("13종 전부 활성 — 몬스터 대치를 뺀 12종은 유리 뼈대(정면·측면)의 변형이다(2026-09-25)", () => {
     expect(listActiveBattleSkinIds()).toHaveLength(13);
-    expect(listActiveBattleSkinIds().slice(0, 4)).toEqual(["rm2000", "rm2003", "pokemon", "retro2003"]);
+    expect(listActiveBattleSkinIds().slice(0, 4)).toEqual(["retro2003", "rm2000", "rm2003", "pokemon"]);
     expect(getBattleSkin("rm2000").layout).toBe("frontview");
     expect(getBattleSkin("rm2003").layout).toBe("sideview");
     expect(getBattleSkin("rm2003").showAllySprites).toBe(true);
@@ -65,9 +66,16 @@ describe("battle skin registry", () => {
     expect(resolveSkinId("mv")).toBe("mv");
   });
 
-  it("rm2000 이 기본 스킨이다", () => {
+  it("새 프로젝트는 retro2003을 명시적으로 저장한다", () => {
+    const project = createBlankProject();
+    expect(project.system.battleUiStyle).toBe("retro2003");
+    expect(normalizeSystemRecords(project.system).battleUiStyle).toBe("retro2003");
+  });
+
+  it("미설정 기존 프로젝트는 rm2000으로 열린다", () => {
     expect(DEFAULT_BATTLE_SKIN_ID).toBe("rm2000");
     expect(resolveSkinId(undefined)).toBe("rm2000");
+    expect(defaultSystem().battleUiStyle).toBeUndefined();
     expect(getBattleSkin("rm2000").showAllySprites).toBe(false);
   });
 

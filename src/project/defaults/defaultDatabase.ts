@@ -91,7 +91,8 @@ export function defaultDatabase(): ProjectDatabaseRecords {
   };
 }
 
-export function defaultSystem(): SystemRecords {
+/** 옛 v1/v2 문서 이관도 이 함수를 쓴다. 새 프로젝트 호출자만 새 스킨을 명시한다. */
+export function defaultSystem(newProject = false): SystemRecords {
   return {
     startActorIds: defaultStarterActorIds(),
     titleResourceId: "oprn-title-field",
@@ -108,6 +109,7 @@ export function defaultSystem(): SystemRecords {
     defaultBgmResourceId: STARTER_DEFAULT_BGM_ID,
     initialTroopId: DEFAULT_TROOP_ID,
     battleFlow: "gauge",
+    ...(newProject ? { battleUiStyle: "retro2003" as const } : {}),
     typeChart: {
       types: ["fire", "water", "grass"],
       multipliers: {

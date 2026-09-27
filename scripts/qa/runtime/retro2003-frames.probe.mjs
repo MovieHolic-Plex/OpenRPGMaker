@@ -43,9 +43,12 @@ async function measure() {
       return {
         id: node.dataset.testid, recordId: node.dataset.recordId,
         x: rect.x, y: rect.y, width: rect.width, height: rect.height,
-        pose: node.dataset.battlePose ?? null, acting: node.classList.contains("battle-acting"),
+        pose: node.dataset.battlePose ?? null, poseFrame: node.dataset.battlePoseFrame ?? null,
+        beat: node.dataset.retroBeat ?? null, resourceId: node.dataset.battleCharsetResourceId ?? null,
+        extended: node.dataset.battlerExtended ?? null, acting: node.classList.contains("battle-acting"),
         opacity: style.opacity, filter: style.filter, transform: style.transform,
-        image: image ? { x: imageRect.x, y: imageRect.y, opacity: getComputedStyle(image).opacity, filter: getComputedStyle(image).filter } : null,
+        image: image ? { x: imageRect.x, y: imageRect.y, width: imageRect.width, height: imageRect.height,
+          backgroundPosition: getComputedStyle(image).backgroundPosition, transform: getComputedStyle(image).transform, rendering: getComputedStyle(image).imageRendering, opacity: getComputedStyle(image).opacity, filter: getComputedStyle(image).filter } : null,
       };
     };
     const actors = [...document.querySelectorAll(".battle-actor-group .battle-actor")].map(read);
@@ -116,6 +119,19 @@ try {
   const root = page.locator(testid("battle-scene"));
   if (await root.getAttribute("data-battle-skin") !== "retro2003" || await root.getAttribute("data-battle-flow") !== "gauge") throw new Error("스킨/시간 게이지 계약 불일치");
   await shot("command");
+  // 120ms 착탄 비트의 칸들은 PNG 간격보다 짧다. 실제 DOM 변화를 별도 원장에도 남긴다.
+  await page.evaluate(() => {
+    window.__retroPoseEvents = [];
+    const last = new Map();
+    new MutationObserver(() => {
+      for (const node of document.querySelectorAll('.battle-actor[data-battler-extended="true"]')) {
+        const frame = node.dataset.battlePoseFrame;
+        if (last.get(node) === frame) continue;
+        last.set(node, frame);
+        window.__retroPoseEvents.push({ at: performance.now(), id: node.dataset.recordId, frame, beat: node.dataset.retroBeat ?? null });
+      }
+    }).observe(document.querySelector('[data-testid="battle-scene"]'), { subtree: true, attributes: true, attributeFilter: ["data-battle-pose-frame"] });
+  });
   await page.keyboard.press("z");
   // 유리 계열은 대상 안내를 숨기고 적 위 선택 표식으로 대신한다.
   await page.waitForSelector(testid("battle-target-prompt"), { state: "attached" });
@@ -150,8 +166,17 @@ try {
   await page.keyboard.press("f");
   await page.waitForSelector(testid("battle-result-panel"), { timeout: 120000 });
   await shot("result");
+  await captureSequence("victory");
   const result = await measure();
   report.beats.push({ id: "victory-pose", passed: result.result === "victory" && result.actors.some((actor) => actor.pose === "victory") });
+  const poseEvents = await page.evaluate(() => window.__retroPoseEvents);
+  await writeFile(join(out, "pose-events.json"), JSON.stringify(poseEvents, null, 2));
+  const framesSeen = new Set(poseEvents.map((entry) => entry.frame));
+  report.beats.push({ id: "extended-attack-frames", passed: ["walk_a", "walk_b", "walk_c", "attack_windup", "attack_strike", "attack", "attack_follow", "evade"].every((frame) => framesSeen.has(frame)) });
+  report.beats.push({ id: "victory-alternation", passed: framesSeen.has("victory") && framesSeen.has("victory_b") });
+  const command = report.beats.find((entry) => entry.id === "command");
+  report.beats.push({ id: "party-left", passed: Math.max(...command.actors.map((node) => node.x + node.width / 2)) < Math.min(...command.enemies.map((node) => node.x + node.width / 2)) });
+  report.beats.push({ id: "charset-sheets", passed: command.actors.every((node) => node.extended === "true" && node.resourceId.startsWith("charset-battler-") && node.image.rendering === "pixelated") });
 } catch (error) {
   report.errors.push(String(error?.stack ?? error));
   if (page) await page.screenshot({ path: join(out, "failure.png") }).catch(() => {});

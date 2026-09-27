@@ -1,4 +1,4 @@
-import { initRetroMotion, retroActionMotion, retroDamage, retroHitRelease, retroVictory } from "@/player/battleRetroMotion";
+import { retroTimelineEntry, retroCommandPose, initRetroMotion, retroActionMotion, retroDamage, retroHitRelease, retroVictory } from "@/player/battleRetroMotion";
 import type {
   ActorCommand,
   BattleResult,
@@ -394,6 +394,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       directorState = withFormationBanner(state);
     },
     onTimelineEntry(entry) {
+      if (retroMotion) retroTimelineEntry(field, entry);
       // 연출이 화면에 도달한 반격·부활의 흔적 — QA 와 스킨 CSS 가 읽는다.
       if (entry.kind === "counter") root.dataset.battleCounterSeen = "true";
       if (entry.kind === "revive") root.dataset.battleReviveSeen = "true";
@@ -484,7 +485,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       else root.classList.remove("battle-hit-stop-critical");
     },
     onActionMotion(beat) {
-      if (retroMotion) retroActionMotion(field, beat, options.runtime.snapshot());
+      if (retroMotion) {
+        // 시퀀서의 배속으로 실제 비트 길이를 맞춰 칸 전환이 다음 비트에 넘어가지 않게 한다.
+        const timed = beat && beat.durationMs > 0
+          ? { ...beat, durationMs: Math.max(10, Math.round(beat.durationMs / Math.max(0.2, sequencer.speedMultiplier))) } : beat;
+        retroActionMotion(field, timed, options.runtime.snapshot());
+      }
       else applyActionMotion(field, beat);
       // 아군 공격의 접근 비트 끝(착탄 SWING_LEAD_MS 전)에 베기 궤적과 휘두름 소리를 둔다. 예전엔 휘두름
       // 소리가 명령 확정 순간(착탄 ~0.5초 전)에 울고 화면은 그동안 멈춰 있었다.
@@ -1024,7 +1030,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     syncBattleField(field, snapshot, lastDamageFeedback, fieldPresentation);
     if (retroMotion) {
       for (const node of field.querySelectorAll<HTMLElement>(".battle-actor")) {
-        node.dataset.retroCommand = String(!sequenceBusy && (snapshot.phase === "actorCommand" || snapshot.phase === "targetSelect")
+        retroCommandPose(node, !sequenceBusy && (snapshot.phase === "actorCommand" || snapshot.phase === "targetSelect")
           && node.dataset.recordId === snapshot.activeActorId && !node.classList.contains("defeated"));
       }
     }

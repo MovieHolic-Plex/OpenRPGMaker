@@ -70,3 +70,33 @@ export function hitFeelFromActionResult(
     healing: result.amount < 0,
   };
 }
+
+/** scripts/asset-gen/charset-battler/cb_lib.py 의 POSES 와 짝인 24칸. 좌표를 함께 유지한다. */
+export const EXTENDED_POSE_FRAME = {
+  idle: { col: 0, row: 0 },
+  attack: { col: 1, row: 0 },
+  hit: { col: 2, row: 0 },
+  defend: { col: 0, row: 1 },
+  dead: { col: 1, row: 1 },
+  victory: { col: 2, row: 1 },
+  walk_a: { col: 0, row: 2 },
+  walk_b: { col: 1, row: 2 },
+  walk_c: { col: 2, row: 2 },
+  attack_windup: { col: 0, row: 3 },
+  attack_strike: { col: 1, row: 3 },
+  attack_follow: { col: 2, row: 3 },
+  cast_charge: { col: 0, row: 4 },
+  cast_raise: { col: 1, row: 4 },
+  cast_release: { col: 2, row: 4 },
+  item: { col: 0, row: 5 },
+  weak: { col: 1, row: 5 },
+  evade: { col: 2, row: 5 },
+  guard_hit: { col: 0, row: 6 },
+  skill: { col: 1, row: 6 },
+  victory_b: { col: 2, row: 6 },
+  dying: { col: 0, row: 7 },
+  revive: { col: 1, row: 7 },
+  front: { col: 2, row: 7 },
+} as const;
+
+export type ExtendedBattlerPose = keyof typeof EXTENDED_POSE_FRAME;

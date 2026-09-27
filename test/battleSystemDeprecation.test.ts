@@ -35,10 +35,10 @@ function skinOptions(host: FakeElement): FakeElement[] {
 }
 
 describe("battle skin registry — 되살린 9종 (2026-09-25)", () => {
-  it("13종 전부 활성이고, 기본 셋 다음에 retro2003이 온다", () => {
+  it("13종 전부 활성이고, retro2003이 맨 앞에 온다", () => {
     expect(listActiveBattleSkinIds()).toEqual([...ACTIVE_BATTLE_SKIN_IDS]);
     expect(listActiveBattleSkinIds()).toHaveLength(13);
-    expect(listActiveBattleSkinIds().slice(0, 4)).toEqual(["rm2000", "rm2003", "pokemon", "retro2003"]);
+    expect(listActiveBattleSkinIds().slice(0, 4)).toEqual(["retro2003", "rm2000", "rm2003", "pokemon"]);
   });
 
   it("2026-08-28 에 지원 종료였던 9종은 이제 deprecated 가 아니다", () => {

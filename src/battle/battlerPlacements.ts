@@ -44,7 +44,7 @@ const SIDEVIEW: SkinBattlerPlacement = {
   party: (i) => ({ x: 196 + i * 32, y: 84 + i * 25 }),
 };
 
-/** 도트 측면: 발끝은 접지 띠 안에, 네 아군은 오른쪽 사선으로 내려선다. */
+/** 도트 측면: 발끝은 접지 띠 안에, 네 아군은 왼쪽 위 오른편에서 아래 왼편으로 내려선다. */
 const RETRO_SIDEVIEW: SkinBattlerPlacement = {
   partyFacing: "front",
   enemy: (i, n) => {
@@ -52,10 +52,10 @@ const RETRO_SIDEVIEW: SkinBattlerPlacement = {
     // 세 마리까지 한 줄, 그 이상은 최대 두 줄로 나눈다.
     const seats = n <= 3 ? n : columns;
     const column = n <= 3 ? i : i % columns;
-    return { x: seats <= 1 ? 96 : Math.round(42 + column * 108 / (seats - 1)),
+    return { x: seats <= 1 ? 240 : Math.round(192 + column * 96 / (seats - 1)),
       y: n <= 3 ? 128 + (i % 2) * 12 : 118 + Math.floor(i / columns) * 22 };
   },
-  party: (i) => ({ x: 230 + i * 20, y: 88 + i * 16 }),
+  party: (i) => ({ x: 124 - i * 30, y: 82 + i * 20 }),
 };
 
 export const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
@@ -101,7 +101,7 @@ export function resolveSkinEnemyPosition(
   // 옛 트룹의 0..240 y를 그대로 쓰면 새 접지 띠 위에 뜬다. 이 스킨만 안전 구간에 맞춘다.
   if (skinId === "retro2003") {
     const cy = canonical?.y;
-    return { x: Math.max(40, Math.min(150, cx)),
+    return { x: Math.max(180, Math.min(288, 320 - cx)),
       y: cy != null && Number.isFinite(cy) ? Math.max(118, Math.min(140, cy * 2 / 3)) : fallback.y };
   }
   const layout = BATTLE_SKINS[skinId]?.layout;
