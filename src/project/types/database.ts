@@ -725,6 +725,8 @@ export interface StateRecord {
   specialFlags?: readonly string[];
   lockedParameters?: readonly string[];
   runtimeEffects?: StateRuntimeEffects;
+  /** 부위 손실: 이 상태인 동안 해당 장비 슬롯(weapon/shield/armor/helmet/accessory)의 능력치 보너스를 잃는다. */
+  disablesEquipSlot?: string;
 }
 
 export interface StateRuntimeEffects {
@@ -746,8 +748,6 @@ export interface StateRuntimeEffects {
   forcedAction?: "attackRandom";
   /** 이 상태인 동안 속성 등급을 덮어쓴다(속성 id → A~E). */
   elementRates?: Record<string, ActorRateGrade>;
-  /** 부위 손실: 이 상태인 동안 해당 장비 슬롯(weapon/shield/armor/helmet/accessory)의 능력치 보너스를 잃는다. */
-  disablesEquipSlot?: string;
 }
 
 export interface BattleAnimationRecord {

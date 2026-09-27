@@ -163,6 +163,7 @@ type EnemyActionChoice = {
   readonly switchOffAfterAction: { readonly enabled: boolean; readonly switchId?: string };
   readonly targetIds?: readonly string[];
   readonly moveTo?: { readonly x: number; readonly y: number };
+  readonly requiresPart?: string;
 };
 
 /** ATB 속도 1~8 → 충전 배율. Chrono Trigger 처럼 숫자가 작을수록 빠르다(4 = 1.0, 1 = 1.45, 8 = 0.4). */
@@ -380,6 +381,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   let strictRoundCount = 0;
   const roundLogs: BattleRoundLogSnapshot[] = [];
   const capturedMonsters: BattleCapturedMonsterSnapshot[] = [];
+  // 훔치기에 성공한 적(적마다 한 번). 부위 파괴를 이미 알린 배틀러.
+  const stolenFrom = new Set<string>();
+  const brokenPartIds = new Set<string>();
   const participatingActorIds = new Set<ActorId>();
   const rewards: {
     exp: number;
@@ -482,18 +486,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     },
     // changeEquipment/promoteActor 후 파생 스탯 재계산 — battleBattlers 생성 산식과 공유.
     // HP/MP/게이지/상태이상은 refreshActorBattlerDerivedStats 가 보존(새 최대치 클램프만).
-    refreshActorDerivedStats: (battler, refreshOptions) => {
-      refreshActorBattlerDerivedStats(options.project, battler, {
-        classOverrides: battleEventState.classOverrides,
-        growthProgress: battleEventState.growthProgress,
-        promotionLineage: battleEventState.promotionLineage,
-        paramBonuses: options.party?.paramBonuses?.[battler.recordId],
-        equipment: battleEventState.actorEquipment?.[battler.recordId],
-        skills: refreshOptions?.refreshSkills
-          ? { sessionSkillIds: battleEventState.actorSkillIds?.[battler.recordId] }
-          : undefined,
-      });
-    },
+    // 부위 손실 상태가 있으면 그 슬롯을 비운 장비로 계산한다(refreshActorStats).
+    refreshActorDerivedStats: (battler, refreshOptions) => refreshActorStats(battler, refreshOptions?.refreshSkills === true),
     playAudio: options.playAudio,
     stopAudio: options.stopAudio,
     moveEnemy: moveEnemyByTarget,
@@ -515,12 +509,15 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     for (const stateId of upkeep.removedStateIds) {
       recordTimeline({ kind: "stateRemoved", side: battlerSide(battler), targetId: battler.id, stateId, reason: "natural" });
     }
+    refreshAfterStateChange(battler, upkeep.removedStateIds);
   }
 
   function recoverHitStates(battler: MutableBattler): void {
-    for (const stateId of recoverStatesWhenHit(options.project, battler, rng)) {
+    const removed = recoverStatesWhenHit(options.project, battler, rng);
+    for (const stateId of removed) {
       recordTimeline({ kind: "stateRemoved", side: battlerSide(battler), targetId: battler.id, stateId, reason: "hit" });
     }
+    refreshAfterStateChange(battler, removed);
   }
 
   function applyStates(
@@ -540,6 +537,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     for (const stateId of result.removed) {
       recordTimeline({ kind: "stateRemoved", side: battlerSide(user), userRecordId: user.recordId, targetId: target.id, stateId, reason: "effect" });
     }
+    refreshAfterStateChange(target, [...result.added, ...result.removed]);
   }
 
   function gen1StateRecords() {
@@ -1517,7 +1515,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           if (action.enemy.hp <= 0 || !visibleEnemies().some(enemy => enemy.id === action.enemy.id)) continue;
           activeActorId = undefined;
           currentActorCommandKind = undefined;
-          executeEnemyAction(action.enemy, action.action);
+          // strict 는 라운드 시작에 행동을 고른다. 그 사이 필요 부위가 파괴됐으면 다시 고른다.
+          const planned = action.action?.requiresPart && brokenPartTags(action.enemy).has(action.action.requiresPart)
+            ? chooseEnemyAction(action.enemy)
+            : action.action;
+          executeEnemyAction(action.enemy, planned);
         }
         logStrictAction(queue.round, queue.index, action, beforeResult);
         if (escaped) { result = "escape"; continue; }
@@ -1892,6 +1894,71 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   // ── 장비 자동 부활(effectFlags.autoRevive) ── 전투당 배우 1회. 승패 판정 직전에 돌아 패배를 막는다.
   const autoRevivedIds = new Set<string>();
 
+  /** 이 본체에 붙은 부위 중 쓰러진 것의 태그. */
+  function brokenPartTags(core: MutableBattler): Set<string> {
+    return new Set(enemies.filter((part) => part.partCoreId === core.id && part.partTag && part.hp <= 0).map((part) => part.partTag!));
+  }
+
+  /** 다부위 적: 부위 파괴를 알리고, 본체가 쓰러졌으면 남은 부위도 함께 쓰러뜨린다. */
+  function resolveEnemyParts(): void {
+    for (const part of enemies) {
+      if (!part.partCoreId) continue;
+      const core = enemies.find((entry) => entry.id === part.partCoreId);
+      if (!core) continue;
+      if (core.hp <= 0 && part.hp > 0) {
+        part.hp = 0;
+        part.gauge = 0;
+        brokenPartIds.add(part.id);
+        recordSpecial(core, part, `${core.name}이(가) 쓰러져 ${part.name}도 무너졌다.`);
+        continue;
+      }
+      if (part.hp <= 0 && !brokenPartIds.has(part.id)) {
+        brokenPartIds.add(part.id);
+        recordSpecial(core, part, `${part.name} 파괴! ${core.name}의 일부 행동이 봉인됐다.`);
+      }
+    }
+  }
+
+  /** 부위 손실 상태(StateRecord.disablesEquipSlot)가 가리키는 장비 슬롯. */
+  function lostEquipSlots(battler: MutableBattler): Set<string> {
+    const slots = new Set<string>();
+    for (const stateId of battler.stateIds) {
+      const slot = options.project.database.states.find((state) => state.id === stateId)?.disablesEquipSlot;
+      if (slot) slots.add(slot);
+    }
+    return slots;
+  }
+
+  /** 이벤트·세션 장비에서 잃은 슬롯만 비운 사본. 잃은 슬롯이 없으면 원본 그대로. */
+  function equipmentAfterSlotLoss(battler: MutableBattler) {
+    const raw = battleEventState.actorEquipment?.[battler.recordId];
+    const lost = lostEquipSlots(battler);
+    if (lost.size === 0) return raw;
+    const base = { ...(raw ?? options.project.database.actors.find((actor) => actor.id === battler.recordId)?.initialEquipment ?? {}) };
+    for (const slot of lost) base[slot] = undefined;
+    return base;
+  }
+
+  function refreshActorStats(battler: MutableBattler, refreshSkills = false): void {
+    refreshActorBattlerDerivedStats(options.project, battler, {
+      classOverrides: battleEventState.classOverrides,
+      growthProgress: battleEventState.growthProgress,
+      promotionLineage: battleEventState.promotionLineage,
+      paramBonuses: options.party?.paramBonuses?.[battler.recordId],
+      equipment: equipmentAfterSlotLoss(battler),
+      skills: refreshSkills
+        ? { sessionSkillIds: battleEventState.actorSkillIds?.[battler.recordId] }
+        : undefined,
+    });
+  }
+
+  /** 상태가 바뀐 뒤 부위 손실 상태가 끼어 있으면 배우 능력치를 다시 계산한다. */
+  function refreshAfterStateChange(battler: MutableBattler, changedStateIds: readonly string[]): void {
+    if (battlerSide(battler) !== "actor" || changedStateIds.length === 0) return;
+    const touchesSlot = changedStateIds.some((stateId) => options.project.database.states.find((state) => state.id === stateId)?.disablesEquipSlot);
+    if (touchesSlot) refreshActorStats(battler);
+  }
+
   function applyAutoRevives(): void {
     if (gen1) return;
     for (const actor of actors) {
@@ -2185,6 +2252,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
     const actionTurn = turn + 1;
     const plans = (enemy.enemyActions ?? [])
+      .filter((action) => !action.requiresPart || !brokenPartTags(enemy).has(action.requiresPart))
       .filter((action) => combatConditionMet(action.condition, enemy, actionTurn, visibleEnemies().filter(ally => ally.id !== enemy.id && ally.hp > 0).length, battleEventState.switches))
       .filter((action) => !action.skillId || !battleSkillUseFailure(options.project, enemy, action.skillId, { requireLearned: false }))
       .flatMap((action) => {
@@ -2350,8 +2418,6 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       applySkillHit(user, target, skillId, commandKind, multiplier * powerMultiplier);
     }
   }
-
-  const stolenFrom = new Set<string>();
 
   function recordSpecial(user: MutableBattler, target: MutableBattler, message: string): void {
     recordTimeline({ kind: "special", side: battlerSide(user), userRecordId: user.recordId, targetId: target.id, message });
@@ -2883,6 +2949,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function resolveOutcome(): void {
     if (result) return;
     applyAutoRevives();
+    resolveEnemyParts();
     // Recoil and event effects can wipe out both sides in the same resolution.
     // Defeat must win before either the Gen1 or the ordinary victory path pays rewards.
     if (actors.every((actor) => actor.hp <= 0)) {

@@ -94,6 +94,7 @@ export function normalizeStateRecord(record: Partial<StateRecord> & Pick<StateRe
     ...(record.specialFlags !== undefined ? { specialFlags: cleanIds(record.specialFlags) } : {}),
     ...(record.lockedParameters !== undefined ? { lockedParameters: cleanIds(record.lockedParameters) } : {}),
     ...(record.runtimeEffects !== undefined ? { runtimeEffects: record.runtimeEffects } : {}),
+    ...(typeof record.disablesEquipSlot === "string" && record.disablesEquipSlot ? { disablesEquipSlot: record.disablesEquipSlot } : {}),
   };
 }
 

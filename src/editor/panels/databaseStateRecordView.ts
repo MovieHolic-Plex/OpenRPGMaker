@@ -4,6 +4,7 @@ import { stateBehavior } from "@/battle/battleStates";
 import { resolvedStateValues, stateOntologyFor } from "@/project/ontology/databaseStateOntology";
 import type { StateRateGrade } from "@/project/ontology/databaseStateOntology";
 import { store } from "@/project/store";
+import { equipmentSlots } from "@/project/equipmentSlots";
 import type { StateRecord } from "@/project/types";
 import { el } from "@/util/dom";
 
@@ -99,6 +100,11 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
         // 하나 끼우면 이후 전부가 다른 영역으로 밀렸다(실제로 그렇게 깨졌고 이 주석이
         // 그 흔적이었다). 이제는 어디에 넣어도 안전하다.
         runtimeEffectsPanel(state, update),
+        panel("부위 손실", [
+          selectLiteral("잃는 장비 슬롯", "db-state-disables-equip-slot", state.disablesEquipSlot ?? "",
+            ["", ...equipmentSlots(store.getCurrent()).map((slot) => slot.id)], (slot) => update({ disablesEquipSlot: slot || undefined })),
+          el("p", { class: "db-skill-card-note", text: "이 상태인 동안 그 슬롯 장비의 능력치를 잃습니다(팔 부상 → 무기 등)." }),
+        ], "db-state-panel-part-loss"),
         el("div", { class: "db-state-summary", dataset: { testid: "db-state-ontology-summary" }, text: ontology.summary }),
       ],
     }),

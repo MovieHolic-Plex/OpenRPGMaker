@@ -67,8 +67,15 @@ export function openActionDialog(record: EnemyRecord, index: number, action: Ene
   const workbench = Array.from(document.querySelectorAll<HTMLElement>('[data-testid="db-enemies-bm101-workbench"]'))
     .find((node) => node.dataset.enemyId === record.id);
   const opener = workbench?.querySelector<HTMLElement>(`[data-testid="db-enemy-action-row-${index}"]`);
+  const partInput = el("input", { attrs: { type: "text", value: nextAction.requiresPart ?? "", "aria-label": "필요 부위 태그" }, dataset: { testid: "db-enemy-action-requires-part" } }) as HTMLInputElement;
+  partInput.value = nextAction.requiresPart ?? "";
+  partInput.addEventListener("input", () => {
+    const requiresPart = partInput.value.trim();
+    nextAction = { ...nextAction, requiresPart: requiresPart || undefined };
+  });
   openDialog("db-enemy-action-dialog", "공격 패턴", [
     panel("조건", [numberFieldNode("우선도", rating), conditionFields]),
+    panel("필요 부위(다부위 적)", [el("label", { class: "db-field", children: [el("span", { text: "부위 태그 — 이 부위가 쓰러지면 이 행동을 쓰지 않음" }), partInput] })]),
     panel("행동 후 스위치 ON", [switchOn]),
     panel("행동 후 스위치 OFF", [switchOff]),
     panel("행동", [modeHost]),

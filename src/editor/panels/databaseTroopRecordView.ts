@@ -566,6 +566,17 @@ function memberEditor(
           updateSelectedMember(record, selectedIndex, { ...member, hidden });
           rerender();
         }),
+        // 다부위 적: 본체 슬롯을 고르면 이 슬롯은 부위가 된다. 본체가 쓰러지면 부위도 쓰러지고,
+        // 부위가 쓰러지면 본체 행동 중 「필요 부위」가 이 태그인 것이 막힌다.
+        selectField("부위의 본체", "db-field-troop-member-part-of", member.partOf === undefined ? "" : String(member.partOf),
+          members.flatMap((entry, index) => index === selectedIndex ? [] : [{ id: String(index), name: `${index + 1}. ${enemies.find((enemy) => enemy.id === entry.enemyId)?.name ?? entry.enemyId}` }]),
+          (value) => {
+            updateSelectedMember(record, selectedIndex, { ...member, partOf: value === "" ? undefined : Number(value) });
+            rerender();
+          }),
+        textField("부위 태그", "db-field-troop-member-part-tag", member.partTag ?? "", (partTag) => {
+          updateSelectedMember(record, selectedIndex, { ...member, partTag: emptyToUndefined(partTag.trim()) });
+        }),
         modeGated(el("div", {
           class: "db-troop-xy-row",
           children: [
