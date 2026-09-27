@@ -371,6 +371,30 @@ export function lintPassage(set: LoadedSet, spec: MapSpec, k1: (string | null)[]
     };
     step(x + 1, y, p.right, "left"); step(x - 1, y, p.left, "right"); step(x, y + 1, p.down, "up"); step(x, y - 1, p.up, "down");
   }
+  // 키 큰 물체(tall) 윗칸은 엔진상 걷지만 몸통을 뚫고 지나는 것처럼 보인다 — 그 칸을 막아도 닿는지 따로 잰다.
+  const tallTop = new Set<number>();
+  for (const p of placed) if (p.o.kind === "tall" && !NATURE.test(p.o.id)) p.cells.forEach(([dx, dy]) => {
+    if (dy === p.o.h - 1 || (p.o.solid ?? []).some(([sx, sy]) => sx === dx && sy === dy)) return;
+    const x = p.x + dx, y = p.y + dy; if (x >= 0 && y >= 0 && x < w && y < h && k1[y * w + x] && !face(x, y)) tallTop.add(y * w + x);
+  });
+  if (tallTop.size) {
+    const strict = new Array<boolean>(w * h).fill(false); const q: number[] = [];
+    const go = (i: number) => { if (!strict[i] && seen[i] && !tallTop.has(i)) { strict[i] = true; q.push(i); } };
+    if (spec.entry) go(spec.entry[1] * w + spec.entry[0]); else for (let i = 0; i < w * h; i += 1) { const x = i % w, y = Math.floor(i / w); if (x === 0 || y === 0 || x === w - 1 || y === h - 1) go(i); }
+    while (q.length) { const i = q.pop()!, x = i % w, y = Math.floor(i / w); for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]] as const) if (nx >= 0 && ny >= 0 && nx < w && ny < h) go(ny * w + nx); }
+    const lost = [...Array(w * h).keys()].filter((i) => seen[i] && !tallTop.has(i) && !strict[i]);
+    if (lost.length) out.push(`통행: 키 큰 물체 몸통(윗칸)을 지나야만 닿는 바닥 ${lost.length}칸 — ${lost.slice(0, 8).map((i) => `(${i % w},${Math.floor(i / w)})`).join(" ")}`);
+  }
+  // 침대는 긴 옆면 한쪽이 비어 닿아야 한다(발치로만 닿으면 안 된다).
+  const beds: string[] = [];
+  for (const p of placed) {
+    if (!/(^|_)bed($|_)/.test(p.o.id) || p.o.kind !== "prop") continue;
+    const cols = [...new Set(p.cells.map(([dx]) => dx))], rows = p.cells.map(([, dy]) => dy);
+    const y0 = Math.min(...rows), y1 = Math.max(...rows), x0 = p.x + Math.min(...cols), x1 = p.x + Math.max(...cols);
+    const side = (x: number) => { for (let y = p.y + y0; y <= p.y + y1; y += 1) if (x >= 0 && x < w && seen[y * w + x]) return true; return false; };
+    if (!side(x0 - 1) && !side(x1 + 1)) beds.push(`${p.o.id}(${p.x},${p.y})`);
+  }
+  if (beds.length) out.push(`통행: 옆으로 못 가는 침대(발치로만 닿음) ${beds.length} — ${beds.join(" ")}`);
   // 닿지 않는 바닥 덩이
   const done = new Array<boolean>(w * h).fill(false);
   const pockets: string[] = [];
