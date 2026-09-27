@@ -2,8 +2,6 @@
 
 import { editorState, type EditorState, type Layer } from "@/editor/editorState";
 import { selectMapModeTool } from "@/editor/panels/tileToolbarActions";
-import { requestEditorCameraFocus } from "@/editor/editorCameraFocus";
-import { store } from "@/project/store";
 import { uiLabel, type UiCopyKey } from "@/editor/uiCopy";
 import { dismissLocationDrawModeForLayer } from "@/editor/locationDrawMode";
 import { applyRovingTabindex } from "./sidebarFocus";
@@ -38,45 +36,20 @@ export function selectSidebarLayer(layer: Layer): void {
   editorState.set({ layer, tool });
 }
 
-/**
- * 레이어 버튼 클릭의 「바로 보이게」(2026-09-21). 전환만으로는 캔버스에 그 차이가
- * 안 읽힌다 — lower→upper 는 상위 타일만 물들이고, lower→event 는 배지가 실루엣이 되고,
- * upper→event/lower 는 채도가 돌아온다. 여기에 **해당 레이어의 실물 위치**를 반짝 강조해
- * 눈이 바로 따라간다. 사용자가 직접 누른 이동이므로 onlyIfOffscreen 를 쓰지 않는다.
- */
-export function revealLayer(layer: Layer): void {
-  const project = store.getCurrent();
-  const mapId = editorState.get().currentMapId ?? project.startMapId;
-  const map = mapId ? project.maps[mapId] : undefined;
-  if (!mapId || !map) return;
-  const hasLower = map.lowerTiles.some((tile) => tile >= 0);
-  const hasUpper = map.upperTiles.some((tile) => tile >= 0);
-  const hasEvents = map.events.length > 0;
-  const hasAny = layer === "lower" ? hasLower : layer === "upper" ? hasUpper : hasEvents;
-  if (!hasAny) return;
-  const bounds = { x: 0, y: 0, width: map.width, height: map.height };
-  const tileX = map.width / 2;
-  const tileY = map.height / 2;
-  window.setTimeout(() => {
-    if ((editorState.get().currentMapId ?? project.startMapId) !== mapId) return;
-    // 같은 맵 안의 화면 맞춤은 씬 구독이 처리한다. bounds 중심으로 부드럽게 데려간다.
-    requestEditorCameraFocus({ mapId, tileX, tileY, bounds });
-  }, 0);
-}
-
 /** 전환 줄에서 켜져 보일 칸. 높이 붓을 쥐고 있으면 레이어가 아니라 「높이」가 켜진다. */
 export function layerSwitcherKey(state: Pick<EditorState, "layer" | "tool">): LayerSwitcherKey {
   return state.tool === "relief" ? "relief" : state.layer;
 }
 
 function selectSwitcherKey(key: LayerSwitcherKey): void {
+  // 레이어 전환은 카메라를 건드리지 않는다(2026-09-27). 예전 revealLayer 는 누를 때마다 맵 전체
+  // 맞춤으로 끌고 가 배율·위치가 튀었다 — 사용자가 보던 자리를 잃는 것이 전환 신호보다 비싸다.
   if (key === "relief") {
     selectMapModeTool("relief");
     editorState.set({ layer: "lower" });
     return;
   }
   selectSidebarLayer(key);
-  revealLayer(key);
 }
 
 export function makeLeftLayerSwitcher(activeKey: LayerSwitcherKey): HTMLElement {

@@ -41,10 +41,10 @@ const EVENT_PASS_FILL_ALPHA = 0.38;
 /** 몸 사각이 겹친 이벤트의 외곽선. 저작 시점 경고이고 lint 와 같은 판정식을 쓴다(D5). */
 const EVENT_OVERLAP_STROKE_COLOR = 0xff6b6b;
 const EVENT_BADGE_FILL_COLOR = 0x1f2937;
-const EVENT_BADGE_FILL_ALPHA = 0.38;
+const EVENT_BADGE_FILL_ALPHA = 0.72;
 const EVENT_BADGE_STROKE_COLOR = 0xcbd5e1;
-const EVENT_BADGE_STROKE_ALPHA = 0.72;
-const EVENT_BADGE_ALPHA = 0.86;
+const EVENT_BADGE_STROKE_ALPHA = 0.95;
+const EVENT_BADGE_ALPHA = 0.95;
 const EVENT_CLICK_FILL_COLOR = 0xd9e8f6;
 const EVENT_CLICK_FILL_ALPHA = 0.55;
 const EVENT_CLICK_STROKE_COLOR = 0x0a246a;
@@ -384,16 +384,15 @@ function createEventBadgeMarker(scene: Phaser.Scene, x: number, y: number, tileS
   const badge = scene.add.circle(0, 0, tileSize / 2 - 2, EVENT_BADGE_FILL_COLOR, EVENT_BADGE_FILL_ALPHA);
   badge.setStrokeStyle(1, EVENT_BADGE_STROKE_COLOR, EVENT_BADGE_STROKE_ALPHA);
   const label = scene.add.text(0, 0, "E", {
-    color: "#dbeafe",
+    color: "#ffffff",
     fontFamily: projectFontStack(store.getCurrent().system.fonts, "mono"),
     fontSize: `${tileSize - 7}px`,
     fontStyle: "bold",
   }).setOrigin(0.5);
   marker.add(badge);
   marker.add(label);
-  // 이벤트 레이어가 아닐 때는 배지를 절반으로 내린다(2026-09-21) — 타일 레이어에서는
-  // 배지가 참고 표시이고, 이벤트 레이어에서만 본체다. 레이어 버튼을 눌렀을 때
-  // 배지 대비 변화가 「이제 이벤트 레이어다」라는 즉시 신호가 된다.
-  marker.setAlpha(editorState.get().layer === "event" ? EVENT_BADGE_ALPHA : EVENT_BADGE_ALPHA * 0.45);
+  // 배지는 이벤트 레이어가 아닐 때(바닥·상위·높이) 그림 없는 이벤트를 알리는 유일한 표시다.
+  // 예전에는 여기서 알파를 0.45 배로 더 낮춰(2026-09-21) 채움이 거의 투명해지고 「E」가 안 읽혔다.
+  marker.setAlpha(EVENT_BADGE_ALPHA);
   return marker;
 }
