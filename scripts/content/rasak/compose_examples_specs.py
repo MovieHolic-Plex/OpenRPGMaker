@@ -62,6 +62,24 @@ MID_TREES = ['trees_summer_tall_leafy', 'trees_summer_gnarled_leafy', 'trees_sum
              'trees_summer_birch_leafy_b', 'trees_summer_small_leafy_b', 'trees_summer_small_leafy_a']
 
 
+def dark_grass(c, cells):
+    """짙은 풀 얼룩(A2:8, 1층) + 같은 칸 전체에 밝은 풀 가장자리(A2:4, 2층).
+    A2:4 는 가운데가 투명하고 바깥 둘레만 풀잎이 안쪽으로 번지는 자동타일이라, 얼룩 전체를 한 덩이로 칠해야
+    둘레 모양이 얼룩 윤곽과 맞는다(둘레 한 줄만 칠하면 고리 모양으로 계산돼 밝은 띠가 생긴다).
+    짙은 풀과 밝은 풀 사이에 전환 그림이 따로 없어 경계가 네모로 보이던 것을 이것으로 감춘다(확대 QA 2026-09-27 3차)."""
+    c.kind(1, 'A2:8', cells)
+    dv = c.ctx.key_value(c.b, 'A2:8')
+    c.kind(2, 'A2:4', [(x, y) for (x, y) in cells if c.ok(x, y) and c.L[1][y * c.w + x] == dv])
+
+
+def dark_grass_finish(c, cells):
+    """나중에 길·물을 칠해 짙은 풀이 아니게 된 칸의 가장자리 풀(2층)을 걷어낸다 — 길 가에 밝은 풀 띠가 생긴다."""
+    dv, rim = c.ctx.key_value(c.b, 'A2:8'), c.ctx.key_value(c.b, 'A2:4')
+    for (x, y) in cells:
+        if c.ok(x, y) and c.L[2][y * c.w + x] == rim and c.L[1][y * c.w + x] != dv:
+            c.L[2][y * c.w + x] = None
+
+
 THIN_TREES = ('trees_summer_tall_leafy', 'trees_summer_gnarled_leafy')
 
 
@@ -1127,7 +1145,7 @@ def ex_castle_court(ctx):
     # 들풀 얼룩과 짙은 풀
     # 왼아래 짙은 풀 얼룩이 한 줄에 한 칸씩 줄어드는 계단 모양이었다(확대 QA 2026-09-27 2차) — 줄마다 들쭉날쭉한 둥근 덩이로
     dark = blob(26, 18, [(0, 5), (-1, 7), (0, 8), (1, 6)]) + blob(0, 20, [(0, 4), (0, 6), (0, 7), (0, 5), (0, 6), (0, 3)])
-    c.kind(1, 'A2:8', dark)
+    dark_grass(c, dark)
     # ── 북쪽 성벽(y=2..5) · 서쪽 탑 · 동쪽 탑
     rampart(c, 3, 2, 20)
     c.obj('castle_battlement_gray', 4, 2)
@@ -1205,6 +1223,7 @@ def ex_castle_court(ctx):
     c.kind(2, 'A2:5', [(3, 25), (9, 21), (16, 21), (21, 23)])
     # 남동 풀밭: 숲 가장자리
     forest(c, blob(24, 21, [(2, 8), (1, 9), (0, 10), (0, 10), (0, 10)]), 7, edge=('trees_summer_sapling_leafy', 'trees_summer_fir_seedling', 'trees_summer_sapling_leafy'))
+    dark_grass_finish(c, dark)
     return c
 
 
@@ -1242,7 +1261,7 @@ def ex_elf_village(ctx):
     c = Canvas(ctx, 'rasak_forestfolk', 36, 26, 'ex_elf_village', 'Rasak 예제 · 엘프 숲 마을(거대 나무·목조 집·사냥꾼 야영지)')
     c.kind(1, 'A2:0', rect(0, 0, 36, 26))
     dark = blob(0, 0, [(0, 9), (0, 8), (0, 7), (0, 5), (0, 4)]) + blob(27, 18, [(2, 7), (1, 8), (0, 9), (0, 9), (0, 9), (0, 9), (0, 9), (0, 9)])
-    c.kind(1, 'A2:8', dark)
+    dark_grass(c, dark)
     # ── 거대 엘프 나무 둘: 시트 왼쪽 세로줄이 한 그루(수관 0,0 · 윗줄기 1,6 · 껍질 머리 0,9 · 밑동 2,13) — 그 상대 위치 그대로 쌓는다
     def elf_tree(x, y, col_slot='X1', sx0=0, top=9):
         # 시트 8열 16줄이 나무 한 그루(수관 위 → 줄기 → 밑동·뿌리). 원본 배치 그대로 옮긴다:
@@ -1289,6 +1308,7 @@ def ex_elf_village(ctx):
     c.kind(2, 'A2:7', [(8, 3), (9, 3), (17, 5), (25, 5), (4, 15), (19, 23), (12, 25), (26, 25)])
     c.kind(2, 'A2:23', [(12, 3), (21, 4), (34, 13), (2, 20), (16, 11)])
     c.kind(2, 'A2:13', [(9, 15), (11, 17), (14, 18), (18, 15), (20, 13), (22, 16), (16, 19), (19, 20), (13, 20), (9, 19), (8, 12), (25, 16), (33, 17), (30, 16), (9, 22), (0, 15), (17, 8), (1, 21), (4, 24), (16, 25), (19, 25), (11, 0), (18, 0), (35, 7), (15, 23)])
+    dark_grass_finish(c, dark)
     return c
 
 
