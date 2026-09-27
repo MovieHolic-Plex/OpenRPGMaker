@@ -3,7 +3,7 @@ import { regionMapPreview } from "./regionMapView";
 import { regionReferenceImage } from "./regionReferenceView";
 import { interiorObjectById, interiorObjectsForTheme } from "@/editor/interiorObjectCatalog";
 import { cellsFromMapRect, assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
-import { INTERIOR_OBJECT_THUMB_BACKGROUND_TILE, interiorThemeCards } from "@/editor/panels/structureKitDbSources";
+import { INTERIOR_OBJECT_THUMB_BACKGROUND_TILE, interiorThemeCards, kitThumbBackgroundTile } from "@/editor/panels/structureKitDbSources";
 import { interiorObjectCanvas } from "@/editor/panels/structureKitInspector";
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import { tilesetImageUrl } from "@/editor/tilesetImage";
@@ -74,7 +74,7 @@ function renderObjectThumb(card: SpatialGalleryCard): HTMLElement {
         heightTiles: Math.max(1, resolved.kit.height),
         cells: assembledKitCells(resolved.kit, resolved.kit.width),
         scale: 3,
-        backgroundTile: INTERIOR_OBJECT_THUMB_BACKGROUND_TILE,
+        backgroundTile: kitThumbBackgroundTile(tileset),
       });
     } else if (resolved?.source === "builtin") {
       return interiorObjectCanvas(tileset, resolved.object, 3);
@@ -87,7 +87,7 @@ function renderObjectThumb(card: SpatialGalleryCard): HTMLElement {
         heightTiles: Math.max(1, kit.height),
         cells: assembledKitCells(kit as SectionStructureKitDef, kit.width),
         scale: 3,
-        backgroundTile: INTERIOR_OBJECT_THUMB_BACKGROUND_TILE,
+        backgroundTile: kitThumbBackgroundTile(tileset),
       });
     }
   }
