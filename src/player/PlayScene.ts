@@ -162,6 +162,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   actionCombatState: import("@/player/actionCombatTypes").ActionCombatSceneState | null = null;
   private zoneFeedback: PlaySceneZoneFeedback | null = null;
   private minimap: MinimapRuntimeState | null = null;
+  /** 미니맵 생성 세대. 앞선 비동기 생성이 늦게 끝나면 그 결과를 버린다(겹친 미니맵이 남지 않게). */
+  private minimapGeneration = 0;
   private handSlotChip: HandSlotChip | null = null;
   private handSlotHost: HTMLElement | null = null;
   private minimapUserHidden = false;
@@ -357,6 +359,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.events.once("shutdown", destroyHandSlotChip);
     this.events.once("destroy", destroyHandSlotChip);
     const destroyMinimapLocal = (): void => {
+      this.minimapGeneration += 1;
       if (!this.minimap) return;
       destroyMinimap(this.minimap);
       this.minimap = null;
@@ -720,10 +723,17 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       destroyMinimap(this.minimap);
       this.minimap = null;
     }
+    const generation = ++this.minimapGeneration;
     const map = this.map;
     if (!map?.minimap?.enabled) return;
     try {
-      this.minimap = await createMinimap(host, map, this.session);
+      const created = await createMinimap(host, map, this.session);
+      // 기다리는 사이 다른 syncMinimap(맵 이동·시작 중복 호출)이나 씬 종료가 있었으면 이 결과는 낡았다.
+      if (generation !== this.minimapGeneration) {
+        destroyMinimap(created);
+        return;
+      }
+      this.minimap = created;
       if (this.minimap) syncMinimapVisibility(this.minimap, host, this.minimapUserHidden);
     } catch {
       // minimap is best-effort — never break play scene

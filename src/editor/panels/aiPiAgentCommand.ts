@@ -60,6 +60,9 @@ import { buildChangeLedger, type ChangeLedger } from "@/project/changeLedger";
 import { createTeamBoard } from "./aiTeamBoard";
 import { currentTeamActivity, publishTeamActivity, setTeamReviewActions } from "@/ai/piAgent/teamActivity";
 import { loadTeamSpec } from "@/ai/piAgent/teamSpecStore";
+import { judgePlayableSegment, playableSegmentGateApplies } from "@/project/playableSegment";
+import { applyProjectWithHistory } from "@/editor/mapEditHistory";
+import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 
 /**
  * 이번 실행이 만들거나 고친 맵 가운데 시작 맵에서 문으로 닿지 않는 것 — 만든 것이 플레이에 안 나온다.
@@ -295,6 +298,29 @@ export async function runPiCommand(
   const here = {
     ...(currentMapId && base.maps[currentMapId] ? { currentMapId } : {}),
     ...(approvedTilesetFamilies.length ? { approvedTilesetFamilies: [...approvedTilesetFamilies] } : {}),
+  };
+  // 끝낼 수 있는 첫 구간(src/project/playableSegment.ts). 프리셋 첫 생성이고 시작 상태가 합격한 뼈대면, AI 결과도 구간 끝까지
+  // 갈 수 있어야 남는다. 못 가면 적용하지 않고, 이미 실시간 반영한 부분은 시작 상태(합격본)로 되돌린다.
+  // 이후 요청에는 걸지 않는다 — 사용자가 구간 끝을 옮기거나 다음 길로 넓히는 것은 막을 일이 아니다.
+  const segmentGate = !readOnly && isGenrePresetBriefRequest(command.task) && playableSegmentGateApplies(base);
+  /** 합격이면 null. 불합격이면 되돌리고 알린 뒤 막힌 곳을 돌려준다. */
+  const enforcePlayableSegment = async (candidate: Project): Promise<string[] | null> => {
+    if (!segmentGate) return null;
+    surface.setStatus("첫 구간을 끝까지 걸어 보고 있어요.");
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    const verdict = judgePlayableSegment(candidate, { budgetMs: 30_000 });
+    if (verdict.ok) return null;
+    // 실행 중 사용자가 따로 고친 게 없을 때만 되돌린다 — 사람의 편집을 덮지 않는다.
+    const untouched = changedProjectKeys(store.getCurrent(), publication.project).length === 0;
+    const reverted = publication.count > 0 && untouched && applyProjectWithHistory(base, "첫 구간 합격본으로 되돌림");
+    ghost.dispose();
+    surface.appendProcess?.(`첫 구간 자동 플레이 막힘\n${verdict.blockers.join("\n")}`);
+    surface.appendBubble("system", reverted
+      ? "AI 결과로는 첫 구간을 끝까지 갈 수 없어서, 끝까지 갈 수 있던 상태로 되돌렸어요. 실행 취소로 AI 결과를 다시 볼 수 있어요."
+      : publication.count > 0
+        ? "AI 결과로는 첫 구간을 끝까지 갈 수 없어요. 그 사이 직접 고친 내용이 있어 되돌리지 않았어요 — 실행 취소로 되돌릴 수 있어요."
+        : "AI 결과로는 첫 구간을 끝까지 갈 수 없어 적용하지 않았어요.");
+    return [...verdict.blockers];
   };
 
   // 실행 결과 4축 — 세션 경로(assistantSession.getRunOutcome)와 같은 deriveRunOutcome 을 쓴다.
@@ -536,23 +562,27 @@ export async function runPiCommand(
     reportSpend();
     if (surface.signal?.aborted) {
       // fetch 는 abort 에서 AbortError 를 던진다 — 실패가 아니라 중단이므로 중단 경로로 돌린다(실측 2026-09-11).
+      // 사용자가 멈춘 실행도 반쯤 반영한 결과가 첫 구간을 끊었으면 합격본으로 되돌린다.
+      const segmentReverted = publication.count > 0 && (await enforcePlayableSegment(publication.project).catch(() => null)) !== null;
       ghost.dispose();
       publishFinalOutcome();
       boardState = markTeamBoardAborted(boardState); sync();
       finishLog({ applied: publication.count > 0, changedCount: publication.count, stoppedReason: "중단" });
       surface.setStatus("대기");
-      surface.appendBubble("system", publication.count ? "작업을 중단했어요. 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요." : "작업을 중단했어요. 변경한 내용은 적용하지 않았어요.");
+      if (!segmentReverted) surface.appendBubble("system", publication.count ? "작업을 중단했어요. 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요." : "작업을 중단했어요. 변경한 내용은 적용하지 않았어요.");
       return false;
     }
     const message = error instanceof Error ? error.message : String(error);
     streamErrors.push(message);
+    // 도중에 끊긴 실행(토큰 만료·연결 끊김)이 실시간으로 반쯤 반영한 결과도 같은 판정을 받는다.
+    const segmentReverted = publication.count > 0 && (await enforcePlayableSegment(publication.project).catch(() => null)) !== null;
     ghost.dispose();
     publishFinalOutcome();
     boardState = markTeamBoardFailed(boardState, message); sync();
     finishLog({ applied: publication.count > 0, changedCount: publication.count, error: message });
     surface.setStatus("작업을 마치지 못했어요.");
     surface.appendProcess?.(message);
-    surface.appendBubble("system", `${friendlyExecutionError(message)} ${publication.count ? "이미 반영한 변경은 남아 있으며 되돌릴 수 있어요." : "변경한 내용은 적용하지 않았어요."}`);
+    surface.appendBubble("system", `${friendlyExecutionError(message)} ${segmentReverted ? "" : publication.count ? "이미 반영한 변경은 남아 있으며 되돌릴 수 있어요." : "변경한 내용은 적용하지 않았어요."}`.trim());
     return false;
   }
   if (surface.signal?.aborted) {
@@ -788,6 +818,17 @@ export async function runPiCommand(
     receiptChips = changeChipsWithAreas(changed, changedAreaLabels(base, merged.project));
   }
   // 명세는 한 번만 계산해 검토 카드와 영수증이 **같은 것**을 쓴다 — 두 번 만들면 두 화면이 갈라진다.
+  const segmentBlockers = await enforcePlayableSegment(merged.project);
+  if (segmentBlockers) {
+    const reason = `첫 구간을 끝까지 갈 수 없음: ${segmentBlockers[0]}`;
+    changedCount = 0;
+    unpublishedChanges = false;
+    publishFinalOutcome();
+    boardState = markTeamBoardFailed(boardState, reason); sync();
+    finishLog({ applied: false, changedCount: 0, error: reason });
+    surface.setStatus("적용 보류 · 첫 구간 막힘");
+    return false;
+  }
   const receiptLedger = buildChangeLedger(base, merged.project);
   // 적용은 한 턴에 여러 번 부려질 수 있다(단계 모드·검토 카드 다시 누르기) — 기록기가 같은 이름을 합산하므로 그 전부가 한 칸에 모인다.
   const apply = async (): Promise<boolean> => {

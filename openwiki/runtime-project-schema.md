@@ -7,6 +7,10 @@
 빈 편집기로 넘어간 뒤 캔버스 브리핑이 다시 「어떤 게임을 만들까요?」를 물었다.
 
 - **엔트리**: 루트 `start-screen.html` → `src/start/startScreen.ts` + `startScreen.css`(tokens.css 만 싣는 자기완결 시트).
+- **모양(2026-09-28)**: 어두운 스튜디오 톤(`--st-*`). 가장 최근 프로젝트는 시작 맵 그림을 판 전체에 까는 히어로(판 전체가 열기 단추,
+  `start-continue`/`start-continue-open`), 그 아래 격자 첫 칸이 「새 게임」(`start-new-card`)이다. 최근 작업이 없으면
+  키아트(`public/assets/generated/welcome/start-hero.jpg`) 히어로 + 장르 포스터. 새 게임 입력판 뒤에는 고른 장르 포스터가 깔린다.
+  좁은 창(860px 이하)에서는 레일이 한 줄 머리띠로 접힌다.
   편집기 트리를 import 하지 않는다 — 번들 11KB. 장르 씨앗·AI 모듈을 여기서 부르면 수십 MB 가 된다(실측 esbuild 90MB).
   `vite.config.ts` 의 `startScreen` 입력, `scripts/mac-launch.mjs` 빌드 입력 목록에 들어 있다.
 - **최근 목록**: `electron/main/recent.ts` 의 `describeRecentProjects()` 가 폴더의 `project.sqlite` 를 **읽기 전용**
@@ -31,6 +35,11 @@
   편집기 `finishEditorBoot` 가 **그 폴더가 열렸을 때만**(`projectDir` 일치, 10분 이내) 꺼내 `createNewProjectSeed` 씨앗을 채택·flush 하고
   (`src/editor/startScreenHandoff.ts`), 한 문장이 있으면 조수 파이프라인(AI 준비 시 자동 전송, 아니면 입력창에 담기)으로 넘긴다.
   인계가 있으면 캔버스 브리핑을 띄우지 않고 `oprn:editor-welcome-dismissed` 를 켠다. 호스트는 인계 비교를 위해 세션이 정규화한 경로를 돌려준다.
+- **프리셋 장르는 인터뷰를 거친다 (2026-09-28):** 장르를 고른 인계(`presetId`)면 셸이 뜬 뒤 `runStartScreenPresetInterview` 가
+  메뉴 「새 프로젝트」와 같은 AI 연결 관문(`ensureAiConnectedForPreset`) → 기획 인터뷰(`showProjectInterview`, 한 문장은 첫 질문 입력칸에
+  `initialAnswer` 로 담김)를 연다. 확정하면 `gameDesignBrief` 를 `generationPending: true` 로 심고, 같은 부팅의 `prepareProjectInterviewStartup`
+  이 저장 → 팀 첫 생성(`team: true`, `장르 프리셋:` 프롬프트)을 넘긴다. 예전에는 한 문장을 자유 입력 프롬프트로만 보내 기획·팀·장르 저작 지침이 빠졌고,
+  한 문장을 비우면 장르만 켜진 빈 맵에서 아무 일도 없었다. 「나중에」·취소면 예전 한 문장 경로로 돌아간다. 단위: `test/startScreenPresetInterview.test.ts`.
 - **증거**: `xvfb-run -a node scripts/qa/electronStartScreenProbe.mjs`(`build:fast` + `build:electron` 뒤) — 격리 `--user-data-dir` 로
   홈·숨김·새 게임·편집기(저장된 제목/장르 재로드)·cover.jpg·재기동을 확인하고 `verify-shots/start-screen/` 에 남긴다. 단위: `test/startScreen.test.ts`.
 

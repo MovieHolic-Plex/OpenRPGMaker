@@ -23,6 +23,8 @@ export const START_SCREEN_TESTIDS = {
   navRecent: "start-nav-recent",
   navNew: "start-nav-new",
   continueCard: "start-continue",
+  continueOpen: "start-continue-open",
+  newCard: "start-new-card",
   recentCard: "start-recent-card",
   hiddenToggle: "start-hidden-toggle",
   intentInput: "start-intent-input",
@@ -36,7 +38,10 @@ export const START_SCREEN_TESTIDS = {
 } as const;
 
 const DEFAULT_TITLE = "새 게임";
-const MAX_GRID = 9;
+/** 격자 첫 칸은 「새 게임」이라 최근 프로젝트는 11장까지 — 넓은 창에서 네 칸 세 줄이 찬다. */
+const MAX_GRID = 11;
+/** 최근 작업이 하나도 없을 때(첫 방문) 히어로 판에 까는 키아트. */
+const WELCOME_ART = "/assets/generated/welcome/start-hero.jpg";
 
 type View = "home" | "new";
 
@@ -57,6 +62,11 @@ type State = {
 
 /** 첫 화면에 보이는 장르 — 새 프로젝트 다이얼로그·웰컴과 같은 정본(featured)만 쓴다. */
 const GENRES: readonly NewProjectChoice[] = NEW_PROJECT_CHOICES.filter((choice) => choice.featured);
+
+/** 새 게임 입력판 뒤에 까는 그림 — 고른 장르의 포스터, 없으면(빈 프로젝트) 키아트. */
+function composeArt(choiceId: NewProjectChoiceId | null): string {
+  return GENRES.find((choice) => choice.id === choiceId)?.thumb ?? WELCOME_ART;
+}
 
 export function formatRelativeTime(iso: string | null | undefined, now = Date.now()): string {
   if (!iso) return "";
@@ -102,7 +112,7 @@ function entryMeta(entry: RecentProjectEntry): string {
   return parts.join(" · ");
 }
 
-function icon(name: "plus" | "folder" | "clock" | "sparkle" | "back" | "blank"): HTMLElement {
+function icon(name: "plus" | "folder" | "clock" | "sparkle" | "back" | "blank" | "arrow"): HTMLElement {
   return el("span", { class: "start-icon start-icon-" + name, attrs: { "aria-hidden": "true" } });
 }
 
@@ -261,10 +271,10 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       el("div", {
         class: "start-brand",
         children: [
-          el("span", { class: "start-logo", text: "✦", attrs: { "aria-hidden": "true" } }),
+          el("span", { class: "start-logo", text: "O", attrs: { "aria-hidden": "true" } }),
           el("span", { class: "start-brand-text", children: [
             el("span", { class: "start-brand-name", text: PRODUCT_BRAND }),
-            el("span", { class: "start-brand-version", text: APP_VERSION }),
+            el("span", { class: "start-brand-tag", text: "RPG 제작 스튜디오" }),
           ] }),
         ],
       }),
@@ -283,10 +293,53 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
         on: { click: openFolder },
       }),
       el("nav", { class: "start-nav", attrs: { "aria-label": "시작 화면" }, children: [navRecent, navNew] }),
+      el("p", { class: "start-rail-foot", text: APP_VERSION }),
     ],
   });
 
   // ── 홈 ────────────────────────────────────────────────────────────────
+  /**
+   * 가장 최근 프로젝트를 판 전체로 보인다 — 시작 맵 그림이 배경이다. 판 전체가 「열기」 단추이고(투명 단추를 뒤에 깐다),
+   * 앞의 단추들은 같은 판 위에서 따로 눌린다. 그림은 applyCover 가 나중에 바꿔 끼울 수 있게 data-hero-for 를 단다.
+   */
+  const heroFor = (entry: RecentProjectEntry): HTMLElement => {
+    const hero = el("section", {
+      class: "start-hero" + (entry.cover ? "" : " is-empty-art"),
+      attrs: { "aria-label": "이어서 만들기" },
+      dataset: { testid: START_SCREEN_TESTIDS.continueCard, heroFor: entry.projectDir },
+    });
+    if (entry.cover) hero.append(el("img", { class: "start-hero-bg", attrs: { src: entry.cover, alt: "", decoding: "async", draggable: "false" } }));
+    hero.append(
+      el("button", {
+        class: "start-hero-open",
+        attrs: { type: "button", "aria-label": entry.title + " 열기" },
+        dataset: { testid: START_SCREEN_TESTIDS.continueOpen },
+        on: { click: () => openEntry(entry) },
+      }),
+      el("div", { class: "start-hero-body", children: [
+        el("span", { class: "start-kicker", text: "이어서 만들기" }),
+        el("h1", { class: "start-hero-title", text: entry.title }),
+        el("span", { class: "start-hero-meta", text: entryMeta(entry) }),
+        el("span", { class: "start-path", text: entry.projectDir }),
+        el("div", { class: "start-hero-actions", children: [
+          // 판 전체 단추(start-hero-open)와 같은 일을 하는 겉모양이다. 키보드·화면 낭독기는 판 단추 하나만 만난다.
+          el("span", {
+            class: "start-btn start-btn-primary start-btn-lg",
+            attrs: { "aria-hidden": "true" },
+            children: ["계속 만들기", icon("arrow")],
+          }),
+          el("button", {
+            class: "start-btn start-btn-lg",
+            attrs: { type: "button" },
+            children: [icon("plus"), "새 게임"],
+            on: { click: () => showView("new", null) },
+          }),
+        ] }),
+      ] }),
+    );
+    return hero;
+  };
+
   const genrePosters = (onPick: (id: NewProjectChoiceId | null) => void, selected: NewProjectChoiceId | null | undefined): HTMLElement => {
     const poster = (id: NewProjectChoiceId | null, label: string, blurb: string, thumb: string | null): HTMLButtonElement => {
       const button = el("button", {
@@ -328,41 +381,59 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   };
 
   const renderHome = (): HTMLElement[] => {
-    if (!state.loaded) return [el("p", { class: "start-muted", text: "최근 작업을 읽는 중…" })];
+    if (!state.loaded) return [el("div", { class: "start-loading", text: "최근 작업을 읽는 중…" })];
     const { visible, temporary, missing } = partitionRecentEntries(state.entries);
     const list = state.showHidden ? state.entries : visible;
     const out: HTMLElement[] = [];
     if (list.length === 0) {
       out.push(
-        el("div", { class: "start-hero", children: [
-          el("h1", { class: "start-title", text: "첫 게임을 만들어 볼까요?" }),
-          el("p", { class: "start-sub", text: "장르를 고르면 시스템 설정을 갖춘 채 시작합니다. 한 문장으로 적으면 AI가 첫 장면을 만들어요." }),
+        el("section", { class: "start-hero is-art is-welcome", children: [
+          el("img", { class: "start-hero-bg", attrs: { src: WELCOME_ART, alt: "", decoding: "async", draggable: "false" } }),
+          el("div", { class: "start-hero-body", children: [
+            el("span", { class: "start-kicker", text: "NEW GAME" }),
+            el("h1", { class: "start-hero-title", text: "첫 게임을 만들어 볼까요?" }),
+            el("p", { class: "start-sub", text: "장르를 고르면 시스템 설정을 갖춘 채 시작합니다. 한 문장으로 적으면 AI가 첫 장면을 만들어요." }),
+            el("div", { class: "start-hero-actions", children: [
+              el("button", {
+                class: "start-btn start-btn-primary start-btn-lg",
+                attrs: { type: "button" },
+                children: [icon("sparkle"), "새 게임 만들기"],
+                on: { click: () => showView("new", null) },
+              }),
+              el("button", {
+                class: "start-btn start-btn-lg",
+                attrs: { type: "button" },
+                children: [icon("folder"), "폴더 열기"],
+                on: { click: openFolder },
+              }),
+            ] }),
+          ] }),
         ] }),
+        el("h2", { class: "start-section", text: "장르에서 바로 시작" }),
         genrePosters((id) => showView("new", id), undefined),
       );
     } else {
       const [first, ...rest] = list;
-      out.push(el("h2", { class: "start-section", text: "이어서 만들기" }));
-      out.push(el("button", {
-        class: "start-continue",
-        attrs: { type: "button", "aria-label": first!.title + " 열기" },
-        dataset: { testid: START_SCREEN_TESTIDS.continueCard },
-        on: { click: () => openEntry(first!) },
+      out.push(heroFor(first!));
+      out.push(el("h2", { class: "start-section", children: [
+        "최근 프로젝트",
+        ...(rest.length > 0 ? [el("span", { class: "start-section-count", text: String(rest.length) })] : []),
+      ] }));
+      out.push(el("div", {
+        class: "start-grid",
         children: [
-          coverArt(first!, "start-continue-art"),
-          el("span", { class: "start-continue-body", children: [
-            el("span", { class: "start-continue-title", text: first!.title }),
-            el("span", { class: "start-meta", text: entryMeta(first!) }),
-            el("span", { class: "start-path", text: first!.projectDir }),
-            el("span", { class: "start-btn start-btn-primary start-continue-cta", text: "열기" }),
-          ] }),
-        ],
-      }));
-      if (rest.length > 0) {
-        out.push(el("h2", { class: "start-section", text: "최근 프로젝트" }));
-        out.push(el("div", {
-          class: "start-grid",
-          children: rest.slice(0, state.showHidden ? rest.length : MAX_GRID).map((entry, index) => el("button", {
+          el("button", {
+            class: "start-card is-new",
+            attrs: { type: "button", "aria-label": "새 게임 만들기" },
+            dataset: { testid: START_SCREEN_TESTIDS.newCard },
+            on: { click: () => showView("new", null) },
+            children: [el("span", { class: "start-new-card-body", children: [
+              icon("plus"),
+              el("span", { text: "새 게임" }),
+              el("small", { text: "장르·한 문장으로 시작" }),
+            ] })],
+          }),
+          ...rest.slice(0, state.showHidden ? rest.length : MAX_GRID).map((entry, index) => el("button", {
             class: "start-card" + (entry.hiddenReason ? " is-hidden-entry" : ""),
             attrs: { type: "button", "aria-label": entry.title + " 열기", title: entry.projectDir },
             dataset: { testid: START_SCREEN_TESTIDS.recentCard + "-" + index },
@@ -375,8 +446,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
               ] }),
             ],
           })),
-        }));
-      }
+        ],
+      }));
     }
     if (temporary + missing > 0) {
       const reasons = [temporary ? "임시 폴더의 테스트 프로젝트 " + temporary + "개" : "", missing ? "찾을 수 없는 폴더 " + missing + "개" : ""].filter(Boolean).join("와 ");
@@ -429,10 +500,15 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
         }),
         el("h1", { class: "start-title", text: "새 게임" }),
       ] }),
-      el("div", { class: "start-field", children: [
-        el("label", { class: "start-label", attrs: { for: "start-intent" }, text: "어떤 게임인가요? (선택)" }),
+      el("div", { class: "start-compose", children: [
+        el("img", {
+          class: "start-compose-bg",
+          attrs: { src: composeArt(state.choiceId), alt: "", decoding: "async", draggable: "false" },
+          dataset: { testid: "start-compose-art" },
+        }),
+        el("label", { class: "start-compose-title", attrs: { for: "start-intent" }, text: "어떤 게임을 만들까요?" }),
         intent,
-        el("p", { class: "start-hint", text: "적어 두면 편집기가 열리자마자 AI 조수가 첫 장면을 만듭니다. 비워 두면 장르만 적용해 시작합니다." }),
+        el("p", { class: "start-hint", text: "한 문장이면 충분해요. 적어 두면 편집기가 열리자마자 AI 조수가 첫 장면을 만듭니다. 장르를 고르면 먼저 몇 가지 질문으로 기획을 정하고, 적어 둔 문장은 첫 답으로 담깁니다." }),
       ] }),
       el("div", { class: "start-field", children: [
         el("span", { class: "start-label", attrs: { id: "start-genre-label" }, text: "시작 장르" }),
@@ -441,6 +517,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
           main.querySelectorAll<HTMLButtonElement>(".start-posters .start-poster").forEach((button) => {
             button.setAttribute("aria-pressed", String(button.dataset.testid === START_SCREEN_TESTIDS.genreOption + "-" + (id ?? "blank")));
           });
+          const art = main.querySelector<HTMLImageElement>(".start-compose-bg");
+          if (art) art.src = composeArt(id);
         }, state.choiceId),
       ] }),
       el("div", { class: "start-row", children: [
@@ -489,6 +567,13 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       if (art.dataset.coverFor !== projectDir) continue;
       art.classList.remove("is-empty");
       art.replaceChildren(el("img", { attrs: { src: cover, alt: "", decoding: "async", draggable: "false" } }));
+    }
+    for (const hero of main.querySelectorAll<HTMLElement>("[data-hero-for]")) {
+      if (hero.dataset.heroFor !== projectDir) continue;
+      hero.classList.remove("is-empty-art");
+      const current = hero.querySelector<HTMLImageElement>(".start-hero-bg");
+      if (current) current.src = cover;
+      else hero.prepend(el("img", { class: "start-hero-bg", attrs: { src: cover, alt: "", decoding: "async", draggable: "false" } }));
     }
   };
 

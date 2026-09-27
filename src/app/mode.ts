@@ -199,18 +199,12 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
     if (startHandoff) {
       // 시작 화면을 거친 사용자는 첫 방문 브리핑을 이미 본 셈이다 — 다음 부팅에도 띄우지 않는다.
       setEditorWelcomeDismissed(true);
-      if (startHandoff.prompt) {
+      if (startHandoff.presetId) {
+        // 프리셋 장르는 셸이 뜬 뒤 인터뷰로 간다(아래). 코치마크가 인터뷰 위에 뜨지 않게 지금 표시한다.
         markWelcomeIntentAppliedThisBoot();
-        setPendingWelcomePipeline({
-          prompt: startHandoff.prompt,
-          ...(startHandoff.displayText ? { displayText: startHandoff.displayText } : {}),
-          autoSend: startHandoff.autoSend,
-          source: "free-text",
-        });
-        if (!startHandoff.autoSend) {
-          const { toast } = await import("@/util/toast");
-          toast("적어 둔 한 문장을 조수 입력창에 담았습니다. AI 연결 후 보낼 수 있습니다.", "info");
-        }
+      } else if (startHandoff.prompt) {
+        markWelcomeIntentAppliedThisBoot();
+        await queueStartScreenSentence(startHandoff, setPendingWelcomePipeline);
       }
     }
   }
@@ -246,6 +240,17 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
   if (sharedDemoOpen && !showBriefing) {
     const { presentSharedDemoIntro } = await import("@/editor/sharedDemoIntro");
     presentSharedDemoIntro();
+  }
+
+  // 시작 화면에서 프리셋 장르를 골랐으면 메뉴 「새 프로젝트」와 같이 AI 연결 관문 → 기획 인터뷰를 거친다.
+  // 확정하면 기획이 generationPending 으로 심기고 아래 prepareProjectInterviewStartup 이 저장·팀 첫 생성을 넘긴다.
+  // 「나중에」·취소면 예전처럼 한 문장만 조수에게 넘긴다(비었으면 장르만 켜진 채로 둔다).
+  if (startHandoff?.presetId) {
+    const { runStartScreenPresetInterview } = await import("@/editor/startScreenHandoff");
+    const outcome = await runStartScreenPresetInterview(startHandoff);
+    if (outcome === "declined" && startHandoff.prompt) {
+      await queueStartScreenSentence(startHandoff, setPendingWelcomePipeline);
+    }
   }
 
   if (showBriefing && elements) {
@@ -340,6 +345,24 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
   // 데스크톱 시작 화면의 최근 목록 카드 그림(cover.jpg). 브리지에 saveCover 가 있을 때만 모듈을 받는다.
   if (typeof window !== "undefined" && window.oprn?.project.saveCover) {
     void import("@/editor/projectCover").then(({ installProjectCoverCapture }) => installProjectCoverCapture()).catch(() => undefined);
+  }
+}
+
+/** 시작 화면의 한 문장을 조수 파이프라인에 싣는다. AI 가 없으면 입력창에 담기만 하고 알린다. */
+async function queueStartScreenSentence(
+  handoff: import("@/editor/startScreenHandoff").StartScreenHandoff,
+  setPendingWelcomePipeline: typeof import("@/editor/aiBootIntent").setPendingWelcomePipeline,
+): Promise<void> {
+  if (!handoff.prompt) return;
+  setPendingWelcomePipeline({
+    prompt: handoff.prompt,
+    ...(handoff.displayText ? { displayText: handoff.displayText } : {}),
+    autoSend: handoff.autoSend,
+    source: "free-text",
+  });
+  if (!handoff.autoSend) {
+    const { toast } = await import("@/util/toast");
+    toast("적어 둔 한 문장을 조수 입력창에 담았습니다. AI 연결 후 보낼 수 있습니다.", "info");
   }
 }
 
