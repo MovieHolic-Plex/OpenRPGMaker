@@ -432,6 +432,7 @@ async function consumeBlockingStep(
         currentName: step.currentName,
         maxLength: step.maxLength,
         showInitialName: step.showInitialName,
+        ...(step.prompt ? { prompt: step.prompt } : {}),
       });
       const result = interpreter.resume(name);
       // 액터 이름 변경을 메뉴/전투 표시에 즉시 반영.

@@ -1,3 +1,4 @@
+import { actorQueryConditionSummary } from "./actorQueryConditionForm";
 import { renderDetectionEncounter } from "./pageNpcBehavior";
 import { renderObjectInteraction } from "./pageHorror";
 import { hasRecursivePageCondition, type EventDraftValidation } from "@/editor/eventDraftValidator";
@@ -515,6 +516,20 @@ function pageConditionSummary(condition: EventPageCondition): string {
       return `관계 ${condition.npcKey || "이 이벤트"} ${relationshipStateName(condition.state)} 이상`;
     case "battleResult":
       return `전투 ${condition.result === "victory" ? "승리" : condition.result === "defeat" ? "패배" : "도망"}`;
+    case "actorStat":
+    case "actorState":
+    case "partyLeader":
+    case "partySize":
+    case "facing":
+    case "relativeFacing":
+    case "hiding":
+    case "pursuitActive":
+    case "clearCount":
+    case "endingSeen":
+    case "newGamePlus":
+    case "weekday":
+    case "stringVariable":
+      return actorQueryConditionSummary(condition);
     case "run":
       return runConditionText(condition);
     case "all":
@@ -1457,6 +1472,20 @@ function pageConditionBadgeText(condition: EventPageCondition): string {
       return `관계 ${relationshipStateName(condition.state)}+`;
     case "battleResult":
       return `전투${condition.result === "victory" ? "승" : condition.result === "defeat" ? "패" : "도"}`;
+    case "actorStat":
+    case "actorState":
+    case "partyLeader":
+    case "partySize":
+    case "facing":
+    case "relativeFacing":
+    case "hiding":
+    case "pursuitActive":
+    case "clearCount":
+    case "endingSeen":
+    case "newGamePlus":
+    case "weekday":
+    case "stringVariable":
+      return truncateBadgeToken(actorQueryConditionSummary(condition), 12);
     case "run":
       return runConditionText(condition);
     case "all":

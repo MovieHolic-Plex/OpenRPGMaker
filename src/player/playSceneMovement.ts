@@ -109,6 +109,8 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
   if (!scene.running && advancePursuitDoors(world, deltaMs)) refreshRuntimeEntities(scene);
   scene.player.setVisible?.(!isPlayerHiding(world));
   scene.session.playTimeSeconds += deltaMs / 1000;
+  // 방향 조건(주인공이 보는 쪽)은 세션만 본다 — 씬의 facing 을 매 프레임 적어 둔다.
+  if (scene.session.playerFacing !== scene.facing) scene.session.playerFacing = scene.facing;
   const ticks = takeLogicTicks(scene, deltaMs);
   // 틱이 없는 프레임(고주사율)에서는 입력을 읽지 않는다 — 엣지와 탭이 다음 틱 프레임으로 살아서 간다.
   if (ticks > 0) {
@@ -236,6 +238,7 @@ function advancePlayerStepFrame(scene: PlaySceneContext): void {
     // 턱을 넘은 체공은 중간 칸도 궤적에 넣는다 — 동료가 턱 칸을 건너뛰지 않고 한 칸씩 따라온다.
     if (hopState?.via) recordFollowerPlayerStep(scene.session, { x: hopState.via.x, y: hopState.via.y, direction: scene.facing });
     const project = store.getCurrent();
+    scene.session.stepCount = (scene.session.stepCount ?? 0) + 1;
     applyWalkCareTicks(project, scene.session, 1);
     applyGen1FieldPoisonStep(project, scene.session);
     // 비행선은 땅에 닿지 않는다 — 지형 피해·접촉 트리거·인카운트를 건너뛴다.

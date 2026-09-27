@@ -21,7 +21,7 @@ import {
 import { isEngineModuleLoadFailure } from "@/util/dynamicImport";
 import { startSession, type PlaySession } from "@/project/session";
 import { applyClearCarry, newGamePlusMenuLabel } from "@/project/newGamePlus";
-import { readClearRecord, recordEndingClear } from "@/player/clearRecord";
+import { clearHistoryOf, readClearRecord, recordEndingClear } from "@/player/clearRecord";
 import { applyStatePreset, testHerePreset } from "@/testing/debugSession";
 import { el, clearChildren } from "@/util/dom";
 import {
@@ -329,10 +329,12 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     }
     // 세션은 고친 프로젝트에서 만든다(요청이 세션을 들고 왔으면 그것을 그대로 쓴다).
     const session = request.session ?? newSession(effectiveSpawn(request, bootProject), bootProject);
-    if (!request.session && request.newGamePlus) {
-      const clear = readClearRecord(window.localStorage);
-      if (clear) applyClearCarry(bootProject, session, clear.carry);
-    }
+    const clear = readClearRecord(window.localStorage);
+    if (!request.session && request.newGamePlus && clear) applyClearCarry(bootProject, session, clear.carry);
+    // 회차는 기기 기록이다 — 새 게임이든 불러오기든 부팅마다 최신 기록을 세션에 비춘다.
+    const history = clearHistoryOf(clear);
+    if (history) session.clearHistory = history;
+    else delete session.clearHistory;
     void bootPlayGame(surface.phaserContainer, session, eventTestId, loading, run, startedAt, repairs);
   };
 

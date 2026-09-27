@@ -387,6 +387,19 @@ function validatePageCondition(condition: EventPageCondition, context: Reference
     case "friendshipAtLeast":
     case "battleResult":
     case "run":
+    case "actorStat":
+    case "actorState":
+    case "partyLeader":
+    case "partySize":
+    case "facing":
+    case "relativeFacing":
+    case "hiding":
+    case "pursuitActive":
+    case "clearCount":
+    case "endingSeen":
+    case "newGamePlus":
+    case "weekday":
+    case "stringVariable":
       return;
     case "all":
     case "any":

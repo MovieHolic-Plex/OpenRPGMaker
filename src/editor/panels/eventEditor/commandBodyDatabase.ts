@@ -1381,23 +1381,42 @@ export function enterHeroNameBody(
   }) as HTMLInputElement;
   const showInitial = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "enter-hero-name-show-initial" } }) as HTMLInputElement;
   showInitial.checked = cmd.showInitialName;
+  // 명작 공백 G1: 배우 이름 대신 문자열 변수로 받는다(암호·기도문·좋아하는 음식). \T[id] 로 대사에 찍는다.
+  const stringVariable = el("input", {
+    attrs: { type: "text", placeholder: "비우면 배우 이름", title: "문자열 변수 id — 대사에서 \\T[id] 로 찍힙니다" },
+    value: cmd.stringVariableId ?? "",
+    dataset: { testid: "enter-hero-name-string-variable" },
+  }) as HTMLInputElement;
+  const prompt = el("input", {
+    attrs: { type: "text", placeholder: "이름 입력" },
+    value: cmd.prompt ?? "",
+    dataset: { testid: "enter-hero-name-prompt" },
+  }) as HTMLInputElement;
 
   const apply = () => {
+    const stringVariableId = stringVariable.value.trim();
+    const promptText = prompt.value.trim();
     context.actions.replaceCommand(context.path, {
       kind: "enterHeroName",
       actorId: actor.select.value,
       maxLength: clampMaxLengthInput(maxLength.value),
       showInitialName: showInitial.checked,
+      ...(stringVariableId ? { stringVariableId } : {}),
+      ...(promptText ? { prompt: promptText } : {}),
     });
   };
   actor.select.addEventListener("change", apply);
   maxLength.addEventListener("change", apply);
   showInitial.addEventListener("change", apply);
+  stringVariable.addEventListener("change", apply);
+  prompt.addEventListener("change", apply);
   const wrap = el("span", {});
   wrap.append(
     actor.root,
     labeledControl("최대 글자", maxLength),
-    labeledControl("초기 이름 표시", showInitial)
+    labeledControl("초기 이름 표시", showInitial),
+    labeledControl("문자열 변수로 받기", stringVariable),
+    labeledControl("안내 문구", prompt)
   );
   return wrap;
 }

@@ -114,6 +114,21 @@ const DATA_QUERY_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "playerY", label: "주인공 Y" },
   { value: "switch", label: "스위치" },
   { value: "variable", label: "변수" },
+  // 명작 공백 G1: 액터·파티·진행 조회. target = 배우 id 또는 "leader"(선두).
+  { value: "actorLevel", label: "배우 레벨" },
+  { value: "actorHp", label: "배우 HP" },
+  { value: "actorMp", label: "배우 MP" },
+  { value: "actorMaxHp", label: "배우 최대 HP" },
+  { value: "actorHpPercent", label: "배우 HP(%)" },
+  { value: "actorHasState", label: "배우 상태 보유(target=배우:상태)" },
+  { value: "partyLeaderIndex", label: "선두 배우 번호(DB 순서, 0=없음)" },
+  { value: "partySize", label: "파티 인원" },
+  { value: "playerFacing", label: "주인공 방향(2·4·6·8)" },
+  { value: "playtimeSeconds", label: "플레이 시간(초)" },
+  { value: "steps", label: "걸음 수" },
+  { value: "clearCount", label: "클리어 횟수" },
+  { value: "weekday", label: "요일(0=일…6=토)" },
+  { value: "stringLength", label: "문자열 변수 길이" },
 ];
 
 export const SCREEN_COLOR_OPTIONS: readonly M2CommandFieldOption[] = [

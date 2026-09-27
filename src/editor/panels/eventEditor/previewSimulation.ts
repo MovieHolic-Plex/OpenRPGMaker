@@ -271,6 +271,19 @@ function conditionNeedsUnsimulatedState(condition: Condition): boolean {
     case "relationshipAtLeast":
     case "battleResult":
     case "run":
+    case "actorStat":
+    case "actorState":
+    case "partyLeader":
+    case "partySize":
+    case "facing":
+    case "relativeFacing":
+    case "hiding":
+    case "pursuitActive":
+    case "clearCount":
+    case "endingSeen":
+    case "newGamePlus":
+    case "weekday":
+    case "stringVariable":
       return true;
     case "all":
     case "any":

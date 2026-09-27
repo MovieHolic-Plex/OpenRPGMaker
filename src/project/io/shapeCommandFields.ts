@@ -455,6 +455,8 @@ function validateCommandShape(label: string, value: unknown): void {
     case "enterHeroName": {
       requireString(`${label}.actorId`, command.actorId);
       requireBoolean(`${label}.showInitialName`, command.showInitialName);
+      if (command.stringVariableId !== undefined) requireString(`${label}.stringVariableId`, command.stringVariableId);
+      if (command.prompt !== undefined) requireString(`${label}.prompt`, command.prompt);
       const maxLength = requireNumber(`${label}.maxLength`, command.maxLength);
       if (Number.isInteger(maxLength) && maxLength >= 1 && maxLength <= 12) return;
       throw new ProjectFormatError(`${label}.maxLength가 잘못되었습니다.`);
@@ -713,6 +715,55 @@ export function validateConditionShape(label: string, value: unknown): void {
     }
     case "not":
       validateConditionShape(`${label}.condition`, condition.condition);
+      return;
+    case "actorStat":
+      requireString(`${label}.actorId`, condition.actorId);
+      assert(["level", "hp", "mp", "hpPercent", "mpPercent"].includes(requireString(`${label}.stat`, condition.stat)), `${label}.stat 값이 올바르지 않습니다.`);
+      requireString(`${label}.op`, condition.op);
+      requireNumber(`${label}.value`, condition.value);
+      return;
+    case "actorState":
+      requireString(`${label}.actorId`, condition.actorId);
+      requireString(`${label}.stateId`, condition.stateId);
+      requireBoolean(`${label}.present`, condition.present);
+      return;
+    case "partyLeader":
+      requireString(`${label}.actorId`, condition.actorId);
+      return;
+    case "partySize":
+    case "clearCount":
+      requireString(`${label}.op`, condition.op);
+      requireNumber(`${label}.value`, condition.value);
+      return;
+    case "facing":
+      assert(condition.subject === "player" || condition.subject === "event", `${label}.subject 값이 올바르지 않습니다.`);
+      assert(["up", "down", "left", "right"].includes(requireString(`${label}.dir`, condition.dir)), `${label}.dir 값이 올바르지 않습니다.`);
+      return;
+    case "relativeFacing":
+      assert(["playerBehindEvent", "eventBehindPlayer", "playerFacingEvent"].includes(requireString(`${label}.relation`, condition.relation)), `${label}.relation 값이 올바르지 않습니다.`);
+      return;
+    case "hiding":
+    case "newGamePlus":
+      requireBoolean(`${label}.value`, condition.value);
+      return;
+    case "pursuitActive":
+      if (condition.eventId !== undefined) requireString(`${label}.eventId`, condition.eventId);
+      requireBoolean(`${label}.value`, condition.value);
+      return;
+    case "endingSeen":
+      requireString(`${label}.endingId`, condition.endingId);
+      requireBoolean(`${label}.value`, condition.value);
+      return;
+    case "weekday":
+      for (const [index, day] of requireArray(`${label}.weekdays`, condition.weekdays).entries()) {
+        const value = requireNumber(`${label}.weekdays[${index}]`, day);
+        assert(Number.isInteger(value) && value >= 0 && value <= 6, `${label}.weekdays[${index}] 는 0~6 이어야 합니다.`);
+      }
+      return;
+    case "stringVariable":
+      requireString(`${label}.stringVariableId`, condition.stringVariableId);
+      assert(["==", "!=", "contains", "empty"].includes(requireString(`${label}.op`, condition.op)), `${label}.op 값이 올바르지 않습니다.`);
+      requireString(`${label}.value`, condition.value);
       return;
   }
   throw new ProjectFormatError(`${label}: 알 수 없는 condition kind: ${kind}`);
