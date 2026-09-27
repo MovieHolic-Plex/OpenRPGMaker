@@ -2,9 +2,9 @@ import { existsSync, readFileSync, readdirSync, realpathSync, statSync, writeFil
 import { tmpdir } from "node:os";
 import { dirname, isAbsolute, join, resolve, sep } from "node:path";
 import { app } from "electron";
-import { readProjectFolderSummary } from "../local-store/summary";
+import { readProjectCoverSource, readProjectFolderSummary } from "../local-store/summary";
 import { PROJECT_COVER_FILE, PROJECT_STORE_FILE } from "../local-store/schema";
-import type { RecentProjectEntry, SuggestedProjectDir } from "../shared/start";
+import type { ProjectCoverSource, RecentProjectEntry, SuggestedProjectDir } from "../shared/start";
 
 type RecentEntry = { readonly projectDir: string; readonly title: string; readonly lastOpenedAt: string };
 const MAX_RECENT = 20;
@@ -63,6 +63,17 @@ function coverDataUrl(projectDir: string): string | null {
   }
 }
 
+/** cover.jpg 가 마지막 저장보다 1분 넘게 오래됐는가. 편집기는 저장 뒤 1분 안에 다시 굽는다. */
+function isCoverStale(projectDir: string, updatedAt: string | null): boolean {
+  const saved = updatedAt ? Date.parse(updatedAt) : NaN;
+  if (!Number.isFinite(saved)) return false;
+  try {
+    return statSync(join(projectDir, PROJECT_COVER_FILE)).mtimeMs + 60_000 < saved;
+  } catch {
+    return false;
+  }
+}
+
 /** 시작 화면 최근 목록. 제목·마지막 편집·맵 수는 폴더의 project.sqlite 에서 읽는다(기록된 제목은 경로일 때가 많다). */
 export function describeRecentProjects(): readonly RecentProjectEntry[] {
   const roots = temporaryRoots();
@@ -70,16 +81,45 @@ export function describeRecentProjects(): readonly RecentProjectEntry[] {
     const exists = existsSync(join(entry.projectDir, PROJECT_STORE_FILE));
     const summary = exists ? readProjectFolderSummary(entry.projectDir) : null;
     const storedTitle = entry.title && entry.title !== entry.projectDir ? entry.title : null;
+    const cover = exists ? coverDataUrl(entry.projectDir) : null;
     return {
       projectDir: entry.projectDir,
       title: summary?.title || storedTitle || entry.projectDir.split(/[\\/]/).filter(Boolean).pop() || entry.projectDir,
       lastOpenedAt: entry.lastOpenedAt ?? null,
       updatedAt: summary?.updatedAt ?? null,
       mapCount: summary?.mapCount ?? null,
-      cover: exists ? coverDataUrl(entry.projectDir) : null,
+      cover,
+      coverStale: cover !== null && isCoverStale(entry.projectDir, summary?.updatedAt ?? null),
       hiddenReason: !exists ? "missing" : isTemporaryDir(entry.projectDir, roots) ? "temporary" : null,
     };
   });
+}
+
+/**
+ * 시작 화면이 부르는 폴더 경로는 **최근 목록에 있는 것만** 받는다. 렌더러가 준 아무 경로나 열거나 쓰지 않는다.
+ */
+function recentProjectDir(projectDir: unknown): string | null {
+  if (typeof projectDir !== "string" || !projectDir) return null;
+  const known = listRecentProjects().some((entry) => entry.projectDir === projectDir);
+  return known && existsSync(join(projectDir, PROJECT_STORE_FILE)) ? projectDir : null;
+}
+
+/** 최근 목록의 프로젝트에서 카드 그림 재료(시작 맵 + 타일셋)를 읽는다. */
+export function recentProjectCoverSource(projectDir: unknown): ProjectCoverSource | null {
+  const dir = recentProjectDir(projectDir);
+  return dir ? readProjectCoverSource(dir) : null;
+}
+
+/** 시작 화면이 구운 카드 그림을 최근 목록의 그 폴더에 남긴다. JPEG·1MB 상한은 편집기 경로와 같다. */
+export function writeRecentProjectCover(projectDir: unknown, dataUrl: unknown): boolean {
+  const dir = recentProjectDir(projectDir);
+  if (!dir || typeof dataUrl !== "string") return false;
+  const match = /^data:image\/jpeg;base64,([A-Za-z0-9+/]+=*)$/.exec(dataUrl);
+  if (!match) return false;
+  const bytes = Buffer.from(match[1]!, "base64");
+  if (bytes.length > MAX_COVER_BYTES || bytes[0] !== 0xff || bytes[1] !== 0xd8) return false;
+  writeFileSync(join(dir, PROJECT_COVER_FILE), bytes);
+  return true;
 }
 
 /** 새 게임 폴더의 기본 상위 위치. QA 하니스는 OPRN_NEW_PROJECT_ROOT 로 임시 폴더를 준다(대화상자를 자동화할 수 없다). */

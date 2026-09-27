@@ -12,9 +12,17 @@
 - **최근 목록**: `electron/main/recent.ts` 의 `describeRecentProjects()` 가 폴더의 `project.sqlite` 를 **읽기 전용**
   (`electron/local-store/summary.ts`, `query_only`, 본문 `current_json` 안 읽음)으로 열어 제목·편집 시각·맵 수를 채운다.
   임시 폴더(`/tmp`·`os.tmpdir()`) 아래와 사라진 폴더는 `hiddenReason` 을 달아 **기본 숨김** — 목록 파일에서 지우지 않는다.
-- **카드 그림**: `<폴더>/cover.jpg` 는 정본이 아니라 캐시다. 편집기가 부팅 4초 뒤 한 번, 이후 저장 뒤 1분에 한 번까지
-  시작 맵(`startPos` 둘레, 30칸 창)을 480×300 으로 구워 `oprn:project.saveCover` 로 보낸다(`src/editor/projectCover.ts`).
-  호스트는 JPEG 표식·1MB 상한을 보고 **세션의 폴더**에만 쓴다(요청의 경로를 믿지 않는다). 팀 호스트 브라우저 브리지에는 채널이 없다.
+- **카드 그림**: `<폴더>/cover.jpg` 는 정본이 아니라 캐시다. 두 곳이 같은 코드로 굽는다 —
+  시작 맵(`startPos` 둘레, 30칸 창)을 480×300 JPEG 로(`src/editor/mapCoverRender.ts`).
+  - 편집기: 부팅 4초 뒤 한 번, 이후 저장 뒤 1분에 한 번까지 `oprn:project.saveCover`(`src/editor/projectCover.ts`). 호스트는 **세션의 폴더**에만 쓴다.
+  - 시작 화면: 그림이 없거나(편집기에서 한 번도 안 연 프로젝트) 마지막 저장보다 1분 넘게 낡은(`coverStale`) 보이는 항목을
+    한 장씩 굽는다(`src/start/startCover.ts`, 필요할 때만 동적 로드). 재료는 `oprn:start.coverSource` 가 읽기 전용으로 꺼낸
+    시작 맵(맵 거울 표) + 그 타일셋(참고문서 제외, 접힌 행이면 `tileset_blobs`, 업로드 그림판이면 16MB 이하 data URL)이고,
+    `oprn:start.saveCover` 로 남긴다. 두 채널 모두 **최근 목록에 있는 폴더만** 받는다(`electron/main/recent.ts`).
+  - 그리기는 store 없는 `src/editor/mapTileDrawCore.ts`(쿼터 합성 판정 `chipsetComposition.ts`)라 편집기 썸네일과 같다.
+    `mapTileDraw.ts` 는 그 코어를 다시 내보내고 편집기 쪽 그림 로드만 더한다. 시작 화면은 이식(tileGrafts)·투명색을 편집기와 같이 합성하고,
+    재료가 하나라도 없으면(번들에 없는 칩셋 등) 반쪽 그림 대신 첫 글자로 둔다. 맵 없는 빈 폴더도 첫 글자.
+  - 팀 호스트 브라우저 브리지에는 두 채널이 없다.
 - **새 게임**: 한 문장(선택)·장르 포스터(featured 3 + 빈 프로젝트)·이름·저장 위치를 한 화면에서 정한다. 저장 위치는
   `oprn:start.suggestProjectDir` 가 `문서/OPRN Games/<이름>`(겹치면 `<이름> 2`…)를 추천하고, 「바꾸기」가 상위 폴더 대화상자를 연다.
   `start.createProject` 에 `projectDir` 를 주면 대화상자 없이 그 **비어 있는** 폴더에 만든다(파일이 있으면 거절). 메뉴 경로는 예전대로 대화상자.

@@ -46,6 +46,10 @@ export const OPRN_CHANNELS = {
   startSuggestProjectDir: "oprn:start.suggestProjectDir",
   /** 새 게임 폴더를 만들 상위 위치를 고르는 대화상자. */
   startChooseProjectRoot: "oprn:start.chooseProjectRoot",
+  /** 최근 목록 프로젝트의 카드 그림 재료(시작 맵 + 타일셋). */
+  startCoverSource: "oprn:start.coverSource",
+  /** 시작 화면이 구운 카드 그림을 그 폴더의 cover.jpg 로 남긴다. */
+  startSaveCover: "oprn:start.saveCover",
   assetBrowserOpen: "oprn:assetBrowser.open",
   assetBrowserBounds: "oprn:assetBrowser.bounds",
   assetBrowserClose: "oprn:assetBrowser.close",

@@ -12,13 +12,10 @@ import { activeTileGrafts, tileGraftsTextureSuffix } from "@/assets/tileGrafts";
 import { bakeTilesetTextureCanvas, tilesetTextureNeedsBake } from "@/assets/tileGraftTexture";
 import { normalizeRgbHexColor } from "@/assets/transparentColorKey";
 import { rawChipsetTextureKey } from "@/assets/chipsetTransparency";
-import {
-  DEFAULT_TILESET_TEXTURE_KEY,
-  LEGACY_RM_TILESET_TEXTURE_KEY,
-} from "@/project/defaults/constants";
-import { INTERIOR_TEXTURE_KEY, isDungeonSheetTexture } from "@/project/tilesetHarness/themePacks";
+import { INTERIOR_TEXTURE_KEY } from "@/project/tilesetHarness/themePacks";
 import { isWorldTileset, isWorldAnimatedTile } from "@/project/defaults/worldCoastMapping";
 import { isCombinedTownHalfTile, isCombinedTownRetroWorldTileset } from "@/project/defaults/combinedTownRetroWorld";
+import { isDefaultTilesetTexture, supportsChipsetQuarterComposition, usesCombinedTownWaterBlock } from "@/editor/chipsetComposition";
 import { store } from "@/project/store";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import type { Project, TilesetDef } from "@/project/types";
@@ -88,44 +85,7 @@ export function ensureTilesetTexture(scene: Phaser.Scene, tileset: TilesetDef): 
   return textureKey;
 }
 
-/**
- * 16px·30열 시트 중 합본 마을과 물 블록(0/30/60/90/120과 가로 3프레임)이 칸 단위로 같은 것.
- * 월드맵 본편은 해안 그룹이 이미 같은 칸을 합성한다. 던전·잔디 사선·부분만 같은 실내는 빠진다.
- */
-const COMBINED_TOWN_WATER_BLOCK_TEXTURES = new Set<string>([
-  "tex_forest_harmony",
-  "tex_forest_harmony_snow",
-  "tex_forest_harmony_volcano",
-  "tex_forest_harmony_desert",
-  "tex_forest_harmony_autumn",
-  "tex_easyrpg_chipset_ship",
-  "tex_easyrpg_chipset_retro_exterior",
-  "tex_easyrpg_chipset_retro_house",
-  "tex_easyrpg_chipset_retro_world",
-  "tex_easyrpg_chipset_combined_town_retro_world",
-  "tex_tibo_interior_expanded",
-  "tex_modern_exteriors_nocturne",
-  "tex_scarloxy_chipset_grassland",
-  "tex_scarloxy_chipset_wilds",
-]);
-
-function usesCombinedTownWaterBlock(tileset: TilesetDef): boolean {
-  return tileset.image.type === "bundled" && COMBINED_TOWN_WATER_BLOCK_TEXTURES.has(tileset.image.id);
-}
-
-export function isDefaultTilesetTexture(tileset: TilesetDef): boolean {
-  return (
-    tileset.image.type === "bundled" &&
-    (tileset.image.id === DEFAULT_TILESET_TEXTURE_KEY || tileset.image.id === LEGACY_RM_TILESET_TEXTURE_KEY)
-  );
-}
-
-export function supportsChipsetQuarterComposition(tileset: TilesetDef): boolean {
-  return isWorldTileset(tileset) || isDefaultTilesetTexture(tileset)
-    || usesCombinedTownWaterBlock(tileset)
-    || (tileset.image.type === "bundled" && tileset.image.id === INTERIOR_TEXTURE_KEY)
-    || (tileset.image.type === "bundled" && isDungeonSheetTexture(tileset.image.id));
-}
+export { isDefaultTilesetTexture, supportsChipsetQuarterComposition };
 
 /**
  * Interior fire and ungrafted World strips animate without enabling town road/tree rules.
