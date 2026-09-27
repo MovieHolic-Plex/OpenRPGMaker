@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Original hand-placed slime pixels. Python 3 + Pillow; no source art inputs.
+"""Hand-authored 48px slime cells. Python 3 + Pillow; no AI or downsampling.
 
-Every silhouette is an explicit scanline (inclusive x endpoints), with authored
-integer-coordinate color clusters and small character-grid facial features.
-Only the review images are scaled, using nearest-neighbor sampling.
+Silhouettes are native scanlines; lighting and faces use integer pixel clusters.
+The actor input is used only in the review comparison, never to draw the slime.
+Only review images are enlarged, with nearest-neighbor sampling.
 """
 from pathlib import Path
 import json
@@ -11,175 +11,145 @@ from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[3]
 OUTPUT = ROOT / 'public/assets/generated/pixel-enemies/slime.png'
+ACTOR = ROOT / 'public/assets/generated/charset-battlers/actor1-0.png'
 REVIEW = ROOT / '.omo/pixel-enemy-slime'
+CELL, SCALE, BASELINE = 48, 4, 44
 COLORS = {
     'D': '#173451',  # deep blue outline / facial ink
     'S': '#2d719b',  # cool shadow / lit-side outline
     'B': '#299fb8',  # clear turquoise body
-    'L': '#70d0d2',  # broad upper-left transmitted light
-    'H': '#b5ece4',  # small internal bubbles
+    'L': '#70d0d2',  # upper-left transmitted light
+    'H': '#b5ece4',  # internal bubble / reflection surround
     'W': '#effff0',  # three-pixel specular reflection
 }
 RGBA = {key: tuple(bytes.fromhex(value[1:])) + (255,) for key, value in COLORS.items()}
 BG = '#202840'
 NAMES = ['idle_a', 'idle_b', 'idle_c', 'windup', 'move', 'attack', 'recover', 'hit', 'dead']
-# Each pair draws one native-resolution row; none are scaled from another pose.
+# Inclusive row endpoints. These are authored at 1:1, not transformed old art.
 SHAPES = {
-    'idle_a': (31, [
-        (29,34),(27,36),(26,37),(25,38),(24,39),(23,40),(22,41),
-        (21,42),(20,43),(19,44),(19,44),(18,45),(18,45),(17,46),
-        (17,46),(16,47),(16,47),(16,47),(15,48),(15,48),(15,48),
-        (15,48),(15,48),(15,48),(16,47),(17,46),(18,45),
-        (20,43),(22,41),(24,39)]),
-    'idle_b': (33, [
-        (29,34),(27,36),(25,38),(23,40),(21,42),(20,43),(19,44),
-        (18,45),(17,46),(17,46),(16,47),(16,47),(15,48),(15,48),
-        (14,49),(14,49),(14,49),(14,49),(14,49),(14,49),(14,49),
-        (14,49),(15,48),(16,47),(17,46),(19,44),(21,42),(23,40)]),
-    'idle_c': (35, [
-        (27,37),(24,40),(22,42),(20,44),(19,45),(18,46),(17,47),
-        (16,47),(15,48),(15,48),(14,49),(14,49),(13,50),
-        (13,50),(13,50),(13,50),(13,50),(13,50),(13,50),(13,50),
-        (14,49),(15,48),(16,47),(18,45),(20,43),(22,41)]),
-    'windup': (39, [
-        (22,26),(20,29),(19,31),(17,33),(15,35),(14,37),(13,39),
-        (12,41),(11,43),(10,45),(10,46),(10,47),(9,48),(9,48),
-        (9,48),(9,48),(10,47),(11,46),(13,44),(15,42),(18,39),(21,36)]),
-    'move': (22, [
-        (43,47),(40,49),(37,51),(34,52),(31,53),(29,53),
-        (27,53),(25,53),(24,53),(23,52),(22,52),(21,52),
-        (20,51),(19,51),(18,50),(17,50),(16,49),(15,48),
-        (15,47),(15,46),(14,44),(14,42),(15,40),(15,37),
-        (16,34),(17,30),(18,27),(18,24),(19,22)]),
-    'attack': (32, [
-        (43,49),(40,53),(37,55),(35,56),(33,57),(31,57),
-        (29,57),(27,57),(26,57),(25,57),(24,57),(23,57),
-        (23,57),(23,57),(23,57),(23,57),(24,57),(24,57),
-        (25,57),(26,57),(27,57),(29,56),(31,55),(33,54),
-        (35,52),(37,50),(39,48),(39,47),(40,46)]),
-    'recover': (37, [
-        (26,36),(23,39),(21,41),(19,43),(18,44),(17,45),
-        (16,46),(15,47),(14,48),(14,49),(13,50),(13,51),
-        (12,52),(12,52),(12,52),(12,52),(12,52),(13,51),
-        (14,50),(15,49),(17,47),(19,45),(21,43),(24,40)]),
-    'hit': (33, [
-        (19,25),(16,28),(14,31),(13,33),(12,35),(11,36),
-        (11,37),(11,38),(12,39),(12,40),(13,41),(13,42),
-        (14,43),(14,44),(15,45),(15,46),(16,47),(16,48),
-        (16,49),(16,49),(16,50),(16,50),(17,49),(18,48),
-        (19,47),(21,45),(23,43),(25,41)]),
-    'dead': (53, [
-        (24,38),(18,44),(14,48),(11,51),(10,53),(11,54),
-        (13,52),(17,47)]),
+    'idle_a': (29, [
+        (22,25),(20,27),(19,28),(18,29),(18,30),(17,30),(17,31),(16,31),
+        (16,32),(15,32),(15,32),(15,32),(16,31),(17,30),(18,29),(20,27)]),
+    'idle_b': (30, [
+        (21,26),(19,28),(18,29),(17,30),(16,31),(16,31),(15,32),(15,32),
+        (14,33),(14,33),(14,33),(15,32),(16,31),(18,29),(20,27)]),
+    'idle_c': (31, [
+        (21,27),(19,29),(17,30),(16,31),(16,32),(15,32),(14,33),
+        (14,33),(14,33),(14,33),(15,32),(16,31),(18,29),(20,27)]),
+    'windup': (33, [
+        (18,22),(16,25),(15,27),(14,29),(14,31),(13,32),
+        (13,33),(13,34),(14,33),(15,32),(17,30),(20,27)]),
+    'move': (23, [
+        (29,32),(27,34),(25,35),(23,35),(22,35),(21,35),(20,34),(19,34),
+        (18,33),(17,32),(16,31),(15,30),(15,28),(15,26),(16,24),(17,22),(18,20)]),
+    'attack': (28, [
+        (29,33),(27,35),(25,37),(23,38),(22,38),(21,38),(20,38),(19,38),
+        (18,38),(17,38),(17,38),(18,38),(19,37),(21,36),(23,35),(25,33),(27,31)]),
+    'recover': (33, [
+        (21,26),(18,29),(16,31),(15,32),(14,33),(13,34),
+        (12,35),(12,35),(13,34),(15,32),(17,30),(20,27)]),
+    'hit': (29, [
+        (17,21),(15,23),(14,25),(13,26),(13,27),(13,28),(14,29),(14,30),
+        (15,31),(16,32),(16,33),(17,34),(18,33),(19,32),(21,30),(23,28)]),
+    'dead': (40, [(19,29),(14,33),(11,35),(12,36),(16,32)]),
 }
-# Integer polygon vertices describe asymmetric color clusters, not gradients.
+# Explicit shadow and light polygons, clipped to the authored silhouette.
 PATCHES = {
     'idle_a': (
-        [(38,36),(43,40),(46,46),(49,51),(48,56),(41,59),(23,59),(17,56),(29,56),(36,53),(39,47)],
-        [(26,35),(31,34),(35,37),(35,41),(32,44),(28,46),(23,47),(20,45),(21,41),(23,38)]),
+        [(30,34),(32,38),(32,41),(28,43),(19,43),(17,42),(25,42),(30,40)],
+        [(21,31),(24,31),(26,33),(25,36),(22,38),(18,38),(18,35)]),
     'idle_b': (
-        [(38,37),(43,41),(46,47),(49,52),(48,56),(41,59),(23,59),(17,56),(29,56),(36,54),(39,48)],
-        [(26,37),(31,36),(35,39),(35,43),(32,46),(28,48),(23,49),(19,47),(20,43),(23,40)]),
+        [(31,35),(33,38),(33,41),(28,43),(19,43),(16,42),(25,42),(31,40)],
+        [(20,32),(24,32),(26,34),(25,37),(21,39),(17,39),(17,36)]),
     'idle_c': (
-        [(38,38),(43,42),(46,48),(49,52),(48,56),(41,59),(23,59),(17,56),(29,56),(36,54),(39,49)],
-        [(26,39),(31,38),(35,41),(35,45),(32,48),(28,50),(22,51),(18,49),(20,45),(23,41)]),
+        [(31,35),(33,38),(33,41),(28,43),(19,43),(16,42),(25,42),(31,40)],
+        [(20,33),(24,33),(26,35),(25,37),(21,39),(17,39),(17,36)]),
     'windup': (
-        [(33,44),(42,48),(48,52),(47,55),(40,58),(20,59),(13,56),(26,56),(34,54)],
-        [(19,43),(25,42),(31,44),(34,47),(30,50),(23,52),(14,52),(13,49),(15,46)]),
+        [(26,36),(31,38),(33,40),(28,43),(18,43),(16,41),(25,41)],
+        [(18,35),(22,35),(25,37),(24,39),(16,40),(15,38)]),
     'move': (
-        [(50,26),(52,29),(51,38),(46,44),(33,49),(27,46),(34,43),(40,36),(43,28)],
-        [(40,26),(45,25),(46,28),(40,33),(35,37),(30,39),(23,40),(23,36),(30,31)]),
+        [(32,25),(34,27),(33,31),(29,34),(21,38),(20,35),(27,31),(29,26)],
+        [(27,26),(30,25),(30,28),(25,31),(19,33),(20,30)]),
     'attack': (
-        [(52,35),(56,38),(56,52),(51,56),(45,59),(37,55),(43,52),(47,48)],
-        [(43,35),(48,35),(48,39),(44,43),(39,46),(31,48),(26,46),(29,42),(36,38)]),
+        [(36,31),(37,33),(37,39),(31,43),(26,42),(33,40),(36,38)],
+        [(28,31),(31,30),(32,32),(29,35),(23,38),(20,37),(23,34)]),
     'recover': (
-        [(39,40),(46,45),(50,51),(50,56),(41,59),(23,59),(16,56),(29,56),(38,53)],
-        [(26,40),(33,39),(38,42),(38,45),(33,49),(24,52),(18,51),(17,48),(21,43)]),
+        [(32,37),(34,39),(34,41),(28,43),(18,43),(15,42),(27,42),(32,40)],
+        [(20,35),(24,35),(27,37),(25,39),(17,40),(16,38)]),
     'hit': (
-        [(29,37),(34,41),(39,45),(48,51),(48,55),(41,59),(26,59),(21,55),(30,53),(30,46)],
-        [(18,37),(24,36),(29,39),(30,42),(27,45),(23,47),(17,46),(14,41)]),
+        [(23,32),(28,35),(33,40),(30,43),(24,43),(21,40),(23,37)],
+        [(17,31),(20,31),(23,33),(23,35),(19,37),(15,35)]),
     'dead': (
-        [(41,55),(48,56),(52,58),(46,59),(19,59),(14,58),(32,57)],
-        [(23,54),(35,54),(42,55),(39,56),(27,56),(16,57),(17,56)]),
+        [(34,42),(35,43),(17,43),(18,43),(33,43)],
+        [(19,41),(26,41),(28,42),(16,42)]),
 }
-# Body reflection origins and two internal bubble origins, one smaller/darker.
 DETAILS = {
-    'idle_a': ((24,37),(23,50),(29,54)),
-    'idle_b': ((24,39),(23,51),(29,55)),
-    'idle_c': ((24,41),(23,53),(30,55)),
-    'windup': ((19,44),(18,54),(26,54)),
-    'move': ((38,28),(28,39),(34,42)),
-    'attack': ((40,38),(32,47),(37,51)),
-    'recover': ((24,42),(23,53),(31,55)),
-    'hit': ((18,39),(23,49),(31,54)),
-    'dead': ((22,55),None,None),
+    'idle_a': ((20,33),(19,39)),
+    'idle_b': ((19,34),(18,40)),
+    'idle_c': ((19,35),(18,40)),
+    'windup': ((17,36),(18,40)),
+    'move': ((25,27),(21,32)),
+    'attack': ((26,32),(24,38)),
+    'recover': ((19,36),(18,40)),
+    'hit': ((17,33),(20,39)),
+    'dead': ((19,41),None),
+}
+FACES = {
+    'idle_a': [((25,34), ['D.','DD','.D']), ((29,34), ['.D','DD','D.']), ((27,39), ['D.D','.D.'])],
+    'idle_b': [((25,35), ['D.','DD','.D']), ((29,35), ['.D','DD','D.']), ((27,39), ['D.D','.D.'])],
+    'idle_c': [((25,36), ['D.','DD','.D']), ((29,36), ['.D','DD','D.']), ((27,39), ['D.D','.D.'])],
+    'windup': [((23,37), ['DD.','.DD']), ((29,37), ['.DD','DD.']), ((26,41), ['DDD'])],
+    'move': [((29,27), ['DD','DD','DD']), ((33,26), ['D','D','D']), ((29,31), ['DD','SD'])],
+    'attack': [((32,32), ['DD','DD']), ((36,32), ['D','D']), ((32,35), ['.DDD','DDDD','DDDD','.LLD'])],
+    'recover': [((25,36), ['D.','DD','.D']), ((29,36), ['.D','DD','D.']), ((27,39), ['D.D','.D.'])],
+    'hit': [((22,35), ['D.','.D','D.']), ((27,35), ['.D','D.','.D']), ((26,40), ['DD'])],
+    'dead': [((24,41), ['D.D','.D.','D.D']), ((30,41), ['D.D','.D.','D.D'])],
+}
+DROPS = {
+    'move': [((12,32), ['SB','BD']), ((12,38), ['SB','BD'])],
+    'attack': [((39,25), ['SB','BD']), ((41,31), ['SB','BD']), ((40,40), ['SB','BD'])],
 }
 
 
-def stamp(image, origin, grid):
-    """Literal character grid: dot = leave existing pixel unchanged."""
+def stamp(image, origin, grid, allowed=None):
+    """Literal native pixels. Body details must stay inside the silhouette."""
     ox, oy = origin
     for dy, row in enumerate(grid):
         for dx, char in enumerate(row):
             if char != '.':
-                image.putpixel((ox + dx, oy + dy), RGBA[char])
+                xy = (ox + dx, oy + dy)
+                assert allowed is None or xy in allowed, (origin, xy)
+                image.putpixel(xy, RGBA[char])
 
 
 def draw_pose(name):
     y0, spans = SHAPES[name]
     pixels = {(x,y0+dy) for dy,(left,right) in enumerate(spans) for x in range(left,right+1)}
-    frame = Image.new('RGBA', (64,64))
-    for xy in pixels:
-        frame.putpixel(xy, RGBA['B'])
-    patches = Image.new('RGBA', (64,64))
+    frame = Image.new('RGBA', (CELL,CELL))
+    patches = Image.new('RGBA', frame.size)
     pen = ImageDraw.Draw(patches)
     for key, vertices in zip(('S','L'), PATCHES[name]):
         pen.polygon(vertices, fill=RGBA[key])
     for x,y in pixels:
-        if patches.getpixel((x,y))[3]:
-            frame.putpixel((x,y), patches.getpixel((x,y)))
+        color = patches.getpixel((x,y))
+        frame.putpixel((x,y), color if color[3] else RGBA['B'])
         if any((x+dx,y+dy) not in pixels for dx,dy in [(0,-1),(-1,0),(1,0),(0,1)]):
-            frame.putpixel((x,y), RGBA['S' if x < 33 and y < 53 else 'D'])
-    reflection, bubble, small_bubble = DETAILS[name]
-    stamp(frame, (reflection[0]-1, reflection[1]-1), ['.HHH','HWWW','HH..'])
-    # Keep the specular white cluster exactly three connected native pixels.
+            frame.putpixel((x,y), RGBA['S' if x < 24 and y < 40 else 'D'])
+    reflection, bubble = DETAILS[name]
+    stamp(frame, reflection, ['HWW','HW.'], pixels)
     if bubble:
-        stamp(frame, bubble, ['HH.','HBL','.LL'])
-        stamp(frame, small_bubble, ['LL','LB'])
-    if name.startswith('idle') or name == 'recover':
-        shift = {'idle_a':-1,'idle_b':0,'idle_c':2,'recover':2}[name]
-        stamp(frame,(32,43+shift),['DD...','.DDD.','..DD.','..DD.','..DD.'])
-        stamp(frame,(41,43+shift),['..DD','.DDD','.DD.','.DD.'])
-        stamp(frame,(40,52+shift),['D..D','.DD.'])
-    elif name == 'windup':
-        stamp(frame,(29,49),['DDD..','.DDD.'])
-        stamp(frame,(41,49),['..DD','DDD.'])
-        stamp(frame,(36,55),['DDD'])
-    elif name == 'move':
-        stamp(frame,(39,29),['DD..','.DDD','..DD','..DD','..DD'])
-        stamp(frame,(48,28),['..D','.DD','.DD','.DD'])
-        stamp(frame,(43,37),['.DD.','DSSD','.DD.'])
-        stamp(frame,(9,38),['.S..','SBL.','.BB.','..D.'])
-        stamp(frame,(12,46),['SB','BD'])
-    elif name == 'attack':
-        stamp(frame,(44,39),['DD..','.DDD','..DD','..DD'])
-        stamp(frame,(53,38),['.DD','DDD','.DD'])
-        stamp(frame,(47,44),['.DDDD.','DDDDDD','DDDDDD','DDDDDD','DSSLLD','.DDDD.'])
-        stamp(frame,(56,26),['.S.','SBL','.BD'])
-        stamp(frame,(60,34),['SB','BD'])
-        stamp(frame,(59,54),['.S.','SBL','.BD'])
-    elif name == 'hit':
-        stamp(frame,(27,43),['DD...','.DD..','..DD.','.DD..','DD...'])
-        stamp(frame,(38,43),['...DD','..DD.','.DD..','..DD.','...DD'])
-        stamp(frame,(33,51),['.DD.','DSSD','.DD.'])
-    else:
-        stamp(frame,(31,55),['D.D','.D.','D.D'])
-        stamp(frame,(42,55),['D.D','.D.','D.D'])
+        stamp(frame, bubble, ['HH','HL'], pixels)
+        if name.startswith('idle') or name == 'recover':
+            stamp(frame, (22,41), ['LL'], pixels)
+    for origin, grid in FACES[name]:
+        stamp(frame, origin, grid, pixels)
+    for origin, grid in DROPS.get(name, []):
+        stamp(frame, origin, grid)
     return frame
 
 
 def components(frame):
-    remaining = {(x,y) for y in range(64) for x in range(64) if frame.getpixel((x,y))[3]}
+    remaining = {(x,y) for y in range(CELL) for x in range(CELL) if frame.getpixel((x,y))[3]}
     sizes = []
     while remaining:
         stack = [remaining.pop()]
@@ -197,60 +167,64 @@ def components(frame):
 
 
 def validate(sheet, frames):
-    assert sheet.mode == 'RGBA' and sheet.size == (192,192)
+    assert sheet.mode == 'RGBA' and sheet.size == (144,144)
     assert set(sheet.getchannel('A').tobytes()) == {0,255}
-    palette = {sheet.getpixel((x,y)) for y in range(192) for x in range(192) if sheet.getpixel((x,y))[3]}
-    assert len(palette) <= 16
+    palette = {color for count,color in sheet.getcolors(sheet.width*sheet.height) if color[3]}
+    assert palette == set(RGBA.values())
     report = {'size': list(sheet.size), 'mode': sheet.mode, 'alpha': [0,255],
-              'opaque_palette_size': len(palette), 'bbox_convention': 'cell-local, inclusive', 'frames': {}}
+              'cell_size': CELL, 'opaque_palette_size': len(palette),
+              'baseline': BASELINE, 'bbox_convention': 'cell-local, inclusive', 'frames': {}}
     for name,frame in frames.items():
-        left,top,right,bottom = frame.getbbox()
+        left,top,right,bottom = frame.getchannel('A').getbbox()
         width,height = right-left,bottom-top
-        assert left >= 1 and top >= 1 and right <= 63 and bottom <= 63, name
-        assert bottom-1 == (50 if name == 'move' else 60), (name,bottom)
+        assert left >= 1 and top >= 1 and right <= CELL-1 and bottom <= CELL-1, name
+        assert bottom-1 == (39 if name == 'move' else BASELINE), (name,bottom)
         sizes = components(frame)
         assert min(sizes) > 1, (name,'isolated pixel',sizes)
+        assert len(sizes) == {'move':3,'attack':4}.get(name,1), (name,sizes)
+        assert sum(count for count,color in frame.getcolors(CELL*CELL) if color == RGBA['W']) == 3, name
         if name.startswith('idle'):
-            assert 34 <= width <= 38 and 26 <= height <= 30, name
-            assert (left+right)/2 == 32, name
+            assert 18 <= width <= 20 and 14 <= height <= 16, name
+            assert (left+right)/2 == 24, name
         if name == 'dead':
-            assert 6 <= height <= 8
-        report['frames'][name] = {'bbox': [left,top,right-1,bottom-1], 'size': [width,height], 'components': sizes}
-    assert [report['frames'][n]['size'] for n in NAMES[:3]] == [[34,30],[36,28],[38,26]]
-    assert report['frames']['windup']['size'] == [40,22]  # idle_a +6 wide, -8 high
+            assert height == 5
+        y0, spans = SHAPES[name]
+        body = [min(l for l,r in spans), y0, max(r for l,r in spans), y0+len(spans)-1]
+        report['frames'][name] = {'bbox': [left,top,right-1,bottom-1], 'size': [width,height],
+                                  'body_bbox': body, 'last_opaque_row': bottom-1, 'components': sizes}
+    assert [report['frames'][n]['size'] for n in NAMES[:3]] == [[18,16],[20,15],[20,14]]
     return report
 
 
 def make_previews(sheet, frames):
+    side = CELL*SCALE
     preview = Image.new('RGBA',sheet.size,BG)
     preview.alpha_composite(sheet)
-    preview = preview.convert('RGB').resize((768,768),Image.Resampling.NEAREST)
+    preview = preview.convert('RGB').resize((side*3,side*3),Image.Resampling.NEAREST)
     pen = ImageDraw.Draw(preview)
-    for line in (0,256,512,767):
-        pen.line((line,0,line,767), fill='#505c78')
-        pen.line((0,line,767,line), fill='#505c78')
+    for line in (0,side,side*2,side*3-1):
+        pen.line((line,0,line,side*3-1), fill='#505c78')
+        pen.line((0,line,side*3-1,line), fill='#505c78')
     for index,name in enumerate(NAMES):
-        x,y = index%3*256,index//3*256
+        x,y = index%3*side,index//3*side
         pen.text((x+12,y+12),name,fill='#c8d5e3')
-        pen.line((x+4,y+244,x+251,y+244),fill='#39465e')
+        pen.line((x+4,y+(BASELINE+1)*SCALE,x+side-5,y+(BASELINE+1)*SCALE),fill='#39465e')
     preview.save(REVIEW/'preview.png')
     idle = ['idle_a','idle_b','idle_c','idle_b']
     sequence = idle*2 + ['windup','move','attack','recover','idle_a','hit','idle_a','dead']
     durations = [180]*8 + [260,140,180,200,400,300,400,1200]
     rendered = []
-    # One fixed GIF palette keeps every pose's six source colors exact.
     gif_palette = Image.new('P',(1,1))
     values = [tuple(bytes.fromhex(BG[1:]))] + [rgba[:3] for rgba in RGBA.values()]
     flat = [channel for rgb in values for channel in rgb]
     gif_palette.putpalette(flat + [0]*(768-len(flat)))
     for name in sequence:
-        shot = Image.new('RGBA',(64,64),BG)
+        shot = Image.new('RGBA',(CELL,CELL),BG)
         shot.alpha_composite(frames[name])
-        shot = shot.convert('RGB').resize((256,256),Image.Resampling.NEAREST)
+        shot = shot.convert('RGB').resize((side,side),Image.Resampling.NEAREST)
         rendered.append(shot.quantize(palette=gif_palette,dither=Image.Dither.NONE))
     rendered[0].save(REVIEW/'cycle.gif',save_all=True,append_images=rendered[1:],
                      duration=durations,loop=0,disposal=2,optimize=False)
-    # Decode the actual GIF frames for visual inspection, not just PNG sources.
     with Image.open(REVIEW/'cycle.gif') as gif:
         assert gif.n_frames == len(sequence)
         for index, expected in enumerate(rendered):
@@ -261,23 +235,46 @@ def make_previews(sheet, frames):
             if index in (0,8,9,10,13,15):
                 actual.save(REVIEW/f'gif-{index:02d}-{sequence[index]}.png')
 
+    # Exact actor idle (0,0); align its last opaque row to slime y=44 by
+    # translation only. Both full cells are enlarged by the SAME factor four.
+    with Image.open(ACTOR) as source:
+        actor = source.convert('RGBA').crop((0,0,CELL,CELL))
+    actor_bbox = actor.getchannel('A').getbbox()
+    offset = BASELINE-(actor_bbox[3]-1)
+    assert 0 <= actor_bbox[1]+offset and actor_bbox[3]+offset <= CELL
+    aligned = Image.new('RGBA',(CELL,CELL))
+    aligned.alpha_composite(actor,(0,offset))
+    assert aligned.getchannel('A').getbbox()[3]-1 == BASELINE
+    board = Image.new('RGBA',(CELL*2,CELL),BG)
+    board.alpha_composite(aligned,(0,0))
+    board.alpha_composite(frames['idle_a'],(CELL,0))
+    board = board.convert('RGB').resize((side*2,side),Image.Resampling.NEAREST)
+    pen = ImageDraw.Draw(board)
+    pen.line((side,0,side,side-1),fill='#505c78')
+    pen.line((0,(BASELINE+1)*SCALE,side*2-1,(BASELINE+1)*SCALE),fill='#8fa28b')
+    pen.text((12,12),'actor1-0 idle / 4x',fill='#c8d5e3')
+    pen.text((side+12,12),'slime idle_a / 4x',fill='#c8d5e3')
+    board.save(REVIEW/'scale.png')
+    return {'actor_source': str(ACTOR.relative_to(ROOT)),
+            'actor_idle_bbox': [actor_bbox[0],actor_bbox[1],actor_bbox[2]-1,actor_bbox[3]-1],
+            'actor_y_translation': offset, 'both_scale': SCALE, 'aligned_last_opaque_row': BASELINE}
+
 
 def main():
     OUTPUT.parent.mkdir(parents=True,exist_ok=True)
     REVIEW.mkdir(parents=True,exist_ok=True)
     frames = {name:draw_pose(name) for name in NAMES}
-    sheet = Image.new('RGBA',(192,192))
+    sheet = Image.new('RGBA',(CELL*3,CELL*3))
     for index,name in enumerate(NAMES):
-        sheet.paste(frames[name],(index%3*64,index//3*64))
+        sheet.paste(frames[name],(index%3*CELL,index//3*CELL))
     report = validate(sheet,frames)
     sheet.save(OUTPUT)
-    # Validate decoded deliverable as well, including exact packing/order.
     with Image.open(OUTPUT) as decoded:
         for index,name in enumerate(NAMES):
-            x,y = index%3*64,index//3*64
-            assert decoded.crop((x,y,x+64,y+64)).tobytes() == frames[name].tobytes()
+            x,y = index%3*CELL,index//3*CELL
+            assert decoded.crop((x,y,x+CELL,y+CELL)).tobytes() == frames[name].tobytes()
         validate(decoded,frames)
-    make_previews(sheet,frames)
+    report['scale_comparison'] = make_previews(sheet,frames)
     (REVIEW/'validation.json').write_text(json.dumps(report,indent=2)+'\n')
     print(json.dumps(report,indent=2))
 
