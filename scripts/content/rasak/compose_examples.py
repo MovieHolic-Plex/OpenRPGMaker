@@ -102,8 +102,20 @@ class Canvas:
         # 주인 기록 없이 찍힌 칸(시트 통째 배·건물 조각)도 이미 차 있으면 덮지 않는다(확대 QA: 배 등불이 대포를 덮음)
         if not all(self.ok(cx, cy) and (ly, cy * self.w + cx) not in self.owner and self.L[ly][cy * self.w + cx] is None and self.ground(cx, cy) == 'floor' for cx, cy in cells):
             return False
+        # 막히는 물체는 길 칸에 흩뿌리지 않는다(확대 QA 2026-09-27 2차: 정원 마을 문 앞 길에 나무가 섬) — 바닥만 칠하는 물체는 괜찮다
+        blocks = [not p for row in o.get('passable') or [] for p in row if p is not None]
+        if any(blocks) and any(self.is_path(cx, cy) for cx, cy in cells):
+            return False
         self.obj(oid, x, y)
         return True
+
+    def is_path(self, x, y):
+        """1층이 실외 길 kind(흙길·자갈길) 인가. 판석·포장 바닥은 실내·광장 바닥 전체에 깔려 넣으면 흩뿌림이 아무것도 못 놓는다."""
+        v = self.L[1][y * self.w + x]
+        if not (isinstance(v, tuple) and v[1] == 'A2'):
+            return False
+        n = self.ctx.kind_name(self.b, f'{v[1]}:{v[2]}')
+        return ('흙길' in n or '자갈길' in n) and '가운데 투명' not in n
 
     def ground(self, x, y):
         """1층 칸 성격: 'wall'(A4 벽면·A3 벽) · 'roof'(A3 지붕) · 'ceiling'(A4 윗면) · 'water'(A1) · 'floor'."""
