@@ -15,6 +15,7 @@ import { beginSpatialToolProposal, sealSpatialToolProposal } from "./spatialTool
 import { verifyPostTilePlacement } from "@/project/lint/postTileVerify";
 import { compactMapLayers, EXTRA_LAYER_KEYS, hasExtraLayers } from "@/project/mapLayers";
 import { formatTreePairRepairSummary, repairTreePairsOnProject } from "@/project/lint/repairTreePairs";
+import { applyForestTreeShadows } from "@/project/defaults/forestHarmonyTreeShadows";
 import { resolveForestCanopyReplacementExemptTileIds } from "./forestComposition";
 import { commitChangeset, createDraft, shareUnchangedTilesets, summarizeChanges, tileBuffersDiffer, tileChangedMapIds } from "./changeset";
 import { normalizeArgsForSchema, validateArgs } from "./jsonSchema";
@@ -260,6 +261,14 @@ export function runToolDefinition(
       ? formatTreePairRepairSummary(repairTreePairsOnProject(draft, {
         canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(draft),
       })) : null;
+    // 나무 밑 그림자: 이 호출이 타일을 바꾼 숲마을 맵만. 밑동 칸·발치 칸의 2층에 그림자 칸을 맞춘다(forestHarmonyTreeShadows.ts).
+    // 동결된 저작 래스터(spatialAuthoring·preservesAuthoredRaster)는 위 수리와 같은 이유로 건드리지 않는다.
+    if (draft.spatialAuthoring === undefined && tool.preservesAuthoredRaster !== true) {
+      for (const id of tileChangedMapIds(before, draft)) {
+        const map = draft.maps[id];
+        if (map) applyForestTreeShadows(map, draft.tilesets[map.tilesetId]);
+      }
+    }
     assertHouseProtection(protectedHouses, draft, builtHouses);
 
     const diff = summarizeChanges(before, draft);
