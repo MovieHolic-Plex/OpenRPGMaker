@@ -1,0 +1,13 @@
+{
+ "marks": {
+  "loaderSeen": 109,
+  "canvas": 20482,
+  "welcome": 22315,
+  "loaderGone": 22315
+ },
+ "exposedEditorBeforeWelcomeMs": 0,
+ "tileRefs": [
+  "ok"
+ ],
+ "warnings": []
+}

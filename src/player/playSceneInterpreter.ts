@@ -27,6 +27,7 @@ import { resolvePlayerBody } from "@/project/playerFootprint";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 import { assertNever } from "@/player/playSceneTypes";
+import { tryBoardVehicle, tryGetOffVehicle } from "@/player/playSceneVehicles";
 import type { Command } from "@/project/types";
 import { characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { waitForEventKey } from "@/player/eventInput";
@@ -620,6 +621,10 @@ async function consumeBlockingStep(
     }
     case "relocateEvents":
       applyEventRelocationStep(scene, step);
+      return resumeAfterSurface(scene, interpreter);
+    case "vehicle":
+      if (step.boarded) tryBoardVehicle(scene);
+      else tryGetOffVehicle(scene);
       return resumeAfterSurface(scene, interpreter);
     case "spawnEvent":
       refreshSpawnedEvent(scene, step.eventId);

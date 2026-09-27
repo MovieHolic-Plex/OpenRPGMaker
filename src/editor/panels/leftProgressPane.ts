@@ -1,7 +1,7 @@
 import { evaluateAuthoringJourney, loadAuthoringJourneyProgress, setManualJourneyStage, saveAuthoringJourneyProgress, type AuthoringJourneyStage, type ManualJourneyStageId } from "@/editor/authoringJourney";
 import { runAuthoringTask, type AuthoringTaskId } from "@/editor/authoringTasks";
 import { collectProjectReferenceIssues } from "@/project/io/references";
-import { store } from "@/project/store";
+import { isTileCellChange, store } from "@/project/store";
 import { el } from "@/util/dom";
 
 const STAGE_TASK: Readonly<Record<AuthoringJourneyStage["id"], AuthoringTaskId | null>> = {
@@ -95,7 +95,7 @@ export function createLeftProgressPane(scope: () => string): { root: HTMLElement
     queueMicrotask(() => { queued = false; render(); });
   };
   const unsubscribe = store.subscribe((_project, change) => {
-    if (!change || change.scope !== "map" || !change.cells?.length) issues = null;
+    if (!isTileCellChange(change)) issues = null;
     schedule();
   });
   return {

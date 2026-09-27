@@ -24,7 +24,7 @@
 
 ## 높이 붓·높이 조수 도구의 기록 (2026-09-26)
 
-- 사람: `paintRelief` 는 `store.updateMap(mapId, …, { label: "높이 붓" })` 한 경로다 — 초크포인트를 지나고 `TilePaintEngine.applyStrokeEdit` 가 스트로크당 되돌리기 한 번을 남긴다. 라벨이 고정이라 드래그가 600ms 병합으로 한 줄이 된다.
+- 사람: `paintRelief` 는 `store.updateMapTiles(mapId, …, { label: "높이 붓", relief: true })` 한 경로다 — 초크포인트를 지나고 `TilePaintEngine.applyStrokeEdit` 가 스트로크당 되돌리기 한 번을 남긴다. 라벨이 고정이라 드래그가 600ms 병합으로 한 줄이 된다.
 - 조수: `sculpt_relief` 는 draft 의 `map.relief` 만 바꾸는 쓰기 도구라 일반 AI 적용 경로(맵 단위 체크포인트, `origin:"ai"`)를 탄다.
 
 ## 조수 오류 자세히 보기 (2026-09-25)

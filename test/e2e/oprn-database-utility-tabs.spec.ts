@@ -1,4 +1,4 @@
-﻿import { expect, test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { exportedProject } from "./oprn-database-helpers";
 
 test.setTimeout(60_000);
@@ -39,7 +39,7 @@ test("RM2K3 database modal exposes manual parity surface tabs", async ({ page })
 
   await page.getByTestId("db-tab-terrain").click();
   await expect(page.getByTestId("db-detail-form")).not.toContainText("database.terrains");
-  await expect(page.getByTestId("db-field-terrain-name-0")).toHaveValue("초원");
+  await expect(page.getByTestId("db-field-terrain-name-0")).toHaveValue("물");
   await page.getByTestId("db-field-terrain-damage-0").fill("7");
   await page.getByTestId("db-field-terrain-encounter-0").fill("33");
   await page.getByTestId("db-field-terrain-footstep-0").fill("easyrpg-sound-water1");

@@ -11,18 +11,20 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-export function deserializeStoredProjectJson(value: unknown, sourceText?: string): Project {
+export function deserializeStoredProjectJson(value: unknown, sourceText?: string | (() => string)): Project {
   try {
     // Repair mutates. Callers that still need the pre-repair tree pass no source text, and
     // this clones first. A save that already holds the original JSON string can repair the
-    // parsed tree in place and re-read that string only if repair fails.
+    // parsed tree in place and re-read that string only if repair fails. 함수를 넘기면 그 글은
+    // 복구가 실패할 때만 만든다 — 호출자가 원본 트리를 따로 만들 수 있을 때(맵 패치: 저장 행 + 패치).
     const repaired: unknown = sourceText === undefined ? structuredClone(value) : value;
     repairStoredProjectJson(repaired);
     return deserializeParsed(repaired);
   } catch {
     // 세 차례의 검토에서 장식용 로드 복구가 정상 프로젝트를 불러오지 못하게 만들었다.
     // 복구본 전체를 검증한 뒤 실패하면 손대지 않은 원본 행을 여는 것을 구조적으로 보장한다.
-    return deserialize(sourceText ?? JSON.stringify(value));
+    const original = typeof sourceText === "function" ? sourceText() : sourceText;
+    return deserialize(original ?? JSON.stringify(value));
   }
 }
 

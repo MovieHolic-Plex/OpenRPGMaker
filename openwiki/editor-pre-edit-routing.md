@@ -14,12 +14,18 @@
 | 층 | 파일 |
 |---|---|
 | 진입 버튼 | `leftLayerSwitcher.ts` `LAYER_ROWS[0]` · `selectSwitcherKey` → `selectMapModeTool("relief")`, `menu.ts` 구독이 활성 표시 |
-| 도구 상태 | `editorState.ts` — `tool: "relief"`, `reliefMode: raise\|lower\|flatten\|set`, `reliefLevel` |
-| 캔버스 포인터 소유 | `canvasPointerOwnership.ts` (relief 는 페인트 도구처럼 드래그를 가진다) |
-| 스트로크 | `TilePaintEngine.ts` `case "relief"` — 붓 크기 N = 반지름 max(1, N-1) 원 — 1칸 폭 돌기는 렌더 규칙이 깎아 안 보이므로 1×1 도 3칸 폭으로 칠한다. 올리기/내리기는 **스트로크 첫 칸 높이 ±1** 이 상한(드래그로 계속 쌓이지 않음), 평탄은 첫 칸 높이로 |
-| 액션 | `tileActions.ts` `paintRelief` → `store.updateMap(..., {label:"높이 붓"})`. 바뀐 칸 없으면 store 를 안 건드린다 |
-| 옵션 UI | `tilePaletteStampStatus.ts` `makeReliefBrushControls` (`relief-brush-controls`, 칩 `relief-mode-*`, 지정 모드일 때 `relief-level-select`) |
-| 렌더 | `EditScene.ts` — relief 가 바뀔 때 절벽 그림을 다시 굽는다 |
+| 도구 상태 | `editorState.ts` — `tool: "relief"`, `reliefMode: raise\|lower\|flatten\|set\|mountain\|canyon\|smooth\|rough`, `reliefLevel`(단 지정·산 봉우리 단) |
+| 캔버스 포인터 소유 | `canvasPointerOwnership.ts` (relief 는 페인트 도구처럼 드래그를 가진다). **오른쪽 버튼도** relief 에서는 영역 제스처가 아니라 칠하기다 — `EditScene` pointerdown 의 우클릭 분기가 `tool !== "relief"` 일 때만 영역을 잡는다 |
+| 스트로크 | `TilePaintEngine.ts` `case "relief"` — 붓 크기 N = 반지름 max(1, N-1) 원 — 1칸 폭 돌기는 렌더 규칙이 깎아 안 보이므로 1×1 도 3칸 폭으로 칠한다. 올리기/내리기는 **스트로크 첫 칸 높이 ±1** 이 상한(드래그로 계속 쌓이지 않음), 평탄은 첫 칸 높이로. 스트로크를 오른쪽 버튼으로 시작하면 `reliefInverseMode`(`reliefBrushMode.ts`)로 반대 방식: 올리기↔내리기, 산↔골짜기, 다듬기↔거칠게, 평탄·단 지정 → 0단 지우기 |
+| 붓 수식 | `src/project/relief/edit.ts` `brushRelief` — 산·골짜기는 `ops.ts` 의 mountain(경사 2칸/단)·canyon(붓 폭) 을 지금 높이 위에 덧칠, 다듬기·거칠게는 붓 원 안에만 smooth/rough |
+| 액션 | `tileActions.ts` `paintRelief` → `store.updateMapTiles(..., {label:"높이 붓", relief: true})`. 바뀐 칸 없으면 store 를 안 건드린다 |
+| 옵션 UI | `tilePaletteStampStatus.ts` `makeReliefBrushControls` (`relief-brush-controls`, 칩 `relief-mode-*` 8개, 단 지정·산일 때 `relief-level-select`, 왼/오른 버튼 안내 `relief-brush-hint`) |
+| 렌더 | `EditScene.ts` — `relief: true` 변경은 `editSceneRenderPlan` 이 `kind:"relief"` 로 가른다. 타일 재렌더 없이 `scheduleReliefRender` 가 다음 프레임에 절벽 그림 한 번만 굽고(같은 크기면 캔버스 텍스처 재사용) |
+
+**드래그 렉 (2026-09-26 수정):** 예전 `paintRelief` 는 셀 정보 없는 `store.updateMap` 이라 포인터 표본마다 맵 전체 `structuredClone` →
+`EditScene.redraw()`(전 타일) + 절벽 전체 재굽기 + 새 텍스처, 그리고 `editor.ts refreshPanels` 가 좌측 팔레트를 통째로 다시 지었다
+(20×15 빈 맵, 표본 40개 드래그 9.9초 · long task 7.2초 실측). 이제 `relief: true` 는 `isTileCellChange` 가 참이라 패널·검사 캐시·이벤트 편집기가
+타일 붓과 같이 가볍게 넘기고, 씬은 절벽 그림만 프레임당 한 번 굽는다. **relief 만 바꾸는 새 쓰기 경로는 `relief: true` 를 달아라.**
 
 주의: 높이는 **그림만** 바꾼다. 윗단 위 타일·통행·이벤트는 들어 올리지 않는다(스키마 쪽 한계는 `runtime-project-schema.md` 「높이 지형」). 조수 도구는 `editor-ai-tools.md` 「절벽 높이 도구」.
 
@@ -160,6 +166,30 @@ identity별로 재사용한다. 따라서 목록을 다시 그릴 때 맵 수가
 
 회귀: `test/persistence/projectPatchReferenceDocuments.test.ts`(문서 공유 시 무변경 · 변경 시 payload 포함 ·
 삭제 방향 · 문서 밖 필드 보존 · 패치를 얹으면 `serialize` 와 동등)와 기존 `test/persistence/` 저장 계약.
+
+## 안 바뀐 타일셋은 복제하지 않는다 — 타일셋 구조 공유 (2026-09-27)
+
+**계약: 스토어가 들고 있는 타일셋 객체(`store.getCurrent().tilesets[id]` 와 그 안의 모든 것)는 제자리에서 고치지 않는다.**
+바꾸려면 `store.update(draft => { draft.tilesets[id]... })` 의 draft 로만 바꾼다. 같은 타일셋 객체를 현재본·
+이전 현재본(되돌리기·조수 기준선)이 함께 가리키므로, 제자리 수정은 저장 diff 에서 사라지고 여러 스냅샷을 동시에 바꾼다.
+
+왜(Electron 앱 실측, 82MB 프로젝트·타일셋 354칸, `verify-shots/perf-app-save/SUMMARY.md`): 편집 하나마다 타일셋 80MB 를
+깊은 복사했고, 복사본이 늘 새 객체라 다음 저장의 diff·커밋 요약이 타일셋 전부를 다시 봤다.
+
+- `store.update` 는 `cloneProjectForMutation` (`projectClone.ts`)을 쓴다. `draft.tilesets` 는 **접근자 사전**이라
+  변경기가 읽는 타일셋만 복제된다. 변경기가 끝나면 `finishProjectMutation` 이 보통 객체로 확정하고,
+  읽기만 한(`Object.values` 로 훑은) 타일셋은 `jsonEqual` 로 대조해 원본 객체로 돌려 놓는다. 삭제·추가·사전 통째 교체도 된다.
+  변경기가 던져도 `finally` 에서 확정하므로 접근자가 새지 않는다.
+- 도구 경로(`runToolDefinition`)는 `createDraft` 를 그대로 쓰되, 커밋 직전 `shareUnchangedTilesets` 가 내용이 같은
+  타일셋을 원본 객체로 되돌린다(354칸 대조 약 0.3s). `summarizeChanges` 의 타일셋 비교는 `JSON.stringify` ×2 대신 `jsonEqual`.
+- `eventDraftVault.cloneKeepingDigests` (도구 뒤 `store.replace` ·로드의 초안 보존)는 맵 이벤트만 고치므로 타일셋을
+  복제하지 않는다.
+- 기준본(`baselineFrom`)·되돌리기 스냅샷(`projectWithoutEventDrafts`)은 여전히 깊은 복사다 — 로드 정규화가
+  `this.current` 를 제자리에서 고치므로(`normalizeCurrentProject`), 그 앞에서 만든 사본은 떼 두어야 한다.
+
+실측(Bun, 실제 `ProjectStore`+`electronRepository`, 브리지 스텁, 같은 스크립트를 main 과 비교):
+`store.update` 1.0–1.1s → 0.19s, 도구 한 칸 칠하기 3.0s → 1.6–1.8s, 그 뒤 저장 7–14s → 3.2–3.7s.
+남은 바닥은 문서 크기 자체다 — `docs/superpowers/specs/2026-09-27-shared-tilesets-by-reference-design.md`.
 
 ## DB 레코드 편집은 컬렉션만 복제한다 (2026-09-25)
 

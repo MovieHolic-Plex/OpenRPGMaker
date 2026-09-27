@@ -14,6 +14,7 @@ import {
   isEasyRpgCharsetTextureKey,
 } from "@/player/charsetMotion";
 import type { Dir } from "@/player/input";
+import { boardedVehicleId } from "@/project/vehicles";
 
 /**
  * 팔로워 슬롯 보간 상태(스프라이트 계층 전용). 슬롯(궤적 칸)은 플레이어 걸음이
@@ -77,7 +78,9 @@ export function syncFollowerSprites(
   // 걸음 지속 시간은 플레이어 걸음과 1:1 — 걸음 완료 시점에 열린 보간이 다음
   // 완료 시점에 정확히 끝나 팔로워가 한 칸 뒤를 걷는다(옵션 없으면 NPC 기본값).
   const stepDurationMs = options?.stepDurationMs ?? NPC_MOVE_DURATION_MS;
-  for (const position of followerPositions(scene.session, project.system.companions, { project, map: scene.map })) {
+  // 탈것에 탄 동안 파티는 탈것 안에 있다 — 동료를 그리지 않는다. 내리면 궤적이 새로 깔리며 돌아온다.
+  const followers = boardedVehicleId(scene.session) ? [] : followerPositions(scene.session, project.system.companions, { project, map: scene.map });
+  for (const position of followers) {
     const key = followerSpriteKey(position.follower);
     expected.add(key);
     const spriteRef = position.follower.graphic.sprite;

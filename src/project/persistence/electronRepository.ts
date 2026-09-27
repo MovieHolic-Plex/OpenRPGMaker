@@ -1,12 +1,11 @@
 import { deserialize, serialize } from "../io";
 import { projectWireView } from "../io/serialize";
-import { diffProjectDocuments, withWirePatchValues, type ProjectDocumentPatch } from "./core/projectPatch";
-import { shareContentDigests } from "./core/contentDigest";
+import { applyProjectDocumentPatch, diffProjectDocumentsSliced, withWirePatchValues, type ProjectDocumentPatch } from "./core/projectPatch";
 import { projectWithoutEventDrafts } from "../eventDrafts";
 import { setUploadedAssetResolver } from "./assetAccessors";
 import type { ProjectWriteAuthority } from "../spatial/saveRouting";
 import type { DbPersistenceDisabledReason } from "./types";
-import type { UploadedAssetRef } from "../types";
+import type { Project, UploadedAssetRef } from "../types";
 import type { LocalProjectTarget, ProjectTarget } from "./target";
 import type {
   AiActivityInput, AiAnalysisRunInput, CommitInput, CommitListItem, ConversationInput, ConversationListOptions,
@@ -130,6 +129,10 @@ export type ElectronRepository = ProjectRepository & {
   readonly adoptOpenProject: () => Promise<boolean>;
 };
 
+function yieldToMain(): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, 0));
+}
+
 export function createElectronRepository(): ElectronRepository {
   let opened: LocalProjectTarget | null = null;
   let loadedSha: string | null = null;
@@ -164,6 +167,7 @@ export function createElectronRepository(): ElectronRepository {
 
   return {
     kind: "local",
+    returnsSubmittedCopy: true,
     supportsAssetRefs: true,
     async open(projectDir: string): Promise<LocalProjectTarget> {
       const result = await electronBridge().project.open({ projectDir });
@@ -210,7 +214,12 @@ export function createElectronRepository(): ElectronRepository {
       const serialized = serialize(persisted);
       const result = await electronBridge().project.save({ projectDir: resolved.projectDir, serialized, expectedSha: loadedSha });
       if (result.kind === "saved") loadedSha = result.sha256 ?? null;
-      return result.kind === "saved" ? { kind: "saved", project: result.serialized ? deserialize(result.serialized) : persisted, sha256: result.sha256, ...(result.revision === undefined ? {} : { revision: result.revision }) } : result;
+      if (result.kind !== "saved") return result;
+      const revision = result.revision === undefined ? {} : { revision: result.revision };
+      // 호스트가 문서를 돌려보내지 않았으면 제출한 사적 사본(persisted)이 곧 저장된 내용이다.
+      return result.serialized
+        ? { kind: "saved", project: deserialize(result.serialized), sha256: result.sha256, ...revision }
+        : { kind: "saved", project: persisted, submitted: persisted, sha256: result.sha256, ...revision };
     },
     async saveMapPatch(input: MapPatchInput, target) {
       const resolved = requireOpened(target);
@@ -219,14 +228,15 @@ export function createElectronRepository(): ElectronRepository {
       // (2026-09-25 실측: 42MB 문서 토한 프로젝트에서 한 번에 563ms).
       const baseProject = input.baseProject;
       const persisted = input.project;
-      // 제출본은 매 저장 새로 복제된 객체라 타일셋 노드마다 요약 기억이 없다. 기준본의 기억을 먼저 붙이면
-      // 바뀌지 않은 가지는 값 대조만 하고 다시 직렬화·해시하지 않는다. 기억은 값으로 검증되므로 짝이 틀려도
-      // 판정은 그대로다(contentDigest.shareContentDigests 머리말). 2026-09-26 실측, 82MB 문서·타일셋 354칸:
-      // 저장당 diff 3.3–7.4s → 공유 0.3–0.5s + diff 1.2s.
-      shareContentDigests(baseProject.tilesets, persisted.tilesets);
       // 버려진 `terrainTemplates` 만 떼는 얕은 보기로 비교한다 — 이것이 예전의
       // `JSON.parse(serialize(x))` 왕부가 «보기» 로 샀던 유일한 것이다. 복사 없이 같은 판정을 늨는다.
-      const patch = withWirePatchValues(diffProjectDocuments(projectWireView(baseProject), projectWireView(persisted)));
+      // 비교는 잘게 나눠 돈다(수십 칸 타일셋 대조가 한 번에 약 1s). 쉬는 동안 스토어는 가지를 교체만 하므로
+      // 입력 보기가 가리키는 내용은 제출 때 그대로다.
+      const patch = withWirePatchValues(await diffProjectDocumentsSliced(projectWireView(baseProject), projectWireView(persisted), yieldToMain));
+      // 호스트가 이 패치를 기준본 위에 얹어 저장하므로, 같은 연산이 곧 저장될 내용의 사적 사본이다.
+      // 패치 값은 이미 JSON 왕복 사본이고, 나머지 가지는 기준본(사적·불변)을 공유한다 — 복제가 변경량에 비례한다.
+      // 실측(2026-09-26, 81MB 새 프로젝트): 저장마다 전체 복제 1.2s 를 없앤다. serialize(submitted) 는 호스트 행과 같다.
+      const submitted = applyProjectDocumentPatch(baseProject, patch) as Project;
       const send = (includeBase: boolean) => electronBridge().project.saveMapPatch({
         projectDir: resolved.projectDir,
         baseSha: loadedSha,
@@ -239,7 +249,11 @@ export function createElectronRepository(): ElectronRepository {
       if (result.kind === "stale-base") result = await send(true);
       if (result.kind === "stale-base") throw new Error("저장 기준 문서가 서버와 달라 맵 패치를 적용하지 못했습니다");
       if (result.kind === "saved") loadedSha = result.sha256 ?? null;
-      return result.kind === "saved" ? { kind: "saved", project: result.serialized ? deserialize(result.serialized) : persisted, sha256: result.sha256, ...(result.revision === undefined ? {} : { revision: result.revision }) } : result;
+      if (result.kind !== "saved") return result;
+      const revision = result.revision === undefined ? {} : { revision: result.revision };
+      return result.serialized
+        ? { kind: "saved", project: deserialize(result.serialized), submitted, sha256: result.sha256, ...revision }
+        : { kind: "saved", project: submitted, submitted, sha256: result.sha256, ...revision };
     },
     commits: {
       record(input: CommitInput, target?) {

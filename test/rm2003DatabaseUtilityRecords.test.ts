@@ -33,12 +33,14 @@ describe("RM2003 database utility records", () => {
       "AGI",
       "Absorb",
     ]);
+    // 순서 = 타일셋 지형 태그 − 1 (chipsetMapping.TERRAIN_TAG: 1 물, 2 모래, 3 눈, 4 돌).
+    expect(database.terrains?.map((terrain) => terrain.id)).toEqual(["terrain_water", "terrain_sand", "terrain_snow", "terrain_stone"]);
     expect(database.terrains?.[0]).toMatchObject({
-      id: "terrain_grassland",
-      name: "초원",
+      id: "terrain_water",
+      name: "물",
       damage: 0,
       encounterRatePercent: 100,
-      battleBackgroundResourceId: "easyrpg-backdrop-dawn1",
+      vehiclePassage: { boat: true, ship: true, airshipLand: false },
     });
     expect(database.battleCommands?.map((command) => command.name)).toEqual(["공격", "스킬", "방어", "아이템"]);
   });

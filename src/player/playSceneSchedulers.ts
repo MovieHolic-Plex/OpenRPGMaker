@@ -16,6 +16,7 @@ import { createInterpreter, type StepResult } from "@/player/interpreter";
 import { commerceOverlayText } from "@/player/playSceneCommerce";
 import type { AutonomousMover, PlaySceneContext, ParallelProcess } from "@/player/playSceneTypes";
 import { assertNever } from "@/player/playSceneTypes";
+import { tryBoardVehicle, tryGetOffVehicle } from "@/player/playSceneVehicles";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 import { clampNpcSetting, npcMoveDurationMs, npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
 import { applyTimerStep, updateRuntimeTimers } from "@/player/playSceneTimers";
@@ -354,6 +355,10 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       return true;
     case "relocateEvents":
       applyEventRelocationStep(scene, step);
+      return true;
+    case "vehicle":
+      if (step.boarded) tryBoardVehicle(scene);
+      else tryGetOffVehicle(scene);
       return true;
     case "spawnEvent":
       removeRuntimeEventSurfaces(scene, step.eventId);

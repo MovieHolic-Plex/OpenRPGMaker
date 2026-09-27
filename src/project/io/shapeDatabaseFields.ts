@@ -147,6 +147,7 @@ export function validateSystem(value: unknown): void {
     requireString("system.chapter.variableId", chapter.variableId);
     requireRecord("system.chapter.labels", chapter.labels);
   }
+  if (system.vehicles !== undefined) requireArray("system.vehicles", system.vehicles);
   if (system.timeSystem !== undefined) validateTimeSystem(system.timeSystem);
   if (system.worldGen !== undefined) {
     const worldGen = requireRecord("system.worldGen", system.worldGen);

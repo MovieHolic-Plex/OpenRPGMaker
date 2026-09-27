@@ -1,6 +1,7 @@
 import { comboBrushBadge, isComboBrush } from "@/editor/comboBrush";
 import { EDITOR_BRUSH_SIZES, editorState, type EditorState } from "@/editor/editorState";
 import type { ReliefBrushMode } from "@/project/relief/edit";
+import { reliefInverseMode } from "@/editor/reliefBrushMode";
 import { RELIEF_MAX_LEVEL } from "@/project/relief/types";
 import { setTileBrushSize, selectTileTool } from "@/editor/panels/tileToolbarActions";
 import { el } from "@/util/dom";
@@ -98,7 +99,19 @@ const RELIEF_MODES: readonly (readonly [ReliefBrushMode, string, string])[] = [
   ["lower", "내리기", "누른 칸보다 한 단 낮게"],
   ["flatten", "평탄", "누른 칸 높이로 고른다"],
   ["set", "단 지정", "고른 단으로 맞춘다"],
+  ["mountain", "산", "고른 단 높이 봉우리를 경사로 쌓는다 — 끌면 능선"],
+  ["canyon", "골짜기", "붓 폭만큼 0단까지 판다 — 끌면 골"],
+  ["smooth", "다듬기", "주변 평균으로 부드럽게"],
+  ["rough", "거칠게", "절벽 가장자리를 들쭉날쭉 깎는다"],
 ];
+
+const RELIEF_MODE_LABEL = Object.fromEntries(RELIEF_MODES.map(([mode, label]) => [mode, label])) as Record<ReliefBrushMode, string>;
+
+/** 오른쪽 버튼이 하는 일 — TilePaintEngine.reliefInverseMode 와 같은 표를 글로 옮긴다. */
+function reliefRightButtonLabel(mode: ReliefBrushMode): string {
+  const inverse = reliefInverseMode(mode);
+  return inverse === "set" ? "0단으로 지우기" : RELIEF_MODE_LABEL[inverse];
+}
 
 /** 「높이」 붓 방식 · 단 — map.relief(절벽 높이)를 칠한다. 크기 칩은 위 공통 줄을 쓴다. */
 function makeReliefBrushControls(state: EditorState, rerender: () => void): HTMLElement {
@@ -110,14 +123,14 @@ function makeReliefBrushControls(state: EditorState, rerender: () => void): HTML
   for (const [mode, label, title] of RELIEF_MODES) {
     group.append(el("button", {
       class: "btn tile-brush-chip" + (state.reliefMode === mode ? " active" : ""), text: label,
-      attrs: { type: "button", title, "aria-pressed": String(state.reliefMode === mode) },
+      attrs: { type: "button", title: `${title} · 오른쪽 버튼: ${reliefRightButtonLabel(mode)}`, "aria-pressed": String(state.reliefMode === mode) },
       dataset: { testid: `relief-mode-${mode}` },
       on: { click: () => { editorState.set({ reliefMode: mode }); rerender(); } },
     }));
   }
-  if (state.reliefMode === "set") {
+  if (state.reliefMode === "set" || state.reliefMode === "mountain") {
     const select = el("select", {
-      attrs: { "aria-label": "맞출 단" }, dataset: { testid: "relief-level-select" },
+      attrs: { "aria-label": state.reliefMode === "mountain" ? "봉우리 단" : "맞출 단" }, dataset: { testid: "relief-level-select" },
       on: { change: (event) => {
         if (!(event.currentTarget instanceof HTMLSelectElement)) return;
         editorState.set({ reliefLevel: Number(event.currentTarget.value) || 0 });
@@ -128,5 +141,10 @@ function makeReliefBrushControls(state: EditorState, rerender: () => void): HTML
     select.value = String(state.reliefLevel);
     group.append(select);
   }
+  group.append(el("span", {
+    class: "relief-brush-hint",
+    text: `왼쪽: ${RELIEF_MODE_LABEL[state.reliefMode]} · 오른쪽: ${reliefRightButtonLabel(state.reliefMode)}`,
+    dataset: { testid: "relief-brush-hint" },
+  }));
   return group;
 }

@@ -15,13 +15,14 @@ import {
 } from "@/editor/clusterAssistRecovery";
 import { revealPaletteTileFromMap } from "@/editor/panels/tilePalette";
 import { selectTileRegion } from "@/editor/mapClipboard";
-import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
+import { canEditMap, toastMapEditLockNotice } from "@/editor/mapEditLocks";
 import { recordMapEditIfChanged } from "@/editor/mapEditHistory";
 import { beginKitStampCapture, checkKitStampConditions, commitKitStampCapture } from "@/editor/structurePlacementActions";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 import { layerTilePickAt, visibleTilePickAt, type VisibleTilePick } from "@/editor/tilePicking";
 import { store } from "@/project/store";
 import type { MapId, TilesetDef } from "@/project/types";
+import { reliefInverseMode } from "@/editor/reliefBrushMode";
 import { toast } from "@/util/toast";
 
 export type TileLayer = "lower" | "upper";
@@ -62,6 +63,8 @@ export class TilePaintEngine {
   private placementNoticeShown = false;
   private strokeSnapshotRecorded = false;
   private reliefStrokeBase = 0;
+  /** 이 스트로크를 오른쪽 버튼으로 시작했는가 — 높이 붓은 왼쪽과 반대 방식으로 칠한다. */
+  private reliefStrokeInverted = false;
 
   constructor(private readonly deps: TilePaintEngineDeps) {}
 
@@ -76,7 +79,7 @@ export class TilePaintEngine {
     const layer = editorState.get().layer;
     if (!canEditMap(mid) && toolCanMutateMap(tool)) {
       this.deps.setPaintState({ isPainting: false, lastPaintKey: "" });
-      toast(mapEditLockNotice(mid), "error");
+      toastMapEditLockNotice(mid);
       return;
     }
     const { activePaletteStamp, autoConnectMode, brushSize, clusterAssistMode, selectedTile } = editorState.get();
@@ -225,11 +228,20 @@ export class TilePaintEngine {
       case "relief": {
         // 붓 크기 N = 반지름 N-1 원. 올리기/내리기는 스트로크 첫 칸 높이 ±1 을 상한으로 삼아
         // 드래그가 같은 언덕을 계속 쌓아 올리지 않게 한다. 평탄은 첫 칸 높이로 맞춘다.
-        const { reliefMode, reliefLevel } = editorState.get();
+        // 오른쪽 버튼 스트로크는 반대 방식(reliefInverseMode)이다.
+        const { reliefLevel } = editorState.get();
         const relief = store.getCurrent().maps[mid]?.relief;
-        if (firstStrokeTile) this.reliefStrokeBase = relief ? relief.levels[y * relief.width + x] ?? 0 : 0;
+        if (firstStrokeTile) {
+          this.reliefStrokeBase = relief ? relief.levels[y * relief.width + x] ?? 0 : 0;
+          this.reliefStrokeInverted = ptr.button === 2 || ptr.rightButtonDown();
+        }
+        const selectedMode = editorState.get().reliefMode;
+        const reliefMode = this.reliefStrokeInverted ? reliefInverseMode(selectedMode) : selectedMode;
         const base = this.reliefStrokeBase;
-        const level = reliefMode === "raise" ? base + 1 : reliefMode === "lower" ? base - 1 : reliefLevel;
+        const level = reliefMode === "raise" ? base + 1
+          : reliefMode === "lower" ? base - 1
+          : reliefMode === "set" && this.reliefStrokeInverted ? 0
+          : reliefLevel;
         this.applyStrokeEdit(mid, () => {
           // 1칸 폭 돌기·홈은 렌더 규칙이 깎아 안 보인다 — 붓은 최소 반지름 1(3칸 폭)로 칠한다.
           paintRelief(mid, x, y, reliefMode, { radius: Math.max(1, brushSize - 1), level, flattenTo: base });
@@ -369,3 +381,4 @@ function applyPaletteStamp(input: {
 function toolCanMutateMap(tool: string): boolean {
   return tool === "paint" || tool === "fill" || tool === "erase" || tool === "collision" || tool === "event" || tool === "relief";
 }
+

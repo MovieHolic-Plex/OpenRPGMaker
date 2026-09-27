@@ -2,6 +2,7 @@ import { editorState } from "./editorState";
 import { store } from "@/project/store";
 import { teamSessionStatus } from "./teamSession";
 import type { MapId } from "@/project/types";
+import { dismissToastsByKey, toast } from "@/util/toast";
 
 export type MapEditLockStatus =
   | { readonly kind: "idle" }
@@ -98,6 +99,18 @@ export function mapEditLockNotice(mapId: MapId): string {
   if (current?.kind === 'locked') return `${lockOwnerPhrase(current.ownerLabel)}님이 편집 중입니다.`;
   if (current?.kind === 'unavailable') return current.message;
   return canEditMap(mapId) ? '' : '편집 권한을 확인하고 있습니다.';
+}
+
+const LOCK_NOTICE_TOAST_KEY = Symbol("map-edit-lock-notice");
+
+/**
+ * 잠긴 맵에서 편집을 되풀이해도 안내는 하나만 남긴다. 실측(2026-09-26 온보딩 저니 04): 칠하기 시도마다
+ * 같은 「호스트님이 편집 중입니다.」가 쌓여 스택 4칸을 다 채웠고 다른 오류를 밀어냈다.
+ * 이전 안내를 걷고 새로 띄우므로 마지막 시도 기준으로 다시 4초 보인다. 상시 안내는 배너가 맡는다.
+ */
+export function toastMapEditLockNotice(mapId: MapId): void {
+  dismissToastsByKey(LOCK_NOTICE_TOAST_KEY);
+  toast(mapEditLockNotice(mapId), { kind: "error", key: LOCK_NOTICE_TOAST_KEY });
 }
 
 export function mapEditLockLastActivityAt(_status: MapEditLockStatus): number | null {

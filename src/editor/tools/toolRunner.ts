@@ -16,7 +16,7 @@ import { verifyPostTilePlacement } from "@/project/lint/postTileVerify";
 import { compactMapLayers, EXTRA_LAYER_KEYS, hasExtraLayers } from "@/project/mapLayers";
 import { formatTreePairRepairSummary, repairTreePairsOnProject } from "@/project/lint/repairTreePairs";
 import { resolveForestCanopyReplacementExemptTileIds } from "./forestComposition";
-import { commitChangeset, createDraft, summarizeChanges, tileBuffersDiffer, tileChangedMapIds } from "./changeset";
+import { commitChangeset, createDraft, shareUnchangedTilesets, summarizeChanges, tileBuffersDiffer, tileChangedMapIds } from "./changeset";
 import { normalizeArgsForSchema, validateArgs } from "./jsonSchema";
 import { getTool } from "./toolRegistry";
 import { ToolError, type ToolContext, type ToolDefinition, type ToolResult } from "./types";
@@ -284,7 +284,10 @@ export function runToolDefinition(
     }
 
     sealSpatialToolProposal(draft);
-    if (!options.dryRun) ctx.project = draft;
+    if (!options.dryRun) {
+      shareUnchangedTilesets(before, draft);
+      ctx.project = draft;
+    }
     const postTile = verifyPostTilePlacement(draft, { name, args: normalizedArgs, data: exec.data });
     if (postTile.length > 0) diff.warnings.push(...postTile.map((issue) => issue.message));
     const issues = [...(exec.issues ?? []), ...commit.issues, ...postTile];

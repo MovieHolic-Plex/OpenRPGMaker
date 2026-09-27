@@ -5,7 +5,10 @@ import { requireNumber, requireRecord } from "./guards";
 import { migrateV1toV3, migrateV2toV3, migrateV3toV4 } from "./migration";
 import { validateProjectV1, validateProjectV2, validateProjectV4 } from "./shape";
 
-function omitRetiredTerrainTemplates(owner: object): Record<string, unknown> {
+function omitRetiredTerrainTemplates<T extends object>(owner: T): T | Record<string, unknown> {
+  // 버려진 키가 없으면 같은 객체를 돌려준다 — 매번 새 객체를 만들면 저장 비교의 같은-객체 단축이 깨져
+  // 타일셋 수십 칸을 매 저장 다시 요약했다(2026-09-26 실측, 81MB 새 프로젝트 diff 1.0s).
+  if (!Object.prototype.hasOwnProperty.call(owner, "terrainTemplates")) return owner;
   return Object.fromEntries(Object.entries(owner).filter(([key]) => key !== "terrainTemplates"));
 }
 
@@ -14,9 +17,16 @@ function omitRetiredTerrainTemplates(owner: object): Record<string, unknown> {
  * The returned view shares everything below those records with `project` — read it, never mutate it.
  */
 export function projectWireView(project: Project) {
+  let tilesets: Record<string, unknown> | null = null;
+  for (const [id, tileset] of Object.entries(project.tilesets)) {
+    const view = omitRetiredTerrainTemplates(tileset);
+    if (view === tileset) continue;
+    tilesets ??= { ...project.tilesets };
+    tilesets[id] = view;
+  }
   return {
     ...omitRetiredTerrainTemplates(project),
-    tilesets: Object.fromEntries(Object.entries(project.tilesets).map(([id, tileset]) => [id, omitRetiredTerrainTemplates(tileset)])),
+    tilesets: tilesets ?? project.tilesets,
   };
 }
 

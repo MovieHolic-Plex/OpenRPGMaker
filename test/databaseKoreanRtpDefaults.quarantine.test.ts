@@ -43,9 +43,10 @@ describe("database Korean localization and EasyRPG RTP defaults", () => {
       ["absorb", "Absorb"],
     ]);
     expect(project.database.terrains?.map((terrain) => [terrain.id, terrain.name])).toEqual([
-      ["terrain_grassland", "초원"],
-      ["terrain_road", "숲"],
-      ["terrain_water", "사막"],
+      ["terrain_water", "물"],
+      ["terrain_sand", "모래"],
+      ["terrain_snow", "눈"],
+      ["terrain_stone", "돌"],
     ]);
     expect(project.database.battleCommands?.map((command) => [command.id, command.name])).toEqual([
       ["cmd_attack", "공격"],

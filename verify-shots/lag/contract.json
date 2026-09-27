@@ -1,0 +1,37 @@
+{
+ "c2": {
+  "kind": "saved",
+  "saveMs": 3507,
+  "cell0": 101,
+  "revisionDelta": 1
+ },
+ "c3": {
+  "secondKind": "saved",
+  "cells": [
+   101,
+   102,
+   103
+  ],
+  "inPlacePrice": 777,
+  "baselineEqualsHost": true,
+  "currentEqualsHost": true
+ },
+ "c3b": {
+  "cells": [
+   106,
+   107
+  ],
+  "inPlacePrice": 888,
+  "baselineEqualsHost": true,
+  "receiptIdentityMatchesHost": true
+ },
+ "c4Stale": {
+  "kind": "saved",
+  "cell3": 104,
+  "titleKept": "other writer"
+ },
+ "c4Lock": {
+  "kind": "conflict",
+  "cell4": 240
+ }
+}

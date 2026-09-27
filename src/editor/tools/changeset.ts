@@ -12,6 +12,7 @@ import { countMonsterMetadataChanges } from "@/project/monsterMetadata";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { hasExtraLayers, layerTileAt, shadowAt } from "@/project/mapLayers";
+import { jsonEqual } from "@/util/structuralJson";
 import type { ChangeSummary } from "./types";
 
 // 구조적 복제본(draft) 생성. Project JSON과 editor-only detached session memory를 함께 복제한다.
@@ -26,6 +27,22 @@ export function createDraft(project: Project): Project {
   }
   transferDetachedDraftMemory(project, clone);
   return clone;
+}
+
+/**
+ * 커밋할 툴 draft 의 타일셋 중 내용이 원본과 같은 것을 원본 객체로 되돌린다.
+ *
+ * 왜(2026-09-26 앱 실측, 82MB·타일셋 354칸): `createDraft` 는 타일셋까지 통째로 복제한다. 타일 한 칸을
+ * 칠하는 툴도 커밋 뒤 모든 타일셋이 새 객체가 되어, 다음 저장의 diff·커밋 요약이 타일셋
+ * 전부를 다시 직렬화했다. 값 비교(`jsonEqual`)는 같은 객체가 아니어도 첫 차이에서 멈추고 문자열을
+ * 만들지 않는다(실측: 354칸 전부 비교 221ms). 원본 객체는 스토어가 제자리 수정하지 않는다는
+ * 계약(`projectClone.cloneProjectForMutation`) 위에서 공유해도 안전하다.
+ */
+export function shareUnchangedTilesets(before: Project, draft: Project): void {
+  for (const [id, tileset] of Object.entries(draft.tilesets)) {
+    const original = before.tilesets[id];
+    if (original !== undefined && original !== tileset && jsonEqual(tileset, original)) draft.tilesets[id] = original;
+  }
 }
 
 function mapWithoutTileBuffers(map: GameMap): GameMap {
@@ -209,6 +226,8 @@ function diffDatabase(before: Project, after: Project, summary: ChangeSummary): 
     "homeDecorationTypes",
   ];
   for (const key of keys) {
+    // 같은 배열 객체면 내용도 같다 — 저장 기준본은 바뀌지 않은 가지를 공유한다(electronRepository accepted).
+    if (before.database[key] === after.database[key]) continue;
     const beforeList = (before.database[key] ?? []) as Array<{ id: string }>;
     const afterList = (after.database[key] ?? []) as Array<{ id: string }>;
     const beforeById = new Map(beforeList.map((record) => [record.id, JSON.stringify(record)]));
@@ -239,6 +258,7 @@ function countNamedDefChanges(
 }
 
 function diffWorld(before: Project, after: Project, summary: ChangeSummary): void {
+  if (before.world === after.world) return;
   const beforeEntities = before.world?.entities ?? [];
   const afterEntities = after.world?.entities ?? [];
   const beforeById = new Map(beforeEntities.map((entity) => [entity.id, JSON.stringify(entity)]));
@@ -253,6 +273,7 @@ function diffWorld(before: Project, after: Project, summary: ChangeSummary): voi
 function diffPalettePresets(before: Project, after: Project, summary: ChangeSummary): void {
   for (const [tilesetId, afterTileset] of Object.entries(after.tilesets)) {
     const beforeTileset = before.tilesets[tilesetId];
+    if (beforeTileset === afterTileset) continue;
     const beforePresets = beforeTileset?.palettePresets ?? [];
     const afterPresets = afterTileset.palettePresets ?? [];
     const beforeById = new Map(beforePresets.map((preset) => [preset.id, JSON.stringify(preset)]));
@@ -277,6 +298,7 @@ export function summarizeChanges(before: Project, after: Project): ChangeSummary
   }
   for (const [id, afterMap] of Object.entries(after.maps)) {
     const beforeMap = before.maps[id];
+    if (beforeMap === afterMap) continue;
     if (beforeMap) {
       summary.tilesChanged += countTileChanges(beforeMap, afterMap);
       if (comparableMapProperties(beforeMap) !== comparableMapProperties(afterMap)) {
@@ -293,15 +315,15 @@ export function summarizeChanges(before: Project, after: Project): ChangeSummary
   for (const [id, afterTileset] of Object.entries(after.tilesets)) {
     // 타일셋은 참고 이미지까지 수 MB 다 — 같은 객체면 직렬화하지 않는다(체크포인트는 타일셋을 객체째 되붙인다).
     const beforeTileset = before.tilesets[id];
-    if (beforeTileset !== afterTileset && JSON.stringify(beforeTileset) !== JSON.stringify(afterTileset)) summary.tilesetsChanged += 1;
+    if (beforeTileset !== afterTileset && !jsonEqual(beforeTileset, afterTileset)) summary.tilesetsChanged += 1;
   }
   summary.switchesAdded = countNamedDefChanges(before.switches, after.switches);
   summary.variablesAdded = countNamedDefChanges(before.variables, after.variables);
   diffWorld(before, after, summary);
   diffPalettePresets(before, after, summary);
   summary.endingsChanged = countRecordChanges(before.endings ?? [], after.endings ?? []);
-  summary.sessionChanged = JSON.stringify(before.session) !== JSON.stringify(after.session);
-  summary.systemChanged = JSON.stringify(before.system) !== JSON.stringify(after.system);
+  summary.sessionChanged = before.session !== after.session && JSON.stringify(before.session) !== JSON.stringify(after.session);
+  summary.systemChanged = before.system !== after.system && JSON.stringify(before.system) !== JSON.stringify(after.system);
   summary.audioDescriptionsChanged = countAudioDescriptionChanges(before.audioDescriptions, after.audioDescriptions);
   summary.monsterMetadataChanged = countMonsterMetadataChanges(before.monsterMetadata, after.monsterMetadata);
   return summary;

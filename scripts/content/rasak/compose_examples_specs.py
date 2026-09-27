@@ -54,6 +54,9 @@ def house(c, x, y, w, roof, wall, roof_h=3, wall_h=2, door=None, windows=(), chi
         c.shadow(x + w, y + j, 5)
 
 
+# 밭 작물 줄: 3칸 주기로 돌리면 격자처럼 보인다(확대 QA 2026-09-27). 7칸 순열을 다른 보폭으로 읽어 이웃과 주기가 맞지 않게 한다.
+CROP_ROW_A = ['crops_carrot_grown', 'crops_pumpkin_grown', 'crops_blade_crop_grown', 'crops_carrot_grown', 'crops_blade_crop_grown_b', 'crops_pumpkin_grown', 'crops_blade_crop_grown']
+CROP_ROW_B = ['crops_blade_crop_grown_b', 'crops_carrot_grown', 'crops_pumpkin_flower', 'crops_blade_crop_grown', 'crops_pumpkin_flower', 'crops_carrot_grown', 'crops_blade_crop_grown_b']
 BIG_TREES = ['trees_summer_oak_big', 'trees_summer_oak_big_b', 'trees_summer_fir_pair_a', 'trees_summer_fir_pair_b']
 MID_TREES = ['trees_summer_tall_leafy', 'trees_summer_gnarled_leafy', 'trees_summer_fir_big', 'trees_summer_round_small',
              'trees_summer_birch_leafy_b', 'trees_summer_small_leafy_b', 'trees_summer_small_leafy_a']
@@ -67,6 +70,7 @@ def forest(c, cells, seed, edge=('garden_bush_green', 'garden_bush_green', 'gard
     rnd = random.Random(seed)
     cells = set(cells)
     taken = {3: set(), 4: set()}
+    prev_in_row = {}
 
     def try_place(oid, x, y, layer):
         w, h = c.ctx.object(c.b, oid)['size']
@@ -82,14 +86,24 @@ def forest(c, cells, seed, edge=('garden_bush_green', 'garden_bush_green', 'gard
         for y in range(min(ys), max(ys) + 1, step):
             for x in range(min(xs) - off, max(xs) + 1, step):
                 big = [o for o in pool if o in BIG_TREES]
-                for oid in rnd.sample(big, len(big)) + rnd.sample([o for o in pool if o not in big], len(pool) - len(big)):
+                recent = prev_in_row.setdefault((layer, y), [])
+                order = rnd.sample(big, len(big)) + rnd.sample([o for o in pool if o not in big], len(pool) - len(big))
+                # 같은 나무가 한 줄에 연달아(또는 ABAB 로) 서면 울타리처럼 보인다(확대 QA 2026-09-27) — 직전 두 나무는 맨 뒤 후보로
+                order = [o for o in order if o not in recent[-2:]] + [o for o in order if o in recent[-2:]]
+                for oid in order:
                     if try_place(oid, x + off, y + off, layer):
+                        recent.append(oid)
                         break
     covered = taken[3] | taken[4]
     for (x, y) in sorted(cells - covered):
         near_village = any((x + dx, y + dy) not in cells for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
         if near_village and c.L[3][y * c.w + x] is None:
-            c.obj(edge[rnd.randrange(len(edge))], x, y)
+            # 가장자리 마감도 같은 덤불이 한 줄로 이어지지 않게 — 위·왼쪽 이웃과 다른 것을 먼저 고른다
+            nb = {c.owner.get((3, (y + dy) * c.w + x + dx)) for dx, dy in ((0, -1), (-1, 0)) if 0 <= x + dx < c.w and 0 <= y + dy < c.h}
+            opts = [e for e in edge if e not in nb] or list(edge)
+            if rnd.random() < 0.3:          # 세 칸에 한 칸쯤은 비워 덤불 줄이 끊기게
+                continue
+            c.obj(opts[rnd.randrange(len(opts))], x, y)
 
 
 @example
@@ -109,7 +123,7 @@ def ex_village(ctx):
     c.kind(1, 'A2:1', path([(12, 12), (9, 12), (9, 10), (7, 10)]))              # 집 A 문(7,9) 아래
     c.kind(1, 'A2:1', path([(17, 11), (17, 10), (22, 10), (22, 9)]))            # 집 B 문(22,8) 아래
     c.kind(1, 'A2:1', path([(20, 13), (25, 13), (25, 12), (29, 12)]))           # 집 C 문(29,11) 아래
-    c.kind(1, 'A2:1', path([(16, 18), (22, 18), (22, 21)]))                     # 집 D 문(22,20) 아래
+    c.kind(1, 'A2:1', path([(16, 18), (22, 18), (22, 21), (22, 23)]))           # 집 D 문(22,20) 아래 — 맵 아래 끝까지(끊긴 1칸 섬 해소)
     # 집 넷
     house(c, 6, 5, 7, 'A3:0', 'A3:10', door=1, windows=(3, 5), chimney=5, gable=('building_gable_red_window', 3))
     house(c, 17, 3, 8, 'A3:19', 'A3:27', roof_h=3, wall_h=3, door=5, windows=(1, 3), upper_windows=(1, 3, 6), chimney=2)
@@ -148,8 +162,8 @@ def ex_village(ctx):
     # 밭: 갈색 흙 + 작물 두 줄(가운데 흙길 한 줄) + 울타리 세 면(아래쪽이 입구) + 허수아비
     c.kind(1, 'A2:16', rect(4, 16, 8, 5))
     for i in range(8):
-        c.obj(['crops_carrot_grown', 'crops_pumpkin_grown', 'crops_blade_crop_grown'][i % 3], 4 + i, 16)
-        c.obj(['crops_blade_crop_grown_b', 'crops_carrot_grown', 'crops_pumpkin_flower'][i % 3], 4 + i, 18)
+        c.obj(CROP_ROW_A[(i * 5 + 2) % 7], 4 + i, 16)
+        c.obj(CROP_ROW_B[(i * 3 + 1) % 7], 4 + i, 18)
         if i not in (3, 4):
             c.obj('crops_seed_mounds_six', 4 + i, 20)
     c.obj('town_scarecrow', 8, 17)
@@ -174,6 +188,23 @@ def ex_village(ctx):
                       ('garden_stepping_stones_110', 18, 23), ('garden_bush_green', 26, 23),
                       ('trees_summer_sapling_leafy', 24, 14), ('garden_bush_green', 13, 10)]:
         c.obj(oid, x, y)
+    # 애니 소품: 모닥불 · 풍경 · 그네 — 빈 풀밭에만(풍차는 6×6 이라 빈 자리가 있을 때만)
+    import random as _r
+    _rnd = _r.Random(9)
+    road = c.ctx.key_value(c.b, 'A2:1')
+    grass = c.ctx.key_value(c.b, 'A2:0')
+    for oid in ('anim_windmill', 'anim_campfire', 'anim_windchime', 'anim_swing', 'anim_campfire2'):
+        w_, h_ = c.ctx.object(c.b, oid)['size']
+        for _ in range(200):
+            x, y = _rnd.randrange(c.w), _rnd.randrange(c.h)
+            # 흙길(문 앞 길 포함) 위와 바로 옆에는 놓지 않는다 — 문 앞을 막는다(확대 QA 2026-09-27)
+            if any(c.ok(x + dx, y + dy) and c.L[1][(y + dy) * c.w + x + dx] == road for dx in range(-1, w_ + 1) for dy in range(-1, h_ + 1)):
+                continue
+            # 밭 흙(짙은 갈색) 위에도 놓지 않는다 — 풀밭 칸에만(확대 QA: 그네가 밭 위에 섬)
+            if not all(c.ok(x + dx, y + dy) and c.L[1][(y + dy) * c.w + x + dx] == grass for dx in range(w_) for dy in range(h_)):
+                continue
+            if c.try_obj(oid, x, y):
+                break
     return c
 
 
@@ -231,8 +262,8 @@ def ex_town_buildings(ctx):
     # 밭: 갈색 흙 + 작물 줄 + 울타리 세 면(오른쪽이 입구) + 허수아비
     c.kind(1, 'A2:16', rect(5, 18, 9, 6))
     for i in range(9):
-        c.obj(['crops_carrot_grown', 'crops_pumpkin_grown', 'crops_blade_crop_grown'][i % 3], 5 + i, 18)
-        c.obj(['crops_blade_crop_grown_b', 'crops_carrot_grown', 'crops_pumpkin_flower'][i % 3], 5 + i, 20)
+        c.obj(CROP_ROW_A[(i * 5 + 2) % 7], 5 + i, 18)
+        c.obj(CROP_ROW_B[(i * 3 + 1) % 7], 5 + i, 20)
         if i not in (4, 5):
             c.obj('crops_seed_mounds_six', 5 + i, 22)
     c.obj('town_scarecrow', 9, 19)
@@ -282,6 +313,7 @@ def ex_city(ctx):
     c.kind(1, PAVE, rect(0, 12, 34, 3))
     c.kind(1, PAVE, blob(4, 15, [(0, 14), (0, 15), (1, 15), (0, 16), (0, 16), (1, 14), (2, 12), (3, 9)]))
     c.kind(1, PAVE, rect(18, 20, 9, 2))                                      # 남동쪽 집 앞마당 — 광장과 이어짐
+    c.kind(1, PAVE, [(18, 15), (19, 15), (19, 16)])                          # 광장과 집 사이에 풀 3칸이 섬처럼 남던 것 메움(확대 QA 2026-09-27)
     c.kind(1, PAVE, rect(14, 4, 1, 8))                                       # 집 줄 사이 골목(뒤뜰로)
     # 포장 결: 흙 낀 판석 조각(2층)을 드문드문
     c.kind(2, 'A2:12', [(3, 13), (9, 12), (10, 12), (21, 14), (28, 13), (7, 18), (12, 21), (16, 16)])
@@ -551,6 +583,16 @@ def ex_tavern(ctx):
     c.obj('tavern_barrel_upright', 25, 13)
     c.obj('tavern_barrel_lying', 25, 14)
     c.obj('living_crate_empty', 26, 14)
+    # 애니 소품(Animations 시트, 2026-09-27): 괘종시계 · 등불 · 불 사발 · 어항 — 빈 바닥에만
+    import random as _r
+    _rnd = _r.Random(5)
+    # 등불은 매단 그림이라 벽면에 건다(확대 QA: 바닥 한가운데 떠 있었음)
+    c.obj('anim_lantern_3', 4, 1)
+    c.obj('anim_lantern_1', 21, 1)
+    for oid in ('anim_grandfather_clock', 'anim_firebowl_1', 'anim_aquarium_2'):
+        for _ in range(60):
+            if c.try_obj(oid, 1 + _rnd.randrange(c.w - 2), 3 + _rnd.randrange(c.h - 4)):
+                break
     return c
 
 
@@ -735,9 +777,10 @@ def ex_tailor(ctx):
     c.obj('tailor_yarn_basket', 7, 14)
     # ── 작업실: 벽에 재봉 책상 셋(1×3 — 윗줄이 벽면) · 가로대 · 선반, 아래에 베틀 둘과 물레
     c.obj('tailor_wall_hook_rail', 14, 1)
+    # 재봉 책상 셋이 2칸 간격 한 줄이면 도장 찍은 듯 보인다(확대 QA 2026-09-27) — 둘은 붙이고 분홍 책상은 아래 줄 창가로
     c.obj('tailor_sew_desk_beige', 15, 2)
     c.obj('tailor_sew_desk_blue', 17, 2)
-    c.obj('tailor_sew_desk_pink', 19, 2)
+    c.obj('tailor_sew_desk_pink', 20, 2)   # 셋째는 한 칸 띄워(19 비움) 간격을 깬다
     c.obj('tailor_wall_shelf_goods', 19, 1)
     c.obj('tailor_loom_blue', 14, 5)
     c.obj('tailor_loom_white', 19, 5)
@@ -931,17 +974,17 @@ def ex_dungeon(ctx):
     ], doors=door_v(12, 6, F1) + door_v(21, 6, F2) + door_h(5, 10, F2) + door_h(16, 9, F1) + door_v(10, 17, F2) + door_v(21, 17, F2) + door_h(26, 11, F2) + [(15, 21, F1)])
     # ── 묘실: 석관 줄(서로 다른 모양) · 묘비 · 유골 단지 · 벽 선반
     c.obj('crypt_wall_shelf_38', 2, 2)
-    c.obj('crypt_wall_shelf_54', 7, 1)
+    c.obj('crypt_wall_shelf_54', 7, 2)
     c.obj('crypt_sarcophagus_a', 2, 3)
     c.obj('crypt_sarcophagus_c', 5, 3)
     c.obj('crypt2_stone_sarcophagus_big', 7, 5)
     c.obj('crypt_tomb_tall_a', 1, 6)
     c.obj('crypt_tomb_low_b', 4, 7)
     c.obj('crypt_headstone_round_b', 10, 3)
-    c.obj('crypt_urn_large_56', 8, 3)
-    c.obj('crypt_urn_bones_spill', 11, 3)
+    c.obj('crypt_urn_large_56', 9, 1)   # 겹아치 창(벽면 두 줄)
+    c.obj('crypt_urn_bones_spill', 11, 2)   # 창살 창(벽 아랫줄) + 바닥 빛줄기
     c.obj('crypt_stone_post_small_blue', 3, 9)
-    c.obj('crypt_urn_small_gold', 6, 9)
+    c.obj('crypt_urn_small_gold', 6, 1)   # 작은 불빛 창(벽 윗줄)
     c.obj('crypt_bones_pile_a', 5, 6)
     c.obj('crypt2_bone_long_18', 2, 5)
     c.obj('dungeon_pebble_beige_1', 10, 8)
@@ -969,8 +1012,8 @@ def ex_dungeon(ctx):
     c.obj('crypt_dark_statue_a', 23, 3)
     c.obj('crypt_dark_statue_b', 28, 3)
     c.obj('dungeon_frame_green_orb', 29, 6)
-    c.obj('crypt2_candle_tall', 24, 6)
-    c.obj('crypt2_candle_skull_52', 28, 8)
+    c.obj('dungeon_candle_lit', 24, 6)
+    c.obj('crypt2_skull_mossy_96', 28, 8)
     c.obj('crypt_stone_altar_a', 22, 8)
     c.obj('crypt_bones_row_a', 29, 9)
     c.obj('dungeon_blood_smear_223', 27, 7)
@@ -987,7 +1030,7 @@ def ex_dungeon(ctx):
     c.obj('dungeon_log_lying', 4, 19)
     c.obj('dungeon_chest_plain_open', 8, 17)
     c.obj('dungeon_iron_stand_228', 6, 16)
-    c.obj('crypt_urn_tall_74', 3, 17)
+    c.obj('crypt_urn_tall_74', 3, 11)   # 창고 벽 아치 창
     c.obj('dungeon_pebble_dark_186', 6, 18)
     c.obj('crypt2_wood_planks', 8, 20)
     c.obj('dungeon_moss_speck', 4, 15)
@@ -1003,7 +1046,7 @@ def ex_dungeon(ctx):
     c.obj('dungeon_crack_diag_a_130', 19, 19)
     c.obj('dungeon_blood_drop_214', 14, 18)
     c.obj('crypt_floor_stain_dark_2', 11, 15)
-    c.obj('dungeon_bones_lying', 15, 12)
+    c.obj('crypt2_bone_long_19', 15, 12)
     # ── 옆 굴: 세운 관 · 관 더미 · 부서진 관 · 해골
     c.obj('crypt2_coffin_upright_a', 22, 14)
     c.obj('crypt2_coffin_upright_dark_a', 23, 14)
@@ -1038,9 +1081,9 @@ def ex_castle_court(ctx):
     c.kind(1, 'A2:8', blob(26, 18, [(0, 5), (-1, 7), (0, 8), (1, 6)]) + blob(0, 20, [(0, 6), (0, 7), (0, 6), (0, 5), (0, 4), (0, 3)]))
     # ── 북쪽 성벽(y=2..5) · 서쪽 탑 · 동쪽 탑
     rampart(c, 3, 2, 20)
-    c.obj('castle_battlement_gray', 5, 2)
+    c.obj('castle_battlement_gray', 4, 2)
     c.obj('castle_battlement_gray', 11, 2)
-    c.obj('castle_battlement_gray', 17, 2)
+    c.obj('castle_battlement_gray', 16, 2)
     for x, o in ((4, 'castle_slit_stone_a_152'), (7, 'castle_window_wood_slit_shut_a'), (15, 'castle_slit_stone_lit_a'), (19, 'castle_window_wood_slit_dark_a_153'), (21, 'castle_slit_stone_b')):
         c.obj(o, x, 4)
     c.obj('castle_wall_arch_gate_open', 11, 4)
@@ -1049,9 +1092,10 @@ def ex_castle_court(ctx):
     c.obj('castle_round_tower_gray_3', 23, 4)
     c.obj('castle_tower_roof_cone_blue', 23, 0)
     # ── 해자(성벽 앞 물, 성문 앞은 도개교)
-    c.kind(1, 'A1:8', rect(0, 7, 11, 2) + rect(14, 7, 12, 2))
-    c.obj('castle_drawbridge_chain', 11, 5, over=True)
-    c.kind(1, 'A5:cobble_road', rect(12, 6, 1, 3))
+    c.kind(1, 'A1:8', rect(0, 7, 11, 2) + rect(13, 7, 13, 2))   # 틈 = 도개교 두 칸(11..12)
+    # 도개교는 성문 아치 아랫줄 바로 밑(y=6)부터 — 아치(11..13, 4..5)를 덮으면 아치 아래 반쪽이 사라진다(확대 QA 2026-09-27)
+    c.obj('castle_drawbridge_chain', 11, 6)
+    c.kind(1, 'A5:cobble_road', rect(12, 9, 1, 1))
     # ── 안뜰 돌길(성문에서 남으로, 굽어 요새·폐허로 갈라짐)
     road = path([(12, 9), (12, 14), (20, 14), (20, 17)], width=2) + path([(12, 14), (6, 14), (6, 18)], width=1)
     c.kind(1, 'A2:3', road)
@@ -1131,6 +1175,7 @@ def sheet_block(c, slot, x, y, sx0=0, sy0=0, sw=16, sh=16, deck_floor=(), layer=
                 continue
             mx, my = x + xx, y + yy
             if not c.ok(mx, my):
+                c.errors.append(f'sheet_block {slot}({gx},{gy})→({mx},{my}): 맵 밖으로 잘림')
                 continue
             if t in floor_ids:
                 c.tile(1, t, mx, my)
@@ -1152,20 +1197,20 @@ def ex_elf_village(ctx):
         # 윗 top 줄(수관·줄기 윗부분)은 4층 = 캐릭터 위로 덮고, 나머지(밑동·뿌리)는 3층 = 막힘.
         sheet_block(c, col_slot, x, y, sx0, 0, 8, top, layer=4)
         sheet_block(c, col_slot, x, y + top, sx0, top, 8, 16 - top)
-    elf_tree(-1, -2)                     # 초록 배치1(둥근 수관 나무)
-    elf_tree(29, 1, 'X10')               # 노랑 배치1 — 색·높이 다르게
+    elf_tree(0, 0)                       # 초록 배치1(둥근 수관 나무) — 맵 밖으로 잘리지 않게 (0,0)
+    elf_tree(26, 1, 'X10')               # 노랑 배치1(오른끝 맵 안) — 색·높이 다르게
     # 수관 그늘 밑 풀숲(2층) — 수관은 4층이라 밑이 비면 빈 땅이 된다
     c.kind(2, 'A2:7', blob(1, 1, [(0, 5), (1, 4), (0, 5), (1, 3)]) + blob(30, 1, [(0, 5), (1, 4), (0, 5), (1, 3)]))
     # ── 흙길(가운데 굽이) · 집마다 문 앞에서 끝남
     road = path([(0, 16), (8, 16), (8, 14), (20, 14), (20, 17), (35, 17)], width=2)
     c.kind(1, 'A2:1', road)
-    c.kind(1, 'A2:1', path([(12, 14), (12, 12)], 1) + path([(24, 14), (24, 11)], 1) + path([(17, 17), (17, 20)], 1))
+    c.kind(1, 'A2:1', path([(12, 14), (12, 12)], 1) + path([(24, 14), (24, 11)], 1))   # (17,17~20) 옛 문길은 지붕 위에 1칸 섬만 남겨 지움(확대 QA 2026-09-27)
     # ── 완성 목조 집 둘(색 다름) · A3 조립 집 하나
     c.obj('elf_green_house_gable_a', 9, 6)
     c.obj('elf_red_house_large', 20, 6)
     house(c, 13, 18, 7, 'A3:16', 'A3:25', roof_h=3, wall_h=2, door=None)
     c.obj('elf_red_wall_door', 17, 22, over=True)
-    c.kind(1, 'A2:1', path([(17, 24), (17, 25)], 1))
+    c.kind(1, 'A2:1', path([(17, 24), (17, 25)], 1) + path([(17, 23), (17, 22)], 1))   # 문 아래 길(확대 QA: 끊긴 1칸 섬 → 문 앞 줄과 이음)
     c.obj('elf_green_treehouse_ladder', 5, 17)
     c.obj('elf_yellow_treehouse_short', 25, 19)
     # ── 흰 돌 가로등(길 한쪽만, 간격 다르게)
@@ -1212,12 +1257,13 @@ def ex_snow_village(ctx):
     house(c, 24, 4, 9, 'A3:0', 'A3:14', roof_h=3, wall_h=2)
     c.obj('vikingsnow_beam_two_shields', 29, 6, over=True)
     # 긴 집마다 문(벽 아래 두 줄)·창 둘(민벽 칸) + 문 아래에서 시작하는 길
-    for hx, hy, hw, rh, door, wins in ((2, 3, 8, 3, 4, (1, 6)), (3, 13, 6, 2, 2, (4,)), (24, 4, 9, 3, 5, (1, 3, 7))):
+    # 문은 방패 들보(첫 집 3..7열, 셋째 집 29..30열) 아래를 피한다 — 들보 아랫줄을 문이 덮으면 들보가 반쪽이 된다(확대 QA 2026-09-27)
+    for hx, hy, hw, rh, door, wins in ((2, 3, 8, 3, 6, (1, 3)), (3, 13, 6, 2, 2, (4,)), (24, 4, 9, 3, 3, (1, 7))):
         base = hy + rh + 1
         c.obj('snowvillage_door_arch', hx + door, base - 1, over=True)
         for wx in wins:
             c.obj('snowvillage_window_shutter', hx + wx, base, over=True)
-    c.kind(1, DIRT, path([(6, 9), (6, 12)], 1) + path([(5, 17), (5, 19)], 1) + path([(29, 10), (29, 13)], 1))
+    c.kind(1, DIRT, path([(8, 9), (8, 12)], 1) + path([(5, 17), (5, 20), (10, 20), (10, 12)], 1) + path([(27, 10), (27, 13)], 1))
     # ── A자 박공 회관(마을 가운데에서 비킴)
     c.obj('vikingsnow_timber_frame_post', 21, 15)
     # ── 부두(나무 단)와 난간
@@ -1298,6 +1344,7 @@ def ex_port(ctx):
     c.kind(1, 'A2:3', rect(8, 8, 2, 3) + rect(20, 8, 2, 3))   # 잔교 둘(배 난간까지)
     # ── 배: 위 9줄 = 선체. 갑판(y+3..y+6)만 1층, 나머지 3층
     X, Y = 0, 10
+    # 선체는 시트 위 9줄. 10번째 줄은 휜 목재·쇠띠 기둥 같은 **낱개 부품**이라 옮기면 바다에 떠 있다(확대 QA 2026-09-27 확인).
     sheet_block(c, 'B', X, Y, 0, 0, 16, 9, deck_floor=('ship_l_deck',))
     sheet_block(c, 'C', X + 16, Y, 6, 0, 10, 9, deck_floor=('ship_r_deck',))
     # 돛대 둘: 밑동이 갑판 가운데 줄에 오게(돛은 4층으로 선체·바다 위로)
@@ -1335,6 +1382,15 @@ def ex_port(ctx):
     house(c, 23, 0, 6, 'A3:1', 'A3:9', roof_h=2, wall_h=2)
     c.obj('shipdeco_cabin_door', 25, 1, over=True)
     c.kind(1, 'A2:3', path([(25, 5), (25, 7)], 1))
+    # 애니 소품: 배 등불(갑판·부두) · 깃발
+    import random as _r
+    _rnd = _r.Random(3)
+    # 배 갑판 A5 칸엔 대포·문양이 바닥 그림에 박혀 있어 흩뿌리면 덮는다(확대 QA) — 셋째 등불은 부두 돌바닥 고정 칸
+    c.try_obj('anim_shiplanterns_3', 17, 6)
+    for oid in ('anim_shiplanterns_1', 'anim_shiplanterns_2', 'anim_flagsleft_1'):
+        for _ in range(200):
+            if c.try_obj(oid, _rnd.randrange(c.w), _rnd.randrange(c.h)):
+                break
     return c
 
 
@@ -1406,7 +1462,11 @@ def ex_mushroom_forest(ctx):
         for _ in range(80):
             x, y = gx + rnd.randrange(gw), gy + rnd.randrange(gh)
             if any((3, (y + dy) * c.w + x + dx) in c.owner for dx in (-1, 0, 1) for dy in (-1, 1) if 0 <= x + dx < c.w and 0 <= y + dy < c.h):
-                c.try_obj(spool[rnd.randrange(len(spool))], x, y)
+                oid = spool[rnd.randrange(len(spool))]
+                # 같은 1칸 버섯이 네 이웃에 또 있으면 건너뛴다 — 한 종류가 줄·격자로 늘어서면 도장 찍은 듯 보인다(확대 QA 2026-09-27)
+                if any(c.owner.get((3, (y + dy) * c.w + x + dx)) == oid for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (-1, -1), (1, -1), (-1, 1), (2, 0), (-2, 0), (0, 2), (0, -2)) if 0 <= x + dx < c.w and 0 <= y + dy < c.h):
+                    continue
+                c.try_obj(oid, x, y)
     # 분홍 꿈 구석(북동): 꽃나무 셋(색 다름) + 꽃 덤불
     for oid, x, y in (('pinkdream_tree_magenta_a', 20, 0), ('pinkdream_cherry_pink_a', 26, 1), ('pinkdream_cherry_red', 22, 4),
                       ('pinkdream_bush_pink_small_b', 18, 4), ('pinkdream_bush_pink_small_b', 29, 5), ('pinkdream_tree_magenta_b', 27, 7)):
@@ -1448,7 +1508,7 @@ def ex_winter_market(ctx):
     # 남서 집(광장 옆) — 문이 광장을 본다
     house(c, 1, 13, 5, 'A3:18', 'A3:28', roof_h=3, wall_h=2)
     c.obj('market_door_frame_wood', 3, 16, over=True)
-    c.kind(1, PAVE, rect(3, 18, 1, 3))
+    c.kind(1, PAVE, rect(3, 18, 1, 3) + rect(4, 20, 16, 1))   # 문길을 광장 쪽으로 이어 1×3 섬이 되지 않게(확대 QA 2026-09-27)
     # 광장: 노점 셋(색·물건 다름) · 선물 더미 · 크리스마스 나무 · 우물 · 긴 의자 · 장식 가로등(서쪽 줄만)
     for oid, x, y in (('market_stall_striped_open', 8, 9), ('market_stall_striped_backwall', 14, 9), ('xmas_stall_counter', 17, 13),
                       ('xmas_gift_pile', 12, 15), ('xmas_xmas_tree_small', 20, 9), ('town_well_roofed', 9, 15), ('town_log_bench', 15, 17),
@@ -1594,14 +1654,14 @@ def ex_skull_crypt(ctx):
     ], doors=door_v(13, 5, 'A2:0') + door_h(6, 10, 'A2:2') + door_h(20, 9, 'A2:1') + door_v(12, 14, 'A2:3') + [(20, 19, 'A2:3')])
     import random
     rnd = random.Random(13)
-    ids = {o['id'] for o in c.ctx.names['bundles'][c.b]['objects']}
+    ids = sorted({o['id'] for o in c.ctx.names['bundles'][c.b]['objects']})   # set 순회는 실행마다 순서가 달라 결과가 흔들린다
     pick = lambda pre: [i for i in ids if i.startswith(pre)]
     # 벽감 묘실: 석관 줄 · 묘비 · 유골 단지 · 벽 선반
     for oid, x, y in (('crypt_sarcophagus_a', 2, 3), ('crypt_sarcophagus_c', 5, 3), ('crypt2_stone_sarcophagus_big', 8, 5), ('crypt_tomb_tall_a', 1, 6),
-                      ('crypt_headstone_round_b', 11, 3), ('crypt_urn_large_56', 9, 3), ('crypt_bones_pile_a', 5, 7), ('crypt_wall_shelf_38', 2, 2), ('crypt_wall_shelf_54', 8, 1)):
+                      ('crypt_headstone_round_b', 11, 3), ('crypt_urn_large_56', 9, 3), ('crypt_bones_pile_a', 5, 7), ('crypt_wall_shelf_38', 2, 2), ('crypt_wall_shelf_54', 8, 2)):
         oid in ids and c.try_obj(oid, x, y)
     # 납골실: 관 더미 · 뼈 무더기 · 해골 선반 · 촛불
-    for oid, x, y in (('crypt2_coffin_stack_wood', 15, 3), ('crypt2_coffin_lid_open', 19, 3), ('crypt2_skeleton_sitting', 23, 3), ('crypt2_candle_tall', 26, 3),
+    for oid, x, y in (('crypt2_coffin_stack_wood', 15, 3), ('crypt2_coffin_lid_open', 19, 3), ('crypt2_skeleton_sitting', 23, 3), ('dungeon_candle_lit', 26, 3),
                       ('crypt_bones_pile_a', 17, 6), ('crypt2_bone_long_18', 22, 6), ('crypt_urn_bones_spill', 25, 6)):
         oid in ids and c.try_obj(oid, x, y)
     # 혼돈의 방: 붉은 살덩이·가시·알
@@ -1610,7 +1670,7 @@ def ex_skull_crypt(ctx):
         if not chaos: break
         c.try_obj(chaos[rnd.randrange(min(12, len(chaos)))], 2 + rnd.randrange(9), 12 + rnd.randrange(6))
     # 입구 복도: 석상 · 촛대 · 뼈 조각 · 핏자국
-    for oid, x, y in (('crypt_dark_statue_a', 14, 11), ('crypt_dark_statue_b', 27, 11), ('crypt2_candle_tall', 17, 12), ('crypt2_candle_tall', 24, 12),
+    for oid, x, y in (('crypt_dark_statue_a', 14, 11), ('crypt_dark_statue_b', 27, 11), ('dungeon_candle_lit', 17, 12), ('dungeon_candle_unlit', 24, 12),
                       ('dungeon_blood_pool', 21, 15), ('crypt_bones_pile_a', 15, 16), ('dungeon_skull_small', 26, 16)):
         oid in ids and c.try_obj(oid, x, y)
     # 방마다 소품 풀에서 무리로 채운다(없는 id 는 건너뜀)
@@ -1649,7 +1709,7 @@ def ex_temple_hall(ctx):
         (17, 10, 28, 18, 'A4:40', 'A2:8'),  # 다다미 객실
         (1, 13, 15, 18, 'A4:10', 'A2:1'),   # 입구 회랑
     ], doors=door_v(16, 5, 'A2:0') + door_h(8, 12, 'A2:0') + door_v(16, 15, 'A2:1') + door_h(22, 9, 'A2:16') + [(8, 19, 'A2:1')])
-    ids = {o['id'] for o in c.ctx.names['bundles'][c.b]['objects']}
+    ids = sorted({o['id'] for o in c.ctx.names['bundles'][c.b]['objects']})   # set 순회는 실행마다 순서가 달라 결과가 흔들린다
     put = lambda oid, x, y: oid in ids and c.try_obj(oid, x, y)
     # 본전: 가운데 붉은 융단 길(2층) · 기둥 줄 양옆(간격 다르게) · 옥좌 · 제단 · 향로
     c.kind(2, 'A2:7', [(8, y) for y in range(4, 12)] + [(7, y) for y in range(4, 12)])
@@ -1710,7 +1770,7 @@ def ex_skull_ossuary(ctx):
     ], doors=door_v(14, 4, 'A2:0') + door_h(5, 9, 'A2:2') + door_v(9, 14, 'A2:3') + door_h(20, 7, 'A2:1') + [(18, 19, 'A2:3')])
     import random
     rnd = random.Random(29)
-    ids = {o['id'] for o in c.ctx.names['bundles'][c.b]['objects']}
+    ids = sorted({o['id'] for o in c.ctx.names['bundles'][c.b]['objects']})   # set 순회는 실행마다 순서가 달라 결과가 흔들린다
     lanes = {(x, 4) for x in range(2, 26)} | {(5, y) for y in range(3, 18)} | {(x, 14) for x in range(2, 26)} | {(20, y) for y in range(3, 19)}
     for (lx, ly) in lanes:
         c.owner.setdefault((3, ly * c.w + lx), '__lane__')
@@ -1743,7 +1803,7 @@ def ex_stone_temple(ctx):
     ], doors=door_v(8, 6, 'A2:16') + door_h(4, 11, 'A2:24') + door_h(15, 11, 'A2:16') + door_v(19, 15, 'A2:16') + [(10, 19, 'A2:16')])
     import random
     rnd = random.Random(41)
-    ids = {o['id'] for o in c.ctx.names['bundles'][c.b]['objects']}
+    ids = sorted({o['id'] for o in c.ctx.names['bundles'][c.b]['objects']})   # set 순회는 실행마다 순서가 달라 결과가 흔들린다
     c.kind(2, 'A2:23', [(15, y) for y in range(4, 11)] + [(16, y) for y in range(4, 11)])
     lanes = {(15, y) for y in range(3, 12)} | {(16, y) for y in range(3, 12)} | {(x, 6) for x in range(2, 10)} | {(x, 15) for x in range(2, 26)} | {(4, y) for y in range(3, 16)} | {(10, y) for y in range(12, 19)}
     for (lx, ly) in lanes:
@@ -1758,7 +1818,10 @@ def ex_stone_temple(ctx):
     fill(('temple2_table', 'temple2_bench', 'temple2_stand', 'temple2_railing', 'temple2_post'), (10, 3, 26, 10), 22)
     fill(('japanese_',), (2, 3, 7, 10), 34)
     fill(('temple2_',), (2, 13, 18, 18), 60)
-    fill(('crypt_urn_', 'crypt_chest', 'crypt_niche'), (21, 13, 26, 18), 30)
+    # 오른아래 납골 곁방: 벽에는 아치 창(벽걸이), 바닥에는 돌 궤·묘표·기둥·촛대
+    for oid, x, y in (('crypt_urn_large_72', 21, 12), ('crypt_urn_tall_76', 25, 12)):
+        oid in ids and c.obj(oid, x, y)
+    fill(('crypt_stone_chest', 'crypt_stone_post', 'crypt_headstone_round', 'crypt_stone_pillar', 'crypt_niche_candle', 'crypt_dark_statue'), (20, 14, 26, 18), 40)
     for k_ in [k_ for k_, v in c.owner.items() if v == '__lane__']:
         del c.owner[k_]
     return c

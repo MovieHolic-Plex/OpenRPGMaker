@@ -521,3 +521,27 @@ buyOnly/sellOnly; real item comparison and purchase/sale handlers remain authori
   저장 스냅샷 메타 `chapterLabel`(선택, 스키마 버전 그대로 — 옛 세이브는 필드 없이 읽힌다)로 남아 불러오기 카드
   `save-slot-N-chapter` 에 보인다.
 - 검증: `node scripts/runtime-qa.mjs --scenario ct-ngplus`(픽스처 `scripts/qa/runtime/ct-ngplus-fixture.mts` 는 runTool 만 쓴다).
+
+## 탈것 — 소형선·대형선·비행선 (2026-09-26)
+
+- **저작.** `system.vehicles?: { id: "boat"|"ship"|"airship"; characterIndex; mapId?; x?; y? }[]` (생략 = 탈것 없음, 기존 프로젝트 동작 그대로).
+  정규화 `normalizeVehicleConfigs`(`src/project/vehicles.ts`)가 화이트리스트에 들어 있어 왕복에 살아남는다. 편집기 도구 `place_vehicle`.
+- **세션.** `session.vehicle?: { boardedId?; positions?: { [id]: { mapId, x, y, direction? } } }`. 탄 탈것은 주인공과 한 몸이라 위치를
+  적지 않고, 세운 자리는 positions → 저작 위치 순으로 푼다(`vehicleLocation`). 세이브 스냅숏 `session.vehicle` 은 있을 때만 쓰고,
+  불러올 때 없으면 **지운다**(이전 세션의 탑승을 끌고 오지 않는다). 파서 `parseVehicleSessionState`.
+- **타기·내리기** (`src/player/playSceneVehicles.ts`). 걷는 중 확인 키는 정면(없으면 발밑)의 세운 탈것이 조사보다 먼저다.
+  타면 주인공이 그 칸으로 옮겨 가고 `resolvePlayerSpriteResource` 가 `tex_easyrpg_charset_vehicles` 의 칸을 돌려준다;
+  `syncFollowerSprites` 는 탑승 중 동료를 그리지 않는다. 탄 채로 확인 키는 내리기뿐이다: 배는 정면의 걸을 수 있고 막는
+  이벤트가 없는 칸으로 내리고 배는 그 칸에 남는다; 비행선은 통행 가능한 칸이면 그 자리에 내려앉는다 — 지형 기록이 있는 칸(태그 1..N)은 그 `airshipLand` 를 따르고, 태그 0 보통 땅은 기록이 없어 허용이다. 기본 지형 기록은 **순서 = 타일셋 태그 − 1** 로 [물(배 허용·착륙 불가), 모래, 눈, 돌] 이다(2026-09-27 이전 기본값은 [초원, 숲, "사막"=terrain_water] 이라 기본 물 위로 배가 못 다녔다; 저장된 프로젝트는 자기 기록을 그대로 쓴다).
+  내리면 동료 궤적이 `placePlayerOnCurrentMap` 으로 새로 깔린다. 명령 `Get On/Off Vehicle` 은 인터프리터 스텝 `{kind:"vehicle", boarded}`
+  로 같은 함수를 부른다(전경·병렬 양쪽). 조건이 안 맞으면 아무 일도 없다.
+- **통행.** 탑승 중 `tryStartVehicleStep` 이 일반 걸음(턱·밀기·반복 맵 접기 포함)을 대신한다. 배는 지형 레코드 `vehiclePassage.boat/.ship`
+  이 참인 칸만 가고 같은 층 이벤트에 막힌다(접촉 트리거는 발동하지 않는다). 비행선은 맵 안이면 어디든 간다. 대형선·비행선은 걸음 프레임이
+  절반(2배속), 소형선은 걷기와 같다. 비행선 걸음은 지형 피해·접촉 트리거·인카운트를 건너뛴다(구역 드나듦은 판정한다).
+- **그림.** 세운 탈것은 이 맵에 있을 때 `syncVehicleSprites` 가 캐릭터 깊이 규칙으로 그린다(`loadMap` 뒤, `refreshRuntimeSurfaces`).
+  `Set Vehicle Location` 은 세운 자리를 옮긴다(맵 비우면 현재 맵; 탄 탈것은 옮기지 않는다). 프리로드는 `system.vehicles` 가 있으면
+  탈것 시트를 싣는다 — id 만 저장하므로 문자열 수집에 안 걸린다.
+- **남은 것.** `Change Vehicle Graphic` 은 여전히 플래그만 쓴다. 비행선 고도 그림자·탑승 BGM·맵 이동 중 탑승 유지 전환은 없다
+  (다른 맵으로 옮겨도 boardedId 는 유지되고 주인공이 그 모습으로 도착한다).
+- 검증: `node scripts/runtime-qa.mjs --scenario ct-vehicle` (픽스처 `scripts/qa/runtime/ct-vehicle-fixture.mts`). 관측 축
+  `playerTextureKey`·`followerSpriteCount`·`vehicleBoarded`·`parkedVehicleSprites` 는 `scripts/lib/runtimeQa.mjs` 에 있다.

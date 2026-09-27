@@ -1,0 +1,28 @@
+{
+ "strokes": [
+  {
+   "stroke": 0,
+   "releaseToSavedMs": 30902,
+   "worstMainThreadStallMs": 414
+  },
+  {
+   "stroke": 1,
+   "releaseToSavedMs": 7675,
+   "worstMainThreadStallMs": 412
+  },
+  {
+   "stroke": 2,
+   "releaseToSavedMs": 7695,
+   "worstMainThreadStallMs": 884
+  }
+ ],
+ "savedRow": {
+  "revision": 4,
+  "painted": 12
+ },
+ "afterReloadRow": {
+  "revision": 4,
+  "painted": 12
+ },
+ "errors": []
+}

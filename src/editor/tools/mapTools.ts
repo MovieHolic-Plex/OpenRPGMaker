@@ -1,4 +1,5 @@
 import { isMapLoop, mapLoopLabel, mapLoopsX, mapLoopsY, MAP_LOOP_VALUES } from "@/project/mapLoop";
+import { isMapRoleKind, MAP_ROLE_LABELS } from "@/project/mapRole";
 import { ensureDocumentedTileset } from "@/project/defaults/dungeonSheetTilesets";
 import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness";
 import { defaultOutdoorTilesetId, defaultToolTilesetId } from "@/project/defaults/forestHarmony";
@@ -1814,6 +1815,11 @@ const setMapProperties: ToolDefinition = {
       clearBackground: { type: "boolean" },
       battleBackground: { type: "string" },
       clearBattleBackground: { type: "boolean" },
+      mapRole: {
+        type: "string",
+        enum: ["town", "dungeon", "field", "interior", "auto"],
+        description: "맵 성격 — 마을/던전/필드/실내. 바로 깔기·배치 조수가 이 값을 먼저 믿는다(마을이면 함정·몬스터를 요청 없이 두지 않고 보상을 낮춘다). \"auto\" 는 지워서 자동 추정으로 되돌린다.",
+      },
       flags: {
         type: "object",
         properties: { disableSave: { type: "boolean" }, disableTeleport: { type: "boolean" }, disableEscape: { type: "boolean" } },
@@ -1898,6 +1904,17 @@ const setMapProperties: ToolDefinition = {
     } else if (typeof args.battleBackground === "string" && args.battleBackground.trim()) {
       map.battleBackground = args.battleBackground.trim();
       changed.push(`전투배경=${map.battleBackground}`);
+    }
+    if (args.mapRole !== undefined) {
+      if (args.mapRole === "auto") {
+        delete map.mapRole;
+        changed.push("맵 성격=자동");
+      } else if (isMapRoleKind(args.mapRole)) {
+        map.mapRole = args.mapRole;
+        changed.push(`맵 성격=${MAP_ROLE_LABELS[args.mapRole]}`);
+      } else {
+        throw new ToolError(`mapRole 은 town/dungeon/field/interior/auto 중 하나여야 합니다(받은 값: ${JSON.stringify(args.mapRole)}).`, { code: "map-role-invalid", mapId: map.id });
+      }
     }
     if (args.flags && typeof args.flags === "object" && !Array.isArray(args.flags)) {
       const flags = args.flags as { disableSave?: boolean; disableTeleport?: boolean; disableEscape?: boolean };
