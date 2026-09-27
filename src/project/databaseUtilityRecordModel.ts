@@ -44,6 +44,7 @@ export function normalizeTerrainRecords(records: readonly Partial<DatabaseTerrai
         ship: record.vehiclePassage?.ship ?? false,
         airshipLand: record.vehiclePassage?.airshipLand ?? true,
       },
+      ...(record.climbable === true ? { climbable: true } : {}),
     }));
 }
 

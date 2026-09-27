@@ -195,6 +195,8 @@ export interface DatabaseTerrainRecord {
   footstepSoundResourceId?: string;
   characterDisplay: DatabaseTerrainCharacterDisplay;
   vehiclePassage: DatabaseTerrainVehiclePassage;
+  /** 옆보기 맵(GameMap.sideView)에서 사다리·밧줄처럼 오를 수 있는 칸. 없으면 false. */
+  climbable?: boolean;
 }
 
 export interface DatabaseBattleCommandRecord {
