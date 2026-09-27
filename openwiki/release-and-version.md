@@ -130,6 +130,34 @@ DISPLAY=:78 xwininfo -root -tree | grep -i oprn   # 1272x766 창이 잡히면 �
 - **빌드는 wine 설치 전에 끝난다.** 실측에서 zip 은 wine 없이 만들어졌고, wine 은 그 뒤 실행 검증에만
   썼다. 그러니 wine 설치 실패가 빌드를 막지는 않는다.
 
+### 데스크톱 AI 워커는 네이티브 애드온을 옆에 둔다 (2026-09-27 실측)
+
+앱의 채팅·Pi 실행은 `bun build --compile` 로 만든 `dist-electron/oh-my-pi-worker[.exe]` 가 한다(로그인은
+Node 쪽 `aiAuthRuntime.ts` 라 워커 없이 된다). 워커는 `@oh-my-pi/pi-natives` 의 Rust 애드온을 **런타임에 계산한
+경로로** require 하므로 `--compile` 이 따라가 싣지 못한다. v0.17.x 까지는 애드온이 빠져 워커가 시작하자마자
+`Failed to load pi_natives native addon` 으로 죽었고, 증상은 «로그인은 되는데 채팅만 안 된다» 였다.
+
+- `scripts/build-electron.mjs` 가 `pi_natives.<linux-x64|win32-x64>-baseline.node` 를 워커 옆에 둔다. 로더는
+  컴파일된 실행 파일의 폴더(execDir)를 후보로 보고, AVX2 가 있어도 modern 다음 후보로 baseline 을 집는다.
+- 윈도우 애드온은 리눅스 호스트의 `node_modules` 에 설치되지 않는다(os 필터). `package-lock.json` 의
+  `resolved`·`integrity` 로 tarball 을 받아 검증하고 `node_modules/.cache/oprn-pi-natives/` 에 캐시한다.
+- `scripts/electron-builder.config.mjs` 는 애드온을 `asarUnpack` 하고, `linux.files`/`win.files` 로 다른 OS 의
+  워커·애드온을 뺀다(각 150~200MB). **최상위 `files` 를 두지 않는다.** 최상위와 플랫폼
+  `files` 는 별개 매처라 합집합이 된다 — 플랫폼 쪽 제외가 최상위 `dist-electron/**` 를 못 이겨 두 OS 에 워커
+  4개가 다 실렸다. 반대로 제외 패턴만 주면 빌더가 `**/*` 로 읽어 저장소 전체를 싣는다(app.asar 4.9GB).
+  그래서 OS 마다 공용 목록 `APP_FILES` 를 펼친 뒤 제외를 붙인다. 확인: `--linux dir --win dir` 뒤
+  `*-unpacked/resources/app.asar.unpacked/dist-electron/` 에 자기 OS 워커와 애드온 둘만 있어야 한다.
+- **두 번째 결함: 워커 스크립트 경로를 무조건 계산했다.** `scripts/lib/ohMyPiPiAi.mjs` 의 `startWorker()` 가
+  `new URL("../oh-my-pi-worker.ts", import.meta.url)` 을 먼저 평가했는데, CJS 로 번들된 Electron 메인에서는
+  `import.meta` 가 `{}` 라 던진다. 애드온을 고친 뒤에도 앱 채팅은 전부 500 `Invalid URL` 이었다. bun 으로 스크립트를
+  띄우는 분기에서만 계산한다. **워커 단독 검증은 이 결함을 못 잡는다** — 앱 전체를 띄워야 한다(아래).
+- 검증: 패키지에서 꺼낸 워커를 **빈 HOME** 으로 띄워 `READY <port>` 가 나오는지 본다. 개발 머신의
+  `~/.omp/natives` 가 있으면 가짜 통과가 된다. 윈도우는 `wine` 으로 `oh-my-pi-worker.exe` 를 같은 방식으로 띄운다
+  (`WINEPREFIX` 는 `/tmp` 바로 밑이면 "not owned" 로 거부된다 — `$HOME/.cache/...` 를 쓴다).
+  앱 전체는 Playwright `_electron` 으로 `linux-unpacked/oprn` 을 띄워 렌더러에서
+  `window.oprn.companionOrigin + "/v1/chat/completions"` 를 `x-oprn-companion-token` 헤더로 부른다.
+  증거(2026-09-27): `verify-shots/desktop-ai-worker/` — wine exe READY·`/complete` 200, 앱 채팅 200.
+
 ## 커밋 메시지가 릴리스 노트의 원고다
 
 `npm run release` 는 `git log` 에서 노트를 만든다(`scripts/lib/releaseNotes.mjs`). 손으로 쓰는 노트는
