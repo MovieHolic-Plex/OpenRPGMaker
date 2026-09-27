@@ -64,14 +64,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1350",
     "description": "밑동 1350 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -84,14 +84,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1422",
     "description": "밑동 1422 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -104,14 +104,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1423",
     "description": "밑동 1423 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -124,14 +124,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1424",
     "description": "밑동 1424 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -144,14 +144,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1425",
     "description": "밑동 1425 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -164,14 +164,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1426",
     "description": "밑동 1426 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -184,14 +184,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1427",
     "description": "밑동 1427 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -204,14 +204,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1428",
     "description": "밑동 1428 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -224,14 +224,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1429",
     "description": "밑동 1429 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -244,14 +244,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1430",
     "description": "밑동 1430 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -264,14 +264,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1431",
     "description": "밑동 1431 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -284,14 +284,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1432",
     "description": "밑동 1432 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -304,14 +304,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1433",
     "description": "밑동 1433 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -324,14 +324,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1453",
     "description": "밑동 1453 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -344,14 +344,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1454",
     "description": "밑동 1454 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -364,14 +364,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1455",
     "description": "밑동 1455 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -384,14 +384,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1457",
     "description": "밑동 1457 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -404,14 +404,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1458",
     "description": "밑동 1458 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -424,14 +424,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1459",
     "description": "밑동 1459 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -444,14 +444,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1461",
     "description": "밑동 1461 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -464,14 +464,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1462",
     "description": "밑동 1462 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -484,14 +484,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1463",
     "description": "밑동 1463 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -504,14 +504,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 290",
     "description": "밑동 290 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -524,14 +524,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 291",
     "description": "밑동 291 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -544,14 +544,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 292",
     "description": "밑동 292 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -564,14 +564,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 293",
     "description": "밑동 293 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -584,14 +584,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1068",
     "description": "밑동 1068 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -604,14 +604,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1069",
     "description": "밑동 1069 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -624,14 +624,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1070",
     "description": "밑동 1070 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -644,14 +644,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1095",
     "description": "밑동 1095 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -664,14 +664,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1096",
     "description": "밑동 1096 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -684,14 +684,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1011",
     "description": "밑동 1011 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -704,14 +704,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 밑 그림자 · 1012",
     "description": "밑동 1012 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -724,14 +724,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 발치 그림자 · 1430",
     "description": "밑동 1430 바로 아래 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -744,14 +744,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 발치 그림자 · 1431",
     "description": "밑동 1431 바로 아래 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -764,14 +764,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 발치 그림자 · 1432",
     "description": "밑동 1432 바로 아래 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -784,14 +784,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 발치 그림자 · 1433",
     "description": "밑동 1433 바로 아래 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -804,14 +804,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 발치 그림자 · 1461",
     "description": "밑동 1461 바로 아래 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -824,14 +824,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 발치 그림자 · 1462",
     "description": "밑동 1462 바로 아래 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -844,14 +844,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 발치 그림자 · 1463",
     "description": "밑동 1463 바로 아래 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -864,14 +864,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 발치 그림자 · 290",
     "description": "밑동 290 바로 아래 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -884,14 +884,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 발치 그림자 · 291",
     "description": "밑동 291 바로 아래 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -904,14 +904,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 발치 그림자 · 292",
     "description": "밑동 292 바로 아래 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -924,14 +924,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 발치 그림자 · 293",
     "description": "밑동 293 바로 아래 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -944,14 +944,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 발치 그림자 · 1068",
     "description": "밑동 1068 바로 아래 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -964,14 +964,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 발치 그림자 · 1069",
     "description": "밑동 1069 바로 아래 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -984,14 +984,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 발치 그림자 · 1070",
     "description": "밑동 1070 바로 아래 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -1004,14 +1004,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 발치 그림자 · 1095",
     "description": "밑동 1095 바로 아래 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -1024,14 +1024,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 발치 그림자 · 1096",
     "description": "밑동 1096 바로 아래 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -1044,14 +1044,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 발치 그림자 · 1011",
     "description": "밑동 1011 바로 아래 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"
@@ -1064,14 +1064,14 @@
     "left": true,
     "right": true
    },
-   "priority": "lower",
+   "priority": "upper",
    "terrain": 0,
    "tileMeta": {
     "role": "decoration",
     "label": "나무 발치 그림자 · 1012",
     "description": "밑동 1012 바로 아래 칸의 2층 그림자. 투명 그림자만 있고 통행에 관여하지 않는다. 나무를 심는 도구가 자동으로 놓는다.",
     "source": "user",
-    "passage": "passable",
+    "passage": "star",
     "userLocked": true,
     "defaultLayer": "lower",
     "layerBacking": "none"

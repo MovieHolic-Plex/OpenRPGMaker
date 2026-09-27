@@ -1,0 +1,193 @@
+{
+  "scenarioId": "four-layer-trunk",
+  "projectPath": "verify-shots/four-layer-ai/run1.project.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "shot": null,
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "boot",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_forest",
+        "x": 21,
+        "y": 12,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForRuntime"
+        },
+        {
+          "kind": "teleport",
+          "mapId": "map_forest",
+          "x": 21,
+          "y": 12
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_forest",
+          "x": 21,
+          "y": 12
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "control-grass",
+      "note": "대조: 열린 잔디 (21,12)→위로 한 칸",
+      "shot": "03-control-grass.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_forest",
+        "x": 21,
+        "y": 9,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "hold",
+          "dir": "up",
+          "ms": 400
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "conifer-before",
+      "note": "침엽수 밑동(21,9) 아래 (21,10)",
+      "shot": "04-conifer-before.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_forest",
+        "x": 21,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "teleport",
+          "mapId": "map_forest",
+          "x": 21,
+          "y": 10
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_forest",
+          "x": 21,
+          "y": 10
+        },
+        {
+          "kind": "face",
+          "dir": "up"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "id": "conifer-up",
+      "note": "위로 — 밑동 칸에 들어가면 버그",
+      "shot": "05-conifer-up.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_forest",
+        "x": 21,
+        "y": 7,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "hold",
+          "dir": "up",
+          "ms": 400
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "id": "edge-before",
+      "note": "숲 가장자리 밑동 줄 아래 (10,7)",
+      "shot": "06-edge-before.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_forest",
+        "x": 10,
+        "y": 7,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "teleport",
+          "mapId": "map_forest",
+          "x": 10,
+          "y": 7
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_forest",
+          "x": 10,
+          "y": 7
+        },
+        {
+          "kind": "face",
+          "dir": "up"
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "id": "edge-up",
+      "note": "위로 길게 — (10,5)(10,4) 밑동 줄에 들어가면 버그",
+      "shot": "07-edge-up.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_forest",
+        "x": 10,
+        "y": 4,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "hold",
+          "dir": "up",
+          "ms": 1600
+        }
+      ]
+    }
+  ]
+}

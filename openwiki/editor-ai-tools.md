@@ -268,6 +268,12 @@ DEFAULT/AUTO/YOLO/단계별 적용에서는 검색까지 직렬 실행됐다. �
   이식 원본(`tex_forest_harmony_tree_shadows`#n)으로 다시 찾는다. 고정 3611~ 은 지나가는 수관 쌍둥이·탈것 이식이 먼저 차지할 수 있다.
 - 호출 지점: `toolRunner.runToolDefinition` 이 타일을 바꾼 맵마다(나무 짝 수리와 같은 조건 — `spatialAuthoring`·
   `preservesAuthoredRaster` 도구는 제외), 그리고 `stamp_object` 가 찍은 뒤 직접. 편집기 붓질 경로에는 아직 붙이지 않았다.
+- **그림자 칸은 ★(통행 + 상위)다(2026-09-28).** 통행은 위층부터 ★·빈칸을 건너뛰고 처음 만난 타일이 정한다
+  (`collision.passabilityOf`). 첫 판은 ○ 라서 2층 그림자가 1층 밑동의 × 를 덮었고, AI 조수 숲마을(40×28)에서 막혀야 할
+  밑동 108칸이 뚫려 출하 플레이어에서 주인공이 밑동 줄 안으로 걸어 들어갔다(증거 `verify-shots/four-layer-ai/`,
+  재현 시나리오 `scripts/qa/runtime/four-layer-trunk.scenario.mjs`). 2층은 캐릭터 밑 묶음이라 priority 가 그리는 순서를
+  바꾸지 않는다. 이미 붙은 옛 칸은 `ensureBundledTilesets` → `repairForestTreeShadowPassage` 가 불러올 때 고친다.
+  2층에 자동으로 까는 새 타일도 같은 규칙을 따라야 한다 — ○ 로 두면 그 칸의 1층 통행을 덮는다.
 - Tests: `test/forestTreeShadows.test.ts`.
 
 ## 마을 군락 — 굽이숲 절벽마을 조립 (2026-09-21)

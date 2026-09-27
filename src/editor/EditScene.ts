@@ -134,6 +134,7 @@ import { setCanvasPointerBridge, type CanvasGestureClaim, type CanvasPointerPoin
 import { resolveCanvasGestureOwner } from "@/editor/canvasPointerOwnership";
 import { repositionMapLocationLayer } from "@/editor/mapLocationLayer";
 import { repositionRegionChunkOverlay } from "@/editor/regionTask/regionChunkOverlayView";
+import { repositionEventAiQueuePins } from "@/editor/eventAiQueue/eventAiQueueView";
 import { notifyRightDragRegionSelected } from "@/editor/selectionChipHint";
 import { computeMapViewport } from "@/ai/mapViewportContext";
 import {
@@ -911,7 +912,10 @@ export class EditScene extends PhaserRuntime.Scene {
     // 자료 보관함에서 방금 가져온 캐릭셋은 preload 가 끝난 뒤에 생긴다 — 텍스처를 뒤늦게
     // 실어 주지 않으면 그 캐릭셋을 쓴 이벤트가 새로고침 전까지 빈 칸으로 보인다.
     // 타일 칠하기(scope: "map")마다 업로드 목록을 훑지 않도록 자산/프로젝트 변경에서만 돈다.
-    if (change.scope !== "map") {
+    // 예외: 이벤트를 넣는 맵 편집(eventId 가 있고 칸 목록이 없다). AI 작업함 배치가 이 경로다 —
+    // 이게 없으면 번들 캐릭셋(상자·주민)을 처음 쓰는 이벤트가 빈 칸 표식으로만 보였다(2026-09-28 실측).
+    const addsEventGraphic = change.scope === "map" && Boolean(change.eventId) && !change.cells?.length;
+    if (change.scope !== "map" || addsEventGraphic) {
       ensureUploadedCharsetTextures(this, store.getCurrent(), () => this.redraw());
       ensureUploadedEventSpriteTextures(this, store.getCurrent(), () => this.redraw());
       ensureUploadedTilesetTextures(this, store.getCurrent(), () => this.redraw(), { onlyMapTilesets: true });
@@ -2809,6 +2813,8 @@ export class EditScene extends PhaserRuntime.Scene {
     this.renderBuildPaletteOverlay();
     // 검토 중인 청크 도형도 카메라를 따라간다. 노드를 다시 만들지 않고 좌표만 고쳐 쓴다.
     repositionRegionChunkOverlay();
+    // AI 작업함의 칸 핀·입력창도 같은 계약이다.
+    repositionEventAiQueuePins();
     // 로케이션 상자·설계 고스트도 카메라를 따라간다. 같은 계약: 노드는 그대로, 좌표만.
     // (인스펙터는 손대지 않는다 — 팬 중에 이름을 입력하고 있을 수 있다.)
     repositionMapLocationLayer();

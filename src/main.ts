@@ -15,7 +15,7 @@ import { initializeTeamAccess, startTeamSession } from "@/editor/teamSession";
 import { loadSharedTileReferences } from "@/project/sharedTileReferences";
 import { loadSharedContent } from "@/project/sharedContent";
 import { bootApp } from "@/app/mode";
-import { dismissBootLoader } from "@/app/bootLoader";
+import { dismissBootLoader, reportBootStage } from "@/app/bootLoader";
 import { editorState } from "@/editor/editorState";
 import { addEvent } from "@/editor/eventActions";
 import { addEventPage, ensureEventPages } from "@/editor/eventPages";
@@ -98,12 +98,14 @@ void bootEditorWithOpenedProject(app)
  * 부팅 전에 브리지로 조회해 세션을 이어받는다(설계 7.3). 브라우저에서는 no-op 이다.
  */
 async function bootEditorWithOpenedProject(host: HTMLElement): Promise<void> {
+  reportBootStage("prepare");
   await initI18n();
   await adoptElectronOpenProject();
   await initializeTeamAccess();
   // 공용 타일 참고문서는 프로젝트에 이미 있는 업로드 타일셋만 보강하고 타일셋을 새로 설치하지 않는다(설치는
   // shared-content 가 한다). 부팅이 기다릴 이유가 없다 — 실측(2026-09-26): 191MB 응답이 10s 제한에 걸려 팀 호스트 부팅이 +10s.
   const tileReferences = loadSharedTileReferences();
+  reportBootStage("shared");
   await loadSharedContent({ scope: "defaults" });
   await bootApp(host);
   startTeamSession();
