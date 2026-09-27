@@ -107,15 +107,20 @@ function icon(name: "plus" | "folder" | "clock" | "sparkle" | "back" | "blank"):
 }
 
 function coverArt(entry: RecentProjectEntry, className: string): HTMLElement {
-  const art = el("span", { class: className, attrs: { "aria-hidden": "true" } });
+  const art = el("span", { class: className, attrs: { "aria-hidden": "true" }, dataset: { coverFor: entry.projectDir } });
   if (entry.cover) {
     art.append(el("img", { attrs: { src: entry.cover, alt: "", decoding: "async", draggable: "false" } }));
   } else {
-    // 그림이 아직 없는 프로젝트(이 버전 이전에 만든 것) — 제목 첫 글자로 자리를 채운다. 편집기에서 한 번 열면 생긴다.
+    // 그림이 아직 없다 — 시작 화면이 곧 굽는다(refreshCovers). 그 사이, 또는 그릴 수 없는 맵이면 제목 첫 글자.
     art.classList.add("is-empty");
     art.append(el("span", { class: "start-cover-initial", text: Array.from(entry.title.trim())[0] ?? "?" }));
   }
   return art;
+}
+
+/** 시작 화면이 그림을 다시 구울 항목 — 그림이 없거나 낡았고, 숨김(임시·사라진 폴더)이 아닌 것. */
+export function entriesNeedingCover(entries: readonly RecentProjectEntry[]): readonly RecentProjectEntry[] {
+  return entries.filter((entry) => !entry.hiddenReason && (!entry.cover || entry.coverStale === true));
 }
 
 export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | undefined): void {
@@ -477,6 +482,46 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     main.replaceChildren(...(home ? renderHome() : renderNew()), errorBox);
   };
 
+  /** 구운 그림을 상태에 넣고, 화면에 있는 그 카드의 그림 칸만 바꾼다(전체를 다시 그리면 포커스가 튄다). */
+  const applyCover = (projectDir: string, cover: string): void => {
+    state.entries = state.entries.map((entry) => entry.projectDir === projectDir ? { ...entry, cover, coverStale: false } : entry);
+    for (const art of main.querySelectorAll<HTMLElement>("[data-cover-for]")) {
+      if (art.dataset.coverFor !== projectDir) continue;
+      art.classList.remove("is-empty");
+      art.replaceChildren(el("img", { attrs: { src: cover, alt: "", decoding: "async", draggable: "false" } }));
+    }
+  };
+
+  /**
+   * 그림이 없거나 낡은 프로젝트의 시작 맵을 여기서 굽는다. 한 장씩 차례로 — 프로젝트마다 타일셋 그림을 읽으므로
+   * 한꺼번에 돌리면 첫 화면이 버벅인다. 굽는 모듈은 필요할 때만 받는다(번들 칩셋 목록이 첫 화면 번들을 키운다).
+   */
+  const refreshCovers = async (): Promise<void> => {
+    const start = bridge;
+    if (!start?.coverSource || !start.saveCover) return;
+    const targets = entriesNeedingCover(state.entries);
+    if (targets.length === 0) return;
+    let renderProjectCover: typeof import("./startCover").renderProjectCover;
+    try {
+      ({ renderProjectCover } = await import("./startCover"));
+    } catch (error) {
+      console.warn("[start] 카드 그림 모듈을 받지 못했습니다:", error);
+      return;
+    }
+    for (const entry of targets) {
+      try {
+        const source = await start.coverSource({ projectDir: entry.projectDir });
+        if (!source) continue;
+        const cover = await renderProjectCover(source);
+        if (!cover) continue;
+        applyCover(entry.projectDir, cover);
+        await start.saveCover({ projectDir: entry.projectDir, dataUrl: cover });
+      } catch (error) {
+        console.warn("[start] 카드 그림을 굽지 못했습니다:", entry.projectDir, error);
+      }
+    }
+  };
+
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && state.view === "new" && !state.busy) showView("home");
   });
@@ -500,6 +545,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       state.loaded = true;
       // 최근 작업이 하나도 없으면 첫 방문이다 — 홈이 장르 포스터를 보여 준다.
       render();
+      void refreshCovers();
     });
 }
 

@@ -71,6 +71,8 @@ const bridge = {
     importFile: invoke(OPRN_CHANNELS.startImportFile),
     suggestProjectDir: invoke(OPRN_CHANNELS.startSuggestProjectDir),
     chooseProjectRoot: invoke(OPRN_CHANNELS.startChooseProjectRoot),
+    coverSource: invoke(OPRN_CHANNELS.startCoverSource),
+    saveCover: invoke(OPRN_CHANNELS.startSaveCover),
   },
   assetBrowser: {
     open: invoke(OPRN_CHANNELS.assetBrowserOpen),

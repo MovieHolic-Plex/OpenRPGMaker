@@ -10,7 +10,7 @@ import { registerAssetBrowser } from "./assetBrowser";
 import { registerAppProtocol, registerAssetProtocol } from "./protocols";
 import { createProjectSessionRegistry } from "./sessions";
 import { startCompanionServer, type CompanionServer } from "./companion";
-import { describeRecentProjects, prepareNewProjectDir, rememberRecentProject, suggestProjectDir } from "./recent";
+import { describeRecentProjects, prepareNewProjectDir, recentProjectCoverSource, rememberRecentProject, suggestProjectDir, writeRecentProjectCover } from "./recent";
 
 protocol.registerSchemesAsPrivileged([
   { scheme: OPRN_APP_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } },
@@ -252,6 +252,12 @@ app.whenReady().then(async () => {
     return true;
   });
   ipcMain.handle(OPRN_CHANNELS.startRecentProjects, () => describeRecentProjects());
+  ipcMain.handle(OPRN_CHANNELS.startCoverSource, (_event: IpcMainInvokeEvent, payload: unknown) =>
+    recentProjectCoverSource((payload as { readonly projectDir?: unknown } | null)?.projectDir));
+  ipcMain.handle(OPRN_CHANNELS.startSaveCover, (_event: IpcMainInvokeEvent, payload: unknown) => {
+    const input = payload as { readonly projectDir?: unknown; readonly dataUrl?: unknown } | null;
+    return writeRecentProjectCover(input?.projectDir, input?.dataUrl);
+  });
   ipcMain.handle(OPRN_CHANNELS.startSuggestProjectDir, (_event: IpcMainInvokeEvent, payload: unknown) => {
     const input = payload as { readonly title?: unknown; readonly root?: unknown } | null;
     const title = typeof input?.title === "string" ? input.title : undefined;
