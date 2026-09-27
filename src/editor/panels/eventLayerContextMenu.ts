@@ -1,6 +1,7 @@
 import { setStartMap, setStartPos } from "@/editor/actions";
 import { editorState } from "@/editor/editorState";
 import { deleteEditorEvent } from "@/editor/eventDeletion";
+import { openEventAiPromptPopover } from "@/editor/eventAiQueue/eventAiQueueView";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { openTransferPlayerDialog } from "@/editor/panels/eventEditor/transferPlayerDialog";
@@ -42,6 +43,17 @@ export function openEventLayerContextMenu(request: OpenEventLayerContextMenuRequ
 export function eventLayerContextMenuItems(target: EventLayerContextMenuTarget): readonly MapContextMenuItem[] {
   const existing = eventAtTarget(target);
   return [
+    // 2026-09-28: 빈 칸의 AI 는 편집기를 열지 않는다. 칸 옆 한 줄 입력창 → 작업함에 맡기고 곧바로
+    // 다음 칸으로 간다(eventAiQueue). 이벤트가 있는 칸은 기존대로 편집기의 명령 도크로 고친다.
+    // 맨 위에 두는 이유: 여러 칸을 연달아 부탁하는 흐름에서 가장 자주 누르는 항목이다(단축키 A).
+    ...(existing ? [] : [{
+      action: () => openEventAiPromptPopover(target.mapId, target.x, target.y),
+      icon: "spark",
+      id: "event-ai-queue",
+      label: "AI로 여기에 이벤트...",
+      shortcut: "A",
+      testId: "event-layer-event-ai-queue",
+    } satisfies MapContextMenuItem]),
     {
       action: () => openNewEventEditorModal(target.mapId, target.x, target.y),
       icon: "event",
@@ -50,11 +62,9 @@ export function eventLayerContextMenuItems(target: EventLayerContextMenuTarget):
       shortcut: "Enter",
       testId: "event-layer-create-event",
     },
-    // 이벤트를 손으로 조립하는 대신 문장으로 만든다/고친다. 편집기를 열되 AI 명령 도크를
-    // **펼친 채로** 열어 주므로 사용자는 곧바로 "무엇을 하는 이벤트인지"를 적고 초안을
-    // 검토하면 된다. 자동 실행은 하지 않는다 — 의도와 다른 초안에 호출을 쓰지 않기 위해서다
-    // (도크의 예시 칩도 같은 이유로 입력만 채운다).
-    {
+    // 이벤트가 있는 칸: 편집기를 AI 명령 도크를 **펼친 채로** 열어 그 페이지를 고친다.
+    // 자동 실행은 하지 않는다 — 의도와 다른 초안에 호출을 쓰지 않기 위해서다.
+    ...(existing ? [{
       // 라벨은 메뉴를 세울 때의 점유를 따르지만, **실행 시점에 다시 읽는다**. 메뉴가 떠 있는
       // 동안 배경 갱신(다른 세션·자동 배치)이 그 칸에 이벤트를 놓으면, 세울 때의 `existing`
       // 은 낡아서 새 이벤트를 만들어 버린다 — 이벤트가 둘로 늘고 사용자는 고치려던 것을
@@ -62,9 +72,9 @@ export function eventLayerContextMenuItems(target: EventLayerContextMenuTarget):
       action: () => openEventAiAuthoring(target),
       icon: "spark",
       id: "event-ai-author",
-      label: existing ? "이 이벤트를 AI 로 고치기..." : "AI 로 이벤트 만들기...",
+      label: "이 이벤트를 AI 로 고치기...",
       testId: "event-layer-event-ai-author",
-    },
+    } satisfies MapContextMenuItem] : []),
     {
       action: () => cutEventAt(target),
       disabled: existing === undefined,

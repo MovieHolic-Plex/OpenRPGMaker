@@ -284,7 +284,6 @@ export function buildEventAssistPrompt(context: EventAssistContext): string {
   const { project, mapId, event, page, selection, selectionLabel } = context;
   const scope = context.scope ?? resolveAssistScope(page);
   const mapName = project.maps[mapId]?.name ?? mapId;
-  const kinds = aiCommandKinds(project);
   const sections: string[] = [];
 
   // 선택 위치는 사람 말로만 싣는다. 예전에는 경로 배열(`[2,-2,1]`)을 그대로 넣었는데,
@@ -309,6 +308,29 @@ export function buildEventAssistPrompt(context: EventAssistContext): string {
     ].join("\n")
   );
 
+  const catalog = eventCommandCatalogSections(project, mapId, context.requestText ?? "");
+  sections.push(...catalog.head);
+  sections.push(existingCommandsSection(page, scope));
+  sections.push(catalog.resources);
+  sections.push(outputContractSection(scope));
+
+  return sections.join("\n\n");
+}
+
+/**
+ * 명령을 만드는 모든 AI 표면이 공유하는 사전 — 명령 스키마, 참조 id, 이동 대상, 세계관, 연출, 리소스.
+ *
+ * 페이지 명령 작성기(buildEventAssistPrompt)와 이벤트 한 개 전체를 만드는 작업함(eventDraftAuthoring)이
+ * 같은 목록을 봐야 두 표면이 같은 명령을 같은 id 로 만든다. 여기서 갈라지면 한쪽만 새 kind 를 알게 된다.
+ * `head` 와 `resources` 로 나눈 이유: 페이지 작성기는 그 사이에 기존 명령을 끼운다(원래 프롬프트 순서 유지).
+ */
+export function eventCommandCatalogSections(
+  project: Project,
+  mapId: string,
+  requestText: string,
+): { readonly head: readonly string[]; readonly resources: string } {
+  const kinds = aiCommandKinds(project);
+  const sections: string[] = [];
   sections.push(
     [
       "## Command 스키마",
@@ -357,11 +379,7 @@ export function buildEventAssistPrompt(context: EventAssistContext): string {
   if (canonSection) sections.push(canonSection);
   sections.push(EVENT_BEAT_STAGING_BLOCK);
   if (kinds.includes("showAnimation")) sections.push(animationCatalogSection(project));
-  sections.push(existingCommandsSection(page, scope));
-  sections.push(resourceSlotSection(project, kinds, context.requestText ?? ""));
-  sections.push(outputContractSection(scope));
-
-  return sections.join("\n\n");
+  return { head: sections, resources: resourceSlotSection(project, kinds, requestText) };
 }
 
 // ── 파싱 + 검증 ──────────────────────────────────────────────────────────────
@@ -422,6 +440,23 @@ export function parseAndValidate(
   } catch (cause) {
     return { ok: false, errors: [`JSON 파싱 실패: ${cause instanceof Error ? cause.message : String(cause)}`] };
   }
+  return validateAssistCommandValue(project, parsed, options);
+}
+
+/**
+ * 이미 파싱된 명령 배열 값을 페이지 작성기와 **같은 검증 사슬**로 통과시킨다(구조 → AI 표면 → 세계관 → 참조).
+ * 이벤트 전체를 JSON 객체로 받는 작업함은 페이지마다 이 함수를 부른다 — 사슬을 복제하면 한쪽만 느슨해진다.
+ */
+export function validateAssistCommandValue(
+  project: Project,
+  parsed: unknown,
+  options: {
+    readonly allowEmpty?: boolean;
+    readonly mapId?: string;
+    readonly scope?: AssistScope;
+    readonly existingCommands?: readonly Command[];
+  } = {},
+): AssistParseResult {
   if (!Array.isArray(parsed)) return { ok: false, errors: ["최상위 값이 배열이 아닙니다."] };
   if (parsed.length === 0 && !options.allowEmpty) {
     return { ok: false, errors: ["빈 배열입니다. 요청에 맞는 커맨드를 1개 이상 생성하세요."] };
