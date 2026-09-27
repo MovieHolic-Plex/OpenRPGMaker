@@ -205,7 +205,7 @@ export function matchesGeneratedKind(kind: DatabaseResourcePickerKind, resourceK
   }
   if (kind === "system") return resourceKind === "system";
   if (kind === "system2") return resourceKind === "system2";
-  if (kind === "backdrop") return resourceKind === "backdrop" || id.includes("backdrop") || id.includes("troop-preview");
+  if (kind === "backdrop") return resourceKind === "backdrop" || id.includes("backdrop") || id.includes("troop-preview") || id.startsWith("battle-scenery-");
   if (kind === "battle") return resourceKind === "battle" || id.startsWith("easyrpg-battle-") || id.includes("battle-anim");
   if (kind === "icon") {
     return (

@@ -1,4 +1,3 @@
-import type { ImportGlobFunction } from "vite/types/importGlob";
 import { BATTLE_SCENERY_CATALOG } from "@/assets/battleSceneryCatalog";
 import { findOpeningStillPackEntry } from "@/assets/openingStillPackRuntime";
 import { openingStillPackUrl } from "@/assets/openingStillPackCdn";
@@ -19,17 +18,6 @@ import type { Project } from "@/project/types";
 import type { WebExportAsset } from "@/project/webExportTypes";
 import { CASTLE_REFERENCE_TILESET_TEXTURE_KEY, CASTLE_TILESET_TEXTURE_KEY, LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY } from "./defaults/constants";
 
-// 저장소는 ImportMetaEnv 를 직접 선언한다. vite/client 전체를 합치지 않고 glob 만 보강한다.
-declare global {
-  interface ImportMeta {
-    glob: ImportGlobFunction;
-  }
-}
-
-// 누락 파일은 ZIP 전체를 실패시킨다. 빌드 시 설치된 파일만 수집한다(런타임은 404 폴백).
-const installedSceneryPaths = new Set(Object.keys(import.meta.glob(
-  "/public/assets/generated/battle-scenery/*/*.png", { eager: true, query: "?url", import: "default" },
-)).map((path) => path.replace(/^\/public\//, "")));
 const encoder = new TextEncoder();
 
 export function collectWebExportAssets(project: Project): readonly WebExportAsset[] {
@@ -41,9 +29,11 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
   }
   if (getBattleSkin(resolveSkinId(project.system.battleUiStyle)).scenery === "layered") {
     ids.add("generated-battle-reference-forest");
+    // 겹 배경 5지형 × 4레이어는 저장소에 커밋된 번들 그림이다(public/assets/generated/battle-scenery).
+    // 지형은 전투마다 위치·기후로 정해지므로 전부 싣는다(약 1.3MB).
     for (const entry of BATTLE_SCENERY_CATALOG) {
       for (const path of Object.values(entry.layers)) {
-        if (installedSceneryPaths.has(path)) assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
+        assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
       }
     }
   }
@@ -71,7 +61,6 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
     const catalogStill = findOpeningStillPackEntry(id);
     const path = localPublicPath(catalogTrack ? bgmTrackUrl(catalogTrack.fileName, {})
       : catalogStill ? openingStillPackUrl(catalogStill.fileName, {}) : url);
-    if (path?.startsWith("assets/generated/battle-scenery/") && !installedSceneryPaths.has(path)) continue;
     if (path && url) assets.set(path, { kind: "public", sourcePath: localPublicPath(url) ?? url, zipPath: path, resourceId: id });
   }
   for (const id of usedUploadedIds) {
