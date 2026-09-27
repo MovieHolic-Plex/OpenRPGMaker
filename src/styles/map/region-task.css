@@ -14,8 +14,7 @@
    예전에는 이 요소가 inset:0 풀스크린인 채로 틴트만 낮췄다. 그래서 창이 떠 있는 동안
    팬·줌·영역 재지정이 전부 막혔고(자기가 바꿀 대상을 볼 수 없었다), 바깥 클릭은 곧
    폐기였다. 영역 작업은 본질적으로 공간 작업이므로 대상을 보면서 해야 한다.
-   요소 자체는 남긴다 — coachMarks 의 "표면이 떠 있다" 판정이 이 클래스를 찾고,
-   openRegionTaskModal 의 반환값이 이 노드다.
+   요소 자체는 남긴다 — openRegionTaskModal 의 반환값이 이 노드다.
    pointer-events:none 이면 `event.target === backdrop` 이 성립하지 않아 바깥클릭-폐기
    핸들러는 자연히 죽는다(별도 삭제 불필요). 중앙 모달 변형은 그대로 모달이다. */
 .region-task-backdrop-popover {

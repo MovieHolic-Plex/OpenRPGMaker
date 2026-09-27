@@ -27,8 +27,7 @@
 }
 /* 2026-09-18: no-right-panel 을 붙이는 코드가 없고(죽은 규칙) dense flow 를
    깨뜨린다(클래스 3 이 dense 규칙을 이겨 24px 갭 부활). dense 에선 무효화. */
-body.editor-ui-standard .editor-layout.no-right-panel .editor-canvas-scroll-shell,
-body.editor-ui-expert .editor-layout.no-right-panel .editor-canvas-scroll-shell {
+body .editor-layout.no-right-panel .editor-canvas-scroll-shell {
   top: auto;
 }
 

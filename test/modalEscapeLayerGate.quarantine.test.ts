@@ -31,7 +31,6 @@ const APPEND_PATTERN = /document\.body\.(append|appendChild)\s*\(/;
  */
 const EXEMPT: Readonly<Record<string, string>> = {
   // Escape 로 닫는 표면이 아니다.
-  "coachMarks.ts": "온보딩 코치마크 — 포인터 상호작용으로만 사라진다",
   "layoutBboxOverlay.ts": "디버그 계측 오버레이 — 사용자 입력을 받지 않는다",
   "panels/eventListHoverTooltip.ts": "hover 툴팁 — 포인터를 떼면 사라진다",
   "delayedTooltip.ts": "공통 지연 툴팁 — pointer-events:none 이고 포인터를 떼거나 blur 하면 사라진다. Escape 는 툴팁만 닫고 그 자리에서 stopPropagation 하지 않으므로 위 모달의 취소 키를 훔치지 않는다",

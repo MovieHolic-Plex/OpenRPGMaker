@@ -27,9 +27,7 @@ try {
   await tab.evaluate(async project => {
     const { store } = await import('/src/project/store.ts');
     const { editorState } = await import('/src/editor/editorState.ts');
-    const { setEditorUiMode } = await import('/src/editor/editorUiMode.ts');
     store.replaceProject(project);
-    setEditorUiMode('expert');
     editorState.set({ currentMapId: 'geometry48', zoom: 1, tool: 'event', layer: 'event', showGrid: true });
   }, project);
   async function open() {

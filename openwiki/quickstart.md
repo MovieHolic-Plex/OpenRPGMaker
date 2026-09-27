@@ -162,8 +162,8 @@ Git에는 카탈로그·검색어·해시만, 그림은 `stills-v1` Release에 �
 | 전투 규칙·턴·보상 | `src/battle/runtime.ts`, `src/battle/types.ts` |
 | 전투 화면 DOM·스킨 | `src/player/battleFieldDom.ts`, `src/styles/runtime/battle/`, `src/styles/runtime/battle-skins/` |
 | 대화창·문장 표시 | `src/player/dialogue.ts`, `src/player/dialoguePresentation.ts`, `src/player/dialoguePagination.ts` |
-| 톱바·메뉴·모드(초보/표준/전문가)·용어 | `src/editor/panels/menu.ts`, `src/editor/editorUiMode.ts`, `src/editor/uiCopy.ts` |
-| 좌측 레일·도크·레이아웃 | `src/editor/workspace/leftDockPanels.ts`, `src/editor/panels/editor.ts` |
+| 톱바·메뉴·용어 (편집 모드는 2026-09-27 삭제) | `src/editor/panels/menu.ts`, `src/editor/uiCopy.ts` |
+| 좌측 도크·레이아웃 | `src/editor/workspace/leftDockPanels.ts`, `src/editor/panels/editor.ts` |
 | 테스트 플레이 창 | `src/editor/panels/testPlayModal.ts` |
 | 색·토큰·크림 셸 | `src/styles/tokens.css`, `src/styles/index.css` |
 | 웹 게임 내보내기 | `src/project/webExport.ts`, `vite.player.config.ts` |

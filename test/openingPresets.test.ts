@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { BGM_STARTER_TRACK_IDS } from "@/assets/bgmStarterTracks";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import {
   buildOpeningPresetSequence,
@@ -107,7 +106,6 @@ describe("opening preset catalogue", () => {
 describe("opening preset gallery in the Database editor", () => {
   beforeEach(() => {
     restoreDom = installFakeDom();
-    resetEditorUiModeForTests("standard");
     const project = createBlankProject();
     project.meta.title = "달빛 서약";
     delete project.system.opening;

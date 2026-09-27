@@ -21,7 +21,6 @@ const EDITOR_LAYOUT_KEY = "oprn:editor-layout:v4";
 const LAYOUT_VERSION_KEY = "oprn:editor-layout-version";
 const LAYOUT_VERSION = "2026-07-24-maptree-300";
 const WORKSPACE_KEY = "oprn:workspace:v1";
-const UI_MODE_KEY = "oprn:editor-ui-mode";
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();
@@ -47,7 +46,6 @@ function installStorage(): void {
   storage = new MemoryStorage();
   storage.setItem(LAYOUT_VERSION_KEY, LAYOUT_VERSION);
   storage.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({ leftWidth: 526, mapTreeHeight: 300, chatDock: "glass" }));
-  storage.setItem(UI_MODE_KEY, "standard");
   storage.setItem(WORKSPACE_KEY, JSON.stringify({
     presetId: "map",
     docks: { left: ["tiles", "maps"], right: ["assistant"], bottom: [] },

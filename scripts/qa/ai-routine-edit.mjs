@@ -94,8 +94,7 @@ try {
   assert.deepEqual(calls, { intent: 2, coverage: 2, agents: 2, review: 0 });
   await page.getByTestId('ai-team-discard').scrollIntoViewIfNeeded();
   await page.screenshot({ path: `${out}/tile-preview.png` });
-  for (const mode of ['beginner', 'expert']) {
-    await page.evaluate(async mode => (await import('/src/editor/editorUiMode.ts')).setEditorUiMode(mode), mode);
+  for (const mode of ['editor']) {
     for (const [width, height] of [[1024, 768], [1280, 800], [1440, 900]]) {
       await page.setViewportSize({ width, height });
       await page.getByTestId('ai-team-discard').scrollIntoViewIfNeeded();

@@ -1,8 +1,7 @@
 // 감독이 지금 보고 있는 맵·레이어·도구·선택. 플레이트/시작 줄/입력 placeholder의 단일 출처.
 
 import { editorState, type Layer, type Tool } from "@/editor/editorState";
-import { getEditorChrome } from "@/editor/editorUiMode";
-import { toolLabel, uiLabel } from "@/editor/uiCopy";
+import { toolLabel, uiLabel, type UiCopyStyle } from "@/editor/uiCopy";
 import {
   defaultAiVisualStartPrompts,
   type AiVisualStartPrompt,
@@ -30,7 +29,7 @@ export type AgentBrief = {
 
 // 도구 이름은 uiCopy 단일 원천(TOOL_LABEL) — 여기서 다시 적지 않는다.
 
-export function layerShortLabel(layer: Layer, termStyle = getEditorChrome().jargonStyle): string {
+export function layerShortLabel(layer: Layer, termStyle: UiCopyStyle = "plain"): string {
   switch (layer) {
     case "lower":
       return uiLabel("layerLower", termStyle);

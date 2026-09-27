@@ -5,8 +5,6 @@ import { reliefInverseMode } from "@/editor/reliefBrushMode";
 import { RELIEF_MAX_LEVEL } from "@/project/relief/types";
 import { setTileBrushSize, selectTileTool } from "@/editor/panels/tileToolbarActions";
 import { el } from "@/util/dom";
-import { getEditorChrome } from "@/editor/editorUiMode";
-import { layerUiLabel } from "@/editor/uiCopy";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 
 /**
@@ -24,7 +22,7 @@ export function tileBrushActionLabel(stamp: PaletteStamp | null): string | null 
   return `도장 ${stamp.width}×${stamp.height}`;
 }
 
-/** Both modes expose brush size only where it applies; beginner keeps its button group, focus modes a select. */
+/** 붓 크기 선택은 쓸 수 있는 도구에서만 보인다. */
 export function makeTileBrushControls(state: EditorState, rerender: () => void): HTMLElement {
   const stamp = state.activePaletteStamp;
   const shape = { pen: "칠하기", rect: "사각형", round: "타원" }[state.paintShape];
@@ -32,64 +30,29 @@ export function makeTileBrushControls(state: EditorState, rerender: () => void):
     ? tileBrushActionLabel(stamp) ?? shape
     : { erase: "지우기", fill: "채우기", select: "선택", eyedropper: "집기", pan: "화면 밀기", collision: "통행 표시", event: "이벤트", relief: "높이" }[state.tool];
   const composite = isComboBrush(stamp);
-  const layer = layerUiLabel(state.layer);
   const row = el("div", { class: "sidebar-brush-controls", dataset: { testid: "tile-brush-controls" } });
   // 크기는 같은 타일을 되풀이하는 붓(칠하기 · 자유선)과 지우기에서만 뜻이 있다 — 다른 도구에선 숨긴다.
   const applicable = state.layer !== "event" && (state.tool === "erase" || state.tool === "relief" || (state.tool === "paint" && state.paintShape === "pen" && !stamp));
-  if (!getEditorChrome().paletteRail) {
-    if (applicable) {
-      const select = el("select", {
-        attrs: { "aria-label": "브러시 크기" }, dataset: { testid: "brush-size-select" },
-        on: { change: (event) => {
-          if (!(event.currentTarget instanceof HTMLSelectElement)) return;
-          const value = event.currentTarget.value;
-          const size = EDITOR_BRUSH_SIZES.find(size => String(size) === value);
-          if (size !== undefined) { setTileBrushSize(size); rerender(); }
-        } },
-      });
-      for (const size of EDITOR_BRUSH_SIZES) select.append(el("option", { value: String(size), text: `${size} × ${size}` }));
-      select.value = String(state.brushSize);
-      row.append(el("label", { class: "sidebar-brush-sizes", children: [el("span", { text: "크기" }), select] }));
-    }
-    row.append(el("span", { class: "sidebar-brush-state" + (composite ? " is-combo-brush" : ""), text: action,
-      dataset: { testid: "tile-brush-state", tool: state.tool, shape: state.paintShape, layer: state.layer,
-        brushKind: composite ? "combo" : stamp ? "stamp" : "repeat",
-        stampWidth: String(stamp?.width ?? 0), stampHeight: String(stamp?.height ?? 0), stampCells: String(stamp?.cells.length ?? 0) } }));
-    if (stamp) row.append(el("button", { class: "btn", text: composite ? "조합 붓 해제" : "도장 해제", dataset: { testid: "palette-stamp-clear" },
-      on: { click: () => { selectTileTool("pen"); rerender(); } } }));
-    if (state.tool === "relief") row.append(makeReliefBrushControls(state, rerender));
-    return row;
-  }
-  const brushState = el("span", {
-    class: "sidebar-brush-state" + (composite ? " is-combo-brush" : ""),
-    // 합성 붓은 배지가 이미 레이어를 말한다 — "바닥+상위 · 바닥"처럼 중복하지 않는다.
-    // 이벤트 레이어는 도구 이름이 곧 레이어라 "이벤트 · 이벤트"로 겹쳐 읽히지 않게 한 번만 쓴다.
-    text: composite || state.layer === "event" ? action : `${action} · ${layer}`,
-    dataset: { testid: "tile-brush-state", shape: state.paintShape, layer: state.layer,
-      brushKind: composite ? "combo" : stamp ? "stamp" : "repeat",
-      stampWidth: String(stamp?.width ?? 0), stampHeight: String(stamp?.height ?? 0), stampCells: String(stamp?.cells.length ?? 0) },
-  });
-  row.append(brushState);
   if (applicable) {
-    const sizes = el("div", {
-      class: "sidebar-brush-sizes", attrs: { role: "group", "aria-label": "브러시 크기" },
-      dataset: { roving: "true" },
+    const select = el("select", {
+      attrs: { "aria-label": "브러시 크기" }, dataset: { testid: "brush-size-select" },
+      on: { change: (event) => {
+        if (!(event.currentTarget instanceof HTMLSelectElement)) return;
+        const value = event.currentTarget.value;
+        const size = EDITOR_BRUSH_SIZES.find(size => String(size) === value);
+        if (size !== undefined) { setTileBrushSize(size); rerender(); }
+      } },
     });
-    sizes.append(el("span", { class: "tile-brush-label", text: "크기" }));
-    for (const size of EDITOR_BRUSH_SIZES) {
-      sizes.append(el("button", {
-        class: "btn tile-brush-chip" + (state.brushSize === size ? " active" : ""), text: String(size),
-        attrs: { type: "button", "aria-label": `브러시 ${size} x ${size}`, "aria-pressed": String(state.brushSize === size) },
-        dataset: { testid: `brush-size-${size}` },
-        on: { click: () => { setTileBrushSize(size); rerender(); } },
-      }));
-    }
-    row.append(sizes);
+    for (const size of EDITOR_BRUSH_SIZES) select.append(el("option", { value: String(size), text: `${size} × ${size}` }));
+    select.value = String(state.brushSize);
+    row.append(el("label", { class: "sidebar-brush-sizes", children: [el("span", { text: "크기" }), select] }));
   }
-  if (stamp) row.append(el("button", {
-    class: "btn", text: composite ? "조합 붓 해제" : "도장 해제", attrs: { type: "button" }, dataset: { testid: "palette-stamp-clear" },
-    on: { click: () => { selectTileTool("pen"); rerender(); } },
-  }));
+  row.append(el("span", { class: "sidebar-brush-state" + (composite ? " is-combo-brush" : ""), text: action,
+    dataset: { testid: "tile-brush-state", tool: state.tool, shape: state.paintShape, layer: state.layer,
+      brushKind: composite ? "combo" : stamp ? "stamp" : "repeat",
+      stampWidth: String(stamp?.width ?? 0), stampHeight: String(stamp?.height ?? 0), stampCells: String(stamp?.cells.length ?? 0) } }));
+  if (stamp) row.append(el("button", { class: "btn", text: composite ? "조합 붓 해제" : "도장 해제", dataset: { testid: "palette-stamp-clear" },
+    on: { click: () => { selectTileTool("pen"); rerender(); } } }));
   if (state.tool === "relief") row.append(makeReliefBrushControls(state, rerender));
   return row;
 }

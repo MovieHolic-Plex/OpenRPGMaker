@@ -6,7 +6,6 @@
 // (qa-enemies.spec.ts·단위 테스트)는 모든 카드의 칸을 testid 로 바로 찾으므로, 여기서는 다섯 패널을
 // 전부 미리 만들어 두고 `hidden` 으로만 가린다. 고른 구역은 모듈 변수에 남겨 편집 뒤 다시 그려도
 // 「기본」으로 튀지 않는다.
-import { isDatabaseUxVisible, uxLevel, type DatabaseUxLevel } from "@/editor/panels/databaseUxLevel";
 import { el } from "@/util/dom";
 
 export type MonsterSpeciesSectionId = "basic" | "capture" | "growth" | "evolution" | "links";
@@ -16,7 +15,6 @@ export type MonsterSpeciesSection = {
   readonly label: string;
   /** 탭 라벨 옆 짧은 요약(「보통」, 「스킬 2」 …). */
   readonly summary?: string;
-  readonly ux?: DatabaseUxLevel;
   readonly children: readonly HTMLElement[];
 };
 
@@ -41,7 +39,6 @@ export function monsterSpeciesSections(sections: readonly MonsterSpeciesSection[
   const tabs = new Map<MonsterSpeciesSectionId, HTMLButtonElement>();
   const summaries = new Map<MonsterSpeciesSectionId, HTMLElement>();
   const panels = new Map<MonsterSpeciesSectionId, HTMLElement>();
-  const reachable = (section: MonsterSpeciesSection): boolean => !section.ux || isDatabaseUxVisible(section.ux);
 
   for (const section of sections) {
     const summary = el("span", { class: "db-monster-species-section-summary", text: section.summary ?? "" });
@@ -57,7 +54,6 @@ export function monsterSpeciesSections(sections: readonly MonsterSpeciesSection[
       dataset: { testid: `db-monster-species-section-tab-${section.id}`, sectionId: section.id },
       children: [el("span", { class: "db-monster-species-section-label", text: section.label }), summary],
     }) as HTMLButtonElement;
-    if (section.ux) uxLevel(tab, section.ux);
     tab.addEventListener("click", () => show(section.id));
     tab.addEventListener("keydown", (event: KeyboardEvent) => onKeydown(event, section.id));
     tabs.set(section.id, tab);
@@ -76,7 +72,7 @@ export function monsterSpeciesSections(sections: readonly MonsterSpeciesSection[
   }
 
   const show = (id: MonsterSpeciesSectionId, options?: { readonly focus?: boolean }): void => {
-    const target = sections.find((section) => section.id === id && reachable(section)) ?? sections[0];
+    const target = sections.find((section) => section.id === id) ?? sections[0];
     if (!target) return;
     activeSection = target.id;
     for (const section of sections) {
@@ -91,7 +87,7 @@ export function monsterSpeciesSections(sections: readonly MonsterSpeciesSection[
   };
 
   const onKeydown = (event: KeyboardEvent, from: MonsterSpeciesSectionId): void => {
-    const order = sections.filter(reachable).map((section) => section.id);
+    const order = sections.map((section) => section.id);
     const index = order.indexOf(from);
     if (index < 0) return;
     let next: MonsterSpeciesSectionId | undefined;

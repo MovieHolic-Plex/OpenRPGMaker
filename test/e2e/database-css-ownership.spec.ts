@@ -63,7 +63,6 @@ async function bootEditor(page: Page) {
     observer.observe(node, { childList: true, characterData: true, subtree: true });
     finish();
   }));
-  await expect(page.locator('body')).toHaveClass(/editor-ui-expert/);
 }
 
 async function openDatabase(page: Page) {

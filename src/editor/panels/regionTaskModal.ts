@@ -15,7 +15,6 @@ import {
 } from "@/editor/regionTask/suggestedCommands";
 import { isRegionPolishRequest } from "@/editor/regionTask/regionPolish";
 import { expandRegion } from "@/editor/regionTask/regionBlend";
-import { dismissCoachMarks } from "@/editor/coachMarks";
 import { dispatchRegionTaskStatus } from "@/editor/regionTask/regionTaskStatus";
 import { resolveRegionClientRect } from "@/editor/regionClientRect";
 import { suggestRegionCommandsByContext } from "@/editor/regionTask/regionContextSuggestions";
@@ -2458,9 +2457,6 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       });
     },
   };
-  // 코치/웰컴 카드는 이 팝오버의 본문(좌표 칩·결정 문장)을 덮는다 — 모달이 표면을 가져간다.
-  // databaseModal 과 같은 처리다. '본 것'으로 기록하지 않으므로 다음 부팅에 다시 안내한다.
-  dismissCoachMarks();
   dispatchModalOpenState(true);
   if (asPopover && options.anchor) {
     positionRegionTaskPopover(windowNode, options.anchor, options.avoid);

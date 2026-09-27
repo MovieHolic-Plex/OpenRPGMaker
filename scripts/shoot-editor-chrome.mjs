@@ -8,7 +8,7 @@ import { mkdirSync } from "node:fs";
 const LABEL = process.argv[2] ?? "shot";
 const BASE = process.argv.find((a) => a.startsWith("http")) ?? "http://127.0.0.1:9806";
 const OUT = `.omo/evidence/menu-ia/shots-${LABEL}`;
-const MODES = ["beginner", "standard", "expert"];
+const MODES = ["editor"];
 
 mkdirSync(OUT, { recursive: true });
 const browser = await chromium.launch();
@@ -18,10 +18,8 @@ for (const mode of MODES) {
   await context.addInitScript((m) => {
     try {
       localStorage.clear();
-      localStorage.setItem("oprn:editor-ui-mode", m);
       localStorage.setItem("oprn:editor-welcome-dismissed", "1");
       localStorage.setItem("oprn:standard-welcome-seen", "1");
-      localStorage.setItem("oprn:coachmarks-basic-v1", "1");
     } catch {}
   }, mode);
   const page = await context.newPage();
@@ -30,7 +28,7 @@ for (const mode of MODES) {
   // Let the palette finish its first paint before shooting: wait for the actual surface,
   // not for a duration.
   await page
-    .locator("[data-testid='left-palette-root'], .basic-left-rail")
+    .locator("[data-testid='left-palette-root']")
     .first()
     .waitFor({ state: "visible", timeout: 20_000 })
     .catch(() => {});

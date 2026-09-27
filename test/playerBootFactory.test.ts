@@ -102,10 +102,6 @@ vi.mock("@/app/perfMetrics", () => ({
 vi.mock("@/editor/mapEditHistory", () => ({
   MAP_EDIT_HISTORY_EVENT: "test-map-edit-history",
 }));
-vi.mock("@/editor/editorUiMode", () => ({
-  subscribeEditorUiMode: vi.fn(),
-}));
-
 type StartPlayGame = typeof import("@/app/mode").startPlayGame;
 
 async function loadAdapters(): Promise<readonly StartPlayGame[]> {

@@ -3,9 +3,7 @@ import { selectSidebarLayer } from "@/editor/panels/leftLayerSwitcher";
 import { clearTimeout as clearDeadline, setTimeout as deadline } from "node:timers";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests, setEditorUiMode } from "@/editor/editorUiMode";
 import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, recordProjectSnapshot, resetMapEditHistory } from "@/editor/mapEditHistory";
-import { resetBasicLeftRailForTests } from "@/editor/panels/basicLeftRail";
 import { renderTilePalette } from "@/editor/panels/tilePalette";
 import { resetTileToolbarMenusForTests } from "@/editor/panels/tileToolbarMenus";
 import { createBlankProject } from "@/project/defaults";
@@ -38,7 +36,7 @@ async function historyChange(action: () => void): Promise<void> {
   }
 }
 
-describe("mode-specific sidebar painting workflow", () => {
+describe("sidebar painting workflow", () => {
   let host: HTMLElement;
   let unsubscribe: () => void;
 
@@ -55,11 +53,9 @@ describe("mode-specific sidebar painting workflow", () => {
   beforeEach(async () => {
     // Cancel production debounce/positioning jobs on teardown; no clock advances.
     vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout", "requestAnimationFrame", "cancelAnimationFrame"] });
-    resetBasicLeftRailForTests();
     resetTileToolbarMenusForTests();
     localStorage.removeItem(SIDEBAR_PINS_KEY);
     resetInspectionPinsForTests();
-    resetEditorUiModeForTests("beginner");
     store.replace(createBlankProject());
     await historyChange(() => resetMapEditHistory());
     editorState.set({
@@ -75,7 +71,6 @@ describe("mode-specific sidebar painting workflow", () => {
 
   afterEach(async () => {
     unsubscribe();
-    resetBasicLeftRailForTests();
     resetTileToolbarMenusForTests();
     host.remove();
     await historyChange(() => resetMapEditHistory());
@@ -83,21 +78,10 @@ describe("mode-specific sidebar painting workflow", () => {
     vi.useRealTimers();
   });
 
-  it("mounts the beginner tile workflow as the persistent draw pane", () => {
-    expect(find("basic-tile-grid")).not.toBeNull();
-    expect(find("basic-tile-search")).not.toBeNull();
+  it("mounts the tile palette as the persistent draw pane", () => {
+    expect(find("tile-palette")).not.toBeNull();
     expect(find("selected-tile-status")).not.toBeNull();
-    expect(host.querySelectorAll('[data-testid="basic-tile-grid"]')).toHaveLength(1);
-  });
-
-  it("keeps the selected cell focused and the sheet mounted after beginner tile activation", () => {
-    editorState.set({ tool: "erase", paintShape: "rect" });
-    const cell = control("basic-tile-0");
-    cell.focus();
-    cell.click();
-    expect(editorState.get()).toMatchObject({ selectedTile: 0, tool: "paint", paintShape: "pen", activePaletteStamp: null });
-    expect(find("basic-tile-grid")).not.toBeNull();
-    expect(document.activeElement).toBe(find("basic-tile-0"));
+    expect(host.querySelectorAll('[data-testid="tile-palette"]')).toHaveLength(1);
   });
 
   it("preserves custom atlas cells and routes selection to the authored layer in the persistent panel", () => {
@@ -111,25 +95,25 @@ describe("mode-specific sidebar painting workflow", () => {
       tileMeta: { 127: { label: "Authored window" } },
     } } });
     renderTilePalette(host);
-    expect(find("basic-tile-grid")?.querySelectorAll(".chipset-tile")).toHaveLength(128);
-    control("basic-tile-127").click();
+    expect(find("custom-palette-grid")?.querySelectorAll(".chipset-tile")).toHaveLength(128);
+    control("chipset-tile-127").click();
     expect(editorState.get()).toMatchObject({ selectedTile: 127, layer: "upper", tool: "paint" });
-    expect(find("basic-tile-grid")?.querySelectorAll(".chipset-tile")).toHaveLength(128);
-    expect(find("basic-tile-127")?.getAttribute("aria-pressed")).toBe("true");
+    expect(find("custom-palette-grid")?.querySelectorAll(".chipset-tile")).toHaveLength(128);
+    expect(find("chipset-tile-127")?.getAttribute("aria-pressed")).toBe("true");
   });
 
   it("restores the persistent picker after leaving the event layer", () => {
     selectSidebarLayer("event");
     expect(editorState.get()).toMatchObject({ layer: "event", tool: "event" });
-    expect(find("basic-tile-grid")).toBeNull();
+    expect(find("tile-palette")).toBeNull();
     selectSidebarLayer("lower");
     expect(editorState.get()).toMatchObject({ layer: "lower", tool: "paint" });
-    expect(find("basic-tile-grid")).not.toBeNull();
+    expect(find("tile-palette")).not.toBeNull();
   });
 
-  it("provides visible beginner undo wired to actual map history and its change event", async () => {
+  it("provides visible undo wired to actual map history and its change event", async () => {
     const undo = control("oprn-tool-undo");
-    expect(undo.textContent?.trim().length).toBeGreaterThan(0);
+    expect((undo.getAttribute("aria-label") ?? undo.textContent ?? "").trim().length).toBeGreaterThan(0);
     expect(undo.disabled).toBe(true);
     const project = store.getCurrent();
     const mapId = project.startMapId;
@@ -146,14 +130,13 @@ describe("mode-specific sidebar painting workflow", () => {
     expect(control("oprn-tool-undo").disabled).toBe(true);
   });
 
-  it("keeps standard daily tools direct and inspection actions reachable once through More", () => {
-    resetEditorUiModeForTests("standard");
+  it("keeps daily tools direct and inspection actions reachable once through More", () => {
     renderTilePalette(host);
     for (const id of ["tool-paint", "tool-erase", "tool-fill", "tool-select", "oprn-tool-undo"]) {
       control(id);
     }
     expect(find('sidebar-tools-menu')).toBeNull();
-    // 검사 3종은 핀 없이는 오버플로 안에 한 번씩만 있다(표준이 전문가 capability 흡수).
+    // 검사 3종은 핀 없이는 오버플로 안에 한 번씩만 있다.
     for (const [id] of advanced) expect(find(id)).toBeNull();
     control("oprn-tool-overflow").click();
     for (const [id] of advanced) {
@@ -162,8 +145,7 @@ describe("mode-specific sidebar painting workflow", () => {
     }
   });
 
-  it.each(advanced)("pins standard %s for direct access and returns Escape focus to its own trigger", (id, panelId) => {
-    resetEditorUiModeForTests("standard");
+  it.each(advanced)("pins %s for direct access and returns Escape focus to its own trigger", (id, panelId) => {
     renderTilePalette(host);
     const pin = { 'oprn-tool-inspector': 'inspector', 'toolbar-toggle-ruleAudit': 'ruleAudit', 'toolbar-toggle-history': 'history' }[id];
     control('oprn-tool-overflow').click();
@@ -185,13 +167,4 @@ describe("mode-specific sidebar painting workflow", () => {
     }
   });
 
-  it("preserves selected tile and tool across mode changes while remounting the beginner picker", () => {
-    editorState.set({ selectedTile: 0, tool: "fill" });
-    setEditorUiMode("expert", null);
-    renderTilePalette(host);
-    setEditorUiMode("beginner", null);
-    renderTilePalette(host);
-    expect(editorState.get()).toMatchObject({ selectedTile: 0, tool: "fill", layer: "lower" });
-    expect(find("basic-tile-grid")).not.toBeNull();
-  });
 });

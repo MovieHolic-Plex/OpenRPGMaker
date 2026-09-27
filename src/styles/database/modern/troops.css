@@ -1048,10 +1048,6 @@
   flex-basis: 100%;
 }
 
-body.editor-ui-beginner .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-backdrop-field .ai-image-queue {
-  display: none;
-}
-
 /* ── 선택한 적 카드 ─────────────────────────────────────────────────────── */
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-card-members > .db-ws-card-body {

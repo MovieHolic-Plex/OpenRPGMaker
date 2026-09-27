@@ -1,7 +1,6 @@
 import type { MapId } from "@/project/types";
 import { el } from "@/util/dom";
 import { registerModal, unregisterModal } from '@/editor/ui/modalStack';
-import { subscribeEditorUiMode } from '@/editor/editorUiMode';
 
 export type MapContextMenuPoint = {
   readonly x: number;
@@ -60,13 +59,11 @@ export function openMapContextMenu(request: MapContextMenuRequest): void {
   const closeOnLayoutChange = (): void => closeMapContextMenu();
 
   document.addEventListener("pointerdown", onPointerDown, true);
-  const unsubscribeMode = subscribeEditorUiMode(() => closeMapContextMenu());
   window.addEventListener("resize", closeOnLayoutChange);
   window.addEventListener("scroll", closeOnLayoutChange, true);
   menu.addEventListener("keydown", onMenuKeyDown);
   activeCleanup = () => {
     document.removeEventListener("pointerdown", onPointerDown, true);
-    unsubscribeMode();
     window.removeEventListener("resize", closeOnLayoutChange);
     window.removeEventListener("scroll", closeOnLayoutChange, true);
     menu.removeEventListener("keydown", onMenuKeyDown);

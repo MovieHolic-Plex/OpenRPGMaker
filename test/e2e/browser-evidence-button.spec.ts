@@ -4,8 +4,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 const evidenceDir = "output/evidence/browser-evidence-button";
 
 test("worldview toolbar button opens the world panel", async ({ page }) => {
-  // toolbar-world 는 전문가 모드의 인라인 도구 버튼이다(표준·초보는 도구 ▾ 메뉴의 menu-tools-world).
-  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
+  // toolbar-world 는 스튜디오 바의 인라인 도구 버튼이다.
   await mkdir(evidenceDir, { recursive: true });
   await writeFile(
     `${evidenceDir}/scenario.json`,

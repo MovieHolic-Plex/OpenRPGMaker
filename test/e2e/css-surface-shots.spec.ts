@@ -37,15 +37,9 @@ async function settle(page: Page) {
 // 된다 — 편집기가 마운트될 때까지 리로드한다. 스크린샷 단언은 재시도하지 않는다(retries: 0).
 const BOOT_ATTEMPTS = 5;
 
-// 저장값 없는 첫 방문은 applyFirstVisitEditorUiMode 가 초보 모드로 박는다(자동화 URL 예외 없음).
-// 「표준」기준선이 우연히 초보 화면이 되지 않도록 모드를 항상 명시한다. parseEditorUiMode 는
-// 날 문자열("beginner")을 받는다 — JSON 으로 감싸면 standard 로 떨어진다.
-type UiMode = "standard" | "beginner" | "expert";
-
-async function boot(page: Page, w: number, h: number, mode: UiMode = "standard") {
+async function boot(page: Page, w: number, h: number) {
   // Date.now()/new Date() 를 고정 시각으로 못 박는다(타이머는 그대로 흐른다). 내비게이션 전에 걸어야 첫 렌더부터 적용된다.
   await page.clock.setFixedTime(FROZEN_TIME);
-  await page.addInitScript((value) => localStorage.setItem("oprn:editor-ui-mode", value), mode);
   await page.setViewportSize({ width: w, height: h });
   const seed = mockupProject();
   let lastError: unknown;
@@ -64,9 +58,8 @@ async function boot(page: Page, w: number, h: number, mode: UiMode = "standard")
     }
   }
   if (lastError) throw lastError;
-  // 초보 모드엔 toolbar-database 가 없다(paletteRail) — 두 모드에 다 있는 저장 버튼을 앵커로 쓴다.
   await expect(page.getByTestId("toolbar-save")).toBeVisible({ timeout: 60_000 });
-  if (mode !== "beginner") await expect(page.getByTestId("toolbar-database")).toBeVisible({ timeout: 60_000 });
+  await expect(page.getByTestId("toolbar-database")).toBeVisible({ timeout: 60_000 });
   await settle(page);
   return seed;
 }
@@ -91,18 +84,6 @@ for (const { w, h } of VIEWPORTS) {
   test(`shell ${w}x${h}`, async ({ page }) => {
     await boot(page, w, h);
     await expect(page).toHaveScreenshot(`shell-${w}.png`, { fullPage: false, mask: shellMasks(page) });
-  });
-
-  test(`shell beginner mode ${w}x${h}`, async ({ page }) => {
-    await boot(page, w, h, "beginner");
-    await expect(page.locator("body.editor-ui-beginner")).toHaveCount(1);
-    await expect(page).toHaveScreenshot(`shell-beginner-${w}.png`, { mask: shellMasks(page) });
-  });
-
-  test(`shell expert mode ${w}x${h}`, async ({ page }) => {
-    await boot(page, w, h, "expert");
-    await expect(page.locator("body.editor-ui-expert")).toHaveCount(1);
-    await expect(page).toHaveScreenshot(`shell-expert-${w}.png`, { mask: shellMasks(page) });
   });
 
   test(`event editor pages ${w}x${h}`, async ({ page }) => {

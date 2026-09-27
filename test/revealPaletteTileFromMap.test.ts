@@ -1,12 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { getEditorUiMode, setEditorUiMode } from "@/editor/editorUiMode";
 import { revealPaletteTileFromMap } from "@/editor/panels/tilePalette";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { installFakeDom } from "./fakeDom";
 
-describe("revealPaletteTileFromMap (expert eyedropper → chipset)", () => {
+describe("revealPaletteTileFromMap (eyedropper → chipset)", () => {
   let restoreDom: (() => void) | null = null;
   let storage: Map<string, string>;
 
@@ -55,35 +54,16 @@ describe("revealPaletteTileFromMap (expert eyedropper → chipset)", () => {
       tool: "paint",
       selectedTile: 0,
     });
-    setEditorUiMode("beginner");
     document.body.replaceChildren();
   });
 
   afterEach(() => {
     document.body.replaceChildren();
-    setEditorUiMode("beginner");
     restoreDom?.();
     restoreDom = null;
   });
 
-  it("does nothing visible in beginner mode", () => {
-    setEditorUiMode("beginner");
-    expect(() => revealPaletteTileFromMap(105)).not.toThrow();
-    expect(getEditorUiMode()).toBe("beginner");
-  });
-
-  it("in standard mode re-renders the palette root", () => {
-    setEditorUiMode("standard");
-    const root = document.createElement("div");
-    root.dataset.testid = "left-palette-root";
-    document.body.append(root);
-    editorState.set({ selectedTile: 105, layer: "lower" });
-    revealPaletteTileFromMap(105);
-    expect(root.childElementCount).toBeGreaterThan(0);
-  });
-
-  it("in expert mode re-renders the palette root when present", () => {
-    setEditorUiMode("expert");
+  it("re-renders the palette root when present", () => {
     const root = document.createElement("div");
     root.dataset.testid = "left-palette-root";
     document.body.append(root);
@@ -96,7 +76,6 @@ describe("revealPaletteTileFromMap (expert eyedropper → chipset)", () => {
   // 강제하고 localStorage 에 썼다 — 감독이 고른 탭이 조용히 덮였다. 탭 자체가 없어졌으니
   // 이 함수는 저장소를 건드릴 이유가 없다.
   it("does not write any palette tab state to storage", () => {
-    setEditorUiMode("expert");
     const root = document.createElement("div");
     root.dataset.testid = "left-palette-root";
     document.body.append(root);

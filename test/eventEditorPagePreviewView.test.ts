@@ -1,7 +1,6 @@
 /** @vitest-environment happy-dom */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { clearCommandInspector } from "@/editor/panels/eventEditor/commandInspector";
 import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
 import { resetEventViewSession } from "@/editor/panels/eventEditor/storyboardView";
@@ -54,7 +53,6 @@ describe("이 페이지가 하는 일 — 미리보기 보기", () => {
   let host: HTMLElement;
 
   beforeEach(() => {
-    resetEditorUiModeForTests("standard");
     clearCommandInspector();
     localStorage.clear();
     // 보기 모드는 이제 세션에도 있다 — localStorage.clear() 만으로는 안 지워진다.

@@ -1,6 +1,5 @@
 import { renderGrowthTreeTab } from "@/editor/panels/growthTree/studio";
 import type { DatabaseCollection } from "@/editor/databaseActions";
-import { getEditorChrome } from "@/editor/editorUiMode";
 import { renderCommonEventsTab } from "@/editor/panels/databaseCommonEventViews";
 import { renderCropTab } from "@/editor/panels/databaseCropView";
 import { renderMonsterSpeciesTab } from "@/editor/panels/databaseMonsterSpeciesView";
@@ -507,62 +506,52 @@ export function renderDatabasePanel(container: HTMLElement): void {
     class: "db-body db-shared-workspace",
     dataset: { testid: "db-shared-workspace" },
   });
-  // 버튼의 testid/라벨/.active 토글 계약(G006 + databaseCrossTabNav)은 모드와 무관하게 유지한다.
-  const chrome = getEditorChrome();
-  if (chrome.databaseNav === "grouped") {
-    appendTabSearch(header, body, container);
-    appendTabButton(header, body, container, tabFor("overview"));
-    for (const group of TAB_GROUPS) {
-      header.append(el("div", {
-        class: "db-tab-group",
-        // 그룹 머리는 이제 구획 제목이다 — 모든 그룹이 늘 펼쳐져 있다. 누르면 그 그룹의 빈 탭을
-        // 펼친다(「빈 탭 N개」 줄과 같은 동작). div+onclick 이라 role/tabindex 를 주고
-        // Enter/Space 를 직접 받는다 — <button> 은 기본 스타일이 달라 레일 모양이 흔들린다.
-        attrs: { title: group.label, role: "button", tabindex: "0" },
-        dataset: { testid: `db-tab-group-${group.slug}`, groupSlug: group.slug },
-        // 라벨을 **별도 span 으로** 둔다. 라벨 계약(databaseNavMode·db-desktop-matrix)은
-        // .db-tab-group-label 의 textContent 를 본다.
-        children: [el("span", { class: "db-tab-group-label", text: group.label })],
-        on: {
-          click: () => revealGroupEmptyTabs(group.slug, header),
-          keydown: (event: Event) => {
-            if (!("key" in event)) return;
-            const key = (event as KeyboardEvent).key;
-            if (key !== "Enter" && key !== " " && key !== "Spacebar") return;
-            event.preventDefault(); // Space 가 레일을 스크롤하지 않게.
-            revealGroupEmptyTabs(group.slug, header);
-          },
+  // 버튼의 testid/라벨/.active 토글 계약(G006 + databaseCrossTabNav)을 유지한다.
+  appendTabSearch(header, body, container);
+  appendTabButton(header, body, container, tabFor("overview"));
+  for (const group of TAB_GROUPS) {
+    header.append(el("div", {
+      class: "db-tab-group",
+      // 그룹 머리는 이제 구획 제목이다 — 모든 그룹이 늘 펼쳐져 있다. 누르면 그 그룹의 빈 탭을
+      // 펼친다(「빈 탭 N개」 줄과 같은 동작). div+onclick 이라 role/tabindex 를 주고
+      // Enter/Space 를 직접 받는다 — <button> 은 기본 스타일이 달라 레일 모양이 흔들린다.
+      attrs: { title: group.label, role: "button", tabindex: "0" },
+      dataset: { testid: `db-tab-group-${group.slug}`, groupSlug: group.slug },
+      // 라벨을 **별도 span 으로** 둔다. 라벨 계약(databaseNavMode·db-desktop-matrix)은
+      // .db-tab-group-label 의 textContent 를 본다.
+      children: [el("span", { class: "db-tab-group-label", text: group.label })],
+      on: {
+        click: () => revealGroupEmptyTabs(group.slug, header),
+        keydown: (event: Event) => {
+          if (!("key" in event)) return;
+          const key = (event as KeyboardEvent).key;
+          if (key !== "Enter" && key !== " " && key !== "Spacebar") return;
+          event.preventDefault(); // Space 가 레일을 스크롤하지 않게.
+          revealGroupEmptyTabs(group.slug, header);
         },
-      }));
-      for (const id of group.tabs) {
-        appendTabButton(header, body, container, tabFor(id));
-      }
-      // 빈 탭 접기 줄. `.db-tab` 이 아니다 — 탭 버튼 계약(라벨·testid·포커스 순서 검사)은
-      // `.db-tab` 만 센다. 문구·숨김은 applyEmptyTabFold 가 채운다.
-      header.append(el("button", {
-        class: "db-tab-fold",
-        attrs: { type: "button", hidden: "" },
-        dataset: { testid: `db-tab-fold-${group.slug}`, groupSlug: group.slug },
-        children: [
-          el("span", { class: "db-tab-fold-count" }),
-          el("span", { class: "db-tab-fold-names" }),
-        ],
-        on: { click: () => revealGroupEmptyTabs(group.slug, header) },
-      }));
+      },
+    }));
+    for (const id of group.tabs) {
+      appendTabButton(header, body, container, tabFor(id));
     }
-    applyEmptyTabFold(header);
-  } else {
-    appendTabSearch(header, body, container);
-    for (const tab of orderedTabs) appendTabButton(header, body, container, tab);
+    // 빈 탭 접기 줄. `.db-tab` 이 아니다 — 탭 버튼 계약(라벨·testid·포커스 순서 검사)은
+    // `.db-tab` 만 센다. 문구·숨김은 applyEmptyTabFold 가 채운다.
+    header.append(el("button", {
+      class: "db-tab-fold",
+      attrs: { type: "button", hidden: "" },
+      dataset: { testid: `db-tab-fold-${group.slug}`, groupSlug: group.slug },
+      children: [
+        el("span", { class: "db-tab-fold-count" }),
+        el("span", { class: "db-tab-fold-names" }),
+      ],
+      on: { click: () => revealGroupEmptyTabs(group.slug, header) },
+    }));
   }
+  applyEmptyTabFold(header);
 
   renderActiveTab(body, container);
-  if (chrome.databaseNav === "grouped") {
-    container.append(buildGroupStrip(header), header, body);
-    syncGroupStrip(header);
-  } else {
-    container.append(header, body);
-  }
+  container.append(buildGroupStrip(header), header, body);
+  syncGroupStrip(header);
   revealActiveTab(header);
   if (typeof ResizeObserver !== "undefined") {
     // 헤더가 교체되면(탭 레일 재구성) 이전 옵저버는 할 일이 없다. GC 로 수거될 "가능성"에

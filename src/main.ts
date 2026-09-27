@@ -7,11 +7,10 @@
 import { installGlobalErrorTrap } from "@/app/errorTrap";
 import { installVitePreloadRecovery } from "@/app/moduleLoadRecovery";
 import "./styles/index.css";
-// ⚠ 순서 의존: 저장 키 마이그레이션이 editorUiMode 보다 **먼저** 평가돼야 한다.
-// editorUiMode 는 import 시점에 localStorage 를 읽는다(ensureHydrated). 자세한 이유는
-// src/storageBoot.ts 헤더 주석 — 진입점 본문의 함수 호출로는 안 된다(import 호이스팅).
+// ⚠ 순서 의존: 저장 키 마이그레이션이 import 시점에 localStorage 를 읽는 모듈보다 **먼저**
+// 평가돼야 한다. 자세한 이유는 src/storageBoot.ts 헤더 주석 — 진입점 본문의 함수 호출로는
+// 안 된다(import 호이스팅).
 import "@/storageBoot";
-import "@/editor/editorUiMode";
 import { initializeTeamAccess, startTeamSession } from "@/editor/teamSession";
 import { loadSharedTileReferences } from "@/project/sharedTileReferences";
 import { loadSharedContent } from "@/project/sharedContent";

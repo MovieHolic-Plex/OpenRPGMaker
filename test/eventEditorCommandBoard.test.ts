@@ -1,7 +1,6 @@
 /** @vitest-environment happy-dom */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { eventAiStagedCommands, resetEventAiStagedForTest } from "@/editor/panels/eventEditor/aiAssist";
 import { clearCommandInspector } from "@/editor/panels/eventEditor/commandInspector";
 import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
@@ -88,7 +87,6 @@ describe("event editor command board", () => {
   let host: HTMLElement;
 
   beforeEach(() => {
-    resetEditorUiModeForTests("standard");
     resetEventAiStagedForTest();
     clearCommandInspector();
     host = document.createElement("div");

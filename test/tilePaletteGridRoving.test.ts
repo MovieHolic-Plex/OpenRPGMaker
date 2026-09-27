@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { renderTilePalette } from "@/editor/panels/tilePalette";
 import { GRID_PALETTE_COLUMNS } from "@/editor/panels/tilePaletteGrid";
 import { createBlankProject } from "@/project/defaults";
@@ -30,7 +29,6 @@ describe("tile palette grid roving tabindex", () => {
   beforeEach(() => {
     restore = installFakeDom();
     store.replace(createBlankProject());
-    resetEditorUiModeForTests("standard");
     container = document.createElement("div");
     document.body.append(container);
     editorState.set({ tool: "paint", layer: "lower", currentMapId: store.getCurrent().startMapId });

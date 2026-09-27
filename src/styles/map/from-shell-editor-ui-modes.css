@@ -4,33 +4,10 @@
    각 규칙 앞 주석은 원본 파일:줄 이다. */
 
 /* shell/editor-ui-modes.css:73-77 */
-body.editor-ui-beginner .canvas-toolbar.is-basic-chrome,
-body.editor-ui-standard .canvas-toolbar.is-basic-chrome {
-  gap: 8px;
-  opacity: 0.95;
-}
 
 /* shell/editor-ui-modes.css:79-92 */
-body.editor-ui-beginner .canvas-toolbar.is-basic-chrome.is-docked-chrome {
-  align-items: center;
-  backdrop-filter: none;
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-  height: var(--editor-canvas-chrome-top, 48px);
-  left: auto;
-  max-width: none;
-  padding: 0 8px;
-  right: 8px;
-  top: 0;
-  transform: none;
-}
 
 /* shell/editor-ui-modes.css:95-98 */
-body.editor-ui-beginner .canvas-toolbar.is-basic-chrome .zoom-button,
-.canvas-toolbar.is-basic-chrome.is-expanded .zoom-button {
-  display: inline-flex;
-}
 
 /* shell/editor-ui-modes.css:422-429 */
 /* 좌팔레트 폭 가둠. 아래 !important 들은 **측정 결과 실제 경쟁을 이기고 있다** —

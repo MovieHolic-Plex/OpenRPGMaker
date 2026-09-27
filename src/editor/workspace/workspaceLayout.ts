@@ -2,24 +2,17 @@
 // 워크스페이스 레이아웃 — 어떤 패널이 어느 도크에 있고 얼마나 넓은지. 데이터다.
 //
 // 프리셋은 작업 자체가 아니라 패널 배치다. 실제 작업 시작은 authoringTasks가 담당하며,
-// 배치를 바꿔도 사용자가 고른 EditorUiMode/밀도는 유지한다.
+// 배치만 바꾼다.
 //
-// ⚠ 단계적 이행: `EditorUiMode`(beginner/standard/expert)와 `EditorChromeVisibility`
-// 18개 플래그는 **아직 살아 있다.** 프리셋이 그 모드를 파생시키므로 기존 플래그와
-// CSS 게이트 38곳이 그대로 동작한다. 플래그를 실제로 걷어내는 일(패널 구성으로 대체된
-// mapTree·paletteRail·leftPanelMaxWidthPx 삭제 등)은 CSS 38곳을 함께 고쳐야 하고
-// 검증 단위가 커서 다음 라운드로 남긴다. 지금 바뀌는 것은 **사용자가 만지는 축**이다.
+// 초보/표준/전문가 편집 모드(`EditorUiMode`)와 거기서 파생되던 밀도(`density`)는
+// 2026-09-27 에 없앴다 — 편집기 화면은 하나다. 옛 저장값에 남은 `density` 는 읽지 않는다.
 
 import { STORAGE_PREFIX } from "@/util/appStorage";
-import type { EditorUiMode } from "@/editor/editorUiMode";
 import { defaultDockFor, isPanelId, sortPanels, type DockZone, type PanelId } from "@/editor/workspace/panelRegistry";
 
 export const WORKSPACE_STORAGE_KEY = `${STORAGE_PREFIX}workspace:v1`;
 
 export type WorkspacePresetId = "map" | "event" | "data";
-
-/** 정보 밀도 — 예전 3단 모드에서 "얼마나 빽빽한가" 만 남긴 축. */
-export type WorkspaceDensity = "guided" | "comfortable" | "dense";
 
 // 패널 **크기**(좌패널 폭·맵 트리 높이)는 여기서 다루지 않는다. 기존 `oprn:editor-layout:v4`
 // 가 이미 저장하고 리사이저가 그 값을 쓴다. 같은 수치를 워크스페이스에도 넣으면 원천이
@@ -28,12 +21,6 @@ export type WorkspaceDensity = "guided" | "comfortable" | "dense";
 
 export type WorkspaceLayout = {
   readonly presetId: WorkspacePresetId;
-  /**
-   * **파생값.** 저장하지 않는다 — `editorUiMode` 가 밀도의 유일한 원천이고 이 필드는 그것을
-   * 읽어 온 사본이다. 커맨드 팔레트·코치마크가 모드를 직접 바꿔도 두 값이 갈라지지 않게
-   * 하려면 원천이 하나여야 한다.
-   */
-  readonly density: WorkspaceDensity;
   readonly docks: Readonly<Record<DockZone, readonly PanelId[]>>;
 };
 
@@ -42,7 +29,6 @@ export type WorkspacePreset = {
   readonly label: string;
   readonly hint: string;
   readonly docks: Readonly<Record<DockZone, readonly PanelId[]>>;
-  readonly density: WorkspaceDensity;
 };
 
 /**
@@ -59,21 +45,18 @@ export const WORKSPACE_PRESETS: readonly WorkspacePreset[] = [
     label: "맵 중심",
     hint: "타일 팔레트와 맵 트리를 왼쪽에 둔다",
     docks: { left: ["tiles", "maps"], right: ["assistant"], bottom: [] },
-    density: "comfortable",
   },
   {
     id: "event",
     label: "이벤트 중심",
     hint: "팔레트를 접고 맵 트리와 조수에 집중한다",
     docks: { left: ["maps"], right: ["assistant"], bottom: [] },
-    density: "comfortable",
   },
   {
     id: "data",
     label: "데이터 중심",
     hint: "자료집을 넓게 쓰고 조수만 곁에 둔다",
     docks: { left: [], right: ["assistant"], bottom: [] },
-    density: "dense",
   },
 ] as const;
 
@@ -85,27 +68,7 @@ export function presetById(id: WorkspacePresetId): WorkspacePreset {
 
 export function layoutFromPreset(id: WorkspacePresetId): WorkspaceLayout {
   const preset = presetById(id);
-  return { presetId: preset.id, density: preset.density, docks: preset.docks };
-}
-
-/**
- * 밀도 → 기존 `EditorUiMode` 파생.
- *
- * 이 함수가 이행의 핵심이다 — 사용자는 프리셋·밀도만 만지고, 18개 크롬 플래그와
- * `.editor-ui-*` CSS 게이트는 여기서 나온 모드로 예전처럼 동작한다. 플래그를 실제로
- * 걷어낼 때 이 함수가 삭제 지점이 된다.
- */
-export function uiModeForDensity(density: WorkspaceDensity): EditorUiMode {
-  if (density === "guided") return "beginner";
-  if (density === "dense") return "expert";
-  return "standard";
-}
-
-/** 역방향 — 기존 저장값(3단 모드)에서 처음 워크스페이스를 만들 때 쓴다. */
-export function densityForUiMode(mode: EditorUiMode): WorkspaceDensity {
-  if (mode === "beginner") return "guided";
-  if (mode === "expert") return "dense";
-  return "comfortable";
+  return { presetId: preset.id, docks: preset.docks };
 }
 
 function parseDocks(value: unknown): Record<DockZone, PanelId[]> | null {
@@ -131,12 +94,9 @@ function isPresetId(value: unknown): value is WorkspacePresetId {
 
 /**
  * 저장값 파싱. 깨진 값은 조용히 기본으로 되돌린다 — 레이아웃이 부팅을 막을 이유가 없다.
- * 밀도는 저장값을 **읽지 않는다**: 항상 `mode`(=`editorUiMode`)에서 파생시켜, 쓰던 3단
- * 모드가 그대로 첫 화면 밀도가 되게 한다.
  */
-export function parseWorkspaceLayout(raw: string | null, mode: EditorUiMode): WorkspaceLayout {
-  const density = densityForUiMode(mode);
-  const fallback = { ...layoutFromPreset("map"), density };
+export function parseWorkspaceLayout(raw: string | null): WorkspaceLayout {
+  const fallback = layoutFromPreset("map");
   if (!raw) return fallback;
   let parsed: unknown;
   try {
@@ -149,7 +109,7 @@ export function parseWorkspaceLayout(raw: string | null, mode: EditorUiMode): Wo
   const presetId: WorkspacePresetId = isPresetId(record["presetId"]) ? record["presetId"] : "map";
   const preset = presetById(presetId);
   const docks = parseDocks(record["docks"]) ?? structuredDocks(preset.docks);
-  return { presetId, density, docks };
+  return { presetId, docks };
 }
 
 /** 도크마다 레지스트리 순서로 정렬한다 — 자리마다 성격이 다르다(sortPanels 주석 참고). */
@@ -161,7 +121,6 @@ function structuredDocks(docks: Readonly<Record<DockZone, readonly PanelId[]>>):
   };
 }
 
-/** `density` 는 일부러 빠진다 — `editorUiMode` 가 자기 키에 저장한다(원천 하나). */
 export function serializeWorkspaceLayout(layout: WorkspaceLayout): string {
   return JSON.stringify({
     presetId: layout.presetId,

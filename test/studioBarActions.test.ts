@@ -3,10 +3,9 @@
 // 배경: 그 전 톱바는 메뉴 4개 + 작업 칩 4개 + 보기 + Ctrl K + 오른쪽 8개가 한 줄에 놓이고, 전문가는
 // 아래에 67px 클래식 툴바 행(15개, 그중 14개가 메뉴 항목의 복제)이 하나 더 있었다. 테스트 실행의 집이
 // 넷(작업 칩·▶ 버튼·게임 메뉴·클래식 툴바)까지 갔다. 이 파일은 남은 집이 하나씩인지, 없어진 표면이
-// 되살아나지 않는지, 모드별 도구 자리가 규칙대로인지 본다.
+// 되살아나지 않는지, 도구 자리가 규칙대로인지 본다. 편집 모드(초보/표준/전문가)는 2026-09-27 에 없앴다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { createBlankProject } from "@/project/defaults";
 import { store, type AutoSaveState } from "@/project/store";
 import type { NewProjectDialogResult } from "@/editor/ui/newProjectDialog";
@@ -106,8 +105,7 @@ function installBrowserGlobals(): void {
   Object.defineProperty(document, "fullscreenElement", { configurable: true, writable: true, value: null });
 }
 
-function render(mode: "beginner" | "standard" | "expert"): FakeElement {
-  resetEditorUiModeForTests(mode);
+function render(): FakeElement {
   const topbar = document.createElement("div");
   renderTopbar(topbar);
   return fake(topbar);
@@ -151,55 +149,52 @@ afterEach(async () => {
   restoreDom = null;
   Reflect.deleteProperty(globalThis, "localStorage");
   Object.defineProperty(globalThis, "window", { configurable: true, writable: true, value: previousWindow });
-  resetEditorUiModeForTests("standard");
   vi.restoreAllMocks();
 });
 
 describe("스튜디오 바 — 한 줄, 집 하나", () => {
-  for (const mode of ["standard", "expert"] as const) {
-    it(`${mode}: 클래식 툴바 행·게임 메뉴·작업 칩·툴바 접기가 없다`, () => {
-      // Break: 복제 표면이 되살아난다.
-      const topbar = render(mode);
-      for (const gone of [
-        "oprn-toolbar", "oprn-toolbar-row-edit", "toolbar-new", "toolbar-map-copy", "toolbar-event-test",
-        "toolbar-battle-test", "toolbar-reload-db", "toolbar-load", "toolbar-import", "toolbar-help", "toolbar-overflow-toggle",
-        "menu-game", "authoring-task-launcher", "authoring-task-map", "authoring-task-event", "authoring-task-data", "authoring-task-test",
-        "window-toolbar-collapse",
-      ]) {
-        expect(findByTestId(topbar, gone), gone).toBeNull();
-      }
-    });
+  it("클래식 툴바 행·게임 메뉴·작업 칩·툴바 접기·도구 메뉴·편집 모드 선택이 없다", () => {
+    // Break: 복제 표면이 되살아난다.
+    const topbar = render();
+    for (const gone of [
+      "oprn-toolbar", "oprn-toolbar-row-edit", "toolbar-new", "toolbar-map-copy", "toolbar-event-test",
+      "toolbar-battle-test", "toolbar-reload-db", "toolbar-load", "toolbar-import", "toolbar-help", "toolbar-overflow-toggle",
+      "menu-game", "authoring-task-launcher", "authoring-task-map", "authoring-task-event", "authoring-task-data", "authoring-task-test",
+      "window-toolbar-collapse", "menu-tools", "workspace-ui-mode-beginner", "workspace-ui-mode-standard", "workspace-ui-mode-expert",
+    ]) {
+      expect(findByTestId(topbar, gone), gone).toBeNull();
+    }
+  });
 
-    it(`${mode}: 동작마다 testid 는 톱바+팝업 전체에서 한 번씩만 나온다`, () => {
-      // Break: 같은 동작이 두 자리에 놓여 testid 가 겹친다(예: 테스트 실행 네 자리).
-      const topbar = render(mode);
-      for (const menuId of ["menu-project", "menu-tools", "menu-help"]) {
-        if (findByTestId(topbar, menuId)) openMenu(topbar, menuId);
-      }
-      const ids = allTestIds(topbar).filter((id) => !id.startsWith("menu-popup-"));
-      const dupes = ids.filter((id, index) => ids.indexOf(id) !== index);
-      expect(dupes, `중복 testid: ${dupes.join(", ")}`).toEqual([]);
-    });
-  }
+  it("동작마다 testid 는 톱바+팝업 전체에서 한 번씩만 나온다", () => {
+    // Break: 같은 동작이 두 자리에 놓여 testid 가 겹친다(예: 테스트 실행 네 자리).
+    const topbar = render();
+    for (const menuId of ["menu-project", "menu-help"]) {
+      if (findByTestId(topbar, menuId)) openMenu(topbar, menuId);
+    }
+    const ids = allTestIds(topbar).filter((id) => !id.startsWith("menu-popup-"));
+    const dupes = ids.filter((id, index) => ids.indexOf(id) !== index);
+    expect(dupes, `중복 testid: ${dupes.join(", ")}`).toEqual([]);
+  });
 
   it("프로젝트 메뉴의 얼굴은 프로젝트 이름이고, 이름이 없으면 「제목 없는 프로젝트」다", () => {
     // Break: 톱바가 다시 「프로젝트」라는 메뉴 이름만 보여 어느 프로젝트인지 말하지 않는다.
     const project = store.getCurrent();
     store.replace({ ...project, meta: { ...project.meta, title: "달빛 항구" } });
-    let topbar = render("standard");
+    let topbar = render();
     const button = findByTestId(topbar, "menu-project");
     expect(button?.textContent).toContain("달빛 항구");
     expect(button?.getAttribute("title")).toBe("프로젝트 — 달빛 항구");
 
     store.replace({ ...project, meta: { ...project.meta, title: "   " } });
     expect(projectMenuLabel()).toBe("제목 없는 프로젝트");
-    topbar = render("standard");
+    topbar = render();
     expect(findByTestId(topbar, "menu-project")?.textContent).toContain("제목 없는 프로젝트");
   });
 
   it("프로젝트 메뉴에 저장 항목은 없고, 새 프로젝트·열기·저장본·가져오기·내보내기·배포가 있다", () => {
     // Break: 저장이 버튼과 메뉴 항목 두 자리에 놓인다.
-    const topbar = render("standard");
+    const topbar = render();
     const popup = openMenu(topbar, "menu-project");
     const ids = (popup?.children ?? []).map((child) => child.dataset.testid ?? "").filter(Boolean);
     expect(ids).toEqual([
@@ -214,7 +209,7 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
   it("새 프로젝트는 확정 기획과 선택한 시스템을 새 폴더 씨앗에 저장한다", async () => {
     const brief = interviewBrief();
     mocks.showNewProjectDialog.mockResolvedValueOnce({ title: "달빛 항구", choiceId: "monster-collect", screenSize: "wide", gameDesignBrief: brief });
-    const topbar = render("expert");
+    const topbar = render();
     openMenu(topbar, "menu-project");
     findByTestId(fake(document.body as unknown as HTMLElement), "menu-project-new")?.click();
     await vi.waitFor(() => expect(mocks.createProjectFolderWithSeed).toHaveBeenCalledOnce());
@@ -229,7 +224,7 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
 
   it("기획을 취소하면 새 폴더나 AI 요청을 만들지 않는다", async () => {
     mocks.showNewProjectDialog.mockResolvedValueOnce(null);
-    const topbar = render("expert");
+    const topbar = render();
     openMenu(topbar, "menu-project");
     findByTestId(fake(document.body as unknown as HTMLElement), "menu-project-new")?.click();
     await new Promise<void>((resolve) => { globalThis.setTimeout(resolve, 0); });
@@ -240,7 +235,7 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
 
   it("빈 프로젝트는 기획이나 AI 전달 표식을 만들지 않는다", async () => {
     mocks.showNewProjectDialog.mockResolvedValueOnce({ title: "빈 맵", choiceId: null, screenSize: "classic" });
-    const topbar = render("expert");
+    const topbar = render();
     openMenu(topbar, "menu-project");
     findByTestId(fake(document.body as unknown as HTMLElement), "menu-project-new")?.click();
     await vi.waitFor(() => expect(mocks.createProjectFolderWithSeed).toHaveBeenCalledOnce());
@@ -254,7 +249,7 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
     let listener: ((state: AutoSaveState) => void) | null = null;
     vi.spyOn(store, "getAutoSaveState").mockReturnValue({ kind: "idle" });
     vi.spyOn(store, "subscribeAutoSave").mockImplementation((fn) => { listener = fn; return () => { listener = null; }; });
-    const topbar = render("standard");
+    const topbar = render();
     const save = findByTestId(topbar, "toolbar-save");
     expect(save).not.toBeNull();
     expect(save?.getAttribute("title")).toBe("프로젝트 저장 (Ctrl+S)");
@@ -273,23 +268,18 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
     expect(autosaveStatusText({ kind: "pending" })).toBe("저장 중");
   });
 
-  it("자료집·소재 버튼은 표준·전문가에서 모달을 열고, 초보에는 없다", () => {
-    // Break: 자료집 버튼이 초보 레일 옆에도 생기거나, 표준에서 사라져 도구 메뉴 두 번 클릭만 남는다.
-    for (const mode of ["standard", "expert"] as const) {
-      const topbar = render(mode);
-      findByTestId(topbar, "toolbar-database")?.click();
-      findByTestId(topbar, "toolbar-resource-manager")?.click();
-    }
-    expect(mocks.openDatabaseModal).toHaveBeenCalledTimes(2);
-    expect(mocks.openResourceModal).toHaveBeenCalledTimes(2);
-    const beginner = render("beginner");
-    expect(findByTestId(beginner, "toolbar-database")).toBeNull();
-    expect(findByTestId(beginner, "toolbar-resource-manager")).toBeNull();
+  it("자료집·소재 버튼이 모달을 연다", () => {
+    // Break: 자료집 버튼이 사라져 메뉴 두 번 클릭만 남는다.
+    const topbar = render();
+    findByTestId(topbar, "toolbar-database")?.click();
+    findByTestId(topbar, "toolbar-resource-manager")?.click();
+    expect(mocks.openDatabaseModal).toHaveBeenCalledTimes(1);
+    expect(mocks.openResourceModal).toHaveBeenCalledTimes(1);
   });
 
-  it("전문가: 세계관·음악·찾기 인라인 버튼이 각 창을 연다", () => {
-    // Break: 전문가 인라인 버튼이 장식으로만 남는다(눌러도 아무 일 없음).
-    const topbar = render("expert");
+  it("세계관·음악·찾기 인라인 버튼이 각 창을 연다", () => {
+    // Break: 인라인 버튼이 장식으로만 남는다(눌러도 아무 일 없음).
+    const topbar = render();
     findByTestId(topbar, "toolbar-world")?.click();
     findByTestId(topbar, "toolbar-sound-test")?.click();
     findByTestId(topbar, "toolbar-search")?.click();
@@ -298,19 +288,14 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
     expect(mocks.openMapEventSearchModal).toHaveBeenCalledTimes(1);
   });
 
-  it("표준: 도구 메뉴 항목이 각 창을 열고 AI 설정 항목은 없다(⚙ 버튼이 집)", () => {
-    const topbar = render("standard");
-    const popup = openMenu(topbar, "menu-tools");
-    const ids = (popup?.children ?? []).map((child) => child.dataset.testid ?? "").filter(Boolean);
-    expect(ids).toEqual(["menu-tools-world", "menu-tools-audio", "menu-tools-search"]);
-    findByTestId(fake(document.body as unknown as HTMLElement), "menu-tools-audio")?.click();
-    expect(mocks.openAudioTestDialog).toHaveBeenCalledTimes(1);
+  it("AI 설정은 ⚙ 버튼이 집이다", () => {
+    const topbar = render();
     findByTestId(topbar, "topbar-ai-settings")?.click();
     expect(mocks.openAiSettingsModal).toHaveBeenCalledTimes(1);
   });
 
   it("오른쪽 묶음: ▶ 테스트와 ⚔ 가 한 실행 그룹, 도움말은 아이콘 메뉴, 전체화면은 남는다", () => {
-    const topbar = render("standard");
+    const topbar = render();
     const group = findByTestId(topbar, "studio-run-group");
     expect(group).not.toBeNull();
     expect(findByTestId(group as unknown as FakeElement, "mode-play")).not.toBeNull();

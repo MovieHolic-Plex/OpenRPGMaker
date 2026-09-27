@@ -12,12 +12,10 @@ applyLegacyEnvAliases();
 
 const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:9977";
 const OUT = join(process.cwd(), "verify-shots", "map-modernize", process.argv[2] ?? "scratch");
-type Mode = "beginner" | "standard" | "expert";
+type Mode = "editor";
 
 async function boot(page: Page, mode: Mode): Promise<void> {
   await page.addInitScript((m) => {
-    localStorage.setItem("oprn:editor-ui-mode", m as string);
-    localStorage.setItem("oprn:coachmarks-basic-v1", "1");
     localStorage.setItem("oprn:standard-welcome-seen", "1");
     localStorage.setItem("oprn:ai-panel-collapsed", "1");
   }, mode);
@@ -38,7 +36,7 @@ async function run(): Promise<void> {
   mkdirSync(OUT, { recursive: true });
   const diags: Diag[] = [];
   const browser = await chromium.launch({ args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu"] });
-  for (const mode of ["expert", "standard", "beginner"] as const) {
+  for (const mode of ["editor"] as const) {
     const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 });
     const page = await context.newPage();
     page.on("pageerror", (e) => console.log("pageerror", mode, e.message));
@@ -58,17 +56,6 @@ async function run(): Promise<void> {
     const mapRoot = page.locator('[data-testid="left-map-root"]').first();
     if (await mapRoot.isVisible().catch(() => false)) {
       await mapRoot.screenshot({ path: join(OUT, `${mode}-map-root.png`) }).catch(() => {});
-    }
-    // 기본/표준 모드는 맵이 플라이아웃일 수 있다.
-    const railMap = page.getByTestId("basic-rail-toggle-maps");
-    if (await railMap.first().isVisible().catch(() => false)) {
-      await railMap.first().click().catch(() => {});
-      await page.waitForTimeout(500);
-      await page.screenshot({ path: join(OUT, `${mode}-map-flyout-shell.png`) });
-      const flyout = page.locator(".basic-flyout-map-host, .map-tree-panel").first();
-      if (await flyout.isVisible().catch(() => false)) {
-        await flyout.screenshot({ path: join(OUT, `${mode}-map-flyout.png`) }).catch(() => {});
-      }
     }
     const diag = await page.evaluate(() => {
       const root = document.querySelector('[data-testid="left-map-root"]') as HTMLElement | null;

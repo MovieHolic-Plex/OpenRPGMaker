@@ -337,7 +337,6 @@
   }
 
   body.director-briefing-open .ai-command-bar,
-  body.director-briefing-open .coach-mark-card,
   body.director-briefing-open [data-testid="standard-welcome-card"] {
     visibility: hidden;
     pointer-events: none;

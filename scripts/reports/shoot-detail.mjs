@@ -14,8 +14,7 @@ const click = async (t, w = 1400) => {
 await page.goto(`${BASE}/`, { waitUntil: "domcontentloaded" });
 await waitForApp(page);
 await page.waitForTimeout(2200);
-await click("menu-tools", 800);
-await click("menu-tools-database", 3000);
+await click("toolbar-database", 3000);
 
 const out = {};
 // 1) 배우 목록 표 — 열 정렬

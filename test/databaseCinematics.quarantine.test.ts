@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import {
   createDatabaseCinematicActions,
   type DatabaseCinematicActions,
@@ -118,7 +117,6 @@ function pick(suffix: string, resourceId: string): void {
 
 beforeEach(() => {
   restoreDom = installFakeDom();
-  resetEditorUiModeForTests("standard");
   const project = createBlankProject();
   delete project.system.opening;
   delete project.system.gameOver;
@@ -136,7 +134,6 @@ afterEach(() => {
   host.remove();
   vi.restoreAllMocks();
   resetMapEditHistory();
-  resetEditorUiModeForTests("standard");
   restoreDom();
 });
 
@@ -171,10 +168,9 @@ describe("Database cinematic authoring", () => {
     }
   });
 
-  it.each(["beginner", "standard", "expert"] as const)(
-    "registers dedicated cinematic tabs in the System group in %s mode",
-    (mode) => {
-      resetEditorUiModeForTests(mode);
+  it(
+    "registers dedicated cinematic tabs in the System group",
+    () => {
       renderDatabasePanel(host as unknown as HTMLElement);
       // First failing baseline assertion: the existing renderer has no such tab.
       expect(findByTestId(host, "db-tab-opening")).not.toBeNull();

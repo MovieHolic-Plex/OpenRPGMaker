@@ -14,7 +14,6 @@ import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 
 function seed(): string {
   const project = createBlankProject();
@@ -56,14 +55,12 @@ describe("레코드 선택 컨트롤 통일", () => {
   let host: HTMLElement;
 
   beforeEach(() => {
-    resetEditorUiModeForTests("expert");
     host = document.createElement("div");
     document.body.append(host);
   });
 
   afterEach(() => {
     host.remove();
-    resetEditorUiModeForTests("standard");
   });
 
   for (const kind of ["item", "actor"] as const) {

@@ -3,17 +3,16 @@
 // 실측 배경(2026-08-26 감사, .omo/evidence/menu-ia/):
 //  · 같은 동작이 사이드바와 상단 메뉴 양쪽에 있었다 — 레이어 3개, 되돌리기, 새 맵,
 //    현재 맵을 시작 맵으로(라벨까지 동일)가 대표적이다.
-//  · standard(기본 모드)의 ⋯ 메뉴는 `.open` 클래스를 붙이지 않아 영구히 열리지 않았고,
+//  · 당시 standard 모드의 ⋯ 메뉴는 `.open` 클래스를 붙이지 않아 영구히 열리지 않았고,
 //    그 안의 4개 항목은 전부 도구 메뉴와 중복이었다. 항목 두 개는 라벨이 똑같이 "자료"였다.
-//  · 음악·찾기는 전문가 클래식 툴바에만 있어서 초보/표준에서는 도달 경로가 없었다.
-//  · standard/expert 사이드바에는 레이어 전환이 아예 없었다(초보 레일에만 있었다).
+//  · 음악·찾기는 전문가 클래식 툴바에만 있어서 다른 모드에서는 도달 경로가 없었다.
+//  · 레이어 전환은 초보 레일에만 있었다. 2026-09-27 편집 모드를 걷어 화면은 하나다.
 //    2026-09-18 레이어 전환은 팔레트와 독립적인 캔버스 상단으로 옮겼다.
 //
 // 계약: 액션은 집이 하나다. 사이드바 = 매초 쓰는 캔버스 작업, 상단 = 세션/프로젝트 작업.
 // Ctrl+K 팔레트는 전체 검색이므로 이 계약의 예외다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
@@ -122,7 +121,6 @@ afterEach(() => {
   restoreDom = null;
   Reflect.deleteProperty(globalThis, "localStorage");
   Object.defineProperty(globalThis, "window", { configurable: true, writable: true, value: previousWindow });
-  resetEditorUiModeForTests("standard");
   vi.restoreAllMocks();
   vi.clearAllTimers();
   vi.useRealTimers();
@@ -143,25 +141,21 @@ const SIDEBAR_OWNED_IDS = [
 ] as const;
 
 describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
-  for (const mode of ["beginner", "standard", "expert"] as const) {
-    it(`${mode}: 상단 영역이 사이드바 소유 액션을 중복 노출하지 않는다`, () => {
-      // Break: 레이어·되돌리기·맵 트리 동작이 다시 상단 메뉴/툴바로 새어 들어온다.
-      resetEditorUiModeForTests(mode);
-      const topbar = document.createElement("div");
-      renderTopbar(topbar);
-      for (const menuId of ["menu-project", "menu-tools", "menu-game", "menu-help"]) {
-        if (findByTestId(fake(topbar), menuId)) openMenu(topbar, menuId);
-      }
+  it("상단 영역이 사이드바 소유 액션을 중복 노출하지 않는다", () => {
+    // Break: 레이어·되돌리기·맵 트리 동작이 다시 상단 메뉴/툴바로 새어 들어온다.
+    const topbar = document.createElement("div");
+    renderTopbar(topbar);
+    for (const menuId of ["menu-project", "menu-help"]) {
+      if (findByTestId(fake(topbar), menuId)) openMenu(topbar, menuId);
+    }
 
-      const ids = topRegionTestIds(topbar);
-      const leaked = SIDEBAR_OWNED_IDS.filter((id) => ids.includes(id));
-      expect(leaked, `상단에 남은 사이드바 액션: ${leaked.join(", ")}`).toEqual([]);
-    });
-  }
+    const ids = topRegionTestIds(topbar);
+    const leaked = SIDEBAR_OWNED_IDS.filter((id) => ids.includes(id));
+    expect(leaked, `상단에 남은 사이드바 액션: ${leaked.join(", ")}`).toEqual([]);
+  });
 
-  it("standard: 열리지 않던 ⋯ 중복 메뉴를 제거한다", () => {
+  it("열리지 않던 ⋯ 중복 메뉴를 제거한다", () => {
     // Break: `.open` 없이 hidden 만 토글하는 ⋯ 메뉴가 되살아난다.
-    resetEditorUiModeForTests("standard");
     const topbar = document.createElement("div");
     renderTopbar(topbar);
 
@@ -169,83 +163,42 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
     expect(findByTestId(fake(topbar), "standard-more-tools-menu")).toBeNull();
   });
 
-  for (const mode of ["beginner", "standard", "expert"] as const) {
-    it(`${mode}: 편집 모드를 패널 메뉴에서 고를 수 있다`, () => {
-      // Break: 모드 전환이 다시 깨진 ⋯ 메뉴나 Ctrl+K 전용 경로로만 남는다.
-      resetEditorUiModeForTests(mode);
-      const topbar = document.createElement("div");
-      renderTopbar(topbar);
-
-      for (const id of ["workspace-ui-mode-beginner", "workspace-ui-mode-standard", "workspace-ui-mode-expert"]) {
-        expect(findByTestId(fake(topbar), id), `${mode}/${id}`).not.toBeNull();
-      }
-    });
-  }
-
-  it("beginner: 음악·찾기를 도구 메뉴에서 연다", () => {
-    // Break: 음악/찾기가 인라인 버튼으로 되돌아가 초보에서 도달 경로가 사라진다.
-    resetEditorUiModeForTests("beginner");
+  it("편집 모드 선택지가 없다", () => {
+    // Break: 2026-09-27 걷어 낸 초보/표준/전문가 라디오가 보기 메뉴에 되살아난다.
     const topbar = document.createElement("div");
     renderTopbar(topbar);
 
-    const ids = commandIds(openMenu(topbar, "menu-tools"));
-    expect(ids, "beginner 도구 메뉴").toContain("menu-tools-audio");
-    expect(ids, "beginner 도구 메뉴").toContain("menu-tools-search");
-    // 같은 모드에 두 표면을 두지 않는다 — 메뉴가 있으면 인라인 버튼은 없다.
-    expect(findByTestId(fake(topbar), "toolbar-sound-test")).toBeNull();
-    expect(findByTestId(fake(topbar), "toolbar-search")).toBeNull();
+    for (const id of ["workspace-ui-mode-beginner", "workspace-ui-mode-standard", "workspace-ui-mode-expert"]) {
+      expect(findByTestId(fake(topbar), id), id).toBeNull();
+    }
   });
 
-  for (const mode of ["standard", "expert"] as const) {
-    it(`${mode}: 세계관·음악·찾기는 인라인 아이콘 버튼이고 도구 메뉴는 없다`, () => {
-      // Break: 표준·전문가에 「도구 ▾」 메뉴와 인라인 버튼이 함께 남아 같은 동작이 두 자리에 놓인다.
-      // 표준이 전문가 capability를 흡수했다 — 표준도 인라인이다.
-      resetEditorUiModeForTests(mode);
-      const topbar = document.createElement("div");
-      renderTopbar(topbar);
-
-      for (const id of ["toolbar-world", "toolbar-sound-test", "toolbar-search"]) {
-        expect(findByTestId(fake(topbar), id), id).not.toBeNull();
-      }
-      expect(findByTestId(fake(topbar), "menu-tools")).toBeNull();
-    });
-  }
-
-  for (const mode of ["standard", "expert"] as const) {
-    it(`${mode}: 자료집·소재는 톱바 버튼이 집이고 도구 메뉴에는 없다`, () => {
-      // Break: 자료집이 다시 버튼과 메뉴 항목 두 자리에 놓인다(2026-09-03 이전의 3중 진입점).
-      resetEditorUiModeForTests(mode);
-      const topbar = document.createElement("div");
-      renderTopbar(topbar);
-
-      expect(findByTestId(fake(topbar), "toolbar-database")).not.toBeNull();
-      expect(findByTestId(fake(topbar), "toolbar-resource-manager")).not.toBeNull();
-      const toolsIds = commandIds(openMenu(topbar, "menu-tools"));
-      expect(toolsIds).not.toContain("menu-tools-database");
-      expect(toolsIds).not.toContain("menu-tools-resources");
-      // 클래식 툴바 행과 작업 칩은 없다 — 복제 표면이었다.
-      for (const gone of ["oprn-toolbar", "toolbar-new", "toolbar-map-copy", "authoring-task-launcher", "authoring-task-data", "window-toolbar-collapse"]) {
-        expect(findByTestId(fake(topbar), gone), gone).toBeNull();
-      }
-    });
-  }
-
-  it("beginner: 자료집은 도구 메뉴에, 소재는 레이어 전환 옆 헤더에 둔다", () => {
-    // Break: 초보 레일 옆에 자료집 버튼이 또 생기거나, 초보의 유일한 자료집 경로(도구 메뉴)가 사라진다.
-    resetEditorUiModeForTests("beginner");
+  it("세계관·음악·찾기는 인라인 아이콘 버튼이고 도구 메뉴는 없다", () => {
+    // Break: 「도구 ▾」 메뉴가 되살아나 인라인 버튼과 같은 동작을 두 자리에 놓는다.
     const topbar = document.createElement("div");
     renderTopbar(topbar);
 
-    expect(findByTestId(fake(topbar), "toolbar-database")).toBeNull();
+    for (const id of ["toolbar-world", "toolbar-sound-test", "toolbar-search"]) {
+      expect(findByTestId(fake(topbar), id), id).not.toBeNull();
+    }
+    expect(findByTestId(fake(topbar), "menu-tools")).toBeNull();
+  });
+
+  it("자료집·소재는 톱바 버튼이 집이다", () => {
+    // Break: 자료집이 다시 버튼과 메뉴 항목 두 자리에 놓인다(2026-09-03 이전의 3중 진입점).
+    const topbar = document.createElement("div");
+    renderTopbar(topbar);
+
+    expect(findByTestId(fake(topbar), "toolbar-database")).not.toBeNull();
     expect(findByTestId(fake(topbar), "toolbar-resource-manager")).not.toBeNull();
-    const toolsIds = commandIds(openMenu(topbar, "menu-tools"));
-    expect(toolsIds).toContain("menu-tools-database");
-    expect(toolsIds).not.toContain("menu-tools-resources");
+    // 클래식 툴바 행과 작업 칩은 없다 — 복제 표면이었다.
+    for (const gone of ["oprn-toolbar", "toolbar-new", "toolbar-map-copy", "authoring-task-launcher", "authoring-task-data", "window-toolbar-collapse"]) {
+      expect(findByTestId(fake(topbar), gone), gone).toBeNull();
+    }
   });
 
   it("프로젝트 메뉴는 예제 프로젝트를 하위 메뉴로 접고 내보내기 두 종류를 함께 둔다", () => {
     // Break: 데모 로더 9개가 다시 최상위로 펼쳐져 프로젝트 메뉴를 14줄로 만든다.
-    resetEditorUiModeForTests("standard");
     const topbar = document.createElement("div");
     renderTopbar(topbar);
 
@@ -270,7 +223,6 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
   it("게임 메뉴는 없다 — 테스트 실행·전투 테스트는 오른쪽 버튼이 유일한 집이다", () => {
     // Break: 게임 메뉴가 되살아나 ▶ 테스트·⚔ 와 같은 창을 두 번째 자리에서 연다
     // (2026-09-03 이전에는 테스트 실행의 집이 작업 칩·▶ 버튼·게임 메뉴·클래식 툴바 넷이었다).
-    resetEditorUiModeForTests("standard");
     const topbar = document.createElement("div");
     renderTopbar(topbar);
 
@@ -286,7 +238,6 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
     // Break: 하위 메뉴를 여는 사이 항목 버튼이 DOM 에서 사라지며 포서스가 러지고,
     // Escape 핸들러가 팝업/트리거 포서스에만 달려 있으면 닫힐 방법이 사라진다.
     // 그 상태에서 팝업은 트리거 자리(증 상단 왼쪽)에 떠 있어 사이드바를 가린다.
-    resetEditorUiModeForTests("standard");
     const topbar = document.createElement("div");
     renderTopbar(topbar);
 
@@ -303,10 +254,10 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
     expect(findByTestId(body(), "menu-popup-project-samples"), "Escape 가 하위 메뉴를 닫아야 한다").toBeNull();
   });
 
-  for (const mode of ["standard", "expert"] as const) {
-    it(`${mode}: 레이어는 앱 헤더에, 맵과 도구는 팔레트에 둔다`, () => {
+  {
+    const mode = "default";
+    it("레이어는 앱 헤더에, 맵과 도구는 팔레트에 둔다", () => {
       // 팔레트를 접어도 소재 옆 헤더에서 레이어를 전환할 수 있어야 한다.
-      resetEditorUiModeForTests(mode);
       const container = document.createElement("div");
       document.body.append(container);
       renderTilePalette(container);
@@ -334,10 +285,10 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
       expect(toolsAt).toBe(1);
     });
   }
-  for (const mode of ["standard", "expert"] as const) {
-    it(`${mode}: 이벤트 팔레트는 레이어 탭 없이 맵·도구·목록을 표시한다`, () => {
+  {
+    const mode = "default";
+    it("이벤트 팔레트는 레이어 탭 없이 맵·도구·목록을 표시한다", () => {
       // 이벤트 분기도 같은 팔레트 셸에서 목록을 렌더한다.
-      resetEditorUiModeForTests(mode);
       editorState.set({ layer: "event", tool: "event" });
       const container = document.createElement("div");
       document.body.append(container);

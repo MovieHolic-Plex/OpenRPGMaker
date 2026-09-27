@@ -126,8 +126,7 @@ async function ensureModalOpen(page: Page, mode: EditorLaneMode): Promise<void> 
   if (mode === "expert") {
     await page.getByTestId("toolbar-database").click();
   } else {
-    await page.getByTestId("menu-tools").click();
-    await page.getByTestId("menu-tools-database").click();
+    await page.getByTestId("toolbar-database").click();
   }
   await expect(modal).toBeVisible();
 }

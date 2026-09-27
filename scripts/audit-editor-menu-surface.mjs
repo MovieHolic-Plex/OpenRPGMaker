@@ -1,5 +1,5 @@
 // Clicks EVERY top-menubar entry and EVERY left-sidebar control in the editor,
-// across beginner/standard/expert, and records whether the click produced any
+// in the editor, and records whether the click produced any
 // observable effect. Output: machine-readable inventory with a works/dead verdict
 // per control plus a cross-surface duplicate report.
 //
@@ -13,12 +13,12 @@ import { mkdirSync, writeFileSync } from "node:fs";
 
 const BASE = process.argv.find((a) => a.startsWith("http")) ?? "http://127.0.0.1:9806";
 const modeArg = process.argv.find((a) => a.startsWith("--modes="));
-const MODES = modeArg ? modeArg.slice("--modes=".length).split(",") : ["beginner", "standard", "expert"];
+const MODES = modeArg ? modeArg.slice("--modes=".length).split(",") : ["editor"];
 const OUT_DIR = ".omo/evidence/menu-ia";
 const SETTLE_BUDGET_MS = 900;
 
 // Content grids are data, not menu controls -- the audit targets chrome.
-const NOISE = /^(chipset-tile-|basic-tile-|structure-kit-|map-toggle-map_|map-context-trigger-map_|tile-meta-)/;
+const NOISE = /^(chipset-tile-|structure-kit-|map-toggle-map_|map-context-trigger-map_|tile-meta-)/;
 
 /** Installed before app scripts: records dispatched CustomEvents + toast mounts. */
 function installProbe() {
@@ -151,10 +151,8 @@ async function auditMode(mode) {
   await context.addInitScript((m) => {
     try {
       localStorage.clear();
-      localStorage.setItem("oprn:editor-ui-mode", m);
       localStorage.setItem("oprn:editor-welcome-dismissed", "1");
       localStorage.setItem("oprn:standard-welcome-seen", "1");
-      localStorage.setItem("oprn:coachmarks-basic-v1", "1");
     } catch {}
   }, mode);
 
@@ -168,7 +166,7 @@ async function auditMode(mode) {
     // sidebar and silently audits only the top region -- which is how a whole run once reported
     // zero leftSidebar targets.
     await page
-      .locator("[data-testid='left-palette-root'], .basic-left-rail")
+      .locator("[data-testid='left-palette-root']")
       .first()
       .waitFor({ state: "visible", timeout: 20_000 })
       .catch(() => {});
@@ -240,8 +238,6 @@ async function auditMode(mode) {
   const nestedParents = [
     { parent: "standard-more-tools", scope: "[data-testid='standard-more-tools-menu']" },
     { parent: "workspace-panels-button", scope: ".workspace-panels-popover, [data-testid^='workspace-panel'], [data-testid^='workspace-layout'], [data-testid^='workspace-density']" },
-    { parent: "basic-rail-toggle-tiles", scope: ".basic-flyout-content" },
-    { parent: "basic-rail-toggle-maps", scope: ".basic-flyout-content" },
     { parent: "oprn-tool-overflow", scope: ".tile-toolbar-overflow-menu, .toolbar-overflow-menu" },
     { parent: "toolbar-overflow-toggle", scope: ".toolbar-overflow-menu" },
   ];

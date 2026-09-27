@@ -114,7 +114,6 @@
 @import "./modern/enemies.css" layer(database);
 @import "./modern/equipment-items.css" layer(database);
 @import "./modern/factions.css" layer(database);
-@import "./modern/monster-ux.css" layer(database);
 @import "./modern/monster-species.css" layer(database);
 @import "./modern/village.css" layer(database);
 @import "./growth-tree.css" layer(database);

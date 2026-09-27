@@ -28,7 +28,6 @@ import type { MapId, Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { ensureGuestIdentityForAiSurface } from "@/editor/teamWorkflowUi";
-import { getEditorChrome } from "@/editor/editorUiMode";
 import { sanitizeUserFacingToolId } from "@/editor/uiCopy";
 import {
   collectVocabSoftConfirms,
@@ -404,9 +403,7 @@ export function createProposalHost(options: {
 
   const noteNoChanges = (result: TurnResult, extraWarnings: readonly string[] = []): void => {
     if (result.proposedCalls.length > 0 || (result.appliedCalls?.length ?? 0) > 0) return;
-    const plainToolNames = getEditorChrome().jargonStyle === "plain";
-    const lines = proposalSummaryLines(result.proposedCalls, extraWarnings)
-      .map((line) => (plainToolNames ? sanitizeUserFacingToolId(line) : line));
+    const lines = proposalSummaryLines(result.proposedCalls, extraWarnings).map((line) => sanitizeUserFacingToolId(line));
     if (lines.length === 0) return;
     appendBubble("system", ["변경 제안 없음(0건) — 완성도 린트:", ...lines].join("\n"));
     const notice = renderEmptyProposalNotice(lines, () => notice.remove());

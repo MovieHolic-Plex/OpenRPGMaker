@@ -5,7 +5,7 @@ import { chromium } from "playwright";
 import { mkdirSync, writeFileSync } from "node:fs";
 
 const BASE = process.argv[2] ?? "http://127.0.0.1:9806";
-const MODES = ["beginner", "standard", "expert"];
+const MODES = ["editor"];
 const OUT_DIR = ".omo/evidence/menu-ia";
 
 const browser = await chromium.launch();
@@ -15,11 +15,6 @@ async function probeMode(mode) {
   const page = await context.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push(String(e.message)));
-  await page.addInitScript((m) => {
-    try {
-      localStorage.setItem("oprn:editor-ui-mode", m);
-    } catch {}
-  }, mode);
   await page.goto(`${BASE}/?blankProject=1`, { waitUntil: "networkidle", timeout: 90_000 });
   await page.locator(".oprn-menu-bar").waitFor({ state: "visible", timeout: 30_000 });
 
@@ -48,7 +43,6 @@ async function probeMode(mode) {
     menubar: ".oprn-menu-bar",
     classicToolbar: ".oprn-toolbar",
     leftPanel: ".left-panel",
-    basicRail: ".basic-left-rail",
   })) {
     surfaces[name] = await page.evaluate(describe(sel));
   }
@@ -78,10 +72,8 @@ async function probeMode(mode) {
         return { w: Math.round(r.width), h: Math.round(r.height), x: Math.round(r.x), testid: n.dataset?.testid ?? null };
       };
       return {
-        mode: document.body.dataset.editorUiMode ?? null,
         bodyClass: document.body.className,
         leftPanel: pick('.left-panel'),
-        basicRail: pick('.basic-left-rail'),
         drawerTabs: pick('[data-testid="left-drawer-tabs"]'),
         mapRoot: pick('[data-testid="left-map-root"]'),
         paletteRoot: pick('[data-testid="left-palette-root"]'),
@@ -100,7 +92,7 @@ mkdirSync(OUT_DIR, { recursive: true });
 writeFileSync(`${OUT_DIR}/surface-probe.json`, JSON.stringify(results, null, 2));
 
 for (const r of results) {
-  console.log(`\n########## MODE=${r.mode} (body=${r.layout.mode}) errors=${r.errors.length}`);
+  console.log(`\n########## MODE=${r.mode}  errors=${r.errors.length}`);
   console.log("layout:", JSON.stringify(r.layout));
   for (const [name, s] of Object.entries(r.surfaces)) {
     if (s.missing) {

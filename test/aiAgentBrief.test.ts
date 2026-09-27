@@ -8,14 +8,12 @@ import {
   readAgentBrief,
 } from "@/editor/panels/aiAgentBrief";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 
 describe("readAgentBrief", () => {
   beforeEach(() => {
     store.replace(createBlankProject());
-    resetEditorUiModeForTests("standard");
     const mapId = store.getCurrent().startMapId;
     editorState.set({
       currentMapId: mapId,
@@ -26,7 +24,6 @@ describe("readAgentBrief", () => {
   });
 
   afterEach(() => {
-    resetEditorUiModeForTests("standard");
   });
 
   it("맵 크기·레이어·도구를 한 줄로 읽는다", () => {

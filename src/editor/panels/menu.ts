@@ -2,16 +2,11 @@ import { editorState } from "@/editor/editorState";
 import { layerSwitcherKey, makeLeftLayerSwitcher } from "./leftLayerSwitcher";
 import { captureFocus, restoreFocus } from "./sidebarFocus";
 import { getMode, toggleMode } from "@/app/mode";
-import { PRODUCT_TAGLINE } from "@/brand";
+import { PRODUCT_BRAND, PRODUCT_TAGLINE } from "@/brand";
 import { showConfirm } from "@/editor/ui/modal";
 import { createNewProjectSeed } from "@/editor/genrePacks";
 import { newProjectChoiceById } from "@/editor/newProjectChoices";
 import { newProjectChoiceLabel, showNewProjectDialog } from "@/editor/ui/newProjectDialog";
-import {
-  EDITOR_PRODUCT_BRAND,
-  getEditorChrome,
-  getEditorUiMode,
-} from "@/editor/editorUiMode";
 import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
 import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
 import { renderAiConnectionChip } from "@/editor/panels/aiConnectionChip";
@@ -72,11 +67,10 @@ import { claimTransientLayer, releaseTransientLayer } from "@/editor/ui/transien
 //   • 오른쪽 = 실행·화면·세션. ▶ 테스트|⚔ · 스튜디오 · 보기 ▾ · 도움말 · 기록 · 신원 · AI 설정 · 전체화면.
 // 삭제한 것: 게임 메뉴(두 항목이 모두 오른쪽 버튼의 복제), 전문가 클래식 툴바 행, 툴바 접기,
 // 작업 칩(레이어 전환·자료집 버튼·▶ 테스트의 복제). 맵 메뉴는 2026-08-26 에 같은 이유로 사라졌다.
-//
-// 초보는 자료집을 도구 메뉴에 둔다. 소재와 레이어 전환은 모든 편집 모드에서
-// 같은 헤더 위치에 표시한다. 표준·전문가는 세계관·음악·찾기도 인라인한다.
+// 초보/표준/전문가 편집 모드는 2026-09-27 에 없앴다 — 편집기 화면은 하나다. 초보 전용이던
+// 「도구 ▾」 메뉴도 그때 걷었다(자료집·소재·세계관·음악·찾기가 모두 인라인 버튼이다).
 
-type MenuId = "project" | "tools" | "help";
+type MenuId = "project" | "help";
 
 const autoSaveLog = createLogger("autosave");
 
@@ -128,11 +122,9 @@ export function renderTopbar(topbar: HTMLElement): void {
   disposeFullscreenButton = null;
   while (topbar.firstChild) topbar.removeChild(topbar.firstChild);
   const mode = getMode();
-  const uiMode = getEditorUiMode();
-  const chrome = getEditorChrome();
   const menuBar = el("div", {
     class: "oprn-menu-bar editor-studio-menubar studio-bar",
-    dataset: { testid: "oprn-menu-bar", editorUiMode: uiMode },
+    dataset: { testid: "oprn-menu-bar" },
   });
 
   // 왼쪽 — 파일·자료 묶음.
@@ -143,23 +135,14 @@ export function renderTopbar(topbar: HTMLElement): void {
     renderMenu("project", projectLabel, menuCommands("project", topbar), { chevron: true, className: "studio-project-button", title: `프로젝트 — ${projectLabel}` }),
     renderSaveButton(),
     renderTopbarSaveStatus(topbar),
-    // 초보는 「도구 ▾」 메뉴가 집, 그 외는 인라인 아이콘 5개가 집이다(표준/전문가 통합).
-    ...(chrome.paletteRail
-      ? [renderMenu("tools", "도구", menuCommands("tools", topbar), { chevron: true })]
-      : [
-          toolButton({ testId: "toolbar-database", icon: "database", label: headerLabel("databaseShort"), title: headerLabel("database"), onClick: () => openDatabaseModalLazy() }),
-          toolButton({ testId: "toolbar-resource-manager", icon: "image", label: headerLabel("resources"), title: headerLabel("resourceLibrary"), onClick: () => openResourceModal() }),
-          toolButton({ testId: "toolbar-world", icon: "globe", title: headerLabel("world"), onClick: () => openWorldPanel() }),
-          toolButton({ testId: "toolbar-sound-test", icon: "music", title: headerLabel("audio"), onClick: () => openAudioTestDialog() }),
-          toolButton({ testId: "toolbar-search", icon: "docSearch", title: headerLabel("mapEventSearch"), onClick: () => openMapEventSearchModal() }),
-        ]),
+    toolButton({ testId: "toolbar-database", icon: "database", label: headerLabel("databaseShort"), title: headerLabel("database"), onClick: () => openDatabaseModalLazy() }),
+    toolButton({ testId: "toolbar-resource-manager", icon: "image", label: headerLabel("resources"), title: headerLabel("resourceLibrary"), onClick: () => openResourceModal() }),
+    toolButton({ testId: "toolbar-world", icon: "globe", title: headerLabel("world"), onClick: () => openWorldPanel() }),
+    toolButton({ testId: "toolbar-sound-test", icon: "music", title: headerLabel("audio"), onClick: () => openAudioTestDialog() }),
+    toolButton({ testId: "toolbar-search", icon: "docSearch", title: headerLabel("mapEventSearch"), onClick: () => openMapEventSearchModal() }),
   );
   if (mode === "edit") {
-    let resources = lead.querySelector<HTMLElement>('[data-testid="toolbar-resource-manager"]');
-    if (!resources) {
-      resources = toolButton({ testId: "toolbar-resource-manager", icon: "image", label: headerLabel("resources"), title: headerLabel("resourceLibrary"), onClick: () => openResourceModal() });
-      lead.append(resources);
-    }
+    const resources = lead.querySelector<HTMLElement>('[data-testid="toolbar-resource-manager"]');
     const layers = makeLeftLayerSwitcher(layerSwitcherKey(editorState.get()));
     layers.classList.add("header-layer-switcher");
     disposeLayerSwitcher = editorState.subscribe((state) => {
@@ -173,8 +156,8 @@ export function renderTopbar(topbar: HTMLElement): void {
         if (!keepFocus) button.tabIndex = active ? 0 : -1;
       }
     });
-    const resourceIndex = Array.from(lead.children).indexOf(resources);
-    lead.insertBefore(layers, lead.children[resourceIndex + 1] ?? null);
+    const resourceIndex = resources ? Array.from(lead.children).indexOf(resources) : -1;
+    lead.insertBefore(layers, resourceIndex >= 0 ? lead.children[resourceIndex + 1] ?? null : null);
   }
   menuBar.append(lead);
 
@@ -202,9 +185,7 @@ export function renderTopbar(topbar: HTMLElement): void {
   const [panelsButton, panelsMenu] = renderWorkspaceBar();
   trailing.append(panelsButton, panelsMenu);
   const cluster = el("div", { class: "studio-icon-cluster", dataset: { testid: "studio-icon-cluster" } });
-  if (chrome.helpMenu) {
-    cluster.append(renderMenu("help", "도움말", menuCommands("help", topbar), { icon: "help", className: "studio-icon-button" }));
-  }
+  cluster.append(renderMenu("help", "도움말", menuCommands("help", topbar), { icon: "help", className: "studio-icon-button" }));
   cluster.append(renderCommitHistoryButton(), renderTopbarIdentityControl(topbar));
   if (mode === "edit") cluster.append(renderTopbarAiSettingsButton(), renderTopbarAiConnectionChip());
   cluster.append(renderFullscreenButton());
@@ -336,10 +317,10 @@ function renderProductBrand(): HTMLElement {
   return el("div", {
     class: "editor-product-brand",
     dataset: { testid: "editor-product-brand" },
-    attrs: { title: EDITOR_PRODUCT_BRAND },
+    attrs: { title: PRODUCT_BRAND },
     children: [
       el("span", { class: "editor-product-brand-mark", attrs: { "aria-hidden": "true" }, text: "✦" }),
-      el("span", { class: "editor-product-brand-text", text: EDITOR_PRODUCT_BRAND }),
+      el("span", { class: "editor-product-brand-text", text: PRODUCT_BRAND }),
     ],
   });
 }
@@ -756,28 +737,10 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
         item("웹 게임 내보내기...", "menu-project-export-web", () => void doExportWebGame()),
         item("실행형 HTML 내보내기...", "menu-project-export-standalone", () => void doExportStandaloneHtml()),
       ];
-    case "tools": {
-      // 작업 창(모달)만 담는다. 레이어 전환은 헤더의 소재 옆에 있다.
-      // 초보의 자료집만 이 메뉴에 둔다. 소재는 모든 편집 모드에서 헤더 버튼이 소유한다.
-      // AI 설정은 오른쪽 ⚙ 버튼이 집이다.
-      const chrome = getEditorChrome();
-      const beginnerOnly: MenuCommand[] = chrome.paletteRail
-        ? [
-            item(`${headerLabel("database")}...`, "menu-tools-database", () => openDatabaseModalLazy(), "database"),
-            { kind: "separator" },
-          ]
-        : [];
-      return [
-        ...beginnerOnly,
-        item(`${headerLabel("world")}...`, "menu-tools-world", () => openWorldPanel(), "globe"),
-        item(`${headerLabel("audio")}...`, "menu-tools-audio", () => openAudioTestDialog(), "music"),
-        item(`${headerLabel("mapEventSearch")}...`, "menu-tools-search", () => openMapEventSearchModal(), "docSearch"),
-      ];
-    }
     case "help":
       return [
         item("단축키 · 도움말", "menu-help-shortcuts", () => openHelpModal()),
-        item("정보", "menu-help-about", () => toast(`${EDITOR_PRODUCT_BRAND} — ${PRODUCT_TAGLINE}`, "ok")),
+        item("정보", "menu-help-about", () => toast(`${PRODUCT_BRAND} — ${PRODUCT_TAGLINE}`, "ok")),
       ];
   }
 }
@@ -798,11 +761,11 @@ function sampleProjectCommands(): readonly MenuCommand[] {
 
 /**
  * 헤더 문구의 단일 진입점. 헤더는 메뉴바·톱바·클래식 툴바가 같은 개념을 같은 말로 불러야
- * 하므로 한국어를 여기서 새로 적지 않고 `uiCopy` 표를 현재 모드의 용어 스타일로 읽는다.
+ * 하므로 한국어를 여기서 새로 적지 않고 `uiCopy` 표에서 읽는다.
  * title/aria-label 은 언제나 정본 키를, label 은 정본 또는 `*Short` 축약형을 쓴다.
  */
 function headerLabel(key: UiCopyKey): string {
-  return uiLabel(key, getEditorChrome().jargonStyle);
+  return uiLabel(key);
 }
 
 function item(label: string, testId: string, onClick: () => void, icon?: SvgIconName): MenuCommand {

@@ -3,7 +3,6 @@
 // 피커가 뒤에 남으면 확인이 뒤 창에 먹혀 저작이 유실된다.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
 import { clearCommandInspector } from "@/editor/panels/eventEditor/commandInspector";
 import { renderDatabaseCommandListEditor } from "@/editor/panels/databaseCommandListAdapter";
@@ -44,7 +43,6 @@ function emptyEvent(): GameEvent {
 }
 
 beforeEach(() => {
-  resetEditorUiModeForTests("expert");
   clearCommandInspector();
   host = document.createElement("div");
   document.body.append(host);
@@ -53,7 +51,6 @@ beforeEach(() => {
 afterEach(() => {
   document.querySelector<HTMLButtonElement>('[data-testid="event-command-edit-cancel"]')?.click();
   document.querySelector<HTMLButtonElement>('[data-testid="event-command-picker-cancel"]')?.click();
-  resetEditorUiModeForTests("standard");
   clearCommandInspector();
   document.body.replaceChildren();
 });

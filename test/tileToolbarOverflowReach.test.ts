@@ -14,7 +14,6 @@ import { resolve } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { renderTilePalette } from "@/editor/panels/tilePalette";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { resetTileToolbarMenusForTests } from "@/editor/panels/tileToolbarMenus";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -49,7 +48,6 @@ function toolbarRow(): HTMLElement {
 describe("도구막대 오버플로 도달성", () => {
   beforeEach(() => {
     resetTileToolbarMenusForTests();
-    resetEditorUiModeForTests("standard");
     const project = createBlankProject();
     store.replace(project);
     editorState.set({ currentMapId: project.startMapId, layer: "lower", paintShape: "pen", selection: null, tool: "paint" });

@@ -32,14 +32,6 @@ export function panelHostTestId(id: PanelId): string {
   return HOST_TESTID[id];
 }
 
-/**
- * 손으로 조립하던 시절 호스트에 붙어 있던 `data-ui-density` 값. 지금 이 두 요소를 보는
- * CSS·테스트는 없지만(살아 있는 규칙은 `.classic-toolbar[data-ui-density="expert"]` 뿐),
- * 이번 라운드는 "조립 근거만 바꾼다"가 목표이므로 속성을 그대로 옮긴다. 지우는 것은
- * 별건 청소다.
- */
-const HOST_UI_DENSITY: Partial<Record<PanelId, string>> = { maps: "expert" };
-
 export type DockMount = {
   readonly zone: DockZone;
   readonly container: HTMLElement;
@@ -81,14 +73,12 @@ export function mountDock(args: MountDockArgs): DockMount {
         args.container.append(splitter);
       }
     }
-    const density = HOST_UI_DENSITY[id];
     const host = el("div", {
       class: "left-panel-stack",
       dataset: {
         testid: HOST_TESTID[id],
         dockPanel: id,
         dockZone: args.zone,
-        ...(density ? { uiDensity: density } : {}),
       },
     });
     hosts.set(id, host);

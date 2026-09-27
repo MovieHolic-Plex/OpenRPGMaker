@@ -9,7 +9,6 @@
 import { actorBattlers } from "@/battle/battleBattlers";
 import { simulateBattle } from "@/battle/simulate";
 import type { EnemyRecord, Project, TroopId } from "@/project/types";
-import { uxLevel } from "@/editor/panels/databaseUxLevel";
 
 export type EnemyDifficultyGrade = "easy" | "normal" | "hard";
 
@@ -109,8 +108,7 @@ function renderDifficulty(node: HTMLElement, estimate: EnemyDifficultyEstimate |
   const hpPercent = Math.round(estimate.hpLeftRatio * 100);
   node.title = `시작 파티가 Lv${estimate.partyLevel}일 때 이 몬스터 1마리와 ${estimate.samples}번 모의 전투: 이긴 비율 ${winPercent}%, 끝난 뒤 남은 HP ${hpPercent}%. 여러 마리 조합은 적 그룹 탭에서 잽니다.`;
   node.setAttribute("aria-label", `강도: 파티 Lv${estimate.partyLevel} 기준 ${estimate.label}`);
-  // 숫자는 전문가 모드에서만(monster-ux.css). 나머지 모드는 말과 막대로 읽는다.
-  const numbers = uxLevel(document.createElement("small"), "expert");
+  const numbers = document.createElement("small");
   numbers.textContent = `승률 ${winPercent}% · 남은 HP ${hpPercent}%`;
   node.replaceChildren(basis, bar, label, numbers);
 }

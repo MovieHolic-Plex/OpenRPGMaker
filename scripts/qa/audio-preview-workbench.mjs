@@ -85,7 +85,7 @@ try {
     Object.values(project.maps)[0].bgm = { mode: "custom", resourceId: "cc0-bgm-field" };
     store.replaceProject(project); focusProjectStartMap();
   });
-  await page.getByTestId("menu-tools").click(); await page.getByTestId("menu-tools-audio").click();
+  await page.getByTestId("toolbar-sound-test").click();
   const dm = '[data-testid="audio-test-dialog"] audio[data-editor-audio-preview]';
   await page.locator('[data-testid="audio-test-list"] [data-resource-id="cc0-bgm-field"]').click();
   assert.equal(await page.locator(dm).evaluate(a => a.paused), true);
@@ -118,7 +118,7 @@ try {
   }));
   await page.evaluate(async () => (await import("/src/player/audio/index.ts")).getAudioEngine().setFadeInMs(777));
   const gameBefore = await runtimeState();
-  await page.getByTestId("menu-tools").click(); await page.getByTestId("menu-tools-audio").click();
+  await page.getByTestId("toolbar-sound-test").click();
   await page.locator('[data-testid="audio-test-list"] [data-resource-id="cc0-music-field-loop"]').click();
   await page.getByTestId("audio-test-advanced").locator("summary").click();
   for (const [id, value] of [["volume", "40"], ["tempo", "125"], ["balance", "40"], ["fade", "2"]]) await page.getByTestId("audio-test-" + id).locator("input").fill(value);
@@ -165,7 +165,7 @@ try {
   await page.getByTestId("map-bgm-resource-dialog-cancel").click(); await page.keyboard.press("Escape");
   assert.equal(await page.locator("audio[data-editor-audio-preview]").count(), 0); assert.deepEqual(await runtimeState(), gameBefore);
   await receipt({ scenario: "map picker playback seek empty search and cleanup", pickerPlay, pickerSeek, pickerShots });
-  await page.getByTestId("menu-tools").click(); await page.getByTestId("menu-tools-audio").click(); await page.getByTestId("audio-test-tab-sound").click();
+  await page.getByTestId("toolbar-sound-test").click(); await page.getByTestId("audio-test-tab-sound").click();
   await context.route(origin + "/assets/cc0/audio/ui-confirm.wav", route => route.abort("failed"));
   const mediaError = await mediaEvent(dm, "error", () => page.locator('[data-testid="audio-test-list"] [data-resource-id="cc0-sound-ui-confirm"]').click());
   assert.equal(await page.getByTestId("audio-test-transport").getAttribute("data-state"), "error");

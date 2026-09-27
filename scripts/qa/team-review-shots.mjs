@@ -53,8 +53,7 @@ try {
         readPage.on('pageerror', e => process.stdout.write('viewer error: ' + e.message + '\n'));
         await readPage.goto(host.url);
         await readPage.locator('[aria-label="팀 연결 상태"]').filter({ hasText: '보기 전용' }).waitFor({ timeout: 45000 });
-        await readPage.getByTestId('menu-tools').click();
-        await readPage.getByTestId('menu-tools-database').click();
+        await readPage.getByTestId('toolbar-database').click();
         await readPage.locator('.db-body').waitFor();
         await readPage.screenshot({ path: out + '/05-viewer-database.png' });
         process.stdout.write('Viewer database opened; disabled authored fields: ' + await readPage.locator('[data-team-disabled]').count() + '\n');

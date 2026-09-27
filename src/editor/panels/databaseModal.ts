@@ -1,6 +1,5 @@
 import "@/styles/database/index.css";
 import { preloadRuntimeStyles } from "@/app/runtimeStyles";
-import { dismissCoachMarks } from "@/editor/coachMarks";
 import { disposeAppearanceSlots } from "@/editor/panels/databaseAppearanceSlots";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { handleHistoryHotkey } from "@/editor/hotkeys";
@@ -41,7 +40,6 @@ import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { pendingHistoryLabels, undoMapEdit } from "@/editor/mapEditHistory";
 import { openHelpModal } from "@/editor/panels/helpModal";
-import { getEditorChrome } from "@/editor/editorUiMode";
 import { uiLabel } from "@/editor/uiCopy";
 import { createConnectionsPanel } from "@/editor/panels/databaseConnectionsPanel";
 
@@ -144,10 +142,6 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   // 제목 화면·상태 메뉴·전투 명령·시네마틱 미리보기가 런타임 시트를 쓴다.
   // 부팅 때 숨겨 만드는 창(prewarm)은 싣지 않는다 — 그러면 편집기 첫 화면이 다시 런타임 시트를 읽는다.
   if (!parkingModal) void preloadRuntimeStyles();
-  // 맵 도구 레일을 가리키는 온보드 코치마크가 body 최상위에 매달려 모달 위를 덮어
-  // 목록 제목과 탭 검색을 가리는 사고가 있었다 — 모달이 열리면 화면을 모달에게 넘긴다.
-  // 본 것으로 기록하지는 않는다(welcome intent 와 같은 정책).
-  if (!parkingModal) dismissCoachMarks();
   if (parkedModal) {
     const parked = parkedModal;
     parkedModal = null;
@@ -261,8 +255,8 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   const header = el("header", {
     class: "database-modal-header",
     children: [
-      // 창 제목이 jargonStyle 을 우회하면 초보 모드에서 명령 팔레트·도움말은 「자료집」,
-      // 정작 열린 창은 「데이터베이스」가 된다. 라벨 정본(uiCopy)을 쓴다.
+      // 창 제목이 라벨 정본(uiCopy)을 우회하면 명령 팔레트·도움말은 「자료집」, 정작 열린 창은
+      // 다른 이름이 된다. 라벨 정본을 쓴다.
       el("div", { class: "database-modal-heading", children: [el("h2", { text: databaseSurfaceLabel() }), crumb] }),
       aiToggleButton,
       windowControls,
@@ -750,7 +744,6 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
         if (showOptions && handle) handle.onClose.add(showOptions.onClose);
         document.addEventListener("keydown", handleModalKeyDown);
         document.addEventListener("keydown", handleHistoryKeyDown);
-        dismissCoachMarks();
         syncModalLayer(false);
         if (readStoredDockMode()) applyDockMode(true);
         closeButton.focus();
@@ -797,11 +790,11 @@ function installDatabaseFocusTrap(backdropEl: HTMLElement, windowEl: HTMLElement
 }
 
 /**
- * 이 표면의 이름. 「자료집」(초보)/「데이터베이스」(전문) 두 이름이 있고 정본은 uiCopy 다.
+ * 이 표면의 이름. 정본은 uiCopy 다.
  * 문자열을 새로 적으면 같은 창이 화면마다 다른 이름으로 불린다 — 실제로 갈라져 있었다.
  */
 function databaseSurfaceLabel(): string {
-  return uiLabel("database", getEditorChrome().jargonStyle);
+  return uiLabel("database");
 }
 
 const DB_DOCK_MODE_KEY = "oprn:db-dock-mode";

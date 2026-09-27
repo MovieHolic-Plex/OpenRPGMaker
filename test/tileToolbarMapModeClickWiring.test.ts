@@ -11,7 +11,6 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { renderTilePalette } from "@/editor/panels/tilePalette";
 import { layerSwitcherKey, makeLeftLayerSwitcher } from "@/editor/panels/leftLayerSwitcher";
 import { createBlankProject } from "@/project/defaults";
@@ -33,7 +32,6 @@ describe("렌더된 표준 도구막대의 맵 모드 클릭 배선", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     resetTileToolbarMenusForTests();
-    resetEditorUiModeForTests("standard");
     store.replace(createBlankProject());
     container = document.createElement("div");
     container.dataset.testid = 'left-palette-root';

@@ -5,7 +5,6 @@ import { clearConversations } from "@/ai/conversationStore";
 import { loadAiConfig } from "@/ai/llmClient";
 import { resolveAutonomy } from "@/ai/autonomyLevels";
 import { editorState } from "@/editor/editorState";
-import { setEditorUiMode } from "@/editor/editorUiMode";
 import { renderAiChatPanel, teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { closeAiSettingsModal, openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
 import { renderTopbar } from "@/editor/panels/menu";
@@ -45,7 +44,6 @@ function open(entry: "topbar" | "panel"): void {
 
 beforeEach(async () => {
   localStorage.clear();
-  setEditorUiMode("standard");
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   store.replace(createBlankProject());
   editorState.set({ currentMapId: store.getCurrent().startMapId, selection: null });

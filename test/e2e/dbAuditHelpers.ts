@@ -4,6 +4,7 @@ import path from "node:path";
 import { exportedProject, type DatabaseTabSpec } from "./oprn-database-helpers";
 import { gotoWithRetry } from "../../scripts/lib/goto-retry.mjs";
 
+/** 증거 파일 이름용 레인 이름. 편집 모드는 2026-09-27 에 없어졌고 두 레인은 같은 편집기를 돈다. */
 export type EditorLaneMode = "beginner" | "expert";
 
 export type BootDbLaneOpts = {
@@ -13,7 +14,6 @@ export type BootDbLaneOpts = {
   readonly localStorageSeed?: Readonly<Record<string, string | null>>;
 };
 
-export const EDITOR_UI_MODE_KEY = "oprn:editor-ui-mode";
 export const ONBOARDING_STORAGE_KEYS = [
   "oprn:coachmarks-basic-v1",
   "oprn:standard-welcome-seen",
@@ -148,8 +148,7 @@ async function openDatabaseAnyMode(page: Page): Promise<void> {
   if (await toolbar.isVisible().catch(() => false)) {
     await toolbar.click();
   } else {
-    await page.getByTestId("menu-tools").click();
-    await page.getByTestId("menu-tools-database").click();
+    await page.getByTestId("toolbar-database").click();
   }
   await expect(page.getByTestId("database-modal")).toBeVisible();
 }
@@ -158,8 +157,7 @@ export async function bootDbLane(page: Page, opts: BootDbLaneOpts): Promise<void
   const viewport = opts.viewport ?? DEFAULT_VIEWPORT;
   await page.setViewportSize(viewport);
   await page.addInitScript(
-    ({ mode, onboardingKeys, modeKey, seed }) => {
-      localStorage.setItem(modeKey, mode);
+    ({ onboardingKeys, seed }) => {
       for (const key of onboardingKeys) localStorage.removeItem(key);
       if (!seed) return;
       for (const [key, value] of Object.entries(seed)) {
@@ -168,9 +166,7 @@ export async function bootDbLane(page: Page, opts: BootDbLaneOpts): Promise<void
       }
     },
     {
-      mode: opts.mode,
       onboardingKeys: ONBOARDING_STORAGE_KEYS,
-      modeKey: EDITOR_UI_MODE_KEY,
       seed: opts.localStorageSeed ?? null,
     },
   );

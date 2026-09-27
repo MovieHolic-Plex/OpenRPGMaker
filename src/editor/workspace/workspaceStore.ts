@@ -1,16 +1,13 @@
 // editor/workspace/workspaceStore.ts
 // 워크스페이스 레이아웃의 살아 있는 상태 + `oprn:workspace:v1` 저장.
 //
-// 밀도(density)는 여기서 **소유하지 않는다** — `editorUiMode` 가 원천이고 이 모듈은 읽기만
-// 한다. 편집 모드를 바꾸는 표면(「보기」 메뉴·Ctrl+K)은 `setEditorUiMode` 를 직접 부른다.
-// 2026-09-03 까지 있던 `setWorkspaceDensity`(밀도 이름으로 같은 일을 하던 두 번째 함수)와
+// 2026-09-03 까지 있던 `setWorkspaceDensity`(밀도 이름으로 편집 모드를 바꾸던 두 번째 함수)와
 // `setWorkspacePreset`(톱바 작업 칩이 부르던 도크 프리셋)은 그 표면들과 함께 걷었다.
+// 밀도 자체는 2026-09-27 에 편집 모드와 함께 없앴다.
 
-import { getEditorUiMode } from "@/editor/editorUiMode";
 import type { DockZone, PanelId } from "@/editor/workspace/panelRegistry";
 import {
   closePanel,
-  densityForUiMode,
   movePanel,
   parseWorkspaceLayout,
   reopenPanel,
@@ -39,18 +36,11 @@ function hydrate(): WorkspaceLayout {
   } catch {
     raw = null;
   }
-  return parseWorkspaceLayout(raw, getEditorUiMode());
-}
-
-/** 밀도는 매번 `editorUiMode` 에서 다시 읽는다 — 사본이 낡지 않게. */
-function withLiveDensity(layout: WorkspaceLayout): WorkspaceLayout {
-  const density = densityForUiMode(getEditorUiMode());
-  return layout.density === density ? layout : { ...layout, density };
+  return parseWorkspaceLayout(raw);
 }
 
 export function getWorkspaceLayout(): WorkspaceLayout {
   if (!current) current = hydrate();
-  current = withLiveDensity(current);
   return current;
 }
 
@@ -67,11 +57,11 @@ function notify(): void {
 }
 
 /**
- * 도크 구성·크기 갱신. 밀도는 무시된다(원천이 editorUiMode).
+ * 도크 구성 갱신.
  * 구독자가 다시 그린다 — 호출자가 직접 렌더하면 전환 1회에 2번 그려진다.
  */
 export function updateWorkspaceLayout(next: WorkspaceLayout): void {
-  current = withLiveDensity(next);
+  current = next;
   persist(current);
   notify();
 }

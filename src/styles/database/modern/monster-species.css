@@ -426,15 +426,6 @@
   margin-left: auto;
 }
 
-/* ── 모드별 숨김 보강 ─────────────────────────────────────────────
-   monster-ux.css 의 공용 규칙((0,2,1))은 `.db-ws-card { display: grid }` 같은 (0,4,0) 표시 규칙에 진다.
-   종족 워크스페이스 안에서는 같은 규칙을 더 높은 특이도로 되풀이한다. */
-body.editor-ui-beginner .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="db-monster-species-workspace"] :is([data-db-ux="advanced"], [data-db-ux="expert"]),
-body.editor-ui-standard .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="db-monster-species-workspace"] [data-db-ux="expert"],
-body.editor-ui-expert .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="db-monster-species-workspace"] [data-db-ux="guide"] {
-  display: none;
-}
-
 /* 포획 구역은 카드 하나뿐이라 전폭이면 숫자 칸이 1000px 넘게 늘어난다. */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-section-panel > [data-testid="db-monster-species-capture-card"] {
   max-width: 720px;

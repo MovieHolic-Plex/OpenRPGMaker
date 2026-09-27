@@ -7,7 +7,6 @@ import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import type { EventPage, GameEvent } from "@/project/types";
 
 function seed(page: Partial<EventPage> = {}, event: Partial<GameEvent> = {}): string {
@@ -51,14 +50,12 @@ describe("레일 그룹 저작 표시 점", () => {
   let host: HTMLElement;
 
   beforeEach(() => {
-    resetEditorUiModeForTests("expert");
     host = document.createElement("div");
     document.body.append(host);
   });
 
   afterEach(() => {
     host.remove();
-    resetEditorUiModeForTests("standard");
   });
 
   it("기본값뿐인 페이지에는 점이 하나도 없다", () => {
