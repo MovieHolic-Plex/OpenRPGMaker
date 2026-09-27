@@ -732,15 +732,7 @@ async function renderTopbar(): Promise<void> {
   render(elements.topbar);
 }
 
-void import("@/editor/editorUiMode").then(({ subscribeEditorUiMode }) => {
-  subscribeEditorUiMode(() => {
-    void renderTopbar();
-  });
-});
-
-// 워크스페이스 구성 변화도 탑바를 다시 그린다 — 프리셋 세그먼트의 선택 표시(aria-pressed)와
-// 패널 메뉴의 체크 상태가 여기서 나온다. 밀도가 안 바뀌는 전환(맵 그리기 → 이벤트 연출)은
-// editorUiMode 구독자를 깨우지 않으므로 이 구독이 없으면 선택 표시가 옛 값에 멈춘다.
+// 워크스페이스 구성 변화는 탑바를 다시 그린다 — 패널 메뉴의 체크 상태가 여기서 나온다.
 void import("@/editor/workspace/workspaceStore").then(({ subscribeWorkspace }) => {
   subscribeWorkspace(() => {
     void renderTopbar();

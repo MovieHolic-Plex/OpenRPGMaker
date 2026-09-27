@@ -22,7 +22,7 @@ await page.addInitScript((seed) => {
 }, project);
 
 await page.goto("http://127.0.0.1:9173/", { waitUntil: "domcontentloaded", timeout: 60_000 });
-await page.waitForSelector('[data-testid="menu-tools"]', { timeout: 30_000 });
+await page.waitForSelector('[data-testid="toolbar-database"]', { timeout: 30_000 });
 await page.waitForTimeout(800);
 
 // --- Title + field menu (system graphic) ---
@@ -57,13 +57,7 @@ await page.waitForTimeout(500);
 
 // --- Troop battle test (battle DOM skins + backdrop) ---
 const toolbarDb = page.locator('[data-testid="toolbar-database"]');
-if ((await toolbarDb.count()) > 0) {
-  await toolbarDb.first().click();
-} else {
-  await page.getByTestId("menu-tools").click();
-  await page.waitForTimeout(200);
-  await page.getByTestId("menu-tools-database").click();
-}
+await toolbarDb.first().click();
 await page.waitForSelector('[data-testid="db-tab-troops"]', { timeout: 15_000 });
 await page.getByTestId("db-tab-troops").click();
 await page.waitForTimeout(500);

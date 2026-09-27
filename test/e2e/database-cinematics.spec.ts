@@ -151,11 +151,8 @@ async function armNativeProgressAndStop(page: Page, kind: "audio" | "video"): Pr
   }, kind);
 }
 
-async function openDatabase(page: Page, mode: "beginner" | "standard" | "expert"): Promise<void> {
-  if (mode === "beginner") {
-    await page.getByRole("button", { name: "도구", exact: true }).click();
-    await page.getByTestId("menu-tools-database").click();
-  } else {
+async function openDatabase(page: Page): Promise<void> {
+  {
     await page.getByTestId("toolbar-database").click();
   }
   await expect(page.getByTestId("database-modal")).toBeVisible();
@@ -213,11 +210,10 @@ async function cleanPreview(page: Page): Promise<void> {
 }
 
 for (const matrix of [
-  { width: 1024, height: 768, mode: "beginner" },
-  { width: 1440, height: 900, mode: "standard" },
-  { width: 1440, height: 900, mode: "expert" },
+  { width: 1024, height: 768 },
+  { width: 1440, height: 900 },
 ] as const) {
-  test(`${matrix.width}x${matrix.height} ${matrix.mode}: cinematic authoring and restored preview`, async ({ page }, info) => {
+  test(`${matrix.width}x${matrix.height}: cinematic authoring and restored preview`, async ({ page }, info) => {
     const errors: string[] = [];
     page.on("dialog", async dialog => {
       if (dialog.type() === "beforeunload") await dialog.accept();
@@ -265,7 +261,6 @@ for (const matrix of [
     });
     await page.setViewportSize({ width: matrix.width, height: matrix.height });
     await page.addInitScript(mode => {
-      localStorage.setItem("oprn:editor-ui-mode", mode);
       const state = window as unknown as ProbeWindow;
       state.cinematicMedia = [];
       state.cinematicMediaProof = [];
@@ -284,7 +279,7 @@ for (const matrix of [
         const { projectRepository } = await import("/src/project/persistence/repository.ts");
         return projectRepository().kind;
       }), "이 격리 편집기 테스트는 브리지 없는 기본(메모리) 저장소여야 한다").toBe("memory");
-      await openDatabase(page, matrix.mode);
+      await openDatabase(page);
       const untouched = await project(page);
       await tab(page, "opening");
       await tab(page, "game-over");
@@ -413,7 +408,7 @@ for (const matrix of [
         if (store.isRemotePersistenceEnabled()) throw new Error("Reload left local-only mode");
         store.replaceProject(deserialize(raw));
       }, wire);
-      await openDatabase(page, matrix.mode);
+      await openDatabase(page);
       await tab(page, "opening");
       expect((await project(page)).system.opening).toEqual(authored.system.opening);
       await expect(page.getByTestId(`${prefix}enabled`)).not.toBeChecked();

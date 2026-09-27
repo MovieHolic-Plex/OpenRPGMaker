@@ -1,5 +1,5 @@
 // test/e2e/responsive-shell.spec.ts
-// 스펙 §5 검증: 1024/1280/1440에서 기본·전문가 모드 줄바꿈·잘림·겹침 없음.
+// 스펙 §5 검증: 1024/1280/1440에서 편집기 줄바꿈·잘림·겹침 없음.
 import { expect, test } from "@playwright/test";
 import { writeFile } from "node:fs/promises";
 
@@ -15,9 +15,8 @@ const PANEL_COLLAPSED_KEY = "oprn:ai-panel-collapsed";
 const EDITOR_LAYOUT_VERSION = "2026-07-24-maptree-300";
 
 for (const size of SIZES) {
-  for (const mode of ["basic", "expert"] as const) {
-    for (const dock of ["side", "float"] as const) {
-    test(`${mode} ${dock} ${size.name}px collapsed rail restores composer`, async ({ page }, testInfo) => {
+  for (const dock of ["side", "float"] as const) {
+    test(`${dock} ${size.name}px collapsed rail restores composer`, async ({ page }, testInfo) => {
       await page.setViewportSize({ width: size.width, height: size.height });
       await page.addInitScript(
         ({ layoutKey, layoutVersionKey, layoutVersion, collapsedKey, chatDock }) => {
@@ -38,7 +37,6 @@ for (const size of SIZES) {
       );
       await page.goto("/?freshProject=1");
       await page.waitForSelector("[data-testid='editor-layout']");
-      await page.evaluate((m) => (window as never as { __oprnEditorUiMode: { set(v: string): void } }).__oprnEditorUiMode.set(m), mode);
       await page.waitForTimeout(300);
 
       // 1) 문서 가로 스크롤 없음
@@ -89,30 +87,21 @@ for (const size of SIZES) {
       expect(box!.x + box!.width).toBeLessThanOrEqual(size.width + 1);
       expect(box!.y + box!.height).toBeLessThanOrEqual(size.height + 1);
 
-      if (mode === "expert") {
-        // 4) 맵 트리 이름이 실제 폭을 가진다
-        const name = page.locator(".map-tree-name").first();
-        await expect(name).toBeVisible();
-        const nameBox = await name.boundingBox();
-        expect(nameBox && nameBox.width).toBeGreaterThan(20);
-        // 5) 스튜디오 바는 한 줄이다 — 1024px 에서도 두 번째 툴바 행이 생기지 않는다(2026-09-03).
-        await expect(page.getByTestId("oprn-toolbar")).toHaveCount(0);
-        const barBox = await page.getByTestId("oprn-menu-bar").boundingBox();
-        expect(barBox && barBox.height).toBeLessThanOrEqual(49);
-      } else {
-        // 기본 모드: 아이콘 레일 존재 + 폭 72
-        const rail = page.locator("[data-testid='basic-left-rail']");
-        await expect(rail).toBeVisible();
-        const railBox = await rail.boundingBox();
-        expect(railBox?.width).toBe(72);
-      }
+      // 4) 맵 트리 이름이 실제 폭을 가진다
+      const name = page.locator(".map-tree-name").first();
+      await expect(name).toBeVisible();
+      const nameBox = await name.boundingBox();
+      expect(nameBox && nameBox.width).toBeGreaterThan(20);
+      // 5) 스튜디오 바는 한 줄이다 — 1024px 에서도 두 번째 툴바 행이 생기지 않는다(2026-09-03).
+      await expect(page.getByTestId("oprn-toolbar")).toHaveCount(0);
+      const barBox = await page.getByTestId("oprn-menu-bar").boundingBox();
+      expect(barBox && barBox.height).toBeLessThanOrEqual(49);
 
-      await page.screenshot({ path: `test-results/ai-panel-${mode}-${dock}-${size.name}.png` });
+      await page.screenshot({ path: `test-results/ai-panel-${dock}-${size.name}.png` });
       await writeFile(
         testInfo.outputPath("ai-panel-metrics.json"),
-        `${JSON.stringify({ viewport: size, mode, dock, overflow, restore: restoreBox, send: box }, null, 2)}\n`,
+        `${JSON.stringify({ viewport: size, dock, overflow, restore: restoreBox, send: box }, null, 2)}\n`,
       );
     });
-    }
   }
 }

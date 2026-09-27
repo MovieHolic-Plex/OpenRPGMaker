@@ -6,7 +6,6 @@
 // 드러내고, 가져온 비대칭 데이터도 authoredFactionStance 로 실제 저작 결과를 보여 준다.
 
 import { factionReputationPreview, factionUsage, type FactionUsage } from "@/editor/panels/databaseFactionPreview";
-import { isDatabaseUxVisible, uxLevel } from "@/editor/panels/databaseUxLevel";
 import { field } from "@/editor/panels/databaseControls";
 import {
   detailHero,
@@ -51,7 +50,7 @@ import { toast } from "@/util/toast";
 
 const STANCES = [-2, -1, 0, 1, 2] as const satisfies readonly FactionStance[];
 const AGGRESSIONS = [0, 1, 2, 3] as const satisfies readonly FactionAggression[];
-// 값(-2~2)은 그대로 저장하고 화면에는 말로 보인다. 숫자는 전문가 모드에서만 곁들인다.
+// 값(-2~2)은 그대로 저장하고 화면에는 말로 보이며 숫자를 곁들인다.
 const STANCE_LABEL: Readonly<Record<FactionStance, string>> = {
   [-2]: "숙적",
   [-1]: "적대",
@@ -90,9 +89,7 @@ export function renderFactionsTab(host: HTMLElement, rerender: () => void): void
   selectedFactionId = table.ids.includes(selectedFactionId) ? selectedFactionId : table.ids[0]!;
   const selectedId = selectedFactionId;
   const selected = factionDefFor(factions, selectedId);
-  // 초보 모드에서는 관계표·전체 규칙 전환 단추가 숨으므로, 다른 모드에서 고른 보기가 남아
-  // 있어도 진영별 보기로 돌아간다(저장된 선택은 그대로 둔다).
-  const view: FactionView = isDatabaseUxVisible("advanced") ? factionView : "faction";
+  const view: FactionView = factionView;
   const query = factionSearch.trim().toLowerCase();
   const rows = table.ids.flatMap((id, index) => {
     const name = table.names[index] ?? id;
@@ -215,7 +212,7 @@ export function renderFactionsTab(host: HTMLElement, rerender: () => void): void
   host.append(workspaceShell({ list, detail, legacyClass: "db-faction-workspace", testid: "db-faction-workspace" }));
 }
 
-/** 제목 아래 한 줄 — 예약 표시, 소속·쓰는 곳 요약(누르면 목록), 전문가에게만 ID. */
+/** 제목 아래 한 줄 — 예약 표시, 소속·쓰는 곳 요약(누르면 목록), ID. */
 function heroMeta(selectedId: string, usage: FactionUsage, rerender: () => void): HTMLElement {
   const total = usage.enemyCount + usage.mapCount + usage.referenceCount;
   const toggle = el("button", {
@@ -238,12 +235,12 @@ function heroMeta(selectedId: string, usage: FactionUsage, rerender: () => void)
         ? [el("span", { class: "db-faction-badge", text: "예약 진영 · 지울 수 없음" })]
         : []),
       toggle,
-      uxLevel(el("code", { class: "db-faction-id-tag", text: selectedId }), "expert"),
+      el("code", { class: "db-faction-id-tag", text: selectedId }),
     ],
   });
 }
 
-/** 목록/관계표 전환과 프로젝트 전체 규칙 — 표준·전문가 모드에서만 보인다. */
+/** 목록/관계표 전환과 프로젝트 전체 규칙. */
 function viewSwitch(view: FactionView, rerender: () => void): HTMLElement {
   const pick = (key: FactionView, label: string, title: string): HTMLElement => el("button", {
     class: `db-faction-view-pick${view === key ? " is-active" : ""}`,
@@ -252,7 +249,7 @@ function viewSwitch(view: FactionView, rerender: () => void): HTMLElement {
     text: label,
     on: { click: () => { factionView = key; rerender(); restoreFocusAfterRerender(`db-faction-view-${key}`); } },
   });
-  return uxLevel(el("div", {
+  return el("div", {
     class: "db-ws-hero-actions db-faction-view-actions",
     children: [
       el("div", {
@@ -265,7 +262,7 @@ function viewSwitch(view: FactionView, rerender: () => void): HTMLElement {
       }),
       pick("rules", "⚙ 진영 전체 규칙", "모든 진영에 공통으로 적용되는 규칙(처치 평판)"),
     ],
-  }), "advanced");
+  });
 }
 
 function factionFields(def: FactionDef, rerender: () => void): HTMLElement[] {
@@ -317,7 +314,7 @@ function factionFields(def: FactionDef, rerender: () => void): HTMLElement[] {
   });
   colorInput.addEventListener("change", rerender);
 
-  return [field("이름", nameInput), uxLevel(field("ID", idInput), "expert"), field("색", colorInput)];
+  return [field("이름", nameInput), field("ID", idInput), field("색", colorInput)];
 }
 
 function behaviorFields(def: FactionDef, rerender: () => void): HTMLElement[] {
@@ -349,10 +346,10 @@ function behaviorFields(def: FactionDef, rerender: () => void): HTMLElement[] {
   });
   return [
     field("먼저 공격", aggression),
-    uxLevel(field("쓰러지지 않음", el("span", {
+    field("쓰러지지 않음", el("span", {
       class: "db-faction-check",
       children: [protectedInput, el("span", { text: "NPC 공격에는 HP 1에서 버팀 (플레이어 공격은 제외)" })],
-    })), "advanced"),
+    })),
   ];
 }
 
@@ -388,7 +385,7 @@ function relationList(
           dataset: { testid: `db-faction-pick-${otherId}-${stance}` },
           children: [
             el("span", { text: STANCE_LABEL[stance] }),
-            uxLevel(el("small", { class: "db-faction-stance-num", text: String(stance) }), "expert"),
+            el("small", { class: "db-faction-stance-num", text: String(stance) }),
           ],
           on: {
             click: () => {
@@ -411,12 +408,12 @@ function relationList(
           class: "db-faction-relation-name",
           children: [
             el("strong", { text: otherName, attrs: { title: `${otherName} (${otherId})` } }),
-            uxLevel(el("span", {
+            el("span", {
               class: `db-faction-chip${cell.authored ? " is-authored" : " is-default"}`,
               text: cell.authored ? "바꿈" : "기본",
               attrs: { title: cell.authored ? "기본과 다르게 정한 관계입니다" : "기본 관계 그대로입니다" },
               dataset: { testid: `db-faction-relation-label-${otherId}` },
-            }), "advanced"),
+            }),
           ],
         }),
         buttons,
@@ -438,10 +435,10 @@ function relationList(
       },
     }));
   }
-  children.push(matches, uxLevel(el("p", {
+  children.push(matches, el("p", {
     class: "db-ws-usage",
     text: "오른쪽 회색 글씨가 실제 전투에서 어떻게 되는지입니다. 먼저 공격하는 범위는 「이 진영의 성격」에서 정합니다.",
-  }), "guide"));
+  }));
   return el("div", { class: "db-faction-relations", children });
 }
 
@@ -480,7 +477,7 @@ function reputationFields(factions: ProjectFactions | undefined, rerender: () =>
       class: "db-faction-check",
       children: [enabledInput, el("span", { text: "플레이어가 NPC를 처치하면 관련 진영 태도에 반영" })],
     })),
-    uxLevel(field("처치당 가중치", weightInput), "expert"),
+    field("처치당 가중치", weightInput),
     el("p", {
       class: "db-ws-usage",
       text: config

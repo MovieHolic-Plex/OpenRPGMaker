@@ -1,6 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
-import { resetEditorUiModeForTests, setEditorUiMode } from "@/editor/editorUiMode";
 import { FakeElement, installFakeDom } from "./fakeDom";
 
 class MemoryStorage implements Storage {
@@ -36,44 +35,13 @@ function asFake(node: HTMLElement): FakeElement {
 afterEach(() => {
   restoreDom?.();
   restoreDom = null;
-  resetEditorUiModeForTests("beginner");
 });
 
-describe("renderCanvasToolbar basic zoom visibility", () => {
-  it("keeps the basic zoom menu collapsed behind the stepper (no duplicate always-on list)", () => {
+describe("renderCanvasToolbar zoom visibility", () => {
+  it("renders the full zoom set behind the expand gate", () => {
     storage = new MemoryStorage();
     restoreDom = installFakeDom();
     Object.defineProperty(globalThis, "localStorage", { configurable: true, value: storage });
-    setEditorUiMode("beginner", storage);
-
-    const host = document.createElement("div") as unknown as HTMLElement;
-    renderCanvasToolbar(host);
-    const fake = asFake(host);
-
-    expect(fake.classList.contains("is-basic-chrome")).toBe(true);
-    // 2026-08-18 UX 리뷰 P2-11: is-expanded를 항상 켜둘 때 줄 목록(1x/2x/4x)이
-    // 스테퍼 ± 와 상시 중복 노출됐다 — 목록은 배율 버튼(is-menu-open)으로만 열린다.
-    expect(fake.classList.contains("is-expanded")).toBe(false);
-    expect(fake.dataset.uiDensity).toBe("beginner");
-    // 기본 모드는 자주 쓰는 배율만 — 1x/2x/4x (e2e가 클릭하는 testid 계약 유지).
-    for (const z of [1, 2, 4]) {
-      expect(fake.querySelector(`[data-testid="editor-zoom-${z}"]`)).toBeTruthy();
-    }
-    for (const z of [0.25, 0.5, 3, 6, 8]) {
-      expect(fake.querySelector(`[data-testid="editor-zoom-${z}"]`)).toBeNull();
-    }
-    // No expand control / map-save / AI workbench in basic path
-    expect(fake.querySelector('[data-testid="editor-canvas-toolbar-expand"]')).toBeNull();
-    expect(fake.querySelector('[data-testid="editor-map-save-group"]')).toBeNull();
-    expect(fake.querySelector('[data-testid="canvas-ai-workbench"]')).toBeNull();
-    expect(fake.querySelector('[data-testid="editor-map-screenshot-button"]')).toBeNull();
-  });
-
-  it("renders standard mode with the dense zoom set behind the expand gate", () => {
-    storage = new MemoryStorage();
-    restoreDom = installFakeDom();
-    Object.defineProperty(globalThis, "localStorage", { configurable: true, value: storage });
-    setEditorUiMode("standard", storage);
 
     const host = document.createElement("div") as unknown as HTMLElement;
     renderCanvasToolbar(host);
@@ -94,11 +62,10 @@ describe("renderCanvasToolbar basic zoom visibility", () => {
     }
   });
 
-  it("keeps expert chrome collapsed by default (⋯ gate still applies)", () => {
+  it("keeps the toolbar collapsed by default (⋯ gate still applies)", () => {
     storage = new MemoryStorage();
     restoreDom = installFakeDom();
     Object.defineProperty(globalThis, "localStorage", { configurable: true, value: storage });
-    setEditorUiMode("expert", storage);
 
     const host = document.createElement("div") as unknown as HTMLElement;
     renderCanvasToolbar(host);

@@ -74,8 +74,7 @@ async function openDatabaseAnyMode(page: Page): Promise<void> {
     await openDatabase(page);
     return;
   }
-  await page.getByTestId("menu-tools").click();
-  await page.getByTestId("menu-tools-database").click();
+  await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("database-modal")).toBeVisible({ timeout: 15_000 });
 }
 

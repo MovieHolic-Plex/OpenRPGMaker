@@ -24,7 +24,6 @@ try {
       return route.continue();
     });
     await page.addInitScript(() => {
-      localStorage.setItem("oprn:editor-ui-mode", "standard");
       localStorage.setItem("oprn:ai-panel-collapsed", "1");
       window.navigationReady = new Promise((resolve, reject) => {
         const timer = setTimeout(() => reject(Error("EditScene hook missing")), 90000);
@@ -300,13 +299,11 @@ try {
         return { selection, painted, pending, wheelBefore, wheelAfter };
       });
     }
-    await scenario("live-resize-and-mode", async () => {
+    await scenario("live-resize", async () => {
       await state({ tool: "select", selection: null, zoom: 2 });
       await center(5, 5);
       const before = await read();
-      for (const mode of ["expert", "standard"]) {
-        await page.getByTestId("workspace-panels-button").click();
-        await input("click", () => page.getByTestId(`workspace-ui-mode-${mode}`).click());
+      for (const widen of [true, false]) {
         // Window size changes always produce the exact Phaser scale resize event.
         await page.evaluate(() => {
           window.nav.resized = new Promise((resolve, reject) => {
@@ -316,7 +313,7 @@ try {
             });
           });
         });
-        await page.setViewportSize({ width: size.width + (mode === "expert" ? 64 : 0), height: size.height });
+        await page.setViewportSize({ width: size.width + (widen ? 64 : 0), height: size.height });
         await page.evaluate(() => window.nav.resized);
         sameFocus(before, await read());
         assert.equal((await read()).camera.zoom, before.camera.zoom);

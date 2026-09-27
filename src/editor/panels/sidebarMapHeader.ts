@@ -1,10 +1,9 @@
-import { getEditorChrome } from '@/editor/editorUiMode';
 import { renderMapList, revealMapInDock } from '@/editor/panels/mapList';
 import { makeSidebarSurface } from '@/editor/panels/sidebarSurface';
 import { el } from '@/util/dom';
 
 export function makeSidebarMapHeader(map: { readonly id: string; readonly name: string }, rerender: () => void): HTMLElement {
-  const docked = getEditorChrome().mapTree && document.querySelector('[data-testid="left-map-root"]');
+  const docked = document.querySelector('[data-testid="left-map-root"]');
   const switcher = docked
     ? el('button', {
       class: 'btn sidebar-surface-button', text: map.name, attrs: { type: 'button', title: '현재 맵 — 맵 목록에서 보기' },

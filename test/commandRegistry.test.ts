@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { listEditorCommands, listMapCommands, matchEditorCommands } from "@/editor/commandRegistry";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests, getEditorUiMode } from "@/editor/editorUiMode";
 import { allPanels } from "@/editor/workspace/panelRegistry";
 import { getWorkspaceLayout, resetWorkspaceForTests, updateWorkspaceLayout } from "@/editor/workspace/workspaceStore";
 import { layoutFromPreset } from "@/editor/workspace/workspaceLayout";
@@ -9,7 +8,6 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 
 const WORKSPACE_KEY = "oprn:workspace:v1";
-const UI_MODE_KEY = "oprn:editor-ui-mode";
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();
@@ -31,7 +29,6 @@ function installDockHosts(): void {
 describe("commandRegistry", () => {
   beforeEach(() => {
     store.replace(createBlankProject());
-    resetEditorUiModeForTests("beginner");
     resetWorkspaceForTests();
     editorState.set({ tool: "paint", layer: "lower" });
   });
@@ -61,24 +58,15 @@ describe("commandRegistry", () => {
     expect(editorState.get().layer).toBe("lower");
   });
 
-  it("편집 모드 명령이 모드를 바꾸고 도크 구성은 건드리지 않는다", () => {
-    // 2026-09-03: 「화면: 밀도 — 안내/보통/촘촘」과 「화면: 프리셋 — …」 명령을 걷었다. 밀도는 편집 모드와
-    // 같은 축의 두 번째 이름이었고, 프리셋은 톱바 작업 칩과 함께 사라진 개념이다.
-    const commands = listEditorCommands();
-    const before = getWorkspaceLayout().docks;
-    commands.find((c) => c.id === "editor-ui-mode-expert")!.run();
-    expect(getEditorUiMode()).toBe("expert");
-    expect(getWorkspaceLayout().density).toBe("dense");
-    expect(getWorkspaceLayout().docks).toEqual(before);
-    commands.find((c) => c.id === "editor-ui-mode-beginner")!.run();
-    expect(getEditorUiMode()).toBe("beginner");
-    expect(getWorkspaceLayout().density).toBe("guided");
-    expect(commands.some((c) => c.id.startsWith("workspace-preset-"))).toBe(false);
-    expect(commands.some((c) => c.id.startsWith("workspace-density-"))).toBe(false);
+  it("화면 밀도·프리셋·편집 모드 명령이 없다", () => {
+    // 2026-09-03 밀도·프리셋 명령을, 2026-09-27 초보/표준/전문가 편집 모드 명령을 걷었다.
+    const ids = listEditorCommands().map((c) => c.id);
+    expect(ids.some((id) => id.startsWith("workspace-preset-"))).toBe(false);
+    expect(ids.some((id) => id.startsWith("workspace-density-"))).toBe(false);
+    expect(ids.some((id) => id.startsWith("editor-ui-mode-"))).toBe(false);
   });
 
   it("패널 명령이 도크를 옮기고 닫는다", () => {
-    resetEditorUiModeForTests("expert");
     installDockHosts();
     const commands = listEditorCommands();
     updateWorkspaceLayout(layoutFromPreset("map"));
@@ -90,34 +78,22 @@ describe("commandRegistry", () => {
     expect(getWorkspaceLayout().docks.right).not.toContain("tiles");
   });
 
-  it("초보 모드에는 도크 패널 명령을 등록하지 않는다", () => {
+  it("도크 패널 명령은 저장된 도크 구성을 바꾸지 않고 항상 등록된다", () => {
     const storage = new MemoryStorage();
     vi.stubGlobal("localStorage", storage);
     installDockHosts();
-    storage.setItem(UI_MODE_KEY, "beginner");
     storage.setItem(WORKSPACE_KEY, JSON.stringify({
       presetId: "map",
       docks: { left: ["tiles", "maps"], right: ["assistant"], bottom: [] },
     }));
-    resetEditorUiModeForTests("beginner");
     resetWorkspaceForTests();
 
     const ids = listEditorCommands().map((command) => command.id);
-    expect(ids).not.toContain("workspace-panel-tiles");
-    expect(ids).not.toContain("workspace-panel-maps");
-    expect(ids).not.toContain("workspace-panel-tiles-right");
-    expect(ids).not.toContain("workspace-panel-maps-right");
+    expect(ids).toContain("workspace-panel-tiles");
+    expect(ids).toContain("workspace-panel-maps");
+    expect(ids).toContain("workspace-panel-tiles-right");
+    expect(ids).toContain("workspace-panel-maps-right");
     expect(JSON.parse(storage.getItem(WORKSPACE_KEY) ?? "{}").docks.left).toEqual(["tiles", "maps"]);
-  });
-
-  // 예전 이름(밀도 낱말)으로 검색하던 손을 막지 않는다.
-  it("구 밀도 이름으로도 편집 모드 명령이 검색된다", () => {
-    const commands = listEditorCommands();
-    expect(matchEditorCommands("전문가", commands).some((c) => c.id === "editor-ui-mode-expert")).toBe(true);
-    expect(matchEditorCommands("촘촘", commands).some((c) => c.id === "editor-ui-mode-expert")).toBe(true);
-    expect(matchEditorCommands("초보", commands).some((c) => c.id === "editor-ui-mode-beginner")).toBe(true);
-    expect(matchEditorCommands("안내", commands).some((c) => c.id === "editor-ui-mode-beginner")).toBe(true);
-    expect(matchEditorCommands("모드", commands).filter((c) => c.id.startsWith("editor-ui-mode-"))).toHaveLength(3);
   });
 
   it("맵 명령은 주입된 select를 호출한다", () => {
@@ -129,13 +105,13 @@ describe("commandRegistry", () => {
     expect(picked).toHaveLength(1);
   });
 
-  it("registers the complete expert chrome command set exactly once", () => {
+  it("registers the complete chrome command set exactly once", () => {
     const commands = listEditorCommands();
     const requiredIds = [
       "open-world",
       "open-world-codex",
       "open-resources",
-      // 2026-09-03: 표준 모드에서 도구 메뉴 두 번 클릭이 유일한 길이던 셋에 팔레트 길을 낸다.
+      // 2026-09-03: 도구 메뉴 두 번 클릭이 유일한 길이던 셋에 팔레트 길을 낸다.
       "open-audio",
       "open-map-event-search",
       "save-project",
@@ -154,14 +130,11 @@ describe("commandRegistry", () => {
     expect(commands.filter((command) => requiredIds.includes(command.id)).map((command) => command.id).sort()).toEqual([...requiredIds].sort());
   });
 
-  it("워크스페이스 명령이 편집 모드 3개 · 패널마다 3개씩 정확히 한 번 등록된다", () => {
-    resetEditorUiModeForTests("expert");
+  it("워크스페이스 명령이 패널마다 3개씩 정확히 한 번 등록된다", () => {
     installDockHosts();
     const ids = listEditorCommands().map((command) => command.id);
     expect(new Set(ids).size).toBe(ids.length);
-    for (const mode of ["beginner", "standard", "expert"]) {
-      expect(ids.filter((id) => id === `editor-ui-mode-${mode}`)).toHaveLength(1);
-    }
+    expect(ids.filter((id) => id.startsWith("editor-ui-mode-"))).toEqual([]);
     for (const panel of allPanels().filter((candidate) => candidate.id !== "assistant")) {
       expect(ids).toContain(`workspace-panel-${panel.id}`);
       expect(ids).toContain(`workspace-panel-${panel.id}-left`);
@@ -188,7 +161,6 @@ describe("commandRegistry", () => {
   });
 
   it('Standard offers all inspection commands but not ineffective dock toggles', () => {
-    resetEditorUiModeForTests('standard');
     installDockHosts();
     const ids = listEditorCommands().map(command => command.id);
     expect(ids.filter(id => id.startsWith('sidebar-inspection-'))).toEqual([

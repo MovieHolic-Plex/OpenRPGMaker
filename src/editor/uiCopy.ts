@@ -1,5 +1,5 @@
 // editor/uiCopy.ts
-// - 모드별 용어 스타일(jargonStyle)에 따라 UI 문구를 반환하는 단일 테이블.
+// - 용어 스타일(plain/technical)에 따라 UI 문구를 반환하는 단일 테이블. 편집기 화면은 plain 을 쓴다.
 // - plain: 초보용 일상어(자료집/바닥/장식), technical: 기존 도메인 용어(데이터베이스/하위/상위).
 
 export type UiCopyStyle = "plain" | "technical";
@@ -27,9 +27,9 @@ export type UiCopyKey =
   | "viewMenu";
 
 // 2026-08-21 용어 정리 라운드: technical 쪽 값이 곧 RM 유래 용어였다 — 하위/상위는 下層/上層의
-// 직역이다. **레이어 이름은 두 스타일을 하나로 통일**한다(감독 지시: 초보 용어를 전 모드
-// 표준으로). 밀도 축(jargonStyle)은 남기되, 레이어처럼 "전문가라고 다르게 부를 이유가
-// 없는" 항목은 같은 말을 쓴다.
+// 직역이다. **레이어 이름은 두 스타일을 하나로 통일**한다(감독 지시: 쉬운 용어를 표준으로).
+// 편집 모드(초보/표준/전문가)는 2026-09-27 에 없앴고 편집기 화면은 plain 만 쓴다. technical 값은
+// 용어 검사(terminologyCheck)가 여전히 읽는다.
 // 2026-09-19: 맵 레이어 세 이름은 바닥 / 상위 / 이벤트. 예전 화면 이름 「덧그림」은 폐기.
 // 「장식」은 타일 분류 이름(팔레트 필터 · tileMeta role "decoration")이라 레이어에 쓰지 않는다.
 const UI_COPY: Record<UiCopyKey, Record<UiCopyStyle, string>> = {
@@ -69,9 +69,9 @@ const UI_COPY: Record<UiCopyKey, Record<UiCopyStyle, string>> = {
   testPlayShort: { plain: "테스트", technical: "테스트" },
   battleTest: { plain: "랜덤 전투 테스트", technical: "랜덤 전투 테스트" },
   battleTestShort: { plain: "전투", technical: "전투" },
-  // 톱바 ▤ 메뉴(패널·밀도·편집 모드)의 글자 라벨. 2026-09-03 까지는 글리프 「▤」 하나뿐이어서
-  // 초보/표준/전문가 전환의 유일한 진입점이 장식처럼 보였고, 사용자가 "진입점이 없다"고 했다.
-  // 「보기」는 배치·밀도·모드 같은 화면 설정을 담는 메뉴의 관용 이름이다.
+  // 톱바 ▤ 메뉴(패널·언어)의 글자 라벨. 2026-09-03 까지는 글리프 「▤」 하나뿐이어서
+  // 메뉴가 장식처럼 보였고, 사용자가 "진입점이 없다"고 했다.
+  // 「보기」는 배치 같은 화면 설정을 담는 메뉴의 관용 이름이다.
   viewMenu: { plain: "보기", technical: "보기" },
 };
 

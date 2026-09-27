@@ -7,7 +7,6 @@
 // (A 를 최소화한 채 B 를 복사한 뒤 A 로 돌아오는 흐름) 엉뚱한 키를 만져 도크가 펼쳐지지 않는다.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { resetEventAiStagedForTest } from "@/editor/panels/eventEditor/aiAssist";
 import { createBlankProject } from "@/project/defaults";
@@ -47,7 +46,6 @@ describe("AI 이벤트 저작 — 실제 모달 통합", () => {
 
   beforeEach(() => {
     _resetEventDraftVaultForTest();
-    resetEditorUiModeForTests("standard");
     // 도크의 열림/초안 상태는 모듈 수명이라 테스트 사이에 새어 나간다 — 여기서 비운다.
     // (제품에서 이 지속은 의도된 것이다: 손으로 펼친 도크는 편집기를 닫았다 열어도 펼쳐진 채다.)
     resetEventAiStagedForTest();
@@ -63,7 +61,6 @@ describe("AI 이벤트 저작 — 실제 모달 통합", () => {
     document.body.replaceChildren();
     _resetEventDraftVaultForTest();
     resetEventAiStagedForTest();
-    resetEditorUiModeForTests("standard");
   });
 
   it("새로 열면 도크가 펼쳐지고 입력창이 초점을 받는다", () => {

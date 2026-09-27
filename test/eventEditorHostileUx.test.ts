@@ -1,7 +1,6 @@
 /** @vitest-environment happy-dom */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
 import { clearCommandInspector } from "@/editor/panels/eventEditor/commandInspector";
 import { openEventConditions, openEventMovement } from "@/editor/panels/eventEditor/eventEditorOpenState";
@@ -49,7 +48,6 @@ function render(host: HTMLElement, ev: GameEvent = event()): void {
 describe("event editor chest-path UX", () => { let host: HTMLElement;
 
 beforeEach(() => {
-  resetEditorUiModeForTests("expert");
   clearCommandInspector();
   openEventConditions.clear();
   openEventMovement.clear();
@@ -58,7 +56,6 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  resetEditorUiModeForTests("standard");
   clearCommandInspector();
   host.remove();
   document.querySelector('[data-testid="event-command-picker"]')?.remove();

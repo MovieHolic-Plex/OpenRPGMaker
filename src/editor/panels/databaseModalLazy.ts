@@ -1,6 +1,5 @@
 import type { DatabaseTab } from "@/editor/panels/database";
 import { preloadRuntimeStyles } from "@/app/runtimeStyles";
-import { getEditorChrome } from "@/editor/editorUiMode";
 import { uiLabel } from "@/editor/uiCopy";
 import { el } from "@/util/dom";
 
@@ -63,7 +62,7 @@ export function scheduleDatabaseModalPrefetch(): void {
 scheduleDatabaseModalPrefetch();
 
 function databaseLabel(): string {
-  return uiLabel("database", getEditorChrome().jargonStyle);
+  return uiLabel("database");
 }
 
 function dismissShell(token: number): void {

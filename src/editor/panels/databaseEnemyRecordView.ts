@@ -32,7 +32,6 @@ import { el } from "@/util/dom";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
 import { detailHero, emptyState, listToolbar, noticeBar, restoreFocusAfterRerender, sectionCard } from "@/editor/panels/databaseWorkspace";
-import { uxLevel } from "@/editor/panels/databaseUxLevel";
 import { enemyResistCard } from "@/editor/panels/databaseEnemyResistSummary";
 import { clearEnemyDifficultyCache, enemyDifficultyBadge } from "@/editor/panels/databaseEnemyDifficulty";
 // 이 뷰의 CSS(database/modern/enemies.css)는 database/index.css 진입 시트가 database 레이어 끝에서 읽는다(2026-09-11 Task 7).
@@ -108,8 +107,7 @@ export function renderEnemyRecordForm(form: HTMLElement, record: EnemyRecord, re
     { id: "basic", label: "기본", cards: [
       enemyCard("기본 정보", "name", identityFields(record, hero.setTitle, rerender)),
       enemyCard("능력치", "stats", [el("div", { class: "db-enemy-stat-grid", children: statFields(record) })], { hint: "전투에 그대로 쓰는 고정값입니다. 종족 성장값과 별개입니다." }),
-      // 포획·성장 종족 연결은 수집 시스템을 쓸 때의 일이다 — 초보 화면에서는 뺀다.
-      uxLevel(enemyCard("포획·성장 종족", "species", speciesFields(record, rerender), { hint: "포획·성장 정보를 연결합니다. 능력치·외형은 자동 상속되지 않습니다." }), "advanced"),
+      enemyCard("포획·성장 종족", "species", speciesFields(record, rerender), { hint: "포획·성장 정보를 연결합니다. 능력치·외형은 자동 상속되지 않습니다." }),
     ] },
     { id: "appearance", label: "외형", cards: [
       enemyCard("그래픽", "graphic", graphicFields(record, rerender), { hint: "100%는 기본 크기입니다. 큰 값은 전투 화면 안에 맞춰 표시됩니다. 실제 크기는 시험 전투에서 확인하세요. 맵 외형은 바뀌지 않습니다." }),
@@ -117,10 +115,10 @@ export function renderEnemyRecordForm(form: HTMLElement, record: EnemyRecord, re
     { id: "combat", label: "전투", cards: [
       // 약점·저항은 기본과 다른 것만 칩으로 — 전체 등급 표(상태/속성 유효도 카드)는 그 안에 접혀 있다.
       enemyResistCard(record, enemyCard("상태 유효도", "state", rateRows(record, "state")), enemyCard("속성 유효도", "element", rateRows(record, "element"))),
-      uxLevel(enemyCard("치명타 확률", "critical", [el("div", { class: "db-enemy-critical-row", children: criticalFields(record, rerender) })], { hint: criticalHint(record) }), "advanced"),
-      uxLevel(enemyCard("명중", "options", optionFields(record)), "advanced"),
-      uxLevel(enemyCard("최후의 일격", "last-stand", lastStandFields(record), { hint: "아군 공격에 쓰러질 때 한 번, 고른 스킬을 쓰고 쓰러집니다." }), "advanced"),
-      uxLevel(enemyCard("액션 전투", "action-combat", actionCombatFields(record), { hint: "필드에서 직접 싸우는 액션 전투용" }), "advanced"),
+      enemyCard("치명타 확률", "critical", [el("div", { class: "db-enemy-critical-row", children: criticalFields(record, rerender) })], { hint: criticalHint(record) }),
+      enemyCard("명중", "options", optionFields(record)),
+      enemyCard("최후의 일격", "last-stand", lastStandFields(record), { hint: "아군 공격에 쓰러질 때 한 번, 고른 스킬을 쓰고 쓰러집니다." }),
+      enemyCard("액션 전투", "action-combat", actionCombatFields(record), { hint: "필드에서 직접 싸우는 액션 전투용" }),
     ] },
     { id: "rewards", label: "보상", cards: [
       enemyCard("보상", "rewards", [el("div", { class: "db-enemy-reward-grid", children: rewardFields(record) })]),
@@ -164,9 +162,6 @@ function enemyHero(record: EnemyRecord): { readonly node: HTMLElement; readonly 
     tags,
     testid: "db-enemy-hero",
   });
-  // 종족 태그(인덱스 1)는 포획·성장 카드와 같은 층위 — 초보에게는 숨긴다.
-  const speciesTag = node.querySelectorAll(".db-ws-tag")[1];
-  if (speciesTag instanceof HTMLElement) uxLevel(speciesTag, "advanced");
   const difficulty = enemyDifficultyBadge(live, store.getCurrent());
   if (difficulty) node.append(difficulty);
   const titleNode = node.querySelector(".db-ws-hero-title");
@@ -210,9 +205,9 @@ function identityFields(
     level,
     factionSelect,
     ...factionMissing,
-    uxLevel(el("details", { class: "db-enemy-faction-details", children: [
+    el("details", { class: "db-enemy-faction-details", children: [
       el("summary", { text: "진영 관계와 설정" }), ...factionDetails,
-    ] }), "advanced"),
+    ] }),
   ];
 }
 
@@ -705,7 +700,7 @@ function graphicFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
         }),
       ],
     }),
-    uxLevel(el("div", {
+    el("div", {
       class: "db-enemy-graphic-flags",
       children: [
         // 두 필드는 런타임이 읽지 않는다(databaseFieldSupport: authoringOnly). 라벨 글자를
@@ -726,11 +721,11 @@ function graphicFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
           databaseFieldSupport("flying").help,
         ),
       ],
-    }), "advanced"),
-    // 리소스 ID 직접 입력은 내부 식별자 — 전문가만. 나머지 모드는 [설정] 대화상자로 고른다.
-    uxLevel(textField("리소스 ID", "db-field-enemy-monster-resource", record.monsterResourceId ?? "", (monsterResourceId) =>
+    }),
+    // 리소스 ID 직접 입력. [설정] 대화상자로도 고를 수 있다.
+    textField("리소스 ID", "db-field-enemy-monster-resource", record.monsterResourceId ?? "", (monsterResourceId) =>
       updateDatabaseRecord("enemies", record.id, { monsterResourceId: emptyToUndefined(monsterResourceId) })
-    ), "expert"),
+    ),
     aiImageGenerateField({
       kind: "monster",
       testidPrefix: "db-enemy-graphic-ai",
@@ -740,7 +735,7 @@ function graphicFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
         rerender();
       },
     }),
-    uxLevel(enemyGraphicSupportNotice(), "advanced"),
+    enemyGraphicSupportNotice(),
   ];
 }
 

@@ -4,7 +4,6 @@ import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { openEventConditions, openEventMovement } from "@/editor/panels/eventEditor/eventEditorOpenState";
 
 describe("event editor layout hierarchy", () => {
@@ -13,7 +12,6 @@ describe("event editor layout hierarchy", () => {
   beforeEach(() => {
     openEventConditions.clear();
     openEventMovement.clear();
-    resetEditorUiModeForTests("expert");
     const project = createBlankProject();
     const mapId = project.startMapId;
     const map = project.maps[mapId]!;
@@ -51,7 +49,6 @@ describe("event editor layout hierarchy", () => {
     host.remove();
     openEventConditions.clear();
     openEventMovement.clear();
-    resetEditorUiModeForTests("standard");
   });
 
   function render(): void {

@@ -84,9 +84,7 @@
         "oprn-toolbar-",
         "editor-layout-",
         "left-panel-",
-        "basic-rail-",
         "team-",
-        "coach-mark-",
         "editor-welcome-",
         "director-briefing-",
         "editor-statusbar-",
@@ -105,9 +103,6 @@
         "db-config-project-"
       ],
       "roots": [
-        "body.editor-ui-beginner",
-        "body.editor-ui-standard",
-        "body.editor-ui-expert",
         ".editor-layout"
       ]
     },
@@ -211,7 +206,6 @@
         "branch-h",
         "canvas-toolbar",
         "charset-thumb",
-        "coach-mark-card",
         "command",
         "command-runtime-badge",
         "copy",

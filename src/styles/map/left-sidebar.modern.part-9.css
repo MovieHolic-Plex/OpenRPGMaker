@@ -55,27 +55,6 @@
 }
 
 /* Beginner: persistent materials, with the sheet owning its scroll and width. */
-.editor-layout .left-panel-stack .basic-left-rail > .basic-rail-section {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  min-height: 0;
-  min-width: 0;
-  gap: var(--space-2);
-  overflow: hidden;
-}
-.editor-layout .left-panel-stack .basic-left-rail .chipset-sheet.tile-palette {
-  container-type: inline-size;
-  flex: 1 1 auto;
-  min-height: 0;
-  max-height: 100%;
-  overflow: auto;
-}
-
-.editor-layout .basic-left-rail .basic-selected-tile,
-.editor-layout .basic-left-rail .tile-search-input {
-  flex: 0 0 auto;
-}
 
 .editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar {
   flex-wrap: wrap;
@@ -95,8 +74,7 @@
 }
 
 .sidebar-brush-controls,
-.sidebar-brush-sizes,
-.basic-tile-search-feedback {
+.sidebar-brush-sizes {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -124,8 +102,7 @@
   font-weight: 600;
 }
 
-.editor-layout .sidebar-brush-controls .btn,
-.editor-layout .basic-tile-search-feedback .btn {
+.editor-layout .sidebar-brush-controls .btn {
   min-height: var(--space-5);
   min-width: var(--space-5);
   padding: var(--space-1);
@@ -387,27 +364,11 @@
 
 /* 「그리기」 탭 붓 크기 세그먼트(2026-09-24). shell 레이어(editor-ui-modes.css)에 두면 이 레이어의
    `.tile-brush-chip` 테두리·배경과 `.sidebar-brush-state` 여백이 이겨서 여기에 둔다. */
-.basic-rail-status { display: flex; align-items: center; gap: 4px; min-height: 30px; padding: 0 2px 0 6px; }
-.basic-rail-status > .sidebar-brush-controls { flex: 1; min-width: 0; flex-wrap: nowrap; padding-block: 0; }
-.basic-rail-status .sidebar-brush-state { order: -1; margin-left: 0; margin-right: auto; color: var(--text-1); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.basic-rail-status .sidebar-brush-sizes { flex-wrap: nowrap; gap: 2px; padding: 2px; border-radius: calc(var(--radius-s) + 1px); background: var(--bg-well, var(--bg-inset)); }
 /* 「높이」 붓 방식 칩(2026-09-26)은 크기 칩 옆에 들어가지 않는다 — 한 줄 아래로 내린다. */
-.basic-rail-status:has(.relief-brush-controls),
-.basic-rail-status > .sidebar-brush-controls:has(.relief-brush-controls) { flex-wrap: wrap; }
 /* 부모 줄이 `flex: 0 0 auto` 라 방식 칩 8개가 한 줄로 늘어 판(258px) 밖으로 잘렸다 — 높이 붓일 때는 줄 폭에 맞춘다. */
 .sidebar-brush-controls:has(> .relief-brush-controls) { flex: 1 1 100%; min-width: 0; }
 .sidebar-brush-controls > .relief-brush-controls { flex: 1 0 100%; min-width: 0; flex-wrap: wrap; row-gap: 2px; }
 /* 높이 붓 8방식은 두 줄로 감싸고, 왼·오른쪽 버튼이 하는 일을 한 줄로 말한다. */
 .relief-brush-controls .relief-brush-hint { flex: 1 0 100%; font: 500 11px/1.3 var(--font-ui); color: var(--text-2); padding-inline: 2px; }
-.basic-rail-status .sidebar-brush-sizes .tile-brush-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
-.editor-layout .basic-rail-status .sidebar-brush-sizes .tile-brush-chip {
-  min-width: 24px; min-height: 22px; padding: 0; border: 0; border-radius: var(--radius-s); background: transparent;
-  font: 500 12px/22px var(--font-ui); color: var(--text-2);
-}
-.editor-layout .basic-rail-status .sidebar-brush-sizes .tile-brush-chip.active {
-  background: var(--bg-raised); color: var(--text-1); font-weight: 600; box-shadow: 0 1px 2px color-mix(in srgb, var(--text-1) 14%, transparent);
-}
 /* 이벤트 레이어: 탭(그리기)·붓 줄(「이벤트」)이 이미 말하므로 패널의 큰 「이벤트」 제목은 뺀다.
    목록 머리는 Finder 사이드바의 작은 회색 머리처럼. */
-.basic-left-rail .event-editor-sidebar > h3 { display: none; }
-.editor-layout .left-panel-stack .basic-left-rail .event-editor-sidebar .event-list-title { font: 600 11px/1.2 var(--font-ui); color: var(--text-2); padding: 6px 4px 4px; }

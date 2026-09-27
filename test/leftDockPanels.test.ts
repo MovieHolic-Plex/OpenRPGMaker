@@ -5,10 +5,8 @@
 //    (`return ["tiles", "maps", ...extras];`) — 토글은 저장값과 `aria-checked` 만 뒤집었다.
 //  · 그래서 「이벤트 중심」·「데이터 중심」 프리셋도 약속한 좌측 구성을 지키지 못했다.
 //  · 동시에 `.left-panel` 이 비지 않는다는 2026-08-26 불변식은 지켜야 한다 —
-//    구성이 비면 레지스트리 선호 기본값으로 되돌리고, 초보 모드는 레일 호스트인
-//    `tiles` 를 고정한다(끄면 사이드바가 빈다).
-//  · 폭: 초보 레일의 실제 렌더 폭은 288px 이고 `--editor-left-safe` 는 거기서 파생해야 한다
-//    (하드코딩 60px 이면 어시스턴트 오버레이의 12px 여백이 0 이 된다).
+//    구성이 비면 레지스트리 선호 기본값으로 되돌린다.
+//  · 초보/표준/전문가 편집 모드는 2026-09-27 에 없앴다 — 초보 레일 계약도 함께 사라졌다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -18,9 +16,6 @@ const EDITOR_LAYOUT_KEY = "oprn:editor-layout:v4";
 const LAYOUT_VERSION_KEY = "oprn:editor-layout-version";
 const LAYOUT_VERSION = "2026-07-24-maptree-300";
 const WORKSPACE_KEY = "oprn:workspace:v1";
-const UI_MODE_KEY = "oprn:editor-ui-mode";
-/** editor-ui-modes.css `--basic-rail-width` 와 같은 값 — 실측 렌더 폭이다. */
-const RAIL_WIDTH_PX = 288;
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();
@@ -156,9 +151,7 @@ afterEach(() => {
 });
 
 describe("좌측 도크 구성은 워크스페이스 레이아웃을 따른다", () => {
-  it("Standard mounts its task host without changing a saved maps-only layout", async () => {
-    // 표준이 전문가 capability를 흡수했다 — 표준에서도 맵 도크 구성이 그대로 Mount된다.
-    storage.setItem(UI_MODE_KEY, 'standard');
+  it("mounts the task host without changing a saved maps-only layout", async () => {
     setWorkspaceDocks(['maps']);
     const root = await mountEditor();
     expect(findByTestId(root, 'left-palette-root')).not.toBeNull();
@@ -166,7 +159,6 @@ describe("좌측 도크 구성은 워크스페이스 레이아웃을 따른다",
     expect(JSON.parse(storage.getItem(WORKSPACE_KEY) ?? '{}').docks.left).toEqual(['maps']);
   }, 120_000);
   it("맵 패널을 닫으면 맵 호스트가 좌측 도크에서 사라진다", async () => {
-    storage.setItem(UI_MODE_KEY, "standard");
     setWorkspaceDocks(["tiles"]);
 
     const root = await mountEditor();
@@ -176,7 +168,6 @@ describe("좌측 도크 구성은 워크스페이스 레이아웃을 따른다",
   }, 120_000);
 
   it("좌측 도크가 비어도 호스트가 최소 하나는 남는다 (.left-panel 은 비지 않는다)", async () => {
-    storage.setItem(UI_MODE_KEY, "standard");
     setWorkspaceDocks([]);
 
     const root = await mountEditor();
@@ -185,39 +176,10 @@ describe("좌측 도크 구성은 워크스페이스 레이아웃을 따른다",
     expect(root.querySelector(".left-panel")?.style.display).not.toBe("none");
   }, 120_000);
 
-  it("초보 모드는 레이아웃이 타일을 숨기라 해도 타일 호스트를 고정한다", async () => {
-    storage.setItem(UI_MODE_KEY, "beginner");
-    setWorkspaceDocks(["maps"]);
-
-    const root = await mountEditor();
-
-    expect(findByTestId(root, "left-palette-root")).not.toBeNull();
-  }, 120_000);
-
-  it("초보 레일의 --editor-left-safe 는 실제 레일 폭에서 파생한다", async () => {
-    storage.setItem(UI_MODE_KEY, "beginner");
-    setWorkspaceDocks(["tiles"]);
-
-    const root = await mountEditor();
-
-    const leftPanel = root.querySelector(".left-panel");
-    // CSSOM represents an absent inline declaration as an empty string. The
-    // fake style object's undefined property is not a browser contract.
-    expect(leftPanel?.style.getPropertyValue("width")).toBe("");
-    expect(document.documentElement.style.getPropertyValue("--editor-left-safe")).toBe(`${RAIL_WIDTH_PX}px`);
-
-    const { setEditorUiMode } = await import("@/editor/editorUiMode");
-    setEditorUiMode("standard");
-    expect(leftPanel?.style.getPropertyValue("width")).not.toBe("");
-    setEditorUiMode("beginner");
-    expect(leftPanel?.style.getPropertyValue("width")).toBe("");
-    expect(document.documentElement.style.getPropertyValue("--editor-left-safe")).toBe(`${RAIL_WIDTH_PX}px`);
-  }, 120_000);
 });
 
 describe("패널 메뉴는 실제로 되는 선택지만 제시한다", () => {
   it("호스트가 없는 zone 으로 옮기는 칩을 만들지 않는다", async () => {
-    storage.setItem(UI_MODE_KEY, "standard");
     setWorkspaceDocks(["tiles", "maps"]);
     const { renderWorkspaceBar } = await import("@/editor/panels/workspaceBar");
 
@@ -228,7 +190,6 @@ describe("패널 메뉴는 실제로 되는 선택지만 제시한다", () => {
   }, 120_000);
 
   it("오른쪽 도크 호스트가 있으면 그 zone 칩을 제시한다", async () => {
-    storage.setItem(UI_MODE_KEY, "expert");
     setWorkspaceDocks(["tiles", "maps"]);
     const rightHost = document.createElement("div");
     rightHost.dataset.dockZone = "right";
@@ -241,32 +202,7 @@ describe("패널 메뉴는 실제로 되는 선택지만 제시한다", () => {
     expect(findByTestId(bodyRoot, "workspace-panel-dock-tiles-right")).not.toBeNull();
   }, 120_000);
 
-  it("초보 모드에서는 레일 플라이아웃만 제공하고 렌더되지 않는 도크 토글은 어디에도 내놓지 않는다", async () => {
-    storage.setItem(UI_MODE_KEY, "beginner");
-    setWorkspaceDocks(["tiles", "maps"]);
-    const { renderWorkspaceBar } = await import("@/editor/panels/workspaceBar");
-    const { listEditorCommands } = await import("@/editor/commandRegistry");
-
-    for (const node of renderWorkspaceBar()) document.body.append(node);
-
-    const bodyRoot = fake(document.body as unknown as HTMLElement);
-    // Ctrl+K도 같은 capability 판정을 써야 한다. 현재 HEAD는 maps 명령을 남겨 저장값만
-    // 바꾸고 mapTree=false인 빈 호스트에는 아무 변화도 만들지 못했다.
-    const commandIds = listEditorCommands().map((command) => command.id);
-    expect(commandIds).not.toContain("workspace-panel-tiles");
-    expect(commandIds).not.toContain("workspace-panel-maps");
-    expect(commandIds).not.toContain("workspace-panel-maps-left");
-    expect(commandIds).not.toContain("workspace-panel-maps-right");
-    expect(findByTestId(bodyRoot, "workspace-panels-button")?.getAttribute("aria-label")).toBe("보기 — 편집 모드");
-    expect(findByTestId(bodyRoot, "workspace-panels-menu")?.getAttribute("aria-label")).toBe("보기 — 편집 모드");
-    expect(findByTestId(bodyRoot, "workspace-panel-toggle-tiles")).toBeNull();
-    expect(findByTestId(bodyRoot, "workspace-panel-toggle-maps")).toBeNull();
-    expect(findByTestId(bodyRoot, "workspace-panel-row-tiles")).toBeNull();
-    expect(JSON.parse(storage.getItem(WORKSPACE_KEY) ?? "{}").docks.left).toEqual(["tiles", "maps"]);
-  }, 120_000);
-
-  it("표준 모드에서는 이 메뉴가 패널 토글의 유일한 집이다", async () => {
-    storage.setItem(UI_MODE_KEY, "standard");
+  it("이 메뉴가 패널 토글의 유일한 집이다", async () => {
     setWorkspaceDocks(["tiles", "maps"]);
     const { renderWorkspaceBar } = await import("@/editor/panels/workspaceBar");
 
@@ -274,13 +210,12 @@ describe("패널 메뉴는 실제로 되는 선택지만 제시한다", () => {
 
     const bodyRoot = fake(document.body as unknown as HTMLElement);
     const tilesToggle = findByTestId(bodyRoot, "workspace-panel-toggle-tiles");
-    expect(findByTestId(bodyRoot, "workspace-panels-button")?.getAttribute("aria-label")).toBe("보기 — 패널과 편집 모드");
-    // 글리프만 있던 버튼은 편집 모드(초보/표준)의 유일한 진입점이면서 장식으로 읽혔다 —
-    // 화면 글자 「보기」가 반드시 함께 있어야 한다.
+    expect(findByTestId(bodyRoot, "workspace-panels-button")?.getAttribute("aria-label")).toBe("보기 — 패널과 언어");
+    // 글리프만 있던 버튼은 장식으로 읽혔다 — 화면 글자 「보기」가 반드시 함께 있어야 한다.
     expect(findByTestId(bodyRoot, "workspace-panels-button")?.textContent).toContain("보기");
     expect(tilesToggle).not.toBeNull();
     expect(tilesToggle?.getAttribute("aria-disabled")).toBeNull();
-    // 그리고 진짜로 된다 — 레일이 없는 모드에서는 이 토글이 지속 구성을 바꿔야 한다.
+    // 그리고 진짜로 된다 — 이 토글이 지속 구성을 바꿔야 한다.
     tilesToggle?.click();
     expect(JSON.parse(storage.getItem(WORKSPACE_KEY) ?? "{}").docks.left).not.toContain("tiles");
   }, 120_000);

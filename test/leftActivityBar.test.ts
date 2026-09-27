@@ -2,7 +2,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createAiSidebarWorkspace } from "@/editor/panels/aiSidebarWorkspace";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { selectPaletteTile } from "@/editor/panels/tilePalette";
@@ -20,7 +19,6 @@ describe("left activity bar", () => {
   beforeEach(() => {
     localStorage.clear();
     clearFavoriteTilesForTest();
-    resetEditorUiModeForTests("standard");
     store.replace(createBlankProject());
     editorState.set({ currentMapId: store.getCurrent().startMapId });
     tools = document.createElement("div");

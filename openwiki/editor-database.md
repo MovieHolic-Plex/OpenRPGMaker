@@ -954,7 +954,7 @@ Database tabs, record views, battle database records, utility records, reference
 
 ## Beginner-centric adversarial review (2026-08)
 
-`docs/reviews/db-beginner-adversarial-qa.md` is the current beginner-centric review of the whole Database modal: 24 surfaces x beginner/expert x 3 viewports, 289 consolidated findings (`docs/reviews/db-beginner-adversarial-qa-findings.md`), 25-heuristic disposition (met 2 / partial 15 / missing 8), and 14 evidence-linked improvement proposals (P0: timeSystem.onDayEnd delete guard, in-flight edit truncation on system section nav, virtualizer selection loss). A beginner-lane e2e contract now exists: `test/e2e/qa-db-beginner-mode.spec.ts` proves the Tools-menu entry, common-6 nav, plain jargon labels, and dirty guard under beginner chrome (see `openwiki/testing.md` for the full permanent + `_db-audit-*` diagnostic spec families).
+`docs/reviews/db-beginner-adversarial-qa.md` is the current beginner-centric review of the whole Database modal: 24 surfaces x beginner/expert x 3 viewports, 289 consolidated findings (`docs/reviews/db-beginner-adversarial-qa-findings.md`), 25-heuristic disposition (met 2 / partial 15 / missing 8), and 14 evidence-linked improvement proposals (P0: timeSystem.onDayEnd delete guard, in-flight edit truncation on system section nav, virtualizer selection loss). The beginner-lane spec `qa-db-beginner-mode.spec.ts` was deleted on 2026-09-27 together with the editor modes; every field the beginner lane used to hide (`data-db-ux`) is now always visible. See `openwiki/testing.md` for the permanent + `_db-audit-*` diagnostic spec families.
 
 ## DB UI modernization (2026-08)
 

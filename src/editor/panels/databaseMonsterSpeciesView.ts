@@ -25,7 +25,6 @@ import { DEFAULT_MONSTER_EXP_CURVE, monsterBattleStatsForSpecies, monsterEvoluti
 import { CAPTURE_DIFFICULTIES, captureDifficulty, capturePreviewLine } from "@/editor/panels/databaseCapturePreview";
 import { monsterSpeciesSections, type MonsterSpeciesSectionId, type MonsterSpeciesSectionsHandle } from "@/editor/panels/databaseMonsterSpeciesSections";
 import { monsterTypeLabel, monsterTypeTone } from "@/editor/panels/databaseMonsterSpeciesTypeLabels";
-import { uxLevel } from "@/editor/panels/databaseUxLevel";
 import { renderExperienceCurvePanel } from "@/editor/panels/databaseClassExperienceCurveEditor";
 import { store } from "@/project/store";
 import type { EnemyStats, MonsterEvolutionRecord, MonsterSpeciesRecord } from "@/project/types";
@@ -570,10 +569,8 @@ function speciesInspector(record: MonsterSpeciesRecord, rerender: () => void): S
       summary: String((record.evolutions ?? []).length),
       children: [evolutionsCard(record, rerender), evolutionReferrersCard(record, rerender)],
     },
-    { id: "links", label: "연결", summary: String(linkedCount()), ux: "advanced", children: [linkedEnemiesCard(record)] },
+    { id: "links", label: "연결", summary: String(linkedCount()), children: [linkedEnemiesCard(record)] },
   ]);
-  const linksPanel = sections.element.querySelector<HTMLElement>('[data-section-id="links"][role="tabpanel"]');
-  if (linksPanel) uxLevel(linksPanel, "advanced");
   const handle = sections;
   return {
     element: el("div", { class: "db-monster-species-inspector", children: [handle.element] }),
@@ -595,7 +592,7 @@ function growthSummary(record: MonsterSpeciesRecord): string {
 const DEFAULT_CAPTURE_RATE = normalizeMonsterSpeciesRecord({ id: "_", name: "_" }).captureRate;
 
 /**
- * 「채울 순서」 — 초보·표준 모드 안내(전문가에게는 숨김). 표시는 실제 데이터로 판정한다:
+ * 「채울 순서」 안내. 표시는 실제 데이터로 판정한다:
  * 이름·타입 = 기본 이름이 아니고 타입이 1개 이상 / 그림 = 앞모습 리소스 있음 /
  * 잡기 난이도 = 계수가 기본값(0.3)에서 바뀜 / 진화 = 규칙 1개 이상(없어도 됨).
  */
@@ -648,14 +645,12 @@ function fillOrderChecklist(
     children: [el("div", { class: "db-monster-species-checklist", children: rows.map((row) => row.button) })],
     testid: "db-monster-species-checklist",
   });
-  uxLevel(element, "guide");
   return { element, paint };
 }
 
 /**
  * 포획 카드 — 계수 숫자 대신 난이도 말을 먼저 보여 준다. 난이도 단추를 누르면 그 단계의 대표 계수를
- * 저장한다(초보·표준 모드에서 계수 칸 없이도 바꿀 수 있게). 원래 계수 칸은 전문가 모드에서만 보이며
- * DOM 에는 늘 남는다.
+ * 저장한다. 계수를 직접 적는 칸은 그 아래에 함께 있다.
  */
 function captureCard(record: MonsterSpeciesRecord): { readonly element: HTMLElement; readonly paint: (record: MonsterSpeciesRecord) => void } {
   const word = el("strong", { class: "db-monster-species-capture-word", dataset: { testid: "db-monster-species-capture-difficulty" } });
@@ -673,9 +668,9 @@ function captureCard(record: MonsterSpeciesRecord): { readonly element: HTMLElem
     },
   }));
   const previewHost = el("div", { class: "db-monster-species-capture-odds" });
-  const rateField = uxLevel(numberField("포획 계수 (0~1)", "db-monster-species-capture-rate", record.captureRate, (value) => {
+  const rateField = numberField("포획 계수 (0~1)", "db-monster-species-capture-rate", record.captureRate, (value) => {
     updateSpecies(record.id, { captureRate: value });
-  }, { min: 0, max: 1, step: 0.01 }), "expert");
+  }, { min: 0, max: 1, step: 0.01 });
   rateInput = rateField.querySelector<HTMLInputElement>('[data-testid="db-monster-species-capture-rate"]');
   const paint = (live: MonsterSpeciesRecord): void => {
     const current = captureDifficulty(live.captureRate);
@@ -796,14 +791,14 @@ function graphicChildren(record: MonsterSpeciesRecord, rerender: () => void): HT
   });
   return [
     pair,
-    uxLevel(el("p", {
+    el("p", {
       class: "db-field-hint db-monster-species-graphic-hint",
       text: "AI 로 만들려면 모습을 한 줄로 적고 [AI로 만들기]를 누르세요. 만드는 동안에도 계속 편집할 수 있습니다.",
-    }), "guide"),
-    uxLevel(numberField("색조", "db-monster-species-hue", record.graphic.graphicHue, (value) => {
+    }),
+    numberField("색조", "db-monster-species-hue", record.graphic.graphicHue, (value) => {
       const current = currentSpecies(record.id, record);
       updateSpecies(record.id, { graphic: { ...current.graphic, graphicHue: value } });
-    }, { min: 0, max: 360 }), "advanced"),
+    }, { min: 0, max: 360 }),
   ];
 }
 

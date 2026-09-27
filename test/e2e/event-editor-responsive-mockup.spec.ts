@@ -73,33 +73,6 @@ test("event editor keeps a non-overlapping desktop flow at every supported viewp
   expect(browserIssues).toEqual([]);
 });
 
-test("opening the event editor suppresses an active coachmark", async ({ page }) => {
-  await mkdir(EVIDENCE_DIR, { recursive: true });
-  const browserIssues = installBrowserIssuePolicy(page);
-  await page.addInitScript(() => localStorage.removeItem("oprn:coachmarks-basic-v1"));
-  await seedProjectForEditor(page, createBlankProject(), `${APP_URL}/?freshProject=1&classicCapture=2`);
-  const restoredEditor = page.getByTestId("event-editor-modal");
-  if (await restoredEditor.count()) {
-    await page.getByTestId("event-editor-cancel").click();
-    await expect(restoredEditor).toHaveCount(0);
-  }
-  await expect(page.locator(".coach-mark-card")).toBeVisible();
-  await ensureEventEditorOpen(page);
-  await expect(page.locator(".coach-mark-card")).toBeHidden();
-
-  const intersects = await page.evaluate(() => {
-    const coach = document.querySelector(".coach-mark-card");
-    const modal = document.querySelector(".event-editor-modal-window");
-    if (!(coach instanceof HTMLElement) || !(modal instanceof HTMLElement)) return false;
-    const a = coach.getBoundingClientRect();
-    const b = modal.getBoundingClientRect();
-    return a.width > 0 && a.height > 0 && a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
-  });
-  expect(intersects).toBe(false);
-  await screenshotEvidence(page, EVIDENCE_DIR, "coachmark-suppressed-open.png");
-  expect(browserIssues).toEqual([]);
-});
-
 function installBrowserIssuePolicy(page: Page): string[] {
   const issues: string[] = [];
   page.on("console", (message) => {

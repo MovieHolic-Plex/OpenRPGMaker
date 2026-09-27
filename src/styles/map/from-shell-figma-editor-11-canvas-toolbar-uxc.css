@@ -20,18 +20,9 @@
    배너 실측 42px + 8px 간격. 도크 툴바(beginner, is-docked-chrome)는 제외 —
    같은 레이어 문서 순서상 :has 규칙이 top:0 을 이겨 도크 바가 밀리는 회귀
    확인(2026-09-18 beginner 실측 overlap:true). */
-.canvas-area:has(.persistence-mode-banner) .canvas-toolbar:not(.is-docked-chrome) {
+.canvas-area:has(.persistence-mode-banner) .canvas-toolbar {
   top: 50px;
 }
-/* 도크 툴바(beginner)는 배너와 같은 행에 겹쳐 배너 텍스트를 가렸다.
-   배너 아래로 내린다. 42px 은 배너 실측 높이(2026-09-18, 1440x900).
-   셸(absolute + top:auto)은 static 위치라 자동으로 42+48=90px 로 밀린다.
-   body 접두는 도크 원 규칙(body.editor-ui-beginner .canvas-toolbar.
-   is-basic-chrome.is-docked-chrome, 클래스 4+요소 1)을 이기기 위한 특이도다. */
-body.editor-ui-beginner .canvas-area:has(.persistence-mode-banner) .canvas-toolbar.is-docked-chrome {
-  top: 42px;
-}
-
 /* shell/figma-editor/11-canvas-toolbar-uxc.css:14-19 */
 .canvas-toolbar-zoom-group,
 .canvas-toolbar-save-group {
@@ -158,8 +149,7 @@ body.editor-ui-beginner .canvas-area:has(.persistence-mode-banner) .canvas-toolb
    canvas-area 상단에 빈 띠를 남겼다. dense(standard/expert, 플로팅 툴바)에서만
    셸을 normal flow + flex:1 로 배너 뒤에 바로 붙인다(resource-system.part-1.css).
    beginner(도크 툴바)는 absolute 예약을 유지한다. */
-body.editor-ui-standard .editor-canvas-scroll-shell,
-body.editor-ui-expert .editor-canvas-scroll-shell {
+body .editor-canvas-scroll-shell {
   bottom: auto;
   flex: 1;
   min-height: 0;

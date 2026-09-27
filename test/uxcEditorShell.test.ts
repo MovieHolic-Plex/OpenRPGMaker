@@ -10,7 +10,6 @@ import {
   shouldOfferEventLayerSwitch,
 } from "@/editor/eventMarkerUx";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import {
   isMapEditLockTakeoverImmediate,
   mapEditLockLastActivityText,
@@ -198,7 +197,6 @@ describe("UXC D14/D19/D27/D29 에디터 셸 크롬", () => {
 
   it("캔버스 툴바에서 줌 그룹과 맵 저장 액션을 분리한다", () => {
     // 맵 저장/펼침 버튼은 dense 크롬(표준/전문가)에서만 렌더된다 — 기본(초보) 크롬은 줌 전용.
-    resetEditorUiModeForTests("expert");
     try {
       const toolbar = document.createElement("div");
 
@@ -214,7 +212,6 @@ describe("UXC D14/D19/D27/D29 에디터 셸 크롬", () => {
       expand?.click();
       expect(fakeElement(toolbar).classList.contains("is-expanded")).toBe(true);
     } finally {
-      resetEditorUiModeForTests();
     }
   });
 

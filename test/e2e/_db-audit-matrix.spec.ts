@@ -202,8 +202,7 @@ async function ensureModal(page: Page): Promise<void> {
   if (await toolbar.isVisible().catch(() => false)) {
     await toolbar.click();
   } else {
-    await page.getByTestId("menu-tools").click();
-    await page.getByTestId("menu-tools-database").click();
+    await page.getByTestId("toolbar-database").click();
   }
   await expect(page.getByTestId("database-modal")).toBeVisible();
 }

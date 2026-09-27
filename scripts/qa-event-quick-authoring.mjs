@@ -103,8 +103,7 @@ async function openEventEditor(page) {
   if (await eventLayerButton.isVisible().catch(() => false)) {
     await eventLayerButton.click();
   } else {
-    await page.getByRole("button", { name: "도구", exact: true }).click();
-    await page.getByTestId("menu-tools-layer-event").click();
+    throw new Error("layer-event button is missing");
   }
   const eventTool = page.locator('[data-testid="tool-event"]:visible').first();
   if (await eventTool.count()) await eventTool.click();

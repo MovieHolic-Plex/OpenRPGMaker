@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { renderDatabasePanel, setDatabaseActiveTab } from "@/editor/panels/database";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -15,13 +14,11 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  resetEditorUiModeForTests("standard");
   restoreDom?.();
   restoreDom = null;
 });
 
-function renderPanel(mode: "beginner" | "standard" | "expert"): FakeElement {
-  resetEditorUiModeForTests(mode);
+function renderPanel(): FakeElement {
   const host = document.createElement("div") as unknown as FakeElement;
   renderDatabasePanel(host as unknown as HTMLElement);
   return host;
@@ -33,9 +30,9 @@ function directTabIds(node: FakeElement): string[] {
     .map((child) => child.dataset.testid ?? "");
 }
 
-describe("database navigation by editor mode", () => {
-  it("groups the rail by category in beginner mode too — no all-data disclosure", () => {
-    const host = renderPanel("beginner");
+describe("database navigation", () => {
+  it("groups the rail by category — no all-data disclosure", () => {
+    const host = renderPanel();
     const nav = host.querySelector(".db-tabs");
     if (!nav) throw new Error("missing database navigation");
 
@@ -56,8 +53,8 @@ describe("database navigation by editor mode", () => {
     expect(findByTestId(nav, "db-tab-switches")?.closest("details")).toBeNull();
   });
 
-  it("keeps grouped navigation with explicit monster and life domains in standard mode", () => {
-    const host = renderPanel("standard");
+  it("keeps grouped navigation with explicit monster and life domains", () => {
+    const host = renderPanel();
     const groups = host.querySelectorAll(".db-tab-group-label").map((group) => group.textContent);
     // 몬스터는 전투 규칙과 분리된 독립 그룹이다 — 예전 `전투·몬스터` 한 덩어리(9탭)가 아니다.
     expect(groups).toContain("몬스터");
@@ -69,7 +66,7 @@ describe("database navigation by editor mode", () => {
   // 그룹은 늘 펼쳐진 구획이다(2026-09-24 개선안 C). 숨는 것은 레코드 0 인 목록 탭뿐이고,
   // 그 이름은 그룹 끝 「빈 탭 N개」 줄에 적힌다. 단위가 다른 것을 더한 그룹 합계 배지는 없앴다.
   it("그룹 머리는 라벨만 남고, 빈 목록 탭은 그룹 끝 한 줄로 접힌다", () => {
-    const host = renderPanel("expert");
+    const host = renderPanel();
     const world = findByTestId(host, "db-tab-group-world");
     const life = findByTestId(host, "db-tab-group-life");
     if (!world || !life) throw new Error("missing group header");
@@ -107,8 +104,8 @@ describe("database navigation by editor mode", () => {
     expect(life.getAttribute("aria-expanded")).toBe("true");
   });
 
-  it("shows the full expert surface without an all-data disclosure", () => {
-    const host = renderPanel("expert");
+  it("shows the full surface without an all-data disclosure", () => {
+    const host = renderPanel();
     const nav = host.querySelector(".db-tabs");
     if (!nav) throw new Error("missing database navigation");
 

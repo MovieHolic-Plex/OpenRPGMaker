@@ -5,7 +5,6 @@ import {
   invalidateCharacterIdIndexCache,
   listCharacterIdIndex,
 } from "@/project/characterIdIndex";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { renderEventCharacterSocialExtras } from "@/editor/panels/eventEditor/pageProps";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -104,12 +103,10 @@ describe("characterIdIndex cache", () => {
 
 describe("characterIdAutocomplete", () => {
   beforeEach(() => {
-    resetEditorUiModeForTests("expert");
     document.body.replaceChildren();
   });
 
   afterEach(() => {
-    resetEditorUiModeForTests("standard");
     document.body.replaceChildren();
     invalidateCharacterIdIndexCache();
   });

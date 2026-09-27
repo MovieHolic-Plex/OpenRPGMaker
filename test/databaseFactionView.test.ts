@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderFactionsTab } from "@/editor/panels/databaseFactionView";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
@@ -112,7 +111,6 @@ describe("database faction authoring view", () => {
   });
 
   it("keeps project-wide rules and the matrix out of the per-faction view until switched", () => {
-    resetEditorUiModeForTests("standard");
     const host = renderView();
     const paneOf = (testid: string): FakeElement | null | undefined => {
       let node = findByTestId(host, testid) as FakeElement | null | undefined;
@@ -130,7 +128,6 @@ describe("database faction authoring view", () => {
     expect(paneOf("db-faction-relations")?.getAttribute("hidden")).not.toBeNull();
     findByTestId(host, "db-faction-view-faction")?.click();
     expect(paneOf("db-faction-relations")?.getAttribute("hidden")).toBeNull();
-    resetEditorUiModeForTests();
   });
 
   it("labels aggression options once, without repeating the label in the description", () => {

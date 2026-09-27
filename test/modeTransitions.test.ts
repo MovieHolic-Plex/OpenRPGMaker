@@ -117,17 +117,6 @@ describe("mode transitions", () => {
       installMapUrlSync: vi.fn(),
       restoreMapFromUrl: vi.fn(() => false),
     }));
-    vi.doMock("@/editor/coachMarks", () => ({
-      maybeStartBasicCoachMarks: vi.fn(),
-      maybeStartStandardWelcomeCard: vi.fn(),
-    }));
-    vi.doMock("@/editor/editorUiMode", () => ({
-      subscribeEditorUiMode: vi.fn(() => () => {}),
-      applyEditorUiModeClasses: vi.fn(),
-      applyFirstVisitEditorUiMode: vi.fn(() => "standard"),
-      getEditorUiMode: vi.fn(() => "standard"),
-      getEditorChrome: vi.fn(() => ({ coachMarks: false, standardWelcome: false })),
-    }));
     vi.doMock("@/editor/teamWorkflowUi", () => ({
       ensureGuestIdentityForAiSurface: vi.fn(),
       openLoginModalIfNeeded: vi.fn(),

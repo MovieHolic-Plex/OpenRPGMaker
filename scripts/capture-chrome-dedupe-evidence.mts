@@ -109,7 +109,6 @@ async function main(): Promise<void> {
         const menus: Record<string, readonly string[]> = {};
         for (const [testid, name] of [
           ["menu-project", "project"],
-          ["menu-tools", "tools"],
           ["menu-game", "game"],
           ["menu-help", "help"],
         ] as const) {

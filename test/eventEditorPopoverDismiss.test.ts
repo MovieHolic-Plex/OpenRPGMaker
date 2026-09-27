@@ -6,7 +6,6 @@
 // 포인터 경로가 없었다.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { clearCommandInspector } from "@/editor/panels/eventEditor/commandInspector";
 import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
 import { resetEventViewSession } from "@/editor/panels/eventEditor/storyboardView";
@@ -56,7 +55,6 @@ describe("툴바 팝오버 닫힘", () => {
   let mapId: string;
 
   beforeEach(() => {
-    resetEditorUiModeForTests("standard");
     resetModalStackForTest();
     clearCommandInspector();
     resetEventViewSession();

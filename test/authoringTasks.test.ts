@@ -5,7 +5,6 @@
 // (「데이터 중심」이 자료집 모달 뒤에서 좌측 도크를 비워, 모달을 닫으면 팔레트가 사라진 채 남는 함정).
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { getWorkspaceLayout, resetWorkspaceForTests } from "@/editor/workspace/workspaceStore";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
@@ -59,7 +58,6 @@ beforeEach(() => {
       dispatchEvent,
     },
   });
-  resetEditorUiModeForTests("standard");
   resetWorkspaceForTests();
   editorState.set({ layer: "lower", tool: "paint" });
   mocks.openDatabaseModal.mockClear();
@@ -111,7 +109,7 @@ describe("저작 작업 명령", () => {
     expect(dispatchEvent.mock.calls[0]?.[0]).toMatchObject({ type: "oprn:test-play-window" });
   });
 
-  it("「보기」 메뉴는 작업 칩·프리셋·밀도를 다시 내놓지 않고 편집 모드만 소유한다", () => {
+  it("「보기」 메뉴는 작업 칩·프리셋·밀도·편집 모드를 다시 내놓지 않는다", () => {
     // Break: 작업 칩이나 밀도(안내/보통/촘촘) 라디오가 두 번째 이름으로 되살아난다.
     const root = renderBar();
     for (const id of ["map", "event", "data", "test"]) {
@@ -123,8 +121,7 @@ describe("저작 작업 명령", () => {
     }
     expect(findByTestId(root, "authoring-task-launcher")).toBeNull();
     for (const mode of ["beginner", "standard", "expert"]) {
-      expect(findByTestId(root, `workspace-ui-mode-${mode}`), mode).not.toBeNull();
+      expect(findByTestId(root, `workspace-ui-mode-${mode}`), mode).toBeNull();
     }
-    expect(findByTestId(root, "workspace-ui-mode-standard")?.getAttribute("aria-checked")).toBe("true");
   });
 });

@@ -13,7 +13,6 @@ import { footprintPreviewLayout } from "@/editor/panels/eventEditor/eventGraphic
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { openEventConditions, openEventMovement } from "@/editor/panels/eventEditor/eventEditorOpenState";
 import type { CharacterFootprint, EventPage } from "@/project/types";
 
@@ -66,7 +65,6 @@ describe("이벤트 편집창 — 크기와 통행 필드셋", () => {
   beforeEach(() => {
     openEventConditions.clear();
     openEventMovement.clear();
-    resetEditorUiModeForTests("expert");
     host = document.createElement("div");
     document.body.append(host);
   });
@@ -75,7 +73,6 @@ describe("이벤트 편집창 — 크기와 통행 필드셋", () => {
     host.remove();
     openEventConditions.clear();
     openEventMovement.clear();
-    resetEditorUiModeForTests("standard");
   });
 
   function render(): void {

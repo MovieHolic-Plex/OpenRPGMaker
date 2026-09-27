@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { setEditorUiMode } from "@/editor/editorUiMode";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -38,33 +37,18 @@ afterEach(() => {
 // 도크 축 삭제(float 단일) — "다음에 갈 도크" 라벨 계산과 「떼기」의 도크 이동 단언은
 // 대상이 없어져 고정 라벨·무동작 계약으로 뒤집었다.
 describe("AI shared surface", () => {
-  it("shows the same empty composer surface in beginner and expert body classes", () => {
-    // Break: either mode remounts start-screen empty kit, or expert gets a private board.
-    document.body.classList.add("editor-ui-beginner");
-    const basicPanel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
-    expect(findByTestId(basicPanel, "ai-start-screen")).toBeNull();
-    expect(findByTestId(basicPanel, "ai-start-visual-gallery")).toBeNull();
-    expect(findByTestId(basicPanel, "ai-empty-cta")).toBeNull();
-    expect(findByTestId(basicPanel, "ai-expert-board")).toBeNull();
-    expect(findByTestId(basicPanel, "ai-composer-chips")).toBeNull();
-    expect(findByTestId(basicPanel, "ai-input")).toBeTruthy();
-    expect(findByTestId(basicPanel, "ai-chat-log")).toBeTruthy();
-    expect(findByTestId(basicPanel, "ai-send")).toBeTruthy();
-    expect(basicPanel.dataset.uiDensity).toBe("shared");
-
-    document.body.classList.remove("editor-ui-beginner");
-    document.body.classList.add("editor-ui-expert");
-    setEditorUiMode("expert");
-    const expertPanel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
-    expect(findByTestId(expertPanel, "ai-start-screen")).toBeNull();
-    expect(findByTestId(expertPanel, "ai-start-visual-gallery")).toBeNull();
-    expect(findByTestId(expertPanel, "ai-empty-cta")).toBeNull();
-    expect(findByTestId(expertPanel, "ai-expert-board")).toBeNull();
-    expect(findByTestId(expertPanel, "ai-composer-chips")).toBeNull();
-    expect(findByTestId(expertPanel, "ai-input")).toBeTruthy();
-    expect(findByTestId(expertPanel, "ai-chat-log")).toBeTruthy();
-    expect(findByTestId(expertPanel, "ai-send")).toBeTruthy();
-    expect(expertPanel.dataset.uiDensity).toBe("shared");
+  it("shows the shared empty composer surface", () => {
+    // Break: the panel remounts the start-screen empty kit or a private expert board.
+    const panel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
+    expect(findByTestId(panel, "ai-start-screen")).toBeNull();
+    expect(findByTestId(panel, "ai-start-visual-gallery")).toBeNull();
+    expect(findByTestId(panel, "ai-empty-cta")).toBeNull();
+    expect(findByTestId(panel, "ai-expert-board")).toBeNull();
+    expect(findByTestId(panel, "ai-composer-chips")).toBeNull();
+    expect(findByTestId(panel, "ai-input")).toBeTruthy();
+    expect(findByTestId(panel, "ai-chat-log")).toBeTruthy();
+    expect(findByTestId(panel, "ai-send")).toBeTruthy();
+    expect(panel.dataset.uiDensity).toBe("shared");
   });
 
   it("도크 전환 진입점은 하나도 남지 않고, 붙은 곳은 dataset 으로만 읽는다", () => {

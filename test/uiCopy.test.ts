@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { uiLabel } from "@/editor/uiCopy";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { layerShortLabel } from "@/editor/panels/aiAgentBrief";
 
 describe("uiCopy", () => {
@@ -116,8 +115,6 @@ describe("uiCopy", () => {
   });
 
   it("layerShortLabel follows the active mode jargon style (standard = plain)", () => {
-    resetEditorUiModeForTests("standard");
     expect(layerShortLabel("lower")).toBe("바닥");
-    resetEditorUiModeForTests("standard");
   });
 });

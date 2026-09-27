@@ -7,7 +7,6 @@
 import type { AuditEntry } from "@/ai/assistantSession";
 import type { ToolResult } from "@/editor/tools";
 import { renderAiDocument } from "@/editor/panels/aiDocRenderers";
-import { getEditorChrome } from "@/editor/editorUiMode";
 import { sanitizeUserFacingToolId } from "@/editor/uiCopy";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
@@ -289,13 +288,11 @@ export function createConversationLogHost(options: {
       return null;
     }
     toolDetailSeq += 1;
-    const plainToolNames = getEditorChrome().jargonStyle === "plain";
-    const visibleResult = plainToolNames
-      ? { ...result, summary: sanitizeUserFacingToolId(result.summary) }
-      : result;
+    // 사용자에게는 내부 도구 id 대신 쉬운 이름을 보인다.
+    const visibleResult = { ...result, summary: sanitizeUserFacingToolId(result.summary) };
     const chip = options.renderChip?.(name, args, result) ?? null;
     const entry = renderToolActivityEntry(name, visibleResult, { args, index: toolDetailSeq }, { chip });
-    if (plainToolNames && !result.ok) {
+    if (!result.ok) {
       const title = entry.querySelector(".ai-tool-failure-summary");
       if (title?.textContent) {
         title.textContent = title.textContent.replace(name, sanitizeUserFacingToolId(name));

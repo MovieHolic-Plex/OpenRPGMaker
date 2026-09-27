@@ -11,7 +11,6 @@ import { store } from "@/project/store";
 import { closeWorkPlanBook } from "@/editor/panels/aiWorkPlanModal";
 import { resetModalStackForTest } from "@/editor/ui/modalStack";
 import { findByTestId, installFakeDom, renderWithFakeDom, type FakeElement } from "./fakeDom";
-import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import type { WorkPlan } from "@/ai/workPlan";
 
 const assistantMock = vi.hoisted(() => {
@@ -299,7 +298,6 @@ describe("자율성 다이얼 런 표면", () => {
   });
 
   it("컴포저 입력줄에는 모델명을 두지 않는다", async () => {
-    resetEditorUiModeForTests("standard");
     storage.set(
       AI_CONFIG_STORAGE_KEY,
       JSON.stringify({ ...defaultAiConfig(), model: "stub-model", autonomyLevel: "autonomous" })

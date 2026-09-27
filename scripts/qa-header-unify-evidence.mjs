@@ -54,8 +54,8 @@ await page.waitForTimeout(1200);
 
 // ── C1: 헤더 용어 ────────────────────────────────────────────────────────────
 // 톱바 영역의 모든 사용자 가시 문구(텍스트 · title · aria-label)를 수집한다. 메뉴 팝업은
-// 열어야 DOM 에 붙으므로 4개 메뉴를 차례로 열어 그때마다 수집한다.
-const menuIds = ["menu-project", "menu-tools", "menu-game", "menu-help"];
+// 열어야 DOM 에 붙으므로 메뉴를 차례로 열어 그때마다 수집한다.
+const menuIds = ["menu-project", "menu-help"];
 const headerStrings = new Set();
 
 async function collectHeaderStrings() {

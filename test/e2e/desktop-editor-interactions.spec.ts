@@ -9,9 +9,8 @@ const VIEWPORTS = [
   { width: 1280, height: 800 },
   { width: 1440, height: 900 },
 ] as const;
-const MODES = ["basic", "expert"] as const;
-// 맵 메뉴(2026-08-26)·게임 메뉴(2026-09-03)는 사라졌다. 도구 메뉴는 표준·초보에만 있고 전문가는
-// 인라인 버튼이라 모드별 필수 목록이 다르다.
+const MODES = ["editor"] as const;
+// 맵 메뉴(2026-08-26)·게임 메뉴(2026-09-03)·도구 메뉴(2026-09-27)는 사라졌다.
 const REQUIRED_FOCUS_TARGETS = [
   "menu-project",
   "menu-help",
@@ -97,9 +96,8 @@ async function runDesktopScenario(
 ): Promise<{ readonly issues: readonly string[]; readonly metric: DesktopInteractionMetric }> {
   const context = await browser.newContext({ viewport });
   const browserIssues: string[] = [];
-  await context.addInitScript(({ editorMode, seededProject }) => {
+  await context.addInitScript(({ seededProject }) => {
     window.localStorage.clear();
-    window.localStorage.setItem("oprn:editor-ui-mode", editorMode);
     window.__OPRN_E2E_PROJECT__ = seededProject;
     Object.defineProperty(window, "Audio", {
       configurable: true,
@@ -127,7 +125,7 @@ async function runDesktopScenario(
       }
       return realFetch(input, init);
     };
-  }, { editorMode: mode, seededProject: project });
+  }, { seededProject: project });
   const page = await context.newPage();
   page.on("console", (message) => {
     if (message.type() === "error") browserIssues.push(`console: ${message.text()}`);
@@ -148,10 +146,10 @@ async function runDesktopScenario(
       focusTrace[testId] = await reachByTab(page, page.getByTestId(testId), viewport, `${mode}/${viewport.width} ${testId}`);
     }
 
-    const tools = page.getByTestId("menu-tools");
-    await reachByTab(page, tools, viewport, `${mode}/${viewport.width} menu-tools popup trigger`);
+    const tools = page.getByTestId("menu-project");
+    await reachByTab(page, tools, viewport, `${mode}/${viewport.width} menu-project popup trigger`);
     await page.keyboard.press("Enter");
-    const popup = page.getByTestId("menu-popup-tools");
+    const popup = page.getByTestId("menu-popup-project");
     await expect(popup).toBeVisible();
     if (viewport.width === 1024) {
       await popup.getByRole("menuitem").first().evaluate((node) => {
@@ -165,7 +163,7 @@ async function runDesktopScenario(
     await expect(popup).toHaveCount(0);
     await expect(tools).toBeFocused();
 
-    if (mode === "expert") await assertEventRowsActivate(page, viewport);
+    await assertEventRowsActivate(page, viewport);
     const pointerBoxes = await page.locator([
       "button[data-testid^='menu-']:visible",
       "button[data-testid^='layer-']:visible",

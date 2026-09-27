@@ -23,9 +23,7 @@
 
 
 
-body.editor-ui-beginner .topbar-test-play,
-body.editor-ui-standard .topbar-test-play,
-body.editor-ui-expert .topbar-test-play {
+body .topbar-test-play {
   align-items: center;
   background: var(--studio-play, var(--editor-blue, var(--accent)));
   border: 1px solid var(--studio-select, var(--accent-border));
@@ -41,12 +39,8 @@ body.editor-ui-expert .topbar-test-play {
   white-space: nowrap;
 }
 
-body.editor-ui-beginner .topbar-test-play:hover,
-body.editor-ui-beginner .topbar-test-play:focus-visible,
-body.editor-ui-standard .topbar-test-play:hover,
-body.editor-ui-standard .topbar-test-play:focus-visible,
-body.editor-ui-expert .topbar-test-play:hover,
-body.editor-ui-expert .topbar-test-play:focus-visible {
+body .topbar-test-play:hover,
+body .topbar-test-play:focus-visible {
   filter: brightness(1.12);
   outline: 2px solid color-mix(in srgb, var(--editor-blue, var(--accent)) 45%, transparent);
   outline-offset: 1px;
@@ -60,9 +54,6 @@ body.editor-ui-expert .topbar-test-play:focus-visible {
 
 /* ── Basic statusbar: keep layer / map / tool / tile / zoom / DB; hide expert-only detail ── */
 /* 타일(무엇을 칠하는지)·줌은 basic에서도 보여준다 — 편집에 필수정보. */
-body.editor-ui-beginner .editor-statusbar .sb-detail {
-  display: none;
-}
 
 /* Map tree: always available when chrome.mapTree; only hide via .is-ui-hidden. */
 .left-panel-stack.is-ui-hidden,
@@ -79,240 +70,11 @@ body.editor-ui-beginner .editor-statusbar .sb-detail {
    clipped (layer/map toggles open overlays to the right of the rail).
 */
 
-body.editor-ui-beginner {
-  --basic-rail-width: 288px;
-}
-
-body.editor-ui-beginner .editor-layout .left-panel,
-body.editor-ui-beginner .left-panel {
-  /* Single-column labeled rail — no expert map-tree grid row.
-     z-index must beat .canvas-area (later sibling, position:relative) so
-     flyouts that spill right are clickable and visible over the map. */
-  container-type: normal;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  grid-template-rows: none;
-  min-width: var(--basic-rail-width) !important;
-  overflow: visible !important;
-  overflow-x: visible !important;
-  overflow-y: visible !important;
-  padding: 0 !important;
-  position: relative;
-  width: var(--basic-rail-width);
-  z-index: var(--z-rail);
-}
-
-body.editor-ui-beginner .editor-layout .left-panel-stack,
-body.editor-ui-beginner .left-panel-stack,
-body.editor-ui-beginner .left-panel-stack[data-testid="left-palette-root"],
-body.editor-ui-beginner .left-panel-stack[data-testid="left-map-root"] {
-  border-bottom: 0;
-  flex: 1 1 auto;
-  max-width: none;
-  min-height: 0;
-  min-width: 0;
-  overflow: visible !important;
-  overflow-x: visible !important;
-  overflow-y: visible !important;
-  padding: 0 !important;
-}
-
-body.editor-ui-beginner .basic-left-rail.is-icon-rail {
-  align-items: stretch;
-  box-sizing: border-box;
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  gap: 6px;
-  height: 100%;
-  min-height: 0;
-  padding: 6px;
-  position: relative;
-  width: 100%;
-}
-
-.basic-rail-icons {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  flex-shrink: 0;
-  gap: var(--space-1);
-}
-
-.basic-rail-btn {
-  align-items: center;
-  background: transparent;
-  border: var(--stroke-1) solid transparent;
-  border-radius: var(--radius-s);
-  color: var(--text-2);
-  cursor: pointer;
-  display: flex;
-  gap: var(--space-1);
-  justify-content: center;
-  min-height: 26px;
-  min-width: 0;
-  padding: var(--space-1);
-}
-
-.basic-rail-btn svg {
-  flex: 0 0 auto;
-  height: var(--space-4);
-  width: var(--space-4);
-}
-
-.basic-rail-label {
-  font: var(--font-weight-semibold) var(--font-size-sm)/var(--line-height-tight) var(--font-ui);
-}
-
-.basic-rail-btn:hover,
-.basic-rail-btn:focus-visible {
-  border-color: var(--editor-line-strong, var(--border-strong));
-  color: var(--editor-text, var(--text-1));
-  outline: none;
-}
-
-.basic-rail-btn.is-active,
-.basic-rail-btn.is-open {
-  background: color-mix(in srgb, var(--editor-blue, var(--accent)) 28%, var(--mix-base));
-  border-color: color-mix(in srgb, var(--editor-blue, var(--accent)) 55%, transparent);
-  color: var(--on-accent);
-}
-
-.basic-rail-btn[disabled] {
-  cursor: default;
-  opacity: 0.45;
-}
-
-.basic-pending-event-cta {
-  align-items: center;
-  background: color-mix(in srgb, var(--editor-blue, var(--accent)) 26%, var(--mix-base));
-  border: 1px solid color-mix(in srgb, var(--editor-blue, var(--accent)) 58%, transparent);
-  border-radius: var(--radius-m);
-  color: var(--on-accent);
-  cursor: pointer;
-  display: flex;
-  flex: 0 0 auto;
-  flex-direction: column;
-  font: var(--font-weight-bold) var(--font-size-sm)/var(--line-height-tight) var(--font-ui);
-  gap: var(--space-1);
-  margin-top: var(--space-1);
-  min-height: 48px;
-  padding: var(--space-1);
-  position: relative;
-  text-align: center;
-  width: calc(var(--basic-rail-width) - (2 * var(--space-1)));
-}
-
-.basic-pending-event-cta > span:not(.basic-pending-event-cta-mark) {
-  background: transparent;
-  border: 0;
-  color: currentColor;
-  display: block;
-  padding: 0;
-  position: static;
-  white-space: normal;
-}
-
-.basic-pending-event-cta-coord {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-medium);
-}
-
-.basic-pending-event-cta:hover,
-.basic-pending-event-cta:focus-visible {
-  background: color-mix(in srgb, var(--editor-blue, var(--accent)) 42%, var(--mix-base));
-  outline: none;
-}
-
-.basic-pending-event-cta-mark {
-  font-size: 22px;
-  line-height: 1;
-}
-
-@media (max-width: 1320px) {
-  body.editor-ui-beginner .editor-product-brand-text,
-  body.editor-ui-beginner .topbar-test-play-label {
-    display: none;
-  }
-
-  body.editor-ui-beginner .editor-product-brand {
-    margin-right: 6px;
-  }
-
-  body.editor-ui-beginner .topbar-test-play {
-    justify-content: center;
-    padding: 0;
-    width: 32px;
-  }
-}
-
 /* ── 첫 방문 코치마크 (기본 모드) ─────────────────────────────── */
-
-.coach-mark-card {
-  background: var(--bg-raised, #FFFDF8);
-  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
-  border-radius: var(--radius-m, 10px);
-  box-shadow: var(--shadow-pop, 0 12px 32px rgba(60, 48, 32, 0.14));
-  padding: 12px 14px;
-  position: fixed;
-  /* 첫 방문 안내라 어떤 셸 레이어보다 앞에 와야 한다 — z-popover(90) 는
-     flyout/popover-high/modal 아래로 깔려 레일·패널에 가렸다. */
-  z-index: var(--z-modal-top);
-}
 
 /* 테스트 플레이/전투 테스트 모달이 떠 있는 동안은 숨긴다 — 코치마크가 가리키는
    도구 레일은 모달 뒤에 있는데 카드만 모달 위(z-modal-top)에 남아, 작은 창에서
    전투 필드·HUD 를 덮었다(코덱스 적대 리뷰 C5). 모달이 닫히면 다시 보인다. */
-body.is-test-play-open .coach-mark-card {
-  display: none;
-}
-
-.coach-mark-head {
-  color: var(--text-1, #2A2521);
-  font: 700 12px/1.3 var(--font-ui, system-ui, sans-serif);
-  margin-bottom: 6px;
-}
-
-.coach-mark-body {
-  color: var(--text-2, #5C5348);
-  font: 400 12px/1.55 var(--font-ui, system-ui, sans-serif);
-  margin-bottom: 10px;
-}
-
-.coach-mark-actions {
-  display: flex;
-  gap: 6px;
-  justify-content: flex-end;
-}
-
-.coach-mark-skip,
-.coach-mark-next {
-  border-radius: 6px;
-  cursor: pointer;
-  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
-  padding: 6px 12px;
-}
-
-.coach-mark-skip {
-  background: var(--bg-raised, #FFFDF8);
-  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
-  color: var(--text-2, #5C5348);
-}
-
-.coach-mark-next {
-  background: var(--accent);
-  border: 1px solid transparent;
-  color: var(--on-accent, #fff);
-}
-
-.coach-mark-skip:hover {
-  border-color: var(--border-strong, rgba(42, 37, 33, 0.26));
-  color: var(--text-1, #2A2521);
-}
-
-.coach-mark-next:hover {
-  filter: brightness(0.96);
-}
 
 
 /* 짧은 뷰포트: 맵 트리가 시트 공간을 잡아먹지 않게 */
@@ -329,27 +91,22 @@ body.is-test-play-open .coach-mark-card {
 
 }
 
-/* 좌패널 전체: 가로 스크롤 전면 차단 (시트·맵트리·툴바 공통)
-   basic 아이콘 레일은 플라이아웃이 우측으로 넘치므로 제외 (위 body.editor-ui-beginner 규칙). */
-body.editor-ui-standard .editor-layout .left-panel,
-body.editor-ui-expert .editor-layout .left-panel {
+/* 좌패널 전체: 가로 스크롤 전면 차단 (시트·맵트리·툴바 공통) */
+body .editor-layout .left-panel {
   box-sizing: border-box;
   flex: 0 0 auto;
   min-width: 0;
   overflow-x: hidden;
 }
 
-body.editor-ui-standard .editor-layout .left-panel-stack,
-body.editor-ui-expert .editor-layout .left-panel-stack {
+body .editor-layout .left-panel-stack {
   max-width: 100%;
   min-width: 0;
   overflow-x: hidden;
 }
 
-body.editor-ui-standard .left-panel-stack[data-testid="left-palette-root"],
-body.editor-ui-standard .left-panel-stack[data-testid="left-map-root"],
-body.editor-ui-expert .left-panel-stack[data-testid="left-palette-root"],
-body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
+body .left-panel-stack[data-testid="left-palette-root"],
+body .left-panel-stack[data-testid="left-map-root"] {
   overflow-x: hidden !important;
 }
 
@@ -359,17 +116,6 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
    RM2K six-column palette: multi-cell facades and props must remain readable. */
 
 /* 시트 크게 보기 팝오버 */
-
-
-.basic-rail-section {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-.basic-selected-tile {
-  color: var(--editor-text-muted, var(--text-2));
-  font: 500 12px/1.3 var(--font-ui, system-ui, sans-serif);
-}
 
 /* Basic rail layout is fully specified in the icon-rail block above. */
 
@@ -607,24 +353,3 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 /* 「그리기」 탭 도구 한 줄 (2026-09-24 정리). 여섯 도구를 3×2 글자 단추에서 아이콘 한 줄로 줄이고,
    이름은 바로 아래 붓 상태 줄(「칠하기 · 바닥」)이 말한다. 라벨 span 은 DOM 에 남기고 화면에서만 숨긴다 —
    접근 이름은 aria-label, 테스트는 textContent 를 그대로 읽는다. */
-body.editor-ui-beginner .basic-left-rail.is-icon-rail { gap: 4px; padding: 4px 8px 8px; }
-.basic-left-rail [data-testid="basic-tool-list"].basic-rail-icons {
-  display: flex; gap: 2px; padding: 2px; border-radius: calc(var(--radius-s) + 2px); background: var(--bg-well, var(--bg-inset));
-}
-.basic-left-rail [data-testid="basic-tool-list"] .basic-rail-btn {
-  flex: 1 1 0; min-height: 30px; border: 0; border-radius: var(--radius-s); color: var(--text-2);
-}
-.basic-left-rail [data-testid="basic-tool-list"] .basic-rail-btn:hover,
-.basic-left-rail [data-testid="basic-tool-list"] .basic-rail-btn:focus-visible { color: var(--text-1); background: var(--bg-hover); }
-.basic-left-rail [data-testid="basic-tool-list"] .basic-rail-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
-.basic-left-rail [data-testid="basic-tool-list"] .basic-rail-btn.is-active {
-  background: var(--bg-raised); color: var(--accent);
-  box-shadow: 0 1px 2px color-mix(in srgb, var(--text-1) 14%, transparent), 0 0 0 .5px color-mix(in srgb, var(--text-1) 8%, transparent);
-}
-.basic-left-rail [data-testid="basic-tool-list"] .basic-rail-btn svg { width: 18px; height: 18px; }
-.basic-left-rail [data-testid="basic-tool-list"] .basic-rail-label,
-.basic-left-rail .basic-rail-undo .basic-rail-label {
-  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
-}
-.basic-rail-status .basic-rail-undo { flex: none; width: 30px; min-height: 28px; border: 0; }
-.basic-rail-status .basic-rail-undo:hover:not([disabled]) { background: var(--bg-hover); }

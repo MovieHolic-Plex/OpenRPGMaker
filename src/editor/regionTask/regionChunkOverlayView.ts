@@ -303,7 +303,7 @@ function positionBar(): void {
   // `TEXTAREA.ai-assistant-input` 이었다).
   //
   // ⚠ 잡을 것은 `.ai-deck` 이다. 실측(2026-09-11):
-  //   - coachMarks:271 의 `.ai-chat-panel.chat-dock-glass:not(.is-collapsed)` → 0개.
+  //   - (삭제된 coachMarks 가 쓰던) `.ai-chat-panel.chat-dock-glass:not(.is-collapsed)` → 0개.
   //     도크가 하나(float)로 정리된 뒤 mountAssistantOverlay 는 `chat-dock-float` 만 붙인다.
   //   - `.ai-chat-panel` → 캔버스 전체(288,49,992,751). 통과용 껍데기라서 이걸 피하면
   //     후보가 전멸하고 바가 그대로 가려진다.

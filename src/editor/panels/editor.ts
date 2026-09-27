@@ -12,15 +12,8 @@ import {
   editorStateNeedsPaletteRefresh,
 } from "@/editor/editorState";
 import { registerAiBootIntentTarget, clearPendingAiBootIntent } from "@/editor/aiBootIntent";
-import { dismissCoachMarks } from "@/editor/coachMarks";
 import { installSelectionChipHint } from "@/editor/selectionChipHint";
 import { installToolCursor } from "@/editor/toolCursor";
-import {
-  applyEditorUiModeClasses,
-  getEditorChrome,
-  getEditorUiMode,
-  subscribeEditorUiMode,
-} from "@/editor/editorUiMode";
 import {
   ensureCurrentMapLock,
   getMapEditLockStatus,
@@ -109,8 +102,8 @@ const MAP_TREE_COLLAPSED_FALLBACK_HEIGHT = 44;
  */
 const PALETTE_SHEET_RESERVE_HEIGHT = 280;
 const EDITOR_LAYOUT_KEY = "oprn:editor-layout:v4";
-// CSS `--basic-rail-width` owns the beginner panel width; this is its pre-layout fallback.
-const BASIC_RAIL_FALLBACK_WIDTH = 288;
+/** 좌패널 표시 폭 상한(px). 사용자 저장값(최대 LEFT_PANEL_MAX_WIDTH)이 더 넓어도 이 폭까지만 쓴다. */
+const LEFT_PANEL_DISPLAY_MAX_WIDTH = 320;
 
 type LoadedEditorLayout = {
   readonly leftWidth: number;
@@ -150,7 +143,6 @@ let mapTreeAutoHeight = MAP_TREE_DEFAULT_HEIGHT;
 let mapTreeFitRaf = 0;
 let mapTreeObserver: MutationObserver | null = null;
 let unsubMapPanel: (() => void) | null = null;
-let unsubUiMode: (() => void) | null = null;
 let unsubLayoutBbox: (() => void) | null = null;
 let unsubLocationLayer: (() => void) | null = null;
 let unsubLocationToggle: (() => void) | null = null;
@@ -165,7 +157,6 @@ let leftDock: DockMount | null = null;
 export function renderEditor(main: HTMLElement): void {
   clearChildren(main);
   installEditorToolHook(); // 헤드리스(Playwright) 에디터 조작용 window.__oprnEditorTool.
-  applyEditorUiModeClasses(getEditorUiMode());
 
   // 도크는 하나(입력줄 = float)다. 예전에는 glass/side/float 3분기가 첫 페인트부터
   // 클래스와 `--ai-chat-side-width` 를 갈라 잡았다 — side 가 사라지면서 캔버스는 항상
@@ -256,7 +247,7 @@ export function renderEditor(main: HTMLElement): void {
 
   mountAssistantOverlay();
   applyLayout();
-  applyEditorUiModeLayout();
+  applyLeftDockLayout();
   refreshPanels();
   ensureCurrentMapLock();
   bindLeftResizer();
@@ -316,13 +307,7 @@ export function renderEditor(main: HTMLElement): void {
     if (canvasToolbarRoot) renderCanvasToolbar(canvasToolbarRoot);
   });
   unsubMapLocks = subscribeMapEditLocks(() => scheduleFullPanelRefresh());
-  unsubUiMode = subscribeEditorUiMode(() => {
-    syncLeftDock();
-    applyEditorUiModeLayout();
-    if (!getEditorChrome().coachMarks || !getEditorChrome().standardWelcome) dismissCoachMarks();
-  });
-  // 패널 이동·열기/닫기(프리셋 전환 포함)는 도크를 다시 짓는다. syncLeftDock 은 멱등이라
-  // 프리셋 전환처럼 uiMode 구독자와 겹쳐 두 번 불려도 한 번만 조립한다.
+  // 패널 이동·열기/닫기(프리셋 전환 포함)는 도크를 다시 짓는다. syncLeftDock 은 멱등이다.
   unsubWorkspace = subscribeWorkspace(() => syncLeftDock());
   // 맵 섹션 접기/펴기 — 헤더 토글(mapList.ts)이 상태를 바꾸면 도크 행 높이를 따라 바꾼다.
   unsubMapPanel = subscribeMapPanel(() => {
@@ -341,11 +326,7 @@ export function renderEditor(main: HTMLElement): void {
 
 /** 좌측 도크에 마운트할 패널. 규칙은 `workspace/leftDockPanels.ts` 가 소유한다(패널 메뉴와 공유). */
 function leftDockPanels(): readonly PanelId[] {
-  return resolveLeftDockPanels({
-    left: getWorkspaceLayout().docks.left,
-    paletteRail: getEditorChrome().paletteRail,
-    mapTree: getEditorChrome().mapTree,
-  }).filter(id => id !== "maps");
+  return resolveLeftDockPanels(getWorkspaceLayout().docks.left).filter(id => id !== "maps");
 }
 
 /**
@@ -354,8 +335,7 @@ function leftDockPanels(): readonly PanelId[] {
  *
  * 팔레트 호스트를 가리키는 모듈 변수는 이 리팩터로 **사라졌다** — 렌더 경로가 레지스트리를
  * 지나므로 아무도 그 노드를 이름으로 찾지 않는다. `leftMapRoot`/`mapTreeResizer` 는 남는데,
- * 맵 트리 표시 여부가 아직 `chrome.mapTree` 밀도 플래그와 CSS `.is-ui-hidden` 게이트에
- * 걸려 있어서다(그 게이트를 도크 구성으로 합치는 일은 다음 라운드).
+ * 맵 트리 표시 여부가 아직 CSS `.is-ui-hidden` 게이트에 걸려 있어서다.
  */
 function mountLeftDock(container: HTMLElement): void {
   closeSidebarSurface();
@@ -399,20 +379,17 @@ function makeMapTreeResizer(): HTMLElement {
 
 /**
  * 워크스페이스 구성이 바뀌었을 때 도크를 맞춘다. **멱등** — 구성 서명이 같으면 다시 짓지
- * 않는다. 프리셋 전환은 밀도까지 바꿔 editorUiMode 구독자도 깨우므로 이 함수가 한 번의
- * 전환에 두 번 불릴 수 있다.
+ * 않는다.
  */
 function syncLeftDock(): void {
   if (!leftRoot) return;
   if (leftDock && leftDock.signature === dockSignature("left", leftDockPanels())) return;
   mountLeftDock(leftRoot);
-  applyEditorUiModeLayout();
+  applyLeftDockLayout();
 }
 
 /**
- * 좌측 도크 패널 렌더. 맵 도크 표시는 도크 구성(사용자 선택) 단일 원천이다 —
- * 예전 `chrome.mapTree` 밀도 게이트는 표준/전문가 통합으로 걷었다.
- * 초보는 `resolveLeftDockPanels`에서 타일만 남기므로 여기서 걸러진다.
+ * 좌측 도크 패널 렌더. 맵 도크 표시는 도크 구성(사용자 선택) 단일 원천이다.
  */
 function renderLeftDockPanels(): void {
   if (!leftDock) return;
@@ -422,9 +399,9 @@ function renderLeftDockPanels(): void {
   scheduleMapTreeFit();
 }
 
-export function applyEditorUiModeLayout(): void {
+/** 도크 구성이 바뀐 뒤 맵 트리 표시·폭·툴바를 다시 맞춘다. */
+function applyLeftDockLayout(): void {
   const inDock = new Set(leftDockPanels());
-  applyEditorUiModeClasses(getEditorUiMode());
 
   if (leftMapRoot) {
     const show = inDock.has("maps");
@@ -438,8 +415,8 @@ export function applyEditorUiModeLayout(): void {
     if (show) mapTreeResizer.classList.remove("is-ui-hidden");
     else mapTreeResizer.classList.add("is-ui-hidden");
   }
-  // 모드 전환(초보 레일 ↔ 표준 컬럼)은 폭·툴바를 다시 잰다.
-  // 이 호출을 빼면 인라인 width/--editor-left-safe 가 이전 모드에 남는다.
+  // 도크 구성이 바뀌면 폭·툴바를 다시 잰다. 이 호출을 빼면 인라인 width/--editor-left-safe 가
+  // 이전 구성에 남는다.
   if (canvasToolbarRoot) {
     renderLeftDockPanels();
     renderCanvasToolbar(canvasToolbarRoot);
@@ -460,7 +437,6 @@ export function teardownEditor(): void {
   unsubStore?.();
   unsubEditor?.();
   unsubMapLocks?.();
-  unsubUiMode?.();
   unsubLayoutBbox?.();
   unsubLocationLayer?.();
   unsubLocationToggle?.();
@@ -476,7 +452,6 @@ export function teardownEditor(): void {
   unsubStore = null;
   unsubEditor = null;
   unsubMapLocks = null;
-  unsubUiMode = null;
   unsubLayoutBbox = null;
   unsubLocationLayer = null;
   unsubLocationToggle = null;
@@ -507,7 +482,7 @@ export function teardownEditor(): void {
   authoringJourneyOpen = false;
   authoringJourneyReferenceIssues = null;
   projectExportMirror.clear();
-  document.body.classList.remove("ai-chat-dock-float", "editor-ui-beginner", "editor-ui-standard", "editor-ui-expert");
+  document.body.classList.remove("ai-chat-dock-float");
 }
 
 /**
@@ -643,7 +618,6 @@ function onWindowResize(): void {
 
 function applyLayout(): void {
   if (!leftRoot || !leftResizer) return;
-  const chrome = getEditorChrome();
   const layoutEl = leftRoot.closest<HTMLElement>(".editor-layout") ?? leftRoot.parentElement;
   let usableWidth = window.innerWidth;
   if (layoutEl) {
@@ -679,24 +653,12 @@ function applyLayout(): void {
   // 시절에는 여기서 1/3 을 잘라 갔다 — 이제 캔버스가 그 폭을 되돌려 받는다.
   layoutEl?.style?.setProperty?.("--ai-chat-side-width", "0px");
 
-  // 좌측 사이드바(타일+맵 트리)는 편집 모드에서 항상 보인다. 프리셋·접힘 토글·좁은
+  // 좌측 사이드바(타일+맵 트리)는 편집 화면에서 항상 보인다. 프리셋·접힘 토글·좁은
   // 뷰포트가 열을 display:none 으로 지울 수 없다.
-  if (chrome.paletteRail) {
-    leftRoot.style.display = "";
-    // Standard/expert leave an inline width. min-width in the rail stylesheet
-    // cannot override it: clear it before measuring the CSS-owned beginner panel.
-    leftRoot.style.width = "";
-    leftResizer.style.display = "none";
-    // `--editor-left-safe` 는 실폭에서 파생한다. 리사이저 여유는 비-레일 분기와 같은 계산이고
-    // 여긴 숨겼으니 0 이다 → 어시스턴트 오버레이의 12px 여백이 마침내 12px 이 된다.
-    setEditorLeftSafe(`${measuredWidth(leftRoot, BASIC_RAIL_FALLBACK_WIDTH) + visibleWidth(leftResizer)}px`);
-    return;
-  }
   leftRoot.style.display = "";
   // 실제 사용 가능한 폭 = 레이아웃 콘텐츠폭 − 좌우 패딩. 캔버스 최소폭을 먼저 확보한 뒤 좌패널 상한을 잡는다.
   const maxLeftForCanvas = Math.max(LEFT_PANEL_MIN_WIDTH, usableWidth - MIN_CANVAS_WIDTH - resizerWidth);
-  const preferredLeftWidth = chrome.leftPanelMaxWidthPx ? Math.min(leftWidth, chrome.leftPanelMaxWidthPx) : leftWidth;
-  const effectiveLeftWidth = Math.min(preferredLeftWidth, maxLeftForCanvas);
+  const effectiveLeftWidth = Math.min(leftWidth, LEFT_PANEL_DISPLAY_MAX_WIDTH, maxLeftForCanvas);
   leftRoot.style.width = `${effectiveLeftWidth}px`;
   // 접힘 클래스를 먼저 발행한다 — 접힌 헤더의 margin-bottom:0 이 적용된 뒤에 재야 첫 계산과
   // 이후 재계산(창 크기 변경 등)의 값이 같다.
@@ -767,13 +729,12 @@ function scheduleMapTreeFit(): void {
 /** 자동 모드: 맵 패널 내용 높이를 재서 도크 3행을 맞춘다. 측정이 불가하면 그대로 둔다. */
 function fitMapTreeHeight(): void {
   if (!leftRoot || !leftMapRoot || !mapTreeAuto || isMapPanelCollapsed()) return;
-  if (getEditorChrome().paletteRail || !getEditorChrome().mapTree) return;
   const desired = measureMapTreeContentHeight(leftMapRoot);
   if (desired === null) return;
   const panelHeight = measuredHeight(leftRoot, 0);
   const ratioCap = panelHeight > 0 ? Math.floor(panelHeight * MAP_TREE_AUTO_MAX_RATIO) : MAP_TREE_AUTO_MAX_HEIGHT;
   const sheetCap = paletteSheetReserveCap(panelHeight);
-  // Keep the existing three-row list viewport usable when expert tools consume
+  // Keep the existing three-row list viewport usable when sidebar tools consume
   // more palette chrome; the sheet's preferred reserve must not starve maps.
   const list = leftMapRoot.querySelector<HTMLElement>(".map-tree-list");
   const minimum = Math.max(MAP_TREE_AUTO_MIN_HEIGHT, list

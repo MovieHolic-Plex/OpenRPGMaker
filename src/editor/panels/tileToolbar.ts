@@ -6,7 +6,6 @@ import { makeSvgIcon } from "@/editor/panels/tileToolbarIcons";
 import type { SvgIconName } from "@/editor/panels/tileToolbarIcons";
 import { isTileToolbarItemActive, selectMapModeTool, selectTileTool } from "@/editor/panels/tileToolbarActions";
 import type { TileToolId } from "@/editor/panels/tileToolbarActions";
-import { getEditorChrome } from "@/editor/editorUiMode";
 import { makeInspectionControls, RULE_AUDIT_UPDATED_EVENT, type TileToolbarModel } from "@/editor/panels/tileToolbarMenus";
 import { installPointerStrokeGate, runWhenPointerReleased } from "@/editor/pointerStrokeGate";
 import { store } from "@/project/store";
@@ -102,7 +101,7 @@ export function makeTileToolbar(model: TileToolbarModel): HTMLElement {
     }));
   }
 
-  if (state.layer !== "event" && getEditorChrome().advancedSidebarControls) scroll.append(makeMapModeGroup(model));
+  if (state.layer !== "event") scroll.append(makeMapModeGroup(model));
   row.append(scroll);
   // 「검사·기록」 ⋯ 메뉴(인스펙터·규칙 감사·작업 기록)는 사이드바 맨 아래 줄에서 여기로 왔다(2026-09-17).
   // 잘 안 보는 옵션이라 상단 도구막대 끝의 ⋯ 하나로 치운다. 이벤트 레이어에서도 같은 자리다.

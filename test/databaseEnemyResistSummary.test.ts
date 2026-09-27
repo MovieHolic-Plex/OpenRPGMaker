@@ -99,21 +99,15 @@ describe("enemy 약점·저항 summary", () => {
     expect((findByTestId(host, "db-enemy-resist-table") as unknown as { open?: boolean }).open).toBe(true);
   });
 
-  it("tags beginner-hidden cards with ux levels instead of removing them", () => {
+  it("shows every enemy card, including the ones beginner mode used to hide", () => {
     const host = renderEnemyForm();
-    const levels = Object.fromEntries(allByDataset(host, "dbUx")
-      .map((node) => [node.dataset.testid ?? node.className, node.dataset.dbUx]));
-    expect(levels["db-enemy-card-critical"]).toBe("advanced");
-    expect(levels["db-enemy-card-options"]).toBe("advanced");
-    expect(levels["db-enemy-card-action-combat"]).toBe("advanced");
-    expect(levels["db-enemy-card-species"]).toBe("advanced");
-    // 리소스 ID 직접 입력은 전문가 전용 — 칸 자체는 남아 있다.
-    expect(findByTestId(host, "db-field-enemy-monster-resource")).not.toBeNull();
-    expect(Object.values(levels)).toContain("expert");
-    // 약점·저항·능력치·보상은 모든 모드에서 보인다.
-    expect(findByTestId(host, "db-enemy-card-resist")?.dataset.dbUx).toBeUndefined();
-    expect(findByTestId(host, "db-enemy-card-stats")?.dataset.dbUx).toBeUndefined();
-    expect(findByTestId(host, "db-enemy-card-rewards")?.dataset.dbUx).toBeUndefined();
+    for (const id of [
+      "db-enemy-card-critical", "db-enemy-card-options", "db-enemy-card-action-combat", "db-enemy-card-species",
+      "db-enemy-card-resist", "db-enemy-card-stats", "db-enemy-card-rewards", "db-field-enemy-monster-resource",
+    ]) {
+      expect(findByTestId(host, id), id).not.toBeNull();
+    }
+    expect(allByDataset(host, "dbUx")).toEqual([]);
     // 치명타 힌트는 「N번에 1번 (x%)」 말투다.
     const critical = store.getCurrent().database.enemies[0]!.criticalHit;
     const hint = findByTestId(host, "db-enemy-card-critical")?.textContent ?? "";
