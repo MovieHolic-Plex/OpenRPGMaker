@@ -66,6 +66,11 @@ export function isSkillCycleKey(key: string): boolean {
   return normalizeKey(key) === "r";
 }
 
+// 액션 전투 선두 교대(동료 켜진 맵). 이동·확인·취소·대시·스킬(Q/R)·가드(C)·자동(F)와 겹치지 않는다.
+export function isLeaderSwitchKey(key: string): boolean {
+  return normalizeKey(key) === "v";
+}
+
 // 홀드 가드(방어). 누르고 있는 동안 피해가 줄고 스태미나가 탄다.
 export function isGuardKey(key: string): boolean {
   return normalizeKey(key) === "c";

@@ -114,6 +114,8 @@ export interface ActionCombatSceneState {
   barsGraphics?: Phaser.GameObjects.Graphics;
   hud?: { update(model: ActionHudModel): void; destroy(): void; setHpVisible(visible: boolean): void };
   lastHudSignature: string;
+  /** 동료(system.actionCombat.allies)마다 남은 공격 쿨다운. 동료가 처음 휘두를 때 만든다. */
+  allyCooldowns?: Map<string, number>;
 }
 
 export interface ActionHudModel {

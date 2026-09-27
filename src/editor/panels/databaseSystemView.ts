@@ -1086,6 +1086,13 @@ function actionCombatDetailFields(config: NonNullable<SystemRecords["actionComba
         else delete draft.system.actionCombat.fourWayMovement;
       });
     }),
+    checkboxField("동료도 싸움(V 키로 조작 교대)", "db-field-system-action-combat-allies", config.allies === true, (checked) => {
+      updateSystem((draft) => {
+        draft.system.actionCombat ??= { enabled: true };
+        if (checked) draft.system.actionCombat.allies = true;
+        else delete draft.system.actionCombat.allies;
+      });
+    }),
     checkboxField("HUD 하트 바", "db-field-system-action-combat-hud-hearts", config.hud?.hearts !== false, (checked) => {
       patchHud((hud) => {
         hud.hearts = checked;

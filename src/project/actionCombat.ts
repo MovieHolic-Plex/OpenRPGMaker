@@ -73,6 +73,7 @@ export function normalizeActionCombatConfig(config: Partial<SystemActionCombat> 
   if (config.swingDamageBonus !== undefined) out.swingDamageBonus = clampInt(config.swingDamageBonus, 0, 9999, 0);
   // 에디터에서 켤 수 있는 토글이므로 정규화가 값을 삼키면 안 된다(기본 false 는 저장하지 않는다).
   if (config.fourWayMovement === true) out.fourWayMovement = true;
+  if (config.allies === true) out.allies = true;
   if (config.dodgeStaminaCost !== undefined) out.dodgeStaminaCost = clampInt(config.dodgeStaminaCost, 0, 100, DEFAULT_DODGE_STAMINA_COST);
   if (config.dodgeIframesMs !== undefined) out.dodgeIframesMs = clampInt(config.dodgeIframesMs, 0, 3000, DEFAULT_DODGE_IFRAMES_MS);
   if (config.guardDamageReductionPercent !== undefined) {
