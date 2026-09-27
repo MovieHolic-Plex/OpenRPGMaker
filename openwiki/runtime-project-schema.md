@@ -135,6 +135,12 @@ PR #845, P2(로컬 어댑터·Electron 셸)는 브랜치 `local-store/p2`가 mai
   저장은 객체 신원으로 본문을 재사용해 바뀐 타일셋만 직렬화한다. 실측(82MB 프로젝트): 행 81.6MB → 1.0MB.
   **`current_json` 을 SQL 로 직접 읽는 스크립트는 표식만 본다** — 문서는 `openLocalProjectStore().exportSerialized()`
   또는 `scripts/oprn-store.mjs export-json` 으로 읽는다.
+- **접힌 로드 (2026-09-27)**: 편집기(`electronRepository` 의 load·loadSnapshot·loadForProof)는 `oprn:project.loadFolded`
+  로 접힌 행(약 1MB)만 받고, 타일셋 본문은 기기 IndexedDB `oprn-tileset-blobs`(키 = 본문 sha)에서 채운다.
+  없는 것만 `oprn:project.tilesetBlobs` 로 받아 캐시에 넣는다. 키가 내용 주소라 무효화가 없고 프로젝트 사이에 공유된다.
+  만든 트리는 펼친 글을 `JSON.parse` 한 것과 같다(`src/project/persistence/core/foldedProject.ts`) — 어느 경로로 열어도
+  같은 `Project` 를 얻는다. 옛 행이면 호스트가 펼친 글을 주고, 본문을 못 채우면(사이에 다른 저장) `project.load` 로 돌아간다.
+  이전 빌드의 호스트(채널 없음)에도 브리지에 메서드가 없으면 `project.load` 를 쓴다. `project.load` 채널은 그대로다.
 - **가드**: SQLite 드라이버 import는 `electron/local-store/**`만, `electron/**`는 `src/brand.ts`·
   `src/project/types/**`·`src/project/persistence/core/**`만, `src/**`는 `electron/shared/**`만
   import한다. 렌더러 파일 이름에 `sqlite`를 쓰지 않는다. `test/noLocalProjectDb.test.ts`가 이 경계를 지킨다.
