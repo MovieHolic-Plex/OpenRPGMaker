@@ -455,18 +455,39 @@ export function createBlockingEventQuery(
   positions: RuntimeEventPositions,
   excludeEventId?: string,
 ): (rect: FootprintRect) => boolean {
-  let blockers: FootprintRect[] | undefined;
+  // 칸 → 그 칸을 덮는 막는 사각들. 모은 목록을 질의마다 전부 훑으면 A* 후보 칸마다 이벤트 수만큼 비교해
+  // 도달 불가 추격(이벤트 300개)이 한 번에 약 35ms, 여러 명이면 수백 ms 였다(브라우저 실측 최대 516ms).
+  // 질의 사각이 닿는 칸만 본다. 좌표가 소수일 수 있으므로(이벤트 좌표는 정수를 강제하지 않는다) 등록과 질의
+  // 모두 floor(left)..floor(right) 의 정수 격자를 쓴다 — 겹치는 두 사각은 반드시 공통 격자 칸을 가진다.
+  // 맵 밖 사각도 그대로 담기게 키는 좌표 문자열이 아니라 정수 쌍을 섞는다.
+  let grid: Map<number, FootprintRect[]> | undefined;
+  const cellKey = (x: number, y: number) => x * 73_856_093 ^ y * 19_349_663;
   return (rect) => {
-    if (!blockers) {
-      const collected: FootprintRect[] = [];
+    if (!grid) {
+      const built = new Map<number, FootprintRect[]>();
       forEachRuntimeEventView(project, map, session, positions, (event) => {
         if (event.event.id === excludeEventId) return;
         if (event.priority !== "same" || !event.overlapForbidden) return;
-        collected.push(event.passRect);
+        const blocker = event.passRect;
+        for (let y = Math.floor(blocker.top); y <= Math.floor(blocker.bottom); y += 1) {
+          for (let x = Math.floor(blocker.left); x <= Math.floor(blocker.right); x += 1) {
+            const key = cellKey(x, y);
+            const bucket = built.get(key);
+            if (bucket) bucket.push(blocker);
+            else built.set(key, [blocker]);
+          }
+        }
       });
-      blockers = collected;
+      grid = built;
     }
-    for (const blocker of blockers) if (rectsOverlap(blocker, rect)) return true;
+    for (let y = Math.floor(rect.top); y <= Math.floor(rect.bottom); y += 1) {
+      for (let x = Math.floor(rect.left); x <= Math.floor(rect.right); x += 1) {
+        const bucket = grid.get(cellKey(x, y));
+        if (!bucket) continue;
+        // 해시 키가 겹칠 수 있으니 실제 겹침으로 확인한다(겹치는 사각은 이 칸을 덮으므로 반드시 여기 있다).
+        for (const blocker of bucket) if (rectsOverlap(blocker, rect)) return true;
+      }
+    }
     return false;
   };
 }

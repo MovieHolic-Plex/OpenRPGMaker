@@ -237,6 +237,9 @@ export function playShop(
           items: Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-menu-choice")),
           cancelEl: overlay.querySelector<HTMLElement>("[data-testid='shop-menu-cancel']"),
           initialIndex: menuCursor,
+          // renderShop 이 overlay 를 비우고 새로 그린 직후에만 불린다(attachShopCursor 호출부 두 곳 중 판매 후
+          // 재부착은 items 뷰라 이 분기를 타지 않는다).
+          freshDom: true,
           sound: true, audioContext: { project: store.getCurrent(), session: scene.session },
           onSelect: (index) => {
             menuCursor = index;
