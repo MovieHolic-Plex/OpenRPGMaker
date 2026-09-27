@@ -71,6 +71,19 @@
   padding-right: 0;
 }
 
+/* fieldset 제목(legend)은 기본 모양대로면 테두리 선 위에 걸쳐 선을 끊는다. 흰 카드 + 테두리
+   구성에서는 그게 옛 그룹 상자처럼 보인다 — 제목을 카드 안 첫 줄로 내린다(목업의 카드 머리).
+   float 로 legend 를 일반 흐름에 넣는 것은 fieldset 제목을 선에서 떼는 표준 방법이다. */
+.database-modal-backdrop .database-modal-window .database-modal-body :is(fieldset, .oprn-db-fieldset, .db-advanced-panel, .db-class-panel) > legend {
+  float: left;
+  margin: 0 0 10px;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body :is(fieldset, .oprn-db-fieldset, .db-advanced-panel, .db-class-panel) > legend + * {
+  clear: both;
+}
+
 /* 카드 제목의 옛 띠(회색 면 + 왼쪽 막대)는 흰 카드 위에서 두 번째 면이 된다 — 글자만 남긴다. */
 .database-modal-backdrop .database-modal-window .database-modal-body :is(.oprn-record-actors, .oprn-record-classes) :is(.actor-panel, .db-advanced-panel) > legend,
 .database-modal-backdrop .database-modal-window .database-modal-body :is(.oprn-record-skills, .oprn-record-items, .oprn-record-equipment) .db-ws-card-head {
@@ -83,6 +96,12 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero {
   background: transparent;
   border-bottom-color: transparent;
+}
+
+/* 직업 설계 요약 — 바탕과 같은 색이라 테두리 없는 회색 덩어리로 떠 있었다. 다른 카드와 같은 흰 칸. */
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-classes .db-class-build-summary {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
 }
 
 /* 서브탭 줄도 바탕 위. 선택 탭 글자는 진한 인디고. */
@@ -123,6 +142,196 @@
 }
 
 /* ── 4. 푸터 ─────────────────────────────────────────────────────────────── */
+
+/* ── 3b. 편집 칸 폭과 속성 행 ─────────────────────────────────────────────────
+   개선안: 카드는 한 열로 쌓이고 너무 넓어지지 않는다(읽는 줄 길이). 카드 안 속성 행은
+   라벨 왼쪽·값 오른쪽 한 줄에, 행 사이는 헤어라인으로 나눈다. */
+@media (min-width: 901px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-classes .db-class-bm88-workbench[data-class-view="overview"] {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 760px;
+  }
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.db-ws-card, fieldset, .db-panel, .db-class-panel, .db-advanced-panel) > .db-field + .db-field,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-card-body > .db-field + .db-field {
+  border-top: 1px solid var(--db-studio-border-subtle);
+  padding-top: 6px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.db-ws-card, fieldset, .db-panel, .db-class-panel, .db-advanced-panel) > .db-field,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-card-body > .db-field {
+  min-height: 38px;
+}
+
+/* ── 5. 연결 칸 (오른쪽) ──────────────────────────────────────────────────────
+   .database-modal-body 의 마지막 형제. 레코드 탭에서만 보이고(hidden 은 TS 가 건다),
+   넓은 창에서만 선다 — 1180px 미만 컨테이너에서는 편집 칸을 좁히지 않도록 접는다. */
+.database-modal-backdrop .database-modal-window .database-modal-body > .db-connections {
+  background: var(--db-studio-surface);
+  border-left: 1px solid var(--db-studio-border-subtle);
+  box-sizing: border-box;
+  display: flex;
+  flex: 0 0 216px;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 12px 18px;
+  width: 216px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body > .db-connections[hidden] {
+  display: none;
+}
+
+@container db-modal (max-width: 1179px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body > .db-connections {
+    display: none;
+  }
+}
+
+@media (max-width: 1179px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body > .db-connections {
+    display: none;
+  }
+}
+
+.database-modal-backdrop.is-docked .database-modal-window .database-modal-body > .db-connections {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-connections-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-connections-title {
+  color: var(--db-studio-text-3);
+  font: 600 11.5px/1.35 var(--font-ui);
+  margin: 0 0 4px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-connections-use {
+  align-items: baseline;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--db-studio-text-1);
+  display: flex;
+  font: 500 12.5px/1.35 var(--font-ui);
+  gap: 6px;
+  min-height: 28px;
+  padding: 5px 6px;
+  text-align: left;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-connections-link {
+  cursor: pointer;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-connections-link:hover {
+  background: var(--db-studio-inset);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-connections-link:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: -2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-connections-kind-head {
+  align-items: center;
+  color: var(--db-studio-text-2);
+  display: flex;
+  font: 600 12px/1.35 var(--font-ui);
+  justify-content: space-between;
+  margin: 6px 0 0;
+  padding: 0 6px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-connections-count {
+  color: var(--db-studio-text-3);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-connections-more {
+  align-self: flex-start;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--db-studio-accent-text);
+  cursor: pointer;
+  font: 500 12px/1.35 var(--font-ui);
+  min-height: 26px;
+  padding: 3px 6px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-connections-more:hover {
+  background: var(--db-studio-accent-soft);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-connections-more:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: -2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-connections-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 「다른 곳」 문장은 말줄임하면 무엇을 쓰는지 사라진다 — 줄을 바꾼다. */
+.database-modal-backdrop .database-modal-window .database-modal-body div.db-connections-use .db-connections-name {
+  white-space: normal;
+  word-break: keep-all;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-connections-check {
+  background: color-mix(in srgb, var(--db-studio-warning) 10%, var(--db-studio-surface));
+  border-radius: 7px;
+  color: var(--db-studio-warning-strong);
+  font: 500 12px/1.4 var(--font-ui);
+  margin: 0 0 4px;
+  padding: 7px 9px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-connections-none {
+  color: var(--db-studio-text-3);
+  font: 400 12px/1.4 var(--font-ui);
+  margin: 0;
+  padding: 2px 6px;
+}
+
+/* 저장 상태는 헤더 오른쪽 작은 표시다(databaseModal 이 헤더로 옮긴다). 목업의 「✓ 자동 저장됨」. */
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-header > .database-footer-status {
+  flex: 0 1 auto;
+  font: 500 12px/1.3 var(--font-ui);
+  margin: 0;
+  max-width: min(420px, 40%);
+  min-height: 26px;
+  padding: 2px 10px 2px 9px;
+}
+
+/* 오류는 잘리면 쓸모없다(studio-theme 의 error 규칙) — 헤더 안에서도 두 줄까지 보인다. */
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-header > .database-footer-status[data-status-kind="error"] {
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  display: -webkit-box;
+  max-width: min(520px, 50%);
+}
+
+/* 발 단추 줄 — 상태가 빠졌으니 단추만 오른쪽에 붙는 얇은 줄. 확인 줄(dirty prompt)이 뜨면 기존 규칙이 늘린다. */
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-footer {
+  justify-content: flex-end;
+}
 
 .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-footer {
   background: var(--db-studio-surface);
