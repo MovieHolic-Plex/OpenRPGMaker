@@ -14,8 +14,22 @@
     500ms 동안 다시 훑지 않는다(`SEARCH_RETRY_MS`). `nearestPassableTile` 은 고리만 훑는다(결과 순서는 같다).
   - 조명은 어둠 0 이면 마스크를 그리지 않는다. 천둥 잡음 버퍼는 한 번 만들어 재사용한다. 필드 HUD·타이머·시계 HUD·
     픽처 층은 값이 바뀔 때만 DOM 을 쓴다. 구역 안내의 정면 조사 안내는 칸·방향이 같으면 250ms 동안 재사용한다.
-  - 남은 후보(이번에 고치지 않음): 맵 이동의 `structuredClone(map)` + 타일 전체 재생성, 자동저장의 동기
-    localStorage 직렬화, 첫 사용 시 색키·구름·안개 텍스처 생성, 날씨 입자 Graphics 재작성.
+  - **타일 그리기의 칸당 판정은 기억한다(2차, `test/runtimeLagFixes2.test.ts`).** `tileGraftsTextureSuffix` 는
+    이식 배열 정체성+길이로 기억한다 — **이식 항목을 제자리에서 고치는 코드를 새로 만들지 않는다**(새 배열 대입이나 push).
+    `worldCoastAutotileGroup` 은 그룹 내용 사본(이웃 수·멤버·연결·variantMap)과 비교해 기억한다. 그룹은 제자리에서
+    고쳐질 수 있어서(`variantMap["255"] = 3`, `test/worldCoastMapping.test.ts`) 정체성으로 보면 안 된다.
+    `renderTiles` 는 `withWorldCoastRenderPass` 로 감싸 한 번의 동기 그리기 안에서는 그 비교도 타일셋마다 한 번만 한다.
+    100×100 그리기(Node 실측): 이식 553개인 기본 숲 타일셋 3.4초 → 약 40ms, 월드 타일셋(바다 섞임) 약 0.7초 → 약 40ms.
+  - 맵 이동의 `mapWithCommittedEvents` 는 이벤트를 두 번 복제하지 않는다(키 순서는 원본 그대로).
+  - 첫 사용 생성물은 나눠 굽는다: 구름 모양은 프레임마다 한 장(지금 보이는 장부터, 한 번에 약 300ms 였다),
+    안개는 프레임마다 64줄(약 46ms 였다), 분위기 소리는 update 마다 10만 표본(최악 84ms → 약 16ms, 결과 표본은 같다).
+    다 될 때까지 그 층은 그리지 않는다. 빗소리 8초 잡음 버퍼는 표본율별로 한 번만 합성해 컨텍스트가 바뀌어도 쓴다.
+  - 날씨 입자는 날씨 시계(16ms 걸음)·날씨·화면 크기·줌·밀도가 같으면 다시 그리지 않는다(`weatherDrawSignature`).
+    안개 층 위치는 매 프레임 옮긴다.
+  - 남은 후보(고치지 않음): 자동저장은 동기다(큰 세션에서 스냅샷 약 17–28ms, stringify 약 3ms). `maybeAutosave` 가
+    곧바로 true 를 내고 복제 실패를 동기로 던지는 계약(`test/autosave.test.ts`)이 있어 미루지 않았다.
+    맵 이동 때 타일 층 전체 재생성은 그대로다 — Phaser Container 는 자식을 깊이로 정렬하지 않고 넣은 순서가 그리는
+    순서라 칸 단위 부분 갱신은 위험하다. 칸당 비용을 줄이는 쪽으로 풀었다.
 - **플레이 프리로드는 카탈로그가 아니라 맵이 쓰는 그림만 싣는다 (2026-09-22):**
   `loadBundledAssets` / `collectPlayReferencedStrings` 는 `resourceProfiles` 와, 어떤 맵·명령도
   가리키지 않는 `tilesets` 레코드를 훑지 않는다. 빈 프로젝트도 `ensureBundledTilesets` 로 칩셋

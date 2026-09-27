@@ -32,17 +32,26 @@ export function syncCloudShadowLayer(scene: PlaySceneContext): void {
     for (const sprite of pool) sprite.setVisible(false);
     return;
   }
-  ensureCloudShapeTextures(scene.textures, params.amount);
   const clock = scene.cloudShadowClockMs ?? 0;
   // Speed zero freezes shape as well as translation (the existing stationary-cloud setting).
   const shapePhase = (params.speed > 0 ? clock % CLOUD_SHAPE_PERIOD_MS : 0) / CLOUD_SHAPE_PERIOD_MS * CLOUD_SHAPE_FRAMES;
   const firstFrame = Math.floor(shapePhase);
+  // 모양 여덟 장을 한 프레임에 굽지 않는다(한 장 약 40ms) — 프레임마다 한 장씩, 지금 보이는 장부터.
+  // 다 구워질 때까지는 이미 있는 장만 그린다. 굽는 동안 크로스페이드 짝이 없으면 한 장만 보인다.
+  if (!scene.cloudShadowTexturesReady?.has(params.amount)) {
+    const ready = ensureCloudShapeTextures(scene.textures, params.amount, { budget: 1, firstFrame });
+    if (ready) (scene.cloudShadowTexturesReady ??= new Set()).add(params.amount);
+  }
   const mix = shapePhase - firstFrame;
   const view = cloudShadowView(scene);
   const seed = cloudShadowSeedForMap(scene.map?.id ?? "") % 256;
   const drift = cloudShadowDrift(params, scene.cloudShadowClockMs ?? 0);
   for (let index = 0; index < 2; index += 1) {
     const key = cloudShapeTextureKey((firstFrame + index) % CLOUD_SHAPE_FRAMES, params.amount);
+    if (!scene.textures.exists(key)) {
+      pool[index]?.setVisible(false);
+      continue;
+    }
     const sprite = pool[index] ?? scene.add.tileSprite(0, 0, 1, 1, key)
       .setOrigin(0).setDepth(CLOUD_SHADOW_DEPTH).setTint(CLOUD_SHADOW_TINT);
     pool[index] = sprite;

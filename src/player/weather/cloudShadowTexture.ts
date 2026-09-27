@@ -29,12 +29,35 @@ export function cloudShapeTextureKey(frame: number, amount = 3): string {
   return `${CLOUD_SHAPE_TEXTURE_KEY}_${amount}_${frame}`;
 }
 
-/** Prebaked slow shape evolution: no canvas painting / pixel uploads during play. */
-export function ensureCloudShapeTextures(textures: Phaser.Textures.TextureManager, amount = 3): void {
-  if (textures.exists(cloudShapeTextureKey(CLOUD_SHAPE_FRAMES - 1, amount))) return;
-  for (let frame = 0; frame < CLOUD_SHAPE_FRAMES; frame++) {
+/**
+ * Prebaked slow shape evolution: no canvas painting / pixel uploads during play.
+ *
+ * 한 번에 여덟 장을 다 굽지 않는다. 한 장이 256² 픽셀 × 구름 덩어리 수 만큼의 거리장 계산이라
+ * 여덟 장을 한 프레임에 구우면 약 300ms 멈춘다(Node 실측, 구름 켠 맵에 처음 들어갈 때마다 한 번).
+ * `budget` 장까지만 굽고, 아직 없는 장이 있으면 false 를 낸다 — 호출부가 다음 프레임에 이어서 부른다.
+ * 굽는 순서는 지금 보이는 장부터다(`firstFrame`).
+ */
+export function ensureCloudShapeTextures(
+  textures: Phaser.Textures.TextureManager,
+  amount = 3,
+  options: { readonly budget?: number; readonly firstFrame?: number } = {},
+): boolean {
+  let budget = options.budget ?? CLOUD_SHAPE_FRAMES;
+  const start = ((Math.floor(options.firstFrame ?? 0) % CLOUD_SHAPE_FRAMES) + CLOUD_SHAPE_FRAMES) % CLOUD_SHAPE_FRAMES;
+  let complete = true;
+  for (let step = 0; step < CLOUD_SHAPE_FRAMES; step++) {
+    const frame = (start + step) % CLOUD_SHAPE_FRAMES;
     const key = cloudShapeTextureKey(frame, amount);
     if (textures.exists(key)) continue;
+    if (budget <= 0) { complete = false; continue; }
+    budget -= 1;
+    bakeCloudShapeFrame(textures, key, frame, amount);
+  }
+  return complete;
+}
+
+function bakeCloudShapeFrame(textures: Phaser.Textures.TextureManager, key: string, frame: number, amount: number): void {
+  {
     const phase = frame / CLOUD_SHAPE_FRAMES * Math.PI * 2;
     const banks = BANKS.slice(0, amount).map((bank, bankIndex) => ({
       ...bank, cos: Math.cos(bank.angle), sin: Math.sin(bank.angle),

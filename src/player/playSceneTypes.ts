@@ -207,6 +207,8 @@ export interface PlaySceneContext extends Phaser.Scene {
   weatherLayer?: Phaser.GameObjects.Container;
   weatherGraphics?: Phaser.GameObjects.Graphics;
   weatherMistLayers?: Phaser.GameObjects.TileSprite[];
+  /** 마지막으로 입자를 그린 조건. 같으면 renderWeather 가 다시 그리지 않는다. */
+  weatherDrawSignature?: string;
   weatherClockMs: number;
   weatherFixedAccumulatorMs: number;
   weatherDisplayed: WeatherParams;
@@ -215,6 +217,8 @@ export interface PlaySceneContext extends Phaser.Scene {
   /** 월드 좌표 구름 실루엣의 인접 위상을 보간하는 두 TileSprite. */
   cloudShadowSprites?: Phaser.GameObjects.TileSprite[];
   cloudShadowClockMs: number;
+  /** 모양 텍스처 여덟 장이 다 구워진 구름 양(amount). 프레임마다 한 장씩 굽는다(playSceneCloudShadows). */
+  cloudShadowTexturesReady?: Set<number>;
   timeFixedAccumulatorMs: number;
   timeMinuteAccumulator: number;
   timeSleepInProgress: boolean;

@@ -23,15 +23,38 @@ function noise(x: number, y: number, period: number, seed: number): number {
   return (a + (b - a) * u) * (1 - v) + (c + (d - c) * u) * v;
 }
 
-/** Generated once per game texture manager, reused across maps. No external assets or per-frame uploads. */
-export function ensureFogTexture(textures: Phaser.Textures.TextureManager, key = KEY): string {
+/**
+ * 굽는 중인 안개. 한 장이 256² × 5옥타브 값잡음이라 한 프레임에 구우면 약 45ms 멈춘다(Node 실측,
+ * 안개·연무 맵에 처음 들어갈 때). 프레임마다 FOG_ROWS_PER_STEP 줄씩 나눠 굽는다.
+ */
+type PendingFog = { readonly pixels: ImageData; readonly canvas: HTMLCanvasElement; readonly context: CanvasRenderingContext2D; row: number };
+const pendingFog = new WeakMap<Phaser.Textures.TextureManager, Map<string, PendingFog>>();
+const FOG_ROWS_PER_STEP = 64;
+
+/**
+ * Generated once per game texture manager, reused across maps. No external assets or per-frame uploads.
+ *
+ * `rowBudget` 를 주면 그만큼만 굽고, 아직 덜 됐으면 null 을 낸다 — 호출부는 그 프레임에 안개를 그리지
+ * 않고 다음 프레임에 다시 부른다. 생략하면 예전처럼 한 번에 끝까지 굽는다.
+ */
+export function ensureFogTexture(textures: Phaser.Textures.TextureManager, key?: string): string;
+export function ensureFogTexture(textures: Phaser.Textures.TextureManager, key: string | undefined, rowBudget: number): string | null;
+export function ensureFogTexture(textures: Phaser.Textures.TextureManager, key = KEY, rowBudget = SIZE): string | null {
   if (textures.exists(key)) return key;
-  const canvas = document.createElement("canvas");
-  canvas.width = canvas.height = SIZE;
-  const context = canvas.getContext("2d");
-  if (!context) throw new Error("Weather requires a 2D canvas context");
-  const pixels = context.createImageData(SIZE, SIZE);
-  for (let y = 0; y < SIZE; y += 1) {
+  let pending = pendingFog.get(textures)?.get(key);
+  if (!pending) {
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = SIZE;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("Weather requires a 2D canvas context");
+    pending = { pixels: context.createImageData(SIZE, SIZE), canvas, context, row: 0 };
+    const byKey = pendingFog.get(textures) ?? new Map<string, PendingFog>();
+    byKey.set(key, pending);
+    pendingFog.set(textures, byKey);
+  }
+  const { pixels } = pending;
+  const end = Math.min(SIZE, pending.row + Math.max(1, Math.floor(rowBudget)));
+  for (let y = pending.row; y < end; y += 1) {
     for (let x = 0; x < SIZE; x += 1) {
       let density = 0;
       let weight = 0;
@@ -50,9 +73,15 @@ export function ensureFogTexture(textures: Phaser.Textures.TextureManager, key =
       pixels.data[offset + 3] = Math.round(density ** 1.5 * 255);
     }
   }
-  context.putImageData(pixels, 0, 0);
-  const texture = textures.addCanvas(key, canvas);
+  pending.row = end;
+  if (pending.row < SIZE) return null;
+  pendingFog.get(textures)?.delete(key);
+  pending.context.putImageData(pixels, 0, 0);
+  const texture = textures.addCanvas(key, pending.canvas);
   // Phaser's LINEAR filter (0): the game's pixelArt/NEAREST setting must not turn mist into blocks.
   texture?.setFilter(0);
   return key;
 }
+
+/** 프레임 예산 안에서 안개를 굽는 기본 줄 수. 약 11ms 분량이다. */
+export const FOG_BAKE_ROWS_PER_FRAME = FOG_ROWS_PER_STEP;

@@ -1,5 +1,12 @@
 import type { WeatherParams } from "@/player/weather/weatherModel";
 
+/**
+ * 잡음 버퍼 공용 보관. 비가 그칠 때마다 컨텍스트를 닫으므로 비가 다시 올 때마다 8초 스테레오 잡음
+ * (48kHz 면 샘플 77만 개, 약 19ms)을 메인 스레드에서 다시 합성했다. AudioBuffer 는 어느 컨텍스트에서나
+ * 재생할 수 있으므로 표본율·길이·종류별로 한 번만 만든다.
+ */
+const sharedNoiseBuffers = new Map<string, AudioBuffer>();
+
 /** Asset-free stereo rain and thunder, owned by the shared audio engine.
  * Separate bus: never replaces authored BGS/ambient tracks. Uses the SE mixer.
  */
@@ -88,6 +95,9 @@ export class WeatherAudio {
 
   private noiseBuffer(seconds: number, brown: boolean): AudioBuffer {
     const context = this.context!;
+    const key = `${context.sampleRate}:${seconds}:${brown ? "brown" : "white"}`;
+    const shared = sharedNoiseBuffers.get(key);
+    if (shared) return shared;
     const buffer = context.createBuffer(2, Math.ceil(context.sampleRate * seconds), context.sampleRate);
     for (let channel = 0; channel < 2; channel++) {
       const data = buffer.getChannelData(channel);
@@ -98,6 +108,7 @@ export class WeatherAudio {
         data[index] = brown ? last * 4 : white * 0.7 + last;
       }
     }
+    sharedNoiseBuffers.set(key, buffer);
     return buffer;
   }
 
