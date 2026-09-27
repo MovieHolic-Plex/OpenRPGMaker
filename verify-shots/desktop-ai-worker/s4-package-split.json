@@ -1,0 +1,34 @@
+{
+ "win_zip": [
+  [
+   "resources/app.asar.unpacked/dist-electron/oh-my-pi-worker.exe",
+   203801088
+  ],
+  [
+   "resources/app.asar.unpacked/dist-electron/pi_natives.win32-x64-baseline.node",
+   156520960
+  ]
+ ],
+ "appimage_unpacked": [
+  "oh-my-pi-worker",
+  "pi_natives.linux-x64-baseline.node"
+ ],
+ "linux_asar": [
+  "browser-bridge.js",
+  "main.cjs",
+  "oh-my-pi-worker",
+  "pi_natives.linux-x64-baseline.node",
+  "preload.cjs"
+ ],
+ "win_asar": [
+  "browser-bridge.js",
+  "main.cjs",
+  "oh-my-pi-worker.exe",
+  "pi_natives.win32-x64-baseline.node",
+  "preload.cjs"
+ ],
+ "sizes": {
+  "AppImage": 889222093,
+  "win_zip": 893884550
+ }
+}

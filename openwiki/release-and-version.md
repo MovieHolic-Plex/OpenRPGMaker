@@ -147,8 +147,16 @@ Node 쪽 `aiAuthRuntime.ts` 라 워커 없이 된다). 워커는 `@oh-my-pi/pi-n
   4개가 다 실렸다. 반대로 제외 패턴만 주면 빌더가 `**/*` 로 읽어 저장소 전체를 싣는다(app.asar 4.9GB).
   그래서 OS 마다 공용 목록 `APP_FILES` 를 펼친 뒤 제외를 붙인다. 확인: `--linux dir --win dir` 뒤
   `*-unpacked/resources/app.asar.unpacked/dist-electron/` 에 자기 OS 워커와 애드온 둘만 있어야 한다.
+- **두 번째 결함: 워커 스크립트 경로를 무조건 계산했다.** `scripts/lib/ohMyPiPiAi.mjs` 의 `startWorker()` 가
+  `new URL("../oh-my-pi-worker.ts", import.meta.url)` 을 먼저 평가했는데, CJS 로 번들된 Electron 메인에서는
+  `import.meta` 가 `{}` 라 던진다. 애드온을 고친 뒤에도 앱 채팅은 전부 500 `Invalid URL` 이었다. bun 으로 스크립트를
+  띄우는 분기에서만 계산한다. **워커 단독 검증은 이 결함을 못 잡는다** — 앱 전체를 띄워야 한다(아래).
 - 검증: 패키지에서 꺼낸 워커를 **빈 HOME** 으로 띄워 `READY <port>` 가 나오는지 본다. 개발 머신의
-  `~/.omp/natives` 가 있으면 가짜 통과가 된다. 윈도우는 `wine` 으로 `oh-my-pi-worker.exe` 를 같은 방식으로 띄운다.
+  `~/.omp/natives` 가 있으면 가짜 통과가 된다. 윈도우는 `wine` 으로 `oh-my-pi-worker.exe` 를 같은 방식으로 띄운다
+  (`WINEPREFIX` 는 `/tmp` 바로 밑이면 "not owned" 로 거부된다 — `$HOME/.cache/...` 를 쓴다).
+  앱 전체는 Playwright `_electron` 으로 `linux-unpacked/oprn` 을 띄워 렌더러에서
+  `window.oprn.companionOrigin + "/v1/chat/completions"` 를 `x-oprn-companion-token` 헤더로 부른다.
+  증거(2026-09-27): `verify-shots/desktop-ai-worker/` — wine exe READY·`/complete` 200, 앱 채팅 200.
 
 ## 커밋 메시지가 릴리스 노트의 원고다
 
