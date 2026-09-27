@@ -325,6 +325,9 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
         if ("hpReleaseStep" in patch && patch.hpReleaseStep !== undefined) record.hpReleaseStep = patch.hpReleaseStep;
         if ("mpReleaseTurn" in patch && patch.mpReleaseTurn !== undefined) record.mpReleaseTurn = patch.mpReleaseTurn;
         if ("mpReleaseStep" in patch && patch.mpReleaseStep !== undefined) record.mpReleaseStep = patch.mpReleaseStep;
+        if ("fieldStepInterval" in patch && patch.fieldStepInterval !== undefined) record.fieldStepInterval = patch.fieldStepInterval;
+        if ("releaseAfterSteps" in patch && patch.releaseAfterSteps !== undefined) record.releaseAfterSteps = patch.releaseAfterSteps;
+        if ("fieldStepCanKill" in patch && patch.fieldStepCanKill !== undefined) record.fieldStepCanKill = patch.fieldStepCanKill;
         if ("specialFlags" in patch) record.specialFlags = patch.specialFlags;
         if ("lockedParameters" in patch) record.lockedParameters = patch.lockedParameters;
         if ("emotion" in patch) {

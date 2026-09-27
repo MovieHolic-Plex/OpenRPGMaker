@@ -140,6 +140,12 @@ export const MODERN_COMMAND_ROWS: readonly M2PdfCommandRow[] = [
   { index: 217, title: "Data Query", pdfTitle: "[Data Query]", pdfFile: "internal_modern_commands", sourcePages: "modern" },
   // Chrono Trigger 계열 적 이동 — 전투 이벤트 전용. 위치 범위기가 새 좌표를 본다.
   { index: 218, title: "Move Enemy", pdfTitle: "[Move Enemy]", pdfFile: "internal_modern_commands", sourcePages: "modern" },
+  // 명작 공백 #1·#24(2026-09-27) — 실시간 미니게임 키트와 방문지 순간이동 메뉴.
+  { index: 219, title: "Key Poll", pdfTitle: "[Key Poll]", pdfFile: "internal_modern_commands", sourcePages: "modern" },
+  { index: 220, title: "Timed Choice", pdfTitle: "[Timed Choice]", pdfFile: "internal_modern_commands", sourcePages: "modern" },
+  { index: 221, title: "Quick Time Event", pdfTitle: "[Quick Time Event]", pdfFile: "internal_modern_commands", sourcePages: "modern" },
+  { index: 222, title: "High Score", pdfTitle: "[High Score]", pdfFile: "internal_modern_commands", sourcePages: "modern" },
+  { index: 223, title: "Teleport Menu", pdfTitle: "[Teleport Menu]", pdfFile: "internal_modern_commands", sourcePages: "modern" },
 ];
 
 export const KOREAN_LABEL_BY_TITLE: Readonly<Record<string, string>> = {
@@ -164,6 +170,11 @@ export const KOREAN_LABEL_BY_TITLE: Readonly<Record<string, string>> = {
   "Change Enemy HP": "적 HP 변경",
   "Change Enemy MP": "적 MP 변경",
   "Move Enemy": "적 이동",
+  "Key Poll": "키 상태 읽기",
+  "Timed Choice": "제한시간 선택지",
+  "Quick Time Event": "퀵타임 입력",
+  "High Score": "최고 점수",
+  "Teleport Menu": "순간이동 메뉴",
   "Change Enemy State": "적 상태 변경",
   "Change Equipment": "장비 변경",
   "Change Escape Access": "탈출 허가 변경",

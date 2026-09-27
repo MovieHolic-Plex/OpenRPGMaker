@@ -400,6 +400,9 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
     case "inputWait":
     case "inputNumber":
     case "enterHeroName":
+    case "timedChoice":
+    case "quickTimeEvent":
+    case "teleportMenu":
     case "flashScreen":
     case "shakeScreen":
       return false;
@@ -421,6 +424,9 @@ function isParallelBlockingStep(step: StepResult): boolean {
     step.kind === "inputWait" ||
     step.kind === "inputNumber" ||
     step.kind === "enterHeroName" ||
+    step.kind === "timedChoice" ||
+    step.kind === "quickTimeEvent" ||
+    step.kind === "teleportMenu" ||
     step.kind === "waitForAllMovement" ||
     step.kind === "flashScreen" ||
     step.kind === "shakeScreen"

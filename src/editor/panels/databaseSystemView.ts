@@ -466,6 +466,12 @@ function systemSectionNodes(
             else delete draft.system.monsterBattleParty;
           });
         }),
+        checkboxField("클릭(탭)으로 걷기", "db-field-system-pointer-movement", project.system.pointerMovement === true, (checked) => {
+          updateSystem((draft) => {
+            if (checked) draft.system.pointerMovement = true;
+            else delete draft.system.pointerMovement;
+          });
+        }),
       ]),
       battleResourcesFieldset(project),
       rm2k3Fieldset("전투 오디오", [

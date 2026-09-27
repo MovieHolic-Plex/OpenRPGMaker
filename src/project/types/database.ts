@@ -224,6 +224,12 @@ export interface SkillRecord {
   animationId?: BattleAnimationId;
   description: string;
   type: "normal" | "teleport" | "escape" | "switch";
+  /**
+   * 필드 능력(명작 공백 #5, 2026-09-27): 메뉴 스킬 목록에서 쓰면 MP 를 내고 이 공통 이벤트를 실행한다.
+   * 실행 전에 주인공 정면 칸의 이벤트 id 를 문자열 변수 `fieldAbilityTarget` 에, 정면 좌표를 변수
+   * `fieldAbilityX`·`fieldAbilityY` 에 적는다(황금의 태양 Move·포켓몬 비전머신·OMORI 리더 능력).
+   */
+  fieldCommonEventId?: string;
   mpCost: SkillMpCost;
   successRate: number;
   variance: number;
@@ -694,9 +700,20 @@ export interface StateRecord {
   recoverNaturallyChance?: number;
   recoverWhenHitChance?: number;
   hpReleaseTurn?: number;
+  /**
+   * 필드 걸음당 HP 변화(음수 = 피해). 명작 공백 #25(2026-09-27)부터 런타임이 실제로 적용한다:
+   * `fieldStepInterval` 걸음마다 한 번, 걸음 피해로는 1 아래로 내려가지 않는다(`fieldStepCanKill` 이면 0까지).
+   */
   hpReleaseStep?: number;
   mpReleaseTurn?: number;
+  /** 필드 걸음당 MP 변화(음수 = 소모). hpReleaseStep 과 같은 간격. */
   mpReleaseStep?: number;
+  /** hp/mpReleaseStep 적용 간격(걸음). 생략 = 1. */
+  fieldStepInterval?: number;
+  /** 걸음 피해가 HP 0 까지 깎을 수 있다(전원 0 이면 필드 패배). 생략 = 1 에서 멈춤. */
+  fieldStepCanKill?: boolean;
+  /** 이 걸음 수를 걸으면 상태가 풀린다(필드 N걸음 지속). 생략 = 걸음으로 풀리지 않음. */
+  releaseAfterSteps?: number;
   specialFlags?: readonly string[];
   lockedParameters?: readonly string[];
   runtimeEffects?: StateRuntimeEffects;
@@ -1303,6 +1320,8 @@ export interface SystemRecords {
    * 이벤트의 `EventPage.footprint` 와 같은 규약이다(2차 스펙 §9).
    */
   playerFootprint?: CharacterFootprint;
+  /** 맵을 클릭(탭)하면 주인공이 경로를 찾아 걸어간다(명작 공백 #32). 생략 = 꺼짐. */
+  pointerMovement?: boolean;
   /**
    * 몸 사각 **하단 몇 행**이 지형·이벤트에 막히는가. 생략하면 몸 높이 전체(= 통행 사각 === 몸 사각).
    * 3x3 주인공에 1 이면 발밑 한 줄만 막혀 상체가 벽을 스치며 지나갈 수 있다.

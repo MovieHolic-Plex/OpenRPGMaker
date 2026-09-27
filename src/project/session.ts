@@ -381,6 +381,14 @@ export interface PlaySession {
   stringVariables?: Record<string, string>;
   /** 누적 필드 걸음 수. Data Query `steps` 가 읽는다. */
   stepCount?: number;
+  /** 방문 순간이동 지점(Set Teleportation Point 가 쌓고 Teleport Menu 가 읽는다). */
+  teleportPoints?: import("./teleportPoints").TeleportPoint[];
+  /** 미니게임 최고 점수(id → 점수). 세이브에 들어간다. */
+  highScores?: Record<string, number>;
+  /** Key Poll 이 읽는 지금 눌린 키(필드 씬이 매 프레임 쓴다). 세이브에 넣지 않는다. */
+  heldInput?: { readonly dir: number; readonly confirm: boolean; readonly cancel: boolean; readonly dash: boolean };
+  /** 상태별 필드 걸음 카운터(actorId → stateId → 걸음). 걸음 상태 효과(#25)가 쓴다. */
+  stateStepCounts?: Record<string, Record<string, number>>;
   /**
    * 이 기기의 회차 기록 사본(부팅 때 clearRecord 에서 채운다, 세이브에 넣지 않는다).
    * 회차는 세이브 슬롯이 아니라 기기에 속한다 — 예전 세이브를 불러도 '이미 본 엔딩' 은 남는다.

@@ -127,6 +127,11 @@ export const M2_PERSISTED_BEHAVIOR_IDS = {
     "m2-215-debug-log",
     "m2-216-evaluate-expression",
     "m2-217-data-query",
+    "m2-219-key-poll",
+    "m2-220-timed-choice",
+    "m2-221-quick-time-event",
+    "m2-222-high-score",
+    "m2-223-teleport-menu",
   ],
   partial: [],
   editorOnly: [
@@ -174,6 +179,12 @@ export const M2_MAP_COMMON_FULL_IDS = [
   "m2-201-camera-control",
   "m2-203-spawn-event",
   "m2-204-remove-event",
+  // 명작 공백 #1·#24(2026-09-27) — 맵·공통 이벤트에서 실제로 동작한다.
+  "m2-219-key-poll",
+  "m2-220-timed-choice",
+  "m2-221-quick-time-event",
+  "m2-222-high-score",
+  "m2-223-teleport-menu",
 ] as const;
 
 export const M2_TROOP_FULL_IDS = [

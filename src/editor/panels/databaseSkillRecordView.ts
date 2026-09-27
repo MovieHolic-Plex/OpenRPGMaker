@@ -448,6 +448,11 @@ function effectFields(record: SkillRecord, rerender: () => void): HTMLElement[] 
     selectField("속성", "db-field-skill-element", record.elementId ?? "", store.getCurrent().database.elements ?? [], (value) =>
       updateSkillOptionalFields(record, { elementId: emptyToUndefined(value) })
     ),
+    // 명작 공백 #5: 메뉴에서 쓰는 필드 능력. 정면 대상은 문자열 변수 fieldAbilityTarget.
+    selectField("필드 능력(공통 이벤트)", "db-field-skill-field-common-event", record.fieldCommonEventId ?? "",
+      (store.getCurrent().commonEvents ?? []).map((event) => ({ id: event.id, name: event.name || event.id })), (value) =>
+      updateSkillOptionalFields(record, { fieldCommonEventId: emptyToUndefined(value) })
+    ),
   ];
   if (record.effect.kind === "damage" || record.effect.kind === "healing") {
     controls.push(
@@ -614,7 +619,7 @@ function updateSkillStateEffects(record: SkillRecord, stateEffects: readonly Dat
   updateSkillOptionalFields(record, { stateEffects: stateEffects.map((effect) => ({ ...effect, chance: clampPercent(effect.chance) })) });
 }
 
-function updateSkillOptionalFields(record: SkillRecord, patch: Pick<Partial<SkillRecord>, "elementId" | "stateEffects">): void {
+function updateSkillOptionalFields(record: SkillRecord, patch: Pick<Partial<SkillRecord>, "elementId" | "stateEffects" | "fieldCommonEventId">): void {
   // updateSkillRecord 뮤테이터가 elementId/stateEffects 를 화이트리스트에 포함하므로 단일 갱신으로 충분하다.
   updateDatabaseRecord("skills", record.id, patch);
 }

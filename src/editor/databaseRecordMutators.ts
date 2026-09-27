@@ -53,6 +53,10 @@ export function updateSkillRecord(database: DatabaseRecords, id: string, patch: 
   if ("effect" in patch && patch.effect !== undefined) record.effect = patch.effect;
   // 속성/상태 변화는 런타임이 소비하는 필드(runtime.ts elementMultiplierFor/applyStateEffects) — 편집 반영 필수.
   if ("elementId" in patch) record.elementId = patch.elementId;
+  if ("fieldCommonEventId" in patch) {
+    if (patch.fieldCommonEventId) record.fieldCommonEventId = patch.fieldCommonEventId;
+    else delete record.fieldCommonEventId;
+  }
   if ("stateEffects" in patch && patch.stateEffects !== undefined) record.stateEffects = patch.stateEffects;
   if ("maxPp" in patch) record.maxPp = patch.maxPp;
   if ("gen1CriticalRate" in patch) record.gen1CriticalRate = patch.gen1CriticalRate;

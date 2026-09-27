@@ -192,6 +192,18 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         },
         onSelectSkill: (skillId) => {
           if (skillActorId) rememberDetailCursorFromTestId(`status-menu-skill-${skillActorId}-${skillId}`);
+          // 명작 공백 #5: 필드 능력은 고르면 바로 쓴다(두 번 누를 필요 없음). 일반 스킬은 설명만.
+          const skill = store.getCurrent().database.skills.find((record) => record.id === skillId);
+          const scene = options.getActiveScene();
+          if (skill?.fieldCommonEventId && scene && skillActorId) {
+            const used = scene.useFieldAbility(skillActorId, skillId);
+            if (used.ok) {
+              options.closeMenu();
+              return;
+            }
+            options.emitMenuJuice("menu-select", renderMenu(used.message, "skills"));
+            return;
+          }
           selectedSkillId = skillId;
           options.emitMenuJuice("menu-select", renderMenu(undefined, "skills"));
         },
