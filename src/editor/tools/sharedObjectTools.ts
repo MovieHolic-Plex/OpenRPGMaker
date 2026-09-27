@@ -3,6 +3,8 @@
 import { regionReferenceScene, preloadRegionReferenceScene, type RegionReferenceScene } from "@/project/regionReferenceImport";
 import { installStampAssets, stampPattern, type StampPattern } from "@/project/objectStamp";
 import type { Project, StructureKitDef, TilesetDef } from "@/project/types";
+import { TRUNK_ONLY_FOREST_GROUPS, TRUNK_ONLY_FOREST_GUIDANCE } from "@/project/defaults/forestTrunkOnlyParts";
+import { applyForestTreeShadows } from "@/project/defaults/forestHarmonyTreeShadows";
 import { catalogEntry, resolveObjectAlias, sharedObjectDef, sharedObjects, sharedPlaces } from "./sharedDesignCatalog";
 import { ToolError, type ToolDefinition } from "./types";
 
@@ -53,6 +55,7 @@ function resolveObject(project: Project, requestedId: string): Resolved {
         entrances: kit.parts?.filter(part => part.kind === "entrance") };
     }
     const group = source.tileGroups?.find(entry => entry.id === innerId) ?? fail(`${tilesetId} 에 타일 그룹 ${innerId} 이 없습니다`);
+    if (TRUNK_ONLY_FOREST_GROUPS.has(group.id)) fail(`「${group.name}」은(는) ${TRUNK_ONLY_FOREST_GUIDANCE}`);
     const preview = group.previewMap ?? fail(`타일 그룹 ${innerId} 에는 도안(previewMap)이 없습니다`);
     return { name: group.name, source, pattern: { width: preview.width, height: preview.height, lower: preview.lowerTiles, upper: preview.upperTiles }, assets: {}, defaultLayers: "both" };
   }
@@ -105,6 +108,9 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
       let result;
       try { result = stampPattern(project, map, resolved.source, pattern, Number(args.x), Number(args.y)); }
       catch (error) { return fail(error instanceof Error ? error.message : String(error)); }
+      // 이 도구는 저작 래스터 보존 도구라 러너의 후처리(나무 짝 수리·그림자)를 건너뛴다. 찍은 나무의 밑 그림자만 여기서 맞춘다 —
+      // 원본 칸은 바꾸지 않고 2층만 쓴다(forestHarmonyTreeShadows.ts).
+      applyForestTreeShadows(map, project.tilesets[map.tilesetId]);
       const warnings = [
         ...(result.clipped ? [`맵 밖으로 나간 칸은 뺐다 — 찍힌 범위 ${JSON.stringify(result.rect)}`] : []),
         ...(result.slotsAdded > 0 ? [`${map.tilesetId} 에 그림 ${result.slotsAdded}칸을 이식해 붙였다(${resolved.source.id} 그림)`] : []),

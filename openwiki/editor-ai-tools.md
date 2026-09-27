@@ -224,6 +224,40 @@ DEFAULT/AUTO/YOLO/단계별 적용에서는 검색까지 직렬 실행됐다. �
   브라우저 관측: `reports/2026-09-21-ai-forest-default.md`.
 
 
+## 숲 나무 물체 산포 — 수관이 빠지던 문제 (2026-09-27)
+
+「작은 숲속에 오두막 하나」 런에서 맵에 잎 없는 밑동 줄만 남았다. 원인과 계약:
+
+- `forest-trees:*` 그룹의 `sourceRect` 는 **픽셀** 단위(숲 벽 160×96 = 10×6칸)다. `placementTools.ts`
+  `sourceRectFootprint` 가 칸 단위로 읽어 실패했고, 표본 빌더가 타일 앞 6개를 가로 한 줄로 늘어놓았다.
+  이제 `previewMap`(칸 단위 하위·상위 배열)이 있고 물체 타일을 전부 담으면 그 모양 그대로 찍는다.
+  받침(잔디) 칸은 비워 기존 지면을 덮지 않는다.
+- 숲 벽·숲 기둥은 첫 줄까지 줄기 그림이다(천장을 덮어야 숲이 되는 띠 시공 부품). `place_props` 낱개 산포는
+  `material-trunk-only` 로 거절하고 굽이숲 수관 경로를 안내한다. 숲 나무 물체(덤불 제외)에 `density` 를 주면
+  `forestTreeKindFromResolvedMaterial` 이 활엽수로 보고 굽이숲 수관을 깐다.
+- Tests: `test/forestTreeObjectPlacement.test.ts`. 조수 실측: gemini-3.8-flash 헤드리스 `scripts/pi-agent.mts`,
+  50×50 맵 수관 779칸(31%), 게이트 통과. 사각형 area 경계에서 수관이 곧게 끊기는 문제는 별개로 남아 있다.
+- 숲 벽·숲 기둥은 `stamp_object`(`group:forest_harmony/forest-trees:forest-wall`)로도 거절하고 공용 오브젝트 목록에서 뺀다.
+  같은 목록은 `src/project/defaults/forestTrunkOnlyParts.ts` 한 곳에 있다. 실측 2차: place_props 가 막히자 모델이
+  stamp_object 로 숲 벽을 29번 찍어 풀밭 위 줄기 벽이 되었다.
+
+## 나무 밑 그림자 (2026-09-27)
+
+밑동(굽이숲 3행 조립·낱그루 밑동)이 받침 잔디 위에 그대로 앉아 수관 아래와 뿌리 둘레가 밝은 풀밭이었다.
+
+- 그림은 `scripts/content/bake-forest-harmony-tree-shadows.py` → `public/assets/forest-harmony/tree-shadows.png`(51칸) +
+  `src/assets/forestHarmonyTreeShadows.json`. 칸마다 원본 밑동 칸의 **투명 부분**에만 숲 그늘색 한 가지를 알파 3단 + 4×4
+  순서 디더로 칠한다. 원본 칩셋 픽셀은 바꾸지 않는다. 굽이숲은 수관 그늘(위 행일수록 진함, 조립 양끝은 바깥으로 옅어짐),
+  낱그루는 뿌리 아래 가로 타원. 밑동 바로 아래 바닥 칸용 발치 칸이 따로 있다.
+- `src/project/defaults/forestHarmonyTreeShadows.ts` 의 `applyForestTreeShadows(map, tileset)` 가 밑동 칸과 발치 칸의
+  **2층**(`lowerOverlayTiles`)에 그림자 칸을 맞춘다. 2층에 사람이 놓은 다른 타일이 있으면 건드리지 않고, 밑동이 사라진 칸의
+  그림자는 지운다. 반복 호출해도 바뀌지 않는다.
+- 칸 번호는 고정하지 않는다. 필요할 때 **마지막 이식 뒤 새 줄**에 이식하고(굽이숲 수관·지나가는 수관과 같은 방식),
+  이식 원본(`tex_forest_harmony_tree_shadows`#n)으로 다시 찾는다. 고정 3611~ 은 지나가는 수관 쌍둥이·탈것 이식이 먼저 차지할 수 있다.
+- 호출 지점: `toolRunner.runToolDefinition` 이 타일을 바꾼 맵마다(나무 짝 수리와 같은 조건 — `spatialAuthoring`·
+  `preservesAuthoredRaster` 도구는 제외), 그리고 `stamp_object` 가 찍은 뒤 직접. 편집기 붓질 경로에는 아직 붙이지 않았다.
+- Tests: `test/forestTreeShadows.test.ts`.
+
 ## 마을 군락 — 굽이숲 절벽마을 조립 (2026-09-21)
 
 - 마을 외곽은 `forestGroves.ts` → `forestContour.ts`로 이어지는 **1칸 단위** 경계다.
