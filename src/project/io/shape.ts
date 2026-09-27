@@ -419,7 +419,7 @@ function normalizeTilesetPalettePresets(project: Project): void {
         id = `${base}_${suffix}`;
         suffix += 1;
       }
-      preset.id = id;
+      if (preset.id !== id) preset.id = id;
       usedIds.add(id);
     }
   }

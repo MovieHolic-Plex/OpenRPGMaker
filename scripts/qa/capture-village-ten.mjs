@@ -6,7 +6,7 @@ import { chromium } from 'playwright';
 const out = 'output/evidence/village-ten';
 const mapId = 'map_cliff_forest_bridge';
 const origin = 'http://127.0.0.1:9825';
-const read = () => JSON.parse(execFileSync('python3', ['-c', "import sqlite3;from pathlib import Path;c=sqlite3.connect(Path('.oprn-projects/oprn-hill-forest-harmony-20260918-a4e1/project.sqlite').resolve().as_uri()+'?mode=ro',uri=True);print(c.execute('select current_json from project').fetchone()[0])"], { maxBuffer: 100 * 1024 * 1024 }));
+const read = () => JSON.parse(execFileSync('python3', ['-c', "import sqlite3;from pathlib import Path;c=sqlite3.connect(Path('.oprn-projects/oprn-hill-forest-harmony-20260918-a4e1/project.sqlite').resolve().as_uri()+'?mode=ro',uri=True);t=c.execute('select current_json from project').fetchone()[0];m='{\"$blob\":\"';p=t.split(m);b=dict(c.execute('select sha256,body from tileset_blobs').fetchall()) if len(p)>1 else {};print(p[0]+''.join(b[s[:64]]+s[66:] for s in p[1:]))"], { maxBuffer: 100 * 1024 * 1024 }));
 const before = read();
 const entries=JSON.parse(fs.readFileSync(`${out}/plans.json`)).map(p=>({...p.spec,mapId:p.map.id,id:p.map.id,width:p.map.width,height:p.map.height}));fs.mkdirSync('tiledata/forest-villages/villages',{recursive:true});
 const browser = await chromium.launch({ executablePath: '/opt/google/chrome/chrome', args: ['--no-sandbox', '--no-proxy-server'] });

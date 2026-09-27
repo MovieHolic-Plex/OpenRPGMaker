@@ -216,10 +216,12 @@ export function applyProjectDocumentPatch(base: unknown, patch: ProjectDocumentP
  * 브리지가 받은 맵 패치 본문을 기준/현재 JSON으로 푼다.
  * 기준 해시가 저장본과 같으면 기준 문서는 서버가 가진 것을 쓴다.
  * 해시가 다르면 클라이언트가 기준 문서를 다시 보내야 한다.
+ * 저장본은 글(`serialized`) 또는 이미 파싱한 트리를 돌려주는 함수(`document`)로 받는다 — 호스트는 타일셋을
+ * 따로 들고 있어 81MB 글을 다시 파싱하지 않는다(electron/local-store/tilesetFold.ts).
  */
 export function resolveMapPatchDocuments(
   input: MapPatchWire,
-  stored: { readonly serialized: string | null; readonly sha256: string | null },
+  stored: { readonly serialized?: string | null; readonly document?: () => unknown; readonly sha256: string | null },
 ): { readonly kind: "stale-base" } | { readonly kind: "ready"; readonly baseJson: unknown; readonly localJson: unknown } {
   if (input.baseSerialized !== undefined && input.serialized !== undefined && input.patch === undefined) {
     return {
@@ -232,8 +234,9 @@ export function resolveMapPatchDocuments(
   let baseJson: unknown;
   if (input.baseSerialized !== undefined) {
     baseJson = JSON.parse(input.baseSerialized) as unknown;
-  } else if ((input.baseSha ?? null) === stored.sha256 && stored.serialized) {
-    baseJson = JSON.parse(stored.serialized) as unknown;
+  } else if ((input.baseSha ?? null) === stored.sha256 && stored.sha256 !== null) {
+    baseJson = stored.document ? stored.document() : stored.serialized ? JSON.parse(stored.serialized) as unknown : undefined;
+    if (baseJson === undefined || baseJson === null) return { kind: "stale-base" };
   } else {
     return { kind: "stale-base" };
   }

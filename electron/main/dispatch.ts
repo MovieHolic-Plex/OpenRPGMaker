@@ -57,8 +57,10 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
     const input = parseOrThrow(saveMapPatchSchema, payload, OPRN_CHANNELS.projectSaveMapPatch);
     const stored = store(key);
     const info = stored.info();
+    // 저장 행이 기준이면 펼친 글을 파싱하지 않고 호스트 문서 트리(타일셋은 얼린 공유 객체)를 쓴다.
+    // 실측(2026-09-27, 82MB): 패치마다 81MB 파싱 두 번 + 검증이 1–8s 였다. 트리는 부를 때마다 새 것이라 복구가 고쳐도 된다.
     const resolved = resolveMapPatchDocuments(input, {
-      serialized: stored.exportSerialized(),
+      document: () => stored.hostDocument(),
       sha256: info.sha256 ?? null,
     });
     if (resolved.kind === "stale-base") return resolved;
@@ -67,15 +69,11 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
     let base: Project | undefined;
     const baseJson = resolved.baseJson;
     // 패치 경로의 로컬 트리는 기준 트리와 가지를 공유하므로 그대로 복구하면 기준본이 더러워진다.
-    // 기준 트리를 이 자리에서 직접 파싱했으면(저장 행·보낸 기준 문서) 그 글을 한 번 더 파싱해 로컬 트리를
-    // 따로 만들고 제자리에서 복구한다 — 복구 전 전체 structuredClone(약 0.4s)보다 파싱(약 0.1s)이 싸다.
-    // 복구가 실패하면 손대지 않은 로컬 문서 글로 돌아간다(loadRepair 계약, 글은 그때만 만든다).
-    const baseText = input.patch ? (input.baseSerialized ?? stored.exportSerialized()) : null;
-    const project = input.patch && baseText
-      ? (() => {
-        const privateLocal = applyProjectDocumentPatch(JSON.parse(baseText) as unknown, input.patch!);
-        return deserializeStoredProjectJson(privateLocal, () => JSON.stringify(resolved.localJson));
-      })()
+    // 기준 트리를 하나 더 만들어(저장 행이면 호스트 문서 트리, 보낸 기준 문서면 그 글의 파싱) 로컬 트리를
+    // 따로 만들고 제자리에서 복구한다. 복구가 실패하면 손대지 않은 로컬 문서 글로 돌아간다(loadRepair 계약).
+    const privateBase = (): unknown => (input.baseSerialized !== undefined ? JSON.parse(input.baseSerialized) as unknown : stored.hostDocument());
+    const project = input.patch
+      ? deserializeStoredProjectJson(applyProjectDocumentPatch(privateBase(), input.patch), () => JSON.stringify(resolved.localJson))
       : deserializeStoredProjectJson(resolved.localJson);
     const ready: PreparedPatch = {
       getBase: () => (base ??= deserializeStoredProjectJson(baseJson)),

@@ -1,5 +1,6 @@
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { DatabaseSync } from "node:sqlite";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -37,7 +38,7 @@ describe("local project store", () => {
     expect(existsSync(join(projectDir, "assets"))).toBe(true);
 
     const info = store.info();
-    expect(info.formatVersion).toBe(1);
+    expect(info.formatVersion).toBe(2);
     expect(info.projectId).toMatch(/^[0-9a-f-]{36}$/);
     store.close();
 
@@ -99,6 +100,58 @@ describe("local project store", () => {
     expect(again).toMatchObject({ kind: "saved", revision: 2 });
     expect(store.exportSerialized()).toBe(expected);
     store.close();
+  });
+
+  it("타일셋을 tileset_blobs 로 접어 저장하고 읽을 때 펼친 글이 바이트 단위로 같다", async () => {
+    const store = await initLocalProjectStore({ projectDir });
+    const project = projectWithoutEventDrafts(createHouseTemplateGalleryProject());
+    const expected = serialize(project);
+    const tilesetIds = Object.keys(project.tilesets);
+    expect(tilesetIds.length).toBeGreaterThan(0);
+    await store.saveProject(project);
+    store.close();
+
+    const db = new DatabaseSync(join(projectDir, "project.sqlite"), { readOnly: true });
+    const row = db.prepare("SELECT current_json, current_sha256 FROM project").get() as { current_json: string; current_sha256: string };
+    const blobCount = (db.prepare("SELECT COUNT(*) AS n FROM tileset_blobs").get() as { n: number }).n;
+    db.close();
+    const folded = JSON.parse(row.current_json) as { tilesets: Record<string, unknown> };
+    expect(Object.keys(folded.tilesets)).toEqual(tilesetIds);
+    for (const marker of Object.values(folded.tilesets)) expect(marker).toEqual({ $blob: expect.stringMatching(/^[0-9a-f]{64}$/) });
+    expect(blobCount).toBe(new Set(Object.values(folded.tilesets).map((m) => (m as { $blob: string }).$blob)).size);
+    expect(row.current_sha256).toBe(sha256HexTextSync(expected));
+
+    const reopened = await openLocalProjectStore({ projectDir });
+    expect(reopened.exportSerialized()).toBe(expected);
+    expect(serialize(reopened.loadSnapshot()!.project)).toBe(expected);
+    reopened.close();
+  });
+
+  it("접지 않은 옛 행을 그대로 읽고, 타일셋을 고친 저장은 바뀐 본문만 남긴다", async () => {
+    const store = await initLocalProjectStore({ projectDir });
+    const project = projectWithoutEventDrafts(createHouseTemplateGalleryProject());
+    const legacy = serialize(project);
+    await store.saveSerialized(JSON.stringify(JSON.parse(legacy), null, 1), null);
+    store.close();
+    const db = new DatabaseSync(join(projectDir, "project.sqlite"));
+    db.prepare("UPDATE project SET current_json = ?, current_sha256 = ?").run(legacy, sha256HexTextSync(legacy));
+    db.exec("DELETE FROM tileset_blobs");
+    db.close();
+
+    const reopened = await openLocalProjectStore({ projectDir });
+    expect(reopened.exportSerialized()).toBe(legacy);
+    const [tilesetId] = Object.keys(project.tilesets);
+    const edited = reopened.loadSnapshot()!.project;
+    const next: Project = { ...edited, tilesets: { ...edited.tilesets, [tilesetId!]: { ...edited.tilesets[tilesetId!]!, name: "고친 타일셋" } } };
+    await reopened.saveProject(next);
+    await reopened.saveProject(next);
+    expect(reopened.exportSerialized()).toBe(serialize(next));
+    reopened.close();
+
+    const check = new DatabaseSync(join(projectDir, "project.sqlite"), { readOnly: true });
+    const blobCount = (check.prepare("SELECT COUNT(*) AS n FROM tileset_blobs").get() as { n: number }).n;
+    check.close();
+    expect(blobCount).toBe(new Set(Object.values(next.tilesets).map((t) => JSON.stringify(t))).size);
   });
 
   it("backup 이 backups/ 에 VACUUM INTO 사본을 만든다", async () => {

@@ -1,8 +1,23 @@
-export const LOCAL_STORE_FORMAT_VERSION = 1;
+/** 2: `project.current_json` 의 타일셋을 `tileset_blobs` 로 접는다. 접힌 행을 쓸 때 올린다 — 이전 빌드는 열기를 거절한다. */
+export const LOCAL_STORE_FORMAT_VERSION = 2;
 
 export const PROJECT_STORE_FILE = "project.sqlite";
 export const ASSETS_DIR = "assets";
 export const BACKUPS_DIR = "backups";
+
+/**
+ * 타일셋 본문 내용 주소 저장소. `project.current_json` 의 타일셋 칸은 `{"$blob":"<sha256>"}` 로 접혀 있고,
+ * 본문(`JSON.stringify(tileset)`)은 여기 한 번만 있다. 문서 해시·내보내기는 펼친 글 기준이다(store.ts `foldProjectText`).
+ * 실측(2026-09-27, 82MB 프로젝트): 문서의 80.7MB 가 타일셋이고 전부 앱 번들·공용 카탈로그의 사본이었다.
+ * 행을 끝어 쓰면 저장마다 81MB 를 다시 쓰고, 접으면 바뀐 타일셋만 쓴다.
+ * 낡은 저장소(마커 없는 행)는 그대로 읽히고 다음 저장에서 접힌다.
+ */
+export const TILESET_BLOBS_DDL = `
+CREATE TABLE IF NOT EXISTS tileset_blobs (
+  sha256 TEXT PRIMARY KEY,
+  body TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);`;
 
 export const STORE_DDL = `
 CREATE TABLE IF NOT EXISTS meta (
@@ -92,6 +107,7 @@ CREATE TABLE IF NOT EXISTS assets (
   kind TEXT,
   created_at TEXT NOT NULL
 );
+${TILESET_BLOBS_DDL}
 CREATE INDEX IF NOT EXISTS commits_recent ON commits (project_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS activity_recent ON ai_activity_logs (project_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS conversations_recent ON ai_conversations (project_id, saved_at DESC);
