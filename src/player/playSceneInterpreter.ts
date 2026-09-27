@@ -55,6 +55,8 @@ import { applyAdvanceTimeStep, applySetTimeStep } from "@/player/playSceneTime";
 import { formatFriendshipFeedback, isGiftableEvent, isGiftSystemEnabled, isTalkFriendshipEnabled, trySocialTalk } from "@/project/friendship";
 import { playGiftSelection } from "@/player/playSceneGift";
 import { playPresentItem } from "@/player/playScenePresentItem";
+import { playTacticsBattle } from "@/player/playSceneTactics";
+import { applyBattleDefeat } from "@/player/playSceneDefeat";
 import { completeDetectionEncounter } from "@/project/npcBehavior";
 import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
 import { getCharacterProfile, resolveCharacterSpeaker } from "@/project/characterProfiles";
@@ -479,6 +481,15 @@ async function consumeBlockingStep(
     case "despawnFieldEnemy":
       despawnFieldEnemyForScene(scene, step.spawnId);
       return resumeAfterSurface(scene, interpreter);
+    case "tacticsBattle": {
+      dialogue.hide();
+      const result = await playTacticsBattle(scene, step);
+      if (result === undefined) return resumeAfterSurface(scene, interpreter);
+      // 패배 불허 전투의 패배는 게임 오버다(battleProcessing 과 같은 규칙).
+      if (result === "defeat" && !step.canLose) { applyBattleDefeat(scene); return { kind: "done" }; }
+      scene.refreshRuntimeSurfaces();
+      return resumeWithValue(scene, interpreter, result);
+    }
     case "setEventGraphicPattern":
       applyEventGraphicPatternStep(scene, step, currentEventId);
       return resumeInterpreter(interpreter);

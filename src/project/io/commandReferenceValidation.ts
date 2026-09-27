@@ -111,6 +111,10 @@ function collectCommandItemReferences(command: Command, ids: Set<string>): void 
     case "loop":
       collectCommandItemReferenceIds(command.body, ids);
       return;
+    case "tacticsBattle":
+      collectCommandItemReferenceIds(command.victoryBranch ?? [], ids);
+      collectCommandItemReferenceIds(command.defeatBranch ?? [], ids);
+      return;
     case "battleProcessing":
       collectCommandItemReferenceIds(command.victoryBranch ?? [], ids);
       collectCommandItemReferenceIds(command.defeatBranch ?? [], ids);
@@ -256,6 +260,11 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       return;
     case "callCommonEvent":
       assert(context.commonEventIds.has(command.commonEventId), `callCommonEvent: commonEventId가 존재하지 않습니다: ${command.commonEventId}`);
+      return;
+    case "tacticsBattle":
+      assert(context.troopIds.has(command.troopId), `tacticsBattle: troopId가 존재하지 않습니다: ${command.troopId}`);
+      validateCommands(command.victoryBranch ?? [], context);
+      validateCommands(command.defeatBranch ?? [], context);
       return;
     case "battleProcessing":
       if (command.troopSource !== "variable") {

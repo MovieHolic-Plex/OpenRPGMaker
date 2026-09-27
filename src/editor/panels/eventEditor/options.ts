@@ -70,6 +70,7 @@ export const COMMAND_KIND_OPTIONS = [
   { value: "changeLifeSkillExp", label: "생활 스킬 숙련도 변경" },
   { value: "spawnFieldEnemy", label: "필드 몬스터 등장" },
   { value: "despawnFieldEnemy", label: "필드 몬스터 제거" },
+  { value: "tacticsBattle", label: "전술 전투(격자)" },
   { value: "changeLevel", label: "레벨 변경" },
   { value: "promoteActor", label: "승급" },
   { value: "changeEquipment", label: "장비 변경" },

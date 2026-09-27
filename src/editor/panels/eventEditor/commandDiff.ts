@@ -91,6 +91,12 @@ function branchSlots(command: Command): readonly BranchSlot[] {
       if (command.failureBranch) slots.push({ key: "evolutionFailure", label: "진화 실패", commands: command.failureBranch });
       return slots;
     }
+    case "tacticsBattle": {
+      const slots: BranchSlot[] = [];
+      if (command.victoryBranch) slots.push({ key: "battleVictory", label: "전투 승리", commands: command.victoryBranch });
+      if (command.defeatBranch) slots.push({ key: "battleDefeat", label: "전투 패배", commands: command.defeatBranch });
+      return slots;
+    }
     case "battleProcessing": {
       const slots: BranchSlot[] = [];
       if (command.victoryBranch) slots.push({ key: "battleVictory", label: "전투 승리", commands: command.victoryBranch });
@@ -142,6 +148,12 @@ function withBranchSlots(command: Command, byKey: ReadonlyMap<string, Command[]>
         ...(byKey.has(failureKey) ? { failureBranch: byKey.get(failureKey) } : {}),
       };
     }
+    case "tacticsBattle":
+      return {
+        ...command,
+        ...(byKey.has("battleVictory") ? { victoryBranch: byKey.get("battleVictory") } : {}),
+        ...(byKey.has("battleDefeat") ? { defeatBranch: byKey.get("battleDefeat") } : {}),
+      };
     case "battleProcessing":
       return {
         ...command,
@@ -171,6 +183,7 @@ const BRANCH_FIELDS_BY_KIND: Readonly<Record<string, readonly string[]>> = {
   promoteActor: ["successBranch", "failureBranch"],
   evolveMonster: ["successBranch", "failureBranch"],
   battleProcessing: ["victoryBranch", "defeatBranch", "escapeBranch"],
+  tacticsBattle: ["victoryBranch", "defeatBranch"],
 };
 
 function stableStringify(value: unknown): string {

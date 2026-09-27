@@ -161,6 +161,7 @@ const INPUT_CAPTURING_TEST_IDS = [
   "runtime-choices",
   "runtime-input-number",
   "runtime-name-entry",
+  "tactics-battle",
 ] as const;
 
 export const INPUT_CAPTURING_SELECTOR = INPUT_CAPTURING_TEST_IDS.map((id) => `[data-testid='${id}']`).join(", ");

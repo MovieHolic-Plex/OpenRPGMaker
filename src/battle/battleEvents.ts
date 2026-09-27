@@ -938,6 +938,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "openSaveMenu":
       case "spawnFieldEnemy":
       case "despawnFieldEnemy":
+      case "tacticsBattle":
       case "advanceCropGrowth":
       case "runControl":
       // playMovie: 맵/공통은 플레이어 비디오 오버레이로 실제 재생되지만 전투 실행기는 없다

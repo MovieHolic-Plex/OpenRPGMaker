@@ -190,6 +190,10 @@ function commandReferences(command: Command, collection: CommandReferenceCollect
         || commandListReferences(command.escapeBranch ?? [], collection, id);
     case "spawnFieldEnemy":
       return collection === "troops" && command.spawn.troopId === id;
+    case "tacticsBattle":
+      return (collection === "troops" && command.troopId === id)
+        || commandListReferences(command.victoryBranch ?? [], collection, id)
+        || commandListReferences(command.defeatBranch ?? [], collection, id);
     case "changeExp":
       return collection === "actors" && Boolean(command.actorId) && command.actorId === id;
     case "changeLevel":
@@ -316,6 +320,9 @@ function commandReferencesSwitchVariable(command: Command, kind: "switch" | "var
     case "shop":
       return commandListReferencesSwitchVariable(command.transactionBranch ?? [], kind, id)
         || commandListReferencesSwitchVariable(command.failedTransactionBranch ?? [], kind, id);
+    case "tacticsBattle":
+      return commandListReferencesSwitchVariable(command.victoryBranch ?? [], kind, id)
+        || commandListReferencesSwitchVariable(command.defeatBranch ?? [], kind, id);
     case "battleProcessing":
       return commandListReferencesSwitchVariable(command.victoryBranch ?? [], kind, id)
         || commandListReferencesSwitchVariable(command.defeatBranch ?? [], kind, id)

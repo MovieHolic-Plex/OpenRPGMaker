@@ -1902,6 +1902,8 @@ function describeRuntimeEffect(cmd: Command, simState: PreviewSimState, _hostEve
       return "필드 몬스터 생성";
     case "despawnFieldEnemy":
       return `필드 몬스터 제거: ${cmd.spawnId}`;
+    case "tacticsBattle":
+      return `전술 전투: ${cmd.troopId || "(적 그룹 미지정)"}`;
     case "killPlayer":
       return `주인공 사망: ${gameOverName(store.getCurrent(), cmd.gameOverId)}`;
     case "gameOver":

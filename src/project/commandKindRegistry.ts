@@ -82,6 +82,7 @@ export const COMMAND_KINDS = [
   "openSaveMenu",
   "spawnFieldEnemy",
   "despawnFieldEnemy",
+  "tacticsBattle",
   "runControl",
   "killPlayer",
   "triggerEnding",
