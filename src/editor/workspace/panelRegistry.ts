@@ -20,7 +20,7 @@
 // 모달이라 도크에 넣지 않았다 — 목록만 길게 만들고 실제로 도킹되지 않으면 거짓이다.
 // 모달을 패널로 승격하는 것은 별도 작업이다(각자 자기 크롬·포커스 트랩을 갖고 있다).
 
-import { renderTilePalette } from "@/editor/panels/tilePalette";
+import { refreshTilePalette } from "@/editor/panels/tilePalette";
 import { renderMapList } from "@/editor/panels/mapList";
 
 /** 패널이 놓일 수 있는 자리. 캔버스는 항상 가운데이고 도크가 아니다. */
@@ -50,7 +50,8 @@ const PANELS: readonly PanelDef[] = [
     id: "tiles",
     title: "타일",
     preferredDock: "left",
-    render: (host) => renderTilePalette(host),
+    // 입력이 그대로면 다시 짓지 않는다 — refreshTilePalette 머리말.
+    render: (host) => refreshTilePalette(host),
     scrolls: true,
   },
   {

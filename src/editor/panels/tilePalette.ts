@@ -1,7 +1,7 @@
 import { el, clearChildren } from "@/util/dom";
 import { editorState } from "@/editor/editorState";
 import type { Layer } from "@/editor/editorState";
-import { getEditorChrome } from "@/editor/editorUiMode";
+import { getEditorChrome, getEditorUiMode } from "@/editor/editorUiMode";
 import { recentTilesView, recordRecentTile } from "@/editor/panels/tileBrushTools";
 import { renderBasicLeftRail, syncBasicRailBrushStatus } from "@/editor/panels/basicLeftRail";
 import { basicTileLabel } from "@/editor/panels/basicTilePalette";
@@ -11,6 +11,7 @@ import { makePaintShapeSelect } from "@/editor/panels/tileToolOptions";
 import { makeSidebarMapHeader } from "@/editor/panels/sidebarMapHeader";
 import { makeSidebarSurface } from "@/editor/panels/sidebarSurface";
 import { isDefaultTilesetTexture, tilesetImageUrl, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
+import { TILE_GRAFT_IMAGE_BAKED_EVENT } from "@/assets/tileGraftImageCache";
 import { openTilePropsDialog } from "@/editor/panels/tilePropsDialog";
 import { openMapPropertiesDialog } from "@/editor/panels/mapPropertiesDialog";
 import { makeStructureKitShelf } from "@/editor/harnessSuggestion/structureKitShelf";
@@ -94,7 +95,75 @@ function detachRetainedPalette(container: HTMLElement, key: string): HTMLElement
   return sheet;
 }
 
+/**
+ * 도크 갱신이 마지막으로 그린 팔레트의 입력. 같은 입력이면 다시 짓지 않는다.
+ *
+ * 왜 (2026-09-27 실측): `editor.ts refreshPanels` 는 셀 없는 맵 변경(이름·이벤트)·assets·project
+ * 통지·이벤트 선택마다 좌측 도크를 통째로 다시 그렸다. 팔레트는 그 값들을 읽지 않는데도
+ * 매번 셸을 버리고 새로 지었다. 이제 아래 입력이 그대로면 건너뛴다. 타일셋은 안 바뀌면 같은
+ * 객체를 유지하므로(store.update 의 cloneProjectForMutation) 객체 비교로 충분하다.
+ * 팔레트 안의 컨트롤(필터·보조 창 등)은 renderTilePalette 를 직접 불러 항상 다시 그린다.
+ */
+const renderedPaletteInputs = new WeakMap<HTMLElement, { readonly shell: Element; readonly inputs: readonly unknown[] }>();
+
+/** 타일 레이어 팔레트가 읽는 값. 이벤트 레이어(이벤트 목록)는 맵 내용을 읽으므로 null — 항상 그린다. */
+function paletteRenderInputs(): readonly unknown[] | null {
+  const state = editorState.get();
+  if (state.layer === "event") return null;
+  const project = store.getCurrent();
+  const map = project.maps[state.currentMapId ?? project.startMapId];
+  const tileset = map ? project.tilesets[map.tilesetId] : undefined;
+  if (!map || !tileset) return null;
+  return [
+    getEditorUiMode(),
+    // 맵 헤더는 맵 도크가 있는지에 따라 모양이 다르다(sidebarMapHeader.ts).
+    document.querySelector('[data-testid="left-map-root"]') !== null,
+    map.id,
+    map.name,
+    tileset,
+    // 타일 이식 베이크가 끝나면 같은 타일셋이어도 그림 주소가 바뀐다.
+    tilesetImageUrl(tileset),
+    state.layer,
+    state.tool,
+    state.paintShape,
+    state.selectedTile,
+    state.autoConnectMode,
+    state.clusterAssistMode,
+    state.activePaletteStamp,
+    state.brushSize,
+    state.reliefMode,
+    state.reliefLevel,
+    activeTileCategory,
+    tileSearchQuery,
+    showQuickTileNumbers,
+  ];
+}
+
+/**
+ * 도크(panelRegistry)가 부르는 진입점. 마지막으로 그린 입력과 같고 그 셸이 아직 붙어 있으면
+ * 아무것도 하지 않는다. 보조 창이 열려 있으면(사용 위치 등 맵 내용을 보여 준다) 그대로 그린다.
+ */
+export function refreshTilePalette(container: HTMLElement): void {
+  if (!getEditorChrome().paletteRail && !container.querySelector("[data-sidebar-surface]")) {
+    const rendered = renderedPaletteInputs.get(container);
+    const inputs = rendered && rendered.shell.parentElement === container ? paletteRenderInputs() : null;
+    if (rendered && inputs && inputs.length === rendered.inputs.length && inputs.every((value, index) => value === rendered.inputs[index])) return;
+  }
+  renderTilePalette(container);
+}
+
+// 타일 이식 베이크는 첫 그리기 뒤에 끝난다(기본 칩셋 이식 553칸). 예전에는 상관없는 통지의 재생성이
+// 구운 그림을 우연히 주웠다. 이제 그런 재생성이 없으므로 베이크 완료를 직접 받는다 — 그림 주소가
+// 입력에 들어 있어 바뀐 때만 한 번 다시 그린다.
+if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+  window.addEventListener(TILE_GRAFT_IMAGE_BAKED_EVENT, () => {
+    const root = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
+    if (root && renderedPaletteInputs.has(root)) preservePaletteViewport(() => refreshTilePalette(root));
+  });
+}
+
 export function renderTilePalette(container: HTMLElement): void {
+  renderedPaletteInputs.delete(container);
   // The rail owns its focus and flyout snapshots. Do not detach its focused node
   // before it can capture them (the real browser moves focus to body on removal).
   if (getEditorChrome().paletteRail) {
@@ -171,6 +240,8 @@ export function renderTilePalette(container: HTMLElement): void {
   const palette: HTMLElement | null = body.palette;
 
   container.append(shell);
+  const inputs = paletteRenderInputs();
+  if (inputs) renderedPaletteInputs.set(container, { shell, inputs });
   applyRovingTabindex(container);
   restoreFocus(container, focusSnapshot);
   if (palette) restorePaletteScroll(container, palette, previousPaletteScroll);
