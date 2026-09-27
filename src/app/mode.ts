@@ -30,9 +30,10 @@ import { MAP_EDIT_HISTORY_EVENT } from "@/editor/mapEditHistory";
 import { editorState, editorStateChangedOnlyPaintPick } from "@/editor/editorState";
 import { hasDeepLinkedProject, presentEditorWelcome, setEditorWelcomeDismissed, shouldPresentEditorWelcome } from "@/editor/editorWelcome";
 import { isForcedWelcomeRehearsal } from "@/editor/automationBootContext";
+import { isBlankStartProject } from "@/project/projectBlankness";
 import { hasElectronBridge, openFolderHeldByMainProcess, type ElectronRepository } from "@/project/persistence/electronRepository";
 import { projectRepository } from "@/project/persistence/repository";
-import { dismissBootLoader } from "@/app/bootLoader";
+import { dismissBootLoader, reportBootStage } from "@/app/bootLoader";
 import { rememberBootBrief } from "@/app/bootBrief";
 import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { START_SCREEN_INTENT_KEY } from "@/start/startIntent";
@@ -114,6 +115,7 @@ export async function bootApp(root: HTMLElement): Promise<void> {
     });
     installAiUiEventCapture();
     deepLinkedProjectAtBoot = hasDeepLinkedProject();
+    reportBootStage("project");
     // Electron 에서는 시작 화면이 고른 폴더가 주 프로세스 세션에만 있다. 편집기 문서는 별개
     // 문서라 모듈 상태가 안 넘어오므로 여기서 다시 붙는다 — 안 붙으면 store.load() 가 대상을
     // 못 찾아 DB 연결 설정 화면으로 떨어진다(로컬 폴더 정본인데도).
@@ -143,6 +145,7 @@ export async function bootApp(root: HTMLElement): Promise<void> {
   syncProjectFontTheme(store.getCurrent());
   store.subscribe(syncProjectFontTheme);
 
+  reportBootStage("editor");
   // 최초 편집 맵 = 시작 맵.
   await finishEditorBoot(startedAt);
 }
@@ -184,13 +187,17 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
   // 만들까요」 브리핑 대신 데모 안내 토스트가 첫 인상을 맡는다. ?forceWelcome=1 리허설만 예외.
   const sharedDemoOpen = store.isSharedDemoSession();
   const demoHoldsFirstScreen = sharedDemoOpen && !isForcedWelcomeRehearsal();
+  // 「어떤 게임을 만들까요? / 빈 맵으로 시작」은 정말 빈 프로젝트에서만 묻는다. 닫음 표시(localStorage)는
+  // 출처마다 따로라 새 포트·새 호스트 주소에서는 비어 있다 — 그것만 보면 다 만든 프로젝트 위에도 뜬다.
+  // ?forceWelcome=1 리허설은 내용과 무관하게 띄운다(e2e 가 예제 프로젝트 위에서 브리핑을 검증한다).
+  const projectIsBlank = isForcedWelcomeRehearsal() || isBlankStartProject(store.getCurrent());
 
   // Cold-boot briefing only. Re-entry while edit/play shell is live must not overlay.
   if (modeMounted) {
     clearPendingAiBootIntent();
   } else {
     clearWelcomeIntentBootFlags();
-    showBriefing = !startHandoff && !store.getCurrent().gameDesignBrief && !demoHoldsFirstScreen && shouldPresentEditorWelcome({
+    showBriefing = !startHandoff && !store.getCurrent().gameDesignBrief && !demoHoldsFirstScreen && projectIsBlank && shouldPresentEditorWelcome({
       modeShellMounted: false,
       deepLinkedProject: deepLinkedProjectAtBoot,
     });
