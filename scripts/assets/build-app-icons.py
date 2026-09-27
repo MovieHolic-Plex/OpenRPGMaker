@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """앱 아이콘 원본(design/app-icon/*.png)에서 배포용 아이콘 파일을 만든다.
 
-    python3 scripts/assets/build-app-icons.py            # 기본안: 떠 있는 맵 조각
-    python3 scripts/assets/build-app-icons.py --backup   # 백업안: 메시지 창 + 검과 깃펜
+    python3 scripts/assets/build-app-icons.py            # 기본안: 메시지 창 + 검과 깃펜
+    python3 scripts/assets/build-app-icons.py --backup   # 백업안: 떠 있는 맵 조각
 
 원본은 이미지 생성 모델이 뽑은 1254px 그림이라 둥근 사각형 바깥에 옅은 파란 번짐이 있다.
 그 번짐은 밝은 바탕(독, 탐색기)에서 얼룩으로 보이므로 둥근 사각형 마스크로 잘라낸다.
@@ -20,8 +20,8 @@ from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCES = {
-    "primary": ROOT / "design/app-icon/oprn-icon-map-cube.png",
-    "backup": ROOT / "design/app-icon/oprn-icon-sword-quill.png",
+    "primary": ROOT / "design/app-icon/oprn-icon-sword-quill.png",
+    "backup": ROOT / "design/app-icon/oprn-icon-map-cube.png",
 }
 
 
@@ -79,7 +79,7 @@ def maskable(plate: Image.Image, size: int = 512) -> Image.Image:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--backup", action="store_true", help="백업안(검과 깃펜)으로 만든다")
+    parser.add_argument("--backup", action="store_true", help="백업안(맵 조각)으로 만든다")
     args = parser.parse_args()
 
     variant = "backup" if args.backup else "primary"
