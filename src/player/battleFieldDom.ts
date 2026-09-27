@@ -1,3 +1,4 @@
+import { retroMotionPose } from "@/player/battleRetroMotion";
 import { battleTypeBadges } from "@/player/battleTypeBadges";
 import type { BattleActionBeat } from "@/player/battleActionBeats";
 import { fitBattleEnemy } from "@/player/battleEnemyFit";
@@ -549,6 +550,7 @@ export function applyBattlerPoseForTest(node: HTMLElement, pose: BattleBattlerSn
 }
 
 function applyBattlerPose(node: HTMLElement, pose: BattleBattlerSnapshot["pose"]): void {
+  if (activeSkin().motionStyle === "retro") pose = retroMotionPose(node, pose, applyBattlerPose);
   node.dataset.battlePose = pose;
   node.classList.toggle("battle-pose-idle", pose === "idle");
   node.classList.toggle("battle-pose-attack", pose === "attack");
@@ -1150,6 +1152,8 @@ export function blinkBattlerNode(node: HTMLElement): void {
 
 /** Side-view approach / knockback classes for the current resolve beat. */
 export function applyActionMotion(field: HTMLElement, beat: BattleActionBeat | undefined): void {
+  // 고전 모션은 바깥 노드 translate를 독점하고 스프라이트 피격 진동과 분리한다.
+  if (activeSkin().motionStyle === "retro") return;
   for (const node of field.querySelectorAll<HTMLElement>(".battle-actor, .battle-enemy")) {
     node.classList.remove(
       "battle-motion-windup",
