@@ -27,11 +27,15 @@ export interface BattleHitIntensityStyle {
  * 무대를 전혀 움직이지 않아 "타격감이 없다" 로 읽혔다. 정보는 **진폭의 차이**(2 → 3 → 7 → 11)가
  * 계속 들고 있다 — 잽과 필살기는 여전히 한눈에 구분된다.
  */
+/*
+ * 2026-09-27: 통상 3px·펀치 1.5% 는 프레임 실측에서 흔들림 4~7px 로만 읽혀, 가장 흔한 타격(normal)이
+ * 무대를 거의 움직이지 않았다. 통상 5px·2.5%, heavy 8px, crushing 12px 로 올린다(잽 2px 는 그대로).
+ */
 export const HIT_INTENSITY_STYLE: Readonly<Record<BattleHitIntensity, BattleHitIntensityStyle>> = {
   graze: { knockbackPx: 10, squash: 0.02, punchScale: 1, shakePx: 2 },
-  normal: { knockbackPx: 26, squash: 0.06, punchScale: 1.015, shakePx: 3 },
-  heavy: { knockbackPx: 40, squash: 0.1, punchScale: 1.03, shakePx: 7 },
-  crushing: { knockbackPx: 54, squash: 0.15, punchScale: 1.05, shakePx: 11 },
+  normal: { knockbackPx: 30, squash: 0.08, punchScale: 1.025, shakePx: 5 },
+  heavy: { knockbackPx: 44, squash: 0.12, punchScale: 1.04, shakePx: 8 },
+  crushing: { knockbackPx: 58, squash: 0.16, punchScale: 1.06, shakePx: 12 },
 };
 
 /** 최대 HP 대비 피해 비율의 경계. */

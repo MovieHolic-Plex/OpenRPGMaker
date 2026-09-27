@@ -11,10 +11,11 @@
    ========================================================================= */
 
 /* ---- ⑥ 피격 점멸 ---------------------------------------------------------
-   blinkBattlerNode 가 55ms 간격으로 이 클래스를 세 번 토글한다. visibility 라 idle·숨쉬기
-   애니메이션 슬롯을 건드리지 않는다. */
+   blinkBattlerNode 가 55ms 간격으로 이 클래스를 세 번 토글한다. animation 슬롯을 건드리지 않는다.
+   2026-09-27: visibility:hidden 이던 때는 흰 실루엣 직후 적이 두 프레임 통째로 사라져(프레임 #389–390)
+   "맞았다" 가 아니라 "없어졌다" 로 읽혔다. 반투명으로 흐려질 뿐 윤곽은 남긴다. */
 .battle-hit-blink-off :is(.battle-enemy-image, .battle-actor-image, .battle-actor-sprite, .battle-skin-actor-image) {
-  visibility: hidden;
+  opacity: 0.38 !important;
 }
 
 /* ---- ② 타격 흔들림 ---------------------------------------------------------
@@ -30,11 +31,15 @@
 
 /* ---- ③ 하드 플래시 --------------------------------------------------------
    번쩍임은 **머물렀다 끊긴다**. 서서히 빠지는 흰 막은 번쩍임이 아니라 안개로 읽힌다. */
+/* 2026-09-27: 무대 전체 흰 막(34%·크리 50%)이 로그 창·이름표까지 씻어 내 맞은 적의 흰 실루엣과
+   구분되지 않았다. 번쩍임은 대상 실루엣(히트스톱)이 맡고 무대 막은 가볍게만 친다. */
 .battle-scene.battle-flash-hit .battle-field::after {
-  animation: battle-flash-snap 130ms linear forwards;
+  animation: battle-flash-snap 110ms linear forwards;
+  background: rgba(255, 255, 255, 0.16);
 }
 .battle-scene.battle-flash-critical .battle-field::after {
-  animation: battle-flash-snap 190ms linear forwards;
+  animation: battle-flash-snap 170ms linear forwards;
+  background: rgba(255, 214, 138, 0.3);
 }
 @keyframes battle-flash-snap {
   0%, 45% { opacity: 1; }
@@ -64,17 +69,24 @@
 .battle-scene .battle-damage-popup.battle-damage-popup-critical {
   --pop-crit: 1.2;
 }
+/* 아군 카드 팝업은 공용 float(0% 투명 → 15% 불투명, 135ms)을 쓴다. 앞부분을 건너뛰어 착탄 프레임에 숫자가
+   보이게 한다 — 붉은 비네트·행 흔들림과 같은 순간이어야 "내가 얼마 맞았다" 가 한 번에 읽힌다. */
+.battle-scene .battle-damage-popup.battle-damage-popup-party {
+  animation-delay: -110ms;
+}
 @keyframes battle-damage-bounce {
+  /* 2026-09-27: 착탄 프레임에 이미 보인다(0% 불투명·크게) — opacity 0 에서 시작하면 ~100ms 동안 숫자가 없다.
+     정점 -170% 는 적 머리 위 팝업을 두 줄 로그 배너(top 32px) 속으로 밀어 넣어 숫자가 잘렸다. */
   0% {
-    opacity: 0;
-    transform: translate(var(--pop-x, -50%), -40%) scale(calc(var(--pop-scale, 1) * var(--pop-crit, 1) * 0.4));
+    opacity: 1;
+    transform: translate(var(--pop-x, -50%), -80%) scale(calc(var(--pop-scale, 1) * var(--pop-crit, 1) * 1.6));
   }
   9% {
     opacity: 1;
-    transform: translate(var(--pop-x, -50%), -150%) scale(calc(var(--pop-scale, 1) * var(--pop-crit, 1) * 1.35));
+    transform: translate(var(--pop-x, -50%), -125%) scale(calc(var(--pop-scale, 1) * var(--pop-crit, 1) * 1.3));
   }
   20% {
-    transform: translate(var(--pop-x, -50%), -170%) scale(calc(var(--pop-scale, 1) * var(--pop-crit, 1) * 1.05));
+    transform: translate(var(--pop-x, -50%), -138%) scale(calc(var(--pop-scale, 1) * var(--pop-crit, 1) * 1.05));
   }
   36% {
     transform: translate(var(--pop-x, -50%), -100%) scale(calc(var(--pop-scale, 1) * var(--pop-crit, 1)));
@@ -203,11 +215,13 @@
    정지 비트(시퀀서 impact) 동안 배틀러·팝업·파편의 CSS 애니메이션을 **멈춘다**. 흔들림은
    `.battle-field` 의 애니메이션이라 여기 걸리지 않아 계속 돈다 — 멈춘 화면이 떨린다.
    피격 juice·팝업·격파 분해는 정지 중에 시작돼 0% 프레임에 붙들려 있다가, 정지가 풀리는
-   순간 한꺼번에 터진다. 옛 1.2% 맥동은 걷는다. */
+   순간 한꺼번에 터진다. 옛 1.2% 맥동은 걷는다.
+   피해 숫자는 멈추지 않는다(2026-09-27) — 0% 프레임이 opacity 0 이라, 멈추면 착탄 뒤 ~240ms 동안
+   숫자가 보이지 않았다. 타격의 정보(얼마나 들어갔나)는 착탄 프레임에 떠야 한다. */
 .battle-scene.battle-hit-stop {
   animation: none;
 }
-.battle-scene[data-battle-ui-style][data-battle-skin].battle-hit-stop :is(.battle-enemy, .battle-actor, .battle-enemy *, .battle-actor *, .battle-damage-popup, .battle-actor-status) {
+.battle-scene[data-battle-ui-style][data-battle-skin].battle-hit-stop :is(.battle-enemy, .battle-actor, .battle-enemy *, .battle-actor *, .battle-actor-status) {
   animation-play-state: paused;
 }
 /* 정지 중 맞은 쪽은 흰 실루엣. 분해·기절 키프레임이 image 의 filter 를 잡고 있어서(애니메이션은 보통

@@ -19,7 +19,12 @@
 
 - CSS 소유: `src/styles/runtime/battle/22-hit-feel.css`. `runtime/index.css` 에서 **스킨 시트 뒤**(`_windowskin.css` 다음)
   에 로드된다 — 같은 특정도의 스킨 규칙을 이긴다. 순서는 `test/playerRuntimeCss.test.ts` 가 고정한다.
-- **진짜 히트스톱:** `.battle-hit-stop` 동안 배틀러·팝업·파티 행 애니메이션을 `animation-play-state: paused` 로 멈춘다.
+- **2026-09-27 보정 (프레임 실측, `~/claude-viz/combat-hit-feel.html`):** 팝업이 히트스톱에 멈춰 opacity 0 인 채로 있어 숫자가
+  착탄 234~333ms 뒤에야 떴다 → 팝업은 정지 대상에서 빼고 0% 프레임부터 불투명(1~9ms). 점멸은 visibility → opacity 0.38
+  (적이 두 프레임 사라졌다). 필드 흰 막 34/50% → 16/30%. 플래시·흔들림·펀치는 다음 rAF 가 아니라 착탄 프레임에
+  동기로 붙는다(리플로우로 재시작). 세기표 2/5/8/12px, 통상 리듬 50ms×3. `BATTLE_ACTING_MS` 470→400,
+  `BATTLE_IMPACT_MS` 430→400. 아래 항목의 옛 수치는 이 줄이 이긴다.
+- **진짜 히트스톱:** `.battle-hit-stop` 동안 배틀러·파티 행 애니메이션을 `animation-play-state: paused` 로 멈춘다.
   흔들림(`.battle-field` 애니메이션)과 필드 플래시는 계속 돈다. 맞은 쪽 이미지는 흰 실루엣(`!important` —
   분해·기절 키프레임과 스킨 filter transition 을 이겨야 한다). 파일 **맨 끝**에 둔다: 이 파일의 다른 `animation` 단축
   속성이 play-state 를 running 으로 되돌린다. 정지 길이는 기존 시퀀서 비트(110ms × weight) 그대로다.
