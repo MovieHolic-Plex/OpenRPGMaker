@@ -205,6 +205,16 @@ function canBattlerAct(project: Project, battler: { readonly stateIds: readonly 
   return stateAllowsAction(project, battler) && !isBattlerIncapacitated(project, battler);
 }
 
+/** 받는 HP 피해 중 MP 로 돌리는 비율(0~1). 여러 상태면 합산 후 1 로 자른다. */
+export function damageToMpRateForStates(project: Pick<Project, "database">, battler: { readonly stateIds: readonly string[] }): number {
+  let rate = 0;
+  for (const stateId of battler.stateIds) {
+    const value = project.database.states.find((state) => state.id === stateId)?.runtimeEffects?.damageToMpRate;
+    if (typeof value === "number" && Number.isFinite(value) && value > 0) rate += value;
+  }
+  return Math.min(1, rate);
+}
+
 type StrictQueuedActorCommand = {
   readonly actorId: ActorId;
   readonly command: ActorCommand;
@@ -1174,7 +1184,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       applyGen1Struggle(actor, target, "attack");
       return;
     }
-    const result = applySkillLike(actor, target, {
+    const hpBefore = target.hp;
+    const result = redirectDamageToMp(target, hpBefore, applySkillLike(actor, target, {
       power: actor.attackPower,
       statistic: "attack",
       effect: "damage",
@@ -1187,7 +1198,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       targetDefenseMultiplier: defenseMultiplierForStatesByKind(options.project, target, "attack"),
       gen1AttackerLevel: gen1AttackerLevel(actor),
       rng,
-    });
+    }));
     if (result.hit && result.amount > 0) recoverHitStates(target);
     if (result.hit) applyNormalAttackEquipmentStates(actor, target);
     recordAction(
@@ -1879,7 +1890,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       applyGen1Residual(enemy);
       return;
     }
-    const result = applySkillLike(enemy, target, {
+    const hpBefore = target.hp;
+    const result = redirectDamageToMp(target, hpBefore, applySkillLike(enemy, target, {
       power: enemy.attackPower,
       statistic: "attack",
       effect: "damage",
@@ -1891,7 +1903,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       targetDefenseMultiplier: defenseMultiplierForStatesByKind(options.project, target, "attack"),
       gen1AttackerLevel: gen1AttackerLevel(enemy),
       rng,
-    });
+    }));
     if (result.hit && result.amount > 0) recoverHitStates(target);
     recordAction(
       { userRecordId: enemy.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical },
@@ -1953,6 +1965,19 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       }
     }
     pendingCounters.length = 0;
+  }
+
+  // ── 피해 MP 전환(StateRuntimeEffects.damageToMpRate) ── HP 피해의 일부를 MP 에서 대신 깎는다.
+  // hpBefore 는 타격 직전 HP. 반환 결과의 amount 는 실제로 HP 에서 빠진 양이다.
+  function redirectDamageToMp<T extends { readonly hit: boolean; readonly amount: number }>(target: MutableBattler, hpBefore: number, applied: T): T {
+    if (gen1 || !applied.hit || applied.amount <= 0) return applied;
+    const rate = damageToMpRateForStates(options.project, target);
+    if (rate <= 0) return applied;
+    const redirected = Math.min(target.mp, Math.floor(applied.amount * rate));
+    if (redirected <= 0) return applied;
+    target.mp -= redirected;
+    target.hp = Math.max(0, hpBefore - (applied.amount - redirected));
+    return { ...applied, amount: applied.amount - redirected };
   }
 
   // ── 장비 자동 부활(effectFlags.autoRevive) ── 전투당 배우 1회. 승패 판정 직전에 돌아 패배를 막는다.
@@ -2430,7 +2455,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       : "attack";
     const affects =
       effect && (effect.kind === "damage" || effect.kind === "healing") ? effect.affects : "hp";
-    const result = applySkillLike(user, target, {
+    const hpBefore = target.hp;
+    const rawResult = applySkillLike(user, target, {
       power,
       statistic,
       effect: effectKind,
@@ -2450,6 +2476,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       gen1AttackerLevel: gen1AttackerLevel(user),
       rng,
     });
+    const result = effectKind === "damage" && affects !== "mp" ? redirectDamageToMp(target, hpBefore, rawResult) : rawResult;
     const timelineKind: BattleTimelineEntrySnapshot["kind"] = !result.hit
       ? "miss"
       : effectKind === "healing" || result.amount < 0

@@ -705,6 +705,8 @@ export interface StateRuntimeEffects {
   elementRates?: Record<string, ActorRateGrade>;
   /** 석화처럼 전투 불능으로 친다 — 아군 전원이 쓰러졌거나 이 상태면 패배. 이 상태로는 행동하지 못한다. */
   incapacitates?: boolean;
+  /** 받는 HP 피해 중 이 비율(0~1)을 MP 에서 대신 깎는다(MP 가 모자라면 남은 만큼만). */
+  damageToMpRate?: number;
 }
 
 export interface BattleAnimationRecord {
