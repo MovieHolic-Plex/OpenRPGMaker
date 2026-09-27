@@ -200,6 +200,8 @@ export interface DatabaseTerrainRecord {
   footstepSoundResourceId?: string;
   characterDisplay: DatabaseTerrainCharacterDisplay;
   vehiclePassage: DatabaseTerrainVehiclePassage;
+  /** 옆보기 맵(GameMap.sideView)에서 사다리·밧줄처럼 오를 수 있는 칸. 없으면 false. */
+  climbable?: boolean;
 }
 
 export interface DatabaseBattleCommandRecord {
@@ -1553,6 +1555,8 @@ export interface ActionCombatHudConfig {
 
 export interface SystemActionCombat {
   enabled: boolean;
+  /** true 면 따라오는 파티 동료가 가까운 적을 스스로 때리고, V 키로 조작 캐릭터(선두)를 바꾼다. 없으면 꺼짐. */
+  allies?: boolean;
   /** 플레이어 피격 무적시간. 기본 800ms. */
   playerIframesMs?: number;
   /** 공격 스윙 쿨다운. 기본 350ms. */

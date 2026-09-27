@@ -388,6 +388,31 @@ export function setMapRole(mapId: MapId, role: import("@/project/types").MapRole
   }, { scope: "map", mapId });
 }
 
+/** 옆보기(횡스크롤) 설정. enabled=false 면 네 필드를 모두 지워 탑다운으로 돌아간다. */
+export function setMapSideView(
+  mapId: MapId,
+  patch: { enabled?: boolean; jumpTiles?: number; fallTiles?: number; fallDamage?: number },
+): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (patch.enabled === false) {
+      delete map.sideView;
+      delete map.sideViewJumpTiles;
+      delete map.sideViewFallTiles;
+      delete map.sideViewFallDamage;
+      return;
+    }
+    if (patch.enabled === true) map.sideView = true;
+    const whole = (value: number | undefined): number | undefined =>
+      value === undefined || !Number.isFinite(value) ? undefined : Math.max(0, Math.trunc(value));
+    if ("jumpTiles" in patch) { const v = whole(patch.jumpTiles); if (v === undefined) delete map.sideViewJumpTiles; else map.sideViewJumpTiles = v; }
+    if ("fallTiles" in patch) { const v = whole(patch.fallTiles); if (v === undefined) delete map.sideViewFallTiles; else map.sideViewFallTiles = v; }
+    if ("fallDamage" in patch) { const v = whole(patch.fallDamage); if (v === undefined) delete map.sideViewFallDamage; else map.sideViewFallDamage = v; }
+  }, { scope: "map", mapId });
+}
+
 export function setMapLoop(mapId: MapId, loop: import("@/project/mapLoop").MapLoop | undefined): void {
   if (!allowMapMutation(mapId)) return;
   store.update((p) => {

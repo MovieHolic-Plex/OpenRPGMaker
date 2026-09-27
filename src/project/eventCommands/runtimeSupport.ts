@@ -135,7 +135,7 @@ export function commandRuntimeSupportDescriptor(
       case "giveMonster": case "evolveMonster": case "openChest": case "advanceTime":
       case "setTime": case "sleepUntilMorning": case "craftRecipe": case "applyItemUpgrade":
       case "equipTool": case "changeLifeSkillExp": case "moveMonster": case "openSaveMenu":
-      case "spawnFieldEnemy": case "despawnFieldEnemy": case "advanceCropGrowth": case "runControl":
+      case "spawnFieldEnemy": case "despawnFieldEnemy": case "tacticsBattle": case "advanceCropGrowth": case "runControl":
       case "playMovie":
         return limited("not-executed-in-context", "전투에서 실행 안 됨", "이 명령의 효과는 전투 이벤트에서 실행되지 않습니다. 맵·공통 이벤트에서 사용할 때의 지원 범위를 확인하세요.");
     }

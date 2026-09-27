@@ -297,6 +297,14 @@ function validateCommandShape(label: string, value: unknown): void {
     case "despawnFieldEnemy":
       requireString(`${label}.spawnId`, command.spawnId);
       return;
+    case "tacticsBattle":
+      requireString(`${label}.troopId`, command.troopId);
+      if (command.width !== undefined) requireNumber(`${label}.width`, command.width);
+      if (command.height !== undefined) requireNumber(`${label}.height`, command.height);
+      if (command.canLose !== undefined) requireBoolean(`${label}.canLose`, command.canLose);
+      if (command.victoryBranch !== undefined) validateCommandArray(`${label}.victoryBranch`, command.victoryBranch);
+      if (command.defeatBranch !== undefined) validateCommandArray(`${label}.defeatBranch`, command.defeatBranch);
+      return;
     case "runControl": {
       const action = requireString(`${label}.action`, command.action);
       if (action === "start") {

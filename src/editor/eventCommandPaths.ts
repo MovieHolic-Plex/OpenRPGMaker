@@ -127,6 +127,18 @@ function resolveCommandBranch(
       return resolveEvolveMonsterBranch(command, branchIndex, missingBranchMode(options));
     case "battleProcessing":
       return resolveBattleProcessingBranch(command, branchIndex, missingBranchMode(options));
+    case "tacticsBattle": {
+      const mode = missingBranchMode(options);
+      if (branchIndex === BATTLE_VICTORY_BRANCH_INDEX) {
+        if (!command.victoryBranch && mode === "create") command.victoryBranch = [];
+        return command.victoryBranch ?? null;
+      }
+      if (branchIndex === BATTLE_DEFEAT_BRANCH_INDEX) {
+        if (!command.defeatBranch && mode === "create") command.defeatBranch = [];
+        return command.defeatBranch ?? null;
+      }
+      return null;
+    }
     default:
       return null;
   }

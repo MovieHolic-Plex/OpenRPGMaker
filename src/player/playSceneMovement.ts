@@ -56,6 +56,7 @@ import { tryActionCombatSwing, tryActionSkillCast, updateActionSkillCharge } fro
 import { applyBattleDefeat } from "@/player/playSceneDefeat";
 import { boardedVehicleId, vehicleCanEnter, vehicleSpeedFactor } from "@/project/vehicles";
 import { tryBoardVehicle, tryGetOffVehicle } from "@/player/playSceneVehicles";
+import { applySideViewLanding, isSideViewMap, planSideViewTick, resolveSideViewSettings, sideViewGridFor, sideViewStateFor } from "@/player/sideViewPhysics";
 
 type ActionEventSceneContext = Pick<
   PlaySceneContext,
@@ -191,6 +192,7 @@ function tickPlayerMovement(scene: PlaySceneContext, input: InputState, cutscene
   if (!scene.moving && !scene.playerHop) {
     // 주인공 강제 이동 루트가 있으면 입력보다 우선해 자동으로 걷는다.
     if (scene.playerRoute) advancePlayerRoute(scene);
+    else if (isSideViewMap(scene.map) && !boardedVehicleId(scene.session)) tickSideView(scene, cutsceneInputLocked ? { x: 0, y: 0 } : input);
     else if (!cutsceneInputLocked && (input.x !== 0 || input.y !== 0)) tryStartMove(scene, input);
   }
   if (scene.moving) {
@@ -204,6 +206,33 @@ function tickPlayerMovement(scene: PlaySceneContext, input: InputState, cutscene
     scene.walkFrame = 0;
     scene.walkTimer = 0;
   }
+}
+
+/**
+ * 옆보기 맵의 멈춘 틱: 중력·점프·사다리를 판정해 한 칸 걸음을 시작한다(sideViewPhysics).
+ * 입력이 없어도 돈다 — 발밑이 비면 저절로 떨어져야 하기 때문이다.
+ */
+function tickSideView(scene: PlaySceneContext, input: { readonly x: number; readonly y: number }): void {
+  const project = store.getCurrent();
+  const settings = resolveSideViewSettings(scene.map);
+  const state = sideViewStateFor(scene, scene.map.id);
+  const plan = planSideViewTick(sideViewGridFor(project, scene.map), scene.tileX, scene.tileY, state, input, settings);
+  if (plan.landedFallTiles !== undefined) {
+    const landing = applySideViewLanding(project, scene.session, plan.landedFallTiles, settings);
+    if (landing.defeated) { applyBattleDefeat(scene, "높은 곳에서 떨어져 쓰러졌습니다."); return; }
+  }
+  if (plan.dx !== 0) scene.facing = plan.dx > 0 ? "right" : "left";
+  else if (plan.kind === "climb") scene.facing = plan.dy < 0 ? "up" : "down";
+  if (plan.kind === "none") return;
+  const nx = scene.tileX + plan.dx;
+  const ny = scene.tileY + plan.dy;
+  if (plan.kind === "walk") {
+    const blockingEvent = findBlockingEventForPlayerBody(scene, resolvePlayerBody(project, scene.session), nx, ny);
+    if (blockingEvent) { firePlayerTouchEvent(scene, blockingEvent.event.id, blockingEvent.trigger.kind); return; }
+  }
+  scene.dashing = false;
+  beginPlayerStep(scene, nx, ny);
+  scene.lastActionTargetKey = "";
 }
 
 function advancePlayerStepFrame(scene: PlaySceneContext): void {

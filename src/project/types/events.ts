@@ -550,6 +550,22 @@ export type Command =
     }
   | { kind: "checkpointSave"; label?: string }
   | { kind: "openSaveMenu" }
+  | {
+      /**
+       * 전술(격자) 전투. 파티와 적 그룹을 작은 격자 양 끝에 세우고 이동력(칸) 안 이동 + 인접 공격을
+       * 번갈아 하다 한쪽이 전멸하면 끝난다. 결과는 세션 battleResult 와 victoryBranch/defeatBranch 로 이어진다.
+       * canLose=false 인데 지면 게임 오버. player/tacticsBattle.ts.
+       */
+      kind: "tacticsBattle";
+      troopId: TroopId;
+      /** 격자 가로 칸 수. 없으면 8. */
+      width?: number;
+      /** 격자 세로 칸 수. 없으면 6. */
+      height?: number;
+      canLose?: boolean;
+      victoryBranch?: Command[];
+      defeatBranch?: Command[];
+    }
   | { kind: "spawnFieldEnemy"; spawn: FieldSpawnDef }
   | { kind: "despawnFieldEnemy"; spawnId: string }
   | {

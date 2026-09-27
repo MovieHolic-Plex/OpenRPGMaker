@@ -756,6 +756,14 @@ export function executeCommand(
       return pause("spawnFieldEnemy", { kind: "spawnFieldEnemy", spawn: command.spawn });
     case "despawnFieldEnemy":
       return pause("despawnFieldEnemy", { kind: "despawnFieldEnemy", spawnId: command.spawnId });
+    case "tacticsBattle":
+      return pause("tacticsBattle", {
+        kind: "tacticsBattle",
+        troopId: command.troopId,
+        width: command.width,
+        height: command.height,
+        canLose: command.canLose === true,
+      });
     case "runControl": {
       switch (command.action) {
         case "start": {

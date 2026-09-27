@@ -377,6 +377,9 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       return true;
     case "despawnFieldEnemy":
       return true;
+    case "tacticsBattle":
+      // 격자 전투는 플레이어 입력을 쥐는 화면이다 — 병렬 이벤트는 isParallelBlockingStep 으로 건너뛴다.
+      return false;
     case "shop":
       scene.showRuntimeOverlay("shop-scene", commerceOverlayText(step));
       return true;
@@ -421,6 +424,7 @@ function isParallelBlockingStep(step: StepResult): boolean {
     step.kind === "text" ||
     step.kind === "choices" ||
     step.kind === "presentItem" ||
+    step.kind === "tacticsBattle" ||
     step.kind === "inputWait" ||
     step.kind === "inputNumber" ||
     step.kind === "enterHeroName" ||

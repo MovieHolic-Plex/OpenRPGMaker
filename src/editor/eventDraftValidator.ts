@@ -1218,6 +1218,7 @@ function validateCommand(
     case "checkpointSave":
     case "openSaveMenu":
     case "despawnFieldEnemy":
+    case "tacticsBattle":
     case "runControl":
     case "ending":
     case "returnToTitle":

@@ -116,6 +116,14 @@ export function advanceResume(
       state.session.variables[command.variableId] = typeof value === "number" ? value : 0;
     }
     frame.pc += 1;
+  } else if (pending === "tacticsBattle") {
+    const command = frame.commands[frame.pc];
+    if (command?.kind === "tacticsBattle") {
+      const result = typeof value === "string" ? value : state.session.battleResult;
+      const branch = result === "victory" ? command.victoryBranch : result === "defeat" ? command.defeatBranch : undefined;
+      if (branch?.length && pushFrame(state, branch)) return "continue";
+    }
+    frame.pc += 1;
   } else if (pending === "battleProcessing") {
     const command = frame.commands[frame.pc];
     if (command?.kind === "battleProcessing" && command.branchOnResult === true) {

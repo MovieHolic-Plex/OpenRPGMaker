@@ -82,6 +82,7 @@ import {
   type ActionEnemyState,
 } from "@/player/actionCombatTypes";
 import { mountActionHud } from "@/player/actionHud";
+import { updateActionAlliesForScene } from "@/player/actionAllies";
 import type { ActionCombatObservation, ActionCombatOutcome } from "@/testing/actionCombatProof";
 
 const combatObservers = new WeakMap<PlaySceneContext, Set<(entry: ActionCombatObservation) => void>>();
@@ -210,6 +211,8 @@ export function updateActionCombatForScene(scene: PlaySceneContext, deltaMs: num
   syncActionEnemiesForScene(scene);
   // 슬롯 순환 엣지는 이동/조사 경로가 아니라 여기서 바로 소모한다.
   if (scene.input_.consumeSkillCycleEdge()) cycleActionSkillSlotForScene(scene, state);
+  updateActionAlliesForScene(scene, state, deltaMs, (id) => enemyFractionalTilePosition(scene, id),
+    (enemy, damage, x, y) => hitActionEnemy(scene, state, enemy, damage, x, y));
   updatePlayerGuard(scene, state, deltaMs);
   tickActionTimers(scene, state, deltaMs);
   updatePlayerDodge(scene, state, deltaMs);

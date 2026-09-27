@@ -38,6 +38,9 @@ function walkCommands(commands: readonly Command[], visit: (command: Command) =>
       walkCommands(command.victoryBranch ?? [], visit);
       walkCommands(command.defeatBranch ?? [], visit);
       walkCommands(command.escapeBranch ?? [], visit);
+    } else if (command.kind === "tacticsBattle") {
+      walkCommands(command.victoryBranch ?? [], visit);
+      walkCommands(command.defeatBranch ?? [], visit);
     } else if (command.kind === "promoteActor" || command.kind === "evolveMonster") {
       walkCommands(command.successBranch ?? [], visit);
       walkCommands(command.failureBranch ?? [], visit);
@@ -112,6 +115,7 @@ function addCommandRefs(command: Command, refs: ReferenceSets): void {
       if (typeof command.amount === "object" && command.amount.kind === "var") refs.variables.add(command.amount.id);
       break;
     case "battleProcessing":
+    case "tacticsBattle":
       refs.troops.add(command.troopId);
       break;
     case "spawnFieldEnemy":

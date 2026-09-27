@@ -35,6 +35,7 @@ const EXPECTED_COMMAND_KINDS = [
   "changeLifeSkillExp",
   "spawnFieldEnemy",
   "despawnFieldEnemy",
+  "tacticsBattle",
   "changeLevel",
   "promoteActor",
   "changeEquipment",

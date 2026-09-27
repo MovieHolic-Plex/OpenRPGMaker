@@ -95,6 +95,7 @@ export type StepResult =
     }
   | { kind: "spawnFieldEnemy"; spawn: FieldSpawnDef }
   | { kind: "despawnFieldEnemy"; spawnId: string }
+  | { kind: "tacticsBattle"; troopId: string; width?: number; height?: number; canLose: boolean }
   | { kind: "setEventGraphicPattern"; eventId: string; pattern: number }
   | {
       kind: "battleProcessing";

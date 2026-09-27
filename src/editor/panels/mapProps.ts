@@ -4,7 +4,7 @@ import { guessMapRole, type MapRole } from "@/ai/mapPlacementContext";
 import { selectField as climateSelectField } from "@/editor/panels/databaseControls";
 import {
   resizeMap, renameMap, setMapEncounterRate, setMapEncounterTable, setMapFieldSpawns, setMapTileset,
-  setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags, setMapLoop, setMapMinimap, setMapRole,
+  setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags, setMapLoop, setMapSideView, setMapMinimap, setMapRole,
   setMapCloudShadows, setMapClimate,
 } from "@/editor/actions";
 import { appendGroupedTilesetOptions } from "@/editor/tilesetSelectOptions";
@@ -719,6 +719,17 @@ function renderRestrictionsTab(host: HTMLElement, map: import("@/project/types")
   section.append(makeCheck("도주 금지", "map-disable-escape", Boolean(map.disableEscape), (v) => {
     setMapFlags(map.id, { disableSave: store.getCurrent().maps[map.id]?.disableSave, disableTeleport: store.getCurrent().maps[map.id]?.disableTeleport, disableEscape: v });
   }));
+  section.append(makeCheck("옆에서 보기(중력·점프·사다리)", "map-side-view", map.sideView === true, (v) => {
+    setMapSideView(map.id, { enabled: v });
+  }));
+  // 숫자는 옆보기를 켠 뒤에만 의미가 있다 — 비워 두면 기본값(점프 2칸, 4칸 초과 낙하부터 칸당 10).
+  const sideGrid = el("div", { class: "map-encounter-cond-grid", dataset: { testid: "map-side-view-settings" } });
+  sideGrid.append(
+    numberField("점프 높이(칸)", "map-side-view-jump", map.sideViewJumpTiles, (value) => setMapSideView(map.id, { jumpTiles: value })),
+    numberField("낙하 피해 시작(칸 초과)", "map-side-view-fall-tiles", map.sideViewFallTiles, (value) => setMapSideView(map.id, { fallTiles: value })),
+    numberField("칸당 낙하 피해", "map-side-view-fall-damage", map.sideViewFallDamage, (value) => setMapSideView(map.id, { fallDamage: value })),
+  );
+  section.append(sideGrid);
   const loopSelect = el("select", { dataset: { testid: "map-loop" } }) as HTMLSelectElement;
   for (const value of ["", ...MAP_LOOP_VALUES] as const) {
     const option = el("option", { text: mapLoopLabel(value || undefined) }) as HTMLOptionElement;
