@@ -176,6 +176,8 @@ function commandReferences(command: Command, collection: CommandReferenceCollect
         commandListReferences(command.failureBranch ?? [], collection, id);
     case "giveMonster":
       return collection === "monsterSpecies" && command.speciesId === id;
+    case "tradeMonster":
+      return collection === "monsterSpecies" && (command.fromSpeciesId === id || command.toSpeciesId === id);
     case "evolveMonster":
       return (collection === "monsterSpecies" && command.toSpeciesId === id) ||
         commandListReferences(command.successBranch ?? [], collection, id) ||

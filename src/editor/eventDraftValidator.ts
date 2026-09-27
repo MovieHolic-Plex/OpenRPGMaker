@@ -216,6 +216,7 @@ function referenceSets(project: Project, mapId: MapId, host: GameEvent) {
     skills: new Set(project.database.skills.map((entry) => entry.id)),
     states: new Set((project.database.states ?? []).map((entry) => entry.id)),
     species: new Set((project.database.monsterSpecies ?? []).map((entry) => entry.id)),
+    difficulties: new Set((project.system.difficulties ?? []).map((entry) => entry.id)),
     switches: new Set(project.switches.map((entry) => entry.id)),
     troops: new Set(project.database.troops.map((entry) => entry.id)),
     upgrades: new Set((project.system.itemUpgrades ?? []).map((entry) => entry.id)),
@@ -699,6 +700,12 @@ function validateCondition(
         });
       }
       return;
+    case "difficulty":
+      requireReference(issues, pageId, "reference.difficulty.missing", "난이도", condition.difficultyId, refs.difficulties, { testId: "event-condition-difficulty" }, commandPath);
+      return;
+    case "itemUsed":
+      requireReference(issues, pageId, "reference.item.missing", "사용한 아이템", condition.itemId, refs.items, { testId: "event-condition-item-used" }, commandPath);
+      return;
   }
   const exhaustive: never = condition;
   void exhaustive;
@@ -1097,6 +1104,11 @@ function validateCommand(
       return;
     case "giveMonster": require("reference.species.missing", "몬스터 종", command.speciesId, refs.species); return;
     case "evolveMonster": require("reference.species.missing", "진화 대상 종", command.toSpeciesId, refs.species, true); return;
+    case "tradeMonster":
+      require("reference.species.missing", "내줄 몬스터 종", command.fromSpeciesId, refs.species);
+      require("reference.species.missing", "받을 몬스터 종", command.toSpeciesId, refs.species);
+      return;
+    case "setDifficulty": require("reference.difficulty.missing", "난이도", command.difficultyId, refs.difficulties); return;
     case "addFollower":
       require("reference.actor.missing", "동료 배우", command.actorId, refs.actors, true);
       require("reference.resource.missing", "동료 그래픽", command.graphic?.sprite?.id, refs.resources, true);
@@ -1224,6 +1236,10 @@ function validateCommand(
     case "returnToTitle":
     case "setFlag":
     case "setSelfSwitch":
+    case "storeParty":
+    case "recallParty":
+    case "removeMonster":
+    case "fuseMonsters":
       return;
   }
   const exhaustive: never = command;

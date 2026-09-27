@@ -1,5 +1,6 @@
 import { actorQueryConditionSummary } from "./actorQueryConditionForm";
 import { el } from "@/util/dom";
+import { difficultyDisplayName } from "@/project/difficulty";
 import { evalCondition } from "@/project/session";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes";
 import { editorState } from "@/editor/editorState";
@@ -200,6 +201,10 @@ function describeCondition(condition: Condition | undefined): string {
     case "weekday":
     case "stringVariable":
       return actorQueryConditionSummary(condition);
+    case "difficulty":
+      return `난이도가 ${difficultyDisplayName(store.getCurrent().system, condition.difficultyId)}일 때`;
+    case "itemUsed":
+      return `${databaseRecordName("items", condition.itemId)}을(를) 이 이벤트에 사용했을 때`;
     case "all":
       return `(${condition.conditions.map(describeCondition).join(", ") || "조건 없음"}) 모두 맞을 때`;
     case "any":

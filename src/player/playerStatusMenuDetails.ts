@@ -7,6 +7,8 @@ import { createGrowthMenu, growthMenuTabs } from "@/player/playerGrowthMenu";
 import { canUseMenuItemOnActor } from "@/player/playerItemUse";
 import { activeItemEffects, itemAllowsMenu } from "@/project/itemUsage";
 import { actorOwnedSkillIds } from '@/project/growth/runtime';
+import { canCraft, combinationPartnersOf, combinationRecipeFor } from "@/project/craftRecipes";
+import { actorLoadoutSlots, equippedBattleSkillIds } from "@/project/skillLoadout";
 import { actorDerivedStats } from '@/battle/battleBattlers';
 import { menuItemUnavailableReason, previewMenuItemTarget } from "@/player/playerItemUse";
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
@@ -132,8 +134,77 @@ function toTitleDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   };
 }
 
+/**
+ * 아이템 «다른 행동» 화면 — 바라보는 대상에 사용 + 가진 아이템과 조합. 둘 다 없으면 이 화면으로 들어오지 않는다.
+ */
+function itemActionDetail(options: StatusMenuDetailOptions, itemId: string): StatusMenuDetail {
+  const { project, session } = options;
+  const authored = project.database.items.find((record) => record.id === itemId);
+  const item = authored ? activeItemEffects(authored) : undefined;
+  const entries: StatusMenuDetailEntry[] = [];
+  if (item && itemAllowsMenu(item)) {
+    const needsTarget = item.type !== "switch" && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile));
+    entries.push({
+      label: "사용",
+      value: "",
+      unavailableReason: menuItemUnavailableReason(item),
+      testId: `status-menu-item-use-${itemId}`,
+      onActivate: needsTarget && options.onSelectItemTarget
+        ? () => options.onSelectItemTarget?.(itemId)
+        : options.onUseItem ? () => options.onUseItem?.(itemId) : undefined,
+    });
+  }
+  if (options.canUseItemOnFacedTarget?.(itemId)) {
+    entries.push({
+      label: "바라보는 대상에 사용",
+      value: "",
+      description: "주인공이 바라보는 대상에게 이 아이템을 씁니다.",
+      testId: `status-menu-item-use-target-${itemId}`,
+      onActivate: options.onUseItemOnFacedTarget ? () => options.onUseItemOnFacedTarget?.(itemId) : undefined,
+    });
+  }
+  for (const partnerId of itemCombinationPartners(project, session, itemId)) {
+    const partner = project.database.items.find((record) => record.id === partnerId);
+    const recipe = combinationRecipeFor(project, itemId, partnerId);
+    const output = recipe ? project.database.items.find((record) => record.id === recipe.outputItemId) : undefined;
+    const check = recipe ? canCraft(project, session, recipe.id) : undefined;
+    entries.push({
+      label: `${partner?.name ?? partnerId}와(과) 조합`,
+      value: output ? `→ ${output.name}` : "",
+      description: recipe?.name ?? "두 아이템을 합쳐 새 아이템을 만듭니다.",
+      unavailableReason: check && !check.ok ? combinationFailureText(check.reason) : undefined,
+      testId: `status-menu-item-combine-${itemId}-${partnerId}`,
+      onActivate: options.onCombineItems ? () => options.onCombineItems?.(itemId, partnerId) : undefined,
+    });
+  }
+  return {
+    title: `${item?.name ?? itemId} · 다른 행동`,
+    entries,
+    emptyLabel: "할 수 있는 행동이 없습니다",
+    hint: "Enter 실행 · Esc 아이템 목록",
+  };
+}
+
+/** 가진 아이템 중 조합 상대(같은 아이템끼리는 2개 이상 있을 때만). */
+export function itemCombinationPartners(project: StatusMenuDetailOptions["project"], session: PlaySession, itemId: string): string[] {
+  return combinationPartnersOf(project, itemId).filter((partnerId) =>
+    partnerId === itemId ? (session.inventory[itemId] ?? 0) >= 2 : (session.inventory[partnerId] ?? 0) > 0,
+  );
+}
+
+function combinationFailureText(reason: string): string {
+  switch (reason) {
+    case "locked": return "아직 배우지 않은 조합입니다";
+    case "missing-gold": return "소지금이 부족합니다";
+    case "missing-ingredients": return "재료가 부족합니다";
+    case "inventory-overflow": return "더 가질 수 없습니다";
+    default: return "조합할 수 없습니다";
+  }
+}
+
 function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const { project, session } = options;
+  if (options.itemActionId) return itemActionDetail(options, options.itemActionId);
   if (options.targetItemId) {
     const authoredItem = project.database.items.find((record) => record.id === options.targetItemId);
     if (!authoredItem) return { title: "대상 선택", entries: [], emptyLabel: "아이템을 찾을 수 없습니다" };
@@ -187,6 +258,21 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const itemEntries = project.database.items.filter((item) => inventory.has(item.id)).map((authored) => {
     const item = activeItemEffects(authored);
     const needsTarget = item.type !== "switch" && itemAllowsMenu(item) && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile));
+    // 조합할 짝이 있거나 바라보는 대상이 받는 아이템은 «행동 고르기» 화면으로 간다. 그 화면 첫 줄이 평소 「사용」이다.
+    const hasOtherActions = Boolean(options.onOpenItemActions)
+      && (itemCombinationPartners(project, session, item.id).length > 0 || options.canUseItemOnFacedTarget?.(item.id) === true);
+    if (hasOtherActions) {
+      return {
+        label: item.name,
+        icon: itemEntryIcon(item),
+        value: `${inventory.get(item.id) ?? 0}개`,
+        description: item.description,
+        facts: itemFacts(project, session, item),
+        testId: `status-menu-item-${item.id}`,
+        attributes: { itemActions: "true" },
+        onActivate: () => options.onOpenItemActions?.(item.id),
+      };
+    }
     return {
       label: item.name,
       icon: itemEntryIcon(item),
@@ -258,6 +344,28 @@ function skillDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
     if (!actor) return { title: "스킬", entries: [], emptyLabel: "파티원을 찾을 수 없습니다" };
     if (options.growthTab && options.growthTab !== "skills") return createGrowthMenu(options);
     const skills = learnedSkills(project, session, actor);
+    const slots = actorLoadoutSlots(actor);
+    if (slots !== undefined) {
+      // 장착 칸이 있는 배우: 행을 고르면 장착/해제. 전투는 장착한 스킬만 쓴다(project/skillLoadout.ts).
+      const equipped = new Set(equippedBattleSkillIds(actor, skills.map((skill) => skill.id), session.actorSkillLoadouts?.[actor.id]));
+      return {
+        title: `스킬 장착: ${actor.name} (${equipped.size}/${slots})`,
+        tabs: project.growth || project.database.classes.some(c => c.promotions?.length) ? growthMenuTabs(options) : undefined,
+        entries: skills.map((skill) => ({
+          label: `${equipped.has(skill.id) ? "● " : "○ "}${skill.name}`,
+          icon: skillEntryIcon(project, skill),
+          value: equipped.has(skill.id) ? "장착" : `MP ${skill.mpCost.flat}`,
+          description: `${skill.description || skillKindLabel(skill)} / 위력 ${skill.power} / 성공 ${skill.successRate}%`,
+          testId: `status-menu-skill-${actor.id}-${skill.id}`,
+          attributes: { loadoutEquipped: equipped.has(skill.id) ? "true" : "false" },
+          onActivate: options.onToggleSkillLoadout
+            ? () => options.onToggleSkillLoadout?.(actor.id, skill.id)
+            : options.onSelectSkill ? () => options.onSelectSkill?.(skill.id) : undefined,
+        })),
+        emptyLabel: "배운 스킬이 없습니다",
+        hint: `Enter 장착/해제 · 전투에서는 장착한 스킬 ${slots}개까지만 씁니다.`,
+      };
+    }
     return {
       title: `스킬: ${actor.name}`,
       tabs: project.growth || project.database.classes.some(c => c.promotions?.length) ? growthMenuTabs(options) : undefined,

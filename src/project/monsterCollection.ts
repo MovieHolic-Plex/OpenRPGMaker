@@ -575,7 +575,15 @@ export function ensureMonsterSessionFields(session: PlaySession): void {
 }
 
 function nextMonsterInstanceId(session: PlaySession): string {
+  // 개체 수 + 1 에서 시작하면, 놓아주기·교환·합성으로 지운 뒤 방금 지운 id 를 다시 쓴다 — 그 id 를 가리키던
+  // 이벤트 명령이 엉뚱한 새 개체를 건드린다. 지금까지 쓴 가장 큰 번호 다음부터 센다(지운 것이 없으면 예전과 같다).
   let index = Object.keys(session.monsterInstances).length + 1;
+  for (const id of Object.keys(session.monsterInstances)) {
+    const match = /^monster_(\d+)$/.exec(id);
+    if (match) index = Math.max(index, Number(match[1]) + 1);
+  }
+  const retired = session.retiredMonsterInstanceSeq ?? 0;
+  if (retired >= index) index = retired + 1;
   while (session.monsterInstances[`monster_${index}`]) index += 1;
   return `monster_${index}`;
 }

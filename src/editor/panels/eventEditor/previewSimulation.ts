@@ -284,6 +284,8 @@ function conditionNeedsUnsimulatedState(condition: Condition): boolean {
     case "newGamePlus":
     case "weekday":
     case "stringVariable":
+    case "difficulty":
+    case "itemUsed":
       return true;
     case "all":
     case "any":

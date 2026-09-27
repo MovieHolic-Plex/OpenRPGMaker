@@ -111,6 +111,22 @@ export async function runEvent(scene: PlaySceneContext, eventId: string): Promis
   }
 }
 
+/**
+ * 메뉴 «바라보는 대상에 사용»: 아이템 사용 페이지(itemUsed 조건)의 명령을 그 이벤트 소유로 실행한다.
+ * 실행하는 동안 session.itemUsedId 가 남아 있어 페이지 안의 조건 분기도 같은 아이템을 본다.
+ */
+export async function runItemUsePage(scene: PlaySceneContext, eventId: string, commands: readonly Command[], itemId: string): Promise<void> {
+  if (scene.running) return;
+  const session = scene.session;
+  session.itemUsedId = itemId;
+  try {
+    await runCommands(scene, commands, eventId);
+  } finally {
+    if (session.itemUsedId === itemId) delete session.itemUsedId;
+    scene.refreshRuntimeSurfaces();
+  }
+}
+
 async function runGiftSelection(scene: PlaySceneContext, event: CommandSourceEvent): Promise<void> {
   const activeSession = scene.session;
   const previousRunning = scene.running;

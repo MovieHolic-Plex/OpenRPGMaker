@@ -516,6 +516,10 @@ function identityPanel(actor: ActorRecord, refreshBuildPreview: () => void): HTM
         }),
       ],
     }),
+    // 스킬 장착 칸 — 0 이면 장착 개념 없이 배운 스킬 전부를 전투에서 쓴다(기존 동작).
+    numberControl("스킬 장착 칸(0 = 제한 없음)", "db-field-actor-loadout-slots", actor.loadoutSlots ?? 0, (value) => {
+      updateDatabaseRecord("actors", actor.id, { loadoutSlots: value > 0 ? value : undefined });
+    }),
   ]);
 }
 

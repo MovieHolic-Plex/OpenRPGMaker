@@ -167,6 +167,10 @@ export interface BattleSessionState {
   /** 배우별 누적 기술 포인트(TP). 승리 후 TP 습득 미리보기의 기준. */
   readonly actorTechPoints?: Readonly<Record<string, number>>;
   readonly actorBattleCommands?: Readonly<Record<string, readonly string[]>>;
+  /** 현재 난이도 id — 적 HP/공격력·보상 배율(project/difficulty.ts). 생략 = 기본 난이도. */
+  readonly difficultyId?: string;
+  /** 배우별 장착 스킬(ActorRecord.loadoutSlots). 있으면 그 배우는 전투에서 장착 스킬만 쓴다. */
+  readonly actorSkillLoadouts?: Readonly<Record<string, readonly string[]>>;
   // 레거시 호환 플래그(setFlag 커맨드 기준 상태).
   readonly flags?: Readonly<Record<string, boolean>>;
   // 타이머 잔여 초(timer 커맨드/timer 조건 기준 상태).

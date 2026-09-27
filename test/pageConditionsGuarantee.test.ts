@@ -116,6 +116,10 @@ function sampleCondition(kind: (typeof CONDITION_KINDS)[number]): EventPageCondi
       return { kind: "battleResult", result: "victory" };
     case "run":
       return { kind: "run", query: "floor", op: ">=", value: 3 };
+    case "difficulty":
+      return { kind: "difficulty", difficultyId: "normal" };
+    case "itemUsed":
+      return { kind: "itemUsed", itemId: DEFAULT_ITEM_ID };
     case "all":
       return {
         kind: "all",
@@ -401,6 +405,8 @@ describe("page conditions working guarantee (all kinds)", () => {
       relationships: { ev_runtime: "dating" as const },
       battleResult: "victory" as const,
       roguelikeRun: RUN_STATE,
+      difficultyId: "normal",
+      itemUsedId: DEFAULT_ITEM_ID,
     };
     event.characterId = "ev_runtime";
     // fill variable id from actual sample
@@ -458,6 +464,8 @@ describe("page conditions working guarantee (all kinds)", () => {
         relationships: {} as Record<string, RelationshipState>,
         battleResult: undefined as undefined | "victory" | "defeat" | "escape",
         roguelikeRun: undefined as undefined | RoguelikeRunState,
+        difficultyId: undefined as string | undefined,
+        itemUsedId: undefined as string | undefined,
         x: undefined as number | undefined,
         y: undefined as number | undefined,
       };
@@ -551,6 +559,12 @@ describe("page conditions working guarantee (all kinds)", () => {
           break;
         case "run":
           pass.roguelikeRun = RUN_STATE;
+          break;
+        case "difficulty":
+          pass.difficultyId = condition.difficultyId;
+          break;
+        case "itemUsed":
+          pass.itemUsedId = condition.itemId;
           break;
         case "insideLocation":
           pass.x = 1;

@@ -52,6 +52,11 @@ export interface ActorRecord {
   learnedSkills: ActorLearnedSkill[];
   stateRates: Record<string, ActorRateGrade>;
   elementRates: Record<string, ActorRateGrade>;
+  /**
+   * 스킬 장착 칸 수(1~12). 있으면 전투에서는 **장착한 스킬만** 쓸 수 있고, 메뉴 스킬 화면에서 장착을 바꾼다.
+   * 생략 = 장착 개념 없음(배운 스킬 전부 사용, 기존 동작).
+   */
+  loadoutSlots?: number;
 }
 
 export type ActorRateGrade = "A" | "B" | "C" | "D" | "E";
@@ -1304,6 +1309,30 @@ export interface TitleScreenSettings {
   logoShine?: TitleLogoShine;
   /** 새 게임 전환. 생략 = 기존 짧은 확인 연출(180ms)만. */
   transition?: TitleTransitionSettings;
+  /**
+   * 클리어·마지막 저장 상태에 따라 바뀌는 배경/음악. 위에서부터 처음 맞는 한 줄을 쓴다.
+   * 비어 있거나 맞는 줄이 없으면 기본 backgroundResourceId/musicResourceId 그대로다.
+   */
+  variants?: TitleScreenVariant[];
+  /** 켜면 저장이 있을 때 타이틀을 건너뛰고 가장 최근 저장(자동 저장 포함)으로 바로 이어한다. 생략 = 타이틀. */
+  resumeOnLaunch?: boolean;
+}
+
+/** 타이틀 변형의 조건 — 한 줄에 조건 하나. */
+export type TitleScreenVariantWhen =
+  /** 이 엔딩을 본 적이 있다(클리어 기록). */
+  | { readonly kind: "endingSeen"; readonly endingId: string }
+  /** 서로 다른 엔딩을 이만큼 이상 봤다. */
+  | { readonly kind: "clearCount"; readonly atLeast: number }
+  /** 가장 최근 저장이 이 맵에서 이뤄졌다. */
+  | { readonly kind: "saveMapId"; readonly mapId: string };
+
+export interface TitleScreenVariant {
+  readonly when: TitleScreenVariantWhen;
+  /** 생략 = 기본 배경 유지. */
+  readonly backgroundResourceId?: string;
+  /** 생략 = 기본 음악 유지. */
+  readonly musicResourceId?: string;
 }
 
 /** Project-authored logical viewport used by the map runtime and its DOM stage. */
@@ -1527,6 +1556,15 @@ export interface SystemRecords {
   weaknessExtraAction?: boolean;
   /** 감정 상성표: 공격자 감정 계열 → 대상 감정 계열 → 피해 배율. 생략 = 상성 없음. */
   emotionCycle?: EmotionCycleRule[];
+  /**
+   * 난이도 목록. 비어 있지 않으면 새 게임을 고를 때 난이도를 묻고(1개면 묻지 않는다), 적 HP/공격력·경험치·골드·
+   * 인카운트율에 배율을 곱한다. 이벤트 명령 setDifficulty 로 바꾸고 조건 difficulty 로 읽는다. 생략 = 난이도 없음.
+   */
+  difficulties?: DifficultyRecord[];
+  /** 새 게임의 난이도 id. 생략·무효면 목록 첫 줄. */
+  defaultDifficultyId?: string;
+  /** 몬스터 합성 표(fuseMonsters). 두 종의 순서는 따지지 않는다. */
+  monsterFusions?: MonsterFusionRecord[];
 }
 
 export interface BattleLimitGaugeConfig {
@@ -1567,6 +1605,23 @@ export interface EmotionCycleRule {
   attackerFamily: string;
   targetFamily: string;
   multiplier: number;
+}
+
+export interface DifficultyRecord {
+  id: string;
+  name: string;
+  /** 모든 배율은 1 = 그대로. 0.1~10 으로 자른다. */
+  enemyHpRate?: number;
+  enemyAttackRate?: number;
+  expRate?: number;
+  goldRate?: number;
+  encounterRate?: number;
+}
+
+export interface MonsterFusionRecord {
+  speciesA: MonsterSpeciesId;
+  speciesB: MonsterSpeciesId;
+  resultSpeciesId: MonsterSpeciesId;
 }
 
 export interface ActionCombatHudConfig {

@@ -281,6 +281,10 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
         if ("learnedSkills" in actorPatch && actorPatch.learnedSkills !== undefined) record.learnedSkills = actorPatch.learnedSkills;
         if ("stateRates" in actorPatch && actorPatch.stateRates !== undefined) record.stateRates = actorPatch.stateRates;
         if ("elementRates" in actorPatch && actorPatch.elementRates !== undefined) record.elementRates = actorPatch.elementRates;
+        if ("loadoutSlots" in actorPatch) {
+          if (actorPatch.loadoutSlots === undefined) delete record.loadoutSlots;
+          else record.loadoutSlots = actorPatch.loadoutSlots;
+        }
         Object.assign(record, normalizeActorRecord(record));
         return;
       }

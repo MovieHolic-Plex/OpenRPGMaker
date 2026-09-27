@@ -48,6 +48,9 @@ import { addFollowerToSession, removeFollowerFromSession, syncPartyFollowers } f
 import { addSessionLight, removeSessionLight, setSessionLighting } from "@/project/lightingRules";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
 import { evolveMonster, giveMonster, moveMonster } from "@/project/monsterCollection";
+import { fuseMonsters, removeMonster, tradeMonster } from "@/project/monsterTrade";
+import { recallPartySet, storePartySet } from "@/project/partySets";
+import { setSessionDifficulty } from "@/project/difficulty";
 import { advanceFarmPlotsForDay } from "@/player/farming";
 import { resolvePricedShopStock } from "@/project/shopPrice";
 import {
@@ -1029,6 +1032,39 @@ export function executeCommand(
     }
     case "m2Command":
       return executeM2Command(state, frame, command);
+    case "setDifficulty":
+      if (state.project) setSessionDifficulty(state.project.system, state.session, command.difficultyId);
+      return resumeNext(frame);
+    case "storeParty":
+      storePartySet(state.session as PlaySession, command.partySetId);
+      return resumeNext(frame);
+    case "recallParty": {
+      if (!state.project) return resumeNext(frame);
+      const recalled = recallPartySet(state.project, state.session as PlaySession, command.partySetId);
+      state.session.flags.recallPartySuccess = recalled.ok;
+      if (!recalled.ok) return resumeNext(frame);
+      syncPartyFollowers(state.project, state.session as PlaySession);
+      // 자리 이동은 transfer 가 소유한다 — 같은 맵이어도 플레이어 스프라이트를 옮기는 길은 이것뿐이다.
+      if (!recalled.moved) return resumeNext(frame);
+      return pause("transfer", { kind: "transfer", mapId: recalled.set.mapId, x: recalled.set.x, y: recalled.set.y });
+    }
+    case "removeMonster": {
+      const result = state.project ? removeMonster(state.project, state.session as PlaySession, command.instanceId) : { ok: false };
+      state.session.flags.removeMonsterSuccess = result.ok;
+      return resumeNext(frame);
+    }
+    case "tradeMonster": {
+      const result = state.project ? tradeMonster(state.project, state.session as PlaySession, command) : { ok: false };
+      state.session.flags.tradeMonsterSuccess = result.ok;
+      return resumeNext(frame);
+    }
+    case "fuseMonsters": {
+      const result = state.project
+        ? fuseMonsters(state.project, state.session as PlaySession, command.instanceIdA, command.instanceIdB)
+        : { ok: false };
+      state.session.flags.fuseMonstersSuccess = result.ok;
+      return resumeNext(frame);
+    }
     default:
       console.warn("[interpreter] 알 수 없는 command kind, 이벤트 중단");
       return { kind: "done" };

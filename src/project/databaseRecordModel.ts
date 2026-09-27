@@ -21,6 +21,9 @@ import { isFontFamilyId } from "@/project/fontRegistry";
 import { normalizeElementRecords, normalizeGlobalBattleCommands, normalizeTerrainRecords } from "@/project/databaseUtilityRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { normalizeTitleOpeningFields } from "@/project/titleEffects";
+import { normalizeDifficulties } from "@/project/difficulty";
+import { normalizeMonsterFusions } from "@/project/monsterTrade";
+import { normalizeTitleScreenVariants } from "@/project/titleVariants";
 import {
   DEFAULT_DAY_END_HOUR,
   DEFAULT_DAY_START_HOUR,
@@ -336,6 +339,19 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
       const monsterCare = normalizeMonsterCare(system.monsterCare);
       return monsterCare ? { monsterCare } : {};
     })(),
+    ...(() => {
+      const difficulties = normalizeDifficulties(system.difficulties);
+      if (!difficulties) return {};
+      const defaultDifficultyId = typeof system.defaultDifficultyId === "string" ? system.defaultDifficultyId.trim() : "";
+      return {
+        difficulties,
+        ...(difficulties.some((row) => row.id === defaultDifficultyId) ? { defaultDifficultyId } : {}),
+      };
+    })(),
+    ...(() => {
+      const monsterFusions = normalizeMonsterFusions(system.monsterFusions);
+      return monsterFusions ? { monsterFusions } : {};
+    })(),
     titleScreen: normalizeTitleScreenSettings(system.titleScreen, titleResourceId),
     ...(system.opening !== undefined ? { opening: normalizeCinematicSequence(system.opening) } : {}),
     ...(system.gameOver !== undefined ? { gameOver: normalizeGameOverSettings(system.gameOver) } : {}),
@@ -444,6 +460,11 @@ function normalizeTitleScreenSettings(
     ...(intro ? { intro } : {}),
     // 오프닝 확장(맞춤·렌더링·영역 효과·로고/메뉴 스타일)도 omit-when-empty.
     ...normalizeTitleOpeningFields(settings),
+    ...(() => {
+      const variants = normalizeTitleScreenVariants(settings?.variants);
+      return variants ? { variants } : {};
+    })(),
+    ...(settings?.resumeOnLaunch === true ? { resumeOnLaunch: true } : {}),
   };
 }
 

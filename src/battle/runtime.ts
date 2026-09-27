@@ -1,4 +1,6 @@
 import { formationDamage, formationStartRow, rollBattleFormation, type BattleRow, type BattleStartFormation } from "@/battle/battleFormation";
+import { applyDifficultyToEnemyBattlers, difficultyRate, scaleByDifficulty } from "@/project/difficulty";
+import { applySkillLoadoutsToBattlers } from "@/project/skillLoadout";
 import { evaluateDamageFormula, formulaBattlerContext } from "@/battle/damageFormula";
 import { predictSkillDamageFor } from "@/battle/battlePredict";
 import { combatConditionMet } from "@/battle/combatConditions";
@@ -329,11 +331,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         stateIds: options.party?.stateIds,
         partyActorIds: options.party?.partyActorIds,
       });
+  if (!usePartyMonsters) applySkillLoadoutsToBattlers(options.project, actors, sessionState.actorSkillLoadouts);
   const enemies = enemyBattlers(options.project, troopRecord);
   // 리미트·기력·파티 게이지(battleGauges). 끈 프로젝트는 필드를 만들지 않는다.
   seedBattleGauges(options.project, actors);
   let partyGauge = initialPartyGauge(options.project);
   const weakness = createWeaknessTracker(options.project);
+  applyDifficultyToEnemyBattlers(options.project.system, sessionState, enemies);
   const gen1EnemyOrderIds = options.project.system.battleModel === "gen1"
     ? enemies.filter((enemy) => !enemy.hidden).map((enemy) => enemy.id)
     : [];
@@ -477,6 +481,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // 직전 전투 처리 결과(세션 SSOT 스냅샷). battleResult 조건 평가 기준.
     battleResult: sessionState.battleResult,
     roguelikeRun: sessionState.roguelikeRun ? structuredClone(sessionState.roguelikeRun) : undefined,
+    difficultyId: sessionState.difficultyId,
     monsterInstances: structuredClone(sessionState.monsterInstances ?? {}),
     monsterParty: [...(sessionState.monsterParty ?? [])],
     monsterBox: [...(sessionState.monsterBox ?? [])],
@@ -555,8 +560,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     },
     // changeEquipment/promoteActor 후 파생 스탯 재계산 — battleBattlers 생성 산식과 공유.
     // HP/MP/게이지/상태이상은 refreshActorBattlerDerivedStats 가 보존(새 최대치 클램프만).
-    // 부위 손실 상태가 있으면 그 슬롯을 비운 장비로 계산한다(refreshActorStats).
-    refreshActorDerivedStats: (battler, refreshOptions) => refreshActorStats(battler, refreshOptions?.refreshSkills === true),
+    // 부위 손실 상태가 있으면 그 슬롯을 비운 장비로 계산한다(refreshActorStats). 스킬을 새로 고치면 장착 칸도 다시 건다.
+    refreshActorDerivedStats: (battler, refreshOptions) => {
+      refreshActorStats(battler, refreshOptions?.refreshSkills === true);
+      if (refreshOptions?.refreshSkills) applySkillLoadoutsToBattlers(options.project, [battler], sessionState.actorSkillLoadouts);
+    },
     playAudio: options.playAudio,
     stopAudio: options.stopAudio,
     moveEnemy: moveEnemyByTarget,
@@ -3174,7 +3182,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function accumulateRewards(): void {
-    const collected = collectBattleRewards(options.project, enemies, rng, Math.max(1, rewardTurn), battleEventState.switches);
+    const rawCollected = collectBattleRewards(options.project, enemies, rng, Math.max(1, rewardTurn), battleEventState.switches);
+    const collected = {
+      ...rawCollected,
+      exp: scaleByDifficulty(rawCollected.exp, difficultyRate(options.project.system, sessionState, "expRate")),
+      gold: scaleByDifficulty(rawCollected.gold, difficultyRate(options.project.system, sessionState, "goldRate")),
+    };
     rewards.exp = collected.exp;
     rewards.gold = collected.gold;
     rewards.enemyLevel = collected.enemyLevel;

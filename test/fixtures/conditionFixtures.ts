@@ -87,6 +87,8 @@ export const CONDITION_FIXTURES: Readonly<Record<ConditionKind, Condition>> = {
   relationshipAtLeast: { kind: "relationshipAtLeast", npcKey: "npc_condition_probe", state: "dating" },
   battleResult: { kind: "battleResult", result: "victory" },
   run: { kind: "run", query: "active", value: true },
+  difficulty: { kind: "difficulty", difficultyId: "normal" },
+  itemUsed: { kind: "itemUsed", itemId: CONDITION_REFS.itemId },
   all: { kind: "all", conditions: [LEAF_SWITCH] },
   any: { kind: "any", conditions: [LEAF_SWITCH] },
   not: { kind: "not", condition: LEAF_SWITCH },

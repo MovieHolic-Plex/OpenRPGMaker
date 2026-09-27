@@ -117,6 +117,12 @@ const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   setSelfSwitch: { kind: "setSelfSwitch", key: "A", value: true },
   // 로더가 카탈로그 id 를 검사한다(2026-09-20~) — 기준선부터 "m2_test" 는 통과할 수 없었다(2026-09-27 교정).
   m2Command: { kind: "m2Command", commandId: "m2-215-debug-log", fields: {} },
+  setDifficulty: { kind: "setDifficulty", difficultyId: "normal" },
+  storeParty: { kind: "storeParty", partySetId: "party_a" },
+  recallParty: { kind: "recallParty", partySetId: "party_a" },
+  removeMonster: { kind: "removeMonster", instanceId: "monster_1" },
+  tradeMonster: { kind: "tradeMonster", fromSpeciesId: "species1", toSpeciesId: "species2" },
+  fuseMonsters: { kind: "fuseMonsters", instanceIdA: "monster_1", instanceIdB: "monster_2" },
 };
 
 // kind별 최소 유효 Condition 인스턴스. 라운드트립 테스트에서는 참조 검증까지 통과해야 하므로
@@ -160,6 +166,8 @@ function buildMinimalConditions(ids: {
     newGamePlus: { kind: "newGamePlus", value: true },
     weekday: { kind: "weekday", weekdays: [0, 6] },
     stringVariable: { kind: "stringVariable", stringVariableId: "prayer", op: "==", value: "빛" },
+    difficulty: { kind: "difficulty", difficultyId: "normal" },
+    itemUsed: { kind: "itemUsed", itemId: ids.itemId },
     all: {
       kind: "all",
       conditions: [

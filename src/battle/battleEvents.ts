@@ -29,6 +29,8 @@ export type BattleEventRuntimeState = {
   // 직전 전투 처리 결과(전투 개시 시점 세션 battleResult 스냅샷). battleResult 조건 평가 기준.
   readonly battleResult?: "victory" | "defeat" | "escape";
   readonly roguelikeRun?: RoguelikeRunState;
+  /** 현재 난이도 id(전투 개시 시점 세션). difficulty 조건 평가 기준. */
+  readonly difficultyId?: string;
   inventory: Record<string, number>;
   itemUseCharges?: Record<string, number>;
   partyActorIds?: string[];
@@ -91,6 +93,7 @@ export const BATTLE_CONDITION_SESSION_STATE_FIELDS = [
   "selfSwitches",
   "battleResult",
   "roguelikeRun",
+  "difficultyId",
   "inventory",
   "partyActorIds",
   "monsterInstances",
@@ -951,6 +954,13 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       // playMovie: 맵/공통은 플레이어 비디오 오버레이로 실제 재생되지만 전투 실행기는 없다
       // (guarantee: troop=partial). 여기서 미지원으로 기록하는 것이 그 계약의 실행 쪽이다.
       case "playMovie":
+      // 난이도·파티 묶음·몬스터 놓아주기/교환/합성은 필드 명령이다(전투 중 파티·몬스터 저장소를 바꾸지 않는다).
+      case "setDifficulty":
+      case "storeParty":
+      case "recallParty":
+      case "removeMonster":
+      case "tradeMonster":
+      case "fuseMonsters":
         logUnsupported(page, context, command.kind);
         return false;
       default:
@@ -1078,6 +1088,11 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
           { eventId: options.ownerEventId },
           calendarOptionsOf(options.project),
         );
+      case "difficulty":
+        return conditionState.difficultyId !== undefined && conditionState.difficultyId === condition.difficultyId;
+      case "itemUsed":
+        // 아이템을 «바라보는 대상에 사용»하는 것은 필드 메뉴 경로뿐이다 — 전투 이벤트에서는 항상 거짓.
+        return false;
       case "all":
         return condition.conditions.every((child) => evaluateCondition(child));
       case "any":
