@@ -1,5 +1,6 @@
 import { charsetBattler, resolvePartyBattleCharset } from "@/assets/charsetBattlers";
-import { retroCastFrameFor, retroMotionPose } from "@/player/battleRetroMotion";
+import { retroCastFrameFor, retroMotionPose, retroPixelEnemyCell } from "@/player/battleRetroMotion";
+import { PIXEL_ENEMY_FRAME, pixelEnemySheet, pixelEnemySheetUrl } from "@/assets/pixelEnemySheets";
 import { battleTypeBadges } from "@/player/battleTypeBadges";
 import type { BattleActionBeat } from "@/player/battleActionBeats";
 import { fitBattleEnemy } from "@/player/battleEnemyFit";
@@ -126,6 +127,28 @@ function applyIdleAnimationToImage(image: HTMLImageElement, resourceId: string |
     image.style.removeProperty("--battler-anim-url");
     image.style.removeProperty("--battler-anim-frames");
     image.style.removeProperty("--battler-anim-duration");
+  });
+  probe.src = url;
+}
+
+/**
+ * 도트 측면 전투의 적 도트 시트(pixelEnemySheets.ts)를 `<img>` 에 얹는다.
+ * idle 스트립과 같은 방식으로 내용 이미지를 상자 밖으로 밀고 배경으로 3×3 칸을 그린다(27-retro-motion.css).
+ * 칸 선택은 applyBattlerPose → retroPixelEnemyCell 이 맡는다. 대기 칸은 CSS 루프가 돈다.
+ */
+function applyPixelEnemySheet(node: HTMLElement, image: HTMLImageElement, resourceId: string | undefined): void {
+  const sheet = pixelEnemySheet(resourceId);
+  if (!sheet) return;
+  const url = pixelEnemySheetUrl(sheet);
+  node.dataset.pixelEnemy = sheet.motion;
+  image.dataset.pixelSheet = sheet.resourceId;
+  image.style.setProperty("--pixel-enemy-url", `url("${url}")`);
+  image.style.setProperty("--pixel-enemy-idle-ms", `${sheet.idleFrameMs * 4}ms`);
+  const probe = new Image();
+  probe.addEventListener("error", () => {
+    delete node.dataset.pixelEnemy;
+    delete image.dataset.pixelSheet;
+    image.style.removeProperty("--pixel-enemy-url");
   });
   probe.src = url;
 }
@@ -579,6 +602,17 @@ function applyBattlerPose(node: HTMLElement, pose: ExtendedBattlerPose): void {
   node.classList.toggle("battle-pose-victory", logicalPose === "victory");
   const sprite = node.querySelector<HTMLElement>(".battle-actor-sprite, .battle-enemy-image, .battle-actor-image");
   if (pose !== "victory") delete node.dataset.battlePoseFrame;
+  if (node.dataset.pixelEnemy && sprite?.classList.contains("battle-enemy-image")) {
+    const cell = retroPixelEnemyCell(node);
+    sprite.dataset.pixelCell = cell;
+    node.dataset.battlePoseFrame = cell;
+    if (cell === "idle") sprite.style.removeProperty("background-position");
+    else {
+      const at = PIXEL_ENEMY_FRAME[cell];
+      sprite.style.backgroundPosition = `${at.col * 50}% ${at.row * 50}%`;
+    }
+    return;
+  }
   if (sprite?.classList.contains("battle-actor-sprite")) {
     // 생성 전투 시트는 5포즈가 (열, 행) 좌표를 갖는다 — POSE_FRAME 이 정본이다.
     // 2026-08-29 까지는 X 만 움직여 defend 가 idle 칸을, dead 가 hit 칸을 돌려 썼다.
@@ -913,6 +947,9 @@ function enemyButton(
     image.src = url;
     // CSS 숨쉬기(_battlers.css battler-breathe)의 위상을 적마다 어긋나게 — 같이 부풀면 한 덩이로 보인다.
     image.style.setProperty("--breathe-delay", `-${index * 730}ms`);
+    // 도트 측면 전투: 도트 시트가 있는 적은 시트 칸으로 그린다(대기 루프·예비동작·돌진·착탄·피격·녹음).
+    // src 는 원본 그대로 두고 배경으로 칸을 그린다 — 시트를 못 읽으면 표시를 걷어 원본이 다시 보인다.
+    if (activeSkin().motionStyle === "retro") applyPixelEnemySheet(enemyNode, image, resourceId);
     enemyNode.append(image);
   }
   applyBattlerPose(enemyNode, enemy.pose);

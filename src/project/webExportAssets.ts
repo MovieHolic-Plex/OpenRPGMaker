@@ -6,6 +6,7 @@ import { BUNDLED_IMAGE_ASSETS, TEX_DIALOGUE_FRAME, TEX_TILESET } from "@/assets/
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID } from "./cinematicSettings";
 import { battlerIdleAnimation } from "@/assets/battlerIdleAnimations";
+import { pixelEnemySheet } from "@/assets/pixelEnemySheets";
 import { findBgmRuntimeEntry } from "@/assets/bgmCatalogRuntime";
 import { bgmTrackUrl } from "@/assets/bgmCdn";
 import { BATTLER_PLACEMENTS } from "@/battle/battlerPlacements";
@@ -55,6 +56,9 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
   for (const id of ids) {
     const idle = battlerIdleAnimation(id);
     if (idle) assets.set(idle.path, { kind: "public", sourcePath: idle.path, zipPath: idle.path });
+    // 도트 측면 전투의 적 도트 시트도 경로로만 참조된다(pixelEnemySheets.ts) — 같은 id 면 함께 싣는다.
+    const pixelSheet = pixelEnemySheet(id);
+    if (pixelSheet) assets.set(pixelSheet.path, { kind: "public", sourcePath: pixelSheet.path, zipPath: pixelSheet.path });
     const bundled = BUNDLED_IMAGE_ASSETS.find((asset) => asset.textureKey === id);
     if (bundled) {
       assets.set(bundled.path, { kind: "public", sourcePath: bundled.path, zipPath: bundled.path, resourceId: id });

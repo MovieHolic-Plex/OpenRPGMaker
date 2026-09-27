@@ -226,3 +226,78 @@
   }
 }
 @keyframes retro-pixel-breathe { 0%, 100% { translate: 0 0; } 50% { translate: 0 -1px; } }
+
+/* ── 도트 적 시트(src/assets/pixelEnemySheets.ts) ───────────────────────────────────────
+   64px 셀 3×3 을 2배(128px)로 그린다. 내용 이미지(원본 통짜 그림)는 상자 밖으로 밀고 배경으로 칸을 그린다.
+   칸은 런타임이 인라인 background-position 으로 고르고(data-pixel-cell), 대기 칸만 여기 루프가 a→b→c→b 로 돈다.
+   이동(뛰기·날기)은 battleRetroMotion 의 Web Animations translate 가 맡는다 — 노드의 transform·animation 슬롯과 겹치지 않는다. */
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-enemy .battle-enemy-image[data-pixel-sheet] {
+  --battle-enemy-base-width: 128px;
+  --battle-enemy-base-height: 128px;
+  object-position: -99999px -99999px;
+  background-image: var(--pixel-enemy-url);
+  background-repeat: no-repeat;
+  background-size: 300% 300%;
+  background-position: 0% 0%;
+  image-rendering: pixelated;
+  animation: none;
+  scale: 1;
+  transition: none;
+}
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-enemy:not(.defeated) .battle-enemy-image[data-pixel-sheet][data-pixel-cell="idle"] {
+  animation: retro-pixel-enemy-idle var(--pixel-enemy-idle-ms, 880ms) infinite;
+  animation-delay: var(--breathe-delay, 0ms);
+}
+@keyframes retro-pixel-enemy-idle {
+  0% { background-position: 0% 0%; animation-timing-function: steps(1, end); }
+  25% { background-position: 50% 0%; animation-timing-function: steps(1, end); }
+  50% { background-position: 100% 0%; animation-timing-function: steps(1, end); }
+  75% { background-position: 50% 0%; animation-timing-function: steps(1, end); }
+  100% { background-position: 0% 0%; }
+}
+/* 흰 점멸 예비동작·10px 찌르기는 도트 칸이 대신한다. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-pixel-enemy][data-retro-beat],
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-pixel-enemy][data-retro-beat] .battle-enemy-image {
+  animation: none;
+}
+/* 돌진 중에는 아군 앞으로 겹쳐 그린다. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy-group:has(.battle-enemy[data-pixel-enemy][data-retro-reach="melee"]) {
+  z-index: 6;
+}
+/* 격파: 맞은 칸 → 녹은/떨어진 칸(dead)을 잠깐 보인 뒤 네 번 깜빡이며 사라진다. 줄무늬 분해 마스크는 쓰지 않는다. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy.defeated .battle-enemy-image[data-pixel-sheet] {
+  animation: retro-pixel-enemy-vanish 560ms steps(1, end) 380ms forwards;
+  mask-image: none;
+  filter: none;
+}
+@keyframes retro-pixel-enemy-vanish {
+  0%, 50% { opacity: 0; }
+  25%, 75% { opacity: 1; }
+  100% { opacity: 0; }
+}
+/* 필드 그림자(아군 발판과 같은 문법). 박쥐는 공중에 떠 있으므로 더 작고 옅다. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-enemy[data-pixel-enemy]::after {
+  background: #10102066;
+  border-radius: 50%;
+  bottom: 4px;
+  content: "";
+  height: 10px;
+  left: 50%;
+  pointer-events: none;
+  position: absolute;
+  translate: -50% 0;
+  width: 56px;
+  z-index: -1;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-enemy[data-pixel-enemy="swoop"]::after {
+  background: #10102044;
+  width: 36px;
+  height: 8px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-enemy.defeated[data-pixel-enemy]::after { display: none; }
+/* 녹은 슬라임·떨어진 박쥐는 제 색으로 남긴다(기본 dead 포즈의 탈색을 끈다). */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-enemy[data-pixel-enemy][data-battle-pose="dead"] { filter: none; }
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-enemy:not(.defeated) .battle-enemy-image[data-pixel-sheet][data-pixel-cell="idle"] { animation: none; }
+  .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy.defeated .battle-enemy-image[data-pixel-sheet] { animation: none; opacity: 0; }
+}

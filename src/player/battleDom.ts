@@ -1,4 +1,4 @@
-import { retroTimelineEntry, retroCommandPose, initRetroMotion, retroActionMotion, retroDamage, retroHitRelease, retroVictory, retroWalk } from "@/player/battleRetroMotion";
+import { retroTimelineEntry, retroCommandPose, initRetroMotion, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, retroVictory, retroWalk } from "@/player/battleRetroMotion";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
 import type {
   ActorCommand,
@@ -526,6 +526,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     ...(retroMotion ? {
       actorApproachMs: (entry: BattleTimelineEntrySnapshot) => retroWalk(field, entry)?.approachMs,
       actorRecoverMs: (entry: BattleTimelineEntrySnapshot) => retroWalk(field, entry)?.recoverMs,
+      // 도트 적(슬라임·박쥐)은 대상 아군 앞까지 뛰어/날아가서 친다.
+      enemyApproachMs: (entry: BattleTimelineEntrySnapshot) => retroEnemyReach(field, entry)?.approachMs,
+      enemyRecoverMs: (entry: BattleTimelineEntrySnapshot) => retroEnemyReach(field, entry)?.recoverMs,
     } : {}),
     onResultStage(stage) {
       // 사용자가 확인키로 전부 공개했으면(revealAllResultRows) 늦게 도착한 낮은 단계가 되감지 않는다.

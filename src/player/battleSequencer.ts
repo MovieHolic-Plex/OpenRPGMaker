@@ -98,6 +98,10 @@ export interface BattleSequencerHooks {
   readonly actorApproachMs?: (entry: BattleTimelineEntrySnapshot) => number | undefined;
   /** 아군 행동의 회복(recover) 비트 최소 길이(걸어간 거리만큼 뛰어 돌아오는 시간). */
   readonly actorRecoverMs?: (entry: BattleTimelineEntrySnapshot) => number | undefined;
+  /** 적 행동의 예고(approach) 비트 길이. 도트 측면 전투에서 적이 아군 앞까지 뛰어/날아가는 시간. undefined 면 BATTLE_ENEMY_WINDUP_MS. */
+  readonly enemyApproachMs?: (entry: BattleTimelineEntrySnapshot) => number | undefined;
+  /** 적 행동의 회복(recover) 비트 최소 길이(제자리로 돌아가는 시간). */
+  readonly enemyRecoverMs?: (entry: BattleTimelineEntrySnapshot) => number | undefined;
 }
 
 export interface BattleSequencer {
@@ -455,9 +459,12 @@ export function createBattleSequencer(
           userId: entry.userRecordId ?? entry.userId ?? "enemy",
           feedback,
           hitStopMs: BATTLE_HITSTOP_MS,
-          impactMs: recoverMsForAnimation(entry.animation?.durationMs, BATTLE_ENEMY_WINDUP_MS, BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
+          impactMs: Math.max(
+            hooks.enemyRecoverMs?.(entry) ?? 0,
+            recoverMsForAnimation(entry.animation?.durationMs, hooks.enemyApproachMs?.(entry) ?? BATTLE_ENEMY_WINDUP_MS, BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
+          ),
           weight,
-          windupMs: BATTLE_ENEMY_WINDUP_MS,
+          windupMs: hooks.enemyApproachMs?.(entry) ?? BATTLE_ENEMY_WINDUP_MS,
         })
       : planActionBeats({
           userId: entry.userRecordId ?? entry.userId ?? "actor",

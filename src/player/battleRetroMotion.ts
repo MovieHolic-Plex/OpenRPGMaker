@@ -1,4 +1,5 @@
 import { CAST_TYPES, EXTENDED_POSE_FRAME, castTypeForSkill, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
+import type { PixelEnemyCell } from "@/assets/pixelEnemySheets";
 import { store } from "@/project/store";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
 import type { BattleSnapshot } from "@/battle/runtime";
@@ -19,6 +20,8 @@ const reduced = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").ma
 export function retroMotionPose(node: HTMLElement, pose: Pose, paint: PaintPose): Pose {
   painters.set(node, paint);
   if (node.dataset.battlerExtended === "true") return extendedMotionPose(node, pose);
+  // 도트 적 시트는 칸을 retroPixelEnemyCell 이 고른다. 의미 포즈만 그대로 통과시킨다.
+  if (node.dataset.pixelEnemy) return node.classList.contains("defeated") || pose === "dead" ? "dead" : "idle";
   if (pose === "dead") {
     if (!node.dataset.retroKo && node.classList.contains("battle-actor")) {
       node.dataset.retroKo = reduced() ? "settled" : "stagger";
@@ -69,6 +72,8 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
     if (node.dataset.retroBeat) {
       delete node.dataset.retroBeat;
       delete node.dataset.retroAction;
+      delete node.dataset.retroReach;
+      if (node.dataset.pixelEnemy) resetPixelEnemy(node);
       beatGenerations.set(node, (beatGenerations.get(node) ?? 0) + 1);
       delete node.dataset.retroFrame;
       paint(node, node.classList.contains("defeated") ? "dead" : "idle");
@@ -104,15 +109,30 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
     user.style.setProperty("--retro-travel", user.dataset.retroAction === "defend" ? "0px"
       : ["cast", "item"].includes(user.dataset.retroAction) ? "-16px"
         : `${-(walk?.distance ?? 72)}px`);
+    if (user.dataset.pixelEnemy && entry) {
+      // 도트 적: 근접 공격은 대상 아군 앞까지 뛰어/날아간다. 그 밖의 기술은 제자리에서 반 걸음만 나선다.
+      const reach = retroEnemyReach(field, entry);
+      user.dataset.retroReach = reach ? "melee" : "ranged";
+      user.style.setProperty("--retro-enemy-dx", `${reach?.dx ?? 18}px`);
+      user.style.setProperty("--retro-enemy-dy", `${reach?.dy ?? 0}px`);
+    }
   }
   user.dataset.retroBeat = beat.kind;
   user.style.setProperty("--retro-beat-ms", `${Math.max(1, beat.durationMs)}ms`);
   if (user.dataset.battlerExtended === "true") animateExtendedBeat(user, beat);
+  else if (user.dataset.pixelEnemy) animatePixelEnemyBeat(user, beat);
   else paint(user, "idle");
 }
 
 export function retroDamage(node: HTMLElement | null, feedback: DamageFeedback, lethal: boolean): void {
   if (!node) return;
+  if (node.dataset.pixelEnemy) {
+    if (feedback.healing || feedback.miss || feedback.amount <= 0) return;
+    // 맞은 칸을 잠깐 보이고, 막타면 그 뒤 녹아내린 칸(dead)으로 넘어간다.
+    if (lethal) node.classList.add("defeated");
+    transientPose(node, "hit", lethal ? 200 : 380);
+    return;
+  }
   if (node.dataset.battlerExtended === "true" && feedback.miss) {
     transientPose(node, "evade", 240);
     return;
@@ -346,4 +366,160 @@ function measureWalk(field: HTMLElement, entry: BattleTimelineEntrySnapshot): Re
     approachMs: clamp(distance / WALK_PX_PER_MS, 420, 1100),
     recoverMs: clamp(distance / RETURN_PX_PER_MS, 420, 900),
   };
+}
+
+
+// ── 도트 적 시트(pixelEnemySheets.ts) ────────────────────────────────────────────────────
+// 슬라임은 통통 두 번 뛰어 박치기(hop), 박쥐는 날개를 치켜들었다 내리꽂아 문다(swoop).
+// 근접(통상 공격·공격력 기술)은 대상 아군 앞까지 간다. 거리는 DOM 에서 재고, 시퀀서가 비트 길이를 여기에 맞춘다.
+const pixelAnimations = new WeakMap<HTMLElement, Animation>();
+const reachCache = new WeakMap<HTMLElement, Map<number, RetroEnemyReach | null>>();
+const ENEMY_HOLD_MS = 260;
+
+export interface RetroEnemyReach {
+  /** 대상 앞까지의 이동량(무대 논리 px, 오른쪽·아래가 양수). */
+  readonly dx: number;
+  readonly dy: number;
+  readonly approachMs: number;
+  readonly recoverMs: number;
+}
+
+/** 지금 그릴 도트 적 칸. 격파 → 맞은 칸을 잠깐 보인 뒤 녹은 칸, 피격 → hit, 행동 중 → 비트가 고른 칸. */
+export function retroPixelEnemyCell(node: HTMLElement): PixelEnemyCell | "idle" {
+  const transient = node.dataset.retroTransient;
+  if (node.classList.contains("defeated")) return transient === "hit" ? "hit" : "dead";
+  if (transient === "hit") return "hit";
+  const cell = node.dataset.retroBeat ? node.dataset.retroPixelCell : undefined;
+  return (cell as PixelEnemyCell | undefined) ?? "idle";
+}
+
+function resetPixelEnemy(node: HTMLElement): void {
+  pixelAnimations.get(node)?.cancel();
+  pixelAnimations.delete(node);
+  delete node.dataset.retroPixelCell;
+}
+
+function isEnemyMeleeEntry(entry: BattleTimelineEntrySnapshot): boolean {
+  if (entry.side !== "enemy") return false;
+  if (entry.commandKind === "enemyAttack") return true;
+  if (entry.commandKind !== "enemySkill") return false;
+  const skill = store.getCurrent().database.skills.find((row) => row.name === entry.skillName);
+  return skill?.effect.kind === "damage" && skill.effect.statistic === "attack";
+}
+
+export function retroEnemyReach(field: HTMLElement, entry: BattleTimelineEntrySnapshot): RetroEnemyReach | undefined {
+  let cache = reachCache.get(field);
+  if (!cache) reachCache.set(field, cache = new Map());
+  if (cache.has(entry.sequence)) return cache.get(entry.sequence) ?? undefined;
+  const result = measureEnemyReach(field, entry);
+  cache.set(entry.sequence, result ?? null);
+  return result;
+}
+
+function measureEnemyReach(field: HTMLElement, entry: BattleTimelineEntrySnapshot): RetroEnemyReach | undefined {
+  if (!isEnemyMeleeEntry(entry) || reduced()) return undefined;
+  const user = [...field.querySelectorAll<HTMLElement>(".battle-enemy[data-pixel-enemy]:not(.defeated)")]
+    .find((node) => node.dataset.recordId === entry.userRecordId || node.dataset.testid === entry.userId);
+  const target = [...field.querySelectorAll<HTMLElement>(".battle-actor:not(.defeated)")]
+    .find((node) => node.dataset.recordId === entry.targetId);
+  const image = user?.querySelector<HTMLElement>(".battle-enemy-image");
+  const sprite = target?.querySelector<HTMLElement>(".battle-actor-sprite, .battle-actor-image") ?? target;
+  if (!user || !image || !sprite) return undefined;
+  const imageRect = image.getBoundingClientRect();
+  const actorRect = sprite.getBoundingClientRect();
+  if (imageRect.width === 0 || actorRect.width === 0) return undefined;
+  // 화면 px → 적 노드 translate 단위(무대 배율 × 필드 zoom). 이미지 자신의 레이아웃 폭 대비 화면 폭으로 잰다.
+  const scale = image.offsetWidth > 0 ? imageRect.width / image.offsetWidth : 1;
+  const swoop = user.dataset.pixelEnemy === "swoop";
+  // 착탄 칸의 앞 가장자리(64px 셀의 x≈61) → 아군 몸 앞(96px 셀 가운데 − 20px) 2px 앞.
+  const front = imageRect.left + imageRect.width * (61 / 64);
+  const actorFront = actorRect.left + actorRect.width / 2 - actorRect.width * (20 / 96);
+  const dx = Math.round((actorFront - front) / scale - 2);
+  // 슬라임은 발(셀 y=60)을 아군 발(48px 셀 y=44)에, 박쥐는 머리(셀 y≈24)를 아군 얼굴 높이(y≈20)에 맞춘다.
+  const dy = Math.round(swoop
+    ? (actorRect.top + actorRect.height * (20 / 48) - (imageRect.top + imageRect.height * (24 / 64))) / scale
+    : (actorRect.top + actorRect.height * (44 / 48) - (imageRect.top + imageRect.height * (60 / 64))) / scale);
+  if (!Number.isFinite(dx) || !Number.isFinite(dy) || dx < 16) return undefined;
+  const distance = Math.hypot(dx, dy);
+  const clamp = (value: number, min: number, max: number) => Math.round(Math.max(min, Math.min(max, value)));
+  return {
+    dx,
+    dy,
+    approachMs: ENEMY_HOLD_MS + clamp(distance / (swoop ? 0.42 : 0.3), 300, 900),
+    recoverMs: clamp(160 + distance / 0.42, 420, 900),
+  };
+}
+
+type PathPoint = readonly [offset: number, x: number, y: number, easing?: string];
+
+function animatePixelEnemyBeat(node: HTMLElement, beat: BattleActionBeat): void {
+  const generation = (beatGenerations.get(node) ?? 0) + 1;
+  beatGenerations.set(node, generation);
+  const length = Math.max(0, beat.durationMs);
+  const swoop = node.dataset.pixelEnemy === "swoop";
+  const melee = node.dataset.retroReach === "melee";
+  const dx = Number.parseFloat(node.style.getPropertyValue("--retro-enemy-dx")) || 18;
+  const dy = Number.parseFloat(node.style.getPropertyValue("--retro-enemy-dy")) || 0;
+  let cells: readonly [number, PixelEnemyCell][];
+  let path: readonly PathPoint[];
+  if (melee && beat.kind === "approach") {
+    const hold = Math.min(0.45, ENEMY_HOLD_MS / Math.max(1, length));
+    const travel = 1 - hold;
+    if (swoop) {
+      // 날개를 치켜들며 살짝 뒤로 떠올랐다가(windup) 날개를 접고 대상에게 내리꽂는다(move).
+      path = [[0, 0, 0, "ease-out"], [hold, -8, -12, "ease-in"], [hold + travel * 0.45, dx * 0.45, dy * 0.35 - 14, "ease-in"], [1, dx, dy]];
+      cells = [[0, "windup"], [hold, "move"]];
+    } else {
+      // 웅크렸다가(windup) 두 번 통통 뛴다. 중간 착지에서 잠깐 퍼진다(recover 칸).
+      const land = hold + travel * 0.5;
+      path = [
+        [0, 0, 0], [hold * 0.5, -4, 0], [hold, -4, 0, "ease-out"],
+        [hold + travel * 0.25, dx * 0.25, dy * 0.25 - 18, "ease-in"], [land, dx * 0.5, dy * 0.5, "ease-out"],
+        [land + travel * 0.25, dx * 0.75, dy * 0.75 - 22, "ease-in"], [1, dx, dy],
+      ];
+      cells = [[0, "windup"], [hold, "move"], [Math.max(hold, land - travel * 0.06), "recover"], [land + travel * 0.06, "move"]];
+    }
+  } else if (melee && beat.kind === "impact") {
+    path = [[0, dx, dy], [0.4, dx + 5, dy + (swoop ? 2 : 0)], [1, dx + 2, dy + (swoop ? 1 : 0)]];
+    cells = [[0, "attack"]];
+  } else if (melee) {
+    if (swoop) {
+      // 날개를 크게 쳐 뒤로 떠오른 뒤 날갯짓하며 제자리로.
+      path = [[0, dx + 2, dy + 1, "ease-out"], [0.3, dx * 0.75, dy - 16], [0.9, 0, 0], [1, 0, 0]];
+      cells = [[0, "recover"], [0.3, "idle_a"], [0.45, "idle_c"], [0.6, "idle_a"], [0.75, "idle_c"], [0.9, "idle_b"]];
+    } else {
+      path = [[0, dx + 2, dy], [0.22, dx, dy, "ease-out"], [0.6, dx * 0.45, dy * 0.45 - 24, "ease-in"], [0.92, 0, 0], [1, 0, 0]];
+      cells = [[0, "recover"], [0.22, "move"], [0.9, "recover"]];
+    }
+  } else if (beat.kind === "approach") {
+    // 제자리 기술: 뒤로 몸을 당겨 힘을 모은다.
+    path = [[0, 0, 0, "ease-out"], [0.6, -6, swoop ? -6 : 0], [1, -6, swoop ? -6 : 0]];
+    cells = [[0, "windup"]];
+  } else if (beat.kind === "impact") {
+    path = [[0, -6, swoop ? -6 : 0, "ease-out"], [0.5, dx, 0], [1, dx, 0]];
+    cells = [[0, "attack"]];
+  } else {
+    path = [[0, dx, 0, "ease-in-out"], [0.8, 0, 0], [1, 0, 0]];
+    cells = [[0, "recover"], [0.55, swoop ? "idle_a" : "idle_b"]];
+  }
+  if (reduced() || length === 0) cells = [[0, cells[0]![1]]];
+  pixelAnimations.get(node)?.cancel();
+  pixelAnimations.delete(node);
+  // 길이 0 비트(빗나간 착탄)도 도착 자리를 붙잡아야 한다 — 애니메이션을 걷으면 한 프레임 제자리로 튄다.
+  if (!reduced() && typeof node.animate === "function") {
+    const animation = node.animate(
+      path.map(([offset, x, y, easing]) => ({ offset, translate: `${Math.round(x)}px ${Math.round(y)}px`, ...(easing ? { easing } : {}) })),
+      { duration: Math.max(1, length), fill: "forwards" },
+    );
+    pixelAnimations.set(node, animation);
+  }
+  for (const [fraction, cell] of cells) {
+    const draw = () => {
+      if (beatGenerations.get(node) !== generation || node.dataset.retroBeat !== beat.kind) return;
+      node.dataset.retroPixelCell = cell;
+      paint(node, "idle");
+    };
+    if (fraction === 0) draw();
+    else scheduleBattleTimer(() => { if (node.isConnected) draw(); }, Math.min(length - 1, Math.round(length * fraction)));
+  }
 }

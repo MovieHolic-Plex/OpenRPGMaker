@@ -24,7 +24,10 @@ const report = { options: { fps, width, maxSeconds, project: values.project ?? '
 const segments = {};
 const castSkillsUsed = new Set();
 const castActors = new Set();
-let fixture, server, browser, context, page, video, crop, started, stopped, enemyStart;
+let fixture, server, browser, context, page, video, crop, started, stopped;
+// 도트 적마다 공격 구간을 따로 찍는다(enemy-slime, enemy-bat). 녹화 사본의 적은 통상 공격만 한다.
+const ENEMY_CLIPS = { enemy_slime: 'enemy-slime', enemy_cave_bat: 'enemy-bat' };
+const enemyStarts = {};
 const id = (value) => `[data-testid="${value}"]`;
 const elapsed = () => (performance.now() - started) / 1000;
 const remaining = () => Math.max(1, (maxSeconds - elapsed()) * 1000);
@@ -38,18 +41,21 @@ async function measure() {
       phase: root?.dataset.battlePhase, busy: root?.dataset.battleSequenceBusy, step: root?.dataset.battleDirectorStep,
       actor: root?.querySelector('.battle-actor-status.is-active-actor')?.getAttribute('data-record-id'),
       message: root?.querySelector('.battle-message-line')?.textContent ?? '',
-      enemyActing: !!root?.querySelector('.battle-enemy-group .battle-enemy[data-retro-beat]'),
+      enemyActing: root?.querySelector('.battle-enemy-group .battle-enemy[data-retro-beat]')?.getAttribute('data-record-id') ?? null,
       result: root?.querySelector('[data-testid="battle-result-panel"]')?.getAttribute('data-battle-result'),
       poses: [...(root?.querySelectorAll('.battle-actor-group .battle-actor') ?? [])].map((node) => node.dataset.battlePose),
     };
   });
-  // 방어 직후 적 행동이 같은 busy 구간에 이어져도 놓치지 않는다.
-  const enemyBeat = state.busy === 'true' && (state.enemyActing || fixture.project.database.enemies.some((entry) => state.message.startsWith(entry.name) && /공격|사용/.test(state.message)));
-  if (!segments.enemy && enemyBeat) enemyStart ??= elapsed();
-  if (!segments.enemy && enemyStart !== undefined && !enemyBeat) {
-    segments.enemy = { start: Math.max(0, enemyStart - 0.15), duration: elapsed() - enemyStart + 0.15 };
-    report.actions.push({ name: 'enemy', ...segments.enemy, observed: true });
-    console.log(`[retro2003-gif] enemy ${elapsed().toFixed(1)}s`);
+  // 방어 직후 적 행동이 같은 busy 구간에 이어져도 놓치지 않는다. 적마다 첫 공격 한 번씩.
+  for (const [recordId, name] of Object.entries(ENEMY_CLIPS)) {
+    if (segments[name]) continue;
+    const acting = state.busy === 'true' && state.enemyActing === recordId;
+    if (acting) enemyStarts[recordId] ??= elapsed();
+    else if (enemyStarts[recordId] !== undefined) {
+      segments[name] = { start: Math.max(0, enemyStarts[recordId] - 0.3), duration: elapsed() - enemyStarts[recordId] + 0.6 };
+      report.actions.push({ name, ...segments[name], observed: true });
+      console.log(`[retro2003-gif] ${name} ${elapsed().toFixed(1)}s`);
+    }
   }
   return state;
 }
@@ -194,21 +200,11 @@ try {
   const party = fixture.project.system.startActorIds ?? [];
   const castCapable = fixture.project.database.actors.filter((actor) => party.includes(actor.id)
     && actor.learnedSkills?.some((skill) => !/skill_attack|skill_sword_slash/.test(skill.skillId))).length;
-  const enemyNames = fixture.project.database.enemies.map((entry) => entry.name);
   while (!(magic && casts >= Math.min(3, castCapable) && defended && enemy && item)) {
     budget();
     const state = await measure();
-    enemy ||= Boolean(segments.enemy);
+    enemy ||= Object.values(ENEMY_CLIPS).every((name) => segments[name]);
     if (state.result) throw new Error('수동 필수 구간 전에 전투가 끝남');
-    if (!enemy && state.busy === 'true' && (state.enemyActing || enemyNames.some((name) => state.message.startsWith(name) && /공격|사용/.test(state.message)))) {
-      const start = elapsed();
-      while ((await measure()).busy === 'true') { budget(); await sleep(40); }
-      segments.enemy = { start: Math.max(0, start - 0.15), duration: elapsed() - start + 0.15 };
-      enemy = true;
-      report.actions.push({ name: 'enemy', ...segments.enemy, observed: true });
-      console.log(`[retro2003-gif] enemy ${elapsed().toFixed(1)}s`);
-      continue;
-    }
     if (state.phase === 'actorCommand' && state.busy === 'false' && await page.locator(id('actor-command-defend')).isVisible()) {
       const actor = fixture.project.database.actors.find((entry) => entry.id === state.actor);
       const castable = actor?.learnedSkills?.some((skill) => !/skill_attack|skill_sword_slash/.test(skill.skillId));
