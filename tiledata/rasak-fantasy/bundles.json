@@ -390,6 +390,9 @@
         "Nature/Rocks/Floating Rocks Grey2.png",
         "Nature/Rocks/Floating Rocks Grey3.png",
         "Nature/lighteffect.png"
+      ],
+      "tailSheets": [
+        "Town/Tileset_Building_Rasak.png"
       ]
     },
     {
@@ -430,7 +433,10 @@
         "D": "Snow_Desert/Tileset_Station_Rasak.png",
         "E": "Nature/Tileset_Nature_ForrestFloorSummer_Rasak.png"
       },
-      "extraSheets": []
+      "extraSheets": [],
+      "tailSheets": [
+        "Town/Tileset_Building_Rasak.png"
+      ]
     },
     {
       "id": "rasak_garden",
@@ -456,7 +462,8 @@
       ],
       "tailSheets": [
         "Bird Houses.png"
-      ]
+      ],
+      "tailBeforeAnim": true
     },
     {
       "id": "rasak_crypt",

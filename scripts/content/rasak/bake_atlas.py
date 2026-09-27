@@ -262,15 +262,21 @@ def main():
     bake_shadows(atlas)
     # 애니 시트는 그림자 **뒤**에 둔다 — 앞에 두면 그림자·합성 칸 번호가 밀려 기존 맵(pNN 재현·예제)이 틀어진다.
     atlas.pad_row()
-    # 그림자 뒤 일반 물체 시트(tailSheets): 기존 번호를 밀지 않고 시트를 더할 때(새집 시트 2026-09-27). 슬롯 이름 T1..
-    for i, rel in enumerate(bundle.get('tailSheets', [])):
-        path = src / rel
-        digest = sha256(path)
-        if known.get(rel) and known[rel] != digest:
-            raise SystemExit(f'{rel}: sha256 differs from the pack this bundle was written for ({digest})')
-        start = (len(atlas.tiles) + COLS - 1) // COLS * COLS
-        bake_slot(atlas, f'T{i + 1}', pad_sheet(load(path)), bundle.get('waterFps', 4))
-        used.append({'slot': f'T{i + 1}', 'file': rel, 'sha256': digest, 'start': start, 'end': len(atlas.tiles)})
+    # 맨 뒤 일반 물체 시트(tailSheets): 기존 번호를 밀지 않고 시트를 더할 때(새집 시트 2026-09-27). 슬롯 이름 T1..
+    # 애니 시트(N) 뒤에 둔다 — 애니 앞에 두면 애니 칸 번호가 밀려 이미 놓인 애니 물체가 틀어진다(계절 묶음 문 시트 2026-09-27).
+    def bake_tail():
+        for i, rel in enumerate(bundle.get('tailSheets', [])):
+            path = src / rel
+            digest = sha256(path)
+            if known.get(rel) and known[rel] != digest:
+                raise SystemExit(f'{rel}: sha256 differs from the pack this bundle was written for ({digest})')
+            start = (len(atlas.tiles) + COLS - 1) // COLS * COLS
+            bake_slot(atlas, f'T{i + 1}', pad_sheet(load(path)), bundle.get('waterFps', 4))
+            used.append({'slot': f'T{i + 1}', 'file': rel, 'sha256': digest, 'start': start, 'end': len(atlas.tiles)})
+
+    # rasak_garden 은 새집 시트(T1)를 애니 앞에 두고 이미 배포됐다(칸 번호 고정) — tailBeforeAnim 으로 그 순서를 지킨다
+    if bundle.get('tailBeforeAnim'):
+        bake_tail()
     anim_root = src.parent / 'Animations'
     for i, rel in enumerate(bundle.get('animSheets', [])):
         path = anim_root / rel
@@ -280,6 +286,8 @@ def main():
         start = len(atlas.tiles) + (-len(atlas.tiles)) % COLS
         chars = bake_anim(atlas, load(path), rel, bundle.get('animFps', 6))
         used.append({'slot': f'N{i + 1}', 'file': 'Animations/' + rel, 'sha256': digest, 'start': start, 'end': len(atlas.tiles), 'characters': chars})
+    if not bundle.get('tailBeforeAnim'):
+        bake_tail()
     atlas.pad_row()
     rows = len(atlas.tiles) // COLS
     img = np.zeros((rows * T, COLS * T, 4), np.uint8)
