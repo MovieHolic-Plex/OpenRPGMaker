@@ -2,7 +2,7 @@ import { getAudioEngine } from "./audio";
 import type Phaser from "phaser";
 import type { PlaySceneContext } from "./playSceneTypes";
 import { ATMOSPHERE_PRESETS, normalizeAtmosphereEffects, type AtmosphereEffect, type AtmosphereKind } from "@/project/atmosphere";
-import { ensureFogTexture } from "./weather/fogTexture";
+import { ensureFogTexture, FOG_BAKE_ROWS_PER_FRAME } from "./weather/fogTexture";
 import { runtimePixelDensity } from "./runtimeViewScale";
 
 type State = { layer: Phaser.GameObjects.Container; graphics: Phaser.GameObjects.Graphics;
@@ -51,8 +51,8 @@ export function syncAtmosphere(scene: PlaySceneContext): void {
     if (effect.amount <= 0 || effect.opacity <= 0) continue;
     const color = effect.tint ? Number.parseInt(effect.tint.slice(1), 16) : ATMOSPHERE_PRESETS.find(p => p.id === effect.kind)!.color;
     if (hazeKinds.has(effect.kind)) {
-      const key = ensureFogTexture(scene.textures);
-      for (let index = 0; index < 2; index++) {
+      const key = ensureFogTexture(scene.textures, undefined, FOG_BAKE_ROWS_PER_FRAME);
+      for (let index = 0; key && index < 2; index++) {
         const id = `${effect.kind}-${index}`;
         let sprite = mist.get(id);
         if (!sprite) {

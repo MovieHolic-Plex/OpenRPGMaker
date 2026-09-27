@@ -28,6 +28,7 @@ import {
   chipsetQuarterComposition,
   type ChipsetQuarterComposition,
 } from "@/project/defaults/terrainQuarterAutotile";
+import { withWorldCoastRenderPass } from "@/project/defaults/worldCoastMapping";
 import { mapWithCommittedEvents } from "@/project/eventDrafts";
 import { applyRuntimeMapOverrides } from "@/project/runtimeMap";
 import { tileStackAt, topTileInStack } from "@/project/mapOverlayTiles";
@@ -213,19 +214,22 @@ export function renderTiles<
   const map = scene.map;
   const tileset = store.getCurrent().tilesets[map.tilesetId];
   if (!tileset) return;
-  for (let y = 0; y < map.height; y++) {
-    for (let x = 0; x < map.width; x++) {
-      const index = y * map.width + x;
-      renderEmptyCellCover(scene, x, y, index);
-      renderTile(scene, tileset, x, y, map.lowerTiles[index], "lower");
-      for (const tile of tileStackAt(map, "lower", index)) renderTile(scene, tileset, x, y, tile, "lower");
-      renderRawTile(scene, tileset, x, y, layerTileAt(map, 2, index), "lower", OVERLAY_LAYER_DEPTH_OFFSET);
-      renderShadow(scene, x, y, shadowAt(map, index));
-      renderTile(scene, tileset, x, y, map.upperTiles[index], "upper");
-      for (const tile of tileStackAt(map, "upper", index)) renderTile(scene, tileset, x, y, tile, "upper");
-      renderRawTile(scene, tileset, x, y, layerTileAt(map, 4, index), "upper", OVERLAY_LAYER_DEPTH_OFFSET);
+  // 칸 판정(해안 그룹)의 내용 비교를 이 동기 그리기 동안 타일셋마다 한 번만 한다.
+  withWorldCoastRenderPass(() => {
+    for (let y = 0; y < map.height; y++) {
+      for (let x = 0; x < map.width; x++) {
+        const index = y * map.width + x;
+        renderEmptyCellCover(scene, x, y, index);
+        renderTile(scene, tileset, x, y, map.lowerTiles[index], "lower");
+        for (const tile of tileStackAt(map, "lower", index)) renderTile(scene, tileset, x, y, tile, "lower");
+        renderRawTile(scene, tileset, x, y, layerTileAt(map, 2, index), "lower", OVERLAY_LAYER_DEPTH_OFFSET);
+        renderShadow(scene, x, y, shadowAt(map, index));
+        renderTile(scene, tileset, x, y, map.upperTiles[index], "upper");
+        for (const tile of tileStackAt(map, "upper", index)) renderTile(scene, tileset, x, y, tile, "upper");
+        renderRawTile(scene, tileset, x, y, layerTileAt(map, 4, index), "upper", OVERLAY_LAYER_DEPTH_OFFSET);
+      }
     }
-  }
+  });
   renderFarmOverlays(scene, store.getCurrent().database.crops ?? []);
   renderPlaceableOverlays(scene);
   renderEvents(scene);

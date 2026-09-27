@@ -34,7 +34,23 @@ export function isValidTileGraft(graft: TileGraft | undefined | null): graft is 
 
 // graft 구성에 따라 달라지는 텍스처 캐시 suffix. graft 가 없으면 빈 문자열.
 // tilesetTextureKey 가 baseKey(+투명색 suffix) 뒤에 붙인다 — graft 편집 시 캐시 자동 무효화.
+//
+// 기억해 둔다. 이 값은 타일 한 칸을 그릴 때마다 불리는데(tilesetTextureKey), 기본 타일셋(forest_harmony)은
+// 이식이 553개라 매번 정렬·이어 붙이기·해시를 다시 하면 칸당 약 0.18ms, 100×100 맵 한 번 그리기에 3초가
+// 넘었다(Node 실측). 배열 정체성과 길이가 같으면 같은 답이다 — 이식을 바꾸는 코드는 배열을 새로 만들거나
+// push 한다(길이가 바뀐다). 항목을 제자리에서 고치는 코드는 없다.
+const graftSuffixCache = new WeakMap<readonly TileGraft[], { readonly length: number; readonly suffix: string }>();
 export function tileGraftsTextureSuffix(tileset: Pick<TilesetDef, "tileGrafts">): string {
+  const source = tileset.tileGrafts;
+  if (!source || source.length === 0) return "";
+  const cached = graftSuffixCache.get(source);
+  if (cached && cached.length === source.length) return cached.suffix;
+  const suffix = computeTileGraftsTextureSuffix(tileset);
+  graftSuffixCache.set(source, { length: source.length, suffix });
+  return suffix;
+}
+
+function computeTileGraftsTextureSuffix(tileset: Pick<TilesetDef, "tileGrafts">): string {
   const grafts = activeTileGrafts(tileset);
   if (grafts.length === 0) return "";
   const signature = grafts

@@ -2,7 +2,7 @@ import { resolveMapWeather } from "@/player/weather/weatherModel";
 import { syncAtmosphere } from "./playSceneAtmosphere";
 import { getAudioEngine } from "@/player/audio";
 import type Phaser from "phaser";
-import { ensureFogTexture } from "@/player/weather/fogTexture";
+import { ensureFogTexture, FOG_BAKE_ROWS_PER_FRAME } from "@/player/weather/fogTexture";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
 import { runtimePixelDensity } from "@/player/runtimeViewScale";
 import type { StepResult } from "@/player/interpreter";
@@ -60,6 +60,7 @@ export function installWeatherLayer(scene: PlaySceneContext): void {
   scene.weatherLayer = layer;
   scene.weatherGraphics = graphics;
   scene.weatherMistLayers = undefined;
+  scene.weatherDrawSignature = undefined;
   scene.events.once("shutdown", () => {
     getAudioEngine().weather.stop();
     scene.weatherLayer = undefined;
@@ -144,16 +145,22 @@ function renderWeather(scene: PlaySceneContext, params: WeatherParams): void {
   const layer = scene.weatherLayer;
   if (!graphics || !layer) return;
   const plan = weatherRenderPlan(params, scene.weatherClockMs ?? 0);
-  graphics.clear();
-  layer.setVisible(plan.active);
-  for (const mist of scene.weatherMistLayers ?? []) mist.setVisible(plan.active && plan.kind === "fog");
-  if (!plan.active) return;
   const canvasWidth = scene.cameras.main.width || PLAY_RESOLUTION.width;
   const canvasHeight = scene.cameras.main.height || PLAY_RESOLUTION.height;
   // Cancel camera zoom for this screen-space effect, including zoom-out edges, and draw in
   // logical pixels so drops keep their size when the canvas runs at a higher pixel density.
   const zoom = scene.cameras.main.zoom || 1;
   const density = runtimePixelDensity(scene);
+  // 입자 그림은 날씨 시계(16ms 고정 걸음)·날씨·화면 크기·줌·밀도로만 정해진다. 모두 같으면 지난 프레임
+  // 그림이 그대로 맞으므로 Graphics 를 비우고 180개를 다시 그리지 않는다(주사율이 60Hz 보다 높거나
+  // 날씨가 꺼진 동안 매 프레임 헛그리기를 막는다). 안개는 층 위치만 옮기므로 아래에서 그대로 갱신한다.
+  const signature = `${params.kind}:${params.intensity}:${scene.weatherClockMs ?? 0}:${canvasWidth}x${canvasHeight}:${zoom}:${density}`;
+  if (plan.kind !== "fog" && signature === scene.weatherDrawSignature) return;
+  scene.weatherDrawSignature = signature;
+  graphics.clear();
+  layer.setVisible(plan.active);
+  for (const mist of scene.weatherMistLayers ?? []) mist.setVisible(plan.active && plan.kind === "fog");
+  if (!plan.active) return;
   const width = canvasWidth / density;
   const height = canvasHeight / density;
   layer.setPosition(canvasWidth / 2 * (1 - 1 / zoom), canvasHeight / 2 * (1 - 1 / zoom));
@@ -223,7 +230,9 @@ function renderFog(
   timeMs: number
 ): void {
   if (!scene.weatherMistLayers) {
-    const key = ensureFogTexture(scene.textures);
+    // 첫 안개는 몇 프레임에 나눠 굽는다. 다 될 때까지 안개 층이 없다(짧은 페이드인처럼 보인다).
+    const key = ensureFogTexture(scene.textures, undefined, FOG_BAKE_ROWS_PER_FRAME);
+    if (!key) return;
     scene.weatherMistLayers = [0, 1, 2].map(() => {
       const mist = scene.add.tileSprite(0, 0, width, height, key).setOrigin(0).setScrollFactor(0);
       scene.weatherLayer!.add(mist);

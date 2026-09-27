@@ -62,9 +62,16 @@ export function editorWorkingEvents(events: readonly GameEvent[]): GameEvent[] {
 }
 
 export function mapWithCommittedEvents(map: GameMap): GameMap {
-  const next = structuredClone(map);
-  next.events = committedEvents(map.events);
-  return next;
+  // 이벤트는 committedEvents 가 따로 복제하므로 맵 전체를 복제할 때 events 를 빼고 복제한다.
+  // 예전에는 structuredClone(map) 이 이벤트 전체를 한 번 복제하고, 그 결과를 committedEvents 로
+  // 곧바로 갈아치웠다 — 맵 이동마다 이벤트 본문(명령 목록)을 두 번씩 복제했다.
+  // 키 순서는 원본 그대로 둔다(직렬화 바이트가 같아야 하는 소비자가 있다).
+  const { events, ...rest } = map;
+  const cloned = structuredClone(rest) as Record<string, unknown>;
+  const next: Record<string, unknown> = {};
+  for (const key of Object.keys(map)) next[key] = key === "events" ? committedEvents(events) : cloned[key];
+  if (!("events" in next)) next.events = committedEvents(events ?? []);
+  return next as unknown as GameMap;
 }
 
 export function projectWithoutEventDrafts(project: Project): Project {
