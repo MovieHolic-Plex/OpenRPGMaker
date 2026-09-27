@@ -1,12 +1,28 @@
-import { battleActorSkillFailure, comboParticipantsFromSnapshot, comboSkillIdsFor } from "@/battle/battleSkillUse";
+import { battleActorSkillFailure, battleSkillMpCost, comboParticipantsFromSnapshot, comboSkillIdsFor } from "@/battle/battleSkillUse";
 import { areaTargets, resolveBattleTargets, targetIdFor } from "@/battle/battleTargetResolver";
 import { predictSkillDamageFor } from "@/battle/battlePredict";
 import type { ActorCommand, BattleBattlerSnapshot, BattleSnapshot } from "@/battle/types";
 import { stateBehavior } from "@/battle/battleStates";
-import type { Project, SkillRecord } from "@/project/types";
+import type { ActorAutoTactic, Project, SkillRecord } from "@/project/types";
 import type { Rng } from "@/util/rng";
 
-export function chooseAutoBattleCommand(project: Project, snapshot: BattleSnapshot, rng: Rng): ActorCommand | undefined {
+/** 작전별 회복 문턱(HP 비율). 생략 작전은 기존 값(40%)이다. */
+const HEAL_THRESHOLD: Readonly<Record<"default" | "healFirst" | "conserveMp", number>> = { default: 0.4, healFirst: 0.7, conserveMp: 0.25 };
+
+/** 배우 DB 의 작전. followOrders 는 수동 명령이라 자동 선택에서는 균형으로 읽는다. */
+export function actorAutoTactic(project: Project, actorRecordId: string): ActorAutoTactic | undefined {
+  return project.database.actors.find((record) => record.id === actorRecordId)?.options.autoTactic;
+}
+
+/** 전투가 이 배우의 차례를 명령 없이 자동으로 고르는가(배우·직업 autoBattle, 작전이 followOrders 가 아닐 때). */
+export function actorFightsAutomatically(project: Project, actorRecordId: string, classId: string | undefined): boolean {
+  const actor = project.database.actors.find((record) => record.id === actorRecordId);
+  if (!actor || actor.options.autoTactic === "followOrders") return false;
+  if (actor.options.autoBattle) return true;
+  return project.database.classes.find((record) => record.id === (classId ?? actor.classId))?.options.autoBattle === true;
+}
+
+export function chooseAutoBattleCommand(project: Project, snapshot: BattleSnapshot, rng: Rng, tactic?: ActorAutoTactic): ActorCommand | undefined {
   if (snapshot.phase !== "actorCommand" || snapshot.result) return undefined;
   if (snapshot.forcedSwitchActorId) {
     const targetActorId = snapshot.switchCandidateActorIds[0];
@@ -15,6 +31,7 @@ export function chooseAutoBattleCommand(project: Project, snapshot: BattleSnapsh
 
   const actor = snapshot.actors.find((entry) => entry.recordId === snapshot.activeActorId);
   if (!actor || actor.defeated) return undefined;
+  const plan = tactic ?? actorAutoTactic(project, actor.recordId);
   // 연계기는 배우지 않아도 연계 멤버에게 열린다 — 메뉴(battleCommandDom)와 같은 목록.
   const offered = [...actor.skillIds, ...comboSkillIdsFor(project, actor.recordId, snapshot.actors.map((entry) => entry.recordId), actor.skillIds)];
   const learned = offered
@@ -22,14 +39,17 @@ export function chooseAutoBattleCommand(project: Project, snapshot: BattleSnapsh
     .filter((skill): skill is SkillRecord => Boolean(skill))
     .filter((skill) => !battleActorSkillFailure(project, actor, skill.id, comboParticipantsFromSnapshot(snapshot)));
 
-  const recovery = bestRecovery(project, snapshot, actor, learned, rng);
+  // 전원 공격: 회복·보조를 건너뛴다. MP 아끼기: 공격은 MP 0 기술(또는 통상 공격)만, 회복은 위급할 때만.
+  const threshold = plan === "healFirst" || plan === "conserveMp" ? HEAL_THRESHOLD[plan] : HEAL_THRESHOLD.default;
+  const recovery = plan === "attackAll" ? undefined : bestRecovery(project, snapshot, actor, learned, rng, threshold);
   if (recovery) return recovery;
 
-  const attacks = learned.filter((skill) => skill.effect.kind === "damage");
+  const attacks = learned.filter((skill) => skill.effect.kind === "damage"
+    && (plan !== "conserveMp" || battleSkillMpCost(skill, actor.maxMp) === 0));
   const attack = bestAttack(project, snapshot, actor, attacks, rng);
   if (attack) return attack;
 
-  const fallbackSkill = fallbackLearnedSkill(snapshot, actor, learned, rng);
+  const fallbackSkill = plan === "attackAll" || plan === "conserveMp" ? undefined : fallbackLearnedSkill(snapshot, actor, learned, rng);
   if (fallbackSkill) return fallbackSkill;
 
   const enemies = snapshot.enemies.filter((enemy) => !enemy.defeated);
@@ -66,6 +86,7 @@ function bestRecovery(
   actor: BattleBattlerSnapshot,
   skills: readonly SkillRecord[],
   rng: Rng,
+  hpThreshold = HEAL_THRESHOLD.default,
 ): ActorCommand | undefined {
   const candidates: Array<{ skill: SkillRecord; target: BattleBattlerSnapshot; score: number }> = [];
   for (const skill of skills) {
@@ -78,7 +99,7 @@ function bestRecovery(
     if (resolution.side !== "actor") continue;
     for (const target of resolution.candidates) {
       const hpDanger = skill.effect.kind === "healing" && skill.effect.affects === "hp"
-        ? Math.max(0, 0.4 - target.hp / Math.max(1, target.maxHp)) * 100
+        ? Math.max(0, hpThreshold - target.hp / Math.max(1, target.maxHp)) * 100
         : 0;
       const mpDanger = skill.effect.kind === "healing" && skill.effect.affects === "mp"
         ? Math.max(0, 0.25 - target.mp / Math.max(1, target.maxMp)) * 80

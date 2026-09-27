@@ -240,12 +240,16 @@ function normalizeInitialEquipment(equipment: Partial<ActorInitialEquipment> | u
   };
 }
 
+const ACTOR_AUTO_TACTICS: readonly string[] = ["attackAll", "healFirst", "conserveMp", "followOrders"];
+
 function normalizeOptions(options: Partial<ActorOptions> | undefined): ActorOptions {
   return {
     dualWield: options?.dualWield ?? false,
     autoBattle: options?.autoBattle ?? false,
     fixedEquipment: options?.fixedEquipment ?? false,
     mightyGuard: options?.mightyGuard ?? false,
+    // 작전은 알려진 값만 남긴다 — 생략이면 기존 자동 전투(균형)와 같다.
+    ...(typeof options?.autoTactic === "string" && ACTOR_AUTO_TACTICS.includes(options.autoTactic) ? { autoTactic: options.autoTactic } : {}),
   };
 }
 

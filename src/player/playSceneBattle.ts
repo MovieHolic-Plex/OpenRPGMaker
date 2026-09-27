@@ -108,6 +108,7 @@ export async function playBattle(
       canEscape: step.canEscape && scene.session.m2Runtime?.access?.escape !== false,
       canLose: step.canLose,
       battleFlow: step.battleFlow,
+      formation: step.formation,
       party: {
         levels: scene.session.actorLevels,
         experience: scene.session.actorExperience,

@@ -119,6 +119,7 @@ export function renderEnemyRecordForm(form: HTMLElement, record: EnemyRecord, re
       enemyResistCard(record, enemyCard("상태 유효도", "state", rateRows(record, "state")), enemyCard("속성 유효도", "element", rateRows(record, "element"))),
       uxLevel(enemyCard("치명타 확률", "critical", [el("div", { class: "db-enemy-critical-row", children: criticalFields(record, rerender) })], { hint: criticalHint(record) }), "advanced"),
       uxLevel(enemyCard("명중", "options", optionFields(record)), "advanced"),
+      uxLevel(enemyCard("최후의 일격", "last-stand", lastStandFields(record), { hint: "아군 공격에 쓰러질 때 한 번, 고른 스킬을 쓰고 쓰러집니다." }), "advanced"),
       uxLevel(enemyCard("액션 전투", "action-combat", actionCombatFields(record), { hint: "필드에서 직접 싸우는 액션 전투용" }), "advanced"),
     ] },
     { id: "rewards", label: "보상", cards: [
@@ -815,6 +816,29 @@ function optionFields(record: EnemyRecord): HTMLElement[] {
     checkboxField("기본 명중률 90% (끄면 100%)", "db-field-enemy-normal-miss", record.attackOptions.normalAttacksMiss, (normalAttacksMiss) =>
       updateDatabaseRecord("enemies", record.id, { attackOptions: { ...currentEnemy(record).attackOptions, normalAttacksMiss } })
     ),
+  ];
+}
+
+/** 반격 목록의 onDeath 항목 하나를 편집한다. 다른 반격(physical/magic/속성)은 그대로 둔다. */
+function lastStandFields(record: EnemyRecord): HTMLElement[] {
+  const current = record.reactions?.find((entry) => entry.trigger === "onDeath");
+  const skills = [{ id: "__attack", name: "통상 공격" }, ...store.getCurrent().database.skills.map((skill) => ({ id: skill.id, name: skill.name }))];
+  const selected = current ? (current.skillId === "" ? "__attack" : current.skillId) : "";
+  const write = (skillChoice: string, chance: number): void => {
+    const others = (currentEnemy(record).reactions ?? []).filter((entry) => entry.trigger !== "onDeath");
+    const reactions = skillChoice
+      ? [...others, { trigger: "onDeath", skillId: skillChoice === "__attack" ? "" : skillChoice, chance }]
+      : others;
+    updateDatabaseRecord("enemies", record.id, { reactions });
+  };
+  return [
+    selectField("쓰러질 때 쓰는 스킬", "db-field-enemy-last-stand-skill", selected, skills, (value) =>
+      write(value, currentEnemy(record).reactions?.find((entry) => entry.trigger === "onDeath")?.chance ?? 100)
+    ),
+    numberField("발동 확률(%)", "db-field-enemy-last-stand-chance", current?.chance ?? 100, (chance) => {
+      const live = currentEnemy(record).reactions?.find((entry) => entry.trigger === "onDeath");
+      if (live) write(live.skillId === "" ? "__attack" : live.skillId, Math.max(0, Math.min(100, Math.round(chance))));
+    }, { min: 0, max: 100 }),
   ];
 }
 

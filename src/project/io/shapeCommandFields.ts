@@ -1,3 +1,4 @@
+import { isBattleStartFormation } from "@/battle/battleFormation";
 import { validateEndingPresentation } from "./shapeDatabaseFields";
 import { isEquipmentSlotId } from "@/project/equipmentSlots";
 import { isEmoteKind } from "@/project/emotes";
@@ -241,6 +242,9 @@ function validateCommandShape(label: string, value: unknown): void {
       }
       if (command.troopVariableId !== undefined) requireString(`${label}.troopVariableId`, command.troopVariableId);
       if (command.branchOnResult !== undefined) requireBoolean(`${label}.branchOnResult`, command.branchOnResult);
+      if (command.formation !== undefined && !isBattleStartFormation(requireString(`${label}.formation`, command.formation))) {
+        throw new ProjectFormatError(`${label}.formation가 잘못되었습니다.`);
+      }
       if (command.victoryBranch !== undefined) validateCommandArray(`${label}.victoryBranch`, command.victoryBranch);
       if (command.defeatBranch !== undefined) validateCommandArray(`${label}.defeatBranch`, command.defeatBranch);
       if (command.escapeBranch !== undefined) validateCommandArray(`${label}.escapeBranch`, command.escapeBranch);

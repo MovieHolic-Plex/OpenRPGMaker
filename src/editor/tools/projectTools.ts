@@ -136,6 +136,8 @@ const setProjectSettings: ToolDefinition = {
           atbSpeed: { type: "integer", minimum: 1, maximum: 8, description: "ATB 속도 1(빠름)~8(느림), 4 = 기존 속도" },
           backdrop: { type: "string", enum: ["field", "default"], description: "field = 전투 배경을 주인공 주변 필드 화면으로(제자리 페이드 진입). default = 트룹/지형 배경" },
           presentation: { type: "string", enum: ["onField", "default"], description: "onField = 크로노식 필드 위 전투: 전환 없이 적은 부딪힌 심볼 자리, 아군은 파티 자리에 서고 끝나면 그 자리로 돌아온다(배경은 필드 그대로). default = 전환 후 전투장" },
+          formationRoll: { type: "boolean", description: "true = 전투마다 선제·기습·백어택·협공을 민첩으로 굴리고 심볼 인카운트는 접촉 방향으로 정한다. false = 항상 보통 개시" },
+          escapeBonusPercent: { type: "integer", minimum: 0, maximum: 100, description: "도주 실패 1회마다 다음 도주 확률에 더하는 %p(기본 10, 0 = 가산 없음)" },
         },
         additionalProperties: false,
       },
@@ -265,6 +267,15 @@ const setProjectSettings: ToolDefinition = {
       else if (battle.backdrop === "default") delete draft.system.battleBackdrop;
       if (battle.presentation === "onField") draft.system.battlePresentation = "onField";
       else if (battle.presentation === "default") delete draft.system.battlePresentation;
+      if (battle.formationRoll === true) draft.system.battleFormationRoll = true;
+      else if (battle.formationRoll === false) delete draft.system.battleFormationRoll;
+      if (battle.escapeBonusPercent !== undefined) {
+        if (typeof battle.escapeBonusPercent !== "number" || !Number.isInteger(battle.escapeBonusPercent) || battle.escapeBonusPercent < 0 || battle.escapeBonusPercent > 100) {
+          throw new ToolError(`battle.escapeBonusPercent 는 0~100 정수여야 합니다(받은 값 ${JSON.stringify(battle.escapeBonusPercent)}).`, { code: "invalid-args" });
+        }
+        if (battle.escapeBonusPercent === 10) delete draft.system.escapeBonusPercent;
+        else draft.system.escapeBonusPercent = battle.escapeBonusPercent;
+      }
       if (typeof battle.initialTroopId === "string") {
         if (!draft.database.troops.some((troop) => troop.id === battle.initialTroopId)) throw new ToolError(`초기 적 그룹을 찾을 수 없습니다: ${battle.initialTroopId}`, { code: "troop-not-found" });
         draft.system.initialTroopId = battle.initialTroopId;

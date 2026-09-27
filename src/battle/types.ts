@@ -115,6 +115,8 @@ export interface BattleRuntimeOptions {
   readonly canLose: boolean;
   readonly battleFlow?: BattleFlow;
   readonly activeSlots?: number;
+  /** 전투 개시 진형. 지정하면 그대로, 생략하면 system.battleFormationRoll 일 때만 민첩으로 굴린다(아니면 보통). */
+  readonly formation?: import("@/battle/battleFormation").BattleStartFormation;
   // 현재 플레이 세션의 파티 레벨/경험치. 승리 시 레벨업 미리보기(rewards.levelUps) 산출에 사용.
   // 없으면 레벨업 미리보기를 계산하지 않는다(세션 적립은 별도 파이프라인이 담당).
   readonly party?: BattlePartyProgress;
@@ -315,7 +317,7 @@ export type BattleTimelineEntryKind =
   | "stateRemoved"
   | "incapacitated"
   | "stalemate"
-  /** 적 반격 선언(이어서 피해 엔트리가 온다). */
+  /** 적 반격 선언(이어서 피해 엔트리가 온다). 쓰러지는 적의 최후의 일격(trigger onDeath)도 이 엔트리로 선언한다. */
   | "counter"
   /** 장비 자동 부활. amount = 되살아난 HP. */
   | "revive"
@@ -508,6 +510,10 @@ export interface BattleSnapshot {
   readonly result?: BattleResult;
   readonly rewards: BattleRewardsSnapshot;
   readonly canEscape: boolean;
+  /** 이 전투의 개시 진형. 보통 개시는 "normal". */
+  readonly formation?: import("@/battle/battleFormation").BattleStartFormation;
+  /** 지금까지 실패한 도주 횟수(다음 도주 확률 가산의 근거). */
+  readonly failedEscapeAttempts?: number;
   readonly canLose: boolean;
   readonly troopId: TroopId;
   readonly backdropResourceId?: string;

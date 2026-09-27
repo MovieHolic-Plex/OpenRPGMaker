@@ -24,6 +24,7 @@ import {
 import { databasePicker } from "./switchVariablePicker";
 import type { ActorAmountOp, ActorEquipmentSlot, ActorRecord, Command, EquipmentRecord, Project } from "@/project/types";
 import type { CommandEditContext } from "./types";
+import { isBattleStartFormation, type BattleStartFormation } from "@/battle/battleFormation";
 
 const AMOUNT_OP_OPTIONS = [
   { value: "=", label: "이 값으로" },
@@ -52,6 +53,15 @@ const BATTLE_FLOW_SEGMENTS = [
   { value: "gauge", key: "gauge", label: "게이지" },
   { value: "strict", key: "strict", label: "엄격 턴제" },
 ] as const satisfies readonly { readonly value: "inherit" | "gauge" | "strict"; readonly key: string; readonly label: string }[];
+
+const BATTLE_FORMATION_SEGMENTS = [
+  { value: "inherit", key: "inherit", label: "시스템 기본" },
+  { value: "normal", key: "normal", label: "보통" },
+  { value: "preemptive", key: "preemptive", label: "선제 공격" },
+  { value: "surprise", key: "surprise", label: "기습" },
+  { value: "backAttack", key: "backAttack", label: "백어택" },
+  { value: "pincer", key: "pincer", label: "협공" },
+] as const satisfies readonly { readonly value: "inherit" | BattleStartFormation; readonly key: string; readonly label: string }[];
 
 const BATTLE_ESCAPE_SEGMENTS = [
   { value: "allow", key: "allow", label: "도망 가능" },
@@ -128,6 +138,7 @@ export function battleProcessingBody(
   let canEscape = cmd.canEscape;
   let canLose = cmd.canLose;
   let battleFlow: "inherit" | "gauge" | "strict" = cmd.battleFlow ?? "inherit";
+  let formation: "inherit" | BattleStartFormation = cmd.formation ?? "inherit";
   let branchOnResult = cmd.branchOnResult === true;
 
   // 트룹 픽커: 카드 부제에 소속 적 이름을 나열해 어떤 전투인지 즉시 보이게 한다.
@@ -168,6 +179,13 @@ export function battleProcessingBody(
     value: battleFlow,
     testid: "battle-processing-flow-select",
     ariaLabel: "전투 방식",
+  });
+
+  const formationSelect = segmentedSelect({
+    options: BATTLE_FORMATION_SEGMENTS,
+    value: formation,
+    testid: "battle-processing-formation-select",
+    ariaLabel: "개시 진형",
   });
 
   // e2e/레거시 체크박스 testid 호환 — 세그먼트와 동기화되는 숨김 입력.
@@ -325,6 +343,7 @@ export function battleProcessingBody(
     canEscape = escape.select.value === "allow";
     canLose = lose.select.value === "allow";
     battleFlow = (flow.select.value as "inherit" | "gauge" | "strict") || "inherit";
+    formation = isBattleStartFormation(formationSelect.select.value) ? formationSelect.select.value : "inherit";
     troopSource = source.select.value === "variable" ? "variable" : "fixed";
     escapeCheckbox.checked = canEscape;
     loseCheckbox.checked = canLose;
@@ -339,6 +358,7 @@ export function battleProcessingBody(
       troopSource: troopSource === "variable" ? "variable" : undefined,
       troopVariableId: troopSource === "variable" ? troopVariableId : undefined,
       branchOnResult: branchOnResult ? true : undefined,
+      formation: formation === "inherit" ? undefined : formation,
       victoryBranch: branchOnResult ? (cmd.victoryBranch ?? []) : cmd.victoryBranch,
       defeatBranch: branchOnResult ? (cmd.defeatBranch ?? []) : cmd.defeatBranch,
       escapeBranch: branchOnResult ? (cmd.escapeBranch ?? []) : cmd.escapeBranch,
@@ -350,6 +370,7 @@ export function battleProcessingBody(
   escape.select.addEventListener("change", apply);
   lose.select.addEventListener("change", apply);
   flow.select.addEventListener("change", apply);
+  formationSelect.select.addEventListener("change", apply);
   escapeCheckbox.addEventListener("change", () => {
     escape.select.value = escapeCheckbox.checked ? "allow" : "deny";
     apply();
@@ -383,6 +404,7 @@ export function battleProcessingBody(
     battleField("도망", escape.root),
     battleField("패배", lose.root),
     battleField("전투 방식", flow.root),
+    battleField("개시 진형", formationSelect.root),
     battleField("프리셋", presets),
     branchControls,
     preview.root,

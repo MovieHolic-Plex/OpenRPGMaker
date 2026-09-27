@@ -441,6 +441,19 @@ function systemSectionNodes(
             draft.system.activeSlots = optionalPositiveInteger(value);
           }, "system:active-slots");
         }),
+        checkboxField("선제·기습 개시 굴림 (심볼 접촉 방향 포함)", "db-field-system-battle-formation-roll", project.system.battleFormationRoll === true, (checked) => {
+          updateSystem((draft) => {
+            if (checked) draft.system.battleFormationRoll = true;
+            else delete draft.system.battleFormationRoll;
+          });
+        }),
+        numberField("도주 실패마다 확률 가산 (%p)", "db-field-system-escape-bonus", () => store.getCurrent().system.escapeBonusPercent ?? 10, (value) => {
+          updateSystem((draft) => {
+            const next = Math.max(0, Math.min(100, Math.round(value)));
+            if (!Number.isFinite(value) || next === 10) delete draft.system.escapeBonusPercent;
+            else draft.system.escapeBonusPercent = next;
+          }, "system:escape-bonus");
+        }, { min: 0, max: 100 }),
         checkboxField("몬스터 수집", "db-field-system-monster-collection", project.system.monsterCollection === true, (checked) => {
           updateSystem((draft) => {
             if (checked) draft.system.monsterCollection = true;

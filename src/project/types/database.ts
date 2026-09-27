@@ -84,7 +84,12 @@ export interface ActorOptions {
   autoBattle: boolean;
   fixedEquipment: boolean;
   mightyGuard: boolean;
+  /** autoBattle 인 배우의 작전. 생략 = 균형(기존 자동 전투 AI). followOrders 면 자동 전투여도 명령을 직접 받는다. */
+  autoTactic?: ActorAutoTactic;
 }
+
+/** 배우별 자동 전투 작전: 전원 공격 · 회복 우선 · MP 아끼기 · 명령 따르기(수동). */
+export type ActorAutoTactic = "attackAll" | "healFirst" | "conserveMp" | "followOrders";
 
 export interface ActorLearnedSkill {
   level: number;
@@ -463,7 +468,7 @@ export interface EnemyRecord {
   reactions?: EnemyReaction[];
 }
 
-/** trigger: physical(공격 계열) · magic(마력 계열) · 그 밖의 문자열은 속성 id. skillId "" = 통상 공격. chance 0~100. */
+/** trigger: physical(공격 계열) · magic(마력 계열) · onDeath(쓰러질 때 최후의 일격, 전투당 1회) · 그 밖의 문자열은 속성 id. skillId "" = 통상 공격. chance 0~100. */
 export interface EnemyReaction {
   trigger: string;
   skillId: SkillId;
@@ -703,6 +708,10 @@ export interface StateRuntimeEffects {
   forcedAction?: "attackRandom";
   /** 이 상태인 동안 속성 등급을 덮어쓴다(속성 id → A~E). */
   elementRates?: Record<string, ActorRateGrade>;
+  /** 석화처럼 전투 불능으로 친다 — 아군 전원이 쓰러졌거나 이 상태면 패배. 이 상태로는 행동하지 못한다. */
+  incapacitates?: boolean;
+  /** 받는 HP 피해 중 이 비율(0~1)을 MP 에서 대신 깎는다(MP 가 모자라면 남은 만큼만). */
+  damageToMpRate?: number;
 }
 
 export interface BattleAnimationRecord {
@@ -1293,6 +1302,10 @@ export interface SystemRecords {
   atbMode?: BattleAtbMode;
   /** ATB 속도 1~8(4 = 기존 속도). 생략 = 기존 속도. */
   atbSpeed?: number;
+  /** true 면 전투마다 선제·기습·백어택·협공을 민첩으로 굴리고, 심볼 인카운트는 접촉 방향으로 정한다. 생략 = 항상 보통 개시. */
+  battleFormationRoll?: boolean;
+  /** 도주에 실패할 때마다 다음 도주 확률에 더하는 %p. 생략 = 10, 0 = 가산 없음. */
+  escapeBonusPercent?: number;
   /** field 면 전투 배경이 주인공 주변 필드 화면의 스냅숏이고 진입은 제자리 페이드. 생략 = 트룹/지형 배경. */
   battleBackdrop?: "field";
   /** onField 면 전투가 **필드 위에서** 벌어진다(크로노식): 전환 연출 없이, 적은 부딪힌 심볼 자리에, 아군은 파티가 선 자리에

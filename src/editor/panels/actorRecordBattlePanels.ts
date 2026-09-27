@@ -12,15 +12,25 @@ import {
   selectRecord,
 } from "@/editor/panels/actorRecordControls";
 import { store } from "@/project/store";
-import type { ActorOptions, ActorRateGrade, ActorRecord } from "@/project/types";
+import type { ActorAutoTactic, ActorOptions, ActorRateGrade, ActorRecord } from "@/project/types";
 import { el } from "@/util/dom";
 
-const OPTION_LABELS: readonly { readonly key: keyof ActorOptions; readonly label: string }[] = [
+type ActorBooleanOption = Exclude<keyof ActorOptions, "autoTactic">;
+
+const OPTION_LABELS: readonly { readonly key: ActorBooleanOption; readonly label: string }[] = [
   { key: "dualWield", label: "이도류" },
   { key: "autoBattle", label: "자동 전투" },
   { key: "fixedEquipment", label: "장비 고정" },
   { key: "mightyGuard", label: "강력 방어" },
 ] as const;
+
+/** 자동 전투 작전. 빈 값 = 균형(기존 자동 전투). */
+const AUTO_TACTIC_OPTIONS: readonly { readonly id: ActorAutoTactic; readonly name: string }[] = [
+  { id: "attackAll", name: "전원 공격" },
+  { id: "healFirst", name: "회복 우선" },
+  { id: "conserveMp", name: "MP 아끼기" },
+  { id: "followOrders", name: "명령 따르기 (직접 조작)" },
+];
 
 export function battlePanel(actor: ActorRecord, rerender: () => void, refreshBuildPreview: () => void): HTMLElement {
   return actorPanel("장비와 스킬", "actor-battle", [
@@ -82,6 +92,11 @@ function optionsPanel(actor: ActorRecord): HTMLElement {
           updateDatabaseRecord("actors", actor.id, { options: { ...currentActor(actor).options, [option.key]: enabled } })
         )
       ),
+    }),
+    selectRecord("자동 전투 작전 (비우면 균형)", "db-picker-actor-auto-tactic", actor.options.autoTactic ?? "", AUTO_TACTIC_OPTIONS, (value) => {
+      const { autoTactic: _previous, ...rest } = currentActor(actor).options;
+      const autoTactic = AUTO_TACTIC_OPTIONS.find((option) => option.id === value)?.id;
+      updateDatabaseRecord("actors", actor.id, { options: autoTactic ? { ...rest, autoTactic } : rest });
     }),
   ]);
 }

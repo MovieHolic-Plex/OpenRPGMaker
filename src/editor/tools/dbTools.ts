@@ -383,7 +383,13 @@ const actorInitialEquipmentSchema: JsonSchema = {
   type: "object", description: "{ equipment slot id: equipment id }; includes project-authored slots",
   additionalProperties: true,
 };
-const actorOptionsSchema = objectSchema({ dualWield: booleanSchema(), autoBattle: booleanSchema(), fixedEquipment: booleanSchema(), mightyGuard: booleanSchema() });
+const actorOptionsSchema = objectSchema({
+  dualWield: booleanSchema(),
+  autoBattle: booleanSchema(),
+  fixedEquipment: booleanSchema(),
+  mightyGuard: booleanSchema(),
+  autoTactic: { type: "string", enum: ["attackAll", "healFirst", "conserveMp", "followOrders"], description: "autoBattle 배우의 작전: attackAll(전원 공격) · healFirst(회복 우선) · conserveMp(MP 아끼기) · followOrders(자동 전투여도 직접 조작). 생략 = 균형" },
+});
 const learnedSkillSchema = objectSchema({ level: integerSchema(), skillId: stringSchema() });
 // 배우 전용: tp 는 배우 learnedSkills 에만 있다(직업·종족 습득표는 레벨만).
 const actorLearnedSkillSchema = objectSchema({
@@ -468,6 +474,8 @@ const stateRuntimeEffectsSchema = objectSchema({
   magicDefenseMultiplier: numberSchema("실드 — 마력(mind) 계열 피해에만 곱하는 방어 배율"),
   forcedAction: { type: "string", enum: ["attackRandom"], description: "버서크 — 명령 없이 무작위 상대를 통상 공격" },
   elementRates: { ...rateMapSchema, description: "이 상태인 동안 덮어쓸 속성 등급(속성 id → A~E)" },
+  incapacitates: booleanSchema("석화처럼 전투 불능으로 친다 — 아군 전원이 쓰러졌거나 이 상태면 패배. 이 상태로는 행동하지 못한다"),
+  damageToMpRate: numberSchema("받는 HP 피해 중 MP 에서 대신 깎는 비율 0~1(예 0.5 = 절반을 MP 로)"),
 });
 
 const itemRecordSchema = objectSchema({
@@ -521,7 +529,7 @@ const enemyRecordSchema = objectSchema({
   rewards: enemyRewardsSchema,
   actions: arrayOf(enemyActionSchema),
   reactions: arrayOf(objectSchema({
-    trigger: stringSchema("physical(공격 계열) | magic(마력 계열) | 속성 id"),
+    trigger: stringSchema("physical(공격 계열) | magic(마력 계열) | onDeath(쓰러질 때 최후의 일격, 전투당 1회) | 속성 id"),
     skillId: stringSchema("반격 스킬 id. 빈 문자열이면 통상 공격"),
     chance: integerSchema("발동 확률 0~100(생략 100)"),
   }), "반격: 피격 후 살아 있으면 차례 밖에서 skillId 를 쓴다(타격당 최대 1회, 게이지 유지). 빈 배열이면 해제"),
@@ -1101,8 +1109,8 @@ function validateEnemyReactions(draft: Project, patch: unknown): void {
   reactions.forEach((raw, index) => {
     const entry = (raw && typeof raw === "object" ? raw : {}) as { trigger?: unknown; skillId?: unknown; chance?: unknown };
     const label = `enemy.reactions[${index}]`;
-    if (typeof entry.trigger !== "string" || !(entry.trigger === "physical" || entry.trigger === "magic" || elementIds.includes(entry.trigger))) {
-      throw new ToolError(`${label}.trigger 는 physical · magic · 속성 id 중 하나여야 합니다(받은 값 ${JSON.stringify(entry.trigger)}). 속성: ${elementIds.slice(0, 8).join(", ") || "없음"}`, { code: "invalid-enemy-reactions" });
+    if (typeof entry.trigger !== "string" || !(entry.trigger === "physical" || entry.trigger === "magic" || entry.trigger === "onDeath" || elementIds.includes(entry.trigger))) {
+      throw new ToolError(`${label}.trigger 는 physical · magic · onDeath · 속성 id 중 하나여야 합니다(받은 값 ${JSON.stringify(entry.trigger)}). 속성: ${elementIds.slice(0, 8).join(", ") || "없음"}`, { code: "invalid-enemy-reactions" });
     }
     if (typeof entry.skillId !== "string") throw new ToolError(`${label}.skillId(문자열, 통상 공격은 "")가 필요합니다.`, { code: "invalid-enemy-reactions" });
     if (entry.chance !== undefined && (typeof entry.chance !== "number" || entry.chance < 0 || entry.chance > 100)) {

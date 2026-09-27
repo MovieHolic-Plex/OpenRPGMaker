@@ -154,6 +154,12 @@ function runtimeEffectsPanel(state: StateRecord, update: (patch: Partial<StateRe
     checkControl("전투 종료 시 해제", "db-state-rt-remove-on-end", behavior.removeOnBattleEnd, (removeOnBattleEnd) =>
       patchEffects({ removeOnBattleEnd })
     ),
+    checkControl("전투 불능으로 침 (석화 — 전원이면 패배)", "db-state-rt-incapacitates", state.runtimeEffects?.incapacitates === true, (incapacitates) =>
+      patchEffects({ incapacitates: incapacitates ? true : undefined })
+    ),
+    numberField("피해를 MP 로 (0~1)", "db-state-rt-damage-to-mp", state.runtimeEffects?.damageToMpRate ?? 0, (damageToMpRate) =>
+      patchEffects({ damageToMpRate: damageToMpRate > 0 ? Math.min(1, damageToMpRate) : undefined }), { min: 0, max: 1, step: 0.05 }
+    ),
     el("div", {
       // db-state-summary 를 쓰면 안 된다 — 그 클래스에 grid-area: summary 가 박혀 있어
       // 온톨로지 요약 칸과 겹쳐 찌그러진다(실제로 그렇게 깨졌다).
