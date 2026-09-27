@@ -322,10 +322,15 @@ export function lintPassage(set: LoadedSet, spec: MapSpec, k1: (string | null)[]
     if (p.o.kind === "door" && dy !== p.o.h - 1) return;
     const x = p.x + dx, y = p.y + dy; if (x >= 0 && y >= 0 && x < w && y < h) legit.add(y * w + x);
   });
-  const crossing = (k: string | null) => !!k && !k.startsWith("#") && /징검|다리|발판/.test(info.get(k)?.name ?? "");
+  // 물 위 2층 길·징검다리·발판은 건널목(여울)이다.
+  const crossingAt = (i: number) => {
+    const k = k2[i]!; if (!k || k.startsWith("#")) return false;
+    const a = info.get(k); if (/징검|다리|발판/.test(a?.name ?? "")) return true;
+    const b = k1[i] ? info.get(k1[i]!) : undefined; return a?.role === "road" && b?.role === "water";
+  };
   const leaks: string[] = [];
   for (let i = 0; i < w * h; i += 1) {
-    if (!open(i) || legit.has(i) || crossing(k2[i]!)) continue;
+    if (!open(i) || legit.has(i) || crossingAt(i)) continue;
     const base = passabilityOf(ts, layers[0][i]!, -1, -1, -1);
     if (!(base.up || base.down || base.left || base.right)) leaks.push(`(${i % w},${Math.floor(i / w)})`);
   }
