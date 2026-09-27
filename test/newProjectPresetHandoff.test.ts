@@ -29,7 +29,8 @@ it("publishes the saved new folder's confirmed brief only after its pending clai
   const preparing = prepareProjectInterviewStartup();
   expect(setPendingAiBootIntent).not.toHaveBeenCalled();
   finish({ kind: "saved" }); await preparing;
-  expect(setPendingAiBootIntent).toHaveBeenCalledWith(expect.stringContaining(JSON.stringify(project.gameDesignBrief!.summary)), { autoSend: true });
+  // 프리셋 첫 생성은 이 한 턴만 팀으로 돈다(2026-09-27) — 사용자 팀 설정은 건드리지 않는다.
+  expect(setPendingAiBootIntent).toHaveBeenCalledWith(expect.stringContaining(JSON.stringify(project.gameDesignBrief!.summary)), expect.objectContaining({ autoSend: true, team: true }));
   expect(project.gameDesignBrief!.generationPending).toBeUndefined();
   await prepareProjectInterviewStartup();
   expect(setPendingAiBootIntent).toHaveBeenCalledOnce();
@@ -62,5 +63,5 @@ it("does not send to a different project opened while saving", async () => {
 it("prefills instead of launching a disconnected AI and preserves the same confirmed design", async () => {
   vi.mocked(isAssistantEndpointReady).mockReturnValue(false);
   await prepareProjectInterviewStartup();
-  expect(setPendingAiBootIntent).toHaveBeenCalledWith(expect.stringContaining("공포"), { autoSend: false });
+  expect(setPendingAiBootIntent).toHaveBeenCalledWith(expect.stringContaining("공포"), expect.objectContaining({ autoSend: false, team: true }));
 });

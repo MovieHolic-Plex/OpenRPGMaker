@@ -317,4 +317,52 @@
     overflow: auto;
     white-space: pre-wrap;
   }
+
+  /* 프리셋 시작 전 AI 연결 관문(editor/ui/aiConnectGate.ts). 설정 창이 떠 있는 동안에는 숨는다. */
+  .ai-connect-gate-overlay[hidden] {
+    display: none;
+  }
+  .ai-connect-gate-card {
+    max-width: 460px;
+  }
+  .ai-connect-gate-kicker {
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .ai-connect-gate-team {
+    display: grid;
+    gap: var(--space-2);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .ai-connect-gate-member {
+    background: var(--accent-muted);
+    border-radius: var(--radius-m);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--space-2);
+  }
+  .ai-connect-gate-role {
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .ai-connect-gate-job {
+    color: var(--text-2);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .ai-connect-gate-status {
+    color: var(--text-2);
+    font-size: 12px;
+    margin: 0;
+  }
+  @media (max-width: 420px) {
+    .ai-connect-gate-team {
+      grid-template-columns: 1fr;
+    }
+  }
 }

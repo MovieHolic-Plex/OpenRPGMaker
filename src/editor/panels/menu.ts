@@ -929,7 +929,13 @@ async function createProjectFromDialog(): Promise<void> {
   // 새 프로젝트는 이름과 시작 장르를 받고 별도 SQLite 폴더에 저장한다.
   // 장르가 있으면 genrePacks.ts 정본 경로로 시스템 프리셋을 씨앗에 적용한다 —
   // 맵·이벤트·DB 레코드는 만들지 않고 system.* 토글만 설정된다.
-  const selection = await showNewProjectDialog({ defaultValue: "새 프로젝트" });
+  const selection = await showNewProjectDialog({
+    defaultValue: "새 프로젝트",
+    ensureAiConnected: async (presetLabel) => {
+      const { ensureAiConnectedForPreset } = await import("@/editor/ui/aiConnectGate");
+      return ensureAiConnectedForPreset({ presetLabel });
+    },
+  });
   if (selection === null) return;
   const title = selection.title.trim() || "새 프로젝트";
   const choiceId = selection.choiceId;
