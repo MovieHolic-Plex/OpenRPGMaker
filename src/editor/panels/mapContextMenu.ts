@@ -106,7 +106,7 @@ function renderMenuItem(item: MapContextMenuItem): HTMLButtonElement {
       el("span", { class: "map-context-menu-label", text: item.label }),
       el("span", { class: "map-context-menu-shortcut", text: item.shortcut ?? "" }),
     ],
-    dataset: { testid: item.testId },
+    dataset: { testid: item.testId, ...(item.shortcut && item.shortcut.length === 1 ? { accessKey: item.shortcut.toLowerCase() } : {}) },
     on: {
       click: (event) => {
         event.preventDefault();
@@ -129,6 +129,15 @@ function positionMenu(menu: HTMLElement, point: MapContextMenuPoint): void {
 }
 
 function handleMenuKeyDown(menu: HTMLElement, event: KeyboardEvent): void {
+  // 한 글자 단축키(예: 「AI로 여기에 이벤트」 A)는 메뉴가 떠 있는 동안 곧바로 그 항목을 누른다.
+  if (event.key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
+    const match = enabledMenuItems(menu).find((item) => item.dataset.accessKey === event.key.toLowerCase());
+    if (match) {
+      event.preventDefault();
+      match.click();
+      return;
+    }
+  }
   if (event.key === "ArrowDown") {
     event.preventDefault();
     moveMenuFocus(menu, 1);
