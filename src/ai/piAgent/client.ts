@@ -7,6 +7,7 @@ import { companionAuthUrl } from "@/ai/chatgptOAuthClient";
 import { companionTokenHeaders } from "@/ai/companionToken";
 import { createPiAgentLineDecoder, PI_AGENT_STALE_MS, restoreCheckpointProject, slimCheckpointProject, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "./protocol";
 import { piRequestBody } from "./requestBody";
+import { forgetHeavySent, markHeavySent, planHeavyWire, withHeavyBlobs } from "./heavyWire";
 
 export interface RunPiAgentClientOptions {
   readonly onCheckpoint?: (event: Extract<PiAgentEvent, { type: "checkpoint" }>) => Promise<Project | void>;
@@ -15,6 +16,10 @@ export interface RunPiAgentClientOptions {
   readonly fetchImpl?: typeof fetch;
   /** 이 시간 동안 줄이 하나도 안 오면 워커가 죽은 것으로 보고 끊는다. 워커는 5초마다 heartbeat 를 쓴다. */
   readonly staleMs?: number;
+  /** 끊긴 스트림을 이어 받을 때 시도 사이 대기(ms). 기본 2초에서 두 배씩, 최대 15초. */
+  readonly resumeDelayMs?: number;
+  /** 이어 받기 시도 상한(연속). 한 번이라도 줄을 받으면 다시 센다. */
+  readonly resumeAttempts?: number;
 }
 
 export class PiAgentClientError extends Error {
@@ -24,27 +29,67 @@ export class PiAgentClientError extends Error {
   }
 }
 
+async function readError(response: Response): Promise<{ error?: string; missing?: string[] }> {
+  try { return (await response.json()) as { error?: string; missing?: string[] }; } catch { return {}; }
+}
+
+function newRunId(): string {
+  return typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+    ? crypto.randomUUID()
+    : `${Date.now().toString(16)}-${Math.random().toString(16).slice(2, 10)}`;
+}
+
+/**
+ * 실행을 연다. 무거운 키(타일셋·DB·에셋)는 해시로 보내고, 호스트가 모르는 해시만 내용을 싣는다(heavyWire).
+ * 호스트가 409 heavy-missing 이면 그 해시만 실어 한 번 더 보낸다. 옛 호스트(해시를 모르는)는 heavy 필드를 무시하고
+ * 빈 키를 받게 되므로, 해시 전송은 실행 기록 헤더(X-Oprn-Run-Id)를 돌려주는 호스트에서만 기억한다.
+ */
+async function openRun(request: PiAgentRequest, runId: string, doFetch: typeof fetch, signal: AbortSignal | undefined): Promise<Response> {
+  const url = companionAuthUrl("/v1/agent/run", request.provider);
+  const origin = new URL(url, typeof location !== "undefined" ? location.href : "http://local").origin;
+  const plan = await planHeavyWire(request);
+  const post = async (body: unknown) => {
+    const wire = await piRequestBody(body, signal);
+    return doFetch(url, { method: "POST", ...wire, headers: { ...wire.headers, ...companionTokenHeaders() }, ...(signal ? { signal } : {}) });
+  };
+  if (!plan) return post({ ...request, runId });
+  let response = await post({ ...withHeavyBlobs(plan, origin), runId });
+  if (response.status === 409) {
+    const payload = await readError(response.clone());
+    if (payload.error === "heavy-missing" && Array.isArray(payload.missing)) {
+      forgetHeavySent(origin, payload.missing);
+      response = await post({ ...withHeavyBlobs(plan, origin, payload.missing), runId });
+    }
+  }
+  if (response.ok && response.headers.get("X-Oprn-Run-Id")) markHeavySent(origin, plan);
+  else if (response.ok) {
+    // 실행 기록을 모르는 옛 호스트 — heavy 를 무시했으므로 빈 키로 돌고 있다. 끊고 예전 방식으로 다시 보낸다.
+    void response.body?.cancel().catch(() => undefined);
+    response = await post({ ...request, runId });
+  }
+  return response;
+}
+
 export async function runPiAgentViaCompanion(request: PiAgentRequest, options: RunPiAgentClientOptions = {}): Promise<PiAgentDoneEvent> {
   const captureEpoch = inspectionEpoch();
   const doFetch = options.fetchImpl ?? fetch;
-  const wire = await piRequestBody(request, options.signal);
-  const response = await doFetch(companionAuthUrl("/v1/agent/run", request.provider), {
-    method: "POST",
-    ...wire,
-    headers: { ...wire.headers, ...companionTokenHeaders() },
-    ...(options.signal ? { signal: options.signal } : {}),
-  });
+  const runId = newRunId();
+  let response = await openRun(request, runId, doFetch, options.signal);
   if (!response.ok) {
-    let detail = `${response.status}`;
-    try {
-      const payload = (await response.json()) as { error?: string };
-      if (payload?.error) detail = payload.error;
-    } catch {
-      // 본문 없음
-    }
-    throw new PiAgentClientError(`Pi 에이전트 실행 실패: ${detail}`, response.status);
+    const payload = await readError(response);
+    throw new PiAgentClientError(`Pi 에이전트 실행 실패: ${payload.error ?? response.status}`, response.status);
   }
   if (!response.body) throw new PiAgentClientError("Pi 에이전트 응답에 본문이 없습니다");
+  // 호스트가 실행 기록을 들고 있으면(헤더) 끊겨도 이어 받는다. 없으면 예전처럼 한 연결이 전부다.
+  const resumable = response.headers.get("X-Oprn-Run-Id") === runId;
+  // 사용자 중단은 연결을 끊는 것만으로는 실행이 멈추지 않는다(호스트가 이어 받기를 기다린다) — 명시적으로 알린다.
+  const onUserAbort = () => {
+    if (!resumable) return;
+    void doFetch(companionAuthUrl("/v1/agent/cancel", request.provider), {
+      method: "POST", headers: { "Content-Type": "application/json", ...companionTokenHeaders() }, body: JSON.stringify({ runId }),
+    }).catch(() => undefined);
+  };
+  options.signal?.addEventListener("abort", onUserAbort, { once: true });
   // 대입이 스트림 콜백 안에서만 일어나 제어흐름 분석이 초기값 null 로 좁힌다(그러면 truthy 분기가 never 가 된다).
   let done: PiAgentDoneEvent | null = null as PiAgentDoneEvent | null;
   let lastError: string | null = null;
@@ -57,6 +102,8 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   let acksInFlight = 0;
   let stale = false;
   let lastLineAt = Date.now();
+  /** 호스트 실행 기록에서 마지막으로 받은 줄 번호. 이어 받을 때 after 로 보낸다. 같은 번호 이하는 두 번 처리하지 않는다. */
+  let lastSeq = -1;
   const trackAck = (work: () => Promise<void>) => async () => {
     acksInFlight += 1;
     try { await work(); } finally { acksInFlight -= 1; lastLineAt = Date.now(); }
@@ -86,10 +133,16 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
         ...(options.signal ? { signal: options.signal } : {}),
       });
       if (!ack.ok) throw new PiAgentClientError("맵 이미지 응답을 전달하지 못했습니다.", ack.status);
-    })).catch(error => { checkpointError = error; void reader.cancel().catch(() => undefined); });
+    })).catch(error => { checkpointError = error; abortStream(); });
     return true;
   };
-  const decoder = createPiAgentLineDecoder((raw) => {
+  const decoder = createPiAgentLineDecoder((line) => {
+    const seq = (line as { seq?: unknown }).seq;
+    if (typeof seq === "number") {
+      if (seq <= lastSeq) return;
+      lastSeq = seq;
+    }
+    const raw = line;
     // 워커는 요청 그대로인 무거운 키(타일셋 이미지·DB)를 빼고 done 을 보낸다 — 요청 프로젝트의 것을 다시 붙인다.
     const event = raw.type === "done" && raw.unchangedKeys?.length ? restoreDone(raw, request.project) : raw;
     // Never persist request contents into conversation/audit event logs.
@@ -119,14 +172,18 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
           ...(options.signal ? { signal: options.signal } : {}),
         });
         if (!ack.ok) throw new PiAgentClientError(stale ? "적용 응답을 전달하지 못했습니다 — 워커 연결이 먼저 끊겼습니다." : "적용 응답을 전달하지 못했습니다.", ack.status);
-      })).catch(error => { checkpointError = error; void reader.cancel().catch(() => undefined); });
+      })).catch(error => { checkpointError = error; abortStream(); });
       return;
     }
     if (event.type === "done") done = event;
     if (event.type === "error") lastError = event.message;
     options.onEvent?.(event);
   });
-  const reader = response.body.getReader();
+  // 지금 읽는 연결. 이어 받으면 새 연결로 바뀐다 — 체크포인트 실패·워치독이 끊는 대상은 언제나 지금 것이다.
+  let reader = response.body.getReader();
+  /** 우리가 일부러 끊었다(체크포인트 실패·워치독·사용자 중단). 이어 받지 않는다. */
+  let stopped = false;
+  const abortStream = () => { stopped = true; void reader.cancel().catch(() => undefined); };
   const text = new TextDecoder();
   // 워치독: 침묵은 모델이 생각하는 것이 아니라(그건 heartbeat 가 묻는다) 워커가 죽은 것이다. 끊지 않으면 실행 상한(PI_AGENT_DEFAULT_TIMEOUT_MS, 3000초)까지 「실행 중」이 떠 있는다.
   const staleMs = options.staleMs ?? PI_AGENT_STALE_MS;
@@ -134,26 +191,67 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
     // 우리가 응답 중이거나, 타이머가 늦게 울렸을 뿐 마지막 줄 이후 staleMs 가 안 지났으면 다시 건다.
     if (acksInFlight > 0 || Date.now() - lastLineAt < staleMs) { watchdog = setTimeout(onStale, staleMs); return; }
     stale = true;
-    void reader.cancel().catch(() => undefined);
+    abortStream();
   };
   let watchdog = setTimeout(onStale, staleMs);
+  const resumeAttempts = options.resumeAttempts ?? 6;
+  const resumeBase = options.resumeDelayMs ?? 2_000;
+  let failures = 0;
+  let dropError: unknown = null;
   try {
     for (;;) {
-      const { value, done: finished } = await reader.read();
-      if (finished) break;
-      if (value) {
-        clearTimeout(watchdog);
-        watchdog = setTimeout(onStale, staleMs);
-        lastLineAt = Date.now();
-        decoder.push(text.decode(value, { stream: true }));
+      try {
+        for (;;) {
+          const { value, done: finished } = await reader.read();
+          if (finished) break;
+          if (value) {
+            clearTimeout(watchdog);
+            watchdog = setTimeout(onStale, staleMs);
+            lastLineAt = Date.now();
+            failures = 0;
+            decoder.push(text.decode(value, { stream: true }));
+          }
+        }
+        dropError = null;
+      } catch (error) {
+        // 연결이 도중에 끊겼다(와이파이·절전·네트워크 변경, Firefox 「Error in input stream」). 호스트는 실행을 계속 들고 있다.
+        dropError = error;
       }
+      decoder.push(text.decode());
+      decoder.flush();
+      // 끝까지 받았거나, 우리가 끊었거나, 이어 받을 수 없는 호스트면 멈춘다.
+      if (done || stopped || !resumable || options.signal?.aborted) break;
+      // 오류 없이 닫혔으면 호스트가 실행을 끝낸 것이다(done 없이 error 줄로 끝난 실행 포함) — 이어 받을 것이 없다.
+      // 실측(2026-09-27): 팀 실행이 OAuth 만료 error 로 끝났는데 끊김으로 보고 이어 받기를 네 번 돌았다.
+      if (!dropError) break;
+      if (++failures > resumeAttempts) break;
+      await new Promise((resolve) => setTimeout(resolve, Math.min(15_000, resumeBase * 2 ** (failures - 1))));
+      if (options.signal?.aborted || stopped) break;
+      options.onEvent?.({ type: "execution_status", name: "stream.resume", summary: "연결이 끊겨 이어 받는 중", ok: true, data: { after: lastSeq + 1, attempt: failures } });
+      let resumed: Response;
+      try {
+        resumed = await doFetch(companionAuthUrl("/v1/agent/run", request.provider) + "&runId=" + encodeURIComponent(runId) + "&after=" + (lastSeq + 1), {
+          method: "GET", headers: companionTokenHeaders(), ...(options.signal ? { signal: options.signal } : {}),
+        });
+      } catch (error) { dropError = error; continue; }
+      // 404: 호스트가 실행을 잃었다(재시작·기록 만료) — 더 기다려도 오지 않는다.
+      if (resumed.status === 404) { lastError = (await readError(resumed)).error ?? lastError; break; }
+      if (!resumed.ok || !resumed.body) { dropError = new Error("이어 받기 " + resumed.status); continue; }
+      reader = resumed.body.getReader();
+      lastLineAt = Date.now();
+      clearTimeout(watchdog);
+      watchdog = setTimeout(onStale, staleMs);
     }
   } finally {
     clearTimeout(watchdog);
+    options.signal?.removeEventListener("abort", onUserAbort);
   }
-  decoder.push(text.decode());
-  decoder.flush();
+  // 사용자 중단: 예전과 같이 AbortError 로 끝낸다(호출자가 「중단」 경로로 보낸다). 호스트에는 onUserAbort 가 이미 알렸다.
+  if (options.signal?.aborted && !done) throw Object.assign(new Error("Request was aborted"), { name: "AbortError" });
   await checkpoints;
+  if (!done && dropError && !stale && !checkpointError) {
+    throw new PiAgentClientError("AI 작업 연결이 끊겼고 다시 이어 받지 못했습니다: " + (dropError instanceof Error ? dropError.message : String(dropError)));
+  }
   // 워치독이 먼저 끊었으면 그 뒤 ACK 실패(워커가 이미 대기를 거둔 409)는 결과일 뿐 — 원인을 보고한다.
   if (checkpointError && !stale) throw checkpointError;
   if (done?.interiorCompletion?.length) throw new PiAgentClientError(`실내 미완료: ${done.interiorCompletion.length}개 맵에 검사 문제가 남아 완료 처리하지 않았습니다. 실행 기록의 실내 검사 결과를 확인하세요.`);
@@ -168,3 +266,5 @@ function restoreDone(done: PiAgentDoneEvent, requestProject: PiAgentRequest["pro
   const { unchangedKeys, ...rest } = done;
   return { ...rest, project: restoreCheckpointProject(requestProject, done.project, unchangedKeys) };
 }
+
+

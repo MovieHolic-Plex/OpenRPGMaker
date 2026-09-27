@@ -8,6 +8,22 @@ import { buildPiAgentSystemPrompt, describeScopedMaps } from "./systemPrompt";
 import { gameDesignBriefContext } from "@/project/gameDesignBrief";
 import type { PiTeamRoleId } from "./protocol";
 import { describeTeamMembers, type PiTeamSpec } from "./teamSpec";
+import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
+
+/**
+ * 프리셋 첫 생성의 범위. 2026-09-27 실측: 첫 생성에서 시공 팀원 하나가 170턴·입력 3,500만 토큰을 쓰고도 마을 검사를
+ * 통과하지 못했고, 다음 실행은 41분이 지나도 끝나지 않았다(맵 17장·이벤트 175개). 사용자가 기다리는 것은
+ * 「첫 제작 범위를 플레이해 볼 수 있는 구간」이다 — 넓히는 것은 다음 요청이 한다.
+ */
+export const PRESET_FIRST_BUILD_RULES = [
+  "[첫 생성 범위] 이 요청은 새 프로젝트의 첫 생성이다. 확정 기획의 「첫 제작 범위」를 플레이해 볼 수 있는 가장 작은 구간만 만든다.",
+  "- 맵은 그 구간에 꼭 필요한 것만(보통 3~5장: 시작 마을 1, 필드 1, 목표 지점 1, 꼭 필요한 실내). 주민 집 실내를 채우려고 맵을 늘리지 않는다.",
+  "- 순서: ① 프로젝트 공통(시스템·DB·타이틀·오프닝)을 한 팀원에게 먼저 맡기고 wait_agents ② 맵 배정 ③ 검수 한 번 ④ finish.",
+  "- 검수 지적 수정은 플레이를 막는 문제(길이 막힘·문 없음·필수 이벤트 누락)만 맡긴다. 장식·밀도 개선은 finish 보고의 「다음에 할 일」로 넘긴다.",
+  "- finish 보고에는 만든 것, 바로 플레이해 볼 순서, 다음에 늘릴 것 세 가지를 적는다.",
+] as const;
+/** 프리셋 첫 생성에서 팀원 한 명이 쓰는 턴 상한. 기본(200~300)의 절반 아래 — 구간이 작으니 한 배정이 길 이유가 없다. */
+export const PRESET_FIRST_BUILD_MEMBER_TURNS = 120;
 
 export interface PiTeamRole {
   readonly id: PiTeamRoleId;
@@ -52,6 +68,7 @@ export const PI_TEAM_ROLES: Record<PiTeamRoleId, PiTeamRole> = {
         "팀원은 소개에 맞는 일만 맡긴다(예: 장식 팀원에게 집을 짓게 하지 않는다). member 를 비우면 첫 시공 팀원이 맡는다.",
         ...(team?.orchestratorNotes.trim() ? [`사용자의 팀 운영 지침: ${team.orchestratorNotes.trim()}`] : []),
         ...teamWorkflowPrompt(),
+        ...(isGenrePresetBriefRequest(task) ? PRESET_FIRST_BUILD_RULES : []),
         "절차:",
         "1. 필요하면 get_map_region 으로 현황을 짧게 본다(맵당 한 번, 넓은 영역 한 번).",
         "2. assign_map_agent 를 **한 턴에 여러 개** 호출해 맵마다 시공 팀원을 띄운다. 이 툴은 배정만 하고 곧바로 돌아온다 — 팀원은 뒤에서 계속 일한다. 각 호출의 task 는 그 맵에서 할 일을 구체적으로 적는다(위치·크기·재료 기본값을 네가 정한다).",

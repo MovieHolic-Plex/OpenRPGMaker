@@ -23,6 +23,7 @@ export { normalizePiThinkingLevel } from "./thinkingLevel";
 import { normalizePiThinkingLevel } from "./thinkingLevel";
 import { resolveVillageContract, type VillageContract } from "./villageContract";
 import { MODERN_MAP_INITIAL_TOOLS, requestsModernMap } from '../modernTilesetPolicy';
+import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 
 /**
  * 계획 턴의 지시문 머리. Pi 에는 세션 플래너가 없으므로 «실행하지 말고 계획만» 을 말로 만든다 —
@@ -67,6 +68,14 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
   let questionPromoted = false;
   let initialToolNames: readonly string[] | undefined;
   let intentNote: string | null = null;
+  // 장르 프리셋 첫 요청(「장르 프리셋: …」)은 답이 정해져 있다: 게임 전체를 새로 만드는 다단계 작업이다.
+  // 의도 선언은 모델을 두 번 불러 10~24초를 쓰고, 30초 창을 넘기면 첫 생성이 시작조차 못 한다(2026-09-27 실측).
+  // 마을 계약도 이미 이 머리글을 보고 빠진다(villageContract.ts) — 선언이 바꿀 수 있는 판정이 남지 않았다.
+  // 도구는 좁히지 않는다(initialToolNames 없음 = 전체) — 게임 전체 저작은 DB·시스템·맵 도구를 모두 쓴다.
+  if (!plan.readOnly && isGenrePresetBriefRequest(input.text)) {
+    const team = input.piTeam;
+    return { mode: team ? "team" : "single", plan: { ...plan, routineEdit: false }, questionPromoted: false, intentNote: null };
+  }
   if (!plan.readOnly) {
     input.onDeclaring?.();
     const { project, text, currentMapId, selection } = input;

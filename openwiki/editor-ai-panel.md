@@ -3082,7 +3082,32 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 - **`Error in input stream` 은 QA 환경 탓이었다:** Firefox 가 스트림 읽기 도중 네트워크 변경을 감지하면 진행 중 연결을 끊고 이 메시지를 낸다.
   이 호스트는 Docker 가 veth 인터페이스를 수십 초마다 만들고 지운다(`ip monitor`). 브라우저 QA 에서 `network.notify.changed=false` 를 주자 같은
   프리셋 팀 첫 생성이 41분 동안 끊김 없이 돌았다(맵 17장 · 이벤트 175개, SQLite 재로드 확인). 제품 코드 문제는 아니지만, 네트워크가 흔들리는 실제
-  사용자 PC 에서도 같은 끊김이 날 수 있다 — 끊긴 뒤 이어 받는 경로는 없다. 의도 선언 `NS_ERROR_ABORT` 도 같은 원인이었다.
+  사용자 PC 에서도 같은 끊김이 날 수 있다. 의도 선언 `NS_ERROR_ABORT` 도 같은 원인이었다. 아래 「실행 기록과 이어 받기」가 그 경로다.
+- **무거운 키는 해시로 보낸다 (2026-09-27):** `src/ai/piAgent/heavyWire.ts` 가 `tilesets` · `database` · `assets` 중 256KB 이상인 키를
+  SHA-256 으로 바꾸고 몸통에서 비운다(`heavy: {키: 해시}`). 호스트가 아직 모르는 해시만 `heavyBlobs` 에 내용을 싣는다. 호스트
+  `scripts/lib/piRunRelay.mjs` 의 `resolveHeavyProject` 가 내용을 해시로 검증해 LRU 캐시(512MB)에 두고 워커 몸통에 다시 붙인다. 모르는 해시면
+  `409 {error:"heavy-missing", missing}` 을 돌려주고, 클라이언트는 그 해시만 실어 한 번 더 보낸다(호스트 재시작·축출). 브라우저의 "보낸 해시" 표는
+  추측일 뿐이고 권위는 409 다. `crypto.subtle` 이 없으면 예전처럼 통째로 보낸다. 체크포인트 슬림·복원(`protocol.ts`)도 `assets` 를 같은 무거운 키로 다룬다.
+- **실행 기록과 이어 받기 (2026-09-27):** 실행은 브라우저 연결이 아니라 호스트의 실행 기록에 묶인다(`piRunRelay.mjs`).
+  POST `/v1/agent/run` 은 몸통의 `runId`(없으면 호스트가 만든다)로 기록을 열고, 워커 NDJSON 을 끝까지 읽어 쌓으며, 줄마다 `"seq"` 를 붙여 흘린다.
+  응답 헤더 `X-Oprn-Run-Id` 가 이어 받기 가능 표시다 — 두 동반 서비스 진입점(`companion/middleware.mjs`, `chatgpt-oauth-companion.mjs`)은
+  `Access-Control-Expose-Headers` 로 이 헤더를 연다(안 열면 app:// 렌더러가 못 읽어 이어 받기 없이 돈다).
+  스트림이 끊기면 `client.ts` 가 GET `/v1/agent/run?runId=&after=마지막seq+1` 을 지수 백오프(2초부터, 6회)로 다시 붙고, seq 로 중복 줄을 버린다.
+  이어 받는 동안 `execution_status stream.resume` 이벤트가 나간다. 중단 버튼은 POST `/v1/agent/cancel` 이고 이것만 워커를 멈춘다.
+  오류 없이 닫힌 스트림은 끊김이 아니라 실행 종료다 — `done` 없이 `error` 줄로 끝났으면 이어 받지 않고 그 오류를 보고한다.
+  아무도 붙지 않은 채 5분(`RESUME_GRACE_MS`)이 지나면 실행을 멈춘다. 끝난 기록은 10분 보관, 기록 상한은 256MB 다. 헤더가 없는 옛 호스트면
+  예전 방식(통째 POST, 끊기면 실패)으로 돈다. 이어 받지 못하면 「AI 작업 연결이 끊겼고 다시 이어 받지 못했습니다」.
+  회귀: `test/ohMyPiRunRelay.node.test.mjs`, `test/piAgentClientResume.test.ts`, `test/piAgentCommandAndRoute.test.ts`.
+- **프리셋 첫 요청은 의도 읽기를 건너뛴다 (2026-09-27):** `classifyPlainPiTurn`(`plainTurn.ts`)은 읽기 전용 다이얼이 아니고
+  `isGenrePresetBriefRequest` 이면 선언 모델을 부르지 않고 바로 제작 턴(`routineEdit:false`, 전체 도구, 팀이면 team)을 돌려준다.
+  실측으로 의도 읽기는 모델 두 번에 10–24초였고, 프리셋 요청은 항상 "제작" 이라 답이 정해져 있다. 회귀: `test/plainTurnGenrePreset.test.ts`.
+- **프리셋 첫 생성의 범위와 턴 상한 (2026-09-27):** 이전 실측은 41분 동안 맵 17장을 만들다 시간 상한에 걸렸다. `team.ts` 의
+  `PRESET_FIRST_BUILD_RULES` 가 오케스트레이터 시스템 프롬프트에 붙는다 — 가장 작은 플레이 가능한 조각, 맵 3–5장, 공통 자료 → 맵 → 검수 한 번 →
+  마무리 순서, 플레이를 막는 문제만 고치기, 정해진 형식의 마무리 보고. `piTeamRuntime.ts` 는 프리셋 작업이면 팀원 `maxTurns` 를
+  `PRESET_FIRST_BUILD_MEMBER_TURNS`(120)로 묶는다.
+- **실측 스크립트:** `scripts/qa/preset-team-first-build.mjs` — 임시 SQLite 호스트 + Firefox 로 포스터 → 인터뷰 → 첫 생성을 돌리고
+  요청 크기·heavy 해시·의도 읽기 호출 수·실행 번호·이어 받기 횟수·SQLite 재로드 맵/이벤트 수를 `verify-shots/preset-first-team-e2e/SUMMARY.json` 에 쓴다.
+  `E2E_NETWORK_CHANGE=1` 이면 Firefox 의 네트워크 변경 감지를 켠 채 두어 이 호스트의 veth 변동으로 실제 끊김을 만든다.
 
 ## 큰 프로젝트의 Pi 요청 전송 (2026-09-24)
 

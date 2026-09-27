@@ -81,7 +81,7 @@ describe("내용 판정", () => {
     const draft = createDraft(base);
     Object.values(draft.maps)[0]!.lowerTiles[0] += 1;
     expect(draft.tilesets).not.toBe(base.tilesets);
-    expect(unchangedHeavyKeys(base, draft)).toEqual(["tilesets", "database"]);
+    expect(unchangedHeavyKeys(base, draft)).toEqual(["tilesets", "database", "assets"]);
     expect(changedProjectKeys(base, draft)).toEqual([`maps.${Object.keys(draft.maps)[0]}`]);
   });
 
@@ -89,7 +89,7 @@ describe("내용 판정", () => {
     const base = createBlankProject();
     const result = createDraft(base);
     const slim = slimDoneEvent(doneFor(result), base);
-    expect(slim.unchangedKeys).toEqual(["tilesets", "database"]);
+    expect(slim.unchangedKeys).toEqual(["tilesets", "database", "assets"]);
     expect(Object.keys(slim.project.tilesets)).toEqual([]);
     const wire = JSON.parse(encodePiAgentEvent(slim)) as PiAgentDoneEvent;
     const restored = restoreCheckpointProject(base, wire.project, wire.unchangedKeys);
@@ -99,7 +99,7 @@ describe("내용 판정", () => {
     const edited = createDraft(base);
     const firstTileset = Object.values(edited.tilesets)[0]!;
     firstTileset.name = `${firstTileset.name}!`;
-    expect(slimDoneEvent(doneFor(edited), base).unchangedKeys).toEqual(["database"]);
+    expect(slimDoneEvent(doneFor(edited), base).unchangedKeys).toEqual(["database", "assets"]);
   });
 });
 

@@ -138,7 +138,11 @@ export const PI_AGENT_DELTA_FLUSH_MS = 1_000;
 
 export interface PiTeamAgentStats extends PiAgentStats {}
 
-export type PiCheckpointHeavyKey = "tilesets" | "database";
+/**
+ * 줄에서 빼고 받는 쪽이 자기 사본을 다시 붙이는 무거운 키. `assets` 는 2026-09-27 에 더했다 — 업로드 그림 dataURL 이
+ * 새 프로젝트 기본 자료에서 66MB 까지 커졌고, 작업 중에는 거의 바뀌지 않는다.
+ */
+export type PiCheckpointHeavyKey = "tilesets" | "database" | "assets";
 
 export interface PiProjectCheckpoint {
   readonly project: Project;
@@ -294,6 +298,7 @@ export function unchangedHeavyKeys(base: Project, project: Project): PiCheckpoin
   const keys: PiCheckpointHeavyKey[] = [];
   if (jsonEqual(project.tilesets, base.tilesets)) keys.push("tilesets");
   if (jsonEqual(project.database, base.database)) keys.push("database");
+  if (jsonEqual(project.assets, base.assets)) keys.push("assets");
   return keys;
 }
 
@@ -311,6 +316,7 @@ export function slimCheckpointProject(project: Project, unchangedKeys: readonly 
   for (const key of unchangedKeys) {
     if (key === "tilesets") next.tilesets = {} as Project["tilesets"];
     if (key === "database") next.database = {} as Project["database"];
+    if (key === "assets") next.assets = { sprites: {}, uploaded: {} } as Project["assets"];
   }
   return next;
 }
@@ -320,13 +326,14 @@ export function restoreCheckpointProject(current: Project, incoming: Project, un
   const next = { ...incoming };
   if (unchangedKeys.includes("tilesets")) next.tilesets = current.tilesets;
   if (unchangedKeys.includes("database")) next.database = current.database;
+  if (unchangedKeys.includes("assets")) next.assets = current.assets;
   return next;
 }
 
-/** 비교용 스냅샷. 타일셋·데이터베이스는 같은 객체를 공유해 매 도구 JSON 비교를 피한다. */
+/** 비교용 스냅샷. 타일셋·데이터베이스·에셋은 같은 객체를 공유해 매 도구 JSON 비교를 피한다. */
 export function snapshotProjectKeepingHeavy(project: Project): Project {
-  const { tilesets, database, ...light } = project;
-  return { ...structuredClone(light), tilesets, database };
+  const { tilesets, database, assets, ...light } = project;
+  return { ...structuredClone(light), tilesets, database, assets };
 }
 
 /**
