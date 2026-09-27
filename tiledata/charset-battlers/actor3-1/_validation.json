@@ -1,0 +1,283 @@
+{
+  "character": "actor3-1",
+  "poses": {
+    "idle": {
+      "bounds": [
+        9,
+        19,
+        32,
+        45
+      ],
+      "newColors": 3,
+      "sha256": "924d2a77fb29d425c40d097bcd10eb0086a665f29c499430762f2a62c22a4842"
+    },
+    "attack": {
+      "bounds": [
+        1,
+        20,
+        35,
+        45
+      ],
+      "newColors": 3,
+      "sha256": "cc4655e6252c9d730cb9aff982b255a0ae5af071169e071413a7d0d89c47b856"
+    },
+    "hit": {
+      "bounds": [
+        18,
+        19,
+        45,
+        45
+      ],
+      "newColors": 3,
+      "sha256": "e5ab546008933220438cb8fb6e8f8ca774ec5d93e93b67e053ec1d780d589efb"
+    },
+    "defend": {
+      "bounds": [
+        15,
+        18,
+        33,
+        45
+      ],
+      "newColors": 3,
+      "sha256": "e5abf1262cd631bde96077e18a48a73dabb6feb14ba5f2d0ef8fbb4f8e04d952"
+    },
+    "dead": {
+      "bounds": [
+        7,
+        31,
+        40,
+        45
+      ],
+      "newColors": 1,
+      "sha256": "259ee950a7558ceeac348afab13ecf80efc3d933f77d9a0c4481d94302eb89de"
+    },
+    "victory": {
+      "bounds": [
+        15,
+        9,
+        34,
+        45
+      ],
+      "newColors": 3,
+      "sha256": "4df8ef2e9125691d4f0b3a51e31bf68c1c37630d952977bdcb2f05cf60873287"
+    },
+    "walk_a": {
+      "bounds": [
+        11,
+        21,
+        31,
+        45
+      ],
+      "newColors": 3,
+      "sha256": "098366b980bad48014c1d12b9aba9d3f100d2e5600a9ea41ce90655d599ef5ab"
+    },
+    "walk_b": {
+      "bounds": [
+        11,
+        20,
+        31,
+        45
+      ],
+      "newColors": 3,
+      "sha256": "e235e62b8457b01570391f0e0919d7c313a343c79055ad7b8f7cc376816b5234"
+    },
+    "walk_c": {
+      "bounds": [
+        11,
+        21,
+        31,
+        45
+      ],
+      "newColors": 3,
+      "sha256": "be65d3ba2a138b1990b5c9b7b00ea8e4579f905d8413db1c3123a7df31726e44"
+    },
+    "attack_windup": {
+      "bounds": [
+        18,
+        14,
+        41,
+        45
+      ],
+      "newColors": 3,
+      "sha256": "889500601882d7ecbca27845d72f84d08f216ab6244be0d423612dd585f40549"
+    },
+    "attack_strike": {
+      "bounds": [
+        7,
+        15,
+        33,
+        45
+      ],
+      "newColors": 3,
+      "sha256": "c8bcf5d96c1bde3c28ab7505d17b5a9d36618ab5c5e29c725b1768632ac059fd"
+    },
+    "attack_follow": {
+      "bounds": [
+        2,
+        20,
+        33,
+        45
+      ],
+      "newColors": 3,
+      "sha256": "e629f92c7fb65571f37b084b60e4ee536e8a97a22fbe4940ab4877e4eea6f809"
+    },
+    "cast_charge": {
+      "bounds": [
+        16,
+        20,
+        32,
+        45
+      ],
+      "newColors": 3,
+      "sha256": "c6f1d1dddeea1e8e944b73c044014e623a18417cef2950d5ca7c9b921bb144aa"
+    },
+    "cast_raise": {
+      "bounds": [
+        14,
+        16,
+        32,
+        45
+      ],
+      "newColors": 3,
+      "sha256": "68064560bcf2b3079050296600f726b4b2be9366f842449baa95a275526b5eb7"
+    },
+    "cast_release": {
+      "bounds": [
+        5,
+        19,
+        33,
+        45
+      ],
+      "newColors": 4,
+      "sha256": "024fbea790d6267da509599c69bfb11ac56ba5fad95ffe3abf5d972b3f311ebb"
+    },
+    "item": {
+      "bounds": [
+        15,
+        19,
+        32,
+        45
+      ],
+      "newColors": 3,
+      "sha256": "cd33a9e5b498d0d2e4e5e369cdd16d5eca2be9e2cd34fd8bdab8e182ebcdfefa"
+    },
+    "weak": {
+      "bounds": [
+        13,
+        24,
+        32,
+        45
+      ],
+      "newColors": 3,
+      "sha256": "992be0e48aaa9f8b2d81881383f8606453f6ceeccd3bc5acd1c85d39e140b19a"
+    },
+    "evade": {
+      "bounds": [
+        18,
+        16,
+        43,
+        45
+      ],
+      "newColors": 3,
+      "sha256": "80fcf5f25353934dcf9bd5dab4dd41f8d39ae549416196171386f9dab9ce5a72"
+    },
+    "guard_hit": {
+      "bounds": [
+        17,
+        18,
+        35,
+        45
+      ],
+      "newColors": 3,
+      "sha256": "de85fedad82416d4f99f8a26dcf1db251262f2faaf27f0728555edf65c80a9ae"
+    },
+    "skill": {
+      "bounds": [
+        5,
+        15,
+        36,
+        45
+      ],
+      "newColors": 5,
+      "sha256": "da0d3dd2cf7d95414354d030070b64a60895131604c3d6363a03e6e83d506a0b"
+    },
+    "victory_b": {
+      "bounds": [
+        15,
+        7,
+        34,
+        45
+      ],
+      "newColors": 3,
+      "sha256": "7ebc74bb0d60f302e785933563670c08a76f0c65dd2b5570097ae09ea343c2c5"
+    },
+    "dying": {
+      "bounds": [
+        12,
+        25,
+        37,
+        45
+      ],
+      "newColors": 3,
+      "sha256": "c3e7ff8281859583da49c4a25e1665281fe6328b0004459754cdcfcd0c585211"
+    },
+    "revive": {
+      "bounds": [
+        14,
+        21,
+        32,
+        45
+      ],
+      "newColors": 3,
+      "sha256": "f2fb51aca7df32d90c79bf994be29b84a75b9afef8e883081971e541fb778cdc"
+    },
+    "front": {
+      "bounds": [
+        16,
+        20,
+        32,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "65ae17aac59eae08b766b5ac47f9a409784c36a085bd24c52d7bcad46f417892"
+    }
+  },
+  "extraColors": [
+    [
+      102,
+      129,
+      151
+    ],
+    [
+      189,
+      218,
+      227
+    ],
+    [
+      248,
+      249,
+      214
+    ],
+    [
+      80,
+      205,
+      225
+    ],
+    [
+      165,
+      247,
+      238
+    ],
+    [
+      255,
+      215,
+      103
+    ]
+  ],
+  "source": "public/assets/easyrpg/charset/Actor3.png",
+  "allGroundY": 44,
+  "alpha": [
+    0,
+    255
+  ]
+}
