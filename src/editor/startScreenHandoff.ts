@@ -4,13 +4,24 @@
 // 시작 화면은 빈 폴더만 만들고(편집기 트리를 싣지 않으려고) 고른 장르·한 문장을 sessionStorage 에 남긴다.
 // 편집기가 **그 폴더를** 열었을 때만 여기서 장르 씨앗을 채택·저장하고, 한 문장이 있으면 조수에게 넘길 프롬프트를 만든다.
 // 씨앗은 메뉴의 「새 프로젝트」와 같은 정본 경로(createNewProjectSeed)다 — 두 표면이 다른 시작점을 만들지 않는다.
+//
+// 장르(프리셋)를 골랐으면 메뉴의 「새 프로젝트」와 같은 흐름을 탄다(2026-09-28): AI 연결 관문 → 기획 인터뷰 →
+// gameDesignBrief(generationPending) → prepareProjectInterviewStartup 이 팀 첫 생성을 넘긴다. 예전에는 인터뷰 없이
+// 한 문장을 자유 입력 프롬프트로만 보내서 기획·팀 첫 생성·장르 저작 지침이 모두 빠졌고, 한 문장을 비우면 장르만 켜진
+// 빈 맵에서 아무 일도 일어나지 않았다. 인터뷰를 취소하거나 관문에서 「나중에」를 고르면 예전 한 문장 경로로 돌아간다.
 
 import { createNewProjectSeed } from "@/editor/genrePacks";
 import { focusProjectStartMap } from "@/editor/mapSelection";
 import { newProjectChoiceById } from "@/editor/newProjectChoices";
 import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
-import { buildWelcomeFreeTextPrompt, welcomeFreeTextDisplayText } from "@/editor/welcomeGenrePresets";
+import {
+  buildWelcomeFreeTextPrompt,
+  welcomeFreeTextDisplayText,
+  welcomeGenrePresetById,
+  type WelcomeGenrePresetId,
+} from "@/editor/welcomeGenrePresets";
 import { isAssistantEndpointReady, resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
+import type { GameDesignBrief } from "@/project/gameDesignBrief";
 import { projectRepository } from "@/project/persistence/repository";
 import { isLocalTarget } from "@/project/persistence/target";
 import { store } from "@/project/store";
@@ -18,6 +29,8 @@ import { takeStartScreenIntent, type StartScreenIntent } from "@/start/startInte
 
 export type StartScreenHandoff = {
   readonly intent: StartScreenIntent;
+  /** 프리셋 장르를 골랐으면 그 id. 셸이 뜬 뒤 인터뷰를 연다. 빈 프로젝트면 null. */
+  readonly presetId: WelcomeGenrePresetId | null;
   /** 조수에게 보낼 프롬프트. 한 문장을 비워 두었으면 null. */
   readonly prompt: string | null;
   readonly displayText: string | null;
@@ -65,6 +78,7 @@ export async function applyStartScreenHandoff(): Promise<StartScreenHandoff | nu
   const saved = await store.flush();
   if (saved.kind !== "saved") throw new Error("새 게임을 폴더에 저장하지 못했습니다.");
   focusProjectStartMap();
+  const presetId = packId !== null && welcomeGenrePresetById(intent.choiceId ?? undefined) ? intent.choiceId as WelcomeGenrePresetId : null;
   const prompt = startScreenPrompt(intent);
   let autoSend = false;
   if (prompt) {
@@ -75,5 +89,44 @@ export async function applyStartScreenHandoff(): Promise<StartScreenHandoff | nu
       autoSend = false;
     }
   }
-  return { intent, prompt, displayText: prompt ? welcomeFreeTextDisplayText(intent.intent) : null, autoSend };
+  return { intent, presetId, prompt, displayText: prompt ? welcomeFreeTextDisplayText(intent.intent) : null, autoSend };
+}
+
+export type StartScreenPresetDependencies = {
+  readonly ensureAiConnected: (presetLabel: string) => Promise<boolean>;
+  readonly interview: (presetId: WelcomeGenrePresetId, initialAnswer: string) => Promise<GameDesignBrief | null>;
+};
+
+const productionPresetDependencies: StartScreenPresetDependencies = {
+  ensureAiConnected: async (presetLabel) => {
+    const { ensureAiConnectedForPreset } = await import("@/editor/ui/aiConnectGate");
+    return ensureAiConnectedForPreset({ presetLabel });
+  },
+  interview: async (presetId, initialAnswer) => {
+    const { showProjectInterview } = await import("@/editor/ui/projectInterviewDialog");
+    return showProjectInterview(presetId, { initialAnswer });
+  },
+};
+
+/**
+ * 프리셋 장르로 만든 새 게임의 기획을 받는다. 확정하면 기획을 generationPending 으로 심고 "brief" —
+ * 저장과 팀 첫 생성 전달은 호출부의 prepareProjectInterviewStartup 이 맡는다(메뉴 경로와 같은 소비 지점).
+ * 관문에서 「나중에」, 인터뷰 취소, 그 사이 다른 프로젝트로 바뀐 경우는 아무것도 바꾸지 않고 "declined".
+ */
+export async function runStartScreenPresetInterview(
+  handoff: StartScreenHandoff,
+  dependencies: StartScreenPresetDependencies = productionPresetDependencies,
+): Promise<"brief" | "declined"> {
+  const presetId = handoff.presetId;
+  if (!presetId) return "declined";
+  const label = newProjectChoiceById(presetId)?.label ?? presetId;
+  const scope = JSON.stringify(store.getProjectIdentity());
+  const connected = await dependencies.ensureAiConnected(label).catch(() => false);
+  if (!connected) return "declined";
+  const brief = await dependencies.interview(presetId, handoff.intent.intent);
+  if (!brief || brief.presetId !== presetId || JSON.stringify(store.getProjectIdentity()) !== scope) return "declined";
+  store.update(project => {
+    project.gameDesignBrief = { ...brief, generationPending: true };
+  }, { scope: "project", label: "게임 기획 확정", origin: "human" });
+  return "brief";
 }

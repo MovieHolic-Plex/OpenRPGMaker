@@ -508,7 +508,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
         }),
         el("label", { class: "start-compose-title", attrs: { for: "start-intent" }, text: "어떤 게임을 만들까요?" }),
         intent,
-        el("p", { class: "start-hint", text: "한 문장이면 충분해요. 적어 두면 편집기가 열리자마자 AI 조수가 첫 장면을 만듭니다. 비워 두면 장르만 적용해 시작합니다." }),
+        el("p", { class: "start-hint", text: "한 문장이면 충분해요. 적어 두면 편집기가 열리자마자 AI 조수가 첫 장면을 만듭니다. 장르를 고르면 먼저 몇 가지 질문으로 기획을 정하고, 적어 둔 문장은 첫 답으로 담깁니다." }),
       ] }),
       el("div", { class: "start-field", children: [
         el("span", { class: "start-label", attrs: { id: "start-genre-label" }, text: "시작 장르" }),

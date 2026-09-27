@@ -9,6 +9,7 @@ import { gameDesignBriefContext } from "@/project/gameDesignBrief";
 import type { PiTeamRoleId } from "./protocol";
 import { describeTeamMembers, type PiTeamSpec } from "./teamSpec";
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
+import { hasPlayableSegmentSkeleton, playableSegmentContract } from "@/project/playableSegmentContract";
 
 /**
  * 프리셋 첫 생성의 범위. 2026-09-27 실측: 첫 생성에서 시공 팀원 하나가 170턴·입력 3,500만 토큰을 쓰고도 마을 검사를
@@ -69,6 +70,7 @@ export const PI_TEAM_ROLES: Record<PiTeamRoleId, PiTeamRole> = {
         ...(team?.orchestratorNotes.trim() ? [`사용자의 팀 운영 지침: ${team.orchestratorNotes.trim()}`] : []),
         ...teamWorkflowPrompt(),
         ...(isGenrePresetBriefRequest(task) ? PRESET_FIRST_BUILD_RULES : []),
+        ...(hasPlayableSegmentSkeleton(project) ? [playableSegmentContract(project)] : []),
         "절차:",
         "1. 필요하면 get_map_region 으로 현황을 짧게 본다(맵당 한 번, 넓은 영역 한 번).",
         "2. assign_map_agent 를 **한 턴에 여러 개** 호출해 맵마다 시공 팀원을 띄운다. 이 툴은 배정만 하고 곧바로 돌아온다 — 팀원은 뒤에서 계속 일한다. 각 호출의 task 는 그 맵에서 할 일을 구체적으로 적는다(위치·크기·재료 기본값을 네가 정한다).",

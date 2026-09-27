@@ -49,6 +49,24 @@ Controls (including keyboard input) are blocked during the interview and saving.
 - The first preset build runs as a team for that one turn: `setPendingAiBootIntent(..., { team: true })` → `AiBootIntentTarget.send/prefill(text, display, { team: true })` → `plainPiTurn(text, { team: true })` → `classifyPlainPiTurn({ piTeam: true })`. `AiConfig.piTeam` is unchanged, so later requests stay single unless the user turns team on. A prefilled draft keeps the team flag through `composerHandoff.team` only while the visible text is unchanged; read-only dials and village contracts still demote to single.
 - Browser evidence: `scripts/capture-preset-ai-gate.mjs` → `verify-shots/preset-ai-connect-gate/SUMMARY.json` + PNG (companion `/auth/status` stubbed signed-out then signed-in; no model calls or project writes).
 
+## Playable first segment — code builds it, code judges it (2026-09-28)
+
+AI-only preset first builds could not be finished: of 24 live runs on 2026-09-27, none reached an end. The largest (17 maps) had no ending; the 4-map run had three unlinked empty maps, no starter and no capture item (`runGameCheck`). The segment is therefore guaranteed by code, not by the prompt.
+
+- `src/project/playableSegment.ts` builds a skeleton for the three start-surface genres with the real editor tools (`runTool`). All share: key action on the start map (`ev_segment_starter`, sets `sw_segment_key`) → door east (`create_transfer_pair`) → `map_segment_route` → `ev_segment_end`, which opens only after the key switch and calls `triggerEnding ending_first_segment`.
+  - monster-collect: professor via `give_starter_monsters` (switch spliced after each `giveMonster`), five `item_capture_orb` in the starting inventory, route via `author_wild_route` with a grass-only Lv3 wild slime `troop_segment_wild` (species formula — the default `troop_slime` beats a Lv5 starter).
+  - adventure-jrpg: village chief quest, random encounters on the route, and a `canLose:false` gatekeeper battle (`troop_slime_pair`, 5/5 simulated wins for the Lv1 hero) before the ending.
+  - story-cutscene: a memory object to inspect, then the far end.
+- `judgePlayableSegment` passes only when `runGameCheck`'s headless autoplay reaches `ending_first_segment`. Any other ending is not a pass. It proves start → partner → route → segment end is walkable; it does not judge fun or looks.
+- Runner fix found by this gate: `sceneTestRunner` used to keep executing an event after a lost `canLose:false` battle, so an ending behind an unbeatable gatekeeper counted as reached. It now stops the event there, like the shipped player (`playSceneInterpreter`).
+- Seeding: `withVerifiedPlayableSegment` runs in `prepareProjectInterviewStartup` (menu and desktop start screen) and in `applyWelcomeGenreSystemPresetPlan` when a brief exists (welcome poster). The ⚙ system preset (no brief) never gets a skeleton. A skeleton that fails its own judgement is not planted.
+- Contract: `playableSegmentContract()` (`playableSegmentContract.ts`, no heavy imports) is added to the builder system prompt and the orchestrator prompt when the project has the skeleton.
+- Gate 1, team runtime (`scripts/lib/piTeamRuntime.ts`): for a `장르 프리셋:` task on a passing skeleton, `finish` is rejected with the blocker list up to two times.
+- Gate 2, browser (`aiPiAgentCommand.ts`): the final merged result, and the partial live result of a failed or stopped run, is judged. On failure nothing more is applied; already published live checkpoints are reverted to the passing start state with `applyProjectWithHistory` (undo brings the AI result back), unless the user edited the project during the run.
+- Both gates are limited to the preset first build. Later requests may move or extend the segment freely.
+- Genres without a skeleton (farm, horror, partner, action) keep the previous AI-only flow and are not gated.
+- Regression: `test/playableSegment.test.ts` (reload pass, cut end/door/starter fail, other genres untouched). A bun probe with a stub team verified finish rejection then acceptance after repair. Not verified: a live model run through the gates.
+
 ## Preset interview and confirmed design (2026-09-22)
 
 

@@ -35,6 +35,11 @@
   편집기 `finishEditorBoot` 가 **그 폴더가 열렸을 때만**(`projectDir` 일치, 10분 이내) 꺼내 `createNewProjectSeed` 씨앗을 채택·flush 하고
   (`src/editor/startScreenHandoff.ts`), 한 문장이 있으면 조수 파이프라인(AI 준비 시 자동 전송, 아니면 입력창에 담기)으로 넘긴다.
   인계가 있으면 캔버스 브리핑을 띄우지 않고 `oprn:editor-welcome-dismissed` 를 켠다. 호스트는 인계 비교를 위해 세션이 정규화한 경로를 돌려준다.
+- **프리셋 장르는 인터뷰를 거친다 (2026-09-28):** 장르를 고른 인계(`presetId`)면 셸이 뜬 뒤 `runStartScreenPresetInterview` 가
+  메뉴 「새 프로젝트」와 같은 AI 연결 관문(`ensureAiConnectedForPreset`) → 기획 인터뷰(`showProjectInterview`, 한 문장은 첫 질문 입력칸에
+  `initialAnswer` 로 담김)를 연다. 확정하면 `gameDesignBrief` 를 `generationPending: true` 로 심고, 같은 부팅의 `prepareProjectInterviewStartup`
+  이 저장 → 팀 첫 생성(`team: true`, `장르 프리셋:` 프롬프트)을 넘긴다. 예전에는 한 문장을 자유 입력 프롬프트로만 보내 기획·팀·장르 저작 지침이 빠졌고,
+  한 문장을 비우면 장르만 켜진 빈 맵에서 아무 일도 없었다. 「나중에」·취소면 예전 한 문장 경로로 돌아간다. 단위: `test/startScreenPresetInterview.test.ts`.
 - **증거**: `xvfb-run -a node scripts/qa/electronStartScreenProbe.mjs`(`build:fast` + `build:electron` 뒤) — 격리 `--user-data-dir` 로
   홈·숨김·새 게임·편집기(저장된 제목/장르 재로드)·cover.jpg·재기동을 확인하고 `verify-shots/start-screen/` 에 남긴다. 단위: `test/startScreen.test.ts`.
 
