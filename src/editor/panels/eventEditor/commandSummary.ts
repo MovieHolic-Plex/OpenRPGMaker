@@ -12,6 +12,7 @@ import { formatWeightedBranchSummary } from "./weightedBranchTable";
 import { BGM_CATALOG } from "@/assets/bgmCatalog";
 import { m2CommandById, type M2CommandFieldSpec } from "@/project/eventCommands/m2Catalog";
 import { tintDurationMs } from "@/project/eventCommands/tintDuration";
+import { screenFilterFromFields } from "@/project/eventCommands/screenFilter";
 import { coordinateAxisSpec, coordinateFailurePolicy } from "@/project/eventCommands/coordinateDestination";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
@@ -863,10 +864,18 @@ function page3M2SummaryParts(
     case "Tint Screen": {
       const color = str("value") || str("color") || "기본";
       const duration = tintDurationMs(cmd.fields);
+      // 채도·흑백·세피아가 중립이 아니면 요약에 덧붙인다. 옛 명령(필드 없음)의 요약은 그대로다.
+      const filter = screenFilterFromFields(cmd.fields);
+      const filterParts = [
+        filter.saturation !== 100 ? `채도 ${filter.saturation}%` : "",
+        filter.grayscale !== 0 ? `흑백 ${filter.grayscale}%` : "",
+        filter.sepia !== 0 ? `세피아 ${filter.sepia}%` : "",
+      ].filter(Boolean);
       return commandLine(
         labelOf("화면 색조 변경"),
         valuePart(color),
-        plainPart(" · "), valuePart(duration > 0 ? `${duration}ms` : "즉시 전환")
+        plainPart(" · "), valuePart(duration > 0 ? `${duration}ms` : "즉시 전환"),
+        ...(filterParts.length > 0 ? [plainPart(" · "), valuePart(filterParts.join(" "))] : [])
       );
     }
     case "Flash Screen": {

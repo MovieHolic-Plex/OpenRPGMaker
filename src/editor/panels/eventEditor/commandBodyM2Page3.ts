@@ -4,6 +4,7 @@ import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
 import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResourcePickerDialog";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { tintDurationMs } from "@/project/eventCommands/tintDuration";
+import { SCREEN_FILTER_LIMITS, screenFilterCss, screenFilterFromFields, type ScreenFilter } from "@/project/eventCommands/screenFilter";
 import { store } from "@/project/store";
 import { tilesetKind, TILESET_KIND_LABELS } from "@/project/tilesetKind";
 import type { Command, M2CommandValue } from "@/project/types";
@@ -574,6 +575,28 @@ function tintScreenBody(context: CommandEditContext, cmd: M2Command): HTMLElemen
     value: String(tintDurationMs(cmd.fields)),
     dataset: { testid: "tint-screen-duration-input" },
   }) as HTMLInputElement;
+  // 색 필터(채도·흑백·세피아, %). 기본값이 중립이라 필드가 없는 옛 명령도 같은 값으로 열린다.
+  const initialFilter = screenFilterFromFields(cmd.fields);
+  const filterInput = (key: keyof ScreenFilter, label: string): HTMLInputElement =>
+    el("input", {
+      attrs: {
+        type: "number",
+        min: String(SCREEN_FILTER_LIMITS[key].min),
+        max: String(SCREEN_FILTER_LIMITS[key].max),
+        step: "5",
+        "aria-label": label,
+      },
+      value: String(initialFilter[key]),
+      dataset: { testid: `tint-screen-${key}-input` },
+    }) as HTMLInputElement;
+  const saturationInput = filterInput("saturation", "채도(%)");
+  const grayscaleInput = filterInput("grayscale", "흑백(%)");
+  const sepiaInput = filterInput("sepia", "세피아(%)");
+  const readFilter = (): ScreenFilter => screenFilterFromFields({
+    saturation: saturationInput.value,
+    grayscale: grayscaleInput.value,
+    sepia: sepiaInput.value,
+  });
   const chips = el("div", {
     class: "actor-m2-chip-grid",
     dataset: { testid: "tint-screen-color-chips" },
@@ -602,10 +625,14 @@ function tintScreenBody(context: CommandEditContext, cmd: M2Command): HTMLElemen
   };
 
   const commit = () => {
+    const filter = readFilter();
     replaceFields(context, cmd, {
       color,
       value: valueInput.value.trim(),
       durationMs: Math.max(0, Math.trunc(Number(durationInput.value) || 0)),
+      saturation: filter.saturation,
+      grayscale: filter.grayscale,
+      sepia: filter.sepia,
     }, ["duration"]);
     renderPreview();
   };
@@ -628,6 +655,10 @@ function tintScreenBody(context: CommandEditContext, cmd: M2Command): HTMLElemen
       },
     });
     if (custom) swatch.style.setProperty("--actor-m2-effect-color", custom);
+    // 색 필터 미리보기: 견본 자체에 같은 CSS filter 를 건다(런타임은 backdrop-filter 로 같은 문자열을 쓴다).
+    const filterCss = screenFilterCss(readFilter());
+    swatch.dataset.filter = filterCss;
+    if (filterCss) swatch.style.filter = filterCss;
     stage.append(swatch, stageLabel(shownLabel));
     const children: HTMLElement[] = [stage];
     if (explicit && !custom) {
@@ -642,7 +673,7 @@ function tintScreenBody(context: CommandEditContext, cmd: M2Command): HTMLElemen
     }
     children.push(
       line(`${shownLabel} 색조 · ${durationPhrase(duration)}`),
-      note("직접 색을 입력하면 프리셋보다 우선합니다.")
+      note("직접 색을 입력하면 프리셋보다 우선합니다. 채도·흑백·세피아는 맵과 전투 화면 모두에 걸립니다.")
     );
     preview.replaceChildren(...children);
   };
@@ -651,6 +682,10 @@ function tintScreenBody(context: CommandEditContext, cmd: M2Command): HTMLElemen
   valueInput.addEventListener("input", commit);
   durationInput.addEventListener("change", commit);
   durationInput.addEventListener("input", commit);
+  for (const input of [saturationInput, grayscaleInput, sepiaInput]) {
+    input.addEventListener("change", commit);
+    input.addEventListener("input", commit);
+  }
   renderChips();
   renderPreview();
   wrap.append(
@@ -660,6 +695,9 @@ function tintScreenBody(context: CommandEditContext, cmd: M2Command): HTMLElemen
         fieldBlock("색상 프리셋", chips),
         fieldBlock("직접 색", valueInput),
         fieldBlock("전환 시간(ms)", durationInput),
+        fieldBlock("채도(%) · 100 = 원래 색", saturationInput),
+        fieldBlock("흑백(%)", grayscaleInput),
+        fieldBlock("세피아(%)", sepiaInput),
       ],
       preview
     )

@@ -432,7 +432,16 @@ export interface BattleRewardsSnapshot {
   readonly techLearned?: readonly { readonly actorId: string; readonly actorName: string; readonly skillIds: readonly SkillId[] }[];
 }
 
+/** 전투 이벤트의 Tint Screen 이 남긴 화면 상태. 색조 문자열은 맵의 m2Runtime.screen.tint 와 같은 문법이다. */
+export interface BattleScreenState {
+  readonly tint: string;
+  readonly tintDurationMs: number;
+  readonly filter: { readonly saturation: number; readonly grayscale: number; readonly sepia: number };
+}
+
 export interface BattleEventStateSnapshot {
+  /** 전투 중 Tint Screen 이 한 번이라도 실행됐을 때만 있다. 전투 화면 전용(세션에 되돌려 쓰지 않는다). */
+  readonly screen?: BattleScreenState;
   readonly gameOverRequest?: { readonly gameOverId: string; readonly message?: string };
   /** Present only when this battle authored a settings change. */
   readonly messageWindowSettings?: MessageWindowSettings;

@@ -1,6 +1,7 @@
 import { formatActorGraphicOverride, parseActorGraphicOverride } from "@/project/actorGraphicOverride";
 import type { M2CommandCatalogEntry } from "@/project/eventCommands/m2Catalog";
 import { tintDurationMs } from "@/project/eventCommands/tintDuration";
+import { isNeutralScreenFilter, screenFilterFromFields } from "@/project/eventCommands/screenFilter";
 import { showPictureState } from "@/project/session";
 import { ACTOR_PARAMETER_KEYS } from "@/project/actorModel";
 import { changeActorClass } from "@/project/sessionClass";
@@ -79,6 +80,10 @@ function executeByTitle(
     // New commands use durationMs. Keep the old duration field readable for
     // imported projects, where small values were authored in seconds.
     runtime.screen.tintDurationMs = tintDurationMs(fields);
+    // 채도·흑백·세피아. 필드가 없는 옛 명령은 중립이라 필터를 걷는다(색조와 같이 명령마다 화면 상태 전체를 정한다).
+    const filter = screenFilterFromFields(fields);
+    if (isNeutralScreenFilter(filter)) delete runtime.screen.filter;
+    else runtime.screen.filter = { ...filter };
     return;
   }
   if (title === "Flash Screen") {

@@ -1,4 +1,6 @@
 import type { Command } from "@/project/types";
+import { screenFilterFromFields, type ScreenFilter } from "@/project/eventCommands/screenFilter";
+import { tintDurationMs } from "@/project/eventCommands/tintDuration";
 
 type M2Command = Extract<Command, { kind: "m2Command" }>;
 type M2NumericOperation = "set" | "add" | "remove";
@@ -16,7 +18,8 @@ export type M2BattleCommand =
   | { readonly kind: "battleEvents"; readonly target: string }
   | { readonly kind: "forceEscape" }
   | { readonly kind: "actionTimes"; readonly target: string; readonly amount: number }
-  | { readonly kind: "callCommonEvent"; readonly commonEventId: string };
+  | { readonly kind: "callCommonEvent"; readonly commonEventId: string }
+  | { readonly kind: "tintScreen"; readonly tint: string; readonly durationMs: number; readonly filter: ScreenFilter };
 
 export function parseM2BattleCommand(command: M2Command): M2BattleCommand | undefined {
   // Persisted commands can predate shape validation. Reject malformed payloads
@@ -75,6 +78,14 @@ export function parseM2BattleCommand(command: M2Command): M2BattleCommand | unde
       return { kind: "callCommonEvent", commonEventId: stringField(command, "value") || stringField(command, "commonEventId") };
     case "m2-107-force-escape":
       return { kind: "forceEscape" };
+    case "m2-046-tint-screen":
+      // 맵 인터프리터(m2Runtime.ts)와 같은 해석: value(R,G,B/hex)가 color 프리셋보다 우선한다.
+      return {
+        kind: "tintScreen",
+        tint: stringField(command, "value").trim() || stringField(command, "color").trim() || "neutral",
+        durationMs: tintDurationMs(command.fields),
+        filter: screenFilterFromFields(command.fields),
+      };
     case "m2-108-action-times":
       return {
         kind: "actionTimes",

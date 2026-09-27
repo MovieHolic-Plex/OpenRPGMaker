@@ -477,6 +477,10 @@ function page3FieldsFor(title: string): readonly M2CommandFieldSpec[] | undefine
         { key: "color", label: "색상", type: "select", defaultValue: "neutral", options: SCREEN_COLOR_OPTIONS },
         { key: "value", label: "색(R,G,B 또는 hex)", type: "text", defaultValue: "" },
         { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 0 },
+        // 색 필터(%). 기본값이 중립이라 필드가 없는 옛 명령과 같게 동작한다.
+        { key: "saturation", label: "채도(%)", type: "number", defaultValue: 100, min: 0, max: 200, step: 5 },
+        { key: "grayscale", label: "흑백(%)", type: "number", defaultValue: 0, min: 0, max: 100, step: 5 },
+        { key: "sepia", label: "세피아(%)", type: "number", defaultValue: 0, min: 0, max: 100, step: 5 },
       ];
     case "Flash Screen":
       return [

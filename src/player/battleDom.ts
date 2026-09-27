@@ -44,6 +44,7 @@ import { applyBattleSystemGraphic } from "@/player/systemGraphics";
 import { store } from "@/project/store";
 import { bindBattleStageScale } from "@/player/battleStageScale";
 import { applyRollingHpSurvival, createRollingHpMeter, startRollingHpTicker } from "@/player/rollingHp";
+import { syncBattleScreenFilter } from "@/player/battleScreenFilter";
 
 export interface BattleDomOptions {
   readonly host: HTMLElement;
@@ -953,6 +954,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     syncBattleField(field, snapshot, lastDamageFeedback, fieldPresentation);
     syncBattleParty(partyPanel, snapshot, fieldPresentation);
     rollingHpTicker?.kick();
+    // 전투 이벤트의 Tint Screen(색조·채도·흑백·세피아).
+    syncBattleScreenFilter(field, snapshot.eventState.screen);
     syncBattleMessageWindow(messageWindow, directorState);
     if (!snapshot.eventPause && !snapshot.eventChoice) eventSurfaceOpen = false;
     // The event surface takes over only after preceding action beats have drained.
