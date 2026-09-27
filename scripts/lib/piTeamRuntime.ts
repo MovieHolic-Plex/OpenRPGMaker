@@ -2,6 +2,7 @@ import { inspectPiVillageCompletion } from "../../src/ai/piAgent/villageCompleti
 import type { PiProjectCheckpoint } from "../../src/ai/piAgent/protocol.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
 import { PiTeamMessaging, teamCommunicationPrompt } from "./piTeamMessaging.ts";
+import { describeMapSeams, formatSeamIssues, inspectWorldSeams } from "../../src/ai/piAgent/worldSeams.ts";
 // Pi 팀 런타임. 팀장 에이전트(orchestrator)가 커스텀 툴로 시공·검수 에이전트를 띄운다.
 // 하위 에이전트는 runPiAgent 를 그대로 재사용하고, 시공 결과는 맵 묶음 단위로 작업 사본(working)에
 // 도착 순서대로 병합된다.
@@ -111,6 +112,11 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   let subTurns = 0;
   let subUsage: PiAgentUsage | undefined;
   let finished: string | null = null;
+  /**
+   * finish 가 이음새 오류로 한 번 거절한 오류 묶음. 같은 묶음으로 다시 부르면 받아 준다 — 고칠 수 없는
+   * 연결 때문에 팀이 영원히 못 끝나면 안 된다. 대신 그 오류는 최종 보고에 그대로 남는다.
+   */
+  let seamRejection: string | null = null;
 
   const baseTeam = request.team ? normalizeTeamSpec(request.team) : defaultTeamSpec();
   // 프리셋 첫 생성은 가장 작은 플레이 구간만 만든다 — 팀원 한 배정의 턴을 줄인다(PRESET_FIRST_BUILD_RULES 와 짝).
@@ -213,15 +219,17 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
 
   /** 배정 하나의 결과를 작업 사본에 얹는다. 도착 순서대로 동기 실행되므로 서로 끼어들지 않는다. */
   function mergeOutcome(agentId: string, mapId: string, snapshot: Project, done: PiAgentDoneEvent): { spills: string[]; conflicts: string[] } {
-    // 지금 다른 맵에서 도는 배정의 묶음을 건드렸는지 — 남의 작업 구역에 손을 댄 경우다.
+    // 지금 다른 맵에서 도는 배정의 맵을 **실제로 바꿨는지** — 남의 작업 구역에 손을 댄 경우다.
+    // 묶음 전체로 세면 안 된다: 시작 맵은 트리 루트라 묶음이 곧 모든 맵이고, 손대지 않은 들판까지 충돌로 보고됐다.
     const busyMaps = new Set(runningAssignments(ledger).filter((assignment) => assignment.agentId !== agentId).map((assignment) => assignment.mapId));
     const bundle = new Set([...mapBundleIds(done.project, mapId), ...mapBundleIds(working, mapId)]);
-    const conflicts = [...bundle].filter((id) => busyMaps.has(id)).sort();
+    const touched = [...bundle].filter((id) => JSON.stringify(done.project.maps[id]) !== JSON.stringify(snapshot.maps[id]));
     // 감사 기준은 병합 시점의 working 이 아니라 이 에이전트가 출발한 사본이다. 그 사이 남이
     // 병합한 맵을 이 에이전트의 범위 밖 변경으로 잘못 잡지 않기 위함.
     const merged = mergeMapBundles(working, [{ mapIds: [mapId], project: done.project, base: snapshot }]);
     assertModernProposal(working, merged.project);
     working = merged.project;
+    const conflicts = [...new Set([...touched.filter((id) => busyMaps.has(id)), ...merged.conflicts])].sort();
     return { spills: merged.spills.flatMap((spill) => [...spill.keys]), conflicts };
   }
 
@@ -280,7 +288,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         const done = await runAgent(
           {
             ...request, ...exposureFor(member, false), ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
-            systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), teamCommunicationPrompt(agentId)], maxTurns: member.maxTurns,
+            systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), ...describeMapSeams(snapshot, mapId), teamCommunicationPrompt(agentId)], maxTurns: member.maxTurns,
             ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
             ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
           },
@@ -429,7 +437,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       done = await runAgent(
         {
           ...request, ...exposureFor(member, true), ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
-          systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), teamCommunicationPrompt(agentId)], maxTurns: member.maxTurns,
+          systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), ...describeMapSeams(snapshot, mapId), teamCommunicationPrompt(agentId)], maxTurns: member.maxTurns,
           ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
           ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
         },
@@ -520,8 +528,17 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           throw new Error(`아직 ${running.map((assignment) => `${assignment.memberId}(${assignment.agentId}, ${assignment.mapId})`).join(", ")} 가 작업 중입니다. wait_agents 로 결과를 받은 뒤 보고하세요.`);
         }
         if (mailbox.unread("orchestrator-1")) throw new Error("팀장에게 미열람 메시지 또는 반영 확인이 있습니다. read_team_messages로 확인하고 질문에 답한 뒤 finish 하세요.");
+        // 맵 사이 연결 계약(worldGraph)을 병합본으로 검사한다. 각 담당은 자기 맵만 보므로 이음새는 여기서만 보인다.
+        const seamErrors = inspectWorldSeams(working).issues.filter((issue) => issue.severity === "error");
+        const seamSignature = seamErrors.map((issue) => `${issue.code}:${issue.mapId ?? ""}:${issue.x ?? ""},${issue.y ?? ""}`).sort().join("|");
+        if (seamErrors.length > 0 && seamSignature !== seamRejection) {
+          seamRejection = seamSignature;
+          throw new Error(`맵 사이 연결 오류 ${seamErrors.length}건: ${formatSeamIssues(seamErrors)} — 해당 맵 담당에게 assign_map_agent 로 수정을 맡기거나 link_maps 수정 작업을 배정한 뒤 다시 finish 하세요. 고칠 수 없으면 그대로 다시 finish 하면 보고에 남기고 끝냅니다.`);
+        }
         const outstanding = mailbox.outstanding();
         finished = str((params as Record<string, unknown>)?.report, "report");
+        if (seamErrors.length > 0) finished += `
+남은 맵 연결 오류 ${seamErrors.length}건: ${formatSeamIssues(seamErrors)}`;
         const failedTasks = [...tasks.keys()].map(id => outcomes.get(id)).filter(outcome => outcome && !outcome.ok);
         if (failedTasks.length) finished += `\n실패한 작업 ${failedTasks.length}건: ${failedTasks.map(outcome => `${outcome!.agentId}: ${outcome!.summary}`).join("; ")}`;
         if (outstanding.length) finished += `\n미확인 협의 ${outstanding.length}건: ${outstanding.map(m => `${m.id} ${m.from}→${m.to}: ${m.body}`).join("; ")}`;
