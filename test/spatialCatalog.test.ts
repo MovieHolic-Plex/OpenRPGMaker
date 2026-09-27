@@ -101,11 +101,11 @@ describe("spatial catalog source fidelity", () => {
     // Then: defaults stay builtin; own cards keep authored names and distinct presentation ids
     expect(defaults.find((card) => card.id === "bed_v")?.name).not.toBe("Authored Bed V");
     expect(defaults.find((card) => card.id === "bed_v")?.source).toBe("default");
-    // 배송 칩셋 가운데 구조 킷을 이미 갖는 것(성벽 연구·공용 숲 오브젝트)은
-    // 사용자가 만든 것이 아니므로 내 설계 목록에서 제외한다.
-    const authoredOwn = own.filter((card) =>
-      !["opengameart_castle", "shared_forest_village_objects"].includes(card.tilesetId ?? ""));
-    expect(authoredOwn.map((card) => card.id).sort()).toEqual(
+    // 배송 칩셋 가운데 구조 킷을 이미 갖는 것(성벽 실측 부품·공용 숲 오브젝트)은
+    // 사용자가 만든 것이 아니므로 내 설계 목록에 나오지 않는다.
+    expect(own.some((card) => card.tilesetId === "opengameart_castle")).toBe(false);
+    expect(defaults.some((card) => card.tilesetId === "opengameart_castle" && card.objectId === "castle-measured-fountain")).toBe(true);
+    expect(own.map((card) => card.id).sort()).toEqual(
       [
         spatialPresentationId("tileset-kit", first, "bed_v"),
         spatialPresentationId("tileset-kit", first, "my_chair"),

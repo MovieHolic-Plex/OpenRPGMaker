@@ -1,6 +1,6 @@
 import { INTERIOR_OBJECT_CATALOG } from "@/editor/interiorObjectCatalog";
 import { sharedObjectKit } from '@/project/sharedSpatialReferences';
-import { LPC_WOODEN_FURNITURE_16_ID, LPC_WOODEN_FURNITURE_TILESET_ID } from "@/project/defaults/constants";
+import { CASTLE_TILESET_ID, CASTLE_TILESET_TEXTURE_KEY, LPC_WOODEN_FURNITURE_16_ID, LPC_WOODEN_FURNITURE_TILESET_ID } from "@/project/defaults/constants";
 import { SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "@/project/defaults/sharedVillageObjects";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { visibleAuthoringProject } from "@/editor/panels/spatialAuthoringAccess";
@@ -162,6 +162,12 @@ function isBundledFurniturePackKit(tileset: Pick<TilesetDef, "id" | "image">, ki
     return kitId.startsWith("lpc_");
   }
   if (tileset.id === "tibo_interior_expanded") return kitId.startsWith("tibo-");
+  // Castle2 실측 부품(잔디 중심·분수 전체 등 14종)은 castleStructureKits 가 번들 시트에 시드한다.
+  if (tileset.id === CASTLE_TILESET_ID
+    && tileset.image.type === "bundled"
+    && tileset.image.id === CASTLE_TILESET_TEXTURE_KEY) {
+    return kitId.startsWith("castle-measured-");
+  }
   if (tileset.id === SHARED_VILLAGE_OBJECT_ID
     && tileset.image.type === "bundled"
     && tileset.image.id === SHARED_VILLAGE_OBJECT_TEXTURE) {
