@@ -1395,6 +1395,10 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
           if (outcome === "defeat" && !step.canLose) {
             killPartyForRunner(state);
             state.gameOver = true;
+            // 실제 플레이어(playSceneInterpreter consumeBlockingStep)는 패배 불허 전투에 지면 이벤트를 거기서 끝낸다.
+            // 예전 러너는 이어서 뒤 명령(엔딩 포함)을 돌려, 못 이기는 문지기 뒤의 triggerEnding 도 도달로 셌다(2026-09-28 실측).
+            refreshRoguelikeRoomForRunner(state);
+            return { stop: "done" };
           }
         }
         step = interp.resume(undefined);

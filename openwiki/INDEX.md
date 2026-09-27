@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **108쪽 / 3819KB / 약 1,096,787 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **108쪽 / 3823KB / 약 1,097,877 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -25,7 +25,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-workflows-misc.md` | 74KB | 33KB | 513 | ~20,302 |
 | `openwiki/runtime-battle.md` | 197KB | 31KB | 1039 | ~56,719 |
 | `openwiki/runtime-pre-edit-routing.md` | 64KB | 38KB | 443 | ~18,916 |
-| `openwiki/runtime-project-schema.md` | 180KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1328 | ~49,838 |
+| `openwiki/runtime-project-schema.md` | 181KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1333 | ~50,102 |
 | `openwiki/runtime-sessions.md` | 119KB | 50KB | 595 | ~32,192 |
 | `openwiki/testing.md` | 206KB | 48KB | 1923 | ~56,967 |
 | `openwiki/tileset-reference-documents.md` | 54KB | 4KB | 558 | ~16,396 |
@@ -92,7 +92,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/runtime-battle.md` | 10 | `_dragonquest.css`, `_mv.css`, `_octopath/_chrono/_bravely/_dragonquest/_ff/_mother/_goldensun/_mv/_vxace/_hud-templates.css`, `battle.css`, `hero-03-battle-idle.png`, `output/evidence/event-command-completion/battle/VERIFICATION.md`, `raw.png`, `scripts/legacy-db-resource-root/catalog.mjs`, `src/styles/runtime/battle/18-pokemon-layout-redesign.css`, `starter/hires/hero-0N-battle.png` |
 | `openwiki/runtime-m2-flow-controls.md` | 3 | `test/runtimePictureStacking.test.ts`, `verify-shots/runtime-qa/cloud-shadows/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md` |
 | `openwiki/runtime-pre-edit-routing.md` | 4 | `editor/core.part-1.css`, `test/playerInputCss.test.ts`, `test/runtimeQaInstrumentationBoundary.test.ts`, `verify-shots/runtime-qa/emote/SUMMARY.md` |
-| `openwiki/runtime-project-schema.md` | 26 | `.json`, `.png`, `20260827000000_ai_log_anon_delete_revoke.sql`, `DRAFT_20260706_auth_rls.sql`, `devMediaPromotion.test.ts`, `interiorLoadConsistency.test.ts`, `mediaImportDurability.test.ts`, `output/evidence/event-command-completion/legacy-persistence/ledger.json`, `scripts/lib/legacyDb-database-ops.mjs`, `scripts/publish-first-visit-demo.mts`, `scripts/qa/issue693-media.mjs`, `src/project/legacyDbProjectSync.ts`, `storeLifecycleReentrancy.test.ts`, `storePersistenceLineage.test.ts`, `test/aiBlockedEventRelocation.test.ts`, `test/audioDescriptionConcurrentPersistence.test.ts`, `test/io.test.ts`, `test/legacyDbCanonicalRoundtrip.live.test.ts`, `test/legacyDbDatabaseOps.node.test.mjs`, `test/legacyDbMapPatchRecovery.test.ts`, `test/legacyDbProjectSync.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/mapPlanningReuse.test.ts`, `test/sharedDemoStore.test.ts`, `test/transactionalNewRemoteProject.test.ts`, `transactionalRemoteSourceLineage.test.ts` |
+| `openwiki/runtime-project-schema.md` | 27 | `.json`, `.png`, `20260827000000_ai_log_anon_delete_revoke.sql`, `DRAFT_20260706_auth_rls.sql`, `devMediaPromotion.test.ts`, `dist-electron/main.cjs`, `interiorLoadConsistency.test.ts`, `mediaImportDurability.test.ts`, `output/evidence/event-command-completion/legacy-persistence/ledger.json`, `scripts/lib/legacyDb-database-ops.mjs`, `scripts/publish-first-visit-demo.mts`, `scripts/qa/issue693-media.mjs`, `src/project/legacyDbProjectSync.ts`, `storeLifecycleReentrancy.test.ts`, `storePersistenceLineage.test.ts`, `test/aiBlockedEventRelocation.test.ts`, `test/audioDescriptionConcurrentPersistence.test.ts`, `test/io.test.ts`, `test/legacyDbCanonicalRoundtrip.live.test.ts`, `test/legacyDbDatabaseOps.node.test.mjs`, `test/legacyDbMapPatchRecovery.test.ts`, `test/legacyDbProjectSync.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/mapPlanningReuse.test.ts`, `test/sharedDemoStore.test.ts`, `test/transactionalNewRemoteProject.test.ts`, `transactionalRemoteSourceLineage.test.ts` |
 | `openwiki/runtime-sessions.md` | 4 | `output/evidence/stardew/stardew-legacyDb.json`, `verify-shots/runtime-qa/feature16-player/SUMMARY.md`, `verify-shots/runtime-qa/menu-design/SUMMARY.md`, `verify-shots/runtime-qa/weather-after/SUMMARY.md` |
 | `openwiki/se-catalog.md` | 8 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `labels.json`, `placed.json`, `test/audioDescriptionCommandSurfaces.test.ts` |
 | `openwiki/slates-assembly-playbook.md` | 1 | `ville_0.png` |
@@ -714,16 +714,17 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L257` Recovered native emote command (2026-09-05)
 - `L261` 패배·엔딩 저작 (2026-09-22)
 
-### `openwiki/editor-genre-packs.md` — 16KB · 130줄 · ~4,169 토큰
+### `openwiki/editor-genre-packs.md` — 19KB · 148줄 · ~4,995 토큰
 
 - `L5` Ownership
 - `L16` Safe blank-project system-preset flow
 - `L44` Preset AI connection gate and first team build (2026-09-27)
-- `L52` Preset interview and confirmed design (2026-09-22)
-- `L64` Vocabulary and readiness
-- `L75` Dialog layering and receipt fixtures (2026-09-08)
-- `L88` Validation
-- `L90` Two new-project surfaces, one choice model (2026-09-11)
+- `L52` Playable first segment — code builds it, code judges it (2026-09-28)
+- `L70` Preset interview and confirmed design (2026-09-22)
+- `L82` Vocabulary and readiness
+- `L93` Dialog layering and receipt fixtures (2026-09-08)
+- `L106` Validation
+- `L108` Two new-project surfaces, one choice model (2026-09-11)
 
 ### `openwiki/editor-interior-room-harness.md` — 98KB · 467줄 · ~28,297 토큰 · 통째읽기 잘림
 
@@ -1269,74 +1270,74 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L347` 맵 배경 다중 레이어 (2026-09-21)
 - `L399` 맵 배경 깊이(카메라 따라가기)·흐름 배율 — 회상 파노라마 (2026-09-27)
 
-### `openwiki/runtime-project-schema.md` — 180KB · 1328줄 · ~49,838 토큰 · 통째읽기 잘림 · 깨진 줄 1
+### `openwiki/runtime-project-schema.md` — 181KB · 1333줄 · ~50,102 토큰 · 통째읽기 잘림 · 깨진 줄 1
 
 - `L3` 데스크톱 시작 화면 — 런처형 (2026-09-27)
-- `L41` 강하게 다시 하기·장 표시 선택 필드 (2026-09-26)
-- `L51` 높이 지형 `map.relief` — 선택 필드 (2026-09-26)
-- `L62` 맵 칸 2층·4층·그림자 — 선택 필드 (MZ식 4층 PR ①, 2026-09-24)
-- `L95` 이름별 게임 오버 (2026-09-23)
-- `L112` 확정된 게임 기획 (2026-09-22)
-- `L128` LegacyDb 잔여 의존 정리 (2026-09-21)
-- `L135` 종족 전투 뒷모습 리소스 (2026-09-20)
-- `L139` 웹 프로젝트 생성과 선택 (2026-09-18)
-- `L145` 팀 프로젝트 서비스 (2026-09-18)
-- `L152` 로컬 SQLite 정본과 저장소 포트 (2026-09-16)
-  - `L213` 데스크톱 앱이 실제로 뜬다 (2026-09-16)
-- `L246` 지역 하위 장소의 단일 계약 (2026-09-14)
-- `L256` 직접 그린 방을 포함하는 다층 장소 (2026-09-14)
-- `L265` 장소 재료의 포함 관계 (2026-09-14)
-- `L274` 혼합 하위 재료 구성 (2026-09-13)
-- `L293` Truthful migrated-load state (2026-09-07)
-- `L326` Explicit publication identity and Save6 (2026-09-06)
-- `L384` Spatial canonical routing (task6 backend increment, 2026-09-07)
-- `L426` P1 accepted-save receipts and read-only proof (2026-09-06)
-- `L476` 패배 흐름과 엔딩 프레젠테이션 (2026-09-22)
-- `L490` Opening and game-over cinematic settings (2026-09-06)
-- `L507` 적 전투 이미지 크기 (2026-09-06)
-- `L511` Project monster metadata overrides (foundation, 2026-09-07)
-- `L553` Project audio description overrides
-  - `L582` Concurrent persistence
-  - `L607` Editor preservation and playable export
-- `L621` Character/face authoring metadata (2026-09-06)
-- `L630` Character appearance sets v1 (2026-09-06)
-- `L667` New-project save/reload verification (2026-09-05)
-- `L675` Task15 nonvisual economy command contract (2026-09-08)
-- `L686` Independent game Save5 boundary (2026-09-06)
-- `L692` Life ownership in Save5 (2026-09-06)
-- `L708` Placement safety core (task12, 2026-09-06)
-- `L720` Project-authored equipment slots (2026-09-05)
-- `L728` 전투 명령 CSS (2026-09-05)
-- `L732` 기본 카탈로그 삭제 보존 (2026-09-05)
-- `L736` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
-- `L749` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
-- `L757` 세계 법칙의 명시적 부재 (2026-09-05)
-- `L761` Showcase media save-copy durability (issue #693, 2026-09-08)
-- `L801` 공용 첫 방문 데모 — 읽기 전용 저장 계약 (2026-09-14)
-- `L835` Project schema & persistence
-- `L1073` Variable arithmetic & loop runtime (2026-08-07)
-- `L1077` Canonical event-draft projection (2026-07-30)
-- `L1084` P2 general buildings and home decorations (2026-08-25)
-- `L1091` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
-- `L1109` Boot normalizers must not create dangling references (2026-08-30)
-- `L1135` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
-- `L1169` 성장 트리 선택 확장 (2026-09-05)
-- `L1175` 마을 설계서 (2026-09-05)
-- `L1181` 공포 게임 제작 기능 (2026-09-05)
-  - `L1185` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
-- `L1189` NPC 표시 이름 (2026-09-05)
-- `L1202` 연결 실내 도면의 영속성 (2026-09-05)
-- `L1206` 개념 장소 형상 (2026-09-05)
-- `L1210` Optional village decoration attachments (2026-09-13)
-- `L1221` Optional map climate (Feature16, 2026-09-21)
-- `L1238` Optional authored combat rules (feature16, 2026-09-21)
-- `L1241` AI 저작 보조 설정의 프로젝트 지속성 (Feature16, 2026-09-21)
-- `L1254` 구름량 optional 필드 (2026-09-21)
-  - `L1266` Map atmosphere layers (2026-09-21)
-- `L1287` 필드 HUD 설정 (2026-09-21)
-  - `L1297` HUD 장르·서체 확장 (2026-09-21)
-- `L1309` 타일셋 참고문서 데이터 (2026-09-21)
-- `L1313` 몬스터 보유 조건 연결 작업 (2026-09-25, 진행 중)
+- `L46` 강하게 다시 하기·장 표시 선택 필드 (2026-09-26)
+- `L56` 높이 지형 `map.relief` — 선택 필드 (2026-09-26)
+- `L67` 맵 칸 2층·4층·그림자 — 선택 필드 (MZ식 4층 PR ①, 2026-09-24)
+- `L100` 이름별 게임 오버 (2026-09-23)
+- `L117` 확정된 게임 기획 (2026-09-22)
+- `L133` LegacyDb 잔여 의존 정리 (2026-09-21)
+- `L140` 종족 전투 뒷모습 리소스 (2026-09-20)
+- `L144` 웹 프로젝트 생성과 선택 (2026-09-18)
+- `L150` 팀 프로젝트 서비스 (2026-09-18)
+- `L157` 로컬 SQLite 정본과 저장소 포트 (2026-09-16)
+  - `L218` 데스크톱 앱이 실제로 뜬다 (2026-09-16)
+- `L251` 지역 하위 장소의 단일 계약 (2026-09-14)
+- `L261` 직접 그린 방을 포함하는 다층 장소 (2026-09-14)
+- `L270` 장소 재료의 포함 관계 (2026-09-14)
+- `L279` 혼합 하위 재료 구성 (2026-09-13)
+- `L298` Truthful migrated-load state (2026-09-07)
+- `L331` Explicit publication identity and Save6 (2026-09-06)
+- `L389` Spatial canonical routing (task6 backend increment, 2026-09-07)
+- `L431` P1 accepted-save receipts and read-only proof (2026-09-06)
+- `L481` 패배 흐름과 엔딩 프레젠테이션 (2026-09-22)
+- `L495` Opening and game-over cinematic settings (2026-09-06)
+- `L512` 적 전투 이미지 크기 (2026-09-06)
+- `L516` Project monster metadata overrides (foundation, 2026-09-07)
+- `L558` Project audio description overrides
+  - `L587` Concurrent persistence
+  - `L612` Editor preservation and playable export
+- `L626` Character/face authoring metadata (2026-09-06)
+- `L635` Character appearance sets v1 (2026-09-06)
+- `L672` New-project save/reload verification (2026-09-05)
+- `L680` Task15 nonvisual economy command contract (2026-09-08)
+- `L691` Independent game Save5 boundary (2026-09-06)
+- `L697` Life ownership in Save5 (2026-09-06)
+- `L713` Placement safety core (task12, 2026-09-06)
+- `L725` Project-authored equipment slots (2026-09-05)
+- `L733` 전투 명령 CSS (2026-09-05)
+- `L737` 기본 카탈로그 삭제 보존 (2026-09-05)
+- `L741` 전투 페이지 중복 ID 복구와 슬롯 참조 (2026-09-05)
+- `L754` 통행 컴포넌트 색인의 계약 (2026-08-30, PR #286)
+- `L762` 세계 법칙의 명시적 부재 (2026-09-05)
+- `L766` Showcase media save-copy durability (issue #693, 2026-09-08)
+- `L806` 공용 첫 방문 데모 — 읽기 전용 저장 계약 (2026-09-14)
+- `L840` Project schema & persistence
+- `L1078` Variable arithmetic & loop runtime (2026-08-07)
+- `L1082` Canonical event-draft projection (2026-07-30)
+- `L1089` P2 general buildings and home decorations (2026-08-25)
+- `L1096` 이벤트 초안 보관함: 명시적 저장은 자기가 대체한 디바운스를 취소한다 (2026-08-29)
+- `L1114` Boot normalizers must not create dangling references (2026-08-30)
+- `L1140` `.oprn` 은 단일 파일 게임 컨테이너다 — 편집기와 플레이어 양쪽이 읽는다 (2026-08-30)
+- `L1174` 성장 트리 선택 확장 (2026-09-05)
+- `L1180` 마을 설계서 (2026-09-05)
+- `L1186` 공포 게임 제작 기능 (2026-09-05)
+  - `L1190` 저장된 대사 별칭과 맵 오버레이 (2026-09-05)
+- `L1194` NPC 표시 이름 (2026-09-05)
+- `L1207` 연결 실내 도면의 영속성 (2026-09-05)
+- `L1211` 개념 장소 형상 (2026-09-05)
+- `L1215` Optional village decoration attachments (2026-09-13)
+- `L1226` Optional map climate (Feature16, 2026-09-21)
+- `L1243` Optional authored combat rules (feature16, 2026-09-21)
+- `L1246` AI 저작 보조 설정의 프로젝트 지속성 (Feature16, 2026-09-21)
+- `L1259` 구름량 optional 필드 (2026-09-21)
+  - `L1271` Map atmosphere layers (2026-09-21)
+- `L1292` 필드 HUD 설정 (2026-09-21)
+  - `L1302` HUD 장르·서체 확장 (2026-09-21)
+- `L1314` 타일셋 참고문서 데이터 (2026-09-21)
+- `L1318` 몬스터 보유 조건 연결 작업 (2026-09-25, 진행 중)
 
 ### `openwiki/runtime-sessions.md` — 119KB · 595줄 · ~32,192 토큰 · 통째읽기 잘림
 
