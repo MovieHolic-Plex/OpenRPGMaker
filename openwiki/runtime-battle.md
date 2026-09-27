@@ -10,6 +10,38 @@
 
 # Runtime Battle Behavior
 
+## 도트 측면 전투 스킨 retro2003 (2026-09-28)
+
+13번째 스킨. 자료집 → 시스템 → 전투 UI 스타일 「레트로 2003 · 측면 도트 전투」(드롭다운 4번째), AI `set_project_settings battle.uiStyle: "retro2003"`.
+규칙 엔진은 건드리지 않는다 — 표현만이고 `battleFlow: "gauge"` 와 함께 쓰면 시간 게이지 전투가 된다. 다른 12종은 DOM·CSS 바이트가 그대로다
+(새 CSS 는 전부 `[data-battle-skin="retro2003"]` 또는 `[data-battle-motion="retro"]` 스코프).
+
+- **레지스트리 필드 두 개**(`src/battle/skins/types.ts`): `motionStyle: "retro"` 가 연출을, `scenery: "layered"` 가 겹 배경을 켠다. 다른 스킨이 같은 연출을 원하면 이 값만 붙이면 된다(CSS 스코프는 스킨 id 라 그 CSS 도 넓혀야 한다).
+- **창·HUD** `battle-skins/_retro2003.css`: 청색 세로 그라데이션 창 + 2px 각진 베벨, 도트 글꼴(`--runtime-pixel-font`), 얼굴 없이 이름·HP·MP·ATB 줄, 텍스트 명령 목록과 맥동 막대 커서, 위쪽 한 줄 메시지, 대상 선택은 ▼ 손가락 커서. HUD 128px, 무대 상단 inset 48px.
+  재생 상태 칩은 메시지 창(최대 두 줄) 아래 `top: 84px` 에 둔다 — 52px 에서는 둘째 줄 위에 얹혔다(프레임 실측).
+- **배치** `battlerPlacements.ts` `RETRO_SIDEVIEW`: 적은 왼쪽(x 42~150, 발 y 118~140), 아군은 `(230+20i, 88+16i)` 사선 계단. 아군 시트는 인라인 96px 셀 규격을 유지하고 CSS `scale(2/3)` 로 그린다.
+  수동 트룹 좌표는 이 스킨에서만 접지 구간으로 접고(`resolveSkinEnemyPosition`), 접은 결과가 뭉치면 트룹 전체를 자동 진형으로 세운다. `battleEnemyFeetRatios.json` 의 retro2003 항목은 아직 rm2003 사본이다 — 감독 실측으로 갱신할 것.
+- **진입** 전환 `shatter-2003`(흰 번쩍임 두 번 → 가로 줄무늬가 번갈아 좌우로 미끄러지며 닫힘), `_transitions.css`.
+- **겹 배경** `src/assets/battleSceneryCatalog.ts` + `src/player/battleScenery.ts` + `battle/26-battle-scenery.css`.
+  그림: `public/assets/generated/battle-scenery/<plains|forest|cave|snow|desert>/{sky,far,mid,ground}.png`(640×360, sky 만 불투명, 도트 2배 nearest, ≤48색, 알파 0/255).
+  재생성: `scripts/asset-gen/gen-battle-scenery.mjs`(원화 source.png·prompts 는 같은 폴더). 리소스 id `battle-scenery-<biome>` 은 배경 피커(`resourceOptions.matchesGeneratedKind` backdrop)에 뜬다.
+  - 지형 결정 `resolveSceneryBiome`: 명시 `battle-scenery-*` → 알려진 배경 id 매핑(숲 레퍼런스→forest, 얼음→snow, 모래→desert, 하늘 파노라마·스킨 기본 배경→plains) → 지형 이름 낱말 → 기후 snow → 던전/동굴/실내 타일셋 → plains.
+    **모르는 id(사용자가 올린 배경)는 undefined** 를 돌려 그 그림을 그대로 두고 앰비언트만 얹는다.
+  - 네 장을 다 읽은 뒤에만 레이어를 붙인다(`data-layers="ready"`). 하나라도 실패하면 기존 단일 배경(`fallback`).
+  - 움직임: 구름 120s 흐름, far/mid 시차 흔들림, 카메라 10s 숨쉬기, 지형별 입자 캔버스 한 장(rAF 루프 1개 — 숨김 탭·노드 제거·감속 모드에서 멈춤/해제), 숲·초원 빛줄기, 동굴 비네트, 인트로 시차 슬라이드, 타격 흔들림에 레이어별 시차.
+  - 필드 스냅샷 배경(`system.battleBackdrop: "field"`)·onField 전투에서는 켜지 않는다.
+  - 내보내기: 스킨이 layered 면 20장 전부(약 1.3MB)를 ZIP 에 싣는다(`webExportAssets.ts`).
+- **연출** `src/player/battleRetroMotion.ts` + `battle/27-retro-motion.css`. 루트 `data-battle-motion="retro"`. 공용 `applyActionMotion` 은 이 스킨에서 즉시 돌아간다.
+  - 바깥 배틀러 노드의 개별 `translate` 속성이 이동을, 안쪽 스프라이트가 피격 진동(`vibrateStruck`)을 갖는다 — 둘을 같은 요소에 걸면 서로 덮는다.
+  - 아군 통상 공격: approach 비트 동안 72px 걸어 나감(발걸음 bob 2px×3) → impact 에 attack 칸 + 8px 찌르기 → recover 동안 포물선 점프로 귀환(그림자는 점프 높이를 반대로 보정). 스킬·아이템은 16px 나와 defend 칸 + 흰 빛 고리. 방어는 제자리 defend 칸.
+  - 명령 입력 중 아군은 16px 앞으로 나와 있다(`data-retro-command`). 피격은 hit 칸 + 붉은 점멸 두 번, KO 는 휘청(160ms) 뒤 dead 칸·회색. 승리 확정(`onResultPending`) 에 victory 칸 + 두 번 점프.
+  - 적: windup 비트에 흰 실루엣 두 번 번쩍, impact 에 10px 튐. 격파는 붉게 물들며 가로줄로 지워지는 500ms 소멸이 기존 파편·분해를 대신한다. 피해 숫자는 도트 글꼴(회복 초록, 급소 노랑)로 튀었다 한 번 튕긴다.
+  - 어느 타임라인 엔트리가 이번 행동인지는 필드별 커서로 따라간다(`initRetroMotion` → approach 때 전진). 마지막 결과 스냅샷은 이미 다음 행동일 수 있어서다.
+  - 감속 모드: 걷기·점프·번쩍임을 끄고 칸 전환만 남긴다.
+- **검증 경로** `node scripts/runtime-qa.mjs --scenario retro2003`(진입·명령·공격·자동 전투 승리, 픽스처는 데모 v3 를 retro2003 + gauge 로 가공해 실행 때 만든다)
+  와 `node scripts/qa/runtime/retro2003-frames.probe.mjs`(아군 공격·적 공격 구간을 ~100ms 간격 16장 + DOM 계측 JSON + 콘택트 시트, `verify-shots/runtime-qa/retro2003-frames/`).
+  프로브는 키보드로만 입력한다 — 명령 버튼은 포인터를 통과시켜 `click()` 이 30초 뒤 실패한다(실측).
+
 ## 타격감 층 (2026-09-25)
 
 사용자 신고 「게임적인 느낌이 거의 안 든다, 타격감이 없다」. 출하 player 녹화로 원인을 쟀다:

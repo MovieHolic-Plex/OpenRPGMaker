@@ -133,8 +133,13 @@ try {
       && enemyNames.some((name) => state.message.startsWith(name))
       && /공격|사용/.test(state.message)) { enemyObserved = true; break; }
     if (state.result) break;
+    // 전투 입력은 키보드 전용이다(명령 버튼은 포인터를 통과시킨다) — 커서를 방어로 옮겨 확정한다.
     if (state.busy === "false" && await page.locator(testid("actor-command-defend")).isVisible()) {
-      await page.locator(testid("actor-command-defend")).click();
+      for (let step = 0; step < 8; step += 1) {
+        if (await page.locator(testid("actor-command-defend")).getAttribute("data-battle-command-cursor") === "true") break;
+        await page.keyboard.press("ArrowDown");
+      }
+      await page.keyboard.press("z");
     }
     await page.waitForTimeout(30);
   }

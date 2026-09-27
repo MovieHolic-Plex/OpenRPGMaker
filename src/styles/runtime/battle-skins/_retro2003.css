@@ -281,7 +281,8 @@
   text-shadow: var(--retro-pixel) var(--retro-pixel) 0 #000820;
 }
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-playback-status {
-  top: 52px;
+  /* 메시지 창은 두 줄(약 72px)까지 자란다 — 그 아래에 둔다. */
+  top: 84px;
   right: 8px;
   border-radius: 0;
   background: #101860;
