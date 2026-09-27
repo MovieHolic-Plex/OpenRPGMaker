@@ -3075,10 +3075,14 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
   `database.actors` 가 없는 사본에서 출발해 「project.database.actors.map undefined」로 막혔다(프리셋 몬스터 수집 팀 첫 생성 실측).
   이제 받은 체크포인트를 `working` 으로 복원한 뒤 병합하고, 브라우저로는 다시 비워 보내며, ACK 도 복원한 뒤 `working` 에 둔다.
   회귀: `test/piAgentTeamRuntime.test.ts` 「slim %s checkpoints keep tilesets and database」(프로젝트·맵 두 경로).
-- **남은 미해결 — 긴 팀 실행 끝의 `Error in input stream`:** 같은 실측의 22분 팀 실행이 마지막 그림 응답(+1028초) 뒤 약 340초 동안 줄 없이
-  있다가 브라우저 스트림 읽기가 이 오류로 끝났다(Firefox 메시지). 워커는 `aborted by client after 51 turns` 를 남겼다 — 브라우저가 먼저 끊었다.
-  호스트 경유 NDJSON 은 heartbeat 만으로 420초 넘게 살아 있음을 따로 확인했으므로(가짜 워커) Node `requestTimeout` 이 원인은 아니다.
-  워커 heartbeat 를 막을 만큼 이벤트 루프를 붙잡는 작업, 또는 Firefox 의 `network.http.response.timeout`(300초)이 후보다. 위 DB 누락이 고쳐진 뒤 다시 재야 한다.
+- **워커 요청 본문 상한 (2026-09-27):** `Bun.serve` 의 `maxRequestBodySize` 기본값은 128MiB 이고, 넘으면 응답 없이 소켓을 닫아 호스트 fetch 가
+  `fetch failed`(EPIPE)로 끝난다. 새 프로젝트 기본 자료가 늘어 몬스터 수집 프리셋 첫 요청이 151MB(타일셋 84MB · 에셋 66MB)가 되자 팀 첫 생성이
+  한 턴도 못 돌고 「Pi 에이전트 실행 실패: fetch failed」로 끝났다. `scripts/oh-my-pi-worker.ts` 가 호스트의 압축 해제 상한과 같은 256MiB 를 쓴다.
+  회귀: `test/ohMyPiWorkerBodyLimit.node.test.mjs`(150MB 본문에 400 검증 오류가 돌아와야 한다).
+- **`Error in input stream` 은 QA 환경 탓이었다:** Firefox 가 스트림 읽기 도중 네트워크 변경을 감지하면 진행 중 연결을 끊고 이 메시지를 낸다.
+  이 호스트는 Docker 가 veth 인터페이스를 수십 초마다 만들고 지운다(`ip monitor`). 브라우저 QA 에서 `network.notify.changed=false` 를 주자 같은
+  프리셋 팀 첫 생성이 41분 동안 끊김 없이 돌았다(맵 17장 · 이벤트 175개, SQLite 재로드 확인). 제품 코드 문제는 아니지만, 네트워크가 흔들리는 실제
+  사용자 PC 에서도 같은 끊김이 날 수 있다 — 끊긴 뒤 이어 받는 경로는 없다. 의도 선언 `NS_ERROR_ABORT` 도 같은 원인이었다.
 
 ## 큰 프로젝트의 Pi 요청 전송 (2026-09-24)
 
