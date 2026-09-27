@@ -545,6 +545,10 @@ export function renderDifficultyCondition(
   const box = el("div", { class: "event-condition-detail" });
   if (rows.length === 0) {
     box.append(el("p", { class: "event-condition-warning", text: "난이도가 없습니다 — 데이터베이스 「시스템 → 난이도」에서 먼저 만드세요. 지금은 항상 거짓입니다.", dataset: { testid: `${testid}-empty` } }));
+    // 목록이 없어도 저장된 id 는 보이고 고칠 수 있어야 한다(나중에 같은 id 의 난이도를 만들면 그대로 살아난다).
+    const input = el("input", { attrs: { type: "text", placeholder: "난이도 id" }, value: cond.difficultyId, dataset: { testid } }) as HTMLInputElement;
+    input.addEventListener("change", () => onChange({ kind: "difficulty", difficultyId: input.value.trim() }));
+    box.append(field("난이도 id", input));
     return box;
   }
   const select = el("select", { dataset: { testid } }) as HTMLSelectElement;

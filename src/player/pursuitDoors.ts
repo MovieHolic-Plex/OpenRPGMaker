@@ -36,6 +36,7 @@ export function carryPursuitThroughDoor(world: PursuitWorld, movers: Map<string,
     if (!path.length && (view.x !== world.session.x || view.y !== world.session.y)) continue;
     state.active = true;
     state.doors.push({ ...destination, remainingMs: config.doorDelayMs + travelMs(path.length, view.movement, movers.get(view.event.id)) });
+    if (config.followSwitchId) world.session.switches[config.followSwitchId] = true;
   }
   for (const [id, state] of Object.entries(world.session.horror?.pursuits ?? {})) {
     const last = state.doors.at(-1);

@@ -116,6 +116,34 @@ function sampleCondition(kind: (typeof CONDITION_KINDS)[number]): EventPageCondi
       return { kind: "battleResult", result: "victory" };
     case "run":
       return { kind: "run", query: "floor", op: ">=", value: 3 };
+    case "monsterSpecies":
+      return { kind: "monsterSpecies", speciesId: project.database.monsterSpecies?.[0]?.id ?? "species_1", present: true };
+    case "actorStat":
+      return { kind: "actorStat", actorId: DEFAULT_ACTOR_ID, stat: "level", op: ">=", value: 1 };
+    case "actorState":
+      return { kind: "actorState", actorId: "anyone", stateId: project.database.states[0]?.id ?? "state_1", present: true };
+    case "partyLeader":
+      return { kind: "partyLeader", actorId: DEFAULT_ACTOR_ID };
+    case "partySize":
+      return { kind: "partySize", op: ">=", value: 1 };
+    case "facing":
+      return { kind: "facing", subject: "player", dir: "up" };
+    case "relativeFacing":
+      return { kind: "relativeFacing", relation: "playerBehindEvent" };
+    case "hiding":
+      return { kind: "hiding", value: true };
+    case "pursuitActive":
+      return { kind: "pursuitActive", value: true };
+    case "clearCount":
+      return { kind: "clearCount", op: ">=", value: 1 };
+    case "endingSeen":
+      return { kind: "endingSeen", endingId: "ending_1", value: true };
+    case "newGamePlus":
+      return { kind: "newGamePlus", value: true };
+    case "weekday":
+      return { kind: "weekday", weekdays: [0, 6] };
+    case "stringVariable":
+      return { kind: "stringVariable", stringVariableId: "prayer", op: "==", value: "빛" };
     case "difficulty":
       return { kind: "difficulty", difficultyId: "normal" };
     case "itemUsed":
@@ -240,6 +268,22 @@ describe("page conditions working guarantee (all kinds)", () => {
      sampleCondition("gold"),
      sampleCondition("battleResult"),
      sampleCondition("run"),
+     sampleCondition("monsterSpecies"),
+     sampleCondition("actorStat"),
+     sampleCondition("actorState"),
+     sampleCondition("partyLeader"),
+     sampleCondition("partySize"),
+     sampleCondition("facing"),
+     sampleCondition("relativeFacing"),
+     sampleCondition("hiding"),
+     sampleCondition("pursuitActive"),
+     sampleCondition("clearCount"),
+     sampleCondition("endingSeen"),
+     sampleCondition("newGamePlus"),
+     sampleCondition("weekday"),
+     sampleCondition("stringVariable"),
+     sampleCondition("difficulty"),
+     sampleCondition("itemUsed"),
      sampleCondition("all"),
      sampleCondition("any"),
      sampleCondition("not"),

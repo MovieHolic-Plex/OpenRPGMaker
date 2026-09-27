@@ -698,6 +698,10 @@ export interface ChaseAcrossMaps {
   doorDelayMs: number;
   searchMs: number;
   onLost: "wait" | "return";
+  /** 명작 공백 #28(2026-09-27): 추격자가 수색 끝에 포기하면 켜는 스위치(따돌림 연출·BGM 복귀 이벤트용). 다시 발견하면 끈다. */
+  lostSwitchId?: string;
+  /** 추격자가 문을 따라 다른 맵으로 넘어오기 시작하면 켜는 스위치(「문이 열린다」 연출용). */
+  followSwitchId?: string;
 }
 
 export interface EventObjectInteraction {
