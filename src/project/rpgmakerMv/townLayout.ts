@@ -612,16 +612,16 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
     lots.push({ kind: "house", x: hx, y: top, w: hw, h: 6, door: { x: mainDoor, y: wallBottom } });
     return doors;
   };
-  const buildApartmentRow = (x0: number, x1: number, band: HouseBand) => {
+  const buildApartmentRow = (x0: number, x1: number, band: HouseBand, single = false) => {
     const deal = dealer(apartments);
     const bottom = band.frontY - 1;
     const topY = band.backY;
     let x = x0;
     let prevStoreys = 0;
     while (x1 - x >= 4) {
-      let w = int(rng, 5, 8);
+      let w = single ? x1 - x : int(rng, 5, 8);
       if (x1 - x - w < 4) w = x1 - x;
-      if (w > 10) w = int(rng, 5, 6);
+      if (w > 10 && !single) w = int(rng, 5, 6);
       const style = deal();
       const height = bottom - topY + 1;
       let storeys = int(rng, 2, Math.min(4, height - 3));
@@ -667,57 +667,78 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
         if (pw === seg.w) return;
         if (atRight) end = parkX; else x = parkX + pw;
       }
-      const flats = band.roadY !== null && end - x >= 8 && rng() < (bandIndex > 0 ? 0.75 : W < 70 ? 0.75 : 0.45);
-      if (flats) {
-        const stop = buildApartmentRow(x, end, band);
-        if (stop < end) paint(recipe.lawn, stop, bandTop, end - stop, band.frontY - bandTop);
-        return;
-      }
-      // 넓은 블록은 한쪽 끝을 중층 주거 몇 채로(벽 맞댐), 나머지를 단독주택으로 — 한 줄에 크기가 섞인다.
-      if (band.roadY !== null && end - x >= 18 && rng() < 0.65) {
-        const fw = int(rng, 8, Math.min(16, end - x - 9));
-        if (rng() < 0.5) { buildApartmentRow(x, x + fw, band); x += fw; }
-        else { buildApartmentRow(end - fw, end, band); end -= fw; }
-      }
-      backHedge(x, end, band);
+      // 블록 = 필지 섞기(작가 p4·p6): 단독주택 · 중층 주거 한 동 · 주차장 · 쌈지 녹지가 섞이고, 같은 종류가 셋 이상 잇따르지 않는다.
+      // 예전엔 블록 하나를 같은 높이 건물 한 줄로 통째로 채워 벽처럼 보였다(2026-09-27 사용자 지적).
       const deal = dealer(recipe.houses);
-      // 블록 하나에 줄집(벽 맞댐 4~5칸 3~4채)을 한 번 섞는다 — 단독주택만 같은 간격으로 늘어서지 않게.
-      let terrace = end - x >= 20 && rng() < 0.5;
+      const aptDeal = dealer(apartments);
+      const carsV = recipe.objects.carsVertical ?? [];
+      let prevKind = "";
+      let houseRun = 0;
       while (end - x >= 5) {
-        if (terrace && end - x >= 16 && rng() < 0.5) {
-          terrace = false;
-          const count = Math.min(4, Math.floor((end - x - 2) / 4));
-          let tx = x + 1;
-          for (let i = 0; i < count; i += 1) {
-            const tw = int(rng, 4, 5);
-            if (tx + tw > end - 1) break;
-            buildHouse(tx, tw, band, deal(), false);
-            tx += tw;
-          }
-          // 줄집 앞: 생울타리 한 줄(보도 쪽), 현관길 자리는 비운다.
-          x = tx + 1;
+        const left = end - x;
+        const kinds: string[] = [];
+        if (houseRun < 2) kinds.push("house", "house");
+        if (band.roadY !== null && left >= 8 && prevKind !== "flat") kinds.push("flat");
+        if (band.roadY !== null && carsV.length && recipe.parkingLine && left >= 7 && prevKind !== "parking" && prevKind !== "green") kinds.push("parking");
+        if (prevKind !== "green" && prevKind !== "parking" && prevKind !== "") kinds.push("green");
+        const kind = pick(rng, kinds.length ? kinds : ["house"]);
+        let lotW = kind === "house" ? int(rng, 8, 10) : kind === "flat" ? int(rng, 8, 11) : kind === "parking" ? int(rng, 7, 9) : int(rng, 4, 6);
+        if (left - lotW < 5) lotW = left;
+        prevKind = kind;
+        houseRun = kind === "house" ? houseRun + 1 : 0;
+        if (kind === "flat") {
+          // 한 동짜리 중층 주거: 양옆 잔디 1칸, 문 앞은 넓은 판석 마당.
+          const bx = x + 1;
+          const bw = Math.min(9, lotW - 2);
+          buildApartmentRow(bx, bx + bw, band, true);
+          const door = lots[lots.length - 1]?.door;
+          if (door && band.front > 0) paint(recipe.plaza ?? recipe.path, Math.max(bx, door.x - 1), band.frontY, Math.min(3, bx + bw - Math.max(bx, door.x - 1)), band.front);
+          x += lotW;
           continue;
         }
-        let lotW = W < 70 ? int(rng, 6, 8) : int(rng, 6, 12);
-        if (end - x - lotW < 5) lotW = end - x;
-        if (lotW > 13) lotW = int(rng, 7, 10);
+        if (kind === "parking") {
+          // 주차장: 뒤 두 줄은 잔디·관목, 그 아래 아스팔트(칸 선 + 세로 차), 보도 앞 잔디 띠는 진입로로 끊는다.
+          const top = band.houseY + 2;
+          const bottom = band.frontY + band.front - 1;
+          const px0 = x + 1;
+          const pw = lotW - 2;
+          backHedge(x, x + lotW, band);
+          paint(recipe.alley, px0, top, pw, bottom - top + 1);
+          for (let bx = px0; bx + 2 < px0 + pw; bx += 3) {
+            paint(recipe.parkingLine!, bx, top, 1, 3);
+            if (rng() < 0.6) place(pick(rng, carsV)[0], bx + 1, top + 2);
+          }
+          const ex = px0 + Math.floor((pw - 2) / 2);
+          paint(recipe.driveway, ex, band.lawnY, 2, 1);
+          drivewayCols.add(ex); drivewayCols.add(ex + 1);
+          x += lotW;
+          continue;
+        }
+        if (kind === "green") {
+          // 쌈지 녹지: 나무 한 그루 + 보도 쪽 벤치 + 꽃.
+          const id = pickTree(recipe.objects.parkTrees ?? recipe.objects.yardTrees);
+          if (id) for (let tries = 0; tries < 4; tries += 1) { const tx = int(grng, x, x + lotW - (kit(id)?.width ?? 1)); if (plantTree(id, tx, band.houseY + 3 + int(grng, 0, 1))) break; }
+          const baseY = band.frontY + band.front - 1;
+          if (recipe.objects.bench) place(recipe.objects.bench, x + int(grng, 1, Math.max(1, lotW - 2)), baseY);
+          const bed = pick(grng, recipe.objects.flowerBeds);
+          for (let i = 0, n = int(grng, 1, 3); i < n; i += 1) place(bed, x + int(grng, 0, lotW - 1), band.frontY);
+          x += lotW;
+          continue;
+        }
+        backHedge(x, x + lotW, band);
         const drive = band.roadY !== null && lotW >= 10 && rng() < 0.5;
-        // 작은 맵은 이웃 틈 0~1칸(밀도 30% 이상, 라운드 4). 난수 소비는 예전과 같다.
-        const hw = Math.max(4, Math.min(9, lotW - (drive ? 3 : W < 70 ? (x + lotW >= end ? 0 : 1) : int(rng, 1, 2))));
+        // 이웃 틈 2~3칸, 필지 가운데 — 비슷한 집이 벽을 맞대고 늘어서지 않게.
+        const hw = Math.max(4, Math.min(8, lotW - (drive ? 3 : int(rng, 2, 3))));
         const room = lotW - hw - (drive ? 3 : 0);
-        const hx = x + (drive ? 0 : int(rng, 0, Math.max(0, room)));
+        const hx = x + (drive ? 0 : Math.floor(Math.max(0, room) / 2));
         buildHouse(hx, hw, band, deal());
         if (drive) {
           const dx = hx + hw + 1;
           paint(recipe.driveway, dx, band.houseY + 3, 2, band.walkY - band.houseY - 3);
           paint(recipe.driveway, dx, band.lawnY, 2, 1);
           drivewayCols.add(dx); drivewayCols.add(dx + 1);
-          // 진입로에 세운 세로 차(가끔).
-          const carsV = recipe.objects.carsVertical ?? [];
           if (carsV.length && rng() < 0.5) place(pick(rng, carsV)[1], dx, band.frontY + band.front - 1);
         }
-        // 예전 모서리 나무가 쓰던 난수 한 번은 그대로 소비한다(뒤 필지의 폭·집 모양이 r1 과 같게).
-        if (band.front >= 2 && !drivewayCols.has(x + lotW - 1)) rng();
         // 앞마당: 필지마다 다른 조경 — 나무(자리도 제각각)·덤불·꽃 무리·맨 잔디(DEFECTS r2-4). 나무는 마당 깊이 안에만 서서 보도·벽을 덮지 않는다.
         if (band.front >= 2) {
           const doorsHere = new Set(lots.flatMap((l) => (l.kind === "house" && l.door && l.x >= x && l.x < x + lotW ? [l.door.x] : [])));
@@ -737,13 +758,6 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
             const n = int(grng, 2, 3);
             const tx = int(grng, x, Math.max(x, x + lotW - n));
             if (free(tx, n)) for (let i = 0; i < n; i += 1) place(id, tx + i, baseY);
-          }
-        }
-        const hedge = recipe.objects.hedge;
-        if (hedge && band.front >= 3 && rng() < 0.6) {
-          for (let gx = x; gx + 3 <= x + lotW - 1; gx += 3) {
-            if ([0, 1, 2].some((i) => drivewayCols.has(gx + i) || lots.some((l) => l.door && l.door.x === gx + i && l.x >= x && l.x < x + lotW))) continue;
-            place(hedge, gx, band.frontY + band.front - 1);
           }
         }
         x += lotW;
