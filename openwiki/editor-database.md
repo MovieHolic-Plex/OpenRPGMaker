@@ -1,5 +1,13 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 자료집 개선안 2단계 — 헤더 저장 상태·얇은 발 줄·연결 칸 (2026-09-27)
+
+- **저장 상태는 헤더에 있다.** `databaseModal` 이 `db-footer-status` 요소를 만든 뒤 헤더(AI 단추 앞)로 옮긴다. 같은 요소라 testid·aria-live·문구 계약(「자동 저장됨」「적용했습니다」「저장 전」…)과 `paintFooterStatus` 소유는 그대로다. 발 줄은 닫기·지금 저장·되돌리기·도움말만 오른쪽에 붙는다. 확인 줄(dirty prompt)은 여전히 발 줄에 뜬다.
+- **연결 칸(`db-connections`)** 은 `.database-modal-body` 의 마지막 형제다(`.db-body` 밖). 그래서 탭 캐시·부분 렌더와 얽히지 않는다. `renderDatabasePanel` 이 호스트를 비우면 `paint` 가 다시 붙인다(`panel.host`). 칠하는 때: 활성 탭 구독, 스토어 변경(읽기 전용이라 편집 중에도), 본문 클릭 뒤 마이크로태스크(목록 선택은 구독이 없다).
+- 계산은 순수 함수 `src/editor/databaseRecordConnections.ts`: 주인공·직업·스킬·아이템·장비·몬스터·적 그룹·상태만. 삭제 차단 문장(`projectDatabaseReferenceMessage`)은 첫 건만 말하고, 이 칸은 **전부** 목록으로 낸다. 목록이 비었는데 차단 검사가 참조를 찾으면 그 문장을 「다른 곳」 한 줄로 보인다 — 제작법·출하·박물관처럼 목록이 모르는 참조가 있을 때 「아무 데서도 안 쓴다」고 말하지 않게. 계약: `test/databaseRecordConnections.test.ts`.
+- 칸은 컨테이너 1180px 미만·도크 모드에서 접힌다(편집 칸을 좁히지 않는다).
+- fieldset 제목은 `float: left; width: 100%` 로 선에서 떼어 카드 안 첫 줄로 둔다(흰 카드 + 테두리에서 선을 끊는 legend 가 옛 그룹 상자처럼 보였다). 카드 안 연속 `.db-field` 행은 헤어라인으로 나눈다.
+
 ## 자료집 개선안 1단계 — 그룹 띠·쿨 인디고 팔레트·흰 카드 (2026-09-27)
 
 목업(`visualizations/…/database-ui-proposal.html`, 사용자 확인)의 레일·색·면 구성을 실제 창에 옮겼다.

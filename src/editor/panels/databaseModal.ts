@@ -43,6 +43,7 @@ import { pendingHistoryLabels, undoMapEdit } from "@/editor/mapEditHistory";
 import { openHelpModal } from "@/editor/panels/helpModal";
 import { getEditorChrome } from "@/editor/editorUiMode";
 import { uiLabel } from "@/editor/uiCopy";
+import { createConnectionsPanel } from "@/editor/panels/databaseConnectionsPanel";
 
 // 창 컨트롤 아이콘 — 예전에는 "⇥ □ x" 텍스트 글리프였다. 글꼴에 따라 굵기·베이스라인이
 // 제각각이고 x 는 소문자 엑스라 닫기 버튼으로 읽히지 않았다. 규격은 레일 아이콘과 같다
@@ -246,9 +247,16 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     dataset: { testid: "database-modal-crumb" },
   });
   writeCrumb(crumb, getDatabaseActiveTab());
+  // 오른쪽 「연결」 칸 — 선택 레코드를 어디서 쓰는지·무엇을 확인할지. 이동은 AI 검토 카드와 같은 경로다.
+  const connections = createConnectionsPanel((target) => {
+    switchDatabaseActiveTab(target.collection === "equipment" ? "items" : target.collection as DatabaseTab, body);
+    refreshDatabasePanel(body);
+    connections.paint(getDatabaseActiveTab());
+  });
   const unsubscribeActiveTab = subscribeDatabaseActiveTab((tab) => {
     writeCrumb(crumb, tab);
     aiBar.refreshContext();
+    connections.paint(tab);
   });
   const header = el("header", {
     class: "database-modal-header",
@@ -383,6 +391,8 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     }
     if (change.scope !== "database" && change.scope !== "project") return;
     syncUndoButton();
+    // 연결 칸은 읽기 전용이라 편집 중에도 다시 그려도 입력을 빼앗지 않는다.
+    connections.paint(getDatabaseActiveTab());
     if (isEditingInsideModalBody() || withinInteractionGrace()) {
       pendingRefresh = true;
       scheduleGraceFlush();
@@ -633,6 +643,10 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     });
   }
   windowEl?.append(footer);
+  // 개선안(2026-09-27): 저장 상태는 헤더 오른쪽(AI 단추 앞)에 작은 표시로 선다 — 목업의 「자동 저장됨」.
+  // 같은 요소를 옮길 뿐이라 db-footer-status testid·aria-live·문구 계약은 그대로다.
+  // 발 단추 줄은 닫기·지금 저장·되돌리기·도움말만 남는 얇은 줄이 된다.
+  header.insertBefore(footerStatus, aiToggleButton);
   paintFooterStatus(); // 주 버튼 무게는 버튼이 생긴 뒤에야 칠할 수 있다.
   // ── 사이드 도킹(M8): 백드롭 투명·포인터 통과 + 창 우측 고정. 맵 캔버스는 그대로 조작 가능. ──
   const applyDockMode = (next: boolean): void => {
@@ -704,6 +718,14 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   }
   document.body.append(backdrop);
   renderDatabasePanel(body);
+  // 연결 칸은 본문(.db-body) 옆 형제다. 목록 선택은 구독 없이 부분 렌더로 끝나므로 본문 클릭 뒤에 다시 칠한다.
+  connections.host = body;
+  connections.paint(getDatabaseActiveTab());
+  body.addEventListener("click", (event) => {
+    if (event.target instanceof Node && connections.element.contains(event.target)) return;
+    // 선택 핸들러가 먼저 돈 뒤에 읽는다.
+    queueMicrotask(() => connections.paint(getDatabaseActiveTab()));
+  });
   if (parkingModal) {
     // 숨긴 창이 단축키와 포커스를 가져가면 편집이 막힌다. 클릭 때 다시 붙인다.
     document.removeEventListener("keydown", handleModalKeyDown);
