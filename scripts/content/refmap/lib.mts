@@ -263,8 +263,41 @@ export function convertSpec(set: LoadedSet, spec: MapSpec): Converted {
   }
   const empty = k1.filter((k) => !k).length;
   if (empty) warnings.push(`1층 빈 칸 ${empty}개(검게 보인다)`);
+  warnings.push(...lintStructure(set, w, h, k1, k2));
   return { width: w, height: h, lowerTiles: shapeLayer(set, w, h, k1), lowerOverlayTiles: shapeLayer(set, w, h, k2),
     upperTiles: up3, upperOverlayTiles: up4, warnings, objects };
+}
+
+// ── 구조 검사 ──
+// A4(천장/벽면)·A3(지붕/벽) 은 시트 짝수 줄 종류가 윗면, 홀수 줄이 벽면이다. 윗면의 남쪽 끝 밑에는 벽면이 있어야 하고
+// 벽면은 위가 윗면(또는 벽면)이고 2줄 이상이어야 한다. 어기면 천장이 바닥 위에 떠 있거나 집이 덜 지어진 것처럼 보인다.
+type Role = "top" | "face" | null;
+export function lintStructure(set: LoadedSet, w: number, h: number, k1: (string | null)[], k2: (string | null)[]): string[] {
+  const roleOf = (k: string | null, part: "A3" | "A4"): Role => {
+    if (!k || k.startsWith("#")) return null;
+    const [s, kind] = k.split(":");
+    if (mvSheetPart(set.fileOf(s!)) !== part) return null;
+    return Math.floor(Number(kind) / 8) % 2 === 0 ? "top" : "face";
+  };
+  const out: string[] = [];
+  for (const [part, label, keys] of [["A4", "천장", k1], ["A3", "지붕", k2]] as const) {
+    const at = (x: number, y: number): Role | "out" => (x < 0 || y < 0 || x >= w || y >= h) ? "out" : roleOf(keys[y * w + x] ?? null, part);
+    const bad: Record<string, [number, number][]> = {};
+    const add = (msg: string, x: number, y: number) => (bad[msg] ??= []).push([x, y]);
+    for (let y = 0; y < h; y += 1) for (let x = 0; x < w; x += 1) {
+      const r = at(x, y);
+      if (r === "top") {
+        const s = at(x, y + 1);
+        if (s !== "top" && s !== "face" && s !== "out") add(`${label} 밑에 벽면 없음`, x, y);
+      } else if (r === "face") {
+        const n = at(x, y - 1);
+        if (n !== "top" && n !== "face" && n !== "out") add(`벽면 위에 ${label} 없음`, x, y);
+        if (n !== "face") { let run = 0; while (at(x, y + run) === "face") run += 1; if (run < 2) add(`${label} 벽면이 1줄뿐`, x, y); }
+      }
+    }
+    for (const [msg, cells] of Object.entries(bad)) out.push(`구조: ${msg} ${cells.length}칸 — ${cells.slice(0, 8).map(([x, y]) => `(${x},${y})`).join(" ")}${cells.length > 8 ? " …" : ""}`);
+  }
+  return out;
 }
 
 export function readMapSpecs(set: LoadedSet): MapSpec[] {

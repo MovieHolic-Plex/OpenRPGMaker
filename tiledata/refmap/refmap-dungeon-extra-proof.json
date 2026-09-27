@@ -7,28 +7,28 @@
   "objectKits": 65,
   "houseKits": 0,
   "autotileGroups": 49,
-  "bytes": 6915331,
+  "bytes": 6912033,
   "maps": {
     "rock_cave": {
       "place": "shared_refmap_dungeon_extra_rock_cave",
       "size": "40×30",
       "objects": 32,
       "houses": 0,
-      "renderSha": "5a8e7df5914e4549d2f31a9e54160ce14d39f05e70d147bd800f11cd4a550321"
+      "renderSha": "299d13607d3b6fc1ac31cc2e4a12418b99794028c5fd2ad0e45a5ffd7926d9d4"
     },
     "underground_lake": {
       "place": "shared_refmap_dungeon_extra_underground_lake",
       "size": "40×32",
       "objects": 39,
       "houses": 0,
-      "renderSha": "83e878f2b9e87e18d00564f96d90aeb5e8aaaa42fde764a86d554fe6d6030491"
+      "renderSha": "dc83dda917430a10c851ca4b89cb180cfc4d343b89946ecc3e2833aaadc30b93"
     }
   },
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "3febbb0e9e4433830e30e1cf68c41f0958ab5ea819c5d8b7396513f9b0bb09cd",
+  "revision": "eb651e7dbd3b3017f089bc160708e9361911d260b22a50cf0fe467622a355932",
   "reloaded": true,
-  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-dungeon-extra-2026-09-27T08-23-52-396Z.sqlite",
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-dungeon-extra-2026-09-27T09-16-06-993Z.sqlite",
   "otherLibraries": 36,
   "otherLibrariesUnchanged": true,
-  "publishedAt": "2026-09-27T08:24:56.584Z"
+  "publishedAt": "2026-09-27T09:16:25.445Z"
 }
