@@ -1,4 +1,5 @@
 import { canMove } from "@/project/collision";
+import { armTerrainComponents, terrainMayReach } from "@/project/tilePassabilityComponents";
 import type { Dir, GameMap, MapConnection, MapId, MoveCommand, Project } from "@/project/types";
 import type { RuntimeEventView } from "@/project/runtimeEventState"
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
@@ -157,6 +158,10 @@ function firstConnectionToward(
 
 function pathTo(project: Project, map: GameMap, from: Point, to: Point): MoveCommand[] {
   if (samePoint(from, to)) return [];
+  // 이 탐색은 지형 통행(canMove)만 본다 — 추격 A* 와 같은 연결 성분 색인으로 도달 불가를 바로 안다.
+  // 예전에는 목적지가 벽 안이면 표면 갱신마다 생활 NPC 마다 맵 전체 BFS 를 다시 돌렸다(NPC 10명 약 90ms).
+  // 한 방향 턱은 색인이 보수적으로 잇는다(tilePassabilityComponents §buildLabels).
+  if (!terrainMayReach(project, map, from.x, from.y, to.x, to.y)) return [];
   const startKey = pointKey(from);
   const targetKey = pointKey(to);
   const queue: Point[] = [from];
@@ -176,6 +181,8 @@ function pathTo(project: Project, map: GameMap, from: Point, to: Point): MoveCom
       queue.push(next);
     }
   }
+  // 성분 전체를 훑고도 못 만났다. 같은 질의가 다시 오면 색인이 바로 답하게 남긴다(훑은 칸이 적으면 안 만든다).
+  armTerrainComponents(project, map, visited.size);
   return [];
 }
 

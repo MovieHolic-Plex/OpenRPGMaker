@@ -161,6 +161,12 @@ function rebuildIndex(project: Project, map: GameMap): ComponentIndex | null {
 /**
  * 유니온-파인드로 성분 라벨을 만든다. 간선은 오른쪽·아래 두 방향만 본다 —
  * canMove 가 대칭이므로 반대 방향은 같은 판정이다(파일 머리 주석 참조).
+ *
+ * **예외 — 한 방향 턱(`tileset.ledgeDirections`).** 턱 칸은 정해진 방향으로만 들어설 수 있어서
+ * canMove 가 대칭이 아니다(collision.ts §canMove). 그 타일셋에서는 두 방향 중 **하나라도** 통하면
+ * 잇는다. 그러면 성분이 실제 도달 관계보다 넓거나 같아진다 — "다른 성분 = 확정 도달 불가" 라는 이
+ * 색인의 유일한 약속은 그대로 참이다(넓은 쪽 오답은 호출부 탐색이 바로잡는다). 예전에는 오른쪽·아래만
+ * 봐서 왼쪽으로만 들어설 수 있는 턱을 끊어, 도달 가능한 목표를 "도달 불가" 로 막았다.
  */
 function buildLabels(project: Project, map: GameMap): Int32Array {
   const width = map.width;
@@ -169,14 +175,17 @@ function buildLabels(project: Project, map: GameMap): Int32Array {
   const parent = new Int32Array(count);
   const rank = new Int32Array(count);
   for (let index = 0; index < count; index += 1) parent[index] = index;
+  const asymmetric = hasLedges(getTileset(project, map));
+  const linked = (ax: number, ay: number, bx: number, by: number): boolean =>
+    canMove(project, map, ax, ay, bx, by) || (asymmetric && canMove(project, map, bx, by, ax, ay));
 
   for (let y = 0; y < height; y += 1) {
     for (let x = 0; x < width; x += 1) {
       const index = y * width + x;
-      if (x + 1 < width && canMove(project, map, x, y, x + 1, y)) {
+      if (x + 1 < width && linked(x, y, x + 1, y)) {
         unite(parent, rank, index, index + 1);
       }
-      if (y + 1 < height && canMove(project, map, x, y, x, y + 1)) {
+      if (y + 1 < height && linked(x, y, x, y + 1)) {
         unite(parent, rank, index, index + width);
       }
     }
@@ -184,6 +193,13 @@ function buildLabels(project: Project, map: GameMap): Int32Array {
   const labels = new Int32Array(count);
   for (let index = 0; index < count; index += 1) labels[index] = findRoot(parent, index);
   return labels;
+}
+
+function hasLedges(tileset: TilesetDef | null): boolean {
+  const ledges = tileset?.ledgeDirections;
+  if (!ledges) return false;
+  for (const key in ledges) if (ledges[key]) return true;
+  return false;
 }
 
 function findRoot(parent: Int32Array, start: number): number {
@@ -259,6 +275,17 @@ function mixTilesetPassage(hash: number, tileset: TilesetDef | null): number {
   const priority = tileset.priority;
   for (let index = 0; index < priority.length; index += 1) {
     mixed = Math.imul(mixed ^ (priority[index] === "upper" ? 1 : 0), 0x01000193);
+  }
+  // 한 방향 턱도 통행을 바꾼다(canMove 가 진입 방향을 막는다). 제자리 편집을 잡으려고 내용을 섞는다.
+  const ledges = tileset.ledgeDirections;
+  if (ledges) {
+    mixed = Math.imul(mixed ^ 0x1ed6e, 0x01000193);
+    for (const key in ledges) {
+      const dir = ledges[key];
+      if (!dir) continue;
+      mixed = Math.imul(mixed ^ Number(key), 0x01000193);
+      mixed = Math.imul(mixed ^ dir.charCodeAt(0), 0x01000193);
+    }
   }
   return mixed;
 }

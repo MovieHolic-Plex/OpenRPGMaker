@@ -199,8 +199,10 @@ function stringField(source: Record<string, unknown> | null, key: string): strin
 }
 
 type DebugState = ReturnType<RuntimeDebugHook["readState"]>;
+/** 라이브 줄이 쓰는 최소 모양. readState 전체와 readLive 결과 둘 다 이 모양을 만족한다. */
+type LiveState = Pick<DebugState, "currentMapId" | "x" | "y"> & { readonly switches?: Readonly<Record<string, boolean>> };
 
-function collectLiveReadout(state: DebugState | undefined): LiveReadout {
+function collectLiveReadout(state: LiveState | undefined): LiveReadout {
   const snapshot = parsedRuntimeSnapshot();
   const player = snapshot?.["player"];
   const playerPos = typeof player === "object" && player !== null ? (player as Record<string, unknown>) : null;
@@ -226,8 +228,11 @@ function applyLiveReadout(
   dumpDetails: HTMLDetailsElement,
   switchValue: SwitchValueReadout,
 ): void {
-  // readState() 는 프레임당 한 번만 부른다(세션 전체를 복제하는 비용이 있다).
-  const state = debug()?.readState();
+  // 전체 readState() 는 덤프가 펼쳐져 있을 때만 부른다 — 생활 상태·이벤트 위치·몬스터를 복제해서 큰
+  // 세션이면 호출당 수~수십 ms 다. 접힌 동안은 좌표·선택 스위치만 읽는 readLive 로 충분하다.
+  const hook = debug();
+  const full = dumpDetails.open || !hook?.readLive ? hook?.readState() : undefined;
+  const state: LiveState | undefined = full ?? liveStateFromHook(hook, switchValue.selectedId());
   switchValue.apply(state);
   const readout = collectLiveReadout(state);
   line.textContent = liveText(readout);
@@ -240,7 +245,16 @@ function applyLiveReadout(
   line.dataset.eventRunning = readout.running === undefined ? "unknown" : `${readout.running}`;
   // 전체 JSON 은 펼쳐져 있을 때만 갱신한다 — 접힌 덤프를 매 프레임 stringify 할 이유가 없다.
   if (!dumpDetails.open) return;
-  stateDump.textContent = state ? JSON.stringify(state, null, 2) : "플레이가 시작되지 않았습니다.";
+  stateDump.textContent = full ? JSON.stringify(full, null, 2) : "플레이가 시작되지 않았습니다.";
+}
+
+function liveStateFromHook(hook: RuntimeDebugHook | undefined, switchId: string): LiveState | undefined {
+  const live = hook?.readLive?.(switchId || undefined);
+  if (!live) return undefined;
+  return {
+    currentMapId: live.currentMapId, x: live.x, y: live.y,
+    switches: switchId && live.switchValue !== undefined ? { [switchId]: live.switchValue } : {},
+  };
 }
 
 // 라이브 루프. 패널이 document 에서 떨어지면(호스트가 Test Play 를 닫으면) 스스로 멈춘다 —
@@ -260,12 +274,13 @@ function startLiveLoop(panel: HTMLElement, refresh: () => void): void {
 // 수백 개 사이에서 해당 id 를 눈으로 찾아야 했다. 셀렉트 옆에 현재 값을 바로 붙인다.
 type SwitchValueReadout = {
   readonly node: HTMLElement;
-  readonly apply: (state: DebugState | undefined) => void;
+  readonly apply: (state: LiveState | undefined) => void;
+  readonly selectedId: () => string;
 };
 
 function createSwitchValueReadout(select: HTMLSelectElement): SwitchValueReadout {
   const node = el("span", { class: "runtime-debug-live", dataset: { testid: "runtime-debug-switch-value" } });
-  const apply = (state: DebugState | undefined): void => {
+  const apply = (state: LiveState | undefined): void => {
     const id = select.value;
     const value = id ? state?.switches?.[id] : undefined;
     node.textContent = !id ? "—" : value === undefined ? "?" : value ? "ON" : "OFF";
@@ -275,7 +290,7 @@ function createSwitchValueReadout(select: HTMLSelectElement): SwitchValueReadout
   // 셀렉트를 바꾸면 다음 라이브 틱을 기다리지 않고 그 자리에서 갱신한다.
   select.addEventListener("change", () => apply(debug()?.readState()));
   apply(debug()?.readState());
-  return { node, apply };
+  return { node, apply, selectedId: () => select.value };
 }
 
 // ON/OFF 는 누른 직후 값이 바뀌어야 한다 — 리드아웃이 다음 rAF 까지 이전 값을 보여주면

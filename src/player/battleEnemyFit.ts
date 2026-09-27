@@ -27,10 +27,13 @@ export function fitEnemyImage(field: Size, image: Size, anchor: Point): Point & 
 /** Called by the existing mounted field sync; owns no observer, frame or timer. */
 export function fitBattleEnemy(field: HTMLElement, node: HTMLElement, authored: Point): Point {
   const requestedScale = Number(node.style.getPropertyValue("--battle-enemy-scale"));
+  // 확대하지 않는 적(대부분)은 레이아웃을 읽지 않고 돌아간다. clientWidth 는 방금 쓴 DOM 때문에 동기
+  // 레이아웃을 강제한다 — 전투 진입 한 번에 적마다 한 번씩이었다(브라우저 실측 작업 51–110ms 의 주범).
+  if (!(requestedScale > 1)) return authored;
   const width = field.clientWidth;
   const height = field.clientHeight;
   // Preserve all legacy/default geometry. Detached or hidden fields have no layout yet.
-  if (requestedScale <= 1 || width <= 32 || height <= 56) return authored;
+  if (width <= 32 || height <= 56) return authored;
   const image = node.querySelector<HTMLImageElement>(".battle-enemy-image");
   if (!image) return authored;
   const style = getComputedStyle(image);

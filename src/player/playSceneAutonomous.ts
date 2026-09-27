@@ -4,7 +4,8 @@ import { isDetectionEmoting } from "./npcDetectionEncounter";
 import { pursuitTarget } from "./horrorRuntime";
 import { pursuitPass } from "./pursuitNavigation";
 import { footprintBounds } from "@/project/footprint";
-import { findBlockingEventOverlappingRect } from "@/project/runtimeEventState";
+import type { CharacterFootprint, FootprintRect } from "@/project/types";
+import { createBlockingEventQuery } from "@/project/runtimeEventState";
 import { store } from "@/project/store";
 // 스프라이트 가로 좌표는 발자국 중앙(footprintSpriteX)이다 — 타일 중앙(characterSpriteX)을
 // 쓰면 폭 2 이상인 몸이 반 칸 왼쪽으로 붙는다. 걸음 보간·착지·첫 프레임 모두 같은 규칙이다.
@@ -168,7 +169,7 @@ function updateChaseNpc(
     pass: view.movement.pursuit
       ? pursuitPass({ project, map: scene.map, session: scene.session, positions: scene.eventPositions }, view)
       : { footprint: view.footprint, passRows: view.passRows,
-        blocked: (x, y) => !!findBlockingEventOverlappingRect(project, scene.map, scene.session, scene.eventPositions, footprintBounds(x, y, view.footprint), eventId) },
+        blocked: blockedByEventFootprint(createBlockingEventQuery(project, scene.map, scene.session, scene.eventPositions, eventId), view.footprint) },
   });
   if (tracked?.searching && decision.kind === "touch" && (pursuit.x !== scene.tileX || pursuit.y !== scene.tileY)) {
     decision = { kind: "move", x: pursuit.x, y: pursuit.y, dir: decision.dir };
@@ -323,4 +324,9 @@ function retryBlockedStep(mover: AutonomousMover): void {
 
 function lerp(from: number, to: number, progress: number): number {
   return from + (to - from) * progress;
+}
+
+/** 몸 사각(footprintBounds)으로 막는 이벤트를 묻는 통행 판정. 쿼리는 이 추격 결정 한 번에서만 쓴다. */
+function blockedByEventFootprint(query: (rect: FootprintRect) => boolean, footprint: CharacterFootprint): (x: number, y: number) => boolean {
+  return (x, y) => query(footprintBounds(x, y, footprint));
 }
