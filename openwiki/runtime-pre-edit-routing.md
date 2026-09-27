@@ -30,6 +30,23 @@
     곧바로 true 를 내고 복제 실패를 동기로 던지는 계약(`test/autosave.test.ts`)이 있어 미루지 않았다.
     맵 이동 때 타일 층 전체 재생성은 그대로다 — Phaser Container 는 자식을 깊이로 정렬하지 않고 넣은 순서가 그리는
     순서라 칸 단위 부분 갱신은 위험하다. 칸당 비용을 줄이는 쪽으로 풀었다.
+  - **3차(서브에이전트 5명 조사 + 적대적 리뷰, `test/runtimeLagFixes2.test.ts` "3차" 절):**
+    - 명령 이력 배열(`m2Runtime.expressions/debug/screenEffects/pathfinding/waits/checkpoints/dialogue/fallbacks`)은
+      `pushM2History` 로만 넣는다. 상한 `M2_HISTORY_LIMIT`(64). 상한이 없어서 오래 플레이하면 세션을 복제하는 모든
+      경로가 느려졌다(10만 건: 저장 236ms → 1.6ms). `ui`·`regions` 는 커서·게임 상태로 읽으므로 상한을 두지 않는다.
+    - 추격 A* 는 막는 이벤트를 `createBlockingEventQuery` 로 **탐색 한 번에 한 번만** 모은다(이벤트 300개 도달 불가
+      추격 559ms → 31ms). 판정기를 프레임 넘어 보관하지 않는다 — 앞 NPC 의 이동을 다음 NPC 가 봐야 한다.
+    - 지형 성분 색인은 한 방향 턱(`ledgeDirections`)이 있으면 두 방향 중 하나라도 통하면 잇고, 턱 내용을 지문에 섞는다.
+      예전 색인은 턱을 끊어 도달 가능한 추격을 "도달 불가" 로 막았다(기존 버그). 생활 NPC BFS 도 이 색인을 쓴다.
+    - 조명: 화면과 겹치지 않는 광원은 서명·그리기에서 뺀다. 스프라이트 없는 이벤트 광원은 `runtimeEventViewById`.
+    - 안개 굽기 예산은 `scene.game.loop.frame` 기준 **프레임당**, 분위기 소리 예산은 update 한 번 전체가 나눠 쓴다.
+    - 생활 상태 파서는 사전을 펼쳐 다시 만들지 않고 own 속성으로 붙인다(제곱 → 선형).
+    - 디버그 패널 라이브 줄은 `readLive` 만 읽는다. 전체 `readState` 는 덤프를 펼쳤을 때만.
+    - 전투 적 맞춤은 배율 1 이하면 레이아웃을 읽지 않는다(브라우저 실측 전투 진입 작업 51–110ms 의 주범).
+    - 미니맵은 해안 렌더 패스로 그리고, 생성 세대 번호로 늦게 끝난 낡은 생성을 버린다.
+    - 조사했지만 고치지 않은 것: 이벤트 층 전량 재생성(스프라이트 재사용은 이동 보간·패턴 override·그림자 계약이
+      얽혀 별도 작업), 대기 없는 라벨 루프(`gotoLabel` 선형 검색), 빈자리 없는 필드 스폰의 1초 재검사, 빈칸 조사의
+      세션 복제(`farming.ts`). 각각 Node 에서 재현은 됐지만 사용자 맵에서 흔한 조건인지 확인되지 않았다.
 - **플레이 프리로드는 카탈로그가 아니라 맵이 쓰는 그림만 싣는다 (2026-09-22):**
   `loadBundledAssets` / `collectPlayReferencedStrings` 는 `resourceProfiles` 와, 어떤 맵·명령도
   가리키지 않는 `tilesets` 레코드를 훑지 않는다. 빈 프로젝트도 `ensureBundledTilesets` 로 칩셋
