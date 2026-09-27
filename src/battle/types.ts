@@ -269,6 +269,10 @@ export interface BattleBattlerSnapshot {
   readonly skillCooldowns?: Readonly<Record<SkillId, number>>;
   readonly equipmentEffects?: EquipmentRuntimeEffects;
   readonly captured?: boolean;
+  /** 리미트 게이지 0~100(system.limitGauge 를 켠 전투의 아군만). */
+  readonly limitGauge?: number;
+  /** 제2 기술 자원 「기력」(system.resource2 를 켠 전투의 아군만). */
+  readonly resource2?: number;
 }
 
 export interface BattleHitFeelSnapshot {
@@ -525,6 +529,8 @@ export interface BattleSnapshot {
   readonly targetSelection?: BattleTargetSelectionSnapshot;
   readonly roundLogs: readonly BattleRoundLogSnapshot[];
   readonly eventLogs: readonly BattleEventLogSnapshot[];
+  /** 파티 공용 게이지(system.partyGauge 를 켠 전투만). */
+  readonly partyGauge?: number;
 }
 
 export interface BattleRuntime {

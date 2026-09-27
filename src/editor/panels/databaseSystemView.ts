@@ -467,6 +467,7 @@ function systemSectionNodes(
           });
         }),
       ]),
+      battleResourcesFieldset(project),
       rm2k3Fieldset("전투 오디오", [
         resourcePickerControl({
           label: "기본 BGM",
@@ -1555,6 +1556,83 @@ function nextRewardPolicy(
     ...(participationOnly ? { participationOnly: true } : {}),
     ...(levelGapPenalty ? { levelGapPenalty: true } : {}),
   };
+}
+
+/**
+ * 전투 자원 — 리미트·기력·파티 게이지·약점 추가 행동·감정 상성(battleGauges/battleEmotion).
+ * 모두 기본 꺼짐이고 끄면 설정을 지워 옛 JSON 바이트를 지킨다(normalizeSystemRecords 와 같은 계약).
+ */
+function battleResourcesFieldset(project: ReturnType<typeof store.getCurrent>): HTMLElement {
+  const system = project.system;
+  const toggle = (
+    label: string,
+    testid: string,
+    key: "limitGauge" | "resource2" | "partyGauge",
+  ): HTMLElement => checkboxField(label, testid, system[key]?.enabled === true, (checked) => {
+    updateSystem((draft) => {
+      if (checked) draft.system[key] = { ...(draft.system[key] ?? {}), enabled: true };
+      else delete draft.system[key];
+    });
+  });
+  return rm2k3Fieldset("전투 자원", [
+    systemHelp("리미트는 맞을수록 차고 가득 차면 리미트 기술을 씁니다. 기력은 주고받는 피해로 차는 제2 기술 자원입니다(기술 습득 TP 와 별개). 연계 게이지는 파티가 함께 채우고 추격 연계기가 씁니다. 스킬 탭 「전투 자원」에서 소모량을 정합니다."),
+    toggle("리미트 게이지", "db-field-system-limit-gauge", "limitGauge"),
+    numberField("리미트: 받은 피해 충전율(%)", "db-field-system-limit-taken-rate", () => store.getCurrent().system.limitGauge?.takenRate ?? 100, (value) => {
+      updateSystem((draft) => {
+        if (draft.system.limitGauge) draft.system.limitGauge.takenRate = value;
+      }, "system:limit-taken-rate");
+    }, { min: 0, max: 1000 }, system.limitGauge?.enabled ? undefined : { disabled: true, disabledReason: "리미트 게이지를 먼저 켜세요." }),
+    toggle("기력(제2 자원)", "db-field-system-resource2", "resource2"),
+    numberField("기력 최대치", "db-field-system-resource2-max", () => store.getCurrent().system.resource2?.max ?? 100, (value) => {
+      updateSystem((draft) => {
+        if (draft.system.resource2) draft.system.resource2.max = value;
+      }, "system:resource2-max");
+    }, { min: 1, max: 999 }, system.resource2?.enabled ? undefined : { disabled: true, disabledReason: "기력을 먼저 켜세요." }),
+    toggle("연계 게이지(파티 공용)", "db-field-system-party-gauge", "partyGauge"),
+    numberField("연계 게이지: 명중당 충전", "db-field-system-party-gauge-gain", () => store.getCurrent().system.partyGauge?.gainPerHit ?? 10, (value) => {
+      updateSystem((draft) => {
+        if (draft.system.partyGauge) draft.system.partyGauge.gainPerHit = value;
+      }, "system:party-gauge-gain");
+    }, { min: 0, max: 999 }, system.partyGauge?.enabled ? undefined : { disabled: true, disabledReason: "연계 게이지를 먼저 켜세요." }),
+    checkboxField("약점을 찌르면 한 번 더 행동", "db-field-system-weakness-extra-action", system.weaknessExtraAction === true, (checked) => {
+      updateSystem((draft) => {
+        if (checked) draft.system.weaknessExtraAction = true;
+        else delete draft.system.weaknessExtraAction;
+      });
+    }),
+    field("감정 상성", (() => {
+      // 한 줄에 하나: 「공격 계열>대상 계열=배율」. 상태 탭의 감정 계열 이름과 같게 적는다.
+      const textarea = el("textarea", {
+        attrs: { rows: "3", placeholder: "기쁨>분노=1.5\n분노>슬픔=1.5\n슬픔>기쁨=1.5", spellcheck: "false" },
+        dataset: { testid: "db-field-system-emotion-cycle" },
+      }) as HTMLTextAreaElement;
+      textarea.value = formatEmotionCycle(system.emotionCycle);
+      textarea.addEventListener("change", () => {
+        const rules = parseEmotionCycle(textarea.value);
+        updateSystem((draft) => {
+          if (rules.length > 0) draft.system.emotionCycle = rules;
+          else delete draft.system.emotionCycle;
+        });
+        textarea.value = formatEmotionCycle(rules);
+      });
+      return textarea;
+    })()),
+  ]);
+}
+
+export function formatEmotionCycle(rules: readonly { attackerFamily: string; targetFamily: string; multiplier: number }[] | undefined): string {
+  return (rules ?? []).map((rule) => `${rule.attackerFamily}>${rule.targetFamily}=${rule.multiplier}`).join("\n");
+}
+
+/** 「공격>대상=배율」 줄들을 규칙으로. 형식이 틀린 줄은 버린다. */
+export function parseEmotionCycle(text: string): { attackerFamily: string; targetFamily: string; multiplier: number }[] {
+  return text.split(/\r?\n/).flatMap((line) => {
+    const match = line.trim().match(/^(.+?)\s*>\s*(.+?)\s*=\s*(-?\d+(?:\.\d+)?)$/);
+    if (!match) return [];
+    const multiplier = Number(match[3]);
+    if (!Number.isFinite(multiplier) || multiplier < 0) return [];
+    return [{ attackerFamily: match[1].trim(), targetFamily: match[2].trim(), multiplier }];
+  });
 }
 
 function rm2k3Fieldset(title: string, children: readonly HTMLElement[]): HTMLElement {

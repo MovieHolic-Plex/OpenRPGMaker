@@ -1,4 +1,4 @@
-import { battleActorSkillFailure, battleSkillMpCost, comboParticipantsFromSnapshot, comboSkillIdsFor } from "@/battle/battleSkillUse";
+import { battleActorSkillFailure, battleSkillMpCost, battlerSkillIdsWithGrants, comboParticipantsFromSnapshot, comboSkillIdsFor } from "@/battle/battleSkillUse";
 import { areaTargets, resolveBattleTargets, targetIdFor } from "@/battle/battleTargetResolver";
 import { predictSkillDamageFor } from "@/battle/battlePredict";
 import type { ActorCommand, BattleBattlerSnapshot, BattleSnapshot } from "@/battle/types";
@@ -33,11 +33,12 @@ export function chooseAutoBattleCommand(project: Project, snapshot: BattleSnapsh
   if (!actor || actor.defeated) return undefined;
   const plan = tactic ?? actorAutoTactic(project, actor.recordId);
   // 연계기는 배우지 않아도 연계 멤버에게 열린다 — 메뉴(battleCommandDom)와 같은 목록.
-  const offered = [...actor.skillIds, ...comboSkillIdsFor(project, actor.recordId, snapshot.actors.map((entry) => entry.recordId), actor.skillIds)];
+  const owned = battlerSkillIdsWithGrants(actor);
+  const offered = [...owned, ...comboSkillIdsFor(project, actor.recordId, snapshot.actors.map((entry) => entry.recordId), owned)];
   const learned = offered
     .map((skillId) => project.database.skills.find((record) => record.id === skillId))
     .filter((skill): skill is SkillRecord => Boolean(skill))
-    .filter((skill) => !battleActorSkillFailure(project, actor, skill.id, comboParticipantsFromSnapshot(snapshot)));
+    .filter((skill) => !battleActorSkillFailure(project, actor, skill.id, comboParticipantsFromSnapshot(snapshot), snapshot.partyGauge));
 
   // 전원 공격: 회복·보조를 건너뛴다. MP 아끼기: 공격은 MP 0 기술(또는 통상 공격)만, 회복은 위급할 때만.
   const threshold = plan === "healFirst" || plan === "conserveMp" ? HEAL_THRESHOLD[plan] : HEAL_THRESHOLD.default;

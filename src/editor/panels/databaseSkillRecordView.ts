@@ -37,6 +37,7 @@ import { store } from "@/project/store";
 import type { DatabaseStateEffect, Project, SkillEffect, SkillRecord } from "@/project/types";
 import { getEditorUiMode } from "@/editor/editorUiMode";
 import { el } from "@/util/dom";
+import { toggleSwitch } from "@/editor/panels/databaseControls";
 
 const SKILL_EFFECT_KINDS = ["damage", "healing", "support", "switch"] as const satisfies readonly SkillEffect["kind"][];
 const SKILL_EFFECT_AFFECTS = ["hp", "mp"] as const satisfies readonly SkillEffectAffects[];
@@ -121,6 +122,7 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
           ),
         ],
       }),
+      battleResourceCard(record),
       // 성공률·명중률·분산·우선도는 초보가 만질 일이 드물다 — 기본값이면 접어 두고, 몇 개가
       // 들어 있는지와 「기본값 그대로」를 머리에 적는다(2026-09-23 파티 UX 검토).
       sectionCard({
@@ -273,6 +275,38 @@ export function skillSentenceFragments(project: Project, record: SkillRecord): {
     ? `연출: ${project.database.battleAnimations.find((entry) => entry.id === record.animationId)?.name || record.animationId}`
     : "연출 없음";
   return { primary, element, states, animation };
+}
+
+/**
+ * 기력·리미트·연계 게이지 소모. 시스템 탭 「전투 자원」에서 켠 자원만 전투에 쓰인다 — 꺼져 있으면
+ * 힌트로 알려 주고 값은 그대로 보관한다(나중에 켜면 바로 적용).
+ */
+function battleResourceCard(record: SkillRecord): HTMLElement {
+  const system = store.getCurrent().system;
+  const off = [
+    system.resource2?.enabled ? "" : "기력",
+    system.limitGauge?.enabled ? "" : "리미트",
+    system.partyGauge?.enabled ? "" : "연계 게이지",
+  ].filter(Boolean);
+  const inUse = (record.resource2Cost ?? 0) > 0 || record.limitSkill === true || (record.partyGaugeCost ?? 0) > 0;
+  return sectionCard({
+    title: "전투 자원",
+    hint: off.length === 3 ? "시스템 → 전투 자원에서 켜면 쓰입니다" : off.length > 0 ? `꺼진 자원: ${off.join(" · ")}` : "기력 · 리미트 · 연계 게이지",
+    testid: "db-skill-card-battle-resources",
+    collapsible: true,
+    collapsed: !advancedOpen(inUse),
+    children: [
+      numberField(system.resource2?.label || "기력 소모", "db-field-skill-resource2-cost", record.resource2Cost ?? 0, (resource2Cost) =>
+        updateDatabaseRecord("skills", record.id, { resource2Cost: resource2Cost > 0 ? resource2Cost : undefined }), { min: 0, max: 999 }
+      ),
+      toggleSwitch("리미트 기술(게이지가 가득 차야 사용)", "db-field-skill-limit", record.limitSkill === true, (limitSkill) =>
+        updateDatabaseRecord("skills", record.id, { limitSkill: limitSkill ? true : undefined })
+      ),
+      numberField("연계 게이지 소모", "db-field-skill-party-gauge-cost", record.partyGaugeCost ?? 0, (partyGaugeCost) =>
+        updateDatabaseRecord("skills", record.id, { partyGaugeCost: partyGaugeCost > 0 ? partyGaugeCost : undefined }), { min: 0, max: 999 }
+      ),
+    ],
+  });
 }
 
 function hasTunedAccuracy(record: SkillRecord): boolean {

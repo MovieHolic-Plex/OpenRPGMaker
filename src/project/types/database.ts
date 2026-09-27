@@ -258,6 +258,15 @@ export interface SkillRecord {
   comboActorIds?: ActorId[];
   /** 위치 범위기: 단일 대상 스코프에서 주 대상 둘레의 같은 편도 함께 맞힌다(전투장 픽셀). */
   area?: SkillArea;
+  /**
+   * 제2 자원 「기력」 소모량(0~100). system.resource2.enabled 일 때만 본다.
+   * 이름이 tp 가 아닌 이유: 기존 TP 는 기술 습득 포인트(rewards.tp)라 뜻이 겹친다.
+   */
+  resource2Cost?: number;
+  /** 리미트 기술: 리미트 게이지가 가득 찼을 때만 쓸 수 있고 쓰면 게이지를 비운다(system.limitGauge.enabled). */
+  limitSkill?: boolean;
+  /** 추격 연계기: 파티 공용 게이지를 이만큼 쓴다(system.partyGauge.enabled). */
+  partyGaugeCost?: number;
 }
 
 export interface SkillArea {
@@ -426,6 +435,10 @@ export interface EquipmentRecord {
   stateResistanceChance: number;
   /** 실시간 액션 전투에서 이 무기를 들었을 때의 스윙 프로필. */
   actionWeapon?: ActionWeaponProfile;
+  /** 장착 중에만 쓸 수 있는 스킬. 배우지 않아도 전투 스킬 목록에 들어간다. */
+  grantsSkillIds?: SkillId[];
+  /** 장착 중에만 전투 명령 메뉴에 붙는 명령. skillId 가 있으면 그 스킬도 함께 쓸 수 있다. */
+  grantsCommand?: ClassBattleCommand;
 }
 
 export interface EquipmentStatBonuses {
@@ -687,6 +700,17 @@ export interface StateRecord {
   specialFlags?: readonly string[];
   lockedParameters?: readonly string[];
   runtimeEffects?: StateRuntimeEffects;
+  /**
+   * 감정 계열과 단계. 같은 계열 상태를 다시 걸면 한 단계씩 올라가고(최고 단계에서 멈춤),
+   * 계열당 한 상태만 남는다. 공격자·대상 계열 상성은 system.emotionCycle 이 정한다.
+   */
+  emotion?: StateEmotion;
+}
+
+export interface StateEmotion {
+  family: string;
+  /** 1 부터. 같은 계열에서 클수록 강하다. */
+  tier: number;
 }
 
 export interface StateRuntimeEffects {
@@ -1402,6 +1426,56 @@ export interface SystemRecords {
   genre?: GenrePackId;
   /** AI 마을 생성의 물·숲·길 수치와 낱말 규칙. 생략하면 내장 기본값(예전 하드코딩과 동일 동작). */
   worldGen?: import("@/project/worldGenRules").WorldGenRules;
+  /** 배우별 리미트 게이지(0~100). 생략 = 없음. */
+  limitGauge?: BattleLimitGaugeConfig;
+  /** 제2 기술 자원 「기력」(0~max). 생략 = 없음. */
+  resource2?: BattleResource2Config;
+  /** 파티 공용 게이지(0~max). 생략 = 없음. */
+  partyGauge?: BattlePartyGaugeConfig;
+  /** 약점(속성 배율 > 1)을 찌르면 한 번 더 행동한다(페르소나식). 같은 적은 제 차례가 올 때까지 다시 쓰러지지 않는다. */
+  weaknessExtraAction?: boolean;
+  /** 감정 상성표: 공격자 감정 계열 → 대상 감정 계열 → 피해 배율. 생략 = 상성 없음. */
+  emotionCycle?: EmotionCycleRule[];
+}
+
+export interface BattleLimitGaugeConfig {
+  enabled: boolean;
+  /** 표시 이름. 생략 = 「리미트」. */
+  label?: string;
+  /** 받은 피해가 최대 HP 의 몇 %인지에 곱하는 충전율(%). 생략 = 100(최대 HP 만큼 맞으면 가득). */
+  takenRate?: number;
+  /** 공격이 명중할 때마다 더하는 점수. 생략 = 5. */
+  dealtGain?: number;
+}
+
+export interface BattleResource2Config {
+  enabled: boolean;
+  /** 표시 이름. 생략 = 「기력」. */
+  label?: string;
+  /** 최대치. 생략 = 100. */
+  max?: number;
+  /** 전투 시작 값. 생략 = 0. */
+  start?: number;
+  /** 피해를 줄 때마다 얻는 양. 생략 = 5. */
+  dealtGain?: number;
+  /** 피해를 받을 때마다 얻는 양. 생략 = 10. */
+  takenGain?: number;
+}
+
+export interface BattlePartyGaugeConfig {
+  enabled: boolean;
+  /** 표시 이름. 생략 = 「연계 게이지」. */
+  label?: string;
+  /** 최대치. 생략 = 100. */
+  max?: number;
+  /** 아군 공격이 명중할 때마다 차는 양. 생략 = 10. */
+  gainPerHit?: number;
+}
+
+export interface EmotionCycleRule {
+  attackerFamily: string;
+  targetFamily: string;
+  multiplier: number;
 }
 
 export interface ActionCombatHudConfig {

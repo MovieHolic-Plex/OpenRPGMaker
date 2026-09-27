@@ -93,7 +93,18 @@ export function normalizeStateRecord(record: Partial<StateRecord> & Pick<StateRe
     ...(record.specialFlags !== undefined ? { specialFlags: cleanIds(record.specialFlags) } : {}),
     ...(record.lockedParameters !== undefined ? { lockedParameters: cleanIds(record.lockedParameters) } : {}),
     ...(record.runtimeEffects !== undefined ? { runtimeEffects: record.runtimeEffects } : {}),
+    ...(() => {
+      const emotion = normalizeStateEmotion(record.emotion);
+      return emotion ? { emotion } : {};
+    })(),
   };
+}
+
+function normalizeStateEmotion(value: unknown): StateRecord["emotion"] {
+  if (!value || typeof value !== "object") return undefined;
+  const { family, tier } = value as { family?: unknown; tier?: unknown };
+  if (typeof family !== "string" || family.trim() === "") return undefined;
+  return { family: family.trim(), tier: typeof tier === "number" && Number.isFinite(tier) ? clampInteger(tier, 1, 9) : 1 };
 }
 
 type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords,
@@ -274,6 +285,24 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     ...(typeChart ? { typeChart } : {}),
     ...(timeSystem ? { timeSystem } : {}),
     ...(system.worldGen ? { worldGen: normalizeWorldGenRulesForStorage(system.worldGen) } : {}),
+    // 전투 자원·감정 설정(battleGauges/battleEmotion). 화이트리스트라 여기 없으면 왕복 1회에 사라진다.
+    ...(() => {
+      const limitGauge = normalizeLimitGauge(system.limitGauge);
+      return limitGauge ? { limitGauge } : {};
+    })(),
+    ...(() => {
+      const resource2 = normalizeResource2(system.resource2);
+      return resource2 ? { resource2 } : {};
+    })(),
+    ...(() => {
+      const partyGauge = normalizePartyGauge(system.partyGauge);
+      return partyGauge ? { partyGauge } : {};
+    })(),
+    ...(system.weaknessExtraAction === true ? { weaknessExtraAction: true } : {}),
+    ...(() => {
+      const emotionCycle = normalizeEmotionCycle(system.emotionCycle);
+      return emotionCycle ? { emotionCycle } : {};
+    })(),
     ...(actionCombat ? { actionCombat } : {}),
     ...(Array.isArray(system.toolActions) ? { toolActions: system.toolActions } : {}),
     ...(Array.isArray(system.craftRecipes) ? { craftRecipes: system.craftRecipes } : {}),
@@ -612,6 +641,14 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
       && Number.isFinite(record.area.radius) && record.area.radius > 0
       ? { area: { shape: record.area.shape, radius: clampNumber(record.area.radius, 1, 640) } }
       : {}),
+    // 전투 자원(battleGauges) — 0/false 는 저장하지 않는다(옛 JSON 바이트 유지).
+    ...(typeof record.resource2Cost === "number" && Number.isFinite(record.resource2Cost) && record.resource2Cost > 0
+      ? { resource2Cost: clampInteger(record.resource2Cost, 1, 999) }
+      : {}),
+    ...(record.limitSkill === true ? { limitSkill: true } : {}),
+    ...(typeof record.partyGaugeCost === "number" && Number.isFinite(record.partyGaugeCost) && record.partyGaugeCost > 0
+      ? { partyGaugeCost: clampInteger(record.partyGaugeCost, 1, 999) }
+      : {}),
   };
 }
 
@@ -684,6 +721,29 @@ export function normalizeEquipmentRecord(record: Partial<EquipmentRecord> & Pick
       const actionWeapon = normalizeActionWeaponProfile(record.actionWeapon);
       return actionWeapon ? { actionWeapon } : {};
     })(),
+    ...(() => {
+      const grantsSkillIds = uniqueCleanIds(record.grantsSkillIds);
+      return grantsSkillIds.length > 0 ? { grantsSkillIds } : {};
+    })(),
+    ...(() => {
+      const grantsCommand = normalizeGrantedCommand(record.grantsCommand);
+      return grantsCommand ? { grantsCommand } : {};
+    })(),
+  };
+}
+
+function normalizeGrantedCommand(command: Partial<ClassBattleCommand> | undefined): ClassBattleCommand | undefined {
+  if (!command || typeof command !== "object") return undefined;
+  const id = cleanOptionalId(command.id);
+  if (!id) return undefined;
+  const skillId = cleanOptionalId(command.skillId);
+  const skillSubsetName = cleanOptionalId(command.skillSubsetName);
+  return {
+    id,
+    name: typeof command.name === "string" ? command.name : "",
+    kind: normalizeBattleCommandKind(command.kind),
+    ...(skillSubsetName ? { skillSubsetName } : {}),
+    ...(skillId ? { skillId } : {}),
   };
 }
 
@@ -1023,4 +1083,56 @@ function clampInteger(value: number, min: number, max: number): number {
 function clampNumber(value: number, min: number, max: number): number {
   if (!Number.isFinite(value)) return min;
   return Math.min(max, Math.max(min, value));
+}
+
+function optionalLabel(value: unknown): { label?: string } {
+  return typeof value === "string" && value.trim() ? { label: value.trim().slice(0, 16) } : {};
+}
+
+function optionalNonNegative(key: string, value: unknown, max: number): Record<string, number> {
+  return typeof value === "number" && Number.isFinite(value) ? { [key]: clampNumber(value, 0, max) } : {};
+}
+
+function normalizeLimitGauge(value: SystemRecords["limitGauge"]): SystemRecords["limitGauge"] {
+  if (!value || typeof value !== "object") return undefined;
+  return {
+    enabled: value.enabled === true,
+    ...optionalLabel(value.label),
+    ...optionalNonNegative("takenRate", value.takenRate, 1000),
+    ...optionalNonNegative("dealtGain", value.dealtGain, 100),
+  };
+}
+
+function normalizeResource2(value: SystemRecords["resource2"]): SystemRecords["resource2"] {
+  if (!value || typeof value !== "object") return undefined;
+  return {
+    enabled: value.enabled === true,
+    ...optionalLabel(value.label),
+    ...(typeof value.max === "number" && Number.isFinite(value.max) ? { max: clampInteger(value.max, 1, 999) } : {}),
+    ...optionalNonNegative("start", value.start, 999),
+    ...optionalNonNegative("dealtGain", value.dealtGain, 999),
+    ...optionalNonNegative("takenGain", value.takenGain, 999),
+  };
+}
+
+function normalizePartyGauge(value: SystemRecords["partyGauge"]): SystemRecords["partyGauge"] {
+  if (!value || typeof value !== "object") return undefined;
+  return {
+    enabled: value.enabled === true,
+    ...optionalLabel(value.label),
+    ...(typeof value.max === "number" && Number.isFinite(value.max) ? { max: clampInteger(value.max, 1, 999) } : {}),
+    ...optionalNonNegative("gainPerHit", value.gainPerHit, 999),
+  };
+}
+
+function normalizeEmotionCycle(value: SystemRecords["emotionCycle"]): SystemRecords["emotionCycle"] {
+  if (!Array.isArray(value)) return undefined;
+  const rules = value.flatMap((rule) => {
+    if (!rule || typeof rule !== "object") return [];
+    const attackerFamily = typeof rule.attackerFamily === "string" ? rule.attackerFamily.trim() : "";
+    const targetFamily = typeof rule.targetFamily === "string" ? rule.targetFamily.trim() : "";
+    if (!attackerFamily || !targetFamily || typeof rule.multiplier !== "number" || !Number.isFinite(rule.multiplier)) return [];
+    return [{ attackerFamily, targetFamily, multiplier: clampNumber(rule.multiplier, 0, 10) }];
+  });
+  return rules.length > 0 ? rules : undefined;
 }

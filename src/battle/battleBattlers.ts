@@ -9,7 +9,7 @@ import { startStateOf } from "@/project/session";
 import type { MonsterInstance } from "@/project/session";
 import { monsterBattleStats, monsterCurrentHp, monsterDisplayName, monsterSkillIds, monsterSkillIdsAtLevel, monsterSpeciesById, normalizeMonsterInstanceBattleState } from "@/project/monsterCollection";
 import { classLearnedSkillIdsUpToLevel, effectiveActorClassId } from "@/project/sessionClass";
-import type { ActorId, ActorInitialEquipment, ActorParameterKey, EnemyActionPattern, EnemyId, Project, SkillId } from "@/project/types";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, ClassBattleCommand, EnemyActionPattern, EnemyId, Project, SkillId } from "@/project/types";
 import { resolveBattlerPose } from "@/battle/battlePose";
 import type { BattleActionResultSnapshot, BattleBattlerSnapshot } from "@/battle/types";
 import { classicEnemyFormation } from "@/battle/battlerPlacements";
@@ -95,6 +95,10 @@ export interface MutableBattler {
   // 상태별 경과 턴 수(stateId → 턴). 자연 회복/지속 피해 판정용.
   stateTurns: Record<string, number>;
   defending: boolean;
+  /** 리미트 게이지 0~100. system.limitGauge 를 켠 전투의 아군만 가진다. */
+  limitGauge?: number;
+  /** 제2 기술 자원(기력). system.resource2 를 켠 전투의 아군만 가진다. */
+  resource2?: number;
 }
 
 export function actorBattlers(
@@ -305,6 +309,12 @@ export interface EquipmentRuntimeEffects {
   readonly stateDefenseIds: readonly string[];
   readonly stateDefenseMode: "resist" | "inflict";
   readonly stateResistanceChance: number;
+  /** 장비 효과 「MP 소모 절반」. 하나라도 있으면 켜진다. */
+  readonly halfMpCost?: boolean;
+  /** 장착 중에만 쓸 수 있는 스킬(EquipmentRecord.grantsSkillIds 합집합). */
+  readonly grantedSkillIds?: readonly SkillId[];
+  /** 장착 중에만 붙는 전투 명령(EquipmentRecord.grantsCommand). */
+  readonly grantedCommands?: readonly ClassBattleCommand[];
 }
 
 function totalEquipmentBonuses(project: Project, equipment: ActorInitialEquipment): { attack: number; defense: number; mind: number; agility: number } {
@@ -331,6 +341,9 @@ function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipm
   let accuracy = 100;
   let criticalRate = 0;
   let stateResistanceChance = 0;
+  let halfMpCost = false;
+  const grantedSkillIds = new Set<SkillId>();
+  const grantedCommands: ClassBattleCommand[] = [];
   const stateDefenseMode = "resist" as const;
   for (const equipmentId of logicalEquipmentIds(project, equipment)) {
     if (!equipmentId) continue;
@@ -338,6 +351,12 @@ function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipm
     if (!record) continue;
     if (record.effectFlags.doubleAttack) doubleAttack = true;
     if (record.effectFlags.attackAll) attackAll = true;
+    if (record.effectFlags.halfMpCost) halfMpCost = true;
+    for (const skillId of record.grantsSkillIds ?? []) grantedSkillIds.add(skillId);
+    if (record.grantsCommand && !grantedCommands.some((command) => command.id === record.grantsCommand!.id)) {
+      grantedCommands.push(record.grantsCommand);
+      if (record.grantsCommand.skillId) grantedSkillIds.add(record.grantsCommand.skillId);
+    }
     if ((record.effectFlags.autoRevive ?? 0) > autoRevive) autoRevive = record.effectFlags.autoRevive ?? 0;
     accuracy = Math.round((accuracy * record.accuracy) / 100);
     criticalRate += record.criticalRate;
@@ -359,6 +378,9 @@ function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipm
     stateDefenseIds: [...stateDefenseIds],
     stateDefenseMode,
     stateResistanceChance,
+    ...(halfMpCost ? { halfMpCost } : {}),
+    ...(grantedSkillIds.size > 0 ? { grantedSkillIds: [...grantedSkillIds] } : {}),
+    ...(grantedCommands.length > 0 ? { grantedCommands } : {}),
   };
 }
 
@@ -529,6 +551,8 @@ export function battlerSnapshot(
     skillPp: battler.skillPp ? { ...battler.skillPp } : undefined,
     equipmentEffects: battler.equipmentEffects,
     captured: battler.captured === true ? true : undefined,
+    ...(battler.limitGauge !== undefined ? { limitGauge: battler.limitGauge } : {}),
+    ...(battler.resource2 !== undefined ? { resource2: battler.resource2 } : {}),
     effectiveStats: { attack: battler.attackPower, defense: battler.defense, mind: battler.mind, agility: battler.agility },
     pose: "idle" as unknown as BattleBattlerSnapshot["pose"],
   };

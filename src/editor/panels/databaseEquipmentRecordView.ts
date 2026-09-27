@@ -82,8 +82,9 @@ const LEGACY_EFFECT_FLAG_FIELDS: readonly { readonly key: Exclude<keyof ItemEqui
   { key: "fixedEquipment", label: "장비 해제 불가", testid: "db-field-equipment-effect-fixed" },
 ];
 
+// halfMpCost 는 전투 MP 소모 계산(battleSkillMpCostFor)이 소비한다 — 그래서 저작 가능한 플래그다.
 const EFFECT_FLAG_FIELDS = LEGACY_EFFECT_FLAG_FIELDS.filter(({ key }) =>
-  key === "doubleAttack" || key === "attackAll" || key === "fixedEquipment"
+  key === "doubleAttack" || key === "attackAll" || key === "fixedEquipment" || key === "halfMpCost"
 );
 
 const STAT_FIELDS = [
@@ -114,6 +115,10 @@ export function equipmentEffectStory(project: Project, record: EquipmentRecord):
   if (record.usableAsItemSkillId) {
     effects.push(`사용 시 스킬: ${namedId(record.usableAsItemSkillId, project.database.skills)}`);
   }
+  if ((record.grantsSkillIds ?? []).length > 0) {
+    effects.push(`장착 시 스킬: ${namedIds(record.grantsSkillIds ?? [], project.database.skills)}`);
+  }
+  if (record.grantsCommand) effects.push(`장착 시 명령: ${record.grantsCommand.name || record.grantsCommand.id}`);
   return {
     statChanges,
     effects: effects.length > 0 ? effects : ["고유 효과 없음"],
@@ -336,6 +341,17 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
               children: [
                 el("div", { class: "db-eq-grid", children: equipmentEffectFields(record, refreshOverview) }),
                 ...unsupportedEffectNotice(record),
+              ],
+            })),
+            spanCard(sectionCard({
+              title: "장착 시 스킬·명령",
+              collapsible: true,
+              collapsed: (record.grantsSkillIds ?? []).length === 0 && !record.grantsCommand,
+              hint: "장착 중에만 전투에서 쓸 수 있습니다 — 배우지 않아도 됩니다",
+              testid: "db-equipment-card-grants",
+              children: [
+                choiceGroup("장착 시 쓸 수 있는 스킬", "db-equipment-grant-skill-group", grantedSkillChoices(record, refreshOverview)),
+                ...grantedCommandFields(record, () => { refreshOverview(); rerender(); }),
               ],
             })),
             twoColumnCard(spanCard(sectionCard({
@@ -694,6 +710,46 @@ function classChoices(record: EquipmentRecord, onChange?: () => void): HTMLEleme
       testid: `db-field-equipment-class-${klass.id}`,
     })
   );
+}
+
+function grantedSkillChoices(record: EquipmentRecord, onChange?: () => void): HTMLElement[] {
+  return store.getCurrent().database.skills.map((skill) =>
+    checkboxField({
+      checked: (record.grantsSkillIds ?? []).includes(skill.id),
+      label: skill.name,
+      onInput: (checked) => {
+        const next = toggleId(currentEquipment(record).grantsSkillIds ?? [], skill.id, checked);
+        updateDatabaseRecord("equipment", record.id, { grantsSkillIds: next.length > 0 ? next : undefined });
+        onChange?.();
+      },
+      testid: `db-field-equipment-grant-skill-${skill.id}`,
+    })
+  );
+}
+
+/** 장착 시 붙는 전투 명령 — 지금은 「스킬 하나를 바로 쓰는 명령」만 저작한다(가장 흔한 쓰임새: 무기 기술). */
+function grantedCommandFields(record: EquipmentRecord, onChange: () => void): HTMLElement[] {
+  const command = record.grantsCommand;
+  const skills = store.getCurrent().database.skills;
+  const nodes: HTMLElement[] = [
+    selectField("장착 시 명령 스킬", "db-field-equipment-grant-command-skill", command?.skillId ?? "", skills, (skillId) => {
+      const id = emptyToUndefined(skillId);
+      const skillName = skills.find((skill) => skill.id === id)?.name ?? "";
+      updateDatabaseRecord("equipment", record.id, {
+        grantsCommand: id
+          ? { id: `cmd_equip_${record.id}`, name: currentEquipment(record).grantsCommand?.name || skillName, kind: "skill", skillId: id }
+          : undefined,
+      });
+      onChange();
+    }),
+  ];
+  if (command) {
+    nodes.push(textField("명령 이름", "db-field-equipment-grant-command-name", command.name, (name) => {
+      const current = currentEquipment(record).grantsCommand;
+      if (current) updateDatabaseRecord("equipment", record.id, { grantsCommand: { ...current, name } });
+    }));
+  }
+  return nodes;
 }
 
 function stateChoices(

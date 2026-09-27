@@ -80,7 +80,9 @@ import {
   normalizeBattleFieldBackgroundId,
 } from "@/project/databaseEnemyTroopRecordModel";
 import { mulberry32, type Rng } from "@/util/rng";
-import { battleActorSkillFailure, battleSkillMpCost, battleSkillUseFailure, comboActorIdsOf, consumeBattleSkillResource, type BattleComboParticipant } from "@/battle/battleSkillUse";
+import { battleActorSkillFailure, battleSkillMpCostFor, battleSkillPartyGaugeCost, battleSkillUseFailure, comboActorIdsOf, consumeBattleSkillResource, type BattleComboParticipant } from "@/battle/battleSkillUse";
+import { applyBattleHitGauges, clampPartyGauge, initialPartyGauge, seedBattleGauges } from "@/battle/battleGauges";
+import { applyStateEffectsWithEmotion, createWeaknessTracker, emotionDamageMultiplier } from "@/battle/battleEmotion";
 import {
   areaTargets,
   requestedTargetId,
@@ -324,6 +326,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         partyActorIds: options.party?.partyActorIds,
       });
   const enemies = enemyBattlers(options.project, troopRecord);
+  // 리미트·기력·파티 게이지(battleGauges). 끈 프로젝트는 필드를 만들지 않는다.
+  seedBattleGauges(options.project, actors);
+  let partyGauge = initialPartyGauge(options.project);
+  const weakness = createWeaknessTracker(options.project);
   const gen1EnemyOrderIds = options.project.system.battleModel === "gen1"
     ? enemies.filter((enemy) => !enemy.hidden).map((enemy) => enemy.id)
     : [];
@@ -593,7 +599,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       applyGen1States(user, target, effects ?? [], gen1Move);
       return;
     }
-    const result = applyStateEffects(options.project, target, effects, rng);
+    const result = applyStateEffectsWithEmotion(options.project, target, effects, rng);
     for (const stateId of result.added) {
       recordTimeline({ kind: "stateAdded", side: battlerSide(user), userRecordId: user.recordId, targetId: target.id, stateId, reason: "effect" });
     }
@@ -1037,7 +1043,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       currentActorCommandKind = undefined;
       return;
     }
-    if (battleEvents.consumeExtraActorAction(actor.recordId)) {
+    if (battleEvents.consumeExtraActorAction(actor.recordId) || weakness.consume(actor.recordId)) {
       actor.gauge = 100;
       activeActorId = actor.recordId;
       currentActorCommandKind = undefined;
@@ -1097,7 +1103,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       case "switch":
         return canSwitchActor(actor.recordId, command.targetActorId);
       case "skill":
-        return battleActorSkillFailure(options.project, actor, command.skillId, comboParticipants()) === undefined;
+        return battleActorSkillFailure(options.project, actor, command.skillId, comboParticipants(), partyGauge) === undefined;
       case "item": {
         const item = options.project.database.items.find((record) => record.id === command.itemId);
         // actor/class 제한 체크 — 불일치 시 커맨드 자체를 거부한다 (무효 턴으로 소모 안 함)
@@ -1141,6 +1147,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // 방어 자세는 "다음 행동까지"다 — 액터가 새 명령을 실행하면 해제된다.
     // (defend 명령이면 아래 switch 에서 곧바로 다시 true 가 된다.)
     actor.defending = false;
+    weakness.beginAction(actor.recordId);
     switch (command.kind) {
       case "attack":
         if (!prepareGen1CombatAction(actor)) break;
@@ -1151,6 +1158,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         if (!prepareGen1CombatAction(actor)) break;
         const targets = resolvedCommandTargets(actor, command).targets;
         consumeBattleSkillResource(options.project, actor, command.skillId);
+        spendPartyGauge(command.skillId);
         // 연계기: 참가 배우 각자의 MP 를 똑같이 소비한다(위력은 시전자 능력치).
         for (const partner of comboPartners(actor, command)) consumeSkillMp(partner, command.skillId);
         for (const target of targets) applySkill(actor, target, command.skillId, "skill");
@@ -1201,6 +1209,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       return;
     }
     const hpBefore = target.hp;
+    const targetMaxHpBefore = target.maxHp;
     const result = redirectDamageToMp(target, hpBefore, applySkillLike(actor, target, {
       power: actor.attackPower,
       statistic: "attack",
@@ -1209,12 +1218,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       hitRate: normalAttackHitRate(actor, target),
       // RM2K3 통상공격 분산(±20%) — 없으면 매 타격이 완전히 같은 숫자라 도박성이 0이다.
       variance: 20,
-      elementMultiplier: normalAttackElementMultiplier(actor, target),
+      elementMultiplier: normalAttackElementMultiplier(actor, target) * emotionDamageMultiplier(options.project, actor, target),
       attackerStatMultiplier: attackMultiplierForStates(options.project, actor),
       targetDefenseMultiplier: defenseMultiplierForStatesByKind(options.project, target, "attack"),
       gen1AttackerLevel: gen1AttackerLevel(actor),
       rng,
     }));
+    noteDamageHit(actor, target, result, targetMaxHpBefore, normalAttackElementMultiplier(actor, target));
     if (result.hit && result.amount > 0) recoverHitStates(target);
     if (result.hit) applyNormalAttackEquipmentStates(actor, target);
     recordAction(
@@ -1308,7 +1318,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       }
     }
     for (const [stateId, chance] of chances) {
-      applyStateEffects(options.project, target, [{ stateId, chance, operation: "add" }], rng);
+      applyStateEffectsWithEmotion(options.project, target, [{ stateId, chance, operation: "add" }], rng);
     }
   }
 
@@ -1322,7 +1332,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (!source?.usableAsItemSkillId) return { kind: "rejected", reason: "sourceHasNoSkill" };
     const skill = lookupSkill(source.usableAsItemSkillId);
     if (!skill) return { kind: "rejected", reason: "missingSkill" };
-    if (actor.mp < battleSkillMpCost(skill, actor.maxMp)) return { kind: "rejected", reason: "insufficientMp" };
+    if (actor.mp < battleSkillMpCostFor(skill, actor)) return { kind: "rejected", reason: "insufficientMp" };
 
     let targets: readonly MutableBattler[];
     switch (skill.scope) {
@@ -1604,7 +1614,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         const beforeResult = lastActionResult;
         if (action.side === "actor") {
           if (action.actor.hp <= 0) continue;
-          if (action.command.kind === "skill" && battleActorSkillFailure(options.project, action.actor, action.command.skillId, comboParticipants(true))) continue;
+          if (action.command.kind === "skill" && battleActorSkillFailure(options.project, action.actor, action.command.skillId, comboParticipants(true), partyGauge)) continue;
           activeActorId = action.actor.recordId;
           applyActorCommandEffect(action.actor, action.command);
         } else {
@@ -1619,7 +1629,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           resolveOutcome();
           if (!result && action.side === "actor" && action.command.kind !== "switch"
             && action.actor.hp > 0 && queue.grantedExtraActions < STRICT_MAX_EXTRA_ACTIONS_PER_ROUND
-            && battleEvents.consumeExtraActorAction(action.actor.recordId)) {
+            && (battleEvents.consumeExtraActorAction(action.actor.recordId) || weakness.consume(action.actor.recordId))) {
             queue.grantedExtraActions += 1;
             insertStrictExtraAction(queue.actions, queue.index, action);
           }
@@ -1850,6 +1860,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       targetSelection,
       roundLogs,
       eventLogs: battleEvents.logs(),
+      ...(partyGauge !== undefined ? { partyGauge } : {}),
     };
   }
 
@@ -1887,6 +1898,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function executeEnemyAction(enemy: MutableBattler, action: EnemyActionChoice | undefined): void {
+    weakness.standUp(enemy.id);
     if (action?.moveTo && enemy.hp > 0) moveEnemyBattler(enemy, action.moveTo.x, action.moveTo.y, ENEMY_MOVE_DEFAULT_MS);
     const skillId = action?.skillId;
     if (skillId) {
@@ -1927,6 +1939,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       return;
     }
     const hpBefore = target.hp;
+    const targetMaxHpBefore = target.maxHp;
+    const emotionMultiplier = emotionDamageMultiplier(options.project, enemy, target);
     const result = redirectDamageToMp(target, hpBefore, applySkillLike(enemy, target, {
       power: enemy.attackPower,
       statistic: "attack",
@@ -1935,11 +1949,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       hitRate: normalAttackHitRate(enemy, target),
       // 통상공격 분산 ±20% — 아군 공격(applySingleActorAttack)과 동일 규칙.
       variance: 20,
+      ...(emotionMultiplier !== 1 ? { elementMultiplier: emotionMultiplier } : {}),
       attackerStatMultiplier: attackMultiplierForStates(options.project, enemy),
       targetDefenseMultiplier: defenseMultiplierForStatesByKind(options.project, target, "attack"),
       gen1AttackerLevel: gen1AttackerLevel(enemy),
       rng,
     }));
+    noteDamageHit(enemy, target, result, targetMaxHpBefore, 1);
     if (result.hit && result.amount > 0) recoverHitStates(target);
     recordAction(
       { userRecordId: enemy.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical },
@@ -2060,6 +2076,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return activeActors().map((battler) => ({
       recordId: battler.recordId, hp: battler.hp, mp: battler.mp, maxMp: battler.maxMp, stateIds: battler.stateIds,
       ready: allReady || battler.gauge >= 100,
+      ...(battler.equipmentEffects?.halfMpCost ? { halfMpCost: true } : {}),
     }));
   }
 
@@ -2300,8 +2317,32 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function consumeSkillMp(user: MutableBattler, skillId: SkillId): void {
     const skill = lookupSkill(skillId);
     if (!skill) return;
-    const cost = battleSkillMpCost(skill, user.maxMp);
+    const cost = battleSkillMpCostFor(skill, user);
     if (cost > 0) user.mp -= cost;
+  }
+
+  /** 추격 연계기의 파티 게이지 소모(battleGauges). 끈 전투는 아무것도 안 한다. */
+  function spendPartyGauge(skillId: SkillId): void {
+    const skill = lookupSkill(skillId);
+    if (partyGauge === undefined || !skill) return;
+    partyGauge = clampPartyGauge(options.project, partyGauge - battleSkillPartyGaugeCost(options.project, skill));
+  }
+
+  /** HP 피해 명중 한 번 — 리미트·기력·파티 게이지 충전과 약점 추가 행동(battleGauges/battleEmotion). */
+  function noteDamageHit(
+    user: MutableBattler,
+    target: MutableBattler,
+    hit: { readonly hit: boolean; readonly amount: number },
+    targetMaxHp: number,
+    elementMultiplier: number,
+  ): void {
+    if (!hit.hit || hit.amount <= 0) return;
+    const userIsActor = battlerSide(user) === "actor";
+    const gain = applyBattleHitGauges(options.project, {
+      user, target, amount: hit.amount, targetMaxHp, userIsActor, targetIsActor: battlerSide(target) === "actor",
+    });
+    if (partyGauge !== undefined && gain > 0) partyGauge = clampPartyGauge(options.project, partyGauge + gain);
+    if (target.hp > 0 && battlerSide(target) === "enemy") weakness.noteHit(user, target, elementMultiplier, userIsActor);
   }
 
   function chooseEnemyAction(enemy: MutableBattler): EnemyActionChoice | undefined {
@@ -2492,6 +2533,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const affects =
       effect && (effect.kind === "damage" || effect.kind === "healing") ? effect.affects : "hp";
     const hpBefore = target.hp;
+    const targetMaxHpBefore = target.maxHp;
     const rawResult = applySkillLike(user, target, {
       power,
       statistic,
@@ -2505,7 +2547,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       criticalMultiplier: skill?.criticalMultiplier,
       variance: skill?.variance,
       criticalRate: skill?.criticalRate ?? criticalRateFor(user),
-      elementMultiplier: elementMultiplierFor(skill?.elementId, user, target),
+      elementMultiplier: elementMultiplierFor(skill?.elementId, user, target) * emotionDamageMultiplier(options.project, user, target),
       attackerStatMultiplier: attackMultiplierForStates(options.project, user),
       targetDefenseMultiplier: defenseMultiplierForStatesByKind(options.project, target, statistic),
       useMagicalDefense: isMagicalElement(skill?.elementId),
@@ -2513,6 +2555,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       rng,
     });
     const result = effectKind === "damage" && affects !== "mp" ? redirectDamageToMp(target, hpBefore, rawResult) : rawResult;
+    if (effectKind === "damage" && affects === "hp") noteDamageHit(user, target, result, targetMaxHpBefore, elementMultiplierFor(skill?.elementId, user, target));
     const timelineKind: BattleTimelineEntrySnapshot["kind"] = !result.hit
       ? "miss"
       : effectKind === "healing" || result.amount < 0

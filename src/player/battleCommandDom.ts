@@ -16,7 +16,8 @@ import { resolveTerms, type ResolvedTerms } from "@/project/terms";
 import { isCaptureTool } from "@/project/itemUsage";
 import { activeActor } from "@/battle/battlePredict";
 import { battleCommandsForActor, type RuntimeBattleCommand } from "@/battle/battleCommands";
-import { battleActorSkillFailure, battleSkillMpCost, battleSkillUseFailure, battleSkillUseFailureLabel, comboActorIdsOf, comboParticipantsFromSnapshot, comboSkillIdsFor } from "@/battle/battleSkillUse";
+import { battleActorSkillFailure, battleSkillMpCostFor, battleSkillResource2Cost, battleSkillUseFailure, battleSkillUseFailureLabel, battlerSkillIdsWithGrants, comboActorIdsOf, comboParticipantsFromSnapshot, comboSkillIdsFor } from "@/battle/battleSkillUse";
+import { resource2Config } from "@/battle/battleGauges";
 import { targetScopeForCommand } from "@/battle/battleTargetResolver";
 import { BATTLE_KEY_PROMPT } from "@/player/keyBindings";
 import { mountBattleCommandCss } from "@/project/battleCommandCss";
@@ -195,6 +196,7 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     includeSwitch: snapshot.reserveActors.length > 0,
     forceSwitchOnly: Boolean(snapshot.forcedSwitchActorId),
     overrideCommandIds,
+    grantedCommands: actor?.equipmentEffects?.grantedCommands,
   })) {
     menu.append(commandControl(snapshot, options, command, actor, targetMode));
   }
@@ -267,7 +269,7 @@ function commandControl(
       const usable = skillIds.filter((skillId) => actor && !actorSkillFailure(snapshot, actor, skillId));
       const onlySkill = skillIds.length === 1 ? project.database.skills.find((skill) => skill.id === skillIds[0]) : undefined;
       const failure = onlySkill && actor ? actorSkillFailure(snapshot, actor, onlySkill.id) : undefined;
-      const reason = failure && actor ? battleSkillUseFailureLabel(failure, onlySkill, actor) : skillIds.length === 0 ? "사용 가능한 스킬이 없습니다." : undefined;
+      const reason = failure && actor ? battleSkillUseFailureLabel(failure, onlySkill, actor, project) : skillIds.length === 0 ? "사용 가능한 스킬이 없습니다." : undefined;
       return commandButton(label, commandTestId(command), "fire", skillIds.length === 0 ? "없음" : "", () => {
         if (targetMode || skillIds.length === 0) return;
         if ((skillIds.length === 1 || command.skillId) && usable.length === 1) {
@@ -432,10 +434,12 @@ function listedSkillIds(actor: BattleBattlerSnapshot | undefined, command?: Runt
   if (command?.skillId) return [command.skillId];
   const project = store.getCurrent();
   // 연계기는 배우지 않아도 연계 멤버의 목록에 뜬다 — 동료가 참전 중일 때만.
+  // 장비가 준 스킬은 배우지 않아도 목록에 뜬다(EquipmentRecord.grantsSkillIds).
+  const owned = battlerSkillIdsWithGrants(actor);
   const combos = snapshot
-    ? comboSkillIdsFor(project, actor.recordId, snapshot.actors.map((entry) => entry.recordId), actor.skillIds)
+    ? comboSkillIdsFor(project, actor.recordId, snapshot.actors.map((entry) => entry.recordId), owned)
     : [];
-  return [...actor.skillIds, ...combos].filter((id) => {
+  return [...owned, ...combos].filter((id) => {
     const skill = project.database.skills.find((record) => record.id === id);
     if (!skill) return true;
     if (command?.skillSubsetName) return skill.type === skillTypeForSubsetName(command.skillSubsetName);
@@ -528,7 +532,7 @@ function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
   for (const skillId of listedSkillIds(actor, command, snapshot)) {
     const skill = project.database.skills.find((record) => record.id === skillId);
     const failure = actor ? actorSkillFailure(snapshot, actor, skillId) : "notLearned";
-    const reason = failure && actor ? battleSkillUseFailureLabel(failure, skill, actor) : failure ? "사용자가 없습니다." : undefined;
+    const reason = failure && actor ? battleSkillUseFailureLabel(failure, skill, actor, project) : failure ? "사용자가 없습니다." : undefined;
     const partners = skill && actor ? comboPartnerNames(snapshot, skill, actor.recordId) : "";
     const detail = [skill && actor ? skillMpDetail(project, skill, terms, actor) : "", partners ? `${withJosa(partners, "와/과")} 연계` : ""].filter(Boolean).join(" · ");
     const hint = skill && actor ? skillDetailFor(project, skill, terms, actor) : reason ?? terms.skill;
@@ -597,7 +601,7 @@ function appendSkillTypeBadge(
 
 /** 전투 메뉴의 기술 사용 가능 판정 — 연계기는 런타임과 같은 동료 준비 규칙을 쓴다. */
 function actorSkillFailure(snapshot: BattleSnapshot, actor: BattleBattlerSnapshot, skillId: SkillId) {
-  return battleActorSkillFailure(store.getCurrent(), actor, skillId, comboParticipantsFromSnapshot(snapshot));
+  return battleActorSkillFailure(store.getCurrent(), actor, skillId, comboParticipantsFromSnapshot(snapshot), snapshot.partyGauge);
 }
 
 /** 연계기면 시전자를 됼 동료 이름(·로 잇는다), 아니면 빈 문자열. */
@@ -619,7 +623,7 @@ function skillMpDetail(
 ): string {
   const fullSkill = project.database.skills.find((record) => record.id === skill.id);
   if (!fullSkill) return "";
-  return `${terms.mp} ${battleSkillMpCost(fullSkill, actor.maxMp)}`;
+  return skillCostText(project, fullSkill, terms, actor);
 }
 
 function skillDetailFor(
@@ -630,7 +634,7 @@ function skillDetailFor(
 ): string {
   const fullSkill = project.database.skills.find((record) => record.id === skill.id);
   if (!fullSkill) return terms.skill;
-  const mp = `${terms.mp} ${battleSkillMpCost(fullSkill, actor.maxMp)}`;
+  const mp = skillCostText(project, fullSkill, terms, actor);
   const scope = scopeLabel(fullSkill.scope);
   const states = (fullSkill.stateEffects ?? []).map((effect) => {
     const name = project.database.states.find((state) => state.id === effect.stateId)?.name ?? effect.stateId;
@@ -642,6 +646,18 @@ function skillDetailFor(
       ? "보조"
       : fullSkill.power > 0 ? `위력 ${fullSkill.power}` : "공격";
   return [mp, scope, effect, states].filter(Boolean).join(" · ");
+}
+
+/** MP(장비 절반 반영) + 기력 소모. 기력은 켠 프로젝트에서 소모가 있을 때만 붙인다. */
+function skillCostText(
+  project: ReturnType<typeof store.getCurrent>,
+  skill: Parameters<typeof battleSkillMpCostFor>[0] & Parameters<typeof battleSkillResource2Cost>[1],
+  terms: ResolvedTerms,
+  actor: BattleBattlerSnapshot,
+): string {
+  const mp = `${terms.mp} ${battleSkillMpCostFor(skill, actor)}`;
+  const resource2 = battleSkillResource2Cost(project, skill);
+  return resource2 > 0 ? `${mp} · ${resource2Config(project)?.label || "기력"} ${resource2}` : mp;
 }
 
 function scopeLabel(scope: "self" | "ally" | "allAllies" | "enemy" | "allEnemies"): string {

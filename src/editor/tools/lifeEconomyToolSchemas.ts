@@ -54,6 +54,7 @@ export const ITEM_UPGRADE_PARAMS: JsonSchema = {
         id: { type: "string" },
         fromItemId: { type: "string" },
         toItemId: { type: "string" },
+        target: { type: "string", enum: ["equipment"], description: "equipment 면 from/to 가 장비 id — 장착 중인 장비를 그 자리에서 바꾼다(같은 슬롯끼리)" },
         goldCost: { type: "integer", minimum: 0 },
         ingredients: { type: "array", items: ITEM_AMOUNT_SCHEMA },
         capability: {
