@@ -329,3 +329,20 @@ export function makeDatabaseTabIcon(tab: DatabaseTab): SVGSVGElement {
 export const DATABASE_TAB_ICON_IDS = Object.keys(TAB_ICONS) as readonly DatabaseTab[];
 
 export { TAB_ICONS as DATABASE_TAB_ICONS };
+
+/** 그룹 띠(레일 왼쪽 세로 줄)의 그룹 아이콘 — 그룹을 대표하는 탭의 그림을 빌린다. */
+const GROUP_ICON_TAB: Readonly<Record<string, DatabaseTab>> = {
+  lore: "worldCanon",
+  party: "actors",
+  monster: "enemies",
+  battle: "elements",
+  life: "crops",
+  world: "spatialRegions",
+  system: "system",
+};
+
+export function makeDatabaseGroupIcon(slug: string): SVGSVGElement {
+  const svg = buildSvgIcon(TAB_ICONS[GROUP_ICON_TAB[slug] ?? "overview"]);
+  svg.setAttribute("class", "db-group-strip-icon");
+  return svg;
+}

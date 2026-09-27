@@ -9,31 +9,37 @@
   color-scheme: light;
 
   /* ---- studio tokens (single source for DB chrome) -------------------- */
-  --db-studio-canvas: #F7F8F8;
+  /* 2026-09-27 자료집 개선안(visualizations/…/database-ui-proposal.html)의 쿨 인디고 팔레트.
+     바탕은 옅은 청회색, 칸은 흰색, 액센트는 인디고 600. 대비는 아래 text-3 주석과 같은
+     세 배경(흰·inset·선택행)에서 AA 를 다시 확인했다. */
+  --db-studio-canvas: #F5F6FA;
   --db-studio-surface: #FFFFFF;
-  --db-studio-inset: #F1F5F9;
-  --db-studio-well: #EEF2F6;
-  --db-studio-text-1: #0F172A;
-  --db-studio-text-2: #475569;
+  --db-studio-inset: #F0F2F7;
+  --db-studio-well: #ECEFF5;
+  --db-studio-text-1: #1A1E29;
+  --db-studio-text-2: #4B5263;
   /* 보조 텍스트. 예전 값 #94A3B8 은 11~11.5px 로 쓰이면서 흰 배경에서 2.56:1,
      inset(#F1F5F9) 에서 2.34:1, 선택 행 틴트(#F1F2FC) 에서 1.74:1 밖에 안 나왔다
      (2026-09-01 실측: 몬스터 그룹 4탭에서 AA 미달 118건 → 0건).
      세 배경 전부에서 AA 를 넘는다: 흰 배경 5.43:1 / inset 4.96:1 / 선택행 4.87:1.
      선택 행 틴트가 가장 빡빡한 제약이라 여기서 더 밝히면 그쪽이 먼저 깨진다. */
-  --db-studio-text-3: #5C6B7F;
+  --db-studio-text-3: #5D6477;
   /* 텍스트가 아닌 "옅은 회색 도형"용. 위 토큰을 텍스트 대비 때문에 어둡게 내렸는데,
      같은 토큰이 바 채움(modern/utility-records.css 의 .db-el-bar-none)과 빈 얼굴 자리
      표시(play-resolution.css)처럼 **칠**에도 쓰여서 그대로 두면 검증하지 않은 탭의
      그림 무게까지 바뀐다. 그 용도는 예전 값에 고정한다. */
   --db-studio-muted-paint: #94A3B8;
-  --db-studio-border-subtle: rgba(15, 23, 42, 0.08);
-  --db-studio-border-default: rgba(15, 23, 42, 0.10);
-  --db-studio-border-strong: rgba(15, 23, 42, 0.18);
-  --db-studio-accent: #4A57D6;
-  --db-studio-accent-hover: #3C48C4;
-  --db-studio-accent-active: #2F3AAE;
-  --db-studio-accent-soft: rgba(74, 87, 214, 0.08);
-  --db-studio-accent-border: rgba(74, 87, 214, 0.16);
+  --db-studio-border-subtle: rgba(26, 30, 60, 0.07);
+  --db-studio-border-default: rgba(26, 30, 60, 0.11);
+  --db-studio-border-strong: rgba(26, 30, 60, 0.20);
+  --db-studio-accent: #4F46E5;
+  --db-studio-accent-hover: #4338CA;
+  --db-studio-accent-active: #3730A3;
+  /* 선택 행·활성 탭 바탕. 알파 대신 불투명 값을 써서 흰 칸·inset 어느 위에서도 같은 색이 난다. */
+  --db-studio-accent-soft: #EEF0FF;
+  --db-studio-accent-border: rgba(79, 70, 229, 0.22);
+  /* 액센트 바탕 위 글자(활성 탭 라벨·선택 칩). --db-studio-accent 보다 한 단계 어둡다. */
+  --db-studio-accent-text: var(--db-studio-accent-active);
   --db-studio-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
   --db-studio-shadow-pop: 0 4px 16px rgba(15, 23, 42, 0.10);
   --db-studio-success: #0F7A4A;
