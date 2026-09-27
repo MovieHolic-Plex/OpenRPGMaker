@@ -59,6 +59,8 @@ function createWindow(): BrowserWindow {
     width: 1280,
     height: 800,
     show: false,
+    // 리눅스·윈도우 창 제목줄과 작업표시줄 아이콘. 맥은 앱 번들 icns 를 쓰므로 주지 않는다.
+    ...(process.platform === "darwin" ? {} : { icon: join(rendererDir, "icons", "pwa-512.png") }),
     webPreferences: {
       preload: join(__dirname, "preload.cjs"),
       contextIsolation: true,

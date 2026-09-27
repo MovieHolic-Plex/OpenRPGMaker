@@ -19,6 +19,13 @@ import { RETRO_HOUSE_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetr
 import { RETRO_WORLD_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetroWorld";
 import { SHIP_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsShip";
 import { WORLD_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsWorld";
+import COMBINED_TOWN_SHARED_CELLS from "@/assets/combinedTownSharedCells.json";
+import { COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, DEFAULT_TILESET_TEXTURE_KEY as COMBINED_TOWN_TEXTURE_KEY } from "@/project/defaults/constants";
+
+/** 파생 시트마다 합본 마을과 픽셀이 같은 칸 번호(2026-09-27 픽셀 동일 비교로 생성). 파생 시트를 다시 구우면 갱신한다. */
+const SHARED_CELLS_BY_TEXTURE: ReadonlyMap<string, ReadonlySet<number>> = new Map(
+  Object.entries(COMBINED_TOWN_SHARED_CELLS as Record<string, number[]>).map(([key, cells]) => [key, new Set(cells)]),
+);
 import {
   DUNGEON_TEXTURE_KEY,
   INTERIOR_TEXTURE_KEY,
@@ -153,7 +160,16 @@ const BUNDLED_TILE_SEMANTICS: ReadonlyMap<
 export function bundledTileSemantics(
   tileset: TilesetDef | undefined
 ): readonly { index: number; label: string; tags: readonly string[] }[] {
-  if (tileset?.image.type === "bundled") return BUNDLED_TILE_SEMANTICS.get(tileset.image.id) ?? COMBINED_TOWN_TILE_SEMANTICS;
+  // 표가 없는 번들 시트에 합본 마을 표를 통째로 씌우면 칸 번호만 같고 그림은 전혀 다른 라벨이 붙는다 —
+  // 성채 266 이 「석상 상단」, 탈것 시트 342 가 「돌바닥」으로 검색됐다(2026-09-27 전수 조사). 합본 마을 칸을
+  // 픽셀 그대로 물려받은 칸(combinedTownSharedCells.json, 픽셀 동일 비교로 생성)만 그 라벨을 쓴다.
+  if (tileset?.image.type === "bundled") {
+    const own = BUNDLED_TILE_SEMANTICS.get(tileset.image.id);
+    if (own) return own;
+    if (tileset.image.id === COMBINED_TOWN_TEXTURE_KEY || tileset.image.id === COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY) return COMBINED_TOWN_TILE_SEMANTICS;
+    const shared = SHARED_CELLS_BY_TEXTURE.get(tileset.image.id);
+    return shared ? COMBINED_TOWN_TILE_SEMANTICS.filter((entry) => shared.has(entry.index)) : [];
+  }
   if (!tileset) return COMBINED_TOWN_TILE_SEMANTICS;
   return [];
 }
@@ -174,8 +190,11 @@ function tileCandidates(tileset: TilesetDef | undefined): ResourceCandidate[] {
       }
     }
     (tileset.tileMeta ?? []).forEach((meta, tile) => {
-      const label = meta.label.trim();
-      const description = meta.description.trim();
+      // 번들 시트의 tileMeta 는 설명 없는 칸·빈 칸이 섞여 있다. 필드를 반드시 있다고 보고 .trim() 하면
+      // 숲마을·기후·바이옴 17종에서 타일 검색 전체가 TypeError 로 죽었다(2026-09-27 전수 조사).
+      if (!meta) return;
+      const label = typeof meta.label === "string" ? meta.label.trim() : "";
+      const description = typeof meta.description === "string" ? meta.description.trim() : "";
       if (!label && !description && !(meta.tags?.length)) return;
       const entry = byTile.get(tile) ?? { label: label || `타일 ${tile}`, tags: [] };
       if (label) {

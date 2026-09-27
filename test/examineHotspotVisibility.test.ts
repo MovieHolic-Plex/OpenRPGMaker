@@ -6,7 +6,7 @@ import { mapTexture } from "@/project/mapTexture";
 import type { GameMap, Project } from "@/project/types";
 
 describe("place_examine_hotspots 보이지 않는 조사 지점", () => {
-  it("그림 생략은 보석 표식, 투명 명시는 빈 바닥 경고", () => {
+  it("그림 생략·투명 명시 모두 대체 그림 없이 투명으로 두고 빈 바닥 경고", () => {
     const ctx = { project: createBlankProject() };
     const mapId = ctx.project.startMapId;
     const res = runTool(ctx, "place_examine_hotspots", {
@@ -18,14 +18,14 @@ describe("place_examine_hotspots 보이지 않는 조사 지점", () => {
       ],
     });
     expect(res.ok, res.summary).toBe(true);
-    expect(res.summary).toContain("1개는 빈 바닥 위 투명");
+    expect(res.summary).toContain("2개는 빈 바닥 위 투명");
     const notes = JSON.stringify(res.warnings ?? res.diff);
-    expect(notes).toContain("보석 표식");
+    expect(notes).not.toContain("보석 표식");
     expect(notes).toContain("메멘토: 낡은 턴테이블");
     expect(notes).toContain("숨은 쪽지");
     expect(notes).not.toContain("보물 상자,");
     const turntable = ctx.project.maps[mapId]!.events.find((event) => event.pages?.[0]?.name === "메멘토: 낡은 턴테이블");
-    expect(turntable?.pages?.[0]?.graphic?.sprite?.id).toBe("tex_easyrpg_charset_object2");
+    expect(turntable?.pages?.[0]?.graphic).toEqual({ transparent: true });
   });
 });
 
@@ -47,20 +47,23 @@ function occupy(map: GameMap, at: { x: number; y: number }): ReadonlySet<string>
   return new Set([...map.events.map((event) => `${event.x},${event.y}`), `${at.x},${at.y}`]);
 }
 
-describe("upsert_event 맨바닥 조사 사물 보석 표식", () => {
-  it("graphic 없는 조사 action 이 지배 바닥 맨바닥에면 보석 표식으로 저장된다", () => {
+describe("upsert_event 맨바닥 조사 사물", () => {
+  it("이름에 맞는 그림이 없는 조사 사물(제단)은 보석 등 대체 그림 없이 투명 + 경고", () => {
     const ctx: ToolContext = { project: createBlankProject() };
     const mapId = ctx.project.startMapId;
     const at = barePassableCell(ctx.project, new Set(ctx.project.maps[mapId]!.events.map((event) => `${event.x},${event.y}`)));
     const res = runTool(ctx, "upsert_event", {
       mapId,
-      event: { id: "ev_clock_statue_t", x: at.x, y: at.y, trigger: { kind: "action" }, commands: [{ kind: "text", body: "멈춘 석상이다." }] },
+      event: { id: "ev_truth_altar", name: "고대 진실의 제단", x: at.x, y: at.y, trigger: { kind: "action" }, commands: [{ kind: "text", body: "제단에 글씨가 새겨져 있다." }] },
     });
     expect(res.ok, res.summary).toBe(true);
-    const event = ctx.project.maps[mapId]!.events.find((entry) => entry.id === "ev_clock_statue_t");
-    expect(event?.pages?.[0]?.graphic?.sprite?.id).toBe("tex_easyrpg_charset_object2");
+    const event = ctx.project.maps[mapId]!.events.find((entry) => entry.id === "ev_truth_altar");
+    expect(event?.pages?.[0]?.graphic?.sprite).toBeUndefined();
+    expect(event?.pages?.[0]?.graphic?.transparent).toBe(true);
     expect(event?.pages?.[0]?.priority).toBe("below");
-    expect((res.diff?.warnings ?? []).join(" ")).toContain("보석 표식");
+    const notes = (res.diff?.warnings ?? []).join(" ");
+    expect(notes).toContain("보이지 않습니다");
+    expect(notes).not.toContain("보석 표식");
   });
 
   it("명시 graphic:{transparent:true} 는 의도로 받아 투명 그대로", () => {

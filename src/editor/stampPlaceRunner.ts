@@ -62,6 +62,11 @@ export interface StampRunInput {
   readonly selection: StampRunSelection | null;
   readonly signal?: AbortSignal;
   readonly onPhase?: (phase: StampRunPhase) => void;
+  /**
+   * 스토어에 적용하기 직전에 기다린다(적용 라운드마다 한 번). 주문 대기열이 조수 채팅 턴이 끝날 때까지
+   * 적용을 미루는 데 쓴다. 기다리는 동안 다른 주문이 깔렸을 수 있으므로 러너는 기다린 **뒤** 맵 사실을 다시 읽어 겹침을 푼다.
+   */
+  readonly waitForApply?: () => Promise<void>;
   /** 주입하면 연결 판정을 건너뛰고 이 함수로 모델을 부른다(테스트용). */
   readonly chat?: StampChatFn;
 }
@@ -246,9 +251,15 @@ export async function runStampPlaceWith(input: StampRunInput, deps: StampRunDeps
     return { ok: false, lines: [`모델이 깔 계획을 내지 못해 아무것도 깔지 않았습니다(${lastProblem}).`], applied: 0, usedModel: true };
   }
 
+  // 적용 차례를 기다린다 — 그동안 다른 주문·사람이 맵을 바꿨을 수 있다.
+  if (input.waitForApply) {
+    await input.waitForApply();
+    if (input.signal?.aborted) return ABORTED;
+  }
   // 새 이벤트가 기존 이벤트·서로와 겹치지 않게 코드가 옮긴다(모델이 빈 칸을 잘못 고른 경우).
+  // 기존 이벤트는 **지금** 맵에서 읽는다 — 계획을 세우는 동안 먼저 끝난 주문이 같은 칸에 NPC 를 세웠을 수 있다.
   const landing = landingCheck(deps, input.mapId);
-  const settled = resolveStampOverlaps(plan.steps, facts, landing);
+  const settled = resolveStampOverlaps(plan.steps, input.waitForApply ? refreshFacts(deps, facts) : facts, landing);
   plan = { ...plan, steps: settled.steps, dropped: [...plan.dropped, ...settled.dropped] };
   const lines: string[] = [];
   if (plan.dropped.length > 0) lines.push(`버린 단계: ${plan.dropped.join(", ")}`);
@@ -278,6 +289,11 @@ export async function runStampPlaceWith(input: StampRunInput, deps: StampRunDeps
       { role: "assistant", content: planRaw },
       { role: "user", content: buildStampRepairPrompt(failures) },
     ], input.signal);
+    // 수리 결과도 적용 차례를 기다린 뒤의 맵으로 겹침을 푼다.
+    if (input.waitForApply) {
+      await input.waitForApply();
+      if (input.signal?.aborted) throw new StampAborted();
+    }
     const repairFacts = refreshFacts(deps, facts);
     const parsed = parseStampPlan(repairRaw, repairFacts);
     const repairedSettled = resolveStampOverlaps(parsed.steps, repairFacts, landingCheck(deps, input.mapId));

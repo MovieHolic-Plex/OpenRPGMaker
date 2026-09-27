@@ -6102,7 +6102,13 @@
     "h": 2,
     "kind": "door",
     "name": "동굴 입구",
-    "description": "절벽 벽 맨 아래에서 위로 2칸"
+    "description": "절벽 벽 맨 아래에서 위로 2칸",
+    "solid": [
+     [
+      0,
+      0
+     ]
+    ]
    },
    {
     "id": "stone_steps_short",
@@ -8051,7 +8057,13 @@
     "h": 2,
     "kind": "door",
     "name": "동굴 입구",
-    "description": "1×2 절벽 벽에 뚫린 동굴 입구."
+    "description": "1×2 절벽 벽에 뚫린 동굴 입구.",
+    "solid": [
+     [
+      0,
+      0
+     ]
+    ]
    },
    {
     "id": "sand_patch_rock",
