@@ -115,7 +115,8 @@ const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   returnToTitle: { kind: "returnToTitle" },
   setFlag: { kind: "setFlag", flag: "flag1", value: true },
   setSelfSwitch: { kind: "setSelfSwitch", key: "A", value: true },
-  m2Command: { kind: "m2Command", commandId: "m2_test", fields: {} },
+  // 로더가 카탈로그 id 를 검사한다(2026-09-20~) — 기준선부터 "m2_test" 는 통과할 수 없었다(2026-09-27 교정).
+  m2Command: { kind: "m2Command", commandId: "m2-215-debug-log", fields: {} },
 };
 
 // kind별 최소 유효 Condition 인스턴스. 라운드트립 테스트에서는 참조 검증까지 통과해야 하므로
@@ -125,6 +126,7 @@ function buildMinimalConditions(ids: {
   variableId: string;
   actorId: string;
   itemId: string;
+  speciesId?: string;
 }): Record<ConditionKind, Condition> {
   return {
     switch: { kind: "switch", switchId: ids.switchId, value: true },
@@ -142,6 +144,22 @@ function buildMinimalConditions(ids: {
     relationshipAtLeast: { kind: "relationshipAtLeast", state: "dating" },
     battleResult: { kind: "battleResult", result: "victory" },
     run: { kind: "run", query: "active", value: true },
+    // 기준선에서 빠져 있던 kind(2026-09-27 교정).
+    monsterSpecies: { kind: "monsterSpecies", speciesId: ids.speciesId ?? "species_test", present: true },
+    // 명작 공백 G1 — 배우·파티·시점·회차·요일·문자열 조건.
+    actorStat: { kind: "actorStat", actorId: ids.actorId, stat: "level", op: ">=", value: 1 },
+    actorState: { kind: "actorState", actorId: "anyone", stateId: "state_test", present: true },
+    partyLeader: { kind: "partyLeader", actorId: ids.actorId },
+    partySize: { kind: "partySize", op: ">=", value: 1 },
+    facing: { kind: "facing", subject: "player", dir: "up" },
+    relativeFacing: { kind: "relativeFacing", relation: "playerBehindEvent" },
+    hiding: { kind: "hiding", value: true },
+    pursuitActive: { kind: "pursuitActive", value: true },
+    clearCount: { kind: "clearCount", op: ">=", value: 1 },
+    endingSeen: { kind: "endingSeen", endingId: "ending_true", value: true },
+    newGamePlus: { kind: "newGamePlus", value: true },
+    weekday: { kind: "weekday", weekdays: [0, 6] },
+    stringVariable: { kind: "stringVariable", stringVariableId: "prayer", op: "==", value: "빛" },
     all: {
       kind: "all",
       conditions: [
@@ -237,7 +255,10 @@ describe("condition 7종 — fork/페이지 조건 serialize→deserialize 왕�
     if (!actorId || !itemId || !switchId || !variableId) {
       throw new Error("blank project reference fixtures are incomplete");
     }
-    const conditions = buildMinimalConditions({ switchId, variableId, actorId, itemId });
+    // 몬스터 보유 조건은 로더가 종 참조를 검사한다 — 기본 DB 의 첫 종을 쓴다.
+    const speciesId = project.database.monsterSpecies?.[0]?.id;
+    expect(speciesId, "blank project에 monster species가 있어야 함").toBeTruthy();
+    const conditions = buildMinimalConditions({ switchId, variableId, actorId, itemId, speciesId });
     const conditionList: Condition[] = CONDITION_KINDS.map((kind) => conditions[kind]);
 
     const forkCommands: Command[] = conditionList.map((condition, index) => ({

@@ -37,7 +37,6 @@ import { store } from "@/project/store";
 import type { DatabaseStateEffect, Project, SkillEffect, SkillRecord } from "@/project/types";
 import { getEditorUiMode } from "@/editor/editorUiMode";
 import { el } from "@/util/dom";
-import { toggleSwitch } from "@/editor/panels/databaseControls";
 import { specialSkillEffectLabel } from "@/battle/battleSpecialEffects";
 
 const SKILL_EFFECT_KINDS = ["damage", "healing", "support", "switch", "steal", "scan", "learnEnemySkill", "randomSkillFrom"] as const satisfies readonly SkillEffect["kind"][];

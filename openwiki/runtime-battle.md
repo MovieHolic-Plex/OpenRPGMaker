@@ -964,3 +964,28 @@ Completed runtime timelines persist into bounded session reports accessible from
 새솔 약품 회수 트레이너전에서 포획 버튼이 가방에 나타난 것을 전용 플레이어로 재현했다.
 회귀 정의: `test/gen1BattleCommandDom.test.ts`의 두 제한 유형과 기존 야생전 경로.
 이번 세션에서는 Vitest를 실행하지 않았다.
+
+
+## 특수 명령 · 입력 기술 · 다부위 적 (명작 공백 #4 #8 #10, 2026-09-27)
+
+- **특수 효과** `SkillEffect` 에 네 종류가 더해졌다(`src/battle/battleSpecialEffects.ts`):
+  `steal`(대상 `EnemyRecord.stealItems [{itemId,rate}]` 를 차례로 굴려 하나를 빼앗는다, 적마다 1회) ·
+  `scan`(라이브라 — HP/MP·약점을 전투 메시지로 알리고 `BattleBattlerSnapshot.scanned` 로 HP 바를 드러낸다) ·
+  `learnEnemySkill`(청마법 — 대상의 `SkillRecord.learnable` 기술 중 모르는 것 하나를 배운다. 그 기술을 아는 배우는 learnable 기술에 맞아도 배운다) ·
+  `randomSkillFrom {skillIds}`(흉내·춤·슬롯).
+- **입력 커맨드** `SkillRecord.inputSequence {keys, timeLimitMs, successMultiplier?, failMultiplier?}` — 전투 UI 가 키를 순서대로 요구하고(`battleInputSequence.ts`, `24-input-prompt.css`)
+  시간 안에 맞히면 성공 배율, 틀리거나 늦으면 실패 배율을 위력에 곱한다. 자동 전투·적은 입력 없이 기본 위력이다.
+- **홀드 차지(액션 전투)** `ActionSkillProfile.chargeTiers [{holdMs,multiplier}]` — 캐스트 키를 누른 시간이 넘은 가장 높은 단계의 배율. 생략하면 즉시 발동(기존).
+- **다부위 적** `TroopMemberRecord.partOf`(본체 인덱스)·`partTag`. 본체가 쓰러지면 부위도 쓰러지고, 부위가 파괴되면 본체 행동 중 `requiresPart` 가 같은 것은 쓰지 않는다.
+  **부위 손실 상태** `StateRecord.disablesEquipSlot` — 그 상태인 동안 해당 장비 슬롯의 능력치 보너스를 잃는다(F&H 팔 절단).
+- 테스트: `test/mgL4SpecialCommands.test.ts`, `mgL4InputCharge`, `mgL4MultiPartEnemies`.
+
+## 롤링 HP · 움직이는 배경 · 화면 색 필터 (명작 공백 #15 #37, 2026-09-27)
+
+- **롤링 HP** `system.battleRollingHp`(+ `battleRollingHpPerSecond`, 기본 40) — 규칙 엔진은 피해를 즉시 확정하고 `src/player/rollingHp.ts` 가 **표시와 결산만** 바꾼다.
+  표시 HP 가 실제 HP 쪽으로 흘러가고, 실제 0 인데 미터가 남은 아군은 「쓰러지는 중」이다. 결과 화면이 뜨는 순간 미터를 멈추고 승리·도주면 남은 HP 로 살아남는다. 패배는 결산하지 않는다.
+- **움직이는 전투 배경** `TroopRecord.backdropAnimation {scrollX, scrollY, waveAmplitude, waveFrequency, paletteCycleSeconds}`(0/생략 = 끔, 범위는 `project/battleBackdropAnimation.ts`).
+  `player/battleBackdropMotion.ts` 가 그린다. `prefers-reduced-motion` 이면 정지 배경.
+- **화면 색 필터** Tint Screen(m2-046)에 `saturation 0~200 · grayscale 0~100 · sepia 0~100`(`project/eventCommands/screenFilter.ts`). 필드는 `.play-stage` 오버레이 backdrop-filter, 전투는 `.battle-field` filter.
+  필드가 없는 옛 명령은 중립값(100/0/0)이라 예전과 같다. 세이브에 들어간다.
+- 테스트: `test/mgL5bvisRollingHp.test.ts`, `mgL5bvisBackdropMotion`, `mgL5bvisScreenFilter`.
