@@ -15,6 +15,7 @@ import { floorShapeForMask, wallShapeForMask, waterfallShapeForMask } from "../.
 import { tileOpacity, type RgbaImage } from "../../../src/project/rpgmakerMv/bake.ts";
 import { AUTOTILE_DIR } from "../../../src/project/defaults/autotileEngine.ts";
 import type { MvPackPreset } from "../../../src/project/rpgmakerMv/packPreset.ts";
+import { passabilityOf } from "../../../src/project/collision.ts";
 
 export const T = MV_TILE_SIZE;
 export const REFMAP_ROOT = path.join(os.homedir(), ".local/share/oprn/refmap-downloads");
@@ -271,8 +272,9 @@ export function convertSpec(set: LoadedSet, spec: MapSpec): Converted {
   const empty = k1.filter((k) => !k).length;
   if (empty) warnings.push(`1층 빈 칸 ${empty}개(검게 보인다)`);
   warnings.push(...lintStructure(set, w, h, k1, k2));
-  warnings.push(...lintPassage(set, spec, k1, k2, placed));
-  return { width: w, height: h, lowerTiles: shapeLayer(set, w, h, k1), lowerOverlayTiles: shapeLayer(set, w, h, k2),
+  const lo1 = shapeLayer(set, w, h, k1), lo2 = shapeLayer(set, w, h, k2);
+  warnings.push(...lintPassage(set, spec, k1, k2, placed, [lo1, lo2, up3, up4]));
+  return { width: w, height: h, lowerTiles: lo1, lowerOverlayTiles: lo2,
     upperTiles: up3, upperOverlayTiles: up4, warnings, objects, keys1: k1, keys2: k2 };
 }
 
@@ -285,7 +287,7 @@ export interface Placed { o: ObjDef; x: number; y: number; cells: [number, numbe
 const PASSWAY = /stair|step|bridge|ladder|entrance|gate|passage|plank|hatch|doorway|arch_door|cave/;
 const NATURE = /tree|conifer|palm|rock|stalag|boulder|spire|bush|stump|mound|pine|broadleaf|fern|grass|flower|mushroom|log|drift|pile/;
 const WALL_FURNITURE = /shelf|bookshelf|cupboard|dresser|cabinet|clock|fireplace|stove|wardrobe|armor|banner|curtain|_bed|^bed/;
-export function lintPassage(set: LoadedSet, spec: MapSpec, k1: (string | null)[], k2: (string | null)[], placed: Placed[]): string[] {
+export function lintPassage(set: LoadedSet, spec: MapSpec, k1: (string | null)[], k2: (string | null)[], placed: Placed[], layers: [number[], number[], number[], number[]]): string[] {
   const { w, h } = spec;
   const info = new Map(set.presetJson.autotiles.map((a) => [`${a.sheet}:${a.kind}`, a]));
   const flatName = new Map((set.presetJson.flats ?? []).map((f) => [`#${set.tileOf(f.sheet, f.cell)}`, f.name]));
@@ -307,20 +309,31 @@ export function lintPassage(set: LoadedSet, spec: MapSpec, k1: (string | null)[]
   const face = (x: number, y: number) => isFace(k1[y * w + x]!) || isFace(k2[y * w + x]!);
   const hangable = (x: number, y: number) => face(x, y) || isRoof(k1[y * w + x]!) || isRoof(k2[y * w + x]!);
   const wallish = (x: number, y: number) => x < 0 || y < 0 || x >= w || y >= h || face(x, y) || blocks(k1[y * w + x]!, true);
-  // 물 위 징검다리·발판(2층)은 건널 수 있다.
-  const crossing = (k: string | null) => !!k && !k.startsWith("#") && /징검|다리|발판/.test(info.get(k)?.name ?? "");
-  const solid = Array.from({ length: w * h }, (_, i) => !crossing(k2[i]!) && (blocks(k1[i]!, true) || blocks(k2[i]!, false)));
+  // 통행은 엔진 규칙 그대로(collision.ts passabilityOf: 맨 위 비-★ 층이 정한다).
+  const ts = set.built.tileset;
+  const pass = Array.from({ length: w * h }, (_, i) => passabilityOf(ts, layers[0][i]!, layers[1][i]!, layers[2][i]!, layers[3][i]!));
+  const open = (i: number) => { const p = pass[i]!; return p.up || p.down || p.left || p.right; };
+  const solid = Array.from({ length: w * h }, (_, i) => !open(i));
   const out: string[] = [];
   const hung: string[] = [], loose: string[] = [];
+  // 누수: 1층 땅은 막혔는데(물·벽·천장) 위층 물체·무늬가 길을 튼 칸. 계단·다리·문 밑줄은 뺀다.
+  const legit = new Set<number>();
   for (const p of placed) if ((p.o.kind === "decal" || p.o.kind === "door") && PASSWAY.test(p.o.id)) p.cells.forEach(([dx, dy]) => {
-    const x = p.x + dx, y = p.y + dy; if (x >= 0 && y >= 0 && x < w && y < h) solid[y * w + x] = false;
+    if (p.o.kind === "door" && dy !== p.o.h - 1) return;
+    const x = p.x + dx, y = p.y + dy; if (x >= 0 && y >= 0 && x < w && y < h) legit.add(y * w + x);
   });
+  const crossing = (k: string | null) => !!k && !k.startsWith("#") && /징검|다리|발판/.test(info.get(k)?.name ?? "");
+  const leaks: string[] = [];
+  for (let i = 0; i < w * h; i += 1) {
+    if (!open(i) || legit.has(i) || crossing(k2[i]!)) continue;
+    const base = passabilityOf(ts, layers[0][i]!, -1, -1, -1);
+    if (!(base.up || base.down || base.left || base.right)) leaks.push(`(${i % w},${Math.floor(i / w)})`);
+  }
+  if (leaks.length) out.push(`통행: 막힌 땅(물·벽·천장) 위를 걷게 만든 칸 ${leaks.length} — ${leaks.slice(0, 10).join(" ")}${leaks.length > 10 ? " …" : ""}`);
   const onTop = new Array<number>(w * h).fill(0);
   for (const p of placed) {
     const { o } = p;
-    const mark = (dx: number, dy: number) => { const x = p.x + dx, y = p.y + dy; if (x >= 0 && y >= 0 && x < w && y < h) solid[y * w + x] = true; };
-    if (o.kind === "prop") (o.solid ?? p.cells).forEach(([dx, dy]) => { mark(dx, dy); const x = p.x + dx, y = p.y + dy; if (x >= 0 && y >= 0 && x < w && y < h) onTop[y * w + x] += 1; });
-    else if (o.kind === "tall") (o.solid ?? p.cells.filter(([, dy]) => dy === o.h - 1)).forEach(([dx, dy]) => mark(dx, dy));
+    if (o.kind === "prop") (o.solid ?? p.cells).forEach(([dx, dy]) => { const x = p.x + dx, y = p.y + dy; if (x >= 0 && y >= 0 && x < w && y < h) onTop[y * w + x] += 1; });
     if (o.kind === "wallmount" && p.cells.some(([dx, dy]) => { const x = p.x + dx, y = p.y + dy; return x >= 0 && y >= 0 && x < w && y < h && !hangable(x, y); })) hung.push(`${o.id}(${p.x},${p.y})`);
     if ((o.kind === "tall" || o.kind === "prop") && WALL_FURNITURE.test(o.id)) {
       const top = Math.min(...p.cells.map(([, dy]) => dy));
@@ -351,8 +364,12 @@ export function lintPassage(set: LoadedSet, spec: MapSpec, k1: (string | null)[]
   else for (let x = 0; x < w; x += 1) { start(x, 0); start(x, h - 1); } 
   if (!spec.entry) for (let y = 0; y < h; y += 1) { start(0, y); start(w - 1, y); }
   while (queue.length) {
-    const i = queue.pop()!, x = i % w, y = Math.floor(i / w);
-    for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]] as const) if (nx >= 0 && ny >= 0 && nx < w && ny < h) start(nx, ny);
+    const i = queue.pop()!, x = i % w, y = Math.floor(i / w), p = pass[i]!;
+    const step = (nx: number, ny: number, out: boolean, into: "up" | "down" | "left" | "right") => {
+      if (!out || nx < 0 || ny < 0 || nx >= w || ny >= h) return;
+      if (pass[ny * w + nx]![into]) start(nx, ny);
+    };
+    step(x + 1, y, p.right, "left"); step(x - 1, y, p.left, "right"); step(x, y + 1, p.down, "up"); step(x, y - 1, p.up, "down");
   }
   // 닿지 않는 바닥 덩이
   const done = new Array<boolean>(w * h).fill(false);
