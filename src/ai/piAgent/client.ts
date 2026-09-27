@@ -221,6 +221,9 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
       decoder.flush();
       // 끝까지 받았거나, 우리가 끊었거나, 이어 받을 수 없는 호스트면 멈춘다.
       if (done || stopped || !resumable || options.signal?.aborted) break;
+      // 오류 없이 닫혔으면 호스트가 실행을 끝낸 것이다(done 없이 error 줄로 끝난 실행 포함) — 이어 받을 것이 없다.
+      // 실측(2026-09-27): 팀 실행이 OAuth 만료 error 로 끝났는데 끊김으로 보고 이어 받기를 네 번 돌았다.
+      if (!dropError) break;
       if (++failures > resumeAttempts) break;
       await new Promise((resolve) => setTimeout(resolve, Math.min(15_000, resumeBase * 2 ** (failures - 1))));
       if (options.signal?.aborted || stopped) break;

@@ -3094,6 +3094,7 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
   `Access-Control-Expose-Headers` 로 이 헤더를 연다(안 열면 app:// 렌더러가 못 읽어 이어 받기 없이 돈다).
   스트림이 끊기면 `client.ts` 가 GET `/v1/agent/run?runId=&after=마지막seq+1` 을 지수 백오프(2초부터, 6회)로 다시 붙고, seq 로 중복 줄을 버린다.
   이어 받는 동안 `execution_status stream.resume` 이벤트가 나간다. 중단 버튼은 POST `/v1/agent/cancel` 이고 이것만 워커를 멈춘다.
+  오류 없이 닫힌 스트림은 끊김이 아니라 실행 종료다 — `done` 없이 `error` 줄로 끝났으면 이어 받지 않고 그 오류를 보고한다.
   아무도 붙지 않은 채 5분(`RESUME_GRACE_MS`)이 지나면 실행을 멈춘다. 끝난 기록은 10분 보관, 기록 상한은 256MB 다. 헤더가 없는 옛 호스트면
   예전 방식(통째 POST, 끊기면 실패)으로 돈다. 이어 받지 못하면 「AI 작업 연결이 끊겼고 다시 이어 받지 못했습니다」.
   회귀: `test/ohMyPiRunRelay.node.test.mjs`, `test/piAgentClientResume.test.ts`, `test/piAgentCommandAndRoute.test.ts`.

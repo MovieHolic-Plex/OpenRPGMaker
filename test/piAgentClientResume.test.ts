@@ -58,6 +58,21 @@ describe("Pi 클라이언트 이어 받기", () => {
       .rejects.toThrow(/연결이 끊겼고/);
   });
 
+  it("done 없이 error 줄로 깨끗이 닫히면 이어 받지 않고 그 오류로 끝낸다", async () => {
+    const methods: string[] = [];
+    const fetchImpl = (async (_url: string, init?: RequestInit) => {
+      methods.push(init?.method ?? "GET");
+      const runId = String((await bodyOf(init)).runId);
+      return new Response(new ReadableStream({ start(c) {
+        c.enqueue(line({ seq: 0, type: "error", message: "OAuth token expired before request" }));
+        c.close();
+      } }), { headers: { "X-Oprn-Run-Id": runId } });
+    }) as unknown as typeof fetch;
+    await expect(runPiAgentViaCompanion({ provider: "google-antigravity", task: "t", mapIds: [], project }, { fetchImpl, resumeDelayMs: 1 }))
+      .rejects.toThrow(/OAuth token expired/);
+    expect(methods).toEqual(["POST"]);
+  });
+
   it("사용자 중단은 호스트에 cancel 을 보낸다", async () => {
     const controller = new AbortController();
     const calls: string[] = [];
