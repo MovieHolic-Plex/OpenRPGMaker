@@ -208,6 +208,8 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
       : {}),
     ...(system.battleBackdrop === "field" ? { battleBackdrop: "field" as const } : {}),
     ...(system.battlePresentation === "onField" ? { battlePresentation: "onField" as const } : {}),
+    // 진형 굴림·도주 가산 — 기본(굴림 없음·+10%p)은 저장하지 않는다(옛 JSON 바이트 유지).
+    ...(system.battleFormationRoll === true ? { battleFormationRoll: true } : {}),
     ...(system.battleCommandCss?.trim() ? { battleCommandCss: system.battleCommandCss } : {}),
     // 기본 스킨(DEFAULT_BATTLE_SKIN_ID = rm2000)만 저장하지 않는다. 그 밖의 명시적 선택은 반드시
     // 보존해야 한다 — 기본이 바뀐 뒤에 명시값을 생략하면 왕복 후 다른 스킨으로 바뀌어버린다

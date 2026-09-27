@@ -441,6 +441,12 @@ function systemSectionNodes(
             draft.system.activeSlots = optionalPositiveInteger(value);
           }, "system:active-slots");
         }),
+        checkboxField("선제·기습 개시 굴림 (심볼 접촉 방향 포함)", "db-field-system-battle-formation-roll", project.system.battleFormationRoll === true, (checked) => {
+          updateSystem((draft) => {
+            if (checked) draft.system.battleFormationRoll = true;
+            else delete draft.system.battleFormationRoll;
+          });
+        }),
         checkboxField("몬스터 수집", "db-field-system-monster-collection", project.system.monsterCollection === true, (checked) => {
           updateSystem((draft) => {
             if (checked) draft.system.monsterCollection = true;

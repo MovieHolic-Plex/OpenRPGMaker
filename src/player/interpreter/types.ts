@@ -102,6 +102,8 @@ export type StepResult =
       troopSource?: "fixed" | "variable";
       troopVariableId?: string;
       branchOnResult?: boolean;
+      /** 전투 개시 진형 강제(명령) 또는 접촉 방향(심볼 인카운트). 생략 = 시스템 설정. */
+      formation?: import("@/battle/battleFormation").BattleStartFormation;
       // 이 전투를 기동한 맵 이벤트 id(트룹 배틀 이벤트 selfSwitch 의 소유 이벤트).
       // 랜덤 인카운터/필드 스폰 전투는 undefined.
       ownerEventId?: string;

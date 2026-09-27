@@ -1293,6 +1293,8 @@ export interface SystemRecords {
   atbMode?: BattleAtbMode;
   /** ATB 속도 1~8(4 = 기존 속도). 생략 = 기존 속도. */
   atbSpeed?: number;
+  /** true 면 전투마다 선제·기습·백어택·협공을 민첩으로 굴리고, 심볼 인카운트는 접촉 방향으로 정한다. 생략 = 항상 보통 개시. */
+  battleFormationRoll?: boolean;
   /** field 면 전투 배경이 주인공 주변 필드 화면의 스냅숏이고 진입은 제자리 페이드. 생략 = 트룹/지형 배경. */
   battleBackdrop?: "field";
   /** onField 면 전투가 **필드 위에서** 벌어진다(크로노식): 전환 연출 없이, 적은 부딪힌 심볼 자리에, 아군은 파티가 선 자리에

@@ -128,6 +128,7 @@ export const COMMAND_SCHEMA: JsonSchema = {
     troopId: { type: "string", description: "battleProcessing: 싸울 부대(troop) ID" },
     canEscape: { type: "boolean", description: "battleProcessing: 도주 허용(기본 true)" },
     canLose: { type: "boolean", description: "battleProcessing: 패배해도 게임 오버 없이 진행(기본 false). defeatBranch 를 쓰려면 true." },
+    formation: { type: "string", enum: ["normal", "preemptive", "surprise", "backAttack", "pincer"], description: "battleProcessing: 개시 진형 강제(선제 공격·기습·백어택·협공). 생략 = 시스템 설정" },
     branchOnResult: {
       type: "boolean",
       description:

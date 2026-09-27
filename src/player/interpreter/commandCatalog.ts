@@ -636,6 +636,7 @@ export function executeCommand(
         troopSource: command.troopSource,
         troopVariableId: command.troopVariableId,
         branchOnResult: command.branchOnResult,
+        formation: command.formation,
         // 이 전투를 기동한 맵 이벤트(커먼 이벤트 경유 시에도 호출 원점 이벤트).
         // 트룹 배틀 이벤트의 selfSwitch 조건/setSelfSwitch 커맨드의 소유 이벤트가 된다.
         ownerEventId: state.currentEventId,

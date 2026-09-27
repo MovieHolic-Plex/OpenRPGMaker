@@ -1,4 +1,4 @@
-import { formationDamage } from "@/battle/battleFormation";
+import { formationDamage, formationStartRow, rollBattleFormation, type BattleRow, type BattleStartFormation } from "@/battle/battleFormation";
 import { evaluateDamageFormula, formulaBattlerContext } from "@/battle/damageFormula";
 import { predictSkillDamageFor } from "@/battle/battlePredict";
 import { combatConditionMet } from "@/battle/combatConditions";
@@ -300,6 +300,34 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     ?? (gen1 ? 1 : undefined);
   const activeSlots = normalizeActiveSlots(requestedActiveSlots, actors.length);
   let activeActorIds: ActorId[] = actors.slice(0, activeSlots).map((actor) => actor.recordId);
+  // 전투 개시 진형: 명시(명령·심볼 접촉) > 시스템 굴림 > 보통. 굴림이 꺼져 있으면 rng 를 쓰지 않아 기존 시드 흐름이 그대로다.
+  const formation: BattleStartFormation = options.formation
+    ?? (options.project.system.battleFormationRoll === true && !gen1
+      ? rollBattleFormation({
+          partyAgility: average(actors.slice(0, activeSlots).filter((actor) => actor.hp > 0).map((actor) => actor.agility)),
+          enemyAgility: average(enemies.filter((enemy) => !enemy.hidden && enemy.hp > 0).map((enemy) => enemy.agility)),
+          preemptiveEquipment: actors.slice(0, activeSlots).some((actor) => actorHasPreemptiveEquipment(actor.recordId)),
+        }, rng)
+      : "normal");
+  if (formation === "backAttack" || formation === "pincer") {
+    for (const actor of actors) (actor as { row?: BattleRow }).row = formationStartRow(actor.row, formation);
+  }
+  // strict 첫 라운드: 선제면 적이, 기습이면 아군이 쉰다. gauge 는 시작 게이지로 같은 뜻을 낸다.
+  let formationRoundPending = formation === "preemptive" || formation === "surprise";
+  if (battleFlow !== "strict" && formationRoundPending) {
+    for (const actor of actors) actor.gauge = formation === "preemptive" ? 100 : 0;
+    for (const enemy of enemies) enemy.gauge = formation === "surprise" ? 100 : 0;
+    formationRoundPending = false;
+  }
+  // 이번 strict 라운드에서 쉬는 쪽(진형 첫 라운드 전용).
+  let strictFormationSkipSide: "actor" | "enemy" | undefined;
+
+  function actorHasPreemptiveEquipment(actorId: string): boolean {
+    const equipment = actorEquipment.get(actorId as ActorId);
+    if (!equipment) return false;
+    return Object.values(equipment).some((equipmentId) =>
+      Boolean(equipmentId) && options.project.database.equipment.find((record) => record.id === equipmentId)?.effectFlags.preemptive === true);
+  }
   // override → troop → terrain(at location) → forest. Never System2 gauge sheets.
   let backdropResourceId = resolveBattleBackdrop({
     project: options.project,
@@ -1383,6 +1411,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     strictCurrentRoundParticipantIds = new Set<ActorId>();
     strictRoundTimelineStart = timeline.length;
     markActiveParticipants();
+    if (formationRoundPending) {
+      strictFormationSkipSide = formation === "preemptive" ? "enemy" : "actor";
+      formationRoundPending = false;
+    }
 
     if (!gen1) {
       for (const battler of [...activeActors(), ...visibleEnemies()]) {
@@ -1403,7 +1435,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         if (actor.hp > 0 && !canBattlerAct(options.project, actor)) recordIncapacitated(actor);
       }
     }
-    strictPendingActorIds = activeActors()
+    strictPendingActorIds = strictFormationSkipSide === "actor" ? [] : activeActors()
       .filter((actor) => actor.hp > 0 && (gen1 || canBattlerAct(options.project, actor)))
       .map((actor) => actor.recordId);
     for (const actor of actors) actor.gauge = strictPendingActorIds.includes(actor.recordId) ? 100 : 0;
@@ -1425,7 +1457,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         if (actor.hp > 0 && !canBattlerAct(options.project, actor)) recordIncapacitated(actor);
       }
     }
-    strictPendingActorIds = activeActors()
+    strictPendingActorIds = strictFormationSkipSide === "actor" ? [] : activeActors()
       .filter((actor) => actor.hp > 0 && (gen1 || canBattlerAct(options.project, actor)))
       .map((actor) => actor.recordId);
     for (const actor of actors) actor.gauge = strictPendingActorIds.includes(actor.recordId) ? 100 : 0;
@@ -1539,6 +1571,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     activeActorId = undefined;
     currentActorCommandKind = undefined;
     turn = round;
+    strictFormationSkipSide = undefined;
     finishStrictRoundLog(round);
   }
 
@@ -1570,7 +1603,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     });
     const enemyActions: StrictQueuedAction[] = visibleEnemies()
       .flatMap((enemy, index) => {
-        if (enemy.hp <= 0) return [];
+        if (enemy.hp <= 0 || strictFormationSkipSide === "enemy") return [];
         if (!gen1 && !canBattlerAct(options.project, enemy)) {
           recordIncapacitated(enemy);
           return [];
@@ -1729,6 +1762,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       result,
       rewards,
       canEscape: options.canEscape,
+      formation,
       canLose: options.canLose,
       troopId: options.troopId,
       backdropResourceId,

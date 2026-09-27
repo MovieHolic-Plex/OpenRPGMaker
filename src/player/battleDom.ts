@@ -7,6 +7,7 @@ import type {
 } from "@/battle/runtime";
 import { mountOnFieldBackdrop, type OnFieldAnchors } from "@/player/battleOnField";
 import { concreteTargetCommand } from "@/battle/runtime";
+import { BATTLE_START_FORMATION_BANNERS } from "@/battle/battleFormation";
 import { waitForEventKey } from "@/player/eventInput";
 import type { BattleEventChoiceSnapshot, BattleEventPauseSnapshot } from "@/battle/types";
 import { targetScopeForCommand } from "@/battle/battleTargetResolver";
@@ -207,6 +208,17 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     if (options.fieldBackdropUrl) mountOnFieldBackdrop(stage, options.onField.canvas, options.fieldBackdropUrl);
   }
 
+  // 개시 진형 배너: 첫 인트로 메시지에 한 줄만 덧붙인다(보통 개시는 그대로).
+  let formationBannerShown = false;
+  function withFormationBanner(state: typeof directorState): typeof directorState {
+    if (formationBannerShown || state.step !== "intro") return state;
+    formationBannerShown = true;
+    const formation = initialSnapshot.formation;
+    if (!formation || formation === "normal") return state;
+    root.dataset.battleFormation = formation;
+    return { ...state, lines: [...state.lines, BATTLE_START_FORMATION_BANNERS[formation]] };
+  }
+
   function toggleAutoBattle(): void {
     autoBattle = !autoBattle;
     root.dataset.battleAuto = autoBattle ? "true" : "false";
@@ -343,7 +355,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       return playCaptureCinematic(field, targetId, success);
     },
     onDirectorState(state) {
-      directorState = state;
+      directorState = withFormationBanner(state);
     },
     onTimelineEntry(entry) {
       // 연출이 화면에 도달한 반격·부활의 흔적 — QA 와 스킨 CSS 가 읽는다.

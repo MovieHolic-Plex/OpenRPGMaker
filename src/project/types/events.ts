@@ -363,6 +363,8 @@ export type Command =
       troopVariableId?: string;
       /** true면 전투 결과에 따라 victory/defeat/escape 분기 실행 */
       branchOnResult?: boolean;
+      /** 전투 개시 진형을 강제한다. 생략 = 시스템 설정(굴림 또는 보통). */
+      formation?: import("@/battle/battleFormation").BattleStartFormation;
       victoryBranch?: Command[];
       defeatBranch?: Command[];
       escapeBranch?: Command[];
