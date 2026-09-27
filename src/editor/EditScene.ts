@@ -33,6 +33,8 @@ import {
 } from "@/editor/cameraFocusViewport";
 import { subscribeAgentBlueprint } from "@/editor/agentBlueprint";
 import { AgentBlueprintRenderer } from "@/editor/agentBlueprintRenderer";
+import { subscribeStampOrders } from "@/editor/stampOrderQueue";
+import { StampOrderRenderer } from "@/editor/stampOrderRenderer";
 import { isAgentGhostPreviewHidden, subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { AI_LIVE_CANVAS_EVENT } from "@/editor/aiLiveCanvas";
 import { AgentFocusRenderer, AgentGhostPreviewRenderer } from "@/editor/agentPreviewRenderers";
@@ -241,6 +243,8 @@ export class EditScene extends PhaserRuntime.Scene {
   private selectionLayer: Phaser.GameObjects.Container | null = null;
   private overlayLayer: Phaser.GameObjects.Container | null = null;
   private agentBlueprintLayer: Phaser.GameObjects.Container | null = null;
+  /** 바로 깔기 주문 사각형(「#3 연못 · 읽는 중」). 청사진 위, 고스트 아래. */
+  private stampOrderLayer: Phaser.GameObjects.Container | null = null;
   private agentGhostPreviewLayer: Phaser.GameObjects.Container | null = null;
   private agentFocusHighlightLayer: Phaser.GameObjects.Container | null = null;
   private eventClickFeedbackLayer: Phaser.GameObjects.Container | null = null;
@@ -258,6 +262,8 @@ export class EditScene extends PhaserRuntime.Scene {
   private unsubCameraFocus: (() => void) | null = null;
   private unsubInlineApproval: (() => void) | null = null;
   private unsubAgentBlueprint: (() => void) | null = null;
+  private unsubStampOrders: (() => void) | null = null;
+  private stampOrderRenderer: StampOrderRenderer | null = null;
   /** 원본 보기(꾹 누름) 마지막 값 — 토글이 바뀐 순간에만 청사진을 다시 그린다. */
   private lastGhostHidden = false;
   private agentBlueprintRenderer: AgentBlueprintRenderer | null = null;
@@ -484,11 +490,14 @@ export class EditScene extends PhaserRuntime.Scene {
     // 청사진은 계획, 고스트는 실물 초안이다 — 계획이 아래로 깔려야 실물이 그 위에 올라간다.
     this.agentBlueprintLayer = this.add.container(0, 0);
     this.agentBlueprintLayer.setDepth(10.2);
+    this.stampOrderLayer = this.add.container(0, 0);
+    this.stampOrderLayer.setDepth(10.3);
     this.agentGhostPreviewLayer = this.add.container(0, 0);
     this.agentGhostPreviewLayer.setDepth(10.5);
     this.agentFocusHighlightLayer = this.add.container(0, 0);
     this.agentFocusHighlightLayer.setDepth(11);
     this.agentBlueprintRenderer = new AgentBlueprintRenderer(this, this.agentBlueprintLayer, () => this.mapId());
+    this.stampOrderRenderer = new StampOrderRenderer(this, this.stampOrderLayer, () => this.mapId());
     this.agentGhostPreviewRenderer = new AgentGhostPreviewRenderer(this, this.agentGhostPreviewLayer, () => this.mapId());
     this.agentFocusRenderer = new AgentFocusRenderer(this, this.agentFocusHighlightLayer, () => this.mapId());
     this.cameraPanController = new CameraPanController(this, {
@@ -544,8 +553,13 @@ export class EditScene extends PhaserRuntime.Scene {
       if (hidden === this.lastGhostHidden) return;
       this.lastGhostHidden = hidden;
       this.renderAgentBlueprint();
+      this.renderStampOrders();
     });
     this.unsubAgentBlueprint = subscribeAgentBlueprint(() => this.renderAgentBlueprint());
+    this.unsubStampOrders = subscribeStampOrders(() => {
+      markEditRenderActive(this.game);
+      this.renderStampOrders();
+    });
     // 미리보기 토글은 씬 밖(캔버스 툴바)에서 뒤집힌다 — 구독이 없으면 켜도 아무 일도 안 한다.
     this.unsubMapBackgroundPreview = subscribeMapBackgroundPreview(() => this.redraw());
 
@@ -637,6 +651,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.unsubCameraFocus?.();
     this.unsubMapBackgroundPreview?.();
     this.unsubAgentBlueprint?.();
+    this.unsubStampOrders?.();
     this.unsubStore = null;
     this.unsubEditor = null;
     this.unsubAgentGhost = null;
@@ -644,8 +659,10 @@ export class EditScene extends PhaserRuntime.Scene {
     this.unsubCameraFocus = null;
     this.unsubMapBackgroundPreview = null;
     this.unsubAgentBlueprint = null;
+    this.unsubStampOrders = null;
     this.clearAgentGhostPreviewLayer();
     this.clearAgentBlueprintLayer();
+    this.stampOrderRenderer?.clear();
     this.clearAgentFocusHighlight();
     window.removeEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
     window.removeEventListener(AI_LIVE_CANVAS_EVENT, this.handleLiveCanvas);
@@ -2143,6 +2160,7 @@ export class EditScene extends PhaserRuntime.Scene {
     // 타일 좌표 위에 그대로 남고(레이어는 맵을 따라 비워지지 않는다), 계획이 굳은 뒤 A 로
     // 돌아오면 다음 상태 변화까지 아무것도 안 보인다.
     this.renderAgentBlueprint();
+    this.renderStampOrders();
     this.publishMapViewport();
     if (!mapChanged && this.lastPointerTile && this.shouldRenderPaintHover()) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
     this.syncSelectionOverlay();
@@ -2586,6 +2604,10 @@ export class EditScene extends PhaserRuntime.Scene {
 
   private renderAgentBlueprint(): void {
     this.agentBlueprintRenderer?.render();
+  }
+
+  private renderStampOrders(): void {
+    this.stampOrderRenderer?.render();
   }
 
   private clearAgentBlueprintLayer(): void {

@@ -670,6 +670,29 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
 - 실측(워크트리 dev, Google 연결): 「왼쪽에 땅을 동그랗게, 가운데 물을 동그랗게, 오른쪽 옆에 나무」 12s·3단계 성공, 「땅으로 깔아줘」 → 흙길 오토타일 채움.
   증거 `verify-shots/stamp-llm/`.
 
+### 연속 주문 대기열 (2026-09-28)
+
+목표: 드래그하면서 바로 깔기 명령을 연달아 내린다. 예전에는 바로 깔기가 채팅의 `turnBusy` 슬롯을 잡아 두 번째 드래그가
+「진행 중인 응답이 끝난 뒤 다시 시도하세요」로 버려졌다.
+
+- 소유: `src/editor/stampOrderQueue.ts`(모듈 싱글턴, 스토어 import 없음). 러너 배선은 `aiChatPanel.ts` 모듈 최상단 `configureStampOrderQueue`.
+  패널이 아니라 모듈이 소유하는 이유는 레인과 같다 — 스튜디오에서 장면을 더하면 패널이 다시 만들어진다(`aiLaneSession.ts`).
+- 규칙: 같은 맵에서 **영역이 겹치는 주문만** 앞 주문이 끝날 때까지 기다린다(선택 없음 = 맵 전체 = 그 맵의 모든 주문과 겹침).
+  동시에 도는 주문은 `STAMP_ORDER_CONCURRENCY`(3). 모델 읽기는 겹쳐 돌고, 적용(`applyToolSequenceToStore`)은 동기라 자연히 하나씩이다.
+- 조수 턴과의 경계: 주문은 **적용 직전에** `waitForApply` 로 조수 턴(`turnBusy`)이 끝나기를 기다린다. Pi 턴은 시작 시 프로젝트를 바닥으로 잡고
+  적용 때 stale-base 를 보므로, 턴 도중에 깔면 조수 결과가 통째로 거절된다. `runSurface.turnBusy=false`·대화 은퇴·패널 해제가 `pokeGate()` 를 부른다.
+  기다린 뒤 러너는 **지금 맵**으로 `resolveStampOverlaps` 를 다시 돌린다(먼저 끝난 주문이 세운 NPC 와 겹치지 않게). 프로젝트가 바뀌었으면 그 주문은 중단.
+- 표면: 채팅 말풍선은 `#번호 문장` → 끝나면 `#번호 이름 — 완료/일부 적용/실패` + 단계 줄(`takeUnreported` 로 한 번만).
+  입력줄 대기 표시(`ai-pending-queue`)에 「바로 깔기 N개 진행 · M개 대기」, 멈추기는 주문이 돌면 서고 `cancelAll()` 로 전부 끊는다.
+  캔버스에는 `StampOrderRenderer`(EditScene depth 10.3)가 주문 사각형과 「#3 연못 · 읽는 중 / #1 끝나면 / 조수 응답 뒤에 깔기」를 그린다 — 스튜디오 모니터도 같은 캔버스다.
+  바로 깔기가 켜져 있으면 조수 턴 중에도 전송 버튼이 살아 있다(`refreshSendEnabled`).
+- 검증: `test/stampOrderQueue.test.ts`(겹침·상한·조수 게이트·프로젝트 교체·중단·보고 1회).
+  브라우저: `BASE=http://127.0.0.1:<포트> node scripts/qa/rapid-stamp-orders.mjs` — 모델을 2.5s 늦춘 스텁으로 표준 편집기·스튜디오에서 드래그 3번.
+  실측(2026-09-28): 두 모드 모두 거절 0·오류 0, 떨어진 두 주문 동시 읽기(`inflightMax` 2), 겹친 셋째는 첫째 뒤에 깔림. 증거 `verify-shots/rapid-stamp/`.
+- **남은 병목(미해결)**: 적용 한 번에 메인 스레드가 5~6s 멈춘다(부하 걸린 공유 박스, longtask 실측). 그동안 다음 드래그 바가 늦게 뜬다(실측 15~21s).
+  CPU 프로파일: `renderRegionSizeBadge`/`positionBuildPaletteOverlay` 의 `getBoundingClientRect` 강제 레이아웃이 약 5.3s(DOM 쓰기마다 레이아웃 ~45ms, 노드 5.5k),
+  `createDraft` 1.1s, `recordProjectSnapshot` 복제 1.1s, 커밋 다이제스트 1.1s. 대기열은 이 비용을 줄이지 않는다 — 다음 작업은 스토어 변경 뒤 오버레이 측정을 rAF 한 번으로 모으고, 타일셋 복제를 참조 공유로 바꾸는 것이다.
+
 ## 단순 생성·수정은 계획 필요 여부로 실행한다 (2026-09-18 갱신)
 
 평문 채팅은 기존 `declareIntentCached` 결과를 재사용한다. 오류 없이 `source: llm`,
