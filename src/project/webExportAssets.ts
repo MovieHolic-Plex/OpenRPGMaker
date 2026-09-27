@@ -1,3 +1,4 @@
+import { charsetBattler, resolvePartyBattleCharset } from "@/assets/charsetBattlers";
 import { BATTLE_SCENERY_CATALOG } from "@/assets/battleSceneryCatalog";
 import { findOpeningStillPackEntry } from "@/assets/openingStillPackRuntime";
 import { openingStillPackUrl } from "@/assets/openingStillPackCdn";
@@ -46,6 +47,10 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
         resourceId: asset.textureKey,
       });
     }
+  }
+  if ([...ids].some((id) => charsetBattler(id))) {
+    const path = "assets/easyrpg/AUTHORS.md";
+    assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
   }
   for (const id of ids) {
     const idle = battlerIdleAnimation(id);
@@ -156,7 +161,10 @@ function collectProjectStrings(project: Project): Set<string> {
   const facing = BATTLER_PLACEMENTS[skinId].partyFacing;
   // Include reserve actors too: party membership/order can change after export.
   for (const actor of project.database.actors) {
-    if (facing === "front" && actor.battleCharacterResourceId) continue;
+    if (facing === "front") {
+      const sheet = resolvePartyBattleCharset(actor, skinId === "retro2003");
+      if (sheet) { values.add(sheet); continue; }
+    }
     // Either fallback slot can be selected after reordering the party.
     for (const index of [0, 1]) {
       const sprite = skinPartySpriteUrl(project, skinId, index, facing, actor);

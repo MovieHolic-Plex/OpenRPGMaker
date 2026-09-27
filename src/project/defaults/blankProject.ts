@@ -94,7 +94,7 @@ export function createProjectWithMaps(starters: readonly GameMap[], selectedInde
     variables,
     commonEvents,
     database: defaultDatabase(),
-    system: defaultSystem(),
+    system: defaultSystem(true),
     session: defaultSession(),
     maps,
     mapConnections: [],

@@ -12,15 +12,22 @@
 
 ## 도트 측면 전투 스킨 retro2003 (2026-09-28)
 
-13번째 스킨. 자료집 → 시스템 → 전투 UI 스타일 「레트로 2003 · 측면 도트 전투」(드롭다운 4번째), AI `set_project_settings battle.uiStyle: "retro2003"`.
-규칙 엔진은 건드리지 않는다 — 표현만이고 `battleFlow: "gauge"` 와 함께 쓰면 시간 게이지 전투가 된다. 다른 12종은 DOM·CSS 바이트가 그대로다
-(새 CSS 는 전부 `[data-battle-skin="retro2003"]` 또는 `[data-battle-motion="retro"]` 스코프).
+13번째 스킨. 자료집 → 시스템 → 전투 UI 스타일 「레트로 2003 · 측면 도트 전투 (기본)」(드롭다운 첫 번째), AI `set_project_settings battle.uiStyle: "retro2003"`.
+규칙 엔진은 건드리지 않는다 — 표현만이고 `battleFlow: "gauge"` 와 함께 쓰면 시간 게이지 전투가 된다. 기존 미설정 문서는 `resolveSkinId(undefined)` / `DEFAULT_BATTLE_SKIN_ID`의 rm2000 호환값을 유지한다. 새 프로젝트·템플릿의 `defaultSystem(true)`과 새 데모 생성은 retro2003을 명시하며 정규화에서도 생략하지 않는다. v1/v2 이관의 인자 없는 `defaultSystem()`은 스킨을 추가하지 않아 옛 화면을 보존한다
+(모션 CSS는 retro2003 스코프, 확장 시트의 정수 배율 규칙은 그 시트를 쓰는 측면 스킨 공통).
 
 - **레지스트리 필드 두 개**(`src/battle/skins/types.ts`): `motionStyle: "retro"` 가 연출을, `scenery: "layered"` 가 겹 배경을 켠다. 다른 스킨이 같은 연출을 원하면 이 값만 붙이면 된다(CSS 스코프는 스킨 id 라 그 CSS 도 넓혀야 한다).
 - **창·HUD** `battle-skins/_retro2003.css`: 청색 세로 그라데이션 창 + 2px 각진 베벨, 도트 글꼴(`--runtime-pixel-font`), 얼굴 없이 이름·HP·MP·ATB 줄, 텍스트 명령 목록과 맥동 막대 커서, 위쪽 한 줄 메시지, 대상 선택은 ▼ 손가락 커서. HUD 128px, 무대 상단 inset 48px.
   재생 상태 칩은 메시지 창(최대 두 줄) 아래 `top: 84px` 에 둔다 — 52px 에서는 둘째 줄 위에 얹혔다(프레임 실측).
-- **배치** `battlerPlacements.ts` `RETRO_SIDEVIEW`: 적은 왼쪽(x 42~150, 발 y 118~140), 아군은 `(230+20i, 88+16i)` 사선 계단. 아군 시트는 인라인 96px 셀 규격을 유지하고 CSS `scale(2/3)` 로 그린다.
+- **배치** `battlerPlacements.ts` `RETRO_SIDEVIEW`: 적은 오른쪽(x 192~288, 한 마리 240, 발 y 118~140), 아군은 왼쪽 `(124-30i, 82+20i)` 사선 계단. 확장 아군 시트는 48px 셀을 BATTLE_ASSET_PIXEL_SCALE(2)로 한 번 확대해 96px로 그린다. 스킨의 1.25·2/3 배율을 해제하고 오른쪽 보기 `scaleX(-1)`만 적용한다. 피격 방향은 아군 -x·적 +x, 전진은 아군 +x·적 -x다. 원본 드래곤은 왼쪽 보기, 슬라임은 정면이라 적 그림은 추가로 뒤집지 않는다.
   수동 트룹 좌표는 이 스킨에서만 접지 구간으로 접고(`resolveSkinEnemyPosition`), 접은 결과가 뭉치면 트룹 전체를 자동 진형으로 세운다. `battleEnemyFeetRatios.json` 의 retro2003 항목은 아직 rm2003 사본이다 — 감독 실측으로 갱신할 것.
+- **걷기 칩 전투 카탈로그** `src/assets/charsetBattlers.ts`: Actor1~4 × characterIndex 0~7 = 32개 `charset-battler-actorN-k`. 그림은 `assets/generated/charset-battlers/actorN-k.png`(144×384), 피커 이름은 `charsetSemantics`의 「걷기 칩 전투 · 이름」이다.
+  - `partyFacing: front`에서는 명시한 사용자 시트가 먼저다. 옛 `hero`/`generated-actor-hero-*` 또는 미설정 시트는 걷기 칩+index(미설정 0)로 유도한다. retro2003은 대응 칩이 없어도 옛 AI 영웅 시트를 표시하지 않는다. 다른 스킨은 대응 칩이 없을 때 기존 폴백을 유지한다.
+  - 스냅샷의 `characterResourceId`·`characterIndex`는 표시 전용이다. 내보내기도 같은 선택기로 예비 액터까지 유도 시트와 `assets/easyrpg/AUTHORS.md`를 포함한다.
+  - 통합 주의: 별도 저작 도구 시드 `src/editor/tools/emptyProject.ts`는 이 작업의 쓰기 범위 밖이라 인자 없는 호출을 유지한다. 이 새 생성 경로도 레트로 기본값을 쓰려면 감독자가 `defaultSystem(true)`로 연결해야 한다. `skyStairGame.ts`의 명시적 rm2000 데모 설정은 그대로다.
+  - 기본 6명은 actor1-0, actor2-0, actor3-0, actor4-0, actor1-7(성직자), actor2-3(궁수). 성직자·궁수의 걷기 칩 index도 7·3으로 맞춘다.
+  - `battlePose.ts`의 `EXTENDED_POSE_FRAME` 24개는 `scripts/asset-gen/charset-battler/cb_lib.py`의 POSES와 정확히 짝이다. 기존 POSE_FRAME·VICTORY_POSE_FRAME은 보존한다.
+  - `data-battler-extended="true"`인 노드는 고해상도 짝·idle 스트립을 쓰지 않는다. pixelated + 정수 배율이며 대기는 CSS 1px 숨쉬기만 한다.
 - **진입** 전환 `shatter-2003`(흰 번쩍임 두 번 → 가로 줄무늬가 번갈아 좌우로 미끄러지며 닫힘), `_transitions.css`.
 - **겹 배경** `src/assets/battleSceneryCatalog.ts` + `src/player/battleScenery.ts` + `battle/26-battle-scenery.css`.
   그림: `public/assets/generated/battle-scenery/<plains|forest|cave|snow|desert>/{sky,far,mid,ground}.png`(640×360, sky 만 불투명, 도트 2배 nearest, ≤48색, 알파 0/255).
@@ -33,13 +40,15 @@
   - 내보내기: 스킨이 layered 면 20장 전부(약 1.3MB)를 ZIP 에 싣는다(`webExportAssets.ts`).
 - **연출** `src/player/battleRetroMotion.ts` + `battle/27-retro-motion.css`. 루트 `data-battle-motion="retro"`. 공용 `applyActionMotion` 은 이 스킨에서 즉시 돌아간다.
   - 바깥 배틀러 노드의 개별 `translate` 속성이 이동을, 안쪽 스프라이트가 피격 진동(`vibrateStruck`)을 갖는다 — 둘을 같은 요소에 걸면 서로 덮는다.
-  - 아군 통상 공격: approach 비트 동안 72px 걸어 나감(발걸음 bob 2px×3) → impact 에 attack 칸 + 8px 찌르기 → recover 동안 포물선 점프로 귀환(그림자는 점프 높이를 반대로 보정). 스킬·아이템은 16px 나와 defend 칸 + 흰 빛 고리. 방어는 제자리 defend 칸.
-  - 명령 입력 중 아군은 16px 앞으로 나와 있다(`data-retro-command`). 피격은 hit 칸 + 붉은 점멸 두 번, KO 는 휘청(160ms) 뒤 dead 칸·회색. 승리 확정(`onResultPending`) 에 victory 칸 + 두 번 점프.
+  - 확장 아군 통상 공격: approach 동안 +72px와 walk_a→walk_b→walk_c→walk_b(약 90ms), impact의 0/30/65%에서 attack_windup→attack_strike→attack, recover의 0/18/86%에서 attack_follow→evade→idle. 스킬은 cast_charge→cast_raise→cast_release, limitSkill 또는 power≥100은 착탄 때 skill. 아이템은 item, 방어는 defend 유지. 옛 시트는 기존 6포즈 분기를 유지한다.
+  - 명령 입력 중 아군은 +16px에서 idle. 피격은 hit/방어 중 guard_hit, 빗나감은 evade, HP≤25% 대기는 weak. 쓰러짐은 dying→dead(160ms), 표시 원장의 부활은 revive→idle(260ms). 승리 확정(`onResultPending`) 뒤 victory↔victory_b를 260ms마다 교대한다. `data-battle-pose-frame`은 실제 셀 id, `data-battle-pose`는 CSS 의미 포즈다.
   - 적: windup 비트에 흰 실루엣 두 번 번쩍, impact 에 10px 튐. 격파는 붉게 물들며 가로줄로 지워지는 500ms 소멸이 기존 파편·분해를 대신한다. 피해 숫자는 도트 글꼴(회복 초록, 급소 노랑)로 튀었다 한 번 튕긴다.
-  - 어느 타임라인 엔트리가 이번 행동인지는 필드별 커서로 따라간다(`initRetroMotion` → approach 때 전진). 마지막 결과 스냅샷은 이미 다음 행동일 수 있어서다.
-  - 감속 모드: 걷기·점프·번쩍임을 끄고 칸 전환만 남긴다.
+  - 시퀀서의 onTimelineEntry가 소비 중인 엔트리를 모션에 넘긴다. 마지막 결과 스냅샷은 이미 다음 행동일 수 있다. 칸 타이머는 scheduleBattleTimer로 장면 수명을 따르며, 비트 세대로 오래된 콜백을 버리고 배속을 반영한 실제 비트 길이 안에서만 움직인다.
+  - 감속 모드: 걷기·점프·번쩍임·승리 교대를 끄고 비트별 대표 칸만 남긴다.
 - **검증 경로** `node scripts/runtime-qa.mjs --scenario retro2003`(진입·명령·공격·자동 전투 승리, 픽스처는 데모 v3 를 retro2003 + gauge 로 가공해 실행 때 만든다)
-  와 `node scripts/qa/runtime/retro2003-frames.probe.mjs`(아군 공격·적 공격 구간을 ~100ms 간격 16장 + DOM 계측 JSON + 콘택트 시트, `verify-shots/runtime-qa/retro2003-frames/`).
+  와 `node scripts/qa/runtime/retro2003-frames.probe.mjs`(아군 공격·적 공격·승리 구간을 목표 100ms 간격 16장 + DOM 계측 JSON + 콘택트 시트, `verify-shots/runtime-qa/retro2003-frames/`).
+  `pose-events.json`은 MutationObserver로 실제 칸 변화를 기록해 120ms 비트 안의 칸들이 PNG 사이에 빠지는 것을 보완한다.
+  2026-09-28 cb-runtime 워크트리: 타입 검사 1회 exit 0, QA 1회 7비트·프레임 프로브 2회 각 12판정 통과, 런타임 오류 0. 기준선 그림으로 걷기 순서·공격 순서·승리 교대·아군 왼쪽·HUD 위 발 위치를 확인했다. 1024×768에서 셀 DOM 실측 144px = 논리96px×무대1.5, 그림은 pixelated·행렬 scaleX(-1)이다. 실제 PNG 간격은 부하에 따라 약 120~350ms였으며 정밀 순서는 pose-events를 함께 본다. 스킬 영창과 0 피해의 guard_hit→defend 복귀도 원장·프레임에 찍혔지만 아이템·빈사·KO·부활·감속 모드는 이 시나리오의 실플레이 범위 밖이다.
   프로브는 키보드로만 입력한다 — 명령 버튼은 포인터를 통과시켜 `click()` 이 30초 뒤 실패한다(실측).
 
 ## 타격감 층 (2026-09-25)
