@@ -27,7 +27,12 @@ function noise(x: number, y: number, period: number, seed: number): number {
  * 굽는 중인 안개. 한 장이 256² × 5옥타브 값잡음이라 한 프레임에 구우면 약 45ms 멈춘다(Node 실측,
  * 안개·연무 맵에 처음 들어갈 때). 프레임마다 FOG_ROWS_PER_STEP 줄씩 나눠 굽는다.
  */
-type PendingFog = { readonly pixels: ImageData; readonly canvas: HTMLCanvasElement; readonly context: CanvasRenderingContext2D; row: number };
+type PendingFog = {
+  readonly pixels: ImageData; readonly canvas: HTMLCanvasElement; readonly context: CanvasRenderingContext2D;
+  row: number;
+  /** 마지막으로 구운 프레임 표. 같은 프레임의 두 번째 호출부터는 굽지 않는다. */
+  frame?: number;
+};
 const pendingFog = new WeakMap<Phaser.Textures.TextureManager, Map<string, PendingFog>>();
 const FOG_ROWS_PER_STEP = 64;
 
@@ -36,10 +41,14 @@ const FOG_ROWS_PER_STEP = 64;
  *
  * `rowBudget` 를 주면 그만큼만 굽고, 아직 덜 됐으면 null 을 낸다 — 호출부는 그 프레임에 안개를 그리지
  * 않고 다음 프레임에 다시 부른다. 생략하면 예전처럼 한 번에 끝까지 굽는다.
+ *
+ * `frame` (게임 루프 프레임 번호)을 주면 예산은 **호출이 아니라 프레임**당이다. 날씨 안개와 분위기 연무
+ * 네 종류가 같은 텍스처를 한 프레임에 각자 부르면, 호출당 예산으로는 그 프레임에 통째로 구워졌다
+ * (Node 실측 약 420ms). 같은 프레임의 추가 호출은 진행 상태만 본다.
  */
 export function ensureFogTexture(textures: Phaser.Textures.TextureManager, key?: string): string;
-export function ensureFogTexture(textures: Phaser.Textures.TextureManager, key: string | undefined, rowBudget: number): string | null;
-export function ensureFogTexture(textures: Phaser.Textures.TextureManager, key = KEY, rowBudget = SIZE): string | null {
+export function ensureFogTexture(textures: Phaser.Textures.TextureManager, key: string | undefined, rowBudget: number, frame?: number): string | null;
+export function ensureFogTexture(textures: Phaser.Textures.TextureManager, key = KEY, rowBudget = SIZE, frame?: number): string | null {
   if (textures.exists(key)) return key;
   let pending = pendingFog.get(textures)?.get(key);
   if (!pending) {
@@ -52,6 +61,8 @@ export function ensureFogTexture(textures: Phaser.Textures.TextureManager, key =
     byKey.set(key, pending);
     pendingFog.set(textures, byKey);
   }
+  if (frame !== undefined && pending.frame === frame) return null;
+  pending.frame = frame;
   const { pixels } = pending;
   const end = Math.min(SIZE, pending.row + Math.max(1, Math.floor(rowBudget)));
   for (let y = pending.row; y < end; y += 1) {
