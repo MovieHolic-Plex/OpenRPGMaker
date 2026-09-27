@@ -1,4 +1,6 @@
 import { formationDamage } from "@/battle/battleFormation";
+import { applyDifficultyToEnemyBattlers, difficultyRate, scaleByDifficulty } from "@/project/difficulty";
+import { applySkillLoadoutsToBattlers } from "@/project/skillLoadout";
 import { evaluateDamageFormula, formulaBattlerContext } from "@/battle/damageFormula";
 import { predictSkillDamageFor } from "@/battle/battlePredict";
 import { combatConditionMet } from "@/battle/combatConditions";
@@ -289,7 +291,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         stateIds: options.party?.stateIds,
         partyActorIds: options.party?.partyActorIds,
       });
+  if (!usePartyMonsters) applySkillLoadoutsToBattlers(options.project, actors, sessionState.actorSkillLoadouts);
   const enemies = enemyBattlers(options.project, troopRecord);
+  applyDifficultyToEnemyBattlers(options.project.system, sessionState, enemies);
   const gen1EnemyOrderIds = options.project.system.battleModel === "gen1"
     ? enemies.filter((enemy) => !enemy.hidden).map((enemy) => enemy.id)
     : [];
@@ -401,6 +405,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // 직전 전투 처리 결과(세션 SSOT 스냅샷). battleResult 조건 평가 기준.
     battleResult: sessionState.battleResult,
     roguelikeRun: sessionState.roguelikeRun ? structuredClone(sessionState.roguelikeRun) : undefined,
+    difficultyId: sessionState.difficultyId,
     monsterInstances: structuredClone(sessionState.monsterInstances ?? {}),
     monsterParty: [...(sessionState.monsterParty ?? [])],
     monsterBox: [...(sessionState.monsterBox ?? [])],
@@ -482,6 +487,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           ? { sessionSkillIds: battleEventState.actorSkillIds?.[battler.recordId] }
           : undefined,
       });
+      if (refreshOptions?.refreshSkills) applySkillLoadoutsToBattlers(options.project, [battler], sessionState.actorSkillLoadouts);
     },
     playAudio: options.playAudio,
     stopAudio: options.stopAudio,
@@ -2823,7 +2829,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function accumulateRewards(): void {
-    const collected = collectBattleRewards(options.project, enemies, rng, Math.max(1, rewardTurn), battleEventState.switches);
+    const rawCollected = collectBattleRewards(options.project, enemies, rng, Math.max(1, rewardTurn), battleEventState.switches);
+    const collected = {
+      ...rawCollected,
+      exp: scaleByDifficulty(rawCollected.exp, difficultyRate(options.project.system, sessionState, "expRate")),
+      gold: scaleByDifficulty(rawCollected.gold, difficultyRate(options.project.system, sessionState, "goldRate")),
+    };
     rewards.exp = collected.exp;
     rewards.gold = collected.gold;
     rewards.enemyLevel = collected.enemyLevel;

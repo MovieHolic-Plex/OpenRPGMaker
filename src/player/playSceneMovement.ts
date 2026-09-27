@@ -1,4 +1,5 @@
 import { mapTileSize } from "@/project/tileGeometry";
+import { difficultyRate } from "@/project/difficulty";
 import { updateDetectionEncounters } from "./npcDetectionEncounter";
 import { BattleAdmissionError } from "@/project/battleAdmission";
 import { advanceFurniturePush, beginFurniturePush, clearFurniturePush, furniturePushFrames } from './furniturePushAnimation';
@@ -888,7 +889,8 @@ export function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
   if (scene.running) return; // 이미 전투/이벤트 진행 중이면 무시
   const map = scene.map;
   const terrain = terrainRecordAt(store.getCurrent(), { mapId: map.id, x: scene.tileX, y: scene.tileY });
-  const rate = scaledEncounterRate(map.encounterRate ?? 0, terrain?.record.encounterRatePercent);
+  const baseRate = scaledEncounterRate(map.encounterRate ?? 0, terrain?.record.encounterRatePercent);
+  const rate = baseRate * difficultyRate(store.getCurrent().system, scene.session, "encounterRate");
   if (rate <= 0) return;
   // 액션 전투 맵에서는 랜덤 인카운트가 턴제 전투를 시작하지 않는다.
   // 누적값을 리셋해 맵을 나간 직후 남은 누적으로 즉시 전투가 터지지 않게 한다.
