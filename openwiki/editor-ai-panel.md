@@ -709,9 +709,23 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
 - 검증: `test/stampOrderQueue.test.ts`(겹침·상한·조수 게이트·프로젝트 교체·중단·보고 1회).
   브라우저: `BASE=http://127.0.0.1:<포트> node scripts/qa/rapid-stamp-orders.mjs` — 모델을 2.5s 늦춘 스텁으로 표준 편집기·스튜디오에서 드래그 3번.
   실측(2026-09-28): 두 모드 모두 거절 0·오류 0, 떨어진 두 주문 동시 읽기(`inflightMax` 2), 겹친 셋째는 첫째 뒤에 깔림. 증거 `verify-shots/rapid-stamp/`.
-- **남은 병목(미해결)**: 적용 한 번에 메인 스레드가 5~6s 멈춘다(부하 걸린 공유 박스, longtask 실측). 그동안 다음 드래그 바가 늦게 뜬다(실측 15~21s).
-  CPU 프로파일: `renderRegionSizeBadge`/`positionBuildPaletteOverlay` 의 `getBoundingClientRect` 강제 레이아웃이 약 5.3s(DOM 쓰기마다 레이아웃 ~45ms, 노드 5.5k),
-  `createDraft` 1.1s, `recordProjectSnapshot` 복제 1.1s, 커밋 다이제스트 1.1s. 대기열은 이 비용을 줄이지 않는다 — 다음 작업은 스토어 변경 뒤 오버레이 측정을 rAF 한 번으로 모으고, 타일셋 복제를 참조 공유로 바꾸는 것이다.
+- **드래그·적용 성능(2026-09-28 고침)**: 새 프로젝트(149MB = 타일셋 82MB + 업로드 자산 66MB)에서 적용 한 번에 메인 스레드가 5~6s 멈추고,
+  드래그 한 칸이 중앙값 140ms 였다. 표준 편집기·스튜디오가 같은 캔버스·같은 패널이라 두 모드 모두 같았다. 원인과 고친 자리:
+  - 오버레이 강제 레이아웃: `renderRegionSizeBadge`/`positionBuildPaletteOverlay`/`publishMapViewport` 가 부를 때마다 `getBoundingClientRect`.
+    `EditScene.hostGeometry()` 캐시(ResizeObserver·resize·scroll 로 무효화) + 팔레트 배치를 rAF 로 모음(`layoutDomOverlays`), 값이 같으면 스타일을 안 쓴다.
+    손을 뗄 때는 `flushDomOverlayLayout()` 로 바를 즉시 띄운다.
+  - 선택만 바뀌는 드래그 칸마다 채팅 패널(`applyAssistantViewPolicy`·스튜디오 `refreshScenes`)과 톱바가 다시 그렸다 —
+    `editorStateChangedOnlyCanvasOverlay` 면 건너뛴다(`aiChatPanel.ts`, `app/mode.ts`).
+  - `createDraft` 가 타일셋 전부를 복제(1.4~2.1s) → `cloneProjectForMutation` 지연 사전 + `toolRunner` 의 `finishDraftTilesets`.
+  - 되돌리기 스냅샷 전체 복제(1.3s) → `mapEditHistory.projectSnapshotSharingTilesets`(타일셋·업로드 자산 항목 공유, 되돌릴 때 복제).
+  - 업로드 자산 복제: `cloneProjectForMutation`·`cloneKeepingDigests` 가 `assets.uploaded` 항목을 공유한다(`projectClone.withoutSharedDictionaries`).
+    계약: 업로드 자산 항목은 제자리에서 고치지 않고 사전 자리에 새 객체를 대입한다. 공유 덕에 요약 기억도 살아 한가할 때 도는 커밋 요약이 1.4s 에서 짧아졌다.
+  - `resetManualProjectCommitBaseline` 의 전체 요약은 한가할 때로 미룬다(`settlePendingManualDigest`, 저장 커밋이 먼저 오면 그 자리에서 센다).
+  - `removeLegacySpriteReferences` 는 한 번 깨끗하다고 본 타일셋·업로드 자산 객체를 `WeakSet` 으로 기억하고 다시 훑지 않는다(240ms).
+  실측(부하 12~19 공유 박스, headless, 모델 스텁, `scripts/qa/stamp-drag-perf.mjs` 3회 중앙값, 전후 교대):
+  편집기 드래그 칸 139 → 47ms, 드래그 40칸 longtask 합 4.9 → 1.6s, 바 등장 150 → 60ms, 적용 최장 멈춤 5.7s → 0.2s.
+  스튜디오 134 → 42ms, 5.4 → 1.4s, 166 → 48ms, 5.8s → 0.24s. 증거 `verify-shots/stamp-drag-perf/final-*.json`, `verify-shots/rapid-stamp/rapid-stamp-studio-after.gif`.
+  남은 것: 드래그 중 longtask 합 약 1.5s/40칸(캔버스 `redraw`·상태 줄 갱신 후보, 미추적).
 
 ## 단순 생성·수정은 계획 필요 여부로 실행한다 (2026-09-18 갱신)
 

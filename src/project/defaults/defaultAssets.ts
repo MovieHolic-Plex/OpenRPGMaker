@@ -201,8 +201,35 @@ export function removeLegacyRmTileset(project: { maps: Record<string, GameMap>; 
   return changed;
 }
 
+/** removeLegacySpriteReferences 가 이미 깨끗하다고 확인한 공유 항목(타일셋·업로드 자산 객체). */
+const cleanSharedEntries = new WeakSet<object>();
+
 export function removeLegacySpriteReferences(project: unknown): boolean {
   let changed = false;
+
+  // 타일셋·업로드 자산 항목은 스토어·스냅샷·draft 가 객체째 공유하고 제자리에서 고치지 않는다(projectClone 계약).
+  // 한 번 깨끗하다고 본 항목은 다시 훑지 않는다. 왜(2026-09-28 실측, 새 프로젝트 149MB): 편집·적용마다 이 청소가
+  // 타일셋 347개와 업로드 자산 66MB 를 전부 훑어 240ms 였다.
+  const visitSharedDictionary = (dictionary: Record<string, unknown>): void => {
+    for (const key of Object.keys(dictionary)) {
+      if (isLegacySpriteReference(key)) {
+        delete dictionary[key];
+        changed = true;
+        continue;
+      }
+      const item = dictionary[key];
+      if (!isRecord(item)) {
+        visit(item);
+        continue;
+      }
+      if (cleanSharedEntries.has(item)) continue;
+      const changedBefore = changed;
+      changed = false;
+      visit(item);
+      if (!changed) cleanSharedEntries.add(item);
+      changed = changed || changedBefore;
+    }
+  };
 
   const visit = (value: unknown): void => {
     if (Array.isArray(value)) {
@@ -244,6 +271,10 @@ export function removeLegacySpriteReferences(project: unknown): boolean {
       if (typeof item === "string" && isLegacySpriteReference(item)) {
         value[key] = DEFAULT_EASYRPG_CHARSET_ID;
         changed = true;
+        continue;
+      }
+      if ((key === "tilesets" || key === "uploaded") && isRecord(item)) {
+        visitSharedDictionary(item);
         continue;
       }
       visit(item);
