@@ -103,8 +103,11 @@ export function createFieldSpawnRuntime(
     })),
     fixedAccumulatorMs: 0,
   };
+  // 첫 배치도 점유를 한 번만 만든다(엔트리 여러 개가 같은 집합을 이어 쓴다).
+  let occupied: Set<string> | undefined;
+  const occupancy = () => (occupied ??= occupiedCells(state, map, player));
   for (const entry of state.entries) {
-    spawnUntilCapacity(state, entry, project, map, player);
+    spawnUntilCapacity(state, entry, project, map, player, occupancy);
   }
   return state;
 }
@@ -130,6 +133,11 @@ export function advanceFieldSpawns(
   if (!state || state.mapId !== map.id) return false;
   let changed = false;
   state.fixedAccumulatorMs += Math.max(0, deltaMs);
+  // 점유 칸은 틱 하나에서 한 번만 만든다. 스폰에 성공하면 그 몸을 바로 더한다 — 스폰마다 맵 전체 점유를
+  // 다시 만들던 것과 같은 집합이다(이 루프 안에서 점유를 바꾸는 것은 스폰뿐이다). 예전에는 대량 리스폰에서
+  // 스폰 수의 제곱이었다(448마리 약 17ms, 640마리 약 36ms, Node 실측).
+  let occupied: Set<string> | undefined;
+  const occupancy = () => (occupied ??= occupiedCells(state, map, player));
   while (state.fixedAccumulatorMs >= FIELD_SPAWN_FIXED_STEP_MS) {
     state.fixedAccumulatorMs -= FIELD_SPAWN_FIXED_STEP_MS;
     for (const entry of state.entries) {
@@ -137,14 +145,14 @@ export function advanceFieldSpawns(
       for (const timer of entry.respawnTimersMs) {
         const remaining = timer - FIELD_SPAWN_FIXED_STEP_MS;
         if (remaining <= 0) {
-          if (trySpawnInstance(state, entry, project, map, player)) changed = true;
+          if (trySpawnInstance(entry, project, map, occupancy())) changed = true;
           else nextTimers.push(FIELD_SPAWN_FIXED_STEP_MS);
         } else {
           nextTimers.push(remaining);
         }
       }
       entry.respawnTimersMs = nextTimers;
-      if (entry.respawnTimersMs.length === 0 && spawnUntilCapacity(state, entry, project, map, player)) changed = true;
+      if (entry.respawnTimersMs.length === 0 && spawnUntilCapacity(state, entry, project, map, player, occupancy)) changed = true;
     }
   }
   return changed;
@@ -245,24 +253,26 @@ function spawnUntilCapacity(
   entry: FieldSpawnRuntimeEntry,
   project: Project,
   map: GameMap,
-  player: { readonly x: number; readonly y: number }
+  player: { readonly x: number; readonly y: number },
+  occupancy?: () => Set<string>,
 ): boolean {
   let changed = false;
+  const occupied = occupancy?.() ?? occupiedCells(state, map, player);
   while (entry.alive.length + entry.persistedDead < entry.spawn.maxAlive) {
-    if (!trySpawnInstance(state, entry, project, map, player)) break;
+    if (!trySpawnInstance(entry, project, map, occupied)) break;
     changed = true;
   }
   return changed;
 }
 
+/** `occupied` 는 호출부가 소유한 점유 집합이다. 성공하면 새 몸을 거기 더한다. */
 function trySpawnInstance(
-  state: FieldSpawnRuntimeState,
   entry: FieldSpawnRuntimeEntry,
   project: Project,
   map: GameMap,
-  player: { readonly x: number; readonly y: number }
+  occupied: Set<string>,
 ): boolean {
-  const point = nextSpawnPoint(state, entry, project, map, player);
+  const point = nextSpawnPoint(entry, project, map, occupied);
   if (!point) return false;
   entry.serial += 1;
   const tuning = resolveChaseTuning(project, entry.spawn.troopId);
@@ -279,6 +289,7 @@ function trySpawnInstance(
     ...(tuning.sightRange !== undefined ? { sightRange: tuning.sightRange } : {}),
     ...(tuning.moveIntervalMs !== undefined ? { moveIntervalMs: tuning.moveIntervalMs } : {}),
   });
+  for (const cell of characterFootprintCells(point.x, point.y, entry.spawn.footprint)) occupied.add(pointKey(cell.x, cell.y));
   return true;
 }
 
@@ -295,18 +306,16 @@ function resolveChaseTuning(project: Project, troopId: string): { sightRange?: n
 }
 
 function nextSpawnPoint(
-  state: FieldSpawnRuntimeState,
   entry: FieldSpawnRuntimeEntry,
   project: Project,
   map: GameMap,
-  player: { readonly x: number; readonly y: number }
+  occupied: ReadonlySet<string>,
 ): { readonly x: number; readonly y: number } | null {
   const area = entry.spawn.area;
   const width = Math.max(0, Math.trunc(area.w));
   const height = Math.max(0, Math.trunc(area.h));
   const total = width * height;
   if (total <= 0) return null;
-  const occupied = occupiedCells(state, map, player);
   for (let offset = 0; offset < total; offset += 1) {
     const index = (entry.cursor + offset) % total;
     const x = Math.trunc(area.x) + (index % width);
