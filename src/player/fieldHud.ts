@@ -6,7 +6,7 @@ import { resolvePlayResolution } from "@/project/playResolution";
 import { readHudWidget, type HudRuntimeContext } from "./fieldHudData";
 import { drawHudWidget, hudNode } from "./fieldHudRender";
 export type { HudRuntimeContext } from "./fieldHudData";
-interface WidgetMount { node: HTMLElement; signature: string; readingSignature?: string; changedAt: number }
+interface WidgetMount { node: HTMLElement; signature: string; drawnWidget?: HudWidget; readingSignature?: string; changedAt: number }
 /** Same renderer for authoring preview and shipped player; input belongs to the editor only. */
 export class FieldHud {
   readonly root = hudNode("field-hud");
@@ -67,8 +67,13 @@ export class FieldHud {
         if (widget.source === "stamina") staminaOwned = true;
         if (widget.source === "hp") hpOwned = true;
       }
-      const signature = JSON.stringify([widget, reading]);
-      if (signature !== mount.signature) { drawHudWidget(mount.node, widget, reading); mount.signature = signature; }
+      // 위젯 설정은 설정 객체가 바뀔 때만 새로 정규화되므로(위 configSource) 정체성으로 비교한다.
+      // 예전에는 매 프레임 위젯마다 [widget, reading] 전체를 JSON.stringify 했다.
+      if (widget !== mount.drawnWidget || readingSignature !== mount.signature) {
+        drawHudWidget(mount.node, widget, reading);
+        mount.signature = readingSignature;
+        mount.drawnWidget = widget;
+      }
       let width = Math.min(size.width - 8, widget.width);
       const height = Math.min(size.height - 8, widget.height);
       let anchor = widget.anchor;

@@ -179,6 +179,18 @@ export class RuntimeDomOverlay {
   // 세션 JSON 이 그대로 바뀌지 않았어도 노드가 무효화된다(실측 고정세 5.4ms).
   private stateJsonNode: HTMLElement | undefined;
   private stateJsonText: string | undefined;
+  /**
+   * 지연 스냅샷의 출처. 설치되면 `runtime-state-json` 노드의 textContent 는 **읽는 순간에만**
+   * 스냅샷을 만들고 직렬화한다. 매 프레임 이벤트 뷰 전체·생활 상태 복제·세션 JSON.stringify 를
+   * 하던 것이 편집기 테스트 플레이(항상 계측 부팅)의 주된 프레임 비용이었다.
+   */
+  private stateSnapshotSource: (() => RuntimeStateSnapshot) | undefined;
+  private lazyStateNodes = new WeakSet<HTMLElement>();
+  private timerHudNode: HTMLElement | undefined;
+  private timerHudText: string | undefined;
+  private timeHudNode: HTMLElement | undefined;
+  private timeHudText: string | undefined;
+  private timeHudPhase: string | undefined;
   private audioJsonNode: HTMLElement | undefined;
   private audioJsonText: string | undefined;
   private lastActionReceipt?: RuntimeActionReceipt;
@@ -372,6 +384,7 @@ export class RuntimeDomOverlay {
       this.syncTimeHud(snapshot.gameTime, snapshot.timePhase, snapshot.lifeCalendarHudLines);
       return;
     }
+    this.stateSnapshotSource = undefined;
     const node = this.mirrorNode(host, this.stateJsonNode, "runtime-state-json", "runtime-state-json");
     // 노드가 새로 잡혔으면 직전 문자열 기억은 버린다 — 안 그러면 새 노드가 빈 채로 남는다.
     if (node !== this.stateJsonNode) {
@@ -385,6 +398,52 @@ export class RuntimeDomOverlay {
     }
     this.syncTimerHud(snapshot.timers, snapshot.timerActive);
     this.syncTimeHud(snapshot.gameTime, snapshot.timePhase, snapshot.lifeCalendarHudLines);
+  }
+
+  /**
+   * QA 상태 미러를 지연 출처로 건다. 스냅샷은 자동화가 textContent 를 읽을 때만 만들어진다 —
+   * 값은 읽는 시점의 씬 상태라 매 프레임 미리 채우던 것보다 늦지 않다. 보이는 HUD 는 호출자가
+   * syncVisibleHud 로 따로 맞춘다. 계측 부팅이 아니면 아무것도 하지 않는다.
+   */
+  syncRuntimeStateSource(
+    source: () => RuntimeStateSnapshot,
+    live?: { readonly inputEnabled: boolean; readonly running: boolean; readonly x: number; readonly y: number; readonly mapId: string },
+  ): void {
+    if (!this.qaInstrumentation) return;
+    const host = this.host();
+    if (!host) return;
+    this.stateSnapshotSource = source;
+    const node = this.mirrorNode(host, this.stateJsonNode, "runtime-state-json", "runtime-state-json");
+    this.stateJsonNode = node;
+    this.stateJsonText = undefined;
+    // 디버그 패널처럼 매 프레임 몇 개 값만 보는 소비자가 덤프 전체를 만들지 않도록 싼 값만 속성에 둔다.
+    if (live) {
+      const flags = `${live.mapId}|${live.x}|${live.y}|${live.inputEnabled}|${live.running}`;
+      if (node.dataset.liveFlags !== flags) node.dataset.liveFlags = flags;
+    }
+    if (this.lazyStateNodes.has(node)) return;
+    this.lazyStateNodes.add(node);
+    const overlay = this;
+    const fallback = inheritedDescriptor(node, "textContent");
+    // 상자 크기를 가진 채로 둔다 — 빈 <pre> 는 CSS 가 없는 표면에서 높이 0 이 되어 가시성 대기가 멈춘다.
+    fallback?.set?.call(node, "{}");
+    Object.defineProperty(node, "textContent", {
+      configurable: true,
+      get(this: HTMLElement): string {
+        const read = overlay.stateJsonNode === node ? overlay.stateSnapshotSource : undefined;
+        if (read) {
+          try {
+            return JSON.stringify(read());
+          } catch (error) {
+            console.warn("[runtime-dom] state mirror snapshot failed:", error);
+          }
+        }
+        return (fallback?.get?.call(this) as string | undefined) ?? "";
+      },
+      set(this: HTMLElement, value: string) {
+        fallback?.set?.call(this, value);
+      },
+    });
   }
 
   syncAudioState(audio: AudioCommandState): void {
@@ -453,7 +512,13 @@ export class RuntimeDomOverlay {
       slot.container.remove();
       this.pictureSlots.delete(id);
     }
-    this.ensurePictureTicker();
+    // 진행 중인 트윈이 있을 때만 rAF 를 건다. 예전에는 픽처가 없어도 매 프레임 rAF 를 예약했다.
+    if (this.hasActivePictureTween()) this.ensurePictureTicker();
+  }
+
+  private hasActivePictureTween(): boolean {
+    for (const slot of this.pictureSlots.values()) if (slot.durationMs > 0) return true;
+    return false;
   }
 
   private syncPictureSlot(
@@ -501,7 +566,8 @@ export class RuntimeDomOverlay {
       slot.to = target;
       slot.startedAt = this.pictureNow();
       slot.durationMs = duration;
-    } else if (created || duration <= 0 || !pictureTransformsEqual(slot.to, target)) {
+    } else if (created || !pictureTransformsEqual(slot.to, target) || (duration <= 0 && slot.durationMs > 0)) {
+      // 정지한 픽처는 목표가 같으면 스타일을 다시 쓰지 않는다(매 프레임 불리는 경로다).
       slot.from = target;
       slot.to = target;
       slot.durationMs = 0;
@@ -593,9 +659,13 @@ export class RuntimeDomOverlay {
     const host = this.host();
     if (!host) return;
     const entries = Object.entries(timers).filter(([id, seconds]) => seconds > 0 || active[id] === true);
-    const existing = host.querySelector("[data-testid='runtime-timer-hud']");
+    // 매 프레임 불린다 — 노드를 기억해 두고 글자가 바뀔 때만 쓴다.
+    const existing = this.timerHudNode?.parentElement === host
+      ? this.timerHudNode
+      : host.querySelector("[data-testid='runtime-timer-hud']");
     if (entries.length === 0) {
       existing?.remove();
+      this.timerHudNode = undefined;
       return;
     }
     const node = existing instanceof HTMLElement ? existing : document.createElement("div");
@@ -604,15 +674,23 @@ export class RuntimeDomOverlay {
       node.dataset.testid = "runtime-timer-hud";
       host.append(node);
     }
-    node.textContent = entries.map(([id, seconds]) => `${id}: ${formatTimer(seconds)}${active[id] ? "" : " paused"}`).join("  ");
+    const text = entries.map(([id, seconds]) => `${id}: ${formatTimer(seconds)}${active[id] ? "" : " paused"}`).join("  ");
+    if (node !== this.timerHudNode || text !== this.timerHudText) {
+      node.textContent = text;
+      this.timerHudNode = node;
+      this.timerHudText = text;
+    }
   }
 
   private syncTimeHud(gameTime: GameTime | undefined, phase: TimePhase | undefined, lines?: readonly string[]): void {
     const host = this.host();
     if (!host) return;
-    const existing = host.querySelector("[data-testid='runtime-time-hud']");
+    const existing = this.timeHudNode?.parentElement === host
+      ? this.timeHudNode
+      : host.querySelector("[data-testid='runtime-time-hud']");
     if (!gameTime) {
       existing?.remove();
+      this.timeHudNode = undefined;
       return;
     }
     const node = existing instanceof HTMLElement ? existing : document.createElement("div");
@@ -621,12 +699,25 @@ export class RuntimeDomOverlay {
       node.dataset.testid = "runtime-time-hud";
       host.append(node);
     }
-    node.dataset.phase = phase ?? "";
-    node.textContent = lines?.length ? lines.join("\n") : formatGameTime(gameTime);
+    const nextPhase = phase ?? "";
+    const text = lines?.length ? lines.join("\n") : formatGameTime(gameTime);
+    if (node !== this.timeHudNode || nextPhase !== this.timeHudPhase) node.dataset.phase = nextPhase;
+    if (node !== this.timeHudNode || text !== this.timeHudText) node.textContent = text;
+    this.timeHudNode = node;
+    this.timeHudText = text;
+    this.timeHudPhase = nextPhase;
   }
 }
 
 // 현재 프로젝트(에셋 해석용). store 가 아직 준비되지 않았어도 안전하게 undefined 반환.
+function inheritedDescriptor(target: object, key: string): PropertyDescriptor | undefined {
+  for (let proto = Object.getPrototypeOf(target); proto; proto = Object.getPrototypeOf(proto)) {
+    const descriptor = Object.getOwnPropertyDescriptor(proto, key);
+    if (descriptor) return descriptor;
+  }
+  return undefined;
+}
+
 function safeProject(): RuntimeAssetProject | undefined {
   try {
     return store.getCurrent();

@@ -74,7 +74,16 @@ export type PlaySceneZoneFeedback = {
   awaitingFirstUi: boolean;
   host: HTMLElement | null;
   dom: ZoneFeedbackDom | null;
+  /** 정면 조사 안내 기억. 칸·방향·세션이 같으면 PROMPT_REFRESH_MS 동안 다시 찾지 않는다. */
+  prompt?: { readonly x: number; readonly y: number; readonly facing: string; readonly session: PlaySession; readonly atMs: number; readonly value: string | null };
 };
+
+/**
+ * 정면 조사 안내를 다시 계산하는 주기. 예전에는 매 프레임 맵의 모든 조사 이벤트 뷰(페이지 조건
+ * 평가 포함)를 만들었다. 칸·방향이 바뀌면 즉시 다시 찾고, 제자리에서는 스위치로 페이지가 바뀐
+ * 경우만 이 주기 안에 따라온다.
+ */
+const PROMPT_REFRESH_MS = 250;
 
 export function createPlaySceneZoneFeedback(session: PlaySession): PlaySceneZoneFeedback {
   const ui = session.m2Runtime?.ui;
@@ -109,11 +118,13 @@ export function syncPlaySceneZoneFeedback(
   }
 
   const entries = scene.session.m2Runtime?.ui ?? [];
+  // 가려진 동안에는 안내 줄이 그려지지 않으므로 정면 조사 대상을 찾지 않는다(매 프레임 이벤트 뷰 조회).
+  const suppressed = feedbackSuppressedByOverlay(host);
   const update = updateZoneFeedback(feedback.model, {
     entries,
     nowMs: feedback.elapsedMs,
-    prompt: facingPrompt(scene),
-    suppressed: feedbackSuppressedByOverlay(host),
+    prompt: suppressed ? null : cachedFacingPrompt(scene, feedback),
+    suppressed,
     transientToast: farmMessages.get(scene)?.message ?? null,
   });
   feedback.model = update.model;
@@ -208,6 +219,16 @@ export function feedbackSuppressedByOverlay(host: HTMLElement | null): boolean {
     host.querySelector(`[data-testid='${testId}']`) !== null
     || document.querySelector(`[data-testid='${testId}']`) !== null
   );
+}
+
+function cachedFacingPrompt(scene: ZoneFeedbackScene, feedback: PlaySceneZoneFeedback): string | null {
+  const cached = feedback.prompt;
+  if (cached && cached.x === scene.tileX && cached.y === scene.tileY && cached.facing === scene.facing
+    && cached.session === scene.session && !scene.session.horror?.hiding
+    && feedback.elapsedMs - cached.atMs < PROMPT_REFRESH_MS) return cached.value;
+  const value = facingPrompt(scene);
+  feedback.prompt = { x: scene.tileX, y: scene.tileY, facing: scene.facing, session: scene.session, atMs: feedback.elapsedMs, value };
+  return value;
 }
 
 function facingPrompt(scene: ZoneFeedbackScene): string | null {

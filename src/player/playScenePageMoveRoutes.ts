@@ -1,7 +1,7 @@
 import type { EventAnimationType, EventPageMovement, MoveCommand } from "@/project/types";
 import { store } from "@/project/store";
 import type { AutonomousMover, PlaySceneContext } from "@/player/playSceneTypes";
-import { routeForLivingMovement } from "@/player/npcLivingTravel";
+import { livingRouteKeyTarget, livingRouteTargetKey, routeForLivingMovement } from "@/player/npcLivingTravel";
 import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
 
 type PageMoveRouteSceneContext = Pick<
@@ -29,6 +29,14 @@ export function registerPageMoveRoutes(scene: PageMoveRouteSceneContext): void {
   for (const view of runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)) {
     if (scene.commandMoveRouteEventIds?.has(view.event.id)) continue;
     const movement = view.movement;
+    const reusedLivingKey = movement.type === "living" ? reusableLivingRouteKey(scene, project, view) : undefined;
+    if (reusedLivingKey) {
+      activeKeys.add(reusedLivingKey);
+      activePageRouteEventIds.add(view.event.id);
+      const mover = scene.autonomousNPCs.get(view.event.id);
+      if (mover) configurePageMover(mover, movement, "sequence", view.animationType);
+      continue;
+    }
     const route = routeForPageMovement(movement) ?? routeForLivingMovement({ project, map: scene.map, session: scene.session, view });
     if (!route) continue;
     const key = "key" in route ? route.key : `${view.event.id}:${view.pageId ?? "legacy"}`;
@@ -64,6 +72,33 @@ export function registerPageMoveRoutes(scene: PageMoveRouteSceneContext): void {
   for (const key of [...scene.pageMoveRouteKeys]) {
     if (!activeKeys.has(key)) scene.pageMoveRouteKeys.delete(key);
   }
+}
+
+/**
+ * 이미 같은 목표로 걷고 있는 생활 NPC 의 기존 경로 키. 있으면 BFS 를 다시 돌리지 않는다.
+ *
+ * 왜: 예전에는 표면 갱신(인터프리터 스텝·병렬 이벤트·시간표 점검)마다 생활 NPC 전원이 맵 전체
+ * BFS 를 돌고, 키에 현재 좌표가 들어가 있어 한 걸음만 걸어도 무버를 새로 등록했다. 결과 경로는
+ * 같은 목표로 가는 나머지 경로라 동작이 같다. 목표가 바뀌었거나 무버가 경로를 다 썼으면 undefined 를
+ * 내서 예전처럼 새로 계산한다.
+ */
+function reusableLivingRouteKey(
+  scene: PageMoveRouteSceneContext,
+  project: ReturnType<typeof store.getCurrent>,
+  view: Parameters<typeof routeForLivingMovement>[0]["view"],
+): string | undefined {
+  const eventId = view.event.id;
+  if (!scene.pageMoveRouteEventIds.has(eventId)) return undefined;
+  const mover = scene.autonomousNPCs.get(eventId);
+  if (!mover || mover.moves.length === 0 || mover.step >= mover.moves.length) return undefined;
+  const prefix = `living:${eventId}:${view.pageId ?? "legacy"}:`;
+  let existing: string | undefined;
+  for (const key of scene.pageMoveRouteKeys) {
+    if (key.startsWith(prefix)) { existing = key; break; }
+  }
+  if (!existing) return undefined;
+  const target = livingRouteTargetKey({ project, map: scene.map, session: scene.session, view });
+  return target !== null && target === livingRouteKeyTarget(existing) ? existing : undefined;
 }
 
 export function clampNpcSetting(value: number): number {

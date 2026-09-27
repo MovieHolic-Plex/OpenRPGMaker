@@ -164,7 +164,15 @@ type LiveReadout = {
 
 function parsedRuntimeSnapshot(): Record<string, unknown> | null {
   if (typeof document === "undefined") return null;
-  const text = document.querySelector("[data-testid='runtime-state-json']")?.textContent;
+  const node = document.querySelector("[data-testid='runtime-state-json']");
+  // 지연 미러는 textContent 를 읽을 때마다 세션 스냅샷 전체를 만든다. 이 루프는 매 프레임 돌므로
+  // 미러가 싸게 내 주는 값(data-live-flags)이 있으면 그것만 쓴다.
+  const flags = node instanceof HTMLElement ? node.dataset.liveFlags : undefined;
+  if (flags) {
+    const [mapId, x, y, inputEnabled, running] = flags.split("|");
+    return { mapId, player: { x: Number(x), y: Number(y) }, inputEnabled: inputEnabled === "true", running: running === "true" };
+  }
+  const text = node?.textContent;
   if (!text) return null;
   try {
     const parsed: unknown = JSON.parse(text);

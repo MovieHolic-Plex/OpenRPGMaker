@@ -74,6 +74,13 @@ export function syncLightingLayer(scene: PlaySceneContext): void {
   if (!overlay || !texture) return;
 
   const lighting = ensureLightingState(scene.session);
+  // 어둠이 0 이면 오버레이가 숨는다. 마스크를 다시 그릴 이유가 없다 — 카메라가 움직일 때마다
+  // 광원 좌표가 바뀌어 서명이 매 프레임 달라지고, 그때마다 캔버스 전체를 지우고 텍스처를 올렸다.
+  if (!(lighting.ambient > 0)) {
+    if (overlay.visible) overlay.setVisible(false);
+    scene.lightingMaskSignature = "";
+    return;
+  }
   const camera = scene.cameras.main;
   const params = lightingGradientParams(lighting, {
     viewportWidth: camera.width || PLAY_RESOLUTION.width,
