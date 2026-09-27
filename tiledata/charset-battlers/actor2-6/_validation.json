@@ -1,0 +1,1222 @@
+{
+  "character": "actor2-6",
+  "poses": {
+    "idle": {
+      "bounds": [
+        5,
+        18,
+        31,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "c733bac3d506c0809cc7c437b677bd4ca1e2c741032d8eca900c14ea00ec33fb"
+    },
+    "attack": {
+      "bounds": [
+        6,
+        18,
+        34,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "a3e90e9be607f20a5584d5f56802d99fba58bbea0eeb272184584ad7f3b5b5c2"
+    },
+    "hit": {
+      "bounds": [
+        16,
+        19,
+        39,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "952c611fa916625943f4c541be122e14374605c9da791d6a9a469d62b01e036f"
+    },
+    "defend": {
+      "bounds": [
+        14,
+        22,
+        32,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "6a5a9a07ee5aa5850fbf484a234a95c1e45d6b956a22e536335ec2207015844d"
+    },
+    "dead": {
+      "bounds": [
+        5,
+        30,
+        44,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "23c1c42926bb2989d4634154531b8a24a83b81e83e073a8de829d30e57abdd4c"
+    },
+    "victory": {
+      "bounds": [
+        14,
+        11,
+        34,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "528cf4f1f99e92686f124551ddd1cc5c008856ea023ca90affa36d19961bde5e"
+    },
+    "walk_a": {
+      "bounds": [
+        14,
+        20,
+        32,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "92ce1628802f2ea6046bd4e8104622fca6996a751679d7b96e35a70f56897e39"
+    },
+    "walk_b": {
+      "bounds": [
+        14,
+        18,
+        31,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "96f4f6ef2d30ed54b682b5bbdc53791f52dce31963fd8ed2514b908530b4b265"
+    },
+    "walk_c": {
+      "bounds": [
+        14,
+        20,
+        32,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "5ff3256a0d1f8cb3ff6f59134bc38ffc5a6b0c77a48d9d18aa281b93511429a9"
+    },
+    "attack_windup": {
+      "bounds": [
+        18,
+        17,
+        42,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "662fce8f448bd4a9ca61a5639d6b88cd3fe8dc0b76bc85ef052694ad87b5fb4d"
+    },
+    "attack_strike": {
+      "bounds": [
+        11,
+        17,
+        34,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "f3af72dffb4e3374d7da9d219363e76626e761105933060fda9af510d61561f9"
+    },
+    "attack_follow": {
+      "bounds": [
+        6,
+        19,
+        33,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "2c9d7ae718aa67b8a59fd499aa1850958e9de9651170da5dd61736928399f495"
+    },
+    "cast_charge": {
+      "bounds": [
+        14,
+        17,
+        36,
+        45
+      ],
+      "newColors": 1,
+      "sha256": "5cc0e26e1647b3c4c4290199d57ee83c07b1cafd9766ae1f37dc625ef257fc54"
+    },
+    "cast_raise": {
+      "bounds": [
+        16,
+        17,
+        37,
+        45
+      ],
+      "newColors": 1,
+      "sha256": "a9912880249303b2133f707c2f3eb8b844d4ce745edaecaa4fb5fd5d2802046d"
+    },
+    "cast_release": {
+      "bounds": [
+        7,
+        17,
+        37,
+        45
+      ],
+      "newColors": 1,
+      "sha256": "04bbe6f29fae07b0a79d59ab9c848d1dc5b3db9b1d98fdf6c4317401d38668d7"
+    },
+    "item": {
+      "bounds": [
+        14,
+        18,
+        37,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "3935ae82778fa2d86edf7854aadcf3c5f1dfe409058436e261a40e042b5d611c"
+    },
+    "weak": {
+      "bounds": [
+        11,
+        22,
+        34,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "02333e1780b290721643c658e45f296aacd2adc10e98e1beb5e18d8f59699e39"
+    },
+    "evade": {
+      "bounds": [
+        16,
+        19,
+        37,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "07d3f69c624442d0e3a915eda17dffb3634ddcda950cce7db5e34360474f6e11"
+    },
+    "guard_hit": {
+      "bounds": [
+        16,
+        22,
+        34,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "fa75e137b1292f6b9b8d4ae9767612f816ad47268fb694c3ef93b10072fdd320"
+    },
+    "skill": {
+      "bounds": [
+        2,
+        18,
+        34,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "dd44256b61304cb826fd62959ad6b3135863fbb71bafb42db8e4f208ff8bd90a"
+    },
+    "victory_b": {
+      "bounds": [
+        14,
+        9,
+        34,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "ed92150583273bfbf5d27d69e22ce82aa145a056f2f5d60d74a78a66af4a204d"
+    },
+    "dying": {
+      "bounds": [
+        11,
+        23,
+        36,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "5bb61d43aad2dd64e77290b97b97b10b1071950e40c2796832148bd2ddc65871"
+    },
+    "revive": {
+      "bounds": [
+        11,
+        20,
+        34,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "5624ba76d4277086e668207e67ff59a504dfa87371b421a64ebd2acf9dac9b3c"
+    },
+    "front": {
+      "bounds": [
+        16,
+        18,
+        33,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "9fe4836db6b6c098bd121ea94d80d2a174ae40cdc1f90c5b03bd1a7b01dd9fb7"
+    },
+    "cast_fire_1": {
+      "bounds": [
+        19,
+        18,
+        40,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "03be2021d361affb8706dd9e2ac6411045e64177f0c52d998ae9fe8909482fbe"
+    },
+    "cast_fire_2": {
+      "bounds": [
+        16,
+        18,
+        32,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "e9af1b1b84de40ac9f32013984b349b212bda9df91f923fb659b01fd8120843d"
+    },
+    "cast_fire_3": {
+      "bounds": [
+        8,
+        18,
+        34,
+        45
+      ],
+      "newColors": 0,
+      "sha256": "26fe74d71744d01a6a53302679901309d297e1caa6a13bed1bcd97f4694414e6"
+    },
+    "cast_ice_1": {
+      "bounds": [
+        16,
+        17,
+        33,
+        45
+      ],
+      "newColors": 1,
+      "sha256": "5e5d0c5bebf0ddf298b72032e0d479c7a09b1a5b41793f7c8e6ddb0454af9cfa"
+    },
+    "cast_ice_2": {
+      "bounds": [
+        13,
+        17,
+        44,
+        45
+      ],
+      "newColors": 1,
+      "sha256": "5c21f50c77b963fcc51aa883c91e3bfeae929a6aa653ddc47eda1970fa243206"
+    },
+    "cast_ice_3": {
+      "bounds": [
+        10,
+        13,
+        32,
+        45
+      ],
+      "newColors": 1,
+      "sha256": "24baf736c949a24f7b493b405673121b5ff30956216aaab999dddf8eb94e9dd2"
+    },
+    "cast_thunder_1": {
+      "bounds": [
+        15,
+        21,
+        37,
+        45
+      ],
+      "newColors": 1,
+      "sha256": "23370a6c1e2146b45700c503506b656d32fa93a52a370d076ddaa22449677044"
+    },
+    "cast_thunder_2": {
+      "bounds": [
+        14,
+        15,
+        32,
+        45
+      ],
+      "newColors": 1,
+      "sha256": "a05b3d58f5097e5a6b16e624d274bfabd1cac64d3334c55cc1674ac69f5b1713"
+    },
+    "cast_thunder_3": {
+      "bounds": [
+        8,
+        20,
+        36,
+        45
+      ],
+      "newColors": 1,
+      "sha256": "5a38f5bce7f83a24329b485951baf2d7badedcbe72d41a8af252245a863ecc57"
+    },
+    "cast_heal_1": {
+      "bounds": [
+        16,
+        19,
+        31,
+        45
+      ],
+      "newColors": 1,
+      "sha256": "b5a1fcac0408132d23056a565f6a802686ae750e336bb236f1ab21f36839b920"
+    },
+    "cast_heal_2": {
+      "bounds": [
+        11,
+        14,
+        38,
+        45
+      ],
+      "newColors": 1,
+      "sha256": "1cd91cfb9494a0c6c76416499adaa8b93acdedc4439eb6fd108d302d0b5eca74"
+    },
+    "cast_heal_3": {
+      "bounds": [
+        9,
+        17,
+        36,
+        45
+      ],
+      "newColors": 1,
+      "sha256": "00026fe3de00250c7beb27de10e79d8624f663bed272dd7b3b86d9166c2bb75c"
+    },
+    "cast_dark_1": {
+      "bounds": [
+        15,
+        21,
+        37,
+        45
+      ],
+      "newColors": 1,
+      "sha256": "8f2659f4f9253157c169a49edd15cef28afc007b460800004e2eadabd1aa047e"
+    },
+    "cast_dark_2": {
+      "bounds": [
+        15,
+        19,
+        38,
+        45
+      ],
+      "newColors": 1,
+      "sha256": "1927f9b9197aca25c515384d34c42859c06643ca17b99bfaa29d2a412755a8f4"
+    },
+    "cast_dark_3": {
+      "bounds": [
+        5,
+        20,
+        37,
+        45
+      ],
+      "newColors": 1,
+      "sha256": "e4608debcc328677eceaf71b9c1b1279adcf6a164b11c7e78fbe4e86213def43"
+    },
+    "cast_arcane_1": {
+      "bounds": [
+        14,
+        17,
+        36,
+        45
+      ],
+      "newColors": 1,
+      "sha256": "5cc0e26e1647b3c4c4290199d57ee83c07b1cafd9766ae1f37dc625ef257fc54"
+    },
+    "cast_arcane_2": {
+      "bounds": [
+        16,
+        17,
+        37,
+        45
+      ],
+      "newColors": 1,
+      "sha256": "a9912880249303b2133f707c2f3eb8b844d4ce745edaecaa4fb5fd5d2802046d"
+    },
+    "cast_arcane_3": {
+      "bounds": [
+        7,
+        17,
+        37,
+        45
+      ],
+      "newColors": 1,
+      "sha256": "04bbe6f29fae07b0a79d59ab9c848d1dc5b3db9b1d98fdf6c4317401d38668d7"
+    },
+    "cast_support_1": {
+      "bounds": [
+        18,
+        17,
+        37,
+        45
+      ],
+      "newColors": 2,
+      "sha256": "d2860645d10d39b3c073d31d91b398f20dd285d915cfa4a5117e56971f1067c6"
+    },
+    "cast_support_2": {
+      "bounds": [
+        7,
+        18,
+        37,
+        45
+      ],
+      "newColors": 2,
+      "sha256": "9d3da9066d3a7267531f0db6392c6b332a5ae3679824f87630772421ef631bac"
+    },
+    "cast_support_3": {
+      "bounds": [
+        13,
+        18,
+        37,
+        45
+      ],
+      "newColors": 2,
+      "sha256": "6d293f2300dab2c127f01110e69825f0fbacc0142161626fa2c281a7b4f44a9a"
+    }
+  },
+  "extraColors": [
+    [
+      66,
+      218,
+      196
+    ],
+    [
+      128,
+      218,
+      255
+    ],
+    [
+      144,
+      237,
+      112
+    ],
+    [
+      172,
+      103,
+      214
+    ],
+    [
+      247,
+      148,
+      210
+    ],
+    [
+      255,
+      232,
+      76
+    ]
+  ],
+  "allGroundY": 44,
+  "alpha": [
+    0,
+    255
+  ],
+  "castJoints": {
+    "cast_fire_1": {
+      "hand": [
+        34,
+        35
+      ],
+      "light": [
+        [
+          32,
+          33
+        ],
+        [
+          31,
+          33
+        ],
+        [
+          32,
+          32
+        ]
+      ],
+      "weaponHand": [
+        32,
+        33
+      ]
+    },
+    "cast_fire_2": {
+      "hand": [
+        20,
+        33
+      ],
+      "light": [
+        [
+          18,
+          31
+        ],
+        [
+          17,
+          31
+        ],
+        [
+          18,
+          30
+        ],
+        [
+          19,
+          31
+        ],
+        [
+          18,
+          32
+        ]
+      ],
+      "weaponHand": [
+        19,
+        32
+      ]
+    },
+    "cast_fire_3": {
+      "hand": [
+        12,
+        34
+      ],
+      "light": [
+        [
+          10,
+          32
+        ],
+        [
+          9,
+          32
+        ],
+        [
+          10,
+          31
+        ],
+        [
+          11,
+          32
+        ],
+        [
+          10,
+          33
+        ],
+        [
+          8,
+          32
+        ],
+        [
+          12,
+          32
+        ],
+        [
+          10,
+          30
+        ],
+        [
+          10,
+          34
+        ]
+      ],
+      "weaponHand": [
+        13,
+        32
+      ]
+    },
+    "cast_ice_1": {
+      "hand": [
+        19,
+        30
+      ],
+      "light": [
+        [
+          17,
+          28
+        ],
+        [
+          16,
+          28
+        ],
+        [
+          17,
+          27
+        ]
+      ],
+      "weaponHand": [
+        28,
+        29
+      ]
+    },
+    "cast_ice_2": {
+      "hand": [
+        15,
+        22
+      ],
+      "light": [
+        [
+          15,
+          19
+        ],
+        [
+          14,
+          19
+        ],
+        [
+          15,
+          18
+        ],
+        [
+          16,
+          19
+        ],
+        [
+          15,
+          20
+        ]
+      ],
+      "weaponHand": [
+        33,
+        34
+      ]
+    },
+    "cast_ice_3": {
+      "hand": [
+        23,
+        19
+      ],
+      "light": [
+        [
+          23,
+          15
+        ],
+        [
+          22,
+          15
+        ],
+        [
+          23,
+          14
+        ],
+        [
+          24,
+          15
+        ],
+        [
+          23,
+          16
+        ],
+        [
+          21,
+          15
+        ],
+        [
+          25,
+          15
+        ],
+        [
+          23,
+          13
+        ],
+        [
+          23,
+          17
+        ]
+      ],
+      "weaponHand": [
+        13,
+        30
+      ]
+    },
+    "cast_thunder_1": {
+      "hand": [
+        35,
+        30
+      ],
+      "light": [
+        [
+          33,
+          28
+        ],
+        [
+          32,
+          28
+        ],
+        [
+          33,
+          27
+        ]
+      ],
+      "weaponHand": [
+        18,
+        34
+      ]
+    },
+    "cast_thunder_2": {
+      "hand": [
+        28,
+        19
+      ],
+      "light": [
+        [
+          28,
+          16
+        ],
+        [
+          27,
+          16
+        ],
+        [
+          28,
+          15
+        ],
+        [
+          29,
+          16
+        ],
+        [
+          28,
+          17
+        ]
+      ],
+      "weaponHand": [
+        17,
+        34
+      ]
+    },
+    "cast_thunder_3": {
+      "hand": [
+        12,
+        40
+      ],
+      "light": [
+        [
+          10,
+          38
+        ],
+        [
+          9,
+          38
+        ],
+        [
+          10,
+          37
+        ],
+        [
+          11,
+          38
+        ],
+        [
+          10,
+          39
+        ],
+        [
+          8,
+          38
+        ],
+        [
+          12,
+          38
+        ],
+        [
+          10,
+          36
+        ],
+        [
+          10,
+          40
+        ]
+      ],
+      "weaponHand": [
+        31,
+        33
+      ]
+    },
+    "cast_heal_1": {
+      "hand": [
+        20,
+        33
+      ],
+      "light": [
+        [
+          18,
+          31
+        ],
+        [
+          17,
+          31
+        ],
+        [
+          18,
+          30
+        ]
+      ],
+      "weaponHand": [
+        19,
+        32
+      ]
+    },
+    "cast_heal_2": {
+      "hand": [
+        14,
+        24
+      ],
+      "light": [
+        [
+          12,
+          22
+        ],
+        [
+          11,
+          22
+        ],
+        [
+          12,
+          21
+        ],
+        [
+          13,
+          22
+        ],
+        [
+          12,
+          23
+        ]
+      ],
+      "weaponHand": [
+        33,
+        24
+      ]
+    },
+    "cast_heal_3": {
+      "hand": [
+        13,
+        30
+      ],
+      "light": [
+        [
+          11,
+          28
+        ],
+        [
+          10,
+          28
+        ],
+        [
+          11,
+          27
+        ],
+        [
+          12,
+          28
+        ],
+        [
+          11,
+          29
+        ],
+        [
+          9,
+          28
+        ],
+        [
+          13,
+          28
+        ],
+        [
+          11,
+          26
+        ],
+        [
+          11,
+          30
+        ]
+      ],
+      "weaponHand": [
+        31,
+        33
+      ]
+    },
+    "cast_dark_1": {
+      "hand": [
+        18,
+        29
+      ],
+      "light": [
+        [
+          16,
+          27
+        ],
+        [
+          15,
+          27
+        ],
+        [
+          16,
+          26
+        ]
+      ],
+      "weaponHand": [
+        32,
+        34
+      ]
+    },
+    "cast_dark_2": {
+      "hand": [
+        36,
+        25
+      ],
+      "light": [
+        [
+          34,
+          23
+        ],
+        [
+          33,
+          23
+        ],
+        [
+          34,
+          22
+        ],
+        [
+          35,
+          23
+        ],
+        [
+          34,
+          24
+        ]
+      ],
+      "weaponHand": [
+        18,
+        34
+      ]
+    },
+    "cast_dark_3": {
+      "hand": [
+        11,
+        31
+      ],
+      "light": [
+        [
+          7,
+          30
+        ],
+        [
+          6,
+          30
+        ],
+        [
+          7,
+          29
+        ],
+        [
+          8,
+          30
+        ],
+        [
+          7,
+          31
+        ],
+        [
+          5,
+          30
+        ],
+        [
+          9,
+          30
+        ],
+        [
+          7,
+          28
+        ],
+        [
+          7,
+          32
+        ]
+      ],
+      "weaponHand": [
+        32,
+        34
+      ]
+    },
+    "cast_arcane_1": {
+      "hand": [
+        17,
+        25
+      ],
+      "light": [
+        [
+          15,
+          23
+        ],
+        [
+          14,
+          23
+        ],
+        [
+          15,
+          22
+        ]
+      ],
+      "weaponHand": [
+        31,
+        34
+      ]
+    },
+    "cast_arcane_2": {
+      "hand": [
+        24,
+        20
+      ],
+      "light": [
+        [
+          22,
+          18
+        ],
+        [
+          21,
+          18
+        ],
+        [
+          22,
+          17
+        ],
+        [
+          23,
+          18
+        ],
+        [
+          22,
+          19
+        ]
+      ],
+      "weaponHand": [
+        32,
+        34
+      ]
+    },
+    "cast_arcane_3": {
+      "hand": [
+        11,
+        33
+      ],
+      "light": [
+        [
+          9,
+          31
+        ],
+        [
+          8,
+          31
+        ],
+        [
+          9,
+          30
+        ],
+        [
+          10,
+          31
+        ],
+        [
+          9,
+          32
+        ],
+        [
+          7,
+          31
+        ],
+        [
+          11,
+          31
+        ],
+        [
+          9,
+          29
+        ],
+        [
+          9,
+          33
+        ]
+      ],
+      "weaponHand": [
+        32,
+        34
+      ]
+    },
+    "cast_support_1": {
+      "hand": [
+        22,
+        26
+      ],
+      "light": [
+        [
+          20,
+          24
+        ],
+        [
+          19,
+          24
+        ],
+        [
+          20,
+          23
+        ]
+      ],
+      "weaponHand": [
+        32,
+        34
+      ]
+    },
+    "cast_support_2": {
+      "hand": [
+        10,
+        35
+      ],
+      "light": [
+        [
+          8,
+          33
+        ],
+        [
+          7,
+          33
+        ],
+        [
+          8,
+          32
+        ],
+        [
+          9,
+          33
+        ],
+        [
+          8,
+          34
+        ]
+      ],
+      "weaponHand": [
+        32,
+        33
+      ]
+    },
+    "cast_support_3": {
+      "hand": [
+        17,
+        31
+      ],
+      "light": [
+        [
+          15,
+          29
+        ],
+        [
+          14,
+          29
+        ],
+        [
+          15,
+          28
+        ],
+        [
+          16,
+          29
+        ],
+        [
+          15,
+          30
+        ],
+        [
+          13,
+          29
+        ],
+        [
+          17,
+          29
+        ],
+        [
+          15,
+          27
+        ],
+        [
+          15,
+          31
+        ]
+      ],
+      "weaponHand": [
+        32,
+        34
+      ]
+    }
+  }
+}
