@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **108쪽 / 3771KB / 약 1,082,319 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **108쪽 / 3774KB / 약 1,083,132 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -86,6 +86,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/pixel-art-world-maps-51.md` | 1 | `paw-maps.html` |
 | `openwiki/project-wiki.md` | 2 | `projectWikiSession.test.ts`, `projectWikiTimeout.test.ts` |
 | `openwiki/quickstart.md` | 1 | `.oprn-local.json` |
+| `openwiki/refmap-town-outside.md` | 1 | `preset.json` |
 | `openwiki/runtime-action-combat.md` | 1 | `export-player/player.html` |
 | `openwiki/runtime-battle.md` | 10 | `_dragonquest.css`, `_mv.css`, `_octopath/_chrono/_bravely/_dragonquest/_ff/_mother/_goldensun/_mv/_vxace/_hud-templates.css`, `battle.css`, `hero-03-battle-idle.png`, `output/evidence/event-command-completion/battle/VERIFICATION.md`, `raw.png`, `scripts/legacy-db-resource-root/catalog.mjs`, `src/styles/runtime/battle/18-pokemon-layout-redesign.css`, `starter/hires/hero-0N-battle.png` |
 | `openwiki/runtime-m2-flow-controls.md` | 3 | `test/runtimePictureStacking.test.ts`, `verify-shots/runtime-qa/cloud-shadows/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md` |
@@ -1124,12 +1125,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L175` 4. 위키를 읽는 법
 - `L187` 5. 끝났다고 말할 수 있는 조건
 
-### `openwiki/refmap-town-outside.md` — 4KB · 55줄 · ~1,305 토큰
+### `openwiki/refmap-town-outside.md` — 7KB · 88줄 · ~2,118 토큰
 
 - `L7` 어디에 무엇이 있나
 - `L20` 게시
 - `L36` 변환 규칙과 함정
 - `L50` 확인 (2026-09-27)
+- `L56` 세트 8개 더 (2026-09-27)
+  - `L80` 세트 맵 기술 (maps/*.json)
 
 ### `openwiki/release-and-version.md` — 14KB · 220줄 · ~4,282 토큰
 

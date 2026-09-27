@@ -52,3 +52,36 @@ bun scripts/content/refmap/publish-refmap-places.mts         # 공용 SQLite 에
 - 공용 DB 만 읽어(타일셋 그림 + 4층 맵) 다시 그리면 숲 0px, 마을·물가는 가로등 둘레만 다름.
 - 편집기 자료집 → 맵 → 장소 「REFMAP」 검색 3곳, 오브젝트 「REFMAP」 검색 10개(집 7 + 장소 구획 3), 「큰 활엽수」 등 프리셋 소품.
 - 장소 「맵에 놓기」 → 42×30 맵이 생기고 Phaser 가 우물·가판·통·길을 원본대로 그린다.
+
+## 세트 8개 더 (2026-09-27)
+
+받아 둔 MV/MZ 타일셋 글(`_catalog/assets.csv`)을 세트 8개로 묶어 같은 방식으로 올렸다. 세트마다 라이브러리 `<세트>-local`
+(`projectDefaults`), 타일셋 `shared_<세트>`, 완성 맵 2장(장소), 프리셋 물체(오브젝트), 2층 A3 덩이에서 떼어 낸 집 킷.
+
+| 세트 | 원본 글 | 시트 | 맵 |
+|---|---|---|---|
+| `refmap-snow` 설원 마을 | 雪マップ | A1 A2 A3 A4 B C D | 설원 마을 · 설산 숲길 |
+| `refmap-interior` 실내 + 마녀의 방 | 内装用データ + 魔女の部屋 | A1 A2 A4 B C(마녀) A5 | 여관 1층 · 마녀의 집 |
+| `refmap-dungeon-extra` 던전 칩 추가 | 中間データ ダンジョンチップ追加 | A1 A2 A4 B | 바위 동굴 · 폐광 층 |
+| `refmap-south-island` 남쪽 섬 | 南の島 | A1 A2 A4 B A5 | 야자수 해변 · 정글 언덕 |
+| `refmap-volcano` 화산 | 火山タイルまとめ | A1 A2 A4 B A5 | 용암 동굴 · 화산 기슭 |
+| `refmap-crayon` 크레용풍 | クレヨン風マップデータ | A1 A2 A3 B A5 | 들판 마을 · 숲 |
+| `refmap-photo` 사진 가공 | 写真加工タイルセット | A2 A4 B | 들판 · 숲길 |
+| `refmap-mz-ground` MZ 지면 | 地面タイル(MZ) | A1 A2×3 | 풀밭→눈밭 필드 · 호숫가 들판 |
+
+- **슬롯은 크기로 정한다.** 글 안 라벨이 틀린 경우가 있다(768×768 인데 「A5」, 384×768 인데 「B」). 768×768 = B~E, 384×768 = A5, 768×576 은 순서(01=A1, 02=A2).
+  마녀의 방은 B 한 장뿐이라 실내 세트의 C 시트로 붙였다. 写真加工地面(384×144)은 세트가 아니라 뺐다.
+- 흐름: `_work/<세트>/sheets.json`(prep) → 에이전트가 그림을 보고 `preset.json`·`maps/*.json` 작성
+  → `bun scripts/content/refmap/set-tool.mts check|render <세트>` → `gen-presets.mts`(저장소 `packs/refmapSets.json`, 그림 없음)
+  → `publish-sets.mts [--dry] [세트…]`. 증거 `tiledata/refmap/<세트>-proof.json`.
+- 공용 DB 만 읽어 다시 그린 16장은 게시 전 그림과 픽셀 동일(0px). 8개 라이브러리 합 약 50MB 가 모든 프로젝트에 실린다.
+- 약점: MZ 지면 두 장은 물체가 없어 네모진 풀 얼룩이 드러나고, 화산 기슭은 성기다.
+
+### 세트 맵 기술 (maps/*.json)
+
+`{ id, name, note, tags, usage, w, h, entry?, ops[] }`. ops 는 순서대로 칠한다.
+- `{layer:1|2, mat, rect:[x,y,w,h] | cells:[[x,y]…]}` — mat = 재료 이름(preset autotiles/flats 의 name) 또는 `{sheet,kind}` · `{sheet,cell:[열,행]}`.
+- `{layer:1|2, rows:["..TT", …], legend:{T:재료}, at:[x,y]}` — `.`·공백은 건너뛴다.
+- `{obj:"<물체 id>", at:[x,y], layer?:3|4}` — 투명 칸은 찍지 않고, 3층이 차 있으면 4층.
+- `{tile:{sheet,x,y,w?,h?}, at, layer?}` · `{erase:1|2|3|4, rect}`.
+- 1층 = 바닥 오토타일·A5 평타일, 2층 = 겹침 오토타일·A3 지붕/벽, 3·4층 = 물체. 오토타일 모양은 이웃으로 계산(맵 밖 = 같은 재료, A1 물은 폭포와 이어짐).
