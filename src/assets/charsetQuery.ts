@@ -141,16 +141,32 @@ function textMatchScore(term: string, entry: CharsetSemanticEntry): number {
   const normalized = normalizeQuery(term);
   if (!normalized) return 0;
   const label = entry.label.toLowerCase();
+  // 한 글자 낱말은 부분 일치를 주지 않는다 — 「용」이 「청년 용사」를, 「돌」이 「떠돌이 검객」을, 「왕」이 「여왕」을
+  // 고르던 원인이다(2026-09-27 전수 조사). 한 글자는 라벨 낱말·태그와 정확히 같을 때만 맞는다.
+  const partial = normalized.length >= 2;
+  const labelWords = label.split(/[\s()（）·,/]+/u).filter(Boolean);
   let score = 0;
   if (label === normalized) score += 120;
-  else if (label.includes(normalized)) score += 55;
+  else if (labelWords.includes(normalized) || (partial && label.includes(normalized))) score += 55;
   for (const tag of entry.tags) {
     const tagLower = tag.toLowerCase();
     if (tagLower === normalized) score += 45;
-    else if (tagLower.includes(normalized)) score += 20;
+    else if (partial && tagLower.includes(normalized)) score += 20;
   }
-  if (normalized.length >= 2 && entry.appearance?.toLowerCase().includes(normalized)) score += 12;
+  if (partial && entry.appearance?.toLowerCase().includes(normalized)) score += 12;
   return score;
+}
+
+/** 질의에서 성별·나이·역할 같은 의도로 읽힌 낱말 — 라벨에 없어도 의도 검사를 통과했으면 맞은 것으로 친다. */
+function intentWords(normalized: string): ReadonlySet<string> {
+  const tokens = englishTokens(normalized);
+  const words = new Set<string>();
+  for (const synonym of SYNONYMS) {
+    for (const term of synonym.terms) {
+      if (hasTerm(normalized, tokens, term)) normalizeQuery(term).split(" ").forEach((word) => words.add(word));
+    }
+  }
+  return words;
 }
 
 function tagScore(tags: ReadonlySet<string>, entry: CharsetSemanticEntry): number {
@@ -223,12 +239,22 @@ export function queryNpcGraphics(
   }
   const exactAlias = exactAliasMatches(normalized, catalog);
   if (exactAlias) return exactAlias.slice(0, cappedLimit);
+  // 라벨과 글자 그대로 같은 칸이 있으면 그 칸이 답이다. 성별·나이 의도 필터를 거치면 「금발 소년」(나이 youth)이
+  // 「소년=child」 의도에 걸려 자기 이름으로도 안 나온다(2026-09-27 전수 조사).
+  const exactLabel = catalog.filter((entry) => entry.label.toLowerCase() === normalized);
+  if (exactLabel.length > 0) return exactLabel.map((entry, index) => ({ entry, score: 2000 - index })).slice(0, cappedLimit);
 
   const intent = intentFromQuery(normalized);
   const queryTerms = normalized.split(/\s+/).filter((term) => term.length > 0);
+  const intentTerms = intentWords(normalized);
+  const termHitsEntry = (term: string, entry: CharsetSemanticEntry): boolean =>
+    intentTerms.has(term) || textMatchScore(term, entry) > 0;
   return catalog
     .map((entry) => {
       if (!satisfiesIntent(entry, intent)) return { entry, score: 0 };
+      // 여러 낱말 질의는 낱말마다 이 칸을 가리켜야 한다. 하나만 맞아도 채택하면 「고양이 석상」이 살아 있는
+      // 고양이가, 「강철 문」이 나무 문이 된다(2026-09-27 전수 조사). 성별·나이 같은 의도 낱말은 위에서 걸렀다.
+      if (queryTerms.length > 1 && !queryTerms.every((term) => termHitsEntry(term, entry))) return { entry, score: 0 };
       const wholeTextScore = textMatchScore(normalized, entry);
       const splitTextScore = wholeTextScore > 0 ? 0 : queryTerms.reduce((sum, term) => sum + textMatchScore(term, entry), 0);
       return { entry, score: intentScore(entry, intent) + wholeTextScore + splitTextScore };
@@ -287,8 +313,14 @@ export function pickNpcGraphic(query: string, options: NpcGraphicPickOptions = {
 
   const avoid = options.avoidKeys;
   if (avoid && avoid.size > 0) {
-    const filtered = matches.filter((m) => !avoid.has(charsetGraphicKey(m.entry)));
+    // 라벨이 질의와 정확히 같은 칸이 있으면 그 칸들 안에서만 피한다 — 맵에 왕이 이미 있다고 「왕」 요청에
+    // 여왕을 주면 안 된다(2026-09-27 전수 조사). 같은 그림을 두 번 쓰는 편이 다른 인물로 바꾸는 것보다 낫다.
+    const wanted = normalizeQuery(query);
+    const exact = matches.filter((m) => m.entry.label.toLowerCase() === wanted);
+    const pool = exact.length > 0 ? exact : matches;
+    const filtered = pool.filter((m) => !avoid.has(charsetGraphicKey(m.entry)));
     if (filtered.length > 0) matches = filtered;
+    else if (exact.length > 0) matches = exact;
   }
 
   const generic = isGenericNpcGraphicQuery(query);

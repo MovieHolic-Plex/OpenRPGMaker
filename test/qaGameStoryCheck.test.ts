@@ -9,7 +9,7 @@ describe("qa gameCheck — 회상 스토리 장르 검사", () => {
     const mapId = ctx.project.startMapId;
     const ok = (name: string, args: Record<string, unknown>) => { const r = runTool(ctx, name, args); expect(r.ok, r.summary).toBe(true); };
     ok("place_examine_hotspots", { mapId, hotspots: [
-      { at: { x: 3, y: 3 }, name: "메멘토: 턴테이블", lines: ["바늘"] },
+      { at: { x: 3, y: 3 }, name: "메멘토: 턴테이블", lines: ["바늘"], graphic: { textureKey: "tex_easyrpg_charset_object2", characterIndex: 7 } },
       { at: { x: 4, y: 3 }, name: "메멘토: 숨은 쪽지", lines: ["글씨"], graphic: { transparent: true } },
     ] });
     ok("script_cutscene", { mapId, eventId: "ev_intro", x: 6, y: 6, trigger: "auto", once: true, beats: [{ kind: "say", text: "여긴 어디지" }] });

@@ -7,6 +7,7 @@
 // - highlight_map_region: 질문 대상 영역을 에디터 화면에 강조(패널이 selection으로 반영).
 
 import { markUserTileRuntimeMetadata, setTileLayerOverride } from "@/editor/runtimeTileMetadata";
+import { bundledTileSemantics } from "@/assets/resourceSearch";
 import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCombinedTown";
 import { DUNGEON_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsDungeon";
 import { INTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsInterior";
@@ -212,7 +213,11 @@ const BUNDLED_TILE_LABELS: ReadonlyMap<string, ReadonlyMap<number, string>> = ne
 ]);
 
 export function bundledTileLabels(tileset: TilesetDef): ReadonlyMap<number, string> {
-  if (tileset.image.type === "bundled") return BUNDLED_TILE_LABELS.get(tileset.image.id) ?? COMBINED_TOWN_TILE_LABELS;
+  // 표가 없는 번들 시트는 합본 마을과 픽셀이 같은 칸만 그 라벨을 물려받는다(resourceSearch.bundledTileSemantics 와
+  // 같은 규칙). 통째로 물려주면 성채·탈것·Tibo 시트가 칸 번호만 같은 엉뚱한 라벨을 보였다(2026-09-27 전수 조사).
+  if (tileset.image.type === "bundled") {
+    return BUNDLED_TILE_LABELS.get(tileset.image.id) ?? labelMap(bundledTileSemantics(tileset));
+  }
   return COMBINED_TOWN_TILE_LABELS;
 }
 
