@@ -13,6 +13,8 @@ import { sourceTextOf } from "@/i18n/domTranslator";
 export interface ProjectInterviewOptions {
   initialBrief?: GameDesignBrief;
   confirmLabel?: string;
+  /** 첫 질문 입력칸에 미리 담을 사용자 문장(시작 화면의 한 문장). 사용자가 「다음」을 눌러야 답이 된다. */
+  initialAnswer?: string;
 }
 
 /** Draft-only modal: neither selecting, cancelling, nor extracting answers mutates the project. */
@@ -26,6 +28,7 @@ export function showProjectInterview(presetId: GamePresetId, options: ProjectInt
     const visited: GameBriefSlot[] = [];
     let slot: GameBriefSlot | null = options.initialBrief ? null : GAME_BRIEF_SLOTS[0];
     let summaryOverride = options.initialBrief?.summary;
+    let pendingInitialAnswer = options.initialBrief ? "" : options.initialAnswer?.trim().slice(0, GAME_BRIEF_ANSWER_LIMIT) ?? "";
     let closed = false;
     let busy = false;
     let request: AbortController | undefined;
@@ -77,7 +80,8 @@ export function showProjectInterview(presetId: GamePresetId, options: ProjectInt
         const activeSlot = slot;
         const count = el("p", { class: "project-interview-count", text: `질문 ${visited.indexOf(slot) + 1} / 최대 5 · 이미 답한 내용은 건너뛰어요` });
         const question = el("h3", { text: current.title, attrs: { id: "project-interview-question" } });
-        let selected = answers[slot]?.text ?? "";
+        let selected = answers[slot]?.text ?? (slot === GAME_BRIEF_SLOTS[0] ? pendingInitialAnswer : "");
+        pendingInitialAnswer = "";
         let source = answers[slot]?.source ?? "user";
         const choices = el("div", { class: "project-interview-options", attrs: { role: "group", "aria-labelledby": "project-interview-question" } });
         const input = el("textarea", { class: "project-interview-input", value: selected,
