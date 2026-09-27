@@ -1,35 +1,35 @@
 {
-  "scratch": "/home/main/.codex/worktrees/55cf/rpg-zzu/.vite-cache/start-qa-muk845pf",
+  "scratch": "/home/main/.codex/worktrees/55cf/rpg-zzu/.vite-cache/start-qa-muk9njcz",
   "home": {
     "url": "app://oprn/start-screen.html",
     "continueTitle": "생활 시스템 완주 픽스처",
     "continueHasCover": true,
     "cards": [
-      "Medieval · 공용 타일과 AI 조립 참고",
       "언덕 위 숲마을 · 자연 지형 조화 검토",
       "Rasak Fantasy · 제작자 프리뷰 재현 (로컬 전용)",
+      "Medieval · 공용 타일과 AI 조립 참고",
       "빈 폴더 게임"
     ],
     "hiddenNote": "임시 폴더의 테스트 프로젝트 1개와 찾을 수 없는 폴더 1개를 숨겼습니다.보기",
-    "stylesheetRules": 3,
+    "stylesheetRules": 4,
     "neverOpenedCoverBytes": 65464,
     "realCovers": [
       {
-        "dir": "real-0-medieval-public-20260922-79ba",
-        "bytes": 0
-      },
-      {
-        "dir": "real-1-oprn-hill-forest-harmony-20260918-a4e1",
+        "dir": "real-0-oprn-hill-forest-harmony-20260918-a4e1",
         "bytes": 58583
       },
       {
-        "dir": "real-2-study-project-full",
+        "dir": "real-1-study-project-full",
         "bytes": 59189
+      },
+      {
+        "dir": "real-2-medieval-public-20260922-79ba",
+        "bytes": 0
       }
     ],
     "cardImages": [
       {
-        "title": "Medieval · 공용 타일과 AI 조립 참고",
+        "title": null,
         "hasImage": false
       },
       {
@@ -41,6 +41,10 @@
         "hasImage": true
       },
       {
+        "title": "Medieval · 공용 타일과 AI 조립 참고",
+        "hasImage": false
+      },
+      {
         "title": "빈 폴더 게임",
         "hasImage": false
       }
@@ -48,7 +52,7 @@
     "emptyProjectCover": false
   },
   "newGame": {
-    "location": "/home/main/.codex/worktrees/55cf/rpg-zzu/.vite-cache/start-qa-muk845pf/new-games/QA 몬스터 마을",
+    "location": "/home/main/.codex/worktrees/55cf/rpg-zzu/.vite-cache/start-qa-muk9njcz/new-games/QA 몬스터 마을",
     "pressed": [
       "start-genre-option-monster-collect"
     ]
@@ -58,7 +62,7 @@
     "welcomeOverlay": false,
     "handoffNotice": false,
     "handoffTextOnPage": true,
-    "projectDir": "/home/main/.codex/worktrees/55cf/rpg-zzu/.vite-cache/start-qa-muk845pf/new-games/QA 몬스터 마을",
+    "projectDir": "/home/main/.codex/worktrees/55cf/rpg-zzu/.vite-cache/start-qa-muk9njcz/new-games/QA 몬스터 마을",
     "savedTitle": "QA 몬스터 마을",
     "savedGenre": "monster-collect",
     "monsterCollection": true,
@@ -75,9 +79,9 @@
     "continueHasCover": true,
     "cards": [
       "생활 시스템 완주 픽스처",
-      "Medieval · 공용 타일과 AI 조립 참고",
       "언덕 위 숲마을 · 자연 지형 조화 검토",
       "Rasak Fantasy · 제작자 프리뷰 재현 (로컬 전용)",
+      "Medieval · 공용 타일과 AI 조립 참고",
       "빈 폴더 게임"
     ]
   },

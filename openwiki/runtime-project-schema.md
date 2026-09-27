@@ -7,6 +7,10 @@
 빈 편집기로 넘어간 뒤 캔버스 브리핑이 다시 「어떤 게임을 만들까요?」를 물었다.
 
 - **엔트리**: 루트 `start-screen.html` → `src/start/startScreen.ts` + `startScreen.css`(tokens.css 만 싣는 자기완결 시트).
+- **모양(2026-09-28)**: 어두운 스튜디오 톤(`--st-*`). 가장 최근 프로젝트는 시작 맵 그림을 판 전체에 까는 히어로(판 전체가 열기 단추,
+  `start-continue`/`start-continue-open`), 그 아래 격자 첫 칸이 「새 게임」(`start-new-card`)이다. 최근 작업이 없으면
+  키아트(`public/assets/generated/welcome/start-hero.jpg`) 히어로 + 장르 포스터. 새 게임 입력판 뒤에는 고른 장르 포스터가 깔린다.
+  좁은 창(860px 이하)에서는 레일이 한 줄 머리띠로 접힌다.
   편집기 트리를 import 하지 않는다 — 번들 11KB. 장르 씨앗·AI 모듈을 여기서 부르면 수십 MB 가 된다(실측 esbuild 90MB).
   `vite.config.ts` 의 `startScreen` 입력, `scripts/mac-launch.mjs` 빌드 입력 목록에 들어 있다.
 - **최근 목록**: `electron/main/recent.ts` 의 `describeRecentProjects()` 가 폴더의 `project.sqlite` 를 **읽기 전용**
