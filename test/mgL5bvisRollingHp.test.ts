@@ -89,6 +89,19 @@ describe("rolling HP meter model", () => {
     expect(meter.isRolling()).toBe(false);
   });
 
+  it("settles to the real HP on defeat so no dying cue lingers", () => {
+    const meter = createRollingHpMeter({ perSecond: 5, nowMs: 0 });
+    meter.setTarget("a", 514, 514);
+    meter.setTarget("a", 0, 514);
+    meter.advance(2000);
+    expect(meter.displayed("a")).toBe(504);
+    meter.settle();
+    expect(meter.displayed("a")).toBe(0);
+    expect(meter.isDying("a")).toBe(false);
+    meter.setTarget("a", 100, 514);
+    expect(meter.displayed("a")).toBe(0);
+  });
+
   it("clamps the speed to 1..999 and defaults to 40", () => {
     expect(normalizeRollingHpSpeed(undefined)).toBe(DEFAULT_ROLLING_HP_PER_SECOND);
     expect(normalizeRollingHpSpeed(0)).toBe(1);
@@ -165,6 +178,22 @@ describe("party HUD with the rolling HP meter", () => {
     expect(hpText(party)).toBe("0");
     expect(row.dataset.rollingHpDying).toBeUndefined();
     expect(row.classList.contains("defeated")).toBe(true);
+  });
+
+  it("shows a frozen survivor as alive without the dying cue on the result screen", () => {
+    const base = battleSnapshot();
+    const party = battlePartyStatus(base);
+    const meter = createRollingHpMeter({ perSecond: 40, nowMs: 0 });
+    syncBattleParty(party, base, { rollingHp: meter });
+    const lethal = withActorHp(base, 0);
+    syncBattleParty(party, lethal, { rollingHp: meter });
+    meter.advance(1000);
+    meter.freeze();
+    syncBattleParty(party, lethal, { rollingHp: meter });
+    const row = party.querySelector<HTMLElement>(".battle-actor-status")!;
+    expect(hpText(party)).toBe("60");
+    expect(row.dataset.rollingHpDying).toBeUndefined();
+    expect(row.classList.contains("defeated")).toBe(false);
   });
 
   it("shows the instant HP without a meter", () => {

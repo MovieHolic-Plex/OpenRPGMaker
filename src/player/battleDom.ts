@@ -948,8 +948,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       onField: options.onField,
       rollingHp,
     };
-    // 결과 화면이 뜨면 미터를 멈춘다 — 이 순간 남은 HP 가 결산 값이다.
-    if (showingResult) rollingHp?.freeze();
+    // 결과 화면이 뜨면 미터를 멈춘다 — 이 순간 남은 HP 가 결산 값이다. 패배는 결산하지 않으므로
+    // 미터를 실제 HP(0)에 붙인다: 전멸 화면에 굴러가던 HP 와 「쓰러지는 중」이 남지 않게.
+    if (showingResult) {
+      if (snapshot.result === "defeat") rollingHp?.settle();
+      else rollingHp?.freeze();
+    }
     lastFieldPresentation = fieldPresentation;
     syncBattleField(field, snapshot, lastDamageFeedback, fieldPresentation);
     syncBattleParty(partyPanel, snapshot, fieldPresentation);

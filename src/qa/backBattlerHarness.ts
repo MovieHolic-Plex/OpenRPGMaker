@@ -91,8 +91,12 @@ window.__qaBattle = {
       mountBattleScene({
         host,
         runtime,
-        onResult: () => {
-          /* QA 는 첫 화면만 본다 */
+        // QA 가 결과 확정 때 제품이 넘기는 스냅샷(롤링 HP 결산 포함)을 읽을 수 있게 남긴다.
+        onResult: (result, snapshot) => {
+          (window as unknown as { __qaBattleResult?: unknown }).__qaBattleResult = {
+            result,
+            actors: snapshot.actors.map((actor) => ({ recordId: actor.recordId, hp: actor.hp, defeated: actor.defeated })),
+          };
         },
         // 인트로 연출을 붙잡지 않는다 — 전환 애니메이션이 끝난 정적 화면이 필요하다.
         introHold: false,

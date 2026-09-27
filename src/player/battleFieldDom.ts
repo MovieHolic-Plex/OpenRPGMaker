@@ -209,8 +209,9 @@ function rollingVitals(
   const meter = presentation?.rollingHp;
   if (!meter) return { hp: presented.hp, defeated: presented.defeated, dying: false };
   const hp = meter.setTarget(actor.recordId, presented.hp, actor.maxHp);
-  const dying = meter.isDying(actor.recordId);
-  return { hp, defeated: presented.defeated && !dying, dying };
+  // 결과 화면에서 멈춘 미터에 HP 가 남았으면 살아남은 것이다 — 「쓰러지는 중」 표식도 걷는다.
+  const dying = meter.isDying(actor.recordId) && !meter.frozen;
+  return { hp, defeated: presented.defeated && hp <= 0, dying };
 }
 
 export function syncBattleField(

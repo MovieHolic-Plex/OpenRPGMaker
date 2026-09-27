@@ -36,6 +36,8 @@ export type RollingHpMeter = {
   isRolling(): boolean;
   /** 결과 화면 진입 — 이후 advance/setTarget 은 미터를 움직이지 않는다. */
   freeze(): void;
+  /** 패배 결과 — 미터를 실제 HP 로 붙이고 멈춘다(전멸 화면에 굴러가던 HP·쓰러지는 중 표식을 남기지 않는다). */
+  settle(): void;
   readonly frozen: boolean;
 };
 
@@ -103,6 +105,10 @@ export function createRollingHpMeter(options: { readonly perSecond?: number; rea
       return false;
     },
     freeze() {
+      frozen = true;
+    },
+    settle() {
+      for (const entry of entries.values()) entry.displayed = entry.target;
       frozen = true;
     },
     get frozen() {
