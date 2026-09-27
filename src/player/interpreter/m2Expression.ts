@@ -1,4 +1,5 @@
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
+import { sessionQueryValue } from "@/project/conditionActorQueries";
 
 type Token = number | string;
 
@@ -85,9 +86,23 @@ function isIdentifier(token: string): boolean {
   return /^[A-Za-z_][A-Za-z0-9_]*$/.test(token);
 }
 
+const EXPRESSION_BUILTINS: Readonly<Record<string, { query: string; target: string }>> = {
+  leaderLevel: { query: "actorLevel", target: "leader" },
+  leaderHp: { query: "actorHp", target: "leader" },
+  leaderMp: { query: "actorMp", target: "leader" },
+  leaderHpPercent: { query: "actorHpPercent", target: "leader" },
+  partySize: { query: "partySize", target: "" },
+  playtime: { query: "playtimeSeconds", target: "" },
+  steps: { query: "steps", target: "" },
+  clearCount: { query: "clearCount", target: "" },
+};
+
 function resolveIdentifier(identifier: string, session: PlaySessionLike): number {
   if (identifier === "gold") return session.gold;
   if (identifier === "playerX") return session.x;
   if (identifier === "playerY") return session.y;
+  // 명작 공백 G1: leaderLevel·leaderHp·partySize 등 — Data Query 와 같은 해석기.
+  const builtin = EXPRESSION_BUILTINS[identifier];
+  if (builtin) return sessionQueryValue(session, builtin.query, builtin.target);
   return session.variables[identifier] ?? 0;
 }

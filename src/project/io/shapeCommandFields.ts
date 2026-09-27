@@ -1,3 +1,4 @@
+import { isBattleStartFormation } from "@/battle/battleFormation";
 import { validateEndingPresentation } from "./shapeDatabaseFields";
 import { isEquipmentSlotId } from "@/project/equipmentSlots";
 import { isEmoteKind } from "@/project/emotes";
@@ -241,6 +242,9 @@ function validateCommandShape(label: string, value: unknown): void {
       }
       if (command.troopVariableId !== undefined) requireString(`${label}.troopVariableId`, command.troopVariableId);
       if (command.branchOnResult !== undefined) requireBoolean(`${label}.branchOnResult`, command.branchOnResult);
+      if (command.formation !== undefined && !isBattleStartFormation(requireString(`${label}.formation`, command.formation))) {
+        throw new ProjectFormatError(`${label}.formation가 잘못되었습니다.`);
+      }
       if (command.victoryBranch !== undefined) validateCommandArray(`${label}.victoryBranch`, command.victoryBranch);
       if (command.defeatBranch !== undefined) validateCommandArray(`${label}.defeatBranch`, command.defeatBranch);
       if (command.escapeBranch !== undefined) validateCommandArray(`${label}.escapeBranch`, command.escapeBranch);
@@ -292,6 +296,14 @@ function validateCommandShape(label: string, value: unknown): void {
     }
     case "despawnFieldEnemy":
       requireString(`${label}.spawnId`, command.spawnId);
+      return;
+    case "tacticsBattle":
+      requireString(`${label}.troopId`, command.troopId);
+      if (command.width !== undefined) requireNumber(`${label}.width`, command.width);
+      if (command.height !== undefined) requireNumber(`${label}.height`, command.height);
+      if (command.canLose !== undefined) requireBoolean(`${label}.canLose`, command.canLose);
+      if (command.victoryBranch !== undefined) validateCommandArray(`${label}.victoryBranch`, command.victoryBranch);
+      if (command.defeatBranch !== undefined) validateCommandArray(`${label}.defeatBranch`, command.defeatBranch);
       return;
     case "runControl": {
       const action = requireString(`${label}.action`, command.action);
@@ -455,12 +467,34 @@ function validateCommandShape(label: string, value: unknown): void {
     case "enterHeroName": {
       requireString(`${label}.actorId`, command.actorId);
       requireBoolean(`${label}.showInitialName`, command.showInitialName);
+      if (command.stringVariableId !== undefined) requireString(`${label}.stringVariableId`, command.stringVariableId);
+      if (command.prompt !== undefined) requireString(`${label}.prompt`, command.prompt);
       const maxLength = requireNumber(`${label}.maxLength`, command.maxLength);
       if (Number.isInteger(maxLength) && maxLength >= 1 && maxLength <= 12) return;
       throw new ProjectFormatError(`${label}.maxLength가 잘못되었습니다.`);
     }
     case "m2Command":
       validateM2CommandShape(label, command);
+      return;
+    case "setDifficulty":
+      requireString(`${label}.difficultyId`, command.difficultyId);
+      return;
+    case "storeParty":
+    case "recallParty":
+      requireString(`${label}.partySetId`, command.partySetId);
+      return;
+    case "removeMonster":
+      requireString(`${label}.instanceId`, command.instanceId);
+      return;
+    case "tradeMonster":
+      requireString(`${label}.fromSpeciesId`, command.fromSpeciesId);
+      requireString(`${label}.toSpeciesId`, command.toSpeciesId);
+      if (command.level !== undefined) requireNumber(`${label}.level`, command.level);
+      if (command.nickname !== undefined) requireString(`${label}.nickname`, command.nickname);
+      return;
+    case "fuseMonsters":
+      requireString(`${label}.instanceIdA`, command.instanceIdA);
+      requireString(`${label}.instanceIdB`, command.instanceIdB);
       return;
     default:
       return;
@@ -703,6 +737,12 @@ export function validateConditionShape(label: string, value: unknown): void {
       }
       throw new ProjectFormatError(`${label}.query가 잘못되었습니다.`);
     }
+    case "difficulty":
+      requireString(`${label}.difficultyId`, condition.difficultyId);
+      return;
+    case "itemUsed":
+      requireString(`${label}.itemId`, condition.itemId);
+      return;
     case "all":
     case "any": {
       const children = requireArray(`${label}.conditions`, condition.conditions);
@@ -713,6 +753,55 @@ export function validateConditionShape(label: string, value: unknown): void {
     }
     case "not":
       validateConditionShape(`${label}.condition`, condition.condition);
+      return;
+    case "actorStat":
+      requireString(`${label}.actorId`, condition.actorId);
+      assert(["level", "hp", "mp", "hpPercent", "mpPercent"].includes(requireString(`${label}.stat`, condition.stat)), `${label}.stat 값이 올바르지 않습니다.`);
+      requireString(`${label}.op`, condition.op);
+      requireNumber(`${label}.value`, condition.value);
+      return;
+    case "actorState":
+      requireString(`${label}.actorId`, condition.actorId);
+      requireString(`${label}.stateId`, condition.stateId);
+      requireBoolean(`${label}.present`, condition.present);
+      return;
+    case "partyLeader":
+      requireString(`${label}.actorId`, condition.actorId);
+      return;
+    case "partySize":
+    case "clearCount":
+      requireString(`${label}.op`, condition.op);
+      requireNumber(`${label}.value`, condition.value);
+      return;
+    case "facing":
+      assert(condition.subject === "player" || condition.subject === "event", `${label}.subject 값이 올바르지 않습니다.`);
+      assert(["up", "down", "left", "right"].includes(requireString(`${label}.dir`, condition.dir)), `${label}.dir 값이 올바르지 않습니다.`);
+      return;
+    case "relativeFacing":
+      assert(["playerBehindEvent", "eventBehindPlayer", "playerFacingEvent"].includes(requireString(`${label}.relation`, condition.relation)), `${label}.relation 값이 올바르지 않습니다.`);
+      return;
+    case "hiding":
+    case "newGamePlus":
+      requireBoolean(`${label}.value`, condition.value);
+      return;
+    case "pursuitActive":
+      if (condition.eventId !== undefined) requireString(`${label}.eventId`, condition.eventId);
+      requireBoolean(`${label}.value`, condition.value);
+      return;
+    case "endingSeen":
+      requireString(`${label}.endingId`, condition.endingId);
+      requireBoolean(`${label}.value`, condition.value);
+      return;
+    case "weekday":
+      for (const [index, day] of requireArray(`${label}.weekdays`, condition.weekdays).entries()) {
+        const value = requireNumber(`${label}.weekdays[${index}]`, day);
+        assert(Number.isInteger(value) && value >= 0 && value <= 6, `${label}.weekdays[${index}] 는 0~6 이어야 합니다.`);
+      }
+      return;
+    case "stringVariable":
+      requireString(`${label}.stringVariableId`, condition.stringVariableId);
+      assert(["==", "!=", "contains", "empty"].includes(requireString(`${label}.op`, condition.op)), `${label}.op 값이 올바르지 않습니다.`);
+      requireString(`${label}.value`, condition.value);
       return;
   }
   throw new ProjectFormatError(`${label}: 알 수 없는 condition kind: ${kind}`);

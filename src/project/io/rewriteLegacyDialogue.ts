@@ -33,6 +33,9 @@ export function rewriteLegacyAdvancedDialogueInProject(project: Project): boolea
         walk(cmd.victoryBranch);
         walk(cmd.defeatBranch);
         walk(cmd.escapeBranch);
+      } else if (cmd.kind === "tacticsBattle") {
+        walk(cmd.victoryBranch);
+        walk(cmd.defeatBranch);
       } else if (cmd.kind === "promoteActor") {
         walk(cmd.successBranch);
         walk(cmd.failureBranch);

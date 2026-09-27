@@ -1,3 +1,5 @@
+import { prepareFieldAbility } from "@/player/fieldAbility";
+import { installPointerMove } from "@/player/playScenePointerMove";
 import { createDefeatRecovery } from "@/player/defeatRecovery";
 import { mapTileSize } from "@/project/tileGeometry";
 import { syncPlayerCharacterScale } from "@/player/playerCharacterScale";
@@ -51,7 +53,7 @@ import {
   shakeCamera,
   transferTo as transferSceneTo,
 } from "@/player/playSceneMapCommands";
-import { resetEncounterCounter, updatePlayScene } from "@/player/playSceneMovement";
+import { findRuntimeEventInScene, resetEncounterCounter, updatePlayScene } from "@/player/playSceneMovement";
 import { characterSpriteY, footprintSpriteX, MAP_LOWER_LAYER_DEPTH, MAP_UPPER_LAYER_DEPTH, placeCharacterSprite } from "@/player/characterDepth";
 import { runEvent as runSceneEvent } from "@/player/playSceneInterpreter";
 import {
@@ -254,6 +256,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.upperTileLayer = this.add.container(0, 0);
     this.upperTileLayer.setDepth(MAP_UPPER_LAYER_DEPTH);
     this.input_ = new Input(this);
+    // 명작 공백 #32: system.pointerMovement 가 켜진 게임만 반응한다(핸들러 안에서 확인).
+    installPointerMove(this as unknown as Parameters<typeof installPointerMove>[0]);
     this.runtimeDom = new RuntimeDomOverlay(() => {
       const host: unknown = this.game.registry.get("dialogueHost");
       return host instanceof HTMLElement ? host : undefined;
@@ -588,6 +592,21 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
 
   getSession(): PlaySession {
     return this.session;
+  }
+
+  /** 명작 공백 #5 — 메뉴에서 필드 능력을 쓴다. 성공하면 메뉴를 닫은 뒤 공통 이벤트가 돈다. */
+  useFieldAbility(actorId: string, skillId: string): { ok: boolean; message: string } {
+    const project = store.getCurrent();
+    const skill = project.database.skills.find((record) => record.id === skillId);
+    if (!skill) return { ok: false, message: "스킬을 찾을 수 없습니다" };
+    if (this.running) return { ok: false, message: "지금은 쓸 수 없습니다" };
+    const delta = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[this.facing];
+    const front = findRuntimeEventInScene(this as unknown as Parameters<typeof findRuntimeEventInScene>[0], this.tileX + delta[0]!, this.tileY + delta[1]!, "action");
+    const result = prepareFieldAbility(project, this.session, actorId, skill, { facing: this.facing, eventId: front?.event.id });
+    if (result.kind === "unusable") return { ok: false, message: result.message };
+    const commonEvent = (project.commonEvents ?? []).find((event) => event.id === result.commonEventId);
+    void import("@/player/playSceneInterpreter").then(({ runCommands }) => runCommands(this, commonEvent?.commands ?? [], front?.event.id));
+    return { ok: true, message: `${skill.name}!` };
   }
 
   readLivePlacementContext() {

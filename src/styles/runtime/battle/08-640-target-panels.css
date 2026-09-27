@@ -290,3 +290,28 @@
   color: #17203a;
 }
 
+
+/* 리미트·기력·파티 공용 게이지(battleGauges). 막대 채움은 위 .battle-stat-bar-tp 를 그대로 쓴다. */
+.battle-resource-gauge {
+  align-items: center;
+  display: grid;
+  gap: 0 4px;
+  grid-column: 1 / -1;
+  grid-template-columns: auto auto 1fr;
+}
+
+.battle-resource-gauge-label,
+.battle-resource-gauge-value {
+  font-size: 0.75em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.battle-resource-gauge .battle-resource-gauge-bar {
+  grid-column: auto;
+  height: 6px;
+}
+
+.battle-resource-gauge.is-full .battle-resource-gauge-label {
+  font-weight: 700;
+}

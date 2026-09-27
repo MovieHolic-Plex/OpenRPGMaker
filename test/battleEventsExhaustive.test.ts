@@ -32,6 +32,7 @@ const PREVIOUSLY_SILENT_KINDS = [
   "openSaveMenu",
   "spawnFieldEnemy",
   "despawnFieldEnemy",
+  "tacticsBattle",
   "advanceCropGrowth",
 ] as const satisfies readonly Command["kind"][];
 

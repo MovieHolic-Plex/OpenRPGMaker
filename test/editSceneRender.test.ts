@@ -374,7 +374,7 @@ describe("edit scene event rendering", () => {
   });
 
   it.each<Layer>(["lower", "upper"])(
-    "keeps NPC sprites visible on the %s tile layer",
+    "renders events as E badges, not sprites, on the %s tile layer",
     (layer) => {
       const result = renderSelectedNpcEvent(layer);
       const objects = flattenObjects(result.overlayObjects);
@@ -393,11 +393,11 @@ describe("edit scene event rendering", () => {
       );
 
       expect(result.gridLineStyles[0]).toMatchObject({ lineWidth: 1, color: 0xffffff, alpha: 0.08 });
-      // Character artwork stays visible while painting tiles.
-      expect(badge).toBeUndefined();
-      expect(badgeBack).toBeUndefined();
-      expect(badgeText).toBeUndefined();
-      expect(sprite).toBeDefined();
+      // Tile layers show only the E badge; character artwork belongs to the event layer.
+      expect(badge).toBeDefined();
+      expect(badgeBack).toBeDefined();
+      expect(badgeText).toBeDefined();
+      expect(sprite).toBeUndefined();
       expect(ring?.stroke).toMatchObject({ lineWidth: 2, color: 0x69db7c });
     }
   );

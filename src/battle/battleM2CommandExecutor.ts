@@ -2,6 +2,7 @@ import { parseM2BattleCommand } from "@/battle/battleM2Commands";
 import type { MutableBattler } from "@/battle/battleBattlers";
 import type { Command } from "@/project/types";
 import type { BattleEventContext } from "./battleEvents";
+import type { BattleScreenState } from "@/battle/types";
 
 type M2Command = Extract<Command, { kind: "m2Command" }>;
 
@@ -20,6 +21,8 @@ export type M2BattleCommandExecutorOptions = {
   // Calls enqueue an invocation; the event frame machine owns suspension and termination.
   readonly executeCommonEvent?: (commonEventId: string) => void;
   readonly executeTroopPage?: (pageId: string) => void;
+  // m2-046 Tint Screen: 전투 화면 색조·색 필터. 전투 안에서만 유효하다(필드로 되돌려 쓰지 않는다).
+  readonly setScreen?: (screen: BattleScreenState) => void;
 };
 
 export type M2BattleCommandExecution = {
@@ -92,6 +95,10 @@ export function executeM2BattleCommand(command: M2Command, options: M2BattleComm
     }
     case "forceEscape":
       return { handled: true, forceEscape: true };
+    case "tintScreen":
+      if (!options.setScreen) return { handled: false, forceEscape: false };
+      options.setScreen({ tint: parsed.tint, tintDurationMs: parsed.durationMs, filter: { ...parsed.filter } });
+      return { handled: true, forceEscape: false };
     case "actionTimes": {
       const actor = resolveActorTarget(options.actors, parsed.target, options.context);
       if (!actor || parsed.amount <= 0) return { handled: true, forceEscape: false };

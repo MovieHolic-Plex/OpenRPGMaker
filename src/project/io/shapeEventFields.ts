@@ -497,6 +497,8 @@ function validatePageShape(label: string, value: unknown): void {
     assert(pursuit.scope === "map" || pursuit.scope === "connected", `${label}: 추격 범위 오류`);
     assert(pursuit.onLost === "wait" || pursuit.onLost === "return", `${label}: 추격 복귀 오류`);
     assert(pursuit.tracking === undefined || pursuit.tracking === "lastSeen" || pursuit.tracking === "persistent", `${label}: 추격 추적 정책 오류`);
+    if (pursuit.lostSwitchId !== undefined) requireString(`${label}.movement.pursuit.lostSwitchId`, pursuit.lostSwitchId);
+    if (pursuit.followSwitchId !== undefined) requireString(`${label}.movement.pursuit.followSwitchId`, pursuit.followSwitchId);
     for (const key of ["doorDelayMs", "searchMs"]) {
       const ms = requireNumber(`${label}.movement.pursuit.${key}`, pursuit[key]);
       assert(Number.isFinite(ms) && ms >= 0 && ms <= 60000, `${label}: 추격 시간은 0~60000ms`);

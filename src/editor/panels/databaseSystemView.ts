@@ -4,6 +4,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { genId } from "@/util/id";
 import { GUARD_MAX_DAMAGE_REDUCTION_PERCENT } from "@/battle/action/guard";
 import { BATTLE_SKINS, isDeprecatedBattleSkin, listActiveBattleSkinIds, listBattleSkinIds, resolveSkinId } from "@/battle/skins/registry";
+import { BATTLE_HIT_FEEL_DESCRIPTIONS, BATTLE_HIT_FEEL_IDS, BATTLE_HIT_FEEL_LABELS, DEFAULT_BATTLE_HIT_FEEL, resolveBattleHitFeel } from "@/project/battleHitFeel";
 import {
   emptyToUndefined,
   field,
@@ -49,6 +50,7 @@ import {
   type FontRole,
 } from "@/project/fontRegistry";
 import { store } from "@/project/store";
+import { DEFAULT_ROLLING_HP_PER_SECOND, normalizeRollingHpSpeed, ROLLING_HP_SPEED_LIMITS } from "@/player/rollingHp";
 import type {
   ActionCombatHudConfig,
   ActorRecord,
@@ -60,6 +62,7 @@ import type {
   TitleParticlePreset,
   TitleScreenSettings,
   TitleScreenTitleMode,
+  TitleScreenVariant,
   TypeChartRecord,
 } from "@/project/types";
 import { el } from "@/util/dom";
@@ -91,6 +94,8 @@ import {
   titleOpeningPresetEffects,
 } from "@/project/titleEffects";
 import { applyToolSequenceToStore } from "@/editor/tools/applyChangesetToStore";
+import { difficultyFieldset, monsterFusionFieldset } from "@/editor/panels/databaseSystemDifficultyView";
+import { TITLE_VARIANT_LIMIT } from "@/project/titleVariants";
 import {
   analyzePlayResolution,
   normalizePlayResolution,
@@ -415,6 +420,24 @@ function systemSectionNodes(
           });
           return select;
         })()),
+        field("타격감", (() => {
+          const select = el("select", {
+            dataset: { testid: "db-field-system-battle-hit-feel" },
+            attrs: { title: BATTLE_HIT_FEEL_IDS.map((id) => `${BATTLE_HIT_FEEL_LABELS[id]}: ${BATTLE_HIT_FEEL_DESCRIPTIONS[id]}`).join("\n") },
+          });
+          for (const id of BATTLE_HIT_FEEL_IDS) {
+            select.append(el("option", { text: BATTLE_HIT_FEEL_LABELS[id], attrs: { value: id } }));
+          }
+          select.value = resolveBattleHitFeel(project.system.battleHitFeel);
+          select.addEventListener("change", () => {
+            updateSystem((draft) => {
+              const next = resolveBattleHitFeel(select.value);
+              if (next === DEFAULT_BATTLE_HIT_FEEL) delete draft.system.battleHitFeel;
+              else draft.system.battleHitFeel = next;
+            });
+          });
+          return select;
+        })()),
         field("규칙 모델", (() => {
           // 전투 규칙 엔진 선택. rm2k3(기본/생략) 또는 gen1(포켓몬 레드 스타일).
           // 기본은 JSON 에 생략하고 gen1 만 보존한다(normalizeSystemRecords 와 동일 계약).
@@ -441,6 +464,19 @@ function systemSectionNodes(
             draft.system.activeSlots = optionalPositiveInteger(value);
           }, "system:active-slots");
         }),
+        checkboxField("선제·기습 개시 굴림 (심볼 접촉 방향 포함)", "db-field-system-battle-formation-roll", project.system.battleFormationRoll === true, (checked) => {
+          updateSystem((draft) => {
+            if (checked) draft.system.battleFormationRoll = true;
+            else delete draft.system.battleFormationRoll;
+          });
+        }),
+        numberField("도주 실패마다 확률 가산 (%p)", "db-field-system-escape-bonus", () => store.getCurrent().system.escapeBonusPercent ?? 0, (value) => {
+          updateSystem((draft) => {
+            const next = Math.max(0, Math.min(100, Math.round(value)));
+            if (!Number.isFinite(value) || next === 0) delete draft.system.escapeBonusPercent;
+            else draft.system.escapeBonusPercent = next;
+          }, "system:escape-bonus");
+        }, { min: 0, max: 100 }),
         checkboxField("몬스터 수집", "db-field-system-monster-collection", project.system.monsterCollection === true, (checked) => {
           updateSystem((draft) => {
             if (checked) draft.system.monsterCollection = true;
@@ -453,7 +489,38 @@ function systemSectionNodes(
             else delete draft.system.monsterBattleParty;
           });
         }),
+        checkboxField("클릭(탭)으로 걷기", "db-field-system-pointer-movement", project.system.pointerMovement === true, (checked) => {
+          updateSystem((draft) => {
+            if (checked) draft.system.pointerMovement = true;
+            else delete draft.system.pointerMovement;
+          });
+        }),
+        // 마더식 롤링 HP: 표시 HP 가 서서히 흐르고, 치명타를 받아도 미터가 0 에 닿기 전에 이기면 살아남는다.
+        checkboxField("롤링 HP 미터", "db-field-system-rolling-hp", project.system.battleRollingHp === true, (checked) => {
+          updateSystem((draft) => {
+            if (checked) draft.system.battleRollingHp = true;
+            else delete draft.system.battleRollingHp;
+          });
+          rerender();
+        }),
+        numberField(
+          "롤링 속도 (HP/초)",
+          "db-field-system-rolling-hp-speed",
+          () => normalizeRollingHpSpeed(store.getCurrent().system.battleRollingHpPerSecond),
+          (value) => {
+            updateSystem((draft) => {
+              const speed = normalizeRollingHpSpeed(value);
+              if (speed === DEFAULT_ROLLING_HP_PER_SECOND) delete draft.system.battleRollingHpPerSecond;
+              else draft.system.battleRollingHpPerSecond = speed;
+            }, "system:rolling-hp-speed");
+          },
+          ROLLING_HP_SPEED_LIMITS,
+          project.system.battleRollingHp === true
+            ? undefined
+            : { disabled: true, disabledReason: "롤링 HP 미터를 켜면 속도를 정할 수 있습니다." },
+        ),
       ]),
+      battleResourcesFieldset(project),
       rm2k3Fieldset("전투 오디오", [
         resourcePickerControl({
           label: "기본 BGM",
@@ -565,6 +632,8 @@ function systemSectionNodes(
         galleryLabelField(project.system.gallery?.label ?? ""),
         systemHelp("켜면 플레이 중 메뉴의 기록에 이 이름으로 들어갑니다. 이름은 갤러리 대신 원하는 낱말을 적어도 됩니다. 그림 표시에서 「남기기」를 켠 그림만 모입니다."),
       ]),
+      rm2k3Fieldset("난이도", difficultyFieldset(project, updateSystem, () => rerender())),
+      rm2k3Fieldset("몬스터 합성", monsterFusionFieldset(project, updateSystem, () => rerender())),
     ]),
     optin: section("optin", optInSystemFields(project, rerender)),
     time: section("time", [timeSystemFieldset(project.system.timeSystem, project.commonEvents, rerender)]),
@@ -583,6 +652,7 @@ function systemSectionNodes(
                 titleScreenOpeningFieldset(titleScreen, rerender),
                 titleScreenDisplayFieldset(titleScreen, titleBackgroundResourceId, project.system.titleResourceId, rerender),
                 titleScreenMenuFieldset(titleScreen, rerender),
+                titleScreenVariantsFieldset(titleScreen, project, rerender),
                 titleScreenEffectsFieldset(titleScreen, rerender),
                 titleScreenAudioFieldset(titleScreen, rerender),
               ],
@@ -1086,6 +1156,13 @@ function actionCombatDetailFields(config: NonNullable<SystemRecords["actionComba
         else delete draft.system.actionCombat.fourWayMovement;
       });
     }),
+    checkboxField("동료도 싸움(V 키로 조작 교대)", "db-field-system-action-combat-allies", config.allies === true, (checked) => {
+      updateSystem((draft) => {
+        draft.system.actionCombat ??= { enabled: true };
+        if (checked) draft.system.actionCombat.allies = true;
+        else delete draft.system.actionCombat.allies;
+      });
+    }),
     checkboxField("HUD 하트 바", "db-field-system-action-combat-hud-hearts", config.hud?.hearts !== false, (checked) => {
       patchHud((hud) => {
         hud.hearts = checked;
@@ -1544,6 +1621,83 @@ function nextRewardPolicy(
   };
 }
 
+/**
+ * 전투 자원 — 리미트·기력·파티 게이지·약점 추가 행동·감정 상성(battleGauges/battleEmotion).
+ * 모두 기본 꺼짐이고 끄면 설정을 지워 옛 JSON 바이트를 지킨다(normalizeSystemRecords 와 같은 계약).
+ */
+function battleResourcesFieldset(project: ReturnType<typeof store.getCurrent>): HTMLElement {
+  const system = project.system;
+  const toggle = (
+    label: string,
+    testid: string,
+    key: "limitGauge" | "resource2" | "partyGauge",
+  ): HTMLElement => checkboxField(label, testid, system[key]?.enabled === true, (checked) => {
+    updateSystem((draft) => {
+      if (checked) draft.system[key] = { ...(draft.system[key] ?? {}), enabled: true };
+      else delete draft.system[key];
+    });
+  });
+  return rm2k3Fieldset("전투 자원", [
+    systemHelp("리미트는 맞을수록 차고 가득 차면 리미트 기술을 씁니다. 기력은 주고받는 피해로 차는 제2 기술 자원입니다(기술 습득 TP 와 별개). 연계 게이지는 파티가 함께 채우고 추격 연계기가 씁니다. 스킬 탭 「전투 자원」에서 소모량을 정합니다."),
+    toggle("리미트 게이지", "db-field-system-limit-gauge", "limitGauge"),
+    numberField("리미트: 받은 피해 충전율(%)", "db-field-system-limit-taken-rate", () => store.getCurrent().system.limitGauge?.takenRate ?? 100, (value) => {
+      updateSystem((draft) => {
+        if (draft.system.limitGauge) draft.system.limitGauge.takenRate = value;
+      }, "system:limit-taken-rate");
+    }, { min: 0, max: 1000 }, system.limitGauge?.enabled ? undefined : { disabled: true, disabledReason: "리미트 게이지를 먼저 켜세요." }),
+    toggle("기력(제2 자원)", "db-field-system-resource2", "resource2"),
+    numberField("기력 최대치", "db-field-system-resource2-max", () => store.getCurrent().system.resource2?.max ?? 100, (value) => {
+      updateSystem((draft) => {
+        if (draft.system.resource2) draft.system.resource2.max = value;
+      }, "system:resource2-max");
+    }, { min: 1, max: 999 }, system.resource2?.enabled ? undefined : { disabled: true, disabledReason: "기력을 먼저 켜세요." }),
+    toggle("연계 게이지(파티 공용)", "db-field-system-party-gauge", "partyGauge"),
+    numberField("연계 게이지: 명중당 충전", "db-field-system-party-gauge-gain", () => store.getCurrent().system.partyGauge?.gainPerHit ?? 10, (value) => {
+      updateSystem((draft) => {
+        if (draft.system.partyGauge) draft.system.partyGauge.gainPerHit = value;
+      }, "system:party-gauge-gain");
+    }, { min: 0, max: 999 }, system.partyGauge?.enabled ? undefined : { disabled: true, disabledReason: "연계 게이지를 먼저 켜세요." }),
+    checkboxField("약점을 찌르면 한 번 더 행동", "db-field-system-weakness-extra-action", system.weaknessExtraAction === true, (checked) => {
+      updateSystem((draft) => {
+        if (checked) draft.system.weaknessExtraAction = true;
+        else delete draft.system.weaknessExtraAction;
+      });
+    }),
+    field("감정 상성", (() => {
+      // 한 줄에 하나: 「공격 계열>대상 계열=배율」. 상태 탭의 감정 계열 이름과 같게 적는다.
+      const textarea = el("textarea", {
+        attrs: { rows: "3", placeholder: "기쁨>분노=1.5\n분노>슬픔=1.5\n슬픔>기쁨=1.5", spellcheck: "false" },
+        dataset: { testid: "db-field-system-emotion-cycle" },
+      }) as HTMLTextAreaElement;
+      textarea.value = formatEmotionCycle(system.emotionCycle);
+      textarea.addEventListener("change", () => {
+        const rules = parseEmotionCycle(textarea.value);
+        updateSystem((draft) => {
+          if (rules.length > 0) draft.system.emotionCycle = rules;
+          else delete draft.system.emotionCycle;
+        });
+        textarea.value = formatEmotionCycle(rules);
+      });
+      return textarea;
+    })()),
+  ]);
+}
+
+export function formatEmotionCycle(rules: readonly { attackerFamily: string; targetFamily: string; multiplier: number }[] | undefined): string {
+  return (rules ?? []).map((rule) => `${rule.attackerFamily}>${rule.targetFamily}=${rule.multiplier}`).join("\n");
+}
+
+/** 「공격>대상=배율」 줄들을 규칙으로. 형식이 틀린 줄은 버린다. */
+export function parseEmotionCycle(text: string): { attackerFamily: string; targetFamily: string; multiplier: number }[] {
+  return text.split(/\r?\n/).flatMap((line) => {
+    const match = line.trim().match(/^(.+?)\s*>\s*(.+?)\s*=\s*(-?\d+(?:\.\d+)?)$/);
+    if (!match) return [];
+    const multiplier = Number(match[3]);
+    if (!Number.isFinite(multiplier) || multiplier < 0) return [];
+    return [{ attackerFamily: match[1].trim(), targetFamily: match[2].trim(), multiplier }];
+  });
+}
+
 function rm2k3Fieldset(title: string, children: readonly HTMLElement[]): HTMLElement {
   const card = sectionCard({ title, children });
   card.classList.add("db-system-settings-group");
@@ -1901,6 +2055,100 @@ function titleScreenMenuFieldset(titleScreen: TitleScreenSettings, rerender: Sys
           }),
         ],
       }),
+    ],
+  });
+}
+
+/** 타이틀 변형(본 엔딩·클리어 수·마지막 저장 맵 → 배경/음악) + 시작하면 바로 이어하기. */
+function titleScreenVariantsFieldset(titleScreen: TitleScreenSettings, project: Project, rerender: SystemRefresh): HTMLElement {
+  const variants = titleScreen.variants ?? [];
+  const storeVariants = (next: TitleScreenVariant[]): void => {
+    updateTitleScreen((settings) => {
+      if (next.length > 0) settings.variants = next;
+      else delete settings.variants;
+    });
+    rerender();
+  };
+  const whenKinds = [
+    { id: "endingSeen", name: "이 엔딩을 봤을 때" },
+    { id: "clearCount", name: "엔딩을 이만큼 봤을 때" },
+    { id: "saveMapId", name: "마지막 저장 맵이" },
+  ] as const;
+  const rows = variants.map((variant, index) => {
+    const patchVariant = (patch: Partial<TitleScreenVariant>): void => {
+      storeVariants(variants.map((entry, i) => (i === index ? { ...entry, ...patch } : entry)));
+    };
+    const when = variant.when;
+    const whenValue = when.kind === "endingSeen"
+      ? selectField("엔딩", `db-field-title-variant-ending-${index}`, when.endingId, (project.endings ?? []).map((ending) => ({ id: ending.id, name: ending.name || ending.id })), (endingId) => patchVariant({ when: { kind: "endingSeen", endingId } }))
+      : when.kind === "clearCount"
+        ? numberField("개수", `db-field-title-variant-count-${index}`, () => when.atLeast, (atLeast) => patchVariant({ when: { kind: "clearCount", atLeast } }), { min: 1, max: 99 })
+        : selectField("맵", `db-field-title-variant-map-${index}`, when.mapId, Object.values(project.maps).map((map) => ({ id: map.id, name: map.name || map.id })), (mapId) => patchVariant({ when: { kind: "saveMapId", mapId } }));
+    return el("div", {
+      class: "db-title-variant-row",
+      dataset: { testid: `db-title-variant-row-${index}` },
+      children: [
+        selectField("조건", `db-field-title-variant-kind-${index}`, when.kind, whenKinds, (kind) => {
+          const firstEnding = project.endings?.[0]?.id ?? "";
+          const next: TitleScreenVariant["when"] = kind === "clearCount"
+            ? { kind: "clearCount", atLeast: 1 }
+            : kind === "saveMapId"
+              ? { kind: "saveMapId", mapId: project.startMapId }
+              : { kind: "endingSeen", endingId: firstEnding };
+          patchVariant({ when: next });
+        }),
+        whenValue,
+        resourcePickerControl({
+          label: "배경",
+          resourceId: variant.backgroundResourceId,
+          kind: "title",
+          testid: `db-field-title-variant-background-${index}`,
+          allowClear: true,
+          dialogTitle: "변형 배경",
+          onChange: (result) => patchVariant({ backgroundResourceId: emptyToUndefined(result.resourceId) }),
+          rerender,
+        }),
+        resourcePickerControl({
+          label: "음악",
+          resourceId: variant.musicResourceId,
+          kind: "music",
+          testid: `db-field-title-variant-music-${index}`,
+          allowClear: true,
+          dialogTitle: "변형 음악",
+          onChange: (result) => patchVariant({ musicResourceId: emptyToUndefined(result.resourceId) }),
+          rerender,
+        }),
+        el("button", {
+          class: "btn",
+          text: "삭제",
+          attrs: { type: "button", "aria-label": `타이틀 변형 ${index + 1}번 삭제` },
+          dataset: { testid: `db-title-variant-remove-${index}` },
+          on: { click: () => storeVariants(variants.filter((_, i) => i !== index)) },
+        }),
+      ],
+    });
+  });
+  return el("fieldset", {
+    class: "oprn-db-fieldset db-title-workbench-group",
+    dataset: { testid: "db-title-workbench-variants" },
+    children: [
+      el("legend", { text: "클리어·저장에 따라 바뀌는 타이틀" }),
+      systemHelp("위에서부터 처음 맞는 줄의 배경·음악을 씁니다. 빈 칸은 기본값을 그대로 둡니다."),
+      ...rows,
+      el("button", {
+        class: "btn",
+        text: "변형 추가",
+        attrs: { type: "button", ...(variants.length >= TITLE_VARIANT_LIMIT ? { disabled: "true" } : {}) },
+        dataset: { testid: "db-title-variant-add" },
+        on: { click: () => storeVariants([...variants, { when: { kind: "clearCount", atLeast: 1 } }]) },
+      }),
+      checkboxField("시작하면 바로 이어하기", "db-field-title-resume-on-launch", titleScreen.resumeOnLaunch === true, (checked) => {
+        updateTitleScreen((settings) => {
+          if (checked) settings.resumeOnLaunch = true;
+          else delete settings.resumeOnLaunch;
+        });
+      }),
+      systemHelp("켜면 저장이 있을 때 타이틀을 건너뛰고 가장 최근 저장(자동 저장 포함)으로 바로 들어갑니다. 저장이 없으면 타이틀이 나옵니다."),
     ],
   });
 }

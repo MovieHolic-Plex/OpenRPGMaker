@@ -25,6 +25,7 @@ import {
 import { battlerTypes, gen1TypeModifiersForTypes, typeChartMultiplierForTypes } from "@/battle/typeChart";
 import { readGen1MajorStatus } from "@/battle/gen1/status";
 import { attackMultiplierForStates, defenseMultiplierForStates } from "@/battle/battleStates";
+import { damageEffectKind } from "@/battle/battleSpecialEffects";
 
 export interface PredictedDamage {
   /** 분산/크리티컬/빗나감을 배제한 평균 기대 피해(또는 회복). 음수 = 흡수. */
@@ -285,7 +286,7 @@ export function predictAttackDamage(project: Project, actor: BattleBattlerSnapsh
 export function predictSkillDamageFor(project: Project, user: BattleBattlerSnapshot, skill: SkillRecord, target: BattleBattlerSnapshot): PredictedDamage {
   const statistic = skill.effect.kind === "damage" || skill.effect.kind === "healing" ? skill.effect.statistic : "attack";
   if (skill.id === DEFAULT_SKILL_ID && !skill.damageFormula && !usesGen1Damage(project)) skill = { ...skill, power: battlerStats(project, user).attack };
-  const normal = predictSkillDamage(project, { ...user, row: undefined }, { power: skill.power, statistic, effect: skill.effect.kind, elementId: skill.elementId }, { ...target, row: undefined });
+  const normal = predictSkillDamage(project, { ...user, row: undefined }, { power: skill.power, statistic, effect: damageEffectKind(skill.effect.kind), elementId: skill.elementId }, { ...target, row: undefined });
   const mutable = (snapshot: BattleBattlerSnapshot): MutableBattler => {
     const stats = battlerStats(project, snapshot);
     return { ...snapshot, ...stats, hidden: false, chargeRate: 0, attackPower: stats.attack, stateIds: [...snapshot.stateIds], stateTurns: { ...snapshot.stateTurns }, skillPp: { ...snapshot.skillPp }, skillCooldowns: { ...snapshot.skillCooldowns }, skillIds: [...snapshot.skillIds] } as MutableBattler;
@@ -303,7 +304,7 @@ export function predictSkillDamageFor(project: Project, user: BattleBattlerSnaps
       { ...source, attackPower: Math.round(source.attackPower * attackMultiplierForStates(project, source)), mind: Math.round(source.mind * attackMultiplierForStates(project, source)) },
       { ...destination, defense: destination.defense * defenseMultiplierForStates(project, destination), mind: destination.mind * defenseMultiplierForStates(project, destination) }, skill.power)) : undefined;
     let hit = predictSkillDamage(project, { ...battlerSnapshot(source), row: undefined },
-      { power: skill.power, statistic, effect: skill.effect.kind, elementId: skill.elementId },
+      { power: skill.power, statistic, effect: damageEffectKind(skill.effect.kind), elementId: skill.elementId },
       { ...battlerSnapshot(destination), row: undefined }).amount;
     if (!usesGen1Damage(project) || formula?.ok) {
       if (usesGen1Damage(project) && skill.effect.kind === "damage" && formula?.ok) {
@@ -312,7 +313,7 @@ export function predictSkillDamageFor(project: Project, user: BattleBattlerSnaps
         if (hit > 1) hit = Math.floor(hit * GEN1_RANDOM_MEDIAN / GEN1_RANDOM_MAX);
       } else {
         const result = applySkillLike({ ...source, row: undefined }, { ...destination, row: undefined }, {
-          power: skill.power, statistic, effect: skill.effect.kind, damageFormula: skill.damageFormula,
+          power: skill.power, statistic, effect: damageEffectKind(skill.effect.kind), damageFormula: skill.damageFormula,
           variance: 0, criticalRate: 0, hitRate: 100, rng: () => 0.5,
           affects: skill.effect.kind === "damage" || skill.effect.kind === "healing" ? skill.effect.affects : "hp",
           attackerStatMultiplier: attackMultiplierForStates(project, source),
@@ -323,7 +324,7 @@ export function predictSkillDamageFor(project: Project, user: BattleBattlerSnaps
         hit = result.amount;
       }
     }
-    hit = formationDamage(Math.round(hit * multiplier), user.row, target.row, usesGen1Damage(project) && skill.effect.kind === "damage" ? (usesMagicalDefense(project, skill.elementId) ? "mind" : "attack") : statistic, skill.effect.kind);
+    hit = formationDamage(Math.round(hit * multiplier), user.row, target.row, usesGen1Damage(project) && skill.effect.kind === "damage" ? (usesMagicalDefense(project, skill.elementId) ? "mind" : "attack") : statistic, damageEffectKind(skill.effect.kind));
     amount += hit;
     if (skill.effect.kind === "damage") {
       if (skill.effect.affects === "mp") destination.mp = Math.min(destination.maxMp, Math.max(0, destination.mp - hit));

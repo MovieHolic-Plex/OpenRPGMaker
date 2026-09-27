@@ -13,6 +13,7 @@ import { el } from "@/util/dom";
 import { mapSelectElement } from "./sharedPickers";
 import { openEventSubdialog } from "./subdialog";
 import { drawTransferFallback, drawTransferMapPreview } from "./transferMapPreview";
+import { sourceTextOf } from "@/i18n/domTranslator";
 
 export type MapPoint = {
   readonly mapId: MapId;
@@ -94,7 +95,7 @@ function renderMapPointPicker(body: HTMLElement, request: MapPointDialogRequest,
     });
     status.textContent = statusLabel(draft.mapId, draft.x, draft.y);
     for (const button of zoomRow.querySelectorAll("button")) {
-      button.classList.toggle("active", button.textContent === zoomLabel(draft.zoom));
+      button.classList.toggle("active", sourceTextOf(button) === zoomLabel(draft.zoom));
     }
   };
 

@@ -14,6 +14,7 @@ function audioReferenceMessage(project: Project, id: string): string | null {
     system.defaultBgmResourceId, system.battleBgmResourceId, system.battleVictoryMeResourceId,
     system.battleDefeatSeResourceId, system.battleEscapeSeResourceId,
     system.titleScreen?.musicResourceId,
+    ...(system.titleScreen?.variants ?? []).map((variant) => variant.musicResourceId),
     sounds?.cursorSeResourceId, sounds?.confirmSeResourceId, sounds?.cancelSeResourceId,
   ];
   if (systemIds.includes(id)) return "시스템 설정이 이 음원을 사용 중입니다.";

@@ -1,5 +1,5 @@
 import { actionSkillFields } from "./databaseActionSkillForm";
-import { skillCombatRuleCard } from "@/editor/panels/databaseCombatRuleFields";
+import { skillCombatRuleCard, skillInputSequenceFields } from "@/editor/panels/databaseCombatRuleFields";
 // 스킬 탭 인스펙터 (2026-08 모던 개편).
 //
 // 개편 전 문제(감사 H 축 P0): `skillComposer()` 를 폼 맨 앞에 prepend 하는데, 그 안의
@@ -18,7 +18,7 @@ import { skillCombatRuleCard } from "@/editor/panels/databaseCombatRuleFields";
 // 실제로 잘려 나갔다(clientWidth 87 / scrollWidth 119). 라벨을 `최대 PP` 로 줄이고
 // 부연은 카드 힌트로 옮겼다. 재발 방지용 줄바꿈 허용 규칙은 modern/skills.css 에 있다.
 
-import { emptyToUndefined, field, numberField, selectField, selectLiteral, textField } from "@/editor/panels/databaseControls";
+import { emptyToUndefined, field, numberField, selectField, selectLiteral, textField, toggleSwitch } from "@/editor/panels/databaseControls";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
 import { setSelectedMonsterSpeciesId } from "@/editor/panels/databaseMonsterSpeciesView";
 import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
@@ -37,8 +37,9 @@ import { store } from "@/project/store";
 import type { DatabaseStateEffect, Project, SkillEffect, SkillRecord } from "@/project/types";
 import { getEditorUiMode } from "@/editor/editorUiMode";
 import { el } from "@/util/dom";
+import { specialSkillEffectLabel } from "@/battle/battleSpecialEffects";
 
-const SKILL_EFFECT_KINDS = ["damage", "healing", "support", "switch"] as const satisfies readonly SkillEffect["kind"][];
+const SKILL_EFFECT_KINDS = ["damage", "healing", "support", "switch", "steal", "scan", "learnEnemySkill", "randomSkillFrom"] as const satisfies readonly SkillEffect["kind"][];
 const SKILL_EFFECT_AFFECTS = ["hp", "mp"] as const satisfies readonly SkillEffectAffects[];
 const SKILL_DAMAGE_STATS = ["attack", "mind"] as const satisfies readonly SkillDamageStatistic[];
 const STATE_EFFECT_OPERATIONS = ["add", "remove"] as const satisfies readonly DatabaseStateEffect["operation"][];
@@ -121,6 +122,7 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
           ),
         ],
       }),
+      battleResourceCard(record),
       // 성공률·명중률·분산·우선도는 초보가 만질 일이 드물다 — 기본값이면 접어 두고, 몇 개가
       // 들어 있는지와 「기본값 그대로」를 머리에 적는다(2026-09-23 파티 UX 검토).
       sectionCard({
@@ -185,6 +187,7 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
   stack.append(skillCombatRuleCard(currentSkill(record), {
     collapsed: !advancedOpen(Boolean(record.damageFormula) || (record.hitSequence ?? [1]).join(",") !== "1"),
   }));
+  stack.append(skillInputSequenceFields(currentSkill(record)));
   stack.append(usedByCard(form, currentSkill(record)));
 
   form.replaceChildren(composer, stack);
@@ -257,6 +260,8 @@ export function skillSentenceFragments(project: Project, record: SkillRecord): {
         return `지원 효과${accuracy}`;
       case "switch":
         return "스위치를 켭니다";
+      default:
+        return `${specialSkillEffectLabel(record.effect)}${accuracy}`;
     }
   })();
   const element = record.elementId
@@ -273,6 +278,38 @@ export function skillSentenceFragments(project: Project, record: SkillRecord): {
     ? `연출: ${project.database.battleAnimations.find((entry) => entry.id === record.animationId)?.name || record.animationId}`
     : "연출 없음";
   return { primary, element, states, animation };
+}
+
+/**
+ * 기력·리미트·연계 게이지 소모. 시스템 탭 「전투 자원」에서 켠 자원만 전투에 쓰인다 — 꺼져 있으면
+ * 힌트로 알려 주고 값은 그대로 보관한다(나중에 켜면 바로 적용).
+ */
+function battleResourceCard(record: SkillRecord): HTMLElement {
+  const system = store.getCurrent().system;
+  const off = [
+    system.resource2?.enabled ? "" : "기력",
+    system.limitGauge?.enabled ? "" : "리미트",
+    system.partyGauge?.enabled ? "" : "연계 게이지",
+  ].filter(Boolean);
+  const inUse = (record.resource2Cost ?? 0) > 0 || record.limitSkill === true || (record.partyGaugeCost ?? 0) > 0;
+  return sectionCard({
+    title: "전투 자원",
+    hint: off.length === 3 ? "시스템 → 전투 자원에서 켜면 쓰입니다" : off.length > 0 ? `꺼진 자원: ${off.join(" · ")}` : "기력 · 리미트 · 연계 게이지",
+    testid: "db-skill-card-battle-resources",
+    collapsible: true,
+    collapsed: !advancedOpen(inUse),
+    children: [
+      numberField(system.resource2?.label || "기력 소모", "db-field-skill-resource2-cost", record.resource2Cost ?? 0, (resource2Cost) =>
+        updateDatabaseRecord("skills", record.id, { resource2Cost: resource2Cost > 0 ? resource2Cost : undefined }), { min: 0, max: 999 }
+      ),
+      toggleSwitch("리미트 기술(게이지가 가득 차야 사용)", "db-field-skill-limit", record.limitSkill === true, (limitSkill) =>
+        updateDatabaseRecord("skills", record.id, { limitSkill: limitSkill ? true : undefined })
+      ),
+      numberField("연계 게이지 소모", "db-field-skill-party-gauge-cost", record.partyGaugeCost ?? 0, (partyGaugeCost) =>
+        updateDatabaseRecord("skills", record.id, { partyGaugeCost: partyGaugeCost > 0 ? partyGaugeCost : undefined }), { min: 0, max: 999 }
+      ),
+    ],
+  });
 }
 
 function hasTunedAccuracy(record: SkillRecord): boolean {
@@ -414,6 +451,11 @@ function effectFields(record: SkillRecord, rerender: () => void): HTMLElement[] 
     selectField("속성", "db-field-skill-element", record.elementId ?? "", store.getCurrent().database.elements ?? [], (value) =>
       updateSkillOptionalFields(record, { elementId: emptyToUndefined(value) })
     ),
+    // 명작 공백 #5: 메뉴에서 쓰는 필드 능력. 정면 대상은 문자열 변수 fieldAbilityTarget.
+    selectField("필드 능력(공통 이벤트)", "db-field-skill-field-common-event", record.fieldCommonEventId ?? "",
+      (store.getCurrent().commonEvents ?? []).map((event) => ({ id: event.id, name: event.name || event.id })), (value) =>
+      updateSkillOptionalFields(record, { fieldCommonEventId: emptyToUndefined(value) })
+    ),
   ];
   if (record.effect.kind === "damage" || record.effect.kind === "healing") {
     controls.push(
@@ -424,6 +466,15 @@ function effectFields(record: SkillRecord, rerender: () => void): HTMLElement[] 
         updateSkillEffectAffects(record, affects)
       )
     );
+  }
+  controls.push(toggleSwitch("적이 쓰면 배울 수 있음(청마법)", "db-field-skill-learnable", record.learnable === true, (learnable) =>
+    updateDatabaseRecord("skills", record.id, { learnable: learnable || undefined })
+  ));
+  if (record.effect.kind === "randomSkillFrom") {
+    const skillIds = record.effect.skillIds;
+    controls.push(textField("무작위 후보 기술 ID(쉼표)", "db-field-skill-effect-random-skills", skillIds.join(", "), (value) =>
+      updateDatabaseRecord("skills", record.id, { effect: { kind: "randomSkillFrom", skillIds: value.split(",").map((id) => id.trim()).filter(Boolean) } })
+    ));
   }
   if (record.effect.kind === "switch") {
     controls.push(
@@ -451,6 +502,14 @@ function updateSkillEffectKind(record: SkillRecord, kind: SkillEffect["kind"]): 
       return;
     case "switch":
       updateDatabaseRecord("skills", record.id, { effect: { kind, switchId: effect.kind === "switch" ? effect.switchId : undefined } });
+      return;
+    case "steal":
+    case "scan":
+    case "learnEnemySkill":
+      updateDatabaseRecord("skills", record.id, { effect: { kind } });
+      return;
+    case "randomSkillFrom":
+      updateDatabaseRecord("skills", record.id, { effect: { kind, skillIds: effect.kind === "randomSkillFrom" ? effect.skillIds : [] } });
       return;
     default:
       assertNever(kind);
@@ -580,7 +639,7 @@ function updateSkillStateEffects(record: SkillRecord, stateEffects: readonly Dat
   updateSkillOptionalFields(record, { stateEffects: stateEffects.map((effect) => ({ ...effect, chance: clampPercent(effect.chance) })) });
 }
 
-function updateSkillOptionalFields(record: SkillRecord, patch: Pick<Partial<SkillRecord>, "elementId" | "stateEffects">): void {
+function updateSkillOptionalFields(record: SkillRecord, patch: Pick<Partial<SkillRecord>, "elementId" | "stateEffects" | "fieldCommonEventId">): void {
   // updateSkillRecord 뮤테이터가 elementId/stateEffects 를 화이트리스트에 포함하므로 단일 갱신으로 충분하다.
   updateDatabaseRecord("skills", record.id, patch);
 }

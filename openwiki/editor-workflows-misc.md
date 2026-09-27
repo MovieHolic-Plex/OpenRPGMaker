@@ -489,3 +489,20 @@ zip SHA-256이 `BUNDLED_PACK_CATALOG` 또는 이 브라우저에 기억된 기�
 진입은 `src/editor/panels/assetSourceBrowser.ts`, 창은 `electron/main/assetBrowser.ts`,
 해시 표는 `src/editor/assetBrowser/packCatalog.ts`.
 
+
+
+## 필드 키트 — 미니게임·필드 능력·순간이동·걸음 상태·클릭 이동 (명작 공백 G3, 2026-09-27)
+
+명작 20선 대조에서 「변수 곡예로 흉내」에 머물던 필드 기능 다섯을 명령·DB 로 올렸다.
+
+| 공백 | 저작 | 런타임 | 파일 |
+|---|---|---|---|
+| #1 미니게임 키트 | 모던 명령 `Key Poll`(m2-219) · `Timed Choice`(m2-220) · `Quick Time Event`(m2-221) · `High Score`(m2-222) | Key Poll 은 필드 씬이 매 프레임 쓰는 `session.heldInput`(방향 2/4/6/8, 결정·취소·달리기)을 변수·스위치로 옮긴다 — 병렬 이벤트 루프에서 읽으면 실시간 조작이 된다. 제한시간 선택지는 기존 선택지 창 + AbortSignal(시간 초과 0), QTE 는 순서(성공 1/실패 0)·연타(횟수). 최고 점수는 `session.highScores`(세이브 포함), `submitLow` 는 시간 기록용 | `interpreter/minigameCommands.ts`, `playSceneMinigames.ts`, `heldKeyTracker.ts` |
+| #5 필드 능력 | 스킬 DB 「필드 능력(공통 이벤트)」 = `SkillRecord.fieldCommonEventId` | 메뉴 스킬 목록에서 고르면 MP 를 내고 메뉴를 닫은 뒤 공통 이벤트를 돌린다. 정면 이벤트 id 는 문자열 변수 `fieldAbilityTarget`, 정면 좌표는 변수 `fieldAbilityX/Y`, 쓴 배우는 `fieldAbilityUser` | `player/fieldAbility.ts`, `PlayScene.useFieldAbility` |
+| #24 순간이동 | `Set Teleportation Point`(m2-072, mapId 비우면 현재 위치, `label` 선택) · `Teleport Menu`(m2-223) | 지점은 `session.teleportPoints` 목록(맵당 한 줄, 최대 48)에 쌓이고 메뉴는 현재 맵·사라진 맵을 뺀다. `Teleportation On/Off` 가 꺼져 있으면 결과 변수 -1, 멈추지 않는다 | `project/teleportPoints.ts` |
+| #25 걸음 상태 | 상태 DB HP 패널의 「맵 이동(걸음당)」 + 새 칸 간격·N걸음 후 풀림·걸음 피해로 쓰러짐 | `hpReleaseStep`/`mpReleaseStep` 은 편집기에만 있고 읽는 런타임이 없었다. 이제 걸음마다 적용, 기본은 HP 1 에서 멈춘다(`fieldStepCanKill` 이면 0 → 전원이면 필드 패배) | `project/stateFieldSteps.ts` |
+| #32 클릭 이동 | 시스템 DB 「클릭(탭)으로 걷기」 = `system.pointerMovement` | 맵 타일을 누르면 `planPathfindMove` 로 걸어간다. 이벤트 실행·컷신 잠금·이동 중에는 무시 | `playScenePointerMove.ts` |
+
+- 카탈로그 개수 계약: m2 카탈로그 131종, 맵·공통 full 36종(`test/m2EventCommandCatalog.test.ts`, `test/m2RuntimeSupportCompleteness.test.ts`). 새 모던 명령을 더하면 두 숫자를 같이 올린다.
+- 새 세션 칸 `teleportPoints`·`highScores`·`stateStepCounts` 는 세이브 왕복, `heldInput` 은 세이브하지 않는다.
+- 테스트: `test/mgL6FieldKit.test.ts`.

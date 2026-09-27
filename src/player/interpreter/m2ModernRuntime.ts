@@ -7,13 +7,16 @@ import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";
 import { coordinateAxisSpec, resolveDestination } from "@/project/eventCommands/coordinateDestination";
 import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
 import { planScreenEffect } from "./screenEffectPlan";
+import { calendarOptionsOf, sessionQueryValue } from "@/project/conditionActorQueries";
+
+type M2ModernRuntimeContext = { readonly currentEventId?: string; readonly project?: Project };
 
 export function executeModernCommand(
   session: PlaySessionLike,
   runtime: M2RuntimeState,
   title: string,
   fields: M2CommandFields,
-  context: { readonly currentEventId?: string } = {}
+  context: M2ModernRuntimeContext = {}
 ): boolean {
   switch (title) {
     case "Camera Control":
@@ -93,7 +96,7 @@ export function executeModernCommand(
       recordExpression(session, runtime, fields);
       return true;
     case "Data Query":
-      recordDataQuery(session, fields);
+      recordDataQuery(session, fields, context);
       return true;
     default:
       return false;
@@ -312,7 +315,7 @@ function recordExpression(session: PlaySessionLike, runtime: M2RuntimeState, fie
   if (resultVariableId) session.variables[resultVariableId] = evaluateM2Expression(expression, session);
 }
 
-function recordDataQuery(session: PlaySessionLike, fields: M2CommandFields): void {
+function recordDataQuery(session: PlaySessionLike, fields: M2CommandFields, context?: M2ModernRuntimeContext): void {
   const variableId = fieldString(fields, "variableId", "");
   if (!variableId) return;
   switch (fieldString(fields, "query", "gold")) {
@@ -335,6 +338,9 @@ function recordDataQuery(session: PlaySessionLike, fields: M2CommandFields): voi
       session.variables[variableId] = session.inventory[fieldString(fields, "target", "")] ?? 0;
       return;
     default:
-      session.variables[variableId] = 0;
+      session.variables[variableId] = sessionQueryValue(session, fieldString(fields, "query", ""), fieldString(fields, "target", ""), {
+        actorOrder: context?.project?.database.actors.map((actor) => actor.id),
+        calendar: calendarOptionsOf(context?.project),
+      });
   }
 }

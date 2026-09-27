@@ -129,6 +129,7 @@ export function validateSystem(value: unknown): void {
     }
   }
   if (system.monsterCollection !== undefined) requireBoolean("system.monsterCollection", system.monsterCollection);
+  if (system.pointerMovement !== undefined) requireBoolean("system.pointerMovement", system.pointerMovement);
   if (system.monsterBattleParty !== undefined) requireBoolean("system.monsterBattleParty", system.monsterBattleParty);
   if (system.giftSystem !== undefined) requireBoolean("system.giftSystem", system.giftSystem);
   if (system.gallery !== undefined) {
@@ -183,6 +184,20 @@ export function validateSystem(value: unknown): void {
   if (system.craftRecipes !== undefined) validateCraftRecipes(system.craftRecipes);
   if (system.itemUpgrades !== undefined) validateItemUpgrades(system.itemUpgrades);
   if (system.sellPrices !== undefined) validateSellPrices(system.sellPrices);
+  for (const key of ["limitGauge", "resource2", "partyGauge"] as const) {
+    if (system[key] === undefined) continue;
+    const config = requireRecord(`system.${key}`, system[key]);
+    requireBoolean(`system.${key}.enabled`, config.enabled);
+  }
+  if (system.weaknessExtraAction !== undefined) requireBoolean("system.weaknessExtraAction", system.weaknessExtraAction);
+  if (system.emotionCycle !== undefined) {
+    for (const [index, raw] of requireArray("system.emotionCycle", system.emotionCycle).entries()) {
+      const rule = requireRecord(`system.emotionCycle[${index}]`, raw);
+      requireString(`system.emotionCycle[${index}].attackerFamily`, rule.attackerFamily);
+      requireString(`system.emotionCycle[${index}].targetFamily`, rule.targetFamily);
+      requireNumber(`system.emotionCycle[${index}].multiplier`, rule.multiplier);
+    }
+  }
   if (system.typeChart !== undefined) {
     const chart = requireRecord("system.typeChart", system.typeChart);
     requireArray("system.typeChart.types", chart.types);
@@ -422,6 +437,7 @@ function validateItemUpgrades(value: unknown): void {
     seen.add(id);
     requireNonBlankString(`${label}.fromItemId`, upgrade.fromItemId);
     requireNonBlankString(`${label}.toItemId`, upgrade.toItemId);
+    if (upgrade.target !== undefined) assert(upgrade.target === "equipment", `${label}.target must be "equipment".`);
     if (upgrade.goldCost !== undefined) assertNonNegativeNumber(`${label}.goldCost`, upgrade.goldCost);
     if (upgrade.ingredients !== undefined) validateItemAmounts(`${label}.ingredients`, upgrade.ingredients, false);
     if (upgrade.capability !== undefined) {
@@ -558,6 +574,7 @@ function validateTimeSystem(value: unknown): void {
   if (timeSystem.dayStartHour !== undefined) requireNumber("system.timeSystem.dayStartHour", timeSystem.dayStartHour);
   if (timeSystem.dayEndHour !== undefined) requireNumber("system.timeSystem.dayEndHour", timeSystem.dayEndHour);
   if (timeSystem.daysPerSeason !== undefined) requireNumber("system.timeSystem.daysPerSeason", timeSystem.daysPerSeason);
+  if (timeSystem.startWeekday !== undefined) requireNumber("system.timeSystem.startWeekday", timeSystem.startWeekday);
   if (timeSystem.forceSleep !== undefined) requireBoolean("system.timeSystem.forceSleep", timeSystem.forceSleep);
   if (timeSystem.onDayEnd !== undefined) requireString("system.timeSystem.onDayEnd", timeSystem.onDayEnd);
 }

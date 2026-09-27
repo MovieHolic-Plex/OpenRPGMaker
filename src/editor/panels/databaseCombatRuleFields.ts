@@ -6,6 +6,7 @@ import { sectionCard } from '@/editor/panels/databaseWorkspace';
 import { store } from '@/project/store';
 import type { EnemyRecord, SkillRecord } from '@/project/types';
 import { el } from '@/util/dom';
+import { isSkillInputKey } from '@/battle/battleInputSequence';
 
 export function skillCombatRuleCard(record: SkillRecord, options: { readonly collapsed?: boolean } = {}): HTMLElement {
   const preview = el('p', { class: 'db-skill-card-note', dataset: { testid: 'feature16-formula-preview' }, attrs: { 'aria-live': 'polite' } });
@@ -73,4 +74,53 @@ export function enemyDropFields(record: EnemyRecord): HTMLElement {
     } } }), el('button', { text: '기존 단일 드롭 사용', attrs: { type: 'button' }, dataset: { testid: 'feature16-drop-legacy' }, on: { click: () => { save(undefined); render(); } } }));
   };
   render(); return host;
+}
+
+/** 훔치기 표(stealItems). 위에서부터 차례로 굴려 첫 성공 하나를 준다. 적마다 한 번만 훔칠 수 있다. */
+export function enemyStealFields(record: EnemyRecord): HTMLElement {
+  const host = el('div', { dataset: { testid: 'mg-enemy-steal-items' } });
+  const current = () => store.getCurrent().database.enemies.find(enemy => enemy.id === record.id) ?? record;
+  const rows = () => current().stealItems ?? [];
+  const save = (stealItems: NonNullable<EnemyRecord['stealItems']>): void => updateDatabaseRecord('enemies', record.id, { stealItems: stealItems.length ? stealItems : undefined });
+  const render = (): void => {
+    host.replaceChildren(el('p', { class: 'db-skill-card-note', text: '훔치기 기술이 위에서부터 차례로 확률을 굴립니다. 한 번 훔치면 그 적에게서는 더 훔칠 수 없습니다.' }));
+    rows().forEach((entry, index) => {
+      const patch = (value: Partial<typeof entry>): void => save(rows().map((row, i) => i === index ? { ...row, ...value } : row));
+      host.append(el('fieldset', { class: 'db-advanced-panel', dataset: { testid: `mg-enemy-steal-${index}` }, children: [
+        el('legend', { text: `훔칠 아이템 ${index + 1}` }),
+        selectField('아이템', `mg-enemy-steal-${index}-item`, entry.itemId, store.getCurrent().database.items, itemId => { if (itemId) patch({ itemId }); }),
+        numberField('확률 %', `mg-enemy-steal-${index}-rate`, entry.rate, rate => patch({ rate }), { min: 0, max: 100 }),
+        el('button', { text: '삭제', attrs: { type: 'button' }, dataset: { testid: `mg-enemy-steal-${index}-remove` }, on: { click: () => { save(rows().filter((_, i) => i !== index)); render(); } } }),
+      ] }));
+    });
+    host.append(el('button', { text: '훔칠 아이템 추가', attrs: { type: 'button' }, dataset: { testid: 'mg-enemy-steal-add' }, on: { click: () => {
+      const itemId = store.getCurrent().database.items[0]?.id;
+      if (itemId) save([...rows(), { itemId, rate: 50 }]);
+      render();
+    } } }));
+  };
+  render(); return host;
+}
+
+/** 입력 커맨드(inputSequence): 키 순서·제한 시간·성공/실패 배율. 키를 비우면 입력 없는 기술. */
+export function skillInputSequenceFields(record: SkillRecord): HTMLElement {
+  const current = () => store.getCurrent().database.skills.find(skill => skill.id === record.id) ?? record;
+  const sequence = record.inputSequence;
+  const save = (patch: Partial<NonNullable<SkillRecord['inputSequence']>>): void => {
+    const base = current().inputSequence ?? { keys: [], timeLimitMs: 3000 };
+    const next = { ...base, ...patch };
+    updateDatabaseRecord('skills', record.id, { inputSequence: next.keys.length ? next : undefined });
+  };
+  const keysField = textField('입력 키(up/down/left/right/confirm/cancel, 쉼표)', 'mg-skill-input-keys', (sequence?.keys ?? []).join(', '), value => {
+    const keys = value.split(',').map(part => part.trim()).filter(Boolean);
+    const valid = keys.every(isSkillInputKey) && keys.length <= 12;
+    keysField.querySelector('input')?.setCustomValidity(valid ? '' : 'up, down, left, right, confirm, cancel 중에서 12개까지 입력하세요.');
+    if (valid) save({ keys: keys as NonNullable<SkillRecord['inputSequence']>['keys'] });
+  });
+  return sectionCard({ title: '입력 커맨드', testid: 'mg-skill-input-sequence', hint: '전투에서 대상을 고른 뒤 키 순서를 입력합니다. 제한 시간 안에 성공하면 위력이 오르고, 실패하면 약해집니다.', collapsible: true, collapsed: !sequence, children: [
+    keysField,
+    numberField('제한 시간(ms)', 'mg-skill-input-time', sequence?.timeLimitMs ?? 3000, timeLimitMs => save({ timeLimitMs }), { min: 300, max: 20000 }),
+    numberField('성공 배율', 'mg-skill-input-success', sequence?.successMultiplier ?? 1.5, successMultiplier => save({ successMultiplier }), { min: 0, max: 10, step: 0.05 }),
+    numberField('실패 배율', 'mg-skill-input-fail', sequence?.failMultiplier ?? 0.5, failMultiplier => save({ failMultiplier }), { min: 0, max: 10, step: 0.05 }),
+  ] });
 }

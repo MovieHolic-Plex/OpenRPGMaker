@@ -307,7 +307,16 @@ export const COMMAND_GUARANTEES = {
     completion: "continue",
     quick: true,
   }),
+  // 전술 격자 전투: 맵/공통에서 오버레이로 끝까지 돈다. 전투 안에서는 실행하지 않는다(battleEvents 미지원 기록).
+  tacticsBattle: guarantee("battle", { ...playerPause, quick: true, support: { map: "full", common: "full", troop: "partial" } }),
   runControl: guarantee("system", { quick: true }),
+  setDifficulty: guarantee("system"),
+  // recallParty: 자리 이동은 transfer pause 로 플레이어가 소유한다(같은 맵이면 계속).
+  storeParty: guarantee("actor"),
+  recallParty: guarantee("actor", { completion: "conditionalPause" }),
+  removeMonster: guarantee("monster"),
+  tradeMonster: guarantee("monster"),
+  fuseMonsters: guarantee("monster"),
 } satisfies Record<CommandKind, CommandGuarantee>;
 
 export function commandGuarantee(kind: CommandKind): CommandGuarantee {

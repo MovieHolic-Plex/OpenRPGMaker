@@ -1,3 +1,4 @@
+import { playQuickTimeEvent, playTeleportMenu, playTimedChoice } from "@/player/playSceneMinigames";
 import { mapTileSize } from "@/project/tileGeometry";
 import { cancelFurniturePush } from './furniturePushAnimation';
 import { friendshipDeltaEmote } from "@/project/emotes";
@@ -55,6 +56,8 @@ import { applyAdvanceTimeStep, applySetTimeStep } from "@/player/playSceneTime";
 import { formatFriendshipFeedback, isGiftableEvent, isGiftSystemEnabled, isTalkFriendshipEnabled, trySocialTalk } from "@/project/friendship";
 import { playGiftSelection } from "@/player/playSceneGift";
 import { playPresentItem } from "@/player/playScenePresentItem";
+import { playTacticsBattle } from "@/player/playSceneTactics";
+import { applyBattleDefeat } from "@/player/playSceneDefeat";
 import { completeDetectionEncounter } from "@/project/npcBehavior";
 import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
 import { getCharacterProfile, resolveCharacterSpeaker } from "@/project/characterProfiles";
@@ -105,6 +108,22 @@ export async function runEvent(scene: PlaySceneContext, eventId: string): Promis
     if (error instanceof DOMException && error.name === "AbortError"
       && (scene.session !== activeSession || scene.sys?.isActive() === false)) return;
     throw error;
+  }
+}
+
+/**
+ * 메뉴 «바라보는 대상에 사용»: 아이템 사용 페이지(itemUsed 조건)의 명령을 그 이벤트 소유로 실행한다.
+ * 실행하는 동안 session.itemUsedId 가 남아 있어 페이지 안의 조건 분기도 같은 아이템을 본다.
+ */
+export async function runItemUsePage(scene: PlaySceneContext, eventId: string, commands: readonly Command[], itemId: string): Promise<void> {
+  if (scene.running) return;
+  const session = scene.session;
+  session.itemUsedId = itemId;
+  try {
+    await runCommands(scene, commands, eventId);
+  } finally {
+    if (session.itemUsedId === itemId) delete session.itemUsedId;
+    scene.refreshRuntimeSurfaces();
   }
 }
 
@@ -432,6 +451,7 @@ async function consumeBlockingStep(
         currentName: step.currentName,
         maxLength: step.maxLength,
         showInitialName: step.showInitialName,
+        ...(step.prompt ? { prompt: step.prompt } : {}),
       });
       const result = interpreter.resume(name);
       // 액터 이름 변경을 메뉴/전투 표시에 즉시 반영.
@@ -478,6 +498,15 @@ async function consumeBlockingStep(
     case "despawnFieldEnemy":
       despawnFieldEnemyForScene(scene, step.spawnId);
       return resumeAfterSurface(scene, interpreter);
+    case "tacticsBattle": {
+      dialogue.hide();
+      const result = await playTacticsBattle(scene, step);
+      if (result === undefined) return resumeAfterSurface(scene, interpreter);
+      // 패배 불허 전투의 패배는 게임 오버다(battleProcessing 과 같은 규칙).
+      if (result === "defeat" && !step.canLose) { applyBattleDefeat(scene); return { kind: "done" }; }
+      scene.refreshRuntimeSurfaces();
+      return resumeWithValue(scene, interpreter, result);
+    }
     case "setEventGraphicPattern":
       applyEventGraphicPatternStep(scene, step, currentEventId);
       return resumeInterpreter(interpreter);
@@ -661,6 +690,12 @@ async function consumeBlockingStep(
         scene.returnToTitle();
       }
       return resumeInterpreter(interpreter);
+    case "timedChoice":
+      return resumeWithValue(scene, interpreter, await playTimedChoice(scene, step));
+    case "quickTimeEvent":
+      return resumeWithValue(scene, interpreter, await playQuickTimeEvent(scene, step));
+    case "teleportMenu":
+      return resumeWithValue(scene, interpreter, await playTeleportMenu(scene, step));
     default:
       return assertNever(step);
   }

@@ -109,6 +109,8 @@ describe("spatial catalog source fidelity", () => {
       [
         spatialPresentationId("tileset-kit", first, "bed_v"),
         spatialPresentationId("tileset-kit", first, "my_chair"),
+        // 두 번째 타일셋에 저작한 킷도 내 것이다(번들 시트여도 시드 킷이 아니다).
+        spatialPresentationId("tileset-kit", second, "bed_v"),
       ].sort(),
     );
     expect(own.find((card) => card.id === spatialPresentationId("tileset-kit", first, "bed_v"))?.name).toBe("Authored Bed V");

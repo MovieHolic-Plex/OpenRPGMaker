@@ -64,6 +64,7 @@ export const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
     spawn: { id: "spawn1", troopId: "troop1", area: { x: 0, y: 0, w: 4, h: 4 } },
   },
   despawnFieldEnemy: { kind: "despawnFieldEnemy", spawnId: "spawn1" },
+  tacticsBattle: { kind: "tacticsBattle", troopId: "troop1" },
   runControl: { kind: "runControl", action: "start", seed: 1 },
   promoteActor: {
     kind: "promoteActor",
@@ -138,4 +139,10 @@ export const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
     commandId: M2_FIXTURE_COMMAND_ID,
     fields: createDefaultM2Fields(m2FixtureEntry),
   },
+  setDifficulty: { kind: "setDifficulty", difficultyId: "normal" },
+  storeParty: { kind: "storeParty", partySetId: "party_a" },
+  recallParty: { kind: "recallParty", partySetId: "party_a" },
+  removeMonster: { kind: "removeMonster", instanceId: "monster_1" },
+  tradeMonster: { kind: "tradeMonster", fromSpeciesId: "species1", toSpeciesId: "species2" },
+  fuseMonsters: { kind: "fuseMonsters", instanceIdA: "monster_1", instanceIdB: "monster_2" },
 };

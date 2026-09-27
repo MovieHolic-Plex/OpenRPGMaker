@@ -540,13 +540,28 @@ function recipeCards(record: CraftRecipe, index: number, rerender: () => void): 
 }
 
 function upgradeCards(record: ItemUpgradeRule, index: number, rerender: () => void): readonly HTMLElement[] {
-  const items = store.getCurrent().database.items;
+  // target:"equipment" 면 from/to 는 장비 id 다 — 장착 중이면 그 슬롯에서 바로 바꾼다(project/upgrades.ts).
+  const equipmentTarget = record.target === "equipment";
+  const database = store.getCurrent().database;
+  const items = equipmentTarget ? database.equipment : database.items;
   return [
     sectionCard({
       title: "교체",
-      hint: "이벤트 명령 '도구 강화 적용'이 이 ID 를 참조합니다.",
+      hint: equipmentTarget
+        ? "장착 중인 장비는 그 자리에서 바뀝니다(같은 부위끼리). 이벤트 명령 '업그레이드'가 이 ID 를 참조합니다."
+        : "이벤트 명령 '도구 강화 적용'이 이 ID 를 참조합니다.",
       children: [
         textControl("ID", "db-life-upgrade-id", record.id, (value) => updateUniqueId("upgrades", index, value, record.id)),
+        checkboxControl("장비 강화(장착 중이면 그 자리에서)", "db-life-upgrade-target-equipment", equipmentTarget, (checked) => {
+          const first = checked ? database.equipment[0]?.id : database.items[0]?.id;
+          if (!first) {
+            toast(checked ? "장비를 먼저 만드세요." : "아이템을 먼저 만드세요.");
+            rerender();
+            return;
+          }
+          updateUpgrade(index, { target: checked ? "equipment" : undefined, fromItemId: first, toItemId: first }, false);
+          rerender();
+        }),
         selectControl("강화 전", "db-life-upgrade-from-item", record.fromItemId, idOptions(items), (value) => updateUpgrade(index, { fromItemId: value })),
         selectControl("강화 후", "db-life-upgrade-to-item", record.toItemId, idOptions(items), (value) => updateUpgrade(index, { toItemId: value })),
         numberControl("골드 비용", "db-life-upgrade-gold-cost", record.goldCost ?? 0, (value) => updateUpgrade(index, { goldCost: nonNegativeInteger(value) || undefined })),

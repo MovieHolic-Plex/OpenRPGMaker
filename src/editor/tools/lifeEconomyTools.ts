@@ -89,6 +89,18 @@ function requireItemId(draft: Project, value: unknown, label: string): ItemId {
   return id;
 }
 
+function requireEquipmentId(draft: Project, value: unknown, label: string): ItemId {
+  const id = typeof value === "string" ? value.trim() : "";
+  const known = draft.database.equipment.map((record) => record.id);
+  if (!id || !known.includes(id)) {
+    throw new ToolError(
+      `${label}='${id}'는 database.equipment 에 없는 장비입니다. 사용 가능한 장비 id: ${sampleIds(known)}`,
+      { code: "equipment-not-found" },
+    );
+  }
+  return id;
+}
+
 function requireSwitchId(draft: Project, value: unknown, label: string): string {
   const id = typeof value === "string" ? value.trim() : "";
   const known = draft.switches.map((entry) => entry.id);
@@ -194,10 +206,13 @@ const upsertItemUpgrade: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const record = asRecord(args.upgrade, "upgrade");
     const id = requireId(record, "id", "upgrade");
+    const equipmentTarget = record.target === "equipment";
+    const requireTargetId = equipmentTarget ? requireEquipmentId : requireItemId;
     const rule: ItemUpgradeRule = {
       id,
-      fromItemId: requireItemId(draft, record.fromItemId, "upgrade.fromItemId"),
-      toItemId: requireItemId(draft, record.toItemId, "upgrade.toItemId"),
+      fromItemId: requireTargetId(draft, record.fromItemId, "upgrade.fromItemId"),
+      toItemId: requireTargetId(draft, record.toItemId, "upgrade.toItemId"),
+      ...(equipmentTarget ? { target: "equipment" as const } : {}),
       ...(optionalCount(record, "goldCost", "upgrade") !== undefined ? { goldCost: optionalCount(record, "goldCost", "upgrade") } : {}),
       ...(record.ingredients !== undefined ? { ingredients: parseIngredients(draft, record.ingredients, "upgrade.ingredients") } : {}),
       ...(record.capability !== undefined && record.capability !== null ? { capability: parseCapability(record.capability) } : {}),

@@ -1,4 +1,5 @@
 import { ownsMonsterSpecies } from "@/project/monsterOwnership";
+import { initialDifficultyId } from "@/project/difficulty";
 // project/session.ts
 // PlaySession: 플레이 중 런타임 상태. Project는 읽기 전용, 가변 상태는 여기에.
 // v2: switches/variables/timers/mapOverrides 포함.
@@ -15,6 +16,7 @@ RuntimeNpcTravelState,
 RuntimeRemovedEventIds,
 RuntimeSpawnedEventState, } from "@/project/sessionRuntimeTypes"
 import { compareVariableValue } from "@/project/conditionEvaluation";
+import { evalActorQueryCondition, type ActorQueryHost, type ActorQueryOptions } from "@/project/conditionActorQueries";
 import { conditionMatchesSeason, conditionMatchesTimePhase, initialGameTime, type BattleResult, type GameTime, type Season } from "@/project/gameTime";
 import {
   evalRelationshipCondition,
@@ -269,6 +271,8 @@ export interface PlaySession {
   monsterInstances: Record<MonsterInstanceId, MonsterInstance>;
   monsterParty: MonsterInstanceId[];
   monsterBox: MonsterInstanceId[];
+  /** 놓아주기·교환·합성으로 지운 개체 번호 중 가장 큰 값. 새 개체 id 가 지운 id 를 다시 쓰지 않게 한다. 생략 = 지운 적 없음. */
+  retiredMonsterInstanceSeq?: number;
   actorSkillIds: Record<ActorId, SkillId[]>;
   /** Remaining Gen1 PP for the legacy actor-party fallback path. */
   actorSkillPp?: Record<ActorId, Record<SkillId, number>>;
@@ -374,10 +378,47 @@ export interface PlaySession {
   m2Runtime?: M2RuntimeState;
   // 누적 플레이 타임(초). 매 프레임 update 에서 증가.
   playTimeSeconds: number;
+  /** 주인공이 보는 방향(필드 씬이 이동·회전 때 기록). 생략 = 아래. 방향 조건이 읽는다. */
+  playerFacing?: import("./types").Dir;
+  /** 문자열 변수(Input Text 가 쓴다). 생략 = 전부 빈 문자열. */
+  stringVariables?: Record<string, string>;
+  /** 누적 필드 걸음 수. Data Query `steps` 가 읽는다. */
+  stepCount?: number;
+  /** 방문 순간이동 지점(Set Teleportation Point 가 쌓고 Teleport Menu 가 읽는다). */
+  teleportPoints?: import("./teleportPoints").TeleportPoint[];
+  /** 미니게임 최고 점수(id → 점수). 세이브에 들어간다. */
+  highScores?: Record<string, number>;
+  /** Key Poll 이 읽는 지금 눌린 키(필드 씬이 매 프레임 쓴다). 세이브에 넣지 않는다. */
+  heldInput?: { readonly dir: number; readonly confirm: boolean; readonly cancel: boolean; readonly dash: boolean };
+  /** 상태별 필드 걸음 카운터(actorId → stateId → 걸음). 걸음 상태 효과(#25)가 쓴다. */
+  stateStepCounts?: Record<string, Record<string, number>>;
+  /**
+   * 이 기기의 회차 기록 사본(부팅 때 clearRecord 에서 채운다, 세이브에 넣지 않는다).
+   * 회차는 세이브 슬롯이 아니라 기기에 속한다 — 예전 세이브를 불러도 '이미 본 엔딩' 은 남는다.
+   */
+  clearHistory?: { count: number; endingIds: string[] };
   rng?: RngState;
   gameTime?: GameTime;
   /** Optional roguelike run lifecycle. Authored project data never lives here. */
   roguelikeRun?: RoguelikeRunState;
+  /** 현재 난이도 id(system.difficulties). 생략 = 난이도 없음 또는 목록 첫 줄. */
+  difficultyId?: string;
+  /** 이름 붙은 파티 묶음(storeParty/recallParty). 생략 = 없음. */
+  partySets?: Record<string, PartySetState>;
+  /** 지금 조작 중인 파티 묶음 이름. recallParty 가 전환 전에 현재 파티를 이 이름으로 저장한다. */
+  activePartySetId?: string;
+  /** 메뉴 «바라보는 대상에 사용»이 발동 중인 아이템 id. 그 한 번의 페이지 판정·실행 동안만 있고 저장하지 않는다. */
+  itemUsedId?: string;
+  /** 배우별 장착 스킬(ActorRecord.loadoutSlots 가 있는 배우만). 생략 = 아직 장착 안 함. */
+  actorSkillLoadouts?: Record<ActorId, SkillId[]>;
+}
+
+/** 파티 묶음 하나 — 구성원과 선 자리. */
+export interface PartySetState {
+  readonly actorIds: string[];
+  readonly mapId: MapId;
+  readonly x: number;
+  readonly y: number;
 }
 
 // 프로젝트 "시작 상태"(에디터가 정의하는 초기 스위치/변수/골드/인벤토리/파티)를
@@ -493,6 +534,10 @@ export function startSession(project: Project, seed?: number): PlaySession {
     playTimeSeconds: 0,
     rng: createRngState(seed),
     gameTime,
+    ...(() => {
+      const difficultyId = initialDifficultyId(project.system);
+      return difficultyId ? { difficultyId } : {};
+    })(),
   };
   const weather = applyDailyWeatherForDate(project, session, gameTime);
   if (weather) {
@@ -851,6 +896,10 @@ export function erasePictureState(session: PlaySession, pictureId: string): void
 export type ConditionEvalContext = {
   /** 세션의 현재 맵. 로케이션 기하의 유일한 출처다. */
   readonly map?: { readonly locations?: readonly { readonly id: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number }[] };
+  /** 이 이벤트의 런타임 위치·방향(방향 조건용). 생략하면 session.eventLocations 에서 찾는다. */
+  readonly host?: ActorQueryHost;
+  /** 요일 계산용 달력(프로젝트 시스템에서). 생략 = 계절 28일·1년 1일 월요일. */
+  readonly calendar?: ActorQueryOptions;
 };
 
 // 조건(Condition) 평가. condition이 없으면 항상 참.
@@ -912,8 +961,26 @@ export function evalCondition(
       return evalRelationshipCondition(session, condition, friendshipKey(condition.npcKey, hostSocial(host)) ?? null);
     case "battleResult":
       return session.battleResult === condition.result;
+    case "actorStat":
+    case "actorState":
+    case "partyLeader":
+    case "partySize":
+    case "facing":
+    case "relativeFacing":
+    case "hiding":
+    case "pursuitActive":
+    case "clearCount":
+    case "endingSeen":
+    case "newGamePlus":
+    case "weekday":
+    case "stringVariable":
+      return evalActorQueryCondition(session, condition, { eventId, ...context?.host }, context?.calendar);
     case "run":
       return evalRoguelikeRunCondition(session, condition);
+    case "difficulty":
+      return session.difficultyId !== undefined && session.difficultyId === condition.difficultyId;
+    case "itemUsed":
+      return session.itemUsedId !== undefined && session.itemUsedId === condition.itemId;
     case "all":
       return condition.conditions.every((child) => evalCondition(session, child, host, context));
     case "any":

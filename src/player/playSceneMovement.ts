@@ -1,4 +1,7 @@
+import { heldInputSnapshot, installHeldKeyTracker } from "@/player/heldKeyTracker";
+import { applyFieldStepStates } from "@/project/stateFieldSteps";
 import { mapTileSize } from "@/project/tileGeometry";
+import { difficultyRate } from "@/project/difficulty";
 import { updateDetectionEncounters } from "./npcDetectionEncounter";
 import { BattleAdmissionError } from "@/project/battleAdmission";
 import { advanceFurniturePush, beginFurniturePush, clearFurniturePush, furniturePushFrames } from './furniturePushAnimation';
@@ -50,10 +53,11 @@ import { fireLocationTransitionTriggers } from "@/player/playSceneLocationTransi
 import { interactWithLifeField } from "@/player/lifeFieldInteraction";
 import { diagnosticObserved, publishDiagnostic } from "@/util/diagnosticObserver";
 import { tryChestInteraction } from "@/player/playSceneChest";
-import { tryActionCombatSwing, tryActionSkillCast } from "@/player/playSceneActionCombat";
+import { tryActionCombatSwing, tryActionSkillCast, updateActionSkillCharge } from "@/player/playSceneActionCombat";
 import { applyBattleDefeat } from "@/player/playSceneDefeat";
 import { boardedVehicleId, vehicleCanEnter, vehicleSpeedFactor } from "@/project/vehicles";
 import { tryBoardVehicle, tryGetOffVehicle } from "@/player/playSceneVehicles";
+import { applySideViewLanding, isSideViewMap, planSideViewTick, resolveSideViewSettings, sideViewGridFor, sideViewStateFor } from "@/player/sideViewPhysics";
 
 type ActionEventSceneContext = Pick<
   PlaySceneContext,
@@ -109,6 +113,11 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
   if (!scene.running && advancePursuitDoors(world, deltaMs)) refreshRuntimeEntities(scene);
   scene.player.setVisible?.(!isPlayerHiding(world));
   scene.session.playTimeSeconds += deltaMs / 1000;
+  // 방향 조건(주인공이 보는 쪽)은 세션만 본다 — 씬의 facing 을 매 프레임 적어 둔다.
+  if (scene.session.playerFacing !== scene.facing) scene.session.playerFacing = scene.facing;
+  // Key Poll(미니게임) — 이벤트가 도는 중에도 지금 눌린 키를 세션에 비춘다(세이브 안 함).
+  installHeldKeyTracker();
+  scene.session.heldInput = heldInputSnapshot();
   const ticks = takeLogicTicks(scene, deltaMs);
   // 틱이 없는 프레임(고주사율)에서는 입력을 읽지 않는다 — 엣지와 탭이 다음 틱 프레임으로 살아서 간다.
   if (ticks > 0) {
@@ -129,6 +138,7 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
     }
     if (!cutsceneInputLocked && input.attackPressed && !interacted && !airborne) tryActionCombatSwing(scene);
     if (!cutsceneInputLocked && input.skillPressed && !airborne) tryActionSkillCast(scene);
+    else if (scene.actionCombatState?.skillCharge) updateActionSkillCharge(scene, ticks * LOGIC_TICK_MS, !cutsceneInputLocked && scene.input_.isSkillHeld());
     scene.input_.resetEdges();
   }
   // Forced event routes must progress while the interpreter awaits completion.
@@ -183,6 +193,7 @@ function tickPlayerMovement(scene: PlaySceneContext, input: InputState, cutscene
   if (!scene.moving && !scene.playerHop) {
     // 주인공 강제 이동 루트가 있으면 입력보다 우선해 자동으로 걷는다.
     if (scene.playerRoute) advancePlayerRoute(scene);
+    else if (isSideViewMap(scene.map) && !boardedVehicleId(scene.session)) tickSideView(scene, cutsceneInputLocked ? { x: 0, y: 0 } : input);
     else if (!cutsceneInputLocked && (input.x !== 0 || input.y !== 0)) tryStartMove(scene, input);
   }
   if (scene.moving) {
@@ -196,6 +207,33 @@ function tickPlayerMovement(scene: PlaySceneContext, input: InputState, cutscene
     scene.walkFrame = 0;
     scene.walkTimer = 0;
   }
+}
+
+/**
+ * 옆보기 맵의 멈춘 틱: 중력·점프·사다리를 판정해 한 칸 걸음을 시작한다(sideViewPhysics).
+ * 입력이 없어도 돈다 — 발밑이 비면 저절로 떨어져야 하기 때문이다.
+ */
+function tickSideView(scene: PlaySceneContext, input: { readonly x: number; readonly y: number }): void {
+  const project = store.getCurrent();
+  const settings = resolveSideViewSettings(scene.map);
+  const state = sideViewStateFor(scene, scene.map.id);
+  const plan = planSideViewTick(sideViewGridFor(project, scene.map), scene.tileX, scene.tileY, state, input, settings);
+  if (plan.landedFallTiles !== undefined) {
+    const landing = applySideViewLanding(project, scene.session, plan.landedFallTiles, settings);
+    if (landing.defeated) { applyBattleDefeat(scene, "높은 곳에서 떨어져 쓰러졌습니다."); return; }
+  }
+  if (plan.dx !== 0) scene.facing = plan.dx > 0 ? "right" : "left";
+  else if (plan.kind === "climb") scene.facing = plan.dy < 0 ? "up" : "down";
+  if (plan.kind === "none") return;
+  const nx = scene.tileX + plan.dx;
+  const ny = scene.tileY + plan.dy;
+  if (plan.kind === "walk") {
+    const blockingEvent = findBlockingEventForPlayerBody(scene, resolvePlayerBody(project, scene.session), nx, ny);
+    if (blockingEvent) { firePlayerTouchEvent(scene, blockingEvent.event.id, blockingEvent.trigger.kind); return; }
+  }
+  scene.dashing = false;
+  beginPlayerStep(scene, nx, ny);
+  scene.lastActionTargetKey = "";
 }
 
 function advancePlayerStepFrame(scene: PlaySceneContext): void {
@@ -236,6 +274,9 @@ function advancePlayerStepFrame(scene: PlaySceneContext): void {
     // 턱을 넘은 체공은 중간 칸도 궤적에 넣는다 — 동료가 턱 칸을 건너뛰지 않고 한 칸씩 따라온다.
     if (hopState?.via) recordFollowerPlayerStep(scene.session, { x: hopState.via.x, y: hopState.via.y, direction: scene.facing });
     const project = store.getCurrent();
+    scene.session.stepCount = (scene.session.stepCount ?? 0) + 1;
+    const stepStates = applyFieldStepStates(project, scene.session);
+    if (stepStates.defeated) applyBattleDefeat(scene, "상태 이상으로 쓰러졌습니다.");
     applyWalkCareTicks(project, scene.session, 1);
     applyGen1FieldPoisonStep(project, scene.session);
     // 비행선은 땅에 닿지 않는다 — 지형 피해·접촉 트리거·인카운트를 건너뛴다.
@@ -778,7 +819,7 @@ function fireTouchTriggers(scene: PlaySceneContext): void {
   if (event) void scene.runEvent(event.event.id);
 }
 
-function findRuntimeEventInScene(
+export function findRuntimeEventInScene(
   scene: Pick<PlaySceneContext, "map" | "session" | "eventPositions">,
   x: number,
   y: number,
@@ -888,7 +929,8 @@ export function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
   if (scene.running) return; // 이미 전투/이벤트 진행 중이면 무시
   const map = scene.map;
   const terrain = terrainRecordAt(store.getCurrent(), { mapId: map.id, x: scene.tileX, y: scene.tileY });
-  const rate = scaledEncounterRate(map.encounterRate ?? 0, terrain?.record.encounterRatePercent);
+  const baseRate = scaledEncounterRate(map.encounterRate ?? 0, terrain?.record.encounterRatePercent);
+  const rate = baseRate * difficultyRate(store.getCurrent().system, scene.session, "encounterRate");
   if (rate <= 0) return;
   // 액션 전투 맵에서는 랜덤 인카운트가 턴제 전투를 시작하지 않는다.
   // 누적값을 리셋해 맵을 나간 직후 남은 누적으로 즉시 전투가 터지지 않게 한다.

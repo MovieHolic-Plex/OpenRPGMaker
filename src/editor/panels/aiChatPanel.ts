@@ -180,6 +180,7 @@ import {
   STUDIO_MODE_KEY,
   type ChatController,
 } from "./aiChatPanelHelpers";
+import { sourceAttributeOf, sourceTextOf } from "@/i18n/domTranslator";
 
 // ── 테스트/외부 호환 re-export (기존 import 경로 유지) ──────────────
 export {
@@ -653,7 +654,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (!runningActivity) return;
     const narration = narrateAiActivity({ toolName: runningActivity.toolName });
     // aria-live 영역은 같은 문자열을 다시 써도 재낭독될 수 있다. 문구가 실제로 바뀔 때만 쓴다.
-    if (runningActivity.line.textContent !== narration.line) {
+    if (sourceTextOf(runningActivity.line) !== narration.line) {
       runningActivity.line.textContent = narration.line;
     }
   };
@@ -2411,7 +2412,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 두 번 파싱하고, 쓰이지 않는 readAgentBrief() 가 lowerTiles 전체를 훑었다.
     const aiConfig = loadAiConfig();
     const placeholder = formatComposerPlaceholder(isAiConfigReady(aiConfig, getAiConnectionStatus(aiConfig)));
-    if (input.getAttribute("placeholder") !== placeholder) input.setAttribute("placeholder", placeholder);
+    if (sourceAttributeOf(input, "placeholder") !== placeholder) input.setAttribute("placeholder", placeholder);
     syncConversationState();
   };
   const clearSelectionTaskContext = (): void => {
@@ -3355,10 +3356,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       ? "error"
       : attention
         ? "attention"
-        : deckStateOfTone(statusToneOf(status.textContent ?? ""));
+        : deckStateOfTone(statusToneOf(sourceTextOf(status)));
     rail.setState(state);
     panel.dataset.aiState = state;
-    setRestoreButtonState(collapsedRestore, state, status.textContent ?? "", pendingApproval ? 1 : 0);
+    setRestoreButtonState(collapsedRestore, state, sourceTextOf(status), pendingApproval ? 1 : 0);
   };
   syncRailContext = (): void => {
     rail.setContext(mapContext().mapName);
@@ -3510,7 +3511,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         document.body.classList.add("ai-studio-open");
       }
       studioShell?.attach(panel, { historyLogMount, commandBar });
-      studioShell?.setStatus(status.textContent ?? "");
+      studioShell?.setStatus(sourceTextOf(status));
       studioShell?.setWorkPlan(workPlanSurfaceState?.active ? workPlanSurfaceState.plan : null, workPlanSurfaceState?.active === true);
       studioShell?.setChangePreview(lastStudioChange);
       studioShell?.setToolLines(studioToolLines);

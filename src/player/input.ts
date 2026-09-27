@@ -11,6 +11,7 @@ import {
   isConfirmKey,
   isDashKey,
   isGuardKey,
+  isLeaderSwitchKey,
   isSkillCycleKey,
   isSkillKey,
   isTextEntryFocused,
@@ -102,6 +103,7 @@ export class RuntimeKeyHoldTracker {
   private pendingAttackEdge = false;
   private pendingSkillEdge = false;
   private pendingSkillCycleEdge = false;
+  private pendingLeaderSwitchEdge = false;
   private attackMode = false;
   private dashHeld = false;
 
@@ -122,6 +124,7 @@ export class RuntimeKeyHoldTracker {
       this.skillKeys.add(normalized);
     }
     if (isSkillCycleKey(key)) this.pendingSkillCycleEdge = true;
+    if (isLeaderSwitchKey(key)) this.pendingLeaderSwitchEdge = true;
     if (isGuardKey(key)) this.guardKeys.add(normalized);
     if (isConfirmKey(key)) {
       if (!this.actionKeys.has(normalized)) {
@@ -171,15 +174,26 @@ export class RuntimeKeyHoldTracker {
     this.pendingAttackEdge = false;
     this.pendingSkillEdge = false;
     this.pendingSkillCycleEdge = false;
+    this.pendingLeaderSwitchEdge = false;
   }
 
   isGuarding(): boolean {
     return this.guardKeys.size > 0;
   }
 
+  isSkillHeld(): boolean {
+    return this.skillKeys.size > 0;
+  }
+
   consumeSkillCycleEdge(): boolean {
     const edge = this.pendingSkillCycleEdge;
     this.pendingSkillCycleEdge = false;
+    return edge;
+  }
+
+  consumeLeaderSwitchEdge(): boolean {
+    const edge = this.pendingLeaderSwitchEdge;
+    this.pendingLeaderSwitchEdge = false;
     return edge;
   }
 
@@ -432,6 +446,17 @@ export class Input {
   // 입력이 닫힌 동안(인터프리터 진행) 대기한 엣지는 버린다.
   consumeSkillCycleEdge(): boolean {
     const edge = this.runtimeKeys.consumeSkillCycleEdge();
+    return this.enabled ? edge : false;
+  }
+
+  // 스킬 키가 눌려 있는가(지속) — 홀드 차지가 뗀 순간을 본다. 입력이 닫히면 뗀 것으로 친다.
+  isSkillHeld(): boolean {
+    return this.enabled && this.runtimeKeys.isSkillHeld();
+  }
+
+  // 액션 전투 선두 교대(V) 엣지. 슬롯 순환과 같이 액션 전투 갱신이 직접 소모한다.
+  consumeLeaderSwitchEdge(): boolean {
+    const edge = this.runtimeKeys.consumeLeaderSwitchEdge();
     return this.enabled ? edge : false;
   }
 

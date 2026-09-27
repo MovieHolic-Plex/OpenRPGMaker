@@ -137,12 +137,18 @@ it("does not offer new equipment types in Items", () => {
 
 it("does not advertise unsupported flags and keeps one attack element input", () => {
   const record = store.getCurrent().database.equipment[0]!;
+  // halfMpCost 는 전투 MP 소모 계산이 소비하므로 저작 가능한 플래그다(mgL3HalfMpCost 테스트).
+  // 여전히 런타임에 없는 플래그(선제 공격)는 토글 없이 「적용되지 않는 효과」 안내로만 남는다.
   record.effectFlags.halfMpCost = true;
+  record.effectFlags.preemptive = true;
   const node = document.createElement("section") as unknown as FakeElement;
   renderEquipmentRecordForm(node as unknown as HTMLElement, record);
-  expect(findByTestId(node, "db-field-equipment-effect-half-mp")).toBeNull();
-  expect(field(node, "db-equipment-unsupported-effects").textContent).toContain("MP 소모 절반");
-  expect(equipmentEffectStory(store.getCurrent(), record).effects).not.toContain("MP 소모 절반");
+  expect(findByTestId(node, "db-field-equipment-effect-half-mp")).not.toBeNull();
+  expect(findByTestId(node, "db-field-equipment-effect-preemptive")).toBeNull();
+  expect(field(node, "db-equipment-unsupported-effects").textContent).toContain("선제 공격");
+  expect(field(node, "db-equipment-unsupported-effects").textContent).not.toContain("MP 소모 절반");
+  expect(equipmentEffectStory(store.getCurrent(), record).effects).toContain("MP 소모 절반");
+  expect(equipmentEffectStory(store.getCurrent(), record).effects).not.toContain("선제 공격");
   expect(findByTestId(node, "db-picker-skill")).toBeNull();
   select(node, "db-field-equipment-attack-element", "fire");
   expect(store.getCurrent().database.equipment[0]!.attackElementIds).toEqual(["fire"]);

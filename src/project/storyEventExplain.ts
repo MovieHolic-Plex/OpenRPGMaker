@@ -293,6 +293,24 @@ function traceCondition(
         expected: condition.result,
         summary: `battleResult=${session.battleResult ?? "none"} expected ${condition.result}`,
       };
+    case "difficulty":
+      return {
+        index,
+        kind: condition.kind,
+        ok,
+        actual: session.difficultyId ?? null,
+        expected: condition.difficultyId,
+        summary: `difficulty=${session.difficultyId ?? "none"} expected ${condition.difficultyId}`,
+      };
+    case "itemUsed":
+      return {
+        index,
+        kind: condition.kind,
+        ok,
+        actual: session.itemUsedId ?? null,
+        expected: condition.itemId,
+        summary: `itemUsed=${session.itemUsedId ?? "none"} expected ${condition.itemId}`,
+      };
     case "run": {
       const run = session.roguelikeRun;
       const actual = condition.query === "active"
@@ -319,6 +337,20 @@ function traceCondition(
         summary: `run:${condition.query}=${String(actual ?? "none")} expected ${String(expected)}`,
       };
     }
+    case "actorStat":
+    case "actorState":
+    case "partyLeader":
+    case "partySize":
+    case "facing":
+    case "relativeFacing":
+    case "hiding":
+    case "pursuitActive":
+    case "clearCount":
+    case "endingSeen":
+    case "newGamePlus":
+    case "weekday":
+    case "stringVariable":
+      return { index, kind: condition.kind, ok, summary: `${condition.kind} => ${ok ? "true" : "false"}` };
     case "all":
       return {
         index,

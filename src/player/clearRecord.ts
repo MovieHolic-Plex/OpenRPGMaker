@@ -20,6 +20,7 @@ export function recordEndingClear(storage: Storage, project: Project, session: P
   const previous = readClearRecord(storage);
   const record: ClearRecord = {
     endingIds: [...new Set([...(previous?.endingIds ?? []), endingId])],
+    clearCount: clearCountOf(previous) + 1,
     clearedAt: new Date().toISOString(),
     carry: captureClearCarry(session, project.system.newGamePlus?.carry ?? []),
   };
@@ -33,7 +34,20 @@ function parseClearRecord(value: unknown): ClearRecord | undefined {
   }
   const endingIds = value.endingIds.filter((id): id is string => typeof id === "string");
   if (endingIds.length === 0) return undefined;
-  return { endingIds, clearedAt: value.clearedAt, carry: value.carry as ClearCarrySnapshot };
+  const clearCount = typeof value.clearCount === "number" && Number.isInteger(value.clearCount) && value.clearCount > 0 ? value.clearCount : undefined;
+  return { endingIds, ...(clearCount ? { clearCount } : {}), clearedAt: value.clearedAt, carry: value.carry as ClearCarrySnapshot };
+}
+
+/** 누적 클리어 횟수. 기록이 없으면 0, clearCount 없는 옛 기록은 본 엔딩 수. */
+export function clearCountOf(record: ClearRecord | undefined): number {
+  if (!record) return 0;
+  return record.clearCount ?? record.endingIds.length;
+}
+
+/** 세션용 회차 사본. 조건 clearCount/endingSeen 이 읽는다. */
+export function clearHistoryOf(record: ClearRecord | undefined): { count: number; endingIds: string[] } | undefined {
+  if (!record) return undefined;
+  return { count: clearCountOf(record), endingIds: [...record.endingIds] };
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

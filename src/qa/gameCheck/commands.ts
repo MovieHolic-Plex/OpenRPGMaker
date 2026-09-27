@@ -30,6 +30,7 @@ const EXTRA_FIELDS: Readonly<Record<string, readonly string[]>> = {
   loop: ["body"],
   wait: ["variableId"],
   battleProcessing: ["victoryBranch", "defeatBranch", "escapeBranch"],
+  tacticsBattle: ["victoryBranch", "defeatBranch"],
   promoteActor: ["successBranch", "failureBranch"],
   evolveMonster: ["successBranch", "failureBranch"],
   shop: ["itemIds", "shopUiPreset", "transactionBranch", "failedTransactionBranch", "branchOnTransaction", "branchOnFailedTransaction"],

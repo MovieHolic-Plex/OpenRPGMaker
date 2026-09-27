@@ -554,6 +554,14 @@ function literalLabel(value: string): string {
       return "회복";
     case "support":
       return "보조";
+    case "steal":
+      return "훔치기";
+    case "scan":
+      return "라이브라(탐색)";
+    case "learnEnemySkill":
+      return "적 기술 습득(청마법)";
+    case "randomSkillFrom":
+      return "무작위 기술(흉내·춤·슬롯)";
     case "hp":
       return "HP";
     case "mp":

@@ -11,6 +11,7 @@ import {
   normalizeActorRecord,
 } from "@/project/actorModel";
 import { DEFAULT_BATTLE_SKIN_ID } from "@/battle/skins/registry";
+import { DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
 import { DEFAULT_MENU_SKIN_ID, isMenuSkinId } from "@/player/menuSkins/registry";
 import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
 import { normalizeActionCombatConfig, normalizeActionSkillProfile, normalizeActionWeaponProfile } from "@/project/actionCombat";
@@ -21,6 +22,9 @@ import { isFontFamilyId } from "@/project/fontRegistry";
 import { normalizeElementRecords, normalizeGlobalBattleCommands, normalizeTerrainRecords } from "@/project/databaseUtilityRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { normalizeTitleOpeningFields } from "@/project/titleEffects";
+import { normalizeDifficulties } from "@/project/difficulty";
+import { normalizeMonsterFusions } from "@/project/monsterTrade";
+import { normalizeTitleScreenVariants } from "@/project/titleVariants";
 import {
   DEFAULT_DAY_END_HOUR,
   DEFAULT_DAY_START_HOUR,
@@ -58,6 +62,7 @@ import {
   normalizeHomeDecorationTypes,
 } from "@/project/spatialPlacements";
 import type { ActorExperienceCurve, CompanionConfig, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
+import { normalizeSkillInputSequence } from "@/battle/battleInputSequence";
 import { normalizeCharacterFootprint, normalizePassRows } from "@/project/footprint";
 import { normalizePlayResolution } from "@/project/playResolution";
 import { normalizeCameraZoom } from "@/project/cameraZoom";
@@ -90,10 +95,25 @@ export function normalizeStateRecord(record: Partial<StateRecord> & Pick<StateRe
     ...(record.hpReleaseStep !== undefined ? { hpReleaseStep: optionalNumber(record.hpReleaseStep) } : {}),
     ...(record.mpReleaseTurn !== undefined ? { mpReleaseTurn: optionalNumber(record.mpReleaseTurn) } : {}),
     ...(record.mpReleaseStep !== undefined ? { mpReleaseStep: optionalNumber(record.mpReleaseStep) } : {}),
+    ...(record.fieldStepInterval !== undefined ? { fieldStepInterval: optionalNumber(record.fieldStepInterval) } : {}),
+    ...(record.releaseAfterSteps !== undefined ? { releaseAfterSteps: optionalNumber(record.releaseAfterSteps) } : {}),
+    ...(record.fieldStepCanKill !== undefined ? { fieldStepCanKill: record.fieldStepCanKill === true } : {}),
     ...(record.specialFlags !== undefined ? { specialFlags: cleanIds(record.specialFlags) } : {}),
     ...(record.lockedParameters !== undefined ? { lockedParameters: cleanIds(record.lockedParameters) } : {}),
     ...(record.runtimeEffects !== undefined ? { runtimeEffects: record.runtimeEffects } : {}),
+    ...(() => {
+      const emotion = normalizeStateEmotion(record.emotion);
+      return emotion ? { emotion } : {};
+    })(),
+    ...(typeof record.disablesEquipSlot === "string" && record.disablesEquipSlot ? { disablesEquipSlot: record.disablesEquipSlot } : {}),
   };
+}
+
+function normalizeStateEmotion(value: unknown): StateRecord["emotion"] {
+  if (!value || typeof value !== "object") return undefined;
+  const { family, tier } = value as { family?: unknown; tier?: unknown };
+  if (typeof family !== "string" || family.trim() === "") return undefined;
+  return { family: family.trim(), tier: typeof tier === "number" && Number.isFinite(tier) ? clampInteger(tier, 1, 9) : 1 };
 }
 
 type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords,
@@ -207,7 +227,18 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
       ? { atbSpeed: clampInteger(system.atbSpeed, 1, 8) }
       : {}),
     ...(system.battleBackdrop === "field" ? { battleBackdrop: "field" as const } : {}),
+    // 롤링 HP 미터(마더식). 기본(끔)과 기본 속도는 저장하지 않는다 — 화이트리스트라 여기 없으면 왕복 1회에 사라진다.
+    ...(system.battleRollingHp === true ? { battleRollingHp: true } : {}),
+    ...(typeof system.battleRollingHpPerSecond === "number" && Number.isFinite(system.battleRollingHpPerSecond)
+      ? { battleRollingHpPerSecond: clampInteger(system.battleRollingHpPerSecond, 1, 999) }
+      : {}),
     ...(system.battlePresentation === "onField" ? { battlePresentation: "onField" as const } : {}),
+    // 진형 굴림·도주 가산 — 기본(굴림 없음·가산 0)은 저장하지 않는다(옛 JSON 바이트 유지).
+    ...(system.battleFormationRoll === true ? { battleFormationRoll: true } : {}),
+    ...(system.pointerMovement === true ? { pointerMovement: true } : {}),
+    ...(typeof system.escapeBonusPercent === "number" && Number.isFinite(system.escapeBonusPercent) && system.escapeBonusPercent !== 0
+      ? { escapeBonusPercent: clampInteger(system.escapeBonusPercent, 0, 100) }
+      : {}),
     ...(system.battleCommandCss?.trim() ? { battleCommandCss: system.battleCommandCss } : {}),
     // 기본 스킨(DEFAULT_BATTLE_SKIN_ID = rm2000)만 저장하지 않는다. 그 밖의 명시적 선택은 반드시
     // 보존해야 한다 — 기본이 바뀐 뒤에 명시값을 생략하면 왕복 후 다른 스킨으로 바뀌어버린다
@@ -215,6 +246,10 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     // 렌더 시점의 resolveSkinId 가 rm2000 으로 푼다.
     ...(system.battleUiStyle && system.battleUiStyle !== DEFAULT_BATTLE_SKIN_ID
       ? { battleUiStyle: system.battleUiStyle }
+      : {}),
+    // 타격감도 같은 계약 — 기본(impact)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.
+    ...(isBattleHitFeel(system.battleHitFeel) && system.battleHitFeel !== DEFAULT_BATTLE_HIT_FEEL
+      ? { battleHitFeel: system.battleHitFeel }
       : {}),
     // ESC 메뉴 스킨도 같은 계약 — 기본(workbench)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.
     ...(isMenuSkinId(system.menuUiStyle) && system.menuUiStyle !== DEFAULT_MENU_SKIN_ID
@@ -269,6 +304,24 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     ...(typeChart ? { typeChart } : {}),
     ...(timeSystem ? { timeSystem } : {}),
     ...(system.worldGen ? { worldGen: normalizeWorldGenRulesForStorage(system.worldGen) } : {}),
+    // 전투 자원·감정 설정(battleGauges/battleEmotion). 화이트리스트라 여기 없으면 왕복 1회에 사라진다.
+    ...(() => {
+      const limitGauge = normalizeLimitGauge(system.limitGauge);
+      return limitGauge ? { limitGauge } : {};
+    })(),
+    ...(() => {
+      const resource2 = normalizeResource2(system.resource2);
+      return resource2 ? { resource2 } : {};
+    })(),
+    ...(() => {
+      const partyGauge = normalizePartyGauge(system.partyGauge);
+      return partyGauge ? { partyGauge } : {};
+    })(),
+    ...(system.weaknessExtraAction === true ? { weaknessExtraAction: true } : {}),
+    ...(() => {
+      const emotionCycle = normalizeEmotionCycle(system.emotionCycle);
+      return emotionCycle ? { emotionCycle } : {};
+    })(),
     ...(actionCombat ? { actionCombat } : {}),
     ...(Array.isArray(system.toolActions) ? { toolActions: system.toolActions } : {}),
     ...(Array.isArray(system.craftRecipes) ? { craftRecipes: system.craftRecipes } : {}),
@@ -290,6 +343,19 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     ...(() => {
       const monsterCare = normalizeMonsterCare(system.monsterCare);
       return monsterCare ? { monsterCare } : {};
+    })(),
+    ...(() => {
+      const difficulties = normalizeDifficulties(system.difficulties);
+      if (!difficulties) return {};
+      const defaultDifficultyId = typeof system.defaultDifficultyId === "string" ? system.defaultDifficultyId.trim() : "";
+      return {
+        difficulties,
+        ...(difficulties.some((row) => row.id === defaultDifficultyId) ? { defaultDifficultyId } : {}),
+      };
+    })(),
+    ...(() => {
+      const monsterFusions = normalizeMonsterFusions(system.monsterFusions);
+      return monsterFusions ? { monsterFusions } : {};
     })(),
     titleScreen: normalizeTitleScreenSettings(system.titleScreen, titleResourceId),
     ...(system.opening !== undefined ? { opening: normalizeCinematicSequence(system.opening) } : {}),
@@ -399,6 +465,11 @@ function normalizeTitleScreenSettings(
     ...(intro ? { intro } : {}),
     // 오프닝 확장(맞춤·렌더링·영역 효과·로고/메뉴 스타일)도 omit-when-empty.
     ...normalizeTitleOpeningFields(settings),
+    ...(() => {
+      const variants = normalizeTitleScreenVariants(settings?.variants);
+      return variants ? { variants } : {};
+    })(),
+    ...(settings?.resumeOnLaunch === true ? { resumeOnLaunch: true } : {}),
   };
 }
 
@@ -582,6 +653,7 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     ...(Number.isFinite(record.criticalRate) ? { criticalRate: clampInteger(record.criticalRate!, 0, 100) } : {}),
     ...(Number.isFinite(record.criticalMultiplier) ? { criticalMultiplier: Math.max(1, Math.min(10, record.criticalMultiplier!)) } : {}),
     ...(Number.isFinite(record.cooldownTurns) ? { cooldownTurns: clampInteger(record.cooldownTurns!, 0, 99) } : {}),
+    ...(typeof record.fieldCommonEventId === "string" && record.fieldCommonEventId.trim() ? { fieldCommonEventId: record.fieldCommonEventId.trim() } : {}),
     ...(Array.isArray(record.hitSequence) && record.hitSequence.length ? { hitSequence: record.hitSequence.slice(0, 16).map(value => Number.isFinite(value) ? Math.max(0, Math.min(10, value)) : 1) } : {}),
     effect: normalizeSkillEffect(record.effect),
     elementId: typeof record.elementId === "string" ? record.elementId : undefined,
@@ -607,6 +679,19 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
       && Number.isFinite(record.area.radius) && record.area.radius > 0
       ? { area: { shape: record.area.shape, radius: clampNumber(record.area.radius, 1, 640) } }
       : {}),
+    // 전투 자원(battleGauges) — 0/false 는 저장하지 않는다(옛 JSON 바이트 유지).
+    ...(typeof record.resource2Cost === "number" && Number.isFinite(record.resource2Cost) && record.resource2Cost > 0
+      ? { resource2Cost: clampInteger(record.resource2Cost, 1, 999) }
+      : {}),
+    ...(record.limitSkill === true ? { limitSkill: true } : {}),
+    ...(typeof record.partyGaugeCost === "number" && Number.isFinite(record.partyGaugeCost) && record.partyGaugeCost > 0
+      ? { partyGaugeCost: clampInteger(record.partyGaugeCost, 1, 999) }
+      : {}),
+    ...(record.learnable === true ? { learnable: true } : {}),
+    ...(() => {
+      const inputSequence = normalizeSkillInputSequence(record.inputSequence);
+      return inputSequence ? { inputSequence } : {};
+    })(),
   };
 }
 
@@ -679,6 +764,29 @@ export function normalizeEquipmentRecord(record: Partial<EquipmentRecord> & Pick
       const actionWeapon = normalizeActionWeaponProfile(record.actionWeapon);
       return actionWeapon ? { actionWeapon } : {};
     })(),
+    ...(() => {
+      const grantsSkillIds = uniqueCleanIds(record.grantsSkillIds);
+      return grantsSkillIds.length > 0 ? { grantsSkillIds } : {};
+    })(),
+    ...(() => {
+      const grantsCommand = normalizeGrantedCommand(record.grantsCommand);
+      return grantsCommand ? { grantsCommand } : {};
+    })(),
+  };
+}
+
+function normalizeGrantedCommand(command: Partial<ClassBattleCommand> | undefined): ClassBattleCommand | undefined {
+  if (!command || typeof command !== "object") return undefined;
+  const id = cleanOptionalId(command.id);
+  if (!id) return undefined;
+  const skillId = cleanOptionalId(command.skillId);
+  const skillSubsetName = cleanOptionalId(command.skillSubsetName);
+  return {
+    id,
+    name: typeof command.name === "string" ? command.name : "",
+    kind: normalizeBattleCommandKind(command.kind),
+    ...(skillSubsetName ? { skillSubsetName } : {}),
+    ...(skillId ? { skillId } : {}),
   };
 }
 
@@ -791,6 +899,7 @@ function normalizeRecovery(cost: Partial<SkillMpCost> | undefined): SkillMpCost 
 }
 
 function normalizeSkillEffect(effect: SkillEffect | undefined): SkillEffect {
+  if (effect?.kind === "randomSkillFrom") return { kind: "randomSkillFrom", skillIds: uniqueCleanIds(effect.skillIds).slice(0, 16) };
   return effect ?? { kind: "damage", statistic: "attack", affects: "hp" };
 }
 
@@ -1018,4 +1127,56 @@ function clampInteger(value: number, min: number, max: number): number {
 function clampNumber(value: number, min: number, max: number): number {
   if (!Number.isFinite(value)) return min;
   return Math.min(max, Math.max(min, value));
+}
+
+function optionalLabel(value: unknown): { label?: string } {
+  return typeof value === "string" && value.trim() ? { label: value.trim().slice(0, 16) } : {};
+}
+
+function optionalNonNegative(key: string, value: unknown, max: number): Record<string, number> {
+  return typeof value === "number" && Number.isFinite(value) ? { [key]: clampNumber(value, 0, max) } : {};
+}
+
+function normalizeLimitGauge(value: SystemRecords["limitGauge"]): SystemRecords["limitGauge"] {
+  if (!value || typeof value !== "object") return undefined;
+  return {
+    enabled: value.enabled === true,
+    ...optionalLabel(value.label),
+    ...optionalNonNegative("takenRate", value.takenRate, 1000),
+    ...optionalNonNegative("dealtGain", value.dealtGain, 100),
+  };
+}
+
+function normalizeResource2(value: SystemRecords["resource2"]): SystemRecords["resource2"] {
+  if (!value || typeof value !== "object") return undefined;
+  return {
+    enabled: value.enabled === true,
+    ...optionalLabel(value.label),
+    ...(typeof value.max === "number" && Number.isFinite(value.max) ? { max: clampInteger(value.max, 1, 999) } : {}),
+    ...optionalNonNegative("start", value.start, 999),
+    ...optionalNonNegative("dealtGain", value.dealtGain, 999),
+    ...optionalNonNegative("takenGain", value.takenGain, 999),
+  };
+}
+
+function normalizePartyGauge(value: SystemRecords["partyGauge"]): SystemRecords["partyGauge"] {
+  if (!value || typeof value !== "object") return undefined;
+  return {
+    enabled: value.enabled === true,
+    ...optionalLabel(value.label),
+    ...(typeof value.max === "number" && Number.isFinite(value.max) ? { max: clampInteger(value.max, 1, 999) } : {}),
+    ...optionalNonNegative("gainPerHit", value.gainPerHit, 999),
+  };
+}
+
+function normalizeEmotionCycle(value: SystemRecords["emotionCycle"]): SystemRecords["emotionCycle"] {
+  if (!Array.isArray(value)) return undefined;
+  const rules = value.flatMap((rule) => {
+    if (!rule || typeof rule !== "object") return [];
+    const attackerFamily = typeof rule.attackerFamily === "string" ? rule.attackerFamily.trim() : "";
+    const targetFamily = typeof rule.targetFamily === "string" ? rule.targetFamily.trim() : "";
+    if (!attackerFamily || !targetFamily || typeof rule.multiplier !== "number" || !Number.isFinite(rule.multiplier)) return [];
+    return [{ attackerFamily, targetFamily, multiplier: clampNumber(rule.multiplier, 0, 10) }];
+  });
+  return rules.length > 0 ? rules : undefined;
 }

@@ -23,6 +23,7 @@ import {
 import { phaseStatusText, shouldShowStatusInChat } from "./aiChatPanelHelpers";
 import { renderStreamedMarkdown } from "./aiConversationLog";
 import type { AiRunSurface } from "./aiRunSurface";
+import { sourceTextOf } from "@/i18n/domTranslator";
 
 export interface AiRegionTaskRunnerDeps {
   /** 채팅 턴과 공유하는 실행 표면. */
@@ -288,7 +289,7 @@ export function createAiRegionTaskRunner(deps: AiRegionTaskRunnerDeps): AiRegion
       deps.activeSelectionRegionKey = null;
       if (deps.surface.activeAbortController === abortController) deps.surface.activeAbortController = null;
       if (cancelled) deps.surface.setStatus("대기");
-      const regionFailed = !cancelled && (deps.status.textContent ?? "") === "오류";
+      const regionFailed = !cancelled && sourceTextOf(deps.status) === "오류";
       deps.surface.endTurnProgress();
       deps.surface.turnBusy = false;
       deps.surface.refreshAbortButton();

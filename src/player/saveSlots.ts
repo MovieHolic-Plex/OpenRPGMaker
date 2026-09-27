@@ -1,4 +1,5 @@
 import { normalizeBattleReports, type BattleReport } from "@/project/battleReports";
+import { isNeutralScreenFilter, normalizeScreenFilter } from "@/project/eventCommands/screenFilter";
 import { LifeReconciliationError, parseLifeState, preserveUnresolvedLifeSource, reconcileLifeState } from "@/project/lifeRecovery";
 import { isLocalSaveSourceKey, isSaveIdentity, publicationSaveKey, requireSaveIdentity, saveIdentity, saveIdentityBlocker, saveScopeBlocker, type SaveIdentity } from "./savePublication";
 import { legacyExportSaveNamespace } from "./exportSaveNamespacePrefix";
@@ -238,10 +239,21 @@ export type SaveSnapshot = {
     readonly classOverrides?: Record<string, string>;
     readonly actorParamBonuses?: PlaySession["actorParamBonuses"];
     readonly actorStateIds?: PlaySession["actorStateIds"];
+    readonly stringVariables?: Record<string, string>;
+    readonly playerFacing?: PlaySession["playerFacing"];
+    readonly stepCount?: number;
+    readonly stateStepCounts?: Record<string, Record<string, number>>;
+    readonly highScores?: Record<string, number>;
+    readonly teleportPoints?: PlaySession["teleportPoints"];
     readonly playTimeSeconds?: number;
     readonly gameTime?: PlaySession["gameTime"];
     readonly rng?: RngState;
     readonly roguelikeRun?: RoguelikeRunState;
+    readonly difficultyId?: string;
+    readonly retiredMonsterInstanceSeq?: number;
+    readonly partySets?: PlaySession["partySets"];
+    readonly activePartySetId?: string;
+    readonly actorSkillLoadouts?: PlaySession["actorSkillLoadouts"];
     // 화면 색조/날씨/숨김 상태(m2Runtime.screen 의 지속형 효과). 세이브 복원 대상.
     readonly screen?: SaveScreenState;
     // Change Save Access 등 접근 플래그(m2Runtime.access). 세이브 복원 대상.
@@ -255,6 +267,8 @@ export type SaveScreenState = {
   readonly weather?: string;
   readonly hidden?: boolean;
   readonly tintDurationMs?: number;
+  /** Tint Screen 색 필터(채도·흑백·세피아). 없으면 필터 없음. */
+  readonly filter?: { readonly saturation: number; readonly grayscale: number; readonly sepia: number };
 };
 
 export type SaveWriteResult =
@@ -479,10 +493,21 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       classOverrides: structuredClone(session.classOverrides),
       actorParamBonuses: structuredClone(session.actorParamBonuses),
       actorStateIds: structuredClone(session.actorStateIds),
+      ...(session.stringVariables && Object.keys(session.stringVariables).length > 0 ? { stringVariables: { ...session.stringVariables } } : {}),
+      ...(session.playerFacing ? { playerFacing: session.playerFacing } : {}),
+      ...(session.stepCount ? { stepCount: Math.floor(session.stepCount) } : {}),
+      ...(session.stateStepCounts && Object.keys(session.stateStepCounts).length > 0 ? { stateStepCounts: structuredClone(session.stateStepCounts) } : {}),
+      ...(session.highScores && Object.keys(session.highScores).length > 0 ? { highScores: { ...session.highScores } } : {}),
+      ...(session.teleportPoints && session.teleportPoints.length > 0 ? { teleportPoints: structuredClone(session.teleportPoints) } : {}),
       playTimeSeconds: Math.floor(session.playTimeSeconds ?? 0),
       gameTime: structuredClone(normalizeRestorableGameTime(project, session.gameTime)),
       rng: cloneRngState(normalizeRngState(session.rng)),
       roguelikeRun: structuredClone(session.roguelikeRun),
+      ...(session.difficultyId ? { difficultyId: session.difficultyId } : {}),
+      ...(session.retiredMonsterInstanceSeq ? { retiredMonsterInstanceSeq: session.retiredMonsterInstanceSeq } : {}),
+      ...(session.partySets && Object.keys(session.partySets).length > 0 ? { partySets: structuredClone(session.partySets) } : {}),
+      ...(session.activePartySetId ? { activePartySetId: session.activePartySetId } : {}),
+      ...(session.actorSkillLoadouts && Object.keys(session.actorSkillLoadouts).length > 0 ? { actorSkillLoadouts: structuredClone(session.actorSkillLoadouts) } : {}),
       screen: pickScreenState(session),
       systemAudio: parseSystemAudioState(session.m2Runtime?.system),
       access: session.m2Runtime?.access && Object.keys(session.m2Runtime.access).length > 0 ? { ...session.m2Runtime.access } : undefined,
@@ -494,11 +519,11 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
 function pickScreenState(session: PlaySession): SaveScreenState | undefined {
   const screen = session.m2Runtime?.screen;
   if (!screen) return undefined;
-  const { tint, weather, hidden, tintDurationMs } = screen;
-  if (tint === undefined && weather === undefined && hidden === undefined && tintDurationMs === undefined) {
+  const { tint, weather, hidden, tintDurationMs, filter } = screen;
+  if (tint === undefined && weather === undefined && hidden === undefined && tintDurationMs === undefined && filter === undefined) {
     return undefined;
   }
-  return { tint, weather, hidden, tintDurationMs };
+  return { tint, weather, hidden, tintDurationMs, ...(filter ? { filter: { ...filter } } : {}) };
 }
 
 // 저장 실패(quota 초과·프라이빗 모드)를 던지면 호출부의 클릭 핸들러가 그대로 끊겨
@@ -554,6 +579,36 @@ export function readSaveSlot(storage: Storage, slot: SaveSlotIndex): SaveSlotRea
   const parsed = parseSaveSnapshot(value, slot);
   const blocker = parsed.kind === "present" ? saveScopeBlocker(parsed.snapshot.identity) : null;
   return blocker ? { kind: "corrupt", slot, message: blocker } : parsed;
+}
+
+/** 가장 최근 저장 — 수동 슬롯과 자동 저장 중 savedAt 이 가장 늦은 것. 없으면 undefined. */
+export type LatestSave =
+  | { readonly source: "autosave"; readonly snapshot: SaveSnapshot }
+  | { readonly source: "slot"; readonly slot: SaveSlotIndex; readonly snapshot: SaveSnapshot };
+
+export function readLatestSave(storage: Storage): LatestSave | undefined {
+  const candidates: LatestSave[] = [];
+  for (const result of listSaveSlots(storage)) {
+    if (result.kind === "present") candidates.push({ source: "slot", slot: result.slot, snapshot: result.snapshot });
+  }
+  const auto = readAutosave(storage);
+  if (auto.kind === "present") candidates.push({ source: "autosave", snapshot: auto.snapshot });
+  let latest: LatestSave | undefined;
+  for (const candidate of candidates) {
+    if (!latest || Date.parse(candidate.snapshot.savedAt) > Date.parse(latest.snapshot.savedAt)) latest = candidate;
+  }
+  return latest;
+}
+
+/**
+ * 「시작하면 바로 이어하기」가 불러올 저장 — 켜져 있고, 가장 최근 저장이 이 프로젝트에서 불러올 수 있을 때만.
+ * 그 밖에는 undefined(타이틀을 보여 준다).
+ */
+export function latestResumableSave(project: Project, storage: Storage): LatestSave | undefined {
+  if (project.system.titleScreen?.resumeOnLaunch !== true) return undefined;
+  const latest = readLatestSave(storage);
+  if (!latest || snapshotLoadBlocker(project, latest.snapshot) !== null) return undefined;
+  return latest;
 }
 
 export function listSaveSlots(storage: Storage): readonly SaveSlotReadResult[] {
@@ -718,6 +773,12 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   // investment ledger, but project current maxima only after every bonus restores.
   for (const actor of project.database.actors) refreshGrowthVitals(project, session, actor.id);
   if (snapshot.session.actorStateIds) session.actorStateIds = structuredClone(snapshot.session.actorStateIds);
+  if (snapshot.session.stringVariables) session.stringVariables = { ...snapshot.session.stringVariables };
+  if (snapshot.session.playerFacing) session.playerFacing = snapshot.session.playerFacing;
+  if (typeof snapshot.session.stepCount === "number") session.stepCount = snapshot.session.stepCount;
+  if (snapshot.session.stateStepCounts) session.stateStepCounts = structuredClone(snapshot.session.stateStepCounts);
+  if (snapshot.session.highScores) session.highScores = { ...snapshot.session.highScores };
+  if (snapshot.session.teleportPoints) session.teleportPoints = structuredClone(snapshot.session.teleportPoints);
   if (typeof snapshot.session.playTimeSeconds === "number") session.playTimeSeconds = snapshot.session.playTimeSeconds;
   const restoredGameTime = normalizeRestorableGameTime(project, snapshot.session.gameTime);
   if (restoredGameTime) session.gameTime = restoredGameTime;
@@ -734,6 +795,16 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
     : undefined;
   session.rng = normalizeRngState(snapshot.session.rng, session.rng?.seed);
   session.roguelikeRun = normalizeRoguelikeRunState(snapshot.session.roguelikeRun);
+  // 난이도 없는 옛 세이브는 새 세션 기본값(startSession 이 심은 값)을 그대로 쓴다.
+  if (snapshot.session.difficultyId) session.difficultyId = snapshot.session.difficultyId;
+  if (snapshot.session.retiredMonsterInstanceSeq) session.retiredMonsterInstanceSeq = snapshot.session.retiredMonsterInstanceSeq;
+  else delete session.retiredMonsterInstanceSeq;
+  if (snapshot.session.partySets) session.partySets = structuredClone(snapshot.session.partySets);
+  else delete session.partySets;
+  if (snapshot.session.activePartySetId) session.activePartySetId = snapshot.session.activePartySetId;
+  else delete session.activePartySetId;
+  if (snapshot.session.actorSkillLoadouts) session.actorSkillLoadouts = structuredClone(snapshot.session.actorSkillLoadouts);
+  else delete session.actorSkillLoadouts;
   if (snapshot.session.screen) applyScreenState(session, snapshot.session.screen);
   if (snapshot.session.systemAudio) Object.assign(ensureM2Runtime(session).system, snapshot.session.systemAudio);
   if (snapshot.session.access) {
@@ -852,6 +923,7 @@ function applyScreenState(session: PlaySession, screen: SaveScreenState): void {
   if (screen.weather !== undefined) runtime.screen.weather = screen.weather;
   if (screen.hidden !== undefined) runtime.screen.hidden = screen.hidden;
   if (screen.tintDurationMs !== undefined) runtime.screen.tintDurationMs = screen.tintDurationMs;
+  if (screen.filter !== undefined) runtime.screen.filter = { ...screen.filter };
 }
 
 function parseSaveSnapshot(value: unknown, slot: SaveSlotIndex): SaveSlotReadResult {
@@ -1146,15 +1218,43 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       classOverrides: isStringRecord(session.classOverrides) ? session.classOverrides : undefined,
       actorParamBonuses: isActorParamBonusRecord(session.actorParamBonuses) ? session.actorParamBonuses : undefined,
       actorStateIds: isActorStateIdsRecord(session.actorStateIds) ? session.actorStateIds : undefined,
+      stringVariables: isStringRecord(session.stringVariables) ? session.stringVariables : undefined,
+      playerFacing: session.playerFacing === "up" || session.playerFacing === "down" || session.playerFacing === "left" || session.playerFacing === "right" ? session.playerFacing : undefined,
+      stateStepCounts: isNestedNumberRecord(session.stateStepCounts) ? session.stateStepCounts : undefined,
+      highScores: isNumberRecord(session.highScores) ? session.highScores : undefined,
+      teleportPoints: Array.isArray(session.teleportPoints)
+        ? session.teleportPoints.filter((p): p is NonNullable<PlaySession["teleportPoints"]>[number] =>
+          !!p && typeof p === "object" && typeof (p as { mapId?: unknown }).mapId === "string"
+          && Number.isFinite((p as { x?: unknown }).x) && Number.isFinite((p as { y?: unknown }).y))
+        : undefined,
+      stepCount: typeof session.stepCount === "number" && Number.isFinite(session.stepCount) && session.stepCount >= 0 ? Math.floor(session.stepCount) : undefined,
       playTimeSeconds: typeof session.playTimeSeconds === "number" ? Math.floor(session.playTimeSeconds) : undefined,
       gameTime: isGameTime(session.gameTime) ? structuredClone(session.gameTime) : undefined,
       rng: parseRngState(session.rng),
       roguelikeRun: normalizeRoguelikeRunState(session.roguelikeRun),
+      difficultyId: typeof session.difficultyId === "string" && session.difficultyId.trim() ? session.difficultyId : undefined,
+      retiredMonsterInstanceSeq: typeof session.retiredMonsterInstanceSeq === "number" && Number.isSafeInteger(session.retiredMonsterInstanceSeq) && session.retiredMonsterInstanceSeq > 0 ? session.retiredMonsterInstanceSeq : undefined,
+      partySets: parsePartySets(session.partySets),
+      activePartySetId: typeof session.activePartySetId === "string" && session.activePartySetId ? session.activePartySetId : undefined,
+      actorSkillLoadouts: isActorSkillIdsRecord(session.actorSkillLoadouts) ? session.actorSkillLoadouts : undefined,
       screen: parseScreenState(session.screen),
       systemAudio: parseSystemAudioState(session.systemAudio),
       access: parseAccessState(session.access),
     },
   };
+}
+
+/** 파티 묶음 — 모양이 틀린 줄만 버린다(한 줄 때문에 세이브 전체를 거절하지 않는다). */
+function parsePartySets(value: unknown): PlaySession["partySets"] {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const sets: NonNullable<PlaySession["partySets"]> = {};
+  for (const [id, raw] of Object.entries(value as Record<string, unknown>)) {
+    if (!raw || typeof raw !== "object") continue;
+    const entry = raw as { actorIds?: unknown; mapId?: unknown; x?: unknown; y?: unknown };
+    if (!isStringArray(entry.actorIds) || typeof entry.mapId !== "string" || typeof entry.x !== "number" || typeof entry.y !== "number") continue;
+    sets[id] = { actorIds: [...entry.actorIds], mapId: entry.mapId, x: Math.trunc(entry.x), y: Math.trunc(entry.y) };
+  }
+  return Object.keys(sets).length > 0 ? sets : undefined;
 }
 
 function parseItemUseCharges(value: unknown): Record<string, number> {
@@ -1169,11 +1269,15 @@ function parseItemUseCharges(value: unknown): Record<string, number> {
 // 저장된 화면 상태를 방어적으로 파싱(모든 필드 선택). 유효 필드가 없으면 undefined.
 function parseScreenState(value: unknown): SaveScreenState | undefined {
   if (!isRecord(value)) return undefined;
-  const result: { tint?: string; weather?: string; hidden?: boolean; tintDurationMs?: number } = {};
+  const result: { tint?: string; weather?: string; hidden?: boolean; tintDurationMs?: number; filter?: SaveScreenState["filter"] } = {};
   if (typeof value.tint === "string") result.tint = value.tint;
   if (typeof value.weather === "string") result.weather = value.weather;
   if (typeof value.hidden === "boolean") result.hidden = value.hidden;
   if (typeof value.tintDurationMs === "number") result.tintDurationMs = value.tintDurationMs;
+  if (isRecord(value.filter)) {
+    const filter = normalizeScreenFilter(value.filter);
+    if (!isNeutralScreenFilter(filter)) result.filter = filter;
+  }
   return Object.keys(result).length > 0 ? result : undefined;
 }
 

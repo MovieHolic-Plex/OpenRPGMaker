@@ -84,12 +84,52 @@ export type Condition =
   | { kind: "friendshipAtLeast"; npcKey?: string; value: number }
   | RelationshipCondition
   | { kind: "battleResult"; result: "victory" | "defeat" | "escape" }
+  | ActorQueryCondition
   | RoguelikeRunCondition
+  /** 현재 난이도(system.difficulties 의 id)가 이것일 때 참. 난이도 목록이 없는 프로젝트에서는 항상 거짓. */
+  | { kind: "difficulty"; difficultyId: string }
+  /**
+   * 메뉴에서 아이템을 «바라보는 이벤트에 사용»해 이 페이지가 발동됐고 그 아이템이 itemId 일 때 참.
+   * 평소 조사·접촉 발동에서는 거짓이다 — 아이템 사용 전용 페이지를 만든다.
+   */
+  | { kind: "itemUsed"; itemId: ItemId }
   | { kind: "all"; conditions: Condition[] }
   | { kind: "any"; conditions: Condition[] }
   | { kind: "not"; condition: Condition };
 
 export type EventPageCondition = Condition;
+
+/** 비교 연산자(조건 공통). */
+export type ConditionCompareOp = "==" | ">=" | "<=" | ">" | "<" | "!=";
+
+/**
+ * 명작 공백 G1(2026-09-27): 이벤트가 액터·파티·시점·회차·요일·문자열을 직접 읽는 조건.
+ * `actorId: "leader"` 는 파티 선두다. 해석할 수 없는 대상(파티에 없는 배우·빈 파티)은 거짓.
+ */
+export type ActorQueryCondition =
+  | { kind: "actorStat"; actorId: ActorId | "leader"; stat: "level" | "hp" | "mp" | "hpPercent" | "mpPercent"; op: ConditionCompareOp; value: number }
+  | { kind: "actorState"; actorId: ActorId | "leader" | "anyone"; stateId: string; present: boolean }
+  | { kind: "partyLeader"; actorId: ActorId }
+  | { kind: "partySize"; op: ConditionCompareOp; value: number }
+  /** subject=player: 주인공이 dir 을 본다. subject=event: 이 이벤트가 dir 을 본다. */
+  | { kind: "facing"; subject: "player" | "event"; dir: Dir }
+  /**
+   * 주인공과 이 이벤트의 상대 자세.
+   * playerBehindEvent = 주인공이 이벤트 등 뒤에 있다(몰래 다가가기),
+   * eventBehindPlayer = 이벤트가 주인공 등 뒤에 있다,
+   * playerFacingEvent = 주인공이 이 이벤트 쪽을 보고 있다(안 볼 때만 움직이는 조각상은 not 으로 감싼다).
+   */
+  | { kind: "relativeFacing"; relation: "playerBehindEvent" | "eventBehindPlayer" | "playerFacingEvent" }
+  | { kind: "hiding"; value: boolean }
+  /** 추격자 추격 중 여부. eventId 생략 = 누구든. */
+  | { kind: "pursuitActive"; eventId?: string; value: boolean }
+  /** 이 기기에서 엔딩을 본 횟수(서로 다른 엔딩 수가 아니라 클리어 횟수). */
+  | { kind: "clearCount"; op: ConditionCompareOp; value: number }
+  | { kind: "endingSeen"; endingId: string; value: boolean }
+  | { kind: "newGamePlus"; value: boolean }
+  /** 게임 달력 요일. 0=일 … 6=토. 시계가 없으면 거짓. */
+  | { kind: "weekday"; weekdays: number[] }
+  | { kind: "stringVariable"; stringVariableId: string; op: "==" | "!=" | "contains" | "empty"; value: string };
 
 export interface ConditionV1 {
   kind: "flag";
@@ -363,6 +403,8 @@ export type Command =
       troopVariableId?: string;
       /** true면 전투 결과에 따라 victory/defeat/escape 분기 실행 */
       branchOnResult?: boolean;
+      /** 전투 개시 진형을 강제한다. 생략 = 시스템 설정(굴림 또는 보통). */
+      formation?: import("@/battle/battleFormation").BattleStartFormation;
       victoryBranch?: Command[];
       defeatBranch?: Command[];
       escapeBranch?: Command[];
@@ -376,7 +418,16 @@ export type Command =
   | { kind: "changeActorHp"; actorId: ActorId; op: ActorAmountOp; amount: number; amountMode?: "flat" | "percent" }
   | { kind: "changeActorMp"; actorId: ActorId; op: ActorAmountOp; amount: number; amountMode?: "flat" | "percent" }
   | { kind: "recoverAll"; actorId?: ActorId }
-  | { kind: "enterHeroName"; actorId: ActorId; maxLength: number; showInitialName: boolean }
+  | {
+      kind: "enterHeroName";
+      actorId: ActorId;
+      maxLength: number;
+      showInitialName: boolean;
+      /** 지정하면 배우 이름 대신 이 문자열 변수에 입력을 저장한다(자유 텍스트 입력·암호·기도문). */
+      stringVariableId?: string;
+      /** 문자열 변수 입력일 때 창 위 안내 문구. */
+      prompt?: string;
+    }
   | { kind: "changeGold"; op: "=" | "+=" | "-="; amount: VariableOperand }
   | { kind: "changeItem"; itemId: ItemId; op: "=" | "+=" | "-="; amount: VariableOperand }
   | { kind: "craftRecipe"; recipeId: string; resultVariableId?: string }
@@ -506,6 +557,22 @@ export type Command =
     }
   | { kind: "checkpointSave"; label?: string }
   | { kind: "openSaveMenu" }
+  | {
+      /**
+       * 전술(격자) 전투. 파티와 적 그룹을 작은 격자 양 끝에 세우고 이동력(칸) 안 이동 + 인접 공격을
+       * 번갈아 하다 한쪽이 전멸하면 끝난다. 결과는 세션 battleResult 와 victoryBranch/defeatBranch 로 이어진다.
+       * canLose=false 인데 지면 게임 오버. player/tacticsBattle.ts.
+       */
+      kind: "tacticsBattle";
+      troopId: TroopId;
+      /** 격자 가로 칸 수. 없으면 8. */
+      width?: number;
+      /** 격자 세로 칸 수. 없으면 6. */
+      height?: number;
+      canLose?: boolean;
+      victoryBranch?: Command[];
+      defeatBranch?: Command[];
+    }
   | { kind: "spawnFieldEnemy"; spawn: FieldSpawnDef }
   | { kind: "despawnFieldEnemy"; spawnId: string }
   | {
@@ -526,7 +593,25 @@ export type Command =
   | { kind: "returnToTitle" }
   | { kind: "setFlag"; flag: FlagName; value: boolean }
   | { kind: "setSelfSwitch"; key: SelfSwitchKey; value: boolean }
-  | { kind: "m2Command"; commandId: string; fields: M2CommandFields };
+  | { kind: "m2Command"; commandId: string; fields: M2CommandFields }
+  /** 난이도 변경(system.difficulties 의 id). 없는 id 는 무시한다. */
+  | { kind: "setDifficulty"; difficultyId: string }
+  /** 현재 파티(구성원·위치)를 이름 붙은 파티 묶음으로 저장한다. 같은 이름은 덮어쓴다. */
+  | { kind: "storeParty"; partySetId: string }
+  /**
+   * 저장한 파티 묶음으로 조작을 바꾼다. 지금 파티는 activePartySetId 로 자동 저장되고,
+   * 불러온 묶음의 위치로 이동한다(맵이 같으면 제자리 교체). 없는 묶음이면 flags.recallPartySuccess=false.
+   */
+  | { kind: "recallParty"; partySetId: string }
+  /** 몬스터 놓아주기. instanceId 를 비우면 보관함의 첫 개체. 결과는 flags.removeMonsterSuccess. */
+  | { kind: "removeMonster"; instanceId: string }
+  /** NPC 교환: 파티·보관함에서 fromSpeciesId 종 한 마리를 내주고 toSpeciesId 종을 받는다. 결과는 flags.tradeMonsterSuccess. */
+  | { kind: "tradeMonster"; fromSpeciesId: MonsterSpeciesId; toSpeciesId: MonsterSpeciesId; level?: number; nickname?: string }
+  /**
+   * 두 개체를 합성해 system.monsterFusions 표의 결과 종 하나로 만든다. 표에 없는 조합이면 실패.
+   * 결과는 flags.fuseMonstersSuccess.
+   */
+  | { kind: "fuseMonsters"; instanceIdA: string; instanceIdB: string };
 
 export type EventPriority = "below" | "same" | "above";
 export type AutonomousMovement = "fixed" | "random" | "approach" | "custom" | "living" | "chase";
@@ -613,6 +698,10 @@ export interface ChaseAcrossMaps {
   doorDelayMs: number;
   searchMs: number;
   onLost: "wait" | "return";
+  /** 명작 공백 #28(2026-09-27): 추격자가 수색 끝에 포기하면 켜는 스위치(따돌림 연출·BGM 복귀 이벤트용). 다시 발견하면 끈다. */
+  lostSwitchId?: string;
+  /** 추격자가 문을 따라 다른 맵으로 넘어오기 시작하면 켜는 스위치(「문이 열린다」 연출용). */
+  followSwitchId?: string;
 }
 
 export interface EventObjectInteraction {

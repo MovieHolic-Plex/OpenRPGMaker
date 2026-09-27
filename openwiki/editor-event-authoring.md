@@ -61,6 +61,33 @@
   AI 모달, 1024px 화면. 기존 샘플의 임시 세션으로 UI만 확인했으며 원격 콘텐츠
   저장 작업은 아니다. 전체 gates/vitest/typecheck 및 실제 LLM 생성은 실행하지 않았다.
 
+
+## 배우·파티·시점·회차·요일·문자열 조건 (명작 공백 G1, 2026-09-27)
+
+쯔꾸르·JRPG 명작 20편 대조에서 가장 많은 우회의 뿌리는 **이벤트가 배우 레벨·HP·상태를 못 읽는 것**이었다.
+13개 조건을 한 해석기(`src/project/conditionActorQueries.ts` `evalActorQueryCondition`)에 모으고
+세 평가기(맵 fork `session.evalCondition`, 페이지 `io/pageResolution.ts`, 트룹 `battle/battleEvents.ts`)가 같은 함수를 부른다.
+`test/conditionEvaluatorParity.test.ts` 가 세 표면의 판정 일치를 kind 마다 고정한다.
+
+| kind | 읽는 것 | 해석 불가일 때 |
+|---|---|---|
+| `actorStat` | 배우(또는 `leader`)의 level·hp·mp·hpPercent·mpPercent | 파티에 없으면 거짓 |
+| `actorState` | 배우(`anyone`·`leader`·id)의 상태 보유 | — |
+| `partyLeader` · `partySize` | 선두 배우 · 인원 | 빈 파티면 선두 거짓 |
+| `facing` | 주인공(`session.playerFacing`) 또는 이 이벤트의 방향 | 이벤트 위치 모르면 거짓 |
+| `relativeFacing` | 주인공이 이벤트를 봄 / 이벤트 등 뒤 / 이벤트가 주인공 등 뒤 | 같은 칸은 거짓 |
+| `hiding` · `pursuitActive` | 숨는 중 · 추격 중(`session.horror`) | — |
+| `clearCount` · `endingSeen` · `newGamePlus` | **기기** 회차 기록(`session.clearHistory`, 부팅 때 clearRecord 에서 채움) | 기록 없으면 0회 |
+| `weekday` | 게임 달력 요일(0=일…6=토, `system.timeSystem.startWeekday` 기본 월) | 시계 꺼짐이면 거짓 |
+| `stringVariable` | 문자열 변수 ==·!=·포함·비어 있음 | 없는 변수는 빈 문자열 |
+
+- **Data Query**(m2-217)에 같은 조회 14종을 더했다 — `actorLevel/actorHp/actorMp/actorMaxHp/actorHpPercent/actorHasState/partyLeaderIndex/partySize/playerFacing/playtimeSeconds/steps/clearCount/weekday/stringLength`. 식(m2-216)은 `leaderLevel·leaderHp·leaderMp·leaderHpPercent·partySize·playtime·steps·clearCount` 를 식별자로 읽는다.
+- **문자 입력**: `enterHeroName.stringVariableId` 를 주면 배우 이름 대신 문자열 변수에 저장한다(`prompt` 가 창 제목). 대사에서 `\T[id]` 로 찍는다(`\S[n]` 은 이미 속도 제어라 `T`).
+- 세션 새 칸 `playerFacing`·`stringVariables`·`stepCount` 는 세이브에 들어가고, `clearHistory` 는 **세이브에 넣지 않는다**(회차는 슬롯이 아니라 기기에 속한다).
+- 편집기: 조건 종류 선택기·고급 조건 목록 모두 `actorQueryConditionForm.ts` 하나가 그린다. 없는 배우·상태·엔딩 참조는 초안 검증이 `condition.<kind>.reference` 경고로 잡는다.
+- **추격 훅(#28)**: 추격자 `movement.pursuit.lostSwitchId` 는 수색 끝에 포기하는 순간 켜고 다시 발견하면 끈다. `followSwitchId` 는 문을 따라 다른 맵으로 넘어오기 시작하면 켠다(`horrorRuntime.ts` / `pursuitDoors.ts`). 페이지 조건으로 「따돌렸다」·「문이 열린다」 연출을 건다. 페이지 추격 패널과 `configure_object_behavior` 의 `pursuit` 에 노출, `test/mgPursuitHooks.test.ts`.
+- 난이도·아이템 사용 조건(`difficulty`·`itemUsed`)은 간단 행이 없어 고급 조건 목록에 나온다(`pageConditionLayout.ts`).
+
 ## 구역(로케이션) 조건분기 (OPRN-OUT-020, 2026-09-10)
 
 `Condition` 에 `{ kind: "insideLocation", locationId, inside }` 가 있다. 「조건 종류」 선택기의

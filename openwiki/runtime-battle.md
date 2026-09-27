@@ -19,7 +19,12 @@
 
 - CSS 소유: `src/styles/runtime/battle/22-hit-feel.css`. `runtime/index.css` 에서 **스킨 시트 뒤**(`_windowskin.css` 다음)
   에 로드된다 — 같은 특정도의 스킨 규칙을 이긴다. 순서는 `test/playerRuntimeCss.test.ts` 가 고정한다.
-- **진짜 히트스톱:** `.battle-hit-stop` 동안 배틀러·팝업·파티 행 애니메이션을 `animation-play-state: paused` 로 멈춘다.
+- **2026-09-27 보정 (프레임 실측, `~/claude-viz/combat-hit-feel.html`):** 팝업이 히트스톱에 멈춰 opacity 0 인 채로 있어 숫자가
+  착탄 234~333ms 뒤에야 떴다 → 팝업은 정지 대상에서 빼고 0% 프레임부터 불투명(1~9ms). 점멸은 visibility → opacity 0.38
+  (적이 두 프레임 사라졌다). 필드 흰 막 34/50% → 16/30%. 플래시·흔들림·펀치는 다음 rAF 가 아니라 착탄 프레임에
+  동기로 붙는다(리플로우로 재시작). 세기표 2/5/8/12px, 통상 리듬 50ms×3. `BATTLE_ACTING_MS` 470→400,
+  `BATTLE_IMPACT_MS` 430→400. 아래 항목의 옛 수치는 이 줄이 이긴다.
+- **진짜 히트스톱:** `.battle-hit-stop` 동안 배틀러·파티 행 애니메이션을 `animation-play-state: paused` 로 멈춘다.
   흔들림(`.battle-field` 애니메이션)과 필드 플래시는 계속 돈다. 맞은 쪽 이미지는 흰 실루엣(`!important` —
   분해·기절 키프레임과 스킨 filter transition 을 이겨야 한다). 파일 **맨 끝**에 둔다: 이 파일의 다른 `animation` 단축
   속성이 play-state 를 running 으로 되돌린다. 정지 길이는 기존 시퀀서 비트(110ms × weight) 그대로다.
@@ -40,6 +45,18 @@
 - **HP 잔상(유리 창):** `.battle-stat-bar-hp::after` 가 같은 `--battle-stat` 폭으로 360ms 뒤 440ms 따라 빠진다. 채움은 90ms.
   포켓몬 HP 바는 `::after` 가 「체력」 라벨이라 잔상 대신 620ms 로 눈에 보이게 줄어든다.
 - **포켓몬 기절:** 흐려지는 대신 `pkmn-battler-sink`(translate 100% + 아래쪽 clip)로 발판 아래로 꺼진다.
+- **타격감 프리셋 (2026-09-27):** `system.battleHitFeel` = `impact`(묵직하게, 기본·JSON 생략) | `light`(가볍게 = 이 날 이전 연출) |
+  `calm`(차분하게). 정본 `src/project/battleHitFeel.ts`, 자료집 시스템 → 시작 설정 → 전투 설정 `db-field-system-battle-hit-feel`,
+  AI `set_project_settings battle.hitFeel`. 루트에 `data-battle-hit-feel-preset` 를 찍는다 — `data-battle-hit-feel` 은 히트스톱 중
+  여부(true/false)로 QA 스펙이 이미 읽으므로 이름을 나눴다. impact 의 JS 층은 `battleHitFeelDom.ts`:
+  아군 피격 흔들림 바닥 heavy(`hurtShakeIntensity`, 514 HP 중 2 피해도 1.2px → 7px), 히트스톱 중 맞은 스프라이트
+  감쇠 진동(`vibrateStruck` — WAAPI 로 **`translate` 속성만**, 정지 CSS 의 paused animation · 넓백 transform 과 안 겹침),
+  평타 착탄 `SWING_LEAD_MS`(160) 전 베기 궤적 `.battle-slash-trail` + 휘두름 소리(명령 확정 순간에서 옮김, 스킬은 그대로),
+  타격음 아래 합성 저음 `battleSfx("thud")`. CSS(22-hit-feel.css 끝): 파티 행 9px 흔들림·틴트 85%·얼굴 움찔,
+  아군 피해 숫자 28px(카드 `overflow` 를 피격 중에만 visible), 방향 있는 카메라 킥(`translate: 0 -9px`, 펀치와 같은 타이머).
+  calm 은 무대 흔들림(타격·스킬 모두)·필드 번쩍임·펀치·파편·파티 행 흔들림을 끄고 숫자·HP·점멸은 둔다.
+  근거·실측: `~/claude-viz/hit-feel-lab.html`, `output/combat-qa/hitfeel2-{impact,light,calm}/timeline2.json`.
+  테스트 `test/battleHitFeelPreset.test.ts`.
 - 함정: 헤드리스·고부하에서는 rAF 가 수백 ms 늦어 juice·플래시 클래스가 정지가 끝난 뒤 붙는다(실측 272ms).
   정지 중 상태를 잴 때는 스크린샷이 아니라 동기 `getComputedStyle`·MutationObserver 로 잰다. transition 이 걸린 속성은
   동기 계산값이 **시작값**으로 읽힌다.
@@ -540,6 +557,29 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - 저작: `upsert_skill` 의 `comboActorIds`·`area`, `upsert_enemy` 의 `rewards.tp`, `upsert_actor` 의 `learnedSkills[].tp`(없는 배우·인원 수·반경·음수 TP 는 ToolError).
 - 검증 증거: `node scripts/runtime-qa.mjs --scenario ct-techs`(`scripts/qa/runtime/ct-techs*.m*`), 헤드리스 TP 는 `scripts/qa/runtime/ct-techs-tp.mts`.
 
+## 전투 자원 · 감정 · 장비 부여 (JRPG 레인 L3, 2026-09-27)
+
+전부 **system 에서 켤 때만** 동작하고 값이 있을 때만 저장한다(정규화가 기본값·꺼짐을 생략). 옛 프로젝트는 스냅샷에 게이지 필드조차 없다.
+
+- **리미트** `system.limitGauge {enabled,label?,takenRate?=100,dealtGain?=5}` → 아군 `MutableBattler.limitGauge`(0~100).
+  맞으면 `받은 HP / 최대 HP × takenRate` 만큼, 명중시키면 `dealtGain` 만큼 찬다. `SkillRecord.limitSkill` 은 100 일 때만 쓰고(`limitNotReady`) 쓰면 0.
+- **기력(제2 자원)** `system.resource2 {enabled,label?,max?=100,start?=0,dealtGain?=5,takenGain?=10}` → `MutableBattler.resource2`,
+  `SkillRecord.resource2Cost` 로 소모(`insufficientResource2`). 이름이 tp 가 아닌 이유: 이 저장소의 TP 는 기술 습득 포인트(`rewards.tp`)다.
+- **파티 공용 게이지** `system.partyGauge {enabled,label?,max?=100,gainPerHit?=10}` → `BattleSnapshot.partyGauge`. 아군→적 명중마다 차고
+  `SkillRecord.partyGaugeCost` 로 추격 연계기가 쓴다(`insufficientPartyGauge`, `battleActorSkillFailure` 의 5번째 인자).
+- 충전은 한 곳: `noteDamageHit`(runtime.ts) → `applyBattleHitGauges`(`src/battle/battleGauges.ts`). HP 피해가 0 이면 아무것도 안 찬다. 게이지는 피해 숫자·rng 를 바꾸지 않는다.
+- HUD: `battleFieldDom` 배우 행에 `.battle-resource-gauge-{limit|resource2}`(role=meter), 파티 패널 끝에 `[data-testid=battle-party-gauge]`. 켠 자원만 그린다.
+- **감정** `StateRecord.emotion {family,tier}` — 배틀러는 감정을 하나만 가진다. 같은 계열을 다시 걸면 한 단계 오르고(최고 단계에서 멈춤) 다른 계열은 바꿔 끼운다
+  (`applyStateEffectsWithEmotion`, `src/battle/battleEmotion.ts`). `system.emotionCycle [{attackerFamily,targetFamily,multiplier}]` 은 속성 배율 칸에 곱해진다.
+- **약점 추가 행동** `system.weaknessExtraAction` — 아군 공격이 속성 배율 > 1 인 적을 맞히면 그 적이 「쓰러지고」 공격자가 한 번 더 행동한다(행동당 1회).
+  쓰러진 적은 제 차례(`executeEnemyAction`)가 오기 전까지 다시 추가 행동을 주지 않는다. gauge 는 `finishGaugeActorCommand`, strict 는 기존 추가 행동 큐 삽입을 그대로 쓴다.
+- **장비 부여** `EquipmentRecord.grantsSkillIds` / `grantsCommand` → `EquipmentRuntimeEffects.grantedSkillIds/grantedCommands`. 스킬은 배우지 않아도 `battlerHasSkill` 로 적법,
+  메뉴·자동 전투는 `battlerSkillIdsWithGrants`, 명령은 `battleCommandsForActor({grantedCommands})` 가 클래스 명령 뒤에 붙인다.
+- **MP 소모 절반** `effectFlags.halfMpCost` 는 이제 살아 있다: `battleSkillMpCostFor` 가 `floor((cost+1)/2)` 로 적법성·소비·메뉴 표시를 모두 맞춘다.
+- **장착 장비 제자리 강화** `ItemUpgradeRule.target: "equipment"` — from/to 가 장비 id. 누가 끼고 있으면 그 슬롯을 바로 바꾸고(같은 부위·슬롯 수용 검사), 아니면 가방 한 개를 바꾼다(`applyItemUpgrade`).
+- 저작: 시스템 탭 「전투 자원」, 스킬 카드 「전투 자원」, 상태 전투 규칙 패널의 「감정 계열/단계」, 장비 카드 「장착 시 스킬·명령」, 생활·제작 업그레이드 「장비 강화」. AI 도구는 `set_project_settings.battle.*`·`upsert_skill`·`upsert_state`·`upsert_equipment`·`upsert_item_upgrade.target`.
+- 테스트: `test/mgL3BattleGauges.test.ts`, `mgL3BattleGaugeHud`, `mgL3BattleEmotion`, `mgL3EquipmentGrants`, `mgL3BattleResourceEditor`.
+
 ## Chrono Trigger 전투 엔진: Active ATB · 상태 · 반격 · 자동 부활 · 적 이동 · 승리 포즈 · 필드 배경 (2026-09-26)
 
 전부 **값이 있을 때만 저장**한다(정규화가 기본값을 생략). 옛 프로젝트는 바이트·동작 그대로다.
@@ -941,3 +981,58 @@ Completed runtime timelines persist into bounded session reports accessible from
 새솔 약품 회수 트레이너전에서 포획 버튼이 가방에 나타난 것을 전용 플레이어로 재현했다.
 회귀 정의: `test/gen1BattleCommandDom.test.ts`의 두 제한 유형과 기존 야생전 경로.
 이번 세션에서는 Vitest를 실행하지 않았다.
+
+
+## 특수 명령 · 입력 기술 · 다부위 적 (명작 공백 #4 #8 #10, 2026-09-27)
+
+- **특수 효과** `SkillEffect` 에 네 종류가 더해졌다(`src/battle/battleSpecialEffects.ts`):
+  `steal`(대상 `EnemyRecord.stealItems [{itemId,rate}]` 를 차례로 굴려 하나를 빼앗는다, 적마다 1회) ·
+  `scan`(라이브라 — HP/MP·약점을 전투 메시지로 알리고 `BattleBattlerSnapshot.scanned` 로 HP 바를 드러낸다) ·
+  `learnEnemySkill`(청마법 — 대상의 `SkillRecord.learnable` 기술 중 모르는 것 하나를 배운다. 그 기술을 아는 배우는 learnable 기술에 맞아도 배운다) ·
+  `randomSkillFrom {skillIds}`(흉내·춤·슬롯).
+- **입력 커맨드** `SkillRecord.inputSequence {keys, timeLimitMs, successMultiplier?, failMultiplier?}` — 전투 UI 가 키를 순서대로 요구하고(`battleInputSequence.ts`, `24-input-prompt.css`)
+  시간 안에 맞히면 성공 배율, 틀리거나 늦으면 실패 배율을 위력에 곱한다. 자동 전투·적은 입력 없이 기본 위력이다.
+- **홀드 차지(액션 전투)** `ActionSkillProfile.chargeTiers [{holdMs,multiplier}]` — 캐스트 키를 누른 시간이 넘은 가장 높은 단계의 배율. 생략하면 즉시 발동(기존).
+- **다부위 적** `TroopMemberRecord.partOf`(본체 인덱스)·`partTag`. 본체가 쓰러지면 부위도 쓰러지고, 부위가 파괴되면 본체 행동 중 `requiresPart` 가 같은 것은 쓰지 않는다.
+  **부위 손실 상태** `StateRecord.disablesEquipSlot` — 그 상태인 동안 해당 장비 슬롯의 능력치 보너스를 잃는다(F&H 팔 절단).
+- 테스트: `test/mgL4SpecialCommands.test.ts`, `mgL4InputCharge`, `mgL4MultiPartEnemies`.
+
+## 롤링 HP · 움직이는 배경 · 화면 색 필터 (명작 공백 #15 #37, 2026-09-27)
+
+- **롤링 HP** `system.battleRollingHp`(+ `battleRollingHpPerSecond`, 기본 40) — 규칙 엔진은 피해를 즉시 확정하고 `src/player/rollingHp.ts` 가 **표시와 결산만** 바꾼다.
+  표시 HP 가 실제 HP 쪽으로 흘러가고, 실제 0 인데 미터가 남은 아군은 「쓰러지는 중」이다. 결과 화면이 뜨는 순간 미터를 멈추고 승리·도주면 남은 HP 로 살아남는다. 패배는 결산하지 않는다.
+- **움직이는 전투 배경** `TroopRecord.backdropAnimation {scrollX, scrollY, waveAmplitude, waveFrequency, paletteCycleSeconds}`(0/생략 = 끔, 범위는 `project/battleBackdropAnimation.ts`).
+  `player/battleBackdropMotion.ts` 가 그린다. `prefers-reduced-motion` 이면 정지 배경.
+- **화면 색 필터** Tint Screen(m2-046)에 `saturation 0~200 · grayscale 0~100 · sepia 0~100`(`project/eventCommands/screenFilter.ts`). 필드는 `.play-stage` 오버레이 backdrop-filter, 전투는 `.battle-field` filter.
+  필드가 없는 옛 명령은 중립값(100/0/0)이라 예전과 같다. 세이브에 들어간다.
+- 테스트: `test/mgL5bvisRollingHp.test.ts`, `mgL5bvisBackdropMotion`, `mgL5bvisScreenFilter`.
+
+## 전투 개시 형태 · 동료 작전 · 패배 규칙 · 피해 전가 · 도주 가산 (명작 공백 #3 #11 #20 #33 #34 #36, 2026-09-27)
+
+모두 옵트인이다. 필드가 없는 옛 프로젝트의 전투 결과는 바뀌지 않는다.
+
+- **개시 형태(#3)** — `BattleStartFormation` = normal / preemptive / backAttack / pincer / surprise(`src/battle/battleFormation.ts`).
+  `battleProcessing.formation`으로 지정하거나, `system.battleFormationRoll`이 켜져 있으면 파티·적 민첩과 심볼 접촉 방향으로 굴린다. 끄면 항상 보통이다.
+  선제는 적 게이지가 0에서 출발하고, 백어택·협공은 아군 대열을 뒤집고 방어가 약해진다.
+- **동료 작전(#11)** — `ActorOptions.autoBattle`(배우 또는 직업)이면 명령 메뉴 없이 스스로 행동하고, `autoTactic`으로 성향을 고른다:
+  attackAll / healFirst(HP 70% 아래 회복) / conserveMp(MP 0 기술만) / followOrders. 생략하면 기존 균형 AI다.
+- **패배 규칙(#20)** — `StateRuntimeEffects.incapacitates`(석화처럼): 이 상태는 행동하지 않고, 아군 전원이 쓰러졌거나 이 상태면 패배다. 스캔은 `SkillEffect scan`(아래 #10 절).
+- **피해 전가(#33)** — `StateRuntimeEffects.damageToMpRate`: 받는 HP 피해의 이 비율을 MP로 먼저 갚는다(MP가 모자라면 나머지는 HP로).
+- **도주 가산(#34)** — `system.escapeBonusPercent`: 도주에 실패할 때마다 다음 확률에 %p를 더한다. **생략 = 0(가산 없음, 예전 식 그대로)**.
+  스냅샷의 `failedEscapeAttempts`가 전투 중 누적 횟수다.
+- **최후의 일격(#36)** — `EnemyReaction.trigger: "onDeath"`: 아군 타격으로 쓰러진 적이 전투당 한 번 `skillId`를 쓰고 쓰러진다. 아군이 전멸했으면 패배가 우선한다.
+
+검증: `test/mgL2Bflow{Formation,Tactics,Defeat,DamageToMp,Escape}.test.ts`, 화면은 `scripts/qa/runtime/masterpiece-battle.scenario.mjs`(선제 배너).
+
+## 리미트 · 기력 · 파티 게이지 · 감정 상성 · 장비 부여 (명작 공백 #7 #9 #16 #21 #23, 2026-09-27)
+
+- **리미트(#9)** — `system.limitGauge { enabled, label?, takenRate?, dealtGain? }`: 받은 피해의 최대 HP 대비 비율(×takenRate%)과 명중마다 dealtGain으로 찬다.
+  `SkillRecord.limitSkill`은 게이지가 가득일 때만 쓸 수 있고, 쓰면 비운다.
+- **두 번째 자원(#21)** — `system.resource2`(TP식, 피해로 찬다) + `SkillRecord.resource2Cost`.
+- **파티 게이지(#16)** — `system.partyGauge`(OMORI Energy식 공용 게이지) + `SkillRecord.partyGaugeCost`(추격 연계기).
+  세 게이지 모두 `battleGaugeHud`가 전투 HUD에 그린다(`data-testid` `battle-limit-*` / `battle-resource2-*` / `battle-party-gauge`).
+- **감정 상성(#23)** — `StateRecord.emotion { family, tier }`: 같은 family를 다시 걸면 tier가 오른다. `system.emotionCycle [{attackerFamily, targetFamily, multiplier}]`이 피해 배율이다.
+- **장비 부여(#7)** — `EquipmentRecord.grantsSkillIds` / `grantsCommand`: 장착 중에만 스킬·명령이 전투 메뉴와 자동 전투에 뜬다.
+  `effectFlags.halfMpCost`를 MP 계산이 실제로 소비하고, `ItemUpgradeRule.target: "equipment"`는 끼운 장비를 그 자리에서 강화한다.
+
+검증: `test/mgL3{BattleGauges,BattleGaugeHud,BattleEmotion,BattleResourceEditor,EquipmentGrants}.test.ts`, 화면은 `masterpiece-battle`(게이지 비트).

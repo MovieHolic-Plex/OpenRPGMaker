@@ -56,6 +56,8 @@ export function nestedCommandLists(command: Command): readonly (readonly Command
       return [command.body];
     case "battleProcessing":
       return [command.victoryBranch, command.defeatBranch, command.escapeBranch].filter(isCommandList);
+    case "tacticsBattle":
+      return [command.victoryBranch, command.defeatBranch].filter(isCommandList);
     case "promoteActor":
     case "evolveMonster":
       return [command.successBranch, command.failureBranch].filter(isCommandList);

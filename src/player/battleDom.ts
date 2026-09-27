@@ -7,6 +7,9 @@ import type {
 } from "@/battle/runtime";
 import { mountOnFieldBackdrop, type OnFieldAnchors } from "@/player/battleOnField";
 import { concreteTargetCommand } from "@/battle/runtime";
+import { BATTLE_START_FORMATION_BANNERS } from "@/battle/battleFormation";
+import { createInputSequenceTracker, inputKeyLabel, type SkillInputResult } from "@/battle/battleInputSequence";
+import type { SkillInputKey, SkillInputSequence } from "@/project/types";
 import { waitForEventKey } from "@/player/eventInput";
 import type { BattleEventChoiceSnapshot, BattleEventPauseSnapshot } from "@/battle/types";
 import { targetScopeForCommand } from "@/battle/battleTargetResolver";
@@ -33,6 +36,10 @@ import { emitBattleJuice as emitContextBattleJuice, flashBattleField, playBattle
 import { ensureBattleFlashFilter } from "@/player/battleFlashFilter";
 import { applyHitIntensity, battlerMaxHp } from "@/player/battleHitIntensityDom";
 import { hitIntensity } from "@/player/battleHitIntensity";
+import { SWING_LEAD_MS, hurtShakeIntensity, spawnSlashTrail, vibrateStruck } from "@/player/battleHitFeelDom";
+import { resolveBattleHitFeel } from "@/project/battleHitFeel";
+import { battlerSpriteNode } from "@/player/battleFieldDom";
+import { playBattleSfx } from "@/player/battleSfx";
 import { AUTO_BATTLE_KEY_LABEL, SPEED_KEY_LABEL, directionForKey, isAutoBattleKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
 import { unlockBattleSfx } from "@/player/battleSfx";
 import {
@@ -43,6 +50,8 @@ import { openBattleTimerScope, clearBattleTimerScope, scheduleBattleTimer } from
 import { applyBattleSystemGraphic } from "@/player/systemGraphics";
 import { store } from "@/project/store";
 import { bindBattleStageScale } from "@/player/battleStageScale";
+import { applyRollingHpSurvival, createRollingHpMeter, startRollingHpTicker } from "@/player/rollingHp";
+import { syncBattleScreenFilter } from "@/player/battleScreenFilter";
 
 export interface BattleDomOptions {
   readonly host: HTMLElement;
@@ -121,6 +130,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   // Active ATB(system.atbMode) — gauge 흐름에서만 켜진다. CSS·QA 가 이 속성으로 구분한다.
   const activeAtb = store.getCurrent().system.atbMode === "active" && options.runtime.snapshot().battleFlow === "gauge";
   root.dataset.battleAtbMode = activeAtb ? "active" : "wait";
+  // 타격감 프리셋(project/battleHitFeel.ts). `data-battle-hit-feel` 은 히트스톱 중 여부(true/false)로 이미 쓰이므로
+  // 이름을 나눈다 — QA 스펙 셋이 그 값을 읽는다. CSS(22-hit-feel.css)가 이 속성으로 갈라진다.
+  const hitFeel = resolveBattleHitFeel(store.getCurrent().system.battleHitFeel);
+  root.dataset.battleHitFeelPreset = hitFeel;
   // 대상 플래시가 실루엣만 물들이도록 SVG 필터 정의를 루트에 심는다(05-poses-motion.css 가 url(#…) 로 참조).
   ensureBattleFlashFilter(root);
   for (const [key, value] of Object.entries(skin.themeVars)) {
@@ -139,6 +152,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
   const initialSnapshot = options.runtime.snapshot();
   let destroyed = false;
+  /** impact · 평타 확정 뒤 처음 오는 접근 비트에 베기 궤적과 휘두름 소리를 한 번 둔다. */
+  let swingArmed = false;
   let choiceController: AbortController | undefined;
   let resultSent = false;
   let submenu: BattleCommandSubmenu = null;
@@ -147,6 +162,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let resultRevealStage = 0;
   let finaleCelebrated: BattleSnapshot["result"] | undefined;
   let sequenceBusy = false;
+  /** 입력 커맨드 기술의 프롬프트. 열려 있는 동안 키 입력은 이 판정기로만 간다. */
+  let inputPrompt: { press(key: SkillInputKey): void } | undefined;
   let eventSurfaceOpen = false;
   let lastDamageFeedback: DamageFeedback | undefined;
   /** 지금 걸려 있는 히트스톱의 타격. 정지가 풀리는 순간 이 대상을 깜빡인다. */
@@ -164,6 +181,22 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
   const field = battleField(initialSnapshot);
   field.dataset.testid = "battle-field";
+  // 롤링 HP(system.battleRollingHp): 아군 HP 표시가 미터처럼 굴러간다. 규칙 엔진은 건드리지 않고,
+  // 결과 확정 때 applyRollingHpSurvival 이 미터에 남은 HP 로 결산한다.
+  const rollingHpSystem = store.getCurrent().system;
+  const rollingHp = rollingHpSystem.battleRollingHp === true
+    ? createRollingHpMeter({ perSecond: rollingHpSystem.battleRollingHpPerSecond })
+    : undefined;
+  if (rollingHp) root.dataset.battleRollingHp = "true";
+  let lastFieldPresentation: Parameters<typeof syncBattleParty>[2];
+  const rollingHpTicker = rollingHp
+    ? startRollingHpTicker(rollingHp, () => {
+      if (destroyed) return;
+      const snapshot = options.runtime.snapshot();
+      syncBattleField(field, snapshot, undefined, lastFieldPresentation);
+      syncBattleParty(partyPanel, snapshot, lastFieldPresentation);
+    })
+    : undefined;
   const animationLayer = document.createElement("div");
   animationLayer.className = "battle-animation-layer";
   animationLayer.dataset.testid = "battle-animation-layer";
@@ -205,6 +238,17 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // 스테이지 전체에 스냅샷을 캔버스 사각형 그대로 깐다 — 필드 배경(cover)은 전장 박스에 맞춰 잘리므로
     // 필드 위 전투에서는 전장 배경을 비우고 스테이지 뒤판이 캔버스와 같은 자리에 그린다.
     if (options.fieldBackdropUrl) mountOnFieldBackdrop(stage, options.onField.canvas, options.fieldBackdropUrl);
+  }
+
+  // 개시 진형 배너: 첫 인트로 메시지에 한 줄만 덧붙인다(보통 개시는 그대로).
+  let formationBannerShown = false;
+  function withFormationBanner(state: typeof directorState): typeof directorState {
+    if (formationBannerShown || state.step !== "intro") return state;
+    formationBannerShown = true;
+    const formation = initialSnapshot.formation;
+    if (!formation || formation === "normal") return state;
+    root.dataset.battleFormation = formation;
+    return { ...state, lines: [...state.lines, BATTLE_START_FORMATION_BANNERS[formation]] };
   }
 
   function toggleAutoBattle(): void {
@@ -343,7 +387,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       return playCaptureCinematic(field, targetId, success);
     },
     onDirectorState(state) {
-      directorState = state;
+      directorState = withFormationBanner(state);
     },
     onTimelineEntry(entry) {
       // 연출이 화면에 도달한 반격·부활의 흔적 — QA 와 스킨 CSS 가 읽는다.
@@ -402,7 +446,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         }
         if (!feedback.healing && !feedback.miss) {
           const hurt = options.runtime.snapshot().actors.some((actor) => actor.id === feedback.targetId || actor.recordId === feedback.targetId);
-          flashBattleField(root, feedback.critical ? "critical" : "hit", intensity, { hurt });
+          flashBattleField(root, feedback.critical ? "critical" : "hit", hurt ? hurtShakeIntensity(hitFeel, intensity) : intensity, { hurt });
+          // 타격음 아래 저음 한 겹 — 샘플은 사건 1개 = 소리 1개(battleJuice) 그대로다. 이 저음은 그 위의 별도 층이다.
+          if (hitFeel === "impact" && intensity) playBattleSfx("thud");
           // 막타는 격파 조각(spawnDeathShards)이 이미 튄다 — 두 파편이 겹치면 뭉개진다.
           if (intensity && targetNode && !lethal) spawnHitSparks(targetNode, intensity);
         }
@@ -418,6 +464,14 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         const node = findBattlerNode(field, struck.targetId);
         if (node && !node.classList.contains("defeated") && !prefersReducedMotion()) blinkBattlerNode(node);
       }
+      // 히트스톱이 걸리는 순간 맞은 쪽이 떨기 시작한다(impact). 멈춘 화면이 사진이 아니라 충격으로 읽힌다.
+      if (active && hitFeel === "impact" && feedback && !prefersReducedMotion()) {
+        const node = findBattlerNode(field, feedback.targetId);
+        const strength = node?.dataset.hitIntensity;
+        if (node && (strength === "graze" || strength === "normal" || strength === "heavy" || strength === "crushing")) {
+          vibrateStruck(battlerSpriteNode(node), strength);
+        }
+      }
       root.dataset.battleHitFeel = active ? "true" : "false";
       root.classList.toggle("battle-hit-stop", active);
       if (active && feedback?.critical) root.classList.add("battle-hit-stop-critical");
@@ -425,6 +479,19 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     },
     onActionMotion(beat) {
       applyActionMotion(field, beat);
+      // 아군 공격의 접근 비트 끝(착탄 SWING_LEAD_MS 전)에 베기 궤적과 휘두름 소리를 둔다. 예전엔 휘두름
+      // 소리가 명령 확정 순간(착탄 ~0.5초 전)에 울고 화면은 그동안 멈춰 있었다.
+      if (hitFeel === "impact" && swingArmed && beat?.kind === "approach" && beat.userMotion === "lunge" && beat.targetId) {
+        swingArmed = false;
+        const targetId = beat.targetId;
+        scheduleBattleTimer(() => {
+          if (destroyed) return;
+          const target = findBattlerNode(field, targetId);
+          if (!target || !target.classList.contains("battle-enemy")) return;
+          playBattleCue("attack-swing");
+          spawnSlashTrail(target);
+        }, Math.max(0, beat.durationMs - SWING_LEAD_MS));
+      }
     },
     animationImpactMs(animation) {
       return battleAnimationImpactMs(animation.animationId);
@@ -474,7 +541,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (directorState.step === "result" && !resultSent) {
         if (revealAllResultRows(snapshot)) return;
         resultSent = true;
-        options.onResult(snapshot.result, snapshot);
+        options.onResult(snapshot.result, applyRollingHpSurvival(snapshot.result, snapshot, rollingHp));
       }
       return;
     }
@@ -525,7 +592,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         if (directorState.step === "result" && !resultSent) {
           if (revealAllResultRows(snapshot)) return;
           resultSent = true;
-          options.onResult(snapshot.result, snapshot);
+          options.onResult(snapshot.result, applyRollingHpSurvival(snapshot.result, snapshot, rollingHp));
         }
       }
       return;
@@ -545,6 +612,15 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       // 상태만 기록하고, keyup 에서 단독이었을 때만 속도를 토글한다(결함 2).
       shiftHeld = true;
       shiftCombined = false;
+      return;
+    }
+    if (inputPrompt) {
+      const dir = directionForKey(event.key);
+      const key: SkillInputKey | undefined = dir ?? (isBattleConfirmKey(event) ? "confirm" : isBattleCancelKey(event) ? "cancel" : undefined);
+      if (key) {
+        event.preventDefault();
+        inputPrompt.press(key);
+      }
       return;
     }
     if (sequenceBusy) {
@@ -928,9 +1004,20 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         ? lastDamageFeedback.targetId
         : undefined,
       onField: options.onField,
+      rollingHp,
     };
+    // 결과 화면이 뜨면 미터를 멈춘다 — 이 순간 남은 HP 가 결산 값이다. 패배는 결산하지 않으므로
+    // 미터를 실제 HP(0)에 붙인다: 전멸 화면에 굴러가던 HP 와 「쓰러지는 중」이 남지 않게.
+    if (showingResult) {
+      if (snapshot.result === "defeat") rollingHp?.settle();
+      else rollingHp?.freeze();
+    }
+    lastFieldPresentation = fieldPresentation;
     syncBattleField(field, snapshot, lastDamageFeedback, fieldPresentation);
     syncBattleParty(partyPanel, snapshot, fieldPresentation);
+    rollingHpTicker?.kick();
+    // 전투 이벤트의 Tint Screen(색조·채도·흑백·세피아).
+    syncBattleScreenFilter(field, snapshot.eventState.screen);
     syncBattleMessageWindow(messageWindow, directorState);
     if (!snapshot.eventPause && !snapshot.eventChoice) eventSurfaceOpen = false;
     // The event surface takes over only after preceding action beats have drained.
@@ -1159,15 +1246,78 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       ? findBattlerNode(field, snapshot.activeActorId)
       : null;
     if (command.kind === "attack" || command.kind === "skill") {
-      emitBattleJuice("attack-swing", actorNode ?? undefined);
+      // impact 의 평타는 휘두름 소리를 착탄 직전(onActionMotion)으로 옮기고 베기 궤적을 같이 긋는다. 여기서도
+      // 울면 한 행동에 두 번 운다. 스킬은 자기 애니메이션이 있어 예전 자리(확정 순간)를 지킨다.
+      swingArmed = hitFeel === "impact" && command.kind === "attack";
+      if (!swingArmed) emitBattleJuice("attack-swing", actorNode ?? undefined);
     } else if (command.kind === "defend") {
       emitBattleJuice("defend", actorNode ?? undefined);
     }
     // escape 는 결과가 화면에 도달할 때 시퀀서 훅(onEscapeOutcome)이 울린다.
   }
 
+  function skillInputSequenceFor(command: TargetedActorCommand): SkillInputSequence | undefined {
+    if (command.kind !== "skill" || command.inputResult) return undefined;
+    return store.getCurrent().database.skills.find((skill) => skill.id === command.skillId)?.inputSequence;
+  }
+
+  /**
+   * 입력 커맨드 프롬프트: 키 순서를 보여 주고 제한 시간 안에 모두 맞게 누르면 성공.
+   * 틀린 키·시간 초과는 실패. 결과는 명령의 inputResult 로 런타임에 넘어가 위력 배율이 된다.
+   */
+  function openInputPrompt(sequence: SkillInputSequence, onDone: (result: SkillInputResult) => void): void {
+    const tracker = createInputSequenceTracker(sequence, Date.now());
+    const overlay = document.createElement("div");
+    overlay.className = "battle-input-prompt";
+    overlay.dataset.testid = "battle-input-prompt";
+    overlay.setAttribute("role", "status");
+    overlay.setAttribute("aria-live", "assertive");
+    const title = document.createElement("p");
+    title.className = "battle-input-prompt-title";
+    title.textContent = `입력! (${(sequence.timeLimitMs / 1000).toFixed(1)}초)`;
+    const keys = document.createElement("div");
+    keys.className = "battle-input-prompt-keys";
+    const keyNodes = sequence.keys.map((key, index) => {
+      const node = document.createElement("span");
+      node.className = "battle-input-prompt-key";
+      node.dataset.testid = `battle-input-prompt-key-${index}`;
+      node.textContent = inputKeyLabel(key);
+      return node;
+    });
+    keys.append(...keyNodes);
+    overlay.append(title, keys);
+    root.append(overlay);
+    let finished = false;
+    const finish = (result: SkillInputResult): void => {
+      if (finished) return;
+      finished = true;
+      inputPrompt = undefined;
+      window.clearTimeout(timer);
+      overlay.dataset.result = result;
+      overlay.remove();
+      onDone(result);
+    };
+    const timer = scheduleBattleTimer(() => finish(tracker.expire(Number.POSITIVE_INFINITY) === "success" ? "success" : "fail"), sequence.timeLimitMs);
+    inputPrompt = {
+      press(key) {
+        const state = tracker.press(key, Date.now());
+        keyNodes.forEach((node, index) => { node.dataset.done = index < tracker.index ? "true" : "false"; });
+        if (state !== "pending") finish(state);
+      },
+    };
+  }
+
   function beginTargetCommand(command: TargetedActorCommand): void {
-    if (sequenceBusy) return;
+    if (sequenceBusy || inputPrompt) return;
+    // 입력 커맨드 기술이 대상 선택 없이 바로 나가는 스코프(자신·전체)면 여기서 입력을 받는다.
+    const promptSequence = skillInputSequenceFor(command);
+    if (promptSequence && command.kind === "skill") {
+      const scope = targetScopeForCommand(store.getCurrent(), command);
+      if (scope === "self" || scope === "allAllies" || scope === "allEnemies") {
+        openInputPrompt(promptSequence, (inputResult) => beginTargetCommand({ ...command, inputResult }));
+        return;
+      }
+    }
     const before = options.runtime.snapshot();
     const returnSubmenu = submenu;
     options.runtime.beginActorCommand(command);
@@ -1207,14 +1357,25 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     sequencer.runAfterActorCommand(concrete, before, afterCommand);
   }
 
-  function confirmTargetSelection(targetId: string): void {
-    if (sequenceBusy) return;
+  function confirmTargetSelection(targetId: string, inputResult?: SkillInputResult): void {
+    if (sequenceBusy || inputPrompt) return;
     const before = options.runtime.snapshot();
     const pending = before.targetSelection?.command;
     const side = before.targetSelection?.side;
     if (before.phase !== "targetSelect" || !pending || !side) return;
-    const command = concreteTargetCommand(pending, targetId, side);
-    options.runtime.selectTarget(targetId);
+    // 입력 커맨드 기술: 대상을 고른 뒤 입력을 받고, 판정을 실은 명령으로 실행한다.
+    const promptSequence = inputResult ? undefined : skillInputSequenceFor(pending);
+    if (promptSequence && before.targetSelection?.targetIds.includes(targetId)) {
+      openInputPrompt(promptSequence, (result) => confirmTargetSelection(targetId, result));
+      return;
+    }
+    const command = concreteTargetCommand(pending.kind === "skill" && inputResult ? { ...pending, inputResult } : pending, targetId, side);
+    if (inputResult) {
+      options.runtime.cancelTargetSelection();
+      options.runtime.performActorCommand(command);
+    } else {
+      options.runtime.selectTarget(targetId);
+    }
     const afterCommand = options.runtime.snapshot();
     if (afterCommand.phase === "targetSelect") {
       directorState = targetSelectDirectorState(afterCommand);
@@ -1291,6 +1452,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (destroyed) return;
       destroyed = true;
       clearBattleTimerScope();
+      rollingHpTicker?.stop();
       choiceController?.abort();
       options.runtime.cancel();
       window.clearInterval(tickInterval);

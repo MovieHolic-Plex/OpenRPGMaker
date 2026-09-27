@@ -39,6 +39,19 @@ export function renderChaseSettings(mapId: MapId, eventId: string, page: EventPa
     wrap.append(field(label, input));
   }
   wrap.append(field('수색 종료 후', select('event-chase-onLost', config.onLost, [['wait', '그 자리에서 대기'], ['return', '이 방 진입점으로 복귀']], onLost => set({ onLost: onLost as ChaseAcrossMaps['onLost'] }))));
+  // 명작 공백 #28: 추격 포기·문 따라옴 순간을 스위치로 알린다(이벤트 페이지 조건으로 연출을 건다).
+  for (const [key, label] of [['lostSwitchId', '포기하면 켤 스위치'], ['followSwitchId', '문 따라오면 켤 스위치']] as const) {
+    const input = el('input', { attrs: { type: 'text', placeholder: '스위치 id (비우면 없음)' }, dataset: { testid: `event-chase-${key}` } }) as HTMLInputElement;
+    input.value = config[key] ?? '';
+    input.addEventListener('change', () => {
+      const value = input.value.trim();
+      const next: ChaseAcrossMaps = { ...config };
+      if (value) next[key] = value;
+      else delete next[key];
+      updateEventPage(mapId, eventId, page.id, { movement: { ...page.movement, pursuit: next } });
+    });
+    wrap.append(field(label, input));
+  }
   wrap.append(el('p', { class: 'empty-hint', text: '문까지 이동한 시간과 대기 시간 뒤에 따라옵니다. 벽과 가구는 시야를 가리며, 숨는 모습을 본 괴물은 계속 쫓습니다.' }));
   return wrap;
 }

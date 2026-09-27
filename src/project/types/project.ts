@@ -82,6 +82,17 @@ export interface GameMap {
   safeZones?: Rect[];
   // system.actionCombat.enabled 일 때 이 맵의 필드 스폰 접촉을 턴제 대신 실시간 액션으로 라우팅.
   actionCombat?: boolean;
+  /**
+   * 옆에서 보는 필드(횡스크롤). 켜면 주인공이 매 걸음 중력으로 떨어지고, 위 키는 점프,
+   * 지형 기록 climbable 칸(사다리·밧줄)은 위아래로 오른다. 없으면 기존 탑다운 이동 그대로. player/sideViewPhysics.ts.
+   */
+  sideView?: boolean;
+  /** 옆보기 점프 높이(칸). 없으면 2. */
+  sideViewJumpTiles?: number;
+  /** 이 칸 수를 넘게 떨어지면 낙하 피해. 없으면 4. */
+  sideViewFallTiles?: number;
+  /** 넘은 한 칸마다 파티 전원이 받는 낙하 피해. 없으면 10. */
+  sideViewFallDamage?: number;
   // 경작 가능한 영역 선언. 경작/물/작물 상태는 PlaySession.farmPlots에만 저장한다.
   farmableArea?: Rect[];
   // 맵 진입 시 세션 lighting에 적용되는 기본 조명. 없는 맵은 이전 조명을 유지한다.

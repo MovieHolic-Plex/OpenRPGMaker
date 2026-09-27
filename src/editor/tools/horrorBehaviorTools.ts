@@ -8,6 +8,8 @@ export const PURSUIT_SCHEMA: JsonSchema = {
     searchMs: { type: 'number', minimum: 0, maximum: 60000 },
     onLost: { type: 'string', enum: ['wait', 'return'] },
     tracking: { type: 'string', enum: ['lastSeen', 'persistent'], description: 'lastSeen(기본): 본 곳까지만 쫓고 수색. persistent: 한 번 쫓기 시작하면 벽 너머로도 계속 따라온다(숨거나 안전지대면 놓친다). 「금고를 열자 달려온다」처럼 보지 않아도 오는 추격은 persistent.' },
+    lostSwitchId: { type: 'string', description: '수색 끝에 포기하면 켜는 스위치 id(따돌림 연출·BGM 복귀). 다시 발견하면 꺼진다.' },
+    followSwitchId: { type: 'string', description: '문을 따라 다른 맵으로 넘어오기 시작하면 켜는 스위치 id(「문이 열린다」 연출).' },
   }, required: ['scope', 'doorDelayMs', 'searchMs', 'onLost'],
 };
 export function parsePursuit(value: unknown): ChaseAcrossMaps | undefined {
@@ -16,7 +18,15 @@ export function parsePursuit(value: unknown): ChaseAcrossMaps | undefined {
   if (!p || !['map', 'connected'].includes(p.scope) || !['wait', 'return'].includes(p.onLost)
     || ![p.doorDelayMs, p.searchMs].every(ms => typeof ms === 'number' && Number.isFinite(ms) && ms >= 0 && ms <= 60000)) throw new ToolError('추격 범위/대기/수색/복귀 설정이 잘못되었습니다.');
   if (p.tracking !== undefined && p.tracking !== 'lastSeen' && p.tracking !== 'persistent') throw new ToolError('pursuit.tracking 은 lastSeen 또는 persistent 입니다.');
-  return { scope: p.scope, doorDelayMs: p.doorDelayMs, searchMs: p.searchMs, onLost: p.onLost, ...(p.tracking ? { tracking: p.tracking } : {}) };
+  for (const key of ['lostSwitchId', 'followSwitchId'] as const) {
+    if (p[key] !== undefined && typeof p[key] !== 'string') throw new ToolError(`pursuit.${key} 는 스위치 id 문자열입니다.`);
+  }
+  return {
+    scope: p.scope, doorDelayMs: p.doorDelayMs, searchMs: p.searchMs, onLost: p.onLost,
+    ...(p.tracking ? { tracking: p.tracking } : {}),
+    ...(p.lostSwitchId ? { lostSwitchId: p.lostSwitchId } : {}),
+    ...(p.followSwitchId ? { followSwitchId: p.followSwitchId } : {}),
+  };
 }
 export const CONFIGURE_OBJECT_BEHAVIOR: ToolDefinition = {
   name: 'configure_object_behavior', mode: 'write',

@@ -167,7 +167,8 @@ describe("batch 6 · type weakness is clearly felt (>=3x vs resist)", () => {
     const enemy = project.database.enemies.find((record) => record.id === "enemy_slime");
     if (!enemy) throw new Error("missing enemy_slime");
     enemy.speciesId = targetSpecies;
-    enemy.stats = { ...enemy.stats, maxHp: 100000, defense: 1, attack: 1 };
+    // 적은 과녁일 뿐이다: 먼저 움직이거나(민첩) 정신력 기술(독침)로 몬스터를 쓰러뜨리지 않게 한다.
+    enemy.stats = { ...enemy.stats, maxHp: 100000, defense: 1, attack: 1, mind: 1, agility: 1 };
     const result = simulateBattle({
       project,
       troopId: "troop_slime",

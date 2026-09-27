@@ -24,7 +24,11 @@ const PARITY_LOCATION_ID = "loc_parity";
 // battleResult 는 여기서 «같은 스냅샷 입력 → 같은 판정» 만 고정한다. 실전 시간 의미는
 // 표면마다 다르다(맵 fork = 방금 끝난 전투, 전투 중 fork/페이지 = 전투 개시 시점의 직전
 // 전투) — 상태-패리티와 시간-패리티를 혼동하지 말 것. fork 폼 힌트가 시간 의미를 설명한다.
-const ALLOWLISTED_DIVERGENCES = {} satisfies Partial<Record<ConditionKind, string>>;
+const ALLOWLISTED_DIVERGENCES = {
+  // «바라보는 대상에 사용»은 필드 메뉴 전용 입력이다 — 전투 이벤트에는 사용 중인 아이템이라는 입력 자체가 없어
+  // 항상 거짓이다(페이지·맵 분기는 session.itemUsedId 로 참이 된다). 상태가 아니라 입력 경로의 차이다.
+  itemUsed: "field-menu-only input; battle events have no item-in-use state and evaluate false",
+} satisfies Partial<Record<ConditionKind, string>>;
 
 type StateMutation = (state: PlaySession) => void;
 type ParityCase = {
@@ -64,6 +68,15 @@ const CASES = {
     condition: { kind: "actor", actorId: "actor_condition", present: true },
     satisfying: (state) => { state.partyActorIds = ["actor_condition"]; },
     nonSatisfying: (state) => { state.partyActorIds = []; },
+  },
+  monsterSpecies: {
+    // 기존 누락(2026-09-27 발견): CONDITION_KINDS 에는 있는데 케이스가 없어 스위트 전체가 수집 단계에서 죽었다.
+    condition: { kind: "monsterSpecies", speciesId: "species_parity", present: true },
+    satisfying: (state) => {
+      state.monsterInstances = { mon_1: { speciesId: "species_parity" } as PlaySession["monsterInstances"][string] };
+      state.monsterParty = ["mon_1"];
+    },
+    nonSatisfying: (state) => { state.monsterInstances = {}; state.monsterParty = []; },
   },
   item: {
     condition: { kind: "item", itemId: "item_condition", present: true },
@@ -120,6 +133,84 @@ const CASES = {
     condition: { kind: "run", query: "active", value: true },
     satisfying: (state) => { state.roguelikeRun = structuredClone(RUN_ACTIVE); },
     nonSatisfying: (state) => { state.roguelikeRun = { ...structuredClone(RUN_ACTIVE), status: "completed" }; },
+  },
+  // 명작 공백 G1 — 파티 수치·상태·선두·인원.
+  actorStat: {
+    condition: { kind: "actorStat", actorId: "leader", stat: "level", op: ">=", value: 5 },
+    satisfying: (state) => { state.partyActorIds = ["actor_parity"]; state.actorLevels.actor_parity = 5; },
+    nonSatisfying: (state) => { state.partyActorIds = ["actor_parity"]; state.actorLevels.actor_parity = 4; },
+  },
+  actorState: {
+    condition: { kind: "actorState", actorId: "anyone", stateId: "state_poison", present: true },
+    satisfying: (state) => { state.partyActorIds = ["actor_parity"]; state.actorStateIds = { actor_parity: ["state_poison"] }; },
+    nonSatisfying: (state) => { state.partyActorIds = ["actor_parity"]; state.actorStateIds = { actor_parity: [] }; },
+  },
+  partyLeader: {
+    condition: { kind: "partyLeader", actorId: "actor_parity" },
+    satisfying: (state) => { state.partyActorIds = ["actor_parity", "actor_other"]; },
+    nonSatisfying: (state) => { state.partyActorIds = ["actor_other", "actor_parity"]; },
+  },
+  partySize: {
+    condition: { kind: "partySize", op: ">=", value: 2 },
+    satisfying: (state) => { state.partyActorIds = ["a", "b"]; },
+    nonSatisfying: (state) => { state.partyActorIds = ["a"]; },
+  },
+  facing: {
+    condition: { kind: "facing", subject: "player", dir: "up" },
+    satisfying: (state) => { state.playerFacing = "up"; },
+    nonSatisfying: (state) => { state.playerFacing = "left"; },
+  },
+  relativeFacing: {
+    // 이벤트(3,3)가 아래를 보고, 주인공이 그 위쪽(등 뒤)에 있다.
+    condition: { kind: "relativeFacing", relation: "playerBehindEvent" },
+    satisfying: (state) => { state.x = 3; state.y = 1; state.eventLocations[OWNER_EVENT.id] = { mapId: state.currentMapId, x: 3, y: 3, direction: "down" }; },
+    nonSatisfying: (state) => { state.x = 3; state.y = 6; state.eventLocations[OWNER_EVENT.id] = { mapId: state.currentMapId, x: 3, y: 3, direction: "down" }; },
+  },
+  hiding: {
+    condition: { kind: "hiding", value: true },
+    satisfying: (state) => { state.horror = { pursuits: {}, hiding: { mapId: state.currentMapId, eventId: "closet", witnessedBy: [] } }; },
+    nonSatisfying: (state) => { state.horror = { pursuits: {} }; },
+  },
+  pursuitActive: {
+    condition: { kind: "pursuitActive", value: true },
+    satisfying: (state) => { state.horror = { pursuits: { oni: { home: { mapId: "m", x: 0, y: 0 }, active: true, searchMs: 0, doors: [] } } }; },
+    nonSatisfying: (state) => { state.horror = { pursuits: { oni: { home: { mapId: "m", x: 0, y: 0 }, active: false, searchMs: 0, doors: [] } } }; },
+  },
+  clearCount: {
+    condition: { kind: "clearCount", op: ">=", value: 2 },
+    satisfying: (state) => { state.clearHistory = { count: 2, endingIds: ["end_a"] }; },
+    nonSatisfying: (state) => { state.clearHistory = { count: 1, endingIds: ["end_a"] }; },
+  },
+  endingSeen: {
+    condition: { kind: "endingSeen", endingId: "end_true", value: true },
+    satisfying: (state) => { state.clearHistory = { count: 1, endingIds: ["end_true"] }; },
+    nonSatisfying: (state) => { state.clearHistory = { count: 1, endingIds: ["end_bad"] }; },
+  },
+  newGamePlus: {
+    condition: { kind: "newGamePlus", value: true },
+    satisfying: (state) => { state.flags.ngplus = true; },
+    nonSatisfying: (state) => { state.flags.ngplus = false; },
+  },
+  weekday: {
+    // 1년 봄 1일 = 월(1). 봄 6일 = 토(6).
+    condition: { kind: "weekday", weekdays: [6] },
+    satisfying: (state) => { state.gameTime = { minute: 0, hour: 12, day: 6, season: "spring", year: 1 }; },
+    nonSatisfying: (state) => { state.gameTime = { minute: 0, hour: 12, day: 1, season: "spring", year: 1 }; },
+  },
+  stringVariable: {
+    condition: { kind: "stringVariable", stringVariableId: "prayer", op: "==", value: "빛이여" },
+    satisfying: (state) => { state.stringVariables = { prayer: "빛이여" }; },
+    nonSatisfying: (state) => { state.stringVariables = { prayer: "어둠아" }; },
+  },
+  difficulty: {
+    condition: { kind: "difficulty", difficultyId: "hard" },
+    satisfying: (state) => { state.difficultyId = "hard"; },
+    nonSatisfying: (state) => { state.difficultyId = "easy"; },
+  },
+  itemUsed: {
+    condition: { kind: "itemUsed", itemId: "item_potion" },
+    satisfying: (state) => { state.itemUsedId = "item_potion"; },
+    nonSatisfying: (state) => { state.itemUsedId = "item_ether"; },
   },
   all: {
     condition: {

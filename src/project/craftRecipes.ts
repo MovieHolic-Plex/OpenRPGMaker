@@ -112,3 +112,39 @@ function operationsFit(
   }
   return true;
 }
+
+/**
+ * 인벤토리 메뉴 «조합»: 두 아이템(순서 무관)으로 만드는 제작법. 재료가 정확히 그 두 아이템(각 1개씩, 같은 아이템이면 2개)인
+ * 제작법만 조합으로 본다 — 세 가지 이상을 요구하는 제작법은 제작 명령(craftRecipe) 전용이다.
+ */
+export function combinationRecipeFor(project: Project, itemA: ItemId, itemB: ItemId): CraftRecipe | undefined {
+  const want = itemA === itemB ? new Map([[itemA, 2]]) : new Map([[itemA, 1], [itemB, 1]]);
+  return craftRecipesOf(project).find((recipe) => {
+    const requirements = aggregateIngredients(recipe.ingredients);
+    if (!requirements || requirements.size !== want.size) return false;
+    for (const [itemId, count] of want) if (requirements.get(itemId) !== count) return false;
+    return true;
+  });
+}
+
+/** 이 아이템과 조합할 수 있는 상대 아이템 id(제작법 기준, 소지 여부는 보지 않는다). */
+export function combinationPartnersOf(project: Project, itemId: ItemId): ItemId[] {
+  const partners = new Set<ItemId>();
+  for (const recipe of craftRecipesOf(project)) {
+    const requirements = aggregateIngredients(recipe.ingredients);
+    if (!requirements || !requirements.has(itemId)) continue;
+    if (requirements.size === 2 && [...requirements.values()].every((count) => count === 1)) {
+      for (const other of requirements.keys()) if (other !== itemId) partners.add(other);
+    } else if (requirements.size === 1 && requirements.get(itemId) === 2) {
+      partners.add(itemId);
+    }
+  }
+  return [...partners];
+}
+
+/** 조합 실행 — 맞는 제작법을 찾아 craftRecipe 규칙(잠금·골드·넘침)을 그대로 적용한다. */
+export function combineItems(project: Project, session: PlaySession, itemA: ItemId, itemB: ItemId): CraftResult {
+  const recipe = combinationRecipeFor(project, itemA, itemB);
+  if (!recipe) return { ok: false, reason: "missing-recipe" };
+  return craftRecipe(project, session, recipe.id);
+}

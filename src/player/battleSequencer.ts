@@ -25,19 +25,21 @@ import { disambiguatedBattlerName } from "@/player/battleCommandDom";
 
 export const BATTLE_INTRO_MS = 1_200;
 // 아래 3개는 **normal 무게** 기준값이다. light/heavy 는 battleActionBeats 가 배율로 늘리거나 줄인다.
-export const BATTLE_ACTING_MS = 470;
+// 470 → 400 (2026-09-27): 전진은 비트 끝 240ms 에만 움직이므로(22-hit-feel.css ⑦) 앞의 230ms 가
+// "주인공의 공격!" 뒤 아무것도 움직이지 않는 죽은 시간이었다.
+export const BATTLE_ACTING_MS = 400;
 /** Brief freeze on a damaging connect before impact UI continues. */
 export const BATTLE_HITSTOP_MS = 110;
 /** 적 행동 예고(움츠림) — planEnemyActionBeats 의 windup 비트. weight 로 0.72~1.28배 늘어난다. */
 export const BATTLE_ENEMY_WINDUP_MS = 300;
 /**
- * 임팩트 여운. 750 → 430.
+ * 임팩트 여운. 750 → 430 → 400(접근 400 과 맞춘다, F06).
  *
  * 실측: 입력 1회당 비인터랙티브 2.09초 중 마지막 ~470ms 는 모션도 팝업도 없는
  * 완전 정적 구간이었다. 히트스톱(=절정)은 1샘플 폭인데 여운이 900ms 넘게 흘러
  * 임팩트 대비 여운의 비율이 거꾸로였다.
  */
-export const BATTLE_IMPACT_MS = 430;
+export const BATTLE_IMPACT_MS = 400;
 /** "○○을(를) 쓰러뜨렸다!" 격파 대사가 화면에 머무는 시간. */
 export const BATTLE_KILL_LINE_MS = 660;
 /** 결판 막타의 격파 대사 체류. 결과 도장이 같은 순간 뜨고 결과 홀드(900)가 뒤를 잇는다. */
@@ -511,6 +513,7 @@ export function createBattleSequencer(
       return { step: "acting", lines: [`${withJosa(actor?.name ?? "아군", "이/가")} 다시 일어섰다! (HP ${entry.amount ?? 0})`], targetId: entry.targetId };
     }
     if (entry.kind === "move") return { step: "acting", lines: [], targetId: entry.targetId };
+    if (entry.kind === "special") return { step: "acting", lines: entry.message ? [entry.message] : [], targetId: entry.targetId };
     if (entry.kind !== "action") return undefined;
     const user = snapshot.actors.find((actor) => actor.recordId === entry.userRecordId)
       ?? snapshot.enemies.find((enemy) => enemy.recordId === entry.userRecordId);

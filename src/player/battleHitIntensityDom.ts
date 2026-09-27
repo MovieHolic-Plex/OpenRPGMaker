@@ -61,10 +61,10 @@ export function applyHitIntensity(
  */
 function punchStage(root: HTMLElement): void {
   root.classList.remove("battle-field-punch");
-  window.requestAnimationFrame(() => {
-    root.classList.add("battle-field-punch");
-    window.setTimeout(() => root.classList.remove("battle-field-punch"), HIT_PUNCH_HOLD_MS);
-  });
+  // 착탄과 같은 프레임. rAF 로 미루면 허공에 한 프레임 늦는다(battleJuice.flashBattleField 와 같은 이유).
+  void root.offsetWidth;
+  root.classList.add("battle-field-punch");
+  window.setTimeout(() => root.classList.remove("battle-field-punch"), HIT_PUNCH_HOLD_MS);
 }
 
 /** 스냅샷에서 배틀러(적 id·아군 id·recordId)의 최대 HP 를 찾는다. 원장이 비어 있을 때의 폴백. */

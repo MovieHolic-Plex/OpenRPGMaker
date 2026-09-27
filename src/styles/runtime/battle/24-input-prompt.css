@@ -1,0 +1,36 @@
+/* 입력 커맨드 기술 프롬프트(SkillRecord.inputSequence). 전투장 중앙 위에 키 순서를 띄운다. */
+.battle-input-prompt {
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  transform: translate(-50%, -50%);
+  z-index: 40;
+  padding: 8px 14px;
+  border: 2px solid #ffe08a;
+  border-radius: 6px;
+  background: rgba(12, 16, 40, 0.92);
+  color: #fff;
+  text-align: center;
+  pointer-events: none;
+}
+.battle-input-prompt-title {
+  margin: 0 0 6px;
+  font-size: 13px;
+}
+.battle-input-prompt-keys {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+.battle-input-prompt-key {
+  min-width: 22px;
+  padding: 2px 6px;
+  border: 1px solid #9ab;
+  border-radius: 4px;
+  font-size: 16px;
+}
+.battle-input-prompt-key[data-done="true"] {
+  border-color: #ffe08a;
+  background: #ffe08a;
+  color: #1a1a2e;
+}

@@ -65,7 +65,7 @@ type DialogueSurfaceSettings = {
 };
 
 export type DialogueTextContext = {
-  readonly session: Pick<PlaySessionLike, "variables" | "actorNames"> & { readonly gold?: number };
+  readonly session: Pick<PlaySessionLike, "variables" | "actorNames"> & { readonly gold?: number; readonly stringVariables?: Readonly<Record<string, string>> };
   readonly project: Pick<Project, "database">;
 };
 
@@ -1198,6 +1198,15 @@ export function parseDialogueText(value: string, context?: DialogueTextContext):
       continue;
     }
     const control = next?.toLowerCase();
+    // \T[id] — 문자열 변수(자유 텍스트 입력 결과). id 는 숫자가 아니어도 된다.
+    if (control === "t" && value[i + 2] === "[") {
+      const end = value.indexOf("]", i + 3);
+      if (end >= 0) {
+        buffer += context?.session.stringVariables?.[value.slice(i + 3, end).trim()] ?? "";
+        i = end;
+        continue;
+      }
+    }
     if ((control === "v" || control === "n" || control === "c" || control === "s") && value[i + 2] === "[") {
       const end = value.indexOf("]", i + 3);
       if (end >= 0) {

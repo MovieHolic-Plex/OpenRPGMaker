@@ -16,7 +16,8 @@ import {
 import { applyBattleDefeat } from "@/player/playSceneDefeat";
 import { enterRoguelikeRunRoom } from "@/project/roguelikeRun";
 import { roguelikeRoomId, syncRoguelikeRoomEventGeneration } from "@/project/roguelikeRooms";
-import { initialRuntimeEventPositions } from "@/project/runtimeEventState";
+import { initialRuntimeEventPositions, runtimeEventView } from "@/project/runtimeEventState";
+import { contactFormation, type BattleStartFormation } from "@/battle/battleFormation";
 
 // 처치 결과를 세션에 영속(persistKill)하고 킬 스위치를 켠다.
 export function recordFieldSpawnKill(scene: PlaySceneContext, spawn: NormalizedFieldSpawn | null): void {
@@ -96,7 +97,8 @@ export async function runFieldSpawnEventBattle(scene: PlaySceneContext, eventId:
   scene.running = true;
   scene.setInputEnabled(false);
   try {
-    const result = await scene.playBattle({ kind: "battleProcessing", troopId, canEscape: true, canLose: true });
+    const formation = symbolContactFormation(scene, eventId);
+    const result = await scene.playBattle({ kind: "battleProcessing", troopId, canEscape: true, canLose: true, ...(formation ? { formation } : {}) });
     if (result === null || scene.session !== session || scene.sys?.isActive() === false) return true;
     session.battleResult = result;
     if (result === "victory") {
@@ -121,6 +123,24 @@ export async function runFieldSpawnEventBattle(scene: PlaySceneContext, eventId:
     }
   }
   return true;
+}
+
+/**
+ * 심볼 인카운트 접촉 방향(system.battleFormationRoll 이 켜졌을 때만). 적 등 뒤에서 닿으면 선제, 등을 잡히면 기습.
+ * 정면·옆 접촉은 undefined 로 두어 런타임의 민첩 굴림에 맡긴다.
+ */
+export function symbolContactFormation(
+  scene: Pick<PlaySceneContext, "map" | "session" | "eventPositions" | "tileX" | "tileY" | "facing">,
+  eventId: string,
+): BattleStartFormation | undefined {
+  if (store.getCurrent().system.battleFormationRoll !== true) return undefined;
+  const event = scene.map.events.find((entry) => entry.id === eventId);
+  if (!event) return undefined;
+  const view = runtimeEventView(event, scene.session, scene.eventPositions);
+  return contactFormation(
+    { x: scene.tileX, y: scene.tileY, facing: scene.facing },
+    { x: view.x, y: view.y, facing: view.runtimeDirection ?? view.direction },
+  );
 }
 
 // spawnFieldEnemy 커맨드: 런타임 스폰을 추가하고 즉시 배치·동기화한다.

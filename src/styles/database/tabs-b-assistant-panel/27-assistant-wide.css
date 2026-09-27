@@ -7,7 +7,29 @@
 .ai-assistant-wide-title strong { font-size: 18px; letter-spacing: -.5px; }
 .ai-assistant-wide-title span { color: var(--text-3); font-size: 12px; }
 .ai-assistant-wide-head > .ai-activity-setting { width: auto; padding: 0; }
-.ai-assistant-wide-back { flex: 0 0 auto; border: 0; border-left: 1px solid var(--border-subtle); background: transparent; color: var(--text-2); padding: 8px 0 8px 20px; font: 12px var(--font-ui); cursor: pointer; }
+/* Window controls follow the user's OS: macOS traffic lights on the left, Windows caption buttons on the right. */
+.ai-assistant-wide-backdrop.is-maximized { padding: 0; backdrop-filter: none; }
+.ai-assistant-wide-backdrop.is-maximized .ai-assistant-wide { width: 100%; border: 0; border-radius: 0; }
+.ai-wide-controls { display: flex; flex: 0 0 auto; }
+.ai-wide-control { display: grid; place-items: center; padding: 0; cursor: pointer; }
+.ai-wide-control-glyph { display: block; }
+.ai-wide-controls.is-mac { gap: 8px; margin-right: -4px; }
+.ai-wide-controls.is-mac .ai-wide-control { width: 13px; height: 13px; border-radius: 50%; border: .5px solid rgb(0 0 0 / 18%); color: rgb(0 0 0 / 62%); }
+.ai-wide-controls.is-mac .ai-wide-control-glyph { width: 8px; height: 8px; stroke-width: 1.6; stroke-linecap: round; opacity: 0; transition: opacity .12s ease; }
+.ai-wide-controls.is-mac:is(:hover, :focus-within) .ai-wide-control-glyph { opacity: 1; }
+.ai-wide-controls.is-mac .is-close { background: #ff5f57; }
+.ai-wide-controls.is-mac .is-minimize { background: #febc2e; }
+.ai-wide-controls.is-mac .is-maximize { background: #28c840; }
+.ai-wide-controls.is-windows { align-self: stretch; margin: -16px -24px -16px 0; }
+.ai-wide-controls.is-windows .ai-wide-control { width: 46px; border: 0; border-radius: 0; background: transparent; color: var(--text-1); transition: background-color .1s ease; }
+.ai-wide-controls.is-windows .ai-wide-control-glyph { width: 10px; height: 10px; stroke-width: 1; }
+.ai-wide-controls.is-windows .ai-wide-control:hover { background: color-mix(in srgb, var(--text-1) 7%, transparent); }
+.ai-wide-controls.is-windows .ai-wide-control:active { background: color-mix(in srgb, var(--text-1) 11%, transparent); }
+.ai-wide-controls.is-windows .is-close:hover { background: #c42b1c; color: #fff; }
+.ai-wide-controls.is-windows .is-close:active { background: #c83c31; color: rgb(255 255 255 / 80%); }
+.ai-wide-controls.is-windows .is-restore-glyph, .ai-assistant-wide-backdrop.is-maximized .ai-wide-controls.is-windows .is-max-glyph { display: none; }
+.ai-assistant-wide-backdrop.is-maximized .ai-wide-controls.is-windows .is-restore-glyph { display: block; }
+.ai-assistant-wide-head:has(.ai-wide-controls.is-windows) > .ai-activity-setting { margin-right: 4px; }
 .ai-assistant-wide-content { display: grid; grid-template-columns: minmax(0, 1fr) 9px minmax(300px, var(--ai-wide-team-width, 30%)); flex: 1; min-height: 0; }
 .ai-assistant-wide-divider { cursor: col-resize; touch-action: none; background: var(--bg-inset); position: relative; outline-offset: -2px; }
 .ai-assistant-wide-divider::after { content: ""; position: absolute; top: calc(50% - 18px); left: 4px; width: 1px; height: 36px; background: var(--border-default); }
@@ -60,10 +82,11 @@
 .ai-assistant-wide .ai-team-sidebar-empty { margin: auto; }
 .ai-assistant-wide .ai-team-sidebar:has(.ai-team-member-detail:not([hidden])) .ai-team-sidebar-empty { display: none; }
 .ai-assistant-wide .ai-team-sidebar:not(:has(.ai-team-member-detail:not([hidden]))):has(.ai-team-member)::after { content: "팀원을 선택하면 작업 기록과 후속 대화를 볼 수 있어요."; margin: auto; padding: 24px; color: var(--text-3); font-size: 13px; line-height: 1.8; }
-@media (max-width: 1000px) { .ai-assistant-wide-title span { display: none; } .ai-assistant-wide-head { gap: 12px; padding: 14px 18px; } }
+@media (max-width: 1000px) { .ai-assistant-wide-title span { display: none; } .ai-assistant-wide-head { gap: 12px; padding: 14px 18px; } .ai-wide-controls.is-windows { margin: -14px -18px -14px 0; } }
 @media (max-width: 760px) {
   .ai-assistant-wide-backdrop { padding: 8px; }
   .ai-assistant-wide-head { flex-wrap: wrap; padding: 10px 14px; }
+  .ai-wide-controls.is-windows { align-self: flex-start; height: 40px; margin: -10px -14px 0 0; }
   .ai-assistant-wide-head > .ai-activity-setting { order: 3; width: 100%; }
   .ai-assistant-wide-content { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(300px, 1fr) minmax(300px, 45%); overflow-y: auto; }
   .ai-assistant-wide-divider { display: none; }

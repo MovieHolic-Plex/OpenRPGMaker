@@ -16,6 +16,8 @@ export const DEFAULT_SEED = 1;
 /** 시나리오가 쓸 수 있는 op 종류. 목록 밖은 정규화 단계에서 거부한다. */
 export const OP_KINDS = [
   "audioAction",
+  // 맵 타일을 실제 캔버스 위에서 누른다(클릭 이동 #32, masterpiece-field).
+  "clickTile",
   // 인라인 CSS 사용자 속성 값 대기(ct-engine: 적 이동 뒤 렌더 좌표).
   "waitForStyleVar",
   // 하위 op 묶음을 조건이 설 때까지 되풀이(ct-engine: 적이 쓰러질 때까지 공격).
@@ -431,6 +433,16 @@ export function evaluateExpect(expected, observed) {
           if (actual !== want) failures.push(`inventory.${itemId}: 기대 ${want}, 실제 ${actual}`);
         }
       }
+    }
+  }
+  // 변수·스위치 단정 — 관측이 없으면(null) 0/false 로 읽지 않는다. 시나리오가 이름을 댄 것만 실린다.
+  for (const axis of ["variables", "switches"]) {
+    if (expected[axis] === undefined) continue;
+    if (state === null) { failures.push(`런타임 훅 없음 — 상태를 읽을 수 없다(${axis} 확인 불가)`); continue; }
+    for (const [id, want] of Object.entries(expected[axis])) {
+      const actual = state[axis]?.[id];
+      if (actual === undefined || actual === null) failures.push(`${axis}.${id}: 관측 없음(기대 ${JSON.stringify(want)})`);
+      else if (actual !== want) failures.push(`${axis}.${id}: 기대 ${JSON.stringify(want)}, 실제 ${JSON.stringify(actual)}`);
     }
   }
   if (expected.energy !== undefined) {

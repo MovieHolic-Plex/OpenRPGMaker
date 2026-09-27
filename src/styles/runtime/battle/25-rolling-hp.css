@@ -1,0 +1,16 @@
+/* 롤링 HP(system.battleRollingHp, player/rollingHp.ts) — battleFieldDom 이 행에 data-rolling-hp-dying 을 건다. */
+
+/* 롤링 HP: 치명타를 받고 미터가 굴러 내려가는 중인 아군. 수치가 붉게 맥박친다. */
+.battle-actor-status[data-rolling-hp-dying="true"] .battle-actor-hp {
+  animation: battle-rolling-hp-dying 0.6s ease-in-out infinite alternate;
+  color: rgb(255, 110, 110);
+}
+
+@keyframes battle-rolling-hp-dying {
+  from { opacity: 1; }
+  to { opacity: 0.55; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .battle-actor-status[data-rolling-hp-dying="true"] .battle-actor-hp { animation: none; }
+}
