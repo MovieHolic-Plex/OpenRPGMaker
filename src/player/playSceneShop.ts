@@ -12,7 +12,7 @@ import { dialogueHost } from "@/player/playSceneDom";
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
 import { attachShopDecisionInput } from "@/player/shopDecisionInput";
 import { previewShopEquipment } from "@/player/shopEquipmentPreview";
-import { renderShopComparison, shopComparisonSummary } from "@/player/shopComparisonDom";
+import { renderShopComparison, shopComparisonSummary, shopRecoverySummary } from "@/player/shopComparisonDom";
 import { emitRuntimeJuice } from "@/player/runtimeJuice";
 import {
   adjustShopQuantity,
@@ -31,8 +31,10 @@ import {
   updateShopHaggleOffer,
   updateShopHelpLine,
   updateShopOwnedPanel,
+  updateShopPartyCards,
   updateShopQuantityTotal,
   updateShopStatus,
+  shopUiPresetOf,
   type ShopMode,
   type ShopView,
 } from "@/player/playSceneShopDom";
@@ -56,6 +58,9 @@ import type { ShopHaggleVisitState } from "@/project/economyValues";
 import type { StepResult } from "@/player/interpreter";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { goodsIndex, type ShopCategory, type ShopGoods } from "@/player/playSceneShopGoods";
+import { bestFitActorId, partyFit, recoveryPreview } from "@/player/shopPartyFit";
+import { shopPartyWalker } from "@/player/playSceneShopParts";
+import { clampLevel, normalizeActorRecord } from "@/project/actorModel";
 
 export type ShopStep = Extract<StepResult, { kind: "shop" }>;
 
@@ -89,7 +94,8 @@ export function playShop(
   let merchantGold = beginShopVisit(scene, step, identity);
   return new Promise((resolve) => {
     const overlay = createShopOverlay();
-    overlay.classList.add(`runtime-shop-preset-${step.shopUiPreset ?? "classic"}`);
+    const preset = shopUiPresetOf(step);
+    overlay.classList.add(`runtime-shop-preset-${preset}`);
     let view: ShopView = "menu";
     let mode: ShopMode = defaultShopMode(step);
     let haggleItem: (typeof stockItems)[number] | undefined;
@@ -114,12 +120,17 @@ export function playShop(
     let itemCursor = 0;
     let comparisonActor: string | undefined;
     let comparisonSlot: string | undefined;
+    // 상세 창에서 동료·부위를 직접 고른 뒤에는 그 선택을 존중한다. 그 전까지 도트 비교 상점은
+    // 물건마다 가장 이득 보는 동료를 기준으로 요약한다(검사 기준으로 지팡이를 보면 늘 「장비 불가」였다).
+    let comparisonPinned = false;
     let detailController: AbortController | undefined;
     let detailOpener: HTMLElement | undefined;
     const comparison = (goods: ShopGoods) => {
       const project = store.getCurrent();
-      const actorId = scene.session.partyActorIds.includes(comparisonActor ?? "") ? comparisonActor : undefined;
-      const preview = previewShopEquipment({ project, session: scene.session, goods, actorId, slot: comparisonSlot });
+      const autoPick = preset === "pixel" && !comparisonPinned;
+      const picked = autoPick ? bestFitActorId(partyFit(project, scene.session, goods)) : comparisonActor;
+      const actorId = scene.session.partyActorIds.includes(picked ?? "") ? picked : undefined;
+      const preview = previewShopEquipment({ project, session: scene.session, goods, actorId, slot: autoPick ? undefined : comparisonSlot });
       if (preview.kind !== "unavailable") {
         comparisonActor = preview.actorId;
         comparisonSlot = preview.slot;
@@ -129,7 +140,28 @@ export function playShop(
     const updateComparison = () => {
       const host = overlay.querySelector<HTMLElement>("[data-testid='shop-stat-slot']");
       const goods = viewItems[itemCursor];
-      host?.replaceChildren(...(goods ? [shopComparisonSummary(store.getCurrent(), comparison(goods))] : []));
+      const preview = goods ? comparison(goods) : undefined;
+      host?.replaceChildren(...(goods && preview ? [summaryFor(goods, preview)] : []));
+      updateShopPartyCards(overlay, scene, goods, preview && preview.kind !== "unavailable" ? preview.actorId : undefined);
+    };
+    /** 도트 비교 상점에서 장비가 아닌 물건은 「비교 불가」 문장 대신 회복량을, 그것도 없으면 설명만 둔다. */
+    const summaryFor = (goods: ShopGoods, preview: ReturnType<typeof comparison>): HTMLElement => {
+      const project = store.getCurrent();
+      if (preset !== "pixel") return shopComparisonSummary(project, preview);
+      if (preview.kind === "unavailable" && preview.reason === "notEquipment") {
+        const rows = recoveryPreview(project, scene.session, goods);
+        if (rows?.length) return shopRecoverySummary(rows, new Map(preview.targets.map(target => [target.actorId, target.name])));
+        const empty = document.createElement("span");
+        empty.hidden = true;
+        return empty;
+      }
+      const actorId = preview.kind === "unavailable" ? undefined : preview.actorId;
+      const actor = actorId ? project.database.actors.find(entry => entry.id === actorId) : undefined;
+      const name = actor ? scene.session.actorNames?.[actor.id] ?? actor.name : "";
+      return shopComparisonSummary(project, preview, false, { statement: {
+        portrait: actorId ? shopPartyWalker(scene, actorId, name) : null,
+        level: actor ? clampLevel(scene.session.actorLevels[actor.id] ?? normalizeActorRecord(actor).initialLevel) : undefined,
+      } });
     };
     const closeDetail = () => {
       detailController?.abort();
@@ -150,8 +182,8 @@ export function playShop(
       const preview = comparison(goods);
       const panel = renderShopComparison({ project: store.getCurrent(), goods, preview,
         signal: detailController.signal, onClose: closeDetail,
-        onActor: id => { comparisonActor = id; openDetail(`shop-actor-${id}`); },
-        onSlot: id => { comparisonSlot = id; openDetail(`shop-slot-${id}`); },
+        onActor: id => { comparisonActor = id; comparisonPinned = true; openDetail(`shop-actor-${id}`); },
+        onSlot: id => { comparisonSlot = id; comparisonPinned = true; openDetail(`shop-slot-${id}`); },
       });
       overlay.querySelector("[data-testid='shop-comparison']")?.remove();
       const stock = overlay.querySelector<HTMLElement>(".runtime-shop-items-shell");
@@ -264,6 +296,14 @@ export function playShop(
               category,
               categorySource: baseForMode(mode),
               onDetail: () => openDetail(),
+              // 파티 카드 — 이후 커서를 옮겨도 이 동료 기준으로 비교한다(상세 창에서 고른 것과 같다).
+              onActor: preset === "pixel" ? (actorId) => {
+                comparisonActor = actorId;
+                comparisonSlot = undefined;
+                comparisonPinned = true;
+                emitRuntimeJuice({ event: "menu-select", project: store.getCurrent(), session: scene.session });
+                updateComparison();
+              } : undefined,
               onCategory: (next) => {
                 category = next;
                 itemCursor = 0;

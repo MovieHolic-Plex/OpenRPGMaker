@@ -29,6 +29,8 @@ import {
 } from "@/player/playSceneShopParts";
 import { emitRuntimeJuice, type RuntimeJuiceOptions } from "@/player/runtimeJuice";
 import { CANCEL_KEY_LABEL, SHOP_CONFIRM_KEY_LABEL, SHOP_FOCUS_GROUP_KEY_LABEL } from "@/player/keyBindings";
+import { DEFAULT_SHOP_UI_PRESET } from "@/project/shopUiPresets";
+import { partyFit, recoveryPreview } from "@/player/shopPartyFit";
 import type { ShopStep } from "@/player/playSceneShop";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { ResolvedTerms } from "@/project/terms";
@@ -63,6 +65,8 @@ type ShopItemsRenderRequest = {
   /** 탭으로 구매/판매를 그 자리에서 바꾼다. 없으면 탭을 만들지 않는다. */
   readonly onMode?: (mode: ShopMode) => void;
   readonly onDetail?: () => void;
+  /** 도트 비교 상점 파티 카드 — 비교 기준 동료를 바꾼다. */
+  readonly onActor?: (actorId: string) => void;
 };
 
 export { flashGoldDelta } from "@/player/playSceneShopParts";
@@ -126,11 +130,11 @@ function shopTagline(step: ShopStep): string {
 
 export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
   const goods = request.items.map(toGoods);
+  const preset = shopUiPresetOf(request.step);
   const shell = el("div", {
     class: "runtime-shop-shell runtime-shop-items-shell",
-    dataset: { shopMode: request.mode, shopPreset: request.step.shopUiPreset ?? "classic" },
+    dataset: { shopMode: request.mode, shopPreset: preset },
   });
-  const preset = request.step.shopUiPreset ?? "classic";
   const first = goods[0];
 
   // ── 상단 바: 정체성(상인·가게) + 모드 탭 + 소지금. 한 줄에 "여기가 어디고 내가 얼마 있나"가 다 있다.
@@ -178,6 +182,8 @@ export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
   }
   listChildren.push(shopItemList(request, goods));
   const listPanel = shopWindow("runtime-shop-list-panel", listChildren);
+  // 도트 비교 상점: 가게 이름은 목록 창 머리에 작게 — 목업의 「녹슨 망치 대장간」 자리.
+  if (preset === "pixel") listPanel.prepend(el("div", { class: "runtime-shop-list-caption", text: shopTitle(request.step) }));
   if (preset === "grid") listPanel.prepend(el("header", { class: "runtime-shop-grid-heading", children: [
     el("strong", { text: "오늘의 진열" }), el("span", { text: `${goods.length}개 상품` }),
   ] }));
@@ -188,9 +194,30 @@ export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
     el("strong", { text: "장비 비교" }), el("span", { text: "현재 장비와 구매 후 변화" }),
   ] }));
   side.append(shopWindow("runtime-shop-detail-panel", [detailCard(request.scene, request.step, first)]));
-  side.append(shopWindow("runtime-shop-party-panel", [partyPreview(request.scene)]));
+  // 도트 비교 상점은 RM2003 처럼 파티 창을 비교 창 위에 둔다.
+  const party = shopWindow("runtime-shop-party-panel", [partyPreview(request.scene, { cards: preset === "pixel", onActor: request.onActor })]);
+  if (preset === "pixel") side.prepend(party);
+  else side.append(party);
   body.append(side);
   shell.append(body);
+  if (preset === "pixel") {
+    // 아래 두 창 — 설명창(설명 + 보유/장착 수)과 소지금 창. 목업의 하단 배치 그대로.
+    const footer = el("div", { class: "runtime-shop-footer" });
+    footer.append(
+      shopWindow("runtime-shop-desc-panel", [
+        el("div", { class: "runtime-shop-desc-text", dataset: { testid: "shop-desc-text" }, text: helpLineText(request.step, first) }),
+        el("div", { class: "runtime-shop-desc-owned", dataset: { testid: "shop-desc-owned" }, text: ownedLine(request.scene, first) }),
+      ]),
+      shopWindow("runtime-shop-purse-panel", [
+        el("div", { class: "runtime-shop-purse-label", text: "소지금" }),
+        el("div", { class: "runtime-shop-purse-value", dataset: { testid: "shop-purse-value" }, children: [
+          el("span", { class: "runtime-shop-purse-amount", text: String(request.scene.session.gold) }),
+          el("span", { class: "runtime-shop-purse-unit", text: ` ${request.terms.gold}` }),
+        ] }),
+      ]),
+    );
+    shell.append(footer);
+  }
 
   // ── 하단: 상태 문구 + 수량 + 결정/취소 + 키 힌트.
   shell.append(
@@ -230,6 +257,49 @@ export function defaultShopMode(step: ShopStep): ShopMode {
   return shopType(step) === "sellOnly" ? "sell" : "buy";
 }
 
+/** 명령에 프리셋이 없으면 도트 비교 상점. 오버레이 클래스와 목록 데이터셋이 같은 값을 쓴다. */
+export function shopUiPresetOf(step: Pick<ShopStep, "shopUiPreset">): NonNullable<ShopStep["shopUiPreset"]> {
+  return step.shopUiPreset ?? DEFAULT_SHOP_UI_PRESET;
+}
+
+/**
+ * 파티 카드와 소모품 회복 미리보기를 커서가 얹힌 물건으로 갱신한다.
+ * 도트 비교 상점에만 카드가 있다 — 카드가 없으면 아무것도 하지 않는다.
+ */
+export function updateShopPartyCards(
+  overlay: HTMLElement,
+  scene: PlaySceneContext,
+  item: ShopListing | undefined,
+  focusActorId: string | undefined,
+): void {
+  const cards = Array.from(overlay.querySelectorAll<HTMLElement>(".runtime-shop-party-card"));
+  if (!cards.length) return;
+  const project = store.getCurrent();
+  const goods = item ? toGoods(item) : undefined;
+  const fits = goods ? partyFit(project, scene.session, goods) : null;
+  const recovery = goods ? recoveryPreview(project, scene.session, goods) : null;
+  for (const card of cards) {
+    const actorId = card.dataset.actorId ?? "";
+    const [first, second] = Array.from(card.querySelectorAll<HTMLElement>(".runtime-shop-party-fit"));
+    const fit = fits?.find(entry => entry.actorId === actorId);
+    const heal = recovery?.find(entry => entry.actorId === actorId);
+    card.dataset.mark = fit?.mark ?? (heal ? (heal.next > heal.current ? "up" : "even") : "none");
+    const focused = Boolean(fit) && actorId === focusActorId;
+    card.classList.toggle("is-focus", focused);
+    card.setAttribute("aria-pressed", String(focused));
+    card.classList.toggle("is-blocked", fit?.mark === "blocked");
+    const lines = fit?.lines
+      ?? (heal ? [{ text: `${heal.kind === "hp" ? "HP" : "MP"} ${heal.next > heal.current ? `+${heal.next - heal.current}` : "가득"}`,
+        tone: heal.next > heal.current ? "up" as const : "muted" as const }] : []);
+    [first, second].forEach((slot, index) => {
+      if (!slot) return;
+      const line = lines[index];
+      slot.textContent = line?.text ?? "";
+      slot.dataset.tone = line?.tone ?? "";
+    });
+  }
+}
+
 export function shopPromptText(step: ShopStep, mode: ShopMode, terms: ResolvedTerms): string {
   if (mode === "sell") return terms.shopSellPrompt;
   return shopBuyPromptText(step.messageType);
@@ -246,6 +316,10 @@ export function updateShopOwnedPanel(
   scene: PlaySceneContext,
   item: ShopListing | undefined
 ): void {
+  const desc = overlay.querySelector<HTMLElement>("[data-testid='shop-desc-owned']");
+  if (desc) desc.textContent = ownedLine(scene, item ? toGoods(item) : undefined);
+  const purse = overlay.querySelector<HTMLElement>("[data-testid='shop-purse-value'] .runtime-shop-purse-amount");
+  if (purse) purse.textContent = String(scene.session.gold);
   const host = overlay.querySelector<HTMLElement>("[data-testid='shop-owned-slot']");
   if (!host) return;
   clear(host);
@@ -260,6 +334,8 @@ export function updateShopHelpLine(overlay: HTMLElement, step: ShopStep, item: S
   const goods = item ? toGoods(item) : undefined;
   const node = overlay.querySelector<HTMLElement>("[data-testid='shop-help-line']");
   if (node) node.textContent = helpLineText(step, goods);
+  const desc = overlay.querySelector<HTMLElement>("[data-testid='shop-desc-text']");
+  if (desc) desc.textContent = helpLineText(step, goods);
   const heroSlot = overlay.querySelector<HTMLElement>("[data-testid='shop-hero-slot']");
   if (heroSlot) {
     clear(heroSlot);
@@ -295,6 +371,8 @@ export function updateShopGoldPanel(
   panel.append(goldPanel(scene, terms, merchantGold, mode));
   const balance = overlay.querySelector<HTMLElement>("[data-testid='shop-balance-after']");
   if (balance) balance.dataset.gold = String(scene.session.gold);
+  const purse = overlay.querySelector<HTMLElement>("[data-testid='shop-purse-value'] .runtime-shop-purse-amount");
+  if (purse) purse.textContent = String(scene.session.gold);
 }
 
 /** 거래 후 한 행의 보유 수량과 '살 수 있는지' 표시를 제자리 갱신. */
@@ -311,7 +389,10 @@ export function refreshShopItemRow(
   if (!row) return;
   const owned = scene.session.inventory[goods.id] ?? 0;
   const ownedNode = row.querySelector<HTMLElement>(".runtime-shop-item-owned");
-  if (ownedNode) ownedNode.textContent = `x${owned}`;
+  if (ownedNode) {
+    ownedNode.textContent = `x${owned}`;
+    ownedNode.dataset.count = String(owned);
+  }
   applyAffordability(row, goods, mode, terms, scene.session.gold, merchantGold, owned);
 }
 
@@ -386,6 +467,7 @@ function shopItemList(request: ShopItemsRenderRequest, goods: readonly ShopGoods
   return wrap;
 }
 
+
 /**
  * 상세 카드. 슬롯(hero/help/owned/stat)으로 쪼개 둔 이유는 커서가 움직일 때
  * 카드 전체가 아니라 바뀐 조각만 갈아끼우기 때문이다 — 전체 재렌더는 포커스와 낭독을 끊는다.
@@ -410,6 +492,18 @@ function detailCard(scene: PlaySceneContext, step: ShopStep, goods: ShopGoods | 
 function helpLineText(step: ShopStep, goods: ShopGoods | undefined): string {
   const description = goods?.description?.trim();
   return description && description.length > 0 ? description : shopListHeaderText(step.messageType);
+}
+
+/** 설명창 둘째 줄 — 「보유 2 · 장착 중 1」. 장착 수는 장비 종류에만 붙인다. */
+function ownedLine(scene: PlaySceneContext, goods: ShopGoods | undefined): string {
+  if (!goods) return "";
+  const owned = scene.session.inventory[goods.id] ?? 0;
+  if (goods.source !== "equipment") return `보유 ${owned}`;
+  let equipped = 0;
+  for (const actorId of scene.session.partyActorIds) {
+    for (const value of Object.values(scene.session.actorEquipment?.[actorId] ?? {})) if (value === goods.id) equipped += 1;
+  }
+  return `보유 ${owned} · 장착 중 ${equipped}`;
 }
 
 function shopPrompt(request: ShopItemsRenderRequest, first: ShopGoods | undefined): HTMLElement {

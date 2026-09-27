@@ -1,4 +1,8 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { findCharsetAsset } from "@/assets/charsetCatalog";
+import { applyCharsetFrameCrop, charsetFrameCropPosition } from "@/assets/charsetFrameCrop";
+import { resolvePlayerSpriteResource } from "@/player/playerSpriteResources";
+import { resolveActorAppearance } from "@/project/characterAppearances";
 import { defaultActorFaceResourceId } from "@/project/actorFaceDefaults";
 import { resolveActorFaceResourceId } from "@/project/sessionActorCommands";
 import { store } from "@/project/store";
@@ -257,7 +261,7 @@ export function shopItemRow(options: {
     el("span", {
       class: "runtime-shop-item-owned",
       text: `x${owned}`,
-      dataset: { testid: `shop-owned-${goods.id}` },
+      dataset: { testid: `shop-owned-${goods.id}`, count: String(owned) },
     }),
     el("span", {
       class: "runtime-shop-item-price",
@@ -476,10 +480,14 @@ function statLine(label: string, value: number): HTMLElement {
  * 파티 얼굴. 예전에는 스프라이트를 넣는 코드가 없어 --bg-inset(에디터 밝은 회색) 로 칠한
  * 빈 사각형이 갈색 창틀 위에 흰 박스로 떠 있었다.
  */
-export function partyPreview(scene: PlaySceneContext): HTMLElement {
-  const wrap = el("div", { class: "runtime-shop-party" });
+export function partyPreview(
+  scene: PlaySceneContext,
+  options: { readonly cards?: boolean; readonly onActor?: (actorId: string) => void } = {},
+): HTMLElement {
+  const wrap = el("div", { class: `runtime-shop-party${options.cards ? " runtime-shop-party-cards" : ""}` });
   // 캡션이 없으면 얼굴 한두 장이 넓은 빈 상자에 떠 있어 무슨 칸인지 읽히지 않는다.
-  wrap.append(el("span", { class: "runtime-shop-party-caption", text: "파티" }));
+  // 카드형은 이름이 카드마다 붙으므로 캡션이 필요 없다.
+  if (!options.cards) wrap.append(el("span", { class: "runtime-shop-party-caption", text: "파티" }));
   const project = store.getCurrent();
   const actorIds = scene.session.partyActorIds.filter(id => project.database.actors.some(actor => actor.id === id));
   for (const [index, actorId] of actorIds.entries()) {
@@ -502,9 +510,58 @@ export function partyPreview(scene: PlaySceneContext): HTMLElement {
       sprite.classList.add("runtime-shop-party-sprite-fallback");
       sprite.textContent = name.trim().slice(0, 1) || "?";
     }
-    wrap.append(sprite);
+    if (!options.cards) {
+      wrap.append(sprite);
+      continue;
+    }
+    // 카드 — RM2003 상점 파티 창처럼 필드와 같은 걷기 그림 + 이름 + 커서 물건의 변화 두 줄.
+    // 두 줄은 updateShopPartyCards 가 채운다. 걷기 그림이 없으면 얼굴로 되돌아간다.
+    const walker = shopPartyWalker(scene, actorId, name);
+    // 버튼이다 — 누르거나 Tab 으로 와서 결정하면 비교 창이 이 동료 기준으로 바뀐다(onActor).
+    wrap.append(el("button", {
+      class: "runtime-shop-party-card",
+      dataset: { testid: `shop-party-card-${actorId}`, actorId },
+      attrs: { type: "button", "aria-pressed": "false" },
+      on: options.onActor ? { click: () => options.onActor?.(actorId) } : undefined,
+      children: [
+        walker ?? sprite,
+        el("span", { class: "runtime-shop-party-name", text: scene.session.actorNames?.[actorId] ?? name }),
+        el("span", { class: "runtime-shop-party-fit", dataset: { testid: `shop-party-fit-${actorId}` } }),
+        el("span", { class: "runtime-shop-party-fit is-second", dataset: { testid: `shop-party-fit2-${actorId}` } }),
+      ],
+    }));
   }
   return wrap;
+}
+
+const WALK_PATTERNS = [0, 1, 2] as const;
+
+/**
+ * 필드 캐릭터와 같은 그림을 정면으로 걷게 한다(RPG_RT Window_ShopParty 와 같은 연출).
+ * 프레임 위치는 CSS 변수로 넘기고 CSS 가 순환한다 — 타이머를 두지 않아 창이 닫히면 같이 사라진다.
+ * 업로드 charset 처럼 목록에 없는 그림이면 null(호출부가 얼굴로 대신한다).
+ */
+export function shopPartyWalker(scene: PlaySceneContext, actorId: string, label: string): HTMLElement | null {
+  const project = store.getCurrent();
+  const actor = project.database.actors.find(entry => entry.id === actorId);
+  if (!actor) return null;
+  const sprite = resolvePlayerSpriteResource(project, { ...scene.session, partyActorIds: [actorId] });
+  const url = resolveAssetResourceUrl(sprite.resourceId, { project });
+  if (!url) return null;
+  const override = scene.session.actorCharacterResourceIds?.[actorId];
+  const requested = override ?? resolveActorAppearance(project, actor)?.characterResourceId;
+  const requestedId = requested ? findCharsetAsset(requested)?.id ?? requested : undefined;
+  const characterIndex = override !== undefined || requestedId === sprite.resourceId ? sprite.characterIndex : 0;
+  const node = el("span", {
+    class: "runtime-shop-party-walker",
+    attrs: { role: "img", "aria-label": label },
+    dataset: { testid: `shop-party-sprite-${actorId}`, characterResourceId: sprite.resourceId },
+  });
+  applyCharsetFrameCrop(node, url, { characterIndex, direction: "down", pattern: 1 }, 1);
+  for (const pattern of WALK_PATTERNS) {
+    node.style.setProperty(`--shop-walk-${pattern}`, charsetFrameCropPosition({ characterIndex, direction: "down", pattern }, 1));
+  }
+  return node;
 }
 
 /* ────────────────────────── 수량 · 조작 힌트 ────────────────────────── */

@@ -4,7 +4,7 @@ import {
 import { emitRuntimeJuice } from "@/player/runtimeJuice";
 
 const STOCK_GROUPS = [
-  ".runtime-shop-item-row", ".runtime-shop-tab", ".runtime-shop-chip",
+  ".runtime-shop-item-row", ".runtime-shop-tab", ".runtime-shop-chip", ".runtime-shop-party-card",
   "[data-testid='shop-detail-open']", "[data-testid='shop-quantity-input']",
   "[data-testid='shop-confirm']", "[data-testid='shop-item-cancel']",
 ] as const;

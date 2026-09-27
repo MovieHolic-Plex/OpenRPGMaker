@@ -2,6 +2,7 @@ import type { Project } from "@/project/types";
 import { equipmentSlotLabel } from "@/project/equipmentSlots";
 import type { ShopGoods } from "@/player/playSceneShopGoods";
 import type { ShopEquipmentPreview, ShopEquipmentEffect } from "@/player/shopEquipmentPreview";
+import type { ShopRecoveryRow } from "@/player/shopPartyFit";
 import { el } from "@/util/dom";
 import { detailStatGrid, keyHints } from "@/player/playSceneShopParts";
 import { SHOP_FOCUS_GROUP_KEY_LABEL, SHOP_DETAIL_SCROLL_KEY_LABEL, CANCEL_KEY_LABEL } from "@/player/keyBindings";
@@ -26,7 +27,13 @@ const equipmentName = (project: Project, id: string | undefined) =>
   id ? project.database.equipment.find(record => record.id === id)?.name ?? id : "없음";
 
 /** Shared truthful selected-actor summary; detail adds the complete equipment/effect ledger. */
-export function shopComparisonSummary(project: Project, preview: ShopEquipmentPreview, detail = false): HTMLElement {
+export function shopComparisonSummary(
+  project: Project,
+  preview: ShopEquipmentPreview,
+  detail = false,
+  options: { readonly statement?: ShopStatementHeader } = {},
+): HTMLElement {
+  if (options.statement && !detail) return shopStatement(project, preview, options.statement);
   const wrap = el("section", { class: "runtime-shop-comparison-summary",
     dataset: { previewKind: preview.kind, ...(preview.kind === "ready" ? { sameEquipment: String(preview.sameEquipment) } : {}) } });
   if (preview.kind === "unavailable") {
@@ -86,6 +93,119 @@ export function shopComparisonSummary(project: Project, preview: ShopEquipmentPr
   if (!preview.effects.changed.length) changed.append(el("p", { text: "없음" }));
   wrap.append(changed);
   return wrap;
+}
+/** 비교 명세서 머리 — 누구의 비교인지. 걷기 그림은 호출부(파티 창과 같은 그림)가 만든다. */
+export interface ShopStatementHeader {
+  readonly portrait: HTMLElement | null;
+  readonly level: number | undefined;
+}
+
+const STATEMENT_LABELS = { attack: "공격력", defense: "방어력", mind: "정신력", agility: "민첩성" } as const;
+
+/**
+ * 도트 비교 상점의 비교 창 — 고른 영웅 한 명의 명세서. 능력치마다 「현재 → 변경 후 ▲▼ ±차이」,
+ * 떨어지는 값은 빨강. 수치는 전부 previewShopEquipment 의 실제 계산값이다.
+ */
+function shopStatement(project: Project, preview: ShopEquipmentPreview, header: ShopStatementHeader): HTMLElement {
+  const wrap = el("section", { class: "runtime-shop-comparison-summary runtime-shop-statement",
+    dataset: { previewKind: preview.kind, ...(preview.kind === "ready" ? { sameEquipment: String(preview.sameEquipment) } : {}) } });
+  if (preview.kind === "unavailable") {
+    wrap.append(el("p", { text: REASONS[preview.reason], dataset: { testid: "shop-summary-reason", reason: preview.reason } }));
+    return wrap;
+  }
+  const actor = preview.targets.find(target => target.actorId === preview.actorId);
+  const slot = actor?.slots.find(entry => entry.id === preview.slot);
+  const current = equipmentName(project, preview.currentEquipment[preview.slot]);
+  const nextName = preview.kind === "ready" ? equipmentName(project, preview.nextEquipment[preview.slot]) : "";
+  const swap = preview.kind === "blocked"
+    ? el("span", { class: "runtime-shop-statement-reason", text: REASONS[preview.reason], dataset: { testid: "shop-summary-reason", reason: preview.reason } })
+    : preview.sameEquipment
+      ? el("span", { class: "runtime-shop-statement-same", text: `${current} 장착 중` })
+      : el("span", { children: [current, el("span", { class: "runtime-shop-statement-arrow", text: " → " }), el("strong", { text: nextName })] });
+  wrap.append(el("header", { class: "runtime-shop-statement-head", children: [
+    ...(header.portrait ? [el("span", { class: "runtime-shop-statement-portrait", children: [header.portrait] })] : []),
+    el("span", { class: "runtime-shop-statement-who", children: [
+      el("span", { class: "runtime-shop-comparison-heading", text: actor?.name ?? preview.actorId }),
+      ...(header.level === undefined ? [] : [el("span", { class: "runtime-shop-statement-level", text: `Lv ${header.level}` })]),
+    ] }),
+    el("span", { class: "runtime-shop-statement-slot", dataset: { testid: "shop-summary-replacement", slot: preview.slot, equipmentId: preview.currentEquipment[preview.slot] ?? "" },
+      children: [el("span", { class: "runtime-shop-statement-slot-label", text: slot?.label ?? equipmentSlotLabel(project, preview.slot) }), swap] }),
+  ] }));
+  const rows = el("div", { class: "runtime-shop-statement-rows" });
+  for (const stat of preview.stats) {
+    const next = "next" in stat ? stat.next : undefined;
+    const delta = "delta" in stat ? stat.delta : 0;
+    const tone = next === undefined || delta === 0 ? "same" : delta > 0 ? "up" : "down";
+    rows.append(el("div", { class: `runtime-shop-statement-row is-${tone}`,
+      dataset: { testid: `shop-summary-stat-${stat.key}`, current: String(stat.current), ...(next === undefined ? {} : { next: String(next), delta: String(delta) }) },
+      children: [
+        el("span", { class: "runtime-shop-statement-key", text: STATEMENT_LABELS[stat.key] }),
+        el("span", { class: "runtime-shop-statement-current", text: String(stat.current) }),
+        el("span", { class: "runtime-shop-statement-arrow", text: "→" }),
+        el("span", { class: "runtime-shop-statement-next", text: next === undefined ? "―" : String(next) }),
+        el("span", { class: "runtime-shop-statement-mark", text: tone === "up" ? "▲" : tone === "down" ? "▼" : "", attrs: { "aria-hidden": "true" } }),
+        el("span", { class: "runtime-shop-statement-delta", text: tone === "same" ? "" : signed(delta) }),
+      ],
+    }));
+  }
+  wrap.append(rows);
+  if (preview.kind === "ready" && !preview.sameEquipment) {
+    // 수치로 안 잡히는 변화(연속 공격을 잃는다 등)는 태그로 — 숫자만 보면 놓친다.
+    const tags = [
+      ...preview.effects.gained.map(effect => ["gain", effect] as const),
+      ...preview.effects.lost.map(effect => ["loss", effect] as const),
+    ];
+    if (tags.length) wrap.append(el("div", { class: "runtime-shop-effect-tags", dataset: { testid: "shop-summary-effects" },
+      children: tags.map(([kind, effect]) => {
+        const name = effectName(project, effect);
+        return el("span", { class: `runtime-shop-effect-tag is-${kind}`,
+          text: `${kind === "gain" ? "+" : "−"} ${EFFECT_LABELS[effect.key]}${name ? ` · ${name}` : ""}` });
+      }) }));
+  }
+  return wrap;
+}
+
+/** 현재 값 막대 + 바뀌는 구간(오르면 채움, 내리면 빗금). 회복 요약이 쓴다. */
+/**
+ * 회복 아이템 요약 — 파티원마다 지금 값과 쓰면 몇이 되는지. 장비 비교 문구
+ * ("장비가 아닌 물건은…") 대신 이 물건이 실제로 무엇을 하는지 보여 준다.
+ */
+export function shopRecoverySummary(rows: readonly ShopRecoveryRow[], names: ReadonlyMap<string, string>): HTMLElement {
+  const wrap = el("section", { class: "runtime-shop-comparison-summary runtime-shop-recovery-summary", dataset: { testid: "shop-summary-recovery" } });
+  const kind = rows[0]?.kind === "mp" ? "MP" : "HP";
+  wrap.append(el("h3", { class: "runtime-shop-comparison-heading", text: `사용하면 · ${kind}` }));
+  const stats = el("div", { class: "runtime-shop-statgrid runtime-shop-comparison-stats" });
+  for (const row of rows) {
+    const gain = row.next - row.current;
+    stats.append(el("div", {
+      class: `runtime-shop-stat${gain > 0 ? " is-up" : " is-same"}`,
+      dataset: { testid: `shop-recovery-${row.actorId}`, current: String(row.current), next: String(row.next), max: String(row.max) },
+      children: [
+        el("span", { class: "runtime-shop-stat-key", text: names.get(row.actorId) ?? row.actorId }),
+        statBar(row.current, row.next, Math.max(1, row.max)),
+        el("span", { class: "runtime-shop-stat-value", text: gain > 0 ? `${row.current} → ${row.next}` : `${row.current}/${row.max}` }),
+        el("span", { class: "runtime-shop-stat-delta", text: gain > 0 ? signed(gain) : "가득" }),
+      ],
+    }));
+  }
+  wrap.append(stats);
+  return wrap;
+}
+
+function statBar(current: number, next: number, scale: number): HTMLElement {
+  const pct = (value: number) => `${Math.max(0, Math.min(100, (value / scale) * 100))}%`;
+  const low = Math.min(current, next);
+  const bar = el("span", { class: "runtime-shop-stat-bar", attrs: { "aria-hidden": "true" } });
+  const base = el("i", { class: "runtime-shop-stat-bar-base" });
+  base.style.width = pct(low);
+  bar.append(base);
+  if (next !== current) {
+    const change = el("i", { class: `runtime-shop-stat-bar-change ${next > current ? "is-gain" : "is-loss"}` });
+    change.style.left = pct(low);
+    change.style.width = pct(Math.abs(next - current));
+    bar.append(change);
+  }
+  return bar;
 }
 function effectName(project: Project, effect: ShopEquipmentEffect): string {
   if (!("id" in effect)) return "";

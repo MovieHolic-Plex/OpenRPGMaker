@@ -471,6 +471,35 @@ Read that directory's `SUMMARY.md` first. Previews are actual player captures at
   a detached test fixture via `test/fixtures/feature16Player.mjs`. No DB content writes.
   Read `verify-shots/runtime-qa/feature16-player/SUMMARY.md` first. Tests and browser captures
   are prepared here, not executed by the feature worktree agent.
+
+## 도트 비교 상점 — 상점 UI 기본값 (2026-09-27)
+
+- 명령에 `shopUiPreset` 이 없으면 `"pixel"` 이다(`src/project/shopUiPresets.ts` 의 `DEFAULT_SHOP_UI_PRESET`).
+  예전 암묵 기본값 `classic` 은 상세·파티 창을 숨겨 장비를 사도 무엇이 오르는지 안 보였다.
+  `"classic"` 을 **명시적으로 저장한** 명령은 그대로 classic 이다. 프리셋 목록·로드 검증·편집기 선택지는
+  모두 `SHOP_UI_PRESETS` 한 곳을 본다(예전에는 세 곳에 문자열 배열이 따로 있었다).
+- 표현: 도트 글꼴(`--runtime-pixel-font`) + 여러 장의 창 + ▶ 커서. 스타일은 `shop.css` 끝의
+  `.runtime-shop-preset-pixel` 블록이 소유한다. 320×240 급(≤460px 또는 ≤360px 높이)에서는 한 장의 표면으로 합친다.
+- 배치는 RM2003 상점(EasyRPG `Window_ShopParty`)을 따른다: 왼쪽 목록, 오른쪽 위 **파티 창**, 그 아래 **비교 창**,
+  아래 **설명 창**(설명 + 보유/장착 수)과 **소지금 창**. 격자는 `.runtime-shop-items-shell` 의 CSS grid 가 소유하고
+  (`.runtime-shop-main` 은 `display: contents`), 글자·행 높이·간격은 `--play-scale` 배율을 따른다.
+  상단 바와 프롬프트 창은 이 프리셋에서 **시각적으로만** 숨긴다(탭·결정·수량 입력·키 힌트는 포커스 링과 테스트 계약이라 DOM 에 남는다).
+  목록 행에는 비교 표시를 두지 않는다(행마다 ▲▼ 네 칸을 달았던 첫 판은 읽기 어려워 걷어 냈다).
+- 수치의 원천은 기존 `previewShopEquipment` 하나다. `src/player/shopPartyFit.ts` 가 그것을 표시로 바꾼다:
+  - `partyFit` → 파티 카드의 동료별 판정과 두 줄(`lines`, 절댓값 큰 순 최대 두 능력치. 예: 방어 +7 / 민첩 −2).
+    장착 불가·장비 고정은 한 줄 사유, 같은 장비는 「장착 중」.
+  - `bestFitActorId` → 비교 창의 기준 동료. 파티 카드나 상세 창에서 동료를 직접 고르면(`comparisonPinned`) 그 선택을 유지한다.
+  - `recoveryPreview` → 회복 아이템이면 파티원별 현재 HP/MP 와 사용 후 값(산식은 `playerItemUse` 와 같다).
+- 파티 카드(`partyPreview(scene, { cards: true, onActor })`)는 필드와 같은 charset 을 정면으로 걷게 한다
+  (`shopPartyWalker`, CSS 변수 `--shop-walk-0..2` 순환, 타이머 없음). 장비할 수 없는 동료는 회색으로 멈춘다.
+  카드는 버튼이며 Tab 포커스 링(`shopDecisionInput` STOCK_GROUPS)에 들어간다. 런타임은 포인터를 막으므로 결정키로 고른다.
+- 비교 창(`shopComparisonSummary(..., { statement })`)은 고른 동료 한 명의 명세서다: 걷기 그림 · 이름 · Lv ·
+  「부위 현재 장비 → 새 장비」, 능력치마다 「현재 → 변경 후 ▲▼ ±차이」(떨어지면 빨강), 얻고 잃는 특수 효과 태그.
+- 크기별: 640×480 급은 같은 배치에서 명세서 초상만 뺀다. 320×240 급은 목록 · 한 줄 파티 창(걷는 그림 + 한 마디) ·
+  설명/소지금만 두고 명세서는 「상세 / 장비 비교」 창에 맡긴다. 공용 압축 규칙이 파티 창을 숨기므로 프리셋이 되살린다.
+- 세션·세이브·거래 규칙은 바뀌지 않았다. 「구매 후 장착」 같은 새 거래 경로는 없다.
+- 시각 증거: `node scripts/qa/runtime/shop-surface-shots.mjs [--preset <id>] --out <dir>` 은 출하 플레이어로
+  같은 픽스처를 띄워 입구·무기·갑옷·회복약과 640×480·320×240 을 찍는다. 이번 전후 비교는 `verify-shots/shop-modern/`.
 ## Persistent battle reports and formation (2026-09-21)
 
 Existing `actorRows` and `partyActorIds` save/load paths remain authoritative. Optional `battleReports` is normalized at create/parse/restore and defaults empty for old saves (20 reports, 120 real timeline lines each). Esc → 기록 → 전투 기록 reads completed outcomes; Esc → 파티 → 진형 edits active order and front/back. Contracts and parent-owned verification: `openwiki/feature16-battle-ui.md`.

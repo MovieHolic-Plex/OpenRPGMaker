@@ -3,6 +3,7 @@ import { SHOP_TRANSACTION_BRANCH_INDEX, SHOP_FAILED_TRANSACTION_BRANCH_INDEX } f
 import { store } from "@/project/store";
 import { SHOP_MESSAGE_LABELS, SHOP_MESSAGE_TYPES, shopGreetingText, shopListHeaderText, shopBuyPromptText } from "@/project/shopMessages";
 import { resolveTerms } from "@/project/terms";
+import { DEFAULT_SHOP_UI_PRESET } from "@/project/shopUiPresets";
 import type { ShopMessageType, ShopType, ShopUiPreset } from "@/project/types";
 import { el } from "@/util/dom";
 import { commandKindSelect, selectedOptionValue } from "./dom";
@@ -19,6 +20,7 @@ const SHOP_TYPE_OPTIONS: readonly { value: ShopType; label: string; hint: string
 ];
 const SHOP_MESSAGE_OPTIONS = SHOP_MESSAGE_TYPES.map((value) => ({ value, label: SHOP_MESSAGE_LABELS[value] }));
 const SHOP_UI_PRESET_OPTIONS: readonly { value: ShopUiPreset; label: string; hint: string }[] = [
+  { value: "pixel", label: "도트 비교 상점 (기본)", hint: "도트 창에 파티원별 능력치 변화와 회복량을 바로 보여줍니다" },
   { value: "classic", label: "단순 목록 상점", hint: "상품명·가격·소지금 중심의 전통 상점" },
   { value: "tabs", label: "카테고리·일일 재고", hint: "카테고리와 오늘의 판매 목록을 함께 보여줍니다" },
   { value: "grid", label: "진열 카드 상점", hint: "상품 카드와 상세 설명을 중심으로 보여줍니다" },
@@ -294,7 +296,7 @@ function shopTypeGroup(context: CommandEditContext, command: ShopCommand): HTMLE
 }
 
 function shopUiPresetGroup(context: CommandEditContext, command: ShopCommand): HTMLElement {
-  const current = command.shopUiPreset ?? "classic";
+  const current = command.shopUiPreset ?? DEFAULT_SHOP_UI_PRESET;
   const select = document.createElement("select");
   select.className = "commerce-command-input shop-ui-preset-select";
   select.dataset.testid = "shop-ui-preset-select";
@@ -307,7 +309,7 @@ function shopUiPresetGroup(context: CommandEditContext, command: ShopCommand): H
   }
   select.title = SHOP_UI_PRESET_OPTIONS.find((option) => option.value === current)?.hint ?? "상점 UI 프리셋";
   select.addEventListener("change", () => {
-    const preset = (select.value as ShopUiPreset) || "classic";
+    const preset = (select.value as ShopUiPreset) || DEFAULT_SHOP_UI_PRESET;
     select.title = SHOP_UI_PRESET_OPTIONS.find((option) => option.value === preset)?.hint ?? "상점 UI 프리셋";
     context.actions.replaceCommand(context.path, { ...latestShop(context, command), shopUiPreset: preset });
   });
