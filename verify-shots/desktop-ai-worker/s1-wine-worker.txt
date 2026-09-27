@@ -1,0 +1,4 @@
+WINEBOOT_DONE
+AppData Contacts Desktop Documents Downloads Favorites Links Music Pictures Saved Games Searches Temp Videos 
+NO_OMP_DIR
+READY 37695
