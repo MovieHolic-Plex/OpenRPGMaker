@@ -7,6 +7,9 @@
 import json, os
 from PIL import Image, ImageDraw
 
+
+
+
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
 CHARSET_DIR = os.path.join(ROOT, "public/assets/easyrpg/charset")
 SRC_DIR = os.path.join(ROOT, "tiledata/charset-battlers")
@@ -166,3 +169,57 @@ def board(char_id, sheet, scale=4):
         dr.text((x + 3, y + 1), pid, fill=(230, 230, 240))
     return out
 
+
+# ── 마법 시전 시트(2026-09-28 2차) ─────────────────────────────────────────────────────
+# 마법마다 캐릭터가 **다르게 움직인다**. 종류 7개 × 3칸(준비 → 영창 → 방출). 셀 규약은 전투 시트와 같다
+# (48×48, 원본 1:1 도트, 발 마지막 행 y=44, 왼쪽을 본다, 알파 0/255). 시트: 3열 × 7행 = 144×336,
+# public/assets/generated/charset-battlers/cast/<id>.png. 행 = CAST_TYPES 순서, 열 = 단계 1~3.
+# 원본: tiledata/charset-battlers/<id>/cast_<type>_<1|2|3>.png. 런타임 정본은 src/battle/battlePose.ts 의 CAST_POSE_FRAME.
+CAST_TYPES = [
+    ("fire", "화염: 1 두 손을 허리 뒤로 당겨 손안에 불씨 → 2 몸을 비틀어 두 손바닥을 가슴 앞에 포갬(불빛 커짐) → 3 앞발 내딛으며 두 손바닥을 앞으로 밀어냄"),
+    ("ice", "냉기: 1 두 팔을 몸 앞에서 X자로 교차 → 2 두 팔을 위·아래로 크게 벌려 원을 그림 → 3 한 손을 머리 위로 펼치고 다른 손은 앞으로, 손끝에 얼음 결정"),
+    ("thunder", "번개: 1 무릎을 굽히고 한 팔을 뒤로 → 2 그 팔을 곧게 하늘로 치켜듦, 손끝에 번개 불꽃 → 3 팔을 앞 아래로 내려찍음"),
+    ("heal", "치유·빛: 1 고개 숙이고 두 손을 가슴에 모아 기도 → 2 두 팔을 양옆 위로 펼침(가슴에 빛) → 3 한 손을 앞으로 부드럽게 뻗어 빛을 건넴"),
+    ("dark", "독·어둠: 1 몸을 웅크려 한 손을 얼굴 앞에서 비틀어 쥠 → 2 그 손을 뒤로 크게 휘감아 돌림 → 3 손가락을 갈퀴처럼 펴 앞으로 찌름"),
+    ("arcane", "비전(속성 없는 공격 마법): 1 지팡이(또는 손)를 몸 앞에 세워 집중 → 2 지팡이/손으로 머리 위에 원을 그림 → 3 지팡이/손끝을 앞으로 겨눔"),
+    ("support", "보조(수면·약화·강화·집중): 1 한 손을 들어 손목을 흔듦 → 2 그 손을 옆으로 넓게 쓸어냄 → 3 손바닥을 입 앞에 펴 가루/안개를 불어 뿌림"),
+]
+CAST_DIR = os.path.join(OUT_DIR, "cast")
+CAST_ROWS = len(CAST_TYPES)
+
+
+def cast_path(char_id, cast_type, step):
+    return os.path.join(SRC_DIR, char_id, f"cast_{cast_type}_{step}.png")
+
+
+def build_cast_sheet(char_id):
+    sheet = Image.new("RGBA", (CELL * 3, CELL * CAST_ROWS), (0, 0, 0, 0))
+    report = {}
+    for row, (ct, _) in enumerate(CAST_TYPES):
+        for step in (1, 2, 3):
+            key = f"cast_{ct}_{step}"
+            path = cast_path(char_id, ct, step)
+            if not os.path.exists(path):
+                report[key] = ["없음"]
+                continue
+            im = Image.open(path).convert("RGBA")
+            issues = validate(char_id, key, im)
+            report[key] = issues
+            sheet.alpha_composite(binarize(im), ((step - 1) * CELL, row * CELL))
+    return sheet, report
+
+
+def cast_board(char_id, sheet, scale=4):
+    cw = CELL * scale
+    lab = 14
+    out = Image.new("RGB", (cw * 3, (cw + lab) * CAST_ROWS), (32, 34, 44))
+    dr = ImageDraw.Draw(out)
+    for row, (ct, _) in enumerate(CAST_TYPES):
+        for col in range(3):
+            x, y = col * cw, row * (cw + lab)
+            dr.rectangle([x, y + lab, x + cw - 1, y + lab + cw - 1], fill=(52, 56, 72))
+            cell = sheet.crop((col * CELL, row * CELL, (col + 1) * CELL, (row + 1) * CELL)).resize((cw, cw), Image.NEAREST)
+            out.paste(cell, (x, y + lab), cell)
+            dr.line([x, y + lab + (GROUND_Y + 1) * scale, x + cw, y + lab + (GROUND_Y + 1) * scale], fill=(200, 80, 80))
+            dr.text((x + 3, y + 1), f"{ct} {col + 1}", fill=(230, 230, 240))
+    return out
