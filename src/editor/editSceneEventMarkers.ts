@@ -156,15 +156,9 @@ export function renderEventMarkers(context: EventMarkerRenderContext, map: GameM
         );
       }
     } else {
-      const page = eventPageForEditorMarker(event, selectedId, state.selectedEventPageId, project, map);
-      const graphic = page?.graphic ?? (event.sprite ? { sprite: event.sprite } : undefined);
-      const texture = editorEventMarkerTexture(project, graphic);
-      if (texture) {
-        context.overlayLayer.add(createEditableEventSprite(context.scene, event,
-          normalizeCharacterFootprint(page?.footprint), graphic, texture, tileSize));
-      } else {
-        context.overlayLayer.add(createEventBadgeMarker(context.scene, cx, cy, tileSize));
-      }
+      // 타일 레이어(바닥·상위·높이)에서는 그림이 있어도 E 배지만 그린다(2026-08-31 결정, 2026-09-27 복구).
+      // 캐릭터 그림은 칠하는 타일을 가리고, 이벤트 레이어와 구분도 안 된다. 그림은 이벤트 레이어 전용이다.
+      context.overlayLayer.add(createEventBadgeMarker(context.scene, cx, cy, tileSize));
     }
     if (event.id === selectedId) addSelectedEventRing(context, position, tileSize);
   }
