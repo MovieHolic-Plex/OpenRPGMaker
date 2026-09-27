@@ -646,6 +646,9 @@ const skillRecordSchema = objectSchema({
     shape: { type: "string", enum: ["circle", "line"] },
     radius: numberSchema("전투장 픽셀(>0). circle=주 대상에서 거리, line=주 대상과 세로 차 ≤ radius/2 인 가로 띠"),
   }, "위치 범위기. scope enemy/ally 에서 주 대상 둘레의 같은 편도 맞힌다"),
+  resource2Cost: integerSchema("제2 자원 「기력」 소모량(system.resource2.enabled 일 때만). 0 이면 없음"),
+  limitSkill: booleanSchema("리미트 기술 — 리미트 게이지가 가득 찼을 때만 쓰고 쓰면 비운다(system.limitGauge.enabled 일 때만)"),
+  partyGaugeCost: integerSchema("추격 연계기 — 파티 공용 게이지 소모량(system.partyGauge.enabled 일 때만). 0 이면 없음"),
 }) as RecordSchema;
 
 const equipmentRecordSchema = objectSchema({
@@ -684,6 +687,14 @@ const equipmentRecordSchema = objectSchema({
   stateDefenseIds: stringArraySchema(),
   stateDefenseMode: { type: "string", enum: ["resist", "inflict"] },
   stateResistanceChance: integerSchema(),
+  grantsSkillIds: stringArraySchema("장착 중에만 쓸 수 있는 스킬 id. 배우지 않아도 전투 스킬 목록에 뜬다"),
+  grantsCommand: objectSchema({
+    id: stringSchema("명령 id(클래스 명령과 겹치지 않게)"),
+    name: stringSchema("메뉴에 보일 이름"),
+    kind: { type: "string", enum: ["attack", "skill", "skillSubset", "defend", "item", "escape"] },
+    skillSubsetName: stringSchema(),
+    skillId: stringSchema("kind:skill 이면 이 스킬 하나를 바로 쓰는 명령"),
+  }, "장착 중에만 전투 명령 메뉴에 붙는 명령"),
 }) as RecordSchema;
 
 const classRecordSchema = objectSchema({
@@ -718,6 +729,10 @@ const stateRecordSchema = objectSchema({
   hpReleaseStep: integerSchema(),
   mpReleaseTurn: integerSchema(),
   mpReleaseStep: integerSchema(),
+  emotion: objectSchema({
+    family: stringSchema("감정 계열 이름(예: 기쁨·분노·슬픔). 같은 계열을 다시 걸면 단계가 오른다"),
+    tier: integerSchema("단계 1~9"),
+  }, "감정 상태. 배틀러는 감정을 하나만 가진다. 계열 상성은 set_battle_settings 의 emotionCycle"),
   specialFlags: stringArraySchema(),
   lockedParameters: stringArraySchema(),
   runtimeEffects: stateRuntimeEffectsSchema,

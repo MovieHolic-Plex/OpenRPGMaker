@@ -36,6 +36,7 @@ import { onFieldEnemyPoint, onFieldPartyPoint, onFieldPointToAuthored, type OnFi
 import { defaultActorFaceResourceId } from "@/project/actorFaceDefaults";
 import { store } from "@/project/store";
 import { scheduleBattleTimer } from "@/player/battleTimerScope";
+import { LIMIT_GAUGE_MAX, limitGaugeConfig, partyGaugeConfig, partyGaugeMax, resource2Config, resource2Max } from "@/battle/battleGauges";
 
 /** 같은 이름이 둘 이상이면 1-base 순번을 붙여 구분한다("초원 슬라임 1/2").
  *  필드 이름표·대상 목록·전투 로그가 **같은 문자열**을 쓰도록 이 함수 하나만 쓴다 —
@@ -230,7 +231,9 @@ function presentedState(
 }
 
 export function battlePartyStatus(snapshot: BattleSnapshot): HTMLElement {
-  return partyStatusGroup(snapshot.actors, snapshot.battleFlow);
+  const group = partyStatusGroup(snapshot.actors, snapshot.battleFlow);
+  syncPartyGaugeNode(group, snapshot);
+  return group;
 }
 
 export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot, presentation?: BattleFieldPresentation): void {
@@ -246,6 +249,7 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot, pr
     const rebuilt = partyStatusGroup(snapshot.actors, snapshot.battleFlow);
     party.replaceChildren(...Array.from(rebuilt.childNodes));
   }
+  syncPartyGaugeNode(party, snapshot);
   for (const actor of snapshot.actors) {
     const row = party.querySelector<HTMLElement>(`.battle-actor-status[data-record-id="${actor.recordId}"]`);
     if (!row) continue;
@@ -275,6 +279,8 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot, pr
     row.style.setProperty("--battle-atb-pct", String(gaugePct));
     const atbValueNode = row.querySelector<HTMLElement>(".battle-atb-value");
     if (atbValueNode) atbValueNode.textContent = `${gaugePct}%`;
+    syncResourceGauge(row, "limit", actor.limitGauge, LIMIT_GAUGE_MAX);
+    syncResourceGauge(row, "resource2", actor.resource2, resource2MaxForHud());
     if (partyStatusRowsCarryIcons()) {
       // 이름 셀 안에 넣으면 rm2000 계열의 overflow:hidden + 고정 폭 열에 잘린다(실측:
       // 배지가 2px 조각으로만 보임) — 행의 직계 자식으로 달고 배치는 스킨 CSS 가 한다.
@@ -1229,6 +1235,11 @@ function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot
     gauge.append(atbLabel(), atbValue(actor.gauge), atbBar(actor.gauge));
     row.append(gauge);
   }
+  // 리미트·기력 게이지(battleGauges). 켠 전투의 아군만 값을 가져서 끈 프로젝트의 행은 그대로다.
+  const limitNode = resourceGaugeNode("limit", actor, actor.limitGauge, LIMIT_GAUGE_MAX);
+  if (limitNode) row.append(limitNode);
+  const resource2Node = resourceGaugeNode("resource2", actor, actor.resource2, resource2MaxForHud());
+  if (resource2Node) row.append(resource2Node);
   // 정면 스킨(필드 노드 없음)은 상태 배지를 행에 직접 단다 — 이름 셀 안은 rm2000 의
   // overflow:hidden 열에 잘린다(실측: 배지가 2px 조각으로만 보임). 배치는 스킨 CSS 책임.
   // DOM 맨 끝에 둬서 겹침 시 같은 z-index 의 다른 셀 위에 그려지게 한다.
@@ -1302,6 +1313,92 @@ function statBar(kind: "hp" | "mp" | "tp", value: number, max: number): HTMLElem
 /** 포켓몬식 HP 바 색 구간: 초록(>50) · 노랑(21~50) · 빨강(≤20). */
 export function hpBarState(pct: number): "high" | "mid" | "low" {
   return pct > 50 ? "high" : pct > 20 ? "mid" : "low";
+}
+
+type ResourceGaugeKind = "limit" | "resource2";
+
+function resource2MaxForHud(): number {
+  return resource2Max(store.getCurrent());
+}
+
+function resourceGaugeLabel(kind: ResourceGaugeKind): string {
+  const project = store.getCurrent();
+  return kind === "limit"
+    ? limitGaugeConfig(project)?.label || "리미트"
+    : resource2Config(project)?.label || "기력";
+}
+
+/** 배우 행 안의 자원 게이지 한 줄: 라벨 · 수치 · 막대. 값이 없는(끈) 자원은 만들지 않는다. */
+function resourceGaugeNode(kind: ResourceGaugeKind, actor: BattleBattlerSnapshot, value: number | undefined, max: number): HTMLElement | null {
+  if (value === undefined) return null;
+  const label = resourceGaugeLabel(kind);
+  const node = document.createElement("span");
+  node.className = `battle-resource-gauge battle-resource-gauge-${kind}`;
+  node.dataset.testid = `battle-${kind}-gauge-${actor.recordId}`;
+  node.setAttribute("role", "meter");
+  node.setAttribute("aria-label", label);
+  node.setAttribute("aria-valuemin", "0");
+  const labelNode = document.createElement("span");
+  labelNode.className = "battle-resource-gauge-label";
+  labelNode.textContent = label;
+  const valueNode = document.createElement("span");
+  valueNode.className = "battle-resource-gauge-value";
+  const bar = document.createElement("span");
+  bar.className = `battle-stat-bar battle-stat-bar-tp battle-resource-gauge-bar`;
+  node.append(labelNode, valueNode, bar);
+  writeResourceGauge(node, value, max);
+  return node;
+}
+
+function writeResourceGauge(node: HTMLElement, value: number, max: number): void {
+  const shown = Math.max(0, Math.min(max, Math.floor(value)));
+  node.setAttribute("aria-valuemax", String(max));
+  node.setAttribute("aria-valuenow", String(shown));
+  node.classList.toggle("is-full", shown >= max);
+  const valueNode = node.querySelector<HTMLElement>(".battle-resource-gauge-value");
+  if (valueNode) valueNode.textContent = `${shown}/${max}`;
+  node.querySelector<HTMLElement>(".battle-resource-gauge-bar")?.style.setProperty("--battle-stat", `${hpPercent(shown, max)}%`);
+}
+
+function syncResourceGauge(row: HTMLElement, kind: ResourceGaugeKind, value: number | undefined, max: number): void {
+  const node = row.querySelector<HTMLElement>(`.battle-resource-gauge-${kind}`);
+  if (value === undefined) {
+    node?.remove();
+    return;
+  }
+  if (node) writeResourceGauge(node, value, max);
+}
+
+/** 파티 공용 게이지. 파티 패널 맨 끝 한 줄 — 켠 전투(snapshot.partyGauge 존재)에서만 보인다. */
+function syncPartyGaugeNode(party: HTMLElement, snapshot: BattleSnapshot): void {
+  let node = party.querySelector<HTMLElement>(":scope > .battle-party-gauge");
+  if (snapshot.partyGauge === undefined) {
+    node?.remove();
+    return;
+  }
+  const project = store.getCurrent();
+  const max = partyGaugeMax(project);
+  const label = partyGaugeConfig(project)?.label || "연계 게이지";
+  if (!node) {
+    node = document.createElement("div");
+    node.className = "battle-resource-gauge battle-party-gauge";
+    node.dataset.testid = "battle-party-gauge";
+    node.setAttribute("role", "meter");
+    node.setAttribute("aria-valuemin", "0");
+    const labelNode = document.createElement("span");
+    labelNode.className = "battle-resource-gauge-label";
+    const valueNode = document.createElement("span");
+    valueNode.className = "battle-resource-gauge-value";
+    const bar = document.createElement("span");
+    bar.className = "battle-stat-bar battle-stat-bar-tp battle-resource-gauge-bar";
+    node.append(labelNode, valueNode, bar);
+  }
+  node.setAttribute("aria-label", label);
+  const labelNode = node.querySelector<HTMLElement>(".battle-resource-gauge-label");
+  if (labelNode) labelNode.textContent = label;
+  writeResourceGauge(node, snapshot.partyGauge, max);
+  // 이미 맨 끝이면 옮기지 않는다 — 매 틱 DOM 을 흔들지 않게.
+  if (party.lastElementChild !== node) party.append(node);
 }
 
 function atbLabel(): HTMLElement {
