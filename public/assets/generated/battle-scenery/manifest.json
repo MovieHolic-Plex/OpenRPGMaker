@@ -1,0 +1,142 @@
+{
+  "plains": {
+    "sky": {
+      "bytes": 63425,
+      "colors": 48,
+      "sha256": "82de550ed6705de6378cc0c59888ce47707bce40851ba7f99fcbf207f3d3d07e"
+    },
+    "far": {
+      "bytes": 23097,
+      "colors": 47,
+      "sha256": "c66ddaa6fd32c681de255e6ef72e05e13d3707e3e0df12609eb85c6638fadbb1"
+    },
+    "mid": {
+      "bytes": 16374,
+      "colors": 48,
+      "sha256": "76f3ad9f2a89e68ccd70bd4163b590444c784db87ae249615afd1abc58cc307c"
+    },
+    "ground": {
+      "bytes": 69036,
+      "colors": 48,
+      "sha256": "3fc414109966c64dce6d796f51116ea23dd2082d7f64f89ee64acdecf2e65bc1"
+    },
+    "preview": {
+      "bytes": 101995
+    },
+    "source": {
+      "bytes": 67118
+    }
+  },
+  "forest": {
+    "sky": {
+      "bytes": 72670,
+      "colors": 48,
+      "sha256": "025c66d84274aa4074269aa48cc4e5bbbab2c8930885f3af7404e0463d0d9044"
+    },
+    "far": {
+      "bytes": 49672,
+      "colors": 47,
+      "sha256": "93fc651f550c1813f6fd92085c0cdcf0d596de7469bcb08f5e30e72e41d825b7"
+    },
+    "mid": {
+      "bytes": 25524,
+      "colors": 48,
+      "sha256": "68435138ab59bcd5e3f1dca12b1e2d637d0e4fb12b6e5006da3fed1fe8754bbe"
+    },
+    "ground": {
+      "bytes": 64415,
+      "colors": 48,
+      "sha256": "9e318f21991e4cdc50472909669bdb5fb1fb4eb28aa181dddc7da6d5c445f3b4"
+    },
+    "preview": {
+      "bytes": 106092
+    },
+    "source": {
+      "bytes": 80001
+    }
+  },
+  "cave": {
+    "sky": {
+      "bytes": 99613,
+      "colors": 48,
+      "sha256": "03246a6082ae8509e1d28b86a32f861c312a28e2368ece5d1b263f23a1a09445"
+    },
+    "far": {
+      "bytes": 58361,
+      "colors": 48,
+      "sha256": "642c802855c8142727d7f2f0c2ec810cc5fee99be6f46e7df936e0f72276feb1"
+    },
+    "mid": {
+      "bytes": 31673,
+      "colors": 48,
+      "sha256": "548b1f677baf0fb50801c25d176a38aa71b9ad121e7a1d8581bab9cc8b4208b0"
+    },
+    "ground": {
+      "bytes": 67525,
+      "colors": 48,
+      "sha256": "8caae3d3cad2e6bc24ca0d4fcf0a4b0f80bd0668efe0ada1b1cb341bea227582"
+    },
+    "preview": {
+      "bytes": 119298
+    },
+    "source": {
+      "bytes": 100884
+    }
+  },
+  "snow": {
+    "sky": {
+      "bytes": 58721,
+      "colors": 48,
+      "sha256": "e02cd5891abcf34212c142d55c2f8b6f582709c874c446884760506aa3c8ae6a"
+    },
+    "far": {
+      "bytes": 54839,
+      "colors": 47,
+      "sha256": "13f81af1282bef9ac67fe36162f8af4f52e45854a8d6b42be725e9c85213a085"
+    },
+    "mid": {
+      "bytes": 19152,
+      "colors": 48,
+      "sha256": "a052a4cc949708e17c7b175aefaa3a3e4f58a5f5eae697b8f9c7a120734ac92c"
+    },
+    "ground": {
+      "bytes": 62921,
+      "colors": 48,
+      "sha256": "3d41b69408b1d106841d8b4cc033d875892aa8b488c1781078f26430da00c664"
+    },
+    "preview": {
+      "bytes": 102267
+    },
+    "source": {
+      "bytes": 80831
+    }
+  },
+  "desert": {
+    "sky": {
+      "bytes": 46687,
+      "colors": 48,
+      "sha256": "3cfd007a42d4a9af16725f120678dae4b6968ec76f059506d7f6205ba5fb8ddd"
+    },
+    "far": {
+      "bytes": 28623,
+      "colors": 47,
+      "sha256": "85ed77090a8ea29a5c04999563e896fd2c28f7ce8bb261deaa2120f6b639f414"
+    },
+    "mid": {
+      "bytes": 18123,
+      "colors": 46,
+      "sha256": "a5004154e2ee5cdd881e1f4742dd8bc8ace0deed7dd78c46b8551572f2ac11ee"
+    },
+    "ground": {
+      "bytes": 66453,
+      "colors": 48,
+      "sha256": "d23bead05ac1ee850b9f61fc7c367f82d848fbd5c6d1202550526686b0c284a3"
+    },
+    "preview": {
+      "bytes": 86053
+    },
+    "source": {
+      "bytes": 66982
+    }
+  }
+}
