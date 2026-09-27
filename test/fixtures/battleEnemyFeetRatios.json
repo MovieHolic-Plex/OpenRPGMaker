@@ -1,5 +1,5 @@
 {
-  "_note": "실측 잠금(measurement lock): 적 배치 y 를 바꾸면 이 픽스처가 어긋나 RED 가 된다. 갱신 방법: node scripts/runtime-qa.mjs --scenario battle --skin <id> 로 12종을 다시 재고 verify-shots/runtime-qa/*/manifest.json 의 battlers 값으로 이 파일을 다시 쓴다. (2026-09-03: 정면 스킨 id rm2003 → rm2000 개명. 옛 deprecated rm2000 항목은 그 스킨이 제거되며 함께 삭제.) (2026-09-25: 지원 종료 9종을 유리 뼈대 변형으로 되살리며 배치·필드 CSS 가 정면 rm2000 / 측면 rm2003 과 같아졌다 — 그 9종 항목은 해당 구도 실측값의 사본이다. 색·HUD 변형은 필드 기하를 건드리지 않는다.)",
+  "_note": "실측 잠금(measurement lock): 적 배치 y 를 바꾸면 이 픽스처가 어긋나 RED 가 된다. 갱신 방법: node scripts/runtime-qa.mjs --scenario battle --skin <id> 로 12종을 다시 재고 verify-shots/runtime-qa/*/manifest.json 의 battlers 값으로 이 파일을 다시 쓴다. (2026-09-03: 정면 스킨 id rm2003 → rm2000 개명. 옛 deprecated rm2000 항목은 그 스킨이 제거되며 함께 삭제.) (2026-09-25: 지원 종료 9종을 유리 뼈대 변형으로 되살리며 배치·필드 CSS 가 정면 rm2000 / 측면 rm2003 과 같아졌다 — 그 9종 항목은 해당 구도 실측값의 사본이다. 색·HUD 변형은 필드 기하를 건드리지 않는다.) (retro2003: rm2003 사본인 임시 기준값. 감독자가 RETRO_SIDEVIEW 통합 후 실측으로 갱신해야 한다.)",
   "_axes": {
     "groundBandRatio": 0.6,
     "noTopClipRatio": 0
@@ -254,6 +254,27 @@
           0.136,
           0.136,
           0.41
+        ]
+      }
+    },
+    "retro2003": {
+      "authoredY": [
+        112,
+        124,
+        112
+      ],
+      "measured": {
+        "fieldTop": 0,
+        "fieldHeight": 540,
+        "feetRatio": [
+          0.74,
+          0.805,
+          0.74
+        ],
+        "topRatio": [
+          0.248,
+          0.312,
+          0.24
         ]
       }
     }
