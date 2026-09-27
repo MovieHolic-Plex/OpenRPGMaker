@@ -1,7 +1,7 @@
 import fs from 'node:fs';import assert from 'node:assert/strict';import {execFileSync} from 'node:child_process';import {isDeepStrictEqual as same} from 'node:util';import {chromium} from 'playwright';
 const out='output/shared-village-references',host='http://127.0.0.1:9825',origin=process.env.REFERENCE_ORIGIN??'http://127.0.0.1:9852';
 const db=process.env.REFERENCE_SQLITE??'/home/main/.codex/worktrees/a4e1/rpg-zzu/.oprn-projects/oprn-hill-forest-harmony-20260918-a4e1/project.sqlite';
-const read=()=>JSON.parse(execFileSync('python3',['-c',"import sqlite3,pathlib,sys;c=sqlite3.connect(pathlib.Path(sys.argv[1]).resolve().as_uri()+'?mode=ro',uri=True);print(c.execute('select current_json from project').fetchone()[0])",db],{maxBuffer:100e6}));
+const read=()=>JSON.parse(execFileSync('python3',['-c',"import sqlite3,pathlib,sys;c=sqlite3.connect(pathlib.Path(sys.argv[1]).resolve().as_uri()+'?mode=ro',uri=True);t=c.execute('select current_json from project').fetchone()[0];m='{\"$blob\":\"';p=t.split(m);b=dict(c.execute('select sha256,body from tileset_blobs').fetchall()) if len(p)>1 else {};print(p[0]+''.join(b[s[:64]]+s[66:] for s in p[1:]))",db],{maxBuffer:100e6}));
 const before=read(),refs=JSON.parse(fs.readFileSync('src/assets/sharedVillageReferences.json'));fs.mkdirSync(out,{recursive:true});fs.writeFileSync(out+'/local-before.json',JSON.stringify(before));
 const conf=JSON.parse((await(await fetch(host)).text()).match(/window\.__OPRN_BRIDGE__=(.*?)<\/script>/)[1]),bridge=await(await fetch(host+'/__oprn/bridge.js')).text();
 const browser=await chromium.launch({executablePath:'/opt/google/chrome/chrome',args:['--no-sandbox','--no-proxy-server']});

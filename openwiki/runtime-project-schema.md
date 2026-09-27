@@ -123,9 +123,18 @@ PR #845, P2(로컬 어댑터·Electron 셸)는 브랜치 `local-store/p2`가 mai
 - **로컬 어댑터**: `electron/local-store/`는 `node:sqlite`(`DatabaseSync`)만 쓰는 Node 전용
   라이브러리다. electron을 import하지 않으므로 헤드리스 도구가 같은 폴더를 같은 라이브러리로 연다.
   폴더 모양은 `project.sqlite` + `assets/` + `backups/`(`VACUUM INTO`), 형식 버전은 `meta`에 있다.
-  스키마는 9테이블(meta·project·maps·commits·changes·ai_activity_logs·ai_conversations·
-  ai_analysis_runs·assets)이고, 저장은 단일 트랜잭션 + sha256 CAS + 리비전 증가다.
+  스키마는 10테이블(meta·project·maps·commits·changes·ai_activity_logs·ai_conversations·
+  ai_analysis_runs·assets·tileset_blobs)이고, 저장은 단일 트랜잭션 + sha256 CAS + 리비전 증가다.
   PRAGMA는 `journal_mode=WAL`·`synchronous=FULL`·`busy_timeout=5000`·`foreign_keys=ON`.
+- **타일셋 접기 (2026-09-27)**: `project.current_json` 의 타일셋 칸은 `{"$blob":"<sha256>"}` 표식이고
+  본문(`JSON.stringify(tileset)`)은 `tileset_blobs` 에 내용 주소로 한 번만 있다(`electron/local-store/tilesetFold.ts`).
+  **저장 행만 접힌다** — `current_sha256`·`exportSerialized()`·`loadSnapshot()`·렌더러 와이어는 펼친 글 기준이라
+  예전과 바이트 단위로 같다. 낡은 행(표식 없음)은 그대로 읽히고 다음 저장에서 접힌다. 펼친 글이 아닌 형식
+  (들여쓴 JSON 등)으로 `saveSerialized` 하면 접지 않고 그 글을 그대로 둔다. 저장마다 현재 행이 가리키지 않는 본문은 지운다.
+  호스트 맵 패치는 `hostDocument()`(타일셋은 얼린 공유 객체, 바깥 트리는 매번 새 것)를 기준으로 쓰고,
+  저장은 객체 신원으로 본문을 재사용해 바뀐 타일셋만 직렬화한다. 실측(82MB 프로젝트): 행 81.6MB → 1.0MB.
+  **`current_json` 을 SQL 로 직접 읽는 스크립트는 표식만 본다** — 문서는 `openLocalProjectStore().exportSerialized()`
+  또는 `scripts/oprn-store.mjs export-json` 으로 읽는다.
 - **가드**: SQLite 드라이버 import는 `electron/local-store/**`만, `electron/**`는 `src/brand.ts`·
   `src/project/types/**`·`src/project/persistence/core/**`만, `src/**`는 `electron/shared/**`만
   import한다. 렌더러 파일 이름에 `sqlite`를 쓰지 않는다. `test/noLocalProjectDb.test.ts`가 이 경계를 지킨다.

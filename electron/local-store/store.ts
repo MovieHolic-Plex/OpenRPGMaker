@@ -6,12 +6,12 @@ import { canonicalJsonString } from "../../src/project/persistence/core/canonica
 import { deserializeStoredProjectJson } from "../../src/project/persistence/core/loadRepair";
 import { mergeTeamProject, validateMergedTeamProject } from "../../src/project/persistence/core/teamMerge";
 import type { MapSaveConflict } from "../../src/project/persistence/core/mapMerge";
-import type { ProjectWire } from "../../src/project/persistence/core/projectWire";
-import { serialize } from "../../src/project/io/serialize";
+import { projectWireView } from "../../src/project/io/serialize";
 import type { GameMap, Project, UploadedAsset, UploadedAssetRef } from "../../src/project/types";
 import { applyStorePragmas, openNodeSqliteDriver, readDataVersion, type Driver, type DriverValue } from "./driver";
 import { LocalStoreError } from "./errors";
-import { ASSETS_DIR, BACKUPS_DIR, LOCAL_STORE_FORMAT_VERSION, META_KEYS, PROJECT_STORE_FILE, STORE_DDL } from "./schema";
+import { ASSETS_DIR, BACKUPS_DIR, LOCAL_STORE_FORMAT_VERSION, META_KEYS, PROJECT_STORE_FILE, STORE_DDL, TILESET_BLOBS_DDL } from "./schema";
+import { blobOfText, deepFreeze, foldDocument, foldedTilesetShas, foldSubmittedText, type FoldedDocument, type TilesetBlob } from "./tilesetFold";
 
 export type LocalStoreSaveResult =
   | { readonly kind: "saved"; readonly sha256: string; readonly revision: number; readonly serialized?: string }
@@ -174,6 +174,11 @@ export type LocalProjectStore = {
     readonly aiAnalysisRuns?: readonly Record<string, unknown>[];
   }): void;
   exportSerialized(): string | null;
+  /**
+   * 호스트 디스패치 전용. 저장 문서의 JSON 트리를 주되 타일셋은 얼린 공유 객체다 — 고치지 마라.
+   * 스크립트처럼 프로젝트를 고쳐 저장하는 쪽은 `loadSnapshot` 을 쓴다.
+   */
+  hostDocument(): unknown;
   backup(): string;
   dataVersion(): number;
   close(): void;
@@ -201,16 +206,36 @@ function sha256HexOfText(value: string): string {
   return createHash("sha256").update(value, "utf8").digest("hex");
 }
 
-/** 호스트가 쓰는 와이어. 파싱한 JSON 은 쓰지 않으므로 만들지 않는다(81MB 문서에서 파싱 약 0.4s). */
-type HostWire = Pick<ProjectWire, "serialized" | "sha256">;
+/** 호스트가 쓰는 와이어. 접힌 행 글과 펼친 글의 해시를 함께 든다(tilesetFold.ts). */
+type HostWire = FoldedDocument;
 
-/**
- * 직렬화 + 네이티브 SHA-256. 공용 projectWire 는 브라우저와 같은 JS 해시를 쓰고 JSON 도 다시 파싱한다.
- * 실측(2026-09-26, 81MB 새 프로젝트): 호스트 패치 한 번의 projectWire 2.7s 중 파싱·JS 해시가 약 1s.
- */
-function hostWire(project: Project): HostWire {
-  const serialized = serialize(project);
-  return { serialized, sha256: sha256HexOfText(serialized) };
+function writeProjectRow(driver: Driver, project: Project, wire: HostWire, projectId: string, now: string): number {
+  const revision = (readProjectMeta(driver)?.revision ?? 0) + 1;
+  // 이미 있는 본문은 다시 매기지 않는다 — 매 저장 80MB 를 SQLite 에 넘기게 된다.
+  const exists = driver.prepare("SELECT 1 AS present FROM tileset_blobs WHERE sha256 = ?");
+  const insertBlob = driver.prepare("INSERT INTO tileset_blobs (sha256, body, created_at) VALUES (?, ?, ?)");
+  for (const [sha, text] of wire.blobs) if (!exists.get([sha])) insertBlob.run([sha, text, now]);
+  if (wire.blobs.size > 0) writeMeta(driver, META_KEYS.formatVersion, String(LOCAL_STORE_FORMAT_VERSION));
+  driver.prepare(
+    `INSERT INTO project (id, project_id, title, document_version, current_json, current_sha256, revision, updated_at)
+     VALUES (1, ?, ?, ?, ?, ?, ?, ?)
+     ON CONFLICT(id) DO UPDATE SET
+       title = excluded.title, document_version = excluded.document_version, current_json = excluded.current_json,
+       current_sha256 = excluded.current_sha256, revision = excluded.revision, updated_at = excluded.updated_at`,
+  ).run([
+    projectId,
+    project.meta?.title ?? null,
+    Number(project.version),
+    wire.folded,
+    wire.sha256,
+    revision,
+    now,
+  ]);
+  // 현재 행이 가리키지 않는 본문은 지운다. 커밋은 문서 sha 만 남기고 백업은 그 시점 표를 통째로 복사한다.
+  driver.prepare("DELETE FROM tileset_blobs WHERE sha256 NOT IN (SELECT value FROM json_each(?))")
+    .run([JSON.stringify([...wire.blobs.keys()])]);
+  replaceMapMirrors(driver, projectId, project, now);
+  return revision;
 }
 
 function readMeta(driver: Driver, key: string): string | null {
@@ -294,27 +319,6 @@ function replaceMapMirrors(driver: Driver, projectId: string, project: Project, 
   }
 }
 
-function writeProjectRow(driver: Driver, project: Project, wire: HostWire, projectId: string, now: string): number {
-  const revision = (readProjectMeta(driver)?.revision ?? 0) + 1;
-  driver.prepare(
-    `INSERT INTO project (id, project_id, title, document_version, current_json, current_sha256, revision, updated_at)
-     VALUES (1, ?, ?, ?, ?, ?, ?, ?)
-     ON CONFLICT(id) DO UPDATE SET
-       title = excluded.title, document_version = excluded.document_version, current_json = excluded.current_json,
-       current_sha256 = excluded.current_sha256, revision = excluded.revision, updated_at = excluded.updated_at`,
-  ).run([
-    projectId,
-    project.meta?.title ?? null,
-    Number(project.version),
-    wire.serialized,
-    wire.sha256,
-    revision,
-    now,
-  ]);
-  replaceMapMirrors(driver, projectId, project, now);
-  return revision;
-}
-
 function jsonOrNull(value: unknown): string | null {
   return value === undefined ? null : JSON.stringify(value);
 }
@@ -393,24 +397,118 @@ function backupStamp(now: string): string {
   return now.replace(/[:.]/g, "-");
 }
 
+/**
+ * 타일셋 본문 기억. 프로세스 하나에서 모든 프로젝트가 공유한다 — 공용 타일셋은 프로젝트마다 같은 본문(같은 sha)이다.
+ * 객체는 얼려 둔다. 객체 신원(===)으로 본문을 재사용하므로 객체가 바뀌면 저장이 옛 본문을 쓴다.
+ * 열린 저장소의 현재 행이 가리키는 것만 남긴다(`retainLiveBlobs`) — 타일셋을 고칠 때마다 새 본문이 쌓이지 않게.
+ */
+const blobTexts = new Map<string, string>();
+const blobObjects = new Map<string, unknown>();
+const blobOfObject = new WeakMap<object, TilesetBlob>();
+const liveBlobsByStore = new Map<symbol, ReadonlySet<string>>();
+
+function retainLiveBlobs(store: symbol, live: ReadonlySet<string> | null): void {
+  if (live) liveBlobsByStore.set(store, live);
+  else liveBlobsByStore.delete(store);
+  const keep = (sha: string): boolean => [...liveBlobsByStore.values()].some((set) => set.has(sha));
+  for (const sha of blobTexts.keys()) if (!keep(sha)) blobTexts.delete(sha);
+  for (const sha of blobObjects.keys()) if (!keep(sha)) blobObjects.delete(sha);
+}
+
+function blobFor(value: unknown): TilesetBlob {
+  if (value !== null && typeof value === "object") {
+    const known = blobOfObject.get(value);
+    if (known) return known;
+  }
+  return blobOfText(JSON.stringify(value));
+}
+
+function readBlobText(driver: Driver, sha256: string): string {
+  const known = blobTexts.get(sha256);
+  if (known !== undefined) return known;
+  const row = driver.prepare("SELECT body FROM tileset_blobs WHERE sha256 = ?").get([sha256]);
+  if (!row) throw new LocalStoreError("row", `tileset blob ${sha256} is missing`);
+  const text = String(row.body);
+  blobTexts.set(sha256, text);
+  return text;
+}
+
+function blobObject(driver: Driver, sha256: string): unknown {
+  const known = blobObjects.get(sha256);
+  if (known !== undefined) return known;
+  const text = readBlobText(driver, sha256);
+  const value = deepFreeze(JSON.parse(text) as unknown);
+  blobObjects.set(sha256, value);
+  if (value !== null && typeof value === "object") blobOfObject.set(value, { sha256, text });
+  return value;
+}
+
+/** 저장 행 글 → 펼친 글. 접힌 행이면 본문을 끼워 예전과 같은 글을 만들고 행의 sha 로 대조한다. */
+function unfoldRowText(driver: Driver, raw: string, sha256: string): string {
+  const folded = foldedTilesetShas(raw);
+  if (!folded) return raw;
+  const wire = foldDocument(folded.document, (marker) => {
+    const sha = (marker as { readonly $blob: string }).$blob;
+    return { sha256: sha, text: readBlobText(driver, sha) };
+  });
+  if (wire.sha256 !== sha256) throw new LocalStoreError("row", "folded project row does not match its stored sha256");
+  return wire.full();
+}
+
+/**
+ * 호스트 전용 문서 트리. 타일셋은 얼린 공유 객체라 본문을 다시 파싱·직렬화하지 않는다. 타일셋 밖은 부르는 때마다 새 트리다.
+ * 실측(2026-09-27, 82MB): 펼친 글 파싱 + 검증이 패치마다 1–8s 였다. 이 트리로는 검증 약 0.6s, 타일셋 재직렬화 0칸.
+ */
+function hostDocumentTree(driver: Driver, raw: string): unknown {
+  const folded = foldedTilesetShas(raw);
+  if (!folded) return JSON.parse(raw);
+  const tilesets: Record<string, unknown> = {};
+  for (const [id, sha] of folded.shas) tilesets[id] = blobObject(driver, sha);
+  return { ...folded.document, tilesets };
+}
+
 function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, projectId: string, clock: () => string): LocalProjectStore {
   // 마지막으로 이 프로세스가 쓴(또는 읽은) 문서 문자열. 저장 행 sha 가 같을 때만 쓴다 — 다른 프로세스가
   // 행을 바꾸면 sha 가 달라 자동으로 버려진다. 문자열은 불변이라 공유해도 안전하다.
   // 실측(2026-09-26, 81MB 새 프로젝트): 패치·상태 조회마다 81MB 행을 다시 읽었다(한 번에 약 0.4s).
-  let cached: { readonly sha256: string; readonly serialized: string } | null = null;
-  const remember = (sha256: string, serialized: string): void => {
-    cached = { sha256, serialized };
+  let cached: { readonly sha256: string; readonly text: () => string } | null = null;
+  const remember = (sha256: string, serialized: string | (() => string)): void => {
+    let text: string | null = typeof serialized === "string" ? serialized : null;
+    cached = { sha256, text: () => (text ??= (serialized as () => string)()) };
   };
-  const cachedFor = (sha256: string | null | undefined) => (sha256 && cached?.sha256 === sha256 ? cached : null);
+  const cachedFor = (sha256: string | null | undefined) => (sha256 && cached?.sha256 === sha256 ? { serialized: cached.text() } : null);
+  const storeToken = Symbol(options.projectDir);
+  const liveFrom = (raw: string): ReadonlySet<string> => new Set(foldedTilesetShas(raw)?.shas.values() ?? []);
+  // 다른 프로세스가 행과 본문을 바꾼 사이에 읽으면 본문이 없거나 sha 가 어긋난다. 한 번 다시 읽는다.
+  const readRowConsistently = <T>(read: (row: ProjectRow) => T): T | null => {
+    for (let attempt = 0; ; attempt += 1) {
+      const row = readProjectRow(driver);
+      if (!row) return null;
+      try {
+        const value = read(row);
+        retainLiveBlobs(storeToken, liveFrom(row.serialized));
+        return value;
+      } catch (error) {
+        if (attempt > 0 || !(error instanceof LocalStoreError) || error.code !== "row") throw error;
+      }
+    }
+  };
   const storedSerialized = (): string | null => {
     const meta = readProjectMeta(driver);
     if (!meta) return null;
     const hit = cachedFor(meta.sha256);
     if (hit) return hit.serialized;
-    const row = readProjectRow(driver);
-    if (!row) return null;
-    remember(row.sha256, row.serialized);
-    return row.serialized;
+    return readRowConsistently((row) => {
+      const full = unfoldRowText(driver, row.serialized, row.sha256);
+      remember(row.sha256, full);
+      return full;
+    });
+  };
+  const storedTree = (): unknown => readRowConsistently((row) => hostDocumentTree(driver, row.serialized));
+  const wireOf = (project: Project): HostWire => foldDocument(projectWireView(project), blobFor);
+  const written = (wire: HostWire): void => {
+    remember(wire.sha256, wire.full);
+    retainLiveBlobs(storeToken, new Set(wire.blobs.keys()));
   };
   return {
     projectDir: options.projectDir,
@@ -444,19 +542,20 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
       return { project: deserializeStoredProjectJson(JSON.parse(serialized)), sha256: meta.sha256, revision: meta.revision };
     },
     async saveProject(project: Project): Promise<LocalStoreSaveResult> {
-      const wire = hostWire(project);
+      const wire = wireOf(project);
       const saved = driver.transaction(() => ({
         kind: "saved" as const,
         sha256: wire.sha256,
         revision: writeProjectRow(driver, project, wire, projectId, clock()),
       }));
-      remember(wire.sha256, wire.serialized);
+      written(wire);
       return saved;
     },
     async saveSerialized(serialized: string, expectedSha?: string | null): Promise<LocalStoreSaveResult> {
+      // 복구가 파싱한 트리를 제자리에서 고치므로, 접기는 그 전에 보낸 글에서 한다.
+      const wire: HostWire = foldSubmittedText(serialized);
       const json = JSON.parse(serialized);
       const parsed = deserializeStoredProjectJson(json, serialized);
-      const wire: HostWire = { serialized, sha256: sha256HexOfText(serialized) };
       const result = driver.transaction((): LocalStoreSaveResult => {
         if (expectedSha !== undefined && (readProjectMeta(driver)?.sha256 ?? null) !== expectedSha) {
           return { kind: "conflict", conflicts: [{ mapId: "project", name: "프로젝트가 다른 사용자에 의해 변경되었습니다" }] };
@@ -466,7 +565,7 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
         return { kind: "saved", sha256: wire.sha256,
           revision: writeProjectRow(driver, parsed, wire, projectId, clock()) };
       });
-      if (result.kind === "saved") remember(wire.sha256, serialized);
+      if (result.kind === "saved") written(wire);
       return result;
     },
     async saveMapPatch(input: LocalMapPatchInput): Promise<LocalStoreSaveResult> {
@@ -477,7 +576,7 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
         // 역직렬화 1.9s + 타일셋마다 정렬 직렬화 비교하는 mergeTeamProject 5.3s 가 매 패치에 돌았다(호스트 15s).
         // 검증·와이어·CAS 쓰기는 그대로라 그 사이 다른 저장이 끼면 아래에서 다시 병합 경로를 탄다.
         const baseIsStored = input.baseSha != null && planned?.sha256 === input.baseSha;
-        const storedText = baseIsStored || !planned ? null : storedSerialized();
+        const storedDocument = baseIsStored || !planned ? null : storedTree();
         const baseProject = baseIsStored ? null : (input.baseProject ?? input.getBaseProject?.());
         if (!baseIsStored && !baseProject) throw new LocalStoreError("cas", "map patch base is required to merge");
         const plan = baseIsStored
@@ -485,13 +584,13 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
           : mergeTeamProject(
             baseProject!,
             input.project,
-            storedText !== null ? deserializeStoredProjectJson(JSON.parse(storedText)) : baseProject!,
+            storedDocument !== null ? deserializeStoredProjectJson(storedDocument, () => storedSerialized() ?? "") : baseProject!,
           );
         // Never trust a caller-supplied map-id list: all changed roots must participate.
         if (plan.kind === "conflict") return plan;
         validateMergedTeamProject(plan.project);
-        const wire = hostWire(plan.project);
-        const written = driver.transaction((): LocalStoreSaveResult | null => {
+        const wire = wireOf(plan.project);
+        const saved = driver.transaction((): LocalStoreSaveResult | null => {
           if ((readProjectMeta(driver)?.sha256 ?? null) !== (planned?.sha256 ?? null)) return null;
           const revision = writeProjectRow(driver, plan.project, wire, projectId, clock());
           // Nobody wrote since the caller's base: the merge is the caller's own document,
@@ -499,17 +598,20 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
           const untouched = input.baseSha != null && planned?.sha256 === input.baseSha;
           return untouched
             ? { kind: "saved", sha256: wire.sha256, revision }
-            : { kind: "saved", sha256: wire.sha256, serialized: wire.serialized, revision };
+            : { kind: "saved", sha256: wire.sha256, serialized: wire.full(), revision };
         });
-        if (written) {
-          remember(wire.sha256, wire.serialized);
-          return written;
+        if (saved) {
+          written(wire);
+          return saved;
         }
       }
       throw new LocalStoreError("cas", "project changed too often while saving a patch");
     },
     exportSerialized(): string | null {
       return storedSerialized();
+    },
+    hostDocument(): unknown {
+      return storedTree();
     },
     backup(): string {
       const backupDir = join(options.projectDir, BACKUPS_DIR, `${backupStamp(clock())}-${randomUUID()}`);
@@ -714,8 +816,9 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
         return { changed: false, migratedAssetIds: [], project, sha256: current?.sha256 ?? null, revision: current?.revision ?? 0 };
       }
       const nextProject: Project = { ...project, assets: { ...project.assets, uploaded } };
-      const wire = hostWire(nextProject);
+      const wire = wireOf(nextProject);
       const revision = driver.transaction(() => writeProjectRow(driver, nextProject, wire, projectId, clock()));
+      written(wire);
       insertCommit(
         driver,
         projectId,
@@ -776,6 +879,7 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
       return readDataVersion(driver);
     },
     close(): void {
+      retainLiveBlobs(storeToken, null);
       driver.close();
     },
   };
@@ -812,5 +916,7 @@ export async function openLocalProjectStore(options: OpenLocalProjectStoreOption
     driver.close();
     throw new LocalStoreError("format", `store format ${formatVersion} is newer than this build supports`);
   }
+  // 옛 저장소에도 본문 표를 만든다. 표가 없으면 첫 저장이 접기를 못 한다(접힌 행은 이 빌드가 쓴 것뿐).
+  driver.exec(TILESET_BLOBS_DDL);
   return createStore(driver, options, projectId, options.now ?? ((): string => new Date().toISOString()));
 }
