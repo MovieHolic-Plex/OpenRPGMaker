@@ -19,7 +19,7 @@ import { PiTeamMessaging, teamCommunicationPrompt } from "./piTeamMessaging.ts";
 
 import { mapBundleIds, mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
 import { authorMergedSpatialProposal, exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.ts";
-import { addPiAgentUsage, changedProjectKeys, slimDoneEvent, type PiAgentDoneEvent, type PiAgentUsage, type PiAgentEvent, type PiAgentRequest, type PiTeamRoleId } from "../../src/ai/piAgent/protocol.ts";
+import { addPiAgentUsage, changedProjectKeys, restoreCheckpointProject, slimCheckpointProject, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentUsage, type PiAgentEvent, type PiAgentRequest, type PiTeamRoleId } from "../../src/ai/piAgent/protocol.ts";
 import { createModernTilesetPolicy, modernTilesetViolation, requestsModernMap } from '../../src/ai/modernTilesetPolicy.ts';
 import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
 import {
@@ -229,13 +229,22 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   let publication: Promise<unknown> = Promise.resolve();
   const checkpointFor = (mapId: string | null, snapshot: Project) => async (checkpoint: PiProjectCheckpoint, signal?: AbortSignal): Promise<Project> => {
     const next = publication.then(async () => {
+      // 팀원 체크포인트는 안 바뀐 무거운 키(타일셋·DB)를 비워서 온다. 작업 사본에서 다시 붙인 뒤에만
+      // 병합·검사한다 — 빈 채로 두면 이 뒤로 배정되는 팀원이 DB 없는 프로젝트에서 출발한다
+      // (2026-09-27 프리셋 팀 첫 생성 실측: 시공 팀원들이 「project.database.actors 가 undefined」로 막혔다).
+      const incoming = restoreCheckpointProject(working, checkpoint.project, checkpoint.unchangedKeys);
       const proposed = mapId
-        ? mergeMapBundles(working, [{ mapIds: [mapId], project: checkpoint.project, base: snapshot }]).project
-        : checkpoint.project;
+        ? mergeMapBundles(working, [{ mapIds: [mapId], project: incoming, base: snapshot }]).project
+        : incoming;
       assertModernProposal(working, proposed);
       authorMergedSpatialProposal(proposed, working);
-      const accepted = await options.onCheckpoint?.({ ...checkpoint, project: proposed, spatialProof: exportSpatialToolProof(proposed) }, signal);
-      working = structuredClone(accepted ?? proposed);
+      // 브라우저로는 다시 비워서 보낸다(수십 MB). ACK 도 같은 키를 비워 돌아오므로 받은 뒤 다시 붙인다.
+      const unchangedKeys = unchangedHeavyKeys(working, proposed);
+      const accepted = await options.onCheckpoint?.({
+        ...checkpoint, project: slimCheckpointProject(proposed, unchangedKeys), unchangedKeys,
+        spatialProof: exportSpatialToolProof(proposed),
+      }, signal);
+      working = structuredClone(restoreCheckpointProject(proposed, accepted ?? proposed, unchangedKeys));
       return working;
     });
     publication = next;

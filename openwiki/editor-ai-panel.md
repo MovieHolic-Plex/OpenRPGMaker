@@ -3069,6 +3069,17 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 
 실시간 적용(DEFAULT/AUTO/YOLO)은 쓰기 도구마다 `store.replace`를 한다. 알림에 칸 목록이 있으면 `redrawCells`가 그 칸과 이벤트 마커만 고친다. 맵 크기·타일셋·맵 추가/삭제·맵 밖 참조가 바뀌거나 칸이 2048개를 넘으면 예전처럼 전체를 다시 그린다. 공개 애니메이션은 체크포인트를 기다리지 않는다. 체크포인트 줄은 타일셋·데이터베이스 참조가 그대로면 그 둘을 빼고, 브라우저와 ACK가 직전 객체를 다시 붙인다. 맵 비교는 타일 배열을 문자열로 만들지 않고 칸 값으로 한다.
 
+- **팀 런타임도 빈 키를 다시 붙인다 (2026-09-27):** 팀원 체크포인트는 `piAgentRuntime` 이 안 바뀐 타일셋·DB 를 비워 보낸다.
+  `piTeamRuntime` 의 `checkpointFor` 는 그걸 복원하지 않고 병합·작업 사본(`working`)으로 삼았다. 프로젝트 공통 작업(`assign_task_agent` mode=project)은
+  빈 체크포인트가 그대로 `working` 이 됐고, 맵 배정은 브라우저 ACK(역시 비워서 돌아온다)가 `working` 을 덮었다. 그 뒤 배정된 시공 팀원은
+  `database.actors` 가 없는 사본에서 출발해 「project.database.actors.map undefined」로 막혔다(프리셋 몬스터 수집 팀 첫 생성 실측).
+  이제 받은 체크포인트를 `working` 으로 복원한 뒤 병합하고, 브라우저로는 다시 비워 보내며, ACK 도 복원한 뒤 `working` 에 둔다.
+  회귀: `test/piAgentTeamRuntime.test.ts` 「slim %s checkpoints keep tilesets and database」(프로젝트·맵 두 경로).
+- **남은 미해결 — 긴 팀 실행 끝의 `Error in input stream`:** 같은 실측의 22분 팀 실행이 마지막 그림 응답(+1028초) 뒤 약 340초 동안 줄 없이
+  있다가 브라우저 스트림 읽기가 이 오류로 끝났다(Firefox 메시지). 워커는 `aborted by client after 51 turns` 를 남겼다 — 브라우저가 먼저 끊었다.
+  호스트 경유 NDJSON 은 heartbeat 만으로 420초 넘게 살아 있음을 따로 확인했으므로(가짜 워커) Node `requestTimeout` 이 원인은 아니다.
+  워커 heartbeat 를 막을 만큼 이벤트 루프를 붙잡는 작업, 또는 Firefox 의 `network.http.response.timeout`(300초)이 후보다. 위 DB 누락이 고쳐진 뒤 다시 재야 한다.
+
 ## 큰 프로젝트의 Pi 요청 전송 (2026-09-24)
 
 `src/ai/piAgent/requestBody.ts`는 1Mi 문자 이상인 요청을 gzip으로 전송한다. `/v1/agent/run`뿐 아니라 적용 ACK `/v1/agent/checkpoint`도 같은 경로를 사용한다. 프로젝트/공용 타일 참고 이미지/이벤트를 제거하지 않는다. 작은 요청과 CompressionStream 미지원 환경은 기존 JSON을 사용하며, 후자는 큰 문서에서 기존 한도 오류를 받을 수 있다.
