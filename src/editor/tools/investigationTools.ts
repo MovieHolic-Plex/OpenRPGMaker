@@ -8,7 +8,7 @@ import type { Command, EventPage, EventPageCondition, EventPageGraphic, GameEven
 import { withJosa } from "@/util/josa";
 import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
-import { examineMarkGraphic, resolveGraphic, type GraphicSpec } from "./eventCompile";
+import { resolveGraphic, type GraphicSpec } from "./eventCompile";
 import { resolveEventPlacement } from "./eventTools";
 import { splitSpeakerPrefix } from "./mysteryCaseTool";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -16,10 +16,6 @@ import { COORD_SCHEMA, CUTSCENE_BEAT_SCHEMA, GRAPHIC_SPEC_SCHEMA } from "./schem
 
 const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
 const TRANSPARENT: EventPageGraphic = { transparent: true };
-/** 그림 없는 조사 지점의 표식. 주민을 세우면 물건이 사람이 된다(2026-09-24 회상 스토리, 메멘토 12개 전부 투명). */
-function mementoMark(): EventPageGraphic {
-  return examineMarkGraphic();
-}
 const SELF_ONCE_KEY = "A";
 
 type RecordValue = Record<string, unknown>;
@@ -116,9 +112,9 @@ function textCommands(lines: unknown, speaker?: string): Command[] {
 }
 
 function graphicFromUnknown(value: unknown): EventPageGraphic {
-  // null 은 투명 명시. 생략은 빈 바닥이라 보석 표식을 붙인다.
-  if (value === undefined) return mementoMark();
-  if (value === null) return TRANSPARENT;
+  // 생략·null 은 투명. 이름과 무관한 대체 그림(예전 보석 표식)을 붙이면 「제단」이 보석으로 보인다
+  // (2026-09-27 사용자 지적). 보이게 하는 일은 그 칸의 사물 타일이나 graphic 지정으로 하고, 빈 바닥이면 경고한다.
+  if (value === undefined || value === null) return TRANSPARENT;
   if (!isRecord(value)) throw new ToolError("graphic은 {query} 또는 {textureKey,characterIndex} 객체/null이어야 합니다.", { code: "graphic-shape" });
   return resolveGraphic(value as GraphicSpec);
 }
@@ -181,7 +177,7 @@ const placeExamineHotspots: ToolDefinition = {
   name: "place_examine_hotspots",
   description:
     "조사 핫스팟을 한 번에 여러 개 배치한다. 각 항목은 {at:{x,y},name,lines?,beats?,once?,itemId?,setSwitch?,graphic?}.  「조사」「살펴보기」 지점 요청의 정본. 이브식 갤러리 방 전체는 make_gallery_room." +
-    " graphic 을 생략하면 빈 바닥 위에 보석 표식(object2)을 붙인다. 투명이 의도라면 graphic:{transparent:true}. 좌표 중복/기존 이벤트 겹침/맵 밖/개별 참조 오류는 해당 항목만 skip하고 warning으로 반환한다.",
+    " graphic 을 생략하면 투명 이벤트다 — 그 칸에 place_props·paint_tiles 로 물건 타일을 깔거나 이름에 맞는 graphic({query:\"…\"})을 준다. 대체 그림은 붙이지 않는다. 좌표 중복/기존 이벤트 겹침/맵 밖/개별 참조 오류는 해당 항목만 skip하고 warning으로 반환한다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -224,7 +220,6 @@ const placeExamineHotspots: ToolDefinition = {
     const eventIds: string[] = [];
     let skipped = 0;
     const invisible: string[] = [];
-    const marked: string[] = [];
 
     hotspots.forEach((raw, index) => {
       try {
@@ -255,7 +250,6 @@ const placeExamineHotspots: ToolDefinition = {
         const placementKey = cellKey(landing);
         const eventId = uniqueEventId(usedIds, `ev_examine_${index + 1}`);
         const graphic = graphicFromUnknown(raw.graphic);
-        if (raw.graphic === undefined) marked.push(name);
         const commands = commandsForHotspot(draft, map, raw, eventId);
         const pages = raw.once === true
           ? [
@@ -299,11 +293,6 @@ const placeExamineHotspots: ToolDefinition = {
       }
     });
 
-    if (marked.length > 0) {
-      warnings.push(
-        `그림 없는 조사 지점 ${marked.length}개(${marked.join(", ")})에 보석 표식을 붙였습니다 — 물건에 맞는 그림은 hotspots[].graphic({query:\"…\"}) 또는 그 칸의 소품 타일로 바꾸세요.`,
-      );
-    }
     if (invisible.length > 0) {
       warnings.push(
         `보이지 않는 조사 지점 ${invisible.length}개(${invisible.join(", ")}): 그림이 없고 그 칸에 물건 타일도 없어 플레이어에게는 빈 바닥이다 — `

@@ -45,7 +45,7 @@ export interface MvPackFlat {
  * - prop: 전부 막힌 물체(쓰레기통·벤치·분수). 캐릭터와 앞뒤 정렬.
  * - tall: 맨 아래 줄만 막히고 위는 캐릭터 위에 그려지는 키 큰 물체(가로등·나무·자판기).
  * - wallmount: 벽·옥상에 붙이는 것(창문·간판·실외기). 통행은 밑의 벽을 따른다.
- * - door: 벽에 붙이는 문. 그 칸을 걸을 수 있게 만든다(이동 이벤트 자리).
+ * - door: 벽에 붙이는 문. 그 칸을 걸을 수 있게 만든다(이동 이벤트 자리). solid 칸(예: 굴 입구 윗줄)은 막힌다.
  * - overhead: 전부 캐릭터 위(차양·불빛).
  */
 export type MvObjectKind = "decal" | "prop" | "tall" | "wallmount" | "door" | "overhead";

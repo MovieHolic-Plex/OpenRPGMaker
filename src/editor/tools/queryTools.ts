@@ -422,13 +422,15 @@ const listNpcGraphics: ToolDefinition = {
 
 const listResources: ToolDefinition = {
   name: "list_resources",
-  description: "리소스를 검색한다. kind: tile/charset/monster/backdrop/bgm/se(시맨틱 검색) 또는 picture(업로드·생성 그림 name/id 부분 일치).",
+  description: "리소스를 검색한다. kind: tile/charset/monster/backdrop/bgm/se(시맨틱 검색) 또는 picture(업로드·생성 그림 name/id 부분 일치). kind:\"tile\" 은 mapId(또는 tilesetId)의 타일셋에서 찾는다 — 생략하면 시작 맵의 타일셋.",
   mode: "read",
   parameters: {
     type: "object",
     properties: {
       kind: { type: "string", enum: RESOURCE_KINDS },
       query: { type: "string" },
+      mapId: { type: "string", description: "kind:tile 일 때 이 맵의 타일셋에서 찾는다" },
+      tilesetId: { type: "string", description: "kind:tile 일 때 이 타일셋에서 찾는다(mapId 보다 우선)" },
       offset: { type: "integer", minimum: 0, description: "시작 위치(기본 0)" },
       limit: { type: "integer", minimum: 1, maximum: 50, description: "반환 개수(기본 20, 최대 50)" },
     },
@@ -465,8 +467,15 @@ const listResources: ToolDefinition = {
       // 타일 검색은 프로젝트에 기록된 사용자 메타데이터(맵 인터뷰 결과)를 겹쳐 검색한다.
       // 빈 query 는 그림과 같이 전체 훑어보기다. 예전엔 0건을 돌려줘 모델이 「actor」「people」로 다시 검색했다
       // (2026-09-24 헤드리스 「등대지기의 겨울」: charset·monster 빈 검색 2회가 헛돌았다).
+      // 타일은 지금 칠하는 맵의 타일셋에서 찾는다. 예전엔 항상 합본 마을에서 찾아 숲마을·실내·던전 맵에
+      // 다른 시트의 칸 번호를 알려줬다(2026-09-27 전수 조사).
+      const tilesetId = typeof args.tilesetId === "string" && project.tilesets[args.tilesetId]
+        ? args.tilesetId
+        : typeof args.mapId === "string" && project.maps[args.mapId]?.tilesetId && project.tilesets[project.maps[args.mapId]!.tilesetId!]
+          ? project.maps[args.mapId]!.tilesetId!
+          : defaultToolTilesetId(project);
       all = searchResources(kind, args.query.trim() || "*", {
-        tileset: project.tilesets[DEFAULT_TILESET_ID],
+        tileset: project.tilesets[tilesetId],
         charsetLabels: project.charsetLabels,
         audioProject: project,
         monsterProject: project,

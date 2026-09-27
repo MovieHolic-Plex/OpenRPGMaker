@@ -51,8 +51,8 @@ describe("place_npc graphic.query", () => {
     expect(findCharsetSemantic(textureKey ?? "", characterIndex)).toMatchObject({ gender: "female", age: "elder" });
   });
 
-  it("그래픽 해석 실패 시 기본 주민 그래픽으로 대체하고 경고에 원래 검색어를 남긴다", () => {
-    // 2026-09-18: 예전엔 graphic-not-found 로 거부했다(거부 잘 안하게).
+  it("그래픽 해석 실패는 주민 그림으로 대체하지 않고 graphic-not-found 로 거절한다", () => {
+    // 2026-09-27: 대체+경고를 되돌렸다 — 조수가 경고를 읽지 않아 「가시덫」「제단」이 마을 사람으로 저장됐다.
     const project = createBlankProject();
     const ctx: ToolContext = { project };
     const result = runTool(ctx, "place_npc", {
@@ -64,11 +64,10 @@ describe("place_npc graphic.query", () => {
       graphic: { query: "존재하지않는그래픽xyz" },
       pages: [{ text: "..." }],
     });
-    expect(result.ok, result.summary).toBe(true);
-    const warnings = [...(result.warnings ?? []), ...(result.diff?.warnings ?? [])];
-    expect(warnings.some((w) => w.includes("존재하지않는그래픽xyz") && w.includes("기본 주민 그래픽으로 대체"))).toBe(true);
-    const npc = ctx.project.maps[project.startMapId]?.events.find((event) => event.id === "npc_fail");
-    expect(npc?.pages?.[0]?.graphic.sprite?.id).toMatch(/^tex_easyrpg_charset_/);
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.code).toBe("graphic-not-found");
+    expect(result.issues?.[0]?.message).toContain("존재하지않는그래픽xyz");
+    expect(ctx.project.maps[project.startMapId]?.events.find((event) => event.id === "npc_fail")).toBeUndefined();
   });
 
   it("default villager graphics diversify across sequential placements", () => {

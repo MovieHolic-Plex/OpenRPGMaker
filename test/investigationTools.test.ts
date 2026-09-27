@@ -70,10 +70,10 @@ describe("place_examine_hotspots", () => {
     expect(result.summary).toContain("조사 핫스팟 1개 생성, 3개 스킵");
     expect(result.data).toMatchObject({ created: 1, skipped: 3 });
     expect(result.diff?.warnings?.filter((warning) => warning.includes("skip"))).toHaveLength(3);
-    expect(result.diff?.warnings?.some((warning) => warning.startsWith("보이지 않는 조사 지점"))).toBe(false);
-    expect(result.diff?.warnings?.some((warning) => warning.includes("보석 표식") && warning.includes("책상"))).toBe(true);
+    expect(result.diff?.warnings?.some((warning) => warning.startsWith("보이지 않는 조사 지점 1개(책상)"))).toBe(true);
+    expect(result.diff?.warnings?.some((warning) => warning.includes("보석 표식"))).toBe(false);
     const placed = startMap(ctx.project).events.find((event) => event.id === "ev_examine_1");
-    expect(placed?.pages?.[0]?.graphic?.sprite?.id).toBe("tex_easyrpg_charset_object2");
+    expect(placed?.pages?.[0]?.graphic).toEqual({ transparent: true });
     expect(startMap(ctx.project).events.map((event) => event.id)).toContain("ev_examine_1");
   });
 

@@ -10,8 +10,9 @@ const current = vi.hoisted(() => ({ project: undefined as Project | undefined })
 vi.mock("@/project/store", () => ({ store: { getCurrent: () => current.project } }));
 vi.mock("@/editor/tilesetImage", () => ({
   tilesetImageUrl: (tileset: TilesetDef) => `/test/${tileset.id}.png`,
-  supportsChipsetQuarterComposition: () => true,
 }));
+// 쿼터 합성 판정은 store 없는 chipsetComposition 으로 옮겼다(맵 그리기 코어가 거기서 읽는다).
+vi.mock("@/editor/chipsetComposition", () => ({ supportsChipsetQuarterComposition: () => true }));
 
 const sourcePixels = [8, 69, 146, 255, 255, 103, 139, 255, 60, 143, 75, 255];
 function context() {

@@ -21,6 +21,7 @@ const MOVEMENT_TYPE_OPTIONS = [
 export function renderPageMovement(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
   const movement = page.movement;
   const type = selectWithOptions(MOVEMENT_TYPE_OPTIONS, movement.type, "event-page-movement-type");
+  type.setAttribute("aria-label", "이동 유형");
   const frequency = frequencySelect(movement.frequency);
   const isCustom = movement.type === "custom";
   const hasAutonomousMovement = movement.type !== "fixed";

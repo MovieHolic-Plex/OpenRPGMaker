@@ -98,9 +98,16 @@ function companionEventGraphic(project: Project, who: CompanionWho | undefined):
     ? project.database.actors.find((entry) => entry.id === who.actorId)
     : undefined;
   const resourceId = actor?.characterResourceId?.trim();
-  return resourceId
-    ? charsetFollowerGraphic(resourceId, actor?.characterIndex ?? 0)
-    : resolveGraphicQuery("villager");
+  if (resourceId) return charsetFollowerGraphic(resourceId, actor?.characterIndex ?? 0);
+  // 액터에 걷는 그림이 없으면 주민 그림으로 대체하지 않는다 — 고양이 동료가 마을 사람으로 서 있었다(2026-09-27 전수 조사).
+  if (actor) {
+    throw new ToolError(
+      `동료 '${actor.name || actor.id}' 에 걷는 그림(characterResourceId)이 없습니다. 다른 그림으로 대체하지 않습니다 — ` +
+        `upsert_actor 로 그림을 정하거나 who 를 {textureKey, characterIndex} 로 주세요.`,
+      { code: "graphic-not-found" },
+    );
+  }
+  return resolveGraphicQuery("villager");
 }
 
 function addFollowerCommand(who: CompanionWho, name: string, hidden: boolean): Command {

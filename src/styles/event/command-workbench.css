@@ -2,7 +2,9 @@
 .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench,
 .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench.has-command-inspector,
 .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench:has(.event-contents-fieldset > .cmd-list:not([hidden]), .event-storyboard-host > .event-storyboard:not([hidden])) {
-  --event-editor-settings-track: 240px;
+  /* 288px = 리사이저가 허용하는 최소 폭(layoutResize.ts columnWidthBounds). 예전 240px 는 그 하한
+     밑이라 리사이저를 처음 잡는 순간 48px 튀었고, 설정 레일 컨트롤이 155px 로 눌렸다(2026-09-27). */
+  --event-editor-settings-track: 288px;
   display: grid;
   grid-template-columns: minmax(200px, var(--event-editor-settings-track)) 6px minmax(0, 1fr) minmax(280px, 28%);
   grid-template-rows: minmax(0, 1fr);

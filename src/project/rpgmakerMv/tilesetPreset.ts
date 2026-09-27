@@ -97,6 +97,8 @@ function objectCells(object: MvPackObject, input: MvPackBuildInput, index: Retur
 function objectCellSolid(object: MvPackObject, dx: number, dy: number): boolean {
   if (object.kind === "prop") return true;
   if (object.kind === "tall") return object.solid ? object.solid.some(([x, y]) => x === dx && y === dy) : dy === object.h - 1;
+  // 문은 통행(창살문·벽을 판 출입구는 두 줄 다 지나간다). 절벽 굴 입구처럼 윗줄이 대지에 닿으면 solid 로 윗줄을 막는다.
+  if (object.kind === "door") return object.solid?.some(([x, y]) => x === dx && y === dy) ?? false;
   return false;
 }
 
