@@ -1,3 +1,5 @@
+import type { ImportGlobFunction } from "vite/types/importGlob";
+import { BATTLE_SCENERY_CATALOG } from "@/assets/battleSceneryCatalog";
 import { findOpeningStillPackEntry } from "@/assets/openingStillPackRuntime";
 import { openingStillPackUrl } from "@/assets/openingStillPackCdn";
 import { BUNDLED_IMAGE_ASSETS, TEX_DIALOGUE_FRAME, TEX_TILESET } from "@/assets/bundled";
@@ -8,7 +10,7 @@ import { findBgmRuntimeEntry } from "@/assets/bgmCatalogRuntime";
 import { bgmTrackUrl } from "@/assets/bgmCdn";
 import { BATTLER_PLACEMENTS } from "@/battle/battlerPlacements";
 import { skinPartySpriteUrl } from "@/battle/partySpriteResources";
-import { resolveSkinId } from "@/battle/skins/registry";
+import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
 import { PLAYER_RUNTIME_AUDIO_RESOURCE_IDS } from "@/player/playerRuntimeAudioIds";
 import { getResourceProfileSpec } from "@/project/resourceProfiles";
 import type { ResourceKind } from "@/project/types";
@@ -17,6 +19,17 @@ import type { Project } from "@/project/types";
 import type { WebExportAsset } from "@/project/webExportTypes";
 import { CASTLE_REFERENCE_TILESET_TEXTURE_KEY, CASTLE_TILESET_TEXTURE_KEY, LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY } from "./defaults/constants";
 
+// 저장소는 ImportMetaEnv 를 직접 선언한다. vite/client 전체를 합치지 않고 glob 만 보강한다.
+declare global {
+  interface ImportMeta {
+    glob: ImportGlobFunction;
+  }
+}
+
+// 누락 파일은 ZIP 전체를 실패시킨다. 빌드 시 설치된 파일만 수집한다(런타임은 404 폴백).
+const installedSceneryPaths = new Set(Object.keys(import.meta.glob(
+  "/public/assets/generated/battle-scenery/*/*.png", { eager: true, query: "?url", import: "default" },
+)).map((path) => path.replace(/^\/public\//, "")));
 const encoder = new TextEncoder();
 
 export function collectWebExportAssets(project: Project): readonly WebExportAsset[] {
@@ -25,6 +38,14 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
   const assets = new Map<string, WebExportAsset>();
   for (const path of requiredRuntimeAssetPaths(project)) {
     assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
+  }
+  if (getBattleSkin(resolveSkinId(project.system.battleUiStyle)).scenery === "layered") {
+    ids.add("generated-battle-reference-forest");
+    for (const entry of BATTLE_SCENERY_CATALOG) {
+      for (const path of Object.values(entry.layers)) {
+        if (installedSceneryPaths.has(path)) assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
+      }
+    }
   }
   for (const asset of BUNDLED_IMAGE_ASSETS) {
     if (asset.textureKey === TEX_TILESET || asset.textureKey === TEX_DIALOGUE_FRAME || ids.has(asset.textureKey)) {
@@ -50,6 +71,7 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
     const catalogStill = findOpeningStillPackEntry(id);
     const path = localPublicPath(catalogTrack ? bgmTrackUrl(catalogTrack.fileName, {})
       : catalogStill ? openingStillPackUrl(catalogStill.fileName, {}) : url);
+    if (path?.startsWith("assets/generated/battle-scenery/") && !installedSceneryPaths.has(path)) continue;
     if (path && url) assets.set(path, { kind: "public", sourcePath: localPublicPath(url) ?? url, zipPath: path, resourceId: id });
   }
   for (const id of usedUploadedIds) {

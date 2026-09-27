@@ -178,7 +178,15 @@ export function battleField(snapshot: BattleSnapshot): HTMLElement {
     enemyGroup(snapshot.enemies, snapshot),
     actorSpriteGroup(snapshot.actors)
   );
-  applyBattleBackdropMotion(backdrop, troopBackdropAnimation(snapshot.troopId));
+  const project = store.getCurrent();
+  if (activeSkin().scenery === "layered") {
+    if (project.system.battleBackdrop !== "field" && project.system.battlePresentation !== "onField") {
+      // 새 스킨만 모듈을 읽는다. 다른 스킨의 배경 DOM·물결 경로는 그대로 둔다.
+      void import("@/player/battleScenery").then(({ syncBattleScenery }) => {
+        if (backdrop.isConnected) syncBattleScenery(backdrop, project, backdrop.dataset.backdropResourceId);
+      });
+    }
+  } else applyBattleBackdropMotion(backdrop, troopBackdropAnimation(snapshot.troopId));
   return field;
 }
 
@@ -365,6 +373,12 @@ function syncBackdrop(field: HTMLElement, resourceId: string | undefined): void 
     const url = resolveAssetResourceUrl(effectiveId, { project: store.getCurrent() });
     backdrop.style.backgroundImage = url ? battleBackdropImage(url) : "";
     syncSceneBackdropVar(field);
+    if (activeSkin().scenery === "layered") {
+      const project = store.getCurrent();
+      void import("@/player/battleScenery").then(({ syncBattleScenery }) => {
+        if (backdrop.isConnected) syncBattleScenery(backdrop, project, backdrop.dataset.backdropResourceId);
+      });
+    }
   }
 }
 
