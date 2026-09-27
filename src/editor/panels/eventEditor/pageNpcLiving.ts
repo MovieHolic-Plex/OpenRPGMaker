@@ -34,6 +34,7 @@ export function renderPageLivingMovement(mapId: MapId, eventId: string, page: Ev
     direction: page.graphic.direction ?? "down",
   };
   const targetMap = mapSelect(destination.mapId, "event-page-living-target-map");
+  targetMap.setAttribute("aria-label", "목적지 맵");
   const targetX = numberInput(destination.x, "event-page-living-target-x");
   const targetY = numberInput(destination.y, "event-page-living-target-y");
   const targetDirection = directionSelect(destination.direction ?? "down", "event-page-living-target-direction");

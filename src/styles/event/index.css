@@ -38,3 +38,4 @@
 @import "./narrow.css" layer(event);
 
 @import "./command-workbench.css" layer(event);
+@import "./settings-rail.css" layer(event);

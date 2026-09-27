@@ -703,6 +703,51 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 - 접힌 그룹의 요약은 사용자가 패널을 펼치기 전에 읽는 유일한 정보다. 원시 enum 을 그대로 쓰지 말라 —
   움직임 그룹은 `movementSummaryText` 로 "정지" / "무작위 · x2 빠름" 을 보여준다.
 
+## 설정 레일 한 열 정돈 (2026-09-27, 적대적 시각 QA 후속)
+
+실측(1280·1440·1920): 설정 열이 205px 로 고정돼 「레일 + 넓은 시트」 두 면 배치
+(`pages-4.part-2.css` 의 `@container evt-settings-rail (min-width: 430px)`)가 **한 번도 켜지지 않았다**.
+명령 중심 배치(`command-workbench.css`)가 설정 트랙을 240px 로 줄인 뒤부터다. 모든 그룹이 세로 폴백이었고,
+그 폴백에서 그룹 본문 → 필드셋 테두리 → 안쪽 상자가 겹쳐 컨트롤 폭이 155px 남았다.
+
+- **세로 한 열이 정식 배치다.** 정돈 규칙은 event 레이어 마지막 시트 `src/styles/event/settings-rail.css` 가 소유한다:
+  본문 테두리 상자 제거 → 섹션 제목(legend, float 로 흐름에 넣어 윗테두리에 겹치지 않게) + 구분선 한 겹,
+  라벨은 컨트롤 **위** 한 줄, 컨트롤 32px 한 높이, 사용자 지정 select 값은 자르지 않고 줄바꿈.
+  두 면 배치는 리사이저로 430px 이상 넓힐 때만 켜진다(규칙은 남겨 뒀다).
+- **설정 트랙 기본값은 288px** — `layoutResize.ts` 의 `columnWidthBounds` 최소값과 같다. 240px 는 그 하한
+  밑이라 리사이저를 처음 잡는 순간 48px 튀었다.
+- **「시작 방식」은 「모습과 대화」 가 claim 한다.** 2026-09-19 조건 모달 재설계가
+  `event-page-trigger-priority-stack` 을 when 에서 뺀 뒤 아무도 claim 하지 않아, 새 이벤트마다
+  「기타 · 분류 없음 1개」 가 생겼다. 단위 테스트 픽스처에서는 재현되지 않았는데 브라우저에서는 항상 보였다 —
+  그룹 소속은 `test/eventSettingsRailTidy.test.ts` 가 실제 렌더로 고정한다.
+- **「움직임과 속도」 안의 두 번째 접이식을 걷었다.** `collapsibleSection("움직임")` 은 details→div 후처리로
+  눌러도 안 열리는 ▸ 만 남았고 제목이 네 겹이었다. 이제 `event-classic-movement-section` 은 평범한 div 스택이고
+  (testid 유지), 요약 칩 `event-movement-summary-chips` 는 그룹 헤더 요약 칸(`evt-rail-meta-move`)으로 올라갔다.
+- **그룹 화살표는 `is-open` 을 본다.** 옛 규칙은 `<details>` 의 `[open]` 을 봐서 열린 그룹도 ▾ 였다.
+  닫힘 ▸ · 열림 ▾ · 창을 여는 「언제 보이나요」 는 … (`aria-haspopup="dialog"`).
+- **아래쪽 그룹을 열면 그 헤더를 보이는 곳에 둔다**(`scrollIntoNearestScroller(header, "nearest")`).
+  위 그룹이 접히며 레일이 짧아져 방금 누른 헤더가 화면 위로 밀려나던 결함(레일 윗단 -116px).
+
+### 등장 조건 창 (`openConditionsModal`)
+
+- 창은 레일의 when 본문을 **빌려** 보여 준다. 편집기는 store 가 바뀔 때마다 레일을 새로 그리므로,
+  창은 `store.subscribe` → microtask 뒤 `liveRailGroup(openKey, "when")` 의 새 본문으로 갈아 끼운다.
+  예전에는 처음 옮긴 본문(떨어져 나간 사본)을 계속 보여 줘서, 칩을 눌러도 창의 칩은 꺼진 채였다.
+- 창은 편집기 backdrop 안에 붙는다(`document.body` 아님). body 에 붙이면 사용자 지정 select 설치 범위 밖이라
+  맨 select 가 나왔다. backdrop 은 본문 재렌더에도 살아남는다. 편집기 창(`.event-editor-modal-window`)
+  안에 붙이면 끌기 transform 이 fixed 기준을 바꾸므로 그 바깥이다.
+  그 결과 창은 `.event-editor-modal-body` 밖이라 옛 select 모양 규칙이 닿지 않는다 — 창 안 컨트롤 문법은
+  `settings-rail.css` 의 `.event-condition-modal-body …` 블록이 따로 준다. select 목록 팝오버도 같은 backdrop 에
+  붙으므로 `--z-popover-top` 으로 창 위에 둔다.
+- when 은 레일에서 펼치지 않는다(CSS 가 본문을 감춘다) → 기본 활성 그룹이 될 수 없다. 조건이 있어도 처음 열림은
+  「모습과 대화」 이고, 조건은 헤더 요약 「조건 N개」 + 점이 알린다. 창이 떠 있는 동안에만 when 이 활성이고,
+  닫으면 직전 그룹으로 돌아간다. 검증 이슈 이동(`openEventRailGroupFor`)이 when 안 칸을 가리키면 같은 창이 뜬다.
+- 푸터는 「완료」 하나다. 조건은 누르는 즉시 반영되는데 「조건 저장」 과 「닫기」 가 같은 함수를 불렀다.
+- 창은 Tab 을 창 안에서 돌린다(`aria-modal`). Esc 는 modalStack 이 창만 닫는다.
+
+시각 QA: 이 세션의 임시 Playwright 프로브(1280 표준 · 1440/1920 전문가, 그룹 넷 × 이동 유형 넷 + 조건 창 왕복)로
+잘림·겹침·legend 위치·작은 누름 영역을 쟀고 세 폭 모두 0건이다. 전후 캡처는 `verify-shots/event-settings-rail/`.
+
 ## 페이지 조건 극성(켜짐/꺼짐) 저작 (2026-08-27)
 
 - 런타임(`src/project/io/pageResolution.ts`)은 `switch.value:false`, `item.present:false`,

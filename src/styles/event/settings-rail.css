@@ -1,0 +1,649 @@
+/* event 표면 — 설정 레일 한 열 정돈 (2026-09-27 적대적 시각 QA 후속).
+
+   실측(1280·1440·1920, 설정 열 205px 고정):
+   - 레일 + 넓은 시트 두 면 배치(pages-4.part-2.css 의 evt-settings-rail 컨테이너 쿼리 430px)는
+     명령 중심 배치가 설정 열을 240px 로 줄인 뒤 한 번도 켜지지 않았다. 모든 그룹이 세로 폴백이다.
+   - 그 폴백에서 그룹 본문 → 필드셋 테두리 → 안쪽 상자가 겹쳐 컨트롤 폭이 155px 남았고,
+     빈도 select 가 「가」, 방향 select 가 1px, 목적지 맵 select 가 22px 로 눌렸다.
+   - 필드셋 legend 가 윗 상자 테두리 위에 걸렸고, 열린/닫힌 그룹 화살표가 똑같이 ▾ 였다
+     (화살표 규칙이 옛 <details> 의 [open] 을 봤다).
+
+   이 시트는 세로 폴백을 **정식 배치**로 삼고 그 한 열을 정돈한다. 두 면 배치는 설정 열을
+   리사이저로 430px 이상 넓힌 경우에만 여전히 켜진다 — 그때는 본문 규칙이 그대로 넓은 면에 적용된다.
+   선택자 접두 .event-editor-modal-window .event-editor 는 앞 세대(dialogs-5.css·pages-2.css) 규칙과
+   같은 축에서 이기기 위한 특이도다. */
+
+/* ── 그룹 헤더: 한 줄 제목 + 요약, 상태를 말하는 화살표 ─────────────────────────── */
+.event-editor-modal-window .event-editor .event-editor-settings-accordion {
+  gap: 4px;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-header {
+  align-items: center;
+  column-gap: 8px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 12px;
+  min-height: 40px;
+  padding: 7px 10px 7px 12px;
+  row-gap: 1px;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-title {
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-meta {
+  color: var(--text-2);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+/* 닫힘 ▸ · 열림 ▾ · 창을 여는 그룹(언제 보이나요)은 ↗ 대신 … 로 «대화상자» 를 말한다. */
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-summary::after {
+  color: var(--text-3);
+  content: "\25B8";
+  font-size: 11px;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-group.is-open
+  > .event-editor-settings-accordion-summary::after {
+  color: var(--accent);
+  content: "\25BE";
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-summary[aria-haspopup="dialog"]::after {
+  content: "\2026";
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-header:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+/* 「언제 보이나요」 본문은 레일에 펼치지 않는다 — 창(openConditionsModal)이 가져가 보여 준다.
+   창이 열려 있는 동안 그룹이 is-open 이어도 레일 안 자리는 비운다. */
+.event-editor-modal-window .event-editor [data-rail-group="when"] > .event-editor-settings-accordion-body {
+  display: none;
+}
+
+/* ── 본문: 테두리 상자를 걷고 제목·구분선 한 겹으로 ─────────────────────────────── */
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body {
+  gap: 0;
+  padding: 2px 12px 12px;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-oprn-fieldset,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body fieldset {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  border-top: 1px solid var(--border-subtle);
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+  overflow: visible;
+  padding: 10px 0 12px;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body > :first-child .event-oprn-fieldset:first-child,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body > .event-oprn-fieldset:first-child,
+.event-editor-modal-window .event-editor .event-page-movement-stack > .event-oprn-fieldset:first-child {
+  border-top: 0;
+  padding-top: 6px;
+}
+
+/* legend 는 상자 테두리 위에 걸리는 떠 있는 라벨이 아니라 섹션 제목이다.
+   float 로 흐름에 넣어야 브라우저가 fieldset 윗테두리에 겹쳐 그리지 않는다. */
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body legend {
+  color: var(--text-2);
+  float: left;
+  font: 600 12px/16px var(--font-ui);
+  letter-spacing: 0;
+  margin: 0 0 2px;
+  padding: 0;
+  text-transform: none;
+  white-space: normal;
+  width: 100%;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body legend + * {
+  clear: both;
+}
+
+/* 안쪽 스택들이 각자 들고 있던 간격·들여쓰기를 한 규칙으로. */
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-page-movement-stack,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-page-behavior-sections,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-page-movement,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-horror-settings {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+}
+
+/* 모든 필드 라벨은 컨트롤 **위**에 한 줄. 옆에 두면 155px 에서 라벨이 컨트롤을 잘랐다. */
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-horror-field,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .db-field,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-page-movement-label,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-footprint-field {
+  align-items: stretch;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
+  min-width: 0;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-horror-field > span,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .db-field > span,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-page-movement-label > span,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-footprint-field > span,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-page-living-field-label {
+  color: var(--text-2);
+  font: 500 12px/16px var(--font-ui);
+  opacity: 1;
+  overflow: visible;
+  white-space: normal;
+}
+
+/* 체크박스 라벨은 [상자] 글자 순서의 한 줄. 상자는 16px 로 고정해 눌리지 않게 한다. */
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-horror-field:has(> input[type="checkbox"]),
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-page-movement-label:has(> input[type="checkbox"]) {
+  align-items: center;
+  column-gap: 8px;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  justify-content: start;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-horror-field:has(> input[type="checkbox"]) > input,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-page-movement-label:has(> input[type="checkbox"]) > input {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-horror-field:has(> input[type="checkbox"]) > span,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-page-movement-label:has(> input[type="checkbox"]) > span {
+  color: var(--text-1);
+  font-size: 13px;
+  grid-column: 2;
+  grid-row: 1;
+  line-height: 18px;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body input[type="checkbox"] {
+  flex: 0 0 16px;
+  height: 16px;
+  margin: 0;
+  min-height: 16px;
+  min-width: 16px;
+  width: 16px;
+}
+
+/* 컨트롤은 한 높이·한 폭. 사용자 지정 select 가 글자를 자르지 않게 채운다. */
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-custom-select,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body select,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body input[type="number"],
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body input[type="text"]:not([data-testid="event-page-sprite-input"]) {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-custom-select-trigger,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body input[type="number"],
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body input[type="text"]:not([data-testid="event-page-sprite-input"]) {
+  min-height: 32px;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-custom-select-trigger {
+  grid-template-columns: minmax(0, 1fr) 14px;
+  min-width: 0;
+  width: 100%;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-custom-select-value {
+  min-width: 0;
+}
+
+/* 보조 안내: 한 크기·한 색·왼쪽 정렬. */
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .empty-hint,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-page-overlap-hint,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-footprint-summary {
+  color: var(--text-2);
+  font: 400 12px/1.5 var(--font-ui);
+  margin: 0;
+  opacity: 1;
+  text-align: start;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-page-overlap-hint.is-quiet {
+  color: var(--text-3);
+}
+
+/* ── 이동 유형 ─────────────────────────────────────────────────────────────── */
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-page-movement-basics {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* 경로 버튼은 입력칸이 아니라 버튼으로 보여야 한다(예전에는 옅은 회색 두 줄 글자라 비활성 입력칸 같았다).
+   비활성일 때는 사용자 지정일 때만 쓴다는 것을 흐린 채로 그대로 말한다. */
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .btn.event-page-custom-route {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  color: var(--text-1);
+  font: 600 13px/18px var(--font-ui);
+  justify-self: stretch;
+  min-height: 32px;
+  padding: 6px 10px;
+  text-align: center;
+  white-space: normal;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .btn.event-page-custom-route:hover:not(:disabled) {
+  background: var(--bg-hover);
+  border-color: var(--accent);
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .btn.event-page-custom-route:disabled {
+  background: transparent;
+  border-style: dashed;
+  color: var(--text-3);
+  cursor: not-allowed;
+}
+
+/* 생활 이동: 목적지 맵 한 줄(찍기 버튼은 아래로), X·Y 두 칸, 방향·반복 두 칸. */
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-page-living-route {
+  gap: 8px;
+  margin-top: 0;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-page-living-destination {
+  align-items: stretch;
+  display: grid;
+  gap: 4px 6px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .btn.event-page-living-pick {
+  justify-self: stretch;
+  min-height: 30px;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-page-living-detail,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-page-map-link-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* ── 크기와 통행: 입력 세 칸 아래 정렬, 미리보기는 요약 옆 ────────────────────────── */
+/* 미리보기(48×64 몸 칸 그림)가 혼자 한 줄을 차지하면 입력과 요약 사이에 빈 띠가 생겼다.
+   body 를 풀어(display: contents) 미리보기와 요약 문장을 한 줄에 나란히 놓는다. */
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-footprint-control {
+  align-items: center;
+  display: grid;
+  gap: 10px 12px;
+  grid-template-columns: max-content minmax(0, 1fr);
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-footprint-body {
+  display: contents;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-footprint-grid,
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-footprint-scale {
+  grid-column: 1 / -1;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-footprint-preview-host {
+  grid-column: 1;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-footprint-summary {
+  grid-column: 2;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-footprint-grid {
+  align-items: end;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* 「통행 차단 행」 처럼 긴 라벨이 두 줄로 접혀도 입력칸 윗선은 셋이 같다. */
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-footprint-grid .event-footprint-field {
+  grid-template-rows: minmax(32px, auto) auto;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-footprint-grid .event-footprint-field > span {
+  align-self: end;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-footprint-grid input {
+  min-width: 0;
+  padding-inline: 6px;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-footprint-preview-host {
+  justify-content: flex-start;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-footprint-scale {
+  align-items: end;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-footprint-scale-manual {
+  align-items: center;
+  align-self: end;
+  column-gap: 8px;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  min-height: 32px;
+  white-space: normal;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-overlap-label {
+  align-items: start;
+  column-gap: 8px;
+  /* shell.css 의 .event-editor label { display: block } (0,1,1) 이 grid 를 이겨 칸이 사라졌다. */
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-overlap-label > span {
+  font: 500 13px/18px var(--font-ui);
+}
+
+/* ── 모습과 대화 ────────────────────────────────────────────────────────────── */
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .presence {
+  gap: 10px;
+  grid-template-columns: 48px minmax(0, 1fr);
+  padding: 6px 0 10px;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .presence .sprite {
+  height: 48px;
+  width: 48px;
+}
+
+/* 외형 select 는 미리보기 옆이 아니라 그룹 폭 전체를 쓴다(예전 「연결 ...」 잘림). */
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-graphic-control {
+  align-items: start;
+  display: grid;
+  gap: 8px 10px;
+  grid-template-columns: 52px minmax(0, 1fr);
+  min-height: 0;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-graphic-control > .db-field {
+  grid-column: 1 / -1;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-graphic-control > .event-graphic-preview {
+  align-self: start;
+  grid-column: 1;
+  grid-row: auto;
+  justify-self: start;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-graphic-control-actions {
+  align-content: start;
+  display: grid;
+  gap: 8px;
+  grid-column: 2;
+  min-width: 0;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-graphic-control-actions .btn {
+  justify-self: stretch;
+  min-height: 30px;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-graphic-transparent {
+  align-items: center;
+  align-self: start;
+  column-gap: 8px;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  white-space: normal;
+}
+
+/* dialogs.css 의 .event-graphic-control input { grid-column: 1 / -1 } 은 스프라이트 ID 입력용인데
+   이 체크박스까지 두 칸에 걸쳐, 글자가 16px 칸 아래 둘째 줄로 밀려 «맵에서 / 숨기기» 로 접혔다. */
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-graphic-transparent > input {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-graphic-transparent > span {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+/* 「이 페이지 설정」 부제는 한 줄에 다 들어가지 않는다 — 줄여 쓰지 않고 줄을 바꾼다. */
+.event-editor-modal-window .event-editor .event-editor-column-label-settings {
+  align-content: center;
+  grid-template-columns: minmax(0, 1fr);
+  padding-block: 6px;
+  row-gap: 0;
+}
+
+.event-editor-modal-window .event-editor .event-editor-column-label-settings .event-editor-column-hint {
+  white-space: normal;
+}
+
+/* ── 등장 조건 창: 편집기 창 안에 뜬다(사용자 지정 select 영역 안) ─────────────── */
+.event-editor-modal-backdrop .event-condition-modal-backdrop {
+  z-index: var(--z-popover-high);
+}
+
+/* 사용자 지정 select 목록은 편집기 backdrop 에 붙는다(customSelect.ts). 조건 창과 같은 쌓임 문맥이라
+   기본 z-index 30 이면 창 뒤에 그려진다 — 창보다 한 칸 위로. */
+.event-editor-modal-backdrop > .event-custom-select-popover {
+  z-index: var(--z-popover-top);
+}
+
+.event-condition-modal-footer .event-condition-modal-note {
+  color: var(--text-2);
+  font: 400 12px/16px var(--font-ui);
+  margin: 0 auto 0 0;
+}
+
+/* ── 등장 조건 창 안의 폼 ───────────────────────────────────────────────────────
+   창은 편집기 backdrop 안에 뜨지만 .event-editor-modal-body 밖이라, 사용자 지정 select 의
+   모양 규칙(.event-editor-modal-body .event-custom-select-trigger)이 닿지 않았다 — 트리거가
+   회색 UA 버튼(13.33px, 가운데 정렬)이었다. 또 칩 팔레트와 조건 목록이 2열 그리드의 두 칸에
+   나란히 앉아, 목록 행이 늘면 flex-wrap 팔레트가 그 높이로 늘어나 칩이 세로로 부풀었다. */
+.event-condition-modal-body .event-conditions-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.event-condition-modal-body .event-condition-palette {
+  align-content: flex-start;
+  align-items: flex-start;
+  gap: 6px;
+  padding-bottom: 4px;
+}
+
+.event-condition-modal-body .event-condition-chip {
+  font-size: 12.5px;
+  line-height: 18px;
+  padding: 3px 10px;
+}
+
+.event-condition-modal-body .event-condition-list {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.event-condition-modal-body .event-condition-row {
+  align-items: center;
+  column-gap: 8px;
+  display: grid;
+  grid-template-columns: 16px max-content minmax(0, 1fr) max-content;
+  row-gap: 4px;
+}
+
+.event-condition-modal-body .event-condition-row > input[type="checkbox"],
+.event-condition-modal-body input[type="checkbox"] {
+  height: 16px;
+  margin: 0;
+  width: 16px;
+}
+
+.event-condition-modal-body .event-condition-label,
+.event-condition-modal-body .event-condition-suffix {
+  color: var(--text-1);
+  font: 600 13px/18px var(--font-ui);
+}
+
+.event-condition-modal-body .event-condition-control {
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+
+.event-condition-modal-body .event-condition-error {
+  background: transparent;
+  border: 0;
+  color: var(--danger);
+  font: 400 12px/16px var(--font-ui);
+  margin: 0;
+  padding: 0;
+}
+
+.event-condition-modal-body .event-condition-error[hidden] {
+  display: none;
+}
+
+/* 창 안 컨트롤 한 문법: 32px · 6px 라운딩 · 들어간 면. */
+.event-condition-modal-body .event-custom-select,
+.event-condition-modal-body select,
+.event-condition-modal-body input[type="number"],
+.event-condition-modal-body input[type="text"] {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+}
+
+.event-condition-modal-body .event-custom-select-trigger,
+.event-condition-modal-body input[type="number"],
+.event-condition-modal-body input[type="text"] {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  box-sizing: border-box;
+  color: var(--text-1);
+  font: 500 13px/18px var(--font-ui);
+  min-height: 32px;
+  padding: 6px 10px;
+}
+
+.event-condition-modal-body .event-custom-select-trigger {
+  align-items: center;
+  appearance: none;
+  cursor: pointer;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) 14px;
+  text-align: left;
+  width: 100%;
+}
+
+.event-condition-modal-body .event-custom-select-trigger:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.event-condition-modal-body .event-custom-select-trigger:focus-visible,
+.event-condition-modal-body .event-custom-select-trigger[aria-expanded="true"],
+.event-condition-modal-body input:focus-visible {
+  border-color: var(--accent);
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.event-condition-modal-body .event-advanced-condition-add {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) max-content;
+}
+
+.event-condition-modal-body .btn,
+.event-condition-modal-footer .btn {
+  min-height: 32px;
+  padding: 0 14px;
+}
+
+.event-condition-modal-body .event-advanced-condition-add > .btn.small {
+  font: 600 13px/18px var(--font-ui);
+  min-height: 32px;
+  padding: 0 14px;
+}
+
+/* 요약 문장 위의 빈 띠(접이식 본문 여백 16px + 조건 줄 아래 여백)를 한 간격으로. */
+.event-condition-modal-body [data-testid="event-classic-conditions"] > .event-collapsible-body {
+  margin-top: 0;
+  padding-top: 12px;
+}
+
+/* 스위치·변수 고르기 버튼은 select 와 같은 칸 문법 — 작은 회색 알약이면 누를 곳으로 안 읽힌다. */
+.event-condition-modal-body .btn.event-record-picker-trigger {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  color: var(--text-1);
+  font: 500 13px/18px var(--font-ui);
+  justify-content: flex-start;
+  padding: 6px 10px;
+  text-align: left;
+  width: 100%;
+}
+
+.event-condition-modal-body .btn.event-record-picker-trigger:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.event-condition-modal-body .event-advanced-conditions > summary,
+.event-condition-modal-body .event-advanced-condition-empty {
+  color: var(--text-2);
+  font: 500 12px/16px var(--font-ui);
+}
+
+/* 창 안의 「조건」 줄은 접이식이 아니다(레일이 <details> 를 <div> 로 바꾼다) — 누를 수 없는 ▸ 를 지운다. */
+.event-condition-modal-body [data-testid="event-classic-conditions"] > .event-collapsible-summary {
+  cursor: default;
+  pointer-events: none;
+}
+
+.event-condition-modal-body [data-testid="event-classic-conditions"] > .event-collapsible-summary::before {
+  content: none;
+}
+
+/* ── 레일 값은 자르지 않고 줄을 바꾼다 (「연결 안 함 · 직접 지정한 그림」 134/156px) ── */
+.event-editor-modal-window .event-editor .event-editor-settings-accordion-body .event-custom-select-value {
+  line-height: 18px;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+
