@@ -5,6 +5,11 @@ const positiveLimit = z.number().int().positive().max(200);
 
 export const projectRefSchema = z.object({ projectDir });
 
+export const tilesetBlobsSchema = z.object({
+  projectDir,
+  sha256s: z.array(z.string().regex(/^[0-9a-f]{64}$/)).max(4096),
+});
+
 export const saveProjectSchema = z.object({
   projectDir,
   serialized: z.string().min(1),

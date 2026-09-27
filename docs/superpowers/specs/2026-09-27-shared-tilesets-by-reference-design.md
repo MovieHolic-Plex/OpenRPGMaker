@@ -1,9 +1,12 @@
 # 공용 타일셋을 프로젝트 문서에 복사하지 않고 참조로 두기 (설계)
 
-상태: 1단계 구현(2026-09-27) — **저장소 층에서만** 접는다. `electron/local-store/tilesetFold.ts` 가 타일셋마다 내용 주소 본문을
-`tileset_blobs` 에 두고 `current_json` 에는 `{"$blob":sha}` 표식만 남긴다. 문서 해시·와이어·렌더러는 그대로라
-아래 3.2–3.6(렌더러 쪽 `$shared` 참조, 판본 고정)은 아직 제안이다. 실측과 계약은 `openwiki/runtime-project-schema.md`
-「타일셋 접기」. 렌더러가 81MB 를 받고 파싱하는 비용은 이 단계로 줄지 않는다.
+상태: 2단계까지 구현(2026-09-27).
+- 1단계(#1648) — **저장소 층**: `electron/local-store/tilesetFold.ts` 가 타일셋마다 내용 주소 본문을 `tileset_blobs` 에 두고
+  `current_json` 에는 `{"$blob":sha}` 표식만 남긴다.
+- 2단계 — **로드 전송**: 편집기는 접힌 행만 받고 본문은 기기 IndexedDB 캐시에서 채운다(없는 것만 받음).
+  문서 해시와 만든 `Project` 는 예전과 같다.
+아래 3.2–3.6(렌더러 메모리의 `$shared` 참조, 판본 고정)은 아직 제안이다 — 타일셋 본문은 여전히 렌더러 메모리에 올라가고 파싱된다.
+실측과 계약은 `openwiki/runtime-project-schema.md` 「타일셋 접기」·「접힌 로드」.
 배경 측정: `verify-shots/perf-app-save/SUMMARY.md` (Electron 앱, 실제 82MB 프로젝트 `ce922871` 사본).
 
 ## 1. 문제

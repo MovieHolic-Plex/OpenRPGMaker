@@ -17,6 +17,7 @@ import {
   conversationRecordSchema,
   listLimitSchema,
   projectRefSchema,
+  tilesetBlobsSchema,
   saveMapPatchSchema,
   saveProjectSchema,
 } from "../shared/schemas";
@@ -165,6 +166,23 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
       return { serialized, sha256: info.sha256 ?? "", revision: info.revision };
     },
 
+    // 접힌 행을 그대로 준다(타일셋은 `{"$blob":sha}` 표식). 렌더러는 가진 본문을 끼우고 없는 것만 `projectTilesetBlobs` 로 받는다.
+    // 접히지 않은 옛 행이면 펼친 글을 준다(= projectLoad). 실측(2026-09-27, 82MB): 81.6MB → 1.0MB.
+    [OPRN_CHANNELS.projectLoadFolded]: (key) => {
+      const target = store(key);
+      const folded = target.exportFolded();
+      if (folded) return { folded: folded.folded, sha256: folded.sha256, revision: folded.revision };
+      const serialized = target.exportSerialized();
+      if (!serialized) return null;
+      const info = target.info();
+      return { serialized, sha256: info.sha256 ?? "", revision: info.revision };
+    },
+
+    [OPRN_CHANNELS.projectTilesetBlobs]: (key, payload) => {
+      const input = parseOrThrow(tilesetBlobsSchema, payload, OPRN_CHANNELS.projectTilesetBlobs);
+      return store(key).tilesetBlobs(input.sha256s);
+    },
+
     [OPRN_CHANNELS.projectSave]: async (key, payload) => {
       const input = parseOrThrow(saveProjectSchema, payload, OPRN_CHANNELS.projectSave);
       return await store(key).saveSerialized(input.serialized, input.expectedSha);
@@ -299,7 +317,7 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
     if (sessions.member(key).role !== 'owner') throw new Error('팀 소유자만 할 수 있습니다');
   }
   const reads = new Set<string>([OPRN_CHANNELS.projectStatus, OPRN_CHANNELS.projectProbe, OPRN_CHANNELS.projectOpen,
-    OPRN_CHANNELS.projectLoad, OPRN_CHANNELS.projectDataVersion, OPRN_CHANNELS.teamStatus,
+    OPRN_CHANNELS.projectLoad, OPRN_CHANNELS.projectLoadFolded, OPRN_CHANNELS.projectTilesetBlobs, OPRN_CHANNELS.projectDataVersion, OPRN_CHANNELS.teamStatus,
     OPRN_CHANNELS.commitsList, OPRN_CHANNELS.aiListActivity, OPRN_CHANNELS.aiListConversations,
     OPRN_CHANNELS.aiLoadConversation, OPRN_CHANNELS.assetsList, OPRN_CHANNELS.assetsRead]);
   // Serialize service operations: lock ownership cannot change halfway through an async save.
@@ -363,6 +381,8 @@ export const STORE_CHANNELS = [
   OPRN_CHANNELS.projectProbe,
   OPRN_CHANNELS.projectOpen,
   OPRN_CHANNELS.projectLoad,
+  OPRN_CHANNELS.projectLoadFolded,
+  OPRN_CHANNELS.projectTilesetBlobs,
   OPRN_CHANNELS.projectSave,
   OPRN_CHANNELS.projectSaveMapPatch,
   OPRN_CHANNELS.projectDataVersion,

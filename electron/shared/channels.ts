@@ -13,6 +13,8 @@ export const OPRN_CHANNELS = {
   projectProbe: "oprn:project.probe",
   projectOpen: "oprn:project.open",
   projectLoad: "oprn:project.load",
+  projectLoadFolded: "oprn:project.loadFolded",
+  projectTilesetBlobs: "oprn:project.tilesetBlobs",
   projectSave: "oprn:project.save",
   projectSaveMapPatch: "oprn:project.saveMapPatch",
   projectDataVersion: "oprn:project.dataVersion",

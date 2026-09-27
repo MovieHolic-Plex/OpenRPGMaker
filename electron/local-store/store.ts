@@ -175,6 +175,13 @@ export type LocalProjectStore = {
   }): void;
   exportSerialized(): string | null;
   /**
+   * 렌더러 로드용 접힌 행. 타일셋 칸은 `{"$blob":sha}` 표식이고 본문은 `tilesetBlobs` 로 따로 받는다.
+   * 접히지 않은 옛 행이면 null — 호출자는 `exportSerialized()` 를 쓴다.
+   */
+  exportFolded(): { readonly folded: string; readonly sha256: string; readonly revision: number } | null;
+  /** 내용 주소 본문(`JSON.stringify(tileset)`). 현재 행이 가리키는 것만 준다. */
+  tilesetBlobs(sha256s: readonly string[]): Readonly<Record<string, string>>;
+  /**
    * 호스트 디스패치 전용. 저장 문서의 JSON 트리를 주되 타일셋은 얼린 공유 객체다 — 고치지 마라.
    * 스크립트처럼 프로젝트를 고쳐 저장하는 쪽은 `loadSnapshot` 을 쓴다.
    */
@@ -609,6 +616,18 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
     },
     exportSerialized(): string | null {
       return storedSerialized();
+    },
+    exportFolded() {
+      const row = readProjectRow(driver);
+      if (!row || !foldedTilesetShas(row.serialized)) return null;
+      return { folded: row.serialized, sha256: row.sha256, revision: row.revision };
+    },
+    tilesetBlobs(sha256s: readonly string[]): Readonly<Record<string, string>> {
+      const row = readProjectRow(driver);
+      const live = row ? liveFrom(row.serialized) : new Set<string>();
+      const out: Record<string, string> = {};
+      for (const sha of sha256s) if (live.has(sha)) out[sha] = readBlobText(driver, sha);
+      return out;
     },
     hostDocument(): unknown {
       return storedTree();

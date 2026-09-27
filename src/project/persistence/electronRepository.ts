@@ -1,5 +1,7 @@
 import { deserialize, serialize } from "../io";
-import { projectWireView } from "../io/serialize";
+import { deserializeParsed, projectWireView } from "../io/serialize";
+import { parseFoldedDocument, unfoldedDocumentTree } from "./core/foldedProject";
+import { readTilesetBlobs, writeTilesetBlobs } from "./tilesetBlobCache";
 import { applyProjectDocumentPatch, diffProjectDocumentsSliced, withWirePatchValues, type ProjectDocumentPatch } from "./core/projectPatch";
 import { projectWithoutEventDrafts } from "../eventDrafts";
 import { setUploadedAssetResolver } from "./assetAccessors";
@@ -17,6 +19,13 @@ export type OprnBridgeProject = {
   probe(): Promise<boolean>;
   open(payload: { readonly projectDir: string }): Promise<{ readonly projectId: string; readonly projectDir: string }>;
   load(payload: { readonly projectDir: string }): Promise<{ readonly serialized: string; readonly sha256: string; readonly revision: number } | null>;
+  /** 접힌 행(타일셋은 표식) 또는 옛 행의 펼친 글. 없는 호스트(이전 빌드)는 `load` 로 돌아간다. */
+  loadFolded?(payload: { readonly projectDir: string }): Promise<
+    | { readonly folded: string; readonly sha256: string; readonly revision: number }
+    | { readonly serialized: string; readonly sha256: string; readonly revision: number }
+    | null
+  >;
+  tilesetBlobs?(payload: { readonly projectDir: string; readonly sha256s: readonly string[] }): Promise<Readonly<Record<string, string>>>;
   save(payload: { readonly projectDir: string; readonly serialized: string; readonly expectedSha: string | null }): Promise<SaveResult & { readonly serialized?: string }>;
   saveMapPatch(payload: {
     readonly projectDir: string;
@@ -160,6 +169,43 @@ export function createElectronRepository(): ElectronRepository {
     };
   };
 
+  /**
+   * 프로젝트를 연다. 호스트가 접힌 행을 주면 타일셋 본문은 기기 캐시에서 채우고 없는 것만 받는다.
+   * 만든 트리는 펼친 글을 `JSON.parse` 한 것과 같다(core/foldedProject.ts). 본문을 못 채우면 펼친 글로 돌아간다.
+   * 실측(2026-09-27, 82MB): 받는 글 81.6MB → 1.0MB(두 번째 열기부터).
+   */
+  const loadSnapshotFromHost = async (target: LocalProjectTarget): Promise<ProjectSnapshot | null> => {
+    const bridge = electronBridge().project;
+    if (!bridge.loadFolded || !bridge.tilesetBlobs) {
+      const loaded = await bridge.load({ projectDir: target.projectDir });
+      return snapshotOf(loaded?.serialized, loaded?.sha256, target);
+    }
+    const loaded = await bridge.loadFolded({ projectDir: target.projectDir });
+    if (!loaded) return null;
+    if ("serialized" in loaded) return snapshotOf(loaded.serialized, loaded.sha256, target);
+    const folded = parseFoldedDocument(loaded.folded);
+    const wanted = [...new Set(folded.tilesetShas.values())];
+    const blobs = await readTilesetBlobs(wanted);
+    const missing = wanted.filter((sha) => !blobs.has(sha));
+    if (missing.length > 0) {
+      const fetched = new Map(Object.entries(await bridge.tilesetBlobs({ projectDir: target.projectDir, sha256s: missing })));
+      for (const [sha, body] of fetched) blobs.set(sha, body);
+      void writeTilesetBlobs(fetched);
+    }
+    if (wanted.some((sha) => !blobs.has(sha))) {
+      // 사이에 다른 저장이 끼어 본문이 지워졌다 — 펼친 글을 받는다.
+      const full = await bridge.load({ projectDir: target.projectDir });
+      return snapshotOf(full?.serialized, full?.sha256, target);
+    }
+    loadedSha = loaded.sha256;
+    return {
+      authority: { mode: "legacy", target },
+      project: deserializeParsed(unfoldedDocumentTree(folded, blobs)),
+      sha256: loaded.sha256,
+      projectId: target.projectId,
+    };
+  };
+
   setUploadedAssetResolver({
     url: (ref) => (opened ? `${electronBridge().assetBaseUrl(opened.projectId)}${ref.sha256}` : ""),
     bytes: async (ref) => electronBridge().assets.read({ projectDir: requireOpened(undefined).projectDir, sha256: ref.sha256 }),
@@ -193,20 +239,15 @@ export function createElectronRepository(): ElectronRepository {
     probe: () => electronBridge().project.probe(),
     async loadProject(target, onAuthority) {
       const resolved = requireOpened(target);
-      const loaded = await electronBridge().project.load({ projectDir: resolved.projectDir });
-      const snapshot = snapshotOf(loaded?.serialized, loaded?.sha256, resolved);
+      const snapshot = await loadSnapshotFromHost(resolved);
       if (snapshot) onAuthority?.(snapshot.authority);
       return snapshot?.project ?? null;
     },
     async loadSnapshot(target, _options?: LoadSnapshotOptions) {
-      const resolved = requireOpened(target);
-      const loaded = await electronBridge().project.load({ projectDir: resolved.projectDir });
-      return snapshotOf(loaded?.serialized, loaded?.sha256, resolved);
+      return await loadSnapshotFromHost(requireOpened(target));
     },
     async loadForProof(target, _signal) {
-      const resolved = requireOpened(target);
-      const loaded = await electronBridge().project.load({ projectDir: resolved.projectDir });
-      return snapshotOf(loaded?.serialized, loaded?.sha256, resolved);
+      return await loadSnapshotFromHost(requireOpened(target));
     },
     async save(project, target, _authority?: ProjectWriteAuthority) {
       const resolved = requireOpened(target);

@@ -46,7 +46,7 @@ import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } 
 import { repairMapTreeOrphans } from "@/project/mapTree";
 import { cloneExtraLayers } from "@/project/mapLayers";
 
-import { jsonEqual, normalizationFingerprint } from "@/util/structuralJson";
+import { jsonEqual } from "@/util/structuralJson";
 import { randomUuid } from "@/util/id";
 import { createLogger } from "@/util/logger";
 import {
@@ -1603,9 +1603,10 @@ class ProjectStore {
     if (!canWriteTeamProject()) return;
     const persistIfChanged = options.persistIfChanged !== false;
     // Helpers can report transient changes while reaching the same final structure.
-    // The fingerprint keeps every field and array position. Tile grids and long
-    // strings are digested so opening a heavy project does not stringify them twice.
-    const before = normalizationFingerprint(this.current);
+    // 변경 판정은 내용 요약(`jsonContentDigest`)으로 한다 — 키 순서를 무시하고 모든 필드·배열 자리·값을 본다
+    // (예전 `normalizationFingerprint` 와 같은 판정, 타일 격자는 손실 없는 SHA 로). 요약은 노드마다 기억되고
+    // 로드는 이 직전에 커밋 기준본 요약을 이미 만든다. 실측(2026-09-27, 82MB): 지문 두 번 3.4s → 기억 대조 약 0.6s.
+    const before = jsonContentDigest(this.current);
     // 어느 정규화기가 실제로 손을 댔는지 이름으로 남긴다.
     // 실측(2026-08-29): 이 13개는 `this.current` 를 in-place 로 고치면서 markLocalMutation 을
     // 부르지 않는다 — 프로젝트가 로드 중에 조용히 바뀌는데 그 사실이 어디에도 안 남아서
@@ -1630,7 +1631,7 @@ class ProjectStore {
       ["bundledBattleAnimations", ensureBundledBattleAnimations(this.current)],
     ];
     const appliedNormalizers = normalizers.filter(([, applied]) => applied).map(([name]) => name);
-    const changed = before !== normalizationFingerprint(this.current);
+    const changed = before !== jsonContentDigest(this.current);
     if (changed) {
       this.markLocalMutation({
         scope: "system",

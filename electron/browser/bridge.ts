@@ -105,6 +105,8 @@ async function readAsset(payload: unknown): Promise<Uint8Array> {
     probe: invoke(OPRN_CHANNELS.projectProbe),
     open: invoke(OPRN_CHANNELS.projectOpen),
     load: invoke(OPRN_CHANNELS.projectLoad),
+    loadFolded: invoke(OPRN_CHANNELS.projectLoadFolded),
+    tilesetBlobs: invoke(OPRN_CHANNELS.projectTilesetBlobs),
     save: invoke(OPRN_CHANNELS.projectSave),
     saveMapPatch: invoke(OPRN_CHANNELS.projectSaveMapPatch),
     dataVersion: invoke(OPRN_CHANNELS.projectDataVersion),
