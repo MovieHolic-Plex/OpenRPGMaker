@@ -84,7 +84,12 @@ export interface ActorOptions {
   autoBattle: boolean;
   fixedEquipment: boolean;
   mightyGuard: boolean;
+  /** autoBattle 인 배우의 작전. 생략 = 균형(기존 자동 전투 AI). followOrders 면 자동 전투여도 명령을 직접 받는다. */
+  autoTactic?: ActorAutoTactic;
 }
+
+/** 배우별 자동 전투 작전: 전원 공격 · 회복 우선 · MP 아끼기 · 명령 따르기(수동). */
+export type ActorAutoTactic = "attackAll" | "healFirst" | "conserveMp" | "followOrders";
 
 export interface ActorLearnedSkill {
   level: number;

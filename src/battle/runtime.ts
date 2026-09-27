@@ -89,7 +89,7 @@ import {
   targetScopeForCommand,
   type BattleTargetScope,
 } from "@/battle/battleTargetResolver";
-import { chooseAutoBattleCommand } from "@/battle/battleAuto";
+import { actorAutoTactic, actorFightsAutomatically, chooseAutoBattleCommand } from "@/battle/battleAuto";
 import { predictSkillDamage } from "@/battle/battlePredict";
 import { effectiveActorEquipment } from "@/project/equipmentRules";
 import { orderGen1TurnActions, type Gen1TurnOrderEntry } from "@/battle/battleStrictOrder";
@@ -946,6 +946,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           applyTroopEvents(() => finishGaugeActorCommand(ready.battler), markGaugeActionCycle(ready.battler));
           return;
         }
+        // 자동 전투 배우(ActorOptions.autoBattle · 작전): 명령 메뉴 없이 작전대로 고른 명령을 그대로 실행한다.
+        const auto = autoActorCommand(ready.battler);
+        if (auto) {
+          phase = "actorCommand";
+          activeActorId = ready.battler.recordId;
+          performActorCommand(auto);
+          return;
+        }
       }
       phase = "actorCommand";
       activeActorId = ready.battler.recordId;
@@ -1510,14 +1518,34 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   // 버서크(strict): 명령을 받지 않고 무작위 적 통상 공격을 이번 라운드 명령으로 넣는다.
+  // 자동 전투 배우도 여기서 작전대로 고른 명령을 미리 넣는다(명령 메뉴가 열리지 않는다).
   function queueBerserkStrictCommands(): void {
     for (const actorId of [...strictPendingActorIds]) {
+      if (!strictPendingActorIds.includes(actorId)) continue;
       const actor = actors.find((entry) => entry.recordId === actorId);
-      const forced = actor ? berserkAttackCommand(actor) : undefined;
+      const forced = actor ? berserkAttackCommand(actor) ?? autoActorCommand(actor) : undefined;
       if (!actor || !forced) continue;
       strictActorCommands = [...strictActorCommands, { actorId: actor.recordId, command: forced }];
-      strictPendingActorIds = strictPendingActorIds.filter((id) => id !== actorId);
+      const partnerIds = comboPartners(actor, forced).map((partner) => partner.recordId);
+      for (const partner of comboPartners(actor, forced)) partner.gauge = 0;
+      strictPendingActorIds = strictPendingActorIds.filter((id) => id !== actorId && !partnerIds.includes(id));
       actor.gauge = 0;
+    }
+  }
+
+  /** 자동 전투 배우의 이번 차례 명령. 수동 배우·gen1·고를 명령이 없으면 undefined(메뉴를 연다). */
+  function autoActorCommand(actor: MutableBattler): ActorCommand | undefined {
+    if (gen1 || usePartyMonsters || !actorFightsAutomatically(options.project, actor.recordId, actor.classId)) return undefined;
+    const savedPhase = phase;
+    const savedActorId = activeActorId;
+    phase = "actorCommand";
+    activeActorId = actor.recordId;
+    try {
+      const command = chooseAutoBattleCommand(options.project, snapshot(), rng, actorAutoTactic(options.project, actor.recordId));
+      return command && isValidActorCommand(actor, command) ? command : undefined;
+    } finally {
+      phase = savedPhase;
+      activeActorId = savedActorId;
     }
   }
 

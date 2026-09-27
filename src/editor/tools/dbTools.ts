@@ -383,7 +383,13 @@ const actorInitialEquipmentSchema: JsonSchema = {
   type: "object", description: "{ equipment slot id: equipment id }; includes project-authored slots",
   additionalProperties: true,
 };
-const actorOptionsSchema = objectSchema({ dualWield: booleanSchema(), autoBattle: booleanSchema(), fixedEquipment: booleanSchema(), mightyGuard: booleanSchema() });
+const actorOptionsSchema = objectSchema({
+  dualWield: booleanSchema(),
+  autoBattle: booleanSchema(),
+  fixedEquipment: booleanSchema(),
+  mightyGuard: booleanSchema(),
+  autoTactic: { type: "string", enum: ["attackAll", "healFirst", "conserveMp", "followOrders"], description: "autoBattle 배우의 작전: attackAll(전원 공격) · healFirst(회복 우선) · conserveMp(MP 아끼기) · followOrders(자동 전투여도 직접 조작). 생략 = 균형" },
+});
 const learnedSkillSchema = objectSchema({ level: integerSchema(), skillId: stringSchema() });
 // 배우 전용: tp 는 배우 learnedSkills 에만 있다(직업·종족 습득표는 레벨만).
 const actorLearnedSkillSchema = objectSchema({
