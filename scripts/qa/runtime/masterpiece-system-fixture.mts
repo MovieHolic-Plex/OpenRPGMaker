@@ -21,12 +21,12 @@ ctx.project.system.difficulties = [
 ];
 ctx.project.system.defaultDifficultyId = "easy";
 
-call("upsert_class", { class: { id: "class_hero", name: "용사", learnedSkills: [] } });
 call("upsert_skill", { skill: {
   id: "skill_libra", name: "라이브라", scope: "enemy", power: 0, description: "적의 HP·약점을 본다",
   effect: { kind: "scan" }, hitRate: 100, mpCost: { flat: 0, percentMax: 0 },
 } });
-call("upsert_actor", { actor: { id: "actor_hero", name: "렌", learnedSkills: ["skill_libra"] } });
+call("upsert_class", { class: { id: "class_hero", name: "용사", learnedSkills: [{ level: 1, skillId: "skill_libra" }] } });
+call("upsert_actor", { actor: { id: "actor_hero", name: "렌", classId: "class_hero" } });
 call("set_party", { scope: "start", actorIds: ["actor_hero"] });
 call("upsert_enemy", { enemy: {
   id: "enemy_mg_ghost", name: "유령", monsterResourceId: "generated-enemy-bat-01",

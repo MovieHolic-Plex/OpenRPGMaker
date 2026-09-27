@@ -55,11 +55,17 @@ export default {
       { kind: "key", key: "z" },
       { kind: "waitForPosition", mapId: "map_harbor", x: 4, y: 4, timeoutMs: 15_000 },
     ], expect: { variables: { where: 1 } }, shot: true },
+    { id: "walk-after-teleport", note: "순간이동 뒤 조작이 돌아온다 — 오른쪽 키로 한 칸 걷는다", ops: [
+      // 도착 좌표는 페이드인 전에 적힌다 — 그동안은 조작이 잠겨 있으므로 방향을 쥔 채 도착을 기다린다.
+      { kind: "dir", dir: "right" },
+      { kind: "waitForPosition", mapId: "map_harbor", x: 5, y: 4, timeoutMs: 5_000 },
+      { kind: "dir", dir: null },
+    ], expect: { mapId: "map_harbor" } },
     { id: "click-move", note: "시작 맵으로 돌아가 오른쪽 두 칸을 클릭 → 경로 탐색으로 걸어간다", ops: [
       { kind: "teleport", mapId: "map_blank_start", x: 10, y: 8 },
       { kind: "waitForPosition", mapId: "map_blank_start", x: 10, y: 8, timeoutMs: 10_000 },
       { kind: "clickTile", x: 12, y: 8 },
-      // 런타임이 스스로 적는 클릭 영수증 — "walking:12,8" 이면 경로가 섰다.
+      // 런타임이 스스로 적는 클릭 영수증 — "walking:12,8" 이면 경로가 섰다(busy-running·noPath 등은 실패 상세에 남는다).
       { kind: "waitForAttr", testid: "play-stage", attr: "data-pointer-move", value: "walking:12,8", timeoutMs: 5_000 },
       { kind: "waitForPosition", mapId: "map_blank_start", x: 12, y: 8, timeoutMs: 10_000 },
     ], expect: { testidAbsent: ["runtime-choices"] }, shot: true },

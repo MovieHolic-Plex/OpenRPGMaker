@@ -440,15 +440,24 @@ async function applyOp(page, op, runState) {
       return;
     }
     case "waitForAttr":
-      await page.waitForFunction(
-        ([testid, attr, value]) => {
+      try {
+        await page.waitForFunction(
+          ([testid, attr, value]) => {
+            const node = document.querySelector(`[data-testid="${testid}"]`);
+            if (!node) return false;
+            return node.getAttribute(attr) === value;
+          },
+          [op.testid, op.attr, op.value],
+          { timeout: op.timeoutMs ?? 30_000 },
+        );
+      } catch (error) {
+        // 실패 보고에 마지막으로 본 값을 남긴다 — "안 바뀌었다"와 "다른 값이 됐다"를 가른다.
+        const seen = await page.evaluate(([testid, attr]) => {
           const node = document.querySelector(`[data-testid="${testid}"]`);
-          if (!node) return false;
-          return node.getAttribute(attr) === value;
-        },
-        [op.testid, op.attr, op.value],
-        { timeout: op.timeoutMs ?? 30_000 },
-      );
+          return node ? node.getAttribute(attr) : "(노드 없음)";
+        }, [op.testid, op.attr]).catch(() => "(읽기 실패)");
+        throw new Error(`${error instanceof Error ? error.message : String(error)} — ${op.testid}[${op.attr}] 마지막 값: ${JSON.stringify(seen)}`);
+      }
       return;
     case "repeatUntil": {
       // 하위 op 묶음을 조건이 설 때까지 되풀이한다(예: 적이 쓰러질 때까지 공격). 매 회 전에 조건을 본다.

@@ -22,12 +22,14 @@ export function pointerMovementEnabled(): boolean {
   return store.getCurrent().system.pointerMovement === true;
 }
 
-export type PointerMoveOutcome = "disabled" | "busy" | "here" | "noPath" | "walking";
+export type PointerMoveOutcome = "disabled" | "busy-running" | "busy-moving" | "busy-locked" | "here" | "noPath" | "walking";
 
 /** 클릭 한 번을 처리한다. 결과는 호출측이 QA 영수증(data-pointer-move)으로 남긴다. */
 export function handlePointerMove(scene: PlaySceneContext, tile: { x: number; y: number }): PointerMoveOutcome {
   if (!pointerMovementEnabled()) return "disabled";
-  if (scene.running || scene.moving || isCutsceneInputLocked(scene.session)) return "busy";
+  if (scene.running) return "busy-running";
+  if (scene.moving) return "busy-moving";
+  if (isCutsceneInputLocked(scene.session)) return "busy-locked";
   if (tile.x === scene.tileX && tile.y === scene.tileY) return "here";
   const plan = planPathfindMove(scene, { kind: "pathfindMove", target: "player", x: tile.x, y: tile.y, speed: 4, wait: false }, undefined);
   if (!plan || plan.moves.length === 0) return "noPath";
@@ -68,13 +70,14 @@ const UI_TARGET_SELECTOR = "button, input, textarea, select, a, .dialogue-box, .
  * 캔버스를 pointer-events:none 으로 두므로, 문서의 pointerdown 을 캔버스 상자로 걸러 받는다.
  */
 export function installPointerMove(scene: PlaySceneContext & PointerInputHost): void {
-  if (typeof document === "undefined") return;
+  if (typeof window === "undefined") return;
   const onPointerDown = (event: PointerEvent): void => {
     const host = scene.game?.registry?.get?.("dialogueHost");
     const receipt = (value: string): void => {
       if (host instanceof HTMLElement) host.dataset.pointerMove = value;
     };
-    if (!pointerMovementEnabled() || event.button !== 0) return;
+    if (event.button !== 0) return;
+    if (!pointerMovementEnabled()) return receipt("disabled");
     const target = event.target instanceof Element ? event.target : null;
     if (target?.closest(UI_TARGET_SELECTOR)) return receipt("ui");
     const canvas = scene.game?.canvas;
@@ -85,8 +88,10 @@ export function installPointerMove(scene: PlaySceneContext & PointerInputHost): 
     const tile = pointerTile(scene, world.x, world.y);
     receipt(tile ? `${handlePointerMove(scene, tile)}:${tile.x},${tile.y}` : "outside");
   };
-  document.addEventListener("pointerdown", onPointerDown);
-  const remove = (): void => document.removeEventListener("pointerdown", onPointerDown);
+  // 플레이 화면은 playInputBlocker 가 누름을 캡처 단계에서 삼킨다(root 리스너). window 캡처는 그보다 먼저 본다 —
+  // 여기서는 읽기만 하고 전파를 막지 않으므로 차단기의 포커스·기본동작 규칙은 그대로다.
+  window.addEventListener("pointerdown", onPointerDown, true);
+  const remove = (): void => window.removeEventListener("pointerdown", onPointerDown, true);
   scene.events?.once?.("shutdown", remove);
   scene.events?.once?.("destroy", remove);
 }
