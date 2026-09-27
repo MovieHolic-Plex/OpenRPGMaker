@@ -83,6 +83,16 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
           numberField("맵 이동(걸음당)", "db-state-hp-move", numericRelease(state.hpReleaseStep, baseOntology.hpMove), (hpReleaseStep) =>
             update({ hpReleaseStep }), { min: -999, max: 999 }
           ),
+          // 명작 공백 #25: 걸음 효과 간격·치사 여부·N걸음 후 해제.
+          numberField("걸음 효과 간격", "db-state-step-interval", state.fieldStepInterval ?? 1, (fieldStepInterval) =>
+            update({ fieldStepInterval: Math.max(1, fieldStepInterval) }), { min: 1, max: 99 }
+          ),
+          numberField("N걸음 후 풀림(0=안 풀림)", "db-state-release-steps", state.releaseAfterSteps ?? 0, (releaseAfterSteps) =>
+            update({ releaseAfterSteps: Math.max(0, releaseAfterSteps) }), { min: 0, max: 9999 }
+          ),
+          numberField("걸음 피해로 쓰러짐(1=예)", "db-state-step-can-kill", state.fieldStepCanKill ? 1 : 0, (value) =>
+            update({ fieldStepCanKill: value >= 1 }), { min: 0, max: 1 }
+          ),
         ], "db-state-panel-hp"),
         panel("MP", [
           numberField("전투 중(턴당%)", "db-state-mp-turn", numericRelease(state.mpReleaseTurn, baseOntology.mpTurn), (mpReleaseTurn) =>

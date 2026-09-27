@@ -641,6 +641,7 @@ const skillRecordSchema = objectSchema({
   maxPp: integerSchema("Gen1 기술별 최대 PP. 1~99"),
   gen1CriticalRate: { type: "string", enum: ["normal", "high"] },
   movePriority: numberSchema("기술 우선도 -7~7 (strict 턴제에서 속도보다 먼저 비교, 퀵어택=+1)"),
+  fieldCommonEventId: { type: "string", description: "필드 능력: 메뉴에서 쓰면 이 공통 이벤트를 실행(정면 이벤트 id 는 문자열 변수 fieldAbilityTarget, 좌표는 변수 fieldAbilityX/Y). 빈 문자열이면 해제" },
   comboActorIds: stringArraySchema("연계기(듀얼·트리플 테크) 참가 배우 2~3명. 전원이 참전·생존·준비 상태여야 메뉴에 열리고, 각자 mpCost 와 턴을 소비한다. 멤버는 따로 배우지 않아도 된다. 빈 배열이면 해제"),
   area: objectSchema({
     shape: { type: "string", enum: ["circle", "line"] },
@@ -718,6 +719,9 @@ const stateRecordSchema = objectSchema({
   hpReleaseStep: integerSchema(),
   mpReleaseTurn: integerSchema(),
   mpReleaseStep: integerSchema(),
+  fieldStepInterval: integerSchema(),
+  releaseAfterSteps: integerSchema(),
+  fieldStepCanKill: { type: "boolean" },
   specialFlags: stringArraySchema(),
   lockedParameters: stringArraySchema(),
   runtimeEffects: stateRuntimeEffectsSchema,

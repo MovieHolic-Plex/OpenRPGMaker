@@ -175,6 +175,11 @@ const SYSTEM_TOOL_PAGE_TITLES: ReadonlySet<string> = new Set([
   "Debug Log",
   "Evaluate Expression",
   "Data Query",
+  "Key Poll",
+  "Timed Choice",
+  "Quick Time Event",
+  "High Score",
+  "Teleport Menu",
 ]);
 
 const DETAILED_MAP_PRESENTATION_PAGE_TITLES: ReadonlySet<string> = new Set([

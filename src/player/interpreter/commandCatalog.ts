@@ -1,3 +1,4 @@
+import { applyHighScore, applyKeyPoll, quickTimeStep, teleportMenuStep, timedChoiceStep } from "./minigameCommands";
 import { isGalleryEnabled, recordGalleryUnlock } from "@/project/gallery";
 import { NEW_GAME_PLUS_FLAG } from "@/project/newGamePlus";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
@@ -124,6 +125,27 @@ function executeM2Command(
       allowEventMovementDuringWait: fieldBoolean(fields, "allowEventMovementDuringWait", DEFAULT_MESSAGE_WINDOW_SETTINGS.allowEventMovementDuringWait),
     };
     return resumeNext(frame);
+  }
+
+  // 명작 공백 #1·#24 — 미니게임 키트와 순간이동 메뉴.
+  if (entry.title === "Key Poll") {
+    applyKeyPoll(state.session, command.fields);
+    return resumeNext(frame);
+  }
+  if (entry.title === "High Score") {
+    applyHighScore(state.session, command.fields);
+    return resumeNext(frame);
+  }
+  if (entry.title === "Timed Choice") return pause("timedChoice", timedChoiceStep(command.fields));
+  if (entry.title === "Quick Time Event") return pause("quickTimeEvent", quickTimeStep(command.fields));
+  if (entry.title === "Teleport Menu") {
+    const step = teleportMenuStep(state.session, command.fields, state.project?.maps ?? {});
+    if (step === "forbidden") {
+      const resultVariableId = fieldString(command.fields, "resultVariableId", "");
+      if (resultVariableId) state.session.variables[resultVariableId] = -1;
+      return resumeNext(frame);
+    }
+    return pause("teleportMenu", step);
   }
 
   if (entry.title === "Camera Control" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {

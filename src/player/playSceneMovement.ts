@@ -1,3 +1,5 @@
+import { heldInputSnapshot, installHeldKeyTracker } from "@/player/heldKeyTracker";
+import { applyFieldStepStates } from "@/project/stateFieldSteps";
 import { mapTileSize } from "@/project/tileGeometry";
 import { updateDetectionEncounters } from "./npcDetectionEncounter";
 import { BattleAdmissionError } from "@/project/battleAdmission";
@@ -111,6 +113,9 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
   scene.session.playTimeSeconds += deltaMs / 1000;
   // 방향 조건(주인공이 보는 쪽)은 세션만 본다 — 씬의 facing 을 매 프레임 적어 둔다.
   if (scene.session.playerFacing !== scene.facing) scene.session.playerFacing = scene.facing;
+  // Key Poll(미니게임) — 이벤트가 도는 중에도 지금 눌린 키를 세션에 비춘다(세이브 안 함).
+  installHeldKeyTracker();
+  scene.session.heldInput = heldInputSnapshot();
   const ticks = takeLogicTicks(scene, deltaMs);
   // 틱이 없는 프레임(고주사율)에서는 입력을 읽지 않는다 — 엣지와 탭이 다음 틱 프레임으로 살아서 간다.
   if (ticks > 0) {
@@ -239,6 +244,8 @@ function advancePlayerStepFrame(scene: PlaySceneContext): void {
     if (hopState?.via) recordFollowerPlayerStep(scene.session, { x: hopState.via.x, y: hopState.via.y, direction: scene.facing });
     const project = store.getCurrent();
     scene.session.stepCount = (scene.session.stepCount ?? 0) + 1;
+    const stepStates = applyFieldStepStates(project, scene.session);
+    if (stepStates.defeated) applyBattleDefeat(scene, "상태 이상으로 쓰러졌습니다.");
     applyWalkCareTicks(project, scene.session, 1);
     applyGen1FieldPoisonStep(project, scene.session);
     // 비행선은 땅에 닿지 않는다 — 지형 피해·접촉 트리거·인카운트를 건너뛴다.
@@ -781,7 +788,7 @@ function fireTouchTriggers(scene: PlaySceneContext): void {
   if (event) void scene.runEvent(event.event.id);
 }
 
-function findRuntimeEventInScene(
+export function findRuntimeEventInScene(
   scene: Pick<PlaySceneContext, "map" | "session" | "eventPositions">,
   x: number,
   y: number,

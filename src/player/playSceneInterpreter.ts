@@ -1,3 +1,4 @@
+import { playQuickTimeEvent, playTeleportMenu, playTimedChoice } from "@/player/playSceneMinigames";
 import { mapTileSize } from "@/project/tileGeometry";
 import { cancelFurniturePush } from './furniturePushAnimation';
 import { friendshipDeltaEmote } from "@/project/emotes";
@@ -662,6 +663,12 @@ async function consumeBlockingStep(
         scene.returnToTitle();
       }
       return resumeInterpreter(interpreter);
+    case "timedChoice":
+      return resumeWithValue(scene, interpreter, await playTimedChoice(scene, step));
+    case "quickTimeEvent":
+      return resumeWithValue(scene, interpreter, await playQuickTimeEvent(scene, step));
+    case "teleportMenu":
+      return resumeWithValue(scene, interpreter, await playTeleportMenu(scene, step));
     default:
       return assertNever(step);
   }

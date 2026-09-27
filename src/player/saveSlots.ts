@@ -241,6 +241,9 @@ export type SaveSnapshot = {
     readonly stringVariables?: Record<string, string>;
     readonly playerFacing?: PlaySession["playerFacing"];
     readonly stepCount?: number;
+    readonly stateStepCounts?: Record<string, Record<string, number>>;
+    readonly highScores?: Record<string, number>;
+    readonly teleportPoints?: PlaySession["teleportPoints"];
     readonly playTimeSeconds?: number;
     readonly gameTime?: PlaySession["gameTime"];
     readonly rng?: RngState;
@@ -485,6 +488,9 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       ...(session.stringVariables && Object.keys(session.stringVariables).length > 0 ? { stringVariables: { ...session.stringVariables } } : {}),
       ...(session.playerFacing ? { playerFacing: session.playerFacing } : {}),
       ...(session.stepCount ? { stepCount: Math.floor(session.stepCount) } : {}),
+      ...(session.stateStepCounts && Object.keys(session.stateStepCounts).length > 0 ? { stateStepCounts: structuredClone(session.stateStepCounts) } : {}),
+      ...(session.highScores && Object.keys(session.highScores).length > 0 ? { highScores: { ...session.highScores } } : {}),
+      ...(session.teleportPoints && session.teleportPoints.length > 0 ? { teleportPoints: structuredClone(session.teleportPoints) } : {}),
       playTimeSeconds: Math.floor(session.playTimeSeconds ?? 0),
       gameTime: structuredClone(normalizeRestorableGameTime(project, session.gameTime)),
       rng: cloneRngState(normalizeRngState(session.rng)),
@@ -727,6 +733,9 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   if (snapshot.session.stringVariables) session.stringVariables = { ...snapshot.session.stringVariables };
   if (snapshot.session.playerFacing) session.playerFacing = snapshot.session.playerFacing;
   if (typeof snapshot.session.stepCount === "number") session.stepCount = snapshot.session.stepCount;
+  if (snapshot.session.stateStepCounts) session.stateStepCounts = structuredClone(snapshot.session.stateStepCounts);
+  if (snapshot.session.highScores) session.highScores = { ...snapshot.session.highScores };
+  if (snapshot.session.teleportPoints) session.teleportPoints = structuredClone(snapshot.session.teleportPoints);
   if (typeof snapshot.session.playTimeSeconds === "number") session.playTimeSeconds = snapshot.session.playTimeSeconds;
   const restoredGameTime = normalizeRestorableGameTime(project, snapshot.session.gameTime);
   if (restoredGameTime) session.gameTime = restoredGameTime;
@@ -1157,6 +1166,13 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorStateIds: isActorStateIdsRecord(session.actorStateIds) ? session.actorStateIds : undefined,
       stringVariables: isStringRecord(session.stringVariables) ? session.stringVariables : undefined,
       playerFacing: session.playerFacing === "up" || session.playerFacing === "down" || session.playerFacing === "left" || session.playerFacing === "right" ? session.playerFacing : undefined,
+      stateStepCounts: isNestedNumberRecord(session.stateStepCounts) ? session.stateStepCounts : undefined,
+      highScores: isNumberRecord(session.highScores) ? session.highScores : undefined,
+      teleportPoints: Array.isArray(session.teleportPoints)
+        ? session.teleportPoints.filter((p): p is NonNullable<PlaySession["teleportPoints"]>[number] =>
+          !!p && typeof p === "object" && typeof (p as { mapId?: unknown }).mapId === "string"
+          && Number.isFinite((p as { x?: unknown }).x) && Number.isFinite((p as { y?: unknown }).y))
+        : undefined,
       stepCount: typeof session.stepCount === "number" && Number.isFinite(session.stepCount) && session.stepCount >= 0 ? Math.floor(session.stepCount) : undefined,
       playTimeSeconds: typeof session.playTimeSeconds === "number" ? Math.floor(session.playTimeSeconds) : undefined,
       gameTime: isGameTime(session.gameTime) ? structuredClone(session.gameTime) : undefined,

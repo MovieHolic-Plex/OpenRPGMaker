@@ -89,6 +89,17 @@ export function advanceResume(
       changeActorName(state.session, command.actorId, clampName(value, command.maxLength));
     }
     frame.pc += 1;
+  } else if (pending === "timedChoice" || pending === "quickTimeEvent" || pending === "teleportMenu") {
+    // 명작 공백 #1·#24: 결과(숫자)를 m2 명령의 resultVariableId/resultSwitchId 에 쓴다.
+    const command = frame.commands[frame.pc];
+    if (command?.kind === "m2Command") {
+      const result = typeof value === "number" && Number.isFinite(value) ? Math.trunc(value) : 0;
+      const resultVariableId = typeof command.fields.resultVariableId === "string" ? command.fields.resultVariableId : "";
+      if (resultVariableId) state.session.variables[resultVariableId] = result;
+      const resultSwitchId = typeof command.fields.resultSwitchId === "string" ? command.fields.resultSwitchId : "";
+      if (resultSwitchId && pending === "quickTimeEvent") state.session.switches[resultSwitchId] = result > 0;
+    }
+    frame.pc += 1;
   } else if (pending === "inputWait") {
     // Key Input Processing: variableId 가 있으면 눌린 키 코드를 변수에 저장.
     const command = frame.commands[frame.pc];

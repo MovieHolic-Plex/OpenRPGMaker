@@ -24,6 +24,9 @@ import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
 
 export type StepResult =
   | { kind: "done" }
+  | import("./minigameCommands").TimedChoiceStep
+  | import("./minigameCommands").QuickTimeStep
+  | import("./minigameCommands").TeleportMenuStep
   | { kind: "text"; speaker?: string; body: string; face?: FaceGraphic; settings?: MessageWindowSettings; autoAdvance?: boolean; emotion?: string; style?: string; context?: string; container?: string; voiceResourceId?: string }
   | {
       kind: "choices";

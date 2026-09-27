@@ -264,7 +264,7 @@ function skillDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       entries: skills.map((skill) => ({
         label: skill.name,
         icon: skillEntryIcon(project, skill),
-        value: `MP ${skill.mpCost.flat}`,
+        value: skill.fieldCommonEventId ? `MP ${skill.mpCost.flat} · 필드에서 사용` : `MP ${skill.mpCost.flat}`,
         description: `${skill.description || skillKindLabel(skill)} / 위력 ${skill.power} / 성공 ${skill.successRate}%`,
         testId: `status-menu-skill-${actor.id}-${skill.id}`,
         onActivate: options.onSelectSkill ? () => options.onSelectSkill?.(skill.id) : undefined,

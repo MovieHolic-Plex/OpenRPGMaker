@@ -1161,3 +1161,61 @@
     animation: none;
   }
 }
+
+/* 명작 공백 #1(2026-09-27) — 제한시간 선택지 막대·퀵타임 입력 오버레이. */
+.timed-choice-bar {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: calc(var(--dialogue-window-height, 30%) + 12px);
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  z-index: 40;
+  pointer-events: none;
+}
+.timed-choice-bar-fill {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #f2c14e, #e0605e);
+  transform-origin: left center;
+}
+.qte-overlay {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  padding: 16px 22px;
+  border-radius: 12px;
+  background: rgba(10, 12, 20, 0.82);
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  z-index: 45;
+  pointer-events: none;
+  font-family: inherit;
+  color: #fff;
+}
+.qte-keys { display: flex; gap: 8px; }
+.qte-key {
+  min-width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: #2b3242;
+  border: 2px solid #9aa3b2;
+  font-size: 20px;
+  font-weight: 700;
+}
+.qte-key-hit { background: #1f6f4a; border-color: #3fb27f; }
+.qte-key-miss { background: #7a2426; border-color: #e0605e; }
+.qte-mash { padding: 0 14px; }
+.qte-meter { width: 180px; height: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.2); overflow: hidden; }
+.qte-meter-fill { width: 100%; height: 100%; background: #f2c14e; transform-origin: left center; }
+.qte-count { font-size: 22px; font-weight: 700; min-height: 1em; }
+@media (prefers-reduced-motion: reduce) {
+  .timed-choice-bar-fill, .qte-meter-fill { transition: none; }
+}

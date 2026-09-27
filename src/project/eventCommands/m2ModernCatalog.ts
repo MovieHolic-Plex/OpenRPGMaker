@@ -131,6 +131,18 @@ const DATA_QUERY_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "stringLength", label: "문자열 변수 길이" },
 ];
 
+const QTE_MODE_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "sequence", label: "순서대로 누르기" },
+  { value: "mash", label: "연타(횟수 세기)" },
+];
+
+const HIGH_SCORE_ACTION_OPTIONS: readonly M2CommandFieldOption[] = [
+  { value: "submit", label: "점수 제출(더 높으면 갱신)" },
+  { value: "submitLow", label: "점수 제출(더 낮으면 갱신 — 시간 기록)" },
+  { value: "read", label: "최고 점수 읽기" },
+  { value: "reset", label: "지우기" },
+];
+
 export const SCREEN_COLOR_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "white", label: "흰색" },
   { value: "red", label: "빨강" },
@@ -284,6 +296,42 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
         { key: "x", label: "X", type: "number", defaultValue: 80, min: 0, max: 320 },
         { key: "y", label: "Y", type: "number", defaultValue: 100, min: 0, max: 240 },
         { key: "durationMs", label: "시간(ms)", type: "number", defaultValue: 400, min: 0, max: 5000, step: 100 },
+      ];
+    case "Key Poll":
+      return [
+        { key: "dirVariableId", label: "방향 변수(0/2/4/6/8)", type: "text", defaultValue: "" },
+        { key: "confirmSwitchId", label: "결정 키 스위치", type: "text", defaultValue: "" },
+        { key: "cancelSwitchId", label: "취소 키 스위치", type: "text", defaultValue: "" },
+        { key: "dashSwitchId", label: "달리기 키 스위치", type: "text", defaultValue: "" },
+      ];
+    case "Timed Choice":
+      return [
+        { key: "prompt", label: "질문", type: "text", defaultValue: "" },
+        { key: "options", label: "선택지(줄마다)", type: "textarea", defaultValue: "예\n아니오" },
+        { key: "timeLimitMs", label: "제한 시간(ms)", type: "number", defaultValue: 3000, min: 500, max: 60000, step: 100 },
+        { key: "resultVariableId", label: "결과 변수(1부터, 시간 초과 0)", type: "text", defaultValue: "" },
+      ];
+    case "Quick Time Event":
+      return [
+        { key: "mode", label: "방식", type: "select", defaultValue: "sequence", options: QTE_MODE_OPTIONS },
+        { key: "keys", label: "순서(예: up,down,z)", type: "text", defaultValue: "z" },
+        { key: "windowMs", label: "키 하나당 시간(ms) / 연타 시간", type: "number", defaultValue: 1200, min: 200, max: 20000, step: 100 },
+        { key: "resultVariableId", label: "결과 변수(성공 1·실패 0·연타 수)", type: "text", defaultValue: "" },
+        { key: "resultSwitchId", label: "성공 스위치", type: "text", defaultValue: "" },
+      ];
+    case "High Score":
+      return [
+        { key: "scoreId", label: "점수 이름", type: "text", defaultValue: "score" },
+        { key: "action", label: "동작", type: "select", defaultValue: "submit", options: HIGH_SCORE_ACTION_OPTIONS },
+        { key: "valueVariableId", label: "점수 변수", type: "text", defaultValue: "" },
+        { key: "resultVariableId", label: "최고 점수를 쓸 변수", type: "text", defaultValue: "" },
+        { key: "recordSwitchId", label: "새 기록이면 켤 스위치", type: "text", defaultValue: "" },
+      ];
+    case "Teleport Menu":
+      return [
+        { key: "prompt", label: "질문", type: "text", defaultValue: "어디로 갈까요?" },
+        { key: "resultVariableId", label: "결과 변수(고른 번호, 취소 0, 금지 -1)", type: "text", defaultValue: "" },
+        { key: "transfer", label: "고르면 바로 이동", type: "boolean", defaultValue: true },
       ];
     case "Data Query":
       return [

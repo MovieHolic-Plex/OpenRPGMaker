@@ -1,3 +1,4 @@
+import { recordTeleportPoint } from "@/project/teleportPoints";
 import { formatActorGraphicOverride, parseActorGraphicOverride } from "@/project/actorGraphicOverride";
 import type { M2CommandCatalogEntry } from "@/project/eventCommands/m2Catalog";
 import { tintDurationMs } from "@/project/eventCommands/tintDuration";
@@ -193,12 +194,14 @@ function executeByTitle(
     return;
   }
   if (title === "Set Teleportation Point") {
-    runtime.map["teleport_point"] = {
-      mapId: fieldString(fields, "mapId", ""),
-      x: fieldNumber(fields, "x", 0),
-      y: fieldNumber(fields, "y", 0),
-      value: "",
+    const point = {
+      mapId: fieldString(fields, "mapId", "") || session.currentMapId,
+      x: fieldNumber(fields, "x", fieldString(fields, "mapId", "") ? 0 : session.x),
+      y: fieldNumber(fields, "y", fieldString(fields, "mapId", "") ? 0 : session.y),
     };
+    runtime.map["teleport_point"] = { ...point, value: "" };
+    // 명작 공백 #24: 방문 지점 목록에 쌓는다(Teleport Menu 가 읽는다). label 이 있으면 메뉴 이름.
+    recordTeleportPoint(session, { ...point, label: fieldString(fields, "label", "") || undefined });
     return;
   }
   if (title === "Set Escape Location") {
