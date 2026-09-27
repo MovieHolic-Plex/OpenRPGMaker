@@ -439,6 +439,38 @@ export function findBlockingEventOverlappingRect(
   return found;
 }
 
+/**
+ * 한 번의 동기 탐색(A* 한 번) 동안 쓰는 "막는 이벤트" 판정기. findBlockingEventOverlappingRect 와
+ * **같은 답**을 내지만, 막는 이벤트의 passRect 를 처음 부를 때 한 번만 모은다.
+ *
+ * 왜: A* 는 칸마다 막힘을 묻고, 예전 질의는 그때마다 맵의 모든 이벤트를 훑었다(앵커 사전 거르기가
+ * 뷰 생성은 줄이지만 순회는 남는다). 도달 불가 추격이 이벤트 300개 맵에서 한 번에 약 250ms 였다.
+ * 탐색 도중에는 이벤트가 움직이지 않으므로 모아 둔 목록이 곧 원본 질의의 답이다. **탐색 하나마다
+ * 새로 만든다** — 앞 NPC 가 움직인 결과를 다음 NPC 가 봐야 하므로 프레임 단위로 공유하지 않는다.
+ */
+export function createBlockingEventQuery(
+  project: Pick<Project, "maps">,
+  map: GameMap,
+  session: PlaySessionLike,
+  positions: RuntimeEventPositions,
+  excludeEventId?: string,
+): (rect: FootprintRect) => boolean {
+  let blockers: FootprintRect[] | undefined;
+  return (rect) => {
+    if (!blockers) {
+      const collected: FootprintRect[] = [];
+      forEachRuntimeEventView(project, map, session, positions, (event) => {
+        if (event.event.id === excludeEventId) return;
+        if (event.priority !== "same" || !event.overlapForbidden) return;
+        collected.push(event.passRect);
+      });
+      blockers = collected;
+    }
+    for (const blocker of blockers) if (rectsOverlap(blocker, rect)) return true;
+    return false;
+  };
+}
+
 export function findRuntimeEventAtInMap(
   project: Pick<Project, "maps">,
   map: GameMap,
