@@ -18,7 +18,8 @@
 | 캔버스 포인터 소유 | `canvasPointerOwnership.ts` (relief 는 페인트 도구처럼 드래그를 가진다). **오른쪽 버튼도** relief 에서는 영역 제스처가 아니라 칠하기다 — `EditScene` pointerdown 의 우클릭 분기가 `tool !== "relief"` 일 때만 영역을 잡는다 |
 | 스트로크 | `TilePaintEngine.ts` `case "relief"` — 붓 크기 N = 반지름 max(1, N-1) 원 — 1칸 폭 돌기는 렌더 규칙이 깎아 안 보이므로 1×1 도 3칸 폭으로 칠한다. 올리기/내리기는 **스트로크 첫 칸 높이 ±1** 이 상한(드래그로 계속 쌓이지 않음), 평탄은 첫 칸 높이로. 스트로크를 오른쪽 버튼으로 시작하면 `reliefInverseMode`(`reliefBrushMode.ts`)로 반대 방식: 올리기↔내리기, 산↔골짜기, 다듬기↔거칠게, 평탄·단 지정 → 0단 지우기 |
 | 붓 수식 | `src/project/relief/edit.ts` `brushRelief` — 산·골짜기는 `ops.ts` 의 mountain(경사 2칸/단)·canyon(붓 폭) 을 지금 높이 위에 덧칠, 다듬기·거칠게는 붓 원 안에만 smooth/rough |
-| 액션 | `tileActions.ts` `paintRelief` → `store.updateMapTiles(..., {label:"높이 붓", relief: true})`. 바뀐 칸 없으면 store 를 안 건드린다 |
+| 액션 | `tileActions.ts` `paintRelief` → `bakeReliefTiles`(절벽 어휘 칩셋만) → `store.updateMapTiles(..., {label:"높이 붓", relief: true, cells})`. 굽기가 바꾼 하위 칸을 `cells` 로 알린다. 바뀐 칸 없으면 store 를 안 건드린다 |
+| 타일 굽기 | `src/editor/tools/village/reliefBake.ts` — 숲마을·합본 마을+레트로 월드맵 칩셋에서 높이를 비취 대계곡 남향 벽 문법(`cliffGrammar.ts`)으로 **하위 층 타일**에 깐다(원본 ID +480). 이전/새 계획의 차이 칸만 고치고, 하위 붓으로 손본 칸·집·물·상위 장식 칸은 덮지 않는다. 0단으로 내리면 땅으로 되돌린다. `relief.baked` 를 켠다 |
 | 옵션 UI | `tilePaletteStampStatus.ts` `makeReliefBrushControls` (`relief-brush-controls`, 칩 `relief-mode-*` 8개, 단 지정·산일 때 `relief-level-select`, 왼/오른 버튼 안내 `relief-brush-hint`) |
 | 렌더 | `EditScene.ts` — `relief: true` 변경은 `editSceneRenderPlan` 이 `kind:"relief"` 로 가른다. 타일 재렌더 없이 `scheduleReliefRender` 가 다음 프레임에 절벽 그림 한 번만 굽고(같은 크기면 캔버스 텍스처 재사용) |
 
@@ -27,7 +28,9 @@
 (20×15 빈 맵, 표본 40개 드래그 9.9초 · long task 7.2초 실측). 이제 `relief: true` 는 `isTileCellChange` 가 참이라 패널·검사 캐시·이벤트 편집기가
 타일 붓과 같이 가볍게 넘기고, 씬은 절벽 그림만 프레임당 한 번 굽는다. **relief 만 바꾸는 새 쓰기 경로는 `relief: true` 를 달아라.**
 
-주의: 높이는 **그림만** 바꾼다. 윗단 위 타일·통행·이벤트는 들어 올리지 않는다(스키마 쪽 한계는 `runtime-project-schema.md` 「높이 지형」). 조수 도구는 `editor-ai-tools.md` 「절벽 높이 도구」.
+**타일 굽기 (2026-09-27):** 예전엔 절벽이 1·3층 사이 불투명 덧그림이라 하위·상위 붓·지우개·스포이트로 고칠 수 없었다(사용자 지적). 절벽 어휘 칩셋에서는 이제 진짜 하위 타일이고 `relief.baked` 맵은 덧그림을 그리지 않는다(`renderReliefLayer`). 절벽은 남향 벽만 선다 — 북·서·동 가장자리는 참고 맵처럼 잔디. 다른 칩셋은 예전처럼 덧그림이다.
+
+주의: 덧그림 칩셋에서 높이는 **그림만** 바꾼다. 어느 쪽이든 윗단 위 타일·통행·이벤트는 들어 올리지 않는다(스키마 쪽 한계는 `runtime-project-schema.md` 「높이 지형」). 조수 도구는 `editor-ai-tools.md` 「절벽 높이 도구」.
 
 ## 맵별 16/32/48px 좌표
 

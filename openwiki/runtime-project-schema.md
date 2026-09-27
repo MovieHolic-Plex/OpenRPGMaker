@@ -12,14 +12,14 @@
 
 ## 높이 지형 `map.relief` — 선택 필드 (2026-09-26)
 
-`GameMap.relief?: ReliefData` — `{ width, height, levels: number[] }`(행 우선, 칸마다 0~14단). **없으면 평지**이고 옛 맵은 바이트 단위로 그대로다.
+`GameMap.relief?: ReliefData` — `{ width, height, levels: number[], baked?: boolean }`(행 우선, 칸마다 0~14단). `baked` 는 절벽을 하위 층 타일로 구웠다는 표시(2026-09-27, `editor/tools/village/reliefBake.ts`) — 편집기가 덧그림을 그리지 않는다. `normalizeRelief`·`remapExtraLayers` 가 보존한다. **없으면 평지**이고 옛 맵은 바이트 단위로 그대로다.
 권위 코드는 `src/project/relief/`(`types`·`edit`·`ops`·`check`·`render`).
 
 - 불러오기: `io/shape.ts` `normalizeProjectRelief` 가 `normalizeRelief` 로 맵 크기에 맞추고 0~14 로 자른다. 전부 0 이거나 모양이 틀리면 필드를 **지운다**.
 - 쓰기 규칙: 결과가 전부 0 이면 `relief` 를 지운다(붓·조수 도구 모두). 빈 `relief` 를 남기지 않는다.
 - 크기 바꾸기·밀기·자르기: `mapLayers.ts` 의 `ExtraLayerFields` 에 `relief` 가 들어가 `cloneExtraLayers`/`remapExtraLayers` 가 같은 칸 번호로 옮긴다.
 - 렌더: 편집기 `EditScene` 이 `renderRelief(effectiveHeights(h), {transparentGround:true})` 로 절벽 벽면·45° 대각선을 그려 1층과 3층 사이에 깐다.
-- **한계(아직):** 높이는 그림만 바꾼다. 윗단 위 타일·이벤트·통행·런타임 플레이어 높이는 relief 를 모른다. 런타임(`player.html`) 렌더도 아직 없다.
+- **한계(아직):** 덧그림 칩셋에서 높이는 그림만 바꾼다(구운 칩셋은 절벽 타일이 1층에 있어 통행·런타임에 그대로 나온다). 윗단 위 타일·이벤트·통행·런타임 플레이어 높이는 relief 를 모른다. 런타임(`player.html`) 렌더도 아직 없다.
 
 ## 맵 칸 2층·4층·그림자 — 선택 필드 (MZ식 4층 PR ①, 2026-09-24)
 
