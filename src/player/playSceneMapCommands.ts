@@ -245,21 +245,35 @@ export function nearestPassableTile(
   const fx = Math.max(0, Math.min(map.width - 1, x));
   const fy = Math.max(0, Math.min(map.height - 1, y));
   if (isPassableLanding(project, map, fx, fy)) return { x: fx, y: fy };
-  for (let radius = 0; radius < Math.max(map.width, map.height); radius++) {
-    for (let dy = -radius; dy <= radius; dy++) {
-      for (let dx = -radius; dx <= radius; dx++) {
-        if (isPassableLanding(project, map, fx + dx, fy + dy)) return { x: fx + dx, y: fy + dy };
-      }
-    }
-  }
+  const landing = scanSquareRings(map, fx, fy, (cx, cy) => isPassableLanding(project, map, cx, cy));
+  if (landing) return landing;
   // 나갈 수 있는 칸이 정말 하나도 없는 맵(전부 막힌 방 등)이면, 최소한 밟을 수는 있는 칸으로
   // 물러선다 — 예전 동작과 같다. 아무 데도 못 가는 것보다는 낫다.
-  for (let radius = 0; radius < Math.max(map.width, map.height); radius++) {
+  return scanSquareRings(map, fx, fy, (cx, cy) => isPassable(project, map, cx, cy)) ?? { x: fx, y: fy };
+}
+
+/**
+ * 중심에서 바깥으로 정사각 고리를 하나씩 훑어 처음 맞는 칸을 낸다.
+ *
+ * 예전에는 반경마다 **안쪽 정사각 전체**를 다시 훑어 최악 O(D³) 였다(시간표 NPC 가 막힌 목표를
+ * 가질 때 100ms 마다 불린다). 안쪽은 이전 반경에서 이미 전부 실패했으므로 고리만 보면 된다.
+ * 한 반경 안의 방문 순서(행 우선: dy 오름차순, 그 안에서 dx 오름차순)는 그대로라 결과가 같다.
+ */
+function scanSquareRings(
+  map: { readonly width: number; readonly height: number },
+  fx: number,
+  fy: number,
+  accept: (x: number, y: number) => boolean,
+): { x: number; y: number } | null {
+  const limit = Math.max(map.width, map.height);
+  for (let radius = 0; radius < limit; radius++) {
     for (let dy = -radius; dy <= radius; dy++) {
-      for (let dx = -radius; dx <= radius; dx++) {
-        if (isPassable(project, map, fx + dx, fy + dy)) return { x: fx + dx, y: fy + dy };
+      const edgeRow = dy === -radius || dy === radius;
+      const step = edgeRow || radius === 0 ? 1 : radius * 2;
+      for (let dx = -radius; dx <= radius; dx += step) {
+        if (accept(fx + dx, fy + dy)) return { x: fx + dx, y: fy + dy };
       }
     }
   }
-  return { x: fx, y: fy };
+  return null;
 }

@@ -1,0 +1,34 @@
+{
+  "id": "refmap-photo-local",
+  "tileset": "shared_refmap_photo",
+  "tiles": 6144,
+  "atlas": "3072×4608",
+  "places": 2,
+  "objectKits": 23,
+  "houseKits": 0,
+  "autotileGroups": 17,
+  "bytes": 4384879,
+  "maps": {
+    "photo_forest_path": {
+      "place": "shared_refmap_photo_photo_forest_path",
+      "size": "36×28",
+      "objects": 35,
+      "houses": 0,
+      "renderSha": "143e1a889e35e20b0ba55d4593b4ff900926d2c9a736419e1abc4383f132f1d8"
+    },
+    "photo_meadow": {
+      "place": "shared_refmap_photo_photo_meadow",
+      "size": "40×30",
+      "objects": 45,
+      "houses": 0,
+      "renderSha": "b69666eefd25687fe43a3fb38e7b91994f348a4d4a8307cb158002396a0d40f4"
+    }
+  },
+  "file": "/home/main/.local/share/oprn/shared-content.sqlite",
+  "revision": "d0cea94f8527a74e53628946ac83fdcd0608196f1334b518ef1437f08fe3e6d1",
+  "reloaded": true,
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-photo-2026-09-27T08-28-40-674Z.sqlite",
+  "otherLibraries": 36,
+  "otherLibrariesUnchanged": true,
+  "publishedAt": "2026-09-27T08:28:54.638Z"
+}

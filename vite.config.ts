@@ -322,6 +322,8 @@ export default defineConfig(({ mode }) => {
       input: {
         main: fileURLToPath(new URL("./index.html", import.meta.url)),
         benchmark: fileURLToPath(new URL("./benchmark.html", import.meta.url)),
+        // 데스크톱 앱 첫 화면(app://oprn/start-screen.html). 편집기 번들을 싣지 않는 별도 엔트리다.
+        startScreen: fileURLToPath(new URL("./start-screen.html", import.meta.url)),
       },
     },
     target: "es2022",

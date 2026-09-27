@@ -223,8 +223,11 @@ export function renderResourceManager(
     ...(recentAssetId === undefined ? {} : { recentAssetId }),
     onDropFile,
     onImportUrl,
-    onBrowseCreatorPage: () => openAssetSourceBrowser((request) => {
-      importImageResource(request.file, "chipset", container, request);
+    onBrowseCreatorPage: () => openAssetSourceBrowser({
+      onImportFile: (request) => importImageResource(request.file, "chipset", container, request),
+      onImportPack: (files) => importMvPackFiles(files)
+        .then(() => renderResourceManager(container))
+        .catch((error: unknown) => toast(error instanceof Error ? error.message : "팩 가져오기 실패", "error")),
     }),
   });
   if (focused instanceof HTMLElement && container.contains(focused)) {

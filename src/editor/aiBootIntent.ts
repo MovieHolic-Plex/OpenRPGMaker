@@ -9,10 +9,21 @@
  */
 export type AiBootIntentTarget = {
   readonly open: () => void;
-  readonly prefill: (text: string, displayText?: string) => void;
+  readonly prefill: (text: string, displayText?: string, options?: AiBootIntentRunOptions) => void;
   readonly getDraft?: () => string;
   /** Optional: send a user turn. Must not bypass proposal approval for write tools. */
-  readonly send?: (text: string, displayText?: string) => void | Promise<void>;
+  readonly send?: (text: string, displayText?: string, options?: AiBootIntentRunOptions) => void | Promise<void>;
+};
+
+/**
+ * 핸드오프가 실어 보내는 실행 옵션.
+ *
+ * `team`: 이 한 턴만 팀(팀장·시공·검수)으로 돌린다. 프리셋으로 시작하는 첫 생성이 맵 여러 장·이벤트·DB 를
+ * 한꺼번에 만드는 일이라 팀이 맡는다(2026-09-27 합의). 사용자의 팀 설정(`AiConfig.piTeam`)은 바꾸지 않는다 —
+ * 그다음의 「집 한 채」 같은 작은 요청까지 팀으로 돌면 느려지기 때문이다.
+ */
+export type AiBootIntentRunOptions = {
+  readonly team?: boolean;
 };
 
 /**
@@ -26,26 +37,31 @@ export type PendingWelcomePipeline = {
   readonly displayText?: string;
   readonly autoSend: boolean;
   readonly source: "chip" | "free-text";
+  /** 이 첫 턴만 팀으로 돌린다. 프리셋 경로만 켠다. */
+  readonly team?: boolean;
 };
 
 let pendingIntent: string | null = null;
 let pendingDisplay: string | null = null;
 let pendingAutoSend = false;
+let pendingTeam = false;
 let target: AiBootIntentTarget | null = null;
 let welcomeIntentAppliedThisBoot = false;
 let suppressCoachForMount = false;
 
-export function setPendingAiBootIntent(text: string, options?: { readonly autoSend?: boolean; readonly displayText?: string }): void {
+export function setPendingAiBootIntent(text: string, options?: { readonly autoSend?: boolean; readonly displayText?: string; readonly team?: boolean }): void {
   const trimmed = text.trim();
   if (!trimmed) {
     pendingIntent = null;
     pendingDisplay = null;
     pendingAutoSend = false;
+    pendingTeam = false;
     return;
   }
   pendingIntent = trimmed;
   pendingDisplay = displayOrNull(trimmed, options?.displayText);
   pendingAutoSend = options?.autoSend === true;
+  pendingTeam = options?.team === true;
   suppressCoachForMount = true;
 }
 
@@ -53,6 +69,7 @@ export function setPendingWelcomePipeline(pipeline: PendingWelcomePipeline): voi
   setPendingAiBootIntent(pipeline.prompt, {
     autoSend: pipeline.autoSend,
     ...(pipeline.displayText !== undefined ? { displayText: pipeline.displayText } : {}),
+    ...(pipeline.team ? { team: true } : {}),
   });
 }
 
@@ -76,6 +93,7 @@ export function consumePendingAiBootIntent(): string | null {
   pendingIntent = null;
   pendingDisplay = null;
   pendingAutoSend = false;
+  pendingTeam = false;
   return value;
 }
 
@@ -88,6 +106,7 @@ export function clearPendingAiBootIntent(): void {
   pendingIntent = null;
   pendingDisplay = null;
   pendingAutoSend = false;
+  pendingTeam = false;
 }
 
 /**
@@ -117,11 +136,15 @@ export function shouldSuppressCoachMarksForWelcomeIntent(): boolean {
   return suppressCoachForMount || pendingIntent !== null || welcomeIntentAppliedThisBoot;
 }
 
-function applyIntentToTarget(text: string, t: AiBootIntentTarget, autoSend: boolean, displayText: string | null = null): boolean {
+function applyIntentToTarget(text: string, t: AiBootIntentTarget, autoSend: boolean, displayText: string | null = null, team = false): boolean {
   try {
     t.open();
-    // 보이는 문장이 따로 있을 때만 두 번째 인자를 싣는다 — 없으면 예전 호출 모양 그대로다.
-    if (autoSend && t.send) {
+    // 보이는 문장·팀 옵션이 있을 때만 인자를 더 싣는다 — 없으면 예전 호출 모양 그대로다.
+    if (team) {
+      const options: AiBootIntentRunOptions = { team: true };
+      if (autoSend && t.send) void t.send(text, displayText ?? undefined, options);
+      else t.prefill(text, displayText ?? undefined, options);
+    } else if (autoSend && t.send) {
       void (displayText ? t.send(text, displayText) : t.send(text));
     } else if (displayText) {
       t.prefill(text, displayText);
@@ -140,17 +163,20 @@ export function applyPendingAiBootIntent(): boolean {
   const text = pendingIntent;
   const display = pendingDisplay;
   const autoSend = pendingAutoSend;
+  const team = pendingTeam;
   pendingIntent = null;
   pendingDisplay = null;
   pendingAutoSend = false;
+  pendingTeam = false;
   if (!text) return false;
   if (!target) {
     pendingIntent = text;
     pendingDisplay = display;
     pendingAutoSend = autoSend;
+    pendingTeam = team;
     return false;
   }
-  return applyIntentToTarget(text, target, autoSend, display);
+  return applyIntentToTarget(text, target, autoSend, display, team);
 }
 
 /** Prefill an already-mounted panel. Never sends. */

@@ -85,6 +85,8 @@
 - **문자 입력**: `enterHeroName.stringVariableId` 를 주면 배우 이름 대신 문자열 변수에 저장한다(`prompt` 가 창 제목). 대사에서 `\T[id]` 로 찍는다(`\S[n]` 은 이미 속도 제어라 `T`).
 - 세션 새 칸 `playerFacing`·`stringVariables`·`stepCount` 는 세이브에 들어가고, `clearHistory` 는 **세이브에 넣지 않는다**(회차는 슬롯이 아니라 기기에 속한다).
 - 편집기: 조건 종류 선택기·고급 조건 목록 모두 `actorQueryConditionForm.ts` 하나가 그린다. 없는 배우·상태·엔딩 참조는 초안 검증이 `condition.<kind>.reference` 경고로 잡는다.
+- **추격 훅(#28)**: 추격자 `movement.pursuit.lostSwitchId` 는 수색 끝에 포기하는 순간 켜고 다시 발견하면 끈다. `followSwitchId` 는 문을 따라 다른 맵으로 넘어오기 시작하면 켠다(`horrorRuntime.ts` / `pursuitDoors.ts`). 페이지 조건으로 「따돌렸다」·「문이 열린다」 연출을 건다. 페이지 추격 패널과 `configure_object_behavior` 의 `pursuit` 에 노출, `test/mgPursuitHooks.test.ts`.
+- 난이도·아이템 사용 조건(`difficulty`·`itemUsed`)은 간단 행이 없어 고급 조건 목록에 나온다(`pageConditionLayout.ts`).
 
 ## 구역(로케이션) 조건분기 (OPRN-OUT-020, 2026-09-10)
 

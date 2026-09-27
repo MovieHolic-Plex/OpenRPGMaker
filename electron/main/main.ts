@@ -10,7 +10,7 @@ import { registerAssetBrowser } from "./assetBrowser";
 import { registerAppProtocol, registerAssetProtocol } from "./protocols";
 import { createProjectSessionRegistry } from "./sessions";
 import { startCompanionServer, type CompanionServer } from "./companion";
-import { listRecentProjects, rememberRecentProject } from "./recent";
+import { describeRecentProjects, prepareNewProjectDir, rememberRecentProject, suggestProjectDir } from "./recent";
 
 protocol.registerSchemesAsPrivileged([
   { scheme: OPRN_APP_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } },
@@ -251,7 +251,18 @@ app.whenReady().then(async () => {
     if (window) destroyWindow(window);
     return true;
   });
-  ipcMain.handle(OPRN_CHANNELS.startRecentProjects, () => listRecentProjects());
+  ipcMain.handle(OPRN_CHANNELS.startRecentProjects, () => describeRecentProjects());
+  ipcMain.handle(OPRN_CHANNELS.startSuggestProjectDir, (_event: IpcMainInvokeEvent, payload: unknown) => {
+    const input = payload as { readonly title?: unknown; readonly root?: unknown } | null;
+    const title = typeof input?.title === "string" ? input.title : undefined;
+    return typeof input?.root === "string" && input.root ? suggestProjectDir(title, input.root) : suggestProjectDir(title);
+  });
+  ipcMain.handle(OPRN_CHANNELS.startChooseProjectRoot, async (event: IpcMainInvokeEvent) => {
+    const owner = BrowserWindow.fromWebContents(event.sender);
+    const options = { properties: ["openDirectory", "createDirectory"] as Array<"openDirectory" | "createDirectory">, title: "새 게임을 만들 위치 선택" };
+    const result = owner ? await dialog.showOpenDialog(owner, options) : await dialog.showOpenDialog(options);
+    return result.canceled || result.filePaths.length === 0 ? null : result.filePaths[0];
+  });
   ipcMain.handle(OPRN_CHANNELS.startOpenFolder, async (event: IpcMainInvokeEvent) => {
     const { dialog } = await import("electron");
     const result = await dialog.showOpenDialog({ properties: ["openDirectory"], title: "프로젝트 폴더 열기" });
@@ -273,15 +284,22 @@ app.whenReady().then(async () => {
     return { projectDir: dir, projectId: session.store.projectId };
   });
   ipcMain.handle(OPRN_CHANNELS.startCreateProject, async (event: IpcMainInvokeEvent, payload: unknown) => {
-    const input = payload as { readonly title?: string; readonly seed?: string };
-    const result = await dialog.showOpenDialog({ properties: ["openDirectory", "createDirectory"], title: "새 프로젝트 폴더 선택" });
-    if (result.canceled || result.filePaths.length === 0) return null;
-    const dir = result.filePaths[0];
+    const input = payload as { readonly title?: string; readonly seed?: string; readonly projectDir?: string };
+    let dir: string;
+    // 시작 화면은 저장 위치를 미리 보여 주고 확정된 경로를 보낸다. 편집기 메뉴 경로는 예전처럼 대화상자를 연다.
+    if (typeof input?.projectDir === "string" && input.projectDir) {
+      dir = prepareNewProjectDir(input.projectDir);
+    } else {
+      const result = await dialog.showOpenDialog({ properties: ["openDirectory", "createDirectory"], title: "새 프로젝트 폴더 선택" });
+      if (result.canceled || result.filePaths.length === 0) return null;
+      dir = result.filePaths[0];
+    }
     const session = await sessions.open(event.sender.id, dir);
     // 시드(장르 프리셋 등)를 새 폴더에 심는다 — 빈 폴더로 시작하면 렌더러가 리로드 뒤에 적용할 수 없다.
     if (typeof input.seed === "string" && input.seed.length > 0) await session.store.saveSerialized(input.seed);
-    rememberRecentProject(dir, input.title ?? "새 프로젝트");
-    return { projectDir: dir, projectId: session.store.projectId };
+    rememberRecentProject(session.projectDir, input.title ?? "새 프로젝트");
+    // 세션이 정규화한 경로(realpath)를 돌려준다 — 시작 화면 인계가 편집기가 연 폴더와 같은 문자열로 비교한다.
+    return { projectDir: session.projectDir, projectId: session.store.projectId };
   });
   ipcMain.handle(OPRN_CHANNELS.startImportFile, async (event: IpcMainInvokeEvent, payload: unknown) => {
     return { projectDir: null, imported: false };

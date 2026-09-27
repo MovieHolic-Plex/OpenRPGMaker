@@ -40,6 +40,11 @@ export type NewProjectDialogOptions = {
   readonly defaultChoiceId?: NewProjectChoiceId | null;
   readonly confirmLabel?: string;
   readonly cancelLabel?: string;
+  /**
+   * 장르를 고르고 확인하면 기획 인터뷰 **전에** 부른다. false 면 다이얼로그에 남는다(빈 프로젝트는 부르지 않는다).
+   * 장르 프리셋은 AI 팀이 첫 생성을 맡으므로, 연결 없이 인터뷰를 끝까지 하게 두지 않는다.
+   */
+  readonly ensureAiConnected?: (presetLabel: string) => Promise<boolean>;
 };
 
 export const NEW_PROJECT_DIALOG_TESTIDS = {
@@ -344,6 +349,10 @@ export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promis
       interviewing = true;
       confirmButton.disabled = true;
       try {
+        if (opts.ensureAiConnected) {
+          const connected = await opts.ensureAiConnected(newProjectChoiceLabel(selection.choiceId)).catch(() => false);
+          if (!connected || settled) return;
+        }
         const gameDesignBrief = await showProjectInterview(selection.choiceId);
         if (gameDesignBrief && !settled) done({ ...selection, gameDesignBrief });
       } finally { interviewing = false; confirmButton.disabled = false; }

@@ -2,6 +2,8 @@
 export const LOCAL_STORE_FORMAT_VERSION = 2;
 
 export const PROJECT_STORE_FILE = "project.sqlite";
+/** 시작 화면 최근 목록 카드 그림. 정본이 아니라 편집기가 다시 만드는 캐시다. */
+export const PROJECT_COVER_FILE = "cover.jpg";
 export const ASSETS_DIR = "assets";
 export const BACKUPS_DIR = "backups";
 

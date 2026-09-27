@@ -35,6 +35,7 @@ import { projectRepository } from "@/project/persistence/repository";
 import { dismissBootLoader } from "@/app/bootLoader";
 import { rememberBootBrief } from "@/app/bootBrief";
 import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
+import { START_SCREEN_INTENT_KEY } from "@/start/startIntent";
 
 export type Mode = "edit" | "play";
 
@@ -176,6 +177,9 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
   } = await import("@/editor/aiBootIntent");
 
   let showBriefing = false;
+  // 데스크톱 시작 화면의 「만들기」로 막 만든 폴더면, 거기서 고른 장르를 채택·저장하고 한 문장을 조수에게 넘긴다.
+  // 시작 화면이 이미 「어떤 게임을 만들까요?」를 물었으므로 캔버스 브리핑은 다시 띄우지 않는다.
+  const startHandoff = modeMounted ? null : await applyStartScreenHandoffAtBoot();
   // 공용 데모가 열려 있으면(첫 방문 게이트 또는 ?project= 데모 딥링크) 「어떤 게임을
   // 만들까요」 브리핑 대신 데모 안내 토스트가 첫 인상을 맡는다. ?forceWelcome=1 리허설만 예외.
   const sharedDemoOpen = store.isSharedDemoSession();
@@ -186,12 +190,29 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
     clearPendingAiBootIntent();
   } else {
     clearWelcomeIntentBootFlags();
-    showBriefing = !store.getCurrent().gameDesignBrief && !demoHoldsFirstScreen && shouldPresentEditorWelcome({
+    showBriefing = !startHandoff && !store.getCurrent().gameDesignBrief && !demoHoldsFirstScreen && shouldPresentEditorWelcome({
       modeShellMounted: false,
       deepLinkedProject: deepLinkedProjectAtBoot,
     });
     // Suppress brush/standard coach while the briefing owns the first visit.
     if (showBriefing) markWelcomeIntentAppliedThisBoot();
+    if (startHandoff) {
+      // 시작 화면을 거친 사용자는 첫 방문 브리핑을 이미 본 셈이다 — 다음 부팅에도 띄우지 않는다.
+      setEditorWelcomeDismissed(true);
+      if (startHandoff.prompt) {
+        markWelcomeIntentAppliedThisBoot();
+        setPendingWelcomePipeline({
+          prompt: startHandoff.prompt,
+          ...(startHandoff.displayText ? { displayText: startHandoff.displayText } : {}),
+          autoSend: startHandoff.autoSend,
+          source: "free-text",
+        });
+        if (!startHandoff.autoSend) {
+          const { toast } = await import("@/util/toast");
+          toast("적어 둔 한 문장을 조수 입력창에 담았습니다. AI 연결 후 보낼 수 있습니다.", "info");
+        }
+      }
+    }
   }
 
   // 브리핑 모듈은 셸 마운트와 **병렬로** 미리 받는다. 셸을 다 그린 뒤에 import 하면 그동안 편집기가
@@ -259,6 +280,11 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
           .then(({ openAiSettingsModal }) => { openAiSettingsModal(); })
           .catch(() => undefined);
       },
+      // 프리셋 포스터는 AI 팀이 첫 생성을 맡는다 — 연결이 없으면 인터뷰 전에 연결부터 안내한다.
+      ensureAiConnected: async (presetLabel) => {
+        const { ensureAiConnectedForPreset } = await import("@/editor/ui/aiConnectGate");
+        return ensureAiConnectedForPreset({ presetLabel });
+      },
     });
     // presentEditorWelcome 은 Promise 실행자 안에서 동기로 마운트한다 — 이 시점에 웰컴이 이미 DOM 에 있다.
     // 로더 페이드아웃(200ms)이 웰컴 위로 겹쳐 빠지므로 로더 → 웰컴 사이에 편집기가 비치지 않는다.
@@ -281,6 +307,8 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
         ...(result.displayText ? { displayText: result.displayText } : {}),
         autoSend: result.autoSend,
         source: result.source === "chip" ? "chip" : "free-text",
+        // 프리셋으로 시작하는 첫 생성만 팀으로 돈다. 자유 입력 「만들기」와 이후 요청은 사용자 팀 설정을 따른다.
+        ...(result.source === "chip" ? { team: true } : {}),
       });
       // AI 없이 인터뷰를 끝내면 기획 프롬프트가 조수 입력창에 담기기만 한다. 설명이 없으면 빈 맵과
       // 낯선 지시문만 남아 「아무 일도 안 일어났다」로 보인다 — 메뉴의 새 프로젝트 경로와 같은 안내를 준다.
@@ -309,6 +337,30 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
     openLoginModalIfNeeded(() => void renderTopbar());
   }
   markInitialEditRender(startedAt);
+  // 데스크톱 시작 화면의 최근 목록 카드 그림(cover.jpg). 브리지에 saveCover 가 있을 때만 모듈을 받는다.
+  if (typeof window !== "undefined" && window.oprn?.project.saveCover) {
+    void import("@/editor/projectCover").then(({ installProjectCoverCapture }) => installProjectCoverCapture()).catch(() => undefined);
+  }
+}
+
+/** 시작 화면 인계가 남아 있을 때만 장르 씨앗 모듈을 받는다. 실패하면 알리고 빈 프로젝트로 계속한다. */
+async function applyStartScreenHandoffAtBoot(): Promise<import("@/editor/startScreenHandoff").StartScreenHandoff | null> {
+  let pending = false;
+  try {
+    pending = typeof window !== "undefined" && window.sessionStorage?.getItem(START_SCREEN_INTENT_KEY) != null;
+  } catch {
+    pending = false;
+  }
+  if (!pending) return null;
+  try {
+    const { applyStartScreenHandoff } = await import("@/editor/startScreenHandoff");
+    return await applyStartScreenHandoff();
+  } catch (error) {
+    console.error("[start] 시작 화면 선택을 적용하지 못했습니다:", error);
+    const { toast } = await import("@/util/toast");
+    toast("고른 장르를 적용하지 못해 빈 프로젝트로 열었습니다. 프로젝트 메뉴에서 다시 고를 수 있습니다.", "error");
+    return null;
+  }
 }
 
 /** Shared edit/play shell mount flag — cold-boot welcome gate uses this (not edit-only). */

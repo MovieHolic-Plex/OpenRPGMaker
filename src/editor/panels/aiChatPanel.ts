@@ -136,7 +136,7 @@ import {
   type AiBridgeSendOptions,
   type AiBridgeTurnResult,
 } from "@/editor/aiAssistantBridge";
-import { registerAiBootIntentTarget } from "@/editor/aiBootIntent";
+import { registerAiBootIntentTarget, type AiBootIntentRunOptions } from "@/editor/aiBootIntent";
 import { createChatResizeChrome } from "./aiChatResizeChrome";
 import {
   applyAiBackgroundOpacity,
@@ -1983,11 +1983,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    * 보이고 보낼 때 전체 지시문이 간다. 사용자가 문장을 고치면(보이는 문장과 달라지면) 사용자가
    * 쓴 그대로 보낸다 — 고친 문장 뒤에 숨은 지시를 몰래 붙이지 않는다.
    */
-  let composerHandoff: { readonly display: string; readonly full: string } | null = null;
+  // `team`: 프리셋 첫 생성 핸드오프 — 이 한 턴만 팀으로 돈다(사용자 팀 설정은 그대로다).
+  let composerHandoff: { readonly display: string; readonly full: string; readonly team?: boolean } | null = null;
   /** 입력창을 되살릴 때 — 보낼 지시문이 보이는 문장과 다르면 핸드오프도 함께 되살린다. */
-  const restoreComposer = (display: string, full?: string): void => {
+  const restoreComposer = (display: string, full?: string, team?: boolean): void => {
     input.value = display;
-    composerHandoff = full && full !== display ? { display, full } : null;
+    composerHandoff = team
+      ? { display, full: full ?? display, team: true }
+      : full && full !== display ? { display, full } : null;
     syncInputHeight();
     refreshSendEnabled();
   };
@@ -2054,7 +2057,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           runSurface.turnBusy = false;
           refreshAbortButton();
           setStatus("대기");
-          if (!input.value.trim()) restoreComposer(displayText || command.task, opts?.sentText);
+          if (!input.value.trim()) restoreComposer(displayText || command.task, opts?.sentText, command.mode === "team");
           appendBubble("system", "제작을 시작하지 않았어요. 요청을 수정해서 다시 보내세요.");
           return;
         }
@@ -2069,7 +2072,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         refreshSendEnabled();
         setStatus("대기");
         appendBubble("system", "이 프로젝트에는 집 미리보기를 지원하는 칩셋이 없어 제작을 시작하지 않았어요. 사용할 칩셋을 지정해 주세요.");
-        if (!input.value.trim()) restoreComposer(displayText || command.task, opts?.sentText);
+        if (!input.value.trim()) restoreComposer(displayText || command.task, opts?.sentText, command.mode === "team");
         return;
       }
     }
@@ -2170,7 +2173,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let piIntentDeclarer: IntentDeclarer | null = null;
   /** 평문 한 줄 → Pi 명령 + 실행 계획. 팀 비트는 설정에서, 읽기 전용·계획은 자율성 다이얼에서 온다. */
   type PlainPiTurn = { readonly command: ParsedPiCommand; readonly plan: PiRunPlan; readonly questionPromoted: boolean; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null; readonly timing: TurnTimingRecorder };
-  const plainPiTurn = async (text: string): Promise<PlainPiTurn> => {
+  const plainPiTurn = async (text: string, turnOptions?: { readonly team?: boolean }): Promise<PlainPiTurn> => {
     // 기록기는 턴당 하나고 의도 선언부터 산다 — 사용자가 기다리는 시간은 엔터를 누른 순간부터고, 선언 한 번이
     // 실제로 1.2~7.5s 를 삼킨다(2026-09-16 실측). 이걸 벽시계 밖에 두면 표의 total 이 그만큼 짧게 나와
     // 「어느 단계도 오래 안 걸렸는데 턴은 느렸다」는 모순이 생긴다.
@@ -2187,7 +2190,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         hasActivePlan: workPlanSurfaceState?.active === true,
         autonomy: currentAutonomy(),
         declarer: () => (piIntentDeclarer ??= createLlmIntentDeclarer({ timeoutMs: 30_000 })),
-        piTeam: loadAiConfig().piTeam ?? DEFAULT_PI_TEAM,
+        // 프리셋 첫 생성은 설정과 무관하게 팀이다 — 읽기 전용 다이얼이면 classifyPlainPiTurn 이 여전히 단독으로 내린다.
+        piTeam: turnOptions?.team === true || (loadAiConfig().piTeam ?? DEFAULT_PI_TEAM),
         onDeclaring: () => setStatus("의도 읽는 중…"),
       });
     } finally {
@@ -2268,7 +2272,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     ensureWorkCard();
     let classified: PlainPiTurn;
     try {
-      classified = await plainPiTurn(text);
+      classified = await plainPiTurn(text, handoff?.team ? { team: true } : undefined);
     } catch (error) {
       // 슬롯을 반드시 돌려놓고, 실패를 unhandled rejection 으로 흘리지 않는다 — 이 호출자는
       // 클릭 리스너(`void send()`)라 받아 줄 사람이 없다(2026-09-16 실측: 분류가 던지면 vitest 가
@@ -3807,10 +3811,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   registerAiBootIntentTarget({
     open: () => restoreCollapsed(),
     getDraft: () => input.value,
-    prefill: (text: string, displayText?: string) => {
+    prefill: (text: string, displayText?: string, runOptions?: AiBootIntentRunOptions) => {
       // AI 연결 전에 담아 둔 첫 화면 프롬프트 — 입력창에는 사용자 쪽 요약만, 보낼 때 전체 지시문이 간다.
       input.value = displayText ?? text;
-      composerHandoff = displayText && displayText !== text ? { display: displayText, full: text } : null;
+      // 팀 옵션은 보이는 문장이 곧 보낼 문장일 때도 따라가야 한다 — 그래서 핸드오프를 그 경우에도 만든다.
+      composerHandoff = runOptions?.team
+        ? { display: displayText ?? text, full: text, team: true }
+        : displayText && displayText !== text ? { display: displayText, full: text } : null;
       syncInputHeight();
       refreshComposerPlaceholder();
       refreshSendEnabled();
@@ -3820,7 +3827,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         // ignore focus failures in headless tests
       }
     },
-    send: async (text: string, displayText?: string) => {
+    send: async (text: string, displayText?: string, runOptions?: AiBootIntentRunOptions) => {
       // Project creation emits before IndexedDB conversation adoption finishes. Its reset
       // must complete before the preset enters the composer or starts a turn.
       await whenAiChatPanelSettled();
@@ -3836,11 +3843,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       const shown = displayText?.trim() || text;
       let classified: PlainPiTurn;
       try {
-        classified = await plainPiTurn(text);
+        classified = await plainPiTurn(text, runOptions?.team ? { team: true } : undefined);
       } catch (error) {
         // 해석이 실패해도 요청은 잃지 않는다 — 예전에는 입력창에 남은 전문으로 다시 보낼 수 있었다.
         if (disposed) return;
-        if (!input.value.trim()) restoreComposer(shown, text);
+        if (!input.value.trim()) restoreComposer(shown, text, runOptions?.team);
         setStatus("대기");
         appendBubble("system", `지시를 해석하지 못했습니다: ${error instanceof Error ? error.message : String(error)}`);
         return;

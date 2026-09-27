@@ -1,6 +1,6 @@
 {
   "name": "oprn",
-  "version": "0.21.0",
+  "version": "0.24.0",
   "description": "웹 기반 탑뷰 타일 JRPG 메이커 (MVP)",
   "private": true,
   "type": "module",
@@ -108,6 +108,7 @@
     "@oh-my-pi/pi-agent-core": "^17.4.0",
     "god-tibo-imagen": "^0.4.1",
     "jimp": "^0.16.13",
+    "node-unrar-js": "2.0.2",
     "phaser": "^3.90.0",
     "tar": "7.5.22",
     "zod": "^4.5.4"

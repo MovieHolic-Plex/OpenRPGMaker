@@ -72,6 +72,14 @@ export function advanceTimeAcrossDayBoundaries(
 
   if (minutes === 0) return { ok: true, time: session.gameTime, receipts: [] };
   if (!isGameTime(session.gameTime)) return { ok: false, reason: "invalid-time" };
+  // 같은 날 안에서 시계만 흐르는 경우(자연 시계의 거의 모든 틱)는 세션 전체 복제·생활 상태 재조정을
+  // 건너뛴다. 실측 없이도 비용 구조는 명확하다 — reconcileLifeState 는 structuredClone(session)
+  // 에 공간 배치·동물 검증까지 돌리고, 자연 시계는 이것을 **1초마다** 부른다. 날짜 경계를 넘지
+  // 않으면 바뀌는 것은 시각과 제작기 상태뿐이라, 그 둘만 초안으로 계산해 원자적으로 커밋한다.
+  if (minutes < minutesUntilDayEnd(session.gameTime, system)) {
+    const fast = advanceClockWithinDay(project, session, minutes, system);
+    if (fast) return fast;
+  }
   let draft: PlaySession;
   try { draft = reconcileLifeState(project, session); }
   catch (error) {
@@ -113,6 +121,44 @@ export function advanceTimeAcrossDayBoundaries(
   }
   replaceSession(session, draft);
   return { ok: true, time: structuredClone(draft.gameTime!), receipts };
+}
+
+/**
+ * 날짜 경계를 넘지 않는 시계 전진. 제작기 인스턴스 사전만 얕게 복제해 초안으로 쓴다. 제작기 검증이
+ * 실패하면 라이브 세션을 건드리지 않고 null 을 내서 재조정을 거치는 원래 경로로 넘긴다 — 저장에서
+ * 온 옛 형태를 재조정이 격리해 주는 경우까지 결과가 예전과 같다.
+ */
+function advanceClockWithinDay(
+  project: Project,
+  session: PlaySession,
+  minutes: number,
+  system: NonNullable<ReturnType<typeof resolveTimeSystem>>,
+): AdvanceTimeAcrossDayBoundariesResult | null {
+  const time = advanceGameTime(session.gameTime!, minutes, system).time;
+  // 재조정이 시계 틱에서 실제로 하는 일은 사라진 정의·바뀐 시간 기준의 제작 작업을 회수함으로
+  // 옮기는 것이다(lifeStateReconciliation §makerInstances). 그런 작업이 하나라도 있으면 빠른 경로를
+  // 포기한다. 나머지 재조정 대상(배송·꾸러미·배치·동물)은 저장 경계와 날짜 경계에서만 바뀐다.
+  if (!makerJobsCurrent(project, session)) return null;
+  const makerInstances = session.makerInstances ? { ...session.makerInstances } : undefined;
+  const draft = { gameTime: time, makerInstances } as PlaySession;
+  const makers = syncMakersToGameTime(project, draft);
+  if (!makers.ok && makers.reason !== "disabled") return null;
+  session.gameTime = time;
+  if (makers.ok && makers.readyInstanceIds.length > 0) session.makerInstances = makerInstances!;
+  return { ok: true, time: structuredClone(time), receipts: [] };
+}
+
+function makerJobsCurrent(project: Project, session: PlaySession): boolean {
+  const jobs = session.makerInstances;
+  if (!jobs) return true;
+  const time = resolveTimeSystem(project);
+  for (const job of Object.values(jobs)) {
+    if (!project.system.makers?.some((maker) => maker.id === job.makerId)) return false;
+    const basis = job.contract?.timeBasis;
+    if (basis && (!time || basis.dayStartHour !== time.dayStartHour || basis.dayEndHour !== time.dayEndHour
+      || basis.daysPerSeason !== time.daysPerSeason)) return false;
+  }
+  return true;
 }
 
 /** Set only the clock, preserving ready jobs and cancelling incompatible jobs at the prior clock. */

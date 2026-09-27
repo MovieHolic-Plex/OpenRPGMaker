@@ -5,6 +5,12 @@ const positiveLimit = z.number().int().positive().max(200);
 
 export const projectRefSchema = z.object({ projectDir });
 
+/** 시작 화면 카드용 대표 그림. 480×300 JPEG 은 base64 로 100KB 안팎이다 — 2MB 는 넉넉한 상한이다. */
+export const projectCoverSchema = z.object({
+  projectDir,
+  dataUrl: z.string().max(2_000_000).regex(/^data:image\/jpeg;base64,[A-Za-z0-9+/]+=*$/),
+});
+
 export const tilesetBlobsSchema = z.object({
   projectDir,
   sha256s: z.array(z.string().regex(/^[0-9a-f]{64}$/)).max(4096),

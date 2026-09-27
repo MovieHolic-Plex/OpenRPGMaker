@@ -1,0 +1,34 @@
+{
+  "id": "refmap-interior-local",
+  "tileset": "shared_refmap_interior",
+  "tiles": 6144,
+  "atlas": "3072×4608",
+  "places": 2,
+  "objectKits": 192,
+  "houseKits": 0,
+  "autotileGroups": 85,
+  "bytes": 10645212,
+  "maps": {
+    "refmap_inn_1f": {
+      "place": "shared_refmap_interior_refmap_inn_1f",
+      "size": "30×22",
+      "objects": 62,
+      "houses": 0,
+      "renderSha": "676dece8c33eea2e8b851040f7e343e50b25ceda890cf1dca13c53b840f69f78"
+    },
+    "refmap_witch_house": {
+      "place": "shared_refmap_interior_refmap_witch_house",
+      "size": "32×24",
+      "objects": 84,
+      "houses": 0,
+      "renderSha": "2feb249de987f111d47064c076cc2c3a58c40de84aba41c4f283ea3ceb496002"
+    }
+  },
+  "file": "/home/main/.local/share/oprn/shared-content.sqlite",
+  "revision": "02df6b347dbe3c6c7b36d01737c57a11cd0a06a212512e48a05834296df772a4",
+  "reloaded": true,
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-interior-2026-09-27T08-26-16-245Z.sqlite",
+  "otherLibraries": 36,
+  "otherLibrariesUnchanged": true,
+  "publishedAt": "2026-09-27T08:26:33.426Z"
+}

@@ -144,6 +144,36 @@ describe("mg L4 body-part loss state (#8)", () => {
     expect(rt.snapshot().actors[0]!.effectiveStats!.attack).toBe(base);
   });
 
+  it("a disablesEquipSlot state carried in from the field already drops the slot bonus at battle start", () => {
+    const healthy = setup();
+    const { weaponId } = withWeaponAndInjury(healthy);
+    const armed = runtime(healthy, { equipment: { weapon: weaponId } }).snapshot().actors[0]!.effectiveStats!.attack;
+    const unarmed = setup();
+    withWeaponAndInjury(unarmed);
+    const bare = runtime(unarmed, { stateIds: ["state_arm_injury"], equipment: { weapon: weaponId } }).snapshot().actors[0]!.effectiveStats!.attack;
+    const emptyHand = runtime(unarmed, { equipment: {} }).snapshot().actors[0]!.effectiveStats!.attack;
+    expect(armed).toBeGreaterThan(bare);
+    expect(bare).toBe(emptyHand);
+
+    const s = setup();
+    withWeaponAndInjury(s);
+    const rt = createBattleRuntime({
+      project: s.project, troopId: s.troopId, canEscape: false, canLose: true, battleFlow: "strict", rng: () => 0.5,
+      sessionState: { switches: {}, variables: {}, inventory: {}, actorEquipment: { [s.actor.id]: { weapon: weaponId } } },
+      party: {
+        levels: { [s.actor.id]: 1 }, experience: { [s.actor.id]: 0 }, vitals: { [s.actor.id]: { hp: 321, mp: 7 } },
+        stateIds: { [s.actor.id]: ["state_arm_injury"] }, skillIds: { [s.actor.id]: [] },
+        partyActorIds: [s.actor.id], equipment: { [s.actor.id]: { weapon: weaponId } },
+      },
+    });
+    const actor = rt.snapshot().actors[0]!;
+    expect(actor.stateIds).toContain("state_arm_injury");
+    expect(actor.effectiveStats!.attack).toBe(bare);
+    // 다시 계산해도 들고 온 HP·MP 는 그대로다.
+    expect(actor.hp).toBe(321);
+    expect(actor.mp).toBe(7);
+  });
+
   it("disablesEquipSlot survives save/load", () => {
     const s = setup();
     withWeaponAndInjury(s);

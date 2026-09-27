@@ -1,6 +1,7 @@
 import { resolveEventPage, type EventPageLocationContext } from "@/project/io";
 import { resolveEventAppearanceGraphic } from "./characterAppearances";
 import {
+  CHARACTER_FOOTPRINT_AXIS_MAX,
   footprintBounds,
   normalizeCharacterFootprint,
   normalizeCharacterScale,
@@ -162,7 +163,14 @@ function forEachRuntimeEventView(
   map: GameMap,
   session: PlaySessionLike,
   positions: RuntimeEventPositions,
-  visit: (view: RuntimeEventView) => boolean | void
+  visit: (view: RuntimeEventView) => boolean | void,
+  /**
+   * 주면 이 사각과 **절대 겹칠 수 없는** 이벤트는 뷰를 만들지 않고 건너뛴다. 뷰 만들기는 페이지
+   * 조건 평가와 객체 몇 개 할당이라, 사각 질의(통행·조사·시야·A* 의 칸마다 호출)를 이벤트 수만큼
+   * 곱하던 비용이다. 판정은 앵커 좌표만으로 한다 — 몸 사각은 앵커 기준 가로 [x-3, x+4],
+   * 세로 [y-7, y] 안에 있다(축 상한 8, footprintBounds). 통행 사각은 몸 사각의 부분집합이다.
+   */
+  near?: FootprintRect,
 ): void {
   const appearanceProject = project.database && project.assets ? { database: project.database, assets: project.assets } : undefined;
   const pageContext: EventPageLocationContext = { locations: map.locations };
@@ -176,6 +184,7 @@ function forEachRuntimeEventView(
     const location = locations?.[event.id];
     if (location && location.mapId !== map.id) continue;
     included.add(event.id);
+    if (near && !anchorMayOverlap(location ?? positions[event.id] ?? event, near)) continue;
     if (visit(runtimeEventView(event, session, positions, appearanceProject, pageContext)) === true) return;
   }
   // 다른 맵의 이벤트는 **이 맵으로 옮겨진 것만** 후보다. 옮겨진 이벤트가 없으면
@@ -196,6 +205,7 @@ function forEachRuntimeEventView(
       if (included.has(event.id)) continue;
       if (removedOnSourceMap?.has(event.id)) continue;
       included.add(event.id);
+      if (near && !anchorMayOverlap(locations?.[event.id] ?? positions[event.id] ?? event, near)) continue;
       if (visit(runtimeEventView(event, session, positions, appearanceProject, pageContext)) === true) return;
     }
   }
@@ -205,11 +215,30 @@ function forEachRuntimeEventView(
     const spawn = spawned[spawnedEventId];
     if (!spawn || spawn.mapId !== map.id) continue;
     if (included.has(spawnedEventId)) continue;
+    if (near && !anchorMayOverlap(locations?.[spawnedEventId] ?? positions[spawnedEventId] ?? spawn, near)) {
+      included.add(spawnedEventId);
+      continue;
+    }
     const event = materializeSpawnedEvent(project, spawnedEventId, spawn);
     if (!event) continue;
     included.add(spawnedEventId);
     if (visit(runtimeEventView(event, session, positions, appearanceProject, pageContext)) === true) return;
   }
+}
+
+/** 몸 사각이 앵커에서 벗어날 수 있는 최대 칸 수(footprintBounds 와 축 상한에서 파생). */
+const BODY_REACH_LEFT = Math.floor((CHARACTER_FOOTPRINT_AXIS_MAX - 1) / 2);
+const BODY_REACH_RIGHT = CHARACTER_FOOTPRINT_AXIS_MAX - 1 - BODY_REACH_LEFT;
+const BODY_REACH_UP = CHARACTER_FOOTPRINT_AXIS_MAX - 1;
+
+/** false 면 이 앵커의 어떤 몸 사각도 rect 와 겹치지 않는다. true 는 "뷰를 만들어 확인하라". */
+function anchorMayOverlap(anchor: { readonly x: number; readonly y: number }, rect: FootprintRect): boolean {
+  const { x, y } = anchor;
+  if (!Number.isFinite(x) || !Number.isFinite(y)) return true;
+  return x + BODY_REACH_RIGHT >= rect.left
+    && x - BODY_REACH_LEFT <= rect.right
+    && y >= rect.top
+    && y - BODY_REACH_UP <= rect.bottom;
 }
 
 export function runtimeEventViewsForMap(
@@ -233,13 +262,38 @@ export function runtimeEventViewById(
   positions: RuntimeEventPositions,
   eventId: string
 ): RuntimeEventView | undefined {
-  let found: RuntimeEventView | undefined;
-  forEachRuntimeEventView(project, map, session, positions, (view) => {
-    if (view.event.id !== eventId) return false;
-    found = view;
-    return true;
-  });
-  return found;
+  // forEachRuntimeEventView 와 같은 포함 규칙을 **그 id 하나에만** 적용한다. 예전에는 id 를 비교하기
+  // 전에 맵의 모든 이벤트 뷰(페이지 조건 평가 포함)를 만들었다 — NPC 마다 프레임당 1~3회 불려
+  // NPC 수의 제곱으로 커졌다. 순서·중복 규칙은 순회 원본과 같다: 현재 맵 → 옮겨 온 이벤트 → 소환.
+  const appearanceProject = runtimeAppearanceProject(project);
+  const pageContext: EventPageLocationContext = { locations: map.locations };
+  const erased = session.erasedEventIds;
+  const location = session.eventLocations?.[eventId];
+  for (const event of map.events) {
+    if (event.id !== eventId) continue;
+    if (erased?.includes(eventId)) continue;
+    if (session.removedEventIds?.[map.id]?.includes(eventId)) continue;
+    if (location && location.mapId !== map.id) continue;
+    return runtimeEventView(event, session, positions, appearanceProject, pageContext);
+  }
+  if (location?.mapId === map.id && !erased?.includes(eventId)) {
+    for (const sourceMap of Object.values(project.maps)) {
+      if (sourceMap.id === map.id) continue;
+      if (session.removedEventIds?.[sourceMap.id]?.includes(eventId)) continue;
+      const event = sourceMap.events.find((entry) => entry.id === eventId);
+      if (event) return runtimeEventView(event, session, positions, appearanceProject, pageContext);
+    }
+  }
+  const spawn = session.spawnedEvents?.[eventId];
+  if (!spawn || spawn.mapId !== map.id) return undefined;
+  const event = materializeSpawnedEvent(project, eventId, spawn);
+  return event ? runtimeEventView(event, session, positions, appearanceProject, pageContext) : undefined;
+}
+
+function runtimeAppearanceProject(
+  project: Pick<Project, "maps"> & Partial<Pick<Project, "database" | "assets">>,
+): Pick<Project, "database" | "assets"> | undefined {
+  return project.database && project.assets ? { database: project.database, assets: project.assets } : undefined;
 }
 
 /** 이 맵으로 옮겨졌고 아직 방문되지 않은 이벤트 id. 없으면 undefined. */
@@ -337,7 +391,7 @@ export function findEventOverlappingRect(
     if (!matchesTrigger(event.trigger.kind, triggerKind)) return false;
     found = event;
     return true;
-  });
+  }, rect);
   return found;
 }
 
@@ -381,7 +435,7 @@ export function findBlockingEventOverlappingRect(
     if (event.priority !== "same" || !event.overlapForbidden) return false;
     found = event;
     return true;
-  });
+  }, rect);
   return found;
 }
 

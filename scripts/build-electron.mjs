@@ -40,6 +40,10 @@ const ENTRIES = [
 ];
 
 await mkdir(OUT_DIR, { recursive: true });
+// 자산 브라우저가 받은 RAR 팩(예: Rasak Modern)을 메인 프로세스에서 푼다 — node-unrar-js 는 wasm 을 따로 읽는다.
+// 번들(main.cjs) 옆에 두고 electron/main/rarPack.ts 가 __dirname 에서 읽는다.
+copyFileSync(resolve(REPO_ROOT, "node_modules/node-unrar-js/dist/js/unrar.wasm"), resolve(OUT_DIR, "unrar.wasm"));
+process.stdout.write("staged dist-electron/unrar.wasm\n");
 for (const { entry, outfile, format, platform, target, external } of ENTRIES) {
   await build({
     absWorkingDir: REPO_ROOT,

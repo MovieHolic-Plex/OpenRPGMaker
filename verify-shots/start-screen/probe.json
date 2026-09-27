@@ -1,0 +1,44 @@
+{
+  "scratch": "/home/main/.codex/worktrees/55cf/rpg-zzu/.vite-cache/start-qa-mujike0v",
+  "home": {
+    "url": "app://oprn/start-screen.html",
+    "continueTitle": "생활 시스템 완주 픽스처",
+    "cards": [
+      "빈 폴더 게임"
+    ],
+    "hiddenNote": "임시 폴더의 테스트 프로젝트 1개와 찾을 수 없는 폴더 1개를 숨겼습니다.보기",
+    "stylesheetRules": 3
+  },
+  "newGame": {
+    "location": "/home/main/.codex/worktrees/55cf/rpg-zzu/.vite-cache/start-qa-mujike0v/new-games/QA 몬스터 마을",
+    "pressed": [
+      "start-genre-option-monster-collect"
+    ]
+  },
+  "editor": {
+    "url": "app://oprn/index.html",
+    "welcomeOverlay": false,
+    "handoffNotice": false,
+    "handoffTextOnPage": true,
+    "projectDir": "/home/main/.codex/worktrees/55cf/rpg-zzu/.vite-cache/start-qa-mujike0v/new-games/QA 몬스터 마을",
+    "savedTitle": "QA 몬스터 마을",
+    "savedGenre": "monster-collect",
+    "monsterCollection": true,
+    "editorReady": true,
+    "cover": 19756
+  },
+  "firstRunErrors": [
+    "console: Refused to execute inline script because it violates the following Content Security Policy directive: \"script-src 'self' app:\". Either the 'unsafe-inline' keyword, a hash ('sha256-jN9KvjaA0nQ2oiaUbfN0jeyc1dyidgHlQ+jczVANxJA='), or a nonce ('nonce-...') is required to enable inline execution.\n",
+    "console: Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "console: Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+  ],
+  "relaunch": {
+    "continueTitle": "QA 몬스터 마을",
+    "continueHasCover": true,
+    "cards": [
+      "생활 시스템 완주 픽스처",
+      "빈 폴더 게임"
+    ]
+  },
+  "relaunchErrors": []
+}

@@ -12,6 +12,12 @@ export class WeatherAudio {
   private volume = 0.8;
   private previousClock: number | null = null;
   private storm = false;
+  /**
+   * 천둥 잡음 버퍼. 폭풍 중 약 2.4초마다 2.2초 길이 스테레오 버퍼(48kHz 면 샘플 약 21만 개)를
+   * 메인 스레드에서 매번 새로 합성했다. 한 번 만들어 두고 재생 노드만 새로 만든다 — 필터·엔벨로프가
+   * 소리의 모양을 정하므로 매번 같은 잡음이어도 귀로 구분되지 않는다. 컨텍스트를 닫으면 버린다.
+   */
+  private thunderBuffer: AudioBuffer | null = null;
 
   unlock(): void {
     if (!this.context && (this.params.kind === "rain" || this.params.kind === "storm")) this.start();
@@ -50,6 +56,7 @@ export class WeatherAudio {
     this.context = null;
     this.bus = null;
     this.rain = null;
+    this.thunderBuffer = null;
     this.previousClock = null;
     this.storm = false;
     this.params = { kind: "none", intensity: 0 };
@@ -79,7 +86,7 @@ export class WeatherAudio {
     } catch { this.stop(); }
   }
 
-  private noise(seconds: number, brown: boolean): AudioBufferSourceNode {
+  private noiseBuffer(seconds: number, brown: boolean): AudioBuffer {
     const context = this.context!;
     const buffer = context.createBuffer(2, Math.ceil(context.sampleRate * seconds), context.sampleRate);
     for (let channel = 0; channel < 2; channel++) {
@@ -91,8 +98,13 @@ export class WeatherAudio {
         data[index] = brown ? last * 4 : white * 0.7 + last;
       }
     }
+    return buffer;
+  }
+
+  private noise(seconds: number, brown: boolean, buffer?: AudioBuffer): AudioBufferSourceNode {
+    const context = this.context!;
     const source = context.createBufferSource();
-    source.buffer = buffer;
+    source.buffer = buffer ?? this.noiseBuffer(seconds, brown);
     this.sources.add(source);
     source.onended = () => { this.sources.delete(source); source.disconnect(); };
     return source;
@@ -100,7 +112,8 @@ export class WeatherAudio {
 
   private thunder(intensity: number): void {
     const context = this.context!;
-    const source = this.noise(2.2, true);
+    this.thunderBuffer ??= this.noiseBuffer(2.2, true);
+    const source = this.noise(2.2, true, this.thunderBuffer);
     const filter = context.createBiquadFilter();
     filter.type = "lowpass";
     filter.frequency.setValueAtTime(1400, context.currentTime);

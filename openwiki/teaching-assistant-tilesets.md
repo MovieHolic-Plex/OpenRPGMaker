@@ -158,10 +158,19 @@ itch.io 의 [Rasak Modern](https://rasak.itch.io/rasak-modern)처럼 「사용·
 팩이 소유한 것만 갈아 끼운다 — 참고문서는 팩의 용도 id, `tileGroups`·`autotileGroups` 는 `rasak_` 접두어 id. 저자가 쓴 용도·그룹은 남는다. 판본은 `tiledata/rasak-fantasy/bundles.json` sha256,
 이름·번호 같은 텍스트만 `tiledata/rasak-fantasy/` 에 둔다. 작업물은 `~/third-party-assets/rasak/`.
 
+> REFMAP 「町の外観」 프리셋과 그 타일로 깐 맵 3장의 공용 DB 게시(장소·오브젝트)는 `openwiki/refmap-town-outside.md`.
+
 ### MV/MZ 팩 프리셋 — 구현 (2026-09-24, Rasak Modern 도시 야외)
 
 사용자가 팩 시트 여러 장을 자원 관리자(칩셋)에 **한꺼번에** 올리면 알려진 프리셋과 해시로 맞춰 타일셋 하나로 굽는다.
 그림은 사용자 원본에서만 만든다. 저장소에는 이름·좌표·해시뿐이다.
+
+**내부 브라우저로 받기(2026-09-27, 데스크톱 앱).** 자원 관리자 → 칩셋 → 「제작자 페이지」 머리줄에 프리셋마다 바로가기 버튼
+(`asset-source-pack-<프리셋 id>`)이 있다. itch 페이지에서 사용자가 Download 를 누르면 `electron/main/assetBrowser.ts` 가 받고,
+RAR(Rasak Modern 은 RAR5 한 파일 15MB)이면 `electron/main/rarPack.ts` 가 `node-unrar-js`(2.0.2 고정, wasm 은 `dist-electron/unrar.wasm`)로
+그림만 꺼내 무압축 zip 으로 렌더러에 넘긴다. `assetSourceBrowser.ts` 는 zip 안에서 프리셋 시트(폴더/파일명)를 절반 이상 찾으면
+시트 한 장 고르기 대신 `importMvPackFiles` 로 통째로 굽는다. 다운로드 상한 64MB·풀린 그림 합계 96MB. 그림은 사용자 PC 에서만 풀린다(재배포 없음).
+실측: xvfb 의 실제 Electron 앱에서 바로가기 → Download → 「타일셋 추가됨: Rasak Modern · 도시 야외 — 재료 208종·물체 157개」.
 
 | 파일 | 하는 일 |
 |---|---|
@@ -208,7 +217,10 @@ itch.io 의 [Rasak Modern](https://rasak.itch.io/rasak-modern)처럼 「사용·
   (Parish&Müller 2001 → SimWorld 2025, CityCraft 2024, CityGenAgent 2026)도 「LLM 은 땅 쓰임, 배치는 절차」로 수렴한다.
   순서: 길(큰길 7·골목길 5·뒷골목, 둘째 골목길은 큰길 T) → 블록 → 필지 → 건물 → 거리 물체.
   치수(1칸 ≈ 1.5m): 가게 4~6칸(가끔 7~9)·벽 맞댐·모퉁이 3~4층·이웃과 폭/층/재료 다르게·차양 65%, 가게 뒤 뒷주차 칸 선(짝수 열만 — 이웃 선이 붙으면 오토타일이 「8」로 이어진다),
-  주택 필지 8~11·집 5~7·앞마당 3~5·현관길 1·진입로 2·뒷마당 울타리·텃밭, 줄집 한 블록, 연석→잔디 띠 1→보도,
+  주택 필지 8~11·집 5~7·앞마당 3~5·현관길 1·진입로 2·뒷마당 울타리·텃밭, 연석→잔디 띠 1→보도,
+  주택가 블록은 **필지 섞기**(2026-09-27): 칸마다 단독주택(8~10, 이웃 틈 2~3·필지 가운데) · 중층 주거 한 동(폭 ≤10) · 주차장(칸 선 + 세로 차) · 쌈지 녹지(나무·벤치)를 고르고
+  같은 종류가 셋 이상 잇따르지 않는다. 예전엔 블록을 같은 높이 건물 한 줄(줄아파트·줄집)로 통째 채워 벽처럼 보였다.
+  주택·중층 주거 문은 유리문(`glass_door_dark/bright`). 옛 `house_door_a/b/d` 는 Street 시트 10~13열 0~1줄 = 교통 콘이라 뺐다.
   가로수 3~7 지터(모통이·진입로·공원 입구에서 끊김)·가로등 6~10, 횡단보도는 교차로 재료로만, 맨 윗줄은 뒷마당 울타리(맵 끝 빈 띠 금지), 공원 8~16칸.
   공원(`buildPark`, r2): 공원 잔디(`parkLawn`)는 가로 띠와 다른 재료, 낮은 관목 테두리(`tallGrass`) + 보도에 닿은 변에만 입구 2~3,
   산책로는 입구→입구(사선·ㄱ·ㄹ자, 큰 공원은 2칸 폭), 큰 공원만 가끔 광장+분수, 벤치는 길 옆, 나무는 2~3그루 무리(밑동 간격·세로 쌓기 금지).
