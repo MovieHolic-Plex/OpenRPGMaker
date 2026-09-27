@@ -3,32 +3,17 @@
   "tileset": "shared_refmap_mz_ground",
   "tiles": 6144,
   "atlas": "3072×4608",
-  "places": 2,
+  "places": 0,
   "objectKits": 0,
   "houseKits": 0,
   "autotileGroups": 25,
-  "bytes": 3036194,
-  "maps": {
-    "mz_grass_to_snow_field": {
-      "place": "shared_refmap_mz_ground_mz_grass_to_snow_field",
-      "size": "44×32",
-      "objects": 0,
-      "houses": 0,
-      "renderSha": "b1e697dd9169a4cc6982c25f05b991a5d9c04eddc5628ab07994331bc3132c47"
-    },
-    "mz_waterside_meadow": {
-      "place": "shared_refmap_mz_ground_mz_waterside_meadow",
-      "size": "42×30",
-      "objects": 0,
-      "houses": 0,
-      "renderSha": "ea707e9ff9732bf3244875c396de6d909363988e5802aeb3b51a5aeebafb62a8"
-    }
-  },
+  "bytes": 2221000,
+  "maps": {},
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "ad189bbb0539754f1050fad33c8ec9ab9ae34cf56af7a0ac25d6c77c929745e3",
+  "revision": "e901e5fbcb2292afb5ed9077c700fb60c99ca9ede9183b480cb60a44338c69e4",
   "reloaded": true,
-  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-mz-ground-2026-09-27T07-45-57-475Z.sqlite",
-  "otherLibraries": 33,
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-mz-ground-2026-09-27T08-27-43-380Z.sqlite",
+  "otherLibraries": 36,
   "otherLibrariesUnchanged": true,
-  "publishedAt": "2026-09-27T07:46:18.693Z"
+  "publishedAt": "2026-09-27T08:28:02.416Z"
 }
