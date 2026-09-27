@@ -9,6 +9,7 @@
 //
 //   bun scripts/content/refmap/publish-refmap-places.mts [--dry] [--out /tmp/refmap-publish]
 // 결과 증거: tiledata/refmap/shared-library-proof.json (그림 없음), --out 폴더에 다시 그린 PNG·차이 그림.
+import { spawnSync } from "node:child_process";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
@@ -44,7 +45,13 @@ const toPng = (image: RgbaImage) => {
   png.data = Buffer.from(image.data.buffer, image.data.byteOffset, image.data.byteLength);
   return PNG.sync.write(png);
 };
-const encodePng = (image: RgbaImage) => `data:image/png;base64,${toPng(image).toString("base64")}`;
+// pngjs 압축이 약하다(합본 15MB). 파이썬 PIL 로 무손실 재압축하면 1/4 이 된다 — 모든 프로젝트에 실리는 그림이라 줄인다.
+const optimize = (png: Buffer) => {
+  const out = spawnSync("python3", ["-c", "import sys,io\nfrom PIL import Image\nb=io.BytesIO()\nImage.open(io.BytesIO(sys.stdin.buffer.read())).save(b,'PNG',optimize=True)\nsys.stdout.buffer.write(b.getvalue())"],
+    { input: png, maxBuffer: 256 * 1024 * 1024 });
+  return out.status === 0 && out.stdout.length > 0 && out.stdout.length < png.length ? out.stdout : png;
+};
+const encodePng = (image: RgbaImage) => `data:image/png;base64,${optimize(toPng(image)).toString("base64")}`;
 const built = buildMvPackTileset({ preset: PRESET, sheets, tilesetId: TILESET_ID, assetId: ASSET_ID, encodePng });
 const tileset = built.tileset;
 const columns = tileset.tilesPerRow;
@@ -217,7 +224,8 @@ const MAPS = [
     note: "연못과 폭포, 나무 다리로 잇는 물가 마을. 풀 언덕 절벽, 물가 풀, 작은 집. 42×30." },
 ] as const;
 
-const lib: Record<string, any> = { version: 1, roots: [], places: {}, tilesets: {}, assets: {}, maps: {}, previews: {}, regions: {}, sourceProjectId: LIBRARY_ID };
+// projectDefaults: 타일셋·그림을 모든 프로젝트에 싣는다 — 그래야 오브젝트 탭에 소품·집 킷이 뜬다(PAW 와 같다).
+const lib: Record<string, any> = { version: 1, projectDefaults: true, roots: [], places: {}, tilesets: {}, assets: {}, maps: {}, previews: {}, regions: {}, sourceProjectId: LIBRARY_ID };
 tileset.name = `${PRESET.name} (공용)`;
 tileset.structureKits = [...(tileset.structureKits ?? [])];
 lib.tilesets[TILESET_ID] = tileset;

@@ -9,7 +9,7 @@
   "houseKits": 7,
   "structureKits": 52,
   "autotileGroups": 32,
-  "bytes": 26509421,
+  "bytes": 9148068,
   "maps": {
     "village": {
       "place": "shared_refmap_village",
@@ -129,10 +129,10 @@
     }
   },
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "fa14bfe4d5a90ff753e5bdfc0cc496eb907950a1e8105d5950727e3cf36f2fc5",
+  "revision": "8f53036202b82e90a2692988f30d4f5d000359183b5f5e5eac74c850f229a21d",
   "reloaded": true,
-  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-2026-09-27T06-44-49-458Z.sqlite",
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-2026-09-27T06-52-30-765Z.sqlite",
   "otherLibraries": 27,
   "otherLibrariesUnchanged": true,
-  "publishedAt": "2026-09-27T06:45:28.048Z"
+  "publishedAt": "2026-09-27T06:53:08.727Z"
 }

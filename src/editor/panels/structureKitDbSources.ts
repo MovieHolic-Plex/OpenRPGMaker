@@ -33,6 +33,11 @@ export interface StructureKitSourceDef {
 /** 실내 오브젝트 래스터의 받침 타일 — 잔디가 아니라 실내 나무 바닥. */
 export const INTERIOR_OBJECT_THUMB_BACKGROUND_TILE = VR.FLOOR;
 
+/** 킷 썸네일 받침. MV 팩 합본은 0번대가 물 오토타일이라 실내 바닥 번호를 깔면 물이 비친다 — 받침 없이 그린다. */
+export function kitThumbBackgroundTile(tileset: { readonly mvPack?: unknown }): number | null {
+  return tileset.mvPack ? null : INTERIOR_OBJECT_THUMB_BACKGROUND_TILE;
+}
+
 /** 레일 위 원본 칩 순서 — 전체 다음에 실내 · 내 저장. */
 export const STRUCTURE_KIT_SOURCES: readonly StructureKitSourceDef[] = [
   { id: "all", label: "전체" },
