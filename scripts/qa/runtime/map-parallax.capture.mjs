@@ -5,7 +5,8 @@
 // 주인공이 오른쪽으로 걸으면 카메라가 따라가고, 층마다 다른 거리를 움직인다. 중간의 밟는 이벤트가
 // 화면을 세피아로 물들이고 「먼 배경 변경」 흐름 배율 0% / 2.5초 를 건다 — 구름이 서서히 멈춘다.
 //
-// 사용: node scripts/qa/runtime/map-parallax.capture.mjs [--out <dir>]
+// 사용: node scripts/qa/runtime/map-parallax.capture.mjs [--out <dir>] [--project <project.json>] [--walk <shots>]
+//   --project 를 주면 픽스처 대신 그 프로젝트(예: 조수가 만든 것)의 시작 맵·시작 칸에서 오른쪽으로 걷는다.
 // 결과: <dir>/frames/*.png, <dir>/map-parallax.gif, <dir>/receipt.json
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
@@ -98,7 +99,18 @@ function buildFixture() {
   });
 }
 
-const { project, walkY } = await buildFixture();
+const argValue = (name) => {
+  const index = process.argv.indexOf(name);
+  return index > 0 ? process.argv[index + 1] : undefined;
+};
+const externalProject = argValue("--project");
+const WALK_SHOTS = Number(argValue("--walk") ?? 175);
+const { project, walkY } = externalProject
+  ? await readFile(externalProject, "utf8").then((text) => {
+    const loaded = JSON.parse(text);
+    return { project: loaded, walkY: loaded.startPos?.y };
+  })
+  : await buildFixture();
 await rm(OUT, { recursive: true, force: true });
 await mkdir(FRAMES_DIR, { recursive: true });
 const server = await startPlayerQaServer();
@@ -159,7 +171,7 @@ try {
   await sample("start");
   // 2) 오른쪽으로 걷는다 — 카메라를 따라 층마다 다른 거리를 간다. 도중에 회상 이벤트를 밟는다.
   await pageHandle.evaluate(() => window.__oprnInput.dir("right"));
-  for (let i = 0; i < 175; i += 1) {
+  for (let i = 0; i < WALK_SHOTS; i += 1) {
     await performObservedFrames(pageHandle, { frames: 4, deltaMs: 16 });
     await capture();
   }

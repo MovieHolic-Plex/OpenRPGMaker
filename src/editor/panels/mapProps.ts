@@ -15,7 +15,7 @@ import {
   MAP_BACKGROUND_CAMERA_FOLLOW_LIMIT,
   MAP_BACKGROUND_EXTRA_LAYER_LIMIT,
   MAP_BACKGROUND_SCROLL_LIMIT,
-  defaultLayerCameraFollow,
+  mapBackgroundFromLayerSet,
   normalizeMapBackgroundCameraFollow,
   normalizeMapBackgroundScroll,
 } from "@/project/mapBackground";
@@ -36,7 +36,7 @@ import {
   CLOUD_SHADOW_AMOUNT_RANGE,
   normalizeCloudShadowParams,
 } from "@/player/cloudShadows";
-import type { EncounterTableEntry, FieldSpawnDef, MapBackground, MapBackgroundLayer, MapBgmSetting } from "@/project/types";
+import type { EncounterTableEntry, FieldSpawnDef, MapBackgroundLayer, MapBgmSetting } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { showConfirm } from "@/editor/ui/modal";
 import { toast } from "@/util/toast";
@@ -475,18 +475,9 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
     const applyLayerSet = (setId: string): void => {
       const defaults = craftpixDefaultLayers(setId);
       if (defaults.length === 0) return;
-      const current = store.getCurrent().maps[map.id]!.background!;
-      // 층마다 기본 깊이를 준다(하늘 0 → 맨 앞 0.7) — 세트를 고르는 것만으로 시차 스크롤이 된다.
-      const next: MapBackground = {
-        ...current,
-        imageId: defaults[0]!.id,
-        layers: defaults.slice(1).map((entry, index) => {
-          const follow = defaultLayerCameraFollow(index + 1, defaults.length);
-          return follow > 0 ? { imageId: entry.id, cameraFollow: follow } : { imageId: entry.id };
-        }),
-      };
-      // 첫 장은 세트의 하늘이다 — 깊이 0(화면 고정)이 기본값이라 키를 지운다.
-      delete next.cameraFollow;
+      // 층 순서·cover·기본 깊이(하늘 0 → 맨 앞 0.7)는 조수 도구와 같은 규칙(`mapBackgroundFromLayerSet`).
+      const next = mapBackgroundFromLayerSet(defaults.map((entry) => entry.id));
+      if (!next) return;
       setMapBackground(map.id, next);
       rerender(host, "map-bg-layer-set");
     };
@@ -642,6 +633,22 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
     };
     loopRow.append(loopBox("loopX", "가로 반복"), loopBox("loopY", "세로 반복"));
     section.append(loopRow);
+
+    // 빈 칸에도 배경 — 기본은 RM2K 규칙(창 타일에서만 비침). 창 타일이 없는 칩셋은 이것을 켜야 보인다.
+    const emptyBox = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "map-bg-show-in-empty" } }) as HTMLInputElement;
+    emptyBox.checked = bg.showInEmptyCells === true;
+    emptyBox.addEventListener("change", () => {
+      const next = { ...store.getCurrent().maps[map.id]!.background! };
+      if (emptyBox.checked) next.showInEmptyCells = true;
+      else delete next.showInEmptyCells;
+      setMapBackground(map.id, next);
+    });
+    const emptyRow = el("label", {
+      class: "map-props-check-row",
+      attrs: { title: "끄면 파노라마 창 타일(합본 마을 #233·#258)을 깐 칸에서만 배경이 보이고 빈 칸은 검게 가려집니다." },
+    });
+    emptyRow.append(emptyBox, el("span", { text: "빈 칸에도 배경 보이기" }));
+    section.append(emptyRow);
   }
 
   host.append(section);

@@ -8,6 +8,10 @@
 //   레이어 PNG 29장은 맵 배경 다층 저작(MapBackground.layers)용이고, 합성본
 //   6장은 단일 이미지로 쓰고 싶을 때의 대체품이다. 픽셀은 편집하지 않았다.
 //
+// 세트 이름은 그림 내용을 따른다(2026-09-27 정정) — id 는 업스트림 폴더 이름을 딴 옛 이름 그대로 둔다
+// (저장된 프로젝트가 id 로 참조한다). 실측: cliffs(bg3)는 밤 전나무 숲, pines(bg2)는 낮 산등성이,
+// ridge(bg4)는 폭포 계곡이었다 — 이름만 보고 고르면 조수가 「회상용 낮 숲」 에 밤 그림을 깐다.
+//
 // 레이어 순서는 아래가 하늘, 위가 앞(지면·나무)이다. MapBackground.layers 의
 // 배열 순서(앞이 아래)와 같게 defaultLayers 를 두었다 — 저작 화면에서 세트를
 // 고르면 그 순서 그대로 얹힌다.
@@ -21,6 +25,8 @@ export type OgaCraftpixLayerAsset = {
 export type OgaCraftpixSetAsset = {
   readonly id: string;
   readonly name: string;
+  /** 그림에 실제로 보이는 것 — 조수가 세트를 고를 때 읽는 한 줄. */
+  readonly summary: string;
   /** 단일 이미지(합성본) — layers 를 쓰고 싶지 않을 때 고르는 그림. */
   readonly composite: OgaCraftpixLayerAsset;
   /** 아래→위. 맵 배경 레이어 스택의 기본 저작값. */
@@ -37,6 +43,7 @@ export const OGA_CRAFTPIX_BACKDROP_SETS: readonly OgaCraftpixSetAsset[] = [
   {
     id: "oga-craftpix-hills",
     name: "구름 언덕 배경 (CraftPix)",
+    summary: "맑은 낮 — 뭉게구름, 보랏빛 바위산, 산기슭 소나무, 잔잔한 호수",
     composite: layer("oga-craftpix-hills", "구름 언덕 배경 (CraftPix)", "bg1/composite.png"),
     layers: [
       layer("oga-craftpix-hills-layer-sky", "구름 언덕 · 하늘", "bg1/layers/sky.png"),
@@ -50,44 +57,47 @@ export const OGA_CRAFTPIX_BACKDROP_SETS: readonly OgaCraftpixSetAsset[] = [
   },
   {
     id: "oga-craftpix-pines",
-    name: "소나무 숲 배경 (CraftPix)",
-    composite: layer("oga-craftpix-pines", "소나무 숲 배경 (CraftPix)", "bg2/composite.png"),
+    name: "낮 산등성이 배경 (CraftPix)",
+    summary: "흐린 낮 — 큰 뭉게구름과 새, 겹겹이 이어진 갈색 산등성이, 비탈의 소나무",
+    composite: layer("oga-craftpix-pines", "낮 산등성이 배경 (CraftPix)", "bg2/composite.png"),
     layers: [
-      layer("oga-craftpix-pines-layer-sky", "소나무 숲 · 하늘", "bg2/layers/sky.png"),
-      layer("oga-craftpix-pines-layer-clouds2", "소나무 숲 · 먼 구름", "bg2/layers/clouds_2.png"),
-      layer("oga-craftpix-pines-layer-rocks3", "소나무 숲 · 먼 바위", "bg2/layers/rocks_3.png"),
-      layer("oga-craftpix-pines-layer-clouds1", "소나무 숲 · 먼 구름 2", "bg2/layers/clouds_1.png"),
-      layer("oga-craftpix-pines-layer-rocks2", "소나무 숲 · 중간 바위", "bg2/layers/rocks_2.png"),
-      layer("oga-craftpix-pines-layer-rocks1", "소나무 숲 · 가까운 바위산", "bg2/layers/rocks_1.png"),
-      layer("oga-craftpix-pines-layer-clouds3", "소나무 숲 · 가까운 구름", "bg2/layers/clouds_3.png"),
-      layer("oga-craftpix-pines-layer-pines", "소나무 숲 · 소나무", "bg2/layers/pines.png"),
-      layer("oga-craftpix-pines-layer-birds", "소나무 숲 · 새", "bg2/layers/birds.png"),
+      layer("oga-craftpix-pines-layer-sky", "낮 산등성이 · 하늘", "bg2/layers/sky.png"),
+      layer("oga-craftpix-pines-layer-clouds2", "낮 산등성이 · 먼 구름", "bg2/layers/clouds_2.png"),
+      layer("oga-craftpix-pines-layer-rocks3", "낮 산등성이 · 먼 바위", "bg2/layers/rocks_3.png"),
+      layer("oga-craftpix-pines-layer-clouds1", "낮 산등성이 · 먼 구름 2", "bg2/layers/clouds_1.png"),
+      layer("oga-craftpix-pines-layer-rocks2", "낮 산등성이 · 중간 바위", "bg2/layers/rocks_2.png"),
+      layer("oga-craftpix-pines-layer-rocks1", "낮 산등성이 · 가까운 바위산", "bg2/layers/rocks_1.png"),
+      layer("oga-craftpix-pines-layer-clouds3", "낮 산등성이 · 가까운 구름", "bg2/layers/clouds_3.png"),
+      layer("oga-craftpix-pines-layer-pines", "낮 산등성이 · 소나무", "bg2/layers/pines.png"),
+      layer("oga-craftpix-pines-layer-birds", "낮 산등성이 · 새", "bg2/layers/birds.png"),
     ],
   },
   {
     id: "oga-craftpix-cliffs",
-    name: "절벽 오후 배경 (CraftPix)",
-    composite: layer("oga-craftpix-cliffs", "절벽 오후 배경 (CraftPix)", "bg3/composite-1.png"),
+    name: "밤 소나무 숲 배경 (CraftPix)",
+    summary: "밤 — 별하늘과 구름, 짙푸른 전나무 숲 실루엣, 어두운 언덕",
+    composite: layer("oga-craftpix-cliffs", "밤 소나무 숲 배경 (CraftPix)", "bg3/composite-1.png"),
     layers: [
-      layer("oga-craftpix-cliffs-layer-sky", "절벽 오후 · 하늘", "bg3/layers/sky.png"),
-      layer("oga-craftpix-cliffs-layer-rocks", "절벽 오후 · 먼 절벽", "bg3/layers/rocks.png"),
-      layer("oga-craftpix-cliffs-layer-clouds1", "절벽 오후 · 구름", "bg3/layers/clouds_1.png"),
-      layer("oga-craftpix-cliffs-layer-ground1", "절벽 오후 · 먼 지면", "bg3/layers/ground_1.png"),
-      layer("oga-craftpix-cliffs-layer-ground2", "절벽 오후 · 중간 지면", "bg3/layers/ground_2.png"),
-      layer("oga-craftpix-cliffs-layer-ground3", "절벽 오후 · 가까운 지면", "bg3/layers/ground_3.png"),
-      layer("oga-craftpix-cliffs-layer-plant", "절벽 오후 · 식물", "bg3/layers/plant.png"),
+      layer("oga-craftpix-cliffs-layer-sky", "밤 소나무 숲 · 하늘", "bg3/layers/sky.png"),
+      layer("oga-craftpix-cliffs-layer-rocks", "밤 소나무 숲 · 먼 산", "bg3/layers/rocks.png"),
+      layer("oga-craftpix-cliffs-layer-clouds1", "밤 소나무 숲 · 구름", "bg3/layers/clouds_1.png"),
+      layer("oga-craftpix-cliffs-layer-ground1", "밤 소나무 숲 · 먼 숲", "bg3/layers/ground_1.png"),
+      layer("oga-craftpix-cliffs-layer-ground2", "밤 소나무 숲 · 중간 숲", "bg3/layers/ground_2.png"),
+      layer("oga-craftpix-cliffs-layer-ground3", "밤 소나무 숲 · 가까운 숲", "bg3/layers/ground_3.png"),
+      layer("oga-craftpix-cliffs-layer-plant", "밤 소나무 숲 · 식물", "bg3/layers/plant.png"),
     ],
   },
   {
     id: "oga-craftpix-ridge",
-    name: "산마루 배경 (CraftPix)",
-    composite: layer("oga-craftpix-ridge", "산마루 배경 (CraftPix)", "bg4/composite.png"),
+    name: "폭포 계곡 배경 (CraftPix)",
+    summary: "보랏빛 황혼 — 계곡 폭포, 붉은 바위 절벽, 둥근 보라색 나무, 물가",
+    composite: layer("oga-craftpix-ridge", "폭포 계곡 배경 (CraftPix)", "bg4/composite.png"),
     layers: [
-      layer("oga-craftpix-ridge-layer-sky", "산마루 · 하늘", "bg4/layers/sky.png"),
-      layer("oga-craftpix-ridge-layer-rocks", "산마루 · 바위산", "bg4/layers/rocks.png"),
-      layer("oga-craftpix-ridge-layer-clouds2", "산마루 · 먼 구름", "bg4/layers/clouds_2.png"),
-      layer("oga-craftpix-ridge-layer-ground", "산마루 · 지면", "bg4/layers/ground.png"),
-      layer("oga-craftpix-ridge-layer-clouds1", "산마루 · 앞 구름", "bg4/layers/clouds_1.png"),
+      layer("oga-craftpix-ridge-layer-sky", "폭포 계곡 · 하늘", "bg4/layers/sky.png"),
+      layer("oga-craftpix-ridge-layer-rocks", "폭포 계곡 · 바위산", "bg4/layers/rocks.png"),
+      layer("oga-craftpix-ridge-layer-clouds2", "폭포 계곡 · 먼 구름", "bg4/layers/clouds_2.png"),
+      layer("oga-craftpix-ridge-layer-ground", "폭포 계곡 · 지면", "bg4/layers/ground.png"),
+      layer("oga-craftpix-ridge-layer-clouds1", "폭포 계곡 · 앞 구름", "bg4/layers/clouds_1.png"),
     ],
   },
 ] as const;

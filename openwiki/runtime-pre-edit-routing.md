@@ -389,7 +389,22 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
 - **알아 둘 것:** 기존 `map-background` 시나리오 픽스처는 빈 칸(-1)으로 하늘 띠를 만든다 — RM2K 창 규칙(2026-09-22) 이후로는
   그 띠가 검게 가려져 배경을 증명하지 못한다(게이트는 샷 비교를 안 해서 통과한다). 창 타일(#233)로 바꿔야 한다.
   CraftPix 세트 이름도 그림과 어긋난다: `oga-craftpix-cliffs`(bg3)는 밤 소나무 숲, `oga-craftpix-pines`(bg2)는 낮 산이다.
+- **조수 경로(같은 날, 두 번째 PR 단계).** 조수가 이 기능을 스스로 찾아 쓰도록 도구 계층을 이었다.
+  - `set_map_properties.background.layerSet`(+`cloudDrift`) 한 칸이 세트를 편다 — 순서·`fit:"cover"`·층별 기본 깊이.
+    편집기 「레이어 세트」 도 같은 `mapBackgroundFromLayerSet` 를 쓴다(예전 편집기 적용은 cover 를 안 넣었다).
+    예전 스키마는 `fit` 이 없는데 `additionalProperties:false` 라 조수는 cover 를 줄 방법이 없었다.
+  - `background.showInEmptyCells`(맵 저작값, 기본 false) — 빈 칸에서도 배경을 비춘다. 창 타일(#233·#258)은 **합본 마을
+    칩셋에만** 있어서 숲마을·기후 시트 맵은 이것 없이는 배경을 보일 길이 없다. 렌더 판정은 `renderEmptyCellCover`.
+  - `set_map_properties.clearForBackground{x,y,width,height}` 가 사각형의 모든 타일 층을 비운다(하늘 자리).
+  - 배경을 설정했는데 비칠 칸이 0 이면 `diff.warnings` 로 알린다(`backgroundVisibleCells` — 렌더러와 같은 판정).
+  - `script_cutscene` 에 `background{flowPercent,imageId?,durationMs,wait}` 비트 → m2-069. 컷신 끝(건너뛰기 착지 뒤)에서
+    마지막 흐름·그림을 전환 없이 다시 건다(색조 비트와 같은 규칙).
+  - 세트 표시 이름을 그림에 맞췄다(id 는 그대로): pines=낮 산등성이, cliffs=밤 소나무 숲, ridge=폭포 계곡. 세트마다 `summary`
+    한 줄이 도구 스키마 설명에 들어간다 — 조수는 이름·요약만 보고 고른다.
+  - `find_tools` 가 「파노라마 배경」「먼 배경」「시차 스크롤」「회상 장면」「parallax」 로 두 도구를 찾는다(2026-09-27 실측).
 - **검증.** 단위: `test/mapBackgroundRuntime.test.ts`(깊이 기준점·층별 이동량·흐름 전환·다른 맵 무시),
+  `test/mapBackgroundAssistantTools.test.ts`(layerSet 펴기·fit·0칸 경고·없는 세트·컷신 background 비트·script_cutscene 경유),
   `test/mapBackgroundRules.test.ts`(정규화·왕복·기본 깊이·흐름 인코딩). 출하 표면 GIF:
   `npx tsx scripts/qa/runtime/map-parallax.capture.mjs` → `verify-shots/map-parallax/map-parallax.gif`
   (구름 언덕 7장, 60×30 맵, 창 타일 하늘, 30칸의 밟는 이벤트가 세피아 색조 + 흐름 0%/2500ms).
+  `--project <조수가 만든 project.json>` 을 주면 그 프로젝트의 시작 칸에서 오른쪽으로 걸으며 찍는다.

@@ -63,6 +63,35 @@ export function defaultLayerCameraFollow(index: number, count: number): number {
 }
 
 /**
+ * 레이어 세트(아래→위 그림 id 목록)를 맵 배경 저작값으로 편다 — 편집기 「레이어 세트」 와 조수 도구
+ * `set_map_properties.background.layerSet` 가 같은 결과를 내도록 한 곳에 둔다.
+ *
+ * - 모든 층 fit: "cover" — 세트 그림은 1920×1080 이라 1:1 이면 좌상단 구석만 보인다.
+ * - 층마다 기본 깊이(`defaultLayerCameraFollow`) — 세트를 고르는 것만으로 시차 스크롤이 된다.
+ * - `cloudDrift` 를 주면 이름에 clouds/birds 가 든 층만 그 속도로 흐른다(나머지 풍경은 제자리).
+ */
+export function mapBackgroundFromLayerSet(
+  layerIds: readonly string[],
+  options: { readonly cloudDrift?: number } = {},
+): MapBackground | undefined {
+  const ids = layerIds.slice(0, MAP_BACKGROUND_EXTRA_LAYER_LIMIT + 1);
+  if (ids.length === 0) return undefined;
+  const drift = normalizeMapBackgroundScroll(options.cloudDrift);
+  const drifting = (id: string): boolean => drift !== undefined && drift !== 0 && /clouds|birds/.test(id);
+  const layer = (id: string, index: number): MapBackgroundLayer => {
+    const follow = defaultLayerCameraFollow(index, ids.length);
+    return {
+      imageId: id,
+      fit: "cover",
+      ...(follow > 0 ? { cameraFollow: follow } : {}),
+      ...(drifting(id) ? { scrollX: drift } : {}),
+    };
+  };
+  const [base, ...rest] = ids.map(layer);
+  return rest.length > 0 ? { ...base!, layers: rest } : { ...base! };
+}
+
+/**
  * 이벤트 명령 「먼 배경 변경」 의 흐름 배율(%) 상한. 100 = 저작한 속도 그대로, 0 = 멈춤,
  * 200 = 두 배. 회상 연출의 「구름이 서서히 멈춘다」 가 이 값을 전환 시간에 걸쳐 바꾸는 것이다.
  */
@@ -152,6 +181,7 @@ export function normalizeMapBackground(value: unknown): MapBackground | undefine
     ...(scrollY !== undefined ? { scrollY } : {}),
     ...(fit !== undefined ? { fit } : {}),
     ...(cameraFollow !== undefined ? { cameraFollow } : {}),
+    ...(record.showInEmptyCells === true ? { showInEmptyCells: true } : {}),
     // 반복이 기본값이다 — «끈 것» 만 적어 옛 JSON 과 바이트를 맞춘다.
     ...(record.loopX === false ? { loopX: false } : {}),
     ...(record.loopY === false ? { loopY: false } : {}),
