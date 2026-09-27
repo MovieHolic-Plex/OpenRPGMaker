@@ -11,6 +11,7 @@ import {
   normalizeActorRecord,
 } from "@/project/actorModel";
 import { DEFAULT_BATTLE_SKIN_ID } from "@/battle/skins/registry";
+import { DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
 import { DEFAULT_MENU_SKIN_ID, isMenuSkinId } from "@/player/menuSkins/registry";
 import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
 import { normalizeActionCombatConfig, normalizeActionSkillProfile, normalizeActionWeaponProfile } from "@/project/actionCombat";
@@ -245,6 +246,10 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     // 렌더 시점의 resolveSkinId 가 rm2000 으로 푼다.
     ...(system.battleUiStyle && system.battleUiStyle !== DEFAULT_BATTLE_SKIN_ID
       ? { battleUiStyle: system.battleUiStyle }
+      : {}),
+    // 타격감도 같은 계약 — 기본(impact)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.
+    ...(isBattleHitFeel(system.battleHitFeel) && system.battleHitFeel !== DEFAULT_BATTLE_HIT_FEEL
+      ? { battleHitFeel: system.battleHitFeel }
       : {}),
     // ESC 메뉴 스킨도 같은 계약 — 기본(workbench)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.
     ...(isMenuSkinId(system.menuUiStyle) && system.menuUiStyle !== DEFAULT_MENU_SKIN_ID

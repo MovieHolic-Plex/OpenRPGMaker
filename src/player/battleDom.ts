@@ -36,6 +36,10 @@ import { emitBattleJuice as emitContextBattleJuice, flashBattleField, playBattle
 import { ensureBattleFlashFilter } from "@/player/battleFlashFilter";
 import { applyHitIntensity, battlerMaxHp } from "@/player/battleHitIntensityDom";
 import { hitIntensity } from "@/player/battleHitIntensity";
+import { SWING_LEAD_MS, hurtShakeIntensity, spawnSlashTrail, vibrateStruck } from "@/player/battleHitFeelDom";
+import { resolveBattleHitFeel } from "@/project/battleHitFeel";
+import { battlerSpriteNode } from "@/player/battleFieldDom";
+import { playBattleSfx } from "@/player/battleSfx";
 import { AUTO_BATTLE_KEY_LABEL, SPEED_KEY_LABEL, directionForKey, isAutoBattleKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
 import { unlockBattleSfx } from "@/player/battleSfx";
 import {
@@ -126,6 +130,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   // Active ATB(system.atbMode) — gauge 흐름에서만 켜진다. CSS·QA 가 이 속성으로 구분한다.
   const activeAtb = store.getCurrent().system.atbMode === "active" && options.runtime.snapshot().battleFlow === "gauge";
   root.dataset.battleAtbMode = activeAtb ? "active" : "wait";
+  // 타격감 프리셋(project/battleHitFeel.ts). `data-battle-hit-feel` 은 히트스톱 중 여부(true/false)로 이미 쓰이므로
+  // 이름을 나눈다 — QA 스펙 셋이 그 값을 읽는다. CSS(22-hit-feel.css)가 이 속성으로 갈라진다.
+  const hitFeel = resolveBattleHitFeel(store.getCurrent().system.battleHitFeel);
+  root.dataset.battleHitFeelPreset = hitFeel;
   // 대상 플래시가 실루엣만 물들이도록 SVG 필터 정의를 루트에 심는다(05-poses-motion.css 가 url(#…) 로 참조).
   ensureBattleFlashFilter(root);
   for (const [key, value] of Object.entries(skin.themeVars)) {
@@ -144,6 +152,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
   const initialSnapshot = options.runtime.snapshot();
   let destroyed = false;
+  /** impact · 평타 확정 뒤 처음 오는 접근 비트에 베기 궤적과 휘두름 소리를 한 번 둔다. */
+  let swingArmed = false;
   let choiceController: AbortController | undefined;
   let resultSent = false;
   let submenu: BattleCommandSubmenu = null;
@@ -436,7 +446,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         }
         if (!feedback.healing && !feedback.miss) {
           const hurt = options.runtime.snapshot().actors.some((actor) => actor.id === feedback.targetId || actor.recordId === feedback.targetId);
-          flashBattleField(root, feedback.critical ? "critical" : "hit", intensity, { hurt });
+          flashBattleField(root, feedback.critical ? "critical" : "hit", hurt ? hurtShakeIntensity(hitFeel, intensity) : intensity, { hurt });
+          // 타격음 아래 저음 한 겹 — 샘플은 사건 1개 = 소리 1개(battleJuice) 그대로다. 이 저음은 그 위의 별도 층이다.
+          if (hitFeel === "impact" && intensity) playBattleSfx("thud");
           // 막타는 격파 조각(spawnDeathShards)이 이미 튄다 — 두 파편이 겹치면 뭉개진다.
           if (intensity && targetNode && !lethal) spawnHitSparks(targetNode, intensity);
         }
@@ -452,6 +464,14 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         const node = findBattlerNode(field, struck.targetId);
         if (node && !node.classList.contains("defeated") && !prefersReducedMotion()) blinkBattlerNode(node);
       }
+      // 히트스톱이 걸리는 순간 맞은 쪽이 떨기 시작한다(impact). 멈춘 화면이 사진이 아니라 충격으로 읽힌다.
+      if (active && hitFeel === "impact" && feedback && !prefersReducedMotion()) {
+        const node = findBattlerNode(field, feedback.targetId);
+        const strength = node?.dataset.hitIntensity;
+        if (node && (strength === "graze" || strength === "normal" || strength === "heavy" || strength === "crushing")) {
+          vibrateStruck(battlerSpriteNode(node), strength);
+        }
+      }
       root.dataset.battleHitFeel = active ? "true" : "false";
       root.classList.toggle("battle-hit-stop", active);
       if (active && feedback?.critical) root.classList.add("battle-hit-stop-critical");
@@ -459,6 +479,19 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     },
     onActionMotion(beat) {
       applyActionMotion(field, beat);
+      // 아군 공격의 접근 비트 끝(착탄 SWING_LEAD_MS 전)에 베기 궤적과 휘두름 소리를 둔다. 예전엔 휘두름
+      // 소리가 명령 확정 순간(착탄 ~0.5초 전)에 울고 화면은 그동안 멈춰 있었다.
+      if (hitFeel === "impact" && swingArmed && beat?.kind === "approach" && beat.userMotion === "lunge" && beat.targetId) {
+        swingArmed = false;
+        const targetId = beat.targetId;
+        scheduleBattleTimer(() => {
+          if (destroyed) return;
+          const target = findBattlerNode(field, targetId);
+          if (!target || !target.classList.contains("battle-enemy")) return;
+          playBattleCue("attack-swing");
+          spawnSlashTrail(target);
+        }, Math.max(0, beat.durationMs - SWING_LEAD_MS));
+      }
     },
     animationImpactMs(animation) {
       return battleAnimationImpactMs(animation.animationId);
@@ -1213,7 +1246,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       ? findBattlerNode(field, snapshot.activeActorId)
       : null;
     if (command.kind === "attack" || command.kind === "skill") {
-      emitBattleJuice("attack-swing", actorNode ?? undefined);
+      // impact 의 평타는 휘두름 소리를 착탄 직전(onActionMotion)으로 옮기고 베기 궤적을 같이 긋는다. 여기서도
+      // 울면 한 행동에 두 번 운다. 스킬은 자기 애니메이션이 있어 예전 자리(확정 순간)를 지킨다.
+      swingArmed = hitFeel === "impact" && command.kind === "attack";
+      if (!swingArmed) emitBattleJuice("attack-swing", actorNode ?? undefined);
     } else if (command.kind === "defend") {
       emitBattleJuice("defend", actorNode ?? undefined);
     }

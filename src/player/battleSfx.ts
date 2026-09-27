@@ -11,6 +11,7 @@ export type BattleSfxKind =
   | "confirm"
   | "cancel"
   | "hit"
+  | "thud"
   | "critical"
   | "miss"
   | "heal"
@@ -116,6 +117,10 @@ export function playBattleSfx(kind: BattleSfxKind): void {
       return;
     case "cancel":
       tone({ freq: 520, duration: 0.09, gain: 0.26, slideTo: 330 });
+      return;
+    case "thud":
+      // 타격음 아래에 깔리는 저음 한 겹(타격감 impact). 샘플과 겹쳐도 대역이 달라 트랜지언트를 가리지 않는다.
+      tone({ freq: 110, type: "sine", duration: 0.2, gain: 0.9, slideTo: 38 });
       return;
     case "hit":
       noise({ duration: 0.11, gain: 0.55, filterFrom: 1100, filterTo: 220, seed: 0x484954 });
