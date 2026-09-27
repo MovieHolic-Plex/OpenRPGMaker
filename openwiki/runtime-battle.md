@@ -540,6 +540,29 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - 저작: `upsert_skill` 의 `comboActorIds`·`area`, `upsert_enemy` 의 `rewards.tp`, `upsert_actor` 의 `learnedSkills[].tp`(없는 배우·인원 수·반경·음수 TP 는 ToolError).
 - 검증 증거: `node scripts/runtime-qa.mjs --scenario ct-techs`(`scripts/qa/runtime/ct-techs*.m*`), 헤드리스 TP 는 `scripts/qa/runtime/ct-techs-tp.mts`.
 
+## 전투 자원 · 감정 · 장비 부여 (JRPG 레인 L3, 2026-09-27)
+
+전부 **system 에서 켤 때만** 동작하고 값이 있을 때만 저장한다(정규화가 기본값·꺼짐을 생략). 옛 프로젝트는 스냅샷에 게이지 필드조차 없다.
+
+- **리미트** `system.limitGauge {enabled,label?,takenRate?=100,dealtGain?=5}` → 아군 `MutableBattler.limitGauge`(0~100).
+  맞으면 `받은 HP / 최대 HP × takenRate` 만큼, 명중시키면 `dealtGain` 만큼 찬다. `SkillRecord.limitSkill` 은 100 일 때만 쓰고(`limitNotReady`) 쓰면 0.
+- **기력(제2 자원)** `system.resource2 {enabled,label?,max?=100,start?=0,dealtGain?=5,takenGain?=10}` → `MutableBattler.resource2`,
+  `SkillRecord.resource2Cost` 로 소모(`insufficientResource2`). 이름이 tp 가 아닌 이유: 이 저장소의 TP 는 기술 습득 포인트(`rewards.tp`)다.
+- **파티 공용 게이지** `system.partyGauge {enabled,label?,max?=100,gainPerHit?=10}` → `BattleSnapshot.partyGauge`. 아군→적 명중마다 차고
+  `SkillRecord.partyGaugeCost` 로 추격 연계기가 쓴다(`insufficientPartyGauge`, `battleActorSkillFailure` 의 5번째 인자).
+- 충전은 한 곳: `noteDamageHit`(runtime.ts) → `applyBattleHitGauges`(`src/battle/battleGauges.ts`). HP 피해가 0 이면 아무것도 안 찬다. 게이지는 피해 숫자·rng 를 바꾸지 않는다.
+- HUD: `battleFieldDom` 배우 행에 `.battle-resource-gauge-{limit|resource2}`(role=meter), 파티 패널 끝에 `[data-testid=battle-party-gauge]`. 켠 자원만 그린다.
+- **감정** `StateRecord.emotion {family,tier}` — 배틀러는 감정을 하나만 가진다. 같은 계열을 다시 걸면 한 단계 오르고(최고 단계에서 멈춤) 다른 계열은 바꿔 끼운다
+  (`applyStateEffectsWithEmotion`, `src/battle/battleEmotion.ts`). `system.emotionCycle [{attackerFamily,targetFamily,multiplier}]` 은 속성 배율 칸에 곱해진다.
+- **약점 추가 행동** `system.weaknessExtraAction` — 아군 공격이 속성 배율 > 1 인 적을 맞히면 그 적이 「쓰러지고」 공격자가 한 번 더 행동한다(행동당 1회).
+  쓰러진 적은 제 차례(`executeEnemyAction`)가 오기 전까지 다시 추가 행동을 주지 않는다. gauge 는 `finishGaugeActorCommand`, strict 는 기존 추가 행동 큐 삽입을 그대로 쓴다.
+- **장비 부여** `EquipmentRecord.grantsSkillIds` / `grantsCommand` → `EquipmentRuntimeEffects.grantedSkillIds/grantedCommands`. 스킬은 배우지 않아도 `battlerHasSkill` 로 적법,
+  메뉴·자동 전투는 `battlerSkillIdsWithGrants`, 명령은 `battleCommandsForActor({grantedCommands})` 가 클래스 명령 뒤에 붙인다.
+- **MP 소모 절반** `effectFlags.halfMpCost` 는 이제 살아 있다: `battleSkillMpCostFor` 가 `floor((cost+1)/2)` 로 적법성·소비·메뉴 표시를 모두 맞춘다.
+- **장착 장비 제자리 강화** `ItemUpgradeRule.target: "equipment"` — from/to 가 장비 id. 누가 끼고 있으면 그 슬롯을 바로 바꾸고(같은 부위·슬롯 수용 검사), 아니면 가방 한 개를 바꾼다(`applyItemUpgrade`).
+- 저작: 시스템 탭 「전투 자원」, 스킬 카드 「전투 자원」, 상태 전투 규칙 패널의 「감정 계열/단계」, 장비 카드 「장착 시 스킬·명령」, 생활·제작 업그레이드 「장비 강화」. AI 도구는 `set_project_settings.battle.*`·`upsert_skill`·`upsert_state`·`upsert_equipment`·`upsert_item_upgrade.target`.
+- 테스트: `test/mgL3BattleGauges.test.ts`, `mgL3BattleGaugeHud`, `mgL3BattleEmotion`, `mgL3EquipmentGrants`, `mgL3BattleResourceEditor`.
+
 ## Chrono Trigger 전투 엔진: Active ATB · 상태 · 반격 · 자동 부활 · 적 이동 · 승리 포즈 · 필드 배경 (2026-09-26)
 
 전부 **값이 있을 때만 저장**한다(정규화가 기본값을 생략). 옛 프로젝트는 바이트·동작 그대로다.

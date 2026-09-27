@@ -154,6 +154,12 @@ function runtimeEffectsPanel(state: StateRecord, update: (patch: Partial<StateRe
     checkControl("전투 종료 시 해제", "db-state-rt-remove-on-end", behavior.removeOnBattleEnd, (removeOnBattleEnd) =>
       patchEffects({ removeOnBattleEnd })
     ),
+    // 감정 계열·단계(battleEmotion). 같은 계열을 다시 걸면 단계가 오른다. 계열 상성은 시스템 → 전투 자원.
+    emotionFamilyControl(state, update),
+    numberField("감정 단계", "db-state-emotion-tier", state.emotion?.tier ?? 1, (tier) => {
+      const family = store.getCurrent().database.states.find((entry) => entry.id === state.id)?.emotion?.family;
+      if (family) update({ emotion: { family, tier } });
+    }, { min: 1, max: 9 }, state.emotion ? undefined : { disabled: true, disabledReason: "감정 계열을 먼저 적으세요." }),
     el("div", {
       // db-state-summary 를 쓰면 안 된다 — 그 클래스에 grid-area: summary 가 박혀 있어
       // 온톨로지 요약 칸과 겹쳐 찌그러진다(실제로 그렇게 깨졌다).
@@ -163,6 +169,21 @@ function runtimeEffectsPanel(state: StateRecord, update: (patch: Partial<StateRe
       text: "Gen1 화상 = 공격 배율 0.5 + 턴당 HP 6.25%(=1/16). 독도 6.25%. 배율은 런타임에서 0.4~2.5 로 clamp 된다.",
     }),
   ], "db-state-runtime-panel");
+}
+
+/** 감정 계열 이름 입력. 비우면 감정 상태가 아니다. */
+function emotionFamilyControl(state: StateRecord, update: (patch: Partial<StateRecord>) => void): HTMLElement {
+  const input = el("input", {
+    attrs: { type: "text", maxlength: "24", placeholder: "예: 기쁨 · 분노 · 슬픔" },
+    value: state.emotion?.family ?? "",
+    dataset: { testid: "db-state-emotion-family" },
+  }) as HTMLInputElement;
+  input.addEventListener("change", () => {
+    const family = input.value.trim();
+    const tier = store.getCurrent().database.states.find((entry) => entry.id === state.id)?.emotion?.tier ?? 1;
+    update({ emotion: family ? { family, tier } : undefined });
+  });
+  return el("label", { class: "db-state-control", children: [el("span", { text: "감정 계열" }), input] });
 }
 
 function checkControl(label: string, testid: string, checked: boolean, onChange: (value: boolean) => void): HTMLElement {
