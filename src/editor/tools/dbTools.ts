@@ -452,8 +452,13 @@ const enemyActionSchema = objectSchema({
   switchOnAfterAction: enemyActionSwitchSchema,
   switchOffAfterAction: enemyActionSwitchSchema,
   moveTo: objectSchema({ x: integerSchema("전투장 X 0~320"), y: integerSchema("전투장 Y 0~240") }, "이 행동 전에 이 좌표(트룹 members 좌표계)로 이동한다. 위치 범위기가 새 위치를 본다"),
+  requiresPart: stringSchema("부위 행동: 이 태그의 부위(troop member partTag)가 쓰러지면 쓰지 않는다"),
 });
-const troopMemberSchema = objectSchema({ enemyId: stringSchema(), x: integerSchema(), y: integerSchema(), hidden: booleanSchema() });
+const troopMemberSchema = objectSchema({
+  enemyId: stringSchema(), x: integerSchema(), y: integerSchema(), hidden: booleanSchema(),
+  partOf: integerSchema("다부위 적: 본체 멤버의 인덱스(0부터). 본체가 쓰러지면 이 부위도 쓰러진다"),
+  partTag: stringSchema("부위 태그. 이 부위가 쓰러지면 본체 행동 중 requiresPart 가 같은 것이 막힌다"),
+});
 const stateRuntimeEffectsSchema = objectSchema({
   restrictsAction: booleanSchema(),
   blocksSkillUse: booleanSchema(),
@@ -525,6 +530,7 @@ const enemyRecordSchema = objectSchema({
     skillId: stringSchema("반격 스킬 id. 빈 문자열이면 통상 공격"),
     chance: integerSchema("발동 확률 0~100(생략 100)"),
   }), "반격: 피격 후 살아 있으면 차례 밖에서 skillId 를 쓴다(타격당 최대 1회, 게이지 유지). 빈 배열이면 해제"),
+  stealItems: arrayOf(objectSchema({ itemId: stringSchema(), rate: integerSchema("훔치기 확률 0~100") }), "훔치기 표. 위에서부터 굴려 첫 성공 하나. 빈 배열이면 해제"),
   stateRates: rateMapSchema,
   elementRates: rateMapSchema,
 }) as RecordSchema;
@@ -635,7 +641,11 @@ const skillRecordSchema = objectSchema({
   successRate: integerSchema(),
   variance: integerSchema(),
   hitRate: integerSchema(),
-  effect: objectSchema({ kind: stringSchema(), statistic: stringSchema(), affects: stringSchema(), switchId: stringSchema() }),
+  effect: objectSchema({
+    kind: { type: "string", enum: ["damage", "healing", "support", "switch", "steal", "scan", "learnEnemySkill", "randomSkillFrom"], description: "steal=적 stealItems 훔치기, scan=라이브라, learnEnemySkill=청마법 습득, randomSkillFrom=skillIds 중 무작위" },
+    statistic: stringSchema(), affects: stringSchema(), switchId: stringSchema(),
+    skillIds: stringArraySchema("randomSkillFrom 후보 기술 id"),
+  }),
   elementId: stringSchema(),
   stateEffects: arrayOf(stateEffectSchema),
   maxPp: integerSchema("Gen1 기술별 최대 PP. 1~99"),
@@ -721,6 +731,7 @@ const stateRecordSchema = objectSchema({
   specialFlags: stringArraySchema(),
   lockedParameters: stringArraySchema(),
   runtimeEffects: stateRuntimeEffectsSchema,
+  disablesEquipSlot: stringSchema("부위 손실: 이 상태인 동안 이 장비 슬롯(weapon/shield/armor/helmet/accessory)의 능력치 보너스를 잃는다"),
 }) as RecordSchema;
 
 function parametersForRecord(key: string, schema: RecordSchema, example: Record<string, unknown>, extraProperties: Record<string, JsonSchema> = {}): JsonSchema {

@@ -1,5 +1,5 @@
 import { actionSkillFields } from "./databaseActionSkillForm";
-import { skillCombatRuleCard } from "@/editor/panels/databaseCombatRuleFields";
+import { skillCombatRuleCard, skillInputSequenceFields } from "@/editor/panels/databaseCombatRuleFields";
 // 스킬 탭 인스펙터 (2026-08 모던 개편).
 //
 // 개편 전 문제(감사 H 축 P0): `skillComposer()` 를 폼 맨 앞에 prepend 하는데, 그 안의
@@ -186,6 +186,7 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
   stack.append(skillCombatRuleCard(currentSkill(record), {
     collapsed: !advancedOpen(Boolean(record.damageFormula) || (record.hitSequence ?? [1]).join(",") !== "1"),
   }));
+  stack.append(skillInputSequenceFields(currentSkill(record)));
   stack.append(usedByCard(form, currentSkill(record)));
 
   form.replaceChildren(composer, stack);

@@ -6,6 +6,7 @@ import { sectionCard } from '@/editor/panels/databaseWorkspace';
 import { store } from '@/project/store';
 import type { EnemyRecord, SkillRecord } from '@/project/types';
 import { el } from '@/util/dom';
+import { isSkillInputKey } from '@/battle/battleInputSequence';
 
 export function skillCombatRuleCard(record: SkillRecord, options: { readonly collapsed?: boolean } = {}): HTMLElement {
   const preview = el('p', { class: 'db-skill-card-note', dataset: { testid: 'feature16-formula-preview' }, attrs: { 'aria-live': 'polite' } });
@@ -99,4 +100,27 @@ export function enemyStealFields(record: EnemyRecord): HTMLElement {
     } } }));
   };
   render(); return host;
+}
+
+/** 입력 커맨드(inputSequence): 키 순서·제한 시간·성공/실패 배율. 키를 비우면 입력 없는 기술. */
+export function skillInputSequenceFields(record: SkillRecord): HTMLElement {
+  const current = () => store.getCurrent().database.skills.find(skill => skill.id === record.id) ?? record;
+  const sequence = record.inputSequence;
+  const save = (patch: Partial<NonNullable<SkillRecord['inputSequence']>>): void => {
+    const base = current().inputSequence ?? { keys: [], timeLimitMs: 3000 };
+    const next = { ...base, ...patch };
+    updateDatabaseRecord('skills', record.id, { inputSequence: next.keys.length ? next : undefined });
+  };
+  const keysField = textField('입력 키(up/down/left/right/confirm/cancel, 쉼표)', 'mg-skill-input-keys', (sequence?.keys ?? []).join(', '), value => {
+    const keys = value.split(',').map(part => part.trim()).filter(Boolean);
+    const valid = keys.every(isSkillInputKey) && keys.length <= 12;
+    keysField.querySelector('input')?.setCustomValidity(valid ? '' : 'up, down, left, right, confirm, cancel 중에서 12개까지 입력하세요.');
+    if (valid) save({ keys: keys as NonNullable<SkillRecord['inputSequence']>['keys'] });
+  });
+  return sectionCard({ title: '입력 커맨드', testid: 'mg-skill-input-sequence', hint: '전투에서 대상을 고른 뒤 키 순서를 입력합니다. 제한 시간 안에 성공하면 위력이 오르고, 실패하면 약해집니다.', collapsible: true, collapsed: !sequence, children: [
+    keysField,
+    numberField('제한 시간(ms)', 'mg-skill-input-time', sequence?.timeLimitMs ?? 3000, timeLimitMs => save({ timeLimitMs }), { min: 300, max: 20000 }),
+    numberField('성공 배율', 'mg-skill-input-success', sequence?.successMultiplier ?? 1.5, successMultiplier => save({ successMultiplier }), { min: 0, max: 10, step: 0.05 }),
+    numberField('실패 배율', 'mg-skill-input-fail', sequence?.failMultiplier ?? 0.5, failMultiplier => save({ failMultiplier }), { min: 0, max: 10, step: 0.05 }),
+  ] });
 }

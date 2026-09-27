@@ -177,6 +177,10 @@ export class RuntimeKeyHoldTracker {
     return this.guardKeys.size > 0;
   }
 
+  isSkillHeld(): boolean {
+    return this.skillKeys.size > 0;
+  }
+
   consumeSkillCycleEdge(): boolean {
     const edge = this.pendingSkillCycleEdge;
     this.pendingSkillCycleEdge = false;
@@ -433,6 +437,11 @@ export class Input {
   consumeSkillCycleEdge(): boolean {
     const edge = this.runtimeKeys.consumeSkillCycleEdge();
     return this.enabled ? edge : false;
+  }
+
+  // 스킬 키가 눌려 있는가(지속) — 홀드 차지가 뗀 순간을 본다. 입력이 닫히면 뗀 것으로 친다.
+  isSkillHeld(): boolean {
+    return this.enabled && this.runtimeKeys.isSkillHeld();
   }
 
   // 가드 키가 누렸는가(지속). 입력이 닫힐 동안은 가드도 서지 않는다.

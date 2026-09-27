@@ -58,6 +58,7 @@ import {
   normalizeHomeDecorationTypes,
 } from "@/project/spatialPlacements";
 import type { ActorExperienceCurve, CompanionConfig, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
+import { normalizeSkillInputSequence } from "@/battle/battleInputSequence";
 import { normalizeCharacterFootprint, normalizePassRows } from "@/project/footprint";
 import { normalizePlayResolution } from "@/project/playResolution";
 import { normalizeCameraZoom } from "@/project/cameraZoom";
@@ -608,6 +609,10 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
       ? { area: { shape: record.area.shape, radius: clampNumber(record.area.radius, 1, 640) } }
       : {}),
     ...(record.learnable === true ? { learnable: true } : {}),
+    ...(() => {
+      const inputSequence = normalizeSkillInputSequence(record.inputSequence);
+      return inputSequence ? { inputSequence } : {};
+    })(),
   };
 }
 

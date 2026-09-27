@@ -77,7 +77,7 @@ export type EquipmentUseResult =
 
 export type TargetedActorCommand =
   | { readonly kind: "attack" }
-  | { readonly kind: "skill"; readonly skillId: SkillId }
+  | { readonly kind: "skill"; readonly skillId: SkillId; readonly inputResult?: import("@/battle/battleInputSequence").SkillInputResult }
   | { readonly kind: "item"; readonly itemId: ItemId }
   | { readonly kind: "capture"; readonly captureItemId: ItemId };
 
@@ -89,7 +89,8 @@ export type ActorCommandDraft =
 
 export type ActorCommand =
   | { readonly kind: "attack"; readonly targetEnemyId: string }
-  | { readonly kind: "skill"; readonly skillId: SkillId; readonly targetEnemyId: string; readonly targetActorId?: ActorId }
+  /** inputResult: 입력 커맨드 기술(SkillRecord.inputSequence)의 판정. 생략 = 배율 1. */
+  | { readonly kind: "skill"; readonly skillId: SkillId; readonly targetEnemyId: string; readonly targetActorId?: ActorId; readonly inputResult?: import("@/battle/battleInputSequence").SkillInputResult }
   | { readonly kind: "item"; readonly itemId: ItemId; readonly targetEnemyId: string; readonly targetActorId?: ActorId }
   | { readonly kind: "capture"; readonly captureItemId: ItemId; readonly targetEnemyId: string }
   | { readonly kind: "defend" }

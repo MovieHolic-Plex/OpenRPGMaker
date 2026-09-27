@@ -5,6 +5,7 @@ import { combatConditionMet } from "@/battle/combatConditions";
 import { advanceBattleSkillCooldowns, startBattleSkillCooldown } from "@/battle/battleSkillUse";
 import { damageEffectKind, firstLearnableSkill, pickRandomSkill, rollStealItem, scanMessage, weaknessElementNames } from "@/battle/battleSpecialEffects";
 import { permanentActorSkillIds } from "@/project/growth/runtime";
+import { inputSequencePowerMultiplier } from "@/battle/battleInputSequence";
 import { effectiveActorClassId } from '@/project/sessionClass';
 import { battleTroopError } from '@/project/battleAdmission';
 import { activeItemEffects, isCaptureTool, itemAllowsBattle } from "@/project/itemUsage";
@@ -1084,7 +1085,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         consumeBattleSkillResource(options.project, actor, command.skillId);
         // 연계기: 참가 배우 각자의 MP 를 똑같이 소비한다(위력은 시전자 능력치).
         for (const partner of comboPartners(actor, command)) consumeSkillMp(partner, command.skillId);
-        for (const target of targets) applySkill(actor, target, command.skillId, "skill");
+        // 입력 커맨드: 성공은 보너스, 실패는 약화. 판정이 없으면(자동전투 등) 1배.
+        const inputMultiplier = inputSequencePowerMultiplier(lookupSkill(command.skillId)?.inputSequence, command.inputResult);
+        for (const target of targets) applySkill(actor, target, command.skillId, "skill", inputMultiplier);
         applyGen1Residual(actor);
         break;
       }
@@ -2324,7 +2327,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
   }
 
-  function applySkill(user: MutableBattler, target: MutableBattler, skillId: SkillId, commandKind: BattleTimelineEntrySnapshot["commandKind"] = "skill"): void {
+  function applySkill(user: MutableBattler, target: MutableBattler, skillId: SkillId, commandKind: BattleTimelineEntrySnapshot["commandKind"] = "skill", powerMultiplier = 1): void {
     const skill = lookupSkill(skillId);
     // 흉내·춤·슬롯: 후보 중 하나를 굴려 그 기술로 바꿔 쓴다. 자원은 원래 기술 몫만 소비했다.
     if (skill?.effect.kind === "randomSkillFrom") {
@@ -2344,7 +2347,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
     for (const multiplier of skill?.hitSequence ?? [1]) {
       if (user.hp <= 0 || (target.hp <= 0 && skill?.effect.kind === "damage")) break;
-      applySkillHit(user, target, skillId, commandKind, multiplier);
+      applySkillHit(user, target, skillId, commandKind, multiplier * powerMultiplier);
     }
   }
 
@@ -3018,7 +3021,7 @@ export function concreteTargetCommand(
     case "attack":
       return { kind: "attack", targetEnemyId: targetId };
     case "skill":
-      return { kind: "skill", skillId: command.skillId, targetEnemyId: targetId, ...(side === "actor" ? { targetActorId: targetId as ActorId } : {}) };
+      return { kind: "skill", skillId: command.skillId, targetEnemyId: targetId, ...(side === "actor" ? { targetActorId: targetId as ActorId } : {}), ...(command.inputResult ? { inputResult: command.inputResult } : {}) };
     case "item":
       return { kind: "item", itemId: command.itemId, targetEnemyId: targetId, ...(side === "actor" ? { targetActorId: targetId as ActorId } : {}) };
     case "capture":

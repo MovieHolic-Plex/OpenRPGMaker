@@ -7,6 +7,8 @@ import type {
 } from "@/battle/runtime";
 import { mountOnFieldBackdrop, type OnFieldAnchors } from "@/player/battleOnField";
 import { concreteTargetCommand } from "@/battle/runtime";
+import { createInputSequenceTracker, inputKeyLabel, type SkillInputResult } from "@/battle/battleInputSequence";
+import type { SkillInputKey, SkillInputSequence } from "@/project/types";
 import { waitForEventKey } from "@/player/eventInput";
 import type { BattleEventChoiceSnapshot, BattleEventPauseSnapshot } from "@/battle/types";
 import { targetScopeForCommand } from "@/battle/battleTargetResolver";
@@ -147,6 +149,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let resultRevealStage = 0;
   let finaleCelebrated: BattleSnapshot["result"] | undefined;
   let sequenceBusy = false;
+  /** 입력 커맨드 기술의 프롬프트. 열려 있는 동안 키 입력은 이 판정기로만 간다. */
+  let inputPrompt: { press(key: SkillInputKey): void } | undefined;
   let eventSurfaceOpen = false;
   let lastDamageFeedback: DamageFeedback | undefined;
   /** 지금 걸려 있는 히트스톱의 타격. 정지가 풀리는 순간 이 대상을 깜빡인다. */
@@ -545,6 +549,15 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       // 상태만 기록하고, keyup 에서 단독이었을 때만 속도를 토글한다(결함 2).
       shiftHeld = true;
       shiftCombined = false;
+      return;
+    }
+    if (inputPrompt) {
+      const dir = directionForKey(event.key);
+      const key: SkillInputKey | undefined = dir ?? (isBattleConfirmKey(event) ? "confirm" : isBattleCancelKey(event) ? "cancel" : undefined);
+      if (key) {
+        event.preventDefault();
+        inputPrompt.press(key);
+      }
       return;
     }
     if (sequenceBusy) {
@@ -1166,8 +1179,68 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // escape 는 결과가 화면에 도달할 때 시퀀서 훅(onEscapeOutcome)이 울린다.
   }
 
+  function skillInputSequenceFor(command: TargetedActorCommand): SkillInputSequence | undefined {
+    if (command.kind !== "skill" || command.inputResult) return undefined;
+    return store.getCurrent().database.skills.find((skill) => skill.id === command.skillId)?.inputSequence;
+  }
+
+  /**
+   * 입력 커맨드 프롬프트: 키 순서를 보여 주고 제한 시간 안에 모두 맞게 누르면 성공.
+   * 틀린 키·시간 초과는 실패. 결과는 명령의 inputResult 로 런타임에 넘어가 위력 배율이 된다.
+   */
+  function openInputPrompt(sequence: SkillInputSequence, onDone: (result: SkillInputResult) => void): void {
+    const tracker = createInputSequenceTracker(sequence, Date.now());
+    const overlay = document.createElement("div");
+    overlay.className = "battle-input-prompt";
+    overlay.dataset.testid = "battle-input-prompt";
+    overlay.setAttribute("role", "status");
+    overlay.setAttribute("aria-live", "assertive");
+    const title = document.createElement("p");
+    title.className = "battle-input-prompt-title";
+    title.textContent = `입력! (${(sequence.timeLimitMs / 1000).toFixed(1)}초)`;
+    const keys = document.createElement("div");
+    keys.className = "battle-input-prompt-keys";
+    const keyNodes = sequence.keys.map((key, index) => {
+      const node = document.createElement("span");
+      node.className = "battle-input-prompt-key";
+      node.dataset.testid = `battle-input-prompt-key-${index}`;
+      node.textContent = inputKeyLabel(key);
+      return node;
+    });
+    keys.append(...keyNodes);
+    overlay.append(title, keys);
+    root.append(overlay);
+    let finished = false;
+    const finish = (result: SkillInputResult): void => {
+      if (finished) return;
+      finished = true;
+      inputPrompt = undefined;
+      window.clearTimeout(timer);
+      overlay.dataset.result = result;
+      overlay.remove();
+      onDone(result);
+    };
+    const timer = scheduleBattleTimer(() => finish(tracker.expire(Number.POSITIVE_INFINITY) === "success" ? "success" : "fail"), sequence.timeLimitMs);
+    inputPrompt = {
+      press(key) {
+        const state = tracker.press(key, Date.now());
+        keyNodes.forEach((node, index) => { node.dataset.done = index < tracker.index ? "true" : "false"; });
+        if (state !== "pending") finish(state);
+      },
+    };
+  }
+
   function beginTargetCommand(command: TargetedActorCommand): void {
-    if (sequenceBusy) return;
+    if (sequenceBusy || inputPrompt) return;
+    // 입력 커맨드 기술이 대상 선택 없이 바로 나가는 스코프(자신·전체)면 여기서 입력을 받는다.
+    const promptSequence = skillInputSequenceFor(command);
+    if (promptSequence && command.kind === "skill") {
+      const scope = targetScopeForCommand(store.getCurrent(), command);
+      if (scope === "self" || scope === "allAllies" || scope === "allEnemies") {
+        openInputPrompt(promptSequence, (inputResult) => beginTargetCommand({ ...command, inputResult }));
+        return;
+      }
+    }
     const before = options.runtime.snapshot();
     const returnSubmenu = submenu;
     options.runtime.beginActorCommand(command);
@@ -1207,14 +1280,25 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     sequencer.runAfterActorCommand(concrete, before, afterCommand);
   }
 
-  function confirmTargetSelection(targetId: string): void {
-    if (sequenceBusy) return;
+  function confirmTargetSelection(targetId: string, inputResult?: SkillInputResult): void {
+    if (sequenceBusy || inputPrompt) return;
     const before = options.runtime.snapshot();
     const pending = before.targetSelection?.command;
     const side = before.targetSelection?.side;
     if (before.phase !== "targetSelect" || !pending || !side) return;
-    const command = concreteTargetCommand(pending, targetId, side);
-    options.runtime.selectTarget(targetId);
+    // 입력 커맨드 기술: 대상을 고른 뒤 입력을 받고, 판정을 실은 명령으로 실행한다.
+    const promptSequence = inputResult ? undefined : skillInputSequenceFor(pending);
+    if (promptSequence && before.targetSelection?.targetIds.includes(targetId)) {
+      openInputPrompt(promptSequence, (result) => confirmTargetSelection(targetId, result));
+      return;
+    }
+    const command = concreteTargetCommand(pending.kind === "skill" && inputResult ? { ...pending, inputResult } : pending, targetId, side);
+    if (inputResult) {
+      options.runtime.cancelTargetSelection();
+      options.runtime.performActorCommand(command);
+    } else {
+      options.runtime.selectTarget(targetId);
+    }
     const afterCommand = options.runtime.snapshot();
     if (afterCommand.phase === "targetSelect") {
       directorState = targetSelectDirectorState(afterCommand);
