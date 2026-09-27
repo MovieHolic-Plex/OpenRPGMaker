@@ -52,6 +52,11 @@ export interface ActorRecord {
   learnedSkills: ActorLearnedSkill[];
   stateRates: Record<string, ActorRateGrade>;
   elementRates: Record<string, ActorRateGrade>;
+  /**
+   * 스킬 장착 칸 수(1~12). 있으면 전투에서는 **장착한 스킬만** 쓸 수 있고, 메뉴 스킬 화면에서 장착을 바꾼다.
+   * 생략 = 장착 개념 없음(배운 스킬 전부 사용, 기존 동작).
+   */
+  loadoutSlots?: number;
 }
 
 export type ActorRateGrade = "A" | "B" | "C" | "D" | "E";
@@ -84,7 +89,12 @@ export interface ActorOptions {
   autoBattle: boolean;
   fixedEquipment: boolean;
   mightyGuard: boolean;
+  /** autoBattle 인 배우의 작전. 생략 = 균형(기존 자동 전투 AI). followOrders 면 자동 전투여도 명령을 직접 받는다. */
+  autoTactic?: ActorAutoTactic;
 }
+
+/** 배우별 자동 전투 작전: 전원 공격 · 회복 우선 · MP 아끼기 · 명령 따르기(수동). */
+export type ActorAutoTactic = "attackAll" | "healFirst" | "conserveMp" | "followOrders";
 
 export interface ActorLearnedSkill {
   level: number;
@@ -195,6 +205,8 @@ export interface DatabaseTerrainRecord {
   footstepSoundResourceId?: string;
   characterDisplay: DatabaseTerrainCharacterDisplay;
   vehiclePassage: DatabaseTerrainVehiclePassage;
+  /** 옆보기 맵(GameMap.sideView)에서 사다리·밧줄처럼 오를 수 있는 칸. 없으면 false. */
+  climbable?: boolean;
 }
 
 export interface DatabaseBattleCommandRecord {
@@ -219,6 +231,12 @@ export interface SkillRecord {
   animationId?: BattleAnimationId;
   description: string;
   type: "normal" | "teleport" | "escape" | "switch";
+  /**
+   * 필드 능력(명작 공백 #5, 2026-09-27): 메뉴 스킬 목록에서 쓰면 MP 를 내고 이 공통 이벤트를 실행한다.
+   * 실행 전에 주인공 정면 칸의 이벤트 id 를 문자열 변수 `fieldAbilityTarget` 에, 정면 좌표를 변수
+   * `fieldAbilityX`·`fieldAbilityY` 에 적는다(황금의 태양 Move·포켓몬 비전머신·OMORI 리더 능력).
+   */
+  fieldCommonEventId?: string;
   mpCost: SkillMpCost;
   successRate: number;
   variance: number;
@@ -253,6 +271,19 @@ export interface SkillRecord {
   comboActorIds?: ActorId[];
   /** 위치 범위기: 단일 대상 스코프에서 주 대상 둘레의 같은 편도 함께 맞힌다(전투장 픽셀). */
   area?: SkillArea;
+  /**
+   * 제2 자원 「기력」 소모량(0~100). system.resource2.enabled 일 때만 본다.
+   * 이름이 tp 가 아닌 이유: 기존 TP 는 기술 습득 포인트(rewards.tp)라 뜻이 겹친다.
+   */
+  resource2Cost?: number;
+  /** 리미트 기술: 리미트 게이지가 가득 찼을 때만 쓸 수 있고 쓰면 게이지를 비운다(system.limitGauge.enabled). */
+  limitSkill?: boolean;
+  /** 추격 연계기: 파티 공용 게이지를 이만큼 쓴다(system.partyGauge.enabled). */
+  partyGaugeCost?: number;
+  /** 청마법: 적이 이 기술로 배우를 맞히면(또는 learnEnemySkill 로 훔쳐보면) 배울 수 있다. */
+  learnable?: boolean;
+  /** 입력 커맨드: 성공/실패에 따라 위력이 달라진다. 생략 = 입력 없음. */
+  inputSequence?: SkillInputSequence;
 }
 
 export interface SkillArea {
@@ -270,7 +301,31 @@ export type SkillEffect =
   | { kind: "damage"; statistic: "attack" | "mind"; affects: "hp" | "mp" }
   | { kind: "healing"; statistic: "mind"; affects: "hp" | "mp" }
   | { kind: "support" }
-  | { kind: "switch"; switchId?: string };
+  | { kind: "switch"; switchId?: string }
+  /** 훔치기: 대상 적의 stealItems 를 rate(0~100)로 차례로 굴려 하나를 빼앗는다. 적마다 한 번만 성공한다. */
+  | { kind: "steal" }
+  /** 라이브라: 대상의 HP/MP·약점 속성을 전투 메시지로 알리고 HP 바를 드러낸다. */
+  | { kind: "scan" }
+  /** 청마법 습득(라젠): 대상 적의 learnable 기술 중 모르는 것 하나를 배운다. 이 기술을 아는 배우는 learnable 기술에 맞아도 배운다. */
+  | { kind: "learnEnemySkill" }
+  /** 흉내·춤·슬롯: skillIds 중 하나를 무작위로 골라 그 기술을 대신 쓴다. */
+  | { kind: "randomSkillFrom"; skillIds: SkillId[] };
+
+/** 입력 커맨드 기술: 전투 UI 가 keys 를 순서대로 요구하고, timeLimitMs 안에 성공하면 successMultiplier, 실패하면 failMultiplier 로 위력이 바뀐다. */
+export interface SkillInputSequence {
+  keys: SkillInputKey[];
+  timeLimitMs: number;
+  successMultiplier?: number;
+  failMultiplier?: number;
+}
+
+export type SkillInputKey = "up" | "down" | "left" | "right" | "confirm" | "cancel";
+
+/** 액션 스킬 홀드 차지 단계: holdMs 이상 누르고 떼면 multiplier 배 피해. */
+export interface ActionChargeTier {
+  holdMs: number;
+  multiplier: number;
+}
 
 export interface ActionWeaponProfile {
   /** 스윙 부채꼴 reach. 생략 시 시스템 기본(1). */
@@ -294,6 +349,8 @@ export interface ActionSkillProfile {
   speedTilesPerSec?: number;
   /** 발사 시 인벤토리에서 소비하는 탄약 아이템. 부족하면 캐스트가 불발한다. mpCost와 병용 가능(둘 다 필요). */
   itemCost?: { itemId: ItemId; amount: number };
+  /** 홀드 차지: 캐스트 키를 누른 시간에 따라 피해 배율. 생략 = 즉시 발동(기존과 같음). */
+  chargeTiers?: ActionChargeTier[];
 }
 
 export interface ItemRecord {
@@ -421,6 +478,10 @@ export interface EquipmentRecord {
   stateResistanceChance: number;
   /** 실시간 액션 전투에서 이 무기를 들었을 때의 스윙 프로필. */
   actionWeapon?: ActionWeaponProfile;
+  /** 장착 중에만 쓸 수 있는 스킬. 배우지 않아도 전투 스킬 목록에 들어간다. */
+  grantsSkillIds?: SkillId[];
+  /** 장착 중에만 전투 명령 메뉴에 붙는 명령. skillId 가 있으면 그 스킬도 함께 쓸 수 있다. */
+  grantsCommand?: ClassBattleCommand;
 }
 
 export interface EquipmentStatBonuses {
@@ -461,9 +522,16 @@ export interface EnemyRecord {
   elementRates: Record<string, ActorRateGrade>;
   /** 반격. 피격 후 살아 있으면 skillId 를 차례 밖에서 쓴다(게이지 유지, 타격당 최대 1회). 생략 = 없음. */
   reactions?: EnemyReaction[];
+  /** 훔치기 표. rate 0~100. 생략 = 훔칠 것 없음. */
+  stealItems?: EnemyStealItem[];
 }
 
-/** trigger: physical(공격 계열) · magic(마력 계열) · 그 밖의 문자열은 속성 id. skillId "" = 통상 공격. chance 0~100. */
+export interface EnemyStealItem {
+  itemId: ItemId;
+  rate: number;
+}
+
+/** trigger: physical(공격 계열) · magic(마력 계열) · onDeath(쓰러질 때 최후의 일격, 전투당 1회) · 그 밖의 문자열은 속성 id. skillId "" = 통상 공격. chance 0~100. */
 export interface EnemyReaction {
   trigger: string;
   skillId: SkillId;
@@ -613,6 +681,8 @@ export interface EnemyActionPattern {
   switchOffAfterAction: EnemyActionSwitchEffect;
   /** 이 행동을 하기 전에 전투장 좌표(트룹 members 와 같은 좌표계)로 옮겨 간다. 생략 = 제자리. */
   moveTo?: { x: number; y: number };
+  /** 부위 행동: 이 태그의 부위(TroopMemberRecord.partTag)가 파괴되면 쓰지 않는다. */
+  requiresPart?: string;
 }
 
 export interface TroopMemberRecord {
@@ -620,6 +690,10 @@ export interface TroopMemberRecord {
   x: number;
   y: number;
   hidden?: boolean;
+  /** 다부위 적: 본체 멤버의 트룹 내 인덱스(0부터). 본체가 쓰러지면 이 부위도 쓰러진다. */
+  partOf?: number;
+  /** 부위 태그. 이 부위가 쓰러지면 본체의 requiresPart 가 같은 행동이 막힌다. */
+  partTag?: string;
 }
 
 export type BattleEventSpan = "battle" | "turn" | "moment";
@@ -655,9 +729,28 @@ export interface TroopRecord {
   /** Distinguishes trainer battles from wild encounters without guessing from troop ids. */
   trainerBattle?: boolean;
   previewBackgroundResourceId?: string;
+  /** 전투 배경 움직임(스크롤·물결·색 순환). 생략 = 정지 배경(기존). project/battleBackdropAnimation.ts 가 정규화한다. */
+  backdropAnimation?: BattleBackdropAnimation;
   battleFlow?: BattleFlow;
   activeSlots?: number;
   battleEventPages: BattleEventPageRecord[];
+}
+
+/**
+ * 마더2식 움직이는 전투 배경. 모든 값은 선택이며 0/생략이면 그 효과가 꺼진다.
+ * prefers-reduced-motion 이면 런타임이 전부 멈추고 정지 배경을 보인다.
+ */
+export interface BattleBackdropAnimation {
+  /** 가로 스크롤 속도(px/초, -400~400). 양수 = 오른쪽. */
+  scrollX?: number;
+  /** 세로 스크롤 속도(px/초, -400~400). 양수 = 아래. */
+  scrollY?: number;
+  /** 물결 왜곡 진폭(px, 0~24). */
+  waveAmplitude?: number;
+  /** 물결 주파수(초당 흔들림 횟수, 0~8). 진폭이 있고 주파수가 0 이면 1 로 본다. */
+  waveFrequency?: number;
+  /** 색 순환 주기(초, 0~60). 0 = 끔. 주기마다 색상이 한 바퀴(hue-rotate 360°) 돈다. */
+  paletteCycleSeconds?: number;
 }
 
 export interface StateRecord {
@@ -676,12 +769,36 @@ export interface StateRecord {
   recoverNaturallyChance?: number;
   recoverWhenHitChance?: number;
   hpReleaseTurn?: number;
+  /**
+   * 필드 걸음당 HP 변화(음수 = 피해). 명작 공백 #25(2026-09-27)부터 런타임이 실제로 적용한다:
+   * `fieldStepInterval` 걸음마다 한 번, 걸음 피해로는 1 아래로 내려가지 않는다(`fieldStepCanKill` 이면 0까지).
+   */
   hpReleaseStep?: number;
   mpReleaseTurn?: number;
+  /** 필드 걸음당 MP 변화(음수 = 소모). hpReleaseStep 과 같은 간격. */
   mpReleaseStep?: number;
+  /** hp/mpReleaseStep 적용 간격(걸음). 생략 = 1. */
+  fieldStepInterval?: number;
+  /** 걸음 피해가 HP 0 까지 깎을 수 있다(전원 0 이면 필드 패배). 생략 = 1 에서 멈춤. */
+  fieldStepCanKill?: boolean;
+  /** 이 걸음 수를 걸으면 상태가 풀린다(필드 N걸음 지속). 생략 = 걸음으로 풀리지 않음. */
+  releaseAfterSteps?: number;
   specialFlags?: readonly string[];
   lockedParameters?: readonly string[];
   runtimeEffects?: StateRuntimeEffects;
+  /**
+   * 감정 계열과 단계. 같은 계열 상태를 다시 걸면 한 단계씩 올라가고(최고 단계에서 멈춤),
+   * 계열당 한 상태만 남는다. 공격자·대상 계열 상성은 system.emotionCycle 이 정한다.
+   */
+  emotion?: StateEmotion;
+  /** 부위 손실: 이 상태인 동안 해당 장비 슬롯(weapon/shield/armor/helmet/accessory)의 능력치 보너스를 잃는다. */
+  disablesEquipSlot?: string;
+}
+
+export interface StateEmotion {
+  family: string;
+  /** 1 부터. 같은 계열에서 클수록 강하다. */
+  tier: number;
 }
 
 export interface StateRuntimeEffects {
@@ -703,6 +820,10 @@ export interface StateRuntimeEffects {
   forcedAction?: "attackRandom";
   /** 이 상태인 동안 속성 등급을 덮어쓴다(속성 id → A~E). */
   elementRates?: Record<string, ActorRateGrade>;
+  /** 석화처럼 전투 불능으로 친다 — 아군 전원이 쓰러졌거나 이 상태면 패배. 이 상태로는 행동하지 못한다. */
+  incapacitates?: boolean;
+  /** 받는 HP 피해 중 이 비율(0~1)을 MP 에서 대신 깎는다(MP 가 모자라면 남은 만큼만). */
+  damageToMpRate?: number;
 }
 
 export interface BattleAnimationRecord {
@@ -1188,6 +1309,30 @@ export interface TitleScreenSettings {
   logoShine?: TitleLogoShine;
   /** 새 게임 전환. 생략 = 기존 짧은 확인 연출(180ms)만. */
   transition?: TitleTransitionSettings;
+  /**
+   * 클리어·마지막 저장 상태에 따라 바뀌는 배경/음악. 위에서부터 처음 맞는 한 줄을 쓴다.
+   * 비어 있거나 맞는 줄이 없으면 기본 backgroundResourceId/musicResourceId 그대로다.
+   */
+  variants?: TitleScreenVariant[];
+  /** 켜면 저장이 있을 때 타이틀을 건너뛰고 가장 최근 저장(자동 저장 포함)으로 바로 이어한다. 생략 = 타이틀. */
+  resumeOnLaunch?: boolean;
+}
+
+/** 타이틀 변형의 조건 — 한 줄에 조건 하나. */
+export type TitleScreenVariantWhen =
+  /** 이 엔딩을 본 적이 있다(클리어 기록). */
+  | { readonly kind: "endingSeen"; readonly endingId: string }
+  /** 서로 다른 엔딩을 이만큼 이상 봤다. */
+  | { readonly kind: "clearCount"; readonly atLeast: number }
+  /** 가장 최근 저장이 이 맵에서 이뤄졌다. */
+  | { readonly kind: "saveMapId"; readonly mapId: string };
+
+export interface TitleScreenVariant {
+  readonly when: TitleScreenVariantWhen;
+  /** 생략 = 기본 배경 유지. */
+  readonly backgroundResourceId?: string;
+  /** 생략 = 기본 음악 유지. */
+  readonly musicResourceId?: string;
 }
 
 /** Project-authored logical viewport used by the map runtime and its DOM stage. */
@@ -1270,6 +1415,8 @@ export interface SystemRecords {
    * 이벤트의 `EventPage.footprint` 와 같은 규약이다(2차 스펙 §9).
    */
   playerFootprint?: CharacterFootprint;
+  /** 맵을 클릭(탭)하면 주인공이 경로를 찾아 걸어간다(명작 공백 #32). 생략 = 꺼짐. */
+  pointerMovement?: boolean;
   /**
    * 몸 사각 **하단 몇 행**이 지형·이벤트에 막히는가. 생략하면 몸 높이 전체(= 통행 사각 === 몸 사각).
    * 3x3 주인공에 1 이면 발밑 한 줄만 막혀 상체가 벽을 스치며 지나갈 수 있다.
@@ -1293,8 +1440,18 @@ export interface SystemRecords {
   atbMode?: BattleAtbMode;
   /** ATB 속도 1~8(4 = 기존 속도). 생략 = 기존 속도. */
   atbSpeed?: number;
+  /** true 면 전투마다 선제·기습·백어택·협공을 민첩으로 굴리고, 심볼 인카운트는 접촉 방향으로 정한다. 생략 = 항상 보통 개시. */
+  battleFormationRoll?: boolean;
+  /** 도주에 실패할 때마다 다음 도주 확률에 더하는 %p. 생략 = 10, 0 = 가산 없음. */
+  escapeBonusPercent?: number;
   /** field 면 전투 배경이 주인공 주변 필드 화면의 스냅숏이고 진입은 제자리 페이드. 생략 = 트룹/지형 배경. */
   battleBackdrop?: "field";
+  /** true 면 전투 HP 가 마더(EarthBound)식 롤링 미터로 표시된다: 표시 HP 가 실제 HP 쪽으로 초당
+   *  battleRollingHpPerSecond 만큼 흘러가고, 치명타를 받은 아군은 미터가 0 에 닿기 전까지 「쓰러지는 중」이다.
+   *  그 사이 전투가 승리·도주로 끝나면 미터에 남은 HP 로 살아남는다. 생략 = 즉시 표시(기존). */
+  battleRollingHp?: boolean;
+  /** 롤링 미터 속도(HP/초, 1~999). 생략 = DEFAULT_ROLLING_HP_PER_SECOND. */
+  battleRollingHpPerSecond?: number;
   /** onField 면 전투가 **필드 위에서** 벌어진다(크로노식): 전환 연출 없이, 적은 부딪힌 심볼 자리에, 아군은 파티가 선 자리에
    *  선다. 배경은 필드 스냅샷 그대로(확대·자르기 없음). battleBackdrop 과 무관하게 필드 배경을 쓴다. 생략 = 전환 후 전투장. */
   battlePresentation?: "onField";
@@ -1389,6 +1546,82 @@ export interface SystemRecords {
   genre?: GenrePackId;
   /** AI 마을 생성의 물·숲·길 수치와 낱말 규칙. 생략하면 내장 기본값(예전 하드코딩과 동일 동작). */
   worldGen?: import("@/project/worldGenRules").WorldGenRules;
+  /** 배우별 리미트 게이지(0~100). 생략 = 없음. */
+  limitGauge?: BattleLimitGaugeConfig;
+  /** 제2 기술 자원 「기력」(0~max). 생략 = 없음. */
+  resource2?: BattleResource2Config;
+  /** 파티 공용 게이지(0~max). 생략 = 없음. */
+  partyGauge?: BattlePartyGaugeConfig;
+  /** 약점(속성 배율 > 1)을 찌르면 한 번 더 행동한다(페르소나식). 같은 적은 제 차례가 올 때까지 다시 쓰러지지 않는다. */
+  weaknessExtraAction?: boolean;
+  /** 감정 상성표: 공격자 감정 계열 → 대상 감정 계열 → 피해 배율. 생략 = 상성 없음. */
+  emotionCycle?: EmotionCycleRule[];
+  /**
+   * 난이도 목록. 비어 있지 않으면 새 게임을 고를 때 난이도를 묻고(1개면 묻지 않는다), 적 HP/공격력·경험치·골드·
+   * 인카운트율에 배율을 곱한다. 이벤트 명령 setDifficulty 로 바꾸고 조건 difficulty 로 읽는다. 생략 = 난이도 없음.
+   */
+  difficulties?: DifficultyRecord[];
+  /** 새 게임의 난이도 id. 생략·무효면 목록 첫 줄. */
+  defaultDifficultyId?: string;
+  /** 몬스터 합성 표(fuseMonsters). 두 종의 순서는 따지지 않는다. */
+  monsterFusions?: MonsterFusionRecord[];
+}
+
+export interface BattleLimitGaugeConfig {
+  enabled: boolean;
+  /** 표시 이름. 생략 = 「리미트」. */
+  label?: string;
+  /** 받은 피해가 최대 HP 의 몇 %인지에 곱하는 충전율(%). 생략 = 100(최대 HP 만큼 맞으면 가득). */
+  takenRate?: number;
+  /** 공격이 명중할 때마다 더하는 점수. 생략 = 5. */
+  dealtGain?: number;
+}
+
+export interface BattleResource2Config {
+  enabled: boolean;
+  /** 표시 이름. 생략 = 「기력」. */
+  label?: string;
+  /** 최대치. 생략 = 100. */
+  max?: number;
+  /** 전투 시작 값. 생략 = 0. */
+  start?: number;
+  /** 피해를 줄 때마다 얻는 양. 생략 = 5. */
+  dealtGain?: number;
+  /** 피해를 받을 때마다 얻는 양. 생략 = 10. */
+  takenGain?: number;
+}
+
+export interface BattlePartyGaugeConfig {
+  enabled: boolean;
+  /** 표시 이름. 생략 = 「연계 게이지」. */
+  label?: string;
+  /** 최대치. 생략 = 100. */
+  max?: number;
+  /** 아군 공격이 명중할 때마다 차는 양. 생략 = 10. */
+  gainPerHit?: number;
+}
+
+export interface EmotionCycleRule {
+  attackerFamily: string;
+  targetFamily: string;
+  multiplier: number;
+}
+
+export interface DifficultyRecord {
+  id: string;
+  name: string;
+  /** 모든 배율은 1 = 그대로. 0.1~10 으로 자른다. */
+  enemyHpRate?: number;
+  enemyAttackRate?: number;
+  expRate?: number;
+  goldRate?: number;
+  encounterRate?: number;
+}
+
+export interface MonsterFusionRecord {
+  speciesA: MonsterSpeciesId;
+  speciesB: MonsterSpeciesId;
+  resultSpeciesId: MonsterSpeciesId;
 }
 
 export interface ActionCombatHudConfig {
@@ -1402,6 +1635,8 @@ export interface ActionCombatHudConfig {
 
 export interface SystemActionCombat {
   enabled: boolean;
+  /** true 면 따라오는 파티 동료가 가까운 적을 스스로 때리고, V 키로 조작 캐릭터(선두)를 바꾼다. 없으면 꺼짐. */
+  allies?: boolean;
   /** 플레이어 피격 무적시간. 기본 800ms. */
   playerIframesMs?: number;
   /** 공격 스윙 쿨다운. 기본 350ms. */

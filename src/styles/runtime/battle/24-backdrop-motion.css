@@ -1,0 +1,60 @@
+/* 움직이는 전투 배경(트룹 backdropAnimation).
+   값은 전부 JS 가 인라인 변수로 건다(player/battleBackdropMotion.ts).
+   prefers-reduced-motion 이면 움직임을 모두 멈춘다 — JS 도 줄임 모드에서는 속성을 걸지 않지만,
+   도중에 OS 설정이 바뀌어도 CSS 가 정지를 보장한다. */
+
+/* 스크롤: 배경을 타일로 깔고 background-position 을 한 타일만큼 밀었다가 되감는다(이음매 없음).
+   타일 크기(640×480)는 battleBackdropMotion.ts 의 TILE_W/TILE_H 와 같아야 한다. */
+.battle-backdrop[data-backdrop-motion~="scroll"] {
+  background-repeat: repeat;
+  background-size: 640px 480px;
+}
+
+.battle-backdrop[data-backdrop-motion~="scroll"]:not([data-backdrop-motion~="palette"]) {
+  animation: battle-backdrop-scroll var(--battle-backdrop-scroll-duration, 8s) linear infinite;
+}
+
+/* 색 순환: 주기마다 hue-rotate 360°. 스크롤과 함께면 두 애니메이션을 겹쳐 건다. */
+.battle-backdrop[data-backdrop-motion~="palette"]:not([data-backdrop-motion~="scroll"]) {
+  animation: battle-backdrop-palette var(--battle-backdrop-palette-duration, 6s) linear infinite;
+}
+
+.battle-backdrop[data-backdrop-motion~="scroll"][data-backdrop-motion~="palette"] {
+  animation:
+    battle-backdrop-scroll var(--battle-backdrop-scroll-duration, 8s) linear infinite,
+    battle-backdrop-palette var(--battle-backdrop-palette-duration, 6s) linear infinite;
+}
+
+/* 물결은 캔버스가 스크롤까지 그린다 — CSS 스크롤을 끄고 원본 그림은 캔버스 밑에 가린다.
+   색 순환은 배경 노드의 filter 라 캔버스에도 그대로 걸린다. */
+.battle-backdrop[data-backdrop-wave="canvas"]:not([data-backdrop-motion~="palette"]) {
+  animation: none;
+}
+
+.battle-backdrop[data-backdrop-wave="canvas"][data-backdrop-motion~="palette"] {
+  animation: battle-backdrop-palette var(--battle-backdrop-palette-duration, 6s) linear infinite;
+}
+
+.battle-backdrop-wave-canvas {
+  display: block;
+  height: 100%;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+}
+
+@keyframes battle-backdrop-scroll {
+  from { background-position: 0 0; }
+  to { background-position: var(--battle-backdrop-scroll-x, 0) var(--battle-backdrop-scroll-y, 0); }
+}
+
+@keyframes battle-backdrop-palette {
+  from { filter: hue-rotate(0deg); }
+  to { filter: hue-rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .battle-backdrop[data-backdrop-motion] { animation: none; }
+  .battle-backdrop-wave-canvas { display: none; }
+}

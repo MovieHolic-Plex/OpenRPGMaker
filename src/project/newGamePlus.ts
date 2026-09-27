@@ -42,6 +42,8 @@ export type ClearCarrySnapshot = {
 
 export type ClearRecord = {
   readonly endingIds: readonly string[];
+  /** 엔딩을 본 누적 횟수(같은 엔딩 반복 포함). 옛 기록은 endingIds 수로 본다. */
+  readonly clearCount?: number;
   readonly clearedAt: string;
   readonly carry: ClearCarrySnapshot;
 };

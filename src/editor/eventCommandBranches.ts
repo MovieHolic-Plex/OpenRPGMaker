@@ -175,6 +175,11 @@ export function eventCommandBranches(command: Command): readonly EventCommandBra
       return successFailureBranches(command.successBranch, command.failureBranch, "promotion");
     case "evolveMonster":
       return successFailureBranches(command.successBranch, command.failureBranch, "evolution");
+    case "tacticsBattle":
+      return [
+        { kind: "battleVictory", label: "이겼을 때", commands: command.victoryBranch ?? [], branchIndex: BATTLE_VICTORY_BRANCH_INDEX, tone: "fork" },
+        { kind: "battleDefeat", label: "졌을 때", commands: command.defeatBranch ?? [], branchIndex: BATTLE_DEFEAT_BRANCH_INDEX, tone: "fork" },
+      ];
     case "battleProcessing": {
       const on = command.branchOnResult;
       const branches: EventCommandBranch[] = [];

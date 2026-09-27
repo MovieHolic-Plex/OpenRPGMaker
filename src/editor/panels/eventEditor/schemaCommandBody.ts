@@ -61,6 +61,8 @@ export const SCHEMA_RENDERED_KINDS: ReadonlySet<string> = new Set<string>([
   "changeLifeSkillExp",
   // 새 명령이라 승계할 기존 testid 계약이 없다. 정답 목록은 presentOptions 위젯이 그린다.
   "presentItem",
+  // 새 명령(전술 격자 전투) — 승계할 testid 계약이 없다. 적 그룹·격자 크기·패배 허용을 스키마 폼이 그린다.
+  "tacticsBattle",
 ]);
 
 /** 프로젝트 상태에서 요약문 조회기를 만든다. */

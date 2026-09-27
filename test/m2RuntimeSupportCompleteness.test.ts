@@ -24,7 +24,7 @@ describe("M2 persisted runtime classification completeness", () => {
 
     // Then: the union is exactly the 126 catalog IDs, with no duplicate membership.
     expect(new Set(classifiedIds)).toEqual(new Set(catalogIds));
-    expect(classifiedIds).toHaveLength(126);
+    expect(classifiedIds).toHaveLength(131);
     expect([...membershipCounts].filter(([, count]) => count > 1)).toEqual([]);
   });
 
@@ -161,7 +161,8 @@ describe("M2 persisted runtime classification completeness", () => {
     const demotedIds = M2_PERSISTED_BEHAVIOR_IDS.full.filter(
       (commandId) => !M2_MAP_COMMON_FULL_IDS.some((fullId) => fullId === commandId)
     );
-    expect(demotedIds).toHaveLength(54);
+    // 55: m2-218 move-enemy(전투 전용) 가 들어오며 기준선에서 이미 55 였다(2026-09-27 발견·교정).
+    expect(demotedIds).toHaveLength(55);
 
     for (const commandId of demotedIds) {
       // When: 피커/리스트가 카탈로그 행을 map 컨텍스트로 판정한다.
@@ -172,7 +173,8 @@ describe("M2 persisted runtime classification completeness", () => {
       expect(catalogRowRuntimeSupport(commandId, undefined), commandId).toBe("runtime-partial");
     }
 
-    expect(M2_MAP_COMMON_FULL_IDS).toHaveLength(32);
+    // 31 + m2-069(맵 배경 흐름) + 명작 공백 미니게임 키트·순간이동 메뉴(m2-219~223).
+    expect(M2_MAP_COMMON_FULL_IDS).toHaveLength(37);
     for (const commandId of M2_MAP_COMMON_FULL_IDS) {
       expect(catalogRowRuntimeSupport(commandId, undefined, "map"), commandId).toBe("runtime-full");
     }

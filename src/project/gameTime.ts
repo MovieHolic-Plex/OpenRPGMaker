@@ -31,6 +31,8 @@ export interface TimeSystemConfig {
   readonly dayEndHour?: number;
   /** Days in each season before rolling to the next. Default 28. Clamped 1..99. */
   readonly daysPerSeason?: number;
+  /** 1년 1일의 요일(0=일 … 6=토). 요일 조건이 읽는다. 기본 1(월). */
+  readonly startWeekday?: number;
   readonly forceSleep?: boolean;
   readonly onDayEnd?: string;
 }

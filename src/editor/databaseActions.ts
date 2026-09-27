@@ -281,6 +281,10 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
         if ("learnedSkills" in actorPatch && actorPatch.learnedSkills !== undefined) record.learnedSkills = actorPatch.learnedSkills;
         if ("stateRates" in actorPatch && actorPatch.stateRates !== undefined) record.stateRates = actorPatch.stateRates;
         if ("elementRates" in actorPatch && actorPatch.elementRates !== undefined) record.elementRates = actorPatch.elementRates;
+        if ("loadoutSlots" in actorPatch) {
+          if (actorPatch.loadoutSlots === undefined) delete record.loadoutSlots;
+          else record.loadoutSlots = actorPatch.loadoutSlots;
+        }
         Object.assign(record, normalizeActorRecord(record));
         return;
       }
@@ -325,8 +329,15 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
         if ("hpReleaseStep" in patch && patch.hpReleaseStep !== undefined) record.hpReleaseStep = patch.hpReleaseStep;
         if ("mpReleaseTurn" in patch && patch.mpReleaseTurn !== undefined) record.mpReleaseTurn = patch.mpReleaseTurn;
         if ("mpReleaseStep" in patch && patch.mpReleaseStep !== undefined) record.mpReleaseStep = patch.mpReleaseStep;
+        if ("fieldStepInterval" in patch && patch.fieldStepInterval !== undefined) record.fieldStepInterval = patch.fieldStepInterval;
+        if ("releaseAfterSteps" in patch && patch.releaseAfterSteps !== undefined) record.releaseAfterSteps = patch.releaseAfterSteps;
+        if ("fieldStepCanKill" in patch && patch.fieldStepCanKill !== undefined) record.fieldStepCanKill = patch.fieldStepCanKill;
         if ("specialFlags" in patch) record.specialFlags = patch.specialFlags;
         if ("lockedParameters" in patch) record.lockedParameters = patch.lockedParameters;
+        if ("emotion" in patch) {
+          if (patch.emotion === undefined) delete record.emotion;
+          else record.emotion = patch.emotion;
+        }
         // runtimeEffects(전투 규칙 knob 5개)는 이 줄이 없으면 폼 입력이 조용히 버려졌다 —
         // normalizeStateRecord 는 이미 보존하므로 구멍은 이 뮤테이터 하나였다.
         // 부분 패치를 병합한다: 건드리지 않은 knob 은 undefined 로 남겨 온톨로지 폴백을 유지한다.

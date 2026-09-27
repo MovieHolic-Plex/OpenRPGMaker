@@ -1,5 +1,7 @@
 import { DEFAULT_ELEMENT_RATE_LABELS } from "@/project/actorModel";
 import { normalizeEnemyActionProfile } from "@/project/actionCombat";
+import { normalizeStealItems } from "@/battle/battleSpecialEffects";
+import { normalizeBattleBackdropAnimation } from "@/project/battleBackdropAnimation";
 import type {
   EnemyActionCondition,
   EnemyActionPattern,
@@ -56,6 +58,10 @@ export function normalizeEnemyRecord(
       const reactions = normalizeEnemyReactions(record.reactions);
       return reactions.length > 0 ? { reactions } : {};
     })(),
+    ...(() => {
+      const stealItems = normalizeStealItems(record.stealItems);
+      return stealItems.length > 0 ? { stealItems } : {};
+    })(),
   };
 }
 
@@ -96,6 +102,11 @@ export function normalizeTroopRecord(record: Partial<TroopRecord> & Pick<TroopRe
     uncapturable: record.uncapturable === true,
     ...(record.trainerBattle === true ? { trainerBattle: true } : {}),
     previewBackgroundResourceId: normalizeBattleFieldBackgroundId(record.previewBackgroundResourceId),
+    // 움직이는 전투 배경. 효과가 하나도 없으면 키를 만들지 않는다(옛 JSON 바이트 유지).
+    ...(() => {
+      const backdropAnimation = normalizeBattleBackdropAnimation(record.backdropAnimation);
+      return backdropAnimation ? { backdropAnimation } : {};
+    })(),
     battleFlow: normalizeBattleFlow(record.battleFlow),
     activeSlots: normalizeOptionalPositiveInteger(record.activeSlots),
     battleEventPages: uniqueBattleEventPages(record.battleEventPages ?? []),
@@ -188,6 +199,7 @@ function normalizeEnemyActions(actions: readonly Partial<EnemyActionPattern>[] |
       ...(action.moveTo && Number.isFinite(action.moveTo.x) && Number.isFinite(action.moveTo.y)
         ? { moveTo: { x: clampInteger(action.moveTo.x, 0, 320), y: clampInteger(action.moveTo.y, 0, 240) } }
         : {}),
+      ...(typeof action.requiresPart === "string" && action.requiresPart.trim() ? { requiresPart: action.requiresPart.trim().slice(0, 32) } : {}),
     }));
 }
 
@@ -234,6 +246,8 @@ function normalizeMembers(members: readonly Partial<TroopMemberRecord>[] | undef
       x: clampInteger(member.x ?? 160, 0, 320),
       y: clampInteger(member.y ?? 120, 0, 240),
       hidden: member.hidden ?? false,
+      ...(typeof member.partOf === "number" && Number.isInteger(member.partOf) && member.partOf >= 0 && member.partOf < 64 ? { partOf: member.partOf } : {}),
+      ...(typeof member.partTag === "string" && member.partTag.trim() ? { partTag: member.partTag.trim().slice(0, 32) } : {}),
     }));
 }
 

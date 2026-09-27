@@ -4,6 +4,7 @@ import { stateBehavior } from "@/battle/battleStates";
 import { resolvedStateValues, stateOntologyFor } from "@/project/ontology/databaseStateOntology";
 import type { StateRateGrade } from "@/project/ontology/databaseStateOntology";
 import { store } from "@/project/store";
+import { equipmentSlots } from "@/project/equipmentSlots";
 import type { StateRecord } from "@/project/types";
 import { el } from "@/util/dom";
 
@@ -83,6 +84,16 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
           numberField("맵 이동(걸음당)", "db-state-hp-move", numericRelease(state.hpReleaseStep, baseOntology.hpMove), (hpReleaseStep) =>
             update({ hpReleaseStep }), { min: -999, max: 999 }
           ),
+          // 명작 공백 #25: 걸음 효과 간격·치사 여부·N걸음 후 해제.
+          numberField("걸음 효과 간격", "db-state-step-interval", state.fieldStepInterval ?? 1, (fieldStepInterval) =>
+            update({ fieldStepInterval: Math.max(1, fieldStepInterval) }), { min: 1, max: 99 }
+          ),
+          numberField("N걸음 후 풀림(0=안 풀림)", "db-state-release-steps", state.releaseAfterSteps ?? 0, (releaseAfterSteps) =>
+            update({ releaseAfterSteps: Math.max(0, releaseAfterSteps) }), { min: 0, max: 9999 }
+          ),
+          numberField("걸음 피해로 쓰러짐(1=예)", "db-state-step-can-kill", state.fieldStepCanKill ? 1 : 0, (value) =>
+            update({ fieldStepCanKill: value >= 1 }), { min: 0, max: 1 }
+          ),
         ], "db-state-panel-hp"),
         panel("MP", [
           numberField("전투 중(턴당%)", "db-state-mp-turn", numericRelease(state.mpReleaseTurn, baseOntology.mpTurn), (mpReleaseTurn) =>
@@ -99,6 +110,11 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
         // 하나 끼우면 이후 전부가 다른 영역으로 밀렸다(실제로 그렇게 깨졌고 이 주석이
         // 그 흔적이었다). 이제는 어디에 넣어도 안전하다.
         runtimeEffectsPanel(state, update),
+        panel("부위 손실", [
+          selectLiteral("잃는 장비 슬롯", "db-state-disables-equip-slot", state.disablesEquipSlot ?? "",
+            ["", ...equipmentSlots(store.getCurrent()).map((slot) => slot.id)], (slot) => update({ disablesEquipSlot: slot || undefined })),
+          el("p", { class: "db-skill-card-note", text: "이 상태인 동안 그 슬롯 장비의 능력치를 잃습니다(팔 부상 → 무기 등)." }),
+        ], "db-state-panel-part-loss"),
         el("div", { class: "db-state-summary", dataset: { testid: "db-state-ontology-summary" }, text: ontology.summary }),
       ],
     }),
@@ -154,6 +170,18 @@ function runtimeEffectsPanel(state: StateRecord, update: (patch: Partial<StateRe
     checkControl("전투 종료 시 해제", "db-state-rt-remove-on-end", behavior.removeOnBattleEnd, (removeOnBattleEnd) =>
       patchEffects({ removeOnBattleEnd })
     ),
+    checkControl("전투 불능으로 침 (석화 — 전원이면 패배)", "db-state-rt-incapacitates", state.runtimeEffects?.incapacitates === true, (incapacitates) =>
+      patchEffects({ incapacitates: incapacitates ? true : undefined })
+    ),
+    numberField("피해를 MP 로 (0~1)", "db-state-rt-damage-to-mp", state.runtimeEffects?.damageToMpRate ?? 0, (damageToMpRate) =>
+      patchEffects({ damageToMpRate: damageToMpRate > 0 ? Math.min(1, damageToMpRate) : undefined }), { min: 0, max: 1, step: 0.05 }
+    ),
+    // 감정 계열·단계(battleEmotion). 같은 계열을 다시 걸면 단계가 오른다. 계열 상성은 시스템 → 전투 자원.
+    emotionFamilyControl(state, update),
+    numberField("감정 단계", "db-state-emotion-tier", state.emotion?.tier ?? 1, (tier) => {
+      const family = store.getCurrent().database.states.find((entry) => entry.id === state.id)?.emotion?.family;
+      if (family) update({ emotion: { family, tier } });
+    }, { min: 1, max: 9 }, state.emotion ? undefined : { disabled: true, disabledReason: "감정 계열을 먼저 적으세요." }),
     el("div", {
       // db-state-summary 를 쓰면 안 된다 — 그 클래스에 grid-area: summary 가 박혀 있어
       // 온톨로지 요약 칸과 겹쳐 찌그러진다(실제로 그렇게 깨졌다).
@@ -163,6 +191,21 @@ function runtimeEffectsPanel(state: StateRecord, update: (patch: Partial<StateRe
       text: "Gen1 화상 = 공격 배율 0.5 + 턴당 HP 6.25%(=1/16). 독도 6.25%. 배율은 런타임에서 0.4~2.5 로 clamp 된다.",
     }),
   ], "db-state-runtime-panel");
+}
+
+/** 감정 계열 이름 입력. 비우면 감정 상태가 아니다. */
+function emotionFamilyControl(state: StateRecord, update: (patch: Partial<StateRecord>) => void): HTMLElement {
+  const input = el("input", {
+    attrs: { type: "text", maxlength: "24", placeholder: "예: 기쁨 · 분노 · 슬픔" },
+    value: state.emotion?.family ?? "",
+    dataset: { testid: "db-state-emotion-family" },
+  }) as HTMLInputElement;
+  input.addEventListener("change", () => {
+    const family = input.value.trim();
+    const tier = store.getCurrent().database.states.find((entry) => entry.id === state.id)?.emotion?.tier ?? 1;
+    update({ emotion: family ? { family, tier } : undefined });
+  });
+  return el("label", { class: "db-state-control", children: [el("span", { text: "감정 계열" }), input] });
 }
 
 function checkControl(label: string, testid: string, checked: boolean, onChange: (value: boolean) => void): HTMLElement {

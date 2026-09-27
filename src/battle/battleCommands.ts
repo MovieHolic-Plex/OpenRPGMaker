@@ -27,6 +27,8 @@ export function battleCommandsForActor(
     readonly forceSwitchOnly?: boolean;
     readonly classId?: string;
     readonly overrideCommandIds?: readonly string[];
+    /** 장착 장비가 주는 명령(EquipmentRuntimeEffects.grantedCommands). 이동·교체 앞에 붙는다. */
+    readonly grantedCommands?: readonly ClassBattleCommand[];
   } = {}
 ): readonly RuntimeBattleCommand[] {
   if (options.forceSwitchOnly) return [switchCommand()];
@@ -52,7 +54,11 @@ export function battleCommandsForActor(
     .filter((command): command is RuntimeBattleCommand => command !== undefined)
     .filter((command) => project.system.monsterCollection === true || command.kind !== "capture")
     .filter((command) => options.includeSwitch || command.kind !== "switch");
-  const base = withMonsterCaptureCommand(project, commands.length > 0 ? commands : defaultRuntimeBattleCommands(project));
+  const granted = (options.grantedCommands ?? [])
+    .map((command) => resolveClassBattleCommand(project, command))
+    .filter((command): command is RuntimeBattleCommand => command !== undefined && command.kind !== "switch" && command.kind !== "capture")
+    .filter((command) => !commands.some((existing) => existing.id === command.id));
+  const base = withMonsterCaptureCommand(project, [...(commands.length > 0 ? commands : defaultRuntimeBattleCommands(project)), ...granted]);
   if (!options.includeSwitch || base.some((command) => command.kind === "switch")) return base;
   return [...base, switchCommand()];
 }

@@ -39,6 +39,7 @@ export const SCENE_SPECS = {
     spawn: { id: "spawn_contract", troopId: "troop_contract", area: { x: 1, y: 1, w: 2, h: 2 } },
   }),
   despawnFieldEnemy: nativeManifestEntry("scene", { kind: "despawnFieldEnemy", spawnId: "spawn_contract" }),
+  tacticsBattle: nativeManifestEntry("scene", { kind: "tacticsBattle", troopId: "troop_contract", canLose: true }),
   setLighting: nativeManifestEntry("scene", {
     kind: "setLighting",
     ambient: 0.75,

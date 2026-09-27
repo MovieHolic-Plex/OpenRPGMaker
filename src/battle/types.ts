@@ -77,7 +77,7 @@ export type EquipmentUseResult =
 
 export type TargetedActorCommand =
   | { readonly kind: "attack" }
-  | { readonly kind: "skill"; readonly skillId: SkillId }
+  | { readonly kind: "skill"; readonly skillId: SkillId; readonly inputResult?: import("@/battle/battleInputSequence").SkillInputResult }
   | { readonly kind: "item"; readonly itemId: ItemId }
   | { readonly kind: "capture"; readonly captureItemId: ItemId };
 
@@ -89,7 +89,8 @@ export type ActorCommandDraft =
 
 export type ActorCommand =
   | { readonly kind: "attack"; readonly targetEnemyId: string }
-  | { readonly kind: "skill"; readonly skillId: SkillId; readonly targetEnemyId: string; readonly targetActorId?: ActorId }
+  /** inputResult: 입력 커맨드 기술(SkillRecord.inputSequence)의 판정. 생략 = 배율 1. */
+  | { readonly kind: "skill"; readonly skillId: SkillId; readonly targetEnemyId: string; readonly targetActorId?: ActorId; readonly inputResult?: import("@/battle/battleInputSequence").SkillInputResult }
   | { readonly kind: "item"; readonly itemId: ItemId; readonly targetEnemyId: string; readonly targetActorId?: ActorId }
   | { readonly kind: "capture"; readonly captureItemId: ItemId; readonly targetEnemyId: string }
   | { readonly kind: "defend" }
@@ -115,6 +116,8 @@ export interface BattleRuntimeOptions {
   readonly canLose: boolean;
   readonly battleFlow?: BattleFlow;
   readonly activeSlots?: number;
+  /** 전투 개시 진형. 지정하면 그대로, 생략하면 system.battleFormationRoll 일 때만 민첩으로 굴린다(아니면 보통). */
+  readonly formation?: import("@/battle/battleFormation").BattleStartFormation;
   // 현재 플레이 세션의 파티 레벨/경험치. 승리 시 레벨업 미리보기(rewards.levelUps) 산출에 사용.
   // 없으면 레벨업 미리보기를 계산하지 않는다(세션 적립은 별도 파이프라인이 담당).
   readonly party?: BattlePartyProgress;
@@ -164,6 +167,10 @@ export interface BattleSessionState {
   /** 배우별 누적 기술 포인트(TP). 승리 후 TP 습득 미리보기의 기준. */
   readonly actorTechPoints?: Readonly<Record<string, number>>;
   readonly actorBattleCommands?: Readonly<Record<string, readonly string[]>>;
+  /** 현재 난이도 id — 적 HP/공격력·보상 배율(project/difficulty.ts). 생략 = 기본 난이도. */
+  readonly difficultyId?: string;
+  /** 배우별 장착 스킬(ActorRecord.loadoutSlots). 있으면 그 배우는 전투에서 장착 스킬만 쓴다. */
+  readonly actorSkillLoadouts?: Readonly<Record<string, readonly string[]>>;
   // 레거시 호환 플래그(setFlag 커맨드 기준 상태).
   readonly flags?: Readonly<Record<string, boolean>>;
   // 타이머 잔여 초(timer 커맨드/timer 조건 기준 상태).
@@ -182,6 +189,14 @@ export interface BattleSessionState {
   readonly currentMapId?: string;
   readonly x?: number;
   readonly y?: number;
+  // 명작 공백 G1 — 트룹 배틀 이벤트 페이지가 읽는 조건 스냅샷.
+  readonly actorVitals?: Readonly<Record<string, { readonly hp: number; readonly mp: number; readonly maxHp: number; readonly maxMp: number }>>;
+  readonly actorStateIds?: Readonly<Record<string, readonly string[]>>;
+  readonly playerFacing?: import("@/project/types").Dir;
+  readonly eventLocations?: Readonly<Record<string, { readonly mapId: string; readonly x: number; readonly y: number; readonly direction?: import("@/project/types").Dir }>>;
+  readonly horror?: import("@/project/horrorState").HorrorState;
+  readonly stringVariables?: Readonly<Record<string, string>>;
+  readonly clearHistory?: { readonly count: number; readonly endingIds: readonly string[] };
 }
 
 export interface BattlePartyProgress {
@@ -259,6 +274,12 @@ export interface BattleBattlerSnapshot {
   readonly skillCooldowns?: Readonly<Record<SkillId, number>>;
   readonly equipmentEffects?: EquipmentRuntimeEffects;
   readonly captured?: boolean;
+  /** 리미트 게이지 0~100(system.limitGauge 를 켠 전투의 아군만). */
+  readonly limitGauge?: number;
+  /** 제2 기술 자원 「기력」(system.resource2 를 켠 전투의 아군만). */
+  readonly resource2?: number;
+  /** 라이브라로 탐색된 적 — HP 바를 피해 전에도 드러낸다. */
+  readonly scanned?: boolean;
 }
 
 export interface BattleHitFeelSnapshot {
@@ -307,14 +328,16 @@ export type BattleTimelineEntryKind =
   | "stateRemoved"
   | "incapacitated"
   | "stalemate"
-  /** 적 반격 선언(이어서 피해 엔트리가 온다). */
+  /** 적 반격 선언(이어서 피해 엔트리가 온다). 쓰러지는 적의 최후의 일격(trigger onDeath)도 이 엔트리로 선언한다. */
   | "counter"
   /** 장비 자동 부활. amount = 되살아난 HP. */
   | "revive"
   /** 적 위치 이동(moveEnemy/moveTo). */
   | "move"
   /** 배틀 이벤트 `wait` 가 요청한 연출 일시정지(strict 흐름). `waitMs` 를 들고 있다. */
-  | "wait";
+  | "wait"
+  /** 특수 명령 결과(훔치기·라이브라·청마법·무작위 기술). `message` 한 줄을 읽힌다. */
+  | "special";
 
 /** Ordered, append-only battle facts consumed by presentation exactly once. */
 export interface BattleTimelineEntrySnapshot {
@@ -337,6 +360,8 @@ export interface BattleTimelineEntrySnapshot {
   readonly resource?: "hp" | "mp";
   /** kind === "wait" 인 엔트리의 일시정지 시간(ms). 시퀀서가 이 값만큼 다음 비트를 늦춘다. */
   readonly waitMs?: number;
+  /** kind === "special" 인 엔트리의 전투 메시지. */
+  readonly message?: string;
   /** 이 액션이 재생할 전투 애니메이션. 시퀀서가 비트 재생 시점에 이 스냅샷으로
    *  애니메이션을 띄운다 — lastAnimation(전역 잔류값) 기반 재생은 잔여물 결함의 원인이었다. */
   readonly animation?: BattleAnimationSnapshot;
@@ -432,7 +457,16 @@ export interface BattleRewardsSnapshot {
   readonly techLearned?: readonly { readonly actorId: string; readonly actorName: string; readonly skillIds: readonly SkillId[] }[];
 }
 
+/** 전투 이벤트의 Tint Screen 이 남긴 화면 상태. 색조 문자열은 맵의 m2Runtime.screen.tint 와 같은 문법이다. */
+export interface BattleScreenState {
+  readonly tint: string;
+  readonly tintDurationMs: number;
+  readonly filter: { readonly saturation: number; readonly grayscale: number; readonly sepia: number };
+}
+
 export interface BattleEventStateSnapshot {
+  /** 전투 중 Tint Screen 이 한 번이라도 실행됐을 때만 있다. 전투 화면 전용(세션에 되돌려 쓰지 않는다). */
+  readonly screen?: BattleScreenState;
   readonly gameOverRequest?: { readonly gameOverId: string; readonly message?: string };
   /** Present only when this battle authored a settings change. */
   readonly messageWindowSettings?: MessageWindowSettings;
@@ -500,6 +534,10 @@ export interface BattleSnapshot {
   readonly result?: BattleResult;
   readonly rewards: BattleRewardsSnapshot;
   readonly canEscape: boolean;
+  /** 이 전투의 개시 진형. 보통 개시는 "normal". */
+  readonly formation?: import("@/battle/battleFormation").BattleStartFormation;
+  /** 지금까지 실패한 도주 횟수(다음 도주 확률 가산의 근거). */
+  readonly failedEscapeAttempts?: number;
   readonly canLose: boolean;
   readonly troopId: TroopId;
   readonly backdropResourceId?: string;
@@ -511,6 +549,8 @@ export interface BattleSnapshot {
   readonly targetSelection?: BattleTargetSelectionSnapshot;
   readonly roundLogs: readonly BattleRoundLogSnapshot[];
   readonly eventLogs: readonly BattleEventLogSnapshot[];
+  /** 파티 공용 게이지(system.partyGauge 를 켠 전투만). */
+  readonly partyGauge?: number;
 }
 
 export interface BattleRuntime {

@@ -1,27 +1,67 @@
 import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/types";
 import type { MutableBattler } from "@/battle/battleBattlers";
 import { canBattlerAct, stateBlocksSkillUse } from "@/battle/battleStates";
+import { limitGaugeConfig, partyGaugeConfig, resource2Config } from "@/battle/battleGauges";
 import type { ActorId, Project, SkillId, SkillRecord } from "@/project/types";
 
 export type BattleSkillUser = Pick<
   MutableBattler | BattleBattlerSnapshot,
-  "mp" | "maxMp" | "skillIds" | "monsterInstanceId" | "skillPp" | "skillCooldowns" | "stateIds"
+  "mp" | "maxMp" | "skillIds" | "monsterInstanceId" | "skillPp" | "skillCooldowns" | "stateIds" | "equipmentEffects" | "limitGauge" | "resource2"
 >;
 export type MutableBattleSkillUser = Pick<
   MutableBattler,
-  "mp" | "maxMp" | "skillIds" | "monsterInstanceId" | "skillPp" | "skillCooldowns"
+  "mp" | "maxMp" | "skillIds" | "monsterInstanceId" | "skillPp" | "skillCooldowns" | "equipmentEffects" | "limitGauge" | "resource2"
 >;
 export type BattleSkillUseFailure =
   | "missingSkill" | "notLearned" | "skillBlocked" | "insufficientMp" | "noPp" | "cooldown"
-  | "comboPartnerAbsent" | "comboPartnerNotReady" | "comboPartnerMp";
+  | "comboPartnerAbsent" | "comboPartnerNotReady" | "comboPartnerMp"
+  | "insufficientResource2" | "limitNotReady" | "insufficientPartyGauge";
 export type BattleSkillResourceConsumption =
   | { readonly kind: "pp" | "mp"; readonly remaining: number }
   | { readonly kind: "none" };
 
-export function battleSkillMpCost(skill: Pick<SkillRecord, "mpCost">, maxMp: number): number {
+export function battleSkillMpCost(skill: Pick<SkillRecord, "mpCost">, maxMp: number, halfCost = false): number {
   const flat = skill.mpCost.flat ?? 0;
   const percentMax = skill.mpCost.percentMax ?? 0;
-  return Math.max(0, Math.trunc(flat) + Math.floor((Math.max(0, maxMp) * percentMax) / 100));
+  const cost = Math.max(0, Math.trunc(flat) + Math.floor((Math.max(0, maxMp) * percentMax) / 100));
+  // 장비 「MP 소모 절반」: RM2k3/EasyRPG 와 같은 (cost + 1) / 2 내림 — 1 짜리 기술이 공짜가 되지 않는다.
+  return halfCost ? Math.floor((cost + 1) / 2) : cost;
+}
+
+/** 시전자 장비의 MP 절반 효과까지 반영한 소모량. 적법성·소비·메뉴 표시가 같은 값을 본다. */
+export function battleSkillMpCostFor(
+  skill: Pick<SkillRecord, "mpCost">,
+  user: { readonly maxMp: number; readonly equipmentEffects?: { readonly halfMpCost?: boolean } },
+): number {
+  return battleSkillMpCost(skill, user.maxMp, user.equipmentEffects?.halfMpCost === true);
+}
+
+/** 장비가 준 스킬까지 포함해 이 배틀러가 「가진」 스킬인가. */
+export function battlerHasSkill(user: Pick<BattleSkillUser, "skillIds" | "equipmentEffects">, skillId: SkillId): boolean {
+  return user.skillIds.includes(skillId) || user.equipmentEffects?.grantedSkillIds?.includes(skillId) === true;
+}
+
+/** 배운 스킬 뒤에 장비가 준 스킬을 겹치지 않게 붙인다(전투 메뉴·자동 전투 목록). */
+export function battlerSkillIdsWithGrants(user: Pick<BattleSkillUser, "skillIds" | "equipmentEffects">): SkillId[] {
+  const granted = (user.equipmentEffects?.grantedSkillIds ?? []).filter((id) => !user.skillIds.includes(id));
+  return [...user.skillIds, ...granted];
+}
+
+/** 제2 자원(기력) 소모량. 시스템에서 끄면 0 이다. */
+export function battleSkillResource2Cost(project: Pick<Project, "system">, skill: Pick<SkillRecord, "resource2Cost">): number {
+  if (!resource2Config(project)) return 0;
+  return Math.max(0, Math.trunc(skill.resource2Cost ?? 0));
+}
+
+/** 리미트 기술인가. 시스템에서 끄면 일반 기술처럼 쓴다. */
+export function battleSkillNeedsLimit(project: Pick<Project, "system">, skill: Pick<SkillRecord, "limitSkill">): boolean {
+  return skill.limitSkill === true && limitGaugeConfig(project) !== undefined;
+}
+
+/** 파티 공용 게이지 소모량. 시스템에서 끄면 0 이다. */
+export function battleSkillPartyGaugeCost(project: Pick<Project, "system">, skill: Pick<SkillRecord, "partyGaugeCost">): number {
+  if (!partyGaugeConfig(project)) return 0;
+  return Math.max(0, Math.trunc(skill.partyGaugeCost ?? 0));
 }
 
 export function battleSkillUseFailure(
@@ -32,7 +72,7 @@ export function battleSkillUseFailure(
 ): BattleSkillUseFailure | undefined {
   const skill = project.database.skills.find((record) => record.id === skillId);
   if (!skill) return "missingSkill";
-  if (options.requireLearned !== false && !user.skillIds.includes(skillId)) return "notLearned";
+  if (options.requireLearned !== false && !battlerHasSkill(user, skillId)) return "notLearned";
   if ((user.skillCooldowns?.[skillId] ?? 0) > 0) return "cooldown";
   if (stateBlocksSkillUse(project, user)) return "skillBlocked";
   if (usesSkillPp(project, user, skill)) {
@@ -40,7 +80,10 @@ export function battleSkillUseFailure(
     if (currentPp <= 0) return "noPp";
     return undefined;
   }
-  if (user.mp < battleSkillMpCost(skill, user.maxMp)) return "insufficientMp";
+  if (user.mp < battleSkillMpCostFor(skill, user)) return "insufficientMp";
+  // 기력·리미트는 그 게이지를 가진 배틀러(켠 전투의 아군)만 판정한다 — 적은 게이지가 없어 같은 기술을 그냥 쓴다.
+  if (user.resource2 !== undefined && user.resource2 < battleSkillResource2Cost(project, skill)) return "insufficientResource2";
+  if (user.limitGauge !== undefined && battleSkillNeedsLimit(project, skill) && user.limitGauge < 100) return "limitNotReady";
   return undefined;
 }
 
@@ -61,8 +104,11 @@ export function consumeBattleSkillResource(
     user.skillPp[skillId] = remaining;
     return { kind: "pp", remaining };
   }
-  const remaining = Math.max(0, user.mp - battleSkillMpCost(skill, user.maxMp));
+  const remaining = Math.max(0, user.mp - battleSkillMpCostFor(skill, user));
   user.mp = remaining;
+  const resource2Cost = battleSkillResource2Cost(project, skill);
+  if (resource2Cost > 0 && user.resource2 !== undefined) user.resource2 = Math.max(0, user.resource2 - resource2Cost);
+  if (user.limitGauge !== undefined && battleSkillNeedsLimit(project, skill)) user.limitGauge = 0;
   return { kind: "mp", remaining };
 }
 
@@ -78,7 +124,8 @@ function usesSkillPp(
 export function battleSkillUseFailureLabel(
   failure: BattleSkillUseFailure,
   skill: SkillRecord | undefined,
-  user: Pick<BattleSkillUser, "mp" | "maxMp">,
+  user: Pick<BattleSkillUser, "mp" | "maxMp"> & Partial<Pick<BattleSkillUser, "equipmentEffects" | "resource2">>,
+  project?: Pick<Project, "system">,
 ): string {
   switch (failure) {
     case "missingSkill":
@@ -88,9 +135,17 @@ export function battleSkillUseFailureLabel(
     case "skillBlocked":
       return "침묵 상태라 스킬을 사용할 수 없습니다.";
     case "insufficientMp": {
-      const cost = skill ? battleSkillMpCost(skill, user.maxMp) : 0;
+      const cost = skill ? battleSkillMpCostFor(skill, user) : 0;
       return `MP 부족 (필요 ${cost} / 현재 ${user.mp})`;
     }
+    case "insufficientResource2": {
+      const label = (project && resource2Config(project)?.label) || "기력";
+      return `${label} 부족 (필요 ${skill?.resource2Cost ?? 0} / 현재 ${Math.floor(user.resource2 ?? 0)})`;
+    }
+    case "limitNotReady":
+      return `${(project && limitGaugeConfig(project)?.label) || "리미트"} 게이지가 가득 차야 합니다.`;
+    case "insufficientPartyGauge":
+      return `${(project && partyGaugeConfig(project)?.label) || "연계 게이지"}가 부족합니다.`;
     case "cooldown": return "재사용 대기 중입니다.";
     case "noPp":
       return "PP가 부족합니다.";
@@ -117,6 +172,8 @@ export interface BattleComboParticipant {
   readonly maxMp: number;
   readonly stateIds: readonly string[];
   readonly ready: boolean;
+  /** 이 동료 장비의 MP 절반 효과 — 연계기에서 각자 내는 MP 도 절반이다. */
+  readonly halfMpCost?: boolean;
 }
 
 /**
@@ -129,10 +186,13 @@ export function battleActorSkillFailure(
   user: BattleSkillUser & { readonly recordId: string },
   skillId: SkillId,
   party: readonly BattleComboParticipant[],
+  /** 파티 공용 게이지 현재값. 시스템에서 켠 경우에만 추격 연계기 적법성에 쓴다. */
+  partyGauge?: number,
 ): BattleSkillUseFailure | undefined {
   const skill = project.database.skills.find((record) => record.id === skillId);
   const combo = comboActorIdsOf(skill);
-  if (!skill || !combo) return battleSkillUseFailure(project, user, skillId);
+  const partyFailure = skill && (partyGauge ?? 0) < battleSkillPartyGaugeCost(project, skill) ? "insufficientPartyGauge" as const : undefined;
+  if (!skill || !combo) return battleSkillUseFailure(project, user, skillId) ?? partyFailure;
   if (!combo.includes(user.recordId as ActorId)) return "notLearned";
   const own = battleSkillUseFailure(project, user, skillId, { requireLearned: false });
   if (own) return own;
@@ -141,9 +201,9 @@ export function battleActorSkillFailure(
   for (const member of members) {
     if (!member || member.recordId === user.recordId) continue;
     if (!member.ready || !canBattlerAct(project, member) || stateBlocksSkillUse(project, member)) return "comboPartnerNotReady";
-    if (member.mp < battleSkillMpCost(skill, member.maxMp)) return "comboPartnerMp";
+    if (member.mp < battleSkillMpCost(skill, member.maxMp, member.halfMpCost === true)) return "comboPartnerMp";
   }
-  return undefined;
+  return partyFailure;
 }
 
 /**
@@ -163,6 +223,7 @@ export function comboSkillIdsFor(project: Project, actorRecordId: string, partyR
 export function comboParticipantsFromSnapshot(snapshot: Pick<BattleSnapshot, "actors">): BattleComboParticipant[] {
   return snapshot.actors.map((actor) => ({
     recordId: actor.recordId, hp: actor.hp, mp: actor.mp, maxMp: actor.maxMp, stateIds: actor.stateIds, ready: actor.gauge >= 100,
+    ...(actor.equipmentEffects?.halfMpCost ? { halfMpCost: true } : {}),
   }));
 }
 

@@ -1,3 +1,4 @@
+import { actorQueryConditionSummary } from "./actorQueryConditionForm";
 import { gameOverName } from "@/project/gameOverLibrary";
 import { equipmentSlotLabel as catalogSlotLabel } from "@/project/equipmentSlots";
 import {
@@ -12,6 +13,7 @@ import { formatWeightedBranchSummary } from "./weightedBranchTable";
 import { BGM_CATALOG } from "@/assets/bgmCatalog";
 import { m2CommandById, type M2CommandFieldSpec } from "@/project/eventCommands/m2Catalog";
 import { tintDurationMs } from "@/project/eventCommands/tintDuration";
+import { screenFilterFromFields } from "@/project/eventCommands/screenFilter";
 import { coordinateAxisSpec, coordinateFailurePolicy } from "@/project/eventCommands/coordinateDestination";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
@@ -23,6 +25,7 @@ import type { Command, SwitchValue, VariableOperand } from "@/project/types";
 import { relationshipStateName } from "@/project/relationshipState";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { insideLocationSentence } from "@/editor/mapLocationLabels";
+import { difficultyDisplayName } from "@/project/difficulty";
 export type CommandSummaryTone =
   | "plain"
   | "command"
@@ -331,6 +334,12 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   ),
   moveMonster: (cmd) => commandLine("몬스터 이동", valuePart(monsterInstanceLabel(cmd.instanceId)), plainPart(" → "), valuePart(cmd.to === "party" ? "파티" : "보관함")),
   evolveMonster: (cmd) => commandLine("몬스터 진화", valuePart(monsterInstanceLabel(cmd.instanceId)), plainPart(" → "), valuePart(cmd.toSpeciesId ? monsterSpeciesName(cmd.toSpeciesId) : "조건 충족 첫 진화")),
+  removeMonster: (cmd) => commandLine("몬스터 놓아주기", valuePart(cmd.instanceId ? monsterInstanceLabel(cmd.instanceId) : "보관함 첫 몬스터")),
+  tradeMonster: (cmd) => commandLine("몬스터 교환", valuePart(monsterSpeciesName(cmd.fromSpeciesId)), plainPart(" → "), valuePart(monsterSpeciesName(cmd.toSpeciesId))),
+  fuseMonsters: (cmd) => commandLine("몬스터 합성", valuePart(monsterInstanceLabel(cmd.instanceIdA)), plainPart(" + "), valuePart(monsterInstanceLabel(cmd.instanceIdB))),
+  setDifficulty: (cmd) => commandLine("난이도 변경", valuePart(difficultyDisplayName(store.getCurrent().system, cmd.difficultyId))),
+  storeParty: (cmd) => commandLine("파티 저장", valuePart(cmd.partySetId || "(이름 없음)")),
+  recallParty: (cmd) => commandLine("파티 전환", valuePart(cmd.partySetId || "(이름 없음)")),
   addFollower: (cmd) => commandLine("동료 추가", valuePart(cmd.name || (cmd.actorId ? actorName(cmd.actorId) : cmd.graphic?.sprite?.id ?? "그래픽"))),
   removeFollower: (cmd) => commandLine("동료 제거", valuePart(cmd.all === true ? "전체" : cmd.name || "이름 없음")),
   setLighting: (cmd) => commandLine(
@@ -863,10 +872,18 @@ function page3M2SummaryParts(
     case "Tint Screen": {
       const color = str("value") || str("color") || "기본";
       const duration = tintDurationMs(cmd.fields);
+      // 채도·흑백·세피아가 중립이 아니면 요약에 덧붙인다. 옛 명령(필드 없음)의 요약은 그대로다.
+      const filter = screenFilterFromFields(cmd.fields);
+      const filterParts = [
+        filter.saturation !== 100 ? `채도 ${filter.saturation}%` : "",
+        filter.grayscale !== 0 ? `흑백 ${filter.grayscale}%` : "",
+        filter.sepia !== 0 ? `세피아 ${filter.sepia}%` : "",
+      ].filter(Boolean);
       return commandLine(
         labelOf("화면 색조 변경"),
         valuePart(color),
-        plainPart(" · "), valuePart(duration > 0 ? `${duration}ms` : "즉시 전환")
+        plainPart(" · "), valuePart(duration > 0 ? `${duration}ms` : "즉시 전환"),
+        ...(filterParts.length > 0 ? [plainPart(" · "), valuePart(filterParts.join(" "))] : [])
       );
     }
     case "Flash Screen": {
@@ -1163,6 +1180,24 @@ function conditionSummary(condition: Extract<Command, { kind: "fork" }>['conditi
       return `전투 ${condition.result === "victory" ? "승리" : condition.result === "defeat" ? "패배" : "도망"}`;
     case "run":
       return runConditionSummary(condition);
+    case "actorStat":
+    case "actorState":
+    case "partyLeader":
+    case "partySize":
+    case "facing":
+    case "relativeFacing":
+    case "hiding":
+    case "pursuitActive":
+    case "clearCount":
+    case "endingSeen":
+    case "newGamePlus":
+    case "weekday":
+    case "stringVariable":
+      return actorQueryConditionSummary(condition);
+    case "difficulty":
+      return `난이도 ${difficultyDisplayName(store.getCurrent().system, condition.difficultyId)}`;
+    case "itemUsed":
+      return `${itemName(condition.itemId)}을(를) 사용했을 때`;
     case "all":
       return condition.conditions.length
         ? `모두 맞을 때(${condition.conditions.map((child) => conditionSummary(child)).join(", ")})`

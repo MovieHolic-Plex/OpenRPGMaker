@@ -145,6 +145,7 @@ function checkUnplayableAudio(project: Project, issues: LintIssue[]): void {
     { label: "system.battleDefeatSeResourceId", resourceId: project.system.battleDefeatSeResourceId },
     { label: "system.battleEscapeSeResourceId", resourceId: project.system.battleEscapeSeResourceId },
     { label: "system.titleScreen.musicResourceId", resourceId: project.system.titleScreen?.musicResourceId },
+    ...(project.system.titleScreen?.variants ?? []).map((variant, index) => ({ label: `system.titleScreen.variants[${index}].musicResourceId`, resourceId: variant.musicResourceId })),
   ];
   for (const [mapId, map] of Object.entries(project.maps)) {
     if (map.bgm?.mode === "custom" && map.bgm.resourceId) {

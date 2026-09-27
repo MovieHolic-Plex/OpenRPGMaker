@@ -23,6 +23,7 @@ export function skillGrowthArt(skill: SkillRecord | undefined): string {
     case 'damage': return icon(skill.effect.statistic === 'mind' ? 'book-magic' : 'book-sword');
     case 'support': return icon('oak-shield');
     case 'switch': return icon('gear');
+    default: return icon('book-magic');
   }
 }
 

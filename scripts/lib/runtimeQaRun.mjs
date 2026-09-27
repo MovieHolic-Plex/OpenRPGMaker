@@ -35,7 +35,7 @@ const PROJECT_ROUTE = "**/__runtime-qa/project.json";
 
 /** 훅을 요구하는 op — 이들 앞에서는 런타임 훅 설치를 기다린다. */
 const HOOK_OPS = new Set([
-  "seed", "dir", "hold", "face", "action", "attack", "skill", "teleport",
+  "clickTile", "seed", "dir", "hold", "face", "action", "attack", "skill", "teleport",
   "pauseFrames", "stepFrames", "resumeFrames",
   // 체공 op 은 __oprnDebug / __oprnCharacterSprites 를 직접 읽는다.
   "playerRoute", "waitForLift", "waitForGrounded", "captureShadowSample",
@@ -329,6 +329,36 @@ async function applyOp(page, op, runState) {
       if (!runState.fieldAnchors?.event) throw new Error(`captureFieldAnchors: 이벤트 스프라이트 ${op.eventId} 를 찾지 못했다`);
       return;
     }
+    case "clickTile": {
+      // 맵 타일 중앙을 실제 캔버스 위에서 누른다(클릭 이동 #32). captureFieldAnchors 와 같은 카메라 변환이다.
+      const point = await page.evaluate(([tx, ty]) => {
+        const canvas = document.querySelector("canvas");
+        const camera = window.__oprnCamera ? window.__oprnCamera() : null;
+        if (!canvas || !camera) return null;
+        const rect = canvas.getBoundingClientRect();
+        const sx = rect.width / camera.width;
+        const sy = rect.height / camera.height;
+        const size = camera.tileSize ?? 16;
+        const x = rect.left + ((tx + 0.5) * size - camera.scrollX) * camera.zoom * sx;
+        const y = rect.top + ((ty + 0.5) * size - camera.scrollY) * camera.zoom * sy;
+        const top = document.elementFromPoint(x, y);
+        const canvases = [...document.querySelectorAll("canvas")].map((node) => {
+          const box = node.getBoundingClientRect();
+          return `${Math.round(box.left)},${Math.round(box.top)} ${Math.round(box.width)}x${Math.round(box.height)} pe=${getComputedStyle(node).pointerEvents}`;
+        });
+        return {
+          // 출하 플레이어의 캔버스는 pointer-events:none 이라 맨 위 요소는 캔버스를 품은 판이다 — 그 판이거나
+          // 캔버스 자신이면 누름이 게임에 닿는다. 메뉴·대사 같은 다른 UI 가 덮고 있으면 실패다.
+          x, y, topIsCanvas: Boolean(top) && (top === canvas || top.contains(canvas)), top: top ? `${top.tagName}.${top.className}` : null,
+          debug: `point=${Math.round(x)},${Math.round(y)} camera=${JSON.stringify(camera)} canvases=[${canvases.join(" | ")}]`,
+        };
+      }, [op.x, op.y]);
+      if (!point) throw new Error("clickTile: 캔버스 또는 카메라 훅이 없다");
+      // 캔버스 위를 덮은 DOM 이 클릭을 먹으면 플레이어도 못 누른다 — 그때는 실패다.
+      if (!point.topIsCanvas) throw new Error(`clickTile: (${op.x},${op.y}) 위에 캔버스가 아닌 ${point.top} 이 있다 — ${point.debug}`);
+      await page.mouse.click(point.x, point.y, { button: "left" });
+      return;
+    }
     case "captureShadowSample": {
       // 그림자가 떠 있는 지금의 프레임과 기하를 기록한다. 대조 프레임은 나중에
       // (캐릭터가 그 자리를 떠난 뒤) `playerShadowInkAtLeast` 가 직접 찍는다.
@@ -410,15 +440,24 @@ async function applyOp(page, op, runState) {
       return;
     }
     case "waitForAttr":
-      await page.waitForFunction(
-        ([testid, attr, value]) => {
+      try {
+        await page.waitForFunction(
+          ([testid, attr, value]) => {
+            const node = document.querySelector(`[data-testid="${testid}"]`);
+            if (!node) return false;
+            return node.getAttribute(attr) === value;
+          },
+          [op.testid, op.attr, op.value],
+          { timeout: op.timeoutMs ?? 30_000 },
+        );
+      } catch (error) {
+        // 실패 보고에 마지막으로 본 값을 남긴다 — "안 바뀌었다"와 "다른 값이 됐다"를 가른다.
+        const seen = await page.evaluate(([testid, attr]) => {
           const node = document.querySelector(`[data-testid="${testid}"]`);
-          if (!node) return false;
-          return node.getAttribute(attr) === value;
-        },
-        [op.testid, op.attr, op.value],
-        { timeout: op.timeoutMs ?? 30_000 },
-      );
+          return node ? node.getAttribute(attr) : "(노드 없음)";
+        }, [op.testid, op.attr]).catch(() => "(읽기 실패)");
+        throw new Error(`${error instanceof Error ? error.message : String(error)} — ${op.testid}[${op.attr}] 마지막 값: ${JSON.stringify(seen)}`);
+      }
       return;
     case "repeatUntil": {
       // 하위 op 묶음을 조건이 설 때까지 되풀이한다(예: 적이 쓰러질 때까지 공격). 매 회 전에 조건을 본다.
@@ -583,6 +622,7 @@ async function evaluateOnFieldPlacement(page, spec, anchors) {
 async function readObserved(page, {
   auditBattleTextNodes = false, watchedEventIds = [], watchedTestids = [],
   watchedItemIds = [], watchedSpeciesIds = [], watchedPlaceableKeys = [], watchedTestidPrefixes = [],
+  watchedVariableIds = [], watchedSwitchIds = [],
 } = {}) {
   const base = await page.evaluate((watched) => {
     const debug = window.__oprnDebug;
@@ -609,6 +649,13 @@ async function readObserved(page, {
             : {}),
           ...(watched.itemIds.length
             ? { inventory: Object.fromEntries(watched.itemIds.map((id) => [id, full.inventory?.[id] ?? 0])) }
+            : {}),
+          // 이벤트 결과를 변수·스위치로 적는 명령(미니게임·조건 분기)의 증거. 이름을 댄 것만 싣는다.
+          ...(watched.variableIds.length
+            ? { variables: Object.fromEntries(watched.variableIds.map((id) => [id, full.variables?.[id] ?? null])) }
+            : {}),
+          ...(watched.switchIds.length
+            ? { switches: Object.fromEntries(watched.switchIds.map((id) => [id, full.switches?.[id] ?? null])) }
             : {}),
         }
       : null;
@@ -704,7 +751,8 @@ async function readObserved(page, {
       battlers: window.__oprnReadBattlerGeometry ? window.__oprnReadBattlerGeometry() : null,
     };
   }, { eventIds: watchedEventIds, testids: watchedTestids, itemIds: watchedItemIds, speciesIds: watchedSpeciesIds,
-     placeableKeys: watchedPlaceableKeys, testidPrefixes: watchedTestidPrefixes });
+     placeableKeys: watchedPlaceableKeys, testidPrefixes: watchedTestidPrefixes,
+     variableIds: watchedVariableIds, switchIds: watchedSwitchIds });
   if (!auditBattleTextNodes) return base;
   // 전투 글자 계측은 요청한 비트에서만 돌린다 — 모든 비트에서 트리 전체를 훑을 이유가 없다.
   const battleText = await page.evaluate(auditBattleText, {
@@ -909,6 +957,8 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
       watchedSpeciesIds: Object.keys(beat.expect?.ownedMonsterCounts ?? {}),
       watchedPlaceableKeys,
       watchedTestidPrefixes,
+      watchedVariableIds: Object.keys(beat.expect?.variables ?? {}),
+      watchedSwitchIds: Object.keys(beat.expect?.switches ?? {}),
     });
     const failures = [...opFailures, ...evaluateExpect(beat.expect ?? {}, observed)];
     if (beat.expect?.onFieldPlacement) failures.push(...await evaluateOnFieldPlacement(page, beat.expect.onFieldPlacement, runState.fieldAnchors));

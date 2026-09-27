@@ -1,4 +1,4 @@
-import { numberField, selectField, selectLiteral } from "./databaseControls";
+import { numberField, selectField, selectLiteral, textField } from "./databaseControls";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { store } from "@/project/store";
 import type { SkillRecord } from "@/project/types";
@@ -64,6 +64,18 @@ export function actionSkillFields(record: SkillRecord, rerender: () => void): HT
         )
       );
     }
+  }
+  if (profile) {
+    // 홀드 차지: "누른 ms:배율" 을 쉼표로. 비우면 즉시 발동(기존 동작).
+    const tiersText = (profile.chargeTiers ?? []).map((tier) => `${tier.holdMs}:${tier.multiplier}`).join(", ");
+    const tiersField = textField("홀드 차지(ms:배율, 쉼표)", "db-field-skill-action-charge-tiers", tiersText, (value) => {
+      const parts = value.split(",").map((part) => part.trim()).filter(Boolean);
+      const tiers = parts.map((part) => part.split(":").map(Number)).map(([holdMs, multiplier]) => ({ holdMs: holdMs!, multiplier: multiplier! }));
+      const valid = tiers.every((tier) => Number.isFinite(tier.holdMs) && tier.holdMs >= 50 && Number.isFinite(tier.multiplier) && tier.multiplier > 0);
+      tiersField.querySelector("input")?.setCustomValidity(valid ? "" : "예: 500:1.5, 1200:2.5 (50ms 이상, 배율 0 초과)");
+      if (valid) patchProfile((draft) => { draft.chargeTiers = tiers.length ? tiers : undefined; });
+    });
+    fields.push(tiersField);
   }
   if (profile?.kind === "trap") fields.push(numberField("함정 수명(ms)", "db-field-skill-action-duration", profile.durationMs ?? 5000,
     (value) => patchProfile((draft) => { draft.durationMs = value; }), { min: 100, max: 30000 }));

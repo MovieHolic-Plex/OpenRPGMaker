@@ -690,6 +690,13 @@ defineCommand({
       { value: "gauge", label: "게이지", key: "gauge" },
       { value: "strict", label: "엄격", key: "strict" },
     ]),
+    formation: f.enum("개시 진형", [
+      { value: "normal", label: "보통", key: "normal" },
+      { value: "preemptive", label: "선제 공격", key: "preemptive" },
+      { value: "surprise", label: "기습", key: "surprise" },
+      { value: "backAttack", label: "백어택", key: "backAttack" },
+      { value: "pincer", label: "협공", key: "pincer" },
+    ]),
     branchOnResult: f.bool("결과로 분기"),
   },
   // 분기도 선언이다 — 토글을 켜면 캔버스에 3분기가 즉시 생긴다.

@@ -42,6 +42,8 @@ export type M2ScreenRuntimeState = {
   tint?: string;
   // 색조 전환에 걸릴 시간(ms). 0/미지정이면 즉시 적용.
   tintDurationMs?: number;
+  /** Tint Screen 의 색 필터(채도·흑백·세피아, %). 미지정 = 필터 없음. 전환은 tintDurationMs 를 따른다. */
+  filter?: { saturation: number; grayscale: number; sepia: number };
   weather?: string;
 };
 
@@ -300,6 +302,14 @@ export interface PlaySessionLike {
   followerTrail?: RuntimeFollowerTrailPointLike[];
   vehicle?: import("@/project/vehicles").VehicleSessionState;
   playTimeSeconds?: number;
+  playerFacing?: import("./types").Dir;
+  stringVariables?: Record<string, string>;
+  stepCount?: number;
+  teleportPoints?: import("./teleportPoints").TeleportPoint[];
+  highScores?: Record<string, number>;
+  /** 키 폴링(Key Poll) 이 매 프레임 쓰는 현재 입력. 세이브에 넣지 않는다. */
+  heldInput?: { readonly dir: number; readonly confirm: boolean; readonly cancel: boolean; readonly dash: boolean };
+  clearHistory?: { count: number; endingIds: string[] };
   gameTime?: GameTime;
   currentMapId: MapId;
   x: number;
@@ -312,4 +322,7 @@ export interface PlaySessionLike {
   roguelikeRun?: RoguelikeRunState;
   // 직전 전투 처리 결과. battleProcessing 이 종료된 뒤 인터프리터/필드 스폰/페이지 조건에서 사용.
   battleResult?: BattleResult;
+  difficultyId?: string;
+  /** 메뉴 «바라보는 대상에 사용»이 발동 중인 아이템 id. 그 한 번의 페이지 판정 동안만 있다. */
+  itemUsedId?: string;
 }

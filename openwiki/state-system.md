@@ -46,6 +46,9 @@ Runtime effects (`runtimeEffects?: StateRuntimeEffects`):
 - `attackMultiplier` / `defenseMultiplier` / `agilityMultiplier` — 공격·방어·민첩 배율
 - `removeOnBattleEnd` — 전투 종료 시 해제
 
+Emotion (`emotion?: { family, tier }`, 2026-09-27): 감정 계열·단계. 배틀러는 감정 상태를 하나만 가지며, 같은 계열을 다시 걸면 한 단계 오르고
+(최고 단계에서 멈춤) 다른 계열은 바꿔 끼운다. 계열 상성 배율은 `system.emotionCycle`. 규칙·파일은 `openwiki/runtime-battle.md` 「전투 자원 · 감정 · 장비 부여」.
+
 회복은 음수 피해로 표현하지 않는다. `hpHealPercentPerTurn` 전용 필드가 직렬화·역직렬화되고 상태 편집기의 `턴당 HP 회복(%)`에 그대로 표시되므로 저작 데이터의 의미가 명확하다.
 
 > Note: `hpReleaseTurn`/`mpReleaseTurn` (record) and `hpTurn`/`mpTurn` (ontology) have **different schemas** — the ontology stores a display string like “매 턴 최대 HP의 -6%”, the record stores a number. `resolvedStateValues` maps between them. Do not assume they are interchangeable.

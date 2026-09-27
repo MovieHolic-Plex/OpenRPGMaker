@@ -1,7 +1,9 @@
+import { recordTeleportPoint } from "@/project/teleportPoints";
 import { formatActorGraphicOverride, parseActorGraphicOverride } from "@/project/actorGraphicOverride";
 import type { M2CommandCatalogEntry } from "@/project/eventCommands/m2Catalog";
 import { tintDurationMs } from "@/project/eventCommands/tintDuration";
 import { encodeMapBackgroundFlow } from "@/project/mapBackground";
+import { isNeutralScreenFilter, screenFilterFromFields } from "@/project/eventCommands/screenFilter";
 import { showPictureState } from "@/project/session";
 import { ACTOR_PARAMETER_KEYS } from "@/project/actorModel";
 import { changeActorClass } from "@/project/sessionClass";
@@ -80,6 +82,10 @@ function executeByTitle(
     // New commands use durationMs. Keep the old duration field readable for
     // imported projects, where small values were authored in seconds.
     runtime.screen.tintDurationMs = tintDurationMs(fields);
+    // 채도·흑백·세피아. 필드가 없는 옛 명령은 중립이라 필터를 걷는다(색조와 같이 명령마다 화면 상태 전체를 정한다).
+    const filter = screenFilterFromFields(fields);
+    if (isNeutralScreenFilter(filter)) delete runtime.screen.filter;
+    else runtime.screen.filter = { ...filter };
     return;
   }
   if (title === "Flash Screen") {
@@ -203,12 +209,14 @@ function executeByTitle(
     return;
   }
   if (title === "Set Teleportation Point") {
-    runtime.map["teleport_point"] = {
-      mapId: fieldString(fields, "mapId", ""),
-      x: fieldNumber(fields, "x", 0),
-      y: fieldNumber(fields, "y", 0),
-      value: "",
+    const point = {
+      mapId: fieldString(fields, "mapId", "") || session.currentMapId,
+      x: fieldNumber(fields, "x", fieldString(fields, "mapId", "") ? 0 : session.x),
+      y: fieldNumber(fields, "y", fieldString(fields, "mapId", "") ? 0 : session.y),
     };
+    runtime.map["teleport_point"] = { ...point, value: "" };
+    // 명작 공백 #24: 방문 지점 목록에 쌓는다(Teleport Menu 가 읽는다). label 이 있으면 메뉴 이름.
+    recordTeleportPoint(session, { ...point, label: fieldString(fields, "label", "") || undefined });
     return;
   }
   if (title === "Set Escape Location") {

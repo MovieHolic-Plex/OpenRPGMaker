@@ -24,6 +24,9 @@ import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
 
 export type StepResult =
   | { kind: "done" }
+  | import("./minigameCommands").TimedChoiceStep
+  | import("./minigameCommands").QuickTimeStep
+  | import("./minigameCommands").TeleportMenuStep
   | { kind: "text"; speaker?: string; body: string; face?: FaceGraphic; settings?: MessageWindowSettings; autoAdvance?: boolean; emotion?: string; style?: string; context?: string; container?: string; voiceResourceId?: string }
   | {
       kind: "choices";
@@ -53,7 +56,7 @@ export type StepResult =
       showPad?: boolean;
       settings: MessageWindowSettings;
     }
-  | { kind: "enterHeroName"; actorId: string; maxLength: number; showInitialName: boolean; currentName: string }
+  | { kind: "enterHeroName"; actorId: string; maxLength: number; showInitialName: boolean; currentName: string; prompt?: string }
   | { kind: "timer"; action: "set" | "start" | "stop"; seconds?: number; timerId?: "timer1" | "timer2" }
   | { kind: "advanceTime"; minutes?: number; days?: number }
   | { kind: "setTime"; hour: number; minute?: number }
@@ -92,6 +95,7 @@ export type StepResult =
     }
   | { kind: "spawnFieldEnemy"; spawn: FieldSpawnDef }
   | { kind: "despawnFieldEnemy"; spawnId: string }
+  | { kind: "tacticsBattle"; troopId: string; width?: number; height?: number; canLose: boolean }
   | { kind: "setEventGraphicPattern"; eventId: string; pattern: number }
   | {
       kind: "battleProcessing";
@@ -102,6 +106,8 @@ export type StepResult =
       troopSource?: "fixed" | "variable";
       troopVariableId?: string;
       branchOnResult?: boolean;
+      /** 전투 개시 진형 강제(명령) 또는 접촉 방향(심볼 인카운트). 생략 = 시스템 설정. */
+      formation?: import("@/battle/battleFormation").BattleStartFormation;
       // 이 전투를 기동한 맵 이벤트 id(트룹 배틀 이벤트 selfSwitch 의 소유 이벤트).
       // 랜덤 인카운터/필드 스폰 전투는 undefined.
       ownerEventId?: string;

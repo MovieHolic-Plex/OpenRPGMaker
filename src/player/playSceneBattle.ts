@@ -108,6 +108,7 @@ export async function playBattle(
       canEscape: step.canEscape && scene.session.m2Runtime?.access?.escape !== false,
       canLose: step.canLose,
       battleFlow: step.battleFlow,
+      formation: step.formation,
       party: {
         levels: scene.session.actorLevels,
         experience: scene.session.actorExperience,
@@ -149,6 +150,8 @@ export async function playBattle(
         actorTechPoints: scene.session.actorTechPoints,
         actorLevels: scene.session.actorLevels,
         actorBattleCommands: scene.session.actorBattleCommands,
+        difficultyId: scene.session.difficultyId,
+        actorSkillLoadouts: scene.session.actorSkillLoadouts,
         // Step 3d: 전투 이벤트 changeEquipment/promoteActor 의 기준 상태(오버레이 시드).
         actorEquipment: scene.session.actorEquipment,
         classOverrides: scene.session.classOverrides,

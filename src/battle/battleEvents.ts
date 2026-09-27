@@ -1,3 +1,4 @@
+import { calendarOptionsOf, evalActorQueryCondition, type ActorQuerySession } from "@/project/conditionActorQueries";
 import { ownsMonsterSpecies } from "@/project/monsterOwnership";
 import { growthEffects, permanentActorSkillIds } from '@/project/growth/runtime';
 import { executeM2BattleCommand as executeM2Command } from "@/battle/battleM2CommandExecutor";
@@ -17,6 +18,8 @@ import type { BattleEventCondition, BattleEventPageRecord, TroopRecord } from "@
 
 export type BattleEventRuntimeState = {
   gameOverRequest?: { gameOverId: string; message?: string };
+  // m2-046 Tint Screen 이 쓰는 전투 화면 상태(색조·색 필터). 전투 화면 전용이다.
+  screen?: import("@/battle/types").BattleScreenState;
   messageWindowSettings?: MessageWindowSettings;
   readonly switches: Record<string, boolean>;
   readonly variables: Record<string, number>;
@@ -26,6 +29,8 @@ export type BattleEventRuntimeState = {
   // 직전 전투 처리 결과(전투 개시 시점 세션 battleResult 스냅샷). battleResult 조건 평가 기준.
   readonly battleResult?: "victory" | "defeat" | "escape";
   readonly roguelikeRun?: RoguelikeRunState;
+  /** 현재 난이도 id(전투 개시 시점 세션). difficulty 조건 평가 기준. */
+  readonly difficultyId?: string;
   inventory: Record<string, number>;
   itemUseCharges?: Record<string, number>;
   partyActorIds?: string[];
@@ -54,6 +59,14 @@ export type BattleEventRuntimeState = {
   promotionLineage?: import('@/project/growth/types').PromotionLineage;
   growthProgress?: import('@/project/growth/types').GrowthProgress;
   readonly gameTime?: GameTime;
+  // 명작 공백 G1 — 페이지 조건(배우 수치·방향·회차·문자열)을 전투 이벤트 페이지도 읽는다. 전부 읽기 전용 스냅샷.
+  readonly actorVitals?: Record<string, { readonly hp: number; readonly mp: number; readonly maxHp: number; readonly maxMp: number }>;
+  readonly actorStateIds?: Record<string, readonly string[]>;
+  readonly playerFacing?: import("@/project/types").Dir;
+  readonly eventLocations?: Record<string, { readonly mapId: string; readonly x: number; readonly y: number; readonly direction?: import("@/project/types").Dir }>;
+  readonly horror?: import("@/project/horrorState").HorrorState;
+  readonly stringVariables?: Record<string, string>;
+  readonly clearHistory?: { readonly count: number; readonly endingIds: readonly string[] };
   readonly npcActivities?: Record<string, string>;
   readonly friendship?: Record<string, number>;
   friendshipWrites?: Record<string, number>;
@@ -80,6 +93,7 @@ export const BATTLE_CONDITION_SESSION_STATE_FIELDS = [
   "selfSwitches",
   "battleResult",
   "roguelikeRun",
+  "difficultyId",
   "inventory",
   "partyActorIds",
   "monsterInstances",
@@ -94,6 +108,15 @@ export const BATTLE_CONDITION_SESSION_STATE_FIELDS = [
   "currentMapId",
   "x",
   "y",
+  "actorLevels",
+  "actorVitals",
+  "actorStateIds",
+  "playerFacing",
+  "eventLocations",
+  "horror",
+  "flags",
+  "stringVariables",
+  "clearHistory",
 ] as const satisfies readonly (keyof BattleEventRuntimeState)[];
 
 type BattleConditionRuntimeState = Pick<
@@ -314,6 +337,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
   function snapshot(): BattleEventStateSnapshot {
     return {
       ...(options.state.gameOverRequest ? { gameOverRequest: { ...options.state.gameOverRequest } } : {}),
+      ...(options.state.screen ? { screen: { ...options.state.screen, filter: { ...options.state.screen.filter } } } : {}),
       messageWindowSettings: settingsChanged && options.state.messageWindowSettings ? { ...options.state.messageWindowSettings } : undefined,
       switches: options.state.switches,
       variables: options.state.variables,
@@ -764,6 +788,10 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
           abortBattle: options.abortBattle,
           executeCommonEvent: (commonEventId) => executeCommonEventById(page, commonEventId, context, depth + 1),
           executeTroopPage: (pageId) => executeTroopPageById(page, pageId, context, depth + 1),
+          setScreen: (screen) => {
+            options.state.screen = screen;
+            logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `tintScreen ${screen.tint}` });
+          },
         });
         if (!result.handled) logUnsupported(page, context, command.commandId);
         return result.forceEscape;
@@ -920,11 +948,19 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "openSaveMenu":
       case "spawnFieldEnemy":
       case "despawnFieldEnemy":
+      case "tacticsBattle":
       case "advanceCropGrowth":
       case "runControl":
       // playMovie: 맵/공통은 플레이어 비디오 오버레이로 실제 재생되지만 전투 실행기는 없다
       // (guarantee: troop=partial). 여기서 미지원으로 기록하는 것이 그 계약의 실행 쪽이다.
       case "playMovie":
+      // 난이도·파티 묶음·몬스터 놓아주기/교환/합성은 필드 명령이다(전투 중 파티·몬스터 저장소를 바꾸지 않는다).
+      case "setDifficulty":
+      case "storeParty":
+      case "recallParty":
+      case "removeMonster":
+      case "tradeMonster":
+      case "fuseMonsters":
         logUnsupported(page, context, command.kind);
         return false;
       default:
@@ -1024,6 +1060,39 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         return conditionState.battleResult === condition.result;
       case "run":
         return evalRoguelikeRunCondition(conditionState, condition);
+      case "actorStat":
+      case "actorState":
+      case "partyLeader":
+      case "partySize":
+      case "facing":
+      case "relativeFacing":
+      case "hiding":
+      case "pursuitActive":
+      case "clearCount":
+      case "endingSeen":
+      case "newGamePlus":
+      case "weekday":
+      case "stringVariable":
+        // 전투 개시 시점 세션 스냅샷으로 판정한다(전투 중 HP 는 트룹 조건 actorHp 가 본다).
+        return evalActorQueryCondition(
+          {
+            ...conditionState,
+            partyActorIds: conditionState.partyActorIds ?? [],
+            actorVitals: conditionState.actorVitals ?? {},
+            x: conditionState.x ?? 0,
+            y: conditionState.y ?? 0,
+            flags: conditionState.flags ?? {},
+            currentMapId: conditionState.currentMapId ?? "",
+          } satisfies ActorQuerySession,
+          condition,
+          { eventId: options.ownerEventId },
+          calendarOptionsOf(options.project),
+        );
+      case "difficulty":
+        return conditionState.difficultyId !== undefined && conditionState.difficultyId === condition.difficultyId;
+      case "itemUsed":
+        // 아이템을 «바라보는 대상에 사용»하는 것은 필드 메뉴 경로뿐이다 — 전투 이벤트에서는 항상 거짓.
+        return false;
       case "all":
         return condition.conditions.every((child) => evaluateCondition(child));
       case "any":

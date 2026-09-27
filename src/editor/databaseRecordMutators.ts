@@ -53,12 +53,16 @@ export function updateSkillRecord(database: DatabaseRecords, id: string, patch: 
   if ("effect" in patch && patch.effect !== undefined) record.effect = patch.effect;
   // 속성/상태 변화는 런타임이 소비하는 필드(runtime.ts elementMultiplierFor/applyStateEffects) — 편집 반영 필수.
   if ("elementId" in patch) record.elementId = patch.elementId;
+  if ("fieldCommonEventId" in patch) {
+    if (patch.fieldCommonEventId) record.fieldCommonEventId = patch.fieldCommonEventId;
+    else delete record.fieldCommonEventId;
+  }
   if ("stateEffects" in patch && patch.stateEffects !== undefined) record.stateEffects = patch.stateEffects;
   if ("maxPp" in patch) record.maxPp = patch.maxPp;
   if ("gen1CriticalRate" in patch) record.gen1CriticalRate = patch.gen1CriticalRate;
   if ("actionSkill" in patch) record.actionSkill = patch.actionSkill;
   if ("movePriority" in patch) record.movePriority = patch.movePriority;
-  for (const key of ["damageFormula", "criticalRate", "criticalMultiplier", "cooldownTurns", "hitSequence"] as const) {
+  for (const key of ["damageFormula", "criticalRate", "criticalMultiplier", "cooldownTurns", "hitSequence", "resource2Cost", "limitSkill", "partyGaugeCost"] as const) {
     if (key in patch) Object.assign(record, { [key]: patch[key] });
   }
   database.skills[index] = normalizeSkillRecord(record);
@@ -132,6 +136,8 @@ export function updateEquipmentRecord(database: DatabaseRecords, id: string, pat
   if ("stateDefenseMode" in patch && patch.stateDefenseMode !== undefined) record.stateDefenseMode = patch.stateDefenseMode;
   if ("stateResistanceChance" in patch && patch.stateResistanceChance !== undefined) record.stateResistanceChance = patch.stateResistanceChance;
   if ("actionWeapon" in patch) record.actionWeapon = patch.actionWeapon;
+  if ("grantsSkillIds" in patch) record.grantsSkillIds = patch.grantsSkillIds;
+  if ("grantsCommand" in patch) record.grantsCommand = patch.grantsCommand;
   database.equipment[index] = normalizeEquipmentRecord(record);
 }
 
@@ -162,6 +168,7 @@ export function updateEnemyRecord(database: DatabaseRecords, id: string, patch: 
   if ("elementRates" in patch && patch.elementRates !== undefined) record.elementRates = patch.elementRates;
   if ("actionProfile" in patch) record.actionProfile = patch.actionProfile;
   if ("factionId" in patch) record.factionId = patch.factionId;
+  if ("reactions" in patch) record.reactions = patch.reactions;
   database.enemies[index] = normalizeEnemyRecord(record);
 }
 
@@ -176,6 +183,7 @@ export function updateTroopRecord(database: DatabaseRecords, id: string, patch: 
   if ("uncapturable" in patch && patch.uncapturable !== undefined) record.uncapturable = patch.uncapturable;
   if ("trainerBattle" in patch) record.trainerBattle = patch.trainerBattle;
   if ("previewBackgroundResourceId" in patch) record.previewBackgroundResourceId = patch.previewBackgroundResourceId;
+  if ("backdropAnimation" in patch) record.backdropAnimation = patch.backdropAnimation;
   if ("battleFlow" in patch) record.battleFlow = patch.battleFlow;
   if ("activeSlots" in patch) record.activeSlots = patch.activeSlots;
   if ("battleEventPages" in patch && patch.battleEventPages !== undefined) record.battleEventPages = patch.battleEventPages;

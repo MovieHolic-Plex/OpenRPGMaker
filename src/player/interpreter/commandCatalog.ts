@@ -1,3 +1,4 @@
+import { applyHighScore, applyKeyPoll, quickTimeStep, teleportMenuStep, timedChoiceStep } from "./minigameCommands";
 import { isGalleryEnabled, recordGalleryUnlock } from "@/project/gallery";
 import { NEW_GAME_PLUS_FLAG } from "@/project/newGamePlus";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
@@ -47,6 +48,9 @@ import { addFollowerToSession, removeFollowerFromSession, syncPartyFollowers } f
 import { addSessionLight, removeSessionLight, setSessionLighting } from "@/project/lightingRules";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
 import { evolveMonster, giveMonster, moveMonster } from "@/project/monsterCollection";
+import { fuseMonsters, removeMonster, tradeMonster } from "@/project/monsterTrade";
+import { recallPartySet, storePartySet } from "@/project/partySets";
+import { setSessionDifficulty } from "@/project/difficulty";
 import { advanceFarmPlotsForDay } from "@/player/farming";
 import { resolvePricedShopStock } from "@/project/shopPrice";
 import {
@@ -124,6 +128,27 @@ function executeM2Command(
       allowEventMovementDuringWait: fieldBoolean(fields, "allowEventMovementDuringWait", DEFAULT_MESSAGE_WINDOW_SETTINGS.allowEventMovementDuringWait),
     };
     return resumeNext(frame);
+  }
+
+  // 명작 공백 #1·#24 — 미니게임 키트와 순간이동 메뉴.
+  if (entry.title === "Key Poll") {
+    applyKeyPoll(state.session, command.fields);
+    return resumeNext(frame);
+  }
+  if (entry.title === "High Score") {
+    applyHighScore(state.session, command.fields);
+    return resumeNext(frame);
+  }
+  if (entry.title === "Timed Choice") return pause("timedChoice", timedChoiceStep(command.fields));
+  if (entry.title === "Quick Time Event") return pause("quickTimeEvent", quickTimeStep(command.fields));
+  if (entry.title === "Teleport Menu") {
+    const step = teleportMenuStep(state.session, command.fields, state.project?.maps ?? {});
+    if (step === "forbidden") {
+      const resultVariableId = fieldString(command.fields, "resultVariableId", "");
+      if (resultVariableId) state.session.variables[resultVariableId] = -1;
+      return resumeNext(frame);
+    }
+    return pause("teleportMenu", step);
   }
 
   if (entry.title === "Camera Control" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
@@ -636,6 +661,7 @@ export function executeCommand(
         troopSource: command.troopSource,
         troopVariableId: command.troopVariableId,
         branchOnResult: command.branchOnResult,
+        formation: command.formation,
         // 이 전투를 기동한 맵 이벤트(커먼 이벤트 경유 시에도 호출 원점 이벤트).
         // 트룹 배틀 이벤트의 selfSwitch 조건/setSelfSwitch 커맨드의 소유 이벤트가 된다.
         ownerEventId: state.currentEventId,
@@ -733,6 +759,14 @@ export function executeCommand(
       return pause("spawnFieldEnemy", { kind: "spawnFieldEnemy", spawn: command.spawn });
     case "despawnFieldEnemy":
       return pause("despawnFieldEnemy", { kind: "despawnFieldEnemy", spawnId: command.spawnId });
+    case "tacticsBattle":
+      return pause("tacticsBattle", {
+        kind: "tacticsBattle",
+        troopId: command.troopId,
+        width: command.width,
+        height: command.height,
+        canLose: command.canLose === true,
+      });
     case "runControl": {
       switch (command.action) {
         case "start": {
@@ -824,12 +858,14 @@ export function executeCommand(
       return resumeNext(frame);
     case "enterHeroName": {
       const actor = state.project?.database.actors.find((record) => record.id === command.actorId);
+      const textTarget = command.stringVariableId;
       return pause("enterHeroName", {
         kind: "enterHeroName",
         actorId: command.actorId,
         maxLength: command.maxLength,
         showInitialName: command.showInitialName,
-        currentName: actor?.name ?? "",
+        currentName: textTarget ? (state.session.stringVariables?.[textTarget] ?? "") : (actor?.name ?? ""),
+        ...(command.prompt ? { prompt: command.prompt } : {}),
       });
     }
     case "changeGold": {
@@ -996,6 +1032,39 @@ export function executeCommand(
     }
     case "m2Command":
       return executeM2Command(state, frame, command);
+    case "setDifficulty":
+      if (state.project) setSessionDifficulty(state.project.system, state.session, command.difficultyId);
+      return resumeNext(frame);
+    case "storeParty":
+      storePartySet(state.session as PlaySession, command.partySetId);
+      return resumeNext(frame);
+    case "recallParty": {
+      if (!state.project) return resumeNext(frame);
+      const recalled = recallPartySet(state.project, state.session as PlaySession, command.partySetId);
+      state.session.flags.recallPartySuccess = recalled.ok;
+      if (!recalled.ok) return resumeNext(frame);
+      syncPartyFollowers(state.project, state.session as PlaySession);
+      // 자리 이동은 transfer 가 소유한다 — 같은 맵이어도 플레이어 스프라이트를 옮기는 길은 이것뿐이다.
+      if (!recalled.moved) return resumeNext(frame);
+      return pause("transfer", { kind: "transfer", mapId: recalled.set.mapId, x: recalled.set.x, y: recalled.set.y });
+    }
+    case "removeMonster": {
+      const result = state.project ? removeMonster(state.project, state.session as PlaySession, command.instanceId) : { ok: false };
+      state.session.flags.removeMonsterSuccess = result.ok;
+      return resumeNext(frame);
+    }
+    case "tradeMonster": {
+      const result = state.project ? tradeMonster(state.project, state.session as PlaySession, command) : { ok: false };
+      state.session.flags.tradeMonsterSuccess = result.ok;
+      return resumeNext(frame);
+    }
+    case "fuseMonsters": {
+      const result = state.project
+        ? fuseMonsters(state.project, state.session as PlaySession, command.instanceIdA, command.instanceIdB)
+        : { ok: false };
+      state.session.flags.fuseMonstersSuccess = result.ok;
+      return resumeNext(frame);
+    }
     default:
       console.warn("[interpreter] 알 수 없는 command kind, 이벤트 중단");
       return { kind: "done" };

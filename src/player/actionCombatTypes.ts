@@ -109,11 +109,15 @@ export interface ActionCombatSceneState {
   skillSlotIds: string[];
   /** 현재 출려로 캐스트하는 슬롯 인덱스. */
   activeSkillSlot: number;
+  /** 홀드 차지 중인 액션 스킬(chargeTiers 가 있는 슬롯). 떼는 순간 배율을 정해 발동한다. */
+  skillCharge?: { skillId: string; heldMs?: number };
   hitstopMs: number;
   fieldSpawnRuntime?: FieldSpawnRuntimeState;
   barsGraphics?: Phaser.GameObjects.Graphics;
   hud?: { update(model: ActionHudModel): void; destroy(): void; setHpVisible(visible: boolean): void };
   lastHudSignature: string;
+  /** 동료(system.actionCombat.allies)마다 남은 공격 쿨다운. 동료가 처음 휘두를 때 만든다. */
+  allyCooldowns?: Map<string, number>;
 }
 
 export interface ActionHudModel {

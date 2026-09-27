@@ -383,7 +383,13 @@ const actorInitialEquipmentSchema: JsonSchema = {
   type: "object", description: "{ equipment slot id: equipment id }; includes project-authored slots",
   additionalProperties: true,
 };
-const actorOptionsSchema = objectSchema({ dualWield: booleanSchema(), autoBattle: booleanSchema(), fixedEquipment: booleanSchema(), mightyGuard: booleanSchema() });
+const actorOptionsSchema = objectSchema({
+  dualWield: booleanSchema(),
+  autoBattle: booleanSchema(),
+  fixedEquipment: booleanSchema(),
+  mightyGuard: booleanSchema(),
+  autoTactic: { type: "string", enum: ["attackAll", "healFirst", "conserveMp", "followOrders"], description: "autoBattle 배우의 작전: attackAll(전원 공격) · healFirst(회복 우선) · conserveMp(MP 아끼기) · followOrders(자동 전투여도 직접 조작). 생략 = 균형" },
+});
 const learnedSkillSchema = objectSchema({ level: integerSchema(), skillId: stringSchema() });
 // 배우 전용: tp 는 배우 learnedSkills 에만 있다(직업·종족 습득표는 레벨만).
 const actorLearnedSkillSchema = objectSchema({
@@ -452,8 +458,13 @@ const enemyActionSchema = objectSchema({
   switchOnAfterAction: enemyActionSwitchSchema,
   switchOffAfterAction: enemyActionSwitchSchema,
   moveTo: objectSchema({ x: integerSchema("전투장 X 0~320"), y: integerSchema("전투장 Y 0~240") }, "이 행동 전에 이 좌표(트룹 members 좌표계)로 이동한다. 위치 범위기가 새 위치를 본다"),
+  requiresPart: stringSchema("부위 행동: 이 태그의 부위(troop member partTag)가 쓰러지면 쓰지 않는다"),
 });
-const troopMemberSchema = objectSchema({ enemyId: stringSchema(), x: integerSchema(), y: integerSchema(), hidden: booleanSchema() });
+const troopMemberSchema = objectSchema({
+  enemyId: stringSchema(), x: integerSchema(), y: integerSchema(), hidden: booleanSchema(),
+  partOf: integerSchema("다부위 적: 본체 멤버의 인덱스(0부터). 본체가 쓰러지면 이 부위도 쓰러진다"),
+  partTag: stringSchema("부위 태그. 이 부위가 쓰러지면 본체 행동 중 requiresPart 가 같은 것이 막힌다"),
+});
 const stateRuntimeEffectsSchema = objectSchema({
   restrictsAction: booleanSchema(),
   blocksSkillUse: booleanSchema(),
@@ -468,6 +479,8 @@ const stateRuntimeEffectsSchema = objectSchema({
   magicDefenseMultiplier: numberSchema("실드 — 마력(mind) 계열 피해에만 곱하는 방어 배율"),
   forcedAction: { type: "string", enum: ["attackRandom"], description: "버서크 — 명령 없이 무작위 상대를 통상 공격" },
   elementRates: { ...rateMapSchema, description: "이 상태인 동안 덮어쓸 속성 등급(속성 id → A~E)" },
+  incapacitates: booleanSchema("석화처럼 전투 불능으로 친다 — 아군 전원이 쓰러졌거나 이 상태면 패배. 이 상태로는 행동하지 못한다"),
+  damageToMpRate: numberSchema("받는 HP 피해 중 MP 에서 대신 깎는 비율 0~1(예 0.5 = 절반을 MP 로)"),
 });
 
 const itemRecordSchema = objectSchema({
@@ -521,10 +534,11 @@ const enemyRecordSchema = objectSchema({
   rewards: enemyRewardsSchema,
   actions: arrayOf(enemyActionSchema),
   reactions: arrayOf(objectSchema({
-    trigger: stringSchema("physical(공격 계열) | magic(마력 계열) | 속성 id"),
+    trigger: stringSchema("physical(공격 계열) | magic(마력 계열) | onDeath(쓰러질 때 최후의 일격, 전투당 1회) | 속성 id"),
     skillId: stringSchema("반격 스킬 id. 빈 문자열이면 통상 공격"),
     chance: integerSchema("발동 확률 0~100(생략 100)"),
   }), "반격: 피격 후 살아 있으면 차례 밖에서 skillId 를 쓴다(타격당 최대 1회, 게이지 유지). 빈 배열이면 해제"),
+  stealItems: arrayOf(objectSchema({ itemId: stringSchema(), rate: integerSchema("훔치기 확률 0~100") }), "훔치기 표. 위에서부터 굴려 첫 성공 하나. 빈 배열이면 해제"),
   stateRates: rateMapSchema,
   elementRates: rateMapSchema,
 }) as RecordSchema;
@@ -538,6 +552,13 @@ const troopRecordSchema = objectSchema({
   uncapturable: booleanSchema(),
   trainerBattle: booleanSchema(),
   previewBackgroundResourceId: stringSchema(),
+  backdropAnimation: objectSchema({
+    scrollX: { type: "number", minimum: -400, maximum: 400, description: "가로 스크롤 px/초(양수 = 오른쪽)" },
+    scrollY: { type: "number", minimum: -400, maximum: 400, description: "세로 스크롤 px/초(양수 = 아래)" },
+    waveAmplitude: { type: "number", minimum: 0, maximum: 24, description: "물결 왜곡 진폭 px" },
+    waveFrequency: { type: "number", minimum: 0, maximum: 8, description: "물결 흔들림 횟수/초" },
+    paletteCycleSeconds: { type: "number", minimum: 0, maximum: 60, description: "색 순환 한 바퀴 초(0 = 끔)" },
+  }, "움직이는 전투 배경(마더식). 0/생략 = 그 효과 끔. 움직임 줄이기 설정이면 정지 배경"),
   battleFlow: { type: "string", enum: ["gauge", "strict"] },
   activeSlots: integerSchema(),
   // battleEventPages 는 여기서 받지 않는다 — 자유 객체(additionalProperties:true)로 통과시키면
@@ -635,17 +656,25 @@ const skillRecordSchema = objectSchema({
   successRate: integerSchema(),
   variance: integerSchema(),
   hitRate: integerSchema(),
-  effect: objectSchema({ kind: stringSchema(), statistic: stringSchema(), affects: stringSchema(), switchId: stringSchema() }),
+  effect: objectSchema({
+    kind: { type: "string", enum: ["damage", "healing", "support", "switch", "steal", "scan", "learnEnemySkill", "randomSkillFrom"], description: "steal=적 stealItems 훔치기, scan=라이브라, learnEnemySkill=청마법 습득, randomSkillFrom=skillIds 중 무작위" },
+    statistic: stringSchema(), affects: stringSchema(), switchId: stringSchema(),
+    skillIds: stringArraySchema("randomSkillFrom 후보 기술 id"),
+  }),
   elementId: stringSchema(),
   stateEffects: arrayOf(stateEffectSchema),
   maxPp: integerSchema("Gen1 기술별 최대 PP. 1~99"),
   gen1CriticalRate: { type: "string", enum: ["normal", "high"] },
   movePriority: numberSchema("기술 우선도 -7~7 (strict 턴제에서 속도보다 먼저 비교, 퀵어택=+1)"),
+  fieldCommonEventId: { type: "string", description: "필드 능력: 메뉴에서 쓰면 이 공통 이벤트를 실행(정면 이벤트 id 는 문자열 변수 fieldAbilityTarget, 좌표는 변수 fieldAbilityX/Y). 빈 문자열이면 해제" },
   comboActorIds: stringArraySchema("연계기(듀얼·트리플 테크) 참가 배우 2~3명. 전원이 참전·생존·준비 상태여야 메뉴에 열리고, 각자 mpCost 와 턴을 소비한다. 멤버는 따로 배우지 않아도 된다. 빈 배열이면 해제"),
   area: objectSchema({
     shape: { type: "string", enum: ["circle", "line"] },
     radius: numberSchema("전투장 픽셀(>0). circle=주 대상에서 거리, line=주 대상과 세로 차 ≤ radius/2 인 가로 띠"),
   }, "위치 범위기. scope enemy/ally 에서 주 대상 둘레의 같은 편도 맞힌다"),
+  resource2Cost: integerSchema("제2 자원 「기력」 소모량(system.resource2.enabled 일 때만). 0 이면 없음"),
+  limitSkill: booleanSchema("리미트 기술 — 리미트 게이지가 가득 찼을 때만 쓰고 쓰면 비운다(system.limitGauge.enabled 일 때만)"),
+  partyGaugeCost: integerSchema("추격 연계기 — 파티 공용 게이지 소모량(system.partyGauge.enabled 일 때만). 0 이면 없음"),
 }) as RecordSchema;
 
 const equipmentRecordSchema = objectSchema({
@@ -684,6 +713,14 @@ const equipmentRecordSchema = objectSchema({
   stateDefenseIds: stringArraySchema(),
   stateDefenseMode: { type: "string", enum: ["resist", "inflict"] },
   stateResistanceChance: integerSchema(),
+  grantsSkillIds: stringArraySchema("장착 중에만 쓸 수 있는 스킬 id. 배우지 않아도 전투 스킬 목록에 뜬다"),
+  grantsCommand: objectSchema({
+    id: stringSchema("명령 id(클래스 명령과 겹치지 않게)"),
+    name: stringSchema("메뉴에 보일 이름"),
+    kind: { type: "string", enum: ["attack", "skill", "skillSubset", "defend", "item", "escape"] },
+    skillSubsetName: stringSchema(),
+    skillId: stringSchema("kind:skill 이면 이 스킬 하나를 바로 쓰는 명령"),
+  }, "장착 중에만 전투 명령 메뉴에 붙는 명령"),
 }) as RecordSchema;
 
 const classRecordSchema = objectSchema({
@@ -718,9 +755,17 @@ const stateRecordSchema = objectSchema({
   hpReleaseStep: integerSchema(),
   mpReleaseTurn: integerSchema(),
   mpReleaseStep: integerSchema(),
+  emotion: objectSchema({
+    family: stringSchema("감정 계열 이름(예: 기쁨·분노·슬픔). 같은 계열을 다시 걸면 단계가 오른다"),
+    tier: integerSchema("단계 1~9"),
+  }, "감정 상태. 배틀러는 감정을 하나만 가진다. 계열 상성은 set_battle_settings 의 emotionCycle"),
+  fieldStepInterval: integerSchema(),
+  releaseAfterSteps: integerSchema(),
+  fieldStepCanKill: { type: "boolean" },
   specialFlags: stringArraySchema(),
   lockedParameters: stringArraySchema(),
   runtimeEffects: stateRuntimeEffectsSchema,
+  disablesEquipSlot: stringSchema("부위 손실: 이 상태인 동안 이 장비 슬롯(weapon/shield/armor/helmet/accessory)의 능력치 보너스를 잃는다"),
 }) as RecordSchema;
 
 function parametersForRecord(key: string, schema: RecordSchema, example: Record<string, unknown>, extraProperties: Record<string, JsonSchema> = {}): JsonSchema {
@@ -1101,8 +1146,8 @@ function validateEnemyReactions(draft: Project, patch: unknown): void {
   reactions.forEach((raw, index) => {
     const entry = (raw && typeof raw === "object" ? raw : {}) as { trigger?: unknown; skillId?: unknown; chance?: unknown };
     const label = `enemy.reactions[${index}]`;
-    if (typeof entry.trigger !== "string" || !(entry.trigger === "physical" || entry.trigger === "magic" || elementIds.includes(entry.trigger))) {
-      throw new ToolError(`${label}.trigger 는 physical · magic · 속성 id 중 하나여야 합니다(받은 값 ${JSON.stringify(entry.trigger)}). 속성: ${elementIds.slice(0, 8).join(", ") || "없음"}`, { code: "invalid-enemy-reactions" });
+    if (typeof entry.trigger !== "string" || !(entry.trigger === "physical" || entry.trigger === "magic" || entry.trigger === "onDeath" || elementIds.includes(entry.trigger))) {
+      throw new ToolError(`${label}.trigger 는 physical · magic · onDeath · 속성 id 중 하나여야 합니다(받은 값 ${JSON.stringify(entry.trigger)}). 속성: ${elementIds.slice(0, 8).join(", ") || "없음"}`, { code: "invalid-enemy-reactions" });
     }
     if (typeof entry.skillId !== "string") throw new ToolError(`${label}.skillId(문자열, 통상 공격은 "")가 필요합니다.`, { code: "invalid-enemy-reactions" });
     if (entry.chance !== undefined && (typeof entry.chance !== "number" || entry.chance < 0 || entry.chance > 100)) {

@@ -511,6 +511,7 @@ export function createBattleSequencer(
       return { step: "acting", lines: [`${withJosa(actor?.name ?? "아군", "이/가")} 다시 일어섰다! (HP ${entry.amount ?? 0})`], targetId: entry.targetId };
     }
     if (entry.kind === "move") return { step: "acting", lines: [], targetId: entry.targetId };
+    if (entry.kind === "special") return { step: "acting", lines: entry.message ? [entry.message] : [], targetId: entry.targetId };
     if (entry.kind !== "action") return undefined;
     const user = snapshot.actors.find((actor) => actor.recordId === entry.userRecordId)
       ?? snapshot.enemies.find((enemy) => enemy.recordId === entry.userRecordId);

@@ -111,6 +111,10 @@ function collectCommandItemReferences(command: Command, ids: Set<string>): void 
     case "loop":
       collectCommandItemReferenceIds(command.body, ids);
       return;
+    case "tacticsBattle":
+      collectCommandItemReferenceIds(command.victoryBranch ?? [], ids);
+      collectCommandItemReferenceIds(command.defeatBranch ?? [], ids);
+      return;
     case "battleProcessing":
       collectCommandItemReferenceIds(command.victoryBranch ?? [], ids);
       collectCommandItemReferenceIds(command.defeatBranch ?? [], ids);
@@ -257,6 +261,11 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "callCommonEvent":
       assert(context.commonEventIds.has(command.commonEventId), `callCommonEvent: commonEventId가 존재하지 않습니다: ${command.commonEventId}`);
       return;
+    case "tacticsBattle":
+      assert(context.troopIds.has(command.troopId), `tacticsBattle: troopId가 존재하지 않습니다: ${command.troopId}`);
+      validateCommands(command.victoryBranch ?? [], context);
+      validateCommands(command.defeatBranch ?? [], context);
+      return;
     case "battleProcessing":
       if (command.troopSource !== "variable") {
         assert(context.troopIds.has(command.troopId), `battleProcessing: troopId가 존재하지 않습니다: ${command.troopId}`);
@@ -327,6 +336,11 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       return;
     case "moveMonster":
       return;
+    case "tradeMonster":
+      // 빈 종은 편집기 초안(새로 넣은 명령)이다 — 초안 검증이 잡고, 런타임은 missingSpecies 로 실패한다.
+      if (command.fromSpeciesId.trim()) assert(context.speciesIds.has(command.fromSpeciesId), `tradeMonster: fromSpeciesId가 존재하지 않습니다: ${command.fromSpeciesId}`);
+      if (command.toSpeciesId.trim()) assert(context.speciesIds.has(command.toSpeciesId), `tradeMonster: toSpeciesId가 존재하지 않습니다: ${command.toSpeciesId}`);
+      return;
     case "evolveMonster":
       if (command.toSpeciesId && command.toSpeciesId.trim().length > 0) {
         assert(context.speciesIds.has(command.toSpeciesId), `evolveMonster: toSpeciesId가 존재하지 않습니다: ${command.toSpeciesId}`);
@@ -387,6 +401,19 @@ function validatePageCondition(condition: EventPageCondition, context: Reference
     case "friendshipAtLeast":
     case "battleResult":
     case "run":
+    case "actorStat":
+    case "actorState":
+    case "partyLeader":
+    case "partySize":
+    case "facing":
+    case "relativeFacing":
+    case "hiding":
+    case "pursuitActive":
+    case "clearCount":
+    case "endingSeen":
+    case "newGamePlus":
+    case "weekday":
+    case "stringVariable":
       return;
     case "all":
     case "any":

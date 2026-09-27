@@ -37,12 +37,18 @@ export const actionSkillProfileSchema = object({
   speedTilesPerSec: integer(1, 30), cooldownMs: integer(50, 30000), durationMs: integer(100, 30000),
   itemCost: object({ itemId: { type: 'string' }, amount: integer(1, 99) }),
   fieldStatus: object({ kind: { type: 'string', enum: ['poison', 'slow'] }, durationMs: integer(100, 30000) }),
+  chargeTiers: { type: 'array', maxItems: 5, items: object({ holdMs: integer(50, 10000), multiplier: number(0.1, 10) }, ['holdMs', 'multiplier']) } as JsonSchema,
 });
 
 export const authoredSkillProperties: Record<string, JsonSchema> = {
   damageFormula: { type: 'string', maxLength: 512, description: '산술식: power, a.atk/def/mind/agi/hp/mp/level, b.* 및 + - * / % 괄호. 빈 문자열은 기본 공식으로 복원.' },
   criticalRate: integer(0, 100), criticalMultiplier: number(1, 10), cooldownTurns: integer(0, 99),
   hitSequence: hitSequenceSchema,
+  learnable: { type: 'boolean', description: '청마법: 적이 쓰면 learnEnemySkill 을 아는 배우가 배울 수 있다.' },
+  inputSequence: object({
+    keys: { type: 'array', maxItems: 12, items: { type: 'string', enum: ['up', 'down', 'left', 'right', 'confirm', 'cancel'] } } as JsonSchema,
+    timeLimitMs: integer(300, 20000), successMultiplier: number(0, 10), failMultiplier: number(0, 10),
+  }, ['keys', 'timeLimitMs']),
   actionSkill: { ...actionSkillProfileSchema, description: '기존 액션은 변경할 필드만 전달. 처음 설정하거나 kind를 바꾸면 kind/damage/range 필수. 해제는 최상위 clearActionSkill/clearActionFieldStatus/clearActionItemCost 사용.' },
 };
 

@@ -5,7 +5,8 @@ import { clampFriendship } from "../session";
 import { resolveSocialKey } from "../socialKey";
 import { evalRoguelikeRunCondition, type RoguelikeRunState } from "../roguelikeRun";
 import { evalRelationshipCondition, type RelationshipState } from "../relationshipState";
-import type { EventPage, EventPageCondition, GameEvent, ProjectSession } from "../types";
+import type { Dir, EventPage, EventPageCondition, GameEvent, ProjectSession } from "../types";
+import { evalActorQueryCondition, type ActorQueryOptions, type ActorQuerySession } from "../conditionActorQueries";
 
 type EventPageSession = Pick<ProjectSession, "switches" | "variables"> &
   Partial<Pick<ProjectSession, "selfSwitches" | "inventory" | "partyActorIds" | "timers" | "gold" | "monsterInstances" | "monsterParty" | "monsterBox">> & {
@@ -15,6 +16,8 @@ type EventPageSession = Pick<ProjectSession, "switches" | "variables"> &
     readonly relationships?: Record<string, RelationshipState>;
     readonly battleResult?: "victory" | "defeat" | "escape";
     readonly roguelikeRun?: RoguelikeRunState;
+    readonly difficultyId?: string;
+    readonly itemUsedId?: string;
     /** 주인공 타일 좌표. `insideLocation` 조건이만 사용한다. */
     readonly x?: number;
     readonly y?: number;
@@ -26,7 +29,24 @@ type EventPageSession = Pick<ProjectSession, "switches" | "variables"> &
  */
 export type EventPageLocationContext = {
   readonly locations?: readonly { readonly id: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number }[];
+  /** 이 이벤트의 런타임 위치·방향(방향 조건). 생략 = session.eventLocations. */
+  readonly host?: { readonly x?: number; readonly y?: number; readonly direction?: Dir };
+  readonly calendar?: ActorQueryOptions;
 };
+
+/** 페이지 세션(부분)을 조건 조회 세션으로 비춘다. 없는 칸은 비어 있는 것으로 본다. */
+function pageQuerySession(session: EventPageSession): ActorQuerySession {
+  const extra = session as EventPageSession & Partial<ActorQuerySession>;
+  return {
+    ...extra,
+    partyActorIds: session.partyActorIds ?? [],
+    actorVitals: extra.actorVitals ?? {},
+    x: session.x ?? 0,
+    y: session.y ?? 0,
+    flags: extra.flags ?? {},
+    currentMapId: extra.currentMapId ?? "",
+  };
+}
 
 export function resolveEventPage(
   event: GameEvent,
@@ -97,6 +117,24 @@ function evalPageCondition(
       return session.battleResult === condition.result;
     case "run":
       return evalRoguelikeRunCondition(session, condition);
+    case "actorStat":
+    case "actorState":
+    case "partyLeader":
+    case "partySize":
+    case "facing":
+    case "relativeFacing":
+    case "hiding":
+    case "pursuitActive":
+    case "clearCount":
+    case "endingSeen":
+    case "newGamePlus":
+    case "weekday":
+    case "stringVariable":
+      return evalActorQueryCondition(pageQuerySession(session), condition, { eventId: event.id, x: context?.host?.x, y: context?.host?.y, direction: context?.host?.direction }, context?.calendar);
+    case "difficulty":
+      return session.difficultyId !== undefined && session.difficultyId === condition.difficultyId;
+    case "itemUsed":
+      return session.itemUsedId !== undefined && session.itemUsedId === condition.itemId;
     case "all":
       return condition.conditions.every((child) => evalPageCondition(child, session, event, context));
     case "any":

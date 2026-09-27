@@ -103,6 +103,14 @@ export type StatusMenuDetailOptions = {
   readonly onLoadSlot?: (slot: SaveSlotIndex) => void;
   readonly onSelectItemTarget?: (itemId: string) => void;
   readonly onUseItem?: (itemId: string, actorId?: string, monsterInstanceId?: string) => void;
+  /** 조합·바라보는 대상에 사용 하위 화면을 연 아이템. */
+  readonly itemActionId?: string;
+  /** 정면(또는 발밑) 이벤트가 이 아이템을 받는가 — 메뉴 행 노출용 판정기. 생략 = 필드 대상 없음. */
+  readonly canUseItemOnFacedTarget?: (itemId: string) => boolean;
+  readonly onOpenItemActions?: (itemId: string) => void;
+  readonly onCombineItems?: (itemA: string, itemB: string) => void;
+  readonly onUseItemOnFacedTarget?: (itemId: string) => void;
+  readonly onToggleSkillLoadout?: (actorId: string, skillId: string) => void;
   readonly onSelectSkillActor?: (actorId: string) => void;
   readonly onSelectGrowthTab?: (tab: GrowthMenuTab) => void;
   readonly onGrowthMutation?: (action: GrowthMenuMutation) => void;

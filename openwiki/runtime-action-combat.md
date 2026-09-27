@@ -335,3 +335,16 @@ Parent-owned validation: `npm test -- test/feature16World*.test.ts`;
 `node scripts/capture-feature16-world-player.mjs` adds keyboard door/cast proof for
 all four profiles. Derived JSON stays under `test/fixtures/feature16-world/` and is
 ignored. No project-service content writes are part of these checks.
+
+
+## 옆보기 중력 · 액션 동료 AI · 전술 격자 전투 (명작 공백 #13 #30 #31, 2026-09-27)
+
+기존 엔진 안에서 도는 **최소 실행 모드**다(대형 시스템은 이후 확장).
+
+- **옆보기(횡스크롤) 맵** `GameMap.sideView`(+ `sideViewJumpTiles` 기본 2, `sideViewFallTiles` 기본 4, `sideViewFallDamage` 기본 10). 켜면 주인공이 매 걸음 중력으로 떨어지고
+  위 키는 점프, 지형 기록 `climbable` 칸(사다리·밧줄)은 위아래로 오른다. 넘은 낙하 칸마다 파티 전원 피해. `src/player/sideViewPhysics.ts`, 맵 속성 패널 토글.
+- **액션 전투 동료** `system.actionCombat.allies` — 따라오는 파티 동료가 가까운 적을 스스로 때리고, V 키가 조작 캐릭터(선두)를 바꾼다. `src/player/actionAllies.ts`.
+- **전술 격자 전투** 명령 `tacticsBattle {troopId, width?=8, height?=6, canLose?, victoryBranch?, defeatBranch?}` — 파티와 적 그룹을 격자 양 끝에 세우고
+  이동력 안 이동 + 인접 공격을 번갈아 하다 한쪽이 전멸하면 끝난다. 결과는 `session.battleResult` 와 분기로 이어지고 canLose=false 에 지면 게임 오버.
+  `src/player/tacticsBattle.ts`(규칙) · `tacticsBattleOverlay.ts`(키보드 UI) · `playSceneTactics.ts`.
+- 테스트: `test/mgL8SideView.test.ts`, `mgL8ActionAllies`, `mgL8TacticsBattle`, `test/commandContracts/tacticsBattle.contract.test.ts`. QA: `scripts/qa/runtime/mg-l8-modes.scenario.mjs`.

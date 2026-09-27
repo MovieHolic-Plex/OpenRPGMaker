@@ -1,3 +1,4 @@
+import { isActorQueryConditionKind } from "@/project/conditionActorQueries";
 import type { EventPage, EventPageCondition } from "@/project/types";
 import type { EventDraftFieldLocator } from "@/editor/eventDraftValidator";
 
@@ -86,6 +87,9 @@ export function advancedConditionEntries(page: Pick<EventPage, "conditions">): A
       condition.kind === "monsterSpecies" ||
       condition.kind === "run" ||
       condition.kind === "battleResult" ||
+      condition.kind === "difficulty" ||
+      condition.kind === "itemUsed" ||
+      isActorQueryConditionKind(condition.kind) ||
       condition.kind === "all" ||
       condition.kind === "any" ||
       condition.kind === "not"
@@ -120,6 +124,20 @@ export function pageConditionField(
       case "relationshipAtLeast": return field("relationship-npc-key");
       case "run": return { testId: "event-condition-run-flag", scopeTestId: `${prefix}-row-${advancedSuffix}` };
       case "selfSwitch": case "battleResult": return undefined;
+    case "actorStat":
+    case "actorState":
+    case "partyLeader":
+    case "partySize":
+    case "facing":
+    case "relativeFacing":
+    case "hiding":
+    case "pursuitActive":
+    case "clearCount":
+    case "endingSeen":
+    case "newGamePlus":
+    case "weekday":
+    case "stringVariable":
+        return { testId: `event-condition-${condition.kind}` };
     }
   }
   switch (condition.kind) {

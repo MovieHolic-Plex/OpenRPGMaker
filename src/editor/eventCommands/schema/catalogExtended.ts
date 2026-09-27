@@ -357,6 +357,24 @@ defineCommand({
 });
 
 defineCommand({
+  kind: "tacticsBattle",
+  family: "battle",
+  label: "전술 전투(격자)",
+  fields: {
+    troopId: f.record("적 그룹", "troop"),
+    width: f.number("격자 가로(칸)", { optional: true, min: 4, max: 16 }),
+    height: f.number("격자 세로(칸)", { optional: true, min: 2, max: 12 }),
+    canLose: f.bool("패배 허용"),
+  },
+  // 결과 분기는 늘 둘이다 — 격자 전투에는 도주가 없다.
+  branches: () => [
+    { key: "victoryBranch", label: "승리", tone: "ok" as const },
+    { key: "defeatBranch", label: "패배", tone: "danger" as const },
+  ],
+  summary: (c, l) => `${l.recordName(str(c.troopId)) || "(적 그룹 미지정)"} 전술 전투 · 2분기`,
+});
+
+defineCommand({
   kind: "despawnFieldEnemy",
   family: "battle",
   label: "필드 적 제거",

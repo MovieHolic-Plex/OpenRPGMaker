@@ -257,6 +257,10 @@ function scanCommand(
       if (command.defeatBranch) scanCommands(command.defeatBranch, add, owner, `${commandPath}.defeatBranch`);
       if (command.escapeBranch) scanCommands(command.escapeBranch, add, owner, `${commandPath}.escapeBranch`);
       break;
+    case "tacticsBattle":
+      if (command.victoryBranch) scanCommands(command.victoryBranch, add, owner, `${commandPath}.victoryBranch`);
+      if (command.defeatBranch) scanCommands(command.defeatBranch, add, owner, `${commandPath}.defeatBranch`);
+      break;
     case "inn":
       if (command.notEnoughBranch) scanCommands(command.notEnoughBranch, add, owner, `${commandPath}.notEnoughBranch`);
       break;

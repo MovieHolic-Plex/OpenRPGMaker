@@ -83,8 +83,11 @@ export function collectProjectItemReferenceIds(project: Project): ReadonlySet<st
     for (const ingredient of recipe.ingredients) ids.add(ingredient.itemId);
   }
   for (const upgrade of project.system.itemUpgrades ?? []) {
-    ids.add(upgrade.fromItemId);
-    ids.add(upgrade.toItemId);
+    // 장비 강화 규칙의 from/to 는 장비 id 다 — 아이템 참조 집합에 넣지 않는다.
+    if (upgrade.target !== "equipment") {
+      ids.add(upgrade.fromItemId);
+      ids.add(upgrade.toItemId);
+    }
     for (const ingredient of upgrade.ingredients ?? []) ids.add(ingredient.itemId);
   }
   for (const price of project.system.sellPrices ?? []) ids.add(price.itemId);
@@ -749,8 +752,9 @@ function validateLifeAuthoringRecords(
   for (const upgrade of project.system.itemUpgrades ?? []) {
     if (seenUpgrades.has(upgrade.id)) issues.push(`itemUpgrade ${upgrade.id}: duplicate id.`);
     seenUpgrades.add(upgrade.id);
-    if (!itemIds.has(upgrade.fromItemId)) issues.push(`itemUpgrade ${upgrade.id}: fromItemId does not exist: ${upgrade.fromItemId}`);
-    if (!itemIds.has(upgrade.toItemId)) issues.push(`itemUpgrade ${upgrade.id}: toItemId does not exist: ${upgrade.toItemId}`);
+    const upgradeTargetIds = upgrade.target === "equipment" ? new Set(project.database.equipment.map((record) => record.id)) : itemIds;
+    if (!upgradeTargetIds.has(upgrade.fromItemId)) issues.push(`itemUpgrade ${upgrade.id}: fromItemId does not exist: ${upgrade.fromItemId}`);
+    if (!upgradeTargetIds.has(upgrade.toItemId)) issues.push(`itemUpgrade ${upgrade.id}: toItemId does not exist: ${upgrade.toItemId}`);
     for (const [index, ingredient] of (upgrade.ingredients ?? []).entries()) {
       if (!itemIds.has(ingredient.itemId)) issues.push(`itemUpgrade ${upgrade.id}: ingredients[${index}].itemId does not exist: ${ingredient.itemId}`);
     }

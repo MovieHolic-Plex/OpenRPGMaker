@@ -316,6 +316,10 @@ function terrainVehicleCard(terrain: DatabaseTerrainRecord, index: number): HTML
         recordProjectSnapshot();
         writeTerrain(index, (target) => { target.vehiclePassage.airshipLand = checked; });
       }),
+      toggleSwitch("사다리·밧줄(옆보기 맵에서 오르기)", `db-field-terrain-climbable-${index}`, terrain.climbable === true, (checked) => {
+        recordProjectSnapshot();
+        writeTerrain(index, (target) => { if (checked) target.climbable = true; else delete target.climbable; });
+      }),
     ],
     testid: "db-terrain-vehicle-card",
   });

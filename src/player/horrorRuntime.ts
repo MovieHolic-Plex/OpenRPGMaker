@@ -85,6 +85,7 @@ function trackedPursuitTarget(world: World, view: RuntimeEventView, mover: Auton
   const persistent = config?.tracking === 'persistent' && (state.active || mover.chaseActive)
     && !hiding && !isInSafeZone(world.map.safeZones, world.session);
   if (visible || persistent) {
+    if (config?.lostSwitchId && world.session.switches[config.lostSwitchId]) world.session.switches[config.lostSwitchId] = false;
     state.active = true;
     state.searchMs = 0;
     state.lastSeen = { x: world.session.x, y: world.session.y };
@@ -101,6 +102,8 @@ function trackedPursuitTarget(world: World, view: RuntimeEventView, mover: Auton
     return target ? { ...target, searching: true } : null;
   }
   mover.chaseActive = false;
+  // 포기 훅 — 추격이 끝나는 순간 한 번(이미 켜져 있으면 그대로).
+  if (config?.lostSwitchId && state.active) world.session.switches[config.lostSwitchId] = true;
   if (config?.onLost === 'return' && state.home.mapId === world.map.id
     && (view.x !== state.home.x || view.y !== state.home.y)) return { ...state.home, searching: true };
   state.active = false;
