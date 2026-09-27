@@ -3,16 +3,16 @@
    특정도를 높인다. 배틀러 모션은 27-retro-motion.css가 소유한다. */
 
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] {
-  --battle-hud-height: 128px;
-  --battle-command-row-height: 26px;
-  --battle-stage-skin-inset-top: 48px;
+  --battle-hud-height: 152px;
+  --battle-command-row-height: 32px;
+  --battle-stage-skin-inset-top: 56px;
   --battle-window-skin-slice: 24;
   --battle-window-skin-width: 0;
   --retro-window: linear-gradient(180deg, #2838b0, #101860);
   --retro-frame: 0 0 0 2px #d8e8ff, inset 0 0 0 2px #080e40;
   --retro-pixel: calc(2px / 2);
   --runtime-ui-font: var(--runtime-pixel-font);
-  grid-template-columns: 168px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 56fr) minmax(0, 42fr);
   font-family: var(--runtime-pixel-font);
   color: #fff;
   text-shadow: var(--retro-pixel) var(--retro-pixel) 0 #000820;
@@ -25,8 +25,9 @@
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-result-panel,
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy-list-panel {
   background: var(--retro-window);
+  box-sizing: border-box;
   border: 0;
-  border-radius: 0;
+  border-radius: 4px;
   box-shadow: var(--retro-frame);
   backdrop-filter: none;
   font-family: var(--runtime-pixel-font);
@@ -35,12 +36,14 @@
 }
 
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-host {
-  margin: 8px 0 8px 8px;
+  grid-column: 2;
+  margin: 8px 8px 8px 4px;
+  clip-path: none;
   animation: none;
 }
 
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-panel {
-  min-width: 160px;
+  min-width: 0;
   padding: 4px;
   grid-template-rows: calc(4 * var(--battle-command-row-height));
 }
@@ -64,9 +67,9 @@
   border-radius: 0;
   grid-template-columns: minmax(0, 1fr);
   color: #fff;
-  padding: 0 10px;
+  padding: 0 6px 0 36px;
   font-family: var(--runtime-pixel-font);
-  font-size: 16px;
+  font-size: 20px;
   text-shadow: var(--retro-pixel) var(--retro-pixel) 0 #000820;
 }
 
@@ -94,29 +97,32 @@
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command:not(:disabled)[data-battle-command-cursor="true"],
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command:not(:disabled):focus-visible,
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command:not(:disabled).battle-target-selected {
-  background: #647cdc66;
-  box-shadow: inset 0 0 0 2px #a8bcff88;
-  color: #fff;
-  animation: retro2003-menu-pulse 1.6s ease-in-out infinite;
+  background: #5468c833;
+  box-shadow: none;
+  color: #ffd66a;
+  animation: none;
 }
 
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party,
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) {
   grid-auto-rows: var(--battle-command-row-height);
-  padding: 4px 10px;
+  grid-column: 1;
+  margin: 8px 4px 8px 8px;
+  padding: 4px;
   align-content: center;
 }
 
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-status,
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-status {
   grid-template-areas: "name hpnum mpnum tp";
-  grid-template-columns: minmax(88px, 1fr) 114px 100px 72px;
+  grid-template-columns: minmax(64px, 1fr) 108px 54px 56px;
   grid-template-rows: var(--battle-command-row-height);
   height: var(--battle-command-row-height);
   max-height: var(--battle-command-row-height);
   max-width: none;
-  column-gap: 8px;
-  padding: 0 2px;
+  column-gap: 4px;
+  box-sizing: border-box;
+  padding: 0 0 0 14px;
   border-radius: 0;
 }
 
@@ -130,7 +136,7 @@
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-name,
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-hp,
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-mp {
-  font-size: 16px;
+  font-size: 20px;
   line-height: 24px;
   color: #fff;
 }
@@ -172,7 +178,11 @@
   left: 8px;
   right: 8px;
   top: 8px;
-  min-height: 36px;
+  display: grid;
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  height: 40px;
+  min-height: 40px;
   padding: 6px 12px;
   grid-template-columns: minmax(0, 1fr);
   text-align: center;
@@ -180,8 +190,8 @@
 }
 
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-line {
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 24px;
+  line-height: 28px;
   text-align: center;
 }
 
@@ -222,8 +232,8 @@
   content: "▼";
   color: #fff;
   font-family: var(--runtime-pixel-font);
-  font-size: 20px;
-  line-height: 24px;
+  font-size: 24px;
+  line-height: 28px;
   text-align: center;
   border-radius: 0;
   box-shadow: none;
@@ -233,11 +243,6 @@
 
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-target-brackets::after {
   content: none;
-}
-
-.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor[data-authored-battler="true"] .battle-actor-sprite {
-  /* 시트 인라인 96px·포즈 오프셋은 보존하고 표시만 정확히 64px로 줄인다. */
-  transform: scale(calc(2 / 3));
 }
 
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-platform {
@@ -281,8 +286,8 @@
   text-shadow: var(--retro-pixel) var(--retro-pixel) 0 #000820;
 }
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-playback-status {
-  /* 메시지 창은 두 줄(약 72px)까지 자란다 — 그 아래에 둔다. */
-  top: 84px;
+  /* 한 줄 메시지 창 아래에 재생 상태를 놓는다. */
+  top: 56px;
   right: 8px;
   border-radius: 0;
   background: #101860;
@@ -311,3 +316,57 @@
   transition: none;
 }
 }
+
+/* 루트만 2열이다. 하위 목록은 기존 4행 스크롤포트·커서 추적을 그대로 쓴다. */
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-menu.battle-standard-root {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-menu:has(> .battle-submenu-header) {
+  grid-template-columns: minmax(0, 1fr);
+}
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-scroll-cue { grid-column: 1 / -1; }
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-panel::before { content: none; }
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-text strong { font-size: 22px; line-height: 28px; }
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-text small { font-size: 16px; line-height: 24px; }
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-text { color: inherit; }
+
+/* 16×12 픽셀 장갑. 문자/이모지 없이 정수 배율로 찍는다. */
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command[data-battle-command-cursor="true"]::before,
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command.battle-target-selected::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 4px;
+  bottom: auto;
+  width: 32px;
+  height: 24px;
+  opacity: 1;
+  border-radius: 0;
+  box-shadow: none;
+  transform: none;
+  animation: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='12' viewBox='0 0 16 12' shape-rendering='crispEdges'%3E%3Cpath fill='%23080e30' d='M0 4h3V2h4V1h8v1h1v3h-5v5H9v2H3v-1H0z'/%3E%3Cpath fill='%23fff4dc' d='M3 4h2V3h3V2h7v2H8v1h2v5H8v1H3z'/%3E%3Cpath fill='%23a8b6cc' d='M5 6h1v3H5zm2-1h1v4H7zm2 1h1v3H9zM3 10h5v1H3z'/%3E%3Cpath fill='%23ffffff' d='M0 5h3v5H0z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  image-rendering: pixelated;
+}
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-status { position: relative; }
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-status.is-active-actor::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 10px;
+  height: 12px;
+  background: #ffdc62;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-mp { color: #8de4ff; }
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-hp .battle-vital-label { display: none; }
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-mp .battle-vital-label { font-size: 12px; color: #8de4ff; margin-right: 0; }
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-mp .battle-vital-max { display: none; }
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-hp .battle-vital-max { font-size: 20px; color: #fff; font-weight: 400; }
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-status.is-active-actor .battle-actor-name { color: #ffd66a; }
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-lines { display: block; min-width: 0; }
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-line { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-line ~ .battle-message-line { display: none; }
+/* 현재 메시지는 텍스트 노드라 기술명만 구분할 수 없다. 의미 노드가 생기면 강조한다. */
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-message-line :is(strong, em, [data-skill-id]) { color: #ff9cdd; font-style: normal; }
