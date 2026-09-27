@@ -49,11 +49,93 @@ export function createWorldCoastAutotileGroup(): AutotileGroup {
   };
 }
 
+/**
+ * 판정 기억. 이 함수는 월드맵 타일 한 칸을 그릴 때마다(물 판정·쿼터 합성·이웃 물 검사) 여러 번 불리는데,
+ * 매번 그룹 전체 비교(matchesCoast: 배열 includes·Set·variantMap 전수)와 이식 전수 검사를 했다.
+ * 100×100 월드맵 한 번 그리기에 약 0.8초였다(Node 실측).
+ *
+ * 그룹은 제자리에서 고쳐질 수 있다(편집기 tilesetActions 는 필드를 새로 대입하고, 저자 편집은
+ * variantMap["255"] = 3 처럼 칸을 직접 고친다 — test/worldCoastMapping.test.ts). 그래서 정체성이 아니라
+ * 지난번 판정 때의 **내용 사본**과 한 줄 비교한다(원소 수십 개, 할당 없음). 이식은 배열 정체성+길이로 본다
+ * (이식 코드는 배열을 새로 만들거나 push 한다).
+ */
+type CoastMemo = {
+  readonly group: AutotileGroup | undefined;
+  readonly neighborhood: number | undefined;
+  readonly members: readonly number[];
+  readonly connects: readonly number[];
+  readonly variantKeys: readonly string[];
+  readonly variantValues: readonly number[];
+  readonly groupCount: number;
+  readonly grafts: unknown;
+  readonly graftCount: number;
+  readonly result: AutotileGroup | undefined;
+};
+const coastMemo = new WeakMap<object, CoastMemo>();
+
+function sameList(snapshot: readonly number[], current: readonly number[] | undefined): boolean {
+  if (!current || current.length !== snapshot.length) return false;
+  for (let index = 0; index < snapshot.length; index += 1) if (snapshot[index] !== current[index]) return false;
+  return true;
+}
+
+function sameVariants(memo: CoastMemo, variantMap: Record<string, number> | undefined): boolean {
+  if (!variantMap) return memo.variantKeys.length === 0;
+  let count = 0;
+  for (const key in variantMap) {
+    if (!Object.prototype.hasOwnProperty.call(variantMap, key)) continue;
+    if (memo.variantKeys[count] !== key || memo.variantValues[count] !== variantMap[key]) return false;
+    count += 1;
+  }
+  return count === memo.variantKeys.length;
+}
+
+function memoStillValid(memo: CoastMemo, tileset: Pick<TilesetDef, "tileGrafts">, groups: readonly AutotileGroup[], group: AutotileGroup | undefined): boolean {
+  if (memo.group !== group || memo.groupCount !== groups.length) return false;
+  if (memo.grafts !== tileset.tileGrafts || memo.graftCount !== (tileset.tileGrafts?.length ?? 0)) return false;
+  if (!group) return true;
+  return memo.neighborhood === group.neighborhood && sameList(memo.members, group.memberTileIds)
+    && sameList(memo.connects, group.connectTileIds) && sameVariants(memo, group.variantMap);
+}
+
 export function worldCoastAutotileGroup(tileset: Pick<TilesetDef, "image" | "autotileGroups" | "tileGrafts">): AutotileGroup | undefined {
   if (!isWorldTileset(tileset)) return undefined;
-  const group = (tileset.autotileGroups ?? []).find(candidate => candidate.id === WORLD_COAST_GROUP_ID);
-  if (!matchesCoast(group, WORLD_WATER_TILES) && !matchesCoast(group, WORLD_SEA_TILES)) return undefined;
-  return group && !hasWorldAutotileGraft(tileset, group.memberTileIds) ? group : undefined;
+  const memo = coastMemo.get(tileset);
+  if (memo && coastPassValidated?.has(tileset)) return memo.result;
+  const groups = tileset.autotileGroups ?? [];
+  const group = groups.find(candidate => candidate.id === WORLD_COAST_GROUP_ID);
+  if (memo && memoStillValid(memo, tileset, groups, group)) {
+    coastPassValidated?.add(tileset);
+    return memo.result;
+  }
+  const result = !matchesCoast(group, WORLD_WATER_TILES) && !matchesCoast(group, WORLD_SEA_TILES)
+    ? undefined
+    : group && !hasWorldAutotileGraft(tileset, group.memberTileIds) ? group : undefined;
+  const variantKeys = group ? Object.keys(group.variantMap ?? {}) : [];
+  coastMemo.set(tileset, {
+    group, neighborhood: group?.neighborhood,
+    members: [...(group?.memberTileIds ?? [])], connects: [...(group?.connectTileIds ?? [])],
+    variantKeys, variantValues: variantKeys.map(key => group!.variantMap[key]!), groupCount: groups.length,
+    grafts: tileset.tileGrafts, graftCount: tileset.tileGrafts?.length ?? 0, result,
+  });
+  coastPassValidated?.add(tileset);
+  return result;
+}
+
+/**
+ * 한 번의 동기 그리기 안에서는 타일셋이 바뀌지 않는다. 그 안에서는 해안 판정의 내용 비교(variantMap 전수)를
+ * 타일셋마다 한 번만 한다 — 칸마다 여러 번 부르는 판정이 칸당 수십 µs 를 먹어 100×100 월드맵 한 번 그리기에
+ * 약 0.3초가 남아 있었다. `fn` 은 동기여야 하고, 그 안에서 타일셋을 고치면 안 된다.
+ */
+let coastPassValidated: WeakSet<object> | null = null;
+export function withWorldCoastRenderPass<T>(fn: () => T): T {
+  if (coastPassValidated) return fn();
+  coastPassValidated = new WeakSet();
+  try {
+    return fn();
+  } finally {
+    coastPassValidated = null;
+  }
 }
 
 export function hasWorldCoastMapping(tileset: Pick<TilesetDef, "image" | "autotileGroups" | "tileGrafts">): boolean {
