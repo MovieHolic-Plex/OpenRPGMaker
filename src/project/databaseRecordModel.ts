@@ -236,7 +236,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     // 진형 굴림·도주 가산 — 기본(굴림 없음·+10%p)은 저장하지 않는다(옛 JSON 바이트 유지).
     ...(system.battleFormationRoll === true ? { battleFormationRoll: true } : {}),
     ...(system.pointerMovement === true ? { pointerMovement: true } : {}),
-    ...(typeof system.escapeBonusPercent === "number" && Number.isFinite(system.escapeBonusPercent) && system.escapeBonusPercent !== 10
+    ...(typeof system.escapeBonusPercent === "number" && Number.isFinite(system.escapeBonusPercent) && system.escapeBonusPercent !== 0
       ? { escapeBonusPercent: clampInteger(system.escapeBonusPercent, 0, 100) }
       : {}),
     ...(system.battleCommandCss?.trim() ? { battleCommandCss: system.battleCommandCss } : {}),

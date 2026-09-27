@@ -19,15 +19,17 @@ function heroAgility(project: Project): number {
 }
 
 describe("mg-l2-bflow #34 도주 실패 가산", () => {
-  it("실패 0회는 예전 식 그대로, 실패마다 기본 +10%p 가 붙고 100% 에서 멈춘다", () => {
+  it("필드가 없으면 예전 식 그대로, 가산을 켜면 실패마다 붙고 100% 에서 멈춘다", () => {
     expect(escapeChance(10, 10, 0, undefined)).toBe(0.5);
-    expect(escapeChance(10, 10, 1, undefined)).toBeCloseTo(0.6);
+    expect(escapeChance(10, 10, 3, undefined)).toBe(0.5);
+    expect(escapeChance(10, 10, 1, 10)).toBeCloseTo(0.6);
     expect(escapeChance(10, 10, 3, 20)).toBe(1);
     expect(escapeChance(10, 10, 4, 0)).toBe(0.5);
   });
 
   it("같은 rng 값이 첫 시도는 실패, 한 번 실패한 뒤에는 성공한다(strict)", () => {
     const project = battleProject();
+    project.system.escapeBonusPercent = 10;
     const slime = project.database.enemies.find((record) => record.id === "enemy_slime")!;
     slime.stats = { ...slime.stats, agility: heroAgility(project) };
     // 0.55: 기본 50% 에서는 실패, +10%p(60%) 에서는 성공.
@@ -39,9 +41,9 @@ describe("mg-l2-bflow #34 도주 실패 가산", () => {
     expect(runtime.snapshot().result).toBe("escape");
   });
 
-  it("escapeBonusPercent 0 이면 가산이 없어 같은 값으로 계속 실패한다", () => {
+  it("escapeBonusPercent 가 없는 옛 프로젝트는 가산이 없어 같은 값으로 계속 실패한다", () => {
     const project = battleProject();
-    project.system.escapeBonusPercent = 0;
+    expect(project.system.escapeBonusPercent).toBeUndefined();
     const slime = project.database.enemies.find((record) => record.id === "enemy_slime")!;
     slime.stats = { ...slime.stats, agility: heroAgility(project) };
     const runtime = createBattleRuntime({ project, troopId: "troop_slime", canEscape: true, canLose: true, battleFlow: "strict", rng: () => 0.55 });
@@ -52,8 +54,9 @@ describe("mg-l2-bflow #34 도주 실패 가산", () => {
     expect(runtime.snapshot().failedEscapeAttempts).toBe(3);
   });
 
-  it("시스템 정규화는 기본값 10 을 저장하지 않고 다른 값은 0~100 으로 자른다", () => {
-    expect(normalizeSystemRecords({ startActorIds: [], escapeBonusPercent: 10 }).escapeBonusPercent).toBeUndefined();
+  it("시스템 정규화는 기본값 0 을 저장하지 않고 다른 값은 0~100 으로 자른다", () => {
+    expect(normalizeSystemRecords({ startActorIds: [], escapeBonusPercent: 0 }).escapeBonusPercent).toBeUndefined();
+    expect(normalizeSystemRecords({ startActorIds: [], escapeBonusPercent: 10 }).escapeBonusPercent).toBe(10);
     expect(normalizeSystemRecords({ startActorIds: [], escapeBonusPercent: 25 }).escapeBonusPercent).toBe(25);
     expect(normalizeSystemRecords({ startActorIds: [], escapeBonusPercent: 250 }).escapeBonusPercent).toBe(100);
     expect(normalizeSystemRecords({ startActorIds: [], battleFormationRoll: true }).battleFormationRoll).toBe(true);

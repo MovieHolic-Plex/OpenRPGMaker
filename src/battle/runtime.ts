@@ -190,7 +190,8 @@ export function autoReviveHp(maxHp: number, percent: number): number {
 }
 
 /** 도주 실패 1회당 가산 %p. 생략 = 10. */
-export const DEFAULT_ESCAPE_BONUS_PERCENT = 10;
+// 옵트인 — 필드가 없는 옛 프로젝트의 도주 확률은 그대로다(명작 공백 #34).
+export const DEFAULT_ESCAPE_BONUS_PERCENT = 0;
 
 /**
  * 도주 확률(0~1). 기존 민첩 식(상한 95%)에 실패 횟수 × 가산을 더한다. 실패 0회면 예전 값 그대로.
@@ -1399,7 +1400,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function attemptEscape(): void {
     if (!options.canEscape) return;
     // RM2K3 도주: 민첩성 기반 확률(파티 평균 vs 적 평균). 단순화해 절반 확률 + 우위 보정.
-    // 실패할 때마다 system.escapeBonusPercent(기본 10)%p 씩 쉬워진다.
+    // 실패할 때마다 system.escapeBonusPercent(생략 = 0, 가산 없음)%p 씩 쉬워진다.
     const actorAgi = average(activeActors().filter((a) => a.hp > 0).map((a) => a.agility));
     const enemyAgi = average(visibleEnemies().filter((e) => e.hp > 0).map((e) => e.agility));
     const chance = escapeChance(actorAgi, enemyAgi, failedEscapeAttempts, options.project.system.escapeBonusPercent);

@@ -1006,3 +1006,33 @@ Completed runtime timelines persist into bounded session reports accessible from
 - **화면 색 필터** Tint Screen(m2-046)에 `saturation 0~200 · grayscale 0~100 · sepia 0~100`(`project/eventCommands/screenFilter.ts`). 필드는 `.play-stage` 오버레이 backdrop-filter, 전투는 `.battle-field` filter.
   필드가 없는 옛 명령은 중립값(100/0/0)이라 예전과 같다. 세이브에 들어간다.
 - 테스트: `test/mgL5bvisRollingHp.test.ts`, `mgL5bvisBackdropMotion`, `mgL5bvisScreenFilter`.
+
+## 전투 개시 형태 · 동료 작전 · 패배 규칙 · 피해 전가 · 도주 가산 (명작 공백 #3 #11 #20 #33 #34 #36, 2026-09-27)
+
+모두 옵트인이다. 필드가 없는 옛 프로젝트의 전투 결과는 바뀌지 않는다.
+
+- **개시 형태(#3)** — `BattleStartFormation` = normal / preemptive / backAttack / pincer / surprise(`src/battle/battleFormation.ts`).
+  `battleProcessing.formation`으로 지정하거나, `system.battleFormationRoll`이 켜져 있으면 파티·적 민첩과 심볼 접촉 방향으로 굴린다. 끄면 항상 보통이다.
+  선제는 적 게이지가 0에서 출발하고, 백어택·협공은 아군 대열을 뒤집고 방어가 약해진다.
+- **동료 작전(#11)** — `ActorOptions.autoBattle`(배우 또는 직업)이면 명령 메뉴 없이 스스로 행동하고, `autoTactic`으로 성향을 고른다:
+  attackAll / healFirst(HP 70% 아래 회복) / conserveMp(MP 0 기술만) / followOrders. 생략하면 기존 균형 AI다.
+- **패배 규칙(#20)** — `StateRuntimeEffects.incapacitates`(석화처럼): 이 상태는 행동하지 않고, 아군 전원이 쓰러졌거나 이 상태면 패배다. 스캔은 `SkillEffect scan`(아래 #10 절).
+- **피해 전가(#33)** — `StateRuntimeEffects.damageToMpRate`: 받는 HP 피해의 이 비율을 MP로 먼저 갚는다(MP가 모자라면 나머지는 HP로).
+- **도주 가산(#34)** — `system.escapeBonusPercent`: 도주에 실패할 때마다 다음 확률에 %p를 더한다. **생략 = 0(가산 없음, 예전 식 그대로)**.
+  스냅샷의 `failedEscapeAttempts`가 전투 중 누적 횟수다.
+- **최후의 일격(#36)** — `EnemyReaction.trigger: "onDeath"`: 아군 타격으로 쓰러진 적이 전투당 한 번 `skillId`를 쓰고 쓰러진다. 아군이 전멸했으면 패배가 우선한다.
+
+검증: `test/mgL2Bflow{Formation,Tactics,Defeat,DamageToMp,Escape}.test.ts`, 화면은 `scripts/qa/runtime/masterpiece-battle.scenario.mjs`(선제 배너).
+
+## 리미트 · 기력 · 파티 게이지 · 감정 상성 · 장비 부여 (명작 공백 #7 #9 #16 #21 #23, 2026-09-27)
+
+- **리미트(#9)** — `system.limitGauge { enabled, label?, takenRate?, dealtGain? }`: 받은 피해의 최대 HP 대비 비율(×takenRate%)과 명중마다 dealtGain으로 찬다.
+  `SkillRecord.limitSkill`은 게이지가 가득일 때만 쓸 수 있고, 쓰면 비운다.
+- **두 번째 자원(#21)** — `system.resource2`(TP식, 피해로 찬다) + `SkillRecord.resource2Cost`.
+- **파티 게이지(#16)** — `system.partyGauge`(OMORI Energy식 공용 게이지) + `SkillRecord.partyGaugeCost`(추격 연계기).
+  세 게이지 모두 `battleGaugeHud`가 전투 HUD에 그린다(`data-testid` `battle-limit-*` / `battle-resource2-*` / `battle-party-gauge`).
+- **감정 상성(#23)** — `StateRecord.emotion { family, tier }`: 같은 family를 다시 걸면 tier가 오른다. `system.emotionCycle [{attackerFamily, targetFamily, multiplier}]`이 피해 배율이다.
+- **장비 부여(#7)** — `EquipmentRecord.grantsSkillIds` / `grantsCommand`: 장착 중에만 스킬·명령이 전투 메뉴와 자동 전투에 뜬다.
+  `effectFlags.halfMpCost`를 MP 계산이 실제로 소비하고, `ItemUpgradeRule.target: "equipment"`는 끼운 장비를 그 자리에서 강화한다.
+
+검증: `test/mgL3{BattleGauges,BattleGaugeHud,BattleEmotion,BattleResourceEditor,EquipmentGrants}.test.ts`, 화면은 `masterpiece-battle`(게이지 비트).
