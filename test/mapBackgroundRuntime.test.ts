@@ -6,6 +6,7 @@ import { MAP_BACKGROUND_LAYER_DEPTH, MAP_LOWER_LAYER_DEPTH } from "@/player/char
 import {
   BACKGROUND_FRAMES_PER_SECOND,
   advanceMapBackgroundScroll,
+  mapBackgroundLayerOffset,
   mapBackgroundLayout,
   mapBackgroundTextureKey,
   syncMapBackgroundLayers,
@@ -108,7 +109,15 @@ function createSprite(key: string): StubSprite {
 }
 
 function createScene(options: {
-  background?: { imageId: string; scrollX?: number; scrollY?: number; loopX?: boolean; loopY?: boolean };
+  background?: {
+    imageId: string;
+    scrollX?: number;
+    scrollY?: number;
+    loopX?: boolean;
+    loopY?: boolean;
+    cameraFollow?: number;
+    layers?: Array<{ imageId: string; scrollX?: number; cameraFollow?: number }>;
+  };
   /** 이벤트 명령 「먼 배경 변경」 이 세션에 남긴 기록. */
   override?: { mapId: string; value: string };
   loadedTextures?: readonly string[];
@@ -120,7 +129,11 @@ function createScene(options: {
   const queued: Array<{ key: string; url: string }> = [];
   const handlers = new Map<string, () => void>();
   const sprites: StubSprite[] = [];
-  const camera = { width: 320, height: 240, zoom: options.zoom ?? 1 };
+  const camera: { width: number; height: number; zoom: number; scrollX?: number; scrollY?: number } = {
+    width: 320,
+    height: 240,
+    zoom: options.zoom ?? 1,
+  };
   /** 세션 스텁 — 명령이 살아 있는 중에 기록을 갈아끼울 수 있어야 한다. */
   const session: { m2Runtime?: unknown } = {};
   const setOverride = (override: { mapId: string; value: string } | null): void => {
@@ -403,6 +416,87 @@ describe("맵 배경 렌더", () => {
       updateMapBackground(stub.scene, 16);
       expect(stub.sprites).toHaveLength(1);
       expect(stub.sprite()?.texture.key).toBe(mapBackgroundTextureKey("easyrpg-backdrop-sky1"));
+    });
+  });
+});
+
+/**
+ * 층마다 다른 깊이(카메라 따라가기)와 이벤트 명령의 흐름 배율 — 회상 파노라마 연출(2026-09-27).
+ *
+ * 잠그는 것: 깊이 0 은 예전처럼 카메라를 보지 않는다, 깊이가 다른 두 층은 같은 카메라 이동에
+ * 다른 거리를 간다, 흐름 배율 명령은 전환 시간 동안 서서히 바뀐다, 다른 맵의 명령은 무시한다.
+ */
+describe("맵 배경 시차(깊이)와 흐름 배율", () => {
+  it("깊이 0 은 카메라를 무시하고, 깊이 값만큼 카메라 스크롤을 따라간다", () => {
+    expect(mapBackgroundLayerOffset(10, 500, 0)).toBe(10);
+    expect(mapBackgroundLayerOffset(10, 500, 0.5)).toBe(260);
+    expect(mapBackgroundLayerOffset(10, 500, 1)).toBe(510);
+    expect(mapBackgroundLayerOffset(10, Number.NaN, 1)).toBe(10);
+  });
+
+  it("같은 카메라 이동에 먼 층은 조금, 가까운 층은 많이 움직인다", async () => {
+    await withProject(() => {
+      const stub = createScene({
+        background: {
+          imageId: "easyrpg-backdrop-sky1",
+          layers: [
+            { imageId: "easyrpg-backdrop-dawn1", cameraFollow: 0.2 },
+            { imageId: "easyrpg-backdrop-sky1", cameraFollow: 0.8 },
+          ],
+        },
+        loadedTextures: [
+          mapBackgroundTextureKey("easyrpg-backdrop-sky1"),
+          mapBackgroundTextureKey("easyrpg-backdrop-dawn1"),
+        ],
+      });
+      // 맵에 들어온 순간의 카메라가 기준점이다 — 절대 좌표가 아니라 거기서 움직인 만큼만 민다.
+      const camera = stub.scene.cameras.main as unknown as { scrollX: number; scrollY: number };
+      camera.scrollX = 400;
+      camera.scrollY = 240;
+      syncMapBackgroundLayers(stub.scene);
+      expect(stub.sprites.map((sprite) => sprite.tilePositionX)).toEqual([0, 0, 0]);
+      camera.scrollX = 500;
+      updateMapBackground(stub.scene, 16);
+      expect(stub.sprites.map((sprite) => sprite.tilePositionX)).toEqual([0, 20, 80]);
+      expect(stub.sprites.map((sprite) => sprite.tilePositionY)).toEqual([0, 0, 0]);
+    });
+  });
+
+  it("흐름 배율 명령은 전환 시간 동안 저작 속도에서 목표까지 서서히 바뀐다", async () => {
+    await withProject(() => {
+      const stub = createScene({
+        background: { imageId: "easyrpg-backdrop-sky1", scrollX: 1 },
+        loadedTextures: [mapBackgroundTextureKey("easyrpg-backdrop-sky1")],
+      });
+      syncMapBackgroundLayers(stub.scene);
+      updateMapBackground(stub.scene, 1000);
+      expect(stub.sprite()!.tilePositionX).toBe(60);
+
+      const session = stub.scene.session as unknown as { m2Runtime?: unknown };
+      session.m2Runtime = { map: { parallax_flow: { mapId: "m1", x: 0, y: 0, value: "0|2000" } } };
+      updateMapBackground(stub.scene, 0);
+      updateMapBackground(stub.scene, 1000);
+      // 1초 지난 시점의 배율은 0.5 — 이 1초 동안 60 × 0.5 = 30px.
+      expect(stub.sprite()!.tilePositionX).toBeCloseTo(90);
+      updateMapBackground(stub.scene, 1000);
+      updateMapBackground(stub.scene, 1000);
+      // 전환이 끝나면 멈춘다.
+      expect(stub.sprite()!.tilePositionX).toBeCloseTo(90);
+      expect(stub.scene.mapBackgroundFlow?.current).toBe(0);
+    });
+  });
+
+  it("다른 맵에 적힌 흐름 배율 명령은 이 맵의 속도를 바꾸지 않는다", async () => {
+    await withProject(() => {
+      const stub = createScene({
+        background: { imageId: "easyrpg-backdrop-sky1", scrollX: 1 },
+        loadedTextures: [mapBackgroundTextureKey("easyrpg-backdrop-sky1")],
+      });
+      const session = stub.scene.session as unknown as { m2Runtime?: unknown };
+      session.m2Runtime = { map: { parallax_flow: { mapId: "map_other", x: 0, y: 0, value: "0|0" } } };
+      syncMapBackgroundLayers(stub.scene);
+      updateMapBackground(stub.scene, 1000);
+      expect(stub.sprite()!.tilePositionX).toBe(60);
     });
   });
 });

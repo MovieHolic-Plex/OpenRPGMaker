@@ -1,4 +1,5 @@
 import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
+import { MAP_BACKGROUND_FLOW_PERCENT_LIMIT } from "@/project/mapBackground";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import type { Command, FaceGraphic, M2CommandFields, M2CommandValue, MoveCommand, MoveRoute } from "@/project/types";
 import { CUTSCENE_END_LABEL } from "@/player/cutsceneControl";
@@ -11,6 +12,7 @@ export type CutsceneBeat =
   | CutsceneMusicBeat
   | CutsceneFadeBeat
   | CutsceneTintBeat
+  | CutsceneBackgroundBeat
   | CutsceneFlashBeat
   | CutsceneShakeBeat
   | CutsceneWaitBeat
@@ -96,6 +98,20 @@ export type CutsceneTintBeat = {
   readonly kind: "tint";
   readonly color?: string;
   readonly value?: string;
+  readonly durationMs?: number;
+  readonly wait?: boolean;
+};
+
+/**
+ * 먼 배경(파노라마) 비트 — 이벤트 명령 「먼 배경 변경」(m2-069)으로 컴파일된다.
+ * 회상·꿈 장면에서 구름을 서서히 멈추거나(flowPercent 0) 빠르게(200) 하고, imageId 를 주면 그림도 바꾼다.
+ * 비우면 그림은 그대로 두고 흐름만 바꾼다. 컷신이 끝나면(건너뛰어도) 마지막 흐름 상태가 즉시 다시 걸린다.
+ */
+export type CutsceneBackgroundBeat = {
+  readonly kind: "background";
+  readonly imageId?: string;
+  /** 0~400, 100 = 맵에 저작한 흐름 속도. 생략하면 100. */
+  readonly flowPercent?: number;
   readonly durationMs?: number;
   readonly wait?: boolean;
 };
@@ -219,6 +235,7 @@ type CompileState = {
   shownFace?: ShownFace;
   camera?: FinalCameraState;
   tint?: FinalTintState;
+  background?: { readonly resourceId: string; readonly flowPercent: number };
 };
 
 /**
@@ -357,6 +374,8 @@ function compileBeat(
       return compileFadeBeat(beat, options.forceNonBlocking);
     case "tint":
       return compileTintBeat(beat, state, options.forceNonBlocking);
+    case "background":
+      return compileBackgroundBeat(beat, state, options.forceNonBlocking);
     case "flash":
       return [m2Command("Flash Screen", { color: beat.color ?? "white", durationMs: durationMs(beat.durationMs, 300) })];
     case "shake":
@@ -590,6 +609,24 @@ function compileTintBeat(beat: CutsceneTintBeat, state: CompileState, forceNonBl
   return commands;
 }
 
+function backgroundFlowPercent(beat: CutsceneBackgroundBeat): number {
+  const value = Number(beat.flowPercent ?? 100);
+  return Number.isFinite(value) ? Math.min(MAP_BACKGROUND_FLOW_PERCENT_LIMIT, Math.max(0, Math.round(value))) : 100;
+}
+
+function compileBackgroundBeat(beat: CutsceneBackgroundBeat, state: CompileState, forceNonBlocking: boolean): Command[] {
+  const resourceId = (beat.imageId ?? "").trim();
+  const flowPercent = backgroundFlowPercent(beat);
+  const ms = durationMs(beat.durationMs, 0);
+  // 그림을 비운 비트는 앞 비트가 바꾼 그림을 이어받는다(정리 단계가 그 그림을 다시 건다).
+  state.background = { resourceId: resourceId || state.background?.resourceId || "", flowPercent };
+  const commands: Command[] = [
+    m2Command("Change Parallax Back", { resourceId, flowPercent, flowDurationMs: ms }),
+  ];
+  if (!forceNonBlocking && beat.wait === true && ms > 0) commands.push({ kind: "wait", ms });
+  return commands;
+}
+
 function compileParallelBeat(beat: CutsceneParallelBeat, state: CompileState): Command[] {
   const commands = compileBeats(beat.beats, state, { forceNonBlocking: true });
   const waitAllMovement = beat.beats.some(needsWaitAllMovement);
@@ -620,6 +657,7 @@ function parallelWaitMs(beat: CutsceneBeat): number {
   if (beat.kind === "camera" && beat.wait === true) return durationMs(beat.durationMs, 300);
   if (beat.kind === "fade" && beat.wait === true) return durationMs(beat.durationMs, 300);
   if (beat.kind === "tint" && beat.wait === true) return durationMs(beat.durationMs, 0);
+  if (beat.kind === "background" && beat.wait === true) return durationMs(beat.durationMs, 0);
   if (beat.kind === "wait") return waitBeatMs(beat);
   if (beat.kind === "parallel") return Math.max(0, ...beat.beats.map(parallelWaitMs));
   return 0;
@@ -637,6 +675,14 @@ function cleanupCommands(state: CompileState): Command[] {
   }
   if (state.tint) {
     commands.push(m2Command("Tint Screen", { color: state.tint.color ?? "neutral", value: state.tint.value ?? "", durationMs: 0 }));
+  }
+  if (state.background) {
+    // 건너뛰어도 끝 상태는 같아야 한다 — 전환 없이 마지막 흐름·그림을 다시 건다.
+    commands.push(m2Command("Change Parallax Back", {
+      resourceId: state.background.resourceId,
+      flowPercent: state.background.flowPercent,
+      flowDurationMs: 0,
+    }));
   }
   for (const picture of state.pictures.values()) {
     if (picture.erased) {
@@ -697,6 +743,12 @@ function validateFlowBeat(beat: CutsceneBeat, path: string, context: CutsceneVal
     if (typeof beat.mapId !== "string" || !beat.mapId) errors.push(`${path}.mapId: 옮길 맵 id 가 필요합니다.`);
     else if (context.mapIds && !context.mapIds.has(beat.mapId)) errors.push(`${path}.mapId: 존재하지 않는 맵 '${beat.mapId}'.`);
     if (typeof beat.x !== "number" || typeof beat.y !== "number") errors.push(`${path}: transfer 에는 도착 칸 x,y 가 필요합니다.`);
+  }
+  if (beat.kind === "background" && beat.flowPercent !== undefined) {
+    const value = Number(beat.flowPercent);
+    if (!Number.isFinite(value) || value < 0 || value > MAP_BACKGROUND_FLOW_PERCENT_LIMIT) {
+      errors.push(`${path}.flowPercent: 0~${MAP_BACKGROUND_FLOW_PERCENT_LIMIT} 사이여야 합니다(100 = 저작 속도, 0 = 멈춤).`);
+    }
   }
   if (beat.kind === "ending" && beat.endingId && context.endingIds && !context.endingIds.has(beat.endingId)) {
     errors.push(`${path}.endingId: 정의되지 않은 엔딩 '${beat.endingId}' — define_ending 으로 먼저 정의하세요.`);
@@ -816,6 +868,7 @@ const KNOWN_BEAT_KINDS: ReadonlySet<string> = new Set([
   "music",
   "fade",
   "tint",
+  "background",
   "flash",
   "shake",
   "wait",

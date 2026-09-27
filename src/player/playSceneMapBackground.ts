@@ -4,6 +4,7 @@ import { MAP_BACKGROUND_LAYER_DEPTH } from "@/player/characterDepth";
 import { ensureSceneImageTexture } from "@/player/playSceneImageTexture";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
+import { decodeMapBackgroundFlow } from "@/project/mapBackground";
 import type { MapBackgroundFit, MapBackgroundLayer } from "@/project/types";
 import { store } from "@/project/store";
 
@@ -13,8 +14,10 @@ import { store } from "@/project/store";
  * 계약:
  * 1. **하층 타일 아래**다({@link MAP_BACKGROUND_LAYER_DEPTH}). 비어 있는 칸이 뚫린 창이고,
  *    타일이 깔린 칸은 배경을 가린다 — 「절벽 뒤로 먼 풍경이 보인다」가 이 순서에서 나온다.
- * 2. **화면 고정**이다. 카메라를 따라 흐르지 않고 자기 속도로만 움직인다(RM2K3 배경에는
- *    「맵에 맞춰 스크롤」 플래그가 없다). 그래서 `scrollFactor 0`.
+ * 2. 스프라이트는 **화면 고정**(`scrollFactor 0`)이고, 카메라 반응은 층마다 `cameraFollow`
+ *    (깊이)로 따로 준다 — 0(기본) 이면 RM2K3 처럼 제자리, 1 이면 타일과 같이 움직인다. 층마다
+ *    값이 다르면 시차(패럴랙스) 스크롤이다. 카메라 추적은 Phaser 가 `preRender` 에서 스크롤을
+ *    확정하므로 `followupdate` 에서 한 번 더 맞춘다 — `update` 값만 쓰면 한 프레임 늦어 떨린다.
  * 3. 스크롤 속도 단위는 **논리 프레임당 px** 다 — 60Hz 기준이라 `scrollX 2` 는 초당 120px.
  *    RM 계열은 서브픽셀 단위(1/8px/프레임)라 그 숫자를 그대로 옮기면 8배 빠르다
  *    (`@/project/mapBackground` 주석).
@@ -41,8 +44,10 @@ export type MapBackgroundLayerSpec = {
   readonly loopY: boolean;
   /** 0..1. 지금은 항상 1(다층 저작이 붙으면 여기로 들어온다). */
   readonly opacity: number;
-  /** 스크롤 속도 배율(깊이감). 지금은 항상 1. */
+  /** 스크롤 속도 배율. 지금은 항상 1(흐름 배율은 이벤트 명령이 장면 단위로 건다). */
   readonly parallax: number;
+  /** 카메라 따라가기 비율(깊이). 0 = 화면 고정, 1 = 타일과 같이. */
+  readonly cameraFollow: number;
   /** 그림 맞추기. native = 1:1, cover = 뷰포트를 덮도록 확대. */
   readonly fit: MapBackgroundFit;
 };
@@ -144,6 +149,7 @@ export function resolveMapBackgroundLayers(
     loopY: background?.loopY !== false,
     opacity: 1,
     parallax: 1,
+    cameraFollow: background?.cameraFollow ?? 0,
     fit: background?.fit ?? "native",
   };
   // 추가 레이어(앞이 아래). 명령의 「먼 배경 변경」이 첫 장을 대체할 뿐 추가 레이어는 그대로 유지한다 —
@@ -161,6 +167,7 @@ function layerSpecFromAuthoring(layer: MapBackgroundLayer): MapBackgroundLayerSp
     loopY: layer.loopY !== false,
     opacity: 1,
     parallax: 1,
+    cameraFollow: layer.cameraFollow ?? 0,
     fit: layer.fit ?? "native",
   };
 }
@@ -175,6 +182,12 @@ export function mapBackgroundSignature(specs: readonly MapBackgroundLayerSpec[])
  * 안 실렸으면 로드를 걸어 두었다가 완료되면 그때 붙인다. 배경 저작이 없으면 감춘다.
  */
 export function syncMapBackgroundLayers(scene: PlaySceneContext): void {
+  // 맵에 막 들어왔다 — 깊이의 기준점을 새로 잡는다(첫 배치에서 그때 카메라 위치로).
+  scene.mapBackgroundCameraAnchor = undefined;
+  syncMapBackgroundStack(scene);
+}
+
+function syncMapBackgroundStack(scene: PlaySceneContext): void {
   const specs = resolveMapBackgroundLayers(scene);
   const signature = mapBackgroundSignature(specs);
   if (specs.length === 0) {
@@ -235,26 +248,134 @@ export function updateMapBackground(scene: PlaySceneContext, deltaMs: number): v
   const specs = resolveMapBackgroundLayers(scene);
   const signature = mapBackgroundSignature(specs);
   if (signature !== scene.mapBackgroundAppliedSignature && signature !== scene.mapBackgroundPendingSignature) {
-    syncMapBackgroundLayers(scene);
+    // 명령으로 그림만 바뀐 것이다 — 기준점은 유지해야 층이 제자리에서 튀지 않는다.
+    syncMapBackgroundStack(scene);
   }
   const sprites = scene.mapBackgroundSprites;
   if (!sprites) return;
+  const flow = advanceMapBackgroundFlow(scene, deltaMs);
   const count = Math.min(sprites.length, specs.length);
   for (let index = 0; index < count; index += 1) {
     const sprite = sprites[index]!;
     const spec = specs[index]!;
     if (!sprite.visible) continue;
-    const layout = layoutMapBackground(scene, sprite, spec);
-    // 저작 스크롤 단위는 **논리 px/프레임** 이다. 타일이 scale 배로 그려지면 같은 화면 이동에
-    // 필요한 tilePosition 증가량이 1/scale 이 되므로, 논리 px 로 환산해 진행하고 되돌려 쓴다.
-    const scaleX = sprite.tileScaleX || 1;
-    const scaleY = sprite.tileScaleY || 1;
-    const logicalX = advanceMapBackgroundScroll(sprite.tilePositionX * scaleX, spec.scrollX * spec.parallax, deltaMs);
-    const logicalY = advanceMapBackgroundScroll(sprite.tilePositionY * scaleY, spec.scrollY * spec.parallax, deltaMs);
-    sprite.tilePositionX = mapBackgroundTilePosition(logicalX, scaleX);
-    sprite.tilePositionY = mapBackgroundTilePosition(logicalY, scaleY);
-    applyAxisScroll(sprite, layout, spec);
+    // 자동 흐름은 따로 누적한다 — tilePosition 에는 카메라 몫이 섞여 있어 거기서 이어 가면
+    // 카메라 이동이 매 프레임 다시 더해진다.
+    const offset = autoOffsetOf(sprite);
+    offset.x = advanceMapBackgroundScroll(offset.x, spec.scrollX * spec.parallax * flow, deltaMs);
+    offset.y = advanceMapBackgroundScroll(offset.y, spec.scrollY * spec.parallax * flow, deltaMs);
+    placeMapBackgroundLayer(scene, sprite, spec);
   }
+}
+
+/**
+ * 층 하나의 최종 위치 = 자동 흐름 + 카메라 스크롤 × 깊이. 단위는 **논리 px** 다 — 타일이 scale
+ * 배로 그려지면 같은 화면 이동에 필요한 tilePosition 은 1/scale 이므로 환산해 쓴다.
+ *
+ * 카메라 몫이 왜 월드 px 그대로인가: 화면 고정 객체도 카메라 줌만큼 확대돼 그려진다. 월드 1px 은
+ * 화면에서 zoom px 이고 배경 1px 도 화면에서 zoom px 이라, 깊이 1 이면 타일과 정확히 같이 간다.
+ *
+ * 카메라 몫은 **맵에 들어온 순간의 카메라 위치 기준**이다. 절대 스크롤을 쓰면 들어오는 자리에
+ * 따라 그림이 달라진다 — 실측(2026-09-27): 30행 맵 바닥에서 시작하면 scrollY 240 × 깊이만큼 모든
+ * 층이 위로 밀려 산과 호수가 화면 위로 달아나고 하늘 아랫단만 남았다. 기준점을 두면 도착 화면은
+ * 저작한 그림 그대로이고, 거기서 움직인 만큼만 층마다 다르게 밀린다.
+ */
+function placeMapBackgroundLayer(
+  scene: PlaySceneContext,
+  sprite: Phaser.GameObjects.TileSprite,
+  spec: MapBackgroundLayerSpec,
+): void {
+  const layout = layoutMapBackground(scene, sprite, spec);
+  const offset = autoOffsetOf(sprite);
+  const camera = scene.cameras.main;
+  if (!scene.mapBackgroundCameraAnchor && Number.isFinite(camera.scrollX) && Number.isFinite(camera.scrollY)) {
+    scene.mapBackgroundCameraAnchor = { x: camera.scrollX, y: camera.scrollY };
+  }
+  const anchor = scene.mapBackgroundCameraAnchor;
+  const logicalX = mapBackgroundLayerOffset(offset.x, camera.scrollX - (anchor?.x ?? Number.NaN), spec.cameraFollow);
+  const logicalY = mapBackgroundLayerOffset(offset.y, camera.scrollY - (anchor?.y ?? Number.NaN), spec.cameraFollow);
+  sprite.tilePositionX = mapBackgroundTilePosition(logicalX, sprite.tileScaleX || 1);
+  sprite.tilePositionY = mapBackgroundTilePosition(logicalY, sprite.tileScaleY || 1);
+  applyAxisScroll(sprite, layout, spec);
+}
+
+/** 자동 흐름 누적 + 카메라 스크롤 × 깊이. 깊이 0 이면 카메라를 전혀 보지 않는다(RM2K3 동작). */
+export function mapBackgroundLayerOffset(autoOffset: number, cameraScroll: number, cameraFollow: number): number {
+  if (!Number.isFinite(cameraFollow) || cameraFollow === 0 || !Number.isFinite(cameraScroll)) return autoOffset;
+  return autoOffset + cameraScroll * cameraFollow;
+}
+
+/** 스프라이트별 자동 흐름 누적(논리 px). 스프라이트는 맵을 오가며 재사용되므로 스프라이트에 묶는다. */
+const autoOffsets = new WeakMap<Phaser.GameObjects.TileSprite, { x: number; y: number }>();
+
+function autoOffsetOf(sprite: Phaser.GameObjects.TileSprite): { x: number; y: number } {
+  let offset = autoOffsets.get(sprite);
+  if (!offset) {
+    offset = { x: 0, y: 0 };
+    autoOffsets.set(sprite, offset);
+  }
+  return offset;
+}
+
+/**
+ * 이벤트 명령 「먼 배경 변경」 의 흐름 배율(1 = 저작 속도). 명령이 바뀌면 지금 배율에서 목표까지
+ * 전환 시간 동안 선형으로 옮긴다 — 「회상이 시작되자 구름이 서서히 멈춘다」.
+ *
+ * 명령은 **그 맵에 대해** 적힌다(`parallax_override` 와 같은 규칙). 다른 맵이면 저작 속도 그대로다.
+ * 장면에 아직 상태가 없으면(맵을 막 실었다·세이브를 불러왔다) 전환 없이 목표로 바로 간다.
+ */
+function advanceMapBackgroundFlow(scene: PlaySceneContext, deltaMs: number): number {
+  const record = scene.session?.m2Runtime?.map?.["parallax_flow"];
+  const recordMapId = (record?.mapId ?? "").trim();
+  const applies = record !== undefined && (recordMapId === "" || recordMapId === scene.map?.id);
+  const command = applies ? decodeMapBackgroundFlow(record.value) : undefined;
+  const target = command ? command.percent / 100 : 1;
+  const key = applies ? `${recordMapId}|${record.value}` : "";
+  const state = scene.mapBackgroundFlow;
+  if (!state) {
+    scene.mapBackgroundFlow = { key, from: target, target, current: target, elapsedMs: 0, durationMs: 0 };
+    return target;
+  }
+  if (state.key !== key) {
+    scene.mapBackgroundFlow = {
+      key,
+      from: state.current,
+      target,
+      current: command?.durationMs ? state.current : target,
+      elapsedMs: 0,
+      durationMs: command?.durationMs ?? 0,
+    };
+    return scene.mapBackgroundFlow.current;
+  }
+  if (state.current !== state.target) {
+    state.elapsedMs += Math.max(0, deltaMs);
+    const t = state.durationMs > 0 ? Math.min(1, state.elapsedMs / state.durationMs) : 1;
+    state.current = state.from + (state.target - state.from) * t;
+  }
+  return state.current;
+}
+
+/** 카메라 추적이 확정된 뒤(`followupdate`) 층 위치를 다시 맞춘다. 흐름은 진행하지 않는다. */
+function realignMapBackgroundToCamera(scene: PlaySceneContext): void {
+  const sprites = scene.mapBackgroundSprites;
+  if (!sprites) return;
+  const specs = resolveMapBackgroundLayers(scene);
+  const count = Math.min(sprites.length, specs.length);
+  for (let index = 0; index < count; index += 1) {
+    const sprite = sprites[index]!;
+    const spec = specs[index]!;
+    if (!sprite.visible || spec.cameraFollow === 0) continue;
+    placeMapBackgroundLayer(scene, sprite, spec);
+  }
+}
+
+const followListenerScenes = new WeakSet<object>();
+
+function ensureCameraFollowListener(scene: PlaySceneContext): void {
+  const camera = scene.cameras?.main as (Phaser.Cameras.Scene2D.Camera & { on?: unknown }) | undefined;
+  if (!camera || typeof camera.on !== "function" || followListenerScenes.has(camera)) return;
+  followListenerScenes.add(camera);
+  camera.on("followupdate", () => realignMapBackgroundToCamera(scene));
 }
 
 function applyMapBackgroundSpecs(
@@ -271,11 +392,12 @@ function applyMapBackgroundSpecs(
       sprite = scene.add.tileSprite(0, 0, PLAY_RESOLUTION.width, PLAY_RESOLUTION.height, textureKey);
       sprite.setOrigin(0, 0);
       sprite.setScrollFactor(0);
-    } else if (sprite.texture.key !== textureKey) {
+    } else if (displayTextureKey(sprite) !== textureKey) {
       // 다른 그림이 들어오면 스크롤 위상도 처음부터다 — 이전 배경의 오프셋을 물려받으면 맵을
       // 다시 실을 때마다 화면이 달라진다.
       sprite.setTexture(textureKey);
       sprite.setTilePosition(0, 0);
+      autoOffsets.delete(sprite);
     }
     // depth 는 목록 순서를 따른다(앞이 아래). 같은 depth 를 쓰면 그리는 순서가 삽입 순서에 맡겨진다.
     sprite.setDepth(MAP_BACKGROUND_LAYER_DEPTH + index);
@@ -288,6 +410,7 @@ function applyMapBackgroundSpecs(
   for (const leftover of previous.slice(specs.length)) leftover.setVisible(false);
   scene.mapBackgroundSprites = sprites;
   scene.mapBackgroundAppliedSignature = signature;
+  ensureCameraFollowListener(scene);
   layoutMapBackgroundStack(scene, specs);
 }
 
@@ -302,7 +425,7 @@ function layoutMapBackgroundStack(scene: PlaySceneContext, specs: readonly MapBa
     const sprite = sprites[index]!;
     if (!sprite.visible) continue;
     const spec = specs[index]!;
-    applyAxisScroll(sprite, layoutMapBackground(scene, sprite, spec), spec);
+    placeMapBackgroundLayer(scene, sprite, spec);
   }
 }
 
@@ -365,7 +488,7 @@ function sourceSizeOf(
   scene: PlaySceneContext,
   sprite: Phaser.GameObjects.TileSprite,
 ): { readonly width: number; readonly height: number } {
-  const source = scene.textures.get(sprite.texture.key).getSourceImage() as {
+  const source = scene.textures.get(displayTextureKey(sprite)).getSourceImage() as {
     readonly width?: number;
     readonly naturalWidth?: number;
     readonly height?: number;
@@ -375,4 +498,17 @@ function sourceSizeOf(
     width: Math.max(1, Number(source.naturalWidth ?? source.width ?? 0)),
     height: Math.max(1, Number(source.naturalHeight ?? source.height ?? 0)),
   };
+}
+
+/**
+ * 스프라이트가 **보여 주는** 그림의 키. Phaser 3.60+ 의 TileSprite 는 `texture` 가 자기 채움 캔버스
+ * (이름이 uuid, 크기가 스프라이트 크기)이고 원본 그림은 `displayTexture` 에 있다.
+ *
+ * 실측(2026-09-27, Phaser 3.90): `texture.key` 로 원본 크기를 읽으면 늘 320×240 이 나와 cover 배율이
+ * 항상 1 이었다 — 1920×1080 레이어 아트가 좌상단 구석만 확대돼 보였고, 산·지면은 화면에 오지 않았다.
+ * 같은 이유로 「다른 그림이 들어왔나」 비교도 매번 참이 되어 맵을 다시 실을 때마다 흐름 위상이 0 으로 돌아갔다.
+ */
+function displayTextureKey(sprite: Phaser.GameObjects.TileSprite): string {
+  const display = (sprite as { displayTexture?: { key?: string } | null }).displayTexture;
+  return display?.key ?? sprite.texture.key;
 }

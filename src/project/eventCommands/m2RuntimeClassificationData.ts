@@ -174,6 +174,9 @@ export const M2_MAP_COMMON_FULL_IDS = [
   "m2-201-camera-control",
   "m2-203-spawn-event",
   "m2-204-remove-event",
+  // 2026-09-27: 먼 배경 그림 교체 + 흐름 배율 전환이 출하 플레이어에서 그려진다
+  // (test/mapBackgroundRuntime.test.ts, scripts/qa/runtime/map-parallax.capture.mjs). 전투 이벤트에는 맵 배경이 없다.
+  "m2-069-change-parallax-back",
 ] as const;
 
 export const M2_TROOP_FULL_IDS = [

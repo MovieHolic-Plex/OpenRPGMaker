@@ -3696,7 +3696,7 @@ const scriptCutscene: ToolDefinition = {
     "회상/플래시백, 오프닝, 엔딩, 시네마틱, '플레이어가 아무것도 못 하는 장면' 요청은 모두 이 툴이다. " +
     "잠금/해제와 스킵 라벨은 컴파일러가 자동으로 감싸므로 upsert_event 로 수동 조립하지 말 것. beat 종류: " +
     "say{speaker,face,text|lines}, moveActor{target:'player'|eventId,moves:[{kind:'move',dir:'up'},{kind:'turn',dir:'left'}],wait}, camera{mode:'pan|follow|fixed|return',target|x,y,durationMs,wait,zoom}, " +
-    "picture{action:'show|move|erase',pictureId,resourceId,x,y,durationMs,wait}, music{action:'bgm|se|fade|stop',resourceId}, fade{direction:'in|out',durationMs,wait}, tint{color|value,durationMs,wait}, flash, shake, wait{ms}, parallel{beats}, label, jump, " +
+    "picture{action:'show|move|erase',pictureId,resourceId,x,y,durationMs,wait}, music{action:'bgm|se|fade|stop',resourceId}, fade{direction:'in|out',durationMs,wait}, tint{color|value(sepia·#rrggbb·'r,g,b,알파'),durationMs,wait}, background{flowPercent,imageId?,durationMs,wait}(먼 배경 흐름 — 회상 진입에 flowPercent:0 으로 구름이 서서히 멈춘다. 배경 자체는 set_map_properties.background.layerSet), flash, shake, wait{ms}, parallel{beats}, label, jump, " +
     "진행 비트 switch{switchId|key,value} · transfer{mapId,x,y,facing,fade} · ending{endingId} — 기억/장면 진입·다음 장면으로 넘어가는 문·엔딩 컷신도 이 툴 하나로 쓴다(Esc 건너뛰기로도 스위치·이동·엔딩은 빠지지 않는다). " +
     "맵에 들어오면 한 번 재생: trigger:'auto', once:true. 조건이 모이면 재생(메멘토 3개 등): trigger:'auto', requiresSwitches:[…], once:true. " +
     "예: {mapId:'map1',eventId:'ev_memory',skippable:true,beats:[{kind:'camera',mode:'pan',x:8,y:6,durationMs:600},{kind:'say',speaker:'나',text:'그날을 기억한다.'},{kind:'camera',mode:'return'}]}",

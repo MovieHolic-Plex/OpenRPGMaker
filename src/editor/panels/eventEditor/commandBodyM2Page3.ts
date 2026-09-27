@@ -4,6 +4,7 @@ import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
 import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResourcePickerDialog";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { tintDurationMs } from "@/project/eventCommands/tintDuration";
+import { MAP_BACKGROUND_FLOW_PERCENT_LIMIT } from "@/project/mapBackground";
 import { store } from "@/project/store";
 import { tilesetKind, TILESET_KIND_LABELS } from "@/project/tilesetKind";
 import type { Command, M2CommandValue } from "@/project/types";
@@ -1514,6 +1515,21 @@ function changeParallaxBackBody(context: CommandEditContext, cmd: M2Command): HT
     },
   });
   const preview = previewPanel("change-parallax-back-preview");
+  // 흐름 배율(회상 연출): 100 = 저작 속도, 0 = 멈춤. 필드가 없는 예전 명령은 100 으로 보인다.
+  const flowInput = el("input", {
+    attrs: { type: "number", min: "0", max: String(MAP_BACKGROUND_FLOW_PERCENT_LIMIT), step: "5", "aria-label": "흐름 배율(%)" },
+    value: String(Number(cmd.fields.flowPercent ?? 100) || 0),
+    dataset: { testid: "change-parallax-back-flow-input" },
+  }) as HTMLInputElement;
+  const flowDurationInput = el("input", {
+    attrs: { type: "number", min: "0", step: "100", "aria-label": "전환 시간(ms)" },
+    value: String(Number(cmd.fields.flowDurationMs ?? 0) || 0),
+    dataset: { testid: "change-parallax-back-flow-duration-input" },
+  }) as HTMLInputElement;
+  const readFlow = () => ({
+    flowPercent: Math.min(MAP_BACKGROUND_FLOW_PERCENT_LIMIT, Math.max(0, Math.round(Number(flowInput.value) || 0))),
+    flowDurationMs: Math.max(0, Math.trunc(Number(flowDurationInput.value) || 0)),
+  });
 
   const commit = () => {
     resourceId = resourceSelect.value.trim();
@@ -1522,6 +1538,7 @@ function changeParallaxBackBody(context: CommandEditContext, cmd: M2Command): HT
       operation: "set",
       value: resourceId,
       resourceId,
+      ...readFlow(),
     });
     renderPreview();
   };
@@ -1565,14 +1582,18 @@ function changeParallaxBackBody(context: CommandEditContext, cmd: M2Command): HT
         })
       );
     }
+    const flow = readFlow();
     preview.replaceChildren(
       panel,
-      line(`먼 배경 → ${resourceId ? name : "(선택 없음)"}`),
-      note("맵 원경(parallax) 이미지를 교체합니다.")
+      line(`먼 배경 → ${resourceId ? name : "(지금 그림 유지)"}`),
+      line(`흐름 ${flow.flowPercent}%${flow.flowDurationMs > 0 ? ` · ${flow.flowDurationMs}ms 동안 서서히` : ""}`),
+      note("그림을 비워 두면 흐름 속도만 바꿉니다. 0% 는 멈춤, 100% 는 맵에 저작한 속도입니다.")
     );
   };
 
   resourceSelect.addEventListener("change", commit);
+  flowInput.addEventListener("change", commit);
+  flowDurationInput.addEventListener("change", commit);
   renderPreview();
   wrap.append(
     intentCard("먼 배경 변경", "맵 뒤에 깔리는 먼 풍경을 바꿉니다.", "change-parallax-back-intent"),
@@ -1581,6 +1602,13 @@ function changeParallaxBackBody(context: CommandEditContext, cmd: M2Command): HT
         fieldBlock(
           "먼 배경",
           el("div", { class: "actor-m2-inline", children: [resourceSelect, pickBtn] })
+        ),
+        fieldBlock(
+          "흐름 배율(%)",
+          el("div", {
+            class: "actor-m2-inline",
+            children: [flowInput, el("span", { text: "전환(ms)" }), flowDurationInput],
+          })
         ),
         fieldBlock(
           "AI로 만들기",

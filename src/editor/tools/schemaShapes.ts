@@ -175,7 +175,7 @@ export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
     kind: {
       type: "string",
       // text·narrate 는 say 의 별칭 — 받아서 say 로 옮긴다(이벤트 명령 모양 {kind:"text",body} 가 enum 에서 통째로 튕기던 문제).
-      enum: ["say", "moveActor", "camera", "picture", "music", "fade", "tint", "flash", "shake", "wait", "parallel", "label", "jump", "switch", "transfer", "ending", "text", "narrate"],
+      enum: ["say", "moveActor", "camera", "picture", "music", "fade", "tint", "background", "flash", "shake", "wait", "parallel", "label", "jump", "switch", "transfer", "ending", "text", "narrate"],
     },
     // 진행 비트: switch{switchId|key,value} · transfer{mapId,x,y,facing,fade} · ending{endingId}
     switchId: { type: "string", description: "switch 비트: 켤 전역 스위치 id" },
@@ -217,6 +217,14 @@ export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
     },
     offsetX: { type: "integer" },
     offsetY: { type: "integer" },
+    // 먼 배경(파노라마) 비트 — 회상·꿈에서 구름을 서서히 멈추기. 맵 배경 저작은 set_map_properties.background.
+    flowPercent: {
+      type: "number",
+      minimum: 0,
+      maximum: 400,
+      description: "background 비트 전용: 배경 흐름 배율 %(100=맵에 저작한 속도, 0=멈춤). durationMs 동안 서서히 바뀐다.",
+    },
+    imageId: { type: "string", description: "background 비트 전용: 첫 장 배경 그림을 이것으로 바꾼다(생략하면 그림 유지)." },
   },
   required: ["kind"],
   additionalProperties: true,

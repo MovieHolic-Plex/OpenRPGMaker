@@ -363,3 +363,48 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
   프레임당 2.0~2.1px — 저작 scrollX 는 2px/프레임이고 Phaser TimeStep 이 61~63 프레임을 돈다),
   배율 0.5 가장자리 검은 비율 0, 그리고 `map.background` 없이 명령만으로도 하늘이 뜬다
   (`verify-shots/runtime-qa/map-background-command/`).
+
+## 맵 배경 깊이(카메라 따라가기)·흐름 배율 — 회상 파노라마 (2026-09-27)
+
+- **층마다 `cameraFollow`(0..2, 생략=0)가 생겼다** — `map.background.cameraFollow`, `layers[].cameraFollow`.
+  0 은 예전 그대로 화면 고정(RM2K3), 1 은 타일과 같이, 1 초과는 타일보다 빨리 지나가는 전경. 층마다 다르게 주면
+  시차(패럴랙스) 스크롤이다. 정규화·상한은 `src/project/mapBackground.ts`, 편집기 입력(%)은 `mapProps.renderBackgroundTab`,
+  AI 스키마는 `mapTools.backgroundSchema` — 셋이 같은 상수를 본다.
+- **카메라 몫은 맵에 들어온 순간의 카메라 위치 기준이다**(`scene.mapBackgroundCameraAnchor`, `syncMapBackgroundLayers` 가
+  loadMap 때 지운다). 절대 스크롤이면 들어오는 자리에 따라 그림이 달라진다 — 실측: 30행 맵 바닥에서 시작하면 scrollY 240 × 깊이만큼
+  모든 층이 위로 밀려 산·호수가 화면 밖으로 나갔다. 「먼 배경 변경」 으로 그림만 바뀌면 기준점은 유지한다(층이 튀지 않게).
+- **카메라 추적은 Phaser `preRender` 에서 확정된다** — `update` 에서 읽은 scrollX 는 한 프레임 늦다. 그래서 카메라 `followupdate`
+  에서 깊이 있는 층을 한 번 더 맞춘다(`realignMapBackgroundToCamera`). 자동 흐름 누적은 tilePosition 이 아니라 스프라이트별
+  WeakMap 에 둔다 — tilePosition 에는 카메라 몫이 섞여 있다.
+- **레이어 세트를 고르면 기본 깊이가 들어간다**(`defaultLayerCameraFollow`: 하늘 0 → 맨 앞 0.7, 0.05 눈금). 1 을 주지 않는
+  이유: 세트의 맨 앞 층도 타일 뒤 풍경이라 1 이면 벽지처럼 붙어 움직인다.
+- **명령 「먼 배경 변경」(m2-069)에 `flowPercent`(0..400, 100=저작 속도)·`flowDurationMs` 가 생겼다.** 세션 기록은
+  `m2Runtime.map.parallax_flow`(값 `"<percent>|<ms>"`, 그 맵 한정 — `parallax_override` 와 같은 규칙). 렌더러가 지금 배율에서
+  목표까지 선형 전환한다(`scene.mapBackgroundFlow`). 흐름 필드가 있는 명령에서 그림을 비우면 **그림 유지**(속도만 바꾸기),
+  흐름 필드가 없는 예전 명령은 예전 그대로 빈 그림 = 저작 그림으로 복귀. 흐름은 자동 흐름(scrollX/Y)에만 걸리고 깊이에는 안 걸린다.
+- **고친 기존 결함: `fit:"cover"` 가 플레이에서 한 번도 적용되지 않았다.** Phaser 3.60+ TileSprite 는 `texture` 가 자기 채움
+  캔버스(키 uuid, 스프라이트 크기 320×240)이고 원본은 `displayTexture` 다. `texture.key` 로 원본 크기를 읽어 cover 배율이
+  늘 1 이었다(1920×1080 아트의 좌상단만 확대되어 보임). 같은 이유로 「그림이 바뀌었나」 비교가 늘 참이라 맵을 다시 실을 때마다
+  흐름 위상이 0 이 됐다. `displayTextureKey()` 로 고쳤다. 단위 테스트 스텁은 `texture.key` 만 있어 이 결함을 못 잡는다.
+- **알아 둘 것:** 기존 `map-background` 시나리오 픽스처는 빈 칸(-1)으로 하늘 띠를 만든다 — RM2K 창 규칙(2026-09-22) 이후로는
+  그 띠가 검게 가려져 배경을 증명하지 못한다(게이트는 샷 비교를 안 해서 통과한다). 창 타일(#233)로 바꿔야 한다.
+  CraftPix 세트 이름도 그림과 어긋난다: `oga-craftpix-cliffs`(bg3)는 밤 소나무 숲, `oga-craftpix-pines`(bg2)는 낮 산이다.
+- **조수 경로(같은 날, 두 번째 PR 단계).** 조수가 이 기능을 스스로 찾아 쓰도록 도구 계층을 이었다.
+  - `set_map_properties.background.layerSet`(+`cloudDrift`) 한 칸이 세트를 편다 — 순서·`fit:"cover"`·층별 기본 깊이.
+    편집기 「레이어 세트」 도 같은 `mapBackgroundFromLayerSet` 를 쓴다(예전 편집기 적용은 cover 를 안 넣었다).
+    예전 스키마는 `fit` 이 없는데 `additionalProperties:false` 라 조수는 cover 를 줄 방법이 없었다.
+  - `background.showInEmptyCells`(맵 저작값, 기본 false) — 빈 칸에서도 배경을 비춘다. 창 타일(#233·#258)은 **합본 마을
+    칩셋에만** 있어서 숲마을·기후 시트 맵은 이것 없이는 배경을 보일 길이 없다. 렌더 판정은 `renderEmptyCellCover`.
+  - `set_map_properties.clearForBackground{x,y,width,height}` 가 사각형의 모든 타일 층을 비운다(하늘 자리).
+  - 배경을 설정했는데 비칠 칸이 0 이면 `diff.warnings` 로 알린다(`backgroundVisibleCells` — 렌더러와 같은 판정).
+  - `script_cutscene` 에 `background{flowPercent,imageId?,durationMs,wait}` 비트 → m2-069. 컷신 끝(건너뛰기 착지 뒤)에서
+    마지막 흐름·그림을 전환 없이 다시 건다(색조 비트와 같은 규칙).
+  - 세트 표시 이름을 그림에 맞췄다(id 는 그대로): pines=낮 산등성이, cliffs=밤 소나무 숲, ridge=폭포 계곡. 세트마다 `summary`
+    한 줄이 도구 스키마 설명에 들어간다 — 조수는 이름·요약만 보고 고른다.
+  - `find_tools` 가 「파노라마 배경」「먼 배경」「시차 스크롤」「회상 장면」「parallax」 로 두 도구를 찾는다(2026-09-27 실측).
+- **검증.** 단위: `test/mapBackgroundRuntime.test.ts`(깊이 기준점·층별 이동량·흐름 전환·다른 맵 무시),
+  `test/mapBackgroundAssistantTools.test.ts`(layerSet 펴기·fit·0칸 경고·없는 세트·컷신 background 비트·script_cutscene 경유),
+  `test/mapBackgroundRules.test.ts`(정규화·왕복·기본 깊이·흐름 인코딩). 출하 표면 GIF:
+  `npx tsx scripts/qa/runtime/map-parallax.capture.mjs` → `verify-shots/map-parallax/map-parallax.gif`
+  (구름 언덕 7장, 60×30 맵, 창 타일 하늘, 30칸의 밟는 이벤트가 세피아 색조 + 흐름 0%/2500ms).
+  `--project <조수가 만든 project.json>` 을 주면 그 프로젝트의 시작 칸에서 오른쪽으로 걸으며 찍는다.
