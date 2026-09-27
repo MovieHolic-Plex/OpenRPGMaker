@@ -534,6 +534,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     friendship: "friendship" in sessionState ? { ...(sessionState.friendship ?? {}) } : undefined,
     relationships: "relationships" in sessionState ? { ...(sessionState.relationships ?? {}) } : undefined,
   };
+  // 부위 손실(#8): 필드에서 이미 지니고 들어온 상태도 그 슬롯 보너스를 뺄다 — 전투 중 부여만 보면 영구 부상이 무기 보너스를 그대로 둔다.
+  if (!usePartyMonsters) {
+    for (const actor of actors) if (lostEquipSlots(actor).size > 0) refreshActorStats(actor);
+  }
   const battleEvents = createBattleEventRuntime({
     project: options.project,
     troopRecord,
