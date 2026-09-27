@@ -207,6 +207,11 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
       ? { atbSpeed: clampInteger(system.atbSpeed, 1, 8) }
       : {}),
     ...(system.battleBackdrop === "field" ? { battleBackdrop: "field" as const } : {}),
+    // 롤링 HP 미터(마더식). 기본(끔)과 기본 속도는 저장하지 않는다 — 화이트리스트라 여기 없으면 왕복 1회에 사라진다.
+    ...(system.battleRollingHp === true ? { battleRollingHp: true } : {}),
+    ...(typeof system.battleRollingHpPerSecond === "number" && Number.isFinite(system.battleRollingHpPerSecond)
+      ? { battleRollingHpPerSecond: clampInteger(system.battleRollingHpPerSecond, 1, 999) }
+      : {}),
     ...(system.battlePresentation === "onField" ? { battlePresentation: "onField" as const } : {}),
     ...(system.battleCommandCss?.trim() ? { battleCommandCss: system.battleCommandCss } : {}),
     // 기본 스킨(DEFAULT_BATTLE_SKIN_ID = rm2000)만 저장하지 않는다. 그 밖의 명시적 선택은 반드시

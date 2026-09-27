@@ -49,6 +49,7 @@ import {
   type FontRole,
 } from "@/project/fontRegistry";
 import { store } from "@/project/store";
+import { DEFAULT_ROLLING_HP_PER_SECOND, normalizeRollingHpSpeed, ROLLING_HP_SPEED_LIMITS } from "@/player/rollingHp";
 import type {
   ActionCombatHudConfig,
   ActorRecord,
@@ -453,6 +454,30 @@ function systemSectionNodes(
             else delete draft.system.monsterBattleParty;
           });
         }),
+        // 마더식 롤링 HP: 표시 HP 가 서서히 흐르고, 치명타를 받아도 미터가 0 에 닿기 전에 이기면 살아남는다.
+        checkboxField("롤링 HP 미터", "db-field-system-rolling-hp", project.system.battleRollingHp === true, (checked) => {
+          updateSystem((draft) => {
+            if (checked) draft.system.battleRollingHp = true;
+            else delete draft.system.battleRollingHp;
+          });
+          rerender();
+        }),
+        numberField(
+          "롤링 속도 (HP/초)",
+          "db-field-system-rolling-hp-speed",
+          () => normalizeRollingHpSpeed(store.getCurrent().system.battleRollingHpPerSecond),
+          (value) => {
+            updateSystem((draft) => {
+              const speed = normalizeRollingHpSpeed(value);
+              if (speed === DEFAULT_ROLLING_HP_PER_SECOND) delete draft.system.battleRollingHpPerSecond;
+              else draft.system.battleRollingHpPerSecond = speed;
+            }, "system:rolling-hp-speed");
+          },
+          ROLLING_HP_SPEED_LIMITS,
+          project.system.battleRollingHp === true
+            ? undefined
+            : { disabled: true, disabledReason: "롤링 HP 미터를 켜면 속도를 정할 수 있습니다." },
+        ),
       ]),
       rm2k3Fieldset("전투 오디오", [
         resourcePickerControl({

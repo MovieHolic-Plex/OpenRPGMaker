@@ -136,6 +136,8 @@ const setProjectSettings: ToolDefinition = {
           atbSpeed: { type: "integer", minimum: 1, maximum: 8, description: "ATB 속도 1(빠름)~8(느림), 4 = 기존 속도" },
           backdrop: { type: "string", enum: ["field", "default"], description: "field = 전투 배경을 주인공 주변 필드 화면으로(제자리 페이드 진입). default = 트룹/지형 배경" },
           presentation: { type: "string", enum: ["onField", "default"], description: "onField = 크로노식 필드 위 전투: 전환 없이 적은 부딪힌 심볼 자리, 아군은 파티 자리에 서고 끝나면 그 자리로 돌아온다(배경은 필드 그대로). default = 전환 후 전투장" },
+          rollingHp: { type: "boolean", description: "true = 마더식 롤링 HP 미터: 표시 HP 가 서서히 실제 HP 로 흐르고, 치명타를 받아도 미터가 0 에 닿기 전에 이기면 살아남는다. false = 즉시 표시(기본)" },
+          rollingHpPerSecond: { type: "integer", minimum: 1, maximum: 999, description: "롤링 HP 속도(HP/초). 생략 = 40" },
         },
         additionalProperties: false,
       },
@@ -265,6 +267,14 @@ const setProjectSettings: ToolDefinition = {
       else if (battle.backdrop === "default") delete draft.system.battleBackdrop;
       if (battle.presentation === "onField") draft.system.battlePresentation = "onField";
       else if (battle.presentation === "default") delete draft.system.battlePresentation;
+      if (battle.rollingHp === true) draft.system.battleRollingHp = true;
+      else if (battle.rollingHp === false) delete draft.system.battleRollingHp;
+      if (battle.rollingHpPerSecond !== undefined) {
+        if (typeof battle.rollingHpPerSecond !== "number" || !Number.isInteger(battle.rollingHpPerSecond) || battle.rollingHpPerSecond < 1 || battle.rollingHpPerSecond > 999) {
+          throw new ToolError(`battle.rollingHpPerSecond 는 1~999 정수여야 합니다(받은 값 ${JSON.stringify(battle.rollingHpPerSecond)}).`, { code: "invalid-args" });
+        }
+        draft.system.battleRollingHpPerSecond = battle.rollingHpPerSecond;
+      }
       if (typeof battle.initialTroopId === "string") {
         if (!draft.database.troops.some((troop) => troop.id === battle.initialTroopId)) throw new ToolError(`초기 적 그룹을 찾을 수 없습니다: ${battle.initialTroopId}`, { code: "troop-not-found" });
         draft.system.initialTroopId = battle.initialTroopId;
