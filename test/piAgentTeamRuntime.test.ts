@@ -1,7 +1,7 @@
 // 팀 런타임의 배정 계약. 하위 에이전트는 가짜 실행기로 갈음하고(LLM 은 결정적으로 만들 수 없다)
 // 팀장 툴을 직접 호출해 런타임의 락·예산·병합·안전망을 검증한다.
 import { describe, expect, it } from "vitest";
-import { PI_AGENT_DEFAULT_TIMEOUT_MS, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "@/ai/piAgent/protocol";
+import { PI_AGENT_DEFAULT_TIMEOUT_MS, slimCheckpointProject, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "@/ai/piAgent/protocol";
 import type { PiToolShape } from "@/ai/piAgent/toolAdapter";
 import type { PiTeamSpec } from "@/ai/piAgent/teamSpec";
 import { commitChangeset, runTool } from "@/editor/tools";
@@ -532,6 +532,46 @@ it("live team checkpoints merge owned maps before another agent's final result",
   expect(publications.at(-1)!.maps.map_b!.name).toBe("live:map_b");
   expect(result.project.maps.map_a!.name).toBe("live:map_a");
   expect(result.project.maps.map_b!.name).toBe("live:map_b");
+});
+
+// 2026-09-27 프리셋 팀 첫 생성 실측: 프로젝트 공통 작업 팀원의 체크포인트는 안 바뀐 타일셋·DB 를 비워서 온다.
+// 팀 런타임이 그걸 그대로 작업 사본으로 삼아, 뒤에 배정된 시공 팀원이 「project.database.actors 가 undefined」로 막혔다.
+it.each([
+  ["project", { task: "DB·시스템", mode: "project", member: "builder" }, "assign_task_agent"],
+  ["map", { mapId: "map_a", task: "A", member: "builder" }, "assign_map_agent"],
+] as const)("slim %s checkpoints keep tilesets and database in the working copy", async (_kind, args, toolName) => {
+  const project = seeded();
+  const published: Project[] = [];
+  const later: Project[] = [];
+  const result = await runPiTeam({ ...request(project), applyMode: "default" }, {
+    onCheckpoint: async checkpoint => {
+      published.push(checkpoint.project);
+      // 브라우저 ACK 도 같은 키를 비운 채 돌아온다(client.ts).
+      return slimCheckpointProject(checkpoint.project, checkpoint.unchangedKeys ?? []);
+    },
+    runAgent: async (child, options) => {
+      if (options.extraTools?.some(t => t.name === toolName)) {
+        await callTool(options.extraTools, toolName, args);
+        await callTool(options.extraTools, "wait_agents", {});
+        await callTool(options.extraTools, "assign_map_agent", { mapId: "map_b", task: "B", member: "decorator" });
+        await callTool(options.extraTools, "wait_agents", {});
+        return doneWith(child.project);
+      }
+      if (child.mapIds[0] === "map_b") { later.push(child.project); return doneWith(child.project); }
+      const next = built(child.project, "map_a", "live:map_a");
+      const unchangedKeys = ["tilesets", "database"] as const;
+      await options.onCheckpoint!({ project: slimCheckpointProject(next, unchangedKeys), label: "a", toolName: "set_map_properties", unchangedKeys: [...unchangedKeys] });
+      return doneWith(next, ["maps.map_a"]);
+    },
+  });
+  // 브라우저로는 여전히 비워서 보낸다 — 줄 하나에 타일셋 이미지 수십 MB 를 싣지 않는다.
+  expect(published).toHaveLength(1);
+  expect(Object.keys(published[0]!.tilesets)).toHaveLength(0);
+  expect(later).toHaveLength(1);
+  expect(later[0]!.database.actors).toEqual(project.database.actors);
+  expect(Object.keys(later[0]!.tilesets)).toEqual(Object.keys(project.tilesets));
+  expect(result.project.maps.map_a!.name).toBe("live:map_a");
+  expect(result.project.database.actors).toEqual(project.database.actors);
 });
 
 

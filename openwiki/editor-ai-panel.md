@@ -3069,6 +3069,21 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 
 실시간 적용(DEFAULT/AUTO/YOLO)은 쓰기 도구마다 `store.replace`를 한다. 알림에 칸 목록이 있으면 `redrawCells`가 그 칸과 이벤트 마커만 고친다. 맵 크기·타일셋·맵 추가/삭제·맵 밖 참조가 바뀌거나 칸이 2048개를 넘으면 예전처럼 전체를 다시 그린다. 공개 애니메이션은 체크포인트를 기다리지 않는다. 체크포인트 줄은 타일셋·데이터베이스 참조가 그대로면 그 둘을 빼고, 브라우저와 ACK가 직전 객체를 다시 붙인다. 맵 비교는 타일 배열을 문자열로 만들지 않고 칸 값으로 한다.
 
+- **팀 런타임도 빈 키를 다시 붙인다 (2026-09-27):** 팀원 체크포인트는 `piAgentRuntime` 이 안 바뀐 타일셋·DB 를 비워 보낸다.
+  `piTeamRuntime` 의 `checkpointFor` 는 그걸 복원하지 않고 병합·작업 사본(`working`)으로 삼았다. 프로젝트 공통 작업(`assign_task_agent` mode=project)은
+  빈 체크포인트가 그대로 `working` 이 됐고, 맵 배정은 브라우저 ACK(역시 비워서 돌아온다)가 `working` 을 덮었다. 그 뒤 배정된 시공 팀원은
+  `database.actors` 가 없는 사본에서 출발해 「project.database.actors.map undefined」로 막혔다(프리셋 몬스터 수집 팀 첫 생성 실측).
+  이제 받은 체크포인트를 `working` 으로 복원한 뒤 병합하고, 브라우저로는 다시 비워 보내며, ACK 도 복원한 뒤 `working` 에 둔다.
+  회귀: `test/piAgentTeamRuntime.test.ts` 「slim %s checkpoints keep tilesets and database」(프로젝트·맵 두 경로).
+- **워커 요청 본문 상한 (2026-09-27):** `Bun.serve` 의 `maxRequestBodySize` 기본값은 128MiB 이고, 넘으면 응답 없이 소켓을 닫아 호스트 fetch 가
+  `fetch failed`(EPIPE)로 끝난다. 새 프로젝트 기본 자료가 늘어 몬스터 수집 프리셋 첫 요청이 151MB(타일셋 84MB · 에셋 66MB)가 되자 팀 첫 생성이
+  한 턴도 못 돌고 「Pi 에이전트 실행 실패: fetch failed」로 끝났다. `scripts/oh-my-pi-worker.ts` 가 호스트의 압축 해제 상한과 같은 256MiB 를 쓴다.
+  회귀: `test/ohMyPiWorkerBodyLimit.node.test.mjs`(150MB 본문에 400 검증 오류가 돌아와야 한다).
+- **`Error in input stream` 은 QA 환경 탓이었다:** Firefox 가 스트림 읽기 도중 네트워크 변경을 감지하면 진행 중 연결을 끊고 이 메시지를 낸다.
+  이 호스트는 Docker 가 veth 인터페이스를 수십 초마다 만들고 지운다(`ip monitor`). 브라우저 QA 에서 `network.notify.changed=false` 를 주자 같은
+  프리셋 팀 첫 생성이 41분 동안 끊김 없이 돌았다(맵 17장 · 이벤트 175개, SQLite 재로드 확인). 제품 코드 문제는 아니지만, 네트워크가 흔들리는 실제
+  사용자 PC 에서도 같은 끊김이 날 수 있다 — 끊긴 뒤 이어 받는 경로는 없다. 의도 선언 `NS_ERROR_ABORT` 도 같은 원인이었다.
+
 ## 큰 프로젝트의 Pi 요청 전송 (2026-09-24)
 
 `src/ai/piAgent/requestBody.ts`는 1Mi 문자 이상인 요청을 gzip으로 전송한다. `/v1/agent/run`뿐 아니라 적용 ACK `/v1/agent/checkpoint`도 같은 경로를 사용한다. 프로젝트/공용 타일 참고 이미지/이벤트를 제거하지 않는다. 작은 요청과 CompressionStream 미지원 환경은 기존 JSON을 사용하며, 후자는 큰 문서에서 기존 한도 오류를 받을 수 있다.

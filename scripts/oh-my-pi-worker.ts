@@ -37,6 +37,11 @@ const server = Bun.serve({
   // 전부 abort 했다(실측 2026-09-14: 팀 모드 "마을 만들어줘" 가 매번 25~110초 만에 실패). 실행
   // 상한은 piAgentRuntime 의 timeoutMs(기본 PI_AGENT_DEFAULT_TIMEOUT_MS, 3000초)가 따로 들고 있으므로 유휴 타임아웃은 끈다.
   idleTimeout: 0,
+  // 요청 본문 상한. Bun.serve 기본값은 128MiB 이고, 넘으면 응답 없이 소켓을 닫아 호스트 fetch 가 `EPIPE`(「fetch failed」)로 끝난다.
+  // /agent/run 은 프로젝트 사본 전체(타일셋 이미지·에셋 dataURL)를 싣는다 — 2026-09-27 새 프로젝트 기본 자료가 늘어
+  // 몬스터 수집 프리셋 첫 요청이 151MB 가 됐고, 팀 첫 생성이 한 턴도 못 돌고 매번 이 오류로 죽었다.
+  // 호스트가 압축 요청을 풀 때 쓰는 상한(`readRequestJson` maxOutputLength 256MiB)과 같게 둔다.
+  maxRequestBodySize: 256 * 1024 * 1024,
   async fetch(request) {
     const url = new URL(request.url);
     try {
