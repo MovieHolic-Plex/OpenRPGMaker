@@ -14,6 +14,7 @@ import { NEW_PROJECT_CHOICES, type NewProjectChoice, type NewProjectChoiceId } f
 import type { RecentProjectEntry } from "../../electron/shared/start";
 import type { OprnBridgeStart } from "@/project/persistence/electronRepository";
 import { el } from "@/util/dom";
+import { getLocale, initI18n, LOCALE_NATIVE_NAMES, setLocale, SUPPORTED_LOCALES, t, type SupportedLocale } from "@/i18n";
 import { writeStartScreenIntent } from "./startIntent";
 
 export const START_SCREEN_TESTIDS = {
@@ -82,7 +83,10 @@ export function formatRelativeTime(iso: string | null | undefined, now = Date.no
   if (days < 7) return days + "일 전";
   const date = new Date(at);
   const sameYear = date.getFullYear() === new Date(now).getFullYear();
-  return (sameYear ? "" : date.getFullYear() + "년 ") + (date.getMonth() + 1) + "월 " + date.getDate() + "일";
+  // 한 템플릿으로 써야 번역 카탈로그가 날짜 순서까지 바꿀 수 있다(Sep 28 / 9月28日).
+  return sameYear
+    ? `${date.getMonth() + 1}월 ${date.getDate()}일`
+    : `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
 }
 
 /** 최근 목록을 보이는 것과 숨긴 것으로 가른다. 숨김은 임시 폴더(QA 찌꺼기)와 사라진 폴더다. */
@@ -99,14 +103,37 @@ export function partitionRecentEntries(entries: readonly RecentProjectEntry[]): 
   };
 }
 
+/**
+ * 「2시간 전 편집」「어제 열어 봄」을 한 문장으로 만든다. 「{0} 편집」 조각은 카탈로그에서 Edit {0} 라
+ * 이어 붙이면 번역이 틀리므로, 경우마다 통째로 적어 번역 카탈로그가 문장 단위로 찾게 한다.
+ */
+function activityLabel(iso: string | null | undefined, kind: "edited" | "opened", now = Date.now()): string {
+  if (!iso) return "";
+  const at = Date.parse(iso);
+  if (!Number.isFinite(at)) return "";
+  const edited = kind === "edited";
+  const minutes = Math.floor((now - at) / 60_000);
+  if (minutes < 1) return edited ? "방금 편집" : "방금 열어 봄";
+  if (minutes < 60) return edited ? `${minutes}분 전 편집` : `${minutes}분 전 열어 봄`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return edited ? `${hours}시간 전 편집` : `${hours}시간 전 열어 봄`;
+  const days = Math.floor(hours / 24);
+  if (days === 1) return edited ? "어제 편집" : "어제 열어 봄";
+  if (days < 7) return edited ? `${days}일 전 편집` : `${days}일 전 열어 봄`;
+  const date = new Date(at);
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  if (date.getFullYear() === new Date(now).getFullYear()) return edited ? `${month}월 ${day}일 편집` : `${month}월 ${day}일 열어 봄`;
+  const year = date.getFullYear();
+  return edited ? `${year}년 ${month}월 ${day}일 편집` : `${year}년 ${month}월 ${day}일 열어 봄`;
+}
+
 function entryMeta(entry: RecentProjectEntry): string {
   const parts: string[] = [];
   // 저장 행의 시각이 있으면 편집 시각, 없으면(빈 폴더) 마지막으로 연 시각이다 — 둘을 같은 말로 부르지 않는다.
-  const edited = formatRelativeTime(entry.updatedAt);
-  const opened = edited ? "" : formatRelativeTime(entry.lastOpenedAt);
-  if (edited) parts.push(edited + " 편집");
-  else if (opened) parts.push(opened + " 열어 봄");
-  if (typeof entry.mapCount === "number" && entry.mapCount > 0) parts.push("맵 " + entry.mapCount);
+  const activity = activityLabel(entry.updatedAt, "edited") || activityLabel(entry.lastOpenedAt, "opened");
+  if (activity) parts.push(activity);
+  if (typeof entry.mapCount === "number" && entry.mapCount > 0) parts.push(`맵 ${entry.mapCount}개`);
   if (entry.hiddenReason === "temporary") parts.push("임시 폴더");
   if (entry.hiddenReason === "missing") parts.push("폴더 없음");
   return parts.join(" · ");
@@ -114,6 +141,35 @@ function entryMeta(entry: RecentProjectEntry): string {
 
 function icon(name: "plus" | "folder" | "clock" | "sparkle" | "back" | "blank" | "arrow"): HTMLElement {
   return el("span", { class: "start-icon start-icon-" + name, attrs: { "aria-hidden": "true" } });
+}
+
+/** 숨긴 항목 안내. 문장을 조각으로 이어 붙이면 번역 카탈로그가 찾지 못하므로 경우마다 한 문장으로 쓴다. */
+function hiddenEntriesNote(temporary: number, missing: number, showing: boolean): string {
+  if (temporary > 0 && missing > 0) {
+    return showing
+      ? `임시 폴더의 테스트 프로젝트 ${temporary}개와 찾을 수 없는 폴더 ${missing}개를 함께 보여 주는 중입니다.`
+      : `임시 폴더의 테스트 프로젝트 ${temporary}개와 찾을 수 없는 폴더 ${missing}개를 숨겼습니다.`;
+  }
+  if (temporary > 0) {
+    return showing ? `임시 폴더의 테스트 프로젝트 ${temporary}개를 함께 보여 주는 중입니다.` : `임시 폴더의 테스트 프로젝트 ${temporary}개를 숨겼습니다.`;
+  }
+  return showing ? `찾을 수 없는 폴더 ${missing}개를 함께 보여 주는 중입니다.` : `찾을 수 없는 폴더 ${missing}개를 숨겼습니다.`;
+}
+
+/**
+ * 레일 아래 언어 고르기. 데스크톱 앱은 이 화면에서 시작하므로 편집기의 「보기 → 언어」까지 가지 않고도 바꿀 수 있어야 한다.
+ * 고른 값은 편집기와 같은 localStorage(oprn:locale)에 남는다. 언어 이름은 그 언어로 쓴다(translate="no").
+ */
+function localePicker(): HTMLElement {
+  const select = el("select", {
+    class: "start-locale-select",
+    attrs: { "aria-label": "언어", translate: "no" },
+    dataset: { testid: "start-locale-select" },
+    children: SUPPORTED_LOCALES.map((locale) => el("option", { text: LOCALE_NATIVE_NAMES[locale], attrs: { value: locale, lang: locale } })),
+  });
+  select.value = getLocale();
+  select.addEventListener("change", () => void setLocale(select.value as SupportedLocale));
+  return select;
 }
 
 function coverArt(entry: RecentProjectEntry, className: string): HTMLElement {
@@ -141,7 +197,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     showHidden: false,
     choiceId: null,
     intent: "",
-    title: DEFAULT_TITLE,
+    // 입력칸 값은 번역 계층이 건드리지 않으므로 기본 제목은 여기서 직접 번역한다.
+    title: t(DEFAULT_TITLE),
     root: null,
     projectDir: null,
     busy: false,
@@ -224,9 +281,9 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
 
   const create = (): void => void run(async () => {
     if (!bridge) throw new Error("데스크톱 앱에서만 새 게임을 만들 수 있습니다.");
-    const title = state.title.trim() || DEFAULT_TITLE;
+    const title = state.title.trim() || t(DEFAULT_TITLE);
     if (!state.projectDir) await refreshLocation();
-    if (!state.projectDir) throw new Error("저장 위치를 정하지 못했습니다. 「바꾸기」로 위치를 골라 주세요.");
+    if (!state.projectDir) throw new Error("저장 위치를 정하지 못했습니다. 「위치 바꾸기」로 위치를 골라 주세요.");
     const created = await bridge.createProject({ title, projectDir: state.projectDir });
     if (!created) throw new Error("새 게임 폴더를 만들지 못했습니다.");
     try {
@@ -293,7 +350,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
         on: { click: openFolder },
       }),
       el("nav", { class: "start-nav", attrs: { "aria-label": "시작 화면" }, children: [navRecent, navNew] }),
-      el("p", { class: "start-rail-foot", text: APP_VERSION }),
+      el("div", { class: "start-rail-foot", children: [localePicker(), el("span", { text: APP_VERSION })] }),
     ],
   });
 
@@ -450,9 +507,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       }));
     }
     if (temporary + missing > 0) {
-      const reasons = [temporary ? "임시 폴더의 테스트 프로젝트 " + temporary + "개" : "", missing ? "찾을 수 없는 폴더 " + missing + "개" : ""].filter(Boolean).join("와 ");
       out.push(el("p", { class: "start-hidden-note", children: [
-        el("span", { text: state.showHidden ? reasons + "를 함께 보여 주는 중입니다." : reasons + "를 숨겼습니다." }),
+        el("span", { text: hiddenEntriesNote(temporary, missing, state.showHidden) }),
         el("button", {
           class: "start-link",
           attrs: { type: "button", "aria-pressed": String(state.showHidden) },
@@ -536,7 +592,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
             class: "start-link",
             attrs: { type: "button" },
             dataset: { testid: START_SCREEN_TESTIDS.changeLocation },
-            text: "바꾸기",
+            // 「바꾸기」 하나로 쓰면 카탈로그의 치환 뜻(Replace)을 받는다 — 저장 위치를 바꾸는 단추라 뜻을 밝힌다.
+            text: "위치 바꾸기",
             on: { click: chooseRoot },
           }),
         ] }),
@@ -635,4 +692,5 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
 }
 
 const host = typeof document !== "undefined" ? document.getElementById("start-app") : null;
-if (host) mountStartScreen(host, window.oprn?.start);
+// 편집기와 같은 번역 계층을 먼저 켠다 — 한국어면 카탈로그도 옵서버도 없다.
+if (host) void initI18n().finally(() => mountStartScreen(host, window.oprn?.start));
