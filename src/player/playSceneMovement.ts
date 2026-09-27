@@ -52,7 +52,7 @@ import { fireLocationTransitionTriggers } from "@/player/playSceneLocationTransi
 import { interactWithLifeField } from "@/player/lifeFieldInteraction";
 import { diagnosticObserved, publishDiagnostic } from "@/util/diagnosticObserver";
 import { tryChestInteraction } from "@/player/playSceneChest";
-import { tryActionCombatSwing, tryActionSkillCast } from "@/player/playSceneActionCombat";
+import { tryActionCombatSwing, tryActionSkillCast, updateActionSkillCharge } from "@/player/playSceneActionCombat";
 import { applyBattleDefeat } from "@/player/playSceneDefeat";
 import { boardedVehicleId, vehicleCanEnter, vehicleSpeedFactor } from "@/project/vehicles";
 import { tryBoardVehicle, tryGetOffVehicle } from "@/player/playSceneVehicles";
@@ -136,6 +136,7 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
     }
     if (!cutsceneInputLocked && input.attackPressed && !interacted && !airborne) tryActionCombatSwing(scene);
     if (!cutsceneInputLocked && input.skillPressed && !airborne) tryActionSkillCast(scene);
+    else if (scene.actionCombatState?.skillCharge) updateActionSkillCharge(scene, ticks * LOGIC_TICK_MS, !cutsceneInputLocked && scene.input_.isSkillHeld());
     scene.input_.resetEdges();
   }
   // Forced event routes must progress while the interpreter awaits completion.

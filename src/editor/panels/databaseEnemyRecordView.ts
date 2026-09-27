@@ -1,4 +1,4 @@
-import { enemyDropFields } from "@/editor/panels/databaseCombatRuleFields";
+import { enemyDropFields, enemyStealFields } from "@/editor/panels/databaseCombatRuleFields";
 import { renderEnemyStudio } from "@/editor/panels/databaseEnemyStudio";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
@@ -762,6 +762,7 @@ function updateGraphicPreviewState(transparent: boolean, flying: boolean): void 
 function rewardFields(record: EnemyRecord): HTMLElement[] {
   return [
     enemyDropFields(record),
+    enemyStealFields(record),
     numberField("경험치", "db-field-enemy-exp", record.rewards.exp, (exp) =>
       updateDatabaseRecord("enemies", record.id, { rewards: { ...currentEnemy(record).rewards, exp } }),
       { min: 0, max: 9999999 }

@@ -3,6 +3,9 @@ import { evaluateDamageFormula, formulaBattlerContext } from "@/battle/damageFor
 import { predictSkillDamageFor } from "@/battle/battlePredict";
 import { combatConditionMet } from "@/battle/combatConditions";
 import { advanceBattleSkillCooldowns, startBattleSkillCooldown } from "@/battle/battleSkillUse";
+import { damageEffectKind, firstLearnableSkill, pickRandomSkill, rollStealItem, scanMessage, weaknessElementNames } from "@/battle/battleSpecialEffects";
+import { permanentActorSkillIds } from "@/project/growth/runtime";
+import { inputSequencePowerMultiplier } from "@/battle/battleInputSequence";
 import { effectiveActorClassId } from '@/project/sessionClass';
 import { battleTroopError } from '@/project/battleAdmission';
 import { activeItemEffects, isCaptureTool, itemAllowsBattle } from "@/project/itemUsage";
@@ -162,6 +165,7 @@ type EnemyActionChoice = {
   readonly switchOffAfterAction: { readonly enabled: boolean; readonly switchId?: string };
   readonly targetIds?: readonly string[];
   readonly moveTo?: { readonly x: number; readonly y: number };
+  readonly requiresPart?: string;
 };
 
 /** ATB 속도 1~8 → 충전 배율. Chrono Trigger 처럼 숫자가 작을수록 빠르다(4 = 1.0, 1 = 1.45, 8 = 0.4). */
@@ -446,6 +450,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   let strictRoundCount = 0;
   const roundLogs: BattleRoundLogSnapshot[] = [];
   const capturedMonsters: BattleCapturedMonsterSnapshot[] = [];
+  // 훔치기에 성공한 적(적마다 한 번). 부위 파괴를 이미 알린 배틀러.
+  const stolenFrom = new Set<string>();
+  const brokenPartIds = new Set<string>();
   const participatingActorIds = new Set<ActorId>();
   const rewards: {
     exp: number;
@@ -548,18 +555,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     },
     // changeEquipment/promoteActor 후 파생 스탯 재계산 — battleBattlers 생성 산식과 공유.
     // HP/MP/게이지/상태이상은 refreshActorBattlerDerivedStats 가 보존(새 최대치 클램프만).
-    refreshActorDerivedStats: (battler, refreshOptions) => {
-      refreshActorBattlerDerivedStats(options.project, battler, {
-        classOverrides: battleEventState.classOverrides,
-        growthProgress: battleEventState.growthProgress,
-        promotionLineage: battleEventState.promotionLineage,
-        paramBonuses: options.party?.paramBonuses?.[battler.recordId],
-        equipment: battleEventState.actorEquipment?.[battler.recordId],
-        skills: refreshOptions?.refreshSkills
-          ? { sessionSkillIds: battleEventState.actorSkillIds?.[battler.recordId] }
-          : undefined,
-      });
-    },
+    // 부위 손실 상태가 있으면 그 슬롯을 비운 장비로 계산한다(refreshActorStats).
+    refreshActorDerivedStats: (battler, refreshOptions) => refreshActorStats(battler, refreshOptions?.refreshSkills === true),
     playAudio: options.playAudio,
     stopAudio: options.stopAudio,
     moveEnemy: moveEnemyByTarget,
@@ -581,12 +578,15 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     for (const stateId of upkeep.removedStateIds) {
       recordTimeline({ kind: "stateRemoved", side: battlerSide(battler), targetId: battler.id, stateId, reason: "natural" });
     }
+    refreshAfterStateChange(battler, upkeep.removedStateIds);
   }
 
   function recoverHitStates(battler: MutableBattler): void {
-    for (const stateId of recoverStatesWhenHit(options.project, battler, rng)) {
+    const removed = recoverStatesWhenHit(options.project, battler, rng);
+    for (const stateId of removed) {
       recordTimeline({ kind: "stateRemoved", side: battlerSide(battler), targetId: battler.id, stateId, reason: "hit" });
     }
+    refreshAfterStateChange(battler, removed);
   }
 
   function applyStates(
@@ -606,6 +606,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     for (const stateId of result.removed) {
       recordTimeline({ kind: "stateRemoved", side: battlerSide(user), userRecordId: user.recordId, targetId: target.id, stateId, reason: "effect" });
     }
+    refreshAfterStateChange(target, [...result.added, ...result.removed]);
   }
 
   function gen1StateRecords() {
@@ -1161,7 +1162,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         spendPartyGauge(command.skillId);
         // 연계기: 참가 배우 각자의 MP 를 똑같이 소비한다(위력은 시전자 능력치).
         for (const partner of comboPartners(actor, command)) consumeSkillMp(partner, command.skillId);
-        for (const target of targets) applySkill(actor, target, command.skillId, "skill");
+        // 입력 커맨드: 성공은 보너스, 실패는 약화. 판정이 없으면(자동전투 등) 1배.
+        const inputMultiplier = inputSequencePowerMultiplier(lookupSkill(command.skillId)?.inputSequence, command.inputResult);
+        for (const target of targets) applySkill(actor, target, command.skillId, "skill", inputMultiplier);
         applyGen1Residual(actor);
         break;
       }
@@ -1621,7 +1624,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           if (action.enemy.hp <= 0 || !visibleEnemies().some(enemy => enemy.id === action.enemy.id)) continue;
           activeActorId = undefined;
           currentActorCommandKind = undefined;
-          executeEnemyAction(action.enemy, action.action);
+          // strict 는 라운드 시작에 행동을 고른다. 그 사이 필요 부위가 파괴됐으면 다시 고른다.
+          const planned = action.action?.requiresPart && brokenPartTags(action.enemy).has(action.action.requiresPart)
+            ? chooseEnemyAction(action.enemy)
+            : action.action;
+          executeEnemyAction(action.enemy, planned);
         }
         logStrictAction(queue.round, queue.index, action, beforeResult);
         if (escaped) { result = "escape"; continue; }
@@ -2035,6 +2042,71 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   // ── 장비 자동 부활(effectFlags.autoRevive) ── 전투당 배우 1회. 승패 판정 직전에 돌아 패배를 막는다.
   const autoRevivedIds = new Set<string>();
 
+  /** 이 본체에 붙은 부위 중 쓰러진 것의 태그. */
+  function brokenPartTags(core: MutableBattler): Set<string> {
+    return new Set(enemies.filter((part) => part.partCoreId === core.id && part.partTag && part.hp <= 0).map((part) => part.partTag!));
+  }
+
+  /** 다부위 적: 부위 파괴를 알리고, 본체가 쓰러졌으면 남은 부위도 함께 쓰러뜨린다. */
+  function resolveEnemyParts(): void {
+    for (const part of enemies) {
+      if (!part.partCoreId) continue;
+      const core = enemies.find((entry) => entry.id === part.partCoreId);
+      if (!core) continue;
+      if (core.hp <= 0 && part.hp > 0) {
+        part.hp = 0;
+        part.gauge = 0;
+        brokenPartIds.add(part.id);
+        recordSpecial(core, part, `${core.name}이(가) 쓰러져 ${part.name}도 무너졌다.`);
+        continue;
+      }
+      if (part.hp <= 0 && !brokenPartIds.has(part.id)) {
+        brokenPartIds.add(part.id);
+        recordSpecial(core, part, `${part.name} 파괴! ${core.name}의 일부 행동이 봉인됐다.`);
+      }
+    }
+  }
+
+  /** 부위 손실 상태(StateRecord.disablesEquipSlot)가 가리키는 장비 슬롯. */
+  function lostEquipSlots(battler: MutableBattler): Set<string> {
+    const slots = new Set<string>();
+    for (const stateId of battler.stateIds) {
+      const slot = options.project.database.states.find((state) => state.id === stateId)?.disablesEquipSlot;
+      if (slot) slots.add(slot);
+    }
+    return slots;
+  }
+
+  /** 이벤트·세션 장비에서 잃은 슬롯만 비운 사본. 잃은 슬롯이 없으면 원본 그대로. */
+  function equipmentAfterSlotLoss(battler: MutableBattler) {
+    const raw = battleEventState.actorEquipment?.[battler.recordId];
+    const lost = lostEquipSlots(battler);
+    if (lost.size === 0) return raw;
+    const base = { ...(raw ?? options.project.database.actors.find((actor) => actor.id === battler.recordId)?.initialEquipment ?? {}) };
+    for (const slot of lost) base[slot] = undefined;
+    return base;
+  }
+
+  function refreshActorStats(battler: MutableBattler, refreshSkills = false): void {
+    refreshActorBattlerDerivedStats(options.project, battler, {
+      classOverrides: battleEventState.classOverrides,
+      growthProgress: battleEventState.growthProgress,
+      promotionLineage: battleEventState.promotionLineage,
+      paramBonuses: options.party?.paramBonuses?.[battler.recordId],
+      equipment: equipmentAfterSlotLoss(battler),
+      skills: refreshSkills
+        ? { sessionSkillIds: battleEventState.actorSkillIds?.[battler.recordId] }
+        : undefined,
+    });
+  }
+
+  /** 상태가 바뀐 뒤 부위 손실 상태가 끼어 있으면 배우 능력치를 다시 계산한다. */
+  function refreshAfterStateChange(battler: MutableBattler, changedStateIds: readonly string[]): void {
+    if (battlerSide(battler) !== "actor" || changedStateIds.length === 0) return;
+    const touchesSlot = changedStateIds.some((stateId) => options.project.database.states.find((state) => state.id === stateId)?.disablesEquipSlot);
+    if (touchesSlot) refreshActorStats(battler);
+  }
+
   function applyAutoRevives(): void {
     if (gen1) return;
     for (const actor of actors) {
@@ -2353,6 +2425,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
     const actionTurn = turn + 1;
     const plans = (enemy.enemyActions ?? [])
+      .filter((action) => !action.requiresPart || !brokenPartTags(enemy).has(action.requiresPart))
       .filter((action) => combatConditionMet(action.condition, enemy, actionTurn, visibleEnemies().filter(ally => ally.id !== enemy.id && ally.hp > 0).length, battleEventState.switches))
       .filter((action) => !action.skillId || !battleSkillUseFailure(options.project, enemy, action.skillId, { requireLearned: false }))
       .flatMap((action) => {
@@ -2495,12 +2568,102 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
   }
 
-  function applySkill(user: MutableBattler, target: MutableBattler, skillId: SkillId, commandKind: BattleTimelineEntrySnapshot["commandKind"] = "skill"): void {
+  function applySkill(user: MutableBattler, target: MutableBattler, skillId: SkillId, commandKind: BattleTimelineEntrySnapshot["commandKind"] = "skill", powerMultiplier = 1): void {
     const skill = lookupSkill(skillId);
+    // 흉내·춤·슬롯: 후보 중 하나를 굴려 그 기술로 바꿔 쓴다. 자원은 원래 기술 몫만 소비했다.
+    if (skill?.effect.kind === "randomSkillFrom") {
+      const picked = pickRandomSkill(options.project, skill.effect.skillIds, rng);
+      recordSpecial(user, target, picked ? `${skill.name}: ${picked.name}!` : `${skill.name}: 아무 일도 일어나지 않았다.`);
+      if (!picked) return;
+      // 뽑힌 기술의 스코프로 다시 겨눈다: 전체기는 그 편 전원, 단일기는 원래 대상(편이 다르면 자신·무작위 상대).
+      const resolution = resolveBattleTargets({ scope: picked.scope, user, actors: activeActors(), enemies: visibleEnemies(), requestedTargetId: target.id });
+      const fallback = resolution.side === battlerSide(user) ? user : randomOpponent(user);
+      const pickedTargets = resolution.targets.length > 0 ? resolution.targets : fallback ? [fallback] : [];
+      for (const pickedTarget of pickedTargets) applySkill(user, pickedTarget, picked.id, commandKind);
+      return;
+    }
+    if (skill && (skill.effect.kind === "steal" || skill.effect.kind === "scan" || skill.effect.kind === "learnEnemySkill")) {
+      applySpecialSkill(user, target, skill);
+      return;
+    }
     for (const multiplier of skill?.hitSequence ?? [1]) {
       if (user.hp <= 0 || (target.hp <= 0 && skill?.effect.kind === "damage")) break;
-      applySkillHit(user, target, skillId, commandKind, multiplier);
+      applySkillHit(user, target, skillId, commandKind, multiplier * powerMultiplier);
     }
+  }
+
+  function recordSpecial(user: MutableBattler, target: MutableBattler, message: string): void {
+    recordTimeline({ kind: "special", side: battlerSide(user), userRecordId: user.recordId, targetId: target.id, message });
+  }
+
+  /** 배우의 영구 기술 목록과 전투 중 목록에 한 기술을 더한다(이벤트 learnSkill 과 같은 권위). */
+  function learnBattleSkill(actor: MutableBattler, skillId: SkillId): void {
+    battleEventState.actorSkillIds ??= {};
+    const known = new Set(permanentActorSkillIds(options.project, battleEventState, actor.recordId));
+    known.add(skillId);
+    battleEventState.actorSkillIds[actor.recordId] = [...known];
+    if (!actor.skillIds.includes(skillId)) actor.skillIds = [...actor.skillIds, skillId];
+  }
+
+  function applySpecialSkill(user: MutableBattler, target: MutableBattler, skill: NonNullable<ReturnType<typeof lookupSkill>>): void {
+    const hitRate = combinedSkillHitRate(skill) ?? 100;
+    if (rng() * 100 >= hitRate) {
+      recordAction({ userRecordId: user.recordId, targetId: target.id, hit: false, amount: 0, critical: false, skillName: skill.name }, "miss", "skill");
+      return;
+    }
+    if (skill.animationId) {
+      lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, skill.animationId, target.id);
+    }
+    const enemyRecord = battlerSide(target) === "enemy"
+      ? options.project.database.enemies.find((record) => record.id === target.recordId)
+      : undefined;
+    if (skill.effect.kind === "steal") {
+      if (!enemyRecord || !(enemyRecord.stealItems?.length)) {
+        recordSpecial(user, target, "훔칠 것이 없다.");
+      } else if (stolenFrom.has(target.id)) {
+        recordSpecial(user, target, "이미 훔쳤다.");
+      } else {
+        const itemId = rollStealItem(enemyRecord, rng);
+        if (itemId) {
+          stolenFrom.add(target.id);
+          battleEventState.inventory[itemId] = (battleEventState.inventory[itemId] ?? 0) + 1;
+          const name = options.project.database.items.find((item) => item.id === itemId)?.name ?? itemId;
+          recordSpecial(user, target, `${name}을(를) 훔쳤다!`);
+        } else {
+          recordSpecial(user, target, "훔치지 못했다.");
+        }
+      }
+    } else if (skill.effect.kind === "scan") {
+      target.scanned = true;
+      const rates: Record<string, string | undefined> = {};
+      for (const element of options.project.database.elements ?? []) {
+        const base = enemyRecord?.elementRates?.[element.id]
+          ?? options.project.database.actors.find((actor) => actor.id === target.recordId)?.elementRates?.[element.id];
+        rates[element.id] = stateElementRateOverride(options.project, target, element.id) ?? base;
+      }
+      recordSpecial(user, target, scanMessage(target.name, target, weaknessElementNames(options.project, rates)));
+    } else if (skill.effect.kind === "learnEnemySkill") {
+      const learned = battlerSide(user) === "actor" && enemyRecord
+        ? firstLearnableSkill(options.project, target.skillIds, user.skillIds)
+        : undefined;
+      if (learned) {
+        learnBattleSkill(user, learned.id);
+        recordSpecial(user, target, `${learned.name}을(를) 배웠다!`);
+      } else {
+        recordSpecial(user, target, "배울 기술이 없다.");
+      }
+    }
+    applyStates(user, target, skill.stateEffects);
+  }
+
+  /** 청마법: learnEnemySkill 기술을 아는 배우가 적의 learnable 기술에 맞으면 그 기술을 배운다. */
+  function learnSkillThatHit(user: MutableBattler, target: MutableBattler, skill: ReturnType<typeof lookupSkill>): void {
+    if (!skill?.learnable || battlerSide(user) !== "enemy" || battlerSide(target) !== "actor" || target.monsterInstanceId) return;
+    if (target.skillIds.includes(skill.id)) return;
+    const blueMage = target.skillIds.some((id) => lookupSkill(id)?.effect.kind === "learnEnemySkill");
+    if (!blueMage) return;
+    learnBattleSkill(target, skill.id);
+    recordSpecial(user, target, `${target.name}이(가) ${skill.name}을(를) 배웠다!`);
   }
 
   function applySkillHit(
@@ -2537,7 +2700,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const rawResult = applySkillLike(user, target, {
       power,
       statistic,
-      effect: effectKind,
+      effect: damageEffectKind(effectKind),
       affects,
       // RM2K3 스킬 성공률: hitRate(명중률)와 successRate(성공률)를 합성한 단일 판정.
       // 두 값 모두 100 이 기본이라 기존 데이터의 기대 명중률은 변하지 않는다.
@@ -2586,6 +2749,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       battleEventState.switches[skill.effect.switchId] = true;
     }
     if (result.hit && effectKind === "damage") queueCounter(user, target, statistic, skill?.elementId);
+    if (result.hit) learnSkillThatHit(user, target, skill);
   }
   // successRate 는 감사 A12 에서 "편집만 되고 전투에 미반영"으로 확인된 필드다.
   function applyGen1Skill(
@@ -2623,7 +2787,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         : applySkillLike(user, target, {
             power,
             statistic,
-            effect: effectKind,
+            effect: damageEffectKind(effectKind),
             affects,
             hitRate: 100,
             variance: skill?.variance,
@@ -2962,6 +3126,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function resolveOutcome(): void {
     if (result) return;
     applyAutoRevives();
+    resolveEnemyParts();
     // Recoil and event effects can wipe out both sides in the same resolution.
     // Defeat must win before either the Gen1 or the ordinary victory path pays rewards.
     // 석화처럼 incapacitates 상태인 배우도 쓰러진 것으로 센다 — 전원이 그렇다면 패배.
@@ -3101,7 +3266,7 @@ export function concreteTargetCommand(
     case "attack":
       return { kind: "attack", targetEnemyId: targetId };
     case "skill":
-      return { kind: "skill", skillId: command.skillId, targetEnemyId: targetId, ...(side === "actor" ? { targetActorId: targetId as ActorId } : {}) };
+      return { kind: "skill", skillId: command.skillId, targetEnemyId: targetId, ...(side === "actor" ? { targetActorId: targetId as ActorId } : {}), ...(command.inputResult ? { inputResult: command.inputResult } : {}) };
     case "item":
       return { kind: "item", itemId: command.itemId, targetEnemyId: targetId, ...(side === "actor" ? { targetActorId: targetId as ActorId } : {}) };
     case "capture":

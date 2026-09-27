@@ -3,6 +3,7 @@
 // timeSystem/monsterCollection과 같은 패턴: 생략 시 레거시(턴제 라우팅) 유지.
 
 import { GUARD_MAX_DAMAGE_REDUCTION_PERCENT } from "@/battle/action/guard";
+import { normalizeChargeTiers } from "@/battle/battleInputSequence";
 
 import type {
   ActionCombatHudConfig,
@@ -114,6 +115,8 @@ export function normalizeActionSkillProfile(profile: Partial<ActionSkillProfile>
   if (profile.itemCost && typeof profile.itemCost.itemId === "string" && profile.itemCost.itemId.length > 0) {
     out.itemCost = { itemId: profile.itemCost.itemId, amount: clampInt(profile.itemCost.amount, 1, 99, 1) };
   }
+  const chargeTiers = normalizeChargeTiers(profile.chargeTiers);
+  if (chargeTiers) out.chargeTiers = chargeTiers;
   return out;
 }
 

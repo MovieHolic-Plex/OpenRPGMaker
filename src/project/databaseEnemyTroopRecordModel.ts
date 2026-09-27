@@ -1,5 +1,6 @@
 import { DEFAULT_ELEMENT_RATE_LABELS } from "@/project/actorModel";
 import { normalizeEnemyActionProfile } from "@/project/actionCombat";
+import { normalizeStealItems } from "@/battle/battleSpecialEffects";
 import type {
   EnemyActionCondition,
   EnemyActionPattern,
@@ -55,6 +56,10 @@ export function normalizeEnemyRecord(
     ...(() => {
       const reactions = normalizeEnemyReactions(record.reactions);
       return reactions.length > 0 ? { reactions } : {};
+    })(),
+    ...(() => {
+      const stealItems = normalizeStealItems(record.stealItems);
+      return stealItems.length > 0 ? { stealItems } : {};
     })(),
   };
 }
@@ -188,6 +193,7 @@ function normalizeEnemyActions(actions: readonly Partial<EnemyActionPattern>[] |
       ...(action.moveTo && Number.isFinite(action.moveTo.x) && Number.isFinite(action.moveTo.y)
         ? { moveTo: { x: clampInteger(action.moveTo.x, 0, 320), y: clampInteger(action.moveTo.y, 0, 240) } }
         : {}),
+      ...(typeof action.requiresPart === "string" && action.requiresPart.trim() ? { requiresPart: action.requiresPart.trim().slice(0, 32) } : {}),
     }));
 }
 
@@ -234,6 +240,8 @@ function normalizeMembers(members: readonly Partial<TroopMemberRecord>[] | undef
       x: clampInteger(member.x ?? 160, 0, 320),
       y: clampInteger(member.y ?? 120, 0, 240),
       hidden: member.hidden ?? false,
+      ...(typeof member.partOf === "number" && Number.isInteger(member.partOf) && member.partOf >= 0 && member.partOf < 64 ? { partOf: member.partOf } : {}),
+      ...(typeof member.partTag === "string" && member.partTag.trim() ? { partTag: member.partTag.trim().slice(0, 32) } : {}),
     }));
 }
 

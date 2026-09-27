@@ -31,6 +31,7 @@
 @import "./battle-skins/_windowskin.css" layer(runtime);
 @import "./battle/22-hit-feel.css" layer(runtime);
 @import "./battle/23-entry-exit.css" layer(runtime);
+@import "./battle/24-input-prompt.css" layer(runtime);
 @import "./commerce.css" layer(runtime);
 @import "./shop.css" layer(runtime);
 @import "./title.css" layer(runtime);

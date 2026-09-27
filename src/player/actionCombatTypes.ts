@@ -109,6 +109,8 @@ export interface ActionCombatSceneState {
   skillSlotIds: string[];
   /** 현재 출려로 캐스트하는 슬롯 인덱스. */
   activeSkillSlot: number;
+  /** 홀드 차지 중인 액션 스킬(chargeTiers 가 있는 슬롯). 떼는 순간 배율을 정해 발동한다. */
+  skillCharge?: { skillId: string; heldMs?: number };
   hitstopMs: number;
   fieldSpawnRuntime?: FieldSpawnRuntimeState;
   barsGraphics?: Phaser.GameObjects.Graphics;

@@ -13,7 +13,7 @@ import type { ActorId, ActorInitialEquipment, ActorParameterKey, ClassBattleComm
 import { resolveBattlerPose } from "@/battle/battlePose";
 import type { BattleActionResultSnapshot, BattleBattlerSnapshot } from "@/battle/types";
 import { classicEnemyFormation } from "@/battle/battlerPlacements";
-import type { TroopRecord } from "@/project/types/database";
+import type { TroopMemberRecord, TroopRecord } from "@/project/types/database";
 import { effectiveActorEquipment, logicalEquipmentIds } from "@/project/equipmentRules";
 
 const CHARGE_PER_AGILITY = 0.1 / 43;
@@ -78,6 +78,10 @@ export interface MutableBattler {
   skillPp?: Record<SkillId, number>;
   skillCooldowns?: Record<SkillId, number>;
   readonly enemyActions?: readonly EnemyActionPattern[];
+  /** 다부위 적: 이 부위의 본체 배틀러 id. 본체가 쓰러지면 이 부위도 쓰러진다. */
+  readonly partCoreId?: string;
+  /** 부위 태그(TroopMemberRecord.partTag). 쓰러지면 본체의 requiresPart 행동이 막힌다. */
+  readonly partTag?: string;
   // 전투 중 moveEnemy(m2)·행동 moveTo 가 옮긴다 — 위치 범위기가 새 좌표를 본다.
   battleX?: number;
   battleY?: number;
@@ -87,6 +91,8 @@ export interface MutableBattler {
   moved?: { readonly durationMs: number; readonly sequence: number };
   hidden: boolean;
   captured?: boolean;
+  /** 라이브라로 탐색됨. */
+  scanned?: boolean;
   hp: number;
   mp: number;
   gauge: number;
@@ -462,7 +468,7 @@ export function enemyBattlers(project: Project, troop: TroopRecord): MutableBatt
         ...classicEnemyFormation(index),
         hidden: false,
       }));
-  return members.map((member, index) => {
+  return members.map((member: TroopMemberRecord, index) => {
     const enemyId = member.enemyId;
     const enemy = project.database.enemies.find((record) => record.id === enemyId);
     if (!enemy) throw new Error(`Missing enemy: ${enemyId}`);
@@ -503,6 +509,10 @@ export function enemyBattlers(project: Project, troop: TroopRecord): MutableBatt
       speciesId: normalizedEnemy.speciesId,
       hidden: member.hidden ?? false,
       captured: false,
+      ...(typeof member.partOf === "number" && member.partOf !== index && members[member.partOf]
+        ? { partCoreId: `enemy-${member.partOf + 1}` }
+        : {}),
+      ...(member.partTag ? { partTag: member.partTag } : {}),
     };
   });
 }
@@ -553,6 +563,7 @@ export function battlerSnapshot(
     captured: battler.captured === true ? true : undefined,
     ...(battler.limitGauge !== undefined ? { limitGauge: battler.limitGauge } : {}),
     ...(battler.resource2 !== undefined ? { resource2: battler.resource2 } : {}),
+    ...(battler.scanned ? { scanned: true } : {}),
     effectiveStats: { attack: battler.attackPower, defense: battler.defense, mind: battler.mind, agility: battler.agility },
     pose: "idle" as unknown as BattleBattlerSnapshot["pose"],
   };

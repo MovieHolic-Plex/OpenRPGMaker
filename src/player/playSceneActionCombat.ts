@@ -25,6 +25,7 @@ import { resolveDodgeStep } from "@/battle/action/dodge";
 import { guardedDamage, resolveGuardStep } from "@/battle/action/guard";
 import { kiteBandForAttack } from "@/battle/action/kiting";
 import { activeActionSkillId, cycleActionSkillSlot, resolveActionSkillSlots } from "@/battle/action/skillSlots";
+import { advanceSkillCharge } from "@/battle/battleInputSequence";
 import { shouldApplyContactDamage } from "@/battle/action/contact";
 import { resolveHostileTarget, resolveNpcDamage, type FactionCombatantRef } from "@/battle/action/factionTargeting";
 import {
@@ -657,7 +658,21 @@ function performActionCombatSwing(scene: PlaySceneContext, state: ActionCombatSc
   }
 }
 
-export function tryActionSkillCast(scene: PlaySceneContext): void {
+/**
+ * 홀드 차지 진행. 스킬 키를 떼는 순간 누른 시간의 chargeTiers 배율로 발동한다.
+ * 차지 중이 아니면 아무 일도 하지 않는다(chargeTiers 없는 스킬은 누르는 즉시 발동 — 기존과 같다).
+ */
+export function updateActionSkillCharge(scene: PlaySceneContext, deltaMs: number, held: boolean): void {
+  const charge = scene.actionCombatState?.skillCharge;
+  if (!charge) return;
+  const skill = store.getCurrent().database.skills.find((entry) => entry.id === charge.skillId);
+  const multiplier = advanceSkillCharge(charge, skill?.actionSkill?.chargeTiers, deltaMs, held);
+  if (multiplier === undefined) return;
+  scene.actionCombatState!.skillCharge = undefined;
+  tryActionSkillCast(scene, multiplier);
+}
+
+export function tryActionSkillCast(scene: PlaySceneContext, chargeMultiplier?: number): void {
   const state = scene.actionCombatState;
   if (!state || scene.running || !scene.inputEnabled) return;
   const project = store.getCurrent();
@@ -673,8 +688,16 @@ export function tryActionSkillCast(scene: PlaySceneContext): void {
   if (!skillId) return;
   const skill = project.database.skills.find((entry) => entry.id === skillId);
   if (!skill?.actionSkill) return;
-  const profile = normalizeActionSkillProfile(skill.actionSkill);
-  if (!profile || vitals.hp <= 0 || !canCastActionProfile(scene, profile)) return;
+  const normalized = normalizeActionSkillProfile(skill.actionSkill);
+  if (!normalized || vitals.hp <= 0 || !canCastActionProfile(scene, normalized)) return;
+  // 차지 단계가 있는 스킬은 누르는 순간 차지를 시작하고, 떼는 순간(updateActionSkillCharge) 발동한다.
+  if (normalized.chargeTiers && chargeMultiplier === undefined) {
+    state.skillCharge = { skillId, heldMs: 0 };
+    return;
+  }
+  const profile = chargeMultiplier && chargeMultiplier !== 1
+    ? { ...normalized, damage: Math.max(1, Math.round(normalized.damage * chargeMultiplier)) }
+    : normalized;
   if (profile.kind === "projectile" && state.projectiles.length >= 128) return;
   const mpCost = battleSkillMpCost(skill, vitals.maxMp);
   const ammo = profile.itemCost;

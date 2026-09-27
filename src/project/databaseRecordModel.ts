@@ -58,6 +58,7 @@ import {
   normalizeHomeDecorationTypes,
 } from "@/project/spatialPlacements";
 import type { ActorExperienceCurve, CompanionConfig, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
+import { normalizeSkillInputSequence } from "@/battle/battleInputSequence";
 import { normalizeCharacterFootprint, normalizePassRows } from "@/project/footprint";
 import { normalizePlayResolution } from "@/project/playResolution";
 import { normalizeCameraZoom } from "@/project/cameraZoom";
@@ -100,6 +101,7 @@ export function normalizeStateRecord(record: Partial<StateRecord> & Pick<StateRe
       const emotion = normalizeStateEmotion(record.emotion);
       return emotion ? { emotion } : {};
     })(),
+    ...(typeof record.disablesEquipSlot === "string" && record.disablesEquipSlot ? { disablesEquipSlot: record.disablesEquipSlot } : {}),
   };
 }
 
@@ -654,6 +656,11 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     ...(typeof record.partyGaugeCost === "number" && Number.isFinite(record.partyGaugeCost) && record.partyGaugeCost > 0
       ? { partyGaugeCost: clampInteger(record.partyGaugeCost, 1, 999) }
       : {}),
+    ...(record.learnable === true ? { learnable: true } : {}),
+    ...(() => {
+      const inputSequence = normalizeSkillInputSequence(record.inputSequence);
+      return inputSequence ? { inputSequence } : {};
+    })(),
   };
 }
 
@@ -861,6 +868,7 @@ function normalizeRecovery(cost: Partial<SkillMpCost> | undefined): SkillMpCost 
 }
 
 function normalizeSkillEffect(effect: SkillEffect | undefined): SkillEffect {
+  if (effect?.kind === "randomSkillFrom") return { kind: "randomSkillFrom", skillIds: uniqueCleanIds(effect.skillIds).slice(0, 16) };
   return effect ?? { kind: "damage", statistic: "attack", affects: "hp" };
 }
 

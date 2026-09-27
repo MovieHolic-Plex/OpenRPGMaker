@@ -77,7 +77,7 @@ export type EquipmentUseResult =
 
 export type TargetedActorCommand =
   | { readonly kind: "attack" }
-  | { readonly kind: "skill"; readonly skillId: SkillId }
+  | { readonly kind: "skill"; readonly skillId: SkillId; readonly inputResult?: import("@/battle/battleInputSequence").SkillInputResult }
   | { readonly kind: "item"; readonly itemId: ItemId }
   | { readonly kind: "capture"; readonly captureItemId: ItemId };
 
@@ -89,7 +89,8 @@ export type ActorCommandDraft =
 
 export type ActorCommand =
   | { readonly kind: "attack"; readonly targetEnemyId: string }
-  | { readonly kind: "skill"; readonly skillId: SkillId; readonly targetEnemyId: string; readonly targetActorId?: ActorId }
+  /** inputResult: 입력 커맨드 기술(SkillRecord.inputSequence)의 판정. 생략 = 배율 1. */
+  | { readonly kind: "skill"; readonly skillId: SkillId; readonly targetEnemyId: string; readonly targetActorId?: ActorId; readonly inputResult?: import("@/battle/battleInputSequence").SkillInputResult }
   | { readonly kind: "item"; readonly itemId: ItemId; readonly targetEnemyId: string; readonly targetActorId?: ActorId }
   | { readonly kind: "capture"; readonly captureItemId: ItemId; readonly targetEnemyId: string }
   | { readonly kind: "defend" }
@@ -273,6 +274,8 @@ export interface BattleBattlerSnapshot {
   readonly limitGauge?: number;
   /** 제2 기술 자원 「기력」(system.resource2 를 켠 전투의 아군만). */
   readonly resource2?: number;
+  /** 라이브라로 탐색된 적 — HP 바를 피해 전에도 드러낸다. */
+  readonly scanned?: boolean;
 }
 
 export interface BattleHitFeelSnapshot {
@@ -328,7 +331,9 @@ export type BattleTimelineEntryKind =
   /** 적 위치 이동(moveEnemy/moveTo). */
   | "move"
   /** 배틀 이벤트 `wait` 가 요청한 연출 일시정지(strict 흐름). `waitMs` 를 들고 있다. */
-  | "wait";
+  | "wait"
+  /** 특수 명령 결과(훔치기·라이브라·청마법·무작위 기술). `message` 한 줄을 읽힌다. */
+  | "special";
 
 /** Ordered, append-only battle facts consumed by presentation exactly once. */
 export interface BattleTimelineEntrySnapshot {
@@ -351,6 +356,8 @@ export interface BattleTimelineEntrySnapshot {
   readonly resource?: "hp" | "mp";
   /** kind === "wait" 인 엔트리의 일시정지 시간(ms). 시퀀서가 이 값만큼 다음 비트를 늦춘다. */
   readonly waitMs?: number;
+  /** kind === "special" 인 엔트리의 전투 메시지. */
+  readonly message?: string;
   /** 이 액션이 재생할 전투 애니메이션. 시퀀서가 비트 재생 시점에 이 스냅샷으로
    *  애니메이션을 띄운다 — lastAnimation(전역 잔류값) 기반 재생은 잔여물 결함의 원인이었다. */
   readonly animation?: BattleAnimationSnapshot;
