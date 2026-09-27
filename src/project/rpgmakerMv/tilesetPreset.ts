@@ -97,6 +97,8 @@ function objectCells(object: MvPackObject, input: MvPackBuildInput, index: Retur
 function objectCellSolid(object: MvPackObject, dx: number, dy: number): boolean {
   if (object.kind === "prop") return true;
   if (object.kind === "tall") return object.solid ? object.solid.some(([x, y]) => x === dx && y === dy) : dy === object.h - 1;
+  // 문은 맨 아랫줄만 걷는다. 윗줄(문틀·아치)까지 통행이면 문 칸에서 벽 위·대지 위로 걸어 올라간다.
+  if (object.kind === "door") return dy < object.h - 1;
   return false;
 }
 
