@@ -68,6 +68,12 @@ export type EditorWelcomeOptions = {
   readonly canGenerate?: () => boolean;
   /** AI 설정을 열어 준다. 안내 문구의 버튼이 부른다. */
   readonly openAiSettings?: () => void;
+  /**
+   * 프리셋 포스터를 누르면 기획 인터뷰 **전에** 부른다. AI 가 연결돼 있거나 연결을 마치면 true,
+   * 사용자가 「나중에」를 고르면 false(포스터는 아무 일도 하지 않고 첫 화면에 남는다).
+   * ⚙ 시스템 프리셋(AI 없이 시작)은 이 관문을 지나지 않는다.
+   */
+  readonly ensureAiConnected?: (presetLabel: string) => Promise<boolean>;
 };
 
 export type ShouldPresentEditorWelcomeOptions = {
@@ -293,6 +299,19 @@ export function presentEditorWelcome(
         systemPresetError.hidden = false;
         systemPresetError.textContent = "원격 저장 경로를 준비하지 못했습니다. 프로젝트 연결을 확인하세요.";
         return;
+      }
+      // 프리셋 경로는 AI 팀이 첫 생성을 맡는다 — 연결이 없으면 인터뷰를 시작하기 전에 연결부터 안내한다.
+      if (autoSend && options.ensureAiConnected) {
+        applyingSystemPreset = true;
+        let connected = false;
+        try {
+          connected = await options.ensureAiConnected(label);
+        } catch {
+          connected = false;
+        } finally {
+          applyingSystemPreset = false;
+        }
+        if (!connected || settled) return;
       }
       applyingSystemPreset = true;
       systemPresetError.hidden = true;

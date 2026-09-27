@@ -259,6 +259,11 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
           .then(({ openAiSettingsModal }) => { openAiSettingsModal(); })
           .catch(() => undefined);
       },
+      // 프리셋 포스터는 AI 팀이 첫 생성을 맡는다 — 연결이 없으면 인터뷰 전에 연결부터 안내한다.
+      ensureAiConnected: async (presetLabel) => {
+        const { ensureAiConnectedForPreset } = await import("@/editor/ui/aiConnectGate");
+        return ensureAiConnectedForPreset({ presetLabel });
+      },
     });
     // presentEditorWelcome 은 Promise 실행자 안에서 동기로 마운트한다 — 이 시점에 웰컴이 이미 DOM 에 있다.
     // 로더 페이드아웃(200ms)이 웰컴 위로 겹쳐 빠지므로 로더 → 웰컴 사이에 편집기가 비치지 않는다.
@@ -281,6 +286,8 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
         ...(result.displayText ? { displayText: result.displayText } : {}),
         autoSend: result.autoSend,
         source: result.source === "chip" ? "chip" : "free-text",
+        // 프리셋으로 시작하는 첫 생성만 팀으로 돈다. 자유 입력 「만들기」와 이후 요청은 사용자 팀 설정을 따른다.
+        ...(result.source === "chip" ? { team: true } : {}),
       });
       // AI 없이 인터뷰를 끝내면 기획 프롬프트가 조수 입력창에 담기기만 한다. 설명이 없으면 빈 맵과
       // 낯선 지시문만 남아 「아무 일도 안 일어났다」로 보인다 — 메뉴의 새 프로젝트 경로와 같은 안내를 준다.
