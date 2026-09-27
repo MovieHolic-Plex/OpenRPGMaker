@@ -286,6 +286,10 @@ export async function runPiCommand(
   const readOnly = options.readOnly === true || options.planOnly === true;
   // 조회 턴에 팀을 켜면 시공 팀원이 아무것도 못 하는 채로 예산만 태운다 — 읽기 전용은 언제나 단독이다.
   const team = command.mode === "team" && !readOnly && !options.villageContract;
+  // 팀을 요청했는데 단독으로 내린 경우는 말한다 — 보드 배지 한 글자만 바뀌어서 「팀이 고장났다」로 읽혔다.
+  if (command.mode === "team" && !team && !readOnly) {
+    surface.appendBubble("system", "이번 요청은 마을 시공 계약이 걸려 있어 팀 대신 혼자 작업해요.");
+  }
   const routineEdit = options.routineEdit === true && !readOnly && !team
     && command.mapIds.length === 1 && Boolean(base.maps[command.mapIds[0]!]);
   const groups = team || options.planOnly ? [command.mapIds] : command.mapIds.length > 0 ? command.mapIds.map((id) => [id]) : [[] as string[]];
