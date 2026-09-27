@@ -44,10 +44,11 @@ function startWorker() {
   if (workerPortPromise) return workerPortPromise;
   let promise;
   promise = new Promise((resolve, reject) => {
-    // 이 줄은 CJS 번들(Electron 메인)에서 빈 import.meta.url 을 본다 — startWorker() 안이라
-    // 모듈 로드 때는 평가되지 않는다. 로드 시점 평가는 앱을 죽이므로 aiAuthRuntime.ts 쪽을
-    // 지연 함수로 감쌌다(2026-09-22 실측: 패키징 AppImage 가 Invalid URL 로 시작 실패).
-    const script = process.env.OPRN_OH_MY_PI_WORKER_SCRIPT || fileURLToPath(new URL("../oh-my-pi-worker.ts", import.meta.url));
+    // 스크립트 경로는 bun 으로 스크립트를 띄울 때만 계산한다. CJS 번들(Electron 메인)에서는 import.meta.url 이
+    // 비어 `new URL` 이 던진다 — 모듈 로드 때 평가하면 앱이 죽고(2026-09-22 실측: AppImage 시작 실패),
+    // 여기서 무조건 평가하면 패키지 워커(OPRN_OH_MY_PI_WORKER_BIN)를 띄우기 전에 모든 채팅이
+    // 500 "Invalid URL" 로 죽는다(2026-09-27 실측: 패키징된 linux 앱).
+    const workerScript = () => process.env.OPRN_OH_MY_PI_WORKER_SCRIPT || fileURLToPath(new URL("../oh-my-pi-worker.ts", import.meta.url));
     const localBun = join(homedir(), ".bun", "bin", "bun");
     const bun = process.env.OPRN_BUN_PATH || (existsSync(localBun) ? localBun : "bun");
     // Tests point this at a script that crashes on startup to pin the failure contract.
@@ -57,7 +58,7 @@ function startWorker() {
       ? spawn(command, [], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env }, shell: true })
       : packedBin && existsSync(packedBin)
         ? spawn(packedBin, [], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env } })
-        : spawn(bun, [script], {
+        : spawn(bun, [workerScript()], {
           stdio: ["ignore", "pipe", "pipe"],
           env: { ...process.env },
         });
