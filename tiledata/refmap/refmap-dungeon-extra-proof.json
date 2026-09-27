@@ -1,0 +1,34 @@
+{
+  "id": "refmap-dungeon-extra-local",
+  "tileset": "shared_refmap_dungeon_extra",
+  "tiles": 6144,
+  "atlas": "3072×4608",
+  "places": 2,
+  "objectKits": 65,
+  "houseKits": 0,
+  "autotileGroups": 49,
+  "bytes": 7022126,
+  "maps": {
+    "abandoned_mine": {
+      "place": "shared_refmap_dungeon_extra_abandoned_mine",
+      "size": "40×30",
+      "objects": 55,
+      "houses": 0,
+      "renderSha": "d03d848cad35499f027e4b99f9275eb9bb25dfb1a9b37976e533176afa418688"
+    },
+    "rock_cave": {
+      "place": "shared_refmap_dungeon_extra_rock_cave",
+      "size": "40×30",
+      "objects": 57,
+      "houses": 0,
+      "renderSha": "0c6395bd3e85bdf00c4501767b243bc322a1a997378fbb57a3e69aacc7960aa3"
+    }
+  },
+  "file": "/home/main/.local/share/oprn/shared-content.sqlite",
+  "revision": "acdbab66ea257b2a25f1a613522d759713c435a99e5442ba8d233fd258d8c68a",
+  "reloaded": true,
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-dungeon-extra-2026-09-27T07-41-56-767Z.sqlite",
+  "otherLibraries": 28,
+  "otherLibrariesUnchanged": true,
+  "publishedAt": "2026-09-27T07:42:45.772Z"
+}
