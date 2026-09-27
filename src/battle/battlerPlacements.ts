@@ -59,6 +59,8 @@ export const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
   goldensun: SIDEVIEW,
   mv: FRONTVIEW,
   vxace: FRONTVIEW,
+  // 도트 측면 전투(2026-09-28). 처음에는 측면 배치를 그대로 쓰고, 스킨 작업이 자기 배치로 바꾼다.
+  retro2003: SIDEVIEW,
 };
 
 export const CANONICAL_SIDEVIEW_ANCHOR_X = 84;
