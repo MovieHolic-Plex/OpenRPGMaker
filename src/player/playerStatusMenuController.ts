@@ -1,6 +1,12 @@
 import { DEFAULT_INVENTORY_VIEW, type InventoryView } from '@/player/playerInventoryView';
 import { LifeReconciliationError } from "@/project/lifeRecovery";
-import { investSkillNode, resetSkillTree } from "@/project/growth/runtime";
+import { actorOwnedSkillIds, investSkillNode, resetSkillTree } from "@/project/growth/runtime";
+import { combineItems } from "@/project/craftRecipes";
+import { toggleSkillLoadout } from "@/project/skillLoadout";
+import { setAudioState } from "@/project/session";
+import { findFacedItemTarget } from "@/player/itemUseOnTarget";
+import { itemCombinationPartners } from "@/player/playerStatusMenuDetails";
+import { runItemUsePage } from "@/player/playSceneInterpreter";
 import { promoteActor } from "@/project/sessionClass";
 import { refreshGrowthVitals } from "@/project/growth/vitals";
 import type { GrowthMenuTab } from "@/player/playerGrowthMenu";
@@ -56,6 +62,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   const detailScrolls = new Map<string, number>();
   let inventoryView: InventoryView = { ...DEFAULT_INVENTORY_VIEW };
   let targetItemId: string | undefined;
+  let itemActionId: string | undefined;
   let skillActorId: string | undefined;
   let selectedSkillId: string | undefined;
   let growthTab: GrowthMenuTab = "skills";
@@ -84,6 +91,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   const resetSubscreenState = (): void => {
     selectedDetailActionIndex = 0;
     targetItemId = undefined;
+    itemActionId = undefined;
     skillActorId = undefined;
     selectedSkillId = undefined;
     growthTab = "skills";
@@ -130,6 +138,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       mode,
       inventoryView,
       targetItemId,
+      itemActionId,
+      canUseItemOnFacedTarget: (itemId) => facedItemTarget(itemId) !== undefined,
       skillActorId,
       selectedSkillId,
       growthTab,
@@ -172,6 +182,14 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
           options.emitMenuJuice("menu-confirm", renderMenu(undefined, "items"));
         },
         onUseItem: useItem,
+        onOpenItemActions: (itemId) => {
+          rememberDetailCursorFromTestId(`status-menu-item-${itemId}`);
+          itemActionId = itemId;
+          options.emitMenuJuice("menu-confirm", renderMenu(undefined, "items"));
+        },
+        onCombineItems: combineItemsFromMenu,
+        onUseItemOnFacedTarget: useItemOnFacedTarget,
+        onToggleSkillLoadout: toggleSkillLoadoutFromMenu,
         onSelectSkillActor: (actorId) => {
           rememberDetailCursorFromTestId(`status-menu-skill-actor-${actorId}`);
           skillActorId = actorId;
@@ -445,6 +463,65 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     emitMutationResult(result, panel);
   }
 
+  /** 정면·발밑 이벤트가 이 아이템을 받는가(itemUsed 페이지). 씬이 없으면 undefined. */
+  function facedItemTarget(itemId: string): ReturnType<typeof findFacedItemTarget> {
+    const scene = options.getActiveScene();
+    if (!scene?.map) return undefined;
+    return findFacedItemTarget(store.getCurrent(), scene.map, scene.getSession(), scene.eventPositions, { x: scene.tileX, y: scene.tileY, facing: scene.facing }, itemId);
+  }
+
+  function useItemOnFacedTarget(itemId: string): void {
+    const scene = options.getActiveScene();
+    const target = facedItemTarget(itemId);
+    if (!scene || !target) {
+      emitMutationResult({ kind: "unusable", message: "여기에는 쓸 수 없습니다" }, renderMenu("여기에는 쓸 수 없습니다", "items"));
+      return;
+    }
+    itemActionId = undefined;
+    // 메뉴를 닫고 이벤트 대화가 메뉴 아래에 묻히지 않게 한다(스위치 아이템 경로와 같은 이유).
+    options.emitMenuJuice("menu-confirm", currentMenu());
+    options.layout.querySelector("[data-testid='main-menu']")?.remove();
+    void runItemUsePage(scene as unknown as PlaySceneContext, target.event.id, target.page.commands, itemId);
+  }
+
+  function combineItemsFromMenu(itemA: string, itemB: string): void {
+    const scene = options.getActiveScene();
+    if (!scene) return;
+    rememberDetailCursorFromTestId(`status-menu-item-combine-${itemA}-${itemB}`);
+    const project = store.getCurrent();
+    const session = scene.getSession();
+    const result = combineItems(project, session, itemA, itemB);
+    if (!result.ok) {
+      emitMutationResult({ kind: "unusable", message: "조합할 수 없습니다" }, renderMenu("조합할 수 없습니다", "items"));
+      return;
+    }
+    setAudioState(session, { channel: "se", resourceId: "easyrpg-sound-item1", loop: false });
+    scene.syncRuntimeState();
+    // 재료가 떨어졌으면 목록으로 돌아간다.
+    if ((session.inventory[itemA] ?? 0) <= 0 || itemCombinationPartners(project, session, itemA).length === 0) itemActionId = undefined;
+    const output = project.database.items.find((item) => item.id === result.outputItemId)?.name ?? result.outputItemId;
+    emitMutationResult({ kind: "used", message: "" }, renderMenu(`${output}을(를) 만들었습니다`, "items"));
+  }
+
+  function toggleSkillLoadoutFromMenu(actorId: string, skillId: string): void {
+    const scene = options.getActiveScene();
+    if (!scene) return;
+    rememberDetailCursorFromTestId(`status-menu-skill-${actorId}-${skillId}`);
+    const project = store.getCurrent();
+    const session = scene.getSession();
+    const actor = project.database.actors.find((record) => record.id === actorId);
+    if (!actor) return;
+    const learned = project.database.skills
+      .filter((skill) => actorOwnedSkillIds(project, session, actorId).includes(skill.id))
+      .map((skill) => skill.id);
+    const result = toggleSkillLoadout(session, actor, learned, skillId);
+    const message = result.ok
+      ? (result.equipped ? "장착했습니다" : "장착을 풀었습니다")
+      : result.reason === "full" ? "장착 칸이 가득 찼습니다. 먼저 하나를 푸세요." : "장착할 수 없습니다";
+    scene.syncRuntimeState();
+    emitMutationResult({ kind: result.ok ? "used" : "unusable", message }, renderMenu(message, "skills"));
+  }
+
   function equipItem(actorId: string, slotId: keyof ActorInitialEquipment, equipmentId: string): void {
     const scene = options.getActiveScene();
     if (!scene) return;
@@ -635,6 +712,10 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
           targetItemId = undefined;
           return true;
         }
+        if (itemActionId) {
+          itemActionId = undefined;
+          return true;
+        }
         return false;
       case "skills":
         if (selectedSkillId) {
@@ -800,7 +881,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     if (isStatusMenuGroupEntryId(selectedCommand)) return `group:${selectedCommand}`;
     switch (selectedCommand) {
       case "items":
-        return targetItemId ? `items:${targetItemId}:targets` : "items:list";
+        if (targetItemId) return `items:${targetItemId}:targets`;
+        return itemActionId ? `items:${itemActionId}:actions` : "items:list";
       case "skills":
         return skillActorId ? `skills:${skillActorId}:${growthTab}` : "skills:actors";
       case "equipment":

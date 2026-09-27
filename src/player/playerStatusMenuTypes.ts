@@ -16,6 +16,10 @@ export type PlayerStatusMenuActions = {
   readonly onLoadSlot: (slot: SaveSlotIndex) => void;
   readonly onSelectItemTarget: (itemId: string) => void;
   readonly onUseItem: (itemId: string, actorId?: string, monsterInstanceId?: string) => void;
+  readonly onOpenItemActions?: (itemId: string) => void;
+  readonly onCombineItems?: (itemA: string, itemB: string) => void;
+  readonly onUseItemOnFacedTarget?: (itemId: string) => void;
+  readonly onToggleSkillLoadout?: (actorId: string, skillId: string) => void;
   readonly onSelectSkillActor: (actorId: string) => void;
   readonly onSelectGrowthTab?: (tab: GrowthMenuTab) => void;
   readonly onGrowthMutation?: (action: GrowthMenuMutation) => void;
@@ -49,6 +53,8 @@ export type PlayerStatusMenuOptions = {
   readonly selectedDetailActionIndex?: number;
   readonly inventoryView?: InventoryView;
   readonly targetItemId?: string;
+  readonly itemActionId?: string;
+  readonly canUseItemOnFacedTarget?: (itemId: string) => boolean;
   readonly skillActorId?: string;
   readonly selectedSkillId?: string;
   readonly growthTab?: GrowthMenuTab;
