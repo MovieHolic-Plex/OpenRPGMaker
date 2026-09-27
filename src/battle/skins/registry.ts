@@ -275,7 +275,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
   // 창 크롬은 유리 뼈대(family glass)의 배치 계약을 그대로 쓰고 모양만 _retro2003.css 가 덮는다.
   retro2003: {
     id: "retro2003", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "레트로 2003 · 측면 도트 전투", layout: "sideview", showAllySprites: true,
-    hudTemplate: "rows", transition: "flash-white", family: "glass", motionStyle: "retro", scenery: "layered",
+    hudTemplate: "rows", transition: "shatter-2003", family: "glass", motionStyle: "retro", scenery: "layered",
     themeVars: {
       "--battle-window-bg": "#18248c",
       "--battle-window-edge": "#d8e0ff",

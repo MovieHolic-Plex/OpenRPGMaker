@@ -44,6 +44,20 @@ const SIDEVIEW: SkinBattlerPlacement = {
   party: (i) => ({ x: 196 + i * 32, y: 84 + i * 25 }),
 };
 
+/** 도트 측면: 발끝은 접지 띠 안에, 네 아군은 오른쪽 사선으로 내려선다. */
+const RETRO_SIDEVIEW: SkinBattlerPlacement = {
+  partyFacing: "front",
+  enemy: (i, n) => {
+    const columns = Math.ceil(n / 2);
+    // 세 마리까지 한 줄, 그 이상은 최대 두 줄로 나눈다.
+    const seats = n <= 3 ? n : columns;
+    const column = n <= 3 ? i : i % columns;
+    return { x: seats <= 1 ? 96 : Math.round(42 + column * 108 / (seats - 1)),
+      y: n <= 3 ? 128 + (i % 2) * 12 : 118 + Math.floor(i / columns) * 22 };
+  },
+  party: (i) => ({ x: 230 + i * 20, y: 88 + i * 16 }),
+};
+
 export const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
   pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.25, enemy: (i, n) => (n <= 1 ? { x: 239, y: 92 } : { x: 250 - i * 58, y: 100 - (i % 2) * 14 }), party: () => ({ x: 76, y: 152 }) },
   rm2000: FRONTVIEW,
@@ -59,8 +73,8 @@ export const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
   goldensun: SIDEVIEW,
   mv: FRONTVIEW,
   vxace: FRONTVIEW,
-  // 도트 측면 전투(2026-09-28). 처음에는 측면 배치를 그대로 쓰고, 스킨 작업이 자기 배치로 바꾼다.
-  retro2003: SIDEVIEW,
+  // 도트 측면 전투의 독립 접지·간격 계약.
+  retro2003: RETRO_SIDEVIEW,
 };
 
 export const CANONICAL_SIDEVIEW_ANCHOR_X = 84;
@@ -84,6 +98,12 @@ export function resolveSkinEnemyPosition(
   if (autoAlign) return fallback;
   const cx = canonical?.x;
   if (cx == null || !Number.isFinite(cx)) return fallback;
+  // 옛 트룹의 0..240 y를 그대로 쓰면 새 접지 띠 위에 뜬다. 이 스킨만 안전 구간에 맞춘다.
+  if (skinId === "retro2003") {
+    const cy = canonical?.y;
+    return { x: Math.max(40, Math.min(150, cx)),
+      y: cy != null && Number.isFinite(cy) ? Math.max(118, Math.min(140, cy * 2 / 3)) : fallback.y };
+  }
   const layout = BATTLE_SKINS[skinId]?.layout;
   if (layout === "sideview" || layout === "active") {
     // 측면/액티브: 우측 아군과 겹치지 않게 x>150 저작값은 고전 좌측 진형으로 당긴다(SC12).
@@ -139,6 +159,13 @@ export function resolveSkinEnemyPositions(
   }
   const resolved = canonicals.map((c, i) => resolveSkinEnemyPosition(skinId, c, i, n, false));
   if (layout !== "sideview" && layout !== "active") return resolved;
+  if (skinId === "retro2003") {
+    // 접지 구간으로 옮긴 수동 좌표가 뭉치면 트룹 전체를 같은 자동 진형으로 정렬한다.
+    const crowded = resolved.some((seat, i) => resolved.slice(0, i).some((prior) =>
+      Math.abs(prior.x - seat.x) < 44 && Math.abs(prior.y - seat.y) < 20));
+    return crowded ? canonicals.map((_, i) => RETRO_SIDEVIEW.enemy(i, n)) : resolved;
+  }
+
   // 측면 수동 배치: 저작 x>150 을 고전 진형 x 로 접는 규칙이 index 별 충돌을 보지 않아 두 적이
   // **같은 좌표**에 서서 한 마리만 보였다(2026-09-14 실측, troop_slime_pair 128/192 → 둘 다 128).
   // 앞선 적과 x·y 가 모두 가까우면 고전 진형의 y(52+36i)로 내려 세운다.

@@ -10,6 +10,7 @@ export type BattleSkinFamily = "glass";
 export type BattleLayout = "sideview" | "frontview" | "active" | "firstperson";
 export type HudTemplate = "boxes" | "rows" | "ring" | "minimal";
 export type BattleTransition =
+  | "shatter-2003"
   | "flash-white"
   | "wipe-blue"
   | "wipe-black"
