@@ -33,6 +33,7 @@ const bridge = {
     dataVersion: invoke(OPRN_CHANNELS.projectDataVersion),
     separateMedia: invoke(OPRN_CHANNELS.projectSeparateMedia),
     backup: invoke(OPRN_CHANNELS.projectBackup),
+    saveCover: invoke(OPRN_CHANNELS.projectSaveCover),
   },
   commits: {
     record: invoke(OPRN_CHANNELS.commitsRecord),
@@ -68,6 +69,8 @@ const bridge = {
     openRecent: invoke(OPRN_CHANNELS.startOpenRecent),
     createProject: invoke(OPRN_CHANNELS.startCreateProject),
     importFile: invoke(OPRN_CHANNELS.startImportFile),
+    suggestProjectDir: invoke(OPRN_CHANNELS.startSuggestProjectDir),
+    chooseProjectRoot: invoke(OPRN_CHANNELS.startChooseProjectRoot),
   },
   assetBrowser: {
     open: invoke(OPRN_CHANNELS.assetBrowserOpen),
