@@ -258,6 +258,10 @@ function renderMapThumb(card: SpatialGalleryCard): HTMLElement {
 export function renderSpatialListThumb(card: SpatialGalleryCard): HTMLElement {
   if (card.kind === "objects" || card.kind === "spaces") return renderSpatialCardThumb(card);
   if (card.regionReferenceId) return regionReferenceImage(card.regionReferenceId, true);
+  // 연결된 맵이 있는 지역은 그 맵을 줄여 그린다. 시트 귀퉁이는 모든 카드가 같은 그림이 된다.
+  if (card.regionMapId) return regionMapPreview(card.regionMapId, true);
+  // 기본 세계는 지역 점 배치만 그린다(지형 컴파일 없음) — 세계마다 모양이 달라진다.
+  if (card.kind === "worlds" && card.source === "default") return renderWorldCatalogThumb(card);
   if (card.reviewedPlaceId) return catalogListImage(sharedPlacePreview(card.reviewedPlaceId) ?? `/assets/reviewed-places/${card.reviewedPlaceId}.png`, "spatial-card-image");
   if (card.kind === "places" && card.localId) {
     const place = visibleAuthoringProject().spatialAuthoring?.library.places[card.localId];

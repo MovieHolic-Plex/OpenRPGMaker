@@ -1,5 +1,13 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 맵 그룹 목록 수리 — 출처·썸네일·레일 (2026-09-27)
+
+- **공용 킷 판정에 성채를 넣었다.** `spatialCatalog.isBundledFurniturePackKit` 가 번들 `opengameart_castle`(`tex_opengameart_castle`) 의 `castle-measured-*` 14종(잔디 중심·분수 전체…)을 몰라 「내가 만든 항목」으로 내보냈다. 새 번들 킷 시드를 추가하면 이 함수에도 같은 변경에서 넣어라. `test/spatialCatalog.test.ts` 는 전에 이 타일셋을 필터로 빼고 검사해서 결함을 못 봤다 — 지금은 「내 설계」에 없고 기본에 있음을 직접 단언한다.
+- **지역 목록 축소본 129장을 채웠다.** `catalogListImage` 는 `/assets/catalog-thumbs/…` 가 없으면 원본으로 넘어간다. `public/assets/region-references/*.png` 208장 중 129장이 축소본 없이 1216×960 원본으로 카드에 실렸다. 새 참고 사례 PNG 를 넣으면 `python3 scripts/content/build-catalog-thumbs.py` 로 축소본을 같이 커밋한다.
+- **목록 썸네일(`renderSpatialListThumb`)** 은 기본 세계를 `renderWorldCatalogThumb`(지역 점 배치), 맵이 연결된 지역을 `regionMapPreview` 로 그린다. 전에는 둘 다 `tilesetListThumb`(시트 귀퉁이)로 떨어져 모든 세계 카드가 같은 그림이었다.
+- **레일 탭 검색은 `position: sticky`** 이고 구획 머리는 그 아래(`top: 40px`)에 붙는다. `.db-tabs` 의 `scroll-padding-top: 72px` 가 `revealActiveTab`(`scrollIntoView nearest`)이 활성 행을 고정 머리 밑에 숨기지 않게 한다. 맵 그룹은 레일 맨 아래라 이 탭을 열면 레일이 스크롤되고, 전에는 검색 칸이 반쯤 잘린 채 사라졌다.
+- 오브젝트 인스펙터의 `.spatial-object-field` 입력·선택은 `min-width: 0` + `max-width: 100%` 로 패널 폭 안에 머문다(긴 타일셋 이름이 밖으로 밀던 결함).
+
 ## 자료집 열기 (2026-09-24)
 
 도구의 자료집은 `openDatabaseModalLazy`가 연다. 본문 묶음(실측 약 1.4MB)은 편집기 첫 화면 그래프에 넣지 않고, 메뉴 모듈이 잡힌 다음 프레임에 미리 읽은 뒤 창까지 만들어 숨겨 둔다. 탭을 지정하지 않은 클릭은 그 창을 보여 준다. 아직 읽는 중이면 「여는 중」 껍데기를 띄우고, 실패하면 다시 열기가 남는다. 특정 탭으로 점프하면 숨겨 둔 창은 버리고 그 탭을 새로 연다.

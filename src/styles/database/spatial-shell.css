@@ -960,9 +960,34 @@
   white-space: nowrap;
 }
 
+/* 이름·타일셋·칩/킷 줄은 인스펙터 폭 안에 머문다 — 긴 타일셋 이름이 패널 밖으로 밀리지 않게. */
+.database-modal-body .spatial-object-graphic {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.database-modal-body .spatial-object-field {
+  max-width: 100%;
+}
+
+.database-modal-body .spatial-object-graphic > .spatial-object-field,
+.database-modal-body .spatial-inspector > .spatial-object-field {
+  display: flex;
+}
+
+.database-modal-body .spatial-object-graphic > .spatial-object-field > span,
+.database-modal-body .spatial-inspector > .spatial-object-field > span {
+  flex: 0 0 3.5rem;
+}
+
 .database-modal-body .spatial-object-field input,
 .database-modal-body .spatial-object-field select {
   min-height: 32px;
+  min-width: 0;
+  max-width: 100%;
+  flex: 1 1 auto;
+  text-overflow: ellipsis;
   padding: 0 10px;
   border: 1px solid var(--db-studio-border-default);
   border-radius: 8px;

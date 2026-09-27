@@ -40,6 +40,10 @@
   position: relative;
   width: 220px;
   scrollbar-gutter: stable;
+  /* 고정된 탭 검색(40px)과 구획 머리 한 줄 아래로 활성 탭을 드러낸다 — scrollIntoView(nearest)가
+     위로 올릴 때 행이 고정 머리 밑에 숨지 않게. */
+  scroll-padding-top: 72px;
+  scroll-padding-bottom: 12px;
   /* ‘모든 자료’를 펼치면 사이드바 내용이 200px 냘게 넘치는데, 오버레이 스크롤바는
      스크롤 전에 보이지 않아 마지막 항목이 그냥 쟘린 듯이 끝났다 — 스크롤바를 상시
      노출해 더 내릴 수 있다는 것을 알린다. */
@@ -255,7 +259,8 @@
   display: flex;
   position: sticky;
   text-align: left;
-  top: 0;
+  /* 탭 검색(32px + 아래 8px) 밑에 붙는다 — 검색 칸이 먼저 위에 고정된다. */
+  top: 40px;
   z-index: 1;
   margin: 0;
   white-space: nowrap;
@@ -309,6 +314,12 @@
   padding: 0 10px;
   width: 100%;
   text-align: left;
+  /* 레일이 넘쳐 아래 탭(맵 구획)으로 스크롤해도 검색 칸이 반쯤 잘린 채 사라지지 않게 고정한다.
+     그림자는 칸 둘레의 여백을 레일 바탕으로 덮어 밑으로 지나가는 행이 비치지 않게 한다. */
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  box-shadow: 0 0 0 10px var(--db-studio-surface, #FFFFFF);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search::placeholder {
@@ -326,7 +337,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search:focus {
   border-color: var(--db-studio-accent, var(--accent));
-  box-shadow: 0 0 0 2px rgba(74,87,214,.16);
+  box-shadow: 0 0 0 2px rgba(74,87,214,.16), 0 0 0 10px var(--db-studio-surface, #FFFFFF);
   outline: none;
 }
 
