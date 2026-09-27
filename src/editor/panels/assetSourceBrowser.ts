@@ -1,6 +1,7 @@
 import { assetPageUrl } from "@/editor/assetBrowser/assetPageAllowlist";
 import { lookupPackCatalog, readLearnedPackCatalog, rememberPackCatalog, sha256Hex, type PackTileSize } from "@/editor/assetBrowser/packCatalog";
 import { extractPackImage, listPackImages, suggestPackImage, type PackImage } from "@/editor/assetBrowser/packImages";
+import { MV_PACK_PRESETS } from "@/project/rpgmakerMv/packs";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
@@ -29,7 +30,14 @@ export type AssetSourceImport = {
   readonly rememberTileSize: (tileSize: PackTileSize) => void;
 };
 
-export function openAssetSourceBrowser(onImportFile: (request: AssetSourceImport) => void): void {
+/** 받은 팩이 알려진 RPG Maker 팩(시트 이름이 프리셋과 같음)이면 시트 묶음 전체를 넘긴다 — 한 장씩 등록하지 않고 프리셋으로 굽는다. */
+export type AssetSourceHandlers = {
+  readonly onImportFile: (request: AssetSourceImport) => void;
+  readonly onImportPack?: (files: readonly File[]) => Promise<void>;
+};
+
+export function openAssetSourceBrowser(handlers: AssetSourceHandlers): void {
+  const { onImportFile } = handlers;
   if (current?.isConnected) return;
   const bridge = window.oprn?.assetBrowser;
   const status = el("p", { class: "asset-source-status", text: "제작자 페이지에서 Download를 누르면 이 프로젝트에만 저장됩니다.", dataset: { testid: "asset-source-status" } });
@@ -65,6 +73,9 @@ export function openAssetSourceBrowser(onImportFile: (request: AssetSourceImport
   const deliver = (request: AssetSourceImport): void => {
     void close().then(() => onImportFile(request));
   };
+  const deliverPack = handlers.onImportPack
+    ? (files: readonly File[]): void => { void close().then(() => handlers.onImportPack!(files)); }
+    : null;
   let stopListen = (): void => {};
   if (bridge) {
     stopListen = bridge.onDownload((payload) => {
@@ -74,7 +85,7 @@ export function openAssetSourceBrowser(onImportFile: (request: AssetSourceImport
         toast(event.message, "error");
         return;
       }
-      void showReceived(chrome, event, deliver);
+      void showReceived(chrome, event, deliver, deliverPack);
     });
     const sync = (): void => {
       const rect = viewport.getBoundingClientRect();
@@ -105,7 +116,7 @@ export function openAssetSourceBrowser(onImportFile: (request: AssetSourceImport
         pageUrl: "",
         pageTitle: picked.name.replace(/\.[^.]+$/, ""),
         bytes: new Uint8Array(buffer),
-      }, deliver));
+      }, deliver, deliverPack));
     });
     viewport.append(file);
   }
@@ -125,6 +136,7 @@ function header(chrome: BrowserChrome, close: () => void): HTMLElement {
       chrome.input,
       el("button", { class: "btn primary", text: "열기", attrs: { type: "button" }, dataset: { testid: "asset-source-open" }, on: { click: () => void loadPage(chrome) } }),
       el("button", { class: "btn", text: "일본 거리 무료 타일셋", attrs: { type: "button" }, dataset: { testid: "asset-source-starter" }, on: { click: () => { chrome.input.value = STARTER_URL; void loadPage(chrome); } } }),
+      ...MV_PACK_PRESETS.map((preset) => el("button", { class: "btn", text: preset.name, attrs: { type: "button", title: `${preset.url} — Download 를 누르면 시트를 찾아 타일셋으로 굽습니다` }, dataset: { testid: `asset-source-pack-${preset.id}` }, on: { click: () => { chrome.input.value = preset.url; void loadPage(chrome); } } })),
       el("button", { class: "btn", text: "닫기", attrs: { type: "button" }, dataset: { testid: "asset-source-close" }, on: { click: close } }),
       chrome.status,
     ],
@@ -159,7 +171,7 @@ async function loadPage(chrome: BrowserChrome): Promise<void> {
   }
 }
 
-async function showReceived(chrome: BrowserChrome, pack: ReceivedPack, onImportFile: (request: AssetSourceImport) => void): Promise<void> {
+async function showReceived(chrome: BrowserChrome, pack: ReceivedPack, onImportFile: (request: AssetSourceImport) => void, onImportPack: ((files: readonly File[]) => void) | null): Promise<void> {
   chrome.status.textContent = "받은 파일에서 타일맵을 고르는 중";
   let images: readonly PackImage[];
   try {
@@ -168,6 +180,23 @@ async function showReceived(chrome: BrowserChrome, pack: ReceivedPack, onImportF
     if (!(error instanceof Error)) throw error;
     toast(error.message, "error");
     return;
+  }
+  if (onImportPack !== null) {
+    const preset = knownMvPack(images);
+    if (preset !== null) {
+      chrome.status.textContent = `${preset.preset.name}: 시트 ${preset.entries.length}장을 찾았습니다. 타일셋으로 굽습니다.`;
+      try {
+        const files = await Promise.all(preset.entries.map(async (image) => {
+          const base = image.name.split("/").pop() ?? image.name;
+          return new File([(await extractPackImage(pack.fileName, pack.bytes, image.name)).slice()], base, { type: mimeFor(base) });
+        }));
+        onImportPack(files);
+      } catch (error) {
+        if (!(error instanceof Error)) throw error;
+        toast(error.message, "error");
+      }
+      return;
+    }
   }
   const known = await knownPackImage(pack, images);
   if (known !== null) {
@@ -222,6 +251,17 @@ async function showReceived(chrome: BrowserChrome, pack: ReceivedPack, onImportF
     } },
   }));
   chrome.status.textContent = "타일맵을 고른 뒤 이 프로젝트에 등록합니다.";
+}
+
+function knownMvPack(images: readonly PackImage[]): { readonly preset: (typeof MV_PACK_PRESETS)[number]; readonly entries: readonly PackImage[] } | null {
+  for (const preset of MV_PACK_PRESETS) {
+    const entries = preset.sheets.flatMap((sheet) => {
+      const hit = images.find((image) => image.name.endsWith(`${sheet.folder}/${sheet.file}`)) ?? images.find((image) => (image.name.split("/").pop() ?? "") === sheet.file);
+      return hit ? [hit] : [];
+    });
+    if (entries.length >= Math.ceil(preset.sheets.length / 2)) return { preset, entries };
+  }
+  return null;
 }
 
 async function knownPackImage(pack: ReceivedPack, images: readonly PackImage[]): Promise<{ readonly entry: { readonly name: string; readonly tileSize: PackTileSize; readonly entryName: string }; readonly image: PackImage } | null> {

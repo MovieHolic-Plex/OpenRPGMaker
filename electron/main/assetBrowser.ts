@@ -6,8 +6,10 @@ import { BrowserWindow, WebContentsView, ipcMain, session, type Session, type We
 import { assetPageUrl } from "../../src/editor/assetBrowser/assetPageAllowlist";
 import { OPRN_CHANNELS } from "../shared/channels";
 import { assetBrowserBoundsSchema, assetBrowserOpenSchema } from "../shared/schemas";
+import { isRar, rarImagesToZip } from "./rarPack";
 
-const MAX_DOWNLOAD_BYTES = 32 * 1024 * 1024;
+/** RPG Maker 팩은 zip/rar 하나가 15~30MB 다(Rasak Modern 15MB). */
+const MAX_DOWNLOAD_BYTES = 64 * 1024 * 1024;
 const PACK_EXTENSIONS = [".zip", ".png", ".jpg", ".jpeg", ".webp", ".gif"] as const;
 
 type AssetView = {
@@ -118,13 +120,13 @@ function bindDownloads(ses: Session): void {
     const fileName = item.getFilename() || fileNameFromUrl(item.getURL());
     if (isBlockedDownload(fileName)) {
       event.preventDefault();
-      notify({ kind: "rejected", message: "zip 또는 그림 파일만 가져옵니다." });
+      notify({ kind: "rejected", message: "zip·rar 또는 그림 파일만 가져옵니다." });
       return;
     }
     const total = item.getTotalBytes();
     if (total > MAX_DOWNLOAD_BYTES) {
       event.preventDefault();
-      notify({ kind: "rejected", message: "32MB보다 큰 파일은 가져오지 않습니다." });
+      notify({ kind: "rejected", message: "64MB보다 큰 파일은 가져오지 않습니다." });
       return;
     }
     const savePath = join(downloadDirectory(), `${Date.now()}-${safeFileName(fileName)}`);
@@ -145,12 +147,27 @@ function downloadDirectory(): string {
 }
 
 async function deliver(savePath: string, fileName: string, pageUrl: string, pageTitle: string): Promise<void> {
-  const bytes = new Uint8Array(await readFile(savePath));
-  if (bytes.byteLength > MAX_DOWNLOAD_BYTES || !isPackBytes(bytes)) {
-    notify({ kind: "rejected", message: "zip 또는 그림 파일만 가져옵니다." });
+  let bytes = new Uint8Array(await readFile(savePath));
+  if (bytes.byteLength > MAX_DOWNLOAD_BYTES) {
+    notify({ kind: "rejected", message: "64MB보다 큰 파일은 가져오지 않습니다." });
     return;
   }
-  const name = isPackFile(fileName) ? fileName : packNameFromBytes(bytes, fileName);
+  let name = fileName;
+  if (isRar(bytes)) {
+    // 렌더러는 zip 만 읽는다 — 그림만 꺼내 zip 으로 넘긴다.
+    try {
+      bytes = new Uint8Array(await rarImagesToZip(bytes));
+    } catch (error) {
+      notify({ kind: "rejected", message: error instanceof Error ? error.message : "rar 을 풀지 못했습니다." });
+      return;
+    }
+    name = `${fileName.replace(/\.rar$/i, "") || "pack"}.zip`;
+  }
+  if (!isPackBytes(bytes)) {
+    notify({ kind: "rejected", message: "zip·rar 또는 그림 파일만 가져옵니다." });
+    return;
+  }
+  name = isPackFile(name) ? name : packNameFromBytes(bytes, name);
   notify({ kind: "download", fileName: name, pageUrl, pageTitle, bytes });
 }
 
