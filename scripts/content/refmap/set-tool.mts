@@ -3,12 +3,13 @@
 //   bun scripts/content/refmap/set-tool.mts check  <세트>            preset.json 검사(칸 범위·빈 칸·이름 중복) + 견본 그림 out/refs/
 //   bun scripts/content/refmap/set-tool.mts render <세트> [맵id…]     maps/*.json → out/<맵>.png(48px 원본) · out/<맵>_half.png
 //   bun scripts/content/refmap/set-tool.mts crop   <세트> <맵id> x y w h   맵 일부를 48px 그대로 잘라 out/<맵>_crop.png
+//   bun scripts/content/refmap/set-tool.mts space  <세트> [맵id…]     빈 바닥 직사각형(12칸 이상) — 크면 방이 너무 큰 것이다
 import fs from "node:fs";
 import path from "node:path";
 import { PNG } from "pngjs";
 import { tileOpacity } from "../../../src/project/rpgmakerMv/bake.ts";
 import { mvSheetPart, mvAutotileShapeKind } from "../../../src/project/rpgmakerMv/layout.ts";
-import { blank, convertSpec, loadSet, readMapSpecs, render, shrink, T, toPng } from "./lib.mts";
+import { blank, convertSpec, emptyRects, loadSet, readMapSpecs, render, shrink, T, toPng } from "./lib.mts";
 
 const [cmd, id, ...rest] = process.argv.slice(2);
 if (!cmd || !id) { console.error("사용: set-tool.mts check|render|crop <세트> …"); process.exit(2); }
@@ -80,6 +81,16 @@ if (cmd === "render") {
     fs.writeFileSync(path.join(out, `${spec.id}.png`), toPng(img));
     fs.writeFileSync(path.join(out, `${spec.id}_half.png`), toPng(shrink(img, Math.max(img.width, img.height) / 2)));
     console.log(JSON.stringify({ map: spec.id, size: `${spec.w}×${spec.h}`, objects: m.objects.length, warnings: m.warnings }));
+  }
+  process.exit(0);
+}
+
+if (cmd === "space") {
+  // 맵마다 가장 큰 빈 바닥 직사각형들. 12칸(예: 4×3) 이상만.
+  for (const spec of readMapSpecs(set)) {
+    if (rest.length && !rest.includes(spec.id)) continue;
+    const rects = emptyRects(set, convertSpec(set, spec));
+    console.log(JSON.stringify({ map: spec.id, size: `${spec.w}×${spec.h}`, empty: rects.map((r) => `${r.w}×${r.h}@(${r.x},${r.y})`) }));
   }
   process.exit(0);
 }

@@ -192,7 +192,7 @@ export interface MapSpec {
   id: string; name: string; note: string; tags: string[]; usage: string; w: number; h: number; ops: Op[];
   entry?: [number, number];
 }
-export interface Converted extends Layers { warnings: string[]; objects: { id: string; x: number; y: number }[] }
+export interface Converted extends Layers { warnings: string[]; objects: { id: string; x: number; y: number }[]; keys1: (string | null)[]; keys2: (string | null)[] }
 
 export function convertSpec(set: LoadedSet, spec: MapSpec): Converted {
   const { w, h } = spec;
@@ -265,7 +265,44 @@ export function convertSpec(set: LoadedSet, spec: MapSpec): Converted {
   if (empty) warnings.push(`1층 빈 칸 ${empty}개(검게 보인다)`);
   warnings.push(...lintStructure(set, w, h, k1, k2));
   return { width: w, height: h, lowerTiles: shapeLayer(set, w, h, k1), lowerOverlayTiles: shapeLayer(set, w, h, k2),
-    upperTiles: up3, upperOverlayTiles: up4, warnings, objects };
+    upperTiles: up3, upperOverlayTiles: up4, warnings, objects, keys1: k1, keys2: k2 };
+}
+
+// ── 빈 바닥 ──
+// 「공간이 남으면 공간이 너무 큰 것이다.」 걸을 수 있는 바닥(A2·A5)인데 물체도 가구(2층 탁자·카운터)도 없는 칸에서
+// 가장 큰 빈 직사각형을 차례로 찾는다. 러그·얼룩 같은 2층 바닥 무늬는 빈 칸으로 센다.
+export function emptyRects(set: LoadedSet, m: Converted, minArea = 12, limit = 5): { x: number; y: number; w: number; h: number }[] {
+  const { width: w, height: h } = m;
+  const nameOf = new Map(set.presetJson.autotiles.map((a) => [`${a.sheet}:${a.kind}`, a.name]));
+  const flatName = new Map((set.presetJson.flats ?? []).map((f) => [`#${set.tileOf(f.sheet, f.cell)}`, f.name]));
+  const part = (k: string) => mvSheetPart(set.fileOf(k.split(":")[0]!));
+  const isFloor = (k: string | null) => {
+    if (!k) return false;
+    if (k.startsWith("#")) { const n = flatName.get(k) ?? ""; return !/어둠|벽|기둥/.test(n); }
+    return part(k) === "A2";
+  };
+  const isDecor = (k: string | null) => !k || (!k.startsWith("#") && part(k) === "A2" && !/탁자|카운터|울타리|생울타리|덤불|키 큰 풀/.test(nameOf.get(k) ?? ""));
+  const free = Array.from({ length: w * h }, (_, i) => isFloor(m.keys1[i]!) && isDecor(m.keys2[i]!) && m.upperTiles[i]! < 0 && m.upperOverlayTiles[i]! < 0);
+  const out: { x: number; y: number; w: number; h: number }[] = [];
+  while (out.length < limit) {
+    let best = { x: 0, y: 0, w: 0, h: 0 };
+    const hist = new Array<number>(w).fill(0);
+    for (let y = 0; y < h; y += 1) {
+      for (let x = 0; x < w; x += 1) hist[x] = free[y * w + x] ? hist[x]! + 1 : 0;
+      for (let x = 0; x < w; x += 1) {
+        let mh = Infinity;
+        for (let x2 = x; x2 < w && hist[x2]! > 0; x2 += 1) {
+          mh = Math.min(mh, hist[x2]!);
+          const a = (x2 - x + 1) * mh;
+          if (a > best.w * best.h) best = { x, y: y - mh + 1, w: x2 - x + 1, h: mh };
+        }
+      }
+    }
+    if (best.w * best.h < minArea) break;
+    out.push(best);
+    for (let y = best.y; y < best.y + best.h; y += 1) for (let x = best.x; x < best.x + best.w; x += 1) free[y * w + x] = false;
+  }
+  return out;
 }
 
 // ── 구조 검사 ──
