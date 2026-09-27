@@ -189,8 +189,7 @@ export function autoReviveHp(maxHp: number, percent: number): number {
   return Math.max(1, Math.floor((maxHp * Math.max(1, Math.min(100, percent))) / 100));
 }
 
-/** 도주 실패 1회당 가산 %p. 생략 = 10. */
-// 옵트인 — 필드가 없는 옛 프로젝트의 도주 확률은 그대로다(명작 공백 #34).
+/** 도주 실패 1회당 가산 %p. 옵트인 — 생략 = 0 이라 필드가 없는 옛 프로젝트의 도주 확률은 그대로다(명작 공백 #34). */
 export const DEFAULT_ESCAPE_BONUS_PERCENT = 0;
 
 /**
