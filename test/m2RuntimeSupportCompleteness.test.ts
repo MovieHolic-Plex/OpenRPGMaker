@@ -161,8 +161,8 @@ describe("M2 persisted runtime classification completeness", () => {
     const demotedIds = M2_PERSISTED_BEHAVIOR_IDS.full.filter(
       (commandId) => !M2_MAP_COMMON_FULL_IDS.some((fullId) => fullId === commandId)
     );
-    // 55: m2-218 move-enemy(전투 전용) 가 들어오며 기준선에서 이미 55 였다(2026-09-27 발견·교정).
-    expect(demotedIds).toHaveLength(55);
+    // 54: m2-218 move-enemy(전투 전용) 가 들어와 55 가 됐고, m2-069(먼 배경) 승격으로 다시 54(2026-09-27).
+    expect(demotedIds).toHaveLength(54);
 
     for (const commandId of demotedIds) {
       // When: 피커/리스트가 카탈로그 행을 map 컨텍스트로 판정한다.
