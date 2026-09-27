@@ -103,7 +103,8 @@ describe("설정 자동 저장", () => {
     expect(findByTestId(modal, "ai-oauth-status")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-model-preset")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-lite-model-preset")).not.toBeNull();
-    expect(modal.textContent).toContain("구독 로그인");
+    // 「구독 로그인」 배지는 지웠다 — 카드 필·상태 줄과 같은 말을 세 번째로 되풀이했다.
+    expect(modal.textContent).toContain("API 키는 필요 없어요");
     expect(modal.textContent).toContain("역할별 모델 직접 지정");
   });
 
@@ -261,11 +262,11 @@ describe("설정 자동 저장", () => {
     const modal = openSettingsSurface(panel);
     const preset = findByTestId(modal, "ai-config-model-preset");
     if (!preset) throw new Error("model preset missing");
-    preset.value = "gpt-5.6-terra";
+    preset.value = "gpt-6-astra";
     preset.dispatchEvent(new Event("change"));
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
-    expect(stored.model).toBe("gpt-5.6-terra");
+    expect(stored.model).toBe("gpt-6-astra");
   });
 
   it("모델 선택기는 선택된 제공자의 모델만 노출하고 제공자를 바꾸면 목록도 바뀐다", () => {
@@ -279,7 +280,7 @@ describe("설정 자동 저장", () => {
 
     // 기본 제공자(Antigravity): gemini 계열이 보이고 Codex 모델은 없다.
     expect(preset.textContent).toContain("gemini-3.7-flash");
-    for (const foreign of ["gpt-5.6-sol", "gpt-5.6-terra", "glm-", "grok-"]) {
+    for (const foreign of ["gpt-5.6-sol", "gpt-6-astra", "glm-", "grok-"]) {
       expect(preset.textContent, foreign).not.toContain(foreign);
     }
 
@@ -287,11 +288,29 @@ describe("설정 자동 저장", () => {
     select.value = "openai-codex";
     select.dispatchEvent(new Event("change"));
 
-    expect(preset.textContent).toContain("gpt-5.6-sol");
-    expect(preset.textContent).toContain("gpt-5.6-terra");
-    for (const foreign of ["gemini-3.7-flash", "claude-opus", "glm-", "grok-"]) {
+    // Codex 는 정확히 네 모델만 보인다(사용자 지시 2026-09-27).
+    const codexOptions = preset.querySelectorAll("option").map((option) => option.getAttribute("value")).filter(Boolean);
+    expect(codexOptions).toEqual(["gpt-5.6-sol", "gpt-6-astra", "gpt-6-sol", "gpt-6-luna"]);
+    for (const foreign of ["gemini-3.7-flash", "claude-opus", "glm-", "grok-", "gpt-5.4-mini", "gpt-5.6-terra"]) {
       expect(preset.textContent, foreign).not.toContain(foreign);
     }
+  });
+
+  it("제공자를 직접 바꾸면 이전 제공자 모델 대신 새 제공자의 추천 모델로 맞춘다", () => {
+    // 회귀: Codex 로 바꿔도 gemini-3.8-flash 가 남아 모든 행에 빨간 경고와 오류 토스트가 떴다.
+    const panel = renderPanel();
+    const modal = openSettingsSurface(panel);
+    const writer = findByTestId(modal, "ai-config-writer-provider") as unknown as HTMLSelectElement;
+    const brain = findByTestId(modal, "ai-config-ultrabrain-provider") as unknown as HTMLSelectElement;
+    if (!writer || !brain) throw new Error("provider selects missing");
+
+    writer.value = "openai-codex";
+    writer.dispatchEvent(new Event("change"));
+    brain.value = "openai-codex";
+    brain.dispatchEvent(new Event("change"));
+
+    expect((findByTestId(modal, "ai-config-model") as unknown as HTMLInputElement).value).toBe("gpt-6-luna");
+    expect((findByTestId(modal, "ai-config-ultrabrain-model") as unknown as HTMLInputElement).value).toBe("gpt-6-astra");
   });
 
   it("카탈로그 밖 모델도 명시적 선택을 보존하고 목록에는 추가하지 않는다", () => {

@@ -155,11 +155,11 @@ describe("API 키 입력칸은 어느 제공자에도 없다", () => {
     dispose();
   });
 
-  it("두 제공자 모두 '키는 입력하지 않는다'고 안내한다", async () => {
+  it("두 제공자 모두 'API 키가 필요 없다'고 안내한다", async () => {
     for (const providerId of ["google-antigravity", "openai-codex"]) {
       const { root, dispose } = await render(providerId);
       expect(findByTestId(root, "ai-auth-provider-help")?.textContent ?? "", providerId)
-        .toContain("키는 입력하지 않습니다");
+        .toContain("API 키는 필요 없어요");
       dispose();
     }
   });
@@ -274,6 +274,11 @@ describe("기기 로그인", () => {
     expect(poll).not.toMatch(/\d+\s*\/\s*\d+/u);
     expect(findByTestId(root, "ai-oauth-device-cancel")).not.toBeNull();
     expect(findByTestId(root, "ai-oauth-paste-row")?.hidden).toBe(true);
+    // 대기 중에는 「로그인」 버튼 줄이 숨는다 — 다음 단계는 대기 블록의 링크·취소 둘뿐이다.
+    expect(findByTestId(root, "ai-auth-actions")?.hidden).toBe(true);
+    findByTestId(root, "ai-oauth-device-cancel")?.click();
+    expect(findByTestId(root, "ai-auth-actions")?.hidden).toBe(false);
+    expect(block?.hidden).toBe(true);
     dispose();
   });
 

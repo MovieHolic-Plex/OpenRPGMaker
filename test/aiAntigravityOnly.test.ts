@@ -71,12 +71,12 @@ describe("제공자는 Antigravity·Codex 둘뿐이다", () => {
   });
 
   it("Codex 를 골라 저장하면 그대로 적힌다", () => {
-    saveAiConfig({ ...defaultAiConfig(), providerId: CODEX_PROVIDER_ID, model: "gpt-5.6-terra", liteModel: "gpt-5.6-terra" });
+    saveAiConfig({ ...defaultAiConfig(), providerId: CODEX_PROVIDER_ID, model: "gpt-6-sol", liteModel: "gpt-6-luna" });
 
     expect(storedProviderId()).toBe(CODEX_PROVIDER_ID);
     const loaded = loadAiConfig();
     expect(loaded.providerId).toBe(CODEX_PROVIDER_ID);
-    expect(loaded.model).toBe("gpt-5.6-terra");
+    expect(loaded.model).toBe("gpt-6-sol");
   });
 
   it("사라진 제공자 id 는 기본 제공자로 끌어온다", () => {

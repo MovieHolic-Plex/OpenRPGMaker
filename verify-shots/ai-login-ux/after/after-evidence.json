@@ -1,0 +1,410 @@
+{
+  "desktop-signed-out": {
+    "header": "Google · 로그인 필요",
+    "panel": "로그인 필요",
+    "help": "로그인을 누르면 새 창이 열리고 Google 계정으로 로그인합니다. API 키는 필요 없어요.",
+    "loginPrimary": true,
+    "loginBg": "rgb(74, 87, 214)",
+    "badge": 0
+  },
+  "desktop-waiting": {
+    "header": "Google · 브라우저에서 로그인 대기 중",
+    "panel": "브라우저에서 로그인 대기 중",
+    "actionsVisible": false,
+    "envAgainVisible": false,
+    "deviceVisible": true
+  },
+  "desktop-connected": {
+    "header": "Google · 연결됨",
+    "panel": "연결됨",
+    "help": "Google 계정으로 연결되어 있어요. 다른 계정을 쓰려면 연결 해제 후 다시 로그인하세요.",
+    "actionsVisible": true
+  },
+  "desktop-role-provider-selects": [
+    {
+      "id": "ai-oh-my-pi-provider",
+      "opts": [
+        "google-antigravity",
+        "openai-codex"
+      ]
+    },
+    {
+      "id": "ai-config-ultrabrain-provider",
+      "opts": [
+        "google-antigravity",
+        "openai-codex"
+      ]
+    },
+    {
+      "id": "ai-config-vision-provider",
+      "opts": [
+        "google-antigravity",
+        "openai-codex"
+      ]
+    },
+    {
+      "id": "ai-config-writer-provider",
+      "opts": [
+        "google-antigravity",
+        "openai-codex"
+      ]
+    },
+    {
+      "id": "ai-config-deep-provider",
+      "opts": [
+        "google-antigravity",
+        "openai-codex"
+      ]
+    },
+    {
+      "id": "ai-config-image-provider",
+      "opts": [
+        "google-antigravity",
+        "openai-codex"
+      ]
+    }
+  ],
+  "desktop-codex-model-options": {
+    "ai-oh-my-pi-provider": [
+      {
+        "id": "ai-oh-my-pi-provider",
+        "opts": [
+          "google-antigravity",
+          "openai-codex"
+        ]
+      }
+    ],
+    "ai-config-ultrabrain-provider": [
+      {
+        "id": "ai-config-ultrabrain-provider",
+        "opts": [
+          "google-antigravity",
+          "openai-codex"
+        ]
+      },
+      {
+        "id": "ai-config-ultrabrain-model-preset",
+        "opts": [
+          "",
+          "gpt-5.6-sol",
+          "gpt-6-astra",
+          "gpt-6-sol",
+          "gpt-6-luna"
+        ]
+      },
+      {
+        "id": "ai-config-ultrabrain-reasoning",
+        "opts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    ],
+    "ai-config-vision-provider": [
+      {
+        "id": "ai-config-vision-provider",
+        "opts": [
+          "google-antigravity",
+          "openai-codex"
+        ]
+      },
+      {
+        "id": "ai-config-vision-model-preset",
+        "opts": [
+          "",
+          "gpt-5.6-sol",
+          "gpt-6-astra",
+          "gpt-6-sol",
+          "gpt-6-luna"
+        ]
+      },
+      {
+        "id": "ai-config-vision-reasoning",
+        "opts": [
+          "off",
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    ],
+    "ai-config-writer-provider": [
+      {
+        "id": "ai-config-writer-provider",
+        "opts": [
+          "google-antigravity",
+          "openai-codex"
+        ]
+      },
+      {
+        "id": "ai-config-model-preset",
+        "opts": [
+          "",
+          "gpt-5.6-sol",
+          "gpt-6-astra",
+          "gpt-6-sol",
+          "gpt-6-luna"
+        ]
+      },
+      {
+        "id": "ai-config-writer-reasoning",
+        "opts": [
+          "off",
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    ],
+    "ai-config-deep-provider": [
+      {
+        "id": "ai-config-deep-provider",
+        "opts": [
+          "google-antigravity",
+          "openai-codex"
+        ]
+      },
+      {
+        "id": "ai-config-lite-model-preset",
+        "opts": [
+          "",
+          "gpt-5.6-sol",
+          "gpt-6-astra",
+          "gpt-6-sol",
+          "gpt-6-luna"
+        ]
+      },
+      {
+        "id": "ai-config-deep-reasoning",
+        "opts": [
+          "off",
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    ],
+    "ai-config-image-provider": [
+      {
+        "id": "ai-config-image-provider",
+        "opts": [
+          "google-antigravity",
+          "openai-codex"
+        ]
+      }
+    ]
+  },
+  "desktop-image-recommend": "그림은 GPT 모델을 강력히 추천합니다. 픽셀 타일·캐릭터의 형태와 색이 더 안정적입니다. ChatGPT 계정 연결이 필요합니다.",
+  "desktop-roles-overflow": {
+    "tableRight": 1064,
+    "maxCellRight": 1056,
+    "paneRight": 1064,
+    "scrollW": 542,
+    "clientW": 542
+  },
+  "mobile-signed-out": {
+    "header": "Google · 로그인 필요",
+    "panel": "로그인 필요",
+    "help": "로그인을 누르면 새 창이 열리고 Google 계정으로 로그인합니다. API 키는 필요 없어요.",
+    "loginPrimary": true,
+    "loginBg": "rgb(74, 87, 214)",
+    "badge": 0
+  },
+  "mobile-waiting": {
+    "header": "Google · 브라우저에서 로그인 대기 중",
+    "panel": "브라우저에서 로그인 대기 중",
+    "actionsVisible": false,
+    "envAgainVisible": false,
+    "deviceVisible": true
+  },
+  "mobile-connected": {
+    "header": "Google · 연결됨",
+    "panel": "연결됨",
+    "help": "Google 계정으로 연결되어 있어요. 다른 계정을 쓰려면 연결 해제 후 다시 로그인하세요.",
+    "actionsVisible": true
+  },
+  "mobile-role-provider-selects": [
+    {
+      "id": "ai-oh-my-pi-provider",
+      "opts": [
+        "google-antigravity",
+        "openai-codex"
+      ]
+    },
+    {
+      "id": "ai-config-ultrabrain-provider",
+      "opts": [
+        "google-antigravity",
+        "openai-codex"
+      ]
+    },
+    {
+      "id": "ai-config-vision-provider",
+      "opts": [
+        "google-antigravity",
+        "openai-codex"
+      ]
+    },
+    {
+      "id": "ai-config-writer-provider",
+      "opts": [
+        "google-antigravity",
+        "openai-codex"
+      ]
+    },
+    {
+      "id": "ai-config-deep-provider",
+      "opts": [
+        "google-antigravity",
+        "openai-codex"
+      ]
+    },
+    {
+      "id": "ai-config-image-provider",
+      "opts": [
+        "google-antigravity",
+        "openai-codex"
+      ]
+    }
+  ],
+  "mobile-codex-model-options": {
+    "ai-oh-my-pi-provider": [
+      {
+        "id": "ai-oh-my-pi-provider",
+        "opts": [
+          "google-antigravity",
+          "openai-codex"
+        ]
+      }
+    ],
+    "ai-config-ultrabrain-provider": [
+      {
+        "id": "ai-config-ultrabrain-provider",
+        "opts": [
+          "google-antigravity",
+          "openai-codex"
+        ]
+      },
+      {
+        "id": "ai-config-ultrabrain-model-preset",
+        "opts": [
+          "",
+          "gpt-5.6-sol",
+          "gpt-6-astra",
+          "gpt-6-sol",
+          "gpt-6-luna"
+        ]
+      },
+      {
+        "id": "ai-config-ultrabrain-reasoning",
+        "opts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    ],
+    "ai-config-vision-provider": [
+      {
+        "id": "ai-config-vision-provider",
+        "opts": [
+          "google-antigravity",
+          "openai-codex"
+        ]
+      },
+      {
+        "id": "ai-config-vision-model-preset",
+        "opts": [
+          "",
+          "gpt-5.6-sol",
+          "gpt-6-astra",
+          "gpt-6-sol",
+          "gpt-6-luna"
+        ]
+      },
+      {
+        "id": "ai-config-vision-reasoning",
+        "opts": [
+          "off",
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    ],
+    "ai-config-writer-provider": [
+      {
+        "id": "ai-config-writer-provider",
+        "opts": [
+          "google-antigravity",
+          "openai-codex"
+        ]
+      },
+      {
+        "id": "ai-config-model-preset",
+        "opts": [
+          "",
+          "gpt-5.6-sol",
+          "gpt-6-astra",
+          "gpt-6-sol",
+          "gpt-6-luna"
+        ]
+      },
+      {
+        "id": "ai-config-writer-reasoning",
+        "opts": [
+          "off",
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    ],
+    "ai-config-deep-provider": [
+      {
+        "id": "ai-config-deep-provider",
+        "opts": [
+          "google-antigravity",
+          "openai-codex"
+        ]
+      },
+      {
+        "id": "ai-config-lite-model-preset",
+        "opts": [
+          "",
+          "gpt-5.6-sol",
+          "gpt-6-astra",
+          "gpt-6-sol",
+          "gpt-6-luna"
+        ]
+      },
+      {
+        "id": "ai-config-deep-reasoning",
+        "opts": [
+          "off",
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    ],
+    "ai-config-image-provider": [
+      {
+        "id": "ai-config-image-provider",
+        "opts": [
+          "google-antigravity",
+          "openai-codex"
+        ]
+      }
+    ]
+  },
+  "mobile-image-recommend": "그림은 GPT 모델을 강력히 추천합니다. 픽셀 타일·캐릭터의 형태와 색이 더 안정적입니다. ChatGPT 계정 연결이 필요합니다.",
+  "mobile-roles-overflow": {
+    "tableRight": 346,
+    "maxCellRight": 338,
+    "paneRight": 346,
+    "scrollW": 312,
+    "clientW": 312
+  }
+}

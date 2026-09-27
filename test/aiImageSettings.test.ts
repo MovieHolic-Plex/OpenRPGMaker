@@ -120,4 +120,25 @@ describe("independent image settings", () => {
   it("compares the selected image provider rather than a fixed provider", () => {
     expect(imageGenerationUsesOtherProvider({ ...defaultAiConfig(), providerId: "openai-codex", imageProviderId: "openai-codex" })).toBe(false);
   });
+
+  it("strongly recommends GPT for drawing and switches to it in one click without touching chat", () => {
+    const before = defaultAiConfig();
+    saveAiConfig(before);
+    const view = form();
+    const note = view.get("ai-config-image-recommend");
+    expect(note.textContent).toContain("그림은 GPT 모델을 강력히 추천합니다.");
+    expect(note.dataset.state).toBe("suggest");
+    const useGpt = view.get("ai-config-image-use-gpt");
+    expect(useGpt.hidden).toBe(false);
+    useGpt.click();
+    expect(loadAiConfig()).toMatchObject({
+      providerId: before.providerId, model: before.model,
+      imageProviderId: "openai-codex", imageModel: "codex-image-default",
+    });
+    expect(view.get("ai-config-image-provider").value).toBe("openai-codex");
+    // GPT 를 골랐어도 추천 문구는 남고 바꾸기 버튼만 숨는다.
+    expect(note.dataset.state).toBe("active");
+    expect(note.textContent).toContain("강력히 추천");
+    expect(useGpt.hidden).toBe(true);
+  });
 });

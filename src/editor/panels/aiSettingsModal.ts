@@ -6,12 +6,6 @@ import { modelForRole, type RoleModel } from "@/ai/modelRoles";
 import { configForUltrabrain, DEFAULT_ULTRABRAIN_MODEL } from "@/ai/ultrabrainConfig";
 import { DEFAULT_PI_APPLY, DEFAULT_PI_TEAM } from "@/ai/piAgent/executionRoute";
 import {
-  fetchChatGptAuthStatus,
-  hasUsableCompanionCredential,
-  isChatGptCompanionResponseError,
-  type ChatGptCompanionUnreachableError,
-} from "@/ai/chatgptOAuthClient";
-import {
   DEFAULT_BASE_URL,
   DEFAULT_LITE_MODEL,
   DEFAULT_MAX_TOKENS,
@@ -27,6 +21,7 @@ import { MODEL_PRESETS, tierModelFor, type ModelPreset } from "@/ai/modelPresets
 import { isModelValidForAuthMode, modelCatalogForAuthMode } from "@/ai/modelCatalog";
 import { OH_MY_PI_PROVIDERS, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, IMAGE_MODEL_CATALOG } from "@/ai/imageModelCatalog";
+import { CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
 import {
   AI_BACKGROUND_OPACITY_LIMITS,
   applyAiBackgroundOpacity,
@@ -45,8 +40,10 @@ import {
 import { isTopModal, registerModal } from "@/editor/ui/modalStack";
 import { installAiModalFocus } from "./aiModalFocus";
 import { el } from "@/util/dom";
-import { toast } from "@/util/toast";
-import { renderAiAuthSettings } from "./aiAuthSettings";
+import { dismissToastsByKey, toast } from "@/util/toast";
+
+const INVALID_MODEL_TOAST_KEY = Symbol("ai-settings-invalid-model");
+import { renderAiAuthSettings, type AiAuthStatusSnapshot } from "./aiAuthSettings";
 import { renderAiToolUsagePanel } from "./aiToolUsagePanel";
 import { deckIcon } from "./aiDeckIcons";
 import { installEventEditorCustomSelects } from "./eventEditor/customSelect";
@@ -245,7 +242,37 @@ export function renderAiSettingsForm(options: {
     attrs: { id: "ai-config-image-status", role: "status", "aria-live": "polite" },
     dataset: { testid: "ai-config-image-status" },
   });
+  // 그림은 GPT 를 강력히 추천한다(감독 지시 2026-09-27). 선택과 무관하게 항상 보이고, GPT 가 아닌 동안에만
+  // 한 번에 바꾸는 버튼을 둔다 — 추천만 있고 바꿀 길이 제공자·모델 두 셀렉트를 차례로 건드리는 것뿐이면 불편하다.
+  const recommendedImage = IMAGE_MODEL_CATALOG.find((entry) => entry.providerId === CODEX_PROVIDER_ID && entry.supported);
+  const useRecommendedImage = el("button", {
+    class: "ai-assistant-action ai-config-recommend-action",
+    text: "GPT로 바꾸기",
+    attrs: { type: "button" },
+    dataset: { testid: "ai-config-image-use-gpt" },
+  }) as HTMLButtonElement;
+  const imageRecommendation = el("div", {
+    class: "ai-config-recommend",
+    attrs: { role: "note" },
+    dataset: { testid: "ai-config-image-recommend" },
+    children: [
+      el("p", {
+        class: "ai-config-recommend-text",
+        children: [
+          el("strong", { text: "그림은 GPT 모델을 강력히 추천합니다." }),
+          el("span", { text: " 픽셀 타일·캐릭터의 형태와 색이 더 안정적입니다. ChatGPT 계정 연결이 필요합니다." }),
+        ],
+      }),
+      useRecommendedImage,
+    ],
+  });
+  const refreshImageRecommendation = (): void => {
+    const onGpt = imageProvider.value === CODEX_PROVIDER_ID;
+    imageRecommendation.dataset.state = onGpt ? "active" : "suggest";
+    useRecommendedImage.hidden = onGpt || !recommendedImage;
+  };
   const refreshImageStatus = (): void => {
+    refreshImageRecommendation();
     const entry = IMAGE_MODEL_CATALOG.find((entry) => entry.providerId === imageProvider.value && entry.model === imageModel.value);
     imageStatus.dataset.availability = entry?.supported ? "supported" : "unsupported";
     imageStatus.textContent = entry?.supported
@@ -320,9 +347,15 @@ export function renderAiSettingsForm(options: {
   let persistAuthMode = (): void => undefined;
   // 인증 패널은 연결 종류와 제공자만 돌려준다 — 전송 축(authMode)은 에디터에서 항상
   // 동반 서비스이므로 UI 가 정할 것이 없다(근거: llmClient.aiTransport).
+  // 패널은 헤더 요약보다 먼저 만들어진다 — 그 사이 온 상태는 마지막 값만 기억해 두었다가 적는다.
+  let lastAuthStatus: AiAuthStatusSnapshot | null = null;
+  let pendingAuthStatus: ((next: AiAuthStatusSnapshot) => void) | null = null;
   const authSettings = renderAiAuthSettings(config, ({ providerId: next }) => {
     providerId = next;
     persistAuthMode();
+  }, (next) => {
+    lastAuthStatus = next;
+    pendingAuthStatus?.(next);
   });
   const maxTokensDescription = `한 요청에서 AI가 쓸 수 있는 출력 토큰 예산입니다. 기본값은 ${DEFAULT_MAX_TOKENS}이며, 예산이 다 되면 그때까지의 변경을 제안하고 멈춥니다.`;
   const maxTokens = textField("최대 토큰", maxTokensDescription, String(config.maxTokens), "ai-config-maxtokens", "number");
@@ -543,8 +576,13 @@ export function renderAiSettingsForm(options: {
     onSaved(next);
     savedHint.textContent = savedAtText();
     syncModelPresetCards();
+    // 자동 저장마다 같은 경고가 쌓이지 않도록 이전 경고를 걷고 하나만 남긴다.
+    dismissToastsByKey(INVALID_MODEL_TOAST_KEY);
     if (!modelValid || !liteValid || !brainValid) {
-      toast("선택한 모델이 현재 연결 방식에서 쓸 수 없습니다. 모델 입력 아래 경고를 확인하세요.", "error");
+      toast("선택한 모델이 현재 연결 방식에서 쓸 수 없습니다. 모델 입력 아래 경고를 확인하세요.", {
+        kind: "error",
+        key: INVALID_MODEL_TOAST_KEY,
+      });
     } else if (showToast) {
       toast("어시스턴트 설정을 저장했습니다.", "ok");
     }
@@ -564,6 +602,12 @@ export function renderAiSettingsForm(options: {
     refreshImageStatus();
     persist(false);
   });
+  useRecommendedImage.addEventListener("click", () => {
+    if (!recommendedImage) return;
+    imageProvider.value = recommendedImage.providerId;
+    refreshImageModels(recommendedImage.model);
+    persist(false);
+  });
   const scheduleAutoSave = (): void => {
     if (typeof window === "undefined") {
       persist(false);
@@ -579,10 +623,19 @@ export function renderAiSettingsForm(options: {
     field.input.addEventListener("input", scheduleAutoSave);
     field.input.addEventListener("change", () => persist(false));
   }
+  // 사용자가 제공자를 **직접** 바꾸면 이전 제공자의 모델 ID(예: gemini-3.8-flash)는 새 제공자에서
+  // 무효다. 그대로 두면 모든 행이 빨간 경고·오류 토스트로 덮여 "연결이 고장났다"처럼 보인다.
+  // 그때만 새 제공자의 추천 모델로 맞춘다. 저장돼 있던 카탈로그 밖 ID 를 열 때 조용히 바꾸지
+  // 않는 계약("자동 대체하지 않습니다")은 그대로다 — 이건 사용자 조작에 따른 교체다.
+  const alignModelToProvider = (field: typeof brainModel, providerId: string, tier: "fast" | "strong"): void => {
+    field.refresh(authMode, providerId);
+    if (field.validate(authMode, providerId)) return;
+    const next = tierModelFor(providerId, tier);
+    if (next) field.setValue(next, authMode, providerId);
+  };
   for (const { provider, field, effort } of specialistControls) {
     provider.addEventListener("change", () => {
-      field.refresh(authMode, provider.value);
-      field.validate(authMode, provider.value);
+      alignModelToProvider(field, provider.value, "fast");
       persist(false);
     });
     field.input.addEventListener("input", () => field.validate(authMode, provider.value));
@@ -593,8 +646,7 @@ export function renderAiSettingsForm(options: {
     effort.addEventListener("change", () => persist(false));
   }
   brainProvider.addEventListener("change", () => {
-    brainModel.refresh(authMode, brainProvider.value);
-    brainModel.validate(authMode, brainProvider.value);
+    alignModelToProvider(brainModel, brainProvider.value, "strong");
     persist(false);
   });
   brainModel.input.addEventListener("input", () => brainModel.validate(authMode, brainProvider.value));
@@ -628,50 +680,28 @@ export function renderAiSettingsForm(options: {
     ],
   });
   const connectionSummaryCopy = connectionSummary.querySelector(".ai-settings-status-copy") as HTMLElement;
-  let connectionCheckGeneration = 0;
-  let disposed = false;
-  const setConnectionSummary = (text: string, tone: "checking" | "ready" | "warning" | "error"): void => {
-    connectionSummary.dataset.tone = tone;
-    connectionSummaryCopy.textContent = text;
+  // 헤더 요약은 따로 조회하지 않는다 — 연결 패널이 쓰는 상태를 그대로 받아 적는다. 옛 헤더는 열 때
+  // 한 번만 따로 조회해서 패널이 「로그인 대기 중」·「연결됨」으로 바뀌어도 「로그인이 필요합니다」에
+  // 머물렀다(패널과 헤더가 서로 다른 말을 했다).
+  const SUMMARY_TONE = {
+    connected: "ready",
+    disconnected: "warning",
+    offline: "error",
+    checking: "checking",
+  } as const;
+  pendingAuthStatus = (next) => {
+    connectionSummary.dataset.tone = SUMMARY_TONE[next.tone];
+    connectionSummaryCopy.textContent = next.tone === "checking" && next.text === "연결 확인 중…"
+      ? "연결 상태를 확인하고 있습니다…"
+      : `${next.providerLabel} · ${next.text}`;
   };
-  const checkConnection = async (): Promise<void> => {
-    const generation = ++connectionCheckGeneration;
-    const checkedProvider = providerId;
-    setConnectionSummary("연결 상태를 확인하고 있습니다…", "checking");
-    try {
-      const auth = await fetchChatGptAuthStatus(checkedProvider);
-      if (disposed || generation !== connectionCheckGeneration || checkedProvider !== providerId) return;
-      if (hasUsableCompanionCredential(auth)) {
-        setConnectionSummary(
-          auth.env === true ? "연결됨 · 환경 변수" : `연결됨${auth.planType ? ` · ${auth.planType.toUpperCase()}` : ""}`,
-          "ready",
-        );
-      } else if (auth.expired === true) {
-        setConnectionSummary("로그인이 만료되었습니다. 다시 로그인하세요.", "warning");
-      } else {
-        setConnectionSummary("로그인이 필요합니다.", "warning");
-      }
-    } catch (error) {
-      if (disposed || generation !== connectionCheckGeneration || checkedProvider !== providerId) return;
-      if (isChatGptCompanionResponseError(error)) {
-        setConnectionSummary("연결 서비스가 응답했지만 내부 오류가 났습니다. 개발 서버를 다시 시작해 보세요.", "error");
-        return;
-      }
-      const reason = (error as ChatGptCompanionUnreachableError | undefined)?.reason;
-      setConnectionSummary(
-        reason === "timeout"
-          ? "연결 서비스가 응답하지 않습니다. 개발 서버를 다시 시작해 보세요."
-          : "연결 서비스에 닿지 않습니다. npm run ai:oauth 실행 상태를 확인하세요.",
-        "error",
-      );
-    }
-  };
+  if (lastAuthStatus) pendingAuthStatus(lastAuthStatus);
   const connectionCheckButton = el("button", {
     class: "ai-assistant-action ai-settings-check",
     text: "연결 확인",
     attrs: { type: "button" },
     dataset: { testid: "ai-settings-connection-check" },
-    on: { click: () => void checkConnection() },
+    on: { click: () => authSettings.recheck() },
   });
 
   // 「지금 저장」버튼은 없다 — 모든 변경 경로가 persist 를 태우고 푸터는 자동 저장 상태만
@@ -895,6 +925,7 @@ export function renderAiSettingsForm(options: {
         settingsSection("image", "이미지 생성", "그림을 생성하는 모델입니다. 이미지를 읽는 Vision과 별도로 선택합니다.", [
           settingsRow("이미지 생성 제공자", "대화 제공자를 바꿔도 이 선택은 유지됩니다.", imageProvider),
           settingsRow("이미지 생성 모델", "이미지를 출력하는 모델만 표시합니다. 지원 미확인 모델은 선택할 수 없습니다.", imageModel),
+          imageRecommendation,
           imageStatus,
         ]),
       ]),
@@ -931,15 +962,12 @@ export function renderAiSettingsForm(options: {
 
   activatePane("connection");
   syncModelPresetCards();
-  void checkConnection();
 
   return {
     element: form,
     connectionSummary,
     connectionCheckButton,
     dispose: () => {
-      disposed = true;
-      connectionCheckGeneration += 1;
       if (autoSaveTimer !== null) {
         if (typeof window !== "undefined") window.clearTimeout(autoSaveTimer);
         autoSaveTimer = null;

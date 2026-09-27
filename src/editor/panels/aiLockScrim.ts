@@ -94,10 +94,12 @@ export function createAiLockScrim(options: {
   // 이게 주 경로다. 막을 누르는 것은 모달을 거치지 않고 상태가 바뀐 경우(다른 창에서 로그인,
   // 토큰 만료 등)를 위한 보조 계기다. 폴링은 붙이지 않는다: 감시할 시점이 둘로 좁혀졌다.
   const onSettingsClosed = (): void => { revalidate(); };
-  window.addEventListener(AI_SETTINGS_CLOSED_EVENT, onSettingsClosed);
   // 다른 호출부(부팅 warm-up·설정 모달·칩)가 한 조회로 캐시가 바뀌어도 막을 다시 칠한다.
   const onStatusChanged = (): void => { sync(); };
-  window.addEventListener(AI_CONNECTION_STATUS_CHANGED_EVENT, onStatusChanged);
+  // window 가 없는 환경(노드 렌더 테스트의 fakeDom)에서도 패널을 그릴 수 있게 리스너만 건너뛴다.
+  const win = typeof window === "undefined" ? null : window;
+  win?.addEventListener(AI_SETTINGS_CLOSED_EVENT, onSettingsClosed);
+  win?.addEventListener(AI_CONNECTION_STATUS_CHANGED_EVENT, onStatusChanged);
   const reevaluate = (): void => { revalidate(); };
   element.addEventListener("click", reevaluate);
   element.addEventListener("focusin", reevaluate);
@@ -106,8 +108,8 @@ export function createAiLockScrim(options: {
     element,
     sync,
     dispose: () => {
-      window.removeEventListener(AI_SETTINGS_CLOSED_EVENT, onSettingsClosed);
-      window.removeEventListener(AI_CONNECTION_STATUS_CHANGED_EVENT, onStatusChanged);
+      win?.removeEventListener(AI_SETTINGS_CLOSED_EVENT, onSettingsClosed);
+      win?.removeEventListener(AI_CONNECTION_STATUS_CHANGED_EVENT, onStatusChanged);
       element.removeEventListener("click", reevaluate);
       element.removeEventListener("focusin", reevaluate);
     },

@@ -19,4 +19,14 @@ describe("piAgent resolvePiModel fallback", () => {
   test("번들에 있는 모델은 그대로 쓴다", () => {
     expect(resolvePiModel("google-antigravity", "gemini-3.6-flash").id).toBe("gemini-3.6-flash");
   });
+
+  test("GPT-6 계열은 로컬 확장으로 풀리고 Codex 전송을 그대로 쓴다", () => {
+    for (const id of ["gpt-6-astra", "gpt-6-sol", "gpt-6-luna"]) {
+      const model = resolvePiModel("openai-codex", id);
+      expect(model.id).toBe(id);
+      expect(model.api).toBe("openai-codex-responses");
+      expect(model.contextWindow).toBe(272000);
+    }
+    expect(() => resolvePiModel("openai-codex", "gpt-6-unknown")).toThrow("대체하지 않았습니다");
+  });
 });

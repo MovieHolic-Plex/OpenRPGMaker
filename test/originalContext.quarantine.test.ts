@@ -347,9 +347,17 @@ describe("task recipe contracts", () => {
 describe("installed model window contract", () => {
   it("matches every supported bundled provider model without importing the 9 MB catalog into the app", () => {
     const catalog = JSON.parse(readFileSync("node_modules/@oh-my-pi/pi-catalog/src/models.json", "utf8")) as Record<string, Record<string, { contextWindow: number }>>;
+    // 번들 밖 로컬 확장(scripts/lib/ohMyPiModel.ts) — 번들에 없는 것이 정상이다.
+    const localExtensions: Record<string, readonly string[]> = {
+      "google-antigravity": ["gemini-3.8-flash"],
+      "openai-codex": ["gpt-6-astra", "gpt-6-sol", "gpt-6-luna"],
+    };
     for (const [provider, windows] of Object.entries(ORIGINAL_MODEL_WINDOWS)) {
-      expect(windows).toEqual(Object.fromEntries(Object.entries(catalog[provider]!).map(([id, model]) => [id, model.contextWindow])));
+      const local = new Set(localExtensions[provider] ?? []);
+      const bundledOnly = Object.fromEntries(Object.entries(windows).filter(([id]) => !local.has(id)));
+      expect(bundledOnly).toEqual(Object.fromEntries(Object.entries(catalog[provider]!).map(([id, model]) => [id, model.contextWindow])));
     }
+    expect(originalContextWindow({ model: "gpt-6-astra", providerId: "openai-codex" })).toBe(272000);
     expect(originalContextWindow({ model: "gpt-5.3-codex-spark", providerId: "openai-codex" })).toBe(128000);
     expect(originalContextWindow({ model: "gpt-5.6-sol", providerId: "openai-codex" })).toBe(1000000);
     expect(originalContextWindow({ model: "unknown", providerId: "openai-codex", authMode: "chatgpt" })).toBe(1000000);

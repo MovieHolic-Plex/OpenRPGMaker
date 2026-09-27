@@ -42,6 +42,20 @@ test("edit mode restores existing chrome, removes the bottom bar, and exposes sc
   await expect(page.getByTestId("ai-settings-modal").locator(".database-modal-window")).toHaveCSS("display", "grid");
   await expect(page.getByTestId("ai-settings-advanced")).toHaveAttribute("open", "");
 
+  // 역할 표의 추론 강도 셀렉트가 페인 오른쪽 끝에서 잘리지 않는다(열 최소폭 합이 페인 폭을 넘던 회귀).
+  await page.getByTestId("ai-settings-tab-models").click();
+  const paneRight = await page.locator(".ai-settings-content").evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return rect.left + element.clientWidth;
+  });
+  for (const role of ["ultrabrain", "vision", "writer", "deep"]) {
+    const effort = page.getByTestId(`ai-config-${role}-reasoning`);
+    await expect(effort).toBeVisible();
+    const box = await effort.boundingBox();
+    expect(box, role).not.toBeNull();
+    expect((box?.x ?? 0) + (box?.width ?? 0), role).toBeLessThanOrEqual(paneRight + 0.5);
+  }
+
   const body = page.getByTestId("ai-settings-body");
   await expect(body).toHaveCSS("overflow-y", "hidden");
   const content = body.locator(".ai-settings-content");

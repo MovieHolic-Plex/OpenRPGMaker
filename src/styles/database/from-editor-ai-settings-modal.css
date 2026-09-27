@@ -36,6 +36,19 @@
   letter-spacing: -0.01em;
 }
 
+/* [레이어 보존] 로그인 전의 유일한 다음 단계 — 회색 버튼 사이에 묻히지 않게 강조한다. 버튼 바탕은 database 레이어의
+ * 범용 .ai-assistant-action 이 칠하므로 shell 레이어에 두면 레이어 순서에 져서 흰 버튼으로 남는다(실측). */
+.ai-auth-actions .ai-oauth-login.is-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent, #fff);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ai-auth-actions .ai-oauth-login.is-primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 88%, black);
+}
+
 /* editor/ai-settings-modal.css:38-47 — [레이어 보존] AI 설정 대화상자가 DB 모달 크롬(.database-modal-*)을 재사용하며 덮어쓰는 규칙 — database 레이어의 범용 .database-modal-header 를 오늘처럼 특이도로 이기려면 같은 레이어여야 한다 */
 /* 레일+페인 리디자인(2026-09): 바디는 스크롤하지 않는다 — 폼이 레일·본문·푸터 그리드로
    높이를 채우고 스크롤은 .ai-settings-content 가 맡는다. */

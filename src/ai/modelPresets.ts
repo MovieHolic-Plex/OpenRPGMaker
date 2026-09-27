@@ -35,7 +35,8 @@ export interface ModelPreset {
  */
 const PROVIDER_TIER_MODELS: Readonly<Record<string, Readonly<Record<ModelTier, string>>>> = {
   [ANTIGRAVITY_PROVIDER_ID]: { fast: "gemini-3.8-flash", strong: "gemini-3-pro" },
-  [CODEX_PROVIDER_ID]: { fast: "gpt-5.4-mini", strong: "gpt-5.6-sol" },
+  // Codex 는 네 모델만 고른다(modelCatalog.CODEX_MODELS). fast = 가장 빠른 gpt-6-luna, strong = 최상위 gpt-6-astra.
+  [CODEX_PROVIDER_ID]: { fast: "gpt-6-luna", strong: "gpt-6-astra" },
 };
 
 /** 티어의 실제 모델 ID. 매핑이 없는 제공자면 null — 호출부는 그 역할의 모델을 건드리지 않는다. */

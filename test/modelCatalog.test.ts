@@ -34,16 +34,12 @@ const ANTIGRAVITY_BUNDLED = [
   "tab_jump_flash_lite_preview",
 ];
 
-/** 실측 `bun -e getBundledModels("openai-codex")` (2026-08-27). */
-const CODEX_BUNDLED = [
-  "gpt-5.3-codex-spark",
-  "gpt-5.4",
-  "gpt-5.4-mini",
-  "gpt-5.5",
-  "gpt-5.6-luna",
+/** ChatGPT 경로는 이 넷만 고를 수 있다(감독 지시 2026-09-27). 순서 = 화면 순서, 첫 항목 = 기본. */
+const CODEX_SUPPORTED = [
   "gpt-5.6-sol",
-  "gpt-5.6-terra",
-  "gpt-daybreak-blue-latest",
+  "gpt-6-astra",
+  "gpt-6-sol",
+  "gpt-6-luna",
 ];
 
 describe("modelCatalog — 두 제공자만 해석한다", () => {
@@ -58,12 +54,11 @@ describe("modelCatalog — 두 제공자만 해석한다", () => {
     expect(models).not.toContain("gemini-3.7-flash-high");
   });
 
-  it("Codex 목록은 pi-catalog 와 같고 첫 항목이 gpt-5.6-sol 다", async () => {
+  it("Codex 목록은 정확히 네 모델(gpt-6-astra·gpt-6-sol·gpt-5.6-sol·gpt-6-luna)이고 첫 항목이 gpt-5.6-sol 다", async () => {
     const { defaultModelForAuthMode, modelCatalogForAuthMode } = await loadCatalog();
     const models = modelCatalogForAuthMode("chatgpt", CODEX_PROVIDER_ID).flatMap((g) => g.models);
 
-    expect([...models].sort()).toEqual([...CODEX_BUNDLED].sort());
-    expect(models[0]).toBe("gpt-5.6-sol");
+    expect(models).toEqual(CODEX_SUPPORTED);
     expect(defaultModelForAuthMode("chatgpt", CODEX_PROVIDER_ID)).toBe("gpt-5.6-sol");
   });
 
@@ -101,8 +96,15 @@ describe("isModelValidForAuthMode — 선택된 제공자 기준", () => {
     for (const model of ANTIGRAVITY_BUNDLED) {
       expect(isModelValidForAuthMode("chatgpt", model, ANTIGRAVITY_PROVIDER_ID), model).toBe(true);
     }
-    for (const model of CODEX_BUNDLED) {
+    for (const model of CODEX_SUPPORTED) {
       expect(isModelValidForAuthMode("chatgpt", model, CODEX_PROVIDER_ID), model).toBe(true);
+    }
+  });
+
+  it("Codex 는 네 모델 밖의 옛 번들 모델을 거부한다", async () => {
+    const { isModelValidForAuthMode } = await loadCatalog();
+    for (const retired of ["gpt-5.4-mini", "gpt-5.4", "gpt-5.5", "gpt-5.6-terra", "gpt-5.6-luna", "gpt-5.3-codex-spark", "gpt-daybreak-blue-latest"]) {
+      expect(isModelValidForAuthMode("chatgpt", retired, CODEX_PROVIDER_ID), retired).toBe(false);
     }
   });
 
