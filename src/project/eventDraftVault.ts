@@ -2,15 +2,18 @@ import { eventWithoutDraft, rebaseOpenEditDraft } from "@/project/eventDrafts";
 import type { GameEvent, MapId, Project } from "@/project/types";
 import { projectRepository } from "@/project/persistence/repository";
 import { shareContentDigests } from "@/project/persistence/core/contentDigest";
-import { cloneProjectSharingReferenceDocuments } from "@/project/projectClone";
 
 /**
- * 스토어가 적용마다 만드는 복제. 타일셋 참고문서는 store.update 와 같이 공유하고, 원본의 정체성 요약 기억을
- * 넘겨 다음 적용 권위 검사가 처음부터 돌지 않게 한다(2026-09-25 실측: 26 MB 프로젝트에서 AI 체크포인트마다
- * 전체 structuredClone 과 그 복제본의 요약 재계산이 1 s 넘게 걸렸다).
+ * 스토어가 적용마다 만드는 복제. 이 파일은 맵의 이벤트만 고치므로 타일셋은 복제하지 않고 같은 객체를
+ * 가리킨다(스토어 타일셋은 update draft 로만 바뀐다 — projectClone.cloneProjectForMutation). 나머지는 복제하고
+ * 원본의 정체성 요약 기억을 넘겨 다음 적용 권위 검사가 처음부터 돌지 않게 한다.
+ * 실측: 2026-09-25, 26 MB 프로젝트에서 AI 체크포인트마다 전체 복제와 요약 재계산이 1 s 넘게 걸렸다.
+ * 2026-09-26 앱(82MB·타일셋 354칸): 툴 한 번의 store.replace 가 타일셋을 또 통째로 복제했다.
  */
 function cloneKeepingDigests(project: Project): Project {
-  const next = cloneProjectSharingReferenceDocuments(project);
+  // 키 순서를 지키려고 빈 사전을 같은 자리에 두고 복제한 뒤 갈아 끼운다(직렬화 바이트가 같아야 한다).
+  const next = structuredClone({ ...project, tilesets: {} }) as Project;
+  next.tilesets = { ...project.tilesets };
   shareContentDigests(project, next);
   return next;
 }

@@ -22,7 +22,7 @@ import type { RemoteProjectTarget } from "./persistence/target";
 import { isSharedDemoProjectId, SHARED_DEMO_PROJECT_ID } from "./sharedDemoProject";
 import { projectViewWithoutEventDrafts, projectWithoutEventDrafts } from "./eventDrafts";
 import { jsonContentDigest, shareContentDigests } from "./persistence/core/contentDigest";
-import { cloneProjectSharingReferenceDocuments } from "./projectClone";
+import { cloneProjectForMutation, cloneProjectSharingReferenceDocuments, finishProjectMutation } from "./projectClone";
 import { assertCanonicalReplacement, ProjectRoutingError } from "./spatial/saveRouting";
 import { SpatialPersistenceError, type MirrorStatus } from "./spatial/persistenceTypes";
 import { applyAudioDescriptionDelta } from "./audioDescriptions";
@@ -842,8 +842,13 @@ class ProjectStore {
 
   update(mutator: (draft: Project) => void, change: ProjectChangeDescriptor = { scope: "project" }): void {
     if (!canWriteTeamProject()) return;
-    const draft: Project = cloneProjectSharingReferenceDocuments(this.current);
-    mutator(draft);
+    // 타일셋은 변경기가 읽는 것만 복제하고, 안 바뀐 것은 이전 객체를 그대로 둔다(projectClone 머리말).
+    const draft: Project = cloneProjectForMutation(this.current);
+    try {
+      mutator(draft);
+    } finally {
+      finishProjectMutation(draft);
+    }
     assertCanonicalReplacement(draft, this.writeAuthority);
     ensureProjectMapConnections(draft);
     ensureMapTreeCoversAllMaps(draft);
