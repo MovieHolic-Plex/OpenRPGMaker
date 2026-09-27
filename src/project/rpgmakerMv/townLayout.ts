@@ -651,7 +651,7 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
     }
     return x;
   };
-  bands.forEach((band, bandIndex) => {
+  bands.forEach((band) => {
     segments.forEach((seg, si) => {
       let x = seg.x;
       let end = seg.x + seg.w;
@@ -670,7 +670,6 @@ export function layOutPackTown(tileset: TilesetDef, recipe: MvTownRecipe, map: P
       // 블록 = 필지 섞기(작가 p4·p6): 단독주택 · 중층 주거 한 동 · 주차장 · 쌈지 녹지가 섞이고, 같은 종류가 셋 이상 잇따르지 않는다.
       // 예전엔 블록 하나를 같은 높이 건물 한 줄로 통째로 채워 벽처럼 보였다(2026-09-27 사용자 지적).
       const deal = dealer(recipe.houses);
-      const aptDeal = dealer(apartments);
       const carsV = recipe.objects.carsVertical ?? [];
       let prevKind = "";
       let houseRun = 0;
