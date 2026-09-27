@@ -4,31 +4,31 @@
   "tiles": 6144,
   "atlas": "3072×4608",
   "places": 2,
-  "objectKits": 192,
+  "objectKits": 194,
   "houseKits": 0,
   "autotileGroups": 85,
-  "bytes": 10645212,
+  "bytes": 10707030,
   "maps": {
     "refmap_inn_1f": {
       "place": "shared_refmap_interior_refmap_inn_1f",
       "size": "30×22",
-      "objects": 62,
+      "objects": 63,
       "houses": 0,
-      "renderSha": "676dece8c33eea2e8b851040f7e343e50b25ceda890cf1dca13c53b840f69f78"
+      "renderSha": "286d9afd417ba965576db6711c9062726b0af1335b48b0f67612d6ee4e598de0"
     },
     "refmap_witch_house": {
       "place": "shared_refmap_interior_refmap_witch_house",
       "size": "32×24",
-      "objects": 84,
+      "objects": 90,
       "houses": 0,
-      "renderSha": "2feb249de987f111d47064c076cc2c3a58c40de84aba41c4f283ea3ceb496002"
+      "renderSha": "d3840fe663a641346876ac8e68a10ce66ca1c8a162c9d5080718b587923f270b"
     }
   },
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "02df6b347dbe3c6c7b36d01737c57a11cd0a06a212512e48a05834296df772a4",
+  "revision": "d40bb8770f9e8dd47af5a7e1754ad10f2263f358ebb60d763a1d053311040b97",
   "reloaded": true,
-  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-interior-2026-09-27T08-26-16-245Z.sqlite",
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-interior-2026-09-27T09-15-36-796Z.sqlite",
   "otherLibraries": 36,
   "otherLibrariesUnchanged": true,
-  "publishedAt": "2026-09-27T08:26:33.426Z"
+  "publishedAt": "2026-09-27T09:15:50.585Z"
 }

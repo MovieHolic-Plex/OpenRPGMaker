@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **108쪽 / 3781KB / 약 1,085,086 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **108쪽 / 3785KB / 약 1,086,328 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -24,7 +24,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-pre-edit-routing.md` | 166KB | 71KB ⚠상한 초과 — 절을 더 쪼개라 | 1033 | ~48,489 |
 | `openwiki/editor-workflows-misc.md` | 73KB | 32KB | 509 | ~20,146 |
 | `openwiki/runtime-battle.md` | 197KB | 31KB | 1039 | ~56,719 |
-| `openwiki/runtime-pre-edit-routing.md` | 60KB | 34KB | 411 | ~17,645 |
+| `openwiki/runtime-pre-edit-routing.md` | 62KB | 36KB | 429 | ~18,331 |
 | `openwiki/runtime-project-schema.md` | 179KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1316 | ~49,349 |
 | `openwiki/runtime-sessions.md` | 115KB | 50KB | 566 | ~31,125 |
 | `openwiki/testing.md` | 206KB | 48KB | 1923 | ~56,996 |
@@ -1127,14 +1127,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L175` 4. 위키를 읽는 법
 - `L187` 5. 끝났다고 말할 수 있는 조건
 
-### `openwiki/refmap-town-outside.md` — 8KB · 95줄 · ~2,441 토큰
+### `openwiki/refmap-town-outside.md` — 9KB · 101줄 · ~2,707 토큰
 
 - `L7` 어디에 무엇이 있나
 - `L20` 게시
 - `L36` 변환 규칙과 함정
 - `L50` 확인 (2026-09-27)
 - `L56` 세트 8개 더 (2026-09-27)
-  - `L87` 세트 맵 기술 (maps/*.json)
+  - `L93` 세트 맵 기술 (maps/*.json)
 
 ### `openwiki/release-and-version.md` — 14KB · 220줄 · ~4,282 토큰
 
@@ -1248,19 +1248,19 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L247` Genre ambience presets and sound pairing (2026-09-21)
   - `L271` Thirty audiovisual presets — evidence (2026-09-21)
 
-### `openwiki/runtime-pre-edit-routing.md` — 60KB · 411줄 · ~17,645 토큰 · 통째읽기 잘림
+### `openwiki/runtime-pre-edit-routing.md` — 62KB · 429줄 · ~18,331 토큰 · 통째읽기 잘림
 
-- `L203` 게임 화면의 2층·그림자·4층 (MZ식 4층, 2026-09-24)
-- `L223` 맵별 16/32/48px 좌표
-- `L227` ESC skill thumbnails (2026-09-06)
-- `L238` Recovered head emotes (2026-09-05)
-- `L244` 메뉴 입력·불러오기 배율 (2026-09-05)
-- `L252` 가구 밀기 애니메이션 (2026-09-05)
-- `L261` Recovered head emotes (2026-09-05)
-- `L267` Saved uploaded tilesets in the actual player (2026-09-14)
-- `L288` 맵 배경(패럴랙스) 렌더 (2026-09-14)
-- `L315` 맵 배경 다중 레이어 (2026-09-21)
-- `L367` 맵 배경 깊이(카메라 따라가기)·흐름 배율 — 회상 파노라마 (2026-09-27)
+- `L221` 게임 화면의 2층·그림자·4층 (MZ식 4층, 2026-09-24)
+- `L241` 맵별 16/32/48px 좌표
+- `L245` ESC skill thumbnails (2026-09-06)
+- `L256` Recovered head emotes (2026-09-05)
+- `L262` 메뉴 입력·불러오기 배율 (2026-09-05)
+- `L270` 가구 밀기 애니메이션 (2026-09-05)
+- `L279` Recovered head emotes (2026-09-05)
+- `L285` Saved uploaded tilesets in the actual player (2026-09-14)
+- `L306` 맵 배경(패럴랙스) 렌더 (2026-09-14)
+- `L333` 맵 배경 다중 레이어 (2026-09-21)
+- `L385` 맵 배경 깊이(카메라 따라가기)·흐름 배율 — 회상 파노라마 (2026-09-27)
 
 ### `openwiki/runtime-project-schema.md` — 179KB · 1316줄 · ~49,349 토큰 · 통째읽기 잘림 · 깨진 줄 1
 
@@ -1700,7 +1700,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L30` 실제 데이터 보존
 - `L43` 역사 자료와 검증
 
-### `openwiki/teaching-assistant-tilesets.md` — 43KB · 360줄 · ~12,826 토큰
+### `openwiki/teaching-assistant-tilesets.md` — 44KB · 367줄 · ~13,116 토큰
 
 - `L8` 한 줄 요약
 - `L14` 조수가 실제로 받는 것
@@ -1714,11 +1714,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L131` 네 층 팩을 가르치는 순서
   - `L151` Rasak Fantasy 파이프라인 (저장소 밖 그림)
   - `L163` MV/MZ 팩 프리셋 — 구현 (2026-09-24, Rasak Modern 도시 야외)
-  - `L203` 건물 문법과 마을 짜임 (2026-09-25)
-- `L285` 알려진 함정
-- `L295` 강제 장치 (이 문서를 안 읽어도 걸리는 것)
-- `L309` 칩셋 계열 규칙 (2026-09-25 사용자 결정)
-- `L344` 문서의 번호가 새 프로젝트에 있어야 한다 (2026-09-25)
+  - `L210` 건물 문법과 마을 짜임 (2026-09-25)
+- `L292` 알려진 함정
+- `L302` 강제 장치 (이 문서를 안 읽어도 걸리는 것)
+- `L316` 칩셋 계열 규칙 (2026-09-25 사용자 결정)
+- `L351` 문서의 번호가 새 프로젝트에 있어야 한다 (2026-09-25)
 
 ### `openwiki/team-project-host.md` — 27KB · 323줄 · ~8,415 토큰
 

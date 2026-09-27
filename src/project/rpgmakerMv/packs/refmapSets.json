@@ -3247,8 +3247,30 @@
     "w": 4,
     "h": 3,
     "kind": "decal",
-    "name": "넓은 나무 계단",
-    "description": "위층으로 오르는 4칸 폭 계단"
+    "name": "좌우 대칭 나무 계단 한 쌍(Λ)",
+    "description": "오른쪽 오름·왼쪽 오름 계단 두 벌이 붙은 조각. 벽에 붙이는 계단으로 쓰지 말 것 — 한 벌은 wood_stairs_up_left / wood_stairs_up_right. 넓은 홀 가운데 대칭 계단참에만."
+   },
+   {
+    "id": "wood_stairs_up_right",
+    "sheet": "B_REFMAP_Interior.png",
+    "x": 8,
+    "y": 13,
+    "w": 2,
+    "h": 3,
+    "kind": "decal",
+    "name": "나무 계단(오른쪽 오름)",
+    "description": "오른쪽 옆벽을 타고 비스듬히 오르는 나무 계단 한 벌. 방 오른쪽 아래 구석에 두고 높은 끝을 오른쪽 벽에 붙인다(원본 시트의 Λ 계단 왼쪽 절반)."
+   },
+   {
+    "id": "wood_stairs_up_left",
+    "sheet": "B_REFMAP_Interior.png",
+    "x": 10,
+    "y": 13,
+    "w": 2,
+    "h": 3,
+    "kind": "decal",
+    "name": "나무 계단(왼쪽 오름)",
+    "description": "왼쪽 옆벽을 타고 비스듬히 오르는 나무 계단 한 벌. 방 왼쪽 아래 구석에 두고 높은 끝을 왼쪽 벽에 붙인다(원본 시트의 Λ 계단 오른쪽 절반)."
    },
    {
     "id": "stairwell_down",
@@ -4579,7 +4601,7 @@
     "name": "작은 초록 호박"
    }
   ],
-  "guide": "# REFMAP 실내 + 마녀의 방 조립법\n\n작가(REFMAP)의 판타지 실내 팩과 「마녀의 방」 추가 시트(C). 칸 48px. 방은 A4 천장 테로 둘러싸고, 북쪽 벽면 2줄 아래가 바닥이다.\n\n## 1. 바닥\n- 방 밖(맵 전체)을 먼저 천장 재료로 칠한다. 천장 속은 검게 보이고 방과 닿는 곳에 테가 그려진다.\n  - 여관·민가: `\"짙은 나무 천장\"` / 저택·마녀의 방: `\"짙은 갈색 천장\"` / 성·신전: `\"석벽돌 천장\"`·`\"청회색 천장\"` / 지하: `\"그늘 천장\"`.\n- 방 자리를 바닥으로 판다. 기본 바닥은 `\"쪽마루 바닥\"`(나무)·`\"판석 바닥\"`(돌). A5 평타일 `\"밝은 가로 마루\"`+`\"밝은 가로 마루(아랫단)\"`, `\"보라 문양 카펫\"`, `\"흑백 체크 타일\"` 등으로 방마다 바닥을 바꾼다.\n- 방 사이 통로는 1~2칸 폭으로 바닥을 이어 판다. 통로의 벽면도 위쪽 2줄에 댄다.\n\n## 2. 벽\n- 방 사각형의 맨 위 2줄 = 벽면(천장 테 바로 아래). 천장과 짝을 맞춘다:\n  `\"짙은 나무 천장\"`↔`\"흰 회벽\"`, `\"나무·회색 천장\"`↔`\"분홍 벽지\"`, `\"짙은 갈색 천장\"`↔`\"노란 무늬 벽지\"`·`\"흰 회벽(짙은 나무 틀)\"`, `\"밝은 나무 천장\"`↔`\"나무 판자 벽\"`, `\"석벽돌 천장\"`↔`\"밝은 석벽돌 벽\"`.\n- 방 안에 튀어나온 칸막이 벽은 천장 재료 덩이(1~2칸 폭)를 세우고 그 바로 아래 2줄에 벽면을 단다.\n- 벽면 평타일(`\"짙은 기둥 회벽 위/아래\"` 등)을 벽면 줄에 덧칠하면 기둥 무늬가 생긴다.\n- 문: 벽면 2줄 자리에 `doorway_dark`·`doorway_lit`·`arch_door_lit`. 바깥 출구는 남쪽 벽 천장 테를 1~2칸 비워 바닥을 맵 끝까지 잇는다.\n\n## 3. 물\n- 실내 수조·목욕탕은 `\"돌테 수조 물\"`, 지하 수로는 `\"돌 수로 물\"`·`\"짙은 물(돌바닥)\"`.\n\n## 4. 큰 가구\n- 탁자·카운터: A2 `\"나무 카운터\"`·`\"짙은 나무 탁자\"`를 **2층**에 2칸 이상 덩이로 깐다(막힘). 위에 `teapot_set`·`wine_set`·`candelabra`·`open_book`, 마녀 방이면 `potion_clutter`·`jars_papers`·`root_herbs`·`green_books` 을 올린다.\n- 식탁: `big_table`(3×3) 둘레에 `chair_s`(위)·`chair_n`(아래)·`chair_e`(왼쪽)·`chair_w`(오른쪽).\n- 벽에 붙는 가구(높이 2~3칸)는 윗칸이 벽면에 걸리게: `light_bookshelf`·`dark_bookshelf`·`light_dresser`·`glass_cabinet`·`fireplace`·`iron_stove`·`pendulum_clock`.\n- 창·액자·화환은 벽면 2줄에만: `window_lit`·`window_blue_lit`·`tall_window_lit`·`lattice_window_lit`·`ivy_window_lit`·`purple_window_lit`·`flower_painting`·`portrait`·`wreath_*`·`hanging_herbs`·`herb_shelf`·`jar_shelf`.\n- 계단: 위층은 `wood_stairs_wide`·`stone_stairs`, 벽을 타는 좁은 계단은 `wood_ladder_stairs`, 지하는 `floor_hatch`·`stairwell_down`.\n- 침실: `wood_bed`·`gold_bed` 에 `pink_quilt`·`green_quilt` 를 겹치면 누운 이불이 된다. 곁에 `table_lamp`·`washbasin`.\n\n## 5. 소품\n- 여관·술집: 카운터 뒤 `light_goods_shelf`·`barrel_stack`·`kitchen_cupboard`, 식당에 `big_table` 여러 벌과 `stool_round`, 구석에 `potted_plant`·`crate`·`sack`.\n- 마녀의 방: 가운데 `big_cauldron` 또는 `cauldron_stand` 와 `magic_circle`, 벽에 `hanging_herbs`·`laundry_garland`·`antler_branch`·`pinned_notes`, 점술 방은 `\"보라 문양 카펫\"` 위 `fortune_table`+`crystal_ball`, 창고에 `ingredient_crates`·`barrel_upright`·`lidded_jar`·`herb_box_scales`·`crystals_bones`, 침실 `witch_bed`+`red_blanket`.\n- 계절 장식: 겨울은 `xmas_tree`·`gift_pile`·`wreath_*`, 가을은 `jackolantern_stack`·`pumpkins`·`big_pumpkin`.\n- 같은 물체를 한 줄로 늘어놓지 말고 벽 쪽 덩이 + 빈 동선을 섞는다.\n"
+  "guide": "# REFMAP 실내 + 마녀의 방 조립법\n\n작가(REFMAP)의 판타지 실내 팩과 「마녀의 방」 추가 시트(C). 칸 48px. 방은 A4 천장 테로 둘러싸고, 북쪽 벽면 2줄 아래가 바닥이다.\n\n## 1. 바닥\n- 방 밖(맵 전체)을 먼저 천장 재료로 칠한다. 천장 속은 검게 보이고 방과 닿는 곳에 테가 그려진다.\n  - 여관·민가: `\"짙은 나무 천장\"` / 저택·마녀의 방: `\"짙은 갈색 천장\"` / 성·신전: `\"석벽돌 천장\"`·`\"청회색 천장\"` / 지하: `\"그늘 천장\"`.\n- 방 자리를 바닥으로 판다. 기본 바닥은 `\"쪽마루 바닥\"`(나무)·`\"판석 바닥\"`(돌). A5 평타일 `\"밝은 가로 마루\"`+`\"밝은 가로 마루(아랫단)\"`, `\"보라 문양 카펫\"`, `\"흑백 체크 타일\"` 등으로 방마다 바닥을 바꾼다.\n- 방 사이 통로는 1~2칸 폭으로 바닥을 이어 판다. 통로의 벽면도 위쪽 2줄에 댄다.\n\n## 2. 벽\n- 방 사각형의 맨 위 2줄 = 벽면(천장 테 바로 아래). 천장과 짝을 맞춘다:\n  `\"짙은 나무 천장\"`↔`\"흰 회벽\"`, `\"나무·회색 천장\"`↔`\"분홍 벽지\"`, `\"짙은 갈색 천장\"`↔`\"노란 무늬 벽지\"`·`\"흰 회벽(짙은 나무 틀)\"`, `\"밝은 나무 천장\"`↔`\"나무 판자 벽\"`, `\"석벽돌 천장\"`↔`\"밝은 석벽돌 벽\"`.\n- 방 안에 튀어나온 칸막이 벽은 천장 재료 덩이(1~2칸 폭)를 세우고 그 바로 아래 2줄에 벽면을 단다.\n- 옆방으로 가는 가로 통로(세로 칸막이를 뚫는 문)는 통로 2줄 위 2줄에 벽면(문 인방)을 남기고 그 위는 천장으로 둔다 — 천장 바로 밑이 바닥이면 안 된다.\n- 방을 모두 직사각형으로 두지 말 것: 구석에 천장 덩이를 들여 ㄱ·ㄷ자 방, 알코브, 튀어나온 벽 기둥을 만들고 칸막이 두께를 1~3칸으로 섞는다. 통로 바닥은 이어지는 방 바닥 한 가지로.\n- 벽면 평타일(`\"짙은 기둥 회벽 위/아래\"` 등)을 벽면 줄에 덧칠하면 기둥 무늬가 생긴다.\n- 문: 벽면 2줄 자리에 `doorway_dark`·`doorway_lit`·`arch_door_lit`. 바깥 출구는 남쪽 벽 천장 테를 1~2칸 비워 바닥을 맵 끝까지 잇는다.\n\n## 3. 물\n- 실내 수조·목욕탕은 `\"돌테 수조 물\"`, 지하 수로는 `\"돌 수로 물\"`·`\"짙은 물(돌바닥)\"`.\n\n## 4. 큰 가구\n- 탁자·카운터: A2 `\"나무 카운터\"`·`\"짙은 나무 탁자\"`를 **2층**에 2칸 이상 덩이로 깐다(막힘). 위에 `teapot_set`·`wine_set`·`candelabra`·`open_book`, 마녀 방이면 `potion_clutter`·`jars_papers`·`root_herbs`·`green_books` 을 올린다.\n- 식탁: `big_table`(3×3) 둘레에 `chair_s`(위)·`chair_n`(아래)·`chair_e`(왼쪽)·`chair_w`(오른쪽).\n- 벽에 붙는 가구(높이 2~3칸)는 윗칸이 벽면에 걸리게: `light_bookshelf`·`dark_bookshelf`·`light_dresser`·`glass_cabinet`·`fireplace`·`iron_stove`·`pendulum_clock`.\n- 창·액자·화환은 벽면 2줄에만: `window_lit`·`window_blue_lit`·`tall_window_lit`·`lattice_window_lit`·`ivy_window_lit`·`purple_window_lit`·`flower_painting`·`portrait`·`wreath_*`·`hanging_herbs`·`herb_shelf`·`jar_shelf`.\n- 계단: 위층 계단은 **옆벽을 따라 비스듬히** 놓는다 — 방 왼쪽 아래 구석이면 `wood_stairs_up_left`(높은 끝이 왼쪽 벽), 오른쪽 아래 구석이면 `wood_stairs_up_right`. 북쪽 벽 가운데에 붙여 벽 속으로 오르게 두지 않는다. `wood_stairs_wide` 는 두 계단이 붙은 Λ 조각이라 벽 계단으로 쓰지 않는다. 돌 실내는 `stone_stairs_up_left/right`, 벽을 타는 좁은 계단은 `wood_ladder_stairs`, 지하는 `floor_hatch`·`stairwell_down`.\n- 침실: `wood_bed`·`gold_bed` 에 `pink_quilt`·`green_quilt` 를 겹치면 누운 이불이 된다. 곁에 `table_lamp`·`washbasin`.\n\n## 5. 소품\n- 여관·술집: 카운터 뒤 `light_goods_shelf`·`barrel_stack`·`kitchen_cupboard`, 식당에 `big_table` 여러 벌과 `stool_round`, 구석에 `potted_plant`·`crate`·`sack`.\n- 마녀의 방: 가운데 `big_cauldron` 또는 `cauldron_stand` 와 `magic_circle`, 벽에 `hanging_herbs`·`laundry_garland`·`antler_branch`·`pinned_notes`, 점술 방은 `\"보라 문양 카펫\"` 위 `fortune_table`+`crystal_ball`, 창고에 `ingredient_crates`·`barrel_upright`·`lidded_jar`·`herb_box_scales`·`crystals_bones`, 침실 `witch_bed`+`red_blanket`.\n- 계절 장식: 겨울은 `xmas_tree`·`gift_pile`·`wreath_*`, 가을은 `jackolantern_stack`·`pumpkins`·`big_pumpkin`.\n- 같은 물체를 한 줄로 늘어놓지 말고 벽 쪽 덩이 + 빈 동선을 섞는다.\n"
  },
  {
   "id": "refmap-mz-ground",
