@@ -824,12 +824,14 @@ export function executeCommand(
       return resumeNext(frame);
     case "enterHeroName": {
       const actor = state.project?.database.actors.find((record) => record.id === command.actorId);
+      const textTarget = command.stringVariableId;
       return pause("enterHeroName", {
         kind: "enterHeroName",
         actorId: command.actorId,
         maxLength: command.maxLength,
         showInitialName: command.showInitialName,
-        currentName: actor?.name ?? "",
+        currentName: textTarget ? (state.session.stringVariables?.[textTarget] ?? "") : (actor?.name ?? ""),
+        ...(command.prompt ? { prompt: command.prompt } : {}),
       });
     }
     case "changeGold": {

@@ -182,6 +182,14 @@ export interface BattleSessionState {
   readonly currentMapId?: string;
   readonly x?: number;
   readonly y?: number;
+  // 명작 공백 G1 — 트룹 배틀 이벤트 페이지가 읽는 조건 스냅샷.
+  readonly actorVitals?: Readonly<Record<string, { readonly hp: number; readonly mp: number; readonly maxHp: number; readonly maxMp: number }>>;
+  readonly actorStateIds?: Readonly<Record<string, readonly string[]>>;
+  readonly playerFacing?: import("@/project/types").Dir;
+  readonly eventLocations?: Readonly<Record<string, { readonly mapId: string; readonly x: number; readonly y: number; readonly direction?: import("@/project/types").Dir }>>;
+  readonly horror?: import("@/project/horrorState").HorrorState;
+  readonly stringVariables?: Readonly<Record<string, string>>;
+  readonly clearHistory?: { readonly count: number; readonly endingIds: readonly string[] };
 }
 
 export interface BattlePartyProgress {

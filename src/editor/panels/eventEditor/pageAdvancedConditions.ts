@@ -1,3 +1,4 @@
+import { ACTOR_QUERY_CONDITION_MODE_OPTIONS, defaultActorQueryCondition, renderActorQueryCondition } from "./actorQueryConditionForm";
 import { el } from "@/util/dom";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
@@ -54,6 +55,7 @@ const LEAF_CONDITION_OPTIONS = [
   { value: "relationshipAtLeast", label: "관계" },
   { value: "battleResult", label: "전투 결과" },
   { value: "run", label: "탐험" },
+  ...ACTOR_QUERY_CONDITION_MODE_OPTIONS,
 ] as const satisfies readonly { readonly value: AdvancedConditionKind; readonly label: string }[];
 
 // 고급 목록도 방향(꺼짐/보유 안 함/파티에 없음)을 저작할 수 있어야 한다.
@@ -477,6 +479,20 @@ function renderAdvancedConditionContent(
       });
     case "run":
       return renderRunCondition(condition, onChange);
+    case "actorStat":
+    case "actorState":
+    case "partyLeader":
+    case "partySize":
+    case "facing":
+    case "relativeFacing":
+    case "hiding":
+    case "pursuitActive":
+    case "clearCount":
+    case "endingSeen":
+    case "newGamePlus":
+    case "weekday":
+    case "stringVariable":
+      return renderActorQueryCondition(condition, onChange);
   }
   return document.createElement("div");
 }
@@ -524,6 +540,20 @@ function defaultAdvancedCondition(kind: AdvancedConditionKind): EventPageConditi
       return { kind: "battleResult", result: "victory" };
     case "run":
       return { kind: "run", query: "active", value: true };
+    case "actorStat":
+    case "actorState":
+    case "partyLeader":
+    case "partySize":
+    case "facing":
+    case "relativeFacing":
+    case "hiding":
+    case "pursuitActive":
+    case "clearCount":
+    case "endingSeen":
+    case "newGamePlus":
+    case "weekday":
+    case "stringVariable":
+      return defaultActorQueryCondition(kind);
     // 빈 묶음은 조용히 참(all)·거짓(any) 이 되어 저작자를 속인다 — 하위 하나를 심어서 낸다.
     case "all":
       return { kind: "all", conditions: [defaultAdvancedCondition("switch")] };

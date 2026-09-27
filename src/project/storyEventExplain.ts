@@ -319,6 +319,20 @@ function traceCondition(
         summary: `run:${condition.query}=${String(actual ?? "none")} expected ${String(expected)}`,
       };
     }
+    case "actorStat":
+    case "actorState":
+    case "partyLeader":
+    case "partySize":
+    case "facing":
+    case "relativeFacing":
+    case "hiding":
+    case "pursuitActive":
+    case "clearCount":
+    case "endingSeen":
+    case "newGamePlus":
+    case "weekday":
+    case "stringVariable":
+      return { index, kind: condition.kind, ok, summary: `${condition.kind} => ${ok ? "true" : "false"}` };
     case "all":
       return {
         index,

@@ -1,3 +1,4 @@
+import { actorQueryConditionSummary } from "./actorQueryConditionForm";
 import { gameOverName } from "@/project/gameOverLibrary";
 import { equipmentSlotLabel as catalogSlotLabel } from "@/project/equipmentSlots";
 import {
@@ -1154,6 +1155,20 @@ function conditionSummary(condition: Extract<Command, { kind: "fork" }>['conditi
       return `전투 ${condition.result === "victory" ? "승리" : condition.result === "defeat" ? "패배" : "도망"}`;
     case "run":
       return runConditionSummary(condition);
+    case "actorStat":
+    case "actorState":
+    case "partyLeader":
+    case "partySize":
+    case "facing":
+    case "relativeFacing":
+    case "hiding":
+    case "pursuitActive":
+    case "clearCount":
+    case "endingSeen":
+    case "newGamePlus":
+    case "weekday":
+    case "stringVariable":
+      return actorQueryConditionSummary(condition);
     case "all":
       return condition.conditions.length
         ? `모두 맞을 때(${condition.conditions.map((child) => conditionSummary(child)).join(", ")})`

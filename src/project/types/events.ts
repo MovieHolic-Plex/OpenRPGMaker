@@ -84,12 +84,45 @@ export type Condition =
   | { kind: "friendshipAtLeast"; npcKey?: string; value: number }
   | RelationshipCondition
   | { kind: "battleResult"; result: "victory" | "defeat" | "escape" }
+  | ActorQueryCondition
   | RoguelikeRunCondition
   | { kind: "all"; conditions: Condition[] }
   | { kind: "any"; conditions: Condition[] }
   | { kind: "not"; condition: Condition };
 
 export type EventPageCondition = Condition;
+
+/** 비교 연산자(조건 공통). */
+export type ConditionCompareOp = "==" | ">=" | "<=" | ">" | "<" | "!=";
+
+/**
+ * 명작 공백 G1(2026-09-27): 이벤트가 액터·파티·시점·회차·요일·문자열을 직접 읽는 조건.
+ * `actorId: "leader"` 는 파티 선두다. 해석할 수 없는 대상(파티에 없는 배우·빈 파티)은 거짓.
+ */
+export type ActorQueryCondition =
+  | { kind: "actorStat"; actorId: ActorId | "leader"; stat: "level" | "hp" | "mp" | "hpPercent" | "mpPercent"; op: ConditionCompareOp; value: number }
+  | { kind: "actorState"; actorId: ActorId | "leader" | "anyone"; stateId: string; present: boolean }
+  | { kind: "partyLeader"; actorId: ActorId }
+  | { kind: "partySize"; op: ConditionCompareOp; value: number }
+  /** subject=player: 주인공이 dir 을 본다. subject=event: 이 이벤트가 dir 을 본다. */
+  | { kind: "facing"; subject: "player" | "event"; dir: Dir }
+  /**
+   * 주인공과 이 이벤트의 상대 자세.
+   * playerBehindEvent = 주인공이 이벤트 등 뒤에 있다(몰래 다가가기),
+   * eventBehindPlayer = 이벤트가 주인공 등 뒤에 있다,
+   * playerFacingEvent = 주인공이 이 이벤트 쪽을 보고 있다(안 볼 때만 움직이는 조각상은 not 으로 감싼다).
+   */
+  | { kind: "relativeFacing"; relation: "playerBehindEvent" | "eventBehindPlayer" | "playerFacingEvent" }
+  | { kind: "hiding"; value: boolean }
+  /** 추격자 추격 중 여부. eventId 생략 = 누구든. */
+  | { kind: "pursuitActive"; eventId?: string; value: boolean }
+  /** 이 기기에서 엔딩을 본 횟수(서로 다른 엔딩 수가 아니라 클리어 횟수). */
+  | { kind: "clearCount"; op: ConditionCompareOp; value: number }
+  | { kind: "endingSeen"; endingId: string; value: boolean }
+  | { kind: "newGamePlus"; value: boolean }
+  /** 게임 달력 요일. 0=일 … 6=토. 시계가 없으면 거짓. */
+  | { kind: "weekday"; weekdays: number[] }
+  | { kind: "stringVariable"; stringVariableId: string; op: "==" | "!=" | "contains" | "empty"; value: string };
 
 export interface ConditionV1 {
   kind: "flag";
@@ -376,7 +409,16 @@ export type Command =
   | { kind: "changeActorHp"; actorId: ActorId; op: ActorAmountOp; amount: number; amountMode?: "flat" | "percent" }
   | { kind: "changeActorMp"; actorId: ActorId; op: ActorAmountOp; amount: number; amountMode?: "flat" | "percent" }
   | { kind: "recoverAll"; actorId?: ActorId }
-  | { kind: "enterHeroName"; actorId: ActorId; maxLength: number; showInitialName: boolean }
+  | {
+      kind: "enterHeroName";
+      actorId: ActorId;
+      maxLength: number;
+      showInitialName: boolean;
+      /** 지정하면 배우 이름 대신 이 문자열 변수에 입력을 저장한다(자유 텍스트 입력·암호·기도문). */
+      stringVariableId?: string;
+      /** 문자열 변수 입력일 때 창 위 안내 문구. */
+      prompt?: string;
+    }
   | { kind: "changeGold"; op: "=" | "+=" | "-="; amount: VariableOperand }
   | { kind: "changeItem"; itemId: ItemId; op: "=" | "+=" | "-="; amount: VariableOperand }
   | { kind: "craftRecipe"; recipeId: string; resultVariableId?: string }

@@ -22,6 +22,8 @@ export interface NameEntryRequest {
   readonly maxLength: number;
   // 초기 이름 표시 여부. true 면 현재 이름을 입력란에 미리 채운다.
   readonly showInitialName: boolean;
+  /** 제목 대신 보일 안내(자유 텍스트 입력). 생략 = "이름 입력". */
+  readonly prompt?: string;
 }
 
 // 공백/특수 문자를 그리드 셀에 알아보기 쉽게 표기한다.
@@ -243,7 +245,7 @@ export function showNameEntry(host: HTMLElement, request: NameEntryRequest): Pro
     renderNameBar();
 
     overlay.append(
-      el("div", { class: "name-entry-title", text: "이름 입력" }),
+      el("div", { class: "name-entry-title", text: request.prompt?.trim() || "이름 입력" }),
       nameBar,
       typingInput,
       tabsEl,

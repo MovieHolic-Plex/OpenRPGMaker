@@ -1,3 +1,4 @@
+import { actorQueryConditionProblems } from "@/editor/panels/eventEditor/actorQueryConditionForm";
 import { commandReferenceField, m2ReferenceField, withEventDraftIssueDetails } from "./eventDraftIssueDetails";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import {
@@ -213,6 +214,7 @@ function referenceSets(project: Project, mapId: MapId, host: GameEvent) {
     recipes: new Set((project.system.craftRecipes ?? []).map((entry) => entry.id)),
     resources: collectResourceIds(project),
     skills: new Set(project.database.skills.map((entry) => entry.id)),
+    states: new Set((project.database.states ?? []).map((entry) => entry.id)),
     species: new Set((project.database.monsterSpecies ?? []).map((entry) => entry.id)),
     switches: new Set(project.switches.map((entry) => entry.id)),
     troops: new Set(project.database.troops.map((entry) => entry.id)),
@@ -632,6 +634,30 @@ function validateCondition(
         });
       }
       return;
+    case "actorStat":
+    case "actorState":
+    case "partyLeader":
+    case "partySize":
+    case "facing":
+    case "relativeFacing":
+    case "hiding":
+    case "pursuitActive":
+    case "clearCount":
+    case "endingSeen":
+    case "newGamePlus":
+    case "weekday":
+    case "stringVariable":
+      for (const message of actorQueryConditionProblems(condition, { actors: refs.actors, states: refs.states, endings: refs.endings })) {
+        issues.push({
+          severity: "warning",
+          code: `condition.${condition.kind}.reference`,
+          message: `${message} — 이 조건은 항상 거짓입니다.`,
+          pageId,
+          ...(commandPath ? { commandPath: [...commandPath] } : {}),
+          field: { testId: `event-condition-${condition.kind}` },
+        });
+      }
+      return;
     case "run":
       if (condition.query === "flag" && !condition.flag.trim()) {
         issues.push({
@@ -1030,7 +1056,7 @@ function validateCommand(
     case "promoteActor": require("reference.actor.missing", "배우", command.actorId, refs.actors); require("reference.class.missing", "전직 직업", command.toClassId, refs.classes, true); return;
     case "changeEquipment": require("reference.actor.missing", "배우", command.actorId, refs.actors); require("reference.equipment.missing", "장비", command.equipmentId, refs.equipment, true); return;
     case "recoverAll": require("reference.actor.missing", "배우", command.actorId, refs.actors, true); return;
-    case "enterHeroName": require("reference.actor.missing", "배우", command.actorId, refs.actors, true); return;
+    case "enterHeroName": if (!command.stringVariableId) require("reference.actor.missing", "배우", command.actorId, refs.actors, true); return;
     case "changeGold": variableOperand(command.amount, "골드 변수"); return;
     case "changeItem": require("reference.item.missing", "아이템", command.itemId, refs.items); variableOperand(command.amount, "아이템 수량 변수"); return;
     case "presentItem":

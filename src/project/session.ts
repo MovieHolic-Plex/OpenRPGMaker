@@ -15,6 +15,7 @@ RuntimeNpcTravelState,
 RuntimeRemovedEventIds,
 RuntimeSpawnedEventState, } from "@/project/sessionRuntimeTypes"
 import { compareVariableValue } from "@/project/conditionEvaluation";
+import { evalActorQueryCondition, type ActorQueryHost, type ActorQueryOptions } from "@/project/conditionActorQueries";
 import { conditionMatchesSeason, conditionMatchesTimePhase, initialGameTime, type BattleResult, type GameTime, type Season } from "@/project/gameTime";
 import {
   evalRelationshipCondition,
@@ -374,6 +375,17 @@ export interface PlaySession {
   m2Runtime?: M2RuntimeState;
   // 누적 플레이 타임(초). 매 프레임 update 에서 증가.
   playTimeSeconds: number;
+  /** 주인공이 보는 방향(필드 씬이 이동·회전 때 기록). 생략 = 아래. 방향 조건이 읽는다. */
+  playerFacing?: import("./types").Dir;
+  /** 문자열 변수(Input Text 가 쓴다). 생략 = 전부 빈 문자열. */
+  stringVariables?: Record<string, string>;
+  /** 누적 필드 걸음 수. Data Query `steps` 가 읽는다. */
+  stepCount?: number;
+  /**
+   * 이 기기의 회차 기록 사본(부팅 때 clearRecord 에서 채운다, 세이브에 넣지 않는다).
+   * 회차는 세이브 슬롯이 아니라 기기에 속한다 — 예전 세이브를 불러도 '이미 본 엔딩' 은 남는다.
+   */
+  clearHistory?: { count: number; endingIds: string[] };
   rng?: RngState;
   gameTime?: GameTime;
   /** Optional roguelike run lifecycle. Authored project data never lives here. */
@@ -851,6 +863,10 @@ export function erasePictureState(session: PlaySession, pictureId: string): void
 export type ConditionEvalContext = {
   /** 세션의 현재 맵. 로케이션 기하의 유일한 출처다. */
   readonly map?: { readonly locations?: readonly { readonly id: string; readonly x: number; readonly y: number; readonly w: number; readonly h: number }[] };
+  /** 이 이벤트의 런타임 위치·방향(방향 조건용). 생략하면 session.eventLocations 에서 찾는다. */
+  readonly host?: ActorQueryHost;
+  /** 요일 계산용 달력(프로젝트 시스템에서). 생략 = 계절 28일·1년 1일 월요일. */
+  readonly calendar?: ActorQueryOptions;
 };
 
 // 조건(Condition) 평가. condition이 없으면 항상 참.
@@ -912,6 +928,20 @@ export function evalCondition(
       return evalRelationshipCondition(session, condition, friendshipKey(condition.npcKey, hostSocial(host)) ?? null);
     case "battleResult":
       return session.battleResult === condition.result;
+    case "actorStat":
+    case "actorState":
+    case "partyLeader":
+    case "partySize":
+    case "facing":
+    case "relativeFacing":
+    case "hiding":
+    case "pursuitActive":
+    case "clearCount":
+    case "endingSeen":
+    case "newGamePlus":
+    case "weekday":
+    case "stringVariable":
+      return evalActorQueryCondition(session, condition, { eventId, ...context?.host }, context?.calendar);
     case "run":
       return evalRoguelikeRunCondition(session, condition);
     case "all":

@@ -8,6 +8,14 @@ import { databasePicker } from "./switchVariablePicker";
 import { actorPickerControl, itemPickerControl } from "./sharedPickers";
 import type { ActorId, Condition, ItemId, Season, TimePhase } from "@/project/types";
 import { renderLocationDrawCta } from "@/editor/locationDrawCta";
+import {
+  ACTOR_QUERY_CONDITION_MODE_OPTIONS,
+  actorQueryConditionHint,
+  defaultActorQueryCondition,
+  isActorQueryCondition,
+  renderActorQueryCondition,
+} from "./actorQueryConditionForm";
+import { isActorQueryConditionKind } from "@/project/conditionActorQueries";
 
 import { isRelationshipState, RELATIONSHIP_STATES, relationshipStateName } from "@/project/relationshipState";
 export { databasePicker, switchPicker, switchVariablePicker, variablePicker } from "./switchVariablePicker";
@@ -29,6 +37,7 @@ const CONDITION_MODE_OPTIONS = [
   { value: "relationshipAtLeast", label: "관계" },
   { value: "battleResult", label: "전투 결과" },
   { value: "run", label: "탐험" },
+  ...ACTOR_QUERY_CONDITION_MODE_OPTIONS,
   { value: "all", label: "모두 맞을 때" },
   { value: "any", label: "하나라도 맞을 때" },
   { value: "not", label: "아닐 때" },
@@ -131,6 +140,9 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
       case "not":
         onChange({ kind: "not", condition: { kind: "switch", switchId: "", value: true } });
         return;
+      default:
+        if (isActorQueryConditionKind(mode.value)) onChange(defaultActorQueryCondition(mode.value));
+        return;
     }
   });
 
@@ -193,6 +205,9 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
       break;
     case "not":
       wrap.append(labeledNot(cond, onChange, path));
+      break;
+    default:
+      if (isActorQueryCondition(cond)) wrap.append(renderActorQueryCondition(cond, onChange));
       break;
   }
 
@@ -654,6 +669,7 @@ function conditionHint(kind: Condition["kind"]): string {
     case "not":
       return "하위 조건이 아닐 때 참입니다.";
     default:
+      if (isActorQueryConditionKind(kind)) return actorQueryConditionHint(kind);
       return "조건을 설정하면 우측 미리보기에 요약이 표시됩니다.";
   }
 }

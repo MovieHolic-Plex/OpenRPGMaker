@@ -300,6 +300,10 @@ export interface PlaySessionLike {
   followerTrail?: RuntimeFollowerTrailPointLike[];
   vehicle?: import("@/project/vehicles").VehicleSessionState;
   playTimeSeconds?: number;
+  playerFacing?: import("./types").Dir;
+  stringVariables?: Record<string, string>;
+  stepCount?: number;
+  clearHistory?: { count: number; endingIds: string[] };
   gameTime?: GameTime;
   currentMapId: MapId;
   x: number;

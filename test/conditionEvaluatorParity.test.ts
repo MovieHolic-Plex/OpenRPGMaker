@@ -65,6 +65,15 @@ const CASES = {
     satisfying: (state) => { state.partyActorIds = ["actor_condition"]; },
     nonSatisfying: (state) => { state.partyActorIds = []; },
   },
+  monsterSpecies: {
+    // 기존 누락(2026-09-27 발견): CONDITION_KINDS 에는 있는데 케이스가 없어 스위트 전체가 수집 단계에서 죽었다.
+    condition: { kind: "monsterSpecies", speciesId: "species_parity", present: true },
+    satisfying: (state) => {
+      state.monsterInstances = { mon_1: { speciesId: "species_parity" } as PlaySession["monsterInstances"][string] };
+      state.monsterParty = ["mon_1"];
+    },
+    nonSatisfying: (state) => { state.monsterInstances = {}; state.monsterParty = []; },
+  },
   item: {
     condition: { kind: "item", itemId: "item_condition", present: true },
     satisfying: (state) => { state.inventory.item_condition = 1; },
@@ -120,6 +129,74 @@ const CASES = {
     condition: { kind: "run", query: "active", value: true },
     satisfying: (state) => { state.roguelikeRun = structuredClone(RUN_ACTIVE); },
     nonSatisfying: (state) => { state.roguelikeRun = { ...structuredClone(RUN_ACTIVE), status: "completed" }; },
+  },
+  // 명작 공백 G1 — 파티 수치·상태·선두·인원.
+  actorStat: {
+    condition: { kind: "actorStat", actorId: "leader", stat: "level", op: ">=", value: 5 },
+    satisfying: (state) => { state.partyActorIds = ["actor_parity"]; state.actorLevels.actor_parity = 5; },
+    nonSatisfying: (state) => { state.partyActorIds = ["actor_parity"]; state.actorLevels.actor_parity = 4; },
+  },
+  actorState: {
+    condition: { kind: "actorState", actorId: "anyone", stateId: "state_poison", present: true },
+    satisfying: (state) => { state.partyActorIds = ["actor_parity"]; state.actorStateIds = { actor_parity: ["state_poison"] }; },
+    nonSatisfying: (state) => { state.partyActorIds = ["actor_parity"]; state.actorStateIds = { actor_parity: [] }; },
+  },
+  partyLeader: {
+    condition: { kind: "partyLeader", actorId: "actor_parity" },
+    satisfying: (state) => { state.partyActorIds = ["actor_parity", "actor_other"]; },
+    nonSatisfying: (state) => { state.partyActorIds = ["actor_other", "actor_parity"]; },
+  },
+  partySize: {
+    condition: { kind: "partySize", op: ">=", value: 2 },
+    satisfying: (state) => { state.partyActorIds = ["a", "b"]; },
+    nonSatisfying: (state) => { state.partyActorIds = ["a"]; },
+  },
+  facing: {
+    condition: { kind: "facing", subject: "player", dir: "up" },
+    satisfying: (state) => { state.playerFacing = "up"; },
+    nonSatisfying: (state) => { state.playerFacing = "left"; },
+  },
+  relativeFacing: {
+    // 이벤트(3,3)가 아래를 보고, 주인공이 그 위쪽(등 뒤)에 있다.
+    condition: { kind: "relativeFacing", relation: "playerBehindEvent" },
+    satisfying: (state) => { state.x = 3; state.y = 1; state.eventLocations[OWNER_EVENT.id] = { mapId: state.currentMapId, x: 3, y: 3, direction: "down" }; },
+    nonSatisfying: (state) => { state.x = 3; state.y = 6; state.eventLocations[OWNER_EVENT.id] = { mapId: state.currentMapId, x: 3, y: 3, direction: "down" }; },
+  },
+  hiding: {
+    condition: { kind: "hiding", value: true },
+    satisfying: (state) => { state.horror = { pursuits: {}, hiding: { mapId: state.currentMapId, eventId: "closet", witnessedBy: [] } }; },
+    nonSatisfying: (state) => { state.horror = { pursuits: {} }; },
+  },
+  pursuitActive: {
+    condition: { kind: "pursuitActive", value: true },
+    satisfying: (state) => { state.horror = { pursuits: { oni: { home: { mapId: "m", x: 0, y: 0 }, active: true, searchMs: 0, doors: [] } } }; },
+    nonSatisfying: (state) => { state.horror = { pursuits: { oni: { home: { mapId: "m", x: 0, y: 0 }, active: false, searchMs: 0, doors: [] } } }; },
+  },
+  clearCount: {
+    condition: { kind: "clearCount", op: ">=", value: 2 },
+    satisfying: (state) => { state.clearHistory = { count: 2, endingIds: ["end_a"] }; },
+    nonSatisfying: (state) => { state.clearHistory = { count: 1, endingIds: ["end_a"] }; },
+  },
+  endingSeen: {
+    condition: { kind: "endingSeen", endingId: "end_true", value: true },
+    satisfying: (state) => { state.clearHistory = { count: 1, endingIds: ["end_true"] }; },
+    nonSatisfying: (state) => { state.clearHistory = { count: 1, endingIds: ["end_bad"] }; },
+  },
+  newGamePlus: {
+    condition: { kind: "newGamePlus", value: true },
+    satisfying: (state) => { state.flags.ngplus = true; },
+    nonSatisfying: (state) => { state.flags.ngplus = false; },
+  },
+  weekday: {
+    // 1년 봄 1일 = 월(1). 봄 6일 = 토(6).
+    condition: { kind: "weekday", weekdays: [6] },
+    satisfying: (state) => { state.gameTime = { minute: 0, hour: 12, day: 6, season: "spring", year: 1 }; },
+    nonSatisfying: (state) => { state.gameTime = { minute: 0, hour: 12, day: 1, season: "spring", year: 1 }; },
+  },
+  stringVariable: {
+    condition: { kind: "stringVariable", stringVariableId: "prayer", op: "==", value: "빛이여" },
+    satisfying: (state) => { state.stringVariables = { prayer: "빛이여" }; },
+    nonSatisfying: (state) => { state.stringVariables = { prayer: "어둠아" }; },
   },
   all: {
     condition: {

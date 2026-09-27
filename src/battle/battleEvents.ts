@@ -1,3 +1,4 @@
+import { calendarOptionsOf, evalActorQueryCondition, type ActorQuerySession } from "@/project/conditionActorQueries";
 import { ownsMonsterSpecies } from "@/project/monsterOwnership";
 import { growthEffects, permanentActorSkillIds } from '@/project/growth/runtime';
 import { executeM2BattleCommand as executeM2Command } from "@/battle/battleM2CommandExecutor";
@@ -54,6 +55,14 @@ export type BattleEventRuntimeState = {
   promotionLineage?: import('@/project/growth/types').PromotionLineage;
   growthProgress?: import('@/project/growth/types').GrowthProgress;
   readonly gameTime?: GameTime;
+  // 명작 공백 G1 — 페이지 조건(배우 수치·방향·회차·문자열)을 전투 이벤트 페이지도 읽는다. 전부 읽기 전용 스냅샷.
+  readonly actorVitals?: Record<string, { readonly hp: number; readonly mp: number; readonly maxHp: number; readonly maxMp: number }>;
+  readonly actorStateIds?: Record<string, readonly string[]>;
+  readonly playerFacing?: import("@/project/types").Dir;
+  readonly eventLocations?: Record<string, { readonly mapId: string; readonly x: number; readonly y: number; readonly direction?: import("@/project/types").Dir }>;
+  readonly horror?: import("@/project/horrorState").HorrorState;
+  readonly stringVariables?: Record<string, string>;
+  readonly clearHistory?: { readonly count: number; readonly endingIds: readonly string[] };
   readonly npcActivities?: Record<string, string>;
   readonly friendship?: Record<string, number>;
   friendshipWrites?: Record<string, number>;
@@ -94,6 +103,15 @@ export const BATTLE_CONDITION_SESSION_STATE_FIELDS = [
   "currentMapId",
   "x",
   "y",
+  "actorLevels",
+  "actorVitals",
+  "actorStateIds",
+  "playerFacing",
+  "eventLocations",
+  "horror",
+  "flags",
+  "stringVariables",
+  "clearHistory",
 ] as const satisfies readonly (keyof BattleEventRuntimeState)[];
 
 type BattleConditionRuntimeState = Pick<
@@ -1024,6 +1042,34 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         return conditionState.battleResult === condition.result;
       case "run":
         return evalRoguelikeRunCondition(conditionState, condition);
+      case "actorStat":
+      case "actorState":
+      case "partyLeader":
+      case "partySize":
+      case "facing":
+      case "relativeFacing":
+      case "hiding":
+      case "pursuitActive":
+      case "clearCount":
+      case "endingSeen":
+      case "newGamePlus":
+      case "weekday":
+      case "stringVariable":
+        // 전투 개시 시점 세션 스냅샷으로 판정한다(전투 중 HP 는 트룹 조건 actorHp 가 본다).
+        return evalActorQueryCondition(
+          {
+            ...conditionState,
+            partyActorIds: conditionState.partyActorIds ?? [],
+            actorVitals: conditionState.actorVitals ?? {},
+            x: conditionState.x ?? 0,
+            y: conditionState.y ?? 0,
+            flags: conditionState.flags ?? {},
+            currentMapId: conditionState.currentMapId ?? "",
+          } satisfies ActorQuerySession,
+          condition,
+          { eventId: options.ownerEventId },
+          calendarOptionsOf(options.project),
+        );
       case "all":
         return condition.conditions.every((child) => evaluateCondition(child));
       case "any":

@@ -238,6 +238,9 @@ export type SaveSnapshot = {
     readonly classOverrides?: Record<string, string>;
     readonly actorParamBonuses?: PlaySession["actorParamBonuses"];
     readonly actorStateIds?: PlaySession["actorStateIds"];
+    readonly stringVariables?: Record<string, string>;
+    readonly playerFacing?: PlaySession["playerFacing"];
+    readonly stepCount?: number;
     readonly playTimeSeconds?: number;
     readonly gameTime?: PlaySession["gameTime"];
     readonly rng?: RngState;
@@ -479,6 +482,9 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       classOverrides: structuredClone(session.classOverrides),
       actorParamBonuses: structuredClone(session.actorParamBonuses),
       actorStateIds: structuredClone(session.actorStateIds),
+      ...(session.stringVariables && Object.keys(session.stringVariables).length > 0 ? { stringVariables: { ...session.stringVariables } } : {}),
+      ...(session.playerFacing ? { playerFacing: session.playerFacing } : {}),
+      ...(session.stepCount ? { stepCount: Math.floor(session.stepCount) } : {}),
       playTimeSeconds: Math.floor(session.playTimeSeconds ?? 0),
       gameTime: structuredClone(normalizeRestorableGameTime(project, session.gameTime)),
       rng: cloneRngState(normalizeRngState(session.rng)),
@@ -718,6 +724,9 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   // investment ledger, but project current maxima only after every bonus restores.
   for (const actor of project.database.actors) refreshGrowthVitals(project, session, actor.id);
   if (snapshot.session.actorStateIds) session.actorStateIds = structuredClone(snapshot.session.actorStateIds);
+  if (snapshot.session.stringVariables) session.stringVariables = { ...snapshot.session.stringVariables };
+  if (snapshot.session.playerFacing) session.playerFacing = snapshot.session.playerFacing;
+  if (typeof snapshot.session.stepCount === "number") session.stepCount = snapshot.session.stepCount;
   if (typeof snapshot.session.playTimeSeconds === "number") session.playTimeSeconds = snapshot.session.playTimeSeconds;
   const restoredGameTime = normalizeRestorableGameTime(project, snapshot.session.gameTime);
   if (restoredGameTime) session.gameTime = restoredGameTime;
@@ -1146,6 +1155,9 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       classOverrides: isStringRecord(session.classOverrides) ? session.classOverrides : undefined,
       actorParamBonuses: isActorParamBonusRecord(session.actorParamBonuses) ? session.actorParamBonuses : undefined,
       actorStateIds: isActorStateIdsRecord(session.actorStateIds) ? session.actorStateIds : undefined,
+      stringVariables: isStringRecord(session.stringVariables) ? session.stringVariables : undefined,
+      playerFacing: session.playerFacing === "up" || session.playerFacing === "down" || session.playerFacing === "left" || session.playerFacing === "right" ? session.playerFacing : undefined,
+      stepCount: typeof session.stepCount === "number" && Number.isFinite(session.stepCount) && session.stepCount >= 0 ? Math.floor(session.stepCount) : undefined,
       playTimeSeconds: typeof session.playTimeSeconds === "number" ? Math.floor(session.playTimeSeconds) : undefined,
       gameTime: isGameTime(session.gameTime) ? structuredClone(session.gameTime) : undefined,
       rng: parseRngState(session.rng),

@@ -81,7 +81,11 @@ export function advanceResume(
     // 이름 입력 결과(문자열)를 세션 오버라이드에 반영한다(프로젝트 DB 는 원복 유지).
     // 빈 이름이면 오버라이드를 설정하지 않아 기존(DB 또는 이전 오버라이드) 이름을 유지한다.
     const command = frame.commands[frame.pc];
-    if (command?.kind === "enterHeroName" && typeof value === "string" && value.trim().length > 0) {
+    if (command?.kind === "enterHeroName" && command.stringVariableId) {
+      // 자유 텍스트 입력: 빈 문자열도 그대로 기록한다(작가가 '아무것도 안 씀' 을 분기할 수 있게).
+      state.session.stringVariables ??= {};
+      state.session.stringVariables[command.stringVariableId] = typeof value === "string" ? clampName(value, command.maxLength) : "";
+    } else if (command?.kind === "enterHeroName" && typeof value === "string" && value.trim().length > 0) {
       changeActorName(state.session, command.actorId, clampName(value, command.maxLength));
     }
     frame.pc += 1;
