@@ -1,4 +1,4 @@
-import { battleActorSkillFailure, comboParticipantsFromSnapshot, comboSkillIdsFor } from "@/battle/battleSkillUse";
+import { battleActorSkillFailure, battlerSkillIdsWithGrants, comboParticipantsFromSnapshot, comboSkillIdsFor } from "@/battle/battleSkillUse";
 import { areaTargets, resolveBattleTargets, targetIdFor } from "@/battle/battleTargetResolver";
 import { predictSkillDamageFor } from "@/battle/battlePredict";
 import type { ActorCommand, BattleBattlerSnapshot, BattleSnapshot } from "@/battle/types";
@@ -16,11 +16,12 @@ export function chooseAutoBattleCommand(project: Project, snapshot: BattleSnapsh
   const actor = snapshot.actors.find((entry) => entry.recordId === snapshot.activeActorId);
   if (!actor || actor.defeated) return undefined;
   // 연계기는 배우지 않아도 연계 멤버에게 열린다 — 메뉴(battleCommandDom)와 같은 목록.
-  const offered = [...actor.skillIds, ...comboSkillIdsFor(project, actor.recordId, snapshot.actors.map((entry) => entry.recordId), actor.skillIds)];
+  const owned = battlerSkillIdsWithGrants(actor);
+  const offered = [...owned, ...comboSkillIdsFor(project, actor.recordId, snapshot.actors.map((entry) => entry.recordId), owned)];
   const learned = offered
     .map((skillId) => project.database.skills.find((record) => record.id === skillId))
     .filter((skill): skill is SkillRecord => Boolean(skill))
-    .filter((skill) => !battleActorSkillFailure(project, actor, skill.id, comboParticipantsFromSnapshot(snapshot)));
+    .filter((skill) => !battleActorSkillFailure(project, actor, skill.id, comboParticipantsFromSnapshot(snapshot), snapshot.partyGauge));
 
   const recovery = bestRecovery(project, snapshot, actor, learned, rng);
   if (recovery) return recovery;

@@ -42,7 +42,7 @@ test("items and equipment expose usable settings and keep summaries synchronized
           expect(bounds).not.toBeNull();
           expect(bounds!.y + bounds!.height).toBeLessThan((await page.getByTestId("database-modal").boundingBox())!.height - 35);
           await expect(page.getByTestId("db-picker-skill")).toHaveCount(0);
-          await expect(page.getByTestId("db-field-equipment-effect-half-mp")).toHaveCount(0);
+          await expect(page.getByTestId("db-field-equipment-effect-preemptive")).toHaveCount(0);
           await expect(page.getByTestId("db-equipment-card-action-weapon")).toHaveCount(0);
         }
       }
