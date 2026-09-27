@@ -200,6 +200,7 @@ export function convertSpec(set: LoadedSet, spec: MapSpec): Converted {
   const up3 = new Array<number>(w * h).fill(-1), up4 = new Array<number>(w * h).fill(-1);
   const warnings: string[] = [];
   const objects: Converted["objects"] = [];
+  const placed: Placed[] = [];
   const inside = (x: number, y: number) => x >= 0 && y >= 0 && x < w && y < h;
   const matKey = (mat: Mat): string => {
     if (typeof mat === "string") {
@@ -231,10 +232,12 @@ export function convertSpec(set: LoadedSet, spec: MapSpec): Converted {
       const o = set.presetJson.objects.find((e) => e.id === op.obj);
       if (!o) throw new Error(`${spec.id}: 물체 id 없음 「${op.obj}」`);
       objects.push({ id: o.id, x: op.at[0], y: op.at[1] });
+      const cells: [number, number][] = [];
       for (let dy = 0; dy < o.h; dy += 1) for (let dx = 0; dx < o.w; dx += 1) {
         const t = set.flatTile(o.sheet, o.x + dx, o.y + dy);
-        if (opaque(t)) put(op.at[0] + dx, op.at[1] + dy, t, op.layer ?? 3, o.id);
+        if (opaque(t)) { put(op.at[0] + dx, op.at[1] + dy, t, op.layer ?? 3, o.id); cells.push([dx, dy]); }
       }
+      placed.push({ o, x: op.at[0], y: op.at[1], cells });
     } else if ("tile" in op) {
       const tw = op.tile.w ?? 1, th = op.tile.h ?? 1;
       for (let dy = 0; dy < th; dy += 1) for (let dx = 0; dx < tw; dx += 1) {
@@ -264,8 +267,106 @@ export function convertSpec(set: LoadedSet, spec: MapSpec): Converted {
   const empty = k1.filter((k) => !k).length;
   if (empty) warnings.push(`1층 빈 칸 ${empty}개(검게 보인다)`);
   warnings.push(...lintStructure(set, w, h, k1, k2));
+  warnings.push(...lintPassage(set, spec, k1, k2, placed));
   return { width: w, height: h, lowerTiles: shapeLayer(set, w, h, k1), lowerOverlayTiles: shapeLayer(set, w, h, k2),
     upperTiles: up3, upperOverlayTiles: up4, warnings, objects, keys1: k1, keys2: k2 };
+}
+
+// ── 통행 ──
+// 물체 종류(BRIEF): decal·door·overhead 통행, prop 전부 막힘(solid 가 있으면 그 칸만), tall 아랫줄만(또는 solid), wallmount 는 벽면에.
+// 걸을 수 있는 바닥이 입구(entry 또는 맵 가장자리)에서 닿지 않으면 「통행:」, 가구에 닿을 칸이 없으면 「통행:」,
+// 벽걸이가 벽면 밖이거나 키 큰 가구가 벽에 안 붙었으면 「벽걸이:」 경고.
+type ObjDef = LoadedSet["presetJson"]["objects"][number];
+export interface Placed { o: ObjDef; x: number; y: number; cells: [number, number][] }
+const PASSWAY = /stair|step|bridge|ladder|entrance|gate|passage|plank|hatch|doorway|arch_door|cave/;
+const NATURE = /tree|conifer|palm|rock|stalag|boulder|spire|bush|stump|mound|pine|broadleaf|fern|grass|flower|mushroom|log|drift|pile/;
+const WALL_FURNITURE = /shelf|bookshelf|cupboard|dresser|cabinet|clock|fireplace|stove|wardrobe|armor|banner|curtain/;
+export function lintPassage(set: LoadedSet, spec: MapSpec, k1: (string | null)[], k2: (string | null)[], placed: Placed[]): string[] {
+  const { w, h } = spec;
+  const info = new Map(set.presetJson.autotiles.map((a) => [`${a.sheet}:${a.kind}`, a]));
+  const flatName = new Map((set.presetJson.flats ?? []).map((f) => [`#${set.tileOf(f.sheet, f.cell)}`, f.name]));
+  const blocks = (k: string | null, base: boolean) => {
+    if (!k) return base;
+    if (k.startsWith("#")) return /어둠|벽|기둥/.test(flatName.get(k) ?? "");
+    const a = info.get(k);
+    if (!a) { const part = mvSheetPart(set.fileOf(k.split(":")[0]!)); return part === "A1" || part === "A3" || part === "A4"; }
+    if (a.role === "water" || a.role === "roof" || a.role === "wall" || a.role === "fence") return true;
+    return a.role === "plant" && /바위|덤불|수풀/.test(a.name);
+  };
+  const isFace = (k: string | null) => {
+    if (!k) return false;
+    if (k.startsWith("#")) return /벽/.test(flatName.get(k) ?? "");
+    const a = info.get(k); const part = mvSheetPart(set.fileOf(k.split(":")[0]!));
+    return a?.role === "wall" || ((part === "A4" || part === "A3") && Math.floor(Number(k.split(":")[1]) / 8) % 2 === 1);
+  };
+  const isRoof = (k: string | null) => !!k && !k.startsWith("#") && (info.get(k)?.role === "roof" || mvSheetPart(set.fileOf(k.split(":")[0]!)) === "A3");
+  const face = (x: number, y: number) => isFace(k1[y * w + x]!) || isFace(k2[y * w + x]!);
+  const hangable = (x: number, y: number) => face(x, y) || isRoof(k1[y * w + x]!) || isRoof(k2[y * w + x]!);
+  const wallish = (x: number, y: number) => x < 0 || y < 0 || x >= w || y >= h || face(x, y) || blocks(k1[y * w + x]!, true);
+  // 물 위 징검다리·발판(2층)은 건널 수 있다.
+  const crossing = (k: string | null) => !!k && !k.startsWith("#") && /징검|다리|발판/.test(info.get(k)?.name ?? "");
+  const solid = Array.from({ length: w * h }, (_, i) => !crossing(k2[i]!) && (blocks(k1[i]!, true) || blocks(k2[i]!, false)));
+  const out: string[] = [];
+  const hung: string[] = [], loose: string[] = [];
+  for (const p of placed) if ((p.o.kind === "decal" || p.o.kind === "door") && PASSWAY.test(p.o.id)) p.cells.forEach(([dx, dy]) => {
+    const x = p.x + dx, y = p.y + dy; if (x >= 0 && y >= 0 && x < w && y < h) solid[y * w + x] = false;
+  });
+  const onTop = new Array<number>(w * h).fill(0);
+  for (const p of placed) {
+    const { o } = p;
+    const mark = (dx: number, dy: number) => { const x = p.x + dx, y = p.y + dy; if (x >= 0 && y >= 0 && x < w && y < h) solid[y * w + x] = true; };
+    if (o.kind === "prop") (o.solid ?? p.cells).forEach(([dx, dy]) => { mark(dx, dy); const x = p.x + dx, y = p.y + dy; if (x >= 0 && y >= 0 && x < w && y < h) onTop[y * w + x] += 1; });
+    else if (o.kind === "tall") (o.solid ?? p.cells.filter(([, dy]) => dy === o.h - 1)).forEach(([dx, dy]) => mark(dx, dy));
+    if (o.kind === "wallmount" && p.cells.some(([dx, dy]) => { const x = p.x + dx, y = p.y + dy; return x >= 0 && y >= 0 && x < w && y < h && !hangable(x, y); })) hung.push(`${o.id}(${p.x},${p.y})`);
+    if ((o.kind === "tall" || o.kind === "prop") && WALL_FURNITURE.test(o.id)) {
+      const top = Math.min(...p.cells.map(([, dy]) => dy));
+      const against = p.cells.filter(([, dy]) => dy === top).every(([dx]) => wallish(p.x + dx, p.y + top - 1) || face(p.x + dx, p.y + top));
+      if (!against) loose.push(`${o.id}(${p.x},${p.y})`);
+    }
+  }
+  if (hung.length) out.push(`벽걸이: 벽면 밖에 건 물체 ${hung.length} — ${hung.slice(0, 8).join(" ")}`);
+  if (loose.length) out.push(`벽걸이: 벽에 안 붙은 벽 가구 ${loose.length} — ${loose.slice(0, 8).join(" ")}`);
+  const seen = new Array<boolean>(w * h).fill(false);
+  const queue: number[] = [];
+  const start = (x: number, y: number) => { const i = y * w + x; if (!solid[i] && !seen[i]) { seen[i] = true; queue.push(i); } };
+  if (spec.entry) start(spec.entry[0], spec.entry[1]);
+  else for (let x = 0; x < w; x += 1) { start(x, 0); start(x, h - 1); } 
+  if (!spec.entry) for (let y = 0; y < h; y += 1) { start(0, y); start(w - 1, y); }
+  while (queue.length) {
+    const i = queue.pop()!, x = i % w, y = Math.floor(i / w);
+    for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]] as const) if (nx >= 0 && ny >= 0 && nx < w && ny < h) start(nx, ny);
+  }
+  // 닿지 않는 바닥 덩이
+  const done = new Array<boolean>(w * h).fill(false);
+  const pockets: string[] = [];
+  for (let i = 0; i < w * h; i += 1) {
+    if (solid[i] || seen[i] || done[i]) continue;
+    const stack = [i]; done[i] = true; let n = 0, x0 = w, y0 = h, x1 = 0, y1 = 0;
+    while (stack.length) {
+      const j = stack.pop()!, x = j % w, y = Math.floor(j / w); n += 1;
+      x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y);
+      for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]] as const) {
+        const k = ny * w + nx;
+        if (nx >= 0 && ny >= 0 && nx < w && ny < h && !solid[k] && !seen[k] && !done[k]) { done[k] = true; stack.push(k); }
+      }
+    }
+    pockets.push(`${n}칸 (${x0},${y0})~(${x1},${y1})`);
+  }
+  if (pockets.length) out.push(`통행: 입구에서 못 가는 바닥 ${pockets.length}덩이 — ${pockets.slice(0, 6).join(" · ")}`);
+  // 쓰는 가구(침대·의자·탁자·상자 등)에 닿을 칸
+  const unreachable: string[] = [];
+  for (const p of placed) {
+    if (p.o.kind !== "prop" && p.o.kind !== "tall") continue;
+    if (NATURE.test(p.o.id)) continue;
+    // 탁자·카운터·다른 가구 위에 올린 소품은 그 가구로 닿는다.
+    if (p.cells.every(([dx, dy]) => { const x = p.x + dx, y = p.y + dy; if (x < 0 || y < 0 || x >= w || y >= h) return true; const k = k2[y * w + x]; return onTop[y * w + x]! >= 2 || (!!k && !k.startsWith("#") && info.get(k)?.role === "fence"); })) continue;
+    const touch = p.cells.some(([dx, dy]) => [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([ax, ay]) => {
+      const x = p.x + dx + ax!, y = p.y + dy + ay!; return x >= 0 && y >= 0 && x < w && y < h && seen[y * w + x];
+    }));
+    if (!touch) unreachable.push(`${p.o.id}(${p.x},${p.y})`);
+  }
+  if (unreachable.length) out.push(`통행: 닿을 수 없는 물체 ${unreachable.length} — ${unreachable.slice(0, 8).join(" ")}`);
+  return out;
 }
 
 // ── 빈 바닥 ──
