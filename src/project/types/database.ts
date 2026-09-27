@@ -1456,6 +1456,8 @@ export interface SystemRecords {
    *  선다. 배경은 필드 스냅샷 그대로(확대·자르기 없음). battleBackdrop 과 무관하게 필드 배경을 쓴다. 생략 = 전환 후 전투장. */
   battlePresentation?: "onField";
   battleUiStyle?: BattleUiStyle;
+  /** 전투 타격감 프리셋(project/battleHitFeel.ts). 생략 = impact(묵직하게). 스킨과 별개 축이다. */
+  battleHitFeel?: import("@/project/battleHitFeel").BattleHitFeel;
   /** ESC(X) 게임 메뉴 디자인. 생략 = workbench(작업대, 지금 화면). */
   menuUiStyle?: MenuUiStyle;
   /** 대화창 스타일(project/dialogueStyles.ts). 생략 = glass(지금까지의 유리 창). */

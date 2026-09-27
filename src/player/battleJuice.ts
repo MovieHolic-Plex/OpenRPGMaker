@@ -199,17 +199,16 @@ export function flashBattleField(
     root.style.setProperty("--battle-hit-shake-iterations", iterations);
   }
   const hurt = options.hurt === true && (kind === "hit" || kind === "critical");
-  window.requestAnimationFrame(() => {
-    root.classList.add(className);
-    if (hurt) root.classList.add("battle-flash-hurt");
-    if (shake) {
-      root.classList.add("battle-hit-shake");
-    }
-    // 전투 스코프 타이머 — teardown 이 남은 것을 끊는다(실측: 이 700ms 가 씬 파괴 뒤에 발화했다).
-    scheduleBattleTimer(() => {
-      root.classList.remove(className, "battle-flash-hurt", "battle-hit-shake");
-    }, kind === "victory" || kind === "defeat" ? 700 : kind === "critical" || intensity === "crushing" ? 400 : 280);
-  });
+  // 착탄 프레임에 곧바로 붙인다. 예전엔 다음 rAF 에 붙여 팝업·히트스톱보다 한 프레임(실측 9~25ms) 늦게
+  // 번쩍였다. 같은 클래스를 떼자마자 다시 붙이면 애니메이션이 재시작되지 않으므로 레이아웃을 한 번 읽는다.
+  void root.offsetWidth;
+  root.classList.add(className);
+  if (hurt) root.classList.add("battle-flash-hurt");
+  if (shake) root.classList.add("battle-hit-shake");
+  // 전투 스코프 타이머 — teardown 이 남은 것을 끊는다(실측: 이 700ms 가 씬 파괴 뒤에 발화했다).
+  scheduleBattleTimer(() => {
+    root.classList.remove(className, "battle-flash-hurt", "battle-hit-shake");
+  }, kind === "victory" || kind === "defeat" ? 700 : kind === "critical" || intensity === "crushing" ? 400 : 280);
 }
 
 const HIT_SHAKE_VARIABLES = ["--battle-hit-shake-x", "--battle-hit-shake-y", "--battle-hit-shake-period", "--battle-hit-shake-iterations"] as const;
@@ -217,7 +216,7 @@ const HIT_SHAKE_VARIABLES = ["--battle-hit-shake-x", "--battle-hit-shake-y", "--
 /** 세기별 흔들림 리듬. 약할수록 짧고 빠르게 — 잽이 무대를 오래 흔들면 흔들림이 소음이 된다. */
 const SHAKE_RHYTHM: Readonly<Record<BattleHitIntensity, { readonly period: string; readonly iterations: string }>> = {
   graze: { period: "60ms", iterations: "2" },
-  normal: { period: "60ms", iterations: "2" },
+  normal: { period: "50ms", iterations: "3" },
   heavy: { period: "90ms", iterations: "3" },
   crushing: { period: "80ms", iterations: "4" },
 };

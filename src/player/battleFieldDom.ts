@@ -657,7 +657,17 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
     const layerRect = layer.getBoundingClientRect();
     const spriteRect = sprite.getBoundingClientRect();
     if (layerRect.height > 0 && spriteRect.height > 0) {
-      popup.style.top = `${((spriteRect.top - layerRect.top + spriteRect.height * 0.3) / layerRect.height) * 100}%`;
+      let topPx = spriteRect.top - layerRect.top + spriteRect.height * 0.3;
+      // 행동 중에는 로그 배너가 필드 위에 떠 있다(z 12). 배너보다 위로 튀면 숫자가 배너 뒤로 숨는다 —
+      // 2026-09-27 프레임 실측: 슬라임 머리 위 -68 이 착탄 +80~+160ms 내내 윗줄이 잘렸다.
+      // 팝업은 자기 높이의 ~1.4배만큼 위로 튀므로(22-hit-feel.css bounce 정점) 그만큼 배너 아래에 둔다.
+      const banner = field.closest(".battle-scene")?.querySelector<HTMLElement>(".battle-message-window");
+      const bannerRect = banner?.getBoundingClientRect();
+      if (bannerRect && bannerRect.height > 0 && bannerRect.bottom > layerRect.top) {
+        const clearance = 64 * (POP_SCALE[anchor.dataset.hitIntensity ?? ""] ?? 1);
+        topPx = Math.max(topPx, bannerRect.bottom - layerRect.top + clearance);
+      }
+      popup.style.top = `${(topPx / layerRect.height) * 100}%`;
     }
     // 막타 팝업(900ms)이 기절 페이드(550~620ms)보다 오래 남아 빈 자리에 떠 있었다 —
     // 사망 대상의 팝업은 페이드와 함께 끝낸다(9차 리뷰).

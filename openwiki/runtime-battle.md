@@ -19,7 +19,12 @@
 
 - CSS 소유: `src/styles/runtime/battle/22-hit-feel.css`. `runtime/index.css` 에서 **스킨 시트 뒤**(`_windowskin.css` 다음)
   에 로드된다 — 같은 특정도의 스킨 규칙을 이긴다. 순서는 `test/playerRuntimeCss.test.ts` 가 고정한다.
-- **진짜 히트스톱:** `.battle-hit-stop` 동안 배틀러·팝업·파티 행 애니메이션을 `animation-play-state: paused` 로 멈춘다.
+- **2026-09-27 보정 (프레임 실측, `~/claude-viz/combat-hit-feel.html`):** 팝업이 히트스톱에 멈춰 opacity 0 인 채로 있어 숫자가
+  착탄 234~333ms 뒤에야 떴다 → 팝업은 정지 대상에서 빼고 0% 프레임부터 불투명(1~9ms). 점멸은 visibility → opacity 0.38
+  (적이 두 프레임 사라졌다). 필드 흰 막 34/50% → 16/30%. 플래시·흔들림·펀치는 다음 rAF 가 아니라 착탄 프레임에
+  동기로 붙는다(리플로우로 재시작). 세기표 2/5/8/12px, 통상 리듬 50ms×3. `BATTLE_ACTING_MS` 470→400,
+  `BATTLE_IMPACT_MS` 430→400. 아래 항목의 옛 수치는 이 줄이 이긴다.
+- **진짜 히트스톱:** `.battle-hit-stop` 동안 배틀러·파티 행 애니메이션을 `animation-play-state: paused` 로 멈춘다.
   흔들림(`.battle-field` 애니메이션)과 필드 플래시는 계속 돈다. 맞은 쪽 이미지는 흰 실루엣(`!important` —
   분해·기절 키프레임과 스킨 filter transition 을 이겨야 한다). 파일 **맨 끝**에 둔다: 이 파일의 다른 `animation` 단축
   속성이 play-state 를 running 으로 되돌린다. 정지 길이는 기존 시퀀서 비트(110ms × weight) 그대로다.
@@ -40,6 +45,18 @@
 - **HP 잔상(유리 창):** `.battle-stat-bar-hp::after` 가 같은 `--battle-stat` 폭으로 360ms 뒤 440ms 따라 빠진다. 채움은 90ms.
   포켓몬 HP 바는 `::after` 가 「체력」 라벨이라 잔상 대신 620ms 로 눈에 보이게 줄어든다.
 - **포켓몬 기절:** 흐려지는 대신 `pkmn-battler-sink`(translate 100% + 아래쪽 clip)로 발판 아래로 꺼진다.
+- **타격감 프리셋 (2026-09-27):** `system.battleHitFeel` = `impact`(묵직하게, 기본·JSON 생략) | `light`(가볍게 = 이 날 이전 연출) |
+  `calm`(차분하게). 정본 `src/project/battleHitFeel.ts`, 자료집 시스템 → 시작 설정 → 전투 설정 `db-field-system-battle-hit-feel`,
+  AI `set_project_settings battle.hitFeel`. 루트에 `data-battle-hit-feel-preset` 를 찍는다 — `data-battle-hit-feel` 은 히트스톱 중
+  여부(true/false)로 QA 스펙이 이미 읽으므로 이름을 나눴다. impact 의 JS 층은 `battleHitFeelDom.ts`:
+  아군 피격 흔들림 바닥 heavy(`hurtShakeIntensity`, 514 HP 중 2 피해도 1.2px → 7px), 히트스톱 중 맞은 스프라이트
+  감쇠 진동(`vibrateStruck` — WAAPI 로 **`translate` 속성만**, 정지 CSS 의 paused animation · 넓백 transform 과 안 겹침),
+  평타 착탄 `SWING_LEAD_MS`(160) 전 베기 궤적 `.battle-slash-trail` + 휘두름 소리(명령 확정 순간에서 옮김, 스킬은 그대로),
+  타격음 아래 합성 저음 `battleSfx("thud")`. CSS(22-hit-feel.css 끝): 파티 행 9px 흔들림·틴트 85%·얼굴 움찔,
+  아군 피해 숫자 28px(카드 `overflow` 를 피격 중에만 visible), 방향 있는 카메라 킥(`translate: 0 -9px`, 펀치와 같은 타이머).
+  calm 은 무대 흔들림(타격·스킬 모두)·필드 번쩍임·펀치·파편·파티 행 흔들림을 끄고 숫자·HP·점멸은 둔다.
+  근거·실측: `~/claude-viz/hit-feel-lab.html`, `output/combat-qa/hitfeel2-{impact,light,calm}/timeline2.json`.
+  테스트 `test/battleHitFeelPreset.test.ts`.
 - 함정: 헤드리스·고부하에서는 rAF 가 수백 ms 늦어 juice·플래시 클래스가 정지가 끝난 뒤 붙는다(실측 272ms).
   정지 중 상태를 잴 때는 스크린샷이 아니라 동기 `getComputedStyle`·MutationObserver 로 잰다. transition 이 걸린 속성은
   동기 계산값이 **시작값**으로 읽힌다.

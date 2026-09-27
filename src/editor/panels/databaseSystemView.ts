@@ -4,6 +4,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { genId } from "@/util/id";
 import { GUARD_MAX_DAMAGE_REDUCTION_PERCENT } from "@/battle/action/guard";
 import { BATTLE_SKINS, isDeprecatedBattleSkin, listActiveBattleSkinIds, listBattleSkinIds, resolveSkinId } from "@/battle/skins/registry";
+import { BATTLE_HIT_FEEL_DESCRIPTIONS, BATTLE_HIT_FEEL_IDS, BATTLE_HIT_FEEL_LABELS, DEFAULT_BATTLE_HIT_FEEL, resolveBattleHitFeel } from "@/project/battleHitFeel";
 import {
   emptyToUndefined,
   field,
@@ -415,6 +416,24 @@ function systemSectionNodes(
           select.addEventListener("change", () => {
             updateSystem((draft) => {
               draft.system.battleUiStyle = select.value as (typeof BATTLE_UI_STYLE_OPTIONS)[number];
+            });
+          });
+          return select;
+        })()),
+        field("타격감", (() => {
+          const select = el("select", {
+            dataset: { testid: "db-field-system-battle-hit-feel" },
+            attrs: { title: BATTLE_HIT_FEEL_IDS.map((id) => `${BATTLE_HIT_FEEL_LABELS[id]}: ${BATTLE_HIT_FEEL_DESCRIPTIONS[id]}`).join("\n") },
+          });
+          for (const id of BATTLE_HIT_FEEL_IDS) {
+            select.append(el("option", { text: BATTLE_HIT_FEEL_LABELS[id], attrs: { value: id } }));
+          }
+          select.value = resolveBattleHitFeel(project.system.battleHitFeel);
+          select.addEventListener("change", () => {
+            updateSystem((draft) => {
+              const next = resolveBattleHitFeel(select.value);
+              if (next === DEFAULT_BATTLE_HIT_FEEL) delete draft.system.battleHitFeel;
+              else draft.system.battleHitFeel = next;
             });
           });
           return select;

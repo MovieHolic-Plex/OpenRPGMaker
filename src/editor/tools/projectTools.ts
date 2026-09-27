@@ -4,6 +4,7 @@ import { applyGenrePreset, type GenrePresetId } from "@/project/genrePresets";
 import { replaceProjectContents } from "./historyTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import type { BattleUiStyle, Terms } from "@/project/types";
+import { BATTLE_HIT_FEEL_IDS, DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
 import { DEFAULT_DIALOGUE_STYLE_ID, DIALOGUE_PROJECT_SPEED_LIMITS, DIALOGUE_STYLE_IDS, DIALOGUE_STYLES, dialogueStyleGuideLines, isDialogueStyleId, recommendedDialogueStyleForPreset } from "@/project/dialogueStyles";
 import { FONT_REGISTRY, isFontFamilyId } from "@/project/fontRegistry";
 import {
@@ -130,6 +131,7 @@ const setProjectSettings: ToolDefinition = {
         properties: {
           flow: { type: "string", enum: ["gauge", "strict"] },
           uiStyle: { type: "string" },
+          hitFeel: { type: "string", enum: [...BATTLE_HIT_FEEL_IDS], description: "타격감. impact(묵직하게, 기본) · light(가볍게) · calm(차분하게 — 화면 흔들림·번쩍임 없음)" },
           activeSlots: { type: "integer", minimum: 1 },
           initialTroopId: { type: "string" },
           atbMode: { type: "string", enum: ["active", "wait"], description: "gauge 흐름 전용. active = 명령 메뉴가 열려 있어도 적이 행동한다(크로노 트리거 Active). 기본 wait" },
@@ -278,6 +280,10 @@ const setProjectSettings: ToolDefinition = {
       const battle = args.battle as Record<string, unknown>;
       if (battle.flow === "gauge" || battle.flow === "strict") draft.system.battleFlow = battle.flow;
       if (typeof battle.uiStyle === "string") draft.system.battleUiStyle = battle.uiStyle as BattleUiStyle;
+      if (isBattleHitFeel(battle.hitFeel)) {
+        if (battle.hitFeel === DEFAULT_BATTLE_HIT_FEEL) delete draft.system.battleHitFeel;
+        else draft.system.battleHitFeel = battle.hitFeel;
+      }
       if (typeof battle.activeSlots === "number") draft.system.activeSlots = Math.trunc(battle.activeSlots);
       // 기본값은 저장하지 않는다 — normalizeSystemRecords 와 같은 계약.
       if (battle.atbMode === "active") draft.system.atbMode = "active";

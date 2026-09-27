@@ -7,24 +7,25 @@ import { generatedEnemyRecords } from "./generatedEnemyRecords";
 export function defaultBattleRecords() {
   return {
     enemies: [
-      normalizeEnemyRecord({"id":"enemy_slime","name":"슬라임","level":1,"speciesId":"species_wild_slime","monsterResourceId":"generated-enemy-slime-01","stats":{"maxHp":78,"maxMp":10,"attack":12,"defense":15,"mind":12,"agility":10},"rewards":{"exp":32,"gold":30,"dropRatePercent":15},"actions":archetypeActions("blob")}),
-      normalizeEnemyRecord({"id":"enemy_meadow_slime","name":"초원 슬라임","level":3,"speciesId":"species_king_slime","monsterResourceId":"generated-enemy-slime-01","stats":{"maxHp":96,"maxMp":10,"attack":14,"defense":16,"mind":14,"agility":10},"rewards":{"exp":40,"gold":37,"dropRatePercent":15},"actions":archetypeActions("blob")}),
+      normalizeEnemyRecord({"id":"enemy_slime","name":"슬라임","level":1,"speciesId":"species_wild_slime","monsterResourceId":"generated-enemy-slime-01","stats":{"maxHp":324,"maxMp":10,"attack":57,"defense":15,"mind":57,"agility":34},"rewards":{"exp":98,"gold":30,"dropRatePercent":15},"actions":archetypeActions("blob")}),
+      normalizeEnemyRecord({"id":"enemy_meadow_slime","name":"초원 슬라임","level":3,"speciesId":"species_king_slime","monsterResourceId":"generated-enemy-slime-01","stats":{"maxHp":107,"maxMp":10,"attack":36,"defense":16,"mind":36,"agility":34},"rewards":{"exp":40,"gold":37,"dropRatePercent":15},"actions":archetypeActions("blob")}),
             // ── 액션 전투 리밸런스(2026-08) ─────────────────────────────────────────
       // 광산 1층(map_mine_1f, actionCombat 옵트인)이 이 레코드들을 실시간 전투로 스폰한다.
       // 기본 주인공 1레벨 스윙(공격력 22, 보너스 0) 기준 스윙 데미지는
       // computeSwingDamage = round(22 - defense/2) (분산 0.9~1.1) 이고,
       // 턴제 TTK 3~5 / TTD 6 설계(2026-09)로 재보정했다(턴제와 같은 수치를 읽는다):
-      //   박쥐  hp 95 / def 18 → Lv1 스윙 13, 8방 · 테스트(공45) 36, 3방 · 턴제 TTK 4
-      //   골렘  hp 240 / def 30 → Lv1 스윙 7, 35방 · 테스트(공45) 30, 8방 · 턴제 TTK 4.2 (탱커형)
-      //   궁수  hp 176 / def 27 → Lv1 스윙 9, 20방 · 테스트(공45) 32, 6방 · 턴제 TTK 4 (원거리 견제)
-      normalizeEnemyRecord({"id":"enemy_cave_bat","name":"동굴 박쥐","level":6,"speciesId":"species_cave_bat","monsterResourceId":"generated-enemy-bat-01","stats":{"maxHp":95,"maxMp":10,"attack":19,"defense":18,"mind":19,"agility":14},"rewards":{"exp":40,"gold":37,"dropRatePercent":15},"actions":archetypeActions("flyer"),"actionProfile":{"contactDamage":10,"aggroRange":7,"moveIntervalMs":220,"knockbackResist":0,"attack":{"kind":"melee","windupMs":300,"recoverMs":250,"damage":14,"range":1,"cooldownMs":800}}}),
-            normalizeEnemyRecord({"id":"enemy_stone_golem","name":"돌 골렘","level":26,"speciesId":"species_stone_golem","monsterResourceId":"generated-enemy-golem-01","stats":{"maxHp":240,"maxMp":10,"attack":40,"defense":30,"mind":40,"agility":8},"rewards":{"exp":100,"gold":92,"dropRatePercent":15},"actions":archetypeActions("bulwark"),"actionProfile":{"contactDamage":24,"aggroRange":5,"moveIntervalMs":600,"knockbackResist":0.8,"attack":{"kind":"melee","windupMs":1100,"recoverMs":500,"damage":40,"range":1,"cooldownMs":1600}}}),
+      //   박쥐  hp 108 / def 18 → 테스트(공45) 스윙 36, 3방 · 턴제 3마리 무리 TTK 4.5
+      //   골렘  hp 240 / def 30 → 테스트(공45) 스윙 30, 8방 · 턴제 무리 속 탱커 TTK 7 (탱커형)
+      //   궁수  hp 256 / def 27 → 테스트(공45) 스윙 32, 8방 · 턴제 Lv16 TTK 3.2 (원거리 견제)
+      //   ※ 궁수는 액션 전투와 공유라 턴제 4.5타 목표 대신 액션 8방 상한에 맞춘다.
+      normalizeEnemyRecord({"id":"enemy_cave_bat","name":"동굴 박쥐","level":6,"speciesId":"species_cave_bat","monsterResourceId":"generated-enemy-bat-01","stats":{"maxHp":108,"maxMp":10,"attack":37,"defense":18,"mind":37,"agility":35},"rewards":{"exp":40,"gold":37,"dropRatePercent":15},"actions":archetypeActions("flyer"),"actionProfile":{"contactDamage":10,"aggroRange":7,"moveIntervalMs":220,"knockbackResist":0,"attack":{"kind":"melee","windupMs":300,"recoverMs":250,"damage":14,"range":1,"cooldownMs":800}}}),
+            normalizeEnemyRecord({"id":"enemy_stone_golem","name":"돌 골렘","level":26,"speciesId":"species_stone_golem","monsterResourceId":"generated-enemy-golem-01","stats":{"maxHp":240,"maxMp":10,"attack":50,"defense":30,"mind":50,"agility":47},"rewards":{"exp":100,"gold":92,"dropRatePercent":15},"actions":archetypeActions("bulwark"),"actionProfile":{"contactDamage":24,"aggroRange":5,"moveIntervalMs":600,"knockbackResist":0.8,"attack":{"kind":"melee","windupMs":1100,"recoverMs":500,"damage":40,"range":1,"cooldownMs":1600}}}),
       // maxMp 40: 4MP 속성기 10회 예산. 다른 보스 10마리(generatedEnemyRecords)와 같은 값이다.
       // MP 가 비용 미만이면 turn 조건 버스트까지 점수 계산 전에 필터되므로(runtime.ts:1798)
       // maxMp 10 으로는 3턴 주기 버스트가 6턴 안에 소진됐다. mind = attack 규약(생성 로스터와
       // 동일)을 적용한다 — 마법 정체성기가 물리 무료기에 영구히 지던 문제를 끊는다.
       // 레벨 40·보스 티어(TTK 8 / TTD 4) — 권장 파티 Lv40 기준 최종 결전.
-      normalizeEnemyRecord({"id":"enemy_dragon","name":"붉은 드래곤","level":40,"speciesId":"species_ember_drake","monsterResourceId":"generated-enemy-dragon-01","stats":{"maxHp":576,"maxMp":40,"attack":77,"defense":43,"mind":77,"agility":12},"rewards":{"exp":240,"gold":222,"dropRatePercent":15},"actions":archetypeActions("boss", "skill_fire")}),
+      normalizeEnemyRecord({"id":"enemy_dragon","name":"붉은 드래곤","level":40,"speciesId":"species_ember_drake","monsterResourceId":"generated-enemy-dragon-01","stats":{"maxHp":1176,"maxMp":40,"attack":192,"defense":43,"mind":192,"agility":67},"rewards":{"exp":353,"gold":222,"dropRatePercent":15},"actions":archetypeActions("boss", "skill_fire")}),
       // enemy_extra_006~120 115건 제거(2026-08-28). maxHp 40,45,50,55… / attack 15,17,18,20… 의
       // 등차수열 더미였고 아트도 enemy-art-NNN.png 공용 슬롯이었다. 실제 몬스터는 위 5종 +
       // enemy_mine_skel_archer + generatedEnemyRecords() 100종이다.
@@ -33,7 +34,7 @@ export function defaultBattleRecords() {
       // 광산 궁수는 활을 든 전용 해골 궁수 아트를 쓴다. enemy_skeleton_archer와
       // 역할이 같으므로 이 한 쌍의 공유를 dbImageMatching에서 명시적으로 허용한다.
       // 검을 든 skeleton-01로 가짜 1:1 매핑을 만들거나 legacy enemy_extra 폴백을 쓰지 않는다.
-      normalizeEnemyRecord({"id":"enemy_mine_skel_archer","name":"광산 해골 궁수","level":16,"speciesId":"species_mine_skeleton","monsterResourceId":"generated-enemy-skeleton-archer","stats":{"maxHp":176,"maxMp":10,"attack":31,"defense":27,"mind":31,"agility":14},"rewards":{"exp":73,"gold":68,"dropItemId":"item_bone","dropRatePercent":15},"actions":archetypeActions("curse"),"actionProfile":{"contactDamage":8,"aggroRange":9,"moveIntervalMs":450,"knockbackResist":0,"attack":{"kind":"projectile","windupMs":700,"recoverMs":300,"damage":18,"range":8,"cooldownMs":1400,"projectileSpeedTilesPerSec":7}}}),
+      normalizeEnemyRecord({"id":"enemy_mine_skel_archer","name":"광산 해골 궁수","level":16,"speciesId":"species_mine_skeleton","monsterResourceId":"generated-enemy-skeleton-archer","stats":{"maxHp":256,"maxMp":10,"attack":75,"defense":27,"mind":75,"agility":38},"rewards":{"exp":108,"gold":68,"dropItemId":"item_bone","dropRatePercent":15},"actions":archetypeActions("curse"),"actionProfile":{"contactDamage":8,"aggroRange":9,"moveIntervalMs":450,"knockbackResist":0,"attack":{"kind":"projectile","windupMs":700,"recoverMs":300,"damage":18,"range":8,"cooldownMs":1400,"projectileSpeedTilesPerSec":7}}}),
       ...generatedEnemyRecords(),
     ],
     troops: [

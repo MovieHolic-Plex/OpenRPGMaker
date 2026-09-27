@@ -4,6 +4,7 @@ import { listTitleMenuOptions } from "@/player/titleScreen";
 import { resolveFontSelection, FONT_ROLE_LABELS, FONT_ROLES, fontOptionsForRole } from "@/project/fontRegistry";
 import { listDatabaseResourceOptions } from "@/editor/panels/databaseResourcePickerDialog";
 import { BATTLE_SKINS, resolveSkinId } from "@/battle/skins/registry";
+import { BATTLE_HIT_FEEL_LABELS, resolveBattleHitFeel } from "@/project/battleHitFeel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { galleryMenuLabel, isGalleryEnabled } from "@/project/gallery";
 import { resolvePlayResolution } from "@/project/playResolution";
@@ -328,6 +329,7 @@ function ruleCardGrid(project: Project): HTMLElement {
         { label: "전투 흐름", value: combatFlow },
         { label: "참전 인원", value: activeSlots },
         { label: "전투 UI", value: battleSkin },
+        { label: "타격감", value: BATTLE_HIT_FEEL_LABELS[resolveBattleHitFeel(project.system.battleHitFeel)] },
         { label: "규칙 모델", value: battleModel },
       ],
     },

@@ -1,37 +1,21 @@
 import { describe, expect, it } from "vitest";
 import { defaultBattleRecords } from "@/project/defaults/defaultDatabaseBattleRecords";
-import {
-  defaultEquipmentRecords,
-} from "@/project/defaults/defaultDatabaseEquipmentRecords";
-import {
-  defaultPartyRecords,
-  defaultStarterActorIds,
-} from "@/project/defaults/defaultDatabasePartyRecords";
-import { parameterValueAtLevel } from "@/project/actorModel";
+import { createBlankProject } from "@/project/defaults/blankProject";
+import { actorBattlers } from "@/battle/battleBattlers";
 
 // 106종 권장 레벨 기준 TTK/TTD 밴드 회귀 — 전투 공식 변경 시 가장 먼저 깨진다.
-function heroAt(level: number): { atk: number; def: number; hp: number } {
-  const party = defaultPartyRecords();
-  const equipById = new Map(defaultEquipmentRecords().map((e) => [e.id, e]));
-  const starters = party.actors.filter((a) => defaultStarterActorIds().includes(a.id));
-  const classById = new Map(party.classes.map((c) => [c.id, c]));
-  let atk = 0, def = 0, hp = 0;
-  for (const actor of starters) {
-    const klass = classById.get(actor.classId)!;
-    let eAtk = 0, eDef = 0;
-    for (const id of Object.values(actor.initialEquipment ?? {})) {
-      const e = id ? equipById.get(id as string) : undefined;
-      if (e) {
-        eAtk += e.statBonuses.attack;
-        eDef += e.statBonuses.defense;
-      }
-    }
-    atk += parameterValueAtLevel(klass.parameterCurves.attack, level) + eAtk;
-    def += parameterValueAtLevel(klass.parameterCurves.defense, level) + eDef;
-    hp += parameterValueAtLevel(klass.parameterCurves.maxHp, level);
-  }
-  const n = Math.max(1, starters.length);
-  return { atk: atk / n, def: def / n, hp: hp / n };
+// 영웅 스탯은 런타임 배틀러(액터 곡선 + 초기 장비)에서 읽는다. 클래스 곡선만 보면
+// L1 HP 40 / 공격 22로 실제(HP 514 / 공격 53)와 달라 밴드가 무의미해진다.
+const project = createBlankProject();
+function heroAt(level: number): { atk: number; def: number; hp: number; agi: number } {
+  const hero = actorBattlers(project, { levels: { actor_hero: level }, partyActorIds: ["actor_hero"] })[0]!;
+  return { atk: hero.attackPower, def: hero.defense, hp: hero.maxHp, agi: hero.agility };
+}
+
+// 적이 기본 부대에서 몇 마리 묶음으로 나오는지 — 무리 적은 개체 HP를 나눠 가진다.
+const groupSize = new Map<string, number>();
+for (const troop of project.database.troops) {
+  for (const id of troop.enemyIds) groupSize.set(id, Math.max(groupSize.get(id) ?? 0, troop.enemyIds.length));
 }
 
 const basicDamage = (atk: number, def: number): number =>
@@ -45,16 +29,26 @@ describe("monster rebalance bands", () => {
     for (const enemy of battle.enemies) {
       const level = enemy.level ?? 1;
       const hero = heroAt(Math.min(50, Math.max(1, level)));
-      const ttk = enemy.stats.maxHp / Math.max(1, basicDamage(hero.atk, enemy.stats.defense));
-      const ttd = hero.hp / Math.max(1, basicDamage(enemy.stats.attack, hero.def));
+      const group = groupSize.get(enemy.id) ?? 1;
+      // 부대 전체를 평타로 지우는 데 드는 타수, 부대 전체가 영웅을 쓰러뜨리는 데 드는 타수.
+      const ttk = (enemy.stats.maxHp * group) / Math.max(1, basicDamage(hero.atk, enemy.stats.defense));
+      const ttd = hero.hp / Math.max(1, basicDamage(enemy.stats.attack, hero.def) * group);
       const boss = enemy.rewards.exp >= 200;
-      const ttkOk = boss ? ttk >= 6 && ttk <= 12 : ttk >= 2 && ttk <= 7;
-      const ttdOk = boss ? ttd >= 2.5 && ttd <= 6 : ttd >= 3;
+      const ttkOk = boss ? ttk >= 6 && ttk <= 12 : ttk >= 3 && ttk <= 8; // 상한 8: 무리 속 탱커(돌 골렘)
+      const ttdOk = boss ? ttd >= 4 && ttd <= 8 : ttd >= 3 && ttd <= 14;
       if (!ttkOk || !ttdOk) {
         violations.push(`${enemy.id} L${level} TTK ${ttk.toFixed(1)} TTD ${ttd.toFixed(1)}`);
       }
     }
     expect(violations, `밴드 이탈: ${violations.join(", ")}`).toEqual([]);
+  });
+
+  it("적 민첩은 같은 레벨 영웅의 70~80%라 게이지 턴을 실제로 받는다", () => {
+    const odd = defaultBattleRecords()
+      .enemies.map((e) => ({ id: e.id, ratio: e.stats.agility / heroAt(Math.max(1, e.level ?? 1)).agi }))
+      .filter((r) => r.ratio < 0.7 || r.ratio > 0.8)
+      .map((r) => `${r.id}(${r.ratio.toFixed(2)})`);
+    expect(odd).toEqual([]);
   });
 
   it("mind = attack 규약이 106종 전체에 성립한다", () => {

@@ -58,15 +58,15 @@ describe("hitIntensity", () => {
       expect(next.punchScale).toBeGreaterThanOrEqual(prev.punchScale);
       expect(next.shakePx).toBeGreaterThanOrEqual(prev.shakePx);
     }
-    // 2026-09-25: 명중하면 잽도 흔든다(바닥값). 정보는 진폭의 차이가 든다 — 잽 2px 과 막타 11px.
+    // 2026-09-25: 명중하면 잽도 흔든다(바닥값). 정보는 진폭의 차이가 든다 — 잽 2px 과 막타 12px.
     expect(HIT_INTENSITY_STYLE.graze.shakePx).toBeGreaterThan(0);
     expect(HIT_INTENSITY_STYLE.crushing.shakePx).toBeGreaterThanOrEqual(HIT_INTENSITY_STYLE.graze.shakePx * 5);
   });
 
   it("CSS 변수 매핑", () => {
-    expect(hitIntensityTargetVariables("heavy")).toEqual({ "--hit-knockback": "40px", "--hit-squash": "0.1" });
-    expect(hitIntensityStageVariables("crushing")["--hit-punch"]).toBe("1.05");
-    expect(hitIntensityStageVariables("crushing")["--battle-shake-x"]).toBe("11px");
+    expect(hitIntensityTargetVariables("heavy")).toEqual({ "--hit-knockback": "44px", "--hit-squash": "0.12" });
+    expect(hitIntensityStageVariables("crushing")["--hit-punch"]).toBe("1.06");
+    expect(hitIntensityStageVariables("crushing")["--battle-shake-x"]).toBe("12px");
   });
 });
 
@@ -79,9 +79,9 @@ describe("applyHitIntensity / flashBattleField", () => {
 
     applyHitIntensity(root, target, "heavy");
     expect(target.dataset.hitIntensity).toBe("heavy");
-    expect(target.style.getPropertyValue("--hit-knockback")).toBe("40px");
+    expect(target.style.getPropertyValue("--hit-knockback")).toBe("44px");
     expect(root.dataset.hitIntensity).toBe("heavy");
-    expect(root.style.getPropertyValue("--hit-punch")).toBe("1.03");
+    expect(root.style.getPropertyValue("--hit-punch")).toBe("1.04");
 
     applyHitIntensity(root, target, undefined);
     expect(target.dataset.hitIntensity).toBeUndefined();
@@ -95,18 +95,18 @@ describe("applyHitIntensity / flashBattleField", () => {
     flashBattleField(root, "hit", "heavy");
     await new Promise((resolve) => requestAnimationFrame(() => resolve(undefined)));
     expect(root.classList.contains("battle-hit-shake")).toBe(true);
-    expect(root.style.getPropertyValue("--battle-hit-shake-x")).toBe("7px");
+    expect(root.style.getPropertyValue("--battle-hit-shake-x")).toBe("8px");
   });
 
-  it("normal 타격도 짧고 작게 흔든다(3px · 60ms × 2)", async () => {
+  it("normal 타격도 짧게 흔든다(5px · 50ms × 3)", async () => {
     const root = document.createElement("section");
     document.body.append(root);
     flashBattleField(root, "hit", "normal");
     await new Promise((resolve) => requestAnimationFrame(() => resolve(undefined)));
     expect(root.classList.contains("battle-hit-shake")).toBe(true);
     expect(root.classList.contains("battle-flash-hit")).toBe(true);
-    expect(root.style.getPropertyValue("--battle-hit-shake-x")).toBe("3px");
-    expect(root.style.getPropertyValue("--battle-hit-shake-period")).toBe("60ms");
+    expect(root.style.getPropertyValue("--battle-hit-shake-x")).toBe("5px");
+    expect(root.style.getPropertyValue("--battle-hit-shake-period")).toBe("50ms");
     // 스킬 애니메이션 층의 클래스·변수와 섞이지 않는다.
     expect(root.classList.contains("battle-screen-shake")).toBe(false);
   });
