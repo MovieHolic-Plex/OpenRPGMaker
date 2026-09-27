@@ -21,12 +21,17 @@ import {
 import { isEngineModuleLoadFailure } from "@/util/dynamicImport";
 import { startSession, type PlaySession } from "@/project/session";
 import { applyClearCarry, newGamePlusMenuLabel } from "@/project/newGamePlus";
+import { difficultiesOf, initialDifficultyId, setSessionDifficulty } from "@/project/difficulty";
+import { applyTitleVariant } from "@/project/titleVariants";
+import { renderDifficultyPanel } from "@/player/playerDifficultyPanel";
 import { readClearRecord, recordEndingClear } from "@/player/clearRecord";
 import { applyStatePreset, testHerePreset } from "@/testing/debugSession";
 import { el, clearChildren } from "@/util/dom";
 import {
   applySaveSnapshot,
   readAutosave,
+  latestResumableSave,
+  readLatestSave,
   readSaveSlot,
   snapshotLoadBlocker,
   setSavePublication,
@@ -145,6 +150,8 @@ type PlayBootRequest = {
   readonly safeMode?: boolean;
   /** 클리어 기록의 이월 필드를 입힌 새 세션(강하게 다시 하기). */
   readonly newGamePlus?: boolean;
+  /** 새 게임 난이도 선택 창에서 고른 난이도. 생략 = system.defaultDifficultyId(또는 첫 줄). */
+  readonly difficultyId?: string;
 };
 
 const MENU_CLOSE_JUICE_MS = 250;
@@ -333,6 +340,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       const clear = readClearRecord(window.localStorage);
       if (clear) applyClearCarry(bootProject, session, clear.carry);
     }
+    if (!request.session && request.difficultyId) setSessionDifficulty(bootProject.system, session, request.difficultyId);
     void bootPlayGame(surface.phaserContainer, session, eventTestId, loading, run, startedAt, repairs);
   };
 
@@ -696,7 +704,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     if (game || !titleEl || titleEl.hasAttribute("data-screen")) return false;
     if (titleConfirming) return true;
     const project = store.getCurrent();
-    const settings = project.system.titleScreen ?? defaultTitleScreenSettings();
+    const settings = currentTitleSettings(project);
     const options = listTitleMenuOptions(settings, { autosaveAvailable: isAutosaveAvailable(), newGamePlusLabel: newGamePlusTitleLabel() });
     const visibleCount = options.length;
     titleMenuIndex = clampTitleMenuIndex(titleMenuIndex, visibleCount);
@@ -812,7 +820,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     stopAllAudio();
     clearChildren(layout);
     const project = store.getCurrent();
-    const settings = project.system.titleScreen ?? defaultTitleScreenSettings();
+    const settings = currentTitleSettings(project);
     const titleContext = {
       autosaveAvailable: isAutosaveAvailable(),
       newGamePlusLabel: newGamePlusTitleLabel(),
@@ -831,7 +839,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     playStage = surface.stage;
     cleanupPlaySurface = surface.cleanup;
     // 타이틀 확정은 키보드와 메뉴 클릭이 같은 activateTitleOption 으로 모인다.
-    const title = renderTitleScreen(project, {
+    // 변형(엔딩·마지막 저장)을 입힌 설정으로 그린다 — 배경·음악만 바뀌고 나머지는 저작 그대로다.
+    const titleProject = settings === project.system.titleScreen ? project : { ...project, system: { ...project.system, titleScreen: settings } };
+    const title = renderTitleScreen(titleProject, {
       onNewGame: () => confirmTitleThen(() => activateTitleOption("newGame"), true),
       onNewGamePlus: () => confirmTitleThen(() => activateTitleOption("newGamePlus"), true),
       onResume: () => confirmTitleThen(() => activateTitleOption("resume")),
@@ -844,7 +854,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     surface.stage.append(title);
     focusSelectedTitleOption(title);
     surface.sync();
-    startTitleBgm(project);
+    startTitleBgm(titleProject);
     if (firstEnter) emitTitleJuice("title-enter");
   };
 
@@ -856,11 +866,81 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     });
   };
 
+  // 타이틀 변형 판정 입력 — 클리어 기록의 엔딩과 가장 최근 저장의 맵. 저장소 오류는 «변형 없음»으로 본다.
+  const currentTitleSettings = (project: ReturnType<typeof store.getCurrent>) => {
+    const settings = project.system.titleScreen ?? defaultTitleScreenSettings();
+    if (!settings.variants?.length) return settings;
+    try {
+      const latest = readLatestSave(window.localStorage);
+      return applyTitleVariant(settings, {
+        endingIds: readClearRecord(window.localStorage)?.endingIds ?? [],
+        lastSaveMapId: latest?.snapshot.session.currentMapId,
+      });
+    } catch {
+      return settings;
+    }
+  };
+
+  // 난이도가 둘 이상이면 새 게임 전에 묻는다. 「뒤로」는 타이틀로 돌아간다.
+  const renderDifficultyPicker = (): void => {
+    stopGame();
+    clearChildren(layout);
+    const project = store.getCurrent();
+    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleMode);
+    clearChildren(surface.stage);
+    playStage = surface.stage;
+    cleanupPlaySurface = surface.cleanup;
+    const panel = renderDifficultyPanel({
+      project,
+      difficulties: difficultiesOf(project.system),
+      selectedId: initialDifficultyId(project.system),
+      onPick: (difficultyId) => {
+        loadDetach?.();
+        loadDetach = null;
+        startGame({ safeMode: options.safeMode === true, difficultyId });
+      },
+      onBack: () => {
+        loadDetach?.();
+        loadDetach = null;
+        renderTitle();
+      },
+    });
+    layout.append(surface.viewport);
+    mountHostControls(surface.viewport);
+    surface.stage.append(panel);
+    surface.sync();
+    const buttons = Array.from(panel.querySelectorAll<HTMLElement>("[data-testid^='difficulty-option-']"));
+    const back = panel.querySelector<HTMLElement>("[data-testid='player-difficulty-back']");
+    const selected = Math.max(0, buttons.findIndex((button) => button.getAttribute("aria-current") === "true"));
+    loadDetach?.();
+    loadDetach = attachCursorMenu(panel, { items: back ? [...buttons, back] : buttons, cancelEl: back, initialIndex: selected });
+  };
+
+  // 「시작하면 바로 이어하기」: 가장 최근 저장이 있으면 타이틀을 건너뛴다. 불러오지 못하면 타이틀로 떨어진다.
+  const tryResumeOnLaunch = (): boolean => {
+    let latest: ReturnType<typeof latestResumableSave>;
+    try {
+      latest = latestResumableSave(store.getCurrent(), window.localStorage);
+    } catch {
+      return false;
+    }
+    if (!latest) return false;
+    if (latest.source === "autosave") loadAutosave(true);
+    else loadSlot(latest.slot, true);
+    return true;
+  };
+
   const activateTitleOption = (id: TitleMenuOptionId | undefined): void => {
     switch (id) {
-      case "newGame":
+      case "newGame": {
+        const difficulties = difficultiesOf(store.getCurrent().system);
+        if (difficulties.length > 1) {
+          renderDifficultyPicker();
+          return;
+        }
         startGame({ safeMode: options.safeMode === true });
         return;
+      }
       case "newGamePlus":
         startGame({ safeMode: options.safeMode === true, newGamePlus: true });
         return;
@@ -959,7 +1039,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     });
   } else if (options.startOverride || options.autoStartRun) {
     startGame({ safeMode: options.safeMode === true });
-  } else {
+  } else if (!tryResumeOnLaunch()) {
     renderTitle();
   }
   options.onRunControlsReady?.({ restartRun, returnToTitle });

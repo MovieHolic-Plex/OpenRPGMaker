@@ -60,6 +60,7 @@ import type {
   TitleParticlePreset,
   TitleScreenSettings,
   TitleScreenTitleMode,
+  TitleScreenVariant,
   TypeChartRecord,
 } from "@/project/types";
 import { el } from "@/util/dom";
@@ -91,6 +92,8 @@ import {
   titleOpeningPresetEffects,
 } from "@/project/titleEffects";
 import { applyToolSequenceToStore } from "@/editor/tools/applyChangesetToStore";
+import { difficultyFieldset, monsterFusionFieldset } from "@/editor/panels/databaseSystemDifficultyView";
+import { TITLE_VARIANT_LIMIT } from "@/project/titleVariants";
 import {
   analyzePlayResolution,
   normalizePlayResolution,
@@ -565,6 +568,8 @@ function systemSectionNodes(
         galleryLabelField(project.system.gallery?.label ?? ""),
         systemHelp("켜면 플레이 중 메뉴의 기록에 이 이름으로 들어갑니다. 이름은 갤러리 대신 원하는 낱말을 적어도 됩니다. 그림 표시에서 「남기기」를 켠 그림만 모입니다."),
       ]),
+      rm2k3Fieldset("난이도", difficultyFieldset(project, updateSystem, () => rerender())),
+      rm2k3Fieldset("몬스터 합성", monsterFusionFieldset(project, updateSystem, () => rerender())),
     ]),
     optin: section("optin", optInSystemFields(project, rerender)),
     time: section("time", [timeSystemFieldset(project.system.timeSystem, project.commonEvents, rerender)]),
@@ -583,6 +588,7 @@ function systemSectionNodes(
                 titleScreenOpeningFieldset(titleScreen, rerender),
                 titleScreenDisplayFieldset(titleScreen, titleBackgroundResourceId, project.system.titleResourceId, rerender),
                 titleScreenMenuFieldset(titleScreen, rerender),
+                titleScreenVariantsFieldset(titleScreen, project, rerender),
                 titleScreenEffectsFieldset(titleScreen, rerender),
                 titleScreenAudioFieldset(titleScreen, rerender),
               ],
@@ -1901,6 +1907,100 @@ function titleScreenMenuFieldset(titleScreen: TitleScreenSettings, rerender: Sys
           }),
         ],
       }),
+    ],
+  });
+}
+
+/** 타이틀 변형(본 엔딩·클리어 수·마지막 저장 맵 → 배경/음악) + 시작하면 바로 이어하기. */
+function titleScreenVariantsFieldset(titleScreen: TitleScreenSettings, project: Project, rerender: SystemRefresh): HTMLElement {
+  const variants = titleScreen.variants ?? [];
+  const storeVariants = (next: TitleScreenVariant[]): void => {
+    updateTitleScreen((settings) => {
+      if (next.length > 0) settings.variants = next;
+      else delete settings.variants;
+    });
+    rerender();
+  };
+  const whenKinds = [
+    { id: "endingSeen", name: "이 엔딩을 봤을 때" },
+    { id: "clearCount", name: "엔딩을 이만큼 봤을 때" },
+    { id: "saveMapId", name: "마지막 저장 맵이" },
+  ] as const;
+  const rows = variants.map((variant, index) => {
+    const patchVariant = (patch: Partial<TitleScreenVariant>): void => {
+      storeVariants(variants.map((entry, i) => (i === index ? { ...entry, ...patch } : entry)));
+    };
+    const when = variant.when;
+    const whenValue = when.kind === "endingSeen"
+      ? selectField("엔딩", `db-field-title-variant-ending-${index}`, when.endingId, (project.endings ?? []).map((ending) => ({ id: ending.id, name: ending.name || ending.id })), (endingId) => patchVariant({ when: { kind: "endingSeen", endingId } }))
+      : when.kind === "clearCount"
+        ? numberField("개수", `db-field-title-variant-count-${index}`, () => when.atLeast, (atLeast) => patchVariant({ when: { kind: "clearCount", atLeast } }), { min: 1, max: 99 })
+        : selectField("맵", `db-field-title-variant-map-${index}`, when.mapId, Object.values(project.maps).map((map) => ({ id: map.id, name: map.name || map.id })), (mapId) => patchVariant({ when: { kind: "saveMapId", mapId } }));
+    return el("div", {
+      class: "db-title-variant-row",
+      dataset: { testid: `db-title-variant-row-${index}` },
+      children: [
+        selectField("조건", `db-field-title-variant-kind-${index}`, when.kind, whenKinds, (kind) => {
+          const firstEnding = project.endings?.[0]?.id ?? "";
+          const next: TitleScreenVariant["when"] = kind === "clearCount"
+            ? { kind: "clearCount", atLeast: 1 }
+            : kind === "saveMapId"
+              ? { kind: "saveMapId", mapId: project.startMapId }
+              : { kind: "endingSeen", endingId: firstEnding };
+          patchVariant({ when: next });
+        }),
+        whenValue,
+        resourcePickerControl({
+          label: "배경",
+          resourceId: variant.backgroundResourceId,
+          kind: "title",
+          testid: `db-field-title-variant-background-${index}`,
+          allowClear: true,
+          dialogTitle: "변형 배경",
+          onChange: (result) => patchVariant({ backgroundResourceId: emptyToUndefined(result.resourceId) }),
+          rerender,
+        }),
+        resourcePickerControl({
+          label: "음악",
+          resourceId: variant.musicResourceId,
+          kind: "music",
+          testid: `db-field-title-variant-music-${index}`,
+          allowClear: true,
+          dialogTitle: "변형 음악",
+          onChange: (result) => patchVariant({ musicResourceId: emptyToUndefined(result.resourceId) }),
+          rerender,
+        }),
+        el("button", {
+          class: "btn",
+          text: "삭제",
+          attrs: { type: "button", "aria-label": `타이틀 변형 ${index + 1}번 삭제` },
+          dataset: { testid: `db-title-variant-remove-${index}` },
+          on: { click: () => storeVariants(variants.filter((_, i) => i !== index)) },
+        }),
+      ],
+    });
+  });
+  return el("fieldset", {
+    class: "oprn-db-fieldset db-title-workbench-group",
+    dataset: { testid: "db-title-workbench-variants" },
+    children: [
+      el("legend", { text: "클리어·저장에 따라 바뀌는 타이틀" }),
+      systemHelp("위에서부터 처음 맞는 줄의 배경·음악을 씁니다. 빈 칸은 기본값을 그대로 둡니다."),
+      ...rows,
+      el("button", {
+        class: "btn",
+        text: "변형 추가",
+        attrs: { type: "button", ...(variants.length >= TITLE_VARIANT_LIMIT ? { disabled: "true" } : {}) },
+        dataset: { testid: "db-title-variant-add" },
+        on: { click: () => storeVariants([...variants, { when: { kind: "clearCount", atLeast: 1 } }]) },
+      }),
+      checkboxField("시작하면 바로 이어하기", "db-field-title-resume-on-launch", titleScreen.resumeOnLaunch === true, (checked) => {
+        updateTitleScreen((settings) => {
+          if (checked) settings.resumeOnLaunch = true;
+          else delete settings.resumeOnLaunch;
+        });
+      }),
+      systemHelp("켜면 저장이 있을 때 타이틀을 건너뛰고 가장 최근 저장(자동 저장 포함)으로 바로 들어갑니다. 저장이 없으면 타이틀이 나옵니다."),
     ],
   });
 }
