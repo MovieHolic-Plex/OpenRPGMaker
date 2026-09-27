@@ -13,14 +13,24 @@ export default {
   // 기본값은 production 의존성을 asar 에 넣어 439MB 를 만들었다(실측) — 명시적으로 뺀다.
   // node:sqlite 는 내장이고 electron 은 패키저가 넣는다.
   files: ["dist/**", "dist-electron/**", "package.json", "scripts/oh-my-pi-worker.ts", "scripts/lib/**", "!node_modules/**"],
-  asarUnpack: ["scripts/**", "dist-electron/oh-my-pi-worker", "dist-electron/oh-my-pi-worker.exe"],
+  // AI 워커는 실행 파일이라 asar 밖에 있어야 하고, 워커가 require 하는 pi_natives 애드온은 로더가
+  // 워커 옆 폴더에서 찾는다(scripts/build-electron.mjs). 둘 다 풀어 둔다.
+  asarUnpack: ["scripts/**", "dist-electron/oh-my-pi-worker", "dist-electron/oh-my-pi-worker.exe", "dist-electron/pi_natives.*.node"],
   extraMetadata: { main: "dist-electron/main.cjs" },
   asar: true,
   // 맥을 먼저 낸다(설계서 7.5). 리눅스는 서명이 필요 없는 AppImage 로 도그푸딩한다.
   mac: { target: ["dmg", "zip"], category: "public.app-category.developer-tools" },
-  linux: { target: ["AppImage"], category: "Development" },
+  // 플랫폼 files 는 위 files 에 더해진다 — 다른 OS 의 워커·애드온(각 약 150~200MB)을 뺀다.
+  linux: {
+    target: ["AppImage"],
+    category: "Development",
+    files: ["!dist-electron/oh-my-pi-worker.exe", "!dist-electron/pi_natives.win32-*.node"],
+  },
   // zip 은 압축만 하므로 리눅스에서 wine 없이 만든다. NSIS exe 는 wine 이 필요하다.
-  win: { target: ["zip"] },
+  win: {
+    target: ["zip"],
+    files: ["!dist-electron/oh-my-pi-worker", "!dist-electron/pi_natives.linux-*.node"],
+  },
   // 자동 업데이트는 범위 밖이다(설계서 2절 비목표) — 게시하지 않는다.
   publish: null,
 };
