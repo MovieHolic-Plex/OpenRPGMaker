@@ -10,7 +10,7 @@ function startBridge(): NonNullable<Window["oprn"]>["start"] | undefined {
  * 성공하면 데스크톱은 새 폴더를 열고 웹은 새 프로젝트 URL을 설정한다. 호출자는 `window.location.reload()`로 부팅한다.
  * 저장 브리지가 없는 정적 웹 미리보기는 false.
  */
-export async function createProjectFolderWithSeed(title: string, seed: Project): Promise<boolean> {
+export async function createProjectFolderWithSeed(title: string, seed: Project, projectDir?: string): Promise<boolean> {
   const bridge = startBridge();
   if (!bridge) return false;
   // A seed can predate bootstrap loading (or come from a copied project). Refresh
@@ -19,7 +19,7 @@ export async function createProjectFolderWithSeed(title: string, seed: Project):
   const required = window.location.protocol === "http:" || window.location.protocol === "https:";
   await loadSharedContent({ required, scope: "defaults" });
   ensureSharedContent(seed);
-  const created = await bridge.createProject({ title, seed: serialize(seed) });
+  const created = await bridge.createProject({ title, seed: serialize(seed), ...(projectDir ? { projectDir } : {}) });
   return created !== null;
 }
 

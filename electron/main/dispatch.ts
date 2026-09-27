@@ -1,4 +1,6 @@
 import { z, type ZodType } from "zod";
+import { writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { deserializeStoredProjectJson } from "../../src/project/persistence/core/loadRepair";
 import { canonicalJsonString } from "../../src/project/persistence/core/canonicalJson";
 import { resolveMapPatchDocuments, applyProjectDocumentPatch } from "../../src/project/persistence/core/projectPatch";
@@ -16,11 +18,13 @@ import {
   conversationLoadSchema,
   conversationRecordSchema,
   listLimitSchema,
+  projectCoverSchema,
   projectRefSchema,
   tilesetBlobsSchema,
   saveMapPatchSchema,
   saveProjectSchema,
 } from "../shared/schemas";
+import { PROJECT_COVER_FILE } from "../local-store/schema";
 import type { SessionKey, SessionRegistry } from "./sessions";
 
 const services = new WeakMap<SessionRegistry, Readonly<Record<string, Handler>>>();
@@ -210,6 +214,15 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
     },
 
     [OPRN_CHANNELS.projectBackup]: (key) => store(key).backup(),
+
+    // 시작 화면 카드 그림. 정본(project.sqlite)이 아니라 폴더 옆 캐시 파일이다 — 경로는 요청이 아니라 세션이 정한다.
+    [OPRN_CHANNELS.projectSaveCover]: (key, payload) => {
+      const input = parseOrThrow(projectCoverSchema, payload, OPRN_CHANNELS.projectSaveCover);
+      const bytes = Buffer.from(input.dataUrl.slice(input.dataUrl.indexOf(",") + 1), "base64");
+      if (bytes.length > 1_000_000 || bytes[0] !== 0xff || bytes[1] !== 0xd8) throw new Error("대표 그림은 1MB 이하 JPEG 이어야 합니다");
+      writeFileSync(join(sessions.require(key).projectDir, PROJECT_COVER_FILE), bytes);
+      return true;
+    },
 
     [OPRN_CHANNELS.commitsRecord]: (key, payload) => {
       const input = parseOrThrow(commitRecordSchema, payload, OPRN_CHANNELS.commitsRecord);

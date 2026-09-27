@@ -38,6 +38,8 @@ export type OprnBridgeProject = {
   dataVersion(payload: { readonly projectDir: string }): Promise<number>;
   separateMedia(payload: { readonly projectDir: string }): Promise<{ readonly changed: boolean; readonly migratedAssetIds: readonly string[]; readonly revision: number }>;
   backup(payload: { readonly projectDir: string }): Promise<string>;
+  /** 시작 화면 카드 그림(cover.jpg). 데스크톱 앱만 있다 — 팀 호스트 브라우저 브리지에는 없다. */
+  saveCover?(payload: { readonly projectDir: string; readonly dataUrl: string }): Promise<boolean>;
 };
 export type OprnBridgeCommits = {
   record(payload: unknown): Promise<SaveResult>;
@@ -64,10 +66,18 @@ export type OprnBridgeLifecycle = {
   readonly onSaveRequest: (callback: () => void) => void;
 };
 export type OprnBridgeStart = {
-  readonly recentProjects: () => Promise<readonly { readonly projectDir: string; readonly title: string }[]>;
+  readonly recentProjects: () => Promise<readonly import("../../../electron/shared/start").RecentProjectEntry[]>;
   readonly openFolder: (payload?: { readonly projectDir?: string }) => Promise<{ readonly projectDir: string; readonly isNew: boolean; readonly projectId: string | null } | null>;
-  /** 새 폴더 프로젝트를 만든다. `seed` 를 주면 그 직렬화 문서를 새 폴더에 심는다(장르 프리셋 등). */
-  readonly createProject: (input: { readonly title?: string; readonly seed?: string }) => Promise<{ readonly projectDir: string; readonly projectId: string } | null>;
+  readonly openRecent?: (payload: { readonly projectDir: string }) => Promise<{ readonly projectDir: string; readonly projectId: string } | null>;
+  /**
+   * 새 폴더 프로젝트를 만든다. `seed` 를 주면 그 직렬화 문서를 새 폴더에 심는다(장르 프리셋 등).
+   * `projectDir` 를 주면(데스크톱 시작 화면) 대화상자 없이 그 새 폴더에 만든다.
+   */
+  readonly createProject: (input: { readonly title?: string; readonly seed?: string; readonly projectDir?: string }) => Promise<{ readonly projectDir: string; readonly projectId: string } | null>;
+  /** 데스크톱 전용 — 새 게임 폴더 추천 경로. */
+  readonly suggestProjectDir?: (input: { readonly title?: string; readonly root?: string }) => Promise<import("../../../electron/shared/start").SuggestedProjectDir>;
+  /** 데스크톱 전용 — 새 게임을 만들 상위 위치 대화상자. 취소하면 null. */
+  readonly chooseProjectRoot?: () => Promise<string | null>;
 };
 
 export type OprnAssetBrowser = {

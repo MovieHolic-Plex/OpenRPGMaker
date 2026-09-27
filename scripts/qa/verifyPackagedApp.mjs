@@ -32,7 +32,7 @@ await page.waitForTimeout(3000);
 const probe = await page.evaluate(() => ({
   url: window.location.href,
   title: document.title,
-  hasRecentList: Boolean(document.querySelector("#recent-list")),
+  hasStartScreen: Boolean(document.querySelector("[data-testid='start-screen']")),
   hasBridge: Boolean(window.oprn),
   bodyText: (document.body?.innerText ?? "").slice(0, 400),
 }));

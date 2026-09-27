@@ -20,6 +20,8 @@ export const OPRN_CHANNELS = {
   projectDataVersion: "oprn:project.dataVersion",
   projectSeparateMedia: "oprn:project.separateMedia",
   projectBackup: "oprn:project.backup",
+  /** 시작 화면 카드에 쓰는 대표 그림(cover.jpg). 편집기가 저장 뒤에 보낸다. */
+  projectSaveCover: "oprn:project.saveCover",
   commitsRecord: "oprn:commits.record",
   commitsList: "oprn:commits.list",
   commitsListSync: "oprn:commits.listSync",
@@ -40,6 +42,10 @@ export const OPRN_CHANNELS = {
   startOpenFolder: "oprn:start.openFolder",
   startCreateProject: "oprn:start.createProject",
   startImportFile: "oprn:start.importFile",
+  /** 새 게임 폴더 추천 경로(기본 위치 + 겹치지 않는 이름). */
+  startSuggestProjectDir: "oprn:start.suggestProjectDir",
+  /** 새 게임 폴더를 만들 상위 위치를 고르는 대화상자. */
+  startChooseProjectRoot: "oprn:start.chooseProjectRoot",
   assetBrowserOpen: "oprn:assetBrowser.open",
   assetBrowserBounds: "oprn:assetBrowser.bounds",
   assetBrowserClose: "oprn:assetBrowser.close",

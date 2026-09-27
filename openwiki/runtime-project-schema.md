@@ -1,5 +1,31 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 데스크톱 시작 화면 — 런처형 (2026-09-27)
+
+옛 `public/start-screen.html + .js`(크림색 카드, 버튼 둘, 경로 목록)를 **vite 엔트리**로 바꿨다.
+실측: 최근 목록 20줄 중 19줄이 QA 가 남긴 `/tmp/oprn-packaged-*` 였고, 「새 프로젝트」는 장르를 묻지 않고
+빈 편집기로 넘어간 뒤 캔버스 브리핑이 다시 「어떤 게임을 만들까요?」를 물었다.
+
+- **엔트리**: 루트 `start-screen.html` → `src/start/startScreen.ts` + `startScreen.css`(tokens.css 만 싣는 자기완결 시트).
+  편집기 트리를 import 하지 않는다 — 번들 11KB. 장르 씨앗·AI 모듈을 여기서 부르면 수십 MB 가 된다(실측 esbuild 90MB).
+  `vite.config.ts` 의 `startScreen` 입력, `scripts/mac-launch.mjs` 빌드 입력 목록에 들어 있다.
+- **최근 목록**: `electron/main/recent.ts` 의 `describeRecentProjects()` 가 폴더의 `project.sqlite` 를 **읽기 전용**
+  (`electron/local-store/summary.ts`, `query_only`, 본문 `current_json` 안 읽음)으로 열어 제목·편집 시각·맵 수를 채운다.
+  임시 폴더(`/tmp`·`os.tmpdir()`) 아래와 사라진 폴더는 `hiddenReason` 을 달아 **기본 숨김** — 목록 파일에서 지우지 않는다.
+- **카드 그림**: `<폴더>/cover.jpg` 는 정본이 아니라 캐시다. 편집기가 부팅 4초 뒤 한 번, 이후 저장 뒤 1분에 한 번까지
+  시작 맵(`startPos` 둘레, 30칸 창)을 480×300 으로 구워 `oprn:project.saveCover` 로 보낸다(`src/editor/projectCover.ts`).
+  호스트는 JPEG 표식·1MB 상한을 보고 **세션의 폴더**에만 쓴다(요청의 경로를 믿지 않는다). 팀 호스트 브라우저 브리지에는 채널이 없다.
+- **새 게임**: 한 문장(선택)·장르 포스터(featured 3 + 빈 프로젝트)·이름·저장 위치를 한 화면에서 정한다. 저장 위치는
+  `oprn:start.suggestProjectDir` 가 `문서/OPRN Games/<이름>`(겹치면 `<이름> 2`…)를 추천하고, 「바꾸기」가 상위 폴더 대화상자를 연다.
+  `start.createProject` 에 `projectDir` 를 주면 대화상자 없이 그 **비어 있는** 폴더에 만든다(파일이 있으면 거절). 메뉴 경로는 예전대로 대화상자.
+  `OPRN_NEW_PROJECT_ROOT` 가 기본 상위 위치를 덮는다(QA 전용 — 대화상자를 자동화할 수 없다).
+- **인계**: 시작 화면은 빈 폴더만 만들고 `sessionStorage` 의 `oprn:start-screen-intent`(`src/start/startIntent.ts`)에 장르·한 문장을 남긴다.
+  편집기 `finishEditorBoot` 가 **그 폴더가 열렸을 때만**(`projectDir` 일치, 10분 이내) 꺼내 `createNewProjectSeed` 씨앗을 채택·flush 하고
+  (`src/editor/startScreenHandoff.ts`), 한 문장이 있으면 조수 파이프라인(AI 준비 시 자동 전송, 아니면 입력창에 담기)으로 넘긴다.
+  인계가 있으면 캔버스 브리핑을 띄우지 않고 `oprn:editor-welcome-dismissed` 를 켠다. 호스트는 인계 비교를 위해 세션이 정규화한 경로를 돌려준다.
+- **증거**: `xvfb-run -a node scripts/qa/electronStartScreenProbe.mjs`(`build:fast` + `build:electron` 뒤) — 격리 `--user-data-dir` 로
+  홈·숨김·새 게임·편집기(저장된 제목/장르 재로드)·cover.jpg·재기동을 확인하고 `verify-shots/start-screen/` 에 남긴다. 단위: `test/startScreen.test.ts`.
+
 ## 강하게 다시 하기·장 표시 선택 필드 (2026-09-26)
 
 `SystemRecords.newGamePlus?: { enabled; label?; carry: ("levels"|"skills"|"equipment"|"inventory"|"gold")[] }` 와
