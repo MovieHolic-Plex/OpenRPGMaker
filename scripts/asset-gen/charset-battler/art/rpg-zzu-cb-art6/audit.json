@@ -1,0 +1,323 @@
+{
+  "actor4-2": {
+    "poses": 24,
+    "redrawn": 20,
+    "source_walk_and_front": 4,
+    "ground_y": [
+      44
+    ],
+    "extra_colors": [
+      [
+        74,
+        203,
+        228
+      ],
+      [
+        112,
+        141,
+        151
+      ],
+      [
+        197,
+        250,
+        255
+      ],
+      [
+        211,
+        225,
+        229
+      ],
+      [
+        233,
+        179,
+        66
+      ]
+    ],
+    "unique_poses": 24,
+    "sheet_size": [
+      144,
+      384
+    ],
+    "gif_frames": 16,
+    "duration_ms": 120,
+    "motion_order": [
+      "walk_a",
+      "walk_b",
+      "walk_c",
+      "walk_b",
+      "attack_windup",
+      "attack_strike",
+      "attack",
+      "attack_follow",
+      "cast_charge",
+      "cast_raise",
+      "cast_release",
+      "idle",
+      "hit",
+      "idle",
+      "victory",
+      "victory_b"
+    ],
+    "all_checks": "통과"
+  },
+  "actor4-3": {
+    "poses": 24,
+    "redrawn": 20,
+    "source_walk_and_front": 4,
+    "ground_y": [
+      44
+    ],
+    "extra_colors": [
+      [
+        74,
+        203,
+        228
+      ],
+      [
+        197,
+        250,
+        255
+      ]
+    ],
+    "unique_poses": 24,
+    "sheet_size": [
+      144,
+      384
+    ],
+    "gif_frames": 16,
+    "duration_ms": 120,
+    "motion_order": [
+      "walk_a",
+      "walk_b",
+      "walk_c",
+      "walk_b",
+      "attack_windup",
+      "attack_strike",
+      "attack",
+      "attack_follow",
+      "cast_charge",
+      "cast_raise",
+      "cast_release",
+      "idle",
+      "hit",
+      "idle",
+      "victory",
+      "victory_b"
+    ],
+    "all_checks": "통과"
+  },
+  "actor4-4": {
+    "poses": 24,
+    "redrawn": 20,
+    "source_walk_and_front": 4,
+    "ground_y": [
+      44
+    ],
+    "extra_colors": [
+      [
+        74,
+        203,
+        228
+      ],
+      [
+        197,
+        250,
+        255
+      ],
+      [
+        233,
+        179,
+        66
+      ]
+    ],
+    "unique_poses": 24,
+    "sheet_size": [
+      144,
+      384
+    ],
+    "gif_frames": 16,
+    "duration_ms": 120,
+    "motion_order": [
+      "walk_a",
+      "walk_b",
+      "walk_c",
+      "walk_b",
+      "attack_windup",
+      "attack_strike",
+      "attack",
+      "attack_follow",
+      "cast_charge",
+      "cast_raise",
+      "cast_release",
+      "idle",
+      "hit",
+      "idle",
+      "victory",
+      "victory_b"
+    ],
+    "all_checks": "통과"
+  },
+  "actor4-5": {
+    "poses": 24,
+    "redrawn": 20,
+    "source_walk_and_front": 4,
+    "ground_y": [
+      44
+    ],
+    "extra_colors": [
+      [
+        74,
+        203,
+        228
+      ],
+      [
+        112,
+        141,
+        151
+      ],
+      [
+        197,
+        250,
+        255
+      ],
+      [
+        211,
+        225,
+        229
+      ],
+      [
+        233,
+        179,
+        66
+      ]
+    ],
+    "unique_poses": 24,
+    "sheet_size": [
+      144,
+      384
+    ],
+    "gif_frames": 16,
+    "duration_ms": 120,
+    "motion_order": [
+      "walk_a",
+      "walk_b",
+      "walk_c",
+      "walk_b",
+      "attack_windup",
+      "attack_strike",
+      "attack",
+      "attack_follow",
+      "cast_charge",
+      "cast_raise",
+      "cast_release",
+      "idle",
+      "hit",
+      "idle",
+      "victory",
+      "victory_b"
+    ],
+    "all_checks": "통과"
+  },
+  "actor4-6": {
+    "poses": 24,
+    "redrawn": 20,
+    "source_walk_and_front": 4,
+    "ground_y": [
+      44
+    ],
+    "extra_colors": [
+      [
+        74,
+        203,
+        228
+      ],
+      [
+        197,
+        250,
+        255
+      ],
+      [
+        233,
+        179,
+        66
+      ]
+    ],
+    "unique_poses": 24,
+    "sheet_size": [
+      144,
+      384
+    ],
+    "gif_frames": 16,
+    "duration_ms": 120,
+    "motion_order": [
+      "walk_a",
+      "walk_b",
+      "walk_c",
+      "walk_b",
+      "attack_windup",
+      "attack_strike",
+      "attack",
+      "attack_follow",
+      "cast_charge",
+      "cast_raise",
+      "cast_release",
+      "idle",
+      "hit",
+      "idle",
+      "victory",
+      "victory_b"
+    ],
+    "all_checks": "통과"
+  },
+  "actor4-7": {
+    "poses": 24,
+    "redrawn": 20,
+    "source_walk_and_front": 4,
+    "ground_y": [
+      44
+    ],
+    "extra_colors": [
+      [
+        74,
+        203,
+        228
+      ],
+      [
+        197,
+        250,
+        255
+      ],
+      [
+        233,
+        179,
+        66
+      ]
+    ],
+    "unique_poses": 24,
+    "sheet_size": [
+      144,
+      384
+    ],
+    "gif_frames": 16,
+    "duration_ms": 120,
+    "motion_order": [
+      "walk_a",
+      "walk_b",
+      "walk_c",
+      "walk_b",
+      "attack_windup",
+      "attack_strike",
+      "attack",
+      "attack_follow",
+      "cast_charge",
+      "cast_raise",
+      "cast_release",
+      "idle",
+      "hit",
+      "idle",
+      "victory",
+      "victory_b"
+    ],
+    "all_checks": "통과"
+  }
+}
