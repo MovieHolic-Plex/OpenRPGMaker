@@ -782,8 +782,11 @@ function treeLayeredFootprint(group: TileGroupMetadata, _tileset: TilesetDef): F
     };
   }
 
+  // 아래 세 모양은 합본 마을 칸 번호가 박혀 있다. 그룹 칸이 정확히 그 번호일 때만 쓴다 —
+  // id 에 「table-horizontal」만 들어 있으면 다른 칩셋·사용자 그룹도 234~236 을 찍었다(2026-09-27 전수 조사).
+  const exactly = (tiles: readonly number[]) => group.tileIds.length === tiles.length && tiles.every((tile, index) => group.tileIds[index] === tile);
   // 가로 탁자 234|235|236 (산포 시 최소 3칸)
-  if (id.includes("table-horizontal")) {
+  if (id.includes("table-horizontal") && exactly([234, 235, 236])) {
     return {
       w: 3,
       h: 1,
@@ -793,7 +796,7 @@ function treeLayeredFootprint(group: TileGroupMetadata, _tileset: TilesetDef): F
   }
 
   // 세로 탁자 144/174/204
-  if (id.includes("table-vertical")) {
+  if (id.includes("table-vertical") && exactly([144, 174, 204])) {
     return {
       w: 1,
       h: 3,
@@ -803,7 +806,7 @@ function treeLayeredFootprint(group: TileGroupMetadata, _tileset: TilesetDef): F
   }
 
   // 과일박스 202|203
-  if (id.includes("fruit-box")) {
+  if (id.includes("fruit-box") && exactly([202, 203])) {
     return {
       w: 2,
       h: 1,

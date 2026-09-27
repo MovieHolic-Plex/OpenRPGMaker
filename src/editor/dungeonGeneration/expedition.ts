@@ -19,8 +19,14 @@ export type DungeonLandmark = (typeof DUNGEON_LANDMARKS)[number];
 export type DungeonPressure = (typeof DUNGEON_PRESSURES)[number];
 
 type Mark = readonly { readonly dx: number; readonly tiles: readonly number[] }[];
-/** 표지 = 열 목록(dx 는 기준 칸에서의 가로 오프셋, tiles 는 위에서 아래로 upper 에 찍는다). */
+/**
+ * 표지 = 열 목록(dx 는 기준 칸에서의 가로 오프셋, tiles 는 위에서 아래로 upper 에 찍는다).
+ * 칸 번호는 EasyRPG 던전 시트(oprn_dungeon_* 재칠 포함) 그림 대조로 고른다(2026-09-27 전수 조사):
+ * 145·175 는 여신상(제단이 아니다), 446·476 이 석주(예전 446 은 「오르간」 라벨이었다), 298 은 나무 팻말,
+ * 265 는 룬 석판. 제단은 모든 테마에서 촛불 마법진 3×3(LAVA_ALTAR)을 쓴다.
+ */
 const MARK: Record<DungeonLandmark, Mark> = {
+  // 좁은 방 전용: 3×3 마법진이 들어가지 않을 때만 쓰는 여신상 성소. 경고로 알린다(아래 applyAltar).
   altar: [{ dx: 0, tiles: [145, 175] }],
   tower: [{ dx: 0, tiles: [446, 476] }],
   gate: [{ dx: 0, tiles: [298] }],
@@ -29,11 +35,23 @@ const MARK: Record<DungeonLandmark, Mark> = {
   beacon: [{ dx: -2, tiles: [446, 476] }, { dx: 0, tiles: [263, 293] }, { dx: 2, tiles: [446, 476] }],
 };
 /**
- * 용암 동굴의 보스 자리 = 제단 마법진(3×3, 441~443·471~473·27~29) — 여신상(145·175)이 아니다
- * (rpg-dungeons 문서: 「보스 자리는 제단·마법진」). 자리가 넉넉하면 양옆에 화로를 둔다.
+ * 제단 = 촛불 마법진(3×3, 441~443·471~473·27~29) — 여신상(145·175)이 아니다
+ * (rpg-dungeons 문서: 「보스 자리는 제단·마법진」). 예전엔 용암 동굴에서만 마법진을 쓰고 나머지 테마는
+ * 여신상을 「제단」으로 찍었다(2026-09-27 전수 조사). 자리가 넉넉하면 양옆에 화로를 둔다.
  */
 const LAVA_ALTAR: Mark = [{ dx: -1, tiles: [441, 471, 27] }, { dx: 0, tiles: [442, 472, 28] }, { dx: 1, tiles: [443, 473, 29] }];
 const LAVA_ALTAR_BRAZIERS: Mark = [{ dx: -2, tiles: [263, 293] }, ...LAVA_ALTAR, { dx: 2, tiles: [263, 293] }];
+
+/** 제단을 찍는다 — 마법진(3×3) → 좁으면 여신상 성소(1×2, 경고). 찍었으면 true. */
+function stampAltar(map: GameMap, open: (x: number, y: number) => boolean, at: { x: number; y: number }, reach: number, braziers: boolean, warnings: string[]): boolean {
+  if (braziers && stamp(map, open, at, LAVA_ALTAR_BRAZIERS, reach)) return true;
+  if (stamp(map, open, at, LAVA_ALTAR, reach + 1)) return true;
+  if (stamp(map, open, at, MARK.altar)) {
+    warnings.push("제단 마법진(3×3)이 들어갈 자리가 없어 여신상 성소(1×2)를 놓았다 — 방을 넓히면 마법진이 된다");
+    return true;
+  }
+  return false;
+}
 const FIXED = { type: "fixed" as const, speed: 3, frequency: 3 };
 const WANDER = { type: "random" as const, speed: 2, frequency: 3 };
 
@@ -61,7 +79,11 @@ function stamp(map: GameMap, open: (x: number, y: number) => boolean, at: { x: n
  */
 export function applySingleRoomLandmark(map: GameMap, plan: { landmark?: DungeonLandmark; linkMapId?: string; pressure?: DungeonPressure }, open: (x: number, y: number) => boolean): string[] {
   const warnings: string[] = [];
-  if (plan.landmark && !stamp(map, open, { x: Math.floor(map.width / 2), y: 5 }, MARK[plan.landmark])) {
+  const at = { x: Math.floor(map.width / 2), y: 5 };
+  const placed = plan.landmark === "altar"
+    ? stampAltar(map, open, at, 2, false, warnings)
+    : plan.landmark ? stamp(map, open, at, MARK[plan.landmark]) : true;
+  if (plan.landmark && !placed) {
     warnings.push(`표지(${plan.landmark})를 놓을 열린 바닥이 없다 — 방을 넓힌다`);
   }
   if (plan.linkMapId) warnings.push(`single-room 은 linkMapId 출입구를 놓지 않는다 — create_transfer_pair 로 ${plan.linkMapId} 와 잇는다`);
@@ -87,9 +109,9 @@ export function applyDungeonExpedition(project: Project, map: GameMap, plan: Exp
   for (const landing of landings) if (Math.hypot(landing.x - entrance.x, landing.y - entrance.y) > Math.hypot(far.x - entrance.x, far.y - entrance.y)) far = landing;
 
   if (plan.landmark) {
-    const altar = plan.landmark === "altar" && isLavaCave(connected);
+    const altar = plan.landmark === "altar";
     const placed = altar
-      ? stamp(map, open, far, LAVA_ALTAR_BRAZIERS, 4) || stamp(map, open, far, LAVA_ALTAR, 5)
+      ? stampAltar(map, open, far, 4, isLavaCave(connected), warnings)
       : stamp(map, open, far, MARK[plan.landmark]);
     if (!placed) warnings.push(altar ? "제단 마법진(3×3)을 놓을 열린 칸이 없다 — 가장 먼 방을 넓힌다" : "표지를 놓을 열린 칸이 없다");
   }

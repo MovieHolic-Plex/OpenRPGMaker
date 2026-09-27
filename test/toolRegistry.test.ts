@@ -246,8 +246,8 @@ describe("toolRegistry", () => {
     expect(npc?.pages?.[0]?.graphic.sprite?.id).toBe("tex_easyrpg_charset_people5");
   });
 
-  it("무매칭 graphic.query는 기본 주민 그래픽으로 대체되고 경고로 알린다", () => {
-    // 2026-09-18: 예전엔 graphic-not-found 로 거부했다. 서 있는 NPC 가 없는 NPC 보다 낫다.
+  it("무매칭 graphic.query는 주민 그림으로 대체하지 않고 거절하며 후보 경로를 알린다", () => {
+    // 2026-09-27: 대체+경고를 되돌렸다(조수가 경고를 무시해 사물·함정이 마을 사람이 됐다).
     const project = createEmptyToolProject();
     const ctx: ToolContext = { project };
     runTool(ctx, "create_map", { name: "빈맵", width: 8, height: 8, id: "m_blank" }, { dryRun: false });
@@ -257,11 +257,10 @@ describe("toolRegistry", () => {
       { mapId: "m_blank", x: 3, y: 3, name: "미지", graphic: { query: "존재하지않는리소스xyz" }, pages: [{ lines: ["?"] }] },
       { dryRun: false }
     );
-    expect(result.ok, result.summary).toBe(true);
-    const warnings = [...(result.warnings ?? []), ...(result.diff?.warnings ?? [])];
-    expect(warnings.some((w) => w.includes("존재하지않는리소스xyz") && w.includes("list_npc_graphics"))).toBe(true);
-    const npc = ctx.project.maps.m_blank.events.find((event) => event.id === (result.data as { eventId: string }).eventId);
-    expect(npc?.pages?.[0]?.graphic.sprite?.id).toMatch(/^tex_easyrpg_charset_/);
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.code).toBe("graphic-not-found");
+    expect(result.issues?.[0]?.message).toContain("존재하지않는리소스xyz");
+    expect(result.issues?.[0]?.message).toContain("list_npc_graphics");
   });
 
   it("list_resources가 tile 검색을 지원한다(표지판 → tile:320)", () => {

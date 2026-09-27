@@ -98,6 +98,16 @@ function charsetKeyShape(key: string): string {
   return key.toLowerCase().replace(/[^a-z0-9]/g, "").replace(/^tex/, "");
 }
 
+/** textureKey 자리에 시트 키가 아닌 라벨이 왔을 때 검색이 가리키는 시트와 칸. 시트 키면 null. */
+function searchedCharsetSelection(input: string): CharsetGraphicSelection | null {
+  const trimmed = input.trim();
+  if (!trimmed || KNOWN_CHARSET_TEXTURE_KEYS.some((key) => key.toLowerCase() === trimmed.toLowerCase())) return null;
+  const shape = charsetKeyShape(trimmed);
+  if (shape && KNOWN_CHARSET_TEXTURE_KEYS.some((key) => charsetKeyShape(key) === shape)) return null;
+  const top = searchResources("charset", trimmed)[0];
+  return top ? parseCharsetSearchId(top.id) : null;
+}
+
 function resolveCharsetTextureKeyCandidate(input: string): string | null {
   const trimmed = input.trim();
   const exact = KNOWN_CHARSET_TEXTURE_KEYS.find((textureKey) => textureKey === trimmed);
@@ -135,7 +145,9 @@ export function resolveCharsetTextureKey(input: string): string {
 }
 
 function resolveCharsetGraphicSelection(textureKey: string, characterIndex: number | undefined): CharsetGraphicSelection {
-  const parsed = parseCharsetSearchId(textureKey);
+  // textureKey 자리에 「보물상자」 같은 라벨을 넣으면 검색이 칸까지 찾는다. 시트만 받고 칸을 0 으로 두면
+  // 보물상자가 나무 문(object1#0)이 됐다(2026-09-27 전수 조사). 검색 결과의 칸을 함께 쓴다.
+  const parsed = parseCharsetSearchId(textureKey) ?? searchedCharsetSelection(textureKey);
   const resolvedTextureKey = resolveCharsetTextureKey(textureKey);
   const resolvedCharacterIndex = parsed && (characterIndex === undefined || characterIndex === 0) ? parsed.characterIndex : characterIndex ?? 0;
   return { textureKey: resolvedTextureKey, characterIndex: resolvedCharacterIndex };
@@ -151,30 +163,19 @@ export function charsetGraphic(textureKey: string, characterIndex: number | unde
   };
 }
 
-/** 그림 없는 조사 사물의 보석 표식 — place_examine_hotspots(#1370) 와 upsert_event 맨바닥 기본이 공유하는 정본. */
-export function examineMarkGraphic(): EventPageGraphic {
-  return charsetGraphic("tex_easyrpg_charset_object2", 6);
-}
-
 // query 문자열을 별칭/자유 질의 매처로 해석해 charset 그래픽을 만든다.
-export type GraphicQueryResolveOptions = NpcGraphicPickOptions & {
-  /** 검색어가 카탈로그에 없어 기본 주민 그래픽으로 대체했을 때 호출된다(경고 전달용). */
-  readonly onFallback?: (message: string) => void;
-};
+export type GraphicQueryResolveOptions = NpcGraphicPickOptions;
 
 export function resolveGraphicQuery(query: string, pick?: GraphicQueryResolveOptions): EventPageGraphic {
-  // 2026-09-18 거부 대신 기본값: "경비병" 같은 라벨이 카탈로그에 없으면 실패하던 것을 기본 주민 그래픽으로 대체한다.
-  // 어떤 그림이든 서 있는 NPC 가 없는 NPC 보다 낫다. 정확한 그림이 필요하면 list_npc_graphics 로 고르면 된다.
-  const { onFallback, ...pickOptions } = pick ?? {};
-  let entry = pickNpcGraphic(query, pickOptions);
-  if (!entry) {
-    entry = pickNpcGraphic("villager", pickOptions) ?? pickNpcGraphic("주민", {});
-    if (entry) onFallback?.(`graphic.query "${query}" 에 맞는 charset 이 없어 기본 주민 그래픽으로 대체했습니다. 정확한 그림은 list_npc_graphics 로 고르세요.`);
-  }
+  // 못 찾으면 거절한다. 2026-09-18 부터 주민 그림으로 대체하고 경고만 남겼는데, 조수는 경고를 읽지 않아
+  // 「가시덫」「경비병」「제단」이 전부 마을 사람으로 저장됐다(2026-09-27 전수 조사). 거절 문구에 후보를 준다.
+  const entry = pickNpcGraphic(query, pick ?? {});
   if (!entry) {
     const examples = npcGraphicExampleLabels(12).join(", ");
     throw new ToolError(
-      `그래픽 검색어에 맞는 charset 리소스를 찾지 못했습니다: "${query}". 후보 라벨 예시: ${examples}. list_npc_graphics 또는 list_resources(kind:"charset")로 후보를 조회하거나 graphic을 {textureKey, characterIndex}로 직접 지정하세요.`,
+      `그래픽 검색어에 맞는 charset 을 찾지 못했습니다: "${query}". 다른 그림으로 대체하지 않습니다. ` +
+        `사람이면 list_npc_graphics 로 고르고, 물건이면 그 칸에 place_props·paint_tiles 로 물건 타일을 깔고 graphic:{transparent:true} 를 주세요. ` +
+        `charset 라벨 예시: ${examples}.`,
       { code: "graphic-not-found" }
     );
   }
