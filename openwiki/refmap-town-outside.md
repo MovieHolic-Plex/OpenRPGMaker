@@ -62,8 +62,8 @@ bun scripts/content/refmap/publish-refmap-places.mts         # 공용 SQLite 에
 |---|---|---|---|
 | `refmap-snow` 설원 마을 | 雪マップ | A1 A2 A3 A4 B C D | 설원 마을 · 설산 숲길 |
 | `refmap-interior` 실내 + 마녀의 방 | 内装用データ + 魔女の部屋 | A1 A2 A4 B C(마녀) A5 | 여관 1층 · 마녀의 집 · 농가 · 잡화점 · 저택 서재 · 겨울 축제 집 · 성 알현실 · 성 지하 감옥 · 저택 객실동 · 연회장 (10곳) |
-| `refmap-dungeon-extra` 던전 칩 추가 | 中間データ ダンジョンチップ追加 | A1 A2 A4 B | 바위 동굴 · 지하 호수 |
-| `refmap-south-island` 남쪽 섬 | 南の島 | A1 A2 A4 B A5 | 야자수 해변 · 정글 언덕 |
+| `refmap-dungeon-extra` 던전 칩 추가 | 中間データ ダンジョンチップ追加 + 단품 확장 | A1 A2 A4 B + A2_Extra C | 바위 동굴 · 지하 호수 · 무너진 유적 신전 · 지하 묘지 · 빛 드는 샘 동굴 |
+| `refmap-south-island` 남쪽 섬 | 南の島 + 단품 확장 | A1 A2 A4 B A5 + A2_Extra C | 야자수 해변 · 정글 언덕 · 섬 마을 · 해변 어시장 · 산호 석호 |
 | `refmap-volcano` 화산 | 火山タイルまとめ | A1 A2 A4 B A5 | 용암 동굴 · 화산 기슭 |
 | `refmap-crayon` 크레용풍 | クレヨン風マップデータ | A1 A2 A3 B A5 | 들판 마을 · 숲 |
 | `refmap-photo` 사진 가공 | 写真加工タイルセット | A2 A4 B | 들판 · 숲길 |
@@ -99,6 +99,10 @@ bun scripts/content/refmap/publish-refmap-places.mts         # 공용 SQLite 에
   - `겹침:` — 큰 물체끼리 막힘 칸 겹침. 낱장 `tile` op 는 막힘(걷는 무늬는 `"pass": true`).
   - `set-tool space` 실내 합격선을 짧은 변 ≥3 빈칸 9칸으로 조였다.
   - 흐름: 고치지 않는 적대적 검수 에이전트(원본 크기 구역 crop + 엔진 통행 재계산) → 수리 → 재검수, 22장 3회 만에 전부 통과.
+- **세트 확장 시트 (6차, 2026-09-28).** 세트 시트만으로 꾸밀 거리가 모자라 같은 작가의 MV 단품(`material/mv/tile-single/`)을
+  `_packs/<세트>/` 의 `A2_<태그>_Extra.png`(오토타일 덩이)·`C_<태그>.png`(물체)로 모았다(로컬만, 커밋 금지). `sheets.json` 에 source 로 원본 파일명.
+  던전: 유적 기둥·폐허 구멍·무덤·고목·낮은 턱·샘 / 섬: 움집(竪穴住居)·해안 얕은 물·모래·바구니 식재료·열대 나무·시장 소품. 가이드에 「꾸미기 조립법」.
+  검사 추가: `set-tool check` 「같은 칸 다른 kind」, render 「막혀야 할 물체 칸이 뚫림」·「모양: 네모난 물 덩이」(수조·수로 제외).
 - 굴 입구처럼 윗줄이 대지에 닿는 `door` 물체는 preset `solid` 로 윗줄을 막는다(`tilesetPreset.ts objectCellSolid` 가 door 의 solid 를 읽는다).
   창살문·벽을 판 출입구는 두 줄 다 지나간다.
 - 약점: 복도가 긴 실내(여관 동쪽, 객실동, 서재 회랑), 화산 길 색이 모래와 비슷함, 사진 들판 샘이 네모에 가깝다.

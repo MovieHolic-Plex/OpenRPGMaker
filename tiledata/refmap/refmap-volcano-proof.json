@@ -7,28 +7,28 @@
   "objectKits": 23,
   "houseKits": 0,
   "autotileGroups": 32,
-  "bytes": 4318360,
+  "bytes": 4317717,
   "maps": {
     "lava_cave": {
       "place": "shared_refmap_volcano_lava_cave",
       "size": "34×23",
       "objects": 17,
       "houses": 0,
-      "renderSha": "f7cfc2a4e2d4ab0ed9e46afa159abcaa443562499ee937d43b3df4fb5742ddc4"
+      "renderSha": "f12effdc16b6fc7f43beda8603d0eee42121493ec687ee0f28d4bbe4c6a0df17"
     },
     "volcano_foothill": {
       "place": "shared_refmap_volcano_volcano_foothill",
       "size": "23×20",
       "objects": 49,
       "houses": 0,
-      "renderSha": "bfd645074a95e48090ce82e7bd05d53b67cda2e0f2d8fdc1a5f6ca02224f4bf0"
+      "renderSha": "65c39976384fa49b3505ecdad32ca914f7b5865f531cf9a6f4f4c3d58d078ff0"
     }
   },
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "3e748bb079937e910d5aaf9db8bde5d40514cc639ef7a679ed4c7aff640b81ef",
+  "revision": "b4e0010f2e9ecb88adaaff86d587f87498cc5a0726a251bf2f505ded75bc5abe",
   "reloaded": true,
-  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-volcano-2026-09-27T20-03-43-281Z.sqlite",
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-volcano-2026-09-27T21-34-25-492Z.sqlite",
   "otherLibraries": 36,
   "otherLibrariesUnchanged": true,
-  "publishedAt": "2026-09-27T20:04:01.465Z"
+  "publishedAt": "2026-09-27T21:34:46.217Z"
 }

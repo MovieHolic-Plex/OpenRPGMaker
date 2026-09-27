@@ -7,7 +7,7 @@
   "objectKits": 194,
   "houseKits": 0,
   "autotileGroups": 85,
-  "bytes": 12018271,
+  "bytes": 12019979,
   "maps": {
     "refmap_banquet_hall": {
       "place": "shared_refmap_interior_refmap_banquet_hall",
@@ -21,7 +21,7 @@
       "size": "36×19",
       "objects": 61,
       "houses": 0,
-      "renderSha": "d9777bd1344de27d652de22a331a8f97bc3b9d8041a7582f8393c9413398ad38"
+      "renderSha": "35538f28b6f4933a23208dedadbd7afd9f5ac69848ae182db35fc066cd7cb985"
     },
     "refmap_farmhouse": {
       "place": "shared_refmap_interior_refmap_farmhouse",
@@ -81,10 +81,10 @@
     }
   },
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "ee9bc6b2e8bf660f76d0b4d5c717f3d49a03bbc79a78654fa1334690ef78c9f5",
+  "revision": "a652c05becf3948860e385e9727d304a3f0fae035ef44a0d0cffb0debedb1190",
   "reloaded": true,
-  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-interior-2026-09-27T20-02-50-442Z.sqlite",
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-interior-2026-09-27T21-36-26-664Z.sqlite",
   "otherLibraries": 36,
   "otherLibrariesUnchanged": true,
-  "publishedAt": "2026-09-27T20:03:06.353Z"
+  "publishedAt": "2026-09-27T21:36:46.560Z"
 }
