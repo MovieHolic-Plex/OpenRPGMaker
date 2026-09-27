@@ -3,25 +3,24 @@ import { isForestHarmonyTileset } from "@/project/defaults/forestHarmony";
 // 마을 지형 고저차 — 언덕(단구)을 계획하고 「합본 마을+레트로 월드맵」 혼합 칩셋의 절벽 어휘로 그린다.
 //
 // 왜 있는가(2026-09-18): 사용자 「언덕도 만들고 고저차도 만들고 대각 언덕도 만들어라」. 합본 마을 칩셋에는
-// 자연 절벽 타일이 없고, 레트로 월드맵 반쪽(ID +480)에 잔디/암벽 45° 경계 4장(18·19·48·49)과 암벽 3×3
-// (171~232) 이 있다. 이 모듈은 그 어휘만 쓴다 — 다른 칩셋에서는 아무것도 그리지 않는다.
+// 자연 절벽 타일이 없고, 레트로 월드맵 반쪽(ID +480)에 45° 경계 18·19·48·49 와 암벽 171~232 가 있다.
+// 이 모듈은 그 어휘만 쓴다 — 다른 칩셋에서는 아무것도 그리지 않는다.
 //
-// 그리는 문법은 「장소」의 완성 참고 맵 「비취 대계곡」(regionReferences/emerald-basin.json, 월드맵 칩셋)을 따른다:
-// 대지 윗선은 139(잔디에 절벽 테), 절벽 면은 172(윗줄)…202(바닥줄), 45° 구간은 윗선 18/19 · 몸통 231 · 아랫선 48/49,
-// 길이 면을 내려가는 자리는 374(돌계단). 월드맵 칩셋과 레트로 월드맵 칩셋은 같은 RM2K 배치라 번호가 그대로 대응한다.
+// 그리는 문법은 「비취 대계곡」(regionReferences/emerald-basin.json) 손배치 절벽에서 뽑은 남향 벽 문법(cliffGrammar.ts)이다.
+// 2026-09-27: 예전엔 대지를 한 칸 팽창한 띠(231)를 북·서·동에도 둘러, 참고 맵에 없는 이웃 쌍이 수백 개 나왔다
+// (오른쪽 대각 몸통 231, 231 위 잔디, 108/110 세로 줄). 참고 맵의 절벽은 남쪽 벽뿐이라 지금은 대지의 남쪽 윤곽만 벽으로 세운다.
 //
-// 기하: 언덕(대지)은 모서리를 45° 로 깎은 직사각형(chamfered rect)의 합집합이다. 꼭짓점이 칸 모서리(정수)에
-// 놓이므로 45° 변은 칸을 정확히 반으로 가르고, 그 칸이 대각 타일이 된다. 대지 Q 를 체비셰프 1 만큼 팽창한
-// Q' 와의 차 Q'∖Q 가 암벽 띠(1칸, 45° 구간은 대각 타일+암벽 1칸+대각 타일)이고, 남쪽으로 향한 곧은 변 아래에는
-// 암벽을 한 줄 더 얹어 절벽 면을 2칸으로 세운다(위에서 내려다보는 RM2K 관례 — 남면만 보인다).
+// 기하: 언덕(대지)은 모서리를 45° 로 깎은 직사각형(chamfered rect)의 합집합이다. 칸 경계 x 마다 남쪽 윤곽 행을 재서
+// 윗선으로 삼고, 그 아래 2칸(172 한 줄 + 202 한 줄)이 벽이다. 맵·구역 가장자리가 아닌 벽 끝은 비탈로 땅에 묻는다.
 //
-// 통행: 암벽·대각 타일은 하네스가 통행 불가로 본다. 대지 위·아래는 잔디 그대로(240)라 다른 도구(나무·밭)가
-// 평지처럼 다룬다. 길은 띠를 지나갈 수 있고, 지난 자리는 모래 길이 되어 비탈(램프)로 읽힌다.
+// 통행: 벽(몸통·발·대각 윗선)은 막힌다. 평평한 윗선 139 와 대지 위·북쪽은 잔디 그대로라 다른 도구가 평지처럼 다룬다.
+// 길은 벽을 지나갈 수 있고, 평평한 열을 지난 자리는 돌계단 374 가 된다.
 
 import { mulberry32, type Rng } from "@/util/rng";
 import { RETRO_WORLD_CLIFF_WALKABLE_TILES, RETRO_WORLD_TILE_OFFSET, TILE } from "@/project/defaults/constants";
 import type { GameMap, TilesetDef } from "@/project/types";
 import type { Rect } from "./constants";
+import { buildWall, CLIFF_TILE, type WallCell } from "./cliffGrammar";
 
 export const RELIEF_STYLES = ["none", "hills"] as const;
 export type ReliefStyle = (typeof RELIEF_STYLES)[number];
@@ -81,7 +80,15 @@ export interface Plateau {
   readonly parts: readonly ChamferRect[];
 }
 
-export type ReliefCell = "top" | "rock" | "face" | "diagNE" | "diagNW" | "diagSW" | "diagSE" | "ground";
+/** 칸 분류 — 대지 윗면, 평평한 윗선(139, 걸을 수 있음), 벽(몸통·발·대각 윗선), 평지. */
+export type ReliefCell = "top" | "lip" | "wall" | "ground";
+
+/** 벽 한 열 — 돌계단 시공이 열 단위로 바꾼다. */
+export interface ReliefColumn {
+  readonly x: number;
+  readonly flat: boolean;
+  readonly cells: readonly WallCell[];
+}
 
 export interface ReliefPlan {
   readonly mapWidth: number;
@@ -90,8 +97,11 @@ export interface ReliefPlan {
   readonly level: Uint8Array;
   /** 칸별 분류. */
   readonly cells: ReliefCell[];
-  /** 집·밭·옆길이 못 쓰는 칸(암벽·절벽 면·대각) — 길은 지나갈 수 있다. */
+  /** 칸별 절벽 타일(원본 ID, -1 = 없음). */
+  readonly tiles: Int16Array;
+  /** 집·밭·옆길이 못 쓰는 칸(벽) — 길은 지나갈 수 있다. */
   readonly cliff: ReadonlySet<number>;
+  readonly columns: readonly ReliefColumn[];
   readonly plateaus: readonly Plateau[];
   readonly notes: readonly string[];
 }
@@ -109,13 +119,7 @@ export interface ReliefArgs {
 
 // ───────────────────────── 기하 ─────────────────────────
 
-/** 네 표본점 — 두 대각선(y=x, y=1-x) 어느 쪽에도 놓이지 않게 비대칭으로 잡았다. */
-const SAMPLES: readonly (readonly [number, number])[] = [[0.2, 0.3], [0.7, 0.2], [0.3, 0.8], [0.8, 0.7]];
-const MASK_NW = 0b0011; // P1,P2 → 북서 반
-const MASK_SW = 0b0101; // P1,P3 → 남서 반
-const MASK_NE = 0b1010; // P2,P4 → 북동 반
-const MASK_SE = 0b1100; // P3,P4 → 남동 반
-
+/** 칸 윗면 중심이 도형 안인가. */
 function insideChamfer(r: ChamferRect, px: number, py: number): boolean {
   if (px <= r.x0 || px >= r.x1 || py <= r.y0 || py >= r.y1) return false;
   if (px - r.x0 + (py - r.y0) < r.nw) return false;
@@ -125,39 +129,14 @@ function insideChamfer(r: ChamferRect, px: number, py: number): boolean {
   return true;
 }
 
-function dilate(r: ChamferRect): ChamferRect {
-  return { ...r, x0: r.x0 - 1, y0: r.y0 - 1, x1: r.x1 + 1, y1: r.y1 + 1 };
+/** 칸 경계 x=e 에서 도형 남쪽 윤곽의 행(e 가 도형 가로 범위 밖이면 undefined). 꼭짓점이 정수라 결과도 정수다. */
+function southEdgeAt(r: ChamferRect, e: number): number | undefined {
+  if (e < r.x0 || e > r.x1) return undefined;
+  return r.y1 - Math.max(0, r.sw - (e - r.x0), r.se - (r.x1 - e));
 }
 
-function sampleMask(parts: readonly ChamferRect[], x: number, y: number): number {
-  let mask = 0;
-  for (const [i, [dx, dy]] of SAMPLES.entries()) {
-    if (parts.some((part) => insideChamfer(part, x + dx, y + dy))) mask |= 1 << i;
-  }
-  return mask;
-}
-
-function popcount(mask: number): number {
-  let n = 0;
-  for (let m = mask; m > 0; m >>= 1) n += m & 1;
-  return n;
-}
-
-type HalfKind = "full" | "empty" | "NE" | "NW" | "SW" | "SE";
-
-function halfKind(mask: number): HalfKind {
-  if (mask === 0b1111) return "full";
-  if (mask === 0) return "empty";
-  if (mask === MASK_NE) return "NE";
-  if (mask === MASK_NW) return "NW";
-  if (mask === MASK_SW) return "SW";
-  if (mask === MASK_SE) return "SE";
-  // 두 도형이 겹친 이상한 칸 — 셋 이상이면 채우고, 하나 이하면 비운다. 대각 맞은편 둘은 채운다.
-  return popcount(mask) >= 2 ? "full" : "empty";
-}
-
-const OPPOSITE: Record<Exclude<HalfKind, "full" | "empty">, ReliefCell> = { NE: "diagSW", NW: "diagSE", SW: "diagNE", SE: "diagNW" };
-const SAME: Record<Exclude<HalfKind, "full" | "empty">, ReliefCell> = { NE: "diagNE", NW: "diagNW", SW: "diagSW", SE: "diagSE" };
+/** 벽 높이(윗선 아래 칸 수) — 참고 맵의 1단 절벽은 172 한 줄 + 202 한 줄. */
+const WALL_HEIGHT = 2;
 
 // ───────────────────────── 계획 ─────────────────────────
 
@@ -242,120 +221,84 @@ export function planRelief(args: ReliefArgs): ReliefPlan {
   return rasterize(plateaus, mapWidth, mapHeight, area, notes);
 }
 
-/** 대지 목록을 칸 분류·높이·절벽 집합으로 굽는다. 높은 단이 낮은 단 위에 덧그려진다. */
+
+/** 대지 목록을 칸 분류·높이·절벽 타일로 굽는다. 높은 단이 낮은 단 위에 덧그려진다. */
 export function rasterize(plateaus: readonly Plateau[], mapWidth: number, mapHeight: number, area: Rect, notes: readonly string[] = []): ReliefPlan {
   const level = new Uint8Array(mapWidth * mapHeight);
   const cells: ReliefCell[] = new Array<ReliefCell>(mapWidth * mapHeight).fill("ground");
+  const tiles = new Int16Array(mapWidth * mapHeight).fill(-1);
   const cliff = new Set<number>();
-  const sorted = [...plateaus].sort((a, b) => a.level - b.level);
-  for (const plateau of sorted) {
-    const dilated = plateau.parts.map(dilate);
-    const local: ReliefCell[] = new Array<ReliefCell>(mapWidth * mapHeight).fill("ground");
-    const bounds = plateau.parts.map((part) => chamferBounds(part, 2));
-    for (const b of bounds) {
-      for (let y = Math.max(0, b.y); y < Math.min(mapHeight, b.y + b.h); y += 1) {
-        for (let x = Math.max(0, b.x); x < Math.min(mapWidth, b.x + b.w); x += 1) {
-          const index = y * mapWidth + x;
-          if (local[index] !== "ground") continue;
-          const top = halfKind(sampleMask(plateau.parts, x, y));
-          if (top === "full") { local[index] = "top"; continue; }
-          if (top !== "empty") { local[index] = SAME[top]; continue; }
-          const band = halfKind(sampleMask(dilated, x, y));
-          if (band === "full") local[index] = "rock";
-          else if (band !== "empty") local[index] = OPPOSITE[band];
-        }
-      }
-    }
-    // 남쪽 절벽 면 — 곧은 남쪽 변 아래(암벽 띠 바로 아래 칸이 평지이고, 그 위 두 칸이 띠·대지)에 한 줄 더.
-    for (let y = 2; y < mapHeight; y += 1) {
-      for (let x = 0; x < mapWidth; x += 1) {
+  const columns: ReliefColumn[] = [];
+  const ax0 = Math.max(0, area.x), ax1 = Math.min(mapWidth, area.x + area.w);
+  const ay0 = Math.max(0, area.y), ay1 = Math.min(mapHeight, area.y + area.h);
+  const inArea = (x: number, y: number) => x >= ax0 && x < ax1 && y >= ay0 && y < ay1;
+  let walls = 0;
+  for (const plateau of [...plateaus].sort((a, b) => a.level - b.level)) {
+    // 윗면 — 칸 중심이 도형 안.
+    for (let y = ay0; y < ay1; y += 1) {
+      for (let x = ax0; x < ax1; x += 1) {
+        if (!plateau.parts.some((part) => insideChamfer(part, x + 0.5, y + 0.5))) continue;
         const index = y * mapWidth + x;
-        if (local[index] !== "ground") continue;
-        const up = local[index - mapWidth]!, up2 = local[index - 2 * mapWidth]!;
-        if (up === "rock" && up2 === "top") local[index] = "face";
+        cells[index] = "top"; tiles[index] = -1; level[index] = plateau.level; cliff.delete(index);
       }
     }
-    for (let index = 0; index < local.length; index += 1) {
-      const kind = local[index]!;
-      if (kind === "ground") continue;
-      const x = index % mapWidth, y = Math.floor(index / mapWidth);
-      if (x < area.x || y < area.y || x >= area.x + area.w || y >= area.y + area.h) continue;
-      cells[index] = kind;
-      if (kind === "top") { level[index] = plateau.level; cliff.delete(index); continue; }
-      level[index] = Math.max(level[index]!, plateau.level - 1);
-      cliff.add(index);
+    // 남쪽 윤곽 — 경계 e 마다 겹친 도형 중 가장 남쪽 변. 연속 구간 하나가 벽 하나다.
+    const edge = (e: number): number | undefined => {
+      let best: number | undefined;
+      for (const part of plateau.parts) {
+        const v = southEdgeAt(part, e);
+        if (v !== undefined && (best === undefined || v > best)) best = v;
+      }
+      return best;
+    };
+    let e = ax0;
+    while (e <= ax1) {
+      if (edge(e) === undefined) { e += 1; continue; }
+      const xa = e;
+      while (e + 1 <= ax1 && edge(e + 1) !== undefined) e += 1;
+      const xb = e;
+      e += 1;
+      if (xb - xa < 1) continue;
+      const rawLip = Array.from({ length: xb - xa + 1 }, (_, i) => edge(xa + i)!);
+      // 구역·맵 가장자리에서 잘린 끝은 드러나지 않는다(벽이 화면 밖으로 이어진다).
+      const exposedLeft = xa > ax0 || plateau.parts.every((part) => part.x0 >= xa);
+      const exposedRight = xb < ax1 || plateau.parts.every((part) => part.x1 <= xb);
+      const wall = buildWall({ xa, xb, rawLip, height: WALL_HEIGHT, exposedLeft, exposedRight });
+      walls += 1;
+      const byColumn = new Map<number, WallCell[]>();
+      for (const cell of wall.cells) {
+        if (!inArea(cell.x, cell.y)) continue;
+        const index = cell.y * mapWidth + cell.x;
+        tiles[index] = cell.tile;
+        if (cell.role === "lip") {
+          cells[index] = "lip"; level[index] = plateau.level; cliff.delete(index);
+        } else {
+          cells[index] = "wall"; level[index] = plateau.level - 1; cliff.add(index);
+        }
+        byColumn.set(cell.x, [...byColumn.get(cell.x) ?? [], cell]);
+      }
+      for (const [x, list] of byColumn) columns.push({ x, flat: list.some((cell) => cell.role === "lip") && list.some((cell) => cell.role === "foot") && !list.some((cell) => cell.tile === CLIFF_TILE.capLeftFace || cell.tile === CLIFF_TILE.capRightFoot), cells: list });
     }
   }
-  const counts = { top: 0, rock: 0, face: 0, diag: 0 };
-  for (const kind of cells) {
-    if (kind === "top") counts.top += 1;
-    else if (kind === "rock") counts.rock += 1;
-    else if (kind === "face") counts.face += 1;
-    else if (kind !== "ground") counts.diag += 1;
-  }
+  const counts = { top: 0, lip: 0, wall: 0 };
+  for (const kind of cells) if (kind !== "ground") counts[kind] += 1;
   return {
-    mapWidth, mapHeight, level, cells, cliff, plateaus,
-    notes: [...notes, `고저차: 대지 ${counts.top}칸 암벽 ${counts.rock} 면 ${counts.face} 대각 ${counts.diag}`],
+    mapWidth, mapHeight, level, cells, tiles, cliff, columns, plateaus,
+    notes: [...notes, `고저차: 대지 ${counts.top}칸 윗선 ${counts.lip} 벽 ${counts.wall} (남향 벽 ${walls}개)`],
   };
 }
 
 // ───────────────────────── 시공 ─────────────────────────
 
-function isTopLike(kind: ReliefCell | undefined): boolean {
-  return kind === "top" || kind === "diagNE" || kind === "diagNW" || kind === "diagSW" || kind === "diagSE";
-}
-
-function isBand(kind: ReliefCell | undefined): boolean {
-  return kind === "rock" || kind === "face";
-}
-
 /**
- * 분류를 lower 레이어에 그린다(비취 대계곡 문법). 잔디(240) 칸만 바꾼다 — 물·기존 시공은 건드리지 않는다.
- *  · 대지 가장자리 칸: 남쪽에 띠 → 139(윗선, 모서리 138/140), 북쪽 → 79(78/80), 서 → 108, 동 → 110.
- *  · 띠: 남쪽 면 첫 줄 172, 그 아래 face 줄 202, 나머지(북·서·동 띠, 대각 몸통) 231.
- *  · 대각: 18/19/48/49 — 잔디가 있는 쪽이 이름.
+ * 절벽 타일을 lower 레이어에 그린다(비취 대계곡 남향 벽 문법, cliffGrammar.ts). 잔디(240) 칸만 바꾼다 — 물·기존 시공은 건드리지 않는다.
  */
 export function paintRelief(map: GameMap, plan: ReliefPlan, tileOffset: number = RETRO_WORLD_TILE_OFFSET): { painted: number } {
   let painted = 0;
-  const W = map.width, H = map.height;
-  const kindAt = (x: number, y: number): ReliefCell | undefined =>
-    x < 0 || y < 0 || x >= W || y >= H ? undefined : plan.cells[y * W + x];
-  const levelAt = (x: number, y: number): number => (x < 0 || y < 0 || x >= W || y >= H ? 0 : plan.level[y * W + x]!);
-  for (let index = 0; index < plan.cells.length; index += 1) {
-    const kind = plan.cells[index]!;
-    if (kind === "ground") continue;
+  for (let index = 0; index < plan.tiles.length; index += 1) {
+    const tile = plan.tiles[index]!;
+    if (tile < 0) continue;
     if ((map.lowerTiles[index] ?? TILE.EMPTY) !== TILE.GRASS) continue;
-    const x = index % W, y = Math.floor(index / W);
-    let tile: number | undefined;
-    switch (kind) {
-      case "top": {
-        // 가장자리 테 — 이 칸보다 낮은 띠가 어느 쪽에 붙었는가.
-        const lv = levelAt(x, y);
-        const south = isBand(kindAt(x, y + 1)) && levelAt(x, y + 1) < lv;
-        const north = isBand(kindAt(x, y - 1)) && levelAt(x, y - 1) < lv;
-        const west = isBand(kindAt(x - 1, y)) && levelAt(x - 1, y) < lv;
-        const east = isBand(kindAt(x + 1, y)) && levelAt(x + 1, y) < lv;
-        if (south) tile = west ? RETRO_CLIFF.lipSW : east ? RETRO_CLIFF.lipSE : RETRO_CLIFF.lip;
-        else if (north) tile = west ? RETRO_CLIFF.edgeNW : east ? RETRO_CLIFF.edgeNE : RETRO_CLIFF.edgeN;
-        else if (west) tile = RETRO_CLIFF.edgeW;
-        else if (east) tile = RETRO_CLIFF.edgeE;
-        break;
-      }
-      case "rock": {
-        // 남쪽 면 첫 줄인가 — 바로 위가 대지(또는 대지 대각)이고 그 대지가 이 칸보다 높다.
-        const above = kindAt(x, y - 1);
-        const southFace = isTopLike(above) && levelAt(x, y - 1) > levelAt(x, y);
-        const below = kindAt(x, y + 1);
-        tile = southFace ? (below === "face" ? RETRO_CLIFF.faceTop : RETRO_CLIFF.faceBottom) : RETRO_CLIFF.body;
-        break;
-      }
-      case "face": tile = RETRO_CLIFF.faceBottom; break;
-      case "diagNE": tile = RETRO_CLIFF.grassNE; break;
-      case "diagNW": tile = RETRO_CLIFF.grassNW; break;
-      case "diagSW": tile = RETRO_CLIFF.grassSW; break;
-      case "diagSE": tile = RETRO_CLIFF.grassSE; break;
-    }
-    if (tile === undefined) continue;
     map.lowerTiles[index] = tile + tileOffset;
     map.upperTiles[index] = TILE.EMPTY;
     painted += 1;
@@ -364,25 +307,22 @@ export function paintRelief(map: GameMap, plan: ReliefPlan, tileOffset: number =
 }
 
 /**
- * 길이 절벽 면(남쪽 면 줄)을 지나는 칸을 돌계단으로 바꾼다 — 비취 대계곡의 374. 북·서·동 띠와 대각 구간을
- * 지난 길은 모래 그대로(비탈로 읽힌다). 길 시공 뒤에 부른다.
+ * 길이 지나간 평평한 벽 열의 몸통·발을 돌계단 374 로 바꾼다 — 참고 맵처럼 윗선 칸은 길 그대로 둔다.
+ * 대각·벽 끝 열을 지난 길은 모래 그대로(비탈로 읽힌다). 길 시공 뒤에 부른다.
  */
 export function paintReliefStairs(map: GameMap, plan: ReliefPlan, isRoadTile: (tile: number) => boolean, tileOffset: number = RETRO_WORLD_TILE_OFFSET): number {
-  const W = map.width;
   let stairs = 0;
-  for (let index = 0; index < plan.cells.length; index += 1) {
-    const kind = plan.cells[index]!;
-    if (kind !== "rock" && kind !== "face") continue;
-    if (!isRoadTile(map.lowerTiles[index] ?? TILE.EMPTY)) continue;
-    const x = index % W, y = Math.floor(index / W);
-    // 남쪽 면 줄만: 위쪽으로 띠를 거슬러 올라가면 대지가 나오고, 그 대지가 더 높다.
-    let up = y - 1;
-    while (up >= 0 && (plan.cells[up * W + x] === "rock" || plan.cells[up * W + x] === "face")) up -= 1;
-    if (up < 0 || !isTopLike(plan.cells[up * W + x]) || plan.level[up * W + x]! <= plan.level[index]!) continue;
-    if (kind === "rock" && y - 1 !== up && plan.cells[(y - 1) * W + x] === "rock" && plan.cells[(y + 1) * W + x] !== "face") continue;
-    map.lowerTiles[index] = RETRO_CLIFF.stairs + tileOffset;
-    map.upperTiles[index] = TILE.EMPTY;
-    stairs += 1;
+  for (const column of plan.columns) {
+    if (!column.flat) continue;
+    const below = column.cells.filter((cell) => cell.role === "body" || cell.role === "foot");
+    const crossed = column.cells.some((cell) => isRoadTile(map.lowerTiles[cell.y * map.width + cell.x] ?? TILE.EMPTY));
+    if (!crossed) continue;
+    for (const cell of below) {
+      const index = cell.y * map.width + cell.x;
+      map.lowerTiles[index] = CLIFF_TILE.stairs + tileOffset;
+      map.upperTiles[index] = TILE.EMPTY;
+      stairs += 1;
+    }
   }
   return stairs;
 }
