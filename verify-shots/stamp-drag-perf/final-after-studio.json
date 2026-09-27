@@ -1,0 +1,62 @@
+{
+  "label": "final-after",
+  "mode": "studio",
+  "tileSize": 16,
+  "nodes": 5689,
+  "drag": {
+    "stepMedianMs": 42,
+    "stepP90Ms": 111,
+    "longTaskSumMs": 1442,
+    "barMs": 48
+  },
+  "apply": {
+    "totalMs": 635,
+    "longTaskMaxMs": 239,
+    "longTaskSumMs": 685
+  },
+  "raw": {
+    "drags": [
+      {
+        "stepMedian": 40,
+        "stepP90": 111,
+        "stepMax": 130,
+        "longTaskSum": 1385,
+        "longTaskMax": 111,
+        "barMs": 49
+      },
+      {
+        "stepMedian": 42,
+        "stepP90": 109,
+        "stepMax": 168,
+        "longTaskSum": 1442,
+        "longTaskMax": 147,
+        "barMs": 44
+      },
+      {
+        "stepMedian": 42,
+        "stepP90": 148,
+        "stepMax": 162,
+        "longTaskSum": 1628,
+        "longTaskMax": 138,
+        "barMs": 48
+      }
+    ],
+    "applies": [
+      {
+        "total": 735,
+        "longTaskMax": 239,
+        "longTaskSum": 685
+      },
+      {
+        "total": 635,
+        "longTaskMax": 287,
+        "longTaskSum": 900
+      },
+      {
+        "total": 584,
+        "longTaskMax": 188,
+        "longTaskSum": 669
+      }
+    ]
+  }
+}
