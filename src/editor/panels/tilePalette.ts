@@ -668,6 +668,7 @@ export function syncMountedPaletteSelection(): boolean {
       const layerLabel = state.layer === "lower" ? "바닥" : "상위";
       status.textContent = `${layerLabel} · ${basicTileLabel(tileset, state.selectedTile)}`;
     }
+    rememberMountedPaletteInputs(root);
     return true;
   }
 
@@ -677,7 +678,20 @@ export function syncMountedPaletteSelection(): boolean {
   const map = store.getCurrent().maps[currentMapId()];
   const status = root.querySelector<HTMLElement>('[data-testid="selected-tile-status"]');
   if (status && map) status.replaceWith(makeSelectedTileStatus(state.selectedTile, tileset, map));
+  rememberMountedPaletteInputs(root);
   return true;
+}
+
+/**
+ * 제자리 동기화(선택·도구·붓)가 끝난 뒤 지금 입력을 다시 적는다. 안 적으면 기록이 옛 선택·도구를
+ * 들고 있어, 다음 무관한 통지(이벤트 편집 등)에서 refreshTilePalette 가 입력이 달라졌다고 보고
+ * 전체를 다시 짓는다(2026-09-27 실측: 타일·도구·붓 변경 직후 무관한 통지마다 1회).
+ */
+function rememberMountedPaletteInputs(root: HTMLElement): void {
+  const shell = root.querySelector(":scope > .palette-work-shell");
+  const inputs = paletteRenderInputs();
+  if (shell && inputs) renderedPaletteInputs.set(root, { shell, inputs });
+  else renderedPaletteInputs.delete(root);
 }
 
 /**
@@ -694,6 +708,8 @@ export function syncMountedPaletteLayerSelection(): boolean {
   const controls = document.querySelector<HTMLElement>('[data-testid="left-palette-root"] [data-testid="tile-brush-controls"]');
   if (!controls) return false;
   controls.replaceWith(makeTileBrushControls(editorState.get(), renderPalettePreservingViewport));
+  const root = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
+  if (root) rememberMountedPaletteInputs(root);
   return true;
 }
 
@@ -730,6 +746,7 @@ export function syncMountedPaletteToolPick(): boolean {
   } else shape?.remove();
   applyRovingTabindex(root);
   restoreFocus(root, focusSnapshot);
+  rememberMountedPaletteInputs(root);
   return true;
 }
 
