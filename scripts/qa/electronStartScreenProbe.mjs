@@ -91,7 +91,7 @@ const probe = { scratch };
   await shot(page, "01-home");
   probe.home = await page.evaluate(() => ({
     url: location.href,
-    continueTitle: document.querySelector("[data-testid='start-continue'] .start-continue-title")?.textContent ?? null,
+    continueTitle: document.querySelector("[data-testid='start-continue'] .start-hero-title")?.textContent ?? null,
     continueHasCover: Boolean(document.querySelector("[data-testid='start-continue'] img")),
     cards: [...document.querySelectorAll(".start-card-title")].map((node) => node.textContent),
     hiddenNote: document.querySelector(".start-hidden-note")?.textContent ?? null,
@@ -165,7 +165,7 @@ const probe = { scratch };
   await page.waitForTimeout(400);
   await shot(page, "05-home-after-create");
   probe.relaunch = await page.evaluate(() => ({
-    continueTitle: document.querySelector("[data-testid='start-continue'] .start-continue-title")?.textContent ?? null,
+    continueTitle: document.querySelector("[data-testid='start-continue'] .start-hero-title")?.textContent ?? null,
     continueHasCover: Boolean(document.querySelector("[data-testid='start-continue'] img")),
     cards: [...document.querySelectorAll(".start-card-title")].map((node) => node.textContent),
   }));
@@ -177,6 +177,17 @@ const probe = { scratch };
   await shutdown(app);
 }
 
+writeFileSync(join(OUT_DIR, "probe.json"), JSON.stringify(probe, null, 2));
+
+// ── 첫 방문: 최근 작업이 하나도 없는 사용자 데이터 ──────────────────────
+{
+  writeFileSync(join(userData, "recent-projects.json"), "[]");
+  const { app, page } = await launch();
+  await page.waitForSelector(".start-hero.is-welcome", { timeout: 30_000 });
+  await page.waitForTimeout(600);
+  await shot(page, "07-first-visit");
+  await shutdown(app);
+}
 writeFileSync(join(OUT_DIR, "probe.json"), JSON.stringify(probe, null, 2));
 console.log(JSON.stringify(probe, null, 2));
 // 임시 프로젝트·사용자 데이터를 치운다. 스크린샷과 probe.json 만 남긴다.
