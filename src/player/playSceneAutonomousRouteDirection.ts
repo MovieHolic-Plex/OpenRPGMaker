@@ -1,3 +1,5 @@
+import { runtimeEventViewById } from "@/project/runtimeEventState";
+import { store } from "@/project/store";
 import type { Dir } from "@/player/input";
 import type { AutonomousNpcSceneContext } from "@/player/playSceneAutonomousTypes";
 import type { MoveCommand } from "@/project/types";
@@ -25,8 +27,7 @@ export function playerRelativeDirection(
   eventId: string,
   towardPlayer: boolean
 ): Dir | null {
-  const event = scene.map.events.find((entry) => entry.id === eventId);
-  const position = eventPositionForPlayerRelativeDirection(scene, eventId, event);
+  const position = runtimeEventViewById(store.getCurrent(), scene.map, scene.session, scene.eventPositions, eventId);
   if (!position) return null;
   const dx = scene.tileX - position.x;
   const dy = scene.tileY - position.y;
@@ -54,19 +55,6 @@ function relativeTurnOffset(turn: Extract<MoveCommand, { kind: "turnRelative" }>
     default:
       return assertNever(turn);
   }
-}
-
-function eventPositionForPlayerRelativeDirection(
-  scene: AutonomousNpcSceneContext,
-  eventId: string,
-  event: { readonly x: number; readonly y: number } | undefined
-): { readonly x: number; readonly y: number } | null {
-  const runtime = scene.eventPositions[eventId];
-  if (runtime) return { x: runtime.x, y: runtime.y };
-  const location = scene.session.eventLocations?.[eventId];
-  if (location?.mapId === scene.map.id) return { x: location.x, y: location.y };
-  if (event) return { x: event.x, y: event.y };
-  return null;
 }
 
 function horizontalPlayerDirection(dx: number, towardPlayer: boolean): Dir {
