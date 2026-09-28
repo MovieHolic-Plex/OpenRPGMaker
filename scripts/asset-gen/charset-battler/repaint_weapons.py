@@ -15,6 +15,7 @@ from weapons import POSE_ANGLES, stamp, fitting_hand
 from cb_lib import ALL_IDS, SRC_DIR, ROOT
 
 BASIC=['actor1-0','actor2-0','actor3-0','actor4-0','actor1-7','actor2-3']
+HEROES6={'actor3-0','actor3-2','actor3-5','actor3-6','actor3-4','actor4-7'}
 KINDS={
  'actor1':('sword','staff','sword','sword','staff','staff','staff','staff'),
  'actor2':('sword','dagger','bow','bow','sword','dagger','bow','bow'),
@@ -129,6 +130,8 @@ def shield(im,center):
 
 
 def repaint(cid):
+ # 새 주인공 6명은 art4/heroes6.py 가 직업 장비(카타나·쿠나이·류트 등)까지 소유한다. 여기서 옛 공용 무기로 덮지 않는다.
+ if cid in HEROES6:return {'kind':'art4/heroes6.py','poses':0}
  records={}
  with equipment_pass('record',records):original=sources.render(cid)
  group,index=cid.split('-');kind=KINDS[group][int(index)]
