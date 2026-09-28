@@ -1,0 +1,173 @@
+{
+  "provenance": "Rounded console output recovered from tool transcript; per-frame raw JSON and PNG were removed outside this task when /tmp directories disappeared.",
+  "samples": [
+    {
+      "mapId": "map_hill_forest_cave",
+      "size": "20×16",
+      "beforeMaxFrameMs": [
+        129.5,
+        16.7,
+        16.8
+      ],
+      "afterMaxFrameMs": [
+        96.2,
+        16.8,
+        16.8
+      ]
+    },
+    {
+      "mapId": "map_peaceful_forest_100",
+      "size": "100×100",
+      "beforeMaxFrameMs": [
+        147.6,
+        98.2,
+        81.7
+      ],
+      "afterMaxFrameMs": [
+        131.3,
+        65.0,
+        64.9
+      ]
+    },
+    {
+      "mapId": "map_rebuilt_forest_cave",
+      "size": "20×16",
+      "beforeMaxFrameMs": [
+        45.3,
+        44.8,
+        46.1
+      ],
+      "afterMaxFrameMs": [
+        61.4,
+        45.6,
+        29.0
+      ]
+    },
+    {
+      "mapId": "map_retro_hill_variants",
+      "size": "50×22",
+      "beforeMaxFrameMs": [
+        16.8,
+        16.7,
+        16.8
+      ],
+      "afterMaxFrameMs": [
+        16.8,
+        16.8,
+        16.8
+      ]
+    },
+    {
+      "mapId": "map_forest_repeat_review",
+      "size": "42×12",
+      "beforeMaxFrameMs": [
+        16.8,
+        16.8,
+        16.7
+      ],
+      "afterMaxFrameMs": [
+        16.8,
+        16.8,
+        16.8
+      ]
+    },
+    {
+      "mapId": "map_forest_ceiling_review",
+      "size": "42×16",
+      "beforeMaxFrameMs": [
+        16.8,
+        16.7,
+        16.7
+      ],
+      "afterMaxFrameMs": [
+        16.8,
+        16.7,
+        16.8
+      ]
+    },
+    {
+      "mapId": "map_forest_diagonal_review",
+      "size": "64×26",
+      "beforeMaxFrameMs": [
+        16.8,
+        16.7,
+        16.7
+      ],
+      "afterMaxFrameMs": [
+        16.8,
+        16.8,
+        16.7
+      ]
+    },
+    {
+      "mapId": "map_forest_great_falls_100",
+      "size": "100×100",
+      "beforeMaxFrameMs": [
+        97.7,
+        97.4,
+        97.9
+      ],
+      "afterMaxFrameMs": [
+        79.3,
+        81.1,
+        80.4
+      ]
+    },
+    {
+      "mapId": "map_forest_village_rebuilt",
+      "size": "64×64",
+      "beforeMaxFrameMs": [
+        78.8,
+        95.0,
+        78.8
+      ],
+      "afterMaxFrameMs": [
+        61.3,
+        62.4,
+        59.9
+      ]
+    },
+    {
+      "mapId": "map_forest_dark_seam_review",
+      "size": "64×26",
+      "beforeMaxFrameMs": [
+        16.7,
+        16.8,
+        16.8
+      ],
+      "afterMaxFrameMs": [
+        16.8,
+        16.8,
+        16.8
+      ]
+    },
+    {
+      "mapId": "map_forest_trunk_assembly_review",
+      "size": "64×26",
+      "beforeMaxFrameMs": [
+        16.8,
+        16.8,
+        16.8
+      ],
+      "afterMaxFrameMs": [
+        16.8,
+        16.8,
+        16.8
+      ]
+    },
+    {
+      "mapId": "map_hill_forest_village_20260918",
+      "size": "64×64",
+      "beforeMaxFrameMs": [
+        28.3,
+        30.7,
+        33.3
+      ],
+      "afterMaxFrameMs": [
+        16.7,
+        16.7,
+        16.8
+      ]
+    }
+  ]
+}
