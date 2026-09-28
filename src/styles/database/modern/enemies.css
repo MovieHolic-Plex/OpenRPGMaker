@@ -839,6 +839,20 @@
   position: absolute;
 }
 
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-ally {
+  background-repeat: no-repeat;
+  background-size: 144px 384px;
+  height: 48px;
+  image-rendering: pixelated;
+  position: absolute;
+  width: 48px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-ally.is-hit {
+  filter: brightness(1.6);
+  translate: 3px 0;
+}
+
 .database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-sprite.is-hit {
   filter: hue-rotate(var(--enemy-pixel-hue, 0deg)) brightness(1.7) saturate(0.4);
 }

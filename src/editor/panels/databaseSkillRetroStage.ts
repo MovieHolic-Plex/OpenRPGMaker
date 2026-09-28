@@ -50,7 +50,8 @@ const FALLBACK_BATTLERS: Readonly<Record<string, string>> = {
   actor_hero: "charset-battler-actor1-0", actor_guardian: "charset-battler-actor2-0", actor_mage: "charset-battler-actor3-0",
   actor_scout: "charset-battler-actor4-0", actor_cleric: "charset-battler-actor1-7", actor_ranger: "charset-battler-actor2-3",
   // 2026-09-28 확장 6명(계약 actorId). 배우 기록이 아직 없거나 칩을 못 찾으면 이 매핑으로 그린다.
-  actor_samurai: "charset-battler-actor3-0", actor_ninja: "charset-battler-actor3-2", actor_monk: "charset-battler-actor3-5",
+  // 사무라이는 actor3-0(마도사) 칩의 전용 변형 시트다.
+  actor_samurai: "charset-battler-actor3-0-samurai", actor_ninja: "charset-battler-actor3-2", actor_monk: "charset-battler-actor3-5",
   actor_bard: "charset-battler-actor3-6", actor_druid: "charset-battler-actor3-4", actor_witch: "charset-battler-actor4-7",
 };
 const PARTY_ORDER = [...new Set(RETRO_CLASS_SKILLS.map((skill) => skill.actorId))];
@@ -101,8 +102,12 @@ const DEFAULT_LINEUP: Lineup = [E.slime, E.wolf, E.bat];
  */
 export function retroStageEnemyLineup(source: { readonly keys: string; readonly motion?: string }): Lineup {
   const found = THEME_LINEUPS.find(([pattern]) => pattern.test(source.keys))?.[1] ?? DEFAULT_LINEUP;
-  // 필살기 과녁은 96px 보스급. 암흑·저주 계열은 마왕, 나머지는 드래곤·트롤을 키 해시로 번갈아.
-  if (source.motion === "finisher") return [found[0], /sabbath|nightmare|blood|requiem|final/.test(source.keys) ? E.demon : source.keys.length % 2 ? E.troll : E.dragon, found[2]];
+  // 필살기 과녁은 96px 보스급: 암흑·저주 계열은 마왕, 검·대지·무술 계열은 트롤, 그 밖(불·빛·음악·별)은 드래곤.
+  if (source.motion === "finisher") {
+    const boss = /sabbath|nightmare|blood|requiem|assassin/.test(source.keys) ? E.demon
+      : /final_sky|final_slash|fortress|world_tree|tree_hit|dragon_aura|thousand/.test(source.keys) ? E.troll : E.dragon;
+    return [found[0], boss, found[2]];
+  }
   if (source.motion === "leap-strike") return [found[0], E.golem, found[2]];
   return found;
 }
@@ -239,7 +244,7 @@ function probeSheet(url: string): Promise<boolean> {
 // ---- 무대 좌표 ----
 
 type Point = { readonly x: number; readonly y: number };
-type Actor = { readonly node: HTMLElement; readonly sheet: string; readonly cast?: string; castOk: boolean; readonly home: Point };
+type Actor = { readonly node: HTMLElement; sheet: string; cast?: string; castOk: boolean; readonly home: Point };
 type Enemy = { readonly node: HTMLElement; readonly home: Point; readonly cell: number; readonly idleMs: number };
 
 /** 발 위치(논리 px). 파티는 오른쪽 사선 계단, 가운데가 시전자. 적은 왼쪽 삼각형. */
@@ -257,14 +262,31 @@ function enemyHomes(frontCell: number): readonly Point[] {
 const FRONT_ENEMY = 1;
 const FRONT_ALLY = 0;
 
-function battlerSheet(actorId: string | undefined, project: Project): { readonly sheet: string; readonly cast?: string } {
+type BattlerSheet = { readonly sheet: string; readonly cast?: string; readonly fallback?: BattlerSheet };
+
+/** 번들 전투 도트 id → 시트·시전 시트 경로. 카탈로그(CHARSET_BATTLERS)에 아직 없는 변형 id 는 규칙대로 경로를 조립한다. */
+function battlerPaths(resourceId: string, project: Project): { readonly sheet: string; readonly cast: string } | undefined {
+  const entry = charsetBattler(resourceId);
+  const match = /^charset-battler-(actor[1-4]-[0-7](?:-[a-z0-9]+)?)$/.exec(resourceId);
+  const path = entry?.path ?? (match ? "assets/generated/charset-battlers/" + match[1] + ".png" : undefined);
+  const castPath = entry?.castPath ?? (match ? "assets/generated/charset-battlers/cast/" + match[1] + ".png" : undefined);
+  if (!path || !castPath) return undefined;
+  return {
+    sheet: resolveAssetResourceUrl(resourceId, { project }) ?? withInlineAsset("/" + path),
+    cast: resolveAssetResourceUrl(resourceId + "-cast", { project }) ?? withInlineAsset("/" + castPath),
+  };
+}
+
+function battlerSheet(actorId: string | undefined, project: Project): BattlerSheet {
   const actor = actorId ? project.database.actors.find((entry) => entry.id === actorId) : undefined;
   const resolved = actor ? resolvePartyBattleCharset(actor, true) : undefined;
-  const entry = charsetBattler(resolved) ?? charsetBattler(FALLBACK_BATTLERS[actorId ?? ""] ?? FALLBACK_BATTLERS.actor_hero);
-  if (!entry) return { sheet: "" };
-  const sheet = resolveAssetResourceUrl(entry.resourceId, { project }) ?? withInlineAsset("/" + entry.path);
-  const cast = resolveAssetResourceUrl(entry.resourceId + "-cast", { project }) ?? withInlineAsset("/" + entry.castPath);
-  return { sheet, cast };
+  const fallbackId = FALLBACK_BATTLERS[actorId ?? ""] ?? FALLBACK_BATTLERS.actor_hero!;
+  // 배우 기록이 있으면 그 시트, 없으면 계약 매핑. 조립한 변형 경로(…-samurai)가 404 면 밑바탕 칩(actor3-0)으로 한 번 더 물러난다.
+  const primary = (resolved ? battlerPaths(resolved, project) : undefined) ?? battlerPaths(fallbackId, project);
+  if (!primary) return { sheet: "" };
+  const base = /^(charset-battler-actor[1-4]-[0-7])-[a-z0-9]+$/.exec(resolved && battlerPaths(resolved, project) ? resolved : fallbackId)?.[1];
+  const fallback = base ? battlerPaths(base, project) : undefined;
+  return fallback ? { ...primary, fallback } : primary;
 }
 
 function lerp(a: number, b: number, t: number): number { return a + (b - a) * t; }
@@ -303,17 +325,33 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
   world.append(scenery, dimVeil, cast, fxLayer, popLayer, cutin, flashVeil);
 
   // 파티: 가운데 칸이 시전자. 양옆은 계약 순서에서 시전자 다음 두 배우(사무라이 → 닌자·무도가). 같은 세대끼리 선다.
+  let portraitRefresh: (() => void) | undefined;
   const casterAt = Math.max(0, PARTY_ORDER.indexOf(source.actorId ?? ""));
   const others = [1, 2].map((step) => PARTY_ORDER[(casterAt + step) % PARTY_ORDER.length]).filter((id) => id !== source.actorId);
   const partyIds = [others[0], source.actorId, others[1]];
   const party: Actor[] = partyIds.map((actorId, index) => {
     const sheets = battlerSheet(actorId, project);
-    const node = el("span", { class: "db-skill-retro-battler", dataset: { role: index === 1 ? "caster" : "ally" } });
+    const node = el("span", { class: "db-skill-retro-battler", dataset: { role: index === 1 ? "caster" : "ally", actor: actorId ?? "" } });
     node.style.backgroundImage = sheets.sheet ? 'url("' + sheets.sheet + '")' : "none";
-    return { node, sheet: sheets.sheet, cast: sheets.cast, castOk: false, home: PARTY_HOMES[index]! };
+    const member: Actor = { node, sheet: sheets.sheet, cast: sheets.cast, castOk: false, home: PARTY_HOMES[index]! };
+    const fallback = sheets.fallback;
+    if (fallback && sheets.sheet) {
+      void probeSheet(sheets.sheet).then((ok) => {
+        if (ok) return;
+        // 변형 시트가 아직 없다 — 밑바탕 칩 시트로 바꿔 그린다(시전 시트도 같이).
+        member.sheet = fallback.sheet;
+        member.cast = fallback.cast;
+        node.style.backgroundImage = 'url("' + fallback.sheet + '")';
+        if (member.node.dataset.role === "caster" && member.cast) void probeSheet(member.cast).then((castOk) => { member.castOk = castOk; });
+        portraitRefresh?.();
+      });
+    }
+    return member;
   });
   const caster = party[1]!;
-  if (caster.cast) void probeSheet(caster.cast).then((ok) => { caster.castOk = ok; });
+  // 변형 시트 폴백이 그 사이 cast 를 바꿨으면 늦게 온 옛 결과는 버린다.
+  const firstCast = caster.cast;
+  if (firstCast) void probeSheet(firstCast).then((ok) => { if (caster.cast === firstCast) caster.castOk = ok; });
   const lineup = retroStageEnemyLineup({
     keys: source.sheets.map((sheet) => sheet.key).join(" ") + " " + (source.recipe?.fx ?? ""),
     motion: source.contract?.motion,
@@ -339,7 +377,8 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
   [...enemies.map((entry) => ({ y: entry.home.y, node: entry.node })), ...party.map((entry) => ({ y: entry.home.y, node: entry.node }))]
     .sort((a, b) => a.y - b.y).forEach((entry, index) => { entry.node.style.zIndex = String(10 + index); cast.append(entry.node); });
   const portrait = cutin.querySelector<HTMLElement>(".db-skill-retro-cutin-portrait")!;
-  if (caster.sheet) portrait.style.backgroundImage = 'url("' + caster.sheet + '")';
+  portraitRefresh = () => { if (caster.sheet) portrait.style.backgroundImage = 'url("' + caster.sheet + '")'; };
+  portraitRefresh();
   placeCell(portrait, EXTENDED_POSE_FRAME.skill, CELL);
 
   const missing = new Set<string>();
@@ -521,7 +560,8 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
       // 겹치지 않게 번호마다 6px 씩 엇갈리게 띄운다.
       const tall = side === "enemies" ? Math.max(0, (enemies[index]?.cell ?? CELL) - CELL) : 0;
       node.style.top = point.y - 52 - tall - rise - index * 2 + "px";
-      node.style.left = point.x + (index % 2 === 0 ? -6 : 6) + "px";
+      // 무대 왼쪽 끝(뒤줄 적) 숫자가 잘리지 않게 4px 안쪽으로 붙든다.
+      node.style.left = Math.max(4, point.x + (index % 2 === 0 ? -6 : 6)) + "px";
       node.style.opacity = String(Math.min(1, strength * 3));
     });
   }

@@ -12,6 +12,8 @@
 // 감속 모드(prefers-reduced-motion)·rAF 없음 → 대기 a 칸에 서 있고, 버튼은 대표 칸 하나를 잠깐 보여 준다.
 // 시트가 404 면 카드 전체를 조용히 걷는다(기존 정적 미리보기만 남는다).
 import { withInlineAsset } from "@/assets/inlineAssetStore";
+import { charsetBattler } from "@/assets/charsetBattlers";
+import { EXTENDED_POSE_FRAME } from "@/battle/battlePose";
 import {
   PIXEL_ENEMY_FRAME,
   pixelEnemyCell,
@@ -28,6 +30,10 @@ const STAGE_W = 240;
 const STAGE_H = 128;
 const FEET_Y = 118;
 const HOME_X = 86;
+/** 과녁 아군(번들 전투 도트 actor1-0, 48px 셀 3×8) 발 위치. 공격이 어디로 가는지 보이게 한다. */
+const ALLY_X = 200;
+const ALLY_CELL = 48;
+const ALLY_FOOT_ROW = 45;
 const SCENERY = ["ground", "mid", "far", "sky"].map((layer) => withInlineAsset("/assets/generated/battle-scenery/plains/" + layer + ".png"));
 
 const MOTION_LABELS: Readonly<Record<PixelEnemyMotion, string>> = {
@@ -138,7 +144,12 @@ export function renderEnemyPixelPreview(
   sprite.style.backgroundSize = cell * 3 + "px " + cell * 3 + "px";
   if (record.graphicHue) sprite.style.setProperty("--enemy-pixel-hue", record.graphicHue + "deg");
   if (record.transparent) sprite.style.opacity = "0.58";
-  world.append(scenery, sprite);
+  const ally = el("span", { class: "db-enemy-pixel-ally" });
+  const allySheet = charsetBattler("charset-battler-actor1-0");
+  if (allySheet) ally.style.backgroundImage = 'url("' + withInlineAsset("/" + allySheet.path) + '")';
+  ally.style.left = ALLY_X - ALLY_CELL / 2 + "px";
+  ally.style.top = FEET_Y - ALLY_FOOT_ROW + "px";
+  world.append(scenery, ally, sprite);
 
   const stage = el("div", {
     class: "db-enemy-pixel-stage",
@@ -193,6 +204,10 @@ export function renderEnemyPixelPreview(
     sprite.style.left = Math.round(HOME_X - cell / 2 + dx) + "px";
     sprite.style.top = Math.round(FEET_Y - (cell - 4) + dy) + "px";
     sprite.classList.toggle("is-hit", current === "hit");
+    // 과녁 아군: 공격 칸(착탄)에서 피격 칸, 평소엔 대기.
+    const allyPose = EXTENDED_POSE_FRAME[current === "attack" ? "hit" : "idle"];
+    ally.style.backgroundPosition = -allyPose.col * ALLY_CELL + "px " + -allyPose.row * ALLY_CELL + "px";
+    ally.classList.toggle("is-hit", current === "attack");
     stage.dataset.pixelCell = current;
     for (const [id, button] of cellButtons) {
       const on = id === current;
