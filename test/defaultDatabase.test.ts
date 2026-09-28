@@ -83,17 +83,18 @@ describe("default database starter party", () => {
       battleCharacterResourceId: "generated-actor-hero-01-battle",
     });
     expect(guardian).toMatchObject({
-      faceResourceId: "easyrpg-faceset-actor2-00",
+      // 걷기 그림의 검토된 짝(공용 대응표). Actor2 ↔ FaceSet/Actor1 8~15, Actor3/4 ↔ FaceSet/Actor2 0~7/8~15.
+      faceResourceId: "easyrpg-faceset-actor1-08",
       characterResourceId: "easyrpg-charset-actor2",
       battleCharacterResourceId: "generated-actor-hero-02-battle",
     });
     expect(mage).toMatchObject({
-      faceResourceId: "easyrpg-faceset-people1-00",
+      faceResourceId: "easyrpg-faceset-actor2-00",
       characterResourceId: "easyrpg-charset-actor3",
       battleCharacterResourceId: "generated-actor-hero-03-battle",
     });
     expect(scout).toMatchObject({
-      faceResourceId: "easyrpg-faceset-people2-00",
+      faceResourceId: "easyrpg-faceset-actor2-08",
       characterResourceId: "easyrpg-charset-actor4",
       battleCharacterResourceId: "generated-actor-hero-04-battle",
     });

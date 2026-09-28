@@ -102,6 +102,8 @@ export function configureScarloxyDemoProject(project: Project): void {
   if (hero) {
     hero.characterResourceId = "scarloxy-charset-people1";
     hero.characterIndex = 0;
+    // 기본 주인공 얼굴(갈색 머리띠 용사)은 이 트레이너 소년이 아니다. 공용 대응표에 이 팩의 얼굴이 없어 비운다.
+    delete hero.faceResourceId;
   }
 
   project.database.skills.push(
