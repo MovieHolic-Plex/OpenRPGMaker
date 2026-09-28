@@ -3288,3 +3288,13 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
   기준선 수치는 같은 f9bbb5067에서 측정한 삭제 전 워크트리 결과를 사용했고 수정 후는 새 워크트리에서 재측정했다.
 - 계약 테스트: `aiUiPerformance.test.ts`, `activityTraceArchive.test.ts` 및 기존 관련 테스트.
   렌더 fixture는 실제 Happy DOM Window를 전역에 설치해 add/removeEventListener를 빠뜨리지 않는다.
+
+
+### 검증 권한 정정과 브라우저 재실측 (2026-09-28)
+
+후속 사용자 지시 이후 Vitest·tsc·gates는 실행하지 않았다. 앞선 통과/실패는 정정 이전 기록이다.
+워크트리의 `npm run dev:worktree`와 Node+Chromium만으로 f9bbb5067/현재 코드를 별도 컨텍스트에서 재측정했다:
+새 활동2,000건 0.936→0.455ms, 대화200건 복원 51.900→10.567ms(높이 읽기200→1),
+run20개의 현재run 저장 getAll1→0, 비활성 스튜디오 DOM365→0.
+원시 수치와 실행 없는 테스트 계약 검토·잔여 위험 파일명은 `verify-shots/perf-ai-ui/README.md`와
+`browser-measurements.json`에 남겼다. 테스트 실행은 새 명시적 허가 전까지 다시 시작하지 않는다.

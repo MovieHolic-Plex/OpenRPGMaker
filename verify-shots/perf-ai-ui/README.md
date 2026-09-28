@@ -1,5 +1,9 @@
 # AI 조수 UI 성능 개선 — 2026-09-28
 
+**검증 권한 정정:** 사용자의 후속 지시에 따라 정정 이후 Vitest·tsc·gates는 실행하지 않았다.
+아래 기존 테스트/타입 검사 결과는 정정 이전 실행 기록이며, 현재의 실행 허가를 뜻하지 않는다.
+정정 이후에는 Node+Chromium 실측과 테스트 코드 읽기만 수행했다. 테스트 파일도 이번 후속 작업에서는 변경하지 않았다.
+
 기준선은 `f9bbb5067`, 작업 브랜치는 `codex/perf-ai-ui`다. 삭제된 이전 워크트리의 수정 전 실측을 사용자 승인에 따라 재사용했고,
 수정 후는 `/home/main/z-project/rpg-zzu-e03b-perf-ai-ui`에서 다시 측정했다. 각 구현 단위는 즉시 커밋했다.
 `assistantSession.ts`와 `aiChatPanel.ts`의 store.subscribe/refreshAcceptance는 변경하지 않았다.
@@ -29,7 +33,7 @@
 수정 후 IndexedDB 호출 수는 fake-indexeddb로 실제 트랜잭션을 실행해 측정했다. 아카이브 시간은 서로 다른 모의 저장소 간 비교를 피하여 제외했다.
 원시 수치는 `measurements.json`, 브라우저 결과는 `browser.json`에 있다. 임시 벤치·원본 비교 모듈은 커밋하지 않고 제거했다.
 
-## 검증
+## 정정 이전 검증 기록
 
 직접 관련 13파일만 실행했다. **116개 중 110 통과, 기준선과 같은 실패 6개, 기존 미처리 예외 4개**다.
 신규 성능 회귀 테스트 9개와 아카이브 테스트 3개는 모두 통과했다.
@@ -91,3 +95,50 @@ Chromium은 실제 컴포넌트와 편집기 CSS를 임시 fixture에서 열었�
 - 진행 중인 run의 용량 증가는 다음 저빈도 정리까지 일시적으로 저장 상한을 넘을 수 있다. 새 run과 종료 전환은 즉시 정리한다.
 - 새 활동 입력은 공유 색인 생성에 O(N) 순회가 남고, 활동 기록·말풍선 자체의 렌더는 필요한 만큼 수행한다.
 - 전체 gates/전체 스위트는 요청 범위 밖이라 실행하지 않았다. 위 6건의 기존 실패도 이 작업에서 고치지 않았다.
+
+
+## 정정 이후: 테스트 실행기 없는 브라우저 전후 실측
+
+명령은 워크트리에서 `npm run dev:worktree`, `node test/ai-ui-browser-measure/run.mjs`였다.
+임시 스크립트/HTML/원본 모듈 사본은 실측 뒤 제거했으며 커밋하지 않았다.
+기준선 `f9bbb5067`의 대상 모듈과 그 대상 간 의존성을 임시 경로로 복원하고, 기준선/현재를 각각 새 Chromium 컨텍스트에서 실행했다.
+현재 코드는 `b7073513c`와 동일하다. 스타일 없는 실제 DOM과 실제 IndexedDB를 사용했다.
+복원 비용은 실제 scrollHeight 읽기를 계수하면서 브라우저 레이아웃도 수행한다.
+표시 코드가 요청한 이미지 observer 콜백은 무관한 텍스트 노드 변경 레코드로 100회 직접 계측했다.
+전체 문서 초기화·모듈 로딩 시간은 호출당 시간에 포함하지 않는다. 각 경로의 예열·반복 수는 위 실측 절과 같다.
+원시 기록: `browser-measurements.json`. 양쪽 `pageerror`는 0개다.
+
+| 경로 | 수정 전 | 수정 후 |
+|---|---:|---:|
+| 동일 활동 입력 2,000건 | 0.952ms | 0.001ms |
+| 새 활동 입력 2,000건 | 0.936ms | 0.455ms |
+| 숨긴 팀 보드 6명 | DOM48 / 0.450ms | DOM0 / 0.020ms |
+| transcript 200행 한 행 추가 | DOM200 / 6.417ms | DOM1 / 3.193ms |
+| 숨긴 transcript 포함 작업 페인 | DOM249 / 1.923ms | DOM1 / 0.040ms |
+| 팀원 6명 중 한 명 갱신 | DOM36 / 0.797ms | DOM0 / 0.030ms |
+| 비활성 스튜디오 | DOM365 | DOM0 |
+| 대화 200건 복원 | 높이 읽기200 / 51.900ms | 높이 읽기1 / 10.567ms |
+| 이름 2,000개, 반복 문장 | 0.1109ms | 0.0002ms |
+| 이름 2,000개, 새 문장 | 0.1261ms | 0.0075ms |
+| run20개 중 현재 run 저장 | getAll1 / get0 / put1 | getAll0 / get1 / put1 |
+| 이미지200개, 무관한 DOM 변경 | 연결 확인200 | 연결 확인0 |
+
+원시 JSON의 일부 0ms는 타이머 분해능 아래였다는 뜻이며, 비용이 물리적으로 0이라는 뜻은 아니다.
+특히 transcript는 DOM 생성이 1개여도 보이는 목록의 레이아웃·스크롤 비용이 남는다.
+
+## 정정 이후: 실행 없는 테스트 계약 검토
+
+| 파일 | 코드에서 확인한 계약 |
+|---|---|
+| `test/aiUiPerformance.test.ts` | 실제 Happy DOM Window의 add/removeEventListener, stable ordinal, 숨김→표시 갱신, 버튼 동일성·포커스 |
+| `test/aiActivityView.test.ts` | 네 표시 수준, 실패 회복 표시, 변경 없는 행·펼친 payload 보존 |
+| `test/aiActivityBriefClutter.test.ts` | 조회 이미지 제외, 로딩 중 URL 보호, 처음 부착 전 유예 |
+| `test/aiTeamWorkPane.test.ts` | trace 없는 fallback에서 이전 transcript 계약, 고정 선택, 검토 동작 유지 |
+| `test/aiAnswerLinks.test.ts` | 긴 이름 우선, 겹침 배제, 한국어 조사와 합성어 거부 |
+| `test/aiConversationLog.test.ts` | 원래 행·마크다운·작업 sink 계약; 배치 모드는 스크롤만 모음 |
+| `test/activityTraceArchive.test.ts` | 같은 트랜잭션의 serial 비교, 정리 시점, 쓰기 실패 및 재시도 표시 |
+
+재실행 없이 남겨 둔 위험:
+- `test/aiStudioShell.test.ts`: Fake DOM의 undefined 상태 글자와 초기화 실패 후 타이머 정리는 이전에 실패했고, 관련 생산 코드를 변경하지 않아 같은 실패 가능성이 남는다.
+- `test/piAgentTeamBoardRender.test.ts`: 「지금」 팀원 종류를 `시공`으로 기대하는 단언과 실제 `만들기` 문구의 불일치가 남아 있다.
+- `test/aiActivityBriefClutter.test.ts`, `test/aiUiPerformance.test.ts`: 이미지 수명·MutationObserver 비동기 계약은 코드로 확인했지만 이번 후속 턴에서 테스트 실행으로 재확인하지 않았다.
