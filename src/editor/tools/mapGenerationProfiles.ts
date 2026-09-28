@@ -165,6 +165,16 @@ const PROFILES = [
     palettes: samePalette({ base: 3, path: 3, obstacle: 31, accent: 34 }),
   },
   {
+    // 위 480칸이 사막/설원 시트와 같은 번호라 팔레트도 같다. 아래 체육관·항구 부품(480~)은 생성이 안 쓴다.
+    tilesetId: "scarloxy_chipset_monster_gym_coast",
+    layout: "wilds",
+    palettes: {
+      village: { base: 0, path: 60, obstacle: 117, accent: 119 },
+      forest: { base: 10, path: 70, obstacle: 175, accent: 149 },
+      cave: { base: 0, path: 60, obstacle: 117, accent: 119 },
+    },
+  },
+  {
     // 실내는 generate_map 이 아니라 개념 시공/직접 조립으로 만든다(layout rooms → concept-interior-required).
     // 번호: 흰 타일 1 · 나무 마루 0 · 벽 틀 윗변 11 · 청록 카펫 3 (src/assets/monsterInteriorManifest.json).
     tilesetId: "scarloxy_chipset_monster_interior",
