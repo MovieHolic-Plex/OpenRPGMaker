@@ -40,10 +40,21 @@ describe("shared team controls", () => {
     await runPiTeam(request(false), { runAgent: async req => { seen.push(req); return done(req); } });
     expect(seen).toHaveLength(1);
   });
-  it("does not silently finish without a reviewer or a final review report", async () => {
+  it("skips the final review with a report line when no reviewer is enabled, but never without a report", async () => {
     const req = request(true);
-    await expect(runPiTeam({ ...req, team: { ...req.team!, members: req.team!.members.filter(m => m.kind !== "reviewer") } },
-      { runAgent: async r => done(r) })).rejects.toThrow("검토 담당");
+    const events: unknown[] = [];
+    const seen: PiAgentRequest[] = [];
+    await runPiTeam({ ...req, team: { ...req.team!, members: req.team!.members.filter(m => m.kind !== "reviewer") } },
+      { runAgent: async r => { seen.push(r); return done(r); }, onEvent: e => events.push(e) });
+    expect(seen).toHaveLength(1);
+    expect(events).toContainEqual(expect.objectContaining({ type: "team_report", text: expect.stringContaining("검수 담당이 없어 생략") }));
     await expect(runPiTeam(req, { runAgent: async r => done(r) })).rejects.toThrow("완료 후 검토를 끝내지 못했습니다");
+  });
+  it("strips a village contract so team members are not locked to author_village", async () => {
+    const seen: PiAgentRequest[] = [];
+    const req = request(false);
+    await runPiTeam({ ...req, villageContract: { mapId: "m", houseCount: 2, npcCount: 2, args: {}, residentDialogue: true } },
+      { runAgent: async r => { seen.push(r); return done(r); } });
+    expect(seen[0]!.villageContract).toBeUndefined();
   });
 });
