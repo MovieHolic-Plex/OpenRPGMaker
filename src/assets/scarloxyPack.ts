@@ -220,7 +220,8 @@ export function resolveScarloxyAssetUrl(resourceId: string): string | null {
 export type ScarloxyChipsetGroupSeed = {
   readonly key: string;
   readonly name: string;
-  readonly role: "terrain" | "water" | "building" | "prop";
+  // wall = 몬스터 실내의 벽·틀(TileGroupRole 부분집합, themePacks.packGroup 이 그대로 받는다).
+  readonly role: "terrain" | "water" | "building" | "prop" | "wall";
   readonly defaultLayer: "lower" | "upper";
   readonly passage: "passable" | "solid";
   readonly repeatability: "repeat" | "fixed";
