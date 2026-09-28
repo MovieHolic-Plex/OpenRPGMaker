@@ -364,3 +364,56 @@
 @media (prefers-reduced-motion: reduce) {
   .battle-scene[data-battle-skin="retro2003"] .retro-skill-screen { display: none; }
 }
+
+/* 직업 스킬 48종(retroSkillChoreography 의 타임라인 재생기). 칸 한 변 × 2 상자, 칸 이동은 인라인 background-position.
+   이동은 재생기의 Web Animations(translate) 가 소유한다 — 비트 키프레임(retro-walk·thrust·return)을 끈다. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-class-skill] {
+  animation: none;
+  transition: none;
+}
+.battle-scene[data-battle-skin="retro2003"] .retro-class-fx { background-repeat: no-repeat; }
+.battle-scene[data-battle-skin="retro2003"] .retro-class-fx-screen { translate: -50% -50%; z-index: 36; }
+.battle-scene[data-battle-skin="retro2003"] .retro-class-fx-projectile { translate: -50% -50%; z-index: 37; }
+.battle-scene[data-battle-skin="retro2003"] .retro-class-veil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 30;
+  opacity: 0;
+}
+.battle-scene[data-battle-skin="retro2003"] .retro-class-veil-dim { background: #0a0618; }
+.battle-scene[data-battle-skin="retro2003"] .retro-class-veil-flash { background: #fffbe0; z-index: 38; }
+/* 필살기 컷인 띠: 무대 가운데를 가로지르는 청색 띠 + 시전자 도트 2배(정수) 확대. */
+.battle-scene[data-battle-skin="retro2003"] .retro-class-cutin {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 38%;
+  height: 76px;
+  pointer-events: none;
+  z-index: 40;
+  overflow: hidden;
+  background: repeating-linear-gradient(to bottom, #203a8c 0 4px, #1a2e70 4px 8px);
+  border-block: 4px solid #f8f0c0;
+  box-shadow: 0 0 0 2px #101020;
+}
+.battle-scene[data-battle-skin="retro2003"] .retro-class-cutin .retro-class-cutin-face {
+  position: absolute;
+  right: 18%;
+  top: 50%;
+  translate: 0 -50%;
+  scale: 2;
+  transform: none;
+  animation: none;
+  image-rendering: pixelated;
+  clip-path: inset(8% 0 30% 0);
+}
+.battle-scene[data-battle-skin="retro2003"] .battle-enemy.retro-skill-struck .battle-enemy-image { filter: brightness(0) invert(1); }
+.battle-scene[data-battle-skin="retro2003"] .battle-actor.retro-skill-blessed .battle-actor-sprite { filter: brightness(1.7) saturate(0.6); }
+/* 회전베기·쌍검 난무의 좌우 반전 교대. 걷기 칩 시트의 scale:1 규칙보다 구체적이어야 한다. */
+.battle-scene[data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-actor-group .battle-actor.retro-skill-flip[data-battler-extended="true"] .battle-actor-sprite[data-rendering="pixelated"],
+.battle-scene[data-battle-skin="retro2003"] .battle-actor.retro-skill-flip .battle-actor-sprite { scale: -1 1; }
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene[data-battle-skin="retro2003"] :is(.retro-class-veil, .retro-class-cutin) { display: none; }
+}
+

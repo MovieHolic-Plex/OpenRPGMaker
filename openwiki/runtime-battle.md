@@ -104,6 +104,34 @@
   GIF를 PIL로 추출해 여러 차례 직접 검토했고 최종 미리보기는 `.omo/retro-skills/final/preview-*.png`,
   감속은 `.omo/retro-skills/reduced/preview-*.png`다(세션 로컬 증거).
 
+### 직업 스킬 48종 (2026-09-28, sk-rt)
+
+계약 `src/assets/retroClassSkills.ts`(읽기 전용, id·레이어 키·칸 규격)의 48개를 기본 DB 와 런타임이 함께 쓴다.
+
+- **기본 DB** `src/project/defaults/retroClassSkillRecords.ts`: 계약 순서대로 SkillRecord 48개. 기존 규칙 필드만 쓴다(위력·MP·scope·damage/healing/support/steal·속성·상태 효과·급소율).
+  부활(`skill_cleric_revive`)은 healing + `state_death` 해제라 `runtime.commandRevives` 가 쓰러진 아군을 대상으로 연다. 훔치기는 `effect.kind: steal`.
+  도발·반격 태세·연막처럼 규칙에 없는 뜻은 가장 가까운 상태(방어 상승·공격 상승·공격 하락)로 대신한다. `defaultSkillRecords` 끝에 붙고,
+  `defaultClassRecords` 가 계약 레벨(1~22)로 직업 learnedSkills/skillIds 에 덧붙인다(기존 스킬 유지).
+  **기존 프로젝트 보강 경로는 없다** — 스킬·직업은 저작 데이터라 로드 복구(`loadRepair`)가 일반 보충을 금지한다. 기존 프로젝트에 넣으려면 감독 판단으로 별도 ensure 를 만들어야 한다.
+- **재생** `retroSkillChoreography.ts` 의 직업 스킬 절: 편집기 스킬 탭과 같은 순수 타임라인 `src/battle/retroSkillTimeline.ts` 의 `retroClassSkillTimeline(contract, { side })` 사건을
+  `scheduleBattleTimer` 로 시간순 재생한다. 대상 편은 레코드 scope(`retroSideForScope`)가 정본이다.
+  - 레이어: user = 시전자 몸(따라감), target = 주 대상, allTargets = scope 편 전원, allAllies = 아군 전원, screen = 무대 한가운데, projectile = 손 → 대상(낙하는 위에서, 궤적은 몸에서) Web Animations 이동 + 루프 칸.
+  - **칸 상자·이동 = 칸 한 변 × 2**(32→64px, 64→128px, 128→256px, `classFrame`). 옛 17종의 `frame()` 도 같은 규칙(64×2)으로 적었다.
+  - 동작: 타임라인의 pose/move/hide 사건이 `data-retro-frame`·노드 translate 를 소유한다(place = home/front/center/above 를 재생 시작 때 DOM 으로 잰다). flip 은 `.retro-skill-flip`(회전베기·쌍검 좌우 교대). finisher 는 dim 막 → 컷인 띠(시전자 도트 2배) → screen 레이어 → flash + 흔들림.
+  - 전체기는 대상마다 타임라인 엔트리가 따로 온다. 첫 엔트리 approach 에서 한 번 재생하고, `actorApproachMs`/`actorRecoverMs` 훅(`retroClassSkillBeatMs`)이 첫 엔트리 = 첫 착탄까지, 이후 = 착탄 간격, 마지막 = 연출 끝까지로 비트를 준다(무게 배율을 미리 나눠 둔다). 재생기는 자기 시계로 끝나며 엔트리 사이 정리(`retroActionMotion`)는 `data-retro-class-skill` 배우를 건드리지 않는다.
+  - 시계 = 실제 approach 길이 ÷ 계획 첫 착탄 → 배속이 같이 걸린다. 감속 모드는 대표 시각(`representativeMs`) 한 장만.
+  - 훔치기는 결과가 special 엔트리 하나라 비트가 없다 — battleDom 이 확정한 skillId 를 기억했다가 그 special 엔트리에서 `startRetroSpecialSkill`.
+  - 소리: 타임라인의 sound 사건만 울린다(EasyRPG RTP 실파일). 기존 전투 애니메이션 층은 `hasRetroChoreography` 로, 휘두름음은 `emitSwingJuice` 에서 끈다. `retroSkillRecipe` 는 계약 id 에 옛 레시피를 붙이지 않는다.
+  - 시트 URL 은 `new URL(`../../public/assets/generated/pixel-fx/${key}.png`, import.meta.url)` — Vite 가 폴더 전체를 player 자산 그래프에 넣는다.
+- **녹화** `node scripts/qa/runtime/retro2003-skills-gif.mjs --out .omo/retro-skills/pass-N`(기본 `--set class` 48종, `--set legacy` 옛 17종, `--skills a,b` 제한).
+  녹화 사본만 고친다: 현재 기본 DB 스킬·상태·직업 습득표를 합치고 레벨 22·MP 999·적 HP 99999·훔칠 아이템. 두 조(주인공·수호자·마도사·정찰병 / 성직자·궁수·쓰러진 주인공)로 실제 player.html(`?e2eVitals=1`)에 키보드 입력.
+  스킬마다 우하단 마젠타 표식을 켜고 끈 구간으로 `skill-<id>.gif` 를 자른다. 스킬별로 보인 레이어 키·노드 수·소리 사건·칸 이동값(−size×2×index)을 검사해 `SUMMARY.md` 표로 남긴다.
+  표식은 스킬마다 마젠타·청록을 번갈아 쓴다(한 색이면 이어지는 두 스킬의 짧은 꺼짐이 영상에서 사라져 구간이 합쳐졌다).
+- 이 작업의 출하 player 녹화: 48/48 녹화, 계약 레이어 누락 0, 칸 이동값 불일치 0, 잔류 노드 0, 기존 애니메이션 층 0, 브라우저 오류 0
+  (`verify-shots/runtime-qa/retro2003-skills/SUMMARY.md`, 미리보기 `.omo/retro-skills/final/review/`). GIF 직접 검토로 두 가지를 고쳤다 —
+  필살기 컷인 띠에 시전자가 안 보임(복제 스프라이트가 클래스 크기를 잃음 → 인라인 크기·시트), 그림자 습격이 적 **앞**에 나타남(blink-strike 는 등 뒤·좌우 반전).
+  감속 모드 녹화는 이번에 돌리지 않았다.
+
 ## 타격감 층 (2026-09-25)
 
 사용자 신고 「게임적인 느낌이 거의 안 든다, 타격감이 없다」. 출하 player 녹화로 원인을 쟀다:

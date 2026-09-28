@@ -1,4 +1,4 @@
-import { animateRetroSkillFx, clearRetroSkillFx, preloadRetroSkillFx, retroSkillForEntry, setRetroSkillEntry, type RetroSkillRecipe } from "@/player/retroSkillChoreography";
+import { animateRetroSkillFx, clearRetroSkillFx, driveRetroClassSkill, isRetroClassSkillActor, preloadRetroClassSkillFx, preloadRetroSkillFx, retroSkillForEntry, setRetroSkillEntry, type RetroSkillRecipe } from "@/player/retroSkillChoreography";
 import { CAST_TYPES, EXTENDED_POSE_FRAME, castTypeForSkill, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
 import type { PixelEnemyCell } from "@/assets/pixelEnemySheets";
 import { store } from "@/project/store";
@@ -48,13 +48,16 @@ export function retroMotionPose(node: HTMLElement, pose: Pose, paint: PaintPose)
 
 function paint(node: HTMLElement, pose: Pose): void { painters.get(node)?.(node, pose); }
 
+/** 표시 계층이 이미 한 번 그린 배틀러를 현재 연출 상태로 다시 그린다. */
+export function repaintRetroBattler(node: HTMLElement): void { paint(node, "idle"); }
+
 /**
  * 지금 그릴 칸이 시전 칸(cast_charge/raise/release, skill 제외)이고 이 행동에 마법 종류가 붙어 있으면
  * 시전 시트의 (종류, 단계)를 돌려준다. 준비=1, 영창=2, 방출=3. 표시 계층(applyBattlerPose)이 시전 시트로 그린다.
  */
 export function retroCastFrameFor(node: HTMLElement, pose: Pose): { readonly type: CastType; readonly step: 1 | 2 | 3 } | undefined {
   const type = node.dataset.retroCast as CastType | undefined;
-  if (!type || !CAST_TYPES.includes(type) || !node.dataset.retroBeat) return undefined;
+  if (!type || !CAST_TYPES.includes(type) || !(node.dataset.retroBeat || node.dataset.retroClassSkill)) return undefined;
   const step = pose === "cast_charge" ? 1 : pose === "cast_raise" ? 2 : pose === "cast_release" ? 3 : undefined;
   return step ? { type, step } : undefined;
 }
@@ -63,6 +66,7 @@ export function retroCastFrameFor(node: HTMLElement, pose: Pose): { readonly typ
 export function initRetroMotion(field: HTMLElement, snapshot: BattleSnapshot): void {
   cursors.set(field, snapshot.timeline.at(-1)?.sequence ?? -1);
   preloadRetroSkillFx();
+  preloadRetroClassSkillFx();
 }
 
 export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | undefined, snapshot: BattleSnapshot): void {
@@ -74,6 +78,8 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
   for (const node of nodes) {
     node.classList.remove("battle-motion-knockback", "battle-motion-target");
     if (node === user && beat) continue;
+    // 직업 스킬 재생기가 움직이는 배우는 재생기가 끝낼 때까지 그대로 둔다(전체기의 엔트리 사이 정리가 연출을 끊었다).
+    if (isRetroClassSkillActor(node)) continue;
     if (node.dataset.retroBeat) {
       delete node.dataset.retroBeat;
       delete node.dataset.retroAction;
@@ -97,6 +103,17 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
     target?.classList.add("battle-motion-target", "battle-motion-knockback");
   }
   if (!beat || !user) return;
+  // 직업 스킬 48종(계약 retroClassSkills): 편집기와 같은 타임라인 재생기가 포즈·이동·이펙트를 모두 소유한다.
+  if (user.classList.contains("battle-actor")) {
+    const entry = currentEntries.get(field);
+    if (beat.kind === "approach" && entry) cursors.set(field, entry.sequence);
+    if (driveRetroClassSkill(field, user, beat, entry, snapshot.timeline, (node) => paint(node, "idle"))) {
+      user.dataset.retroBeat = beat.kind;
+      user.dataset.retroAction = "skill";
+      user.style.setProperty("--retro-beat-ms", `${Math.max(1, beat.durationMs)}ms`);
+      return;
+    }
+  }
   if (beat.kind === "approach") {
     const entry = currentEntries.get(field) ?? snapshot.timeline.find((item) => item.sequence > (cursors.get(field) ?? -1)
       && visualKinds.has(item.kind) && (item.userRecordId === beat.userId || item.userId === beat.userId));
@@ -334,7 +351,8 @@ function extendedMotionPose(node: HTMLElement, pose: Pose): Pose {
   if (node.dataset.retroHurt === "true") return extendedFrame(node.dataset.retroHurtFrame) ?? "hit";
   const transient = extendedFrame(node.dataset.retroTransient);
   if (transient) return transient;
-  const frame = node.dataset.retroBeat ? extendedFrame(node.dataset.retroFrame) : undefined;
+  // 직업 스킬 재생기는 비트 밖(훔치기의 special 엔트리, 전체기의 엔트리 사이)에서도 칸을 소유한다.
+  const frame = node.dataset.retroBeat || node.dataset.retroClassSkill ? extendedFrame(node.dataset.retroFrame) : undefined;
   if (frame && frame !== "idle") return frame;
   if (node.dataset.retroCommand === "true") return "idle";
   if (node.dataset.battlerDefending === "true") return "defend";

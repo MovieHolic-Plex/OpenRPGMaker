@@ -1,5 +1,5 @@
-import { currentRetroSkill, retroSkillForEntry, retroSkillRecipe } from "@/player/retroSkillChoreography";
-import { retroTimelineEntry, retroCommandPose, initRetroMotion, isTravellingEffect, preloadRetroMotionSe, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, retroVictory, retroWalk } from "@/player/battleRetroMotion";
+import { hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillRecord, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
+import { retroTimelineEntry, retroCommandPose, initRetroMotion, isTravellingEffect, preloadRetroMotionSe, repaintRetroBattler, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, retroVictory, retroWalk } from "@/player/battleRetroMotion";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
 import type {
   ActorCommand,
@@ -159,6 +159,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let destroyed = false;
   /** impact · 평타 확정 뒤 처음 오는 접근 비트에 베기 궤적과 휘두름 소리를 한 번 둔다. */
   let swingArmed = false;
+  // 방금 확정한 직업 스킬(훔치기 등 special 결과만 남는 기술의 연출 시작점).
+  let pendingRetroSkillId: string | undefined;
+  let pendingRetroSkillUserId: string | undefined;
   let choiceController: AbortController | undefined;
   let resultSent = false;
   let submenu: BattleCommandSubmenu = null;
@@ -400,6 +403,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     },
     onTimelineEntry(entry) {
       if (retroMotion) retroTimelineEntry(field, entry);
+      // 훔치기처럼 결과가 특수 메시지 한 줄뿐인 직업 스킬은 시각 비트가 없다 — 그 메시지에서 연출을 시작한다.
+      if (retroMotion && entry.kind === "special" && entry.side === "actor" && pendingRetroSkillId && entry.userRecordId === pendingRetroSkillUserId) {
+        const skillId = pendingRetroSkillId;
+        pendingRetroSkillId = undefined;
+        startRetroSpecialSkill(field, entry, skillId, sequencer.speedMultiplier, repaintRetroBattler);
+      }
       // 연출이 화면에 도달한 반격·부활의 흔적 — QA 와 스킨 CSS 가 읽는다.
       if (entry.kind === "counter") root.dataset.battleCounterSeen = "true";
       if (entry.kind === "revive") root.dataset.battleReviveSeen = "true";
@@ -413,7 +422,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       activeAnimation?.destroy();
       activeAnimation = syncBattleAnimationLayer(
         animationLayer,
-        { ...options.runtime.snapshot(), lastAnimation: retroMotion && (currentRetroSkill(field) || isTravellingEffect(animation)) ? undefined : animation },
+        { ...options.runtime.snapshot(), lastAnimation: retroMotion && (hasRetroChoreography(field) || isTravellingEffect(animation)) ? undefined : animation },
         root,
       );
     },
@@ -528,8 +537,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     },
     // 도트 측면 전투: 근접 공격은 대상 적 앞까지 실제로 걸어간다. 비트 길이를 걸음 거리에 맞춘다.
     ...(retroMotion ? {
-      actorApproachMs: (entry: BattleTimelineEntrySnapshot) => retroSkillForEntry(entry)?.approachMs ?? retroWalk(field, entry)?.approachMs,
-      actorRecoverMs: (entry: BattleTimelineEntrySnapshot) => retroSkillForEntry(entry)?.recoverMs ?? retroWalk(field, entry)?.recoverMs,
+      // 직업 스킬 48종은 타임라인 길이(첫 착탄·대상별 간격·남은 연출)를 비트로 준다. 필살기는 약 2.5초다.
+      actorApproachMs: (entry: BattleTimelineEntrySnapshot) => retroClassSkillBeatMs(field, entry, "approach", options.runtime.snapshot().timeline)
+        ?? retroSkillForEntry(entry)?.approachMs ?? retroWalk(field, entry)?.approachMs,
+      actorRecoverMs: (entry: BattleTimelineEntrySnapshot) => retroClassSkillBeatMs(field, entry, "recover", options.runtime.snapshot().timeline)
+        ?? retroSkillForEntry(entry)?.recoverMs ?? retroWalk(field, entry)?.recoverMs,
       // 도트 적(슬라임·박쥐)은 대상 아군 앞까지 뛰어/날아가서 친다.
       enemyApproachMs: (entry: BattleTimelineEntrySnapshot) => retroEnemyReach(field, entry)?.approachMs,
       enemyRecoverMs: (entry: BattleTimelineEntrySnapshot) => retroEnemyReach(field, entry)?.recoverMs,
@@ -1278,7 +1290,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const actorNode = snapshot.activeActorId
       ? findBattlerNode(field, snapshot.activeActorId)
       : null;
-    if (retroMotion && command.kind === "skill" && retroSkillRecipe(store.getCurrent().database.skills.find((skill) => skill.id === command.skillId))) {
+    const skillRecord = command.kind === "skill" ? store.getCurrent().database.skills.find((skill) => skill.id === command.skillId) : undefined;
+    pendingRetroSkillId = retroMotion && retroClassSkillRecord(skillRecord) ? skillRecord?.id : undefined;
+    pendingRetroSkillUserId = snapshot.activeActorId;
+    if (retroMotion && command.kind === "skill" && (retroSkillRecipe(skillRecord) || retroClassSkillRecord(skillRecord))) {
       swingArmed = false; // The recipe owns release SE; the old animation and generic swing are silent.
       return;
     }

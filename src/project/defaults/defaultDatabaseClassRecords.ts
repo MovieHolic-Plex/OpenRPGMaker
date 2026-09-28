@@ -16,6 +16,7 @@ import {
   SCOUT_EQUIPMENT_IDS,
 } from "./defaultDatabaseRecordIds";
 import { applyGeneratedBattleEffectClassBindings } from "./generatedBattleEffectBindings";
+import { retroClassLearnedSkills } from "./retroClassSkillRecords";
 
 const STANDARD_BATTLE_COMMANDS = [
   { id: "cmd_attack", name: "공격", kind: "attack" },
@@ -157,6 +158,13 @@ export function defaultClassRecords(): ClassRecord[] {
       },
     }),
   ];
+  // retro2003 직업 스킬: 계약의 레벨대로 배운다. 기존 스킬(레벨 1)은 그대로 둔다.
+  for (const record of records) {
+    const known = new Set(record.learnedSkills.map((entry) => entry.skillId));
+    const added = retroClassLearnedSkills(record.id).filter((entry) => !known.has(entry.skillId));
+    record.learnedSkills = [...record.learnedSkills, ...added];
+    record.skillIds = record.learnedSkills.map((entry) => entry.skillId);
+  }
   applyGeneratedBattleEffectClassBindings(records);
   return records;
 }
