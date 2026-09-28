@@ -9,6 +9,7 @@ import { MV_PACK_PRESETS } from "@/project/rpgmakerMv/packs";
 import type { MvTownRecipe } from "@/project/rpgmakerMv/packPreset";
 import { layOutPackTown } from "@/project/rpgmakerMv/townLayout";
 import { lintPackMap } from "@/project/rpgmakerMv/packMapLint";
+import { paintPackLayoutTool } from "./packLayoutTool";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { requireMap } from "./mapHelpers";
 
@@ -372,4 +373,4 @@ const checkPackMapTool: ToolDefinition = {
   },
 };
 
-export const PACK_TOWN_TOOLS: readonly ToolDefinition[] = [buildPackTown, checkTownMapTool, checkPackMapTool];
+export const PACK_TOWN_TOOLS: readonly ToolDefinition[] = [buildPackTown, checkTownMapTool, checkPackMapTool, paintPackLayoutTool];

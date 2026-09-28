@@ -155,6 +155,14 @@ export function lintPackPassage(input: PackLintInput): string[] {
     for (const [dx, dy] of want) { const x = p.x + dx, y = p.y + dy; if (inside(x, y) && open(y * w + x)) holes.push(`${p.o.id}${at(x, y)}`); }
   }
   if (holes.length) out.push(`통행: 막혀야 할 물체 칸이 뚫림 ${holes.length} — ${holes.slice(0, 8).join(" ")}`);
+  // 땅에 서는 물체(키 큰 물체·두 줄 이상 가구)의 밑줄은 걷는 바닥 위여야 한다 — 벽·천장·물 위에 서면 벽을 뚫고 선 것처럼 보인다.
+  const floating: string[] = [];
+  for (const p of placed) {
+    if ((p.o.kind !== "tall" && p.o.kind !== "prop") || p.o.h < 2 || NATURE.test(p.o.id) || p.o.id.startsWith("tile:") || /tunnel|hole|cave|mouth|exit/.test(p.o.id)) continue;
+    const bottom = p.cells.filter(([, dy]) => dy === p.o.h - 1);
+    if (bottom.some(([dx, dy]) => { const x = p.x + dx, y = p.y + dy; return inside(x, y) && !openOf(input.basePass[y * w + x]!) && m1[y * w + x]?.role !== "fence" && m2[y * w + x]?.role !== "fence"; })) floating.push(`${p.o.id}${at(p.x, p.y)}`);
+  }
+  if (floating.length) out.push(`통행: 밑줄이 벽·천장·물 위에 선 물체 ${floating.length} — ${floating.slice(0, 8).join(" ")}`);
   // 네모 물: 물 덩이가 바운딩 상자를 거의 꽉 채우면(80% 이상, 6칸 이상) 욕조처럼 보인다. 수조·수로는 일부러 네모다.
   const isWater = (i: number) => [m1[i], m2[i]].some((m) => !!m && !m.flat && m.role === "water" && !/수조|수로|분수|욕탕/.test(m.name));
   const wseen = new Array<boolean>(w * h).fill(false); const boxes: string[] = [];
