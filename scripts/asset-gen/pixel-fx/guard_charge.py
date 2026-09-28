@@ -31,9 +31,10 @@ def dust(c: Cell, t, k=5):
 
 def draw(c: Cell, f: int) -> None:
     if f == 0:
-        shield(c, 60)
+        # QA: 첫 칸 방패가 칸 오른쪽 밖으로 반쯤 잘렸다 — 몸 전체가 보이는 x 로 당긴다.
+        shield(c, 53)
         for y in (18, 28, 40, 50):
-            c.put(c.line([(63, y), (58, y)]), "l")
+            c.put(c.line([(62, y), (59, y)]), "l")
     elif f == 1:
         shield(c, 44, -2)
         for y in (16, 26, 38, 48, 54):
@@ -71,7 +72,7 @@ _draw_body = draw
 
 def draw(c, f):
     _draw_body(c, f)
-    fade_edges(c, R=6)
+    fade_edges(c, R=2)
 
 
 if __name__ == "__main__":

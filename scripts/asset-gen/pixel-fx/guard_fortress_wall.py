@@ -59,8 +59,12 @@ def draw(c: Cell, f: int) -> None:
         return
     if f <= 7:  # topples forward
         lean = (0.18, 0.42)[f - 6]
+        # QA: 앞(왼쪽)으로 기울면 맨 왼쪽 방패 윗부분이 칸 밖으로 나가 잘렸다 — 벽 전체를 기운 만큼 오른쪽으로 민다.
+        h = 80 - (f - 5) * 12
+        left = max(XS[0], round(lean * h) + 11 + 3)   # 기운 윗부분이 x>=3 에 오도록
+        right = 127 - 12
         for x in XS:
-            tower(c, x, 80 - (f - 5) * 12, lean)
+            tower(c, round(left + (x - XS[0]) * (right - left) / (XS[-1] - XS[0])), h, lean)
         for x in (10, 34, 58, 82, 106):
             c.put(c.line([(x, 18 + f * 4), (x - 4, 32 + f * 4)]), "l")
         return
@@ -87,7 +91,8 @@ _draw_body = draw
 
 def draw(c, f):
     _draw_body(c, f)
-    fade_edges(c, T=8, B=8, L=8, R=8)
+    # 단단한 방패는 디더로 걷지 않는다 — 광선·흙먼지만 닿는 위아래 가장자리만 짧게 걷는다.
+    fade_edges(c, T=6, B=4)
 
 
 if __name__ == "__main__":

@@ -111,6 +111,10 @@ def equipment_pass(mode,records,positions=None):
 def angle_for(kind,pid):
  # Bow angles describe shooting direction: upright in the hand, flat on death.
  if kind=='bow':return 90 if pid=='dead' else 0
+ # QA 2026-09-28: a collapsing body's hand is at the floor (y≈42). The 315° blade
+ # cannot fit below it, so fitting_hand lifted the grip 8px above the fist and
+ # the sword floated. Lay blades flat (0°) while falling, as on the corpse.
+ if pid=='dying' and kind in ('sword','dagger'):return 0
  if pid.startswith('cast_'):
   step={'charge':1,'raise':2,'release':3}.get(pid.split('_')[-1])
   if step is None:step=int(pid.split('_')[-1])

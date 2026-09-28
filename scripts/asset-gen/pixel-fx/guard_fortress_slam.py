@@ -77,7 +77,8 @@ _draw_body = draw
 
 def draw(c, f):
     _draw_body(c, f)
-    fade_edges(c, T=10, L=3)
+    # 방패 밑면은 화면 층(guard_fortress_wall)이 내리꽂은 방패의 끝이라 위에서 들어오는 게 맞다 — 위는 걷지 않는다.
+    fade_edges(c, L=2, R=2)
 
 
 if __name__ == "__main__":
