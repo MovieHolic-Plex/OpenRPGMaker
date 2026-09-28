@@ -166,12 +166,12 @@ def tint_poly(p, pts, fill, tint, edge=None):
 
 
 def settle(p, ground):
-    """Move a finished frame so its lowest opaque row sits on ground and it keeps a 1px
+    """Move a finished frame so its lowest opaque row sits on ground (None = keep height) and it keeps a 1px
     side margin (the sheet checker rejects silhouettes touching the cell edge)."""
     box = p.im.getbbox()
     if not box:
         return
-    dy = ground - (box[3] - 1)
+    dy = 0 if ground is None else ground - (box[3] - 1)
     dx = 0
     if box[0] < 1:
         dx = 1 - box[0]
