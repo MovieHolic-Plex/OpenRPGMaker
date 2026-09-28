@@ -11,3 +11,18 @@ binary alpha and at most twelve RGBA colours. The runtime renders at exactly 2×
 
 The PNGs use the repository's artwork licensing terms. Associated sounds are the
 existing EasyRPG RTP assets; their attribution remains in `assets/easyrpg/AUTHORS.md`.
+
+## Class skill sheets (hero · guardian)
+
+`lib_hero.py` draws the class_hero and class_guardian layer sheets listed in
+`src/assets/retroClassSkills.ts` (22 keys, including the shared `hero_dust`).
+Each `<key>.py` holds one sheet's frame formulas; `python3 <key>.py` rebuilds
+that sheet and `python3 lib_hero.py` rebuilds all 22. Frame size and count are
+read back from the contract file and asserted before writing.
+
+Shapes are aliased PIL masks painted on a palette-index canvas, so alpha is 0/255
+and each sheet stays within its palette (at most 12 colours). Shading comes from
+mask dilation and erosion, and fades use a checker dither. The build prints and
+asserts size, alpha, colour count, non-empty frames and frame-to-frame change.
+Review images (4× previews, 2× GIFs on #202840, per-class sheet and battler
+composite) go to `.omo/pixel-fx/` and are not committed.
