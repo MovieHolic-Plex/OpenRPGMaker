@@ -1,0 +1,61 @@
+{
+  "label": "r2ab-r1-hill-1",
+  "base": "http://127.0.0.1:9955",
+  "seed": "/home/main/.codex/worktrees/e03b/perf-tmp-archive/seed-hill.json",
+  "project": {
+    "mapId": "map_peaceful_forest_100",
+    "size": "100x100",
+    "maps": 12
+  },
+  "bootMs": 36787,
+  "checkpoints": 6,
+  "runMs": 28568,
+  "longTask": {
+    "count": 108,
+    "totalMs": 21014,
+    "maxMs": 5399
+  },
+  "frameGapMs": {
+    "p50": 16.7,
+    "p95": 416.6,
+    "max": 5633.1,
+    "over100": 52
+  },
+  "checkpointAckMs": {
+    "median": 603.3,
+    "max": 616.3,
+    "ok": true,
+    "n": 6
+  },
+  "manualEditAfterTurnMs": {
+    "median": 1.9,
+    "max": 6.5
+  },
+  "correctness": {
+    "appliedMatchesLastCheckpoint": true,
+    "undoRestoresOriginal": true
+  },
+  "topLongTasksAt": [
+    [
+      385,
+      5399
+    ],
+    [
+      23583,
+      635
+    ],
+    [
+      11811,
+      625
+    ],
+    [
+      14420,
+      613
+    ],
+    [
+      21277,
+      591
+    ]
+  ],
+  "errors": []
+}

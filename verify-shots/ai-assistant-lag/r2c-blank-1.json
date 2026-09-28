@@ -1,0 +1,61 @@
+{
+  "label": "r2c-blank-1",
+  "base": "http://127.0.0.1:9954",
+  "seed": "blank",
+  "project": {
+    "mapId": "map_blank_start",
+    "size": "20x15",
+    "maps": 1
+  },
+  "bootMs": 19831,
+  "checkpoints": 6,
+  "runMs": 22933,
+  "longTask": {
+    "count": 85,
+    "totalMs": 8767,
+    "maxMs": 324
+  },
+  "frameGapMs": {
+    "p50": 33.3,
+    "p95": 100.1,
+    "max": 1449.9,
+    "over100": 27
+  },
+  "checkpointAckMs": {
+    "median": 253.2,
+    "max": 323.6,
+    "ok": true,
+    "n": 6
+  },
+  "manualEditAfterTurnMs": {
+    "median": 2.1,
+    "max": 5.4
+  },
+  "correctness": {
+    "appliedMatchesLastCheckpoint": true,
+    "undoRestoresOriginal": true
+  },
+  "topLongTasksAt": [
+    [
+      12166,
+      324
+    ],
+    [
+      16057,
+      283
+    ],
+    [
+      68,
+      273
+    ],
+    [
+      13468,
+      253
+    ],
+    [
+      1314,
+      240
+    ]
+  ],
+  "errors": []
+}
