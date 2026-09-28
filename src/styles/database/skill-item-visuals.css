@@ -782,3 +782,46 @@
 .db-skill-retro-pop[hidden] {
   display: none;
 }
+
+/* 스킬 탭 몬스터 스킬 무대(몬스터 왼쪽 시전 → 아군 오른쪽 대상) · 레코드가 없을 때의 계약 둘러보기. */
+.db-skill-mon-browser {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+}
+
+.db-skill-mon-browser-note {
+  color: var(--db-studio-text-2);
+  font-size: 12px;
+  margin: 0;
+}
+
+.db-skill-mon-browser-label {
+  align-items: center;
+  color: var(--db-studio-text-2);
+  display: flex;
+  font-size: 12px;
+  gap: 6px;
+}
+
+.db-skill-mon-browser-select {
+  flex: 1 1 auto;
+  min-height: 28px;
+  min-width: 0;
+}
+
+.db-skill-mon-browser-select:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: 1px;
+}
+
+.db-skill-retro-fx[hidden] {
+  display: none;
+}
+
+/* 몬스터 스킬 화면 층(screen 128)은 배우(z 10~) 뒤, 어둡게 층 위에 둔다. */
+.db-skill-retro-screen-layer {
+  pointer-events: none;
+  z-index: 5;
+}

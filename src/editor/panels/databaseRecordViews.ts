@@ -23,12 +23,14 @@ import { recordIdentity } from "@/editor/panels/databaseRecordIdentity";
 import { emptyState } from "@/editor/panels/databaseWorkspace";
 import { recordListThumbnail } from "@/editor/panels/databaseRecordThumbnails";
 import {
+  RETRO_MONSTER_FILTER_ID,
   retroSkillClassFilters,
   retroSkillListBadge,
   setSkillClassFilter,
   skillClassFilterFor,
   skillMatchesRetroClass,
 } from "@/editor/panels/databaseSkillRetroStage";
+import { renderMonsterSkillContractBrowser } from "@/editor/panels/databaseMonsterSkillStage";
 import { enemyPixelListBadge } from "@/editor/panels/databaseEnemyPixelPreview";
 import { renderStateRecordForm } from "@/editor/panels/databaseStateRecordView";
 import { renderEquipmentRecordForm, renderItemRecordForm, renderSkillRecordForm, renderTroopRecordForm } from "@/editor/panels/databaseAdvancedRecordViews";
@@ -526,6 +528,10 @@ function recordList(
   // 목록 창이 통째로 붕괴해(적 그룹에서 4px 로 실측) 검색을 지울 방법도 안 보인다.
   if (visible.length === 0) {
     const filtered = searchQuery.length > 0 || categoryFilter !== "all";
+    // 「몬스터」 칩인데 skill_mon_* 레코드가 아직 없다 — 계약(retroMonsterSkills.ts)만으로 미리 보게 한다.
+    if (collection === "skills" && categoryFilter === RETRO_MONSTER_FILTER_ID && searchQuery.length === 0) {
+      return el("div", { class: "db-list db-ws-list db-skill-mon-browser-list", dataset: { testid: "db-list-empty" }, children: [renderMonsterSkillContractBrowser()] });
+    }
     // `db-ws-list` 도 함께 붙인다 — 빈 상태 중앙 정렬 규칙이 `.db-ws-list.db-ws-list-empty`
     // 로 선언돼 있어서 `db-list db-ws-list-empty` 만으로는 정렬이 적용되지 않는다.
     return el("div", {

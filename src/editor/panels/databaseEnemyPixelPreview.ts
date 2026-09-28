@@ -11,9 +11,25 @@
 // 함께 불린다. 재생은 requestAnimationFrame 하나이고, 루트가 두 틱 연속 문서에서 떨어져 있으면 스스로 멈춘다.
 // 감속 모드(prefers-reduced-motion)·rAF 없음 → 대기 a 칸에 서 있고, 버튼은 대표 칸 하나를 잠깐 보여 준다.
 // 시트가 404 면 카드 전체를 조용히 걷는다(기존 정적 미리보기만 남는다).
+//
+// 몬스터 스킬(계약 retroMonsterSkills.ts): 그 slug 가 쓰는 스킬마다 버튼을 두고 「스킬 N개」 칩으로 레벨대별 수를 보인다.
+// 누르면 databaseMonsterSkillStage 의 순수 타임라인대로 windup→(lunge 는 move)→attack→recover 칸을 넘기며
+// 계약 레이어를 오른쪽 아군 위에 얹는다. 레이어 시트가 404 면 그 레이어만 생략하고 몸 동작은 그대로다.
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { charsetBattler } from "@/assets/charsetBattlers";
 import { EXTENDED_POSE_FRAME } from "@/battle/battlePose";
+import { retroTimelineStateAt, type RetroSkillTimeline } from "@/battle/retroSkillTimeline";
+import type { RetroMonsterSkill } from "@/assets/retroMonsterSkills";
+import {
+  MONSTER_MOTION_LABELS,
+  createMonsterFxPainter,
+  monsterCellForPose,
+  monsterMovePoint,
+  monsterSkillTimeline,
+  monsterSkillsForSlug,
+  pixelEnemySlug,
+  type MonsterFxPainter,
+} from "@/editor/panels/databaseMonsterSkillStage";
 import {
   PIXEL_ENEMY_FRAME,
   pixelEnemyCell,
@@ -149,7 +165,12 @@ export function renderEnemyPixelPreview(
   if (allySheet) ally.style.backgroundImage = 'url("' + withInlineAsset("/" + allySheet.path) + '")';
   ally.style.left = ALLY_X - ALLY_CELL / 2 + "px";
   ally.style.top = FEET_Y - ALLY_FOOT_ROW + "px";
-  world.append(scenery, ally, sprite);
+  const dimVeil = el("div", { class: "db-enemy-pixel-dim" });
+  const screenLayer = el("div", { class: "db-enemy-pixel-fx-layer db-enemy-pixel-screen-layer" });
+  const fxLayer = el("div", { class: "db-enemy-pixel-fx-layer" });
+  const flashVeil = el("div", { class: "db-enemy-pixel-flash" });
+  // 화면 층(screen 128)은 배우 뒤, 몸 위 층(대상·투사체·오라)은 배우 앞.
+  world.append(scenery, dimVeil, screenLayer, ally, sprite, fxLayer, flashVeil);
 
   const stage = el("div", {
     class: "db-enemy-pixel-stage",
@@ -194,20 +215,20 @@ export function renderEnemyPixelPreview(
   let detachedTicks = 0;
   let beats: readonly Beat[] = [];
   let beatAt = 0;
-  let action: EnemyPixelAction | "idle" | "still" = "idle";
+  let action: EnemyPixelAction | "idle" | "still" | "skill" = "idle";
   let still: PixelEnemyCell = "idle_a";
   let from = { x: 0, y: 0 };
 
-  const draw = (current: PixelEnemyCell, dx: number, dy: number): void => {
+  const draw = (current: PixelEnemyCell, dx: number, dy: number, allyStruck = current === "attack"): void => {
     const pos = PIXEL_ENEMY_FRAME[current];
     sprite.style.backgroundPosition = -pos.col * cell + "px " + -pos.row * cell + "px";
     sprite.style.left = Math.round(HOME_X - cell / 2 + dx) + "px";
     sprite.style.top = Math.round(FEET_Y - (cell - 4) + dy) + "px";
     sprite.classList.toggle("is-hit", current === "hit");
-    // 과녁 아군: 공격 칸(착탄)에서 피격 칸, 평소엔 대기.
-    const allyPose = EXTENDED_POSE_FRAME[current === "attack" ? "hit" : "idle"];
+    // 과녁 아군: 공격 칸(착탄)·스킬 피격 순간에 피격 칸, 평소엔 대기.
+    const allyPose = EXTENDED_POSE_FRAME[allyStruck ? "hit" : "idle"];
     ally.style.backgroundPosition = -allyPose.col * ALLY_CELL + "px " + -allyPose.row * ALLY_CELL + "px";
-    ally.classList.toggle("is-hit", current === "attack");
+    ally.classList.toggle("is-hit", allyStruck);
     stage.dataset.pixelCell = current;
     for (const [id, button] of cellButtons) {
       const on = id === current;
@@ -219,7 +240,10 @@ export function renderEnemyPixelPreview(
   const setAction = (next: typeof action): void => {
     action = next;
     stage.dataset.action = next;
-    for (const button of actionButtons) button.setAttribute("aria-pressed", String(button.dataset.action === next));
+    if (next !== "skill") { playing = null; painterFor?.clear(); resetScreen(); }
+    const pressed = next === "skill" && playing ? "skill:" + playing.skill.id : next;
+    for (const button of [...actionButtons, ...skillButtons]) button.setAttribute("aria-pressed", String(button.dataset.action === pressed));
+    stage.dataset.skill = next === "skill" && playing ? playing.skill.id : "";
   };
 
   const stop = (): void => {
@@ -250,6 +274,62 @@ export function renderEnemyPixelPreview(
     clock = 0;
   }
 
+  // ---- 몬스터 스킬 ----
+  const skills = monsterSkillsForSlug(pixelEnemySlug(sheet));
+  const painters = new Map<string, MonsterFxPainter>();
+  let painterFor: MonsterFxPainter | undefined;
+  let playing: { readonly skill: RetroMonsterSkill; readonly timeline: RetroSkillTimeline } | null = null;
+  let skillAt = 0;
+  const allyFeet = { x: ALLY_X, y: FEET_Y };
+  const home = { x: HOME_X, y: FEET_Y };
+  // 과녁 앞: 몬스터 몸 폭 절반 + 14px 떨어져 선다(큰 몸이 아군을 덮지 않게).
+  const front = { x: ALLY_X - Math.min(cell / 2, 40) - 14, y: FEET_Y };
+  function resetScreen(): void {
+    world.style.setProperty("--enemy-pixel-shake-x", "0px");
+    world.style.setProperty("--enemy-pixel-shake-y", "0px");
+    dimVeil.style.opacity = "0";
+    flashVeil.style.opacity = "0";
+  }
+  function drawSkill(t: number): void {
+    if (!playing) return;
+    const state = retroTimelineStateAt(playing.timeline, t);
+    const point = monsterMovePoint(state, home, front);
+    const beat = monsterCellForPose(state.pose) ?? IDLE_LOOP[Math.floor(clock / sheet!.idleFrameMs) % 4]!;
+    const struck = playing.timeline.side === "enemies" && Math.max(state.hitAll, state.hitTarget) > 0.3;
+    draw(beat, point.x - HOME_X, point.y - FEET_Y, struck);
+    world.style.setProperty("--enemy-pixel-shake-x", state.shake.x + "px");
+    world.style.setProperty("--enemy-pixel-shake-y", state.shake.y + "px");
+    dimVeil.style.opacity = String(Math.round(state.dim * 72) / 100);
+    flashVeil.style.opacity = String(Math.round(state.flash * 80) / 100);
+    painterFor?.paint(state, { caster: point, casterCell: cell, target: allyFeet, targets: [allyFeet], allies: [point], stageW: STAGE_W, stageH: STAGE_H });
+    stage.dataset.retroTime = String(Math.round(t));
+  }
+  function stepSkill(dt: number): void {
+    if (!playing) { setAction("idle"); return; }
+    skillAt += dt;
+    if (skillAt >= playing.timeline.durationMs) { setAction("idle"); clock = 0; draw("idle_a", 0, 0); return; }
+    drawSkill(skillAt);
+  }
+  function playSkill(skill: RetroMonsterSkill): void {
+    let painter = painters.get(skill.id);
+    if (!painter) { painter = createMonsterFxPainter(fxLayer, skill.layers, "db-enemy-pixel-fx", undefined, screenLayer); painters.set(skill.id, painter); }
+    painterFor?.clear();
+    painterFor = painter;
+    playing = { skill, timeline: monsterSkillTimeline(skill) };
+    skillAt = 0;
+    setAction("skill");
+    skillNote.textContent = skill.description;
+    skillMotion.textContent = MONSTER_MOTION_LABELS[skill.motion];
+    skillMotion.hidden = false;
+    if (!canAutoplay) {
+      // 감속 모드: 착탄 한가운데 한 장면만 보인다.
+      drawSkill(playing.timeline.representativeMs);
+      return;
+    }
+    drawSkill(0);
+    start();
+  }
+
   function tick(stamp: number): void {
     frame = null;
     if (!stage.isConnected) {
@@ -264,7 +344,8 @@ export function renderEnemyPixelPreview(
       clock += dt;
       if (!canAutoplay) { draw("idle_a", 0, 0); stop(); return; }
       draw(IDLE_LOOP[Math.floor(clock / sheet!.idleFrameMs) % 4]!, 0, 0);
-    } else stepAction(dt);
+    } else if (action === "skill") { clock += dt; stepSkill(dt); }
+    else stepAction(dt);
     schedule();
   }
 
@@ -277,6 +358,7 @@ export function renderEnemyPixelPreview(
   };
 
   function play(next: EnemyPixelAction): void {
+    setAction("idle");
     beats = enemyPixelBeats(sheet!, next, cell);
     beatAt = 0;
     from = { x: 0, y: 0 };
@@ -322,13 +404,37 @@ export function renderEnemyPixelPreview(
     el("span", { class: "db-skill-animation-chip", text: `${cell}px 셀` }),
   ] });
   const controls = el("div", { class: "db-enemy-pixel-controls", attrs: { role: "group", "aria-label": "도트 동작" }, children: actionButtons });
+  const skillButtons: HTMLButtonElement[] = skills.map((skill) => el("button", {
+    class: "db-enemy-pixel-action db-enemy-pixel-skill",
+    text: skill.name,
+    attrs: { type: "button", "aria-pressed": "false" },
+    dataset: { testid: "db-enemy-pixel-skill-" + skill.id, action: "skill:" + skill.id, motion: skill.motion },
+    on: { click: () => playSkill(skill) },
+  }));
+  const skillNote = el("p", { class: "db-enemy-pixel-skill-note", attrs: { "aria-live": "polite" }, dataset: { testid: "db-enemy-pixel-skill-note" }, text: skills.length > 0 ? "스킬 버튼을 누르면 그 스킬 연출을 재생합니다." : "" });
+  const skillMotion = el("span", { class: "db-skill-animation-chip", dataset: { testid: "db-enemy-pixel-skill-motion" } });
+  skillMotion.hidden = true;
+  const skillGroup = skills.length === 0 ? null : el("div", {
+    class: "db-enemy-pixel-skills",
+    attrs: { role: "group", "aria-label": "몬스터 스킬" },
+    dataset: { testid: "db-enemy-pixel-skills", count: String(skills.length) },
+    children: [
+      el("div", { class: "db-enemy-pixel-skills-head", children: [
+        el("span", { class: "db-enemy-pixel-skills-title", text: "몬스터 스킬" }),
+        el("span", { class: "db-skill-animation-chip db-enemy-pixel-skill-count", dataset: { testid: "db-enemy-pixel-skill-count" }, text: `스킬 ${skills.length}개` }),
+        skillMotion,
+      ] }),
+      el("div", { class: "db-enemy-pixel-skill-buttons", children: skillButtons }),
+      skillNote,
+    ],
+  });
   const wrap = el("section", {
     class: "db-enemy-pixel-preview",
     attrs: { "aria-label": "도트 미리보기" },
     dataset: { testid: "db-enemy-pixel-preview", resourceId: sheet.resourceId },
     children: [
       el("div", { class: "db-enemy-stage-heading", children: [el("span", { text: "도트 미리보기" }), el("span", { class: "db-enemy-stage-status", text: "레트로 2003 전투" })] }),
-      caption, stage, controls, grid,
+      caption, stage, controls, ...(skillGroup ? [skillGroup] : []), grid,
     ],
   });
 
