@@ -596,6 +596,7 @@ export function ensureBundledProjectTextures(
       if (!scene.textures.exists(asset.textureKey)) continue;
       registerTilesetTextureFrames(scene, asset.textureKey, bundledChipsetFrameCount(asset.textureKey));
     }
+    if (chipsets.length > 0) registerUploadedTilesets(scene, project);   // 늦게 실린 번들 시트의 저작 스트립
     for (const key of charsetKeys) inFlight.delete(rawCharsetTextureKey(key));
     for (const id of cropIds) inFlight.delete(id);
     if (charsetKeys.size > 0) registerEasyRpgCharsetTextures(scene, charsetKeys);

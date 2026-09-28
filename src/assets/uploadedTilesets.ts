@@ -15,8 +15,28 @@ function animationName(strip: TilesetAnimationStrip): string {
 
 export function uploadedTilesetAnimationName(tileset: TilesetDef, tile: number): string | null {
   if (tileset.image.type !== "uploaded") return null;
+  return tilesetStripAnimationName(tileset, tile);
+}
+
+/**
+ * 타일셋이 직접 적은 애니메이션 스트립(업로드·번들 공통). 번들 시트에 손으로 그려 붙인 분수·횃불 같은
+ * 프레임 묶음도 이 목록으로 움직인다 — 기본 칩셋의 내장 물 스트립(CHIPSET_ANIMATION_STRIPS)과는 별개다.
+ */
+export function tilesetStripAnimationName(tileset: TilesetDef, tile: number): string | null {
   const strip = tileset.animationStrips?.find(s => tile >= s.baseTile && tile < s.baseTile + s.frames);
   return strip ? animationName(strip) : null;
+}
+
+/** 스트립마다 `${textureKey}:${이름}` 애니메이션을 한 번만 만든다. 프레임(tile_N)은 이미 등록돼 있어야 한다. */
+export function registerTilesetStripAnimations(scene: Phaser.Scene, tileset: TilesetDef, key: string): void {
+  if (!scene.textures.exists(key)) return;
+  for (const strip of tileset.animationStrips ?? []) {
+    const name = `${key}:${animationName(strip)}`;
+    if (scene.anims.exists(name)) continue;
+    scene.anims.create({ key: name, frameRate: strip.fps, repeat: -1,
+      frames: Array.from({ length: strip.frames }, (_, frame) => ({ key, frame: `tile_${strip.baseTile + frame}` })),
+    });
+  }
 }
 
 /**
@@ -72,18 +92,14 @@ export function registerUploadedTilesetFrames(
       Math.floor(tile / tileset.tilesPerRow) * tileset.tileSize,
       tileset.tileSize, tileset.tileSize);
   }
-  for (const strip of tileset.animationStrips ?? []) {
-    const name = `${key}:${animationName(strip)}`;
-    if (scene.anims.exists(name)) continue;
-    scene.anims.create({ key: name, frameRate: strip.fps, repeat: -1,
-      frames: Array.from({ length: strip.frames }, (_, frame) => ({ key, frame: `tile_${strip.baseTile + frame}` })),
-    });
-  }
+  registerTilesetStripAnimations(scene, tileset, key);
 }
 
 export function registerUploadedTilesets(scene: Phaser.Scene, project?: Project): void {
   for (const tileset of Object.values(project?.tilesets ?? {})) {
     if (tileset.image.type === "uploaded") registerUploadedTilesetFrames(scene, tileset);
+    // 번들 시트의 저작 스트립: 텍스처 키가 곧 image.id 다(이식·투명색으로 구운 사본은 ensureTilesetTexture 가 맡는다).
+    else if (tileset.animationStrips?.length) registerTilesetStripAnimations(scene, tileset, tileset.image.id);
   }
 }
 
