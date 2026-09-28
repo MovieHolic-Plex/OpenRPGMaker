@@ -544,3 +544,8 @@ store lineage/generation으로 공유한다. 로드 정규화가 쓰는 순수 �
 
 EditScene은 store 렌더 계획이 skip이면 유휴 게이트를 깨우지 않는다. 실제 변경은
 requestEditRenderFrame으로 한 프레임만 요청하고, 카메라·포인터의 연속 렌더 정책은 유지한다.
+
+직접 도구·도구 묶음은 `toolMapCellApply`로 단일 맵의 타일 변경만 증명된 경우 기존
+`mapCellApply` → `replace({renderCells})` 경로를 사용한다. 네 층·그림자·스택을 비교하고,
+오토타일 이웃 확장은 기존 렌더러가 맡는다. `replace`에는 changedMapIds 옵션이 없으므로
+여러 맵/속성/이벤트/프로젝트 데이터 변경, 추가·삭제와 2,048셀 초과는 전체 통지를 유지한다.

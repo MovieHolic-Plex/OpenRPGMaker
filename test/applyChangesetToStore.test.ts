@@ -231,3 +231,20 @@ describe("applyProposedProject shared apply path", () => {
     expect(getMapEditHistoryEntries()).toHaveLength(0);
   });
 });
+
+describe("direct tool render descriptors", () => {
+  it("publishes changed cells including autotile neighbors for direct tools and sequences", () => {
+    store.replace(createBlankProject());
+    const mapId = store.getCurrent().startMapId;
+    const replace = vi.spyOn(store, "replace");
+    const args = { mapId, layer: "lower", mode: "cells", tile: 281, cells: [{ x: 2, y: 2 }] };
+    const result = applyChangesetToStore.applyToolToStore("paint_tiles", args);
+    expect(result.ok, JSON.stringify(result)).toBe(true);
+    expect(replace.mock.calls.at(-1)?.[1]?.renderCells).toEqual({ mapId, cells: [{ x: 2, y: 2, layer: "lower" }] });
+    const results = applyChangesetToStore.applyToolSequenceToStore([
+      { name: "paint_tiles", args: { ...args, cells: [{ x: 3, y: 2 }] } },
+    ]);
+    expect(results[0]?.ok, JSON.stringify(results)).toBe(true);
+    expect(replace.mock.calls.at(-1)?.[1]?.renderCells).toEqual({ mapId, cells: [{ x: 2, y: 2, layer: "lower" }, { x: 3, y: 2, layer: "lower" }] });
+  });
+});
