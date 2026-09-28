@@ -114,6 +114,12 @@ async function recordAll(rows) {
     for (const row of rows) {
       const enemy = structuredClone(row.enemy);
       enemy.id = 'qa_enemy_' + row.slug.replace(/-/g, '_');
+      // 기본 DB 행을 데모 사본에 옮긴다 — 사본에 없는 참조(종·드롭·훔칠 아이템·행동 기술)는 걷어 로드 검증을 통과시킨다.
+      delete enemy.speciesId;
+      if (enemy.rewards) delete enemy.rewards.dropItemId;
+      delete enemy.stealItems;
+      delete enemy.learnableSkillIds;
+      delete enemy.elementRates; delete enemy.stateRates;
       enemy.stats = { ...enemy.stats, maxHp: 99999, attack: 1, agility: 999 };
       enemy.actions = [{ skillId: 'skill_attack', priority: 5, condition: { kind: 'always' } }];
       if (!have.has(enemy.id)) project.database.enemies.push(enemy);
