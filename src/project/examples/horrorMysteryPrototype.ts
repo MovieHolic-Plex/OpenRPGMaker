@@ -194,7 +194,6 @@ export function createHorrorMysteryPrototypeProject(): HorrorMysteryPrototypeBui
     musicResourceId: "cc0-bgm-dungeon",
     backgroundResourceId: "horror-mystery-blue-gallery",
     titleGraphic: { mode: "text" },
-    showInputHint: true,
   });
   context.project.maps[HORROR_MYSTERY_MAP_IDS.gallery]!.bgm = {
     mode: "custom",

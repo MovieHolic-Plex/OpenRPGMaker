@@ -21,6 +21,7 @@ import {
 import { hostExitReturnUrl, parseHostBridge, type HostBridge } from "@/player/hostBridge";
 import { stopAllAudio } from "@/player/audio";
 import { registerExportAssetBase } from "@/assets/inlineAssetStore";
+import { repairFaceMatches } from "@/project/faceMatchRepair";
 import type { ActionCombatRuntimeResult } from "@/testing/actionCombatProof";
 
 const app = document.getElementById("app");
@@ -102,6 +103,8 @@ function startPlayer(
   source: ExportProjectSource,
 ): void {
   try {
+    // 옛 저장본에서 내보낸 게임도 에디터와 같은 얼굴을 보여 준다(faceMatchRepair.ts — 걷기 그림의 짝으로 교정).
+    repairFaceMatches(project);
     setExportedProject(project);
     const saveNamespace = resolveExportSaveNamespace(project, {
       source,

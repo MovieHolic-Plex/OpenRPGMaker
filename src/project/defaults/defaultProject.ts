@@ -18,6 +18,7 @@ import { DEFAULT_ROAD_AUTOTILE_GROUP } from "./autotileGroups";
 import { shapeAutotileGroupAround } from "./autotileEngine";
 import { DIRT_ROAD_TILE } from "./chipsetMapping";
 import { repairLegacyRateKeys } from "./legacyRateKeyRepair";
+import { repairFaceMatches } from "../faceMatchRepair";
 import { repairUnplayableSystemBgm } from "./legacyAudioRepair";
 import {
   createBlankMap,
@@ -75,6 +76,8 @@ export function createSampleAdventureProject(): Project {
   enlivenDewVillage(project);
   // 주민 대사에 시간대·활동·호감·퀘스트 진행을 반영한다(dewVillageDialogue.ts 주석 참조).
   layerDewVillageDialogue(project);
+  // 픽스처는 옛 기본값(이름이 같은 얼굴 시트)으로 저장됐다 — 걷기 그림의 짝으로 맞춘다(faceMatchRepair.ts).
+  repairFaceMatches(project);
   return project;
 }
 

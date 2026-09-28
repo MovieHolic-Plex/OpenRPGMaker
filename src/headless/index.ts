@@ -10,6 +10,7 @@ import { ensureBundledResourceProfiles, ensureBundledTilesets, removeLegacyRmTil
 import { ensureSharedTileReferences } from "@/project/sharedTileReferences";
 import { ensureDefaultDatabaseIconResources } from "@/project/defaults/defaultDatabaseIconResources";
 import { ensureBundledBattleAnimations } from "@/project/defaults/defaultDatabase";
+import { repairFaceMatches } from "@/project/faceMatchRepair";
 import { setRegionReferenceDownloadLoader } from "@/project/regionReferenceImport";
 import { readFile } from "node:fs/promises";
 import { LEGACY_RPGZZU_EXTENSION, OPRN_EXTENSION } from "@/project/package";
@@ -78,6 +79,7 @@ export function normalizeHeadlessProject(project: Project): Project {
   ensureBundledResourceProfiles(project);
   ensureDefaultDatabaseIconResources(project);
   ensureBundledBattleAnimations(project);
+  repairFaceMatches(project);
   return project;
 }
 

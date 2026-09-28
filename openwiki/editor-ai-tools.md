@@ -453,6 +453,30 @@ M2 명령의 `commandId`와 객체 `fields`는 공통 command shape 검증에서
 명시한 최상위 face > 페이지 face > 공용 매핑 순서를 유지한다. 명시 textureKey도 공용 매핑으로 해석한다.
 기존 저장 이벤트를 소급 변경하지 않는다. 회귀 계약: `test/npcSharedFaceMapping.test.ts`.
 
+### 얼굴 짝 전수 교정 (2026-09-28)
+
+얼굴의 정본은 공용 대응표 하나다. 읽는 쪽은 `src/assets/reviewedCharsetFaces.ts`(zod 없이 JSON 직독 — 플레이어 번들도 쓴다).
+
+- **조수가 넘긴 얼굴은 걷기 그림과 대조한다** (`reconcileFaceWithCharset`): place_npc·make_villager의 `face`, 페이지 `face`,
+  컷신 `say.face`(화자가 이 맵 NPC·배우 이름과 하나로 맞을 때), `upsert_actor.faceResourceId`(그림만 바꿔도 따라간다).
+  짝이 있으면 짝으로 바꾸고, 대응표가 "얼굴 없음"이면 뺀다. 경고를 남긴다. 대응표 밖 얼굴(업로드·생성·표정 세트)은 그대로 둔다.
+  실측: 이전엔 노인 그림에 슬라임 얼굴을 넣어도 다섯 곳 모두 경고 없이 저장됐다.
+- **얼굴 검색**: `list_resources(kind:"faceset")` 가 라벨·특징·짝 걷기 그림으로 찾는다. `list_npc_graphics` 결과에 `face`(짝, 없으면 null).
+- **기본값**: 배우 기본 얼굴(`actorFaceDefaults.ts`)·기본 파티·시작 마을·하늘계단이 대응표를 따른다. "이름이 같은 시트가 짝"은 틀렸다
+  (Actor2 ↔ FaceSet/Actor1 8~15). 옛 추정 함수(`faceGraphicForCharset`·`npcFaceGraphic`)는 지웠다.
+- **억지 근사 7칸 해제**: People4 #1·#3·#5, People5 #2·#3, People2 #4, Actor3 #5 → no-face. 호스트 공용 파일에도 같은 7행을 적용했다.
+- **저장본 교정**(사용자 결정: 불러올 때 짝과 다르면 전부): `src/project/faceMatchRepair.ts` 를 store 정규화(`faceMatches`)·헤드리스·
+  내보낸 플레이어가 부른다. NPC는 페이지의 **첫** 얼굴만 본다(뒤 얼굴은 다른 화자일 수 있다). 닫힌 폴더에 미리 쓰려면
+  `node scripts/content/repair-face-matches.mjs <projectDir> [--dry]`(저장 후 재로드·재교정 0건 확인).
+- 실측(프로젝트 337곳, 읽기 전용 대조): 교정 전 배우 1,693·NPC 220건이 짝과 다름/없어야 함 → 교정 후 0건.
+  회귀: `test/faceMatchAudit.test.ts`, 런타임 증거 `npm run qa:runtime -- --scenario face-match`.
+- **없던 얼굴 생성(같은 날)**: 원본 얼굴 시트에 없는 사람·동물·몬스터·Scarloxy 29칸의 짝 얼굴을 AI 로 그려 넣었다
+  (`generated-faceset-missing-people-00..15`, `-scarloxy-00..09`, `-monster-00..02`). 억지 근사로 해제했던 7칸도 여기에 짝이 있다.
+  Animal #1 은 라벨이 "검은 고양이"지만 실제 그림은 짙은 귀의 갈색 고양이라 그림에 맞췄다.
+  이제 얼굴이 없는 칸은 사물·탈것·Template·빈 칸뿐이다. 새 얼굴 추가 절차: 4x4 48px 시트를
+  `public/assets/generated/faceset/` 에 두고 `scripts/slice-faceset-sheets.mjs` 의 SHEETS·MISSING_FACE_NAMES 에 등록 → 슬라이스 →
+  공용 대응표에 짝 연결(번들 JSON + 호스트 파일). 출처는 `public/assets/ATTRIBUTION.md`.
+
 # Editor AI Tools & Vocabulary
 
 ## 이식 타일 최초 검수 준비 대기 (2026-09-18)

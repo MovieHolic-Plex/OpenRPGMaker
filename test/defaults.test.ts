@@ -44,7 +44,8 @@ const STARTER_VILLAGE_NPCS = [
     y: 16,
     spriteId: "tex_easyrpg_charset_people2",
     pattern: charsetFrameIndex({ characterIndex: 1, direction: "down", pattern: 1 }),
-    faceResourceId: "easyrpg-faceset-people2-01",
+    // 수녀(People2 #1)의 짝은 FaceSet/People1 #9 흰 두건 여성이다. 이름이 같은 People2-01 은 청발 여성.
+    faceResourceId: "easyrpg-faceset-people1-09",
     speaker: "로웬",
     body: "트리거를 Action Button으로 두면 말을 걸 때만 대화가 시작됩니다.",
   },
@@ -54,7 +55,8 @@ const STARTER_VILLAGE_NPCS = [
     y: 18,
     spriteId: "tex_easyrpg_charset_actor2",
     pattern: charsetFrameIndex({ characterIndex: 2, direction: "down", pattern: 1 }),
-    faceResourceId: "easyrpg-faceset-actor2-02",
+    // Actor2 의 얼굴은 FaceSet/Actor1 8~15칸이다. FaceSet/Actor2-02 는 닌자.
+    faceResourceId: "easyrpg-faceset-actor1-10",
     speaker: "세라",
     body: "얼굴 그림도 함께 뜨니까 실제 게임에서 보일 대화창을 그대로 확인할 수 있어요.",
   },

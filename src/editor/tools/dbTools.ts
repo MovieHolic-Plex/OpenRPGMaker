@@ -11,6 +11,7 @@ import { projectDatabaseReferenceMessage } from "@/editor/databaseRecordReferenc
 
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { normalizeActorRecord } from "@/project/actorModel";
+import { reconcileFaceWithCharset } from "@/assets/reviewedCharsetFaces";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { MAX_TITLE_BACKGROUND_LAYERS, normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, normalizeSkillRecord, normalizeStateRecord, normalizeTypeChart } from "@/project/databaseRecordModel";
 import { normalizeCropRecord } from "@/project/farmModel";
@@ -1529,6 +1530,7 @@ const upsertActor: ToolDefinition = {
       throw new ToolError(`공유 캐릭터 외형을 찾을 수 없습니다: ${actorPatch.appearanceId}`, { code: "appearance-not-found" });
     }
     const record = normalizeActorRecord(merged as Parameters<typeof normalizeActorRecord>[0]);
+    reconcileActorFace(record, actorPatch, warnings);
     validateActorTechPoints(args.actor);
     dropUnknownElementRates(draft, record, "actor", warnings);
     const outcome = upsertById(draft.database.actors, record satisfies ActorRecord);
@@ -1539,6 +1541,29 @@ const upsertActor: ToolDefinition = {
     };
   },
 };
+
+/**
+ * 배우 얼굴을 걷기 그림의 짝과 맞춘다(reconcileFaceWithCharset). 두 경우를 본다:
+ * - 조수가 faceResourceId 를 넘겼다 → 그 얼굴이 이 그림의 다른 인물이면 짝으로 바꾼다.
+ * - 그림만 바꿨다 → 예전 그림의 짝 얼굴(또는 짝이 아닌 번들 얼굴)이 남아 있으면 새 그림의 짝으로 따라간다.
+ *   업로드·생성 얼굴처럼 대응표 밖 얼굴은 작가가 고른 것이므로 둔다.
+ */
+function reconcileActorFace(record: ActorRecord, patch: Record<string, unknown>, warnings: string[]): void {
+  if (!record.characterResourceId || !record.faceResourceId) return;
+  const index = record.characterIndex ?? 0;
+  const lookChanged = "characterResourceId" in patch || "characterIndex" in patch;
+  if (!("faceResourceId" in patch) && !lookChanged) return;
+  const reconciled = reconcileFaceWithCharset(record.faceResourceId, record.characterResourceId, index);
+  if (!("faceResourceId" in patch) && reconciled.faceResourceId !== record.faceResourceId) {
+    const next = reconciled.faceResourceId;
+    warnings.push(`액터 '${record.name}': 걷기 그림을 바꿔 얼굴을 ${next ? `새 짝 ${next}` : "비움(이 그림에 맞는 얼굴 없음)"} 으로 맞췄습니다(이전 ${record.faceResourceId}).`);
+    if (next) record.faceResourceId = next; else delete record.faceResourceId;
+    return;
+  }
+  if (reconciled.warning) warnings.push(`액터 '${record.name}': ${reconciled.warning}`);
+  if (reconciled.faceResourceId === null) delete record.faceResourceId;
+  else record.faceResourceId = reconciled.faceResourceId;
+}
 
 const upsertSkill: ToolDefinition = {
   name: "upsert_skill",

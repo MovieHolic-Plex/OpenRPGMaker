@@ -30,7 +30,7 @@ import {
   STARTER_ACTOR_IDS,
 } from "./defaultDatabaseRecordIds";
 import { applyGeneratedBattleEffectActorBindings } from "./generatedBattleEffectBindings";
-import { faceIdForSheetCell } from "@/assets/facesetFaceAssets";
+import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
 
 type PartyRecords = {
   readonly actors: ActorRecord[];
@@ -40,6 +40,13 @@ type PartyRecords = {
 
 export function defaultStarterActorIds(): string[] {
   return [...STARTER_ACTOR_IDS];
+}
+
+/** 걷기 그림 0번 칸의 검토된 짝 얼굴. 이름이 같은 얼굴 시트를 쓰면 틀린다(Actor2 ↔ FaceSet/Actor1 8~15칸). */
+function pairedFace(characterResourceId: string): string {
+  const faceId = reviewedFaceIdForCharset(characterResourceId, 0);
+  if (!faceId) throw new Error(`기본 파티 얼굴 대응이 없습니다: ${characterResourceId}`);
+  return faceId;
 }
 
 export function defaultPartyRecords(): PartyRecords {
@@ -62,7 +69,7 @@ function defaultActorRecords(): ActorRecord[] {
       }),
       name: "주인공",
       nickname: "없음",
-      faceResourceId: faceIdForSheetCell("easyrpg-faceset-actor1", 0),
+      faceResourceId: pairedFace("easyrpg-charset-actor1"),
       characterResourceId: "easyrpg-charset-actor1",
       battleCharacterResourceId: "generated-actor-hero-01-battle",
       initialEquipment: {
@@ -82,7 +89,7 @@ function defaultActorRecords(): ActorRecord[] {
       }),
       name: "수호자",
       nickname: "방패",
-      faceResourceId: faceIdForSheetCell("easyrpg-faceset-actor2", 0),
+      faceResourceId: pairedFace("easyrpg-charset-actor2"),
       characterResourceId: "easyrpg-charset-actor2",
       battleCharacterResourceId: "generated-actor-hero-02-battle",
       initialEquipment: {
@@ -102,7 +109,7 @@ function defaultActorRecords(): ActorRecord[] {
       }),
       name: "마도사",
       nickname: "별빛",
-      faceResourceId: faceIdForSheetCell("easyrpg-faceset-people1", 0),
+      faceResourceId: pairedFace("easyrpg-charset-actor3"),
       characterResourceId: "easyrpg-charset-actor3",
       battleCharacterResourceId: "generated-actor-hero-03-battle",
       initialEquipment: {
@@ -121,7 +128,7 @@ function defaultActorRecords(): ActorRecord[] {
       }),
       name: "정찰병",
       nickname: "바람",
-      faceResourceId: faceIdForSheetCell("easyrpg-faceset-people2", 0),
+      faceResourceId: pairedFace("easyrpg-charset-actor4"),
       characterResourceId: "easyrpg-charset-actor4",
       battleCharacterResourceId: "generated-actor-hero-04-battle",
       initialEquipment: {
@@ -140,7 +147,7 @@ function defaultActorRecords(): ActorRecord[] {
       }),
       name: "성직자",
       nickname: "치유",
-      faceResourceId: faceIdForSheetCell("easyrpg-faceset-people1", 0),
+      faceResourceId: pairedFace("easyrpg-charset-actor1"),
       characterResourceId: "easyrpg-charset-actor1",
       battleCharacterResourceId: "generated-actor-hero-05-battle",
       initialEquipment: {
@@ -160,7 +167,7 @@ function defaultActorRecords(): ActorRecord[] {
       }),
       name: "궁수",
       nickname: "초원",
-      faceResourceId: faceIdForSheetCell("easyrpg-faceset-people2", 0),
+      faceResourceId: pairedFace("easyrpg-charset-actor2"),
       characterResourceId: "easyrpg-charset-actor2",
       battleCharacterResourceId: "generated-actor-hero-06-battle",
       initialEquipment: {

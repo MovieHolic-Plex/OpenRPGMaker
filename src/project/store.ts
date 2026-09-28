@@ -15,6 +15,7 @@ import { repairInteriorTransparentPropLayers } from "./defaults/interiorTranspar
 import { ensureScarloxyPokemonInteriors } from "./defaults/scarloxyPokemonInteriors";
 import { ensureDefaultDatabaseIconResources } from "./defaults/defaultDatabaseIconResources";
 import { ensureBundledBattleAnimations } from "./defaults/defaultDatabase";
+import { repairFaceMatches } from "./faceMatchRepair";
 import { isSaveSkippedLocation, loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
 import type { ProjectWriteAuthority } from "./spatial/saveRouting";
 import type { SaveResult } from "./persistence/types";
@@ -1629,6 +1630,8 @@ class ProjectStore {
       // 팩 이전 스냅샷은 anim_gen_* 이 없어 스타터 아이템·스킬 참조가 끊긴다 —
       // 그대로 두면 fail-closed 재생 게이트가 ▶테스트를 조용히 막는다.
       ["bundledBattleAnimations", ensureBundledBattleAnimations(this.current)],
+      // 걷기 그림과 다른 인물의 얼굴을 짝으로 맞춘다(2026-09-28 전수 조사, faceMatchRepair.ts).
+      ["faceMatches", faceMatchesRepaired(repairFaceMatches(this.current))],
     ];
     const appliedNormalizers = normalizers.filter(([, applied]) => applied).map(([name]) => name);
     const changed = before !== jsonContentDigest(this.current);
@@ -1721,6 +1724,10 @@ function ensureProjectMapConnections(project: Project): boolean {
   if (Array.isArray(project.mapConnections)) return false;
   project.mapConnections = [];
   return true;
+}
+
+function faceMatchesRepaired(result: { readonly actors: number; readonly eventFaces: number }): boolean {
+  return result.actors + result.eventFaces > 0;
 }
 
 function ensureMapTreeCoversAllMaps(project: Project): boolean {
