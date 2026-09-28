@@ -277,12 +277,37 @@ def draw_terrain(sheet, native):
         names[label + "-lower"] = put(bottom, 15 + i, 1)
         blocks.append({"name": label, "col": 15 + i, "row": 0, "w": 1, "h": 2, "kind": "wall"})
 
+    # 문 매트: 밟고 지나가므로 1층이어야 한다(3층 통행 가능 칸은 캐릭터 위에 그려진다 — characterDepth.ts).
+    # 그래서 바닥별로 매트를 미리 합성한 불투명 칸을 둔다.
     mat1, mat2 = mat_tiles()
-    sheet.alpha_composite(mat2, (18 * TILE, 0))
-    sheet.alpha_composite(mat1, (20 * TILE, 0))
-    blocks.append({"name": "door-mat-wide", "col": 18, "row": 0, "w": 2, "h": 1, "kind": "mat"})
-    blocks.append({"name": "door-mat", "col": 20, "row": 0, "w": 1, "h": 1, "kind": "mat"})
+    floors = {"wood": native[0:16, 48:64], "tile": native[0:16, 128:144]}
+    for i, (floor_name, floor_arr) in enumerate(floors.items()):
+        one = tile_from(floor_arr); one.alpha_composite(mat1)
+        names[f"door-mat-{floor_name}"] = put(one, 18 + i, 0)
+        wide = Image.new("RGBA", (2 * TILE, TILE))
+        wide.paste(tile_from(floor_arr), (0, 0)); wide.paste(tile_from(floor_arr), (TILE, 0))
+        wide.alpha_composite(mat2)
+        col = 20 + 2 * i
+        sheet.paste(wide, (col * TILE, 0))
+        names[f"door-mat-wide-{floor_name}-left"] = col
+        names[f"door-mat-wide-{floor_name}-right"] = col + 1
+        blocks.append({"name": f"door-mat-{floor_name}", "col": 18 + i, "row": 0, "w": 1, "h": 1, "kind": "mat"})
+        blocks.append({"name": f"door-mat-wide-{floor_name}", "col": col, "row": 0, "w": 2, "h": 1, "kind": "mat"})
     return blocks, names
+
+
+def back_stairs(sheet, native, stairs):
+    """계단은 밟는 칸이라 1층에 둔다. 투명 가장자리 아래에 나무 마루를 깔아 불투명하게 만든다."""
+    wood = tile_from(native[0:16, 48:64])
+    for b in stairs:
+        box = (b["col"] * TILE, b["row"] * TILE, (b["col"] + b["w"]) * TILE, (b["row"] + b["h"]) * TILE)
+        art = sheet.crop(box)
+        base = Image.new("RGBA", art.size)
+        for y in range(b["h"]):
+            for x in range(b["w"]):
+                base.paste(wood, (x * TILE, y * TILE))
+        base.alpha_composite(art)
+        sheet.paste(base, box[:2])
 
 
 def main():
@@ -298,7 +323,9 @@ def main():
             blocks.append({"name": name, "col": col, "row": row, "w": tw, "h": th, "kind": kind})
     # 생성 가구만 팔레트를 줄인다. 바닥·벽·틀은 Scarloxy 원본 색을 그대로 지켜야 한다.
     sheet = reduce_palette(furn)
-    terrain_blocks, names = draw_terrain(sheet, scarloxy_native())
+    native = scarloxy_native()
+    terrain_blocks, names = draw_terrain(sheet, native)
+    back_stairs(sheet, native, [b for b in blocks if b["kind"] == "stairs"])
     blocks = terrain_blocks + blocks
     sheet.save(OUT_PNG, optimize=True)
     with open(MANIFEST, "w", encoding="utf-8") as f:

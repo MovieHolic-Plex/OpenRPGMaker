@@ -25,7 +25,13 @@
     "wall-lavender-upper": 16,
     "wall-lavender-lower": 46,
     "wall-cream-upper": 17,
-    "wall-cream-lower": 47
+    "wall-cream-lower": 47,
+    "door-mat-wood": 18,
+    "door-mat-wide-wood-left": 20,
+    "door-mat-wide-wood-right": 21,
+    "door-mat-tile": 19,
+    "door-mat-wide-tile-left": 22,
+    "door-mat-wide-tile-right": 23
   },
   "blocks": [
     {
@@ -117,18 +123,34 @@
       "kind": "wall"
     },
     {
-      "name": "door-mat-wide",
+      "name": "door-mat-wood",
       "col": 18,
+      "row": 0,
+      "w": 1,
+      "h": 1,
+      "kind": "mat"
+    },
+    {
+      "name": "door-mat-wide-wood",
+      "col": 20,
       "row": 0,
       "w": 2,
       "h": 1,
       "kind": "mat"
     },
     {
-      "name": "door-mat",
-      "col": 20,
+      "name": "door-mat-tile",
+      "col": 19,
       "row": 0,
       "w": 1,
+      "h": 1,
+      "kind": "mat"
+    },
+    {
+      "name": "door-mat-wide-tile",
+      "col": 22,
+      "row": 0,
+      "w": 2,
       "h": 1,
       "kind": "mat"
     },
