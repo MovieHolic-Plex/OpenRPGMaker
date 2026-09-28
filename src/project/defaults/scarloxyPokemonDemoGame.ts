@@ -19,6 +19,7 @@ import { MONSTER_TOWN_KIT_MANIFEST } from "@/assets/scarloxyPack";
 import { applyScarloxyBackSprites, createScarloxyExtraSkills, createScarloxyExtraSpeciesRecords } from "./scarloxyExtraSpecies";
 import { castFace, castGraphic } from "./scarloxyCastEvents";
 import { PKMN_FLAGS, PKMN_LINKS, PKMN_MAPS } from "./scarloxyPokemonWorld";
+import { installScarloxyPokemonRegions } from "./scarloxyPokemonRegions";
 import {
   G,
   PEOPLE2_CHARSET_ID,
@@ -448,6 +449,9 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
       { enemyId: "enemy_pkmn_atrox", x: 168, y: 124 },
     ])
   );
+
+  // 지역 A·B(scarloxyPokemonRegionA/B.ts) — 이끼 마을부터 챔피언의 탑까지. 맵·적·무리·아이템·맵 트리를 스스로 넣는다.
+  installScarloxyPokemonRegions(project);
 }
 
 // --- 종(도감) 정의: 팩 몬스터 16종 전부 --------------------------------------

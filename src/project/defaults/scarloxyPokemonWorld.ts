@@ -102,6 +102,7 @@ export const PKMN_GATES = [
 /** 파일 소유 — 한 작업이 한 파일 묶음만 고친다. */
 export const PKMN_FILE_OWNERS = {
   "scarloxyPokemonRegionA.ts": ["mossTown", "mossCenter", "grassGym", "cave1", "cave2"],
-  "scarloxyPokemonRegionB.ts": ["waveTown", "waveCenter", "waterGym", "route3", "emberTown", "emberCenter", "fireGym", "victoryRoad", "championTower"],
+  "scarloxyPokemonRegionB.ts": ["waveTown", "waveCenter", "waterGym", "route3"],
+  "scarloxyPokemonRegionC.ts": ["emberTown", "emberCenter", "fireGym", "victoryRoad", "championTower"],
 } as const;
 
