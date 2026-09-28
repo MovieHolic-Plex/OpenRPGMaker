@@ -9,6 +9,7 @@
 import type { EasyRpgCharsetAsset } from "@/assets/easyrpgRtp";
 import manifestInput from "./scarloxyPackManifest.json" with { type: "json" };
 import monsterTownKitInput from "./monsterTownKitManifest.json" with { type: "json" };
+import monsterInteriorInput from "./monsterInteriorManifest.json" with { type: "json" };
 
 type ScarloxyPackedBlock = {
   readonly name: string;
@@ -19,7 +20,9 @@ type ScarloxyPackedBlock = {
   readonly kind:
     | "terrain" | "water" | "tree" | "rock" | "deco" | "structure" | "overhead" | "indoor" | "furniture"
     // 몬스터 마을 부품(생성 자산, scripts/content/build-monster-town-kit.py)만 쓰는 종류.
-    | "sign" | "shrub" | "lamp" | "tall-grass" | "fence" | "ledge" | "bridge";
+    | "sign" | "shrub" | "lamp" | "tall-grass" | "fence" | "ledge" | "bridge"
+    // 몬스터 실내(scripts/content/build-monster-interior.py)만 쓰는 종류.
+    | "floor" | "rug" | "frame" | "wall" | "mat" | "stairs" | "wall-decor";
 };
 
 type ScarloxyPackManifest = {
@@ -43,6 +46,18 @@ export const MONSTER_TOWN_KIT_TEXTURE_KEY = "tex_scarloxy_chipset_monster_town_k
 /** 위 반쪽 = 초원 마을 시트 그대로(0~479), 아래 반쪽 = 새 부품(480~959). */
 export const MONSTER_TOWN_KIT_FRAME_COUNT = 960;
 
+/**
+ * 몬스터 실내 — 회복 센터·도구 상점·주인공 집·연구소 한 장(480칸). 바닥·벽·틀은 Scarloxy 실내 원본에서
+ * 뜬 색·무늬, 가구·벽 장식·계단은 Scarloxy 화풍으로 그린 **생성 자산**(팩 원본 아님).
+ * 출처 표기는 public/assets/ATTRIBUTION.md 「Generated monster interior」.
+ */
+export const MONSTER_INTERIOR_MANIFEST = monsterInteriorInput as {
+  readonly file: string;
+  readonly tiles: Readonly<Record<string, number>>;
+  readonly blocks: readonly ScarloxyPackedBlock[];
+};
+export const MONSTER_INTERIOR_TEXTURE_KEY = "tex_scarloxy_chipset_monster_interior";
+
 const ASSET_DIR = "assets/scarloxy";
 
 // bundled.ts 의 BundledImageAsset 과 구조 동일(순환 import 방지를 위해 구조 타이핑).
@@ -54,6 +69,7 @@ export const SCARLOXY_CHIPSET_ASSETS = [
   { textureKey: "tex_scarloxy_chipset_indoor", path: `${ASSET_DIR}/scarloxy-chipset-indoor.png`, name: "Scarloxy 실내 ChipSet" },
   // 텍스처 키 접두어를 tex_scarloxy_chipset_ 로 맞춰 화풍 분류·테마 팩·생성 프로필을 그대로 탄다.
   { textureKey: MONSTER_TOWN_KIT_TEXTURE_KEY, path: "assets/monster-town-kit/monster-town-kit.png", name: "Scarloxy 초원 마을 + 몬스터 마을 부품 (480~ 생성 자산)" },
+  { textureKey: MONSTER_INTERIOR_TEXTURE_KEY, path: "assets/monster-interior/monster-interior.png", name: "Scarloxy 몬스터 실내 · 회복 센터·상점·집·연구소 (가구는 생성 자산)" },
 ] as const satisfies readonly ScarloxyBundledAsset[];
 
 export const SCARLOXY_CHARSET_ASSETS = [
@@ -307,11 +323,99 @@ function monsterTownKitGroupSeeds(): readonly ScarloxyChipsetGroupSeed[] {
   return [...byKey.values()];
 }
 
+
+/**
+ * 몬스터 실내 블록 라벨. 블록마다 그룹 하나(벽 틀·안쪽 모서리는 한 그룹, 문 매트는 바닥별 한 그룹).
+ * 층 규칙(openwiki/tile-layer-policy.md):
+ * - 바닥·깔개·문 매트·계단·벽·틀은 칸을 꽉 채운 불투명 칸 → 1층(lower).
+ * - 문 매트·계단은 밟는 칸이다. 3층 통행 가능(★) 칸은 캐릭터 위에 그려지므로(player/characterDepth.ts)
+ *   반드시 1층에 두고, 그래서 빌드 스크립트가 바닥을 미리 합성해 둔다.
+ * - 가구·벽 장식은 가장자리가 투명 → 3층(upper), 통행 불가. 1층에 두면 투명 픽셀 아래가 검게 보인다.
+ */
+type MonsterInteriorLabel = {
+  readonly name: string;
+  readonly role: ScarloxyChipsetGroupSeed["role"];
+  readonly layer: ScarloxyChipsetGroupSeed["defaultLayer"];
+  readonly passage: ScarloxyChipsetGroupSeed["passage"];
+  readonly repeat?: boolean;
+  readonly group?: string;
+  readonly description: string;
+};
+const MONSTER_INTERIOR_LABELS: Record<string, MonsterInteriorLabel> = {
+  "floor-wood": { name: "나무 마루", role: "terrain", layer: "lower", passage: "passable", repeat: true, description: "Scarloxy 원본의 나무 마루(1칸 반복)입니다. 주인공 집 바닥." },
+  "floor-tile": { name: "흰 타일", role: "terrain", layer: "lower", passage: "passable", repeat: true, description: "Scarloxy 원본의 흰 타일(1칸 반복)입니다. 회복 센터·상점·연구소 바닥." },
+  "floor-carpet-red": { name: "빨간 카펫", role: "terrain", layer: "lower", passage: "passable", repeat: true, description: "무늬 없는 빨간 카펫(1칸 반복)입니다. 방 전체 바닥으로 깝니다." },
+  "floor-carpet-teal": { name: "청록 카펫", role: "terrain", layer: "lower", passage: "passable", repeat: true, description: "무늬 없는 청록 카펫(1칸 반복)입니다." },
+  "rug-red": { name: "빨간 깔개", role: "terrain", layer: "lower", passage: "passable", description: "테두리 있는 빨간 깔개 3×3입니다. 바닥 위를 1층으로 덮어씁니다. 가운데 칸을 반복하면 더 커집니다." },
+  "rug-teal": { name: "청록 깔개", role: "terrain", layer: "lower", passage: "passable", description: "테두리 있는 청록 깔개 3×3입니다. 회복 센터 로비에 씁니다." },
+  "wall-frame": { name: "실내 벽 틀", role: "wall", layer: "lower", passage: "solid", repeat: true, group: "wall-frame", description: "방을 두르는 검은 틀(흰 띠 3px)입니다. 3×3: 바깥 모서리 네 칸, 변 네 칸(띠가 방 쪽), 가운데 천장. 통행 불가." },
+  "wall-frame-inner": { name: "실내 벽 틀", role: "wall", layer: "lower", passage: "solid", group: "wall-frame", description: "안쪽 모서리 2×2(ㄱ자 방·칸막이 끝)입니다." },
+  "wall-mint": { name: "민트 벽", role: "wall", layer: "lower", passage: "solid", repeat: true, description: "Scarloxy 민트 벽 앞면 2줄(윗줄·걸레받이 줄)입니다. 북쪽 틀 바로 아래 두 줄에 가로로 반복합니다. 통행 불가." },
+  "wall-lavender": { name: "라벤더 벽", role: "wall", layer: "lower", passage: "solid", repeat: true, description: "Scarloxy 라벤더 벽 앞면 2줄입니다. 통행 불가." },
+  "wall-cream": { name: "크림 벽", role: "wall", layer: "lower", passage: "solid", repeat: true, description: "크림 벽 앞면 2줄입니다. 집·상점용. 통행 불가." },
+  "door-mat-wood": { name: "문 매트(마루)", role: "terrain", layer: "lower", passage: "passable", group: "door-mat-wood", description: "마루 위 초록 문 매트(1칸)입니다. 출입구 칸의 1층에 두고 밟기 장소 이동 이벤트를 얹습니다." },
+  "door-mat-wide-wood": { name: "문 매트(마루)", role: "terrain", layer: "lower", passage: "passable", group: "door-mat-wood", description: "마루 위 두 칸 문 매트(왼·오)입니다." },
+  "door-mat-tile": { name: "문 매트(타일)", role: "terrain", layer: "lower", passage: "passable", group: "door-mat-tile", description: "흰 타일 위 초록 문 매트(1칸)입니다. 출입구 칸의 1층에 두고 밟기 장소 이동 이벤트를 얹습니다." },
+  "door-mat-wide-tile": { name: "문 매트(타일)", role: "terrain", layer: "lower", passage: "passable", group: "door-mat-tile", description: "흰 타일 위 두 칸 문 매트(왼·오)입니다." },
+  "stairs-up": { name: "올라가는 계단", role: "terrain", layer: "lower", passage: "passable", description: "나무 계단 2×2(위로)입니다. 1층에 두고 윗줄 칸에 밟기 장소 이동 이벤트를 둡니다." },
+  "stairs-down": { name: "내려가는 계단", role: "terrain", layer: "lower", passage: "passable", description: "바닥 구멍 계단 2×2(아래로)입니다. 1층에 두고 칸에 밟기 장소 이동 이벤트를 둡니다." },
+  "wall-window": { name: "커튼 창문", role: "prop", layer: "upper", passage: "solid", description: "커튼 달린 창문 2×2입니다. 벽 두 줄(y=1~2) 위 3층에 겁니다." },
+  "wall-clock": { name: "벽시계", role: "prop", layer: "upper", passage: "solid", description: "둥근 벽시계 1×1입니다. 벽 윗줄 위 3층." },
+  "wall-poster": { name: "몬스터 포스터", role: "prop", layer: "upper", passage: "solid", description: "몬스터 그림 액자 1×1입니다. 벽 윗줄 위 3층." },
+  whiteboard: { name: "화이트보드", role: "prop", layer: "upper", passage: "solid", description: "연구소 화이트보드 2×2입니다. 벽 두 줄 위 3층." },
+  "reception-counter": { name: "접수 카운터", role: "prop", layer: "upper", passage: "solid", description: "회복 센터 접수 카운터 5×2(빨간 십자)입니다. 뒤에 접수원, 아랫줄 가운데 칸에 회복 조사 이벤트. 통행 불가." },
+  "healing-machine": { name: "회복 기계", role: "prop", layer: "upper", passage: "solid", description: "볼 여섯 개를 올리는 회복 기계 2×2입니다. 카운터 뒤 벽에 붙입니다. 통행 불가." },
+  "pc-terminal": { name: "PC 단말", role: "prop", layer: "upper", passage: "solid", description: "몬스터 보관함 PC 1×2입니다. 아랫칸 앞에서 조사 이벤트. 통행 불가." },
+  "lobby-bench": { name: "로비 의자", role: "prop", layer: "upper", passage: "solid", description: "3인 로비 의자 3×2입니다. 통행 불가." },
+  "potted-plant": { name: "화분", role: "prop", layer: "upper", passage: "solid", description: "큰 화분 1×2입니다. 모서리 장식. 통행 불가." },
+  "shelf-wall": { name: "벽 진열대", role: "prop", layer: "upper", passage: "solid", description: "상점 벽 진열대 3×2입니다. 벽에 붙입니다(Y=3). 통행 불가." },
+  "shelf-island": { name: "가운데 진열대", role: "prop", layer: "upper", passage: "solid", description: "통로 사이 낮은 진열대 2×2입니다. 통행 불가." },
+  "shop-counter": { name: "계산대", role: "prop", layer: "upper", passage: "solid", description: "상점 계산대 3×2(금전등록기)입니다. 뒤에 점원, 아랫줄 가운데 칸에 상점 이벤트. 통행 불가." },
+  "drink-cooler": { name: "음료 냉장고", role: "prop", layer: "upper", passage: "solid", description: "유리문 냉장고 2×2입니다. 벽에 붙입니다. 통행 불가." },
+  bed: { name: "침대", role: "prop", layer: "upper", passage: "solid", description: "1인용 민트 침대 2×3입니다. 조사 = 잠자기 회복. 통행 불가." },
+  "tv-set": { name: "TV", role: "prop", layer: "upper", passage: "solid", description: "TV와 게임기 2×2입니다. 통행 불가." },
+  "dining-table": { name: "식탁", role: "prop", layer: "upper", passage: "solid", description: "식탁 3×2입니다. 위·아래에 의자. 통행 불가." },
+  "chair-down": { name: "의자(아래 보기)", role: "prop", layer: "upper", passage: "solid", description: "식탁 윗줄 바로 위에 놓는 의자 1×1입니다. 통행 불가." },
+  "chair-up": { name: "의자(위 보기)", role: "prop", layer: "upper", passage: "solid", description: "식탁 아랫줄 바로 아래에 놓는 의자 1×1입니다. 통행 불가." },
+  "kitchen-counter": { name: "부엌 조리대", role: "prop", layer: "upper", passage: "solid", description: "개수대·가스레인지 조리대 3×2입니다. 벽에 붙입니다. 통행 불가." },
+  bookshelf: { name: "책장", role: "prop", layer: "upper", passage: "solid", description: "연구소 책장 2×2입니다. 벽에 붙입니다. 통행 불가." },
+  "lab-bench": { name: "실험대", role: "prop", layer: "upper", passage: "solid", description: "현미경·시험관 실험대 3×2입니다. 통행 불가." },
+  "starter-stand": { name: "스타터 볼 받침대", role: "prop", layer: "upper", passage: "solid", description: "스타터 볼 셋(왼쪽부터 풀·불·물) 받침대 3×2입니다. 아랫줄 칸마다 스타터 선택 조사 이벤트. 통행 불가." },
+  "lab-computer": { name: "연구 컴퓨터", role: "prop", layer: "upper", passage: "solid", description: "모니터 달린 서버 2×2입니다. 통행 불가." },
+};
+
+function monsterInteriorGroupSeeds(): readonly ScarloxyChipsetGroupSeed[] {
+  const byKey = new Map<string, ScarloxyChipsetGroupSeed>();
+  for (const block of MONSTER_INTERIOR_MANIFEST.blocks) {
+    const label = MONSTER_INTERIOR_LABELS[block.name];
+    if (!label) continue;
+    const key = label.group ?? block.name;
+    const tileIds = blockTileIds(block);
+    const existing = byKey.get(key);
+    if (existing) {
+      byKey.set(key, { ...existing, tileIds: [...existing.tileIds, ...tileIds] });
+      continue;
+    }
+    byKey.set(key, {
+      key,
+      name: label.name,
+      role: label.role,
+      defaultLayer: label.layer,
+      passage: label.passage,
+      repeatability: label.repeat ? "repeat" : "fixed",
+      tileIds,
+      description: label.description,
+    });
+  }
+  return [...byKey.values()];
+}
+
 export function scarloxyChipsetGroupSeeds(textureKey: string): readonly ScarloxyChipsetGroupSeed[] {
   // 위 반쪽은 초원 마을 시트와 칸 번호가 같으므로 그 그룹을 그대로 쓰고, 부품 그룹을 덧붙인다.
   if (textureKey === MONSTER_TOWN_KIT_TEXTURE_KEY) {
     return [...scarloxyChipsetGroupSeeds("tex_scarloxy_chipset_grassland"), ...monsterTownKitGroupSeeds()];
   }
+  if (textureKey === MONSTER_INTERIOR_TEXTURE_KEY) return monsterInteriorGroupSeeds();
   const asset = SCARLOXY_CHIPSET_ASSETS.find((entry) => entry.textureKey === textureKey);
   if (!asset) return [];
   const fileName = asset.path.slice(asset.path.lastIndexOf("/") + 1);

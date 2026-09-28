@@ -157,6 +157,13 @@ const PROFILES = [
     layout: "rooms",
     palettes: samePalette({ base: 3, path: 3, obstacle: 31, accent: 34 }),
   },
+  {
+    // 실내는 generate_map 이 아니라 개념 시공/직접 조립으로 만든다(layout rooms → concept-interior-required).
+    // 번호: 흰 타일 1 · 나무 마루 0 · 벽 틀 윗변 11 · 청록 카펫 3 (src/assets/monsterInteriorManifest.json).
+    tilesetId: "scarloxy_chipset_monster_interior",
+    layout: "rooms",
+    palettes: samePalette({ base: 1, path: 0, obstacle: 11, accent: 3 }),
+  },
 ] as const satisfies readonly MapGenerationProfile[];
 
 export const MAP_GENERATION_PROFILES: ReadonlyMap<string, MapGenerationProfile> = new Map(

@@ -113,7 +113,7 @@ describe("generate_map", () => {
         manualAtlases += 1;
         continue;
       }
-      if (["easyrpg_chipset_interior", "easyrpg_chipset_retro_house", "scarloxy_chipset_indoor"].includes(tilesetId)) {
+      if (["easyrpg_chipset_interior", "easyrpg_chipset_retro_house", "scarloxy_chipset_indoor", "scarloxy_chipset_monster_interior"].includes(tilesetId)) {
         expect(result.ok).toBe(false);
         expect(result.issues?.some(issue => issue.code === "concept-interior-required")).toBe(true);
         expect(ctx.project.maps[`map_${tilesetId}`]).toBeUndefined();

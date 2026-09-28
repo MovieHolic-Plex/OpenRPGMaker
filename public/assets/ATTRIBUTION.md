@@ -209,6 +209,23 @@
 - Notes: same terms as the generated monster sprites above. The CC-BY 4.0 credit for the pack does
   not cover these files.
 
+## Generated monster interior (partly derived from the Scarloxy pack)
+
+- Files: `monster-interior/monster-interior.png` (recovery center, item shop, player home, research
+  lab interiors) and the reference renders in `monster-interior/references/`.
+- Furniture, wall decorations and stairs (reception counter, healing machine, PC terminal, lobby
+  bench, potted plant, shelves, checkout counter, drink cooler, bed, TV, dining table, chairs, kitchen
+  counter, bookshelf, lab bench, starter ball stand, lab computer, window, clock, poster, whiteboard,
+  stairs): synthesized with an image generation model using Scarloxy indoor, player and center
+  sprites as a style reference, then downscaled to 16px tiles by
+  `scripts/content/build-monster-interior.py`. Raw model outputs are kept at `tiledata/pkmn-interior/raw/`.
+  Not Scarloxy (Ismael Garcia) artwork; same terms as the generated monster sprites above.
+- Wood floor and white tile floor tiles, the mint and lavender wall colors and the frame border rule
+  are cut from the Scarloxy pack `graphics/tilesets/indoor.png` (CC-BY 4.0, credit as above).
+  Carpets, rugs, door mats and the cream wall are hand-placed pixels in the same palette.
+- The texture key uses the `tex_scarloxy_chipset_` prefix only so the sheet shares the Scarloxy
+  art-style grouping in the editor.
+
 ## EasyRPG RTP scoped runtime import
 
 - Files:

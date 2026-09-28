@@ -384,3 +384,25 @@ Pi 런타임(`scripts/lib/piAgentRuntime.ts`)은 모델이 끝났다고 할 때 
 - **데모**: `createScarloxyPokemonDemoProject` 의 새싹 마을·초원 1번 길이 이 시트로 그려진다. 이미 저장된 데모 맵은 바꾸지 않는다(저작 콘텐츠).
 - **없는 것**: 동굴·체육관 내부, 바다·해변, 다리 난간. 실내는 `easyrpg_chipset_interior`, 동굴 맵은 `easyrpg_chipset_dungeon`.
 
+## 몬스터 실내 (scarloxy_chipset_monster_interior, 2026-09-28)
+
+포켓몬풍 게임의 건물 안(회복 센터·도구 상점·주인공 집·연구소)을 Scarloxy 화풍으로 까는 480칸 시트다.
+`scarloxy_chipset_indoor` 는 타일 정렬 아틀라스가 아니라서(문·창이 칸 경계를 가로지른다) 벽·바닥 런을 만들 수 없었다.
+
+- **그림**: 바닥(나무 마루·흰 타일)·민트/라벤더 벽 색·틀 규칙(검은 바깥 + 회색 선 + 흰 띠 3px)은 Scarloxy 실내 원본을
+  원래 해상도(1/4)로 되돌려 떴다. 카펫·깔개·문 매트·크림 벽은 같은 팔레트의 손 도트. 가구·벽 장식·계단은 생성 자산이다
+  (`public/assets/ATTRIBUTION.md` 「Generated monster interior」). 원본 `tiledata/pkmn-interior/raw/` →
+  `python3 scripts/content/build-monster-interior.py` → 시트 + `src/assets/monsterInteriorManifest.json`(블록 + 이름 붙은 한 칸).
+- **층 규칙**: 바닥·깔개·문 매트·계단·벽·틀은 불투명 1층, 가구·벽 장식은 3층. **문 매트와 계단은 밟는 칸이라 1층**이다 —
+  3층 ○ 칸은 ★ 로 판정돼 캐릭터 위에 그려진다(`src/player/characterDepth.ts`). 그래서 매트는 마루용·타일용으로 바닥을 미리 합성해 두었다.
+- **칸 규칙**: `scarloxyPack.ts` 의 `MONSTER_INTERIOR_LABELS` 가 블록마다 그룹을 만든다(벽 틀 바깥·안쪽은 한 그룹, 문 매트는 바닥별 한 그룹).
+  `mapGenerationProfiles` 는 `rooms` 라서 `generate_map` 은 개념 시공으로 돌려보낸다.
+- **참고문서**: `node scripts/content/prepare-monster-interior-references.mjs` → `src/assets/monsterInteriorReferences.json`.
+  스크립트가 방 네 개를 조립하고 구조 검사(틀 방향·층·블록 완결성·벽 장식 위치·문 매트에서 조사 앞칸까지 도보 연결)를 돌린다.
+  정답 방이 오류를 내거나 변조 방 다섯 개가 기대 코드를 안 내면 실패로 끝난다. 그림은 `public/assets/monster-interior/references/`.
+  `ensureMonsterInteriorReferences` 가 새 프로젝트와 로드 보정 양쪽에서 심는다.
+- **이벤트 자리**: 카운터 너머 말 걸기는 엔진에 없으므로 회복·상점 조사 이벤트는 카운터 아랫줄 가운데 칸 자체에 둔다.
+  스타터는 받침대 아랫줄 칸마다 하나. 출구는 문 매트 칸의 밟기 이벤트, 들어올 때 도착 칸은 매트 한 칸 위.
+- **데모**: `scarloxyPokemonInteriors.ts` 의 기존 실내 3종은 그대로 `easyrpg_chipset_interior` 를 쓴다(저작 콘텐츠).
+- **없는 것**: 계단 난간, 실내 쪽 문짝 그림, 창밖 풍경, 체육관·동굴 내부.
+
