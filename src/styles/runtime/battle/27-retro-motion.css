@@ -410,6 +410,18 @@
 }
 .battle-scene[data-battle-skin="retro2003"] .battle-enemy.retro-skill-struck .battle-enemy-image { filter: brightness(0) invert(1); }
 .battle-scene[data-battle-skin="retro2003"] .battle-actor.retro-skill-blessed .battle-actor-sprite { filter: brightness(1.7) saturate(0.6); }
+/* 몬스터 스킬(retroMonsterSkills): 편이 반대다 — 맞는 쪽은 아군, 축복받는 쪽은 몬스터 편. */
+.battle-scene[data-battle-skin="retro2003"] .battle-actor.retro-skill-struck .battle-actor-sprite { filter: brightness(0) invert(1); }
+.battle-scene[data-battle-skin="retro2003"] .battle-enemy.retro-skill-blessed .battle-enemy-image { filter: brightness(1.6) saturate(0.7); }
+/* 몬스터 스킬 재생기가 translate 를 소유한다. 비트 키프레임(retro-enemy-windup·strike)을 끄고 파고들 때 아군 위에 그린다. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-retro-class-skill],
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-retro-class-skill] .battle-enemy-image {
+  animation: none;
+  transition: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy-group:has(.battle-enemy[data-retro-class-skill]) {
+  z-index: 6;
+}
 /* 회전베기·쌍검 난무의 좌우 반전 교대. 걷기 칩 시트의 scale:1 규칙보다 구체적이어야 한다. */
 .battle-scene[data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-actor-group .battle-actor.retro-skill-flip[data-battler-extended="true"] .battle-actor-sprite[data-rendering="pixelated"],
 .battle-scene[data-battle-skin="retro2003"] .battle-actor.retro-skill-flip .battle-actor-sprite { scale: -1 1; }

@@ -2,8 +2,10 @@ import type { CastType, ExtendedBattlerPose } from "@/battle/battlePose";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
 import type { SkillRecord } from "@/project/types";
 import { RETRO_CLASS_SKILLS, RETRO_FX_SHEETS, retroClassSkill, type RetroClassSkill } from "@/assets/retroClassSkills";
+import { RETRO_MONSTER_FX_SHEETS, RETRO_MONSTER_SKILLS, retroMonsterSkill } from "@/assets/retroMonsterSkills";
+import type { RetroFxLayer } from "@/assets/retroClassSkills";
 import {
-  retroClassSkillTimeline, retroSideForScope, retroTimelineSounds, retroTimelineStateAt,
+  retroClassSkillTimeline, retroMonsterCellForPose, retroMonsterSide, retroMonsterSkillTimeline, retroSideForScope, retroTimelineSounds, retroTimelineStateAt,
   type RetroSkillTimeline, type RetroStagePlace, type RetroTimelineEvent, type RetroTimelineSide,
 } from "@/battle/retroSkillTimeline";
 import { store } from "@/project/store";
@@ -100,7 +102,8 @@ export function retroSkillRecipe(skill: Pick<SkillRecord, "id" | "name" | "eleme
 export function retroSkillForEntry(entry: BattleTimelineEntrySnapshot | undefined): RetroSkillRecipe | undefined {
   if (!entry || entry.side !== "actor" || entry.commandKind !== "skill") return undefined;
   // Timeline currently carries skillName, not skillId. Don't guess between duplicate authored names.
-  const matches = store.getCurrent().database.skills.filter((skill) => skill.name === entry.skillName);
+  // 몬스터 스킬(skill_mon_*)은 아군 후보에서 뺀다 — 「독침」「연막탄」은 아군 스킬과 이름이 같다.
+  const matches = store.getCurrent().database.skills.filter((skill) => skill.name === entry.skillName && !retroMonsterSkill(skill.id));
   return matches.length === 1 ? retroSkillRecipe(matches[0]) : undefined;
 }
 
@@ -223,7 +226,7 @@ export function animateRetroSkillFx(field: HTMLElement, user: HTMLElement, beat:
 type ClassSkillSheets = Readonly<Record<string, string>>;
 // 동적 템플릿 URL 은 Vite 가 폴더의 PNG 전부를 player 자산 그래프에 넣는다(내보내기에도 실린다).
 const classSheetUrl = (key: string): string => new URL(`../../public/assets/generated/pixel-fx/${key}.png`, import.meta.url).href;
-const classSheets: ClassSkillSheets = Object.fromEntries(RETRO_FX_SHEETS.map((layer) => [layer.key, classSheetUrl(layer.key)]));
+const classSheets: ClassSkillSheets = Object.fromEntries([...RETRO_FX_SHEETS, ...RETRO_MONSTER_FX_SHEETS].map((layer) => [layer.key, classSheetUrl(layer.key)]));
 
 const VISUAL_KINDS = new Set(["damage", "healing", "miss", "action"]);
 const HITSTOP_MS = 110;
@@ -233,11 +236,21 @@ const HITSTOP_SCALE = { light: 0, normal: 1, heavy: 1.9 } as const;
 const RECOVER_SCALE = { light: 0.68, normal: 1, heavy: 1.45 } as const;
 const HIT_STAGGER_MS = 90;
 
+/** 재생기가 읽는 계약 모양(직업·몬스터 공통). */
+interface PlayableSkill {
+  readonly id: string;
+  readonly motion: string;
+  readonly layers: readonly RetroFxLayer[];
+}
+
 interface ClassPlan {
-  readonly skill: RetroClassSkill;
+  readonly skill: PlayableSkill;
   readonly record: SkillRecord;
   readonly timeline: RetroSkillTimeline;
+  /** 시전자 기준 편(enemies = 시전자의 상대). */
   readonly side: RetroTimelineSide;
+  /** 몬스터 스킬(계약 retroMonsterSkills) — 시전자가 적 노드, 상대 편이 아군 파티. */
+  readonly monster: boolean;
   readonly sequences: readonly number[];
   /** 엔트리별 계획 착탄 시각(ms, 타임라인 시계). */
   readonly hits: readonly number[];
@@ -250,8 +263,9 @@ export function retroClassSkillRecord(skill: Pick<SkillRecord, "id"> | undefined
   return skill ? retroClassSkill(skill.id) : undefined;
 }
 
-function skillByName(name: string | undefined): SkillRecord | undefined {
-  const matches = store.getCurrent().database.skills.filter((skill) => skill.name === name);
+function skillByName(name: string | undefined, monster = false): SkillRecord | undefined {
+  // 이름이 겹치는 몬스터 스킬(독침·연막탄)이 있어 편별로 후보를 나눈다.
+  const matches = store.getCurrent().database.skills.filter((skill) => skill.name === name && Boolean(retroMonsterSkill(skill.id)) === monster);
   return matches.length === 1 ? matches[0] : undefined;
 }
 
@@ -262,18 +276,32 @@ function classEntry(entry: BattleTimelineEntrySnapshot | undefined): { skill: Re
   return skill && record ? { skill, record } : undefined;
 }
 
-function sameAction(a: BattleTimelineEntrySnapshot, b: BattleTimelineEntrySnapshot): boolean {
-  return b.side === "actor" && b.commandKind === "skill" && b.userRecordId === a.userRecordId && b.skillName === a.skillName && VISUAL_KINDS.has(b.kind);
+/** 적의 몬스터 스킬 엔트리. */
+function monsterEntry(entry: BattleTimelineEntrySnapshot | undefined): { skill: PlayableSkill; record: SkillRecord } | undefined {
+  if (!entry || entry.side !== "enemy" || entry.commandKind !== "enemySkill" || !VISUAL_KINDS.has(entry.kind)) return undefined;
+  const record = skillByName(entry.skillName, true);
+  const skill = record ? retroMonsterSkill(record.id) : undefined;
+  return skill && record ? { skill, record } : undefined;
 }
 
-function buildPlan(skill: RetroClassSkill, record: SkillRecord, sequences: readonly number[]): ClassPlan {
-  const side = retroSideForScope(record.scope) ?? "enemies";
-  const timeline = retroClassSkillTimeline(skill, { side });
+/** 이 엔트리가 retro2003 몬스터 스킬 연출을 쓰는가(battleDom·battleRetroMotion 분기용). */
+export function isRetroMonsterSkillEntry(entry: BattleTimelineEntrySnapshot | undefined): boolean {
+  return Boolean(monsterEntry(entry));
+}
+
+function sameAction(a: BattleTimelineEntrySnapshot, b: BattleTimelineEntrySnapshot): boolean {
+  return b.side === a.side && b.commandKind === a.commandKind && b.userRecordId === a.userRecordId && b.skillName === a.skillName && VISUAL_KINDS.has(b.kind);
+}
+
+function buildPlan(skill: PlayableSkill, record: SkillRecord, sequences: readonly number[], monster = false): ClassPlan {
+  const contract = monster ? retroMonsterSkill(skill.id) : undefined;
+  const side = retroSideForScope(record.scope) ?? (contract ? retroMonsterSide(contract) : "enemies");
+  const timeline = contract ? retroMonsterSkillTimeline(contract) : retroClassSkillTimeline(skill as RetroClassSkill, { side });
   const firstHit = timeline.events.find((event) => event.kind === "hit")?.at
     ?? timeline.events.find((event) => event.kind === "fx" && event.anchor !== "user")?.at
     ?? timeline.representativeMs;
   const hits = sequences.map((_, index) => Math.max(1, Math.round(firstHit + index * HIT_STAGGER_MS)));
-  return { skill, record, timeline, side, sequences, hits };
+  return { skill, record, timeline, side, monster, sequences, hits };
 }
 
 /** 엔트리가 속한 행동(같은 사용자·같은 스킬의 연속 엔트리, 대상은 겹치지 않음)의 계획. */
@@ -282,11 +310,12 @@ function planFor(field: HTMLElement, entry: BattleTimelineEntrySnapshot, timelin
   if (!cache) plans.set(field, cache = new Map());
   const cached = cache.get(entry.sequence);
   if (cached) return cached;
-  const found = classEntry(entry);
+  const monster = entry.side === "enemy";
+  const found = monster ? monsterEntry(entry) : classEntry(entry);
   if (!found) return undefined;
   const at = timeline.findIndex((row) => row.sequence === entry.sequence);
   if (at < 0) {
-    const single = buildPlan(found.skill, found.record, [entry.sequence]);
+    const single = buildPlan(found.skill, found.record, [entry.sequence], monster);
     cache.set(entry.sequence, single);
     return single;
   }
@@ -309,7 +338,7 @@ function planFor(field: HTMLElement, entry: BattleTimelineEntrySnapshot, timelin
     group.push(row.sequence);
   }
   if (!group.includes(entry.sequence)) group.splice(0, group.length, entry.sequence);
-  const plan = buildPlan(found.skill, found.record, group);
+  const plan = buildPlan(found.skill, found.record, group, monster);
   for (const sequence of group) cache.set(sequence, plan);
   return plan;
 }
@@ -355,7 +384,7 @@ const players = new WeakMap<HTMLElement, ClassPlayer>();
 /** 지금 이 필드에서 전용 도트 연출(기존 레시피 또는 직업 스킬)이 재생 중인가 — 기존 전투 애니메이션 층을 건너뛸지 정한다. */
 export function hasRetroChoreography(field: HTMLElement): boolean {
   const entry = entries.get(field);
-  return Boolean(retroSkillForEntry(entry) || classEntry(entry));
+  return Boolean(retroSkillForEntry(entry) || classEntry(entry) || monsterEntry(entry));
 }
 
 /** 이 배우를 직업 스킬 재생기가 움직이는 중인가. */
@@ -385,6 +414,48 @@ function sideNodes(field: HTMLElement, side: RetroTimelineSide, user: HTMLElemen
   if (side === "self") return [user];
   if (side === "allies") return [...field.querySelectorAll<HTMLElement>(".battle-actor:not(.retro-afterimage)")];
   return livingEnemies(field);
+}
+/** 시전자 기준 편 → 화면 노드. 몬스터가 시전하면 상대(enemies)는 아군 파티, 자기 편(allies)은 살아 있는 적이다. */
+function casterSideNodes(field: HTMLElement, player: ClassPlayer, side: RetroTimelineSide): HTMLElement[] {
+  if (!player.plan.monster || side === "self") return sideNodes(field, side, player.user);
+  return side === "allies" ? livingEnemies(field) : [...field.querySelectorAll<HTMLElement>(".battle-actor:not(.defeated):not(.retro-afterimage)")];
+}
+
+/**
+ * 몬스터 시전자가 서는 자리(적 노드 translate 단위). front = 대상 아군 바로 앞(왼쪽), battleRetroMotion 의
+ * measureEnemyReach 와 같은 몸 비율(적 앞 cell−6·발 cell−4, 아군 앞 14/48·발 44/48)이다. 뿌리 박힌 적은 제자리.
+ */
+function measureMonsterPlaces(field: HTMLElement, user: HTMLElement, primary: HTMLElement | undefined): Record<RetroStagePlace, Point> {
+  const image = battlerImage(user);
+  const imageRect = image.getBoundingClientRect();
+  const scale = image.offsetWidth > 0 && imageRect.width > 0 ? imageRect.width / image.offsetWidth : 1;
+  const now = currentTranslate(user);
+  const pixel = image.dataset.pixelSheet !== undefined;
+  const cell = pixelCellOf(image);
+  const hovering = user.dataset.pixelEnemy === "swoop" || user.dataset.pixelEnemy === "float";
+  const front0 = (pixel ? imageRect.left + imageRect.width * ((cell - 6) / cell) : imageRect.right - imageRect.width * 0.15) - now.x * scale;
+  const feet0 = (pixel ? imageRect.top + imageRect.height * ((hovering ? cell / 2 - 4 : cell - 4) / cell) : imageRect.bottom) - now.y * scale;
+  const actors = [...field.querySelectorAll<HTMLElement>(".battle-actor:not(.defeated):not(.retro-afterimage)")];
+  const foe = primary?.classList.contains("battle-actor") ? primary : actors[0];
+  const spot = (node: HTMLElement) => {
+    const box = battlerImage(node).getBoundingClientRect();
+    return { front: box.left + box.width * (14 / 48), center: box.left + box.width / 2, feet: box.top + box.height * ((hovering ? 20 : 44) / 48) };
+  };
+  const rooted = image.dataset.pixelSheet === "generated-enemy-plant-carnivore";
+  let front: Point = { x: rooted ? 0 : 72, y: 0 };
+  if (foe && !rooted) {
+    const s = spot(foe);
+    front = { x: Math.round((s.front - front0) / scale - 2), y: Math.round((s.feet - feet0) / scale) };
+  }
+  let center: Point = { x: front.x - 20, y: front.y };
+  if (actors.length > 0 && !rooted) {
+    const all = actors.map(spot);
+    center = {
+      x: Math.round((all.reduce((sum, s) => sum + s.center, 0) / all.length - front0) / scale - 40),
+      y: Math.round((all.reduce((sum, s) => sum + s.feet, 0) / all.length - feet0) / scale),
+    };
+  }
+  return { home: { x: 0, y: 0 }, front, center, above: { x: front.x - 10, y: front.y - 62 } };
 }
 
 /** 시전자가 서는 자리(노드 translate 단위). 제자리 = 0,0. 재생 시작 때 한 번 잰다. */
@@ -462,6 +533,14 @@ function handPoint(field: HTMLElement, user: HTMLElement): Point {
   // 아군은 왼쪽을 본다 — 손은 몸 가운데보다 왼쪽, 가슴 높이.
   return { x: Math.round((box.left + box.width * 0.3 - f.rect.left) / f.x), y: Math.round((box.top + box.height * 0.55 - f.rect.top) / f.y) };
 }
+/** 도트 적의 입·손(오른쪽을 본다): 셀 앞쪽 75%, 몸 절반 높이. 발 여백(cell−4)을 빼고 잰다. */
+function monsterMouth(field: HTMLElement, user: HTMLElement): Point {
+  const image = battlerImage(user);
+  const box = image.getBoundingClientRect();
+  const f = fieldScale(field);
+  const bottom = image.dataset.pixelSheet !== undefined ? (pixelCellOf(image) - 4) / pixelCellOf(image) : 1;
+  return { x: Math.round((box.left + box.width * 0.75 - f.rect.left) / f.x), y: Math.round((box.top + box.height * bottom * 0.55 - f.rect.top) / f.y) };
+}
 
 /**
  * 화면 상자 한 변. 기본은 칸 × 2(도트 2배). 단 대상 몸 위에 얹는 128px 칸(낙하참·브레이브 블레이드·파산장·용권 멸살의 착탄)은
@@ -472,14 +551,23 @@ export function retroClassFxBox(size: number, anchor: string): number {
   return size >= 128 && (anchor === "target" || anchor === "allTargets") ? size : size * 2;
 }
 
-function fxNode(player: ClassPlayer, field: HTMLElement, key: string, size: number, frames: number, anchor: string): HTMLElement {
+/**
+ * 몬스터 몸 위 레이어(user·allAllies) 상자: 셀 96 거구는 칸 × 4, 그 밖은 칸 × 2(정수 배율 유지).
+ * 64px 오라를 128px 로 96셀(192px 상자) 마왕·트롤 위에 얹으면 몸의 3분의 2 밖에 안 덮였다.
+ */
+function monsterBodyBox(size: number, host: HTMLElement | undefined): number | undefined {
+  if (!host?.classList.contains("battle-enemy") || size >= 128) return undefined;
+  return pixelCellOf(battlerImage(host)) >= 96 ? size * 4 : undefined;
+}
+
+function fxNode(player: ClassPlayer, field: HTMLElement, key: string, size: number, frames: number, anchor: string, host?: HTMLElement): HTMLElement {
   const node = document.createElement("span");
   node.className = "retro-skill-fx retro-class-fx";
   node.dataset.retroSkillFx = key;
   node.dataset.retroFxAnchor = anchor;
   node.dataset.fxSize = String(size);
   node.setAttribute("aria-hidden", "true");
-  const box = retroClassFxBox(size, anchor);
+  const box = monsterBodyBox(size, host) ?? retroClassFxBox(size, anchor);
   node.dataset.fxBox = String(box);
   node.style.width = `${box}px`;
   node.style.height = `${box}px`;
@@ -503,13 +591,13 @@ function alive(field: HTMLElement, player: ClassPlayer): boolean {
 function playFx(field: HTMLElement, player: ClassPlayer, event: Extract<RetroTimelineEvent, { kind: "fx" }>, still?: number): void {
   const hosts = event.anchor === "screen" ? [undefined]
     : event.anchor === "user" ? [player.user]
-      : event.anchor === "allAllies" ? sideNodes(field, "allies", player.user)
-        : event.anchor === "allTargets" ? sideNodes(field, player.plan.side, player.user)
+      : event.anchor === "allAllies" ? casterSideNodes(field, player, "allies")
+        : event.anchor === "allTargets" ? casterSideNodes(field, player, player.plan.side)
           : [targetNode(field, player.primaryId) ?? player.user];
   const frameMs = Math.max(16, event.frameMs * player.clock);
   const layer = player.plan.skill.layers[event.layer];
   for (const host of hosts) {
-    const node = fxNode(player, field, event.key, event.frame, layer?.frames ?? event.cells.length, event.anchor);
+    const node = fxNode(player, field, event.key, event.frame, layer?.frames ?? event.cells.length, event.anchor, player.plan.monster ? host : undefined);
     const place = () => {
       if (!host) {
         const center = stageCenter(field);
@@ -532,7 +620,7 @@ function playFx(field: HTMLElement, player: ClassPlayer, event: Extract<RetroTim
 }
 
 function playProjectile(field: HTMLElement, player: ClassPlayer, event: Extract<RetroTimelineEvent, { kind: "projectile" }>): void {
-  const targets = sideNodes(field, player.plan.side, player.user);
+  const targets = casterSideNodes(field, player, player.plan.side);
   const primary = targetNode(field, player.primaryId);
   const aimed = event.aim >= 0 && targets.length > 1 ? targets[event.aim % targets.length] : primary ?? targets[0];
   let end: Point;
@@ -540,7 +628,10 @@ function playProjectile(field: HTMLElement, player: ClassPlayer, event: Extract<
     const points = targets.map((node) => bodyCenter(field, node));
     end = { x: Math.round(points.reduce((s, p) => s + p.x, 0) / points.length), y: Math.round(points.reduce((s, p) => s + p.y, 0) / points.length) };
   } else end = aimed ? bodyCenter(field, aimed) : stageCenter(field);
-  const start = event.path === "fall" ? { x: end.x + 34, y: end.y - 170 } : event.path === "trail" ? bodyCenter(field, player.user) : handPoint(field, player.user);
+  // 몬스터는 오른쪽을 본다 — 입·손은 몸 가운데보다 오른쪽이고, 낙하는 왼쪽 위에서 비스듬히 온다.
+  const start = event.path === "fall" ? { x: end.x + (player.plan.monster ? -34 : 34), y: end.y - 170 }
+    : event.path === "trail" ? bodyCenter(field, player.user)
+      : player.plan.monster ? monsterMouth(field, player.user) : handPoint(field, player.user);
   const node = fxNode(player, field, event.key, event.frame, event.frames, "projectile");
   node.classList.add("retro-class-fx-projectile");
   node.style.left = `${end.x}px`;
@@ -606,7 +697,7 @@ function playScreen(field: HTMLElement, player: ClassPlayer, event: Extract<Retr
 }
 
 function playHit(field: HTMLElement, player: ClassPlayer, event: Extract<RetroTimelineEvent, { kind: "hit" }>): void {
-  const hosts = event.who === "target" ? [targetNode(field, player.primaryId)].filter((n): n is HTMLElement => Boolean(n)) : sideNodes(field, player.plan.side, player.user);
+  const hosts = event.who === "target" ? [targetNode(field, player.primaryId)].filter((n): n is HTMLElement => Boolean(n)) : casterSideNodes(field, player, player.plan.side);
   const className = player.plan.side === "enemies" ? "retro-skill-struck" : "retro-skill-blessed";
   const duration = Math.round(Math.min(event.durationMs, player.plan.side === "enemies" ? 90 : 260) * player.clock);
   for (const host of hosts) {
@@ -646,6 +737,7 @@ function finishPlayer(field: HTMLElement, player: ClassPlayer): void {
   delete user.dataset.retroAction;
   delete user.dataset.retroFrame;
   delete user.dataset.retroCast;
+  if (player.plan.monster) delete user.dataset.retroPixelCell;
   user.classList.remove("retro-skill-flip");
   if (field.dataset.retroClassSkill === player.plan.skill.id) delete field.dataset.retroClassSkill;
   if (players.get(field) === player) players.delete(field);
@@ -658,22 +750,40 @@ export function stopRetroClassSkill(field: HTMLElement): void {
   if (player) finishPlayer(field, player);
 }
 
+/** 포즈 사건을 시전자에 그린다. 몬스터는 도트 시트 9칸(windup·move·attack·recover)으로 옮긴다. */
+function drawPose(player: ClassPlayer, pose: ExtendedBattlerPose, flip: boolean): void {
+  const user = player.user;
+  if (player.plan.monster) {
+    const cell = retroMonsterCellForPose(pose);
+    if (cell) user.dataset.retroPixelCell = cell;
+    else delete user.dataset.retroPixelCell;
+    user.dataset.retroFrame = pose;
+    player.paint(user);
+    return;
+  }
+  user.dataset.retroFrame = pose;
+  user.classList.toggle("retro-skill-flip", flip || player.behind);
+  player.paint(user);
+}
+
 function startPlayer(field: HTMLElement, user: HTMLElement, plan: ClassPlan, primaryId: string | undefined, clock: number, paint: (node: HTMLElement) => void): void {
   stopRetroClassSkill(field);
   const primary = targetNode(field, primaryId);
   const player: ClassPlayer = {
     plan, user, primaryId, clock: Math.max(0.1, clock), paint, nodes: new Set(), animations: [],
-    places: measurePlaces(field, user, primary, plan.skill.motion === "blink-strike"), last: currentTranslate(user), behind: false, done: false,
+    places: plan.monster ? measureMonsterPlaces(field, user, primary) : measurePlaces(field, user, primary, plan.skill.motion === "blink-strike"),
+    last: currentTranslate(user), behind: false, done: false,
   };
   players.set(field, player);
   user.dataset.retroClassSkill = plan.skill.id;
-  user.dataset.retroCast = plan.timeline.castType;
+  // 몬스터 시트에는 시전 칸이 없다 — retroCast 는 아군 시전 시트 전용이다.
+  if (!plan.monster) user.dataset.retroCast = plan.timeline.castType;
+  else user.dataset.retroBeat ??= "approach";
   field.dataset.retroClassSkill = plan.skill.id;
   if (reduced()) {
     // 감속 모드: 대표 순간 한 장만 보인다. 이동·흔들림·컷인 없음.
     const state = retroTimelineStateAt(plan.timeline, plan.timeline.representativeMs);
-    user.dataset.retroFrame = state.pose;
-    paint(user);
+    drawPose(player, state.pose, false);
     for (const fx of state.fx) {
       const event = plan.timeline.events[fx.event];
       if (event?.kind === "fx") playFx(field, player, event, fx.cell);
@@ -686,9 +796,7 @@ function startPlayer(field: HTMLElement, user: HTMLElement, plan: ClassPlan, pri
       if (!alive(field, player)) return;
       switch (event.kind) {
         case "pose":
-          user.dataset.retroFrame = event.pose;
-          user.classList.toggle("retro-skill-flip", event.flip === true || player.behind);
-          paint(user);
+          drawPose(player, event.pose, event.flip === true);
           break;
         case "move": moveUser(player, event); break;
         case "hide":
@@ -742,6 +850,7 @@ export function startRetroSpecialSkill(field: HTMLElement, entry: BattleTimeline
 export function preloadRetroClassSkillFx(): void {
   const sounds = new Set<string>();
   for (const skill of RETRO_CLASS_SKILLS) for (const id of retroTimelineSounds(retroClassSkillTimeline(skill))) sounds.add(id);
+  for (const skill of RETRO_MONSTER_SKILLS) for (const id of retroTimelineSounds(retroMonsterSkillTimeline(skill))) sounds.add(id);
   preloadBattleSamples([...sounds]);
   for (const url of Object.values(classSheets)) { const img = new Image(); img.src = url; }
 }

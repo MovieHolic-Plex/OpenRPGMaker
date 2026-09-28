@@ -542,9 +542,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         ?? retroSkillForEntry(entry)?.approachMs ?? retroWalk(field, entry)?.approachMs,
       actorRecoverMs: (entry: BattleTimelineEntrySnapshot) => retroClassSkillBeatMs(field, entry, "recover", options.runtime.snapshot().timeline)
         ?? retroSkillForEntry(entry)?.recoverMs ?? retroWalk(field, entry)?.recoverMs,
-      // 도트 적(슬라임·박쥐)은 대상 아군 앞까지 뛰어/날아가서 친다.
-      enemyApproachMs: (entry: BattleTimelineEntrySnapshot) => retroEnemyReach(field, entry)?.approachMs,
-      enemyRecoverMs: (entry: BattleTimelineEntrySnapshot) => retroEnemyReach(field, entry)?.recoverMs,
+      // 몬스터 스킬 42종은 같은 타임라인 훅(첫 착탄·대상별 간격·남은 연출). 그 밖의 도트 적 근접은 대상 아군 앞까지 뛰어/날아간다.
+      enemyApproachMs: (entry: BattleTimelineEntrySnapshot) => retroClassSkillBeatMs(field, entry, "approach", options.runtime.snapshot().timeline)
+        ?? retroEnemyReach(field, entry)?.approachMs,
+      enemyRecoverMs: (entry: BattleTimelineEntrySnapshot) => retroClassSkillBeatMs(field, entry, "recover", options.runtime.snapshot().timeline)
+        ?? retroEnemyReach(field, entry)?.recoverMs,
     } : {}),
     onResultStage(stage) {
       // 사용자가 확인키로 전부 공개했으면(revealAllResultRows) 늦게 도착한 낮은 단계가 되감지 않는다.

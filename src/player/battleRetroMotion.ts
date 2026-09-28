@@ -103,8 +103,9 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
     target?.classList.add("battle-motion-target", "battle-motion-knockback");
   }
   if (!beat || !user) return;
-  // 직업 스킬 48종(계약 retroClassSkills): 편집기와 같은 타임라인 재생기가 포즈·이동·이펙트를 모두 소유한다.
-  if (user.classList.contains("battle-actor")) {
+  // 직업 스킬 96종(계약 retroClassSkills)과 몬스터 스킬 42종(계약 retroMonsterSkills): 타임라인 재생기가
+  // 포즈·이동·이펙트를 모두 소유한다. 몬스터는 도트 시트 칸(retroPixelCell)을 재생기가 고른다.
+  {
     const entry = currentEntries.get(field);
     if (beat.kind === "approach" && entry) cursors.set(field, entry.sequence);
     if (driveRetroClassSkill(field, user, beat, entry, snapshot.timeline, (node) => paint(node, "idle"))) {

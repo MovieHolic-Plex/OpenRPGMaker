@@ -10,6 +10,7 @@
 //   그 밖        착탄 순간부터 목록 순서대로 이어 재생한다. 다음 레이어는 앞 레이어의 55% 지점에서 겹쳐 시작한다.
 import { castTypeForSkill, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
 import type { RetroFxAnchor, RetroFxLayer, RetroSkillMotion } from "@/assets/retroClassSkills";
+import type { PixelEnemyCell } from "@/assets/pixelEnemySheets";
 
 /** 시전자가 서는 자리. 좌표는 무대가 정한다. */
 export type RetroStagePlace = "home" | "front" | "center" | "above";
@@ -438,6 +439,177 @@ export function retroRecipeTimeline(recipe: RetroRecipeLike, options: { readonly
   b.pose(Math.max(end, approach + recipe.recoverMs), "idle");
   return b.build(recipe.cast, side);
 }
+
+// ── 몬스터 스킬 42개(계약 src/assets/retroMonsterSkills.ts) ──────────────────────────────────
+// 적은 왼쪽, 아군은 오른쪽이다. 타임라인의 편은 **시전자 기준**이다: enemies = 시전 몬스터의 상대(아군 파티),
+// allies = 몬스터 편, self = 시전 몬스터. 무대(런타임·편집기)가 편을 화면의 노드로 옮긴다.
+// 포즈 사건은 확장 포즈 이름을 그대로 쓰고 retroMonsterCellForPose 가 도트 적 시트 9칸으로 옮긴다
+// (windup·move·attack·recover). 투사체 첫 칸은 오른쪽을 본다 — 무대가 몬스터 손 → 아군으로 날린다.
+
+/** 확장 포즈 → 도트 적 시트 칸. idle 이면 undefined(CSS 대기 루프). */
+export function retroMonsterCellForPose(pose: ExtendedBattlerPose): PixelEnemyCell | undefined {
+  if (pose === "idle") return undefined;
+  if (pose === "attack_windup" || pose === "cast_charge" || pose === "cast_raise" || pose === "defend") return "windup";
+  if (pose === "walk_a" || pose === "walk_b" || pose === "walk_c") return "move";
+  if (pose === "evade" || pose === "hit") return "recover";
+  return "attack";
+}
+
+/** 몬스터 스킬 레이어 → 착탄·발사 효과음(EasyRPG RTP 실파일, public/assets/easyrpg/sound). */
+const MONSTER_SOUND: Readonly<Record<string, string>> = {
+  mon_acid_blob: "easyrpg-sound-shot2", mon_acid_splash: "easyrpg-sound-poison", mon_slam_hit: "easyrpg-sound-blow4",
+  mon_drain: "easyrpg-sound-absorb1", mon_screech_ring: "easyrpg-sound-sleep", mon_sting: "easyrpg-sound-poison",
+  mon_web_ball: "easyrpg-sound-shot2", mon_web_net: "easyrpg-sound-debuff", mon_scythe_x: "easyrpg-sound-attack2",
+  mon_howl_ring: "easyrpg-sound-monster1", mon_charge_dust: "easyrpg-sound-wind8", mon_tusk_hit: "easyrpg-sound-blow4",
+  mon_claw_rake: "easyrpg-sound-attack1", mon_fang_bite: "easyrpg-sound-poison", mon_shell_barrier: "easyrpg-sound-barrier",
+  mon_hellfire_bite: "easyrpg-sound-fire2", mon_curse_skull: "easyrpg-sound-darkness3", mon_bone_arrow: "easyrpg-sound-shot1",
+  mon_arrow_hit: "easyrpg-sound-blow2", mon_rot_cloud: "easyrpg-sound-poison", mon_wail_sky: "easyrpg-sound-silence",
+  mon_frost_orb: "easyrpg-sound-ice2", mon_frost_burst: "easyrpg-sound-ice1", mon_blizzard_sky: "easyrpg-sound-ice5",
+  mon_bandage_wrap: "easyrpg-sound-debuff", mon_flame_pillar: "easyrpg-sound-fire3", mon_wave_screen: "easyrpg-sound-wave2",
+  mon_vine_lash: "easyrpg-sound-blow2", mon_spore_cloud: "easyrpg-sound-pollen", mon_quake_crack: "easyrpg-sound-earth7",
+  mon_cleave_arc: "easyrpg-sound-attack2", mon_devour_jaws: "easyrpg-sound-blow4", mon_eye_ray: "easyrpg-sound-flash1",
+  mon_ray_hit: "easyrpg-sound-glare", mon_gaze_screen: "easyrpg-sound-glare", mon_hex_flame: "easyrpg-sound-fire4",
+  mon_smoke_bomb: "easyrpg-sound-shot3", mon_smoke_cloud: "easyrpg-sound-fog1", mon_backstab_slash: "easyrpg-sound-attack2",
+  mon_spear_pierce: "easyrpg-sound-attack1", mon_gale_screen: "easyrpg-sound-wind8", mon_boulder: "easyrpg-sound-shot3",
+  mon_rock_burst: "easyrpg-sound-earth2", mon_rampage_screen: "easyrpg-sound-earth8", mon_fire_breath: "easyrpg-sound-fire5",
+  mon_burn: "easyrpg-sound-fire1", mon_roar_ring: "easyrpg-sound-monster1", mon_dark_flame: "easyrpg-sound-darkness4",
+  mon_dark_burn: "easyrpg-sound-darkness3", mon_dark_meteor: "easyrpg-sound-fall2", mon_dark_crater: "easyrpg-sound-explosion1",
+  mon_demon_aura: "easyrpg-sound-darkness5", mon_judgment_sky: "easyrpg-sound-darkness4",
+};
+
+/** 몬스터 스킬의 레이어 키 → 효과음. 표에 없으면 아군과 같은 낱말 규칙. */
+export function retroMonsterSoundForLayer(key: string): string {
+  return MONSTER_SOUND[key] ?? retroSoundForLayer(key);
+}
+
+/** 계약에서 몬스터 타임라인이 읽는 부분(RetroMonsterSkill 과 같은 모양 — 계약 모듈을 import 하지 않는다). */
+export interface RetroMonsterTimelineSkill {
+  readonly name?: string;
+  readonly motion: "lunge" | "shoot" | "cast" | "breath" | "stomp" | "buff" | "finisher";
+  readonly effect: "damage" | "damageAll" | "debuff" | "debuffAll" | "buffSelf" | "buffAllies";
+  readonly element?: string;
+  readonly layers: readonly RetroFxLayer[];
+}
+
+const ELEMENT_CAST: Readonly<Record<string, CastType>> = { fire: "fire", ice: "ice", water: "ice", thunder: "thunder", holy: "heal", dark: "dark" };
+const MONSTER_TAIL_MS = 300;
+const MONSTER_FINISHER_TAIL_MS = 520;
+
+/** 계약 effect → 시전자 기준 편. */
+export function retroMonsterSide(skill: Pick<RetroMonsterTimelineSkill, "effect">): RetroTimelineSide {
+  return skill.effect === "buffSelf" ? "self" : skill.effect === "buffAllies" ? "allies" : "enemies";
+}
+
+/** 몬스터 투사체 방출. 운석은 위에서 떨어지고, 뼈화살 난사는 세 발, 나머지는 한 발 던지기. */
+function launchMonster(b: TimelineBuilder, at: number, layers: readonly IndexedLayer[], impact: readonly IndexedLayer[]): number {
+  const spread = impact.some((entry) => entry.layer.anchor === "allTargets");
+  let first = at;
+  for (const { index, layer } of layers) {
+    const fall = /meteor/.test(layer.key);
+    const count = /arrow|meteor/.test(layer.key) && spread ? 3 : 1;
+    const durationMs = fall ? 380 : /boulder|bomb/.test(layer.key) ? 360 : /ray/.test(layer.key) ? 180 : 260;
+    for (let i = 0; i < count; i += 1) b.projectile(at + i * 90, durationMs, index, layer, fall ? "fall" : "throw", spread ? i % 3 : 0);
+    b.sound(at, retroMonsterSoundForLayer(layer.key));
+    first = at + durationMs;
+  }
+  return layers.length > 0 ? first : at;
+}
+
+/**
+ * 계약 몬스터 스킬 → 타임라인. 모든 시각은 시퀀서의 적 비트(windup → impact → recover)에 대응하도록 첫 착탄이
+ * approach 끝이 된다(retroMonsterSkillBeatMs). lunge 는 아군 파고들기(질주 130ms)와 같은 속도감이다.
+ */
+export function retroMonsterSkillTimeline(skill: RetroMonsterTimelineSkill): RetroSkillTimeline {
+  const b = new TimelineBuilder();
+  const castType = ELEMENT_CAST[skill.element ?? ""] ?? (skill.motion === "buff" ? "support" : "arcane");
+  const side = retroMonsterSide(skill);
+  const { user, projectile, aim, impact } = partition(skill.layers);
+  const playUser = (at: number): void => { for (const { index, layer } of user) b.fx(at, index, layer); };
+  let tail = MONSTER_TAIL_MS;
+  switch (skill.motion) {
+    case "lunge": {
+      // 움츠림 90ms → 질주 130ms → 착탄. 돌아오기는 recover 칸으로 튕겨 150ms.
+      b.pose(0, "idle"); b.pose(30, "attack_windup"); playUser(30);
+      b.sound(100, SOUND.dash); b.pose(110, "walk_b"); b.move(110, 130, "front", -6);
+      b.pose(240, "attack");
+      const end = playImpact(b, 250, impact);
+      const back = Math.max(end - 140, 470);
+      b.pose(back, "evade"); b.move(back, 150, "home", -14); b.pose(back + 70, "walk_b"); b.pose(back + 150, "idle");
+      break;
+    }
+    case "shoot": {
+      b.pose(0, "idle"); b.pose(40, "attack_windup"); playUser(40);
+      let release = 380;
+      if (aim.length > 0) for (const entry of aim) release = Math.max(release, b.fx(120, entry.index, entry.layer) + 20);
+      b.pose(release, "attack");
+      const land = projectile.length > 0 ? launchMonster(b, release, projectile, impact) : release + 60;
+      if (projectile.length === 0) b.sound(release, SOUND.shot);
+      const end = playImpact(b, land, impact);
+      b.pose(Math.max(release + 220, land + 60), "evade");
+      b.pose(Math.max(release + 320, end - 160), "idle");
+      break;
+    }
+    case "cast": {
+      // 충전(windup)을 길게 → attack 칸에서 방출.
+      b.pose(0, "idle"); b.pose(40, "cast_charge"); playUser(40);
+      const release = 560;
+      b.pose(release, "attack"); b.sound(release, CAST_SOUND[castType]);
+      const land = projectile.length > 0 ? launchMonster(b, release + 20, projectile, impact) : release + 60;
+      if (projectile.some((entry) => /meteor/.test(entry.layer.key))) b.screen(land, 320, "shake");
+      if (castType === "thunder") b.screen(land, 120, "flash");
+      const end = playImpact(b, land, impact);
+      b.pose(Math.max(land + 200, end - 160), "idle");
+      break;
+    }
+    case "breath": {
+      // 젖혔다(windup) attack 칸을 착탄 끝까지 붙잡는다.
+      b.pose(0, "idle"); b.pose(40, "attack_windup"); playUser(40);
+      b.pose(320, "attack"); b.sound(320, "easyrpg-sound-breath");
+      const end = playImpact(b, 360, impact);
+      b.pose(Math.max(700, end - 120), "evade");
+      b.pose(Math.max(820, end), "idle");
+      break;
+    }
+    case "stomp": {
+      b.pose(0, "idle"); b.pose(40, "attack_windup"); playUser(40);
+      b.pose(330, "attack"); b.sound(340, SOUND.land); b.screen(340, 320, "shake");
+      const end = playImpact(b, 350, impact);
+      b.pose(Math.max(650, end - 160), "evade");
+      b.pose(Math.max(760, end - 60), "idle");
+      break;
+    }
+    case "buff": {
+      // windup 칸으로 기합, 자기(user)·몬스터 편(allAllies) 위 오라.
+      b.pose(0, "idle"); b.pose(40, "attack_windup");
+      playUser(200);
+      b.sound(200, retroMonsterSoundForLayer(skill.layers[0]?.key ?? "buff"));
+      const end = playImpact(b, 220, impact);
+      if (b.firstImpactMid < 0 && user[0]) b.firstImpactMid = 200 + Math.round(user[0].layer.frames * (RETRO_FX_FRAME_MS[user[0].layer.frame] ?? 60) * 0.45);
+      if (!impact.some((entry) => entry.layer.anchor !== "screen")) b.hit(260, "allTargets", 260);
+      b.pose(Math.max(560, end - 120), "idle");
+      break;
+    }
+    case "finisher": {
+      // 화면 어둡게 → 긴 windup(오라) → 섬광과 함께 attack → 화면 층 + 전체 착탄 + 흔들림.
+      b.pose(0, "idle"); b.pose(60, "attack_windup"); playUser(200);
+      b.sound(160, SOUND.flash);
+      b.pose(420, "cast_charge"); b.pose(700, "attack_windup");
+      const release = 960;
+      b.pose(release, "attack"); b.screen(release, 120, "flash"); b.sound(release, CAST_SOUND[castType]);
+      const land = projectile.length > 0 ? launchMonster(b, release, projectile, impact) : release + 40;
+      const end = playImpact(b, land, impact);
+      const firstLength = impact[0] ? impact[0].layer.frames * (RETRO_FX_FRAME_MS[impact[0].layer.frame] ?? 60) : 400;
+      const blow = Math.round(land + firstLength * 0.5);
+      b.screen(blow, 140, "flash"); b.screen(blow, 420, "shake"); b.sound(blow, SOUND.boom);
+      b.pose(Math.max(release + 400, end - 120), "idle");
+      b.screen(0, Math.max(end + 120, release + 600), "dim");
+      tail = MONSTER_FINISHER_TAIL_MS;
+      break;
+    }
+  }
+  return b.build(castType, side, tail);
+}
+
 
 // ---- 시각 t 의 무대 상태 ----
 
