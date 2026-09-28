@@ -90,28 +90,75 @@ class Rig:
         self.cy = self.G - stand - spec['hip'][1] + pose.get('dy', 0)
         self.tilt = pose.get('tilt', 0)
 
+    flat = 1.0
+
+    def hpt(self, lx, ly):
+        """머리 중심: 자세의 hdx/hdy 를 더한 몸 좌표. 쓰러진 자세는 head_abs 로 바닥 위 절대 위치를 준다."""
+        ha = self.pose.get('head_abs')
+        if ha:
+            return (self.cx + ha[0], self.G - ha[1])
+        return self.pt(lx + self.pose.get('hdx', 0), ly + self.pose.get('hdy', 0))
+
     def pt(self, lx, ly):
-        x, y = rot(lx, ly, self.tilt)
+        x, y = rot(lx, ly * self.flat, self.tilt)
         return (self.cx + x, self.cy + y)
 
 
+def eye_x(p, ex, ey, c='o'):
+    p.line([(ex - 1, ey - 1), (ex + 1, ey + 1)], c)
+    p.line([(ex - 1, ey + 1), (ex + 1, ey - 1)], c)
+
+
 def draw_frame(spec, name):
+    if spec.get('draw'):
+        return spec['draw'](name)
     pose = dict(spec['poses'][name])
     if name == 'dead':
-        return spec['dead'](spec)
+        return dead_lying(spec)
+    return draw_pose(spec, pose)
+
+
+def dead_lying(spec):
+    """쓰러진 자세: 리그를 납작하게(flat) 눌러 배를 바닥에 붙이고, 다리 넷을 바닥 따라 뻣뻣하게 뻗고, 머리는 바닥에 얹는다."""
+    d = dict(spec.get('dead_pose', {}))
+    fl = d.pop('flat', 0.7)
+    pose = dict(dx=d.pop('dx', 0), tilt=d.pop('tilt', 0), tail=d.pop('tail', -25), hang=d.pop('hang', 12), mouth=1, eye='x', flat=fl,
+                head_abs=d.pop('head_abs', (10, 5)), out=True)
+    bottom = max(ly * fl + b * fl for (lx, ly, a, b, ang) in spec['body'])
+    pose['dy'] = spec['stand'] + spec['hip'][1] - bottom
+    return draw_pose(spec, pose)
+
+
+def draw_pose(spec, pose):
     p = Pen(spec['cell'], spec['pal'])
     R = Rig(spec, pose)
     R.p = p
+    R.flat = pose.get('flat', 1.0)
+    name = pose.get('name')
     feet = pose.get('feet', [(0, 0)] * 4)
+    up = pose.get('out')
     hf = R.pt(*spec['hip_fore'])
     hr = R.pt(*spec['hip_rear'])
+    if up:
+        feet = [(0, -99)] * 4
     lf, lh = spec['leg_fore'], spec['leg_hind']
     G = R.G
     def leg(hip, fx, lift, l, front, far):
+        if up:
+            L_ = l[0] + l[1]
+            sgn = 1 if front else -1
+            k_ = spec.get('out_k', 1.0)
+            foot = (hip[0] + sgn * L_ * k_ * (0.86 if far else 0.98), hip[1] + (-1.6 if far else 0.6))
+            base, shade = (spec['far'] if far else spec['near'])
+            knee, fp = limb(p, hip, foot, l[0], l[1], front, l[2], l[3], l[4], base, shade, bend=0.35)
+            spec['foot'](p, fp, front, far, 0)
+            return
         foot = (hip[0] + fx + (spec['foot_dx_fore'] if front else spec['foot_dx_hind']), G - lift - l[4] - 1)
         base, shade = (spec['far'] if far else spec['near'])
         knee, fp = limb(p, hip, foot, l[0], l[1], front, l[2], l[3], l[4], base, shade, bend=spec.get('bend', 1.0))
         spec['foot'](p, fp, front, far, lift)
+        R.fp[(front, far)] = fp
+    R.fp = {}
     if spec.get('pre'):
         spec['pre'](p, R)
     # 먼 쪽 다리 → 몸 → 가까운 쪽 다리 → 머리
@@ -120,7 +167,7 @@ def draw_frame(spec, name):
     leg(hrx, feet[1][0], feet[1][1], lh, False, True)
     if spec.get('behind'):
         spec['behind'](p, R)
-    mass(p, [(R.pt(a_, b_)[0], R.pt(a_, b_)[1], c_, d_, e_ + R.tilt) for a_, b_, c_, d_, e_ in spec['body']],
+    mass(p, [(R.pt(a_, b_)[0], R.pt(a_, b_)[1], c_, d_ * R.flat, e_ + R.tilt) for a_, b_, c_, d_, e_ in spec['body']],
          fn=spec.get('shade', B.shade3), light_c=R.pt(*spec['light_c']), light_r=spec['light_r'])
     if spec.get('body_detail'):
         spec['body_detail'](p, R)
@@ -136,12 +183,32 @@ def lying_base(spec):
     return Pen(spec['cell'], spec['pal'])
 
 
+def fit(im, cell):
+    """칸 안에 안 들어온 프레임은 넘친 만큼만 밀어 넣는다(가로는 1px 여유, 바닥은 cell-4 행까지)."""
+    box = im.getbbox()
+    if not box:
+        return im
+    dx = 0
+    if box[0] < 1:
+        dx = 1 - box[0]
+    elif box[2] > cell - 1:
+        dx = cell - 1 - box[2]
+    dy = 0
+    if box[3] > cell - 3:
+        dy = (cell - 3) - box[3]
+    if not (dx or dy):
+        return im
+    out = Image.new('RGBA', im.size)
+    out.paste(im, (dx, dy))
+    return out
+
+
 def build(chip, spec):
     cell = spec['cell']
     frames = []
     for n in NAMES:
         pen = draw_frame(spec, n)
-        frames.append(ImageOps.mirror(pen.im))
+        frames.append(fit(ImageOps.mirror(pen.im), cell))
     sheet = Image.new('RGBA', (cell * 3, cell * 3))
     for i, im in enumerate(frames):
         sheet.paste(im, (i % 3 * cell, i // 3 * cell))
@@ -194,6 +261,67 @@ def build(chip, spec):
 
 def run(chip, spec):
     build(chip, spec)
+
+
+def std_head(p, R, c):
+    """공용 머리. c: rest(lx,ly) skull(a,b) tk(몸 기울기 따라가는 비율)
+    ears[(far, d, perp, dir_deg, length, halfwidth, key, inner)] muzzle(d, perp, a, b, keys) nose(d, perp, key, w)
+    eye(d, perp, key) jaw(d, perp, a, b, keys) tongue key, before(fn) / after(fn) 는 (p, R, hc, ang)."""
+    pose = R.pose
+    hc = R.hpt(*c['rest'])
+    ang = pose.get('hang', 0) + R.tilt * c.get('tk', 0.5)
+    mouth = pose.get('mouth', 0)
+    eye = pose.get('eye', 'o')
+    if c.get('before'):
+        c['before'](p, R, hc, ang)
+    back = pose.get('ears', 0)
+    for far, d, perp, dr, ln, hw, key, inner in sorted(c.get('ears', []), key=lambda e: not e[0]):
+        base = ax(hc, ang, d, perp)
+        tip = ax(base, ang + (dr if not back else 196), ln, 0)
+        p.poly([ipt(ax(base, ang, 0, -hw)), ipt(tip), ipt(ax(base, ang, 0, hw))], key, 'o')
+        if inner and not far and ln > 4:
+            ti = ax(base, ang + (dr if not back else 196), ln * 0.62, 0)
+            p.poly([ipt(ax(base, ang, 0.3, -hw * 0.5)), ipt(ti), ipt(ax(base, ang, 0.3, hw * 0.5))], inner)
+    sa, sb = c['skull']
+    blob(p, hc[0], hc[1], sa, sb, ang)
+    if c.get('muzzle'):
+        d, perp, a, b, keys = c['muzzle']
+        mz = ax(hc, ang, d, perp)
+        blob(p, mz[0], mz[1], a, b, ang, keys=keys)
+    if mouth and c.get('jaw'):
+        d, perp, a, b, keys = c['jaw']
+        jaw = ax(hc, ang + 12 + 6 * (mouth - 1), d, perp)
+        blob(p, jaw[0], jaw[1], a, b, ang + 12 + 6 * (mouth - 1), keys=keys)
+        m0 = ax(hc, ang, d - a * 0.6, perp - b * 0.9)
+        p.line([ipt(m0), ipt(ax(m0, ang + 8, a * 1.7, 0.3))], 'o')
+        if c.get('tongue'):
+            tg = ax(hc, ang + 20, d + a * 0.4, perp + b * 0.9)
+            p.box((int(tg[0]) - 1, int(tg[1]), int(tg[0]) + 1, int(tg[1]) + 1), c['tongue'])
+        if c.get('fang') and mouth > 1:
+            for k in (0.3, 0.75):
+                f0 = ax(hc, ang, d - a * 0.6 + a * 1.5 * k, perp - b * 0.7)
+                p.line([ipt(f0), ipt((f0[0], f0[1] + 2))], c['fang'])
+    if c.get('nose'):
+        d, perp, key, w = c['nose']
+        n = ax(hc, ang, d, perp)
+        x, y = int(round(n[0])), int(round(n[1]))
+        p.box((x - w + 1, y - 1, x, y), key)
+    d, perp, key = c['eye']
+    ey = ax(hc, ang, d, perp)
+    ex, eyy = ipt(ey)
+    if eye == 'x':
+        eye_x(p, ex, eyy, c.get('eyec', 'o'))
+    elif eye == 'c':
+        p.line([(ex - 1, eyy + 1), (ex + 1, eyy + 1)], c.get('eyec', 'o'))
+    else:
+        p.box((ex, eyy, ex + 1, eyy + 1), c.get('eyec', 'o'))
+        if c.get('eyehi'):
+            dot(p, ex, eyy, c['eyehi'])
+        if eye == 'a' or pose.get('angry'):
+            p.line([(ex - 2, eyy - 2), (ex + 2, eyy - 1)], 'o')
+    if c.get('after'):
+        c['after'](p, R, hc, ang)
+    return hc, ang
 
 
 # ---- 공용 자세표(48 셀 강아지 기준 px; 종 파일이 덮어쓴다) ----

@@ -40,7 +40,7 @@ def body_detail(p, R):
 
 def head(p, R):
     pose = R.pose
-    hc = R.pt(11.5 + pose.get('hdx', 0), -3.6 + pose.get('hdy', 0))
+    hc = R.hpt(11.5, -3.6)
     ang = pose.get('hang', 0) + R.tilt * 0.6
     mouth = pose.get('mouth', 0)
     eye = pose.get('eye', 'o')
@@ -70,7 +70,9 @@ def head(p, R):
     # 눈
     ey = ax(hc, ang, 2.6, -1.0)
     ex, eyy = ipt(ey)
-    if eye == 'c':
+    if eye == 'x':
+        eye_x(p, ex, eyy, 'k')
+    elif eye == 'c':
         p.line([(ex - 1, eyy - 1), (ex + 1, eyy), (ex - 1, eyy + 1)], 'k')
     else:
         p.box((ex, eyy, ex + 1, eyy + 1), 'k')
@@ -78,29 +80,6 @@ def head(p, R):
     # 볼 하이라이트
     hh = ax(hc, ang, -1, -4.2)
     dot(p, hh[0], hh[1], 'h')
-
-
-def dead(spec):
-    p = Pen(CELL, PAL)
-    G = CELL - 4
-    # 옆으로 누운 몸: 위쪽 다리 둘이 뻣뻣하게 비스듬히 솟는다
-    for (x0, y0, x1, y1) in [(16, G - 7, 12, G - 12), (34, G - 7, 38, G - 12)]:
-        tube(p, bez([(x0, y0, 2.0), (x1, y1, 1.3)]), 'b', 'o', 's')
-        p.box((x1 - 1, y1 - 2, x1 + 1, y1 - 1), 'w')
-    blob(p, 25, G - 4, 14.5, 4.6, 0)
-    def f(t):
-        blob(t, 25, G - 1, 11, 2.4, 0, edge=None, fn=lambda u, v, r, L: 'w' if L > -.3 else 'c')
-        blob(t, 25, G - 8, 12, 1.6, 0, edge=None, fn=lambda u, v, r, L: 's')
-    layer(p, f)
-    hc = (38, G - 4)
-    blob(p, hc[0], hc[1], 5.4, 4.2, 6)
-    blob(p, hc[0] + 4.5, hc[1] + 1.5, 4.0, 2.4, 6, keys={'l': 'w', 'b': 'w', 's': 'c'})
-    p.box((hc[0] + 7, hc[1] + 0, hc[0] + 8, hc[1] + 1), 'k')
-    p.box((hc[0] + 2, hc[1] + 3, hc[0] + 3, hc[1] + 4), 't')
-    p.line([(hc[0] + 1, hc[1] - 2), (hc[0] + 3, hc[1])], 'k'); p.line([(hc[0] + 3, hc[1] - 2), (hc[0] + 1, hc[1])], 'k')
-    p.poly([(hc[0] - 3, hc[1] - 3), (hc[0] - 6, hc[1] - 7), (hc[0] - 1, hc[1] - 4)], 's', 'o')
-    tube(p, bez([(12, G - 5, 2.0), (8, G - 5, 1.6)]), 'l', 'o', 'b')
-    return p
 
 
 POSES = default_poses()
@@ -112,7 +91,7 @@ SPEC = dict(
     leg_fore=(4.2, 4.2, 2.4, 1.8, 1.3), leg_hind=(4.2, 4.2, 2.9, 1.9, 1.3),
     foot_dx_fore=0, foot_dx_hind=0, far=('s', 'd'), near=('b', 's'),
     body=[(0, 0, 9.2, 5.4, 0), (4.6, 1, 5.8, 5.6, 0), (-5, 0.5, 5.6, 5.4, 0)],
-    light_c=(0, 0), light_r=10, foot=foot, pre=pre, body_detail=body_detail, head=head, dead=dead, poses=POSES,
+    light_c=(0, 0), light_r=10, foot=foot, pre=pre, body_detail=body_detail, head=head, dead_pose=dict(flat=0.7, head_abs=(11, 6), hang=8), poses=POSES,
 )
 
 if __name__ == '__main__':
