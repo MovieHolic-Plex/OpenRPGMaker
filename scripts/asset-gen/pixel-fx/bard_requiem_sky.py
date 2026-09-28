@@ -11,12 +11,14 @@ CX, CY = 64, 64
 
 
 def curtain(c, depth):
-    """Dark dithered drape from the top edge, depth in px."""
+    """Violet drape hanging from the top: scalloped folds, 50% dither body, sparse rim.
+    Its sides taper in so the cell edge never cuts a hard vertical line."""
     for x in range(128):
-        d = depth * (0.85 + 0.15 * math.sin(x * 0.19))
+        edge = min(x, 127 - x)
+        d = depth * (0.85 + 0.15 * math.sin(x * 0.19)) * min(1.0, edge / 24)
         for y in range(int(d)):
             if y < d - 10:
-                if y < d - 22 or (x + y) % 2 == 0:
+                if (x + y) % 2 == 0:
                     c.px(x, y, 'v0')
             elif (x + y) % 4 == 0:
                 c.px(x, y, 'v1')
@@ -54,6 +56,10 @@ def wisp(c, x, y, s, keys):
 
 def draw(c, f):
     curtain(c, min(60, 12 + f * 14) if f < 8 else 60 - (f - 7) * 18)
+    if f == 0:
+        for i in range(12):
+            x = 8 + i * 10
+            wisp(c, x, 120 - (i * 13) % 30, 1.5, ['v1', 'v3'])
     if f >= 1:
         arch_staff(c, min(1.0, f / 4), 'v2', 'v3')
     if f >= 2:

@@ -35,19 +35,9 @@ def rad(u):
 
 
 def vignette(c, strength):
-    """Dark dithered frame around the stage; strength 0..1 closes it in."""
-    r = lerp(96, 74, strength)
-    c.pal['_'] = (0, 0, 0, 0)
-    for y in range(128):
-        for x in range(128):
-            d = math.hypot((x - CX) / 1.0, (y - CY) / 0.8)
-            if d > r + 8:
-                c.px(x, y, 'q0')
-            elif d > r:
-                if (x + y) % 2 == 0:
-                    c.px(x, y, 'q0')
-            elif d > r - 6 and (x + y) % 4 == 0 and y % 2 == 0:
-                c.px(x, y, 'q1')
+    """Dithered dusk over the stage; strength 0..1 widens it (never reaches the cell corners)."""
+    if strength > 0.05:
+        shade(c, CX, CY, lerp(20, 50, strength), 'q0', squash=0.9)
 
 
 def wake(c, head_t, n, keys, seed):

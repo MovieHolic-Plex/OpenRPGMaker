@@ -11,15 +11,9 @@ CX, CY = 64, 62
 
 
 def dim(c, depth):
-    """Dithered dark border; depth 0..1."""
-    r = lerp(100, 66, depth)
-    for y in range(128):
-        for x in range(128):
-            d = math.hypot(x - CX, (y - CY) * 1.15)
-            if d > r + 10:
-                c.px(x, y, 'q0')
-            elif d > r and (x + y) % 2 == 0:
-                c.px(x, y, 'q0')
+    """Dithered stage darkening; depth 0..1 widens it."""
+    if depth > 0.05:
+        shade(c, CX, CY, lerp(20, 50, depth), 'q0', squash=0.9)
 
 
 def spot(c, x_top, x_bot, w, k, dither=True):
@@ -61,7 +55,11 @@ def draw(c, f):
     if f <= 10:
         dim(c, min(1.0, (f + 1) / 3) if f < 9 else (11 - f) / 3)
     if f == 0:
-        c.spark(CX, CY, 3, 'q2', 'ry')
+        converge(c, CX, CY, 0.5, 24, 3, ['q1', 'q2'], r0=60, r1=12, trail=6)
+        for i, k in enumerate(HUES):
+            x, y = pol(CX, CY, 30, i * math.pi / 3 + 0.3)
+            note(c, x, y, k, 4, s=0.8)
+        c.spark(CX, CY, 4, 'w', 'ry')
         return
     if 1 <= f <= 4:
         sw = (f - 1) * 10
@@ -69,7 +67,7 @@ def draw(c, f):
         spot(c, 118 - sw, 88 - sw, 12, 'rb')
         spot(c, CX + math.sin(f) * 10, CX, 14, 'ry')
     if 2 <= f <= 7:
-        s = min(3.2, 1.0 + (f - 2) * 0.8)
+        s = min(4.6, 1.4 + (f - 2) * 1.1)
         clef(c, CX, CY - 4, 'q2' if f < 5 else 'w', s=s, ol='ry' if f < 5 else 'ro')
     if 4 <= f <= 8:
         ribbons(c, (f - 4) / 4, f * 0.35)

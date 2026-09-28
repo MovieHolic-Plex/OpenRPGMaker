@@ -13,7 +13,7 @@ CX, CY = 32, 34
 def confetti(c, t, seed, n=16):
     r = rng(seed)
     for i in range(n):
-        a = r.uniform(0, 2 * math.pi)
+        a = i * 2 * math.pi / n + r.uniform(-0.25, 0.25)
         v = r.uniform(12, 28)
         x = CX + math.cos(a) * v * ease(t)
         y = CY + math.sin(a) * v * ease(t) * 0.8 + t * t * 18
@@ -62,7 +62,7 @@ def draw(c, f):
                 c.dring(CX, CY, r, k, parity=i)
             else:
                 c.ring(CX, CY, r, k, 1)
-        confetti(c, t, 5)
+        confetti(c, t, 5, n=18)
         if f in (4, 5):
             c.spark(CX + (f - 4.5) * 16, CY - 8, 5, 'w', HUES[f])
         if f == 6:

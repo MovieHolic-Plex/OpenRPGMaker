@@ -253,6 +253,20 @@ def flame_tongue(c, x, y, h, w, keys, seed=0, lean=0.0):
         c.oval(x, y - 0.5, ww, max(1, ww * 0.5), k)
 
 
+def shade(c, cx, cy, r, k, squash=1.0, dense=None):
+    """Stage dimming for screen sheets: 50% checker inside r, 25% in a 12px rim, nothing beyond.
+    Never a solid fill, so battlers under the sheet stay readable and the 128px cell edge never shows."""
+    dense = dense or k
+    for y in range(c.n):
+        for x in range(c.n):
+            d = math.hypot(x - cx, (y - cy) / squash)
+            if d <= r:
+                if (x + y) % 2 == 0:
+                    c.px(x, y, k)
+            elif d <= r + 12 and (x + y) % 2 == 0 and y % 2 == 0:
+                c.px(x, y, dense)
+
+
 # --------------------------------------------------------------------------- bard shapes
 
 def _note_parts(x, y, kind, s):
