@@ -74,7 +74,7 @@ npx vitest run test/perfEditorSubs.measure.test.ts test/perfEditorPanel.measure.
 NODE_OPTIONS=--max-old-space-size=8192 npx tsc --noEmit -p tsconfig.app.json
 ```
 
-타입 검사 결과는 실행 종료 후 기록한다.
+오류 0건, exit 0. 기본 힙 한도로 실패했던 이전 작업의 경험을 반영하여 처음부터 8GB 힙을 사용했다.
 
 ## 남은 제한
 
