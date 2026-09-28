@@ -245,6 +245,20 @@
 - Notes: same terms as the generated monster sprites above. The CC-BY 4.0 credit for the pack does
   not cover the generated tiles.
 
+## Generated monster cave (not part of the Scarloxy pack)
+
+- Files: `monster-cave/monster-cave.png` (cave rock wall, raised ledge, cave water and gravel 47-cell
+  edge sets, cliff face, stone stairs, ladders, ladder hole, tunnel and exit openings, puddle, crack,
+  glow moss, hidden-item sparkle, stalagmites, push boulder, breakable rock, ore rock, crystal, rubble)
+  and the reference renders under `monster-cave/references/`.
+- Origin: synthesized with an image generation model, using the Scarloxy cliff ring and rock sprites
+  (4x nearest upscale) as a style reference, then cut and composed into 16px tiles by
+  `scripts/content/build-monster-cave.py`. Raw model outputs are kept at `tiledata/pkmn-cave/raw/`.
+- Author: not Scarloxy (Ismael Garcia) artwork. The texture key uses the `tex_scarloxy_chipset_`
+  prefix only so the sheet shares the Scarloxy art-style grouping in the editor.
+- Notes: same terms as the generated monster sprites above. The CC-BY 4.0 credit for the pack does
+  not cover these files.
+
 ## EasyRPG RTP scoped runtime import
 
 - Files:

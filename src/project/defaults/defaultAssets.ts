@@ -19,6 +19,7 @@ import { ATLAS_VEHICLES_TEXTURE, createAtlasVehiclesTileset, ensureAtlasVehicles
 import { ensureMonsterTownKitReferences } from "./monsterTownKitReferences";
 import { ensureMonsterInteriorReferences } from "./monsterInteriorReferences";
 import { ensureMonsterGymCoastReferences } from "./monsterGymCoastReferences";
+import { ensureMonsterCaveReferences } from "./monsterCaveReferences";
 import { ensureForestHarmonyAtlasTownParts } from "./forestHarmonyAtlasTownParts";
 import { repairForestTreeShadowPassage } from "./forestHarmonyTreeShadows";
 import { createForestGrassJoinsTileset, extendForestGrassJoinsTileset, FOREST_GRASS_JOINS_TEXTURE } from "./forestGrassJoins";
@@ -181,6 +182,7 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       changed = ensureMonsterTownKitReferences(project.tilesets[id]) || changed;
       changed = ensureMonsterInteriorReferences(project.tilesets[id]) || changed;
       changed = ensureMonsterGymCoastReferences(project.tilesets[id]) || changed;
+      changed = ensureMonsterCaveReferences(project.tilesets[id]) || changed;
       if (id === TIBO_INTERIOR_ID) changed = extendTiboInteriorDefaults(project.tilesets[id]) || changed;
       changed = seedLpcWoodenFurnitureKits(project.tilesets[id]) || changed;
       changed = seedLpcWoodenFurniture16Kits(project.tilesets[id]) || changed;
@@ -293,6 +295,7 @@ function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[nu
   ensureMonsterTownKitReferences(tileset);
   ensureMonsterInteriorReferences(tileset);
   ensureMonsterGymCoastReferences(tileset);
+  ensureMonsterCaveReferences(tileset);
   return tileset;
 }
 

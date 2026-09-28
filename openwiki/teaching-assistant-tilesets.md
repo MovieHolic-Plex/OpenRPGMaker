@@ -433,3 +433,27 @@ Pi 런타임(`scripts/lib/piAgentRuntime.ts`)은 모델이 끝났다고 할 때 
 - **퍼즐 배선**: 스위치 칸 playerTouch 이벤트가 `changeTile`(layer upper)로 스위치 → 켜짐, 차단기 → 열림 칸을 바꾼다. 예제 문서에 좌표·타일 번호가 있다.
 - **없는 것**: 파도 애니메이션(해안 조각은 정지), 체육관 외벽(바깥은 위 반쪽 아레나 7×7), 실내 계단, 얼음·바위 속성 체육관, 배 갑판, 편집기 저작 데모 맵(예제 배열은 문서에만 있다).
 
+- **없는 것**: 동굴·체육관 내부, 바다·해변, 다리 난간. 실내는 `easyrpg_chipset_interior`, 동굴 맵은 아래 「몬스터 동굴」(`scarloxy_chipset_monster_cave`).
+
+## 몬스터 동굴 (scarloxy_chipset_monster_cave, 2026-09-28)
+
+포켓몬풍 게임의 동굴 맵용 480칸 한 장이다. 바위 벽·고지대·동굴 물·자갈 47칸 블롭 네 세트, 절벽 앞면(2줄),
+오르는 돌계단·사다리(오르기)·사다리 구멍(내려가기)·내려가는 계단·어두운 굴·밝은 출구, 흙 위에 구운 바닥 장식(물웅덩이·균열·빛 이끼·반짝이 2프레임),
+3층 소품(석순 2종·밀 바위·깨는 바위·광석·수정·돌무더기)이 들어 있다.
+
+- **그림**: 이미지 생성 모델로 Scarloxy 절벽 링·바위를 화풍 기준으로 그렸다(생성 자산, 팩 원본 아님 — `public/assets/ATTRIBUTION.md`).
+  원본 `tiledata/pkmn-cave/raw/`(이음매 없는 견본 6장·절벽 앞면 띠·입구류·소품·작은 장식) → `python3 scripts/content/build-monster-cave.py`
+  → `public/assets/monster-cave/monster-cave.png` + `src/assets/monsterCaveManifest.json`.
+- **가장자리는 47칸 블롭**(3×3 아님): 견본 질감에서 모양마다 칸을 픽셀 합성한다(열린 변은 흙 띠·1px 외곽선·북쪽 밝은 테).
+  솟은 세트(벽·고지대)는 남쪽 띠가 없고 그 아래 두 줄에 절벽 앞면을 따로 깐다. 대각 비트는 양옆 직교가 모두 이어졌을 때만 남긴다.
+  `monsterCaveAutotiles.ts` 가 네 세트를 8방 오토타일 그룹으로 등록한다(몸통 156·164·172·336 로 칠하면 모양이 잡힌다). 벽·고지대는 앞면 줄 칸을 이웃으로 본다.
+- **칸 규칙**: `scarloxyPack.ts` 의 `MONSTER_CAVE_LABELS`. 블록 하나에 통행이 섞이면(고지대 테두리 ×, 사다리·굴 윗칸 ×, 큰 석순 윗칸 ★) 통행 값별 그룹 두 개로 가른다 —
+  팩 그룹 계약이 칸 통행을 적는 유일한 경로다. 바닥 장식은 **흙에 구운 불투명 1층 칸**이다. 투명한 채 3층 ○ 로 두면 ★ 이 되어 발을 덮는다.
+- **참고문서**: `node scripts/content/prepare-monster-cave-references.mjs` → `src/assets/monsterCaveReferences.json`
+  (칸 사전·47칸 마스크 표 네 세트·조립 순서·완성 예제 24×20 전체 배열·변조 오류 그림 4쌍, 그림 `public/assets/monster-cave/references/`).
+  예제는 글자 배치에서 엔진 규칙으로 배열을 계산하고, 구조 검사(`checkCave`: 블롭 모양·앞면 순서·층·잘린 소품)와 입구→계단·굴·사다리 도달 검사를 통과해야 저장된다.
+  변조 그림은 같은 검사가 오류 코드를 내지 않으면 생성이 실패한다. `ensureMonsterCaveReferences` 가 새 프로젝트와 로드 보정 양쪽에서 심는다.
+- **생성 프로필**: `generate_map` 은 dungeon 레이아웃으로 흙 24·잔돌 25·벽 몸통 156·자갈 336 만 칠한다(가장자리·앞면은 그리지 않는다).
+- **없는 것**: 나무 다리·난간, 동굴 안 건물, 얼음·용암 동굴, 비밀 문, 폭포. 바깥 입구 그림은 몬스터 마을 부품의 cave-entrance.
+
+

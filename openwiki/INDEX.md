@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **108쪽 / 3840KB / 약 1,103,176 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **108쪽 / 3843KB / 약 1,104,122 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -27,7 +27,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/runtime-pre-edit-routing.md` | 66KB | 40KB | 460 | ~19,633 |
 | `openwiki/runtime-project-schema.md` | 181KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1333 | ~50,102 |
 | `openwiki/runtime-sessions.md` | 119KB | 50KB | 595 | ~32,192 |
-| `openwiki/teaching-assistant-tilesets.md` | 52KB | 12KB | 436 | ~15,765 |
+| `openwiki/teaching-assistant-tilesets.md` | 55KB | 12KB | 460 | ~16,711 |
 | `openwiki/testing.md` | 206KB | 48KB | 1923 | ~56,967 |
 | `openwiki/tileset-reference-documents.md` | 54KB | 4KB | 558 | ~16,396 |
 
@@ -1711,7 +1711,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L30` 실제 데이터 보존
 - `L43` 역사 자료와 검증
 
-### `openwiki/teaching-assistant-tilesets.md` — 52KB · 436줄 · ~15,765 토큰 · 통째읽기 잘림
+### `openwiki/teaching-assistant-tilesets.md` — 55KB · 460줄 · ~16,711 토큰 · 통째읽기 잘림
 
 - `L8` 한 줄 요약
 - `L14` 조수가 실제로 받는 것
@@ -1733,6 +1733,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L368` 몬스터 마을 부품 (scarloxy_chipset_monster_town_kit, 2026-09-28)
 - `L387` 몬스터 실내 (scarloxy_chipset_monster_interior, 2026-09-28)
 - `L411` 몬스터 체육관·해변 부품 (scarloxy_chipset_monster_gym_coast, 2026-09-28)
+- `L438` 몬스터 동굴 (scarloxy_chipset_monster_cave, 2026-09-28)
 
 ### `openwiki/team-project-host.md` — 27KB · 323줄 · ~8,415 토큰
 
