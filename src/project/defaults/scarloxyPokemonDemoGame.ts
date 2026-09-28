@@ -15,9 +15,9 @@ import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import { normalizeSkillRecord, normalizeStateRecord } from "@/project/databaseRecordModel";
 import { DEFAULT_ACTOR_ID, DEFAULT_SKILL_ID } from "./constants";
 import { createBlankMap, singleNodeTree } from "./defaultMaps";
+import { MONSTER_TOWN_KIT_MANIFEST } from "@/assets/scarloxyPack";
 import {
   G,
-  GRASSLAND_TILESET_ID,
   PEOPLE1_CHARSET_ID,
   PEOPLE2_CHARSET_ID,
   charsetGraphic,
@@ -45,6 +45,48 @@ import {
 
 const TOWN_MAP_ID = "map_pkmn_town";
 const ROUTE_MAP_ID = "map_pkmn_route";
+
+// 마을·1번 길은 「초원 마을 + 몬스터 마을 부품」 960칸 시트로 그린다. 위 480칸은 초원 마을
+// 시트와 번호가 같아 G 상수를 그대로 쓰고, 480~ 의 새 부품(상점·풀숲·울타리·턱…)을 함께 깐다.
+const OUTDOOR_TILESET_ID = "scarloxy_chipset_monster_town_kit";
+
+/** 부품 블록의 칸 번호 격자(행 우선). 매니페스트에 없는 이름이면 빌드 스크립트와 어긋난 것이다. */
+function kitBlock(name: string): number[][] {
+  const block = MONSTER_TOWN_KIT_MANIFEST.blocks.find((entry) => entry.name === name);
+  if (!block) throw new Error(`몬스터 마을 부품 매니페스트에 ${name} 블록이 없습니다.`);
+  return Array.from({ length: block.h }, (_, dy) =>
+    Array.from({ length: block.w }, (_, dx) => (block.row + dy) * 30 + block.col + dx));
+}
+const K = {
+  SHOP: kitBlock("item-shop"),
+  CAVE: kitBlock("cave-entrance"),
+  SIGNPOST: kitBlock("signpost")[0]![0]!,
+  MAILBOX: kitBlock("mailbox")[0]![0]!,
+  SHRUB: kitBlock("cuttable-shrub")[0]![0]!,
+  PLANTER: kitBlock("flower-planter"),
+  BENCH: kitBlock("bench"),
+  LAMP: kitBlock("street-lamp"),
+  TALL_GRASS: [kitBlock("tall-grass-a")[0]![0]!, kitBlock("tall-grass-b")[0]![0]!] as const,
+  FENCE: kitBlock("picket-fence")[0]!,
+  FENCE_POST: kitBlock("fence-post")[0]![0]!,
+  LEDGE: kitBlock("grass-ledge")[0]!,
+} as const;
+
+/** 조우 풀숲을 사각형으로 깐다(두 변형을 체크무늬로 섞어 반복을 숨긴다). 이미 뭔가 있는 칸은 비운다. */
+function tallGrass(map: GameMap, x0: number, y0: number, w: number, h: number): void {
+  for (let y = y0; y < y0 + h; y += 1) {
+    for (let x = x0; x < x0 + w; x += 1) {
+      if (map.upperTiles[y * map.width + x] !== EMPTY) continue;
+      setUpper(map, x, y, K.TALL_GRASS[(x + y) % 2]!);
+    }
+  }
+}
+
+/** 가로 울타리: 2칸 조각을 이어 붙이고 끝을 기둥으로 막는다. */
+function fenceRow(map: GameMap, x0: number, x1: number, y: number): void {
+  for (let x = x0; x <= x1; x += 1) setUpper(map, x, y, K.FENCE[(x - x0) % 2]!);
+  setUpper(map, x1, y, K.FENCE_POST);
+}
 
 // 마을 건물 문 앞 칸 — 건물 스프라이트의 문 타일 바로 아래.
 //   연구소  = hospital 블록(10,1) 6×6, 문 = 블록 (2..3, 5) → 마을 (12..13, 6), 접근 (12,7)
@@ -538,7 +580,7 @@ function wildEnemy(
 // --- 맵 -----------------------------------------------------------------------
 
 function townMap(): GameMap {
-  const map = createBlankMap("새싹 마을", 26, 18, GRASSLAND_TILESET_ID);
+  const map = createBlankMap("새싹 마을", 26, 18, OUTDOOR_TILESET_ID);
   map.id = TOWN_MAP_ID;
   map.lowerTiles = new Array<number>(map.width * map.height).fill(G.GRASS);
   map.upperTiles = new Array<number>(map.width * map.height).fill(EMPTY);
@@ -554,6 +596,16 @@ function townMap(): GameMap {
   setUpper(map, 8, 13, G.GRASS_TUFT);
   setUpper(map, 17, 13, G.GRASS_TUFT);
   setUpper(map, 22, 15, G.ROCK_1);
+  // 몬스터 마을 부품: 집 앞 우체통, 광장 벤치·화단·가로등, 마을 남쪽 울타리(가운데 길목만 열어 둔다).
+  setUpper(map, 4, 8, K.MAILBOX);
+  setUpper(map, 21, 9, K.MAILBOX);
+  stampUpper(map, 8, 11, K.BENCH);
+  stampUpper(map, 14, 13, K.PLANTER);
+  stampUpper(map, 10, 9, K.LAMP);
+  stampUpper(map, 16, 9, K.LAMP);
+  setUpper(map, 15, 16, K.SIGNPOST);
+  fenceRow(map, 3, 11, 16);
+  fenceRow(map, 16, 22, 16);
 
   map.events.push(
     professorEvent(),
@@ -578,6 +630,10 @@ function townMap(): GameMap {
       },
     ], charsetGraphic(PEOPLE2_CHARSET_ID, 4)),
     transferEvent("ev_pkmn_to_route", 13, 17, ROUTE_MAP_ID, 15, 2, "초원 1번 길로"),
+    talker("ev_pkmn_town_sign", 15, 16, "표지판", [
+      "새싹 마을 — 새로운 모험이 싹트는 곳.",
+      "남쪽: 초원 1번 길",
+    ], [], { transparent: true }, { type: "fixed", speed: 3, frequency: 3 }),
     ...createTownDoorEvents(TOWN_DOORS),
     ...createTownDoorSigns(TOWN_DOORS),
   );
@@ -620,12 +676,15 @@ function professorEvent(): GameEvent {
 }
 
 function routeMap(): GameMap {
-  const map = createBlankMap("초원 1번 길", 30, 24, GRASSLAND_TILESET_ID);
+  const map = createBlankMap("초원 1번 길", 30, 24, OUTDOOR_TILESET_ID);
   map.id = ROUTE_MAP_ID;
   map.lowerTiles = new Array<number>(map.width * map.height).fill(G.GRASS);
   map.upperTiles = new Array<number>(map.width * map.height).fill(EMPTY);
   map.encounterRate = 5;
-  map.troopIds = ["troop_pkmn_grass_a", "troop_pkmn_grass_b", "troop_pkmn_new_grass", "troop_pkmn_new_pair", "troop_pkmn_pond_pair", "troop_pkmn_shore", "troop_pkmn_dream", "troop_pkmn_sparchu", "troop_pkmn_pouch"];
+  map.troopIds = [...ROUTE_TROOPS];
+  // 야생은 조우 풀숲 안에서만 나온다(맨 잔디·길은 안전) — 풀숲 사각형마다 같은 조우표를 건다.
+  map.encounterTable = ROUTE_GRASS_PATCHES.flatMap((region) =>
+    ROUTE_TROOPS.map((troopId) => ({ troopId, weight: 1, conditions: { region: { ...region } } })));
 
   stampLower(map, 22, 16, G.POND);
   stampLower(map, 4, 18, G.SAND_PATCH);
@@ -640,6 +699,16 @@ function routeMap(): GameMap {
   }
   setUpper(map, 26, 13, G.ROCK_1);
   setUpper(map, 6, 9, G.ROCK_2);
+  // 턱: 기존 내리막 이벤트 칸(11~13, 15)에 풀밭 턱 그림을 깐다. 이벤트가 점프를 맡는다.
+  LEDGE_TILES.forEach(([x, y], index) => setUpper(map, x, y, K.LEDGE[index % K.LEDGE.length]!));
+  // 조우 풀숲 — 트리·바위가 있는 칸은 건너뛴다.
+  for (const region of ROUTE_GRASS_PATCHES) tallGrass(map, region.x, region.y, region.w, region.h);
+  // 길 가장자리 울타리와 동굴 입구(남서쪽). 동굴 안은 아직 없으므로 막힌 입구 안내만 둔다.
+  fenceRow(map, 2, 7, 3);
+  fenceRow(map, 22, 27, 3);
+  stampUpper(map, 1, 11, K.CAVE);
+  setUpper(map, 12, 3, K.SIGNPOST);
+  setUpper(map, 18, 8, K.SHRUB);
 
   map.events.push(
     transferEvent("ev_pkmn_to_town", 15, 1, TOWN_MAP_ID, 13, 16, "새싹 마을로"),
@@ -649,6 +718,10 @@ function routeMap(): GameMap {
       "초원 1번 길 — 풀숲에서는 야생 몬스터가 튀어나옵니다.",
       "남쪽 끝에서 이상한 울음소리가 들린다는 소문이 있다.",
       "아래로 난 단은 뛰어내릴 수 있지만, 다시 올라올 수는 없습니다.",
+    ], [], { transparent: true }, { type: "fixed", speed: 3, frequency: 3 }),
+    talker("ev_pkmn_cave_mouth", 3, 14, "동굴 입구", [
+      "어두운 동굴이 입을 벌리고 있다. 안쪽에서 찬 바람이 불어온다.",
+      "(아직 들어갈 수 없다.)",
     ], [], { transparent: true }, { type: "fixed", speed: 3, frequency: 3 }),
     ...LEDGE_TILES.map(([x, y], index) => ledgeEvent(`ev_pkmn_ledge_${index}`, x, y)),
   );
@@ -660,6 +733,16 @@ function routeMap(): GameMap {
  * 아래에서 밟으면 다시 아래로 튕겨 나가므로 "올라올 수 없는 한 방향 지형"이 된다(포켓몬과 같은 동작).
  */
 const LEDGE_TILES = [[11, 15], [12, 15], [13, 15]] as const;
+
+const ROUTE_TROOPS = ["troop_pkmn_grass_a", "troop_pkmn_grass_b", "troop_pkmn_new_grass", "troop_pkmn_new_pair", "troop_pkmn_pond_pair", "troop_pkmn_shore", "troop_pkmn_dream", "troop_pkmn_sparchu", "troop_pkmn_pouch"] as const;
+
+/** 조우 풀숲 사각형 — 길(15열 부근)을 비켜 좌우와 남쪽에 둔다. */
+const ROUTE_GRASS_PATCHES = [
+  { x: 3, y: 5, w: 8, h: 4 },
+  { x: 18, y: 5, w: 7, h: 5 },
+  { x: 6, y: 17, w: 8, h: 3 },
+  { x: 16, y: 13, w: 5, h: 5 },
+] as const;
 
 /**
  * 밟으면 주인공을 아래로 두 칸 점프시키는 이벤트.
