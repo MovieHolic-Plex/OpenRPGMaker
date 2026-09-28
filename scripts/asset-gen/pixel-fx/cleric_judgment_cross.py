@@ -87,6 +87,18 @@ def draw(c, f):
         c.dither(lambda cc: cc.rect(CX - 3, 20, CX + 3, LAND - 30, H[3]), t)
 
 
+# QA 2026-09-28: 칸 경계에서 직선으로 잘리던 가장자리를 디더로 걷는다(fx_edge.py). 그림 수식은 위 draw 그대로.
+from fx_edge import fade_edges  # noqa: E402
+
+_draw_body = draw
+
+
+def draw(c, f):
+    _draw_body(c, f)
+    # 위쪽 빛 원반은 원래 칸 안에 있다 — 위는 가장자리 한두 줄만 걷고, 아래·좌우 빛 웅덩이를 디더로 걷는다.
+    fade_edges(c, T=3, B=10, L=10, R=10)
+
+
 if __name__ == '__main__':
     make(KEY)
 

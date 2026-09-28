@@ -69,6 +69,18 @@ def draw(c: Cell, f: int) -> None:
             c.ramp(c.star5(CX + math.cos(a) * 12, 22 + math.sin(a) * 4, 3), ("gd", "g", "y"))
 
 
+# QA 2026-09-28: 칸 경계에서 직선으로 잘리던 가장자리를 디더로 걷는다(fx_edge.py). 그림 수식은 위 draw 그대로.
+from fx_edge import fade_edges  # noqa: E402
+
+_draw_body = draw
+
+
+def draw(c, f):
+    _draw_body(c, f)
+    # 방패 밑면은 화면 층(guard_fortress_wall)이 내리꽂은 방패의 끝이라 위에서 들어오는 게 맞다 — 위는 걷지 않는다.
+    fade_edges(c, L=2, R=2)
+
+
 if __name__ == "__main__":
     run([KEY])
 

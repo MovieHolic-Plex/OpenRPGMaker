@@ -59,8 +59,12 @@ def draw(c: Cell, f: int) -> None:
         return
     if f <= 7:  # topples forward
         lean = (0.18, 0.42)[f - 6]
+        # QA: 앞(왼쪽)으로 기울면 맨 왼쪽 방패 윗부분이 칸 밖으로 나가 잘렸다 — 벽 전체를 기운 만큼 오른쪽으로 민다.
+        h = 80 - (f - 5) * 12
+        left = max(XS[0], round(lean * h) + 11 + 3)   # 기운 윗부분이 x>=3 에 오도록
+        right = 127 - 12
         for x in XS:
-            tower(c, x, 80 - (f - 5) * 12, lean)
+            tower(c, round(left + (x - XS[0]) * (right - left) / (XS[-1] - XS[0])), h, lean)
         for x in (10, 34, 58, 82, 106):
             c.put(c.line([(x, 18 + f * 4), (x - 4, 32 + f * 4)]), "l")
         return
@@ -77,6 +81,18 @@ def draw(c: Cell, f: int) -> None:
     if f == 11:  # last embers of gold settle on the floor seams
         for x in XS:
             c.put(c.dith(c.rect(x - 9, G - 1, x + 9, G), 0), "gd", "over")
+
+
+# QA 2026-09-28: 칸 경계에서 직선으로 잘리던 가장자리를 디더로 걷는다(fx_edge.py). 그림 수식은 위 draw 그대로.
+from fx_edge import fade_edges  # noqa: E402
+
+_draw_body = draw
+
+
+def draw(c, f):
+    _draw_body(c, f)
+    # 단단한 방패는 디더로 걷지 않는다 — 광선·흙먼지만 닿는 위아래 가장자리만 짧게 걷는다.
+    fade_edges(c, T=6, B=4, **({'L': 10, 'R': 10} if f >= 8 else {}))   # 쓰러진 판·흙먼지는 화면 폭 끝에서 흩어지게
 
 
 if __name__ == "__main__":

@@ -90,6 +90,18 @@ def draw(c: Cell, f: int) -> None:
         debris(c, "brave_gold", 8, CX, 60, 0.9, (20, 50), size=1, cols=("gd", "g", "p"))
 
 
+# QA 2026-09-28: 칸 경계에서 직선으로 잘리던 가장자리를 디더로 걷는다(fx_edge.py). 그림 수식은 위 draw 그대로.
+from fx_edge import fade_edges  # noqa: E402
+
+_draw_body = draw
+
+
+def draw(c, f):
+    _draw_body(c, f)
+    # 칼자루·낙하 빛기둥(가운데 기둥)은 위에서 들어오는 물체라 위 가장자리 디더에서 뺀다.
+    fade_edges(c, T=12, B=12, L=12, R=12, spare=((52, 0, 76, 30),))
+
+
 if __name__ == "__main__":
     run([KEY])
 

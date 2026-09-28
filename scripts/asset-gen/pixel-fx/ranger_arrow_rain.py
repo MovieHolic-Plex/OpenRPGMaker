@@ -8,7 +8,9 @@ KEY, SIZE, FRAMES, ANCHOR = 'ranger_arrow_rain', 64, 10, 'allTargets'
 PAL = pal(pick(GOLD, 'y1', 'y2', 'y3'), WOOD, pick(STEEL, 's1', 's2'), pick(LEAF, 'l3'), pick(SMOKE, 'q1', 'q2', 'q3'), WHITE)
 FEET = 56
 ANG = math.pi / 2 + 0.35  # falling down and slightly left
-LANDS = [(14, 0), (26, 1), (40, 0), (50, 2), (20, 3), (34, 2), (46, 4), (30, 4), (10, 5), (54, 5), (24, 6), (38, 6)]
+# QA 2026-09-28: 화살은 오른쪽 위에서 비스듬히 떨어진다(ANG). x 50·54 착지 화살은 낙하선 꼬리가 칸 오른쪽 밖이라 반쪽이 잘렸다.
+# 착지 x 상한을 44 로 당겨 낙하 두 칸(36px) 거리에서도 꼬리가 x<=62 에 들어오게 한다.
+LANDS = [(14, 0), (26, 1), (40, 0), (44, 2), (20, 3), (34, 2), (42, 4), (30, 4), (10, 5), (44, 5), (24, 6), (38, 6)]
 
 
 def falling(c, x, y):
@@ -58,6 +60,17 @@ def draw(c, f):
         for i, (x, t) in enumerate(LANDS[::2]):
             c.spark(x + 3, FEET - 10, 1, 'y3')
         c.ddisc(32, FEET - 1, 24, 'q1', squash=0.12)
+
+
+# QA 2026-09-28: 칸 경계에서 직선으로 잘리던 가장자리를 디더로 걷는다(fx_edge.py). 그림 수식은 위 draw 그대로.
+from fx_edge import fade_edges  # noqa: E402
+
+_draw_body = draw
+
+
+def draw(c, f):
+    _draw_body(c, f)
+    fade_edges(c, R=2)
 
 
 if __name__ == '__main__':
