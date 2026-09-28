@@ -525,3 +525,11 @@ LLM 전송 본문과 Pi provider payload에서 민감값을 가린 뒤 표시용
 Pi의 `prompt_inspection` 이벤트는 client에서 소비하고 일반 감사/대화 이벤트 전달에서
 제외한다. 기존 로컬 진단 수집 동의나 영구 AI 로그에 새 원문 저장 경로를 추가하지 않는다.
 상세 UI/수명/중앙 검증 명령은 `editor-ai-panel.md`의 Feature16 절을 따른다.
+
+## 연속 AI 적용의 구독자 비용 (2026-09-28)
+
+`editor/projectReferenceIssues.ts`는 작성 여정·진행 패널의 참조 검증 결과를 Project 객체와
+store lineage/generation으로 공유한다. 로드 정규화가 쓰는 순수 검증기는 캐시하지 않는다.
+`editor.ts`는 작성 진행 기록을 통지마다 저장하고, 표면 갱신만 rAF로 합친다.
+서로 다른 범위나 팔레트 요청이 겹치면 전체 패널 갱신으로 승격하며, teardown 뒤 예약은 버린다.
+지연된 store 구독자 오류도 기존 store 로거에 남긴다.

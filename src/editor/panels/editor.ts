@@ -1,7 +1,7 @@
 import { destroyGame, getGame, startEditGame } from "@/app/mode";
 import { clearTileGraftImageCache } from "@/assets/tileGraftImageCache";
 import { scheduleEditorAssetWarmup } from "@/assets/editorAssetWarmup";
-import { collectProjectReferenceIssues } from "@/project/io/references";
+import { collectEditorProjectReferenceIssues } from "@/editor/projectReferenceIssues";
 import {
   editorState,
   editorStateChangedOnlyCanvasOverlay,
@@ -57,6 +57,7 @@ import { getWorkspaceLayout, subscribeWorkspace } from "@/editor/workspace/works
 import { ProjectExportMirror } from "@/editor/projectExportMirror";
 import { isSaveSkippedLocation } from "@/project/devProjectPersistence";
 import { store, type ProjectChangeDescriptor } from "@/project/store";
+import { createLogger } from "@/util/logger";
 import { clearChildren, el } from "@/util/dom";
 import {
   AUTHORING_TEST_BOOT_SUCCESS_EVENT,
@@ -280,7 +281,7 @@ export function renderEditor(main: HTMLElement): void {
 
   unsubStore = store.subscribe((_project, change) => {
     if (change?.projectSwitch) clearTileGraftImageCache();
-    refreshPanels(change);
+    scheduleStorePanelRefresh(change);
   });
   lastEditorPanelState = editorState.get();
   unsubEditor = editorState.subscribe((state) => {
@@ -429,6 +430,11 @@ function applyLeftDockLayout(): void {
 }
 
 export function teardownEditor(): void {
+  panelRefreshEpoch += 1;
+  pendingStoreChange = undefined;
+  fullPanelRefreshQueued = false;
+  fullPanelRefreshNeedsProject = false;
+  pendingPanelChange = undefined;
   aiSidebarWorkspace?.dispose();
   aiSidebarWorkspace = null;
   teardownSidebarSurfaces();
@@ -830,13 +836,18 @@ function verticalMargin(node: HTMLElement): number {
 // editorState 통지 하나가 좌측 독 전체 + 캔버스 툴바 재구축이다. 우클릭 영역 드래그는
 // 지나간 칸마다 통지를 내므로, 한 틱 안의 여러 통지를 한 번으로 접는다. 최종 상태만
 // 반영하면 되므로 정합성 손실은 없다 — mapHistoryPanel 의 scheduleMapHistoryPanelMount 와 같은 모양.
+const panelRefreshLog = createLogger("store");
+let pendingStoreChange: ProjectChangeDescriptor | undefined;
+let pendingPanelChange: ProjectChangeDescriptor | undefined;
+let panelRefreshEpoch = 0;
 let fullPanelRefreshQueued = false;
 let fullPanelRefreshNeedsProject = false;
 let paletteRefreshQueued = false;
 
 /** 타일 팔레트와 툴바만. 맵 트리 썸네일은 그대로 둔다. */
 function schedulePaletteOnlyRefresh(): void {
-  if (fullPanelRefreshQueued || paletteRefreshQueued) return;
+  if (fullPanelRefreshQueued) { pendingPanelChange = undefined; return; }
+  if (paletteRefreshQueued) return;
   paletteRefreshQueued = true;
   const run = (): void => {
     paletteRefreshQueued = false;
@@ -849,17 +860,53 @@ function schedulePaletteOnlyRefresh(): void {
   else setTimeout(run, 0);
 }
 
-function scheduleFullPanelRefresh(editorStateOnly = false): void {
+function scheduleStorePanelRefresh(change: ProjectChangeDescriptor): void {
+  pendingStoreChange = change;
+  // Record every edit even when only the final state is painted.
+  if (authoringJourneyRoot) {
+    const scope = authoringJourneyScope();
+    const progress = loadAuthoringJourneyProgress(scope);
+    const next = recordAuthoringJourneyChange(progress, change);
+    if (next !== progress) saveAuthoringJourneyProgress(scope, next);
+  }
+  // Mixed scopes require a full surface refresh. Keep narrow tile/DB paths otherwise.
+  if (!fullPanelRefreshQueued) pendingPanelChange = change;
+  else if (!pendingPanelChange || pendingPanelChange.scope !== change.scope
+    || change.projectSwitch || pendingPanelChange.projectSwitch
+    || change.scope === "map" && (!change.cells?.length && !change.relief)) pendingPanelChange = undefined;
+  if (paletteRefreshQueued) pendingPanelChange = undefined;
+  scheduleFullPanelRefresh(false, true);
+}
+
+function scheduleFullPanelRefresh(editorStateOnly = false, fromStore = false): void {
+  if (!fromStore) pendingPanelChange = undefined;
   fullPanelRefreshNeedsProject ||= !editorStateOnly;
   if (fullPanelRefreshQueued) return;
   fullPanelRefreshQueued = true;
+  const epoch = panelRefreshEpoch;
   const run = (): void => {
+    if (epoch !== panelRefreshEpoch) return;
     fullPanelRefreshQueued = false;
     const stateOnly = !fullPanelRefreshNeedsProject;
     fullPanelRefreshNeedsProject = false;
-    refreshPanels(undefined, stateOnly);
+    const change = pendingPanelChange;
+    pendingPanelChange = undefined;
+    const storeChange = pendingStoreChange;
+    pendingStoreChange = undefined;
+    try {
+      refreshPanels(change, stateOnly);
+    } catch (error) {
+      if (!storeChange) throw error;
+      // Preserve store.emit's error isolation/reporting after deferring its work.
+      panelRefreshLog.error("프로젝트 변경 리스너가 예외를 던졌다 — 나머지 리스너는 계속 실행한다", {
+        scope: storeChange.scope,
+        label: storeChange.label ?? null,
+        error: error instanceof Error ? `${error.name}: ${error.message}` : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
+    }
   };
-  if (typeof queueMicrotask === "function") queueMicrotask(run);
+  if (typeof requestAnimationFrame === "function") requestAnimationFrame(run);
   else setTimeout(run, 0);
 }
 
@@ -893,14 +940,7 @@ function refreshAuthoringJourney(change?: ProjectChangeDescriptor): void {
   if (!authoringJourneyRoot) return;
   const project = store.getCurrent();
   const scope = authoringJourneyScope();
-  let progress = loadAuthoringJourneyProgress(scope);
-  if (change) {
-    const next = recordAuthoringJourneyChange(progress, change);
-    if (next !== progress) {
-      progress = next;
-      saveAuthoringJourneyProgress(scope, progress);
-    }
-  }
+  const progress = loadAuthoringJourneyProgress(scope);
   if (
     authoringJourneyReferenceIssues === null ||
     !change ||
@@ -909,7 +949,7 @@ function refreshAuthoringJourney(change?: ProjectChangeDescriptor): void {
     change.scope === "project" ||
     (change.scope === "map" && !change.cells?.length && !change.relief)
   ) {
-    authoringJourneyReferenceIssues = collectProjectReferenceIssues(project);
+    authoringJourneyReferenceIssues = collectEditorProjectReferenceIssues(project);
   }
   clearChildren(authoringJourneyRoot);
   authoringJourneyRoot.append(renderAuthoringJourney(project, progress, {
@@ -933,7 +973,7 @@ function onAuthoringTestBootSuccess(event: Event): void {
   const projectFingerprint = detail.projectFingerprint;
   if (typeof projectFingerprint !== "string" || projectFingerprint.length === 0) return;
   const project = store.getCurrent();
-  authoringJourneyReferenceIssues = collectProjectReferenceIssues(project);
+  authoringJourneyReferenceIssues = collectEditorProjectReferenceIssues(project);
   const scope = authoringJourneyScope();
   const progress = loadAuthoringJourneyProgress(scope);
   const next = recordSuccessfulTestBoot(
