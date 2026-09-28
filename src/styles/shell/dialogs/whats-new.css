@@ -1,0 +1,306 @@
+/* 새 소식 서랍과 톱바 버튼 — DOM: src/editor/whatsNew/whatsNewPanel.ts.
+   업데이트 상태(받는 중·준비됨·새 버전)는 버튼 data-state 로 보이고, 서랍 맨 위 카드에 자세히 나온다. */
+
+.whats-new-button {
+  gap: 6px;
+  position: relative;
+  width: auto;
+  min-width: 32px;
+}
+
+.whats-new-button-label {
+  font: 500 12px/1 var(--font-ui);
+  white-space: nowrap;
+}
+
+.whats-new-button[data-state="downloading"],
+.whats-new-button[data-state="manual"] {
+  background: var(--bg-inset);
+  color: var(--text-1);
+  padding: 0 10px 0 8px;
+}
+
+.whats-new-button[data-state="ready"] {
+  background: var(--accent);
+  color: var(--on-accent);
+  padding: 0 10px 0 8px;
+}
+
+.whats-new-button[data-state="ready"]:hover,
+.whats-new-button[data-state="ready"]:focus-visible {
+  background: var(--accent-hover);
+  color: var(--on-accent);
+}
+
+.whats-new-dot {
+  background: var(--accent);
+  border-radius: var(--radius-pill);
+  height: 7px;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  width: 7px;
+}
+
+.whats-new-panel {
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-modal);
+  color: var(--text-1);
+  display: flex;
+  flex-direction: column;
+  font: 13px/1.5 var(--font-ui);
+  max-height: min(620px, calc(100vh - 80px));
+  outline: none;
+  position: fixed;
+  right: 12px;
+  top: 56px;
+  width: min(400px, calc(100vw - 24px));
+  z-index: var(--z-modal-overlay);
+}
+
+.whats-new-head {
+  align-items: flex-start;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  gap: var(--space-2);
+  justify-content: space-between;
+  padding: 14px var(--space-4) 10px;
+}
+
+.whats-new-head h2 {
+  font: 600 15px/1.3 var(--font-ui);
+  margin: 0;
+}
+
+.whats-new-range {
+  color: var(--text-2);
+  font-size: 12px;
+  margin: 2px 0 0;
+}
+
+.whats-new-close {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  cursor: pointer;
+  font: 400 18px/1 var(--font-ui);
+  height: 28px;
+  width: 28px;
+}
+
+.whats-new-close:hover,
+.whats-new-close:focus-visible {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.whats-new-update {
+  background: var(--accent-muted);
+  border-radius: var(--radius-m);
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-3) var(--space-4) 0;
+  padding: 10px var(--space-3);
+}
+
+.whats-new-update.is-error {
+  background: var(--danger-muted);
+}
+
+.whats-new-update-text {
+  display: grid;
+  gap: 2px;
+}
+
+.whats-new-update-text strong {
+  font-weight: 600;
+}
+
+.whats-new-update-text span {
+  color: var(--text-2);
+  font-size: 12px;
+}
+
+.whats-new-update-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.whats-new-progress {
+  background: var(--control-bg-active);
+  border-radius: var(--radius-pill);
+  height: 4px;
+  overflow: hidden;
+}
+
+.whats-new-progress span {
+  background: var(--accent);
+  display: block;
+  height: 100%;
+}
+
+.whats-new-primary,
+.whats-new-secondary {
+  appearance: none;
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  font: 500 12px/1 var(--font-ui);
+  min-height: 30px;
+  padding: 0 var(--space-3);
+}
+
+.whats-new-primary {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: var(--on-accent);
+}
+
+.whats-new-primary:hover,
+.whats-new-primary:focus-visible {
+  background: var(--accent-hover);
+}
+
+.whats-new-secondary {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  color: var(--text-1);
+}
+
+.whats-new-secondary:hover,
+.whats-new-secondary:focus-visible {
+  background: var(--control-bg-hover);
+}
+
+.whats-new-primary:focus-visible,
+.whats-new-secondary:focus-visible,
+.whats-new-close:focus-visible,
+.whats-new-link:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+.whats-new-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--space-1) var(--space-4) var(--space-3);
+}
+
+.whats-new-section h3 {
+  color: var(--text-3);
+  font: 600 12px/1.3 var(--font-ui);
+  margin: var(--space-3) 0 var(--space-1);
+}
+
+.whats-new-section ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.whats-new-item {
+  align-items: flex-start;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  gap: 10px;
+  padding: 7px 0;
+}
+
+.whats-new-item:last-child {
+  border-bottom: 0;
+}
+
+.whats-new-tag {
+  align-items: center;
+  background: var(--bg-inset);
+  border-radius: var(--radius-pill);
+  color: var(--text-2);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 11px;
+  height: 20px;
+  padding: 0 7px;
+  white-space: nowrap;
+}
+
+.whats-new-tag.is-new {
+  background: var(--accent-muted);
+  color: var(--accent-active);
+}
+
+.whats-new-tag.is-fix {
+  background: var(--success-muted);
+  color: var(--success);
+}
+
+.whats-new-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.whats-new-version {
+  color: var(--text-3);
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.whats-new-empty {
+  color: var(--text-2);
+  margin: var(--space-3) 0;
+}
+
+.whats-new-foot {
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-2);
+  display: grid;
+  font-size: 12px;
+  gap: var(--space-1);
+  padding: 10px var(--space-4);
+}
+
+.whats-new-check {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.whats-new-meta {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.whats-new-meta .whats-new-link:last-child {
+  margin-left: auto;
+}
+
+.whats-new-link {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-s);
+  color: var(--accent);
+  cursor: pointer;
+  font: 500 12px/1.4 var(--font-ui);
+  padding: 2px 0;
+}
+
+.whats-new-link:hover {
+  text-decoration: underline;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .whats-new-progress span {
+    transition: width var(--transition-fast);
+  }
+}

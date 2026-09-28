@@ -10,6 +10,9 @@ import { build } from "esbuild";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_DIR = resolve(REPO_ROOT, "dist-electron");
+// 업데이트 주소는 빌드에 박는다(electron/main/updatesIpc.ts). 없으면 앱은 확인하지 않고 릴리스 페이지 링크만 보인다.
+// 같은 값을 scripts/electron-builder.config.mjs 가 publish(generic)로 써서 latest-linux.yml 을 만든다.
+const UPDATE_URL = process.env.OPRN_UPDATE_URL?.trim() ?? "";
 
 const ENTRIES = [
   {
@@ -19,6 +22,7 @@ const ENTRIES = [
     platform: "node",
     target: "node22",
     external: ["electron", "node:*"],
+    define: { __OPRN_UPDATE_URL__: JSON.stringify(UPDATE_URL) },
   },
   {
     entry: resolve(REPO_ROOT, "electron/preload/index.ts"),
@@ -44,10 +48,11 @@ await mkdir(OUT_DIR, { recursive: true });
 // 번들(main.cjs) 옆에 두고 electron/main/rarPack.ts 가 __dirname 에서 읽는다.
 copyFileSync(resolve(REPO_ROOT, "node_modules/node-unrar-js/dist/js/unrar.wasm"), resolve(OUT_DIR, "unrar.wasm"));
 process.stdout.write("staged dist-electron/unrar.wasm\n");
-for (const { entry, outfile, format, platform, target, external } of ENTRIES) {
+for (const { entry, outfile, format, platform, target, external, define } of ENTRIES) {
   await build({
     absWorkingDir: REPO_ROOT,
     bundle: true,
+    define,
     entryPoints: [entry],
     format,
     logLevel: "warning",
@@ -58,6 +63,7 @@ for (const { entry, outfile, format, platform, target, external } of ENTRIES) {
   });
   process.stdout.write(`built ${outfile.replace(`${REPO_ROOT}/`, "")}\n`);
 }
+process.stdout.write(UPDATE_URL ? `update feed ${UPDATE_URL}\n` : "update feed 없음 — OPRN_UPDATE_URL 을 주면 앱이 새 버전을 확인한다\n");
 
 // 데스크톱 앱은 사용자 PC에 bun 이 없다. 리눅스·윈도우 워커를 실행 파일로 넣어 채팅이 그 파일을 띄운다.
 const workerEntry = resolve(REPO_ROOT, "scripts/oh-my-pi-worker.ts");

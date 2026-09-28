@@ -60,6 +60,11 @@ export const OPRN_CHANNELS = {
   assetBrowserBounds: "oprn:assetBrowser.bounds",
   assetBrowserClose: "oprn:assetBrowser.close",
   assetBrowserDownload: "oprn:assetBrowser.download",
+  /** 데스크톱 업데이트(electron/main/updates.ts). status·check·install 은 요청, changed 는 메인이 보내는 알림. */
+  updatesStatus: "oprn:updates.status",
+  updatesCheck: "oprn:updates.check",
+  updatesInstall: "oprn:updates.install",
+  updatesChanged: "oprn:updates.changed",
 } as const;
 
 export type OprnChannel = (typeof OPRN_CHANNELS)[keyof typeof OPRN_CHANNELS];

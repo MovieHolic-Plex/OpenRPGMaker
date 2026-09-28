@@ -183,9 +183,58 @@ Node 쪽 `aiAuthRuntime.ts` 라 워커 없이 된다). 워커는 `@oh-my-pi/pi-n
 
 - **release-please(GitHub Actions)**: 이 저장소의 Actions 는 꺼져 있어(enabled=false) 쓸 수 없다. 대신 아래 로컬 자동화가 같은 의미를 한다 — 켜게 되면 그대로 쓸 수 있다.
   커밋 규약은 이미 있어 그대로 동작한다.
-- **업데이터·채널**: 데스크톱 패키징 뒤. stable/beta/nightly 는 프리릴리스 태그(`0.2.0-beta.1`)로 가른다.
+- **업데이트 파일 호스팅**: 앱 쪽은 끝났다(아래 「앱 안 새 소식과 업데이트」). 공개로 읽을 수 있는 https 주소가 아직 없다.
+- **채널**: stable/beta/nightly 는 프리릴리스 태그(`0.2.0-beta.1`)로 가른다. 지금은 stable 하나(`allowPrerelease: false`).
 - **아티팩트 매니페스트의 도구 버전**: 내보낸 플레이어(sdk-manifest.json)에 아직 앱 버전이 안 들어간다.
 - **CHANGELOG 링크**: 저장소 URL 이 정해지면 버전 제목에 compare 링크를 붙인다.
+
+## 앱 안 새 소식과 업데이트 (2026-09-28)
+
+릴리스가 하루 수십 번이라(9-27 태그 22개, 9-28 18개) 사용자가 «뭐가 바뀌었나» 와 «새 버전이 있나» 를 앱 안에서 본다.
+톱바 도움말 옆 선물 버튼 하나가 둘 다 맡는다. 증거: `verify-shots/whats-new/`.
+
+**새 소식** — 마지막으로 본 버전(`localStorage oprn:whats-new-seen`) 뒤의 릴리스를 한 서랍에 모은다.
+창을 저절로 열지 않는다. 새 버전을 처음 연 뒤 버튼에 점만 켜고, 서랍을 열면 본 것으로 적는다. 처음 여는 사람은 최근 릴리스 3개.
+
+- 데이터 정본은 `CHANGELOG.md` 하나다. `scripts/lib/whatsNew.mjs` 의 vite 플러그인이 빌드 때 걸러
+  가상 모듈 `virtual:oprn-whats-new`(최근 40릴리스, 약 24KB)로 싣고, 서랍을 열 때만 동적 import 한다.
+- 거르기: 기능 → 새 기능, 수정·성능 → 고친 점. 문서·테스트·잡무·정리·기타는 뺀다.
+  범위가 `INTERNAL_SCOPES`(openwiki·qa·gates·evidence·css·refmap·shared-db …)뿐이면 뺀다. 뺀 수는 «개발 내부 변경 N건은 숨김».
+- **사용자 문장**: 커밋 본문에 트레일러 `User-Note: <사용자에게 보일 문장>` 을 쓰면 제목 대신 그 문장이 보인다.
+  `User-Note: -` 는 «보이지 않는 변경» 이다. `npm run release` 와 `release:auto` 가 트레일러를 읽어 CHANGELOG 항목 아래
+  `  <!-- user-note: … -->` 줄로 남긴다(GitHub 화면에는 안 보인다). 사용자에게 보일 변경이면 쓰는 편이 낫다 — 커밋 제목은 개발자 문장이다.
+
+  ~~~
+  feat(battle): 도트 전투 결과를 한 화면 요약 + 레벨 업 한 명씩으로 줄인다
+
+  User-Note: 전투가 끝나면 결과를 한 화면에서 보고, 레벨 업은 한 명씩 보여요
+  ~~~
+- 커밋 문장은 번역 카탈로그에 없으므로 목록 글자에 `data-i18n-skip` 을 붙인다. 서랍 틀 문구는 ko/en/ja/zh 카탈로그에 있다.
+
+**업데이트** — `electron/main/updates.ts`(판단, 단위 테스트) + `updatesIpc.ts`(electron 배선) + `electron/shared/updates.ts`(상태 모양).
+
+| 설치 | 동작 |
+|---|---|
+| 리눅스 AppImage | electron-updater 가 뒤에서 받는다(버튼 «0.40.0 받는 중 42%»). 다 받으면 «다시 시작해 업데이트». 누르면 저장 → 창을 모두 닫고(각 창 flush-before-close) → 바꾸고 새 버전을 띄운다. 그냥 종료해도 다음 실행부터 적용된다 |
+| 윈도우 zip · 서명 없는 맥 · AppImage 밖 실행 | 스스로 못 바꾼다. `latest-linux.yml` 의 버전만 읽어 «0.40.0 새 버전» → 그 태그의 릴리스 페이지를 연다 |
+| 업데이트 주소 없이 만든 빌드 | 확인하지 않는다. 서랍에 «전체 변경 기록» 링크만 |
+| 패키지 안 된 개발 실행 | 확인하지 않는다(`OPRN_UPDATE_FORCE_DEV=1` 이면 시험용으로 확인) |
+
+확인은 첫 창 15초 뒤, 그다음 4시간마다, 그리고 서랍을 열 때.
+
+**업데이트 주소** — 저장소가 비공개라 앱이 GitHub Release 를 토큰 없이 못 읽는다(토큰을 앱에 넣지 않는다). 그래서 주소를 따로 둔다.
+
+- 빌드할 때 `OPRN_UPDATE_URL=https://…` 를 주면 `scripts/build-electron.mjs` 가 메인 번들에 박고,
+  `scripts/electron-builder.config.mjs` 가 `publish: generic` 으로 `latest-linux.yml`(버전·sha512)을 AppImage 옆에 만든다.
+  https 만 받는다(루프백 http 는 시험용). 주소가 곧 «앱에서 실행될 코드의 출처» 라서다. 실행할 때 같은 이름의 환경 변수가 이긴다.
+- 올리기: 그 주소 아래에 `latest-linux.yml` 과 `OPRN Studio-<version>.AppImage` 를 둔다. 빌더의 generic 은 올리지 않는다.
+  윈도우·맥은 같은 `latest-linux.yml` 로 버전만 본다 — 모든 OS 가 한 태그에서 나오기 때문이다.
+- `electron-updater` 는 `dependencies` 에 정확한 버전(6.8.9)으로 있다. 메인 번들에 esbuild 가 싣는다.
+- 릴리스 페이지 주소는 `OPRN_RELEASES_URL` 로 바꿀 수 있다(기본 GitHub releases).
+
+검증: `test/whatsNew.test.ts`(거르기·트레일러 왕복·본 범위), `test/desktopUpdates.test.ts`(가짜 업데이터로 상태 흐름·주소 규칙).
+Electron 실측: 로컬 http 서버가 `version: 99.0.0` 을 주면 개발 실행(`OPRN_UPDATE_FORCE_DEV=1`)의 톱바가 «99.0.0 새 버전» 으로 바뀐다
+(`verify-shots/whats-new/07-electron-manual.png`). AppImage 를 실제로 바꾸는 흐름은 패키지 빌드와 호스팅이 있어야 해서 아직 못 봤다.
 
 ## 검증
 

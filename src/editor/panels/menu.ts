@@ -53,6 +53,7 @@ import { installToolbarOverflow } from "@/editor/panels/toolbarOverflow";
 import { renderWorkspaceBar } from "@/editor/panels/workspaceBar";
 import { toolbarButton } from "./menuToolbar";
 import { renderCommitHistoryButton, renderIdentityTopbarControl } from "@/editor/teamWorkflowUi";
+import { renderWhatsNewButton } from "@/editor/whatsNew/whatsNewPanel";
 import { claimTransientLayer, releaseTransientLayer } from "@/editor/ui/transientLayer";
 
 // ── 스튜디오 바 (2026-09-03) ──────────────────────────────────────────────────────────────
@@ -186,6 +187,8 @@ export function renderTopbar(topbar: HTMLElement): void {
   trailing.append(panelsButton, panelsMenu);
   const cluster = el("div", { class: "studio-icon-cluster", dataset: { testid: "studio-icon-cluster" } });
   cluster.append(renderMenu("help", "도움말", menuCommands("help", topbar), { icon: "help", className: "studio-icon-button" }));
+  // 새 소식 — 업데이트 받기·적용 상태도 이 버튼이 보인다(src/editor/whatsNew/whatsNewPanel.ts).
+  cluster.append(renderWhatsNewButton(makeSvgIcon("gift")));
   cluster.append(renderCommitHistoryButton(), renderTopbarIdentityControl(topbar));
   if (mode === "edit") cluster.append(renderTopbarAiSettingsButton(), renderTopbarAiConnectionChip());
   cluster.append(renderFullscreenButton());

@@ -3,6 +3,12 @@
 // 빨간불이 됐다. `vite/client` 를 types 에 넣으면 ImportMetaEnv 선언과 겹치므로 모양만 선언한다.
 declare module "*.css";
 
+// 「새 소식」 데이터 — scripts/lib/whatsNew.mjs 의 vite 플러그인이 CHANGELOG.md 를 걸러 만든다.
+declare module "virtual:oprn-whats-new" {
+  const data: import("@/editor/whatsNew/whatsNewModel").WhatsNewData;
+  export default data;
+}
+
 interface ImportMetaEnv {
   readonly DEV: boolean;
   readonly PROD: boolean;

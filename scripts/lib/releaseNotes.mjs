@@ -7,6 +7,34 @@
 //
 // 순수 함수만 있다. git 호출은 scripts/release.mjs 가 한다 — 그래야 테스트가
 // 저장소 이력에 의존하지 않고 이스(0.x 범프, 깨지는 변경, 비규약 커밋)를 직접 넣는다.
+//
+// 앱 안 「새 소식」(scripts/lib/whatsNew.mjs)이 같은 CHANGELOG 를 읽는다. 커밋 본문 트레일러
+// `User-Note: <사용자에게 보일 문장>` 은 항목 아래 주석 줄로 남아 그쪽이 제목 대신 쓴다.
+
+import { renderUserNoteMarker } from "./whatsNew.mjs";
+
+/**
+ * `git log` 형식. 한 커밋 = sha TAB 제목 TAB User-Note 트레일러, 레코드 끝은 0x1e.
+ * 트레일러가 여러 개면 마지막 것을 쓴다(0x1f 로 이어진다).
+ */
+export const RELEASE_LOG_FORMAT = "--pretty=format:%H%x09%s%x09%(trailers:key=User-Note,valueonly,separator=%x1f)%x1e";
+
+/** RELEASE_LOG_FORMAT 출력 → { sha, subject, userNote }[]. */
+export function parseReleaseLog(output) {
+  return String(output ?? "")
+    .split("\x1e")
+    .map((record) => record.replace(/^\n+/, ""))
+    .filter((record) => record.trim())
+    .map((record) => {
+      const firstTab = record.indexOf("\t");
+      const lastTab = record.lastIndexOf("\t");
+      if (firstTab < 0) return { sha: record.trim(), subject: "", userNote: null };
+      const sha = record.slice(0, firstTab);
+      const subject = lastTab > firstTab ? record.slice(firstTab + 1, lastTab) : record.slice(firstTab + 1);
+      const notes = lastTab > firstTab ? record.slice(lastTab + 1).split("\x1f").map((note) => note.trim()).filter(Boolean) : [];
+      return { sha, subject, userNote: notes.length > 0 ? notes[notes.length - 1] : null };
+    });
+}
 
 /** 이 순서대로 섹션이 나온다. 여기 없는 타입과 비규약 커밋은 "기타" 로 간다. */
 export const SECTION_TITLES = [
@@ -72,6 +100,7 @@ export function collectReleaseItems(commits) {
       summary: parsed.summary,
       breaking: parsed.breaking,
       section: SECTION_BY_TYPE.get(parsed.type) ?? OTHER_TITLE,
+      userNote: typeof commit?.userNote === "string" && commit.userNote.trim() ? commit.userNote.trim() : null,
     });
   }
   return items;
@@ -103,7 +132,9 @@ export function buildReleaseSections(items) {
 function renderItem(item) {
   const scope = item.scope ? `**${item.scope}** — ` : "";
   const sha = item.sha ? ` (\`${item.sha}\`)` : "";
-  return `- ${scope}${item.summary}${sha}`;
+  const line = `- ${scope}${item.summary}${sha}`;
+  const marker = renderUserNoteMarker(item.userNote);
+  return marker ? `${line}\n${marker}` : line;
 }
 
 /**

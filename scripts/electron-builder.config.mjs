@@ -3,11 +3,20 @@
 // 왜 파일을 손으로 안 쓰는가: 제품명과 식별자가 두 곳에 적히면 이름을 바꿀 때 한쪽만 고친다.
 // node 24 는 .ts 를 그대로 import 할 수 있어(vite-node 불필요) brand.ts 하나만 정본으로 둔다.
 import { PRODUCT_BRAND, PRODUCT_SLUG } from "../src/brand.ts";
+import { normalizeFeedUrl } from "../electron/shared/updates.ts";
 
 // 메인·preload 는 esbuild 번들이라 런타임 node_modules 가 필요 없고, 렌더러는 vite 번들이다.
 // 기본값은 production 의존성을 asar 에 넣어 439MB 를 만들었다(실측) — 명시적으로 뺀다.
 // node:sqlite 는 내장이고 electron 은 패키저가 넣는다.
 const APP_FILES = ["dist/**", "dist-electron/**", "package.json", "scripts/oh-my-pi-worker.ts", "scripts/lib/**", "!node_modules/**"];
+
+// 업데이트 주소(https). 있으면 generic 게시 설정을 넣는다 — 빌더가 그래야 AppImage 옆에 latest-linux.yml(버전·sha512)을
+// 만들고 패키지 안에 app-update.yml 을 넣는다. 올리는 일은 사람이 한다(generic 은 업로드하지 않는다).
+// 절차: openwiki/release-and-version.md 「앱 안 새 소식과 업데이트」.
+const UPDATE_URL = normalizeFeedUrl(process.env.OPRN_UPDATE_URL);
+if (process.env.OPRN_UPDATE_URL && !UPDATE_URL) {
+  throw new Error(`OPRN_UPDATE_URL 은 https 주소여야 합니다: ${process.env.OPRN_UPDATE_URL}`);
+}
 
 /** @type {import('electron-builder').Configuration} */
 export default {
@@ -41,6 +50,5 @@ export default {
     target: ["zip"],
     files: [...APP_FILES, "!dist-electron/oh-my-pi-worker", "!dist-electron/pi_natives.linux-*.node"],
   },
-  // 자동 업데이트는 범위 밖이다(설계서 2절 비목표) — 게시하지 않는다.
-  publish: null,
+  publish: UPDATE_URL ? [{ provider: "generic", url: UPDATE_URL }] : null,
 };

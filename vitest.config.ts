@@ -1,10 +1,13 @@
 import { configDefaults, defineConfig } from "vitest/config";
 import { fileURLToPath, URL } from "node:url";
 import { applyLegacyEnvAliases } from "./scripts/lib/oprnEnv.mjs";
+import { whatsNewPlugin } from "./scripts/lib/whatsNew.mjs";
 
 applyLegacyEnvAliases();
 
 export default defineConfig({
+  // 톱바가 「새 소식」 서랍을 동적 import 한다 — 톱바를 그리는 테스트도 가상 모듈을 풀 수 있어야 한다.
+  plugins: [whatsNewPlugin()],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),

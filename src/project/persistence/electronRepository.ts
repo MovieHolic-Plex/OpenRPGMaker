@@ -124,6 +124,8 @@ export type OprnBridge = {
   readonly start: OprnBridgeStart;
   /** 데스크톱 앱에서만 있다. 제작자 페이지를 창 안에 열고, 받은 파일은 이 프로젝트로만 넘긴다. */
   readonly assetBrowser?: OprnAssetBrowser;
+  /** 데스크톱 앱에서만 있다. 새 버전 확인·받기·적용(electron/main/updates.ts). 팀 호스트 브라우저 브리지에는 없다. */
+  readonly updates?: import("../../../electron/shared/updates").OprnUpdatesBridge;
 };
 
 declare global {

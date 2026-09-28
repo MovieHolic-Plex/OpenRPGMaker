@@ -12,6 +12,7 @@ import { createProjectSessionRegistry } from "./sessions";
 import { startCompanionServer, type CompanionServer } from "./companion";
 import { describeRecentProjects, listRecentTeams, prepareNewProjectDir, recentProjectCoverSource, rememberRecentProject, rememberRecentTeam, suggestProjectDir, writeRecentProjectCover } from "./recent";
 import { openTeamWindow } from "./teamWindow";
+import { isInstallingUpdate, registerUpdates } from "./updatesIpc";
 import type { JoinTeamResult } from "../shared/start";
 
 protocol.registerSchemesAsPrivileged([
@@ -377,6 +378,7 @@ app.whenReady().then(async () => {
   ipcMain.handle(OPRN_CHANNELS.startRecentTeams, () => listRecentTeams());
   registerIpcHandlers(sessions);
   registerAssetBrowser();
+  registerUpdates({ reopenWindow: () => { createWindow(); } });
   createWindow();
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -384,7 +386,8 @@ app.whenReady().then(async () => {
 });
 
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") app.quit();
+  // 업데이트 적용은 창을 다 닫은 뒤 스스로 종료·재실행한다. 여기서 먼저 끝내면 새 버전이 뜨지 않는다.
+  if (process.platform !== "darwin" && !isInstallingUpdate()) app.quit();
 });
 
 app.on("will-quit", () => {

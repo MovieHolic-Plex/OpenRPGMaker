@@ -106,6 +106,7 @@
   },
   "dependencies": {
     "@oh-my-pi/pi-agent-core": "^17.4.0",
+    "electron-updater": "6.8.9",
     "god-tibo-imagen": "^0.4.1",
     "jimp": "^0.16.13",
     "node-unrar-js": "2.0.2",

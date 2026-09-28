@@ -25,7 +25,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { buildReleaseSections, bumpVersion, collectReleaseItems, decideReleaseKind, renderReleaseNotes } from "./lib/releaseNotes.mjs";
+import { RELEASE_LOG_FORMAT, buildReleaseSections, bumpVersion, collectReleaseItems, decideReleaseKind, parseReleaseLog, renderReleaseNotes } from "./lib/releaseNotes.mjs";
 import { bumpManifestVersion, changelogEntryFor, localDate, writeChangelog } from "./lib/releaseFiles.mjs";
 
 const PROPOSE_BRANCH = "release/next";
@@ -61,14 +61,7 @@ function parseArgs(argv) {
 
 function commitsSince(base, tag) {
   const range = tag ? [base, `^${tag}`] : [base];
-  const output = git(["log", "--no-merges", "--pretty=format:%H%x09%s", ...range], { allowFailure: true }) ?? "";
-  return output
-    .split("\n")
-    .filter((line) => line.trim())
-    .map((line) => {
-      const [sha, ...rest] = line.split("\t");
-      return { sha, subject: rest.join("\t") };
-    });
+  return parseReleaseLog(git(["log", "--no-merges", RELEASE_LOG_FORMAT, ...range], { allowFailure: true }) ?? "");
 }
 
 function manifestVersionAt(rev) {

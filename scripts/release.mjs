@@ -23,7 +23,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { readAppVersion } from "./lib/appVersion.mjs";
-import { buildReleaseSections, bumpVersion, collectReleaseItems, renderReleaseNotes } from "./lib/releaseNotes.mjs";
+import { RELEASE_LOG_FORMAT, buildReleaseSections, bumpVersion, collectReleaseItems, parseReleaseLog, renderReleaseNotes } from "./lib/releaseNotes.mjs";
 import {
   CHANGELOG_FILE,
   bumpManifestVersion as bumpManifestVersionAt,
@@ -94,17 +94,10 @@ function writeChangelog(entry) {
 }
 
 function collectCommits(range, limit) {
-  const args = ["log", "--no-merges", "--pretty=format:%H%x09%s"];
+  const args = ["log", "--no-merges", RELEASE_LOG_FORMAT];
   if (limit) args.push(`-n${limit}`);
   if (range) args.push(range);
-  const output = git(args, { allowFailure: true }) ?? "";
-  return output
-    .split("\n")
-    .filter((line) => line.trim())
-    .map((line) => {
-      const [sha, ...rest] = line.split("\t");
-      return { sha, subject: rest.join("\t") };
-    });
+  return parseReleaseLog(git(args, { allowFailure: true }) ?? "");
 }
 
 const args = parseArgs(process.argv.slice(2));

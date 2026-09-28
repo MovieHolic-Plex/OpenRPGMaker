@@ -1,10 +1,23 @@
 import { contextBridge, ipcRenderer } from "electron";
 import { OPRN_CHANNELS } from "../shared/channels";
+import type { OprnUpdatesBridge, UpdateStatus } from "../shared/updates";
 
 const invoke = (channel: string) => (payload?: unknown) => ipcRenderer.invoke(channel, payload);
 
+const updates: OprnUpdatesBridge = {
+  status: () => ipcRenderer.invoke(OPRN_CHANNELS.updatesStatus),
+  check: () => ipcRenderer.invoke(OPRN_CHANNELS.updatesCheck),
+  install: () => ipcRenderer.invoke(OPRN_CHANNELS.updatesInstall),
+  onStatus: (callback: (status: UpdateStatus) => void): (() => void) => {
+    const listener = (_event: unknown, status: UpdateStatus): void => callback(status);
+    ipcRenderer.on(OPRN_CHANNELS.updatesChanged, listener);
+    return () => ipcRenderer.removeListener(OPRN_CHANNELS.updatesChanged, listener);
+  },
+};
+
 const bridge = {
   closeIsHostDriven: true,
+  updates,
   team: { status: invoke(OPRN_CHANNELS.teamStatus), lock: invoke(OPRN_CHANNELS.teamLock) },
   // 동반 서비스 출처는 실행할 때마다 다른 포트라 프리로드 시점에 한 번 동기로 받는다.
   companionOrigin: (() => {

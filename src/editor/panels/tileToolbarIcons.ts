@@ -3,7 +3,7 @@ type SvgIconName =
   | "eyedropper" | "event" | "tile" | "layers" | "layerGround" | "layerOverlay" | "layerEvent"
   | "map" | "hand" | "collision" | "more"
   | "terrain" | "structure" | "polish" | "npc" | "chest" | "combat" | "mood"
-  | "composite" | "pin" | "save" | "warning" | "door" | "sign" | "shop"
+  | "composite" | "pin" | "save" | "warning" | "door" | "sign" | "shop" | "gift"
   | "close" | "check"
   // 스튜디오 바(톱바) 세트 — 2026-09-03 표준·전문가 셸 개편. 클래식 툴바의 CSS 배경 아이콘
   // (components/icons.css 의 .oprn-icon-*) 대신 사이드바와 같은 22px 스트로크 규격을 쓴다.
@@ -248,6 +248,14 @@ const ICONS: Record<SvgIconName, readonly SvgNodeSpec[]> = {
     { tag: "circle", attrs: { cx: "11", cy: "11", r: "7.5" } },
     { tag: "path", attrs: { d: "M8.6 8.6a2.4 2.4 0 1 1 3.4 2.2c-.7.4-1 .9-1 1.6" } },
     { tag: "circle", attrs: { cx: "11", cy: "15.3", r: "0.9", fill: "currentColor" } },
+  ],
+  // 새 소식 — 선물 상자. 톱바 도움말 옆 버튼(src/editor/whatsNew/whatsNewPanel.ts).
+  gift: [
+    { tag: "rect", attrs: { x: "3.5", y: "8", width: "15", height: "4", rx: "1" } },
+    { tag: "path", attrs: { d: "M5 12v6.5h12V12" } },
+    { tag: "path", attrs: { d: "M11 8v10.5" } },
+    { tag: "path", attrs: { d: "M11 8c-1-2.6-4.6-3.6-4.6-1.3C6.4 8 9 8 11 8z" } },
+    { tag: "path", attrs: { d: "M11 8c1-2.6 4.6-3.6 4.6-1.3C15.6 8 13 8 11 8z" } },
   ],
   expand: [
     { tag: "path", attrs: { d: "M13 4h5v5" } },
