@@ -116,9 +116,11 @@ describe("대각 통행 — canMoveFootprint 교체가 1x1 에서 항등이다",
   }
 
   it("세 이웃 칸의 벽 조합 8가지 × 네 대각 모두에서 같은 걸음이 나온다", () => {
+    // Only the 3 neighbour tiles vary; build the asset catalogue once, not 32 times.
+    const { project, map } = grassProject();
     for (const [dx, dy] of [[1, -1], [1, 1], [-1, -1], [-1, 1]] as const) {
       for (let mask = 0; mask < 8; mask += 1) {
-        const { project, map } = grassProject();
+        map.lowerTiles.fill(TILE.GRASS);
         // 대각 판정이 보는 칸: 가로 이웃, 세로 이웃, 대각 목적지. 그 밖은 건드리지 않는다.
         if (mask & 1) wall(map, ORIGIN.x + dx, ORIGIN.y);
         if (mask & 2) wall(map, ORIGIN.x, ORIGIN.y + dy);
@@ -245,6 +247,8 @@ function transferScene(project: Project, map: GameMap): { scene: PlaySceneContex
   const player = mockSprite();
   const scene = {
     session: startSession(project),
+    // No dialogue is mounted in this transfer-only fixture. Phaser still has a registry.
+    game: { registry: new Map() },
     map,
     eventPositions: initialRuntimeEventPositions(map.events),
     tileX: 1,

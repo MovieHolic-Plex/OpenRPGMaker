@@ -297,12 +297,14 @@ describe("map event command repairs: directly coupled parallax resource loss", (
 });
 
 describe("map event command repairs: weather intensity", () => {
+  // Shipped precipitation density is 180 at full strength (040583434);
+  // keep literal expected counts so the renderer cannot silently ignore intensity.
   it.each([
-    { name: "explicit 0.7", fields: { value: "snow", intensity: 0.7, transitionMs: 750 }, kind: "snow", intensity: 0.7, count: 67 },
+    { name: "explicit 0.7", fields: { value: "snow", intensity: 0.7, transitionMs: 750 }, kind: "snow", intensity: 0.7, count: 126 },
     { name: "explicit zero clears weather", fields: { value: "snow", intensity: 0, transitionMs: 750 }, kind: "none", intensity: 0, count: 0 },
-    { name: "legacy embedded strength", fields: { value: "snow,8", durationMs: 750 }, kind: "snow", intensity: 0.8, count: 77 },
-    { name: "explicit strength overrides embedded strength", fields: { value: "snow,8", intensity: 0.7, transitionMs: 750 }, kind: "snow", intensity: 0.7, count: 67 },
-    { name: "legacy missing strength defaults to half", fields: { value: "snow", durationMs: 750 }, kind: "snow", intensity: 0.5, count: 48 },
+    { name: "legacy embedded strength", fields: { value: "snow,8", durationMs: 750 }, kind: "snow", intensity: 0.8, count: 144 },
+    { name: "explicit strength overrides embedded strength", fields: { value: "snow,8", intensity: 0.7, transitionMs: 750 }, kind: "snow", intensity: 0.7, count: 126 },
+    { name: "legacy missing strength defaults to half", fields: { value: "snow", durationMs: 750 }, kind: "snow", intensity: 0.5, count: 90 },
   ])("preserves $name in both step and renderer-consumed state", row => {
     const f = fixture();
     const [step] = execute(f, [m2(50, row.fields)]);
