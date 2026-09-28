@@ -1,7 +1,9 @@
 # art4 — 새 주인공 6명 전투 도트 (2026-09-28)
 
-`heroes6.py` 가 사무라이(actor3-0)·닌자(actor3-2)·무도가(actor3-5)·음유시인(actor3-6)·드루이드(actor3-4)·마녀(actor4-7)의
-24포즈 + 시전 21칸 원본(`tiledata/charset-battlers/<id>/*.png`)의 정본이다. 이 여섯 명에게는 `repaint_weapons.py` 를 돌리지 않는다(옛 공용 무기로 되돌아간다).
+`heroes6.py` 가 사무라이(칩 actor3-0 → 출력 actor3-0-samurai)·닌자(actor3-2)·무도가(actor3-5)·음유시인(actor3-6)·드루이드(actor3-4)·마녀(actor4-7)의
+24포즈 + 시전 21칸 원본(`tiledata/charset-battlers/<id>/*.png`)의 정본이다. 이 출력 id 들은 `repaint_weapons.py` 가 건너뛴다(옛 공용 무기로 되돌아간다).
+
+**actor3-0 은 기본 배우 「마도사」(actor_mage)의 지팡이 시트다.** 사무라이는 같은 칩에서 파생하지만 OUT_ID 로 tiledata/charset-battlers/actor3-0-samurai/, charset-battlers/actor3-0-samurai.png, cast/actor3-0-samurai.png 에만 쓴다. heroes6.py 는 actor3-0 에 쓰려 하면 assert 로 멈추고, repaint_weapons.py 는 actor3-0 을 계속 지팡이로 칠한다.
 
 ```
 python3 scripts/asset-gen/charset-battler/art4/heroes6.py            # --dry 는 .omo/hero6/dry 에만 쓴다
