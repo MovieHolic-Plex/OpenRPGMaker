@@ -10,7 +10,8 @@ const PLACEHOLDER = /\{(\d+)\}/g;
 // 템플릿 후보를 좁히는 앞/뒤 고정 글자 수. 동적 자리로 시작·끝나는 템플릿은 반대쪽 고정부로 찾는다.
 const BUCKET_CHARS = 2;
 // 화면에서 조각을 이어 붙이는 구분자. 앞의 것이 더 큰 단위다("칠하기 (B) — 고른 타일로 칠합니다").
-const SEGMENT_SEPARATORS = [" — ", ": ", ", ", " · "] as const;
+// 맨 끝의 붙은 가운뎃점은 이름 나열용이다("공용 이벤트·변수" — 빈 탭 이름을 names.join("·") 로 잇는다).
+const SEGMENT_SEPARATORS = [" — ", ": ", ", ", " · ", "·"] as const;
 const TRAILING_PARENS = / \([^()]*\)$/;
 
 type CompiledTemplate = {
@@ -144,7 +145,8 @@ export function createTranslator(catalog: Catalog): Translator {
     translate(text: string): string | null {
       if (!containsHangul(text)) return null;
       const key = normalizeSource(text);
-      return translateExact(key) ?? translateTemplate(key) ?? translateSegments(key);
+      // 괄호 꼬리를 먼저 본다 — 「다시실행 (Ctrl+Shift+Z / ⌘⇧Z, Ctrl+Y)」의 쉼표에서 쪼개면 괄호가 갈라져 못 찾는다.
+      return translatePiece(key) ?? translateSegments(key);
     },
   };
 }
