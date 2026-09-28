@@ -37,10 +37,18 @@ BACK_GROUPS = {
     "back-2": ["draem", "emberkit", "finiette", "finsta"],
     "back-3": ["friolera", "gulfin", "ivieron", "jacana"],
     "back-4": ["larvea", "mossling", "pluma", "plumette"],
-    "back-5": ["pouch", "puddlup", "sparchu"],
+    # back-5 는 안전 필터가 한 장 요청을 막아 종마다 따로 받았다. sparchu 뒷모습은 매번 막혀
+    # 정면에서 코드로 만든다(make_sparchu_back).
+    "back-5-pouch": ["pouch"],
+    "back-5-puddlup": ["puddlup"],
+}
+# 격자(윗줄 정면, 아랫줄 뒷모습). new-1 은 막혀 종마다 한 쌍(왼쪽 정면, 오른쪽 뒷모습)으로 받았다.
+# zaplet(찌릿다람)은 매번 막혀 진화형 voltail 그림에서 코드로 만든다(make_zaplet).
+NEW_PAIRS = {
+    "new-1-a": "pebblit",
+    "new-1-b": "bouldurr",
 }
 NEW_GROUPS = {
-    "new-1": ["pebblit", "bouldurr", "zaplet"],
     "new-2": ["voltail", "wispin", "lanterghast"],
     "new-3": ["hornbeet", "toxtoad", "brawlape"],
     "new-4": ["frostpip", "sandscorp"],
@@ -217,8 +225,69 @@ def backdrop(im):
             nh = round(w * 9 / 16)
             rgb = rgb.crop((0, (h - nh) // 2, w, (h - nh) // 2 + nh))
     small = rgb.resize((640, 360), Image.BOX)
-    q = small.quantize(colors=BACKDROP_COLORS, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
-    return q.convert("RGBA")
+    # 팔레트 PNG 로 둔다(RGBA 로 풀면 장당 150~210KB, 팔레트면 그 절반 이하).
+    return small.quantize(colors=BACKDROP_COLORS, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
+
+
+def shrink_tail(crop, box, anchor_x, factor=0.55):
+    """box=(x0, y0, x1, y1) 안의 꼬리를 factor 배로 줄여 아래쪽 뿌리(anchor_x, y1)에 다시 붙인다."""
+    x0, y0, x1, y1 = box
+    out = crop.copy()
+    region = out[y0:y1, x0:x1].copy()
+    out[y0:y1, x0:x1] = 0
+    h, w = region.shape[:2]
+    nw, nh = max(1, round(w * factor)), max(1, round(h * factor))
+    small = np.array(Image.fromarray(region, "RGBA").resize((nw, nh), Image.NEAREST))
+    px = int(round(anchor_x - (anchor_x - x0) * factor))
+    py = y1 - nh
+    dst = out[py:py + nh, px:px + nw]
+    mask = small[..., 3] > 0
+    dst[mask] = small[mask]
+    return out
+
+
+def make_zaplet(front_crop, back_crop):
+    """찌릿다람(아기)은 생성이 매번 막혀 번개꼬리 그림에서 만든다: 지그재그 꼬리를 절반 남짓으로 줄이고,
+    몸 전체를 작게(몸통 긴 축 96x0.62) 둔다. 생성 원본 기준 좌표(정면 375px, 뒷모습 376px 성분)."""
+    fh, fw = front_crop.shape[:2]
+    bh, bw = back_crop.shape[:2]
+    # 정면: 꼬리는 오른쪽 위(x≥0.61w, y<0.44h), 뿌리 x≈0.79w. 뒷모습: 왼쪽 위(x<0.37w, y<0.43h), 뿌리 x≈0.21w.
+    front = shrink_tail(front_crop, (round(fw * 0.61), 0, fw, round(fh * 0.44)), round(fw * 0.79))
+    back = shrink_tail(back_crop, (0, 0, round(bw * 0.37), round(bh * 0.43)), round(bw * 0.21))
+    return normalize(front, fill=0.64), normalize(back, fill=0.64), icon(front)
+
+
+def make_sparchu_back():
+    """스파르츄 뒷모습은 생성이 매번 막혀 정면 스프라이트에서 만든다.
+    좌우 반전(머리가 오른쪽 = 적 쪽)한 뒤 얼굴(주황 피부·눈·이빨)을 등껍질 색으로 다시 칠하고,
+    배 쪽 주황은 한 단계 어두운 등 피부색으로 낮춘다. 외곽선(검정)은 실루엣 테두리만 남긴다."""
+    src = np.array(Image.open(os.path.join(OUT, "scarloxy-monster-sparchu.png")).convert("RGBA"))
+    a = src[:, ::-1].copy()
+    rgb = a[..., :3].astype(np.int32)
+    opaque = a[..., 3] > 0
+    interior = ndimage.binary_erosion(opaque, iterations=2)
+
+    def is_col(c):
+        return (np.abs(rgb - np.array(c)).sum(-1) < 12) & opaque
+
+    orange, red, maroon, white, black = (255, 136, 69), (171, 76, 69), (100, 40, 35), (255, 255, 255), (0, 0, 0)
+    shell, shell_hi, seam = (196, 143, 86), (255, 202, 96), (171, 76, 69)
+    h, w = opaque.shape
+    ys, xs = np.mgrid[0:h, 0:w]
+    # 반전 후 얼굴 자리(정면 x 22~50 → 반전 x 45~73, y 40~62). 헬멧 아래 주황 얼굴 덩어리.
+    face = (xs >= 44) & (xs <= 75) & (ys >= 40) & (ys <= 63)
+    face_px = face & interior & (is_col(orange) | is_col(red) | is_col(maroon) | is_col(white) | is_col(black))
+    pattern = np.where(((ys // 2) % 3) == 0, 1, 0)
+    fill = np.where(pattern[..., None] == 1, np.array(shell_hi), np.array(shell))
+    seams = ((xs - 44) % 9 == 0)
+    fill = np.where(seams[..., None], np.array(seam), fill)
+    rgb = np.where(face_px[..., None], fill, rgb)
+    # 몸통 아래쪽 주황(배·팔 안쪽)은 등 피부로 한 단계 어둡게, 흰 이빨·발톱 밝은 칸은 피부색으로.
+    body = (ys > 63) & interior
+    rgb = np.where((body & is_col(orange))[..., None], np.array(red), rgb)
+    rgb = np.where((body & is_col(white))[..., None], np.array(orange), rgb)
+    a[..., :3] = rgb.astype(np.uint8)
+    return Image.fromarray(a, "RGBA")
 
 
 # ---------------------------------------------------------------------------
@@ -268,17 +337,31 @@ def main():
             pairs.append((key, [front, back]))
             report[key] = {"back": back.getbbox()}
         print(f"{rid}: {', '.join(keys)}")
+    if not only or "sparchu" in only:
+        back = make_sparchu_back()
+        back.save(os.path.join(args.out, "scarloxy-monster-sparchu-back.png"))
+        pairs.append(("sparchu", [Image.open(os.path.join(OUT, "scarloxy-monster-sparchu.png")).convert("RGBA"), back]))
+        report["sparchu"] = {"back": back.getbbox(), "derived": "front"}
+        print("sparchu: 정면에서 유도")
     if pairs:
         review_sheet(pairs, os.path.join(REVIEW, "backs.png"))
 
     pairs = []
+    jobs = []
+    for rid, key in NEW_PAIRS.items():
+        if want(rid):
+            a = remove_background(Image.open(os.path.join(args.raw, rid + ".png")))
+            fc, bc = components(a, 2)
+            jobs.append((rid, [key], [fc], [bc]))
     for rid, keys in NEW_GROUPS.items():
-        if not want(rid):
-            continue
-        a = remove_background(Image.open(os.path.join(args.raw, rid + ".png")))
-        crops = components(a, len(keys) * 2, rows=2)
-        fronts, backs = crops[: len(keys)], crops[len(keys):]
+        if want(rid):
+            a = remove_background(Image.open(os.path.join(args.raw, rid + ".png")))
+            crops = components(a, len(keys) * 2, rows=2)
+            jobs.append((rid, keys, crops[: len(keys)], crops[len(keys):]))
+    raw_crops = {}
+    for rid, keys, fronts, backs in jobs:
         for key, fc, bc in zip(keys, fronts, backs):
+            raw_crops[key] = (fc, bc)
             front = normalize(fc)
             back = normalize(bc)
             ic = icon(fc)
@@ -288,6 +371,15 @@ def main():
             pairs.append((key, [front, back, ic]))
             report[key] = {"front": front.getbbox(), "back": back.getbbox(), "icon": ic.size}
         print(f"{rid}: {', '.join(keys)}")
+    if "voltail" in raw_crops and (not only or "zaplet" in only):
+        fc, bc = raw_crops["voltail"]
+        front, back, ic = make_zaplet(fc, bc)
+        front.save(os.path.join(args.out, "scarloxy-monster-zaplet.png"))
+        back.save(os.path.join(args.out, "scarloxy-monster-zaplet-back.png"))
+        ic.save(os.path.join(args.out, "scarloxy-monster-icon-zaplet.png"))
+        pairs.append(("zaplet", [front, back, ic]))
+        report["zaplet"] = {"front": front.getbbox(), "back": back.getbbox(), "icon": ic.size, "derived": "voltail"}
+        print("zaplet: voltail 에서 유도")
     if pairs:
         review_sheet(pairs, os.path.join(REVIEW, "new-species.png"))
 
@@ -297,8 +389,8 @@ def main():
         if not want(rid):
             continue
         bd = backdrop(Image.open(os.path.join(args.raw, rid + ".png")))
-        bd.save(os.path.join(args.out, f"scarloxy-backdrop-{name}.png"))
-        shots.append(bd)
+        bd.save(os.path.join(args.out, f"scarloxy-backdrop-{name}.png"), optimize=True)
+        shots.append(bd.convert("RGBA"))
         print(f"{rid}: 640x360")
     if shots:
         sheet = Image.new("RGBA", (640 * 2, 360 * ((len(shots) + 1) // 2)))

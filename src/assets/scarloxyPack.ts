@@ -184,7 +184,7 @@ const MONSTER_LABELS: Record<string, { readonly name: string; readonly tags: rea
   // 도감 확장 11종(2026-09-28, 생성 자산). 종 데이터: src/project/defaults/scarloxyExtraSpecies.ts.
   pebblit: { name: "자갈콩", tags: ["몬스터", "바위", "땅", "돌", "생성 자산"] },
   bouldurr: { name: "바위곰", tags: ["몬스터", "바위", "땅", "곰", "생성 자산"] },
-  zaplet: { name: "찌릿다람", tags: ["몬스터", "전기", "다람쥐", "생성 자산"] },
+  zaplet: { name: "찌릿냥", tags: ["몬스터", "전기", "살쾡이", "아기", "생성 자산"] },
   voltail: { name: "번개꼬리", tags: ["몬스터", "전기", "살쾡이", "생성 자산"] },
   wispin: { name: "안개령", tags: ["몬스터", "고스트", "혼불", "생성 자산"] },
   lanterghast: { name: "등롱귀", tags: ["몬스터", "고스트", "불", "등롱", "생성 자산"] },

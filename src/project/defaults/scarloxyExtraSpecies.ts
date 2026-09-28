@@ -111,7 +111,10 @@ export function createScarloxyExtraSkills(): SkillRecord[] {
 }
 
 // --- 새 11종 -------------------------------------------------------------------
-// 진화 라인 셋: 자갈콩→바위곰(바위·땅), 찌릿다람→번개꼬리(전기), 안개령→등롱귀(고스트).
+// 진화 라인 셋: 자갈콩→바위곰(바위·땅), 찌릿냥→번개꼬리(전기), 안개령→등롱귀(고스트).
+// 찌릿냥 그림은 이미지 생성이 매번 막혀 번개꼬리 그림에서 코드로 만들었다(작은 몸, 짧은 꼬리).
+// 스파르츄 뒷모습도 같은 이유로 정면을 반전하고 얼굴을 등껍질 색으로 덮어 만들었다.
+// 둘 다 scripts/content/build-scarloxy-monster-roster.py make_zaplet / make_sparchu_back.
 // 나머지 다섯은 단일 종. 데모에 없던 타입(바위·땅·벌레·전기·독·격투·얼음·고스트)을 채운다.
 
 export const SCARLOXY_EXTRA_SPECIES_SEEDS: readonly ScarloxyExtraSpeciesSeed[] = [
@@ -130,18 +133,18 @@ export const SCARLOXY_EXTRA_SPECIES_SEEDS: readonly ScarloxyExtraSpeciesSeed[] =
     description: "바위를 겹쳐 쌓은 몸의 곰. 자갈콩이 오래 굴러 다듬어지면 이렇게 된다.",
   },
   {
-    key: "zaplet", name: "찌릿다람", types: ["electric"],
+    key: "zaplet", name: "찌릿냥", types: ["electric"],
     stats: { maxHp: 17, maxMp: 8, attack: 10, defense: 7, mind: 11, agility: 17 }, captureRate: 0.5,
     moves: [{ level: 3, skillId: "skill_scarloxy_spark" }, { level: 6, skillId: "skill_scarloxy_quick" }, { level: 10, skillId: "skill_scarloxy_wave" }],
     evolvesTo: { key: "voltail", level: 12 }, habitat: ["route"], wildLevels: [3, 7],
-    description: "번개 모양 꼬리에 정전기를 모으는 다람쥐. 볼이 파랗게 튀면 조심.",
+    description: "짧은 번개 꼬리에 정전기를 모으는 새끼 살쾡이. 귀 끝이 번쩍이면 조심.",
   },
   {
     key: "voltail", name: "번개꼬리", types: ["electric"],
     stats: { maxHp: 38, maxMp: 12, attack: 18, defense: 12, mind: 17, agility: 23 }, captureRate: 0.15,
     moves: [{ level: 3, skillId: "skill_scarloxy_spark" }, { level: 12, skillId: "skill_scarloxy_thunder_fang" }, { level: 16, skillId: "skill_scarloxy_wave" }],
     habitat: ["route"], wildLevels: [12, 16],
-    description: "지그재그 꼬리로 번개를 끌어 쓰는 살쾡이. 찌릿다람이 진화한 모습.",
+    description: "지그재그 꼬리로 번개를 끌어 쓰는 살쾡이. 찌릿냥이 진화한 모습.",
   },
   {
     key: "wispin", name: "안개령", types: ["ghost"],

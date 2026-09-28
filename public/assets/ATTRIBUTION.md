@@ -207,7 +207,9 @@
 - Origin: the sprites and backdrops were drawn by an image generation model from style references cut from the
   Scarloxy pack (front sprites and backdrops, NEAREST-upscaled; references in `tiledata/pkmn-monsters/refs/`,
   prompts in `tiledata/pkmn-monsters/requests.json`), then reduced by `scripts/content/build-scarloxy-monster-roster.py`.
-  The cries contain no samples: `scripts/content/synth-scarloxy-cries.py` synthesizes them in code.
+  Two sprites were made in code because generation was refused: zaplet (front, back, icon) is the voltail art
+  scaled down with a shortened tail, and the sparchu back is its pack front sprite mirrored with the face repainted
+  in shell colours. The cries contain no samples: `scripts/content/synth-scarloxy-cries.py` synthesizes them in code.
 - Author: none of these files are Scarloxy (Ismael Garcia) artwork, so the CC-BY 4.0 credit above does not cover them.
   The rear sprites of the 16 pack species depict pack characters and are derived designs of that artwork; keep the
   Scarloxy credit when shipping them. Review generated-asset terms before shipping commercially.
