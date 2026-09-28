@@ -14,6 +14,7 @@
 
 import type { Command, GameEvent, GameMap } from "../types";
 import { DEFAULT_TILE_SIZE } from "./constants";
+import { castGraphic } from "./scarloxyCastEvents";
 import { charsetGraphic, event, page, PEOPLE1_CHARSET_ID, PEOPLE2_CHARSET_ID, talker, transferEvent } from "./scarloxyDemoGame";
 
 export const INTERIOR_TILESET_ID = "easyrpg_chipset_interior";
@@ -219,7 +220,7 @@ export function createHomeInteriorMap(townMapId: string, backX: number, backY: n
     talker("ev_pkmn_home_mom", 7, 5, "엄마", [
       "다녀왔니? 몬스터들이 지쳐 보이는구나 — 좀 쉬게 해주자.",
       "언제든 들러렴. 밥은 늘 차려둘 테니.",
-    ], [{ kind: "recoverAll" }], charsetGraphic(PEOPLE1_CHARSET_ID, 2)),
+    ], [{ kind: "recoverAll" }], castGraphic("mom")),
     // 침대에서 자면 전회복 — 포켓몬풍 관례.
     event("ev_pkmn_home_bed", 1, 3, [
       page("ev_pkmn_home_bed_page", "침대", [
@@ -264,7 +265,7 @@ export function createCenterInteriorMap(townMapId: string, backX: number, backY:
       "몬스터 회복 센터에 오신 걸 환영합니다.",
       "파티 몬스터를 전부 회복시켜 드릴게요. 잠시만요…",
       "다 됐습니다. 좋은 여행 되세요!",
-    ], [{ kind: "recoverAll" }], charsetGraphic(PEOPLE1_CHARSET_ID, 3), { type: "fixed", speed: 3, frequency: 3 }),
+    ], [{ kind: "recoverAll" }], castGraphic("nurse"), { type: "fixed", speed: 3, frequency: 3 }),
     talker("ev_pkmn_center_visitor", 3, 8, "대기 중인 트레이너", [
       "1번 길 남쪽 끝에서 엄청난 열기가 느껴진대. 전설급이 나온다는 소문이야.",
       "덤비기 전에 여기서 꼭 회복하고 가.",

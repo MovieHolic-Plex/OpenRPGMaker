@@ -16,9 +16,11 @@ import { normalizeSkillRecord, normalizeStateRecord } from "@/project/databaseRe
 import { DEFAULT_ACTOR_ID, DEFAULT_SKILL_ID } from "./constants";
 import { createBlankMap, singleNodeTree } from "./defaultMaps";
 import { MONSTER_TOWN_KIT_MANIFEST } from "@/assets/scarloxyPack";
+import { applyScarloxyBackSprites, createScarloxyExtraSkills, createScarloxyExtraSpeciesRecords } from "./scarloxyExtraSpecies";
+import { castFace, castGraphic } from "./scarloxyCastEvents";
+import { PKMN_FLAGS, PKMN_LINKS, PKMN_MAPS } from "./scarloxyPokemonWorld";
 import {
   G,
-  PEOPLE1_CHARSET_ID,
   PEOPLE2_CHARSET_ID,
   charsetGraphic,
   demoEnemy,
@@ -98,6 +100,8 @@ const TOWN_DOORS = {
   center: { x: 20, y: 8 },
 } as const;
 const CAPTURE_ORB_ITEM_ID = "item_capture_orb";
+/** 라이벌이 고를 상성 스타터를 정하는 변수 — 1=불 스파르츄 2=물 핀스타 3=풀 라르베아. */
+export const PKMN_STARTER_VARIABLE = "var_pkmn_starter";
 const EMPTY = -1;
 
 const GEN1_TYPE_DEFINITIONS = [
@@ -367,7 +371,30 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
   project.database.monsterSpecies = [
     ...(project.database.monsterSpecies ?? []),
     ...scarloxySpeciesRecords(),
+    // 새 11종(바위·전기·유령·벌레·독·격투·얼음·땅) — scarloxyExtraSpecies.ts. 도감 30종.
+    ...createScarloxyExtraSpeciesRecords(),
   ];
+  // 30종 전부 뒷모습 — 포켓몬 스킨은 아군 몬스터를 뒤에서 그린다(graphic.backResourceId).
+  applyScarloxyBackSprites(project.database.monsterSpecies);
+  project.database.skills.push(...createScarloxyExtraSkills().filter((skill) => !project.database.skills.some((existing) => existing.id === skill.id)));
+
+  // 진행 스위치·변수(scarloxyPokemonWorld.ts PKMN_FLAGS). 지역 맵들이 이 id 로 관문·배지를 판정한다.
+  const switchNames: Record<string, string> = {
+    [PKMN_FLAGS.gotStarter]: "스타터를 받았다",
+    [PKMN_FLAGS.badge1]: "풀 배지",
+    [PKMN_FLAGS.badge2]: "물 배지",
+    [PKMN_FLAGS.badge3]: "불 배지",
+    [PKMN_FLAGS.rival1]: "라이벌전 1",
+    [PKMN_FLAGS.rival2]: "라이벌전 2",
+    [PKMN_FLAGS.rival3]: "라이벌전 3",
+    [PKMN_FLAGS.champion]: "챔피언을 이겼다",
+  };
+  for (const [id, name] of Object.entries(switchNames)) {
+    if (!project.switches.some((entry) => entry.id === id)) project.switches.push({ id, name });
+  }
+  for (const [id, name] of [[PKMN_FLAGS.badgeCount, "배지 수"], [PKMN_STARTER_VARIABLE, "스타터(1불 2물 3풀)"]] as const) {
+    if (!project.variables.some((entry) => entry.id === id)) project.variables.push({ id, name });
+  }
 
   project.database.enemies.push(
     wildEnemy("enemy_pkmn_larvea", "라르베아", "larvea", 3, { maxHp: 40, maxMp: 2, attack: 6, defense: 8, mind: 4, agility: 5 }, { exp: 5, gold: 3 }, [DEFAULT_SKILL_ID, "skill_scarloxy_scratch"]),
@@ -613,12 +640,12 @@ function townMap(): GameMap {
     professorEvent(),
     talker("ev_pkmn_healer", 11, 8, "치유사", [
       "연구소 앞이니 안심하세요. 상처를 치료해 드릴게요.",
-    ], [{ kind: "recoverAll" }], charsetGraphic(PEOPLE1_CHARSET_ID, 3)),
+    ], [{ kind: "recoverAll" }], castGraphic("nurse")),
     talker("ev_pkmn_guide", 16, 11, "금발 소년", [
       "남쪽 풀숲에는 야생 몬스터가 나와. 전투에서 '포획' 명령으로 구슬을 던져봐!",
       "몬스터의 HP를 깎을수록 잘 잡혀. 잡은 몬스터는 메뉴의 '몬스터'에서 볼 수 있어.",
       "파티에 넣은 몬스터는 전투 경험치를 나눠 받아서 레벨이 오르고, 7레벨이 되면 진화한대!",
-    ], [], charsetGraphic(PEOPLE1_CHARSET_ID, 1)),
+    ], [], castGraphic("villagerA")),
     talker("ev_pkmn_merchant", 18, 6, "상인", [
       "포획 구슬이 떨어졌나? 여기 있어. 여행 필수품도 같이 둘게.",
     ], [
@@ -630,7 +657,7 @@ function townMap(): GameMap {
         shopType: "normal",
         messageType: "welcome",
       },
-    ], charsetGraphic(PEOPLE2_CHARSET_ID, 4)),
+    ], castGraphic("clerk")),
     transferEvent("ev_pkmn_to_route", 13, 17, ROUTE_MAP_ID, 15, 2, "초원 1번 길로"),
     talker("ev_pkmn_town_sign", 15, 16, "표지판", [
       "새싹 마을 — 새로운 모험이 싹트는 곳.",
@@ -644,12 +671,14 @@ function townMap(): GameMap {
 
 function professorEvent(): GameEvent {
   const starters = [
-    { key: "sparchu", name: "스파르츄", flavor: "불꽃을 문 장난꾸러기" },
-    { key: "finsta", name: "핀스타", flavor: "차분한 물고기" },
-    { key: "larvea", name: "라르베아", flavor: "씩씩한 풀 애벌레" },
+    // starterId 는 라이벌 무리 분기용(PKMN_STARTER_VARIABLE: 1=불 스파르츄 2=물 핀스타 3=풀 라르베아).
+    { key: "sparchu", name: "스파르츄", flavor: "불꽃을 문 장난꾸러기", starterId: 1 },
+    { key: "finsta", name: "핀스타", flavor: "차분한 물고기", starterId: 2 },
+    { key: "larvea", name: "라르베아", flavor: "씩씩한 풀 애벌레", starterId: 3 },
   ];
   return event("ev_pkmn_professor", 13, 8, [
     page("ev_pkmn_professor_choose", "박사", [
+      ...castFace("professor"),
       { kind: "text", speaker: "박사", body: "왔구나! 몬스터 테이머가 되려면 동료가 필요하지." },
       { kind: "text", speaker: "박사", body: "셋 중 하나를 고르렴. 포획 구슬 5개도 챙겨주마." },
       {
@@ -660,18 +689,21 @@ function professorEvent(): GameEvent {
           branch: [
             { kind: "giveMonster", speciesId: scarloxySpeciesId(starter.key), level: 5, nickname: starter.name },
             { kind: "changeItem", itemId: CAPTURE_ORB_ITEM_ID, op: "+=", amount: 5 },
+            { kind: "setVariable", variableId: PKMN_STARTER_VARIABLE, op: "=", value: starter.starterId },
+            { kind: "setSwitch", switchId: PKMN_FLAGS.gotStarter, value: true },
             { kind: "text", speaker: "박사", body: `${starter.name}와 함께 여행을 시작하렴. 남쪽 풀숲에서 포획을 연습해 보고!` },
             { kind: "setSelfSwitch", key: "A", value: true },
           ],
         })),
         cancelBehavior: "disallow",
       },
-    ], charsetGraphic(PEOPLE2_CHARSET_ID, 1), { type: "fixed", speed: 3, frequency: 3 }),
+    ], castGraphic("professor"), { type: "fixed", speed: 3, frequency: 3 }),
     page("ev_pkmn_professor_after", "박사", [
+      ...castFace("professor"),
       { kind: "text", speaker: "박사", body: "몬스터들은 잘 크고 있니? 메뉴의 '몬스터'에서 파티를 확인해 보렴." },
       { kind: "text", speaker: "박사", body: "구슬이 부족하면 좀 더 가져가고." },
       { kind: "changeItem", itemId: CAPTURE_ORB_ITEM_ID, op: "+=", amount: 3 },
-    ], charsetGraphic(PEOPLE2_CHARSET_ID, 1), { type: "fixed", speed: 3, frequency: 3 }, [
+    ], castGraphic("professor"), { type: "fixed", speed: 3, frequency: 3 }, [
       { kind: "selfSwitch", key: "A", value: true },
     ]),
   ]);
@@ -714,11 +746,14 @@ function routeMap(): GameMap {
 
   map.events.push(
     transferEvent("ev_pkmn_to_town", 15, 1, TOWN_MAP_ID, 13, 16, "새싹 마을로"),
+    // 남쪽 끝 → 이끼 마을(scarloxyPokemonWorld.ts PKMN_LINKS 의 route1 출구).
+    ...PKMN_LINKS.filter((link) => link.from === "route1").map((link, index) =>
+      transferEvent(`ev_pkmn_route_exit_${index}`, link.x, link.y, PKMN_MAPS[link.to], link.toX, link.toY, link.name)),
     rivalEvent(),
     atroxEvent(),
     talker("ev_pkmn_route_sign", 12, 3, "표지판", [
       "초원 1번 길 — 풀숲에서는 야생 몬스터가 튀어나옵니다.",
-      "남쪽 끝에서 이상한 울음소리가 들린다는 소문이 있다.",
+      "남쪽 끝을 지나면 이끼 마을. 길목에서 이상한 울음소리가 들린다는 소문이 있다.",
       "아래로 난 단은 뛰어내릴 수 있지만, 다시 올라올 수는 없습니다.",
     ], [], { transparent: true }, { type: "fixed", speed: 3, frequency: 3 }),
     talker("ev_pkmn_cave_mouth", 3, 14, "동굴 입구", [
@@ -787,21 +822,24 @@ function ledgeEvent(id: string, x: number, y: number): GameEvent {
 function rivalEvent(): GameEvent {
   return event("ev_pkmn_rival", 15, 12, [
     page("ev_pkmn_rival_battle", "라이벌", [
+      ...castFace("rival"),
       { kind: "text", speaker: "라이벌", body: "오, 너도 박사님한테 몬스터 받았구나? 내 신드릴이랑 붙어보자!" },
       { kind: "battleProcessing", troopId: "troop_pkmn_rival", canEscape: false, canLose: false },
       { kind: "text", speaker: "라이벌", body: "졌다… 트레이너의 몬스터는 포획할 수 없다는 건 알아둬!" },
       { kind: "setSelfSwitch", key: "A", value: true },
-    ], charsetGraphic(PEOPLE1_CHARSET_ID, 1), { type: "fixed", speed: 3, frequency: 3 }),
+    ], castGraphic("rival"), { type: "fixed", speed: 3, frequency: 3 }),
     page("ev_pkmn_rival_after", "라이벌", [
+      ...castFace("rival"),
       { kind: "text", speaker: "라이벌", body: "남쪽 끝에 전설의 몬스터가 있다던데… 난 아직 무리야." },
-    ], charsetGraphic(PEOPLE1_CHARSET_ID, 1), { type: "fixed", speed: 3, frequency: 3 }, [
+    ], castGraphic("rival"), { type: "fixed", speed: 3, frequency: 3 }, [
       { kind: "selfSwitch", key: "A", value: true },
     ]),
   ]);
 }
 
 function atroxEvent(): GameEvent {
-  return event("ev_pkmn_atrox", 15, 22, [
+  // 남쪽 출구(15,23) 길목을 막지 않게 동남쪽 연못 아래로 비켜 둔다.
+  return event("ev_pkmn_atrox", 24, 21, [
     page("ev_pkmn_atrox_battle", "전설의 아트록스", [
       { kind: "text", body: "타오르는 기척… 전설의 아트록스가 모습을 드러냈다!" },
       { kind: "text", body: "(포획하려면 HP를 충분히 깎고 구슬을 던지자. 포획률이 낮으니 여러 개 필요할지도.)" },
