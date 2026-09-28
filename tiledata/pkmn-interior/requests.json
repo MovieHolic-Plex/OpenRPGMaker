@@ -1,0 +1,62 @@
+[
+  {
+    "id": "center-furniture",
+    "prompt": "Monster recovery center furniture, 5 objects. Style: match the reference exactly — Scarloxy monster-taming pixel art drawn at 4x scale (every art pixel = a 4x4 block of screen pixels), top-down 3/4 RPG view showing the top surface and the front face, clean 1-art-pixel outlines in a darker shade of each object's own color (not pure black), flat soft pastel colors with one highlight and one shadow tone, no gradients, no dithering, no anti-aliasing. Scale: one map tile = 64x64 screen pixels (16x16 art pixels); the player sprite in the reference is about 1 tile wide and 2 tiles tall. Layout: ONE horizontal row of separate objects, left to right in the listed order, bottom edges aligned on one baseline, at least 48 px of fully transparent space between neighbours, nothing touching. Each object must fill its stated footprint (width = tiles x 64 px, height = tiles x 64 px) with no extra floor, rug or cast shadow drawn around it. Fully transparent background (alpha 0). No text, no letters, no numbers, no logos. Objects: (1) reception counter, 5x2 tiles: long straight counter, cream-white top surface with a pink front panel and a small red-cross emblem in the middle of the front, a little bell at the right on top; (2) healing machine, 2x2 tiles: white and pink console, top surface holds six small round capsule-ball slots in 2 rows of 3, small teal screen on the front face; (3) PC terminal, 1x2 tiles: desktop computer with a light-grey monitor (teal screen) on top of a small grey cabinet with a keyboard ledge; (4) lobby bench, 3x2 tiles: three joined cushioned seats in soft teal with a white frame, seen from the front, backrest in the upper tile row; (5) potted plant, 1x2 tiles: round green leafy plant in a terracotta pot.",
+    "reference": "tiledata/pkmn-interior/ref/indoor-style-4x.png",
+    "size_tiles": [
+      12,
+      2
+    ],
+    "notes": "Center: reception-counter 5x2, healing-machine 2x2, pc-terminal 1x2, lobby-bench 3x2, potted-plant 1x2. Total 12 tiles wide."
+  },
+  {
+    "id": "shop-furniture",
+    "prompt": "Item shop (mart) furniture, 4 objects. Style: match the reference exactly — Scarloxy monster-taming pixel art drawn at 4x scale (every art pixel = a 4x4 block of screen pixels), top-down 3/4 RPG view showing the top surface and the front face, clean 1-art-pixel outlines in a darker shade of each object's own color (not pure black), flat soft pastel colors with one highlight and one shadow tone, no gradients, no dithering, no anti-aliasing. Scale: one map tile = 64x64 screen pixels (16x16 art pixels); the player sprite in the reference is about 1 tile wide and 2 tiles tall. Layout: ONE horizontal row of separate objects, left to right in the listed order, bottom edges aligned on one baseline, at least 48 px of fully transparent space between neighbours, nothing touching. Each object must fill its stated footprint (width = tiles x 64 px, height = tiles x 64 px) with no extra floor, rug or cast shadow drawn around it. Fully transparent background (alpha 0). No text, no letters, no numbers, no logos. Objects: (1) wall shelf, 3x2 tiles: tall light-wood shelving unit seen from the front with three shelves full of small colorful item boxes, bottles and sprays; (2) island display shelf, 2x2 tiles: low double-sided white shelf with items visible on its top and front; (3) shop checkout counter, 3x2 tiles: light-blue and white counter with a cash register on the left of the top surface and a small basket on the right; (4) drink cooler, 2x2 tiles: glass-front refrigerator with blue frame showing rows of colorful bottles.",
+    "reference": "tiledata/pkmn-interior/ref/indoor-style-4x.png",
+    "size_tiles": [
+      10,
+      2
+    ],
+    "notes": "Shop: shelf-wall 3x2, shelf-island 2x2, shop-counter 3x2, drink-cooler 2x2. Total 10 tiles."
+  },
+  {
+    "id": "home-furniture",
+    "prompt": "Player's home furniture, 6 objects. Style: match the reference exactly — Scarloxy monster-taming pixel art drawn at 4x scale (every art pixel = a 4x4 block of screen pixels), top-down 3/4 RPG view showing the top surface and the front face, clean 1-art-pixel outlines in a darker shade of each object's own color (not pure black), flat soft pastel colors with one highlight and one shadow tone, no gradients, no dithering, no anti-aliasing. Scale: one map tile = 64x64 screen pixels (16x16 art pixels); the player sprite in the reference is about 1 tile wide and 2 tiles tall. Layout: ONE horizontal row of separate objects, left to right in the listed order, bottom edges aligned on one baseline, at least 48 px of fully transparent space between neighbours, nothing touching. Each object must fill its stated footprint (width = tiles x 64 px, height = tiles x 64 px) with no extra floor, rug or cast shadow drawn around it. Fully transparent background (alpha 0). No text, no letters, no numbers, no logos. Objects: (1) single bed, 2x3 tiles: seen from above, pillow at the top, mint blanket, wooden frame like the bed in the reference; (2) TV set, 2x2 tiles: small boxy TV with a light-blue screen on a low wooden stand, a tiny game console in front; (3) dining table, 3x2 tiles: rectangular light-wood table with a white tablecloth runner and a small vase; (4) chair facing down, 1x1 tile: small wooden chair seen from behind-above with the backrest at the top; (5) chair facing up, 1x1 tile: same chair, backrest at the bottom; (6) kitchen counter, 3x2 tiles: cream counter with a silver sink on the left and a two-burner stove on the right of the top surface, cabinet doors on the front.",
+    "reference": "tiledata/pkmn-interior/ref/indoor-style-4x.png",
+    "size_tiles": [
+      12,
+      3
+    ],
+    "notes": "Home: bed 2x3, tv 2x2, dining-table 3x2, chair-down 1x1, chair-up 1x1, kitchen-counter 3x2. Total 12 tiles wide, tallest 3."
+  },
+  {
+    "id": "lab-furniture",
+    "prompt": "Monster research lab furniture, 4 objects. Style: match the reference exactly — Scarloxy monster-taming pixel art drawn at 4x scale (every art pixel = a 4x4 block of screen pixels), top-down 3/4 RPG view showing the top surface and the front face, clean 1-art-pixel outlines in a darker shade of each object's own color (not pure black), flat soft pastel colors with one highlight and one shadow tone, no gradients, no dithering, no anti-aliasing. Scale: one map tile = 64x64 screen pixels (16x16 art pixels); the player sprite in the reference is about 1 tile wide and 2 tiles tall. Layout: ONE horizontal row of separate objects, left to right in the listed order, bottom edges aligned on one baseline, at least 48 px of fully transparent space between neighbours, nothing touching. Each object must fill its stated footprint (width = tiles x 64 px, height = tiles x 64 px) with no extra floor, rug or cast shadow drawn around it. Fully transparent background (alpha 0). No text, no letters, no numbers, no logos. Objects: (1) tall bookshelf, 2x2 tiles: dark-wood bookcase seen from the front, packed with colorful book spines on 3 shelves; (2) lab bench, 3x2 tiles: white laboratory table with a microscope, a rack of test tubes and two flasks with green and blue liquid on top; (3) starter capsule-ball stand, 3x2 tiles: white round-cornered table with a light-teal top holding three capture balls in a row — each ball white on the bottom half with a dark band and a small white button, the top halves colored green, red and blue from left to right; (4) lab computer, 2x2 tiles: large grey server cabinet with a teal monitor on top and small blinking lights on the front.",
+    "reference": "tiledata/pkmn-interior/ref/indoor-style-4x.png",
+    "size_tiles": [
+      10,
+      2
+    ],
+    "notes": "Lab: bookshelf 2x2, lab-bench 3x2, starter-stand 3x2, lab-computer 2x2. Total 10 tiles."
+  },
+  {
+    "id": "fixtures",
+    "prompt": "Interior fixtures, 6 objects. Style: match the reference exactly — Scarloxy monster-taming pixel art drawn at 4x scale (every art pixel = a 4x4 block of screen pixels), top-down 3/4 RPG view showing the top surface and the front face, clean 1-art-pixel outlines in a darker shade of each object's own color (not pure black), flat soft pastel colors with one highlight and one shadow tone, no gradients, no dithering, no anti-aliasing. Scale: one map tile = 64x64 screen pixels (16x16 art pixels); the player sprite in the reference is about 1 tile wide and 2 tiles tall. Layout: ONE horizontal row of separate objects, left to right in the listed order, bottom edges aligned on one baseline, at least 48 px of fully transparent space between neighbours, nothing touching. Each object must fill its stated footprint (width = tiles x 64 px, height = tiles x 64 px) with no extra floor, rug or cast shadow drawn around it. Fully transparent background (alpha 0). No text, no letters, no numbers, no logos. Objects: (1) stairs going up, 2x2 tiles: light-wood staircase seen from above, steps rising toward the top edge, darker at the top where it enters the upper floor, side rails; (2) stairs going down, 2x2 tiles: square opening in a wooden floor with steps descending toward the bottom into darkness, wooden rim; (3) wall window, 2x2 tiles: wooden-framed window with four sky-blue panes and white curtains on both sides, drawn flat on a wall face (no wall around it); (4) wall clock, 1x1 tile: round wall clock with a white face and a wooden rim; (5) wall poster, 1x1 tile: small framed picture of a cute round monster; (6) whiteboard, 2x2 tiles: white board with a grey frame and a few colored scribble lines and a pinned paper, no readable writing.",
+    "reference": "tiledata/pkmn-interior/ref/indoor-style-4x.png",
+    "size_tiles": [
+      10,
+      2
+    ],
+    "notes": "Fixtures: stairs-up 2x2, stairs-down 2x2, wall-window 2x2, wall-clock 1x1, wall-poster 1x1, whiteboard 2x2. Total 10 tiles."
+  },
+  {
+    "id": "surfaces",
+    "reference": "tiledata/pkmn-interior/ref/indoor-style-4x.png",
+    "size_tiles": [
+      9,
+      2
+    ],
+    "prompt": "Interior floor and wall swatches for a tile sheet. Style: match the reference exactly — Scarloxy monster-taming pixel art drawn at 4x scale (every art pixel = a 4x4 block), flat soft pastel colors, one highlight and one shadow tone, no gradients, no dithering, no anti-aliasing. Layout: a grid of separate SQUARE swatches, each exactly 128x128 px (2x2 tiles of 64 px), with 48 px of fully transparent gap between swatches. Every swatch must tile seamlessly when repeated side by side and top to bottom (pattern continues across the edges, no border drawn around the swatch). Top row, left to right: (1) light honey wood plank floor, planks running horizontally, same colors as the wood floor in the reference; (2) white/very light grey square ceramic floor tiles with thin light-blue grout lines, 4 tiles per swatch; (3) plain soft red carpet with a subtle woven texture; (4) plain soft teal carpet with a subtle woven texture. Bottom row: (5) interior wall face, mint green plaster like the reference wall, with a cream baseboard strip along the bottom 16 px, pattern repeats horizontally; (6) same wall face in soft lavender like the reference; (7) same wall face in warm cream; (8) wall top/ceiling edge: dark slate blue-grey flat surface with a lighter 8 px rim along the bottom edge; (9) green door mat, 128x64 px, a rectangular woven mat with a darker border. No text, no letters, no objects.",
+    "notes": "Terrain swatches. I will cut 16px tiles from the center of each swatch and may redraw them procedurally if the swatch is not seamless."
+  }
+]

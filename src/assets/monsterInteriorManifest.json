@@ -1,0 +1,336 @@
+{
+  "file": "monster-interior.png",
+  "columns": 30,
+  "rows": 16,
+  "tiles": {
+    "floor-wood": 0,
+    "floor-tile": 1,
+    "floor-carpet-red": 2,
+    "floor-carpet-teal": 3,
+    "frame-corner-nw": 10,
+    "frame-top": 11,
+    "frame-corner-ne": 12,
+    "frame-left": 40,
+    "frame-ceiling": 41,
+    "frame-right": 42,
+    "frame-corner-sw": 70,
+    "frame-bottom": 71,
+    "frame-corner-se": 72,
+    "frame-inner-se": 13,
+    "frame-inner-sw": 14,
+    "frame-inner-ne": 43,
+    "frame-inner-nw": 44,
+    "wall-mint-upper": 15,
+    "wall-mint-lower": 45,
+    "wall-lavender-upper": 16,
+    "wall-lavender-lower": 46,
+    "wall-cream-upper": 17,
+    "wall-cream-lower": 47
+  },
+  "blocks": [
+    {
+      "name": "floor-wood",
+      "col": 0,
+      "row": 0,
+      "w": 1,
+      "h": 1,
+      "kind": "floor"
+    },
+    {
+      "name": "floor-tile",
+      "col": 1,
+      "row": 0,
+      "w": 1,
+      "h": 1,
+      "kind": "floor"
+    },
+    {
+      "name": "floor-carpet-red",
+      "col": 2,
+      "row": 0,
+      "w": 1,
+      "h": 1,
+      "kind": "floor"
+    },
+    {
+      "name": "floor-carpet-teal",
+      "col": 3,
+      "row": 0,
+      "w": 1,
+      "h": 1,
+      "kind": "floor"
+    },
+    {
+      "name": "rug-red",
+      "col": 4,
+      "row": 0,
+      "w": 3,
+      "h": 3,
+      "kind": "rug"
+    },
+    {
+      "name": "rug-teal",
+      "col": 7,
+      "row": 0,
+      "w": 3,
+      "h": 3,
+      "kind": "rug"
+    },
+    {
+      "name": "wall-frame",
+      "col": 10,
+      "row": 0,
+      "w": 3,
+      "h": 3,
+      "kind": "frame"
+    },
+    {
+      "name": "wall-frame-inner",
+      "col": 13,
+      "row": 0,
+      "w": 2,
+      "h": 2,
+      "kind": "frame"
+    },
+    {
+      "name": "wall-mint",
+      "col": 15,
+      "row": 0,
+      "w": 1,
+      "h": 2,
+      "kind": "wall"
+    },
+    {
+      "name": "wall-lavender",
+      "col": 16,
+      "row": 0,
+      "w": 1,
+      "h": 2,
+      "kind": "wall"
+    },
+    {
+      "name": "wall-cream",
+      "col": 17,
+      "row": 0,
+      "w": 1,
+      "h": 2,
+      "kind": "wall"
+    },
+    {
+      "name": "door-mat-wide",
+      "col": 18,
+      "row": 0,
+      "w": 2,
+      "h": 1,
+      "kind": "mat"
+    },
+    {
+      "name": "door-mat",
+      "col": 20,
+      "row": 0,
+      "w": 1,
+      "h": 1,
+      "kind": "mat"
+    },
+    {
+      "name": "stairs-up",
+      "col": 0,
+      "row": 3,
+      "w": 2,
+      "h": 2,
+      "kind": "stairs"
+    },
+    {
+      "name": "stairs-down",
+      "col": 2,
+      "row": 3,
+      "w": 2,
+      "h": 2,
+      "kind": "stairs"
+    },
+    {
+      "name": "wall-window",
+      "col": 4,
+      "row": 3,
+      "w": 2,
+      "h": 2,
+      "kind": "wall-decor"
+    },
+    {
+      "name": "wall-clock",
+      "col": 6,
+      "row": 3,
+      "w": 1,
+      "h": 1,
+      "kind": "wall-decor"
+    },
+    {
+      "name": "wall-poster",
+      "col": 7,
+      "row": 3,
+      "w": 1,
+      "h": 1,
+      "kind": "wall-decor"
+    },
+    {
+      "name": "whiteboard",
+      "col": 8,
+      "row": 3,
+      "w": 2,
+      "h": 2,
+      "kind": "wall-decor"
+    },
+    {
+      "name": "reception-counter",
+      "col": 0,
+      "row": 5,
+      "w": 5,
+      "h": 2,
+      "kind": "furniture"
+    },
+    {
+      "name": "healing-machine",
+      "col": 5,
+      "row": 5,
+      "w": 2,
+      "h": 2,
+      "kind": "furniture"
+    },
+    {
+      "name": "pc-terminal",
+      "col": 7,
+      "row": 5,
+      "w": 1,
+      "h": 2,
+      "kind": "furniture"
+    },
+    {
+      "name": "lobby-bench",
+      "col": 8,
+      "row": 5,
+      "w": 3,
+      "h": 2,
+      "kind": "furniture"
+    },
+    {
+      "name": "potted-plant",
+      "col": 11,
+      "row": 5,
+      "w": 1,
+      "h": 2,
+      "kind": "furniture"
+    },
+    {
+      "name": "shelf-wall",
+      "col": 12,
+      "row": 5,
+      "w": 3,
+      "h": 2,
+      "kind": "furniture"
+    },
+    {
+      "name": "shelf-island",
+      "col": 15,
+      "row": 5,
+      "w": 2,
+      "h": 2,
+      "kind": "furniture"
+    },
+    {
+      "name": "shop-counter",
+      "col": 17,
+      "row": 5,
+      "w": 3,
+      "h": 2,
+      "kind": "furniture"
+    },
+    {
+      "name": "drink-cooler",
+      "col": 20,
+      "row": 5,
+      "w": 2,
+      "h": 2,
+      "kind": "furniture"
+    },
+    {
+      "name": "bed",
+      "col": 0,
+      "row": 7,
+      "w": 2,
+      "h": 3,
+      "kind": "furniture"
+    },
+    {
+      "name": "tv-set",
+      "col": 2,
+      "row": 8,
+      "w": 2,
+      "h": 2,
+      "kind": "furniture"
+    },
+    {
+      "name": "dining-table",
+      "col": 4,
+      "row": 8,
+      "w": 3,
+      "h": 2,
+      "kind": "furniture"
+    },
+    {
+      "name": "chair-down",
+      "col": 7,
+      "row": 9,
+      "w": 1,
+      "h": 1,
+      "kind": "furniture"
+    },
+    {
+      "name": "chair-up",
+      "col": 8,
+      "row": 9,
+      "w": 1,
+      "h": 1,
+      "kind": "furniture"
+    },
+    {
+      "name": "kitchen-counter",
+      "col": 9,
+      "row": 8,
+      "w": 3,
+      "h": 2,
+      "kind": "furniture"
+    },
+    {
+      "name": "bookshelf",
+      "col": 12,
+      "row": 7,
+      "w": 2,
+      "h": 2,
+      "kind": "furniture"
+    },
+    {
+      "name": "lab-bench",
+      "col": 14,
+      "row": 7,
+      "w": 3,
+      "h": 2,
+      "kind": "furniture"
+    },
+    {
+      "name": "starter-stand",
+      "col": 17,
+      "row": 7,
+      "w": 3,
+      "h": 2,
+      "kind": "furniture"
+    },
+    {
+      "name": "lab-computer",
+      "col": 20,
+      "row": 7,
+      "w": 2,
+      "h": 2,
+      "kind": "furniture"
+    }
+  ]
+}
