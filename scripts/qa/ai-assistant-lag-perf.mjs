@@ -29,7 +29,7 @@ await page.addInitScript((seed) => {
   window.__perf = { longTasks: [], frames: [], measuring: false };
   try {
     new PerformanceObserver((list) => {
-      for (const e of list.getEntries()) if (window.__perf.measuring) window.__perf.longTasks.push(e.duration);
+      for (const e of list.getEntries()) if (window.__perf.measuring) window.__perf.longTasks.push(e.duration), (window.__perf.longTaskAt ??= []).push([Math.round(e.startTime - (window.__perf.runStart ?? 0)), Math.round(e.duration)]);
     }).observe({ type: "longtask", buffered: false });
   } catch {}
   let last = 0;
@@ -53,9 +53,9 @@ await page.route("**/*", async (route) => {
 const bootStart = Date.now();
 await page.goto(seed ? base + "/" : base + "/?blankProject=1", { waitUntil: "domcontentloaded", timeout: 180000 });
 const guest = page.getByTestId("login-guest");
-await page.getByTestId("ai-input").waitFor({ state: "attached", timeout: 180000 });
+await page.getByTestId("ai-input").waitFor({ state: "attached", timeout: 420000 });
 if (await guest.isVisible().catch(() => false)) await guest.click();
-await page.waitForFunction(() => typeof window.__oprnEditWorldToClient === "function", undefined, { timeout: 180000 });
+await page.waitForFunction(() => typeof window.__oprnEditWorldToClient === "function", undefined, { timeout: 420000 });
 const bootMs = Date.now() - bootStart;
 await page.waitForTimeout(3000);
 const info = await page.evaluate(async (CHECKPOINTS) => {
@@ -104,6 +104,7 @@ const info = await page.evaluate(async (CHECKPOINTS) => {
       const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
       write({ type: "start", provider: body.provider, model: body.model, toolCount: 1 });
       let accepted = { ...reqProject, maps: structuredClone(reqProject.maps) };
+      window.__perf.originalTiles = [...reqProject.maps[map.id].lowerTiles];
       for (let i = 0; i < CHECKPOINTS; i += 1) {
         write({ type: "turn", index: i + 1 });
         for (let d = 0; d < 4; d += 1) { write({ type: "delta", kind: d % 2 ? "text" : "thinking", text: "생각 조각 ".repeat(40) + i + ":" + d }); await sleep(120); }
@@ -125,6 +126,7 @@ const info = await page.evaluate(async (CHECKPOINTS) => {
         console.log("[ack]", i, ack.ok, String(ack.issue ?? "").slice(0, 300));
         if (!ack.ok) { write({ type: "error", message: ack.issue }); controller.close(); return; }
         accepted = proposed;
+        window.__perf.expectedTiles = [...proposed.maps[map.id].lowerTiles];
         await sleep(200);
       }
       write({ type: "assistant", text: "바닥을 수정했습니다." });
@@ -141,6 +143,23 @@ await page.evaluate(() => { window.__perf.measuring = true; window.__perf.runSta
 const cdp = process.env.PROFILE ? await page.context().newCDPSession(page) : null;
 if (cdp) { await cdp.send("Profiler.enable"); await cdp.send("Profiler.setSamplingInterval", { interval: 1000 }); await cdp.send("Profiler.start"); }
 await page.getByTestId("ai-send").click();
+if (cdp && process.env.PROFILE_FIRST_MS) {
+  await page.waitForTimeout(Number(process.env.PROFILE_FIRST_MS));
+  const { profile } = await cdp.send("Profiler.stop");
+  const byId = new Map(profile.nodes.map((n) => [n.id, n]));
+  const parent = new Map();
+  for (const n of profile.nodes) for (const c of n.children ?? []) parent.set(c, n.id);
+  const keyOf = (n) => (n.callFrame.functionName || "(anon)") + " " + n.callFrame.url.replace(/^.*\/src\//, "src/").replace(/\?.*$/, "") + ":" + (n.callFrame.lineNumber + 1);
+  const total = new Map();
+  profile.samples.forEach((id, i) => {
+    const dt = (profile.timeDeltas[i] ?? 0) / 1000;
+    const seen = new Set();
+    for (let cur = id; cur !== undefined; cur = parent.get(cur)) { const k = keyOf(byId.get(cur)); if (!seen.has(k)) { seen.add(k); total.set(k, (total.get(k) ?? 0) + dt); } }
+  });
+  const top = [...total].filter(([k]) => !/^\((idle|program|root)\)/.test(k)).sort((a, b) => b[1] - a[1]).slice(0, 60).map(([k, v]) => v.toFixed(0).padStart(7) + "ms " + k);
+  writeFileSync(out + "/" + label + "-first-profile.txt", top.join("\n") + "\n");
+  await cdp.send("Profiler.start");
+}
 {
   const started = Date.now();
   const limit = Number(process.env.RUN_TIMEOUT_MS ?? 300000);
@@ -153,7 +172,7 @@ await page.getByTestId("ai-send").click();
   }
 }
 await page.waitForTimeout(3000);
-const run = await page.evaluate(() => { window.__perf.measuring = false; return { ms: performance.now() - window.__perf.runStart, longTasks: window.__perf.longTasks.slice(), frames: window.__perf.frames.slice(), acks: window.__perf.acks }; });
+const run = await page.evaluate(() => { window.__perf.measuring = false; return { ms: performance.now() - window.__perf.runStart, longTasks: window.__perf.longTasks.slice(), longTaskAt: (window.__perf.longTaskAt ?? []).slice(), ackAt: window.__perf.ackAt ?? [], frames: window.__perf.frames.slice(), acks: window.__perf.acks }; });
 if (cdp) {
   const { profile } = await cdp.send("Profiler.stop");
   const byId = new Map(profile.nodes.map((n) => [n.id, n]));
@@ -172,6 +191,20 @@ if (cdp) {
   writeFileSync(out + "/" + label + "-profile.txt", "SELF\n" + top(self, 40).join("\n") + "\n\nTOTAL\n" + top(total, 80).join("\n") + "\n");
 }
 // ③ 턴 이후 사람 편집 한 번 — 조수 구독자(체크리스트 갱신 등)까지 포함한 동기 비용.
+// ②-1 정확성: 대본이 마지막에 보낸 맵이 실제 스토어에 있는가(실시간 적용이 빠짐없이 반영됐는가), 그리고 되돌리기가 원래대로 돌리는가.
+const correctness = await page.evaluate(async (mapId) => {
+  const [{ store }, history] = await Promise.all([import("/src/project/store.ts"), import("/src/editor/mapEditHistory.ts")]);
+  const expected = window.__perf.expectedTiles;
+  const live = store.getCurrent().maps[mapId]?.lowerTiles ?? [];
+  const applied = Array.isArray(expected) && expected.length === live.length && expected.every((v, i) => v === live[i]);
+  const original = window.__perf.originalTiles;
+  let undone = false;
+  for (let i = 0; i < 5 && history.undoMapEdit(); i += 1) {
+    const now = store.getCurrent().maps[mapId]?.lowerTiles ?? [];
+    if (Array.isArray(original) && original.length === now.length && original.every((v, k) => v === now[k])) { undone = true; break; }
+  }
+  return { appliedMatchesLastCheckpoint: applied, undoRestoresOriginal: undone };
+}, info.mapId);
 const edits = await page.evaluate(async (mapId) => {
   const actions = await import("/src/editor/actions.ts");
   const samples = [];
@@ -193,6 +226,8 @@ const result = {
   frameGapMs: { p50: q(run.frames, 0.5), p95: q(run.frames, 0.95), max: q(run.frames, 1), over100: run.frames.filter((f) => f > 100).length },
   checkpointAckMs: { median: q(run.acks.map((a) => a.ms), 0.5), max: q(run.acks.map((a) => a.ms), 1), ok: run.acks.every((a) => a.ok), n: run.acks.length },
   manualEditAfterTurnMs: { median: q(edits, 0.5), max: q(edits, 1) },
+  correctness,
+  topLongTasksAt: [...(run.longTaskAt ?? [])].sort((a, b) => b[1] - a[1]).slice(0, 5),
   errors,
 };
 writeFileSync(out + "/" + label + ".json", JSON.stringify(result, null, 2));

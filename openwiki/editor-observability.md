@@ -573,3 +573,30 @@ requestEditRenderFrame으로 한 프레임만 요청하고, 카메라·포인터
 원문을 실행하여 84→1회/6묶음 504→6회를 재확인했다. 84개 완료를 6프레임으로 나누면
 84→6회다(`verify-shots/perf-editor-subs/texture-node.json`). 실제 Phaser 수명 이벤트 연결은
 이 호출 수 하네스 범위 밖이며, 과거 테스트 실행 이력과 정정 후 코드 검토는 SUMMARY에서 구분한다.
+
+
+## 조수 적용·체크리스트 경로의 전체 문서 비용 (2026-09-28)
+
+새 프로젝트 기본 자료(약 149MB: 타일셋 82MB · 업로드 자산 66MB)에서 조수 체크포인트 하나가 메인 스레드를 약 4s 멈췄다.
+실측 도구는 `scripts/qa/ai-assistant-lag-perf.mjs`(실제 편집기·스토어, 전송만 NDJSON 대본, `PROFILE=1` 이면 CDP 프로파일 상위 함수를 남긴다).
+원인과 대응은 아래와 같다. 판정 결과는 바꾸지 않았고, 비용만 줄였다.
+
+- **체크리스트 갱신**(`AssistantSession.refreshAcceptance`, 스토어 통지마다): 프로젝트 두 개의 `JSON.stringify` 비교(149MB 에서 2.2~2.6s)와
+  `structuredClone`(1.3s)를 `sameAcceptanceContent`(내용 요약 비교 — 지문과 같은 판정)와 `cloneProjectSharingSharedDictionaries`(타일셋·업로드 공유)로 바꿨다.
+  세션·원장의 다른 전체 프로젝트 지문 비교도 같은 함수로 옮겼다. 첫 비교의 판정 차이는 하나다: 키 순서만 다른 같은 내용을 더는 «바뀜» 으로 보지 않는다.
+- **적용 권위 요약**(`applyChangesetToStore` 의 `withIdentityScope`): 같은 동기 구간 안에서는 요약의 노드 대조를 한 번만 한다(`withContentDigestEpoch`).
+  `projectIdentityDigest` 는 한 번 요약한 타일셋·업로드 자산 항목을 다음 권위 요약부터 대조하지 않는다(`withTrustedSharedEntries` —
+  projectClone 계약: 두 사전의 항목은 제자리에서 고치지 않는다). 사람 편집의 제자리 수정이 일어나는 맵·DB·시스템은 계속 대조한다.
+  로드 정규화처럼 공유 항목을 제자리에서 고치고 전후 요약으로 알아내는 곳은 믿음 없이 끝까지 대조한다.
+- **저장 왕복 검사**(`projectLint.checkRoundtrip`, 적용 커밋마다): 글은 `serializeReusingSharedDictionaries`(항목 글 기억, `serialize` 와 글자까지 같다)로 만들고,
+  이미 왕복을 통과한 타일셋·업로드 항목(같은 객체)은 뼈대 글로 되읽는다(`serializeForRoundtripCheck`). 공간 저작이 있는 문서는 뼈대를 쓰지 않는다
+  (공간 참조가 타일셋 `structureKits` 를 읽는다). 맵·DB 등 나머지 문서의 깨짐과 새 타일셋 객체의 깨짐은 그대로 잡힌다.
+- **실행 요청의 무거운 키 해시**(`heavyWire.planHeavyWire`, 턴마다): 사전 객체가 새것이어도 내용 요약이 같으면 글·SHA-256 을 다시 만들지 않는다.
+- **첫 턴·첫 적용 준비 비용**: 조수 패널이 뜬 뒤와 무거운 키가 바뀐 스토어 통지 뒤, 한가할 때(`requestIdleCallback`) 무거운 키 글·해시
+  (`warmHeavyWire`)와 첫 적용의 왕복 통과 기록·권위 요약 기억(`warmApplyCaches`)을 미리 만든다. 판정에는 영향이 없다 —
+  미리 만든 값은 값 대조를 통과할 때만 쓰인다. 이 준비가 없으면 첫 전송 직후 약 7s, 첫 체크포인트 약 2.7s 멈췄다.
+- 편집기 구독자·캔버스(텍스처 적재마다 전체 redraw 등)는 위 "연속 AI 적용의 구독자 비용" 절, 조수 패널 DOM 은 `editor-ai-panel.md` 의 "AI 패널 렌더 비용" 절.
+
+새 경로를 추가할 때: 전체 프로젝트를 `JSON.stringify`/`acceptanceFingerprint`/`structuredClone` 하는 비교·복제를 스토어 통지나 체크포인트마다 부르지 마라.
+내용 비교는 `sameAcceptanceContent` 또는 `jsonContentDigest`, 읽기 전용 사본은 `cloneProjectSharingSharedDictionaries` 를 쓴다.
+
