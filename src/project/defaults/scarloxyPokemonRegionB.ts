@@ -573,11 +573,208 @@ function rivalEvent(): GameEvent {
   ]);
 }
 
+
+// --- 파도 회복 센터 (monster_interior 15×11) ----------------------------------------
+// 이끼 회복 센터와 같은 배열(참고문서 「완성 예제 · 몬스터 회복 센터 15×11」 + 왼쪽 계산대).
+
+export function createWaveCenterMap(): GameMap {
+  const map = blankMap("waveCenter", "파도 회복 센터", INTERIOR_TILESET_ID, 1);
+  const lower = [
+    [10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12],
+    [40, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 42],
+    [40, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 42],
+    [40, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 42],
+    [40, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 42],
+    [40, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 42],
+    [40, 1, 1, 1, 1, 1, 7, 8, 9, 1, 1, 1, 1, 1, 42],
+    [40, 1, 1, 1, 1, 1, 37, 38, 39, 1, 1, 1, 1, 1, 42],
+    [40, 1, 1, 1, 1, 1, 67, 68, 69, 1, 1, 1, 1, 1, 42],
+    [40, 1, 1, 1, 1, 1, 1, 19, 1, 1, 1, 1, 1, 1, 42],
+    [70, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 72],
+  ];
+  const upper = [
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, 94, 95, -1, -1, 96, -1, -1, 94, 95, -1, 97, -1],
+    [-1, -1, -1, 124, 125, -1, -1, -1, -1, -1, 124, 125, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 155, 156, -1, 157, -1],
+    [-1, 167, 168, 169, -1, 150, 151, 152, 153, 154, 185, 186, -1, 187, -1],
+    [-1, 197, 198, 199, -1, 180, 181, 182, 183, 184, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, 161, 158, 159, 160, -1, -1, -1, -1, -1, 158, 159, 160, 161, -1],
+    [-1, 191, 188, 189, 190, -1, -1, -1, -1, -1, 188, 189, 190, 191, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+  ];
+  map.lowerTiles = lower.flat();
+  map.upperTiles = upper.flat();
+
+  const nurse = "nurse" as const;
+  map.events.push(
+    transferEvent("ev_pkmn_b_center_exit", 7, 9, PKMN_MAPS.waveTown, WAVE_DOORS.center.x, WAVE_DOORS.center.y + 1, "밖으로"),
+    castTalker("ev_pkmn_b_center_nurse", 7, 3, nurse, ["어서 오세요. 카운터 앞에서 말씀해 주세요."]),
+    event("ev_pkmn_b_center_heal", 7, 5, [
+      page("ev_pkmn_b_center_heal_page", SCARLOXY_CAST.nurse.label, [
+        ...castLines(nurse, ["등대 아래 파도 회복 센터에 오신 걸 환영합니다.", "몬스터들을 맡아 회복시켜 드릴게요. 잠시만요…"]),
+        { kind: "recoverAll" },
+        { kind: "text", speaker: SCARLOXY_CAST.nurse.label, body: "모두 건강해졌어요! 좋은 항해 되세요." },
+      ], NO_GRAPHIC, PASSIVE_MOVEMENT),
+    ]),
+    castTalker("ev_pkmn_b_center_clerk", 2, 3, "clerk", ["계산대 앞에서 말씀해 주세요!"]),
+    event("ev_pkmn_b_center_shop", 2, 5, [
+      page("ev_pkmn_b_center_shop_page", SCARLOXY_CAST.clerk.label, [
+        ...castLines("clerk", ["어서 오세요! 배로 막 들어온 하이퍼 구슬이 있어요."]),
+        {
+          kind: "shop",
+          itemIds: [...WAVE_SHOP_ITEM_IDS],
+          allowSell: true,
+          quantityMode: "select",
+          shopType: "normal",
+          messageType: "welcome",
+        },
+      ], NO_GRAPHIC, PASSIVE_MOVEMENT),
+    ]),
+    signEvent("ev_pkmn_b_center_pc", 13, 4, "PC", [
+      "몬스터 보관 PC다. 파티와 보관함은 메뉴의 「몬스터」에서 바꿀 수 있다.",
+    ]),
+    castTalker("ev_pkmn_b_center_sailor", 11, 6, "fisherman", [
+      "관장 미르는 원래 뱃사람이었어. 폭풍 속에서도 키를 놓지 않았다지.",
+      "물 몬스터에는 풀이나 전기 기술을 준비해 가.",
+    ], { speaker: "뱃사람" }),
+    castTalker("ev_pkmn_b_center_visitor", 3, 9, "swimmer", [
+      "3번 도로 풀숲엔 번개꼬리가 나온대. 물 몬스터만 데려가면 큰일 나!",
+    ], { speaker: "수영선수" }),
+  );
+  return map;
+}
+
+// --- 물 체육관 (gym_coast 14×15) -----------------------------------------------------
+// 「완성 예제 · 풀 체육관 14×15」의 물 속성 치환: 바닥 486/487, 벽 516/546, 문장 517/518·547/548,
+// 단상 leader-podium-water, 조각상 badge-statue-water, 장식은 분수대 2×2(화분 자리 두 칸 폭).
+
+const GYM_BARRIER_OPEN = 634;
+const GYM_SWITCH_ON = 632;
+const GYM_SWITCH = { x: 11, y: 10 } as const;
+const GYM_GATE_CELLS = [{ x: 6, y: 8 }, { x: 7, y: 8 }] as const;
+
+export function createWaterGymMap(): GameMap {
+  const map = blankMap("waterGym", "파도 마을 물 체육관", GYM_TILESET_ID, 486);
+  const F = 486; // 물 바닥 A
+  const D = 487; // 물방울 문양 B
+  const floorRow = (y: number): number[] => [520, ...Array.from({ length: 12 }, (_, i) => ((i + 1) % 4 === 2 && y % 4 === 0 ? D : F)), 521];
+  const lower = [
+    [519, 519, 519, 519, 519, 519, 519, 519, 519, 519, 519, 519, 519, 519],
+    [520, 516, 516, 516, 516, 516, 517, 518, 516, 516, 516, 516, 516, 521],
+    [520, 546, 546, 546, 546, 546, 547, 548, 546, 546, 546, 546, 546, 521],
+    ...Array.from({ length: 11 }, (_, i) => floorRow(i + 3)),
+    [523, 522, 522, 522, 522, 525, F, F, 526, 522, 522, 522, 522, 524],
+  ];
+  const upper = [
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, 584, 585, -1, -1, 576, 577, 578, -1, -1, -1, 584, 585, -1],
+    [-1, 614, 615, -1, -1, 606, 607, 608, -1, -1, -1, 614, 615, -1],
+    [-1, -1, -1, -1, 630, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, 633, 633, 633, 633, 633, 633, 633, 633, 633, 633, 633, 633, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 631, -1, -1],
+    [-1, -1, -1, 630, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, 581, -1, -1, -1, -1, 581, -1, -1, -1, -1],
+    [-1, -1, -1, -1, 611, -1, -1, -1, -1, 611, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, 635, 636, -1, -1, -1, -1, -1, -1],
+  ];
+  map.lowerTiles = lower.flat();
+  map.upperTiles = upper.flat();
+  const mapId = map.id;
+
+  const switchEvent = event("ev_pkmn_b_gym_switch", GYM_SWITCH.x, GYM_SWITCH.y, [
+    page("ev_pkmn_b_gym_switch_off", "바닥 스위치", [
+      { kind: "changeTile", mapId, layer: "upper", x: GYM_SWITCH.x, y: GYM_SWITCH.y, tile: GYM_SWITCH_ON },
+      ...GYM_GATE_CELLS.map((cell) => ({ kind: "changeTile", mapId, layer: "upper", x: cell.x, y: cell.y, tile: GYM_BARRIER_OPEN }) satisfies Command),
+      { kind: "text", body: "딸깍! 물 흐르는 소리와 함께 차단기가 내려갔다." },
+      { kind: "setSelfSwitch", key: "A", value: true },
+    ], NO_GRAPHIC, PASSIVE_MOVEMENT),
+    page("ev_pkmn_b_gym_switch_on", "눌린 스위치", [], NO_GRAPHIC, PASSIVE_MOVEMENT, [{ kind: "selfSwitch", key: "A", value: true }]),
+  ], "playerTouch", "below");
+
+  const leader = "waterLeader" as const;
+  const leaderName = "관장 미르";
+  const leaderBattle: Command = {
+    kind: "battleProcessing",
+    troopId: PKMN_B_TROOPS.leader,
+    canEscape: false,
+    canLose: true,
+    branchOnResult: true,
+    victoryBranch: [
+      ...castLines(leader, [
+        "…밀물을 거슬러 올라오다니. 대단한 배짱이야.",
+        "파도 마을 체육관을 이긴 증표, 물 배지를 받아 줘. 이제 남쪽 3번 도로 경비원도 길을 열어 줄 거야.",
+      ], leaderName),
+      { kind: "setSwitch", switchId: PKMN_FLAGS.badge2, value: true },
+      { kind: "setVariable", variableId: PKMN_FLAGS.badgeCount, op: "+=", value: 1 },
+      { kind: "text", body: "물 배지를 받았다!" },
+      { kind: "changeItem", itemId: PKMN_B_HYPER_ORB_ITEM_ID, op: "+=", amount: 3 },
+      { kind: "changeItem", itemId: "item_hi_potion", op: "+=", amount: 3 },
+      { kind: "changeGold", op: "+=", amount: 1200 },
+      { kind: "text", body: "하이퍼 구슬 3개와 상급 회복약 3개, 1200골드를 받았다!" },
+      { kind: "text", speaker: leaderName, body: "하이퍼 구슬은 슈퍼 구슬보다도 잘 잡혀. 잿불 마을로 가는 길에 강한 몬스터를 만나면 써 봐." },
+    ],
+    defeatBranch: whiteoutCommands(),
+    escapeBranch: [],
+  };
+  const leaderEvent = event("ev_pkmn_b_gym_leader", 6, 3, [
+    page("ev_pkmn_b_gym_leader_battle", leaderName, [
+      ...castLines(leader, [
+        "어서 와, 도전자. 나는 파도 마을 체육관 관장 미르.",
+        "바다는 부드럽지만 멈추지 않아. 내 파도를 견뎌 낼 수 있을까?",
+      ], leaderName),
+      leaderBattle,
+    ], facingGraphic(leader, "down"), PASSIVE_MOVEMENT),
+    page("ev_pkmn_b_gym_leader_after", leaderName, castLines(leader, [
+      "물 배지, 잘 어울리네. 다음 체육관은 3번 도로 끝 잿불 마을이야.",
+      "불 타입은 물 기술에 약해. 오늘 맞은 파도를 이번엔 네가 일으켜 봐!",
+    ], leaderName), facingGraphic(leader, "down"), PASSIVE_MOVEMENT, [
+      { kind: "switch", switchId: PKMN_FLAGS.badge2, value: true },
+    ]),
+  ]);
+
+  map.events.push(
+    transferEvent("ev_pkmn_b_gym_exit_l", 6, 14, PKMN_MAPS.waveTown, WAVE_DOORS.gym.x, WAVE_DOORS.gym.y + 1, "밖으로"),
+    transferEvent("ev_pkmn_b_gym_exit_r", 7, 14, PKMN_MAPS.waveTown, WAVE_DOORS.gym.x, WAVE_DOORS.gym.y + 1, "밖으로"),
+    switchEvent,
+    leaderEvent,
+    trainerEvent({
+      id: "ev_pkmn_b_gym_trainer_a", x: 4, y: 5, role: "swimmer", speaker: "체육관 트레이너 바다", facing: "right",
+      troopId: PKMN_B_TROOPS.gymA, range: 4,
+      intro: ["관장님 앞까지 헤엄쳐 오다니! 여기서 가라앉혀 주지!"],
+      lose: "물살에 휩쓸렸어…",
+      after: ["관장님의 프리올레라는 얼음 기술도 써. 풀 몬스터는 조심해."],
+    }),
+    trainerEvent({
+      id: "ev_pkmn_b_gym_trainer_b", x: 3, y: 11, role: "fisherman", speaker: "체육관 트레이너 조약돌", facing: "right",
+      troopId: PKMN_B_TROOPS.gymB, range: 4,
+      intro: ["스위치를 찾나? 낚아 올리기 전에 승부부터 하자!"],
+      lose: "놓친 물고기가 크구먼…",
+      after: ["스위치는 오른쪽 벽 가까이에 있다네. 밟으면 차단기가 내려가지."],
+    }),
+    castTalker("ev_pkmn_b_gym_guide", 11, 13, "gentleman", [
+      "도전자여, 어서 오게! 관장 미르는 물 타입 전문이라네.",
+      "차단기가 길을 막고 있지? 이 방 어딘가의 바닥 스위치를 밟아 보게.",
+      "풀·전기 기술이 잘 통한다네. 얼음 기술에는 조심하고!",
+    ], { speaker: "체육관 안내원", direction: "left" }),
+    signEvent("ev_pkmn_b_gym_statue_l", 4, 13, "배지 조각상", ["파도 마을 체육관 — 관장 미르에게 이긴 트레이너의 이름이 새겨져 있다."]),
+    signEvent("ev_pkmn_b_gym_statue_r", 9, 13, "배지 조각상", ["「밀물은 반드시 돌아온다」"]),
+  );
+  return map;
+}
+
 // --- 조립 도우미 ---------------------------------------------------------------------
 
 /** B 지역 맵 — 파도 마을 · 파도 회복 센터 · 물 체육관 · 3번 도로. */
 export function createPkmnRegionBMaps(): GameMap[] {
-  return [createWaveTownMap()];
+  return [createWaveTownMap(), createWaveCenterMap(), createWaterGymMap()];
 }
 
 /**
