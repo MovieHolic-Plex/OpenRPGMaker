@@ -1,0 +1,2586 @@
+{
+ "actor3-0": {
+  "role": "samurai",
+  "weapon": "katana",
+  "frames": 45,
+  "placements": {
+   "idle": [
+    {
+     "kind": "sheathed",
+     "angle": 0,
+     "grip": [
+      18,
+      35
+     ],
+     "moved": false
+    }
+   ],
+   "attack": [
+    {
+     "kind": "katana",
+     "angle": 45,
+     "grip": [
+      15,
+      27
+     ],
+     "moved": false
+    },
+    {
+     "kind": "saya",
+     "angle": 0,
+     "grip": [
+      23,
+      38
+     ],
+     "moved": false
+    }
+   ],
+   "hit": [
+    {
+     "kind": "katana",
+     "angle": 315,
+     "grip": [
+      36,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "defend": [
+    {
+     "kind": "katana",
+     "angle": 90,
+     "grip": [
+      17,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "dead": [
+    {
+     "kind": "katana",
+     "angle": 0,
+     "grip": [
+      30,
+      42
+     ],
+     "moved": false
+    }
+   ],
+   "victory": [
+    {
+     "kind": "katana",
+     "angle": 90,
+     "grip": [
+      31,
+      24
+     ],
+     "moved": false
+    }
+   ],
+   "walk_a": [
+    {
+     "kind": "sheathed",
+     "angle": 0,
+     "grip": [
+      18,
+      35
+     ],
+     "moved": false
+    }
+   ],
+   "walk_b": [
+    {
+     "kind": "sheathed",
+     "angle": 0,
+     "grip": [
+      18,
+      35
+     ],
+     "moved": false
+    }
+   ],
+   "walk_c": [
+    {
+     "kind": "sheathed",
+     "angle": 0,
+     "grip": [
+      18,
+      35
+     ],
+     "moved": false
+    }
+   ],
+   "attack_windup": [
+    {
+     "kind": "sheathed",
+     "angle": 0,
+     "grip": [
+      20,
+      37
+     ],
+     "moved": false
+    }
+   ],
+   "attack_strike": [
+    {
+     "kind": "katana",
+     "angle": 0,
+     "grip": [
+      17,
+      33
+     ],
+     "moved": false
+    },
+    {
+     "kind": "saya",
+     "angle": 0,
+     "grip": [
+      23,
+      38
+     ],
+     "moved": false
+    }
+   ],
+   "attack_follow": [
+    {
+     "kind": "katana",
+     "angle": 315,
+     "grip": [
+      18,
+      34
+     ],
+     "moved": true
+    },
+    {
+     "kind": "saya",
+     "angle": 0,
+     "grip": [
+      23,
+      38
+     ],
+     "moved": false
+    }
+   ],
+   "cast_charge": [
+    {
+     "kind": "katana",
+     "angle": 45,
+     "grip": [
+      17,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "cast_raise": [
+    {
+     "kind": "katana",
+     "angle": 90,
+     "grip": [
+      23,
+      18
+     ],
+     "moved": false
+    }
+   ],
+   "cast_release": [
+    {
+     "kind": "katana",
+     "angle": 45,
+     "grip": [
+      13,
+      30
+     ],
+     "moved": false
+    }
+   ],
+   "item": [
+    {
+     "kind": "katana",
+     "angle": 90,
+     "grip": [
+      29,
+      37
+     ],
+     "moved": false
+    }
+   ],
+   "weak": [
+    {
+     "kind": "sheathed",
+     "angle": 0,
+     "grip": [
+      16,
+      37
+     ],
+     "moved": false
+    }
+   ],
+   "evade": [
+    {
+     "kind": "katana",
+     "angle": 315,
+     "grip": [
+      36,
+      30
+     ],
+     "moved": false
+    }
+   ],
+   "guard_hit": [
+    {
+     "kind": "katana",
+     "angle": 90,
+     "grip": [
+      19,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "skill": [
+    {
+     "kind": "katana",
+     "angle": 0,
+     "grip": [
+      17,
+      32
+     ],
+     "moved": false
+    },
+    {
+     "kind": "saya",
+     "angle": 0,
+     "grip": [
+      23,
+      37
+     ],
+     "moved": false
+    }
+   ],
+   "victory_b": [
+    {
+     "kind": "katana",
+     "angle": 90,
+     "grip": [
+      31,
+      22
+     ],
+     "moved": false
+    }
+   ],
+   "dying": [
+    {
+     "kind": "katana",
+     "angle": 315,
+     "grip": [
+      28,
+      34
+     ],
+     "moved": true
+    }
+   ],
+   "revive": [
+    {
+     "kind": "katana",
+     "angle": 45,
+     "grip": [
+      21,
+      35
+     ],
+     "moved": false
+    }
+   ],
+   "front": [],
+   "cast_fire_1": [
+    {
+     "kind": "katana",
+     "angle": 135,
+     "grip": [
+      30,
+      36
+     ],
+     "moved": false
+    }
+   ],
+   "cast_fire_2": [
+    {
+     "kind": "katana",
+     "angle": 45,
+     "grip": [
+      17,
+      31
+     ],
+     "moved": false
+    }
+   ],
+   "cast_fire_3": [
+    {
+     "kind": "katana",
+     "angle": 45,
+     "grip": [
+      11,
+      30
+     ],
+     "moved": false
+    }
+   ],
+   "cast_ice_1": [
+    {
+     "kind": "katana",
+     "angle": 45,
+     "grip": [
+      16,
+      30
+     ],
+     "moved": false
+    }
+   ],
+   "cast_ice_2": [
+    {
+     "kind": "katana",
+     "angle": 135,
+     "grip": [
+      32,
+      41
+     ],
+     "moved": false
+    }
+   ],
+   "cast_ice_3": [
+    {
+     "kind": "katana",
+     "angle": 45,
+     "grip": [
+      11,
+      33
+     ],
+     "moved": false
+    }
+   ],
+   "cast_thunder_1": [
+    {
+     "kind": "katana",
+     "angle": 135,
+     "grip": [
+      35,
+      30
+     ],
+     "moved": false
+    }
+   ],
+   "cast_thunder_2": [
+    {
+     "kind": "katana",
+     "angle": 90,
+     "grip": [
+      29,
+      17
+     ],
+     "moved": true
+    }
+   ],
+   "cast_thunder_3": [
+    {
+     "kind": "katana",
+     "angle": 45,
+     "grip": [
+      12,
+      37
+     ],
+     "moved": false
+    }
+   ],
+   "cast_heal_1": [
+    {
+     "kind": "katana",
+     "angle": 45,
+     "grip": [
+      18,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "cast_heal_2": [
+    {
+     "kind": "katana",
+     "angle": 90,
+     "grip": [
+      35,
+      24
+     ],
+     "moved": false
+    }
+   ],
+   "cast_heal_3": [
+    {
+     "kind": "katana",
+     "angle": 135,
+     "grip": [
+      29,
+      35
+     ],
+     "moved": false
+    }
+   ],
+   "cast_dark_1": [
+    {
+     "kind": "katana",
+     "angle": 135,
+     "grip": [
+      30,
+      38
+     ],
+     "moved": false
+    }
+   ],
+   "cast_dark_2": [
+    {
+     "kind": "katana",
+     "angle": 45,
+     "grip": [
+      19,
+      38
+     ],
+     "moved": false
+    }
+   ],
+   "cast_dark_3": [
+    {
+     "kind": "katana",
+     "angle": 135,
+     "grip": [
+      30,
+      40
+     ],
+     "moved": false
+    }
+   ],
+   "cast_arcane_1": [
+    {
+     "kind": "katana",
+     "angle": 45,
+     "grip": [
+      17,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "cast_arcane_2": [
+    {
+     "kind": "katana",
+     "angle": 90,
+     "grip": [
+      23,
+      18
+     ],
+     "moved": false
+    }
+   ],
+   "cast_arcane_3": [
+    {
+     "kind": "katana",
+     "angle": 45,
+     "grip": [
+      13,
+      30
+     ],
+     "moved": false
+    }
+   ],
+   "cast_support_1": [
+    {
+     "kind": "katana",
+     "angle": 135,
+     "grip": [
+      30,
+      35
+     ],
+     "moved": false
+    }
+   ],
+   "cast_support_2": [
+    {
+     "kind": "katana",
+     "angle": 45,
+     "grip": [
+      19,
+      36
+     ],
+     "moved": false
+    }
+   ],
+   "cast_support_3": [
+    {
+     "kind": "katana",
+     "angle": 135,
+     "grip": [
+      31,
+      36
+     ],
+     "moved": false
+    }
+   ]
+  }
+ },
+ "actor3-2": {
+  "role": "ninja",
+  "weapon": "kunai",
+  "frames": 45,
+  "placements": {
+   "idle": [
+    {
+     "kind": "kunai",
+     "angle": 0,
+     "grip": [
+      15,
+      33
+     ],
+     "moved": false
+    }
+   ],
+   "attack": [
+    {
+     "kind": "kunai",
+     "angle": 0,
+     "grip": [
+      12,
+      32
+     ],
+     "moved": false
+    },
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      31,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "hit": [
+    {
+     "kind": "kunai",
+     "angle": 315,
+     "grip": [
+      36,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "defend": [
+    {
+     "kind": "kunai",
+     "angle": 90,
+     "grip": [
+      17,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "dead": [
+    {
+     "kind": "kunai",
+     "angle": 0,
+     "grip": [
+      21,
+      42
+     ],
+     "moved": false
+    }
+   ],
+   "victory": [
+    {
+     "kind": "kunai",
+     "angle": 90,
+     "grip": [
+      31,
+      24
+     ],
+     "moved": false
+    }
+   ],
+   "walk_a": [
+    {
+     "kind": "kunai",
+     "angle": 0,
+     "grip": [
+      15,
+      33
+     ],
+     "moved": false
+    }
+   ],
+   "walk_b": [
+    {
+     "kind": "kunai",
+     "angle": 0,
+     "grip": [
+      15,
+      33
+     ],
+     "moved": false
+    }
+   ],
+   "walk_c": [
+    {
+     "kind": "kunai",
+     "angle": 0,
+     "grip": [
+      15,
+      33
+     ],
+     "moved": false
+    }
+   ],
+   "attack_windup": [
+    {
+     "kind": "kunai",
+     "angle": 135,
+     "grip": [
+      32,
+      27
+     ],
+     "moved": false
+    },
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      34,
+      33
+     ],
+     "moved": false
+    }
+   ],
+   "attack_strike": [
+    {
+     "kind": "kunai",
+     "angle": 90,
+     "grip": [
+      16,
+      29
+     ],
+     "moved": false
+    },
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      31,
+      33
+     ],
+     "moved": false
+    }
+   ],
+   "attack_follow": [
+    {
+     "kind": "kunai",
+     "angle": 315,
+     "grip": [
+      14,
+      36
+     ],
+     "moved": false
+    },
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      31,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_charge": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      31,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_raise": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      32,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_release": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      32,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "item": [
+    {
+     "kind": "kunai",
+     "angle": 90,
+     "grip": [
+      32,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "weak": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      16,
+      37
+     ],
+     "moved": false
+    }
+   ],
+   "evade": [
+    {
+     "kind": "kunai",
+     "angle": 315,
+     "grip": [
+      36,
+      30
+     ],
+     "moved": false
+    }
+   ],
+   "guard_hit": [
+    {
+     "kind": "kunai",
+     "angle": 90,
+     "grip": [
+      19,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "skill": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      31,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "victory_b": [
+    {
+     "kind": "kunai",
+     "angle": 90,
+     "grip": [
+      31,
+      22
+     ],
+     "moved": false
+    }
+   ],
+   "dying": [
+    {
+     "kind": "kunai",
+     "angle": 315,
+     "grip": [
+      28,
+      40
+     ],
+     "moved": true
+    }
+   ],
+   "revive": [
+    {
+     "kind": "kunai",
+     "angle": 45,
+     "grip": [
+      21,
+      35
+     ],
+     "moved": false
+    }
+   ],
+   "front": [],
+   "cast_fire_1": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      32,
+      33
+     ],
+     "moved": false
+    }
+   ],
+   "cast_fire_2": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      19,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "cast_fire_3": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      13,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "cast_ice_1": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      28,
+      29
+     ],
+     "moved": false
+    }
+   ],
+   "cast_ice_2": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      33,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_ice_3": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      13,
+      30
+     ],
+     "moved": false
+    }
+   ],
+   "cast_thunder_1": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      18,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_thunder_2": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      17,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_thunder_3": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      31,
+      33
+     ],
+     "moved": false
+    }
+   ],
+   "cast_heal_1": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      19,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "cast_heal_2": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      33,
+      24
+     ],
+     "moved": false
+    }
+   ],
+   "cast_heal_3": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      31,
+      33
+     ],
+     "moved": false
+    }
+   ],
+   "cast_dark_1": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      32,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_dark_2": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      18,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_dark_3": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      32,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_arcane_1": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      31,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_arcane_2": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      32,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_arcane_3": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      32,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_support_1": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      32,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_support_2": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      32,
+      33
+     ],
+     "moved": false
+    }
+   ],
+   "cast_support_3": [
+    {
+     "kind": "kunai",
+     "angle": 270,
+     "grip": [
+      32,
+      34
+     ],
+     "moved": false
+    }
+   ]
+  }
+ },
+ "actor3-5": {
+  "role": "monk",
+  "weapon": null,
+  "frames": 45,
+  "placements": {
+   "idle": [],
+   "attack": [],
+   "hit": [],
+   "defend": [],
+   "dead": [],
+   "victory": [],
+   "walk_a": [],
+   "walk_b": [],
+   "walk_c": [],
+   "attack_windup": [],
+   "attack_strike": [],
+   "attack_follow": [],
+   "cast_charge": [],
+   "cast_raise": [],
+   "cast_release": [],
+   "item": [],
+   "weak": [],
+   "evade": [],
+   "guard_hit": [],
+   "skill": [],
+   "victory_b": [],
+   "dying": [],
+   "revive": [],
+   "front": [],
+   "cast_fire_1": [],
+   "cast_fire_2": [],
+   "cast_fire_3": [],
+   "cast_ice_1": [],
+   "cast_ice_2": [],
+   "cast_ice_3": [],
+   "cast_thunder_1": [],
+   "cast_thunder_2": [],
+   "cast_thunder_3": [],
+   "cast_heal_1": [],
+   "cast_heal_2": [],
+   "cast_heal_3": [],
+   "cast_dark_1": [],
+   "cast_dark_2": [],
+   "cast_dark_3": [],
+   "cast_arcane_1": [],
+   "cast_arcane_2": [],
+   "cast_arcane_3": [],
+   "cast_support_1": [],
+   "cast_support_2": [],
+   "cast_support_3": []
+  }
+ },
+ "actor3-6": {
+  "role": "bard",
+  "weapon": "lute",
+  "frames": 45,
+  "placements": {
+   "idle": [
+    {
+     "kind": "lute",
+     "angle": 45,
+     "grip": [
+      17,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "attack": [
+    {
+     "kind": "lute",
+     "angle": 180,
+     "grip": [
+      14,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "hit": [
+    {
+     "kind": "lute",
+     "angle": 45,
+     "grip": [
+      35,
+      35
+     ],
+     "moved": false
+    }
+   ],
+   "defend": [
+    {
+     "kind": "lute",
+     "angle": 90,
+     "grip": [
+      17,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "dead": [
+    {
+     "kind": "lute",
+     "angle": 0,
+     "grip": [
+      21,
+      42
+     ],
+     "moved": false
+    }
+   ],
+   "victory": [
+    {
+     "kind": "lute",
+     "angle": 270,
+     "grip": [
+      28,
+      22
+     ],
+     "moved": false
+    }
+   ],
+   "walk_a": [
+    {
+     "kind": "lute",
+     "angle": 45,
+     "grip": [
+      17,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "walk_b": [
+    {
+     "kind": "lute",
+     "angle": 45,
+     "grip": [
+      17,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "walk_c": [
+    {
+     "kind": "lute",
+     "angle": 45,
+     "grip": [
+      17,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "attack_windup": [
+    {
+     "kind": "lute",
+     "angle": 315,
+     "grip": [
+      33,
+      28
+     ],
+     "moved": false
+    }
+   ],
+   "attack_strike": [
+    {
+     "kind": "lute",
+     "angle": 270,
+     "grip": [
+      18,
+      25
+     ],
+     "moved": false
+    }
+   ],
+   "attack_follow": [
+    {
+     "kind": "lute",
+     "angle": 135,
+     "grip": [
+      16,
+      37
+     ],
+     "moved": true
+    }
+   ],
+   "cast_charge": [
+    {
+     "kind": "lute",
+     "angle": 45,
+     "grip": [
+      17,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_raise": [
+    {
+     "kind": "lute",
+     "angle": 90,
+     "grip": [
+      18,
+      25
+     ],
+     "moved": false
+    }
+   ],
+   "cast_release": [
+    {
+     "kind": "lute",
+     "angle": 0,
+     "grip": [
+      11,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "item": [
+    {
+     "kind": "lute",
+     "angle": 45,
+     "grip": [
+      25,
+      36
+     ],
+     "moved": true
+    }
+   ],
+   "weak": [
+    {
+     "kind": "lute",
+     "angle": 45,
+     "grip": [
+      16,
+      36
+     ],
+     "moved": true
+    }
+   ],
+   "evade": [
+    {
+     "kind": "lute",
+     "angle": 45,
+     "grip": [
+      35,
+      36
+     ],
+     "moved": true
+    }
+   ],
+   "guard_hit": [
+    {
+     "kind": "lute",
+     "angle": 90,
+     "grip": [
+      19,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "skill": [
+    {
+     "kind": "lute",
+     "angle": 0,
+     "grip": [
+      11,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "victory_b": [
+    {
+     "kind": "lute",
+     "angle": 270,
+     "grip": [
+      28,
+      24
+     ],
+     "moved": false
+    }
+   ],
+   "dying": [
+    {
+     "kind": "lute",
+     "angle": 45,
+     "grip": [
+      33,
+      36
+     ],
+     "moved": true
+    }
+   ],
+   "revive": [
+    {
+     "kind": "lute",
+     "angle": 45,
+     "grip": [
+      21,
+      36
+     ],
+     "moved": true
+    }
+   ],
+   "front": [],
+   "cast_fire_1": [
+    {
+     "kind": "lute",
+     "angle": 45,
+     "grip": [
+      19,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_fire_2": [
+    {
+     "kind": "lute",
+     "angle": 90,
+     "grip": [
+      18,
+      25
+     ],
+     "moved": false
+    }
+   ],
+   "cast_fire_3": [
+    {
+     "kind": "lute",
+     "angle": 0,
+     "grip": [
+      11,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "cast_ice_1": [
+    {
+     "kind": "lute",
+     "angle": 45,
+     "grip": [
+      17,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_ice_2": [
+    {
+     "kind": "lute",
+     "angle": 90,
+     "grip": [
+      18,
+      25
+     ],
+     "moved": false
+    }
+   ],
+   "cast_ice_3": [
+    {
+     "kind": "lute",
+     "angle": 0,
+     "grip": [
+      12,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "cast_thunder_1": [
+    {
+     "kind": "lute",
+     "angle": 45,
+     "grip": [
+      18,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_thunder_2": [
+    {
+     "kind": "lute",
+     "angle": 90,
+     "grip": [
+      19,
+      25
+     ],
+     "moved": false
+    }
+   ],
+   "cast_thunder_3": [
+    {
+     "kind": "lute",
+     "angle": 0,
+     "grip": [
+      10,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "cast_heal_1": [
+    {
+     "kind": "lute",
+     "angle": 45,
+     "grip": [
+      17,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_heal_2": [
+    {
+     "kind": "lute",
+     "angle": 90,
+     "grip": [
+      18,
+      25
+     ],
+     "moved": false
+    }
+   ],
+   "cast_heal_3": [
+    {
+     "kind": "lute",
+     "angle": 0,
+     "grip": [
+      12,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "cast_dark_1": [
+    {
+     "kind": "lute",
+     "angle": 45,
+     "grip": [
+      16,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_dark_2": [
+    {
+     "kind": "lute",
+     "angle": 90,
+     "grip": [
+      20,
+      25
+     ],
+     "moved": false
+    }
+   ],
+   "cast_dark_3": [
+    {
+     "kind": "lute",
+     "angle": 0,
+     "grip": [
+      10,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "cast_arcane_1": [
+    {
+     "kind": "lute",
+     "angle": 45,
+     "grip": [
+      17,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_arcane_2": [
+    {
+     "kind": "lute",
+     "angle": 90,
+     "grip": [
+      18,
+      25
+     ],
+     "moved": false
+    }
+   ],
+   "cast_arcane_3": [
+    {
+     "kind": "lute",
+     "angle": 0,
+     "grip": [
+      11,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "cast_support_1": [
+    {
+     "kind": "lute",
+     "angle": 45,
+     "grip": [
+      17,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_support_2": [
+    {
+     "kind": "lute",
+     "angle": 90,
+     "grip": [
+      18,
+      25
+     ],
+     "moved": false
+    }
+   ],
+   "cast_support_3": [
+    {
+     "kind": "lute",
+     "angle": 0,
+     "grip": [
+      11,
+      32
+     ],
+     "moved": false
+    }
+   ]
+  }
+ },
+ "actor3-4": {
+  "role": "druid",
+  "weapon": "druid_staff",
+  "frames": 45,
+  "placements": {
+   "idle": [
+    {
+     "kind": "druid_staff",
+     "angle": 45,
+     "grip": [
+      18,
+      35
+     ],
+     "moved": false
+    }
+   ],
+   "attack": [
+    {
+     "kind": "druid_staff",
+     "angle": 0,
+     "grip": [
+      14,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "hit": [
+    {
+     "kind": "druid_staff",
+     "angle": 315,
+     "grip": [
+      35,
+      35
+     ],
+     "moved": false
+    }
+   ],
+   "defend": [
+    {
+     "kind": "druid_staff",
+     "angle": 45,
+     "grip": [
+      17,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "dead": [
+    {
+     "kind": "druid_staff",
+     "angle": 0,
+     "grip": [
+      21,
+      42
+     ],
+     "moved": false
+    }
+   ],
+   "victory": [
+    {
+     "kind": "druid_staff",
+     "angle": 90,
+     "grip": [
+      28,
+      22
+     ],
+     "moved": false
+    }
+   ],
+   "walk_a": [
+    {
+     "kind": "druid_staff",
+     "angle": 45,
+     "grip": [
+      18,
+      35
+     ],
+     "moved": false
+    }
+   ],
+   "walk_b": [
+    {
+     "kind": "druid_staff",
+     "angle": 45,
+     "grip": [
+      18,
+      35
+     ],
+     "moved": false
+    }
+   ],
+   "walk_c": [
+    {
+     "kind": "druid_staff",
+     "angle": 45,
+     "grip": [
+      18,
+      35
+     ],
+     "moved": false
+    }
+   ],
+   "attack_windup": [
+    {
+     "kind": "druid_staff",
+     "angle": 135,
+     "grip": [
+      33,
+      28
+     ],
+     "moved": false
+    }
+   ],
+   "attack_strike": [
+    {
+     "kind": "druid_staff",
+     "angle": 90,
+     "grip": [
+      18,
+      25
+     ],
+     "moved": false
+    }
+   ],
+   "attack_follow": [
+    {
+     "kind": "druid_staff",
+     "angle": 315,
+     "grip": [
+      16,
+      35
+     ],
+     "moved": true
+    }
+   ],
+   "cast_charge": [
+    {
+     "kind": "druid_staff",
+     "angle": 45,
+     "grip": [
+      17,
+      31
+     ],
+     "moved": false
+    }
+   ],
+   "cast_raise": [
+    {
+     "kind": "druid_staff",
+     "angle": 90,
+     "grip": [
+      34,
+      18
+     ],
+     "moved": false
+    }
+   ],
+   "cast_release": [
+    {
+     "kind": "druid_staff",
+     "angle": 90,
+     "grip": [
+      12,
+      27
+     ],
+     "moved": false
+    }
+   ],
+   "item": [
+    {
+     "kind": "druid_staff",
+     "angle": 90,
+     "grip": [
+      25,
+      38
+     ],
+     "moved": false
+    }
+   ],
+   "weak": [
+    {
+     "kind": "druid_staff",
+     "angle": 315,
+     "grip": [
+      16,
+      35
+     ],
+     "moved": true
+    }
+   ],
+   "evade": [
+    {
+     "kind": "druid_staff",
+     "angle": 315,
+     "grip": [
+      35,
+      35
+     ],
+     "moved": true
+    }
+   ],
+   "guard_hit": [
+    {
+     "kind": "druid_staff",
+     "angle": 45,
+     "grip": [
+      19,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "skill": [
+    {
+     "kind": "druid_staff",
+     "angle": 45,
+     "grip": [
+      16,
+      27
+     ],
+     "moved": false
+    }
+   ],
+   "victory_b": [
+    {
+     "kind": "druid_staff",
+     "angle": 90,
+     "grip": [
+      28,
+      24
+     ],
+     "moved": false
+    }
+   ],
+   "dying": [
+    {
+     "kind": "druid_staff",
+     "angle": 315,
+     "grip": [
+      33,
+      35
+     ],
+     "moved": true
+    }
+   ],
+   "revive": [
+    {
+     "kind": "druid_staff",
+     "angle": 45,
+     "grip": [
+      21,
+      40
+     ],
+     "moved": false
+    }
+   ],
+   "front": [],
+   "cast_fire_1": [
+    {
+     "kind": "druid_staff",
+     "angle": 135,
+     "grip": [
+      30,
+      36
+     ],
+     "moved": false
+    }
+   ],
+   "cast_fire_2": [
+    {
+     "kind": "druid_staff",
+     "angle": 45,
+     "grip": [
+      17,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "cast_fire_3": [
+    {
+     "kind": "druid_staff",
+     "angle": 45,
+     "grip": [
+      12,
+      33
+     ],
+     "moved": false
+    }
+   ],
+   "cast_ice_1": [
+    {
+     "kind": "druid_staff",
+     "angle": 135,
+     "grip": [
+      29,
+      29
+     ],
+     "moved": false
+    }
+   ],
+   "cast_ice_2": [
+    {
+     "kind": "druid_staff",
+     "angle": 135,
+     "grip": [
+      35,
+      40
+     ],
+     "moved": true
+    }
+   ],
+   "cast_ice_3": [
+    {
+     "kind": "druid_staff",
+     "angle": 45,
+     "grip": [
+      10,
+      33
+     ],
+     "moved": false
+    }
+   ],
+   "cast_thunder_1": [
+    {
+     "kind": "druid_staff",
+     "angle": 45,
+     "grip": [
+      17,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_thunder_2": [
+    {
+     "kind": "druid_staff",
+     "angle": 90,
+     "grip": [
+      30,
+      13
+     ],
+     "moved": false
+    }
+   ],
+   "cast_thunder_3": [
+    {
+     "kind": "druid_staff",
+     "angle": 135,
+     "grip": [
+      30,
+      33
+     ],
+     "moved": false
+    }
+   ],
+   "cast_heal_1": [
+    {
+     "kind": "druid_staff",
+     "angle": 45,
+     "grip": [
+      18,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "cast_heal_2": [
+    {
+     "kind": "druid_staff",
+     "angle": 90,
+     "grip": [
+      12,
+      21
+     ],
+     "moved": false
+    }
+   ],
+   "cast_heal_3": [
+    {
+     "kind": "druid_staff",
+     "angle": 135,
+     "grip": [
+      29,
+      39
+     ],
+     "moved": false
+    }
+   ],
+   "cast_dark_1": [
+    {
+     "kind": "druid_staff",
+     "angle": 135,
+     "grip": [
+      30,
+      40
+     ],
+     "moved": false
+    }
+   ],
+   "cast_dark_2": [
+    {
+     "kind": "druid_staff",
+     "angle": 45,
+     "grip": [
+      23,
+      40
+     ],
+     "moved": false
+    }
+   ],
+   "cast_dark_3": [
+    {
+     "kind": "druid_staff",
+     "angle": 135,
+     "grip": [
+      32,
+      37
+     ],
+     "moved": false
+    }
+   ],
+   "cast_arcane_1": [
+    {
+     "kind": "druid_staff",
+     "angle": 45,
+     "grip": [
+      17,
+      31
+     ],
+     "moved": false
+    }
+   ],
+   "cast_arcane_2": [
+    {
+     "kind": "druid_staff",
+     "angle": 90,
+     "grip": [
+      34,
+      18
+     ],
+     "moved": false
+    }
+   ],
+   "cast_arcane_3": [
+    {
+     "kind": "druid_staff",
+     "angle": 90,
+     "grip": [
+      12,
+      27
+     ],
+     "moved": false
+    }
+   ],
+   "cast_support_1": [
+    {
+     "kind": "druid_staff",
+     "angle": 135,
+     "grip": [
+      30,
+      38
+     ],
+     "moved": false
+    }
+   ],
+   "cast_support_2": [
+    {
+     "kind": "druid_staff",
+     "angle": 135,
+     "grip": [
+      33,
+      35
+     ],
+     "moved": false
+    }
+   ],
+   "cast_support_3": [
+    {
+     "kind": "druid_staff",
+     "angle": 135,
+     "grip": [
+      31,
+      37
+     ],
+     "moved": false
+    }
+   ]
+  }
+ },
+ "actor4-7": {
+  "role": "witch",
+  "weapon": "witch_staff",
+  "frames": 45,
+  "placements": {
+   "idle": [
+    {
+     "kind": "witch_staff",
+     "angle": 45,
+     "grip": [
+      16,
+      35
+     ],
+     "moved": false
+    }
+   ],
+   "attack": [
+    {
+     "kind": "witch_staff",
+     "angle": 0,
+     "grip": [
+      17,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "hit": [
+    {
+     "kind": "witch_staff",
+     "angle": 315,
+     "grip": [
+      37,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "defend": [
+    {
+     "kind": "witch_staff",
+     "angle": 45,
+     "grip": [
+      16,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "dead": [
+    {
+     "kind": "witch_staff",
+     "angle": 0,
+     "grip": [
+      21,
+      42
+     ],
+     "moved": false
+    }
+   ],
+   "victory": [
+    {
+     "kind": "witch_staff",
+     "angle": 90,
+     "grip": [
+      18,
+      24
+     ],
+     "moved": false
+    }
+   ],
+   "walk_a": [
+    {
+     "kind": "witch_staff",
+     "angle": 45,
+     "grip": [
+      16,
+      35
+     ],
+     "moved": false
+    }
+   ],
+   "walk_b": [
+    {
+     "kind": "witch_staff",
+     "angle": 45,
+     "grip": [
+      16,
+      35
+     ],
+     "moved": false
+    }
+   ],
+   "walk_c": [
+    {
+     "kind": "witch_staff",
+     "angle": 45,
+     "grip": [
+      16,
+      35
+     ],
+     "moved": false
+    }
+   ],
+   "attack_windup": [
+    {
+     "kind": "witch_staff",
+     "angle": 135,
+     "grip": [
+      32,
+      26
+     ],
+     "moved": false
+    }
+   ],
+   "attack_strike": [
+    {
+     "kind": "witch_staff",
+     "angle": 90,
+     "grip": [
+      17,
+      26
+     ],
+     "moved": false
+    }
+   ],
+   "attack_follow": [
+    {
+     "kind": "witch_staff",
+     "angle": 315,
+     "grip": [
+      18,
+      36
+     ],
+     "moved": true
+    }
+   ],
+   "cast_charge": [
+    {
+     "kind": "witch_staff",
+     "angle": 45,
+     "grip": [
+      17,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_raise": [
+    {
+     "kind": "witch_staff",
+     "angle": 90,
+     "grip": [
+      23,
+      21
+     ],
+     "moved": false
+    }
+   ],
+   "cast_release": [
+    {
+     "kind": "witch_staff",
+     "angle": 45,
+     "grip": [
+      18,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "item": [
+    {
+     "kind": "witch_staff",
+     "angle": 90,
+     "grip": [
+      33,
+      37
+     ],
+     "moved": false
+    }
+   ],
+   "weak": [
+    {
+     "kind": "witch_staff",
+     "angle": 315,
+     "grip": [
+      16,
+      36
+     ],
+     "moved": true
+    }
+   ],
+   "evade": [
+    {
+     "kind": "witch_staff",
+     "angle": 315,
+     "grip": [
+      33,
+      36
+     ],
+     "moved": true
+    }
+   ],
+   "guard_hit": [
+    {
+     "kind": "witch_staff",
+     "angle": 45,
+     "grip": [
+      18,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "skill": [
+    {
+     "kind": "witch_staff",
+     "angle": 45,
+     "grip": [
+      16,
+      29
+     ],
+     "moved": false
+    }
+   ],
+   "victory_b": [
+    {
+     "kind": "witch_staff",
+     "angle": 90,
+     "grip": [
+      20,
+      22
+     ],
+     "moved": false
+    }
+   ],
+   "dying": [
+    {
+     "kind": "witch_staff",
+     "angle": 315,
+     "grip": [
+      37,
+      36
+     ],
+     "moved": true
+    }
+   ],
+   "revive": [
+    {
+     "kind": "witch_staff",
+     "angle": 45,
+     "grip": [
+      19,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "front": [],
+   "cast_fire_1": [
+    {
+     "kind": "witch_staff",
+     "angle": 135,
+     "grip": [
+      30,
+      38
+     ],
+     "moved": false
+    }
+   ],
+   "cast_fire_2": [
+    {
+     "kind": "witch_staff",
+     "angle": 45,
+     "grip": [
+      18,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "cast_fire_3": [
+    {
+     "kind": "witch_staff",
+     "angle": 45,
+     "grip": [
+      15,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "cast_ice_1": [
+    {
+     "kind": "witch_staff",
+     "angle": 45,
+     "grip": [
+      19,
+      30
+     ],
+     "moved": false
+    }
+   ],
+   "cast_ice_2": [
+    {
+     "kind": "witch_staff",
+     "angle": 135,
+     "grip": [
+      34,
+      40
+     ],
+     "moved": false
+    }
+   ],
+   "cast_ice_3": [
+    {
+     "kind": "witch_staff",
+     "angle": 45,
+     "grip": [
+      14,
+      30
+     ],
+     "moved": false
+    }
+   ],
+   "cast_thunder_1": [
+    {
+     "kind": "witch_staff",
+     "angle": 45,
+     "grip": [
+      22,
+      36
+     ],
+     "moved": false
+    }
+   ],
+   "cast_thunder_2": [
+    {
+     "kind": "witch_staff",
+     "angle": 135,
+     "grip": [
+      33,
+      37
+     ],
+     "moved": false
+    }
+   ],
+   "cast_thunder_3": [
+    {
+     "kind": "witch_staff",
+     "angle": 135,
+     "grip": [
+      31,
+      37
+     ],
+     "moved": false
+    }
+   ],
+   "cast_heal_1": [
+    {
+     "kind": "witch_staff",
+     "angle": 45,
+     "grip": [
+      19,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "cast_heal_2": [
+    {
+     "kind": "witch_staff",
+     "angle": 90,
+     "grip": [
+      34,
+      26
+     ],
+     "moved": false
+    }
+   ],
+   "cast_heal_3": [
+    {
+     "kind": "witch_staff",
+     "angle": 135,
+     "grip": [
+      32,
+      37
+     ],
+     "moved": false
+    }
+   ],
+   "cast_dark_1": [
+    {
+     "kind": "witch_staff",
+     "angle": 135,
+     "grip": [
+      33,
+      39
+     ],
+     "moved": false
+    }
+   ],
+   "cast_dark_2": [
+    {
+     "kind": "witch_staff",
+     "angle": 135,
+     "grip": [
+      24,
+      38
+     ],
+     "moved": false
+    }
+   ],
+   "cast_dark_3": [
+    {
+     "kind": "witch_staff",
+     "angle": 135,
+     "grip": [
+      31,
+      39
+     ],
+     "moved": false
+    }
+   ],
+   "cast_arcane_1": [
+    {
+     "kind": "witch_staff",
+     "angle": 45,
+     "grip": [
+      17,
+      34
+     ],
+     "moved": false
+    }
+   ],
+   "cast_arcane_2": [
+    {
+     "kind": "witch_staff",
+     "angle": 90,
+     "grip": [
+      23,
+      21
+     ],
+     "moved": false
+    }
+   ],
+   "cast_arcane_3": [
+    {
+     "kind": "witch_staff",
+     "angle": 45,
+     "grip": [
+      18,
+      32
+     ],
+     "moved": false
+    }
+   ],
+   "cast_support_1": [
+    {
+     "kind": "witch_staff",
+     "angle": 135,
+     "grip": [
+      32,
+      37
+     ],
+     "moved": false
+    }
+   ],
+   "cast_support_2": [
+    {
+     "kind": "witch_staff",
+     "angle": 135,
+     "grip": [
+      30,
+      38
+     ],
+     "moved": false
+    }
+   ],
+   "cast_support_3": [
+    {
+     "kind": "witch_staff",
+     "angle": 135,
+     "grip": [
+      32,
+      37
+     ],
+     "moved": false
+    }
+   ]
+  }
+ }
+}
