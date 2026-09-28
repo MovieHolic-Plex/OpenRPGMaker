@@ -151,6 +151,29 @@ export const SCARLOXY_CHARSET_ASSETS = [
     textureKey: "tex_scarloxy_charset_people2",
     group: "Scarloxy",
   },
+  // --- 몬스터 게임 출연진(생성 자산, scripts/build-scarloxy-cast.py) ---------------------
+  // 팩 원본이 아니다. Scarloxy 주민 시트를 화풍 참고로 그린 걷기 그림. 배역 대응은
+  // src/project/defaults/scarloxyCast.ts, 출처 표기는 ATTRIBUTION.md 「Generated monster game cast」.
+  {
+    category: "charset",
+    id: "scarloxy-charset-people3",
+    name: "Scarloxy People3 CharSet (출연진 · 생성 자산)",
+    sourcePath: "generated/pkmn-characters",
+    path: `${ASSET_DIR}/scarloxy-charset-people3.png`,
+    fileName: "scarloxy-charset-people3.png",
+    textureKey: "tex_scarloxy_charset_people3",
+    group: "Scarloxy",
+  },
+  {
+    category: "charset",
+    id: "scarloxy-charset-people4",
+    name: "Scarloxy People4 CharSet (트레이너 · 생성 자산)",
+    sourcePath: "generated/pkmn-characters",
+    path: `${ASSET_DIR}/scarloxy-charset-people4.png`,
+    fileName: "scarloxy-charset-people4.png",
+    textureKey: "tex_scarloxy_charset_people4",
+    group: "Scarloxy",
+  },
 ] as const satisfies readonly EasyRpgCharsetAsset[];
 
 export type ScarloxyResourceAsset = {
@@ -300,6 +323,20 @@ export const SCARLOXY_UI_ICON_ASSETS: readonly ScarloxyResourceAsset[] = SCARLOX
   tags: ["아이콘", "스탯", UI_ICON_LABELS[key] ?? key],
 }));
 
+/**
+ * 몬스터 게임 출연진 얼굴(48×48 낱장, 대사창 얼굴 규격) — **생성 자산**(팩 원본 아님).
+ * scripts/build-scarloxy-cast.py 가 tiledata/pkmn-characters/raw/faces-main.png 에서 잘라 만든다.
+ * id 에 -bust/-portrait 가 없어 대사창은 얼굴(face) 모드로 그린다. 배경색은 기존
+ * generated-faceset-missing-scarloxy 얼굴과 같은 하늘색이다.
+ */
+export const SCARLOXY_CAST_FACE_ASSETS: readonly ScarloxyResourceAsset[] = [
+  { id: "scarloxy-face-professor", name: "박사 얼굴 (Scarloxy 출연진 · 생성)", path: `${ASSET_DIR}/scarloxy-face-professor.png`, tags: ["얼굴", "박사", "연구소", "안경", "흰 가운", "생성 자산"] },
+  { id: "scarloxy-face-mom", name: "엄마 얼굴 (Scarloxy 출연진 · 생성)", path: `${ASSET_DIR}/scarloxy-face-mom.png`, tags: ["얼굴", "엄마", "주인공 집", "갈색 머리", "생성 자산"] },
+  { id: "scarloxy-face-nurse", name: "간호사 얼굴 (Scarloxy 출연진 · 생성)", path: `${ASSET_DIR}/scarloxy-face-nurse.png`, tags: ["얼굴", "간호사", "회복 센터", "분홍 머리", "생성 자산"] },
+  { id: "scarloxy-face-champion", name: "챔피언 얼굴 (Scarloxy 출연진 · 생성)", path: `${ASSET_DIR}/scarloxy-face-champion.png`, tags: ["얼굴", "챔피언", "최종 보스", "은발", "생성 자산"] },
+  { id: "scarloxy-face-clerk", name: "상점 점원 얼굴 (Scarloxy 출연진 · 생성)", path: `${ASSET_DIR}/scarloxy-face-clerk.png`, tags: ["얼굴", "점원", "상점", "파란 모자", "생성 자산"] },
+];
+
 const ALL_RESOLVABLE_ASSETS: readonly ScarloxyResourceAsset[] = [
   ...SCARLOXY_MONSTER_ASSETS,
   ...SCARLOXY_MONSTER_ICON_ASSETS,
@@ -307,6 +344,7 @@ const ALL_RESOLVABLE_ASSETS: readonly ScarloxyResourceAsset[] = [
   ...SCARLOXY_BACKDROP_ASSETS,
   ...SCARLOXY_BATTLE_ANIMATION_ASSETS,
   ...SCARLOXY_UI_ICON_ASSETS,
+  ...SCARLOXY_CAST_FACE_ASSETS,
 ];
 
 // 프로젝트 직렬화 참조 검증(collectResourceIds)에 등록할 전체 리소스 ID 목록.

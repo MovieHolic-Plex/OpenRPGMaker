@@ -1,0 +1,47 @@
+{
+  "charsets": [
+    {
+      "file": "scarloxy-charset-people3.png",
+      "characters": [
+        "professor",
+        "mom",
+        "nurse",
+        "clerk",
+        "champion",
+        "bug-catcher",
+        "hiker",
+        "swimmer"
+      ]
+    },
+    {
+      "file": "scarloxy-charset-people4.png",
+      "characters": [
+        "camper-girl",
+        "fisherman",
+        "gentleman"
+      ]
+    }
+  ],
+  "faces": [
+    {
+      "role": "professor",
+      "file": "scarloxy-face-professor.png"
+    },
+    {
+      "role": "mom",
+      "file": "scarloxy-face-mom.png"
+    },
+    {
+      "role": "nurse",
+      "file": "scarloxy-face-nurse.png"
+    },
+    {
+      "role": "champion",
+      "file": "scarloxy-face-champion.png"
+    },
+    {
+      "role": "clerk",
+      "file": "scarloxy-face-clerk.png"
+    }
+  ]
+}

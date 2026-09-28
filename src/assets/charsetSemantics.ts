@@ -234,6 +234,23 @@ const CHARSET_SEMANTICS_RAW: readonly CharsetSemanticEntry[] = [
     [0, "불 도장 보스", ["보스", "불", "트레이너", "scarloxy"], { gender: "male" }],
     [1, "풀 도장 보스", ["보스", "풀", "트레이너", "scarloxy"], { gender: "male" }],
   ]),
+  // tex_scarloxy_charset_people3 / people4 — 몬스터 게임 출연진(생성 자산, scripts/build-scarloxy-cast.py).
+  // 2026-09-28 변환 결과 미리보기(tiledata/pkmn-characters/preview/)를 육안 확인해 라벨링. 배역표: scarloxyCast.ts.
+  ...sheet("tex_scarloxy_charset_people3", [
+    [0, "몬스터 박사", ["박사", "연구소", "과학자", "안경", "흰 가운", "scarloxy"], { gender: "male", age: "middle" }],
+    [1, "엄마", ["엄마", "어머니", "주민", "앞치마", "scarloxy"], { gender: "female", age: "middle" }],
+    [2, "회복 센터 간호사", ["간호사", "회복 센터", "치유사", "분홍 머리", "scarloxy"], { gender: "female", age: "youth" }],
+    [3, "상점 점원", ["점원", "상인", "상점", "모자", "scarloxy"], { gender: "male", age: "youth" }],
+    [4, "챔피언", ["챔피언", "최종 보스", "보스", "트레이너", "은발", "망토", "scarloxy"], { gender: "male", age: "youth" }],
+    [5, "벌레잡이 소년", ["벌레잡이", "트레이너", "소년", "아이", "잠자리채", "밀짚모자", "scarloxy"], { gender: "male", age: "child" }],
+    [6, "등산가", ["등산가", "트레이너", "배낭", "수염", "산", "동굴", "scarloxy"], { gender: "male", age: "middle" }],
+    [7, "수영선수", ["수영선수", "트레이너", "물", "바다", "물안경", "scarloxy"], { gender: "male", age: "youth" }],
+  ]),
+  ...sheet("tex_scarloxy_charset_people4", [
+    [0, "캠프걸", ["캠프걸", "트레이너", "소녀", "베레모", "야영", "scarloxy"], { gender: "female", age: "youth" }],
+    [1, "낚시꾼", ["낚시꾼", "트레이너", "낚싯대", "노인", "물", "scarloxy"], { gender: "male", age: "elder" }],
+    [2, "신사", ["신사", "트레이너", "부자", "실크햇", "지팡이", "노인", "scarloxy"], { gender: "male", age: "elder" }],
+  ]),
 ];
 
 function withAppearance(entry: CharsetSemanticEntry): CharsetSemanticEntry {
