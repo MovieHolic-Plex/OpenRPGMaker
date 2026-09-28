@@ -60,6 +60,47 @@
         font-size: 13px;
         color: #475569;
       }
+      /* 진행 막대. 번들 전에는 CSS 애니메이션이 0→12% 를 채우고, 번들이 뜨면 src/app/bootLoader.ts 가
+         data-progress="js" 로 바꿔 단계별 전환을 건다(Electron CSP 는 인라인 스크립트를 막으므로 JS 없이 시작한다).
+         transform 만 움직인다 — 합성 스레드가 그려 프로젝트 역직렬화로 메인 스레드가 막혀도 계속 찬다. */
+      #oprn-boot-loader .oprn-boot-progress-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: min(100% - 32px, 18rem);
+      }
+      #oprn-boot-loader .oprn-boot-progress {
+        flex: 1;
+        height: 6px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.1);
+        overflow: hidden;
+      }
+      #oprn-boot-loader .oprn-boot-progress-fill {
+        width: 100%;
+        height: 100%;
+        background: #4a57d6;
+        transform-origin: left center;
+        transform: scaleX(0.12);
+        animation: oprn-boot-progress 6s cubic-bezier(0.1, 0.6, 0.3, 1) both;
+      }
+      #oprn-boot-loader[data-progress="js"] .oprn-boot-progress-fill {
+        animation: none;
+      }
+      #oprn-boot-loader .oprn-boot-percent {
+        min-width: 3ch;
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
+        color: #475569;
+        text-align: right;
+      }
+      #oprn-boot-loader:not([data-progress="js"]) .oprn-boot-percent {
+        visibility: hidden;
+      }
+      @keyframes oprn-boot-progress {
+        from { transform: scaleX(0); }
+        to { transform: scaleX(0.12); }
+      }
       @keyframes oprn-boot-lines {
         0%, 30% { transform: translateY(0); }
         38%, 64% { transform: translateY(-2.8em); }
@@ -71,6 +112,10 @@
         }
         #oprn-boot-loader .oprn-boot-track {
           animation: none;
+        }
+        #oprn-boot-loader .oprn-boot-progress-fill {
+          animation: none;
+          transition: none !important;
         }
       }
     </style>
@@ -86,6 +131,12 @@
         </div>
       </div>
       <div class="oprn-boot-text">불러오는 중…</div>
+      <div class="oprn-boot-progress-row">
+        <div class="oprn-boot-progress" role="progressbar" aria-label="불러오기 진행률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="oprn-boot-progress-fill"></div>
+        </div>
+        <span class="oprn-boot-percent" aria-hidden="true">0%</span>
+      </div>
     </div>
     <script>
       (function () {

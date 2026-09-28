@@ -1,0 +1,259 @@
+{
+  "provider": "google-antigravity",
+  "model": null,
+  "task": "이 맵에 작은 숲속 마을을 만들어줘. 가운데에 오두막 두 채와 흙길을 두고, 둘레는 울창한 숲으로 감싸줘. 숲 속에는 걸어 들어갈 수 있는 작은 오솔길도 하나 있으면 좋겠어.",
+  "mapIds": [
+    "map_forest"
+  ],
+  "team": false,
+  "ms": 354679,
+  "agents": [
+    {
+      "mapIds": [
+        "map_forest"
+      ],
+      "ms": 342432,
+      "turns": 47,
+      "toolCalls": 54,
+      "toolErrors": 5,
+      "usage": {
+        "input": 1558928,
+        "output": 4590,
+        "cacheRead": 11719601,
+        "cacheWrite": 0,
+        "totalTokens": 13283119,
+        "calls": 47
+      },
+      "changedKeys": [
+        "mapTree",
+        "maps.map_forest",
+        "maps.map_house_interior_map_forest_amber_wood_11_15",
+        "maps.map_house_interior_map_forest_blue_stone_26_17",
+        "tilesets"
+      ]
+    }
+  ],
+  "spills": [
+    {
+      "mapIds": [
+        "map_forest"
+      ],
+      "keys": [
+        "tilesets"
+      ]
+    }
+  ],
+  "conflicts": [],
+  "changedKeys": [
+    "mapTree",
+    "maps.map_forest",
+    "maps.map_house_interior_map_forest_amber_wood_11_15",
+    "maps.map_house_interior_map_forest_blue_stone_26_17",
+    "tilesets"
+  ],
+  "gate": {
+    "ok": true,
+    "issues": [
+      {
+        "severity": "warning",
+        "code": "transfer-retrigger",
+        "mapId": "map_forest",
+        "x": 11,
+        "y": 16,
+        "message": "transfer 착지 좌표에 playerTouch 이벤트가 있어 즉시 재전이될 수 있습니다: map_forest (11, 16)"
+      },
+      {
+        "severity": "warning",
+        "code": "transfer-retrigger",
+        "mapId": "map_forest",
+        "x": 26,
+        "y": 18,
+        "message": "transfer 착지 좌표에 playerTouch 이벤트가 있어 즉시 재전이될 수 있습니다: map_forest (26, 18)"
+      },
+      {
+        "severity": "warning",
+        "code": "playerTouch-impassable",
+        "mapId": "map_forest",
+        "eventId": "ev_house_door_map_forest_amber_wood_11_15",
+        "relocation": {
+          "eventId": "ev_house_door_map_forest_amber_wood_11_15",
+          "searchRadius": 3,
+          "candidates": [
+            {
+              "name": "move_event",
+              "args": {
+                "mapId": "map_forest",
+                "eventId": "ev_house_door_map_forest_amber_wood_11_15",
+                "x": 10,
+                "y": 16
+              }
+            },
+            {
+              "name": "move_event",
+              "args": {
+                "mapId": "map_forest",
+                "eventId": "ev_house_door_map_forest_amber_wood_11_15",
+                "x": 12,
+                "y": 16
+              }
+            },
+            {
+              "name": "move_event",
+              "args": {
+                "mapId": "map_forest",
+                "eventId": "ev_house_door_map_forest_amber_wood_11_15",
+                "x": 9,
+                "y": 13
+              }
+            }
+          ]
+        },
+        "x": 11,
+        "y": 15,
+        "message": "밟기형 playerTouch 이벤트가 통행 불가 타일 위에 있어 발동될 수 없습니다: map_forest ev_house_door_map_forest_amber_wood_11_15/ev_house_door_map_forest_amber_wood_11_15_page (11, 15) — 통행 가능한 타일로 옮기거나, 부딪힘 발동을 원하면 priority를 \"same\"으로 바꾸세요."
+      },
+      {
+        "severity": "warning",
+        "code": "playerTouch-impassable",
+        "mapId": "map_forest",
+        "eventId": "ev_house_door_map_forest_blue_stone_26_17",
+        "relocation": {
+          "eventId": "ev_house_door_map_forest_blue_stone_26_17",
+          "searchRadius": 3,
+          "candidates": [
+            {
+              "name": "move_event",
+              "args": {
+                "mapId": "map_forest",
+                "eventId": "ev_house_door_map_forest_blue_stone_26_17",
+                "x": 25,
+                "y": 18
+              }
+            },
+            {
+              "name": "move_event",
+              "args": {
+                "mapId": "map_forest",
+                "eventId": "ev_house_door_map_forest_blue_stone_26_17",
+                "x": 27,
+                "y": 18
+              }
+            },
+            {
+              "name": "move_event",
+              "args": {
+                "mapId": "map_forest",
+                "eventId": "ev_house_door_map_forest_blue_stone_26_17",
+                "x": 28,
+                "y": 18
+              }
+            }
+          ]
+        },
+        "x": 26,
+        "y": 17,
+        "message": "밟기형 playerTouch 이벤트가 통행 불가 타일 위에 있어 발동될 수 없습니다: map_forest ev_house_door_map_forest_blue_stone_26_17/ev_house_door_map_forest_blue_stone_26_17_page (26, 17) — 통행 가능한 타일로 옮기거나, 부딪힘 발동을 원하면 priority를 \"same\"으로 바꾸세요."
+      },
+      {
+        "severity": "warning",
+        "code": "event-unreachable",
+        "mapId": "map_forest",
+        "eventId": "ev_house_door_map_forest_amber_wood_11_15",
+        "relocation": {
+          "eventId": "ev_house_door_map_forest_amber_wood_11_15",
+          "searchRadius": 3,
+          "candidates": [
+            {
+              "name": "move_event",
+              "args": {
+                "mapId": "map_forest",
+                "eventId": "ev_house_door_map_forest_amber_wood_11_15",
+                "x": 10,
+                "y": 16
+              }
+            },
+            {
+              "name": "move_event",
+              "args": {
+                "mapId": "map_forest",
+                "eventId": "ev_house_door_map_forest_amber_wood_11_15",
+                "x": 12,
+                "y": 16
+              }
+            },
+            {
+              "name": "move_event",
+              "args": {
+                "mapId": "map_forest",
+                "eventId": "ev_house_door_map_forest_amber_wood_11_15",
+                "x": 9,
+                "y": 13
+              }
+            }
+          ]
+        },
+        "x": 11,
+        "y": 15,
+        "message": "이벤트의 상호작용 위치에 도달할 수 없습니다: map_forest ev_house_door_map_forest_amber_wood_11_15 (11, 15) — 통행 가능한 칸으로 옮기세요."
+      },
+      {
+        "severity": "warning",
+        "code": "event-unreachable",
+        "mapId": "map_forest",
+        "eventId": "ev_house_door_map_forest_blue_stone_26_17",
+        "relocation": {
+          "eventId": "ev_house_door_map_forest_blue_stone_26_17",
+          "searchRadius": 3,
+          "candidates": [
+            {
+              "name": "move_event",
+              "args": {
+                "mapId": "map_forest",
+                "eventId": "ev_house_door_map_forest_blue_stone_26_17",
+                "x": 25,
+                "y": 18
+              }
+            },
+            {
+              "name": "move_event",
+              "args": {
+                "mapId": "map_forest",
+                "eventId": "ev_house_door_map_forest_blue_stone_26_17",
+                "x": 27,
+                "y": 18
+              }
+            },
+            {
+              "name": "move_event",
+              "args": {
+                "mapId": "map_forest",
+                "eventId": "ev_house_door_map_forest_blue_stone_26_17",
+                "x": 28,
+                "y": 18
+              }
+            }
+          ]
+        },
+        "x": 26,
+        "y": 17,
+        "message": "이벤트의 상호작용 위치에 도달할 수 없습니다: map_forest ev_house_door_map_forest_blue_stone_26_17 (26, 17) — 통행 가능한 칸으로 옮기세요."
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:callMapEvent",
+        "mapId": "map_forest",
+        "x": 11,
+        "y": 16,
+        "message": "맵 이벤트 ev_house_door_map_forest_amber_wood_11_15_step/ev_house_door_map_forest_amber_wood_11_15_step_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): callMapEvent"
+      },
+      {
+        "severity": "warning",
+        "code": "runtime-support:callMapEvent",
+        "mapId": "map_forest",
+        "x": 26,
+        "y": 18,
+        "message": "맵 이벤트 ev_house_door_map_forest_blue_stone_26_17_step/ev_house_door_map_forest_blue_stone_26_17_step_page에 런타임 지원이 제한된 명령이 있습니다(runtime-partial): callMapEvent"
+      }
+    ]
+  }
+}

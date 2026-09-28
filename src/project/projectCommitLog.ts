@@ -173,6 +173,7 @@ function scheduleWhenIdle(run: () => void): void {
 }
 
 function recordManualProjectCommitNow(project: Project, baseline?: Project | null): void {
+  settlePendingManualDigest();
   const digest = manualCommitDigest(project);
   if (digest === lastManualDigest) return;
   // 복제 없는 투영을 쓴다: 이 값은 `summarizeChanges` 와 `commits.record` 가 읽기만 하고,
@@ -209,7 +210,8 @@ function recordManualProjectCommitNow(project: Project, baseline?: Project | nul
     // 나중에 설정이 붙은 뒤 동일 내용 재저장이 dedup 에 걸려 그 커밋이 영구히 사라졌다.
     .then((result) => {
       if (result.kind === "saved") {
-        lastManualDigest = digest;
+        // 그 사이 재기준선(AI 적용)이 왔으면 그 기준이 이긴다 — 늦게 도착한 저장 응답이 덮지 않는다.
+        if (pendingManualDigestProject === null) lastManualDigest = digest;
         return;
       }
       log.warn("수동 저장 커밋이 기록되지 않았다 — dedup baseline 을 전진시키지 않는다", {
@@ -225,11 +227,32 @@ function recordManualProjectCommitNow(project: Project, baseline?: Project | nul
 export function resetManualProjectCommitBaseline(project: Project): void {
   // 프로젝트 전환·AI 적용 재기준선: 미뤄 둔 이전 저장의 커밋은 그 기준에서 끝난다 — 지금 남긴다.
   flushPendingManualProjectCommit();
-  lastManualDigest = manualCommitDigest(project);
+  // 기준 요약은 다음 사람 저장 커밋의 dedup 에만 쓰인다 — 적용 직후에 셀 필요가 없다.
+  // 왜(2026-09-28 실측, 새 프로젝트 149MB): 바로 깔기 적용마다 여기서 문서 전체 요약이 0.3~1.1s 돌았다
+  // (타일셋 객체가 새로 복제되면 요약 기억이 맞지 않아 전부 다시 해시한다). 한가할 때 세고,
+  // 그 전에 사람 저장 커밋이 오면 그 자리에서 먼저 센다(settlePendingManualDigest) — 결과는 같다.
+  pendingManualDigestProject = project;
+  if (!pendingManualDigestScheduled) {
+    pendingManualDigestScheduled = true;
+    scheduleWhenIdle(() => {
+      pendingManualDigestScheduled = false;
+      settlePendingManualDigest();
+    });
+  }
   // 프로젝트 전환/재베이스라인 시 남아 있던 pending 엔트리를 버린다 — 안 버리면 이전
   // 프로젝트의 편집이 다음 프로젝트의 첫 커밋에 실려 엉뚱한 맵 id 로 읽힌다.
   // AI 적용 경로에서는 바로 앞의 커밋이 이미 드레인했으므로 no-op 이다.
   editActivityCursor = takeEditActivitySince(editActivityCursor).cursor;
+}
+
+let pendingManualDigestProject: Project | null = null;
+let pendingManualDigestScheduled = false;
+
+/** 미뤄 둔 기준 요약을 지금 센다. 그 사이 새 기준이 오면 마지막 것만 센다. */
+function settlePendingManualDigest(): void {
+  const project = pendingManualDigestProject;
+  pendingManualDigestProject = null;
+  if (project) lastManualDigest = manualCommitDigest(project);
 }
 
 export function summaryForDiff(diff: ChangeSummary): string {

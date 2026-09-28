@@ -68,18 +68,14 @@ describe("AI 이벤트 저작 우클릭 진입점", () => {
     document.body.replaceChildren();
   });
 
-  it("빈 칸에서는 새 이벤트를 만들면서 AI 도크를 펼치라고 요청한다", () => {
+  it("빈 칸에서는 편집기를 열지 않고 칸 옆 작업함 입력창으로 간다", () => {
     const target = seedProject(false);
-    const item = eventLayerContextMenuItems(target).find((candidate) => candidate.id === "event-ai-author");
+    const item = eventLayerContextMenuItems(target).find((candidate) => candidate.id === "event-ai-queue");
 
-    expect(item?.label).toBe("AI 로 이벤트 만들기...");
+    expect(item?.label).toBe("AI로 여기에 이벤트...");
     item?.action();
 
-    expect(openNew).toHaveBeenCalledTimes(1);
-    expect(openNew.mock.calls[0]?.[0]).toBe(target.mapId);
-    expect(openNew.mock.calls[0]?.[1]).toBe(target.x);
-    expect(openNew.mock.calls[0]?.[2]).toBe(target.y);
-    expect(openNew.mock.calls[0]?.[4]).toEqual({ aiDock: true });
+    expect(openNew).not.toHaveBeenCalled();
     expect(openExisting).not.toHaveBeenCalled();
   });
 
@@ -96,10 +92,10 @@ describe("AI 이벤트 저작 우클릭 진입점", () => {
     expect(openNew).not.toHaveBeenCalled();
   });
 
-  it("AI 항목은 「이벤트 생성...」 바로 뒤에 온다 — 왕복 없이 눈에 먼저 닿아야 한다", () => {
+  it("빈 칸의 AI 항목은 맨 위다 — 여러 칸을 연달아 부탁할 때 가장 자주 누른다", () => {
     const target = seedProject(false);
     const ids = eventLayerContextMenuItems(target).map((item) => item.id);
-    expect(ids.slice(0, 2)).toEqual(["create-event", "event-ai-author"]);
+    expect(ids.slice(0, 2)).toEqual(["event-ai-queue", "create-event"]);
   });
 
   it("이벤트가 있어도 AI 항목은 비활성이 아니다 — 고치기가 곧 이 항목의 일이다", () => {

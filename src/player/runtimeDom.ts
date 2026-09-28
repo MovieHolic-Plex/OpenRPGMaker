@@ -51,12 +51,27 @@ function nowMs(): number {
 function applyMarkerBodyRect(marker: HTMLElement, view: RuntimeEventView, tileSize: number): void {
   const width = (view.bodyRect.right - view.bodyRect.left + 1) * tileSize;
   const height = (view.bodyRect.bottom - view.bodyRect.top + 1) * tileSize;
-  marker.dataset.mapX = `${view.bodyRect.left * tileSize}`;
-  marker.dataset.mapY = `${view.bodyRect.top * tileSize}`;
-  marker.dataset.mapW = `${width}`;
-  marker.dataset.mapH = `${height}`;
-  marker.style.width = `${width}px`;
-  marker.style.height = `${height}px`;
+  setData(marker, "mapX", `${view.bodyRect.left * tileSize}`);
+  setData(marker, "mapY", `${view.bodyRect.top * tileSize}`);
+  setData(marker, "mapW", `${width}`);
+  setData(marker, "mapH", `${height}`);
+  setStyle(marker, "width", `${width}px`);
+  setStyle(marker, "height", `${height}px`);
+}
+
+/**
+ * 값이 다를 때만 쓴다. QA 마커는 표면 갱신마다 이벤트 수만큼 다시 쓰여, 생활 NPC 500명 맵에서 같은 값의
+ * textContent·style 재대입만으로 스타일 재계산이 프레임당 최대 131ms 였다(브라우저 실측, 보행 중앙값
+ * 100ms → 쓰기를 멈추면 16.7ms). 같은 값 대입도 브라우저는 무효화로 친다.
+ */
+function setData(marker: HTMLElement, key: string, value: string): void {
+  if (marker.dataset[key] !== value) marker.dataset[key] = value;
+}
+function setStyle(marker: HTMLElement, key: "left" | "top" | "width" | "height" | "visibility" | "pointerEvents", value: string): void {
+  if (marker.style[key] !== value) marker.style[key] = value;
+}
+function setText(marker: HTMLElement, value: string): void {
+  if (marker.textContent !== value) marker.textContent = value;
 }
 
 /**
@@ -295,11 +310,11 @@ export class RuntimeDomOverlay {
       && screenY > -markerH
       && screenX < this.stageBounds.width
       && screenY < this.stageBounds.height;
-    marker.dataset.offscreen = visible ? "" : "1";
-    marker.style.left = `${visible ? screenX : 0}px`;
-    marker.style.top = `${visible ? screenY : 0}px`;
-    marker.style.visibility = visible ? "" : "hidden";
-    marker.style.pointerEvents = visible ? "" : "none";
+    setData(marker, "offscreen", visible ? "" : "1");
+    setStyle(marker, "left", `${visible ? screenX : 0}px`);
+    setStyle(marker, "top", `${visible ? screenY : 0}px`);
+    setStyle(marker, "visibility", visible ? "" : "hidden");
+    setStyle(marker, "pointerEvents", visible ? "" : "none");
     this.onMarkerWrite?.(marker);
   }
 
@@ -316,13 +331,13 @@ export class RuntimeDomOverlay {
       host.append(marker);
       this.eventMarkers.set(view.event.id, marker);
     }
-    marker.textContent = view.pageId ?? view.event.id;
+    setText(marker, view.pageId ?? view.event.id);
     // 히트박스는 **몸 사각**이다. 앵커 한 칸으로 두면 3x3 골렘의 머리를 클릭해도 아무 일이
     // 없다 — 이 마커가 `pointer-events: auto` 실행 히트박스이기 때문이다.
     applyMarkerBodyRect(marker, view, tileSize);
-    marker.dataset.pageId = view.pageId ?? "";
-    marker.dataset.priority = view.priority;
-    marker.dataset.trigger = view.trigger.kind;
+    setData(marker, "pageId", view.pageId ?? "");
+    setData(marker, "priority", view.priority);
+    setData(marker, "trigger", view.trigger.kind);
     this.placeMarker(marker);
     this.syncSpriteMarker(host, view, tileSize);
   }
@@ -352,10 +367,10 @@ export class RuntimeDomOverlay {
       host.append(marker);
       this.spriteMarkers.set(view.event.id, marker);
     }
-    marker.textContent = view.pageId ?? view.event.id;
+    setText(marker, view.pageId ?? view.event.id);
     applyMarkerBodyRect(marker, view, tileSize);
-    marker.dataset.pageId = view.pageId ?? "";
-    marker.dataset.priority = view.priority;
+    setData(marker, "pageId", view.pageId ?? "");
+    setData(marker, "priority", view.priority);
     this.placeMarker(marker);
   }
 

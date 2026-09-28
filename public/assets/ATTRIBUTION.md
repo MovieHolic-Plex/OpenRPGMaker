@@ -415,6 +415,28 @@ the existing mixed-source terrain/building attribution and the reviewed custom
 forest materials; they are portable authored map snapshots, not new original
 claims for those inherited tiles.
 
+## Stone well recolour (2026-09-28)
+
+The four "낮은 돌 우물" (low stone well) cells from
+`generated/forest-harmony/village-unfake-v1/stone-well-low.png` and every bundled
+sheet that copies them (`shared-village/objects.png`, the climate-village and
+atlas-biome chipsets, the region-reference atlases and the shared-object card
+preview) were recoloured by `scripts/content/recolor-forest-stone-well.py`.
+Silhouette and stone joints are unchanged; only colours were remapped to the
+forest chipset's neutral stone ramp, with a left-top light and an ordered-dither
+ground shadow. This is a derivative edit of the same Tibo-generated prop and
+carries its existing provenance; it does not change the rights of any source image.
+
+A subsequent outline cleanup used the built-in image generation tool as a contour
+reference, constrained to the original native footprint. Twenty border pixels were
+unified; original interior colours and alpha were retained. Reproducible sources
+and prompt are in `tiledata/forest-stone-well/`, packed and propagated by
+`scripts/content/prepare-forest-well-outline.mjs`.
+
+The full generated replacement was briefly tried at the user's request, then
+rejected in favour of the outline-cleaned version. Its saved source is historical;
+`tiledata/forest-stone-well/outline-native.png` is the accepted shipped sprite.
+
 ## Authored forest place library (2026-09-21)
 
 The 13 portable map documents listed in `scripts/asset-gen/forest-place-library.json`

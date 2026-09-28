@@ -1007,6 +1007,11 @@ function renderActiveTab(
     return;
   }
   activeTabRenderDepth += 1;
+  // 탭 이동은 activeTab 을 먼저 바꾸고 이 함수를 부른다. 그래서 "직전에 이 본문에 그린 탭"과
+  // 비교해야 옛 탭의 스크롤이 새 탭으로 새지 않는다.
+  const sameTabRedraw = lastRenderedTab.get(body) === activeTab;
+  const scrollTab = activeTab;
+  const scrollSnapshot = sameTabRedraw ? snapshotBodyScroll(body) : [];
   try {
     let nextBody = body;
     let nextContainer = container;
@@ -1033,6 +1038,66 @@ function renderActiveTab(
     activeTabRenderDepth = 0;
     queuedActiveTabRender = null;
   }
+  lastRenderedTab.set(body, activeTab);
+  // 같은 탭을 다시 그렸을 때만 되돌린다. 탭을 옮긴 경우는 새 화면의 맨 위가 맞다.
+  if (activeTab === scrollTab) restoreBodyScroll(body, scrollSnapshot);
+}
+
+const lastRenderedTab = new WeakMap<HTMLElement, DatabaseTab>();
+
+/**
+ * 값 하나를 바꿔도(숫자 ±, 버튼, 통행 토글…) 저장소 갱신이 탭 본문을 통째로 새로 그린다.
+ * 목록은 각 뷰가 제 스크롤을 되돌리지만 상세·설정 칸은 그러지 않아 매번 맨 위로 튀었다
+ * (실측 2026-09-28: 몬스터·적 그룹·속성·전투 애니메이션·타일 상세, 400px → 0).
+ * 새로 그리기 전에 스크롤된 칸을 적어 두고, 새로 그린 뒤 같은 자리의 새 칸에 되돌린다.
+ */
+type BodyScrollEntry = { readonly node: HTMLElement; readonly key: string; readonly ordinal: number; readonly top: number; readonly left: number };
+
+function scrollKey(node: HTMLElement): string {
+  const testid = node.dataset?.testid;
+  return testid ? `#${testid}` : `${node.tagName}.${node.classList?.[0] ?? ""}`;
+}
+
+function snapshotBodyScroll(body: HTMLElement): readonly BodyScrollEntry[] {
+  if (typeof body.querySelectorAll !== "function") return [];
+  const ordinals = new Map<string, number>();
+  const entries: BodyScrollEntry[] = [];
+  for (const node of Array.from(body.querySelectorAll<HTMLElement>("*"))) {
+    const top = node.scrollTop || 0;
+    const left = node.scrollLeft || 0;
+    if (top <= 0 && left <= 0) continue;
+    const key = scrollKey(node);
+    const ordinal = ordinals.get(key) ?? 0;
+    ordinals.set(key, ordinal + 1);
+    entries.push({ node, key, ordinal, top, left });
+  }
+  return entries;
+}
+
+function restoreBodyScroll(body: HTMLElement, entries: readonly BodyScrollEntry[]): void {
+  if (entries.length === 0 || !body.isConnected) return;
+  const pending: { node: HTMLElement; entry: BodyScrollEntry }[] = [];
+  for (const entry of entries) {
+    // 살아남은 같은 노드는 제 위치를 그대로 갖고 있다 — 건드리지 않는다.
+    if (entry.node.isConnected && body.contains(entry.node)) continue;
+    const candidates = Array.from(body.querySelectorAll<HTMLElement>("*")).filter((node) => scrollKey(node) === entry.key);
+    const node = candidates[entry.ordinal];
+    if (!node) continue;
+    // 뷰가 스스로 위치를 정했으면(선택 행 보이기 등) 그 뜻을 따른다.
+    if ((node.scrollTop || 0) > 0 || (node.scrollLeft || 0) > 0) continue;
+    node.scrollTop = entry.top;
+    node.scrollLeft = entry.left;
+    // 내용이 아직 덜 그려져 목표에 못 닿았으면 다음 프레임에 한 번 더 넣는다.
+    if (node.scrollTop < entry.top - 1 || node.scrollLeft < entry.left - 1) pending.push({ node, entry });
+  }
+  if (pending.length === 0 || typeof requestAnimationFrame !== "function") return;
+  requestAnimationFrame(() => {
+    for (const { node, entry } of pending) {
+      if (!node.isConnected) continue;
+      if (entry.top > 0) node.scrollTop = entry.top;
+      if (entry.left > 0) node.scrollLeft = entry.left;
+    }
+  });
 }
 
 function renderActiveTabUnguarded(

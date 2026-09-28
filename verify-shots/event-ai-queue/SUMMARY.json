@@ -1,0 +1,84 @@
+{
+  "jobs": 8,
+  "llmCalls": 10,
+  "runningRightAfterQueueing": 3,
+  "maxParallelCalls": 4,
+  "callsThatOverlappedAnother": 8,
+  "placedEvents": [
+    {
+      "name": "보물상자",
+      "x": 2,
+      "y": 4,
+      "pages": 2,
+      "secondPageCondition": {
+        "kind": "selfSwitch",
+        "key": "A",
+        "value": true
+      },
+      "sprite": "tex_easyrpg_charset_object1"
+    },
+    {
+      "name": "주민",
+      "x": 4,
+      "y": 4,
+      "pages": 1,
+      "secondPageCondition": null,
+      "sprite": "tex_easyrpg_charset_people1"
+    },
+    {
+      "name": "표지판",
+      "x": 6,
+      "y": 4,
+      "pages": 1,
+      "secondPageCondition": null,
+      "sprite": null
+    },
+    {
+      "name": "노인",
+      "x": 8,
+      "y": 4,
+      "pages": 2,
+      "secondPageCondition": {
+        "kind": "selfSwitch",
+        "key": "A",
+        "value": true
+      },
+      "sprite": "tex_easyrpg_charset_people1"
+    },
+    {
+      "name": "아이",
+      "x": 2,
+      "y": 8,
+      "pages": 1,
+      "secondPageCondition": null,
+      "sprite": "tex_easyrpg_charset_people1"
+    },
+    {
+      "name": "작은 상자",
+      "x": 4,
+      "y": 8,
+      "pages": 2,
+      "secondPageCondition": {
+        "kind": "selfSwitch",
+        "key": "A",
+        "value": true
+      },
+      "sprite": "tex_easyrpg_charset_object1"
+    },
+    {
+      "name": "표지판",
+      "x": 6,
+      "y": 8,
+      "pages": 1,
+      "secondPageCondition": null,
+      "sprite": null
+    }
+  ],
+  "eventsAfterOneUndo": {
+    "before": 7,
+    "after": 6,
+    "removed": [
+      "표지판"
+    ]
+  }
+}
