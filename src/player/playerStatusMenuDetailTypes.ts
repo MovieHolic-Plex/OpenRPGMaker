@@ -14,6 +14,9 @@ export type StatusMenuDetailEntry = {
   readonly vitals?: {
     readonly hp: number; readonly maxHp: number; readonly hpAfter: number;
     readonly mp: number; readonly maxMp: number; readonly mpAfter: number;
+    /** 지금 걸린 상태 이름과, 이 행동으로 풀리는 상태 이름. 없으면 「정상」. */
+    readonly stateNames?: readonly string[];
+    readonly curedStateNames?: readonly string[];
   };
   readonly face?: {
     readonly resourceId?: string;
@@ -119,6 +122,8 @@ export type StatusMenuDetailOptions = {
   readonly onSelectEquipmentSlot?: (actorId: string, slotId: keyof ActorInitialEquipment) => void;
   readonly onEquipItem?: (actorId: string, slotId: keyof ActorInitialEquipment, equipmentId: string) => void;
   readonly onUnequipItem?: (actorId: string, slotId: keyof ActorInitialEquipment) => void;
+  /** 「최강 장비」 — bestEquipmentPlan 의 조합을 한 번에 장착한다. */
+  readonly onOptimizeEquipment?: (actorId: string) => void;
   readonly onToggleRow?: (actorId: string) => void;
   readonly onSelectFormationActor?: (actorId: string) => void;
   readonly onMoveFormationActor?: (actorId: string, targetIndex: number) => void;

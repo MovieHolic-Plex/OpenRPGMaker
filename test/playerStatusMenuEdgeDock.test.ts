@@ -34,6 +34,7 @@ describe("player status menu edge dock", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const menu = renderWithFakeDom(() => renderPlayerStatusMenu({
         project,
         session: startSession(project),
@@ -67,6 +68,7 @@ describe("player status menu edge dock", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const menu = renderWithFakeDom(() => renderPlayerStatusMenu({
         project,
         session: startSession(project),
@@ -100,6 +102,7 @@ describe("player status menu edge dock", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const menu = renderWithFakeDom(() => renderPlayerStatusMenu({
         project,
         session: startSession(project),
@@ -123,6 +126,7 @@ describe("player status menu edge dock", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const session = startSession(project);
       const item = project.database.items.find((record) => record.description.trim().length > 0);
       if (!item) throw new Error("missing item fixture with a description");
@@ -154,6 +158,7 @@ describe("player status menu edge dock", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const menu = renderWithFakeDom(() => renderPlayerStatusMenu({
         project,
         session: startSession(project),
@@ -174,6 +179,7 @@ describe("player status menu edge dock", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const menu = renderWithFakeDom(() => renderPlayerStatusMenu({
         project,
         session: startSession(project),

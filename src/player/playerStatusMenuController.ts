@@ -47,6 +47,7 @@ import {
   type StatusMenuMutationResult,
   toggleStatusMenuActorRow,
   unequipStatusMenuItem,
+  optimizeStatusMenuEquipment,
   useStatusMenuItem,
 } from "@/player/playerStatusMenuMutations";
 import { fireAutoTriggers } from "@/player/playSceneMapRuntime";
@@ -239,6 +240,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         },
         onEquipItem: equipItem,
         onUnequipItem: unequipItem,
+        onOptimizeEquipment: optimizeEquipment,
         onToggleRow: toggleActorRow,
         onSelectBattleReport: (index) => {
           battleReportIndex = index;
@@ -552,6 +554,14 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     rememberDetailCursorFromTestId("status-menu-equipment-item-none");
     const result = unequipStatusMenuItem(scene, actorId, slotId);
     if (result.kind === "used") equipmentSlotId = undefined;
+    emitMutationResult(result, renderMenu(result.message, "equipment"));
+  }
+
+  function optimizeEquipment(actorId: string): void {
+    const scene = options.getActiveScene();
+    if (!scene) return;
+    rememberDetailCursorFromTestId("status-menu-equipment-optimize");
+    const result = optimizeStatusMenuEquipment(scene, actorId);
     emitMutationResult(result, renderMenu(result.message, "equipment"));
   }
 

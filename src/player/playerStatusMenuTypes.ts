@@ -28,6 +28,7 @@ export type PlayerStatusMenuActions = {
   readonly onSelectEquipmentSlot: (actorId: string, slotId: keyof ActorInitialEquipment) => void;
   readonly onEquipItem: (actorId: string, slotId: keyof ActorInitialEquipment, equipmentId: string) => void;
   readonly onUnequipItem: (actorId: string, slotId: keyof ActorInitialEquipment) => void;
+  readonly onOptimizeEquipment?: (actorId: string) => void;
   readonly onSelectBattleReport?: (index: number | undefined) => void;
   readonly onToggleRow: (actorId: string) => void;
   readonly onSelectFormationActor: (actorId: string) => void;

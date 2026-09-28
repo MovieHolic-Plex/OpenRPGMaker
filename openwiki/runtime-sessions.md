@@ -491,7 +491,7 @@ Read that directory's `SUMMARY.md` first. Previews are actual player captures at
   - `bestFitActorId` → 비교 창의 기준 동료. 파티 카드나 상세 창에서 동료를 직접 고르면(`comparisonPinned`) 그 선택을 유지한다.
   - `recoveryPreview` → 회복 아이템이면 파티원별 현재 HP/MP 와 사용 후 값(산식은 `playerItemUse` 와 같다).
 - 파티 카드(`partyPreview(scene, { cards: true, onActor })`)는 필드와 같은 charset 을 정면으로 걷게 한다
-  (`shopPartyWalker`, CSS 변수 `--shop-walk-0..2` 순환, 타이머 없음). 장비할 수 없는 동료는 회색으로 멈춘다.
+  (`shopPartyWalker` → 공용 `partyWalker`, CSS 변수 `--party-walk-0..2` 순환, 타이머 없음). 장비할 수 없는 동료는 회색으로 멈춘다.
   카드는 버튼이며 Tab 포커스 링(`shopDecisionInput` STOCK_GROUPS)에 들어간다. 런타임은 포인터를 막으므로 결정키로 고른다.
 - 비교 창(`shopComparisonSummary(..., { statement })`)은 고른 동료 한 명의 명세서다: 걷기 그림 · 이름 · Lv ·
   「부위 현재 장비 → 새 장비」, 능력치마다 「현재 → 변경 후 ▲▼ ±차이」(떨어지면 빨강), 얻고 잃는 특수 효과 태그.
@@ -500,6 +500,38 @@ Read that directory's `SUMMARY.md` first. Previews are actual player captures at
 - 세션·세이브·거래 규칙은 바뀌지 않았다. 「구매 후 장착」 같은 새 거래 경로는 없다.
 - 시각 증거: `node scripts/qa/runtime/shop-surface-shots.mjs [--preset <id>] --out <dir>` 은 출하 플레이어로
   같은 픽스처를 띄워 입구·무기·갑옷·회복약과 640×480·320×240 을 찍는다. 이번 전후 비교는 `verify-shots/shop-modern/`.
+
+## 도트 창 통일 — ESC 메뉴·장비·아이템·여관·전투 결과 (2026-09-28)
+
+상점 기본 프리셋 `pixel` 과 같은 창 체계(청색 도트 창 · 이중 흰 테두리 · 손가락 커서 · 걷는 파티 ·
+「현재 → 변경 후 ▲▼」)를 나머지 런타임 화면의 기본값으로 넓혔다.
+
+- ESC 메뉴 기본 스킨이 `workbench` → **`pixel`**(`MENU_SKINS.pixel`, `DEFAULT_MENU_SKIN_ID`).
+  `menuUiStyle` 을 저장하지 않은 프로젝트는 새 기본을 따르고, `"workbench"` 를 **명시적으로 저장한** 프로젝트는 그대로다
+  (저장 정규화는 기본값 `pixel` 만 지운다). 스킨 플래그 `partyStats` 가 도트 창 계열 표시를 켠다.
+  - 첫 화면(landing party): 파티 창 = 걷는 그림(`player/partyWalker.ts`, 상점 파티 카드와 같은 구현) · 이름 · 직업/Lv ·
+    상태이상 줄(`PlayerStatusMenuPartyRow.stateNames`, 세션 `actorStateIds`) · HP/MP/EX 숫자와 막대
+    (`nextLevel.remaining` = 다음 레벨까지 남은 EXP). 오른쪽에 명령 · 소지금 · 장소 · 시간 · 장 창.
+  - 장비: 부위 목록에도 현재 능력치(증감 0 인 `statDelta`)가 서고, 끝에 **「최강 장비」** 행
+    (`bestEquipmentPlan` — 부위마다 가진 후보 중 네 능력치 합이 최대인 것, 저주·고정 부위는 건너뜀.
+    실행은 `optimizeStatusMenuEquipment` 가 부위별 `transitionActorEquipment` 로 원자적으로 적용). 후보 행 값은
+    「공격+12 · 1개」처럼 가장 큰 변화 둘과 소지 수. 비교 행마다 `status-menu-delta`(▲n/▼n).
+  - 아이템 대상: 카드에 상태 줄(「독 → 정상」, `previewMenuItemTarget` 의 `stateIds`/`curedStateIds`)과
+    회복량 ▲n. 늘어날 막대 구간이 깜빡인다. 제목 문자열(「회복약 · 4개」)은 바꾸지 않았다(여러 테스트의 계약).
+- 여관: 메뉴 스킨이 `partyStats` 면 `layoutPixelInn`(playSceneCommerce.ts)이 기존 노드(제목·인사·질문·예/아니오)를
+  도트 창 격자로 옮기고 파티 창(`inn-party-row-<actorId>`, HP/MP 「60 → 514 ▲454」)과 요약 창
+  (`inn-summary-gold` 「1,200 → 1,120 G」, 회복 합계)을 더한다. 거래·휴식 연출·분기 규칙은 그대로다.
+- 전투 결과: 승리 + `partyStats` + 포켓몬 전투가 아니면 `syncPixelResultParty`(battleDirectorDom.ts)가 합계 창 ·
+  파티 창(`battle-result-party-<actorId>`: 걷는 그림 · Lv 전후 · LEVEL UP · EXP 막대 · 다음 Lv까지) ·
+  레벨 업 창(`battle-result-levelup-<actorId>`: HP·MP·공격·방어·정신·민첩 현재 → 오른 뒤 ▲, 새 스킬 MP)을 더한다.
+  기존 보상 행(경험치·골드·아이템, 공개 단계·세기)은 전리품 창으로 그대로 남는다. 걷는 그림은
+  `battleResultPanel(snapshot, stage, audioContext)` 로 받은 플레이 세션이 있을 때만 그린다(에디터 전투 테스트는 이름 첫 글자).
+- 스타일은 `src/styles/runtime/pixelWindows.css` 한 장(색 변수 `--px-*`). 메뉴·여관은 320×240 논리 픽셀,
+  전투 결과는 640×480 전투 무대라 두 배 값이다.
+- 런타임 QA 하네스에 `systemPatch`(시나리오가 QA 사본의 `project.system` 만 덮는다)가 생겼다. workbench 배치를
+  계약으로 보던 시나리오(esc-menu · item-menu · item-care · life-full · dream-explore)는 `menuUiStyle: "workbench"` 로 고정했다.
+- 증거: `npm run qa:runtime -- --scenario esc-pixel`(첫 화면 · 대상 · 해독 · 장비 부위/후보 · 최강 장비),
+  `--scenario inn-battle-pixel`(여관 · 레벨 업 결과). `verify-shots/runtime-qa/<시나리오>/SUMMARY.md` 를 먼저 읽는다.
 ## Persistent battle reports and formation (2026-09-21)
 
 Existing `actorRows` and `partyActorIds` save/load paths remain authoritative. Optional `battleReports` is normalized at create/parse/restore and defaults empty for old saves (20 reports, 120 real timeline lines each). Esc → 기록 → 전투 기록 reads completed outcomes; Esc → 파티 → 진형 edits active order and front/back. Contracts and parent-owned verification: `openwiki/feature16-battle-ui.md`.

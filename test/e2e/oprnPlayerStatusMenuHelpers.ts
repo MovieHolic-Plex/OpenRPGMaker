@@ -44,6 +44,8 @@ export async function startActualPlay(page: Page, project = seededStatusMenuProj
 
 export function seededStatusMenuProject(): Project {
   const project = createBlankProject();
+  // 이 헬퍼의 스펙들은 workbench 스킨(ESC 직후 아이템 작업 패널) 배치의 계약이다. 기본 스킨은 pixel 이다.
+  project.system.menuUiStyle = "workbench";
   project.session.inventory = {
     item_potion: 2,
     item_ether: 1,

@@ -1227,7 +1227,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // 애니메이션 레이어 정리는 syncView 의 생성 지점에서 함께 처리한다(중복 방지).
     let panel = resultHost.querySelector<HTMLElement>("[data-testid='battle-result-panel']");
     if (!panel) {
-      const created = battleResultPanel(snapshot, resultRevealStage);
+      const created = battleResultPanel(snapshot, resultRevealStage, options.audioContext);
       if (!created) return;
       resultHost.replaceChildren(created);
       panel = created;
