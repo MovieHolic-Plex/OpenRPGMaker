@@ -36,7 +36,8 @@ log("HOST_PROJECT revision=" + before.revision + " title=" + JSON.stringify(befo
 const app = await electron.launch({
   args: [REPO, "--disable-gpu", "--disable-dev-shm-usage", "--user-data-dir=" + join(scratch, "userdata")],
   cwd: REPO,
-  env: { ...process.env, XDG_CONFIG_HOME: join(scratch, "config"), OPRN_RENDERER_DIR: join(REPO, "dist"), OPRN_OPEN_PROJECT_DIR: projectDir },
+  // OPRN_QA_RENDERER_DIR: 프로파일용 비압축 빌드(vite build --minify false --outDir …)를 참여 창에 준다.
+  env: { ...process.env, XDG_CONFIG_HOME: join(scratch, "config"), OPRN_RENDERER_DIR: process.env.OPRN_QA_RENDERER_DIR ?? join(REPO, "dist"), OPRN_OPEN_PROJECT_DIR: projectDir },
   timeout: 60_000,
 });
 let verdict = "FAIL";
