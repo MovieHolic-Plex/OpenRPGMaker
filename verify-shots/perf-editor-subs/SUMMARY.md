@@ -11,6 +11,7 @@
 - 연결: maps 구성·순서·id, events 배열, mapConnections, startMapId를 캐시 입력으로 사용한다. 이벤트 명령 순회도 배열별로 공유한다. 이름·현재 맵 선택은 별도로 확인하여 DOM 재사용 여부를 결정한다.
 - 감사: 마지막 편집 뒤 250ms에 검사. 닫힌 패널·폐기된 패널·포인터 대기 중 예약의 수명을 처리한다.
 - 캔버스: skip 계획은 깨우지 않고, 실제 변경은 한 프레임만 요청한다. 입력·카메라의 연속 렌더 정책은 유지한다.
+- 텍스처 완료: 네 종류 로더 및 맵 전환 타일셋의 onReady를 하나의 rAF 예약으로 합친다. 종료 시 취소하며, 재시작 전 예약은 epoch로 무효화한다. 씬별 pending 로더의 완료 콜백은 재시작 후에도 현재 씬을 갱신할 수 있다.
 - 직접 도구/도구 묶음: 한 맵의 타일만 바뀐 경우 기존 부분 갱신 경로에 renderCells를 전달한다. 네 층·그림자·스택과 오토타일 이웃을 처리한다.
 - 감독자 소유의 changeset 커밋/직렬화, store.replace 내부, eventDraftVault, src/ai, aiChatPanel은 수정하지 않았다. applyChangesetToStore는 import 및 직접 도구/묶음의 replace 옵션만 수정했다.
 
@@ -30,6 +31,8 @@
 | 캔버스 단발 변경 | 유휴 상태 현재 맵 셀 통지, 같은 관측 창의 렌더 횟수 | 30 | 1 |
 | 직접 도구 타일 갱신 | 100×100 맵 한 칸, 10회 평균 ms (이후는 diff 포함) | 25.341 | 13.286 |
 | 직접 도구 타일 객체 | 같은 변경, 갱신 객체 수 | 10,000 | 9 |
+| 텍스처 완료 | 같은 프레임 전 84개 완료, 완료 콜백에 의한 redraw 횟수 | 84 | 1 |
+| 텍스처 완료 6묶음 | 위 묶음 6회, 완료 콜백에 의한 redraw 총수 | 504 | 6 |
 
 공유 머신의 일회 측정이므로 절대 시간과 배율은 부하에 따라 달라진다. 노드·객체·프레임 수는 결정적 작업량이다.
 
@@ -39,13 +42,15 @@
 - 렌더 게이트는 기준선/수정본의 실제 store 콜백과 redrawForStoreChange를 실행하고, 가짜 시계·텍스처 로더·그리기 대역을 사용했다.
 - 타일 렌더는 기존 editSceneRender의 Phaser mock 하네스다. 도구 커밋의 기존 타일셋 구조 공유를 반영한 비교 입력을 사용했다. 실제 GPU FPS나 AI 전체 적용 지연을 뜻하지 않는다.
 
-원자료: `subs-before.json`, `subs-after.json`, `panel-before.json`, `panel-after.json`, `browser.json`, `render.json`, `wake.json`.
+- 텍스처 완료는 수정 직전 커밋 `e2c04b5f8`과 수정본의 실제 EditScene.redrawForStoreChange를 호출했다. 에셋 I/O, rAF와 redraw 본문만 대역이다. 매 묶음의 84개 Promise가 다음 프레임 전에 모두 완료되는 입력이다. 동기 store redraw는 양쪽 모두 6회로 보존되어 총 호출 수는 510→12회다. 감독자 프로파일의 14초/12.7초를 이 하네스에서 재현하거나 개선 시간으로 환산하지 않았다. 완료가 여러 프레임으로 나뉘면 그 프레임 수만큼 redraw한다.
+
+원자료: `texture.json`, `subs-before.json`, `subs-after.json`, `panel-before.json`, `panel-after.json`, `browser.json`, `render.json`, `wake.json`.
 화면: `links-before.png`, `links-after.png` (540×960, 실제 Chromium).
 임시 측정 테스트 및 기준선 사본은 실행 뒤 삭제했으며 커밋하지 않았다.
 
 ## 테스트
 
-전체 스위트와 gates는 실행하지 않았다. 관련 10파일 **66건 통과, 0건 실패**.
+전체 스위트와 gates는 실행하지 않았다. 관련 회귀 테스트 11파일 **72건 통과, 0건 실패**. 텍스처 실측 임시 테스트 1건도 통과했다.
 
 ```bash
 node scripts/run-vitest.mjs test/editSceneStoreRender.test.ts test/editRenderGate.test.ts --maxWorkers=1
@@ -68,6 +73,16 @@ npx vitest run test/perfEditorSubs.measure.test.ts test/perfEditorPanel.measure.
 
 각각 2건 통과/3건 의도적 제외, 5건 통과/25건 의도적 제외. 제외 건은 재사용한 기존 하네스의 비측정 테스트다.
 
+텍스처 추가 과제의 최종 코드에서 실행:
+
+```bash
+node scripts/run-vitest.mjs test/editSceneTextureRedraw.test.ts test/editSceneStoreRender.test.ts test/editRenderGate.test.ts test/perfEditorTexture.measure.test.ts --maxWorkers=1
+```
+
+4파일 18건 통과, 실패 0건, exit 0 (회귀 17건 + 임시 실측 1건). 네 로더의 84개 비동기 완료, 맵 전환 로더 연결, 종료 취소와 늦은 완료, 재시작 후 진행 중 로더 완료 및 이전 프레임 무효화, 여러 프레임으로 나뉜 완료, redraw 안에서 다시 요청한 예약을 검사했다. 기존 window 이벤트 mock 보완을 유지하여 앞서 실패했던 렌더 테스트 2건도 통과했다.
+
+첫 실측 명령 `npx vitest run test/perfEditorTexture.measure.test.ts --maxWorkers=1 --silent=false`도 1건 통과, exit 0. 임시 측정 코드와 수정 전 사본은 최종 측정 후 삭제했다.
+
 타입 검사 명령:
 
 ```bash
@@ -78,6 +93,7 @@ NODE_OPTIONS=--max-old-space-size=8192 npx tsc --noEmit -p tsconfig.app.json
 
 ## 남은 제한
 
+- 텍스처 등록 함수의 순회 비용은 남는다. 실측은 호출 수 비교이며 실제 100×100 편집기 프로파일의 개선 시간과 GPU FPS는 재측정하지 않았다.
 - 전역 count 규칙 및 좌표 없는 위반의 기존 보고 결과를 유지하기 위해 감사의 mapIds 제한/결과 부분 병합은 적용하지 않았다. 한 번의 전역 검사 비용은 남는다.
 - replace는 단일 맵 renderCells만 받는다. 여러 맵·이벤트·메타데이터·맵 추가/삭제·2,048셀 초과는 기존 전체 통지를 유지한다.
 - 그래프 캐시는 불변 events/mapConnections 참조에 의존한다. 내용이 같아도 배열을 깊이 복제하는 경로는 캐시가 무효화된다.
@@ -97,14 +113,15 @@ NODE_OPTIONS=--max-old-space-size=8192 npx tsc --noEmit -p tsconfig.app.json
 - `src/editor/incrementalMapApply.ts`
 - `src/editor/tools/applyChangesetToStore.ts`
 
-테스트 7개:
+테스트 8개:
 
 - `test/editorProjectReferenceIssues.test.ts`
 - `test/mapLinkStats.test.ts`
 - `test/ruleAuditPanel.test.ts`
 - `test/editSceneStoreRender.test.ts`
+- `test/editSceneTextureRedraw.test.ts`
 - `test/incrementalMapApply.test.ts`
 - `test/applyChangesetToStore.test.ts`
 - `test/rightDragPanelRebuilds.test.ts`
 
-문서·증거: `openwiki/editor-observability.md`, 이 SUMMARY 및 위 원자료 JSON 7개, PNG 2개.
+문서·증거: `openwiki/editor-observability.md`, 이 SUMMARY 및 위 원자료 JSON 8개, PNG 2개.

@@ -1,0 +1,36 @@
+{
+  "baselineCommit": "e2c04b5f884e75720f52629685bd03b3001887cc",
+  "method": "Actual EditScene.redrawForStoreChange; mocked loader promises, rAF, and redraw body; all 84 completions before each frame; no GPU/wall-time measurement",
+  "results": [
+    {
+      "label": "before",
+      "spritesPerCheckpoint": 84,
+      "checkpoints": 6,
+      "synchronousStoreRedraws": 6,
+      "textureCompletionRedrawsPerCheckpoint": [
+        84,
+        84,
+        84,
+        84,
+        84,
+        84
+      ],
+      "totalTextureCompletionRedraws": 504
+    },
+    {
+      "label": "after",
+      "spritesPerCheckpoint": 84,
+      "checkpoints": 6,
+      "synchronousStoreRedraws": 6,
+      "textureCompletionRedrawsPerCheckpoint": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "totalTextureCompletionRedraws": 6
+    }
+  ]
+}
