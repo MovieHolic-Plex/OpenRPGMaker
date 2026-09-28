@@ -518,3 +518,104 @@ def manor6():
         for x in range(33,48): pp[x,y]=(0,0,0,0)
     im.alpha_composite(pz.fin(po),(48+16,H-po.height))
     return dict(im=im,door=6,chim=[(x+48,y) for x,y in c['chim']],below=8,above=c['above'])
+
+# ======================= arch bridge (verdict 6: visibly joined to the road on both banks) =======================
+def bridge6(wc=4):
+    # E-W road bridge over a N-S river wc cells wide, in the chipset bridge idiom (deck top + front face + openings +
+    # shade / reflection on the water). The deck IS the street's own cobble tile on the same 16 px grid, so the road runs
+    # straight across; the parapets stand exactly over the two banks (newel posts on the quay edges) and stop there; the
+    # front face spans bank to bank with solid abutments on the quay rims, two round arches and one plain middle pier
+    # with a low cutwater - nothing stands on the span. back = far parapet + deck (ground layer), front = near parapet +
+    # face (sorted with the objects). Offsets are relative to the deck's top-left cell corner.
+    A=6; RW=wc*16; W=RW+2*A; P=12                                     # P: far parapet rises P px above the deck
+    COB=ctile(160,96)
+    back=Image.new('RGBA',(W,P+32)); bp=back.load()
+    for Y in range(P,P+32):
+        for X in range(A,A+RW): bp[X,Y]=COB[(X-A)%16,(Y-P)%16]+(255,)
+    def newel(px,W_,H_,xc,y0,h):
+        for y in range(y0,y0+h):
+            for x in range(xc-4,xc+4):
+                t=6 if y<y0+2 else (5 if x<xc-1 else (4 if x<xc+2 else 3))
+                if y==y0+h-1: t=2
+                put(px,W_,H_,x,y,ST[t])
+        for x in range(xc-2,xc+2): put(px,W_,H_,x,y0-2,ST[5] if x<xc else ST[4]); put(px,W_,H_,x,y0-1,ST[6] if x<xc else ST[4])
+    def balustrade(px,W_,H_,y0,x0,x1):
+        # top rail 3 px, balusters (lit/mid/shade, pinched in the middle), base rail 2 px
+        for x in range(x0,x1):
+            for j,t in enumerate((6,5,3)): put(px,W_,H_,x,y0+j,ST[t])
+            k=(x-x0)%5
+            for j in range(3,9):
+                if k<3 and not (j in (5,6) and k!=1): put(px,W_,H_,x,y0+j,ST[(5,4,2)[k] if j not in (5,6) else 4])
+            put(px,W_,H_,x,y0+9,ST[4]); put(px,W_,H_,x,y0+10,ST[2])
+    balustrade(bp,W,P+32,P-9,A+4,A+RW-4)
+    for xc in (A,A+RW): newel(bp,W,P+32,xc,P-10,13)
+    # ---- front ----
+    WL=P+58; H2=WL+14; front=Image.new('RGBA',(W,H2)); fp=front.load()
+    balustrade(fp,W,H2,P+23,A+4,A+RW-4)
+    for xc in (A,A+RW): newel(fp,W,H2,xc,P+22,14)
+    for X in range(A,A+RW):
+        for j,t in enumerate((6,5,2)): put(fp,W,H2,X,P+34+j,ST[t])          # cornice / string course
+    mid=A+RW//2; ab=5
+    spans=[(A+ab,mid-4),(mid+4,A+RW-ab)]
+    shade=[]
+    for Y in range(P+37,WL):
+        for X in range(A,A+RW):
+            op=None
+            for a,b in spans:
+                if a<=X<b: op=((a+b)/2,(b-a)/2)
+            if op:
+                cx,hs=op; rise=hs*1.05; dx=(X+0.5-cx)/hs; dy=(WL-(Y+0.5))/rise; r=math.hypot(dx,dy)
+                if r<1.0: shade.append((X,Y,0.40+0.3*(1-dy))); continue
+                if r<1.3:
+                    ang=math.atan2(dy,dx); t=5 if X<cx else 4
+                    if (ang/(math.pi/8))%1<0.12: t=2
+                    if abs(dx)<0.15 and dy>0.9: t=6
+                    put(fp,W,H2,X,Y,ST[t]); continue
+            row=(Y-P-37)//5; off=6 if row%2 else 0
+            t=4 if (Y-P-37)%5!=4 and (X+off)%12!=0 else 2
+            if t==4 and _hash((X+off)//12,row,7)<0.25: t=3
+            if X<A+2 or X>=A+RW-2: t=5 if X<A+2 else 2                     # abutment quoin edges on the bank lines
+            put(fp,W,H2,X,Y,ST[t])
+    foam=[]
+    for Y in range(WL-3,WL+6):                                            # low cutwater under the middle pier
+        half=4 if Y<WL else 4*(1-(Y-WL)/6)
+        for X in range(int(mid-half),int(mid+half)+1):
+            put(fp,W,H2,X,Y,ST[5] if X<mid else ST[3])
+    for X in range(A,A+RW): put(fp,W,H2,X,WL-1,ST[2])
+    foam+=[(mid,WL+6,3),(mid-5,WL+1,2),(mid+5,WL+1,2),(A+3,WL,2),(A+RW-3,WL,2)]
+    face=front.crop((0,P+37,W,WL)); refl=face.transpose(Image.FLIP_TOP_BOTTOM)
+    return dict(back=pz.fin(back),front=pz.fin(front),ox=-A,oy_back=-P,oy_front=-P,W=W,shade=shade,foam=foam,reflect=refl,refl_y=WL,P=P)
+
+# ======================= natural banks (verdict 7) =======================
+def canal6(mask,skip):
+    # pn.canal (quay rim + north quay face + quay shadow) for every water cell except the `skip` cells (natural banks);
+    # neighbour tests still see the skipped cells as water, so no rim runs down the middle of the lake
+    import pn
+    Wc,Hc=len(mask[0]),len(mask); im=Image.new('RGBA',(Wc*16,Hc*16)); px=im.load()
+    full=pn.canal(mask).load()
+    for cy in range(Hc):
+        for cx in range(Wc):
+            if not mask[cy][cx] or skip[cy][cx]: continue
+            for ly in range(16):
+                for lx in range(16): px[cx*16+lx,cy*16+ly]=full[cx*16+lx,cy*16+ly]
+    return im
+def beach_layer(beach,surf,W,H):
+    # sand on the carved bank: wet sand along the water, dry sand, and grass tufts eating into it from the land side
+    import numpy as np
+    from scipy import ndimage
+    import water6
+    out=np.zeros((H,W,4),np.uint8)
+    dw=ndimage.distance_transform_edt(~surf)                        # px from open water
+    land=~(beach|surf)
+    dl=ndimage.distance_transform_edt(~land)                        # px from land
+    gthr=1.0+5.0*water6.vnoise2(W,H,17,81)
+    ys,xs=np.nonzero(beach)
+    SAND=ctile(64,224); LAWN=ctile(0,128)
+    for y,x in zip(ys,xs):
+        if dl[y,x]<gthr[y,x]: c=LAWN[x%16,y%16]
+        else:
+            c=SAND[x%16,y%16]
+            if dw[y,x]<2.5: c=mul(c,0.72)
+            elif dw[y,x]<4: c=mul(c,0.86)
+        out[y,x,:3]=c; out[y,x,3]=255
+    return Image.fromarray(out,'RGBA')

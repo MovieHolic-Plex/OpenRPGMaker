@@ -31,7 +31,8 @@ import castle6, v6pieces
 img.alpha_composite(roman.paving5(CPV_,lambda X,Y: v6pieces.ctex(192,176,X,Y),joins=ANYP))
 print('paving',round(__import__('time').time()-T0,1))
 # ---- water: static rims/quay faces from pn.canal, the surface from water6 (frame 0 here, all 8 frames saved) ----
-img.alpha_composite(pn.canal(water))
+NAT=[[bool((lake[y][x] and (x<=35 or x>=65)) or pond[y][x]) for x in range(W)] for y in range(H)]
+img.alpha_composite(v6pieces.canal6(water,NAT))
 FLOW=[['still']*W for _ in range(H)]
 for y in range(H):
     for x in range(W):
@@ -41,7 +42,7 @@ for y in range(H):
         elif 47<=x<=50: FLOW[y][x]='S'
 OBST=[]; BR=[]
 for bx,by in BRIDGES:
-    b=roman.bridge_grand(4); x0=bx*16+b['ox']; y0=by*16+b['oy_back']; BR.append((b,x0,y0))
+    b=v6pieces.bridge6(4); x0=bx*16+b['ox']; y0=by*16+b['oy_back']; BR.append((b,x0,y0))
     OBST+=[(x0+a,y0+c,r) for a,c,r in b['foam']]
 for px_ in (20,38,62,76):                                      # pier legs at the waterline
     y0=shore[px_]*16+5*16
@@ -53,9 +54,10 @@ for y in range(H):
         quiet=pond[y][x] or (lake[y][x] and (x<=24 or x>=76) and y>=91) or (moat[y][x] and x<12)
         if quiet and water[y][x] and _lr.random()<(0.55 if pond[y][x] else 0.22):
             LIL.append((x*16+_lr.randint(1,8),y*16+_lr.randint(2,10),1 if _lr.random()<0.35 else 0))
-WA5=water6.Water(water,FLOW,obstacles=OBST,lilies=LIL)
+WA5=water6.Water(water,FLOW,obstacles=OBST,lilies=LIL,natural=NAT)
+img.alpha_composite(v6pieces.beach_layer(WA5.beach,WA5.surf,W*16,H*16))
 for b,x0,y0 in BR:
-    WA5.add_shade(x0,y0,b['shade']); WA5.add_band(x0+12,x0+b['W']-12,y0+b['refl_y'],y0+b['refl_y']+4,0.62)
+    WA5.add_shade(x0,y0,b['shade']); WA5.add_band(x0+6,x0+b['W']-6,y0+b['refl_y'],y0+b['refl_y']+4,0.62)
     WA5.add_reflection(b['reflect'],x0,y0+b['refl_y'])
 _bs={}
 for i,(k,bx_,by_) in enumerate(BOATS):

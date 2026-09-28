@@ -1,4 +1,8 @@
-# 버들항 v5 animated water: 8-frame seamless loop over every open water pixel.
+# 버들항 v6 animated water: 8-frame seamless loop over every open water pixel.
+# v6 (verdict 7 "harbour water looks like paving under water"): the chipset's 2-tone water tile is gone from the base -
+# depth bands now come from the distance to the bank plus two octaves of lattice-free value noise, so nothing repeats
+# every 16 / 32 px; still water only swells in place (no drifting dash rows with a 16 px period); `natural` cells get
+# an irregular, noise-carved shoreline (the carved band is returned as `beach` for a sand edge) instead of a quay rim.
 #  - depth shading from the bank distance (dark middle, lighter shallows), the quay's shadow under a north bank
 #  - river: current streaks that travel with the flow (south / east lanes, period 32 px, 4 px per frame)
 #  - lake/pond: standing ripple dashes that swell and fade on their own phase, a slow eastward drift line set
@@ -13,13 +17,21 @@ import terrain
 NF=8
 WT=np.array(terrain.CH.crop((16,80,32,96)).convert('RGB'),dtype=np.int32)       # chipset water tile (2 tones)
 TA=(28,74,68); TB=(33,88,78)
+def vnoise2(W,H,sc,seed):
+    # value noise on a jittered lattice of spacing sc (smoothstep interpolation); no tiling, no fixed period
+    gw=W//sc+3; gh=H//sc+3; rng=np.random.RandomState(seed); G=rng.rand(gh,gw)
+    ox=rng.randint(0,sc); oy=rng.randint(0,sc)
+    Y,X=np.mgrid[0:H,0:W]; fx=(X+ox)/sc; fy=(Y+oy)/sc; ix=fx.astype(int); iy=fy.astype(int); tx=fx-ix; ty=fy-iy
+    tx=tx*tx*(3-2*tx); ty=ty*ty*(3-2*ty)
+    a=G[iy,ix]; b=G[iy,ix+1]; c=G[iy+1,ix]; d=G[iy+1,ix+1]
+    return (a*(1-tx)+b*tx)*(1-ty)+(c*(1-tx)+d*tx)*ty
 def nhash(x,y,s):
     x=np.asarray(x,dtype=np.uint64); y=np.asarray(y,dtype=np.uint64)
     h=(x*np.uint64(374761393)+y*np.uint64(668265263)+np.uint64(s*982451653))&np.uint64(0xffffffff)
     h=((h^(h>>np.uint64(13)))*np.uint64(1274126177))&np.uint64(0xffffffff)
     return ((h^(h>>np.uint64(16)))&np.uint64(0xffff)).astype(np.float64)/65535.0
 class Water:
-    def __init__(s,mask,flow,obstacles=(),lilies=()):
+    def __init__(s,mask,flow,obstacles=(),lilies=(),natural=None):
         # mask[y][x] water cells; flow[y][x] in 'S','E','N','W','still'; obstacles: (x,y,r) px foam spots
         H=len(mask); W=len(mask[0]); s.H,s.W=H*16,W*16
         m=np.array(mask,bool); M=np.kron(m,np.ones((16,16),bool))
@@ -29,17 +41,20 @@ class Water:
         cu=np.kron(up,np.ones((16,16),bool)); cd=np.kron(dn,np.ones((16,16),bool)); cl=np.kron(lf,np.ones((16,16),bool)); cr=np.kron(rt,np.ones((16,16),bool))
         rim=((~cu)&(ly<9))|((~cd)&(ly>=13))|((~cl)&(lx<3))|((~cr)&(lx>=13))
         s.surf=M&~rim
+        s.beach=np.zeros_like(M)
+        if natural is not None:
+            NM=np.kron(np.array(natural,bool),np.ones((16,16),bool))&M
+            dl=ndimage.distance_transform_edt(M)                        # px from the nearest land pixel
+            thr=3.0+11.0*vnoise2(s.W,s.H,40,71)+4.0*vnoise2(s.W,s.H,13,72)
+            wet=dl>thr
+            s.surf=np.where(NM,wet,s.surf); s.beach=NM&~wet
         d=ndimage.distance_transform_edt(s.surf)
         s.d=d
-        # tile pattern bit (A/B) and depth tones
-        tile=WT[ly,lx]; isB=(tile[...,1]>80)
-        deep=np.array([(20,60,54),(26,70,64)]); mid=np.array([TA,TB]); shal=np.array([(33,88,78),(42,106,96)])
-        dz=np.clip((d-3)/10.0,0,1)                                   # 0 shallow .. 1 deep
-        n=nhash(X,Y,5)
-        lvl=np.where(d<3.5,0,np.where(d<9+3*n,1,2))
-        base=np.zeros((s.H,s.W,3),np.float64)
-        for i,pal in enumerate((shal,mid,deep)):
-            sel=lvl==i; base[sel]=np.where(isB[sel][:,None],pal[1],pal[0])
+        # depth bands: distance to the bank + two noise octaves + a hashed dither at the band edges (no tile, no period)
+        TONES=np.array([(42,106,96),(33,88,78),(28,74,68),(26,70,64),(20,60,54)],np.float64)
+        v=np.clip((d-1.5)/26.0,0,1)*0.78+(vnoise2(s.W,s.H,56,5)-0.5)*0.42+(vnoise2(s.W,s.H,19,6)-0.5)*0.16+(nhash(X,Y,5)-0.5)*0.07
+        lvl=np.digitize(v,[0.10,0.28,0.50,0.74])
+        base=TONES[lvl]
         # quay shadow under a north bank, lighter under a west bank (from pn.canal) -- measured in px from the bank
         nb=np.zeros((s.H,s.W),np.int32)+99
         for k in range(1,13):
@@ -79,14 +94,12 @@ class Water:
         # ---- still water: ripple dashes swelling on their own phase + a slow drift ----
         sel=surf&(s.fl==4)&(d>2.5)
         if sel.any():
-            gx=X//14; gy=Y//7; hx_=nhash(gx,gy,21); hy_=nhash(gx,gy,22)
-            cxp=gx*14+2+(hx_*8).astype(np.int64); cyp=gy*7+(hy_*5).astype(np.int64)
+            gy=Y//7; gx=(X+(nhash(gy,0,20)*23).astype(np.int64))//23; hx_=nhash(gx,gy,21); hy_=nhash(gx,gy,22)
+            cxp=gx*23-(nhash(gy,0,20)*23).astype(np.int64)+2+(hx_*15).astype(np.int64); cyp=gy*7+(hy_*5).astype(np.int64)
             ph=((f+(nhash(gx,gy,23)*NF).astype(np.int64))%NF)
             ln=np.choose(np.clip(ph,0,NF-1),[0,2,4,5,4,2,0,0])
             dash=sel&(Y==cyp)&(np.abs(X-cxp-2)<=ln//2)&(ln>0)&(nhash(gx,gy,24)>0.45)
             c[dash]=c[dash]*0.5+np.where((ph[dash]==3)[:,None],PALE,LIGHT)*0.5
-            lane=Y//5; dr=sel&(Y%5==2)&(nhash(lane,0,25)>0.72)&(((X+(nhash(lane,0,26)*16).astype(np.int64)-f*2)%16)<2)
-            c[dr]=c[dr]*0.75+LIGHT*0.25
         # ---- sparkles ----
         h=nhash(X,Y,31); ph=(nhash(X,Y,32)*NF).astype(np.int64)
         sp=surf&(d>1.5)&(h<0.0022)&(((f+ph)%NF)==0)
