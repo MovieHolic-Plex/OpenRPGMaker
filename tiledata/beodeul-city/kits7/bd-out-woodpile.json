@@ -1,0 +1,20 @@
+{
+ "id": "bd-out-woodpile",
+ "name": "외곽 장작더미",
+ "w": 2,
+ "h": 1,
+ "walk": [
+  "XX"
+ ],
+ "description": "쪼갠 장작을 쌓은 2칸 더미(둥근 단면이 앞을 향함).",
+ "rules": "집 옆 마당에 놓는다.",
+ "tags": [
+  "외곽",
+  "소품",
+  "장작"
+ ],
+ "role": "prop",
+ "doors": [],
+ "notes": "",
+ "assembly": []
+}

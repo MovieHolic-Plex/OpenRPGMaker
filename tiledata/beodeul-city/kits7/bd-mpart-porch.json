@@ -1,0 +1,22 @@
+{
+ "id": "bd-mpart-porch",
+ "name": "기둥 박공 현관 지붕",
+ "w": 3,
+ "h": 3,
+ "walk": [
+  "XXX",
+  "XCX",
+  "X.X"
+ ],
+ "description": "3x3칸: 낮은 박공(페디먼트)과 들보, 흰 기둥 둘. 기둥 사이는 비어 문이 보인다.",
+ "rules": "bd-mpart-door-bay 위에 3칸 폭으로 겹친다(문 칸 앞). 기둥 칸은 막힘, 가운데 칸 위쪽은 막힘.",
+ "tags": [
+  "귀족저택",
+  "부품",
+  "현관"
+ ],
+ "role": "part",
+ "doors": [],
+ "notes": "",
+ "assembly": []
+}

@@ -1,0 +1,29 @@
+{
+ "id": "bd-garden-formal",
+ "name": "정형 정원 (대칭 자갈 십자길·산울타리·사이프러스 통)",
+ "w": 17,
+ "h": 9,
+ "walk": [
+  ".C...CCFFFCC...C.",
+  ".XXXXXCFFFCXXXXX.",
+  ".XXXXXXFFFXXXXXX.",
+  ".XXXXX.FFF.XXXXX.",
+  "FCFFFCCFFFCCFFFCF",
+  ".XXXXXCFFFCXXXXX.",
+  ".XXXXXXFFFXXXXXX.",
+  ".XXXXX.FFF.XXXXX.",
+  ".......FFF......."
+ ],
+ "description": "17x9칸 대칭 정형 정원(저택 참고 그림): 3칸 폭 자갈 중심길(현관 계단과 같은 폭)과 가로길 셋·바깥 세로길, 네 화단마다 위아래 산울타리, 바깥쪽 통 속 사이프러스, 가운데 통 속 둥근 관목, 안쪽 쌍등 가로등. 길은 아래 그림(걷기), 나머지는 위 그림.",
+ "rules": "저택 바로 아래에 붙인다: 정원 x = 저택 x + (저택 문 칸 x - 8), 정원 y = 저택 y + 저택 높이(계단 끝). bd-manor-timber/vine 은 문 칸 x=8, 높이 12 → 같은 x, y+12 에 놓으면 정원 (8,0) 길칸이 계단 바로 아래에 이어진다. 화단 잔디 칸은 비워 둬 맵의 잔디가 보인다.",
+ "tags": [
+  "귀족저택",
+  "정원",
+  "대칭",
+  "정형"
+ ],
+ "role": "garden",
+ "doors": [],
+ "notes": "STAMP: garden.x = manor.x + (manor door dx - 8), garden.y = manor.y + manor.h. For bd-manor-timber / bd-manor-vine (door dx 8, h 12) that is the same x and y+12: the garden path cell (8,0) then sits directly under the stairs cell (8,11). For bd-manor-tower (door dx 9, h 11) use x-1, y+11. For bd-manor-small (door dx 5, h 12) use x+3, y+12 (the garden is 17 wide).",
+ "assembly": []
+}

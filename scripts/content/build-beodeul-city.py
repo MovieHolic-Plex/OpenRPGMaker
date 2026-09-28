@@ -178,6 +178,51 @@ for o in objects:
         g, x0, y0 = piece(o, {(o["px"] // T + i, o["py"] // T + j) for j in range(o["h"] // T) for i in range(o["w"] // T)}, "나무", "tree")
         PIECES.append(("tree", o["hash"][:6], g, x0, y0, o))
 
+# ---- v7 autotiles: 16 variants (N=1 E=2 S=4 W=8) for the street, the canal water and the sandy path, drawn by terrain7.py with the
+#      functions that drew the city; identical pictures share the map's own tiles (add() de-duplicates on pixels+layer+walk) ----
+import terrain7
+SIDE_KO = {1: "북", 2: "동", 4: "남", 8: "서"}
+def variant_name(m):
+    con = "".join(SIDE_KO[b] for b in (1, 2, 4, 8) if m & b)
+    return "사방 이어짐(몸통)" if m == 15 else ("외딴 한 칸" if m == 0 else f"{con}쪽으로 이어짐")
+road_var = terrain7.road_variants(); water_var = terrain7.water_variants(); sand_var = terrain7.sand_variants()
+def one(im): return np.repeat(np.array(im.convert("RGBA"))[None], LOOP, 0)
+ROAD_IDS = {}; WATER_IDS = {}; SAND_IDS = {}
+for m in range(16):
+    ROAD_IDS[m] = add(one(road_var[m]), dict(layer="lower", label=f"길 포석 오토타일 · {variant_name(m)}", kind="road", walk=True, level=1, x=-1, y=-1))
+for m in range(16):
+    seq = np.stack([np.array(water_var[m][f % 8].convert("RGBA")) for f in range(LOOP)])
+    WATER_IDS[m] = add(seq, dict(layer="lower", label=f"강·운하 물 오토타일 · {variant_name(m)}", kind="water", walk=False, level=1, x=-1, y=-1))
+for m in range(16):
+    SAND_IDS[m] = add(one(sand_var[m]), dict(layer="lower", label=f"모랫길 오토타일 · {variant_name(m)}", kind="sand", walk=True, level=1, x=-1, y=-1))
+
+# ---- v7 kits drawn as parts (tiledata/beodeul-city/kits7): cut into cells, per-cell collision from the kit's walk grid ----
+import kits7_common as K7
+KITS7 = []
+def cut_kit7(kid):
+    spec, up, lo = K7.load_kit(kid); Wc, Hc = spec["w"], spec["h"]
+    A = np.array(up); L = np.array(lo) if lo is not None else None
+    rows_ = []; role_txt = {"X": "막힘", "C": "걸음(윗부분)", "F": "걸음(바닥)", ".": "비움"}
+    for j in range(Hc):
+        lo_row, up_row = [], []
+        for i in range(Wc):
+            ch = spec["walk"][j][i]
+            cu = A[j * T:(j + 1) * T, i * T:(i + 1) * T]
+            lo_id, up_id = -1, -1
+            if L is not None:
+                cl = L[j * T:(j + 1) * T, i * T:(i + 1) * T]
+                if (cl[..., 3] == 255).all():
+                    lo_kind = ("sand" if "sand" in kid else "plaza") if ch == "F" else "kit7"      # a walkable floor of a kit is paved ground (path, plaza, steps)
+                    lo_id = add(np.repeat(cl[None], LOOP, 0), dict(layer="lower", label=spec["name"], kind=lo_kind, walk=(ch != "X"), level=1, x=-1, y=-1))
+            if cu[..., 3].any():
+                up_id = add(np.repeat(cu[None], LOOP, 0), dict(layer="upper", label=spec["name"], kind="kit7", walk=(ch in "CF"), level=1, x=-1, y=-1))
+            lo_row.append(lo_id); up_row.append(up_id)
+        rows_.append(dict(tiles=lo_row, upperTiles=up_row))
+    return spec, rows_
+for kid in K7.all_kits():
+    try: KITS7.append((kid,) + cut_kit7(kid))
+    except Exception as e: print("kits7", kid, "skipped:", e)
+
 count = len(tiles)
 rows = -(-count // COLS)
 sheet = np.zeros((rows * T, COLS * T, 4), np.uint8)
@@ -229,16 +274,55 @@ def group(gid, name, role, kind, desc, rule, layer="lower"):
     ids = most_common(cells_of.get(kind, []))
     return dict(id=f"beodeul:{gid}", name=name, role=role, source="bundled-default", tileIds=ids, defaultLayer=layer,
                 confidence="high", description=desc, placementRules=rule)
+def auto_group(gid, name, role, ids, desc, rule):
+    order = [ids[15]] + [ids[m] for m in range(15)]
+    return dict(id=f"beodeul:{gid}", name=name, role=role, source="bundled-default", tileIds=order, defaultLayer="lower",
+                confidence="high", description=f"{desc} 대표 바디 {ids[15]}.", placementRules=rule)
 tileGroups = [
-    group("paving", "버들항 길 포석", "path", "road", "버들항 거리의 회색 포석(연석 포함 여러 칸). 대표 칸 번호 순서대로 많이 쓰인다.", "길 폭 1~2칸. 집 문 앞 칸과 이어 준다."),
+    auto_group("paving", "버들항 길 포석", "path", ROAD_IDS, "버들항 거리의 회색 포석 **오토타일**(16변형: 이웃 길이 없는 쪽마다 연석 2px). 칠하면 가장자리·모서리가 저절로 맞는다.",
+               "길 폭 1~2칸. fill_region·lay_path 로 깔면 연석이 자동으로 붙는다. 광장·다리·계단·성문과 닿는 쪽은 연석이 안 생긴다. 집 문 앞 칸과 이어 준다."),
     group("plaza", "버들항 광장 판석", "path", "plaza", "광장·성 마당·항구 광장의 판석.", "광장 면 전체에 깐다."),
     group("grass", "버들항 풀밭", "ground", "grass", "버들항 풀밭(잔디·밝은 풀·그늘 풀이 섞임).", "빈 땅."),
-    group("water", "버들항 물", "water", "water", "버들항 운하·호수 물(8프레임 움직임, 사본 칸은 animationStrips).", "지나갈 수 없다. 강·호수 면."),
+    auto_group("water", "버들항 물", "water", WATER_IDS, "버들항 강·운하 물 **오토타일**(16변형, 8프레임 움직임). 물 이웃이 없는 쪽마다 돌 둑 테두리와 그림자가 붙는다.",
+               "지나갈 수 없다. 강·운하·호수 면. fill_region 으로 채우면 둑이 자동으로 맞는다. 다리·폭포와 닿는 쪽은 둑이 안 생긴다."),
+    auto_group("sand", "버들항 모랫길", "path", SAND_IDS, "성 밖 외곽의 모랫길 **오토타일**(16변형: 길이 아닌 쪽마다 잔디 가장자리).",
+               "성벽 밖 마을·우물 광장 사이. 폭 2칸 안팎. fill_region 또는 lay_path 로 깐다."),
+]
+# ---- autotile definitions (8-neighbourhood so lay_path accepts them; the picture depends on the 4 sides only) ----
+def variant_map8():
+    return {str(mask): (mask & 15) for mask in range(256)}
+def vmap(ids): return {k: ids[v] for k, v in variant_map8().items()}
+def tile_ids_of(kinds):
+    return sorted({lower[y * W + x] for y in range(H) for x in range(W) if label_of(x, y)[1] in kinds})
+ROAD_CONNECT = sorted(set(ROAD_IDS.values()) | set(tile_ids_of(("plaza", "bridge", "stair", "gate", "pier"))))
+WATER_CONNECT = sorted(set(WATER_IDS.values()) | set(tile_ids_of(("water", "bridge"))))
+SAND_CONNECT = sorted(set(SAND_IDS.values()) | set(ROAD_IDS.values()))
+autotileGroups = [
+    dict(id="beodeul_road_autotile", name="버들항 길 포석", neighborhood=8, memberTileIds=sorted(set(ROAD_IDS.values())), connectTileIds=ROAD_CONNECT,
+         variantMap=vmap(ROAD_IDS), edgeConnects=True, outsideConnects=True),
+    dict(id="beodeul_canal_lake_47", name="버들항 강·운하 물", neighborhood=8, memberTileIds=sorted(set(WATER_IDS.values())), connectTileIds=WATER_CONNECT,
+         variantMap=vmap(WATER_IDS), edgeConnects=True, outsideConnects=True),
+    dict(id="beodeul_sand_autotile", name="버들항 모랫길", neighborhood=8, memberTileIds=sorted(set(SAND_IDS.values())), connectTileIds=SAND_CONNECT,
+         variantMap=vmap(SAND_IDS), edgeConnects=True, outsideConnects=True),
 ]
 # ---- kits: every house / landmark footprint as a stampable structure kit (both layers, walkable fringe kept) ----
 kits_src = json.loads((REND / "city6_kits.json").read_text())
-def kit_rect(name, x0, y0, x1, y1, desc, rule, tags, entrance=None):
-    rows = [dict(tiles=[lower[yy * W + xx] for xx in range(x0, x1)], upperTiles=[upper[yy * W + xx] for xx in range(x0, x1)]) for yy in range(y0, y1)]
+def object_cells(o):
+    return {(cx, cy) for cy in range(o["py"] // T, (o["py"] + o["h"] - 1) // T + 1) for cx in range(o["px"] // T, (o["px"] + o["w"] - 1) // T + 1)}
+OBJ_CELLS = [object_cells(o) for o in objects if o["src"] != "ground"]
+def cut_off(x0, y0, x1, y1):
+    """cells inside the rect whose object (house, tree, prop, sign) reaches out of it: a kit must not carry half a building"""
+    inside = {(x, y) for y in range(y0, y1) for x in range(x0, x1)}; drop = set()
+    for cs in OBJ_CELLS:
+        if cs & inside and not cs <= inside: drop |= cs & inside
+    return drop
+def kit_rect(name, x0, y0, x1, y1, desc, rule, tags, entrance=None, clip=False):
+    drop = cut_off(x0, y0, x1, y1) if clip else set()
+    gb = next(g for g in tileGroups if g["id"] == "beodeul:grass")["tileIds"][0]
+    def lo_at(xx, yy):
+        # a removed tree leaves its dark 'shade' grass behind: put the plain lawn tile there
+        return gb if (xx, yy) in drop and label_of(xx, yy)[1] == "grass" else lower[yy * W + xx]
+    rows = [dict(tiles=[lo_at(xx, yy) for xx in range(x0, x1)], upperTiles=[(-1 if (xx, yy) in drop else upper[yy * W + xx]) for xx in range(x0, x1)]) for yy in range(y0, y1)]
     k = dict(id=name, kind="section", name=desc.split(" — ")[0], width=x1 - x0, height=y1 - y0, tileSize=16, rows=rows, learnedFrom="db-authored",
              ai=dict(description=desc, placementRules=rule, tags=["버들항"] + tags, role="building"))
     if entrance: k["parts"] = [dict(id="door", kind="entrance", dx=entrance[0] - x0, dy=entrance[1] - y0, w=1, h=1, note="문 칸 — 그 아래 칸이 문 앞 길")]
@@ -285,6 +369,52 @@ DISTRICTS = [
 ]
 for kid, x0, y0, x1, y1, desc, rule, tags in DISTRICTS:
     KITS.append(kit_rect(kid, x0, y0, min(W, x1), min(H, y1), desc + f" {min(W, x1) - x0}×{min(H, y1) - y0}. 원본 ({x0},{y0}).", rule, tags))
+# v7: the river in pieces (the upper river 33..36 x 0..23 was in no kit at all): whole upper river, straight pieces, bends, waterfalls
+RIVER_KITS = [
+    ("bd-river-upper", 33, 0, 37, 24, "버들항 윗 강줄기 — 성벽 북문 틈에서 시작해 성 해자 옆을 지나 폭포 위까지 4칸 폭 물(둑·그림자 포함)", "물 4칸 폭. 위는 맵 가장자리, 아래는 bd-waterfall-drop 로 이어진다. 양쪽은 성 둑길과 저택 담이다.", ["river", "water", "source"]),
+    ("bd-river-straight-ns", 33, 6, 37, 10, "버들항 곧은 강 조각(남북) 4×4 — 세로로 이어 찍는 재료", "물 4칸 폭. 세로로 몇 번이든 이어 찍는다(양옆에 강둑 땅·담이 필요하다). 끝은 폭포·굽이·다리로 마무리.", ["river", "water", "straight"]),
+    ("bd-canal-straight-ew", 38, 38, 46, 42, "버들항 곧은 운하 조각(동서) 8×4 — 가로로 이어 찍는 재료", "물 4칸 폭. 가로로 이어 찍는다. 위쪽 둑은 돌 벽면(6px)이 붙는다.", ["river", "water", "straight", "canal"]),
+    ("bd-river-bend-ns-ew", 33, 38, 37, 42, "버들항 강 굽이 — 남북 강이 동쪽 운하로 꺾이는 4×4", "북쪽에서 내려온 강이 동쪽으로 꺾인다.", ["river", "water", "bend"]),
+    ("bd-canal-bend-ew-ns", 47, 38, 51, 42, "버들항 강 굽이 — 동서 운하가 남쪽 강으로 꺾이는 4×4", "서쪽에서 온 운하가 남쪽으로 꺾인다.", ["river", "water", "bend"]),
+    ("bd-bridge-arch", 33, 32, 37, 37, "버들항 강 위 아치 다리 — 폭 4칸 갑판(2줄)에 양쪽 난간, 남쪽 면에 아치 둘과 물깎이 4×5", "남북으로 흐르는 4칸 폭 강을 동서 큰길이 건널 때. 갑판 2줄(위에서 둘째·셋째 줄)이 길 두 줄과 맞아야 한다. 강 위·아래는 강 조각(bd-river-straight-ns)으로 이어 준다.", ["bridge", "river", "arch"]),
+    ("bd-harbour-lake", 9, 85, 92, 100, "버들항 호수 항구 — 남쪽 호수(자연 둑·갈대), 물가 산책길(포석 두 줄), 잔교 넷, 계선주, 배(움직임), 강 하구의 아치 다리 83×15", "맵 남쪽 가장자리. 위 줄(산책길)에 큰길이 닿고, 강은 키트 위 줄의 물 칸(원점에서 38~41칸째)으로 들어온다. 집·도로는 이 위에 새로 깐다.", ["harbour", "lake", "pier", "port"]),
+    ("bd-harbour-square", 59, 66, 71, 77, "버들항 항구 광장 — 생선 노점·닻 전시대·그물 건조대·분수(물고기 연못)가 있는 포석 광장 12×11", "부두에서 가까운 큰길 옆. 광장 가장자리에 길이 닿는다.", ["harbour", "plaza", "market"]),
+    ("bd-waterfall-drop", 29, 26, 41, 33, "버들항 폭포(위 단 → 가운데 단) — 강이 3칸 절벽 아래로 떨어지고 물웅덩이로 이어짐 12×7", "위 강(4칸 폭)을 이 폭포 위에서 받고, 아래는 웅덩이 강으로 이어진다. 양옆은 바위 절벽면·풀 가장자리 칸이 구워져 있다. 폭포 위 강의 물 칸은 키트 맨 위에서 원점 기준 4~7칸째다.", ["waterfall", "river", "cliff"]),
+    ("bd-waterfall-wall", 43, 59, 55, 68, "버들항 폭포(가운데 단 → 항구 단) — 석축 옹벽을 넘는 폭포 12×9", "가운데 마을과 항구 사이 석축 옹벽 위에 폭포. 아래 물은 항구 대로 옆 강으로 이어진다.", ["waterfall", "river", "wall"]),
+]
+for kid, x0, y0, x1, y1, desc, rule, tags in RIVER_KITS:
+    k = kit_rect(kid, x0, y0, x1, y1, desc + f" {x1 - x0}×{y1 - y0}. 원본 ({x0},{y0}).", rule, tags, clip=True)
+    k["ai"]["role"] = "water" if kid.startswith(("bd-river", "bd-canal", "bd-water", "bd-bridge")) else "terrain"; KITS.append(k)
+def kit7_struct(kid, spec, rows_):
+    role = {"building": "building", "part": "building", "prop": "prop", "garden": "terrain", "district": "building"}[spec["role"]]
+    asm = ""
+    if spec.get("assembly"): asm = " 조립: " + ", ".join(f"{a['kit']} @({a['x']},{a['y']})" for a in spec["assembly"]) + "."
+    door = spec["doors"][0] if spec["doors"] else None
+    k = dict(id=kid, kind="section", name=spec["name"], width=spec["w"], height=spec["h"], tileSize=16, rows=rows_, learnedFrom="db-authored",
+             ai=dict(description=spec["description"] + asm, placementRules=spec["rules"], tags=["버들항", "v7"] + list(spec["tags"]), role=role))
+    if spec["doors"]:
+        k["parts"] = [dict(id="door" if i == 0 else f"door{i + 1}", kind="entrance", dx=d["dx"], dy=d["dy"], w=1, h=1, note=d["note"] + " — 그 아래 칸이 문 앞") for i, d in enumerate(spec["doors"])]
+    return k
+for kid, spec, rows_ in KITS7: KITS.append(kit7_struct(kid, spec, rows_))
+# v7: ground variety. The flat material fill (one grass tile) looks dead; the city's own lawn is a noise mix of lawn / meadow / shade /
+# flower. Six 6x6 windows of the plain lawn (no object, no shadow within 1 cell) become stampable ground patches.
+def lawn_windows(n=6, S=6):
+    def clear(x, y): return 0 <= x < W and 0 <= y < H and occ[y][x] is None and upper[y * W + x] < 0 and not water[y][x] and not grid["F"][y][x]
+    cand = []
+    for y in range(1, H - S - 1):
+        for x in range(1, W - S - 1):
+            if all(clear(x + i, y + j) for j in range(0, S) for i in range(0, S)) and len({E[y + j][x + i] for j in range(S) for i in range(S)}) == 1:
+                cand.append((len({lower[(y + j) * W + x + i] for j in range(S) for i in range(S)}), x, y))
+    cand.sort(reverse=True); pick = []
+    for score, x, y in cand:
+        if all(abs(x - a) >= 10 or abs(y - b) >= 10 for _, a, b in pick): pick.append((score, x, y))
+        if len(pick) == n: break
+    return pick
+for k_, (score, gx, gy) in enumerate(lawn_windows(), 1):
+    KITS.append(dict(id=f"bd-ground-lawn-{k_}", kind="section", name=f"버들항 잔디 무늬 조각 {k_} 6×6", width=6, height=6, tileSize=16, learnedFrom="db-authored",
+        rows=[dict(tiles=[lower[(gy + j) * W + gx + i] for i in range(6)], upperTiles=[-1] * 6) for j in range(6)],
+        ai=dict(description=f"버들항 잔디 무늬(풀·밝은 풀·그늘 풀·꽃잎이 섞인 원본 {gx},{gy} 6×6 땅). 아래층만 — 빈 땅이 납작한 한 가지 잔디로 죽어 보이지 않게 흩어 찍는다.",
+                placementRules="빈 풀밭 위에 겹쳐 찍는다(길·물·건물 자리는 피한다). 6×6 조각 가장자리는 같은 풀이라 이음새가 거의 안 보인다. 한 곳에 뭉치지 말고 10칸 안팎으로 띄워 흩는다.", tags=["버들항", "ground", "lawn"], role="terrain")))
 # no whole-city kit: the assistant composes a town from the district and house kits (the full map is the saved canon)
 # ---- NPCs ----
 people = json.loads((REND / "city6_people.json").read_text())
@@ -292,7 +422,7 @@ out = dict(
     id=TILESET_ID, name="버들항 v6 · 로마풍 항구 도시 (손 도트)", textureKey="tex_beodeul_city",
     image="assets/beodeul-city/beodeul-city-chipset.png", tileSize=T, tilesPerRow=COLS, count=count,
     passability=passability, priority=priority, terrain=terrain, tileMeta=tileMeta, tileGroups=tileGroups,
-    animationStrips=strips, structureKits=KITS, family="easyrpg",
+    animationStrips=strips, structureKits=KITS, autotileGroups=autotileGroups, family="easyrpg",
 )
 TS_JSON.write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")))
 # sheet geometry for bundled.ts (kept apart so the frame registry does not import the 6 MB definition)
