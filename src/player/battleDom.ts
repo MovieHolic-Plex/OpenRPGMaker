@@ -1,4 +1,4 @@
-import { retroTimelineEntry, retroCommandPose, initRetroMotion, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, retroVictory, retroWalk } from "@/player/battleRetroMotion";
+import { retroTimelineEntry, retroCommandPose, initRetroMotion, isTravellingEffect, preloadRetroMotionSe, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, retroVictory, retroWalk } from "@/player/battleRetroMotion";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
 import type {
   ActorCommand,
@@ -225,7 +225,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   playbackStatus.setAttribute("aria-live", "polite");
   playbackStatus.setAttribute("aria-atomic", "true");
   root.append(field, animationLayer, messageWindow, enemyPanel, commandHost, partyPanel, resultHost, playbackStatus);
-  if (retroMotion) initRetroMotion(field, initialSnapshot);
+  if (retroMotion) {
+    initRetroMotion(field, initialSnapshot);
+    preloadRetroMotionSe();
+  }
   syncPlaybackStatus();
   // 씬이 붙으면 포커스를 씬 안으로 가져온다 — 없으면 인트로·명령 국면 내내 activeElement 가
   // BODY 라 보조기술 컨텍스트가 필드에 남고 씬 스코프 포커스 링이 절대 보이지 않는다.
@@ -1507,14 +1510,5 @@ function prefersReducedMotion(): boolean {
     && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-/**
- * 도트 측면 전투에서는 **날아가는 이펙트(화살·투사체)를 그리지 않는다** — 마법은 캐릭터가 도트로 시전하는 모습이 주인공이다
- * (사용자 지시, 2026-09-28). 판정: 애니메이션의 그림 리소스·이름에 화살/투사체 낱말이 있으면 날아가는 것으로 본다
- * (EasyRPG Arrow 시트 easyrpg-battle-arrow, 생성 이펙트 projectile-shot · 이름 「화살」「투사체」「독침」).
- * 대상 위에서 제자리로 터지는 이펙트(불꽃·치유 빛·베기)는 남는다.
- */
-function isTravellingEffect(animation: { readonly resourceId?: string; readonly name?: string; readonly animationId?: string } | undefined): boolean {
-  if (!animation) return false;
-  const text = `${animation.resourceId ?? ""} ${animation.animationId ?? ""} ${animation.name ?? ""}`;
-  return /arrow|projectile|missile|bolt-shot|화살|투사체|독침|탄환/i.test(text);
-}
+// 도트 측면 전투에서는 날아가는 이펙트(화살·투사체)를 그리지 않는다 — 판정은 battleRetroMotion.isTravellingEffect.
+// 대상 위에서 제자리로 터지는 이펙트(불꽃·치유 빛·베기)는 남는다. 빠진 이펙트의 소리는 시전 방출음이 대신한다.

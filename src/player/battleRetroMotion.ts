@@ -6,6 +6,7 @@ import type { BattleSnapshot } from "@/battle/runtime";
 import type { BattleActionBeat } from "@/player/battleActionBeats";
 import type { DamageFeedback } from "@/player/battleSequencer";
 import { scheduleBattleTimer } from "@/player/battleTimerScope";
+import { playBattleSample, preloadBattleSamples } from "@/player/battleSeSamples";
 
 type Pose = ExtendedBattlerPose;
 type PaintPose = (node: HTMLElement, pose: Pose) => void;
@@ -107,6 +108,8 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
     const castType = user.dataset.retroAction === "cast" && skill ? castTypeForSkill(skill) : undefined;
     if (castType) user.dataset.retroCast = castType;
     else delete user.dataset.retroCast;
+    // 이 스킨은 날아가는 투사체 애니메이션을 띄우지 않는다(battleDom). 그 소리도 함께 빠지므로 표시해 두고 방출음을 낸다.
+    user.dataset.retroMuted = String(isTravellingEffect(entry?.animation));
     // 차례의 반 걸음 위치에서 출발한다. 화면 배율을 이동 거리에 다시 곱하지 않는다.
     user.style.setProperty("--retro-start", user.dataset.retroCommand === "true" ? "-16px" : "0px");
     // 근접 공격은 대상 적 앞까지 실제로 걸어간다(retroWalk 가 DOM 좌표로 잰다). 못 재면 72px.
@@ -212,6 +215,7 @@ function animateExtendedBeat(node: HTMLElement, beat: BattleActionBeat): void {
   }
   if (beat.kind === "recover" && node.dataset.retroStyle === "blink" && !reduced() && length > 0 && typeof node.animate === "function") {
     // 순간이동으로 온 캐릭터는 돌아갈 때도 빛나며 사라졌다 제자리에 나타난다.
+    scheduleBattleTimer(() => { if (node.isConnected) motionSe("blink", 0.26); }, Math.round(length * 0.3));
     const dx = node.style.getPropertyValue("--retro-travel") || "0px";
     const dy = node.style.getPropertyValue("--retro-travel-y") || "0px";
     approachAnimations.set(node, node.animate([
@@ -230,6 +234,13 @@ function animateExtendedBeat(node: HTMLElement, beat: BattleActionBeat): void {
     frames = beat.kind === "approach" ? [[0, "cast_charge"], [0.55, "cast_raise"]]
       : beat.kind === "impact" ? [[0, finisher ? "skill" : "cast_release"]]
         : [[0, finisher ? "skill" : "cast_release"], [0.6, "idle"]];
+    // 방출 소리는 투사체가 빠진 기술에만 — 자기 애니메이션이 화면에 뜨는 기술은 그 소리가 이미 운다.
+    const cast = node.dataset.retroCast as CastType | undefined;
+    if (beat.kind === "approach" && cast && node.dataset.retroMuted === "true") {
+      scheduleBattleTimer(() => {
+        if (node.isConnected && beatGenerations.get(node) === generation) motionSe(`cast-${cast}` as MotionCue, 0.3);
+      }, Math.max(0, length - 60));
+    }
   } else if (beat.kind === "approach") {
     if (node.dataset.retroStyle && !reduced() && length > 0 && typeof node.animate === "function") {
       frames = animateMeleeApproach(node, length);
@@ -336,6 +347,45 @@ export function retroTimelineEntry(field: HTMLElement, entry: BattleTimelineEntr
   currentEntries.set(field, entry);
 }
 
+// ── 도트 측면 접근 효과음 ────────────────────────────────────────────────────────────────
+// 이동 사건 1개에 소리 1개(battleJuice 의 계약과 같다). 휘두름·타격음은 기존 경로(attack-swing·hit-*)가 그대로 낸다.
+// 샘플은 EasyRPG RTP(CC-BY, 게임과 함께 출하). 디코드 캐시가 비었으면 이번 한 번은 조용히 넘어간다(다음부터 즉시).
+const MOTION_SE = {
+  dash: "easyrpg-sound-wind8",
+  leap: "easyrpg-sound-move",
+  land: "easyrpg-sound-earth2",
+  blink: "easyrpg-sound-teleport2",
+  flash: "easyrpg-sound-flash1",
+  "enemy-hop": "easyrpg-sound-move",
+  "enemy-swoop": "easyrpg-sound-wind8",
+  // 마법 방출(cast_release) 순간. 날아가는 투사체 애니메이션을 이 스킨은 띄우지 않아서, 그 애니메이션의
+  // 첫 타이밍 소리(예: 독침 Poison.wav)도 함께 사라졌다 — 시전 도트가 방출하는 순간에 종류별 소리를 낸다.
+  "cast-fire": "easyrpg-sound-fire1",
+  "cast-ice": "easyrpg-sound-ice1",
+  "cast-thunder": "easyrpg-sound-flash3",
+  "cast-heal": "easyrpg-sound-holy2",
+  "cast-dark": "easyrpg-sound-darkness3",
+  "cast-arcane": "easyrpg-sound-magic2",
+  "cast-support": "easyrpg-sound-buff",
+} as const;
+type MotionCue = keyof typeof MOTION_SE;
+
+export function preloadRetroMotionSe(): void {
+  preloadBattleSamples([...new Set(Object.values(MOTION_SE))]);
+}
+
+/** 날아가는 효과(화살·투사체)인가 — 도트 측면 전투는 이런 애니메이션을 띄우지 않고 시전 도트로 대신한다. */
+export function isTravellingEffect(animation: { readonly resourceId?: string; readonly name?: string; readonly animationId?: string } | undefined): boolean {
+  if (!animation) return false;
+  const text = `${animation.resourceId ?? ""} ${animation.animationId ?? ""} ${animation.name ?? ""}`;
+  return /arrow|projectile|missile|bolt-shot|화살|투사체|독침|탄환/i.test(text);
+}
+
+function motionSe(cue: MotionCue, volume = 0.3): void {
+  if (reduced()) return;
+  playBattleSample(MOTION_SE[cue], volume);
+}
+
 // ── 캐릭터별 접근 방식 ──────────────────────────────────────────────────────────────────
 // 걸어가기가 기본이었는데 "너무 루즈하다" 는 지적(2026-09-28). 직업마다 대상 앞까지 가는 방식을 다르게 한다.
 //   dash     전사: 몸을 낮췄다가 잔상을 남기며 질주 → 미끄러지며 벤다
@@ -432,6 +482,11 @@ function animateMeleeApproach(node: HTMLElement, length: number): readonly [numb
   approachAnimations.get(node)?.cancel();
   const animation = node.animate(keys, { duration: Math.max(1, length), fill: "forwards" });
   approachAnimations.set(node, animation);
+  // 이동 효과음: 출발 순간에 한 번(도약은 착지에 한 번 더). 순간이동은 사라지는 순간.
+  const departAt = keys[1]?.offset ?? 0;
+  const cue: MotionCue = style;
+  scheduleBattleTimer(() => { if (node.isConnected) motionSe(cue, style === "blink" ? 0.34 : 0.26); }, Math.round(length * departAt));
+  if (style === "leap") scheduleBattleTimer(() => { if (node.isConnected) motionSe("land", 0.32); }, Math.round(length * arrive));
   // 잔상: 질주·섬광은 지나간 자리에 스프라이트 사본을 짧게 남긴다(도트 게임의 잔상 문법).
   if (style === "dash" || style === "flash") spawnAfterimages(node, keys, length, style === "flash" ? 4 : 3);
   if (style === "leap") scheduleBattleTimer(() => spawnDust(node), Math.round(length * arrive));
@@ -654,6 +709,11 @@ function animatePixelEnemyBeat(node: HTMLElement, beat: BattleActionBeat): void 
   if (melee && beat.kind === "approach") {
     const hold = Math.min(0.45, ENEMY_HOLD_MS / Math.max(1, length));
     const travel = 1 - hold;
+    // 슬라임은 두 번 뛸 때마다 통, 박쥐는 급강하에 바람 소리 한 번.
+    const hops = swoop ? [hold] : [hold, hold + travel * 0.5];
+    for (const at of hops) scheduleBattleTimer(() => {
+      if (node.isConnected && beatGenerations.get(node) === generation) motionSe(swoop ? "enemy-swoop" : "enemy-hop", 0.22);
+    }, Math.round(length * at));
     if (swoop) {
       // 날개를 치켜들며 살짝 뒤로 떠올랐다가(windup) 날개를 접고 대상에게 내리꽂는다(move).
       path = [[0, 0, 0, "ease-out"], [hold, -8, -12, "ease-in"], [hold + travel * 0.45, dx * 0.45, dy * 0.35 - 14, "ease-in"], [1, dx, dy]];
