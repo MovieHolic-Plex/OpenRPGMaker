@@ -5,6 +5,56 @@
 
 <!-- releases -->
 
+## 0.39.2 — 2026-09-28
+
+### 수정
+
+- **ai** — 전송 gzip 조각 스트림 타입을 CompressionStream 쓰기 쪽(BufferSource)에 맞춤 (`887b4c3`)
+
+### 성능
+
+- **ai** — 조수 렉 2차 실측 증거 (`df2cbec`)
+- **ai** — 전송 gzip 양보를 조각마다가 아니라 12ms 마다 (`54141f8`)
+- **ai** — 체크포인트를 칸 단위로 다시 그리기·커밋 기준 요약에 공유 항목 믿음·초점 이동의 강제 레이아웃 제거 (`9d9d39e`)
+- **ai** — 조수 체크포인트의 클러스터 전체 스캔 제거·타일 색인·전송 gzip 을 조각으로 흘리기 (`b0e38e5`)
+- **ai** — 조수 렉 실측 하네스·전후 증거·위키 기록 (`e347776`)
+- **ai-ui** — record browser-only measurements and corrected validation scope (`6f0f1a8`)
+- **editor** — record standalone Node measurements after validation halt (`c0db7b7`)
+- **editor** — record texture redraw measurements and regression checks (`8670725`)
+- **editor** — retain pending texture completion across scene restart (`abf81ca`)
+- **editor** — verify texture redraw batching and scene lifetime (`b21c01e`)
+- **editor** — coalesce texture completion redraws per frame (`47de879`)
+- **ai-ui** — finalize rendering measurements and validation results (`b707351`)
+- **editor** — finalize subscriber performance verification (`e2c04b5`)
+- **ai-ui** — record measurements contracts and browser evidence (`9d05f55`)
+- **editor** — record subscriber benchmarks and browser evidence (`0e7592b`)
+- **ai-ui** — verify archive version guards pruning and write failures (`5565d06`)
+- **ai-ui** — cover deferred rendering and DOM identity with a complete window fixture (`f29308d`)
+- **ai-ui** — release activity media from removed subtrees only (`b860a7b`)
+- **ai-ui** — match answer references with a cached prefix trie (`f3ecff5`)
+- **editor** — cover coalesced panel state and mount lifetime (`60da691`)
+- **ai-ui** — stop building permanently hidden legacy board rows (`8e96878`)
+- **editor** — apply direct tool tile changes through incremental rendering (`51a28ea`)
+- **ai-ui** — reuse member buttons and index recent media by actor (`e6a7d86`)
+- **editor** — request a render frame only for visible store changes (`ee45dcb`)
+- **ai-ui** — share actor indices and bound activity projections (`aac1ad7`)
+- **editor** — debounce rule audits after the final edit (`d1d4488`)
+- **editor** — reuse map link graphs and preserve unchanged link panels (`8387b32`)
+- **ai-ui** — persist only pending runs and amortize archive pruning (`dd0d0cf`)
+- **ai-ui** — scroll conversation replay once per batch (`d661838`)
+- **ai-ui** — defer detached studio and hidden transcript updates (`ae61d79`)
+- **editor** — share reference diagnostics and coalesce store panel refreshes (`f229979`)
+- **ai-ui** — retain capped transcript rows by stable ordinal (`f0ac581`)
+
+### 기타
+
+- perf(ai) 조수 패널이 한가할 때 첫 턴·첫 적용 준비 비용을 미리 치르기 (`af17a6b`)
+- perf(pi) 무거운 키 해시를 내용 요약으로 재사용 (`cb5a1b0`)
+- perf(lint) 왕복을 통과한 공유 항목은 뼈대로 되읽기 (`6caec2a`)
+- perf(ai) 적용 권위 요약이 공유 항목 대조를 반복하지 않게 (`b273d4a`)
+- perf(ai) 조수 적용·체크리스트 경로의 전체 문서 직렬화·요약 줄이기 (`333f29c`)
+- preserve AI UI verification report while app typecheck finishes (`6b47505`)
+
 ## 0.39.1 — 2026-09-28
 
 ### 성능
