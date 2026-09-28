@@ -1,3 +1,4 @@
+import { animateRetroSkillFx, clearRetroSkillFx, preloadRetroSkillFx, retroSkillForEntry, setRetroSkillEntry, type RetroSkillRecipe } from "@/player/retroSkillChoreography";
 import { CAST_TYPES, EXTENDED_POSE_FRAME, castTypeForSkill, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
 import type { PixelEnemyCell } from "@/assets/pixelEnemySheets";
 import { store } from "@/project/store";
@@ -10,6 +11,7 @@ import { playBattleSample, preloadBattleSamples } from "@/player/battleSeSamples
 
 type Pose = ExtendedBattlerPose;
 type PaintPose = (node: HTMLElement, pose: Pose) => void;
+const actorRecipes = new WeakMap<HTMLElement, RetroSkillRecipe>();
 const painters = new WeakMap<HTMLElement, PaintPose>();
 const cursors = new WeakMap<HTMLElement, number>();
 const currentEntries = new WeakMap<HTMLElement, BattleTimelineEntrySnapshot>();
@@ -60,9 +62,11 @@ export function retroCastFrameFor(node: HTMLElement, pose: Pose): { readonly typ
 /** 시퀀서가 실제로 소비하는 시각 엔트리만 따라간다. 마지막 결과는 이미 다음 행동일 수 있다. */
 export function initRetroMotion(field: HTMLElement, snapshot: BattleSnapshot): void {
   cursors.set(field, snapshot.timeline.at(-1)?.sequence ?? -1);
+  preloadRetroSkillFx();
 }
 
 export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | undefined, snapshot: BattleSnapshot): void {
+  if (!beat) clearRetroSkillFx(field);
   const nodes = [...field.querySelectorAll<HTMLElement>(".battle-actor, .battle-enemy")];
   const matchesUser = (node: HTMLElement) => node.dataset.recordId === beat?.userId || node.dataset.testid === beat?.userId
     || snapshot.actors.some((actor) => actor.id === beat?.userId && actor.recordId === node.dataset.recordId);
@@ -73,6 +77,8 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
     if (node.dataset.retroBeat) {
       delete node.dataset.retroBeat;
       delete node.dataset.retroAction;
+      delete node.dataset.retroSkill;
+      actorRecipes.delete(node);
       delete node.dataset.retroReach;
       delete node.dataset.retroStyle;
       approachAnimations.get(node)?.cancel();
@@ -97,15 +103,19 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
     if (entry) cursors.set(field, entry.sequence);
     const skill = entry?.commandKind === "skill"
       ? store.getCurrent().database.skills.find((row) => row.name === entry.skillName) : undefined;
+    const recipe = user.classList.contains("battle-actor") ? retroSkillForEntry(entry) : undefined;
+    if (recipe) { actorRecipes.set(user, recipe); user.dataset.retroSkill = recipe.fx; }
+    else { actorRecipes.delete(user); delete user.dataset.retroSkill; }
     user.dataset.retroFinisher = String(Boolean(skill?.limitSkill || (skill?.power ?? 0) >= 100));
     user.dataset.retroAction = user.classList.contains("battle-enemy") ? "enemy"
       : entry?.commandKind === "defend" ? "defend"
         : entry?.commandKind === "item" && user.dataset.battlerExtended === "true" ? "item"
           // 공격력으로 치는 기술(검격 등)은 걸어가서 벤다. 나머지 기술은 제자리 시전.
+          : recipe ? (recipe.approach === "still" ? "cast" : "attack")
           : entry && entry.commandKind === "skill" && isMeleeEntry(entry) ? "attack"
             : entry?.commandKind === "skill" || entry?.commandKind === "item" ? "cast" : "attack";
     // 마법 종류별 시전 칸(cast 시트). 걷기 칩 시트가 아니면 기존 시전 칸으로 떨어진다.
-    const castType = user.dataset.retroAction === "cast" && skill ? castTypeForSkill(skill) : undefined;
+    const castType = recipe?.cast ?? (user.dataset.retroAction === "cast" && skill ? castTypeForSkill(skill) : undefined);
     if (castType) user.dataset.retroCast = castType;
     else delete user.dataset.retroCast;
     // 이 스킨은 날아가는 투사체 애니메이션을 띄우지 않는다(battleDom). 그 소리도 함께 빠지므로 표시해 두고 방출음을 낸다.
@@ -120,7 +130,7 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
       : ["cast", "item"].includes(user.dataset.retroAction) ? "-16px"
         : `${-(walk?.distance ?? 72)}px`);
     // 근접은 직업별 접근(질주·도약·순간이동·섬광). 거리를 못 쟀으면(감속 모드 등) 예전 걷기 키프레임.
-    if (walk) user.dataset.retroStyle = retroApproachStyle(entry?.userRecordId ?? user.dataset.recordId);
+    if (walk) user.dataset.retroStyle = recipe && recipe.approach !== "still" ? recipe.approach : retroApproachStyle(entry?.userRecordId ?? user.dataset.recordId);
     else delete user.dataset.retroStyle;
     if (user.dataset.pixelEnemy && entry) {
       // 도트 적: 근접 공격은 대상 아군 앞까지 뛰어/날아간다. 그 밖의 기술은 제자리에서 반 걸음만 나선다.
@@ -130,6 +140,7 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
       user.style.setProperty("--retro-enemy-dy", `${reach?.dy ?? 0}px`);
     }
   }
+  animateRetroSkillFx(field, user, beat);
   user.dataset.retroBeat = beat.kind;
   user.style.setProperty("--retro-beat-ms", `${Math.max(1, beat.durationMs)}ms`);
   if (user.dataset.battlerExtended === "true") animateExtendedBeat(user, beat);
@@ -227,8 +238,18 @@ function animateExtendedBeat(node: HTMLElement, beat: BattleActionBeat): void {
       { offset: 1, translate: "0px 0px", opacity: 1, filter: "none" },
     ], { duration: length, fill: "forwards" }));
   }
-  let frames: readonly [number, Pose][];
-  if (action === "defend") frames = [[0, "defend"]];
+  const recipe = actorRecipes.get(node);
+  let frames: readonly (readonly [number, Pose])[];
+  if (recipe) {
+    if (beat.kind === "approach" && recipe.approach !== "still" && !reduced() && length > 0 && typeof node.animate === "function") {
+      // Arrive in the first third; the remaining beat belongs to the actual combo.
+      animateMeleeApproach(node, length * 0.34);
+    }
+    frames = beat.kind === "approach" ? recipe.poses
+      : beat.kind === "impact" ? [[0, recipe.release]]
+        : [[0, recipe.release], [recipe.approach === "still" ? 0.72 : 0.2, "idle"]];
+  }
+  else if (action === "defend") frames = [[0, "defend"]];
   else if (action === "item") frames = [[0, "item"]];
   else if (action === "cast") {
     frames = beat.kind === "approach" ? [[0, "cast_charge"], [0.55, "cast_raise"]]
@@ -261,7 +282,7 @@ function animateExtendedBeat(node: HTMLElement, beat: BattleActionBeat): void {
   else frames = [[0, "attack_follow"], [0.18, "evade"], [0.86, "idle"]];
   // 감속 모드와 길이 0 비트에서는 대표 칸만 내보내고 뒤늦은 칸 전환을 예약하지 않는다.
   if (reduced() || length === 0) {
-    frames = [[0, action === "defend" ? "defend" : action === "item" ? "item"
+    frames = [[0, recipe ? (beat.kind === "recover" ? "idle" : recipe.release) : action === "defend" ? "defend" : action === "item" ? "item"
       : beat.kind === "recover" ? "idle" : action === "cast" ? (finisher ? "skill" : "cast_release")
         : beat.kind === "impact" ? "attack" : "idle"]];
   }
@@ -345,6 +366,7 @@ export function retroCommandPose(node: HTMLElement, active: boolean): void {
 /** 시퀀서가 소비 중인 엔트리 자체를 쓴다. 같은 사용자의 과거 피해를 재검색하지 않는다. */
 export function retroTimelineEntry(field: HTMLElement, entry: BattleTimelineEntrySnapshot): void {
   currentEntries.set(field, entry);
+  setRetroSkillEntry(field, entry);
 }
 
 // ── 도트 측면 접근 효과음 ────────────────────────────────────────────────────────────────
@@ -555,6 +577,8 @@ function isMeleeEntry(entry: BattleTimelineEntrySnapshot): boolean {
   if (entry.side === "enemy") return false;
   if (entry.commandKind === "attack") return true;
   if (entry.commandKind !== "skill") return false;
+  const recipe = retroSkillForEntry(entry);
+  if (recipe) return recipe.approach !== "still";
   const skill = store.getCurrent().database.skills.find((row) => row.name === entry.skillName);
   return skill?.effect.kind === "damage" && skill.effect.statistic === "attack";
 }

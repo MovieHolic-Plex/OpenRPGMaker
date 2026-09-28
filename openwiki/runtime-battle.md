@@ -64,6 +64,42 @@
   프로브는 키보드로만 입력한다 — 명령 버튼은 포인터를 통과시켜 `click()` 이 30초 뒤 실패한다(실측).
   GIF: `node scripts/qa/runtime/retro2003-gif.mjs --fps 10 --width 520` → `verify-shots/runtime-qa/retro2003-gif/` 의 battle·attack·defend·magic·magic-2·enemy-slime·enemy-bat·victory. 녹화 사본은 번들 `charset-battler-*` id 를 그대로 쓴다(업로드 사본이면 확장 칸·시전 시트가 꺼진다) 그리고 슬라임·박쥐는 통상 공격만 한다.
 
+### 스킬별 도트 연출 (2026-09-28)
+
+`src/player/retroSkillChoreography.ts`의 `RETRO_SKILL_RECIPES`가 아군 스킬의 접근·포즈 순서·길이·도트·방출음을 소유한다.
+기본 id 우선, 없으면 속성 → 이름 낱말 → 효과 종류로 추정한다. 타임라인은 현재 skillId 없이 skillName만 전달하므로
+동명이인 기술이 여러 개면 기존 연출로 돌아간다. 통상 공격·아이템·적의 동작은 기존 경로다.
+
+| 스킬 id (`skill_` 접두사) | 동작 / 대상 도트 | RTP 방출음 |
+|---|---|---|
+| sword_slash | 질주 → 3연속 베기, 두 작은 궤적 → 마지막 큰 궤적·흔들림 | Attack2 |
+| focus | 제자리 skill, 노란 기 두 번 맥동·상승 화살표 | Buff |
+| arcane_bolt | 지팡이 쪽 빛 구체 충전 → 대상 별 파편 | Magic2 |
+| heal | 초록 기둥·상승 반짝이 | Holy2 |
+| sleep_mist / weaken | 분홍 안개·Z / 보라 안개·하강 화살표, 짧은 암전 | Sleep / Darkness3 |
+| poison_sting | 섬광 접근·2회 찌르기 → 독 방울 | Poison |
+| fire / ice / thunder | 불기둥 / 얼음 결정 / 하늘 번개 | Fire1 / Ice1 / Flash3 |
+| earth / wind / dark | 솟는 바위·흔들림 / 교차 바람 칼날 / 수축 구체·암전 | Earth2 / Wind8 / Darkness3 |
+| holy / water / leaf / throwing_knife | 빛 십자 / 물기둥 / 회전 잎 / 제자리 단검 투척 | Holy3 / Wave1 / Wind8 / Shot1 |
+
+- 그림은 PIL 좌표 저작(`scripts/asset-gen/pixel-fx/<name>.py` + `fx_lib.py`),
+  `public/assets/generated/pixel-fx/*.png`의 64px × 8칸 가로 스트립이다. 종당 불투명 5색 + 투명, 알파 0/255,
+  DOM은 128px(2배)·pixelated. 작은 PNG를 정적 `new URL(..., import.meta.url)`로 참조해 player 빌드 자산 그래프에 포함한다.
+- `actorApproachMs`/`actorRecoverMs` 훅은 레시피 길이를 먼저 반환한다. 동작 비트의 배속·행동 무게를 적용한 실제 길이로
+  포즈와 도트 프레임을 예약한다. 착탄에서 방출음 1회, 복귀 비트 안에서 잔광까지 끝낸다. 검격의 3타는 **표현**이며 피해 횟수는 바꾸지 않는다.
+- 레시피가 있는 아군 스킬만 기존 `onEntryAnimation` 층과 그 타이밍 SE, 명령 확정 시 일반 휘두름음을 생략한다.
+  이동음·피해 피드백은 각각 기존 사건이다. 도트는 대상 위 별도 형제 노드에 얹어 피격 filter와 opacity를 상속하지 않는다.
+- `scheduleBattleTimer`·연결 여부·현재 엔트리로 수명을 제한하고, 다음 엔트리/모션 종료 때 노드를 제거한다.
+  감속 모드는 대표 3번 칸 하나만 표시하며 충전·연속 궤적·화면 효과를 생략한다.
+- 녹화: `node scripts/qa/runtime/retro2003-skills-gif.mjs --out .omo/retro-skills/pass-2`.
+  현재 기본 DB를 녹화 사본에만 합쳐 파티 전원에게 대상 17개 기술·충분한 MP를 준다. 실제 player.html에 키보드로 입력하며
+  우하단의 작은 QA 전용 색 표식을 영상에서 판독해 `skill-<id>.gif`를 자른다(영상 끝 시각 추정은 다음 스킬이 섞였음).
+  `--reduced`, `--skills sword_slash,heal,fire`로 같은 경로를 제한해 볼 수 있다. 원본 프로젝트/정본 저장소는 수정하지 않는다.
+- 이 작업의 출하 player 녹화: 일반 17/17, 감속 대표 6/6, 브라우저 오류 0. 실제 포즈 검격 3회·독침 2회,
+  스킬당 캐시 RTP 방출 1회·기존 애니메이션 층 중복 0·종료 후 잔류 도트 0을 DOM 계측으로 확인했다.
+  GIF를 PIL로 추출해 여러 차례 직접 검토했고 최종 미리보기는 `.omo/retro-skills/final/preview-*.png`,
+  감속은 `.omo/retro-skills/reduced/preview-*.png`다(세션 로컬 증거).
+
 ## 타격감 층 (2026-09-25)
 
 사용자 신고 「게임적인 느낌이 거의 안 든다, 타격감이 없다」. 출하 player 녹화로 원인을 쟀다:

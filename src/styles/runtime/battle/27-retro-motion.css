@@ -333,3 +333,35 @@
   .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-enemy:not(.defeated) .battle-enemy-image[data-pixel-sheet][data-pixel-cell="idle"] { animation: none; }
   .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy.defeated .battle-enemy-image[data-pixel-sheet] { animation: none; opacity: 0; }
 }
+
+/* Skill choreography: 64px original cells at exactly 2×, no blur or fractional frame tween. */
+.battle-scene[data-battle-skin="retro2003"] .retro-skill-fx {
+  position: absolute;
+  width: 128px;
+  height: 128px;
+  translate: -50% -100%;
+  background-size: 1024px 128px;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  pointer-events: none;
+  z-index: 35;
+}
+.battle-scene[data-battle-skin="retro2003"] .retro-skill-screen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 30;
+  animation: retro-skill-veil var(--retro-fx-ms) steps(3, end) both;
+}
+.battle-scene[data-battle-skin="retro2003"] .retro-skill-screen-flash { background: #ffffdf; }
+.battle-scene[data-battle-skin="retro2003"] .retro-skill-screen-dim { background: #160e2e; }
+.battle-scene[data-battle-skin="retro2003"] .retro-skill-screen-shake { background: transparent; }
+@keyframes retro-skill-veil { 0% { opacity: 0.24; } 100% { opacity: 0; } }
+/* Recipe movement is still owned by the outer battler, its poses by the inner sheet. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-skill][data-retro-action="cast"][data-retro-beat] {
+  animation: none;
+  translate: -16px 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene[data-battle-skin="retro2003"] .retro-skill-screen { display: none; }
+}
