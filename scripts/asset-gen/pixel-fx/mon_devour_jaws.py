@@ -12,23 +12,32 @@ HX = 4  # hinge on the left (monster side)
 
 
 def jaw(c, gap, reach, upper=True, teeth=True):
-    """One jaw as a thick wedge from the hinge; gap = half opening angle in radians."""
+    """One jaw: a curved beak-like shell from the hinge; the gum line bows inward and the tip hooks toward the
+    other jaw. gap = half opening angle (radians). Teeth hang from the gum line toward the mouth centre."""
     s = -1 if upper else 1
     a = s * gap
-    tip = (HX + math.cos(a) * reach, CY + math.sin(a) * reach)
-    back = (HX, CY + s * 12)
-    mid_out = (HX + math.cos(a) * reach * 0.55 + (-math.sin(a)) * s * -8, CY + math.sin(a) * reach * 0.55 + s * 8)
-    c.poly([back, mid_out, (tip[0] + 2, tip[1] + s * 3), tip, (HX + 2, CY)], 'v0')
-    c.poly([(back[0] + 1, back[1] - s * 2), (mid_out[0], mid_out[1] - s * 2), (tip[0], tip[1]), (HX + 3, CY)], 'v1')
-    c.line([(HX + 3, CY), tip], 'c1', 2)
+    ux, uy = math.cos(a), math.sin(a)
+    nx, ny = -uy * s, ux * s            # normal pointing away from the mouth (up for the upper jaw)
+    tip = (HX + ux * reach, CY + uy * reach)
+    hook = (tip[0] - ux * 3 - nx * 4, tip[1] - uy * 3 - ny * 4)
+    gum = bez([(HX + 2, CY), (HX + ux * reach * 0.5 - nx * 1, CY + uy * reach * 0.5 - ny * 1), tip], 12)
+    shell = bez([tip, (HX + ux * reach * 0.7 + nx * 12, CY + uy * reach * 0.7 + ny * 12),
+                 (HX + ux * reach * 0.2 + nx * 14, CY + uy * reach * 0.2 + ny * 14), (HX - 4, CY + ny * 8)], 14)
+    c.poly(gum + [hook] + shell + [(HX - 4, CY)], 'v0')
+    inner = bez([(tip[0] - ux * 3, tip[1] - uy * 3), (HX + ux * reach * 0.65 + nx * 9, CY + uy * reach * 0.65 + ny * 9),
+                 (HX + ux * reach * 0.2 + nx * 11, CY + uy * reach * 0.2 + ny * 11), (HX - 2, CY + ny * 6)], 12)
+    c.poly([(x + nx * 1, y + ny * 1) for x, y in gum] + inner, 'v1')
+    if upper:  # lit ridge (light from the upper left)
+        c.line(inner[1:-2], 'v2')
+    c.line(gum, 'c1', 2)
+    c.poly([tip, hook, (tip[0] - ux * 6, tip[1] - uy * 6)], 'b2')
     if teeth:
         n = max(2, int(reach / 7))
         for i in range(1, n + 1):
-            t = i / (n + 0.5)
-            x, y = lerp(HX + 3, tip[0], t), lerp(CY, tip[1], t)
+            x, y = gum[min(len(gum) - 2, int(i / (n + 1) * len(gum)))]
             L = 4 + (i % 2) * 2
-            c.poly([(x - 2, y), (x + 2, y), (x + 0.5, y - s * -L)], 'b2')
-            c.line([(x - 1, y), (x, y - s * -(L - 1))], 'b3')
+            c.poly([(x - 2 * ux, y - 2 * uy), (x + 2 * ux, y + 2 * uy), (x - nx * L, y - ny * L)], 'b2')
+            c.line([(x - ux, y - uy), (x - nx * (L - 1), y - ny * (L - 1))], 'b3')
     return tip
 
 
@@ -63,8 +72,8 @@ def draw(c, f):
         c.brush(HX, CY, 50, 40, 10, 0.5, 1.5, 'v2')
     elif f == 5:  # peak: SNAP
         c.rays(CX + 6, CY, 12, 10, 26, 'c2', rot=0.1, jitter=[1, 0.6])
-        jaw(c, 0.08, 58)
-        jaw(c, 0.08, 58, False)
+        jaw(c, 0.12, 56)
+        jaw(c, 0.12, 56, False)
         c.lens((HX + 20, CY), (62, CY), 3, ['c3', 'w'])
         c.spark(CX + 12, CY, 9, 'w', 'c3', diag=True)
         motes(c, CX + 8, CY, 8, 10, 20, 5, ['c2', 'b3'])

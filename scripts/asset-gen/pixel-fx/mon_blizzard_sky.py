@@ -64,10 +64,10 @@ def draw(c, f):
         for i in range(6):
             c.shard(10 + i * 20, 20 + (i * 37) % 80, TILT, 8, 1.5, ['i2', 'i3', 'w'])
     elif f == 5:  # peak white-out
-        haze(c, 'i3')
+        haze(c, 'i1')
         for y in (0, 22, 44, 66, 88, 110):
-            band(c, y, 0, 128, 'i4', 5, f)
-            band(c, y + 1, 0, 128, 'w', 2, f)
+            band(c, y, 0, 128, 'i3', 3, f)
+            band(c, y, 0, 128, 'w', 1, f)
         for i in range(9):
             c.shard(4 + i * 14, 10 + (i * 29) % 100, TILT, 11, 2, ['i1', 'i3', 'w'])
         snow(c, 30, 2, s, ('i1', 'i0'), flakes=3)

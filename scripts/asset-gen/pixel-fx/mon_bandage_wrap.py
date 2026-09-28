@@ -30,7 +30,7 @@ def wraps(c, n, rx, phase=0.0, tight=0.0):
         r = rx - tight
         pts = [(CX + math.cos(a) * r, y + math.sin(a) * r * 0.28 + (a - math.pi / 2) * 0.8)
                for a in [phase + j * math.pi / 10 for j in range(11)]]
-        strip(c, pts, 2)
+        strip(c, pts, 1)
 
 
 def tail(c, x0, y0, x1, y1, bend, w=3):
@@ -59,7 +59,7 @@ def draw(c, f):
     elif f == 5:  # peak: cinched tight, curse knot flares
         c.ring(CX, CY, 22, 'v1', 2, squash=0.9)
         c.dring(CX, CY, 25, 'v2', squash=0.9)
-        wraps(c, 5, 13, 0.0, 1)
+        wraps(c, 4, 13, 0.0, 1)
         c.disc(CX + 12, CY - 2, 4, 'l0')
         c.disc(CX + 12, CY - 2, 3, 'l2')
         c.line([(CX + 12, CY + 1), (CX + 16, CY + 8)], 'l1', 2)
@@ -68,7 +68,7 @@ def draw(c, f):
         motes(c, CX, CY, 8, 18, 24, 5, ['v2', 'v3'], sq=0.9)
     elif f == 6:
         c.dring(CX, CY, 22, 'v1', squash=0.9)
-        wraps(c, 5, 12, 0.15, 1)
+        wraps(c, 4, 12, 0.15, 1)
         c.disc(CX + 12, CY - 2, 3, 'l2')
         motes(c, CX, CY, 8, 16, 24, 6, ['v2', 'l2'], sq=0.9, dy=-3)
     elif f == 7:  # bands loosen and fray

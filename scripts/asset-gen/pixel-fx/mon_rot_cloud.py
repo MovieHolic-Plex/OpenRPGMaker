@@ -36,16 +36,18 @@ def draw(c, f):
         bubble(c, CX - 10, FEET - 22, 2)
         bubble(c, CX + 8, FEET - 14, 1.5)
     elif f == 3:
-        c.cloud(CX, FEET - 8, 15, G, seed=8, lobes=11)
+        c.cloud(CX, FEET - 3, 13, G, seed=8, lobes=11)
         c.cloud(CX - 14, FEET - 22, 8, G[:3], seed=9, lobes=7)
         c.cloud(CX + 14, FEET - 20, 8, G[:3], seed=10, lobes=7)
         for x, y, r in [(CX - 4, 26, 2), (CX + 10, 30, 2), (CX - 16, 34, 1.5)]:
             bubble(c, x, y, r)
     elif f == 4:  # peak: plume rises into a skull face over the head, rot aura ring
         c.dring(CX, FEET - 6, 26, 'p1', squash=0.45)
-        c.cloud(CX, FEET - 6, 16, G, seed=11, lobes=11)
-        c.cloud(CX - 16, 34, 8, G[:3], seed=12, lobes=7)
-        c.cloud(CX + 17, 32, 8, G[:3], seed=13, lobes=7)
+        # knee-high cloud bank and two flank plumes: the ally's torso and face stay visible between them
+        c.cloud(CX, FEET - 2, 13, G, seed=11, lobes=11)
+        c.ddisc(CX, 38, 12, 'g1', squash=0.9)
+        c.cloud(CX - 18, 36, 8, G, seed=12, lobes=7)
+        c.cloud(CX + 19, 34, 8, G, seed=13, lobes=7)
         c.cloud(CX, 18, 11, ('p1', 'p2', 'p3'), seed=14, lobes=9)
         c.disc(CX - 4, 17, 2.5, 'v0')
         c.disc(CX + 4, 17, 2.5, 'v0')
@@ -58,7 +60,9 @@ def draw(c, f):
         drip(c, CX - 7, 27, 4)
         drip(c, CX + 6, 28, 3)
     elif f == 5:
-        c.cloud(CX, FEET - 6, 15, G, seed=15, lobes=11)
+        c.cloud(CX, FEET - 2, 13, G, seed=15, lobes=11)
+        c.ddisc(CX, 38, 11, 'g1', 1, squash=0.9)
+        c.cloud(CX + 18, 38, 7, G[:3], seed=151, lobes=7)
         c.cloud(CX - 1, 16, 10, ('p1', 'p2', 'p3'), seed=16, lobes=9)
         c.disc(CX - 4, 16, 2, 'v0')
         c.disc(CX + 4, 16, 2, 'v0')
@@ -68,7 +72,7 @@ def draw(c, f):
         bubble(c, CX + 18, 34, 2)
         bubble(c, CX - 18, 38, 2)
     elif f == 6:
-        c.cloud(CX + 2, FEET - 5, 14, G[:3], seed=17, lobes=10)
+        c.cloud(CX + 2, FEET - 2, 12, G[:3], seed=17, lobes=10)
         c.cloud(CX + 2, 14, 9, ('p0', 'p1', 'p2'), seed=18, lobes=8)
         c.disc(CX - 1, 14, 1.5, 'v0')
         c.disc(CX + 5, 14, 1.5, 'v0')
@@ -76,7 +80,7 @@ def draw(c, f):
             drip(c, x, y, L)
         motes(c, CX, 34, 8, 14, 24, 6, ['g2', 'p2'], sq=0.7)
     elif f == 7:
-        c.cloud(CX + 6, FEET - 4, 12, G[:3], seed=19, lobes=9, parity=1)
+        c.cloud(CX + 8, FEET - 2, 10, G[:3], seed=19, lobes=9, parity=1)
         c.cloud(CX + 6, 12, 7, ('p0', 'p1'), seed=20, lobes=7)
         bubble(c, CX - 6, 40, 2)
         motes(c, CX, 30, 10, 14, 26, 7, ['g2', 'g3', 'p2'], sq=0.7, dy=-4)

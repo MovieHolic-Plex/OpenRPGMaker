@@ -33,7 +33,40 @@ def embers(c, n, seed, spread, top, drift=0):
 
 
 def smoke(c, y, r, seed, keys=('o0', 'o1', 'o2')):
-    c.puff(CX + 2, y, r, keys, seed=seed)
+    """Rising smoke: a checker-dithered billow with a few solid wisps, so it reads as vapour, never as a rock."""
+    rr = rng(seed)
+    c.ddisc(CX + 2, y, r * 1.3, keys[1], parity=seed % 2, squash=0.8)
+    for i in range(3):
+        x = CX + 2 + rr.uniform(-r, r)
+        yy = y + rr.uniform(-r * 0.6, r * 0.6)
+        c.brush(x, yy, r * 0.6, 200, 330, 0.5, 0.8, keys[-1])
+
+
+def column(c, top, w, k, seed, dither=False):
+    """Fire column: flares at the base, narrows and wavers upward, pointed ragged top (no straight sides)."""
+    r = rng(seed)
+    left, right = [], []
+    for y in range(FEET - 2, int(top), -3):
+        t = (FEET - y) / (FEET - top)
+        ww = w * (1.25 - 0.45 * t) + r.uniform(-1, 1)
+        wob = math.sin(y / 5 + seed) * 1.5
+        left.append((CX - ww + wob, y))
+        right.append((CX + ww + wob, y))
+    tips = [(CX - w * 0.6, top + 4), (CX - w * 0.2, top - 3), (CX + w * 0.2, top + 2), (CX + w * 0.5, top - 5)]
+    if not dither:
+        c.poly(left + tips + right[::-1], k)
+        return
+    # heat veil: checker fill with a solid 1px rim, so the ally stays visible inside the pillar
+    tmp = Mon(c.n, {'k': '#000000'})
+    tmp.poly(left + tips + right[::-1], 'k')
+    a = tmp.im.getchannel('A').load()
+    for y in range(c.n):
+        for x in range(c.n):
+            if a[x, y]:
+                rim = any(not (0 <= x + dx < c.n and 0 <= y + dy < c.n and a[x + dx, y + dy])
+                          for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+                if rim or (x + y) % 2 == 0:
+                    c.px(x, y, k)
 
 
 def draw(c, f):
@@ -51,27 +84,26 @@ def draw(c, f):
         embers(c, 4, 3, 14, 26)
     elif f == 3:
         base_glow(c, 22)
-        c.rect(CX - 9, 8, CX + 9, FEET - 2, 'e1')
+        column(c, 10, 9, 'e1', 3, dither=True)
         tongues(c, 44, 8, 4)
-        c.rect(CX - 4, 14, CX + 4, FEET - 4, 'e3')
+        column(c, 16, 3, 'e3', 33, dither=True)
         embers(c, 6, 4, 18, 12)
     elif f == 4:  # peak roar: full column, white-hot core, flared crown
         base_glow(c, 24, ('e1', 'e2', 'e4'))
-        c.oval(CX, 30, 16, 26, 'e0')
-        c.rect(CX - 12, 6, CX + 12, FEET - 2, 'e1')
-        tongues(c, 52, 9, 5)
-        c.rect(CX - 7, 10, CX + 7, FEET - 4, 'e3')
-        c.rect(CX - 3, 14, CX + 3, FEET - 6, 'e4')
-        c.line([(CX - 1, 16), (CX - 1, FEET - 8)], 'w', 2)
+        c.dring(CX, 30, 18, 'e0', squash=1.5)
+        column(c, 6, 12, 'e1', 4, dither=True)
+        tongues(c, 30, 9, 5)
+        column(c, 10, 6, 'e3', 44, dither=True)
+        c.line([(CX - 1, 12), (CX - 1, 26)], 'e4', 2)
+        c.line([(CX - 1, 14), (CX - 1, 22)], 'w')
         for dx, h in ((-14, 30), (14, 34), (-6, 48), (8, 50)):
             c.flame(CX + dx, 20, 14, 3, ['e2', 'e3', 'e4'], lean=dx * 0.2)
         embers(c, 10, 5, 22, 4)
     elif f == 5:
         base_glow(c, 22)
-        c.rect(CX - 10, 6, CX + 10, FEET - 2, 'e1')
-        tongues(c, 50, 8, 6)
-        c.rect(CX - 5, 12, CX + 5, FEET - 4, 'e3')
-        c.rect(CX - 2, 16, CX + 2, FEET - 8, 'e4')
+        column(c, 8, 10, 'e1', 5, dither=True)
+        tongues(c, 28, 8, 6)
+        column(c, 12, 5, 'e3', 55, dither=True)
         embers(c, 10, 6, 24, 2)
     elif f == 6:  # thinning: top breaks off into smoke
         base_glow(c, 18, ('e0', 'e1', 'e2'))

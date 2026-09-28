@@ -12,7 +12,7 @@ VK = ('n0', 'n2', 'n3')
 
 
 def lash(c, ctrl, w=3, thorn='n1'):
-    c.vine(bez(ctrl, 28), VK, thorn=thorn, w=w, every=5)
+    c.vine(bez(ctrl, 28), VK, thorn=thorn, w=w + 1, every=5)
 
 
 def leaf(c, x, y, a, L=5):
@@ -36,12 +36,12 @@ def draw(c, f):
         c.brush(20, 44, 26, -100, -30, 0.5, 1.5, 'n1')
         lash(c, [(-2, 52), (10, 36), (22, 16), (40, 14)], 3)
     elif f == 4:  # peak crack across the body
-        c.brush(18, 50, 30, -80, -5, 0.5, 2, 'n1')
-        c.brush(18, 50, 28, -70, -5, 0.5, 1, 'n4')
-        lash(c, [(-2, 54), (16, 28), (40, 26), (54, 44)], 3)
-        snap(c, 54, 44, 6)
-        c.line([(CX - 10, 32), (CX + 12, 46)], 'c2', 2)
-        c.line([(CX - 8, 31), (CX + 10, 44)], 'w')
+        c.brush(14, 52, 36, -95, -5, 0.5, 2.5, 'n1')
+        c.brush(14, 52, 33, -85, -5, 0.5, 1.2, 'n4')
+        lash(c, [(-2, 54), (14, 22), (42, 20), (56, 42)], 3)
+        snap(c, 55, 43, 8)
+        c.rays(55, 43, 8, 10, 15, 'n4', rot=0.3)
+        c.lens((CX - 12, 28), (CX + 14, 48), 2.5, ['c1', 'c2', 'w'])
         for i, (x, y, a) in enumerate([(46, 34, -0.3), (52, 52, 1.2), (40, 50, 2.2)]):
             leaf(c, x, y, a)
     elif f == 5:

@@ -56,7 +56,7 @@ def draw(c, f):
         motes(c, 44, 46, 6, 6, 14, 5, ['c3', 'm3'])
     elif f == 6:
         c.blade(P0, P1, -18, 6, ['c0', 'c1', 'c2'])
-        c.dline((14, 14), (56, 56), 'c2')
+        c.lens((16, 16), (54, 54), 1.2, ['c1'])
         ground_split(c, 1, 6)
         chips(c, 5, 6, 30)
     elif f == 7:
@@ -64,7 +64,7 @@ def draw(c, f):
         ground_split(c, 1, 7)
         motes(c, 36, 40, 7, 6, 18, 7, ['c1', 'm2'])
     elif f == 8:
-        c.dline((10, 10), (52, 54), 'c1', 2)
+        c.blade(P0, P1, -18, 1.5, ['c0'], frac=0.7)
         c.crack(CX - 4, FEET + 1, CX + 22, FEET + 3, 7, 'd0', segs=4, jit=1.2)
         motes(c, 40, 44, 5, 6, 18, 8, ['c1', 'm1'], dy=4)
     else:
