@@ -37,6 +37,25 @@ const SHARED_EXPRESSION_NAMES = [
 
 const SHARED_SETS = JSON.parse(await readFile(path.join(SCRIPT_DIR, "shared-face-expression-sources.json"), "utf8"));
 
+// 생성 짝 얼굴 칸 이름(짝 걷기 그림의 라벨). 빈 칸은 이름 없이 남는다.
+const MISSING_FACE_NAMES = {
+  "missing-people": [
+    "닌자 소녀", "삐쭉머리 안경 소년", "이국적인 모자 청년", "머리 장식 이국 여성",
+    "대머리 이국 주민", "노란 전통옷 남성", "청년 병사", "붉은 머리띠 청년 전사",
+    "기모노 여성", "난쟁이 병사", "청록 머리 무도가", "갈색 고양이",
+    "붉은 머리 하피", "황동 기계 병사", "검은 후드 인물", "보라 후드 마족",
+  ],
+  "missing-scarloxy": [
+    "초록 모자 트레이너 소년", "금발 소년", "초록 벙거지 소년", "보라 머리 소녀",
+    "갈래머리 소녀", "남색 머리 소년", "밀짚모자 농부", "물 도장 관장",
+    "불 도장 관장", "풀 도장 관장", "빈 칸", "빈 칸", "빈 칸", "빈 칸", "빈 칸", "빈 칸",
+  ],
+  "missing-monster": [
+    "보물상자 미믹", "붉은 드래곤", "붉은 불꽃", "빈 칸", "빈 칸", "빈 칸", "빈 칸", "빈 칸",
+    "빈 칸", "빈 칸", "빈 칸", "빈 칸", "빈 칸", "빈 칸", "빈 칸", "빈 칸",
+  ],
+};
+
 const SHEETS = [
   sheet("assets/easyrpg/faceset/Actor1.png", "easyrpg-faceset-actor1", "easyrpg"),
   sheet("assets/easyrpg/faceset/Actor2.png", "easyrpg-faceset-actor2", "easyrpg"),
@@ -46,6 +65,11 @@ const SHEETS = [
   sheet("assets/generated/starter/hero-01-face.png", "generated-actor-hero-01-face", "generated"),
   sheet("assets/generated/starter/hero-02-face.png", "generated-actor-hero-02-face", "generated"),
   ...SHARED_SETS.map(set => sheet(`assets/shared/faceset/${set.stem}.png`, `shared-${set.stem}`, "shared")),
+  // 2026-09-28: 원본 얼굴 시트에 없는 걷기 그림(People2·4·5·Actor3·Monster3·Scarloxy)의 짝 얼굴. AI 생성 → 48px 4x4 시트.
+  // 저작 목록에 올린다(생성 시리즈 hero-XX 와 달리 "missing" 은 공용 대응표의 정식 짝이다). 원본은 assets/generated/faceset/source/.
+  sheet("assets/generated/faceset/missing-people.png", "generated-faceset-missing-people", "missing"),
+  sheet("assets/generated/faceset/missing-scarloxy.png", "generated-faceset-missing-scarloxy", "missing"),
+  sheet("assets/generated/faceset/missing-monster.png", "generated-faceset-missing-monster", "missing"),
 ];
 
 function sheet(sheetPath, sheetResourceId, origin) {
@@ -72,6 +96,7 @@ function faceEntries(sheetSpec) {
 // EasyRPG 시트에서 온 얼굴만 " · EasyRPG" 출처를 붙인다. 생성 에셋은 우리가 만든 그림이다.
 function faceName(sheetSpec, index) {
   if (sheetSpec.origin === "shared") return `${SHARED_SETS.find(set => set.stem === sheetSpec.stem).name} · ${String(index + 1).padStart(2, "0")} ${SHARED_EXPRESSION_NAMES[index]}`;
+  if (sheetSpec.origin === "missing") return `${MISSING_FACE_NAMES[sheetSpec.stem]?.[index] ?? `${sheetSpec.stem} 얼굴 ${index + 1}`} · 생성`;
   const label = `${sheetSpec.stem} 얼굴 ${index + 1}`;
   return sheetSpec.origin === "easyrpg" ? `${label} · EasyRPG` : label;
 }
@@ -158,7 +183,12 @@ async function verifySheet(sheetSpec) {
 
 function generatedSource(entries) {
   const generatedSheetIds = new Set(SHEETS.filter((sheetSpec) => sheetSpec.origin === "generated").map((sheetSpec) => sheetSpec.sheetResourceId));
-  const generatedFaceIds = entries.filter((entry) => generatedSheetIds.has(entry.sheetResourceId)).map((entry) => entry.id);
+  // 생성 짝 시트의 빈 칸도 저작 목록에서 뺀다(파란 배경뿐인 칸을 조수가 얼굴로 고르지 않게).
+  const isBlankMissingCell = (entry) => {
+    const spec = SHEETS.find((sheetSpec) => sheetSpec.sheetResourceId === entry.sheetResourceId);
+    return spec?.origin === "missing" && MISSING_FACE_NAMES[spec.stem]?.[entry.sheetIndex] === "빈 칸";
+  };
+  const generatedFaceIds = entries.filter((entry) => generatedSheetIds.has(entry.sheetResourceId) || isBlankMissingCell(entry)).map((entry) => entry.id);
   const rows = entries
     .map(
       (entry) =>

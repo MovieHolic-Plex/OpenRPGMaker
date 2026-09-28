@@ -224,6 +224,8 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
     hero.name = "트레이너";
     hero.characterResourceId = "scarloxy-charset-people1";
     hero.characterIndex = 0;
+    // 기본 주인공 얼굴(갈색 머리띠 용사)은 이 트레이너 소년이 아니다. 공용 대응표에 이 팩의 얼굴이 없어 비운다.
+    delete hero.faceResourceId;
     // 포켓몬풍 밸런스: 기본 용사 스탯(HP 500+, 공격 원킬)을 데모 규모로 낮춘다.
     hero.parameterCurves = {
       ...hero.parameterCurves,

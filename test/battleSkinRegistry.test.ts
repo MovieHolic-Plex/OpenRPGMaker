@@ -3,17 +3,18 @@ import { BATTLE_SKINS, DEFAULT_BATTLE_SKIN_ID, battleSkinFamily, getBattleSkin, 
 import { builtinGeneratedResourceIds, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { createBlankProject } from "@/project/defaults";
 import { BATTLER_PLACEMENTS } from "@/battle/battlerPlacements";
+import { defaultSystem } from "@/project/defaults/defaultDatabase";
 import { normalizeSystemRecords } from "@/project/databaseRecordModel";
 
 describe("battle skin registry", () => {
-  it("정확히 12개 스킨을 노출한다(2026-09-03: 정면 rm2000 개명 + 측면 rm2003 되살림, deprecated 감청 rm2000 흡수)", () => {
-    expect(listBattleSkinIds()).toHaveLength(12);
-    expect(new Set(listBattleSkinIds()).size).toBe(12);
+  it("기존 12종과 retro2003을 합쳐 정확히 13개 스킨을 노출한다", () => {
+    expect(listBattleSkinIds()).toHaveLength(13);
+    expect(new Set(listBattleSkinIds()).size).toBe(13);
   });
 
-  it("12종 전부 활성 — 몬스터 대치를 뺀 11종은 유리 뼈대(정면·측면)의 변형이다(2026-09-25)", () => {
-    expect(listActiveBattleSkinIds()).toHaveLength(12);
-    expect(listActiveBattleSkinIds().slice(0, 3)).toEqual(["rm2000", "rm2003", "pokemon"]);
+  it("13종 전부 활성 — 몬스터 대치를 뺀 12종은 유리 뼈대(정면·측면)의 변형이다(2026-09-25)", () => {
+    expect(listActiveBattleSkinIds()).toHaveLength(13);
+    expect(listActiveBattleSkinIds().slice(0, 4)).toEqual(["retro2003", "rm2000", "rm2003", "pokemon"]);
     expect(getBattleSkin("rm2000").layout).toBe("frontview");
     expect(getBattleSkin("rm2003").layout).toBe("sideview");
     expect(getBattleSkin("rm2003").showAllySprites).toBe(true);
@@ -31,12 +32,22 @@ describe("battle skin registry", () => {
     }
   });
 
-  it("구도가 같은 스킨은 배치도 같다(battlerPlacements 가 구도에서 파생)", () => {
+  it("전용 배치를 가진 retro2003 외에는 같은 구도의 배치를 공유한다", () => {
     for (const id of listBattleSkinIds()) {
-      if (id === "pokemon") continue;
+      if (id === "pokemon" || id === "retro2003") continue;
       const base = getBattleSkin(id).layout === "sideview" ? "rm2003" : "rm2000";
       expect(BATTLER_PLACEMENTS[id], id).toBe(BATTLER_PLACEMENTS[base]);
     }
+  });
+
+  it("retro2003은 측면 아군·유리 계열·레트로 모션·겹 배경 계약을 가진다", () => {
+    expect(resolveSkinId("retro2003")).toBe("retro2003");
+    expect(battleSkinFamily("retro2003")).toBe("glass");
+    expect(getBattleSkin("retro2003")).toMatchObject({
+      layout: "sideview", showAllySprites: true, motionStyle: "retro", scenery: "layered",
+    });
+    // 전용 RETRO_SIDEVIEW는 스킨 구현에서 제공한다. 기존 측면 배치와 공유하면 안 된다.
+    expect(BATTLER_PLACEMENTS.retro2003).not.toBe(BATTLER_PLACEMENTS.rm2003);
   });
 
   it("얼굴 카드·링·얇은 HUD 변형이 한 번씩은 쓰인다", () => {
@@ -55,9 +66,16 @@ describe("battle skin registry", () => {
     expect(resolveSkinId("mv")).toBe("mv");
   });
 
-  it("rm2000 이 기본 스킨이다", () => {
+  it("새 프로젝트는 retro2003을 명시적으로 저장한다", () => {
+    const project = createBlankProject();
+    expect(project.system.battleUiStyle).toBe("retro2003");
+    expect(normalizeSystemRecords(project.system).battleUiStyle).toBe("retro2003");
+  });
+
+  it("미설정 기존 프로젝트는 rm2000으로 열린다", () => {
     expect(DEFAULT_BATTLE_SKIN_ID).toBe("rm2000");
     expect(resolveSkinId(undefined)).toBe("rm2000");
+    expect(defaultSystem().battleUiStyle).toBeUndefined();
     expect(getBattleSkin("rm2000").showAllySprites).toBe(false);
   });
 
@@ -136,11 +154,11 @@ describe("battle skin assets", () => {
 });
 
 describe("battleUiStyle serialization", () => {
-  it("비-기본 스킨 id는 그대로 보존한다", () => {
+  it.each(["octopath", "retro2003"] as const)("비-기본 스킨 %s는 그대로 보존한다", (id) => {
     const project = createBlankProject();
-    project.system.battleUiStyle = "octopath";
+    project.system.battleUiStyle = id;
     const out = normalizeSystemRecords(project.system) as { battleUiStyle?: string };
-    expect(out.battleUiStyle).toBe("octopath");
+    expect(out.battleUiStyle).toBe(id);
   });
 
   it("기본 스킨(rm2000)만 생략하고, 명시적 vxace 선택은 보존한다", () => {

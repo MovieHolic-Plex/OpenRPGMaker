@@ -18,6 +18,13 @@ AI 설정의 「사용량」 탭은 이 브라우저의 실행 영수증, 대화
 미연결이면 초안으로 남기며 기획 수정 메뉴는 자동 전송하지 않는다. 상세 계약은
 [장르 프리셋 인터뷰](editor-genre-packs.md)의 저장·handoff 절을 따른다.
 
+2026-09-28 보강: 실제 팀 실행의 검수 프롬프트는 `PI_TEAM_ROLES.reviewer` 가 아니라
+`teamSpec.memberSystemPrompt` 가 만든다 — 여기에 기획이 빠져 있어 검수가 인터뷰 답을 몰랐다. 지금은
+검수와 Writer(`consult_writer`, `scripts/lib/piWriterTool.ts` 의 시스템 메시지)도 같은 기획을 받는다.
+첫 생성 말풍선·입력창에 보이는 문장(`welcomeGenrePresetDisplayText`)은 확정 요약 전체(600자 상한)를
+줄 단위로 보인다. 예전 「장르 · 첫 답 24자 · 범위 24자」 한 줄은 모델이 기획을 다 받는데도
+사용자에게 인터뷰가 안 넘어간 것처럼 보였다.
+
 ## 제작 전 그래픽 선택과 자동 큰 창 (2026-09-21)
 
 `aiCreationChoice.ts` + `aiChatPanel.runPiTurn`은 마을·도시·집의 새 생성 요청에 제작 전 선택을 둔다.
@@ -208,6 +215,13 @@ x=8, y=278, 300×383으로 화면 안에 놓인다. 설정 변경·팀 메뉴 �
 
 
 ## 팀 분업 유즈케이스와 맵 밖 작업 배정 (2026-09-18)
+
+> **팀이 조용히 혼자가 되던 길 (2026-09-28).** 활동 기록 실측: 2026-09-18 12:04 이후 일반 채팅 Pi 실행 67회 중
+> 팀 실행 0회. 원인 후보와 조치: ① 마을 요청이면 `resolveVillageContract` 가 계약을 걸고 `runPiCommand` 가 계약이
+> 있으면 팀을 껐다 → 이제 `classifyPlainPiTurn` 이 팀 설정일 때 계약을 걸지 않고, 팀 런타임도 실려 온 계약을 벗긴다.
+> 그래도 팀이 단독으로 내려가면 채팅에 한 줄로 알린다. ② 검수 담당을 끄면 메뉴는 「완료 후 검토: 생략」인데 런타임은
+> 400 으로 실행 전체를 거절했다 → 생략하고 최종 보고에 적는다. ③ Ultrabrain 계획 턴이 팀장 자리를 빌려 활동 기록에
+> `pi:팀장` 으로 남아 단독 실행이 팀처럼 보였다 → `pi:계획` 으로 남긴다. 읽기 전용·질문 판정은 여전히 단독이다(의도).
 
 `src/ai/piAgent/teamWorkflows.ts`의 레시피(현재 8가지 — 2026-09-28 new-project 추가)를 팀장 시스템 프롬프트에
 실제로 삽입한다: 던전, 퀘스트, 게임 도입부, 전투 콘텐츠, 마을 생활감,
@@ -709,9 +723,23 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
 - 검증: `test/stampOrderQueue.test.ts`(겹침·상한·조수 게이트·프로젝트 교체·중단·보고 1회).
   브라우저: `BASE=http://127.0.0.1:<포트> node scripts/qa/rapid-stamp-orders.mjs` — 모델을 2.5s 늦춘 스텁으로 표준 편집기·스튜디오에서 드래그 3번.
   실측(2026-09-28): 두 모드 모두 거절 0·오류 0, 떨어진 두 주문 동시 읽기(`inflightMax` 2), 겹친 셋째는 첫째 뒤에 깔림. 증거 `verify-shots/rapid-stamp/`.
-- **남은 병목(미해결)**: 적용 한 번에 메인 스레드가 5~6s 멈춘다(부하 걸린 공유 박스, longtask 실측). 그동안 다음 드래그 바가 늦게 뜬다(실측 15~21s).
-  CPU 프로파일: `renderRegionSizeBadge`/`positionBuildPaletteOverlay` 의 `getBoundingClientRect` 강제 레이아웃이 약 5.3s(DOM 쓰기마다 레이아웃 ~45ms, 노드 5.5k),
-  `createDraft` 1.1s, `recordProjectSnapshot` 복제 1.1s, 커밋 다이제스트 1.1s. 대기열은 이 비용을 줄이지 않는다 — 다음 작업은 스토어 변경 뒤 오버레이 측정을 rAF 한 번으로 모으고, 타일셋 복제를 참조 공유로 바꾸는 것이다.
+- **드래그·적용 성능(2026-09-28 고침)**: 새 프로젝트(149MB = 타일셋 82MB + 업로드 자산 66MB)에서 적용 한 번에 메인 스레드가 5~6s 멈추고,
+  드래그 한 칸이 중앙값 140ms 였다. 표준 편집기·스튜디오가 같은 캔버스·같은 패널이라 두 모드 모두 같았다. 원인과 고친 자리:
+  - 오버레이 강제 레이아웃: `renderRegionSizeBadge`/`positionBuildPaletteOverlay`/`publishMapViewport` 가 부를 때마다 `getBoundingClientRect`.
+    `EditScene.hostGeometry()` 캐시(ResizeObserver·resize·scroll 로 무효화) + 팔레트 배치를 rAF 로 모음(`layoutDomOverlays`), 값이 같으면 스타일을 안 쓴다.
+    손을 뗄 때는 `flushDomOverlayLayout()` 로 바를 즉시 띄운다.
+  - 선택만 바뀌는 드래그 칸마다 채팅 패널(`applyAssistantViewPolicy`·스튜디오 `refreshScenes`)과 톱바가 다시 그렸다 —
+    `editorStateChangedOnlyCanvasOverlay` 면 건너뛴다(`aiChatPanel.ts`, `app/mode.ts`).
+  - `createDraft` 가 타일셋 전부를 복제(1.4~2.1s) → `cloneProjectForMutation` 지연 사전 + `toolRunner` 의 `finishDraftTilesets`.
+  - 되돌리기 스냅샷 전체 복제(1.3s) → `mapEditHistory.projectSnapshotSharingTilesets`(타일셋·업로드 자산 항목 공유, 되돌릴 때 복제).
+  - 업로드 자산 복제: `cloneProjectForMutation`·`cloneKeepingDigests` 가 `assets.uploaded` 항목을 공유한다(`projectClone.withoutSharedDictionaries`).
+    계약: 업로드 자산 항목은 제자리에서 고치지 않고 사전 자리에 새 객체를 대입한다. 공유 덕에 요약 기억도 살아 한가할 때 도는 커밋 요약이 1.4s 에서 짧아졌다.
+  - `resetManualProjectCommitBaseline` 의 전체 요약은 한가할 때로 미룬다(`settlePendingManualDigest`, 저장 커밋이 먼저 오면 그 자리에서 센다).
+  - `removeLegacySpriteReferences` 는 한 번 깨끗하다고 본 타일셋·업로드 자산 객체를 `WeakSet` 으로 기억하고 다시 훑지 않는다(240ms).
+  실측(부하 12~19 공유 박스, headless, 모델 스텁, `scripts/qa/stamp-drag-perf.mjs` 3회 중앙값, 전후 교대):
+  편집기 드래그 칸 139 → 47ms, 드래그 40칸 longtask 합 4.9 → 1.6s, 바 등장 150 → 60ms, 적용 최장 멈춤 5.7s → 0.2s.
+  스튜디오 134 → 42ms, 5.4 → 1.4s, 166 → 48ms, 5.8s → 0.24s. 증거 `verify-shots/stamp-drag-perf/final-*.json`, `verify-shots/rapid-stamp/rapid-stamp-studio-after.gif`.
+  남은 것: 드래그 중 longtask 합 약 1.5s/40칸(캔버스 `redraw`·상태 줄 갱신 후보, 미추적).
 
 ## 단순 생성·수정은 계획 필요 여부로 실행한다 (2026-09-18 갱신)
 
@@ -3060,6 +3088,32 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 - 빈 시작 맵의 전체 시공 뒤 예전 중앙 좌표가 고립되면 빌더가 검증한 시작점을 유지한다.
   기존 콘텐츠/부분 범위의 시작점은 보존한다. 실측: 4채 green 형태에서 (10,8)을 복원하면
   4채 모두 접근 불가였고, 검증된 시작점 (23,16)은 4/4 도달했다.
+- 방향이 있는 요청(「위로 올라가면 마을」)은 의도 선언이 `construction.approach`
+  (north/south/east/west)로 옮긴다. 계약은 `target:{kind:"new"}` + `connection`이 되고,
+  `author_village` 성공 직후 `villageConnection.connectContractVillage`가 출발 맵의 그쪽 끝과
+  마을 반대쪽 끝을 `link_maps`로 잇고 게임 시작을 출발 맵 원래 자리로 되돌린다. 완료 검사는
+  출입구 존재, 시작→출발 맵 출입구 통행, 마을 착지→집 문앞 통행을 본다. 모델은 출입구를 만들지 않는다.
+- 방향·선택 영역·새 이름이 없는데 대상 맵에 이미 내용이 있으면(`isLivedMap`) 계약을 만들지 않는다.
+  얼린 `target:{kind:"existing"}`(bounds 없음)은 `village-requires-scope`로 항상 거부되기 때문이다.
+  이때는 일반 경로의 마을 노트(빈 땅 bounds → 없으면 새 맵)를 따른다.
+  실측(2026-09-28): 숲·NPC가 있는 20×15 시작 맵에서 「위로 올라가면 마을」이 이 조합으로 얼어 6번 중 5번 실패했다.
+- 계약 해제(2026-09-28): 계약 인자 그대로 부른 `author_village`가 대상·범위·칩셋·설계서 규칙
+  (`village-requires-scope`, `village-tileset-mismatch`, `bounds-*`, `map-*`, `village-design-*`,
+  `target`을 가리키는 `invalid-args`)에 거부되면 `villageContractBlocker`가 막다른 길로 판정한다.
+  워커는 그 자리에서 계약을 풀고, 계약 지시 줄을 `[마을 계약 해제]` 안내로 바꾸고, 같은 실패 결과에 안내를 붙인다.
+  이후는 일반 실행이다(다른 쓰기 도구 허용, 일반 마을 검사). `done.villageContractReleased`를 받은 패널은
+  조화 검수와 적용 정책을 계약 없는 실행으로 되돌린다. 집·주민 수 부족이나 문·길 검사처럼 seed로 달라질 수 있는
+  실패와, `residents` 같은 모델 몫 인자 오류는 계약을 유지한다. 회귀: `test/piVillageContractRelease.bun.test.ts`.
+- 의도 판정 로그: `classifyPlainPiTurn`이 `plan.routingAudit` 한 줄을 만들고(`intent:llm mode=… construction=approach:north … → 마을 계약: 새 맵 …`,
+  계약이 없으면 `마을 계약 없음(팀 실행|현대 맵|판정)`), Pi 활동 로그의 첫 상태 행 「의도 판정: …」으로 남는다.
+- Pi 실행 감사(`src/ai/piAgent/activityLog.ts` `runAudit`)는 에이전트 행 요약 뒤에 보드 과정 행 전부를 싣는다:
+  모든 도구 호출(성공·실패, `인자` 한 줄), 오류 문장, 워커 실행 상태(`village.contract_released`·`village.connection`·
+  `repeat_guard`·`layout_quality` 등, 매 호출 반복인 `map.image.delivered`만 제외), 보드 상한으로 잘린 앞부분 수,
+  실행 도중 판정이 바뀐 사실(`PiRunFacts.notes`). 크기는 활동 로그 바이트 예산이 양 끝을 남기며 자른다.
+  과정 행의 `status` 종류는 팀 데크 트랜스크립트에도 「상태」 태그로 그려진다.
+- 의도 해석 자체가 실패한 턴(`지시를 해석하지 못했습니다`)은 실행까지 가지 않아 로그가 비었다.
+  `recordPiIntentFailure`가 `pi` 채널 실패 행 하나를 남긴다(`stoppedReason: "의도 해석 실패"`).
+  예전 사용 로그에는 판정도, 「오류 5」의 문장도, 도구 인자도, 해석 실패 턴도 없었다.
 
 검증: Bun 계약/실행 루프 6건, 기존 facade/intent-note Vitest 50건 통과.
 실제 에디터 + Gemini 호출은 `author_village` 1회/2턴/9.294초/도구 오류 0으로

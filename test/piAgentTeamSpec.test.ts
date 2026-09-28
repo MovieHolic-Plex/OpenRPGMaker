@@ -4,6 +4,7 @@ import { __resetTeamSpecCache, loadTeamSpec, resetTeamSpec, saveTeamSpec, TEAM_S
 import { PI_TEAM_ROLES } from "@/ai/piAgent/team";
 import { createTeamBoardState, reduceTeamBoard } from "@/ai/piAgent/teamBoardState";
 import { createBlankProject } from "@/project/defaults";
+import { interviewBrief } from "./helpers/gameDesignBrief";
 
 class MemoryStorage {
   private map = new Map<string, string>();
@@ -56,6 +57,10 @@ describe("팀 명세", () => {
     expect(builder).toMatch(/「정원사」에이전트다\. 나무를 심는다/); expect(builder).toMatch(/작업 범위는 프로젝트 전체/);
     const reviewer = memberSystemPrompt(spec.members[2]!, project, []).join("\n");
     expect(reviewer).toMatch(/읽기 도구만/); expect(reviewer).toMatch(/report_review/);
+    expect(reviewer).not.toMatch(/사용자가 확정한 게임 기획/);
+    const briefed = { ...project, gameDesignBrief: interviewBrief("monster-collect") };
+    expect(memberSystemPrompt(spec.members[2]!, briefed, []).join("\n")).toMatch(/사용자가 확정한 게임 기획/);
+    expect(memberSystemPrompt(spec.members[1]!, briefed, []).join("\n")).toMatch(/사용자가 확정한 게임 기획/);
   });
   it("보드 행은 팀원 이름과 id 를 받는다", () => {
     let state = createTeamBoardState("team", "x");

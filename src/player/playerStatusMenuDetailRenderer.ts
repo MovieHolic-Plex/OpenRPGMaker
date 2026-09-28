@@ -197,14 +197,35 @@ function renderDetailEntry(options: {
   if (entry.vitals) {
     if (entry.face) row.append(renderDetailFace(project, entry.face, 24));
     row.append(el("span", { class: "status-menu-target-name", text: entry.label }));
+    // 상태 줄 — 걸린 상태는 빨강, 이 아이템이 푸는 상태는 「→ 정상」 초록. 비어 있으면 「정상」.
+    if (entry.vitals.stateNames) {
+      const cured = entry.vitals.curedStateNames ?? [];
+      const remaining = entry.vitals.stateNames.filter((name) => !cured.includes(name));
+      row.append(el("span", {
+        class: `status-menu-target-states${entry.vitals.stateNames.length ? " has-state" : ""}`,
+        dataset: { testid: `${entry.testId ?? "status-menu-target"}-states` },
+        children: entry.vitals.stateNames.length
+          ? [
+              el("span", { class: "status-menu-target-state-now", text: entry.vitals.stateNames.join(" · ") }),
+              ...(cured.length ? [el("span", { class: "status-menu-target-state-next", text: ` → ${remaining.length ? remaining.join(" · ") : "정상"}` })] : []),
+            ]
+          : [el("span", { class: "status-menu-target-state-ok", text: "정상" })],
+      }));
+    }
     for (const kind of ["hp", "mp"] as const) {
       const current = entry.vitals[kind];
       const max = entry.vitals[kind === "hp" ? "maxHp" : "maxMp"];
       const next = entry.vitals[kind === "hp" ? "hpAfter" : "mpAfter"];
       row.append(el("span", {
-        class: `status-menu-target-vital ${kind}`,
+        class: `status-menu-target-vital ${kind}${next > current ? " gains" : ""}`,
         children: [
-          el("span", { text: `${kind.toUpperCase()} ${current}/${max}${next > current ? ` → ${next}` : ""}` }),
+          el("span", {
+            class: "status-menu-target-vital-text",
+            children: [
+              `${kind.toUpperCase()} ${current}/${max}${next > current ? ` → ${next}` : ""}`,
+              ...(next > current ? [el("span", { class: "status-menu-delta up", text: ` ▲${next - current}` })] : []),
+            ],
+          }),
           el("span", { class: "status-menu-target-track", children: [
             el("span", { class: "status-menu-target-preview", attrs: { style: `width:${max ? next / max * 100 : 0}%` } }),
             el("span", { class: "status-menu-target-fill", attrs: { style: `width:${max ? current / max * 100 : 0}%` } }),
@@ -264,6 +285,11 @@ function renderDetailShowcase(project: Project, entry: StatusMenuDetailEntry): H
         children: [
           el("span", { class: "status-menu-stat-delta-label", text: delta.label }),
           el("span", { class: "status-menu-stat-delta-value", text: `${delta.current} → ${delta.next}` }),
+          // 「현재 → 변경 후 ▲+6」 — 상점 비교 창과 같은 표기. 같으면 비워 둔다.
+          el("span", {
+            class: `status-menu-delta${delta.next > delta.current ? " up" : delta.next < delta.current ? " down" : ""}`,
+            text: delta.next > delta.current ? `▲${delta.next - delta.current}` : delta.next < delta.current ? `▼${delta.current - delta.next}` : "",
+          }),
         ],
       })),
     }));

@@ -5,6 +5,8 @@
 import { canonicalizeCommandFieldAlias } from "@/project/eventCommands/commandFieldAliases";
 import { sharedFaceFromEventGraphic, sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import { EASYRPG_RTP_ASSETS, charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
+import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
+import { reconcileFaceWithCharset } from "@/assets/reviewedCharsetFaces";
 import { npcGraphicExampleLabels, pickNpcGraphic, type NpcGraphicPickOptions } from "@/assets/charsetQuery";
 import { searchResources } from "@/assets/resourceSearch";
 import { COMMAND_KINDS, CONDITION_KINDS } from "@/project/commandKindRegistry";
@@ -76,6 +78,8 @@ const CHARSET_SEARCH_ID_PATTERN = /^charset:(.+):(\d+)$/;
 const KNOWN_CHARSET_TEXTURE_KEYS = [
   ...new Set([
     ...EASYRPG_RTP_ASSETS.flatMap((asset) => (asset.category === "charset" && "textureKey" in asset ? [asset.textureKey] : [])),
+    // 번들 차셋 전부(스칼록시·농장 동물 포함). 빠지면 대응표에 행이 있는 닭·소를 place_npc 가 해석하지 못해 거절했다(2026-09-28).
+    ...CHARSET_ASSETS.map((asset) => asset.textureKey),
     ...searchResources("charset", "*").flatMap((result) => {
       const parsed = parseCharsetSearchId(result.id);
       return parsed ? [parsed.textureKey] : [];
@@ -504,9 +508,12 @@ export function compileSimplePage(
   // 명시 face 우선. 자동 얼굴은 공용 검토 자료만 사용하며 얼굴 없는 상태도 보존한다.
   const injectFace = options.injectFace !== false;
   if (injectFace && hasText) {
-    const face = options.face !== undefined ? options.face
+    const requested = options.face !== undefined ? options.face
       : page.face !== undefined ? faceFromSimplePage(page)
-      : sharedFaceFromEventGraphic(graphic);
+      : undefined;
+    const face = requested === undefined ? sharedFaceFromEventGraphic(graphic)
+      : requested === null ? null
+      : explicitFaceForGraphic(requested, graphic, name, options.warnings);
     if (face) {
       commands.push({
         kind: "changeFace",
@@ -514,7 +521,7 @@ export function compileSimplePage(
         position: face.position ?? "left",
         flipHorizontally: face.flipHorizontally ?? false,
       });
-    } else {
+    } else if (requested === undefined) {
       options.warnings?.push(
         `NPC '${name}' 공용 얼굴 매핑 없음(미검토·얼굴 없음 포함) — 얼굴을 자동 추정하지 않습니다.`,
       );
@@ -591,7 +598,20 @@ function graphicSpecFromPage(page: SimplePage): GraphicSpec | undefined {
 }
 
 function faceFromSimplePage(page: SimplePage): FaceGraphic | null {
-  const raw = page.face;
+  return faceFromArg(page.face);
+}
+
+/** 명시 얼굴을 이 페이지의 걷기 그림과 대조한다(reconcileFaceWithCharset). 투명·업로드 그림은 그대로 둔다. */
+function explicitFaceForGraphic(face: FaceGraphic, graphic: EventPageGraphic, name: string, warnings: string[] | undefined): FaceGraphic | null {
+  const sprite = graphic.transparent ? undefined : graphic.sprite;
+  if (!sprite || sprite.type !== "bundled" || !sprite.id) return face;
+  const characterIndex = decodeCharsetFrameIndex(graphic.pattern ?? 0).characterIndex;
+  const reconciled = reconcileFaceWithCharset(face.resourceId, sprite.id, characterIndex);
+  if (reconciled.warning) warnings?.push(`NPC '${name}': ${reconciled.warning}`);
+  return reconciled.faceResourceId === null ? null : { ...face, resourceId: reconciled.faceResourceId };
+}
+
+function faceFromArg(raw: unknown): FaceGraphic | null {
   if (!raw || typeof raw !== "object") return null;
   const rec = raw as Record<string, unknown>;
   if (typeof rec.resourceId === "string" && rec.resourceId.trim()) {

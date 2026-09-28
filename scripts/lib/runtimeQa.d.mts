@@ -266,6 +266,8 @@ export type RuntimeQaScenario = {
   readonly seed?: number;
   readonly viewport?: RuntimeQaViewport;
   readonly projectFixture?: string;
+  /** QA 사본에만 얹는 시스템 설정(예: menuUiStyle 고정). 픽스처 파일은 바꾸지 않는다. */
+  readonly systemPatch?: Readonly<Record<string, unknown>>;
   /** player.html 에 붙일 쿼리(예: e2eVitals=1 로 액터 바이탈 훅 개방). */
   readonly query?: Readonly<Record<string, string>>;
 };

@@ -1,4 +1,5 @@
 import { fallHop, jumpHop } from "@/player/characterHop";
+import { invalidateEventIdIndexPass } from "@/project/runtimeEventState";
 import { mapTileSize } from "@/project/tileGeometry";
 import type { Dir } from "@/player/input";
 import { npcMoveDurationMs, npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
@@ -205,6 +206,8 @@ function applyRouteSwitch(scene: AutonomousNpcSceneContext, command: Extract<Mov
   const switchId = command.switchId.trim();
   if (switchId.length === 0) return;
   scene.session.switches[switchId] = command.value;
+  // 표면 갱신은 이벤트 배열을 바꿀 수 있다(소환·스폰) — 이 NPC 패스의 id 색인을 버린다.
+  invalidateEventIdIndexPass();
   scene.refreshRuntimeSurfaces?.();
 }
 

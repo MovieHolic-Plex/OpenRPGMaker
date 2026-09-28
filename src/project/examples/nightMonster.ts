@@ -197,7 +197,6 @@ export function createNightMonsterProject(): NightMonsterBuild {
     musicResourceId: "cc0-bgm-dungeon",
     backgroundResourceId: "horror-mystery-blue-gallery",
     titleGraphic: { mode: "text" },
-    showInputHint: true,
   });
   context.project.maps[NIGHT_MONSTER_MAP_IDS.gallery]!.bgm = {
     mode: "custom",
@@ -413,7 +412,7 @@ export function createNightMonsterProject(): NightMonsterBuild {
   ] }] };
   requireTool(context, "set_title_screen", { title: "밤의 괴물",
     menuLabels: { newGame: "저택에 들어가기", continueGame: "이어서 도망치기", quit: "돌아가기" },
-    particles: { preset: "rain", density: 30 }, showInputHint: true });
+    particles: { preset: "rain", density: 30 } });
   for (const map of Object.values(context.project.maps)) {
     map.encounterRate = 0;
     map.bgm = { mode: "custom", resourceId: map.id === chase.id ? "cc0-bgm-battle" : "cc0-bgm-dungeon", fadeInMs: 650 };

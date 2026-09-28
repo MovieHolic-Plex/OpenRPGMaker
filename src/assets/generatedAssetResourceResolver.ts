@@ -1,3 +1,5 @@
+import { CHARSET_BATTLERS } from "./charsetBattlers";
+import { BATTLE_SCENERY_CATALOG } from "./battleSceneryCatalog";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import { withInlineAsset } from "./inlineAssetStore";
 import { resolveCc0IconAssetUrl } from "./cc0IconAssets";
@@ -21,6 +23,9 @@ import type { Project } from "@/project/types";
 // 구 id 를 지우면 사용자가 만든 기존 프로젝트의 타이틀 화면이 빈 화면이 된다.
 // 파일 경로(*.png) 자체는 안 옮겼다 — 에셋 파일 개명은 별도 라운드(Phase 5).
 const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
+  ...Object.fromEntries(CHARSET_BATTLERS.map((entry) => [entry.resourceId, `/${entry.path}`])),
+  // 미설치 팩도 id 는 유지한다. 파일 실패는 전투 배경의 네 장 로드 가드가 처리한다.
+  ...Object.fromEntries(BATTLE_SCENERY_CATALOG.map((entry) => [entry.resourceId, `/${entry.layers.ground}`])),
   hero: "/assets/generated/starter/hero-01-battle.png",
   "oprn-title-bright": "/assets/generated/title/oprn-title-bright-v2.png",
   "oprn-title-blue": "/assets/generated/title/default-title-blue.png",

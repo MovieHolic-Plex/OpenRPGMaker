@@ -4,6 +4,8 @@
 // 읽기 툴은 project를 변형하지 않는다(runner가 read 모드로 처리).
 
 import { queryNpcGraphics } from "@/assets/charsetQuery";
+import { reviewedCharsetFaceRow } from "@/assets/reviewedCharsetFaces";
+import reviewedCharacterGraphics from "@/assets/sharedCharacterGraphics.json";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { listDatabaseResourceOptions } from "@/editor/resourceOptions";
 import { searchResources, type ResourceSearchKind, type ResourceSearchResult } from "@/assets/resourceSearch";
@@ -387,7 +389,47 @@ const findSwitchUsage: ToolDefinition = {
   },
 };
 
-const RESOURCE_KINDS: readonly (ResourceSearchKind | "picture")[] = ["tile", "charset", "monster", "backdrop", "bgm", "se", "picture"];
+const RESOURCE_KINDS: readonly (ResourceSearchKind | "picture" | "faceset")[] = ["tile", "charset", "monster", "backdrop", "bgm", "se", "picture", "faceset"];
+
+/**
+ * 얼굴 검색. 번들 얼굴은 공용 대응표의 사람 말 라벨("금발 여성")과 **짝 걷기 그림**을 함께 준다.
+ * 예전엔 조수가 본 얼굴 목록이 "Actor2 얼굴 4 · EasyRPG" 같은 이름뿐이라 번호로 찍었다(2026-09-28 전수 조사).
+ * 업로드·생성 얼굴은 DB 피커와 같은 목록에서 이름·id 로 찾는다.
+ */
+function searchFacesets(project: Project, query: string): Pick<ResourceSearchResult, "id" | "label" | "description">[] {
+  const needle = query.trim().toLocaleLowerCase();
+  const browse = needle.length === 0 || needle === "*" || needle === "all" || needle === "전체";
+  const pairedSprites = new Map<string, string[]>();
+  for (const row of reviewedCharacterGraphics.mappings) {
+    if (row.status !== "mapped" || !row.faceResourceId) continue;
+    pairedSprites.set(row.faceResourceId, [...(pairedSprites.get(row.faceResourceId) ?? []), `${row.textureKey}#${row.characterIndex} ${row.label}`]);
+  }
+  const bundled = reviewedCharacterGraphics.faces.map((face) => {
+    const paired = pairedSprites.get(face.resourceId) ?? [];
+    const traits = Object.values(face.attributes ?? {}).join(" ");
+    return {
+      id: face.resourceId,
+      label: face.label,
+      description: paired.length > 0
+        ? `짝 걷기 그림: ${paired.join(", ")}. 이 그림의 NPC 는 얼굴을 생략해도 자동으로 붙는다.`
+        : "짝 걷기 그림 없음 — 걷기 그림과 같은 인물인지 직접 확인하고 쓴다.",
+      haystack: `${face.resourceId} ${face.label} ${traits} ${paired.join(" ")}`.toLocaleLowerCase(),
+    };
+  });
+  const bundledIds = new Set(bundled.map((face) => face.id));
+  const others = listDatabaseResourceOptions("faceset", project)
+    .filter((option) => !bundledIds.has(option.id))
+    .map((option) => ({ id: option.id, label: option.name, description: "업로드·생성 얼굴", haystack: `${option.id} ${option.name} ${(option.searchTerms ?? []).join(" ")}`.toLocaleLowerCase() }));
+  const terms = needle.split(/\s+/).filter(Boolean);
+  return [...bundled, ...others]
+    .filter((face) => browse || terms.every((term) => face.haystack.includes(term)))
+    .map(({ haystack: _haystack, ...face }) => face);
+}
+
+function faceForNpcGraphic(textureKey: string, characterIndex: number): { readonly resourceId: string; readonly quality: string } | null {
+  const row = reviewedCharsetFaceRow(textureKey, characterIndex);
+  return row?.status === "mapped" ? { resourceId: row.faceResourceId, quality: row.quality } : null;
+}
 
 const listNpcGraphics: ToolDefinition = {
   name: "list_npc_graphics",
@@ -409,6 +451,8 @@ const listNpcGraphics: ToolDefinition = {
       age: match.entry.age,
       tags: match.entry.tags,
       ...(match.entry.appearance ? { appearance: match.entry.appearance } : {}),
+      // 이 그림의 검토된 짝 얼굴. null 이면 맞는 얼굴이 없다 — 다른 얼굴을 붙이지 말 것.
+      face: faceForNpcGraphic(match.entry.textureKey, match.entry.characterIndex),
       nativeGraphic: {
         sprite: { type: "bundled", id: match.entry.textureKey },
         direction: "down",
@@ -422,7 +466,7 @@ const listNpcGraphics: ToolDefinition = {
 
 const listResources: ToolDefinition = {
   name: "list_resources",
-  description: "리소스를 검색한다. kind: tile/charset/monster/backdrop/bgm/se(시맨틱 검색) 또는 picture(업로드·생성 그림 name/id 부분 일치). kind:\"tile\" 은 mapId(또는 tilesetId)의 타일셋에서 찾는다 — 생략하면 시작 맵의 타일셋.",
+  description: "리소스를 검색한다. kind: tile/charset/monster/backdrop/bgm/se(시맨틱 검색), picture(업로드·생성 그림 name/id 부분 일치) 또는 faceset(얼굴: 라벨·특징·짝 걷기 그림으로 검색, 예: '금발 여성', 'people2'). NPC 얼굴은 보통 생략한다 — 걷기 그림의 짝이 자동으로 붙고, 짝이 아닌 번들 얼굴은 짝으로 교정된다. kind:\"tile\" 은 mapId(또는 tilesetId)의 타일셋에서 찾는다 — 생략하면 시작 맵의 타일셋.",
   mode: "read",
   parameters: {
     type: "object",
@@ -452,7 +496,9 @@ const listResources: ToolDefinition = {
       throw new ToolError("limit은 1~50의 정수여야 합니다.", { code: "invalid-args" });
     }
     let all: Pick<ResourceSearchResult, "id" | "label" | "description">[];
-    if (kind === "picture") {
+    if (kind === "faceset") {
+      all = searchFacesets(project, args.query);
+    } else if (kind === "picture") {
       // 그림(picture)은 시맨틱 카탈로그가 아니라 DB 피커와 같은 단일 정본 목록에서
       // name/id 부분 일치로 찾는다. query='*' 는 전체 훑어보기 관례를 따른다.
       const needle = args.query.trim().toLocaleLowerCase();

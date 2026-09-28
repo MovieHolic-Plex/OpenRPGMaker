@@ -2016,6 +2016,10 @@ player preview. The editor probe accepts skin IDs as arguments and an optional
 
 ### 공용 기본 매핑 재저작 (2026-09-18)
 
+> 2026-09-28 전수 대조로 근사 26칸 중 다른 인물인 7칸을 얼굴 없음으로 바꿨다(현재 정확 68·근사 19·얼굴 없음 81).
+> 같은 날 원본에 얼굴이 없던 29칸의 짝 얼굴을 생성해 연결했다(현재 정확 97·근사 19·얼굴 없음 52 — 사물·탈것·빈 칸뿐, 얼굴 메타데이터 109개).
+> 목록과 저장본 교정은 `openwiki/editor-ai-tools.md` 「얼굴 짝 전수 교정」.
+
 사용자의 재매핑 지시로 `src/assets/sharedCharacterGraphics.json`을 원본 그림에서 새로 저작했다. 168칸 중 94칸 연결(정확 68·근사 26), 74칸 얼굴 없음, 원본 얼굴 메타데이터 80개다. 공용 저장 파일이 없는 호스트는 이 자료로 시작하며, 이미 저장된 호스트 파일은 우선하여 사용자 편집을 보존한다. 각 근사 대응의 차이는 `note`에 남긴다. `Actor3 #5`를 여성 얼굴에 순번으로 연결하지 않으며, 검은 고양이·Scarloxy 전용 그림·물건·빈 칸에 억지 얼굴을 주지 않는다. 시트·얼굴 대조 PNG, 호스트 저장 후 재읽기, LegacyDb 전용 행 `oprn-shared-character-graphics`의 저장(201) 후 재조회 근거는 `.omo/evidence/shared-character-faces/README.md`에 보존한다. LegacyDb는 재저작 자료의 원격 보관본이고 편집기의 공용 저장 정본은 호스트 파일이다.
 
 ## Feature16 climate and action forms (2026-09-21)
@@ -2107,6 +2111,19 @@ HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한�
 타일별 AI 참고문서·SQLite 저장·불변 원격 v2 보존본은
 `openwiki/tileset-reference-documents.md`와
 `tiledata/tilesets/forest_high_cliff_river/shared-library/`를 참조한다.
+
+**낮은 돌 우물 재채색 (2026-09-28).** 원본 Tibo 소품은 파란 회색에 거의 검은 남색 외곽선·물이 불투명 픽셀의 34%였고,
+앞 입술이 가장 밝은 베개 음영에 발밑 그림자가 없어 숲마을 게임 화면에서 혼자 떠 보였다. `scripts/content/recolor-forest-stone-well.py`
+가 픽셀 모양은 그대로 두고 색만 칩셋 비석·돌기둥의 중성 회색 8단 + 왼위 빛 + 나무 그림자와 같은 규칙의 접지 그림자로 바꾼다.
+같은 네 칸이 복사된 PNG 28장(원본 소품·공용 소품 시트·기후/생물군 칩셋·등록 장소 아틀라스)을 원본 칸 해시로 찾아
+함께 바꾸고 카드 미리보기 1장도 갱신한다(총 29장). 참고문서 이미지 목록에 새 요약 키를 더한다(옛 키는 옛 프로젝트 인라인 그림용으로 남긴다). 다시 돌리면 아무것도 안 한다.
+프로젝트에 이미 **업로드**로 저장된 옛 우물 그림(예: `forest_high_cliff_river` 업로드 시트)은 이 스크립트가 건드리지 않는다.
+후속 외곽선 정리는 `scripts/content/prepare-forest-well-outline.mjs --apply`로 동기화한다.
+원본과 생성 윤곽 자료는 `tiledata/forest-stone-well/`에 보관한다. 생성 그림의 내부 색을 가져오지 않고
+기존 32×32 내부 무늬를 유지하면서 외곽 20픽셀의 색만 연속된 짙은 회색으로 맞췄다(알파·크기 동일).
+첨부 그림 전체를 교체해 본 뒤 사용자가 이전 외곽선 정리본을 선택했다.
+현재 스크립트는 `outline-native.png`를 정본으로 복사하며, 반려된 교체본도 원래 네 칸으로 되돌린다.
+기존 ID·2×2 배치·통행 속성은 그대로다.
 
 ### 세계 개요 스프레드 뷰 (2026-09-22)
 

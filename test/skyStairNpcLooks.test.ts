@@ -11,7 +11,8 @@
 import { describe, expect, it } from "vitest";
 import { findCharsetSemantic } from "@/assets/charsetSemantics";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
-import { faceIdForSheetCell, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
+import { LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
+import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
 import { skyStairMaps } from "@/editor/content/skyStairMaps";
 import type { GameEvent } from "@/project/types";
 
@@ -91,16 +92,9 @@ describe("천공의 계단 NPC 그래픽", () => {
     expect(guardians).not.toContain("(none)");
   });
 
-  it("사람 NPC 는 대사 앞에 charset 과 짝이 맞는 changeFace 를 갖는다", () => {
-    // Face sheets contain two 8-character halves; actor2/4 need the second-half offset.
-    const ALIGNED: Readonly<Record<string, readonly [string, number]>> = {
-      tex_easyrpg_charset_people1: ["easyrpg-faceset-people1", 0],
-      tex_easyrpg_charset_people3: ["easyrpg-faceset-people2", 0],
-      tex_easyrpg_charset_actor1: ["easyrpg-faceset-actor1", 0],
-      tex_easyrpg_charset_actor2: ["easyrpg-faceset-actor1", 8],
-      tex_easyrpg_charset_actor3: ["easyrpg-faceset-actor2", 0],
-      tex_easyrpg_charset_actor4: ["easyrpg-faceset-actor2", 8],
-    };
+  it("사람 NPC 의 대화 얼굴은 공용 대응표의 짝이고, 대응표가 얼굴 없음이면 얼굴이 없다", () => {
+    // 정답지는 AI 도구와 같은 공용 대응표(sharedCharacterGraphics.json)다. 예전엔 짝 없는 시트를 성별·나이로
+    // FaceSet/People1 에서 골랐고, 그 추정이 기름 장수·선원·여관 주인 등 10명에게 다른 인물을 붙였다(2026-09-28).
     let facedPages = 0;
     const problems: string[] = [];
     for (const ev of allEvents()) {
@@ -108,41 +102,30 @@ describe("천공의 계단 NPC 그래픽", () => {
         const cell = cellOf(pg.graphic);
         const cmds = flatCommands(pg.commands);
         const faces = cmds.filter((c) => c.kind === "changeFace");
-        const isPerson = cell !== null
-          && (cell.textureKey.includes("people") || cell.textureKey.includes("actor"));
-        if (!isPerson) {
-          // 몬스터·사물·투명에는 얼굴을 붙이지 않는다.
-          if (faces.length > 0) problems.push(`${ev.id}/${pg.id}: 사람이 아닌데 얼굴이 붙었다`);
+        const look = cell ? `${cell.textureKey}#${cell.characterIndex}` : "투명";
+        const expected = cell ? reviewedFaceIdForCharset(cell.textureKey, cell.characterIndex) : undefined;
+        if (!expected) {
+          if (faces.length > 0) problems.push(`${ev.id}/${pg.id}: ${look} 은 얼굴 없음인데 얼굴이 붙었다`);
           continue;
         }
-        const speaks = cmds.some((c) => c.kind === "text");
-        if (!speaks) continue;
+        // 화자가 있는 대사만 본다. 몬스터 수호자는 나레이션(화자 없음)만 있어 얼굴이 없는 게 맞다.
+        if (!cmds.some((c) => c.kind === "text" && typeof c.speaker === "string")) continue;
+        const isPerson = cell!.textureKey.includes("people") || cell!.textureKey.includes("actor");
+        // 보스(파수꾼·계단의 주인)는 얼굴 없이 말하는 연출이다 — 붙인다면 짝이어야 할 뿐 강제하지 않는다.
+        if (faces.length === 0 && !isPerson) continue;
         if (faces.length === 0) {
-          problems.push(`${ev.id}/${pg.id}: 사람 NPC 인데 changeFace 가 없다`);
+          problems.push(`${ev.id}/${pg.id}: 짝 얼굴 ${expected} 가 있는데 changeFace 가 없다`);
           continue;
         }
         facedPages += 1;
         const face = faces[0] as { resourceId: string };
-        const aligned = ALIGNED[cell.textureKey];
-        if (aligned) {
-          const expected = faceIdForSheetCell(aligned[0], cell.characterIndex + aligned[1]);
-          if (face.resourceId !== expected) {
-            problems.push(
-              `${ev.id}/${pg.id}: ${cell.textureKey}#${cell.characterIndex} 는 `
-              + `${expected} 와 짝인데 ${face.resourceId} 가 붙았다`,
-            );
-          }
-        } else if (!face.resourceId.startsWith("easyrpg-faceset-people1-")) {
-          // 짝이 없는 시트는 일반 주민 얼굴 시트에서만 고른다.
-          problems.push(`${ev.id}/${pg.id}: 짝 없는 시트에 ${face.resourceId} 를 썼다`);
-        }
+        if (face.resourceId !== expected) problems.push(`${ev.id}/${pg.id}: ${look} 의 짝은 ${expected} 인데 ${face.resourceId} 가 붙었다`);
         // 얼굴은 낱장 리소스 id 다 — 시트 id 를 그대로 쓰면 칸이 정해지지 않는다.
         expect(LEGACY_FACESET_SHEET_IDS).not.toContain(face.resourceId);
-        expect(face.resourceId).toMatch(/-\d{2}$/);
       }
     }
     expect(problems, problems.join("\n")).toEqual([]);
-    expect(facedPages).toBeGreaterThan(30);
+    expect(facedPages).toBeGreaterThan(20);
   });
 
   it("투명한 이벤트는 이동문·자동 트리거·등대뿐이다", () => {

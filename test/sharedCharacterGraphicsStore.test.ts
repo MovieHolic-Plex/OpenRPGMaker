@@ -17,7 +17,8 @@ describe("Host-owned character graphics catalog", () => {
     expect(() => validateSharedCharacterGraphics(catalog)).not.toThrow();
     expect(readSharedCharacterGraphics(file).document).toEqual(catalog);
     expect(catalog.mappings.some(row => row.status === "pending")).toBe(false);
-    expect(catalog.mappings.find(row => row.textureKey === "tex_easyrpg_charset_animal" && row.characterIndex === 1)?.faceResourceId).toBeNull();
+    // Animal #1 은 원본 얼굴이 없어 짝 얼굴을 생성했다(2026-09-28). 다른 고양이·강아지 얼굴을 대체로 쓰지 않는다.
+    expect(catalog.mappings.find(row => row.textureKey === "tex_easyrpg_charset_animal" && row.characterIndex === 1)?.faceResourceId).toBe("generated-faceset-missing-people-11");
     expect(catalog.mappings.find(row => row.textureKey === "tex_easyrpg_charset_actor3" && row.characterIndex === 5)?.faceResourceId).not.toBe("easyrpg-faceset-actor2-05");
   });
   it("survives a new reader and retains a previous accepted revision", () => {

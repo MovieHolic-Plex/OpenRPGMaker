@@ -1,0 +1,27 @@
+[
+  {
+    "name": "remote host editor opens in a member app window",
+    "ok": true,
+    "detail": "http://100.73.251.77:9840/?map=map_farming_demo bar=\"내 팀 · 호스트팀 관리 ↗\" loadMs=51839"
+  },
+  {
+    "name": "member window uses the host's HTTP bridge",
+    "ok": true,
+    "detail": "{\"revision\":2,\"title\":\"생활 시스템 완주 픽스처\"}"
+  },
+  {
+    "name": "member save accepted by the remote host",
+    "ok": true,
+    "detail": "{\"kind\":\"saved\",\"revision\":3,\"newTitle\":\"원격 참여 저장 main 1790544369416\"}"
+  },
+  {
+    "name": "member re-reads the saved title from the host",
+    "ok": true,
+    "detail": "{\"revision\":3,\"title\":\"원격 참여 저장 main 1790544369416\"}"
+  },
+  {
+    "name": "remote host listed under 최근 참여한 팀",
+    "ok": true,
+    "detail": "100.73.251.77:98401분 전"
+  }
+]

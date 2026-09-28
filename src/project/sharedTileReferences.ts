@@ -3,6 +3,7 @@ import { ensureSharedContent } from './sharedContent';
 import { validateTilesetReferences } from './tilesetReferences';
 import { sha256HexTextSync } from '@/util/sha256';
 import { installSharedSpatialReferences, ensureSharedSpatialReferences, type SharedSpatialReferences } from './sharedSpatialReferences';
+import { readSharedContentCache, writeSharedContentCache } from './sharedContentCache';
 export const SHARED_TILE_REFERENCES_ENDPOINT = '/__oprn/shared-tile-references';
 export interface SharedTileReferenceEntry {
   id: string; tileSize: number; tilesPerRow: number; count: number; assetId: string;
@@ -23,10 +24,18 @@ export async function loadSharedTileReferences(): Promise<boolean> {
   installSharedSpatialReferences();
   if (typeof window === 'undefined') return false;
   try {
-    const response = await fetch(SHARED_TILE_REFERENCES_ENDPOINT, { cache: 'no-store' });
+    // 판본(ETag)이 기기 캐시와 같으면 호스트가 본문 없이 304 를 준다(sharedContent.ts 와 같은 계약).
+    const cached = await readSharedContentCache<SharedTileReferenceSnapshot>('tile-references');
+    const response = await fetch(SHARED_TILE_REFERENCES_ENDPOINT, { cache: 'no-store', headers: cached ? { 'if-none-match': cached.etag } : {} });
     if (response.status === 404) return false;
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const value = await response.json() as SharedTileReferenceSnapshot;
+    let value: SharedTileReferenceSnapshot;
+    if (response.status === 304 && cached) value = cached.value;
+    else {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      value = await response.json() as SharedTileReferenceSnapshot;
+      const etag = response.headers.get('etag');
+      if (etag) void writeSharedContentCache('tile-references', etag, value);
+    }
     if (typeof value.revision !== 'string' || !Array.isArray(value.entries)) throw new Error('Invalid shared tile references');
     for (const entry of value.entries) {
       if (typeof entry.id !== 'string' || !entry.id.startsWith('shared_') || typeof entry.assetId !== 'string'

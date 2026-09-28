@@ -1,8 +1,9 @@
 import { furniturePushBlocks } from './furniturePushAnimation';
 import { canMoveFootprint, inBounds } from "@/project/collision";
-import { UNIT_FOOTPRINT, passageBounds } from "@/project/footprint";
+import { UNIT_FOOTPRINT, passageBounds, rectsOverlap } from "@/project/footprint";
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
-import type { CharacterFootprint } from "@/project/types";
+import { resolvePlayerBody, playerPassageRect } from "@/project/playerFootprint";
+import type { CharacterFootprint, FootprintRect } from "@/project/types";
 import { store } from "@/project/store";
 import { nearestPassableTile } from "@/player/playSceneMapCommands";
 import type { MoveCommand } from "@/project/types";
@@ -10,7 +11,7 @@ import type { AutonomousMover } from "@/player/playSceneTypes";
 import type { AutonomousNpcSceneContext, MovementDelta } from "@/player/playSceneAutonomousTypes";
 import { applySpriteAlpha } from "@/player/playSceneAutonomousSprites";
 import type { NpcCommandTarget, NpcRouteCommandContext } from "@/player/playSceneAutonomousCommands";
-import { findBlockingEventOverlappingRect, runtimeEventViewById } from "@/project/runtimeEventState"
+import { findBlockingEventOverlappingRect, invalidateEventIdIndexPass, runtimeEventViewById } from "@/project/runtimeEventState"
 import type { Project } from "@/project/types/project";
 
 export type NpcMoveCollision = {
@@ -26,13 +27,23 @@ export type NpcMoveCollision = {
 /** Player occupancy for character collision: current tile, plus mid-move destination. */
 export function isPlayerOccupyingTile(
   scene: Pick<AutonomousNpcSceneContext, "tileX" | "tileY"> &
-    Partial<Pick<AutonomousNpcSceneContext, "moving" | "movingTo">>,
+    Partial<Pick<AutonomousNpcSceneContext, "moving" | "movingTo" | "session">>,
   x: number,
   y: number
 ): boolean {
-  if (scene.tileX === x && scene.tileY === y) return true;
-  if (scene.moving === true && scene.movingTo && scene.movingTo.x === x && scene.movingTo.y === y) return true;
-  return false;
+  return playerOverlapsRect(scene, { left: x, right: x, top: y, bottom: y }, store.getCurrent());
+}
+
+function playerOverlapsRect(
+  scene: Pick<AutonomousNpcSceneContext, "tileX" | "tileY"> &
+    Partial<Pick<AutonomousNpcSceneContext, "moving" | "movingTo" | "session">>,
+  rect: FootprintRect,
+  project: Project
+): boolean {
+  const body = resolvePlayerBody(project, scene.session);
+  return rectsOverlap(rect, playerPassageRect(body, scene.tileX, scene.tileY))
+    || (scene.moving === true && !!scene.movingTo
+      && rectsOverlap(rect, playerPassageRect(body, scene.movingTo.x, scene.movingTo.y)));
 }
 
 /**
@@ -109,7 +120,7 @@ function leg(
  * (x,y) 를 발밑으로 삼은 이 무버의 통행 사각이 플레이어나 다른 솔리드 이벤트와 겹치는가.
  *
  * 양쪽 다 **통행 사각**이다 — 상체만 겹치는 것은 서로 지나갈 수 있어야 한다.
- * 플레이어 쪽은 아직 점이다(플레이어 발자국은 후속 태스크).
+ * 플레이어는 현재 위치와 진행 중인 걸음의 목적지 모두를 예약한다.
  */
 function isCharacterBlockedRect(
   request: NpcMoveCollision,
@@ -119,11 +130,7 @@ function isCharacterBlockedRect(
 ): boolean {
   const rect = passageBounds(x, y, self.fp, self.passRows);
   if (furniturePushBlocks(request.scene, rect, request.eventId)) return true;
-  for (let cy = rect.top; cy <= rect.bottom; cy += 1) {
-    for (let cx = rect.left; cx <= rect.right; cx += 1) {
-      if (isPlayerOccupyingTile(request.scene, cx, cy)) return true;
-    }
-  }
+  if (playerOverlapsRect(request.scene, rect, request.project)) return true;
   // 예전에는 맵 전체 뷰 배열을 만든 뒤 some() 했다. 대각 이동 판정은 이 함수를 최대 3번
   // 부르므로 NPC 한 명이 한 걸음 옮길 때마다 배열이 3개 생겼다. 이제는 첫 차단에서 멈춘다.
   return findBlockingEventOverlappingRect(
@@ -148,6 +155,14 @@ export function applyNpcTransfer(
     return;
   }
   const destination = nearestPassableTile(project, targetMap, command.x, command.y);
+  const rect = passageBounds(destination.x, destination.y, target.view.footprint, target.view.passRows);
+  if (findBlockingEventOverlappingRect(project, targetMap, routeContext.scene.session,
+    targetMap.id === routeContext.scene.map.id ? routeContext.scene.eventPositions : {}, rect, routeContext.eventId)
+    || isSpatialPlacementBlocking(project, routeContext.scene.session, targetMap.id, rect)) {
+    // 호출부는 명령을 먼저 소비한다. 점유가 풀릴 때까지 같은 transfer를 보존한다.
+    target.mover.step = Math.max(0, target.mover.step - 1);
+    return;
+  }
   routeContext.scene.session.eventLocations ??= {};
   routeContext.scene.session.eventLocations[routeContext.eventId] = {
     mapId: command.mapId,
@@ -157,7 +172,10 @@ export function applyNpcTransfer(
   };
   delete routeContext.scene.eventPositions[routeContext.eventId];
   routeContext.scene.autonomousNPCs.delete(routeContext.eventId);
+  routeContext.scene.commandMoveRouteEventIds?.delete(routeContext.eventId);
   applySpriteAlpha(target.sprite, 0);
+  // 표면 갱신은 이벤트 배열을 바꿀 수 있다(소환·스폰) — 이 NPC 패스의 id 색인을 버린다.
+  invalidateEventIdIndexPass();
   routeContext.scene.refreshRuntimeSurfaces?.();
   routeContext.scene.syncRuntimeState?.();
 }

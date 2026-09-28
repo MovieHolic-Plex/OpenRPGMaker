@@ -410,3 +410,62 @@ describe("runtime debug panel placement and persistence", () => {
     expect(css).toContain(".runtime-debug-panel:not([open]) .runtime-debug-live{display:none}");
   });
 });
+
+describe("runtime debug panel frame cost", () => {
+  function hookWithLive(state: { x: number; switchValue: boolean }): RuntimeDebugHook {
+    const hook = installDebugHook(() => stateSnapshot({ x: state.x, switches: { sw_0001: state.switchValue } }));
+    hook.readLive = vi.fn(() => ({ currentMapId: "map_0001", x: state.x, y: 6, switchValue: state.switchValue }));
+    return hook;
+  }
+
+  it("같은 상태가 이어지면 라이브 줄·스위치 값을 다시 쓰지 않고, 바뀌면 곧바로 쓴다", async () => {
+    const state = { x: 4, switchValue: false };
+    hookWithLive(state);
+    const panel = renderRuntimeDebugPanel();
+    document.body.append(panel);
+    await nextFrames(2);
+    const live = testid(panel, "runtime-debug-live-state");
+    const value = testid(panel, "runtime-debug-switch-value");
+    const mutations: MutationRecord[] = [];
+    const observer = new MutationObserver((records) => mutations.push(...records));
+    for (const node of [live, value]) observer.observe(node, { attributes: true, childList: true, characterData: true, subtree: true });
+    await nextFrames(4);
+    mutations.push(...observer.takeRecords());
+    expect(mutations).toHaveLength(0);
+
+    state.x = 5;
+    state.switchValue = true;
+    await nextFrames(2);
+    expect(live.dataset.x).toBe("5");
+    expect(live.textContent).toContain("5,6");
+    expect(value.dataset.switchValue).toBe("true");
+    expect(value.textContent).toBe("ON");
+    observer.disconnect();
+    panel.remove();
+  });
+
+  it("상위 패널만 접어도 전체 상태를 읽지 않고, 다시 펼치면 최신 JSON 을 보여준다", async () => {
+    const state = { x: 4, switchValue: false };
+    const hook = hookWithLive(state);
+    const panel = renderRuntimeDebugPanel() as HTMLDetailsElement;
+    document.body.append(panel);
+    panel.open = true;
+    testid(panel, "runtime-debug-read").click();
+    await nextFrames(2);
+    const readState = hook.readState as ReturnType<typeof vi.fn>;
+    expect(readState.mock.calls.length).toBeGreaterThan(1);
+
+    panel.open = false;
+    await nextFrames(1);
+    const callsWhileCollapsed = readState.mock.calls.length;
+    await nextFrames(4);
+    expect(readState.mock.calls.length).toBe(callsWhileCollapsed);
+    expect(testid(panel, "runtime-debug-live-state").dataset.x).toBe("4");
+
+    state.x = 9;
+    panel.open = true;
+    await nextFrames(2);
+    expect(testid(panel, "runtime-debug-state").textContent).toContain("\"x\": 9");
+    panel.remove();
+  });
+});

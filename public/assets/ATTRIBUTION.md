@@ -402,6 +402,15 @@
 - Each master yields a 192×192 sheet and 16 standalone 48×48 PNGs. Per-cell nearest-neighbor sampling; no repainting or invented expressions.
 - These are supplied derivatives of the existing EasyRPG portraits; the existing EasyRPG attribution remains applicable. User supply does not establish a new license.
 
+## Generated paired faces for walking sprites without a portrait (2026-09-28)
+
+- AI-generated (Codex built-in image generation) at the user's request, so every human/monster walking sprite has a matching dialogue face.
+- Inputs: front-facing crops of the bundled walking sprites (EasyRPG People2/People4/People5/Actor3/Animal/Monster3, Scarloxy people1/people2) as identity references, and EasyRPG FaceSet/People1 and People2 as style references.
+- Reduced masters: `generated/faceset/source/missing-people-master.png`, `missing-scarloxy-master.png`, `missing-animal-monster-master.png` (628×628 of the 1254×1254 output).
+- Runtime sheets: `generated/faceset/missing-people.png`, `missing-scarloxy.png`, `missing-monster.png`; standalone faces `generated/faceset/missing-*/00.png`–`15.png` via `node scripts/slice-faceset-sheets.mjs`.
+- Pairing: `src/assets/sharedCharacterGraphics.json` (`generated-faceset-missing-*`). Blank cells are registered but hidden from authoring lists.
+- Style follows EasyRPG portraits; the EasyRPG and Scarloxy attributions above still apply to the referenced sprites. Generation does not establish a new license.
+
 
 ### Forest harmony bundled snapshot (2026-09-18)
 `forest-harmony/chipset.png` packages the approved forest village atlas with
@@ -477,6 +486,28 @@ The gubisup, small-forest-village and forest-cliff-village region atlases preser
 the existing mixed-source terrain/building attribution and the reviewed custom
 forest materials; they are portable authored map snapshots, not new original
 claims for those inherited tiles.
+
+## Stone well recolour (2026-09-28)
+
+The four "낮은 돌 우물" (low stone well) cells from
+`generated/forest-harmony/village-unfake-v1/stone-well-low.png` and every bundled
+sheet that copies them (`shared-village/objects.png`, the climate-village and
+atlas-biome chipsets, the region-reference atlases and the shared-object card
+preview) were recoloured by `scripts/content/recolor-forest-stone-well.py`.
+Silhouette and stone joints are unchanged; only colours were remapped to the
+forest chipset's neutral stone ramp, with a left-top light and an ordered-dither
+ground shadow. This is a derivative edit of the same Tibo-generated prop and
+carries its existing provenance; it does not change the rights of any source image.
+
+A subsequent outline cleanup used the built-in image generation tool as a contour
+reference, constrained to the original native footprint. Twenty border pixels were
+unified; original interior colours and alpha were retained. Reproducible sources
+and prompt are in `tiledata/forest-stone-well/`, packed and propagated by
+`scripts/content/prepare-forest-well-outline.mjs`.
+
+The full generated replacement was briefly tried at the user's request, then
+rejected in favour of the outline-cleaned version. Its saved source is historical;
+`tiledata/forest-stone-well/outline-native.png` is the accepted shipped sprite.
 
 ## Authored forest place library (2026-09-21)
 
@@ -572,3 +603,4 @@ claim; existing forest-harmony component notices still apply.
   (`src/assets/forestHarmonyTreeShadows.json`, `src/project/defaults/forestHarmonyTreeShadows.ts`).
 - Each cell is a single shade colour (#10261a) at stepped alpha, shaped only by the transparency mask of an existing
   `forest-harmony/chipset.png` trunk cell. No pixels are copied from any source; the chipset's own notice applies.
+- `generated/battle-scenery/{plains,forest,cave,snow,desert}/*.png`: OPRN Studio 자체 생성 이미지 (OpenAI image_gen, 2026-09-28); 원화 시트와 프롬프트 포함, `scripts/asset-gen/gen-battle-scenery.mjs`로 도트 양자화·레이어 분리·이음매 보정. 외부 게임 소재를 복사하지 않음.

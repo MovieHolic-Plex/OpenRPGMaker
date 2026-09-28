@@ -67,6 +67,8 @@ describe("createTranslator", () => {
     expect(pieces.translate("칠하기 · 바닥")).toBe("Paint · Ground");
     expect(pieces.translate("바닥 · 흙길 중앙")).toBe("Ground · 흙길 중앙");
     expect(pieces.translate("흙길 · 중앙")).toBeNull();
+    // 빈 탭 이름처럼 공백 없이 붙인 나열도 조각마다 찾는다.
+    expect(pieces.translate("칠하기·바닥")).toBe("Paint·Ground");
     const tooltip = createTranslator({ "칠하기": "Paint", "고른 타일로 칠합니다": "Paints with the chosen tile" });
     expect(tooltip.translate("칠하기 (B) — 고른 타일로 칠합니다")).toBe("Paint (B) — Paints with the chosen tile");
   });
@@ -84,6 +86,14 @@ describe("shipped catalogs", () => {
     for (const catalog of [en, ja, zh] as Record<string, string>[]) {
       const broken = Object.entries(catalog).filter(([source, target]) => placeholders(source).join() !== placeholders(target).join());
       expect(broken).toEqual([]);
+    }
+  });
+
+  it("never wrap a translation in quotes the Korean source does not have", () => {
+    // 2026-09-28: 일괄 생성 한 묶음(「모습 미선택」…「목장 울타리」 등 43개)이 "List" 처럼 따옴표째 들어가 화면에 그대로 보였다.
+    for (const catalog of [en, ja, zh] as Record<string, string>[]) {
+      const quoted = Object.entries(catalog).filter(([source, target]) => /^".*"$/.test(target) && !/^".*"$/.test(source));
+      expect(quoted).toEqual([]);
     }
   });
 

@@ -849,7 +849,13 @@ export async function writeReport(outDir, report) {
 export async function runRuntimeQa(page, rawScenario, opts = {}) {
   const scenario = normalizeScenario(rawScenario);
   const projectPath = resolve(REPO_ROOT, scenario.projectFixture);
-  const projectJson = await readFile(projectPath, "utf8");
+  let projectJson = await readFile(projectPath, "utf8");
+  // 시스템 설정만 QA 사본에서 고정한다 — 기본값(예: ESC 메뉴 스킨)이 바뀌어도 시나리오가 원래 보던 화면을 계속 본다.
+  if (scenario.systemPatch) {
+    const project = JSON.parse(projectJson);
+    project.system = { ...project.system, ...scenario.systemPatch };
+    projectJson = JSON.stringify(project);
+  }
   const outDir = opts.outDir ?? join(REPO_ROOT, "verify-shots/runtime-qa", scenario.id);
 
   const errors = [];

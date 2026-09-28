@@ -3,12 +3,19 @@
   "tileset": "shared_refmap_interior",
   "tiles": 6144,
   "atlas": "3072×4608",
-  "places": 10,
-  "objectKits": 194,
+  "places": 20,
+  "objectKits": 256,
   "houseKits": 0,
   "autotileGroups": 85,
-  "bytes": 12019979,
+  "bytes": 15232436,
   "maps": {
+    "refmap_bakery_home": {
+      "place": "shared_refmap_interior_refmap_bakery_home",
+      "size": "15×13",
+      "objects": 24,
+      "houses": 0,
+      "renderSha": "80e509dcce1c34c16ed0300fa1909fd64c085b073687e220b1c6b85057c35e01"
+    },
     "refmap_banquet_hall": {
       "place": "shared_refmap_interior_refmap_banquet_hall",
       "size": "31×23",
@@ -16,12 +23,19 @@
       "houses": 0,
       "renderSha": "e6f265b2a2b0f1c69340ccdb0cc9b883a43b3f7d82828b8eeba70e46f141a6b5"
     },
+    "refmap_blacksmith_home": {
+      "place": "shared_refmap_interior_refmap_blacksmith_home",
+      "size": "12×14",
+      "objects": 19,
+      "houses": 0,
+      "renderSha": "25f51f7b5fab2d952d8a068571983c2b23ff8ed3c325f3ae024ba35b4e8bc268"
+    },
     "refmap_castle_jail": {
       "place": "shared_refmap_interior_refmap_castle_jail",
       "size": "36×19",
       "objects": 61,
       "houses": 0,
-      "renderSha": "35538f28b6f4933a23208dedadbd7afd9f5ac69848ae182db35fc066cd7cb985"
+      "renderSha": "d7f61110aef5970ab66e755d8e6baef5c4b74f0cc28922f5247e7ac3cfde0c05"
     },
     "refmap_farmhouse": {
       "place": "shared_refmap_interior_refmap_farmhouse",
@@ -30,12 +44,26 @@
       "houses": 0,
       "renderSha": "0daea860c26053574d3f7a0d64a4038f3c89fad6871daf720a5ce77a13d40d13"
     },
+    "refmap_fisher_hut": {
+      "place": "shared_refmap_interior_refmap_fisher_hut",
+      "size": "10×12",
+      "objects": 16,
+      "houses": 0,
+      "renderSha": "46fb199764662000010076206526851d7a94605d82d5e1b30e1da634f78549a9"
+    },
     "refmap_general_store": {
       "place": "shared_refmap_interior_refmap_general_store",
       "size": "23×23",
       "objects": 54,
       "houses": 0,
       "renderSha": "5766eeed13fe4750b9434c4c9bf800c4405bde9b1fbbb38e51081abc1516c409"
+    },
+    "refmap_herbalist_hut": {
+      "place": "shared_refmap_interior_refmap_herbalist_hut",
+      "size": "12×9",
+      "objects": 22,
+      "houses": 0,
+      "renderSha": "8cb936c2e050995d9f5a67bd88fa3df3d9832ce4786575324e4565228ee4252d"
     },
     "refmap_inn_1f": {
       "place": "shared_refmap_interior_refmap_inn_1f",
@@ -58,12 +86,47 @@
       "houses": 0,
       "renderSha": "2c5899f99d59ebc1a6de619e9642a16af9aabc9512b4c4b2d9f460cf2d1e0824"
     },
+    "refmap_miner_home": {
+      "place": "shared_refmap_interior_refmap_miner_home",
+      "size": "14×14",
+      "objects": 25,
+      "houses": 0,
+      "renderSha": "9fd65856b77377a2be6f33c6c802ed831254fcb432e93a1f9d31d1753d3a5e52"
+    },
+    "refmap_old_couple_cottage": {
+      "place": "shared_refmap_interior_refmap_old_couple_cottage",
+      "size": "15×9",
+      "objects": 26,
+      "houses": 0,
+      "renderSha": "b2b6c9f58353292795b3f8ee564f428c7e67cb3c750e9b041d7b738dceef032d"
+    },
+    "refmap_poor_rental": {
+      "place": "shared_refmap_interior_refmap_poor_rental",
+      "size": "9×9",
+      "objects": 10,
+      "houses": 0,
+      "renderSha": "2e68973038d17bbd3e244b5fa6749de7c7b6e0b6232b0bbf82dc7ec49e5d55d4"
+    },
+    "refmap_student_room": {
+      "place": "shared_refmap_interior_refmap_student_room",
+      "size": "10×10",
+      "objects": 14,
+      "houses": 0,
+      "renderSha": "946741ab89f7b825be82986d2b5a4d8255e6f1de14668c55d1c953d03515299a"
+    },
     "refmap_throne_hall": {
       "place": "shared_refmap_interior_refmap_throne_hall",
       "size": "32×30",
       "objects": 72,
       "houses": 0,
       "renderSha": "4a6044acb4f1ffb0e6d876ec205e112527f4f822d7c5753a29b4f2aeac8910e2"
+    },
+    "refmap_watch_post": {
+      "place": "shared_refmap_interior_refmap_watch_post",
+      "size": "12×14",
+      "objects": 27,
+      "houses": 0,
+      "renderSha": "009aa5ed8d6501ea45332073382db5561dac7fc71219fde8c409d3fa271a6f36"
     },
     "refmap_winter_home": {
       "place": "shared_refmap_interior_refmap_winter_home",
@@ -78,13 +141,20 @@
       "objects": 90,
       "houses": 0,
       "renderSha": "435d0e646965908c69d01e30f482c7b284e49bfaade1852b0fa6d500ce3b2284"
+    },
+    "refmap_woodcutter_cabin": {
+      "place": "shared_refmap_interior_refmap_woodcutter_cabin",
+      "size": "12×10",
+      "objects": 19,
+      "houses": 0,
+      "renderSha": "84927f6511fd5ed2036b6ae1632572d7269b72e4231636a45b04b7b39b83e1d3"
     }
   },
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "a652c05becf3948860e385e9727d304a3f0fae035ef44a0d0cffb0debedb1190",
+  "revision": "0530ce17d2b2cef5fd6719517a00ac7fe66a922298cb6daa6d8c659522bbfac9",
   "reloaded": true,
-  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-interior-2026-09-27T21-36-26-664Z.sqlite",
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-interior-2026-09-28T03-34-06-121Z.sqlite",
   "otherLibraries": 36,
   "otherLibrariesUnchanged": true,
-  "publishedAt": "2026-09-27T21:36:46.560Z"
+  "publishedAt": "2026-09-28T03:34:20.942Z"
 }

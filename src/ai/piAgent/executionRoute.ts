@@ -11,6 +11,7 @@
 import { formatPackTownNote, type PackTownTarget } from "./packTownRoute";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
 import { estimateVillageSize } from "@/ai/constructionDeclaration";
+import { formatVillageReferenceNote, villageReferenceExamples } from "@/ai/villageReferenceExamples";
 import {
   formatIntentNote,
   formatScopeNote,
@@ -35,6 +36,8 @@ export const LEGACY_PI_TEAM_ROUTE = "pi-team";
 /** 다이얼 한 값이 이번 실행에 대해 정하는 것 전부. */
 export interface PiRunPlan {
   readonly villageContract?: import("./villageContract").VillageContract;
+  /** 이 턴을 어떻게 읽었는지 한 줄(classifyPlainPiTurn). 활동 로그의 「의도 판정」 행이 된다. 실행은 이 값을 읽지 않는다. */
+  readonly routingAudit?: string;
   /** 기존 의도 선언이 확인한 단순 생성·수정. 별도 계획·시각 검토를 생략할 후보다. */
   readonly routineEdit?: boolean;
   /** 쓰기 툴 없이 조회·보고만 한다(읽기 전용 레벨·계획 턴). */
@@ -77,6 +80,11 @@ export interface PiIntentNoteInput {
   readonly selection: IntentSelectionFact | null;
   /** 요청이 팩 도시 타일셋(Rasak 등) 마을이면 그 타일셋 — 숲마을 노트 대신 build_pack_town 노트(packTownRoute). */
   readonly packTown?: PackTownTarget | null;
+  /**
+   * 사용자 문장. 있으면 숲마을 노트에 요청에 가까운 완성 마을 사례([참고 마을])를 붙인다.
+   * 2026-09-28: 사례 약 70곳이 Pi 프롬프트·노트·도구 결과 어디에도 없어 모델이 기본값(12채·강변촌)만 썼다.
+   */
+  readonly requestText?: string;
 }
 
 /**
@@ -97,10 +105,13 @@ export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
   const noteIntent = preset ? { ...input.intent, construction: undefined } : input.intent;
   const intentNote = formatIntentNote(noteIntent, { clarifyBypassed: true, targetMap: input.targetMap });
   const villageNote = input.packTown ? formatPackTownNote(input.packTown, input.targetMap) : formatPiVillageNote(input);
+  const referenceNote = !input.packTown && villageNote && input.requestText !== undefined && input.project && "tilesets" in input.project
+    ? formatVillageReferenceNote(villageReferenceExamples(input.project as Project, input.requestText))
+    : null;
   const scopeNote = input.selection
     ? formatScopeNote({ mapId: input.selection.mapId, region: input.selection }, input.intent)
     : null;
-  const parts = [intentNote, villageNote, scopeNote].filter((part): part is string => typeof part === "string" && part.length > 0);
+  const parts = [intentNote, villageNote, referenceNote, scopeNote].filter((part): part is string => typeof part === "string" && part.length > 0);
   return parts.length > 0 ? parts.join("\n") : null;
 }
 
@@ -145,6 +156,13 @@ function formatPiVillageNote(input: PiIntentNoteInput): string | null {
   ];
   if (selection && intent.useSelection) {
     lines.push("target 은 아래 [선택 영역] 노트의 사각형이다.");
+  } else if (intent.construction?.approach) {
+    // 「위로 올라가면 마을」— 지금 맵은 출발지이고 마을은 그 너머의 새 맵이다. 지금 맵 위에 짓지 않는다.
+    const from = targetMap ? `'${targetMap.id}'` : "지금 맵";
+    lines.push(
+      `마을은 ${from}의 ${intent.construction.approach} 쪽으로 나가면 나오는 새 맵이다 → target:{kind:"new", mapId, name}. ${from} 위에 짓지 않는다. `
+        + `마을 계약이 있으면 출입구와 시작 위치는 코드가 잇는다. 계약이 없으면 시공 뒤 link_maps 로 ${from}의 ${intent.construction.approach} 끝과 마을의 반대쪽 끝을 잇는다.`,
+    );
   } else if (targetMap && !targetMap.lived) {
     lines.push(
       `지금 맵 '${targetMap.id}'(${targetMap.width}×${targetMap.height})은 비어 있다 → target:{kind:"existing", mapId:"${targetMap.id}"} 로 맵 전체에 짓는다(bounds·fullMap 불필요). `

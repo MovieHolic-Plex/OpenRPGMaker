@@ -88,9 +88,33 @@ function lazyTilesetDictionary(originals: Project["tilesets"]): Project["tileset
  */
 export function cloneProjectForMutation(project: Project): Project {
   // 키 순서를 지키려고 빈 사전을 같은 자리에 두고 복제한 뒤 갈아 끼운다(직렬화 바이트가 같아야 한다).
-  const draft = structuredClone({ ...project, tilesets: {} }) as Project;
+  const draft = structuredClone(withoutSharedDictionaries(project)) as Project;
   draft.tilesets = lazyTilesetDictionary(project.tilesets);
+  shareUploadedAssets(project, draft);
   return draft;
+}
+
+/**
+ * 타일셋·업로드 자산 사전을 빈 사전으로 바꾼 얕은 사본. 복제할 나머지만 남긴다(키 자리는 그대로).
+ *
+ * 업로드 자산(그림·소리 dataUrl)은 항목째 공유한다. 왜(2026-09-28 실측, 새 프로젝트 149MB 중 업로드 자산 66MB):
+ * 편집·도구 draft 와 store.replace 마다 이 사전을 structuredClone 해서 복제만 수백 ms 였고, 새 객체라 요약 기억도
+ * 맞지 않았다. 계약: 업로드 자산 항목은 제자리에서 고치지 않는다 — 항상 사전 자리에 새 객체를 대입한다
+ * (facesetSheetRepair·resourceTools 가 그렇게 한다). 사전 자체는 얕게 복사하므로 대입·삭제는 안전하다.
+ */
+export function withoutSharedDictionaries(project: Project): Project {
+  const assets = project.assets as Project["assets"] | undefined;
+  return {
+    ...project,
+    tilesets: {},
+    ...(assets && assets.uploaded ? { assets: { ...assets, uploaded: {} } } : {}),
+  } as Project;
+}
+
+/** withoutSharedDictionaries 로 비운 업로드 사전을 원본 항목을 가리키는 얕은 사전으로 채운다. */
+export function shareUploadedAssets(source: Project, copy: Project): void {
+  const uploaded = (source.assets as Project["assets"] | undefined)?.uploaded;
+  if (uploaded && copy.assets) copy.assets.uploaded = { ...uploaded };
 }
 
 /**

@@ -13,6 +13,8 @@ import type { TitleBackgroundFit, TitleEffect } from "@/project/types";
 import { TITLE_EFFECT_DEFAULT_COLORS, activeTitleEffects } from "@/project/titleEffects";
 import {
   TITLE_EFFECT_FRAGMENT_SHADER,
+  TITLE_EFFECT_FALLBACK_FRAGMENT_SHADER,
+  TITLE_EFFECT_MOTE_FRAGMENT_SHADER,
   TITLE_EFFECT_SHADER_KIND,
   TITLE_EFFECT_SHADER_MAX_EFFECTS,
   TITLE_EFFECT_SHADER_MAX_MOTES,
@@ -25,7 +27,7 @@ export const TITLE_EFFECTS_MAX_CANVAS_EDGE = 1920;
 
 const DEFAULT_SPREAD: Partial<Record<TitleEffect["kind"], number>> = { godRays: 0.19, motes: 0.28, glow: 0.08 };
 
-/** 셰이더 uniform 으로 넘길 평탄 배열. 순수 함수 — 테스트는 이것만 본다. */
+/** 셰이더 uniform 으로 넘길 평탄 배열. 순수 인코딩 함수. */
 export interface TitleEffectUniforms {
   count: number;
   kind: Int32Array;
@@ -188,7 +190,8 @@ function startTitleEffects(canvas: HTMLCanvasElement, initialUniforms: TitleEffe
     canvas.dataset.titleEffectsRenderer = "unavailable";
     return;
   }
-  const program = buildProgram(gl);
+  const motes = createMotePass(gl);
+  const program = buildProgram(gl, motes ? TITLE_EFFECT_FRAGMENT_SHADER : TITLE_EFFECT_FALLBACK_FRAGMENT_SHADER);
   if (!program) {
     canvas.dataset.titleEffectsRenderer = "unavailable";
     return;
@@ -233,14 +236,20 @@ function startTitleEffects(canvas: HTMLCanvasElement, initialUniforms: TitleEffe
       image: location("uImage"),
       depth: location("uDepth"),
       hasDepth: location("uHasDepth"),
+      motes: location("uMotes"),
+      moteTw: location("uMoteTw"),
     };
     context.useProgram(program);
     context.uniform1i(loc.image, 0);
     context.uniform1i(loc.depth, 1);
+    context.uniform1i(loc.motes, 2);
+    context.uniform1i(loc.moteTw, 3);
     context.uniform1i(loc.hasDepth, 0);
     context.uniform2f(loc.imageSize, image.naturalWidth || 1, image.naturalHeight || 1);
     context.uniform1i(loc.fit, FIT_ID[options.fit ?? "stretch"]);
     const applyUniforms = (): void => {
+      motes?.update(uniforms, image.naturalWidth || 1, image.naturalHeight || 1);
+      context.useProgram(program);
       context.uniform1i(loc.count, uniforms.count);
       context.uniform1iv(loc.kind, uniforms.kind);
       context.uniform4fv(loc.a, uniforms.a);
@@ -278,6 +287,9 @@ function startTitleEffects(canvas: HTMLCanvasElement, initialUniforms: TitleEffe
 
     const draw = (seconds: number) => {
       resizeCanvas(canvas, context);
+      motes?.draw(seconds);
+      context.useProgram(program);
+      context.viewport(0, 0, canvas.width, canvas.height);
       context.uniform2f(loc.canvas, canvas.width, canvas.height);
       context.uniform1f(loc.time, seconds);
       context.drawArrays(context.TRIANGLE_STRIP, 0, 4);
@@ -334,7 +346,90 @@ function resizeCanvas(canvas: HTMLCanvasElement, gl: WebGL2RenderingContext): vo
   }
 }
 
-function buildProgram(gl: WebGL2RenderingContext): WebGLProgram | null {
+/** A tiny GPU calculation pass avoids changing sin/fract hash precision on the CPU.
+ * TEXTURE2/3 belong to this pass; image/depth remain on units 0/1.
+ * Storage is allocated once, never read back or allocated in the animation loop.
+ */
+function createMotePass(gl: WebGL2RenderingContext): {
+  update: (uniforms: TitleEffectUniforms, width: number, height: number) => void;
+  draw: (seconds: number) => void;
+} | null {
+  if (!gl.getExtension("EXT_color_buffer_float")) return null;
+  const texture = gl.createTexture();
+  const twTexture = gl.createTexture();
+  const framebuffer = gl.createFramebuffer();
+  if (!texture || !twTexture || !framebuffer) {
+    gl.deleteTexture(texture);
+    gl.deleteTexture(twTexture);
+    gl.deleteFramebuffer(framebuffer);
+    return null;
+  }
+  gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+  [texture, twTexture].forEach((target, index) => {
+    gl.activeTexture(gl.TEXTURE2 + index);
+    gl.bindTexture(gl.TEXTURE_2D, target);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texStorage2D(gl.TEXTURE_2D, 1, gl.RGBA32F, TITLE_EFFECT_SHADER_MAX_MOTES, TITLE_EFFECT_SHADER_MAX_EFFECTS);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + index, gl.TEXTURE_2D, target, 0);
+  });
+  // MRT computes each particle once while retaining both uncombined brightness factors.
+  gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1]);
+  const complete = gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE;
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.activeTexture(gl.TEXTURE0);
+  const program = complete ? buildProgram(gl, TITLE_EFFECT_MOTE_FRAGMENT_SHADER) : null;
+  if (!program) {
+    gl.deleteFramebuffer(framebuffer);
+    gl.deleteTexture(texture);
+    gl.deleteTexture(twTexture);
+    return null;
+  }
+  const loc = {
+    time: gl.getUniformLocation(program, "uTime"),
+    size: gl.getUniformLocation(program, "uImageSize"),
+    count: gl.getUniformLocation(program, "uCount"),
+    kind: gl.getUniformLocation(program, "uKind"),
+    a: gl.getUniformLocation(program, "uA"),
+    b: gl.getUniformLocation(program, "uB"),
+  };
+  let rows = 0;
+  let columns = 0;
+  return {
+    update(uniforms, width, height) {
+      rows = 0;
+      columns = 0;
+      for (let i = 0; i < uniforms.count; i++) {
+        if (uniforms.kind[i] !== TITLE_EFFECT_SHADER_KIND.motes && uniforms.kind[i] !== TITLE_EFFECT_SHADER_KIND.motesRegion) continue;
+        const count = uniforms.b[i * 4 + 3]!;
+        if (count <= 0) continue;
+        rows = i + 1;
+        columns = Math.max(columns, count);
+      }
+      gl.useProgram(program);
+      gl.uniform2f(loc.size, width, height);
+      gl.uniform1i(loc.count, uniforms.count);
+      gl.uniform1iv(loc.kind, uniforms.kind);
+      gl.uniform4fv(loc.a, uniforms.a);
+      gl.uniform4fv(loc.b, uniforms.b);
+    },
+    draw(seconds) {
+      if (!rows) return;
+      gl.useProgram(program);
+      gl.uniform1f(loc.time, seconds);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+      gl.viewport(0, 0, TITLE_EFFECT_SHADER_MAX_MOTES, TITLE_EFFECT_SHADER_MAX_EFFECTS);
+      // Restrict work without changing gl_FragCoord (particle/slot indices).
+      gl.enable(gl.SCISSOR_TEST);
+      gl.scissor(0, 0, columns, rows);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      gl.disable(gl.SCISSOR_TEST);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    },
+  };
+}
+
+function buildProgram(gl: WebGL2RenderingContext, fragmentSource: string): WebGLProgram | null {
   const compile = (type: number, source: string) => {
     const shader = gl.createShader(type);
     if (!shader) return null;
@@ -347,12 +442,13 @@ function buildProgram(gl: WebGL2RenderingContext): WebGLProgram | null {
     return shader;
   };
   const vs = compile(gl.VERTEX_SHADER, TITLE_EFFECT_VERTEX_SHADER);
-  const fs = compile(gl.FRAGMENT_SHADER, TITLE_EFFECT_FRAGMENT_SHADER);
+  const fs = compile(gl.FRAGMENT_SHADER, fragmentSource);
   if (!vs || !fs) return null;
   const program = gl.createProgram();
   if (!program) return null;
   gl.attachShader(program, vs);
   gl.attachShader(program, fs);
+  gl.bindAttribLocation(program, 0, "aPos");
   gl.linkProgram(program);
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
     console.warn("[title-effects] program link failed", gl.getProgramInfoLog(program));
