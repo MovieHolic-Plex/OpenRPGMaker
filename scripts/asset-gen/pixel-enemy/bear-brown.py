@@ -1,7 +1,7 @@
 """Original brown bear, 64px: rears up on its hind legs and hammers down with both forepaws."""
 import sys
 sys.dont_write_bytecode = True
-from beast_lib import Pen, run, blob, tube, bez, dot, ipt, mass
+from beast_lib import Pen, run, blob, tube, bez, dot, ipt, mass, settle
 CELL = 64
 G = 60
 PAL = dict(o='21150f', s='4a2c1c', b='76482c', l='9f6a3e', h='c4935e', m='5c3a26',
@@ -38,7 +38,7 @@ def head(p, hx, hy, n, open_=False, tilt=0):
 
 def limb(p, top, knee, foot, far, r0=3.8, r1=3.3):
     base, sh = ('m', 's') if far else ('b', 's')
-    tube(p, bez([(top[0], top[1], r0), (knee[0], knee[1], r1), (foot[0], foot[1] - 3, 3.0)]), base, 'o', sh)
+    tube(p, bez([(top[0], top[1], r0), (knee[0], knee[1], r1), (foot[0], foot[1] - 4, 2.8)]), base, 'o', sh)
     fx = foot[0]
     p.box((fx - 3, G - 3, fx + 3, G - 1), 'o')
     p.box((fx - 2, G - 3, fx + 2, G - 2), sh if far else 's')
@@ -126,6 +126,7 @@ def draw(n):
         p.line([(51, 53), (53, 55)], 'o'); p.line([(53, 53), (51, 55)], 'o')
         tube(p, bez([(36, 51, 3.6), (41, 57, 3)]), 'b', 'o', 's')
         blob(p, 42, 57, 3.3, 2.4, 0)
+        settle(p, G)
         return p
     if n in ('windup', 'attack'):
         reared(p, n)

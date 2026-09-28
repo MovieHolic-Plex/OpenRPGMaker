@@ -165,6 +165,25 @@ def tint_poly(p, pts, fill, tint, edge=None):
                 px[x, y] = p.pal[tint.get(k, fill)]
 
 
+def settle(p, ground):
+    """Move a finished frame so its lowest opaque row sits on ground and it keeps a 1px
+    side margin (the sheet checker rejects silhouettes touching the cell edge)."""
+    box = p.im.getbbox()
+    if not box:
+        return
+    dy = ground - (box[3] - 1)
+    dx = 0
+    if box[0] < 1:
+        dx = 1 - box[0]
+    elif box[2] > p.im.width - 1:
+        dx = p.im.width - 1 - box[2]
+    if dx or dy:
+        moved = Image.new('RGBA', p.im.size)
+        moved.paste(p.im, (dx, dy))
+        p.im = moved
+        p.d = ImageDraw.Draw(p.im)
+
+
 def run(name, cell, pal, draw):
     build(name, cell, pal, draw)
     frames = [draw(n).im for n in NAMES]
