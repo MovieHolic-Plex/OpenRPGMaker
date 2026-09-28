@@ -16,7 +16,7 @@ import { tileOpacity, type RgbaImage } from "../../../src/project/rpgmakerMv/bak
 import { AUTOTILE_DIR } from "../../../src/project/defaults/autotileEngine.ts";
 import type { MvPackPreset } from "../../../src/project/rpgmakerMv/packPreset.ts";
 import { passabilityOf } from "../../../src/project/collision.ts";
-import { lintPackPassage, lintPackStructure, packEmptyRects, type PackLintInput, type PackLintMaterial } from "../../../src/project/rpgmakerMv/packMapLint.ts";
+import { FLOOR_NOISE, lintPackPassage, lintPackStructure, packEmptyRects, type PackLintInput, type PackLintMaterial } from "../../../src/project/rpgmakerMv/packMapLint.ts";
 
 export const T = MV_TILE_SIZE;
 export const REFMAP_ROOT = path.join(os.homedir(), ".local/share/oprn/refmap-downloads");
@@ -300,9 +300,17 @@ function lintInput(set: LoadedSet, spec: MapSpec, k1: (string | null)[], k2: (st
     w: spec.w, h: spec.h, m1: materialsOf(set, k1), m2: materialsOf(set, k2), placed,
     pass: Array.from({ length: n }, (_, i) => passabilityOf(ts, layers[0][i]!, layers[1][i]!, layers[2][i]!, layers[3][i]!)),
     basePass: Array.from({ length: n }, (_, i) => passabilityOf(ts, layers[0][i]!, -1, -1, -1)),
-    occupied: Array.from({ length: n }, (_, i) => layers[2][i]! >= 0 || layers[3][i]! >= 0),
+    occupied: occupiedCells(n, spec.w, placed, layers),
     ...(spec.entry ? { entry: spec.entry } : {}),
   };
+}
+/** 3·4층에 물체가 있는 칸. 그림자·얼룩 같은 바닥 결(FLOOR_NOISE)만 있는 칸은 비었다고 본다. */
+function occupiedCells(n: number, w: number, placed: Placed[], layers: [number[], number[], number[], number[]]): boolean[] {
+  const decal = new Set<number>();
+  for (const p of placed) if (p.o.kind === "decal" && FLOOR_NOISE.test(p.o.id)) for (const [dx, dy] of p.cells) decal.add((p.y + dy) * w + p.x + dx);
+  const solid = new Set<number>();
+  for (const p of placed) if (!(p.o.kind === "decal" && FLOOR_NOISE.test(p.o.id))) for (const [dx, dy] of p.cells) solid.add((p.y + dy) * w + p.x + dx);
+  return Array.from({ length: n }, (_, i) => (layers[2][i]! >= 0 || layers[3][i]! >= 0) && (solid.has(i) || !decal.has(i)));
 }
 export function lintPassage(set: LoadedSet, spec: MapSpec, k1: (string | null)[], k2: (string | null)[], placed: Placed[], layers: [number[], number[], number[], number[]]): string[] {
   return lintPackPassage(lintInput(set, spec, k1, k2, placed, layers));

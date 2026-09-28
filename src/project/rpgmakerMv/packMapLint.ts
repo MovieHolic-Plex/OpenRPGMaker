@@ -58,6 +58,8 @@ export interface PackLintInput {
 }
 
 const PASSWAY = /stair|step|bridge|ladder|entrance|gate|passage|plank|hatch|doorway|arch_door|cave/;
+/** 빈 바닥으로 세는 바닥 결 무늬. */
+export const FLOOR_NOISE = /shadow|fade|void|black_fill|pebble|crack|moss_tuft|leaf_tuft|stain|puddle/;
 const NATURE = /tree|conifer|palm|rock|stalag|boulder|spire|bush|stump|mound|pine|broadleaf|fern|grass|flower|mushroom|log|drift|pile/;
 // 탁자·카운터 위에 올리는 한 칸 소품. 밑 탁자가 한 칸이면 그림에 완전히 가려 되찾을 수 없으므로 닿기 검사에서 뺀다.
 const TABLETOP = /teapot|wine_set|teacup|candelabra|flower_vase|open_book|book_pile|table_lamp|plates|fruit_bowl|cutting_board|egg_pan|stock_pots|pan_kettle|bread_basket|potion|jars|crystal_ball|root_herbs|green_books|crystals_bones|desk_top/;
@@ -283,11 +285,12 @@ export interface PackEmptyRect { readonly x: number; readonly y: number; readonl
  * 「공간이 남으면 공간이 너무 큰 것이다.」 걸을 수 있는 바닥(A2·A5)인데 물체도 가구(2층 탁자·카운터)도 없는 칸에서
  * 가장 큰 빈 직사각형을 차례로 찾는다. 러그·얼룩 같은 2층 바닥 무늬는 빈 칸으로 센다. minSide 로 폭 1~2 복도를 뺄 수 있다.
  */
-export function packEmptyRects(input: Pick<PackLintInput, "w" | "h" | "m1" | "m2" | "occupied">, minArea = 12, limit = 5, minSide = 1): PackEmptyRect[] {
+export function packEmptyRects(input: Pick<PackLintInput, "w" | "h" | "m1" | "m2" | "occupied"> & { readonly pass?: readonly PassFlag[] }, minArea = 12, limit = 5, minSide = 1): PackEmptyRect[] {
   const { w, h } = input;
-  const isFloor = (m: PackLintMaterial | null) => !!m && (m.flat ? !/어둠|벽|기둥/.test(m.name) : m.part === "A2");
+  // 바닥 = A2 오토타일 바닥과 A5 평바닥. 걸을 수 있는 A4 윗면(계단참·대지)은 세지 않는다 — 게시 맵 41장 대조로 정했다.
+  const isFloor = (m: PackLintMaterial | null, i: number) => (!input.pass || openOf(input.pass[i]!)) && !!m && (m.flat ? !/어둠|벽|기둥/.test(m.name) : m.part === "A2");
   const isDecor = (m: PackLintMaterial | null) => !m || (!m.flat && m.part === "A2" && !/탁자|카운터|울타리|생울타리|덤불|키 큰 풀/.test(m.name));
-  const free = Array.from({ length: w * h }, (_, i) => isFloor(input.m1[i] ?? null) && isDecor(input.m2[i] ?? null) && !input.occupied[i]);
+  const free = Array.from({ length: w * h }, (_, i) => isFloor(input.m1[i] ?? null, i) && isDecor(input.m2[i] ?? null) && !input.occupied[i]);
   const out: PackEmptyRect[] = [];
   while (out.length < limit) {
     let best = { x: 0, y: 0, w: 0, h: 0 };
@@ -449,7 +452,9 @@ export function packLintInputFromMap(project: Project, map: GameMap): PackLintIn
     m2.push(index.material.get(l2) ?? null);
     pass.push(passabilityOf(tileset, l1, l2, l3, l4));
     basePass.push(passabilityOf(tileset, l1, -1, -1, -1));
-    occupied.push(l3 >= 0 || l4 >= 0);
+    // 그림자·얼룩·잔돌 같은 바닥 결(FLOOR_NOISE decal)만 있는 칸은 빈 바닥이다. 계단·깔개·융단은 자리를 차지한다.
+    const decalOnly = (t: number) => t < 0 || (index.objectTile.get(t) ?? []).some((c) => c.kit.o.kind === "decal" && FLOOR_NOISE.test(c.kit.o.id));
+    occupied.push((l3 >= 0 || l4 >= 0) && !(decalOnly(l3) && decalOnly(l4)));
   }
   // 입구: 맵 가장자리의 열린 칸(실내는 남쪽 출구를 맵 끝까지 잇는다). 가장자리가 모두 막혔으면 이 맵의 시작 위치.
   const border: number[] = [];
@@ -459,6 +464,44 @@ export function packLintInputFromMap(project: Project, map: GameMap): PackLintIn
   }
   const startHere = project.startMapId === map.id && project.startPos ? [project.startPos.y * w + project.startPos.x] : [];
   return { w, h, m1, m2, placed: recoverAll(map, index), pass, basePass, occupied, starts: border.length ? border : startHere };
+}
+
+/**
+ * 오토타일 모양이 이웃과 맞는가. 도구로 칠하면 늘 맞지만, 완성 장소 그림(모양이 굳은 래스터 킷)을 다른 칸 위에 찍거나
+ * 한 칸만 손으로 바꾸면 테두리가 어긋나 벽 조각·천장 줄이 떠 보인다(2026-09-28 시험: 대장간 킷을 찍고 남은 옛 벽 테 두 줄).
+ * A1(물·폭포)은 폭포와 물이 서로 이어지는 규칙이 따로라 뺀다.
+ */
+export function lintAutotileShapes(project: Project, map: GameMap): string[] {
+  const tileset = project.tilesets[map.tilesetId];
+  if (!tileset) return [];
+  const groupOf = new Map<number, NonNullable<TilesetDef["autotileGroups"]>[number]>();
+  for (const group of tileset.autotileGroups ?? []) {
+    const m = PART_KIND.exec(group.id);
+    if (!m || m[1] === "A1") continue;
+    for (const tile of group.memberTileIds) groupOf.set(tile, group);
+  }
+  const { width: w, height: h } = map;
+  const bad: string[] = [];
+  for (const layer of [map.lowerTiles, map.lowerOverlayTiles ?? []]) {
+    for (let i = 0; i < w * h; i += 1) {
+      const tile = layer[i] ?? -1;
+      const group = groupOf.get(tile);
+      if (!group) continue;
+      const x = i % w, y = Math.floor(i / w);
+      const members = new Set(group.memberTileIds);
+      const same = (dx: number, dy: number) => {
+        const nx = x + dx, ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= w || ny >= h) return group.outsideConnects === true || group.edgeConnects === true;
+        return members.has(layer[ny * w + nx] ?? -1);
+      };
+      let mask = 0;
+      if (same(0, -1)) mask |= 1; if (same(1, 0)) mask |= 2; if (same(0, 1)) mask |= 4; if (same(-1, 0)) mask |= 8;
+      if ((group.neighborhood ?? 4) === 8) { if (same(1, -1)) mask |= 16; if (same(1, 1)) mask |= 32; if (same(-1, 1)) mask |= 64; if (same(-1, -1)) mask |= 128; }
+      const want = group.variantMap[String(mask)];
+      if (want !== undefined && want !== tile) bad.push(at(x, y));
+    }
+  }
+  return bad.length ? [`모양: 이웃과 안 맞는 오토타일 ${bad.length}칸 — ${bad.slice(0, 10).join(" ")}${bad.length > 10 ? " …" : ""}. 완성 장소 그림을 다른 칸 위에 찍었거나 한 칸만 바꾼 자리다 — 그 칸들을 fill_region 으로 다시 칠하면 모양이 맞춰진다`] : [];
 }
 
 export interface PackMapLintResult {
@@ -480,7 +523,7 @@ export function lintPackMap(project: Project, map: GameMap): PackMapLintResult |
   const interior = kind === "interior";
   const emptyLimit = PACK_EMPTY_LIMIT[kind];
   const empty = packEmptyRects(input, emptyLimit + 1, 3, 3);
-  const warnings = [...lintPackStructure(input), ...lintPackPassage(input)];
+  const warnings = [...lintPackStructure(input), ...lintPackPassage(input), ...lintAutotileShapes(project, map)];
   if (input.m1.every((m) => !m)) warnings.unshift("재료: 1층에 이 팩 재료가 하나도 없다 — 팩 재료로 칠한 맵이 아니다");
   if (!input.starts?.length) warnings.unshift("통행: 입구가 없다 — 맵 가장자리에 열린 바닥이 없다. 실내는 남쪽 벽 천장 테를 1~2칸 비워 바닥을 맵 끝까지 잇는다");
   if (empty.length) warnings.push(`공간: 가구·물체 없는 빈 바닥 ${empty.map((r) => `${r.w}×${r.h}@(${r.x},${r.y})`).join(" ")} — ${kind === "interior" ? "집 실내" : kind === "cave" ? "동굴·던전" : "야외"} 한도 ${emptyLimit}칸. 물체로 메우지 말고 방·맵을 줄인다(또는 그 자리에 용도 있는 구역을 둔다)`);
