@@ -1,0 +1,14 @@
+[
+  {
+    "baseline": true,
+    "ms": 0.946000000089407,
+    "nodes": 18800,
+    "sameNode": false
+  },
+  {
+    "baseline": false,
+    "ms": 0.02299999997019768,
+    "nodes": 0,
+    "sameNode": true
+  }
+]

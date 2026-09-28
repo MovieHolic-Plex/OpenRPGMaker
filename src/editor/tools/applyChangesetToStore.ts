@@ -24,7 +24,7 @@ import { ToolError, type ToolContext, type ToolResult } from "./types";
 import { assertHouseProtection, captureHouseProtection } from "./houseProtection";
 import type { EditActivityField, EditActivityOrigin } from "@/editor/editActivityLog";
 import type { ProjectChangeAnnotation } from "@/project/store";
-import { mapCellApply } from "@/editor/incrementalMapApply";
+import { mapCellApply, toolMapCellApply } from "@/editor/incrementalMapApply";
 import type { RunOperation } from "@/ai/runOperation";
 import { emptiedEventMapIds, isMapDestruction, removedMapIds, wipedTileMapIds } from "@/ai/approvalPolicy";
 
@@ -129,6 +129,7 @@ export function applyToolToStore(name: string, args: Record<string, unknown>): T
     const summary = result.summary || summaryForDiff(result.diff ?? combineDiffs([]));
     // origin 은 "tool" — 사람이 에디터에서 툴을 직접 실행한 경로다(채팅 에이전트가 아니다).
     store.replace(ctx.project, {
+      renderCells: toolMapCellApply(store.getCurrent(), ctx.project) ?? undefined,
       change: applyAnnotation(
         "tool",
         `툴 ${name}: ${summary}`,
@@ -191,6 +192,7 @@ export function applyToolSequenceToStore(
     finishSpatialToolAcceptance(ctx.project);
     recordProjectSnapshot();
     store.replace(ctx.project, {
+      renderCells: toolMapCellApply(store.getCurrent(), ctx.project) ?? undefined,
       change: applyAnnotation(
         byAgent ? "ai" : "tool",
         `${byAgent ? `AI 적용${options.agentName ? ` (${options.agentName})` : ""}` : "툴 묶음"}: ${summary}`,

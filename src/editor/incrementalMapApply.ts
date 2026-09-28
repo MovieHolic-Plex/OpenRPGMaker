@@ -1,8 +1,11 @@
 import type { GameEvent, GameMap, MapId, Project } from "@/project/types";
+import { layerTileAt, shadowAt } from "@/project/mapLayers";
+import { jsonEqual } from "@/util/structuralJson";
 import type { ProjectChangeCell } from "@/project/store";
 
 /** 이보다 많은 칸은 화면 창 전체 재렌더가 더 싸다. */
 const MAX_INCREMENTAL_CELLS = 2048;
+const CELL_FIELDS = new Set(["lowerTiles", "upperTiles", "lowerOverlayTiles", "upperOverlayTiles", "shadowBits", "lowerTileStacks", "upperTileStacks"]);
 
 /**
  * 조수 적용이 지금 맵의 칸만 바꿨으면 그 칸 목록을 돌려준다.
@@ -43,10 +46,15 @@ function changedCells(before: GameMap, after: GameMap): ProjectChangeCell[] {
     for (let x = 0; x < width; x += 1) {
       const left = y * before.width + x;
       const right = y * after.width + x;
-      if (before.lowerTiles[left] !== after.lowerTiles[right] || stackAt(before.lowerTileStacks, left) !== stackAt(after.lowerTileStacks, right)) {
+      if (layerTileAt(before, 1, left) !== layerTileAt(after, 1, right)
+        || layerTileAt(before, 2, left) !== layerTileAt(after, 2, right)
+        || shadowAt(before, left) !== shadowAt(after, right)
+        || stackAt(before.lowerTileStacks, left) !== stackAt(after.lowerTileStacks, right)) {
         cells.push({ x, y, layer: "lower" });
       }
-      if (before.upperTiles?.[left] !== after.upperTiles?.[right] || stackAt(before.upperTileStacks, left) !== stackAt(after.upperTileStacks, right)) {
+      if (layerTileAt(before, 3, left) !== layerTileAt(after, 3, right)
+        || layerTileAt(before, 4, left) !== layerTileAt(after, 4, right)
+        || stackAt(before.upperTileStacks, left) !== stackAt(after.upperTileStacks, right)) {
         cells.push({ x, y, layer: "upper" });
       }
     }
@@ -72,4 +80,32 @@ function stackAt(stacks: Record<number, number[]> | undefined, index: number): s
 
 function eventBodyChanged(left: GameEvent, right: GameEvent): boolean {
   return left.name !== right.name || left.pages !== right.pages || left.commands !== right.commands;
+}
+
+/** Direct tools may clone unchanged inputs. Prove a single tile-only map edit before
+ * using replace's single-map descriptor; event/metadata/global edits retain full notification.
+ * Share equivalent inputs only in a comparison view, never mutate the authored result.
+ */
+export function toolMapCellApply(before: Project, after: Project): ReturnType<typeof mapCellApply> {
+  for (const key of new Set([...Object.keys(before), ...Object.keys(after)])) {
+    if (key !== "maps" && !jsonEqual(Reflect.get(before, key), Reflect.get(after, key))) return null;
+  }
+  let changedMapId: string | null = null;
+  for (const id of new Set([...Object.keys(before.maps), ...Object.keys(after.maps)])) {
+    const left = before.maps[id];
+    const right = after.maps[id];
+    if (left === right || jsonEqual(left, right)) continue;
+    if (!left || !right || changedMapId !== null) return null;
+    for (const key of new Set([...Object.keys(left), ...Object.keys(right)])) {
+      if (!CELL_FIELDS.has(key) && !jsonEqual(Reflect.get(left, key), Reflect.get(right, key))) return null;
+    }
+    changedMapId = id;
+  }
+  if (changedMapId === null) return null;
+  const left = before.maps[changedMapId]!;
+  const right = after.maps[changedMapId]!;
+  return mapCellApply(before, {
+    ...before,
+    maps: { ...before.maps, [changedMapId]: { ...right, events: left.events } },
+  }, changedMapId);
 }

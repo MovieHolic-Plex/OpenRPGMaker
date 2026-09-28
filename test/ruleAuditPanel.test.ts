@@ -64,6 +64,41 @@ afterEach(() => {
 });
 
 describe("규칙 감사 패널", () => {
+  it("debounces continuous edits and cancels the previous panel's timer", () => {
+    vi.useFakeTimers();
+    try {
+      renderRuleAuditPanel();
+      vi.mocked(clusterRuleLintIssues).mockClear();
+      for (let i = 0; i < 20; i++) {
+        store.update(project => { project.meta.title = String(i); });
+        vi.advanceTimersByTime(100);
+      }
+      expect(clusterRuleLintIssues).not.toHaveBeenCalled();
+      vi.advanceTimersByTime(150);
+      expect(clusterRuleLintIssues).toHaveBeenCalledTimes(1);
+      store.update(project => { project.meta.title = "pending"; });
+      const replacement = renderRuleAuditPanel();
+      const replace = vi.spyOn(replacement, "replaceChildren");
+      vi.advanceTimersByTime(300);
+      expect(replace).not.toHaveBeenCalled();
+    } finally { vi.useRealTimers(); }
+  });
+
+  it("defers a pending refresh when collapsed and refreshes on reopening", () => {
+    vi.useFakeTimers();
+    try {
+      const panel = renderRuleAuditPanel();
+      vi.mocked(clusterRuleLintIssues).mockClear();
+      store.update(project => { project.meta.title = "closed"; });
+      panel.removeAttribute("open");
+      vi.advanceTimersByTime(300);
+      expect(clusterRuleLintIssues).not.toHaveBeenCalled();
+      panel.setAttribute("open", "");
+      panel.dispatchEvent(new Event("toggle"));
+      expect(clusterRuleLintIssues).toHaveBeenCalledTimes(1);
+    } finally { vi.useRealTimers(); }
+  });
+
   it("reuses project diagnostics for navigation and refreshes them after edits", () => {
     lintMock.issues = [{ code: "cluster-rule-count", message: "위반", severity: "info" }];
     expect(ruleAuditViolationCount()).toBe(1);
