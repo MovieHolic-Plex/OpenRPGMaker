@@ -44,3 +44,25 @@ def _spared(m, spare):
     for x0, y0, x1, y1 in spare:
         m[y0:y1 + 1, x0:x1 + 1] = False
     return m
+
+
+def oval_mask(w, h, band=0.35):
+    """True where a pixel must be cleared: outside the inscribed ellipse, dithered over the outer 'band' of the radius."""
+    yy, xx = np.mgrid[0:h, 0:w]
+    thr = (BAYER[yy % 4, xx % 4] + 0.5) / 16.0
+    r = np.hypot((xx + 0.5 - w / 2) / (w / 2), (yy + 0.5 - h / 2) / (h / 2))
+    keep = np.clip((1.0 - r) / band, 0, 1)            # 1 inside, 0 at the ellipse rim
+    return (r >= 1.0) | (thr >= keep)
+
+
+def fade_oval(c, band=0.35):
+    """Screen layers: round the square box off into a dithered oval so no straight edge shows on stage."""
+    if isinstance(getattr(c, 'a', None), np.ndarray):
+        h, w = c.a.shape
+        c.a[oval_mask(w, h, band)] = 0
+        return
+    im = c.im
+    w, h = im.size
+    a = np.array(im)
+    a[oval_mask(w, h, band)] = 0
+    im.paste(Image.fromarray(a.astype(np.uint8), im.mode))

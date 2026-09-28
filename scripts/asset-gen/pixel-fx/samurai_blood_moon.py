@@ -86,6 +86,18 @@ def draw(c, f):
         burst_petals(c, MX, 100, 8, 60, 9, drop=10, L=3, keys=('r1', 's1'), sq=0.3)
 
 
+# 감독 QA 2026-09-28: 화면 층(128px 칸 → 무대 256px 상자)이 칸 끝까지 칠해져 무대 한가운데 네모로 잘려 보였다.
+# 칸에 내접한 타원 바깥을 디더로 걷어 둥글게 흩뜨린다(fx_edge.fade_oval, 새 색 없음·알파 0/255 유지).
+from fx_edge import fade_oval  # noqa: E402
+
+_draw_body = draw
+
+
+def draw(c, f):
+    _draw_body(c, f)
+    fade_oval(c, band=0.3)
+
+
 if __name__ == '__main__':
     run(globals())
 
