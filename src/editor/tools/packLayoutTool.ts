@@ -142,13 +142,24 @@ export const paintPackLayoutTool: ToolDefinition = {
     }
     const layer1 = readGrid(args.layer1, "layer1")!;
     const layer2 = readGrid(args.layer2, "layer2");
-    const h = layer1.rows.length, w = layer1.rows[0]?.length ?? 0;
+    const h = layer1.rows.length;
+    // 폭 = 가장 많은 줄의 길이. 모델은 20칸이 넘는 줄에서 글자 수를 한두 개 틀린다(2026-09-28 광산 26칸: 8번 거부 끝에 포기) —
+    // 2칸 이하 차이는 그 줄 끝 글자로 채우거나 잘라 맞추고 알린다. 더 크면 거부한다.
+    const lengths = new Map<number, number>();
+    for (const row of layer1.rows) lengths.set([...row].length, (lengths.get([...row].length) ?? 0) + 1);
+    const w = [...lengths].sort((a, b) => b[1] - a[1] || b[0] - a[0])[0]?.[0] ?? 0;
     if (w < 3 || h < 3 || w > MAX_TOOL_MAP_DIMENSION || h > MAX_TOOL_MAP_DIMENSION) throw new ToolError(`layer1 크기 ${w}×${h} — 3 이상 ${MAX_TOOL_MAP_DIMENSION} 이하`, { code: "invalid-args" });
+    const fixedRows: string[] = [];
     for (const [name, grid] of [["layer1", layer1], ["layer2", layer2]] as const) {
       if (!grid) continue;
       if (grid.rows.length !== h) throw new ToolError(`${name} 줄 수 ${grid.rows.length} ≠ ${h}`, { code: "invalid-args" });
-      const bad = grid.rows.findIndex((row) => [...row].length !== w);
-      if (bad >= 0) throw new ToolError(`${name} ${bad}행 길이 ${[...grid.rows[bad]!].length} ≠ ${w} — 모든 줄의 글자 수가 같아야 한다`, { code: "invalid-args" });
+      grid.rows = grid.rows.map((row, y) => {
+        const chars = [...row];
+        if (chars.length === w) return row;
+        if (Math.abs(chars.length - w) > 2 || !chars.length) throw new ToolError(`${name} ${y}행 길이 ${chars.length} ≠ ${w} — 모든 줄의 글자 수가 같아야 한다`, { code: "invalid-args" });
+        fixedRows.push(`${name} ${y}행 ${chars.length}→${w}`);
+        return chars.length > w ? chars.slice(0, w).join("") : row + chars[chars.length - 1]!.repeat(w - chars.length);
+      });
     }
     const lower = shapeGrid(tileset, layer1, w, h, true, "layer1");
     const overlay = layer2 ? shapeGrid(tileset, layer2, w, h, false, "layer2") : undefined;
@@ -171,7 +182,10 @@ export const paintPackLayoutTool: ToolDefinition = {
     }
     compactMapLayers(map);
     const lint = lintPackMap(draft, map);
-    const warnings = [...failed.map((line) => `물체 못 찍음 — ${line}`), ...(lint?.warnings ?? [])];
+    const warnings = [
+      ...(fixedRows.length ? [`줄 길이 맞춤(끝 글자로 채움·자름) — ${fixedRows.join(", ")}. 그 줄 끝이 의도와 다르면 고쳐 다시 부른다`] : []),
+      ...failed.map((line) => `물체 못 찍음 — ${line}`), ...(lint?.warnings ?? []),
+    ];
     return {
       summary: `${map.name} ${w}×${h} 을 글자 배열로 깔고 물체 ${placed}개${failed.length ? `(실패 ${failed.length})` : ""}${lint?.warnings.length ? ` — 검사 경고 ${lint.warnings.length}가지` : " — 검사 통과"}`,
       ...(warnings.length ? { warnings } : {}),

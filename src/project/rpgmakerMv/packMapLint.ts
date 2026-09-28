@@ -260,15 +260,23 @@ export function lintPackPassage(input: PackLintInput): string[] {
   for (let i = 0; i < w * h; i += 1) {
     if (!open(i) || seen[i] || done[i]) continue;
     const stack = [i]; done[i] = true; let n = 0, x0 = w, y0 = h, x1 = 0, y1 = 0;
+    const walls = new Set<number>();
     while (stack.length) {
       const j = stack.pop()!, x = j % w, y = Math.floor(j / w); n += 1;
       x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y);
       for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]] as const) {
         const k = ny * w + nx;
         if (inside(nx, ny) && open(k) && !seen[k] && !done[k]) { done[k] = true; stack.push(k); }
+        // 막는 칸: 이 덩이와 닿은 칸 중 막혔지만 건너편이 입구에서 닿는 칸 — 그 칸을 열면 이어진다.
+        if (inside(nx, ny) && !open(k) && [[nx + 1, ny], [nx - 1, ny], [nx, ny + 1], [nx, ny - 1]].some(([ax, ay]) => inside(ax!, ay!) && seen[ay! * w + ax!])) walls.add(k);
       }
     }
-    pockets.push(`${n}칸 ${at(x0, y0)}~${at(x1, y1)}`);
+    // 조수는 이 목록이 없어 막힌 곳을 check_reachability 로 칸마다 더듬었다(2026-09-28 광산: 166회).
+    const blockers = [...walls].slice(0, 4).map((k) => {
+      const obj = placed.find((p) => p.cells.some(([dx, dy]) => (p.y + dy) * w + p.x + dx === k));
+      return `${at(k % w, Math.floor(k / w))}${obj ? ` ${obj.o.id}` : ` ${input.m2[k]?.name ?? input.m1[k]?.name ?? "막힘"}`}`;
+    });
+    pockets.push(`${n}칸 ${at(x0, y0)}~${at(x1, y1)}${blockers.length ? ` (여는 칸: ${blockers.join(", ")})` : " (입구 쪽과 닿은 칸이 없다 — 통로를 새로 판다)"}`);
   }
   if (pockets.length) out.push(`통행: 입구에서 못 가는 바닥 ${pockets.length}덩이 — ${pockets.slice(0, 6).join(" · ")}`);
   // 쓰는 가구(침대·의자·탁자·상자 등)에 닿을 칸.
