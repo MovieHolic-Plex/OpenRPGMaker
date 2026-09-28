@@ -3097,9 +3097,16 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
   이후는 일반 실행이다(다른 쓰기 도구 허용, 일반 마을 검사). `done.villageContractReleased`를 받은 패널은
   조화 검수와 적용 정책을 계약 없는 실행으로 되돌린다. 집·주민 수 부족이나 문·길 검사처럼 seed로 달라질 수 있는
   실패와, `residents` 같은 모델 몫 인자 오류는 계약을 유지한다. 회귀: `test/piVillageContractRelease.bun.test.ts`.
-- 의도 판정 로그: `classifyPlainPiTurn`이 `plan.routingAudit` 한 줄을 만들고(`intent:llm mode=… construction=approach:north … → 마을 계약: 새 맵 …`),
-  Pi 활동 로그의 첫 상태 행 「의도 판정: …」으로 남는다. 같은 감사에 실패한 도구마다 실제 오류 문장과 계약 해제 사실도 싣는다.
-  예전 사용 로그에는 판정도, 「오류 5」의 문장도 없었다.
+- 의도 판정 로그: `classifyPlainPiTurn`이 `plan.routingAudit` 한 줄을 만들고(`intent:llm mode=… construction=approach:north … → 마을 계약: 새 맵 …`,
+  계약이 없으면 `마을 계약 없음(팀 실행|현대 맵|판정)`), Pi 활동 로그의 첫 상태 행 「의도 판정: …」으로 남는다.
+- Pi 실행 감사(`src/ai/piAgent/activityLog.ts` `runAudit`)는 에이전트 행 요약 뒤에 보드 과정 행 전부를 싣는다:
+  모든 도구 호출(성공·실패, `인자` 한 줄), 오류 문장, 워커 실행 상태(`village.contract_released`·`village.connection`·
+  `repeat_guard`·`layout_quality` 등, 매 호출 반복인 `map.image.delivered`만 제외), 보드 상한으로 잘린 앞부분 수,
+  실행 도중 판정이 바뀐 사실(`PiRunFacts.notes`). 크기는 활동 로그 바이트 예산이 양 끝을 남기며 자른다.
+  과정 행의 `status` 종류는 팀 데크 트랜스크립트에도 「상태」 태그로 그려진다.
+- 의도 해석 자체가 실패한 턴(`지시를 해석하지 못했습니다`)은 실행까지 가지 않아 로그가 비었다.
+  `recordPiIntentFailure`가 `pi` 채널 실패 행 하나를 남긴다(`stoppedReason: "의도 해석 실패"`).
+  예전 사용 로그에는 판정도, 「오류 5」의 문장도, 도구 인자도, 해석 실패 턴도 없었다.
 
 검증: Bun 계약/실행 루프 6건, 기존 facade/intent-note Vitest 50건 통과.
 실제 에디터 + Gemini 호출은 `author_village` 1회/2턴/9.294초/도구 오류 0으로
