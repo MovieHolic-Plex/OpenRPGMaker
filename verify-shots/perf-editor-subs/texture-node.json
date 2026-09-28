@@ -1,0 +1,84 @@
+{
+  "command": "node test/perfTextureNode.measure.mjs",
+  "baselineCommit": "e2c04b5f884e75720f52629685bd03b3001887cc",
+  "afterCommit": "86707253aa2e2132e23af70def9f27f256d004fe",
+  "method": "Node VM executes exact EditScene method/field text extracted via TypeScript AST, transpilation only. Loader I/O, rAF, render body and full-render plan are stubs. No Vitest, tsc, GPU or wall-time measurement.",
+  "results": [
+    {
+      "label": "before",
+      "texturesPerBatch": 84,
+      "batches": 1,
+      "framesPerBatch": 1,
+      "storeRedraws": 1,
+      "redrawsPerBatch": [
+        84
+      ],
+      "completionRedraws": 84
+    },
+    {
+      "label": "before",
+      "texturesPerBatch": 84,
+      "batches": 6,
+      "framesPerBatch": 1,
+      "storeRedraws": 6,
+      "redrawsPerBatch": [
+        84,
+        84,
+        84,
+        84,
+        84,
+        84
+      ],
+      "completionRedraws": 504
+    },
+    {
+      "label": "before",
+      "texturesPerBatch": 84,
+      "batches": 1,
+      "framesPerBatch": 6,
+      "storeRedraws": 1,
+      "redrawsPerBatch": [
+        84
+      ],
+      "completionRedraws": 84
+    },
+    {
+      "label": "after",
+      "texturesPerBatch": 84,
+      "batches": 1,
+      "framesPerBatch": 1,
+      "storeRedraws": 1,
+      "redrawsPerBatch": [
+        1
+      ],
+      "completionRedraws": 1
+    },
+    {
+      "label": "after",
+      "texturesPerBatch": 84,
+      "batches": 6,
+      "framesPerBatch": 1,
+      "storeRedraws": 6,
+      "redrawsPerBatch": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "completionRedraws": 6
+    },
+    {
+      "label": "after",
+      "texturesPerBatch": 84,
+      "batches": 1,
+      "framesPerBatch": 6,
+      "storeRedraws": 1,
+      "redrawsPerBatch": [
+        6
+      ],
+      "completionRedraws": 6
+    }
+  ]
+}

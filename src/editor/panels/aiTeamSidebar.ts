@@ -1,3 +1,5 @@
+import { activityEntryIndex } from "./aiActivityIndex";
+import { createKeyedRows } from "./aiKeyedRows";
 import { createActivityMedia } from "./aiActivityMedia";
 import { createActivityView } from "./aiActivityView";
 import { bindActivityLevel, createActivityLevelControl } from "./aiActivityPreference";
@@ -36,7 +38,6 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
   let view: "team" | "settings" = "team";
   let tab: "chat" | "changes" = "chat";
   let disposed = false;
-  let rosterSignature = "";
   const drafts = new Map<string, string>();
   const followUps = new Map<string, string>();
   const notices = new Map<string, string>();
@@ -157,7 +158,7 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
       if (m.agent) {
         resultText.textContent = m.agent.summary || (m.state === "실행 중" ? "맡은 작업을 진행하고 있어요." : "아직 결과가 없어요.");
         if (!processBody.contains(transcript.root)) processBody.replaceChildren(transcript.root);
-        transcript.update(m.agent);
+        if (!hasDetailedTrace && !process.hidden && process.open) transcript.update(m.agent);
         activityView.update(activity?.trace, m.agent.agentId);
         if (activity?.trace) process.hidden = true;
       } else if (m.lane) {
@@ -202,26 +203,46 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
     if (error) { notice.textContent = friendlyExecutionError(error); notice.hidden = false; }
     updateSend();
   }
+  process.addEventListener("toggle", () => { if (process.open && !process.hidden) renderDetail(); });
+  const taskText = (m: Member): string => m.agent?.lastLine || m.agent?.summary || m.agent?.task || m.lane?.progress.lastLine || m.lane?.spec.instruction || "요청을 기다리고 있어요";
+  const mediaFor = (m: Member) => m.agent
+    ? activity?.trace && activityEntryIndex(activity.trace).mediaByActor.get(m.agent.agentId)
+    : m.lane?.trace && activityEntryIndex(m.lane.trace).latestMedia;
+  const reconcileRoster = createKeyedRows(roster, (m: Member, previous) => {
+    const mark = m.state === "완료" || m.state === "적용됨" ? "✓" : m.state === "실패" || m.state === "검토 대기" ? "!" : "";
+    const media = mediaFor(m);
+    if (previous) {
+      previous.setAttribute("aria-pressed", String(view === "team" && selected === m.key));
+      previous.setAttribute("aria-label", `${m.name} · ${m.state} · 대화 열기`);
+      previous.dataset.state = m.state;
+      const avatar = previous.querySelector<HTMLElement>(".ai-team-member-avatar")!;
+      if (avatar.dataset.icon !== m.icon) {
+        avatar.replaceChildren(deckIcon(m.icon, { size: 22 }), el("span", { class: "ai-team-member-badge", attrs: { "aria-hidden": "true" } }));
+        avatar.dataset.icon = m.icon;
+      }
+      for (const [selector, text] of [["badge", mark], ["name", m.name], ["state", m.state], ["task", taskText(m)]] as const) {
+        const node = previous.querySelector<HTMLElement>(`.ai-team-member-${selector}`)!;
+        if (node.textContent !== text) node.textContent = text;
+      }
+      const mediaId = media?.at(-1)?.id ?? "";
+      if (previous.dataset.mediaId !== mediaId) {
+        previous.querySelector(".ai-activity-media")?.remove();
+        if (media?.length) previous.prepend(createActivityMedia(media, "", true));
+        previous.dataset.mediaId = mediaId;
+      }
+      return previous;
+    }
+    return el("button", {
+      class: "ai-team-member", attrs: { type: "button", "aria-pressed": String(view === "team" && selected === m.key), "aria-label": `${m.name} · ${m.state} · 대화 열기` },
+      dataset: { testid: "ai-team-member", agentId: m.key, state: m.state, mediaId: media?.at(-1)?.id ?? "" },
+      children: [...(media?.length ? [createActivityMedia(media, "", true)] : []), el("span", { class: "ai-team-member-avatar", dataset: { icon: m.icon }, children: [deckIcon(m.icon, { size: 22 }), el("span", { class: "ai-team-member-badge", text: mark, attrs: { "aria-hidden": "true" } })] }), el("span", { class: "ai-team-member-name", text: m.name }), el("span", { class: "ai-team-member-state", text: m.state }), el("span", { class: "ai-team-member-task", text: taskText(m) })],
+      on: { click: () => { selected = selected === m.key && view === "team" ? null : m.key; view = "team"; tab = "chat"; render(); } },
+    });
+  });
   function render(): void {
     if (disposed) return;
     const rows = members();
-    const taskText = (m: Member): string => m.agent?.lastLine || m.agent?.summary || m.agent?.task || m.lane?.progress.lastLine || m.lane?.spec.instruction || "요청을 기다리고 있어요";
-    const mediaFor = (m: Member) => (m.agent ? activity?.trace?.entries.filter(e => e.actor === m.agent!.agentId) : m.lane?.trace?.entries)?.filter(e => e.visuals?.length).at(-1)?.visuals;
-    const signature = JSON.stringify(rows.map(m => [m.key, m.name, m.state, m.icon, taskText(m), mediaFor(m)?.at(-1)?.id, view === "team" && selected === m.key]));
-    if (signature !== rosterSignature) {
-      rosterSignature = signature;
-      const focusKey = (document.activeElement as HTMLElement | null)?.closest<HTMLElement>(".ai-team-member")?.dataset.agentId;
-      roster.replaceChildren(...rows.map(m => {
-        const mark = m.state === "완료" || m.state === "적용됨" ? "✓" : m.state === "실패" ? "!" : m.state === "검토 대기" ? "!" : "";
-        return el("button", {
-          class: "ai-team-member", attrs: { type: "button", "aria-pressed": String(view === "team" && selected === m.key), "aria-label": `${m.name} · ${m.state} · 대화 열기` },
-          dataset: { testid: "ai-team-member", agentId: m.key, state: m.state },
-          children: [...(mediaFor(m)?.length ? [createActivityMedia(mediaFor(m)!, "", true)] : []), el("span", { class: "ai-team-member-avatar", children: [deckIcon(m.icon, { size: 22 }), el("span", { class: "ai-team-member-badge", text: mark, attrs: { "aria-hidden": "true" } })] }), el("span", { class: "ai-team-member-name", text: m.name }), el("span", { class: "ai-team-member-state", text: m.state }), el("span", { class: "ai-team-member-task", text: taskText(m) })],
-          on: { click: () => { selected = selected === m.key && view === "team" ? null : m.key; view = "team"; tab = "chat"; render(); } },
-        });
-      }));
-      if (focusKey) Array.from(roster.querySelectorAll<HTMLButtonElement>("button")).find(b => b.dataset.agentId === focusKey)?.focus();
-    }
+    reconcileRoster(rows, m => m.key, m => JSON.stringify([m.name, m.state, m.icon, taskText(m), mediaFor(m)?.at(-1)?.id, view === "team" && selected === m.key]));
     empty.hidden = rows.length > 0;
     // 팀 작업이 없으면 레일을 톱니 하나 폭으로 접는다 — 84px 가 「팀 작업 없음」 한 줄을 위해 늘 캔버스를 먹었다.
     root.classList.toggle("is-idle", rows.length === 0 && view === "team" && selected === null);

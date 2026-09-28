@@ -14,6 +14,7 @@ import {
   type NormalizedFieldSpawn,
 } from "@/player/fieldSpawns";
 import { applyBattleDefeat } from "@/player/playSceneDefeat";
+import { runTroopAfterBattle } from "@/player/troopAfterBattleRunner";
 import { enterRoguelikeRunRoom } from "@/project/roguelikeRun";
 import { roguelikeRoomId, syncRoguelikeRoomEventGeneration } from "@/project/roguelikeRooms";
 import { initialRuntimeEventPositions, runtimeEventView } from "@/project/runtimeEventState";
@@ -50,7 +51,7 @@ export function updateFieldSpawnsForScene(scene: PlaySceneContext, deltaMs: numb
   if (scene.running) return;
   const project = store.getCurrent();
   if (refreshRoguelikeRoomForScene(scene)) return;
-  const changed = advanceFieldSpawns(scene.fieldSpawnState, project, scene.map, { x: scene.tileX, y: scene.tileY }, deltaMs);
+  const changed = advanceFieldSpawns(scene.fieldSpawnState, project, scene.map, { x: scene.tileX, y: scene.tileY }, deltaMs, scene.eventPositions);
   if (!changed) return;
   syncFieldSpawnEventsIntoMap(scene.map, scene.fieldSpawnState, scene.eventPositions);
   scene.renderTiles();
@@ -109,6 +110,8 @@ export async function runFieldSpawnEventBattle(scene: PlaySceneContext, eventId:
     } else if (result === "defeat") {
       applyBattleDefeat(scene);
     }
+    // 적 그룹 「전투 뒤」 이벤트. 심볼 접촉 패배는 게임 오버라 승리·도망만 돈다.
+    if (result !== "defeat") await runTroopAfterBattle(scene, troopId, result, () => scene.session === session);
   } catch (error) {
     if (!(error instanceof BattleAdmissionError)) throw error;
     if (scene.session === session && scene.sys?.isActive() !== false) {

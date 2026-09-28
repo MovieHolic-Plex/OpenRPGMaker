@@ -6,6 +6,8 @@
 // 호스트가 캐시를 잃었으면(재시작·축출) 409 heavy-missing 을 돌려주고, 그 해시의 내용만 다시 보낸다.
 
 import type { Project } from "@/project/types";
+import { stringifyAssets, stringifySharedDictionary } from "@/project/io/sharedDictionaryJson";
+import { jsonContentDigest, trustSharedProjectEntries, withTrustedSharedEntries } from "@/project/persistence/core/contentDigest";
 
 export const PI_HEAVY_PROJECT_KEYS = ["tilesets", "database", "assets"] as const;
 export type PiHeavyProjectKey = (typeof PI_HEAVY_PROJECT_KEYS)[number];
@@ -41,6 +43,41 @@ async function sha256Hex(text: string): Promise<string> {
  * 같은 객체를 두 번 해시하지 않게 WeakMap 에 기억한다(체크포인트가 무거운 키 객체를 그대로 물려준다).
  */
 const hashMemo = new WeakMap<object, { hash: string; json: string }>();
+/**
+ * 키마다 마지막으로 만든 글·해시와 그 내용 요약. 사전 객체는 적용마다 새로 만들어져(스토어 복제) 위 기억이 빗나가도,
+ * 내용 요약(`jsonContentDigest`: 노드 기억 — 공유 항목은 대조도 건너뛴다)이 같으면 글도 해시도 다시 만들지 않는다.
+ * 요약이 같다 ⇔ 키 순서만 다를 수 있는 같은 내용이다. 스토어 사전은 키 순서를 지키므로 글도 같다 — 다르면 호스트는 해시로
+ * 캐시를 찾을 뿐이라, 순서만 다른 옛 글을 되살려도 내용은 같다.
+ * 키마다 하나만 쥔다 — 글이 수십 MB 라 여러 개를 쥐면 메모리가 커진다(계획의 blobs 가 어차피 같은 글을 쥔다).
+ */
+const lastByKey = new Map<PiHeavyProjectKey, { readonly digest: string; readonly json: string; readonly hash: string }>();
+
+/**
+ * 무거운 키의 JSON. 타일셋·업로드 자산은 항목 글을 기억해 조립한다 — 글자까지 `JSON.stringify` 와 같다(sharedDictionaryJson).
+ * 왜(2026-09-28 실측, 149MB 새 프로젝트): 턴마다 사전 객체가 새것이라 hashMemo 가 빗나가 타일셋·자산 전체를 다시 직렬화했다(약 1s).
+ */
+function heavyJson(key: PiHeavyProjectKey, value: object): string {
+  if (key === "tilesets") return stringifySharedDictionary(value) ?? "null";
+  if (key === "assets") return stringifyAssets(value) ?? "null";
+  return JSON.stringify(value);
+}
+
+async function heavyEntry(key: PiHeavyProjectKey, value: object): Promise<{ hash: string; json: string } | null> {
+  // 타일셋·업로드 자산 항목은 제자리에서 고치지 않는다(projectClone 계약) — 공유 항목을 믿고 요약한다.
+  const digest = withTrustedSharedEntries(() => {
+    const token = jsonContentDigest(value);
+    if (key === "tilesets") trustSharedProjectEntries({ tilesets: value });
+    if (key === "assets") trustSharedProjectEntries({ assets: value });
+    return token;
+  });
+  const last = lastByKey.get(key);
+  if (digest !== undefined && last && last.digest === digest) return { hash: last.hash, json: last.json };
+  const json = heavyJson(key, value);
+  if (json.length < MIN_HEAVY_BYTES) return null;
+  const hash = await sha256Hex(json);
+  if (digest !== undefined) lastByKey.set(key, { digest, json, hash });
+  return { hash, json };
+}
 
 export async function planHeavyWire<T extends { project: Project }>(request: T): Promise<HeavyWirePlan | null> {
   if (typeof crypto === "undefined" || !crypto.subtle) return null;
@@ -52,9 +89,9 @@ export async function planHeavyWire<T extends { project: Project }>(request: T):
     if (!value || typeof value !== "object") continue;
     let entry = hashMemo.get(value);
     if (!entry) {
-      const json = JSON.stringify(value);
-      if (json.length < MIN_HEAVY_BYTES) continue;
-      entry = { hash: await sha256Hex(json), json };
+      const made = await heavyEntry(key, value);
+      if (!made) continue;
+      entry = made;
       hashMemo.set(value, entry);
     }
     heavy[key] = entry.hash;
@@ -63,6 +100,27 @@ export async function planHeavyWire<T extends { project: Project }>(request: T):
   }
   if (Object.keys(heavy).length === 0) return null;
   return { body: { ...request, project: project as unknown as Project, heavy }, blobs };
+}
+
+/**
+ * 한가할 때 무거운 키의 글·해시를 미리 만든다. 첫 조수 턴이 이 일을 메인 스레드에서 하면(2026-09-28 실측, 새 프로젝트 기본 자료
+ * 149MB) 전송 직후 약 3s 멈췄다 — 타일셋·자산은 턴 사이에 거의 바뀌지 않으므로 미리 만든 결과를 그 턴이 그대로 쓴다.
+ * 키마다 따로 예약해 한가한 조각 하나가 키 하나만 맡는다. 결과는 위 기억(hashMemo·lastByKey)에만 남고, 그 사이 내용이 바뀌면
+ * 턴이 요약 대조로 알아채 다시 만든다 — 미리 만든 값이 틀린 해시로 쓰일 수 없다.
+ */
+export function warmHeavyWire(getProject: () => Project, schedule: (run: () => void) => void): void {
+  if (typeof crypto === "undefined" || !crypto.subtle) return;
+  const step = (index: number): void => {
+    const key = PI_HEAVY_PROJECT_KEYS[index];
+    if (!key) return;
+    schedule(() => {
+      const value = (getProject() as unknown as Record<string, unknown>)[key];
+      const next = () => step(index + 1);
+      if (!value || typeof value !== "object" || hashMemo.has(value)) { next(); return; }
+      void heavyEntry(key, value).then((made) => { if (made) hashMemo.set(value, made); }, () => undefined).finally(next);
+    });
+  };
+  step(0);
 }
 
 /** 이 호스트가 아직 모를 법한 해시의 내용만 싣는다. */
@@ -92,4 +150,5 @@ export function forgetHeavySent(origin: string, hashes: readonly string[]): void
 /** 테스트 전용. */
 export function resetHeavyWireForTests(): void {
   sentByOrigin.clear();
+  lastByKey.clear();
 }

@@ -4,6 +4,7 @@ import { store } from "@/project/store";
 import { namedReferenceMessage, commandLocationMessage, projectDatabaseReferenceMessage, projectSwitchVariableReferenceMessage } from "./databaseRecordReferences";
 import type { Command, ItemRecord, SkillRecord } from "@/project/types";
 import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
+import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 
 export function databaseReferenceMessage(collection: DatabaseCollection, id: string): string | null {
   return projectDatabaseReferenceMessage(store.getCurrent(), collection, id);
@@ -88,7 +89,8 @@ export function commonEventReferenceMessage(id: string): string | null {
     Object.values(project.maps).some((map) =>
       map.events.some((event) => commandListReferencesCommonEvent(event.commands, id) || (event.pages ?? []).some((page) => commandListReferencesCommonEvent(page.commands, id)))
     ) ||
-    project.database.troops.some((troop) => troop.battleEventPages.some((page) => commandListReferencesCommonEvent(page.commands, id)))
+    project.database.troops.some((troop) => troop.battleEventPages.some((page) => commandListReferencesCommonEvent(page.commands, id))
+      || troopAfterBattleLists(troop).some((list) => commandListReferencesCommonEvent(list.commands, id)))
   ) return "이벤트 명령이 이 커먼 이벤트를 호출 중입니다.";
   return null;
 }

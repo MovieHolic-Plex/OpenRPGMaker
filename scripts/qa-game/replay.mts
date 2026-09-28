@@ -18,7 +18,7 @@ import { store } from "../../src/project/store.ts";
 import { deserialize, serialize } from "../../src/project/io.ts";
 import { resolvePiToolShape, type PiToolCallRecord } from "../../src/ai/piAgent/toolAdapter.ts";
 import { PiTilesetReferenceGate } from "../../src/ai/piAgent/tilesetReferenceGate.ts";
-import { changedProjectKeys, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, snapshotProjectKeepingHeavy, unchangedHeavyKeys, type PiAgentRequest } from "../../src/ai/piAgent/protocol.ts";
+import { changedProjectKeys, piMapScopeGuard, restoreCheckpointProject, slimProjectForWire, snapshotProjectKeepingHeavy, type PiAgentRequest } from "../../src/ai/piAgent/protocol.ts";
 import { normalizePiApplyMode, isLiveApplyMode } from "../../src/ai/piAgent/applyMode.ts";
 import { createPiPublication } from "../../src/editor/panels/aiPiPublication.ts";
 import { exportSpatialToolProof, finishSpatialToolAcceptance } from "../../src/editor/tools/spatialToolState.ts";
@@ -85,12 +85,13 @@ export async function replayRecording(dir: string, options: { readonly phases?: 
     if (!live || changedProjectKeys(accepted, ctx.project).length === 0) return;
     // piAgentRuntime.checkpoint 와 같은 순서: 무거운 키는 빼고 발행 → 발행본으로 되돌려 받기 → 공간 증거 확정.
     const project = ctx.project;
-    const unchangedKeys = unchangedHeavyKeys(accepted, project);
+    const wire = slimProjectForWire(accepted, project);
     const published = await publication.publish({
-      project: structuredClone(slimCheckpointProject(project, unchangedKeys)) as Project,
-      label: toolName, toolName, spatialProof: exportSpatialToolProof(project), unchangedKeys,
+      project: structuredClone(wire.project) as Project,
+      label: toolName, toolName, spatialProof: exportSpatialToolProof(project), unchangedKeys: wire.unchangedKeys,
+      ...(wire.unchangedTilesetIds.length ? { unchangedTilesetIds: wire.unchangedTilesetIds } : {}),
     });
-    const merged = restoreCheckpointProject(project, published ?? project, unchangedKeys);
+    const merged = restoreCheckpointProject(project, published ?? project, wire.unchangedKeys, wire.unchangedTilesetIds);
     ctx.project = merged;
     accepted = snapshotProjectKeepingHeavy(merged);
     finishSpatialToolAcceptance(ctx.project);

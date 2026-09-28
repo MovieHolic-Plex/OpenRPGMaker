@@ -1,0 +1,57 @@
+{
+  "label": "after-warm",
+  "base": "http://127.0.0.1:9954",
+  "seed": "blank",
+  "project": {
+    "mapId": "map_blank_start",
+    "size": "20x15",
+    "maps": 1
+  },
+  "bootMs": 20070,
+  "checkpoints": 6,
+  "runMs": 21270,
+  "longTask": {
+    "count": 68,
+    "totalMs": 11566,
+    "maxMs": 2274
+  },
+  "frameGapMs": {
+    "p50": 16.7,
+    "p95": 283.4,
+    "max": 3483.2,
+    "over100": 28
+  },
+  "checkpointAckMs": {
+    "median": 297.7,
+    "max": 425.9,
+    "ok": true,
+    "n": 6
+  },
+  "manualEditAfterTurnMs": {
+    "median": 2.6,
+    "max": 6.6
+  },
+  "topLongTasksAt": [
+    [
+      519,
+      2274
+    ],
+    [
+      10962,
+      455
+    ],
+    [
+      8783,
+      427
+    ],
+    [
+      10537,
+      425
+    ],
+    [
+      19393,
+      384
+    ]
+  ],
+  "errors": []
+}

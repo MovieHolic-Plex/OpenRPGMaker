@@ -3,6 +3,7 @@
 // 툴 행은 조수 작업 타임라인(aiChatRenderers.renderToolActivityEntry)과 같은 어휘다 —
 // 칩 · 한국어 라벨(aiToolLabels) · 요약 · ✓/✗, 함수 원명은 title. 두 번째 어휘를 만들지 않는다.
 
+import { createKeyedRows } from "./aiKeyedRows";
 import { el } from "@/util/dom";
 import type { TeamAgentLogEntry, TeamBoardAgent } from "@/ai/piAgent/teamBoardState";
 import { deckIcon } from "./aiDeckIcons";
@@ -138,6 +139,8 @@ export function createTeamTranscript(options: TeamTranscriptOptions = {}): TeamT
 
   let shownAgentId: string | null = null;
   let shownLog: readonly TeamAgentLogEntry[] = [];
+  let shownDropped = 0;
+  let reconcile = createKeyedRows(list, renderEntry);
 
   const atBottom = (): boolean => scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight < 24;
 
@@ -153,16 +156,16 @@ export function createTeamTranscript(options: TeamTranscriptOptions = {}): TeamT
     root.dataset.state = agent.state;
     if (agent.droppedLog > 0) { dropped.textContent = `이전 ${agent.droppedLog}행은 접었습니다`; dropped.removeAttribute("hidden"); }
     else dropped.setAttribute("hidden", "");
-    // 행은 불변 배열이다 — 같은 팀원이고 앞부분 참조가 같으면 새 행만 덧붙이고, 닫힌 툴 행은 제자리에서 바꾼다.
-    if (!switched && shownLog.length > 0 && agent.log.length >= shownLog.length && agent.log.length - shownLog.length < 64 && agent.droppedLog === 0) {
-      const children = list.children;
-      for (let index = 0; index < shownLog.length && index < children.length; index += 1) {
-        if (agent.log[index] !== shownLog[index]) children[index]!.replaceWith(renderEntry(agent.log[index]!));
-      }
-      for (let index = shownLog.length; index < agent.log.length; index += 1) list.append(renderEntry(agent.log[index]!));
-    } else {
-      list.replaceChildren(...agent.log.map(renderEntry));
+    // Stable ordinal also covers entries without tool IDs. Tool completion replaces
+    // only that row, while a capped log removes only its expired prefix.
+    if (switched || agent.droppedLog < shownDropped) {
+      list.replaceChildren();
+      reconcile = createKeyedRows(list, renderEntry);
     }
+    if (switched || shownLog !== agent.log || shownDropped !== agent.droppedLog) {
+      reconcile(agent.log, (_entry, index) => String(agent.droppedLog + index));
+    }
+    shownDropped = agent.droppedLog;
     shownAgentId = agent.agentId;
     shownLog = agent.log;
     if (follow) scroller.scrollTop = scroller.scrollHeight;

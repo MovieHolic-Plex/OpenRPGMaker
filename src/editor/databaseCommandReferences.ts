@@ -2,6 +2,7 @@ import type { DatabaseCollection } from "@/editor/databaseActions";
 import { eventDisplayName } from "@/project/eventDisplayName";
 import type { BattleEventCondition, Command, Condition, GiftPrefs, MoveCommand, Project } from "@/project/types";
 import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
+import { TROOP_AFTER_BATTLE_LABELS, troopAfterBattleLists } from "@/project/troopAfterBattle";
 
 type CommandReferenceCollection = DatabaseCollection | "monsterSpecies" | "lifeSkills" | "craftRecipes" | "itemUpgrades";
 
@@ -48,6 +49,9 @@ export function commandsReferenceLocations(project: Project, collection: Command
         commandListReferences(page.commands, collection, id);
       if (matches) locations.push({ kind: "troopBattleEvent", troopName: troop.name, pageName: page.name });
     }
+    for (const list of troopAfterBattleLists(troop)) {
+      if (commandListReferences(list.commands, collection, id)) locations.push({ kind: "troopBattleEvent", troopName: troop.name, pageName: afterBattlePageName(list.outcome) });
+    }
   }
 
   return locations;
@@ -66,7 +70,8 @@ export function commandsResourceReference(project: Project, resourceId: string):
           )
       )
     ) ||
-    project.database.troops.some((troop) => troop.battleEventPages.some((page) => commandListResourceReferences(page.commands, resourceId)))
+    project.database.troops.some((troop) => troop.battleEventPages.some((page) => commandListResourceReferences(page.commands, resourceId))
+      || troopAfterBattleLists(troop).some((list) => commandListResourceReferences(list.commands, resourceId)))
   );
 }
 
@@ -112,6 +117,9 @@ export function switchVariableReferenceLocations(
         commandListReferencesSwitchVariable(page.commands, kind, id);
       if (matches) locations.push({ kind: "troopBattleEvent", troopName: troop.name, pageName: page.name });
     }
+    for (const list of troopAfterBattleLists(troop)) {
+      if (commandListReferencesSwitchVariable(list.commands, kind, id)) locations.push({ kind: "troopBattleEvent", troopName: troop.name, pageName: afterBattlePageName(list.outcome) });
+    }
   }
 
   return locations;
@@ -141,13 +149,17 @@ export function switchVariableReferencedInProject(project: Project, kind: "switc
         (page) =>
           page.conditions.some((condition) => conditionReferencesSwitchVariable(condition, kind, id)) ||
           commandListReferencesSwitchVariable(page.commands, kind, id)
-      )
+      ) || troopAfterBattleLists(troop).some((list) => commandListReferencesSwitchVariable(list.commands, kind, id))
     )
   );
 }
 
 function commandListReferences(commands: readonly Command[], collection: CommandReferenceCollection, id: string): boolean {
   return commands.some((command) => commandReferences(command, collection, id));
+}
+
+function afterBattlePageName(outcome: keyof typeof TROOP_AFTER_BATTLE_LABELS): string {
+  return `전투 뒤 · ${TROOP_AFTER_BATTLE_LABELS[outcome]}`;
 }
 
 function commandReferences(command: Command, collection: CommandReferenceCollection, id: string): boolean {

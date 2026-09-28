@@ -14,17 +14,18 @@ import { currentAgentEditorIdentity, currentHumanEditorIdentity } from "@/projec
 import { combineDiffs, recordProjectCommit, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline, summaryForDiff, type CommitLogInput, type CommitRow } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
 import { canWriteTeamProject, TEAM_READ_ONLY_WRITE_MESSAGE } from "@/project/teamAccess";
-import { jsonContentDigest } from "@/project/persistence/core/contentDigest";
+import { jsonContentDigest, withContentDigestEpoch } from "@/project/persistence/core/contentDigest";
 import { AuthoredProjectBaseline, projectIdentityDigest, type ProjectIdentitySource } from "@/project/authoredProjectBaseline";
 import type { ChangeSummary, Project } from "@/project/types";
 import { reconcileReviewedWorldForApply } from "@/project/world";
 import { commitChangeset, summarizeChanges } from "./changeset";
+import { warmRoundtripCheck } from "@/project/lint/projectLint";
 import { runTool } from "./toolRunner";
 import { ToolError, type ToolContext, type ToolResult } from "./types";
 import { assertHouseProtection, captureHouseProtection } from "./houseProtection";
 import type { EditActivityField, EditActivityOrigin } from "@/editor/editActivityLog";
 import type { ProjectChangeAnnotation } from "@/project/store";
-import { mapCellApply } from "@/editor/incrementalMapApply";
+import { mapCellApply, toolMapCellApply } from "@/editor/incrementalMapApply";
 import type { RunOperation } from "@/ai/runOperation";
 import { emptiedEventMapIds, isMapDestruction, removedMapIds, wipedTileMapIds } from "@/ai/approvalPolicy";
 
@@ -129,6 +130,7 @@ export function applyToolToStore(name: string, args: Record<string, unknown>): T
     const summary = result.summary || summaryForDiff(result.diff ?? combineDiffs([]));
     // origin 은 "tool" — 사람이 에디터에서 툴을 직접 실행한 경로다(채팅 에이전트가 아니다).
     store.replace(ctx.project, {
+      renderCells: toolMapCellApply(store.getCurrent(), ctx.project) ?? undefined,
       change: applyAnnotation(
         "tool",
         `툴 ${name}: ${summary}`,
@@ -191,6 +193,7 @@ export function applyToolSequenceToStore(
     finishSpatialToolAcceptance(ctx.project);
     recordProjectSnapshot();
     store.replace(ctx.project, {
+      renderCells: toolMapCellApply(store.getCurrent(), ctx.project) ?? undefined,
       change: applyAnnotation(
         byAgent ? "ai" : "tool",
         `${byAgent ? `AI 적용${options.agentName ? ` (${options.agentName})` : ""}` : "툴 묶음"}: ${summary}`,
@@ -255,7 +258,8 @@ let identityScope: WeakMap<Project, IdentityMemo> | null = null;
 function withIdentityScope<T>(run: () => T): T {
   if (identityScope) return run();
   identityScope = new WeakMap();
-  try { return run(); } finally { identityScope = null; }
+  // 같은 구간 안에서는 요약의 노드 대조도 한 번만 한다(contentDigest.withContentDigestEpoch). 구간 안에서는 값을 고치지 않는다.
+  try { return withContentDigestEpoch(run); } finally { identityScope = null; }
 }
 function memoOf(project: Project): IdentityMemo | null {
   if (!identityScope) return null;
@@ -292,6 +296,23 @@ export function captureProposalBase(project: Project): ProposalBase {
 /** 적용 권위(기준 + 초안 기준선)를 한 번에 잡는다. 둘을 따로 잡으면 같은 직렬화를 두 번 한다. */
 export function captureApplyAuthority(project: Project): { base: ProposalBase; baseline: AuthoredProjectBaseline } {
   return withIdentityScope(() => ({ base: captureProposalBase(project), baseline: captureAuthoredBaseline(project) }));
+}
+
+/**
+ * 한가할 때 첫 적용의 준비 비용을 미리 치른다: 타일셋·업로드 자산 항목의 저장 왕복 검사 통과 기록, 적용 권위 요약의 노드 기억.
+ * 판정에는 영향이 없다 — 왕복 기록은 검사가 실제로 통과한 객체에만 남고, 요약 기억은 값 대조로만 쓰인다.
+ * 왜(2026-09-28 실측, 새 프로젝트 기본 자료 149MB): 조수 첫 체크포인트 적용이 이 둘을 처음 하느라 약 2.7s, 이후는 약 0.3s 였다.
+ */
+export function warmApplyCaches(project: Project): void {
+  try {
+    withIdentityScope(() => {
+      proposalContentOf(project);
+      storeIdentities.authored(project);
+    });
+    warmRoundtripCheck(project);
+  } catch {
+    // 준비는 선택이다. 실패하면 첫 적용이 예전처럼 직접 한다.
+  }
 }
 
 function isProposalBaseCurrent(base: ProposalBase, resetProject: boolean): boolean {
@@ -435,7 +456,10 @@ export async function applyProposedProject(
       const issue = error.mapId ? `[${error.mapId}] ${error.message}` : error.message;
       return { ok: false, reason: "commit-rejected", issue, issues: [issue] };
     }
-    const commit = commitChangeset(appliedProject, before);
+    // 클러스터 규칙 위반은 커밋을 막지 않고(commitChangeset 의 isBlocking), 이 경로는
+    // commit.issues 를 쓰지 않는다 — 전체 맵 클러스터 스캔(체크포인트마다 ~1s)을 건너뛴다.
+    // 규칙 감사는 ruleAuditPanel 이 따로 보여 준다.
+    const commit = commitChangeset(appliedProject, before, { clusterMapIds: [] });
     if (!commit.ok) {
       const blocking = commit.blocking.map((entry) =>
         entry.mapId ? `[${entry.mapId}] ${entry.message}` : entry.message);

@@ -32,9 +32,22 @@ export function parseFoldedDocument(folded: string): FoldedDocument {
   return { document, tilesetShas };
 }
 
-export function unfoldedDocumentTree(folded: FoldedDocument, blobs: ReadonlyMap<string, string>): Record<string, unknown> {
+/**
+ * `reuse(id, sha)` 가 객체를 주면 본문을 파싱하지 않고 그 객체를 그 자리에 둔다. 호출자는 그 객체가 같은 sha 본문을
+ * 풀어 만든 것이고 그 뒤 고쳐지지 않았음을 보장해야 한다(persistence/electronRepository.ts 참조).
+ */
+export function unfoldedDocumentTree(
+  folded: FoldedDocument,
+  blobs: ReadonlyMap<string, string>,
+  reuse?: (id: string, sha: string) => unknown,
+): Record<string, unknown> {
   const tilesets: Record<string, unknown> = {};
   for (const [id, sha] of folded.tilesetShas) {
+    const reused = reuse?.(id, sha);
+    if (reused !== undefined) {
+      tilesets[id] = reused;
+      continue;
+    }
     const body = blobs.get(sha);
     if (body === undefined) throw new Error(`타일셋 본문 ${sha} 가 없습니다`);
     tilesets[id] = JSON.parse(body) as unknown;

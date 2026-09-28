@@ -1,0 +1,61 @@
+{
+  "label": "final-after-hill-3",
+  "base": "http://127.0.0.1:9954",
+  "seed": ".perf-tmp/seed-hill.json",
+  "project": {
+    "mapId": "map_peaceful_forest_100",
+    "size": "100x100",
+    "maps": 12
+  },
+  "bootMs": 27700,
+  "checkpoints": 6,
+  "runMs": 25636,
+  "longTask": {
+    "count": 98,
+    "totalMs": 18143,
+    "maxMs": 2753
+  },
+  "frameGapMs": {
+    "p50": 16.7,
+    "p95": 400,
+    "max": 3366.6,
+    "over100": 54
+  },
+  "checkpointAckMs": {
+    "median": 593.1,
+    "max": 672.6,
+    "ok": true,
+    "n": 6
+  },
+  "manualEditAfterTurnMs": {
+    "median": 2,
+    "max": 5.5
+  },
+  "correctness": {
+    "appliedMatchesLastCheckpoint": true,
+    "undoRestoresOriginal": true
+  },
+  "topLongTasksAt": [
+    [
+      334,
+      2753
+    ],
+    [
+      8898,
+      684
+    ],
+    [
+      11457,
+      655
+    ],
+    [
+      18270,
+      604
+    ],
+    [
+      20571,
+      604
+    ]
+  ],
+  "errors": []
+}

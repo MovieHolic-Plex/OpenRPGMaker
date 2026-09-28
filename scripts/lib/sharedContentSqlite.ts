@@ -40,8 +40,25 @@ export function readSharedContentForEditor(scope: SharedContentScope, file = sha
         // 부팅이 defaults 를 이미 받았다 — 뒤따르는 요청은 나머지만 받는다(2026-09-27 실측: defaults 20MB 가 두 번 왔다).
         ? db.prepare("SELECT id, revision, payload FROM content_libraries WHERE coalesce(json_extract(payload, '$.projectDefaults'), 0) != 1 ORDER BY id").all()
         : db.prepare('SELECT id, revision, payload FROM content_libraries ORDER BY id').all()) as { id: string; revision: string; payload: string }[];
-    return { revision: snapshotRevision(all), libraries: Object.fromEntries(rows.map(r => [r.id, linkReferenceImages(linkPreviews(r.id, r.revision, JSON.parse(r.payload) as SharedContentLibrary), referenceImageIndexFor(file, snapshotRevision(all)))])) };
+    const libraries = Object.fromEntries(rows.map(r => [r.id, linkReferenceImages(linkPreviews(r.id, r.revision, JSON.parse(r.payload) as SharedContentLibrary), referenceImageIndexFor(file, snapshotRevision(all)))]));
+    return { revision: snapshotRevision(all), libraries, assetBytesSha256: defaultAssetBytesSha256(libraries) };
   } finally { db.close(); }
+}
+/**
+ * 기본 라이브러리 그림의 바이트 SHA-256. 편집기는 설치 때 이 값으로 기본 자산의 정체를 맞춘다(src/project/sharedContent.ts).
+ * HTTP 팀 참여 창은 crypto.subtle 이 없어 JS 로 셌다 — 호스트가 판본마다 한 번 센다(응답 압축본과 함께 캐시된다).
+ */
+function defaultAssetBytesSha256(libraries: Record<string, SharedContentLibrary>): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const library of Object.values(libraries)) {
+    if (!library.projectDefaults) continue;
+    for (const asset of Object.values(library.assets)) {
+      const dataUrl = asset.dataUrl;
+      if (!dataUrl?.startsWith('data:image/')) continue;
+      out[asset.id] = createHash('sha256').update(Buffer.from(dataUrl.slice(dataUrl.indexOf(',') + 1), 'base64')).digest('hex');
+    }
+  }
+  return out;
 }
 /**
  * 타일셋 참고문서 이미지(타일셋·구조 킷)를 내용 주소로 바꾼다. 이 타일셋들은 프로젝트에 복사되는데,

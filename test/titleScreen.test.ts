@@ -222,7 +222,7 @@ describe("title screen", () => {
     }
   });
 
-  it("ignores pointer clicks because title selection is keyboard-only", () => {
+  it("activates the clicked title option through its explicit play-ui owner", () => {
     const restoreDom = installFakeDom();
     try {
       let activated: string | null = null;
@@ -238,6 +238,7 @@ describe("title screen", () => {
           onContinue: () => {
             activated = "continue";
           },
+          onCredits: () => { activated = "credits"; },
           onQuit: () => {
             activated = "quit";
           },
@@ -246,8 +247,9 @@ describe("title screen", () => {
       const newGame = findByTestId(screen, "title-new-game");
       expect(String(newGame?.tagName ?? "").toLowerCase()).not.toBe("button");
       newGame?.dispatchEvent?.(new Event("click", { bubbles: true }));
-      expect(activated).toBeNull();
-      expect(findByTestId(screen, "title-input-hint")?.textContent).not.toContain("클릭");
+      expect(newGame?.attrs["data-play-input-owner"]).toBe("play-ui");
+      expect(activated).toBe("new");
+      expect(findByTestId(screen, "title-input-hint")).toBeNull();
     } finally {
       restoreDom();
     }
@@ -286,16 +288,18 @@ describe("title screen", () => {
     }
   });
 
-  it("lists visible options New→Continue→Quit with stable ids/testIds", () => {
+  it("lists visible options New→Continue→Credits→Quit with stable ids/testIds", () => {
     const defaults = defaultTitleScreenSettings();
     expect(listTitleMenuOptions(defaults).map((option) => option.id)).toEqual([
       "newGame",
       "continueGame",
+      "credits",
       "quit",
     ]);
     expect(listTitleMenuOptions(defaults).map((option) => option.testId)).toEqual([
       "title-new-game",
       "title-load-game",
+      "title-credits",
       "title-quit-game",
     ]);
 
@@ -305,6 +309,7 @@ describe("title screen", () => {
     });
     expect(listTitleMenuOptions(hideContinue).map((option) => option.id)).toEqual([
       "newGame",
+      "credits",
       "quit",
     ]);
 
@@ -319,20 +324,28 @@ describe("title screen", () => {
         elementId: "title-option-new-game",
         label: defaults.menuLabels.newGame,
       },
+      {
+        id: "credits",
+        testId: "title-credits",
+        elementId: "title-option-credits",
+        label: "크레딧",
+      },
     ]);
   });
 
-  it("shows resume only when an autosave exists, ordered New→Resume→Continue→Quit", () => {
+  it("shows resume only when an autosave exists, ordered New→Resume→Continue→Credits→Quit", () => {
     const defaults = defaultTitleScreenSettings();
-    // 컨텍스트 생략/오토세이브 없음 → resume 미노출(기존 3항목 그대로).
+    // 컨텍스트 생략/오토세이브 없음 → resume 미노출(크레딧 포함 4항목).
     expect(listTitleMenuOptions(defaults).map((option) => option.id)).toEqual([
       "newGame",
       "continueGame",
+      "credits",
       "quit",
     ]);
     expect(listTitleMenuOptions(defaults, { autosaveAvailable: false }).map((option) => option.id)).toEqual([
       "newGame",
       "continueGame",
+      "credits",
       "quit",
     ]);
 
@@ -341,6 +354,7 @@ describe("title screen", () => {
       "newGame",
       "resume",
       "continueGame",
+      "credits",
       "quit",
     ]);
     const resume = withAutosave[1];
@@ -361,6 +375,7 @@ describe("title screen", () => {
     expect(listTitleMenuOptions(hidden, { autosaveAvailable: true }).map((option) => option.id)).toEqual([
       "newGame",
       "continueGame",
+      "credits",
       "quit",
     ]);
 
@@ -380,8 +395,9 @@ describe("title screen", () => {
     expect(top).toBe(240 - 40 - titleMenuHeight(optionCount));
     // 메뉴 아래끝이 안내 창 예약 영역(200) 위에서 끝난다.
     expect(top + titleMenuHeight(optionCount)).toBeLessThanOrEqual(200);
-    // 안내 창이 없으면 저작값 그대로.
-    expect(titleMenuTop(148, optionCount, false)).toBe(148);
+    // 안내 창이 없어도 메뉴 전체가 무대 안에 들어오며 아래 여백 8px을 남긴다.
+    expect(titleMenuTop(148, optionCount, false)).toBe(124);
+    expect(titleMenuTop(148, optionCount, false) + titleMenuHeight(optionCount)).toBe(232);
   });
 
   it("renders the resume option between new game and load when context says autosave exists", () => {
@@ -398,6 +414,7 @@ describe("title screen", () => {
               resumed += 1;
             },
             onContinue: () => undefined,
+            onCredits: () => undefined,
             onQuit: () => undefined,
           },
           1,
@@ -409,10 +426,10 @@ describe("title screen", () => {
       expect(resume).toBeTruthy();
       expect(resume?.textContent).toBe("이어하기");
       expect(resume?.attrs.id).toBe("title-option-resume-game");
-      // selectedIndex 1 은 이제 resume 을 가리킨다(new → resume → load → quit).
+      // selectedIndex 1 은 이제 resume 을 가리킨다(new → resume → load → credits → quit).
       expect(resume?.attrs["aria-selected"]).toBe("true");
       resume?.dispatchEvent?.(new Event("click", { bubbles: true }));
-      expect(resumed).toBe(0);
+      expect(resumed).toBe(1);
     } finally {
       restoreDom();
     }
@@ -442,9 +459,10 @@ describe("title screen", () => {
             onNewGame: () => undefined,
             onResume: () => undefined,
             onContinue: () => undefined,
+            onCredits: () => undefined,
             onQuit: () => undefined,
           },
-          1,
+          2,
         ),
       );
 
@@ -454,7 +472,7 @@ describe("title screen", () => {
       expect(findByTestId(screen, "title-input-hint")).toBeNull();
       expect(findByTestId(screen, "title-quit-game")?.attrs["aria-current"]).toBe("true");
       expect(findByTestId(screen, "title-selection-json")?.textContent).toBe(
-        JSON.stringify({ selectedIndex: 1 }),
+        JSON.stringify({ selectedIndex: 2 }),
       );
     } finally {
       restoreDom();
@@ -477,16 +495,17 @@ describe("title screen", () => {
             onNewGame: () => undefined,
             onResume: () => undefined,
             onContinue: () => undefined,
+            onCredits: () => undefined,
             onQuit: () => undefined,
           },
-          2,
+          99,
         ),
       );
 
       expect(findByTestId(screen, "title-quit-game")).toBeNull();
-      expect(findByTestId(screen, "title-load-game")?.attrs["aria-current"]).toBe("true");
+      expect(findByTestId(screen, "title-credits")?.attrs["aria-current"]).toBe("true");
       expect(findByTestId(screen, "title-selection-json")?.textContent).toBe(
-        JSON.stringify({ selectedIndex: 1 }),
+        JSON.stringify({ selectedIndex: 2 }),
       );
     } finally {
       restoreDom();

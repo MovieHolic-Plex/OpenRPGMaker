@@ -8,7 +8,7 @@ import {
   type AcceptanceSource, type RequirementWithdrawalAction,
 } from "./assistantAcceptance";
 import {
-  acceptanceFingerprint, acceptanceReviewRegion, criterionTargets, evaluateAcceptanceCriterion, resolveAcceptanceMap, type AcceptanceEvaluation,
+  acceptanceFingerprint, acceptanceReviewRegion, criterionTargets, evaluateAcceptanceCriterion, resolveAcceptanceMap, sameAcceptanceContent, type AcceptanceEvaluation,
 } from "./assistantAcceptanceEvaluation";
 
 import { AssistantImageEvidence, coveredByImages, type AcceptanceImageReceipt } from "./assistantImageEvidence";
@@ -395,7 +395,7 @@ export class AssistantAcceptanceLedger {
     const projectBound = (kind: string): boolean => kind === "toolVerdict" || isReloadCriterionKind(kind) || isProjectAcceptanceKind(kind);
     const toolDraftChanged = applied !== draft
       && promises.some(promise => promise.criteria?.some(criterion => projectBound(criterion.kind)))
-      && acceptanceFingerprint(applied) !== acceptanceFingerprint(draft);
+      && !sameAcceptanceContent(applied, draft);
     const items: AcceptanceItemSnapshot[] = promises.map(promise => {
       const metadata = { required: promise.required !== false, ...(promise.source ? { source: promise.source } : {}),
         ...(promise.refinements ? { refinements: Object.freeze(promise.refinements.map(source => Object.freeze({ ...source,

@@ -67,3 +67,23 @@ describe("collectMapLinkGraph", () => {
     expect(field.incoming.map((edge) => edge.kind)).toEqual(["connection"]);
   });
 });
+
+it("reuses link inputs across tile edits and invalidates event positions, start and map membership", () => {
+  const p = createBlankProject();
+  const a = p.startMapId;
+  p.maps.b = { ...p.maps[a]!, id: "b", events: [] };
+  p.maps[a]!.events = [{ id: "door", x: 1, y: 1, trigger: { kind: "action" }, commands: [{ kind: "transfer", mapId: "b", x: 0, y: 0 }] }];
+  const graph = collectMapLinkGraph(p);
+  const painted = { ...p, maps: { ...p.maps, [a]: { ...p.maps[a]!, lowerTiles: [...p.maps[a]!.lowerTiles] } } };
+  expect(collectMapLinkGraph(painted)).toBe(graph);
+  const moved = { ...painted, maps: { ...painted.maps, [a]: { ...painted.maps[a]!, events: [{ ...p.maps[a]!.events[0]!, x: 7 }] } } };
+  expect(collectMapLinkGraph(moved).find(n => n.mapId === a)!.outgoing[0]!.x).toBe(7);
+  const restarted = { ...moved, startMapId: "b" };
+  expect(collectMapLinkGraph(restarted).find(n => n.mapId === a)!.reachableFromStart).toBe(false);
+  const removed = { ...restarted, maps: { [a]: restarted.maps[a]! } };
+  expect(collectMapLinkGraph(removed)[0]!.outgoing).toEqual([]);
+  expect(collectMapLinkStats(removed, a).outgoingTransfers).toBe(1); // dangling transfers still counted
+  const connected = { ...p, mapConnections: [{ id: "edge", from: { mapId: a, x: 0, y: 0 }, to: { mapId: "b", x: 0, y: 0 }, playerEnabled: true, npcEnabled: false }] };
+  expect(collectMapLinkGraph(connected).find(n => n.mapId === "b")!.outgoing[0]!.kind).toBe("connection");
+  expect(collectMapLinkStats(connected, a).connections).toBe(1);
+});

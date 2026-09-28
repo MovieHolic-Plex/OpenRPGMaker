@@ -6,6 +6,7 @@ import { validateConditionShape } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { Command, EndingCondition, EndingDef, Project } from "@/project/types";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
+import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { CONDITION_SCHEMA, CUTSCENE_BEAT_SCHEMA } from "./schemaShapes";
@@ -36,7 +37,8 @@ function projectTriggersEnding(project: Project): boolean {
   }
   if ((project.commonEvents ?? []).some(common => commandsTriggerEnding(common.commands))) return true;
   return (project.database?.troops ?? []).some(troop =>
-    (troop.battleEventPages ?? []).some(page => commandsTriggerEnding(page.commands)));
+    (troop.battleEventPages ?? []).some(page => commandsTriggerEnding(page.commands))
+    || troopAfterBattleLists(troop).some(list => commandsTriggerEnding(list.commands)));
 }
 
 /** endingId 를 지정해 이 엔딩을 직접 부르는 triggerEnding 이 프로젝트에 있는가. */
@@ -62,7 +64,8 @@ function projectHasBareTriggerEnding(project: Project): boolean {
   }
   if ((project.commonEvents ?? []).some(common => bare(common.commands))) return true;
   return (project.database?.troops ?? []).some(troop =>
-    (troop.battleEventPages ?? []).some(page => bare(page.commands)));
+    (troop.battleEventPages ?? []).some(page => bare(page.commands))
+    || troopAfterBattleLists(troop).some(list => bare(list.commands)));
 }
 
 /** 이 특정 엔딩 id 를 부르는 곳이 있는가(직접 호출 또는 조건 선택형 bare 호출). */
@@ -76,7 +79,8 @@ function endingIsReachable(project: Project, endingId: string): boolean {
   }
   if ((project.commonEvents ?? []).some(common => commandsCallEndingId(common.commands, endingId))) return true;
   return (project.database?.troops ?? []).some(troop =>
-    (troop.battleEventPages ?? []).some(page => commandsCallEndingId(page.commands, endingId)));
+    (troop.battleEventPages ?? []).some(page => commandsCallEndingId(page.commands, endingId))
+    || troopAfterBattleLists(troop).some(list => commandsCallEndingId(list.commands, endingId)));
 }
 
 const ENDING_CONDITION_SCHEMA: JsonSchema = {

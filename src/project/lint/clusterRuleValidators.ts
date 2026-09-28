@@ -44,6 +44,10 @@ export function isAutotileGroup(group: TileGroupMetadata): boolean {
 /** 타일이 바뀐 맵만 맵 단위 규칙을 검사한다. 맵을 가로지르는 count 규칙은 전체 맵을 본다. */
 export function validateClusterRulesForMaps(project: Project, mapIds: readonly string[]): ClusterRuleViolation[] {
   if (mapIds.length === 0) return [];
+  return withTileIndexScope(() => validateClusterRulesForMapsScoped(project, mapIds));
+}
+
+function validateClusterRulesForMapsScoped(project: Project, mapIds: readonly string[]): ClusterRuleViolation[] {
   const wanted = new Set(mapIds);
   const maps = Object.values(project.maps).filter((map) => wanted.has(map.id));
   const violations = violationsOnMaps(project, maps);
@@ -63,6 +67,10 @@ export function validateClusterRulesForMaps(project: Project, mapIds: readonly s
 }
 
 export function validateClusterRules(project: Project, mapId?: string): ClusterRuleViolation[] {
+  return withTileIndexScope(() => validateClusterRulesScoped(project, mapId));
+}
+
+function validateClusterRulesScoped(project: Project, mapId?: string): ClusterRuleViolation[] {
   const maps = selectedMaps(project, mapId);
   const violations = violationsOnMaps(project, maps);
   for (const tileset of Object.values(project.tilesets)) {
@@ -199,15 +207,17 @@ function adjacencyViolation(map: GameMap, group: TileGroupMetadata, rule: Cluste
   const params = adjacencyParams(rule.params);
   if (!params) return null;
   const coords = new Map<string, ClusterRuleViolationCoord>();
+  const forward = new Set(acceptedCompanionTiles(params, "forward"));
+  const reverse = new Set(acceptedCompanionTiles(params, "reverse"));
   for (const coord of tileCoords(map, params.a)) {
     const expected = neighbor(coord, params.relation);
-    if (!adjacencyCompanionSatisfied(map, expected, acceptedCompanionTiles(params, "forward"))) {
+    if (!(isInside(map, expected.x, expected.y) && hasAnyTileAt(map, expected.x, expected.y, forward))) {
       coords.set(coordKey(coord), { mapId: map.id, x: coord.x, y: coord.y });
     }
   }
   for (const coord of tileCoords(map, params.b)) {
     const expected = neighbor(coord, oppositeRelation(params.relation));
-    if (!adjacencyCompanionSatisfied(map, expected, acceptedCompanionTiles(params, "reverse"))) {
+    if (!(isInside(map, expected.x, expected.y) && hasAnyTileAt(map, expected.x, expected.y, reverse))) {
       coords.set(coordKey(coord), { mapId: map.id, x: coord.x, y: coord.y });
     }
   }
@@ -348,14 +358,11 @@ function integerParam(value: unknown): number | null {
 }
 
 function groupCoords(map: GameMap, group: TileGroupMetadata): readonly ClusterRuleViolationCoord[] {
-  const tileIds = new Set(group.tileIds);
-  const coords: ClusterRuleViolationCoord[] = [];
-  for (let y = 0; y < map.height; y += 1) {
-    for (let x = 0; x < map.width; x += 1) {
-      if (hasAnyTileAt(map, x, y, tileIds)) coords.push({ mapId: map.id, x, y });
-    }
-  }
-  return coords;
+  const index = tileCellIndex(map);
+  const cells = new Set<number>();
+  for (const tile of new Set(group.tileIds)) for (const cell of index.get(tile) ?? []) cells.add(cell);
+  // 전체 스캔과 같은 행 우선 순서.
+  return cellsToCoords(map, [...cells].sort((a, b) => a - b));
 }
 
 function groupInstances(map: GameMap, group: TileGroupMetadata): readonly ClusterRuleInstance[] {
@@ -482,13 +489,49 @@ function instanceFromCoords(coords: readonly ClusterRuleViolationCoord[]): Clust
 }
 
 function tileCoords(map: GameMap, tile: number): readonly ClusterRuleViolationCoord[] {
-  const coords: ClusterRuleViolationCoord[] = [];
-  for (let y = 0; y < map.height; y += 1) {
-    for (let x = 0; x < map.width; x += 1) {
-      if (hasTileAt(map, x, y, tile)) coords.push({ mapId: map.id, x, y });
-    }
+  return cellsToCoords(map, tileCellIndex(map).get(tile) ?? []);
+}
+
+function cellsToCoords(map: GameMap, cells: readonly number[]): readonly ClusterRuleViolationCoord[] {
+  return cells.map((cell) => ({ mapId: map.id, x: cell % map.width, y: Math.floor(cell / map.width) }));
+}
+
+/**
+ * 타일 id → 그 타일을 어느 레이어에든 든 칸 번호(오름차순, 중복 없음).
+ *
+ * 규칙마다 맵 전체를 훑고 칸마다 `new Set([tile])` 을 만들던 것이 조수 적용 한 번에 ~1s 였다
+ * (100×100 맵 12장, 2026-09-28 프로파일). 검사 한 번 동안 맵당 한 번만 만들어 모든 규칙이 나눠 쓴다.
+ * 맵 배열은 제자리 수정될 수 있으므로 검사 호출 밖으로는 들고 가지 않는다.
+ */
+type TileCellIndex = ReadonlyMap<number, readonly number[]>;
+let scopedTileIndexes: WeakMap<GameMap, TileCellIndex> | null = null;
+
+function withTileIndexScope<T>(run: () => T): T {
+  if (scopedTileIndexes) return run();
+  scopedTileIndexes = new WeakMap();
+  try { return run(); }
+  finally { scopedTileIndexes = null; }
+}
+
+function tileCellIndex(map: GameMap): TileCellIndex {
+  const cached = scopedTileIndexes?.get(map);
+  if (cached) return cached;
+  const index = new Map<number, number[]>();
+  const add = (tile: number | undefined, cell: number): void => {
+    if (tile === undefined) return;
+    let cells = index.get(tile);
+    if (!cells) index.set(tile, cells = []);
+    if (cells[cells.length - 1] !== cell) cells.push(cell);
+  };
+  const size = map.width * map.height;
+  for (let cell = 0; cell < size; cell += 1) {
+    add(map.lowerTiles[cell], cell);
+    add(map.upperTiles[cell], cell);
+    for (const tile of map.lowerTileStacks?.[cell] ?? []) add(tile, cell);
+    for (const tile of map.upperTileStacks?.[cell] ?? []) add(tile, cell);
   }
-  return coords;
+  scopedTileIndexes?.set(map, index);
+  return index;
 }
 
 function hasAnyTileAt(map: GameMap, x: number, y: number, tileIds: ReadonlySet<number>): boolean {
@@ -498,10 +541,6 @@ function hasAnyTileAt(map: GameMap, x: number, y: number, tileIds: ReadonlySet<n
   for (const tile of map.lowerTileStacks?.[index] ?? []) if (tileIds.has(tile)) return true;
   for (const tile of map.upperTileStacks?.[index] ?? []) if (tileIds.has(tile)) return true;
   return false;
-}
-
-function hasTileAt(map: GameMap, x: number, y: number, tile: number): boolean {
-  return hasAnyTileAt(map, x, y, new Set([tile]));
 }
 
 /** 하위(지형) 레이어만 본다 — 배치 면 감사가 「이 칸의 지형을 이 물건이 덮었나」를 가르는 데 쓴다. */

@@ -5,7 +5,7 @@ import { createActivityView } from "./aiActivityView";
 // 스타일: tabs-b-assistant-panel/20-team-board.css (tokens.css 변수만, !important 0).
 
 import { el } from "@/util/dom";
-import { teamBoardTotals, type TeamBoardAgent, type TeamBoardState } from "@/ai/piAgent/teamBoardState";
+import { teamBoardTotals, type TeamBoardState } from "@/ai/piAgent/teamBoardState";
 
 /**
  * 검토 대기 단계의 계약. `preview` 는 적용 **전** 비교 카드다 — 사용자가 결정하려면 결과가
@@ -28,75 +28,6 @@ export interface TeamBoardHandle {
 const PHASE_TONE: Record<TeamBoardState["phase"], string> = {
   "준비": "idle", "실행 중": "running", "적용 중": "running", "검토 대기": "review", "적용됨": "done", "완료": "done", "버림": "muted", "중단": "muted", "실패": "error",
 };
-const AGENT_TONE: Record<TeamBoardAgent["state"], string> = {
-  "대기": "idle", "실행 중": "running", "완료": "done", "실패": "error", "중단": "muted",
-};
-
-function agentTitle(agent: TeamBoardAgent): string {
-  if (agent.role === "orchestrator") return "전체";
-  return agent.mapName ? `${agent.mapName}` : agent.mapId ?? "";
-}
-
-function renderAgent(agent: TeamBoardAgent, startedAt: number, hideTask: boolean): HTMLElement {
-  const counters = [
-    agent.turns > 0 ? `${agent.turns}턴` : null,
-    agent.toolCalls > 0 ? `툴 ${agent.toolCalls}${agent.toolErrors ? ` (실패 ${agent.toolErrors})` : ""}` : null,
-    agent.stats ? `${Math.max(1, Math.round(agent.stats.ms / 1000))}초` : null,
-  ].filter((part): part is string => part !== null);
-  const row = el("li", {
-    class: `ai-team-agent is-${AGENT_TONE[agent.state]} role-${agent.role}`,
-    dataset: { testid: "ai-team-agent", agentId: agent.agentId, state: agent.state },
-    attrs: { "aria-label": `${agent.roleLabel} ${agentTitle(agent)} ${agent.state}` },
-  });
-  const head = el("div", { class: "ai-team-agent-head" });
-  head.append(el("span", { class: "ai-team-role", text: agent.roleLabel }));
-  // 팀원 이름이 배지를 덮으면 그 행이 시공인지 검수인지 사라진다 — 종류를 따로 붙인다.
-  if (agent.kindLabel && agent.kindLabel !== agent.roleLabel) {
-    head.append(el("span", { class: "ai-team-kind", text: agent.kindLabel, dataset: { testid: "ai-team-kind" } }));
-  }
-  head.append(
-    el("span", { class: "ai-team-map", text: agentTitle(agent), attrs: { title: agent.mapId ?? "" } }),
-    el("span", { class: "ai-team-agent-state", text: agent.state, dataset: { testid: "ai-team-agent-state" } }),
-  );
-  if (agent.state === "실행 중") head.append(el("span", { class: "ai-deck-spin ai-team-spin", attrs: { "aria-hidden": "true" } }));
-  if (counters.length > 0) head.append(el("span", { class: "ai-team-counters", text: counters.join(" · ") }));
-  row.append(head);
-  if (agent.fixOf) {
-    // 같은 맵에 시공 행이 둘 쌓였을 때 어느 것이 검수 지적 때문에 다시 돈 것인지 밝힌다.
-    row.append(el("p", { class: "ai-team-fix-of", text: "검수 지적을 고치러 다시 배정됨", dataset: { testid: "ai-team-fix-of", fixOf: agent.fixOf } }));
-  }
-  if (agent.task && !hideTask && agent.role !== "orchestrator") {
-    // 팀장이 쓴 작업 지시는 길다 — 두 줄로 접고, 누르면 펼친다.
-    const task = el("p", { class: "ai-team-task is-clamped", text: agent.task, attrs: { role: "button", tabindex: "0", "aria-expanded": "false", title: "누르면 전체 지시를 펼칩니다" } });
-    const toggle = () => { const open = task.classList.toggle("is-clamped"); task.setAttribute("aria-expanded", String(!open)); };
-    task.addEventListener("click", toggle);
-    task.addEventListener("keydown", (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); toggle(); } });
-    row.append(task);
-  }
-  if (agent.review) {
-    const review = el("div", { class: `ai-team-review ${agent.review.ok ? "is-ok" : "is-findings"}` });
-    review.append(el("span", { class: "ai-team-review-verdict", text: agent.review.ok ? "검수 통과" : `지적 ${agent.review.findings.length}건` }));
-    if (agent.review.findings.length > 0) {
-      const list = el("ul", { class: "ai-team-findings" });
-      for (const finding of agent.review.findings.slice(0, 4)) list.append(el("li", { text: finding }));
-      review.append(list);
-    }
-    row.append(review);
-  } else if (agent.lastLine) {
-    row.append(el("p", { class: `ai-team-last is-${agent.lastKind}`, text: agent.lastLine, attrs: { "aria-live": agent.state === "실행 중" ? "polite" : "off" } }));
-  }
-  if (agent.spills.length > 0 || agent.conflicts.length > 0) {
-    row.append(el("p", {
-      class: "ai-team-warn",
-      text: [
-        agent.spills.length > 0 ? `범위 밖 변경 버림: ${agent.spills.join(", ")}` : null,
-        agent.conflicts.length > 0 ? `같은 맵·설정 충돌: ${agent.conflicts.join(", ")}` : null,
-      ].filter(Boolean).join(" · "),
-    }));
-  }
-  void startedAt;
-  return row;
-}
 
 export function createTeamBoard(initial: TeamBoardState, options: { externalReview?: boolean } = {}): TeamBoardHandle {
   const startedAt = Date.now();
@@ -168,9 +99,7 @@ export function createTeamBoard(initial: TeamBoardState, options: { externalRevi
     const errors = teamBoardTotals(state).toolErrors;
     const findings = state.agents.reduce((count, agent) => count + (agent.review && !agent.review.ok ? Math.max(1, agent.review.findings.length) : 0), 0);
     summaryLabel.textContent = ["작업 기록", errors ? `도구 오류 ${errors}건` : "", findings ? `검토 지적 ${findings}건` : ""].filter(Boolean).join(" · ");
-    // 행의 지시가 보드 지시(=사용자 발화, 이미 카드 제목)와 같으면 echo 를 생략한다 —
-    // 단일 /pi 실행은 행이 지시를 그대로 물고 와 같은 문장이 세 번 나왔다(2026-09-12 실측).
-    list.replaceChildren(...state.agents.map((agent) => renderAgent(agent, startedAt, agent.task === state.task)));
+    // Permanently hidden legacy rows have no surface; ActivityView owns the receipts.
     const footParts: HTMLElement[] = [];
     if (state.report) footParts.push(el("p", { class: "ai-team-report", text: state.report, dataset: { testid: "ai-team-report" } }));
     if (state.error) footParts.push(el("p", { class: "ai-team-error", text: state.error }));

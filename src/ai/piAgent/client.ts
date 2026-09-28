@@ -5,7 +5,7 @@ import type { Project } from "@/project/types";
 
 import { companionAuthUrl } from "@/ai/chatgptOAuthClient";
 import { companionTokenHeaders } from "@/ai/companionToken";
-import { createPiAgentLineDecoder, PI_AGENT_STALE_MS, restoreCheckpointProject, slimCheckpointProject, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "./protocol";
+import { createPiAgentLineDecoder, PI_AGENT_STALE_MS, restoreCheckpointProject, slimCheckpointProject, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiCheckpointHeavyKey } from "./protocol";
 import { piRequestBody } from "./requestBody";
 import { forgetHeavySent, markHeavySent, planHeavyWire, withHeavyBlobs } from "./heavyWire";
 
@@ -123,7 +123,7 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
       try {
         options.signal?.throwIfAborted();
         const { renderPiMapImage } = await import("../toolImageRenderer");
-        const draft = restoreCheckpointProject(request.project, event.project, event.unchangedKeys);
+        const draft = restoreCheckpointProject(request.project, event.project, event.unchangedKeys, event.unchangedTilesetIds);
         const url = await renderPiMapImage(draft, event.data);
         png = url.replace(/^data:image\/png;base64,/, "");
       } catch (error) { issue = error instanceof Error ? error.message : String(error); }
@@ -144,7 +144,7 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
     }
     const raw = line;
     // 워커는 요청 그대로인 무거운 키(타일셋 이미지·DB)를 빼고 done 을 보낸다 — 요청 프로젝트의 것을 다시 붙인다.
-    const event = raw.type === "done" && raw.unchangedKeys?.length ? restoreDone(raw, request.project) : raw;
+    const event = raw.type === "done" && (raw.unchangedKeys?.length || raw.unchangedTilesetIds?.length) ? restoreDone(raw, request.project) : raw;
     // Never persist request contents into conversation/audit event logs.
     if (receiveInspection(event) || receiveRender(event)) return;
     if (event.type === "checkpoint") {
@@ -161,8 +161,9 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
           issue = error instanceof Error ? error.message : String(error);
         }
         options.onEvent?.({ type: "execution_status", name: "checkpoint.apply", summary: issue ? "단계 적용 실패" : "단계 적용 완료", ok: issue === undefined, data: { checkpointId: event.checkpointId, issue } });
-        const ackProject = project && event.unchangedKeys?.length
-          ? slimCheckpointProject(project, event.unchangedKeys)
+        // 받은 모양 그대로 돌려준다 — 워커가 뺀 키·타일셋을 자기 사본에서 다시 붙인다.
+        const ackProject = project && (event.unchangedKeys?.length || event.unchangedTilesetIds?.length)
+          ? slimForAck(project, event.unchangedKeys ?? [], event.unchangedTilesetIds ?? [])
           : project;
         const ackWire = await piRequestBody({ checkpointId: event.checkpointId, ok: issue === undefined, issue, project: ackProject }, options.signal);
         const ack = await doFetch(companionAuthUrl("/v1/agent/checkpoint", request.provider), {
@@ -262,9 +263,17 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   throw new PiAgentClientError(lastError ?? "Pi 에이전트가 결과를 돌려주지 않았습니다");
 }
 
+function slimForAck(project: Project, keys: readonly PiCheckpointHeavyKey[], tilesetIds: readonly string[]): Project {
+  const slim = slimCheckpointProject(project, keys);
+  if (!tilesetIds.length || keys.includes("tilesets")) return slim;
+  const skip = new Set(tilesetIds);
+  return { ...slim, tilesets: Object.fromEntries(Object.entries(project.tilesets).filter(([id]) => !skip.has(id))) as Project["tilesets"] };
+}
+
 function restoreDone(done: PiAgentDoneEvent, requestProject: PiAgentRequest["project"]): PiAgentDoneEvent {
   const { unchangedKeys, ...rest } = done;
-  return { ...rest, project: restoreCheckpointProject(requestProject, done.project, unchangedKeys) };
+  const { unchangedTilesetIds, ...body } = rest;
+  return { ...body, project: restoreCheckpointProject(requestProject, done.project, unchangedKeys, unchangedTilesetIds) };
 }
 
 

@@ -1,6 +1,6 @@
 import { evaluateAuthoringJourney, loadAuthoringJourneyProgress, setManualJourneyStage, saveAuthoringJourneyProgress, type AuthoringJourneyStage, type ManualJourneyStageId } from "@/editor/authoringJourney";
 import { runAuthoringTask, type AuthoringTaskId } from "@/editor/authoringTasks";
-import { collectProjectReferenceIssues } from "@/project/io/references";
+import { collectEditorProjectReferenceIssues } from "@/editor/projectReferenceIssues";
 import { isTileCellChange, store } from "@/project/store";
 import { el } from "@/util/dom";
 
@@ -28,7 +28,7 @@ export function createLeftProgressPane(scope: () => string): { root: HTMLElement
   const render = (): void => {
     if (root.hidden) return;
     const project = store.getCurrent();
-    issues ??= collectProjectReferenceIssues(project);
+    issues ??= collectEditorProjectReferenceIssues(project);
     const progress = loadAuthoringJourneyProgress(scope());
     const stages = evaluateAuthoringJourney(project, progress, issues);
     const done = (stage: AuthoringJourneyStage) => stage.completion !== null || stage.acknowledgement !== null;
@@ -89,10 +89,13 @@ export function createLeftProgressPane(scope: () => string): { root: HTMLElement
   };
 
   let queued = false;
+  let disposed = false;
   const schedule = (): void => {
     if (queued) return;
     queued = true;
-    queueMicrotask(() => { queued = false; render(); });
+    const run = (): void => { queued = false; if (!disposed) render(); };
+    if (typeof requestAnimationFrame === "function") requestAnimationFrame(run);
+    else queueMicrotask(run);
   };
   const unsubscribe = store.subscribe((_project, change) => {
     if (!isTileCellChange(change)) issues = null;
@@ -101,6 +104,6 @@ export function createLeftProgressPane(scope: () => string): { root: HTMLElement
   return {
     root,
     show: () => { issues = null; render(); },
-    dispose: () => unsubscribe(),
+    dispose: () => { disposed = true; unsubscribe(); },
   };
 }

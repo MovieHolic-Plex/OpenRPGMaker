@@ -20,6 +20,7 @@ import { battleAnimationImpactMs, syncBattleAnimationLayer } from "@/player/batt
 import { createPresentationLedger, type BattlePresentationLedger } from "@/player/battlePresentation";
 import { commandPanel, enemyListPanel, syncEnemyListPanel, type BattleCommandSubmenu } from "@/player/battleCommandDom";
 import {
+  advanceBattleResultLevelUps,
   applyBattleDirectorState,
   battleMessageWindow,
   battleResultPanel,
@@ -566,6 +567,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     if (snapshot.result) {
       if (directorState.step === "result" && !resultSent) {
         if (revealAllResultRows(snapshot)) return;
+        if (advanceResultLevelUps()) return;
         resultSent = true;
         options.onResult(snapshot.result, applyRollingHpSurvival(snapshot.result, snapshot, rollingHp));
       }
@@ -617,6 +619,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         // 씬을 닫던 결함(2026-09-14 실측: stage 0 에서 Z → 700ms 뒤 씬 소멸).
         if (directorState.step === "result" && !resultSent) {
           if (revealAllResultRows(snapshot)) return;
+          // 도트 결과: 둘째 확인부터는 레벨 업한 사람을 한 명씩 보인다. 다 보이면 닫는다.
+          if (advanceResultLevelUps()) return;
           resultSent = true;
           options.onResult(snapshot.result, applyRollingHpSurvival(snapshot.result, snapshot, rollingHp));
         }
@@ -1193,6 +1197,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     resultRevealStage = battleResultRewardRowCount(snapshot) + 1;
     syncBattleResultPanel(panel, snapshot, resultRevealStage);
     return true;
+  }
+
+  /** 도트 결과의 다음 레벨 업 창을 열었으면 true. 레벨 업 창이 없거나 다 봤으면 false. */
+  function advanceResultLevelUps(): boolean {
+    const panel = resultHost.querySelector<HTMLElement>("[data-testid='battle-result-panel']");
+    return panel ? advanceBattleResultLevelUps(panel) : false;
   }
 
   /** 결과 홀드 동안 필드 한가운데 찍히는 도장. 결과 패널이 뜨면 걷는다(syncResultHost).

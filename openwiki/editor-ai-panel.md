@@ -3205,12 +3205,27 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 - **실측 스크립트:** `scripts/qa/preset-team-first-build.mjs` — 임시 SQLite 호스트 + Firefox 로 포스터 → 인터뷰 → 첫 생성을 돌리고
   요청 크기·heavy 해시·의도 읽기 호출 수·실행 번호·이어 받기 횟수·SQLite 재로드 맵/이벤트 수를 `verify-shots/preset-first-team-e2e/SUMMARY.json` 에 쓴다.
   `E2E_NETWORK_CHANGE=1` 이면 Firefox 의 네트워크 변경 감지를 켠 채 두어 이 호스트의 veth 변동으로 실제 끊김을 만든다.
+- **새 프로젝트 첫 Pi 요청이 호스트에서 끊겼다 (2026-09-28):** 해시 전송을 해도 첫 요청은 호스트가 모르는 내용을 전부 싣는다. 빈 새 프로젝트가
+  gzip 69MB(풀면 203MB — 공용 업로드 아틀라스 dataURL 414개 85MB + 타일셋 368개 101MB)였고, `readRequestJson` 의 받은 몸통 상한 64MiB 가
+  매번 「Request body is too large」로 끊었다 — 팀·단독 모두, 새 프로젝트에서 한 번도 돌지 못했다. 받은 몸통 상한을 풀어낸 상한·워커 상한과 같은
+  256MiB(`MAX_REQUEST_BYTES`)로 올리고 초과는 413 이다. 회귀: `test/piAgentRequestBody.test.ts` 「above the old 64MiB cap」.
+- **체크포인트는 바뀐 타일셋만 싣는다 (2026-09-28):** 무거운 키 슬림은 키 단위였다. `author_village` 가 `forest_harmony` 하나에 이식을
+  더하면 `tilesets` 전체(368개)가 줄에 실렸고, 팀 중계를 지나며 101MB 체크포인트 한 줄이 되어 워커가 150초 동안 다음 줄을 못 썼다 —
+  브라우저 워치독(30초)이 「워커에서 30초 동안 신호가 없어」로 끊었다. 이제 `slimProjectForWire` 가 그대로인 타일셋 id 를
+  `unchangedTilesetIds` 로 따로 보내고 받는 쪽(`restoreCheckpointProject` 네 번째 인자)이 자기 사본에서 붙인다. 체크포인트·render_request·done·ACK
+  모두 같은 모양이다. 받는 쪽 사본에 없는 id 를 뺐다고 하면 조용히 비우지 않고 던진다. 실측: 같은 마을 체크포인트 101MB → 4.4MB, 도구 종료 0.3초 뒤 도착.
+  회귀: `test/piAgentEfficiency.test.ts` 「타일셋 하나만 바뀌면 그 하나만 싣고」.
+- **실측 스크립트(팀 + 평문 마을):** `scripts/qa/team-village-live.mjs` — 빈 새 SQLite 호스트에서 작업 인원 「팀으로」 → 「마을을 만들어줘」 →
+  그래픽 조합 선택 → 끝까지 기다린다. `E2E_SOLO=1` 이면 혼자. 결과는 `verify-shots/team-village-live/SUMMARY.json`.
+  2026-09-28 실측(위 두 수정 뒤): 「Pi 팀」 배지, 팀장이 시공 배정 → 검수 → 수정 배정 → 재검수 → 완료 후 검토까지 돌고 21분에 「적용됨」
+  (맵 15개 · 이벤트 168개). 남은 문제: 적용 뒤 자동 저장이 `allocation size overflow`(Firefox, 큰 프로젝트 직렬화)로 실패해 SQLite 에
+  남지 않았다 — 이 변경 범위 밖이며 별도 수정이 필요하다.
 
 ## 큰 프로젝트의 Pi 요청 전송 (2026-09-24)
 
 `src/ai/piAgent/requestBody.ts`는 1Mi 문자 이상인 요청을 gzip으로 전송한다. `/v1/agent/run`뿐 아니라 적용 ACK `/v1/agent/checkpoint`도 같은 경로를 사용한다. 프로젝트/공용 타일 참고 이미지/이벤트를 제거하지 않는다. 작은 요청과 CompressionStream 미지원 환경은 기존 JSON을 사용하며, 후자는 큰 문서에서 기존 한도 오류를 받을 수 있다.
 
-수신 `scripts/lib/companionHttpUtil.mjs`는 wire64MiB 제한을 유지하고 gzip 복원은 별도256MiB 상한으로 제한한다. 기존 identity JSON은 계속64MiB다. 손상 gzip/미지원 encoding은 거절한다. 동반 서비스 두 진입점의 CORS는 Content-Encoding을 허용한다. 서버 gzip 수신 지원을 먼저 배포한 뒤 renderer를 갱신한다. 새 renderer만 배포하면 기존 서버는 gzip을 JSON으로 읽을 수 없다.
+수신 `scripts/lib/companionHttpUtil.mjs`는 받은 몸통과 gzip 복원 모두 256MiB(`MAX_REQUEST_BYTES`)로 제한한다(2026-09-28, 예전 받은 몸통 64MiB 는 새 프로젝트 첫 요청을 끊었다). 손상 gzip/미지원 encoding은 거절한다. 동반 서비스 두 진입점의 CORS는 Content-Encoding을 허용한다. 서버 gzip 수신 지원을 먼저 배포한 뒤 renderer를 갱신한다. 새 renderer만 배포하면 기존 서버는 gzip을 JSON으로 읽을 수 없다.
 
 실측: 새솔 정본507을 포함한 요청83,468,214bytes →34,820,901bytes, 복원 객체 전체 일치. 저장 브리지의128MiB 제한과는 별개다. 루트 필드별 용량에서 tilesets 약73MB가 대부분이었다. 압축 지원은 제작 완료나 LLM 자체 컨텍스트 제한 해결을 의미하지 않는다.
 
@@ -3306,3 +3321,35 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
   표본 분산이 크다(low @30k 가 2832~6413ms) — 이 박스는 부하를 나눠 쓰므로 중앙값만 인용한다. n=3 에이전트 런 6행은 전부 `turns=1 · tools=0` 으로 끝나서 위 3턴 실측(3턴·툴 2회)과 조건이 다르다 — 두 실측을 섞어 평균하지 않는다.
 - 프롬프트 캐시: 같은 접두를 다시 보낸 실행이 cacheRead 12,021 토큰을 보고했다 — 공급자의 암묵 접두 캐시가 실행 사이에도 이미 듣는다. 세션 id 를 바꿀 필요는 없다.
 - 프로브: `scripts/qa/_ai-turn-latency-probe.mjs` (`provider` / `agent` 모드), 증거 `verify-shots/ai-turn-latency/`.
+
+
+## AI 패널 렌더 비용 (2026-09-28)
+
+- 스튜디오는 떨어져 있는 동안 teamActivity의 최신 상태만 기억하고 attach/팀 스레드 선택 때 그린다.
+  팀 화면의 `teamWork.update`는 한 번만 호출한다. 영구히 숨겨진 옛 보드 목록은 만들지 않는다.
+- 팀원 행은 ID로 재사용한다. transcript는 `droppedLog + index`를 행 키로 삼아 200행 상한을 넘을 때
+  앞부분만 제거하고 새 행만 붙인다. trace가 보이는 동안 숨겨진 transcript는 갱신하지 않는다.
+- `aiActivityIndex.ts`는 불변 entries 배열별 actor·최근 이미지·단계 색인을 WeakMap으로 공유한다.
+  brief는 기존 묶음/실패/이미지 규칙 그대로 작은 결과 창을 유지하고, detail/trace는 표시 창+1행만 수집한다.
+  동일 입력은 조기 반환하며 표시 결과가 같으면 목록 DOM을 건드리지 않는다. 필터·50행 추가·펼친 기록은 유지한다.
+- 실행 아카이브는 해당 run만 get/serial 비교/put한다. 새 run·종료 전환·60초 간격에 전체 정리를 한다.
+  7일/20run/약10MB 정리 기준과 실패 안내를 유지한다. 실행 중 용량 증가는 다음 정리까지 일시적으로 상한을 넘을 수 있다.
+- 대화 복원은 `renderConversationEntries`로 묶어 높이를 한 번 읽는다. 라이브 append는 그대로 스크롤한다.
+  답변 이름 검색은 색인별 trie+최대256문장 캐시를 쓰며 전역 긴 이름 우선·한국어 조사 경계를 유지한다.
+- 이미지 관찰자는 추가/제거된 서브트리의 이미지만 검사한다. 읽는 중·문서 내 이동·처음 붙기 전 30초 유예를 유지하고
+  미부착 이미지 정리는 저빈도 타이머로 처리한다.
+- 실측: 비활성 스튜디오 DOM365→0, transcript 200행 한 행 추가 DOM200→1, 팀원 한 명 갱신 DOM36→0,
+  대화200건 높이 읽기200→1, 저장마다 getAll 1→0. 상세 수치·조건·브라우저 근거: `verify-shots/perf-ai-ui/`.
+  기준선 수치는 같은 f9bbb5067에서 측정한 삭제 전 워크트리 결과를 사용했고 수정 후는 새 워크트리에서 재측정했다.
+- 계약 테스트: `aiUiPerformance.test.ts`, `activityTraceArchive.test.ts` 및 기존 관련 테스트.
+  렌더 fixture는 실제 Happy DOM Window를 전역에 설치해 add/removeEventListener를 빠뜨리지 않는다.
+
+
+### 검증 권한 정정과 브라우저 재실측 (2026-09-28)
+
+후속 사용자 지시 이후 Vitest·tsc·gates는 실행하지 않았다. 앞선 통과/실패는 정정 이전 기록이다.
+워크트리의 `npm run dev:worktree`와 Node+Chromium만으로 f9bbb5067/현재 코드를 별도 컨텍스트에서 재측정했다:
+새 활동2,000건 0.936→0.455ms, 대화200건 복원 51.900→10.567ms(높이 읽기200→1),
+run20개의 현재run 저장 getAll1→0, 비활성 스튜디오 DOM365→0.
+원시 수치와 실행 없는 테스트 계약 검토·잔여 위험 파일명은 `verify-shots/perf-ai-ui/README.md`와
+`browser-measurements.json`에 남겼다. 테스트 실행은 새 명시적 허가 전까지 다시 시작하지 않는다.

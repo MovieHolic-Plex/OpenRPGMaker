@@ -7,8 +7,25 @@ import { readSharedContentCache, writeSharedContentCache } from './sharedContent
 const bundledLibraries: Record<string, SharedContentLibrary> = {};
 let snapshot: SharedContentSnapshot = {revision:'bundled',libraries:bundledLibraries};
 let defaultAssetHashes = new Map<string,string>();
+/** 기본 자산 id → 센 글과 그 바이트 해시. 같은 글을 다시 설치할 때 세지 않는다. */
+let defaultAssetHashSources = new Map<string,{ readonly dataUrl: string; readonly sha: string }>();
 let snapshotScope: SharedContentScope | null = null;
 export const sharedContentSnapshot = () => snapshot;
+const installWaiters = new Set<() => void>();
+/**
+ * 이 라이브러리들이 설치될 때까지 기다린다. 공용 타일 참고문서 응답은 카탈로그에 있는 것을 라이브러리 표식으로만 보내므로
+ * (sharedTileReferences.ts) 그 라이브러리가 설치된 뒤에 채운다. 부팅은 나머지 범위를 편집기가 뜬 뒤 받는다(main.ts).
+ */
+export function whenSharedLibrariesInstalled(ids: ReadonlySet<string>, timeoutMs: number): Promise<boolean> {
+  const ready = () => [...ids].every(id => Object.hasOwn(snapshot.libraries, id));
+  if (ready()) return Promise.resolve(true);
+  return new Promise(resolve => {
+    const check = () => { if (!ready()) return; finish(true); };
+    const timer = setTimeout(() => finish(false), timeoutMs);
+    const finish = (value: boolean) => { clearTimeout(timer); installWaiters.delete(check); resolve(value); };
+    installWaiters.add(check);
+  });
+}
 /**
  * 설치된 공용 기본 자산 중 바이트 해시와 머리가 같은 것의 dataUrl. 같은 바이트의 base64 글은 하나뿐이므로
  * 머리까지 같으면 글도 같다. 팀 참여 창이 호스트에서 같은 그림을 다시 받지 않게 한다(persistence/electronRepository.ts).
@@ -31,16 +48,28 @@ export async function installSharedContent(value: SharedContentSnapshot): Promis
   if(typeof value.revision!=='string'||!value.libraries||Object.values(value.libraries).some(l=>l.version!==1||!l.tilesets||!l.places||!Array.isArray(l.roots))) throw new Error('Invalid shared content');
   const next={...value,libraries:{...bundledLibraries,...value.libraries}};
   const hashes=new Map<string,string>();
+  const known=value.assetBytesSha256;
   for(const lib of Object.values(next.libraries)) if(lib.projectDefaults) for(const asset of Object.values(lib.assets)) {
     if(asset.dataUrl?.startsWith('data:image/')) {
+      // 같은 글을 이미 셌으면(나머지 범위를 합쳐 다시 설치할 때) 다시 세지 않는다. 호스트가 센 값이 있으면 그것을 쓴다.
+      const previous=defaultAssetHashSources.get(asset.id);
+      const hint=known?.[asset.id];
+      if(previous?.dataUrl===asset.dataUrl) { hashes.set(asset.id,previous.sha); continue; }
+      if(typeof hint==='string'&&/^[0-9a-f]{64}$/.test(hint)) { hashes.set(asset.id,hint); continue; }
       // 글자마다 콜백을 부르는 Uint8Array.from(atob(), fn) 은 기본 자산 379장(16MB)에 약 1.2s 걸렸다(2026-09-26 실측).
       // fetch(dataURL) 은 더 빠르지만 Electron·팀 호스트 CSP connect-src 가 data: 를 막는다.
       hashes.set(asset.id,await sha256HexBytes(base64Bytes(asset.dataUrl.slice(asset.dataUrl.indexOf(',')+1))));
     }
   }
   snapshot=next; defaultAssetHashes=hashes;
+  defaultAssetHashSources=new Map();
+  for(const lib of Object.values(next.libraries)) if(lib.projectDefaults) for(const asset of Object.values(lib.assets)) {
+    const sha=hashes.get(asset.id);
+    if(sha&&asset.dataUrl) defaultAssetHashSources.set(asset.id,{dataUrl:asset.dataUrl,sha});
+  }
   const {installSharedReviewedPlaces}=await import('./defaults/spatial/reviewedPlaceCatalog');
   installSharedReviewedPlaces(snapshot);
+  for(const waiter of [...installWaiters]) waiter();
 }
 export function sharedContentTileset(id: string): TilesetDef | undefined {
   for(const lib of Object.values(snapshot.libraries)) if(Object.hasOwn(lib.tilesets,id)) return lib.tilesets[id];

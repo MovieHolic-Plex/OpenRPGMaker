@@ -206,6 +206,25 @@ export function loadMap(scene: PlaySceneContext, mapId: MapId, options: { readon
   scene.syncRuntimeState();
 }
 
+/** Owned by one synchronous render only: authored metadata may mutate between passes. */
+interface TileRenderPass {
+  readonly textureKey: string;
+  readonly size: number;
+  readonly quarters: boolean;
+  readonly backing: Map<number, number | null>;
+  readonly animations: Map<number, string | null>;
+  readonly lakes: Map<number, boolean>;
+  readonly above: Map<number, boolean>;
+}
+
+function cachedTileValue<T>(cache: Map<number, T>, tile: number, resolve: () => T): T {
+  const found = cache.get(tile);
+  if (found !== undefined) return found;
+  const value = resolve();
+  cache.set(tile, value);
+  return value;
+}
+
 export function renderTiles<
   TImage extends RenderedTileImage,
   TSprite extends RenderedEventSprite,
@@ -231,19 +250,25 @@ export function renderTiles<
     clearEventSprites(scene);
     return;
   }
+  const pass: TileRenderPass = {
+    textureKey: signature.textureKey,
+    size: mapTileSize(map),
+    quarters: supportsChipsetQuarterComposition(tileset),
+    backing: new Map(), animations: new Map(), lakes: new Map(), above: new Map(),
+  };
   // 칸 판정(해안 그룹)의 내용 비교를 이 동기 그리기 동안 타일셋마다 한 번만 한다.
   withWorldCoastRenderPass(() => {
     for (let y = 0; y < map.height; y++) {
       for (let x = 0; x < map.width; x++) {
         const index = y * map.width + x;
         renderEmptyCellCover(scene, x, y, index);
-        renderTile(scene, tileset, x, y, map.lowerTiles[index], "lower");
-        for (const tile of tileStackAt(map, "lower", index)) renderTile(scene, tileset, x, y, tile, "lower");
-        renderRawTile(scene, tileset, x, y, layerTileAt(map, 2, index), "lower", OVERLAY_LAYER_DEPTH_OFFSET);
+        renderTile(scene, tileset, x, y, map.lowerTiles[index], "lower", pass);
+        for (const tile of tileStackAt(map, "lower", index)) renderTile(scene, tileset, x, y, tile, "lower", pass);
+        renderRawTile(scene, tileset, x, y, layerTileAt(map, 2, index), "lower", OVERLAY_LAYER_DEPTH_OFFSET, pass);
         renderShadow(scene, x, y, shadowAt(map, index));
-        renderTile(scene, tileset, x, y, map.upperTiles[index], "upper");
-        for (const tile of tileStackAt(map, "upper", index)) renderTile(scene, tileset, x, y, tile, "upper");
-        renderRawTile(scene, tileset, x, y, layerTileAt(map, 4, index), "upper", OVERLAY_LAYER_DEPTH_OFFSET);
+        renderTile(scene, tileset, x, y, map.upperTiles[index], "upper", pass);
+        for (const tile of tileStackAt(map, "upper", index)) renderTile(scene, tileset, x, y, tile, "upper", pass);
+        renderRawTile(scene, tileset, x, y, layerTileAt(map, 4, index), "upper", OVERLAY_LAYER_DEPTH_OFFSET, pass);
       }
     }
   });
@@ -404,12 +429,13 @@ function placeMapTileImage<TImage extends RenderedTileImage, TSprite extends Ren
   x: number,
   y: number,
   layer: "lower" | "upper",
-  depthOffset = 0,
+  depthOffset: number,
+  pass: TileRenderPass,
 ): void {
-  const alwaysAbove = layer === "upper" && isAlwaysAboveCharacterUpperTile(tileset, tile);
+  const alwaysAbove = layer === "upper" && cachedTileValue(pass.above, tile, () => isAlwaysAboveCharacterUpperTile(tileset, tile));
   bumpPerfCounter(scene, "tileObjectsCreated");
   image.setOrigin(0, 0);
-  applyTileDepth(mapTileSize(scene.map), image, tileset, tile, y, layer, depthOffset);
+  applyTileDepth(pass.size, image, tileset, tile, y, layer, depthOffset);
   // 화면 밖 타일은 카메라가 타일 경계를 넘을 때 숨긴다(playSceneTileCulling 주석 참고).
   trackCullableTile(rootYSortHost(scene), image, x, y);
   if (layer === "upper" && !alwaysAbove) {
@@ -465,30 +491,31 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
   y: number,
   tile: number,
   layer: "lower" | "upper",
+  pass: TileRenderPass,
 ): void {
   if (tile < 0) return;
-  const textureKey = scene.resolveTilesetTexture?.(tileset) ?? tilesetTextureKey(tileset);
+  const textureKey = pass.textureKey;
   // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 타일 그림판도 포함.
-  if (supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile, tileset)) {
-    renderLakeAutotile(scene, tileset, textureKey, x, y, layer);
+  if (pass.quarters && cachedTileValue(pass.lakes, tile, () => isLakeAutotileTile(tile, tileset))) {
+    renderLakeAutotile(scene, tileset, textureKey, x, y, layer, pass);
     return;
   }
-  if (layer === "lower" && supportsChipsetQuarterComposition(tileset)) {
+  if (layer === "lower" && pass.quarters) {
     const composition = chipsetQuarterComposition(scene.map, tileset, x, y);
     if (composition) {
-      renderTerrainQuarter(scene, tileset, textureKey, x, y, composition, layer);
+      renderTerrainQuarter(scene, tileset, textureKey, x, y, composition, layer, pass);
       return;
     }
   }
   // lower 투명 칩: 정책이 정한 받침을 먼저 깔아 투명 픽셀이 검게 보이지 않게 한다.
   // 받침은 정책(tileLayerPolicy)이 정한다 — 합본 마을 밑동뿐 아니라 혼합 칩셋(위 반쪽 밑동·숲 나무 띠)과
   // 사용자가 받침을 확정한 커스텀 칩셋도 같은 답을 받는다. 규칙이 없으면 null 이라 그 밖은 전과 같다.
-  const backingTile = layer === "lower" ? tileBackingTile(tileset, tile) : null;
+  const backingTile = layer === "lower" ? cachedTileValue(pass.backing, tile, () => tileBackingTile(tileset, tile)) : null;
   if (backingTile !== null) {
-    const backing = scene.add.image(x * mapTileSize(scene.map), y * mapTileSize(scene.map), textureKey, `tile_${backingTile}`);
-    placeMapTileImage(scene, backing, tileset, backingTile, x, y, layer);
+    const backing = scene.add.image(x * pass.size, y * pass.size, textureKey, `tile_${backingTile}`);
+    placeMapTileImage(scene, backing, tileset, backingTile, x, y, layer, 0, pass);
   }
-  renderRawTile(scene, tileset, x, y, tile, layer, 0);
+  renderRawTile(scene, tileset, x, y, tile, layer, 0, pass);
 }
 
 /**
@@ -503,16 +530,19 @@ function renderRawTile<TImage extends RenderedTileImage, TSprite extends Rendere
   tile: number,
   layer: "lower" | "upper",
   depthOffset: number,
+  pass: TileRenderPass,
 ): void {
   if (tile < 0) return;
-  const textureKey = scene.resolveTilesetTexture?.(tileset) ?? tilesetTextureKey(tileset);
-  const baseAnimationKey = tilesetAnimationKeyForTile(tileset, tile);
-  const animationKey = baseAnimationKey ? chipsetAnimationKey(textureKey, baseAnimationKey) : null;
-  const size = mapTileSize(scene.map);
+  const textureKey = pass.textureKey;
+  const animationKey = cachedTileValue(pass.animations, tile, () => {
+    const base = tilesetAnimationKeyForTile(tileset, tile);
+    return base ? chipsetAnimationKey(textureKey, base) : null;
+  });
+  const size = pass.size;
   const image = animationKey
     ? scene.add.sprite(x * size, y * size, textureKey, `tile_${tile}`).play(animationKey)
     : scene.add.image(x * size, y * size, textureKey, `tile_${tile}`);
-  placeMapTileImage(scene, image, tileset, tile, x, y, layer, depthOffset);
+  placeMapTileImage(scene, image, tileset, tile, x, y, layer, depthOffset, pass);
 }
 
 /**
@@ -545,15 +575,16 @@ function renderLakeAutotile<TImage extends RenderedTileImage, TSprite extends Re
   x: number,
   y: number,
   layer: "lower" | "upper",
+  pass: TileRenderPass,
 ): void {
   for (const part of lakeAutotileQuarterSources(scene.map, x, y, tileset)) {
     const animationKey = quarterAnimationKey(textureKey, part.tile, part.quarter);
     const frameName = quarterFrameName(part.tile, part.quarter);
     const image = animationKey
-      ? scene.add.sprite(x * mapTileSize(scene.map) + part.offsetX, y * mapTileSize(scene.map) + part.offsetY, textureKey, frameName).play(animationKey)
-      : scene.add.image(x * mapTileSize(scene.map) + part.offsetX, y * mapTileSize(scene.map) + part.offsetY, textureKey, frameName);
+      ? scene.add.sprite(x * pass.size + part.offsetX, y * pass.size + part.offsetY, textureKey, frameName).play(animationKey)
+      : scene.add.image(x * pass.size + part.offsetX, y * pass.size + part.offsetY, textureKey, frameName);
     // 쿼터 소스는 맵 셀 좌표 기준 depth 를 공유한다.
-    placeMapTileImage(scene, image, tileset, part.tile, x, y, layer);
+    placeMapTileImage(scene, image, tileset, part.tile, x, y, layer, 0, pass);
   }
 }
 
@@ -566,19 +597,20 @@ function renderTerrainQuarter<TImage extends RenderedTileImage, TSprite extends 
   y: number,
   composition: ChipsetQuarterComposition,
   layer: "lower" | "upper",
+  pass: TileRenderPass,
 ): void {
   if (composition.underlayTile !== undefined) {
-    const underlay = scene.add.image(x * mapTileSize(scene.map), y * mapTileSize(scene.map), textureKey, `tile_${composition.underlayTile}`);
-    placeMapTileImage(scene, underlay, tileset, composition.underlayTile, x, y, layer);
+    const underlay = scene.add.image(x * pass.size, y * pass.size, textureKey, `tile_${composition.underlayTile}`);
+    placeMapTileImage(scene, underlay, tileset, composition.underlayTile, x, y, layer, 0, pass);
   }
   for (const part of composition.sources) {
     const image = scene.add.image(
-      x * mapTileSize(scene.map) + part.offsetX,
-      y * mapTileSize(scene.map) + part.offsetY,
+      x * pass.size + part.offsetX,
+      y * pass.size + part.offsetY,
       textureKey,
       `tile_${part.tile}_${part.quarter}`
     );
-    placeMapTileImage(scene, image, tileset, part.tile, x, y, layer);
+    placeMapTileImage(scene, image, tileset, part.tile, x, y, layer, 0, pass);
   }
 }
 

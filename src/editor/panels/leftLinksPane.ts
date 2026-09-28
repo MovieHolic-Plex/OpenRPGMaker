@@ -14,6 +14,8 @@ export function createLeftLinksPane(): { root: HTMLElement; show(): void; dispos
   const root = el("section", { class: "left-links-pane", attrs: { "aria-label": "맵 연결" }, dataset: { testid: "left-links-pane" } });
   let lastProject: Project | null = null;
   let lastMapId: string | null = null;
+  let lastNodes: readonly MapLinkNode[] | null = null;
+  let lastNames: readonly string[] = [];
 
   const name = (project: Project, mapId: string) => project.maps[mapId]?.name?.trim() || mapId;
 
@@ -102,9 +104,15 @@ export function createLeftLinksPane(): { root: HTMLElement; show(): void; dispos
     const project = store.getCurrent();
     const current = editorState.get().currentMapId ?? null;
     if (!force && project === lastProject && current === lastMapId) return;
+    const mapChanged = current !== lastMapId;
     lastProject = project;
     lastMapId = current;
     const nodes = collectMapLinkGraph(project);
+    const names = nodes.map(node => name(project, node.mapId));
+    const unchanged = nodes === lastNodes && names.every((value, index) => value === lastNames[index]);
+    lastNodes = nodes;
+    lastNames = names;
+    if (!force && unchanged && !mapChanged) return;
     const problem = (node: MapLinkNode) => !node.reachableFromStart;
     const problems = nodes.filter(problem);
     const ordered = [...nodes].sort((a, b) => Number(problem(b)) - Number(problem(a)) || Number(b.isStart) - Number(a.isStart));

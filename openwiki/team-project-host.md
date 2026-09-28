@@ -99,14 +99,42 @@ Docker 주소 모두 200, 위조 Host(`evil.example`)·다른 포트 Host 는 40
 - `removeLegacySpriteReferences` 는 얼린 가지(호스트가 저장 행에서 읽은 타일셋)를 건너뛴다.
 - 본문이 없을 때의 폴백이 펼친 전체 글(`project.load`)을 부르지 않는다 — 이 규모에서 호스트 메인 프로세스가 V8 OOM 으로 죽었다.
 
-남은 것(측정만, 미수정):
+### 동료 저장 반영·부팅·첫 참여 전송량 (2026-09-28 2차)
 
-- 동료 저장이 참여 창에 **보이기까지 약 20s**. 전송은 240KB·50ms 다. 참여 창 메인 스레드가 받은 문서 전체를 파싱·검증하고
-  `refreshFromHost` 의 `jsonEqual`·기준본 요약·복제를 문서 전체에 돌린다(프로파일: `refreshFromHost` 8.5s, 요약 SHA 6.8s, GC 6.6s).
-  가지 재사용으로 줄일 수 있지만 편집기가 제자리 수정한 가지를 재사용하면 판정이 틀어진다 — 별도 과제.
-- 첫 참여의 공용 카탈로그 111MB(`shared-content` defaults 55MB·rest 31MB·tile-references 25MB)는 기기마다 한 번 받는다.
-  두 번째부터는 304. 로컬 폴더로 같은 프로젝트를 열어도 편집기 부팅이 약 40s 라(같은 기기 실측) 참여 부팅 25–34s 는 편집기 자체 비용이 대부분이다.
-- 참여 창은 `crypto.subtle` 이 없는 HTTP 출처라 SHA 를 JS 로 계산한다(부팅 CPU 약 5s).
+앞 절에서 남겼던 세 가지를 고쳤다. 측정은 같은 픽스처(`life-full.reloaded`, 타일셋 368칸)로 한다.
+
+| 항목 | 전 | 후 |
+|---|---|---|
+| 동료 저장이 참여 창에 보이기까지 | 약 20s(1차 측정) · 5.9–7.1s(같은 기기 재측정) | 0.9–1.7s |
+| 첫 참여 공용 자료 | 111.7MB | 87.7MB (`shared-tile-references` 24.8MB → 0.8MB) |
+| 두 번째 참여 부팅(같은 기기) | 28.0s | 14.7–17.6s |
+
+고친 것:
+
+- **동료 저장 반영.** `refreshFromHost` 가 매번 문서 전체를 새로 풀고, 그 사본을 또 복제해 기준본으로 두었다.
+  - 참여 창 어댑터(`electronRepository.ts`)가 지난 로드에서 푼 타일셋 객체와 **그 순간의 내용 요약**을 기억한다. 다음 로드에서 본문 sha 가 같고
+    요약이 그대로인 칸은 파싱하지 않고 그 객체를 쓴다. 편집기가 제자리에서 고친 칸은 요약이 달라져 새로 푼다
+    (`test/persistence/electronRepository.test.ts` folded host loads).
+  - `refreshFromHost` 는 방금 받은 스냅숏을 기준본으로 그대로 쓴다(`baselineFrom(…, { owned: true })`) — 전에는 1.5s 복제.
+- **첫 참여 전송량.** `/__oprn/shared-tile-references` 의 82MB 가 전부 공용 카탈로그(`shared-content`)에 같은 글로 있었다.
+  이제 편집기 응답은 카탈로그에 있는 타일셋·그림·참고문서·구조 킷을 `{"$library":<id>}` / 항목의 `library` 로만 보내고, 편집기는
+  설치한 카탈로그 객체로 채운다(`sharedTileReferences.ts` `resolveLibraryRefs`). 가리키는 라이브러리가 아직 없으면 편집기가 뜬 뒤 받는
+  나머지 범위를 기다린다(`whenSharedLibrariesInstalled`). 작업자 경로(`piAgentRuntime`)는 예전처럼 전체 글을 읽는다. 형식이 바뀌어 ETag 에
+  형식 판(`w2`)을 넣었다 — 옛 형식을 캐시한 기기가 304 로 옛 글을 쓰지 않는다. 시험: `test/sharedTileReferenceLibraryRefs.test.ts`.
+- **부팅 CPU.**
+  - 공용 카탈로그 설치(`reviewedPlaceCatalog.installSharedReviewedPlaces`·`installSharedSpatialReferences`)가 받은 타일셋·그림 약 100MB 를
+    통째로 복제했다. 읽기 전용 투영이라 복제하지 않는다 — 프로젝트로 옮기는 쪽이 복제한다.
+  - 기본 자산 바이트 해시(HTTP 참여 창은 JS SHA)를 호스트가 판본마다 한 번 세어 응답에 싣는다(`assetBytesSha256`).
+  - 부팅 뒤 참고문서 보강(`applySharedReferenceRefresh`)은 바뀔 것이 없으면 문서를 복제하지 않는다(dry run).
+  - 기준본 한가할 때 요약은 current 의 요약 기억을 먼저 넘겨 받는다 — 같은 문서를 처음부터 다시 해시했다(4.4s).
+
+남은 것:
+
+- 첫 참여의 공용 카탈로그 87MB(defaults 55.6MB·rest 31.3MB) 중 약 65MB 는 기본 자산 그림 dataUrl 이다. 그림을 주소로 빼면 더 줄지만
+  프로젝트에 복사되는 공용 자산의 계약(`ensureSharedContent`)을 바꾸는 일이라 따로 한다.
+- 부팅 CPU 에서 가장 큰 것은 타일셋 368칸의 첫 내용 요약(약 4s, 통행 칸 28.8만 개)이다. 잎 배열을 글 한 번으로 세는 시도는 첫 요약을
+  5.9 → 4.1s 로 줄였지만 두 번째 요약이 0.5 → 1.0s 로 늘어 편집 중 저장이 느려져 되돌렸다.
+- 참여 창은 `crypto.subtle` 이 없는 HTTP 출처라 남은 SHA 도 JS 로 계산한다.
 **팀 관리 → 접속 설정 → 접속 코드 사용**을 켜면 로그인을 요구한다. **팀 관리**에서 편집자·읽기 전용 초대 링크를 만들거나 접근 권한을 취소할 수 있다.
 초대 비밀은 URL fragment로 전달하고 로그인 화면에서 주소에서 제거한다.
 팀원 목록·권한 선택·팀 이름 변경·백업·초대 복사를 한 관리 화면에서 제공한다.

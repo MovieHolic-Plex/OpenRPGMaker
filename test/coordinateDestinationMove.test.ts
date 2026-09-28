@@ -278,7 +278,8 @@ function sceneHarness(project = projectWithVariables()): Harness {
   };
   const idle: InputState = { dir: null, x: 0, y: 0, dash: false, actionPressed: false, confirmPressed: false, attackPressed: false, skillPressed: false };
   const scene = {
-    game: { canvas: { parentElement: null, ownerDocument: { querySelector: () => null } } },
+    // Phaser always supplies a registry, including when no dialogue host is mounted.
+    game: { registry: new Map(), canvas: { parentElement: null, ownerDocument: { querySelector: () => null } } },
     session,
     map,
     input_: { update: () => idle, resetEdges: () => undefined, setEnabled: () => undefined, clearDirectionTaps: () => undefined },

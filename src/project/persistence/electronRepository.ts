@@ -1,6 +1,7 @@
 import { deserialize, serialize } from "../io";
 import { deserializeParsed, projectWireView } from "../io/serialize";
 import { assetBlobOwners, parseFoldedDocument, restoreAssetBlobs, unfoldedDocumentTree } from "./core/foldedProject";
+import { jsonContentDigest } from "./core/contentDigest";
 import { sharedDefaultAssetDataUrl } from "../sharedContent";
 import { readTilesetBlobs, writeTilesetBlobs } from "./tilesetBlobCache";
 import { applyProjectDocumentPatch, diffProjectDocumentsSliced, withWirePatchValues, type ProjectDocumentPatch } from "./core/projectPatch";
@@ -173,6 +174,14 @@ function yieldToMain(): Promise<void> {
 export function createElectronRepository(): ElectronRepository {
   let opened: LocalProjectTarget | null = null;
   let loadedSha: string | null = null;
+  /**
+   * 지난 로드가 푼 타일셋 객체(칸 id → 본문 sha·객체·푼 직후의 내용 요약). 팀 변경 반영(3초 폴링 → refreshFromHost)이
+   * 바뀌지 않은 타일셋을 다시 읽고 파싱하지 않게 한다. 객체는 스토어가 들고 있으므로 요약이 그대로일 때만 쓴다 —
+   * 부팅 정규화처럼 제자리에서 고친 객체는 요약이 달라져 버린다. 실측(2026-09-28, 팀 참여 창): 동료 저장 반영 한 번에
+   * 타일셋 본문 8MB 를 IndexedDB 에서 읽고 파싱했다(0.7s + 그 쓰레기의 GC).
+   */
+  let parsedTilesets = new Map<string, { readonly sha: string; readonly tileset: unknown; readonly digest: string | undefined }>();
+  let parsedTilesetsDir: string | null = null;
 
   const openedRef = (target: ProjectTarget | null | undefined): LocalProjectTarget | null => {
     if (target !== undefined && target !== null) {
@@ -215,12 +224,21 @@ export function createElectronRepository(): ElectronRepository {
       return snapshotOf(loaded?.serialized, loaded?.sha256, target);
     }
     const assetTransport = typeof bridge.assetBlobs === "function";
+    if (parsedTilesetsDir !== target.projectDir) {
+      parsedTilesets = new Map();
+      parsedTilesetsDir = target.projectDir;
+    }
     for (let attempt = 0; attempt < 3; attempt += 1) {
       const loaded = await bridge.loadFolded({ projectDir: target.projectDir, ...(assetTransport ? { assetBlobs: true } : {}) });
       if (!loaded) return null;
       if ("serialized" in loaded) return snapshotOf(loaded.serialized, loaded.sha256, target);
       const folded = parseFoldedDocument(loaded.folded);
-      const tilesetShas = [...new Set(folded.tilesetShas.values())];
+      const reusable = new Map<string, unknown>();
+      for (const [id, sha] of folded.tilesetShas) {
+        const previous = parsedTilesets.get(id);
+        if (previous?.sha === sha && previous.digest !== undefined && jsonContentDigest(previous.tileset) === previous.digest) reusable.set(id, previous.tileset);
+      }
+      const tilesetShas = [...new Set([...folded.tilesetShas].filter(([id]) => !reusable.has(id)).map(([, sha]) => sha))];
       const assetShas = assetTransport ? [...new Set(loaded.assetBlobShas ?? [])] : [];
       // 두 본문 모두 내용 주소 글이라 같은 기기 캐시를 쓴다(키 = 글의 SHA-256).
       const blobs = await readTilesetBlobs([...tilesetShas, ...assetShas]);
@@ -244,10 +262,24 @@ export function createElectronRepository(): ElectronRepository {
       await Promise.all([fetchMissing(tilesetShas, bridge.tilesetBlobs), fetchMissing(assetShas, bridge.assetBlobs)]);
       if ([...tilesetShas, ...assetShas].some((sha) => !blobs.has(sha))) continue;
       restoreAssetBlobs(folded.document, blobs);
+      const tree = unfoldedDocumentTree(folded, blobs, (id) => reusable.get(id));
+      const project = deserializeParsed(tree);
+      // 검증·정규화를 지난 뒤의 객체와 **그 순간의** 요약을 기억한다(deserializeParsed 는 파싱한 트리를 그대로 채택한다).
+      // 요약은 여기서 세야 한다 — 늦게 세면 그사이 제자리에서 고친 내용을 호스트 본문으로 착각한다. 비용이 더해지지는 않는다:
+      // 스토어의 정규화 전 요약(normalizeCurrentProject)이 같은 객체의 노드 기억을 그대로 쓴다
+      // (2026-09-28 실측, 팀 참여 창 부팅의 요약 합계 10.0s → 5.7s).
+      const next = new Map<string, { readonly sha: string; readonly tileset: unknown; readonly digest: string | undefined }>();
+      for (const [id, sha] of folded.tilesetShas) {
+        const tileset = project.tilesets[id];
+        if (tileset === undefined) continue;
+        const previous = parsedTilesets.get(id);
+        next.set(id, previous && previous.tileset === tileset ? previous : { sha, tileset, digest: jsonContentDigest(tileset) });
+      }
+      parsedTilesets = next;
       loadedSha = loaded.sha256;
       return {
         authority: { mode: "legacy", target },
-        project: deserializeParsed(unfoldedDocumentTree(folded, blobs)),
+        project,
         sha256: loaded.sha256,
         projectId: target.projectId,
       };

@@ -1,6 +1,6 @@
 // 동료가 저장했을 때 참여 창이 그 변경을 반영하는 데 걸리는 시간과 받는 양.
 // 동료 = 같은 호스트에 다른 탭 id 로 붙은 두 번째 HTTP 세션(meta.title 만 바꾼 saveMapPatch).
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { _electron as electron } from "@playwright/test";
@@ -49,6 +49,8 @@ for (let run = 1; run <= 2; run++) {
     const tSaved = Date.now();
     const seen = await team.waitForFunction((newTitle) => (document.querySelector("#app .topbar")?.textContent ?? "").includes(newTitle), newTitle, { timeout: 120000 }).then(() => Date.now() - tSaved, () => null);
     const { profile } = await cdp.send("Profiler.stop");
+    // --profile-out <폴더>: 두 번째 실행의 참여 창 CPU 프로파일을 남긴다(DevTools 에서 열 수 있다).
+    if (run === 2 && arg("--profile-out")) writeFileSync(join(resolve(arg("--profile-out")), "member-refresh.cpuprofile"), JSON.stringify(profile));
     if (run === 2) {
       const byId = new Map(profile.nodes.map((n) => [n.id, n])); const parent = new Map(); for (const n of profile.nodes) for (const c of n.children ?? []) parent.set(c, n.id);
       const incl = new Map(); let i = 0, busy = 0;
