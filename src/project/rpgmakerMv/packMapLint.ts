@@ -544,6 +544,36 @@ export function lintPackRepeats(input: PackLintInput, kind: PackSpaceKind): stri
     : [];
 }
 
+/**
+ * 방이 통째로 네모 하나(ㅁ자)인 실내. 바닥 덩이가 자기 테두리 상자를 0.8 이상 채우면 경고한다.
+ * 게시 실내 20곳은 0.43~0.74, 조수가 칸막이 없이 깐 집은 0.89~0.92였다(2026-09-28). 작은 방(40칸 미만)은 네모여도 된다.
+ */
+export function lintBoxRooms(input: Pick<PackLintInput, "w" | "h" | "m1">): string[] {
+  const { w, h } = input;
+  const floor = (i: number) => { const m = input.m1[i]; return !!m && (m.flat ? !/어둠|벽|기둥/.test(m.name) : m.part === "A2"); };
+  const seen = new Uint8Array(w * h);
+  const out: string[] = [];
+  for (let i = 0; i < w * h; i += 1) {
+    if (seen[i] || !floor(i)) continue;
+    const stack = [i]; seen[i] = 1;
+    let n = 0, x0 = w, x1 = 0, y0 = h, y1 = 0;
+    while (stack.length) {
+      const c = stack.pop()!; n += 1;
+      const x = c % w, y = Math.floor(c / w);
+      x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        const nx = x + dx, ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+        const j = ny * w + nx;
+        if (!seen[j] && floor(j)) { seen[j] = 1; stack.push(j); }
+      }
+    }
+    const bw = x1 - x0 + 1, bh = y1 - y0 + 1;
+    if (n >= 40 && n / (bw * bh) >= 0.8) out.push(`구조: 방이 네모 하나(ㅁ자) — 바닥 ${n}칸이 ${bw}×${bh}@(${x0},${y0}) 상자를 ${Math.round((100 * n) / (bw * bh))}% 채운다. 구석에 천장 덩이를 들여 ㄱ·ㄷ자로 만들거나 칸막이(천장 덩이 + 벽면 2줄)·알코브로 방을 나눈다(게시 장소는 75% 이하)`);
+  }
+  return out;
+}
+
 export function lintPackMap(project: Project, map: GameMap): PackMapLintResult | null {
   const input = packLintInputFromMap(project, map);
   if (!input) return null;
@@ -556,6 +586,7 @@ export function lintPackMap(project: Project, map: GameMap): PackMapLintResult |
   if (input.m1.every((m) => !m)) warnings.unshift("재료: 1층에 이 팩 재료가 하나도 없다 — 팩 재료로 칠한 맵이 아니다");
   if (!input.starts?.length) warnings.unshift("통행: 입구가 없다 — 맵 가장자리에 열린 바닥이 없다. 실내는 남쪽 벽 천장 테를 1~2칸 비워 바닥을 맵 끝까지 잇는다");
   warnings.push(...lintPackRepeats(input, kind));
+  if (interior) warnings.push(...lintBoxRooms(input));
   if (empty.length) warnings.push(`공간: 가구·물체 없는 빈 바닥 ${empty.map((r) => `${r.w}×${r.h}@(${r.x},${r.y})`).join(" ")} — ${kind === "interior" ? "집 실내" : kind === "cave" ? "동굴·던전" : "야외"} 한도 ${emptyLimit}칸. 물체로 메우지 말고 방·맵을 줄인다(또는 그 자리에 용도 있는 구역을 둔다)`);
   return { interior, kind, warnings, empty, emptyLimit, objects: input.placed.length };
 }
