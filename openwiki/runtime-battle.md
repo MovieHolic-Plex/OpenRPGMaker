@@ -172,6 +172,21 @@
     확장 스킬 48/48 통과(레이어 누락·칸 이동·상자 크기 불일치·잔류 노드 0, 브라우저 오류 0), 미리보기 `.omo/retro-skills/new-1/preview.png`.
     128px 대상 층 넷(낙하참·브레이브 블레이드·파산장·용권 멸살)은 녹화에서 128px 상자로 대상 몸 크기와 비슷함을 확인(`.omo/retro-skills/big-target/preview.png`). 감속 모드는 돌리지 않았다.
 
+### 몬스터 스킬 42종 (2026-09-28, mrt)
+
+계약 `src/assets/retroMonsterSkills.ts`(읽기 전용)의 42개를 기본 DB 와 retro2003 적 연출에 붙였다. 사용자 요구: 「고위급으로 갈수록 다양한 스킬」.
+
+- **레코드** `src/project/defaults/retroMonsterSkillRecords.ts`: 계약 순서대로 SkillRecord 42개, `defaultSkillRecords` 끝(직업 스킬 뒤). 기존 필드만(위력·MP 2~8·scope·damage/support·속성·상태). scope 는 계약 effect(debuff 단일·debuffAll/damageAll 아군 전체·buffSelf 자기·buffAllies 몬스터 편 전체). 흡혈·소환 같은 규칙 없는 뜻은 표현만.
+  위력은 스킬 피해 = power + 스탯/2 − 방어/2 라 **power 가 적 attack 보다 작으면 통상 공격보다 약하다** — 단일 피해기 ≈ 쓰는 적 레벨대 attack × 1.1, 상태 얹은 단일기 × 0.8, 전체기 × 0.6~0.7(산성 침 40 → 암흑의 심판 220).
+- **적 행동** `withRetroMonsterSkills`: `defaultBattleRecords` 가 적 목록 끝에서 덮는다. 도트 시트(PIXEL_ENEMY_SHEETS, slug = 경로 파일명)가 있고 계약 목록이 있는 41행(기본 6 + 생성 35, 슬라임·박쥐 등 같은 시트 공유 포함)만 바뀐다. 앵커 `skill_attack`(7) + 유료 스킬 8, 필살기(미궁의 광란 4턴·암흑의 심판 3턴)는 **MP 0** turn 버스트 9 — 유료 always 스킬이 MP 를 먼저 말리면 turn 항목도 점수 계산 전에 걸러지기 때문이다(상태·속성이 있어 "평범한 무료기"로 분류되지 않는다).
+  `generatedEnemyRecords()` 는 그대로 아키타입 출력이다 — `test/enemyActionArchetypes.test.ts` 가 그 출력을 서명으로 역판정한다. 106마리 전원 검사(행동 ≥2·MP 0 ≥1·정체성 데미지기 > 평범 무료기·정령 속성 7종·보스 속성)는 스크립트로 확인해 위반 0(vitest 는 돌리지 않았다). 식충 식물은 계약 목록에 속성기가 없어 덩굴 채찍에 earth 를 붙였다. 보스 maxMp 40 은 기존 값 그대로.
+  기존 프로젝트 보강 경로는 없다(직업 스킬과 같은 이유 — 저작 데이터).
+- **타임라인** `retroSkillTimeline.ts` `retroMonsterSkillTimeline(skill)`: 편은 시전자 기준(enemies = 아군 파티). 포즈 사건은 확장 포즈 이름이고 `retroMonsterCellForPose` 가 도트 시트 칸으로 옮긴다(windup·move·attack·recover). lunge 는 움츠림 90ms → 질주 130ms(아군 파고들기와 같은 속도) → 착탄 → 150ms 튕겨 복귀, cast 는 충전 520ms, breath 는 attack 칸 유지, stomp 는 흔들림, buff 는 몸 위 오라, finisher 는 dim → 긴 windup → 섬광 → 화면 층 + 흔들림. 여운 300ms(필살기 520). 착탄음은 `MONSTER_SOUND`(RTP 실파일만).
+- **재생** `retroSkillChoreography.ts`: 직업 스킬 재생기를 그대로 쓴다(`ClassPlan.monster`). 엔트리 판정은 `side === "enemy"`·`commandKind === "enemySkill"` + skill_mon_* 이름. **「독침」「연막탄」은 아군 스킬과 이름이 같아** 이름 조회를 편별로 나눴다(아군 쪽은 skill_mon_* 를 후보에서 뺀다).
+  편 → 노드는 `casterSideNodes`(몬스터가 시전하면 allTargets = 아군 전원, allAllies = 살아 있는 적). 몬스터 자리 `measureMonsterPlaces` 는 `measureEnemyReach` 와 같은 몸 비율, 식충 식물은 제자리. 투사체는 몬스터 입(셀 앞 75%)에서 왼→오. user/allAllies 층은 96셀 거구에서 칸 × 4, 그 밖 × 2.
+  비트: `battleDom` 의 `enemyApproachMs`/`enemyRecoverMs` 가 `retroClassSkillBeatMs` 를 먼저 본다(첫 착탄·대상별 간격·남은 연출). CSS 는 재생 중 적 노드의 비트 키프레임을 끄고, 편이 뒤집힌 피격/축복 필터를 더했다.
+- **녹화** `node scripts/qa/runtime/retro2003-monster-skills-gif.mjs [--skills acid_spit,dark_judgment] [--out DIR]` → `mskill-<id>.gif`·`SUMMARY.md`. 스킬마다 대표 몬스터(그 스킬을 가진 첫 slug) 한 마리 트룹, 녹화 사본에서 actions = 그 스킬 하나·MP 999, 아군 셋. 판정: 재생기 시작·windup/attack 칸·계약 레이어 전부 표시·기존 애니메이션 층 0·필살기 dim. PNG 가 없는 레이어는 missing 열에 적는다.
+
 ## 타격감 층 (2026-09-25)
 
 사용자 신고 「게임적인 느낌이 거의 안 든다, 타격감이 없다」. 출하 player 녹화로 원인을 쟀다:
