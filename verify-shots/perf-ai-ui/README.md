@@ -57,7 +57,7 @@ node scripts/run-vitest.mjs test/aiUiPerfTemporary.test.ts test/activityTraceArc
 NODE_OPTIONS=--max-old-space-size=8192 npx tsc --noEmit -p tsconfig.app.json
 ```
 
-타입 검사 결과는 마무리 시 기록한다.
+앱 타입 검사는 exit 0, 오류 0개로 완료했다. `git diff --check f9bbb5067..HEAD`도 통과했다.
 
 Chromium은 실제 컴포넌트와 편집기 CSS를 임시 fixture에서 열었다. 팀원 선택·포커스 유지·검색·50행 창·숨긴 transcript 0행을 확인했고 페이지 오류는 0개다.
 `ai-panels.png`는 그 화면이다. 전체 게임 저작이나 라이브 LLM 호출을 검증한 증거는 아니다.
