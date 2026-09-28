@@ -1136,7 +1136,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       return;
     }
     const selected = markMenuCursor(snapshot);
-    if (selected && document.activeElement !== selected) selected.focus({ preventScroll: true });
+    // 시퀀스(인트로·액션 비트)가 도는 동안 명령 패널은 숨어 있다. 여기서 focus() 하면 숨은 버튼에 포커스를 주려고
+    // 동기 레이아웃만 강제된다(첫 전투 진입 focus 64ms 실측). 명령 국면이 되면 syncView 가 커서 버튼에 포커스를 준다.
+    if (selected && !sequenceBusy && document.activeElement !== selected) selected.focus({ preventScroll: true });
   }
 
   /** 적 대상 국면의 커서: 「뒤로」 행이 커서를 갖고 있으면 그 행, 아니면 필드의 선택 적. */
@@ -1448,10 +1450,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     return previous.step === "command" || previous.activeActorRecordId !== snapshot.activeActorId;
   }
 
-  syncView();
-  if (options.introHold !== false) {
-    sequencer.startIntro(initialSnapshot);
-  }
+  // 인트로는 startIntro 가 인트로 상태로 syncView 를 부른다. 그 앞에 명령 상태로 한 번 더 그리면 전투 DOM 전체를
+  // 명령 화면으로 만들고 포커스·레이아웃까지 한 뒤 곧바로 인트로로 갈아엎는다(첫 전투 진입 115–128ms 의 절반 가량).
+  if (options.introHold !== false) sequencer.startIntro(initialSnapshot);
+  else syncView();
 
   const tickInterval = window.setInterval(() => {
     if (sequenceBusy) return;

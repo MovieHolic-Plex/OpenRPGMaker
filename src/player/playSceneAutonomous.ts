@@ -3,7 +3,10 @@ import { actionFieldSlow } from "./actionFieldSlow";
 import { isDetectionEmoting } from "./npcDetectionEncounter";
 import { pursuitTarget } from "./horrorRuntime";
 import { pursuitPass } from "./pursuitNavigation";
-import { footprintBounds } from "@/project/footprint";
+import { canMoveFootprint } from "@/project/collision";
+import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
+import { routeForLivingMovement } from "@/player/npcLivingTravel";
+import { footprintBounds, passageBounds } from "@/project/footprint";
 import type { CharacterFootprint, FootprintRect } from "@/project/types";
 import { createBlockingEventQuery, invalidateEventIdIndexPass, withEventIdIndexPass } from "@/project/runtimeEventState";
 import { store } from "@/project/store";
@@ -34,8 +37,10 @@ export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, frameDelt
 
 function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDeltaMs: number): void {
   const project = store.getCurrent();
+  const repathCandidates: LivingRepathCandidate[] = [];
   for (const [eventId, mover] of scene.autonomousNPCs) {
     const deltaMs = frameDeltaMs * (actionFieldSlow.get(mover) ?? 1);
+    if (mover.livingRepathCooldownMs) mover.livingRepathCooldownMs = Math.max(0, mover.livingRepathCooldownMs - Math.max(0, deltaMs));
     if (isDetectionEmoting(scene, eventId)) continue;
     if (scene.running && scene.session.messageWindowSettings?.allowEventMovementDuringWait !== true
       && !scene.commandMoveRouteEventIds?.has(eventId)) continue;
@@ -133,9 +138,14 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
         continue;
       }
       retryBlockedStep(mover);
+      if (mover.livingRoute && !scene.commandMoveRouteEventIds?.has(eventId)
+        && (mover.blockedSteps ?? 0) >= MAX_BLOCKED_STEP_RETRIES && (mover.livingRepathCooldownMs ?? 0) <= 0) {
+        repathCandidates.push({ mover, view, nx, ny });
+      }
     }
     completeRouteCommand(mover);
   }
+  runLivingRepaths(scene, repathCandidates);
 }
 
 function updateChaseNpc(
@@ -316,18 +326,94 @@ const MAX_BLOCKED_STEP_RETRIES = 8;
  * 작가가 쓴 경로는 대상이 아니다 — playSceneTypes §retryBlockedSteps.
  *
  * 한계를 두는 이유: 영구히 막힌 자리에서 무버가 멈춘 채 남으면 재계획 자체가 안 일어난다.
+ * 생활 페이지는 걸음을 보존하고 이벤트 막힘에만 쿨다운 재탐색한다. 시간표는
  * 한계를 넘으면 예전처럼 소비해 계획이 소진되고 시간표가 다시 계획한다. 반복(repeat)
  * 경로는 moves 를 비울 수 없으므로 포기 대신 소비로 푼다.
  */
 function retryBlockedStep(mover: AutonomousMover): void {
   if (mover.retryBlockedSteps !== true) return;
   const attempts = (mover.blockedSteps ?? 0) + 1;
-  if (attempts > MAX_BLOCKED_STEP_RETRIES) {
+  if (!mover.livingRoute && attempts > MAX_BLOCKED_STEP_RETRIES) {
     mover.blockedSteps = 0;
     return;
   }
-  mover.blockedSteps = attempts;
+  mover.blockedSteps = Math.min(attempts, MAX_BLOCKED_STEP_RETRIES);
   mover.step -= 1;
+}
+
+/**
+ * 한 프레임에 재탐색할 수 있는 NPC 수. 여러 주민이 같은 순간 막히면(행렬·좁은 문) 쿨다운만으로는 전원이
+ * 같은 프레임에 BFS 를 돌려 프레임이 주기적으로 멈췄다(리뷰 반례: 100×100, 20명 108ms · 50명 220ms).
+ * 예산을 못 받은 NPC 는 쿨다운을 쓰지 않고 다음 프레임에 다시 줄을 선다.
+ */
+const LIVING_REPATH_BUDGET_PER_FRAME = 2;
+
+type LivingRepathCandidate = {
+  readonly mover: AutonomousMover;
+  readonly view: Parameters<typeof routeForLivingMovement>[0]["view"];
+  readonly nx: number;
+  readonly ny: number;
+};
+
+/** 재탐색 차례. 가장 오래 기다린(마지막 재탐색이 가장 오래된) NPC 부터 — 맵 순회 순서에 묶이면 우회 불가로 계속 실패하는
+ * 앞쪽 NPC 가 쿨다운이 풀릴 때마다 예산을 먹어 뒤쪽은 영영 차례가 오지 않았다(리뷰 반례: 20명·간격 1초). */
+let livingRepathTurn = 0;
+
+function runLivingRepaths(scene: AutonomousNpcSceneContext, candidates: LivingRepathCandidate[]): void {
+  if (candidates.length === 0) return;
+  candidates.sort((a, b) => (a.mover.livingRepathTurn ?? -1) - (b.mover.livingRepathTurn ?? -1));
+  for (let index = 0; index < candidates.length && index < LIVING_REPATH_BUDGET_PER_FRAME; index += 1) {
+    const { mover, view, nx, ny } = candidates[index]!;
+    livingRepathTurn += 1;
+    mover.livingRepathTurn = livingRepathTurn;
+    repathBlockedLivingNpc(scene, mover, view, nx, ny);
+  }
+}
+
+/** 남은 걸음을 따라간 끝 칸(이 맵 안). 맵 이동 걸음은 좌표를 바꾸지 않는다. */
+function plannedEndPoint(mover: AutonomousMover, x: number, y: number): { x: number; y: number } {
+  let endX = x;
+  let endY = y;
+  for (let index = Math.max(0, mover.step); index < mover.moves.length; index += 1) {
+    const move = mover.moves[index]!;
+    if (move.kind !== "move") continue;
+    if (move.dir === "left") endX -= 1;
+    else if (move.dir === "right") endX += 1;
+    else if (move.dir === "up") endY -= 1;
+    else if (move.dir === "down") endY += 1;
+  }
+  return { x: endX, y: endY };
+}
+
+/** 8회 연속 막힘 이후에만, NPC당 최대 1초에 한 번, 프레임당 최대 2명(runLivingRepaths). 일반 이동/표면 갱신에는 BFS가 없다. */
+function repathBlockedLivingNpc(
+  scene: AutonomousNpcSceneContext,
+  mover: AutonomousMover,
+  view: Parameters<typeof routeForLivingMovement>[0]["view"],
+  nx: number,
+  ny: number,
+): void {
+  mover.livingRepathCooldownMs = 1000;
+  const project = store.getCurrent();
+  // 이벤트들은 탐색당 한 번만 모으고, 다음 NPC/다음 탐색은 새 위치를 본다.
+  const blocked = createBlockingEventQuery(project, scene.map, scene.session, scene.eventPositions, view.event.id);
+  if (!blocked(passageBounds(nx, ny, view.footprint, view.passRows))) return;
+  // 가려는 끝 칸 자체를 이벤트가 차지하고 있으면 어떤 우회로도 도착하지 못한다 — 맵 전체 BFS 를 돌리지 않고 기다린다.
+  const end = plannedEndPoint(mover, view.x, view.y);
+  if (blocked(passageBounds(end.x, end.y, view.footprint, view.passRows))) return;
+  const route = routeForLivingMovement({ project, map: scene.map, session: scene.session, view,
+    canStep: (fx, fy, tx, ty) => {
+      const rect = passageBounds(tx, ty, view.footprint, view.passRows);
+      return !blocked(rect)
+        && canMoveFootprint(project, scene.map, fx, fy, view.footprint, tx, ty, view.passRows)
+        && !isSpatialPlacementBlocking(project, scene.session, scene.map.id, rect);
+    },
+  });
+  // 목적지 점유/우회 불가: 도착 처리하거나 걸음을 소비하지 않고 기존 계획으로 기다린다.
+  if (!route) return;
+  mover.moves = route.moves;
+  mover.step = 0;
+  mover.blockedSteps = 0;
 }
 
 function lerp(from: number, to: number, progress: number): number {
