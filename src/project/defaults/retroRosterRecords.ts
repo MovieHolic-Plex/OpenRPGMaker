@@ -192,7 +192,7 @@ export function retroRosterActorRecords(): ActorRecord[] {
 
 // ── 스킬 레코드 유도 ─────────────────────────────────────────────────────────────────────────────────
 const HEAL = /치유|회복|치료|힐|재생|수복|약초|우유|찻|차 대접|응급|돌보|보살|성가|기도|염불|생명|소생|부활|되살|heal|cure/;
-const REVIVE = /부활|소생|되살|revive/;
+const REVIVE = /부활|소생|되살아|revive/;
 const CLEANSE = /정화|해독|씻어|해제|디스펠|purify|cleanse/;
 const STEAL = /훔치|절도|steal/;
 const ENEMY = /적|상대|몬스터/;
@@ -221,21 +221,27 @@ const BUFF_RULES: readonly (readonly [RegExp, string])[] = [
   [/공격|힘|기합|분노|광폭|사기|호령|고무|함성|투지|왕명|명령|축복|강화|올린/, "state_attack_up"],
 ];
 
+// 속성 낱말은 **한국어 이름·설명**에서만 찾는다(짧은 낱말은 오탐이 많다: 「물어뜯기」의 물, 「빙글」의 빙, 「풍선」의 풍, 「수류탄」의 수류).
+// 레이어 키의 영어 낱말은 아래 KEY 표로 좁게만 본다(hit·wave 같은 낱말은 속성이 아니다).
 const ELEMENT_RULES: readonly (readonly [RegExp, string])[] = [
-  [/화염|불꽃|불길|불태|화룡|업화|폭염|지옥불|용암|열기|화염구|불|fire|flame|burn|blaze/, "fire"],
-  [/얼음|빙결|빙|서리|냉기|눈보라|얼려|frost|ice|snow/, "ice"],
-  [/번개|뇌|전기|감전|스파크|낙뢰|천둥|thunder|lightning|bolt/, "thunder"],
-  [/물대포|물결|물살|파도|수류|해일|물|wave|water|aqua/, "water"],
-  [/대지|암석|바위|흙|모래|땅|지진|낙석|굴착|earth|rock|quake|sand/, "earth"],
-  [/바람|질풍|돌풍|회오리|깃털|풍|wind|gale|tornado|feather/, "wind"],
-  [/성광|신성|성스|천사|광선|심판|후광|holy|halo/, "holy"],
-  [/어둠|암흑|저주|흡혈|영혼|사신|죽음|악몽|그림자|지옥|dark|shadow|curse|drain|soul/, "dark"],
+  [/화염|불꽃|불길|불덩|불태|불타|불의|불을|불사|불기둥|불새|지옥불|폭염|용암|열기|화룡|업화|화살에 불|점화|폭죽|fire|flame/, "fire"],
+  [/얼음|빙결|빙하|빙벽|빙설|서리|냉기|눈보라|얼려|얼어|한파|frost|blizzard/, "ice"],
+  [/번개|낙뢰|천둥|뇌격|뇌운|뇌광|전기|감전|스파크|thunder|lightning/, "thunder"],
+  [/물대포|물줄기|물결|물살|물보라|물기둥|물총|파도|해일|수룡|수류(?!탄)|폭포|우유 물|급류/, "water"],
+  [/대지|암석|바위|흙|모래|땅|지진|낙석|굴착|진흙|늪|earth/, "earth"],
+  [/질풍|돌풍|강풍|바람|회오리|깃털|풍압|검풍|폭풍우|태풍|wind/, "wind"],
+  [/성광|신성|성스|천사|심판|후광|성검|성가|holy/, "holy"],
+  [/어둠|암흑|저주|흡혈|영혼|사신|죽음|악몽|그림자|지옥|망령|dark/, "dark"],
+];
+const ELEMENT_KEY_RULES: readonly (readonly [RegExp, string])[] = [
+  [/fire|flame|meteor/, "fire"], [/frost|blizzard|ice_/, "ice"], [/thunder|lightning/, "thunder"],
+  [/holy|halo/, "holy"], [/shadow|dark|venom/, "dark"],
 ];
 const WEAPON_RULES: readonly (readonly [RegExp, string])[] = [
   [/창|찌르|꿰뚫|투창|lance|spear|pierce/, "spear"],
-  [/활|화살|석궁|궁|사격|저격|연사|총|탄|투척|던지|부메랑|작살|암기|대포|함포|포격|폭탄|arrow|shot|bow|gun/, "bow"],
-  [/주먹|발차기|킥|권|타격|강타|박치기|들이받|몽둥이|망치|곤봉|밟|내려찍|뒷발|꼬리|채찍|투석|hit|punch|kick|bash/, "hit"],
-  [/검|도끼|낫|칼|베|참|쌍도|거합|레이피어|할퀴|발톱|송곳니|물기|물어|이빨|쪼|sword|slash|blade/, "sword"],
+  [/활|화살|석궁|사격|저격|연사|총|탄환|투척|던지|부메랑|작살|암기|대포|함포|포격|폭탄|수류탄|arrow|bow/, "bow"],
+  [/주먹|발차기|킥|권|타격|강타|박치기|들이받|받기|뿔|몽둥이|망치|곤봉|밟|짓밟|내려찍|뒷발|꼬리|채찍|투석|punch|kick|bash/, "hit"],
+  [/검|도끼|낫|칼|베|참|쌍도|거합|레이피어|할퀴|발톱|송곳니|물기|물어|이빨|쪼|긁|sword|slash|blade/, "sword"],
 ];
 const MAGIC_ELEMENTS: ReadonlySet<string> = new Set(["fire", "ice", "thunder", "water", "earth", "wind", "holy", "dark"]);
 const MAGIC_ROLES: ReadonlySet<string> = new Set(["마법", "회복", "지원", "소환"]);
@@ -258,11 +264,12 @@ function layerKeys(layers: readonly RetroFxLayer[]): string {
   return layers.map((layer) => layer.key.replace(/_/g, " ")).join(" ");
 }
 
-function pickElement(text: string, allowWeapon: boolean): string | undefined {
-  const magical = ELEMENT_RULES.find(([pattern]) => pattern.test(text))?.[1];
+/** 속성: 한국어 이름·설명 → 레이어 키(좁은 표) 순. 무기 속성은 공격력 기술만 받고 한국어 낱말에서만 찾는다(없으면 타격). */
+function pickElement(korean: string, keys: string, allowWeapon: boolean): string | undefined {
+  const magical = ELEMENT_RULES.find(([pattern]) => pattern.test(korean))?.[1] ?? ELEMENT_KEY_RULES.find(([pattern]) => pattern.test(keys))?.[1];
   if (magical) return magical;
   if (!allowWeapon) return undefined;
-  return WEAPON_RULES.find(([pattern]) => pattern.test(text))?.[1] ?? "hit";
+  return WEAPON_RULES.find(([pattern]) => pattern.test(korean))?.[1] ?? "hit";
 }
 
 function debuffStates(text: string, chanceScale = 1): DatabaseStateEffect[] {
@@ -329,7 +336,9 @@ function animationFor(kind: Seed["kind"], element: string | undefined, text: str
  * 대상 편의 정본은 레이어 앵커(allTargets = 전체, allAllies = 아군 전체, user 만 = 자신)다. 낱말은 앵커가 없을 때 보조한다.
  */
 export function deriveRosterSkillSeed(skill: Pick<RetroClassSkill, "name" | "description" | "motion" | "level" | "layers">, role: string): Seed {
-  const text = `${skill.name} ${skill.description} ${layerKeys(skill.layers)}`;
+  const korean = `${skill.name} ${skill.description}`;
+  const keys = layerKeys(skill.layers);
+  const text = `${korean} ${keys}`;
   const i = tier(skill.level);
   const finisher = skill.motion === "finisher" || skill.level >= 22;
   const anchors = new Set(skill.layers.map((layer) => layer.anchor));
@@ -354,7 +363,7 @@ export function deriveRosterSkillSeed(skill: Pick<RetroClassSkill, "name" | "des
         return { scope: allyAnchor || allWords ? "allAllies" : "ally", mp: allyAnchor || allWords ? 26 : 20, kind: "healing", power: allyAnchor || allWords ? 50 : 60,
           animation: animationFor("healing", undefined, text, false), states: [remove("state_death")] };
       }
-      const scope = allyAnchor || allWords ? "allAllies" : /자신|스스로/.test(skill.description) ? "self" : "ally";
+      const scope = allyAnchor || allWords ? "allAllies" : selfOnly || /자신|스스로/.test(skill.description) ? "self" : "ally";
       const power = Math.round(HEAL_POWER[i]! * (scope === "allAllies" ? 0.9 : 1) * (finisher ? 1.1 : 1));
       return { scope, mp: HEAL_MP[i]! + (scope === "allAllies" ? 3 : 0), kind: "healing", power, animation: animationFor("healing", undefined, text, false),
         states: /재생/.test(text) ? [add("state_regen")] : undefined };
@@ -379,12 +388,16 @@ export function deriveRosterSkillSeed(skill: Pick<RetroClassSkill, "name" | "des
   }
 
   // ④ 적 공격
-  const magical = pickElement(text, false);
+  const magical = pickElement(korean, keys, false);
   const magicalElement = magical !== undefined && MAGIC_ELEMENTS.has(magical);
-  const kind: "attack" | "mind" = skill.motion === "cast" || (finisher && (MAGIC_ROLES.has(role) || magicalElement) && skill.motion !== "dash-strike" && skill.motion !== "leap-strike")
-    || (MAGIC_ROLES.has(role) && skill.motion === "blink-strike" && magicalElement) ? "mind" : "attack";
+  // 정신력(mind) 피해는 시전 역할(마법·회복·지원·소환)의 몫이다 — 배우 곡선이 역할별이라 물리 역할의 마법 낱말 기술도 공격력으로 친다.
+  // 혼합·운·지휘는 시전 모션이거나 속성 필살기일 때만 정신력.
+  const flexible = role === "혼합" || role === "운" || role === "지휘";
+  const kind: "attack" | "mind" = MAGIC_ROLES.has(role) && skill.motion !== "dash-strike" && skill.motion !== "leap-strike" && skill.motion !== "flurry" && skill.motion !== "spin"
+    ? "mind"
+    : flexible && (skill.motion === "cast" || (finisher && magicalElement)) ? "mind" : "attack";
   // 정신력 마법은 무기 속성이 없다(속성 낱말이 없으면 무속성). 공격력 기술만 검·창·활·타격 속성을 갖는다.
-  const element = magical ?? (kind === "attack" ? pickElement(text, true) : undefined);
+  const element = magical ?? (kind === "attack" ? pickElement(korean, keys, true) : undefined);
   const all = allEnemies;
   const base = POWER[i]! * (skill.motion === "flurry" ? 0.92 : 1);
   const power = Math.round(base * (all ? (finisher ? 0.8 : 0.72) : 1));
@@ -398,7 +411,7 @@ export function deriveRosterSkillSeed(skill: Pick<RetroClassSkill, "name" | "des
     kind: kindWord,
     power,
     ...(element ? { element } : {}),
-    animation: animationFor(kindWord, element, text, finisher),
+    animation: animationFor(kindWord, element, korean, finisher),
     ...(states.length > 0 ? { states } : {}),
     ...(critical !== undefined ? { critical } : {}),
     ...(/저격|필중/.test(text) ? { hitRate: 100 } : {}),
