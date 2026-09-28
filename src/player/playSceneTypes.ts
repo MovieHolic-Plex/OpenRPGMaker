@@ -29,6 +29,11 @@ export type ParallelProcess = {
   pendingTimeTransition?: Promise<boolean>;
   pendingBattle?: import("./scheduledBattle").PendingScheduledBattle;
   stopped?: boolean;
+  /**
+   * 한 프레임의 단계 상한(16)에 걸려 **아직 처리하지 않은** 인터프리터 결과. 다음 프레임에 resume 보다 먼저
+   * 이것부터 처리한다. 예전에는 버려져서 17번째 명령(타일 변경·대기 등)이 조용히 사라졌다(퍼징 반례).
+   */
+  pendingResult?: import("./interpreter").StepResult;
 };
 
 export type AutonomousMover = {
