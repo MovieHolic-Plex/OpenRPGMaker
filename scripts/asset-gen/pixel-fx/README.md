@@ -26,3 +26,14 @@ mask dilation and erosion, and fades use a checker dither. The build prints and
 asserts size, alpha, colour count, non-empty frames and frame-to-frame change.
 Review images (4× previews, 2× GIFs on #202840, per-class sheet and battler
 composite) go to `.omo/pixel-fx/` and are not committed.
+
+## Class skill sheets (druid · witch)
+
+`lib_druid.py` draws the class_druid (10) and class_witch (12) sheets on top of the
+`lib_mage.py` index canvas. `python3 lib_druid.py` rebuilds all 22, `python3 <key>.py`
+one sheet. Each script's FRAME, FRAMES and ANCHOR are compared with
+`src/assets/retroClassSkills.ts` and a mismatch aborts the build. Colour identity:
+druid LEAF green, BARK brown, MOON silver (+ blossom pink); witch HEX violet,
+TOXIC green (+ BLOOD crimson for life drain, GLASS lilac for the mirror).
+Checks: size, binary alpha, ≤16 colours, no empty cell, neighbour change ≥ 5 % of ink.
+Review output: `.omo/pixel-fx/<key>-preview.png`, `druid|witch-sheet.png`, `druid|witch-composite.png`.
