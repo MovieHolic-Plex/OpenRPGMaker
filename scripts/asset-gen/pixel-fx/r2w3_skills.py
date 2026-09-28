@@ -67,6 +67,16 @@ CLASSES = [
         S('pixie_dash', '요정 돌진', 'dash-strike', '빛가루 꼬리를 끌며 적의 품으로 파고든다', 'fairy_dash', 'fairy_dash_hit'),
         S('forest_hymn', '숲의 성가', 'finisher', '깊은 숲과 반딧불이 깨어나 모든 적을 덮치는 필살기', 'fairy_grove_sky', 'fairy_grove_hit'),
     ]),
+    dict(batch='p2', classId='class_king', ck='king', chip='people3-0', name='국왕', mod='r2w3_king', skills=[
+        S('scepter_throw', '홀 투척', 'shoot', '황금 홀을 던져 적의 머리 위에 왕관 문장을 새긴다', 'king_scepter', 'king_scepter_hit'),
+        S('royal_decree', '왕명', 'buff', '두루마리 왕명을 펼쳐 아군 전체의 힘을 북돋는다', 'king_decree'),
+        S('war_banner', '군기 게양', 'buff', '왕가의 군기를 높이 세워 아군을 고무한다', 'king_banner'),
+        S('guard_charge', '근위대 창격', 'cast', '근위대의 창끝이 하늘에서 적진에 쏟아진다', 'king_guard'),
+        S('tribute_seal', '조공 인장', 'cast', '금화 비와 왕가 인장이 적을 짓누른다', 'king_tribute'),
+        S('majesty', '왕의 위광', 'buff', '왕관과 인장의 위광으로 아군의 사기를 끌어올린다', 'king_aura'),
+        S('crown_fall', '왕관 강하', 'leap-strike', '거대한 왕관이 떨어져 충격파로 적을 밀어낸다', 'king_crown_drop'),
+        S('realm_decree', '왕국의 칙령', 'finisher', '성벽과 깃발이 솟고 왕관이 내려앉는 필살기', 'king_realm_sky', 'king_realm_hit'),
+    ]),
 ]
 
 

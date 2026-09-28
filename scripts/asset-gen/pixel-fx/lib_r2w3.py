@@ -72,7 +72,7 @@ GLYPHS = {
     'star4': ['...k...', '..kdk..', '..kdk..', 'kkddkkk', 'kdddddk', 'kkkdkkk', '..kdk..', '..kdk..', '...k...'],
     'feather': ['....kk', '...kdk', '..kddk', '.kdcdk', '.kdcdk', 'kdcdk.', 'kdck..', 'kck...', 'k.....'],
     'petal': ['.kk.', 'kddk', 'kddk', 'kcdk', '.kck', '..k.'],
-    'crown': ['k.k.k.k', 'kdkdkdk', 'kddddgk', 'kdrdrdk', 'kccccck', '.kkkkk.'],
+    'crown': ['k...k...k', 'kd.kdk.dk', 'kdddddddk', 'kdcdrdcdk', 'kcccccccck'[:9], '.kkkkkkk.'],
     'skull': ['.kkkkk.', 'kdddddk', 'kdkdkdk', 'kdkdkdk', '.kdddk.', '.kdkdk.', '..kkk..'],
     'moon': ['..kkk.', '.kddk.', 'kddk..', 'kdk...', 'kdk...', 'kddk..', '.kdddk', '..kkk.'],
     'drop': ['..k..', '.kdk.', '.kdk.', 'kddck', 'kdcck', '.kdk.', '..k..'],
