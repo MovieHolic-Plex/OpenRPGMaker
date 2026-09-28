@@ -183,3 +183,13 @@ def leg_to(p, hip, foot, l1, l2, w, col, dark=None, lit=None, bw=4, bh=3, bcol='
     boot(p, e[0], sole, bw, bh, bcol, blit)
     return e, j
 
+
+def clean(p):
+    """Drop pixels with no 4-neighbour (polygon spike tips). Keeps silhouettes free of stray dots."""
+    im = p.im; a = im.getchannel('A').load(); w, h = im.size; kill = []
+    for y in range(h):
+        for x in range(w):
+            if a[x, y] and not any(0 <= x+dx < w and 0 <= y+dy < h and a[x+dx, y+dy]
+                                   for dx, dy in ((1,0),(-1,0),(0,1),(0,-1))): kill.append((x, y))
+    for q in kill: im.putpixel(q, (0, 0, 0, 0))
+    return p
