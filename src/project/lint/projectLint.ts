@@ -46,7 +46,7 @@ import { rectCells } from "../footprint";
 import { createEventPlacementAnalysis, eventIsMovable, eventRequiresPassableTile, type EventRelocation } from "../eventPlacementRecovery";
 import { playerPassageRect, resolvePlayerBody } from "../playerFootprint";
 import { deserialize } from "../io";
-import { serializeReusingSharedDictionaries } from "../io/sharedDictionaryJson";
+import { markRoundtripPassed, serializeForRoundtripCheck } from "../io/sharedDictionaryJson";
 import { malformedExtraLayerKeys } from "../mapLayers";
 import { collectProjectReferenceIssues } from "../io/references";
 import { isQuestGraphDef } from "../quest/questDef";
@@ -191,8 +191,9 @@ function checkRoundtrip(project: Project, issues: LintIssue[]): void {
     }
   }
   try {
-    // 글은 serialize(project) 와 같다 — 타일셋·업로드 자산 항목의 글만 기억해 다시 쓴다(sharedDictionaryJson 머리말).
-    deserialize(serializeReusingSharedDictionaries(project));
+    // 이미 왕복을 통과한 타일셋·업로드 자산 항목(같은 객체)은 뼈대로, 나머지는 serialize 와 같은 글로 되읽는다(sharedDictionaryJson).
+    deserialize(serializeForRoundtripCheck(project));
+    markRoundtripPassed(project);
   } catch (cause) {
     issues.push({
       severity: "error",
