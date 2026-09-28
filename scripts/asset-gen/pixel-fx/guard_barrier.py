@@ -5,7 +5,7 @@ from lib_hero import BARRIER, Cell, dilate, erode, shift, radial, rays, shock, d
 
 KEY = "guard_barrier"
 SIZE, FRAMES, PAL = 64, 10, BARRIER
-CX, G = 32, 58
+CX, G = 32, 57   # QA: 58 이면 바닥 룬 고리 아랫줄이 칸 마지막 행(63)에 붙어 평평하게 잘렸다
 RX, RY = 26, 36   # dome half-width / height above the feet
 
 

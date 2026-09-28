@@ -49,7 +49,8 @@ def draw(c: Cell, f: int) -> None:
         c.spark(CX - 7, CY - 10, 3, ("l", "w", "w"), "over")
     elif f <= 6:
         emblem(c, 1.0)
-        shock(c, CX, CY + 2, 20 + (f - 3) * 3, 22 + (f - 3) * 3, 1, ("d", "m"), dither=f)
+        # QA: 퍼지는 고리 반경이 26~28 까지 커져 아래·좌우 칸 경계에서 잘렸다 — 가로 28·세로 25 상한.
+        shock(c, CX, CY + 2, min(28, 20 + (f - 3) * 3), min(25, 22 + (f - 3) * 3), 1, ("d", "m"), dither=f)
         heal_motes(c, f, 4 + (f - 3) * 2)
         c.spark(CX + 6 - (f - 4) * 5, CY - 12 + (f - 4) * 8, 2, ("l", "w", "w"), "over")
     elif f <= 8:

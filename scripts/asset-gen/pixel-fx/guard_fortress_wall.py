@@ -92,7 +92,7 @@ _draw_body = draw
 def draw(c, f):
     _draw_body(c, f)
     # 단단한 방패는 디더로 걷지 않는다 — 광선·흙먼지만 닿는 위아래 가장자리만 짧게 걷는다.
-    fade_edges(c, T=6, B=4)
+    fade_edges(c, T=6, B=4, **({'L': 10, 'R': 10} if f >= 8 else {}))   # 쓰러진 판·흙먼지는 화면 폭 끝에서 흩어지게
 
 
 if __name__ == "__main__":
