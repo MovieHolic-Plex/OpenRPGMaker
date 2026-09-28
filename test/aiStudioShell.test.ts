@@ -457,7 +457,8 @@ describe("스튜디오 콘솔(재개편)", () => {
 
   it("실행 보드가 버스에 오르면 팀장·팀원이 레인 보드의 행으로 서고, 행을 누르면 오른쪽이 팀 보드다", () => {
     const { root } = standaloneShell();
-    let state = createTeamBoardState("team", "대장간 거리");
+    // Exercise the legacy transcript fallback, without a modern trace.
+    let state = { ...createTeamBoardState("team", "대장간 거리"), trace: undefined } as ReturnType<typeof createTeamBoardState>;
     state = reduceTeamBoard(state, { type: "agent_spawn", agentId: "lead", role: "orchestrator", mapId: null, mapName: null, task: state.task });
     state = reduceTeamBoard(state, { type: "agent_spawn", agentId: "b1", role: "builder", mapId: null, mapName: "시장 마을", task: "대장간 2채", memberId: "architect", label: "건축가" });
     state = reduceTeamBoard(state, { type: "agent_event", agentId: "b1", event: { type: "tool_start", id: "t1", name: "place_structure", args: { x: 13, y: 5 } } });

@@ -1,3 +1,4 @@
+import { createKeyedRows } from "./aiKeyedRows";
 import { createActivityView } from "./aiActivityView";
 // 작업 페인 — 실행 중인 `/pi` 의 팀원 열 + 선택 팀원의 과정 열. 조수 데크의 「작업」 탭과
 // 스튜디오 덱의 「작업」 탭이 같은 컴포넌트를 쓴다(스튜디오는 detail: 툴 인자·전체 문장까지).
@@ -83,9 +84,8 @@ export function createTeamWorkPane(options: TeamWorkPaneOptions = {}): TeamWorkP
     return activity.agents.find((agent) => agent.agentId === wanted) ?? activity.agents[0] ?? null;
   };
 
-  const renderMembers = (state: TeamBoardState, selected: TeamBoardAgent | null): void => {
-    members.replaceChildren(...orderedAgents(state).map((agent) => {
-      const isSelected = selected?.agentId === agent.agentId;
+  const reconcileMembers = createKeyedRows(members, (agent: TeamBoardAgent) => {
+      const isSelected = selectedAgent()?.agentId === agent.agentId;
       const button = el("button", {
         class: `ai-team-work-member is-${agent.state === "실행 중" ? "running" : agent.state === "실패" ? "error" : agent.state === "완료" ? "done" : "idle"} role-${agent.role}`,
         attrs: { type: "button", "aria-selected": String(isSelected), title: agent.task || agent.roleLabel },
@@ -103,7 +103,12 @@ export function createTeamWorkPane(options: TeamWorkPaneOptions = {}): TeamWorkP
       if (detail && agent.task) button.append(el("div", { class: "ai-team-work-member-task", text: agent.task }));
       if (agent.fixOf) button.append(el("div", { class: "ai-team-work-member-fix", text: "검수 지적 수정 배정" }));
       return el("li", { children: [button] });
-    }));
+  });
+  const renderMembers = (state: TeamBoardState, selected: TeamBoardAgent | null): void => {
+    reconcileMembers(orderedAgents(state), agent => agent.agentId, agent => JSON.stringify([
+      selected?.agentId === agent.agentId, agent.state, agent.role, agent.task, agent.roleLabel,
+      agent.kindLabel, agent.mapName, agent.mapId, memberMeta(agent, detail), agent.fixOf,
+    ]));
   };
 
   const renderReview = (state: TeamBoardState): void => {
@@ -152,7 +157,7 @@ export function createTeamWorkPane(options: TeamWorkPaneOptions = {}): TeamWorkP
     if (!activity || activity.agents.length === 0) {
       empty.removeAttribute("hidden");
       body.setAttribute("hidden", "");
-      members.replaceChildren();
+      reconcileMembers([], agent => agent.agentId);
       review.replaceChildren();
       review.setAttribute("hidden", "");
       foot.replaceChildren();
@@ -165,9 +170,9 @@ export function createTeamWorkPane(options: TeamWorkPaneOptions = {}): TeamWorkP
     body.classList.toggle("is-single", activity.agents.length < 2);
     const selected = selectedAgent();
     renderMembers(activity, selected);
-    if (selected) transcript.update(selected);
-    activityView.update(activity.trace, selected?.agentId);
     transcript.root.hidden = Boolean(activity.trace);
+    if (selected && !transcript.root.hidden) transcript.update(selected);
+    activityView.update(activity.trace, selected?.agentId);
     renderReview(activity);
     renderFoot(activity);
   };

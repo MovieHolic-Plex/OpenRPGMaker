@@ -35,7 +35,8 @@ function agentEvent(state: TeamBoardState, agentId: string, event: Parameters<ty
 }
 
 function teamRun(): TeamBoardState {
-  let state = createTeamBoardState("team", "대장간 거리");
+  // These assertions exercise the trace-less transcript fallback.
+  let state: TeamBoardState = { ...createTeamBoardState("team", "대장간 거리"), trace: undefined };
   state = reduceTeamBoard(state, { type: "team_start", task: state.task, roles: [] });
   state = reduceTeamBoard(state, { type: "agent_spawn", agentId: "lead", role: "orchestrator", mapId: null, mapName: null, task: state.task });
   state = reduceTeamBoard(state, { type: "agent_spawn", agentId: "b1", role: "builder", mapId: "map_a", mapName: "시장 마을", task: "대장간 2채", memberId: "architect", label: "건축가" });
@@ -78,7 +79,7 @@ describe("작업 페인", () => {
 
   it("한 명뿐인 실행은 팀원 열 없이 과정만 남긴다", () => {
     const pane = createTeamWorkPane();
-    let state = createTeamBoardState("single", "우물 옆 벤치");
+    let state: TeamBoardState = { ...createTeamBoardState("single", "우물 옆 벤치"), trace: undefined };
     state = reduceTeamBoard(state, { type: "agent_spawn", agentId: "agent-1", role: "builder", mapId: "map_a", mapName: "시장 마을", task: "우물 옆 벤치" });
     state = agentEvent(state, "agent-1", { type: "tool_start", id: "t1", name: "place_event", args: {} });
     pane.update(state);
@@ -128,7 +129,7 @@ describe("작업 페인", () => {
     let first = teamRun();
     pane.update(first);
     qa(pane.root, "ai-team-work-member")[0]!.click();
-    let second = createTeamBoardState("team", "숲길 정비");
+    let second: TeamBoardState = { ...createTeamBoardState("team", "숲길 정비"), trace: undefined };
     second = reduceTeamBoard(second, { type: "agent_spawn", agentId: "g1", role: "builder", mapId: "map_b", mapName: "숲", task: "숲길", memberId: "gardener", label: "정원사" });
     pane.update(second);
     expect(q(pane.root, "ai-team-tx-name")!.textContent).toBe("정원사");
