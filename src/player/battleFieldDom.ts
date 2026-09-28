@@ -140,15 +140,27 @@ function applyPixelEnemySheet(node: HTMLElement, image: HTMLImageElement, resour
   const sheet = pixelEnemySheet(resourceId);
   if (!sheet) return;
   const url = pixelEnemySheetUrl(sheet);
+  const cell = sheet.cell ?? 48;
+  const dimensions = ["--battle-enemy-base-width", "--battle-enemy-base-height"] as const;
+  const previousDimensions = dimensions.map((key) => image.style.getPropertyValue(key));
   node.dataset.pixelEnemy = sheet.motion;
+  node.dataset.pixelEnemyCell = String(cell);
+  for (const key of dimensions) image.style.setProperty(key, `${cell * 2}px`);
   image.dataset.pixelSheet = sheet.resourceId;
   image.style.setProperty("--pixel-enemy-url", `url("${url}")`);
   image.style.setProperty("--pixel-enemy-idle-ms", `${sheet.idleFrameMs * 4}ms`);
   const probe = new Image();
   probe.addEventListener("error", () => {
     delete node.dataset.pixelEnemy;
+    delete node.dataset.pixelEnemyCell;
+    dimensions.forEach((key, index) => {
+      const previous = previousDimensions[index];
+      if (previous) image.style.setProperty(key, previous);
+      else image.style.removeProperty(key);
+    });
     delete image.dataset.pixelSheet;
     image.style.removeProperty("--pixel-enemy-url");
+    image.style.removeProperty("--pixel-enemy-idle-ms");
   });
   probe.src = url;
 }

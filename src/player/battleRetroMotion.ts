@@ -358,6 +358,11 @@ const MOTION_SE = {
   flash: "easyrpg-sound-flash1",
   "enemy-hop": "easyrpg-sound-move",
   "enemy-swoop": "easyrpg-sound-wind8",
+  "enemy-stomp": "easyrpg-sound-earth2",
+  "enemy-dash": "easyrpg-sound-wind8",
+  "enemy-float": "easyrpg-sound-magic2",
+  "enemy-shoot": "easyrpg-sound-shot1",
+  "enemy-breath": "easyrpg-sound-fire1",
   // 마법 방출(cast_release) 순간. 날아가는 투사체 애니메이션을 이 스킨은 띄우지 않아서, 그 애니메이션의
   // 첫 타이밍 소리(예: 독침 Poison.wav)도 함께 사라졌다 — 시전 도트가 방출하는 순간에 종류별 소리를 낸다.
   "cast-fire": "easyrpg-sound-fire1",
@@ -662,10 +667,14 @@ export function retroEnemyReach(field: HTMLElement, entry: BattleTimelineEntrySn
 
 function measureEnemyReach(field: HTMLElement, entry: BattleTimelineEntrySnapshot): RetroEnemyReach | undefined {
   if (!isEnemyMeleeEntry(entry) || reduced()) return undefined;
-  const user = [...field.querySelectorAll<HTMLElement>(".battle-enemy[data-pixel-enemy]:not(.defeated)")]
-    .find((node) => node.dataset.recordId === entry.userRecordId || node.dataset.testid === entry.userId);
-  const target = [...field.querySelectorAll<HTMLElement>(".battle-actor:not(.defeated)")]
-    .find((node) => node.dataset.recordId === entry.targetId);
+  const enemies = [...field.querySelectorAll<HTMLElement>(".battle-enemy[data-pixel-enemy]:not(.defeated)")];
+  const user = enemies.find((node) => node.dataset.testid === entry.userId)
+    ?? enemies.find((node) => node.dataset.recordId === entry.userRecordId);
+  // 궁수·브레스는 통상 공격이어도 ranged. 대상까지 걸어가지 않는다.
+  if (user?.dataset.pixelEnemy === "shoot" || user?.dataset.pixelEnemy === "breath") return undefined;
+  const actors = [...field.querySelectorAll<HTMLElement>(".battle-actor:not(.defeated)")];
+  const target = actors.find((node) => node.dataset.testid === entry.targetId)
+    ?? actors.find((node) => node.dataset.recordId === entry.targetId);
   const image = user?.querySelector<HTMLElement>(".battle-enemy-image");
   const sprite = target?.querySelector<HTMLElement>(".battle-actor-sprite, .battle-actor-image") ?? target;
   if (!user || !image || !sprite) return undefined;
@@ -674,23 +683,27 @@ function measureEnemyReach(field: HTMLElement, entry: BattleTimelineEntrySnapsho
   if (imageRect.width === 0 || actorRect.width === 0) return undefined;
   // 화면 px → 적 노드 translate 단위(무대 배율 × 필드 zoom). 이미지 자신의 레이아웃 폭 대비 화면 폭으로 잰다.
   const scale = image.offsetWidth > 0 ? imageRect.width / image.offsetWidth : 1;
-  const swoop = user.dataset.pixelEnemy === "swoop";
-  // 착탄 칸의 앞 가장자리(48px 셀의 x≈42) → 아군 몸 앞(셀 가운데 − 셀의 20/96) 2px 앞.
-  const front = imageRect.left + imageRect.width * (42 / 48);
-  const actorFront = actorRect.left + actorRect.width / 2 - actorRect.width * (20 / 96);
+  const motion = user.dataset.pixelEnemy;
+  const hovering = motion === "swoop" || motion === "float";
+  const cell = Math.max(1, Number(user.dataset.pixelEnemyCell) || 48);
+  // 적 셀은 가변 크기: 앞 가장자리 cell−6, 지면 cell−4, 부유 중심 cell/2−4.
+  // 아군 확장 시트는 여전히 48px 셀이다. 적의 비율을 아군에도 적용하면 큰 적이 높이를 잘못 맞춘다.
+  const front = imageRect.left + imageRect.width * ((cell - 6) / cell);
+  const actorFront = actorRect.left + actorRect.width * ((48 / 2 - 10) / 48);
   const dx = Math.round((actorFront - front) / scale - 2);
-  // 슬라임은 발(셀 y=44)을 아군 발(y=44)에, 박쥐는 머리(셀 y≈20)를 아군 얼굴 높이(y≈20)에 맞춘다.
-  const dy = Math.round(swoop
-    ? (actorRect.top + actorRect.height * (20 / 48) - (imageRect.top + imageRect.height * (20 / 48))) / scale
-    : (actorRect.top + actorRect.height * (44 / 48) - (imageRect.top + imageRect.height * (44 / 48))) / scale);
-  if (!Number.isFinite(dx) || !Number.isFinite(dy) || dx < 16) return undefined;
+  const enemyAnchor = hovering ? cell / 2 - 4 : cell - 4;
+  const actorAnchor = hovering ? 20 : 44;
+  const dy = Math.round((actorRect.top + actorRect.height * (actorAnchor / 48)
+    - (imageRect.top + imageRect.height * (enemyAnchor / cell))) / scale);
+  if (!Number.isFinite(dx) || !Number.isFinite(dy)) return undefined;
   const distance = Math.hypot(dx, dy);
   const clamp = (value: number, min: number, max: number) => Math.round(Math.max(min, Math.min(max, value)));
+  const speed = motion === "dash" ? 0.65 : motion === "stomp" ? 0.34 : hovering ? 0.42 : 0.3;
   return {
     dx,
     dy,
-    approachMs: ENEMY_HOLD_MS + clamp(distance / (swoop ? 0.42 : 0.3), 300, 900),
-    recoverMs: clamp(160 + distance / 0.42, 420, 900),
+    approachMs: ENEMY_HOLD_MS + clamp(distance / speed, motion === "stomp" ? 440 : 300, 900),
+    recoverMs: clamp(160 + distance / (motion === "stomp" ? 0.38 : motion === "dash" ? 0.7 : 0.42), 420, 900),
   };
 }
 
@@ -700,40 +713,76 @@ function animatePixelEnemyBeat(node: HTMLElement, beat: BattleActionBeat): void 
   const generation = (beatGenerations.get(node) ?? 0) + 1;
   beatGenerations.set(node, generation);
   const length = Math.max(0, beat.durationMs);
-  const swoop = node.dataset.pixelEnemy === "swoop";
-  const melee = node.dataset.retroReach === "melee";
-  const dx = Number.parseFloat(node.style.getPropertyValue("--retro-enemy-dx")) || 18;
+  const motion = node.dataset.pixelEnemy;
+  const swoop = motion === "swoop";
+  const stationary = motion === "shoot" || motion === "breath";
+  const melee = !stationary && node.dataset.retroReach === "melee";
+  // Preserve a measured zero (already next to the target), rather than inventing an 18px lunge.
+  const parsedDx = Number.parseFloat(node.style.getPropertyValue("--retro-enemy-dx"));
+  const dx = Number.isFinite(parsedDx) ? parsedDx : 18;
   const dy = Number.parseFloat(node.style.getPropertyValue("--retro-enemy-dy")) || 0;
+  const cues: [number, MotionCue][] = [];
   let cells: readonly [number, PixelEnemyCell][];
   let path: readonly PathPoint[];
-  if (melee && beat.kind === "approach") {
+  if (stationary) {
+    // The authored neck/bow changes supply the motion. Feet and node remain planted, including recover.
+    node.dataset.retroReach = "ranged";
+    path = [[0, 0, 0], [1, 0, 0]];
+    if (beat.kind === "approach") cells = [[0, "windup"], [motion === "breath" ? 0.7 : 0.55, "move"]];
+    else if (beat.kind === "impact") {
+      cells = [[0, "attack"]];
+      cues.push([0, motion === "breath" ? "enemy-breath" : "enemy-shoot"]);
+    } else cells = [[0, "recover"], [0.8, "idle_b"]];
+  } else if (melee && beat.kind === "approach") {
     const hold = Math.min(0.45, ENEMY_HOLD_MS / Math.max(1, length));
     const travel = 1 - hold;
-    // 슬라임은 두 번 뛸 때마다 통, 박쥐는 급강하에 바람 소리 한 번.
-    const hops = swoop ? [hold] : [hold, hold + travel * 0.5];
-    for (const at of hops) scheduleBattleTimer(() => {
-      if (node.isConnected && beatGenerations.get(node) === generation) motionSe(swoop ? "enemy-swoop" : "enemy-hop", 0.22);
-    }, Math.round(length * at));
-    if (swoop) {
-      // 날개를 치켜들며 살짝 뒤로 떠올랐다가(windup) 날개를 접고 대상에게 내리꽂는다(move).
+    if (motion === "stomp") {
+      const first = hold + travel * 0.42;
+      const second = hold + travel * 0.82;
+      path = [[0, 0, 0], [hold, -3, 1],
+        [hold + travel * 0.18, dx * 0.25, dy * 0.25 - 3], [first, dx * 0.5, dy * 0.5 + 2],
+        [hold + travel * 0.62, dx * 0.75, dy * 0.75 - 3], [second, dx, dy + 2], [1, dx, dy]];
+      cells = [[0, "idle_c"], [hold, "move"], [first, "idle_b"],
+        [hold + travel * 0.52, "move"], [second, "windup"]];
+      cues.push([first, "enemy-stomp"], [second, "enemy-stomp"]);
+    } else if (motion === "dash") {
+      path = [[0, 0, 0], [hold, -7, 3, "ease-in"],
+        [hold + travel * 0.7, dx * 0.86, dy * 0.86 + 3, "ease-out"], [1, dx, dy]];
+      cells = [[0, "windup"], [hold, "move"], [hold + travel * 0.45, "idle_c"], [hold + travel * 0.62, "move"]];
+      cues.push([hold, "enemy-dash"]);
+    } else if (motion === "float") {
+      path = [[0, 0, 0, "ease-in-out"], [hold, -4, -4],
+        [hold + travel * 0.5, dx * 0.5, dy * 0.5 - 6], [1, dx, dy]];
+      cells = [[0, "windup"], [hold, "move"], [hold + travel * 0.5, "idle_c"], [0.92, "move"]];
+      cues.push([hold, "enemy-float"]);
+    } else if (swoop) {
       path = [[0, 0, 0, "ease-out"], [hold, -8, -12, "ease-in"], [hold + travel * 0.45, dx * 0.45, dy * 0.35 - 14, "ease-in"], [1, dx, dy]];
       cells = [[0, "windup"], [hold, "move"]];
+      cues.push([hold, "enemy-swoop"]);
     } else {
-      // 웅크렸다가(windup) 두 번 통통 뛴다. 중간 착지에서 잠깐 퍼진다(recover 칸).
       const land = hold + travel * 0.5;
-      path = [
-        [0, 0, 0], [hold * 0.5, -4, 0], [hold, -4, 0, "ease-out"],
+      path = [[0, 0, 0], [hold * 0.5, -4, 0], [hold, -4, 0, "ease-out"],
         [hold + travel * 0.25, dx * 0.25, dy * 0.25 - 18, "ease-in"], [land, dx * 0.5, dy * 0.5, "ease-out"],
-        [land + travel * 0.25, dx * 0.75, dy * 0.75 - 22, "ease-in"], [1, dx, dy],
-      ];
+        [land + travel * 0.25, dx * 0.75, dy * 0.75 - 22, "ease-in"], [1, dx, dy]];
       cells = [[0, "windup"], [hold, "move"], [Math.max(hold, land - travel * 0.06), "recover"], [land + travel * 0.06, "move"]];
+      cues.push([hold, "enemy-hop"], [land, "enemy-hop"]);
     }
   } else if (melee && beat.kind === "impact") {
-    path = [[0, dx, dy], [0.4, dx + 5, dy + (swoop ? 2 : 0)], [1, dx + 2, dy + (swoop ? 1 : 0)]];
+    const down = motion === "stomp" ? 4 : swoop ? 2 : 0;
+    const push = motion === "float" ? 2 : motion === "dash" ? 8 : 5;
+    path = [[0, dx, dy], [0.4, dx + push, dy + down], [1, dx + 2, dy + (swoop ? 1 : 0)]];
     cells = [[0, "attack"]];
   } else if (melee) {
-    if (swoop) {
-      // 날개를 크게 쳐 뒤로 떠오른 뒤 날갯짓하며 제자리로.
+    if (motion === "stomp") {
+      path = [[0, dx + 2, dy], [0.2, dx, dy], [0.5, dx * 0.5, dy * 0.5 - 2], [0.65, dx * 0.5, dy * 0.5], [0.95, 0, 0], [1, 0, 0]];
+      cells = [[0, "recover"], [0.2, "move"], [0.5, "idle_b"], [0.65, "move"], [0.95, "idle_a"]];
+    } else if (motion === "dash") {
+      path = [[0, dx + 2, dy], [0.18, dx, dy + 2, "ease-in-out"], [0.85, 0, 0], [1, 0, 0]];
+      cells = [[0, "recover"], [0.18, "move"], [0.85, "idle_a"]];
+    } else if (motion === "float") {
+      path = [[0, dx + 2, dy, "ease-in-out"], [0.5, dx * 0.5, dy * 0.5 - 5], [1, 0, 0]];
+      cells = [[0, "recover"], [0.3, "idle_b"], [0.65, "idle_c"], [0.9, "idle_a"]];
+    } else if (swoop) {
       path = [[0, dx + 2, dy + 1, "ease-out"], [0.3, dx * 0.75, dy - 16], [0.9, 0, 0], [1, 0, 0]];
       cells = [[0, "recover"], [0.3, "idle_a"], [0.45, "idle_c"], [0.6, "idle_a"], [0.75, "idle_c"], [0.9, "idle_b"]];
     } else {
@@ -741,7 +790,6 @@ function animatePixelEnemyBeat(node: HTMLElement, beat: BattleActionBeat): void 
       cells = [[0, "recover"], [0.22, "move"], [0.9, "recover"]];
     }
   } else if (beat.kind === "approach") {
-    // 제자리 기술: 뒤로 몸을 당겨 힘을 모은다.
     path = [[0, 0, 0, "ease-out"], [0.6, -6, swoop ? -6 : 0], [1, -6, swoop ? -6 : 0]];
     cells = [[0, "windup"]];
   } else if (beat.kind === "impact") {
@@ -750,6 +798,14 @@ function animatePixelEnemyBeat(node: HTMLElement, beat: BattleActionBeat): void 
   } else {
     path = [[0, dx, 0, "ease-in-out"], [0.8, 0, 0], [1, 0, 0]];
     cells = [[0, "recover"], [0.55, swoop ? "idle_a" : "idle_b"]];
+  }
+  // Cue zero is synchronous with the attack cell; delayed cues belong to this beat generation only.
+  if (!reduced()) for (const [fraction, cue] of cues) {
+    const play = () => {
+      if (node.isConnected && beatGenerations.get(node) === generation && node.dataset.retroBeat === beat.kind) motionSe(cue, 0.22);
+    };
+    if (fraction === 0) play();
+    else if (length > 0) scheduleBattleTimer(play, Math.min(length - 1, Math.round(length * fraction)));
   }
   if (reduced() || length === 0) cells = [[0, cells[0]![1]]];
   pixelAnimations.get(node)?.cancel();

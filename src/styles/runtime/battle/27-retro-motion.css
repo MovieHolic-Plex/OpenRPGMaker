@@ -260,12 +260,10 @@
 }
 
 /* ── 도트 적 시트(src/assets/pixelEnemySheets.ts) ───────────────────────────────────────
-   48px 셀 3×3 을 아군 전투 도트와 같은 2배(96px)로 그린다. 내용 이미지(원본 통짜 그림)는 상자 밖으로 밀고 배경으로 칸을 그린다.
+   48·64·96px 셀 3×3 을 아군 전투 도트와 같은 2배로 그린다(인라인 base-width/height = cell×2). 내용 이미지(원본 통짜 그림)는 상자 밖으로 밀고 배경으로 칸을 그린다.
    칸은 런타임이 인라인 background-position 으로 고르고(data-pixel-cell), 대기 칸만 여기 루프가 a→b→c→b 로 돈다.
    이동(뛰기·날기)은 battleRetroMotion 의 Web Animations translate 가 맡는다 — 노드의 transform·animation 슬롯과 겹치지 않는다. */
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-enemy .battle-enemy-image[data-pixel-sheet] {
-  --battle-enemy-base-width: 96px;
-  --battle-enemy-base-height: 96px;
   object-position: -99999px -99999px;
   background-image: var(--pixel-enemy-url);
   background-repeat: no-repeat;
@@ -321,7 +319,8 @@
   width: 40px;
   z-index: -1;
 }
-.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-enemy[data-pixel-enemy="swoop"]::after {
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-enemy[data-pixel-enemy="swoop"]::after,
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-enemy[data-pixel-enemy="float"]::after {
   background: #10102044;
   width: 28px;
   height: 8px;
