@@ -579,7 +579,7 @@ const REPEAT_OK = /chair|stool|bench|window|sconce|candle|torch|door|bed|table|d
 
 /**
  * 같은 소품을 방에 여러 번 흩는 것 — 목적 없는 채우기의 가장 흔한 꼴(2026-09-28 조수 시험: 재봉사 집 14×12 에 옷감 두루마리 7개).
- * 게시 실내·던전 38곳은 이 기준에 하나도 걸리지 않는다: 소품 하나가 4번 이상이면서 맵 30칸마다 1개를 넘을 때만.
+ * 게시 실내·던전 38곳은 이 기준에 하나도 걸리지 않는다: 소품 하나가 6번 이상이거나, 4번 이상이면서 맵 30칸마다 1개를 넘을 때.
  */
 export function lintPackRepeats(input: PackLintInput, kind: PackSpaceKind): string[] {
   if (kind === "outdoor") return [];
@@ -589,7 +589,8 @@ export function lintPackRepeats(input: PackLintInput, kind: PackSpaceKind): stri
     if (id.startsWith("tile:") || NATURE.test(id) || TABLETOP.test(id) || REPEAT_OK.test(id)) continue;
     counts.set(id, (counts.get(id) ?? 0) + 1);
   }
-  const over = [...counts].filter(([, n]) => n >= 4 && n * 30 >= input.w * input.h);
+  // 큰 맵은 면적 기준을 쉽게 빠져나간다(26×18 광산에 같은 버팀목 틀 8개를 바둑판으로) — 6개 이상이면 크기와 상관없이.
+  const over = [...counts].filter(([, n]) => n >= 6 || (n >= 4 && n * 30 >= input.w * input.h));
   return over.length
     ? [`반복: ${over.map(([id, n]) => `「${id}」 ${n}개`).join(", ")} — 같은 소품을 여러 번 흩지 않는다. 구역마다 기준 물체 하나 + 서로 다른 곁들이 2~4개로 줄인다`]
     : [];
