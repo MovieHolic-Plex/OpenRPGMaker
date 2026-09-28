@@ -301,8 +301,11 @@ export type MonsterFxPainter = {
 /**
  * container 안에 레이어 노드를 두고 상태를 그린다. 404 시트는 그 레이어만 조용히 생략한다.
  * onMissing 은 시트 하나가 없다고 판명될 때 부른다(칩 표시용).
+ * screen 레이어는 screenContainer(배우 뒤) 에 둔다 — 앞에 두면 128 하늘이 시전 몬스터를 통째로 가렸다(2026-09-28 캡처).
  */
-export function createMonsterFxPainter(container: HTMLElement, layers: readonly RetroFxLayer[], nodeClass: string, onMissing?: (key: string) => void): MonsterFxPainter {
+export function createMonsterFxPainter(
+  container: HTMLElement, layers: readonly RetroFxLayer[], nodeClass: string, onMissing?: (key: string) => void, screenContainer: HTMLElement = container,
+): MonsterFxPainter {
   const nodes = new Map<number, HTMLElement>();
   const missing = new Set<string>();
   for (const key of new Set(layers.map((layer) => layer.key))) {
@@ -312,16 +315,16 @@ export function createMonsterFxPainter(container: HTMLElement, layers: readonly 
       onMissing?.(key);
     });
   }
-  const nodeFor = (id: number): HTMLElement => {
+  const nodeFor = (id: number, screen: boolean): HTMLElement => {
     let node = nodes.get(id);
-    if (!node) { node = el("span", { class: nodeClass }); container.append(node); nodes.set(id, node); }
+    if (!node) { node = el("span", { class: nodeClass }); (screen ? screenContainer : container).append(node); nodes.set(id, node); }
     return node;
   };
   const place = (id: number, layerIndex: number, cell: number, center: Point, bottom: boolean, used: Set<number>, stageH: number): void => {
     const layer = layers[layerIndex];
     if (!layer || missing.has(layer.key)) return;
     const size = monsterFxBox(layer, stageH);
-    const node = nodeFor(id);
+    const node = nodeFor(id, layer.anchor === "screen");
     used.add(id);
     node.style.width = size + "px";
     node.style.height = size + "px";
@@ -414,10 +417,11 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string)
   const scenery = el("div", { class: "db-skill-retro-scenery" });
   scenery.style.backgroundImage = SCENERY.map((url) => 'url("' + url + '")').join(", ");
   const dimVeil = el("div", { class: "db-skill-retro-dim" });
+  const screenLayer = el("div", { class: "db-skill-retro-screen-layer" });
   const cast = el("div", { class: "db-skill-retro-cast" });
   const fxLayer = el("div", { class: "db-skill-retro-fx-layer" });
   const flashVeil = el("div", { class: "db-skill-retro-flash" });
-  world.append(scenery, dimVeil, cast, fxLayer, flashVeil);
+  world.append(scenery, dimVeil, screenLayer, cast, fxLayer, flashVeil);
 
   const monster = el("span", { class: "db-skill-retro-enemy db-skill-mon-caster", dataset: { enemy: sheet?.resourceId ?? "" } });
   monster.style.width = cell + "px";
@@ -443,12 +447,12 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string)
   const painter = createMonsterFxPainter(fxLayer, skill.layers, "db-skill-retro-fx", (key) => {
     layerChips.get(key)?.classList.add("is-missing");
     layerChips.get(key)?.setAttribute("data-missing", "true");
-  });
+  }, screenLayer);
 
   const stage = el("div", {
     class: "db-skill-retro-stage db-skill-mon-stage",
     dataset: { testid: "db-skill-mon-stage", skill: skill.id, motion: skill.motion, caster: caster?.slug ?? "", mirror: "true", running: "false" },
-    attrs: { role: "img", "aria-label": title + " 몬스터 스킬 미리보기" },
+    attrs: { role: "img", "aria-label": `${title} 몬스터 스킬 미리보기` },
     children: [world],
   });
 

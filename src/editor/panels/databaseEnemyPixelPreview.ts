@@ -166,9 +166,11 @@ export function renderEnemyPixelPreview(
   ally.style.left = ALLY_X - ALLY_CELL / 2 + "px";
   ally.style.top = FEET_Y - ALLY_FOOT_ROW + "px";
   const dimVeil = el("div", { class: "db-enemy-pixel-dim" });
+  const screenLayer = el("div", { class: "db-enemy-pixel-fx-layer db-enemy-pixel-screen-layer" });
   const fxLayer = el("div", { class: "db-enemy-pixel-fx-layer" });
   const flashVeil = el("div", { class: "db-enemy-pixel-flash" });
-  world.append(scenery, dimVeil, ally, sprite, fxLayer, flashVeil);
+  // 화면 층(screen 128)은 배우 뒤, 몸 위 층(대상·투사체·오라)은 배우 앞.
+  world.append(scenery, dimVeil, screenLayer, ally, sprite, fxLayer, flashVeil);
 
   const stage = el("div", {
     class: "db-enemy-pixel-stage",
@@ -310,7 +312,7 @@ export function renderEnemyPixelPreview(
   }
   function playSkill(skill: RetroMonsterSkill): void {
     let painter = painters.get(skill.id);
-    if (!painter) { painter = createMonsterFxPainter(fxLayer, skill.layers, "db-enemy-pixel-fx"); painters.set(skill.id, painter); }
+    if (!painter) { painter = createMonsterFxPainter(fxLayer, skill.layers, "db-enemy-pixel-fx", undefined, screenLayer); painters.set(skill.id, painter); }
     painterFor?.clear();
     painterFor = painter;
     playing = { skill, timeline: monsterSkillTimeline(skill) };

@@ -1431,6 +1431,15 @@ leaf 조건에서 멈추고 `default: return false` 했다:
 - 목록: 도트 시트가 있는 몬스터 썸네일 모서리에 대기 칸 배지(`db-enemy-pixel-badge`, 행 `data-pixel-sheet`). CSS 는 `database/modern/enemies.css` 에만 더했다(새 파일 없음).
 - 시각 확인: 세션 로컬 `.omo/editor-mx/capture.mjs [skills|enemies|all]`(새 프로젝트 메모리 스토어, 계약 스킬이 없으면 메모리에만 넣고 저장하지 않는다). 모달을 닫은 뒤 도는 루프 0, pageerror·시트 404 0 이다.
 
+### 몬스터 스킬 미리보기 (2026-09-28 med)
+
+- 계약은 `src/assets/retroMonsterSkills.ts`(스킬 42 · slug → 스킬 목록, 레벨대마다 1~5개). 편집기 쪽 전부가 `databaseMonsterSkillStage.ts` 에 있다: 순수 타임라인 `monsterSkillTimeline`(사건 형식·상태 계산은 `retroSkillTimeline.ts` 것을 그대로 쓴다), 레이어 그리기 `createMonsterFxPainter`, 스킬 탭 반전 무대 `renderMonsterSkillStage`, 레코드가 없을 때의 계약 둘러보기.
+- 몬스터 시트 9칸은 pose 사건에 싣는다: windup=`attack_windup` · move=`walk_b` · attack=`attack` · recover=`attack_follow`(`monsterCellForPose`). lunge 는 직업 파고들기와 같은 박자(질주 130ms · 복귀 190ms · 여운 260ms), 나머지는 여운 520ms.
+- 레이어 크기(논리 px, 무대가 2배로 그린다): 32·64 칸 그대로, 대상·전원 위 128 칸은 절반(화면 1배), screen 128 은 무대 높이 × 1.25. **screen 층은 배우 뒤**(`db-*-screen-layer`)에 둔다 — 앞에 두면 심판의 하늘·눈보라가 시전 몬스터를 통째로 덮었다(1차 캡처). 투사체는 몬스터 몸 앞에서 왼→오로 난다(계약상 첫 칸이 오른쪽을 본다). 404 시트는 그 레이어만 생략한다.
+- 적 탭 카드: slug(`pixelEnemySlug` = 시트 파일 이름)의 스킬마다 `db-enemy-pixel-skill-<id>` 버튼, 머리에 「스킬 N개」(`db-enemy-pixel-skill-count`)와 모션 칩, 아래 설명(`aria-live`). 대기·공격 버튼이나 칸 정지로 바꾸면 스킬 층·어둡게·흔들림을 지운다. 감속 모드에서는 착탄 한가운데 한 장면.
+- 스킬 탭: 직업 칩 뒤 `db-filter-chip-monster`(「몬스터」, `RETRO_MONSTER_FILTER_ID`, 판정 `isMonsterSkillId` = 계약 id 또는 `skill_mon_`). `renderSkillRetroStage` 는 계약 몬스터 스킬이면 반전 무대(`db-skill-mon-stage`, 몬스터 왼쪽 시전 → 아군 셋 오른쪽 대상, 시전 몬스터 = `monsterCasterFor` 의 첫 slug)를 돌려준다. skill_mon_* 레코드가 아직 없으면 몬스터 칩 목록 자리에 계약 42개 선택 상자(`db-skill-mon-browser`)가 뜬다. 타이머는 `stopRetroSkillStagesIn` / `resumeRetroSkillStagesIn` 이 `stop/resumeMonsterSkillStagesIn` 을 함께 부른다.
+- 시각 확인: 세션 로컬 `.omo/editor-mon/capture.mjs <회차>`(기본 프로젝트 `/`, Playwright 가짜 시계로 정확한 시각에 찍는다). 마왕 5개 · 서릿 리치 3개 · 슬라임 1개, 「암흑의 심판」「화염 브레스」 모두 pageerror 0.
+
 ## 데이터베이스 30탭 UI/UX 계약 (2026-08-30 실측)
 
 계측은 `scripts/qa/db-ux-probe.mjs` 로 한다(사용법은 `openwiki/testing.md`). 아래 모든 수치는

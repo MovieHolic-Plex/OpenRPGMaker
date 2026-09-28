@@ -819,3 +819,9 @@
 .db-skill-retro-fx[hidden] {
   display: none;
 }
+
+/* 몬스터 스킬 화면 층(screen 128)은 배우(z 10~) 뒤, 어둡게 층 위에 둔다. */
+.db-skill-retro-screen-layer {
+  pointer-events: none;
+  z-index: 5;
+}
