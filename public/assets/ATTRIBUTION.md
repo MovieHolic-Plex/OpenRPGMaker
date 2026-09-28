@@ -259,6 +259,20 @@
 - Notes: same terms as the generated monster sprites above. The CC-BY 4.0 credit for the pack does
   not cover these files.
 
+## Generated monster game cast (not part of the Scarloxy pack)
+
+- Files: `scarloxy/scarloxy-charset-people3.png` (professor, mom, nurse, shop clerk, champion,
+  bug catcher, hiker, swimmer), `scarloxy/scarloxy-charset-people4.png` (camper girl, fisherman,
+  gentleman) and `scarloxy/scarloxy-face-{professor,mom,nurse,champion,clerk}.png` (48x48 faces).
+- Origin: synthesized with an image generation model, using Scarloxy `characters/player.png` and
+  `young_girl.png` (4x nearest upscale) and the existing generated Scarloxy faces as style references,
+  then downscaled to 24x32 RM2K3 walking cells and 48x48 faces by `scripts/build-scarloxy-cast.py`.
+  Raw model outputs are kept at `tiledata/pkmn-characters/raw/`.
+- Author: not Scarloxy (Ismael Garcia) artwork. The files live under `scarloxy/` and use the
+  `tex_scarloxy_charset_` prefix only so they share the Scarloxy art-style grouping in the editor.
+- Notes: same terms as the generated monster sprites above. The CC-BY 4.0 credit for the pack does
+  not cover these files.
+
 ## EasyRPG RTP scoped runtime import
 
 - Files:

@@ -152,4 +152,17 @@ export const CHARSET_APPEARANCE: Readonly<Record<string, string>> = {
 
   "tex_scarloxy_charset_people2#0": "빨간 불꽃 머리, 검은 마스크, 빨간 코트에 노란 띠.",
   "tex_scarloxy_charset_people2#1": "초록 뾰족 머리, 초록 후드, 흰 셔츠, 초록 바지.",
+
+  "tex_scarloxy_charset_people3#0": "회색 넘긴 머리, 둥근 안경, 흰 가운에 청록 셔츠, 갈색 바지.",
+  "tex_scarloxy_charset_people3#1": "갈색 옆으로 묶은 머리, 노란 웃옷, 분홍 앞치마, 하늘색 치마.",
+  "tex_scarloxy_charset_people3#2": "분홍 머리 두 고리, 빨간 십자 흰 간호모, 흰·분홍 간호복.",
+  "tex_scarloxy_charset_people3#3": "파란 모자, 갈색 머리, 파랑·흰 세로 줄무늬 앞치마, 검은 바지.",
+  "tex_scarloxy_charset_people3#4": "은발 뾰족 머리, 금장 남색 코트, 빨간 망토, 검은 부츠.",
+  "tex_scarloxy_charset_people3#5": "밀짚모자, 잠자리채, 초록 셔츠, 황갈색 반바지, 빨간 운동화.",
+  "tex_scarloxy_charset_people3#6": "주황 두건, 갈색 수염, 큰 배낭, 갈색 조끼, 등산화.",
+  "tex_scarloxy_charset_people3#7": "검은 머리에 파란 물안경, 맨 윗몸, 파란 수영 바지, 맨발.",
+
+  "tex_scarloxy_charset_people4#0": "주황 땋은 머리, 초록 베레모, 황갈색 셔츠에 빨간 스카프, 초록 반바지.",
+  "tex_scarloxy_charset_people4#1": "노란 모자, 회색 수염, 낚싯대, 올리브 조끼, 청바지, 검은 장화.",
+  "tex_scarloxy_charset_people4#2": "검은 실크햇, 회색 콧수염, 자주 연미복, 검은 나비넥타이, 지팡이.",
 };
