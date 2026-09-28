@@ -1,6 +1,6 @@
 import type { Project } from "./types";
 import { canonicalJsonOf } from "@/project/persistence/core/canonicalJson";
-import { jsonContentDigest } from "@/project/persistence/core/contentDigest";
+import { jsonContentDigest, trustSharedProjectEntries, withTrustedSharedEntries } from "@/project/persistence/core/contentDigest";
 
 // Same JSON value semantics as proposal bases and remote JSONB: object key order
 // is not authored drift. Array order and every authored value remain significant.
@@ -81,9 +81,18 @@ function digestOf(value: unknown): string {
  * 메인 스레드가 초 단위로 멈춘다(contentDigest 주석).
  */
 export function projectIdentityDigest(project: Project, kind: "proposal" | "authored" | "complete"): string {
-  if (kind === "complete") return digestOf(project);
-  const { world, ...rest } = project;
-  return digestOf(kind === "proposal" ? rest : { ...rest, world: authoredWorld(world) });
+  // 타일셋·업로드 자산 항목은 제자리에서 고치지 않는다(projectClone 계약) — 한 번 요약한 항목은 다음 권위 요약부터 대조하지 않는다.
+  // 사람 편집의 제자리 수정(stale-base 가 잡아야 하는 것)은 데이터베이스·맵·시스템 쪽이고 그 가지는 계속 대조한다.
+  return withTrustedSharedEntries(() => {
+    let digest: string;
+    if (kind === "complete") digest = digestOf(project);
+    else {
+      const { world, ...rest } = project;
+      digest = digestOf(kind === "proposal" ? rest : { ...rest, world: authoredWorld(world) });
+    }
+    trustSharedProjectEntries(project);
+    return digest;
+  });
 }
 
 /** 같은 프로젝트 객체의 정체성 요약을 다시 계산하지 않게 해 주는 공급자(한 동기 구간 안에서만 기억한다). */

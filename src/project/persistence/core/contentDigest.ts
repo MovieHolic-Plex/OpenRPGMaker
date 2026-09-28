@@ -42,6 +42,40 @@ export function withContentDigestEpoch<T>(run: () => T): T {
   try { return run(); } finally { verifiedInEpoch = null; }
 }
 
+/**
+ * 제자리에서 고치지 않는다는 계약을 가진 공유 항목(스토어의 타일셋·업로드 자산 항목 — projectClone 머리말). 한 번 요약을 만든 뒤에는
+ * 구간을 넘어서도 대조하지 않는다. 계약이 깨지면(항목을 제자리에서 고치면) 저장 diff 도 이미 그 변경을 놓친다(projectPatch 의
+ * `base === local` 단축) — 같은 전제를 요약도 따른다.
+ *
+ * 왜(2026-09-28 실측, 새 프로젝트 기본 자료 · 타일셋 노드 62만 개): 기억이 있어도 대조가 타일셋 노드를 전부 훑어 요약 한 번에 약 0.3s,
+ * 조수 체크포인트 하나가 구간 여러 개(적용 권위·적용·체크리스트·커밋 기준)에서 이를 되풀이해 1s 이상이었다.
+ */
+const trustedShared = new WeakSet<object>();
+/**
+ * 믿음은 적용 권위 요약(projectIdentityDigest) 안에서만 쓴다. 로드 정규화(store.normalizeCurrentProject)처럼 공유 항목을
+ * 제자리에서 고치고 전후 요약으로 변경을 알아내는 곳은 믿음 없이 끝까지 대조한다.
+ */
+let trustingShared = false;
+
+/** 이 안의 요약은 믿은 공유 항목을 대조하지 않는다. */
+export function withTrustedSharedEntries<T>(run: () => T): T {
+  if (trustingShared) return run();
+  trustingShared = true;
+  try { return run(); } finally { trustingShared = false; }
+}
+
+/** 프로젝트의 타일셋·업로드 자산 항목 중 요약 기억이 있는 것을 공유 항목으로 믿는다. 요약을 만든 직후 부른다. */
+export function trustSharedProjectEntries(project: unknown): void {
+  if (!isObject(project)) return;
+  const record = project as { tilesets?: unknown; assets?: { uploaded?: unknown } };
+  for (const dictionary of [record.tilesets, record.assets?.uploaded]) {
+    if (!isObject(dictionary)) continue;
+    for (const entry of Object.values(dictionary as Record<string, unknown>)) {
+      if (isObject(entry) && memos.has(entry)) trustedShared.add(entry);
+    }
+  }
+}
+
 /** JSON 값의 토큰. 원시값·짧은 노드는 글 그대로, 긴 객체·배열은 `#` + 글의 요약. JSON 값이 없으면 undefined. */
 function tokenOf(value: unknown, key: string): string | undefined {
   if (value === null) return "null";
@@ -69,7 +103,7 @@ function nodeToken(node: Record<string, unknown>): string {
   const items = keys ? null : (node as unknown as unknown[]);
   const length = keys ? keys.length : items!.length;
   const memo = memos.get(node);
-  if (memo && verifiedInEpoch?.has(node)) return memo.token;
+  if (memo && (verifiedInEpoch?.has(node) || (trustingShared && trustedShared.has(node)))) return memo.token;
   if (memo && memo.values.length === length && isFresh(node, keys, items, length, memo)) {
     verifiedInEpoch?.add(node);
     return memo.token;
