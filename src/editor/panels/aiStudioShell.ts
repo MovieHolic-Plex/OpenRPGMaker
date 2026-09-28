@@ -837,6 +837,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
 
   /** 오른쪽 열 = 지금 보고 있는 채팅. 감독이면 기존 로그·포저, 레인이면 그 레인 스레드, 팀이면 팀 보드. */
   const syncThreadView = (): void => {
+    if (!attachedTo) return;
     const team = selectedThreadId === "team" && teamBoard !== null;
     const lane = selectedThreadId === "director" || team ? null : laneManager.get(selectedThreadId);
     if (!lane && !team && selectedThreadId !== "director") selectedThreadId = "director";
@@ -847,7 +848,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     if (team) {
       laneThreadSlot.replaceChildren();
       teamWork.update(teamBoard);
-      teamSlot.replaceChildren(teamWork.root);
+      if (!teamSlot.contains(teamWork.root)) teamSlot.replaceChildren(teamWork.root);
       return;
     }
     teamSlot.replaceChildren();
@@ -1200,6 +1201,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
       refreshScenes();
       refreshMonitor();
       renderDeck();
+      syncThreadView();
       return;
     }
     detach();
@@ -1212,6 +1214,8 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     composerSlot.append(next.commandBar);
     panel.append(root);
     attachedTo = panel;
+    refreshLaneCaption();
+    syncThreadView();
     adoptLiveMap();
     refreshScenes();
     refreshMonitor();
@@ -1257,7 +1261,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
 
   const unsubscribeTeamActivity = subscribeTeamActivity((state) => {
     teamBoard = state;
-    teamWork.update(state);
+    if (!attachedTo) return;
     // 팀장·팀원은 레인 보드의 행이다 — 캡션·배지·표를 같이 갱신한다.
     refreshLaneCaption();
     if (deckTab === "lanes") renderDeck();

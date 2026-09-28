@@ -662,7 +662,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     appendTileGrid,
     appendAiDocument,
     appendChangeCard,
-    renderConversationEntry,
+    renderConversationEntries,
     clearLastReasoning,
     isLastReasoningBox,
   } = conversationLog;
@@ -1031,7 +1031,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     log.replaceChildren();
     startScreen = null;
     closeToolActivity();
-    for (const entry of record.entries) renderConversationEntry(entry);
+    renderConversationEntries(record.entries);
     const lastAssistant = [...record.entries].reverse().find((entry) => entry.kind === "assistant" && entry.text.trim());
     if (lastAssistant?.kind === "assistant") renderQuickReplies(lastAssistant.text);
     setStatus(source === "manual" ? "이전 대화" : "대화 복원됨");
@@ -1379,7 +1379,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     log.replaceChildren();
     startScreen = null;
     closeToolActivity();
-    for (const entry of turn.entries) renderConversationEntry(entry);
+    renderConversationEntries(turn.entries);
     appendBubble(
       "system",
       reverted

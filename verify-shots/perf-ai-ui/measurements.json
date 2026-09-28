@@ -1,0 +1,107 @@
+{
+  "baselineCommit": "f9bbb5067",
+  "beforeSource": "Previous worktree measurement in this task, before its deletion; reused with user authorization.",
+  "before": {
+    "activity_same_2000": {
+      "ms": 1.1143,
+      "elements": 0
+    },
+    "activity_new_2000": {
+      "ms": 1.0379,
+      "elements": 5
+    },
+    "hidden_board_6": {
+      "ms": 2.0443,
+      "elements": 48
+    },
+    "transcript_roll_200": {
+      "ms": 6.2521,
+      "elements": 200
+    },
+    "workpane_hidden_transcript_6_200": {
+      "ms": 10.9874,
+      "elements": 249
+    },
+    "sidebar_one_member_6_2000": {
+      "ms": 2.4873,
+      "elements": 36
+    },
+    "studio_detached_6_2000": {
+      "ms": 14.2922,
+      "elements": 365
+    },
+    "restore_200": {
+      "ms": 34.1508,
+      "elements": 1000
+    },
+    "restore_scroll_reads": 200,
+    "links_2000_repeat": {
+      "ms": 0.1262
+    },
+    "links_2000_unique": {
+      "ms": 0.1343
+    },
+    "archive_20_runs": {
+      "getAll": 1,
+      "get": 0,
+      "put": 1
+    },
+    "image_observer_200": {
+      "ms": 0.0201
+    },
+    "image_connected_reads": 200
+  },
+  "after": {
+    "activity_same_2000": {
+      "ms": 0.0154,
+      "elements": 0
+    },
+    "activity_new_2000": {
+      "ms": 1.0054,
+      "elements": 5
+    },
+    "hidden_board_6": {
+      "ms": 0.0774,
+      "elements": 0
+    },
+    "transcript_roll_200": {
+      "ms": 0.3159,
+      "elements": 1
+    },
+    "workpane_hidden_transcript_6_200": {
+      "ms": 0.1955,
+      "elements": 1
+    },
+    "sidebar_one_member_6_2000": {
+      "ms": 0.2983,
+      "elements": 0
+    },
+    "studio_detached_6_2000": {
+      "ms": 0.0008,
+      "elements": 0
+    },
+    "restore_200": {
+      "ms": 31.0228,
+      "elements": 1000
+    },
+    "restore_scroll_reads": 1,
+    "links_2000_repeat": {
+      "ms": 0.0003,
+      "elements": 0
+    },
+    "links_2000_unique": {
+      "ms": 0.0082,
+      "elements": 0
+    },
+    "archive_20_runs": {
+      "getAll": 0,
+      "get": 1,
+      "put": 1
+    },
+    "image_observer_200": {
+      "ms": 0.0025,
+      "elements": 0
+    },
+    "image_connected_reads": 0
+  }
+}
