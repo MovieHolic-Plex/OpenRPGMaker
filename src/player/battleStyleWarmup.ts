@@ -27,7 +27,8 @@ export function warmBattleStyles(host: HTMLElement, snapshot: BattleSnapshot): v
   stage.className = "battle-stage";
   stage.setAttribute("aria-hidden", "true");
   stage.inert = true;
-  stage.style.cssText = "visibility:hidden;pointer-events:none;left:-100000px;top:0";
+  // Keep inset:0 sizing: overriding only left with -100000px stretches the stage by 100000px.
+  stage.style.cssText = "visibility:hidden;pointer-events:none;transform:translateX(-100000px)";
   const scene = document.createElement("section");
   scene.className = "battle-scene";
   scene.dataset.battleUiStyle = system.battleUiStyle === "pokemon" ? "pokemon" : "classic";

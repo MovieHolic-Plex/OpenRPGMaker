@@ -96,7 +96,8 @@ describe("mounted enemy battlefield containment", () => {
     ["rm2003", 50, 200, 240, 216, 289.8],
     ["rm2003", 100, 200, 240, 216, 289.8],
     ["rm2000", 100, 200, 240, 320, 289.8],
-    ["pokemon", 100, 148, 148, 490, 227.4],
+    // f115c53bb moved the single enemy feet to logical (239, 92).
+    ["pokemon", 100, 148, 148, 478, 227.4],
   ] as const)("preserves the existing %s dimensions and anchor at %s percent", (skin, percent, width, height, x, bottom) => {
     const { node } = mount(percent, skin);
     const box = geometry(node, width, height);

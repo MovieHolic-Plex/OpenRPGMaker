@@ -1,3 +1,4 @@
+/** @vitest-environment happy-dom */
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { startSession } from "@/project/session";

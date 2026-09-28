@@ -414,13 +414,101 @@ function plannedEndPoint(mover: AutonomousMover, x: number, y: number): { x: num
 
 /** 8회 연속 막힘 이후에만, NPC당 최대 1초에 한 번, 프레임당 최대 2명(runLivingRepaths). 일반 이동/표면 갱신에는 BFS가 없다. */
 const livingBlockers = new WeakMap<AutonomousMover, { id: string; count: number }>();
-const livingYields = new WeakMap<AutonomousMover, { id: string; x: number; y: number; pocketAxis: "vertical" | "horizontal" }>();
+type LivingView = LivingRepathCandidate["view"];
+const livingYields = new WeakMap<AutonomousMover, { ids: string[]; x: number; y: number }>();
+const yieldDirections = [
+  { dir: "up" as const, x: 0, y: -1 }, { dir: "down" as const, x: 0, y: 1 },
+  { dir: "left" as const, x: -1, y: 0 }, { dir: "right" as const, x: 1, y: 0 },
+];
 
-/** 진행 축에 수직인 바로 옆 두 칸(대피 후보). 순서는 위/아래, 왼쪽/오른쪽. */
-function yieldPocketCandidates(view: { readonly x: number; readonly y: number }, axis: "vertical" | "horizontal") {
-  return axis === "vertical"
-    ? [{ dir: "up" as const, x: view.x, y: view.y - 1 }, { dir: "down" as const, x: view.x, y: view.y + 1 }]
-    : [{ dir: "left" as const, x: view.x - 1, y: view.y }, { dir: "right" as const, x: view.x + 1, y: view.y }];
+/** Only called inside the blocked-event cooldown/budget. Edges are observed failures. */
+function blockedLivingGroup(scene: AutonomousNpcSceneContext, id: string): string[] {
+  const edges = new Map<string, string>();
+  for (const [key, mover] of scene.autonomousNPCs) {
+    const edge = livingBlockers.get(mover);
+    if (mover.livingRoute && !mover.activeMove && !scene.commandMoveRouteEventIds?.has(key)
+      && edge && edge.count >= MAX_BLOCKED_STEP_RETRIES) edges.set(key, edge.id);
+  }
+  const group = new Set([id]);
+  let overflow = false;
+  for (let changed = true; changed && !overflow;) {
+    changed = false;
+    for (const [from, to] of edges) if (edges.has(to) && (group.has(from) || group.has(to))) {
+      if (!group.has(from) || !group.has(to)) changed = true;
+      group.add(from); group.add(to);
+      if (group.size > 32) { overflow = true; break; }
+    }
+  }
+  // 33명 이상이 엮이면 전체 그룹을 보지 않고 서로 막은 두 명만 푼다(예전 쌍 양보와 같은 범위).
+  // 비용 상한이 양보 자체를 끄면 예전에 풀리던 긴 줄이 영원히 선다(적대 리뷰 반례: 33명 0/33 도착).
+  if (overflow) {
+    const peer = edges.get(id);
+    group.clear();
+    if (peer !== undefined && edges.get(peer) === id) { group.add(id); group.add(peer); }
+  }
+  if (group.size < 2) return [];
+  // A fixed event is a terminal, not a deadlock cycle.
+  const seen = new Set<string>();
+  let cursor: string | undefined = id;
+  while (cursor && !seen.has(cursor)) { seen.add(cursor); cursor = edges.get(cursor); }
+  if (!cursor) return [];
+  if ([...group].some(key => yieldingLivingMovers.has(scene.autonomousNPCs.get(key)!))) return [];
+  return [...group];
+}
+
+function remainingPassage(scene: AutonomousNpcSceneContext, ids: string[]) {
+  const rects: ReturnType<typeof passageBounds>[] = [];
+  for (const id of ids) {
+    const peer = runtimeEventViewById(store.getCurrent(), scene.map, scene.session, scene.eventPositions, id);
+    if (!peer || peer.priority !== "same" || !peer.overlapForbidden) continue;
+    let x = peer.x, y = peer.y;
+    rects.push(passageBounds(x, y, peer.footprint, peer.passRows));
+    const mover = scene.autonomousNPCs.get(id);
+    if (!mover) continue;
+    for (const move of mover.moves.slice(mover.step)) {
+      if (move.kind === "npcTransfer") break;
+      if (move.kind !== "move") continue;
+      const d = yieldDirections.find(d => d.dir === move.dir);
+      if (!d) continue;
+      x += d.x; y += d.y;
+      rects.push(passageBounds(x, y, peer.footprint, peer.passRows));
+    }
+  }
+  return rects;
+}
+
+/** 경로의 걸음마다 통행 사각이 상대의 남은 통로와 겹치는가. 대피 해제 판정에만 쓴다. */
+function routeCrosses(view: LivingView, moves: AutonomousMover["moves"], reserved: ReturnType<typeof passageBounds>[]): boolean {
+  let x = view.x, y = view.y;
+  for (const move of moves) {
+    if (move.kind === "npcTransfer") break;
+    if (move.kind !== "move") continue;
+    const d = yieldDirections.find(d => d.dir === move.dir);
+    if (!d) continue;
+    x += d.x; y += d.y;
+    const rect = passageBounds(x, y, view.footprint, view.passRows);
+    if (reserved.some(other => rectsOverlap(other, rect))) return true;
+  }
+  return false;
+}
+
+/** At most 85 anchors (Manhattan radius 6); the whole passage must leave peers' routes. */
+function yieldPath(view: LivingView, reserved: ReturnType<typeof passageBounds>[],
+  canStep: (fx: number, fy: number, tx: number, ty: number) => boolean) {
+  const queue = [{ x: view.x, y: view.y, moves: [] as AutonomousMover["moves"] }];
+  const seen = new Set([`${view.x},${view.y}`]);
+  for (let i = 0; i < queue.length; i++) {
+    const at = queue[i]!;
+    if (at.moves.length > 0 && !reserved.some(rect => rectsOverlap(rect, passageBounds(at.x, at.y, view.footprint, view.passRows)))) return at.moves;
+    if (at.moves.length >= 6) continue;
+    for (const d of yieldDirections) {
+      const x = at.x + d.x, y = at.y + d.y, key = `${x},${y}`;
+      if (seen.has(key) || !canStep(at.x, at.y, x, y)) continue;
+      seen.add(key);
+      queue.push({ x, y, moves: [...at.moves, { kind: "move", dir: d.dir }] });
+    }
+  }
+  return null;
 }
 
 function repathBlockedLivingNpc(
@@ -451,16 +539,23 @@ function repathBlockedLivingNpc(
   };
   const yielding = livingYields.get(mover);
   if (yielding) {
-    const peer = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, yielding.id);
-    // 상대가 아직 통로를 막고 있을 때만(솔리드로 남아 있고 두 칸 넘게 지나가지 않았다) 대피를 유지한다.
-    // 상대가 사라지거나 페이지 전환으로 비충돌(아래 층·겹침 허용)이 되면 곧바로 원래 경로를 다시 짠다 —
-    // 위치만 보면 길이 열렸는데도 영원히 대피 칸에 서 있었다(리뷰 반례).
-    const peerSolid = peer && peer.priority === "same" && peer.overlapForbidden;
-    if (peerSolid && Math.abs(peer.x - yielding.x) + Math.abs(peer.y - yielding.y) < 2) {
-      // 대피 걸음이 아직 남았는데 막혔다 = 다른 NPC 가 대피 칸을 먼저 차지했다. 반대편 대피 칸으로 다시 고른다.
+    const reserved = remainingPassage(scene, yielding.ids);
+    const origin = passageBounds(yielding.x, yielding.y, view.footprint, view.passRows);
+    if (reserved.some(rect => rectsOverlap(rect, origin))) {
+      // 상대가 대피자의 원래 자리를 계속 쓰더라도(도착 칸이 그 자리 등) 지금 자리에서 상대의 남은
+      // 통로와 겹치지 않는 경로가 열렸으면 대피를 끝내고 그 길로 간다. 1초 쿨다운·프레임 예산 안에서만 돈다.
+      const detour = routeForLivingMovement({ project, map: scene.map, session: scene.session, view, canStep });
+      if (detour && !routeCrosses(view, detour.moves, reserved)) {
+        livingYields.delete(mover);
+        yieldingLivingMovers.delete(mover);
+        mover.moves = detour.moves;
+        mover.step = 0;
+        mover.blockedSteps = 0;
+        return;
+      }
       if (mover.step < mover.moves.length) {
-        const pocket = yieldPocketCandidates(view, yielding.pocketAxis).find(p => canStep(view.x, view.y, p.x, p.y));
-        if (pocket) { mover.moves = [{ kind: "move", dir: pocket.dir }]; mover.step = 0; }
+        const moves = yieldPath(view, reserved, canStep);
+        if (moves) { mover.moves = moves; mover.step = 0; }
       }
       return;
     }
@@ -469,20 +564,15 @@ function repathBlockedLivingNpc(
   const route = !yielding && blocked(passageBounds(end.x, end.y, view.footprint, view.passRows)) ? null
     : routeForLivingMovement({ project, map: scene.map, session: scene.session, view, canStep });
   if (!route) {
-    const blocker = livingBlockers.get(mover);
-    // 같은 상대에게 8회 막힌 쌍에서 작은 id만 양보한다. 고정 이벤트에는 양보하지 않는다.
-    if (yielding || !blocker || blocker.count < MAX_BLOCKED_STEP_RETRIES || view.event.id >= blocker.id) return;
-    const peerMover = scene.autonomousNPCs.get(blocker.id);
-    const peerBlocker = peerMover && livingBlockers.get(peerMover);
-    const peer = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, blocker.id);
-    if (!peer || !peerMover?.livingRoute || peerBlocker?.id !== view.event.id || peerBlocker.count < MAX_BLOCKED_STEP_RETRIES) return;
-    // 보수적으로 진행 축에 수직인 바로 옆 대피 칸만 쓴다. 없으면 원래 걸음으로 기다린다.
-    const pocketAxis = nx !== view.x && ny === view.y ? "vertical" as const : "horizontal" as const;
-    const pocket = yieldPocketCandidates(view, pocketAxis).find(p => canStep(view.x, view.y, p.x, p.y));
-    if (!pocket) return;
-    livingYields.set(mover, { id: blocker.id, x: peer.x, y: peer.y, pocketAxis });
+    if (yielding) return;
+    const group = blockedLivingGroup(scene, view.event.id);
+    if (group.length === 0) return;
+    const ids = group.filter(id => id !== view.event.id);
+    const moves = yieldPath(view, remainingPassage(scene, ids), canStep);
+    if (!moves) return;
+    livingYields.set(mover, { ids, x: view.x, y: view.y });
     yieldingLivingMovers.add(mover);
-    mover.moves = [{ kind: "move", dir: pocket.dir }];
+    mover.moves = moves;
     mover.step = 0;
     return;
   }
