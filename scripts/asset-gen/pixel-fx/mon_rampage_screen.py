@@ -15,9 +15,10 @@ SX = 22          # stomp point (monster side)
 def veil(c, strong=False):
     shade(c, 64, 64, 50, 'r0', dense='d0')
     if strong:
-        for y in range(0, 128, 4):
-            for x in range((y // 4) % 2 * 2, 128, 4):
-                c.px(x, y, 'd0')
+        for y in range(1, 128, 2):
+            for x in range((y // 2) % 2 * 2, 128, 4):
+                if math.hypot(x - 64, y - 64) < 46:
+                    c.px(x, y, 'd0')
 
 
 def cracks(c, x, y, reach, seed, k='o0', lit=None):

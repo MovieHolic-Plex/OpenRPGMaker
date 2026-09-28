@@ -14,7 +14,7 @@ def spikes(c, h, n, rot, keys, r=20, sq=0.85):
         a = rot + i * 2 * math.pi / n
         x, y = pol(UX, UY + 4, r, a, sq)
         up = 0.5 + 0.5 * max(0.0, -math.sin(a))       # taller on the top half
-        c.flame(x, y + 3, h * (0.55 + 0.6 * up), 2.6, keys, lean=math.cos(a) * 2)
+        c.flame(x, y + 3, h * (0.5 + 0.5 * up), 3.4, keys, lean=math.cos(a) * 3)
 
 
 def runes(c, r, rot, k, n=6, sq=0.5):

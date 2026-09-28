@@ -8,8 +8,8 @@ SIZE / FRAMES / ANCHOR are checked against the contract before anything is writt
 
 Direction (opposite of the class skills): projectile cells face RIGHT; slashes/thrusts/charges enter from the LEFT.
 Cell conventions
-  target/allTargets 64px  shown at 2x (128px box, bottom = ally feet + 16px) -> ally feet near row 53,
-                          body roughly x 21..43, y 29..53. Effects centre on BX, BY and never hide the whole body.
+  target/allTargets 64px  shown at 2x (128px box, bottom = ally feet + 16px) -> ally feet on row 56,
+                          body roughly x 21..43, y 32..56. Effects centre on BX, BY and never hide the whole body.
   user 64px               round, centred on the casting monster.
   screen 128px            256px in the middle of the stage; always finished with fade_oval.
 Colour identity (monster side): smoke olive-grey, steel + dark blood, gale mint + harpy feathers,
@@ -52,10 +52,34 @@ DARK = dict(v0='#0a0610', v1='#23103a', v2='#4a2270', v3='#7a3eb0', v4='#b87ae8'
 CRIM = dict(c1='#7a0a2a', c2='#c81e44', c3='#ff5a6a')
 WHITE = dict(w='#ffffff')
 
-BX, BY, FEET = 32, 41, 53      # ally body centre / feet in a 64px target cell
+BX, BY, FEET = 32, 44, 56      # ally body centre / feet in a 64px target cell (runtime: box bottom = feet + 16px - footMargin)
 UX, UY = 32, 34                # user cell centre
 
-KEYS_FILE = HERE / 'lib_monster_36_52.py'
+
+
+class MonInk(Ink):
+    """Ink with a flame whose lighter layers are shorter and sit 1 px higher each, fully inside the darker ones
+    (Ink.flame put every layer's bottom on the same row, so a light nub showed under each tongue)."""
+
+    def flame(self, x, y, h, w, keys, lean=0.0, curl=None):
+        """Teardrop fire tongue with its base on row y: round belly, curved spine (lean + a small S curl), sharp tip.
+        Lighter layers are narrower, shorter and lifted 1 px each, so they stay inside the darker ones."""
+        curl = (x * 0.37 + y * 0.11) % 1.0 * 2 - 1 if curl is None else curl
+        for i, k in enumerate(keys):
+            ww = max(0.8, w * (1 - i * 0.22))
+            hh = max(2.0, h * (1 - i * 0.2))
+            base = y - i * 1.1
+            left, right = [], []
+            steps = max(6, int(hh / 1.5))
+            for j in range(steps + 1):
+                u = j / steps
+                cx = x + lean * u * u + curl * 1.6 * math.sin(u * math.pi * 1.5)
+                half = ww * (1.25 * (1 - u) ** 0.9) * (0.75 + 0.5 * math.sin(min(1.0, u * 2.2) * math.pi / 2))
+                yy = base - ww * 0.3 - u * hh
+                left.append((cx - half, yy))
+                right.append((cx + half, yy))
+            self.disc(x, base - ww, ww, k)
+            self.poly(left + right[::-1], k)
 
 
 def contract():
@@ -107,29 +131,40 @@ def chunk(c, x, y, s, rot, keys):
     c.px(x - s * 0.3, y - s * 0.3, lt)
 
 
-def cone(c, x0, y0, xf, t, keys, wob=0.0, spread=0.36, w0=4, lift=0.0, tail=None):
-    """Horizontal breath cone from (x0, y0) to front xf (left -> right), rolling billow front.
-    keys: outer -> core. t = animation phase (radians) for the licking edge. tail: x where the stream starts (for fade-out)."""
+def cone(c, x0, y0, xf, t, keys, wob=0.0, spread=0.36, w0=4, lift=0.0, tail=None, reach=None):
+    """Horizontal breath cone from (x0, y0) to xf (left -> right) that ends in licking horizontal flame tongues.
+    keys: outer -> core; hotter layers are thinner, ride slightly high (light from the upper left) and reach less far.
+    t = animation phase. tail: x where a broken-off stream starts; its first 12 px thin out in a checker."""
     xs = int(max(x0, tail if tail is not None else x0))
     n = len(keys)
-    for x in range(xs, int(xf) + 1):
+    reach = reach if reach is not None else 6 + (xf - x0) * 0.16
+    dfront = xf - x0
+
+    def centre(d):
+        return y0 - d * lift + math.sin(d * 0.11 + t) * 3 * wob
+
+    for x in range(xs, int(xf + reach) + 1):
         d = x - x0
-        hw = w0 + d * spread
-        yc = y0 - d * lift + math.sin(d * 0.11 + t) * 3 * wob
+        hw = w0 + min(d, dfront) * spread
+        yc = centre(min(d, dfront))
+        fade = 1.0 if tail is None else min(1.0, (x - xs) / 12)
         for i, k in enumerate(keys):
             s = 1 - i / (n + 0.3)
-            e = hw * s + math.sin(d * 0.45 + t * 2 + i) * 1.8 + math.sin(d * 0.21 - t + i * 2) * 1.4
+            e = hw * s * (0.4 + 0.6 * fade) + math.sin(d * 0.45 + t * 2 + i) * 1.6 + math.sin(d * 0.21 - t + i * 2) * 1.2
             if e < 0.5:
                 continue
-            c.line([(x, yc - e), (x, yc + e * 0.8)], k)
-    # rolling front: a bulge of discs
-    d = xf - x0
-    hw = w0 + d * spread
-    yc = y0 - d * lift + math.sin(d * 0.11 + t) * 3 * wob
-    for i, k in enumerate(keys):
-        s = 1 - i / (n + 0.3)
-        c.disc(xf, yc - hw * 0.1, hw * s * 0.85, k)
-    return yc
+            top, bot = yc - e - 0.7 * i, yc + e * 0.78 - 0.7 * i
+            ri = reach * (1 - i / (n + 1))
+            for yy in range(int(round(top)), int(round(bot)) + 1):
+                if x > xf:
+                    v = (yy - (top + bot) / 2) / max(1.0, (bot - top) / 2)
+                    L = ri * (0.3 + 0.7 * abs(math.sin(yy * 0.42 + t * 1.3 + i * 0.9))) * max(0.0, 1 - v * v)
+                    if x - xf > L:
+                        continue
+                if fade < 1.0 and (x + yy) % 2 and (x * 7 + yy * 3) % 5 > fade * 5:
+                    continue
+                c.px(x, yy, k)
+    return centre(dfront)
 
 
 def tongue(c, x, base, h, w, keys, lean=0.0):
@@ -171,7 +206,7 @@ def despeckle(c):
 def render(mod):
     frames = []
     for f in range(mod['FRAMES']):
-        c = Ink(mod['SIZE'], mod['PAL'])
+        c = MonInk(mod['SIZE'], mod['PAL'])
         mod['draw'](c, f)
         despeckle(c)
         frames.append(c.im)
@@ -269,7 +304,7 @@ def stage_panel(frames, mod, fi, label):
     box = size * 2
     fx = frames[fi].resize((box, box), Image.NEAREST)
     if a in ('target', 'allTargets'):
-        pos = (ACT_C - box // 2, atop + 96 + 16 - box)
+        pos = (ACT_C - box // 2, atop + 96 + 16 - 6 - box)      # placeOnBody: image bottom + 16 - footMargin(3/48 of 96)
     elif a in ('user', 'allAllies'):
         pos = (MON_C - box // 2, FLOOR + 8 - box)
     elif a == 'screen':

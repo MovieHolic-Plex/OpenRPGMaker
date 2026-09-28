@@ -27,17 +27,17 @@ def draw(c, f):
         pow_burst(c, BX, BY - 2, 10, ['k2', 'h1', 'h2', 'w'])
         ring_of_puffs(c, 9, 5, 0.3, 4.5, SK[:3], seed=10)
     elif f == 2:
-        ring_of_puffs(c, 14, 6, 0.1, 6.5, SK, seed=20)
-        c.ddisc(BX, BY - 2, 10, 'k2', squash=0.9)
+        ring_of_puffs(c, 15, 6, 0.1, 6, SK, seed=20)
+        c.dring(BX, BY - 2, 9, 'k2', squash=0.9)
         c.spark(BX - 1, BY - 3, 3, 'h2', 'e3')
     elif f == 3:        # PEAK: full swirling ring, dithered heart
-        ring_of_puffs(c, 18, 7, 0.4, 7.5, SK + ['k4'], seed=30)
-        c.ddisc(BX, BY - 2, 13, 'k1', squash=0.85)
-        c.ddisc(BX - 2, BY - 5, 7, 'k3', squash=0.85, parity=1)
+        ring_of_puffs(c, 20, 7, 0.4, 7, SK + ['k4'], seed=30)
+        c.dring(BX, BY - 2, 11, 'k2', squash=0.85)
+        c.dring(BX, BY - 2, 7, 'k3', squash=0.85, parity=1)
         c.brush(BX, BY - 2, 10, 200, 320, 1.4, 0.4, 'k4', squash=0.7)
     elif f == 4:
-        ring_of_puffs(c, 20, 7, 0.75, 6.5, SK, seed=40)
-        c.ddisc(BX, BY - 2, 12, 'k1', squash=0.85, parity=1)
+        ring_of_puffs(c, 21, 7, 0.75, 6.5, SK, seed=40)
+        c.dring(BX, BY - 2, 12, 'k1', squash=0.85, parity=1)
         c.brush(BX, BY - 2, 12, 20, 150, 1.4, 0.4, 'k3', squash=0.7)
     elif f == 5:        # fraying: puffs drift up and outward
         for i in range(6):

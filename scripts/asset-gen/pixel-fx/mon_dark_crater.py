@@ -45,19 +45,21 @@ def draw(c, f):
     elif f == 3:        # PEAK: dark column erupts
         c.oval(GX, GY, 26, 7, 'c1', 1)
         c.oval(GX, GY, 24, 6, 'c3', 1)
-        c.flame(GX, GY + 1, 44, 9, ['v0', 'v1', 'c1', 'v3', 'v5'], lean=0)
-        c.flame(GX - 12, GY, 20, 5, ['v1', 'c1', 'v3'], lean=-3)
-        c.flame(GX + 12, GY, 20, 5, ['v1', 'c1', 'v3'], lean=3)
+        c.flame(GX - 9, GY, 26, 6, ['v0', 'v1', 'c1', 'v3'], lean=-4, curl=0.6)
+        c.flame(GX + 9, GY, 28, 6, ['v0', 'v1', 'c1', 'v3'], lean=4, curl=-0.6)
+        c.flame(GX, GY + 1, 40, 8, ['v0', 'v1', 'c1', 'v3', 'v5'], lean=1, curl=0.8)
         c.spark(GX, 18, 7, 'w', 'v5', diag=True)
         rubble(c, 0.4, 12, 2)
     elif f == 4:
         c.oval(GX, GY, 30, 8, 'c1', 1)
         c.dring(GX, GY, 26, 'v2', squash=0.28)
-        c.flame(GX, GY + 1, 36, 8, ['v0', 'v1', 'v2', 'v3', 'v4'], lean=1)
+        c.flame(GX - 8, GY, 22, 6, ['v0', 'v1', 'v2', 'v3'], lean=-5, curl=-0.5)
+        c.flame(GX + 6, GY + 1, 32, 7, ['v0', 'v1', 'v2', 'v3', 'v4'], lean=3, curl=0.7)
         rubble(c, 0.7, 12, 2)
     elif f == 5:
         c.dring(GX, GY, 29, 'c1', squash=0.26)
-        c.flame(GX, GY + 1, 24, 6, ['v1', 'c1', 'v3'], lean=-1)
+        c.flame(GX - 3, GY + 1, 20, 6, ['v1', 'c1', 'v3'], lean=-3, curl=0.9)
+        c.flame(GX + 8, GY, 12, 4, ['v1', 'c1', 'v3'], lean=2)
         c.cloud(GX - 8, GY - 30, 8, ['v0', 'v1', 'v2'], seed=5, lobes=6)
         rubble(c, 1.0, 12, 2)
     elif f == 6:        # crater with smoke

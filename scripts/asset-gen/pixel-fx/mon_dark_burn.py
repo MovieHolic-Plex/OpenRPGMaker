@@ -10,12 +10,12 @@ PEAK = 3
 FK = ['v1', 'c1', 'v2', 'v3', 'v4']
 
 
-def flank_flames(c, h, n, seed, keys, w=3.4, lean=1.0):
+def flank_flames(c, h, n, seed, keys, w=4.2, lean=1.0):
     r = rng(seed)
     for i in range(n):
         x = BX - 15 + i * 30 / max(1, n - 1) + r.uniform(-1.5, 1.5)
         side = abs(x - BX) / 15
-        c.flame(x, FEET + 1, h * (0.4 + 0.75 * side) * r.uniform(0.8, 1.1), w * r.uniform(0.8, 1.2), keys, lean=lean * r.uniform(-0.5, 1.2))
+        c.flame(x, FEET + 1, h * (0.38 + 0.55 * side) * r.uniform(0.8, 1.1), w * r.uniform(0.9, 1.25), keys, lean=lean * r.uniform(-0.5, 1.2))
 
 
 def draw(c, f):

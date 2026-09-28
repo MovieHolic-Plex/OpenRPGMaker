@@ -67,11 +67,12 @@ def draw(c, f):
         for i in range(4):
             c.px(54 + i * 2, FEET - 4 + (i % 2), 'r1')
     else:
-        c.dline((26, Y), (46, Y), 's1', step=4)
+        c.dring(30, Y, 5, 's1', squash=1.4)
         c.px(30, Y, 's2')
-        c.px(31, Y, 's1')
+        for i in range(4):
+            c.line([(34 + i * 6, Y - 2 + (i % 2) * 4), (36 + i * 6, Y - 2 + (i % 2) * 4)], 's1')
         for i in range(3):
-            c.px(56 + i * 2, FEET - 1, 'r1')
+            c.line([(55 + i * 2, FEET - 1), (56 + i * 2, FEET - 1)], 'r1')
     fade_edges(c, L=4, R=4)
 
 

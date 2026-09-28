@@ -10,12 +10,12 @@ PEAK = 3
 FK = ['e0', 'e1', 'e2', 'e3', 'e4']
 
 
-def ring_flames(c, h, n, seed, keys, w=3.5, lean=1.0):
+def ring_flames(c, h, n, seed, keys, w=4.2, lean=1.0):
     r = rng(seed)
     for i in range(n):
         x = BX - 14 + i * 28 / max(1, n - 1) + r.uniform(-1.5, 1.5)
         side = abs(x - BX) / 14                       # taller on the flanks, low in the middle
-        hh = h * (0.45 + 0.7 * side) * r.uniform(0.8, 1.1)
+        hh = h * (0.4 + 0.55 * side) * r.uniform(0.8, 1.1)
         c.flame(x, FEET + 1 - (1 - side) * 1.5, hh, w * r.uniform(0.8, 1.2), keys, lean=lean * r.uniform(0.3, 1.2))
 
 
