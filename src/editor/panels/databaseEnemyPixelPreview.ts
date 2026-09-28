@@ -44,25 +44,29 @@ const IDLE_LOOP: readonly PixelEnemyCell[] = ["idle_a", "idle_b", "idle_c", "idl
 type Beat = { readonly cell: PixelEnemyCell; readonly ms: number; readonly dx: number; readonly dy: number };
 export type EnemyPixelAction = "attack" | "hit" | "dead";
 
+/** 이동 슬롯은 근접이지만 그림이 제자리 공격인 종(식충 식물 = stomp 슬롯의 덩굴 채찍). */
+const IN_PLACE = new Set(["generated-enemy-plant-carnivore"]);
+
 /** 근접형인가 — 공격 때 아군 쪽으로 움직인다. shoot·breath 는 제자리. */
-function melee(motion: PixelEnemyMotion): boolean {
-  return motion !== "shoot" && motion !== "breath";
+function melee(sheet: Pick<PixelEnemySheet, "motion"> & { readonly resourceId?: string }): boolean {
+  return sheet.motion !== "shoot" && sheet.motion !== "breath" && !IN_PLACE.has(sheet.resourceId ?? "");
 }
 
 /**
  * 동작 한 번의 칸 순서(순수). dx/dy 는 논리 px — 칸이 끝날 때 그 자리에 있다(칸 사이는 선형 보간).
  * 길이는 런타임 비트(windup·approach·impact·recover)를 줄인 값이라 미리보기에서도 리듬이 같다.
  */
-export function enemyPixelBeats(sheet: Pick<PixelEnemySheet, "motion">, action: EnemyPixelAction, cell: number): readonly Beat[] {
+export function enemyPixelBeats(sheet: Pick<PixelEnemySheet, "motion"> & { readonly resourceId?: string }, action: EnemyPixelAction, cell: number): readonly Beat[] {
   if (action === "hit") return [{ cell: "hit", ms: 380, dx: -4, dy: 0 }, { cell: "hit", ms: 120, dx: 0, dy: 0 }];
   if (action === "dead") return [{ cell: "hit", ms: 260, dx: -4, dy: 0 }, { cell: "dead", ms: 900, dx: 0, dy: 0 }];
-  const reach = melee(sheet.motion) ? Math.min(64, Math.round(96 - cell / 2)) : 0;
-  const lift = sheet.motion === "swoop" ? -18 : sheet.motion === "hop" ? -10 : sheet.motion === "float" ? -6 : 0;
+  const near = melee(sheet);
+  const reach = near ? Math.min(64, Math.round(96 - cell / 2)) : 0;
+  const lift = !near ? 0 : sheet.motion === "swoop" ? -18 : sheet.motion === "hop" ? -10 : sheet.motion === "float" ? -6 : 0;
   return [
-    { cell: "windup", ms: 360, dx: melee(sheet.motion) ? -4 : -2, dy: sheet.motion === "swoop" ? -10 : 0 },
-    { cell: "move", ms: melee(sheet.motion) ? 320 : 220, dx: reach, dy: lift },
+    { cell: "windup", ms: 360, dx: near ? -4 : -2, dy: near && sheet.motion === "swoop" ? -10 : 0 },
+    { cell: "move", ms: near ? 320 : 220, dx: reach, dy: lift },
     { cell: "attack", ms: 300, dx: reach, dy: 0 },
-    { cell: "recover", ms: melee(sheet.motion) ? 360 : 260, dx: 0, dy: 0 },
+    { cell: "recover", ms: near ? 360 : 260, dx: 0, dy: 0 },
   ];
 }
 
@@ -139,7 +143,7 @@ export function renderEnemyPixelPreview(
   const stage = el("div", {
     class: "db-enemy-pixel-stage",
     dataset: { testid: "db-enemy-pixel-stage", motion: sheet.motion, cell: String(cell), running: "false", action: "idle", pixelCell: "idle_a" },
-    attrs: { role: "img", "aria-label": name + " 도트 미리보기" },
+    attrs: { role: "img", "aria-label": `${name} 도트 미리보기` },
     children: [world],
   });
   if (typeof ResizeObserver === "function") {
@@ -162,7 +166,7 @@ export function renderEnemyPixelPreview(
     if (record.graphicHue) pic.style.setProperty("--enemy-pixel-hue", record.graphicHue + "deg");
     const button = el("button", {
       class: "db-enemy-pixel-cell",
-      attrs: { type: "button", title: CELL_LABELS[id] + " 칸 보기", "aria-pressed": "false" },
+      attrs: { type: "button", "aria-pressed": "false" },
       dataset: { testid: "db-enemy-pixel-cell-" + id, cell: id },
       children: [pic, el("span", { class: "db-enemy-pixel-cell-label", text: CELL_LABELS[id] })],
     });
@@ -299,8 +303,8 @@ export function renderEnemyPixelPreview(
 
   const caption = el("div", { class: "db-enemy-pixel-caption", children: [
     el("span", { class: "db-skill-retro-badge-inline", text: "도트 시트" }),
-    el("span", { class: "db-skill-animation-chip", dataset: { testid: "db-enemy-pixel-motion" }, text: MOTION_LABELS[sheet.motion] }),
-    el("span", { class: "db-skill-animation-chip", text: cell + "px 셀" }),
+    el("span", { class: "db-skill-animation-chip", dataset: { testid: "db-enemy-pixel-motion" }, text: IN_PLACE.has(sheet.resourceId) ? "제자리 덩굴 채찍" : MOTION_LABELS[sheet.motion] }),
+    el("span", { class: "db-skill-animation-chip", text: `${cell}px 셀` }),
   ] });
   const controls = el("div", { class: "db-enemy-pixel-controls", attrs: { role: "group", "aria-label": "도트 동작" }, children: actionButtons });
   const wrap = el("section", {

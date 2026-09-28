@@ -767,3 +767,161 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* ---- retro2003 도트 미리보기 카드(databaseEnemyPixelPreview.ts) ----
+   무대는 논리 240×128 을 카드 폭에 맞춰 늘리되 pixelated(nearest)라 흐려지지 않는다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-slot[hidden] {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-preview {
+  background: var(--db-studio-text-1);
+  border-radius: 8px;
+  color: var(--db-studio-on-accent);
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+  padding-bottom: 14px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-preview > .db-enemy-stage-heading {
+  padding-bottom: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-caption,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-controls,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-cells {
+  margin: 0 16px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-caption {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-stage {
+  aspect-ratio: 240 / 128;
+  background: var(--db-studio-well);
+  border: 1px solid var(--db-studio-text-3);
+  border-radius: 6px;
+  margin: 0 16px;
+  max-width: 480px;
+  overflow: hidden;
+  position: relative;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-world {
+  image-rendering: pixelated;
+  left: 0;
+  position: absolute;
+  top: 0;
+  transform: scale(var(--enemy-pixel-scale, 2));
+  transform-origin: 0 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-scenery {
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  /* 640×360(논리 320×180 의 2배) 네 장을 논리 폭 240 에 맞춘다. */
+  background-size: 240px 135px;
+  image-rendering: pixelated;
+  inset: 0;
+  position: absolute;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-sprite {
+  background-repeat: no-repeat;
+  filter: hue-rotate(var(--enemy-pixel-hue, 0deg));
+  image-rendering: pixelated;
+  position: absolute;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-sprite.is-hit {
+  filter: hue-rotate(var(--enemy-pixel-hue, 0deg)) brightness(1.7) saturate(0.4);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-action {
+  background: transparent;
+  border: 1px solid var(--db-studio-text-3);
+  border-radius: 5px;
+  color: var(--db-studio-on-accent);
+  cursor: pointer;
+  font: 500 12px/1.4 var(--font-ui);
+  min-height: 32px;
+  padding: 6px 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-action[aria-pressed="true"] {
+  background: var(--db-studio-accent);
+  border-color: var(--db-studio-accent);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-action:focus-visible,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-cell:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: 1px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-cells {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-cell {
+  align-items: center;
+  background: var(--db-studio-well);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--db-studio-text-1);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-cell.is-current {
+  border-color: var(--db-studio-accent);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-cell[aria-pressed="true"] {
+  background: var(--db-studio-accent-soft);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-cell-pic {
+  background-repeat: no-repeat;
+  filter: hue-rotate(var(--enemy-pixel-hue, 0deg));
+  height: 36px;
+  image-rendering: pixelated;
+  width: 36px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-cell-label {
+  font: 500 10px/1.2 var(--font-ui);
+  white-space: nowrap;
+}
+
+/* 목록 썸네일 모서리의 도트 시트 배지(스킬 탭 .db-skill-retro-badge 와 같은 자리). */
+.db-enemy-pixel-badge {
+  background-color: color-mix(in srgb, var(--db-studio-text-1) 82%, black);
+  background-repeat: no-repeat;
+  border: 1px solid var(--db-studio-accent-border);
+  border-radius: 4px;
+  bottom: -5px;
+  box-shadow: 0 0 0 1px var(--db-studio-surface);
+  box-sizing: content-box;
+  image-rendering: pixelated;
+  pointer-events: none;
+  position: absolute;
+  right: -5px;
+}

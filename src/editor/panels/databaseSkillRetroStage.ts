@@ -69,19 +69,29 @@ const E = {
   slime: "generated-enemy-slime-01", bat: "generated-enemy-bat-01", golem: "generated-enemy-golem-01", dragon: "generated-enemy-dragon-01",
   archer: "generated-enemy-skeleton-archer", wolf: "generated-enemy-wolf-grey", spider: "generated-enemy-spider-cave",
   wisp: "generated-enemy-wisp-blue", redSlime: "generated-enemy-slime-red", zombie: "generated-enemy-zombie-rot",
+  // 2026-09-28 확장(retroMonsterPlan). 시트가 아직 없으면 그 자리만 빈다.
+  ghost: "generated-enemy-ghost-pale", lich: "generated-enemy-lich-frost", knight: "generated-enemy-skeleton-knight",
+  fireSpirit: "generated-enemy-spirit-fire", waterSpirit: "generated-enemy-spirit-water", ironGolem: "generated-enemy-golem-iron",
+  goblin: "generated-enemy-goblin-scout", orc: "generated-enemy-orc-warrior", bandit: "generated-enemy-bandit-mask",
+  harpy: "generated-enemy-harpy-cliff", bee: "generated-enemy-bee-giant", mantis: "generated-enemy-mantis-blade",
+  snake: "generated-enemy-snake-viper", vampire: "generated-enemy-bat-vampire", eye: "generated-enemy-eye-floating",
+  plant: "generated-enemy-plant-carnivore", troll: "generated-enemy-troll-cave", demon: "generated-enemy-demon-lord",
+  mimic: "generated-enemy-mimic-chest", lizard: "generated-enemy-lizardman-spear", boar: "generated-enemy-boar-tusk",
 } as const;
 /** [뒤 위, 앞(한 대상 스킬의 과녁), 뒤 아래]. 앞자리만 큰 적(64·96px)을 쓴다 — 뒤 둘은 48px. */
 type Lineup = readonly [string, string, string];
 const THEME_LINEUPS: readonly (readonly [RegExp, Lineup])[] = [
-  [/holy|smite|judgment|requiem|sabbath|nightmare|hex|drain|blood|mirror|frog/, [E.zombie, E.archer, E.wisp]],
-  [/fire|flame|meteor|burst|breath|cauldron|poison/, [E.redSlime, E.wolf, E.redSlime]],
-  [/ice|frost|blizzard|snow|water|splash|lullaby|notes_blue/, [E.wisp, E.slime, E.wisp]],
-  [/lightning|bolt|storm|chain|thunder/, [E.bat, E.spider, E.bat]],
-  [/thorn|roots|swarm|leaves|tree|moonbeam|bark|regrowth|bat_swarm/, [E.spider, E.wolf, E.slime]],
-  [/notes|sonic|discord|finale|tempo|hymn/, [E.bat, E.wisp, E.redSlime]],
-  [/shuriken|kunai|needle|paralyze|clone|knife|arrow|scope/, [E.archer, E.wolf, E.spider]],
-  [/quake|earth|palm|fist|kick|bash|charge|fortress|bear|claw/, [E.slime, E.golem, E.zombie]],
-  [/moon|cherry|petals|iai|wind|cross|pierce|rising|slash|flurry|whirl|backstab|venom|shadow/, [E.spider, E.wolf, E.bat]],
+  // 성·암흑·저주 → 언데드
+  [/holy|smite|judgment|requiem|nightmare|drain|mirror/, [E.ghost, E.knight, E.zombie]],
+  [/sabbath|hex|blood|frog/, [E.vampire, E.lich, E.ghost]],
+  [/fire|flame|meteor|burst|breath|cauldron|poison/, [E.fireSpirit, E.orc, E.redSlime]],
+  [/ice|frost|blizzard|snow|water|splash|lullaby|notes_blue/, [E.waterSpirit, E.lich, E.wisp]],
+  [/lightning|bolt|storm|chain|thunder/, [E.bat, E.ironGolem, E.eye]],
+  [/thorn|roots|swarm|leaves|tree|moonbeam|bark|regrowth/, [E.bee, E.plant, E.snake]],
+  [/bat_swarm|notes|sonic|discord|finale|tempo|hymn/, [E.harpy, E.mimic, E.bat]],
+  [/shuriken|kunai|needle|paralyze|clone|knife|arrow|scope/, [E.bandit, E.goblin, E.archer]],
+  [/quake|earth|palm|fist|kick|bash|charge|fortress|bear|claw/, [E.goblin, E.boar, E.slime]],
+  [/moon|cherry|petals|iai|wind|cross|pierce|rising|slash|flurry|whirl|backstab|venom|shadow/, [E.mantis, E.lizard, E.spider]],
 ];
 const DEFAULT_LINEUP: Lineup = [E.slime, E.wolf, E.bat];
 
@@ -91,7 +101,8 @@ const DEFAULT_LINEUP: Lineup = [E.slime, E.wolf, E.bat];
  */
 export function retroStageEnemyLineup(source: { readonly keys: string; readonly motion?: string }): Lineup {
   const found = THEME_LINEUPS.find(([pattern]) => pattern.test(source.keys))?.[1] ?? DEFAULT_LINEUP;
-  if (source.motion === "finisher") return [found[0], E.dragon, found[2]];
+  // 필살기 과녁은 96px 보스급. 암흑·저주 계열은 마왕, 나머지는 드래곤·트롤을 키 해시로 번갈아.
+  if (source.motion === "finisher") return [found[0], /sabbath|nightmare|blood|requiem|final/.test(source.keys) ? E.demon : source.keys.length % 2 ? E.troll : E.dragon, found[2]];
   if (source.motion === "leap-strike") return [found[0], E.golem, found[2]];
   return found;
 }
