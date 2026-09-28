@@ -7,7 +7,7 @@
   "objectKits": 14,
   "houseKits": 6,
   "autotileGroups": 10,
-  "bytes": 4756819,
+  "bytes": 4757076,
   "maps": {
     "crayon_field_village": {
       "place": "shared_refmap_crayon_crayon_field_village",
@@ -25,10 +25,10 @@
     }
   },
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "76387055e02a871ef5fb0f7e10e3c2746efb7f91f8fd4552f071104f2d2bfc72",
+  "revision": "135dfe6c470d70198876bdf0f1c4bf6829392227a1d53c04f5734769cab6791d",
   "reloaded": true,
-  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-crayon-2026-09-28T00-47-40-590Z.sqlite",
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-crayon-2026-09-28T01-25-37-577Z.sqlite",
   "otherLibraries": 36,
   "otherLibrariesUnchanged": true,
-  "publishedAt": "2026-09-28T00:48:13.692Z"
+  "publishedAt": "2026-09-28T01:26:05.353Z"
 }

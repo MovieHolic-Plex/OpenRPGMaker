@@ -7,7 +7,7 @@
   "objectKits": 23,
   "houseKits": 0,
   "autotileGroups": 17,
-  "bytes": 5276228,
+  "bytes": 5276490,
   "maps": {
     "photo_forest_path": {
       "place": "shared_refmap_photo_photo_forest_path",
@@ -25,10 +25,10 @@
     }
   },
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "d2c3d93573b336cd939fe173401a6fd506142ff903e41695dede60b3a8436bbb",
+  "revision": "a01faf4fc85232b2154150102fc72566b816d2ede88e15d46d83ac5fbeee6080",
   "reloaded": true,
-  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-photo-2026-09-28T00-48-26-592Z.sqlite",
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-photo-2026-09-28T01-26-18-257Z.sqlite",
   "otherLibraries": 36,
   "otherLibrariesUnchanged": true,
-  "publishedAt": "2026-09-28T00:48:53.305Z"
+  "publishedAt": "2026-09-28T01:26:42.315Z"
 }
