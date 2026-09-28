@@ -86,10 +86,10 @@ def reared(p, n):
         arms_near = [(27, 30), (21, 21), (18, 12)]
         legs = [(23, 22, 21), (30, 32, 33)]
     else:  # attack: body pitched forward, both paws smashed onto the ground in front
-        cx, cy, ang, hxy = 34, 44, 18, (45, 36)
-        arms_far = [(42, 40), (49, 47), (55, 56)]
-        arms_near = [(38, 42), (44, 50), (50, 56)]
-        legs = [(22, 21, 18), (28, 27, 26)]
+        cx, cy, ang, hxy = 30, 42, 25, (42, 32)
+        arms_far = [(38, 38), (47, 44), (54, 55)]
+        arms_near = [(36, 40), (45, 47), (50, 56)]
+        legs = [(20, 19, 16), (26, 25, 24)]
     # hind legs carry all the weight
     for (top, knee, foot), far in zip(legs, (True, False)):
         limb(p, (top, cy + 8), (knee + 1, G - 8), (foot + 2, G), far, 5.8, 4.4)
