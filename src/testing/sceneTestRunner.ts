@@ -1,4 +1,6 @@
 import { recoverAll } from "@/project/sessionActorCommands";
+import { setMapTileOverride } from "@/project/session";
+import { invalidateTilePassabilityComponents } from "@/project/tilePassabilityComponents";
 import { numberInputAnswer } from "@/testing/numberInputAnswer";
 import { buildLifeRuntimeSnapshot, type LifeRuntimeSnapshot } from "@/player/runtimeDom";
 import { canMove, isPassable, isPassableLanding } from "@/project/collision";
@@ -1365,7 +1367,6 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
       case "removeEvent":
       case "vehicle":
       case "setEventGraphicPattern":
-      case "changeTile":
       case "timer":
       case "moveEvent":
       case "waitForAllMovement":
@@ -1373,6 +1374,12 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
       case "inn":
       case "flashScreen":
       case "shakeScreen":
+        step = interp.resume(undefined);
+        break;
+      case "changeTile":
+        // 출하 player(applyChangeTileStep)와 같이 세션 오버라이드에 적고 러너의 실행 맵에도 반영한다 —
+        // 바닥 스위치로 차단기를 여는 체육관 퍼즐은 칸이 바뀌어야 관장까지 걸어갈 수 있다.
+        applyRunnerChangeTile(state, step);
         step = interp.resume(undefined);
         break;
       case "shop":
@@ -2307,6 +2314,16 @@ function expectEventDistance(
 function toStringList(value: string | readonly string[] | undefined): readonly string[] {
   if (value === undefined) return [];
   return typeof value === "string" ? [value] : value;
+}
+
+function applyRunnerChangeTile(state: RunnerState, step: { readonly mapId: string; readonly layer: "lower" | "upper"; readonly x: number; readonly y: number; readonly tile: number }): void {
+  const map = state.runtimeMaps[step.mapId];
+  if (!map) return;
+  const index = step.y * map.width + step.x;
+  if (index < 0 || index >= map.lowerTiles.length) return;
+  setMapTileOverride(state.session, step.mapId, step.layer, index, step.tile);
+  (step.layer === "lower" ? map.lowerTiles : map.upperTiles)[index] = step.tile;
+  invalidateTilePassabilityComponents(map);
 }
 
 function currentMap(state: RunnerState): GameMap | undefined {

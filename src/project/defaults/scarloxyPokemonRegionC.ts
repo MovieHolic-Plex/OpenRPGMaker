@@ -752,6 +752,9 @@ export function createChampionTowerMap(): GameMap {
         "나는 이 지방의 챔피언 세라. 배지 세 개와 라이벌과의 승부, 그 모든 길을 걸어온 네 몬스터들을 보여 줘.",
         "여기서는 도망칠 수 없어. 자, 마지막 승부다!",
       ]),
+      // 마지막 승부 직전 전회복 — 원작 리그처럼 챔피언 앞에서는 지친 파티로 싸우지 않는다.
+      { kind: "recoverAll" },
+      { kind: "text", body: "탑의 성화가 파티를 감쌌다. 몬스터들이 모두 기운을 되찾았다!" },
       battle,
     ], facingGraphic(champion, "down"), PASSIVE_MOVEMENT),
     page("ev_pkmn_c_champion_after", championName, [

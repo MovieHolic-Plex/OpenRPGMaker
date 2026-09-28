@@ -8,8 +8,9 @@
 
 import { canMove } from "@/project/collision";
 import { resolveEventPage } from "@/project/io";
+import { applyRuntimeMapOverrides } from "@/project/runtimeMap";
 import type { PlaySession } from "@/project/session";
-import type { GameEvent, Project } from "@/project/types";
+import type { GameEvent, GameMap, Project } from "@/project/types";
 import { runSceneTest, type SceneStep, type SceneTestResult } from "@/testing/sceneTestRunner";
 import { numberInputAnswer } from "@/testing/numberInputAnswer";
 import { initiallyOn } from "./progression";
@@ -279,6 +280,8 @@ function pageResetGoals(project: Project, setter: CommandVisit, visits: readonly
 }
 
 /** 목표 명령 하나에 이르는 선행 목표 목록(선행 먼저). */
+const PLAN_DEPTH_LIMIT = 48;
+
 export function planCriticalPath(project: Project, target: CommandVisit, targetGoal: Goal): CriticalPlan {
   const map = project.maps;
   const visits: CommandVisit[] = [];
@@ -335,7 +338,9 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
     return ok;
   };
   const planVisit = (visit: CommandVisit, depth: number): boolean => {
-    if (depth > 12) return false;
+    // 한 단계 = 스위치 세터 하나 또는 문 하나. 12 는 맵 19장·배지 3개 포켓몬풍 데모(문 사슬 약 20단)에서 모자랐다.
+    // 순환은 inProgress·mapsInProgress 가 막으므로 깊이는 폭주 방지용 상한일 뿐이다.
+    if (depth > PLAN_DEPTH_LIMIT) return false;
     for (const req of requirementsOf(project, visit)) {
       const key = reqKey(req);
       if (planned.has(key) || satisfiedAtStart(project, req)) continue;
@@ -600,18 +605,37 @@ function relaysTo(event: GameEvent, targetId: string): boolean {
  * 한 칸씩 걷는 경로. 러너의 walk 는 밑에 깔린 다른 문(접촉 이벤트) 위를 지나가다 엉뚱한 맵으로 튄다 —
  * 여기서는 목표 말고 모든 이벤트 칸을 피해서 BFS 한다. 충돌은 런타임과 같은 canMove.
  */
-function pathMoves(project: Project, mapId: string, from: { x: number; y: number }, target: GameEvent, adjacent: boolean): SceneStep[] | null {
-  const map = project.maps[mapId];
-  if (!map) return null;
+function runtimeMapWithOverrides(map: GameMap, session: Pick<PlaySession, "mapOverrides">): GameMap {
+  const copy = { ...map, lowerTiles: [...map.lowerTiles], upperTiles: [...map.upperTiles] };
+  applyRuntimeMapOverrides(copy, session);
+  return copy;
+}
+
+function pathMoves(project: Project, mapId: string, from: { x: number; y: number }, target: GameEvent, adjacent: boolean, session?: PlaySession): SceneStep[] | null {
+  const authored = project.maps[mapId];
+  if (!authored) return null;
+  // changeTile 로 열린 칸(체육관 차단기 등)은 세션 오버라이드에 있다 — 작성본 대신 그것을 반영한 맵으로 길을 찾는다.
+  const map = session?.mapOverrides?.[mapId] ? runtimeMapWithOverrides(authored, session) : authored;
   // 문 앞 발판(`<문>_step`)처럼 목표를 callMapEvent 로 부르기만 하는 접촉 이벤트는 목표와 같은 칸으로 친다 —
   // 2층 집 문은 벽 줄에 붙어 발판으로만 닿는데, 발판을 「다른 이벤트」로 피하면 문이 영영 막힌 것으로 보였다.
   const relays = adjacent ? [] : (map.events ?? []).filter((event) => event.id !== target.id && relaysTo(event, target.id));
   const relayCells = new Set(relays.map((event) => `${event.x},${event.y}`));
   // 밟아도 아무 일 없는 이벤트(모든 페이지가 발밑·겹침 허용이고 접촉 발동이 아님 — 조사 지점·자동 컷신 자리)는 지나간다.
   // 전부 피하면 좁은 기억 방(11×9)에서 투명 조사 지점·컷신 자리에 둘러싸인 메멘토가 「길이 없다」로 오판됐다(2026-09-24).
-  const harmless = (event: GameEvent) => (event.pages ?? []).length > 0 && (event.pages ?? []).every((page) =>
-    page.priority === "below" && page.overlapForbidden === false
-    && !["playerTouch", "touch", "eventTouch"].includes(page.trigger?.kind ?? ""));
+  const harmlessPage = (page: NonNullable<GameEvent["pages"]>[number]) => page.priority === "below" && page.overlapForbidden === false
+    && !["playerTouch", "touch", "eventTouch"].includes(page.trigger?.kind ?? "");
+  // 세션이 있으면 지금 켜진 페이지만 본다(런타임 runtimeEventState 와 같다) — 배지를 받으면 발밑 투명 페이지로 바뀌어
+  // 비켜 서는 관문 경비원이, 모든 페이지를 보는 판정에서는 영영 길을 막는 것으로 보였다(2026-09-28 포켓몬풍 데모).
+  // 켜진 페이지가 없으면(조건 불충족) 그 이벤트는 런타임에 없는 것이라 막지 않는다.
+  const harmless = (event: GameEvent) => {
+    const pages = event.pages ?? [];
+    if (pages.length === 0) return false;
+    if (session) {
+      const active = resolveEventPage(event, session);
+      return !active || harmlessPage(active) || (active.priority ?? "same") !== "same";
+    }
+    return pages.every(harmlessPage);
+  };
   const occupied = new Set((map.events ?? []).filter((event) => event.id !== target.id && !harmless(event)).map((event) => `${event.x},${event.y}`).filter((cell) => !relayCells.has(cell)));
   const isGoal = (x: number, y: number) => adjacent ? Math.abs(x - target.x) + Math.abs(y - target.y) === 1 : (x === target.x && y === target.y) || relayCells.has(`${x},${y}`);
   const key = (x: number, y: number) => `${x},${y}`;
@@ -658,7 +682,7 @@ function fireEvent(driver: Driver, event: GameEvent, visit: CommandVisit): strin
   if (trigger === "none") return `${event.name ?? event.id} 의 현재 활성 페이지가 없습니다(페이지 조건이 안 맞음).`;
   const touch = trigger === "touch" || trigger === "playerTouch" || trigger === "eventTouch";
   const mapId = session.currentMapId;
-  const moves = pathMoves(driver.project, mapId, { x: session.x, y: session.y }, event, !touch);
+  const moves = pathMoves(driver.project, mapId, { x: session.x, y: session.y }, event, !touch, session);
   if (!moves) return `${driver.project.maps[mapId]?.name ?? mapId} (${session.x},${session.y}) 에서 ${event.name ?? event.id} ${touch ? "칸" : "옆"} (${event.x},${event.y}) 까지 걸어갈 길이 없습니다(벽·물·다른 이벤트에 막힘).`;
   if (moves.length > 0) {
     const walked = tryCommit(driver, moves);

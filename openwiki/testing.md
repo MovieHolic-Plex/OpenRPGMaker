@@ -1,5 +1,15 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 오프라인 게임 검사기가 긴 게임을 끝까지 걷게 한 세 보정 (2026-09-28)
+
+19맵·배지 3개 포켓몬풍 데모(`openwiki/pokemon-full-game.md`)에서 `scripts/qa-game/check.mts` 자동 플레이가 가짜로 막혔다.
+
+- **계획 깊이**: `planCriticalPath` 가 12단에서 멈췄다(문·세터 사슬 약 20단). 상한을 48로 올렸다 — 순환은 원래 `inProgress` 가 막는다.
+- **`changeTile`**: 헤드리스 러너(`src/testing/sceneTestRunner.ts`)가 명령을 건너뛰어 바닥 스위치로 연 차단기가 그대로 벽이었다.
+  이제 출하 player(`applyChangeTileStep`)처럼 세션 오버라이드와 실행 맵에 쓰고, `autoPlay` 의 길찾기도 오버라이드를 반영한 맵을 쓴다.
+- **켜진 페이지만 막는다**: 길찾기가 이벤트의 **모든** 페이지를 보고 막힘을 판정해, 배지를 받으면 발밑 투명 페이지로 비켜 서는 경비원이
+  영영 막는 것으로 보였다. 세션이 있으면 지금 켜진 페이지로 판정한다(런타임 `runtimeEventState` 와 같다).
+
 ## AI 세션 테스트의 모델 id 는 임의로 짓지 않는다 (2026-09-14)
 
 픽스처가 `model: "supervisor-model"` 처럼 **카탈로그에 없는 id** 를 쓰면 창이 보수 폴백

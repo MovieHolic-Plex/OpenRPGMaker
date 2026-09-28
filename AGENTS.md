@@ -39,6 +39,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - Runtime pre-edit routing & cautions: `openwiki/runtime-pre-edit-routing.md` (read first for any runtime change)
    - 타이틀 오프닝 효과 (WebGL 빛내림·칼날 반사·물결·안개, AI 키아트 + 비전 좌표 맞춤): `openwiki/title-opening-effects.md`
    - Runtime battle: `openwiki/runtime-battle.md`
+   - 포켓몬풍 완결 게임 「몬스터 테이머」(19맵, 지역 파일 계약·진행 보정·검증 명령): `openwiki/pokemon-full-game.md`
    - 배틀러 idle 애니메이션을 **새로 추가하는 절차**(표시 상자 실측 → 클립 → 창 탐색 → 패킹 → 검증, 네 계약과 함정): `openwiki/battler-idle-playbook.md`
    - Runtime action combat: `openwiki/runtime-action-combat.md`
    - Runtime sessions & state: `openwiki/runtime-sessions.md`

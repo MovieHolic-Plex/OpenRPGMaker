@@ -456,4 +456,9 @@ Pi 런타임(`scripts/lib/piAgentRuntime.ts`)은 모델이 끝났다고 할 때 
 - **생성 프로필**: `generate_map` 은 dungeon 레이아웃으로 흙 24·잔돌 25·벽 몸통 156·자갈 336 만 칠한다(가장자리·앞면은 그리지 않는다).
 - **없는 것**: 나무 다리·난간, 동굴 안 건물, 얼음·용암 동굴, 비밀 문, 폭포. 바깥 입구 그림은 몬스터 마을 부품의 cave-entrance.
 
+- **쿼터 합성 제외(2026-09-28)**: Scarloxy 시트(grassland·wilds 와 그 위 반쪽을 쓰는 monster_town_kit·monster_gym_coast)는
+  `COMBINED_TOWN_WATER_BLOCK_TEXTURES`(`src/editor/chipsetComposition.ts`)에서 뺐다. 0/30/60/90 자리가 물이 아니라 모래·절벽 조각이라,
+  모래 34(수로 프레임 번호)·모래 패치 0~2/30~32 가 호수·수로 쿼터로 합성돼 출하 player 에서 세로 줄무늬로 보였다.
+  이 네 칩셋 전부를 한 게임에서 쓰는 예는 `openwiki/pokemon-full-game.md`.
+
 

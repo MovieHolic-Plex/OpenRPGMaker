@@ -25,10 +25,9 @@ const COMBINED_TOWN_WATER_BLOCK_TEXTURES = new Set<string>([
   "tex_easyrpg_chipset_combined_town_retro_world",
   "tex_tibo_interior_expanded",
   "tex_modern_exteriors_nocturne",
-  "tex_scarloxy_chipset_grassland",
-  "tex_scarloxy_chipset_monster_town_kit",
-  "tex_scarloxy_chipset_monster_gym_coast",
-  "tex_scarloxy_chipset_wilds",
+  // Scarloxy 시트(grassland·wilds 와 그 위 반쪽을 쓰는 monster_town_kit·monster_gym_coast)는 넣지 않는다 —
+  // 0/30/60/90 자리가 물이 아니라 모래·절벽 조각이라, 넣으면 모래 34(수로 프레임 번호)·모래 패치 0~2/30~32 가
+  // 호수·수로 쿼터로 합성돼 세로 줄무늬가 된다(2026-09-28 출하 player 파도 마을 실측). 이 팩의 물은 별도 블록이다.
 ]);
 
 export function usesCombinedTownWaterBlock(tileset: TilesetDef): boolean {
