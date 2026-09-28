@@ -169,8 +169,12 @@ async function recordAll(rows) {
   async function leaveBattle() {
     // 결과 창까지 넘긴 뒤 필드로. 적 HP 가 커서 이기지 못하므로 이 사본의 전투는 패배 가능 + 도주 불가 — 실패 때만 새로고침으로 빠진다.
     if (!(await scene()).present) return;
-    await page.goto(server.url + '/player.html', { waitUntil: 'domcontentloaded' });
-    await page.waitForSelector(selector('title-screen'), { timeout: 120000 });
+    // 부하가 높으면 새로고침 한 번이 타이틀까지 120초를 넘길 때가 있다(실측) — 한 번 더 시도한다.
+    for (let attempt = 0; ; attempt++) {
+      await page.goto(server.url + '/player.html', { waitUntil: 'domcontentloaded' });
+      try { await page.waitForSelector(selector('title-screen'), { timeout: 120000 }); break; }
+      catch (e) { if (attempt >= 1) throw e; console.log('[monsters] title timeout after battle, reloading'); }
+    }
     await page.keyboard.press('Enter');
     await page.waitForFunction(() => !!window.__oprnDebug?.readState?.().currentMapId, null, { timeout: 120000 });
     await page.evaluate(() => {
