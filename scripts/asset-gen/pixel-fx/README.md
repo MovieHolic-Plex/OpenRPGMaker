@@ -61,3 +61,14 @@ druid LEAF green, BARK brown, MOON silver (+ blossom pink); witch HEX violet,
 TOXIC green (+ BLOOD crimson for life drain, GLASS lilac for the mirror).
 Checks: size, binary alpha, ≤16 colours, no empty cell, neighbour change ≥ 5 % of ink.
 Review output: `.omo/pixel-fx/<key>-preview.png`, `druid|witch-sheet.png`, `druid|witch-composite.png`.
+
+## Monster skill sheets 0–17 (retro2003)
+
+`lib_monster_0_17.py` draws sheets 0–17 of `RETRO_MONSTER_FX_SHEETS` in `src/assets/retroMonsterSkills.ts`
+(acid, slam, drain, screech, sting, web, scythe, howl, charge, tusk, claw, fang, shell, hellfire, curse skull, bone arrow).
+It reuses the `lib_samurai.Ink` cel and the `lib_scout` checks. Each script's anchor, frame size and count are compared
+with the contract, and the build also stops if the first 18 contract keys change order.
+Direction is the mirror of the class sheets: monsters stand on the left, so projectiles face right and hits arrive from the left.
+Every cell ends with `fx_edge.fade_edges`. Colour identity: poison is acid green and violet, darkness is violet, black and crimson,
+fire is orange-red with soot, earth is brown dust. `python3 lib_monster_0_17.py` rebuilds all 18 and writes
+`.omo/mfx/<key>-preview.png`, `frames-0_17-part*.png` and `board-0_17*.png` (stage mock-up with actor1-0).
