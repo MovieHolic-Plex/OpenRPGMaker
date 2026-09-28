@@ -53,7 +53,7 @@ const MOSS_SHOP_ITEM_IDS = [CAPTURE_ORB_ITEM_ID, PKMN_A_SUPER_ORB_ITEM_ID, "item
 // --- 공용 이벤트 헬퍼 ---------------------------------------------------------------
 
 /** 배역 그림을 원하는 방향으로 세운다(castGraphic 은 아래 방향 고정). */
-function facingGraphic(role: ScarloxyCastRole, direction: Dir): EventPage["graphic"] {
+export function facingGraphic(role: ScarloxyCastRole, direction: Dir): EventPage["graphic"] {
   const entry = SCARLOXY_CAST[role];
   return {
     sprite: { type: "bundled", id: entry.charsetTextureKey },
@@ -62,7 +62,7 @@ function facingGraphic(role: ScarloxyCastRole, direction: Dir): EventPage["graph
   };
 }
 
-function castTalker(id: string, x: number, y: number, role: ScarloxyCastRole, lines: readonly string[], options: {
+export function castTalker(id: string, x: number, y: number, role: ScarloxyCastRole, lines: readonly string[], options: {
   speaker?: string; extra?: readonly Command[]; wander?: boolean; direction?: Dir;
 } = {}): GameEvent {
   const speaker = options.speaker ?? SCARLOXY_CAST[role].label;
@@ -74,23 +74,23 @@ function castTalker(id: string, x: number, y: number, role: ScarloxyCastRole, li
 }
 
 /** 표지판·조사 칸 — 그림 없는 조사 이벤트. */
-function signEvent(id: string, x: number, y: number, name: string, lines: readonly string[], extra: readonly Command[] = []): GameEvent {
+export function signEvent(id: string, x: number, y: number, name: string, lines: readonly string[], extra: readonly Command[] = []): GameEvent {
   return event(id, x, y, [
     page(`${id}_page`, name, [...lines.map((body) => ({ kind: "text", speaker: name, body }) satisfies Command), ...extra], NO_GRAPHIC, PASSIVE_MOVEMENT),
   ]);
 }
 
 /** 트레이너에게 지면 이끼 센터로 돌아가 회복한다(포켓몬식 '눈앞이 캄캄해졌다'). */
-function whiteoutCommands(): Command[] {
+export function whiteoutCommands(center: { mapId: string; x: number; y: number } = { mapId: PKMN_MAPS.mossCenter, ...CENTER_ARRIVAL }): Command[] {
   return [
     { kind: "text", body: "눈앞이 캄캄해졌다…" },
-    { kind: "transfer", mapId: PKMN_MAPS.mossCenter, x: CENTER_ARRIVAL.x, y: CENTER_ARRIVAL.y, fade: "black" },
+    { kind: "transfer", mapId: center.mapId, x: center.x, y: center.y, fade: "black" },
     { kind: "recoverAll" },
     { kind: "text", speaker: SCARLOXY_CAST.nurse.label, body: "정신이 드셨나요? 몬스터들은 모두 회복해 두었어요. 무리하지 마세요." },
   ];
 }
 
-type TrainerSpec = {
+export type TrainerSpec = {
   readonly id: string;
   readonly x: number;
   readonly y: number;
@@ -102,6 +102,8 @@ type TrainerSpec = {
   readonly lose: string;
   readonly after: readonly string[];
   readonly range?: number;
+  /** 지면 돌아갈 센터(기본 이끼 센터). */
+  readonly whiteout?: { mapId: string; x: number; y: number };
 };
 
 /**
@@ -109,7 +111,7 @@ type TrainerSpec = {
  * 이기면 셀프 스위치 A 가 켜져 둘째 페이지(다시 싸우지 않는 대사)로 바뀐다.
  * 지면 센터로 돌아가고, A 는 켜지지 않으므로 말을 걸면 다시 싸울 수 있다.
  */
-function trainerEvent(spec: TrainerSpec): GameEvent {
+export function trainerEvent(spec: TrainerSpec): GameEvent {
   const graphic = facingGraphic(spec.role, spec.facing);
   const battle: Command = {
     kind: "battleProcessing",
@@ -121,7 +123,7 @@ function trainerEvent(spec: TrainerSpec): GameEvent {
       { kind: "text", speaker: spec.speaker, body: spec.lose },
       { kind: "setSelfSwitch", key: "A", value: true },
     ],
-    defeatBranch: whiteoutCommands(),
+    defeatBranch: whiteoutCommands(spec.whiteout),
     escapeBranch: [],
   };
   const challenge: EventPage = {
@@ -141,7 +143,7 @@ function trainerEvent(spec: TrainerSpec): GameEvent {
 
 // --- DB 레코드: 야생·트레이너 몬스터 ------------------------------------------------
 
-type BaseStats = { maxHp: number; maxMp: number; attack: number; defense: number; mind: number; agility: number };
+export type BaseStats = { maxHp: number; maxMp: number; attack: number; defense: number; mind: number; agility: number };
 
 /** 데모 기존 종(scarloxyPokemonDemoGame.ts SPECIES_SEEDS) 중 이 지역이 쓰는 종의 기본 능력치. */
 const BASE_SPECIES: Readonly<Record<string, { name: string; stats: BaseStats; skills: readonly string[] }>> = {
@@ -173,10 +175,10 @@ function speciesInfo(key: string, level: number): { name: string; stats: BaseSta
  * HP 만 배수를 곱한다. 적은 교대·아이템이 없으니 HP 로 버티게 한다. 배수는 simulateBattle 로 맞췄다
  * (스타터 진화형 + 포획 2마리, 기대 레벨에서 야생 90%+, 체육관 트레이너 70~90%, 관장 50~70%).
  */
-const WILD_HP_MULTIPLIER = 1.5;
-const TRAINER_HP_MULTIPLIER = 1.7;
-const LEADER_HP_MULTIPLIER = 2.0;
-function scaledStats(base: BaseStats, level: number, multiplier: number): BaseStats {
+export const WILD_HP_MULTIPLIER = 1.5;
+export const TRAINER_HP_MULTIPLIER = 1.7;
+export const LEADER_HP_MULTIPLIER = 2.0;
+export function scaledStats(base: BaseStats, level: number, multiplier: number): BaseStats {
   const stats = monsterBattleStatsForSpecies({ id: "pkmn_a_scale", name: "", baseStats: base } as MonsterSpeciesRecord, level, undefined);
   return { ...stats, maxHp: Math.round(stats.maxHp * multiplier) };
 }
@@ -292,7 +294,7 @@ export function createPkmnRegionARecords(): PkmnRegionARecords {
   };
 }
 
-function encounterTable(regions: readonly Rect[], weights: Readonly<Record<string, number>>): EncounterTableEntry[] {
+export function encounterTable(regions: readonly Rect[], weights: Readonly<Record<string, number>>): EncounterTableEntry[] {
   return regions.flatMap((region) => Object.entries(weights).map(([troopId, weight]) => ({
     troopId, weight, conditions: { region: { ...region } },
   })));
@@ -300,13 +302,13 @@ function encounterTable(regions: readonly Rect[], weights: Readonly<Record<strin
 
 // --- 이끼 마을 (town_kit 28×20) -----------------------------------------------------
 
-function kitBlock(name: string): number[][] {
+export function kitBlock(name: string): number[][] {
   const block = MONSTER_TOWN_KIT_MANIFEST.blocks.find((entry) => entry.name === name);
   if (!block) throw new Error(`몬스터 마을 부품 매니페스트에 ${name} 블록이 없습니다.`);
   return Array.from({ length: block.h }, (_, dy) =>
     Array.from({ length: block.w }, (_, dx) => (block.row + dy) * 30 + block.col + dx));
 }
-const K = {
+export const K = {
   LAB: kitBlock("research-lab"),
   SIGNPOST: kitBlock("signpost")[0]![0]!,
   MAILBOX: kitBlock("mailbox")[0]![0]!,
@@ -318,14 +320,14 @@ const K = {
   FENCE: kitBlock("picket-fence")[0]!,
   FENCE_POST: kitBlock("fence-post")[0]![0]!,
 } as const;
-const TEAL_TREE_SMALL: readonly (readonly number[])[] = [[19], [49]];
+export const TEAL_TREE_SMALL: readonly (readonly number[])[] = [[19], [49]];
 
-function fenceRow(map: GameMap, x0: number, x1: number, y: number): void {
+export function fenceRow(map: GameMap, x0: number, x1: number, y: number): void {
   for (let x = x0; x <= x1; x += 1) setUpper(map, x, y, K.FENCE[(x - x0) % 2]!);
   setUpper(map, x1, y, K.FENCE_POST);
 }
 
-function blankMap(key: keyof typeof PKMN_MAPS, name: string, tilesetId: string, lower: number): GameMap {
+export function blankMap(key: keyof typeof PKMN_MAPS, name: string, tilesetId: string, lower: number): GameMap {
   const [width, height] = PKMN_MAP_SIZES[key];
   return {
     id: PKMN_MAPS[key],
@@ -690,11 +692,11 @@ function reduceMask(mask: number): number {
 }
 
 /** 글자 배치: W 바위 벽 · h 고지대 · ~ 물 · g 자갈 · . 흙. */
-type CaveChar = "W" | "h" | "~" | "g" | ".";
-type CaveRect = readonly [CaveChar, number, number, number, number]; // 글자, x0, y0, x1, y1 (끝 포함)
-type CavePlacement = readonly [string, number, number];
+export type CaveChar = "W" | "h" | "~" | "g" | ".";
+export type CaveRect = readonly [CaveChar, number, number, number, number]; // 글자, x0, y0, x1, y1 (끝 포함)
+export type CavePlacement = readonly [string, number, number];
 
-type CaveSpec = {
+export type CaveSpec = {
   readonly width: number;
   readonly height: number;
   readonly rects: readonly CaveRect[];
@@ -765,7 +767,7 @@ export function buildCaveTiles(spec: CaveSpec): { lower: number[]; upper: number
   return { lower, upper };
 }
 
-function caveMap(key: "cave1" | "cave2", name: string, spec: CaveSpec): GameMap {
+export function caveMap(key: keyof typeof PKMN_MAPS, name: string, spec: CaveSpec): GameMap {
   const map = blankMap(key, name, CAVE_TILESET_ID, CAVE_DIRT);
   const tiles = buildCaveTiles(spec);
   map.lowerTiles = tiles.lower;
@@ -774,7 +776,7 @@ function caveMap(key: "cave1" | "cave2", name: string, spec: CaveSpec): GameMap 
 }
 
 /** 반짝이 바닥 = 숨은 도구. 조사하면 줍고 바닥을 흙으로 되돌린다. */
-function sparkleItem(id: string, mapId: string, x: number, y: number, itemId: string, amount: number, label: string): GameEvent {
+export function sparkleItem(id: string, mapId: string, x: number, y: number, itemId: string, amount: number, label: string): GameEvent {
   return event(id, x, y, [
     page(`${id}_find`, "반짝이는 바닥", [
       { kind: "text", body: `바닥에서 무언가 반짝인다… ${label}을(를) 주웠다!` },
