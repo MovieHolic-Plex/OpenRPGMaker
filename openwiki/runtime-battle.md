@@ -45,6 +45,11 @@
   - **도트 적 시트** `src/assets/pixelEnemySheets.ts`: 슬라임(`generated-enemy-slime-01`)·박쥐(`generated-enemy-bat-01`)는 이 스킨에서만 손도트 시트 `assets/generated/pixel-enemies/<name>.png`(64px 셀 3×3: idle a·b·c / windup·move·attack / recover·hit·dead, 오른쪽 보기)로 그린다. 원본·설명은 `scripts/asset-gen/pixel-enemy/<name>.py`, `tiledata/pixel-enemies/<name>/README.md`. 다른 스킨은 같은 id 로 기존 통짜 그림을 그대로 쓴다.
     `<img>` 는 src 를 유지하고 배경으로 칸을 그린다(`data-pixel-sheet`, 128px 상자, 대기는 CSS a→b→c→b 루프). 노드 `data-pixel-enemy` 가 hop(슬라임)/swoop(박쥐). 근접(통상 공격·공격력 기술)은 `retroEnemyReach` 가 대상 아군까지의 dx/dy 를 재고 시퀀서 훅 `enemyApproachMs`/`enemyRecoverMs` 가 비트를 늘린다. 이동은 Web Animations 의 `translate` 경로(슬라임 두 번 도약, 박쥐 치켜들기→급강하), 칸은 windup→move→attack→recover. 그 밖의 기술은 제자리에서 당겼다 나선다. 피격 hit 칸 380ms, 막타는 hit→dead 칸 뒤 네 번 깜빡여 사라진다. 시트를 못 읽으면 표시를 걷어 원본 그림이 보인다.
   - 명령 입력 중 아군은 +16px에서 idle. 피격은 hit/방어 중 guard_hit, 빗나감은 evade, HP≤25% 대기는 weak. 쓰러짐은 dying→dead(160ms), 표시 원장의 부활은 revive→idle(260ms). 승리 확정(`onResultPending`) 뒤 victory↔victory_b를 260ms마다 교대한다. `data-battle-pose-frame`은 실제 셀 id, `data-battle-pose`는 CSS 의미 포즈다.
+  - **2026-09-28 3차 수정(사용자 지적: 공격 대상 부정확·적이 너무 큼·일행이 계속 앉아 있음·배경이 그림 같음)**
+    - 대상은 전투 id(`enemy-N`, 노드 testid)로 먼저 찾는다. recordId 로 찾으면 같은 종족 둘 중 첫째에게 걸어가고 넉백도 첫째에게 걸렸다. 가로뿐 아니라 대상 발 높이까지 세로로도 걷는다(`RetroWalk.dy` → `--retro-travel-y`). GIF 도구의 `strike` 계측(맞은 적 = 가장 가까운 적, gapX·feetY)이 잰다.
+    - 도트 적 시트는 48px 셀(아군과 같은 크기, 같은 2배 표시 96px 상자, 바닥선 y=44). 64px 셀·128px 상자였던 첫 판은 아군보다 컸다.
+    - 빈사 대기 weak 칸(무릎 꿇음)은 쓰지 않는다. 대기·걷기·방어·방어 피격·빈사 칸은 걷기 칩의 곧게 선 몸으로 다시 그렸다(`scripts/asset-gen/charset-battler/art3/actorN.py`, idle 높이 = 걷기 칩 높이).
+    - 겹 배경은 AI 원화 축소본을 버리고 PIL 로 직접 찍은 도트(논리 320×180 → 2배, 바이옴당 ≤24색)로 바꿨다. 생성기는 `scripts/asset-gen/pixel-scenery/<biome>.py`. 옛 `gen-battle-scenery.mjs` 는 돌리지 않는다(침식 필터·감색이 도트를 망친다). source.png 는 옛 원화 기록으로만 남는다.
   - 도트 시트가 없는 적: windup 비트에 흰 실루엣 두 번 번쩍, impact 에 10px 튐. 격파는 붉게 물들며 가로줄로 지워지는 500ms 소멸이 기존 파편·분해를 대신한다. 피해 숫자는 도트 글꼴(회복 초록, 급소 노랑)로 튀었다 한 번 튕긴다.
   - 시퀀서의 onTimelineEntry가 소비 중인 엔트리를 모션에 넘긴다. 마지막 결과 스냅샷은 이미 다음 행동일 수 있다. 칸 타이머는 scheduleBattleTimer로 장면 수명을 따르며, 비트 세대로 오래된 콜백을 버리고 배속을 반영한 실제 비트 길이 안에서만 움직인다.
   - 감속 모드: 걷기·점프·번쩍임·승리 교대를 끄고 비트별 대표 칸만 남긴다.
