@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { clearAiActivityLogs, listAiActivityLogs } from "@/ai/activityLog";
-import { startPiRunLog } from "@/ai/piAgent/activityLog";
+import { recordPiIntentFailure, startPiRunLog } from "@/ai/piAgent/activityLog";
 import { createTeamBoardState, reduceTeamBoard } from "@/ai/piAgent/teamBoardState";
 import type { TeamBoardState } from "@/ai/piAgent/teamBoardState";
 import type { AuditEntry } from "@/ai/session/types";
@@ -109,5 +109,46 @@ describe("Pi 실행 활동 로그", () => {
     // tool 항목은 text 대신 summary 를 쓴다 — 합집합 타입이라 한 접근자로 편다.
     const labelOf = (entry: AuditEntry): string => ("text" in entry ? entry.text : entry.summary);
     expect(row?.audit.map(labelOf)).toEqual(rows.map(labelOf));
+  });
+
+  // 2026-09-28 실측 회귀: 「위로 올라가면 마을」 실패 로그에는 판정도, 「오류 5」의 문장도, 도구 인자도 없었다.
+  it("의도 판정·도구 과정(인자·성공·실패)·실행 상태·판정 변경이 감사에 순서대로 남는다", async () => {
+    let board = createTeamBoardState("single", "위로 올라가면 마을");
+    board = reduceTeamBoard(board, { type: "agent_spawn", agentId: "map_a", role: "builder", mapId: "map_a", mapName: "빈 맵", task: "위로 올라가면 마을" });
+    const event = (inner: Parameters<typeof reduceTeamBoard>[1]) => { board = reduceTeamBoard(board, { type: "agent_event", agentId: "map_a", event: inner }); };
+    event({ type: "tool_start", id: "t1", name: "author_village", args: { target: { kind: "existing", mapId: "map_a" } } });
+    event({ type: "tool_end", id: "t1", name: "author_village", ok: false, summary: "기존 맵 map_a에 이미 저작 내용이 있어 전체 재시공이 거부됐습니다" });
+    event({ type: "execution_status", name: "village.contract_released", ok: false, summary: "마을 계약 해제 — village-requires-scope" });
+    event({ type: "execution_status", name: "map.image.delivered", ok: true, summary: "이미지 전달" });
+    event({ type: "tool_start", id: "t2", name: "author_village", args: { target: { kind: "new", mapId: "map_village" } } });
+    event({ type: "tool_end", id: "t2", name: "author_village", ok: true, summary: "Village authored: 12/12 houses" });
+    const run = startPiRunLog({
+      instruction: "위로 올라가면 마을", mode: "single", mapIds: ["map_a"], mapId: "map_a", mapName: "빈 맵", provider: "p", model: "m",
+      routing: "intent:llm mode=create construction=approach:north → 마을 계약: 새 맵 map_village",
+    });
+    await run.started;
+    const rows = await run.finish({ board, applied: true, changedCount: 2, stoppedReason: "적용됨", notes: ["마을 계약 해제 — 일반 실행으로 이어 갔습니다."] });
+    const lines = rows.map((entry) => entry.kind === "tool" ? `tool:${entry.ok ? "ok" : "fail"}:${entry.name}:${JSON.stringify(entry.args)}` : `${entry.kind}:${entry.text}`);
+    expect(lines[0]).toBe("user:위로 올라가면 마을");
+    expect(lines[1]).toBe("status:의도 판정: intent:llm mode=create construction=approach:north → 마을 계약: 새 맵 map_village");
+    expect(lines).toContain(`tool:fail:author_village:${JSON.stringify({ 인자: 'target: {"kind":"existing","mapId":"map_a"}' })}`);
+    expect(lines).toContain(`tool:ok:author_village:${JSON.stringify({ 인자: 'target: {"kind":"new","mapId":"map_village"}' })}`);
+    expect(lines).toContain("status:실행 상태 village.contract_released ✗: 마을 계약 해제 — village-requires-scope");
+    // 매 호출 반복되는 이미지 전달 알림은 과정을 붐비게만 해서 남기지 않는다.
+    expect(lines.some((line) => line.includes("map.image.delivered"))).toBe(false);
+    expect(lines.at(-2)).toBe("status:마을 계약 해제 — 일반 실행으로 이어 갔습니다.");
+    expect(lines.at(-1)).toContain("적용됨");
+    // 실패한 도구의 사유는 진단 메시지에도 올라간다 — 로그 첫 화면에서 보인다.
+    const row = listAiActivityLogs().find((entry) => entry.id === run.id);
+    expect(row?.diagnostics.messages.join("\n")).toContain("이미 저작 내용이 있어");
+  });
+
+  it("의도 해석이 실패한 턴도 실패 행 하나를 남긴다", async () => {
+    await recordPiIntentFailure({ instruction: "위로 올라가면 마을", error: "시간 초과(30000ms)", mapId: "map_a", model: "m" });
+    const row = listAiActivityLogs().find((entry) => entry.instruction === "위로 올라가면 마을");
+    expect(row?.channel).toBe("pi");
+    expect(row?.result).toMatchObject({ ok: false, applied: false, stoppedReason: "의도 해석 실패" });
+    expect(row?.result.error).toContain("시간 초과");
+    expect(row?.audit.some((entry) => entry.kind === "status" && entry.text.includes("의도 판정: 실패"))).toBe(true);
   });
 });

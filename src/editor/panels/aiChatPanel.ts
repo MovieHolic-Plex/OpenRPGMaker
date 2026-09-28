@@ -100,6 +100,7 @@ import { createAiContextMeter, type AiContextMeterHandle, type AiContextSnapshot
 import { closeAiConversationHistoryModal, openAiConversationHistoryModal } from "./aiConversationHistoryModal";
 import { openAiInstructionsModal } from "./aiInstructionsModal";
 import { aiActivityPersistenceState, extractCommitIdsFromAudit } from "@/ai/activityLog";
+import { recordPiIntentFailure } from "@/ai/piAgent/activityLog";
 import { listAiUiEvents, recordAiUiEvent } from "@/ai/uiEventLog";
 import { AI_UI_ACTIONS } from "@/ai/uiEventTypes";
 import { parseQuickReplies } from "@/ai/interviewPrompt";
@@ -2158,6 +2159,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         readOnly: plan.readOnly,
         routineEdit: plan.routineEdit,
         villageContract: plan.villageContract,
+        ...(plan.routingAudit ? { routingAudit: plan.routingAudit } : {}),
         planOnly: plan.planOnly,
         maxTurns: plan.maxTurns,
         // 상한에 걸려 멈췄을 때 「무엇을 올리면 되는지」를 말하려면 단계 이름이 필요하다.
@@ -2306,7 +2308,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       finishWorkCard({ ok: false, message: "지시 해석 실패" });
       refreshSendEnabled();
       setStatus("대기");
-      appendBubble("system", `지시를 해석하지 못했습니다: ${error instanceof Error ? error.message : String(error)}`);
+      const reason = error instanceof Error ? error.message : String(error);
+      void recordPiIntentFailure({ instruction: text, error: reason, mapId: editorState.get().currentMapId ?? null, model: loadAiConfig().model });
+      appendBubble("system", `지시를 해석하지 못했습니다: ${reason}`);
       return;
     }
     await runPiTurn(classified.command, shown, classified.plan, { questionPromoted: classified.questionPromoted, slotClaimed: true, echoed: true, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: classified.intentNote, timing: classified.timing, ...(handoff ? { sentText: text } : {}) });
@@ -3881,7 +3885,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         if (disposed) return;
         if (!input.value.trim()) restoreComposer(shown, text, runOptions?.team);
         setStatus("대기");
-        appendBubble("system", `지시를 해석하지 못했습니다: ${error instanceof Error ? error.message : String(error)}`);
+        const reason = error instanceof Error ? error.message : String(error);
+        void recordPiIntentFailure({ instruction: text, error: reason, mapId: editorState.get().currentMapId ?? null, model: loadAiConfig().model });
+        appendBubble("system", `지시를 해석하지 못했습니다: ${reason}`);
         return;
       }
       const { command, plan, questionPromoted, initialToolNames, intentNote, timing } = classified;
