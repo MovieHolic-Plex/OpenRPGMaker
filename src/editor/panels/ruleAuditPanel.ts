@@ -43,7 +43,9 @@ export function renderRuleAuditPanel(): HTMLElement {
     dataset: { testid: "rule-audit-panel" },
   });
 
+  let disposed = false;
   const refresh = (): void => {
+    if (disposed) return;
     const groups = groupedClusterIssues(clusterRuleIssues());
     root.replaceChildren(
       el("summary", { text: "🔎 규칙 감사" }),
@@ -57,21 +59,29 @@ export function renderRuleAuditPanel(): HTMLElement {
   // 패널이 접혀 있으면 펼칠 때까지 미룬다.
   let refreshTimer: ReturnType<typeof setTimeout> | null = null;
   let staleWhileClosed = false;
+  const refreshAfterRelease = (): void => {
+    if (disposed || refreshTimer !== null) return;
+    if (root.getAttribute("open") === null) { staleWhileClosed = true; return; }
+    refresh();
+  };
   const scheduleRefresh = (): void => {
+    if (refreshTimer !== null) clearTimeout(refreshTimer);
+    refreshTimer = null;
     if (root.getAttribute("open") === null) {
       staleWhileClosed = true;
       return;
     }
-    if (refreshTimer) return;
     refreshTimer = setTimeout(() => {
       refreshTimer = null;
       // 칠하는 도중에는 감사하지 않는다 — 뗄 때 한 번(pointerStrokeGate).
-      runWhenPointerReleased(refresh);
+      runWhenPointerReleased(refreshAfterRelease);
     }, 250);
   };
   root.addEventListener("toggle", () => {
     if (root.getAttribute("open") !== null && staleWhileClosed) {
       staleWhileClosed = false;
+      if (refreshTimer !== null) clearTimeout(refreshTimer);
+      refreshTimer = null;
       refresh();
     }
   });
@@ -81,7 +91,8 @@ export function renderRuleAuditPanel(): HTMLElement {
   const unsubscribeStore = store.subscribe(scheduleRefresh);
   disposeActivePanel = () => {
     disposeActivePanel = null;
-    if (refreshTimer) clearTimeout(refreshTimer);
+    disposed = true;
+    if (refreshTimer !== null) clearTimeout(refreshTimer);
     refreshTimer = null;
     if (typeof window !== "undefined") window.removeEventListener(MAP_EDIT_HISTORY_EVENT, scheduleRefresh);
     unsubscribeStore();
