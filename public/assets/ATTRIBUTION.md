@@ -196,6 +196,22 @@
   attribution changes, it does not apply to them; conversely the CC-BY 4.0 credit above does not
   cover them. Review generated-asset terms before shipping commercially.
 
+## Generated monster roster expansion (not part of the Scarloxy pack, 2026-09-28)
+
+- Files (all under `scarloxy/`):
+  - `scarloxy-monster-<key>-back.png` for all 30 species (19 existing + 11 new): rear battle sprites, 96x96.
+  - `scarloxy-monster-<key>.png` and `scarloxy-monster-icon-<key>.png` for the 11 new species
+    (pebblit, bouldurr, zaplet, voltail, wispin, lanterghast, hornbeet, toxtoad, brawlape, frostpip, sandscorp).
+  - `scarloxy-backdrop-{cave,gym,beach,route}.png`: battle backdrops, 640x360.
+  - `cries/scarloxy-cry-<key>.wav`: 30 monster cries.
+- Origin: the sprites and backdrops were drawn by an image generation model from style references cut from the
+  Scarloxy pack (front sprites and backdrops, NEAREST-upscaled; references in `tiledata/pkmn-monsters/refs/`,
+  prompts in `tiledata/pkmn-monsters/requests.json`), then reduced by `scripts/content/build-scarloxy-monster-roster.py`.
+  The cries contain no samples: `scripts/content/synth-scarloxy-cries.py` synthesizes them in code.
+- Author: none of these files are Scarloxy (Ismael Garcia) artwork, so the CC-BY 4.0 credit above does not cover them.
+  The rear sprites of the 16 pack species depict pack characters and are derived designs of that artwork; keep the
+  Scarloxy credit when shipping them. Review generated-asset terms before shipping commercially.
+
 ## Generated monster town kit (not part of the Scarloxy pack)
 
 - Files: `monster-town-kit/monster-town-kit.png` (item shop, research lab, cave entrance, signpost,
