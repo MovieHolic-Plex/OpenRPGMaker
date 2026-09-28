@@ -32,6 +32,14 @@ import {
 } from "@/battle/retroSkillTimeline";
 import { RETRO_SKILL_RECIPES, retroSkillRecipe, type RetroSkillRecipe } from "@/player/retroSkillChoreography";
 import { loadBattleSample, playBattleSample } from "@/player/battleSeSamples";
+import { retroMonsterSkill } from "@/assets/retroMonsterSkills";
+import {
+  isMonsterSkillId,
+  monsterFxUrl,
+  renderMonsterSkillStage,
+  resumeMonsterSkillStagesIn,
+  stopMonsterSkillStagesIn,
+} from "@/editor/panels/databaseMonsterSkillStage";
 import type { Project, SkillRecord } from "@/project/types";
 import { el } from "@/util/dom";
 
@@ -63,6 +71,8 @@ export const RETRO_SKILL_CLASS_FILTERS: readonly { readonly id: string; readonly
   { id: "class_samurai", label: "사무라이" }, { id: "class_ninja", label: "닌자" }, { id: "class_monk", label: "무도가" },
   { id: "class_bard", label: "음유시인" }, { id: "class_druid", label: "드루이드" }, { id: "class_witch", label: "마녀" },
 ];
+/** 직업 칩 옆 「몬스터」 칩 id. skill_mon_* 스킬(계약 retroMonsterSkills.ts)을 고른다. */
+export const RETRO_MONSTER_FILTER_ID = "monster";
 
 // ---- 적 편 구성 ----
 
@@ -168,6 +178,11 @@ function learnerActorId(record: SkillRecord, project: Project): string | undefin
 
 /** 목록 배지·필터용: 전용 도트 연출(계약 또는 런타임 고정 레시피)이 있는가. */
 export function retroSkillBadgeSheet(record: Pick<SkillRecord, "id">): { readonly url: string; readonly frame: number; readonly frames: number; readonly cell: number } | undefined {
+  const monster = retroMonsterSkill(record.id);
+  if (monster) {
+    const layer = monster.layers.find((entry) => entry.anchor !== "projectile" && entry.anchor !== "user") ?? monster.layers[0]!;
+    return { url: monsterFxUrl(layer.key), frame: layer.frame, frames: layer.frames, cell: Math.floor(layer.frames * 0.4) };
+  }
   const contract = retroClassSkill(record.id);
   if (contract) {
     // 첫 칸은 대부분 거의 빈 도입 칸이라, 첫 착탄 레이어의 40% 지점 칸을 쓴다(목록에서 알아볼 수 있게).
@@ -193,6 +208,7 @@ export function retroSkillListBadge(record: Pick<SkillRecord, "id">, size = 20):
 
 /** 직업 필터 판정: 계약 직업이거나, 프로젝트 직업의 습득표·스킬 목록에 있다. */
 export function skillMatchesRetroClass(record: Pick<SkillRecord, "id">, classId: string, project: Project): boolean {
+  if (classId === RETRO_MONSTER_FILTER_ID) return isMonsterSkillId(record.id);
   if (retroClassSkill(record.id)?.classId === classId) return true;
   const found = project.database.classes.find((entry) => entry.id === classId);
   return Boolean(found && (found.skillIds.includes(record.id) || found.learnedSkills.some((entry) => entry.skillId === record.id)));
@@ -201,11 +217,15 @@ export function skillMatchesRetroClass(record: Pick<SkillRecord, "id">, classId:
 /** 직업 필터 칩 목록. 프로젝트에 그 직업도 계약 스킬도 없으면 빈 배열(칩 줄을 그리지 않는다). */
 export function retroSkillClassFilters(project: Project): readonly { readonly id: string; readonly label: string }[] {
   const skills = project.database.skills;
-  return RETRO_SKILL_CLASS_FILTERS.flatMap((entry) => {
+  const classes = RETRO_SKILL_CLASS_FILTERS.flatMap((entry) => {
     const record = project.database.classes.find((candidate) => candidate.id === entry.id);
     const hasContract = skills.some((skill) => retroClassSkill(skill.id)?.classId === entry.id);
     return record || hasContract ? [{ id: entry.id, label: record?.name || entry.label }] : [];
   });
+  // 몬스터 칩은 늘 보인다 — 레코드(skill_mon_*)가 아직 없으면 빈 칩(0개)이고, 고르면 계약 둘러보기가 뜬다.
+  return classes.length > 0 || skills.some((skill) => isMonsterSkillId(skill.id))
+    ? [...classes, { id: RETRO_MONSTER_FILTER_ID, label: "몬스터" }]
+    : classes;
 }
 
 // 스킬 목록 직업 필터 — 편집 세션 동안만 기억한다(아이템·장비 필터의 localStorage 계약과 섞지 않는다).
@@ -303,6 +323,9 @@ export type SkillRetroStage = { readonly element: HTMLElement; readonly stop: ()
 
 /** 이 스킬의 도트 전투 미리보기. 연출이 없으면 null. */
 export function renderSkillRetroStage(record: SkillRecord, project: Project): SkillRetroStage | null {
+  // 몬스터 스킬은 무대 방향이 반대다(몬스터 왼쪽 시전 → 아군 오른쪽 대상). 레코드가 없어도 계약만으로 돈다.
+  const monster = retroMonsterSkill(record.id);
+  if (monster) return renderMonsterSkillStage(monster, record.name);
   const source = stageSource(record, project);
   if (!source) return null;
   const { timeline } = source;
@@ -751,6 +774,7 @@ function autoplayAllowed(): boolean {
 /** scope 안의 도트 스테이지 루프를 모두 멈춘다. stopSkillAnimationStagesIn 이 함께 부른다. */
 export function stopRetroSkillStagesIn(scope: ParentNode): void {
   for (const stage of scope.querySelectorAll<HTMLElement>("[data-testid='db-skill-retro-stage']")) controllers.get(stage)?.stop();
+  stopMonsterSkillStagesIn(scope);
 }
 
 /** 캐시에서 다시 붙은 스테이지를 자동 반복으로 되돌린다. resumeSkillAnimationStagesIn 이 함께 부른다. */
@@ -759,10 +783,12 @@ export function resumeRetroSkillStagesIn(scope: ParentNode): void {
     const controller = controllers.get(stage);
     if (controller?.canAutoplay) controller.resume();
   }
+  resumeMonsterSkillStagesIn(scope);
 }
 
 /** 스킬 설정이 바뀌어 스테이지를 다시 그려야 하는지 가르는 서명. */
 export function retroStageSignature(record: SkillRecord): string {
+  if (retroMonsterSkill(record.id)) return ["mon", record.id, record.name].join("|");
   const recipe = retroClassSkill(record.id) ? record.id : retroSkillRecipe(record);
   const key = typeof recipe === "string" ? recipe : recipe ? recipe.fx + ":" + recipe.approach : "";
   return [key, record.scope, record.name, record.effect.kind].join("|");

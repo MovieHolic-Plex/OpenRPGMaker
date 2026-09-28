@@ -645,3 +645,28 @@ export function resumeMonsterSkillStagesIn(scope: ParentNode): void {
     if (controller?.canAutoplay) controller.resume();
   }
 }
+
+/**
+ * 스킬 레코드(skill_mon_*)가 아직 없을 때 「몬스터」 칩 목록 자리에 띄우는 계약 둘러보기.
+ * 계약 스킬 목록 + 무대 하나. 고를 때 옛 무대를 멈춘다(떨어진 무대는 두 틱 뒤 스스로도 멈춘다).
+ */
+export function renderMonsterSkillContractBrowser(): HTMLElement {
+  const slot = el("div", { class: "db-skill-mon-browser-stage" });
+  let current: MonsterSkillStage | null = null;
+  const select = el("select", { class: "db-skill-mon-browser-select", attrs: { "aria-label": "몬스터 스킬 고르기" }, dataset: { testid: "db-skill-mon-browser-select" } });
+  for (const skill of RETRO_MONSTER_SKILLS) select.append(el("option", { text: skill.name, attrs: { value: skill.id } }));
+  const show = (id: string): void => {
+    const skill = retroMonsterSkill(id);
+    if (!skill) return;
+    current?.stop();
+    current = renderMonsterSkillStage(skill);
+    slot.replaceChildren(current.element);
+  };
+  select.addEventListener("change", () => show(select.value));
+  show(RETRO_MONSTER_SKILLS[0]!.id);
+  return el("div", { class: "db-skill-mon-browser", dataset: { testid: "db-skill-mon-browser" }, children: [
+    el("p", { class: "db-skill-mon-browser-note", text: `스킬 레코드가 아직 없어 계약으로 미리 봅니다 (몬스터 스킬 ${RETRO_MONSTER_SKILLS.length}개).` }),
+    el("label", { class: "db-skill-mon-browser-label", children: [el("span", { text: "스킬" }), select] }),
+    slot,
+  ] });
+}

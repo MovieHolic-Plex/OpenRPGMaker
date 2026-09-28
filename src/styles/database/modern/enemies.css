@@ -939,3 +939,69 @@
   position: absolute;
   right: -5px;
 }
+
+/* 몬스터 스킬 층(databaseMonsterSkillStage 계약 레이어). 무대 흔들림은 world 변환에 더한다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-world {
+  translate: var(--enemy-pixel-shake-x, 0px) var(--enemy-pixel-shake-y, 0px);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-dim,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-flash,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-fx-layer {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-dim {
+  background: color-mix(in srgb, var(--db-studio-text-1) 86%, black);
+  opacity: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-flash {
+  background: var(--db-studio-surface);
+  mix-blend-mode: screen;
+  opacity: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-fx {
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  position: absolute;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-fx[hidden] {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-skills {
+  border-top: 1px solid color-mix(in srgb, var(--db-studio-on-accent) 18%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 16px;
+  padding-top: 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-skills-head,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-skill-buttons {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-skills-title {
+  font: 600 12px/1.4 var(--font-ui);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-skill {
+  border-color: color-mix(in srgb, var(--db-studio-accent) 60%, var(--db-studio-text-3));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-pixel-skill-note {
+  font: 400 11px/1.45 var(--font-ui);
+  margin: 0;
+  min-height: 16px;
+  opacity: 0.82;
+}
