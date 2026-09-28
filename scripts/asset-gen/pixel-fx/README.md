@@ -35,3 +35,18 @@ and sakura pink; ninja to violet shadow and iron grey, with the element ink of e
 added on top. `python3 lib_samurai.py` rebuilds all 28 plus `.omo/pixel-fx/samurai-*` and
 `ninja-*` boards; `python3 <key>.py` rebuilds one. Anchor, frame size and count are read
 back from `src/assets/retroClassSkills.ts` and a mismatch aborts before writing.
+
+
+## Class skill sheets (monk · bard)
+
+`lib_monk.py` draws the 21 class_monk and class_bard sheets from the 2026-09-28
+extension of `src/assets/retroClassSkills.ts`. It reuses the `Cel` primitives,
+checks and review boards from `lib_scout.py` and asserts each script's anchor,
+frame size and frame count against the contract before writing.
+`python3 lib_monk.py` rebuilds all 21 plus `.omo/pixel-fx/{monk,bard}-{sheet,composite}.png`;
+`python3 lib_monk.py monk` or a single key limits the run.
+
+Colour identity: monk is gold and orange fire, with earth browns for ground hits and
+blue only for chi. Bard is rainbow notes on a dark plum outline, with blue for the
+lullaby and violet for the requiem. Screen sheets dim the stage with a checker-dithered
+oval (`shade`) and never with a solid fill, so battlers stay visible.
