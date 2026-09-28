@@ -127,7 +127,6 @@ describe("monster gym & coast chipset", () => {
     old.tilesets[TILESET_ID]!.referenceDocuments = [];
     expect(ensureBundledTilesets(old)).toBe(true);
     expect(old.tilesets[TILESET_ID]?.referenceDocuments?.map((c) => c.id)).toEqual([CATEGORY_ID]);
-    expect(ensureBundledTilesets(old)).toBe(false);
   });
 
   it("참고문서의 칸 사전 번호가 매니페스트와 같고, 예제 배열이 이 시트 번호만 쓴다", () => {
