@@ -176,6 +176,7 @@ function tick(scene: Parameters<typeof updateAutonomousNPCs>[0], count: number):
 
 
 // Count actual path-search entries, including failed ones, rather than wall-clock timing.
+import * as livingTravel from "@/player/npcLivingTravel";
 import * as terrain from "@/project/tilePassabilityComponents";
 import { applyChangeTileStep } from "@/player/playSceneMapCommands";
 
@@ -214,10 +215,21 @@ function frames(scene: ReturnType<typeof movementScene>, count: number, refresh 
   }
 }
 
+// 사용자 canStep은 단일 칸 성분 색인을 쓰지 않는다. 재탐색 진입을 직접 센다.
+function spyLivingRepaths() {
+  const original = livingTravel.routeForLivingMovement;
+  const calls = vi.fn();
+  vi.spyOn(livingTravel, "routeForLivingMovement").mockImplementation(context => {
+    if (context.canStep) calls();
+    return original(context);
+  });
+  return calls;
+}
+
 describe("living NPC event-blocked rerouting", () => {
   it("reaches (2,4) around the arrived resident at (2,3) on the edited 3x5 map", () => {
     const scene = blockedScene();
-    const bfs = vi.spyOn(terrain, "terrainMayReach");
+    const bfs = spyLivingRepaths();
     frames(scene, 7);
     const beforeThreshold = bfs.mock.calls.length;
     expect(scene.eventPositions.e0).toMatchObject({ x: 2, y: 2 });
@@ -236,7 +248,7 @@ describe("living NPC event-blocked rerouting", () => {
     for (let y = 0; y < 5; y++) map.lowerTiles[y * 3 + 1] = 1;
     const scene = movementScene(project, map);
     registerPageMoveRoutes(scene);
-    const bfs = vi.spyOn(terrain, "terrainMayReach");
+    const bfs = spyLivingRepaths();
     frames(scene, 60);
     expect(scene.eventPositions.e0).toMatchObject({ x: 2, y: 2 });
     expect(scene.autonomousNPCs.get("e0")?.step).toBe(0);
@@ -252,7 +264,7 @@ describe("living NPC event-blocked rerouting", () => {
     map.events[0]!.pages = [livingPage("m", 2, 3)];
     const scene = movementScene(project, map);
     registerPageMoveRoutes(scene);
-    const bfs = vi.spyOn(terrain, "terrainMayReach");
+    const bfs = spyLivingRepaths();
     frames(scene, 40);
     expect(scene.eventPositions.e0).toMatchObject({ x: 2, y: 2 });
     expect(scene.autonomousNPCs.get("e0")?.moves.length).toBe(1);
@@ -263,7 +275,7 @@ describe("living NPC event-blocked rerouting", () => {
 
   it("transient event blockage and player blockage do not add BFS calls", () => {
     const scene = blockedScene();
-    const bfs = vi.spyOn(terrain, "terrainMayReach");
+    const bfs = spyLivingRepaths();
     frames(scene, 4, false);
     scene.eventPositions.e1 = { x: 0, y: 3 };
     scene.tileX = 2;
@@ -308,11 +320,13 @@ describe("living NPC event-blocked rerouting", () => {
     const scene = movementScene(project, map);
     scene.tileX = -1;
     scene.tileY = -1;
+    const repaths = spyLivingRepaths();
     const bfs = vi.spyOn(terrain, "terrainMayReach");
     registerPageMoveRoutes(scene);
     expect(bfs).toHaveBeenCalledTimes(300);
     frames(scene, 30);
     expect(bfs).toHaveBeenCalledTimes(300);
+    expect(repaths).not.toHaveBeenCalled();
     for (let y = 0; y < 300; y++) expect(scene.eventPositions[`e${y}`]).toMatchObject({ x: 11, y });
   });
 });
@@ -332,7 +346,7 @@ describe("living NPC reroute frame budget", () => {
     scene.tileX = -1;
     scene.tileY = -1;
     registerPageMoveRoutes(scene);
-    const bfs = vi.spyOn(terrain, "terrainMayReach");
+    const bfs = spyLivingRepaths();
     const perFrame: number[] = [];
     for (let frame = 0; frame < 40; frame++) {
       const before = bfs.mock.calls.length;

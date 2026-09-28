@@ -60,6 +60,8 @@ export function nextChaseDecision(input: {
   readonly kite?: KiteBand;
   /** 추격자 자신의 통행 사각. 생략 시 1x1 — 기존 호출부는 동작이 안 바뀐다. */
   readonly pass?: ChasePassSize;
+  /** Periodic/failed searches share a frame budget; exhausted reachable paths stay immediate. */
+  readonly requestRepath?: () => boolean;
 }): ChaseDecision {
   const { mover } = input;
   mover.chaseHome ??= { ...input.from };
@@ -104,7 +106,10 @@ export function nextChaseDecision(input: {
   }
 
   const pathExhausted = !mover.chasePath || mover.chasePath.length === 0;
-  if (mover.chaseRepathTimerMs >= REPATH_INTERVAL_MS || (pathExhausted && mover.chasePathBlocked !== true)) {
+  const periodic = mover.chaseRepathTimerMs >= REPATH_INTERVAL_MS;
+  const needsPath = periodic || (pathExhausted && mover.chasePathBlocked !== true);
+  const budgeted = input.pathfind !== false && (periodic || mover.chasePathBlocked === true);
+  if (needsPath && (!budgeted || !input.requestRepath || input.requestRepath())) {
     mover.chasePath = input.pathfind === false
       ? directStepPath(input.project, input.map, input.from, input.player, input.pass)
       : findChasePath(input.project, input.map, input.from, input.player, input.pass);

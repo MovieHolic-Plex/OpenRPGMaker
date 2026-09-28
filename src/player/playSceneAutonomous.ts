@@ -5,10 +5,10 @@ import { pursuitTarget } from "./horrorRuntime";
 import { pursuitPass } from "./pursuitNavigation";
 import { canMoveFootprint } from "@/project/collision";
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
-import { routeForLivingMovement } from "@/player/npcLivingTravel";
-import { footprintBounds, passageBounds } from "@/project/footprint";
-import type { CharacterFootprint, FootprintRect } from "@/project/types";
-import { createBlockingEventQuery, invalidateEventIdIndexPass, withEventIdIndexPass } from "@/project/runtimeEventState";
+import { yieldingLivingMovers, routeForLivingMovement } from "@/player/npcLivingTravel";
+import { passageBounds, rectsOverlap } from "@/project/footprint";
+import { playerPassageRect, resolvePlayerBody } from "@/project/playerFootprint";
+import { findBlockingEventOverlappingRect, createBlockingEventQuery, invalidateEventIdIndexPass, withEventIdIndexPass } from "@/project/runtimeEventState";
 import { store } from "@/project/store";
 // 스프라이트 가로 좌표는 발자국 중앙(footprintSpriteX)이다 — 타일 중앙(characterSpriteX)을
 // 쓰면 폭 2 이상인 몸이 반 칸 왼쪽으로 붙는다. 걸음 보간·착지·첫 프레임 모두 같은 규칙이다.
@@ -32,7 +32,7 @@ runtimeEventViewById, } from "@/project/runtimeEventState"
 
 export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, frameDeltaMs: number): void {
   // NPC 마다 자기 뷰를 id 로 1~3번 찾는다. 이 동기 루프 동안만 id 색인을 쓴다(runtimeEventState §withEventIdIndexPass).
-  withEventIdIndexPass(() => updateAutonomousNPCsInPass(scene, frameDeltaMs));
+  withChaseRepathBudget(scene, () => withEventIdIndexPass(() => updateAutonomousNPCsInPass(scene, frameDeltaMs)));
 }
 
 function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDeltaMs: number): void {
@@ -54,6 +54,13 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
     }
     if (mover.strategy === "chase") {
       updateChaseNpc(scene, eventId, mover, deltaMs);
+      continue;
+    }
+    if (yieldingLivingMovers.has(mover) && mover.step >= mover.moves.length) {
+      if ((mover.livingRepathCooldownMs ?? 0) <= 0) {
+        const view = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, eventId);
+        if (view) repathCandidates.push({ mover, view, nx: view.x, ny: view.y });
+      }
       continue;
     }
     if (mover.moves.length === 0) {
@@ -90,6 +97,7 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
     const frameDir = applyFacing(mover, movement.face);
     // eventTouch fires when the event tries to step onto the player (including mid-move destination).
     if (!movement.jump && !mover.through && isPlayerOccupyingTile(scene, nx, ny)) {
+      livingBlockers.delete(mover);
       fireEventTouch(scene, eventId, view.trigger.kind);
       setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
       if (mover.stopOnBlocked) {
@@ -98,11 +106,17 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
         continue;
       }
       retryBlockedStep(mover);
+      // 대피 걸음을 플레이어가 막았다. 생활 막힘 경로(아래 else)로 가지 않으므로 여기서 재선택 줄에 세운다 —
+      // 안 그러면 대피 칸만 영원히 다시 시도했다(리뷰 반례). 쿨다운·프레임 예산은 그대로 따른다.
+      if (yieldingLivingMovers.has(mover) && (mover.livingRepathCooldownMs ?? 0) <= 0) {
+        repathCandidates.push({ mover, view, nx, ny });
+      }
       completeRouteCommand(mover);
       continue;
     }
     if (canNpcMove({ project, scene, mover, eventId, from: position, to: { x: nx, y: ny } }, movement)) {
       mover.blockedSteps = 0;
+      livingBlockers.delete(mover);
       moveAutonomousRuntimePosition(scene, eventId, nx, ny, frameDir);
       mover.activeMove = {
         fromX: position.x,
@@ -138,6 +152,13 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
         continue;
       }
       retryBlockedStep(mover);
+      if (mover.livingRoute) {
+        const blocker = findBlockingEventOverlappingRect(project, scene.map, scene.session, scene.eventPositions,
+          passageBounds(nx, ny, view.footprint, view.passRows), eventId);
+        const old = livingBlockers.get(mover);
+        if (blocker) livingBlockers.set(mover, { id: blocker.event.id, count: old?.id === blocker.event.id ? old.count + 1 : 1 });
+        else livingBlockers.delete(mover);
+      }
       if (mover.livingRoute && !scene.commandMoveRouteEventIds?.has(eventId)
         && (mover.blockedSteps ?? 0) >= MAX_BLOCKED_STEP_RETRIES && (mover.livingRepathCooldownMs ?? 0) <= 0) {
         repathCandidates.push({ mover, view, nx, ny });
@@ -169,6 +190,10 @@ function updateChaseNpc(
     return;
   }
   const pursuit = mover.chaseTarget ?? tracked ?? { x: scene.tileX, y: scene.tileY };
+  const targetEvent = mover.chaseTarget
+    ? findBlockingEventOverlappingRect(project, scene.map, scene.session, scene.eventPositions,
+      { left: pursuit.x, right: pursuit.x, top: pursuit.y, bottom: pursuit.y }, eventId)
+    : undefined;
   let decision = nextChaseDecision({
     project,
     map: scene.map,
@@ -180,11 +205,8 @@ function updateChaseNpc(
     giveUpRange: tracked ? undefined : mover.giveUpRange,
     pathfind: mover.pathfind,
     kite: mover.kite,
-    // 추격자 자신의 통행 사각. 1x1 이면 canMove 1회로 환원돼 기존 경로와 같다.
-    pass: view.movement.pursuit
-      ? pursuitPass({ project, map: scene.map, session: scene.session, positions: scene.eventPositions }, view)
-      : { footprint: view.footprint, passRows: view.passRows,
-        blocked: blockedByEventFootprint(createBlockingEventQuery(project, scene.map, scene.session, scene.eventPositions, eventId), view.footprint) },
+    requestRepath: () => requestChaseRepath(scene, mover),
+    pass: pursuitPass({ project, map: scene.map, session: scene.session, positions: scene.eventPositions }, view, targetEvent?.event.id),
   });
   if (tracked?.searching && decision.kind === "touch" && (pursuit.x !== scene.tileX || pursuit.y !== scene.tileY)) {
     decision = { kind: "move", x: pursuit.x, y: pursuit.y, dir: decision.dir };
@@ -205,9 +227,14 @@ function updateChaseNpc(
     setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
     return;
   }
-  // Chase pathfinding only sees the player's committed tile. Mid-move destination still blocks.
-  if (!mover.through && isPlayerOccupyingTile(scene, decision.x, decision.y)) {
-    if (!tracked?.searching) fireEventTouch(scene, eventId, view.trigger.kind);
+  // Touch uses the same passage rectangles as feet collision, including the player's reserved destination.
+  const nextRect = passageBounds(decision.x, decision.y, view.footprint, view.passRows);
+  const playerBody = resolvePlayerBody(project, scene.session);
+  const touchesPlayer = rectsOverlap(nextRect, playerPassageRect(playerBody, scene.tileX, scene.tileY))
+    || (scene.moving === true && scene.movingTo !== undefined
+      && rectsOverlap(nextRect, playerPassageRect(playerBody, scene.movingTo.x, scene.movingTo.y)));
+  if (!mover.through && touchesPlayer) {
+    if (!mover.chaseTarget && !mover.kite && !tracked?.searching) fireEventTouch(scene, eventId, view.trigger.kind);
     setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
     return;
   }
@@ -386,6 +413,16 @@ function plannedEndPoint(mover: AutonomousMover, x: number, y: number): { x: num
 }
 
 /** 8회 연속 막힘 이후에만, NPC당 최대 1초에 한 번, 프레임당 최대 2명(runLivingRepaths). 일반 이동/표면 갱신에는 BFS가 없다. */
+const livingBlockers = new WeakMap<AutonomousMover, { id: string; count: number }>();
+const livingYields = new WeakMap<AutonomousMover, { id: string; x: number; y: number; pocketAxis: "vertical" | "horizontal" }>();
+
+/** 진행 축에 수직인 바로 옆 두 칸(대피 후보). 순서는 위/아래, 왼쪽/오른쪽. */
+function yieldPocketCandidates(view: { readonly x: number; readonly y: number }, axis: "vertical" | "horizontal") {
+  return axis === "vertical"
+    ? [{ dir: "up" as const, x: view.x, y: view.y - 1 }, { dir: "down" as const, x: view.x, y: view.y + 1 }]
+    : [{ dir: "left" as const, x: view.x - 1, y: view.y }, { dir: "right" as const, x: view.x + 1, y: view.y }];
+}
+
 function repathBlockedLivingNpc(
   scene: AutonomousNpcSceneContext,
   mover: AutonomousMover,
@@ -397,20 +434,60 @@ function repathBlockedLivingNpc(
   const project = store.getCurrent();
   // 이벤트들은 탐색당 한 번만 모으고, 다음 NPC/다음 탐색은 새 위치를 본다.
   const blocked = createBlockingEventQuery(project, scene.map, scene.session, scene.eventPositions, view.event.id);
-  if (!blocked(passageBounds(nx, ny, view.footprint, view.passRows))) return;
-  // 가려는 끝 칸 자체를 이벤트가 차지하고 있으면 어떤 우회로도 도착하지 못한다 — 맵 전체 BFS 를 돌리지 않고 기다린다.
+
+  const nextRect = passageBounds(nx, ny, view.footprint, view.passRows);
+  // 플레이어만 막는 경우에는 탐색하지 않는다(넓은 몸의 옆칸도 포함).
+  if (!yieldingLivingMovers.has(mover) && !blocked(nextRect)
+    && canMoveFootprint(project, scene.map, view.x, view.y, view.footprint, nx, ny, view.passRows)
+    && !isSpatialPlacementBlocking(project, scene.session, scene.map.id, nextRect)) return;
+  const canStep = (fx: number, fy: number, tx: number, ty: number) => {
+    const rect = passageBounds(tx, ty, view.footprint, view.passRows);
+    for (let y = rect.top; y <= rect.bottom; y++) for (let x = rect.left; x <= rect.right; x++) {
+      if (isPlayerOccupyingTile(scene, x, y)) return false;
+    }
+    return !blocked(rect)
+      && canMoveFootprint(project, scene.map, fx, fy, view.footprint, tx, ty, view.passRows)
+      && !isSpatialPlacementBlocking(project, scene.session, scene.map.id, rect);
+  };
+  const yielding = livingYields.get(mover);
+  if (yielding) {
+    const peer = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, yielding.id);
+    // 상대가 아직 통로를 막고 있을 때만(솔리드로 남아 있고 두 칸 넘게 지나가지 않았다) 대피를 유지한다.
+    // 상대가 사라지거나 페이지 전환으로 비충돌(아래 층·겹침 허용)이 되면 곧바로 원래 경로를 다시 짠다 —
+    // 위치만 보면 길이 열렸는데도 영원히 대피 칸에 서 있었다(리뷰 반례).
+    const peerSolid = peer && peer.priority === "same" && peer.overlapForbidden;
+    if (peerSolid && Math.abs(peer.x - yielding.x) + Math.abs(peer.y - yielding.y) < 2) {
+      // 대피 걸음이 아직 남았는데 막혔다 = 다른 NPC 가 대피 칸을 먼저 차지했다. 반대편 대피 칸으로 다시 고른다.
+      if (mover.step < mover.moves.length) {
+        const pocket = yieldPocketCandidates(view, yielding.pocketAxis).find(p => canStep(view.x, view.y, p.x, p.y));
+        if (pocket) { mover.moves = [{ kind: "move", dir: pocket.dir }]; mover.step = 0; }
+      }
+      return;
+    }
+  }
   const end = plannedEndPoint(mover, view.x, view.y);
-  if (blocked(passageBounds(end.x, end.y, view.footprint, view.passRows))) return;
-  const route = routeForLivingMovement({ project, map: scene.map, session: scene.session, view,
-    canStep: (fx, fy, tx, ty) => {
-      const rect = passageBounds(tx, ty, view.footprint, view.passRows);
-      return !blocked(rect)
-        && canMoveFootprint(project, scene.map, fx, fy, view.footprint, tx, ty, view.passRows)
-        && !isSpatialPlacementBlocking(project, scene.session, scene.map.id, rect);
-    },
-  });
-  // 목적지 점유/우회 불가: 도착 처리하거나 걸음을 소비하지 않고 기존 계획으로 기다린다.
-  if (!route) return;
+  const route = !yielding && blocked(passageBounds(end.x, end.y, view.footprint, view.passRows)) ? null
+    : routeForLivingMovement({ project, map: scene.map, session: scene.session, view, canStep });
+  if (!route) {
+    const blocker = livingBlockers.get(mover);
+    // 같은 상대에게 8회 막힌 쌍에서 작은 id만 양보한다. 고정 이벤트에는 양보하지 않는다.
+    if (yielding || !blocker || blocker.count < MAX_BLOCKED_STEP_RETRIES || view.event.id >= blocker.id) return;
+    const peerMover = scene.autonomousNPCs.get(blocker.id);
+    const peerBlocker = peerMover && livingBlockers.get(peerMover);
+    const peer = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, blocker.id);
+    if (!peer || !peerMover?.livingRoute || peerBlocker?.id !== view.event.id || peerBlocker.count < MAX_BLOCKED_STEP_RETRIES) return;
+    // 보수적으로 진행 축에 수직인 바로 옆 대피 칸만 쓴다. 없으면 원래 걸음으로 기다린다.
+    const pocketAxis = nx !== view.x && ny === view.y ? "vertical" as const : "horizontal" as const;
+    const pocket = yieldPocketCandidates(view, pocketAxis).find(p => canStep(view.x, view.y, p.x, p.y));
+    if (!pocket) return;
+    livingYields.set(mover, { id: blocker.id, x: peer.x, y: peer.y, pocketAxis });
+    yieldingLivingMovers.add(mover);
+    mover.moves = [{ kind: "move", dir: pocket.dir }];
+    mover.step = 0;
+    return;
+  }
+  livingYields.delete(mover);
+  yieldingLivingMovers.delete(mover);
   mover.moves = route.moves;
   mover.step = 0;
   mover.blockedSteps = 0;
@@ -420,7 +497,44 @@ function lerp(from: number, to: number, progress: number): number {
   return from + (to - from) * progress;
 }
 
-/** 몸 사각(footprintBounds)으로 막는 이벤트를 묻는 통행 판정. 쿼리는 이 추격 결정 한 번에서만 쓴다. */
-function blockedByEventFootprint(query: (rect: FootprintRect) => boolean, footprint: CharacterFootprint): (x: number, y: number) => boolean {
-  return (x, y) => query(footprintBounds(x, y, footprint));
+/** Chase-only queue. It owns no living-route state and adds no path searches. */
+type ChaseRepathBudget = {
+  frame?: number;
+  remaining: number;
+  pending: Set<AutonomousMover>;
+  requested: Set<AutonomousMover>;
+};
+const chaseRepathBudgets = new WeakMap<AutonomousNpcSceneContext, ChaseRepathBudget>();
+
+function withChaseRepathBudget(scene: AutonomousNpcSceneContext, run: () => void): void {
+  const frame = (scene as AutonomousNpcSceneContext & { game?: { loop?: { frame?: number } } }).game?.loop?.frame;
+  let budget = chaseRepathBudgets.get(scene);
+  if (!budget) {
+    budget = { remaining: 2, pending: new Set(), requested: new Set() };
+    chaseRepathBudgets.set(scene, budget);
+  }
+  if (frame === undefined || frame !== budget.frame) budget.remaining = 2;
+  budget.frame = frame;
+  budget.requested.clear();
+  try { run(); } finally {
+    // Frozen, removed, out-of-range or otherwise idle callers cannot retain a queue slot.
+    for (const mover of budget.pending) if (!budget.requested.has(mover)) budget.pending.delete(mover);
+  }
+}
+
+function requestChaseRepath(scene: AutonomousNpcSceneContext, mover: AutonomousMover): boolean {
+  const budget = chaseRepathBudgets.get(scene);
+  if (!budget) return false;
+  budget.requested.add(mover);
+  budget.pending.add(mover);
+  let older = 0;
+  for (const waiting of budget.pending) {
+    if (waiting === mover) break;
+    older += 1;
+    if (older >= budget.remaining) return false;
+  }
+  if (budget.remaining <= older) return false;
+  budget.remaining -= 1;
+  budget.pending.delete(mover);
+  return true;
 }
