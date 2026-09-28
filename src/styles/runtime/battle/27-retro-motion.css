@@ -119,24 +119,25 @@
   100% { translate: var(--retro-travel) 0; }
 }
 @keyframes retro-thrust {
-  0%, 100% { translate: var(--retro-travel) 0; }
-  40% { translate: calc(var(--retro-travel) - 8px) 0; }
+  0%, 100% { translate: var(--retro-travel) var(--retro-travel-y, 0px); }
+  40% { translate: calc(var(--retro-travel) - 8px) var(--retro-travel-y, 0px); }
 }
-/* 걸음 구간 = 비트의 앞 60% 안팎(battleRetroMotion 의 swingMs 240ms 를 뺀 나머지). 도착 뒤에는 서서 휘두른다. */
+/* 걸음 구간 = 비트의 앞 60% 안팎(battleRetroMotion 의 swingMs 240ms 를 뺀 나머지). 도착 뒤에는 서서 휘두른다.
+   대상 적의 발 높이까지 세로로도 걷는다(--retro-travel-y, retroWalk 가 잰다). */
 @keyframes retro-walk-up {
   0% { translate: var(--retro-start, 0px) 0; }
-  10% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.14) -2px; }
-  20% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.3) 0; }
-  30% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.46) -2px; }
-  40% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.62) 0; }
-  50% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.78) -2px; }
-  62%, 100% { translate: var(--retro-travel) 0; }
+  10% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.14) calc(var(--retro-travel-y, 0px) * 0.14 - 2px); }
+  20% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.3) calc(var(--retro-travel-y, 0px) * 0.3); }
+  30% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.46) calc(var(--retro-travel-y, 0px) * 0.46 - 2px); }
+  40% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.62) calc(var(--retro-travel-y, 0px) * 0.62); }
+  50% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.78) calc(var(--retro-travel-y, 0px) * 0.78 - 2px); }
+  62%, 100% { translate: var(--retro-travel) var(--retro-travel-y, 0px); }
 }
 @keyframes retro-cast-hold { from, to { translate: var(--retro-travel) 0; } }
 @keyframes retro-return {
-  0% { translate: var(--retro-travel) 0; }
-  30% { translate: calc(var(--retro-travel) * 0.7) -10px; }
-  60% { translate: calc(var(--retro-travel) * 0.4) -12px; }
+  0% { translate: var(--retro-travel) var(--retro-travel-y, 0px); }
+  30% { translate: calc(var(--retro-travel) * 0.7) calc(var(--retro-travel-y, 0px) * 0.7 - 10px); }
+  60% { translate: calc(var(--retro-travel) * 0.4) calc(var(--retro-travel-y, 0px) * 0.4 - 12px); }
   86%, 100% { translate: 0 0; }
 }
 @keyframes retro-shadow-return {
@@ -228,12 +229,12 @@
 @keyframes retro-pixel-breathe { 0%, 100% { translate: 0 0; } 50% { translate: 0 -1px; } }
 
 /* ── 도트 적 시트(src/assets/pixelEnemySheets.ts) ───────────────────────────────────────
-   64px 셀 3×3 을 2배(128px)로 그린다. 내용 이미지(원본 통짜 그림)는 상자 밖으로 밀고 배경으로 칸을 그린다.
+   48px 셀 3×3 을 아군 전투 도트와 같은 2배(96px)로 그린다. 내용 이미지(원본 통짜 그림)는 상자 밖으로 밀고 배경으로 칸을 그린다.
    칸은 런타임이 인라인 background-position 으로 고르고(data-pixel-cell), 대기 칸만 여기 루프가 a→b→c→b 로 돈다.
    이동(뛰기·날기)은 battleRetroMotion 의 Web Animations translate 가 맡는다 — 노드의 transform·animation 슬롯과 겹치지 않는다. */
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-enemy .battle-enemy-image[data-pixel-sheet] {
-  --battle-enemy-base-width: 128px;
-  --battle-enemy-base-height: 128px;
+  --battle-enemy-base-width: 96px;
+  --battle-enemy-base-height: 96px;
   object-position: -99999px -99999px;
   background-image: var(--pixel-enemy-url);
   background-repeat: no-repeat;
@@ -286,12 +287,12 @@
   pointer-events: none;
   position: absolute;
   translate: -50% 0;
-  width: 56px;
+  width: 40px;
   z-index: -1;
 }
 .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-enemy[data-pixel-enemy="swoop"]::after {
   background: #10102044;
-  width: 36px;
+  width: 28px;
   height: 8px;
 }
 .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-enemy.defeated[data-pixel-enemy]::after { display: none; }

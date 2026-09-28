@@ -80,8 +80,10 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
     }
   }
   if (beat?.targetMotion === "knockback") {
-    const target = nodes.find((node) => node.dataset.testid === beat.targetId || node.dataset.recordId === beat.targetId
-      || snapshot.actors.some((actor) => actor.id === beat.targetId && actor.recordId === node.dataset.recordId));
+    // 전투 id(enemy-2 등)가 먼저다 — 같은 종족 둘이면 recordId 로는 첫째가 맞은 것처럼 보였다.
+    const target = nodes.find((node) => node.dataset.testid === beat.targetId)
+      ?? nodes.find((node) => node.dataset.recordId === beat.targetId
+        || snapshot.actors.some((actor) => actor.id === beat.targetId && actor.recordId === node.dataset.recordId));
     target?.classList.add("battle-motion-target", "battle-motion-knockback");
   }
   if (!beat || !user) return;
@@ -105,7 +107,9 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
     // 차례의 반 걸음 위치에서 출발한다. 화면 배율을 이동 거리에 다시 곱하지 않는다.
     user.style.setProperty("--retro-start", user.dataset.retroCommand === "true" ? "-16px" : "0px");
     // 근접 공격은 대상 적 앞까지 실제로 걸어간다(retroWalk 가 DOM 좌표로 잰다). 못 재면 72px.
+    // 가로만 가면 뒷줄 적을 공중에서 친다 — 대상의 발 높이까지 세로로도 간다(--retro-travel-y).
     const walk = entry && user.dataset.retroAction === "attack" && user.classList.contains("battle-actor") ? retroWalk(field, entry) : undefined;
+    user.style.setProperty("--retro-travel-y", `${walk?.dy ?? 0}px`);
     user.style.setProperty("--retro-travel", user.dataset.retroAction === "defend" ? "0px"
       : ["cast", "item"].includes(user.dataset.retroAction) ? "-16px"
         : `${-(walk?.distance ?? 72)}px`);
@@ -274,7 +278,7 @@ function extendedMotionPose(node: HTMLElement, pose: Pose): Pose {
   if (frame && frame !== "idle") return frame;
   if (node.dataset.retroCommand === "true") return "idle";
   if (node.dataset.battlerDefending === "true") return "defend";
-  if (node.dataset.battlerWeak === "true") return "weak";
+  // 빈사 대기(weak) 칸은 쓰지 않는다 — HP 가 낮다는 정보는 HP 줄이 준다. 전투 내내 앉아 있는 것처럼 보였다.
   return pose === "victory" ? "victory" : "idle";
 }
 
@@ -316,6 +320,8 @@ const walkCache = new WeakMap<HTMLElement, Map<number, RetroWalk | null>>();
 export interface RetroWalk {
   /** 걸어가는 거리(무대 논리 px, 왼쪽이 양수). */
   readonly distance: number;
+  /** 대상 발 높이까지의 세로 이동(아래가 양수). */
+  readonly dy: number;
   readonly approachMs: number;
   readonly recoverMs: number;
 }
@@ -343,7 +349,9 @@ function measureWalk(field: HTMLElement, entry: BattleTimelineEntrySnapshot): Re
   const userId = entry.userRecordId ?? entry.userId;
   const user = [...field.querySelectorAll<HTMLElement>(".battle-actor")].find((node) => node.dataset.recordId === userId);
   const enemies = [...field.querySelectorAll<HTMLElement>(".battle-enemy:not(.defeated)")];
-  const target = enemies.find((node) => node.dataset.testid === entry.targetId || node.dataset.recordId === entry.targetId) ?? enemies[0];
+  // 같은 종족이 여럿이면 recordId 가 겹친다 — 전투 id(testid) 로 먼저 고르고, 없을 때만 recordId.
+  const target = enemies.find((node) => node.dataset.testid === entry.targetId)
+    ?? enemies.find((node) => node.dataset.recordId === entry.targetId) ?? enemies[0];
   if (!user || !target) return undefined;
   const userRect = user.getBoundingClientRect();
   // 화면 px → 배틀러 translate 단위. 무대 배율(--battle-stage-scale) 위에 필드 zoom 이 한 번 더 걸려 있어
@@ -354,17 +362,27 @@ function measureWalk(field: HTMLElement, entry: BattleTimelineEntrySnapshot): Re
   if (userRect.width === 0 || enemyRect.width === 0) return undefined;
   // 지금 걸린 translate(명령 차례의 반 걸음)는 빼고 제자리 기준으로 잰다.
   const current = Number.parseFloat(getComputedStyle(user).translate.split(" ")[0] ?? "0") || 0;
+  const translate = getComputedStyle(user).translate.split(" ");
+  const currentY = Number.parseFloat(translate[1] ?? "0") || 0;
   // 96px 셀 안에서 몸은 가운데 약 40px 이다 — 몸 앞 가장자리 = 셀 가운데 − 20px.
   const bodyFront = (userRect.left + userRect.width / 2) / scale - current - 20;
-  // 몬스터 그림은 투명 여백이 가장자리에 있다(실측 오른쪽 약 15%).
-  const enemyFront = (enemyRect.right - enemyRect.width * 0.15) / scale;
+  // 도트 적 시트는 48px 셀에서 몸 오른쪽 끝이 x≈36, 바닥선이 y=44 다. 통짜 그림은 오른쪽 투명 여백 약 15%, 바닥이 그림 아래끝.
+  const pixel = image.dataset.pixelSheet !== undefined;
+  const enemyFront = (pixel ? enemyRect.left + enemyRect.width * (36 / 48) : enemyRect.right - enemyRect.width * 0.15) / scale;
+  const enemyFeet = (pixel ? enemyRect.top + enemyRect.height * (44 / 48) : enemyRect.bottom) / scale;
+  // 아군 셀(48px 원본)의 발 마지막 행은 y=44.
+  const userFeet = (userRect.top + userRect.height * (45 / 48)) / scale - currentY;
   const distance = Math.round(bodyFront - enemyFront - WALK_GAP_PX);
-  if (!Number.isFinite(distance) || distance < 24) return undefined;
+  // 적보다 조금 앞(화면 아래)에 서야 적 그림을 가리지 않고 맞붙어 보인다.
+  const dy = Math.round(enemyFeet - userFeet + 2);
+  if (!Number.isFinite(distance) || !Number.isFinite(dy) || distance < 24) return undefined;
   const clamp = (value: number, min: number, max: number) => Math.round(Math.max(min, Math.min(max, value)));
+  const path = Math.hypot(distance, dy);
   return {
     distance,
-    approachMs: clamp(distance / WALK_PX_PER_MS, 420, 1100),
-    recoverMs: clamp(distance / RETURN_PX_PER_MS, 420, 900),
+    dy,
+    approachMs: clamp(path / WALK_PX_PER_MS, 420, 1100),
+    recoverMs: clamp(path / RETURN_PX_PER_MS, 420, 900),
   };
 }
 
@@ -431,14 +449,14 @@ function measureEnemyReach(field: HTMLElement, entry: BattleTimelineEntrySnapsho
   // 화면 px → 적 노드 translate 단위(무대 배율 × 필드 zoom). 이미지 자신의 레이아웃 폭 대비 화면 폭으로 잰다.
   const scale = image.offsetWidth > 0 ? imageRect.width / image.offsetWidth : 1;
   const swoop = user.dataset.pixelEnemy === "swoop";
-  // 착탄 칸의 앞 가장자리(64px 셀의 x≈61) → 아군 몸 앞(96px 셀 가운데 − 20px) 2px 앞.
-  const front = imageRect.left + imageRect.width * (61 / 64);
+  // 착탄 칸의 앞 가장자리(48px 셀의 x≈42) → 아군 몸 앞(셀 가운데 − 셀의 20/96) 2px 앞.
+  const front = imageRect.left + imageRect.width * (42 / 48);
   const actorFront = actorRect.left + actorRect.width / 2 - actorRect.width * (20 / 96);
   const dx = Math.round((actorFront - front) / scale - 2);
-  // 슬라임은 발(셀 y=60)을 아군 발(48px 셀 y=44)에, 박쥐는 머리(셀 y≈24)를 아군 얼굴 높이(y≈20)에 맞춘다.
+  // 슬라임은 발(셀 y=44)을 아군 발(y=44)에, 박쥐는 머리(셀 y≈20)를 아군 얼굴 높이(y≈20)에 맞춘다.
   const dy = Math.round(swoop
-    ? (actorRect.top + actorRect.height * (20 / 48) - (imageRect.top + imageRect.height * (24 / 64))) / scale
-    : (actorRect.top + actorRect.height * (44 / 48) - (imageRect.top + imageRect.height * (60 / 64))) / scale);
+    ? (actorRect.top + actorRect.height * (20 / 48) - (imageRect.top + imageRect.height * (20 / 48))) / scale
+    : (actorRect.top + actorRect.height * (44 / 48) - (imageRect.top + imageRect.height * (44 / 48))) / scale);
   if (!Number.isFinite(dx) || !Number.isFinite(dy) || dx < 16) return undefined;
   const distance = Math.hypot(dx, dy);
   const clamp = (value: number, min: number, max: number) => Math.round(Math.max(min, Math.min(max, value)));

@@ -42,10 +42,27 @@ async function measure() {
       actor: root?.querySelector('.battle-actor-status.is-active-actor')?.getAttribute('data-record-id'),
       message: root?.querySelector('.battle-message-line')?.textContent ?? '',
       enemyActing: root?.querySelector('.battle-enemy-group .battle-enemy[data-retro-beat]')?.getAttribute('data-record-id') ?? null,
+      // 근접 착탄 순간: 때린 아군이 **맞은 적 바로 앞**에 서 있는가(가로 틈·발 높이 차, 화면 px).
+      strike: (() => {
+        const actor = root?.querySelector('.battle-actor-group .battle-actor[data-retro-action="attack"][data-retro-beat="impact"]');
+        const struck = root?.querySelector('.battle-enemy.battle-motion-knockback');
+        if (!actor || !struck) return null;
+        const a = actor.querySelector('.battle-actor-sprite')?.getBoundingClientRect() ?? actor.getBoundingClientRect();
+        const e = struck.querySelector('.battle-enemy-image').getBoundingClientRect();
+        const nearest = [...root.querySelectorAll('.battle-enemy:not(.defeated)')].map((node) => {
+          const r = node.querySelector('.battle-enemy-image').getBoundingClientRect();
+          return { id: node.dataset.testid, d: Math.hypot(r.left + r.width / 2 - (a.left + a.width / 2), r.bottom - a.bottom) };
+        }).sort((x, y) => x.d - y.d)[0]?.id;
+        return { actor: actor.dataset.recordId, struck: struck.dataset.testid, nearest, gapX: Math.round(a.left + a.width * 0.29 - (e.left + e.width * 0.75)), feetY: Math.round(a.bottom - e.bottom) };
+      })(),
       result: root?.querySelector('[data-testid="battle-result-panel"]')?.getAttribute('data-battle-result'),
       poses: [...(root?.querySelectorAll('.battle-actor-group .battle-actor') ?? [])].map((node) => node.dataset.battlePose),
     };
   });
+  if (state.strike && !report.strikes?.some((s) => s.actor === state.strike.actor && s.struck === state.strike.struck)) {
+    (report.strikes ??= []).push(state.strike);
+    console.log(`[retro2003-gif] strike ${JSON.stringify(state.strike)}`);
+  }
   // 방어 직후 적 행동이 같은 busy 구간에 이어져도 놓치지 않는다. 적마다 첫 공격 한 번씩.
   for (const [recordId, name] of Object.entries(ENEMY_CLIPS)) {
     if (segments[name]) continue;
@@ -111,7 +128,11 @@ async function finishAction(name, command, wantedSkill) {
   while (elapsed() - start < 20) {
     budget();
     const state = await measure();
-    if (state.phase === 'targetSelect' && state.busy === 'false') { await sleep(200); await page.keyboard.press('z'); }
+    if (state.phase === 'targetSelect' && state.busy === 'false') {
+      // 통상 공격은 기본 대상(첫 적)이 아닌 적을 골라 "고른 적에게 간다" 를 녹화한다.
+      if (name === 'attack' && !report.retargeted) { report.retargeted = true; await page.keyboard.press('ArrowDown'); await sleep(160); }
+      await sleep(200); await page.keyboard.press('z');
+    }
     if (state.busy === 'true') acted = true;
     if (acted && state.busy === 'false') break;
     await sleep(40);

@@ -1,7 +1,8 @@
 // 도트 측면 전투(retro2003) 전용 적 도트 시트 카탈로그.
 //
 // 시트 계약(그림 원본: scripts/asset-gen/pixel-enemy/<name>.py, 설명: tiledata/pixel-enemies/<name>/README.md):
-//   192×192 = 64px 셀 3열×3행, 1:1 도트, 알파 0/255. 오른쪽(아군 쪽)을 본다. 바닥 기준선 y=60.
+//   144×144 = 48px 셀 3열×3행(아군 전투 셀과 같은 크기·같은 2배 표시), 1:1 도트, 알파 0/255.
+//   오른쪽(아군 쪽)을 본다. 가로 중심 x=24, 바닥 기준선 y=44.
 //   (0,0)(1,0)(2,0) 대기 a·b·c — a→b→c→b 로 돈다
 //   (0,1) windup · (1,1) move · (2,1) attack
 //   (0,2) recover · (1,2) hit · (2,2) dead
@@ -9,7 +10,7 @@
 // 같은 리소스 id 를 다른 스킨은 지금까지의 통짜 그림으로 그린다 — 이 카탈로그는 retro2003 에서만 읽힌다.
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 
-export const PIXEL_ENEMY_CELL = 64;
+export const PIXEL_ENEMY_CELL = 48;
 
 export type PixelEnemyCell = "idle_a" | "idle_b" | "idle_c" | "windup" | "move" | "attack" | "recover" | "hit" | "dead";
 
