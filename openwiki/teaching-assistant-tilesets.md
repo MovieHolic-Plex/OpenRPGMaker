@@ -382,5 +382,30 @@ Pi 런타임(`scripts/lib/piAgentRuntime.ts`)은 모델이 끝났다고 할 때 
   `ensureMonsterTownKitReferences` 가 새 프로젝트와 로드 보정 양쪽에서 심는다.
   출하 player 확인: `vite-node --root . scripts/qa/runtime/monster-town-kit-fixture.mts` 후 `npm run qa:runtime -- --scenario monster-town-kit`.
 - **데모**: `createScarloxyPokemonDemoProject` 의 새싹 마을·초원 1번 길이 이 시트로 그려진다. 이미 저장된 데모 맵은 바꾸지 않는다(저작 콘텐츠).
-- **없는 것**: 동굴·체육관 내부, 바다·해변, 다리 난간. 실내는 `easyrpg_chipset_interior`, 동굴 맵은 `easyrpg_chipset_dungeon`.
+- **없는 것**: 동굴 내부, 다리 난간. 체육관 내부·해변은 아래 `scarloxy_chipset_monster_gym_coast`. 실내는 `easyrpg_chipset_interior`, 동굴 맵은 `easyrpg_chipset_dungeon`.
+
+## 몬스터 체육관·해변 부품 (scarloxy_chipset_monster_gym_coast, 2026-09-28)
+
+포켓몬풍 게임의 체육관 내부(풀·불·물 속성 바닥·벽·문장 벽·천장 테두리·관장 단상·배지 조각상·화분·화로·분수대·트레이너 위치 표시·바닥 스위치·차단기·입구 매트)와
+해변·항구(젖은 모래·해안 파도 테두리·모래 경계·부두 판자·부두 앞면 말뚝·등대·나룻배·계류 기둥·부표·밧줄·야자 덤불·야자열매·파라솔·조개·불가사리·바다 바위·유목)를 더한 960칸 시트다.
+
+- **한 장인 이유**: 위 480칸(0~479)을 Scarloxy 사막/설원 시트 그대로 두고 아래 480칸에 부품을 붙였다. 모래 34·바다 204·야자·아레나 외관(체육관 바깥)과
+  새 부품을 한 맵에 깐다. 위 반쪽 번호는 `scarloxy_chipset_wilds` 와 같다.
+- **그림**: 바닥·벽·단상·소품은 이미지 생성 모델 출력(`tiledata/pkmn-gym-coast/raw/`, 생성 자산 — `public/assets/ATTRIBUTION.md`)을
+  `python3 scripts/content/build-monster-gym-coast.py` 가 잘라 16px 로 줄인다. **이어 깔리는 칸은 코드로 합성한다** —
+  젖은 모래·해안 파도 3×3+안모서리·모래 경계 3×3+안모서리는 위 반쪽의 실제 모래 34·바다 204 를 좌표 mod 16 으로 샘플링해서 그 칸들과 이음새가 정확히 맞고,
+  체육관 천장 8칸도 합성이다. 벽 기둥은 원본 가운데 한 줄을 늘려 가로 반복이 이어지게 했다.
+- **칸 규칙**: 층·통행은 매니페스트 블록이 들고 있다(`layer`·`passage`·`overRows`·`openCells`). `scarloxyPack.ts` 의 `monsterGymCoastGroupSeeds` 가
+  블록마다 그룹 하나, 그리고 통행이 다른 부분을 별도 그룹으로 낸다: 조각상·화분·화로·파라솔의 윗줄 「… 머리」(○), 단상 가운데 아래 「… 계단」(○),
+  해안 3×3 가운데 「… 가운데」(○). 한 그룹은 통행값이 하나라서 섞으면 머리 칸이 벽이 된다.
+  1층 = 바닥·벽·천장·부두·모래·해안(불투명), 3층 = 단상·조각상·표시·퍼즐·항구·해변 소품(투명 가장자리).
+- **이어 깔기 문법**: 해안·모래는 모서리 재료(sea / wet / dry) 조합으로 칸을 고른다. sea 와 dry 는 한 칸에서 만나지 못해 사이에 wet 이 한 줄 이상 있어야 하고,
+  대각 조합 칸은 없다(해안선은 줄마다 ±1). 표는 참고문서 「칸 사전 · 모서리 재료」.
+- **참고문서**: `node scripts/content/prepare-monster-gym-coast-references.mjs` → `src/assets/monsterGymCoastReferences.json`
+  (칸 사전·조립 순서·풀 체육관 14×15·해변과 부두 24×16 전체 배열·자동 구조 검사). 예제는 스크립트가 조립하고 바로 구조 검사
+  (E_BLOCK_CUT · E_WRONG_LAYER · E_LOWER_EMPTY · E_EDGE_MISMATCH · E_UNREACHABLE · E_PUZZLE_BYPASS)를 통과해야 문서를 쓴다. 정상/오류 그림 4쌍은 예제를 실제로 변조해 만든다.
+  그림 렌더러는 `scripts/content/render-monster-gym-coast-references.py`, 출력 `public/assets/monster-gym-coast/references/`.
+  `ensureMonsterGymCoastReferences` 가 새 프로젝트와 로드 보정 양쪽에서 심는다.
+- **퍼즐 배선**: 스위치 칸 playerTouch 이벤트가 `changeTile`(layer upper)로 스위치 → 켜짐, 차단기 → 열림 칸을 바꾼다. 예제 문서에 좌표·타일 번호가 있다.
+- **없는 것**: 파도 애니메이션(해안 조각은 정지), 체육관 외벽(바깥은 위 반쪽 아레나 7×7), 실내 계단, 얼음·바위 속성 체육관, 배 갑판, 편집기 저작 데모 맵(예제 배열은 문서에만 있다).
 
