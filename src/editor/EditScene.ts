@@ -553,12 +553,11 @@ export class EditScene extends PhaserRuntime.Scene {
 
     // store/에디터 상태 변경 시 재렌더.
     this.unsubStore = store.subscribe((_project, change) => {
-      markEditRenderActive(this.game);
       this.clearInvalidPendingEventCoordinate();
       this.redrawForStoreChange(change);
     });
     this.unsubEditor = editorState.subscribe((state) => {
-      markEditRenderActive(this.game);
+      requestEditRenderFrame(this.game);
       const pending = state.pendingEventCoordinate;
       if (pending && (this.mapId() !== pending.mapId || state.layer !== "event" || state.tool !== "event")) {
         editorState.set({ pendingEventCoordinate: null });
@@ -975,6 +974,7 @@ export class EditScene extends PhaserRuntime.Scene {
       canIncrementalCells: mapId !== null && this.canIncrementallyRenderCells(mapId),
     });
     if (plan.kind === "skip") return;
+    requestEditRenderFrame(this.game);
     if (plan.kind === "relief") {
       this.scheduleReliefRender();
       return;
