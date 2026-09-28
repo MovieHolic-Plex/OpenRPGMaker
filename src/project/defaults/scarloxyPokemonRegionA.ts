@@ -17,6 +17,8 @@ import type { EncounterTableEntry, Rect } from "../types/project";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { MONSTER_CAVE_MANIFEST, MONSTER_TOWN_KIT_MANIFEST } from "@/assets/scarloxyPack";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
+import { monsterBattleStatsForSpecies } from "@/project/monsterCollection";
+import type { MonsterSpeciesRecord } from "@/project/types";
 import { DEFAULT_SKILL_ID, DEFAULT_TILE_SIZE } from "./constants";
 import { singleNodeTree } from "./defaultMaps";
 import { SCARLOXY_CAST, type ScarloxyCastRole } from "./scarloxyCast";
@@ -167,31 +169,28 @@ function speciesInfo(key: string, level: number): { name: string; stats: BaseSta
 }
 
 /**
- * 레벨 L 적 능력치. 데모 기존 야생(라르베아 L3 HP40, 드림 L6 HP60, 라이벌 L8 HP90)과 같은 눈금으로
- * 종족 기본치에서 뽑는다. 트레이너 몬스터는 HP 를 조금 더 준다.
+ * 레벨 L 적 능력치 — 플레이어 몬스터와 같은 Gen1 공식(monsterBattleStatsForSpecies, IV 0)에
+ * HP 만 배수를 곱한다. 적은 교대·아이템이 없으니 HP 로 버티게 한다. 배수는 simulateBattle 로 맞췄다
+ * (스타터 진화형 + 포획 2마리, 기대 레벨에서 야생 90%+, 체육관 트레이너 70~90%, 관장 50~70%).
  */
-function scaledStats(base: BaseStats, level: number, trainer: boolean): BaseStats {
-  const hp = Math.round(base.maxHp * 1.1 + level * 5 + 8);
-  return {
-    maxHp: trainer ? Math.round(hp * 1.12) : hp,
-    maxMp: Math.round(base.maxMp * 0.6 + level * 0.5),
-    attack: Math.round(base.attack * 0.45 + level * 0.55 + 1),
-    defense: Math.round(base.defense * 0.45 + level * 0.5 + 1),
-    mind: Math.round(base.mind * 0.45 + level * 0.5 + 1),
-    agility: Math.round(base.agility * 0.5 + level * 0.5 + 1),
-  };
+const WILD_HP_MULTIPLIER = 1.5;
+const TRAINER_HP_MULTIPLIER = 1.7;
+const LEADER_HP_MULTIPLIER = 2.0;
+function scaledStats(base: BaseStats, level: number, multiplier: number): BaseStats {
+  const stats = monsterBattleStatsForSpecies({ id: "pkmn_a_scale", name: "", baseStats: base } as MonsterSpeciesRecord, level, undefined);
+  return { ...stats, maxHp: Math.round(stats.maxHp * multiplier) };
 }
 
-type EnemySpec = { readonly key: string; readonly level: number; readonly trainer?: boolean; readonly label?: string };
+type EnemySpec = { readonly key: string; readonly level: number; readonly trainer?: boolean; readonly leader?: boolean; readonly label?: string };
 
 function enemyId(spec: EnemySpec): string {
-  return `enemy_pkmn_a_${spec.trainer ? "t_" : ""}${spec.key}_${spec.level}`;
+  return `enemy_pkmn_a_${spec.leader ? "leader_" : spec.trainer ? "t_" : ""}${spec.key}_${spec.level}`;
 }
 
 function enemyRecord(spec: EnemySpec) {
   const info = speciesInfo(spec.key, spec.level);
   const exp = Math.round((2 + spec.level * 1.4) * (spec.trainer ? 1.5 : 1));
-  return demoEnemy(enemyId(spec), spec.label ?? info.name, `scarloxy-monster-${spec.key}`, scaledStats(info.stats, spec.level, spec.trainer === true), {
+  return demoEnemy(enemyId(spec), spec.label ?? info.name, `scarloxy-monster-${spec.key}`, scaledStats(info.stats, spec.level, spec.leader ? LEADER_HP_MULTIPLIER : spec.trainer ? TRAINER_HP_MULTIPLIER : WILD_HP_MULTIPLIER), {
     exp,
     gold: spec.level * (spec.trainer ? 4 : 1),
   }, info.skills, { level: spec.level, speciesId: `species_scarloxy_${spec.key}` });
@@ -239,9 +238,9 @@ const TRAINER_TROOPS: readonly TroopSpec[] = [
   { id: PKMN_A_TROOPS.gymA, name: "체육관 트레이너 새봄", backdrop: GYM_BACKDROP, trainer: true, members: [{ key: "plumette", level: 8, trainer: true }, { key: "mossling", level: 9, trainer: true }] },
   { id: PKMN_A_TROOPS.gymB, name: "체육관 트레이너 도토리", backdrop: GYM_BACKDROP, trainer: true, members: [{ key: "hornbeet", level: 9, trainer: true }] },
   { id: PKMN_A_TROOPS.leader, name: "이끼 체육관 관장 모라", backdrop: GYM_BACKDROP, trainer: true, members: [
-    { key: "mossling", level: 10, trainer: true, label: "관장의 모슬링" },
-    { key: "cleaf", level: 11, trainer: true, label: "관장의 클리프" },
-    { key: "ivieron", level: 12, trainer: true, label: "관장의 아이비론" },
+    { key: "mossling", level: 10, trainer: true, leader: true, label: "관장의 모슬링" },
+    { key: "cleaf", level: 11, trainer: true, leader: true, label: "관장의 클리프" },
+    { key: "ivieron", level: 12, trainer: true, leader: true, label: "관장의 아이비론" },
   ] },
   { id: PKMN_A_TROOPS.caveHiker, name: "등산가 바우", backdrop: CAVE_BACKDROP, trainer: true, members: [{ key: "pebblit", level: 7, trainer: true }, { key: "pebblit", level: 8, trainer: true }] },
   { id: PKMN_A_TROOPS.caveFisher, name: "낚시꾼 물결", backdrop: CAVE_BACKDROP, trainer: true, members: [{ key: "puddlup", level: 7, trainer: true }, { key: "toxtoad", level: 8, trainer: true }] },
@@ -446,7 +445,7 @@ function gateGuardEvents(): GameEvent[] {
     priority: "below",
   };
   const guard = event("ev_pkmn_a_moss_gate_guard", GATE_GUARD.x, GATE_GUARD.y, [blocking]);
-  guard.pages.push(cleared);
+  guard.pages?.push(cleared);
   const aside = event("ev_pkmn_a_moss_gate_guard_aside", 24, 12, [
     page("ev_pkmn_a_moss_gate_guard_aside_page", speaker, castLines("hiker", [
       "오, 풀 배지로군! 지나가도 좋네. 바위굴 안에서는 자갈밭을 조심하게.",
