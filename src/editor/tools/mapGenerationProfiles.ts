@@ -138,6 +138,12 @@ const PROFILES = [
     palettes: samePalette({ base: 0, path: 60, obstacle: 48, accent: 78 }),
   },
   {
+    // 위 480칸이 초원 마을 시트와 같은 번호라 팔레트도 같다. 아래 부품(480~)은 생성이 안 쓴다.
+    tilesetId: "scarloxy_chipset_monster_town_kit",
+    layout: "settlement",
+    palettes: samePalette({ base: 0, path: 60, obstacle: 48, accent: 78 }),
+  },
+  {
     tilesetId: "scarloxy_chipset_wilds",
     layout: "wilds",
     palettes: {

@@ -16,6 +16,7 @@ import { ensureForestHarmonyVillageSlots } from "./forestHarmonyExtension";
 import { ensureForestHarmonyHouseParts } from "./forestHarmonyHouseParts";
 import { ensureForestHarmonyTreetopParts } from "./forestHarmonyTreetopParts";
 import { ATLAS_VEHICLES_TEXTURE, createAtlasVehiclesTileset, ensureAtlasVehiclesReferences } from "./atlasVehicles";
+import { ensureMonsterTownKitReferences } from "./monsterTownKitReferences";
 import { ensureForestHarmonyAtlasTownParts } from "./forestHarmonyAtlasTownParts";
 import { repairForestTreeShadowPassage } from "./forestHarmonyTreeShadows";
 import { createForestGrassJoinsTileset, extendForestGrassJoinsTileset, FOREST_GRASS_JOINS_TEXTURE } from "./forestGrassJoins";
@@ -26,7 +27,7 @@ import { composeCombinedTownRetroWorldTileset } from "./combinedTownRetroWorld";
 import type { AssetSet, GameMap, PassFlag, ResourceKind, ResourceProfile, SpriteDef, TilesetDef } from "../types";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { CC0_AUDIO_ASSETS } from "@/assets/cc0AudioAssets";
-import { BUNDLED_EASYRPG_CHARSET_ASSETS, BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledChipsetSheetHeight, bundledChipsetTilesPerRow, bundledChipsetTileSize, bundledEasyRpgTilesetId, LPC_WOODEN_FURNITURE_16_TEXTURE_KEY, LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY, SLATES_32_TEXTURE_KEY } from "@/assets/bundled";
+import { BUNDLED_EASYRPG_CHARSET_ASSETS, BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledChipsetFrameCount, bundledChipsetSheetHeight, bundledChipsetTilesPerRow, bundledChipsetTileSize, bundledEasyRpgTilesetId, LPC_WOODEN_FURNITURE_16_TEXTURE_KEY, LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY, SLATES_32_TEXTURE_KEY } from "@/assets/bundled";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { AUTHORABLE_FACESET_FACE_ASSETS, GENERATED_FACESET_FACE_IDS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
@@ -61,7 +62,8 @@ export function defaultTileset(): TilesetDef {
 }
 
 function makeBundledTileset(id: string, name: string, textureKey: string): TilesetDef {
-  const count = DEFAULT_TILE_COUNT;
+  // 16px 30열 시트 중 480칸보다 긴 것(초원 마을 + 몬스터 마을 부품 960칸)은 번들 칸 수를 따른다.
+  const count = Math.max(DEFAULT_TILE_COUNT, bundledChipsetFrameCount(textureKey));
   const passability: PassFlag[] = [];
   const priority: ("lower" | "upper")[] = [];
   const terrain: number[] = [];
@@ -174,6 +176,7 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       changed = ensureAtlasBiomeReferences(project.tilesets[id]) || changed;
       if (id === SHARED_VILLAGE_OBJECT_ID) changed = ensureSharedVillageObjectReferences(project.tilesets[id]) || changed;
       if (asset.textureKey === ATLAS_VEHICLES_TEXTURE) changed = ensureAtlasVehiclesReferences(project.tilesets[id]) || changed;
+      changed = ensureMonsterTownKitReferences(project.tilesets[id]) || changed;
       if (id === TIBO_INTERIOR_ID) changed = extendTiboInteriorDefaults(project.tilesets[id]) || changed;
       changed = seedLpcWoodenFurnitureKits(project.tilesets[id]) || changed;
       changed = seedLpcWoodenFurniture16Kits(project.tilesets[id]) || changed;
@@ -283,6 +286,7 @@ function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[nu
   ensureRpgDungeonReferences(tileset);
   ensureFieldRouteReferences(tileset);
   ensureElfTreetopReferences(tileset);
+  ensureMonsterTownKitReferences(tileset);
   return tileset;
 }
 
