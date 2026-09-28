@@ -8,7 +8,11 @@ import fs from "node:fs";
 import path from "node:path";
 import { withTsModule } from "../../ontology-ts-loader.mjs";
 import { MV_PACK_PRESETS } from "../../../src/project/rpgmakerMv/packs/index.ts";
-import { blank, blit, convertSpec, encodePng, loadSet, readMapSpecs, REFMAP_ROOT, render, sha, shrink, T, toPng, type Converted, type LoadedSet } from "./lib.mts";
+import { blank, blit, convertSpec, encodePng, loadSet, readMapSpecs, REFMAP_ROOT, render, sha, shrink, T, toPng, type Converted, type LoadedSet, type MapSpec } from "./lib.mts";
+import { exampleDoc, exampleImage, placesDoc, rulesDoc } from "./assistantDocs.mts";
+
+/** 조수 참고문서 예시로 쓸 맵. 없으면 가장 작은 맵 하나. 실내는 방 하나짜리와 칸막이 있는 집 둘. */
+const EXAMPLES: Record<string, readonly string[]> = { "refmap-interior": ["refmap_poor_rental", "refmap_old_couple_cottage"] };
 
 const DRY = process.argv.includes("--dry");
 const wanted = process.argv.slice(2).filter((a) => !a.startsWith("--"));
@@ -76,6 +80,7 @@ for (const id of sets) {
   fs.mkdirSync(outDir, { recursive: true });
   const proofMaps: Record<string, unknown> = {};
   let houseCount = 0;
+  const built: { spec: MapSpec; m: Converted; placeId: string }[] = [];
   for (const spec of readMapSpecs(set)) {
     const m = convertSpec(set, spec);
     if (m.warnings.length) throw new Error(`${id}/${spec.id}: ${m.warnings.join(" · ")}`);
@@ -126,6 +131,31 @@ for (const id of sets) {
     lib.roots.push(root);
     lib.previews[floor] = lib.previews[root] = encodePng(shrink(full));
     proofMaps[spec.id] = { place: root, size: `${w}×${h}`, objects: m.objects.length, houses: houseRows.length, renderSha: sha(toPng(full)) };
+    built.push({ spec, m, placeId: root });
+  }
+  // 조수 참고문서: 규칙 · 실제 장소 예시(도시 팩용 빈 예시 블록 대신) · 장소 목록.
+  const category = (tileset.referenceDocuments ?? []).find((c: any) => c.id === `mvpack-${preset.id}`);
+  if (category && !built.length) {
+    // 장소가 없는 세트(MZ 지면): 도시 팩용 빈 예시 블록만 빼고 규칙을 둔다.
+    category.description = `${preset.pack} 재료 이름·규칙. 칠하기 전에 전부 읽는다.`;
+    category.documents = category.documents.filter((d: any) => d.id !== "example");
+    category.documents.splice(category.documents.findIndex((d: any) => d.id === "guide") + 1, 0, { id: "rules", name: "규칙", markdown: rulesDoc(preset.id) });
+    category.images = category.images.filter((img: any) => img.id !== "example-block");
+  }
+  if (category && built.length) {
+    const picks = (EXAMPLES[id] ?? []).map((mapId) => built.find((b) => b.spec.id === mapId)).filter((b): b is (typeof built)[number] => !!b);
+    if (!picks.length) picks.push([...built].sort((a, b) => a.spec.w * a.spec.h - b.spec.w * b.spec.h)[0]!);
+    category.description = `${preset.pack} 을 까는 순서·규칙·재료 이름·물체 id·완성 장소 예시와 목록. 칠하기 전에 전부 읽는다.`;
+    const docs = category.documents.filter((d: any) => d.id !== "example");
+    const at = docs.findIndex((d: any) => d.id === "guide") + 1;
+    docs.splice(at, 0, { id: "rules", name: "규칙", markdown: rulesDoc(preset.id) });
+    docs.splice(docs.findIndex((d: any) => d.id === "pack"), 0,
+      ...picks.map((b, n) => ({ id: n ? `example-${n + 1}` : "example", name: `예시 ${b.spec.name}`, markdown: exampleDoc(set, b.spec, b.m, b.placeId) })),
+      { id: "places", name: "장소 목록", markdown: placesDoc(built.map((b) => ({ placeId: b.placeId, spec: b.spec }))) });
+    category.documents = docs;
+    category.images = [...category.images.filter((img: any) => img.id !== "example-block"),
+      ...picks.map((b, n) => ({ id: n ? `example-${n + 1}` : "example-block", name: `예시 ${b.spec.name} ${b.spec.w}×${b.spec.h}`,
+        caption: `「예시 ${b.spec.name}」 문서의 배열을 그대로 그린 것. ${b.spec.note}`, dataUrl: exampleImage(set, b.m) }))];
   }
   const bytes = JSON.stringify(lib).length;
   if (bytes > 60 * 1024 * 1024) throw new Error(`${id}: library too large ${bytes}`);
