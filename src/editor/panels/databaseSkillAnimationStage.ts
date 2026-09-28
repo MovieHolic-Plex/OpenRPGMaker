@@ -21,6 +21,7 @@ import {
 } from "@/editor/panels/eventEditor/showAnimationPlayback";
 import type { BattleAnimationSheet, Project, SkillRecord } from "@/project/types";
 import { el } from "@/util/dom";
+import { resumeRetroSkillStagesIn, stopRetroSkillStagesIn } from "@/editor/panels/databaseSkillRetroStage";
 
 const DEFAULT_ANIMATION_SHEET: BattleAnimationSheet = { frameWidth: 96, frameHeight: 96, columns: 5 };
 const PLAYBACK_FPS = Math.round(1000 / SHOW_ANIMATION_FRAME_MS);
@@ -173,6 +174,8 @@ export function stopSkillAnimationStagesIn(scope: ParentNode): void {
   for (const stage of scope.querySelectorAll<HTMLElement>("[data-testid='db-skill-animation-stage']")) {
     stageControllers.get(stage)?.stop();
   }
+  // 같은 카드의 도트 전투 미리보기(retro2003)도 같은 소유자 경로로 멈춘다.
+  stopRetroSkillStagesIn(scope);
 }
 
 /** 캐시에서 다시 붙은 자동재생 가능 스테이지를 재시작한다. */
@@ -181,6 +184,7 @@ export function resumeSkillAnimationStagesIn(scope: ParentNode): void {
     const controller = stageControllers.get(stage);
     if (controller?.canAutoplay) controller.resume();
   }
+  resumeRetroSkillStagesIn(scope);
 }
 
 function chip(testid: string, text: string): HTMLElement {
