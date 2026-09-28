@@ -1,3 +1,4 @@
+import { activityEntryIndex, majorActivityKinds as majorKinds } from "./aiActivityIndex";
 import { createActivityMedia } from "./aiActivityMedia";
 import { el } from "@/util/dom";
 import { activityText, type ActivityEntry, type ActivityTrace } from "@/ai/activityTrace";
@@ -103,13 +104,22 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
   } } });
   const controls = el("div", { class: "ai-activity-filters", children: [search, filter, actorFilter, latest, exportButton] });
   root.append(meta, controls, more, columns, list, notice);
+  let lastRowsSignature = "";
+  let lastRender: { trace: ActivityTrace; actor?: string; level: string; shown: number; severity: string; selectedActor: string; query: string; failed: boolean; length: number } | undefined;
   function render(): void {
     const level = getActivityLevel();
     root.dataset.level = level;
     root.hidden = level === "none" || !trace;
     if (!trace || level === "none") return;
     const current = trace;
-    const actors = [...new Set(current.entries.map(e => e.actor))];
+    const failed = activityArchiveFailed(current.id);
+    if (lastRender && lastRender.trace === current && lastRender.length === current.entries.length
+      && lastRender.actor === actor && lastRender.level === level && lastRender.shown === shown
+      && lastRender.severity === severity && lastRender.selectedActor === selectedActor
+      && lastRender.query === query && lastRender.failed === failed) return;
+    lastRender = { trace: current, actor, level, shown, severity, selectedActor, query, failed, length: current.entries.length };
+    const index = activityEntryIndex(current);
+    const actors = [...index.byActor.keys()];
     const nextActorSignature = JSON.stringify(actors.map(id => [id, actorLabel(current, id)]));
     if (nextActorSignature !== actorSignature) {
       actorSignature = nextActorSignature;
@@ -120,121 +130,157 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
     actorFilter.hidden = Boolean(actor) || actors.length < 2;
     meta.hidden = level !== "trace"; controls.hidden = level !== "trace"; columns.hidden = level !== "trace";
     root.dataset.member = String(Boolean(actor));
-    meta.textContent = `실행 기록 · ${current.entries.length}건 · ${current.phase}`;
-    const candidates = current.entries.filter(e => !actor || e.actor === actor).map(entry => options.historical && entry.status === "running"
-      ? { ...entry, status: "info" as const, summary: `${entry.summary} · 종료 응답 미수집` } : entry);
-    let rows = level === "trace" ? candidates : candidates.filter(e => ["tool", "agent_spawn", "agent_done", "review", "status", "error"].includes(e.kind));
+    const metaText = `실행 기록 · ${current.entries.length}건 · ${current.phase}`;
+    if (meta.textContent !== metaText) meta.textContent = metaText;
+    const source = actor ? index.byActor.get(actor) ?? [] : current.entries;
+    const candidates = options.historical ? source.map(entry => entry.status === "running"
+      ? { ...entry, status: "info" as const, summary: `${entry.summary} · 종료 응답 미수집` } : entry) : source;
+    let rows: readonly ActivityEntry[] = candidates;
     if (level === "brief") {
-      const latestPhase = rows.filter(e => e.name === "run.phase").at(-1)?.id;
-      const latestSave = rows.filter(e => e.name.startsWith("save.")).at(-1)?.id;
+      const latestPhase = index.phases.get(actor);
+      const latestSave = index.saves.get(actor);
       // 체크포인트 반영 성공은 쓰기마다 한 줄씩 쌓이는 배관 소식이다 — 실패만 남긴다.
       // 도구 실패 뒤에 기록이 더 이어졌으면 조수가 회복한 것이다 — 간단히 보기에서는 지운다.
       // 실행 자체가 실패로 끝나면 마지막 run.phase 「실패」 줄이 그 사실을 말한다. 자세히 보기는 그대로 둔다.
       const latestEntry = candidates.at(-1)?.id;
-      rows = rows.filter(e => (e.name !== "run.phase" || e.id === latestPhase) && (!e.name.startsWith("save.") || e.id === latestSave)
-        && !(e.name === "checkpoint.apply" && e.status !== "error")
-        && !(e.kind === "tool" && e.status === "error" && e.id !== latestEntry));
-      // Merge adjacent successful repetitions; keep failures and active calls individually visible.
-      const grouped: ActivityEntry[] = [];
-      const counts = new Map<string, number>();
-      for (const entry of rows) {
-        const previous = grouped[grouped.length - 1];
-        if (previous && entry.kind === "tool" && entry.status === "ok" && previous.status === "ok" && previous.name === entry.name && previous.actor === entry.actor && previous.visuals?.at(-1)?.target === entry.visuals?.at(-1)?.target) {
-          const count = (counts.get(previous.id) ?? 1) + 1;
-          grouped[grouped.length - 1] = { ...entry, summary: `${count}건 확인·처리` }; counts.set(entry.id, count);
-        } else grouped.push(entry);
+      // Fold adjacent successes once; retain only the brief display window.
+      const active: ActivityEntry[] = [];
+      const completed: ActivityEntry[] = [];
+      let activeCount = 0;
+      let illustrated: ActivityEntry | undefined;
+      let plain: ActivityEntry | undefined;
+      const collect = (entry: ActivityEntry): void => {
+        if (entry.status === "running") {
+          activeCount++;
+          active.push(entry);
+          if (active.length > 3) active.shift();
+        } else {
+          completed.push(entry);
+          if (completed.length > 4) completed.shift();
+          if (!entry.visuals?.length) plain = entry;
+          if (entry.visuals?.some(v => v.phase !== "read") && (entry.kind !== "tool" || toolGroup(entry.name) !== "inspect")) illustrated = entry;
+        }
+      };
+      let previous: ActivityEntry | undefined;
+      let count = 1;
+      const flush = (): void => {
+        if (previous) collect(count > 1 ? { ...previous, summary: `${count}건 확인·처리` } : previous);
+      };
+      for (const entry of candidates) {
+        if (!majorKinds.has(entry.kind) || (entry.name === "run.phase" && entry.id !== latestPhase)
+          || (entry.name.startsWith("save.") && entry.id !== latestSave)
+          || (entry.name === "checkpoint.apply" && entry.status !== "error")
+          || (entry.kind === "tool" && entry.status === "error" && entry.id !== latestEntry)) continue;
+        if (previous && entry.kind === "tool" && entry.status === "ok" && previous.status === "ok"
+          && previous.name === entry.name && previous.actor === entry.actor && previous.visuals?.at(-1)?.target === entry.visuals?.at(-1)?.target) count++;
+        else { flush(); count = 1; }
+        previous = entry;
       }
-      const active = grouped.filter(e => e.status === "running");
-      const completed = grouped.filter(e => e.status !== "running");
-      // 그림은 가장 최근 한 장만 — 좁은 패널에 변경 전/초안 쌍이 세 번 쌓이면 대화가 그림에 묻힌다.
-      // 조회 도구(화면 이동·영역 읽기)의 「확인한 모습」보다 실제로 바꾼 그림을 먼저 고른다.
-      // 조회 그림(「확인한 모습」)은 간단히 보기에서 그리지 않으므로 그림 후보에서도 뺀다.
-      const pictured = completed.filter(e => briefActivityVisuals(e.visuals).length);
-      const illustrated = pictured.filter(e => e.kind !== "tool" || toolGroup(e.name) !== "inspect").slice(-1);
-      rows = illustrated.length ? [...illustrated, ...completed.filter(e => !e.visuals?.length).slice(-1), ...active.slice(-3)].sort((a, b) => a.at - b.at) : [...completed.slice(-Math.max(1, 4 - active.length)), ...active.slice(-3)];
-    } else if (level === "trace") rows = rows.filter(e => (!selectedActor || actor || e.actor === selectedActor) && (severity === "all" || (severity === "tool" ? e.kind === "tool" : e.status === "error")) && (!query || entrySearchText(e).includes(query)));
-    const soloActor = new Set(candidates.map(e => e.actor).filter(id => id !== "system")).size <= 1;
+      flush();
+      rows = illustrated ? [illustrated, ...(plain ? [plain] : []), ...active].sort((a, b) => a.at - b.at)
+        : [...completed.slice(-Math.max(1, 4 - activeCount)), ...active];
+    } else {
+      // Collect the visible window plus one row for the "more" button.
+      const recent: ActivityEntry[] = [];
+      for (let i = candidates.length - 1; i >= 0 && recent.length <= shown; i--) {
+        const entry = candidates[i]!;
+        if (level === "detail" ? !majorKinds.has(entry.kind)
+          : ((!actor && selectedActor && entry.actor !== selectedActor)
+            || (severity !== "all" && (severity === "tool" ? entry.kind !== "tool" : entry.status !== "error"))
+            || (query && !entrySearchText(entry).includes(query)))) continue;
+        recent.push(entry);
+      }
+      rows = recent.reverse();
+    }
+    const soloActor = actor ? true : actors.filter(id => id !== "system").length <= 1;
     const total = rows.length;
     if (level !== "brief") rows = rows.slice(-shown);
     more.hidden = level === "brief" || total <= shown;
-    const existing = new Map(Array.from(list.children).map(node => [(node as HTMLElement).dataset.entryId, node as HTMLElement]));
-    const keep = new Set<HTMLElement>();
-    let previousRow: HTMLElement | null = null;
-    for (const entry of rows) {
-      const signature = `${level}:${soloActor}:${entry.status}:${entry.endedAt}:${entry.summary}:${entry.at}:${entry.visuals?.map(v => v.id).join(",")}`;
-      let row = existing.get(entry.id);
-      if (!row || row.dataset.signature !== signature) {
-        // 간단히 보기의 도구 실패는 「다른 방법을 찾는 중」 으로 적는다 — 빨간 느낌표를 달지 않는다.
-        const shownStatus = level === "brief" && entry.kind === "tool" && entry.status === "error" ? "info" : entry.status;
-        const mark = shownStatus === "running" ? "◌" : shownStatus === "ok" ? "✓" : shownStatus === "error" ? "!" : "·";
-        const text = level === "trace" ? `${entry.name} · ${entry.summary}` : level === "brief" ? briefEntryText(entry) : `${activityText(label(entry), 1000)}${entry.kind === "tool" ? ` · ${entry.status === "running" ? "실행 중" : entry.status === "error" ? "실패" : entry.status === "info" ? "종료 응답 없음" : /^\d+건/.test(entry.summary) ? entry.summary : "완료"}` : ""}`;
-        const heading = el("div", { class: "ai-activity-entry-title", children: [el("span", { class: "ai-activity-mark", text: mark, attrs: { "aria-hidden": "true" } }), el("span", { text })] });
-        // 담당이 하나뿐이면 행마다 같은 이름(「시공」)을 되풀이하지 않는다. 0.1초 미만은 시간을 적지 않는다(「0.00초」).
-        // 간단히 보기는 소요 시간(「시공 · 8.7초」)을 적지 않는다 — 머리 줄의 시계가 이미 간다.
-        const who = level === "brief" ? (soloActor ? "" : briefActorLabel(current, entry.actor)) : actorLabel(current, entry.actor);
-        const took = entry.durationMs === undefined || level === "brief" ? "" : `${(entry.durationMs / 1000).toFixed(2)}초`;
-        const detail = [who, took].filter(Boolean).join(" · ");
-        let next: HTMLElement;
-        if (level === "brief") next = el("div", { children: detail ? [heading, el("small", { text: detail })] : [heading] });
-        else {
-          const summary = el("summary", { children: [heading, el("small", { text: `${clock(entry.at - current.startedAt)} · ${detail}` })] });
-          if (level === "trace") {
-            summary.classList.add("ai-activity-log-row");
-            const status = { running: "진행 중", ok: "완료", error: "실패", info: "기록" }[entry.status];
-            summary.replaceChildren(
-              el("time", { class: "ai-activity-log-time", text: clock(entry.at - current.startedAt) }),
-              el("span", { class: "ai-activity-log-actor", text: actorLabel(current, entry.actor) }),
-              el("span", { class: "ai-activity-log-task", children: [el("strong", { text: label(entry) }), el("small", { text: entry.kind === "tool" ? `${entry.name} · ${entry.summary}` : entry.name })] }),
-              el("span", { class: "ai-activity-log-status", text: status }),
-              el("span", { class: "ai-activity-log-duration", text: entry.durationMs === undefined ? "—" : `${(entry.durationMs / 1000).toFixed(2)}초` }),
-            );
-          }
-          const body = el("div", { class: "ai-activity-payload" });
-          let filled = false;
-          const fillPayload = () => {
-            if (filled) return;
-            filled = true;
-            if (level === "detail") {
-              const output = entry.output as { text?: string; task?: string; summary?: string } | undefined;
-              body.append(el("p", { text: (output?.text ?? output?.task ?? output?.summary ?? entry.summary) || "결과 설명 없음" }));
-            } else {
-              for (const [caption, value] of [["입력", entry.input], ["결과 / 상태", entry.output]] as const) if (value !== undefined) body.append(el("strong", { text: caption }), el("pre", { text: JSON.stringify(value, null, 2) }));
-              if (!body.childElementCount) body.append(el("p", { text: "추가 데이터 없음" }));
-              body.append(el("p", { class: "ai-activity-receipt-meta", text: `${detail} · ${new Date(entry.at).toLocaleString()} · ${entry.name}\n실행 ID ${current.id}` }));
+    const rowSignature = (entry: ActivityEntry): string => JSON.stringify([level, soloActor, entry.status, entry.endedAt, entry.summary, entry.at, entry.durationMs, entry.name, actorLabel(current, entry.actor), entry.visuals?.map(v => v.id)]);
+    const rowsSignature = JSON.stringify([current.id, current.startedAt, rows.length ? rows.map(entry => [entry.id, rowSignature(entry)]) : [current.phase, query, severity]]);
+    if (rowsSignature !== lastRowsSignature) {
+      lastRowsSignature = rowsSignature;
+      const existing = new Map(Array.from(list.children).map(node => [(node as HTMLElement).dataset.entryId, node as HTMLElement]));
+      const keep = new Set<HTMLElement>();
+      let previousRow: HTMLElement | null = null;
+      for (const entry of rows) {
+        const signature = rowSignature(entry);
+        let row = existing.get(entry.id);
+        if (!row || row.dataset.signature !== signature) {
+          // 간단히 보기의 도구 실패는 「다른 방법을 찾는 중」 으로 적는다 — 빨간 느낌표를 달지 않는다.
+          const shownStatus = level === "brief" && entry.kind === "tool" && entry.status === "error" ? "info" : entry.status;
+          const mark = shownStatus === "running" ? "◌" : shownStatus === "ok" ? "✓" : shownStatus === "error" ? "!" : "·";
+          const text = level === "trace" ? `${entry.name} · ${entry.summary}` : level === "brief" ? briefEntryText(entry) : `${activityText(label(entry), 1000)}${entry.kind === "tool" ? ` · ${entry.status === "running" ? "실행 중" : entry.status === "error" ? "실패" : entry.status === "info" ? "종료 응답 없음" : /^\d+건/.test(entry.summary) ? entry.summary : "완료"}` : ""}`;
+          const heading = el("div", { class: "ai-activity-entry-title", children: [el("span", { class: "ai-activity-mark", text: mark, attrs: { "aria-hidden": "true" } }), el("span", { text })] });
+          // 담당이 하나뿐이면 행마다 같은 이름(「시공」)을 되풀이하지 않는다. 0.1초 미만은 시간을 적지 않는다(「0.00초」).
+          // 간단히 보기는 소요 시간(「시공 · 8.7초」)을 적지 않는다 — 머리 줄의 시계가 이미 간다.
+          const who = level === "brief" ? (soloActor ? "" : briefActorLabel(current, entry.actor)) : actorLabel(current, entry.actor);
+          const took = entry.durationMs === undefined || level === "brief" ? "" : `${(entry.durationMs / 1000).toFixed(2)}초`;
+          const detail = [who, took].filter(Boolean).join(" · ");
+          let next: HTMLElement;
+          if (level === "brief") next = el("div", { children: detail ? [heading, el("small", { text: detail })] : [heading] });
+          else {
+            const summary = el("summary", { children: [heading, el("small", { text: `${clock(entry.at - current.startedAt)} · ${detail}` })] });
+            if (level === "trace") {
+              summary.classList.add("ai-activity-log-row");
+              const status = { running: "진행 중", ok: "완료", error: "실패", info: "기록" }[entry.status];
+              summary.replaceChildren(
+                el("time", { class: "ai-activity-log-time", text: clock(entry.at - current.startedAt) }),
+                el("span", { class: "ai-activity-log-actor", text: actorLabel(current, entry.actor) }),
+                el("span", { class: "ai-activity-log-task", children: [el("strong", { text: label(entry) }), el("small", { text: entry.kind === "tool" ? `${entry.name} · ${entry.summary}` : entry.name })] }),
+                el("span", { class: "ai-activity-log-status", text: status }),
+                el("span", { class: "ai-activity-log-duration", text: entry.durationMs === undefined ? "—" : `${(entry.durationMs / 1000).toFixed(2)}초` }),
+              );
             }
-          };
-          const details = el("details", { children: [summary, body] }) as HTMLDetailsElement;
-          details.open = opened.has(entry.id);
-          if (details.open) fillPayload();
-          details.addEventListener("toggle", () => { if (!details.isConnected) return; if (details.open) { opened.add(entry.id); fillPayload(); } else opened.delete(entry.id); });
-          next = details;
+            const body = el("div", { class: "ai-activity-payload" });
+            let filled = false;
+            const fillPayload = () => {
+              if (filled) return;
+              filled = true;
+              if (level === "detail") {
+                const output = entry.output as { text?: string; task?: string; summary?: string } | undefined;
+                body.append(el("p", { text: (output?.text ?? output?.task ?? output?.summary ?? entry.summary) || "결과 설명 없음" }));
+              } else {
+                for (const [caption, value] of [["입력", entry.input], ["결과 / 상태", entry.output]] as const) if (value !== undefined) body.append(el("strong", { text: caption }), el("pre", { text: JSON.stringify(value, null, 2) }));
+                if (!body.childElementCount) body.append(el("p", { text: "추가 데이터 없음" }));
+                body.append(el("p", { class: "ai-activity-receipt-meta", text: `${detail} · ${new Date(entry.at).toLocaleString()} · ${entry.name}\n실행 ID ${current.id}` }));
+              }
+            };
+            const details = el("details", { children: [summary, body] }) as HTMLDetailsElement;
+            details.open = opened.has(entry.id);
+            if (details.open) fillPayload();
+            details.addEventListener("toggle", () => { if (!details.isConnected) return; if (details.open) { opened.add(entry.id); fillPayload(); } else opened.delete(entry.id); });
+            next = details;
+          }
+          const shownVisuals = level === "brief" ? briefActivityVisuals(entry.visuals) : entry.visuals ?? [];
+          if (shownVisuals.length) {
+            const media = createActivityMedia(shownVisuals, level === "brief" ? briefCaption(entry.summary) : entry.summary);
+            // Visuals stay visible in detail/trace; raw receipts remain separately expandable.
+            if (next instanceof HTMLDetailsElement) {
+              const wrapper = el("div", { children: [next, media] });
+              next = wrapper;
+            } else next.append(media);
+          }
+          next.className = `ai-activity-entry is-${shownStatus}`;
+          next.dataset.entryId = entry.id; next.dataset.signature = signature;
+          if (row) row.replaceWith(next);
+          row = next;
         }
-        const shownVisuals = level === "brief" ? briefActivityVisuals(entry.visuals) : entry.visuals ?? [];
-        if (shownVisuals.length) {
-          const media = createActivityMedia(shownVisuals, level === "brief" ? briefCaption(entry.summary) : entry.summary);
-          // Visuals stay visible in detail/trace; raw receipts remain separately expandable.
-          if (next instanceof HTMLDetailsElement) {
-            const wrapper = el("div", { children: [next, media] });
-            next = wrapper;
-          } else next.append(media);
-        }
-        next.className = `ai-activity-entry is-${shownStatus}`;
-        next.dataset.entryId = entry.id; next.dataset.signature = signature;
-        if (row) row.replaceWith(next);
-        row = next;
+        keep.add(row);
+        // append only new rows; stable DOM preserves selection, focus and scroll during updates.
+        const position: ChildNode | null = previousRow ? previousRow.nextSibling ?? null : list.firstChild;
+        if (row !== position) list.insertBefore(row, position);
+        previousRow = row;
       }
-      keep.add(row);
-      // append only new rows; stable DOM preserves selection, focus and scroll during updates.
-      const position: ChildNode | null = previousRow ? previousRow.nextSibling : list.firstChild;
-      if (row !== position) list.insertBefore(row, position);
-      previousRow = row;
+      for (const node of Array.from(list.children)) if (!keep.has(node as HTMLElement)) node.remove();
+      if (!rows.length) list.replaceChildren(el("p", { class: "ai-activity-meta", text: query || severity !== "all" ? "일치하는 기록이 없어요." : `${current.phase} · 다음 실행 신호를 기다리고 있어요.` }));
     }
-    for (const node of Array.from(list.children)) if (!keep.has(node as HTMLElement)) node.remove();
-    if (!rows.length) list.replaceChildren(el("p", { class: "ai-activity-meta", text: query || severity !== "all" ? "일치하는 기록이 없어요." : `${current.phase} · 다음 실행 신호를 기다리고 있어요.` }));
     const recent = candidates[candidates.length - 1];
     const warnings = [options.historical ? `이전 실행 기록 · 마지막 기록 상태: ${current.phase}` : "", current.dropped ? `보존 상한으로 이전 ${current.dropped}건이 제외됐어요.` : "", activityArchiveFailed(current.id) ? "기기에 기록을 저장하지 못했어요. 현재 화면에서 내려받을 수 있어요." : ""];
     if (level === "brief" && recent && ["turn", "delta", "heartbeat"].includes(recent.kind) && !["완료", "적용됨", "검토 대기", "실패", "중단", "버림"].includes(current.phase)) warnings.unshift("생각하는 중…");
-    notice.textContent = warnings.filter(Boolean).join(" "); notice.hidden = !notice.textContent;
+    const warningText = warnings.filter(Boolean).join(" ");
+    if (notice.textContent !== warningText) notice.textContent = warningText;
+    notice.hidden = !warningText;
   }
   search.addEventListener("input", () => { query = search.value.toLowerCase(); render(); });
   actorFilter.addEventListener("change", () => { selectedActor = actorFilter.value; render(); });
