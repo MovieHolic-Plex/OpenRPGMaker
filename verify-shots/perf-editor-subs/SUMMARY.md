@@ -33,6 +33,7 @@
 | 직접 도구 타일 객체 | 같은 변경, 갱신 객체 수 | 10,000 | 9 |
 | 텍스처 완료 | 같은 프레임 전 84개 완료, 완료 콜백에 의한 redraw 횟수 | 84 | 1 |
 | 텍스처 완료 6묶음 | 위 묶음 6회, 완료 콜백에 의한 redraw 총수 | 504 | 6 |
+| 텍스처 분산 완료 | 84개를 6프레임에 나누어 완료, redraw 총수(Node 재측정) | 84 | 6 |
 
 공유 머신의 일회 측정이므로 절대 시간과 배율은 부하에 따라 달라진다. 노드·객체·프레임 수는 결정적 작업량이다.
 
@@ -44,11 +45,13 @@
 
 - 텍스처 완료는 수정 직전 커밋 `e2c04b5f8`과 수정본의 실제 EditScene.redrawForStoreChange를 호출했다. 에셋 I/O, rAF와 redraw 본문만 대역이다. 매 묶음의 84개 Promise가 다음 프레임 전에 모두 완료되는 입력이다. 동기 store redraw는 양쪽 모두 6회로 보존되어 총 호출 수는 510→12회다. 감독자 프로파일의 14초/12.7초를 이 하네스에서 재현하거나 개선 시간으로 환산하지 않았다. 완료가 여러 프레임으로 나뉘면 그 프레임 수만큼 redraw한다.
 
-원자료: `texture.json`, `subs-before.json`, `subs-after.json`, `panel-before.json`, `panel-after.json`, `browser.json`, `render.json`, `wake.json`.
+원자료: `texture-node.json`, `texture.json`, `subs-before.json`, `subs-after.json`, `panel-before.json`, `panel-after.json`, `browser.json`, `render.json`, `wake.json`.
 화면: `links-before.png`, `links-after.png` (540×960, 실제 Chromium).
 임시 측정 테스트 및 기준선 사본은 실행 뒤 삭제했으며 커밋하지 않았다.
 
-## 테스트
+## 테스트 — 실행 중지 지시 이전 이력
+
+아래 Vitest·tsc 결과는 사용자의 실행 중지 정정 **이전**에 완료한 이력이다. 정정 이후에는 Vitest(run-vitest.mjs 포함)·tsc·gates를 실행하지 않았다. 정정 이후 작업은 아래 독립 Node 실측과 코드 읽기로 제한했다.
 
 전체 스위트와 gates는 실행하지 않았다. 관련 회귀 테스트 11파일 **72건 통과, 0건 실패**. 텍스처 실측 임시 테스트 1건도 통과했다.
 
@@ -124,4 +127,26 @@ NODE_OPTIONS=--max-old-space-size=8192 npx tsc --noEmit -p tsconfig.app.json
 - `test/applyChangesetToStore.test.ts`
 - `test/rightDragPanelRebuilds.test.ts`
 
-문서·증거: `openwiki/editor-observability.md`, 이 SUMMARY 및 위 원자료 JSON 8개, PNG 2개.
+문서·증거: `openwiki/editor-observability.md`, 이 SUMMARY 및 위 원자료 JSON 9개, PNG 2개.
+
+
+## 실행 중지 정정 이후: 독립 Node 재측정
+
+실행 명령: `node test/perfTextureNode.measure.mjs` — exit 0. 임시 스크립트는 측정 후 삭제했으며 커밋하지 않았다.
+기준선 `e2c04b5f8`, 수정본 `86707253a`의 EditScene에서 관련 필드와 메서드 원문을 TypeScript AST로 추출하고, 타입 검사 없는 transpileModule 변환 뒤 Node VM에서 실행했다. Vitest와 tsc는 호출하지 않았다. 로더 I/O·rAF·redraw 본문 및 전체 렌더 계획 판정은 대역이다. 네 로더의 실제 콜백 연결과 스케줄러에 비동기 완료를 공급하여 redraw 호출 횟수를 셌다.
+
+| 입력 | 이전 redraw | 이후 redraw |
+|---|---:|---:|
+| 한 프레임 전 텍스처 84개 완료 | 84 | 1 |
+| 같은 완료 묶음 6회 | 504 | 6 |
+| 텍스처 84개를 6프레임으로 분산 완료 | 84 | 6 |
+
+동기 store redraw는 각각 1/6/1회로 전후 동일했다. 원자료는 `texture-node.json`. 이 재측정은 전체 편집기 실행 시간이나 실제 GPU 렌더링 측정이 아니다.
+
+코드 읽기로 확인한 계약과 남은 검증 범위:
+
+- `test/editSceneTextureRedraw.test.ts`: 네 로더·맵 전환의 콜백 공유, 종료 취소, 늦은 완료, 재시작 후 pending 로더 재사용, 옛 프레임 무효화, 여러 프레임 및 재진입 예약을 현 코드와 대조했다. 계약 충돌은 발견하지 못했다. 단, 종료 검사는 cancelTextureRedraw를 직접 호출하므로 실제 Phaser SHUTDOWN/DESTROY 이벤트 → cleanup 연결 전체는 이 테스트로 확인되지 않는다. 추후 실행을 허용받으면 이 파일과 실제 씬 수명 경계를 함께 확인할 대상이다.
+- `test/editSceneStoreRender.test.ts`: window.addEventListener/removeEventListener 대역이 있고, prototype 하네스는 스케줄러가 필요 없는 map/cells 경로만 사용한다. 현재 두 테스트와의 충돌은 발견하지 못했다. 하네스를 project 통지로 확장한다면 인스턴스 필드 및 initTextureRedraw 초기화가 필요하다.
+- `test/editRenderGate.test.ts`: 단발 프레임·유휴 heartbeat·입력 활성 계약을 읽었다. 텍스처 완료가 requestEditRenderFrame을 사용하는 것과 충돌하지 않는다.
+
+이번 정정 후 실행 코드와 테스트 파일은 변경하지 않았다. 기존 72건 통과·타입 오류 0건은 과거 실행 이력이며, 정정 후 새 테스트 결과로 주장하지 않는다.
