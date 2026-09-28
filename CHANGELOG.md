@@ -5,6 +5,63 @@
 
 <!-- releases -->
 
+## 0.36.0 — 2026-09-28
+
+### 기능
+
+- retro2003 이동·순간이동·방출 효과음, 배경 README 를 도트 생성기 기준으로 (`7f8c121`)
+- retro2003 직업별 근접 접근(질주·도약·순간이동·섬광)과 적 진형 다양화 (`2ae7ca5`)
+- **team** — 팀원도 앱으로 참여하고 LAN·Tailscale HTTP 참여를 가볍게 한다 (`ecf8620`)
+- 레트로 전투 배경 cave·snow·desert 도트로 다시 그림 (`4d5c6c0`)
+- 레트로 전투 배경 plains·forest 도트로 다시 그림 (`cd74bc5`)
+- retro2003 슬라임·박쥐 도트 시트와 적 근접 공격 모션 (`00e6e8f`)
+- 레트로 전투 slime 도트 시트 (`ce6aca8`)
+- 레트로 전투 bat 도트 시트 (`e2ebcaa`)
+- **battle** — retro2003 아군 오른쪽 복귀·적 앞까지 걸어가 타격·마법 종류별 시전 칸·날아가는 이펙트 제거 (`144ae86`)
+- actor4 6명 마법별 시전 도트와 무장 걷기 추가 (`35640a1`)
+- **asset-gen** — 마법 종류별 시전 시트 규약(7종 × 3칸) (`08ac8f1`)
+- **battle** — 빈 새 프로젝트도 retro2003 전투로 시작 (`6a7f32a`)
+- 레트로 전투 HUD 재배치와 키보드 GIF 녹화 도구 추가 (`1dfbb18`)
+- wire charset battlers and 24-pose retro side combat (`508db2c`)
+- Actor4 후반 여섯 캐릭터의 원본 칩 기반 전투 도트 저작 (`4375659`)
+- 걷기 칩 기반 도적과 마법사 5종 전투 도트 저작 (`aab64c5`)
+- 걷기 칩 기반 사무라이 엘프 검객 닌자 전투 도트 저작 (`ee58660`)
+- 걷기 원본 기반 청년 드루이드 무도가 음유시인 전투 도트 제작 (`bbf110b`)
+- redraw Actor1 party battlers from walking charset pixels (`d5a4537`)
+- 걷기 칩 기반 Actor2 다섯 명의 측면 전투 도트 저작 (`2f0d290`)
+- **asset-gen** — 걷기 칩 기반 전투 시트 도구와 기준선 32명 (`d26c1d7`)
+- add retro2003 battler motion and feedback (`1751715`)
+- add layered retro2003 battle scenery and ambient motion (`310ead6`)
+- add five layered pixel battle scenery biomes (`aef8ca3`)
+- retro2003 런타임 QA 시나리오와 스킨 계약 추가 (`54d8107`)
+- add retro2003 blue battle HUD and sideview transition (`8713f5b`)
+
+### 수정
+
+- retro2003 공격 대상 정확도·세로 이동, 48px 적 시트, 빈사 앉기 자세 제거 (`fe9a1ec`)
+- actor4 전투 대기·걷기·방어를 선 자세로 (`10f3d56`)
+- actor2 전투 대기·걷기·방어를 선 자세로 (`c56095c`)
+- actor1 전투 대기·걷기·방어를 선 자세로 (`822beb3`)
+- actor3 전투 대기·걷기·방어를 선 자세로 (`27abecd`)
+- 레트로 전투 bat 도트를 아군 크기에 맞춰 축소 (`43f2d02`)
+- 레트로 전투 slime 도트를 아군 크기에 맞춰 축소 (`27b8b1b`)
+- retro 이동 거리 배율 보정, GIF 픽스처는 번들 전투칩 사용 (`2c9a8f6`)
+- 마도사 지팡이와 여섯 캐릭터 속성별 시전 도트 수정 (`d5f0bb0`)
+- 정찰병과 궁수 일행 시전 7종 및 무장 보행 교정 (`d0ed8e0`)
+- add distinct spell casts and held weapons for five battlers (`0a72dd5`)
+- add distinct spell casts and armed walks for five battlers (`40e0d55`)
+- distinguish seven spell casts and retain weapons for five battlers (`17897fe`)
+- **battle** — retro2003 재생 상태 칩 위치·프레임 프로브 키보드 입력·접지 실측값, 위키 절 추가 (`4e0652f`)
+- 겹 배경 레이어를 번들 목록으로 내보내고 배경 피커에 노출 (`4e76754`)
+
+### 문서
+
+- retro2003 3차 수정 기록 (`ec9e6b4`)
+
+### 기타
+
+- retro2003 측면 도트 전투 스킨 골격 (`c9a7653`)
+
 ## 0.35.0 — 2026-09-28
 
 ### 기능
