@@ -18,6 +18,13 @@ AI 설정의 「사용량」 탭은 이 브라우저의 실행 영수증, 대화
 미연결이면 초안으로 남기며 기획 수정 메뉴는 자동 전송하지 않는다. 상세 계약은
 [장르 프리셋 인터뷰](editor-genre-packs.md)의 저장·handoff 절을 따른다.
 
+2026-09-28 보강: 실제 팀 실행의 검수 프롬프트는 `PI_TEAM_ROLES.reviewer` 가 아니라
+`teamSpec.memberSystemPrompt` 가 만든다 — 여기에 기획이 빠져 있어 검수가 인터뷰 답을 몰랐다. 지금은
+검수와 Writer(`consult_writer`, `scripts/lib/piWriterTool.ts` 의 시스템 메시지)도 같은 기획을 받는다.
+첫 생성 말풍선·입력창에 보이는 문장(`welcomeGenrePresetDisplayText`)은 확정 요약 전체(600자 상한)를
+줄 단위로 보인다. 예전 「장르 · 첫 답 24자 · 범위 24자」 한 줄은 모델이 기획을 다 받는데도
+사용자에게 인터뷰가 안 넘어간 것처럼 보였다.
+
 ## 제작 전 그래픽 선택과 자동 큰 창 (2026-09-21)
 
 `aiCreationChoice.ts` + `aiChatPanel.runPiTurn`은 마을·도시·집의 새 생성 요청에 제작 전 선택을 둔다.
