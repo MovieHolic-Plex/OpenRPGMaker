@@ -6,7 +6,7 @@ import { RETRO_ALL_CLASS_SKILLS, RETRO_ALL_FX_SHEETS, retroClassSkill } from "@/
 import { RETRO_MONSTER_FX_SHEETS, RETRO_MONSTER_SKILLS, retroMonsterSkill } from "@/assets/retroMonsterSkills";
 import type { RetroFxLayer } from "@/assets/retroClassSkills";
 import {
-  retroClassSkillTimeline, retroMonsterCellForPose, retroMonsterSide, retroMonsterSkillTimeline, retroSideForScope, retroTimelineSounds, retroTimelineStateAt,
+  retroClassSkillTimeline, retroMonsterCellForPose, retroMonsterSide, retroPartyPixelCellForPose, retroMonsterSkillTimeline, retroSideForScope, retroTimelineSounds, retroTimelineStateAt,
   type RetroSkillTimeline, type RetroStagePlace, type RetroTimelineEvent, type RetroTimelineSide,
 } from "@/battle/retroSkillTimeline";
 import { store } from "@/project/store";
@@ -439,8 +439,11 @@ function measureMonsterPlaces(field: HTMLElement, user: HTMLElement, primary: HT
   const actors = [...field.querySelectorAll<HTMLElement>(".battle-actor:not(.defeated):not(.retro-afterimage)")];
   const foe = primary?.classList.contains("battle-actor") ? primary : actors[0];
   const spot = (node: HTMLElement) => {
-    const box = battlerImage(node).getBoundingClientRect();
-    return { front: box.left + box.width * (14 / 48), center: box.left + box.width / 2, feet: box.top + box.height * ((hovering ? 20 : 44) / 48) };
+    const image = battlerImage(node);
+    const box = image.getBoundingClientRect();
+    // 파티원 몬스터 시트(셀 48·64)는 몸 앞이 12/cell, 발이 (cell−4)/cell 이다.
+    const cell = node.dataset.pixelParty ? pixelCellOf(image) : 0;
+    return { front: box.left + box.width * (cell ? 12 / cell : 14 / 48), center: box.left + box.width / 2, feet: box.top + box.height * (cell ? (hovering ? cell / 2 - 4 : cell - 4) / cell : (hovering ? 20 : 44) / 48) };
   };
   const rooted = image.dataset.pixelSheet === "generated-enemy-plant-carnivore";
   let front: Point = { x: rooted ? 0 : 72, y: 0 };
@@ -465,7 +468,9 @@ function measurePlaces(field: HTMLElement, user: HTMLElement, primary: HTMLEleme
   const rect = user.getBoundingClientRect();
   const now = currentTranslate(user);
   const baseX = rect.left + rect.width / 2 - now.x * scale;
-  const baseFeet = rect.top + rect.height * (45 / 48) - now.y * scale;
+  // 파티원 몬스터 시트는 발 기준선이 y=cell−4 다(사람 전투 시트는 45/48).
+  const userCell = user.dataset.pixelParty ? pixelCellOf(battlerImage(user)) : 0;
+  const baseFeet = rect.top + rect.height * (userCell ? (userCell - 4) / userCell : 45 / 48) - now.y * scale;
   const enemies = livingEnemies(field);
   const foe = primary?.classList.contains("battle-enemy") ? primary : enemies[0];
   const edge = (node: HTMLElement) => {
@@ -738,7 +743,7 @@ function finishPlayer(field: HTMLElement, player: ClassPlayer): void {
   delete user.dataset.retroAction;
   delete user.dataset.retroFrame;
   delete user.dataset.retroCast;
-  if (player.plan.monster) delete user.dataset.retroPixelCell;
+  if (player.plan.monster || user.dataset.pixelParty) delete user.dataset.retroPixelCell;
   user.classList.remove("retro-skill-flip");
   if (field.dataset.retroClassSkill === player.plan.skill.id) delete field.dataset.retroClassSkill;
   if (players.get(field) === player) players.delete(field);
@@ -761,6 +766,12 @@ function drawPose(player: ClassPlayer, pose: ExtendedBattlerPose, flip: boolean)
     user.dataset.retroFrame = pose;
     player.paint(user);
     return;
+  }
+  if (user.dataset.pixelParty) {
+    // 파티원 몬스터 시트: 사람 24포즈 이름을 9칸으로 옮긴다. 좌우 반전은 그대로(등 뒤 순간이동은 오른쪽을 본다).
+    const cell = retroPartyPixelCellForPose(pose);
+    if (cell) user.dataset.retroPixelCell = cell;
+    else delete user.dataset.retroPixelCell;
   }
   user.dataset.retroFrame = pose;
   user.classList.toggle("retro-skill-flip", flip || player.behind);

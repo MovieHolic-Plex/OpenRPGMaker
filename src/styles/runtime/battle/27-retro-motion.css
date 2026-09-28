@@ -424,8 +424,43 @@
 }
 /* 회전베기·쌍검 난무의 좌우 반전 교대. 걷기 칩 시트의 scale:1 규칙보다 구체적이어야 한다. */
 .battle-scene[data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-actor-group .battle-actor.retro-skill-flip[data-battler-extended="true"] .battle-actor-sprite[data-rendering="pixelated"],
+.battle-scene[data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-actor-group .battle-actor.retro-skill-flip[data-pixel-party] .battle-actor-sprite[data-rendering="pixelated"],
 .battle-scene[data-battle-skin="retro2003"] .battle-actor.retro-skill-flip .battle-actor-sprite { scale: -1 1; }
 @media (prefers-reduced-motion: reduce) {
   .battle-scene[data-battle-skin="retro2003"] :is(.retro-class-veil, .retro-class-cutin) { display: none; }
 }
 
+/* ── 파티원 몬스터 9칸 시트(src/assets/partyPixelSheets.ts, 2차 로스터) ─────────────────────────
+   사람형이 아닌 파티원(짐승·탈것·몬스터 칩)은 24포즈 걷기 칩 시트 대신 적 도트와 같은 3×3 시트로 선다.
+   그림은 왼쪽을 본다 — 이동 경로만 battleRetroMotion 이 가로로 뒤집는다. 노드·스프라이트 상자는 셀 × 2(96·128px)이고
+   스킨의 1.25 배율은 걷기 칩 시트와 같은 이유로 끈다. 칸은 런타임이 인라인 background-position 으로 고르고(data-pixel-cell),
+   대기 칸만 적 도트와 같은 a→b→c→b 루프(retro-pixel-enemy-idle)가 돈다. */
+.battle-scene[data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-actor-group .battle-actor[data-authored-battler="true"][data-pixel-party] {
+  width: var(--party-pixel-box, 96px);
+  height: var(--party-pixel-box, 96px);
+}
+.battle-scene[data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-actor-group .battle-actor[data-authored-battler="true"][data-pixel-party] .battle-actor-sprite[data-rendering="pixelated"] {
+  transform: none;
+  scale: 1;
+  rotate: none;
+  image-rendering: pixelated;
+  animation: none;
+  background-repeat: no-repeat;
+  background-position: 0% 0%;
+}
+.battle-scene[data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-actor-group .battle-actor[data-pixel-party]:not(.defeated) .battle-actor-sprite[data-pixel-sheet][data-pixel-cell="idle"] {
+  animation: retro-pixel-enemy-idle var(--pixel-enemy-idle-ms, 880ms) infinite;
+}
+/* 걷기 칩용 걷기·기울임 키프레임 대신 Web Animations 이동을 쓴다(적 도트와 같다). */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-pixel-party][data-retro-beat] {
+  animation: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-actor[data-pixel-party][data-retro-beat="approach"][data-retro-action="attack"] .battle-actor-sprite {
+  rotate: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-actor[data-pixel-party][data-retro-beat="approach"][data-retro-action="cast"]::before {
+  content: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene[data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-actor-group .battle-actor[data-pixel-party] .battle-actor-sprite[data-pixel-sheet][data-pixel-cell="idle"] { animation: none; }
+}

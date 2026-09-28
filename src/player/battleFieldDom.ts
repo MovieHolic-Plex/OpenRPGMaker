@@ -1,6 +1,7 @@
 import { charsetBattler, resolvePartyBattleCharset } from "@/assets/charsetBattlers";
-import { retroCastFrameFor, retroMotionPose, retroPixelEnemyCell } from "@/player/battleRetroMotion";
+import { retroCastFrameFor, retroMotionPose, retroPartyPixelCell, retroPixelEnemyCell } from "@/player/battleRetroMotion";
 import { PIXEL_ENEMY_FRAME, pixelEnemySheet, pixelEnemySheetUrl } from "@/assets/pixelEnemySheets";
+import { partyPixelSheet, partyPixelSheetUrl, type PartyPixelSheet } from "@/assets/partyPixelSheets";
 import { battleTypeBadges } from "@/player/battleTypeBadges";
 import type { BattleActionBeat } from "@/player/battleActionBeats";
 import { fitBattleEnemy } from "@/player/battleEnemyFit";
@@ -625,6 +626,18 @@ function applyBattlerPose(node: HTMLElement, pose: ExtendedBattlerPose): void {
     }
     return;
   }
+  if (node.dataset.pixelParty && sprite?.classList.contains("battle-actor-sprite")) {
+    // 파티원 몬스터 9칸 시트(partyPixelSheets.ts). 적 도트와 같은 칸 배치, 대기 칸만 CSS 루프가 돈다.
+    const cell = retroPartyPixelCell(node, pose);
+    sprite.dataset.pixelCell = cell;
+    node.dataset.battlePoseFrame = cell;
+    if (cell === "idle") sprite.style.removeProperty("background-position");
+    else {
+      const at = PIXEL_ENEMY_FRAME[cell];
+      sprite.style.backgroundPosition = `${at.col * 50}% ${at.row * 50}%`;
+    }
+    return;
+  }
   if (sprite?.classList.contains("battle-actor-sprite")) {
     // 생성 전투 시트는 5포즈가 (열, 행) 좌표를 갖는다 — POSE_FRAME 이 정본이다.
     // 2026-08-29 까지는 X 만 움직여 defend 가 idle 칸을, dead 가 hit 칸을 돌려 썼다.
@@ -1113,6 +1126,21 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0, count = 4): HTMLElem
   if (resourceId) {
     node.dataset.authoredBattler = "true";
     node.dataset.battleCharsetResourceId = resourceId;
+    const pixelParty = partyPixelSheet(resourceId);
+    if (pixelParty) {
+      // 사람형이 아닌 파티원(짐승·탈것·몬스터 칩): 24포즈 걷기 칩 시트 대신 몬스터 9칸 시트로 선다. battlerExtended 는 켜지 않는다.
+      node.dataset.pixelParty = pixelParty.motion;
+      node.dataset.pixelEnemyCell = String(pixelParty.cell);
+      node.style.setProperty("--party-pixel-box", `${pixelParty.cell * 2}px`);
+      node.append(partyPixelSprite(actor.name, pixelParty));
+      applyBattlerPose(node, actor.pose);
+      node.append(statusIconCluster(actor));
+      if (actor.defeated) node.classList.add("defeated");
+      const pixelPlatform = document.createElement("span");
+      pixelPlatform.className = "battle-actor-platform";
+      node.append(pixelPlatform);
+      return node;
+    }
     if (charsetBattler(resourceId)) node.dataset.battlerExtended = "true";
     const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
     if (url) node.append(actorBattleImage(actor.name, resourceId, url));
@@ -1630,6 +1658,28 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
     cluster.append(node);
   }
   return cluster;
+}
+
+/** 파티원 몬스터 9칸 시트 스프라이트. 상자 = 셀 × 2(적 도트와 같은 2배), 그림은 배경 300%×300%. */
+function partyPixelSprite(name: string, sheet: PartyPixelSheet): HTMLElement {
+  const box = sheet.cell * 2;
+  const sprite = document.createElement("span");
+  sprite.className = "battle-actor-sprite";
+  sprite.dataset.testid = `battle-actor-sprite-${sheet.resourceId}`;
+  sprite.dataset.rendering = "pixelated";
+  // pixelSheet: placeOnBody·sprite() 가 발 여백을 (cell−4)/cell 로 재는 신호(적 도트 시트와 같은 규격).
+  sprite.dataset.pixelSheet = sheet.resourceId;
+  sprite.dataset.pixelCell = "idle";
+  sprite.setAttribute("role", "img");
+  sprite.setAttribute("aria-label", `${name} 전투 캐릭터`);
+  const url = partyPixelSheetUrl(sheet);
+  sprite.style.setProperty("--battle-sprite-frame-width", `${box}px`);
+  sprite.style.setProperty("--battle-sprite-frame-height", `${box}px`);
+  sprite.style.setProperty("--pixel-enemy-idle-ms", `${sheet.idleFrameMs * 4}ms`);
+  sprite.style.backgroundImage = `url("${url}")`;
+  sprite.style.backgroundSize = "300% 300%";
+  sprite.style.backgroundPosition = "0% 0%";
+  return sprite;
 }
 
 function actorBattleImage(name: string, resourceId: string, url: string): HTMLElement {

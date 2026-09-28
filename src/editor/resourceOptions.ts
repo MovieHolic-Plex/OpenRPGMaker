@@ -14,6 +14,7 @@ import {
 import { AUTHORABLE_FACESET_FACE_ASSETS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
 import { GENERATED_EFFECT_SHEET_ASSETS } from "@/assets/generatedEffectSheets";
 import { charsetBattler } from "@/assets/charsetBattlers";
+import { partyPixelLabel, partyPixelSheet } from "@/assets/partyPixelSheets";
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
 import { listMonsterResources } from "@/assets/monsterResourceCatalog";
 import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
@@ -155,7 +156,7 @@ export function listDatabaseResourceOptions(
     }
   }
   for (const id of builtinGeneratedResourceIds()) {
-    if (matchesGeneratedKind(kind, undefined, id)) add(id, charsetBattler(id)?.label ?? `${prettyId(id)} <생성>`);
+    if (matchesGeneratedKind(kind, undefined, id)) add(id, charsetBattler(id)?.label ?? (partyPixelSheet(id) ? partyPixelLabel(partyPixelSheet(id)!) : `${prettyId(id)} <생성>`));
   }
   for (const [id, uploaded] of Object.entries(project.assets.uploaded ?? {})) {
     if (uploadedMatchesKind(kind, uploaded.kind, id)) {
@@ -187,7 +188,7 @@ export function matchesGeneratedKind(kind: DatabaseResourcePickerKind, resourceK
   }
   if (kind === "charset") return resourceKind === "charset" || (id.startsWith("generated-actor-") && id.endsWith("-charset"));
   if (kind === "battleCharset") {
-    return resourceKind === "battleCharset" || Boolean(charsetBattler(id)) || id === "hero" || (id.startsWith("generated-actor-") && id.endsWith("-battle"));
+    return resourceKind === "battleCharset" || Boolean(charsetBattler(id)) || Boolean(partyPixelSheet(id)) || id === "hero" || (id.startsWith("generated-actor-") && id.endsWith("-battle"));
   }
   if (kind === "monster") return resourceKind === "monster" || id.startsWith("generated-enemy-");
   if (kind === "title") return resourceKind === "title" || id.includes("title");

@@ -455,6 +455,29 @@ export function retroMonsterCellForPose(pose: ExtendedBattlerPose): PixelEnemyCe
   return "attack";
 }
 
+/**
+ * 확장 포즈(직업 스킬 타임라인 24포즈 이름) → **파티원** 도트 시트 9칸. 사람형이 아닌 파티원(짐승·탈것·몬스터 칩)이 직업 스킬을
+ * 쓸 때 재생기가 이 표로 칸을 고른다(2차 로스터). idle·front 는 undefined = CSS 대기 루프.
+ *   준비(attack_windup·cast_charge·defend·item·skill 기합) → windup, 걷기·시전 고조(walk_*·cast_raise) → move,
+ *   타격·방출(attack·attack_strike·cast_release·skill) → attack, 여운·회피(attack_follow·evade·weak·revive) → recover,
+ *   피격(hit·guard_hit) → hit, 쓰러짐(dying·dead) → dead, 승리 → idle_b/idle_c.
+ * 몬스터 스킬용 retroMonsterCellForPose 와 다른 점: 피격은 hit 칸을 쓰고, 기합류 skill 은 windup 이 아니라 attack 이다.
+ */
+export function retroPartyPixelCellForPose(pose: ExtendedBattlerPose): PixelEnemyCell | undefined {
+  switch (pose) {
+    case "idle": case "front": return undefined;
+    case "attack_windup": case "cast_charge": case "defend": case "item": return "windup";
+    case "walk_a": case "walk_b": case "walk_c": case "cast_raise": return "move";
+    case "attack": case "attack_strike": case "cast_release": case "skill": return "attack";
+    case "attack_follow": case "evade": case "weak": case "revive": return "recover";
+    case "hit": case "guard_hit": return "hit";
+    case "dying": case "dead": return "dead";
+    case "victory": return "idle_b";
+    case "victory_b": return "idle_c";
+    default: return "attack";
+  }
+}
+
 /** 몬스터 스킬 레이어 → 착탄·발사 효과음(EasyRPG RTP 실파일, public/assets/easyrpg/sound). */
 const MONSTER_SOUND: Readonly<Record<string, string>> = {
   mon_acid_blob: "easyrpg-sound-shot2", mon_acid_splash: "easyrpg-sound-poison", mon_slam_hit: "easyrpg-sound-blow4",

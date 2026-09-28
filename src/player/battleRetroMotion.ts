@@ -26,6 +26,8 @@ export function retroMotionPose(node: HTMLElement, pose: Pose, paint: PaintPose)
   if (node.dataset.battlerExtended === "true") return extendedMotionPose(node, pose);
   // 도트 적 시트는 칸을 retroPixelEnemyCell 이 고른다. 의미 포즈만 그대로 통과시킨다.
   if (node.dataset.pixelEnemy) return node.classList.contains("defeated") || pose === "dead" ? "dead" : "idle";
+  // 파티원 몬스터 9칸 시트(2차 로스터)도 같다 — 칸은 retroPartyPixelCell 이 고른다. 승리·격파만 의미 포즈로 남긴다.
+  if (node.dataset.pixelParty) return node.classList.contains("defeated") || pose === "dead" ? "dead" : pose === "victory" ? "victory" : "idle";
   if (pose === "dead") {
     if (!node.dataset.retroKo && node.classList.contains("battle-actor")) {
       node.dataset.retroKo = reduced() ? "settled" : "stagger";
@@ -90,7 +92,7 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
       delete node.dataset.retroStyle;
       approachAnimations.get(node)?.cancel();
       approachAnimations.delete(node);
-      if (node.dataset.pixelEnemy) resetPixelEnemy(node);
+      if (node.dataset.pixelEnemy || node.dataset.pixelParty) resetPixelEnemy(node);
       beatGenerations.set(node, (beatGenerations.get(node) ?? 0) + 1);
       delete node.dataset.retroFrame;
       paint(node, node.classList.contains("defeated") ? "dead" : "idle");
@@ -151,6 +153,14 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
     // 근접은 직업별 접근(질주·도약·순간이동·섬광). 거리를 못 쟀으면(감속 모드 등) 예전 걷기 키프레임.
     if (walk) user.dataset.retroStyle = recipe && recipe.approach !== "still" ? recipe.approach : retroApproachStyle(entry?.userRecordId ?? user.dataset.recordId);
     else delete user.dataset.retroStyle;
+    if (user.dataset.pixelParty && entry) {
+      // 파티원 몬스터 시트: 걷기 칩용 접근 방식(질주·도약·순간이동)이 아니라 적 도트와 같은 이동(hop·swoop·stomp·dash·float)을 쓴다.
+      // 대상 적 앞까지의 거리(retroWalk)를 그대로 쓰되 가로는 왼쪽 방향이다(animatePixelEnemyBeat 가 뒤집는다).
+      delete user.dataset.retroStyle;
+      user.dataset.retroReach = walk ? "melee" : "ranged";
+      user.style.setProperty("--retro-enemy-dx", `${walk?.distance ?? 18}px`);
+      user.style.setProperty("--retro-enemy-dy", `${walk?.dy ?? 0}px`);
+    }
     if (user.dataset.pixelEnemy && entry) {
       // 도트 적: 근접 공격은 대상 아군 앞까지 뛰어/날아간다. 그 밖의 기술은 제자리에서 반 걸음만 나선다.
       const reach = retroEnemyReach(field, entry);
@@ -163,13 +173,14 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
   user.dataset.retroBeat = beat.kind;
   user.style.setProperty("--retro-beat-ms", `${Math.max(1, beat.durationMs)}ms`);
   if (user.dataset.battlerExtended === "true") animateExtendedBeat(user, beat);
-  else if (user.dataset.pixelEnemy) animatePixelEnemyBeat(user, beat);
+  else if (user.dataset.pixelEnemy || user.dataset.pixelParty) animatePixelEnemyBeat(user, beat);
   else paint(user, "idle");
 }
 
 export function retroDamage(node: HTMLElement | null, feedback: DamageFeedback, lethal: boolean): void {
   if (!node) return;
-  if (node.dataset.pixelEnemy) {
+  if (node.dataset.pixelEnemy || node.dataset.pixelParty) {
+    if (node.dataset.pixelParty && feedback.miss) { transientPose(node, "evade", 240); return; }
     if (feedback.healing || feedback.miss || feedback.amount <= 0) return;
     // 맞은 칸을 잠깐 보이고, 막타면 그 뒤 녹아내린 칸(dead)으로 넘어간다.
     if (lethal) node.classList.add("defeated");
@@ -219,7 +230,7 @@ export function retroVictory(field: HTMLElement): void {
     if (node.dataset.retroVictory) continue;
     node.dataset.retroVictory = "true";
     paint(node, "victory");
-    if (node.dataset.battlerExtended === "true") victoryLoop(node);
+    if (node.dataset.battlerExtended === "true" || node.dataset.pixelParty) victoryLoop(node);
   }
 }
 
@@ -660,21 +671,36 @@ function measureWalk(field: HTMLElement, entry: BattleTimelineEntrySnapshot): Re
   const current = Number.parseFloat(getComputedStyle(user).translate.split(" ")[0] ?? "0") || 0;
   const translate = getComputedStyle(user).translate.split(" ");
   const currentY = Number.parseFloat(translate[1] ?? "0") || 0;
+  // 파티원 몬스터 시트: 셀 cell 에서 몸 왼쪽 끝이 x≈12, 바닥선이 y=cell−4 다(적 시트를 뒤집은 규격).
+  const partyCell = user.dataset.pixelParty ? Number(user.dataset.pixelEnemyCell) || 48 : 0;
   // 96px 셀 안에서 몸은 가운데 약 40px 이다 — 몸 앞 가장자리 = 셀 가운데 − 20px.
-  const bodyFront = (userRect.left + userRect.width / 2) / scale - current - 20;
+  const bodyFront = partyCell ? (userRect.left + userRect.width * (12 / partyCell)) / scale - current : (userRect.left + userRect.width / 2) / scale - current - 20;
   // 도트 적 시트는 셀 cell(48·64·96)에서 몸 오른쪽 끝이 x≈cell−12, 바닥선이 y=cell−4 다. 통짜 그림은 오른쪽 투명 여백 약 15%, 바닥이 그림 아래끝.
   const pixel = image.dataset.pixelSheet !== undefined;
   const cell = Number(image.closest<HTMLElement>("[data-pixel-enemy-cell]")?.dataset.pixelEnemyCell) || 48;
   const enemyFront = (pixel ? enemyRect.left + enemyRect.width * ((cell - 12) / cell) : enemyRect.right - enemyRect.width * 0.15) / scale;
   const enemyFeet = (pixel ? enemyRect.top + enemyRect.height * ((cell - 4) / cell) : enemyRect.bottom) / scale;
   // 아군 셀(48px 원본)의 발 마지막 행은 y=44.
-  const userFeet = (userRect.top + userRect.height * (45 / 48)) / scale - currentY;
+  const userFeet = (userRect.top + userRect.height * (partyCell ? (partyCell - 4) / partyCell : 45 / 48)) / scale - currentY;
   const distance = Math.round(bodyFront - enemyFront - WALK_GAP_PX);
   // 적보다 조금 앞(화면 아래)에 서야 적 그림을 가리지 않고 맞붙어 보인다.
   const dy = Math.round(enemyFeet - userFeet + 2);
   if (!Number.isFinite(distance) || !Number.isFinite(dy) || distance < 24) return undefined;
   const clamp = (value: number, min: number, max: number) => Math.round(Math.max(min, Math.min(max, value)));
   const path = Math.hypot(distance, dy);
+  if (partyCell) {
+    // 파티원 몬스터: 적 도트와 같은 이동(measureEnemyReach) — 궁수형·브레이스형은 다가가지 않는다.
+    const motion = user.dataset.pixelParty;
+    if (motion === "shoot" || motion === "breath") return undefined;
+    const hovering = motion === "swoop" || motion === "float";
+    const speed = motion === "dash" ? 0.65 : motion === "stomp" ? 0.34 : hovering ? 0.42 : 0.3;
+    return {
+      distance,
+      dy,
+      approachMs: ENEMY_HOLD_MS + clamp(path / speed, motion === "stomp" ? 440 : 300, 900),
+      recoverMs: clamp(160 + path / (motion === "stomp" ? 0.38 : motion === "dash" ? 0.7 : 0.42), 420, 900),
+    };
+  }
   const style = retroApproachStyle(userId);
   return {
     distance,
@@ -708,6 +734,26 @@ export function retroPixelEnemyCell(node: HTMLElement): PixelEnemyCell | "idle" 
   if (transient === "hit") return "hit";
   const cell = node.dataset.retroBeat ? node.dataset.retroPixelCell : undefined;
   return (cell as PixelEnemyCell | undefined) ?? "idle";
+}
+
+/**
+ * 파티원 몬스터 9칸 시트(partyPixelSheets.ts)의 지금 칸. 적과 같은 규칙에 파티원만의 상태가 더해진다 —
+ * 승리(들썩임: windup ↔ idle_b)·방어 태세(windup)·회피(recover). 비트/직업 스킬 재생기가 고른 칸(retroPixelCell)이 있으면 그것이 이긴다.
+ * 그 밖의 스킨(모션이 retro 가 아닌 정면 스킨)에서는 의미 포즈로 대신한다.
+ */
+export function retroPartyPixelCell(node: HTMLElement, pose: Pose = "idle"): PixelEnemyCell | "idle" {
+  const transient = node.dataset.retroTransient;
+  if (node.classList.contains("defeated") || pose === "dead") return transient === "hit" ? "hit" : "dead";
+  if (transient === "hit" || transient === "guard_hit") return "hit";
+  if (transient === "evade") return "recover";
+  if (node.dataset.retroVictory === "true" || pose === "victory") return node.dataset.retroVictoryFrame === "victory_b" ? "idle_b" : "windup";
+  const cell = node.dataset.retroBeat || node.dataset.retroClassSkill ? node.dataset.retroPixelCell : undefined;
+  if (cell) return cell as PixelEnemyCell;
+  if (node.dataset.retroCommand === "true") return "idle";
+  if (node.dataset.battlerDefending === "true" || pose === "defend") return "windup";
+  if (pose === "hit") return "hit";
+  if (pose === "attack") return "attack";
+  return "idle";
 }
 
 function resetPixelEnemy(node: HTMLElement): void {
@@ -765,11 +811,13 @@ function measureEnemyReach(field: HTMLElement, entry: BattleTimelineEntrySnapsho
   // 적 셀은 가변 크기: 앞 가장자리 cell−6, 지면 cell−4, 부유 중심 cell/2−4.
   // 아군 확장 시트는 여전히 48px 셀이다. 적의 비율을 아군에도 적용하면 큰 적이 높이를 잘못 맞춘다.
   const front = imageRect.left + imageRect.width * ((cell - 6) / cell);
-  const actorFront = actorRect.left + actorRect.width * ((48 / 2 - 10) / 48);
+  // 파티원 몬스터 시트(셀 48·64)는 몸 앞 12/cell, 발 (cell−4)/cell — 사람 전투 시트(14/48 · 44/48)와 다르다.
+  const targetCell = target?.dataset.pixelParty ? Number(target.dataset.pixelEnemyCell) || 48 : 0;
+  const actorFront = actorRect.left + actorRect.width * (targetCell ? 12 / targetCell : (48 / 2 - 10) / 48);
   const dx = Math.round((actorFront - front) / scale - 2);
   const enemyAnchor = hovering ? cell / 2 - 4 : cell - 4;
-  const actorAnchor = hovering ? 20 : 44;
-  const dy = Math.round((actorRect.top + actorRect.height * (actorAnchor / 48)
+  const actorAnchor = targetCell ? (hovering ? targetCell / 2 - 4 : targetCell - 4) : hovering ? 20 : 44;
+  const dy = Math.round((actorRect.top + actorRect.height * (actorAnchor / (targetCell || 48))
     - (imageRect.top + imageRect.height * (enemyAnchor / cell))) / scale);
   if (!Number.isFinite(dx) || !Number.isFinite(dy)) return undefined;
   const distance = Math.hypot(dx, dy);
@@ -789,7 +837,10 @@ function animatePixelEnemyBeat(node: HTMLElement, beat: BattleActionBeat): void 
   const generation = (beatGenerations.get(node) ?? 0) + 1;
   beatGenerations.set(node, generation);
   const length = Math.max(0, beat.durationMs);
-  const motion = node.dataset.pixelEnemy;
+  // 파티원 몬스터 시트(data-pixel-party)는 오른쪽 진영에서 왼쪽을 본다 — 이동 경로의 가로만 뒤집고 칸 순서·거리 산식은 적과 같다.
+  const party = node.dataset.pixelParty !== undefined;
+  const sign = party ? -1 : 1;
+  const motion = node.dataset.pixelEnemy ?? node.dataset.pixelParty;
   const swoop = motion === "swoop";
   const stationary = motion === "shoot" || motion === "breath";
   const melee = !stationary && node.dataset.retroReach === "melee";
@@ -889,7 +940,7 @@ function animatePixelEnemyBeat(node: HTMLElement, beat: BattleActionBeat): void 
   // 길이 0 비트(빗나간 착탄)도 도착 자리를 붙잡아야 한다 — 애니메이션을 걷으면 한 프레임 제자리로 튄다.
   if (!reduced() && typeof node.animate === "function") {
     const animation = node.animate(
-      path.map(([offset, x, y, easing]) => ({ offset, translate: `${Math.round(x)}px ${Math.round(y)}px`, ...(easing ? { easing } : {}) })),
+      path.map(([offset, x, y, easing]) => ({ offset, translate: `${Math.round(x * sign)}px ${Math.round(y)}px`, ...(easing ? { easing } : {}) })),
       { duration: Math.max(1, length), fill: "forwards" },
     );
     pixelAnimations.set(node, animation);

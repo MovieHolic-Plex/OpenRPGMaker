@@ -10,6 +10,7 @@
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { RETRO_PARTY_PIXEL_SHEETS } from "@/assets/retroRosterSkills";
 import type { PixelEnemyMotion } from "@/assets/pixelEnemySheets";
+import { RETRO_ROSTER } from "@/assets/retroRoster";
 
 export const PARTY_PIXEL_PREFIX = "party-pixel-";
 
@@ -47,4 +48,9 @@ export function partyPixelSheet(resourceId: string | undefined): PartyPixelSheet
 
 export function partyPixelSheetUrl(entry: PartyPixelSheet): string {
   return withInlineAsset(`/${entry.path}`);
+}
+
+/** 피커·미리보기 라벨: 「파티원 몬스터 전투 · 슬라임」. 로스터 표에 없는 칩이면 칩 id. */
+export function partyPixelLabel(entry: PartyPixelSheet): string {
+  return `파티원 몬스터 전투 · ${RETRO_ROSTER.find((row) => row.chip === entry.chip)?.name ?? entry.chip}`;
 }
