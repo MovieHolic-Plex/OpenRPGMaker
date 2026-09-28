@@ -989,9 +989,9 @@
 .runtime-shop-party-fit[data-tone="down"] { color: var(--shop-loss); }
 .runtime-shop-party-fit[data-tone="equipped"] { color: var(--shop-accent); }
 @keyframes runtime-shop-walk {
-  0%, 100% { background-position: var(--shop-walk-0); }
-  25%, 75% { background-position: var(--shop-walk-1); }
-  50% { background-position: var(--shop-walk-2); }
+  0%, 100% { background-position: var(--party-walk-0); }
+  25%, 75% { background-position: var(--party-walk-1); }
+  50% { background-position: var(--party-walk-2); }
 }
 .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-sprite { width: 24px; height: 24px; border: 0; background-color: var(--shop-inset); }
 @media (max-width: 860px), (max-height: 600px) {

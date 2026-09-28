@@ -8,6 +8,12 @@ import { store } from "@/project/store";
 import { resolveTerms } from "@/project/terms";
 import { CONTINUE_KEY_PROMPT } from "@/player/keyBindings";
 import { disambiguatedBattlerName } from "@/player/battleCommandDom";
+import { menuSkinFor } from "@/player/menuSkins/registry";
+import { partyWalker } from "@/player/partyWalker";
+import { rewardActorIds } from "@/battle/rewardPolicy";
+import type { PlaySession } from "@/project/session";
+import type { Project } from "@/project/types";
+import { el } from "@/util/dom";
 
 export type BattleDirectorStep = "intro" | "command" | "target" | "acting" | "impact" | "result";
 
@@ -317,12 +323,17 @@ function countUpRewardValue(value: HTMLElement): void {
   window.requestAnimationFrame(step);
 }
 
-export function battleResultPanel(snapshot: BattleSnapshot, revealStage = 0): HTMLElement | undefined {
+/** 결과 패널을 그린 플레이 세션 — 도트 창(파티 수치)이 걷기 그림과 보상 대상 판정에 쓴다. 에디터 전투 테스트는 없다. */
+export type BattleResultContext = { readonly project: Project; readonly session: PlaySession };
+const resultContexts = new WeakMap<HTMLElement, BattleResultContext>();
+
+export function battleResultPanel(snapshot: BattleSnapshot, revealStage = 0, context?: BattleResultContext): HTMLElement | undefined {
   if (!snapshot.result) return undefined;
   const panel = document.createElement("div");
   panel.className = "battle-result-panel";
   panel.dataset.testid = "battle-result-panel";
   panel.dataset.battleResult = snapshot.result;
+  if (context) resultContexts.set(panel, context);
   // 제목만 라이브(polite). 카드 컨테이너까지 atomic 으로 읽으면 스테이지마다 패널 전체가
   // 행 수만큼 재낭독됐다(최대 12회).
   panel.setAttribute("role", "status");
@@ -450,6 +461,149 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
     prompt.textContent = CONTINUE_KEY_PROMPT;
     panel.append(prompt);
   }
+  syncPixelResultParty(panel, snapshot, revealStage);
+}
+
+/**
+ * 도트 창 결과(기본 메뉴 스킨 pixel, 포켓몬 전투 제외) — 상점·ESC 메뉴와 같은 창 체계로
+ * 「파티 창: 걷는 그림 · Lv 전후 · EXP 막대 · 다음 Lv까지」 와
+ * 「레벨 업 창: 최대 HP·MP·공격·방어·정신·민첩 현재 → 오른 뒤 ▲」 · 새 스킬(MP 소모) 을 더한다.
+ * 기존 행(경험치·골드·아이템)은 전리품 창으로 그대로 남는다 — 공개 단계·세기·테스트 계약이 그 행을 본다.
+ */
+function syncPixelResultParty(panel: HTMLElement, snapshot: BattleSnapshot, revealStage: number): void {
+  const project = store.getCurrent();
+  if (snapshot.result !== "victory" || !menuSkinFor(project).partyStats || project.system.battleUiStyle === "pokemon") return;
+  const context = resultContexts.get(panel);
+  const actors = snapshot.actors.filter((actor) => !actor.monsterInstanceId && project.database.actors.some((record) => record.id === actor.recordId));
+  if (actors.length === 0) return;
+  panel.classList.add("battle-result-pixel");
+  let party = panel.querySelector<HTMLElement>(".battle-result-party");
+  if (!party) {
+    party = el("section", { class: "battle-result-party", attrs: { "aria-label": "파티 경험치" }, dataset: { testid: "battle-result-party" } });
+    const summary = el("div", {
+      class: "battle-result-summary",
+      dataset: { testid: "battle-result-summary" },
+      children: [
+        el("span", { class: "battle-result-summary-label", text: "EXP" }),
+        el("span", { class: "battle-result-summary-value", text: `+${snapshot.rewards.exp.toLocaleString("ko-KR")}` }),
+        el("span", { class: "battle-result-summary-label", text: resolveTerms(project).gold }),
+        el("span", { class: "battle-result-summary-value", text: `+${snapshot.rewards.gold.toLocaleString("ko-KR")}` }),
+      ],
+    });
+    const rewarded = new Set(rewardActorIds(project, actors.map((actor) => actor.recordId), snapshot.participatingActorIds));
+    for (const actor of actors) party.append(resultPartyCard(project, context, snapshot, actor, rewarded.has(actor.recordId)));
+    const levelUps = (snapshot.rewards.levelUps ?? []).filter((entry) => actors.some((actor) => actor.recordId === entry.actorId));
+    const level = el("section", {
+      class: "battle-result-levelups",
+      attrs: { "aria-label": "레벨 업" },
+      dataset: { testid: "battle-result-levelups" },
+      children: levelUps.length
+        ? levelUps.map((entry) => resultLevelUpBlock(project, actors.find((actor) => actor.recordId === entry.actorId), entry))
+        : [el("div", { class: "battle-result-levelup-none", text: "이번 전투에서는 레벨이 오르지 않았다." })],
+    });
+    panel.append(summary, party, level);
+  }
+  // 첫 보상 행(경험치)이 공개되는 순간 막대가 이전 → 이후로 찬다. 모두 공개(확인키)면 바로 최종값.
+  const revealed = revealStage > 0;
+  party.dataset.revealed = revealed ? "true" : "false";
+  for (const fill of party.querySelectorAll<HTMLElement>(".battle-result-party-fill")) {
+    const target = revealed ? fill.dataset.toPct : fill.dataset.fromPct;
+    if (fill.dataset.shownPct === target) continue;
+    fill.dataset.shownPct = target ?? "0";
+    requestAnimationFrame(() => { fill.style.width = `${target ?? 0}%`; });
+  }
+}
+
+function resultPartyCard(project: Project, context: BattleResultContext | undefined, snapshot: BattleSnapshot, actor: BattleBattlerSnapshot, rewarded: boolean): HTMLElement {
+  const record = project.database.actors.find((entry) => entry.id === actor.recordId)!;
+  const normalized = normalizeActorRecord(record);
+  const levelUp = snapshot.rewards.levelUps?.find((entry) => entry.actorId === actor.recordId);
+  const fromLevel = snapshot.eventState.actorLevels?.[actor.recordId] ?? actor.level ?? 1;
+  const toLevel = levelUp?.toLevel ?? fromLevel;
+  const before = snapshot.eventState.actorExperience?.[actor.recordId] ?? totalExpForLevel(normalized.expCurve, fromLevel);
+  const gained = rewarded ? expForRewardActor(snapshot.rewards.exp, fromLevel, snapshot.rewards.enemyLevel, project.system.rewardPolicy) : 0;
+  const after = before + gained;
+  const base = totalExpForLevel(normalized.expCurve, toLevel);
+  const next = totalExpForLevel(normalized.expCurve, toLevel + 1);
+  const span = next > base ? next - base : 0;
+  const pct = (value: number) => (span ? Math.max(0, Math.min(100, ((value - base) / span) * 100)) : 100);
+  // 레벨이 올랐으면 새 구간의 0 에서, 아니면 이전 진행률에서 찬다.
+  const fromPct = levelUp ? 0 : pct(before);
+  const toPct = pct(after);
+  const maxed = toLevel >= normalized.maxLevel || !span;
+  const walker = context ? partyWalker(project, context.session, actor.recordId, actor.name, { className: "battle-result-walker" }) : null;
+  return el("article", {
+    class: `battle-result-party-card${levelUp ? " is-levelup" : ""}${actor.hp <= 0 ? " is-down" : ""}`,
+    dataset: { testid: `battle-result-party-${actor.recordId}` },
+    children: [
+      walker ?? el("span", { class: "battle-result-walker is-missing", text: actor.name.slice(0, 1) }),
+      el("span", { class: "battle-result-party-name", text: actor.name }),
+      el("span", {
+        class: "battle-result-party-level",
+        children: [`Lv ${fromLevel}`, ...(levelUp ? [el("span", { class: "battle-result-party-arrow", text: " → " }), el("span", { class: "battle-result-party-to", text: String(toLevel) })] : [])],
+      }),
+      el("span", { class: "battle-result-party-badge", text: levelUp ? "LEVEL UP" : "", attrs: { "aria-hidden": levelUp ? "false" : "true" } }),
+      el("span", {
+        class: "battle-result-party-track",
+        children: [el("span", { class: "battle-result-party-fill", attrs: { style: `width:${fromPct}%` }, dataset: { fromPct: String(fromPct), toPct: String(toPct), shownPct: String(fromPct) } })],
+      }),
+      el("span", { class: "battle-result-party-exp", text: rewarded ? `EXP +${gained.toLocaleString("ko-KR")}` : "EXP 없음" }),
+      el("span", { class: "battle-result-party-next", text: maxed ? "최대 레벨" : `다음 Lv까지 ${Math.max(0, next - after).toLocaleString("ko-KR")}` }),
+    ],
+  });
+}
+
+function resultLevelUpBlock(project: Project, actor: BattleBattlerSnapshot | undefined, entry: NonNullable<BattleSnapshot["rewards"]["levelUps"]>[number]): HTMLElement {
+  const stats = actor?.effectiveStats;
+  const rows: readonly (readonly [string, number | undefined, number])[] = [
+    // 네 명이 한꺼번에 올라도 한 창에 들어가게 짧은 이름을 쓴다(메뉴·상점 비교와 같은 약칭).
+    ["HP", actor?.maxHp, entry.maxHpGain],
+    ["MP", actor?.maxMp, entry.maxMpGain],
+    ["공격", stats?.attack, entry.attackGain],
+    ["방어", stats?.defense, entry.defenseGain],
+    ["정신", stats?.mind, entry.mindGain],
+    ["민첩", stats?.agility, entry.agilityGain],
+  ];
+  const skills = entry.learnedSkillIds.flatMap((skillId) => {
+    const skill = project.database.skills.find((record) => record.id === skillId);
+    return skill ? [skill] : [];
+  });
+  return el("article", {
+    class: "battle-result-levelup",
+    dataset: { testid: `battle-result-levelup-${entry.actorId}` },
+    children: [
+      el("div", {
+        class: "battle-result-levelup-head",
+        children: [
+          el("span", { class: "battle-result-levelup-name", text: entry.actorName }),
+          el("span", { class: "battle-result-levelup-level", children: [`Lv ${entry.fromLevel}`, el("span", { class: "battle-result-party-arrow", text: " → " }), el("span", { class: "battle-result-party-to", text: String(entry.toLevel) })] }),
+        ],
+      }),
+      el("div", {
+        class: "battle-result-levelup-stats",
+        children: rows.map(([label, current, gain]) => el("div", {
+          class: `battle-result-levelup-row${gain > 0 ? " up" : ""}`,
+          children: [
+            el("span", { class: "battle-result-levelup-label", text: label }),
+            el("span", { class: "battle-result-levelup-value", text: current === undefined ? `+${gain}` : `${current} → ${current + gain}` }),
+            el("span", { class: "battle-result-levelup-delta", text: gain > 0 ? `▲${gain}` : "" }),
+          ],
+        })),
+      }),
+      ...(skills.length
+        ? [el("div", {
+            class: "battle-result-levelup-skills",
+            children: [
+              el("span", { class: "battle-result-levelup-label", text: "새 스킬" }),
+              ...skills.map((skill) => el("span", {
+                class: "battle-result-levelup-skill",
+                children: [skill.name, ...(skill.mpCost.flat > 0 ? [el("span", { class: "battle-result-levelup-mp", text: ` MP ${skill.mpCost.flat}` })] : [])],
+              })),
+            ],
+          })]
+        : []),
+    ],
+  });
 }
 
 export function applyBattleDirectorState(
