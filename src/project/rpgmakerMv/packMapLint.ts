@@ -671,6 +671,13 @@ export function lintPackMap(project: Project, map: GameMap): PackMapLintResult |
   warnings.push(...lintPackRepeats(input, kind));
   if (interior) warnings.push(...lintBoxRooms(input));
   if (kind === "outdoor") warnings.push(...lintBoxLand(input));
+  // 맵 대부분이 쓰지 않는 어둠·천장(2026-09-28 광산: 26×18 맵에 폭 4칸 띠 하나). 걸을 수 있는 칸의 테두리 상자가 맵의 30% 미만이면 줄이라고 한다(게시 장소 최소 44% — 작은 집은 위 벽·천장 3줄이 크다, 그 광산 14%).
+  if (kind !== "outdoor") {
+    let x0 = input.w, y0 = input.h, x1 = -1, y1 = -1;
+    input.pass.forEach((flag, i) => { if (!openOf(flag)) return; const x = i % input.w, y = Math.floor(i / input.w); x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y); });
+    const used = x1 < 0 ? 0 : (x1 - x0 + 1) * (y1 - y0 + 1);
+    if (used < 0.3 * input.w * input.h) warnings.push(`공간: 맵 ${input.w}×${input.h} 중 걷는 곳은 (${x0},${y0})~(${x1},${y1}) ${x1 - x0 + 1}×${y1 - y0 + 1} 뿐 — 나머지는 빈 어둠이다. resize_map 으로 맵을 줄이거나 그 자리에 방·갱도를 더 판다`);
+  }
   if (empty.length) warnings.push(`공간: 가구·물체 없는 빈 바닥 ${empty.map((r) => `${r.w}×${r.h}@(${r.x},${r.y})`).join(" ")} — ${kind === "interior" ? "집 실내" : kind === "cave" ? "동굴·던전" : "야외"} 한도 ${emptyLimit}칸. 물체로 메우지 말고 방·맵을 줄인다(또는 그 자리에 용도 있는 구역을 둔다)`);
   return { interior, kind, warnings, empty, emptyLimit, objects: input.placed.length };
 }
