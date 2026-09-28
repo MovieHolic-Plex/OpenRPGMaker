@@ -1,5 +1,6 @@
 import { eventCommandBranches, type EventBranchKind } from "@/editor/eventCommandBranches";
 import type { Command, Project } from "@/project/types";
+import { TROOP_AFTER_BATTLE_LABELS, troopAfterBattleLists } from "@/project/troopAfterBattle";
 
 export type CommandOwnerKind = "legacyEvent" | "eventPage" | "commonEvent" | "troopPage";
 export type NestedBranchKind = EventBranchKind;
@@ -80,6 +81,13 @@ export function visitProjectCommands(project: Project, visitor: (visit: ProjectC
       troopName: troop.name,
       pageId: page.id,
       pageName: page.name,
+    });
+    for (const list of troopAfterBattleLists(troop)) visitList(list.commands, {
+      kind: "troopPage",
+      troopId: troop.id,
+      troopName: troop.name,
+      pageId: `afterBattle.${list.outcome}`,
+      pageName: `전투 뒤 · ${TROOP_AFTER_BATTLE_LABELS[list.outcome]}`,
     });
   }
 }

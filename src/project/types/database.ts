@@ -735,7 +735,17 @@ export interface TroopRecord {
   battleFlow?: BattleFlow;
   activeSlots?: number;
   battleEventPages: BattleEventPageRecord[];
+  /**
+   * 전투 뒤 이벤트 — 결과 화면이 닫히고 필드로 돌아온 **다음**, 결과별로 한 번 실행하는 명령.
+   * 전투를 연 길(이벤트 전투 처리 · 랜덤 인카운터 · 필드 심볼 접촉)과 상관없이 이 그룹이면 돈다.
+   * 게임 오버로 끝나는 패배(canLose=false)에는 돌지 않는다. 생략·빈 목록 = 없음(옛 JSON 바이트 유지).
+   * 모델·순회는 project/troopAfterBattle.ts.
+   */
+  afterBattle?: TroopAfterBattle;
 }
+
+export type TroopAfterBattleOutcome = "victory" | "defeat" | "escape";
+export type TroopAfterBattle = Partial<Record<TroopAfterBattleOutcome, Command[]>>;
 
 /**
  * 마더2식 움직이는 전투 배경. 모든 값은 선택이며 0/생략이면 그 효과가 꺼진다.

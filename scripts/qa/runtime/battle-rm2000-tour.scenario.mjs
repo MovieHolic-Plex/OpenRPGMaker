@@ -85,7 +85,8 @@ export const battleRm2000TourScenario = {
       ops: [
         { kind: "pressUntil", key: "z", testid: "battle-result-panel", state: "present", maxPresses: 60, timeoutMs: 2500 },
         // 보상 행은 opacity 페이드로 드러난다 — 기본 alpha 판정선(0.06)에서 찍으면 반투명 행이 남는다.
-        { kind: "waitForVisible", testid: "battle-result-exp-bar", minAlpha: 0.9, timeoutMs: 15000 },
+        // 기본 메뉴 스킨(pixel) 결과는 경험치 행을 파티 창이 대신 말해 숨기므로 전리품 창을 기다린다.
+        { kind: "waitForVisible", testid: "battle-result-cards", minAlpha: 0.9, timeoutMs: 15000 },
       ],
       expect: { testidPresent: ["battle-result-panel", "battle-result-confirm"] },
       shot: true,

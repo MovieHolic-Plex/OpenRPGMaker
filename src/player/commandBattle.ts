@@ -3,6 +3,7 @@ import type { StepResult } from './interpreter';
 import type { PlaySceneContext } from './playSceneTypes';
 import { applyBattleDefeat } from './playSceneDefeat';
 import { BattleAdmissionError } from '@/project/battleAdmission';
+import { runTroopAfterBattle } from './troopAfterBattleRunner';
 
 type BattleStep = Extract<StepResult, { kind: 'battleProcessing' }>;
 export type CommandBattleResult = 'victory' | 'defeat' | 'escape' | null;
@@ -18,8 +19,10 @@ export async function playCommandBattle(
   if (!isCurrent()) return null;
   scene.clearRuntimeOverlay('runtime-error');
   let result: CommandBattleResult;
+  let troopId = step.troopId;
   try {
-    result = await scene.playBattle({ ...step, troopId: resolveBattleTroopId(scene, step) }, isCurrent);
+    troopId = resolveBattleTroopId(scene, step);
+    result = await scene.playBattle({ ...step, troopId }, isCurrent);
   } catch (error) {
     if (scene.session !== session || scene.map !== map || !isCurrent() || scene.sys?.isActive() === false) return null;
     throw error;
@@ -29,7 +32,13 @@ export async function playCommandBattle(
   // 결과가 취소로 위장되어 돌아가고 session.battleResult 가 직전 전투 값으로 남는다.
   if (result === null || scene.session !== session || scene.map !== map || !isLive() || scene.sys?.isActive() === false) return null;
   session.battleResult = result;
-  if (result === 'defeat' && !step.canLose) applyBattleDefeat(scene);
+  if (result === 'defeat' && !step.canLose) {
+    applyBattleDefeat(scene);
+    return result;
+  }
+  // 적 그룹의 「전투 뒤」 이벤트가 먼저 돌고, 그다음 이 전투를 연 이벤트가 결과 분기로 이어진다.
+  await runTroopAfterBattle(scene, troopId, result, isLive);
+  if (scene.session !== session || !isLive() || scene.sys?.isActive() === false) return null;
   return result;
 }
 

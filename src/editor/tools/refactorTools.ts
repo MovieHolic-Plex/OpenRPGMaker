@@ -8,6 +8,7 @@ import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { collectProjectItemReferenceIds } from "@/project/io/references";
 import { projectDatabaseReferenceMessage, projectSwitchVariableReferenceMessage } from "@/editor/databaseRecordReferences";
 import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
+import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 
 // --- 공통 순회 ---
 
@@ -172,6 +173,7 @@ export function collectReferences(project: Project): ReferenceSets {
       }
       walkCommands(page.commands ?? [], (command) => addCommandRefs(command, refs));
     }
+    for (const list of troopAfterBattleLists(troop)) walkCommands(list.commands, (command) => addCommandRefs(command, refs));
   }
   for (const enemy of project.database.enemies) {
     for (const action of enemy.actions) {
@@ -266,6 +268,7 @@ export function renameSwitchEverywhere(project: Project, oldId: string, newId: s
       }
       walkCommands(page.commands ?? [], renameInCommand);
     }
+    for (const list of troopAfterBattleLists(troop)) walkCommands(list.commands, renameInCommand);
   }
   for (const enemy of project.database.enemies) {
     for (const action of enemy.actions) {
@@ -542,6 +545,7 @@ export function renameVariableEverywhere(project: Project, oldId: string, newId:
       }
       walkCommands(page.commands ?? [], renameInCommand);
     }
+    for (const list of troopAfterBattleLists(troop)) walkCommands(list.commands, renameInCommand);
   }
   return count;
 }

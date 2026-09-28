@@ -14,6 +14,7 @@ import {
   type NormalizedFieldSpawn,
 } from "@/player/fieldSpawns";
 import { applyBattleDefeat } from "@/player/playSceneDefeat";
+import { runTroopAfterBattle } from "@/player/troopAfterBattleRunner";
 import { enterRoguelikeRunRoom } from "@/project/roguelikeRun";
 import { roguelikeRoomId, syncRoguelikeRoomEventGeneration } from "@/project/roguelikeRooms";
 import { initialRuntimeEventPositions, runtimeEventView } from "@/project/runtimeEventState";
@@ -109,6 +110,8 @@ export async function runFieldSpawnEventBattle(scene: PlaySceneContext, eventId:
     } else if (result === "defeat") {
       applyBattleDefeat(scene);
     }
+    // 적 그룹 「전투 뒤」 이벤트. 심볼 접촉 패배는 게임 오버라 승리·도망만 돈다.
+    if (result !== "defeat") await runTroopAfterBattle(scene, troopId, result, () => scene.session === session);
   } catch (error) {
     if (!(error instanceof BattleAdmissionError)) throw error;
     if (scene.session === session && scene.sys?.isActive() !== false) {
