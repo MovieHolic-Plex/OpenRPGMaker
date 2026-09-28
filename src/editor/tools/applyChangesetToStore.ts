@@ -456,7 +456,10 @@ export async function applyProposedProject(
       const issue = error.mapId ? `[${error.mapId}] ${error.message}` : error.message;
       return { ok: false, reason: "commit-rejected", issue, issues: [issue] };
     }
-    const commit = commitChangeset(appliedProject, before);
+    // 클러스터 규칙 위반은 커밋을 막지 않고(commitChangeset 의 isBlocking), 이 경로는
+    // commit.issues 를 쓰지 않는다 — 전체 맵 클러스터 스캔(체크포인트마다 ~1s)을 건너뛴다.
+    // 규칙 감사는 ruleAuditPanel 이 따로 보여 준다.
+    const commit = commitChangeset(appliedProject, before, { clusterMapIds: [] });
     if (!commit.ok) {
       const blocking = commit.blocking.map((entry) =>
         entry.mapId ? `[${entry.mapId}] ${entry.message}` : entry.message);
