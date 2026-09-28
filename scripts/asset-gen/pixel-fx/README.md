@@ -50,3 +50,14 @@ Colour identity: monk is gold and orange fire, with earth browns for ground hits
 blue only for chi. Bard is rainbow notes on a dark plum outline, with blue for the
 lullaby and violet for the requiem. Screen sheets dim the stage with a checker-dithered
 oval (`shade`) and never with a solid fill, so battlers stay visible.
+
+## Class skill sheets (druid · witch)
+
+`lib_druid.py` draws the class_druid (10) and class_witch (12) sheets on top of the
+`lib_mage.py` index canvas. `python3 lib_druid.py` rebuilds all 22, `python3 <key>.py`
+one sheet. Each script's FRAME, FRAMES and ANCHOR are compared with
+`src/assets/retroClassSkills.ts` and a mismatch aborts the build. Colour identity:
+druid LEAF green, BARK brown, MOON silver (+ blossom pink); witch HEX violet,
+TOXIC green (+ BLOOD crimson for life drain, GLASS lilac for the mirror).
+Checks: size, binary alpha, ≤16 colours, no empty cell, neighbour change ≥ 5 % of ink.
+Review output: `.omo/pixel-fx/<key>-preview.png`, `druid|witch-sheet.png`, `druid|witch-composite.png`.
