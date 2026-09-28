@@ -51,7 +51,7 @@ export function syncAtmosphere(scene: PlaySceneContext): void {
     if (effect.amount <= 0 || effect.opacity <= 0) continue;
     const color = effect.tint ? Number.parseInt(effect.tint.slice(1), 16) : ATMOSPHERE_PRESETS.find(p => p.id === effect.kind)!.color;
     if (hazeKinds.has(effect.kind)) {
-      const key = ensureFogTexture(scene.textures, undefined, FOG_BAKE_ROWS_PER_FRAME);
+      const key = ensureFogTexture(scene.textures, undefined, FOG_BAKE_ROWS_PER_FRAME, scene.game?.loop?.frame);
       for (let index = 0; key && index < 2; index++) {
         const id = `${effect.kind}-${index}`;
         let sprite = mist.get(id);

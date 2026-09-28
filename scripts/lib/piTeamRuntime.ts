@@ -25,6 +25,7 @@ import { createModernTilesetPolicy, modernTilesetViolation, requestsModernMap } 
 import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
 import { PRESET_FIRST_BUILD_MEMBER_TURNS } from "../../src/ai/piAgent/team.ts";
 import { isGenrePresetBriefRequest } from "../../src/ai/genrePresetBrief.ts";
+import { judgePlayableSegment, playableSegmentGateApplies } from "../../src/project/playableSegment.ts";
 import {
   claimAssignment,
   createTeamAssignmentLedger,
@@ -96,6 +97,8 @@ const REVIEW_READ_TOOLS = ["get_map_region", "run_lint", "get_project_summary", 
 
 export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptions = {}): Promise<PiAgentDoneEvent> {
   if (request.modernTilesetOnly || requestsModernMap(request.project, request.task, [...request.mapIds, ...(request.currentMapId ? [request.currentMapId] : [])])) request = { ...request, modernTilesetOnly: true, villageContract: undefined };
+  // 마을 계약은 단독 실행 전용이다. 팀 요청에 실려 오면 모든 팀원이 author_village 한 호출로만 묶이므로 벗긴다.
+  if (request.villageContract) request = { ...request, villageContract: undefined };
   const modernPolicy = request.modernTilesetOnly ? createModernTilesetPolicy(request.project) : undefined;
   const assertModernProposal = (before: Project, after: Project) => {
     const violation = modernPolicy && modernTilesetViolation(before, after, modernPolicy);
@@ -126,7 +129,13 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     : baseTeam;
   const builders = enabledMembers(team, "builder");
   const reviewers = enabledMembers(team, "reviewer");
-  if (team.reviewAfterWork && reviewers.length === 0) throw Object.assign(new Error("완료 후 검토 담당이 없습니다. 팀 구성에서 검수 담당을 켜거나 완료 후 검토를 꺼 주세요."), { status: 400 });
+  // 끝낼 수 있는 첫 구간 판정(src/project/playableSegment.ts). 프리셋 첫 생성이고 시작 프로젝트가 합격한 뼈대일 때만 건다 —
+  // 되돌릴 합격본이 없으면 finish 를 막을 근거가 없고, 이후 요청은 사용자가 구간을 넓히거나 바꿀 수 있어야 한다.
+  const segmentGate = isGenrePresetBriefRequest(request.task) && playableSegmentGateApplies(base);
+  let segmentRejections = 0;
+  // 검수 담당을 끄면 팀 메뉴는 「완료 후 검토: 생략」 이라고 보여 준다. 예전 런타임은 여기서 실행 전체를 400 으로
+  // 거절해, 메뉴 말과 달리 팀 요청이 전부 실패했다. 메뉴 말대로 생략하고 최종 보고에 남긴다(조용히 끝내지 않는다).
+  const skipFinalReview = team.reviewAfterWork === true && reviewers.length === 0;
   if (builders.length === 0) throw Object.assign(new Error("팀에 켜진 시공 팀원이 없습니다. 팀 패널에서 팀원을 켜 주세요."), { status: 400 });
 
   let ledger: TeamAssignmentLedger = createTeamAssignmentLedger(teamAssignmentBudget(builders.length));
@@ -535,6 +544,16 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           seamRejection = seamSignature;
           throw new Error(`맵 사이 연결 오류 ${seamErrors.length}건: ${formatSeamIssues(seamErrors)} — 해당 맵 담당에게 assign_map_agent 로 수정을 맡기거나 link_maps 수정 작업을 배정한 뒤 다시 finish 하세요. 고칠 수 없으면 그대로 다시 finish 하면 보고에 남기고 끝냅니다.`);
         }
+        // 첫 구간을 끝까지 갈 수 없으면 finish 를 받지 않는다(최대 2번). 막힌 곳을 그대로 돌려줘 팀장이 수정 배정을 하게 한다.
+        // 그 뒤에도 막히면 받아들이되 브라우저가 적용하지 않는다(aiPiAgentCommand 의 같은 판정).
+        if (segmentGate && segmentRejections < 2) {
+          const verdict = judgePlayableSegment(working);
+          if (!verdict.ok) {
+            segmentRejections += 1;
+            emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `첫 구간 자동 플레이 막힘(${segmentRejections}/2): ${verdict.blockers.join(" / ")}` } });
+            throw new Error(`첫 구간을 끝까지 갈 수 없어 finish 를 받지 않습니다(${segmentRejections}/2). 자동 플레이가 막힌 곳: ${verdict.blockers.join(" / ")}. 해당 맵에 수정 배정을 하고 wait_agents 뒤 다시 finish 하세요.`);
+          }
+        }
         const outstanding = mailbox.outstanding();
         finished = str((params as Record<string, unknown>)?.report, "report");
         if (seamErrors.length > 0) finished += `
@@ -562,7 +581,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   // 팀장이 wait 없이 끝났을 수 있다(턴 상한·조기 finish 실패). 남은 배정을 거두어 병합한다 —
   // 여기서 놓치면 이미 끝난 시공 결과가 조용히 사라진다.
   await Promise.all(inflight.map((entry) => entry.promise));
-  if (team.reviewAfterWork && request.applyMode !== "yolo") {
+  if (skipFinalReview && request.applyMode !== "yolo") {
+    finished = `${finished ?? summaryOf(orchDone)}\n완료 후 검토: 켜진 검수 담당이 없어 생략했습니다.`;
+    emit({ type: "team_report", text: finished });
+  } else if (team.reviewAfterWork && request.applyMode !== "yolo") {
     const finalReview = startTask(
       `제작이 끝난 최종 결과를 읽기 전용으로 검토하라. 사용자 요청: ${request.task}\n요청 충족 여부, 남은 문제와 확인 근거를 report_task로 보고한다. 직접 수정하지 않는다.`,
       "read", reviewers[0]!,

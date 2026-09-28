@@ -96,6 +96,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     intentNote = buildPiIntentNote({
       project,
       packTown,
+      requestText: text,
       intent: declared.intent,
       targetMap: noteTargetMap
         ? { id: noteTargetMap.id, width: noteTargetMap.width, height: noteTargetMap.height, lived: isLivedMap(noteTargetMap) }
@@ -107,7 +108,11 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       && (declared.intent.mode === "create" || declared.intent.mode === "modify")
       && declared.intent.needsPlan === false
       && declared.intent.clarify === null };
-    plan = { ...plan, villageContract: requestsModernMap(project, text, currentMapId ? [currentMapId] : []) ? undefined : resolveVillageContract(project, declared.intent, currentMapId, selection ?? null, text) };
+    // 팀을 켠 사용자에게는 마을 계약을 걸지 않는다. 계약은 단독 실행 전용이라(runPiCommand 가 계약이 있으면
+    // 팀을 끈다) 「마을 만들어」 한 마디가 설정과 무관하게 조용히 혼자 실행이 됐다 — 2026-09-18 이후 일반 채팅
+    // 67회 실행 중 팀 실행 0회. 팀은 팀장 배정·검수 팀원이 마을 품질을 맡는다.
+    const skipVillageContract = input.piTeam || requestsModernMap(project, text, currentMapId ? [currentMapId] : []);
+    plan = { ...plan, villageContract: skipVillageContract ? undefined : resolveVillageContract(project, declared.intent, currentMapId, selection ?? null, text) };
     if (declared.intent.mode === "question") {
       plan = { ...plan, readOnly: true };
       questionPromoted = true;

@@ -231,7 +231,7 @@ function renderFog(
 ): void {
   if (!scene.weatherMistLayers) {
     // 첫 안개는 몇 프레임에 나눠 굽는다. 다 될 때까지 안개 층이 없다(짧은 페이드인처럼 보인다).
-    const key = ensureFogTexture(scene.textures, undefined, FOG_BAKE_ROWS_PER_FRAME);
+    const key = ensureFogTexture(scene.textures, undefined, FOG_BAKE_ROWS_PER_FRAME, scene.game?.loop?.frame);
     if (!key) return;
     scene.weatherMistLayers = [0, 1, 2].map(() => {
       const mist = scene.add.tileSprite(0, 0, width, height, key).setOrigin(0).setScrollFactor(0);

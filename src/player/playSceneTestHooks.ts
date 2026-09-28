@@ -34,6 +34,11 @@ export type RuntimeDebugHook = {
   playerRoute: (moves: readonly MoveCommand[]) => void;
   applyPreset: (preset: StatePreset) => void;
   setSeed: (seed: number) => void;
+  /**
+   * 디버그 패널 라이브 줄이 매 프레임 읽는 값만. readState 는 생활 상태·이벤트 위치·몬스터를 복제해서
+   * 큰 세션에서 호출당 수~수십 ms 다 — 접힌 패널이 그것을 60Hz 로 돌렸다. 선택 항목이라 옛 훅도 동작한다.
+   */
+  readLive?: (switchId?: string) => { readonly currentMapId: string; readonly x: number; readonly y: number; readonly switchValue?: boolean };
   readState: () => LifeRuntimeSnapshot & {
     readonly actionReceipt?: RuntimeActionReceipt;
     horror: PlaySession["horror"];
@@ -324,6 +329,15 @@ export function installPlaySceneTestHooks(
     setSeed: (seed) => {
       reseedSessionRng(getSession(), seed);
       syncRuntimeState();
+    },
+    readLive: (switchId) => {
+      const session = getSession();
+      return {
+        currentMapId: session.currentMapId,
+        x: session.x,
+        y: session.y,
+        ...(switchId && Object.hasOwn(session.switches, switchId) ? { switchValue: session.switches[switchId] } : {}),
+      };
     },
     readState: () => {
       const session = getSession();

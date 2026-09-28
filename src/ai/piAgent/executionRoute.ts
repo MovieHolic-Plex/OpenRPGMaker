@@ -11,6 +11,7 @@
 import { formatPackTownNote, type PackTownTarget } from "./packTownRoute";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
 import { estimateVillageSize } from "@/ai/constructionDeclaration";
+import { formatVillageReferenceNote, villageReferenceExamples } from "@/ai/villageReferenceExamples";
 import {
   formatIntentNote,
   formatScopeNote,
@@ -77,6 +78,11 @@ export interface PiIntentNoteInput {
   readonly selection: IntentSelectionFact | null;
   /** 요청이 팩 도시 타일셋(Rasak 등) 마을이면 그 타일셋 — 숲마을 노트 대신 build_pack_town 노트(packTownRoute). */
   readonly packTown?: PackTownTarget | null;
+  /**
+   * 사용자 문장. 있으면 숲마을 노트에 요청에 가까운 완성 마을 사례([참고 마을])를 붙인다.
+   * 2026-09-28: 사례 약 70곳이 Pi 프롬프트·노트·도구 결과 어디에도 없어 모델이 기본값(12채·강변촌)만 썼다.
+   */
+  readonly requestText?: string;
 }
 
 /**
@@ -97,10 +103,13 @@ export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
   const noteIntent = preset ? { ...input.intent, construction: undefined } : input.intent;
   const intentNote = formatIntentNote(noteIntent, { clarifyBypassed: true, targetMap: input.targetMap });
   const villageNote = input.packTown ? formatPackTownNote(input.packTown, input.targetMap) : formatPiVillageNote(input);
+  const referenceNote = !input.packTown && villageNote && input.requestText !== undefined && input.project && "tilesets" in input.project
+    ? formatVillageReferenceNote(villageReferenceExamples(input.project as Project, input.requestText))
+    : null;
   const scopeNote = input.selection
     ? formatScopeNote({ mapId: input.selection.mapId, region: input.selection }, input.intent)
     : null;
-  const parts = [intentNote, villageNote, scopeNote].filter((part): part is string => typeof part === "string" && part.length > 0);
+  const parts = [intentNote, villageNote, referenceNote, scopeNote].filter((part): part is string => typeof part === "string" && part.length > 0);
   return parts.length > 0 ? parts.join("\n") : null;
 }
 

@@ -292,14 +292,27 @@ export function renderSpatialAuthoringShell(
   function bindGalleryScroll(): void {
     const grid = listing.querySelector<HTMLElement>(".spatial-gallery-grid");
     if (!grid || !(placesGallery || regionGallery)) return;
-    grid.scrollTop = usageChromeState.galleryScrollTop;
+    // 카드 클릭마다 셸이 통째로 다시 그려진다. 이 함수는 셸이 문서에 붙기 전에 불리므로
+    // 여기서 scrollTop 을 바로 대입하면 무시되고 목록이 맨 위로 튄다 — 붙은 뒤에 복원한다.
+    const savedTop = usageChromeState.galleryScrollTop;
+    const popoverOpen = usageChromeState.openPopoverCardId !== null;
+    let restored = false;
+    const restore = (): void => {
+      if (restored || !grid.isConnected) return;
+      restored = true;
+      if (savedTop > 0) grid.scrollTop = savedTop;
+      if (popoverOpen) {
+        listing.querySelector<HTMLElement>('[data-testid="spatial-usage-popover"]')?.scrollIntoView({ block: "nearest" });
+      }
+    };
     grid.addEventListener("scroll", () => {
+      // 떼어진 옛 그리드가 쏘는 scroll 0 이 저장값을 덮지 않게 한다.
+      if (!grid.isConnected) return;
       usageChromeState.galleryScrollTop = grid.scrollTop;
       hidePlaceHover();
     }, { passive: true });
-    if (usageChromeState.openPopoverCardId !== null) {
-      listing.querySelector<HTMLElement>('[data-testid="spatial-usage-popover"]')?.scrollIntoView({ block: "nearest" });
-    }
+    queueMicrotask(restore);
+    if (typeof requestAnimationFrame === "function") requestAnimationFrame(restore);
   }
   // libraryControls 는 아래에서 만든다. 검색 콜백은 그 뒤에만 호출된다.
   let libraryControls: HTMLElement | null = null;

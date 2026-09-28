@@ -5,7 +5,7 @@
 //
 // NPC 30명 배치: 항구 12 · 밀밭 6 · 안개 숲 4 · 호수 신전 4 · 폐광 2 · 설산 2 = 30.
 // (천공 제단은 사람이 없는 곳이다 — 마지막 층에 NPC 를 두지 않는 것도 연출이다.)
-import { npcFaceGraphicFromEventGraphic } from "@/assets/charsetFaceMap";
+import { sharedFaceFromEventGraphic } from "@/project/sharedCharacterFaceResolver";
 import { queryNpcGraphics } from "@/assets/charsetQuery";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { stampRectHouseKit, type HouseKitId } from "@/editor/houseKit";
@@ -886,7 +886,7 @@ function scarfClues(): GameEvent[] {
 function lostChildEvent(): GameEvent {
   const childGraphic = charsetByLabel("남자아이");
   // 아이는 전투가 끝난 뒤에야 말한다 — 그 대사에만 얼굴을 붙인다.
-  const CHILD_FACE = npcFaceGraphicFromEventGraphic(childGraphic);
+  const CHILD_FACE = sharedFaceFromEventGraphic(childGraphic);
   return event("ev_sky_m_child", 26, 26, [
     page("ch_hidden", "안개", [], [
       say(undefined, "안개가 너무 짙다. 아직 아무것도 보이지 않는다."),
@@ -1525,13 +1525,12 @@ function charsetByLabel(label: string): EventPage["graphic"] {
 }
 
 /**
- * 사람 NPC 의 대사 앞에 `changeFace` 를 붙인다. 얼굴은 charsetFaceMap 이 정한다 —
- * **짝이 검증된 시트**(CharSet/People1↔FaceSet/People1, CharSet/People3↔FaceSet/People2,
- * Actor1/2)는 인덱스를 그대로 쓰고, 짝이 없는 시트(People2·People4·People5·Actor3·Actor4)는
- * 성별·나이·특징으로 FaceSet/People1 에서 고른다. 몬스터·사물에는 얼굴을 붙이지 않는다.
+ * 사람 NPC 의 대사 앞에 `changeFace` 를 붙인다. 얼굴은 AI 도구와 같은 공용 대응표에서만 온다 —
+ * 대응표가 "얼굴 없음" 이면 붙이지 않는다. 예전엔 짝 없는 시트를 성별·나이로 FaceSet/People1 에서
+ * 골랐는데, 그 추정이 기름 장수·선원·여관 주인 등 10명에게 다른 인물의 얼굴을 붙였다(2026-09-28).
  */
 function withFace(graphic: EventPage["graphic"], commands: readonly Command[]): Command[] {
-  const face = npcFaceGraphicFromEventGraphic(graphic);
+  const face = sharedFaceFromEventGraphic(graphic);
   if (!face) return [...commands];
   return [{ kind: "changeFace", ...face }, ...commands];
 }

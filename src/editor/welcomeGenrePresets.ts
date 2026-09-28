@@ -268,18 +268,27 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
 
 /**
  * 장르 칩 핸드오프의 «보이는 문장». 모델은 `buildWelcomeGenrePresetPrompt` 전체를 읽지만, 사용자 말풍선에는
- * 자기가 고른 것만 짧게 남긴다(예: 「모험 JRPG · 누군가를 구하기 위해 · 시작 마을과 첫 의뢰」).
+ * 자기가 고른 것만 남긴다.
  * 체크리스트·「한국어로 진행하고…」 같은 내부 지시가 사용자 말로 보이면 안 된다(2026-09-23 실측).
+ *
+ * 기획이 있으면 확정 요약(인터뷰 답 또는 사용자가 고친 요약)을 줄 단위로 보인다. 예전에는 첫 답과 범위만
+ * 24자로 잘라 한 줄로 붙여서, 모델은 다섯 답을 다 받는데도 사용자에게는 인터뷰가 안 넘어간 것처럼 보였다
+ * (2026-09-28 신고). 요약이 길면 BRIEF_DISPLAY_LIMIT 에서 자른다 — 전문은 모델 쪽 지시문과 「게임 기획」 메뉴에 있다.
  */
+const BRIEF_DISPLAY_LIMIT = 600;
+
 export function welcomeGenrePresetDisplayText(preset: WelcomeGenrePreset, brief?: GameDesignBrief): string {
+  if (brief) {
+    const lines = brief.summary.replace(/\r\n?/gu, "\n").split("\n").map((line) => line.replace(/[ \t]+/gu, " ").trim()).filter(Boolean);
+    let body = lines.join("\n");
+    if (body.length > BRIEF_DISPLAY_LIMIT) body = `${body.slice(0, BRIEF_DISPLAY_LIMIT - 1).trimEnd()}…`;
+    return body ? `${preset.label} · 확정한 게임 기획\n${body}` : preset.label;
+  }
   const short = (text: string | undefined): string => {
     const line = (text ?? "").split(/\r?\n/u)[0]!.replace(/\s+/gu, " ").trim();
     return line.length > 24 ? `${line.slice(0, 23)}…` : line;
   };
-  const parts = brief
-    ? [preset.label, short(brief.answers.experience?.text), short(brief.answers.scope?.text)]
-    : [preset.label, short(preset.blurb)];
-  return [...new Set(parts.filter(Boolean))].join(" · ");
+  return [...new Set([preset.label, short(preset.blurb)].filter(Boolean))].join(" · ");
 }
 
 /** 자유 입력 핸드오프의 «보이는 문장» — 사용자가 친 한 문장 그대로. */

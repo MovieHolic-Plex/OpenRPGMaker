@@ -30,6 +30,13 @@ if (cmd === "check") {
     if (names.has(f.name)) problems.push(`재료 이름 중복: ${f.name}`); names.add(f.name);
     if (tileOpacity(set.built.atlas, set.columns, set.tileOf(f.sheet, f.cell)) === 0) problems.push(`빈 평타일: ${f.name}`);
   }
+  // 같은 시트 칸을 kind 가 다른 두 물체가 잡으면 나중 것이 그 칸의 통행을 덮는다.
+  const cellKind = new Map<string, string>();
+  for (const o of set.presetJson.objects) for (let dy = 0; dy < o.h; dy += 1) for (let dx = 0; dx < o.w; dx += 1) {
+    const key = `${o.sheet}:${o.x + dx},${o.y + dy}`, prev = cellKind.get(key);
+    if (prev && prev.split("/")[1] !== o.kind) problems.push(`같은 칸 다른 kind: ${key} ${prev} · ${o.id}/${o.kind}`);
+    else cellKind.set(key, `${o.id}/${o.kind}`);
+  }
   const ids = new Set<string>();
   for (const o of set.presetJson.objects) {
     if (ids.has(o.id)) problems.push(`물체 id 중복: ${o.id}`); ids.add(o.id);

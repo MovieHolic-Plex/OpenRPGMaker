@@ -41,7 +41,9 @@ describe.each(["place_npc", "make_villager"])("%s shared face mapping", tool => 
   });
   it("keeps explicit face overrides", () => {
     acceptSharedCharacterGraphics(catalog("no-face"));
-    expect(npc(tool, { face: { resourceId: chosen } })[0]!.commands[0]).toMatchObject({ kind: "changeFace", resourceId: chosen });
+    // 대응표 밖 얼굴(생성 표정 세트)은 작가 선택으로 그대로 둔다. 번들 얼굴은 걷기 그림의 짝으로 교정된다(faceMatchAudit.test.ts).
+    const custom = "shared-brown-headband-expressions-01";
+    expect(npc(tool, { face: { resourceId: custom } })[0]!.commands[0]).toMatchObject({ kind: "changeFace", resourceId: custom });
   });
   it("resolves each page graphic, not just the top-level sprite", () => {
     acceptSharedCharacterGraphics(catalog("no-face"));

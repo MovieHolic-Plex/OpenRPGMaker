@@ -35,7 +35,7 @@ import {
 } from "@/editor/aiApplyCompletion";
 import type { ChangeSummary, Project, TilesetDef } from "@/project/types";
 import { computeAssistantToolMode } from "@/editor/assistantToolMode";
-import { editorState, editorStateChangedOnlyPaintPick } from "@/editor/editorState";
+import { editorState, editorStateChangedOnlyCanvasOverlay, editorStateChangedOnlyPaintPick } from "@/editor/editorState";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
 import { AI_REGION_HANDOFF_EVENT, aiRegionHandoffDetail } from "@/editor/aiRegionHandoff";
 import { isStampPlaceOn, setStampPlaceOn, subscribeStampPlace } from "@/editor/stampPlaceMode";
@@ -120,6 +120,13 @@ import { renderPreferenceMemorySettings } from "./aiPreferenceMemorySettings";
 import { createCollapsedUndoButton, createDirectorRestoreButton, setRestoreButtonState } from "./aiDirectorChrome";
 import { openAiSettingsModal, registerAiSettingsPanel } from "./aiSettingsModal";
 import { runStampPlace } from "@/editor/stampPlaceRunner";
+import {
+  configureStampOrderQueue,
+  createStampOrderQueue,
+  formatStampOrderSummary,
+  stampOrderQueue,
+  type StampOrder,
+} from "@/editor/stampOrderQueue";
 import { buildMapPlacementContext, formatChestRewardHint } from "@/ai/mapPlacementContext";
 import { getTool } from "@/editor/tools/toolRegistry";
 import {
@@ -304,6 +311,14 @@ let activeAiChatPanelCleanup: (() => void) | null = null;
 // 안 끝나 있다 — 테스트·헤드리스 하네스는 이걸로 정착을 기다린다.
 const panelPendingWork = createPendingWorkTracker();
 
+// 바로 깔기 주문 대기열은 패널보다 오래 산다(스튜디오 장면 추가마다 패널이 다시 만들어진다).
+// 실제 러너·스토어 배선은 여기서 한 번 건다. 대기열 모듈은 스토어를 import 하지 않는다.
+configureStampOrderQueue(() => createStampOrderQueue({
+  run: (input) => runStampPlace(input),
+  projectKey: () => store.getProjectIdentity().id,
+  mapSize: (mapId) => store.getCurrent().maps[mapId],
+}));
+
 /** 패널의 비동기 저장·복원·프로젝트 전환 처리가 모두 끝날 때까지 기다린다. */
 export function whenAiChatPanelSettled(): Promise<void> {
   return panelPendingWork.settled();
@@ -466,9 +481,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 이유를 돌려준다. 진짜 disabled 는 턴 진행 중(turnBusy)에만 쓴다.
   const refreshSendEnabled = (): void => {
     const empty = input.value.trim() === "";
-    sendButton.disabled = turnBusy;
-    sendButton.classList.toggle("is-not-ready", empty && !turnBusy);
-    sendButton.setAttribute("aria-disabled", String(turnBusy || empty));
+    // 바로 깔기는 턴 슬롯을 쓰지 않는다 — 조수가 답하는 동안에도 주문을 보낼 수 있고, 빈 문장도 「알아서」다.
+    const stamp = isStampPlaceOn();
+    const blocked = turnBusy && !stamp;
+    sendButton.disabled = blocked;
+    sendButton.classList.toggle("is-not-ready", empty && !stamp && !turnBusy);
+    sendButton.setAttribute("aria-disabled", String(blocked || (empty && !stamp)));
   };
   let runningProgress: { startedAt: number; toolCount: number } | null = null;
   let runningPhaseStatus: string | null = null;
@@ -990,6 +1008,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshQueueIndicator();
     turnBusy = false;
     for (const resolve of idleWaiters) resolve();
+    stampOrderQueue().pokeGate();
     endTurnProgress();
     refreshAbortButton();
   };
@@ -1453,9 +1472,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const queueIndicator = el("div", { class: "ai-pending-queue", dataset: { testid: "ai-pending-queue" } });
   queueIndicator.hidden = true;
   const refreshQueueIndicator = (): void => {
-    queueIndicator.hidden = pendingSends.length === 0;
-    queueIndicator.textContent =
-      pendingSends.length > 0 ? `기다리는 메시지 ${pendingSends.length}개` : "";
+    // 채팅 대기 메시지와 바로 깔기 주문을 한 줄에 함께 센다 — 둘 다 «아직 끝나지 않은 내 지시» 다.
+    const parts: string[] = [];
+    if (pendingSends.length > 0) parts.push(`기다리는 메시지 ${pendingSends.length}개`);
+    const stampLine = formatStampOrderSummary(stampOrderQueue().summary());
+    if (stampLine) parts.push(stampLine);
+    queueIndicator.hidden = parts.length === 0;
+    queueIndicator.textContent = parts.join(" · ");
   };
   const drainPendingSends = (): void => {
     const next = pendingSends.shift();
@@ -1656,8 +1679,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let activeSelectionRegionController: AbortController | null = null;
   /** `/pi` 실행 중인 Pi 에이전트의 취소 컨트롤러. 선택 영역 작업처럼 직접 abort 한다. */
   let piRunController: AbortController | null = null;
-  /** 바로 깔기(stampPlaceNow)의 취소 컨트롤러 — 모델 계획·수리 호출을 끊는다. */
-  let stampController: AbortController | null = null;
   let activeSelectionRegionKey: string | null = null;
   const abortActiveSelectionRegionTask = (): void => {
     const regionController = activeSelectionRegionController;
@@ -1672,8 +1693,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let progressTimer: number | null = null;
   const refreshAbortButton = (): void => {
     if (!abortButton) return;
-    const running = Boolean(activeAbortController && !activeAbortController.signal.aborted);
-    abortButton.hidden = !turnBusy;
+    // 바로 깔기 주문은 턴 슬롯을 잡지 않는다 — 주문이 돌고 있어도 멈추기 버튼은 서야 한다.
+    const stampActive = stampOrderQueue().active();
+    const running = Boolean(activeAbortController && !activeAbortController.signal.aborted) || stampActive;
+    abortButton.hidden = !turnBusy && !stampActive;
     abortButton.disabled = !running;
     abortButton.setAttribute("aria-disabled", String(!running));
     // 전송은 항상 마운트 — 진행 중엔 비활성(disabled)으로 두고 중단은 형제로 노출한다.
@@ -1730,9 +1753,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     syncGlassIdle();
   };
   const abortActiveTurn = (): void => {
+    // 멈추기는 바로 깔기 주문도 모두 끊는다(도는 것·기다리는 것).
+    const stampsCancelled = stampOrderQueue().cancelAll();
+    if (stampsCancelled > 0) appendBubble("system", `바로 깔기 주문 ${stampsCancelled}개를 중단했습니다.`);
     if (!activeAbortController || activeAbortController.signal.aborted) return;
-    const regionOwner = activeAbortController === activeSelectionRegionController || activeAbortController === piRunController
-      || activeAbortController === stampController;
+    const regionOwner = activeAbortController === activeSelectionRegionController || activeAbortController === piRunController;
     // 중단 시점의 진행 정도를 함께 남긴다 — 툴 0개에서 끊긴 것과 40개 돌다 끊긴 것은 다른 사건이다.
     const toolsSoFar = (controller.session?.getAuditEntries() ?? []).filter((entry) => entry.kind === "tool").length;
     const droppedQueue = pendingSends.length;
@@ -1851,7 +1876,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     get turnBusy() { return turnBusy; },
     set turnBusy(value) {
       turnBusy = value;
-      if (!value) for (const resolve of idleWaiters) resolve();
+      if (!value) {
+        for (const resolve of idleWaiters) resolve();
+        // 조수 턴이 끝났다 — 적용 차례를 기다리던 바로 깔기 주문을 깨운다.
+        stampOrderQueue().pokeGate();
+      }
     },
     get disposed() { return disposed; },
     get abortNoticeShown() { return abortNoticeShown; },
@@ -2224,14 +2253,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       return;
     }
     if (stampPlaceOn) {
-      if (turnBusy) {
-        toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
-        return;
-      }
       input.value = "";
       composerHandoff = null;
       syncInputHeight();
-      void stampPlaceNow(text);
+      stampPlaceNow(text);
       return;
     }
     if (!ensureConfigReadyForSend()) return;
@@ -2361,8 +2386,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const contextChips = el("div", { class: "ai-context-chips", dataset: { testid: "ai-context-chips" } });
   let stampPlaceOn = false;
   // 바로 깔기 — 모델이 의도를 한 번 읽어 단계로 나누고 바로 적용한다(계획 턴·승인 없음).
-  // 모델이 없거나 실패하면 러너가 낱말 규칙으로 떨어진다. 두 바로 깔기가 겹치지 않도록 turnBusy 를 잡는다.
-  const stampPlaceNow = async (text: string): Promise<void> => {
+  // 주문은 대기열(stampOrderQueue)에 쌓인다. 턴 슬롯(turnBusy)을 잡지 않으므로 드래그를 연달아 해도
+  // 거절되지 않고, 겹치지 않는 영역은 동시에 읽힌다. 결과 줄은 주문이 끝날 때 reportStampOrders 가 남긴다.
+  const stampPlaceNow = (text: string): void => {
     const state = editorState.get();
     const mapId = state.currentMapId;
     const map = mapId ? store.getCurrent().maps[mapId] : undefined;
@@ -2370,38 +2396,35 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       toast("맵을 연 뒤 바로 깔 수 있습니다", "info");
       return;
     }
-    appendBubble("user", text.trim() || "(알아서 깔기)");
-    const controller = new AbortController();
-    stampController = controller;
-    activeAbortController = controller;
-    runSurface.turnBusy = true;
-    abortNoticeShown = false;
-    refreshAbortButton();
-    setStatus(text.trim() ? "의도 읽는 중…" : "까는 중…");
-    try {
-      const result = await runStampPlace({
-        text,
-        mapId,
-        selection: state.selection,
-        signal: controller.signal,
-        onPhase: (phase) => {
-          setStatus(phase === "planning" ? "의도 읽는 중…" : phase === "repairing" ? "고쳐 까는 중…" : "까는 중…");
-        },
-      });
-      // 아무것도 깔기 전에 중단했으면 중단 버튼이 이미 「사용자가 중단했습니다」를 남겼다.
-      if (!(controller.signal.aborted && result.applied === 0)) {
-        for (const line of result.lines) appendBubble("system", line);
-      }
-      setStatus(result.ok || controller.signal.aborted ? "대기" : "실패");
-    } catch (cause) {
-      appendBubble("system", `바로 깔기에 실패했습니다: ${cause instanceof Error ? cause.message : String(cause)}`);
-      setStatus("실패");
-    } finally {
-      if (stampController === controller) stampController = null;
-      if (activeAbortController === controller) activeAbortController = null;
-      runSurface.turnBusy = false;
-      refreshAbortButton();
+    const order = stampOrderQueue().enqueue({ text, mapId, selection: state.selection });
+    if (!order) {
+      toast("맵을 연 뒤 바로 깔 수 있습니다", "info");
+      return;
     }
+    appendBubble("user", `#${order.id} ${text.trim() || "(알아서 깔기)"}`);
+    abortNoticeShown = false;
+  };
+  // 끝난 주문의 결과 줄을 채팅에 한 번만 남긴다. 주문마다 머리에 번호를 붙여 어느 드래그의 결과인지 읽히게 한다.
+  const reportStampOrders = (): void => {
+    for (const order of stampOrderQueue().takeUnreported()) appendStampOrderResult(order);
+  };
+  const appendStampOrderResult = (order: StampOrder): void => {
+    // 멈추기로 끊은 주문은 멈추기가 한 줄로 이미 알렸다.
+    if (order.status === "aborted" && order.applied === 0) return;
+    const head = order.status === "done" ? "완료" : order.applied > 0 ? "일부 적용" : "실패";
+    appendBubble("system", [`#${order.id} ${order.label} — ${head}`, ...order.lines.map((line) => `- ${line}`)].join("\n"));
+  };
+  // 대기열 상태를 입력줄 요약·멈추기 버튼·상태 줄에 비춘다.
+  const syncStampOrders = (): void => {
+    if (disposed) return;
+    reportStampOrders();
+    refreshQueueIndicator();
+    refreshAbortButton();
+    if (!turnBusy) {
+      const summary = stampOrderQueue().summary();
+      setStatus(summary.total > 0 ? formatStampOrderSummary(summary) : "대기", false);
+    }
+    syncGlassIdle();
   };
   const refreshComposerPlaceholder = (): void => {
     if (stampPlaceOn) {
@@ -2498,6 +2521,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 타일·붓만 고른 클릭은 안내문 한 줄만 바뀐다 — 칩·레일·패널 크기는 그대로다.
     if (editorStateChangedOnlyPaintPick(previous, state)) {
       refreshComposerPlaceholder();
+      return;
+    }
+    // 선택 사각형·붙여넣기 고스트·클립보드만 바뀐 통지(우클릭 드래그는 pointermove 마다 여기로 온다).
+    // 컨텍스트 칩 하나만 달라진다 — 패널 크기 재측정(applyAssistantViewPolicy)과 스튜디오 장면·모니터 재구축은
+    // 강제 레이아웃을 여러 번 불렀다(2026-09-28 트레이스: 드래그 10걸음에 1.1s, 걸음마다 약 120ms).
+    if (editorStateChangedOnlyCanvasOverlay(previous, state)) {
+      if (previous.selection !== state.selection) refreshContextChips();
       return;
     }
     // 맵을 바꾸면 재사용 선택은 그 맵의 것이 아니다 — 칩보다 먼저 범위를 갈아끈는다.
@@ -3035,6 +3065,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshComposerPlaceholder();
   });
   if (stampPlaceOn) refreshComposerPlaceholder();
+  // 바로 깔기 대기열 — 패널이 다시 만들어져도 대기열은 산다. 붙을 때 게이트·구독을 다시 건다.
+  const stampQueue = stampOrderQueue();
+  stampQueue.setChatBusyProbe(() => turnBusy);
+  const unsubscribeStampOrders = stampQueue.subscribe(syncStampOrders);
   // 선택 영역 → 채팅 핸드오프. 우클릭 드래그 바·영역 메뉴·검사 패널이 보낸 문장은 여기서 채팅 턴이 된다
   // (예전의 «영역 작업» 창은 폐기). 영역은 선택 칩으로 붙어 Pi 턴의 범위가 된다.
   const handleRegionHandoff = (event: Event): void => {
@@ -3064,11 +3098,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       return;
     }
     if (stamp) {
-      if (turnBusy) {
-        toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
-        return;
-      }
-      void stampPlaceNow(text);
+      // 조수 턴이 돌고 있어도 받는다 — 주문은 읽기를 먼저 하고, 깔기는 턴이 끝난 뒤에 한다(stampOrderQueue).
+      stampPlaceNow(text);
       return;
     }
     restoreComposer(text);
@@ -3327,6 +3358,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     || compacting
     || workPlanSurfaceState?.active === true
     || pendingSends.length > 0
+    || stampOrderQueue().active()
     || applyingProposal
     || proposalApi.pendingProposalMessage !== null
     || hasPendingQuestion();
@@ -3912,6 +3944,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     appliedCompletion = null;
     commandBarClearanceObserver?.disconnect();
     unsubscribeStampPlace();
+    unsubscribeStampOrders();
+    // 대기열은 패널보다 오래 산다 — 주문은 계속 돌고, 다음 패널이 게이트를 다시 건다.
+    stampQueue.setChatBusyProbe(null);
     composerShell.dispose();
     teamPanel.dispose();
 

@@ -5,6 +5,7 @@ import { USER_FACING_REPORT_RULE } from "./userFacingCopy";
 
 import type { Project, TilesetDef } from "@/project/types";
 import { gameDesignBriefContext } from "@/project/gameDesignBrief";
+import { hasPlayableSegmentSkeleton, playableSegmentContract } from "@/project/playableSegmentContract";
 import { hasExtraLayers } from "@/project/mapLayers";
 import { referenceOwner } from "@/project/tilesetReferences";
 import { HOUSE_VARIETY_POLICY_LINE, TILESET_FAMILY_POLICY_LINE } from "../promptPolicies";
@@ -40,6 +41,7 @@ export function buildPiAgentSystemPrompt(project: Project, mapIds: readonly stri
     "너는 웹 JRPG 메이커의 시공 에이전트다. 제공된 도구만으로 프로젝트를 편집하며, 도구 밖의 텍스트 편집은 없다.",
     USER_FACING_REPORT_RULE,
     ...(project.gameDesignBrief ? [gameDesignBriefContext(project.gameDesignBrief)] : []),
+    ...(hasPlayableSegmentSkeleton(project) ? [playableSegmentContract(project)] : []),
     ...scope,
     MODERN_TILESET_POLICY_LINE,
     `새 야외·마을의 기본 칩셋은 ${defaultOutdoorTilesetId(project)}이다. 사용자 선택이 있으면 우선하고 author_village의 새 target.tilesetId에 전달한다. 기존 맵의 칩셋은 유지한다. 실내·던전은 해당 용도 칩셋을 선택한다. 기획·세계관이 눈·겨울·눈보라·설원이면 마을은 author_village groundTheme:"snow"(설원 칩셋·눈 날씨), 사막이면 groundTheme:"desert", 화산이면 "volcano", 가을이면 "autumn"(기후 칩셋·잎 없는 고목 덩이), 다른 야외 맵은 set_map_properties climate:{mode:"fixed",weather:"snow",intensity:0.6} 로 기후를 맞춘다 — 전투 배경이 맵 기후를 따른다.`,

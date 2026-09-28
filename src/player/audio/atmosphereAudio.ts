@@ -53,15 +53,21 @@ export class AtmosphereAudio {
       }
     }
     // Adding many effects never linearly multiplies volume; duplicate sound pairs share a voice.
+    // 합성 예산은 소리마다가 아니라 update 한 번 전체가 나눠 쓴다 — 세 소리가 한꺼번에 굽히면 한 프레임에
+    // 30만 표본(약 25ms)을 돌렸다. 예산이 떨어지면 남은 소리는 다음 update 에서 이어 간다.
+    let bakeBudget = ATMOSPHERE_BAKE_SAMPLES_PER_UPDATE;
     for (const [sound, rawLevel] of levels) {
       const level = rawLevel / Math.sqrt(levels.size);
       let voice = this.voices.get(sound);
       if (!voice) {
         let buffer = this.buffers.get(sound);
         if (!buffer) {
+          if (bakeBudget <= 0) continue;
           const bake = this.baking.get(sound) ?? startAtmosphereBake(context, sound);
           this.baking.set(sound, bake);
-          if (!stepAtmosphereBake(bake, ATMOSPHERE_BAKE_SAMPLES_PER_UPDATE)) continue;
+          const spent = stepAtmosphereBake(bake, bakeBudget);
+          bakeBudget -= spent.samples;
+          if (!spent.done) continue;
           this.baking.delete(sound);
           buffer = bake.buffer;
           this.buffers.set(sound, buffer);
@@ -119,24 +125,30 @@ function startAtmosphereBake(context: AudioContext, sound: AtmosphereSound): Atm
   return { sound, buffer, channels, channel: 0 };
 }
 
-/** budget 샘플만큼 이어서 합성한다. 두 채널이 다 끝나 버퍼가 채워졌으면 true. */
-function stepAtmosphereBake(bake: AtmosphereBake, budget: number): boolean {
+/**
+ * budget 샘플만큼 이어서 합성한다. 두 채널이 다 끝나 버퍼가 채워졌으면 done. 채널을 마칠 때 버퍼로 옮기는
+ * 복사(채널 길이만큼)도 쓴 표본 수에 넣는다 — 호출부가 여러 소리에 한 예산을 나눠 쓴다.
+ */
+function stepAtmosphereBake(bake: AtmosphereBake, budget: number): { readonly done: boolean; readonly samples: number } {
   let remaining = Math.max(1, Math.floor(budget));
+  const initial = remaining;
   while (bake.channel < bake.channels.length && remaining > 0) {
     const state = bake.channels[bake.channel]!;
     const start = state.index;
     const end = Math.min(state.raw.length, start + remaining);
     synthesizeAtmosphere(bake.sound, bake.channel, state, end);
     remaining -= end - start;
-    if (state.index < state.raw.length) return false;
+    if (state.index < state.raw.length) return { done: false, samples: initial - remaining };
     const data = bake.buffer.getChannelData(bake.channel);
     const raw = state.raw;
     for (let i = 0; i < ATMOSPHERE_LENGTH; i++) {
       data[i] = i < ATMOSPHERE_SEAM ? raw[ATMOSPHERE_LENGTH + i]! * (1 - i / ATMOSPHERE_SEAM) + raw[i]! * i / ATMOSPHERE_SEAM : raw[i]!;
     }
+    // 이음매 복사는 합성보다 훨씬 싸다(표본당 곱셈 몇 개). 합성 표본의 1/8 로 친다.
+    remaining -= Math.ceil(ATMOSPHERE_LENGTH / 8);
     bake.channel += 1;
   }
-  return bake.channel >= bake.channels.length;
+  return { done: bake.channel >= bake.channels.length, samples: initial - remaining };
 }
 
 function synthesizeAtmosphere(sound: AtmosphereSound, channel: number, state: AtmosphereChannelState, end: number): void {

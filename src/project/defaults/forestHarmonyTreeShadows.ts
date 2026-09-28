@@ -42,6 +42,31 @@ export function tilesetHasTreeShadows(tileset: TilesetDef | undefined): boolean 
 }
 
 /**
+ * 그림자 칸은 ★(통행 + 상위 표시)여야 한다. 통행은 위층부터 내려가며 ★·빈칸을 건너뛰고 처음 만난 타일이 정하므로
+ * (collision.passabilityOf), 2층 그림자가 ○ 면 1층 밑동의 × 를 덮어 나무를 걸어서 지나간다.
+ * 실측(2026-09-28, AI 조수 숲마을 40×28): 막혀야 할 밑동 108칸이 뚫렸고 출하 플레이어에서 주인공이 밑동 줄 안으로 들어갔다.
+ * 2층은 캐릭터 밑 묶음이라 priority 가 그리는 순서를 바꾸지 않는다 — ★ 는 통행 판정에서 빠지라는 뜻만 한다.
+ * 2026-09-27 판(○)으로 이미 붙은 칸은 이 함수가 제자리에서 고친다. 바뀌었으면 true.
+ */
+export function repairForestTreeShadowPassage(tileset: TilesetDef | undefined): boolean {
+  if (!isBundledForestHarmony(tileset)) return false;
+  let changed = false;
+  for (const graft of tileset.tileGrafts ?? []) {
+    if (graft.sourceChipset !== PARTS.textureKey || graft.targetTile >= tileset.count) continue;
+    const tile = graft.targetTile;
+    const pass = tileset.passability[tile];
+    const open = pass?.up && pass.down && pass.left && pass.right;
+    const meta = tileset.tileMeta?.[tile];
+    if (open && tileset.priority[tile] === "upper" && (!meta || meta.passage === "star")) continue;
+    tileset.passability[tile] = { up: true, down: true, left: true, right: true };
+    tileset.priority[tile] = "upper";
+    if (meta) tileset.tileMeta![tile] = { ...meta, passage: "star" };
+    changed = true;
+  }
+  return changed;
+}
+
+/**
  * forest_harmony 끝(마지막 이식 뒤 새 줄)에 그림자 칸을 붙인다. 이미 있으면 아무것도 하지 않는다. 바뀌었으면 true.
  * 일부만 있는 타일셋(손으로 지운 경우)은 건드리지 않는다 — 번호를 다시 섞지 않는다.
  */
@@ -56,9 +81,10 @@ export function ensureForestHarmonyTreeShadows(tileset: TilesetDef): boolean {
   for (let tile = tileset.count; tile < count; tile += 1) {
     const slot = PARTS.slots[tile - start];
     tileset.passability[tile] = structuredClone(slot?.passability ?? open);
-    tileset.priority[tile] = slot?.priority ?? "lower";
+    // 그림자 칸은 ★ — 1층 밑동의 통행을 덮지 않는다(repairForestTreeShadowPassage). 줄을 채우는 빈 칸만 하위.
+    tileset.priority[tile] = slot ? "upper" : "lower";
     tileset.terrain[tile] = slot?.terrain ?? 0;
-    tileset.tileMeta[tile] = slot ? structuredClone(slot.tileMeta) : { label: "", description: "" };
+    tileset.tileMeta[tile] = slot ? { ...structuredClone(slot.tileMeta), passage: "star" } : { label: "", description: "" };
   }
   tileset.count = count;
   tileset.tileGrafts = [...(tileset.tileGrafts ?? []),

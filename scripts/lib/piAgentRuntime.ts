@@ -40,6 +40,7 @@ import { exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.
 import { createDeltaRelay } from "../../src/ai/piAgent/deltaRelay.ts";
 import { applyMapDeltas, diffMapsForDelta } from "../../src/ai/piAgent/mapDelta.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
+import { gameDesignBriefContext } from "../../src/project/gameDesignBrief.ts";
 import { createModernTilesetPolicy, modernTilesetPolicyPrompt, requestsModernMap } from '../../src/ai/modernTilesetPolicy.ts';
 import { isTransientProviderStreamError, PI_PROVIDER_STREAM_RETRY_LIMIT, providerStreamResumePrompt } from "../../src/ai/piAgent/providerRetry.ts";
 import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
@@ -387,7 +388,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const writer = contract ? undefined : request.roleModels?.writer;
   if (writer && !options.toolNames) {
     const writerTool = createWriterTool(writer, completeProvider,
-      options.providerApiKeys?.[writer.provider] ?? (writer.provider === request.provider ? options.apiKey : undefined));
+      options.providerApiKeys?.[writer.provider] ?? (writer.provider === request.provider ? options.apiKey : undefined),
+      gameDesignBriefContext(base.gameDesignBrief));
     tools.push(writerTool);
     exposed.add(writerTool.name);
   }
@@ -400,7 +402,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   }
   // 읽기 전용은 툴 목록으로 강제된다(options.readOnlyTools). 이 한 줄은 모델이 "왜 답만 하는지" 알게 한다 —
   // 이유를 모르면 쓰기를 시도하며 턴을 태운다.
-  if (contract) systemPrompt.push("[확정 마을 계약] 완료 검사는 코드가 자동 수행한다. evaluate_village_look는 요청을 모르는 미감 참고 도구이므로 이 작업에서는 호출하지 않는다. 시공과 대사가 성공하면 보고하고 종료한다. 별도 계획/미감 검수 없이 author_village → 주민 대사 → 완료 검사 순서로 진행한다. 다음 인자는 반드시 그대로 유지하고, 취향·테마·residents 대사는 사용자의 요청에 맞춰 추가한다. 처음부터 residents에 충분한 대사를 넣으면 추가 호출이 줄어든다. 구조 시공 성공 후에는 author_npc_cast로 누락 대사만 보충한다. " + JSON.stringify(contract.args) + (contract.residentDialogue === false ? " 사용자가 무언 주민을 요청했으므로 대사를 추가하지 않는다." : ""));
+  if (contract) systemPrompt.push("[확정 마을 계약] 완료 검사는 코드가 자동 수행한다. evaluate_village_look는 요청을 모르는 미감 참고 도구이므로 이 작업에서는 호출하지 않는다. 시공과 대사가 성공하면 보고하고 종료한다. 별도 계획/미감 검수 없이 author_village → 주민 대사 → 완료 검사 순서로 진행한다. 다음 인자는 반드시 그대로 유지하고, 취향·테마·residents 대사는 사용자의 요청에 맞춰 추가한다. 처음부터 residents에 충분한 대사를 넣으면 추가 호출이 줄어든다. 구조 시공 성공 후에는 author_npc_cast로 누락 대사만 보충한다. " + JSON.stringify(contract.args) + (contract.residentDialogue === false ? " 사용자가 무언 주민을 요청했으므로 대사를 추가하지 않는다." : "")
+    + (contract.referenceId ? ` author_village 에 referenceId:${JSON.stringify(contract.referenceId)} 를 함께 넘긴다 — 결과가 그 완성 마을 사례 그림과 크기·집 수 비교를 돌려준다. 보고에 사례와의 차이를 한 줄 적는다.` : ""));
   if (request.readOnly) systemPrompt.push(READ_ONLY_INSTRUCTION);
   if (!request.readOnly && !options.readOnlyTools) systemPrompt.push("집·마을처럼 여러 영역을 시공할 때는 먼저 set_build_spec으로 실제 좌표와 buildOrder를 제출하여 사용자가 맵에서 밑그림을 보게 하라. 밑그림은 타일 배치가 아니다. 제출 후 반드시 실제 시공 도구를 실행하라. 단순 한 영역 칠하기는 도구 좌표로 작업 영역을 표시하므로 생략할 수 있다.");
   if (incremental && request.applyMode === "step") systemPrompt.push("작업을 지형, 건물·길, NPC·이벤트 등 의미 있는 단계로 나누고 각 단계를 끝낼 때 반드시 finish_stage를 호출하라. 승인 결과를 받기 전 다음 단계의 쓰기 도구를 호출하지 마라. 도구 호출마다 승인받지 말고 작업 단위로 묶어라.");

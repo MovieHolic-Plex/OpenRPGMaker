@@ -22,12 +22,13 @@ export default {
   asarUnpack: ["scripts/**", "dist-electron/oh-my-pi-worker", "dist-electron/oh-my-pi-worker.exe", "dist-electron/pi_natives.*.node"],
   extraMetadata: { main: "dist-electron/main.cjs" },
   asar: true,
-  // 앱 아이콘 원본(1024px). 빌더가 여기서 맥 icns·윈도우 ico·리눅스 png 를 만든다.
+  // 앱 아이콘 원본(1024px, 투명 배경). 빌더가 여기서 윈도우 ico·리눅스 png 를 만든다.
   // directories.buildResources 를 기본값(build/)에 기대지 않고 못박는다 — output 을 바꾼 설정이라
   // 어느 폴더를 보는지 읽는 사람이 헷갈린다. 원본을 바꾸려면 scripts/assets/build-app-icons.py.
   icon: "build/icon.png",
   // 맥을 먼저 낸다(설계서 7.5). 리눅스는 서명이 필요 없는 AppImage 로 도그푸딩한다.
-  mac: { target: ["dmg", "zip"], category: "public.app-category.developer-tools", files: APP_FILES },
+  // 맥은 판을 깐 icon-mac.png 를 쓴다. macOS 26 은 투명 아이콘을 회색 판에 줄여 넣는다.
+  mac: { target: ["dmg", "zip"], category: "public.app-category.developer-tools", icon: "build/icon-mac.png", files: APP_FILES },
   // 다른 OS 의 워커·애드온(각 약 150~200MB)을 뺀다. 제외 패턴만 주면 빌더가 «무엇이든 포함»(`**/*`)으로
   // 읽어 저장소 전체를 싣는다(실측: app.asar 4.9GB, AppImage 3.5GB) — 그래서 APP_FILES 를 펼친다.
   linux: {

@@ -18,7 +18,7 @@ import {
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { LightSource, LightSourceAnchor } from "@/project/types";
 import { store } from "@/project/store";
-import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
+import { runtimeEventViewById } from "@/project/runtimeEventState"
 
 const LIGHTING_MASK_TEXTURE_KEY = "__oprn_lighting_mask";
 
@@ -163,8 +163,8 @@ function resolveLightAnchor(
       entry.follower.eventId === anchor.eventId || entry.follower.name === anchor.eventId
     );
     if (follower) return { x: follower.x, y: follower.y };
-    const view = runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)
-      .find((entry) => entry.event.id === anchor.eventId);
+    // 그 id 하나만 뷰로 만든다 — 광원마다 맵 전체 이벤트 뷰를 만들면 광원 수 × 이벤트 수가 매 프레임 든다.
+    const view = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, anchor.eventId);
     // 스프라이트가 없으면 뷰에서 몸 중앙을 계산한다 — spriteToTilePosition 과 같은 좌표계다
     // (중앙 타일 인덱스). Y 는 발밑이 곧 앵커라 그대로다.
     return view

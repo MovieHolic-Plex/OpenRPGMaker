@@ -18,6 +18,13 @@ AI 설정의 「사용량」 탭은 이 브라우저의 실행 영수증, 대화
 미연결이면 초안으로 남기며 기획 수정 메뉴는 자동 전송하지 않는다. 상세 계약은
 [장르 프리셋 인터뷰](editor-genre-packs.md)의 저장·handoff 절을 따른다.
 
+2026-09-28 보강: 실제 팀 실행의 검수 프롬프트는 `PI_TEAM_ROLES.reviewer` 가 아니라
+`teamSpec.memberSystemPrompt` 가 만든다 — 여기에 기획이 빠져 있어 검수가 인터뷰 답을 몰랐다. 지금은
+검수와 Writer(`consult_writer`, `scripts/lib/piWriterTool.ts` 의 시스템 메시지)도 같은 기획을 받는다.
+첫 생성 말풍선·입력창에 보이는 문장(`welcomeGenrePresetDisplayText`)은 확정 요약 전체(600자 상한)를
+줄 단위로 보인다. 예전 「장르 · 첫 답 24자 · 범위 24자」 한 줄은 모델이 기획을 다 받는데도
+사용자에게 인터뷰가 안 넘어간 것처럼 보였다.
+
 ## 제작 전 그래픽 선택과 자동 큰 창 (2026-09-21)
 
 `aiCreationChoice.ts` + `aiChatPanel.runPiTurn`은 마을·도시·집의 새 생성 요청에 제작 전 선택을 둔다.
@@ -208,6 +215,13 @@ x=8, y=278, 300×383으로 화면 안에 놓인다. 설정 변경·팀 메뉴 �
 
 
 ## 팀 분업 유즈케이스와 맵 밖 작업 배정 (2026-09-18)
+
+> **팀이 조용히 혼자가 되던 길 (2026-09-28).** 활동 기록 실측: 2026-09-18 12:04 이후 일반 채팅 Pi 실행 67회 중
+> 팀 실행 0회. 원인 후보와 조치: ① 마을 요청이면 `resolveVillageContract` 가 계약을 걸고 `runPiCommand` 가 계약이
+> 있으면 팀을 껐다 → 이제 `classifyPlainPiTurn` 이 팀 설정일 때 계약을 걸지 않고, 팀 런타임도 실려 온 계약을 벗긴다.
+> 그래도 팀이 단독으로 내려가면 채팅에 한 줄로 알린다. ② 검수 담당을 끄면 메뉴는 「완료 후 검토: 생략」인데 런타임은
+> 400 으로 실행 전체를 거절했다 → 생략하고 최종 보고에 적는다. ③ Ultrabrain 계획 턴이 팀장 자리를 빌려 활동 기록에
+> `pi:팀장` 으로 남아 단독 실행이 팀처럼 보였다 → `pi:계획` 으로 남긴다. 읽기 전용·질문 판정은 여전히 단독이다(의도).
 
 `src/ai/piAgent/teamWorkflows.ts`의 레시피(현재 8가지 — 2026-09-28 new-project 추가)를 팀장 시스템 프롬프트에
 실제로 삽입한다: 던전, 퀘스트, 게임 도입부, 전투 콘텐츠, 마을 생활감,
@@ -689,6 +703,43 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
   타일셋을 참조 공유(copy-on-write)하면 줄지만 드래프트에서 타일셋을 직접 고치는 도구가 21파일이라 이번 변경에서 하지 않았다.
 - 실측(워크트리 dev, Google 연결): 「왼쪽에 땅을 동그랗게, 가운데 물을 동그랗게, 오른쪽 옆에 나무」 12s·3단계 성공, 「땅으로 깔아줘」 → 흙길 오토타일 채움.
   증거 `verify-shots/stamp-llm/`.
+
+### 연속 주문 대기열 (2026-09-28)
+
+목표: 드래그하면서 바로 깔기 명령을 연달아 내린다. 예전에는 바로 깔기가 채팅의 `turnBusy` 슬롯을 잡아 두 번째 드래그가
+「진행 중인 응답이 끝난 뒤 다시 시도하세요」로 버려졌다.
+
+- 소유: `src/editor/stampOrderQueue.ts`(모듈 싱글턴, 스토어 import 없음). 러너 배선은 `aiChatPanel.ts` 모듈 최상단 `configureStampOrderQueue`.
+  패널이 아니라 모듈이 소유하는 이유는 레인과 같다 — 스튜디오에서 장면을 더하면 패널이 다시 만들어진다(`aiLaneSession.ts`).
+- 규칙: 같은 맵에서 **영역이 겹치는 주문만** 앞 주문이 끝날 때까지 기다린다(선택 없음 = 맵 전체 = 그 맵의 모든 주문과 겹침).
+  동시에 도는 주문은 `STAMP_ORDER_CONCURRENCY`(3). 모델 읽기는 겹쳐 돌고, 적용(`applyToolSequenceToStore`)은 동기라 자연히 하나씩이다.
+- 조수 턴과의 경계: 주문은 **적용 직전에** `waitForApply` 로 조수 턴(`turnBusy`)이 끝나기를 기다린다. Pi 턴은 시작 시 프로젝트를 바닥으로 잡고
+  적용 때 stale-base 를 보므로, 턴 도중에 깔면 조수 결과가 통째로 거절된다. `runSurface.turnBusy=false`·대화 은퇴·패널 해제가 `pokeGate()` 를 부른다.
+  기다린 뒤 러너는 **지금 맵**으로 `resolveStampOverlaps` 를 다시 돌린다(먼저 끝난 주문이 세운 NPC 와 겹치지 않게). 프로젝트가 바뀌었으면 그 주문은 중단.
+- 표면: 채팅 말풍선은 `#번호 문장` → 끝나면 `#번호 이름 — 완료/일부 적용/실패` + 단계 줄(`takeUnreported` 로 한 번만).
+  입력줄 대기 표시(`ai-pending-queue`)에 「바로 깔기 N개 진행 · M개 대기」, 멈추기는 주문이 돌면 서고 `cancelAll()` 로 전부 끊는다.
+  캔버스에는 `StampOrderRenderer`(EditScene depth 10.3)가 주문 사각형과 「#3 연못 · 읽는 중 / #1 끝나면 / 조수 응답 뒤에 깔기」를 그린다 — 스튜디오 모니터도 같은 캔버스다.
+  바로 깔기가 켜져 있으면 조수 턴 중에도 전송 버튼이 살아 있다(`refreshSendEnabled`).
+- 검증: `test/stampOrderQueue.test.ts`(겹침·상한·조수 게이트·프로젝트 교체·중단·보고 1회).
+  브라우저: `BASE=http://127.0.0.1:<포트> node scripts/qa/rapid-stamp-orders.mjs` — 모델을 2.5s 늦춘 스텁으로 표준 편집기·스튜디오에서 드래그 3번.
+  실측(2026-09-28): 두 모드 모두 거절 0·오류 0, 떨어진 두 주문 동시 읽기(`inflightMax` 2), 겹친 셋째는 첫째 뒤에 깔림. 증거 `verify-shots/rapid-stamp/`.
+- **드래그·적용 성능(2026-09-28 고침)**: 새 프로젝트(149MB = 타일셋 82MB + 업로드 자산 66MB)에서 적용 한 번에 메인 스레드가 5~6s 멈추고,
+  드래그 한 칸이 중앙값 140ms 였다. 표준 편집기·스튜디오가 같은 캔버스·같은 패널이라 두 모드 모두 같았다. 원인과 고친 자리:
+  - 오버레이 강제 레이아웃: `renderRegionSizeBadge`/`positionBuildPaletteOverlay`/`publishMapViewport` 가 부를 때마다 `getBoundingClientRect`.
+    `EditScene.hostGeometry()` 캐시(ResizeObserver·resize·scroll 로 무효화) + 팔레트 배치를 rAF 로 모음(`layoutDomOverlays`), 값이 같으면 스타일을 안 쓴다.
+    손을 뗄 때는 `flushDomOverlayLayout()` 로 바를 즉시 띄운다.
+  - 선택만 바뀌는 드래그 칸마다 채팅 패널(`applyAssistantViewPolicy`·스튜디오 `refreshScenes`)과 톱바가 다시 그렸다 —
+    `editorStateChangedOnlyCanvasOverlay` 면 건너뛴다(`aiChatPanel.ts`, `app/mode.ts`).
+  - `createDraft` 가 타일셋 전부를 복제(1.4~2.1s) → `cloneProjectForMutation` 지연 사전 + `toolRunner` 의 `finishDraftTilesets`.
+  - 되돌리기 스냅샷 전체 복제(1.3s) → `mapEditHistory.projectSnapshotSharingTilesets`(타일셋·업로드 자산 항목 공유, 되돌릴 때 복제).
+  - 업로드 자산 복제: `cloneProjectForMutation`·`cloneKeepingDigests` 가 `assets.uploaded` 항목을 공유한다(`projectClone.withoutSharedDictionaries`).
+    계약: 업로드 자산 항목은 제자리에서 고치지 않고 사전 자리에 새 객체를 대입한다. 공유 덕에 요약 기억도 살아 한가할 때 도는 커밋 요약이 1.4s 에서 짧아졌다.
+  - `resetManualProjectCommitBaseline` 의 전체 요약은 한가할 때로 미룬다(`settlePendingManualDigest`, 저장 커밋이 먼저 오면 그 자리에서 센다).
+  - `removeLegacySpriteReferences` 는 한 번 깨끗하다고 본 타일셋·업로드 자산 객체를 `WeakSet` 으로 기억하고 다시 훑지 않는다(240ms).
+  실측(부하 12~19 공유 박스, headless, 모델 스텁, `scripts/qa/stamp-drag-perf.mjs` 3회 중앙값, 전후 교대):
+  편집기 드래그 칸 139 → 47ms, 드래그 40칸 longtask 합 4.9 → 1.6s, 바 등장 150 → 60ms, 적용 최장 멈춤 5.7s → 0.2s.
+  스튜디오 134 → 42ms, 5.4 → 1.4s, 166 → 48ms, 5.8s → 0.24s. 증거 `verify-shots/stamp-drag-perf/final-*.json`, `verify-shots/rapid-stamp/rapid-stamp-studio-after.gif`.
+  남은 것: 드래그 중 longtask 합 약 1.5s/40칸(캔버스 `redraw`·상태 줄 갱신 후보, 미추적).
 
 ## 단순 생성·수정은 계획 필요 여부로 실행한다 (2026-09-18 갱신)
 

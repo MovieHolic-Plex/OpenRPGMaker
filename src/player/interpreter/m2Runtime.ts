@@ -15,7 +15,7 @@ import { terrainTagAt } from "@/project/terrainAt";
 import { boardedVehicleId, isVehicleId, setParkedVehicleLocation } from "@/project/vehicles";
 import { runtimeEventViewById, runtimeEventViewsForMap, type RuntimeEventPositions } from "@/project/runtimeEventState";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
-import { ensureM2Runtime } from "./m2RuntimeState";
+import { ensureM2Runtime, pushM2History } from "./m2RuntimeState";
 import { isSystemBgmCue, isSystemSeCue } from "@/project/systemAudioOverrides";
 import { isSystemAudioSlot, systemAudioOverrideKey } from "@/player/systemAudioSlots";
 
@@ -286,7 +286,7 @@ function executeByTitle(
     return;
   }
   if (title === "Show Animation" || title === "Flash Event") {
-    runtime.screenEffects.push({
+    pushM2History(runtime.screenEffects, {
       effect: title === "Show Animation" ? "animation" : "flash",
       value: fieldString(fields, "value", ""),
       durationMs: fieldNumber(fields, "durationMs", 300),
@@ -638,7 +638,7 @@ function recordMapOrEventState(runtime: M2RuntimeState, title: string, fields: M
 }
 
 function recordFallback(runtime: M2RuntimeState, commandId: string, label: string, reason: string): void {
-  runtime.fallbacks.push({ commandId, label, reason });
+  pushM2History(runtime.fallbacks, { commandId, label, reason });
 }
 
 function applyRuntimeNumber(current: unknown, fields: M2CommandFields): number {

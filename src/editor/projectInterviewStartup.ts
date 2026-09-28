@@ -6,6 +6,7 @@ import { welcomeGenrePresetById, buildWelcomeGenrePresetPrompt, welcomeGenrePres
 import { setPendingAiBootIntent } from "./aiBootIntent";
 import { isAssistantEndpointReady, resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
 import { getAiConnectionStatus } from "./panels/aiConnectionStatus";
+import { withVerifiedPlayableSegment } from "@/project/playableSegment";
 
 let preparing = false;
 
@@ -38,6 +39,10 @@ export async function prepareProjectInterviewStartup(): Promise<void> {
     if (!stillCurrent() || store.getCurrent().gameDesignBrief?.generationPending) {
       throw new Error("게임 기획 전달 상태를 변경하지 못했습니다.");
     }
+    // 끝낼 수 있는 첫 구간 뼈대 — AI 가 오기 전에 코드가 깔고 자동 플레이로 합격을 확인한다(src/project/playableSegment.ts).
+    // 판정을 통과한 뼈대만 심는다. 못 깔면 예전처럼 AI 만으로 진행한다(판정 대상도 아니게 된다).
+    const skeleton = withVerifiedPlayableSegment(store.getCurrent());
+    if (skeleton) store.replace(skeleton, { change: { label: "끝낼 수 있는 첫 구간 뼈대", origin: "system" } });
     const saved = await store.flush();
     if (saved.kind !== "saved") throw new Error("게임 기획 저장을 확인하지 못했습니다.");
     if (!stillCurrent()) return;

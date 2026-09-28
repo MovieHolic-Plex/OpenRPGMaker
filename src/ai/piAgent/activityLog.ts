@@ -107,7 +107,9 @@ function agentToolCalls(board: TeamBoardState): AiActivityToolCall[] {
     const tokens = usage ? ` · 입력 ${usage.input + usage.cacheRead}(캐시 ${usage.cacheRead})/출력 ${usage.output} 토큰` : "";
     const counters = `${agent.turns}턴/${agent.toolCalls}툴콜${agent.toolErrors > 0 ? ` · 오류 ${agent.toolErrors}` : ""}${tokens}`;
     return {
-      name: `pi:${agent.kindLabel}`,
+      // Ultrabrain 계획 턴은 보드에서 팀장 자리(role orchestrator)를 빌려 쓰지만 팀장이 아니다.
+      // 예전엔 단독 실행이 「pi:팀장 → pi:시공」 으로 남아 기록만 보고는 팀이 돈 것처럼 보였다.
+      name: agent.agentId.startsWith("ultrabrain-plan") ? "pi:계획" : `pi:${agent.kindLabel}`,
       args: {
         ...(agent.memberId ? { memberId: agent.memberId } : {}),
         ...(agent.mapId ? { mapId: agent.mapId } : {}),

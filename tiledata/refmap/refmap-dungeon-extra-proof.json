@@ -1,34 +1,55 @@
 {
   "id": "refmap-dungeon-extra-local",
   "tileset": "shared_refmap_dungeon_extra",
-  "tiles": 6144,
-  "atlas": "3072×4608",
-  "places": 2,
-  "objectKits": 65,
+  "tiles": 7168,
+  "atlas": "3072×5376",
+  "places": 5,
+  "objectKits": 102,
   "houseKits": 0,
-  "autotileGroups": 49,
-  "bytes": 6801031,
+  "autotileGroups": 52,
+  "bytes": 8643466,
   "maps": {
+    "crypt": {
+      "place": "shared_refmap_dungeon_extra_crypt",
+      "size": "23×16",
+      "objects": 28,
+      "houses": 0,
+      "renderSha": "7c5610f837b1ef7c6fb00309abc338dbdfcc0286b97b8f8c1202b30b9468352f"
+    },
+    "moss_spring": {
+      "place": "shared_refmap_dungeon_extra_moss_spring",
+      "size": "20×18",
+      "objects": 15,
+      "houses": 0,
+      "renderSha": "f259bdffae43792edbc43423f7fa7bc5f4898e699d10379b82d94ca3726d6d69"
+    },
     "rock_cave": {
       "place": "shared_refmap_dungeon_extra_rock_cave",
       "size": "34×24",
-      "objects": 27,
+      "objects": 35,
       "houses": 0,
-      "renderSha": "c8f363cfb1fad1127361a0c1b8a2664415a30660d17678eb6d45695fd2c454b9"
+      "renderSha": "bbffb2c9d3832aa520144a7e765994732d51e6101e4cea939f96bd9fc15e497f"
+    },
+    "ruin_temple": {
+      "place": "shared_refmap_dungeon_extra_ruin_temple",
+      "size": "20×21",
+      "objects": 23,
+      "houses": 0,
+      "renderSha": "f46ed5a9bb786f4f68823cfce7b11f87bd5bdf03b800776fa0230bab23935ca2"
     },
     "underground_lake": {
       "place": "shared_refmap_dungeon_extra_underground_lake",
       "size": "36×22",
-      "objects": 23,
+      "objects": 32,
       "houses": 0,
-      "renderSha": "dd12ac81f8ec5eac45fb03bd207679ec50430f2335e9f9fbd9c8940299bdcedf"
+      "renderSha": "de2c94a0f7a1043ee8d388a80106d8b6b45d121847369a26cd30c4ac72263bbe"
     }
   },
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "b05926147d43fba61e9f1a415f911a26c4a2b499d193fecd8fb9eb96dff7f6b6",
+  "revision": "199b5630e668c333a8d91e32b751f145d744bf3263e4523eb438b24d9768b352",
   "reloaded": true,
-  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-dungeon-extra-2026-09-27T20-03-21-756Z.sqlite",
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-dungeon-extra-2026-09-27T21-33-13-816Z.sqlite",
   "otherLibraries": 36,
   "otherLibrariesUnchanged": true,
-  "publishedAt": "2026-09-27T20:03:32.694Z"
+  "publishedAt": "2026-09-27T21:33:31.283Z"
 }

@@ -3,6 +3,7 @@
 // 순수 모듈 — 저장은 teamSpecStore, 실행은 scripts/lib/piTeamRuntime.ts.
 
 import type { Project } from "@/project/types";
+import { gameDesignBriefContext } from "@/project/gameDesignBrief";
 import { buildPiAgentSystemPrompt, describeScopedMaps } from "./systemPrompt";
 
 export type PiTeamMemberKind = "builder" | "reviewer";
@@ -140,8 +141,12 @@ export function describeTeamMembers(spec: PiTeamSpec): string[] {
 /** 팀원의 시스템 프롬프트 = 범위·절차(공통) + 팀원 프롬프트. */
 export function memberSystemPrompt(member: PiTeamMember, project: Project, mapIds: readonly string[]): string[] {
   if (member.kind === "reviewer") {
+    // 실제 팀 실행(piTeamRuntime review)은 이 함수로 검수 프롬프트를 만든다 — PI_TEAM_ROLES.reviewer 가 아니다.
+    // 확정 기획이 빠지면 검수가 인터뷰 답(무대·인물·분위기)을 모른 채 일반 기준으로만 판정하고,
+    // 팀장은 그 지적대로 고친다(2026-09-28: 프리셋 인터뷰 내용이 조수 결과에 안 들어간다는 신고).
     return [
       `너는 팀의 검수 에이전트「${member.label}」다. 읽기 도구만 있다. 아무것도 고치지 않는다.`,
+      ...(project.gameDesignBrief ? [gameDesignBriefContext(project.gameDesignBrief)] : []),
       ...describeScopedMaps(project, mapIds),
       member.prompt,
       "확인이 끝나면 반드시 report_review 를 한 번 호출한다. ok 는 문제가 없을 때만 true. findings 에는 고쳐야 할 점을 좌표와 함께 짧게 적는다(없으면 빈 배열).",

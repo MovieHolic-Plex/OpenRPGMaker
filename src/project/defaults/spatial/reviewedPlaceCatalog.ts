@@ -15,6 +15,10 @@ const sharedIds = new Set<string>();
 const sharedPreviews: Record<string,string> = {};
 export const reviewedPlacePreviewUrl = (id:string) => sharedPreviews[id] ?? `/assets/reviewed-places/${id}.png`;
 export const reviewedPlaceReferences = (id: string) => catalog.places[id]?.referenceDocuments;
+/** One place design (bundled or host-installed), including floor children that are not gallery roots. */
+export const reviewedPlaceDesign = (id: string): PlaceDesign | undefined => catalog.places[id];
+/** Shipped with the app — its preview PNG is public/assets/reviewed-places/<id>.png. */
+export const isBundledReviewedPlace = (id: string): boolean => Object.hasOwn(existing.places, id);
 export function installSharedReviewedPlaces(snapshot: SharedContentSnapshot): void {
   for(const id of sharedIds) { delete catalog.places[id]; const index=catalog.roots.indexOf(id); if(index>=0)catalog.roots.splice(index,1); }
   sharedIds.clear();
