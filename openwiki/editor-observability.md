@@ -533,3 +533,7 @@ store lineage/generation으로 공유한다. 로드 정규화가 쓰는 순수 �
 `editor.ts`는 작성 진행 기록을 통지마다 저장하고, 표면 갱신만 rAF로 합친다.
 서로 다른 범위나 팔레트 요청이 겹치면 전체 패널 갱신으로 승격하며, teardown 뒤 예약은 버린다.
 지연된 store 구독자 오류도 기존 store 로거에 남긴다.
+
+맵 연결 인덱스·그래프는 맵 구성/순서/id, 각 events 배열, mapConnections, startMapId로
+재사용하고 이벤트 명령 순회도 events 배열별로 공유한다. 연결 패널은 그래프·맵 이름·선택이
+같으면 DOM을 보존한다. 이벤트 배열 내부는 제자리 수정하지 않는 store 불변성 계약을 따른다.
