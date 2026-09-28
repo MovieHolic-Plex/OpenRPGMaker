@@ -479,7 +479,19 @@ export function packLintInputFromMap(project: Project, map: GameMap): PackLintIn
     if ((x === 0 || y === 0 || x === w - 1 || y === h - 1) && openOf(pass[i]!)) border.push(i);
   }
   const startHere = project.startMapId === map.id && project.startPos ? [project.startPos.y * w + project.startPos.x] : [];
-  return { w, h, m1, m2, placed: recoverAll(map, index), pass, basePass, occupied, starts: border.length ? border : startHere };
+  // 섬(물이 맵의 25% 이상이고 가장자리가 물)은 물가의 걸을 수 있는 칸이 입구다 — 배로 닿는다. 가장자리만 입구로 치면
+  // 조수가 모래 띠를 바다 건너 맵 끝까지 뚫었다(2026-09-28 블라인드 검수: 「섬이라는 설정을 깬다」).
+  const water = (i: number) => m1[i]?.part === "A1";
+  const island = m1.filter((m) => m?.part === "A1").length >= 0.25 * n
+    && [...Array(n).keys()].filter((i) => { const x = i % w, y = Math.floor(i / w); return x === 0 || y === 0 || x === w - 1 || y === h - 1; }).every((i) => water(i) || openOf(pass[i]!));
+  const shore = island
+    ? [...Array(n).keys()].filter((i) => openOf(pass[i]!) && !water(i) && [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => {
+      const x = (i % w) + dx!, y = Math.floor(i / w) + dy!;
+      return x >= 0 && y >= 0 && x < w && y < h && water(y * w + x);
+    }))
+    : [];
+  const starts = [...border, ...shore];
+  return { w, h, m1, m2, placed: recoverAll(map, index), pass, basePass, occupied, starts: starts.length ? starts : startHere };
 }
 
 /**
