@@ -85,7 +85,8 @@ async function gzipPieces(pieces: readonly Piece[], signal?: AbortSignal): Promi
   let pieceIndex = 0;
   let offset = 0;
   let sliceStart = nowMs();
-  const source = new ReadableStream<Uint8Array>({
+  // CompressionStream 의 쓰기 쪽은 BufferSource 를 받는다 — 조각 타입을 그에 맞춘다(TextEncoder 결과는 BufferSource 다).
+  const source = new ReadableStream<BufferSource>({
     async pull(controller) {
       for (;;) {
         const piece = pieces[pieceIndex];
