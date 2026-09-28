@@ -42,7 +42,8 @@ export function rulesDoc(presetId: string): string {
     "- 부분 수정: `fill_region material:\"재료 이름\" layer:1`(탁자·카운터 겹침은 `layer:2`).",
     "- 물체: `stamp_tileset_object objectId at:{x,y}`(왼쪽 위 칸) 또는 `base:{x,y}`(땅에 닿는 줄). 한 줄 높이 소품(찻잔·등잔·냄비·책)은 탁자·카운터·상자 위에 그대로 찍으면 4층에 올라간다.",
     "- 끝나면 `show_map_region` 으로 보고 `check_pack_map` 경고가 빌 때까지 고친다.",
-    "- 비슷한 완성 장소가 「장소 목록」에 있으면 `import_region_reference id:\"reviewed:…\"` 로 통째로 가져올 수 있다. 새 맵으로 가져오는 것이 기본이다. 지금 맵에 붙이려면(mapId) 먼저 `resize_map` 으로 장소 크기에 맞춘다 — 맵이 더 크면 둘레에 옛 칸이 남아 벽 테가 어긋난다. 장소 그림 킷(`stamp_object` 의 REFMAP 장소)은 층이 합쳐진 그림이라 쓰지 않는다.",
+    "- 「장소 목록」의 완성 장소는 **요청이 그 장소와 같은 이야기일 때만** `import_region_reference id:\"reviewed:…\"` 로 가져온다(「가난한 셋방을 가져와」, 「지하 묘지를 만들어」). 요청한 구역·물건이 그 장소에 없으면 가져오지 말고 새로 깐다 — 광산을 요청했는데 묘지를, 재봉사 집을 요청했는데 노부부 집을 가져오면 요청을 어긴 것이다.",
+    "- 가져왔으면 요청한 구역이 모두 있는지 하나씩 대조하고, 없는 구역·물건은 `paint_pack_layout`·`stamp_tileset_object` 로 더한 뒤 보고에 무엇을 바꿨는지 적는다. 새 맵으로 가져오는 것이 기본이다. 지금 맵에 붙이려면(mapId) 먼저 `resize_map` 으로 장소 크기에 맞춘다 — 맵이 더 크면 둘레에 옛 칸이 남아 벽 테가 어긋난다. 장소 그림 킷(`stamp_object` 의 REFMAP 장소)은 층이 합쳐진 그림이라 쓰지 않는다.",
     "- 새로 까는 요청이면 예시를 베끼지 말고 이야기에 맞게 새로 짠다.",
   ].join("\n");
 }
@@ -108,7 +109,7 @@ export function exampleImage(set: LoadedSet, m: Converted): string {
 export function placesDoc(entries: readonly { placeId: string; spec: MapSpec }[]): string {
   return [
     "# 장소 목록 — 이 세트의 완성 장소",
-    "`import_region_reference id:\"reviewed:<id>\"` 로 새 맵으로 가져오거나(mapId 를 주면 그 맵에 붙인다) 짜임을 참고한다. 모두 check_pack_map 경고 0.",
+    "요청이 아래 장소와 **같은 이야기일 때만** `import_region_reference id:\"reviewed:<id>\"` 로 가져온다(mapId 를 주면 그 맵에 붙인다). 다른 이야기면 짜임만 참고하고 새로 깐다. 모두 check_pack_map 경고 0.",
     "",
     "| id | 이름 | 크기 | 이야기 |",
     "|---|---|---|---|",
