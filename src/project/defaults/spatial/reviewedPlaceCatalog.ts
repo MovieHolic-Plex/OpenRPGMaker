@@ -36,13 +36,25 @@ export function installSharedReviewedPlaces(snapshot: SharedContentSnapshot): vo
   }
   REVIEWED_PLACES.splice(0,REVIEWED_PLACES.length,...catalog.roots.map(id=>({id,name:catalog.places[id]!.name,kind:catalog.places[id]!.kind})));
 }
+/** 층 원본을 합친 그림이 래스터 킷과 칸마다 같을 때만 원본을 쓴다 — 보이는 그림은 그대로, 층만 되살린다. */
+function layeredMatchesKit(map: GameMap, kit: { width: number; height: number; rows: readonly { tiles: readonly number[]; upperTiles?: readonly number[] }[] }): boolean {
+  if (map.width !== kit.width || map.height !== kit.height) return false;
+  for (let y = 0; y < map.height; y += 1) for (let x = 0; x < map.width; x += 1) {
+    const i = y * map.width + x, row = kit.rows[y]!;
+    const lower = (map.lowerOverlayTiles?.[i] ?? -1) >= 0 ? map.lowerOverlayTiles![i]! : map.lowerTiles[i];
+    const upper = (map.upperOverlayTiles?.[i] ?? -1) >= 0 ? map.upperOverlayTiles![i]! : map.upperTiles[i];
+    if (lower !== row.tiles[x] || upper !== (row.upperTiles?.[x] ?? -1)) return false;
+  }
+  return true;
+}
 export function reviewedPlaceMaps(id: string): { map: GameMap; tileset: TilesetDef; level: number }[] {
   const result: ReturnType<typeof reviewedPlaceMaps> = [];
   function visit(key: string, level: number) {
     const place = catalog.places[key];
     if (!place) throw new Error(`Unknown reviewed place: ${key}`);
     const layered = sharedMaps[key];
-    if (place.exterior && layered && layered.tilesetId === place.exterior.tilesetId && catalog.tilesets[layered.tilesetId]) {
+    const kitOf = place.exterior && catalog.tilesets[place.exterior.tilesetId]?.structureKits?.find(k => k.id === place.exterior!.kitId);
+    if (place.exterior && layered && kitOf && layered.tilesetId === place.exterior.tilesetId && layeredMatchesKit(layered, kitOf)) {
       result.push({ level, tileset: catalog.tilesets[layered.tilesetId]!, map: { ...structuredClone(layered), id: key, name: place.name, events: [] } });
     } else if (place.exterior) {
       const tileset = catalog.tilesets[place.exterior.tilesetId]!;
