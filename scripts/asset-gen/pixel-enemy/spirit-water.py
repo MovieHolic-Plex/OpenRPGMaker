@@ -80,13 +80,18 @@ def draw(n):
         p.box((ex, ey, ex, ey), 'h')
     if n == 'windup':
         # a water orb gathers between the raised hands
-        ox, oy = 25 + dx, 6 + dy
-        p.poly([(ox - 3, oy), (ox, oy - 3), (ox + 3, oy), (ox, oy + 3)], 's', 'o')
-        p.box((ox - 1, oy - 1, ox, oy), 'h')
+        ox, oy = 25 + dx, 7 + dy
+        p.d.ellipse((ox - 4, oy - 4, ox + 4, oy + 4), fill=p.pal['o'])
+        p.d.ellipse((ox - 3, oy - 3, ox + 3, oy + 3), fill=p.pal['b'])
+        p.d.ellipse((ox - 3, oy - 3, ox, oy), fill=p.pal['h'])
+        p.box((ox + 2, oy + 1, ox + 2, oy + 2), 's')
+        p.grid(ox - 7, oy - 1, ['l']); p.grid(ox + 6, oy + 2, ['l'])
     if n == 'attack':
         # a jet of water bursts from the forward hand
-        p.poly([(41 + dx, 20), (46, 18), (46, 26), (41 + dx, 24)], 'b', 'o')
-        p.line([(42 + dx, 21), (45, 20)], 'h'); p.line([(42 + dx, 23), (45, 24)], 'l')
+        p.poly([(40 + dx, 20), (46, 17), (46, 27), (40 + dx, 24)], 'b', 'o')
+        p.poly([(41 + dx, 21), (45, 19), (45, 21), (41 + dx, 22)], 'h')
+        p.line([(42 + dx, 23), (45, 25)], 'l')
+        p.line([(36 + dx, 22), (41 + dx, 22)], 'l')
         p.grid(37, 15, ['h..', '..l'])
     if n == 'hit':
         p.grid(33 + dx, 7 + dy, ['.l', 'l.', '.h'])
