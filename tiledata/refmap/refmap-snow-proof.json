@@ -7,7 +7,7 @@
   "objectKits": 144,
   "houseKits": 7,
   "autotileGroups": 55,
-  "bytes": 10490745,
+  "bytes": 10491018,
   "maps": {
     "snow_mountain_path": {
       "place": "shared_refmap_snow_snow_mountain_path",
@@ -25,10 +25,10 @@
     }
   },
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "6440aaf76c2af37f161d776e03f178261375458b6c71f1da98e155b9e569da0b",
+  "revision": "31a4df85519300aef31fa58a88f424ebedd60473be6a5977a80217f4a8cb0e7f",
   "reloaded": true,
-  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-snow-2026-09-28T01-24-16-745Z.sqlite",
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-snow-2026-09-28T03-04-29-127Z.sqlite",
   "otherLibraries": 36,
   "otherLibrariesUnchanged": true,
-  "publishedAt": "2026-09-28T01:24:40.050Z"
+  "publishedAt": "2026-09-28T03:07:00.183Z"
 }
