@@ -156,8 +156,12 @@ async function recordGroup(groupIndex, group, defaults, contract) {
     });
     await page.route('**/__skills-qa/project.json', (route) => route.fulfill({ contentType: 'application/json', body: JSON.stringify(project) }));
     console.log('[skills] group ' + groupIndex + ': ' + group.party.join(',') + ' -> ' + group.skills.length + ' skills');
-    await page.goto(server.url + '/player.html?e2eVitals=1', { waitUntil: 'domcontentloaded' });
-    await page.waitForSelector(selector('title-screen'), { timeout: 120000 });
+    // 소스를 고친 직후 첫 부팅은 Vite 재최적화로 흰 화면에서 멈출 수 있다(실측) — 한 번 다시 연다.
+    for (let attempt = 0; ; attempt++) {
+      await page.goto(server.url + '/player.html?e2eVitals=1', { waitUntil: 'domcontentloaded' });
+      try { await page.waitForSelector(selector('title-screen'), { timeout: 120000 }); break; }
+      catch (e) { if (attempt >= 1) throw e; console.log('[skills] title timeout, reloading'); }
+    }
     await page.keyboard.press('Enter');
     await page.waitForFunction(() => !!window.__oprnDebug?.readState?.().currentMapId, null, { timeout: 120000 });
     const vitals = await page.evaluate(({ entry, dead, party }) => {
@@ -199,7 +203,8 @@ async function recordGroup(groupIndex, group, defaults, contract) {
       await page.waitForSelector(selector('actor-skill-' + skill));
       await page.evaluate(() => { window.__skillEvidence = []; window.__skillPoses = []; window.__legacySkillLayers = 0; const f = document.querySelector('.battle-field'); if (f) delete f.dataset.retroClassSkillSounds; });
       const from = elapsed();
-      await page.evaluate(() => { document.getElementById('skill-video-marker').style.background = 'rgb(255, 40, 255)'; });
+      // 표식 색을 스킬마다 마젠타·청록으로 번갈아 켠다 — 이어지는 두 스킬 사이의 꺼짐이 짧아도 경계가 남는다.
+      await page.evaluate((odd) => { document.getElementById('skill-video-marker').style.background = odd ? 'rgb(0, 255, 255)' : 'rgb(255, 0, 255)'; }, segments.length % 2 === 1);
       await choose('actor-skill-' + skill);
       let acted = false, completed = false, targeted = false;
       for (let i = 0; i < 900; i++) {
@@ -253,18 +258,26 @@ async function recordGroup(groupIndex, group, defaults, contract) {
   if (!video || !crop || !start || !segments.length) return;
   try {
     const raw = await video.path();
-    // 표식은 스킬마다 켜졌다 꺼진다 — 켜진 구간(마젠타)을 순서대로 스킬에 대응시킨다.
+    // 표식은 스킬마다 마젠타(짝수 번째)·청록(홀수 번째)으로 켜진다 — 같은 색 연속 구간을 순서대로 스킬에 대응시킨다.
     const { stdout: pixels } = await run('/usr/bin/ffmpeg', ['-hide_banner', '-loglevel', 'error', '-threads', '2', '-filter_threads', '1', '-i', raw, '-vf', 'fps=50,crop=2:2:952:712,scale=1:1,format=rgb24', '-f', 'rawvideo', 'pipe:1'], { encoding: 'buffer', maxBuffer: 64 * 1024 * 1024 });
     const runs = [];
-    let open = -1, gap = 0;
+    let open = -1, gap = 0, color = '';
     for (let i = 0; i < pixels.length / 3; i++) {
       const [r, g, b] = pixels.subarray(i * 3, i * 3 + 3);
-      const on = r > 200 && b > 200 && g < 120;
-      if (on) { if (open < 0) open = i; gap = 0; }
-      else if (open >= 0 && ++gap > 4) { runs.push([open, i - gap]); open = -1; gap = 0; }
+      const now = r > 200 && b > 200 && g < 120 ? 'm' : r < 120 && g > 200 && b > 200 ? 'c' : '';
+      if (now && open >= 0 && now !== color) { runs.push([open, i - 1 - gap, color]); open = -1; gap = 0; }
+      if (now) { if (open < 0) { open = i; color = now; } gap = 0; }
+      else if (open >= 0 && ++gap > 4) { runs.push([open, i - gap, color]); open = -1; gap = 0; }
     }
-    if (open >= 0) runs.push([open, pixels.length / 3 - 1]);
-    const usable = runs.filter(([a, b]) => b - a >= 10);
+    if (open >= 0) runs.push([open, pixels.length / 3 - 1, color]);
+    // 꺼짐이 아주 짧아 같은 색 구간이 끊기면 다시 잇는다(코덱 오차 한두 칸).
+    const merged = [];
+    for (const item of runs) {
+      const last = merged.at(-1);
+      if (last && last[2] === item[2] && item[0] - last[1] <= 8) last[1] = item[1];
+      else merged.push([...item]);
+    }
+    const usable = merged.filter(([a, b]) => b - a >= 10);
     if (usable.length !== segments.length) throw new Error('group ' + groupIndex + ': ' + usable.length + ' marker runs for ' + segments.length + ' skills');
     for (const [i, segment] of segments.entries()) {
       const [a, b] = usable[i];

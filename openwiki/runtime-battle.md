@@ -103,6 +103,7 @@
   스킬당 캐시 RTP 방출 1회·기존 애니메이션 층 중복 0·종료 후 잔류 도트 0을 DOM 계측으로 확인했다.
   GIF를 PIL로 추출해 여러 차례 직접 검토했고 최종 미리보기는 `.omo/retro-skills/final/preview-*.png`,
   감속은 `.omo/retro-skills/reduced/preview-*.png`다(세션 로컬 증거).
+
 ### 직업 스킬 48종 (2026-09-28, sk-rt)
 
 계약 `src/assets/retroClassSkills.ts`(읽기 전용, id·레이어 키·칸 규격)의 48개를 기본 DB 와 런타임이 함께 쓴다.
@@ -125,6 +126,11 @@
 - **녹화** `node scripts/qa/runtime/retro2003-skills-gif.mjs --out .omo/retro-skills/pass-N`(기본 `--set class` 48종, `--set legacy` 옛 17종, `--skills a,b` 제한).
   녹화 사본만 고친다: 현재 기본 DB 스킬·상태·직업 습득표를 합치고 레벨 22·MP 999·적 HP 99999·훔칠 아이템. 두 조(주인공·수호자·마도사·정찰병 / 성직자·궁수·쓰러진 주인공)로 실제 player.html(`?e2eVitals=1`)에 키보드 입력.
   스킬마다 우하단 마젠타 표식을 켜고 끈 구간으로 `skill-<id>.gif` 를 자른다. 스킬별로 보인 레이어 키·노드 수·소리 사건·칸 이동값(−size×2×index)을 검사해 `SUMMARY.md` 표로 남긴다.
+  표식은 스킬마다 마젠타·청록을 번갈아 쓴다(한 색이면 이어지는 두 스킬의 짧은 꺼짐이 영상에서 사라져 구간이 합쳐졌다).
+- 이 작업의 출하 player 녹화: 48/48 녹화, 계약 레이어 누락 0, 칸 이동값 불일치 0, 잔류 노드 0, 기존 애니메이션 층 0, 브라우저 오류 0
+  (`verify-shots/runtime-qa/retro2003-skills/SUMMARY.md`, 미리보기 `.omo/retro-skills/final/review/`). GIF 직접 검토로 두 가지를 고쳤다 —
+  필살기 컷인 띠에 시전자가 안 보임(복제 스프라이트가 클래스 크기를 잃음 → 인라인 크기·시트), 그림자 습격이 적 **앞**에 나타남(blink-strike 는 등 뒤·좌우 반전).
+  감속 모드 녹화는 이번에 돌리지 않았다.
 
 ## 타격감 층 (2026-09-25)
 

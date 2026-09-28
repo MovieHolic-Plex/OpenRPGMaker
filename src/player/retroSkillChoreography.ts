@@ -345,6 +345,8 @@ interface ClassPlayer {
   readonly animations: Animation[];
   readonly places: Readonly<Record<RetroStagePlace, Point>>;
   last: Point;
+  /** blink-strike: 대상 등 뒤(적의 왼쪽)에 나타나 오른쪽을 보고 친다. */
+  behind: boolean;
   move?: Animation;
   done: boolean;
 }
@@ -382,7 +384,7 @@ function sideNodes(field: HTMLElement, side: RetroTimelineSide, user: HTMLElemen
 }
 
 /** 시전자가 서는 자리(노드 translate 단위). 제자리 = 0,0. 재생 시작 때 한 번 잰다. */
-function measurePlaces(field: HTMLElement, user: HTMLElement, primary: HTMLElement | undefined): Record<RetroStagePlace, Point> {
+function measurePlaces(field: HTMLElement, user: HTMLElement, primary: HTMLElement | undefined, behind = false): Record<RetroStagePlace, Point> {
   const scale = scaleOf(user);
   const rect = user.getBoundingClientRect();
   const now = currentTranslate(user);
@@ -396,6 +398,7 @@ function measurePlaces(field: HTMLElement, user: HTMLElement, primary: HTMLEleme
     const pixel = image.dataset.pixelSheet !== undefined;
     return {
       front: pixel ? box.left + box.width * (36 / 48) : box.right - box.width * 0.15,
+      back: pixel ? box.left + box.width * (12 / 48) : box.left + box.width * 0.15,
       center: box.left + box.width / 2,
       feet: pixel ? box.top + box.height * (44 / 48) : box.bottom,
     };
@@ -403,7 +406,10 @@ function measurePlaces(field: HTMLElement, user: HTMLElement, primary: HTMLEleme
   let front: Point = { x: -72, y: 0 };
   if (foe) {
     const e = edge(foe);
-    front = { x: Math.round((e.front + 26 * scale - baseX) / scale), y: Math.round((e.feet - baseFeet) / scale + 2) };
+    // 등 뒤: 적 그림 왼쪽 가장자리보다 26px 더 왼쪽(아군은 왼쪽을 보므로 이때 좌우를 뒤집는다).
+    front = behind
+      ? { x: Math.round((e.back - 26 * scale - baseX) / scale), y: Math.round((e.feet - baseFeet) / scale + 2) }
+      : { x: Math.round((e.front + 26 * scale - baseX) / scale), y: Math.round((e.feet - baseFeet) / scale + 2) };
   }
   let center: Point = { x: front.x - 20, y: front.y };
   if (enemies.length > 0) {
@@ -555,6 +561,14 @@ function playScreen(field: HTMLElement, player: ClassPlayer, event: Extract<Retr
       const copy = sprite.cloneNode(false) as HTMLElement;
       copy.removeAttribute("data-testid");
       copy.className = "retro-class-cutin-face";
+      // 원래 클래스(.battle-actor-sprite)가 주던 상자 크기·시트를 인라인으로 옮긴다 — 빠지면 컷인 띠가 빈 띠로 보였다(녹화 실측).
+      const computed = getComputedStyle(sprite);
+      copy.style.width = `${sprite.offsetWidth || 96}px`;
+      copy.style.height = `${sprite.offsetHeight || 96}px`;
+      copy.style.backgroundImage = computed.backgroundImage;
+      copy.style.backgroundSize = computed.backgroundSize;
+      copy.style.backgroundPosition = computed.backgroundPosition;
+      copy.style.backgroundRepeat = "no-repeat";
       veil.append(copy);
     }
     if (typeof veil.animate === "function") player.animations.push(veil.animate([
@@ -585,6 +599,8 @@ function playHit(field: HTMLElement, player: ClassPlayer, event: Extract<RetroTi
 function moveUser(player: ClassPlayer, event: Extract<RetroTimelineEvent, { kind: "move" }>): void {
   const to = player.places[event.to];
   const from = player.last;
+  player.behind = player.plan.skill.motion === "blink-strike" && event.to === "front";
+  player.user.classList.toggle("retro-skill-flip", player.behind);
   const duration = Math.max(1, event.durationMs * player.clock);
   const mid = { x: Math.round((from.x + to.x) / 2), y: Math.round((from.y + to.y) / 2 + event.arc) };
   player.move?.cancel();
@@ -628,7 +644,7 @@ function startPlayer(field: HTMLElement, user: HTMLElement, plan: ClassPlan, pri
   const primary = targetNode(field, primaryId);
   const player: ClassPlayer = {
     plan, user, primaryId, clock: Math.max(0.1, clock), paint, nodes: new Set(), animations: [],
-    places: measurePlaces(field, user, primary), last: currentTranslate(user), done: false,
+    places: measurePlaces(field, user, primary, plan.skill.motion === "blink-strike"), last: currentTranslate(user), behind: false, done: false,
   };
   players.set(field, player);
   user.dataset.retroClassSkill = plan.skill.id;
@@ -652,7 +668,7 @@ function startPlayer(field: HTMLElement, user: HTMLElement, plan: ClassPlan, pri
       switch (event.kind) {
         case "pose":
           user.dataset.retroFrame = event.pose;
-          user.classList.toggle("retro-skill-flip", event.flip === true);
+          user.classList.toggle("retro-skill-flip", event.flip === true || player.behind);
           paint(user);
           break;
         case "move": moveUser(player, event); break;
