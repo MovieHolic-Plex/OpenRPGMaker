@@ -23,6 +23,11 @@ const TRANSIENT_PATTERNS: readonly RegExp[] = [
   /returned an empty response/i,
   // 2026-09-24 갤러리 호러 r3: 생각만 흘리고 답을 안 준 응답 — 한 번 더 요청하면 대개 풀린다.
   /thought-only response|without final output/i,
+  // 2026-09-28 REFMAP 조수 시험: Cloud Code Assist 가 도구 호출을 만드는 도중(functionCallingConfig VALIDATED)
+  // 「400 Request contains an invalid argument」로 끝냈다. 같은 도구·같은 종류의 기록으로 앞선 요청은 모두 통과했고,
+  // 모델이 부르려던 도구(paint_pack_layout)의 인자 스키마만 바꿔도 8회 중 5회 → 24회 중 1회로 줄었다 — 요청 본문이 아니라
+  // 생성 쪽 실패다. 이어 가기 턴을 한 번 더 주면 다시 뽑는다(원 요청: ~/.omp/logs/http-400-requests/).
+  /Cloud Code Assist API error \(400\)[\s\S]*INVALID_ARGUMENT/,
 ];
 
 /** 같은 대화 기록으로 한 번 더 요청하면 나아질 법한 제공자 오류인가. */

@@ -3205,12 +3205,27 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 - **실측 스크립트:** `scripts/qa/preset-team-first-build.mjs` — 임시 SQLite 호스트 + Firefox 로 포스터 → 인터뷰 → 첫 생성을 돌리고
   요청 크기·heavy 해시·의도 읽기 호출 수·실행 번호·이어 받기 횟수·SQLite 재로드 맵/이벤트 수를 `verify-shots/preset-first-team-e2e/SUMMARY.json` 에 쓴다.
   `E2E_NETWORK_CHANGE=1` 이면 Firefox 의 네트워크 변경 감지를 켠 채 두어 이 호스트의 veth 변동으로 실제 끊김을 만든다.
+- **새 프로젝트 첫 Pi 요청이 호스트에서 끊겼다 (2026-09-28):** 해시 전송을 해도 첫 요청은 호스트가 모르는 내용을 전부 싣는다. 빈 새 프로젝트가
+  gzip 69MB(풀면 203MB — 공용 업로드 아틀라스 dataURL 414개 85MB + 타일셋 368개 101MB)였고, `readRequestJson` 의 받은 몸통 상한 64MiB 가
+  매번 「Request body is too large」로 끊었다 — 팀·단독 모두, 새 프로젝트에서 한 번도 돌지 못했다. 받은 몸통 상한을 풀어낸 상한·워커 상한과 같은
+  256MiB(`MAX_REQUEST_BYTES`)로 올리고 초과는 413 이다. 회귀: `test/piAgentRequestBody.test.ts` 「above the old 64MiB cap」.
+- **체크포인트는 바뀐 타일셋만 싣는다 (2026-09-28):** 무거운 키 슬림은 키 단위였다. `author_village` 가 `forest_harmony` 하나에 이식을
+  더하면 `tilesets` 전체(368개)가 줄에 실렸고, 팀 중계를 지나며 101MB 체크포인트 한 줄이 되어 워커가 150초 동안 다음 줄을 못 썼다 —
+  브라우저 워치독(30초)이 「워커에서 30초 동안 신호가 없어」로 끊었다. 이제 `slimProjectForWire` 가 그대로인 타일셋 id 를
+  `unchangedTilesetIds` 로 따로 보내고 받는 쪽(`restoreCheckpointProject` 네 번째 인자)이 자기 사본에서 붙인다. 체크포인트·render_request·done·ACK
+  모두 같은 모양이다. 받는 쪽 사본에 없는 id 를 뺐다고 하면 조용히 비우지 않고 던진다. 실측: 같은 마을 체크포인트 101MB → 4.4MB, 도구 종료 0.3초 뒤 도착.
+  회귀: `test/piAgentEfficiency.test.ts` 「타일셋 하나만 바뀌면 그 하나만 싣고」.
+- **실측 스크립트(팀 + 평문 마을):** `scripts/qa/team-village-live.mjs` — 빈 새 SQLite 호스트에서 작업 인원 「팀으로」 → 「마을을 만들어줘」 →
+  그래픽 조합 선택 → 끝까지 기다린다. `E2E_SOLO=1` 이면 혼자. 결과는 `verify-shots/team-village-live/SUMMARY.json`.
+  2026-09-28 실측(위 두 수정 뒤): 「Pi 팀」 배지, 팀장이 시공 배정 → 검수 → 수정 배정 → 재검수 → 완료 후 검토까지 돌고 21분에 「적용됨」
+  (맵 15개 · 이벤트 168개). 남은 문제: 적용 뒤 자동 저장이 `allocation size overflow`(Firefox, 큰 프로젝트 직렬화)로 실패해 SQLite 에
+  남지 않았다 — 이 변경 범위 밖이며 별도 수정이 필요하다.
 
 ## 큰 프로젝트의 Pi 요청 전송 (2026-09-24)
 
 `src/ai/piAgent/requestBody.ts`는 1Mi 문자 이상인 요청을 gzip으로 전송한다. `/v1/agent/run`뿐 아니라 적용 ACK `/v1/agent/checkpoint`도 같은 경로를 사용한다. 프로젝트/공용 타일 참고 이미지/이벤트를 제거하지 않는다. 작은 요청과 CompressionStream 미지원 환경은 기존 JSON을 사용하며, 후자는 큰 문서에서 기존 한도 오류를 받을 수 있다.
 
-수신 `scripts/lib/companionHttpUtil.mjs`는 wire64MiB 제한을 유지하고 gzip 복원은 별도256MiB 상한으로 제한한다. 기존 identity JSON은 계속64MiB다. 손상 gzip/미지원 encoding은 거절한다. 동반 서비스 두 진입점의 CORS는 Content-Encoding을 허용한다. 서버 gzip 수신 지원을 먼저 배포한 뒤 renderer를 갱신한다. 새 renderer만 배포하면 기존 서버는 gzip을 JSON으로 읽을 수 없다.
+수신 `scripts/lib/companionHttpUtil.mjs`는 받은 몸통과 gzip 복원 모두 256MiB(`MAX_REQUEST_BYTES`)로 제한한다(2026-09-28, 예전 받은 몸통 64MiB 는 새 프로젝트 첫 요청을 끊었다). 손상 gzip/미지원 encoding은 거절한다. 동반 서비스 두 진입점의 CORS는 Content-Encoding을 허용한다. 서버 gzip 수신 지원을 먼저 배포한 뒤 renderer를 갱신한다. 새 renderer만 배포하면 기존 서버는 gzip을 JSON으로 읽을 수 없다.
 
 실측: 새솔 정본507을 포함한 요청83,468,214bytes →34,820,901bytes, 복원 객체 전체 일치. 저장 브리지의128MiB 제한과는 별개다. 루트 필드별 용량에서 tilesets 약73MB가 대부분이었다. 압축 지원은 제작 완료나 LLM 자체 컨텍스트 제한 해결을 의미하지 않는다.
 

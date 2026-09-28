@@ -37,7 +37,11 @@ class Canvas:
             if not self.ok(x, y):
                 continue
             # 2층 바닥 장식(풀숲·낙엽·자갈 조각)은 바닥 위에만. 흩뿌림 덩이가 집 지붕 끝에 걸리면 지붕에 풀이 돋는다(확대 QA 2026-09-27).
-            if layer == 2 and self.ground(x, y) not in ('floor', 'table'):
+            # 단, A1 물 장식(깊은 물 그늘·수초 얼룩)은 물 칸 위에만 겹치는 것이 맞다.
+            if layer == 2 and key.startswith('A1:'):
+                if self.ground(x, y) != 'water':
+                    continue
+            elif layer == 2 and self.ground(x, y) not in ('floor', 'table'):
                 continue
             self.L[layer][y * self.w + x] = self.ctx.key_value(self.b, key)
 
@@ -50,7 +54,7 @@ class Canvas:
             if self.ok(x, y):
                 self.L[layer][y * self.w + x] = None
 
-    def obj(self, oid, x, y, layer=None, over=False):
+    def obj(self, oid, x, y, layer=None, over=False, clip=False):
         """names.json 물체를 왼위 (x,y) 에 찍는다. 물체의 층을 기본으로 쓴다.
         검사(적대적 시각 QA 2026-09-25): 맵 밖으로 잘림 · 같은 층 다른 물체 덮어쓰기(over=True 로만 허용) ·
         바닥 물체가 지붕·벽(A3)이나 벽면(A4 벽)을 딛음 · 벽걸이가 벽면 밖 · 4층 소품 밑에 3층 물체 없음."""
@@ -58,6 +62,8 @@ class Canvas:
         ly = layer or o['layer']
         cells = [(x + c, y + r, t) for r, row in enumerate(o['cells']) for c, t in enumerate(row) if t >= 0]
         where = f'{oid}@({x},{y})'
+        if clip:   # 맵 가장자리 숲 나무처럼 일부러 맵 밖으로 걸쳐 세운 물체 — 밖 칸은 버린다
+            cells = [(cx, cy, tt) for cx, cy, tt in cells if self.ok(cx, cy)]
         for cx, cy, _ in cells:
             if not self.ok(cx, cy):
                 self.errors.append(f'{where}: 맵 밖으로 잘림 ({cx},{cy})')
@@ -65,7 +71,7 @@ class Canvas:
             prev = self.owner.get((ly, cy * self.w + cx))
             if prev and not over:
                 self.errors.append(f'{where}: {ly}층 ({cx},{cy}) 에서 {prev} 를 덮어씀')
-            if ly == 4 and self.L[3][cy * self.w + cx] is None and not oid.startswith(('building_', 'trees_', 'sb_', 'elftree_', 'sails_')) and self.ground(cx, cy) != 'table':
+            if ly == 4 and self.L[3][cy * self.w + cx] is None and not oid.startswith(('building_', 'trees_', 'sb_', 'elftree_', 'sails_')) and '_tree' not in oid and self.ground(cx, cy) != 'table':
                 self.errors.append(f'{where}: 4층 소품 밑 ({cx},{cy}) 에 3층 물체가 없음')
         if ly == 2:
             for cx, cy, _ in cells:

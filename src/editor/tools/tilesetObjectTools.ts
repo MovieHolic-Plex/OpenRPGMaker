@@ -162,7 +162,7 @@ const stampTilesetObject: ToolDefinition = {
   name: "stamp_tileset_object",
   description:
     "팩 프리셋 물체 하나를 at(왼쪽 위 칸) 또는 base(땅에 닿는 맨 아래 줄 왼쪽 칸)에 원형 그대로 찍는다(위층). objectId = list_tileset_objects 의 id(또는 정확한 이름). "
-    + "막힌 밑칸이 옥상·외벽·물 위면 거부한다. "
+    + "막힌 밑칸이 옥상·외벽·물 위면 거부한다. 한 줄 높이 소품은 탁자·카운터·상자 같은 다른 물체 위에 올릴 수 있다(자동으로 4층). "
     + "repeat {x,y} 는 이어 찍을 수 있는 물체(차선·횡단보도·벤치·울타리)만 — 그 축으로 물체 크기만큼 붙여 반복한다. "
     + "이미 위층 타일이 있는 칸은 overwrite:true 가 없으면 거부한다. 문(door)은 외벽 맨 아래 줄에, 창·간판(wallmount)은 외벽·옥상 안에만(밖에 걸치면 거부) 찍는다. "
     + "횡단보도는 차도 칸에만, 차선 화살표는 우측통행 차로에만(반대 차로면 거부). "
@@ -217,7 +217,7 @@ const stampTilesetObject: ToolDefinition = {
         { code: "out-of-bounds", mapId: map.id, x: ox, y: oy },
       );
     }
-    const writes: { index: number; x: number; y: number; layer: "lowerTiles" | "upperTiles"; tile: number }[] = [];
+    const writes: { index: number; x: number; y: number; layer: "lowerTiles" | "upperTiles" | "upperOverlayTiles"; tile: number }[] = [];
     for (let ry = 0; ry < repeatY; ry += 1) for (let rx = 0; rx < repeatX; rx += 1) {
       kit.rows.forEach((row, dy) => {
         for (let dx = 0; dx < kit.width; dx += 1) {
@@ -249,6 +249,16 @@ const stampTilesetObject: ToolDefinition = {
     };
     const kept = writes.filter(keepExisting);
     if (kept.length > 0) writes.splice(0, writes.length, ...writes.filter((w) => !keepExisting(w)));
+    // 탁자·조리대·상자 위 소품(한 줄 높이): 3층이 이미 찼으면 4층에 올린다 — 탁자 위 찻잔, 상자 위 등잔, 조리대 위 냄비.
+    // 예전에는 「위층에 이미 타일」로 거부해 조수가 소품을 맨바닥에 흩었다(2026-09-28 REFMAP 헤드리스 시험).
+    let stacked = 0;
+    if (args.overwrite !== true && kit.height === 1) {
+      for (const w of writes) {
+        if (w.layer !== "upperTiles") continue;
+        const here = map.upperTiles[w.index]!;
+        if (here >= 0 && here !== w.tile && (map.upperOverlayTiles?.[w.index] ?? -1) < 0 && !replacesExisting(w)) { w.layer = "upperOverlayTiles"; stacked += 1; }
+      }
+    }
     if (args.overwrite !== true) {
       const clash = writes.find((w) => w.layer === "upperTiles" && map.upperTiles[w.index]! >= 0 && map.upperTiles[w.index] !== w.tile
         && !replacesExisting(w));
@@ -263,8 +273,12 @@ const stampTilesetObject: ToolDefinition = {
     // (2026-09-24 헤드리스 실측: 보도 가로등 at 을 밑칸으로 줘서 건물 옥상 위에 세웠다).
     if (kind === "prop" || kind === "tall") {
       const tileset = draft.tilesets[map.tilesetId];
-      const bad = writes.find((w) => w.layer === "upperTiles" && tileset?.passability[w.tile] && !Object.values(tileset.passability[w.tile]!).some(Boolean)
-        && (wallUnder(draft, map, w.x, w.y) || !isPassable(draft, map, w.x, w.y)));
+      // 탁자·카운터(겹침 재료 fence) 위나 다른 물체 위에 올리는 한 줄 소품은 받는다 — 벽·지붕·물 위만 거부.
+      const onFurniture = (w: (typeof writes)[number]) => kit.height === 1 && !wallUnder(draft, map, w.x, w.y)
+        && (w.layer === "upperOverlayTiles" || [map.lowerTiles[w.index] ?? -1, map.lowerOverlayTiles?.[w.index] ?? -1]
+          .some((t) => t >= 0 && tileset?.tileMeta?.[t]?.tags?.includes("fence") === true));
+      const bad = writes.find((w) => (w.layer === "upperTiles" || w.layer === "upperOverlayTiles") && tileset?.passability[w.tile] && !Object.values(tileset.passability[w.tile]!).some(Boolean)
+        && !onFurniture(w) && (wallUnder(draft, map, w.x, w.y) || !isPassable(draft, map, w.x, w.y)));
       if (bad) {
         throw new ToolError(
           `${kit.id} 의 밑칸 (${bad.x},${bad.y}) 이 옥상·외벽·물·다른 물체 위입니다 — 보도·잔디 같은 걷는 바닥에 밑이 오게 하세요. `
@@ -330,7 +344,8 @@ const stampTilesetObject: ToolDefinition = {
         if (plain !== undefined) { map.lowerTiles[w.index] = plain; plainSwapped += 1; }
       }
     }
-    for (const w of writes) map[w.layer][w.index] = w.tile;
+    if (writes.some((w) => w.layer === "upperOverlayTiles") && !map.upperOverlayTiles) map.upperOverlayTiles = new Array(map.width * map.height).fill(-1);
+    for (const w of writes) map[w.layer]![w.index] = w.tile;
     const cells = [...new Map(writes.map((w) => [w.index, w])).values()];
     const blockedCells = cells.filter((c) => !isPassable(draft, map, c.x, c.y)).map((c) => ({ x: c.x, y: c.y }));
     const doorCells = kind === "door" ? cells.filter((c) => c.y === oy + height - 1).map((c) => ({ x: c.x, y: c.y })) : [];
@@ -344,7 +359,7 @@ const stampTilesetObject: ToolDefinition = {
     const laneWarning = centerLineWarning(draft, map, kit.id, ox, oy);
     if (laneWarning) warnings.push(laneWarning);
     return {
-      summary: `${map.name}에 ${kit.name}(${kit.id}) ${repeatX * repeatY > 1 ? `${repeatX}×${repeatY}번 ` : ""}찍음 — (${ox},${oy}) ${width}×${height}${blockedCells.length ? `, 막힌 칸 ${blockedCells.length}` : ""}${plainSwapped ? `, 밑 벽 ${plainSwapped}칸을 창 없는 벽으로` : ""}`,
+      summary: `${map.name}에 ${kit.name}(${kit.id}) ${repeatX * repeatY > 1 ? `${repeatX}×${repeatY}번 ` : ""}찍음 — (${ox},${oy}) ${width}×${height}${stacked ? ` (아래 물체 위 4층에 올림)` : ""}${blockedCells.length ? `, 막힌 칸 ${blockedCells.length}` : ""}${plainSwapped ? `, 밑 벽 ${plainSwapped}칸을 창 없는 벽으로` : ""}`,
       ...(warnings.length ? { warnings } : {}),
       data: { objectId: kit.id, footprint: { x: ox, y: oy, w: width, h: height }, blockedCells, ...(doorCells.length ? { doorCells } : {}) },
     };

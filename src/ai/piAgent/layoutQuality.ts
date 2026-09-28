@@ -2,6 +2,7 @@ import { tileAt } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
 import { MV_PACK_PRESETS } from "@/project/rpgmakerMv/packs";
 import { checkTownMap } from "@/editor/tools/packTownTools";
+import { isPackPresetTileset, lintPackMap } from "@/project/rpgmakerMv/packMapLint";
 
 // 조수가 칠한 맵의 배치 품질(빈 바닥·빈 정사각형·좌우 대칭)을 끝에서 한 번 잰다.
 // 문서·예제만으로는 전체 배치가 옮겨지지 않았다(2026-09-25 Rasak 시험: 문서를 세 번 고쳐도 마을 빈 바닥 44%,
@@ -34,8 +35,11 @@ export interface LayoutQualityStats {
 
 export interface LayoutQualityIssue {
   readonly mapId: string;
-  readonly stats: LayoutQualityStats;
+  /** 팩 세트 맵(pack)은 빈 바닥 비율을 재지 않는다 — null. */
+  readonly stats: LayoutQualityStats | null;
   readonly problems: readonly string[];
+  /** 마을 짜임이 없는 팩 프리셋 맵(REFMAP 세트 등)이면 check_pack_map 경고(구조·통행·벽걸이·빈 공간). */
+  readonly pack?: readonly string[];
   /** 팩 도시 타일셋 맵이면 check_town_map 의 좌표 달린 항목(거부 위반 먼저). */
   readonly town?: readonly string[];
 }
@@ -158,6 +162,23 @@ function paintedShare(map: GameMap, before: GameMap | undefined): number {
   return changed / n;
 }
 
+/**
+ * 마을 짜임이 없는 팩 프리셋 맵이면 check_pack_map 경고, 아니면 null. 이런 맵은 빈 바닥 비율·빈 정사각형으로 재지 않는다 —
+ * 「비었으니 채워라」는 세트 규칙(공간이 남으면 방이 너무 큰 것)과 반대다. 2026-09-28 시험: 그 권고를 받은 조수가
+ * 어부 집 한가운데에 5×5 초록 러그를 깔았다.
+ */
+function packMapProblems(project: Project, map: GameMap): string[] | null {
+  const tileset = project.tilesets[map.tilesetId];
+  if (!isPackPresetTileset(tileset) || MV_PACK_PRESETS.some((preset) => preset.id === tileset?.mvPack?.presetId && preset.town)) return null;
+  return [...(lintPackMap(project, map)?.warnings ?? [])];
+}
+
+const LAYERS = ["lowerTiles", "lowerOverlayTiles", "upperTiles", "upperOverlayTiles"] as const;
+function mapChanged(map: GameMap, before: GameMap | undefined): boolean {
+  if (!before || before.width !== map.width || before.height !== map.height) return true;
+  return LAYERS.some((layer) => (map[layer] ?? []).some((tile, i) => tile !== (before[layer]?.[i] ?? -1)));
+}
+
 export function inspectPiLayoutQuality(project: Project, baseline: Project, scopeMapIds: readonly string[] | undefined,
   skipMapIds: Iterable<string> = []): LayoutQualityIssue[] {
   const skip = new Set(skipMapIds);
@@ -167,7 +188,14 @@ export function inspectPiLayoutQuality(project: Project, baseline: Project, scop
   const issues: LayoutQualityIssue[] = [];
   for (const mapId of ids) {
     const map = project.maps[mapId];
-    if (!map || skip.has(mapId) || map.width * map.height < MIN_CELLS) continue;
+    if (!map || skip.has(mapId)) continue;
+    // 팩 세트 맵은 작은 집(9×9)도 본다 — 이번 실행이 칸을 바꿨으면.
+    const pack = packMapProblems(project, map);
+    if (pack) {
+      if (pack.length && mapChanged(map, baseline.maps[mapId])) issues.push({ mapId, stats: null, problems: [], pack });
+      continue;
+    }
+    if (map.width * map.height < MIN_CELLS) continue;
     if (paintedShare(map, baseline.maps[mapId]) < MIN_PAINTED_SHARE) continue;
     const stats = measureLayoutQuality(project, map);
     if (!stats || stats.floorCells < MIN_FLOOR) continue;
@@ -179,8 +207,10 @@ export function inspectPiLayoutQuality(project: Project, baseline: Project, scop
 }
 
 export function piLayoutRepairPrompt(issues: readonly LayoutQualityIssue[]): string {
-  const lines = issues.map(issue => {
-    const windows = issue.stats.emptiestWindows.map(r => `(${r.x},${r.y}) ${r.w}×${r.h}칸 중 빈 칸 ${r.emptyCells}`).join(" · ");
+  const packIssues = issues.filter(issue => issue.pack?.length);
+  if (packIssues.length === issues.length) return piPackRepairPrompt(packIssues);
+  const lines = issues.filter(issue => !issue.pack).map(issue => {
+    const windows = (issue.stats?.emptiestWindows ?? []).map(r => `(${r.x},${r.y}) ${r.w}×${r.h}칸 중 빈 칸 ${r.emptyCells}`).join(" · ");
     const head = issue.problems.length ? `- ${issue.mapId}: ${issue.problems.join(" / ")}${windows ? `. 가장 빈 곳: ${windows}` : ""}` : `- ${issue.mapId}:`;
     const town = issue.town?.length
       ? `\n  도시 점검(check_town_map, [거부] 는 도구가 실패로 돌려주는 확실한 위반 — 먼저 고친다):\n` + issue.town.map(line => `  · ${line}`).join("\n")
@@ -193,5 +223,18 @@ export function piLayoutRepairPrompt(issues: readonly LayoutQualityIssue[]): str
     + "그 용도에 맞는 덩이(가구 한 벌, 집 곁 생활 소품 묶음, 나무 2~3그루+덤불, 바닥 장식 2층)를 놓는다. "
     + "1×1 소품·바닥 얼룩·풀 한 칸을 고르게 흩뿌리지 마라 — 숫자만 맞추는 흩뿌림은 빈 바닥보다 나쁘다. 좌우 대칭이면 한쪽 덩이를 옮기거나 바꿔 비대칭으로 만든다. "
     + "길·문 앞·통로는 막지 않는다. 사용자가 넓은 빈터를 요청했다면 고치지 말고 그 이유를 보고에 적는다."
-    + (issues.some(issue => issue.town?.length) ? " 도시 맵은 고친 뒤 check_town_map 이 실패 없이 돌아올 때까지 다시 부른다." : "");
+    + (issues.some(issue => issue.town?.length) ? " 도시 맵은 고친 뒤 check_town_map 이 실패 없이 돌아올 때까지 다시 부른다." : "")
+    + (packIssues.length ? "\n" + piPackRepairPrompt(packIssues) : "");
+}
+
+/** 팩 세트 맵(REFMAP 등) 수리 권고 — check_pack_map 경고를 그대로 좌표와 함께 준다. */
+export function piPackRepairPrompt(issues: readonly LayoutQualityIssue[]): string {
+  return "[세트 맵 검사 check_pack_map] 깐 맵이 세트 게시 기준(완성 장소 38곳이 모두 통과한 기준)을 못 넘었다. 끝내기 전에 고쳐라.\n"
+    + issues.map(issue => `- ${issue.mapId}:\n` + (issue.pack ?? []).map(line => `  · ${line}`).join("\n")).join("\n") + "\n"
+    + "고치는 법: show_map_region 으로 그 좌표를 먼저 본다. "
+    + "「구조」는 천장 테 바로 밑에 벽면 2줄을 댄다(칸막이 천장 덩이도 그 밑 2줄 벽면). "
+    + "「통행」은 입구(맵 가장자리로 이어진 바닥)에서 모든 방·가구 앞까지 한 칸 길을 낸다 — 침대는 긴 옆면 한쪽을 비우고, 입구가 없으면 남쪽 벽을 1~2칸 터서 바닥을 맵 끝까지 잇는다. "
+    + "「벽걸이」는 창·액자·선반·시계를 벽면 줄로, 침대 머리·장·선반은 벽에 붙인다. "
+    + "「공간」은 빈 바닥을 소품·러그로 메우지 말고 방·맵을 줄인다: 칸막이 천장 덩이로 알코브·ㄱ자 방을 만들거나 벽을 안쪽으로 옮기고, 맵이 크면 resize_map. "
+    + "고친 뒤 check_pack_map 을 다시 불러 warnings 가 빌 때까지 반복한다.";
 }
