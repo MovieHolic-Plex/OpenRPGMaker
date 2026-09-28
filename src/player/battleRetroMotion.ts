@@ -73,6 +73,9 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
       delete node.dataset.retroBeat;
       delete node.dataset.retroAction;
       delete node.dataset.retroReach;
+      delete node.dataset.retroStyle;
+      approachAnimations.get(node)?.cancel();
+      approachAnimations.delete(node);
       if (node.dataset.pixelEnemy) resetPixelEnemy(node);
       beatGenerations.set(node, (beatGenerations.get(node) ?? 0) + 1);
       delete node.dataset.retroFrame;
@@ -113,6 +116,9 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
     user.style.setProperty("--retro-travel", user.dataset.retroAction === "defend" ? "0px"
       : ["cast", "item"].includes(user.dataset.retroAction) ? "-16px"
         : `${-(walk?.distance ?? 72)}px`);
+    // 근접은 직업별 접근(질주·도약·순간이동·섬광). 거리를 못 쟀으면(감속 모드 등) 예전 걷기 키프레임.
+    if (walk) user.dataset.retroStyle = retroApproachStyle(entry?.userRecordId ?? user.dataset.recordId);
+    else delete user.dataset.retroStyle;
     if (user.dataset.pixelEnemy && entry) {
       // 도트 적: 근접 공격은 대상 아군 앞까지 뛰어/날아간다. 그 밖의 기술은 제자리에서 반 걸음만 나선다.
       const reach = retroEnemyReach(field, entry);
@@ -199,6 +205,24 @@ function animateExtendedBeat(node: HTMLElement, beat: BattleActionBeat): void {
   const length = Math.max(0, beat.durationMs);
   const action = node.dataset.retroAction;
   const finisher = node.dataset.retroFinisher === "true";
+  // 접근 경로(Web Animations, fill forwards)는 CSS 키프레임보다 위에 쌓인다 — 착탄부터는 CSS(retro-thrust/return)에 넘긴다.
+  if (beat.kind !== "approach") {
+    approachAnimations.get(node)?.cancel();
+    approachAnimations.delete(node);
+  }
+  if (beat.kind === "recover" && node.dataset.retroStyle === "blink" && !reduced() && length > 0 && typeof node.animate === "function") {
+    // 순간이동으로 온 캐릭터는 돌아갈 때도 빛나며 사라졌다 제자리에 나타난다.
+    const dx = node.style.getPropertyValue("--retro-travel") || "0px";
+    const dy = node.style.getPropertyValue("--retro-travel-y") || "0px";
+    approachAnimations.set(node, node.animate([
+      { offset: 0, translate: `${dx} ${dy}`, opacity: 1, filter: "none" },
+      { offset: 0.3, translate: `${dx} ${dy}`, opacity: 1, filter: "brightness(2.4)" },
+      { offset: 0.42, translate: `${dx} ${dy}`, opacity: 0, filter: "brightness(3)", easing: "steps(1, end)" },
+      { offset: 0.62, translate: "0px 0px", opacity: 0, filter: "brightness(3)" },
+      { offset: 0.8, translate: "0px 0px", opacity: 1, filter: "brightness(1.6)" },
+      { offset: 1, translate: "0px 0px", opacity: 1, filter: "none" },
+    ], { duration: length, fill: "forwards" }));
+  }
   let frames: readonly [number, Pose][];
   if (action === "defend") frames = [[0, "defend"]];
   else if (action === "item") frames = [[0, "item"]];
@@ -207,6 +231,9 @@ function animateExtendedBeat(node: HTMLElement, beat: BattleActionBeat): void {
       : beat.kind === "impact" ? [[0, finisher ? "skill" : "cast_release"]]
         : [[0, finisher ? "skill" : "cast_release"], [0.6, "idle"]];
   } else if (beat.kind === "approach") {
+    if (node.dataset.retroStyle && !reduced() && length > 0 && typeof node.animate === "function") {
+      frames = animateMeleeApproach(node, length);
+    } else {
     // 걸어가는 동안 걷기 칸을 돌리고, 적 앞에 도착한 마지막 구간(약 240ms)에 젖힘 → 휘두름. 착탄(impact)에서 attack 칸.
     // impact 비트는 히트스톱 길이(약 110ms)뿐이라 휘두름을 거기 다 넣으면 세 칸이 안 보였다.
     const walk: Pose[] = ["walk_a", "walk_b", "walk_c", "walk_b"];
@@ -218,6 +245,7 @@ function animateExtendedBeat(node: HTMLElement, beat: BattleActionBeat): void {
       [walkMs / Math.max(1, length), "attack_windup"],
       [(walkMs + swingMs * 0.55) / Math.max(1, length), "attack_strike"],
     ];
+    }
   } else if (beat.kind === "impact") frames = [[0, "attack"]];
   else frames = [[0, "attack_follow"], [0.18, "evade"], [0.86, "idle"]];
   // 감속 모드와 길이 0 비트에서는 대표 칸만 내보내고 뒤늦은 칸 전환을 예약하지 않는다.
@@ -308,11 +336,152 @@ export function retroTimelineEntry(field: HTMLElement, entry: BattleTimelineEntr
   currentEntries.set(field, entry);
 }
 
+// ── 캐릭터별 접근 방식 ──────────────────────────────────────────────────────────────────
+// 걸어가기가 기본이었는데 "너무 루즈하다" 는 지적(2026-09-28). 직업마다 대상 앞까지 가는 방식을 다르게 한다.
+//   dash     전사: 몸을 낮췄다가 잔상을 남기며 질주 → 미끄러지며 벤다
+//   leap     수호자: 웅크렸다 높게 도약 → 내리찍기(착지 흙먼지)
+//   blink    마도사·성직자: 제자리에서 사라졌다 대상 앞에 나타난다(순간이동)
+//   flash    정찰병·궁수·도적: 번개처럼 한 번에 파고든다(아주 짧은 잔상 줄)
+export type RetroApproachStyle = "dash" | "leap" | "blink" | "flash";
+
+const STYLE_BY_NAME: readonly [RegExp, RetroApproachStyle][] = [
+  [/마도|마법|위저드|mage|wizard|sorcer|witch|성직|사제|신관|cleric|priest|healer|monk|수녀/i, "blink"],
+  [/정찰|궁수|도적|닌자|scout|ranger|archer|thief|rogue|ninja|assassin/i, "flash"],
+  [/수호|기사|성기사|guard|knight|paladin|tank|전차/i, "leap"],
+];
+
+/** 액터(또는 그 직업) 이름으로 접근 방식을 고른다. 모르면 dash. */
+export function retroApproachStyle(actorId: string | undefined): RetroApproachStyle {
+  const project = store.getCurrent();
+  const actor = project.database.actors.find((row) => row.id === actorId);
+  const cls = actor ? project.database.classes.find((row) => row.id === actor.classId) : undefined;
+  const words = [cls?.id, cls?.name, actor?.id].filter(Boolean).join(" ");
+  return STYLE_BY_NAME.find(([pattern]) => pattern.test(words))?.[1] ?? "dash";
+}
+
+/** 스타일별 접근 비트 길이(ms). 걷기보다 모두 짧다 — 준비 동작 + 순간 이동 + 휘두름. */
+function approachMsFor(style: RetroApproachStyle, path: number): number {
+  const clamp = (value: number, min: number, max: number) => Math.round(Math.max(min, Math.min(max, value)));
+  if (style === "blink") return 520;
+  if (style === "flash") return 380;
+  if (style === "leap") return clamp(300 + path / 0.9, 480, 700);
+  return clamp(240 + path / 0.8, 420, 620);
+}
+
+const approachAnimations = new WeakMap<HTMLElement, Animation>();
+
+/**
+ * 근접 접근 비트: 노드 translate 를 스타일별 경로로 움직이고 칸을 고른다. CSS 키프레임(retro-walk-up)은 걷기 전용으로 남긴다.
+ * 비율은 비트 길이에 대한 몫이다. 도착 뒤 마지막 구간에 젖힘 → 휘두름(attack_windup → attack_strike).
+ */
+function animateMeleeApproach(node: HTMLElement, length: number): readonly [number, Pose][] {
+  const style = (node.dataset.retroStyle ?? "dash") as RetroApproachStyle;
+  const dx = Number.parseFloat(node.style.getPropertyValue("--retro-travel")) || -72;
+  const dy = Number.parseFloat(node.style.getPropertyValue("--retro-travel-y")) || 0;
+  const start = Number.parseFloat(node.style.getPropertyValue("--retro-start")) || 0;
+  const swing = Math.min(0.42, 200 / Math.max(1, length));
+  const arrive = 1 - swing;
+  type Key = { offset: number; translate: string; opacity?: number; filter?: string; easing?: string };
+  const at = (fx: number, fy: number, lift = 0) => `${Math.round(start + (dx - start) * fx)}px ${Math.round(dy * fy - lift)}px`;
+  let keys: Key[];
+  let frames: [number, Pose][];
+  if (style === "leap") {
+    const crouch = Math.min(0.28, 140 / Math.max(1, length));
+    keys = [
+      { offset: 0, translate: at(0, 0) },
+      { offset: crouch, translate: at(-0.03, 0, -2), easing: "cubic-bezier(.2,.7,.3,1)" },
+      { offset: crouch + (arrive - crouch) * 0.5, translate: at(0.55, 0.45, 46), easing: "cubic-bezier(.6,0,.9,.5)" },
+      { offset: arrive, translate: at(1, 1) },
+      { offset: 1, translate: at(1, 1) },
+    ];
+    frames = [[0, "defend"], [crouch, "attack_windup"], [crouch + (arrive - crouch) * 0.55, "attack_strike"], [arrive, "attack"]];
+  } else if (style === "blink") {
+    const vanish = Math.min(0.34, 170 / Math.max(1, length));
+    const appear = vanish + 0.14;
+    keys = [
+      { offset: 0, translate: at(0, 0), opacity: 1, filter: "none" },
+      { offset: vanish * 0.6, translate: at(0, 0), opacity: 1, filter: "brightness(2.2)" },
+      { offset: vanish, translate: at(0, 0, 6), opacity: 0, filter: "brightness(3)", easing: "steps(1, end)" },
+      { offset: appear, translate: at(1, 1, 6), opacity: 0, filter: "brightness(3)" },
+      { offset: appear + 0.1, translate: at(1, 1), opacity: 1, filter: "brightness(1.6)" },
+      { offset: 1, translate: at(1, 1), opacity: 1, filter: "none" },
+    ];
+    frames = [[0, "cast_charge"], [appear, "attack_windup"], [arrive, "attack_strike"]];
+  } else if (style === "flash") {
+    const ready = Math.min(0.4, 150 / Math.max(1, length));
+    const hit = ready + 0.14;
+    keys = [
+      { offset: 0, translate: at(0, 0) },
+      { offset: ready, translate: at(-0.06, 0) , easing: "cubic-bezier(.9,0,1,.2)" },
+      { offset: hit, translate: at(1.04, 1) },
+      { offset: hit + 0.08, translate: at(1, 1) },
+      { offset: 1, translate: at(1, 1) },
+    ];
+    frames = [[0, "attack_windup"], [ready, "walk_c"], [hit, "attack_strike"]];
+  } else {
+    const lean = Math.min(0.24, 110 / Math.max(1, length));
+    keys = [
+      { offset: 0, translate: at(0, 0) },
+      { offset: lean, translate: at(-0.05, 0, -1), easing: "cubic-bezier(.5,0,.2,1)" },
+      { offset: arrive - 0.06, translate: at(1.06, 1) },
+      { offset: arrive, translate: at(1, 1) },
+      { offset: 1, translate: at(1, 1) },
+    ];
+    frames = [[0, "attack_windup"], [lean, "walk_a"], [lean + (arrive - lean) * 0.4, "walk_c"], [arrive - 0.06, "attack_strike"]];
+  }
+  approachAnimations.get(node)?.cancel();
+  const animation = node.animate(keys, { duration: Math.max(1, length), fill: "forwards" });
+  approachAnimations.set(node, animation);
+  // 잔상: 질주·섬광은 지나간 자리에 스프라이트 사본을 짧게 남긴다(도트 게임의 잔상 문법).
+  if (style === "dash" || style === "flash") spawnAfterimages(node, keys, length, style === "flash" ? 4 : 3);
+  if (style === "leap") scheduleBattleTimer(() => spawnDust(node), Math.round(length * arrive));
+  return frames;
+}
+
+function spawnAfterimages(node: HTMLElement, keys: readonly { offset: number; translate: string }[], length: number, count: number): void {
+  const sprite = node.querySelector<HTMLElement>(".battle-actor-sprite");
+  const parent = node.parentElement;
+  if (!sprite || !parent) return;
+  const from = keys[1]!;
+  const to = keys[keys.length - 2]!;
+  const parse = (value: string) => value.split(" ").map((part) => Number.parseFloat(part) || 0);
+  const [x0, y0] = parse(from.translate);
+  const [x1, y1] = parse(to.translate);
+  for (let i = 0; i < count; i += 1) {
+    const t = (i + 1) / (count + 1);
+    const delay = Math.round(length * (from.offset + (to.offset - from.offset) * t));
+    scheduleBattleTimer(() => {
+      if (!node.isConnected) return;
+      const ghost = node.cloneNode(false) as HTMLElement;
+      ghost.className = "battle-actor retro-afterimage";
+      // data-* 를 모두 걷는다 — 남기면 원본의 비트 키프레임·포즈 규칙과 QA 조회가 잔상에도 걸린다.
+      for (const name of ghost.getAttributeNames()) if (name.startsWith("data-") || name === "aria-label") ghost.removeAttribute(name);
+      ghost.setAttribute("aria-hidden", "true");
+      const copy = sprite.cloneNode(false) as HTMLElement;
+      copy.removeAttribute("data-testid");
+      copy.removeAttribute("role");
+      copy.removeAttribute("aria-label");
+      ghost.append(copy);
+      ghost.style.translate = `${Math.round(x0 + (x1 - x0) * t)}px ${Math.round(y0 + (y1 - y0) * t)}px`;
+      parent.append(ghost);
+      scheduleBattleTimer(() => ghost.remove(), 220);
+    }, delay);
+  }
+}
+
+function spawnDust(node: HTMLElement): void {
+  if (!node.isConnected) return;
+  const dust = document.createElement("span");
+  dust.className = "retro-landing-dust";
+  dust.setAttribute("aria-hidden", "true");
+  node.append(dust);
+  scheduleBattleTimer(() => dust.remove(), 360);
+}
+
 // ── 걸어가서 때리기 ─────────────────────────────────────────────────────────────────────
 // 근접 공격(통상 공격·attack 계열 스킬)은 approach 비트 동안 대상 적 **바로 앞**까지 걷는다.
 // 거리는 실제 DOM 좌표에서 잰다: 아군 몸 앞(왼쪽) 가장자리 → 적 그림 오른쪽 가장자리 + 여유.
 // 시퀀서가 비트 길이를 정하기 전에(actorApproachMs) 한 번, 전진을 걸 때 한 번 부르므로 엔트리별로 기억한다.
-const WALK_PX_PER_MS = 0.26;
 const RETURN_PX_PER_MS = 0.36;
 const WALK_GAP_PX = 6;
 const walkCache = new WeakMap<HTMLElement, Map<number, RetroWalk | null>>();
@@ -378,11 +547,13 @@ function measureWalk(field: HTMLElement, entry: BattleTimelineEntrySnapshot): Re
   if (!Number.isFinite(distance) || !Number.isFinite(dy) || distance < 24) return undefined;
   const clamp = (value: number, min: number, max: number) => Math.round(Math.max(min, Math.min(max, value)));
   const path = Math.hypot(distance, dy);
+  const style = retroApproachStyle(userId);
   return {
     distance,
     dy,
-    approachMs: clamp(path / WALK_PX_PER_MS, 420, 1100),
-    recoverMs: clamp(path / RETURN_PX_PER_MS, 420, 900),
+    approachMs: approachMsFor(style, path),
+    // 돌아갈 때는 뒤로 공중제비하듯 튀어 돌아간다(retro-return). 순간이동은 다시 사라졌다 나타난다.
+    recoverMs: style === "blink" ? 420 : clamp(path / RETURN_PX_PER_MS, 360, 620),
   };
 }
 

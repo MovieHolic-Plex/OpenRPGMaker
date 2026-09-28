@@ -44,17 +44,85 @@ const SIDEVIEW: SkinBattlerPlacement = {
   party: (i) => ({ x: 196 + i * 32, y: 84 + i * 25 }),
 };
 
-/** 도트 측면: 적은 왼쪽 접지 띠, 아군은 오른쪽 사선(뒤=위·왼쪽 → 앞=아래·오른쪽). 아군 도트는 왼쪽을 본다. */
+// ── 도트 측면 적 진형(retro2003) ─────────────────────────────────────────────────────────
+// 적 발 위치가 설 수 있는 구역(무대 논리 좌표 320×160). 아군은 오른쪽 x 222~294.
+// 아래 한계 142 = 아군 마지막 발(136)보다 조금 아래, HUD 위.
+const RETRO_ZONE = { left: 34, right: 150, top: 92, bottom: 142, cx: 92, cy: 117 } as const;
+type Offsets = readonly (readonly [number, number])[];
+/** 마리 수별 진형 후보(구역 중심 기준 오프셋). 첫 번째가 자동 정렬 기본값. 순서의 마지막이 아군 쪽(앞). */
+export const RETRO_ENEMY_FORMATIONS: Readonly<Record<number, readonly { readonly name: string; readonly seats: Offsets }[]>> = {
+  1: [{ name: "single", seats: [[-4, 4]] }],
+  2: [
+    { name: "diagonal", seats: [[-28, -18], [22, 16]] },
+    { name: "column", seats: [[-8, -22], [8, 22]] },
+  ],
+  3: [
+    { name: "triangle", seats: [[-36, -24], [-36, 24], [26, 0]] },
+    { name: "wedge", seats: [[-30, 0], [22, -24], [22, 24]] },
+    { name: "column", seats: [[-6, -26], [10, 0], [-6, 26]] },
+    { name: "diagonal", seats: [[-44, -24], [0, 0], [44, 24]] },
+  ],
+  4: [
+    { name: "diamond", seats: [[-44, 0], [0, -26], [0, 26], [44, 0]] },
+    { name: "stagger", seats: [[-36, -22], [12, -22], [-12, 22], [36, 22]] },
+    { name: "arrow", seats: [[-48, -26], [-48, 26], [-2, -12], [40, 14]] },
+  ],
+  5: [
+    { name: "cross", seats: [[-46, -24], [-46, 24], [0, 0], [46, -24], [46, 24]] },
+    { name: "wedge", seats: [[-48, -26], [-48, 26], [-4, -14], [-4, 14], [44, 0]] },
+  ],
+};
+
+function retroSeat(offset: readonly [number, number]): { x: number; y: number } {
+  return {
+    x: Math.round(Math.max(RETRO_ZONE.left, Math.min(RETRO_ZONE.right, RETRO_ZONE.cx + offset[0]))),
+    y: Math.round(Math.max(RETRO_ZONE.top, Math.min(RETRO_ZONE.bottom, RETRO_ZONE.cy + offset[1]))),
+  };
+}
+
+/** 진형 한 벌. 6마리 이상은 세 줄 엇갈림. `variant` 는 후보 번호(넘치면 돌아간다). */
+export function retroEnemyFormation(n: number, variant = 0): { x: number; y: number }[] {
+  const options = RETRO_ENEMY_FORMATIONS[n];
+  if (options) return options[variant % options.length]!.seats.map(retroSeat);
+  const rows = 3;
+  const columns = Math.ceil(n / rows);
+  return Array.from({ length: n }, (_, i) => {
+    const column = Math.floor(i / rows);
+    const row = i % rows;
+    return retroSeat([Math.round(-48 + column * 96 / Math.max(1, columns - 1)) + (row % 2) * 14, -26 + row * 26]);
+  });
+}
+
+/**
+ * 수동 트룹을 도트 측면 구역에 앉힌다. 저작 좌표에 **모양**(삼각형·사선·세로)이 있으면 그 모양을 구역에 맞춰
+ * 줄이고, 한 줄이거나 뭉쳐 있으면 진형 후보 중 하나를 쓴다(좌표에서 뽑은 번호라 같은 트룹은 늘 같은 진형).
+ * 예전에는 y 를 118~140 으로 눌러 모든 트룹이 가로 한 줄이었다.
+ */
+export function retroManualFormation(canonicals: readonly CanonicalEnemyPosition[]): { x: number; y: number }[] {
+  const n = canonicals.length;
+  const valid = canonicals.every((c) => Number.isFinite(c?.x) && Number.isFinite(c?.y));
+  const hash = canonicals.reduce((sum, c, i) => sum + Math.round(c?.x ?? 0) * (i + 3) + Math.round(c?.y ?? 0) * (i + 7), n);
+  const fallback = () => retroEnemyFormation(n, Math.abs(hash));
+  if (!valid || n <= 1) return n <= 1 ? retroEnemyFormation(n) : fallback();
+  const xs = canonicals.map((c) => c.x!);
+  const ys = canonicals.map((c) => c.y!);
+  const spanX = Math.max(...xs) - Math.min(...xs);
+  const spanY = Math.max(...ys) - Math.min(...ys);
+  if (spanY < 20) return fallback();
+  const width = Math.min(RETRO_ZONE.right - RETRO_ZONE.left - 8, Math.max(40, spanX * 0.62));
+  const height = Math.min(RETRO_ZONE.bottom - RETRO_ZONE.top - 4, Math.max(36, spanY * 0.9));
+  const seats = canonicals.map((c) => retroSeat([
+    spanX === 0 ? 0 : ((c.x! - Math.min(...xs)) / spanX - 0.5) * width,
+    ((c.y! - Math.min(...ys)) / spanY - 0.5) * height,
+  ]));
+  const crowded = seats.some((seat, i) => seats.slice(0, i).some((prior) => Math.abs(prior.x - seat.x) < 30 && Math.abs(prior.y - seat.y) < 18));
+  return crowded ? fallback() : seats;
+}
+
+/** 도트 측면: 적은 왼쪽 구역에 진형으로, 아군은 오른쪽 사선(뒤=위·왼쪽 → 앞=아래·오른쪽). 아군 도트는 왼쪽을 본다. */
 const RETRO_SIDEVIEW: SkinBattlerPlacement = {
   partyFacing: "front",
-  enemy: (i, n) => {
-    const columns = Math.ceil(n / 2);
-    // 세 마리까지 한 줄, 그 이상은 최대 두 줄로 나눈다.
-    const seats = n <= 3 ? n : columns;
-    const column = n <= 3 ? i : i % columns;
-    return { x: seats <= 1 ? 88 : Math.round(40 + column * 96 / (seats - 1)),
-      y: n <= 3 ? 128 + (i % 2) * 12 : 118 + Math.floor(i / columns) * 22 };
-  },
+  enemy: (i, n) => retroEnemyFormation(n)[i] ?? retroSeat([0, 0]),
   // 96px(정수 2배) 도트 넷이 크게 겹치지 않게 가로 24·세로 18 간격. 마지막 발 y 136 은 HUD 위다.
   party: (i) => ({ x: 222 + i * 24, y: 82 + i * 18 }),
 };
@@ -102,8 +170,8 @@ export function resolveSkinEnemyPosition(
   // 옛 트룹의 0..240 y를 그대로 쓰면 새 접지 띠 위에 뜬다. 이 스킨만 안전 구간에 맞춘다.
   if (skinId === "retro2003") {
     const cy = canonical?.y;
-    return { x: Math.max(32, Math.min(150, cx)),
-      y: cy != null && Number.isFinite(cy) ? Math.max(118, Math.min(140, cy * 2 / 3)) : fallback.y };
+    return { x: Math.max(RETRO_ZONE.left, Math.min(RETRO_ZONE.right, cx)),
+      y: cy != null && Number.isFinite(cy) ? Math.max(RETRO_ZONE.top, Math.min(RETRO_ZONE.bottom, cy * 2 / 3)) : fallback.y };
   }
   const layout = BATTLE_SKINS[skinId]?.layout;
   if (layout === "sideview" || layout === "active") {
@@ -158,14 +226,10 @@ export function resolveSkinEnemyPositions(
       y: BATTLER_PLACEMENTS[skinId].enemy(i, n).y,
     }));
   }
+  // 도트 측면: 저작 모양을 살리거나 진형 후보를 고른다(retroManualFormation).
+  if (skinId === "retro2003") return retroManualFormation(canonicals);
   const resolved = canonicals.map((c, i) => resolveSkinEnemyPosition(skinId, c, i, n, false));
   if (layout !== "sideview" && layout !== "active") return resolved;
-  if (skinId === "retro2003") {
-    // 접지 구간으로 옮긴 수동 좌표가 뭉치면 트룹 전체를 같은 자동 진형으로 정렬한다.
-    const crowded = resolved.some((seat, i) => resolved.slice(0, i).some((prior) =>
-      Math.abs(prior.x - seat.x) < 44 && Math.abs(prior.y - seat.y) < 20));
-    return crowded ? canonicals.map((_, i) => RETRO_SIDEVIEW.enemy(i, n)) : resolved;
-  }
 
   // 측면 수동 배치: 저작 x>150 을 고전 진형 x 로 접는 규칙이 index 별 충돌을 보지 않아 두 적이
   // **같은 좌표**에 서서 한 마리만 보였다(2026-09-14 실측, troop_slime_pair 128/192 → 둘 다 128).

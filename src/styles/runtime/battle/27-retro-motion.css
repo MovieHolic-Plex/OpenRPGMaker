@@ -228,6 +228,37 @@
 }
 @keyframes retro-pixel-breathe { 0%, 100% { translate: 0 0; } 50% { translate: 0 -1px; } }
 
+/* 직업별 접근(battleRetroMotion.animateMeleeApproach): 질주·섬광의 잔상, 도약의 착지 흙먼지. 경로 자체는 Web Animations 가 그린다. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor.retro-afterimage {
+  animation: retro-afterimage 220ms steps(4, end) forwards;
+  filter: brightness(0) invert(0.85) sepia(1) hue-rotate(180deg) saturate(3);
+  pointer-events: none;
+  z-index: 0;
+}
+@keyframes retro-afterimage { from { opacity: 0.55; } to { opacity: 0; } }
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .retro-landing-dust {
+  animation: retro-landing-dust 360ms steps(4, end) forwards;
+  background:
+    radial-gradient(circle at 20% 70%, #e8dcc0 0 3px, transparent 4px),
+    radial-gradient(circle at 50% 80%, #d8c8a4 0 4px, transparent 5px),
+    radial-gradient(circle at 80% 70%, #e8dcc0 0 3px, transparent 4px);
+  bottom: 0;
+  height: 16px;
+  image-rendering: pixelated;
+  left: 50%;
+  pointer-events: none;
+  position: absolute;
+  translate: -50% 0;
+  width: 64px;
+}
+@keyframes retro-landing-dust {
+  from { opacity: 1; scale: 0.6 1; }
+  to { opacity: 0; scale: 1.5 0.7; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] :is(.retro-afterimage, .retro-landing-dust) { display: none; }
+}
+
 /* ── 도트 적 시트(src/assets/pixelEnemySheets.ts) ───────────────────────────────────────
    48px 셀 3×3 을 아군 전투 도트와 같은 2배(96px)로 그린다. 내용 이미지(원본 통짜 그림)는 상자 밖으로 밀고 배경으로 칸을 그린다.
    칸은 런타임이 인라인 background-position 으로 고르고(data-pixel-cell), 대기 칸만 여기 루프가 a→b→c→b 로 돈다.

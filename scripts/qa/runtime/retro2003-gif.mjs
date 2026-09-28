@@ -241,6 +241,20 @@ try {
     }
     await sleep(40);
   }
+  // 직업마다 근접 접근이 다르다(질주·도약·순간이동·섬광) — 파티 전원의 통상 공격을 한 번씩 찍는다.
+  const attacked = new Set(report.strikes?.map((strike) => strike.actor) ?? []);
+  while (party.some((actorId) => !attacked.has(actorId))) {
+    budget();
+    const state = await measure();
+    if (state.result) { report.notes.push(`통상 공격 미녹화: ${party.filter((actorId) => !attacked.has(actorId)).join(', ')} (전투 종료)`); break; }
+    if (state.phase === 'actorCommand' && state.busy === 'false' && await page.locator(id('actor-command-attack')).isVisible()) {
+      if (!attacked.has(state.actor)) {
+        attacked.add(state.actor);
+        await finishAction(`attack-${state.actor.replace('actor_', '')}`, 'actor-command-attack');
+      } else await finishAction('defend', 'actor-command-defend');
+    }
+    await sleep(40);
+  }
   await page.keyboard.press('f');
   console.log(`[retro2003-gif] auto ${elapsed().toFixed(1)}s`);
   await page.waitForSelector(id('battle-result-panel'), { timeout: remaining() });
