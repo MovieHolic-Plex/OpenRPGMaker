@@ -50,6 +50,7 @@ def measure(m, man, interior, a5=(frozenset(), frozenset())):
     L1 = m['lowerTiles']
     L2 = m.get('lowerOverlayTiles') or [-1] * n
     L3 = m.get('upperTiles') or [-1] * n
+    L4 = m.get('upperOverlayTiles') or [-1] * n
     SH = m.get('shadowBits') or [0] * n
 
     def is_wall(i):
@@ -65,7 +66,9 @@ def measure(m, man, interior, a5=(frozenset(), frozenset())):
 
     # 물(A1)은 걷는 바닥이 아니다 — 바다·호수가 넓은 항구·물가 맵에서 물을 「빈 바닥」으로 세지 않는다.
     floor = [L1[i] is not None and L1[i] >= 0 and not is_wall(i) and slot_of(man, L1[i]) != 'A1' and L3[i] < 0 for i in range(n)]
-    occ = [L2[i] >= 0 or L3[i] >= 0 for i in range(n)]
+    # 4층(수관·거대 나무 잎·처마)은 바닥을 덮어 그린다 — 세지 않으면 수관 밑 풀밭이 「빈 바닥」으로 잡혀,
+    # 예제가 숫자를 맞추려고 소품을 흩뿌렸다(에디터 확대 QA 2026-09-28).
+    occ = [L2[i] >= 0 or L3[i] >= 0 or L4[i] >= 0 for i in range(n)]
 
     def near(i):
         x, y = i % w, i // w

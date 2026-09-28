@@ -112,12 +112,20 @@ async function main() {
     await page.goto(`${opts.base}/__authored_village_capture`, { waitUntil: "domcontentloaded" });
     const rendered = await page.evaluate(async ({ project, mapId, rects }) => {
       const { deserialize } = await import("/src/project/io.ts");
-      const { drawMapTileLayers, loadTilesetImage } = await import("/src/editor/mapTileDraw.ts");
+      const { drawMapTileLayers } = await import("/src/editor/mapTileDraw.ts");
+      const { tilesetBaseImageUrl } = await import("/src/editor/tilesetImage.ts");
       const p = deserialize(JSON.stringify(project)), map = p.maps[mapId];
       if (!map) throw new Error(`Map ${mapId} missing after deserialization`);
       const tileset = p.tilesets[map.tilesetId];
       if (!tileset || tileset.tileSize !== map.tileSize) throw new Error("Map and tileset must have the same tile size");
-      const atlas = await loadTilesetImage(tileset);
+      // Uploaded atlases resolve through the snapshot, not the (empty) editor store: the store fallback
+      // silently drew the default sheet, so an uploaded-tileset map captured as solid black.
+      const atlas = await new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = () => reject(new Error("Tileset atlas failed to load"));
+        image.src = tilesetBaseImageUrl(tileset, p);
+      });
       const canvas = document.createElement("canvas");
       canvas.width = map.width * map.tileSize; canvas.height = map.height * map.tileSize;
       const ctx = canvas.getContext("2d");
