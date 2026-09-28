@@ -1,6 +1,7 @@
 import { inBounds, isPassable } from "@/project/collision";
 import {
   characterFootprintCells,
+  footprintBounds,
   normalizeCharacterFootprint,
   normalizePassRows,
 } from "@/project/footprint";
@@ -14,11 +15,26 @@ import type {
   Project,
   Rect,
 } from "@/project/types";
-import { eventBodyRect } from "@/project/eventFootprintQuery";
+import { terrainRevision } from "@/project/tilePassabilityComponents";
 import { resolveLocationAnchorRect } from "@/project/locationAnchors";
 import type { RuntimeEventPositions } from "@/project/runtimeEventState"
 import type { RoguelikeRunState } from "@/project/roguelikeRun";
 import { resolveRoguelikeRoomFieldSpawns, roguelikeRoomGenerationKey } from "@/project/roguelikeRooms";
+
+// Compare occupied cells once per due tick; a failed area is searched again only after an
+// occupancy/terrain change. Runtime state is transient and never written into project data.
+const previousOccupancy = new WeakMap<FieldSpawnRuntimeState, Set<string>>();
+const failedSpawns = new WeakMap<FieldSpawnRuntimeEntry, { occupied: Set<string>; map: GameMap; revision: number; width: number; height: number }>();
+function reuseOccupancy(state: FieldSpawnRuntimeState, next: Set<string>): Set<string> {
+  const previous = previousOccupancy.get(state);
+  if (previous && previous.size === next.size) {
+    let same = true;
+    for (const cell of next) if (!previous.has(cell)) { same = false; break; }
+    if (same) return previous;
+  }
+  previousOccupancy.set(state, next);
+  return next;
+}
 
 export const FIELD_SPAWN_EVENT_PREFIX = "__field_spawn__";
 export const FIELD_SPAWN_FIXED_STEP_MS = 1000;
@@ -105,7 +121,7 @@ export function createFieldSpawnRuntime(
   };
   // 첫 배치도 점유를 한 번만 만든다(엔트리 여러 개가 같은 집합을 이어 쓴다).
   let occupied: Set<string> | undefined;
-  const occupancy = () => (occupied ??= occupiedCells(state, map, player));
+  const occupancy = () => (occupied ??= reuseOccupancy(state, occupiedCells(state, map, player)));
   for (const entry of state.entries) {
     spawnUntilCapacity(state, entry, project, map, player, occupancy);
   }
@@ -128,7 +144,8 @@ export function advanceFieldSpawns(
   project: Project,
   map: GameMap,
   player: { readonly x: number; readonly y: number },
-  deltaMs: number
+  deltaMs: number,
+  positions?: RuntimeEventPositions,
 ): boolean {
   if (!state || state.mapId !== map.id) return false;
   let changed = false;
@@ -137,7 +154,7 @@ export function advanceFieldSpawns(
   // 다시 만들던 것과 같은 집합이다(이 루프 안에서 점유를 바꾸는 것은 스폰뿐이다). 예전에는 대량 리스폰에서
   // 스폰 수의 제곱이었다(448마리 약 17ms, 640마리 약 36ms, Node 실측).
   let occupied: Set<string> | undefined;
-  const occupancy = () => (occupied ??= occupiedCells(state, map, player));
+  const occupancy = () => (occupied ??= reuseOccupancy(state, occupiedCells(state, map, player, positions)));
   while (state.fixedAccumulatorMs >= FIELD_SPAWN_FIXED_STEP_MS) {
     state.fixedAccumulatorMs -= FIELD_SPAWN_FIXED_STEP_MS;
     for (const entry of state.entries) {
@@ -257,7 +274,8 @@ function spawnUntilCapacity(
   occupancy?: () => Set<string>,
 ): boolean {
   let changed = false;
-  const occupied = occupancy?.() ?? occupiedCells(state, map, player);
+  if (entry.alive.length + entry.persistedDead >= entry.spawn.maxAlive) return false;
+  const occupied = occupancy?.() ?? reuseOccupancy(state, occupiedCells(state, map, player));
   while (entry.alive.length + entry.persistedDead < entry.spawn.maxAlive) {
     if (!trySpawnInstance(entry, project, map, occupied)) break;
     changed = true;
@@ -272,8 +290,16 @@ function trySpawnInstance(
   map: GameMap,
   occupied: Set<string>,
 ): boolean {
+  const revision = terrainRevision(map);
+  const failed = failedSpawns.get(entry);
+  if (failed?.occupied === occupied && failed.map === map && failed.revision === revision
+    && failed.width === map.width && failed.height === map.height) return false;
   const point = nextSpawnPoint(entry, project, map, occupied);
-  if (!point) return false;
+  if (!point) {
+    failedSpawns.set(entry, { occupied, map, revision, width: map.width, height: map.height });
+    return false;
+  }
+  failedSpawns.delete(entry);
   entry.serial += 1;
   const tuning = resolveChaseTuning(project, entry.spawn.troopId);
   entry.alive.push({
@@ -349,21 +375,24 @@ function bodyFitsAt(
 function occupiedCells(
   state: FieldSpawnRuntimeState,
   map: GameMap,
-  player: { readonly x: number; readonly y: number }
+  player: { readonly x: number; readonly y: number },
+  positions?: RuntimeEventPositions,
 ): Set<string> {
   const occupied = new Set<string>([pointKey(player.x, player.y)]);
   for (const event of map.events) {
     if (isFieldSpawnEventId(event.id)) continue;
     // 이벤트의 **몸 사각 전 칸**을 점유로 등록한다. 앵커 한 칸만 등록하던 시절에는
     // 2x2 골렘의 몸통 안에서 몬스터가 솟았다.
-    const rect = eventBodyRect(event);
+    const position = positions?.[event.id] ?? event;
+    const rect = footprintBounds(position.x, position.y, normalizeCharacterFootprint(event.pages?.[0]?.footprint));
     for (let y = rect.top; y <= rect.bottom; y += 1) {
       for (let x = rect.left; x <= rect.right; x += 1) occupied.add(pointKey(x, y));
     }
   }
   for (const entry of state.entries) {
     for (const instance of entry.alive) {
-      for (const cell of characterFootprintCells(instance.x, instance.y, instance.footprint)) {
+      const position = positions?.[instance.eventId] ?? instance;
+      for (const cell of characterFootprintCells(position.x, position.y, instance.footprint)) {
         occupied.add(pointKey(cell.x, cell.y));
       }
     }

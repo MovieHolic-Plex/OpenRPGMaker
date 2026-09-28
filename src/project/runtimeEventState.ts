@@ -6,7 +6,6 @@ import {
   normalizeCharacterFootprint,
   normalizeCharacterScale,
   normalizePassRows,
-  passageBounds,
   pointRect,
   rectsOverlap,
 } from "@/project/footprint";
@@ -118,7 +117,7 @@ export function runtimeEventView(
     : authoredPage;
   const location = session.eventLocations?.[event.id];
   const runtimePosition = positions[event.id];
-  const position = location ? { x: location.x, y: location.y } : runtimePosition ?? { x: event.x, y: event.y };
+  const position = location ?? runtimePosition ?? event;
   const runtimeDirection = location?.direction ?? runtimePosition?.direction;
   // 페이지가 있는데 조건이 맞는 페이지가 하나도 없으면(RPG 쯔꾸르 규칙대로) 그 이벤트는 맵에 없는 것과 같다 —
   // 보이지도, 막지도 않는다. 예전에는 기본값 same·겹침 금지로 서서, 한 번 돈 자동 컷신(once: 셀프 스위치 A 가 켜져
@@ -127,6 +126,9 @@ export function runtimeEventView(
   const transparent = dormant || page?.graphic.transparent === true;
   const footprint = normalizeCharacterFootprint(page?.footprint);
   const passRows = normalizePassRows(page?.passRows, footprint.height);
+  const bodyRect = footprintBounds(position.x, position.y, footprint);
+  // Separate snapshots: neither a pooled mutable view nor a body/pass alias can escape.
+  const passRect = { left: bodyRect.left, right: bodyRect.right, top: bodyRect.bottom - (passRows - 1), bottom: bodyRect.bottom };
   return {
     event,
     page,
@@ -138,8 +140,8 @@ export function runtimeEventView(
     overlapForbidden: dormant ? false : page?.overlapForbidden ?? true,
     footprint,
     passRows,
-    bodyRect: footprintBounds(position.x, position.y, footprint),
-    passRect: passageBounds(position.x, position.y, footprint, passRows),
+    bodyRect,
+    passRect,
     scale: normalizeCharacterScale(page?.graphic.scale),
     transparent,
     animationType: page?.animationType ?? "normal",
