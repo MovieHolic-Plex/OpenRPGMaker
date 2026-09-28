@@ -149,6 +149,9 @@ def soil():
         for x in range(16):
             p=y%4; c.setv(x,y,'dirt',(0.8,0.6,0.32,0.5)[p])
     return c
+# v7: ripe wheat in a khaki straw ramp (the chipset gold ramp's tone 5 is a saturated primary yellow: QA "원색 노랑 밀밭")
+import px2 as _px2
+_px2.PAL['wheat']=['#312210','#4a3a20','#6b5a30','#8a7844','#a69456','#c2b078','#ddd0a0']
 def crop(kind):
     # overlays for the furrow tile: plants sit on the ridge rows (y%4==0)
     c=C(16,16,seed=181); c.period=16
@@ -163,8 +166,8 @@ def crop(kind):
         elif kind=='wheat':
             for rx in range(0,16):
                 h=4+int(_hash(rx,ry,181)*3); c.new()
-                for y in range(ry-h+2,ry+2): c.tone(rx,y%16,'gold',2 if y>ry else (3 if rx%2 else 4))
-                for k in range(3): c.tone(rx,(ry-h-k+2)%16,'gold',(6,5,4)[k] if rx%2==0 else (5,4,3)[k])
+                for y in range(ry-h+2,ry+2): c.tone(rx,y%16,'wheat',2 if y>ry else (3 if rx%2 else 4))
+                for k in range(3): c.tone(rx,(ry-h-k+2)%16,'wheat',(6,5,4)[k] if rx%2==0 else (5,4,3)[k])
     return c
 
 def field(kind,w=4,h=3):

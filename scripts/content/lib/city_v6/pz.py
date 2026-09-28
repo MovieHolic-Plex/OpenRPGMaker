@@ -2,7 +2,7 @@
 # INSET soft outline (fin()). v4: contact shadows are light (chipset props carry almost none); unreadable v3 props
 # (rope coil, trap pile, buoys, horseshoe board, chain bollards, mask fountain, tarp pile, oar rack, poster column,
 # gazebo) were dropped after the adversarial QA.
-import sys, math, os; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+import sys, math, os, random; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
 from PIL import Image
 import px2
 from px2 import C, vnoise, _hash, PAL, GRAIN
@@ -456,11 +456,12 @@ def laundry_line(width_px,seed=0,drop=10):
     c.group(1); c.new()
     for x in range(width_px):
         y=1+round(drop*0.35*math.sin(math.pi*x/max(1,width_px-1))); c.tone(x,y,'rope',4)
-    cols=['cream','red','slate','cream','gold','lily']; x=4; k=seed
+    # v7: each line gets its own shuffled muted set (the old fixed cycle made every line the same, with a primary yellow)
+    _lr=random.Random(seed*7919+13); cols=['cream','red','slate','cream','rope','lily','cloth','cream']; _lr.shuffle(cols); x=4+_lr.randint(0,3); k=seed
     c.group(2)
     while x<width_px-7:
         y=1+round(drop*0.35*math.sin(math.pi*(x+2)/max(1,width_px-1)))+1
-        m=cols[k%len(cols)]; w=4+(k*3)%4; h=6+(k*5)%6; c.new()
+        m=cols[k%len(cols)]; w=4+_lr.randint(0,3); h=6+_lr.randint(0,5); c.new()
         if k%3==1:
             for yy in range(y,y+3):
                 for xx in range(x-1,x+w+1): c.tone(xx,yy,m,5 if xx<x+w//2 else 4)
@@ -469,7 +470,7 @@ def laundry_line(width_px,seed=0,drop=10):
         else:
             for yy in range(y,y+h):
                 for xx in range(x,x+w): c.tone(xx,yy,m,(5 if xx<x+w//2 else 4) if yy<y+h-1 else 3)
-        x+=w+3; k+=1
+        x+=w+2+_lr.randint(0,2); k+=1
     return fin(c)
 P['골목 빨랫줄']=(lambda: laundry_line(48,1),'두 집 사이 (공중)','골목 틈')
 

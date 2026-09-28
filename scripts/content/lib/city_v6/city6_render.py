@@ -28,6 +28,7 @@ img.alpha_composite(roman.paving5(FOR_,_forum_tex,joins=ROADM,edge=roman.TRV))
 img.alpha_composite(roman.paving5(FLG_,roman.tex_flag,joins=ROADM))
 img.alpha_composite(roman.paving5(GRV_,roman.tex_gravel,joins=ROADM,curb=True,edge=roman.GRV))
 import castle6, v6pieces
+terrain.MASONRY_FN=lambda X,fy: castle6.ash(X,fy,0.97,seed=7)      # v7: pale ashlar retaining walls (the pink brick strips read as roads)
 img.alpha_composite(roman.paving5(CPV_,lambda X,Y: v6pieces.ctex(192,176,X,Y),joins=ANYP))
 print('paving',round(__import__('time').time()-T0,1))
 # ---- water: static rims/quay faces from pn.canal, the surface from water6 (frame 0 here, all 8 frames saved) ----
@@ -81,7 +82,7 @@ for y in range(H):
                     r_,g_,b_,a_=_tp[x*16+lx,y*16+ly]
                     if a_ and g_>r_+20 and g_>b_+10: _tp[x*16+lx,y*16+ly]=roman.ST[2]+(255,) if (lx in (0,15) or ly in (0,15)) else roman.ST[5]+(255,)
 img.alpha_composite(_tr)
-img.alpha_composite(pn.townwall(wall,gates=GATES))
+img.alpha_composite(pn.townwall(wall,gates=GATES,face=lambda X,wy: castle6.ash(X,wy,1.0,seed=3)))
 for b,x0,y0 in BR:
     img.alpha_composite(b['back'],(x0,y0)); objs.append((b['front'],x0,y0,False))
 for im,x,y,c in GROUNDOBJ: img.alpha_composite(im,(x,y))

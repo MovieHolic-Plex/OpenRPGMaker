@@ -4,7 +4,7 @@ import sys, os, math; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__
 from PIL import Image
 from px2 import _hash
 import palette
-CH=Image.open(os.environ.get('PJ_CHIPSET','/home/main/.t3/worktrees/rpg-zzu/t3code-8b4b09de/public/assets/atlas-biomes/jungle-chipset.png')).convert('RGBA')
+CH=Image.open(os.environ.get('PJ_CHIPSET',os.path.join(os.path.dirname(os.path.abspath(__file__)),'assets','jungle-chipset-v6.png'))).convert('RGBA')   # the v6 chipset copy (byte-identical to the jungle atlas it was taken from)
 def hx(s): return tuple(int(s[i:i+2],16) for i in (1,3,5))
 ST=[hx(c) for c in [palette.OUT_CHIP['stone']]+palette.RAMPS_CHIP['stone']]     # tone 0..6
 WD=[hx(c) for c in [palette.OUT_CHIP['wood']]+palette.RAMPS_CHIP['wood']]
@@ -64,7 +64,7 @@ def bridge(w=3,h=4):
             for X in range(x0,x0+5): px[X,Y]=ST[6 if Y==y0 else 4 if X<x0+3 else 3]+(255,)
     return im
 
-def townwall(mask,gates=()):
+def townwall(mask,gates=(),face=None):
     # mask: walkway cells. An E-W run shows walkway (merlons on the outer/north edge, a parapet on the inner edge) and,
     # in the two cells below it, the stone front face. N-S runs show only the walkway with merlons on both sides.
     # gates: cells of the walkway above a road; the face below them gets an arch passage.
@@ -93,7 +93,8 @@ def townwall(mask,gates=()):
                 if not k: continue
                 wy=ly+(k-1)*16; wc=cx
                 gate=any((gx,gy)==(cx,cy-k) for gx,gy in gates)
-                r,g,b,_=CASTLE[lx,ly]; col=(r,g,b)
+                if face: col=face(X,wy)                                           # v7: pale ashlar like the castle (the chipset's dark navy tile read as water)
+                else: r,g,b,_=CASTLE[lx,ly]; col=(r,g,b)
                 if wy<3: col=mul(col,0.6)                                         # under the parapet overhang
                 if wy>=29: col=ST[4] if wy==29 else ST[2]                         # footing course
                 px[X,Y]=col+(255,)

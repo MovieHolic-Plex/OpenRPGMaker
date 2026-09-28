@@ -14,6 +14,7 @@ LF=[hx(c) for c in palette.RAMPS_CHIP['leaf']]
 def tile(x,y): return CH.crop((x,y,x+16,y+16)).load()
 ROCK=[tile(336,336),tile(352,352),tile(352,336)]; CASTLE=tile(352,32); WATER=tile(16,80)
 _SW=[None]
+MASONRY_FN=None      # v7: optional (X,fy)->rgb for retaining-wall faces (city6_render sets pale ashlar; None = the chipset's pink brick)
 def SW():
     if _SW[0] is None:
         import pj; _SW[0]=pj.tex('sto.wall',16,16).load()
@@ -44,7 +45,8 @@ def render(E,masonry=None,stairs=(),falls=(),frame=0):
                 fy=ly+(k-1)*16                                            # 0..47 down the face
                 ends_w=not F[cy][cx-1] if cx>0 else True; ends_e=not F[cy][cx+1] if cx<W-1 else True
                 if masonry and masonry[cy][cx]:
-                    r,g,b,_=SW()[lx,ly]; c=(r,g,b)
+                    if MASONRY_FN: c=MASONRY_FN(X,fy)
+                    else: r,g,b,_=SW()[lx,ly]; c=(r,g,b)
                     if fy<3: c=ST[5] if fy==0 else (ST[4] if fy==1 else ST[1])          # coping course
                     elif fy<6: c=mul(c,0.62)
                     if fy>=45: c=ST[3] if fy==45 else ST[1]

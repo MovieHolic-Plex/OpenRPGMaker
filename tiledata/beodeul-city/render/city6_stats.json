@@ -50,7 +50,7 @@
   "둥근 돌 화분": 8,
   "칼 꽂은 통": 1,
   "긴 꽃상자": 1,
-  "골목 빨랫줄": 4,
+  "골목 빨랫줄": 0,
   "빨래 건조대": 5,
   "목 굽은 가로등": 7,
   "화분 속 가로수": 10,
@@ -66,13 +66,22 @@
   "계단 난간": 16
  },
  "roads": {
-  "extended": 2,
-  "pruned_cells": 234,
-  "islands_removed": 8,
-  "bulges": 17,
-  "pier_paths": 2
+  "extended": 0,
+  "pruned_cells": 36,
+  "islands_removed": 0,
+  "bulges": 14,
+  "pier_paths": 3,
+  "first_pass": {
+   "extended": 2,
+   "pruned_cells": 218,
+   "islands_removed": 8,
+   "bulges": 17,
+   "pier_paths": 2
+  },
+  "stubs_pruned": 2,
+  "ends_left": []
  },
- "bridges": 3,
+ "bridges": 4,
  "smoke_kinds": {
   "dark": 4,
   "puffy": 15,
@@ -109,7 +118,7 @@
   ]
  ],
  "water_px": 323398,
- "walk_cells": 1849,
+ "walk_cells": 1841,
  "walk_unconnected": 0,
  "walk_off_list": []
 }

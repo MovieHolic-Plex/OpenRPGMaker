@@ -154,16 +154,20 @@ for i,(nm,dx,by) in enumerate(HOUSES):
     if r<0.35: put('문간 화분 둘',dx+(1 if i%2 else -1),by+1) or put('문간 화분 둘',dx-(1 if i%2 else -1),by+1)
     elif r<0.5: put('긴 꽃상자',dx+1,by+1) or put('긴 꽃상자',dx-2,by+1)
 def hname(o): return isinstance(o,str) and o[:1] in 'hib' and o not in ('bridge',)
-nl=0
+nl=0; _LL=[]
 for y in range(2,H-1):
     x=1
     while x<W-4:
         if hname(occ[y][x]) and not hname(occ[y][x+1]) and not hname(occ[y+1][x]):
             a=occ[y][x]; g=1
             while g<=3 and x+g<W and not hname(occ[y][x+g]): g+=1
+            # v7 QA: laundry lines were everywhere, identical, and crossed the main streets. Now: at most 5 in the town, only over
+            # a grass gap (no road/plaza cell in it), never two within 14 cells of each other.
             if g<=3 and x+g<W and hname(occ[y][x+g]) and occ[y][x+g]!=a and not hname(occ[y+1][x+g]) and _rs.random()<0.75:
                 wpx=(g-1)*16+12
-                if wpx>=20:
+                gap_ok=all(occ[yy][xx] is None for xx in range(x+1,x+g) for yy in (y,y+1) if 0<=yy<H) and nl<5 and not any(abs(x-a_)+abs(y-b_)<14 for a_,b_ in _LL)
+                if wpx>=20 and gap_ok:
+                    _LL.append((x,y))
                     im=pz.laundry_line(wpx,seed=x+y,drop=8); OVER.append((im,(x+1)*16-6,y*16-10,False)); nl+=1
                     PLACED.append(dict(id='laundry_line',x=x+1,y=y,w=g-1,h=0,layer='overlay',between=[a,occ[y][x+g]]))
             x+=g

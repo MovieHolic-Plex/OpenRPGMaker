@@ -8,6 +8,7 @@ from PIL import Image, ImageDraw
 import palette; palette.apply()
 exec(open(SRC+'/city_layout.py').read())
 STAIRS[STAIRS.index((11,14,2))]=(14,12,5); STAIRS.append((15,30,3))   # v6: grand stair on the palace axis + causeway stair
+from px2 import _hash
 import terrain, pk, pn, pj, pv, shapes, addons2, pf, pl, pi, pe, ph, pv2, pz, ground, roman, water6, smoke5
 from pj_demo import roofrows as RR, storeyrows as SR
 from sheet2 import lawn
@@ -18,6 +19,40 @@ CHIP=terrain.CH
 TREES={'oakA':(224,512,4,5),'oakB':(288,512,3,4),'bushC':(336,512,2,2),'bushD':(368,512,3,3),'bushE':(368,560,2,2)}
 def tree(k):
     x,y,w,h=TREES[k]; im=CHIP.crop((x,y,x+w*16,y+h*16)); im._tree=True; return im
+# v7: the same round tree five times in a row was a QA defect. Every tree kind now has 4 looks (as drawn, mirrored, a warmer
+# and lighter tint, a cooler and darker tint mirrored), picked from the cell by hash, and a look is not reused within 6 cells.
+import colorsys
+_TV={}
+def _tint(im,dh,dv):
+    o=im.copy(); p=o.load(); memo={}
+    for yy in range(o.height):
+        for xx in range(o.width):
+            r,g,b,a=p[xx,yy]
+            if not a: continue
+            c=memo.get((r,g,b))
+            if c is None:
+                h_,s_,v_=colorsys.rgb_to_hsv(r/255,g/255,b/255)
+                if s_>0.18: h_=(h_+dh)%1.0
+                v_=max(0,min(1,v_*dv)); rr,gg,bb=colorsys.hsv_to_rgb(h_,s_,v_); c=(round(rr*255),round(gg*255),round(bb*255)); memo[(r,g,b)]=c
+            p[xx,yy]=c+(a,)
+    return o
+def tree_v(k,v):
+    key=(k,v)
+    if key not in _TV:
+        im=tree(k)
+        if v==1: im=im.transpose(Image.FLIP_LEFT_RIGHT)
+        elif v==2: im=_tint(im,0.018,1.07)
+        elif v==3: im=_tint(im,-0.02,0.92).transpose(Image.FLIP_LEFT_RIGHT)
+        im._tree=True; _TV[key]=im
+    return _TV[key]
+TREEPLACED=[]      # (x,y,kind,variant) of every tree drawn from a kind that has looks
+def tree_pick(k,x,y,r=6):
+    used={(kk,vv) for tx,ty,kk,vv in TREEPLACED if abs(tx-x)<=r and abs(ty-y)<=r}
+    v0=int(_hash(x,y,77)*4)
+    for d in range(4):
+        v=(v0+d)%4
+        if (k,v) not in used: break
+    TREEPLACED.append((x,y,k,v)); return tree_v(k,v)
 I=lambda o: (pz.fin(o) if hasattr(o,'img') else o)
 rng=random.Random(11)
 
@@ -96,6 +131,10 @@ for bx in (33,47):
         # a street row on both banks at y and y+1 -> bridge
         if all(road[y+j][bx+i] for j in (0,1) for i in (-3,-2,-1,4,5,6)) and water[y][bx] and water[y+1][bx] and not any(fx==bx and 0<=y-(fy+3)<3 for fx,fy,fw in FALLS):
             if not any(abs(y-b)<2 and bx==a for a,b in BRIDGES): BRIDGES.append((bx,y))
+# v7 QA: the east boulevard (x51..52) ran up to the river at the second waterfall and stopped ("a main road ending in the river").
+# A fourth bridge joins it to the west boulevard (x45..46) just below the foam, so the street crosses instead of ending.
+if not any(b[0]==47 and 64<=b[1]<=69 for b in BRIDGES) and all(road[67+j][xx] for j in (0,1) for xx in (45,46,51,52)) and all(water[67+j][xx] for j in (0,1) for xx in (47,48,49,50)):
+    BRIDGES.append((47,67))
 for bx,by in BRIDGES:
     for i in range(4):
         for j in range(2): occ[by+j][bx+i]='bridge'
@@ -201,8 +240,7 @@ def yard(x,fw,y0,y1,door,stone,r):
             f=r.choice(things) if r.random()<0.7 else None
             if f is not None: P_(f'yd{cx}_{cy}',f,cx,cy,allow=())
             else:
-                im=tree('bushC')
-                if free(cx,cy,2,2): mark('tree',cx,cy,2,2); objs.append((im,cx*16,cy*16,True))
+                if free(cx,cy,2,2): mark('tree',cx,cy,2,2); objs.append((tree_pick('bushC',cx,cy),cx*16,cy*16,True))
 POOL={}
 def pool(style):
     # a stock of ready-made houses per style (built once), so each street picks from what FITS its block
@@ -356,6 +394,7 @@ for y in range(3,95):
             if P_(f'yd{x}_{y}',YARD[k%len(YARD)],x,y,allow=()): k+=1
 # lanterns along the main streets
 exec(open(SRC+'/city6_props.py').read())
+exec(open(SRC+'/road_fix7.py').read())      # v7: no street ends in a stub any more (props take street edge cells and left some behind)
 
 # ---------------- trees: clumps on the hill edges, along the river, parks, outskirts ----------------
 def clump(cx,cy,n):
@@ -363,10 +402,17 @@ def clump(cx,cy,n):
         im=tree(kk); fw,fh=im.width//16,im.height//16
         for t in range(30):
             x=cx+rng.randint(-3,3)-fw//2; y=cy+rng.randint(-3,3)-fh//2
-            if free(x,y,fw,fh): mark('tree',x,y,fw,fh); objs.append((im,x*16,y*16,True)); break
+            if free(x,y,fw,fh): mark('tree',x,y,fw,fh); objs.append((tree_pick(kk,x,y),x*16,y*16,True)); break
 _T5={}
-def tree5(k,seed=0):
-    if k in TREES: return tree(k)
+def cyp_pick(x,y,r=6):
+    used={vv for tx,ty,kk,vv in TREEPLACED if kk=='cyp' and abs(tx-x)<=r and abs(ty-y)<=r}
+    v0=int(_hash(x,y,79)*3)
+    for d in range(3):
+        v=(v0+d)%3
+        if v not in used: break
+    TREEPLACED.append((x,y,'cyp',v)); return tree5('cyp',v)
+def tree5(k,seed=0,at=None):
+    if k in TREES: return tree_pick(k,*at) if at else tree(k)
     key=(k,seed%3)
     if key not in _T5:
         im=roman.cypress(3,seed%3) if k=='cyp' else roman.umbrella_pine(seed%3); im._tree=True; _T5[key]=im
@@ -383,7 +429,10 @@ for y in range(2,H-1):
         if gr.random()<0.30: big=['cyp']+big
         for kk in big+gr.sample(['bushC','bushE'],2):
             im=tree5(kk,x*7+y); fw,fh=im.width//16,im.height//16
-            if free(x,y,fw,fh): mark('tree',x,y,fw,fh); objs.append((im,x*16,y*16,True)); break
+            if free(x,y,fw,fh):
+                if kk in TREES: im=tree_pick(kk,x,y)
+                elif kk=='cyp': im=cyp_pick(x,y)
+                mark('tree',x,y,fw,fh); objs.append((im,x*16,y*16,True)); break
 # ---------------- lake: wooden piers and boats ----------------
 def pier(w,h):
     im=Image.new('RGBA',(w*16,h*16)); px=im.load(); WD=terrain.WD
@@ -400,13 +449,13 @@ for px_ in (20,38,62,76):
     # promenade; there it starts one row higher so the planks run from the road edge out over the water
     nat=px_<=35 or px_>=65
     y0=shore[px_]-(1 if nat else 0)
-    objs.append((pier(2,5+(1 if nat else 0)),px_*16,y0*16,True)); PIERS.append((px_,y0,2,5+(1 if nat else 0)))
+    GROUNDOBJ.append((pier(2,5+(1 if nat else 0)),px_*16,y0*16,True)); PIERS.append((px_,y0,2,5+(1 if nat else 0)))   # v7: the deck is GROUND (it was an upper picture: a player on the pier was drawn under its planks)
 # boats sit in the water (their own waterline effect); drawn per frame by city2_anim.py, frame 0 here
 BOATS=[('ship',51,88),('fishing',40,89),('fishing',77,91),('rowboat',22,92),('rowboat',35,94),('rowboat',66,95),('rowboat',44,97),('barge',47,80)]
 
 
 # ---------------- townsfolk ----------------
-CS='/home/main/.t3/worktrees/rpg-zzu/t3code-8b4b09de/public/assets/easyrpg/charset/'
+CS=os.path.join(SRC,'..','..','..','..','public','assets','easyrpg','charset')+os.sep      # repo public/assets (was another worktree's copy)
 _SH={}
 def npc(sheet,k,d,f=1):
     if sheet not in _SH:
