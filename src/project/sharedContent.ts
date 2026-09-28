@@ -9,6 +9,18 @@ let snapshot: SharedContentSnapshot = {revision:'bundled',libraries:bundledLibra
 let defaultAssetHashes = new Map<string,string>();
 let snapshotScope: SharedContentScope | null = null;
 export const sharedContentSnapshot = () => snapshot;
+/**
+ * 설치된 공용 기본 자산 중 바이트 해시와 머리가 같은 것의 dataUrl. 같은 바이트의 base64 글은 하나뿐이므로
+ * 머리까지 같으면 글도 같다. 팀 참여 창이 호스트에서 같은 그림을 다시 받지 않게 한다(persistence/electronRepository.ts).
+ */
+export function sharedDefaultAssetDataUrl(id: string, bytesSha256: string, head: string): string | undefined {
+  if (defaultAssetHashes.get(id) !== bytesSha256) return undefined;
+  for (const lib of Object.values(snapshot.libraries)) {
+    const dataUrl = lib.projectDefaults ? lib.assets[id]?.dataUrl : undefined;
+    if (dataUrl && dataUrl.startsWith(head + ",")) return dataUrl;
+  }
+  return undefined;
+}
 function base64Bytes(value: string): Uint8Array {
   const binary=atob(value), bytes=new Uint8Array(binary.length);
   for(let index=0;index<binary.length;index+=1) bytes[index]=binary.charCodeAt(index);

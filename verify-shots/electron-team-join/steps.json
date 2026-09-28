@@ -1,0 +1,52 @@
+[
+  {
+    "name": "host app opens the project folder in the editor",
+    "ok": true,
+    "detail": "app://oprn/index.html"
+  },
+  {
+    "name": "host starts the team host and lists join addresses",
+    "ok": true,
+    "detail": "[\"http://192.168.100.124:9840\",\"http://100.73.251.77:9840\"]"
+  },
+  {
+    "name": "file menu has 「팀에 참여…」",
+    "ok": true,
+    "detail": "팀 협업 시작 / 관리 | 팀에 참여… | 팀 호스트 중지 | 새 프로젝트 | 폴더 열기 | 저장 | 백업 만들기 | 프로젝트 폴더 보기 | Close"
+  },
+  {
+    "name": "wrong address shows a reason and leaves no stray window",
+    "ok": true,
+    "detail": "192.168.100.124:9 에 연결하지 못했습니다 (ERR_UNSAFE_PORT). 호스트 컴퓨터에서 팀 협업이 켜져 있는지, 같은 네트워크인지 확인해 주세요."
+  },
+  {
+    "name": "member app shows the host editor (map canvas + team bar) in an app window",
+    "ok": true,
+    "detail": "http://192.168.100.124:9840/?map=map_farming_demo bar=\"내 팀 · 호스트 · 저장 후 팀 변경 반영팀 관리 ↗\" loadMs=34892"
+  },
+  {
+    "name": "member window talks to the host over HTTP, without the local IPC bridge",
+    "ok": true,
+    "detail": "{\"url\":\"http://192.168.100.124:9840/?map=map_farming_demo\",\"closeIsHostDriven\":false,\"member\":\"호스트\",\"role\":\"owner\"}"
+  },
+  {
+    "name": "the member window is an Electron window of the member app",
+    "ok": true,
+    "detail": "[{\"title\":\"OPRN Studio\",\"url\":\"http://192.168.100.124:9840/?map=map_farming_demo\"},{\"title\":\"OPRN Studio\",\"url\":\"app://oprn/start-screen.html\"}]"
+  },
+  {
+    "name": "member save lands in the host's project.sqlite",
+    "ok": true,
+    "detail": "{\"result\":{\"kind\":\"saved\",\"revision\":3},\"revisionBefore\":1,\"revisionAfter\":3,\"titleAfter\":\"팀 참여 저장 1790543673355\"}"
+  },
+  {
+    "name": "host app reads the member's change",
+    "ok": true,
+    "detail": "{\"revision\":3,\"title\":\"팀 참여 저장 1790543673355\"}"
+  },
+  {
+    "name": "joined host appears under 최근 참여한 팀",
+    "ok": true,
+    "detail": "192.168.100.124:98401분 전"
+  }
+]
