@@ -1,0 +1,511 @@
+{
+  "file": "monster-gym-coast.png",
+  "baseRows": 16,
+  "baseSheet": "scarloxy-chipset-wilds.png",
+  "blocks": [
+    {
+      "name": "gym-floor-neutral",
+      "col": 0,
+      "row": 16,
+      "w": 2,
+      "h": 1,
+      "kind": "floor",
+      "layer": "lower",
+      "passage": "passable"
+    },
+    {
+      "name": "gym-floor-grass",
+      "col": 2,
+      "row": 16,
+      "w": 2,
+      "h": 1,
+      "kind": "floor",
+      "layer": "lower",
+      "passage": "passable"
+    },
+    {
+      "name": "gym-floor-fire",
+      "col": 4,
+      "row": 16,
+      "w": 2,
+      "h": 1,
+      "kind": "floor",
+      "layer": "lower",
+      "passage": "passable"
+    },
+    {
+      "name": "gym-floor-water",
+      "col": 6,
+      "row": 16,
+      "w": 2,
+      "h": 1,
+      "kind": "floor",
+      "layer": "lower",
+      "passage": "passable"
+    },
+    {
+      "name": "pier-deck-h",
+      "col": 8,
+      "row": 16,
+      "w": 1,
+      "h": 1,
+      "kind": "pier",
+      "layer": "lower",
+      "passage": "passable"
+    },
+    {
+      "name": "pier-deck-v",
+      "col": 9,
+      "row": 16,
+      "w": 1,
+      "h": 1,
+      "kind": "pier",
+      "layer": "lower",
+      "passage": "passable"
+    },
+    {
+      "name": "pier-front",
+      "col": 10,
+      "row": 16,
+      "w": 1,
+      "h": 1,
+      "kind": "pier",
+      "layer": "lower",
+      "passage": "solid"
+    },
+    {
+      "name": "wet-sand",
+      "col": 11,
+      "row": 16,
+      "w": 1,
+      "h": 1,
+      "kind": "sand",
+      "layer": "lower",
+      "passage": "passable"
+    },
+    {
+      "name": "gym-wall-grass",
+      "col": 0,
+      "row": 17,
+      "w": 1,
+      "h": 2,
+      "kind": "wall",
+      "layer": "lower",
+      "passage": "solid"
+    },
+    {
+      "name": "gym-wall-grass-emblem",
+      "col": 1,
+      "row": 17,
+      "w": 2,
+      "h": 2,
+      "kind": "wall",
+      "layer": "lower",
+      "passage": "solid"
+    },
+    {
+      "name": "gym-wall-fire",
+      "col": 3,
+      "row": 17,
+      "w": 1,
+      "h": 2,
+      "kind": "wall",
+      "layer": "lower",
+      "passage": "solid"
+    },
+    {
+      "name": "gym-wall-fire-emblem",
+      "col": 4,
+      "row": 17,
+      "w": 2,
+      "h": 2,
+      "kind": "wall",
+      "layer": "lower",
+      "passage": "solid"
+    },
+    {
+      "name": "gym-wall-water",
+      "col": 6,
+      "row": 17,
+      "w": 1,
+      "h": 2,
+      "kind": "wall",
+      "layer": "lower",
+      "passage": "solid"
+    },
+    {
+      "name": "gym-wall-water-emblem",
+      "col": 7,
+      "row": 17,
+      "w": 2,
+      "h": 2,
+      "kind": "wall",
+      "layer": "lower",
+      "passage": "solid"
+    },
+    {
+      "name": "gym-ceiling",
+      "col": 9,
+      "row": 17,
+      "w": 8,
+      "h": 1,
+      "kind": "ceiling",
+      "layer": "lower",
+      "passage": "solid"
+    },
+    {
+      "name": "leader-podium-grass",
+      "col": 0,
+      "row": 19,
+      "w": 3,
+      "h": 2,
+      "kind": "podium",
+      "layer": "upper",
+      "passage": "solid",
+      "openCells": [
+        [
+          1,
+          1
+        ]
+      ],
+      "openPart": "stairs"
+    },
+    {
+      "name": "leader-podium-fire",
+      "col": 3,
+      "row": 19,
+      "w": 3,
+      "h": 2,
+      "kind": "podium",
+      "layer": "upper",
+      "passage": "solid",
+      "openCells": [
+        [
+          1,
+          1
+        ]
+      ],
+      "openPart": "stairs"
+    },
+    {
+      "name": "leader-podium-water",
+      "col": 6,
+      "row": 19,
+      "w": 3,
+      "h": 2,
+      "kind": "podium",
+      "layer": "upper",
+      "passage": "solid",
+      "openCells": [
+        [
+          1,
+          1
+        ]
+      ],
+      "openPart": "stairs"
+    },
+    {
+      "name": "badge-statue-grass",
+      "col": 9,
+      "row": 19,
+      "w": 1,
+      "h": 2,
+      "kind": "statue",
+      "layer": "upper",
+      "passage": "solid",
+      "overRows": 1
+    },
+    {
+      "name": "badge-statue-fire",
+      "col": 10,
+      "row": 19,
+      "w": 1,
+      "h": 2,
+      "kind": "statue",
+      "layer": "upper",
+      "passage": "solid",
+      "overRows": 1
+    },
+    {
+      "name": "badge-statue-water",
+      "col": 11,
+      "row": 19,
+      "w": 1,
+      "h": 2,
+      "kind": "statue",
+      "layer": "upper",
+      "passage": "solid",
+      "overRows": 1
+    },
+    {
+      "name": "gym-fern-pot",
+      "col": 12,
+      "row": 19,
+      "w": 1,
+      "h": 2,
+      "kind": "statue",
+      "layer": "upper",
+      "passage": "solid",
+      "overRows": 1
+    },
+    {
+      "name": "gym-brazier",
+      "col": 13,
+      "row": 19,
+      "w": 1,
+      "h": 2,
+      "kind": "statue",
+      "layer": "upper",
+      "passage": "solid",
+      "overRows": 1
+    },
+    {
+      "name": "gym-fountain",
+      "col": 14,
+      "row": 19,
+      "w": 2,
+      "h": 2,
+      "kind": "statue",
+      "layer": "upper",
+      "passage": "solid"
+    },
+    {
+      "name": "trainer-marker",
+      "col": 0,
+      "row": 21,
+      "w": 1,
+      "h": 1,
+      "kind": "marker",
+      "layer": "upper",
+      "passage": "passable"
+    },
+    {
+      "name": "floor-switch-off",
+      "col": 1,
+      "row": 21,
+      "w": 1,
+      "h": 1,
+      "kind": "switch",
+      "layer": "upper",
+      "passage": "passable"
+    },
+    {
+      "name": "floor-switch-on",
+      "col": 2,
+      "row": 21,
+      "w": 1,
+      "h": 1,
+      "kind": "switch",
+      "layer": "upper",
+      "passage": "passable"
+    },
+    {
+      "name": "barrier-closed",
+      "col": 3,
+      "row": 21,
+      "w": 1,
+      "h": 1,
+      "kind": "barrier",
+      "layer": "upper",
+      "passage": "solid"
+    },
+    {
+      "name": "barrier-open",
+      "col": 4,
+      "row": 21,
+      "w": 1,
+      "h": 1,
+      "kind": "barrier",
+      "layer": "upper",
+      "passage": "passable"
+    },
+    {
+      "name": "gym-doormat",
+      "col": 5,
+      "row": 21,
+      "w": 2,
+      "h": 1,
+      "kind": "marker",
+      "layer": "upper",
+      "passage": "passable"
+    },
+    {
+      "name": "shore-sea",
+      "col": 0,
+      "row": 22,
+      "w": 3,
+      "h": 3,
+      "kind": "shore",
+      "layer": "lower",
+      "passage": "solid",
+      "openCells": [
+        [
+          1,
+          1
+        ]
+      ],
+      "openPart": "center"
+    },
+    {
+      "name": "shore-sea-inner",
+      "col": 3,
+      "row": 22,
+      "w": 2,
+      "h": 2,
+      "kind": "shore",
+      "layer": "lower",
+      "passage": "solid"
+    },
+    {
+      "name": "sand-wet-edge",
+      "col": 5,
+      "row": 22,
+      "w": 3,
+      "h": 3,
+      "kind": "sand-edge",
+      "layer": "lower",
+      "passage": "passable"
+    },
+    {
+      "name": "sand-wet-edge-inner",
+      "col": 8,
+      "row": 22,
+      "w": 2,
+      "h": 2,
+      "kind": "sand-edge",
+      "layer": "lower",
+      "passage": "passable"
+    },
+    {
+      "name": "lighthouse",
+      "col": 0,
+      "row": 25,
+      "w": 3,
+      "h": 6,
+      "kind": "structure",
+      "layer": "upper",
+      "passage": "solid"
+    },
+    {
+      "name": "rowboat",
+      "col": 3,
+      "row": 29,
+      "w": 3,
+      "h": 2,
+      "kind": "boat",
+      "layer": "upper",
+      "passage": "solid"
+    },
+    {
+      "name": "mooring-bollard",
+      "col": 6,
+      "row": 30,
+      "w": 1,
+      "h": 1,
+      "kind": "harbor",
+      "layer": "upper",
+      "passage": "solid"
+    },
+    {
+      "name": "buoy",
+      "col": 7,
+      "row": 30,
+      "w": 1,
+      "h": 1,
+      "kind": "harbor",
+      "layer": "upper",
+      "passage": "solid"
+    },
+    {
+      "name": "rope-coil",
+      "col": 8,
+      "row": 30,
+      "w": 1,
+      "h": 1,
+      "kind": "harbor",
+      "layer": "upper",
+      "passage": "passable"
+    },
+    {
+      "name": "palm-shrub",
+      "col": 9,
+      "row": 30,
+      "w": 1,
+      "h": 1,
+      "kind": "beach",
+      "layer": "upper",
+      "passage": "solid"
+    },
+    {
+      "name": "coconut-pile",
+      "col": 10,
+      "row": 30,
+      "w": 1,
+      "h": 1,
+      "kind": "beach",
+      "layer": "upper",
+      "passage": "solid"
+    },
+    {
+      "name": "beach-umbrella",
+      "col": 11,
+      "row": 29,
+      "w": 2,
+      "h": 2,
+      "kind": "beach",
+      "layer": "upper",
+      "passage": "solid",
+      "overRows": 1
+    },
+    {
+      "name": "spiral-shell",
+      "col": 13,
+      "row": 30,
+      "w": 1,
+      "h": 1,
+      "kind": "shell",
+      "layer": "upper",
+      "passage": "passable"
+    },
+    {
+      "name": "scallop-shell",
+      "col": 14,
+      "row": 30,
+      "w": 1,
+      "h": 1,
+      "kind": "shell",
+      "layer": "upper",
+      "passage": "passable"
+    },
+    {
+      "name": "starfish",
+      "col": 15,
+      "row": 30,
+      "w": 1,
+      "h": 1,
+      "kind": "shell",
+      "layer": "upper",
+      "passage": "passable"
+    },
+    {
+      "name": "sea-rock",
+      "col": 16,
+      "row": 30,
+      "w": 1,
+      "h": 1,
+      "kind": "beach",
+      "layer": "upper",
+      "passage": "solid"
+    },
+    {
+      "name": "driftwood",
+      "col": 17,
+      "row": 30,
+      "w": 2,
+      "h": 1,
+      "kind": "beach",
+      "layer": "upper",
+      "passage": "solid"
+    }
+  ]
+}

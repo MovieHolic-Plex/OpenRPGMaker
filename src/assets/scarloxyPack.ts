@@ -10,6 +10,7 @@ import type { EasyRpgCharsetAsset } from "@/assets/easyrpgRtp";
 import manifestInput from "./scarloxyPackManifest.json" with { type: "json" };
 import monsterTownKitInput from "./monsterTownKitManifest.json" with { type: "json" };
 import monsterInteriorInput from "./monsterInteriorManifest.json" with { type: "json" };
+import monsterGymCoastInput from "./monsterGymCoastManifest.json" with { type: "json" };
 
 type ScarloxyPackedBlock = {
   readonly name: string;
@@ -58,6 +59,33 @@ export const MONSTER_INTERIOR_MANIFEST = monsterInteriorInput as {
 };
 export const MONSTER_INTERIOR_TEXTURE_KEY = "tex_scarloxy_chipset_monster_interior";
 
+/** 체육관 내부 + 해변·항구 블록. 층·통행을 블록이 직접 들고 있다(빌드 스크립트가 정본). */
+export type MonsterGymCoastBlock = {
+  readonly name: string;
+  readonly col: number;
+  readonly row: number;
+  readonly w: number;
+  readonly h: number;
+  readonly kind: string;
+  readonly layer: "lower" | "upper";
+  readonly passage: "passable" | "solid";
+  /** 위에서부터 이 줄 수만큼은 통행 가능(캐릭터 머리 위로 그려지는 조각상 머리·파라솔 천). */
+  readonly overRows?: number;
+  /** 막힘 블록 안에서 통행 가능한 칸 [dx, dy](단상 계단·해안 가운데). */
+  readonly openCells?: readonly (readonly number[])[];
+  readonly openPart?: "stairs" | "center";
+};
+
+/**
+ * 체육관 내부 + 해변·항구 — Scarloxy 화풍에 맞춰 이미지 생성 모델로 그린 **생성 자산**(팩 원본 아님).
+ * 위 480칸은 Scarloxy 사막/설원 시트 그대로(모래·바다·해안·야자·아레나 외관), 아래 480칸이 새 부품이다.
+ * 빌드: scripts/content/build-monster-gym-coast.py. 출처 표기: public/assets/ATTRIBUTION.md 「Generated monster gym & coast kit」.
+ */
+export const MONSTER_GYM_COAST_MANIFEST = monsterGymCoastInput as { readonly file: string; readonly baseRows: number; readonly baseSheet: string; readonly blocks: readonly MonsterGymCoastBlock[] };
+export const MONSTER_GYM_COAST_TEXTURE_KEY = "tex_scarloxy_chipset_monster_gym_coast";
+/** 위 반쪽 = 사막/설원 시트 그대로(0~479), 아래 반쪽 = 새 부품(480~959). */
+export const MONSTER_GYM_COAST_FRAME_COUNT = 960;
+
 const ASSET_DIR = "assets/scarloxy";
 
 // bundled.ts 의 BundledImageAsset 과 구조 동일(순환 import 방지를 위해 구조 타이핑).
@@ -70,6 +98,7 @@ export const SCARLOXY_CHIPSET_ASSETS = [
   // 텍스처 키 접두어를 tex_scarloxy_chipset_ 로 맞춰 화풍 분류·테마 팩·생성 프로필을 그대로 탄다.
   { textureKey: MONSTER_TOWN_KIT_TEXTURE_KEY, path: "assets/monster-town-kit/monster-town-kit.png", name: "Scarloxy 초원 마을 + 몬스터 마을 부품 (480~ 생성 자산)" },
   { textureKey: MONSTER_INTERIOR_TEXTURE_KEY, path: "assets/monster-interior/monster-interior.png", name: "Scarloxy 몬스터 실내 · 회복 센터·상점·집·연구소 (가구는 생성 자산)" },
+  { textureKey: MONSTER_GYM_COAST_TEXTURE_KEY, path: "assets/monster-gym-coast/monster-gym-coast.png", name: "Scarloxy 사막/해안 + 체육관·항구 부품 (480~ 생성 자산)" },
 ] as const satisfies readonly ScarloxyBundledAsset[];
 
 export const SCARLOXY_CHARSET_ASSETS = [
@@ -411,12 +440,101 @@ function monsterInteriorGroupSeeds(): readonly ScarloxyChipsetGroupSeed[] {
   return [...byKey.values()];
 }
 
+/**
+ * 체육관·해변 블록 라벨. 블록 하나가 그룹 하나다(바닥 A·B 변형은 한 그룹 안에 둘 다 든다).
+ * 조각상·파라솔처럼 위 줄이 머리 위로 그려지는 블록은 「… 머리」 통행 가능 그룹을 따로 만든다 —
+ * 그룹 하나는 통행값 하나라서, 한 그룹에 섞으면 머리 칸이 벽이 된다(나무 수관·밑동과 같은 이유).
+ * 단상 계단 칸도 같은 이유로 「… 계단」 그룹이 따로 있다.
+ */
+const MONSTER_GYM_COAST_LABELS: Record<string, { readonly name: string; readonly role: ScarloxyChipsetGroupSeed["role"]; readonly repeat?: boolean; readonly description: string }> = {
+  "gym-floor-neutral": { name: "체육관 바닥 · 중립", role: "terrain", repeat: true, description: "밝은 회색 광택 타일 바닥(A·B 2칸)입니다. 로비·통로에 1층으로 깔고 A·B 를 체크무늬로 섞습니다." },
+  "gym-floor-grass": { name: "체육관 바닥 · 풀", role: "terrain", repeat: true, description: "초록 잔디무늬 타일 바닥(A 무늬 · B 잎 문양)입니다. 풀 속성 체육관 1층." },
+  "gym-floor-fire": { name: "체육관 바닥 · 불", role: "terrain", repeat: true, description: "주황·빨강 돌 타일 바닥(A 무늬 · B 불꽃 문양)입니다. 불 속성 체육관 1층." },
+  "gym-floor-water": { name: "체육관 바닥 · 물", role: "terrain", repeat: true, description: "파란 유리 타일 바닥(A 무늬 · B 물방울 문양)입니다. 물 속성 체육관 1층." },
+  "pier-deck-h": { name: "부두 판자 · 가로", role: "terrain", repeat: true, description: "가로 판자 부두 바닥(1×1)입니다. 바다 위로 뻗은 부두를 1층에 채웁니다. 통행 가능." },
+  "pier-deck-v": { name: "부두 판자 · 세로", role: "terrain", repeat: true, description: "세로 판자 부두 바닥(1×1)입니다. 세로로 뻗은 잔교에 씁니다. 통행 가능." },
+  "pier-front": { name: "부두 앞면(말뚝)", role: "water", repeat: true, description: "부두 끝 판자 모서리와 바닷속 말뚝(1×1)입니다. 부두 바로 아래 바다 줄에 가로로 반복합니다. 통행 불가." },
+  "wet-sand": { name: "젖은 모래", role: "terrain", repeat: true, description: "물가 젖은 모래(1×1)입니다. 사막 모래 34 와 무늬가 같아 그대로 이어집니다. 통행 가능." },
+  "gym-wall-grass": { name: "체육관 벽 · 풀", role: "building", repeat: true, description: "초록 벽 기둥(1×2)입니다. 방 윗벽 두 줄에 가로로 반복합니다. 통행 불가." },
+  "gym-wall-grass-emblem": { name: "체육관 벽 · 풀 문장", role: "building", description: "잎 문장판이 달린 초록 벽(2×2)입니다. 윗벽 가운데에 한 번 둡니다." },
+  "gym-wall-fire": { name: "체육관 벽 · 불", role: "building", repeat: true, description: "주황 벽 기둥(1×2)입니다. 방 윗벽 두 줄에 가로로 반복합니다. 통행 불가." },
+  "gym-wall-fire-emblem": { name: "체육관 벽 · 불 문장", role: "building", description: "불꽃 문장판이 달린 주황 벽(2×2)입니다." },
+  "gym-wall-water": { name: "체육관 벽 · 물", role: "building", repeat: true, description: "파란 벽 기둥(1×2)입니다. 방 윗벽 두 줄에 가로로 반복합니다. 통행 불가." },
+  "gym-wall-water-emblem": { name: "체육관 벽 · 물 문장", role: "building", description: "물방울 문장판이 달린 파란 벽(2×2)입니다." },
+  "gym-ceiling": { name: "체육관 천장 테두리", role: "building", description: "방 바깥을 두르는 남색 천장(8칸: 평면·왼·오·아래 테·두 안모서리·입구 두 끝)입니다. 1층, 통행 불가." },
+  "leader-podium-grass": { name: "관장 단상 · 풀", role: "building", description: "초록 관장 단상(3×2)입니다. 관장은 윗줄 가운데 칸에 섭니다. 아래 가운데 계단 칸만 통행 가능." },
+  "leader-podium-fire": { name: "관장 단상 · 불", role: "building", description: "주황 관장 단상(3×2)입니다. 아래 가운데 계단 칸만 통행 가능." },
+  "leader-podium-water": { name: "관장 단상 · 물", role: "building", description: "파란 관장 단상(3×2)입니다. 아래 가운데 계단 칸만 통행 가능." },
+  "badge-statue-grass": { name: "배지 조각상 · 풀", role: "prop", description: "금빛 잎 배지를 얹은 돌 받침(1×2)입니다. 입구 양옆에 둡니다. 아래 칸 통행 불가." },
+  "badge-statue-fire": { name: "배지 조각상 · 불", role: "prop", description: "금빛 불꽃 배지 조각상(1×2)입니다." },
+  "badge-statue-water": { name: "배지 조각상 · 물", role: "prop", description: "금빛 물방울 배지 조각상(1×2)입니다." },
+  "gym-fern-pot": { name: "고사리 화분", role: "prop", description: "흰 화분 고사리(1×2)입니다. 풀 체육관 장식." },
+  "gym-brazier": { name: "화로", role: "prop", description: "불타는 쇠 화로(1×2)입니다. 불 체육관 장식." },
+  "gym-fountain": { name: "분수대", role: "prop", description: "둥근 물 분수대(2×2)입니다. 물 체육관 장식. 통행 불가." },
+  "trainer-marker": { name: "트레이너 위치 표시", role: "prop", description: "바닥에 칠한 빨강·흰 원(1×1)입니다. 트레이너 이벤트가 서는 칸 표시. 통행 가능." },
+  "floor-switch-off": { name: "바닥 스위치 · 꺼짐", role: "prop", description: "빨간 버튼 바닥 스위치(1×1)입니다. 밟으면 켜짐 칸으로 바꾸는 퍼즐 이벤트의 그림. 통행 가능." },
+  "floor-switch-on": { name: "바닥 스위치 · 켜짐", role: "prop", description: "눌려 초록으로 빛나는 스위치(1×1)입니다. 통행 가능." },
+  "barrier-closed": { name: "차단기 · 닫힘", role: "prop", description: "노랑·검정 줄무늬 금속 차단기(1×1)입니다. 스위치로 열리는 문. 통행 불가." },
+  "barrier-open": { name: "차단기 · 열림", role: "prop", description: "바닥에 들어간 차단기 홈(1×1)입니다. 통행 가능." },
+  "gym-doormat": { name: "입구 매트", role: "prop", description: "빨간 입구 매트(2×1)입니다. 출구 칸 위에 깝니다. 통행 가능." },
+  "shore-sea": { name: "바다 해안(파도)", role: "water", description: "젖은 모래 섬을 바다가 둘러싼 3×3 테두리입니다. 가운데 칸은 젖은 모래, 둘레 8칸은 거품 파도, 바깥은 바다 204 로 이어집니다. 통행 불가." },
+  "shore-sea-inner": { name: "바다 해안 안모서리", role: "water", description: "해안선이 안쪽으로 꺾일 때 쓰는 2×2(왼위·오른위 / 왼아래·오른아래)입니다. 통행 불가." },
+  "sand-wet-edge": { name: "마른·젖은 모래 경계", role: "terrain", description: "마른 모래 34 를 젖은 모래가 둘러싼 3×3 테두리입니다. 통행 가능." },
+  "sand-wet-edge-inner": { name: "모래 경계 안모서리", role: "terrain", description: "모래 경계가 안쪽으로 꺾일 때 쓰는 2×2 입니다. 통행 가능." },
+  lighthouse: { name: "등대", role: "building", description: "빨강·흰 줄무늬 등대(3×6)입니다. 맨 아래 가운데가 나무 문입니다. 통행 불가." },
+  rowboat: { name: "나룻배", role: "prop", description: "오른쪽을 향한 나무 나룻배(3×2)입니다. 바다 위 3층. 통행 불가." },
+  "mooring-bollard": { name: "계류 기둥", role: "prop", description: "부두 가장자리 쇠 계류 기둥(1×1)입니다. 통행 불가." },
+  buoy: { name: "부표", role: "prop", description: "빨강·흰 부표(1×1)입니다. 바다 위 3층. 통행 불가." },
+  "rope-coil": { name: "밧줄 더미", role: "prop", description: "부두 위 감긴 밧줄(1×1)입니다. 통행 가능." },
+  "palm-shrub": { name: "야자 덤불", role: "prop", description: "줄기 없는 낮은 야자 덤불(1×1)입니다. 통행 불가. 큰 야자는 위 반쪽 palm 블록을 씁니다." },
+  "coconut-pile": { name: "야자열매 더미", role: "prop", description: "야자열매 세 개(1×1)입니다. 통행 불가." },
+  "beach-umbrella": { name: "비치 파라솔", role: "prop", description: "빨강·흰 파라솔(2×2)입니다. 위 줄은 머리 위, 아래 줄 기둥 칸만 막힙니다." },
+  "spiral-shell": { name: "소라껍데기", role: "prop", description: "작은 소라껍데기(1×1)입니다. 모래 위 장식. 통행 가능." },
+  "scallop-shell": { name: "가리비껍데기", role: "prop", description: "분홍 가리비(1×1)입니다. 통행 가능." },
+  starfish: { name: "불가사리", role: "prop", description: "주황 불가사리(1×1)입니다. 통행 가능." },
+  "sea-rock": { name: "바다 바위", role: "prop", description: "물결 고리가 있는 바다 바위(1×1)입니다. 바다 위 3층. 통행 불가." },
+  driftwood: { name: "유목", role: "prop", description: "모래 위 흰 유목 통나무(2×1)입니다. 통행 불가." },
+};
+
+function monsterGymCoastGroupSeeds(): readonly ScarloxyChipsetGroupSeed[] {
+  const seeds: ScarloxyChipsetGroupSeed[] = [];
+  for (const block of MONSTER_GYM_COAST_MANIFEST.blocks) {
+    const label = MONSTER_GYM_COAST_LABELS[block.name];
+    if (!label) continue;
+    const cell = (dx: number, dy: number) => (block.row + dy) * SHEET_COLUMNS + block.col + dx;
+    const open = new Set((block.openCells ?? []).map(([dx, dy]) => cell(dx!, dy!)));
+    const over = block.overRows ?? 0;
+    const body: number[] = [];
+    const head: number[] = [];
+    for (let dy = 0; dy < block.h; dy += 1) {
+      for (let dx = 0; dx < block.w; dx += 1) {
+        const id = cell(dx, dy);
+        if (dy < over || open.has(id)) head.push(id);
+        else body.push(id);
+      }
+    }
+    const base = { role: label.role, defaultLayer: block.layer, repeatability: label.repeat ? "repeat" : "fixed" } as const;
+    seeds.push({ key: block.name, name: label.name, ...base, passage: block.passage, tileIds: body, description: label.description });
+    if (head.length === 0) continue;
+    const part = block.openPart === "stairs" ? { key: "-stairs", name: " 계단", description: label.name + "의 계단 칸입니다. 통행 가능 — 도전자가 이 칸에 서서 관장에게 말을 겁니다." }
+      : block.openPart === "center" ? { key: "-center", name: " 가운데", description: label.name + "의 가운데 칸(젖은 모래)입니다. 통행 가능 — 섬·곶의 몸통을 채웁니다." }
+      : { key: "-top", name: " 머리", description: label.name + "의 윗부분입니다. 3층 통행 가능 칸이라 캐릭터가 뒤로 지나갈 때 머리 위로 그려집니다." };
+    seeds.push({ key: block.name + part.key, name: label.name + part.name, ...base, passage: "passable", tileIds: head, description: part.description });
+  }
+  return seeds;
+}
+
+
 export function scarloxyChipsetGroupSeeds(textureKey: string): readonly ScarloxyChipsetGroupSeed[] {
   // 위 반쪽은 초원 마을 시트와 칸 번호가 같으므로 그 그룹을 그대로 쓰고, 부품 그룹을 덧붙인다.
   if (textureKey === MONSTER_TOWN_KIT_TEXTURE_KEY) {
     return [...scarloxyChipsetGroupSeeds("tex_scarloxy_chipset_grassland"), ...monsterTownKitGroupSeeds()];
   }
   if (textureKey === MONSTER_INTERIOR_TEXTURE_KEY) return monsterInteriorGroupSeeds();
+  // 위 반쪽은 사막/설원 시트와 칸 번호가 같다(모래·해안·야자·아레나 그룹을 그대로 쓴다).
+  if (textureKey === MONSTER_GYM_COAST_TEXTURE_KEY) {
+    return [...scarloxyChipsetGroupSeeds("tex_scarloxy_chipset_wilds"), ...monsterGymCoastGroupSeeds()];
+  }
   const asset = SCARLOXY_CHIPSET_ASSETS.find((entry) => entry.textureKey === textureKey);
   if (!asset) return [];
   const fileName = asset.path.slice(asset.path.lastIndexOf("/") + 1);

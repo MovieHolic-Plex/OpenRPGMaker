@@ -226,6 +226,25 @@
 - The texture key uses the `tex_scarloxy_chipset_` prefix only so the sheet shares the Scarloxy
   art-style grouping in the editor.
 
+## Generated monster gym & coast kit (not part of the Scarloxy pack)
+
+- Files: `monster-gym-coast/monster-gym-coast.png` rows 16–31 (tiles 480–959: gym floors for
+  neutral/grass/fire/water, gym walls and emblem walls, leader podiums, badge statues, fern pot,
+  brazier, fountain, trainer marker, floor switches, barriers, door mat, pier planks, pier front,
+  lighthouse, rowboat, mooring bollard, buoy, rope coil, palm shrub, coconut pile, beach umbrella,
+  shells, starfish, sea rock, driftwood) and `monster-gym-coast/references/*.png`.
+- Origin: synthesized with an image generation model, using Scarloxy desert/indoor sheets and the
+  generated monster town kit as a style reference, then downscaled to 16px tiles by
+  `scripts/content/build-monster-gym-coast.py`. Raw model outputs are kept at
+  `tiledata/pkmn-gym-coast/raw/`. The wet sand, shoreline, sand edge and gym ceiling tiles are
+  computed by the same script from the Scarloxy sand (34) and sea (204) tiles.
+- Rows 0–15 (tiles 0–479) are an unmodified copy of `scarloxy/scarloxy-chipset-wilds.png`
+  (Scarloxy pack, CC-BY 4.0 — credit above).
+- Author: not Scarloxy (Ismael Garcia) artwork for tiles 480–959. The texture key uses the
+  `tex_scarloxy_chipset_` prefix only so the sheet shares the Scarloxy art-style grouping in the editor.
+- Notes: same terms as the generated monster sprites above. The CC-BY 4.0 credit for the pack does
+  not cover the generated tiles.
+
 ## EasyRPG RTP scoped runtime import
 
 - Files:
