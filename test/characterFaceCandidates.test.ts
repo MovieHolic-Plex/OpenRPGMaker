@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { listCharacterFaces, listCharacterSprites, seedGraphicAttributes, updateCharacterSprite } from "@/project/characterGraphics";
 import { isRecommendedCharacterFace, rankCharacterFaces } from "@/project/characterFaceCandidates";
-import { faceGraphicForCharset, npcFaceGraphic, reviewedCharsetFace } from "@/assets/charsetFaceMap";
+import { reviewedCharsetFace } from "@/assets/charsetFaceMap";
+import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
 
 describe("character face evidence", () => {
   it("uses written semantic age and gender without saving or borrowing paired-face traits", () => {
@@ -35,11 +36,16 @@ describe("character face evidence", () => {
   it("uses both halves of each actor face sheet in editor and NPC tool paths", () => {
     const pairs = [["actor1", "actor1", 0], ["actor2", "actor1", 8], ["actor3", "actor2", 0], ["actor4", "actor2", 8]] as const;
     for (const [charset, faceset, offset] of pairs) for (let slot = 0; slot < 8; slot++) {
+      // Actor3 #5(청록 머리 무도가)는 FaceSet/Actor2 에 이 인물이 없다(2026-09-28 원본 대조) — 생성 짝 얼굴을 쓴다.
+      if (charset === "actor3" && slot === 5) {
+        expect(reviewedCharsetFace("tex_easyrpg_charset_actor3", 5)).toBeNull();
+        expect(reviewedFaceIdForCharset("easyrpg-charset-actor3", 5)).toBe("generated-faceset-missing-people-10");
+        continue;
+      }
       const expected = `easyrpg-faceset-${faceset}-${String(slot + offset).padStart(2, "0")}`;
       const texture = `tex_easyrpg_charset_${charset}`;
       expect(reviewedCharsetFace(texture, slot)?.resourceId).toBe(expected);
-      expect(faceGraphicForCharset(texture, slot)?.resourceId).toBe(expected);
-      expect(npcFaceGraphic(`easyrpg-charset-${charset}`, slot)?.resourceId).toBe(expected);
+      expect(reviewedFaceIdForCharset(`easyrpg-charset-${charset}`, slot)).toBe(expected);
     }
   });
 

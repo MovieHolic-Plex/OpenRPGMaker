@@ -1,7 +1,7 @@
 // 실사용 감사 로그(2026-07-04) 회귀: place_npc가 graphic.query="people1"로 실패했고
 // 실패 요약에 원인이 없어 추적이 어려웠다. 시트명 질의 해석 + 실패 요약 원인 포함을 고정한다.
 import { describe, expect, it } from "vitest";
-import { reviewedCharsetFace } from "@/assets/charsetFaceMap";
+import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
 import { findCharsetSemantic } from "@/assets/charsetSemantics";
 import { resolveGraphicQuery } from "@/editor/tools/eventCompile";
 import { runTool } from "@/editor/tools/toolRunner";
@@ -112,18 +112,17 @@ describe("place_npc graphic.query", () => {
       const event = ctx.project.maps[project.startMapId].events.find((e) => e.id === id);
       const cmds = event?.pages?.[0]?.commands ?? [];
       const face = cmds.find((c) => c.kind === "changeFace");
+      const g = event?.pages?.[0]?.graphic;
+      const characterIndex = decodeCharsetFrameIndex(g?.pattern ?? 0).characterIndex;
+      // 정답지는 공용 대응표다. 짝이 없는 그림은 얼굴이 없어야 한다.
+      const paired = reviewedFaceIdForCharset(g?.sprite?.id ?? "", characterIndex);
+      if (!paired) { expect(face, `${id} 에 짝 없는 얼굴이 붙었다`).toBeUndefined(); continue; }
       expect(face, `missing changeFace for ${id}`).toBeTruthy();
       if (face && face.kind === "changeFace") {
         faces.add(face.resourceId);
-        const g = event?.pages?.[0]?.graphic;
-        const characterIndex = decodeCharsetFrameIndex(g?.pattern ?? 0).characterIndex;
-        // Walking sheets have 8 slots, face sheets 16: actor2/4 use the second half.
-        const paired = reviewedCharsetFace(g?.sprite?.id ?? "", characterIndex);
-        if (paired) { expect(face.resourceId).toBe(paired.resourceId); continue; }
-        expect(face.resourceId.endsWith(`-${String(characterIndex).padStart(2, "0")}`),
-          `${face.resourceId} 가 charset 칸 ${characterIndex} 와 어긋난다`).toBe(true);
+        expect(face.resourceId).toBe(paired);
       }
     }
-    expect(faces.size).toBeGreaterThanOrEqual(2);
+    expect(faces.size).toBeGreaterThanOrEqual(1);
   });
 });

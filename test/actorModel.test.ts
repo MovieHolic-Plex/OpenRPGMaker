@@ -70,7 +70,8 @@ describe("RM2K3 actor model", () => {
     });
 
     expect(actor.characterResourceId).toBeUndefined();
-    expect(actor.faceResourceId).toBe("easyrpg-faceset-people1-00");
+    // 걷기 그림이 없으면 짝을 정할 근거가 없다 — 이름(actor_cleric)으로 얼굴을 지어내지 않는다.
+    expect(actor.faceResourceId).toBeUndefined();
   });
 
   it("calculates total EXP from the actor experience curve", () => {

@@ -339,6 +339,15 @@
 - Each master yields a 192×192 sheet and 16 standalone 48×48 PNGs. Per-cell nearest-neighbor sampling; no repainting or invented expressions.
 - These are supplied derivatives of the existing EasyRPG portraits; the existing EasyRPG attribution remains applicable. User supply does not establish a new license.
 
+## Generated paired faces for walking sprites without a portrait (2026-09-28)
+
+- AI-generated (Codex built-in image generation) at the user's request, so every human/monster walking sprite has a matching dialogue face.
+- Inputs: front-facing crops of the bundled walking sprites (EasyRPG People2/People4/People5/Actor3/Animal/Monster3, Scarloxy people1/people2) as identity references, and EasyRPG FaceSet/People1 and People2 as style references.
+- Reduced masters: `generated/faceset/source/missing-people-master.png`, `missing-scarloxy-master.png`, `missing-animal-monster-master.png` (628×628 of the 1254×1254 output).
+- Runtime sheets: `generated/faceset/missing-people.png`, `missing-scarloxy.png`, `missing-monster.png`; standalone faces `generated/faceset/missing-*/00.png`–`15.png` via `node scripts/slice-faceset-sheets.mjs`.
+- Pairing: `src/assets/sharedCharacterGraphics.json` (`generated-faceset-missing-*`). Blank cells are registered but hidden from authoring lists.
+- Style follows EasyRPG portraits; the EasyRPG and Scarloxy attributions above still apply to the referenced sprites. Generation does not establish a new license.
+
 
 ### Forest harmony bundled snapshot (2026-09-18)
 `forest-harmony/chipset.png` packages the approved forest village atlas with

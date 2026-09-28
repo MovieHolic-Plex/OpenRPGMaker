@@ -23,7 +23,7 @@ export const TASK_RECIPES = [
     policy: "Read original terrain/layout and submit set_build_spec before spatial writes. Honor target and selection; modify does not authorize replacing/creating a map. Inspect real images and routes after the final mutation." },
   { id: "interior", read: ["get_concept_facility", "list_interior_room_sessions", "get_map_region"],
     write: ["place_concept", "furnish_interior_space"], verify: ["evaluate_interior_room", "check_reachability", "show_map_region"],
-    policy: "New interiors use place_concept with a new map ID and a plan from authored concepts. Existing interiors use their original map/session with furnish_interior_space. Verify doors, furniture and walking space." },
+    policy: "New interiors use place_concept with a new map ID and a plan from authored concepts; size and furnish it against get_concept_facility presetExamples (reviewed presets such as 버드나무 여관, with floor images). Existing interiors use their original map/session with furnish_interior_space. Verify doors, furniture and walking space." },
   { id: "database-battle", read: ["get_database_records"], write: ["upsert_enemy", "upsert_skill", "upsert_troop"],
     verify: ["get_database_records", "run_lint", "simulate_battle"],
     policy: "Read include=full for existing records and every referenced ID. Preserve unrelated stats/effects. Read newly created records before referencing them. Simulate actual troop/party inputs and inspect phase/outcome evidence." },
