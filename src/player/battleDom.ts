@@ -1,3 +1,4 @@
+import { currentRetroSkill, retroSkillForEntry, retroSkillRecipe } from "@/player/retroSkillChoreography";
 import { retroTimelineEntry, retroCommandPose, initRetroMotion, isTravellingEffect, preloadRetroMotionSe, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, retroVictory, retroWalk } from "@/player/battleRetroMotion";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
 import type {
@@ -412,7 +413,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       activeAnimation?.destroy();
       activeAnimation = syncBattleAnimationLayer(
         animationLayer,
-        { ...options.runtime.snapshot(), lastAnimation: retroMotion && isTravellingEffect(animation) ? undefined : animation },
+        { ...options.runtime.snapshot(), lastAnimation: retroMotion && (currentRetroSkill(field) || isTravellingEffect(animation)) ? undefined : animation },
         root,
       );
     },
@@ -527,8 +528,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     },
     // 도트 측면 전투: 근접 공격은 대상 적 앞까지 실제로 걸어간다. 비트 길이를 걸음 거리에 맞춘다.
     ...(retroMotion ? {
-      actorApproachMs: (entry: BattleTimelineEntrySnapshot) => retroWalk(field, entry)?.approachMs,
-      actorRecoverMs: (entry: BattleTimelineEntrySnapshot) => retroWalk(field, entry)?.recoverMs,
+      actorApproachMs: (entry: BattleTimelineEntrySnapshot) => retroSkillForEntry(entry)?.approachMs ?? retroWalk(field, entry)?.approachMs,
+      actorRecoverMs: (entry: BattleTimelineEntrySnapshot) => retroSkillForEntry(entry)?.recoverMs ?? retroWalk(field, entry)?.recoverMs,
       // 도트 적(슬라임·박쥐)은 대상 아군 앞까지 뛰어/날아가서 친다.
       enemyApproachMs: (entry: BattleTimelineEntrySnapshot) => retroEnemyReach(field, entry)?.approachMs,
       enemyRecoverMs: (entry: BattleTimelineEntrySnapshot) => retroEnemyReach(field, entry)?.recoverMs,
@@ -1277,6 +1278,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const actorNode = snapshot.activeActorId
       ? findBattlerNode(field, snapshot.activeActorId)
       : null;
+    if (retroMotion && command.kind === "skill" && retroSkillRecipe(store.getCurrent().database.skills.find((skill) => skill.id === command.skillId))) {
+      swingArmed = false; // The recipe owns release SE; the old animation and generic swing are silent.
+      return;
+    }
     if (command.kind === "attack" || command.kind === "skill") {
       // impact 의 평타는 휘두름 소리를 착탄 직전(onActionMotion)으로 옮기고 베기 궤적을 같이 긋는다. 여기서도
       // 울면 한 행동에 두 번 운다. 스킬은 자기 애니메이션이 있어 예전 자리(확정 순간)를 지킨다.
