@@ -5,6 +5,12 @@ import { resolveTerms, type ResolvedTerms } from "@/project/terms";
 import { dialogueHost } from "@/player/playSceneDom";
 import { applySystemGraphic } from "@/player/systemGraphics";
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
+import { menuSkinFor } from "@/player/menuSkins/registry";
+import { partyWalker } from "@/player/partyWalker";
+import { resolveActorName } from "@/project/sessionActorCommands";
+import type { PlaySession } from "@/project/session";
+import type { Project } from "@/project/types";
+import { el } from "@/util/dom";
 import type { StepResult } from "@/player/interpreter";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 
@@ -77,6 +83,9 @@ export function playInn(scene: PlaySceneContext, step: InnStep): Promise<InnOutc
     );
     actions.append(stayButton, cancelButton);
     overlay.append(question, actions);
+    // 도트 창(기본 메뉴 스킨 pixel) — 묵기 전에 누가 얼마나 회복되는지와 소지금 전후를 한 화면에 보인다.
+    const project = store.getCurrent();
+    if (menuSkinFor(project).partyStats) layoutPixelInn(overlay, project, scene.session, step);
     mountCommerceOverlay(scene, overlay);
     // 예/아니오 를 방향키(←→)로 선택, Z/Enter 결정, X/Esc(=아니오) 취소.
     detachCursor = attachCursorMenu(overlay, {
@@ -88,6 +97,113 @@ export function playInn(scene: PlaySceneContext, step: InnStep): Promise<InnOutc
 }
 
 // 숙박 연출: 어두워짐(휴식) → 기상 메시지 → 밝아지며 종료.
+
+/**
+ * 여관 도트 창 배치 — 머리 창(주인 인사) · 왼쪽 파티 창(걷는 그림 · HP/MP 현재 → 묵은 뒤) ·
+ * 오른쪽 선택 창(예/아니오)과 요약 창(소지금 전후 · 회복 합계) · 아래 질문 줄.
+ * 기존 노드(title/note/status/actions)는 그대로 옮겨 담는다 — 테스트와 커서 계약이 그 노드를 본다.
+ */
+function layoutPixelInn(overlay: HTMLElement, project: Project, session: PlaySession, step: InnStep): void {
+  const recoverMp = step.recoverMp !== false;
+  const price = Math.max(0, Math.trunc(step.price) || 0);
+  const title = overlay.querySelector<HTMLElement>(".runtime-overlay-title");
+  const note = overlay.querySelector<HTMLElement>(".runtime-commerce-note");
+  const question = overlay.querySelector<HTMLElement>(".runtime-commerce-status");
+  const actions = overlay.querySelector<HTMLElement>(".runtime-commerce-actions");
+  overlay.classList.add("runtime-inn-pixel");
+  let hpGain = 0;
+  let mpGain = 0;
+  const rows = session.partyActorIds.flatMap((actorId, index) => {
+    const actor = project.database.actors.find((record) => record.id === actorId);
+    const vitals = session.actorVitals[actorId];
+    if (!actor || !vitals) return [];
+    const name = resolveActorName(session, actor);
+    const hpAfter = vitals.maxHp;
+    const mpAfter = recoverMp ? vitals.maxMp : vitals.mp;
+    hpGain += hpAfter - vitals.hp;
+    mpGain += mpAfter - vitals.mp;
+    const states = (session.actorStateIds?.[actorId] ?? [])
+      .map((stateId) => project.database.states.find((state) => state.id === stateId)?.name)
+      .filter((stateName): stateName is string => Boolean(stateName));
+    return [el("div", {
+      class: "runtime-inn-party-row",
+      dataset: { testid: `inn-party-row-${actorId}` },
+      children: [
+        partyWalker(project, session, actorId, name, { className: "runtime-inn-walker" }) ?? el("span", { class: "runtime-inn-walker is-missing", text: name.slice(0, 1) }),
+        el("span", {
+          class: "runtime-inn-party-who",
+          children: [
+            el("span", { class: "runtime-inn-party-name", text: name }),
+            el("span", { class: `runtime-inn-party-state${states.length ? " has-state" : ""}`, text: states.length ? states.join(" · ") : "정상" }),
+          ],
+        }),
+        innGauge("HP", vitals.hp, hpAfter, vitals.maxHp, "hp", `inn-party-hp-${index}`),
+        innGauge("MP", vitals.mp, mpAfter, vitals.maxMp, "mp", `inn-party-mp-${index}`),
+      ],
+    })];
+  });
+  const enough = session.gold >= price;
+  const summary = el("div", {
+    class: "runtime-inn-summary",
+    dataset: { testid: "inn-summary" },
+    children: [
+      el("span", { class: "runtime-inn-summary-label", text: "소지금" }),
+      el("span", {
+        class: "runtime-inn-summary-gold",
+        dataset: { testid: "inn-summary-gold" },
+        children: [
+          `${session.gold.toLocaleString("ko-KR")} → `,
+          el("span", { class: enough ? "is-after" : "is-short", text: enough ? (session.gold - price).toLocaleString("ko-KR") : "부족" }),
+          " G",
+        ],
+      }),
+      el("span", { class: "runtime-inn-summary-label", text: "묵으면" }),
+      innSummaryLine("HP", hpGain, "inn-summary-hp"),
+      recoverMp ? innSummaryLine("MP", mpGain, "inn-summary-mp") : el("span", { class: "runtime-inn-summary-line", text: "MP 그대로" }),
+    ],
+  });
+  const head = el("div", { class: "runtime-inn-head", children: [title, note].filter((node): node is HTMLElement => Boolean(node)) });
+  const party = el("div", { class: "runtime-inn-party", dataset: { testid: "inn-party" }, children: rows });
+  const side = el("div", { class: "runtime-inn-side", children: [actions, summary].filter((node): node is HTMLElement => Boolean(node)) });
+  const foot = el("div", { class: "runtime-inn-foot", children: question ? [question] : [] });
+  overlay.replaceChildren(head, party, side, foot);
+}
+
+/** 「HP 52/96 → 96 ▲44」 + 막대(늘어날 구간은 깜빡인다). 상점·ESC 메뉴와 같은 표기. */
+function innGauge(label: string, current: number, after: number, max: number, kind: "hp" | "mp", testId: string): HTMLElement {
+  const pct = (value: number) => `${max > 0 ? Math.max(0, Math.min(100, value / max * 100)) : 0}%`;
+  return el("span", {
+    class: `runtime-inn-gauge ${kind}${after > current ? " gains" : ""}`,
+    dataset: { testid: testId },
+    children: [
+      el("span", {
+        class: "runtime-inn-gauge-text",
+        children: [
+          // 오르면 「HP 60 → 514 ▲454」(최대치는 오른 뒤 값과 같다), 그대로면 「HP 514/514」.
+          ...(after > current
+            ? [`${label} ${current} → ${after}`, el("span", { class: "runtime-inn-delta", text: ` ▲${after - current}` })]
+            : [`${label} ${current}/${max}`]),
+        ],
+      }),
+      el("span", {
+        class: "runtime-inn-track",
+        children: [
+          el("span", { class: "runtime-inn-track-gain", attrs: { style: `width:${pct(after)}` } }),
+          el("span", { class: "runtime-inn-track-fill", attrs: { style: `width:${pct(current)}` } }),
+        ],
+      }),
+    ],
+  });
+}
+
+function innSummaryLine(label: string, gain: number, testId: string): HTMLElement {
+  return el("span", {
+    class: `runtime-inn-summary-line${gain > 0 ? " gains" : ""}`,
+    text: `${label} +${gain}`,
+    dataset: { testid: testId },
+  });
+}
+
 async function playInnRest(
   scene: PlaySceneContext,
   overlay: HTMLElement,

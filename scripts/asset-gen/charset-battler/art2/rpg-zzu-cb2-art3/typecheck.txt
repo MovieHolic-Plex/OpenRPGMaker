@@ -1,0 +1,6 @@
+실행 위치: /home/main/z-project/rpg-zzu-cb2-art3
+명령: NODE_OPTIONS=--max-old-space-size=12288 npx tsc -p tsconfig.app.json --noEmit
+실행 횟수: 1
+파이프: 없음
+종료 코드: 0
+표준 출력/오류: 없음

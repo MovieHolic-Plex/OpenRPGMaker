@@ -39,7 +39,25 @@ export function registerPageMoveRoutes(scene: PageMoveRouteSceneContext): void {
       continue;
     }
     const route = routeForPageMovement(movement) ?? routeForLivingMovement({ project, map: scene.map, session: scene.session, view });
-    if (!route) continue;
+    if (!route) {
+      // 지형이 바뀌어 갈 길이 없어졌다. 예전처럼 무버를 지우면(아래 정리 루프) 진행 중인 걸음의 보간까지 사라져
+      // 스프라이트가 반 칸에 멈춘다. 걷는 중이면 무버를 남기고 남은 걸음만 비운다 — 걸음이 끝나면 경로가
+      // 소진되어 다음 표면 갱신이 다시 짠다.
+      const walking = movement.type === "living" ? scene.autonomousNPCs.get(view.event.id) : undefined;
+      // 같은 페이지의 생활 경로로 걷던 무버만 남긴다. 추격 페이지에서 생활 페이지로 막 넘어온 무버는
+      // strategy 가 chase 라 걸음을 비워도 계속 쫓아간다(리뷰 반례) — 예전처럼 지운다.
+      const livingPrefix = `living:${view.event.id}:${view.pageId ?? "legacy"}:`;
+      const ownLivingKeys = walking?.activeMove && scene.pageMoveRouteEventIds.has(view.event.id)
+        ? [...scene.pageMoveRouteKeys].filter((kept) => kept.startsWith(livingPrefix))
+        : [];
+      if (walking && ownLivingKeys.length > 0) {
+        walking.moves = [];
+        walking.step = 0;
+        activePageRouteEventIds.add(view.event.id);
+        for (const kept of ownLivingKeys) activeKeys.add(kept);
+      }
+      continue;
+    }
     const key = "key" in route ? route.key : `${view.event.id}:${view.pageId ?? "legacy"}`;
     activeKeys.add(key);
     activePageRouteEventIds.add(view.event.id);
@@ -179,9 +197,10 @@ function configurePageMover(
   animationType: EventAnimationType
 ): void {
   mover.strategy = strategy;
-  // 생활 이동만 계산된 경로다(routeForLivingMovement 의 A* 결과). 작가가 쓴 custom 경로는
+  // 생활 이동만 계산된 경로다(routeForLivingMovement 의 BFS 결과). 작가가 쓴 custom 경로는
   // 막히면 걸음을 소비하는 기존 동작을 유지한다 — playSceneTypes §retryBlockedSteps.
   mover.retryBlockedSteps = movement.type === "living";
+  mover.livingRoute = movement.type === "living";
   mover.directionFix = animationType === "fixedDirection" || animationType === "fixedDirectionStep";
   mover.speedRank = clampNpcSetting(movement.speed);
   mover.frequencyRank = clampNpcSetting(movement.frequency);

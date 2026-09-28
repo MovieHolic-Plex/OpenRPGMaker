@@ -73,6 +73,8 @@ const bridge = {
     chooseProjectRoot: invoke(OPRN_CHANNELS.startChooseProjectRoot),
     coverSource: invoke(OPRN_CHANNELS.startCoverSource),
     saveCover: invoke(OPRN_CHANNELS.startSaveCover),
+    joinTeam: invoke(OPRN_CHANNELS.startJoinTeam),
+    recentTeams: invoke(OPRN_CHANNELS.startRecentTeams),
   },
   assetBrowser: {
     open: invoke(OPRN_CHANNELS.assetBrowserOpen),

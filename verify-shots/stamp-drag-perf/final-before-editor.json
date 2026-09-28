@@ -1,0 +1,62 @@
+{
+  "label": "final-before",
+  "mode": "editor",
+  "tileSize": 16,
+  "nodes": 5587,
+  "drag": {
+    "stepMedianMs": 139,
+    "stepP90Ms": 260,
+    "longTaskSumMs": 4932,
+    "barMs": 150
+  },
+  "apply": {
+    "totalMs": 6234,
+    "longTaskMaxMs": 5672,
+    "longTaskSumMs": 6287
+  },
+  "raw": {
+    "drags": [
+      {
+        "stepMedian": 139,
+        "stepP90": 276,
+        "stepMax": 346,
+        "longTaskSum": 4932,
+        "longTaskMax": 307,
+        "barMs": 139
+      },
+      {
+        "stepMedian": 146,
+        "stepP90": 260,
+        "stepMax": 928,
+        "longTaskSum": 5254,
+        "longTaskMax": 893,
+        "barMs": 150
+      },
+      {
+        "stepMedian": 118,
+        "stepP90": 254,
+        "stepMax": 341,
+        "longTaskSum": 4477,
+        "longTaskMax": 304,
+        "barMs": 175
+      }
+    ],
+    "applies": [
+      {
+        "total": 6491,
+        "longTaskMax": 5717,
+        "longTaskSum": 7902
+      },
+      {
+        "total": 6234,
+        "longTaskMax": 5672,
+        "longTaskSum": 6287
+      },
+      {
+        "total": 5477,
+        "longTaskMax": 4897,
+        "longTaskSum": 5556
+      }
+    ]
+  }
+}

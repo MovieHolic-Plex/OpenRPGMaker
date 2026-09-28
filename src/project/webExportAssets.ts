@@ -1,14 +1,17 @@
+import { charsetBattler, resolvePartyBattleCharset } from "@/assets/charsetBattlers";
+import { BATTLE_SCENERY_CATALOG } from "@/assets/battleSceneryCatalog";
 import { findOpeningStillPackEntry } from "@/assets/openingStillPackRuntime";
 import { openingStillPackUrl } from "@/assets/openingStillPackCdn";
 import { BUNDLED_IMAGE_ASSETS, TEX_DIALOGUE_FRAME, TEX_TILESET } from "@/assets/bundled";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID } from "./cinematicSettings";
 import { battlerIdleAnimation } from "@/assets/battlerIdleAnimations";
+import { pixelEnemySheet } from "@/assets/pixelEnemySheets";
 import { findBgmRuntimeEntry } from "@/assets/bgmCatalogRuntime";
 import { bgmTrackUrl } from "@/assets/bgmCdn";
 import { BATTLER_PLACEMENTS } from "@/battle/battlerPlacements";
 import { skinPartySpriteUrl } from "@/battle/partySpriteResources";
-import { resolveSkinId } from "@/battle/skins/registry";
+import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
 import { PLAYER_RUNTIME_AUDIO_RESOURCE_IDS } from "@/player/playerRuntimeAudioIds";
 import { getResourceProfileSpec } from "@/project/resourceProfiles";
 import type { ResourceKind } from "@/project/types";
@@ -26,6 +29,16 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
   for (const path of requiredRuntimeAssetPaths(project)) {
     assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
   }
+  if (getBattleSkin(resolveSkinId(project.system.battleUiStyle)).scenery === "layered") {
+    ids.add("generated-battle-reference-forest");
+    // 겹 배경 5지형 × 4레이어는 저장소에 커밋된 번들 그림이다(public/assets/generated/battle-scenery).
+    // 지형은 전투마다 위치·기후로 정해지므로 전부 싣는다(약 1.3MB).
+    for (const entry of BATTLE_SCENERY_CATALOG) {
+      for (const path of Object.values(entry.layers)) {
+        assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
+      }
+    }
+  }
   for (const asset of BUNDLED_IMAGE_ASSETS) {
     if (asset.textureKey === TEX_TILESET || asset.textureKey === TEX_DIALOGUE_FRAME || ids.has(asset.textureKey)) {
       assets.set(asset.path, {
@@ -36,9 +49,16 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
       });
     }
   }
+  if ([...ids].some((id) => charsetBattler(id))) {
+    const path = "assets/easyrpg/AUTHORS.md";
+    assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
+  }
   for (const id of ids) {
     const idle = battlerIdleAnimation(id);
     if (idle) assets.set(idle.path, { kind: "public", sourcePath: idle.path, zipPath: idle.path });
+    // 도트 측면 전투의 적 도트 시트도 경로로만 참조된다(pixelEnemySheets.ts) — 같은 id 면 함께 싣는다.
+    const pixelSheet = pixelEnemySheet(id);
+    if (pixelSheet) assets.set(pixelSheet.path, { kind: "public", sourcePath: pixelSheet.path, zipPath: pixelSheet.path });
     const bundled = BUNDLED_IMAGE_ASSETS.find((asset) => asset.textureKey === id);
     if (bundled) {
       assets.set(bundled.path, { kind: "public", sourcePath: bundled.path, zipPath: bundled.path, resourceId: id });
@@ -145,7 +165,10 @@ function collectProjectStrings(project: Project): Set<string> {
   const facing = BATTLER_PLACEMENTS[skinId].partyFacing;
   // Include reserve actors too: party membership/order can change after export.
   for (const actor of project.database.actors) {
-    if (facing === "front" && actor.battleCharacterResourceId) continue;
+    if (facing === "front") {
+      const sheet = resolvePartyBattleCharset(actor, skinId === "retro2003");
+      if (sheet) { values.add(sheet); continue; }
+    }
     // Either fallback slot can be selected after reordering the party.
     for (const index of [0, 1]) {
       const sprite = skinPartySpriteUrl(project, skinId, index, facing, actor);

@@ -75,6 +75,32 @@ describe('shared project service', () => {
     expect(await invoke[C.projectLoad]!('b', {})).not.toBeNull();
   });
 
+  // 2026-09-28: 호스트가 맵 하나를 쥐고 있으면, 그 맵을 건드리지 않는 참여자 변경분 저장도 매번 문서 전체를
+  // 역직렬화해 임대 충돌을 검사했다(저장 응답 4–8s). 패치가 건드리지 않는 자원은 검사를 건너뛴다.
+  it('a patch that does not touch a leased map skips the conflict check; one that does is still refused', async () => {
+    const { base, sessions, invoke, a, dir } = await setup();
+    const invited = a.team.invite('editor', 'editor');
+    sessions.setMember('b', invited.member.id);
+    const [held, other] = Object.keys(base.maps);
+    expect(await invoke[C.teamLock]!('a', { resource: `map:${held}` })).toMatchObject({ kind: 'held' });
+    const sha = () => a.store.info().sha256;
+    const otherMap = { ...structuredClone(base.maps[other!]!), name: 'member edit' };
+    expect(await invoke[C.projectSaveMapPatch]!('b', { projectDir: dir, baseSha: sha(), patch: { maps: { set: { [other!]: otherMap } } } }))
+      .toMatchObject({ kind: 'saved' });
+    expect(await invoke[C.projectSaveMapPatch]!('b', { projectDir: dir, baseSha: sha(), patch: { set: { meta: { ...base.meta, title: 'member title' } } } }))
+      .toMatchObject({ kind: 'saved' });
+    const heldMap = { ...structuredClone(base.maps[held!]!), name: 'steal' };
+    expect(await invoke[C.projectSaveMapPatch]!('b', { projectDir: dir, baseSha: sha(), patch: { maps: { set: { [held!]: heldMap } } } }))
+      .toMatchObject({ kind: 'conflict' });
+    // 기준이 저장 행과 다르면(3자 병합) 패치 밖의 가지도 바뀔 수 있으므로 예전처럼 문서로 검사한다.
+    expect(await invoke[C.projectSaveMapPatch]!('b', { projectDir: dir, baseSha: 'stale', baseSerialized: serialize(base), patch: { maps: { set: { [held!]: heldMap } } } }))
+      .toMatchObject({ kind: 'conflict' });
+    const saved = a.store.loadSnapshot()!.project;
+    expect(saved.maps[other!]!.name).toBe('member edit');
+    expect(saved.meta.title).toBe('member title');
+    expect(saved.maps[held!]!.name).toBe(base.maps[held!]!.name);
+  });
+
   it('backup restores membership, project and content-addressed asset bytes together', async () => {
     const { a, dir } = await setup();
     const invited = a.team.invite('member', 'editor');

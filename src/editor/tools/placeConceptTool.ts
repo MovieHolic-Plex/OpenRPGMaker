@@ -37,6 +37,7 @@ import { deterministicRng } from "@/util/rng";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { CONCEPT_PLAN_SCHEMA, REPLACE_EXISTING_SCHEMA } from "./schemaShapes";
 import { getCanonicalConcept, placeCanonicalConcept } from "./spatialConceptTools";
+import { interiorPresetContext } from "./interiorPresetExamples";
 
 const KIT = INTERIOR_ROOM_KIT.kitId;
 
@@ -369,6 +370,7 @@ export const GET_CONCEPT_FACILITY_TOOL: ToolDefinition = {
     + "템플릿(사용자가 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 정해 둔 장소·물건)과 이 타일셋에서 쓸 수 있는 물건 어휘(vocabulary)를 돌려준다. "
     + "이 응답의 plan 을 요청에 맞게 고쳐 place_concept({query, mapId, plan}) 에 넘기라 — 그래야 장소 수·크기·내용물이 다른 시설이 생긴다. "
     + "query가 없거나 미등록 시설이면 sources에 현재 꾸러미의 장소·물건 구성을 돌려준다. 이를 조합해 새 실내 plan을 설계하라. 읽기 전용 — 맵을 건들지 않는다. "
+    + "presetExamples 에는 요청에 맞는 검토된 완성 실내 프리셋(버드나무 여관·어부의 집 등)의 층별 크기·출입구·재료·가구가 오고 첫 예시의 층별 그림이 함께 온다 — 규모·밀도의 기준으로 삼아라. "
     + "canonical(spatialAuthoring) 프로젝트에서는 꾸러미 대신 canonical 설계와 쓸 체인(tools 필드)을 돌려준다 — 그 경우 plan 흐름이 아니라 spatial_* 도구를 쓴다.",
   mode: "read",
   parameters: {
@@ -380,11 +382,16 @@ export const GET_CONCEPT_FACILITY_TOOL: ToolDefinition = {
   },
   invalidArgsExample: { query: "여관" },
   run(draft, args): ToolExecResult {
-    if (draft.spatialAuthoring !== undefined) return getCanonicalConcept(draft, args);
+    const query = String(args.query ?? "").trim();
+    const presets = interiorPresetContext(query);
+    const presetNote = presets.presetExamples ? ` · 참고 프리셋 ${presets.presetExamples.map((example) => `「${example.name}」`).join("·")}` : "";
+    if (draft.spatialAuthoring !== undefined) {
+      const canonical = getCanonicalConcept(draft, args);
+      return { ...canonical, summary: canonical.summary + presetNote, data: { ...presets, ...(canonical.data as object) } };
+    }
     const tilesetId = args.tilesetId !== undefined ? String(args.tilesetId).trim() : INTERIOR_ROOM_TILESET_ID;
     // Phase 5: 읽기 도구는 쓰지 않는다 — 실외 칩셋의 ensure 빈 배열 쓰기를 건너뛴다.
     // liveBundlesForTileset이 미시드 실외를 []로 읽으므로 동작은 같다.
-    const query = String(args.query ?? "").trim();
     const vocabulary = conceptVocabulary(interiorVocabFromTileset(draft.tilesets[tilesetId]), INTERIOR_OBJECT_CATALOG);
     const facilities = constructionFacilityLabels(draft, tilesetId);
     // Phase 5: 요청 칩셋 스코프로만 푼다 — 실외 시설명을 실내 템플릿으로 둔갑시키지 않는다.
@@ -397,10 +404,10 @@ export const GET_CONCEPT_FACILITY_TOOL: ToolDefinition = {
         plan: facilityAsPlan(bundle, facility),
       })));
       return {
-        summary: query
+        summary: (query
           ? `템플릿에 "${query}" 시설이 없다 — sources의 장소·물건을 조합해 plan을 설계하고 place_concept에 넘겨라. 물건 어휘 ${vocabulary.length}종`
-          : `시설 템플릿 ${facilities.length}종 · 물건 어휘 ${vocabulary.length}종`,
-        data: { query, facilities, template: null, sources, vocabulary },
+          : `시설 템플릿 ${facilities.length}종 · 물건 어휘 ${vocabulary.length}종`) + presetNote,
+        data: { query, ...presets, facilities, template: null, sources, vocabulary },
       };
     }
     const plan = facilityAsPlan(resolved.bundle, resolved.facility);
@@ -409,9 +416,11 @@ export const GET_CONCEPT_FACILITY_TOOL: ToolDefinition = {
     return {
       summary: `시설 「${resolved.facility.label}」 템플릿 — 장소 ${plan.places.length}·물건 ${plan.things.length} · 물건 어휘 ${vocabulary.length}종. `
         + (variants.length > 0 ? `variants ${variants.length}종. ` : "")
-        + "이건 출발점이다 — 그대로 넘기지 말고 사용자 문장과 배경(미을 규모·분위기)에 맞게 장소 수·크기·바닥·물건 구성을 고쳐 plan 으로 넘기라.",
+        + "이건 출발점이다 — 그대로 넘기지 말고 사용자 문장과 배경(미을 규모·분위기)에 맞게 장소 수·크기·바닥·물건 구성을 고쳐 plan 으로 넘기라."
+        + presetNote,
       data: {
         query,
+        ...presets,
         designHint: {
           rule: "사용자의 요청과 현재 template의 개별 수정이 우선이다. variants는 공간 구성 참고이며 사용자에게 없는 물건을 무조건 다시 넣는 초기화 명령이 아니다. 수식어가 없어도 용도와 규모를 정하고, 요청에 맞게 장소 수·크기·layout·물건을 바꿔 plan으로 넘겨라. 탁자와 러그, 조리 도구와 화덕, 같은 종류 재고를 묶고 문 접근로를 비워라. **템플릿 물건을 그대로 베끼면 모든 실내가 같은 구조물로 채워진다 — 같은 역할(vocabularyGroups)의 다른 물건을 최소 둘 이상 골라라.**",
           keep: plan.things.filter((thing) => thing.required).map((thing) => thing.objectId),

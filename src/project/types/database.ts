@@ -153,11 +153,12 @@ export type BattleUiStyle =
   | "pokemon" | "rm2000" | "octopath" | "chrono"
   | "bravely" | "dragonquest" | "ff" | "mother" | "goldensun" | "mv" | "vxace"
   | "rm2003" // 측면 전투(2026-09-03 되살림 — 그 전 몇 시간은 rm2000 의 옛 id 였다)
+  | "retro2003" // 도트 측면 전투(2026-09-28): 청색 픽셀 창 · 겹 배경 · 전진 걸음 연출
   | "classic"; // legacy alias, remapped by resolveSkinId → rm2000
 
 /** ESC(X) 게임 메뉴 스킨 — @/player/menuSkins/registry 의 id union. 프로젝트 파일에 저장되므로
  *  id 를 함부로 바꾸지 않는다. 미설정·미지값은 resolveMenuSkinId 가 workbench 로 푼다. */
-export type MenuUiStyle = "field-list" | "workbench" | "party-first" | "party-first-warm" | "hub" | "sheet" | "classic" | "journal" | "ribbon" | "retro-2000" | "retro-2003" | "classic-xp" | "classic-vx";
+export type MenuUiStyle = "pixel" | "field-list" | "workbench" | "party-first" | "party-first-warm" | "hub" | "sheet" | "classic" | "journal" | "ribbon" | "retro-2000" | "retro-2003" | "classic-xp" | "classic-vx";
 
 /** 전투 아군측 배틀러 소스 — actors: 파티 액터가 직접 싸움(기본),
  *  monsters: 잡은 파티 몬스터가 필드에 나서 싸움(포켓몬식). */

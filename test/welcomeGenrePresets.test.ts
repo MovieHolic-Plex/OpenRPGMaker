@@ -119,7 +119,7 @@ describe("welcomeGenrePresets", () => {
     const brief: GameDesignBrief = {
       version: 1,
       presetId: "adventure-jrpg",
-      summary: "요약",
+      summary: "경험: 누군가를 구하기 위해\r\n행동: 탐험\n진행: 레벨\n세부: 세부\n범위: 시작 마을과 첫 의뢰 (추천안)",
       answers: {
         experience: { question: "q", label: "경험", text: "누군가를 구하기 위해", source: "user" },
         activity: { question: "q", label: "행동", text: "탐험", source: "user" },
@@ -128,13 +128,20 @@ describe("welcomeGenrePresets", () => {
         scope: { question: "q", label: "범위", text: "시작 마을과 첫 의뢰", source: "recommended" },
       },
     };
-    expect(welcomeGenrePresetDisplayText(preset, brief)).toBe(`${preset.label} · 누군가를 구하기 위해 · 시작 마을과 첫 의뢰`);
+    // 인터뷰 답이 말풍선에 다 보여야 한다 — 첫 답·범위만 24자로 잘라 보이면 「인터뷰가 안 넘어갔다」로 읽힌다.
+    expect(welcomeGenrePresetDisplayText(preset, brief)).toBe(
+      `${preset.label} · 확정한 게임 기획\n경험: 누군가를 구하기 위해\n행동: 탐험\n진행: 레벨\n세부: 세부\n범위: 시작 마을과 첫 의뢰 (추천안)`,
+    );
+    const long = welcomeGenrePresetDisplayText(preset, { ...brief, summary: "가".repeat(2000) });
+    expect(long.length).toBeLessThan(700);
+    expect(long.endsWith("…")).toBe(true);
     const withoutBrief = welcomeGenrePresetDisplayText(preset);
     expect(withoutBrief.startsWith(preset.label)).toBe(true);
+    expect(withoutBrief).not.toContain("\n");
     for (const shown of [withoutBrief, welcomeGenrePresetDisplayText(preset, brief)]) {
       expect(shown).not.toContain("한국어로 진행하고");
       expect(shown).not.toContain("체크리스트");
-      expect(shown).not.toContain("\n");
+      expect(shown).not.toContain("장르 프리셋:");
     }
   });
 

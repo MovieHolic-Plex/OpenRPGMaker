@@ -21,6 +21,8 @@ type RouteContext = {
   readonly map: GameMap;
   readonly session: PlaySessionLike;
   readonly view: RuntimeEventView;
+  /** 막힘 사건에서만 제공하는 현재 점유/통행 판정. 탐색 밖으로 보관하지 않는다. */
+  readonly canStep?: (fromX: number, fromY: number, toX: number, toY: number) => boolean;
 };
 
 type ConnectionPath = {
@@ -50,7 +52,7 @@ export function routeForLivingMovement(context: RouteContext): LivingRoute | nul
       advanceDestination(context.session, context.view.event.id, living.destinations.length, living.repeat);
       return null;
     }
-    const path = pathTo(context.project, context.map, current, destinationPoint);
+    const path = pathTo(context.project, context.map, current, destinationPoint, context.canStep);
     if (path.length === 0) return null;
     return livingRoute(context.view, path, destination.mapId, destinationPoint);
   }
@@ -67,7 +69,7 @@ export function routeForLivingMovement(context: RouteContext): LivingRoute | nul
       connection.to
     );
   }
-  const path = pathTo(context.project, context.map, current, departure);
+  const path = pathTo(context.project, context.map, current, departure, context.canStep);
   if (path.length === 0) return null;
   return livingRoute(
     context.view,
@@ -188,7 +190,7 @@ function connectionsByFromMap(connections: readonly MapConnection[]): Map<MapId,
   return byFrom;
 }
 
-function pathTo(project: Project, map: GameMap, from: Point, to: Point): MoveCommand[] {
+function pathTo(project: Project, map: GameMap, from: Point, to: Point, canStep?: RouteContext["canStep"]): MoveCommand[] {
   if (samePoint(from, to)) return [];
   // 이 탐색은 지형 통행(canMove)만 본다 — 추격 A* 와 같은 연결 성분 색인으로 도달 불가를 바로 안다.
   // 예전에는 목적지가 벽 안이면 표면 갱신마다 생활 NPC 마다 맵 전체 BFS 를 다시 돌렸다(NPC 10명 약 90ms).
@@ -199,7 +201,7 @@ function pathTo(project: Project, map: GameMap, from: Point, to: Point): MoveCom
   // 맵 밖 칸은 canMove 가 막으므로(inBounds) 큐에 들어가지 않는다. 출발점이 맵 밖이면 예전 경로로 간다.
   const width = map.width;
   const height = map.height;
-  if (!inside(map, from) || !inside(map, to)) return pathToSlow(project, map, from, to);
+  if (!inside(map, from) || !inside(map, to)) return pathToSlow(project, map, from, to, canStep);
   const cells = width * height;
   const startKey = from.y * width + from.x;
   const targetKey = to.y * width + to.x;
@@ -222,7 +224,7 @@ function pathTo(project: Project, map: GameMap, from: Point, to: Point): MoveCom
       const ny = cy + step.dy;
       if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
       const key = ny * width + nx;
-      if (visited[key] || !canMove(project, map, cx, cy, nx, ny)) continue;
+      if (visited[key] || !(canStep ? canStep(cx, cy, nx, ny) : canMove(project, map, cx, cy, nx, ny))) continue;
       visited[key] = 1;
       visitedCount += 1;
       previousCell[key] = current;
@@ -254,7 +256,7 @@ function unwindCells(previousCell: Int32Array, previousDir: Int8Array, startKey:
 }
 
 /** 맵 밖 좌표가 들어온 경우의 예전 구현(문자열 키). 정상 입력은 위 정수 경로를 탄다. */
-function pathToSlow(project: Project, map: GameMap, from: Point, to: Point): MoveCommand[] {
+function pathToSlow(project: Project, map: GameMap, from: Point, to: Point, canStep?: RouteContext["canStep"]): MoveCommand[] {
   const startKey = pointKey(from);
   const targetKey = pointKey(to);
   const queue: Point[] = [from];
@@ -267,7 +269,7 @@ function pathToSlow(project: Project, map: GameMap, from: Point, to: Point): Mov
     for (const step of DIRECTIONS) {
       const next = { x: current.x + step.dx, y: current.y + step.dy };
       const key = pointKey(next);
-      if (visited.has(key) || !canMove(project, map, current.x, current.y, next.x, next.y)) continue;
+      if (visited.has(key) || !(canStep ? canStep(current.x, current.y, next.x, next.y) : canMove(project, map, current.x, current.y, next.x, next.y))) continue;
       visited.add(key);
       previous.set(key, { point: current, dir: step.dir });
       if (key === targetKey) return unwindPath(previous, from, to);

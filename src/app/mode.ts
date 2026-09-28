@@ -27,7 +27,7 @@ import {
   mountPerfMetrics,
 } from "@/app/perfMetrics";
 import { MAP_EDIT_HISTORY_EVENT } from "@/editor/mapEditHistory";
-import { editorState, editorStateChangedOnlyPaintPick } from "@/editor/editorState";
+import { editorState, editorStateChangedOnlyCanvasOverlay, editorStateChangedOnlyPaintPick } from "@/editor/editorState";
 import { hasDeepLinkedProject, presentEditorWelcome, setEditorWelcomeDismissed, shouldPresentEditorWelcome } from "@/editor/editorWelcome";
 import { isForcedWelcomeRehearsal } from "@/editor/automationBootContext";
 import { isBlankStartProject } from "@/project/projectBlankness";
@@ -95,6 +95,9 @@ export async function bootApp(root: HTMLElement): Promise<void> {
       // 레이어 단추는 menu.ts 가 제자리에서 바꾼다. 타일·붓만 고른 클릭마다 탑바를 통째로
       // 다시 지으면 대형 칩셋 팔레트 클릭이 그만큼 굼떠진다(2026-09-25 실측).
       if (previous && editorStateChangedOnlyPaintPick(previous, state)) return;
+      // 선택 사각형·붙여넣기 고스트·클립보드는 탑바가 읽지 않는다. 우클릭 드래그가 pointermove 마다
+      // 탑바를 통째로 다시 짓고 있었다(2026-09-28 트레이스: 드래그 10걸음에 스타일 무효화 7건).
+      if (previous && editorStateChangedOnlyCanvasOverlay(previous, state)) return;
       if (topbarRefreshQueued) return;
       topbarRefreshQueued = true;
       queueMicrotask(() => {

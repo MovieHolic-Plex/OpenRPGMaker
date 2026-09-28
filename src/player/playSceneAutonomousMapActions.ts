@@ -10,7 +10,7 @@ import type { AutonomousMover } from "@/player/playSceneTypes";
 import type { AutonomousNpcSceneContext, MovementDelta } from "@/player/playSceneAutonomousTypes";
 import { applySpriteAlpha } from "@/player/playSceneAutonomousSprites";
 import type { NpcCommandTarget, NpcRouteCommandContext } from "@/player/playSceneAutonomousCommands";
-import { findBlockingEventOverlappingRect, runtimeEventViewById } from "@/project/runtimeEventState"
+import { findBlockingEventOverlappingRect, invalidateEventIdIndexPass, runtimeEventViewById } from "@/project/runtimeEventState"
 import type { Project } from "@/project/types/project";
 
 export type NpcMoveCollision = {
@@ -158,6 +158,8 @@ export function applyNpcTransfer(
   delete routeContext.scene.eventPositions[routeContext.eventId];
   routeContext.scene.autonomousNPCs.delete(routeContext.eventId);
   applySpriteAlpha(target.sprite, 0);
+  // 표면 갱신은 이벤트 배열을 바꿀 수 있다(소환·스폰) — 이 NPC 패스의 id 색인을 버린다.
+  invalidateEventIdIndexPass();
   routeContext.scene.refreshRuntimeSurfaces?.();
   routeContext.scene.syncRuntimeState?.();
 }

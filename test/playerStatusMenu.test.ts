@@ -34,6 +34,7 @@ describe("player status menu", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const menu = renderWithFakeDom(() =>
         renderPlayerStatusMenu({
           project,
@@ -60,6 +61,7 @@ describe("player status menu", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const menu = renderWithFakeDom(() =>
         renderPlayerStatusMenu({
           project,
@@ -89,6 +91,7 @@ describe("player status menu", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const slots: SaveSlotReadResult[] = [{ kind: "empty", slot: 1 }];
       const menu = renderWithFakeDom(() =>
         renderPlayerStatusMenu({
@@ -114,6 +117,7 @@ describe("player status menu", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const session = startSession(project);
       const actorId = session.partyActorIds[0]!;
       const vitals = session.actorVitals[actorId]!;
@@ -141,6 +145,7 @@ describe("player status menu", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const session = startSession(project);
       const actorId = session.partyActorIds[0]!;
       session.actorVitals[actorId] = { hp: 0, maxHp: 0, mp: 0, maxMp: 0 };
@@ -158,6 +163,7 @@ describe("player status menu", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const menu = renderWithFakeDom(() =>
         renderPlayerStatusMenu({
           project,
@@ -184,6 +190,7 @@ describe("player status menu", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const menu = renderWithFakeDom(() =>
         renderPlayerStatusMenu({
           project,
@@ -210,6 +217,7 @@ describe("player status menu", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const session = startSession(project);
       // blank 프로젝트는 인벤토리가 비어 있어 상세 목록 자체가 안 생긴다.
       const item = project.database.items.find((record) => record.description.trim().length > 0);
@@ -247,6 +255,7 @@ describe("player status menu", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const session = startSession(project);
       const sword = project.database.equipment.find((record) => record.id === DEFAULT_EQUIPMENT_ID);
       if (!sword) throw new Error("missing default sword");
@@ -281,6 +290,7 @@ describe("player status menu", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const session = startSession(project);
       const actor = session.partyActorIds[0];
       if (!actor) throw new Error("missing party member fixture");
@@ -311,6 +321,7 @@ describe("player status menu", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const session = startSession(project);
       // 시스템 그룹의 첫 항목(저장) 설명이 레일 단계에서 푸터로 새던 결함.
       const menu = renderWithFakeDom(() =>
@@ -335,6 +346,7 @@ describe("player status menu", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const menu = renderWithFakeDom(() =>
         renderPlayerStatusMenu({
           project,
@@ -357,6 +369,7 @@ describe("player status menu", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const menu = renderWithFakeDom(() =>
         renderPlayerStatusMenu({
           project,
@@ -378,6 +391,7 @@ describe("player status menu", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const session = startSession(project);
       const actorId = session.partyActorIds[0]!;
       const weapon = project.database.equipment.find((record) => record.slot === "weapon");
@@ -406,6 +420,7 @@ describe("player status menu", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const session = startSession(project);
       const item = project.database.items.find((record) => record.id === "item_potion") ?? project.database.items[0]!;
       item.name = "테스트 회복약";
@@ -435,6 +450,7 @@ describe("player status menu", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const session = startSession(project);
       const item = project.database.items.find((record) => record.id === "item_gen2_monster_kibble");
       const species = project.database.monsterSpecies?.[0];
@@ -493,6 +509,7 @@ describe("player status menu", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const session = startSession(project);
       const species = project.database.monsterSpecies?.[0];
       const [oldSkill, pendingSkill] = project.database.skills;

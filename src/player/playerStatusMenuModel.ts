@@ -1,4 +1,4 @@
-import { defaultActorFaceResourceId } from "@/project/actorModel";
+import { defaultActorFaceResourceId, normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
 import type { PlaySession } from "@/project/session";
 import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
 import { effectiveActorClassId } from "@/project/sessionClass";
@@ -202,6 +202,10 @@ export type PlayerStatusMenuPartyRow = {
   readonly mpRatio: number;
   /** 게이지 임계 — safe(>50%) / warn(>25%) / crit(<=25%). */
   readonly hpLevel: PartyVitalLevel;
+  /** 세션에 걸린 상태이상 이름(필드에서도 남는 것). 없으면 빈 배열 — 화면은 「정상」 으로 쓴다. */
+  readonly stateNames: readonly string[];
+  /** 다음 레벨까지 남은 경험치와 이번 레벨 구간 진행률(0~1). 최대 레벨이면 undefined. */
+  readonly nextLevel?: { readonly remaining: number; readonly ratio: number };
 };
 
 export type PartyVitalLevel = "crit" | "safe" | "warn";
@@ -267,6 +271,16 @@ export function createPlayerStatusMenuSnapshot(
     const level = session.actorLevels[actorId] ?? actor.initialLevel;
     const hpRatio = vitalRatio(vitals?.hp, vitals?.maxHp);
     const classId = effectiveActorClassId(project, session, actorId);
+    const normalized = normalizeActorRecord(actor);
+    const exp = session.actorExperience?.[actorId] ?? totalExpForLevel(normalized.expCurve, level);
+    const levelBase = totalExpForLevel(normalized.expCurve, level);
+    const levelNext = totalExpForLevel(normalized.expCurve, level + 1);
+    const nextLevel = level < normalized.maxLevel && levelNext > levelBase
+      ? { remaining: Math.max(0, levelNext - exp), ratio: vitalRatio(exp - levelBase, levelNext - levelBase) }
+      : undefined;
+    const stateNames = (session.actorStateIds?.[actorId] ?? [])
+      .map((stateId) => project.database.states.find((state) => state.id === stateId)?.name)
+      .filter((name): name is string => Boolean(name));
     return [{
       actorId,
       name: resolveActorName(session, actor),
@@ -282,6 +296,8 @@ export function createPlayerStatusMenuSnapshot(
       hpRatio,
       mpRatio: vitalRatio(vitals?.mp, vitals?.maxMp),
       hpLevel: partyVitalLevel(hpRatio),
+      stateNames,
+      ...(nextLevel ? { nextLevel } : {}),
     }];
   });
   const seenGroups = new Set<StatusMenuCommandGroupId>();

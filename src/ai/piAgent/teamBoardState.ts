@@ -17,6 +17,8 @@ export type TeamAgentLogEntry =
   | { readonly kind: "tool"; readonly id: string; readonly name: string; readonly ok: boolean | null; readonly summary: string; readonly args?: string }
   | { readonly kind: "text"; readonly text: string }
   | { readonly kind: "error"; readonly text: string }
+  /** 워커가 낸 실행 상태(마을 계약 해제·맵 연결·반복 차단·배치 품질 등). 과정에도, 활동 로그 감사에도 남는다. */
+  | { readonly kind: "status"; readonly name: string; readonly ok: boolean | null; readonly text: string }
   | { readonly kind: "review"; readonly ok: boolean; readonly findings: readonly string[] }
   | { readonly kind: "done"; readonly ok: boolean; readonly summary: string; readonly stats: PiAgentStats | null };
 
@@ -175,6 +177,11 @@ function applyAgentEvent(agent: TeamBoardAgent, event: PiAgentEvent): TeamBoardA
       );
     case "error":
       return appendLog({ ...agent, state: "실패", lastLine: trimLine(event.message), lastKind: "text" }, { kind: "error", text: trimLine(event.message, 400) });
+    // 무엇 때문에 실행이 방향을 바꿨는지는 도구 결과가 아니라 이 상태 행에만 있다(2026-09-28 계약 해제).
+    // 이미지 전달 알림은 매 호출 반복이라 과정만 붐비게 해서 뺀다.
+    case "execution_status":
+      if (event.name === "map.image.delivered") return agent;
+      return appendLog(agent, { kind: "status", name: event.name, ok: event.ok ?? null, text: trimLine(event.summary, 400) });
     case "done": return { ...agent, state: agent.state === "실패" ? "실패" : "완료", stats: event.stats, changedKeys: event.changedKeys };
     default: return agent;
   }

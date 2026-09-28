@@ -65,21 +65,41 @@ export function readSharedTileReferences(file = defaultFile(), options: { readon
  */
 const encodedCache = new Map<string, { revision: string; gzip: Buffer }>();
 export function encodedSharedTileReferences(file = defaultFile()): Buffer {
-  if (!existsSync(file)) return gzipSync(JSON.stringify({ revision: '', entries: [] }), { level: 1 });
+  return encodedSharedTileReferencesWithRevision(file).gzip;
+}
+/** 압축본과 그 판본. 판본은 카탈로그 행 판본의 해시라 payload 를 읽지 않고 1ms 대에 얻는다. */
+export function encodedSharedTileReferencesWithRevision(file = defaultFile()): { readonly revision: string; readonly gzip: Buffer } {
+  if (!existsSync(file)) return { revision: '', gzip: gzipSync(JSON.stringify({ revision: '', entries: [] }), { level: 1 }) };
   const db = new DatabaseSync(file, { readOnly: true });
   let revision: string;
   try { revision = hash((db.prepare('SELECT id, revision FROM content_libraries ORDER BY id').all() as { id: string; revision: string }[]).map(r => r.id + ':' + r.revision).join('\n')); }
   finally { db.close(); }
   const cached = encodedCache.get(file);
-  if (cached?.revision === revision) return cached.gzip;
+  if (cached?.revision === revision) return cached;
   const snapshot = readSharedTileReferences(file, { linkImages: true });
   const gzip = gzipSync(JSON.stringify(snapshot), { level: 1 });
-  encodedCache.set(file, { revision: snapshot.revision, gzip });
-  return gzip;
+  const entry = { revision: snapshot.revision, gzip };
+  encodedCache.set(file, entry);
+  return entry;
 }
-/** `accept-encoding` 에 gzip 이 없으면 풀어서 준다. */
-export function sharedTileReferencesBody(acceptEncoding: string | undefined): { readonly body: Buffer; readonly gzip: boolean } {
+/**
+ * `accept-encoding` 에 gzip 이 없으면 풀어서 준다. `ifNoneMatch` 가 지금 판본이면 본문 없이 304 다.
+ * 실측(2026-09-28, Tailscale 참여): 이 응답이 부팅마다 gzip 25MB(4.4–8.0s)를 다시 보냈다.
+ */
+export function sharedTileReferencesBody(acceptEncoding: string | undefined, ifNoneMatch?: string): { readonly body: Buffer; readonly gzip: boolean; readonly etag: string; readonly notModified: boolean } {
   const gzip = /\bgzip\b/.test(acceptEncoding ?? '');
-  const encoded = encodedSharedTileReferences();
-  return { body: gzip ? encoded : gunzipSync(encoded), gzip };
+  // 304 판정에는 판본만 있으면 된다. 첫 요청이면 본문(약 190MB 읽기·압축, 호스트 메인 스레드 약 6s)을 만들지 않는다.
+  const revision = sharedTileReferencesRevision();
+  const early = `"tile-references-${revision}"`;
+  if (ifNoneMatch && ifNoneMatch.split(',').some(tag => tag.trim() === early)) return { body: Buffer.alloc(0), gzip, etag: early, notModified: true };
+  const encoded = encodedSharedTileReferencesWithRevision();
+  const etag = `"tile-references-${encoded.revision}"`;
+  return { body: gzip ? encoded.gzip : gunzipSync(encoded.gzip), gzip, etag, notModified: false };
+}
+/** 카탈로그 판본(행 판본의 해시). payload 를 읽지 않는다. `readSharedTileReferences` 의 revision 과 같은 값이다. */
+export function sharedTileReferencesRevision(file = defaultFile()): string {
+  if (!existsSync(file)) return '';
+  const db = new DatabaseSync(file, { readOnly: true });
+  try { return hash((db.prepare('SELECT id, revision FROM content_libraries ORDER BY id').all() as { id: string; revision: string }[]).map(r => r.id + ':' + r.revision).join('\n')); }
+  finally { db.close(); }
 }

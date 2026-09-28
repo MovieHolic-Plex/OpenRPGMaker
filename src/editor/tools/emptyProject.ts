@@ -19,7 +19,8 @@ export function createEmptyToolProject(title = "빈 프로젝트"): Project {
   // 아이템을 버렸으니 씨앗·수확물을 참조하는 작물 행도 함께 버린다(참조 검증 통과).
   dropCropsWithMissingItems(database);
 
-  const system = defaultSystem();
+  // 새 프로젝트는 도트 측면 전투(retro2003)로 태어난다(defaultSystem 의 newProject 인자).
+  const system = defaultSystem(true);
   // 트룹을 비웠으므로 초기 트룹 참조를 제거(참조 검증 통과).
   system.initialTroopId = undefined;
 

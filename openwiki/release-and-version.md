@@ -79,10 +79,11 @@ gh release create v0.2.0 --title "v0.2.0" --notes-from-tag
 
 Electron 배포는 GitHub Release 에 바이너리를 붙이는 게 본류다. 이 저장소의 절차:
 
-앱 아이콘(2026-09-28): 원본은 `design/app-icon/`(기본안 `oprn-icon-sword-quill.png`, 백업안 `oprn-icon-map-cube.png`)이고,
-`python3 scripts/assets/build-app-icons.py`(백업안은 `--backup`)가 `public/icons/` 의 파비콘·PWA·마스커블 아이콘과
-`build/icon.png`(1024px)를 한 번에 다시 만든다. `scripts/electron-builder.config.mjs` 의 `icon` 이 `build/icon.png` 를 가리켜
-맥 icns·윈도우 ico·리눅스 png 가 여기서 나온다. 리눅스·윈도우 창 아이콘은 `electron/main/main.ts` 가 렌더러 번들의
+앱 아이콘(2026-09-28): 원본은 투명 배경의 도트 검 `design/app-icon/oprn-icon-sword.png` 한 장이고,
+`python3 scripts/assets/build-app-icons.py` 가 `public/icons/` 의 파비콘·PWA·마스커블 아이콘과 `build/icon.png`·`build/icon-mac.png` 를
+한 번에 다시 만든다. 판(배경)은 두 곳에만 깐다: 안드로이드 마스커블(런처가 모양대로 자른다)과 맥
+(macOS 26 은 둥근 사각형이 아닌 아이콘을 회색 판에 줄여 넣는다). 빌더 설정의 `icon` 은 윈도우·리눅스용 `build/icon.png`,
+`mac.icon` 은 `build/icon-mac.png` 를 가리킨다. 리눅스·윈도우 창 아이콘은 `electron/main/main.ts` 가 렌더러 번들의
 `icons/pwa-512.png` 로 준다. 생성 파일을 손으로 고치지 말고 원본을 바꾼 뒤 스크립트를 다시 돌린다.
 
 ```bash

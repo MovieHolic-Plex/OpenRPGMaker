@@ -2016,6 +2016,10 @@ player preview. The editor probe accepts skin IDs as arguments and an optional
 
 ### 공용 기본 매핑 재저작 (2026-09-18)
 
+> 2026-09-28 전수 대조로 근사 26칸 중 다른 인물인 7칸을 얼굴 없음으로 바꿨다(현재 정확 68·근사 19·얼굴 없음 81).
+> 같은 날 원본에 얼굴이 없던 29칸의 짝 얼굴을 생성해 연결했다(현재 정확 97·근사 19·얼굴 없음 52 — 사물·탈것·빈 칸뿐, 얼굴 메타데이터 109개).
+> 목록과 저장본 교정은 `openwiki/editor-ai-tools.md` 「얼굴 짝 전수 교정」.
+
 사용자의 재매핑 지시로 `src/assets/sharedCharacterGraphics.json`을 원본 그림에서 새로 저작했다. 168칸 중 94칸 연결(정확 68·근사 26), 74칸 얼굴 없음, 원본 얼굴 메타데이터 80개다. 공용 저장 파일이 없는 호스트는 이 자료로 시작하며, 이미 저장된 호스트 파일은 우선하여 사용자 편집을 보존한다. 각 근사 대응의 차이는 `note`에 남긴다. `Actor3 #5`를 여성 얼굴에 순번으로 연결하지 않으며, 검은 고양이·Scarloxy 전용 그림·물건·빈 칸에 억지 얼굴을 주지 않는다. 시트·얼굴 대조 PNG, 호스트 저장 후 재읽기, LegacyDb 전용 행 `oprn-shared-character-graphics`의 저장(201) 후 재조회 근거는 `.omo/evidence/shared-character-faces/README.md`에 보존한다. LegacyDb는 재저작 자료의 원격 보관본이고 편집기의 공용 저장 정본은 호스트 파일이다.
 
 ## Feature16 climate and action forms (2026-09-21)

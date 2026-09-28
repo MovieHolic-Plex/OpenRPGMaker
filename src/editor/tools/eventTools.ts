@@ -33,6 +33,8 @@ import {
   type CutsceneBeat,
 } from "@/editor/cutscene";
 import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
+import { reconcileFaceWithCharset } from "@/assets/reviewedCharsetFaces";
+import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { searchResources } from "@/assets/resourceSearch";
 import {
   charsetGraphic,
@@ -3634,6 +3636,35 @@ function resolveCutsceneActorTargets(map: GameMap, beats: readonly CutsceneBeat[
   return resolved;
 }
 
+/**
+ * 컷신 say.face 를 화자의 걷기 그림과 대조한다. 화자가 이 맵 이벤트 이름이거나 배우 이름과 **정확히 하나** 맞을 때만
+ * 판단한다 — 화자를 못 찾으면(나레이션·맵 밖 인물) 얼굴을 건드리지 않는다. 규칙은 reconcileFaceWithCharset.
+ */
+function reconcileCutsceneSayFaces(project: Project, map: GameMap, beats: readonly CutsceneBeat[], warnings: string[]): CutsceneBeat[] {
+  const lookOf = (speaker: string): { readonly id: string; readonly index: number } | undefined => {
+    const events = map.events.filter((event) => event.name?.trim() === speaker || event.pages?.[0]?.name?.trim() === speaker);
+    const actors = project.database.actors.filter((actor) => actor.name.trim() === speaker);
+    if (events.length + actors.length !== 1) return undefined;
+    const actor = actors[0];
+    if (actor) return actor.characterResourceId ? { id: actor.characterResourceId, index: actor.characterIndex ?? 0 } : undefined;
+    const graphic = events[0]!.pages?.find((page) => page.graphic && !page.graphic.transparent)?.graphic;
+    if (!graphic?.sprite?.id || graphic.sprite.type !== "bundled") return undefined;
+    return { id: graphic.sprite.id, index: decodeCharsetFrameIndex(graphic.pattern ?? 0).characterIndex };
+  };
+  const fix = (items: readonly CutsceneBeat[]): CutsceneBeat[] => items.map((beat): CutsceneBeat => {
+    if (beat.kind === "parallel") return { ...beat, beats: fix(beat.beats) };
+    if (beat.kind !== "say" || typeof beat.face?.resourceId !== "string" || !beat.speaker?.trim()) return beat;
+    const look = lookOf(beat.speaker.trim());
+    if (!look) return beat;
+    const reconciled = reconcileFaceWithCharset(beat.face.resourceId, look.id, look.index);
+    if (reconciled.warning) warnings.push(`컷신 화자 '${beat.speaker.trim()}': ${reconciled.warning}`);
+    if (reconciled.faceResourceId === beat.face.resourceId) return beat;
+    const { face: _face, ...rest } = beat;
+    return reconciled.faceResourceId === null ? rest : { ...beat, face: { ...beat.face, resourceId: reconciled.faceResourceId } };
+  });
+  return fix(beats);
+}
+
 function cutsceneMoveWarnings(project: Project, map: GameMap, beats: readonly CutsceneBeat[]): string[] {
   const warnings: string[] = [];
   const positions = new Map<string, { x: number; y: number }>();
@@ -3716,7 +3747,8 @@ const scriptCutscene: ToolDefinition = {
     const warnings: string[] = [];
     const aliased = canonicalizeSayBeatAliases(args.beats);
     if (aliased.moved > 0) warnings.push(SAY_BEAT_ALIAS_WARNING(aliased.moved));
-    const beats = resolveCutsceneActorTargets(map, resolveCutsceneMusicResources(draft, aliased.beats as CutsceneBeat[], warnings), warnings);
+    const beats = reconcileCutsceneSayFaces(draft, map,
+      resolveCutsceneActorTargets(map, resolveCutsceneMusicResources(draft, aliased.beats as CutsceneBeat[], warnings), warnings), warnings);
     const eventId = typeof args.eventId === "string" && args.eventId.trim() ? args.eventId.trim() : genId("ev_cutscene");
     const eventIds = new Set(map.events.map((event) => event.id));
     eventIds.add(eventId);

@@ -150,6 +150,7 @@ export function createBattleTransition(
 export type SkinBattleTransition = import("@/battle/skins/types").BattleTransition;
 
 const SKIN_TRANSITION_CLASS: Record<string, string> = {
+  "shatter-2003": "battle-transition--shatter-2003",
   "slide-pokemon": "battle-transition--slide-pokemon",
   "focus-blur": "battle-transition--focus-blur",
   "sweep-cyan": "battle-transition--sweep-cyan",

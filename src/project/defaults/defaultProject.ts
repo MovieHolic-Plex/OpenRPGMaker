@@ -4,7 +4,7 @@ import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { normalizeCropRecord } from "@/project/farmModel";
 import { defaultFeatureCropRecords } from "./defaultFeatureItemRecords";
 import { DEFAULT_ACTOR_ID, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_ITEM_ID, DEFAULT_TILE_SIZE } from "./constants";
-import { defaultStarterActorIds } from "./defaultDatabasePartyRecords";
+import { defaultPartyRecords, defaultStarterActorIds } from "./defaultDatabasePartyRecords";
 import { placeableKey, type PlaceableObjectState } from "@/project/placeables";
 import { configureScarloxyDemoProject, createScarloxyDemoMaps } from "./scarloxyDemoGame";
 import { configureScarloxyPokemonDemoProject, createScarloxyPokemonDemoMaps } from "./scarloxyPokemonDemoGame";
@@ -18,6 +18,7 @@ import { DEFAULT_ROAD_AUTOTILE_GROUP } from "./autotileGroups";
 import { shapeAutotileGroupAround } from "./autotileEngine";
 import { DIRT_ROAD_TILE } from "./chipsetMapping";
 import { repairLegacyRateKeys } from "./legacyRateKeyRepair";
+import { repairFaceMatches } from "../faceMatchRepair";
 import { repairUnplayableSystemBgm } from "./legacyAudioRepair";
 import {
   createBlankMap,
@@ -54,6 +55,17 @@ const SHOP_SHOWCASE_GOLD_SWITCH_ID = "switch_shop_showcase_gold";
 /** 예제 데모: 《이슬 마을의 종》 — 에디터 작성 export fixture. 별등 마을 코드 생성기는 제거됨. */
 export function createSampleAdventureProject(): Project {
   const project = structuredClone(dewVillageDemoFixture as unknown as Project);
+  // 새 데모도 새 프로젝트의 전투 기본값을 사용한다. 기존 저장 문서는 바꾸지 않는다.
+  project.system.battleUiStyle = "retro2003";
+  const starterGraphics = defaultPartyRecords().actors;
+  for (const actor of project.database.actors) {
+    if (!actor.battleCharacterResourceId?.startsWith("generated-actor-hero-")) continue;
+    const seed = starterGraphics.find((entry) => entry.id === actor.id);
+    if (!seed) continue;
+    actor.characterResourceId = seed.characterResourceId;
+    actor.characterIndex = seed.characterIndex;
+    actor.battleCharacterResourceId = seed.battleCharacterResourceId;
+  }
   // Fixture는 blank 시드에서 왔으므로 시작 파티가 1명일 수 있다. 정규 스타터 파티
   // (`STARTER_ACTOR_IDS`, 4인)를 DB에 실제로 있는 배우로 걸러 맞춘다. 예전에는 `slice(0, 2)` 로
   // 2인만 채웠는데, 로스터가 6인·정규 파티가 4인이 된 뒤에도 2인에 머물러 데모가 스타터 파티를
@@ -75,6 +87,8 @@ export function createSampleAdventureProject(): Project {
   enlivenDewVillage(project);
   // 주민 대사에 시간대·활동·호감·퀘스트 진행을 반영한다(dewVillageDialogue.ts 주석 참조).
   layerDewVillageDialogue(project);
+  // 픽스처는 옛 기본값(이름이 같은 얼굴 시트)으로 저장됐다 — 걷기 그림의 짝으로 맞춘다(faceMatchRepair.ts).
+  repairFaceMatches(project);
   return project;
 }
 

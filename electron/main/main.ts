@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
-import { networkInterfaces } from "node:os";
 import { startLocalProjectServer, type LocalProjectServer } from "../serve/runtime";
+import { normalizeTeamUrl } from "../serve/localNetwork";
 import { join } from "node:path";
 import { BrowserWindow, Menu, app, clipboard, dialog, ipcMain, protocol, shell, type IpcMainInvokeEvent } from "electron";
 import { OPRN_APP_SCHEME, OPRN_ASSET_SCHEME, OPRN_CHANNELS } from "../shared/channels";
@@ -10,7 +10,9 @@ import { registerAssetBrowser } from "./assetBrowser";
 import { registerAppProtocol, registerAssetProtocol } from "./protocols";
 import { createProjectSessionRegistry } from "./sessions";
 import { startCompanionServer, type CompanionServer } from "./companion";
-import { describeRecentProjects, prepareNewProjectDir, recentProjectCoverSource, rememberRecentProject, suggestProjectDir, writeRecentProjectCover } from "./recent";
+import { describeRecentProjects, listRecentTeams, prepareNewProjectDir, recentProjectCoverSource, rememberRecentProject, rememberRecentTeam, suggestProjectDir, writeRecentProjectCover } from "./recent";
+import { openTeamWindow } from "./teamWindow";
+import type { JoinTeamResult } from "../shared/start";
 
 protocol.registerSchemesAsPrivileged([
   { scheme: OPRN_APP_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } },
@@ -22,6 +24,9 @@ const hosting = new Set<string>();
 const teamHosts = new Map<string, LocalProjectServer>();
 let companionServer: CompanionServer | null = null;
 const rendererDir = process.env.OPRN_RENDERER_DIR ?? join(app.getAppPath(), "dist");
+const windowIcon = process.platform === "darwin" ? undefined : join(rendererDir, "icons", "pwa-512.png");
+/** 팀 호스트 포트. 앱을 다시 켜도 팀원이 받은 주소가 그대로 맞도록 고정 범위에서 먼저 찾는다. */
+const TEAM_HOST_PORTS = [9840, 9841, 9842, 9843, 9844, 9845, 9846, 9847, 9848, 9849];
 
 const closing = new Set<number>();
 const closeTimers = new Map<number, ReturnType<typeof setTimeout>>();
@@ -60,7 +65,7 @@ function createWindow(): BrowserWindow {
     height: 800,
     show: false,
     // 리눅스·윈도우 창 제목줄과 작업표시줄 아이콘. 맥은 앱 번들 icns 를 쓰므로 주지 않는다.
-    ...(process.platform === "darwin" ? {} : { icon: join(rendererDir, "icons", "pwa-512.png") }),
+    ...(windowIcon ? { icon: windowIcon } : {}),
     webPreferences: {
       preload: join(__dirname, "preload.cjs"),
       contextIsolation: true,
@@ -118,6 +123,48 @@ function focusedWindow(): BrowserWindow | null {
   return BrowserWindow.getFocusedWindow() ?? BrowserWindow.getAllWindows()[0] ?? null;
 }
 
+/** 참여하는 쪽: 다른 컴퓨터의 팀 호스트를 앱 창으로 연다. 창이 첫 페이지를 불러오면 끝난다. */
+function joinTeam(input: string): Promise<JoinTeamResult> {
+  let target: URL;
+  try { target = normalizeTeamUrl(input); }
+  catch (error) { return Promise.resolve({ ok: false, error: error instanceof Error ? error.message : String(error) }); }
+  return new Promise((resolvePromise) => {
+    openTeamWindow(target, {
+      icon: windowIcon,
+      onLoaded: (loaded) => { rememberRecentTeam(loaded); resolvePromise({ ok: true, url: loaded.origin }); },
+      onLoadFailed: (_failed, reason) => resolvePromise({ ok: false, error: `${target.host} 에 연결하지 못했습니다 (${reason}). 호스트 컴퓨터에서 팀 협업이 켜져 있는지, 같은 네트워크인지 확인해 주세요.` }),
+    });
+  });
+}
+
+async function startTeamHost(projectDir: string): Promise<LocalProjectServer> {
+  const browserBridgeSource = await readFile(join(app.getAppPath(), 'dist-electron/browser-bridge.js'), 'utf8');
+  let lastError: unknown = null;
+  for (const port of [...TEAM_HOST_PORTS, 0]) {
+    try {
+      return await startLocalProjectServer({ projectDir, distDir: rendererDir, browserBridgeSource, sessions,
+        host: '0.0.0.0', port, localNetwork: true });
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'EADDRINUSE') throw error;
+      lastError = error;
+    }
+  }
+  throw lastError;
+}
+
+/** 팀원을 초대하려면 이 주소를 알려 준다. LAN 주소가 여러 개면 모두 보여 준다(어느 것이 맞는지는 네트워크마다 다르다). */
+function teamHostDetail(host: LocalProjectServer, accessCodeRequired: boolean): string {
+  const [first, ...others] = host.urls;
+  return [
+    `팀원은 앱 시작 화면의 「팀에 참여」에 이 주소를 넣으면 됩니다:\n${first}`,
+    others.length > 0 ? `연결되지 않으면 다른 주소를 써 보세요:\n${others.join('\n')}` : '',
+    accessCodeRequired
+      ? '접속 코드가 켜져 있습니다. 소유자 접속 코드를 클립보드에 복사했습니다. 팀원은 팀 관리에서 만든 초대 링크를 쓰세요.'
+      : '주소를 클립보드에 복사했습니다. 코드 없이 바로 참여할 수 있습니다. 접속 코드는 팀 관리의 접속 설정에서 켤 수 있습니다.',
+    '같은 네트워크에서만 참여할 수 있으며, 이 앱을 종료하면 팀 호스트도 종료됩니다. 연결되지 않으면 이 컴퓨터의 방화벽이 앱을 막고 있는지 확인해 주세요.',
+  ].filter(Boolean).join('\n\n');
+}
+
 /** The app owns the local host lifecycle; users do not install or start a DB/server. */
 async function hostCurrentTeam(): Promise<void> {
   const window = focusedWindow();
@@ -129,19 +176,29 @@ async function hostCurrentTeam(): Promise<void> {
   try {
     let host = teamHosts.get(session.projectDir);
     if (!host) {
-      const ip = Object.values(networkInterfaces()).flat().find(address => address && !address.internal && address.family === 'IPv4')?.address;
-      if (!ip) throw new Error('연결된 로컬 네트워크를 찾을 수 없습니다.');
-      const browserBridgeSource = await readFile(join(app.getAppPath(), 'dist-electron/browser-bridge.js'), 'utf8');
-      host = await startLocalProjectServer({ projectDir: session.projectDir, distDir: rendererDir,
-        browserBridgeSource, sessions, host: '0.0.0.0', publicOrigin: `http://${ip}:0` });
+      host = await startTeamHost(session.projectDir);
+      if (!host.urls.some((url) => !url.includes('127.0.0.1'))) {
+        await host.close();
+        throw new Error('연결된 로컬 네트워크를 찾을 수 없습니다. Wi-Fi 나 유선 네트워크에 연결한 뒤 다시 시도해 주세요.');
+      }
       teamHosts.set(session.projectDir, host);
     }
-    clipboard.writeText(session.team.accessCodeRequired() ? host.ownerAccessCode! : host.url);
-    await dialog.showMessageBox(window, { message: '팀 호스트가 실행 중입니다.',
-      detail: `${host.url}\n${session.team.accessCodeRequired() ? '소유자 접속 코드를 클립보드에 복사했습니다.' : '접속 주소를 클립보드에 복사했습니다. 코드 없이 바로 사용할 수 있습니다.'} 접속 코드는 팀 관리의 접속 설정에서 켜거나 끌 수 있습니다. 같은 네트워크에서 접속할 수 있으며, 앱을 종료하면 호스트도 종료됩니다.` });
-    await shell.openExternal(host.url);
+    const accessCodeRequired = session.team.accessCodeRequired();
+    clipboard.writeText(accessCodeRequired ? host.ownerAccessCode! : host.url);
+    const { response } = await dialog.showMessageBox(window, { message: '팀 호스트가 실행 중입니다.',
+      detail: teamHostDetail(host, accessCodeRequired), buttons: ['확인', '팀 관리 열기'], defaultId: 0, cancelId: 0 });
+    // 팀 관리(초대·권한·접속 코드)는 호스트 페이지다. 브라우저 대신 앱 창으로 연다.
+    // LAN 주소로 연다. 팀 관리가 만드는 초대 링크는 이 창의 주소(location.origin)를 쓴다.
+    if (response === 1) openTeamWindow(new URL('/__oprn/team', host.url), { icon: windowIcon });
   } catch (error) { await dialog.showMessageBox(window, { type: 'error', message: '팀 호스트를 시작하지 못했습니다.', detail: error instanceof Error ? error.message : String(error) }); }
   finally { hosting.delete(session.projectDir); }
+}
+
+/** 파일 메뉴 → 팀에 참여. 주소 입력은 시작 화면이 맡는다. 새 창은 프로젝트가 없으니 시작 화면으로 열린다. */
+function showJoinFromMenu(): void {
+  const window = BrowserWindow.getAllWindows().find((candidate) => candidate.webContents.getURL().includes('start-screen.html'));
+  if (window) { window.show(); window.focus(); return; }
+  createWindow();
 }
 
 function buildMenu(): void {
@@ -151,6 +208,7 @@ function buildMenu(): void {
       label: "파일",
       submenu: [
         { label: "팀 협업 시작 / 관리", click: () => { void hostCurrentTeam(); } },
+        { label: "팀에 참여…", click: () => { showJoinFromMenu(); } },
         { label: "팀 호스트 중지", click: async () => {
           const window = focusedWindow();
           const projectDir = window ? sessions.get(window.webContents.id)?.projectDir : undefined;
@@ -312,6 +370,11 @@ app.whenReady().then(async () => {
   ipcMain.handle(OPRN_CHANNELS.startImportFile, async (event: IpcMainInvokeEvent, payload: unknown) => {
     return { projectDir: null, imported: false };
   });
+  ipcMain.handle(OPRN_CHANNELS.startJoinTeam, async (_event: IpcMainInvokeEvent, payload: unknown) => {
+    const url = (payload as { readonly url?: unknown } | null)?.url;
+    return joinTeam(typeof url === "string" ? url : "");
+  });
+  ipcMain.handle(OPRN_CHANNELS.startRecentTeams, () => listRecentTeams());
   registerIpcHandlers(sessions);
   registerAssetBrowser();
   createWindow();

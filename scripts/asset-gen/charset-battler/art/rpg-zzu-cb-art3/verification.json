@@ -1,0 +1,87 @@
+{
+  "actor2-3": {
+    "poses": 24,
+    "new_battle_poses": 20,
+    "source_walk_and_front": 4,
+    "distinct_images": 24,
+    "sheet_size": [
+      144,
+      384
+    ],
+    "ground_y": 44,
+    "binary_alpha": true,
+    "extra_colors": 6,
+    "sheet_matches_sources": true,
+    "motion_frames": 16,
+    "frame_duration_ms": 120,
+    "board_and_motion_visually_reviewed": true
+  },
+  "actor2-2": {
+    "poses": 24,
+    "new_battle_poses": 20,
+    "source_walk_and_front": 4,
+    "distinct_images": 24,
+    "sheet_size": [
+      144,
+      384
+    ],
+    "ground_y": 44,
+    "binary_alpha": true,
+    "extra_colors": 6,
+    "sheet_matches_sources": true,
+    "motion_frames": 16,
+    "frame_duration_ms": 120,
+    "board_and_motion_visually_reviewed": true
+  },
+  "actor2-4": {
+    "poses": 24,
+    "new_battle_poses": 20,
+    "source_walk_and_front": 4,
+    "distinct_images": 24,
+    "sheet_size": [
+      144,
+      384
+    ],
+    "ground_y": 44,
+    "binary_alpha": true,
+    "extra_colors": 6,
+    "sheet_matches_sources": true,
+    "motion_frames": 16,
+    "frame_duration_ms": 120,
+    "board_and_motion_visually_reviewed": true
+  },
+  "actor2-5": {
+    "poses": 24,
+    "new_battle_poses": 20,
+    "source_walk_and_front": 4,
+    "distinct_images": 24,
+    "sheet_size": [
+      144,
+      384
+    ],
+    "ground_y": 44,
+    "binary_alpha": true,
+    "extra_colors": 6,
+    "sheet_matches_sources": true,
+    "motion_frames": 16,
+    "frame_duration_ms": 120,
+    "board_and_motion_visually_reviewed": true
+  },
+  "actor2-6": {
+    "poses": 24,
+    "new_battle_poses": 20,
+    "source_walk_and_front": 4,
+    "distinct_images": 24,
+    "sheet_size": [
+      144,
+      384
+    ],
+    "ground_y": 44,
+    "binary_alpha": true,
+    "extra_colors": 6,
+    "sheet_matches_sources": true,
+    "motion_frames": 16,
+    "frame_duration_ms": 120,
+    "board_and_motion_visually_reviewed": true
+  }
+}

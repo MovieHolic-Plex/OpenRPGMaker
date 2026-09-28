@@ -86,6 +86,11 @@ export type ExistingVillageTarget = {
    * 최상위 fullMap:true도 여기로 합쳐진다.
    */
   readonly fullMap?: boolean;
+  /**
+   * bounds 생략 시 맵을 적어도 이 크기로 넓힌다(좌상단 유지·잔디, 줄이지 않는다). 마을 계약이 완성 마을 사례
+   * 크기를 빈 시작 맵에 옮길 때 쓴다(2026-09-28) — 환산기 기본 크기는 사례 배치(포구·단구)에 모자라 채수가 빈다.
+   */
+  readonly minSize?: { readonly width: number; readonly height: number };
 };
 
 export type NewVillageTarget = {

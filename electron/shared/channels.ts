@@ -15,6 +15,8 @@ export const OPRN_CHANNELS = {
   projectLoad: "oprn:project.load",
   projectLoadFolded: "oprn:project.loadFolded",
   projectTilesetBlobs: "oprn:project.tilesetBlobs",
+  /** HTTP 팀 호스트 전용: 전송에서 뗀 업로드 자산 dataUrl 본문(내용 주소). 로컬 IPC 에는 없다. */
+  projectAssetBlobs: "oprn:project.assetBlobs",
   projectSave: "oprn:project.save",
   projectSaveMapPatch: "oprn:project.saveMapPatch",
   projectDataVersion: "oprn:project.dataVersion",
@@ -50,6 +52,10 @@ export const OPRN_CHANNELS = {
   startCoverSource: "oprn:start.coverSource",
   /** 시작 화면이 구운 카드 그림을 그 폴더의 cover.jpg 로 남긴다. */
   startSaveCover: "oprn:start.saveCover",
+  /** 다른 컴퓨터의 팀 호스트를 앱 창으로 연다(참여하는 쪽). */
+  startJoinTeam: "oprn:start.joinTeam",
+  /** 전에 참여한 팀 호스트 주소. 초대 비밀(#join=)은 남기지 않는다. */
+  startRecentTeams: "oprn:start.recentTeams",
   assetBrowserOpen: "oprn:assetBrowser.open",
   assetBrowserBounds: "oprn:assetBrowser.bounds",
   assetBrowserClose: "oprn:assetBrowser.close",
