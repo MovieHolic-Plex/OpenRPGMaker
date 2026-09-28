@@ -1,4 +1,5 @@
 import { findCharsetSemantic } from "@/assets/charsetSemantics";
+import { READY_PEOPLE_BATTLERS } from "@/assets/charsetBattlerReady";
 
 /** 걷기 칩과 전투 시트의 공용 대응표. 48px 셀 3열×8행, 확대는 표시 계층에서 한 번만 한다. */
 const WALK_CHIP_BATTLERS = Array.from({ length: 32 }, (_, index) => {
@@ -31,7 +32,26 @@ const CLASS_BATTLERS = [
   },
 ];
 
-export const CHARSET_BATTLERS = [...WALK_CHIP_BATTLERS, ...CLASS_BATTLERS];
+/**
+ * People1~5 전투 시트 40개(2026-09-28 2차 로스터, `charset-battler-people<N>-<i>`).
+ * 시트 PNG 는 아트 묶음이 나눠서 만든다 — **파일이 있는 것만** 등록한다(charsetBattlerReady.ts). 등록만 하고 파일이 없으면
+ * 전투에서 빈 배우가 서기 때문이다. 없는 칩은 자동 대응이 undefined 를 돌려줘 기존 스킨 폴백(공용 전사/마법사)으로 간다.
+ * 파일이 늘면 `node scripts/content/sync-charset-battler-ready.mjs` 로 목록을 다시 만든다.
+ */
+const PEOPLE_CHIP_BATTLERS = Array.from({ length: 40 }, (_, index) => {
+  const people = `people${Math.floor(index / 8) + 1}`;
+  const characterIndex = index % 8;
+  return {
+    resourceId: `charset-battler-${people}-${characterIndex}`,
+    path: `assets/generated/charset-battlers/${people}-${characterIndex}.png`,
+    castPath: `assets/generated/charset-battlers/cast/${people}-${characterIndex}.png`,
+    characterResourceId: `easyrpg-charset-${people}`,
+    characterIndex,
+    label: `걷기 칩 전투 · ${findCharsetSemantic(`tex_easyrpg_charset_${people}`, characterIndex)?.label ?? `${people} ${characterIndex + 1}`}`,
+  };
+}).filter((entry) => READY_PEOPLE_BATTLERS.has(entry.resourceId));
+
+export const CHARSET_BATTLERS = [...WALK_CHIP_BATTLERS, ...PEOPLE_CHIP_BATTLERS, ...CLASS_BATTLERS];
 
 const byId = new Map(CHARSET_BATTLERS.map((entry) => [entry.resourceId, entry]));
 export function charsetBattler(resourceId: string | undefined) {
@@ -39,9 +59,16 @@ export function charsetBattler(resourceId: string | undefined) {
 }
 
 export function charsetBattlerForCharacter(characterResourceId?: string, characterIndex = 0): string | undefined {
-  if (!/^easyrpg-charset-actor[1-4]$/.test(characterResourceId ?? "")) return undefined;
+  if (!/^easyrpg-charset-(actor[1-4]|people[1-5])$/.test(characterResourceId ?? "")) return undefined;
   if (!Number.isInteger(characterIndex) || characterIndex < 0 || characterIndex > 7) return undefined;
-  return `charset-battler-${characterResourceId!.slice("easyrpg-charset-".length)}-${characterIndex}`;
+  const id = `charset-battler-${characterResourceId!.slice("easyrpg-charset-".length)}-${characterIndex}`;
+  // People 시트는 아직 다 그려지지 않았다 — 파일이 없는 칩은 undefined(기존 폴백).
+  return byId.has(id) ? id : undefined;
+}
+
+/** 이 걷기 칩의 전투 시트 id 가 규칙상 있는가(파일 존재와 무관). 로스터 생성기가 「시트가 아직 없다」를 구분할 때 쓴다. */
+export function charsetBattlerIdForChip(characterResourceId: string, characterIndex: number): string {
+  return `charset-battler-${characterResourceId.slice("easyrpg-charset-".length)}-${characterIndex}`;
 }
 
 /** 측면 표시·내보내기가 같은 선택 계약을 쓴다. 저작 시트는 자동 대응보다 우선한다. */
