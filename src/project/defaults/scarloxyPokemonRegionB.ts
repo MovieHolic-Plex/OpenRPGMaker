@@ -770,11 +770,120 @@ export function createWaterGymMap(): GameMap {
   return map;
 }
 
+
+// --- 3번 도로 (town_kit 24×34) -------------------------------------------------------
+// 북쪽 (12,0) ↔ 파도 마을, 남쪽 (12,33) → 잿불 마을. 양옆은 나무 벽, 가운데 길을 따라 풀숲 네 덩이와 트레이너 셋.
+
+function kitBlock(name: string): number[][] {
+  const block = MONSTER_TOWN_KIT_MANIFEST.blocks.find((entry) => entry.name === name);
+  if (!block) throw new Error("몬스터 마을 부품 매니페스트에 " + name + " 블록이 없습니다.");
+  return Array.from({ length: block.h }, (_, dy) =>
+    Array.from({ length: block.w }, (_, dx) => (block.row + dy) * 30 + block.col + dx));
+}
+const K = {
+  SIGNPOST: kitBlock("signpost")[0]![0]!,
+  SHRUB: kitBlock("cuttable-shrub")[0]![0]!,
+  CRATE: kitBlock("crate")[0]![0]!,
+  BENCH: kitBlock("bench"),
+  TALL_GRASS: [kitBlock("tall-grass-a")[0]![0]!, kitBlock("tall-grass-b")[0]![0]!] as const,
+  FENCE: kitBlock("picket-fence")[0]!,
+  FENCE_POST: kitBlock("fence-post")[0]![0]!,
+} as const;
+
+function fenceRow(map: GameMap, x0: number, x1: number, y: number): void {
+  for (let x = x0; x <= x1; x += 1) setUpper(map, x, y, K.FENCE[(x - x0) % 2]!);
+  setUpper(map, x1, y, K.FENCE_POST);
+}
+
+/** 조우 풀숲(두 변형 체크무늬). 이미 뭔가 있는 칸은 건너뛴다. */
+function tallGrass(map: GameMap, region: Rect): void {
+  for (let y = region.y; y < region.y + region.h; y += 1) for (let x = region.x; x < region.x + region.w; x += 1) {
+    if (map.upperTiles[y * map.width + x] !== EMPTY) continue;
+    setUpper(map, x, y, K.TALL_GRASS[(x + y) % 2]!);
+  }
+}
+
+const ROUTE3_GRASS: readonly Rect[] = [
+  { x: 3, y: 5, w: 7, h: 5 },
+  { x: 14, y: 10, w: 7, h: 6 },
+  { x: 3, y: 17, w: 8, h: 5 },
+  { x: 13, y: 24, w: 7, h: 5 },
+];
+
+export function createRoute3Map(): GameMap {
+  const map = blankMap("route3", "3번 도로", TOWN_TILESET_ID, G.GRASS);
+  map.encounterRate = 5;
+  map.troopIds = WILD_ROUTE3.map((troop) => troop.id);
+  // 야생은 풀숲 안에서만 나온다(맨 잔디·길은 안전).
+  map.encounterTable = encounterTable(ROUTE3_GRASS, ROUTE3_WEIGHTS);
+
+  // 양옆 나무 벽(윗줄 두 칸은 ★, 밑동만 막힌다). 맨 아래 줄은 덤불로 마감한다.
+  for (let y = 0; y <= 30; y += 3) {
+    stampUpper(map, 0, y, G.GREEN_TREE);
+    stampUpper(map, 22, y, G.GREEN_TREE);
+  }
+  for (const x of [0, 1, 22, 23]) setUpper(map, x, 33, K.SHRUB);
+  // 길 안쪽 나무·연못·바위.
+  for (const [x, y] of [[9, 11], [4, 26], [17, 29]] as const) stampUpper(map, x, y, G.TEAL_TREE);
+  stampUpper(map, 6, 1, G.GREEN_TREE_SMALL);
+  stampLower(map, 18, 19, G.POND);
+  setUpper(map, 2, 14, G.ROCK_1);
+  setUpper(map, 20, 7, G.ROCK_2);
+  for (const [x, y] of [[12, 4], [5, 12], [19, 17], [9, 23], [15, 31]] as const) setUpper(map, x, y, G.GRASS_TUFT);
+
+  // 북쪽 입구 양옆 울타리(10..14열은 비운다).
+  fenceRow(map, 2, 9, 2);
+  fenceRow(map, 15, 21, 2);
+  for (const region of ROUTE3_GRASS) tallGrass(map, region);
+
+  // 쉼터: 남쪽 벤치, 상자(숨은 도구).
+  stampUpper(map, 7, 30, K.BENCH);
+  setUpper(map, 20, 26, K.CRATE);
+  const sign = { x: 14, y: 3 } as const;
+  setUpper(map, sign.x, sign.y, K.SIGNPOST);
+
+  map.events.push(
+    transferEvent("ev_pkmn_b_route3_to_wave", 12, 0, PKMN_MAPS.waveTown, 16, 20, "파도 마을로"),
+    transferEvent("ev_pkmn_b_route3_to_ember", 12, 33, PKMN_MAPS.emberTown, 14, 1, "잿불 마을로"),
+    signEvent("ev_pkmn_b_route3_sign", sign.x, sign.y, "표지판", [
+      "3번 도로 — 북쪽: 파도 마을 · 남쪽: 잿불 마을",
+      "풀숲에서는 전기·비행 몬스터가 자주 나옵니다.",
+    ]),
+    trainerEvent({
+      id: "ev_pkmn_b_route3_camper", x: 16, y: 6, role: "camperGirl", speaker: "캠프걸 하늘", facing: "left",
+      troopId: PKMN_B_TROOPS.route3Camper, range: 4,
+      intro: ["물 배지를 땄구나? 그럼 번개 한 번 맞아 볼래?"],
+      lose: "찌릿하게 졌네…",
+      after: ["번개꼬리는 물 몬스터를 노려. 땅 기술이 있으면 든든할 거야."],
+    }),
+    trainerEvent({
+      id: "ev_pkmn_b_route3_hiker", x: 6, y: 14, role: "hiker", speaker: "등산가 우직", facing: "right",
+      troopId: PKMN_B_TROOPS.route3Hiker, range: 4,
+      intro: ["잿불 마을 화산까지 걸어가는 중이다! 몸 좀 풀어 볼까!"],
+      lose: "바위곰이 쓰러지다니!",
+      after: ["잿불 마을 관장은 불 타입이야. 바위·물 몬스터를 데려가게."],
+    }),
+    trainerEvent({
+      id: "ev_pkmn_b_route3_fisher", x: 17, y: 21, role: "fisherman", speaker: "낚시꾼 너울", facing: "left",
+      troopId: PKMN_B_TROOPS.route3Fisher, range: 4,
+      intro: ["연못에서 건진 몬스터들이야. 상대해 주게!"],
+      lose: "오늘은 입질이 영 아니군.",
+      after: ["이 연못엔 파우치가 산다네. 가끔 물 위로 입을 뻐끔거리지."],
+    }),
+    pickupEvent("ev_pkmn_b_route3_crate", 20, 26, "나무 상자", "상자 안에 상급 회복약 2개가 들어 있었다!", "item_hi_potion", 2, "빈 나무 상자다."),
+    castTalker("ev_pkmn_b_route3_traveler", 14, 31, "villagerB", [
+      "조금만 더 가면 잿불 마을이야. 공기가 따뜻해지는 게 느껴지지?",
+      "잿불 마을에도 회복 센터가 있으니 걱정 말고 가.",
+    ], { speaker: "여행자", wander: true }),
+  );
+  return map;
+}
+
 // --- 조립 도우미 ---------------------------------------------------------------------
 
 /** B 지역 맵 — 파도 마을 · 파도 회복 센터 · 물 체육관 · 3번 도로. */
 export function createPkmnRegionBMaps(): GameMap[] {
-  return [createWaveTownMap(), createWaveCenterMap(), createWaterGymMap()];
+  return [createWaveTownMap(), createWaveCenterMap(), createWaterGymMap(), createRoute3Map()];
 }
 
 /**
