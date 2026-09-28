@@ -151,10 +151,12 @@ class Ink(Cel):
         self.poly([(x, y), (m[0] + vx * bw, m[1] + vy * bw), b, (m[0] - vx * bw, m[1] - vy * bw)], blade)
         self.line([(x - ux, y - uy), b], hi)
         e = (x - ux * L * 0.88, y - uy * L * 0.88)
-        self.line([b, e], edge, 2)
+        self.line([b, e], edge, 3)
+        self.line([b, e], blade, 1)
         for j in range(int(L * 0.4)):
             if j % 2 == 0:
                 t = bl + 1 + j
+                self.px(x - ux * t + vx * 0.6, y - uy * t + vy * 0.6, wrap)
                 self.px(x - ux * t, y - uy * t, wrap)
         self.ring(x - ux * L, y - uy * L, 1.5, ring)
 

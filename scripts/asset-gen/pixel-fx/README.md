@@ -26,3 +26,12 @@ mask dilation and erosion, and fades use a checker dither. The build prints and
 asserts size, alpha, colour count, non-empty frames and frame-to-frame change.
 Review images (4× previews, 2× GIFs on #202840, per-class sheet and battler
 composite) go to `.omo/pixel-fx/` and are not committed.
+
+## Class skill sheets (samurai · ninja)
+
+`lib_samurai.py` draws the 28 class_samurai / class_ninja layer sheets (reusing the
+`lib_scout.py` cel, checks and review boards). Samurai keeps to indigo night, white steel
+and sakura pink; ninja to violet shadow and iron grey, with the element ink of each jutsu
+added on top. `python3 lib_samurai.py` rebuilds all 28 plus `.omo/pixel-fx/samurai-*` and
+`ninja-*` boards; `python3 <key>.py` rebuilds one. Anchor, frame size and count are read
+back from `src/assets/retroClassSkills.ts` and a mismatch aborts before writing.
