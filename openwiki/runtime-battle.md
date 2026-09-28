@@ -132,6 +132,46 @@
   필살기 컷인 띠에 시전자가 안 보임(복제 스프라이트가 클래스 크기를 잃음 → 인라인 크기·시트), 그림자 습격이 적 **앞**에 나타남(blink-strike 는 등 뒤·좌우 반전).
   감속 모드 녹화는 이번에 돌리지 않았다.
 
+### 확장: 새 주인공 6명·스킬 48개·몬스터 30종 (2026-09-28, mx-rt)
+
+계약 두 파일(읽기 전용) `src/assets/retroClassSkills.ts`(뒤쪽 48개)·`src/assets/retroMonsterPlan.ts`(30종)을 게임 데이터와 연출에 붙였다.
+
+- **직업 6개** `defaultDatabaseClassRecords.ts` `retroExtensionClass`: 사무라이·무도가 striker, 닌자·음유시인 agile, 드루이드·마녀 caster 곡선. 레벨 1 은 통상 공격만, 직업 기술은 계약 레벨(1~22)로 기존 습득표 루프가 붙인다. 장비 허용은 무기 레코드를 건드리지 않고 직업 `equipmentPermissions.equipmentIds`(`*_EQUIPMENT_IDS`)로 연다.
+- **배우 6명** `defaultDatabasePartyRecords.ts` `retroExtensionActors`: **예비 배우**(성직자·궁수와 같은 자리, `STARTER_ACTOR_IDS` 불변). 걷기 칩 사무라이 actor3#0 · 닌자 actor3#2 · 무도가 actor3#5 · 음유시인 actor3#6 · 드루이드 actor3#4 · 마녀 actor4#7, 얼굴은 `pairedFace(칩, index)`(검토 대응표).
+  사무라이만 전투 시트가 `charset-battler-actor3-0-samurai`다. 같은 걷기 칩의 `actor3-0` 은 마도사 시트라서 `charsetBattlers.ts` 에 직업 전용 항목(`CLASS_BATTLERS`)으로 등록했다. 자동 대응 `charsetBattlerForCharacter` 는 이 항목을 고르지 않는다 — 배우가 명시한다.
+- **스킬 48개** `retroClassSkillRecords.ts` SEEDS 뒤쪽. 규칙 엔진에 없는 뜻은 가장 가까운 상태로 대신한다:
+
+| 스킬 | 계약의 뜻 | 대신한 규칙 |
+|---|---|---|
+| 심안 | 회피·급소율 상승 | 민첩 상승 + 공격 상승 |
+| 변신술(통나무) | 공격 회피 | 민첩 상승 + 방어 상승 |
+| 분신술 | 분신 셋이 동시에 벤다 | 단일 고위력 공격기(분신은 연출) |
+| 곰 변신 | 곰의 영혼을 입고 할퀸다 | 공격력 할퀴기(변신은 연출) |
+| 개구리 변신 | 적을 개구리로 | 공격 하락 + 침묵 |
+| 불협화음 | 혼란 | 공격 하락 + 방어 하락(기본 DB 에 혼란 없음) |
+| 생명 흡수 | 적 HP 를 빨아 회복 | 어둠 피해만(흡수 회복 규칙 없음) |
+| 거울 장막 | 마법 반사 | 방어 상승 |
+| 가시 덩굴·대지의 속박 | 옭아맴 | 민첩 하락 |
+| 명상 | 호흡 회복 | 자기 회복 + 재생 |
+| 세계수의 분노 | 적 피해 + 아군 치유 | 적 전체 피해만(한 기술 두 편 효과 없음) |
+
+- **연출** 기존 재생기가 계약만 보고 48개를 모두 재생한다(레이어 누락 0, 타임라인 검사 `.omo/mx-rt/timeline-audit.ts`). 보강한 것:
+  - `retroSkillTimeline.ts` `EXTENSION_CAST`·`EXTENSION_SOUND`: 확장 레이어 키의 시전 종류와 착탄음(EasyRPG RTP 실파일만 — 전부 존재 확인). 없던 때는 "chi_burst"(burst)·"불협화음"(불) 같은 낱말 우연으로 불 시전이 잡히고 거의 모든 착탄음이 Magic2 였다.
+  - 투사체 모양: 수리검 3연발, 쿠나이는 위에서 낙하 3발, 독침은 짧게.
+  - **128px 대상 층**(`target`/`allTargets` + frame 128: 낙하참·브레이브 블레이드·파산장·용권 멸살 착탄)은 화면 상자 = 칸 × 1(128px), 바닥 = 발 아래 24px(`retroClassFxBox`, 편집기 footPad 와 같음). 칸 × 2(256px)면 적보다 2.7배 컸다(qa 실측). 칸 이동은 노드의 `data-fx-box` 를 따른다. screen 128 은 2배 그대로.
+- **접근 방식** `retroApproachStyle`: 무도가 dash(blink 줄의 monk 낱말보다 먼저), 사무라이·음유시인·드루이드·마녀 blink, 닌자 flash.
+- **몬스터 30종** 시트 등록은 편집기 에이전트 커밋(c01ad71aa)을 그대로 받았다. 적 레코드는 `generatedEnemyRecords` 에 이미 있다.
+  - 적·아군 몸 비율(앞 cell−12 · 뒤 12 · 발 cell−4)을 셀 크기로 나눈다(`retroWalk`·스킬 무대 `measurePlaces`·`placeOnBody`). 48 고정이던 때는 64·96 셀 적에게 걸어가는 자리와 이펙트 발 위치가 어긋났다.
+  - 식충 식물은 stomp 칸이지만 제자리 덩굴 채찍이라 `ROOTED_PIXEL_ENEMIES` 로 다가가지 않는다(제자리 분기).
+  - 크기: 64셀 리치·철 골렘은 아군의 약 1.8~1.9배, 96셀 트롤 2.6·미노타우로스 3.2·마왕 3.4배다. 2배 정수 배율 규칙을 지키려고 **표시 배율은 바꾸지 않았다** — 줄이려면 그림을 다시 찍는다.
+- **녹화**
+  - 스킬: `node scripts/qa/runtime/retro2003-skills-gif.mjs --set new`(확장 48) · `--set old`(기존 48) · 기본 `class`(96). 확장 배우·직업·장비는 기본 DB 에서 녹화 사본에 합치고, 조 (사무라이·닌자·무도가)·(음유시인·드루이드·마녀)로 찍는다.
+  - 몬스터: `node scripts/qa/runtime/retro2003-monsters-gif.mjs [--monsters a,b]` → `monster-<slug>.gif`·`SUMMARY.md`. `PIXEL_ENEMY_SHEETS` 40종마다 한 마리 트룹을 녹화 사본에 만들고, 전투 이벤트를 `troopSource: variable`(숫자 = troops 1부터 번호, 기존 `__oprnDebug.setVariable`)로 바꿔 말을 건다. 적은 통상 공격만·민첩 999, 전투마다 player.html 을 다시 연다. 시트 PNG 가 없으면 건너뛰고 적는다.
+    기본 DB 적 행을 데모 사본에 옮길 때 사본에 없는 참조(speciesId·드롭·훔치기)는 걷는다 — 두면 로드 검증에서 타이틀이 안 뜬다(실측).
+  - 이 작업 결과: 몬스터 40/40 통과(칸 순서·셀·모션·시트 적용 계측), 미리보기 `.omo/retro-monsters/all/preview-big.png`(식충 식물 제자리 수정 전 녹화).
+    확장 스킬 48/48 통과(레이어 누락·칸 이동·상자 크기 불일치·잔류 노드 0, 브라우저 오류 0), 미리보기 `.omo/retro-skills/new-1/preview.png`.
+    128px 대상 층 넷(낙하참·브레이브 블레이드·파산장·용권 멸살)은 녹화에서 128px 상자로 대상 몸 크기와 비슷함을 확인(`.omo/retro-skills/big-target/preview.png`). 감속 모드는 돌리지 않았다.
+
 ## 타격감 층 (2026-09-25)
 
 사용자 신고 「게임적인 느낌이 거의 안 든다, 타격감이 없다」. 출하 player 녹화로 원인을 쟀다:
