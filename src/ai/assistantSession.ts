@@ -16,7 +16,7 @@ import { parseFunctionalRequirements, type FunctionalCriterion } from "./functio
 import { deriveRunOutcome, type RunOutcome } from "./runOutcome";
 import { RunOperation } from "./runOperation";
 import { AssistantAcceptanceLedger } from "./assistantAcceptanceLedger";
-import { acceptanceFingerprint } from "./assistantAcceptanceEvaluation";
+import { acceptanceFingerprint, sameAcceptanceContent } from "./assistantAcceptanceEvaluation";
 import { AssistantImageEvidence, coveredByImages, type AcceptanceImageReceipt } from "./assistantImageEvidence";
 import { ACCEPTANCE_TOOLS } from "./assistantAcceptanceTools";
 import { adventureCompletionProblems, type AdventureRequirements } from "./adventureCompletion";
@@ -59,6 +59,8 @@ import {
 import { buildWorldDigest, normalizeProjectWorld } from "@/project/world";
 import { applyProposedProject, captureProposalBase, type ProposalBase, type ApplyProposedProjectResult } from "@/editor/tools/applyChangesetToStore";
 import { AuthoredProjectBaseline, authoredIdentity } from "@/project/authoredProjectBaseline";
+import { withContentDigestEpoch } from "@/project/persistence/core/contentDigest";
+import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { isDestructiveOutcome, isMapDestruction } from "@/ai/approvalPolicy";
 import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
 import { contextFooterMapId, stripContextFooter } from "@/ai/contextFooter";
@@ -1259,12 +1261,12 @@ export class AssistantSession {
 
   /** Same idle panel-owned boundary as withdrawal; no model tool or history replay. */
   previewApproachCorrection(checkId: string): ApproachPreview | null {
-    if (!this.acceptanceAppliedProject || acceptanceFingerprint(this.ctx.project) !== acceptanceFingerprint(this.acceptanceAppliedProject)) return null;
+    if (!this.acceptanceAppliedProject || !sameAcceptanceContent(this.ctx.project, this.acceptanceAppliedProject)) return null;
     return this.verificationEvidence.previewApproach(checkId, this.acceptanceAppliedProject);
   }
 
   confirmApproachCorrection(preview: ApproachPreview, onEvent?: (event: SessionEvent) => void): boolean {
-    if (!this.acceptanceAppliedProject || acceptanceFingerprint(this.ctx.project) !== acceptanceFingerprint(this.acceptanceAppliedProject)) return false;
+    if (!this.acceptanceAppliedProject || !sameAcceptanceContent(this.ctx.project, this.acceptanceAppliedProject)) return false;
     const revision = this.verificationEvidence.confirmApproach(preview, this.acceptanceAppliedProject);
     if (!revision) return false;
     this.pushAudit({ kind: "status", text: `approach:user-confirmed ${JSON.stringify(revision)}` });
@@ -1274,9 +1276,23 @@ export class AssistantSession {
     return true;
   }
 
-  /** Applied-state refresh for store changes/undo, including after completion. */
+  /**
+   * Applied-state refresh for store changes/undo, including after completion.
+   *
+   * 스토어 통지마다 불린다(aiChatPanel 의 store.subscribe). 예전에는 여기서 프로젝트 두 개를 통째로 `JSON.stringify`
+   * 비교하고(`acceptanceFingerprint` 두 번 더), 적용본을 `structuredClone` 했다 — 2026-09-28 실측, 새 프로젝트 기본 자료
+   * (149MB)에서 문자열 비교 한 번 2.2~2.6s, 복제 1.3s. 조수가 끝난 뒤에도 체크리스트가 떠 있으면 사람 편집 한 획마다 돌았다.
+   * 지금은 내용 요약(`sameAcceptanceContent`: 키 순서 무시 · 값/배열 정확 — 지문과 같은 판정)으로 비교하고,
+   * 적용본 사본은 타일셋·업로드 자산을 공유한다(스토어 계약: 두 사전의 항목은 제자리에서 고치지 않는다 — projectClone).
+   * 판정 차이는 하나다: 첫 비교가 `JSON.stringify` 였을 때는 키 순서만 다른 같은 내용도 «바뀜» 으로 보아 검증을 버렸다.
+   * 지금은 다른 비교들(지문·적용 권위)과 같이 키 순서를 무시한다 — 내용이 같으면 검증도 그대로 유효하다.
+   */
   refreshAcceptance(project: Project, onEvent?: (event: SessionEvent) => void): void {
-    if (JSON.stringify(this.ctx.project) !== JSON.stringify(project)) this.invalidateVerificationAfterWrite();
+    withContentDigestEpoch(() => this.refreshAcceptanceInEpoch(project, onEvent));
+  }
+
+  private refreshAcceptanceInEpoch(project: Project, onEvent?: (event: SessionEvent) => void): void {
+    if (!sameAcceptanceContent(this.ctx.project, project)) this.invalidateVerificationAfterWrite();
     // The exact reviewed candidate already carries checks against these values.
     // Still retire live apply authority below; content evidence is not permission.
     const reviewedContent = this.isDraftReviewApproved(project);
@@ -1294,10 +1310,10 @@ export class AssistantSession {
     if (!this.acceptance && !this.verificationEvidence.hasChecks()) return;
     // A verdict may precede declaration; late adoption must not revive pre-edit proof.
     const previous = this.acceptanceAppliedProject ?? this.acceptanceRequestBaseline;
-    if (!reviewedContent && previous !== project && acceptanceFingerprint(previous) !== acceptanceFingerprint(project)) {
+    if (!reviewedContent && previous !== project && !sameAcceptanceContent(previous, project)) {
       this.verificationEvidence.invalidateAfterWrite();
     }
-    this.acceptanceAppliedProject = structuredClone(project);
+    this.acceptanceAppliedProject = cloneProjectSharingSharedDictionaries(project);
     this.publishAcceptance(onEvent);
     if (this.acceptanceApplyPending && this.runExecution === "blocked"
       && this.lastAppliedProject?.project === project && this.turnProposals.size === 0
@@ -1551,7 +1567,7 @@ export class AssistantSession {
       data: { verification: this.getVerificationSnapshot(false) } };
     const amended = this.verificationEvidence.snapshot(false).approaches.some(entry => entry.checkId === args.checkId);
     if (amended && (signal?.aborted || !this.acceptanceAppliedProject
-      || acceptanceFingerprint(this.ctx.project) !== acceptanceFingerprint(this.acceptanceAppliedProject))) return {
+      || !sameAcceptanceContent(this.ctx.project, this.acceptanceAppliedProject))) return {
       ok: false, summary: "접근 보정은 현재 적용된 내용에서 새로 검증해야 합니다.",
       issues: [{ severity: "error", code: "unapplied-approach-verification", message: "Apply current content before executing the approved approach." }],
     };
@@ -3613,7 +3629,7 @@ export class AssistantSession {
     // A retained canonical pass is usable only for its assessed applied revision.
     // Do not evaluate requirements or mutate their evidence in a read-only getter.
     const assessmentCurrent = (!this.storeBacked && !this.lastAppliedProject) || !this.acceptanceAppliedProject
-      || acceptanceFingerprint(this.acceptanceAppliedProject) === acceptanceFingerprint(store.getCurrent());
+      || sameAcceptanceContent(this.acceptanceAppliedProject, store.getCurrent());
     const proof = this.getRunEndProof();
     const receipt = this.runReceipt ?? this.wikiDelivery?.receipt ?? null;
     return deriveRunOutcome({
@@ -3675,7 +3691,7 @@ export class AssistantSession {
     const outcomeOwner = this.runResult;
     const acceptance = this.acceptance;
     const functionalDraftPending = (): boolean => Boolean(acceptance?.hasReloadCriteria() && this.turnProposals.size > 0
-      && acceptanceFingerprint(this.ctx.project) !== acceptanceFingerprint(store.getCurrent()));
+      && !sameAcceptanceContent(this.ctx.project, store.getCurrent()));
     const previous = this.getRunEndProof();
     if (!signal?.aborted && previous?.verified && !this.acceptanceOpen() && !functionalDraftPending()
       && (acceptance?.functionalProblems(store.getCurrent()).length ?? 0) === 0) {

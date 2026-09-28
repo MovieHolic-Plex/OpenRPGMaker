@@ -45,7 +45,8 @@ import { eventBodyRect, eventCoversPoint, eventPassageRect, overlappingEventPair
 import { rectCells } from "../footprint";
 import { createEventPlacementAnalysis, eventIsMovable, eventRequiresPassableTile, type EventRelocation } from "../eventPlacementRecovery";
 import { playerPassageRect, resolvePlayerBody } from "../playerFootprint";
-import { deserialize, serialize } from "../io";
+import { deserialize } from "../io";
+import { markRoundtripPassed, serializeForRoundtripCheck } from "../io/sharedDictionaryJson";
 import { malformedExtraLayerKeys } from "../mapLayers";
 import { collectProjectReferenceIssues } from "../io/references";
 import { isQuestGraphDef } from "../quest/questDef";
@@ -177,6 +178,11 @@ function bundledAudioPath(resourceId: string): string | null {
   return rtp ? rtp.path : null;
 }
 
+/** 한가할 때 왕복 검사만 한 번 돌려 통과한 공유 항목을 기억한다(결과는 버린다). 첫 적용 커밋의 되읽기 비용을 미리 치른다. */
+export function warmRoundtripCheck(project: Project): void {
+  checkRoundtrip(project, []);
+}
+
 // (a) 직렬화 왕복: serialize→deserialize가 throw하면 error로 수집.
 function checkRoundtrip(project: Project, issues: LintIssue[]): void {
   // 선택 층(2층·4층·그림자)은 불러올 때 길이가 틀리면 경고만 하고 버려지므로 왕복이 던지지 않는다.
@@ -191,7 +197,9 @@ function checkRoundtrip(project: Project, issues: LintIssue[]): void {
     }
   }
   try {
-    deserialize(serialize(project));
+    // 이미 왕복을 통과한 타일셋·업로드 자산 항목(같은 객체)은 뼈대로, 나머지는 serialize 와 같은 글로 되읽는다(sharedDictionaryJson).
+    deserialize(serializeForRoundtripCheck(project));
+    markRoundtripPassed(project);
   } catch (cause) {
     issues.push({
       severity: "error",

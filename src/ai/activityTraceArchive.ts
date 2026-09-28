@@ -9,6 +9,9 @@ const pending = new Map<string, ActivityTrace>();
 let timer: ReturnType<typeof setTimeout> | undefined;
 let writing = Promise.resolve();
 const failed = new Set<string>();
+const PRUNE_INTERVAL = 60_000;
+const settledPhases = new Set(["완료", "적용됨", "버림", "중단", "실패", "검토 대기"]);
+let lastPruned = 0;
 function db(): Promise<IDBDatabase> {
   return database ??= new Promise((resolve, reject) => {
     if (typeof indexedDB === "undefined") { reject(new Error("IndexedDB unavailable")); return; }
@@ -37,24 +40,29 @@ export async function flushActivityArchive(): Promise<void> {
       await new Promise<void>((resolve, reject) => {
         const tx = database.transaction("runs", "readwrite");
         const store = tx.objectStore("runs");
-        const all = store.getAll();
-        all.onsuccess = () => {
-          // Detached/older views can render again when preferences change. Never let
-          // their snapshot overwrite a newer receipt or a settled run phase.
-          const traces = new Map((all.result as ActivityTrace[]).map(trace => [trace.id, trace]));
-          for (const trace of batch) {
-            const saved = traces.get(trace.id);
-            if (saved && saved.serial >= trace.serial) continue;
-            traces.set(trace.id, trace);
-            store.put(trace);
-          }
-          let bytes = 0;
-          [...traces.values()].sort((a, b) => b.updatedAt - a.updatedAt).forEach((trace, index) => {
-            bytes += trace.bytes * 2;
-            if (Date.now() - trace.updatedAt > TTL || index >= 20 || bytes > MAX_BYTES) store.delete(trace.id);
-          });
-        };
-        tx.oncomplete = () => resolve(); tx.onerror = () => reject(tx.error); tx.onabort = () => reject(tx.error);
+        let remaining = batch.length;
+        let prune = Date.now() - lastPruned >= PRUNE_INTERVAL;
+        for (const trace of batch) {
+          // Compare only this run, in a transaction shared with other tab writers.
+          const request = store.get(trace.id);
+          request.onsuccess = () => {
+            const saved = request.result as ActivityTrace | undefined;
+            if (!saved || saved.serial < trace.serial) {
+              store.put(trace);
+              prune ||= !saved || (settledPhases.has(trace.phase) && saved.phase !== trace.phase);
+            }
+            if (--remaining !== 0 || !prune) return;
+            const all = store.getAll();
+            all.onsuccess = () => {
+              let bytes = 0;
+              (all.result as ActivityTrace[]).sort((a, b) => b.updatedAt - a.updatedAt).forEach((trace, index) => {
+                bytes += trace.bytes * 2;
+                if (Date.now() - trace.updatedAt > TTL || index >= 20 || bytes > MAX_BYTES) store.delete(trace.id);
+              });
+            };
+          };
+        }
+        tx.oncomplete = () => { if (prune) lastPruned = Date.now(); resolve(); }; tx.onerror = () => reject(tx.error); tx.onabort = () => reject(tx.error);
       });
       for (const trace of batch) failed.delete(trace.id);
     } catch { for (const trace of batch) failed.add(trace.id); }

@@ -119,7 +119,10 @@ function mockEditorDependencies(): void {
     },
   }));
   vi.doMock("@/editor/panels/tilePalette", () => ({
-    renderTilePalette: (node: HTMLElement) => {
+    syncMountedPaletteSelection: () => false,
+    syncMountedPaletteLayerSelection: () => false,
+    syncMountedPaletteToolPick: () => false,
+    refreshTilePalette: (node: HTMLElement) => {
       paletteRenders += 1;
       node.textContent = "tiles";
     },
@@ -197,5 +200,41 @@ describe("우클릭 영역 드래그 중 좌측 독 재구축", () => {
     }
     await flush();
     expect(paletteRenders, "같은 사각형 30회 재제출").toBe(0);
+  }, 120_000);
+});
+
+
+describe("store panel frame coalescing", () => {
+  it("records every change, preserves palette requests and cancels a retired mount", async () => {
+    const { renderEditor, teardownEditor } = await import("@/editor/panels/editor");
+    const { store: liveStore } = await import("@/project/store");
+    const { editorState: liveEditor } = await import("@/editor/editorState");
+    const { loadAuthoringJourneyProgress } = await import("@/editor/authoringJourney");
+    renderEditor(document.createElement("main"));
+    await flush();
+    const frames: FrameRequestCallback[] = [];
+    vi.stubGlobal("requestAnimationFrame", (fn: FrameRequestCallback) => { frames.push(fn); return frames.length; });
+    const emit = (change: unknown) => (liveStore as unknown as { emit(change: unknown): void }).emit(change);
+    const mapId = liveStore.getCurrent().startMapId;
+    paletteRenders = 0;
+    emit({ scope: "database" });
+    emit({ scope: "map", mapId, cells: [{ x: 1, y: 1, layer: "lower" }] });
+    const identity = liveStore.getProjectIdentity();
+    const progress = loadAuthoringJourneyProgress(`${identity.kind}:${identity.id}`);
+    expect(progress.databaseTouched).toBe(true);
+    expect(progress.mapTouched).toBe(true);
+    expect(paletteRenders).toBe(0);
+    for (const frame of frames.splice(0)) frame(0);
+    expect(paletteRenders).toBe(1);
+    paletteRenders = 0;
+    emit({ scope: "map", mapId, cells: [{ x: 2, y: 1, layer: "lower" }] });
+    liveEditor.set({ tool: liveEditor.get().tool === "erase" ? "paint" : "erase" });
+    for (const frame of frames.splice(0)) frame(0);
+    expect(paletteRenders).toBe(1);
+    emit({ scope: "project" });
+    teardownEditor();
+    paletteRenders = 0;
+    for (const frame of frames.splice(0)) frame(0);
+    expect(paletteRenders).toBe(0);
   }, 120_000);
 });

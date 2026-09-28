@@ -294,6 +294,10 @@ export class EditScene extends PhaserRuntime.Scene {
   /** 유휴 렌더 게이트용 — 지난 프레임의 카메라. 바뀌면 렌더를 깨운다. */
   private lastRenderCamera: { scrollX: number; scrollY: number; zoom: number; width: number; height: number } | null = null;
   private readonly requestRenderFrame = (): void => requestEditRenderFrame(this.game);
+  private textureRedrawActive = false;
+  private textureRedrawEpoch = 0;
+  private textureRedrawFrame: number | null = null;
+  private readonly requestTextureRedraw = (): void => this.scheduleTextureRedraw();
   private lastRenderStateKey = "";
   /** 레이어 색·충돌 오버레이·이벤트 마커·격자. 타일 메시 재생성 키와 분리한다. */
   private lastViewChromeKey = "";
@@ -485,6 +489,7 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   create(): void {
+    this.initTextureRedraw();
     registerBundledFrames(this, store.getCurrent());
     this.cameras.main.setBackgroundColor("#E7E0D0");
     // 배경 미리보기는 하층 타일 **아래** 다 — 타일이 깔린 칸은 가리고 빈 칸만 뚫린다(플레이와 같은 순서).
@@ -553,12 +558,11 @@ export class EditScene extends PhaserRuntime.Scene {
 
     // store/에디터 상태 변경 시 재렌더.
     this.unsubStore = store.subscribe((_project, change) => {
-      markEditRenderActive(this.game);
       this.clearInvalidPendingEventCoordinate();
       this.redrawForStoreChange(change);
     });
     this.unsubEditor = editorState.subscribe((state) => {
-      markEditRenderActive(this.game);
+      requestEditRenderFrame(this.game);
       const pending = state.pendingEventCoordinate;
       if (pending && (this.mapId() !== pending.mapId || state.layer !== "event" || state.tool !== "event")) {
         editorState.set({ pendingEventCoordinate: null });
@@ -647,6 +651,7 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private cleanup(): void {
+    this.cancelTextureRedraw();
     this.cancelCameraFocus(false);
     this.unbindCanvasPanGuards();
     this.navigationResizeObserver?.disconnect();
@@ -946,6 +951,33 @@ export class EditScene extends PhaserRuntime.Scene {
     ].join("|");
   }
 
+  private initTextureRedraw(): void {
+    this.cancelTextureRedraw();
+    this.textureRedrawActive = true;
+  }
+
+  /** 로더 완료 묶음은 한 프레임에 한 번만 타일 객체를 재생성한다. */
+  private scheduleTextureRedraw(): void {
+    if (!this.textureRedrawActive || this.textureRedrawFrame !== null) return;
+    const epoch = this.textureRedrawEpoch;
+    this.textureRedrawFrame = requestAnimationFrame(() => {
+      // 이미 dispatch된 옛 프레임도 재시작한 씬의 예약을 지우지 않는다.
+      if (!this.textureRedrawActive || epoch !== this.textureRedrawEpoch) return;
+      this.textureRedrawFrame = null;
+      requestEditRenderFrame(this.game);
+      this.redraw();
+    });
+  }
+
+  private cancelTextureRedraw(): void {
+    this.textureRedrawActive = false;
+    this.textureRedrawEpoch++;
+    if (this.textureRedrawFrame !== null) cancelAnimationFrame(this.textureRedrawFrame);
+    this.textureRedrawFrame = null;
+    // requestTextureRedraw는 유지한다. 로더가 씬별 pending 요청을 재사용하므로,
+    // 재시작 후 도착한 완료는 현재 씬에서 새 프레임을 요청할 수 있어야 한다.
+  }
+
   private redrawForStoreChange(change: ProjectChangeDescriptor): void {
     // 자료 보관함에서 방금 가져온 캐릭셋은 preload 가 끝난 뒤에 생긴다 — 텍스처를 뒤늦게
     // 실어 주지 않으면 그 캐릭셋을 쓴 이벤트가 새로고침 전까지 빈 칸으로 보인다.
@@ -954,10 +986,10 @@ export class EditScene extends PhaserRuntime.Scene {
     // 이게 없으면 번들 캐릭셋(상자·주민)을 처음 쓰는 이벤트가 빈 칸 표식으로만 보였다(2026-09-28 실측).
     const addsEventGraphic = change.scope === "map" && Boolean(change.eventId) && !change.cells?.length;
     if (change.scope !== "map" || addsEventGraphic) {
-      ensureUploadedCharsetTextures(this, store.getCurrent(), () => this.redraw());
-      ensureUploadedEventSpriteTextures(this, store.getCurrent(), () => this.redraw());
-      ensureUploadedTilesetTextures(this, store.getCurrent(), () => this.redraw(), { onlyMapTilesets: true });
-      ensureBundledProjectTextures(this, store.getCurrent(), () => this.redraw());
+      ensureUploadedCharsetTextures(this, store.getCurrent(), this.requestTextureRedraw);
+      ensureUploadedEventSpriteTextures(this, store.getCurrent(), this.requestTextureRedraw);
+      ensureUploadedTilesetTextures(this, store.getCurrent(), this.requestTextureRedraw, { onlyMapTilesets: true });
+      ensureBundledProjectTextures(this, store.getCurrent(), this.requestTextureRedraw);
     }
     const mapId = this.mapId();
     const nextFeedback = retainEventLayerClickFeedback({
@@ -975,6 +1007,7 @@ export class EditScene extends PhaserRuntime.Scene {
       canIncrementalCells: mapId !== null && this.canIncrementallyRenderCells(mapId),
     });
     if (plan.kind === "skip") return;
+    requestEditRenderFrame(this.game);
     if (plan.kind === "relief") {
       this.scheduleReliefRender();
       return;
@@ -2147,7 +2180,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (mapChanged) {
       // 다른 맵으로 넘어갔다 — 그 맵의 업로드 타일셋은 아직 안 올렸을 수 있다(부팅은 쓰는 맵 것만 올린다).
       // 맵 전환은 editorState 변경이라 redrawForStoreChange 를 타지 않는다.
-      ensureUploadedTilesetTextures(this, store.getCurrent(), () => this.redraw(), { onlyMapTilesets: true });
+      ensureUploadedTilesetTextures(this, store.getCurrent(), this.requestTextureRedraw, { onlyMapTilesets: true });
       this.navigationGeometry = null;
       this.lastNavGeometryKey = "";
       this.lastPointerTile = null;
@@ -2694,7 +2727,9 @@ export class EditScene extends PhaserRuntime.Scene {
     if (active && JSON.stringify(active.target) === JSON.stringify(target)) return;
     const camera = this.cameras.main;
     camera.preRender();
-    const plan = planCameraFocus(target, map, this.visibleTileRect(), 1, {
+    // 캔버스·가림 사각형은 250ms 기억한 값을 쓴다(cachedOverlayGeometry) — 크기가 바뀌면 ResizeObserver 가 무효화한다.
+    // 조수 체크포인트마다 초점을 옮기며 getBoundingClientRect 로 강제 레이아웃을 돌려 한 번에 수십~수백 ms 였다(2026-09-28 실측).
+    const plan = planCameraFocus(target, map, this.visibleTileRect({ cachedGeometry: true }), 1, {
       currentZoom: camera.zoom,
       zoomLevels: EDITOR_ZOOM_LEVELS,
     });
@@ -2715,7 +2750,7 @@ export class EditScene extends PhaserRuntime.Scene {
     // 계획은 이미 대상 사각형의 정확한 중심을 담고 있다(분수 타일) — +0.5 를 더하면 반 타일 밀린다.
     const targetWorldX = plan.centerTileX * this.activeTileSize();
     const targetWorldY = plan.centerTileY * this.activeTileSize();
-    const area = this.cameraVisibleArea();
+    const area = this.cameraVisibleArea({ cachedGeometry: true });
     // 조수 카드가 캔버스를 덮고 있으면 캔버스 중앙 = 카드 뒤다. 가림을 뺀 영역의 중앙에 대상이
     // 오도록 lookAt 을 민다(cameraLookAtForTarget).
     const lookAt = area
@@ -2870,8 +2905,8 @@ export class EditScene extends PhaserRuntime.Scene {
    * 같은 헬퍼에서 가져오므로 조수의 팬 판정과 뷰포트 스냅샷이 한 소스를 본다.
    * 정수로 깎지 않는다 — 99% 보이는 타일을 버리면 이미 화면 안인 대상을 다시 끌어당긴다.
    */
-  private visibleTileRect(): VisibleTileRect | null {
-    const area = this.cameraVisibleArea();
+  private visibleTileRect(options?: { readonly cachedGeometry?: boolean }): VisibleTileRect | null {
+    const area = this.cameraVisibleArea(options);
     if (!area) return null;
     return visibleTileRectFromViewport({
       worldView: area.worldView,

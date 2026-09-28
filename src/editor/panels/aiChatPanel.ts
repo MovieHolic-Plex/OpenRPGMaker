@@ -68,6 +68,8 @@ import { createInlineWorkCard } from "./aiInlineWorkCard";
 import { currentTeamActivity, setTeamStopHandler } from "@/ai/piAgent/teamActivity";
 import { DEFAULT_PI_TEAM, resolvePiRunPlan, type PiRunPlan } from "@/ai/piAgent/executionRoute";
 import { classifyPlainPiTurn } from "@/ai/piAgent/plainTurn";
+import { warmHeavyWire } from "@/ai/piAgent/heavyWire";
+import { warmApplyCaches } from "@/editor/tools/applyChangesetToStore";
 import { createTurnTiming, type TurnTimingRecorder } from "@/ai/turnTiming";
 import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
@@ -380,6 +382,26 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     },
   });
   let disposed = false;
+  // 조수 첫 전송이 타일셋·자산 전체를 직렬화·해시하느라 메인 스레드를 수 초 멈추지 않게, 패널이 뜬 뒤 한가할 때 미리 만든다.
+  // 예약은 하나만 둔다 — 스토어 통지가 몰려도 한가한 틈에 한 번 돈다.
+  let heavyWireWarmupScheduled = false;
+  const scheduleHeavyWireWarmup = (): void => {
+    if (heavyWireWarmupScheduled) return;
+    heavyWireWarmupScheduled = true;
+    const idle = (globalThis as { requestIdleCallback?: (cb: () => void, options?: { timeout: number }) => number }).requestIdleCallback;
+    const schedule = (run: () => void): void => {
+      if (typeof idle === "function") idle(run, { timeout: 5_000 });
+      else setTimeout(run, 500);
+    };
+    schedule(() => {
+      heavyWireWarmupScheduled = false;
+      if (disposed) return;
+      warmHeavyWire(() => store.getCurrent(), (run) => schedule(() => { if (!disposed) run(); }));
+      // 첫 체크포인트 적용의 왕복 검사·적용 권위 요약도 처음 한 번은 문서 전체를 훑는다 — 같은 한가한 틈에 미리 한다.
+      schedule(() => { if (!disposed) warmApplyCaches(store.getCurrent()); });
+    });
+  };
+  scheduleHeavyWireWarmup();
   const initialProjectIdentity = store.getProjectIdentity();
   const currentProjectContextKey = conversationScopeKey(initialProjectIdentity, store.getCurrent());
   // 이 패널(대화 세션) 전체를 하나의 기록으로 저장할 id — 매 턴 끝에 누적 감사 로그를 저장한다.
@@ -663,7 +685,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     appendTileGrid,
     appendAiDocument,
     appendChangeCard,
-    renderConversationEntry,
+    renderConversationEntries,
     clearLastReasoning,
     isLastReasoningBox,
   } = conversationLog;
@@ -1032,7 +1054,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     log.replaceChildren();
     startScreen = null;
     closeToolActivity();
-    for (const entry of record.entries) renderConversationEntry(entry);
+    renderConversationEntries(record.entries);
     const lastAssistant = [...record.entries].reverse().find((entry) => entry.kind === "assistant" && entry.text.trim());
     if (lastAssistant?.kind === "assistant") renderQuickReplies(lastAssistant.text);
     setStatus(source === "manual" ? "이전 대화" : "대화 복원됨");
@@ -1380,7 +1402,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     log.replaceChildren();
     startScreen = null;
     closeToolActivity();
-    for (const entry of turn.entries) renderConversationEntry(entry);
+    renderConversationEntries(turn.entries);
     appendBubble(
       "system",
       reverted
@@ -2545,6 +2567,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
   });
   const unsubscribeContextStore = store.subscribe((_project, change) => {
+    // 무거운 키(타일셋·DB·자산)가 새 객체로 바뀌었으면 다음 턴 전송 전에 한가할 때 글·해시를 다시 만든다(heavyWire.warmHeavyWire).
+    if (!disposed && (change?.scope !== "map")) scheduleHeavyWireWarmup();
     if (change?.projectSwitch) panelRoot?.querySelector(".ai-activity-toolbar")?.dispatchEvent(new Event("ai-project-switch"));
     // 항목 편집·은퇴·삭제가 저장소에서 오면 재사용 선택도 그 사실을 따른다(조용한 부활 금지).
     planningReuseControl?.refresh();
