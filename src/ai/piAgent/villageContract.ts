@@ -5,6 +5,9 @@ import type { Project } from "@/project/types";
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import type { IntentDeclaration, IntentSelectionFact } from "@/ai/intentDeclaration";
 import { estimateVillageSize } from "@/ai/constructionDeclaration";
+import { villageReferenceDefaults } from "@/ai/villageReferenceExamples";
+import { runTool } from "@/editor/tools/toolRunner";
+import { isLivedMap } from "@/editor/tools/authorVillageScope";
 import { resolveVillageDesignInput } from "@/editor/tools/village/designContract";
 import type { PiToolCallRecord } from "./toolAdapter";
 import type { AuthorVillageFacadeData } from "@/editor/tools/authorVillageSupport";
@@ -17,6 +20,8 @@ export interface VillageContract {
   readonly houseCount: number;
   readonly npcCount: number;
   readonly residentDialogue?: boolean;
+  /** 요청 문장으로 고른 완성 마을 사례 — author_village 결과가 이 사례와 비교한다(시공 인자는 아니다). */
+  readonly referenceId?: string;
 }
 
 export function resolveVillageContract(project: Project, intent: IntentDeclaration, currentMapId: string | null,
@@ -31,8 +36,11 @@ export function resolveVillageContract(project: Project, intent: IntentDeclarati
   if (intent.adventure || intent.npcRewards || intent.functionalAcceptance?.length || intent.actionCombat) return;
   const declared = intent.construction;
   const preset = project.villagePresets?.find(p => p.id === project.defaultVillagePresetId);
+  // 설계서가 없으면 요청에 가장 가까운 완성 마을 사례가 사용자가 말하지 않은 집 수·크기·배치의 기본이다(2026-09-28).
+  // 예전엔 코드 기본값(12채·강변촌·88×56)이 굳어 「숲마을」「바닷가 어촌」「절벽 위 폭포」가 같은 마을이 됐다.
+  const reference: ReturnType<typeof villageReferenceDefaults> = preset ? { layouts: [] } : villageReferenceDefaults(project, requestText ?? intent.summary ?? "");
   const houseCount = declared?.houseCount ?? (declared?.scale ? estimateVillageSize(declared).houseCount
-    : preset?.houseCount ?? preset?.design?.houseCount.min ?? estimateVillageSize().houseCount);
+    : preset?.houseCount ?? preset?.design?.houseCount.min ?? reference.houseCount ?? estimateVillageSize().houseCount);
   let mapId = intent.targetMapId ?? currentMapId;
   let target: Record<string, unknown>;
   if (selection && intent.useSelection) {
@@ -44,12 +52,38 @@ export function resolveVillageContract(project: Project, intent: IntentDeclarati
     target = { kind: "new", mapId, name: declared?.targetName ?? "새 마을" };
   } else target = { kind: "existing", mapId };
   // The same DB resolver used by the facade detects conflicts before any mutation.
-  const args = withVillageMorphologyDefault(project, resolveVillageDesignInput(project, { target, houseCount, countPolicy: "exact",
+  const base = { target, houseCount, countPolicy: "exact",
     ...(declared?.morphology ? { morphology: declared.morphology } : {}),
     ...(declared?.theme ? { theme: declared.theme } : {}),
-    ...(declared?.npcCount !== undefined ? { npcCount: declared.npcCount } : {}) }, true));
+    ...(declared?.npcCount !== undefined ? { npcCount: declared.npcCount } : {}) };
+  const layout = declared?.morphology || declared?.theme || selection ? undefined
+    : pickReferenceLayout(project, target, houseCount, reference.layouts);
+  const args = withVillageMorphologyDefault(project, resolveVillageDesignInput(project, layout ? { ...base, ...layout.args, target: layout.target } : base, true));
   args.npcCount ??= preset?.npcCount ?? houseCount + 2;
-  return { args, mapId, houseCount: args.houseCount as number, npcCount: args.npcCount as number, residentDialogue: declared?.residentDialogue !== false };
+  return { args, mapId, houseCount: args.houseCount as number, npcCount: args.npcCount as number, residentDialogue: declared?.residentDialogue !== false,
+    ...(reference.referenceId ? { referenceId: reference.referenceId } : {}) };
+}
+
+/**
+ * 사례 배치 후보를 dryRun 으로 실제로 지어 보고 처음 성공하는 것을 고른다. 시공기는 같은 인자라도 시드·크기에 따라
+ * 채수가 모자라 실패하므로(2026-09-28 실측: 절벽+theme 은 6시드 모두 실패) 인자만 보고 정하지 않는다.
+ * 빈 맵(기존 대상)은 minSize 로 사례 크기까지 넓혀 짓고, 이미 내용이 있는 맵은 후보를 쓰지 않는다. 모두 실패하면 undefined — 옛 기본값.
+ * 비용: 후보 하나당 시공 한 번(실측 약 3.5초, 빈 맵·8채). 후보는 최대 다섯이고 보통 첫 후보에서 끝난다.
+ * runTool dryRun 은 원본 프로젝트를 바꾸지 않으므로 사본을 만들지 않는다.
+ */
+function pickReferenceLayout(project: Project, target: Record<string, unknown>, houseCount: number,
+  layouts: readonly import("@/ai/villageReferenceExamples").VillageLayoutCandidate[]):
+  { readonly args: Record<string, unknown>; readonly target: Record<string, unknown> } | undefined {
+  const existing = target.kind === "existing" ? project.maps[String(target.mapId)] : undefined;
+  if (target.kind === "existing" && (!existing || isLivedMap(existing))) return undefined;
+  for (const candidate of layouts) {
+    const { width, height, ...rest } = candidate;
+    const sized = target.kind === "new" ? { ...target, width, height } : { ...target, minSize: { width, height } };
+    const built = runTool({ project }, "author_village", { target: sized, houseCount, countPolicy: "exact", npcCount: 0, seed: 7, interior: false, ...rest }, { dryRun: true });
+    // 시험한 시드를 계약에 묶는다 — 다른 시드는 같은 배치에서도 채수가 모자랄 수 있다(실측 street+hills 시드 5).
+    if (built.ok) return { args: { ...rest, seed: 7 }, target: sized };
+  }
+  return undefined;
 }
 
 export interface VillageDraftReceipt {
