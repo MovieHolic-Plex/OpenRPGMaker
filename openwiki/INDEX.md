@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **108쪽 / 3834KB / 약 1,101,167 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **108쪽 / 3837KB / 약 1,102,124 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -1710,7 +1710,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L30` 실제 데이터 보존
 - `L43` 역사 자료와 검증
 
-### `openwiki/teaching-assistant-tilesets.md` — 46KB · 385줄 · ~13,756 토큰
+### `openwiki/teaching-assistant-tilesets.md` — 49KB · 409줄 · ~14,713 토큰
 
 - `L8` 한 줄 요약
 - `L14` 조수가 실제로 받는 것
@@ -1730,6 +1730,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L316` 칩셋 계열 규칙 (2026-09-25 사용자 결정)
 - `L351` 문서의 번호가 새 프로젝트에 있어야 한다 (2026-09-25)
 - `L368` 몬스터 마을 부품 (scarloxy_chipset_monster_town_kit, 2026-09-28)
+- `L387` 몬스터 동굴 (scarloxy_chipset_monster_cave, 2026-09-28)
 
 ### `openwiki/team-project-host.md` — 27KB · 323줄 · ~8,415 토큰
 
