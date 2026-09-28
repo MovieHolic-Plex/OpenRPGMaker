@@ -179,7 +179,8 @@ def leg_to(p, hip, foot, l1, l2, w, col, dark=None, lit=None, bw=4, bh=3, bcol='
     """Leg that ends in a boot standing on foot=(x, sole)."""
     fx, sole = foot
     bend = -1 if fx >= hip[0] else 1
-    e, j = limb(p, hip, (fx, sole-bh), l1, l2, w, col, dark=dark, lit=lit, bend=bend)
+    # Thick shins would poke through the sole, so the ankle sits at least w/2+1 above it.
+    e, j = limb(p, hip, (fx, sole-max(bh, w//2+1)), l1, l2, w, col, dark=dark, lit=lit, bend=bend)
     boot(p, e[0], sole, bw, bh, bcol, blit)
     return e, j
 
