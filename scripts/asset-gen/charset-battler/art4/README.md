@@ -5,8 +5,8 @@
 
 ```
 python3 scripts/asset-gen/charset-battler/art4/heroes6.py            # --dry 는 .omo/hero6/dry 에만 쓴다
-python3 scripts/asset-gen/charset-battler/build.py actor3-0 actor3-2 actor3-5 actor3-6 actor3-4 actor4-7
-python3 scripts/asset-gen/charset-battler/build_cast.py actor3-0 actor3-2 actor3-5 actor3-6 actor3-4 actor4-7
+python3 scripts/asset-gen/charset-battler/build.py actor3-0-samurai actor3-2 actor3-5 actor3-6 actor3-4 actor4-7
+python3 scripts/asset-gen/charset-battler/build_cast.py actor3-0-samurai actor3-2 actor3-5 actor3-6 actor3-4 actor4-7
 ```
 
 - 몸: 기존 손도트 원본(art2/art3)을 `repaint_weapons.equipment_pass('clean')` 로 재생해 옛 장비만 뺀다. 핵심 포즈는 팔 관절 좌표만 옮긴다(`design()` 의 moves).

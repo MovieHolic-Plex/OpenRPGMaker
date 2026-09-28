@@ -1,15 +1,17 @@
 """새 주인공 6명 전투 도트 — 직업 개성판 (2026-09-28).
 
-    python3 scripts/asset-gen/charset-battler/art4/heroes6.py [actor3-0 ...]
-    python3 scripts/asset-gen/charset-battler/build.py actor3-0 ...        (--manifest 없이)
-    python3 scripts/asset-gen/charset-battler/build_cast.py actor3-0 ...
+    python3 scripts/asset-gen/charset-battler/art4/heroes6.py [actor3-0 ...]   (인자는 원본 칩 id)
+    python3 scripts/asset-gen/charset-battler/build.py actor3-0-samurai actor3-2 ...        (--manifest 없이, 출력 id)
+    python3 scripts/asset-gen/charset-battler/build_cast.py actor3-0-samurai actor3-2 ...
 
-대상: 사무라이 actor3-0 · 닌자 actor3-2 · 무도가 actor3-5 · 음유시인 actor3-6 · 드루이드 actor3-4 · 마녀 actor4-7.
+대상: 사무라이 actor3-0 칩 → 출력 actor3-0-samurai(별도 시트) · 닌자 actor3-2 · 무도가 actor3-5 · 음유시인 actor3-6 · 드루이드 actor3-4 · 마녀 actor4-7.
 몸(머리·몸통·다리·팔·마법 빛)은 기존 손도트 원본(art2/art3)을 repaint_weapons 의 'clean' 재생으로 다시 얻는다.
 옛 장비만 빠지고 팔은 원래 층 순서대로 남는다. 핵심 포즈는 팔 관절 좌표만 옮긴다(positions 매핑).
 그 위에 직업 장비(weapons.py 의 katana·kunai·lute·druid_staff·witch_staff 격자)와 직업 도트(칼집·베기 궤적·
 수리검·타격 섬광·기공·음표·잎·마력 반짝임)를 좌표로 찍는다. 이미지 생성·축소·회전·보간 없음.
-repaint_weapons.py 는 이 여섯 명을 건너뛴다(여기가 정본).
+repaint_weapons.py 는 이 파일이 소유한 출력 id 를 건너뛴다(여기가 정본).
+주의: actor3-0 은 기본 배우 「마도사」(actor_mage)의 전투 시트다. 사무라이는 같은 칩에서 파생하되
+반드시 OUT_ID 의 actor3-0-samurai 로만 쓴다 — actor3-0 폴더·시트를 덮으면 마도사가 칼을 든다(사용자 지적 사례).
 """
 import sys, json, math
 from pathlib import Path
@@ -28,6 +30,11 @@ ROLE = {'actor3-0': 'samurai', 'actor3-2': 'ninja', 'actor3-5': 'monk',
         'actor3-6': 'bard', 'actor3-4': 'druid', 'actor4-7': 'witch'}
 KIND = {'samurai': 'katana', 'ninja': 'kunai', 'monk': None, 'bard': 'lute',
         'druid': 'druid_staff', 'witch': 'witch_staff'}
+# 원본 칩 id → 출력 id(포즈 폴더·시트 이름). 기본 배우가 쓰는 칩은 여기서 별도 이름으로 뗀다.
+OUT_ID = {cid: cid for cid in IDS}
+OUT_ID['actor3-0'] = 'actor3-0-samurai'
+PROTECTED = {'actor3-0'}  # 기본 배우 시트: 이 파일은 절대 쓰지 않는다.
+assert not PROTECTED & set(OUT_ID.values())
 UPRIGHT = ('idle', 'walk_a', 'walk_b', 'walk_c', 'defend', 'guard_hit', 'weak')
 EVIDENCE = Path(ROOT) / '.omo/hero6'
 C = {k: v for k, v in PALETTE.items()}
@@ -480,15 +487,18 @@ def render(cid):
 
 
 def save(cid, frames):
-    target = Path(SRC_DIR) / cid
-    backup = EVIDENCE / 'before' / cid
+    out = OUT_ID[cid]
+    assert out not in PROTECTED, out
+    target = Path(SRC_DIR) / out
+    target.mkdir(parents=True, exist_ok=True)
+    backup = EVIDENCE / 'before' / out
     backup.mkdir(parents=True, exist_ok=True)
     for name, im in frames.items():
         src = target / f'{name}.png'
         if not (backup / f'{name}.png').exists() and src.exists():
             Image.open(src).save(backup / f'{name}.png')
-        issues = validate(cid, name, im)
-        assert not issues, (cid, name, issues)
+        issues = validate(out, name, im)
+        assert not issues, (out, name, issues)
         assert {c[3] for c in im.getdata()} <= {0, 255}
         im.save(src, optimize=True)
 
@@ -501,11 +511,11 @@ def board(path, source_dir, poses):
         d.text((80 + c * cw + 4, 2), p, fill=(235, 235, 240))
     for r, cid in enumerate(IDS):
         y = 16 + r * (cw + 4)
-        d.text((4, y + 80), ROLE[cid], fill=(235, 235, 240)); d.text((4, y + 94), cid, fill=(160, 160, 170))
+        d.text((4, y + 80), ROLE[cid], fill=(235, 235, 240)); d.text((4, y + 94), OUT_ID[cid], fill=(160, 160, 170))
         for c, p in enumerate(poses):
             x = 80 + c * cw
             d.rectangle((x, y, x + cw - 2, y + cw - 1), fill=(56, 60, 74))
-            f = Path(source_dir) / cid / f'{p}.png'
+            f = Path(source_dir) / OUT_ID[cid] / f'{p}.png'
             if f.exists():
                 im = Image.open(f).convert('RGBA').resize((cw, cw), Image.Resampling.NEAREST)
                 out.paste(im, (x, y), im)
@@ -527,10 +537,10 @@ def main():
         if '--dry' not in sys.argv:
             save(cid, frames)
         else:
-            dry = EVIDENCE / 'dry' / cid; dry.mkdir(parents=True, exist_ok=True)
+            dry = EVIDENCE / 'dry' / OUT_ID[cid]; dry.mkdir(parents=True, exist_ok=True)
             for n, im in frames.items():
                 im.save(dry / f'{n}.png')
-        audit[cid] = dict(role=ROLE[cid], weapon=KIND[ROLE[cid]], frames=len(frames), placements=report)
+        audit[OUT_ID[cid]] = dict(source_chip=cid, role=ROLE[cid], weapon=KIND[ROLE[cid]], frames=len(frames), placements=report)
         print(cid, ROLE[cid], len(frames), 'frames', flush=True)
     (HERE / 'audit.json').write_text(json.dumps(audit, ensure_ascii=False, indent=1) + '\n')
     src = EVIDENCE / 'dry' if '--dry' in sys.argv else Path(SRC_DIR)

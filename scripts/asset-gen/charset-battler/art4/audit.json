@@ -1,5 +1,6 @@
 {
- "actor3-0": {
+ "actor3-0-samurai": {
+  "source_chip": "actor3-0",
   "role": "samurai",
   "weapon": "katana",
   "frames": 45,
@@ -528,6 +529,7 @@
   }
  },
  "actor3-2": {
+  "source_chip": "actor3-2",
   "role": "ninja",
   "weapon": "kunai",
   "frames": 45,
@@ -1056,6 +1058,7 @@
   }
  },
  "actor3-5": {
+  "source_chip": "actor3-5",
   "role": "monk",
   "weapon": null,
   "frames": 45,
@@ -1108,6 +1111,7 @@
   }
  },
  "actor3-6": {
+  "source_chip": "actor3-6",
   "role": "bard",
   "weapon": "lute",
   "frames": 45,
@@ -1600,6 +1604,7 @@
   }
  },
  "actor3-4": {
+  "source_chip": "actor3-4",
   "role": "druid",
   "weapon": "druid_staff",
   "frames": 45,
@@ -2092,6 +2097,7 @@
   }
  },
  "actor4-7": {
+  "source_chip": "actor4-7",
   "role": "witch",
   "weapon": "witch_staff",
   "frames": 45,
