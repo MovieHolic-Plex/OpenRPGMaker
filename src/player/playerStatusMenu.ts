@@ -20,6 +20,7 @@ import { applyCharsetFrameCrop } from "@/assets/charsetFrameCrop";
 import { resolvePlayerSpriteResource } from "@/player/playerSpriteResources";
 import { resolveActorAppearance } from "@/project/characterAppearances";
 import { menuSkinFor } from "@/player/menuSkins/registry";
+import { partyWalker } from "@/player/partyWalker";
 import type { PlayerStatusMenuActions, PlayerStatusMenuOptions } from "@/player/playerStatusMenuTypes";
 import { el } from "@/util/dom";
 
@@ -58,6 +59,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       menuSkinLanding: skin.landing,
       menuSkinIcons: skin.railIcons,
       menuSkinRail: skin.railStyle,
+      ...(skin.partyStats ? { menuSkinStats: "true" } : {}),
     },
   });
   applySystemGraphic(panel);
@@ -107,6 +109,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     onSelectEquipmentSlot: options.actions.onSelectEquipmentSlot,
     onEquipItem: options.actions.onEquipItem,
     onUnequipItem: options.actions.onUnequipItem,
+    onOptimizeEquipment: options.actions.onOptimizeEquipment,
     onToggleRow: options.actions.onToggleRow,
     onSelectFormationActor: options.actions.onSelectFormationActor,
     onMoveFormationActor: options.actions.onMoveFormationActor,
@@ -180,7 +183,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       ? [skin.landing === "hub"
           ? renderPartyStrip(options.project, snapshot)
           // 사이드 시트는 140px 폭에 4행이라 얼굴을 22px 로 줄인다(파티 퍼스트는 30px).
-          : renderPartyOverview(options.project, snapshot, skin.landing === "sheet" ? 22 : 30, skin.partyArt === "character" ? options.session : undefined)]
+          : renderPartyOverview(options.project, snapshot, skin.landing === "sheet" ? 22 : 30, skin.partyArt === "character" ? options.session : undefined, skin.partyStats === true)]
       : [detailPanel]),
     ...(showParty ? [renderPartyPanel(options.project, snapshot)] : []),
     renderFooter(
@@ -450,6 +453,11 @@ function renderPartyFace(
 
 /** The same actor appearance and session override as the field sprite. */
 function renderPartyCharacter(project: PlayerStatusMenuOptions["project"], session: PlayerStatusMenuOptions["session"], row: PlayerStatusMenuPartyRow, index: number, faceSize: number): HTMLElement {
+  // 도트 창 스킨(partyStats)은 상점 파티 창과 같은 정면 걷기 그림을 쓴다 — 멈춘 한 프레임이 아니라 걷는다.
+  if (menuSkinFor(project).partyStats) {
+    const walker = partyWalker(project, session, row.actorId, row.name, { className: "status-menu-character", testId: `status-menu-overview-character-${index}` });
+    if (walker) return walker;
+  }
   const actor = project.database.actors.find((entry) => entry.id === row.actorId);
   const effective = actor ? resolveActorAppearance(project, actor) : undefined;
   const override = session.actorCharacterResourceIds?.[row.actorId];
@@ -471,7 +479,7 @@ function renderPartyCharacter(project: PlayerStatusMenuOptions["project"], sessi
 // ── 스킨 첫 화면: 파티 개요(party·sheet) ──
 // 작업 패널 자리에 파티 4명을 크게 그린다 — 얼굴 30px · 이름 · 직업 · Lv · HP/MP 게이지+숫자 · 「위험」 칩.
 // 상태이상 칩은 세션에 필드 상태이상 데이터가 없어 아직 없다(스펙 §2).
-function renderPartyOverview(project: PlayerStatusMenuOptions["project"], snapshot: PlayerStatusMenuSnapshot, faceSize: number, characterSession?: PlayerStatusMenuOptions["session"]): HTMLElement {
+function renderPartyOverview(project: PlayerStatusMenuOptions["project"], snapshot: PlayerStatusMenuSnapshot, faceSize: number, characterSession?: PlayerStatusMenuOptions["session"], stats = false): HTMLElement {
   const overview = el("section", {
     class: "status-menu-party-overview",
     attrs: { "aria-label": "파티 상태" },
@@ -501,8 +509,19 @@ function renderPartyOverview(project: PlayerStatusMenuOptions["project"], snapsh
                 ...(row.hpLevel === "crit" ? [el("span", { class: "status-menu-overview-chip crit", text: "위험" })] : []),
               ],
             }),
+            // 상태이상은 이름 바로 아래 — 해독초를 누구에게 쓸지 메뉴 첫 화면에서 판단한다.
+            ...(stats
+              ? [el("div", {
+                  class: `status-menu-overview-states${row.stateNames.length ? " has-state" : ""}`,
+                  text: row.stateNames.length ? row.stateNames.join(" · ") : "정상",
+                  dataset: { testid: `status-menu-overview-states-${index}` },
+                })]
+              : []),
             renderOverviewVital("HP", row.hpValueLabel, row.hpRatio, `hp ${row.hpLevel}`, `status-menu-overview-hp-${index}`),
             renderOverviewVital("MP", row.mpValueLabel, row.mpRatio, "mp", `status-menu-overview-mp-${index}`),
+            ...(stats && row.nextLevel
+              ? [renderOverviewVital("EX", `다음 ${row.nextLevel.remaining}`, row.nextLevel.ratio, "xp", `status-menu-overview-exp-${index}`)]
+              : []),
           ],
         }),
       ],

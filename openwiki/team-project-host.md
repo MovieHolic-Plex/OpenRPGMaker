@@ -23,6 +23,118 @@ SQLite 파일 위치와 브라우저 UI 위치는 독립적이다. 원격 접속
 
 Electron에서 프로젝트를 연 뒤 **파일 → 팀 협업 시작 / 관리**. 앱이 같은 session registry를
 사용하는 HTTP 호스트를 실행한다. 기본은 코드 없이 주소로 바로 접속한다.
+
+### 앱끼리 참여 (2026-09-28)
+
+참여하는 쪽도 앱이다. 팀원은 시작 화면 **팀에 참여**(또는 파일 → 팀에 참여…)에 호스트 주소나
+초대 링크를 넣는다. 주 프로세스(`electron/main/teamWindow.ts`)가 그 호스트 페이지를 **앱 창**으로 연다.
+창은 preload 없이 `persist:oprn-team` 파티션을 쓰고, 호스트가 주입한 `/__oprn/bridge.js` 가 HTTP 로
+`window.oprn` 을 만든다. 원격 페이지라 이 컴퓨터의 IPC·파일에는 닿지 않는다. 다른 출처로의 이동은 막고
+https 링크는 시스템 브라우저로 넘긴다. 첫 페이지 로드가 실패하면 창을 닫고 시작 화면에 이유를 보여 준다.
+참여한 주소는 `userData/recent-teams.json` 에 초대 비밀(`#join=`)을 뺀 채 남는다.
+
+호스트 쪽 두 가지를 같이 바꿨다(`electron/serve/localNetwork.ts`).
+
+- 예전: 네트워크 카드 목록의 **첫** IPv4 하나를 `publicOrigin` 으로 고정했다. Docker·VPN 이 있으면
+  그 주소가 `172.17.0.1` 같은 가상 브리지였고, 팀원이 실제 LAN 주소로 오면 Host 검사에서 403 이었다.
+  이제 앱 호스트는 `localNetwork: true` 로 뜨고, **이 컴퓨터가 실제로 가진 주소 전부**(IP·호스트 이름·`.local`)의
+  Host 를 받는다. 목록에 없는 Host 는 여전히 403 이라 DNS rebinding 방어는 유지된다. 안내 주소는 가상
+  인터페이스를 빼고 192.168 → 10 → 172.16/12 → 100.64/10(Tailscale) 순서로 보여 준다.
+- 예전: 포트 0(실행마다 바뀜)이라 받은 주소가 다음 실행에 틀렸다. 이제 9840~9849 를 차례로 시도하고
+  모두 쓰이면 임의 포트로 뜬다.
+
+호스트 대화상자의 **팀 관리 열기**도 브라우저 대신 앱 창으로 연다. 소유자 본인은 계속 IPC 로 편집한다.
+`serve:project` / `npm start` 의 프록시 경로는 그대로 `publicOrigin` 하나만 받는다.
+
+실측(2026-09-28, 이 서버): 외부 IPv4 13개 중 첫 번째가 가상 브리지가 아니었지만, `127.0.0.1`·LAN·Tailscale·
+Docker 주소 모두 200, 위조 Host(`evil.example`)·다른 포트 Host 는 403, 다른 Origin 의 RPC 는 403.
+두 번째 호스트가 9840 을 잡으면 `EADDRINUSE` 를 받고 다음 포트로 넘어간다.
+
+앱 두 개 실기: `xvfb-run -a node scripts/qa/electronTeamJoinProbe.mjs` (먼저 `npm run build:fast`·`npm run build:electron`).
+사용자 데이터를 나눈 Electron 두 개를 띄워 호스트 → 참여 → 참여 창 저장 → 호스트 재로드까지 10단계를 본다.
+증거는 `verify-shots/electron-team-join/`(steps.json·화면). 2026-09-28 실측 10/10 통과: 참여 창 첫 로드 34.9초(67MB 접힌 행),
+참여 창 `saveMapPatch` 로 호스트 `project.sqlite` revision 1 → 3, 호스트 IPC 재로드가 같은 제목을 읽었다.
+
+함정 두 가지(실측):
+
+- Electron 을 `dist-electron/main.cjs` 로 직접 띄우면 `app.getAppPath()` 가 `dist-electron/` 이 되어 팀 호스트가
+  `dist-electron/dist-electron/browser-bridge.js` 를 찾다 실패한다. 저장소 루트(package.json main)로 띄운다.
+  `electronAppBootProbe.mjs` 는 여전히 main.cjs 로 띄우므로 그 프로브로는 팀 호스트를 검증할 수 없다.
+- 이 픽스처(펼치면 수백 MB)에서 HTTP `project.load`(펼친 전체 글)를 부르면 **호스트 앱 메인 프로세스가 V8 OOM 으로 죽는다**.
+  편집기는 `loadFolded` 를 쓰므로 정상 경로는 아니지만, 접힌 행에 빠진 타일셋 본문이 있을 때의 폴백
+  (`electronRepository.ts` `loadSnapshotFromHost`)은 이 채널을 부른다. 별도 과제로 남긴다.
+
+두 컴퓨터 실기(2026-09-28, Tailscale): 호스트 mdc-server 에서
+`xvfb-run -a node scripts/qa/electronTeamJoinRemoteHost.mjs`, 참여 ai-server 에서 앱 번들(`dist`·`dist-electron`·`package.json`)과
+`electron`·`playwright`·`@playwright/test` 만 복사한 폴더로 `xvfb-run -a node electronTeamJoinRemoteMember.mjs --app . --url http://100.73.251.77:9840`.
+참여 5/5 · 호스트 PASS: ai-server 앱 창에 원격 편집기가 51.8초에 떴고, 참여 창 저장이 호스트 `project.sqlite` revision 3 으로 들어가
+호스트 앱 재로드가 같은 제목을 읽었다. 참여자가 맵 임대를 쥔 동안 호스트 편집기에는 「호스트님이 편집 중입니다」가 떴다(접속 코드가 꺼져
+있으면 참여자도 owner 이름으로 보인다). 증거: `verify-shots/electron-team-join-remote/`.
+
+### HTTP 참여의 지연 원인과 개선 (2026-09-28, Tailscale 실측)
+
+브리지 왕복 자체는 느리지 않다(`team.status` 10–50ms). 느린 것은 **같은 큰 덩어리를 매번 다시 보내거나 다시 계산하는 것**이었다.
+측정 도구: `scripts/qa/electronTeamJoinTraffic.mjs`(요청별 크기·시간), `electronTeamJoinEdit.mjs`(타일 한 칸 저장 왕복),
+`electronTeamJoinRefresh.mjs`(동료 저장이 보이기까지), 호스트는 `electronTeamJoinRemoteHost.mjs --serve-only [--project-dir] [--profile-at 지연,초]`.
+
+| 항목 | 전 | 후 |
+|---|---|---|
+| 두 번째 참여 받는 양 | 101.5MB | 19MB (코드·정적 그림 캐시만 남음) |
+| 첫 참여 받는 양 | 164.5MB | 126–131MB |
+| 참여 창 한 줄 저장 응답 | 4.7–8.6s | 0.8–0.9s |
+| 동료 저장 응답 | 7–8.6s | 0.8–1.2s |
+| 동료 저장 반영 시 받는 양 | 전체 행 45MB | 240KB |
+
+고친 것:
+
+- 업로드 자산 dataUrl 을 전송에서 뗀다(`electron/serve/assetBlobs.ts`, 채널 `project.assetBlobs`, HTTP 전용). 접힌 행 64MB 중 63MB 가
+  공용 자산 dataUrl 393개였다. 참여 창은 기기 캐시(`tilesetBlobCache`, 내용 주소)와 이미 받은 공용 카탈로그의 같은 그림
+  (`sharedDefaultAssetDataUrl`, 바이트 해시+머리 일치)로 채우고 없는 것만 받는다. 저장 행·문서 sha·로컬 IPC 는 그대로다.
+- `/__oprn/shared-tile-references` 에 ETag/304 와 IndexedDB 캐시(`sharedContent` 와 같은 계약). 304 판정은 판본만 읽고 본문(약 6s 호스트
+  메인 스레드)을 만들지 않는다.
+- 변경분 저장이 임대 충돌 검사로 문서 전체를 역직렬화하지 않게 했다(`dispatch.ts`): 기준이 저장 행 그대로이고 패치가 그 맵·DB 를
+  건드리지 않으면 건너뛴다. 건드리면 예전처럼 거절한다(`test/team/projectService.test.ts`).
+- 새 프로젝트는 부팅 정규화 저장이 공용 그림 85MB 를 dataUrl 로 문서에 넣는데, 여는 순간의 미디어 분리는 그 전에 돌아 한 세션 내내
+  저장마다 그 85MB 를 다시 해시했다. 저장 직후(세션당 처음 3번) 미디어 분리를 한 번 더 본다.
+- `removeLegacySpriteReferences` 는 얼린 가지(호스트가 저장 행에서 읽은 타일셋)를 건너뛴다.
+- 본문이 없을 때의 폴백이 펼친 전체 글(`project.load`)을 부르지 않는다 — 이 규모에서 호스트 메인 프로세스가 V8 OOM 으로 죽었다.
+
+### 동료 저장 반영·부팅·첫 참여 전송량 (2026-09-28 2차)
+
+앞 절에서 남겼던 세 가지를 고쳤다. 측정은 같은 픽스처(`life-full.reloaded`, 타일셋 368칸)로 한다.
+
+| 항목 | 전 | 후 |
+|---|---|---|
+| 동료 저장이 참여 창에 보이기까지 | 약 20s(1차 측정) · 5.9–7.1s(같은 기기 재측정) | 0.9–1.7s |
+| 첫 참여 공용 자료 | 111.7MB | 87.7MB (`shared-tile-references` 24.8MB → 0.8MB) |
+| 두 번째 참여 부팅(같은 기기) | 28.0s | 14.7–17.6s |
+
+고친 것:
+
+- **동료 저장 반영.** `refreshFromHost` 가 매번 문서 전체를 새로 풀고, 그 사본을 또 복제해 기준본으로 두었다.
+  - 참여 창 어댑터(`electronRepository.ts`)가 지난 로드에서 푼 타일셋 객체와 **그 순간의 내용 요약**을 기억한다. 다음 로드에서 본문 sha 가 같고
+    요약이 그대로인 칸은 파싱하지 않고 그 객체를 쓴다. 편집기가 제자리에서 고친 칸은 요약이 달라져 새로 푼다
+    (`test/persistence/electronRepository.test.ts` folded host loads).
+  - `refreshFromHost` 는 방금 받은 스냅숏을 기준본으로 그대로 쓴다(`baselineFrom(…, { owned: true })`) — 전에는 1.5s 복제.
+- **첫 참여 전송량.** `/__oprn/shared-tile-references` 의 82MB 가 전부 공용 카탈로그(`shared-content`)에 같은 글로 있었다.
+  이제 편집기 응답은 카탈로그에 있는 타일셋·그림·참고문서·구조 킷을 `{"$library":<id>}` / 항목의 `library` 로만 보내고, 편집기는
+  설치한 카탈로그 객체로 채운다(`sharedTileReferences.ts` `resolveLibraryRefs`). 가리키는 라이브러리가 아직 없으면 편집기가 뜬 뒤 받는
+  나머지 범위를 기다린다(`whenSharedLibrariesInstalled`). 작업자 경로(`piAgentRuntime`)는 예전처럼 전체 글을 읽는다. 형식이 바뀌어 ETag 에
+  형식 판(`w2`)을 넣었다 — 옛 형식을 캐시한 기기가 304 로 옛 글을 쓰지 않는다. 시험: `test/sharedTileReferenceLibraryRefs.test.ts`.
+- **부팅 CPU.**
+  - 공용 카탈로그 설치(`reviewedPlaceCatalog.installSharedReviewedPlaces`·`installSharedSpatialReferences`)가 받은 타일셋·그림 약 100MB 를
+    통째로 복제했다. 읽기 전용 투영이라 복제하지 않는다 — 프로젝트로 옮기는 쪽이 복제한다.
+  - 기본 자산 바이트 해시(HTTP 참여 창은 JS SHA)를 호스트가 판본마다 한 번 세어 응답에 싣는다(`assetBytesSha256`).
+  - 부팅 뒤 참고문서 보강(`applySharedReferenceRefresh`)은 바뀔 것이 없으면 문서를 복제하지 않는다(dry run).
+  - 기준본 한가할 때 요약은 current 의 요약 기억을 먼저 넘겨 받는다 — 같은 문서를 처음부터 다시 해시했다(4.4s).
+
+남은 것:
+
+- 첫 참여의 공용 카탈로그 87MB(defaults 55.6MB·rest 31.3MB) 중 약 65MB 는 기본 자산 그림 dataUrl 이다. 그림을 주소로 빼면 더 줄지만
+  프로젝트에 복사되는 공용 자산의 계약(`ensureSharedContent`)을 바꾸는 일이라 따로 한다.
+- 부팅 CPU 에서 가장 큰 것은 타일셋 368칸의 첫 내용 요약(약 4s, 통행 칸 28.8만 개)이다. 잎 배열을 글 한 번으로 세는 시도는 첫 요약을
+  5.9 → 4.1s 로 줄였지만 두 번째 요약이 0.5 → 1.0s 로 늘어 편집 중 저장이 느려져 되돌렸다.
+- 참여 창은 `crypto.subtle` 이 없는 HTTP 출처라 남은 SHA 도 JS 로 계산한다.
 **팀 관리 → 접속 설정 → 접속 코드 사용**을 켜면 로그인을 요구한다. **팀 관리**에서 편집자·읽기 전용 초대 링크를 만들거나 접근 권한을 취소할 수 있다.
 초대 비밀은 URL fragment로 전달하고 로그인 화면에서 주소에서 제거한다.
 팀원 목록·권한 선택·팀 이름 변경·백업·초대 복사를 한 관리 화면에서 제공한다.

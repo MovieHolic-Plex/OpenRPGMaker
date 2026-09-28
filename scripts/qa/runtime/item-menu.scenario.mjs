@@ -2,6 +2,8 @@
 export const itemMenuScenario = {
   id: "item-menu",
   projectFixture: "test/fixtures/projects/item-runtime-qa-v3.json",
+  // 이 시나리오는 workbench 스킨(ESC 직후 아이템 작업 패널)의 계약이다 — 기본 스킨이 pixel 로 바뀐 뒤에도 같은 화면을 본다.
+  systemPatch: { menuUiStyle: "workbench" },
   query: { e2eVitals: "1" },
   beats: [
     {

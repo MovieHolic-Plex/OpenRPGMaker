@@ -15,6 +15,7 @@ import { repairInteriorTransparentPropLayers } from "./defaults/interiorTranspar
 import { ensureScarloxyPokemonInteriors } from "./defaults/scarloxyPokemonInteriors";
 import { ensureDefaultDatabaseIconResources } from "./defaults/defaultDatabaseIconResources";
 import { ensureBundledBattleAnimations } from "./defaults/defaultDatabase";
+import { repairFaceMatches } from "./faceMatchRepair";
 import { isSaveSkippedLocation, loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
 import type { ProjectWriteAuthority } from "./spatial/saveRouting";
 import type { SaveResult } from "./persistence/types";
@@ -702,7 +703,10 @@ class ProjectStore {
     // 메우는 만큼 «다르다» 로 달 수 있지만, 그 방향은 논리적으로 같은 스냅샷을 한 번 다시 얹는 것뿐이다.
     if (this.persistedBaseline && jsonEqual(snapshot.project, this.persistedBaseline)) return true;
     this.current = preserveEventDraftsOnProject(snapshot.project, this.current);
-    this.persistedBaseline = this.baselineFrom(snapshot.project);
+    // 방금 받은 스냅숏은 이 스토어만 가진 사본이고 초안이 없다(호스트 행은 초안을 싣지 않는다). current 는 위에서
+    // 따로 복제했으므로 스냅숏을 그대로 기준본으로 둔다. 실측(2026-09-28, 팀 참여 창): 동료 저장 반영마다 기준본
+    // 복제(cloneProjectSharingReferenceDocuments) 1.5s 와 그 쓰레기의 GC 가 메인 스레드를 막았다.
+    this.persistedBaseline = this.baselineFrom(snapshot.project, { owned: true });
     this.writeAuthority = snapshot.authority;
     this.lastPersistenceReceipt = null;
     this.lastSavedHostRevision = null;
@@ -977,11 +981,16 @@ class ProjectStore {
    * 요약했다(2026-09-26 실측, 81MB 새 프로젝트 첫 칠하기 diff 1.8s 동안 메인 스레드 정지). 한가할 때 원본의
    * 요약을 미리 만들어 기준본에 넘긴다 — 기억은 값 대조로만 쓰이므로 그 사이 무엇이 바뀌어도 결과는 같다.
    */
-  private baselineFrom(source: Project): Project {
-    const baseline = projectWithoutEventDrafts(source);
+  private baselineFrom(source: Project, options: { readonly owned?: boolean } = {}): Project {
+    // owned: 호출자가 source 를 다른 곳에 넘기지 않는 사적 사본이라고 보증한다. 초안이 없으면 복제하지 않는다.
+    const baseline = options.owned && projectViewWithoutEventDrafts(source) === source ? source : projectWithoutEventDrafts(source);
     const lineage = this.contentLineage;
     scheduleIdleWork(() => {
       if (this.contentLineage !== lineage || this.persistedBaseline !== baseline) return;
+      // 로드 직후 정규화가 current 의 요약을 이미 만들었다. 복제본인 기준본은 기억이 비어 있어 같은 문서를 처음부터
+      // 다시 해시했다(2026-09-28 실측, 팀 참여 창 부팅 4.4s). 기억을 먼저 넘기면 바뀐 가지만 다시 센다 — 기억은 값
+      // 대조로만 채택되므로 정규화가 current 를 고친 가지는 그대로 다시 계산된다.
+      if (baseline !== this.current) shareContentDigests(this.current, baseline);
       jsonContentDigest(projectWireView(baseline));
       shareContentDigests(baseline, this.current);
     });
@@ -1629,6 +1638,8 @@ class ProjectStore {
       // 팩 이전 스냅샷은 anim_gen_* 이 없어 스타터 아이템·스킬 참조가 끊긴다 —
       // 그대로 두면 fail-closed 재생 게이트가 ▶테스트를 조용히 막는다.
       ["bundledBattleAnimations", ensureBundledBattleAnimations(this.current)],
+      // 걷기 그림과 다른 인물의 얼굴을 짝으로 맞춘다(2026-09-28 전수 조사, faceMatchRepair.ts).
+      ["faceMatches", faceMatchesRepaired(repairFaceMatches(this.current))],
     ];
     const appliedNormalizers = normalizers.filter(([, applied]) => applied).map(([name]) => name);
     const changed = before !== jsonContentDigest(this.current);
@@ -1675,6 +1686,9 @@ class ProjectStore {
     if (!this.loaded || this.currentValue === null || !canWriteTeamProject() || this.readOnlyProjectSnapshot) return false;
     // 보강할 타일셋이 없으면 프로젝트를 복제하지 않는다(대부분의 프로젝트가 이 경우다).
     if (!sharedTileReferencesTouch(this.current)) return false;
+    // 부팅 정규화가 같은 판본을 이미 넣었으면 바뀔 것이 없다 — 복제 전에 본다. 실측(2026-09-28, 팀 참여 창 부팅):
+    // 바뀔 것 없는 갱신이 문서 복제 1.5s 를 먼저 치렀다.
+    if (!applySharedTileReferenceEntries(this.current, undefined, { dryRun: true })) return false;
     const draft = cloneProjectSharingReferenceDocuments(this.current);
     if (!applySharedTileReferenceEntries(draft)) return false;
     this.current = draft;
@@ -1721,6 +1735,10 @@ function ensureProjectMapConnections(project: Project): boolean {
   if (Array.isArray(project.mapConnections)) return false;
   project.mapConnections = [];
   return true;
+}
+
+function faceMatchesRepaired(result: { readonly actors: number; readonly eventFaces: number }): boolean {
+  return result.actors + result.eventFaces > 0;
 }
 
 function ensureMapTreeCoversAllMaps(project: Project): boolean {

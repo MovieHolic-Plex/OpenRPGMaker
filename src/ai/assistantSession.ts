@@ -309,6 +309,8 @@ import {
 } from "./session/toolPayload";
 import { batchRecordTarget, failedRecordReference, type BatchRecordTarget } from "./session/recordReference";
 import { spatialReferenceImages } from '@/editor/tools/spatialReferenceTools';
+import { interiorPresetImages } from '@/editor/tools/interiorPresetExamples';
+import { villageReferenceImages } from '@/ai/villageReferenceExamples';
 import { ASSISTANT_TURN_RETRY_ATTEMPTS, appendTransientRetryGuidance, sleep } from "./session/transientRetry";
 import { completedWorkItemIdFromResult, findWorkItemById } from "./session/workItemLookup";
 import type {
@@ -5485,6 +5487,12 @@ export class AssistantSession {
           }
           if (name === 'read_spatial_reference' && toolResult.ok) {
             roundImages.push(...await operation.wait(spatialReferenceImages(this.ctx.project, args, toolResult.data)));
+          }
+          if (name === "get_concept_facility" && toolResult.ok) {
+            roundImages.push(...await operation.wait(interiorPresetImages(toolResult.data)));
+          }
+          if (name === "author_village" && toolResult.ok) {
+            roundImages.push(...await operation.wait(villageReferenceImages(toolResult.data)));
           }
 
           // 비전(BUG C): '보여줘' 계열 툴이면 이미지를 렌더해 모아둔다. 렌더 실패는 무시(텍스트로 진행).

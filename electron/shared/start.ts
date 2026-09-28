@@ -40,3 +40,11 @@ export type SuggestedProjectDir = {
   /** 만들 폴더의 절대 경로(아직 없거나 비어 있다). */
   readonly projectDir: string;
 };
+
+/** 전에 참여한 팀 호스트. url 에는 초대 비밀(#join=)이 없다. */
+export type RecentTeamEntry = {
+  readonly url: string;
+  readonly lastJoinedAt: string;
+};
+
+export type JoinTeamResult = { readonly ok: true; readonly url: string } | { readonly ok: false; readonly error: string };

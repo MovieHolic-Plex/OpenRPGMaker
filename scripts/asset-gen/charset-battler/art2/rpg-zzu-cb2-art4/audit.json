@@ -1,0 +1,117 @@
+{
+  "actor2-6": {
+    "cells": 45,
+    "castCells": 21,
+    "extraColors": 6,
+    "groundY": 44,
+    "sheetPixelMatch": true,
+    "castSilhouettesPerStep": 7,
+    "minSilhouetteDifferencePixels": 95,
+    "gifSize": [
+      1344,
+      210
+    ],
+    "gifDurationsMs": [
+      160,
+      160,
+      160
+    ],
+    "handLightPixels": [
+      3,
+      5,
+      9
+    ]
+  },
+  "actor2-7": {
+    "cells": 45,
+    "castCells": 21,
+    "extraColors": 6,
+    "groundY": 44,
+    "sheetPixelMatch": true,
+    "castSilhouettesPerStep": 7,
+    "minSilhouetteDifferencePixels": 94,
+    "gifSize": [
+      1344,
+      210
+    ],
+    "gifDurationsMs": [
+      160,
+      160,
+      160
+    ],
+    "handLightPixels": [
+      3,
+      5,
+      9
+    ]
+  },
+  "actor3-1": {
+    "cells": 45,
+    "castCells": 21,
+    "extraColors": 6,
+    "groundY": 44,
+    "sheetPixelMatch": true,
+    "castSilhouettesPerStep": 7,
+    "minSilhouetteDifferencePixels": 70,
+    "gifSize": [
+      1344,
+      210
+    ],
+    "gifDurationsMs": [
+      160,
+      160,
+      160
+    ],
+    "handLightPixels": [
+      3,
+      5,
+      9
+    ]
+  },
+  "actor3-2": {
+    "cells": 45,
+    "castCells": 21,
+    "extraColors": 6,
+    "groundY": 44,
+    "sheetPixelMatch": true,
+    "castSilhouettesPerStep": 7,
+    "minSilhouetteDifferencePixels": 72,
+    "gifSize": [
+      1344,
+      210
+    ],
+    "gifDurationsMs": [
+      160,
+      160,
+      160
+    ],
+    "handLightPixels": [
+      3,
+      5,
+      9
+    ]
+  },
+  "actor3-3": {
+    "cells": 45,
+    "castCells": 21,
+    "extraColors": 6,
+    "groundY": 44,
+    "sheetPixelMatch": true,
+    "castSilhouettesPerStep": 7,
+    "minSilhouetteDifferencePixels": 58,
+    "gifSize": [
+      1344,
+      210
+    ],
+    "gifDurationsMs": [
+      160,
+      160,
+      160
+    ],
+    "handLightPixels": [
+      3,
+      5,
+      9
+    ]
+  }
+}

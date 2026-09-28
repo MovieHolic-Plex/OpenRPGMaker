@@ -10,6 +10,75 @@
 
 # Runtime Battle Behavior
 
+## 도트 결과 화면 단순화 · 적 그룹 「전투 뒤」 이벤트 (2026-09-28)
+
+- **도트 결과(기본 메뉴 스킨 pixel, 포켓몬 제외)** 는 첫 화면이 세 창이다: 머리 창(승리 · EXP · 돈 · 전리품 이름, `battle-result-summary`) / 파티 창(걷는 그림 · Lv 전후 · EXP 막대 · LEVEL UP 또는 다음 Lv까지, `battle-result-party-<actorId>`) / 전리품 창(`battle-result-cards`: 소지금 「a → b」, 아이템 「보유 a → b」).
+  능력치 24칸을 늘어놓던 레벨 업 창은 없앴다. 확인키 흐름은 **첫 확인 = 보상 전부 공개 → 확인마다 레벨 업한 사람 한 명씩(`battle-result-levelup-<actorId>`, `data-active="true"`) → 다 보면 닫기**다.
+  단계는 `battleDom` 의 확인 처리에서 `revealAllResultRows` 다음 `advanceBattleResultLevelUps(panel)` 이 소비한다. 창은 처음부터 DOM 에 있고 모달(`battle-result-levelups`)의 `data-open`/`data-index` 로 켠다.
+  공용 보상 행은 그대로 남는다(공개 단계·세기 계약). 경험치·레벨 업 행은 `data-reward-kind` 로 숨긴다 — 파티 창과 레벨 업 창이 대신 말한다.
+  그래서 도트 스킨에서 `battle-result-exp-bar` 는 보이지 않는다. QA 는 `battle-result-cards`/`battle-result-party` 를 기다린다.
+- **「전투 뒤」 이벤트** `TroopRecord.afterBattle?: { victory?, defeat?, escape? }`(명령 목록). 결과 화면이 닫히고 필드로 돌아온 뒤 결과별로 한 번 돈다. 명령 문맥은 맵 이벤트("map")다.
+  - 러너 `src/player/troopAfterBattleRunner.ts` (`runCommands`, `allowNested`). 부르는 곳 세 갈래: `commandBattle.playCommandBattle`(이벤트 전투 처리·병렬 전투), `playSceneMovement.runRandomEncounterBattle`, `playSceneFieldSpawns.runFieldSpawnEventBattle`.
+  - 순서: `session.battleResult` 기록 → 적 그룹 「전투 뒤」 → 이 전투를 연 이벤트의 결과 분기(`branchOnResult`)가 이어진다.
+  - 게임 오버로 끝나는 패배(canLose=false, 인카운터·심볼 접촉 패배)에는 돌지 않는다. 「졌을 때」 는 패배 허용 이벤트 전투에서만 의미가 있다.
+  - 모델·순회 `src/project/troopAfterBattle.ts`(`normalizeTroopAfterBattle`, `troopAfterBattleLists`, `mapTroopAfterBattleLists`). 빈 목록은 키를 만들지 않는다(옛 JSON 바이트 유지).
+    명령 목록을 훑는 곳(참조 검증·끊긴 참조 정리·맵 삭제·스위치/변수 이름 바꾸기·사용처·엔딩 도달·lint·명령 색인)은 전투 이벤트 페이지 옆에서 이 목록도 훑는다. 새 순회기를 만들면 같이 넣어라.
+  - QA: `inn-battle-pixel` 의 `after-battle`/`after-battle-done` 비트(승리 뒤 대사 + 스위치 `sw_0001`).
+
+## 도트 측면 전투 스킨 retro2003 (2026-09-28)
+
+13번째 스킨. 자료집 → 시스템 → 전투 UI 스타일 「레트로 2003 · 측면 도트 전투 (기본)」(드롭다운 첫 번째), AI `set_project_settings battle.uiStyle: "retro2003"`.
+규칙 엔진은 건드리지 않는다 — 표현만이고 `battleFlow: "gauge"` 와 함께 쓰면 시간 게이지 전투가 된다. 기존 미설정 문서는 `resolveSkinId(undefined)` / `DEFAULT_BATTLE_SKIN_ID`의 rm2000 호환값을 유지한다. 새 프로젝트·템플릿의 `defaultSystem(true)`과 새 데모 생성은 retro2003을 명시하며 정규화에서도 생략하지 않는다. v1/v2 이관의 인자 없는 `defaultSystem()`은 스킨을 추가하지 않아 옛 화면을 보존한다
+(모션 CSS는 retro2003 스코프, 확장 시트의 정수 배율 규칙은 그 시트를 쓰는 측면 스킨 공통).
+
+- **레지스트리 필드 두 개**(`src/battle/skins/types.ts`): `motionStyle: "retro"` 가 연출을, `scenery: "layered"` 가 겹 배경을 켠다. 다른 스킨이 같은 연출을 원하면 이 값만 붙이면 된다(CSS 스코프는 스킨 id 라 그 CSS 도 넓혀야 한다).
+- **창·HUD** `battle-skins/_retro2003.css`: 청색 세로 그라데이션 창 + 2px 각진 베벨, 도트 글꼴(`--runtime-pixel-font`), 얼굴 없이 이름·HP·MP·ATB 줄, 텍스트 명령 목록과 맥동 막대 커서, 위쪽 한 줄 메시지, 대상 선택은 ▼ 손가락 커서. HUD 128px, 무대 상단 inset 48px.
+  재생 상태 칩은 메시지 창(최대 두 줄) 아래 `top: 84px` 에 둔다 — 52px 에서는 둘째 줄 위에 얹혔다(프레임 실측).
+- **배치** `battlerPlacements.ts` `RETRO_SIDEVIEW` (2026-09-28 반전): 적은 **왼쪽**(x 40~136, 한 마리 88, 발 y 128/140, 스킨 분기에서 x 32~150 으로 접음), 아군은 **오른쪽** `(222+24i, 82+18i)` 사선 계단. 걷기 칩 전투 시트는 원래 왼쪽을 보도록 그렸으므로 뒤집지 않는다(옛 `scaleX(-1)` 제거). 확장 아군 시트는 48px 셀을 BATTLE_ASSET_PIXEL_SCALE(2)로 한 번 확대해 96px로 그린다.
+  수동 트룹 좌표는 이 스킨에서만 접지 구간으로 접고(`resolveSkinEnemyPosition`), 접은 결과가 뭉치면 트룹 전체를 자동 진형으로 세운다. `battleEnemyFeetRatios.json` 의 retro2003 항목은 아직 rm2003 사본이다 — 감독 실측으로 갱신할 것.
+- **걷기 칩 전투 카탈로그** `src/assets/charsetBattlers.ts`: Actor1~4 × characterIndex 0~7 = 32개 `charset-battler-actorN-k`. 그림은 `assets/generated/charset-battlers/actorN-k.png`(144×384), 피커 이름은 `charsetSemantics`의 「걷기 칩 전투 · 이름」이다.
+  - `partyFacing: front`에서는 명시한 사용자 시트가 먼저다. 옛 `hero`/`generated-actor-hero-*` 또는 미설정 시트는 걷기 칩+index(미설정 0)로 유도한다. retro2003은 대응 칩이 없어도 옛 AI 영웅 시트를 표시하지 않는다. 다른 스킨은 대응 칩이 없을 때 기존 폴백을 유지한다.
+  - 스냅샷의 `characterResourceId`·`characterIndex`는 표시 전용이다. 내보내기도 같은 선택기로 예비 액터까지 유도 시트와 `assets/easyrpg/AUTHORS.md`를 포함한다.
+  - 통합 주의: 별도 저작 도구 시드 `src/editor/tools/emptyProject.ts`는 이 작업의 쓰기 범위 밖이라 인자 없는 호출을 유지한다. 이 새 생성 경로도 레트로 기본값을 쓰려면 감독자가 `defaultSystem(true)`로 연결해야 한다. `skyStairGame.ts`의 명시적 rm2000 데모 설정은 그대로다.
+  - 기본 6명은 actor1-0, actor2-0, actor3-0, actor4-0, actor1-7(성직자), actor2-3(궁수). 성직자·궁수의 걷기 칩 index도 7·3으로 맞춘다.
+  - `battlePose.ts`의 `EXTENDED_POSE_FRAME` 24개는 `scripts/asset-gen/charset-battler/cb_lib.py`의 POSES와 정확히 짝이다. 기존 POSE_FRAME·VICTORY_POSE_FRAME은 보존한다.
+  - `data-battler-extended="true"`인 노드는 고해상도 짝·idle 스트립을 쓰지 않는다. pixelated + 정수 배율이며 대기는 CSS 1px 숨쉬기만 한다.
+- **진입** 전환 `shatter-2003`(흰 번쩍임 두 번 → 가로 줄무늬가 번갈아 좌우로 미끄러지며 닫힘), `_transitions.css`.
+- **겹 배경** `src/assets/battleSceneryCatalog.ts` + `src/player/battleScenery.ts` + `battle/26-battle-scenery.css`.
+  그림: `public/assets/generated/battle-scenery/<plains|forest|cave|snow|desert>/{sky,far,mid,ground}.png`(640×360, sky 만 불투명, 도트 2배 nearest, ≤48색, 알파 0/255).
+  재생성: `scripts/asset-gen/gen-battle-scenery.mjs`(원화 source.png·prompts 는 같은 폴더). 리소스 id `battle-scenery-<biome>` 은 배경 피커(`resourceOptions.matchesGeneratedKind` backdrop)에 뜬다.
+  - 지형 결정 `resolveSceneryBiome`: 명시 `battle-scenery-*` → 알려진 배경 id 매핑(숲 레퍼런스→forest, 얼음→snow, 모래→desert, 하늘 파노라마·스킨 기본 배경→plains) → 지형 이름 낱말 → 기후 snow → 던전/동굴/실내 타일셋 → plains.
+    **모르는 id(사용자가 올린 배경)는 undefined** 를 돌려 그 그림을 그대로 두고 앰비언트만 얹는다.
+  - 네 장을 다 읽은 뒤에만 레이어를 붙인다(`data-layers="ready"`). 하나라도 실패하면 기존 단일 배경(`fallback`).
+  - 움직임: 구름 120s 흐름, far/mid 시차 흔들림, 카메라 10s 숨쉬기, 지형별 입자 캔버스 한 장(rAF 루프 1개 — 숨김 탭·노드 제거·감속 모드에서 멈춤/해제), 숲·초원 빛줄기, 동굴 비네트, 인트로 시차 슬라이드, 타격 흔들림에 레이어별 시차.
+  - 필드 스냅샷 배경(`system.battleBackdrop: "field"`)·onField 전투에서는 켜지 않는다.
+  - 내보내기: 스킨이 layered 면 20장 전부(약 1.3MB)를 ZIP 에 싣는다(`webExportAssets.ts`).
+- **연출** `src/player/battleRetroMotion.ts` + `battle/27-retro-motion.css`. 루트 `data-battle-motion="retro"`. 공용 `applyActionMotion` 은 이 스킨에서 즉시 돌아간다.
+  - 바깥 배틀러 노드의 개별 `translate` 속성이 이동을, 안쪽 스프라이트가 피격 진동(`vibrateStruck`)을 갖는다 — 둘을 같은 요소에 걸면 서로 덮는다.
+  - **걸어가서 때리기**: 통상 공격과 `effect.statistic === "attack"` 피해 스킬은 대상 적 바로 앞까지 걷는다. `retroWalk` 가 DOM 사각형으로 거리를 재고(화면 px ÷ `rect.width/offsetWidth` — 무대 배율 위에 필드 zoom 이 한 번 더 걸려 변수 하나로는 1.6배 넘쳤다), 시퀀서 훅 `actorApproachMs`/`actorRecoverMs` 가 비트 길이를 걸음에 맞춘다(0.26px/ms, 420~1100ms). approach 앞부분은 walk_a→b→c→b, 마지막 240ms 에 attack_windup→attack_strike, impact 에서 attack, recover 에서 뛰어 돌아온다(`retro-walk-up`/`retro-return`).
+  - **마법별 시전 도트**: 마법(제자리 스킬)은 `castTypeForSkill`(속성 → 이름 낱말 → 효과 종류, 기본 arcane) 로 fire/ice/thunder/heal/dark/arcane/support 중 하나를 고르고, 시전 시트 `charset-battlers/cast/<id>.png`(3단계 × 7종) 의 칸을 cast_charge/raise/release 자리에 그린다. 날아가는 화살·투사체 애니메이션(`isTravellingEffect`)은 이 스킨에서 띄우지 않는다. limitSkill 또는 power≥100은 착탄 때 skill. 아이템은 item, 방어는 defend 유지. 옛 시트는 기존 6포즈 분기를 유지한다.
+  - **도트 적 시트** `src/assets/pixelEnemySheets.ts`: 슬라임(`generated-enemy-slime-01`)·박쥐(`generated-enemy-bat-01`)는 이 스킨에서만 손도트 시트 `assets/generated/pixel-enemies/<name>.png`(64px 셀 3×3: idle a·b·c / windup·move·attack / recover·hit·dead, 오른쪽 보기)로 그린다. 원본·설명은 `scripts/asset-gen/pixel-enemy/<name>.py`, `tiledata/pixel-enemies/<name>/README.md`. 다른 스킨은 같은 id 로 기존 통짜 그림을 그대로 쓴다.
+    `<img>` 는 src 를 유지하고 배경으로 칸을 그린다(`data-pixel-sheet`, 128px 상자, 대기는 CSS a→b→c→b 루프). 노드 `data-pixel-enemy` 가 hop(슬라임)/swoop(박쥐). 근접(통상 공격·공격력 기술)은 `retroEnemyReach` 가 대상 아군까지의 dx/dy 를 재고 시퀀서 훅 `enemyApproachMs`/`enemyRecoverMs` 가 비트를 늘린다. 이동은 Web Animations 의 `translate` 경로(슬라임 두 번 도약, 박쥐 치켜들기→급강하), 칸은 windup→move→attack→recover. 그 밖의 기술은 제자리에서 당겼다 나선다. 피격 hit 칸 380ms, 막타는 hit→dead 칸 뒤 네 번 깜빡여 사라진다. 시트를 못 읽으면 표시를 걷어 원본 그림이 보인다.
+  - 명령 입력 중 아군은 +16px에서 idle. 피격은 hit/방어 중 guard_hit, 빗나감은 evade, HP≤25% 대기는 weak. 쓰러짐은 dying→dead(160ms), 표시 원장의 부활은 revive→idle(260ms). 승리 확정(`onResultPending`) 뒤 victory↔victory_b를 260ms마다 교대한다. `data-battle-pose-frame`은 실제 셀 id, `data-battle-pose`는 CSS 의미 포즈다.
+  - **2026-09-28 3차 수정(사용자 지적: 공격 대상 부정확·적이 너무 큼·일행이 계속 앉아 있음·배경이 그림 같음)**
+    - 대상은 전투 id(`enemy-N`, 노드 testid)로 먼저 찾는다. recordId 로 찾으면 같은 종족 둘 중 첫째에게 걸어가고 넉백도 첫째에게 걸렸다. 가로뿐 아니라 대상 발 높이까지 세로로도 걷는다(`RetroWalk.dy` → `--retro-travel-y`). GIF 도구의 `strike` 계측(맞은 적 = 가장 가까운 적, gapX·feetY)이 잰다.
+    - 도트 적 시트는 48px 셀(아군과 같은 크기, 같은 2배 표시 96px 상자, 바닥선 y=44). 64px 셀·128px 상자였던 첫 판은 아군보다 컸다.
+    - 빈사 대기 weak 칸(무릎 꿇음)은 쓰지 않는다. 대기·걷기·방어·방어 피격·빈사 칸은 걷기 칩의 곧게 선 몸으로 다시 그렸다(`scripts/asset-gen/charset-battler/art3/actorN.py`, idle 높이 = 걷기 칩 높이).
+    - 겹 배경은 AI 원화 축소본을 버리고 PIL 로 직접 찍은 도트(논리 320×180 → 2배, 바이옴당 ≤24색)로 바꿨다. 생성기는 `scripts/asset-gen/pixel-scenery/<biome>.py`. 옛 `gen-battle-scenery.mjs` 는 돌리지 않는다(침식 필터·감색이 도트를 망친다). source.png 는 옛 원화 기록으로만 남는다.
+  - **2026-09-28 4차(사용자: "걸어가는 공격이 너무 루즈하다", "적 가로 한 줄 말고 다양한 진형")**
+    - 근접 접근은 직업별 4종(`retroApproachStyle`, 직업 id·이름 낱말로 판정, 모르면 dash): **dash** 전사(몸 낮춤 → 잔상 질주 → 미끄러져 벰), **leap** 수호자·기사(웅크림 → 높은 도약 → 내려찍기 + 착지 흙먼지), **blink** 마도사·성직자(빛나며 사라짐 → 대상 앞에 나타남, 돌아갈 때도 순간이동), **flash** 정찰병·궁수·도적(한 번에 파고드는 섬광 + 잔상 4장). 경로는 노드 `translate` 의 Web Animations(`animateMeleeApproach`), 착탄부터는 CSS `retro-thrust`/`retro-return` 에 넘긴다. 접근 비트는 380~700ms(예전 걷기 420~1100ms). 감속 모드·거리 측정 실패는 옛 걷기 키프레임.
+    - 적 진형: `RETRO_ENEMY_FORMATIONS`(2 사선·세로 / 3 삼각형·쐐기·세로·사선 / 4 마름모·엇갈림·화살 / 5 십자·쐐기, 6+ 세 줄 엇갈림) 을 구역(x 34~150, 발 y 92~142) 안에 앉힌다. 자동 정렬은 첫 진형. 수동 트룹은 `retroManualFormation` 이 저작 좌표의 모양(세로 폭 ≥ 20)을 구역에 맞춰 줄여 살리고, 한 줄이거나 뭉치면 좌표 해시로 진형 후보 하나를 고른다(같은 트룹은 늘 같은 진형). 예전에는 y 를 118~140 으로 눌러 모든 트룹이 가로 한 줄이었다.
+    - 효과음: 휘두름(`attack-swing`, 착탄 160ms 전)·타격·급소·빗나감·회복·쓰러짐·방어는 기존 `battleJuice` 경로 그대로다. 이 스킨이 더하는 이동음은 `battleRetroMotion` 의 `MOTION_SE`(EasyRPG RTP 샘플, 디코드 캐시 `battleSeSamples`, 마운트 때 미리 적재): 질주 Wind8 · 도약 Move + 착지 Earth2 · 순간이동 Teleport2(돌아갈 때도) · 섬광 Flash1 · 슬라임 도약마다 Move · 박쥐 급강하 Wind8. 날아가는 투사체 애니메이션을 띄우지 않는 기술(화살·독침 등)은 그 애니메이션의 소리도 빠지므로, 시전 도트가 방출하는 순간 종류별 방출음(fire Fire1 · ice Ice1 · thunder Flash3 · heal Holy2 · dark Darkness3 · arcane Magic2 · support Buff)을 낸다. 자기 애니메이션이 화면에 뜨는 기술은 그 소리가 이미 울리므로 겹치지 않는다. 감속 모드에서는 이동음을 내지 않는다.
+  - 도트 시트가 없는 적: windup 비트에 흰 실루엣 두 번 번쩍, impact 에 10px 튐. 격파는 붉게 물들며 가로줄로 지워지는 500ms 소멸이 기존 파편·분해를 대신한다. 피해 숫자는 도트 글꼴(회복 초록, 급소 노랑)로 튀었다 한 번 튕긴다.
+  - 시퀀서의 onTimelineEntry가 소비 중인 엔트리를 모션에 넘긴다. 마지막 결과 스냅샷은 이미 다음 행동일 수 있다. 칸 타이머는 scheduleBattleTimer로 장면 수명을 따르며, 비트 세대로 오래된 콜백을 버리고 배속을 반영한 실제 비트 길이 안에서만 움직인다.
+  - 감속 모드: 걷기·점프·번쩍임·승리 교대를 끄고 비트별 대표 칸만 남긴다.
+- **검증 경로** `node scripts/runtime-qa.mjs --scenario retro2003`(진입·명령·공격·자동 전투 승리, 픽스처는 데모 v3 를 retro2003 + gauge 로 가공해 실행 때 만든다)
+  와 `node scripts/qa/runtime/retro2003-frames.probe.mjs`(아군 공격·적 공격·승리 구간을 목표 100ms 간격 16장 + DOM 계측 JSON + 콘택트 시트, `verify-shots/runtime-qa/retro2003-frames/`).
+  `pose-events.json`은 MutationObserver로 실제 칸 변화를 기록해 120ms 비트 안의 칸들이 PNG 사이에 빠지는 것을 보완한다.
+  2026-09-28 cb-runtime 워크트리: 타입 검사 1회 exit 0, QA 1회 7비트·프레임 프로브 2회 각 12판정 통과, 런타임 오류 0. 기준선 그림으로 걷기 순서·공격 순서·승리 교대·아군 왼쪽·HUD 위 발 위치를 확인했다. 1024×768에서 셀 DOM 실측 144px = 논리96px×무대1.5, 그림은 pixelated·행렬 scaleX(-1)이다. 실제 PNG 간격은 부하에 따라 약 120~350ms였으며 정밀 순서는 pose-events를 함께 본다. 스킬 영창과 0 피해의 guard_hit→defend 복귀도 원장·프레임에 찍혔지만 아이템·빈사·KO·부활·감속 모드는 이 시나리오의 실플레이 범위 밖이다.
+  프로브는 키보드로만 입력한다 — 명령 버튼은 포인터를 통과시켜 `click()` 이 30초 뒤 실패한다(실측).
+  GIF: `node scripts/qa/runtime/retro2003-gif.mjs --fps 10 --width 520` → `verify-shots/runtime-qa/retro2003-gif/` 의 battle·attack·defend·magic·magic-2·enemy-slime·enemy-bat·victory. 녹화 사본은 번들 `charset-battler-*` id 를 그대로 쓴다(업로드 사본이면 확장 칸·시전 시트가 꺼진다) 그리고 슬라임·박쥐는 통상 공격만 한다.
+
 ## 타격감 층 (2026-09-25)
 
 사용자 신고 「게임적인 느낌이 거의 안 든다, 타격감이 없다」. 출하 player 녹화로 원인을 쟀다:

@@ -13,7 +13,23 @@ import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
 const ROOT = new URL("../../", import.meta.url).pathname;
-const SCAN_ROOTS = ["src/editor", "src/app", "src/project/eventCommands", "src/i18n", "src/ai/piAgent/applyMode.ts", "src/project/store.ts"];
+// src/start = 데스크톱 앱 첫 화면(start-screen.html). 편집기와 같은 번역 계층을 부팅한다.
+// 뒤의 레지스트리 다섯은 런타임과 공유하지만 편집기 「자료집 → 시스템」이 이름·설명을 그대로 보여 준다.
+// 게임 화면(.player-layout)은 번역 계층이 건너뛰므로 여기 넣어도 출하 게임 글자는 바뀌지 않는다.
+const SCAN_ROOTS = [
+  "src/editor",
+  "src/app",
+  "src/start",
+  "src/project/eventCommands",
+  "src/i18n",
+  "src/ai/piAgent/applyMode.ts",
+  "src/project/store.ts",
+  "src/project/fieldHud.ts",
+  "src/project/fontRegistry.ts",
+  "src/project/battleHitFeel.ts",
+  "src/battle/skins/registry.ts",
+  "src/player/menuSkins/registry.ts",
+];
 // 저작 콘텐츠(기본 맵·예제 이름)와 AI 도구 본문은 화면 문구가 아니라 데이터·모델 입력이다.
 const EXCLUDED_DIRS = ["src/editor/content", "src/editor/tools"];
 const HANGUL = /[\uac00-\ud7a3]/;

@@ -70,6 +70,13 @@ export function renderTeamTranscriptEntry(entry: TeamAgentLogEntry, options: Tea
       return el("li", { class: "ai-team-tx-row ai-team-tx-text", dataset: { testid: "ai-team-tx-text" }, text: entry.text });
     case "error":
       return el("li", { class: "ai-team-tx-row ai-team-tx-error", dataset: { testid: "ai-team-tx-error" }, text: entry.text });
+    case "status":
+      // 실행 방향이 바뀐 사실(계약 해제·맵 연결 등). 도구 행과 같은 과정 줄에 놓되 태그로 구분한다.
+      return el("li", {
+        class: `ai-team-tx-row ai-team-tx-task ai-team-tx-status${entry.ok === false ? " is-error" : ""}`,
+        dataset: { testid: "ai-team-tx-status", name: entry.name },
+        children: [el("span", { class: "ai-team-tx-tag", text: "상태" }), el("span", { class: "ai-team-tx-body", text: entry.text })],
+      });
     case "review": {
       const row = el("li", {
         class: `ai-team-tx-row ai-team-tx-review ${entry.ok ? "is-ok" : "is-findings"}`,

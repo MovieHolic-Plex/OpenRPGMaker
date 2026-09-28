@@ -20,7 +20,7 @@ import { describeMapSeams, formatSeamIssues, inspectWorldSeams } from "../../src
 
 import { mapBundleIds, mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
 import { authorMergedSpatialProposal, exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.ts";
-import { addPiAgentUsage, changedProjectKeys, restoreCheckpointProject, slimCheckpointProject, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentUsage, type PiAgentEvent, type PiAgentRequest, type PiTeamRoleId } from "../../src/ai/piAgent/protocol.ts";
+import { addPiAgentUsage, changedProjectKeys, restoreCheckpointProject, slimDoneEvent, slimProjectForWire, type PiAgentDoneEvent, type PiAgentUsage, type PiAgentEvent, type PiAgentRequest, type PiTeamRoleId } from "../../src/ai/piAgent/protocol.ts";
 import { createModernTilesetPolicy, modernTilesetViolation, requestsModernMap } from '../../src/ai/modernTilesetPolicy.ts';
 import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
 import { PRESET_FIRST_BUILD_MEMBER_TURNS } from "../../src/ai/piAgent/team.ts";
@@ -97,6 +97,8 @@ const REVIEW_READ_TOOLS = ["get_map_region", "run_lint", "get_project_summary", 
 
 export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptions = {}): Promise<PiAgentDoneEvent> {
   if (request.modernTilesetOnly || requestsModernMap(request.project, request.task, [...request.mapIds, ...(request.currentMapId ? [request.currentMapId] : [])])) request = { ...request, modernTilesetOnly: true, villageContract: undefined };
+  // 마을 계약은 단독 실행 전용이다. 팀 요청에 실려 오면 모든 팀원이 author_village 한 호출로만 묶이므로 벗긴다.
+  if (request.villageContract) request = { ...request, villageContract: undefined };
   const modernPolicy = request.modernTilesetOnly ? createModernTilesetPolicy(request.project) : undefined;
   const assertModernProposal = (before: Project, after: Project) => {
     const violation = modernPolicy && modernTilesetViolation(before, after, modernPolicy);
@@ -131,7 +133,9 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   // 되돌릴 합격본이 없으면 finish 를 막을 근거가 없고, 이후 요청은 사용자가 구간을 넓히거나 바꿀 수 있어야 한다.
   const segmentGate = isGenrePresetBriefRequest(request.task) && playableSegmentGateApplies(base);
   let segmentRejections = 0;
-  if (team.reviewAfterWork && reviewers.length === 0) throw Object.assign(new Error("완료 후 검토 담당이 없습니다. 팀 구성에서 검수 담당을 켜거나 완료 후 검토를 꺼 주세요."), { status: 400 });
+  // 검수 담당을 끄면 팀 메뉴는 「완료 후 검토: 생략」 이라고 보여 준다. 예전 런타임은 여기서 실행 전체를 400 으로
+  // 거절해, 메뉴 말과 달리 팀 요청이 전부 실패했다. 메뉴 말대로 생략하고 최종 보고에 남긴다(조용히 끝내지 않는다).
+  const skipFinalReview = team.reviewAfterWork === true && reviewers.length === 0;
   if (builders.length === 0) throw Object.assign(new Error("팀에 켜진 시공 팀원이 없습니다. 팀 패널에서 팀원을 켜 주세요."), { status: 400 });
 
   let ledger: TeamAssignmentLedger = createTeamAssignmentLedger(teamAssignmentBudget(builders.length));
@@ -252,19 +256,22 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       // 팀원 체크포인트는 안 바뀐 무거운 키(타일셋·DB)를 비워서 온다. 작업 사본에서 다시 붙인 뒤에만
       // 병합·검사한다 — 빈 채로 두면 이 뒤로 배정되는 팀원이 DB 없는 프로젝트에서 출발한다
       // (2026-09-27 프리셋 팀 첫 생성 실측: 시공 팀원들이 「project.database.actors 가 undefined」로 막혔다).
-      const incoming = restoreCheckpointProject(working, checkpoint.project, checkpoint.unchangedKeys);
+      const incoming = restoreCheckpointProject(working, checkpoint.project, checkpoint.unchangedKeys, checkpoint.unchangedTilesetIds);
       const proposed = mapId
         ? mergeMapBundles(working, [{ mapIds: [mapId], project: incoming, base: snapshot }]).project
         : incoming;
       assertModernProposal(working, proposed);
       authorMergedSpatialProposal(proposed, working);
       // 브라우저로는 다시 비워서 보낸다(수십 MB). ACK 도 같은 키를 비워 돌아오므로 받은 뒤 다시 붙인다.
-      const unchangedKeys = unchangedHeavyKeys(working, proposed);
+      // 그대로인 타일셋도 뺀다 — 통째로 실으면 마을 한 번에 이 줄이 100MB 가 넘어 브라우저가 30초 동안 한 줄도 못 받았다.
+      const wire = slimProjectForWire(working, proposed);
+      const { unchangedTilesetIds: _childIds, ...rest } = checkpoint;
       const accepted = await options.onCheckpoint?.({
-        ...checkpoint, project: slimCheckpointProject(proposed, unchangedKeys), unchangedKeys,
+        ...rest, project: wire.project, unchangedKeys: wire.unchangedKeys,
+        ...(wire.unchangedTilesetIds.length ? { unchangedTilesetIds: wire.unchangedTilesetIds } : {}),
         spatialProof: exportSpatialToolProof(proposed),
       }, signal);
-      working = structuredClone(restoreCheckpointProject(proposed, accepted ?? proposed, unchangedKeys));
+      working = structuredClone(restoreCheckpointProject(proposed, accepted ?? proposed, wire.unchangedKeys, wire.unchangedTilesetIds));
       return working;
     });
     publication = next;
@@ -577,7 +584,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   // 팀장이 wait 없이 끝났을 수 있다(턴 상한·조기 finish 실패). 남은 배정을 거두어 병합한다 —
   // 여기서 놓치면 이미 끝난 시공 결과가 조용히 사라진다.
   await Promise.all(inflight.map((entry) => entry.promise));
-  if (team.reviewAfterWork && request.applyMode !== "yolo") {
+  if (skipFinalReview && request.applyMode !== "yolo") {
+    finished = `${finished ?? summaryOf(orchDone)}\n완료 후 검토: 켜진 검수 담당이 없어 생략했습니다.`;
+    emit({ type: "team_report", text: finished });
+  } else if (team.reviewAfterWork && request.applyMode !== "yolo") {
     const finalReview = startTask(
       `제작이 끝난 최종 결과를 읽기 전용으로 검토하라. 사용자 요청: ${request.task}\n요청 충족 여부, 남은 문제와 확인 근거를 report_task로 보고한다. 직접 수정하지 않는다.`,
       "read", reviewers[0]!,

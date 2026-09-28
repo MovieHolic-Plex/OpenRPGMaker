@@ -231,12 +231,15 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       title: `${item.name} · ${session.inventory[item.id] ?? 0}개`,
       entries: partyActors(project, session).map((actor) => {
         const preview = previewMenuItemTarget(project, session, item, actor.id);
+        const stateName = (stateId: string) => project.database.states.find((state) => state.id === stateId)?.name;
+        const stateNames = preview.stateIds.map(stateName).filter((name): name is string => Boolean(name));
+        const curedStateNames = preview.curedStateIds.map(stateName).filter((name): name is string => Boolean(name));
         const anyTarget = item.scope === "allAllies" && session.partyActorIds.some((id) => canUseMenuItemOnActor(project, session, item, id));
         const eligible = anyTarget || canUseMenuItemOnActor(project, session, item, actor.id);
         return {
           label: resolveActorName(session, actor),
           value: `HP ${preview.hp}/${preview.maxHp}  MP ${preview.mp}/${preview.maxMp}`,
-          vitals: preview,
+          vitals: { ...preview, stateNames, curedStateNames },
           unavailableReason: anyTarget ? undefined : preview.reason,
           description: anyTarget ? "사용 가능한 파티원 모두에게 적용됩니다." : preview.reason,
           face: {
@@ -427,10 +430,27 @@ function equipmentDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       label: slot.label,
       value: equipmentName(equipmentById, worn[slot.id]),
       icon: equipmentEntryIcon(equipmentById.get(worn[slot.id] ?? "")),
+      // 부위만 고르는 화면에서도 지금 능력치가 보여야 무엇을 바꿀지 판단한다(증감 0 = 현재값).
+      statDelta: equipmentStatDelta(options, actor, slot.id as keyof ActorInitialEquipment, worn[slot.id]),
       testId: `status-menu-equipment-slot-${slot.id}`,
       onActivate: options.onSelectEquipmentSlot ? () => options.onSelectEquipmentSlot?.(actor.id, slot.id) : undefined,
     }));
-    return { title: `장비: ${resolveActorName(session, actor)}`, entries, hint: "바꿀 부위를 선택하세요." };
+    // 「최강 장비」 — 가진 것 중 능력치 합이 가장 높아지는 조합을 부위별로 고른다. 미리 바뀌는 수치를 보인다.
+    const best = bestEquipmentPlan(options, actor);
+    const optimize = best && options.onOptimizeEquipment
+      ? [{
+          label: "최강 장비",
+          value: best.changes.length ? `합계 ${signed(best.gain)}` : "이미 최강",
+          description: best.changes.length
+            ? best.changes.map((change) => `${change.slotLabel} ${change.fromName} → ${change.toName}`).join(" · ")
+            : "지금 장비가 가진 것 중 가장 강한 조합입니다.",
+          statDelta: best.statDelta,
+          testId: "status-menu-equipment-optimize",
+          attributes: { equipmentGain: String(best.gain) },
+          onActivate: () => options.onOptimizeEquipment?.(actor.id),
+        }]
+      : [];
+    return { title: `장비: ${resolveActorName(session, actor)}`, entries: [...entries, ...optimize], hint: "바꿀 부위를 선택하세요." };
   }
 
   const currentEquipmentId = actorEquipment(project, session, actor)[options.equipmentSlotId];
@@ -459,7 +479,8 @@ function equipmentDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       ...choices.map((equipment) => ({
         label: equipment.name,
         icon: equipmentEntryIcon(equipment),
-        value: `소지 ${session.inventory[equipment.id] ?? 0}개`,
+        // 후보 행 오른쪽 = 가장 큰 변화 두 개(공+6 민−2). 소지 수는 쇼케이스가 보인다.
+        value: `${deltaChips(equipmentStatDelta(options, actor, options.equipmentSlotId as keyof ActorInitialEquipment, equipment.id))} · ${session.inventory[equipment.id] ?? 0}개`,
         description: equipmentDetailLine(equipment, currentStats),
         statDelta: equipmentStatDelta(options, actor, options.equipmentSlotId as keyof ActorInitialEquipment, equipment.id),
         testId: `status-menu-equipment-item-${equipment.id}`,
@@ -889,6 +910,90 @@ function equipmentStatDelta(
     current: actorStatTotal(options, actor, key, slotId, currentId),
     next: actorStatTotal(options, actor, key, slotId, candidateId),
   }));
+}
+
+/** 증감 요약 — 절대값이 큰 순서로 둘. 변화가 없으면 「변화 없음」. */
+function deltaChips(deltas: readonly StatusMenuStatDelta[]): string {
+  const chips = deltas
+    .map((delta) => ({ label: delta.label, diff: delta.next - delta.current }))
+    .filter((chip) => chip.diff !== 0)
+    .sort((a, b) => Math.abs(b.diff) - Math.abs(a.diff))
+    .slice(0, 2)
+    .map((chip) => `${chip.label}${chip.diff > 0 ? "+" : "−"}${Math.abs(chip.diff)}`);
+  return chips.length ? chips.join(" ") : "변화 없음";
+}
+
+export type BestEquipmentPlan = {
+  readonly swap: ActorInitialEquipment;
+  readonly gain: number;
+  readonly changes: readonly { readonly slotId: string; readonly slotLabel: string; readonly fromName: string; readonly toName: string; readonly equipmentId?: string }[];
+  readonly statDelta: readonly StatusMenuStatDelta[];
+};
+
+/**
+ * 「최강 장비」 — 부위마다 (지금 장비 + 가방 속 장착 가능 후보) 중 네 능력치 합이 가장 높은 것을 고른다.
+ * 앞 부위의 선택을 누적한 상태에서 다음 부위를 본다(두손 무기·쌍수 판정은 actorDerivedStats·transition 이 맡는다).
+ * 저주·고정 장비가 끼어 있으면 그 부위는 건너뛴다 — 실제 적용(transitionActorEquipment)이 거부할 조합을 권하지 않는다.
+ */
+export function bestEquipmentPlan(options: Pick<StatusMenuDetailOptions, "project" | "session">, actor: ActorRecord): BestEquipmentPlan | undefined {
+  const { project, session } = options;
+  const classId = effectiveActorClassId(project, session, actor.id);
+  const classRecord = project.database.classes.find((record) => record.id === classId);
+  if (actor.options.fixedEquipment || classRecord?.options.fixedEquipment) return undefined;
+  const byId = new Map(project.database.equipment.map((record) => [record.id, record]));
+  const current = actorEquipment(project, session, actor);
+  const stats = (worn: ActorInitialEquipment) => {
+    const level = session.actorLevels[actor.id] ?? actor.initialLevel;
+    return actorDerivedStats(project, normalizeActorRecord(actor), {
+      level, classOverrides: session.classOverrides, promotionLineage: session.promotionLineage,
+      growthProgress: session.growthProgress, paramBonuses: session.actorParamBonuses?.[actor.id],
+      equipment: effectiveActorEquipment(project, actor, worn, classId),
+    });
+  };
+  const score = (worn: ActorInitialEquipment) => { const s = stats(worn); return s.attack + s.defense + s.mind + s.agility; };
+  const swap: ActorInitialEquipment = { ...current };
+  const used = new Map<string, number>();
+  for (const slot of equipmentSlots(project)) {
+    const slotId = slot.id as keyof ActorInitialEquipment;
+    const wornId = swap[slotId];
+    const worn = wornId ? byId.get(wornId) : undefined;
+    if (worn?.cursed || worn?.effectFlags.fixedEquipment) continue;
+    // 두손 무기가 방패 칸을 비추는 거울이면 방패 칸은 무기가 정한다.
+    if (slotId === "shield" && swap.weapon && byId.get(swap.weapon)?.twoHanded) continue;
+    const candidates = project.database.equipment.filter((record) =>
+      equipmentSlotAccepts(project, actor, slotId, record, classId)
+      && canEquip(project, actor, record, classId)
+      && (session.inventory[record.id] ?? 0) - (used.get(record.id) ?? 0) > 0
+      && !(record.twoHanded && slotId !== "weapon"));
+    let bestId = wornId, bestScore = score(swap);
+    for (const record of candidates) {
+      const trial: ActorInitialEquipment = { ...swap, [slotId]: record.id };
+      if (record.twoHanded) trial.shield = record.id;
+      const value = score(trial);
+      if (value > bestScore) { bestScore = value; bestId = record.id; }
+    }
+    if (bestId !== wornId && bestId) {
+      swap[slotId] = bestId;
+      if (byId.get(bestId)?.twoHanded) swap.shield = bestId;
+      used.set(bestId, (used.get(bestId) ?? 0) + 1);
+    }
+  }
+  const before = stats(current), after = stats(swap);
+  const changes = equipmentSlots(project)
+    .filter((slot) => swap[slot.id] !== current[slot.id] && !(slot.id === "shield" && swap.weapon && swap.shield === swap.weapon))
+    .map((slot) => ({
+      slotId: slot.id,
+      slotLabel: slot.label,
+      fromName: equipmentName(byId, current[slot.id]),
+      toName: equipmentName(byId, swap[slot.id]),
+      equipmentId: swap[slot.id],
+    }));
+  return {
+    swap,
+    gain: score(swap) - score(current),
+    changes,
+    statDelta: STAT_LABELS.map(([key, label]) => ({ label, current: before[key], next: after[key] })),
+  };
 }
 
 function equipmentDetailLine(equipment: EquipmentRecord, currentStats: EquipmentStatBonuses): string {

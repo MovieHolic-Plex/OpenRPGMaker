@@ -1,4 +1,5 @@
 import type { Command, Project } from "@/project/types";
+import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 
 /** m2-209 Advanced Dialogue → native text (emotion/autoAdvance 보존). 로드 시 1회 정규화. */
 export function rewriteLegacyAdvancedDialogueInProject(project: Project): boolean {
@@ -55,6 +56,7 @@ export function rewriteLegacyAdvancedDialogueInProject(project: Project): boolea
   for (const common of project.commonEvents ?? []) walk(common.commands);
   for (const troop of project.database.troops ?? []) {
     for (const page of troop.battleEventPages ?? []) walk(page.commands);
+    for (const list of troopAfterBattleLists(troop)) walk(list.commands);
   }
   return changed;
 }

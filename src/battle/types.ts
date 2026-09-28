@@ -247,6 +247,9 @@ export interface BattleBattlerSnapshot {
   /** 현재 배우 식별 그래픽. 런타임 faceset 변경을 포함하며 DOM은 DB를 다시 추측하지 않는다. */
   readonly faceResourceId?: string;
   readonly battleCharacterResourceId?: string;
+  /** 표시용 걷기 칩. 전투 규칙 계산에는 쓰지 않는다. */
+  readonly characterResourceId?: string;
+  readonly characterIndex?: number;
   /** 아군측 배틀러가 파티 몬스터에서 온 경우의 원 식별자(스프라이트·되돌려쓰기 키). */
   readonly monsterInstanceId?: string;
   readonly name: string;

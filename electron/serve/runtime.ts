@@ -6,9 +6,10 @@ import { SHARED_TILE_REFERENCES_ENDPOINT } from "../../src/project/sharedTileRef
 import { createHash, randomUUID } from "node:crypto";
 import { mkdir, readFile, realpath, rm, writeFile, rename, readdir } from "node:fs/promises";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
+import { hostname as osHostname, networkInterfaces } from "node:os";
 import { extname, normalize, resolve, sep, basename } from "node:path";
 import { createStoreHandlers } from "../main/dispatch";
-import { createProjectSessionRegistry, type SessionRegistry } from "../main/sessions";
+import { createProjectSessionRegistry, separateInlineMediaOnOpen, type SessionRegistry } from "../main/sessions";
 import { ASSET_RESPONSE_CSP, assetCacheControl, safeAssetContentType } from "../shared/assetMime";
 import { OPRN_CHANNELS } from "../shared/channels";
 import { isCompanionPath } from "../../scripts/lib/ohMyPiHttp.mjs";
@@ -21,6 +22,8 @@ import { SHARED_CHARACTER_GRAPHICS_ENDPOINT } from "../../src/project/sharedChar
 import { loginPage, teamPage } from "./teamPage";
 import { sendHttpBody } from "./httpBody";
 import { BridgeRequestBodyError, readBridgeRequestBody } from "./bridgeRequestBody";
+import { localNetworkHosts, preferredLanAddresses } from "./localNetwork";
+import { createAssetBlobIndex } from "./assetBlobs";
 
 const BRIDGE_PATH = "/__oprn/bridge";
 const BRIDGE_SCRIPT_PATH = "/__oprn/bridge.js";
@@ -69,12 +72,20 @@ export type LocalProjectServerOptions = {
   /** Non-loopback hosting requires the exact externally visible origin (TLS at a reverse proxy is supported). */
   readonly host?: string;
   readonly publicOrigin?: string;
+  /**
+   * 데스크톱 앱이 여는 LAN 팀 호스트. 공개 주소 하나 대신 이 컴퓨터가 가진 모든 주소(IP·호스트 이름)로 오는
+   * 요청을 받는다. 앞에 프록시가 없는 경우에만 쓴다 — 프록시 뒤라면 publicOrigin 을 준다.
+   */
+  readonly localNetwork?: boolean;
   /** Explicit host-owner access to the host AI credentials. Other members remain denied. */
   readonly enableOwnerAi?: boolean;
 };
 
 export type LocalProjectServer = {
   readonly url: string;
+  /** 팀원에게 안내할 주소. localNetwork 호스트는 LAN 주소 순서, 그 밖에는 url 하나. */
+  readonly urls: readonly string[];
+  readonly port: number;
   readonly token: string;
   readonly ownerAccessCode: string | null;
   /** 동반 서비스(AI) 실행별 토큰(설계 7.4). 페이지는 브리지 설정에서 받는다. */
@@ -134,8 +145,9 @@ function sendHtml(response: ServerResponse, html: string, status = 200): void {
 
 export async function startLocalProjectServer(options: LocalProjectServerOptions): Promise<LocalProjectServer> {
   const host = options.host ?? LOOPBACK;
-  const shared = !!options.publicOrigin || (host !== LOOPBACK && host !== 'localhost' && host !== '::1');
-  if (shared && !options.publicOrigin) throw new Error('공유 호스트에는 --public-origin 이 필요합니다');
+  const localNetwork = options.localNetwork === true && !options.publicOrigin;
+  const shared = !!options.publicOrigin || localNetwork || (host !== LOOPBACK && host !== 'localhost' && host !== '::1');
+  if (shared && !options.publicOrigin && !localNetwork) throw new Error('공유 호스트에는 --public-origin 이 필요합니다');
   let publicOrigin = options.publicOrigin ? new URL(options.publicOrigin).origin : null;
   if (publicOrigin && !/^https?:/.test(publicOrigin)) throw new Error('HTTP(S) origin required');
   const clients = new Map<string, number>();
@@ -144,7 +156,14 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
   const sessions = options.sessions ?? createProjectSessionRegistry();
   const SESSION_KEY = `host:${randomUUID()}`;
   await sessions.open(SESSION_KEY, projectDir);
+  // 앱이 이미 연 폴더면 세션을 재사용하므로 여는 순간의 미디어 분리가 돌지 않는다. 새 프로젝트는 첫 세션 내내 공용
+  // 그림 dataUrl(실측 414장·85MB)을 문서에 들고 있어, 팀 저장마다 호스트가 그 전체를 다시 해시했다(저장 한 번 4–5s).
+  // 팀을 열 때 한 번 파일로 분리한다. 호스트 창의 다음 저장은 기준이 달라 한 번 병합 경로를 탄다.
+  await separateInlineMediaOnOpen(sessions.require(SESSION_KEY).store);
   const handlers = createStoreHandlers(sessions);
+  // 프로젝트 폴더마다 하나. 참여자 여럿이 같은 본문을 받는다.
+  const assetBlobIndexes = new Map<string, ReturnType<typeof createAssetBlobIndex>>();
+  const assetBlobIndex = (dir: string) => assetBlobIndexes.get(dir) ?? assetBlobIndexes.set(dir, createAssetBlobIndex()).get(dir)!;
   const team = sessions.require(SESSION_KEY).team;
   const cookieName = `oprn_session_${createHash('sha256').update(sessions.require(SESSION_KEY).projectDir).digest('hex').slice(0, 24)}`;
   let ownerAccessCode: string | null = null;
@@ -242,6 +261,12 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       }
     }
     const handler = Object.hasOwn(handlers, channel) ? handlers[channel] : undefined;
+    if (channel === OPRN_CHANNELS.projectAssetBlobs) {
+      // 읽기 전용 채널. 본문은 이 탭이 방금 연 프로젝트의 loadFolded 가 기억한 것만 준다.
+      const input = body.payload as { readonly sha256s?: unknown } | null;
+      const shas = Array.isArray(input?.sha256s) ? input.sha256s.filter((sha): sha is string => typeof sha === 'string' && /^[0-9a-f]{64}$/.test(sha)).slice(0, 4096) : [];
+      return assetBlobIndex(sessions.require(key).projectDir).read(shas);
+    }
     if (!handler) throw new Error(`${channel}: 알 수 없는 채널입니다`);
 
     // 클라이언트가 보낸 디스크 경로 대신 인증된 탭의 프로젝트를 연다.
@@ -257,6 +282,12 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
     }
 
     const result = await handler(key, body.payload);
+    if (channel === OPRN_CHANNELS.projectLoadFolded && (body.payload as { readonly assetBlobs?: unknown } | null)?.assetBlobs === true
+      && result && typeof result === 'object' && typeof (result as { folded?: unknown }).folded === 'string') {
+      const row = result as { readonly folded: string; readonly sha256: string; readonly revision: number };
+      const stripped = assetBlobIndex(sessions.require(key).projectDir).strip(row.folded);
+      return { ...row, folded: stripped.folded, assetBlobShas: stripped.assetBlobShas, assetBlobHints: stripped.assetBlobHints };
+    }
     if (channel === OPRN_CHANNELS.teamStatus) return { ...(result as object), accessCodeRequired: team.accessCodeRequired() };
     if (channel === OPRN_CHANNELS.assetsRead && result instanceof Uint8Array) {
       return Buffer.from(result).toString("base64");
@@ -310,10 +341,14 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       const requestedProject = url.searchParams.get('hostProject') ?? '';
       const returnUrl = /^[0-9a-f-]{36}$/.test(requestedProject) ? `/?hostProject=${requestedProject}` : '/';
       const entryLoginPage = loginPage.replace('action="/__oprn/login"', `action="/__oprn/login${returnUrl === '/' ? '' : returnUrl.slice(1)}"`);
-      const expectedOrigin = publicOrigin ?? `http://${request.headers.host}`;
       // Reject DNS rebinding and cross-origin requests before any filesystem/AI handler.
-      const allowedHost = publicOrigin ? new URL(publicOrigin).host : new URL(serverUrl).host;
-      if (request.headers.host !== allowedHost || (request.headers.origin && request.headers.origin !== expectedOrigin)) {
+      // LAN 호스트는 이 컴퓨터가 실제로 가진 주소 전부를 받는다. 팀원마다 들어오는 주소가 다를 수 있다.
+      const requestHost = (request.headers.host ?? '').toLowerCase();
+      const hostAccepted = localNetwork
+        ? currentLocalHosts().has(requestHost)
+        : request.headers.host === (publicOrigin ? new URL(publicOrigin).host : new URL(serverUrl).host);
+      const expectedOrigin = localNetwork ? `http://${requestHost}` : publicOrigin ?? `http://${request.headers.host}`;
+      if (!hostAccepted || (request.headers.origin && request.headers.origin.toLowerCase() !== expectedOrigin)) {
         await sendJson(response, 403, { error: 'origin' }); return;
       }
       response.setHeader('x-content-type-options', 'nosniff');
@@ -343,8 +378,11 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       if (url.pathname === SHARED_CONTENT_ENDPOINT || url.pathname === SHARED_CONTENT_PREVIEW_ENDPOINT || url.pathname.startsWith(SHARED_REFERENCE_IMAGE_PREFIX)) { sharedContentMiddleware(request, response, () => {}); return; }
       if (url.pathname === SHARED_TILE_REFERENCES_ENDPOINT) {
         if (request.method !== 'GET') { await sendJson(response, 405, { error: 'Read only' }); return; }
-        const { body, gzip } = sharedTileReferencesBody(request.headers['accept-encoding']);
-        response.writeHead(200, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'content-length': body.length, ...(gzip ? { 'content-encoding': 'gzip', vary: 'accept-encoding' } : {}) }).end(body);
+        const ifNoneMatch = typeof request.headers['if-none-match'] === 'string' ? request.headers['if-none-match'] : undefined;
+        const { body, gzip, etag, notModified } = sharedTileReferencesBody(request.headers['accept-encoding'], ifNoneMatch);
+        // 본문이 커서 브라우저 HTTP 캐시가 남기지 않는다 — 클라이언트가 IndexedDB 에 판본별로 들고 If-None-Match 를 보낸다.
+        if (notModified) { response.writeHead(304, { 'cache-control': 'no-store', etag, vary: 'accept-encoding' }).end(); return; }
+        response.writeHead(200, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', etag, 'content-length': body.length, ...(gzip ? { 'content-encoding': 'gzip', vary: 'accept-encoding' } : {}) }).end(body);
         return;
       }
       if (url.pathname === SHARED_CHARACTER_GRAPHICS_ENDPOINT) {
@@ -455,6 +493,16 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
   });
 
   let serverUrl = '';
+  let listenPort = 0;
+  let localHostsCache: { readonly at: number; readonly hosts: ReadonlySet<string> } | null = null;
+  // Wi-Fi 를 바꾸면 주소가 바뀐다. 요청마다 다시 읽되 짧게 캐시한다(에셋 요청이 몰린다).
+  const currentLocalHosts = (): ReadonlySet<string> => {
+    const now = Date.now();
+    if (!localHostsCache || now - localHostsCache.at > 5_000) {
+      localHostsCache = { at: now, hosts: localNetworkHosts(listenPort, networkInterfaces(), osHostname()) };
+    }
+    return localHostsCache.hosts;
+  };
   const cleanup = setInterval(() => {
     for (const [key, touched] of clients) if (Date.now() - touched > 5 * 60_000) { sessions.close(key); clients.delete(key); }
   }, 60_000);
@@ -465,13 +513,17 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
   }).catch(error => { clearInterval(cleanup); companion.dispose(); sessions.close(SESSION_KEY); throw error; });
   const address = server.address();
   const port = typeof address === "object" && address ? address.port : (options.port ?? 0);
+  listenPort = port;
 
   if (publicOrigin && new URL(publicOrigin).port === '0') {
     const address = new URL(publicOrigin); address.port = String(port); publicOrigin = address.origin;
   }
-  serverUrl = publicOrigin ?? `http://${host === '::1' ? '[::1]' : host}:${port}`;
+  const lanUrls = localNetwork ? preferredLanAddresses(networkInterfaces()).map((ip) => `http://${ip}:${port}`) : [];
+  serverUrl = publicOrigin ?? lanUrls[0] ?? `http://${host === '::1' || (localNetwork && host === '::') ? '[::1]' : localNetwork ? LOOPBACK : host}:${port}`;
   return {
     url: serverUrl,
+    urls: lanUrls.length > 0 ? lanUrls : [serverUrl],
+    port,
     ownerAccessCode,
     token,
     companionToken,

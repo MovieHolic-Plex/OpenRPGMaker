@@ -35,7 +35,7 @@ import {
 
 const REQUEST_KEYS = ["target", "houseCount", "housePlans", "houseObjectIds", "composition", "multiStoreyCount", "houseClustering", "countPolicy", "groundTheme", "landmark", "settlementLayout", "morphology", "relief", "npcCount", "residents", "theme", "forestDensity", "seed", "interior", "presetId", "fullMap"] as const;
 const FOREST_DENSITIES = ["sparse", "normal", "dense", "impassable"] as const;
-const EXISTING_TARGET_KEYS = ["kind", "mapId", "bounds", "fullMap"] as const;
+const EXISTING_TARGET_KEYS = ["kind", "mapId", "bounds", "fullMap", "minSize"] as const;
 const NEW_TARGET_KEYS = ["kind", "mapId", "name", "width", "height", "plannedMap", "tilesetId"] as const;
 const HOUSE_PLAN_KEYS = ["objectId", "kitId", "yard", "ownerName", "templateId", "program", "fence"] as const;
 const RESIDENT_KEYS = ["name", "role", "lines"] as const;
@@ -155,11 +155,23 @@ function parseExistingTarget(target: BoundaryRecord): AuthorVillageTarget {
     ? undefined
     : parseRect(target["bounds"], "authorVillage.target.bounds");
   const fullMap = optionalBoolean(target, "fullMap", "authorVillage.target");
+  let minSize: { width: number; height: number } | undefined;
+  if (target["minSize"] !== undefined) {
+    const record = requireRecord(target["minSize"], "authorVillage.target.minSize");
+    const width = optionalInteger(record, "width", "authorVillage.target.minSize");
+    const height = optionalInteger(record, "height", "authorVillage.target.minSize");
+    if (width === undefined || height === undefined) throw new ToolError("authorVillage.target.minSize needs width and height.", { code: "invalid-args" });
+    validateDimensionRange(width, "width");
+    validateDimensionRange(height, "height");
+    if (bounds) throw new ToolError("authorVillage.target.minSize is for whole-map builds; drop it when bounds are given.", { code: "invalid-args" });
+    minSize = { width, height };
+  }
   return {
     kind: "existing",
     mapId: requiredString(target, "mapId", "authorVillage.target"),
     ...(bounds === undefined ? {} : { bounds }),
     ...(fullMap === undefined ? {} : { fullMap }),
+    ...(minSize === undefined ? {} : { minSize }),
   };
 }
 

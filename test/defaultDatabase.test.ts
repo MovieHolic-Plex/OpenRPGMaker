@@ -80,28 +80,29 @@ describe("default database starter party", () => {
     expect(hero).toMatchObject({
       faceResourceId: "easyrpg-faceset-actor1-00",
       characterResourceId: "easyrpg-charset-actor1",
-      battleCharacterResourceId: "generated-actor-hero-01-battle",
+      battleCharacterResourceId: "charset-battler-actor1-0",
     });
     expect(guardian).toMatchObject({
-      faceResourceId: "easyrpg-faceset-actor2-00",
+      // 걷기 그림의 검토된 짝(공용 대응표). Actor2 ↔ FaceSet/Actor1 8~15, Actor3/4 ↔ FaceSet/Actor2 0~7/8~15.
+      faceResourceId: "easyrpg-faceset-actor1-08",
       characterResourceId: "easyrpg-charset-actor2",
-      battleCharacterResourceId: "generated-actor-hero-02-battle",
+      battleCharacterResourceId: "charset-battler-actor2-0",
     });
     expect(mage).toMatchObject({
-      faceResourceId: "easyrpg-faceset-people1-00",
+      faceResourceId: "easyrpg-faceset-actor2-00",
       characterResourceId: "easyrpg-charset-actor3",
-      battleCharacterResourceId: "generated-actor-hero-03-battle",
+      battleCharacterResourceId: "charset-battler-actor3-0",
     });
     expect(scout).toMatchObject({
-      faceResourceId: "easyrpg-faceset-people2-00",
+      faceResourceId: "easyrpg-faceset-actor2-08",
       characterResourceId: "easyrpg-charset-actor4",
-      battleCharacterResourceId: "generated-actor-hero-04-battle",
+      battleCharacterResourceId: "charset-battler-actor4-0",
     });
     // 성직자·궁수는 시작 파티(startActorIds) 밖이라 위 4명 검사에 안 걸리지만, DB 액터로
     // 존재하므로 작성자가 파티에 넣는 순간 전투 화면에 선다. 2026-08-29 전까지 hero-02 /
     // hero-01 시트를 돌려 써서 같은 그림이 두 번 섰고, 전용 시트를 그려 끊었다.
-    expect(cleric).toMatchObject({ battleCharacterResourceId: "generated-actor-hero-05-battle" });
-    expect(ranger).toMatchObject({ battleCharacterResourceId: "generated-actor-hero-06-battle" });
+    expect(cleric).toMatchObject({ characterIndex: 7, battleCharacterResourceId: "charset-battler-actor1-7" });
+    expect(ranger).toMatchObject({ characterIndex: 3, battleCharacterResourceId: "charset-battler-actor2-3" });
     const allBattleResourceIds = restored.database.actors.map((actor) => actor.battleCharacterResourceId);
     expect(new Set(allBattleResourceIds).size).toBe(restored.database.actors.length);
     const starterBattleResourceIds = restored.system.startActorIds.map(

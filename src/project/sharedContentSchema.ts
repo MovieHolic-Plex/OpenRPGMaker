@@ -28,4 +28,12 @@ export interface SharedContentLibrary {
   sourceProjectId: string;
   previews: Record<string,string>;
 }
-export interface SharedContentSnapshot { revision: string; libraries: Record<string, SharedContentLibrary> }
+export interface SharedContentSnapshot {
+  revision: string;
+  libraries: Record<string, SharedContentLibrary>;
+  /**
+   * 편집기 응답에 호스트가 붙이는 기본 자산의 바이트 SHA-256(자산 id → hex). 없으면 편집기가 직접 센다.
+   * HTTP 팀 참여 창은 crypto.subtle 이 없어 JS 로 셌다(2026-09-28 실측, 기본 자산 393장 · 65MB 에 약 1s).
+   */
+  assetBytesSha256?: Record<string, string>;
+}

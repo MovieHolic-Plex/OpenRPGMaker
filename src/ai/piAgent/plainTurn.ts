@@ -6,7 +6,7 @@
 
 import { packTownTargetFor } from "./packTownRoute";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
-import type { IntentSelectionFact } from "@/ai/intentDeclaration";
+import { formatIntentAudit, type IntentSelectionFact } from "@/ai/intentDeclaration";
 import { buildIntentFacts, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
 import type { RoleModel } from "@/ai/modelRoles";
 import { buildSessionRegistryTools } from "@/ai/sessionToolExposure";
@@ -37,6 +37,8 @@ export const PLAN_ONLY_PREFIX = "[계획 턴] 이번 실행에서는 프로젝�
  * 다시 읽는다. 예전엔 실행과 같은 상한(최대 200턴)을 받아 계획 하나에 수십 번 읽기가 쌓였다.
  */
 export const PLAN_MAX_TURNS = 30;
+
+const GENRE_PRESET_ROUTING = "intent:skipped(genre-preset) → 게임 전체 저작";
 /** 계획 턴이 의도 목록과 상관없이 쥐는 읽기 도구. 나머지는 find_tools 로 찾는다. */
 export const PLAN_READ_TOOLS = ["get_project_summary", "get_map_region", "tile_query", "find_tools"] as const;
 
@@ -60,6 +62,12 @@ export interface PlainPiTurnClassification {
   readonly questionPromoted: boolean;
   readonly initialToolNames?: readonly string[];
   readonly intentNote: string | null;
+  /**
+   * 이 턴을 어떻게 읽었는지 한 줄(`intent:llm mode=… construction=… → 마을 계약 …`). 활동 로그의 첫 상태 행이 된다.
+   * 2026-09-28 실측: 「위로 올라가면 마을」이 잘못 읽혀 5번 헛돌았는데 사용 로그에는 판정이 한 줄도 없어서
+   * 원인을 코드로 역추적해야 했다. 선언을 부르지 않은 턴(장르 프리셋·읽기 전용)은 그 사실을 적는다.
+   */
+  readonly routingAudit: string;
 }
 
 /** 평문 한 줄 → 실행 계획. 팀 비트는 설정에서, 읽기 전용·계획은 자율성 다이얼에서 온다. */
@@ -74,8 +82,10 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
   // 도구는 좁히지 않는다(initialToolNames 없음 = 전체) — 게임 전체 저작은 DB·시스템·맵 도구를 모두 쓴다.
   if (!plan.readOnly && isGenrePresetBriefRequest(input.text)) {
     const team = input.piTeam;
-    return { mode: team ? "team" : "single", plan: { ...plan, routineEdit: false }, questionPromoted: false, intentNote: null };
+    return { mode: team ? "team" : "single", plan: { ...plan, routineEdit: false, routingAudit: GENRE_PRESET_ROUTING }, questionPromoted: false, intentNote: null,
+      routingAudit: GENRE_PRESET_ROUTING };
   }
+  let routingAudit = plan.readOnly ? "intent:skipped(read-only dial)" : "intent:none";
   if (!plan.readOnly) {
     input.onDeclaring?.();
     const { project, text, currentMapId, selection } = input;
@@ -96,6 +106,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     intentNote = buildPiIntentNote({
       project,
       packTown,
+      requestText: text,
       intent: declared.intent,
       targetMap: noteTargetMap
         ? { id: noteTargetMap.id, width: noteTargetMap.width, height: noteTargetMap.height, lived: isLivedMap(noteTargetMap) }
@@ -107,7 +118,16 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       && (declared.intent.mode === "create" || declared.intent.mode === "modify")
       && declared.intent.needsPlan === false
       && declared.intent.clarify === null };
-    plan = { ...plan, villageContract: requestsModernMap(project, text, currentMapId ? [currentMapId] : []) ? undefined : resolveVillageContract(project, declared.intent, currentMapId, selection ?? null, text) };
+    // 팀을 켠 사용자에게는 마을 계약을 걸지 않는다. 계약은 단독 실행 전용이라(runPiCommand 가 계약이 있으면
+    // 팀을 끈다) 「마을 만들어」 한 마디가 설정과 무관하게 조용히 혼자 실행이 됐다 — 2026-09-18 이후 일반 채팅
+    // 67회 실행 중 팀 실행 0회. 팀은 팀장 배정·검수 팀원이 마을 품질을 맡는다.
+    const modernMap = requestsModernMap(project, text, currentMapId ? [currentMapId] : []);
+    const skipVillageContract = input.piTeam || modernMap;
+    plan = { ...plan, villageContract: skipVillageContract ? undefined : resolveVillageContract(project, declared.intent, currentMapId, selection ?? null, text) };
+    // 계약이 없으면 왜 없는지까지 적는다 — 「마을 계약 없음」만으로는 팀 설정 때문인지 판정 때문인지 모른다.
+    const noContractReason = input.piTeam ? "팀 실행" : modernMap ? "현대 맵" : "판정";
+    routingAudit = `${formatIntentAudit(declared.intent, declared.elapsedMs)}${declared.error ? ` — 선언 오류: ${declared.error}` : ""}`
+      + ` → ${plan.villageContract ? villageContractAudit(plan.villageContract) : `마을 계약 없음(${noContractReason})`}`;
     if (declared.intent.mode === "question") {
       plan = { ...plan, readOnly: true };
       questionPromoted = true;
@@ -120,7 +140,16 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     }
   }
   const team = input.piTeam && !plan.readOnly;
-  return { mode: team ? "team" : "single", plan, questionPromoted, ...(initialToolNames ? { initialToolNames } : {}), intentNote };
+  return { mode: team ? "team" : "single", plan: { ...plan, routingAudit }, questionPromoted, ...(initialToolNames ? { initialToolNames } : {}), intentNote, routingAudit };
+}
+
+/** 계약이 얼린 대상 — 로그에서 「어디에 짓기로 했나」가 보여야 한다. */
+function villageContractAudit(contract: VillageContract): string {
+  const target = contract.args.target as { kind?: string; mapId?: string; bounds?: { x: number; y: number; w: number; h: number } } | undefined;
+  const where = target?.kind === "new" ? `새 맵 ${target.mapId}`
+    : `기존 맵 ${target?.mapId ?? contract.mapId}${target?.bounds ? ` 범위 (${target.bounds.x},${target.bounds.y}) ${target.bounds.w}×${target.bounds.h}` : " 전체"}`;
+  const link = contract.connection ? ` · ${contract.connection.fromMapId} ${contract.connection.side}쪽 연결` : "";
+  return `마을 계약: ${where} · 집 ${contract.houseCount}채 · 주민 ${contract.npcCount}명${link}`;
 }
 
 /** Ultrabrain 계획 턴을 먼저 돌리는가 — 단독·쓰기·비일상 실행만. */

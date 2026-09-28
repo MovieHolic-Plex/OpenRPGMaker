@@ -224,7 +224,8 @@ function primaryCardGrid(project: Project): HTMLElement {
   const fonts = resolveFontSelection(project.system.fonts);
   const resources = [project.system.titleResourceId, project.system.systemResourceId, project.system.battleSystemResourceId].filter(Boolean);
   const additional: StudioCard[] = [
-    { id: "font", title: "폰트", description: "UI · 픽셀 · 고정폭 역할별 글꼴", status: FONT_ROLES.map((role) => `${FONT_ROLE_LABELS[role]} ${fontOptionsForRole(role).find((entry) => entry.id === fonts[role])?.label ?? fonts[role]}`).join(" · "), statusKind: "neutral", target: "font" },
+    // 「역할: 글꼴」을 쉼표로 잇는다. 글꼴 이름 자체에 「 · 」가 있어 같은 구분자로 이으면 번역 계층이 경계를 못 찾는다.
+    { id: "font", title: "폰트", description: "UI · 픽셀 · 고정폭 역할별 글꼴", status: FONT_ROLES.map((role) => `${FONT_ROLE_LABELS[role]}: ${fontOptionsForRole(role).find((entry) => entry.id === fonts[role])?.label ?? fonts[role]}`).join(", "), statusKind: "neutral", target: "font" },
     { id: "resources", title: "리소스", description: "타이틀 · 창 · 전투 공유 그래픽", status: `${resources.length}/3개 선택`, statusKind: "neutral", target: "resources" },
     { id: "typechart", title: "타입 상성", description: "공격 → 방어 배율", status: `${project.system.typeChart?.types.length ?? 0}개 타입`, statusKind: "neutral", target: "typechart" },
   ];

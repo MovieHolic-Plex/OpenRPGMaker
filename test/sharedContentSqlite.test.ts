@@ -51,6 +51,12 @@ describe("editor shared-content snapshot", () => {
     expect(readSharedContentPreview("catalog", "place", "missing", file)).toBeNull();
     expect(readSharedContentPreview("catalog", "tileset", "shared_room", file)).toBeNull();
   });
+
+  it("carries the byte SHA-256 of every default image so HTTP editors need not hash them", () => {
+    publishSharedContent("defaults", { ...library(true), assets: { shared_room_image: { id: "shared_room_image", name: "room", kind: "tileset", dataUrl: PIXEL, meta: {} } } as unknown as SharedContentLibrary["assets"] }, hashLibrary(readSharedContent(file).libraries.defaults), file);
+    const boot = readSharedContentForEditor("defaults", file);
+    expect(boot.assetBytesSha256).toEqual({ shared_room_image: createHash("sha256").update(Buffer.from(PIXEL.slice(PIXEL.indexOf(",") + 1), "base64")).digest("hex") });
+  });
 });
 
 describe("shared tileset reference images", () => {

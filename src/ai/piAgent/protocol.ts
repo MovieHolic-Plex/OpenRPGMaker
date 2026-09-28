@@ -151,13 +151,19 @@ export interface PiProjectCheckpoint {
   readonly spatialProof?: SpatialToolProof | null;
   /** 이 키는 project 에서 뺐다. 받는 쪽이 직전 프로젝트의 같은 객체를 다시 붙인다. */
   readonly unchangedKeys?: readonly PiCheckpointHeavyKey[];
+  /**
+   * tilesets 가 바뀐 줄에서, 그중 내용이 그대로인 타일셋 id. project.tilesets 에서 뺐고 받는 쪽이 자기 사본에서 다시 붙인다.
+   * 마을 한 번 짓기가 forest_harmony 하나만 고쳐도 39개 타일셋(25MB)이 통째로 실렸다(2026-09-28 실측) — 그 줄이 팀 중계를
+   * 지나며 101MB 체크포인트가 되어 브라우저 워치독(30초)이 연결을 끊었다.
+   */
+  readonly unchangedTilesetIds?: readonly string[];
 }
 export type PiAgentEvent = PiAgentEventPayload & { readonly at?: number };
 type PiAgentEventPayload =
   | { readonly type: "prompt_inspection"; readonly snapshot: import("../authoring/promptInspection").PromptInspection }
   | { readonly type: "execution_status"; readonly name: string; readonly summary: string; readonly ok?: boolean; readonly data?: unknown }
   | ({ readonly type: "checkpoint"; readonly checkpointId: string } & PiProjectCheckpoint)
-  | { readonly type: "render_request"; readonly renderId: string; readonly project: Project; readonly unchangedKeys?: readonly PiCheckpointHeavyKey[]; readonly toolName: string; readonly data: unknown }
+  | { readonly type: "render_request"; readonly renderId: string; readonly project: Project; readonly unchangedKeys?: readonly PiCheckpointHeavyKey[]; readonly unchangedTilesetIds?: readonly string[]; readonly toolName: string; readonly data: unknown }
   | { readonly type: "start"; readonly provider: string; readonly model: string; readonly toolCount: number }
   // ── 팀 이벤트. 하위 에이전트의 진행은 agent_event 로 감싸서 흘린다(보드가 행 단위로 그린다). ──
   | { readonly type: "team_start"; readonly task: string; readonly roles: readonly { id: PiTeamRoleId; label: string }[] }
@@ -188,6 +194,13 @@ type PiAgentEventPayload =
   | { readonly type: "done"; readonly villageCompletion?: PiVillageCompletion; readonly interiorCompletion?: readonly { mapId: string; issues: readonly unknown[] }[]; readonly project: Project; readonly stats: PiAgentStats; readonly changedKeys: readonly string[]; readonly spatialProof?: SpatialToolProof | null;
       /** 요청 프로젝트와 내용이 같아 project 에서 뺀 무거운 키. 클라이언트가 요청 프로젝트의 것을 다시 붙인다. */
       readonly unchangedKeys?: readonly PiCheckpointHeavyKey[];
+      /** tilesets 가 바뀐 done 에서 그대로인 타일셋 id(PiProjectCheckpoint.unchangedTilesetIds 와 같은 뜻). */
+      readonly unchangedTilesetIds?: readonly string[];
+      /**
+       * 실행 전에 얼린 마을 계약을 실행 도중 풀었다 — 계약 인자 그대로 부른 시공이 대상·범위·칩셋 규칙에 막혔다.
+       * 패널은 이 실행을 계약 실행이 아니라 일반 실행으로 마무리한다(완료 검사·검수·적용 정책).
+       */
+      readonly villageContractReleased?: { readonly code: string; readonly message: string };
       /**
        * 모델·제공자 오류나 상한으로 **도중에 멈춘** 실행의 사유. 반영된 작업은 남지만 요청을 끝까지 하지 않았다 —
        * 패널이 「만들었어요 · 플레이해 보세요」 대신 멈췄다고 말하게 한다(2026-09-24 연애 도그푸딩: 공략 인물 하나 없이 완료 표시).
@@ -304,9 +317,34 @@ export function unchangedHeavyKeys(base: Project, project: Project): PiCheckpoin
 
 /** 줄로 내보낼 done. 무거운 키가 요청 그대로면 빼서 보낸다 — 타일셋 이미지만 수십 MB 다. */
 export function slimDoneEvent(done: PiAgentDoneEvent, base: Project): PiAgentDoneEvent {
-  const unchangedKeys = unchangedHeavyKeys(base, done.project);
-  if (unchangedKeys.length === 0) return done;
-  return { ...done, project: slimCheckpointProject(done.project, unchangedKeys), unchangedKeys };
+  const slim = slimProjectForWire(base, done.project);
+  if (!slim.unchangedKeys.length && !slim.unchangedTilesetIds.length) return done;
+  return { ...done, project: slim.project, unchangedKeys: slim.unchangedKeys, ...(slim.unchangedTilesetIds.length ? { unchangedTilesetIds: slim.unchangedTilesetIds } : {}) };
+}
+
+/** tilesets 가 바뀌었을 때 그중 그대로인 타일셋 id. 새 타일셋은 싣는다. */
+export function unchangedTilesetIds(base: Project, project: Project): string[] {
+  const ids: string[] = [];
+  for (const [id, tileset] of Object.entries(project.tilesets ?? {})) {
+    const before = base.tilesets?.[id];
+    if (before !== undefined && (before === tileset || jsonEqual(before, tileset))) ids.push(id);
+  }
+  return ids;
+}
+
+/**
+ * 줄로 보낼 프로젝트. 무거운 키가 통째로 그대로면 빼고(unchangedKeys), tilesets 가 바뀌었으면 그대로인 타일셋만 뺀다
+ * (unchangedTilesetIds). 받는 쪽은 restoreCheckpointProject 에 두 목록을 같이 넘겨 자기 사본을 다시 붙인다.
+ */
+export function slimProjectForWire(base: Project, project: Project): { project: Project; unchangedKeys: PiCheckpointHeavyKey[]; unchangedTilesetIds: string[] } {
+  const unchangedKeys = unchangedHeavyKeys(base, project);
+  let slim = slimCheckpointProject(project, unchangedKeys);
+  const tilesetIds = unchangedKeys.includes("tilesets") ? [] : unchangedTilesetIds(base, project);
+  if (tilesetIds.length) {
+    const skip = new Set(tilesetIds);
+    slim = { ...slim, tilesets: Object.fromEntries(Object.entries(project.tilesets).filter(([id]) => !skip.has(id))) as Project["tilesets"] };
+  }
+  return { project: slim, unchangedKeys, unchangedTilesetIds: tilesetIds };
 }
 
 /** 체크포인트 줄에서 빼도 되는 무거운 키. 받는 쪽이 unchangedKeys 로 다시 붙인다. */
@@ -321,12 +359,21 @@ export function slimCheckpointProject(project: Project, unchangedKeys: readonly 
   return next;
 }
 
-export function restoreCheckpointProject(current: Project, incoming: Project, unchangedKeys: readonly PiCheckpointHeavyKey[] | undefined): Project {
-  if (!unchangedKeys?.length) return incoming;
+export function restoreCheckpointProject(current: Project, incoming: Project, unchangedKeys: readonly PiCheckpointHeavyKey[] | undefined, tilesetIds?: readonly string[]): Project {
+  if (!unchangedKeys?.length && !tilesetIds?.length) return incoming;
   const next = { ...incoming };
-  if (unchangedKeys.includes("tilesets")) next.tilesets = current.tilesets;
-  if (unchangedKeys.includes("database")) next.database = current.database;
-  if (unchangedKeys.includes("assets")) next.assets = current.assets;
+  if (unchangedKeys?.includes("tilesets")) next.tilesets = current.tilesets;
+  else if (tilesetIds?.length) {
+    const tilesets = { ...incoming.tilesets } as Record<string, unknown>;
+    for (const id of tilesetIds) {
+      const own = (current.tilesets as Record<string, unknown>)[id];
+      if (own === undefined) throw new Error(`체크포인트가 뺀 타일셋 '${id}' 이 받는 쪽 사본에 없습니다.`);
+      tilesets[id] = own;
+    }
+    next.tilesets = tilesets as Project["tilesets"];
+  }
+  if (unchangedKeys?.includes("database")) next.database = current.database;
+  if (unchangedKeys?.includes("assets")) next.assets = current.assets;
   return next;
 }
 

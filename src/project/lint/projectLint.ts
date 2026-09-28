@@ -59,6 +59,7 @@ import { clusterRuleLintIssues } from "./clusterRuleLint";
 import { checkReachability, isAdjacentOrOn, type ReachabilitySpec } from "./reachability";
 import { activeTileGrafts } from "@/assets/tileGrafts";
 import { collectMapLocationReferenceIssues } from "../mapLocationReferences";
+import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 
 export type { LintSeverity } from "../types";
 
@@ -565,6 +566,18 @@ function checkRuntimeSupportCommands(project: Project, issues: LintIssue[]): voi
         `트룹 ${troop.id}/${page.id}.commands`
       );
     }
+    for (const list of troopAfterBattleLists(troop)) {
+      visitCommands(
+        list.commands,
+        (command) =>
+          pushRuntimeSupportCommandIssue(command, issues, {
+            owner: `트룹 ${troop.id}/전투 뒤(${list.outcome})`,
+            support: commandRuntimeSupport(command, "map"),
+          }),
+        issues,
+        `트룹 ${troop.id}.afterBattle.${list.outcome}`
+      );
+    }
   }
 }
 
@@ -1004,6 +1017,7 @@ function checkSystemOptInConsistency(project: Project, issues: LintIssue[]): voi
   for (const commonEvent of project.commonEvents) visitCommands(commonEvent.commands, visitKind);
   for (const troop of database.troops) {
     for (const page of troop.battleEventPages ?? []) visitCommands(page.commands, visitKind);
+    for (const list of troopAfterBattleLists(troop)) visitCommands(list.commands, visitKind);
   }
 
   const farmableMaps = maps.filter((m) => (m.farmableArea ?? []).length > 0);

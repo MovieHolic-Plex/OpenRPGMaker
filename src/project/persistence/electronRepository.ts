@@ -1,6 +1,8 @@
 import { deserialize, serialize } from "../io";
 import { deserializeParsed, projectWireView } from "../io/serialize";
-import { parseFoldedDocument, unfoldedDocumentTree } from "./core/foldedProject";
+import { assetBlobOwners, parseFoldedDocument, restoreAssetBlobs, unfoldedDocumentTree } from "./core/foldedProject";
+import { jsonContentDigest } from "./core/contentDigest";
+import { sharedDefaultAssetDataUrl } from "../sharedContent";
 import { readTilesetBlobs, writeTilesetBlobs } from "./tilesetBlobCache";
 import { applyProjectDocumentPatch, diffProjectDocumentsSliced, withWirePatchValues, type ProjectDocumentPatch } from "./core/projectPatch";
 import { projectWithoutEventDrafts } from "../eventDrafts";
@@ -19,13 +21,22 @@ export type OprnBridgeProject = {
   probe(): Promise<boolean>;
   open(payload: { readonly projectDir: string }): Promise<{ readonly projectId: string; readonly projectDir: string }>;
   load(payload: { readonly projectDir: string }): Promise<{ readonly serialized: string; readonly sha256: string; readonly revision: number } | null>;
-  /** 접힌 행(타일셋은 표식) 또는 옛 행의 펼친 글. 없는 호스트(이전 빌드)는 `load` 로 돌아간다. */
-  loadFolded?(payload: { readonly projectDir: string }): Promise<
-    | { readonly folded: string; readonly sha256: string; readonly revision: number }
+  /**
+   * 접힌 행(타일셋은 표식) 또는 옛 행의 펼친 글. 없는 호스트(이전 빌드)는 `load` 로 돌아간다.
+   * `assetBlobs: true` 를 주면 HTTP 호스트가 업로드 자산 dataUrl 도 전송에서 떼고 `assetBlobShas` 로 알린다.
+   */
+  loadFolded?(payload: { readonly projectDir: string; readonly assetBlobs?: boolean }): Promise<
+    | {
+      readonly folded: string; readonly sha256: string; readonly revision: number;
+      readonly assetBlobShas?: readonly string[];
+      readonly assetBlobHints?: Readonly<Record<string, { readonly bytesSha256: string; readonly head: string }>>;
+    }
     | { readonly serialized: string; readonly sha256: string; readonly revision: number }
     | null
   >;
   tilesetBlobs?(payload: { readonly projectDir: string; readonly sha256s: readonly string[] }): Promise<Readonly<Record<string, string>>>;
+  /** HTTP 팀 호스트만 있다. `loadFolded({ assetBlobs: true })` 가 알린 자산 본문(dataUrl)을 준다. */
+  assetBlobs?(payload: { readonly projectDir: string; readonly sha256s: readonly string[] }): Promise<Readonly<Record<string, string>>>;
   save(payload: { readonly projectDir: string; readonly serialized: string; readonly expectedSha: string | null }): Promise<SaveResult & { readonly serialized?: string }>;
   saveMapPatch(payload: {
     readonly projectDir: string;
@@ -82,6 +93,10 @@ export type OprnBridgeStart = {
   readonly coverSource?: (input: { readonly projectDir: string }) => Promise<import("../../../electron/shared/start").ProjectCoverSource | null>;
   /** 데스크톱 전용 — 시작 화면이 구운 카드 그림 저장. 목록에 없는 경로면 false. */
   readonly saveCover?: (input: { readonly projectDir: string; readonly dataUrl: string }) => Promise<boolean>;
+  /** 데스크톱 전용 — 다른 컴퓨터의 팀 호스트를 앱 창으로 연다. */
+  readonly joinTeam?: (input: { readonly url: string }) => Promise<import("../../../electron/shared/start").JoinTeamResult>;
+  /** 데스크톱 전용 — 전에 참여한 팀 호스트 주소. */
+  readonly recentTeams?: () => Promise<readonly import("../../../electron/shared/start").RecentTeamEntry[]>;
 };
 
 export type OprnAssetBrowser = {
@@ -159,6 +174,14 @@ function yieldToMain(): Promise<void> {
 export function createElectronRepository(): ElectronRepository {
   let opened: LocalProjectTarget | null = null;
   let loadedSha: string | null = null;
+  /**
+   * 지난 로드가 푼 타일셋 객체(칸 id → 본문 sha·객체·푼 직후의 내용 요약). 팀 변경 반영(3초 폴링 → refreshFromHost)이
+   * 바뀌지 않은 타일셋을 다시 읽고 파싱하지 않게 한다. 객체는 스토어가 들고 있으므로 요약이 그대로일 때만 쓴다 —
+   * 부팅 정규화처럼 제자리에서 고친 객체는 요약이 달라져 버린다. 실측(2026-09-28, 팀 참여 창): 동료 저장 반영 한 번에
+   * 타일셋 본문 8MB 를 IndexedDB 에서 읽고 파싱했다(0.7s + 그 쓰레기의 GC).
+   */
+  let parsedTilesets = new Map<string, { readonly sha: string; readonly tileset: unknown; readonly digest: string | undefined }>();
+  let parsedTilesetsDir: string | null = null;
 
   const openedRef = (target: ProjectTarget | null | undefined): LocalProjectTarget | null => {
     if (target !== undefined && target !== null) {
@@ -185,8 +208,14 @@ export function createElectronRepository(): ElectronRepository {
 
   /**
    * 프로젝트를 연다. 호스트가 접힌 행을 주면 타일셋 본문은 기기 캐시에서 채우고 없는 것만 받는다.
-   * 만든 트리는 펼친 글을 `JSON.parse` 한 것과 같다(core/foldedProject.ts). 본문을 못 채우면 펼친 글로 돌아간다.
+   * 만든 트리는 펼친 글을 `JSON.parse` 한 것과 같다(core/foldedProject.ts). 본문을 못 채우면 다시 받는다.
    * 실측(2026-09-27, 82MB): 받는 글 81.6MB → 1.0MB(두 번째 열기부터).
+   *
+   * 팀 호스트(HTTP, `assetBlobs` 가 있다)는 업로드 자산 dataUrl 도 같은 방식으로 뗀다. 실측(2026-09-28, Tailscale):
+   * 접힌 행 64MB 중 63MB 가 공용 자산 dataUrl 393개였고, 부팅·팀 변경 반영마다 gzip 45MB(약 4.5s)를 다시 받았다.
+   *
+   * 본문이 사이에 지워졌으면(다른 저장이 끼었다) 펼친 전체 글(`load`)로 돌아가지 않고 접힌 행을 한 번 더 받는다.
+   * 전체 글은 이 규모에서 호스트 메인 프로세스를 V8 OOM 으로 죽였다(2026-09-28 실측).
    */
   const loadSnapshotFromHost = async (target: LocalProjectTarget): Promise<ProjectSnapshot | null> => {
     const bridge = electronBridge().project;
@@ -194,30 +223,68 @@ export function createElectronRepository(): ElectronRepository {
       const loaded = await bridge.load({ projectDir: target.projectDir });
       return snapshotOf(loaded?.serialized, loaded?.sha256, target);
     }
-    const loaded = await bridge.loadFolded({ projectDir: target.projectDir });
-    if (!loaded) return null;
-    if ("serialized" in loaded) return snapshotOf(loaded.serialized, loaded.sha256, target);
-    const folded = parseFoldedDocument(loaded.folded);
-    const wanted = [...new Set(folded.tilesetShas.values())];
-    const blobs = await readTilesetBlobs(wanted);
-    const missing = wanted.filter((sha) => !blobs.has(sha));
-    if (missing.length > 0) {
-      const fetched = new Map(Object.entries(await bridge.tilesetBlobs({ projectDir: target.projectDir, sha256s: missing })));
-      for (const [sha, body] of fetched) blobs.set(sha, body);
-      void writeTilesetBlobs(fetched);
+    const assetTransport = typeof bridge.assetBlobs === "function";
+    if (parsedTilesetsDir !== target.projectDir) {
+      parsedTilesets = new Map();
+      parsedTilesetsDir = target.projectDir;
     }
-    if (wanted.some((sha) => !blobs.has(sha))) {
-      // 사이에 다른 저장이 끼어 본문이 지워졌다 — 펼친 글을 받는다.
-      const full = await bridge.load({ projectDir: target.projectDir });
-      return snapshotOf(full?.serialized, full?.sha256, target);
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const loaded = await bridge.loadFolded({ projectDir: target.projectDir, ...(assetTransport ? { assetBlobs: true } : {}) });
+      if (!loaded) return null;
+      if ("serialized" in loaded) return snapshotOf(loaded.serialized, loaded.sha256, target);
+      const folded = parseFoldedDocument(loaded.folded);
+      const reusable = new Map<string, unknown>();
+      for (const [id, sha] of folded.tilesetShas) {
+        const previous = parsedTilesets.get(id);
+        if (previous?.sha === sha && previous.digest !== undefined && jsonContentDigest(previous.tileset) === previous.digest) reusable.set(id, previous.tileset);
+      }
+      const tilesetShas = [...new Set([...folded.tilesetShas].filter(([id]) => !reusable.has(id)).map(([, sha]) => sha))];
+      const assetShas = assetTransport ? [...new Set(loaded.assetBlobShas ?? [])] : [];
+      // 두 본문 모두 내용 주소 글이라 같은 기기 캐시를 쓴다(키 = 글의 SHA-256).
+      const blobs = await readTilesetBlobs([...tilesetShas, ...assetShas]);
+      // 공용 기본 자산은 부팅이 이미 받은 카탈로그에 같은 그림이 있다 — 첫 참여에 다시 받지 않는다.
+      const owners = assetShas.length > 0 ? assetBlobOwners(folded.document) : new Map<string, string[]>();
+      for (const sha of assetShas) {
+        const hint = loaded.assetBlobHints?.[sha];
+        if (blobs.has(sha) || !hint) continue;
+        for (const id of owners.get(sha) ?? []) {
+          const dataUrl = sharedDefaultAssetDataUrl(id, hint.bytesSha256, hint.head);
+          if (dataUrl) { blobs.set(sha, dataUrl); break; }
+        }
+      }
+      const fetchMissing = async (shas: readonly string[], fetch: ((payload: { readonly projectDir: string; readonly sha256s: readonly string[] }) => Promise<Readonly<Record<string, string>>>) | undefined): Promise<void> => {
+        const missing = shas.filter((sha) => !blobs.has(sha));
+        if (missing.length === 0 || !fetch) return;
+        const fetched = new Map(Object.entries(await fetch({ projectDir: target.projectDir, sha256s: missing })));
+        for (const [sha, body] of fetched) blobs.set(sha, body);
+        void writeTilesetBlobs(fetched);
+      };
+      await Promise.all([fetchMissing(tilesetShas, bridge.tilesetBlobs), fetchMissing(assetShas, bridge.assetBlobs)]);
+      if ([...tilesetShas, ...assetShas].some((sha) => !blobs.has(sha))) continue;
+      restoreAssetBlobs(folded.document, blobs);
+      const tree = unfoldedDocumentTree(folded, blobs, (id) => reusable.get(id));
+      const project = deserializeParsed(tree);
+      // 검증·정규화를 지난 뒤의 객체와 **그 순간의** 요약을 기억한다(deserializeParsed 는 파싱한 트리를 그대로 채택한다).
+      // 요약은 여기서 세야 한다 — 늦게 세면 그사이 제자리에서 고친 내용을 호스트 본문으로 착각한다. 비용이 더해지지는 않는다:
+      // 스토어의 정규화 전 요약(normalizeCurrentProject)이 같은 객체의 노드 기억을 그대로 쓴다
+      // (2026-09-28 실측, 팀 참여 창 부팅의 요약 합계 10.0s → 5.7s).
+      const next = new Map<string, { readonly sha: string; readonly tileset: unknown; readonly digest: string | undefined }>();
+      for (const [id, sha] of folded.tilesetShas) {
+        const tileset = project.tilesets[id];
+        if (tileset === undefined) continue;
+        const previous = parsedTilesets.get(id);
+        next.set(id, previous && previous.tileset === tileset ? previous : { sha, tileset, digest: jsonContentDigest(tileset) });
+      }
+      parsedTilesets = next;
+      loadedSha = loaded.sha256;
+      return {
+        authority: { mode: "legacy", target },
+        project,
+        sha256: loaded.sha256,
+        projectId: target.projectId,
+      };
     }
-    loadedSha = loaded.sha256;
-    return {
-      authority: { mode: "legacy", target },
-      project: deserializeParsed(unfoldedDocumentTree(folded, blobs)),
-      sha256: loaded.sha256,
-      projectId: target.projectId,
-    };
+    throw new Error("호스트 문서가 읽는 동안 계속 바뀌어 프로젝트를 불러오지 못했습니다. 잠시 뒤 다시 시도해 주세요.");
   };
 
   setUploadedAssetResolver({

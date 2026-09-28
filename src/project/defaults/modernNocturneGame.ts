@@ -158,7 +158,7 @@ export function createModernNocturneProject(): Project {
     },
   ];
 
-  const system = defaultSystem();
+  const system = defaultSystem(true);
   system.startActorIds = [DEFAULT_ACTOR_ID];
   system.initialTroopId = "troop_neon_wraith";
   system.titleScreen = {

@@ -29,7 +29,7 @@ function uploadedAssetsHaveInlineDataUrl(serialized: string): boolean {
   return slice.includes('"dataUrl"');
 }
 
-async function separateInlineMediaOnOpen(store: LocalProjectStore): Promise<void> {
+export async function separateInlineMediaOnOpen(store: LocalProjectStore): Promise<void> {
   // Normal hosted projects already store uploaded media as file refs. Avoid deserializing the
   // entire project just to discover that there is no inline data URL to migrate. This check is
   // intentionally lexical: a false positive only does the old repair work, while the common

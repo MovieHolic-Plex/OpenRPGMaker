@@ -18,6 +18,13 @@ AI 설정의 「사용량」 탭은 이 브라우저의 실행 영수증, 대화
 미연결이면 초안으로 남기며 기획 수정 메뉴는 자동 전송하지 않는다. 상세 계약은
 [장르 프리셋 인터뷰](editor-genre-packs.md)의 저장·handoff 절을 따른다.
 
+2026-09-28 보강: 실제 팀 실행의 검수 프롬프트는 `PI_TEAM_ROLES.reviewer` 가 아니라
+`teamSpec.memberSystemPrompt` 가 만든다 — 여기에 기획이 빠져 있어 검수가 인터뷰 답을 몰랐다. 지금은
+검수와 Writer(`consult_writer`, `scripts/lib/piWriterTool.ts` 의 시스템 메시지)도 같은 기획을 받는다.
+첫 생성 말풍선·입력창에 보이는 문장(`welcomeGenrePresetDisplayText`)은 확정 요약 전체(600자 상한)를
+줄 단위로 보인다. 예전 「장르 · 첫 답 24자 · 범위 24자」 한 줄은 모델이 기획을 다 받는데도
+사용자에게 인터뷰가 안 넘어간 것처럼 보였다.
+
 ## 제작 전 그래픽 선택과 자동 큰 창 (2026-09-21)
 
 `aiCreationChoice.ts` + `aiChatPanel.runPiTurn`은 마을·도시·집의 새 생성 요청에 제작 전 선택을 둔다.
@@ -208,6 +215,13 @@ x=8, y=278, 300×383으로 화면 안에 놓인다. 설정 변경·팀 메뉴 �
 
 
 ## 팀 분업 유즈케이스와 맵 밖 작업 배정 (2026-09-18)
+
+> **팀이 조용히 혼자가 되던 길 (2026-09-28).** 활동 기록 실측: 2026-09-18 12:04 이후 일반 채팅 Pi 실행 67회 중
+> 팀 실행 0회. 원인 후보와 조치: ① 마을 요청이면 `resolveVillageContract` 가 계약을 걸고 `runPiCommand` 가 계약이
+> 있으면 팀을 껐다 → 이제 `classifyPlainPiTurn` 이 팀 설정일 때 계약을 걸지 않고, 팀 런타임도 실려 온 계약을 벗긴다.
+> 그래도 팀이 단독으로 내려가면 채팅에 한 줄로 알린다. ② 검수 담당을 끄면 메뉴는 「완료 후 검토: 생략」인데 런타임은
+> 400 으로 실행 전체를 거절했다 → 생략하고 최종 보고에 적는다. ③ Ultrabrain 계획 턴이 팀장 자리를 빌려 활동 기록에
+> `pi:팀장` 으로 남아 단독 실행이 팀처럼 보였다 → `pi:계획` 으로 남긴다. 읽기 전용·질문 판정은 여전히 단독이다(의도).
 
 `src/ai/piAgent/teamWorkflows.ts`의 레시피(현재 8가지 — 2026-09-28 new-project 추가)를 팀장 시스템 프롬프트에
 실제로 삽입한다: 던전, 퀘스트, 게임 도입부, 전투 콘텐츠, 마을 생활감,
@@ -3074,6 +3088,32 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 - 빈 시작 맵의 전체 시공 뒤 예전 중앙 좌표가 고립되면 빌더가 검증한 시작점을 유지한다.
   기존 콘텐츠/부분 범위의 시작점은 보존한다. 실측: 4채 green 형태에서 (10,8)을 복원하면
   4채 모두 접근 불가였고, 검증된 시작점 (23,16)은 4/4 도달했다.
+- 방향이 있는 요청(「위로 올라가면 마을」)은 의도 선언이 `construction.approach`
+  (north/south/east/west)로 옮긴다. 계약은 `target:{kind:"new"}` + `connection`이 되고,
+  `author_village` 성공 직후 `villageConnection.connectContractVillage`가 출발 맵의 그쪽 끝과
+  마을 반대쪽 끝을 `link_maps`로 잇고 게임 시작을 출발 맵 원래 자리로 되돌린다. 완료 검사는
+  출입구 존재, 시작→출발 맵 출입구 통행, 마을 착지→집 문앞 통행을 본다. 모델은 출입구를 만들지 않는다.
+- 방향·선택 영역·새 이름이 없는데 대상 맵에 이미 내용이 있으면(`isLivedMap`) 계약을 만들지 않는다.
+  얼린 `target:{kind:"existing"}`(bounds 없음)은 `village-requires-scope`로 항상 거부되기 때문이다.
+  이때는 일반 경로의 마을 노트(빈 땅 bounds → 없으면 새 맵)를 따른다.
+  실측(2026-09-28): 숲·NPC가 있는 20×15 시작 맵에서 「위로 올라가면 마을」이 이 조합으로 얼어 6번 중 5번 실패했다.
+- 계약 해제(2026-09-28): 계약 인자 그대로 부른 `author_village`가 대상·범위·칩셋·설계서 규칙
+  (`village-requires-scope`, `village-tileset-mismatch`, `bounds-*`, `map-*`, `village-design-*`,
+  `target`을 가리키는 `invalid-args`)에 거부되면 `villageContractBlocker`가 막다른 길로 판정한다.
+  워커는 그 자리에서 계약을 풀고, 계약 지시 줄을 `[마을 계약 해제]` 안내로 바꾸고, 같은 실패 결과에 안내를 붙인다.
+  이후는 일반 실행이다(다른 쓰기 도구 허용, 일반 마을 검사). `done.villageContractReleased`를 받은 패널은
+  조화 검수와 적용 정책을 계약 없는 실행으로 되돌린다. 집·주민 수 부족이나 문·길 검사처럼 seed로 달라질 수 있는
+  실패와, `residents` 같은 모델 몫 인자 오류는 계약을 유지한다. 회귀: `test/piVillageContractRelease.bun.test.ts`.
+- 의도 판정 로그: `classifyPlainPiTurn`이 `plan.routingAudit` 한 줄을 만들고(`intent:llm mode=… construction=approach:north … → 마을 계약: 새 맵 …`,
+  계약이 없으면 `마을 계약 없음(팀 실행|현대 맵|판정)`), Pi 활동 로그의 첫 상태 행 「의도 판정: …」으로 남는다.
+- Pi 실행 감사(`src/ai/piAgent/activityLog.ts` `runAudit`)는 에이전트 행 요약 뒤에 보드 과정 행 전부를 싣는다:
+  모든 도구 호출(성공·실패, `인자` 한 줄), 오류 문장, 워커 실행 상태(`village.contract_released`·`village.connection`·
+  `repeat_guard`·`layout_quality` 등, 매 호출 반복인 `map.image.delivered`만 제외), 보드 상한으로 잘린 앞부분 수,
+  실행 도중 판정이 바뀐 사실(`PiRunFacts.notes`). 크기는 활동 로그 바이트 예산이 양 끝을 남기며 자른다.
+  과정 행의 `status` 종류는 팀 데크 트랜스크립트에도 「상태」 태그로 그려진다.
+- 의도 해석 자체가 실패한 턴(`지시를 해석하지 못했습니다`)은 실행까지 가지 않아 로그가 비었다.
+  `recordPiIntentFailure`가 `pi` 채널 실패 행 하나를 남긴다(`stoppedReason: "의도 해석 실패"`).
+  예전 사용 로그에는 판정도, 「오류 5」의 문장도, 도구 인자도, 해석 실패 턴도 없었다.
 
 검증: Bun 계약/실행 루프 6건, 기존 facade/intent-note Vitest 50건 통과.
 실제 에디터 + Gemini 호출은 `author_village` 1회/2턴/9.294초/도구 오류 0으로
@@ -3165,12 +3205,27 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 - **실측 스크립트:** `scripts/qa/preset-team-first-build.mjs` — 임시 SQLite 호스트 + Firefox 로 포스터 → 인터뷰 → 첫 생성을 돌리고
   요청 크기·heavy 해시·의도 읽기 호출 수·실행 번호·이어 받기 횟수·SQLite 재로드 맵/이벤트 수를 `verify-shots/preset-first-team-e2e/SUMMARY.json` 에 쓴다.
   `E2E_NETWORK_CHANGE=1` 이면 Firefox 의 네트워크 변경 감지를 켠 채 두어 이 호스트의 veth 변동으로 실제 끊김을 만든다.
+- **새 프로젝트 첫 Pi 요청이 호스트에서 끊겼다 (2026-09-28):** 해시 전송을 해도 첫 요청은 호스트가 모르는 내용을 전부 싣는다. 빈 새 프로젝트가
+  gzip 69MB(풀면 203MB — 공용 업로드 아틀라스 dataURL 414개 85MB + 타일셋 368개 101MB)였고, `readRequestJson` 의 받은 몸통 상한 64MiB 가
+  매번 「Request body is too large」로 끊었다 — 팀·단독 모두, 새 프로젝트에서 한 번도 돌지 못했다. 받은 몸통 상한을 풀어낸 상한·워커 상한과 같은
+  256MiB(`MAX_REQUEST_BYTES`)로 올리고 초과는 413 이다. 회귀: `test/piAgentRequestBody.test.ts` 「above the old 64MiB cap」.
+- **체크포인트는 바뀐 타일셋만 싣는다 (2026-09-28):** 무거운 키 슬림은 키 단위였다. `author_village` 가 `forest_harmony` 하나에 이식을
+  더하면 `tilesets` 전체(368개)가 줄에 실렸고, 팀 중계를 지나며 101MB 체크포인트 한 줄이 되어 워커가 150초 동안 다음 줄을 못 썼다 —
+  브라우저 워치독(30초)이 「워커에서 30초 동안 신호가 없어」로 끊었다. 이제 `slimProjectForWire` 가 그대로인 타일셋 id 를
+  `unchangedTilesetIds` 로 따로 보내고 받는 쪽(`restoreCheckpointProject` 네 번째 인자)이 자기 사본에서 붙인다. 체크포인트·render_request·done·ACK
+  모두 같은 모양이다. 받는 쪽 사본에 없는 id 를 뺐다고 하면 조용히 비우지 않고 던진다. 실측: 같은 마을 체크포인트 101MB → 4.4MB, 도구 종료 0.3초 뒤 도착.
+  회귀: `test/piAgentEfficiency.test.ts` 「타일셋 하나만 바뀌면 그 하나만 싣고」.
+- **실측 스크립트(팀 + 평문 마을):** `scripts/qa/team-village-live.mjs` — 빈 새 SQLite 호스트에서 작업 인원 「팀으로」 → 「마을을 만들어줘」 →
+  그래픽 조합 선택 → 끝까지 기다린다. `E2E_SOLO=1` 이면 혼자. 결과는 `verify-shots/team-village-live/SUMMARY.json`.
+  2026-09-28 실측(위 두 수정 뒤): 「Pi 팀」 배지, 팀장이 시공 배정 → 검수 → 수정 배정 → 재검수 → 완료 후 검토까지 돌고 21분에 「적용됨」
+  (맵 15개 · 이벤트 168개). 남은 문제: 적용 뒤 자동 저장이 `allocation size overflow`(Firefox, 큰 프로젝트 직렬화)로 실패해 SQLite 에
+  남지 않았다 — 이 변경 범위 밖이며 별도 수정이 필요하다.
 
 ## 큰 프로젝트의 Pi 요청 전송 (2026-09-24)
 
 `src/ai/piAgent/requestBody.ts`는 1Mi 문자 이상인 요청을 gzip으로 전송한다. `/v1/agent/run`뿐 아니라 적용 ACK `/v1/agent/checkpoint`도 같은 경로를 사용한다. 프로젝트/공용 타일 참고 이미지/이벤트를 제거하지 않는다. 작은 요청과 CompressionStream 미지원 환경은 기존 JSON을 사용하며, 후자는 큰 문서에서 기존 한도 오류를 받을 수 있다.
 
-수신 `scripts/lib/companionHttpUtil.mjs`는 wire64MiB 제한을 유지하고 gzip 복원은 별도256MiB 상한으로 제한한다. 기존 identity JSON은 계속64MiB다. 손상 gzip/미지원 encoding은 거절한다. 동반 서비스 두 진입점의 CORS는 Content-Encoding을 허용한다. 서버 gzip 수신 지원을 먼저 배포한 뒤 renderer를 갱신한다. 새 renderer만 배포하면 기존 서버는 gzip을 JSON으로 읽을 수 없다.
+수신 `scripts/lib/companionHttpUtil.mjs`는 받은 몸통과 gzip 복원 모두 256MiB(`MAX_REQUEST_BYTES`)로 제한한다(2026-09-28, 예전 받은 몸통 64MiB 는 새 프로젝트 첫 요청을 끊었다). 손상 gzip/미지원 encoding은 거절한다. 동반 서비스 두 진입점의 CORS는 Content-Encoding을 허용한다. 서버 gzip 수신 지원을 먼저 배포한 뒤 renderer를 갱신한다. 새 renderer만 배포하면 기존 서버는 gzip을 JSON으로 읽을 수 없다.
 
 실측: 새솔 정본507을 포함한 요청83,468,214bytes →34,820,901bytes, 복원 객체 전체 일치. 저장 브리지의128MiB 제한과는 별개다. 루트 필드별 용량에서 tilesets 약73MB가 대부분이었다. 압축 지원은 제작 완료나 LLM 자체 컨텍스트 제한 해결을 의미하지 않는다.
 

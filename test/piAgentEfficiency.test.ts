@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 // 2026-09-23 조수 비효율 리뷰의 수정 회귀. 숫자 상한은 느슨하게 둔다 — 잡으려는 것은 «제곱·통째 복제로 되돌아감» 이다.
 import {
   addPiAgentUsage, changedProjectKeys, createPiAgentLineDecoder, encodePiAgentEvent, restoreCheckpointProject,
-  slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent,
+  slimDoneEvent, slimProjectForWire, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent,
 } from "@/ai/piAgent/protocol";
 import { createDraft } from "@/editor/tools/changeset";
 import { spatialToolFingerprint } from "@/editor/tools/spatialToolState";
@@ -100,6 +100,27 @@ describe("내용 판정", () => {
     const firstTileset = Object.values(edited.tilesets)[0]!;
     firstTileset.name = `${firstTileset.name}!`;
     expect(slimDoneEvent(doneFor(edited), base).unchangedKeys).toEqual(["database", "assets"]);
+  });
+
+  // Break(2026-09-28 실측): 마을이 forest_harmony 하나에 이식을 더하자 39개 타일셋 25MB 가 체크포인트마다 통째로 실렸고,
+  // 팀 중계를 지나며 101MB 줄이 되어 브라우저 워치독이 30초에 연결을 끊었다.
+  it("타일셋 하나만 바뀌면 그 하나만 싣고 나머지는 받는 쪽이 되붙인다", () => {
+    const base = createBlankProject();
+    const edited = createDraft(base);
+    const [changedId, ...rest] = Object.keys(edited.tilesets);
+    edited.tilesets[changedId!]!.name += "!";
+    const wire = slimProjectForWire(base, edited);
+    expect(wire.unchangedKeys).toEqual(["database", "assets"]);
+    expect(Object.keys(wire.project.tilesets)).toEqual([changedId]);
+    expect(new Set(wire.unchangedTilesetIds)).toEqual(new Set(rest));
+    const line = JSON.parse(JSON.stringify(wire.project));
+    const restored = restoreCheckpointProject(base, line, wire.unchangedKeys, wire.unchangedTilesetIds);
+    expect(jsonEqual(restored, edited)).toBe(true);
+    expect(restored.tilesets[rest[0]!]).toBe(base.tilesets[rest[0]!]);
+    const done = slimDoneEvent(doneFor(edited), base);
+    expect(done.unchangedTilesetIds?.length).toBe(rest.length);
+    // 받는 쪽 사본에 없는 타일셋을 뺐다고 하면 조용히 비우지 않고 멈춘다.
+    expect(() => restoreCheckpointProject({ ...base, tilesets: {} }, line, wire.unchangedKeys, wire.unchangedTilesetIds)).toThrow(/사본에 없습니다/);
   });
 });
 

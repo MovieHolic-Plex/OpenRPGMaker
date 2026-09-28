@@ -1,5 +1,55 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 실내 설계는 검토된 실내 프리셋을 함께 본다 (2026-09-28)
+
+사용자 지적: "AI 가 실내를 놓을 때 '버드나무 여관' 같은 미리 만들어진 프리셋을 전혀 참고하지 않는다". 실측이 맞았다.
+실내 요청의 경로(`get_concept_facility` → `place_concept(plan)`)는 개념 꾸러미 템플릿·물건 어휘만 돌려줬고,
+편집기 「장소」 탭의 검토 장소(`reviewedPlaceIndex` 중 태그 `공간형태:건물 내부` 36곳 — 버드나무 여관 3층, 어부의 집 등)는
+`list_spatial_designs` 의 `data.shared` 에만 있었다. 실내 경로는 그 도구를 부르지 않으므로 모델은 프리셋을 한 번도 보지 못했다.
+
+- `src/editor/tools/interiorPresetExamples.ts` — 요청어로 프리셋을 고른다(이름 일치 > `용도:` 태그(여관→숙박, 집·민가→주거·주택 등) > 이름 낱말).
+  최대 3곳, 층마다 크기·출입구(포트)·재료·가구(그 칩셋의 타일 그룹이 전부 깔린 것, 여러 개면 `×N`)를 뽑는다.
+  좌표 배열이나 자동 배치는 없다. 맞는 게 없으면 `presetCatalog` 에 이름만 준다.
+- `get_concept_facility` 는 모든 분기(템플릿·sources·canonical)에서 `presetHint`/`presetExamples` 를 **data 맨 앞**에 싣는다.
+  Pi 는 도구 data 를 12,000자에서 자르는데 여관 응답은 약 24,000자라, 뒤에 두면 잘려서 다시 안 보인다.
+- 첫 예시의 층별 미리보기 PNG(`public/assets/reviewed-places/<id>.png`, 호스트 공용 장소는 `previews` 의 data URL)를
+  Pi(`toolAdapter`)와 채팅 세션(`assistantSession` roundImages)이 모델 입력 이미지로 붙인다.
+- 프리셋을 그대로 원하면 `import_region_reference({id:'reviewed:<id>'})`(`use` 필드). 새 설계를 복사로 대신하지 않는 기존 계약은 그대로다.
+
+회귀: `test/interiorPresetExamples.test.ts`. 실제 모델이 프리셋을 보고 규모·밀도를 바꾸는지는 아직 관찰하지 않았다.
+
+## 마을 시공도 완성 마을 사례를 본다 (2026-09-28)
+
+같은 날 후속 지적: "마을도 미리 만들어진 프리셋을 거의 참고 안 하는 것 같다". 빈 새 프로젝트 실측:
+
+- 데이터베이스 마을 설계서(`villagePresets`) 0개, 기본 설계서 없음 → `presetId` 경로는 비어 있다.
+- 완성 마을 사례(`REGION_REFERENCES`+`PLACE_REFERENCES`+공유 중 정착지) 약 70곳은 옛 세션의 `buildSystemPrompt`
+  (`regionReferenceContext`, 예산 밖 고정분)에만 있었고, Pi 시스템 프롬프트(3,827자)·의도 노트·`author_village` 결과에는 0곳이었다.
+- 마을 계약(`resolveVillageContract`)은 코드 기본값(12채·강변촌)을 먼저 굳히고 `author_village` 외 쓰기를 막는다.
+  「숲마을」「바닷가 어촌」「절벽 위 폭포 마을」 셋 다 88×56·집 12채·강변촌으로 같은 마을이 됐다.
+
+변경:
+
+- `src/ai/villageReferenceExamples.ts` — 요청 낱말(바다·포구·절벽·폭포·성곽·기후 …)을 사례 **이름과 앞 두 규칙**에서 찾는다.
+  뒤쪽 규칙은 공용 문서 제목을 되풀이해 모든 사례가 같은 점수가 되므로 보지 않는다. 기후 사례는 기후를 말할 때만.
+- Pi 의도 노트(`buildPiIntentNote`, `requestText`)에 `[참고 마을]` 세 곳을 붙인다.
+- 마을 계약은 설계서가 없으면 첫 사례에서 사용자가 말하지 않은 **집 수·크기·배치**를 가져온다(`referenceId` 기록).
+  배치 후보(호수→theme 호숫가, 바다→theme 포구, 교회·광장→green+hills, 절벽→cluster+hills, 강→river)를 **dryRun 으로 실제
+  시공해 보고** 처음 성공한 것을 seed 7 과 함께 계약에 묶는다. 이유(시드 6개 실측): 같은 배치라도 크기·시드·theme 조합에 따라
+  8채 중 4~7채만 지어 실패한다(절벽+theme 은 6/6 실패, 절벽 단독은 6/6 성공; 환산기 기본 크기 54×28 은 대부분 실패).
+  빈 기존 맵은 새 target 필드 `minSize`(bounds 생략 전용, 넓히기만)로 사례 크기까지 넓힌다. 이미 내용이 있는 맵,
+  사용자가 배치·테마를 말한 요청, 선택 영역 요청은 후보를 쓰지 않는다. 비용은 후보당 시공 1회(약 3.5초), 보통 한 번.
+  요청에 강·폭포가 있으면 강을 언덕보다 먼저 둔다(시공기는 강과 언덕을 같이 못 깐다 — 언덕만 깔면 물 없는 둔덕 마을이 됐다).
+  결과(빈 맵): 숲마을 78×44 강변 8채 · 바닷가 어촌 71×52 포구 8채 · 절벽 위 폭포 78×65 강변 8채 · 언덕 교회 57×54 광장+언덕 7채 ·
+  호숫가 64×60 호수 13채 — 예전엔 다섯 다 88×56·12채 강변촌이었다. 사례 지형(폭포·2단 절벽·교회 건물)은 시공기에 없어 재현하지 못한다.
+- `author_village` 는 결과 `data.referenceVillages` 와 요약 한 줄(사례 크기·집 수 대 지은 마을)을 돌려준다. 선택 인자
+  `referenceId` 는 비교 대상만 정하고 파서·시공기에 가지 않는다. 계약 프롬프트(`piAgentRuntime`)가 그 id 를 넘기라고 한다.
+- 첫 사례 그림은 Pi·채팅 어댑터가 모델 입력에 붙인다. 원본(976~2400px·0.3~1.4MB) 대신 긴 변 640px·64색 사본
+  `public/assets/village-reference-previews/`(57장·4.5MB)을 쓴다 — 헤드리스 Pi 는 캔버스가 없어 실행 중에 못 줄인다.
+  재생성: `node_modules/.bin/vite-node --script scripts/content/prepare-village-reference-previews.mjs`. 사본이 없는 사례(호스트 공유 전용)는 그림을 붙이지 않는다.
+
+회귀: `test/villageReferenceExamples.test.ts`. 실제 모델 실행으로 결과가 사례에 가까워지는지는 아직 보지 않았다.
+
 ## 배치 매칭은 대체하지 않고 거절한다 (2026-09-27 전수 조사)
 
 「고대 진실의 제단」이 보석 그림으로 저장된 일을 계기로 물건·NPC·타일 배치의 이름→그림 해석을 전수 조사했다. 같은 결함이 네 단계(캐릭터 그림 검색·재료 라벨→타일·조립 물건·자동 생성기)에 있었다. 공통 원인은 이름에 맞는 그림이 없거나 애매할 때 다른 그림으로 대체하고 경고만 남긴 것이다. 조수는 경고를 읽지 않는다.
@@ -452,6 +502,30 @@ M2 명령의 `commandId`와 객체 `fields`는 공통 command shape 검증에서
 `pending` / `no-face` / 없는 항목은 시트 번호나 나이로 추정하지 않는다.
 명시한 최상위 face > 페이지 face > 공용 매핑 순서를 유지한다. 명시 textureKey도 공용 매핑으로 해석한다.
 기존 저장 이벤트를 소급 변경하지 않는다. 회귀 계약: `test/npcSharedFaceMapping.test.ts`.
+
+### 얼굴 짝 전수 교정 (2026-09-28)
+
+얼굴의 정본은 공용 대응표 하나다. 읽는 쪽은 `src/assets/reviewedCharsetFaces.ts`(zod 없이 JSON 직독 — 플레이어 번들도 쓴다).
+
+- **조수가 넘긴 얼굴은 걷기 그림과 대조한다** (`reconcileFaceWithCharset`): place_npc·make_villager의 `face`, 페이지 `face`,
+  컷신 `say.face`(화자가 이 맵 NPC·배우 이름과 하나로 맞을 때), `upsert_actor.faceResourceId`(그림만 바꿔도 따라간다).
+  짝이 있으면 짝으로 바꾸고, 대응표가 "얼굴 없음"이면 뺀다. 경고를 남긴다. 대응표 밖 얼굴(업로드·생성·표정 세트)은 그대로 둔다.
+  실측: 이전엔 노인 그림에 슬라임 얼굴을 넣어도 다섯 곳 모두 경고 없이 저장됐다.
+- **얼굴 검색**: `list_resources(kind:"faceset")` 가 라벨·특징·짝 걷기 그림으로 찾는다. `list_npc_graphics` 결과에 `face`(짝, 없으면 null).
+- **기본값**: 배우 기본 얼굴(`actorFaceDefaults.ts`)·기본 파티·시작 마을·하늘계단이 대응표를 따른다. "이름이 같은 시트가 짝"은 틀렸다
+  (Actor2 ↔ FaceSet/Actor1 8~15). 옛 추정 함수(`faceGraphicForCharset`·`npcFaceGraphic`)는 지웠다.
+- **억지 근사 7칸 해제**: People4 #1·#3·#5, People5 #2·#3, People2 #4, Actor3 #5 → no-face. 호스트 공용 파일에도 같은 7행을 적용했다.
+- **저장본 교정**(사용자 결정: 불러올 때 짝과 다르면 전부): `src/project/faceMatchRepair.ts` 를 store 정규화(`faceMatches`)·헤드리스·
+  내보낸 플레이어가 부른다. NPC는 페이지의 **첫** 얼굴만 본다(뒤 얼굴은 다른 화자일 수 있다). 닫힌 폴더에 미리 쓰려면
+  `node scripts/content/repair-face-matches.mjs <projectDir> [--dry]`(저장 후 재로드·재교정 0건 확인).
+- 실측(프로젝트 337곳, 읽기 전용 대조): 교정 전 배우 1,693·NPC 220건이 짝과 다름/없어야 함 → 교정 후 0건.
+  회귀: `test/faceMatchAudit.test.ts`, 런타임 증거 `npm run qa:runtime -- --scenario face-match`.
+- **없던 얼굴 생성(같은 날)**: 원본 얼굴 시트에 없는 사람·동물·몬스터·Scarloxy 29칸의 짝 얼굴을 AI 로 그려 넣었다
+  (`generated-faceset-missing-people-00..15`, `-scarloxy-00..09`, `-monster-00..02`). 억지 근사로 해제했던 7칸도 여기에 짝이 있다.
+  Animal #1 은 라벨이 "검은 고양이"지만 실제 그림은 짙은 귀의 갈색 고양이라 그림에 맞췄다.
+  이제 얼굴이 없는 칸은 사물·탈것·Template·빈 칸뿐이다. 새 얼굴 추가 절차: 4x4 48px 시트를
+  `public/assets/generated/faceset/` 에 두고 `scripts/slice-faceset-sheets.mjs` 의 SHEETS·MISSING_FACE_NAMES 에 등록 → 슬라이스 →
+  공용 대응표에 짝 연결(번들 JSON + 호스트 파일). 출처는 `public/assets/ATTRIBUTION.md`.
 
 # Editor AI Tools & Vocabulary
 

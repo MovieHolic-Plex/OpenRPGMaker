@@ -1,5 +1,11 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 적 그룹 「전투 뒤」 구획 (2026-09-28)
+
+- 적 그룹 폼 구획 탭에 「전투 뒤」(`db-troop-section-after`)가 붙었다. `src/editor/panels/databaseTroopAfterBattlePanel.ts` — 결과 탭 셋(`db-troop-after-battle-tab-victory|defeat|escape`) + 명령 목록 하나(`db-troop-after-battle-command-list`, 피커 문맥 "map").
+- 조건·빈도가 없다. 결과가 곧 조건이다. 저장은 `updateDatabaseRecord("troops", id, { afterBattle })` → `updateTroopRecord` 가 `normalizeTroopRecord` 로 빈 결과를 지운다.
+- 참조 위치(`databaseCommandReferences`)에는 `troopBattleEvent` 종류에 페이지 이름 「전투 뒤 · 이겼을 때」 로 실린다. 런타임 계약은 [runtime-battle.md](runtime-battle.md) 같은 날짜 절.
+
 ## 자료집 개선안 2단계 — 헤더 저장 상태·얇은 발 줄·연결 칸 (2026-09-27)
 
 - **저장 상태는 헤더에 있다.** `databaseModal` 이 `db-footer-status` 요소를 만든 뒤 헤더(AI 단추 앞)로 옮긴다. 같은 요소라 testid·aria-live·문구 계약(「자동 저장됨」「적용했습니다」「저장 전」…)과 `paintFooterStatus` 소유는 그대로다. 발 줄은 닫기·지금 저장·되돌리기·도움말만 오른쪽에 붙는다. 확인 줄(dirty prompt)은 여전히 발 줄에 뜬다.
@@ -2015,6 +2021,10 @@ player preview. The editor probe accepts skin IDs as arguments and an optional
 - 복구 조사: LegacyDb 프로젝트 123개의 `current_json.resourceProfiles`에는 이 섹션의 `characterSlots` 저장본이 없었다. 이는 브라우저에만 남았던 편집이나 별도 JSON 백업의 부재까지 증명하지 않는다. 공용 저장 수정과 과거 수동 매핑 복구를 구별한다.
 
 ### 공용 기본 매핑 재저작 (2026-09-18)
+
+> 2026-09-28 전수 대조로 근사 26칸 중 다른 인물인 7칸을 얼굴 없음으로 바꿨다(현재 정확 68·근사 19·얼굴 없음 81).
+> 같은 날 원본에 얼굴이 없던 29칸의 짝 얼굴을 생성해 연결했다(현재 정확 97·근사 19·얼굴 없음 52 — 사물·탈것·빈 칸뿐, 얼굴 메타데이터 109개).
+> 목록과 저장본 교정은 `openwiki/editor-ai-tools.md` 「얼굴 짝 전수 교정」.
 
 사용자의 재매핑 지시로 `src/assets/sharedCharacterGraphics.json`을 원본 그림에서 새로 저작했다. 168칸 중 94칸 연결(정확 68·근사 26), 74칸 얼굴 없음, 원본 얼굴 메타데이터 80개다. 공용 저장 파일이 없는 호스트는 이 자료로 시작하며, 이미 저장된 호스트 파일은 우선하여 사용자 편집을 보존한다. 각 근사 대응의 차이는 `note`에 남긴다. `Actor3 #5`를 여성 얼굴에 순번으로 연결하지 않으며, 검은 고양이·Scarloxy 전용 그림·물건·빈 칸에 억지 얼굴을 주지 않는다. 시트·얼굴 대조 PNG, 호스트 저장 후 재읽기, LegacyDb 전용 행 `oprn-shared-character-graphics`의 저장(201) 후 재조회 근거는 `.omo/evidence/shared-character-faces/README.md`에 보존한다. LegacyDb는 재저작 자료의 원격 보관본이고 편집기의 공용 저장 정본은 호스트 파일이다.
 

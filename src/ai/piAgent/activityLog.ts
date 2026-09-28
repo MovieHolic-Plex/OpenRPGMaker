@@ -30,6 +30,8 @@ export interface PiRunContext {
   readonly mapName: string | null;
   readonly provider: string;
   readonly model: string;
+  /** 의도 판정 한 줄(`classifyPlainPiTurn` 의 routingAudit). 명시 `/pi` 처럼 판정 없이 들어온 실행은 비운다. */
+  readonly routing?: string;
 }
 
 export interface PiRunFacts {
@@ -44,6 +46,8 @@ export interface PiRunFacts {
   readonly stoppedReason?: string;
   /** 이 실행의 단계별 벽시계(`createTurnTiming().snapshot()`). `npm run ai:trace` 가 이 필드만 읽는다. */
   readonly timing?: import("../turnTiming").TurnTimingRecord;
+  /** 실행 도중 판정이 바뀐 사실(마을 계약 해제 등) — 보드 행에 없는 것만. 결말 행 앞에 상태 행으로 싣는다. */
+  readonly notes?: readonly string[];
 }
 
 export interface PiRunLogHandle {
@@ -97,6 +101,21 @@ export function startPiRunLog(context: PiRunContext): PiRunLogHandle {
 }
 
 /**
+ * 의도 해석 자체가 실패한 턴 — 실행(startPiRunLog)까지 가지 않아서 예전엔 사용 로그에 흔적이 없었다.
+ * 사용자는 「지시를 해석하지 못했습니다」를 봤는데 로그를 내려받으면 그 턴이 통째로 없었다.
+ */
+export function recordPiIntentFailure(input: { readonly instruction: string; readonly error: string; readonly mapId?: string | null; readonly model?: string }): Promise<void> {
+  return recordAiActivity({
+    channel: "pi",
+    instruction: input.instruction,
+    ...(input.model ? { model: input.model } : {}),
+    ...(input.mapId ? { mapId: input.mapId } : {}),
+    result: { ok: false, applied: false, error: `의도 해석 실패: ${input.error}`, stoppedReason: "의도 해석 실패" },
+    audit: [{ kind: "user", text: input.instruction }, { kind: "status", text: `의도 판정: 실패 — ${input.error}` }],
+  }).then(() => undefined, () => { /* 기록 실패가 턴을 막지 않는다 */ });
+}
+
+/**
  * 하위 에이전트를 «툴 호출» 로 옮긴다. 기존 로그 뷰어(`npm run ai:log --tools`)가 toolCalls 를
  * 순번·상태·요약으로 펼치므로, 팀 실행의 서사가 별도 뷰어 없이 그대로 읽힌다.
  */
@@ -107,7 +126,9 @@ function agentToolCalls(board: TeamBoardState): AiActivityToolCall[] {
     const tokens = usage ? ` · 입력 ${usage.input + usage.cacheRead}(캐시 ${usage.cacheRead})/출력 ${usage.output} 토큰` : "";
     const counters = `${agent.turns}턴/${agent.toolCalls}툴콜${agent.toolErrors > 0 ? ` · 오류 ${agent.toolErrors}` : ""}${tokens}`;
     return {
-      name: `pi:${agent.kindLabel}`,
+      // Ultrabrain 계획 턴은 보드에서 팀장 자리(role orchestrator)를 빌려 쓰지만 팀장이 아니다.
+      // 예전엔 단독 실행이 「pi:팀장 → pi:시공」 으로 남아 기록만 보고는 팀이 돈 것처럼 보였다.
+      name: agent.agentId.startsWith("ultrabrain-plan") ? "pi:계획" : `pi:${agent.kindLabel}`,
       args: {
         ...(agent.memberId ? { memberId: agent.memberId } : {}),
         ...(agent.mapId ? { mapId: agent.mapId } : {}),
@@ -128,6 +149,7 @@ function boardUsage(board: TeamBoardState): PiAgentUsage | undefined {
 
 function runAudit(context: PiRunContext, facts: PiRunFacts): AuditEntry[] {
   const rows: AuditEntry[] = [{ kind: "user", text: context.instruction }];
+  if (context.routing) rows.push({ kind: "status", text: `의도 판정: ${context.routing}` });
   for (const agent of facts.board.agents) {
     const where = agent.mapName ?? "프로젝트 전체";
     rows.push({
@@ -143,7 +165,19 @@ function runAudit(context: PiRunContext, facts: PiRunFacts): AuditEntry[] {
     if (agent.conflicts.length > 0) {
       rows.push({ kind: "status", text: `맵 충돌 (${agent.roleLabel}): ${agent.conflicts.join(", ")}` });
     }
+    // 에이전트의 과정 전부 — 도구 호출(성공·실패·인자), 오류, 실행 상태. 행 요약은 「오류 5」 숫자뿐이라
+    // 무엇을 어떤 인자로 불렀고 무엇이 왜 거부됐는지가 로그에서 사라졌다(2026-09-28: author_village 5회 거부의
+    // 사유와 인자가 사용 로그 어디에도 없었다). 보드 과정 행(상한 200)이 이미 들고 있다. 크기는 활동 로그가
+    // 바이트 예산으로 양 끝을 남기며 자른다(fitWithinBudget).
+    if (agent.droppedLog > 0) rows.push({ kind: "status", text: `과정 앞부분 ${agent.droppedLog}건은 보드 상한으로 남지 않았습니다 (${agent.roleLabel})` });
+    for (const entry of agent.log) {
+      if (entry.kind === "tool" && entry.ok !== null) {
+        rows.push({ kind: "tool", name: entry.name, args: entry.args ? { 인자: entry.args } : {}, ok: entry.ok, summary: entry.summary || (entry.ok ? "완료" : "실패") });
+      } else if (entry.kind === "error") rows.push({ kind: "status", text: `오류 (${agent.roleLabel}): ${entry.text}` });
+      else if (entry.kind === "status") rows.push({ kind: "status", text: `실행 상태 ${entry.name}${entry.ok === false ? " ✗" : ""}: ${entry.text}` });
+    }
   }
+  for (const note of facts.notes ?? []) rows.push({ kind: "status", text: note });
   const scope = context.mapIds.length > 0 ? context.mapIds.join(", ") : "프로젝트 전체";
   const ending = facts.error
     ? `실패: ${facts.error}`

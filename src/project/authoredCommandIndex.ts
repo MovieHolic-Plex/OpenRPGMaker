@@ -2,6 +2,7 @@ import type { CommandKind } from "@/project/commandKindRegistry";
 import type { CommandContext } from "@/project/commandGuaranteeRegistry";
 import type { Command, GameEvent, Project } from "@/project/types";
 import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
+import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 
 export type AuthoredCommandIndex = Readonly<Record<CommandContext, ReadonlySet<CommandKind>>>;
 
@@ -20,6 +21,8 @@ export function indexAuthoredCommands(project: Project): AuthoredCommandIndex {
   for (const commonEvent of project.commonEvents) visitCommands(commonEvent.commands, common);
   for (const troopRecord of project.database.troops) {
     for (const page of troopRecord.battleEventPages) visitCommands(page.commands, troop);
+    // 전투 뒤 이벤트는 필드에서 도는 맵 문맥 명령이다.
+    for (const list of troopAfterBattleLists(troopRecord)) visitCommands(list.commands, map);
   }
 
   return { map, common, troop };

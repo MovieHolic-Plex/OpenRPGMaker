@@ -1,5 +1,5 @@
 /**
- * 타이틀 영역 효과 셰이더(WebGL2). 효과 목록을 uniform 배열로 받아 한 패스에 그린다.
+ * 타이틀 영역 효과 셰이더(WebGL2). 효과 목록을 uniform 배열로 받아 합성한다(입자 계산은 작은 보조 패스).
  *
  * - 좌표계: `q` 는 배경 그림 기준 0..1, `P` 는 그림 높이를 1 로 둔 종횡비 공간(q * (aspect,1)).
  *   효과 기하(점·선·다각형)는 저장값 그대로 0..1 그림 좌표로 들어오고, 거리 계산은 P 공간에서 한다.
@@ -34,6 +34,29 @@ void main() {
   gl_Position = vec4(aPos, 0.0, 1.0);
 }`;
 
+const MOTE_FUNCTION = `
+void moteData(int i, int j, out vec2 base, out float r, out float life, out float tw) {
+  int kind = uKind[i];
+  float t = uTime * uB[i].y;
+  vec2 S = toP(uA[i].xy);
+  vec2 dir = kind == 1 ? normalize(toP(uA[i].zw) - S) : vec2(0.0, 1.0);
+  vec2 lo = toP(uA[i].xy);
+  vec2 hi = toP(uA[i].zw);
+  float fi = float(j) + float(i) * 101.0;
+  life = fract(t * 0.03 * (0.5 + h1(fi * 5.3)) + h1(fi * 7.7));
+  if (kind == 1) {
+    float a = (h1(fi * 1.7) - 0.5) * 2.0 * uB[i].z;
+    float dist = 0.25 + h1(fi * 3.1);
+    base = S + rot(a) * dir * dist + vec2(sin(t * 0.4 + fi) * 0.02, life * 0.12 - 0.06);
+  } else {
+    vec2 r0 = vec2(h1(fi * 1.7), fract(h1(fi * 3.1) + life * 0.35));
+    base = mix(lo, hi, r0) + vec2(sin(t * 0.4 + fi) * 0.02, 0.0);
+  }
+  r = 0.0016 + h1(fi * 9.9) * 0.0022;
+  tw = 0.5 + 0.5 * sin(t * (2.0 + h1(fi) * 3.0) + fi);
+}
+`;
+
 export const TITLE_EFFECT_FRAGMENT_SHADER = `#version 300 es
 precision highp float;
 precision highp int;
@@ -41,6 +64,7 @@ precision highp int;
 #define MAX_PTS ${TITLE_EFFECT_SHADER_MAX_POINTS}
 #define MAX_MOTES ${TITLE_EFFECT_SHADER_MAX_MOTES}
 #define PI 3.14159265
+#define PRECOMPUTED_MOTES 1
 in vec2 vUv;
 out vec4 outColor;
 uniform sampler2D uImage;
@@ -57,6 +81,8 @@ uniform int uPtsN[MAX_FX];
 uniform vec2 uPts[MAX_FX * MAX_PTS];
 uniform sampler2D uDepth;    // 깊이 지도(흰색 = 가까움). uHasDepth 가 0 이면 쓰지 않는다.
 uniform int uHasDepth;
+uniform highp sampler2D uMotes;
+uniform highp sampler2D uMoteTw;
 
 float h1(float n) { return fract(sin(n) * 43758.5453); }
 float h2(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -109,6 +135,8 @@ float depthAt(vec2 q) {
 float luma(vec3 c) { return dot(c, vec3(0.299, 0.587, 0.114)); }
 vec3 screenAdd(vec3 c, vec3 add) { return 1.0 - (1.0 - c) * (1.0 - clamp(add, 0.0, 1.0)); }
 
+${MOTE_FUNCTION}
+
 void main() {
   AR = uImageSize.x / max(uImageSize.y, 1.0);
   float canvasAR = uCanvas.x / max(uCanvas.y, 1.0);
@@ -157,6 +185,7 @@ void main() {
     if (i >= uCount) break;
     if (uKind[i] != 4) continue;
     float wm = regionMask(i, toP(q), 0.012) * uB[i].x;
+    if (wm == 0.0) continue;
     float t = uTime * uB[i].y;
     s.x += wm * (sin(q.y * 900.0 - t * 2.2) * 0.0009 + sin(q.y * 380.0 + t * 1.3) * 0.0006);
     s.y += wm * sin(q.x * 260.0 + t * 1.7) * 0.0007;
@@ -173,15 +202,18 @@ void main() {
     vec3 col = uColor[i];
     if (kind == 4) {
       float wm = regionMask(i, P, 0.012);
+      if (wm == 0.0) continue;
       float sp = pow(smoothstep(0.72, 1.0, n2(vec2(q.x * 420.0, q.y * 900.0 - t * 1.5))), 3.0);
       c += col * sp * 0.55 * smoothstep(0.35, 0.7, luma(c)) * wm * k;
     } else if (kind == 5) {
       float m = regionMask(i, P, 0.08);
+      if (m == 0.0) continue;
       float f = fbm(vec2(q.x * 4.0 - t * 0.025, q.y * 9.0 + sin(t * 0.05)));
       float band = smoothstep(0.42, 0.75, f) * m;
       c = mix(c, col, clamp(band * 0.55 * k, 0.0, 1.0));
     } else if (kind == 6) {
       float m = regionMask(i, P, 0.1) * k;
+      if (m == 0.0) continue;
       float d = fbm(vec2(q.x * 7.0 + sin(t * 0.6) * 0.25, q.y * 7.0 + cos(t * 0.45) * 0.2));
       c *= 1.0 + m * (smoothstep(0.45, 0.7, d) * 0.22 - 0.06);
     } else if (kind == 0) {
@@ -201,26 +233,29 @@ void main() {
       float m = 0.0;
       vec2 S = toP(uA[i].xy);
       vec2 dir = kind == 1 ? normalize(toP(uA[i].zw) - S) : vec2(0.0, 1.0);
-      vec2 lo = toP(uA[i].xy);
-      vec2 hi = toP(uA[i].zw);
       for (int j = 0; j < MAX_MOTES; j++) {
         if (j >= count) break;
-        float fi = float(j) + float(i) * 101.0;
-        float life = fract(t * 0.03 * (0.5 + h1(fi * 5.3)) + h1(fi * 7.7));
         vec2 base;
-        if (kind == 1) {
-          float a = (h1(fi * 1.7) - 0.5) * 2.0 * uB[i].z;
-          float dist = 0.25 + h1(fi * 3.1);
-          base = S + rot(a) * dir * dist + vec2(sin(t * 0.4 + fi) * 0.02, life * 0.12 - 0.06);
-        } else {
-          vec2 r0 = vec2(h1(fi * 1.7), fract(h1(fi * 3.1) + life * 0.35));
-          base = mix(lo, hi, r0) + vec2(sin(t * 0.4 + fi) * 0.02, 0.0);
-        }
-        float r = 0.0016 + h1(fi * 9.9) * 0.0022;
-        float dd = length(P - base);
-        float tw = 0.5 + 0.5 * sin(t * (2.0 + h1(fi) * 3.0) + fi);
+        float r, life, tw;
+#if PRECOMPUTED_MOTES
+        vec4 data = texelFetch(uMotes, ivec2(j, i), 0);
+        base = data.xy;
+        r = data.z;
+        life = data.w;
+#else
+        moteData(i, j, base, r, life, tw);
+#endif
+        vec2 delta = P - base;
+        // Exact support of smoothstep(r, 0, distance); no epsilon/truncated tails.
+        if (abs(delta.x) >= r || abs(delta.y) >= r) continue;
+        float dd = length(delta);
+        if (dd >= r) continue;
+#if PRECOMPUTED_MOTES
+        tw = texelFetch(uMoteTw, ivec2(j, i), 0).x;
+#endif
         m += smoothstep(r, 0.0, dd) * sin(life * PI) * (0.4 + 0.6 * tw);
       }
+      if (m == 0.0) continue;
       float boost = 1.0;
       if (kind == 1) {
         vec2 v = P - S;
@@ -255,4 +290,29 @@ void main() {
     }
   }
   outColor = vec4(clamp(c, 0.0, 1.0), 1.0);
+}`;
+
+// Float render targets are optional in WebGL2. Keep the same on-GPU math as fallback.
+export const TITLE_EFFECT_FALLBACK_FRAGMENT_SHADER = TITLE_EFFECT_FRAGMENT_SHADER.replace(
+  "#define PRECOMPUTED_MOTES 1", "#define PRECOMPUTED_MOTES 0",
+);
+
+/** Two RGBA32F texels per particle preserve the original multiply order (life and tw separate). */
+export const TITLE_EFFECT_MOTE_FRAGMENT_SHADER = TITLE_EFFECT_FRAGMENT_SHADER.slice(
+  0, TITLE_EFFECT_FRAGMENT_SHADER.indexOf("void main()"),
+).replace("out vec4 outColor;", "layout(location = 0) out vec4 outColor;\nlayout(location = 1) out vec4 outTw;") + `
+void main() {
+  AR = uImageSize.x / max(uImageSize.y, 1.0);
+  int i = int(gl_FragCoord.y);
+  int j = int(gl_FragCoord.x);
+  if (i >= uCount || (uKind[i] != 1 && uKind[i] != 2) || j >= int(uB[i].w)) {
+    outColor = vec4(0.0);
+    outTw = vec4(0.0);
+    return;
+  }
+  vec2 base;
+  float r, life, tw;
+  moteData(i, j, base, r, life, tw);
+  outColor = vec4(base, r, life);
+  outTw = vec4(tw, 0.0, 0.0, 0.0);
 }`;

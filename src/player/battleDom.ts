@@ -1,3 +1,5 @@
+import { retroTimelineEntry, retroCommandPose, initRetroMotion, isTravellingEffect, preloadRetroMotionSe, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, retroVictory, retroWalk } from "@/player/battleRetroMotion";
+import type { BattleTimelineEntrySnapshot } from "@/battle/types";
 import type {
   ActorCommand,
   BattleResult,
@@ -18,6 +20,7 @@ import { battleAnimationImpactMs, syncBattleAnimationLayer } from "@/player/batt
 import { createPresentationLedger, type BattlePresentationLedger } from "@/player/battlePresentation";
 import { commandPanel, enemyListPanel, syncEnemyListPanel, type BattleCommandSubmenu } from "@/player/battleCommandDom";
 import {
+  advanceBattleResultLevelUps,
   applyBattleDirectorState,
   battleMessageWindow,
   battleResultPanel,
@@ -122,6 +125,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   const skinId = resolveSkinId(store.getCurrent().system.battleUiStyle);
   const skin = getBattleSkin(skinId);
   root.dataset.battleSkin = skinId;
+  const retroMotion = skin.motionStyle === "retro";
+  if (retroMotion) root.dataset.battleMotion = "retro";
   // 창 크롬 묶음 — `_rm2000.css` 의 유리 HUD 는 이 속성으로 스코프해 정면(rm2000)·측면(rm2003) 이 나눠 쓴다.
   root.dataset.battleSkinFamily = battleSkinFamily(skinId);
   root.dataset.battleTransition = skin.transition;
@@ -221,6 +226,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   playbackStatus.setAttribute("aria-live", "polite");
   playbackStatus.setAttribute("aria-atomic", "true");
   root.append(field, animationLayer, messageWindow, enemyPanel, commandHost, partyPanel, resultHost, playbackStatus);
+  if (retroMotion) {
+    initRetroMotion(field, initialSnapshot);
+    preloadRetroMotionSe();
+  }
   syncPlaybackStatus();
   // 씬이 붙으면 포커스를 씬 안으로 가져온다 — 없으면 인트로·명령 국면 내내 activeElement 가
   // BODY 라 보조기술 컨텍스트가 필드에 남고 씬 스코프 포커스 링이 절대 보이지 않는다.
@@ -390,6 +399,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       directorState = withFormationBanner(state);
     },
     onTimelineEntry(entry) {
+      if (retroMotion) retroTimelineEntry(field, entry);
       // 연출이 화면에 도달한 반격·부활의 흔적 — QA 와 스킨 CSS 가 읽는다.
       if (entry.kind === "counter") root.dataset.battleCounterSeen = "true";
       if (entry.kind === "revive") root.dataset.battleReviveSeen = "true";
@@ -403,7 +413,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       activeAnimation?.destroy();
       activeAnimation = syncBattleAnimationLayer(
         animationLayer,
-        { ...options.runtime.snapshot(), lastAnimation: animation },
+        { ...options.runtime.snapshot(), lastAnimation: retroMotion && isTravellingEffect(animation) ? undefined : animation },
         root,
       );
     },
@@ -422,6 +432,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         const maxHp = vitalsBefore?.maxHp ?? battlerMaxHp(options.runtime.snapshot(), feedback.targetId);
         const intensity = hitIntensity(feedback, maxHp, lethal);
         applyHitIntensity(root, targetNode, intensity);
+        if (retroMotion) retroDamage(targetNode, feedback, lethal);
         // 타격/급소/회복/빗나감 효과음 — 사건 1개에 소리 1개. emitBattleJuice 안의
         // playBattleCue 가 샘플→합성 폴백을 단일 경로로 처리한다. 여기서 합성 보이스를
         // 따로 부르면 한 타격에 소리가 겹친다(예전 결함).
@@ -462,7 +473,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         const struck = hitStopFeedback;
         hitStopFeedback = undefined;
         const node = findBattlerNode(field, struck.targetId);
-        if (node && !node.classList.contains("defeated") && !prefersReducedMotion()) blinkBattlerNode(node);
+        if (retroMotion && node?.classList.contains("battle-actor")) retroHitRelease(node);
+        else if (node && !node.classList.contains("defeated") && !prefersReducedMotion()) blinkBattlerNode(node);
       }
       // 히트스톱이 걸리는 순간 맞은 쪽이 떨기 시작한다(impact). 멈춘 화면이 사진이 아니라 충격으로 읽힌다.
       if (active && hitFeel === "impact" && feedback && !prefersReducedMotion()) {
@@ -478,7 +490,13 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       else root.classList.remove("battle-hit-stop-critical");
     },
     onActionMotion(beat) {
-      applyActionMotion(field, beat);
+      if (retroMotion) {
+        // 시퀀서의 배속으로 실제 비트 길이를 맞춰 칸 전환이 다음 비트에 넘어가지 않게 한다.
+        const timed = beat && beat.durationMs > 0
+          ? { ...beat, durationMs: Math.max(10, Math.round(beat.durationMs / Math.max(0.2, sequencer.speedMultiplier))) } : beat;
+        retroActionMotion(field, timed, options.runtime.snapshot());
+      }
+      else applyActionMotion(field, beat);
       // 아군 공격의 접근 비트 끝(착탄 SWING_LEAD_MS 전)에 베기 궤적과 휘두름 소리를 둔다. 예전엔 휘두름
       // 소리가 명령 확정 순간(착탄 ~0.5초 전)에 울고 화면은 그동안 멈춰 있었다.
       if (hitFeel === "impact" && swingArmed && beat?.kind === "approach" && beat.userMotion === "lunge" && beat.targetId) {
@@ -505,8 +523,17 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       emitBattleJuice(success ? "escape" : "hit-miss", actorNode ?? undefined);
     },
     onResultPending(result) {
+      if (retroMotion && result === "victory") retroVictory(field);
       showFinaleStamp(result);
     },
+    // 도트 측면 전투: 근접 공격은 대상 적 앞까지 실제로 걸어간다. 비트 길이를 걸음 거리에 맞춘다.
+    ...(retroMotion ? {
+      actorApproachMs: (entry: BattleTimelineEntrySnapshot) => retroWalk(field, entry)?.approachMs,
+      actorRecoverMs: (entry: BattleTimelineEntrySnapshot) => retroWalk(field, entry)?.recoverMs,
+      // 도트 적(슬라임·박쥐)은 대상 아군 앞까지 뛰어/날아가서 친다.
+      enemyApproachMs: (entry: BattleTimelineEntrySnapshot) => retroEnemyReach(field, entry)?.approachMs,
+      enemyRecoverMs: (entry: BattleTimelineEntrySnapshot) => retroEnemyReach(field, entry)?.recoverMs,
+    } : {}),
     onResultStage(stage) {
       // 사용자가 확인키로 전부 공개했으면(revealAllResultRows) 늦게 도착한 낮은 단계가 되감지 않는다.
       resultRevealStage = Math.max(resultRevealStage, stage);
@@ -540,6 +567,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     if (snapshot.result) {
       if (directorState.step === "result" && !resultSent) {
         if (revealAllResultRows(snapshot)) return;
+        if (advanceResultLevelUps()) return;
         resultSent = true;
         options.onResult(snapshot.result, applyRollingHpSurvival(snapshot.result, snapshot, rollingHp));
       }
@@ -591,6 +619,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         // 씬을 닫던 결함(2026-09-14 실측: stage 0 에서 Z → 700ms 뒤 씬 소멸).
         if (directorState.step === "result" && !resultSent) {
           if (revealAllResultRows(snapshot)) return;
+          // 도트 결과: 둘째 확인부터는 레벨 업한 사람을 한 명씩 보인다. 다 보이면 닫는다.
+          if (advanceResultLevelUps()) return;
           resultSent = true;
           options.onResult(snapshot.result, applyRollingHpSurvival(snapshot.result, snapshot, rollingHp));
         }
@@ -1014,6 +1044,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     }
     lastFieldPresentation = fieldPresentation;
     syncBattleField(field, snapshot, lastDamageFeedback, fieldPresentation);
+    if (retroMotion) {
+      for (const node of field.querySelectorAll<HTMLElement>(".battle-actor")) {
+        retroCommandPose(node, !sequenceBusy && (snapshot.phase === "actorCommand" || snapshot.phase === "targetSelect")
+          && node.dataset.recordId === snapshot.activeActorId && !node.classList.contains("defeated"));
+      }
+    }
     syncBattleParty(partyPanel, snapshot, fieldPresentation);
     rollingHpTicker?.kick();
     // 전투 이벤트의 Tint Screen(색조·채도·흑백·세피아).
@@ -1104,7 +1140,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       return;
     }
     const selected = markMenuCursor(snapshot);
-    if (selected && document.activeElement !== selected) selected.focus({ preventScroll: true });
+    // 시퀀스(인트로·액션 비트)가 도는 동안 명령 패널은 숨어 있다. 여기서 focus() 하면 숨은 버튼에 포커스를 주려고
+    // 동기 레이아웃만 강제된다(첫 전투 진입 focus 64ms 실측). 명령 국면이 되면 syncView 가 커서 버튼에 포커스를 준다.
+    if (selected && !sequenceBusy && document.activeElement !== selected) selected.focus({ preventScroll: true });
   }
 
   /** 적 대상 국면의 커서: 「뒤로」 행이 커서를 갖고 있으면 그 행, 아니면 필드의 선택 적. */
@@ -1161,6 +1199,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     return true;
   }
 
+  /** 도트 결과의 다음 레벨 업 창을 열었으면 true. 레벨 업 창이 없거나 다 봤으면 false. */
+  function advanceResultLevelUps(): boolean {
+    const panel = resultHost.querySelector<HTMLElement>("[data-testid='battle-result-panel']");
+    return panel ? advanceBattleResultLevelUps(panel) : false;
+  }
+
   /** 결과 홀드 동안 필드 한가운데 찍히는 도장. 결과 패널이 뜨면 걷는다(syncResultHost).
    *  결과 소리·플래시는 도장과 같은 순간에 한 번 울린다 — 패널이 뜰 때까지 기다리면 막타와
    *  팡파레 사이가 1.5초 비었다(2026-09-25 녹화). 도주는 자기 연출이 있어 도장을 찍지 않는다. */
@@ -1193,7 +1237,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // 애니메이션 레이어 정리는 syncView 의 생성 지점에서 함께 처리한다(중복 방지).
     let panel = resultHost.querySelector<HTMLElement>("[data-testid='battle-result-panel']");
     if (!panel) {
-      const created = battleResultPanel(snapshot, resultRevealStage);
+      const created = battleResultPanel(snapshot, resultRevealStage, options.audioContext);
       if (!created) return;
       resultHost.replaceChildren(created);
       panel = created;
@@ -1416,10 +1460,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     return previous.step === "command" || previous.activeActorRecordId !== snapshot.activeActorId;
   }
 
-  syncView();
-  if (options.introHold !== false) {
-    sequencer.startIntro(initialSnapshot);
-  }
+  // 인트로는 startIntro 가 인트로 상태로 syncView 를 부른다. 그 앞에 명령 상태로 한 번 더 그리면 전투 DOM 전체를
+  // 명령 화면으로 만들고 포커스·레이아웃까지 한 뒤 곧바로 인트로로 갈아엎는다(첫 전투 진입 115–128ms 의 절반 가량).
+  if (options.introHold !== false) sequencer.startIntro(initialSnapshot);
+  else syncView();
 
   const tickInterval = window.setInterval(() => {
     if (sequenceBusy) return;
@@ -1477,3 +1521,6 @@ function prefersReducedMotion(): boolean {
   return typeof window !== "undefined" && typeof window.matchMedia === "function"
     && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
+
+// 도트 측면 전투에서는 날아가는 이펙트(화살·투사체)를 그리지 않는다 — 판정은 battleRetroMotion.isTravellingEffect.
+// 대상 위에서 제자리로 터지는 이펙트(불꽃·치유 빛·베기)는 남는다. 빠진 이펙트의 소리는 시전 방출음이 대신한다.

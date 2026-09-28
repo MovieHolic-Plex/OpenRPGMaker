@@ -1,7 +1,7 @@
 import type { EventAnimationType, EventPageMovement, MoveCommand } from "@/project/types";
 import { store } from "@/project/store";
 import type { AutonomousMover, PlaySceneContext } from "@/player/playSceneTypes";
-import { livingRouteKeyTarget, livingRouteTargetKey, routeForLivingMovement } from "@/player/npcLivingTravel";
+import { yieldingLivingMovers, livingRouteKeyTarget, livingRouteTargetKey, routeForLivingMovement } from "@/player/npcLivingTravel";
 import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
 import { terrainRevision } from "@/project/tilePassabilityComponents";
 
@@ -39,15 +39,34 @@ export function registerPageMoveRoutes(scene: PageMoveRouteSceneContext): void {
       continue;
     }
     const route = routeForPageMovement(movement) ?? routeForLivingMovement({ project, map: scene.map, session: scene.session, view });
-    if (!route) continue;
+    if (!route) {
+      // 지형이 바뀌어 갈 길이 없어졌다. 예전처럼 무버를 지우면(아래 정리 루프) 진행 중인 걸음의 보간까지 사라져
+      // 스프라이트가 반 칸에 멈춘다. 걷는 중이면 무버를 남기고 남은 걸음만 비운다 — 걸음이 끝나면 경로가
+      // 소진되어 다음 표면 갱신이 다시 짠다.
+      const walking = movement.type === "living" ? scene.autonomousNPCs.get(view.event.id) : undefined;
+      // 같은 페이지의 생활 경로로 걷던 무버만 남긴다. 추격 페이지에서 생활 페이지로 막 넘어온 무버는
+      // strategy 가 chase 라 걸음을 비워도 계속 쫓아간다(리뷰 반례) — 예전처럼 지운다.
+      const livingPrefix = `living:${view.event.id}:${view.pageId ?? "legacy"}:`;
+      const ownLivingKeys = walking?.activeMove && scene.pageMoveRouteEventIds.has(view.event.id)
+        ? [...scene.pageMoveRouteKeys].filter((kept) => kept.startsWith(livingPrefix))
+        : [];
+      if (walking && ownLivingKeys.length > 0) {
+        walking.moves = [];
+        walking.step = 0;
+        activePageRouteEventIds.add(view.event.id);
+        for (const kept of ownLivingKeys) activeKeys.add(kept);
+      }
+      continue;
+    }
     const key = "key" in route ? route.key : `${view.event.id}:${view.pageId ?? "legacy"}`;
     activeKeys.add(key);
     activePageRouteEventIds.add(view.event.id);
     // 지형이 바뀐 뒤 새로 짠 생활 경로는 키가 같아도(같은 길이의 우회로) 무버를 다시 깔아야 한다.
     const livingStale = movement.type === "living" && livingRouteRevisionsOf(scene)[view.event.id] !== terrainRevision(scene.map);
     const existingMover = scene.autonomousNPCs.get(view.event.id);
-    if (livingStale && existingMover && scene.pageMoveRouteEventIds.has(view.event.id)) {
-      // 같은 NPC 의 생활 경로를 지형 변경 뒤 다시 짠 경우: 무버를 새로 만들지 않고 남은 걸음만 갈아 끼운다.
+    if (movement.type === "living" && existingMover && scene.pageMoveRouteEventIds.has(view.event.id)
+      && [...scene.pageMoveRouteKeys].some((kept) => kept.startsWith(`living:${view.event.id}:${view.pageId ?? "legacy"}:`))) {
+      // 같은 생활 페이지에서 지형 또는 목적지 변경으로 다시 짠 경우: 무버를 새로 만들지 않고 남은 걸음만 갈아 끼운다.
       // 새로 만들면 진행 중인 걸음(activeMove 보간)·타이머·방향이 초기화돼 NPC 가 제자리에 멈췄다가 튄다.
       // 새 경로는 이미 걸음의 목적지(논리 좌표)에서 짰으므로, 진행 중인 걸음이 끝난 뒤 이어서 소비하면 된다.
       for (const stale of [...scene.pageMoveRouteKeys]) if (stale.startsWith(`living:${view.event.id}:`)) scene.pageMoveRouteKeys.delete(stale);
@@ -110,17 +129,21 @@ function reusableLivingRouteKey(
 ): string | undefined {
   const eventId = view.event.id;
   if (!scene.pageMoveRouteEventIds.has(eventId)) return undefined;
-  // 경로를 짠 뒤로 지형이 바뀌었으면(changeTile 로 길이 막혔을 수 있다) 남은 경로를 믿지 않는다.
-  if (livingRouteRevisionsOf(scene)[eventId] !== terrainRevision(scene.map)) return undefined;
+
   const mover = scene.autonomousNPCs.get(eventId);
-  if (!mover || mover.moves.length === 0 || mover.step >= mover.moves.length) return undefined;
+  if (!mover) return undefined;
+  const yielding = yieldingLivingMovers.has(mover);
+  if (!yielding && (mover.moves.length === 0 || mover.step >= mover.moves.length)) return undefined;
   const prefix = `living:${eventId}:${view.pageId ?? "legacy"}:`;
   let existing: string | undefined;
   for (const key of scene.pageMoveRouteKeys) {
     if (key.startsWith(prefix)) { existing = key; break; }
   }
   if (!existing) return undefined;
-  const target = livingRouteTargetKey({ project, map: scene.map, session: scene.session, view });
+  // 대피는 사건 재탐색이 관리한다. 표면 갱신이 원래 목적지로 덮어쓰지 않는다.
+  if (yielding) return existing;
+  if (livingRouteRevisionsOf(scene)[eventId] !== terrainRevision(scene.map)) return undefined;
+  const target = livingRouteTargetKey({ project, map: scene.map, session: scene.session, view }, livingRouteKeyTarget(existing));
   return target !== null && target === livingRouteKeyTarget(existing) ? existing : undefined;
 }
 
@@ -179,9 +202,10 @@ function configurePageMover(
   animationType: EventAnimationType
 ): void {
   mover.strategy = strategy;
-  // 생활 이동만 계산된 경로다(routeForLivingMovement 의 A* 결과). 작가가 쓴 custom 경로는
+  // 생활 이동만 계산된 경로다(routeForLivingMovement 의 BFS 결과). 작가가 쓴 custom 경로는
   // 막히면 걸음을 소비하는 기존 동작을 유지한다 — playSceneTypes §retryBlockedSteps.
   mover.retryBlockedSteps = movement.type === "living";
+  mover.livingRoute = movement.type === "living";
   mover.directionFix = animationType === "fixedDirection" || animationType === "fixedDirectionStep";
   mover.speedRank = clampNpcSetting(movement.speed);
   mover.frequencyRank = clampNpcSetting(movement.frequency);

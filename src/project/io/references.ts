@@ -33,6 +33,7 @@ import { monsterEvolutionCycleSpeciesIds } from "../monsterCollection";
 import { inBounds, isPassable } from "../collision";
 import { footprintCells, isSpatialFootprint, isSpatialOrientation } from "../spatialPlacements";
 import { mapPresentItemBranches } from "@/project/eventCommands/presentItemBranches";
+import { mapTroopAfterBattleLists, troopAfterBattleLists } from "@/project/troopAfterBattle";
 
 export function validateProjectReferences(project: Project): void {
   const issues = collectProjectReferenceIssues(project);
@@ -138,6 +139,7 @@ export function collectProjectItemReferenceIds(project: Project): ReadonlySet<st
       for (const condition of page.conditions) collectConditionItemReferenceIds(condition, ids);
       collectCommandItemReferenceIds(page.commands, ids);
     }
+    for (const list of troopAfterBattleLists(troop)) collectCommandItemReferenceIds(list.commands, ids);
   }
   return ids;
 }
@@ -436,6 +438,7 @@ export function repairProjectReferences(project: Project): void {
   }
   for (const troop of project.database.troops) {
     for (const page of troop.battleEventPages) page.commands = pruneDanglingCommandRefs(page.commands, commonEventIds, mapIds, eventIds, prune);
+    mapTroopAfterBattleLists(troop, (commands) => pruneDanglingCommandRefs(commands, commonEventIds, mapIds, eventIds, prune));
   }
   for (const commonEvent of project.commonEvents) {
     commonEvent.commands = pruneDanglingCommandRefs(commonEvent.commands, commonEventIds, mapIds, eventIds, prune);
@@ -1177,6 +1180,8 @@ function validateTroopRecords(project: Project, enemyIds: ReadonlySet<string>, c
     collectExistingIdIssues(`troop ${troop.id}: enemy`, troop.enemyIds, enemyIds, issues);
     if (troop.members) validateTroopMembers(troop.id, troop.members, enemyIds, issues);
     capture(issues, () => validateBattleEventPages(troop.battleEventPages, { ...context, enemySlotIds: new Set(troop.enemyIds.map((_, index) => `enemy-${index + 1}`)) }));
+    // 전투 뒤 이벤트는 필드에서 도는 맵 문맥 명령이다 — 전투 슬롯(enemy-N)은 없다.
+    for (const list of troopAfterBattleLists(troop)) capture(issues, () => validateCommands(list.commands, context));
   }
 }
 

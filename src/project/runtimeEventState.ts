@@ -6,7 +6,6 @@ import {
   normalizeCharacterFootprint,
   normalizeCharacterScale,
   normalizePassRows,
-  passageBounds,
   pointRect,
   rectsOverlap,
 } from "@/project/footprint";
@@ -118,7 +117,7 @@ export function runtimeEventView(
     : authoredPage;
   const location = session.eventLocations?.[event.id];
   const runtimePosition = positions[event.id];
-  const position = location ? { x: location.x, y: location.y } : runtimePosition ?? { x: event.x, y: event.y };
+  const position = location ?? runtimePosition ?? event;
   const runtimeDirection = location?.direction ?? runtimePosition?.direction;
   // 페이지가 있는데 조건이 맞는 페이지가 하나도 없으면(RPG 쯔꾸르 규칙대로) 그 이벤트는 맵에 없는 것과 같다 —
   // 보이지도, 막지도 않는다. 예전에는 기본값 same·겹침 금지로 서서, 한 번 돈 자동 컷신(once: 셀프 스위치 A 가 켜져
@@ -127,6 +126,9 @@ export function runtimeEventView(
   const transparent = dormant || page?.graphic.transparent === true;
   const footprint = normalizeCharacterFootprint(page?.footprint);
   const passRows = normalizePassRows(page?.passRows, footprint.height);
+  const bodyRect = footprintBounds(position.x, position.y, footprint);
+  // Separate snapshots: neither a pooled mutable view nor a body/pass alias can escape.
+  const passRect = { left: bodyRect.left, right: bodyRect.right, top: bodyRect.bottom - (passRows - 1), bottom: bodyRect.bottom };
   return {
     event,
     page,
@@ -138,8 +140,8 @@ export function runtimeEventView(
     overlapForbidden: dormant ? false : page?.overlapForbidden ?? true,
     footprint,
     passRows,
-    bodyRect: footprintBounds(position.x, position.y, footprint),
-    passRect: passageBounds(position.x, position.y, footprint, passRows),
+    bodyRect,
+    passRect,
     scale: normalizeCharacterScale(page?.graphic.scale),
     transparent,
     animationType: page?.animationType ?? "normal",
@@ -269,12 +271,13 @@ export function runtimeEventViewById(
   const pageContext: EventPageLocationContext = { locations: map.locations };
   const erased = session.erasedEventIds;
   const location = session.eventLocations?.[eventId];
-  for (const event of map.events) {
-    if (event.id !== eventId) continue;
-    if (erased?.includes(eventId)) continue;
-    if (session.removedEventIds?.[map.id]?.includes(eventId)) continue;
-    if (location && location.mapId !== map.id) continue;
-    return runtimeEventView(event, session, positions, appearanceProject, pageContext);
+  // 거르는 조건이 전부 id·세션으로만 정해져서, 같은 id 가 여럿이어도 답은 **첫** 이벤트가 정한다(예전 선형
+  // 순회와 같다). 그 첫 이벤트를 색인으로 찾는다 — NPC 마다 부르면 맵 이벤트 수만큼 훑어 NPC 수의 제곱이었다
+  // (이벤트 2,500개 전원 조회 약 22ms, Node 실측).
+  const current = firstEventById(map.events, eventId);
+  if (current && !erased?.includes(eventId) && !session.removedEventIds?.[map.id]?.includes(eventId)
+    && !(location && location.mapId !== map.id)) {
+    return runtimeEventView(current, session, positions, appearanceProject, pageContext);
   }
   if (location?.mapId === map.id && !erased?.includes(eventId)) {
     for (const sourceMap of Object.values(project.maps)) {
@@ -288,6 +291,39 @@ export function runtimeEventViewById(
   if (!spawn || spawn.mapId !== map.id) return undefined;
   const event = materializeSpawnedEvent(project, eventId, spawn);
   return event ? runtimeEventView(event, session, positions, appearanceProject, pageContext) : undefined;
+}
+
+/**
+ * 이벤트 배열의 id → 첫 위치 색인. NPC 마다 runtimeEventViewById 를 부르면 맵 이벤트 수만큼 훑어 NPC 수의
+ * 제곱이었다(이벤트 2,500개 전원 조회 약 22ms, Node 실측).
+ *
+ * 이벤트 배열은 제자리에서 고쳐지므로(push·splice·칸 대입) 색인은 **동기 패스 안에서만** 쓴다
+ * (withEventIdIndexPass). 패스 밖에서는 예전 선형 순회다. 패스는 NPC 갱신처럼 이벤트 배열을 바꾸지 않는
+ * 동기 루프만 감싼다 — 퍼징에서 "같은 길이로 앞 칸에 같은 id 를 대입" 하는 반례가 나와 상시 캐시는 버렸다.
+ */
+let eventIdPass: WeakMap<readonly GameEvent[], Map<string, GameEvent>> | null = null;
+export function withEventIdIndexPass<T>(fn: () => T): T {
+  if (eventIdPass) return fn();
+  eventIdPass = new WeakMap();
+  try {
+    return fn();
+  } finally {
+    eventIdPass = null;
+  }
+}
+/** 패스 안에서 이벤트 배열이 바뀔 수 있는 일(이벤트 실행)을 하기 직전에 부른다. 색인을 버린다. */
+export function invalidateEventIdIndexPass(): void {
+  if (eventIdPass) eventIdPass = new WeakMap();
+}
+function firstEventById(events: readonly GameEvent[], eventId: string): GameEvent | undefined {
+  if (!eventIdPass) return events.find((event) => event.id === eventId);
+  let index = eventIdPass.get(events);
+  if (!index) {
+    index = new Map();
+    for (const event of events) if (!index.has(event.id)) index.set(event.id, event);
+    eventIdPass.set(events, index);
+  }
+  return index.get(eventId);
 }
 
 function runtimeAppearanceProject(
