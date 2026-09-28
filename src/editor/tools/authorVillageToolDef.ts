@@ -39,6 +39,8 @@ import { resolveVillageDesignInput } from "./village/designContract";
 import { villageObjectHouseCatalog } from "./village/objectHouses";
 import { assertVillagePublicAccess } from "./village/lakeside";
 import { chooseCompactHouses } from "./village/compactComposition";
+import { villageReferenceExamples } from "@/ai/villageReferenceExamples";
+import { MORPHOLOGY_LABEL } from "./village/morphologyTypes";
 
 export type AuthorVillageDependencies = {
   readonly build: (project: Parameters<typeof buildVillageDomain>[0], args: VillageBuildDomainArgs) => ToolExecResult;
@@ -108,6 +110,13 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
             tilesetId: { type: "string", description: "kind=new 전용. 생략하면 숲마을 · 거리별 잔디. 사용자가 선택한 칩셋은 여기에 지정한다. 기존 맵은 원래 칩셋을 유지한다." },
             width: { type: "integer" },
             height: { type: "integer" },
+            minSize: {
+              type: "object",
+              description: "kind=existing·bounds 생략 전용. 맵을 적어도 이 크기로 넓힌다(좌상단 유지, 줄이지 않음). 마을 계약이 참고 마을 크기를 옮길 때 쓴다.",
+              properties: { width: { type: "integer" }, height: { type: "integer" } },
+              required: ["width", "height"],
+              additionalProperties: false,
+            },
             bounds: {
               ...RECT_SCHEMA,
               description:
@@ -215,6 +224,10 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
             "target.kind=\"existing\" + bounds 생략 + 맵에 이미 내용이 있을 때 전체 재시공 확인. "
             + "빈 맵은 없이도 전체 시공, bounds가 있으면 불필요하다.",
         },
+        referenceId: {
+          type: "string",
+          description: "선택. 결과가 비교할 완성 마을 사례 id([참고 마을] 노트·read_region_reference 목록). 시공 배치는 바꾸지 않고 결과의 referenceVillages 첫 자리와 그림만 정한다.",
+        },
       },
       required: ["target", "countPolicy"],
     },
@@ -226,6 +239,10 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
       interior: false,
     },
     run(draft, args): ToolExecResult {
+      // referenceId 는 결과 비교용 — 파서(허용 키 고정)와 시공기에 넘기지 않는다.
+      const { referenceId: rawReferenceId, ...buildArgs } = args;
+      const referenceId = typeof rawReferenceId === "string" && rawReferenceId.trim() ? rawReferenceId.trim() : undefined;
+      args = buildArgs;
       // 파서는 existing 대상의 name 을 반대 변형 필드로 버린다 — 이름 바꾸기용으로 먼저 잡아 둔다.
       const requestedExistingName = existingTargetName(args);
       const designed = withVillageMorphologyDefault(draft, resolveVillageDesignInput(draft, args, true));
@@ -279,10 +296,24 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
       const landmark = request.landmark ? placeVillageLandmark(draft, request.target.mapId, request.landmark) : undefined;
       const climateWarnings = applyVillageClimate(draft, request, borrowed.climate);
       const warnings = [...data.construction.warnings, ...scopeWarnings, ...renameWarnings, ...(landmark?.warnings ?? []), ...climateWarnings];
+      // 지은 마을과 가장 가까운 완성 마을 사례(테마·이름·배치로 고른다)를 나란히 둔다 — 첫 사례 그림은
+      // Pi·채팅 어댑터가 모델 입력에 붙인다(2026-09-28). 계약 실행은 다른 읽기 도구를 못 부르므로 이 결과가 유일한 통로다.
+      const builtMap = draft.maps[request.target.mapId];
+      // theme(사용자 문장·요청 테마)이 있으면 그것만으로 고른다 — 형태 라벨(강변촌)을 섞으면 「바닷가 어촌」도
+      // 강 사례가 1순위가 된다(실측). theme 이 없을 때만 맵 이름·형태로 고른다.
+      const referenceQuery = request.theme?.trim()
+        || [request.target.kind === "new" ? request.target.name : builtMap?.name, request.morphology ? MORPHOLOGY_LABEL[request.morphology] : "", request.relief === "hills" ? "언덕" : ""]
+          .filter(Boolean).join(" ");
+      const referenceVillages = villageReferenceExamples(draft, referenceQuery, builtMap?.tilesetId, referenceId);
+      const firstReference = referenceVillages[0];
+      const referenceNote = firstReference && builtMap
+        ? ` 참고 마을 「${firstReference.name}」(${firstReference.size}${firstReference.houses ? `·집 ${firstReference.houses}채` : ""})와 비교: 지은 마을 ${builtMap.width}×${builtMap.height}·집 ${inspection.actualHouseCount}채.`
+        : "";
       return {
         summary: `Village authored: ${inspection.actualHouseCount}/${request.houseCount} houses on ${request.target.mapId}.`
-          + (landmark?.placed ? ` Lighthouse at (${landmark.placed.x},${landmark.placed.y}), entrance (${landmark.placed.entrance.x},${landmark.placed.entrance.y}).` : ""),
-        data: landmark?.placed ? { ...data, landmark: landmark.placed } : data,
+          + (landmark?.placed ? ` Lighthouse at (${landmark.placed.x},${landmark.placed.y}), entrance (${landmark.placed.entrance.x},${landmark.placed.entrance.y}).` : "")
+          + referenceNote,
+        data: { ...(referenceVillages.length ? { referenceVillages } : {}), ...data, ...(landmark?.placed ? { landmark: landmark.placed } : {}) },
         ...(warnings.length === 0 ? {} : { warnings }),
       };
     },
@@ -395,8 +426,8 @@ function assertTargetCapacity(draft: Project, request: AuthorVillageRequest): vo
   // 사실」이라는 전제가, 신축에만 쓰이던 환산기(estimateVillageSize)를 기존 맵에서 막고 있었다.
   // 집 수가 요구하는 크기는 신축·기존 동일하게 같은 환산기가 정한다. 줄이지는 않으므로 비파괴다.
   const needed = estimateVillageSize({ houseCount: request.houseCount, morphology: request.morphology });
-  const width = Math.max(w, MIN_BOUNDS_SIZE, needed.width);
-  const height = Math.max(h, MIN_BOUNDS_SIZE, needed.height);
+  const width = Math.max(w, MIN_BOUNDS_SIZE, needed.width, request.target.minSize?.width ?? 0);
+  const height = Math.max(h, MIN_BOUNDS_SIZE, needed.height, request.target.minSize?.height ?? 0);
   if (width > map.width || height > map.height) growExistingVillageMap(map, width, height);
 }
 

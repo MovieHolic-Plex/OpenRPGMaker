@@ -96,6 +96,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     intentNote = buildPiIntentNote({
       project,
       packTown,
+      requestText: text,
       intent: declared.intent,
       targetMap: noteTargetMap
         ? { id: noteTargetMap.id, width: noteTargetMap.width, height: noteTargetMap.height, lived: isLivedMap(noteTargetMap) }
