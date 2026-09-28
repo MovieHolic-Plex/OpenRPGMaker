@@ -38,6 +38,14 @@ export interface PixelEnemySheet {
 export const PIXEL_ENEMY_SHEETS: readonly PixelEnemySheet[] = [
   { resourceId: "generated-enemy-slime-01", path: "assets/generated/pixel-enemies/slime.png", motion: "hop", idleFrameMs: 220 },
   { resourceId: "generated-enemy-bat-01", path: "assets/generated/pixel-enemies/bat.png", motion: "swoop", idleFrameMs: 110 },
+  { resourceId: "generated-enemy-golem-01", path: "assets/generated/pixel-enemies/golem.png", cell: 64, motion: "stomp", idleFrameMs: 300 },
+  { resourceId: "generated-enemy-dragon-01", path: "assets/generated/pixel-enemies/dragon.png", cell: 96, motion: "breath", idleFrameMs: 260 },
+  { resourceId: "generated-enemy-skeleton-archer", path: "assets/generated/pixel-enemies/skeleton-archer.png", cell: 48, motion: "shoot", idleFrameMs: 240 },
+  { resourceId: "generated-enemy-wolf-grey", path: "assets/generated/pixel-enemies/wolf-grey.png", cell: 48, motion: "dash", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-spider-cave", path: "assets/generated/pixel-enemies/spider-cave.png", cell: 48, motion: "dash", idleFrameMs: 160 },
+  { resourceId: "generated-enemy-wisp-blue", path: "assets/generated/pixel-enemies/wisp-blue.png", cell: 48, motion: "float", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-slime-red", path: "assets/generated/pixel-enemies/slime-red.png", cell: 48, motion: "hop", idleFrameMs: 180 },
+  { resourceId: "generated-enemy-zombie-rot", path: "assets/generated/pixel-enemies/zombie-rot.png", cell: 48, motion: "stomp", idleFrameMs: 340 },
 ];
 
 export const PIXEL_ENEMY_FRAME: Readonly<Record<PixelEnemyCell, { readonly col: number; readonly row: number }>> = {
