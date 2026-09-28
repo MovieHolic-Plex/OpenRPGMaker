@@ -2158,6 +2158,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         readOnly: plan.readOnly,
         routineEdit: plan.routineEdit,
         villageContract: plan.villageContract,
+        ...(plan.routingAudit ? { routingAudit: plan.routingAudit } : {}),
         planOnly: plan.planOnly,
         maxTurns: plan.maxTurns,
         // 상한에 걸려 멈췄을 때 「무엇을 올리면 되는지」를 말하려면 단계 이름이 필요하다.
