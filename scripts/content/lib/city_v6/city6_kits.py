@@ -73,7 +73,7 @@ if kp('castle','castle.smithy',h['im'],29,13,name='smithy',door=h['door'],chim=h
 h=castle6.castle_house(3,1,door=1,seed=5,chim=False); kp('castle','castle.barracks',h['im'],29,7,name='barracks',door=h['door'],above=0)
 P_('c_anvil',pf.anvil,28,14); P_('c_hay',pi.P['건초더미'],1,12); P_('c_trough',pi.trough,2,9)
 P_('c_well',pe.P['돌 우물'],1,15)
-P_('c_target',V2('과녁'),6,17); P_('c_rack',pf.P['무기 거치대'],24,16)
+P_('c_target',V2('과녁'),6,17)   # v6 QA: the weapon rack (24,16) stood against the wall and read as a gallows — dropped
 for y in range(1,19):
     for x in range(1,32):
         if E[y][x]==2 and not F[y][x] and not water[y][x] and occ[y][x] not in ('walk','wall'):
@@ -156,6 +156,9 @@ if P_('fountain',lambda: pf.fountain(0),63,43): rec('forum','forum.fountain',63,
 for i,(x,y) in enumerate(((60,42),(67,42))):
     if P_(f'f_statue{i}',lambda i=i: roman.statue_plinth(i%2,10+i),x,y): rec('forum','forum.statue',x,y,2,4)
 kobj('forum','forum.gate',v6pieces.forum_gate6(),55,45,['#PPP#']*4,name='forum_gate')
+for _x in range(62,67): PROPBAN.add((_x,46))          # v6 QA: a cart stood on the fountain basin's lower rim
+for _y in range(43,49):                                # v6 QA: stalls stood inside the arch (gate rows 45-48) and just above it
+    for _x in range(55,60): PROPBAN.add((_x,_y))
 for y in range(35,47):
     for x in range(55,75): FORUM[y][x]=plaza[y][x]
 # ======================= windmill (v6: one tall tower mill, body in the base, sails animate) =======================

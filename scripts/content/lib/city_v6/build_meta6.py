@@ -7,7 +7,7 @@ props=[p for p in m['props'] if p['id']!='bridge_ew']
 def E(iid,ko,en,desc,cat,tags,im,foot,rows,rules,rel=(),frames=None,legend=None,by='/tmp/j8city6/roman.py'):
     return dict(id=iid,name_ko=ko,name_en=en,description_ko=desc,category=cat,tags=tags,footprint_cells=list(foot),image_px=[im.width,im.height],
                 overhang_up_px=max(0,im.height-foot[1]*16),role_grid=dict(rows=rows,anchor='맨 아랫줄 왼쪽 칸 = 배치 좌표',**({'legend':legend} if legend else {})),
-                placement_rules=list(rules),related=[dict(id=a,why=b) for a,b in rel],variants_group=iid.split('_')[0],animation_frames=frames,status='v5',drawn_by=by)
+                placement_rules=list(rules),related=[dict(id=a,why=b) for a,b in rel],variants_group=iid.split('_')[0],animation_frames=frames,status='v6',drawn_by=by)
 b=roman.bridge_grand(4)
 N=[
  E('bridge_grand','큰 아치 돌다리','Grand stone arch bridge','남북으로 흐르는 4칸 강을 동서로 건너는 돌다리. 먼 난간(물이 비치는 난간살)·판석 상판 2줄·가까운 난간·아치 2개가 뚫린 앞면·가운데 교각의 물가름돌. 양 끝 받침에 가로등, 가운데 받침에 토가 석상, 끝 받침에 공 장식.',
@@ -62,7 +62,7 @@ out=dict(schema=m['schema'],source='버들항 v6 (로마풍) — scripts/content
     estate=dict(name_ko='귀족 저택',pieces=[v for v in PIE.values() if v['kit']=='estate'],answer=kits['estate']['answer'],roles=kits['estate']['roles'],legend=kits['estate']['legend'],bbox_cells=kits['estate']['bbox'],
        walk_route=['아래 마을 계단 (44,28) → 남쪽 길 44-45 (y23-27) → 정문 G (44-45,22) → 담 안 길(y21) → 자갈 축 → 저택 문 D (45,11)','문지기 집 D (52,20), 마구간 D (52,11)'],
        interior_link='저택 실내(현관홀·계단·식당·침실)는 실내 v4 작업의 저택 방 세트로 잇는다 — 이 외관의 문 (45,11)이 현관홀 남쪽 문과 짝.'),
-    forum=dict(name_ko='포룸 + 카페 + 수도교',answer=kits['forum']['answer'],roles=kits['forum']['roles'],legend=kits['forum']['legend'],bbox_cells=kits['forum']['bbox'])),
+    forum=dict(name_ko='포룸 + 카페',answer=kits['forum']['answer'],roles=kits['forum']['roles'],legend=kits['forum']['legend'],bbox_cells=kits['forum']['bbox'])),
   city_placements=json.load(open('/tmp/j8city6/city6_placements.json')))
-json.dump(out,open('/home/main/claude-viz/city-beodeul-v5-meta.json','w'),ensure_ascii=False,indent=1)
+json.dump(out,open('/home/main/claude-viz/city-beodeul-v6-meta.json','w'),ensure_ascii=False,indent=1)
 print('props',len(out['props']),'new',len(N),'kit pieces',len(PIE),'placements',len(out['city_placements']))

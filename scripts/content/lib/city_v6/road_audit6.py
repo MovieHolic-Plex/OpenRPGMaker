@@ -5,6 +5,28 @@
 from collections import deque as _dq2
 ROADLOG={'extended':0,'pruned_cells':0,'islands_removed':0}
 _DF={(dx,by+1) for _n,dx,by in HOUSES}
+# v6 QA: the lake piers are destinations too. On the sand banks the promenade beside them was pruned as a dead end, so a
+# pier head stood in grass. After the pruning, a 2-wide path runs from each pier head (the two cells above it) to the
+# nearest cell of the connected street network (BFS over free same-level ground); those cells are then kept.
+def _pier_paths(net):
+    for px_ in (20,38,62,76):
+        head=[(px_,shore[px_]-1),(px_+1,shore[px_]-1)]
+        if any(occ[y][x] not in (None,'road','rim') for x,y in head) or any(h in net for h in head): continue
+        start=head[0]; prev={start:None}; q=_dq2([start]); goal=None
+        free=lambda x,y: 0<=x<W-1 and 0<=y<H and occ[y][x] in (None,'rim','road') and occ[y][x+1] in (None,'rim','road')
+        while q and goal is None:
+            cx,cy=q.popleft()
+            for ddx,ddy in ((0,-1),(1,0),(-1,0),(0,1)):
+                n_=(cx+ddx,cy+ddy)
+                if n_ in prev: continue
+                if n_ in net or (n_[0]+1,n_[1]) in net: prev[n_]=(cx,cy); goal=n_; break
+                if free(*n_) and E[n_[1]][n_[0]]==E[cy][cx]: prev[n_]=(cx,cy); q.append(n_)
+        if goal is None: print('pier path failed',px_); continue
+        c=prev[goal]
+        while c is not None:
+            for xx in (c[0],c[0]+1): occ[c[1]][xx]='road'; road[c[1]][xx]=True; _DF.add((xx,c[1]))
+            c=prev[c]
+        ROADLOG['pier_paths']=ROADLOG.get('pier_paths',0)+1
 _GATEADJ={(gx,gy+k) for gx,gy in GATES for k in (1,2,3)}
 def _walk(x,y): return 0<=x<W and 0<=y<H and occ[y][x] in ('road','plaza','stair','bridge','walk','gate')
 for gx,gy in GATES:                                   # the gate passage runs down to the first street
@@ -110,4 +132,5 @@ while q:
 for y in range(H):
     for x in range(W):
         if occ[y][x]=='road' and (x,y) not in seen and (x,y) not in _DF: occ[y][x]=None; road[y][x]=False; ROADLOG['islands_removed']+=1
+_pier_paths(seen)
 print('road audit',ROADLOG)

@@ -395,8 +395,11 @@ def pier(w,h):
             px[X,Y]=c+(255,)
     return im
 for px_ in (20,38,62,76):
-    y0=shore[px_]
-    objs.append((pier(2,5),px_*16,y0*16,True))
+    # v6 QA: on the natural (sand) banks x<=35 / x>=65 the pier head stopped in the carved sand, a cell short of the
+    # promenade; there it starts one row higher so the planks run from the road edge out over the water
+    nat=px_<=35 or px_>=65
+    y0=shore[px_]-(1 if nat else 0)
+    objs.append((pier(2,5+(1 if nat else 0)),px_*16,y0*16,True))
 # boats sit in the water (their own waterline effect); drawn per frame by city2_anim.py, frame 0 here
 BOATS=[('ship',51,88),('fishing',40,89),('fishing',77,91),('rowboat',22,92),('rowboat',35,94),('rowboat',66,95),('rowboat',44,97),('barge',47,80)]
 
