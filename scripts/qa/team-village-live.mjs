@@ -89,6 +89,49 @@ await withTsModule(resolve("electron/serve/runtime.ts"), "team-village-live.mjs"
     });
     // 스트림 줄 크기와 페이지 주 스레드 멈춤을 잰다 — 워치독(30초)이 어디서 울리는지 보려고.
     await page.addInitScript(() => {
+      // 큰 직렬화와 그 실패를 잰다 — 적용 뒤 자동 저장이 어느 JSON.stringify 에서 터지는지(allocation size overflow).
+      // 저장·다시 받기·호스트 리비전을 시각과 함께 남긴다 — 실행 중 호스트 문서 교체가 적용 기준을 무너뜨리는지 보려고.
+      window.__qaHost = [];
+      const wrapBridge = () => {
+        const p = window.oprn?.project;
+        if (!p || p.__qaWrapped) return !!p;
+        for (const name of ["loadFolded", "save", "saveMapPatch"]) {
+          const real = p[name];
+          if (typeof real !== "function") continue;
+          p[name] = async function (...args) {
+            const e = { name, at: Math.round(performance.now() / 1000), from: String(new Error().stack).split("\n").slice(1, 5).map((l) => l.split("@")[0]).join("<") };
+            window.__qaHost.push(e);
+            const out = await real.apply(this, args);
+            e.doneAt = Math.round(performance.now() / 1000); e.kind = out?.kind; e.revision = out?.revision;
+            return out;
+          };
+        }
+        const team = window.oprn.team;
+        const status = team?.status;
+        if (typeof status === "function") {
+          let last;
+          team.status = async (...a) => { const out = await status.apply(team, a); if (out?.revision !== last) { last = out?.revision; window.__qaHost.push({ name: "revision", at: Math.round(performance.now() / 1000), revision: last }); } return out; };
+        }
+        p.__qaWrapped = true;
+        return true;
+      };
+      const wrapTimer = setInterval(() => { if (wrapBridge()) clearInterval(wrapTimer); }, 5);
+      window.__qaStringify = [];
+      const realStringify = JSON.stringify;
+      const shape = (v) => {
+        if (!v || typeof v !== "object") return typeof v;
+        try { return Object.fromEntries(Object.keys(v).slice(0, 40).map((k) => { let n = null; try { n = realStringify(v[k])?.length ?? null; } catch { n = "overflow"; } return [k, n]; })); } catch { return "?"; }
+      };
+      JSON.stringify = function (value, ...rest) {
+        try {
+          const out = realStringify.call(this, value, ...rest);
+          if (typeof out === "string" && out.length > 50_000_000) window.__qaStringify.push({ at: Math.round(performance.now() / 1000), chars: out.length, stack: String(new Error().stack).slice(0, 600) });
+          return out;
+        } catch (e) {
+          window.__qaStringify.push({ at: Math.round(performance.now() / 1000), error: String(e), stack: String(new Error().stack).slice(0, 1200), shape: shape(value) });
+          throw e;
+        }
+      };
       window.__qaStalls = [];
       let last = performance.now();
       setInterval(() => { const now = performance.now(); if (now - last > 3000) window.__qaStalls.push({ at: Math.round(now / 1000), gapMs: Math.round(now - last) }); last = now; }, 500);
@@ -152,6 +195,8 @@ await withTsModule(resolve("electron/serve/runtime.ts"), "team-village-live.mjs"
       if (idleStreak >= 2) break;
       await page.waitForTimeout(15_000);
       summary.agentsSeen = await page.locator(".ai-team-agents > li").allInnerTexts().then((rows) => rows.map((r) => r.replace(/\s+/g, " ").slice(0, 120))).catch(() => []);
+      summary.hostTrace = await page.evaluate(() => (window.__qaHost ?? []).slice(-40)).catch(() => null);
+      summary.pageSeconds = await page.evaluate(() => Math.round(performance.now() / 1000)).catch(() => null);
       await save();
     }
     summary.finishedWithin = Date.now() < end;
@@ -161,6 +206,8 @@ await withTsModule(resolve("electron/serve/runtime.ts"), "team-village-live.mjs"
     summary.processNotes = await page.locator(".ai-work-process-note").allInnerTexts().then((rows) => rows.map((r) => r.slice(0, 600))).catch(() => []);
     summary.stalls = await page.evaluate(() => window.__qaStalls ?? []).catch(() => null);
     summary.bigChunks = await page.evaluate(() => (window.__qaBigChunks ?? []).slice(-12)).catch(() => null);
+    summary.bigStringify = await page.evaluate(() => (window.__qaStringify ?? []).slice(-20)).catch(() => null);
+    summary.hostTrace = await page.evaluate(() => (window.__qaHost ?? []).slice(-40)).catch(() => null);
     summary.chatTail = (await page.getByTestId("ai-chat-log").innerText().catch(() => "")).slice(-1500);
     await page.screenshot({ path: out + "/03-finished.png", timeout: 90_000 }).catch((e) => summary.errors.push("screenshot: " + e.message.slice(0, 120)));
     if (!summary.finishedWithin) await page.getByTestId("ai-abort").click().catch(() => undefined);

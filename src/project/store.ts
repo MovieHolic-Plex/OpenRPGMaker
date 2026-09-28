@@ -11,6 +11,7 @@ import { createBlankProject } from "./defaults";
 import { ensureSwitchVariableSlots } from "./defaults/blankProject";
 import { ensureBundledResourceProfiles, ensureBundledTilesets, removeLegacyRmTileset, removeLegacySpriteReferences } from "./defaults/defaultAssets";
 import { hasPendingFacesetSheetRepair, repairUploadedFacesetSheets } from "@/assets/facesetSheetRepair";
+import { separateInlineUploadedMedia } from "./persistence/inlineMediaRefs";
 import { repairInteriorTransparentPropLayers } from "./defaults/interiorTransparentPropLayerRepair";
 import { ensureScarloxyPokemonInteriors } from "./defaults/scarloxyPokemonInteriors";
 import { ensureDefaultDatabaseIconResources } from "./defaults/defaultDatabaseIconResources";
@@ -1657,9 +1658,21 @@ class ProjectStore {
       this.markLocalMutation({ scope: "system", origin: "system", label: "Faceset sheet migration" });
       this.emit();
     }
+    // 파일 저장이 있는 호스트면 인라인 업로드 자산을 지금 파일 참조로 바꾼다(inlineMediaRefs.ts 머리말).
+    // 로드가 끝나기 전이라 조수 실행 기준이 잡히기 전이다 — 나중에 호스트가 문서를 다시 쓰면 실행 기준이 무너진다.
+    const mediaTarget = this.current;
+    const media = this.repository.supportsAssetRefs && this.remotePersistenceEnabled
+      ? await separateInlineUploadedMedia(mediaTarget, this.repository.assets)
+      : null;
+    if (this.current !== mediaTarget || this.contentLineage !== repairLineage) return;
+    if (media) {
+      this.current = media.project;
+      this.markLocalMutation({ scope: "system", origin: "system", label: `업로드 자산 파일 분리 (${media.assetIds.length}건)` });
+      this.emit();
+    }
     // Boot load must not block the editor on a full remote rewrite (~2MB+).
     // Schedule deferred auto-save so the shell can paint first.
-    if ((changed || facesRepaired) && this.remotePersistenceEnabled) {
+    if ((changed || facesRepaired || media) && this.remotePersistenceEnabled) {
       this.dirtySinceLastPersist = true;
       if (persistIfChanged && this.writeAuthority?.mode !== "canonical") await this.persistCurrent();
       else if (persistIfChanged && !this.persistInFlight) await this.saveCurrentWithAutoSaveState();
