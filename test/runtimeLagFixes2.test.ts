@@ -27,7 +27,9 @@ import { registerPageMoveRoutes } from "@/player/playScenePageMoveRoutes";
 import { applyChangeTileStep } from "@/player/playSceneMapCommands";
 import { firstConnectionToward } from "@/player/npcLivingTravel";
 import { pointRect } from "@/project/footprint";
-import type { GameMap, MapConnection, Project } from "@/project/types";
+import type { GameEvent, GameMap, MapConnection, Project } from "@/project/types";
+import { invalidateEventIdIndexPass, runtimeEventViewById, runtimeEventViewsForMap, withEventIdIndexPass } from "@/project/runtimeEventState";
+import { updateParallelEvents } from "@/player/playSceneSchedulers";
 import type { TileGraft, TilesetDef } from "@/project/types";
 
 afterEach(() => {
@@ -584,3 +586,174 @@ describe("4차 2차 리뷰 반례", () => {
   });
 });
 
+
+describe("5차: 단건 이벤트 조회 색인", () => {
+  it("무작위 제자리 편집 뒤에도 패스 안팎에서 전체 순회의 첫 항목과 같고, 패스는 invalidate 뒤 새 배열을 본다", () => {
+    const { project, map, session, positions } = (() => {
+      const project = createBlankProject();
+      const map = project.maps[project.startMapId]!;
+      const session = startSession(project);
+      return { project, map, session, positions: {} as Record<string, { x: number; y: number }> };
+    })();
+    let seed = 0x5a5a;
+    const rand = () => { seed = (Math.imul(seed ^ (seed >>> 15), 0x2c1b3c6d) + 0x9e3779b9) >>> 0; return seed / 4294967296; };
+    const make = (id: string) => ({ id, x: Math.floor(rand() * 10), y: Math.floor(rand() * 10), trigger: { kind: "action" }, commands: [],
+      pages: [{ id: id + "_p", name: "p", conditions: [], graphic: {}, trigger: { kind: "action" }, priority: "same",
+        movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [] }] }) as never as GameEvent;
+    map.events = Array.from({ length: 12 }, (_, i) => make("e" + i));
+    const ids = () => ["e0", "e3", "e7", "e11", "dup", "zz", "e5"];
+    for (let step = 0; step < 400; step += 1) {
+      const op = Math.floor(rand() * 5);
+      if (op === 0) map.events.push(make(rand() < 0.3 ? "dup" : "e" + Math.floor(rand() * 14)));
+      if (op === 1 && map.events.length > 1) map.events.splice(Math.floor(rand() * map.events.length), 1);
+      if (op === 2 && map.events.length) map.events[Math.floor(rand() * map.events.length)] = make("e" + Math.floor(rand() * 14));
+      if (op === 3 && map.events.length) (map.events[Math.floor(rand() * map.events.length)] as { id: string }).id = rand() < 0.5 ? "dup" : "e" + Math.floor(rand() * 14);
+      for (const id of ids()) {
+        const expected = runtimeEventViewsForMap(project, map, session, positions).find((view) => view.event.id === id);
+        expect(runtimeEventViewById(project, map, session, positions, id)?.event, `step ${step} id ${id}`).toBe(expected?.event);
+        // 패스 안에서도 같다(패스 동안에는 배열을 바꾸지 않는다).
+        expect(withEventIdIndexPass(() => runtimeEventViewById(project, map, session, positions, id))?.event).toBe(expected?.event);
+      }
+    }
+    withEventIdIndexPass(() => {
+      const before = runtimeEventViewById(project, map, session, positions, "late");
+      expect(before).toBeUndefined();
+      map.events.unshift(make("late"));
+      invalidateEventIdIndexPass();
+      expect(runtimeEventViewById(project, map, session, positions, "late")?.event.id).toBe("late");
+    });
+  });
+});
+
+
+describe("5차: 병렬 이벤트 16단계 상한", () => {
+  // dialogueHost 가 instanceof 로만 본다. 노드 환경에는 DOM 이 없다.
+  afterEach(() => { vi.unstubAllGlobals(); });
+  const parallelScene = (commands: unknown[]) => {
+    vi.stubGlobal("HTMLElement", class {});
+    const project = createBlankProject();
+    project.commonEvents = [{ id: "burst", name: "Burst", trigger: "parallel", commands }] as never;
+    store.replace(project);
+    const session = startSession(store.getCurrent());
+    session.commonEvents = store.getCurrent().commonEvents;
+    const tiles: number[] = [];
+    const scene = {
+      map: store.getCurrent().maps[project.startMapId]!, session, eventPositions: {},
+      parallelProcesses: new Map(), game: { registry: { get: () => undefined } },
+      activeRuntimeEvents: () => [],
+      applyChangeTileStep: (step: { x: number }) => { tiles.push(step.x); },
+      refreshRuntimeSurfaces: () => undefined,
+    };
+    return { scene, tiles, session };
+  };
+  const tile = (x: number) => ({ kind: "changeTile", mapId: "", layer: "lower", x, y: 0, tile: 1 });
+
+  it("한 프레임 상한에 걸린 17번째 명령을 다음 프레임에 실행한다", () => {
+    const { scene, tiles, session } = parallelScene([...Array.from({ length: 17 }, (_, i) => tile(i)), { kind: "setSwitch", switchId: "sw_done", value: true }]);
+    updateParallelEvents(scene as never, 16);
+    expect(tiles).toHaveLength(16);
+    updateParallelEvents(scene as never, 16);
+    expect(tiles).toEqual(Array.from({ length: 17 }, (_, i) => i));
+    expect(session.switches.sw_done).toBe(true);
+  });
+
+  it("상한 바로 뒤의 대기를 건너뛰지 않는다", () => {
+    const { scene, tiles, session } = parallelScene([...Array.from({ length: 16 }, (_, i) => tile(i)), { kind: "wait", ms: 500 }, { kind: "setSwitch", switchId: "sw_done", value: true }]);
+    updateParallelEvents(scene as never, 16);
+    updateParallelEvents(scene as never, 16);
+    expect(tiles).toHaveLength(16);
+    expect(session.switches.sw_done).not.toBe(true);
+    updateParallelEvents(scene as never, 600);
+    expect(session.switches.sw_done).toBe(true);
+  });
+});
+
+const blockedMidStep = () => {
+  const project = createBlankProject();
+  const base = project.tilesets[Object.keys(project.tilesets)[0]!]!;
+  project.tilesets.t = { ...base, id: "t", count: 2,
+    passability: [{ up: true, down: true, left: true, right: true }, { up: false, down: false, left: false, right: false }],
+    priority: ["lower", "lower"], ledgeDirections: undefined } as TilesetDef;
+  const livingPage = { id: "p", name: "p", conditions: [], graphic: {}, trigger: { kind: "action" as const }, priority: "same" as const, commands: [],
+    movement: { type: "living" as const, speed: 3, frequency: 3, living: { destinations: [{ mapId: "m", x: 2, y: 0 }], repeat: false } } };
+  const map = { ...createBlankMap("m", 3, 1, "t"), id: "m", lowerTiles: Array(3).fill(0), upperTiles: Array(3).fill(-1),
+    events: [{ id: "npc", x: 0, y: 0, trigger: { kind: "action" }, commands: [], pages: [livingPage] }] } as unknown as GameMap;
+  project.maps = { m: map };
+  project.startMapId = "m";
+  store.replace(project);
+  const session = startSession(store.getCurrent());
+  session.currentMapId = "m";
+  const movers = new Map<string, Record<string, unknown>>();
+  const scene = {
+    map: store.getCurrent().maps.m!, session, eventPositions: { npc: { x: 0, y: 0 } },
+    pageMoveRouteKeys: new Set<string>(), pageMoveRouteEventIds: new Set<string>(), commandMoveRouteEventIds: new Set<string>(),
+    autonomousNPCs: movers, getMapId: () => "m",
+    registerAutonomousMover(id: string, moves: unknown[], repeat: boolean) {
+      movers.set(id, { moves, repeat, step: 0, timer: 0, activeMove: null, facing: "down", animationEnabled: true, opacity: 255 });
+    },
+  };
+  registerPageMoveRoutes(scene as never);
+  const mover = movers.get("npc")!;
+  const walking = { fromX: 0, fromY: 0, toX: 1, toY: 0, elapsedMs: 100, durationMs: 400 };
+  mover.activeMove = walking;
+  mover.step = 1;
+  scene.eventPositions.npc = { x: 1, y: 0 };
+  // 걷는 도중 목적지를 막고 표면을 다시 맞춘다.
+  const block = () => {
+    applyChangeTileStep(scene as never, { kind: "changeTile", mapId: "m", layer: "lower", x: 2, y: 0, tile: 1 } as never);
+    registerPageMoveRoutes(scene as never);
+  };
+  return { scene, movers, mover, walking, block };
+};
+
+describe("5차: 걷는 중 길이 막힘", () => {
+  it("걸음 도중 목적지가 막혀도 무버와 진행 중인 걸음을 지우지 않고 남은 걸음만 비운다", () => {
+    const { scene, movers, mover, walking, block } = blockedMidStep();
+    block();
+    expect(movers.get("npc")).toBe(mover);
+    expect(mover.activeMove).toBe(walking);
+    expect(mover.moves).toEqual([]);
+    expect(scene.pageMoveRouteEventIds.has("npc")).toBe(true);
+    expect([...scene.pageMoveRouteKeys].some((key) => key.startsWith("living:npc:"))).toBe(true);
+  });
+
+  it("다른 페이지(추격 등)에서 넘어온 무버는 남기지 않는다", () => {
+    // 추격 페이지의 키로 걷던 무버(페이지 전환 직후)를 흉내 낸다.
+    const { scene, movers, mover, block } = blockedMidStep();
+    scene.pageMoveRouteKeys.clear();
+    scene.pageMoveRouteKeys.add("npc:p_chase");
+    mover.strategy = "chase";
+    block();
+    expect(movers.has("npc")).toBe(false);
+    expect(scene.pageMoveRouteEventIds.has("npc")).toBe(false);
+  });
+});
+
+describe("5차: 조건 분기의 소셜 host 탐색", () => {
+  it("호감도 조건은 중첩돼도 이벤트의 characterId 로 읽고, 다른 조건은 맵을 뒤지지 않는다", async () => {
+    const { createInterpreter } = await import("@/player/interpreter");
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId]!;
+    map.events.push({ id: "npc", x: 1, y: 1, characterId: "char_mina", trigger: { kind: "action" }, commands: [], pages: [] } as never);
+    const session = startSession(project);
+    session.friendship = { char_mina: 5 };
+    session.switches.gate = true;
+    let mapScans = 0;
+    const counted = { ...project, maps: new Proxy(project.maps, { ownKeys(target) { mapScans += 1; return Reflect.ownKeys(target); } }) };
+    const fork = (condition: unknown) => ({ kind: "fork", condition, then: [{ kind: "setVariable", variableId: "hit", op: "+=", value: 1 }], else: [] });
+    const run = (commands: unknown[]) => {
+      session.variables.hit = 0;
+      const interpreter = createInterpreter(commands as never, session, counted as never, { currentEventId: "npc" });
+      let step = interpreter.start();
+      for (let i = 0; i < 50 && step.kind !== "done"; i++) step = interpreter.resume(undefined);
+      return session.variables.hit;
+    };
+    expect(run([fork({ kind: "not", condition: { kind: "all", conditions: [{ kind: "friendshipAtLeast", value: 5 }] } })])).toBe(0);
+    expect(run([fork({ kind: "friendshipAtLeast", value: 5 })])).toBe(1);
+    expect(run([fork({ kind: "friendshipAtLeast", value: 6 })])).toBe(0);
+    const scansBefore = mapScans;
+    expect(scansBefore).toBeGreaterThan(0);
+    expect(run(Array.from({ length: 20 }, () => fork({ kind: "all", conditions: [{ kind: "switch", switchId: "gate", value: true }, { kind: "selfSwitch", key: "A", value: false }] })))).toBe(20);
+    expect(mapScans).toBe(scansBefore);
+  });
+});
