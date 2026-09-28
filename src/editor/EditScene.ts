@@ -294,8 +294,10 @@ export class EditScene extends PhaserRuntime.Scene {
   /** 유휴 렌더 게이트용 — 지난 프레임의 카메라. 바뀌면 렌더를 깨운다. */
   private lastRenderCamera: { scrollX: number; scrollY: number; zoom: number; width: number; height: number } | null = null;
   private readonly requestRenderFrame = (): void => requestEditRenderFrame(this.game);
-  private requestTextureRedraw: () => void = () => {};
-  private cancelTextureRedraw: () => void = () => {};
+  private textureRedrawActive = false;
+  private textureRedrawEpoch = 0;
+  private textureRedrawFrame: number | null = null;
+  private readonly requestTextureRedraw = (): void => this.scheduleTextureRedraw();
   private lastRenderStateKey = "";
   /** 레이어 색·충돌 오버레이·이벤트 마커·격자. 타일 메시 재생성 키와 분리한다. */
   private lastViewChromeKey = "";
@@ -949,26 +951,31 @@ export class EditScene extends PhaserRuntime.Scene {
     ].join("|");
   }
 
-  /** 로더 완료 묶음은 한 프레임에 한 번만 타일 객체를 재생성한다. */
   private initTextureRedraw(): void {
     this.cancelTextureRedraw();
-    let frame: number | null = null;
-    let disposed = false;
-    // create마다 별도 수명: 이전 씬의 늦은 Promise도 새 씬을 다시 그리지 않는다.
-    this.requestTextureRedraw = () => {
-      if (disposed || frame !== null) return;
-      frame = requestAnimationFrame(() => {
-        frame = null;
-        if (disposed) return;
-        requestEditRenderFrame(this.game);
-        this.redraw();
-      });
-    };
-    this.cancelTextureRedraw = () => {
-      disposed = true;
-      if (frame !== null) cancelAnimationFrame(frame);
-      frame = null;
-    };
+    this.textureRedrawActive = true;
+  }
+
+  /** 로더 완료 묶음은 한 프레임에 한 번만 타일 객체를 재생성한다. */
+  private scheduleTextureRedraw(): void {
+    if (!this.textureRedrawActive || this.textureRedrawFrame !== null) return;
+    const epoch = this.textureRedrawEpoch;
+    this.textureRedrawFrame = requestAnimationFrame(() => {
+      // 이미 dispatch된 옛 프레임도 재시작한 씬의 예약을 지우지 않는다.
+      if (!this.textureRedrawActive || epoch !== this.textureRedrawEpoch) return;
+      this.textureRedrawFrame = null;
+      requestEditRenderFrame(this.game);
+      this.redraw();
+    });
+  }
+
+  private cancelTextureRedraw(): void {
+    this.textureRedrawActive = false;
+    this.textureRedrawEpoch++;
+    if (this.textureRedrawFrame !== null) cancelAnimationFrame(this.textureRedrawFrame);
+    this.textureRedrawFrame = null;
+    // requestTextureRedraw는 유지한다. 로더가 씬별 pending 요청을 재사용하므로,
+    // 재시작 후 도착한 완료는 현재 씬에서 새 프레임을 요청할 수 있어야 한다.
   }
 
   private redrawForStoreChange(change: ProjectChangeDescriptor): void {

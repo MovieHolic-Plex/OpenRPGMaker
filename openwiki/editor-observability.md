@@ -559,7 +559,8 @@ requestEditRenderFrame으로 한 프레임만 요청하고, 카메라·포인터
 
 `EditScene`의 캐릭셋·이벤트 스프라이트·업로드 타일셋·번들 로더 onReady 및 맵 전환의
 타일셋 onReady는 같은 rAF 예약 함수를 사용한다. 한 프레임에 완료된 텍스처 수와 무관하게
-전체 redraw와 단발 렌더 요청은 한 번이다. cleanup은 예약을 취소하고 그 씬 수명의
-늦은 완료 콜백을 무시한다. 다음 create는 새 예약 함수를 만들어 이전 완료와 분리한다.
+전체 redraw와 단발 렌더 요청은 한 번이다. cleanup은 예약을 취소하고 종료 중에는
+늦은 완료 콜백을 무시한다. 재시작 전 예약은 epoch로 무효화하되, 씬별 pending 로더가
+재사용하는 완료 콜백은 재시작 후 새 프레임을 요청할 수 있게 유지한다.
 동기 store redraw와 프레임 등록·로드 오류 처리는 유지한다. 실측은
 `verify-shots/perf-editor-subs/SUMMARY.md`의 텍스처 완료 항목에 기록한다.

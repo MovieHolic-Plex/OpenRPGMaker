@@ -10,6 +10,7 @@ type TextureScene = {
   redraw: ReturnType<typeof vi.fn>;
 };
 let prototype: TextureScene;
+let Scene: new () => TextureScene;
 let scene: TextureScene;
 let frames: Map<number, FrameRequestCallback>;
 let callbacks: (() => void)[];
@@ -24,7 +25,8 @@ beforeAll(async () => {
     addEventListener() {}, removeEventListener() {},
   });
   vi.stubGlobal("document", { querySelector: () => null });
-  prototype = (await import("@/editor/EditScene")).EditScene.prototype as unknown as TextureScene;
+  Scene = (await import("@/editor/EditScene")).EditScene as unknown as new () => TextureScene;
+  prototype = Scene.prototype;
   bundled = await import("@/assets/bundled");
   sprites = await import("@/assets/uploadedEventSprites");
   tilesets = await import("@/assets/uploadedTilesets");
@@ -41,9 +43,9 @@ beforeEach(() => {
   vi.spyOn(bundled, "ensureBundledProjectTextures").mockImplementation((_scene, _project, ready) => { callbacks.push(ready); });
   vi.spyOn(sprites, "ensureUploadedEventSpriteTextures").mockImplementation((_scene, _project, ready) => { callbacks.push(ready); });
   vi.spyOn(tilesets, "ensureUploadedTilesetTextures").mockImplementation((_scene, _project, ready) => { callbacks.push(ready); });
-  scene = Object.assign(Object.create(prototype), {
+  scene = Object.assign(new Scene(), {
     game: {}, mapId: () => "current", eventLayerClickFeedback: null,
-    canIncrementallyRenderCells: () => false, redraw: vi.fn(), cancelTextureRedraw() {},
+    canIncrementallyRenderCells: () => false, redraw: vi.fn(),
   });
   scene.initTextureRedraw();
 });
@@ -97,13 +99,18 @@ it("cancels queued redraw and ignores late completions after disposal", () => {
   expect(scene.redraw).not.toHaveBeenCalled();
 });
 
-it("isolates restarted scenes from old loader completions", () => {
-  const oldCompletion = scene.requestTextureRedraw;
-  oldCompletion();
+it("lets reused pending loaders redraw a restarted scene but rejects its old frame", () => {
+  const pendingCompletion = scene.requestTextureRedraw;
+  pendingCompletion();
+  const oldFrame = [...frames.values()][0];
   scene.initTextureRedraw();
-  oldCompletion();
   expect(frames.size).toBe(0);
+  pendingCompletion(); // scene-keyed pending loaders retain this callback across restart
+  expect(frames.size).toBe(1);
+  oldFrame(16);
+  expect(scene.redraw).not.toHaveBeenCalled();
   scene.requestTextureRedraw();
+  expect(frames.size).toBe(1); // stale frame must not clear the new reservation
   frame();
   expect(scene.redraw).toHaveBeenCalledTimes(1);
 });
