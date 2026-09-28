@@ -7,7 +7,7 @@ for _f in glob.glob(SRC+'/anim/boat_*.png'): shutil.copy(_f,OUT+'/anim/')
 from PIL import Image, ImageDraw
 import palette; palette.apply()
 exec(open(SRC+'/city_layout.py').read())
-STAIRS[STAIRS.index((11,14,2))]=(9,14,4)
+STAIRS[STAIRS.index((11,14,2))]=(14,12,5); STAIRS.append((15,30,3))   # v6: grand stair on the palace axis + causeway stair
 import terrain, pk, pn, pj, pv, shapes, addons2, pf, pl, pi, pe, ph, pv2, pz, ground, roman, water6, smoke5
 from pj_demo import roofrows as RR, storeyrows as SR
 from sheet2 import lawn
@@ -378,7 +378,6 @@ for y in range(2,H-1):
             P_(f'plot{x}_{y}',pi.field(gr.choice(['sprout','cabbage','wheat']),4,2),x,y,allow=()); continue
         if gr.random()<0.35: continue
         big=gr.sample(['oakA','oakB','bushD'],3)
-        if gr.random()<0.22: big=['pine']+big
         if gr.random()<0.30: big=['cyp']+big
         for kk in big+gr.sample(['bushC','bushE'],2):
             im=tree5(kk,x*7+y); fw,fh=im.width//16,im.height//16
@@ -418,7 +417,7 @@ rng.shuffle(walk)
 sheets=['People1','People2','People3','People4','People5']
 for (x,y) in walk[:110]:
     people.append((npc(rng.choice(sheets),rng.randint(0,7),rng.choice('udlr')),x*16-4,y*16-16))
-for (x,y,d) in ((62,1,'d'),(63,1,'d'),(9,18,'d'),(12,18,'d'),(15,21,'d'),(16,21,'d'),(8,20,'r'),(22,20,'l'),(32,11,'d'),(63,41,'d'),(64,45,'u'),(88,23,'d')):
+for (x,y,d) in ((62,1,'d'),(63,1,'d'),(15,22,'d'),(17,22,'d'),(7,19,'r'),(25,19,'l'),(32,11,'d'),(15,27,'d'),(17,27,'d'),(63,41,'d'),(64,45,'u'),(88,23,'d')):
     people.append((npc('People3',7 if x%2 else 6,d),x*16-4,y*16-16))
 
 exec(open(SRC+'/city6_render.py').read())

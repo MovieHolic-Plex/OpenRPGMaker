@@ -15,8 +15,9 @@ img,GROUNDLAB=ground.render(W*16,H*16,TREEPX,_rm)
 PLZ=[[occ[y][x]=='plaza' for x in range(W)] for y in range(H)]
 ROADM=[[occ[y][x]=='road' or (road[y][x] and occ[y][x] not in ('water',)) for x in range(W)] for y in range(H)]
 FOR_=[[FORUM[y][x] and not water[y][x] for x in range(W)] for y in range(H)]
-GRV_=[[GRAVEL[y][x] and not FOR_[y][x] for x in range(W)] for y in range(H)]
-FLG_=[[(PLZ[y][x] or plaza[y][x] or COURT[y][x]) and not water[y][x] and not FOR_[y][x] and not GRV_[y][x] and not ROADM[y][x] for x in range(W)] for y in range(H)]
+CPV_=[[CPAVE[y][x] and not FOR_[y][x] and not water[y][x] and occ[y][x]!='road' for x in range(W)] for y in range(H)]
+GRV_=[[GRAVEL[y][x] and not FOR_[y][x] and not CPV_[y][x] for x in range(W)] for y in range(H)]
+FLG_=[[(PLZ[y][x] or plaza[y][x] or COURT[y][x]) and not water[y][x] and not FOR_[y][x] and not GRV_[y][x] and not CPV_[y][x] and not ROADM[y][x] for x in range(W)] for y in range(H)]
 ANYP=[[PLZ[y][x] or occ[y][x] in ('gate','stair','walk','bridge') for x in range(W)] for y in range(H)]
 img.alpha_composite(terrain.paving(ROADM,160,96,joins=ANYP))
 fcx,fcy=FOUNTAIN[0]*16+24,FOUNTAIN[1]*16+24
@@ -26,6 +27,8 @@ def _forum_tex(X,Y):
 img.alpha_composite(roman.paving5(FOR_,_forum_tex,joins=ROADM,edge=roman.TRV))
 img.alpha_composite(roman.paving5(FLG_,roman.tex_flag,joins=ROADM))
 img.alpha_composite(roman.paving5(GRV_,roman.tex_gravel,joins=ROADM,curb=True,edge=roman.GRV))
+import castle6, v6pieces
+img.alpha_composite(roman.paving5(CPV_,lambda X,Y: v6pieces.ctex(192,176,X,Y),joins=ANYP))
 print('paving',round(__import__('time').time()-T0,1))
 # ---- water: static rims/quay faces from pn.canal, the surface from water6 (frame 0 here, all 8 frames saved) ----
 img.alpha_composite(pn.canal(water))
@@ -63,7 +66,11 @@ for i,(k,bx_,by_) in enumerate(BOATS):
 WATER_F=[WA5.frame(f) for f in range(water6.NF)]
 F0=_Im.fromarray(WATER_F[0],'RGBA'); img.alpha_composite(F0)
 print('water',round(__import__('time').time()-T0,1))
-img.alpha_composite(terrain.render(E,MAS,STAIRS,FALLS,frame=0))
+_tr=terrain.render(E,MAS,STAIRS,FALLS,frame=0)
+_stc={(x0+i,y0+j) for x0,y0,w in STAIRS for i in range(w) for j in (0,1,2)}
+_cf=[(x,y) for y in range(H) for x in range(W) if F[y][x] and E[y-F[y][x]][x]==3 and (x,y) not in _stc]
+castle6.castle_face(_tr.load(),W*16,H*16,_cf,{(x,y):F[y][x]-1 for x,y in _cf})
+img.alpha_composite(_tr)
 img.alpha_composite(pn.townwall(wall,gates=GATES))
 for b,x0,y0 in BR:
     img.alpha_composite(b['back'],(x0,y0)); objs.append((b['front'],x0,y0,False))

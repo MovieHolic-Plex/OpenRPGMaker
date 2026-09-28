@@ -20,7 +20,7 @@ def anim_spr(kind,f):
     key=(kind,f)
     if key not in _S:
         o={'flag':lambda: pz.flagpole(f%4),'fsmall':lambda: pz.fountain_small(f%4),'fpool':lambda: pz.fish_pool(f%4),'crane':lambda: pz.crane(f%4)}.get(kind)
-        o=o() if o else pz.festoon(160,frame=f%6,seed=3)
+        o=o() if o else pz.festoon(88,frame=f%6,seed=3)
         _S[key]=o if isinstance(o,Image.Image) else pz.fin(o)
     return _S[key]
 _G={}
@@ -42,7 +42,8 @@ def wmask():
 _SAILS={}
 def sails(f):
     f%=roman.WM_NF
-    if f not in _SAILS: _SAILS[f]=roman.windmill_sails(f)
+    if f not in _SAILS:
+        import v6pieces; _SAILS[f]=v6pieces.windmill_sails6(f)
     return _SAILS[f]
 def comp(im,src,x,y):
     x,y=int(x),int(y)

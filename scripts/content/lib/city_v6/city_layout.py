@@ -19,8 +19,8 @@ e1=segs([(0,9,58),(10,15,57),(16,27,59),(28,35,61),(36,46,60),(47,50,61),(51,55,
 for x in range(W):
     for y in range(e1[x]+1,H): E[y][x]=0
 # castle rock (level 3) on the hill: the keep stands on it, its face looks down on the castle court
-cr=segs([(2,8,12),(9,14,13),(15,21,12)])
-for x in range(2,22):
+cr=segs([(4,28,11)])                                   # v6: one symmetric rock under the palace
+for x in range(4,29):
     for y in range(1,cr[x]+1): E[y][x]=3
 em=segs([(80,85,22),(86,91,24),(92,97,22)])            # temple mount
 for x in range(80,98):

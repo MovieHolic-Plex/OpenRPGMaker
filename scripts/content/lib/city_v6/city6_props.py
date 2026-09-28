@@ -217,7 +217,7 @@ for (x,y) in [(x,y) for y in range(40,90) for x in range(3,95)]:   # a small fou
     if all(walkable(i,y+1) for i in (x,x+1)) and put(R3('작은 분수'),x,y,foot=2,allow=(),anim='fsmall',label='작은 분수'): break
 try_box('주막 탁자',55,72,28,34,1,allow=())
 # ---- 6. festoon over the market (overhead) and stair railings (overlay) ----
-ANIM.append(('festoon',67*16+4,40*16-14)); PLACED.append(dict(id='festoon',x=67,y=39,w=10,h=0,layer='overlay (cafe terrace)')); PROPLOG['등불 줄 (깜빡임)']=1
+ANIM.append(('festoon',69*16+4,40*16-14)); PLACED.append(dict(id='festoon',x=69,y=39,w=6,h=0,layer='overlay (cafe terrace)')); PROPLOG['등불 줄 (깜빡임)']=1
 for x0,y0,w in STAIRS:
     im=pz.stair_rail(40)
     OVER.append((im,x0*16-3,y0*16-10,False)); OVER.append((im,(x0+w)*16-1,y0*16-10,False))
