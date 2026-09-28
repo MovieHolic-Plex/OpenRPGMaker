@@ -23,6 +23,7 @@ import { applyGeneratedBattleEffectSkillBindings } from "./generatedBattleEffect
 import { normalizeBattleAnimationRecord } from "../databaseAnimationRecordModel";
 import { normalizeSkillRecord } from "../databaseRecordModel";
 import { DEFAULT_ANIMATION_ID, DEFAULT_SKILL_ID, DEFAULT_STATE_ID } from "./constants";
+import { retroClassSkillRecords } from "./retroClassSkillRecords";
 export { defaultItemRecords } from "./defaultDatabaseItemRecords";
 
 type BattleEffectAnimationSeed = {
@@ -112,6 +113,8 @@ export function defaultSkillRecords(): SkillRecord[] {
     supportSkill("skill_item_guard", "수호 효과", "ally", "수호 부적이 사용하는 방어 상승 효과입니다.", "anim_heal", 0, 100, [
       { stateId: "state_defense_up", chance: 100, operation: "add" },
     ]),
+    // retro2003 직업 스킬 48개(계약 src/assets/retroClassSkills.ts). 기존 스킬 뒤에 붙인다.
+    ...retroClassSkillRecords(),
   ];
   applyGeneratedBattleEffectSkillBindings(records);
   return records;
