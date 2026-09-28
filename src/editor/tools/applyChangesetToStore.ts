@@ -19,6 +19,7 @@ import { AuthoredProjectBaseline, projectIdentityDigest, type ProjectIdentitySou
 import type { ChangeSummary, Project } from "@/project/types";
 import { reconcileReviewedWorldForApply } from "@/project/world";
 import { commitChangeset, summarizeChanges } from "./changeset";
+import { warmRoundtripCheck } from "@/project/lint/projectLint";
 import { runTool } from "./toolRunner";
 import { ToolError, type ToolContext, type ToolResult } from "./types";
 import { assertHouseProtection, captureHouseProtection } from "./houseProtection";
@@ -295,6 +296,23 @@ export function captureProposalBase(project: Project): ProposalBase {
 /** 적용 권위(기준 + 초안 기준선)를 한 번에 잡는다. 둘을 따로 잡으면 같은 직렬화를 두 번 한다. */
 export function captureApplyAuthority(project: Project): { base: ProposalBase; baseline: AuthoredProjectBaseline } {
   return withIdentityScope(() => ({ base: captureProposalBase(project), baseline: captureAuthoredBaseline(project) }));
+}
+
+/**
+ * 한가할 때 첫 적용의 준비 비용을 미리 치른다: 타일셋·업로드 자산 항목의 저장 왕복 검사 통과 기록, 적용 권위 요약의 노드 기억.
+ * 판정에는 영향이 없다 — 왕복 기록은 검사가 실제로 통과한 객체에만 남고, 요약 기억은 값 대조로만 쓰인다.
+ * 왜(2026-09-28 실측, 새 프로젝트 기본 자료 149MB): 조수 첫 체크포인트 적용이 이 둘을 처음 하느라 약 2.7s, 이후는 약 0.3s 였다.
+ */
+export function warmApplyCaches(project: Project): void {
+  try {
+    withIdentityScope(() => {
+      proposalContentOf(project);
+      storeIdentities.authored(project);
+    });
+    warmRoundtripCheck(project);
+  } catch {
+    // 준비는 선택이다. 실패하면 첫 적용이 예전처럼 직접 한다.
+  }
 }
 
 function isProposalBaseCurrent(base: ProposalBase, resetProject: boolean): boolean {

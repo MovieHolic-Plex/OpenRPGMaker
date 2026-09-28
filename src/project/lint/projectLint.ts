@@ -177,6 +177,11 @@ function bundledAudioPath(resourceId: string): string | null {
   return rtp ? rtp.path : null;
 }
 
+/** 한가할 때 왕복 검사만 한 번 돌려 통과한 공유 항목을 기억한다(결과는 버린다). 첫 적용 커밋의 되읽기 비용을 미리 치른다. */
+export function warmRoundtripCheck(project: Project): void {
+  checkRoundtrip(project, []);
+}
+
 // (a) 직렬화 왕복: serialize→deserialize가 throw하면 error로 수집.
 function checkRoundtrip(project: Project, issues: LintIssue[]): void {
   // 선택 층(2층·4층·그림자)은 불러올 때 길이가 틀리면 경고만 하고 버려지므로 왕복이 던지지 않는다.

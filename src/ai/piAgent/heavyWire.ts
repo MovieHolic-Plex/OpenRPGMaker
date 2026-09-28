@@ -102,6 +102,27 @@ export async function planHeavyWire<T extends { project: Project }>(request: T):
   return { body: { ...request, project: project as unknown as Project, heavy }, blobs };
 }
 
+/**
+ * 한가할 때 무거운 키의 글·해시를 미리 만든다. 첫 조수 턴이 이 일을 메인 스레드에서 하면(2026-09-28 실측, 새 프로젝트 기본 자료
+ * 149MB) 전송 직후 약 3s 멈췄다 — 타일셋·자산은 턴 사이에 거의 바뀌지 않으므로 미리 만든 결과를 그 턴이 그대로 쓴다.
+ * 키마다 따로 예약해 한가한 조각 하나가 키 하나만 맡는다. 결과는 위 기억(hashMemo·lastByKey)에만 남고, 그 사이 내용이 바뀌면
+ * 턴이 요약 대조로 알아채 다시 만든다 — 미리 만든 값이 틀린 해시로 쓰일 수 없다.
+ */
+export function warmHeavyWire(getProject: () => Project, schedule: (run: () => void) => void): void {
+  if (typeof crypto === "undefined" || !crypto.subtle) return;
+  const step = (index: number): void => {
+    const key = PI_HEAVY_PROJECT_KEYS[index];
+    if (!key) return;
+    schedule(() => {
+      const value = (getProject() as unknown as Record<string, unknown>)[key];
+      const next = () => step(index + 1);
+      if (!value || typeof value !== "object" || hashMemo.has(value)) { next(); return; }
+      void heavyEntry(key, value).then((made) => { if (made) hashMemo.set(value, made); }, () => undefined).finally(next);
+    });
+  };
+  step(0);
+}
+
 /** 이 호스트가 아직 모를 법한 해시의 내용만 싣는다. */
 export function withHeavyBlobs(plan: HeavyWirePlan, origin: string, force?: readonly string[]): HeavyWireBody {
   const sent = sentByOrigin.get(origin) ?? new Set<string>();
