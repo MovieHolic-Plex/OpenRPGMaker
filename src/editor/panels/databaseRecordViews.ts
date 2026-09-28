@@ -22,6 +22,13 @@ import { renderClassRecordForm } from "@/editor/panels/databaseClassRecordView";
 import { recordIdentity } from "@/editor/panels/databaseRecordIdentity";
 import { emptyState } from "@/editor/panels/databaseWorkspace";
 import { recordListThumbnail } from "@/editor/panels/databaseRecordThumbnails";
+import {
+  retroSkillClassFilters,
+  retroSkillListBadge,
+  setSkillClassFilter,
+  skillClassFilterFor,
+  skillMatchesRetroClass,
+} from "@/editor/panels/databaseSkillRetroStage";
 import { renderStateRecordForm } from "@/editor/panels/databaseStateRecordView";
 import { renderEquipmentRecordForm, renderItemRecordForm, renderSkillRecordForm, renderTroopRecordForm } from "@/editor/panels/databaseAdvancedRecordViews";
 import { ITEM_TYPES } from "@/editor/panels/databaseItemRecordView";
@@ -543,6 +550,7 @@ function recordList(
               onClick: () => {
                 setSearchQueryForCollection(collection, "");
                 setCategoryFilterForCollection(collection, "all");
+                if (collection === "skills") setSkillClassFilter("all");
                 rerender();
               },
               testid: "db-record-list-empty-clear",
@@ -608,10 +616,13 @@ function recordListRow(
   const isSelected = selectedRecordIdForSession(collection) === record.id;
   const thumb = recordListThumbnail(collection, record, store.getCurrent());
   const sub = recordCategoryLabel(collection, record);
+  // retro2003 도트 연출이 있는 스킬은 이펙트 시트 한 칸을 썸네일 모서리 배지로 단다(행 그리드 열은 그대로).
+  const badge = collection === "skills" ? retroSkillListBadge(record, 16) : null;
+  if (badge && thumb) { thumb.classList.add("db-list-thumb-has-retro"); thumb.append(badge); }
   return el("button", {
     class: `db-list-row${thumb ? " db-list-row-has-thumb" : ""}${isSelected ? " active" : ""}`,
     attrs: { "aria-pressed": String(isSelected), title: `${record.name} (${record.id})`, type: "button" },
-    dataset: { recordId: record.id, recordIndex: String(visibleIndex), recordName: record.name, recordTotal: String(total), testid: `db-record-row-${record.id}` },
+    dataset: { recordId: record.id, recordIndex: String(visibleIndex), recordName: record.name, recordTotal: String(total), testid: `db-record-row-${record.id}`, ...(badge ? { retroFx: "true" } : {}) },
     children: [
       ...(thumb ? [thumb] : []),
       el("span", { class: "db-list-name", text: record.name || "(이름 없음)" }),
@@ -641,6 +652,8 @@ function recordGalleryCard(
   const isSelected = selectedRecordIdForSession(collection) === record.id;
   const thumb = recordListThumbnail(collection, record, store.getCurrent(), GALLERY_THUMB_SIZE);
   const tag = galleryCategoryTag(collection, record);
+  const badge = collection === "skills" ? retroSkillListBadge(record, 24) : null;
+  if (badge && thumb) thumb.classList.add("db-list-thumb-has-retro");
   return el("button", {
     class: `db-gallery-card${isSelected ? " active" : ""}`,
     attrs: { "aria-pressed": String(isSelected), title: `${record.name} (${record.id})`, type: "button" },
@@ -653,7 +666,7 @@ function recordGalleryCard(
     children: [
       el("span", {
         class: "db-gallery-thumb",
-        children: [thumb ?? el("span", { class: "db-list-thumb empty", attrs: { "aria-hidden": "true" } })],
+        children: [thumb ?? el("span", { class: "db-list-thumb empty", attrs: { "aria-hidden": "true" } }), ...(badge ? [badge] : [])],
       }),
       el("span", { class: "db-gallery-name", text: record.name || "(이름 없음)" }),
       ...(tag ? [tag] : []),
@@ -713,6 +726,7 @@ export const ITEM_CHIP_CLUSTERS: readonly { readonly caption: string; readonly t
 // 개수는 **필터 적용 전 전체 컬렉션**에서 센다 — 필터된 배열로 세면 한 번 좁힌 뒤
 // 다른 칩이 모두 0 으로 보인다.
 function categoryFilterChips(collection: DatabaseCollection, rerender: () => void): HTMLElement | null {
+  if (collection === "skills") return skillClassFilterChips(rerender);
   if (collection !== "items" && collection !== "equipment") return null;
   const current = effectiveCategoryFilter(collection);
   const counts = categoryCounts(collection);
@@ -742,6 +756,29 @@ function categoryFilterChips(collection: DatabaseCollection, rerender: () => voi
     if (cluster.caption === "장비" && !cluster.types.some((type) => (counts.get(type) ?? 0) > 0)) continue;
     row.append(chipCluster(cluster.caption, cluster.types.map((type) => chipFor(type, ITEM_TYPE_CHIP_LABELS[type]))));
   }
+  return row;
+}
+
+/**
+ * 스킬 직업 필터(전사·수호자·마도사·정찰병·성직자·궁수). 직업 레코드도 계약 스킬도 없는 프로젝트는 칩 줄을 그리지 않는다.
+ * 개수는 필터 전 전체 스킬에서 센다(아이템 칩과 같은 규칙).
+ */
+function skillClassFilterChips(rerender: () => void): HTMLElement | null {
+  const project = store.getCurrent();
+  const filters = retroSkillClassFilters(project);
+  if (filters.length === 0) return null;
+  const current = skillClassFilterFor(project);
+  const skills = project.database.skills;
+  const pick = (id: string) => () => {
+    if (skillClassFilterFor(project) === id) return;
+    setSkillClassFilter(id);
+    rerender();
+  };
+  const row = el("div", { class: "db-filter-chips db-skill-class-chips", attrs: { role: "group", "aria-label": "직업 필터" } });
+  row.append(chipCluster("", [
+    filterChipButton("all", "전체", skills.length, current === "all", pick("all")),
+    ...filters.map(({ id, label }) => filterChipButton(id, label, skills.filter((skill) => skillMatchesRetroClass(skill, id, project)).length, current === id, pick(id))),
+  ]));
   return row;
 }
 
@@ -782,6 +819,8 @@ function filterChipButton(id: string, label: string, count: number, active: bool
 
 // 저장된 필터가 현재 컬렉션의 알려진 칩 id가 아니면 'all'로 취급한다.
 function effectiveCategoryFilter(collection: DatabaseCollection): string {
+  // 스킬 직업 필터는 세션 메모리에만 있다(아이템·장비 localStorage 필터와 따로) — 저장값 검사보다 먼저 본다.
+  if (collection === "skills") return skillClassFilterFor(store.getCurrent());
   const stored = categoryFilterForCollection(collection);
   if (stored === "all") return "all";
   if (collection === "items") return ITEM_TYPES.includes(stored as (typeof ITEM_TYPES)[number]) ? stored : "all";
@@ -796,6 +835,7 @@ function matchesCategoryFilter(
 ): boolean {
   if (collection === "items") return (record as ItemRecord).type === filter;
   if (collection === "equipment") return (record as EquipmentRecord).slot === filter;
+  if (collection === "skills") return skillMatchesRetroClass(record, filter, store.getCurrent());
   return true;
 }
 

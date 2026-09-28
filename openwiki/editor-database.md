@@ -1406,6 +1406,17 @@ leaf 조건에서 멈추고 `default: return false` 했다:
 - 스타일은 `src/styles/database/skill-item-visuals.css` 안에서만 늘린다. 색은 `.database-modal-backdrop` 아래 `--db-studio-*` 토큰만 쓰고(하드코딩 hex/rgba 금지), **새 CSS 파일을 만들지 않는다**(`scripts/check-css-budget.mjs` 파일 수 래칫).
 - 커버리지: `test/databaseSkillAnimationStage.test.ts`(자동 반복 + 카운터 추적, 1프레임 정지, reduced-motion 정지, 토글 왕복, 표시면 교체 후 분리된 스테이지의 인터벌 정리), `test/databaseSkillItemForms.test.ts`(스테이지·셀·시트 메타·토글 계약), `test/eventEditorShowAnimationPreview.test.ts`(loop 랩어라운드와 `onFrame` 이 기존 1회 재생을 깨지 않음).
 
+### retro2003 도트 전투 미리보기 (2026-09-28)
+
+- `연출` 카드 맨 위에 **도트 전투 무대** `db-skill-retro-stage`(`databaseSkillRetroStage.ts`)가 붙는다. 조건: `retroClassSkill(record.id)`(계약 48종) 또는 `retroSkillRecipe(record)`(런타임 레시피 17종 + 속성·이름·효과 추정). 둘 다 없으면 그리지 않는다.
+- 무대: 논리 240×136, CSS `scale` 로 카드 폭(최대 480px = 2배)에 맞추고 pixelated. 배경 plains 네 장 겹 배경, 오른쪽 파티 셋(가운데 = 계약 `actorId` 의 전투 도트, `resolvePartyBattleCharset` → 시트 3×8 + `cast/<id>.png`), 왼쪽 적 셋(슬라임·박쥐·늑대 48px 3×3). 회복·아군 버프는 레이어가 파티 위에 올라간다.
+- **순서의 정본은 순수 함수** `src/battle/retroSkillTimeline.ts`: `retroClassSkillTimeline(contract)` / `retroRecipeTimeline(RETRO_SKILL_RECIPES 항목)` → `[ms, pose|move|hide|fx|projectile|screen|hit|sound]` 사건 목록, `retroTimelineStateAt(timeline, t)` → 그 시각의 무대 상태. 런타임(`retroSkillChoreography`)은 아직 이 함수를 쓰지 않는다 — 계약 48종의 런타임 연출을 붙일 때 같은 함수를 쓰면 두 화면이 같은 순서가 된다.
+  레이어 규칙: user 는 준비 순간, projectile 은 방출(투사체보다 앞의 target 은 조준), 나머지는 착탄부터 목록 순서로 55% 겹쳐 이어 재생. 칸 폭은 계약 `frame`(32·64·128) 그대로이고 screen 은 1.25배로 무대 가운데. 필살기 = 어둡게 → 컷인(띠 + 초상 + 스킬 이름) → 대형 레이어 + 번쩍임·흔들림.
+- 조작: `▶ 재생`(`db-skill-retro-play`, 처음부터 + 효과음), `반복`(`db-skill-retro-repeat`), 속도 `0.5×/1×`, 경과 시간 칩, 레이어 칩(키·anchor·규격, 404 면 `그림 없음`). 자동 반복은 **무음**이고 소리는 버튼을 누른 회차에만 난다. 피해·회복 숫자는 표시용(위력 기반)이며 지원 스킬에는 없다.
+- 타이머: rAF 루프 하나, 스테이지 루트별 WeakMap 컨트롤러. `stopSkillAnimationStagesIn` / `resumeSkillAnimationStagesIn` 이 `stopRetroSkillStagesIn` / `resumeRetroSkillStagesIn` 을 함께 부르므로 탭 전환·레코드 전환·모달 닫기가 기존 경로 그대로 멈춘다. 떨어진 루트는 2틱 뒤 스스로 멈춘다. reduced-motion·rAF 없음 → 대표 시각 정지 화면. 없는 시트는 그 레이어만 빠진다.
+- 목록: 도트 연출이 있는 스킬 썸네일 모서리에 이펙트 한 칸 배지(`db-skill-retro-badge`, 행 `data-retro-fx`). 스킬 탭에는 직업 필터 칩(전체·전사·수호자·마도사·정찰병·성직자·궁수 — 계약 classId 또는 직업 습득표·skillIds)이 뜬다. 이 필터는 세션 메모리만 쓰고 `oprn:database.categoryFilter` 에 저장하지 않는다(아이템·장비 전용 계약 유지).
+- 시각 확인: 세션 로컬 `.omo/editor-skill-stage/capture.mjs`(가짜 시계로 16ms 씩 전진, 계약 스킬이 없는 새 프로젝트면 메모리 스토어에만 레코드를 넣는다).
+
 ## 데이터베이스 30탭 UI/UX 계약 (2026-08-30 실측)
 
 계측은 `scripts/qa/db-ux-probe.mjs` 로 한다(사용법은 `openwiki/testing.md`). 아래 모든 수치는
