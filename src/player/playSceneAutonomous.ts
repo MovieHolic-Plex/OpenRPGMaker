@@ -5,7 +5,7 @@ import { pursuitTarget } from "./horrorRuntime";
 import { pursuitPass } from "./pursuitNavigation";
 import { footprintBounds } from "@/project/footprint";
 import type { CharacterFootprint, FootprintRect } from "@/project/types";
-import { createBlockingEventQuery } from "@/project/runtimeEventState";
+import { createBlockingEventQuery, invalidateEventIdIndexPass, withEventIdIndexPass } from "@/project/runtimeEventState";
 import { store } from "@/project/store";
 // 스프라이트 가로 좌표는 발자국 중앙(footprintSpriteX)이다 — 타일 중앙(characterSpriteX)을
 // 쓰면 폭 2 이상인 몸이 반 칸 왼쪽으로 붙는다. 걸음 보간·착지·첫 프레임 모두 같은 규칙이다.
@@ -28,6 +28,11 @@ runtimeEventView,
 runtimeEventViewById, } from "@/project/runtimeEventState"
 
 export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, frameDeltaMs: number): void {
+  // NPC 마다 자기 뷰를 id 로 1~3번 찾는다. 이 동기 루프 동안만 id 색인을 쓴다(runtimeEventState §withEventIdIndexPass).
+  withEventIdIndexPass(() => updateAutonomousNPCsInPass(scene, frameDeltaMs));
+}
+
+function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDeltaMs: number): void {
   const project = store.getCurrent();
   for (const [eventId, mover] of scene.autonomousNPCs) {
     const deltaMs = frameDeltaMs * (actionFieldSlow.get(mover) ?? 1);
@@ -235,7 +240,10 @@ function moveAutonomousRuntimePosition(
 }
 
 function fireEventTouch(scene: AutonomousNpcSceneContext, eventId: string, triggerKind: string): void {
-  if (triggerKind === "eventTouch") void scene.runEvent(eventId);
+  if (triggerKind !== "eventTouch") return;
+  // 이벤트 실행은 첫 대기까지 동기로 돌아 맵 이벤트 배열을 바꿀 수 있다(소환·제거) — 조회 색인을 버린다.
+  invalidateEventIdIndexPass();
+  void scene.runEvent(eventId);
 }
 
 type ActiveNpcMoveTarget = {

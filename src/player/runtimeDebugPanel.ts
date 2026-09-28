@@ -223,6 +223,7 @@ function liveText(readout: LiveReadout): string {
 }
 
 function applyLiveReadout(
+  panel: HTMLDetailsElement,
   line: HTMLElement,
   stateDump: HTMLElement,
   dumpDetails: HTMLDetailsElement,
@@ -230,22 +231,34 @@ function applyLiveReadout(
 ): void {
   // 전체 readState() 는 덤프가 펼쳐져 있을 때만 부른다 — 생활 상태·이벤트 위치·몬스터를 복제해서 큰
   // 세션이면 호출당 수~수십 ms 다. 접힌 동안은 좌표·선택 스위치만 읽는 readLive 로 충분하다.
+  // 상위 패널을 접으면 덤프가 open 이어도 화면에 없다 — 둘 다 열려 있을 때만 전체를 읽는다.
+  const dumpVisible = panel.open && dumpDetails.open;
   const hook = debug();
-  const full = dumpDetails.open || !hook?.readLive ? hook?.readState() : undefined;
+  const full = dumpVisible || !hook?.readLive ? hook?.readState() : undefined;
   const state: LiveState | undefined = full ?? liveStateFromHook(hook, switchValue.selectedId());
   switchValue.apply(state);
   const readout = collectLiveReadout(state);
-  line.textContent = liveText(readout);
+  // 같은 값을 다시 대입해도 브라우저는 DOM 변경으로 보고 스타일을 다시 계산한다. 편집기 창이 뒤에 남아 있으면
+  // 매 프레임 25ms 넘게 먹었다(실측) — 값이 바뀔 때만 쓴다.
+  setText(line, liveText(readout));
   // dataset 은 Playwright 가 파싱하는 기계 판독 경로다(문구는 바뀔 수 있다).
-  line.dataset.live = readout.live;
-  line.dataset.mapId = readout.mapId;
-  line.dataset.x = readout.x === undefined ? "" : `${readout.x}`;
-  line.dataset.y = readout.y === undefined ? "" : `${readout.y}`;
-  line.dataset.inputEnabled = readout.inputEnabled === undefined ? "unknown" : `${readout.inputEnabled}`;
-  line.dataset.eventRunning = readout.running === undefined ? "unknown" : `${readout.running}`;
+  setData(line, "live", readout.live);
+  setData(line, "mapId", readout.mapId);
+  setData(line, "x", readout.x === undefined ? "" : `${readout.x}`);
+  setData(line, "y", readout.y === undefined ? "" : `${readout.y}`);
+  setData(line, "inputEnabled", readout.inputEnabled === undefined ? "unknown" : `${readout.inputEnabled}`);
+  setData(line, "eventRunning", readout.running === undefined ? "unknown" : `${readout.running}`);
   // 전체 JSON 은 펼쳐져 있을 때만 갱신한다 — 접힌 덤프를 매 프레임 stringify 할 이유가 없다.
-  if (!dumpDetails.open) return;
-  stateDump.textContent = full ? JSON.stringify(full, null, 2) : "플레이가 시작되지 않았습니다.";
+  if (!dumpVisible) return;
+  setText(stateDump, full ? JSON.stringify(full, null, 2) : "플레이가 시작되지 않았습니다.");
+}
+
+function setText(node: HTMLElement, value: string): void {
+  if (node.textContent !== value) node.textContent = value;
+}
+
+function setData(node: HTMLElement, key: string, value: string): void {
+  if (node.dataset[key] !== value) node.dataset[key] = value;
 }
 
 function liveStateFromHook(hook: RuntimeDebugHook | undefined, switchId: string): LiveState | undefined {
@@ -283,9 +296,9 @@ function createSwitchValueReadout(select: HTMLSelectElement): SwitchValueReadout
   const apply = (state: LiveState | undefined): void => {
     const id = select.value;
     const value = id ? state?.switches?.[id] : undefined;
-    node.textContent = !id ? "—" : value === undefined ? "?" : value ? "ON" : "OFF";
-    node.dataset.switchId = id;
-    node.dataset.switchValue = value === undefined ? "unknown" : `${value}`;
+    setText(node, !id ? "—" : value === undefined ? "?" : value ? "ON" : "OFF");
+    setData(node, "switchId", id);
+    setData(node, "switchValue", value === undefined ? "unknown" : `${value}`);
   };
   // 셀렉트를 바꾸면 다음 라이브 틱을 기다리지 않고 그 자리에서 갱신한다.
   select.addEventListener("change", () => apply(debug()?.readState()));
@@ -467,7 +480,7 @@ export function renderRuntimeDebugPanel(): HTMLElement {
   details.open = readExpanded();
   details.addEventListener("toggle", () => writeExpanded(details.open));
 
-  applyLiveReadout(liveLine, stateDump, dumpDetails, switchValue);
-  startLiveLoop(details, () => applyLiveReadout(liveLine, stateDump, dumpDetails, switchValue));
+  applyLiveReadout(details, liveLine, stateDump, dumpDetails, switchValue);
+  startLiveLoop(details, () => applyLiveReadout(details, liveLine, stateDump, dumpDetails, switchValue));
   return details;
 }
