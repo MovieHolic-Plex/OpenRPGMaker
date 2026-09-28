@@ -68,6 +68,7 @@ export interface RetroRecipeLike {
 /** 칸 길이(ms). 시트 한 칸 크기별. */
 export const RETRO_FX_FRAME_MS: Readonly<Record<number, number>> = { 32: 60, 64: 60, 128: 72 };
 const TAIL_MS = 520;
+const QUICK_TAIL_MS = 260;
 const OVERLAP = 0.55;
 
 const SOUND = {
@@ -194,9 +195,9 @@ class TimelineBuilder {
     this.events.push({ kind: "projectile", at, durationMs, layer: index, key: layer.key, frame: layer.frame, frames: Math.max(1, layer.frames), frameMs: RETRO_FX_FRAME_MS[layer.frame] ?? 60, path, aim });
     this.touch(at + durationMs);
   }
-  build(castType: CastType, side: RetroTimelineSide): RetroSkillTimeline {
+  build(castType: CastType, side: RetroTimelineSide, tailMs = TAIL_MS): RetroSkillTimeline {
     const events = [...this.events].sort((a, b) => a.at - b.at);
-    const durationMs = Math.round(this.end + TAIL_MS);
+    const durationMs = Math.round(this.end + tailMs);
     return { durationMs, castType, side, representativeMs: this.firstImpactMid >= 0 ? this.firstImpactMid : Math.round(this.end / 2), events };
   }
 }
@@ -400,7 +401,9 @@ export function retroClassSkillTimeline(skill: RetroTimelineSkill, options: { re
       break;
     }
   }
-  return b.build(castType, side);
+  // 근접 파고들기 계열은 복귀 뒤 여운을 절반으로(사용자 「도약·대시류는 더 빠르게」). 시전·필살기는 여운을 그대로 둔다.
+  const quick = skill.motion === "dash-strike" || skill.motion === "leap-strike" || skill.motion === "blink-strike" || skill.motion === "flurry" || skill.motion === "spin";
+  return b.build(castType, side, quick ? QUICK_TAIL_MS : TAIL_MS);
 }
 
 /**
