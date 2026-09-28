@@ -19,3 +19,51 @@
 .battle-transition-overlay.battle-transition--brave-shift { --battle-transition-cover: #f6ecd4; }
 .battle-transition-overlay.battle-transition--psychedelic .battle-transition-blind-bar { background: conic-gradient(from 0deg,#ff4fd8,#4f8cff,#4fffa0,#ffe14f,#ff4fd8); }
 .battle-transition-overlay.battle-transition--curtain-dq .battle-transition-blind-bar { transform-origin: top; }
+
+/* 도트 측면 진입: 흰 번쩍임 두 번(340ms) → 교차 가로 줄 닫힘(260ms).
+   JS 타임라인 안에서 190 + 7×10ms에 모두 닫힌다. 전투 씬이 생기기 전의
+   오버레이이므로 전용 전환 클래스가 스코프다. */
+.battle-transition-overlay.battle-transition--shatter-2003[data-battle-transition="shatter-2003"] {
+  --battle-transition-cover: #000;
+  overflow: hidden;
+}
+.battle-transition-overlay.battle-transition--shatter-2003[data-battle-transition="shatter-2003"][data-battle-transition-phase="flash"] .battle-transition-flash {
+  background: #fff;
+  animation: retro2003-entry-flash 340ms linear both;
+}
+.battle-transition-overlay.battle-transition--shatter-2003[data-battle-transition="shatter-2003"] .battle-transition-blind-bar {
+  --retro-slide: -100%;
+  transform: translateX(var(--retro-slide));
+}
+.battle-transition-overlay.battle-transition--shatter-2003[data-battle-transition="shatter-2003"] .battle-transition-blind-bar:nth-child(even) {
+  --retro-slide: 100%;
+}
+.battle-transition-overlay.battle-transition--shatter-2003[data-battle-transition="shatter-2003"][data-battle-transition-phase="close"] .battle-transition-blind-bar {
+  animation: retro2003-stripe-close 190ms ease-in both;
+  animation-delay: calc(var(--blind-index) * 10ms);
+}
+.battle-transition-overlay.battle-transition--shatter-2003[data-battle-transition="shatter-2003"][data-battle-transition-phase="reveal"] .battle-transition-blind-bar {
+  animation: retro2003-stripe-open 230ms ease-out both;
+  animation-delay: calc((7 - var(--blind-index)) * 10ms);
+}
+@keyframes retro2003-entry-flash {
+  0%, 38%, 100% { opacity: 0; }
+  14%, 60% { opacity: 0.9; }
+}
+@keyframes retro2003-stripe-close {
+  from { transform: translateX(var(--retro-slide)); }
+  to { transform: translateX(0); }
+}
+@keyframes retro2003-stripe-open {
+  from { transform: translateX(0); }
+  to { transform: translateX(var(--retro-slide)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-transition-overlay.battle-transition--shatter-2003[data-battle-transition="shatter-2003"][data-battle-transition-phase] .battle-transition-flash,
+  .battle-transition-overlay.battle-transition--shatter-2003[data-battle-transition="shatter-2003"][data-battle-transition-phase] .battle-transition-blind-bar {
+    animation: none;
+  }
+  .battle-transition-overlay.battle-transition--shatter-2003[data-battle-transition="shatter-2003"][data-battle-transition-phase="close"] .battle-transition-blind-bar {
+    transform: none;
+  }
+}

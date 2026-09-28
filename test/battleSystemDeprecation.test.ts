@@ -35,20 +35,22 @@ function skinOptions(host: FakeElement): FakeElement[] {
 }
 
 describe("battle skin registry — 되살린 9종 (2026-09-25)", () => {
-  it("12종 전부 활성이고, 기본 셋이 앞에 온다", () => {
+  it("13종 전부 활성이고, retro2003이 맨 앞에 온다", () => {
     expect(listActiveBattleSkinIds()).toEqual([...ACTIVE_BATTLE_SKIN_IDS]);
-    expect(listActiveBattleSkinIds()).toHaveLength(12);
-    expect(listActiveBattleSkinIds().slice(0, 3)).toEqual(["rm2000", "rm2003", "pokemon"]);
+    expect(listActiveBattleSkinIds()).toHaveLength(13);
+    expect(listActiveBattleSkinIds().slice(0, 4)).toEqual(["retro2003", "rm2000", "rm2003", "pokemon"]);
   });
 
   it("2026-08-28 에 지원 종료였던 9종은 이제 deprecated 가 아니다", () => {
     for (const id of REVIVED_IDS) expect(isDeprecatedBattleSkin(id), id).toBe(false);
   });
 
-  it("12종 등록과 resolveSkinId 동작은 그대로 유지된다(저장된 프로젝트 보존)", () => {
-    expect(listBattleSkinIds()).toHaveLength(12);
+  it("13종 등록과 resolveSkinId 동작은 그대로 유지된다(저장된 프로젝트 보존)", () => {
+    expect(listBattleSkinIds()).toHaveLength(13);
     expect(resolveSkinId("octopath")).toBe("octopath");
     expect(resolveSkinId("vxace")).toBe("vxace");
+    expect(resolveSkinId("retro2003")).toBe("retro2003");
+    expect(isDeprecatedBattleSkin("retro2003")).toBe(false);
   });
 });
 
@@ -65,7 +67,7 @@ describe("editor skin dropdown", () => {
     cleanupDom = undefined;
   });
 
-  it("빈 프로젝트에서 12종을 모두 보여준다", () => {
+  it("빈 프로젝트에서 13종을 모두 보여준다", () => {
     const options = skinOptions(renderSystem());
     expect(options.map((option) => option.value)).toEqual([...ACTIVE_BATTLE_SKIN_IDS]);
     expect(options.some((option) => option.textContent.includes("지원 종료"))).toBe(false);
@@ -76,7 +78,7 @@ describe("editor skin dropdown", () => {
       draft.system.battleUiStyle = "octopath";
     });
     const host = renderSystem();
-    expect(skinOptions(host)).toHaveLength(12);
+    expect(skinOptions(host)).toHaveLength(13);
     expect(findByTestId(host, "db-field-system-battle-ui-style")?.value).toBe("octopath");
   });
 });

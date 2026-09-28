@@ -1,0 +1,57 @@
+{
+  "actor2-0": {
+    "cast_cells": 21,
+    "battle_cells": 24,
+    "unique_cast_silhouettes": 21,
+    "max_extra_colors_per_cell": 6,
+    "gif_ms": [
+      160,
+      160,
+      160
+    ]
+  },
+  "actor1-5": {
+    "cast_cells": 21,
+    "battle_cells": 24,
+    "unique_cast_silhouettes": 21,
+    "max_extra_colors_per_cell": 4,
+    "gif_ms": [
+      160,
+      160,
+      160
+    ]
+  },
+  "actor1-6": {
+    "cast_cells": 21,
+    "battle_cells": 24,
+    "unique_cast_silhouettes": 21,
+    "max_extra_colors_per_cell": 4,
+    "gif_ms": [
+      160,
+      160,
+      160
+    ]
+  },
+  "actor1-7": {
+    "cast_cells": 21,
+    "battle_cells": 24,
+    "unique_cast_silhouettes": 21,
+    "max_extra_colors_per_cell": 4,
+    "gif_ms": [
+      160,
+      160,
+      160
+    ]
+  },
+  "actor2-1": {
+    "cast_cells": 21,
+    "battle_cells": 24,
+    "unique_cast_silhouettes": 21,
+    "max_extra_colors_per_cell": 6,
+    "gif_ms": [
+      160,
+      160,
+      160
+    ]
+  }
+}

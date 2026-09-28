@@ -153,6 +153,7 @@ export type BattleUiStyle =
   | "pokemon" | "rm2000" | "octopath" | "chrono"
   | "bravely" | "dragonquest" | "ff" | "mother" | "goldensun" | "mv" | "vxace"
   | "rm2003" // 측면 전투(2026-09-03 되살림 — 그 전 몇 시간은 rm2000 의 옛 id 였다)
+  | "retro2003" // 도트 측면 전투(2026-09-28): 청색 픽셀 창 · 겹 배경 · 전진 걸음 연출
   | "classic"; // legacy alias, remapped by resolveSkinId → rm2000
 
 /** ESC(X) 게임 메뉴 스킨 — @/player/menuSkins/registry 의 id union. 프로젝트 파일에 저장되므로

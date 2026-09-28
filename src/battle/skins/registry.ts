@@ -60,7 +60,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
   // 남색 유리 표면(런타임 공용 토큰) 위에서 남보라 강조는 "AI 보라 그라데이션" 으로 읽혔고(디자인
   // 감사), 밤 숲·초록 몬스터 위에서도 대비가 약했다. HP(민트)·MP(하늘)는 의미색이라 별개다.
   rm2000: {
-    id: "rm2000", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "유리 창 · 정면 필드 (기본)", layout: "frontview", showAllySprites: false,
+    id: "rm2000", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "유리 창 · 정면 필드", layout: "frontview", showAllySprites: false,
     hudTemplate: "rows", transition: "wipe-blue", family: "glass",
     themeVars: {
       "--battle-window-bg": "rgba(14,18,34,.96)",
@@ -271,6 +271,27 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
       "--battle-backdrop-filter": "saturate(1.04) brightness(1.0)",
     },
   },
+  // 도트 측면 전투(2026-09-28): 청색 그라데이션 픽셀 창, 겹 배경(scenery), 전진 걸음·적 점멸 연출(motionStyle).
+  // 창 크롬은 유리 뼈대(family glass)의 배치 계약을 그대로 쓰고 모양만 _retro2003.css 가 덮는다.
+  retro2003: {
+    id: "retro2003", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "레트로 2003 · 측면 도트 전투 (기본)", layout: "sideview", showAllySprites: true,
+    hudTemplate: "rows", transition: "shatter-2003", family: "glass", motionStyle: "retro", scenery: "layered",
+    themeVars: {
+      "--battle-window-bg": "#18248c",
+      "--battle-window-edge": "#d8e0ff",
+      "--battle-window-inner": "#0c1458",
+      "--battle-text": "#ffffff",
+      "--battle-text-muted": "#a8b8f0",
+      "--battle-accent": "#ffe060",
+      "--battle-accent-soft": "rgba(255,224,96,.2)",
+      "--battle-hp-high": "#58e070",
+      "--battle-hp-mid": "#f0d040",
+      "--battle-hp-low": "#f05040",
+      "--battle-shadow": "0 2px 0 rgba(0,0,0,.6)",
+      "--battle-cursor": "#ffe060",
+      "--battle-backdrop-filter": "none",
+    },
+  },
 };
 
 const VALID_IDS = new Set(Object.keys(BATTLE_SKINS) as BattleSkinId[]);
@@ -290,7 +311,7 @@ export function listBattleSkinIds(): BattleSkinId[] {
  * 기본 셋을 앞에 두고, 그 뒤는 정면 → 측면.
  */
 export const ACTIVE_BATTLE_SKIN_IDS: readonly BattleSkinId[] = [
-  "rm2000", "rm2003", "pokemon",
+  "retro2003", "rm2000", "rm2003", "pokemon",
   "vxace", "dragonquest", "mother", "mv",
   "ff", "goldensun", "chrono", "octopath", "bravely",
 ];
