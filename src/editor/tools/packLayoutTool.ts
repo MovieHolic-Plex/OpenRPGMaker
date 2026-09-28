@@ -9,7 +9,7 @@ import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { isPackPresetTileset, lintPackMap } from "@/project/rpgmakerMv/packMapLint";
 import type { AutotileGroup, TilesetDef } from "@/project/types";
 import { TILESET_OBJECT_TOOLS } from "./tilesetObjectTools";
-import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { requireMap } from "./mapHelpers";
 
 type Grid = { rows: string[]; legend: Record<string, string> };
@@ -40,7 +40,7 @@ function readGrid(value: unknown, name: string): Grid | undefined {
   return { rows: grid.rows as string[], legend };
 }
 
-const LEGEND_SCHEMA = {
+const LEGEND_SCHEMA: JsonSchema = {
   type: "array",
   description: "글자 → 재료 이름. 예: [{char:\"#\", material:\"그늘 천장\"}]",
   items: { type: "object", properties: { char: { type: "string" }, material: { type: "string" } }, required: ["char", "material"] },
