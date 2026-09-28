@@ -614,13 +614,18 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     }
     // 배치 품질은 권고 한 번뿐이다 — 거부하지 않고, 두 번째 결과는 숫자만 알린다(layoutQuality.ts).
     if (!fatal && !rejected && !contract && !request.readOnly && turns < maxTurns && !options.signal?.aborted) {
-      const layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds, villageMapIds);
-      if (layout.length) {
-        emit({ type: "execution_status", name: "layout_quality", ok: false, summary: `배치 품질 기준 미달 — 한 번 더 채웁니다: ${layout.map(i => `${i.mapId} ${i.problems.join(", ")}`).join(" / ")}`, data: layout });
+      const describe = (issues: typeof layout) => issues.map(i => `${i.mapId} ${[...i.problems, ...(i.pack ?? [])].join(", ")}`).join(" / ");
+      let layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds, villageMapIds);
+      // 팩 세트 맵(check_pack_map)은 좌표가 붙은 확실한 결함이라 한 번 더 권고한다(같은 결과면 멈춘다). 나머지는 한 번뿐.
+      for (let round = 0; layout.length && round < 2 && turns < maxTurns && !options.signal?.aborted; round++) {
+        if (round > 0 && !layout.some(i => i.pack?.length)) break;
+        emit({ type: "execution_status", name: "layout_quality", ok: false, summary: `배치 품질 기준 미달 — 한 번 더 고칩니다: ${describe(layout)}`, data: layout });
+        const before = JSON.stringify(layout);
         await promptResuming(piLayoutRepairPrompt(layout));
-        const after = inspectPiLayoutQuality(ctx.project, base, request.mapIds, villageMapIds);
-        emit({ type: "execution_status", name: "layout_quality", ok: after.length === 0,
-          summary: after.length ? `배치 품질 수리 뒤에도 기준 미달: ${after.map(i => `${i.mapId} ${i.problems.join(", ")}`).join(" / ")}` : "배치 품질 기준 통과", data: after });
+        layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds, villageMapIds);
+        emit({ type: "execution_status", name: "layout_quality", ok: layout.length === 0,
+          summary: layout.length ? `배치 품질 수리 뒤에도 기준 미달: ${describe(layout)}` : "배치 품질 기준 통과", data: layout });
+        if (JSON.stringify(layout) === before) break;
       }
     }
     let previousInteriorIssues = '';

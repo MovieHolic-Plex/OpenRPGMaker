@@ -16,6 +16,7 @@ import { tileOpacity, type RgbaImage } from "../../../src/project/rpgmakerMv/bak
 import { AUTOTILE_DIR } from "../../../src/project/defaults/autotileEngine.ts";
 import type { MvPackPreset } from "../../../src/project/rpgmakerMv/packPreset.ts";
 import { passabilityOf } from "../../../src/project/collision.ts";
+import { lintPackPassage, lintPackStructure, packEmptyRects, type PackLintInput, type PackLintMaterial } from "../../../src/project/rpgmakerMv/packMapLint.ts";
 
 export const T = MV_TILE_SIZE;
 export const REFMAP_ROOT = path.join(os.homedir(), ".local/share/oprn/refmap-downloads");
@@ -278,254 +279,42 @@ export function convertSpec(set: LoadedSet, spec: MapSpec): Converted {
     upperTiles: up3, upperOverlayTiles: up4, warnings, objects, keys1: k1, keys2: k2 };
 }
 
-// ── 통행 ──
-// 물체 종류(BRIEF): decal·door·overhead 통행, prop 전부 막힘(solid 가 있으면 그 칸만), tall 아랫줄만(또는 solid), wallmount 는 벽면에.
-// 걸을 수 있는 바닥이 입구(entry 또는 맵 가장자리)에서 닿지 않으면 「통행:」, 가구에 닿을 칸이 없으면 「통행:」,
-// 벽걸이가 벽면 밖이거나 키 큰 가구가 벽에 안 붙었으면 「벽걸이:」 경고.
+// ── 검사 ──
+// 규칙 본체는 src/project/rpgmakerMv/packMapLint.ts(편집기 check_pack_map·조수와 같은 것). 여기서는 맵 기술의 재료 키로 입력을 만든다.
 type ObjDef = LoadedSet["presetJson"]["objects"][number];
 export interface Placed { o: ObjDef; x: number; y: number; cells: [number, number][] }
-const PASSWAY = /stair|step|bridge|ladder|entrance|gate|passage|plank|hatch|doorway|arch_door|cave/;
-const NATURE = /tree|conifer|palm|rock|stalag|boulder|spire|bush|stump|mound|pine|broadleaf|fern|grass|flower|mushroom|log|drift|pile/;
-const WALL_FURNITURE = /shelf|bookshelf|cupboard|dresser|cabinet|clock|fireplace|stove|wardrobe|armor|banner|curtain|_bed|^bed/;
-export function lintPassage(set: LoadedSet, spec: MapSpec, k1: (string | null)[], k2: (string | null)[], placed: Placed[], layers: [number[], number[], number[], number[]]): string[] {
-  const { w, h } = spec;
+function materialsOf(set: LoadedSet, keys: (string | null)[]): (PackLintMaterial | null)[] {
   const info = new Map(set.presetJson.autotiles.map((a) => [`${a.sheet}:${a.kind}`, a]));
   const flatName = new Map((set.presetJson.flats ?? []).map((f) => [`#${set.tileOf(f.sheet, f.cell)}`, f.name]));
-  const blocks = (k: string | null, base: boolean) => {
-    if (!k) return base;
-    if (k.startsWith("#")) return /어둠|벽|기둥/.test(flatName.get(k) ?? "");
+  return keys.map((k) => {
+    if (!k) return null;
+    if (k.startsWith("#")) return { key: k, name: flatName.get(k) ?? "", part: "A5", flat: true };
+    const [sheet, kind] = k.split(":");
     const a = info.get(k);
-    if (!a) { const part = mvSheetPart(set.fileOf(k.split(":")[0]!)); return part === "A1" || part === "A3" || part === "A4"; }
-    if (a.role === "water" || a.role === "roof" || a.role === "wall" || a.role === "fence") return true;
-    return a.role === "plant" && /바위|덤불|수풀/.test(a.name);
-  };
-  const isFace = (k: string | null) => {
-    if (!k) return false;
-    if (k.startsWith("#")) return /벽/.test(flatName.get(k) ?? "");
-    const a = info.get(k); const part = mvSheetPart(set.fileOf(k.split(":")[0]!));
-    return a?.role === "wall" || ((part === "A4" || part === "A3") && Math.floor(Number(k.split(":")[1]) / 8) % 2 === 1);
-  };
-  const isRoof = (k: string | null) => !!k && !k.startsWith("#") && (info.get(k)?.role === "roof" || mvSheetPart(set.fileOf(k.split(":")[0]!)) === "A3");
-  const face = (x: number, y: number) => isFace(k1[y * w + x]!) || isFace(k2[y * w + x]!);
-  const hangable = (x: number, y: number) => face(x, y) || isRoof(k1[y * w + x]!) || isRoof(k2[y * w + x]!);
-  const wallish = (x: number, y: number) => x < 0 || y < 0 || x >= w || y >= h || face(x, y) || blocks(k1[y * w + x]!, true);
-  // 통행은 엔진 규칙 그대로(collision.ts passabilityOf: 맨 위 비-★ 층이 정한다).
-  const ts = set.built.tileset;
-  const pass = Array.from({ length: w * h }, (_, i) => passabilityOf(ts, layers[0][i]!, layers[1][i]!, layers[2][i]!, layers[3][i]!));
-  const open = (i: number) => { const p = pass[i]!; return p.up || p.down || p.left || p.right; };
-  const solid = Array.from({ length: w * h }, (_, i) => !open(i));
-  const out: string[] = [];
-  const hung: string[] = [], loose: string[] = [];
-  // 누수: 1층 땅은 막혔는데(물·벽·천장) 위층 물체·무늬가 길을 튼 칸. 계단·다리·문 밑줄은 뺀다.
-  const legit = new Set<number>();
-  for (const p of placed) if ((p.o.kind === "decal" || p.o.kind === "door") && PASSWAY.test(p.o.id)) p.cells.forEach(([dx, dy]) => {
-    if (p.o.kind === "door" && dy !== p.o.h - 1) return;
-    const x = p.x + dx, y = p.y + dy; if (x >= 0 && y >= 0 && x < w && y < h) legit.add(y * w + x);
+    return { key: k, name: a?.name ?? k, ...(a ? { role: a.role } : {}), part: mvSheetPart(set.fileOf(sheet!)), kind: Number(kind), flat: false };
   });
-  // 물 위 2층 길·징검다리·발판은 건널목(여울)이다.
-  const crossingAt = (i: number) => {
-    const k = k2[i]!; if (!k || k.startsWith("#")) return false;
-    const a = info.get(k); if (/징검|다리|발판/.test(a?.name ?? "")) return true;
-    const b = k1[i] ? info.get(k1[i]!) : undefined; return a?.role === "road" && b?.role === "water";
-  };
-  const leaks: string[] = [];
-  for (let i = 0; i < w * h; i += 1) {
-    if (!open(i) || legit.has(i) || crossingAt(i)) continue;
-    const base = passabilityOf(ts, layers[0][i]!, -1, -1, -1);
-    if (!(base.up || base.down || base.left || base.right)) leaks.push(`(${i % w},${Math.floor(i / w)})`);
-  }
-  // 막혀야 할 물체 칸(prop 전부·tall 밑줄·solid)이 엔진에서 뚫린 곳 — 같은 칸을 다른 kind 로 잡았거나 위에 통행 그림을 얹은 경우.
-  const holes: string[] = [];
-  for (const p of placed) {
-    // 낱장 tile 조각도 막힘으로 두었으면(pass 없음) 엔진에서도 막혀야 한다 — 탁자·책상 끝을 낱장으로 찍으면 그 칸이 통행 타일일 수 있다.
-    const want = p.o.solid ?? (p.o.kind === "prop" ? p.cells : p.o.kind === "tall" ? p.cells.filter(([, dy]) => dy === p.o.h - 1) : []);
-    for (const [dx, dy] of want) { const x = p.x + dx, y = p.y + dy; if (x >= 0 && y >= 0 && x < w && y < h && open(y * w + x)) holes.push(`${p.o.id}(${x},${y})`); }
-  }
-  if (holes.length) out.push(`통행: 막혀야 할 물체 칸이 뚫림 ${holes.length} — ${holes.slice(0, 8).join(" ")}`);
-  // 네모 물: 물 덩이가 바운딩 상자를 거의 꽉 채우면(80% 이상, 6칸 이상) 욕조처럼 보인다.
-  // 돌테 수조·수로처럼 일부러 네모인 물은 뺀다.
-  const isWater = (i: number) => [k1[i], k2[i]].some((k) => !!k && !k.startsWith("#") && info.get(k)?.role === "water" && !/수조|수로|분수|욕탕/.test(info.get(k)?.name ?? ""));
-  const wseen = new Array<boolean>(w * h).fill(false); const boxes: string[] = [];
-  for (let i = 0; i < w * h; i += 1) {
-    if (wseen[i] || !isWater(i)) continue;
-    const st = [i]; wseen[i] = true; let n = 0, x0 = w, y0 = h, x1 = 0, y1 = 0;
-    while (st.length) {
-      const j = st.pop()!, x = j % w, y = Math.floor(j / w); n += 1;
-      x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y);
-      for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]] as const) { const k = ny * w + nx; if (nx >= 0 && ny >= 0 && nx < w && ny < h && !wseen[k] && isWater(k)) { wseen[k] = true; st.push(k); } }
-    }
-    const touchesEdge = x0 === 0 || y0 === 0 || x1 === w - 1 || y1 === h - 1;
-    if (n >= 6 && !touchesEdge && n / ((x1 - x0 + 1) * (y1 - y0 + 1)) >= 0.8) boxes.push(`${x1 - x0 + 1}×${y1 - y0 + 1}@(${x0},${y0})`);
-  }
-  if (boxes.length) out.push(`모양: 네모난 물 덩이 ${boxes.length} — ${boxes.join(" ")}`);
-  if (leaks.length) out.push(`통행: 막힌 땅(물·벽·천장) 위를 걷게 만든 칸 ${leaks.length} — ${leaks.slice(0, 10).join(" ")}${leaks.length > 10 ? " …" : ""}`);
-  const onTop = new Array<number>(w * h).fill(0);
-  for (const p of placed) {
-    const { o } = p;
-    if (o.kind === "prop") (o.solid ?? p.cells).forEach(([dx, dy]) => { const x = p.x + dx, y = p.y + dy; if (x >= 0 && y >= 0 && x < w && y < h) onTop[y * w + x] += 1; });
-    if (o.kind === "wallmount" && p.cells.some(([dx, dy]) => { const x = p.x + dx, y = p.y + dy; return x >= 0 && y >= 0 && x < w && y < h && !hangable(x, y); })) hung.push(`${o.id}(${p.x},${p.y})`);
-    if ((o.kind === "tall" || o.kind === "prop") && WALL_FURNITURE.test(o.id)) {
-      const top = Math.min(...p.cells.map(([, dy]) => dy));
-      // 가로 침대(_h)는 머리판이 서쪽 끝이다 — 윗변 대신 머리 쪽 옆 칸이 벽이면 붙은 것으로 본다.
-      const headWest = /bed.*_h$/.test(o.id) && p.cells.filter(([dx]) => dx === 0).every(([, dy]) => wallish(p.x - 1, p.y + dy));
-      const against = headWest || p.cells.filter(([, dy]) => dy === top).every(([dx]) => wallish(p.x + dx, p.y + top - 1) || face(p.x + dx, p.y + top));
-      if (!against) loose.push(`${o.id}(${p.x},${p.y})`);
-    }
-  }
-  // 큰 물체끼리 겹침(탁자 위 소품·1칸 물체는 뺀다)
-  const owner = new Map<number, string>(); const overlaps: string[] = [];
-  for (const p of placed) {
-    if ((p.o.kind !== "prop" && p.o.kind !== "tall") || p.cells.length < 2 || p.o.id.startsWith("tile:") || /quilt|blanket/.test(p.o.id)) continue;
-    const blocking = p.o.solid ?? (p.o.kind === "tall" ? p.cells.filter(([, dy]) => dy === p.o.h - 1) : p.cells);
-    for (const [dx, dy] of blocking) {
-      const x = p.x + dx, y = p.y + dy; if (x < 0 || y < 0 || x >= w || y >= h) continue;
-      const i = y * w + x, k = k2[i]; if (k && !k.startsWith("#") && info.get(k)?.role === "fence") continue;
-      const prev = owner.get(i); const me = `${p.o.id}(${p.x},${p.y})`;
-      if (prev && prev !== me) { overlaps.push(`${prev}×${me}`); break; }
-      owner.set(i, me);
-    }
-  }
-  if (overlaps.length) out.push(`겹침: 큰 물체끼리 겹침 ${overlaps.length} — ${overlaps.slice(0, 6).join(" ")}`);
-  if (hung.length) out.push(`벽걸이: 벽면 밖에 건 물체 ${hung.length} — ${hung.slice(0, 8).join(" ")}`);
-  if (loose.length) out.push(`벽걸이: 벽에 안 붙은 벽 가구 ${loose.length} — ${loose.slice(0, 8).join(" ")}`);
-  const seen = new Array<boolean>(w * h).fill(false);
-  const queue: number[] = [];
-  const start = (x: number, y: number) => { const i = y * w + x; if (!solid[i] && !seen[i]) { seen[i] = true; queue.push(i); } };
-  if (spec.entry) start(spec.entry[0], spec.entry[1]);
-  else for (let x = 0; x < w; x += 1) { start(x, 0); start(x, h - 1); } 
-  if (!spec.entry) for (let y = 0; y < h; y += 1) { start(0, y); start(w - 1, y); }
-  while (queue.length) {
-    const i = queue.pop()!, x = i % w, y = Math.floor(i / w), p = pass[i]!;
-    const step = (nx: number, ny: number, out: boolean, into: "up" | "down" | "left" | "right") => {
-      if (!out || nx < 0 || ny < 0 || nx >= w || ny >= h) return;
-      if (pass[ny * w + nx]![into]) start(nx, ny);
-    };
-    step(x + 1, y, p.right, "left"); step(x - 1, y, p.left, "right"); step(x, y + 1, p.down, "up"); step(x, y - 1, p.up, "down");
-  }
-  // 키 큰 물체(tall) 윗칸은 엔진상 걷지만 몸통을 뚫고 지나는 것처럼 보인다 — 그 칸을 막아도 닿는지 따로 잰다.
-  const tallTop = new Set<number>();
-  for (const p of placed) if (p.o.kind === "tall" && !NATURE.test(p.o.id)) p.cells.forEach(([dx, dy]) => {
-    if (dy === p.o.h - 1 || (p.o.solid ?? []).some(([sx, sy]) => sx === dx && sy === dy)) return;
-    const x = p.x + dx, y = p.y + dy; if (x >= 0 && y >= 0 && x < w && y < h && k1[y * w + x] && !face(x, y)) tallTop.add(y * w + x);
-  });
-  if (tallTop.size) {
-    const strict = new Array<boolean>(w * h).fill(false); const q: number[] = [];
-    const go = (i: number) => { if (!strict[i] && seen[i] && !tallTop.has(i)) { strict[i] = true; q.push(i); } };
-    if (spec.entry) go(spec.entry[1] * w + spec.entry[0]); else for (let i = 0; i < w * h; i += 1) { const x = i % w, y = Math.floor(i / w); if (x === 0 || y === 0 || x === w - 1 || y === h - 1) go(i); }
-    while (q.length) { const i = q.pop()!, x = i % w, y = Math.floor(i / w); for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]] as const) if (nx >= 0 && ny >= 0 && nx < w && ny < h) go(ny * w + nx); }
-    const lost = [...Array(w * h).keys()].filter((i) => seen[i] && !tallTop.has(i) && !strict[i]);
-    if (lost.length) out.push(`통행: 키 큰 물체 몸통(윗칸)을 지나야만 닿는 바닥 ${lost.length}칸 — ${lost.slice(0, 8).map((i) => `(${i % w},${Math.floor(i / w)})`).join(" ")}`);
-  }
-  // 침대는 긴 옆면 한쪽이 비어 닿아야 한다(발치로만 닿으면 안 된다).
-  const beds: string[] = [];
-  for (const p of placed) {
-    if (!/(^|_)bed($|_)/.test(p.o.id) || p.o.kind !== "prop") continue;
-    const cols = [...new Set(p.cells.map(([dx]) => dx))], rows = p.cells.map(([, dy]) => dy);
-    const y0 = Math.min(...rows), y1 = Math.max(...rows), x0 = p.x + Math.min(...cols), x1 = p.x + Math.max(...cols);
-    const side = (x: number) => { for (let y = p.y + y0; y <= p.y + y1; y += 1) if (x >= 0 && x < w && seen[y * w + x]) return true; return false; };
-    if (!side(x0 - 1) && !side(x1 + 1)) beds.push(`${p.o.id}(${p.x},${p.y})`);
-  }
-  if (beds.length) out.push(`통행: 옆으로 못 가는 침대(발치로만 닿음) ${beds.length} — ${beds.join(" ")}`);
-  // 닿지 않는 바닥 덩이
-  const done = new Array<boolean>(w * h).fill(false);
-  const pockets: string[] = [];
-  for (let i = 0; i < w * h; i += 1) {
-    if (solid[i] || seen[i] || done[i]) continue;
-    const stack = [i]; done[i] = true; let n = 0, x0 = w, y0 = h, x1 = 0, y1 = 0;
-    while (stack.length) {
-      const j = stack.pop()!, x = j % w, y = Math.floor(j / w); n += 1;
-      x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y);
-      for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]] as const) {
-        const k = ny * w + nx;
-        if (nx >= 0 && ny >= 0 && nx < w && ny < h && !solid[k] && !seen[k] && !done[k]) { done[k] = true; stack.push(k); }
-      }
-    }
-    pockets.push(`${n}칸 (${x0},${y0})~(${x1},${y1})`);
-  }
-  if (pockets.length) out.push(`통행: 입구에서 못 가는 바닥 ${pockets.length}덩이 — ${pockets.slice(0, 6).join(" · ")}`);
-  // 쓰는 가구(침대·의자·탁자·상자 등)에 닿을 칸
-  const unreachable: string[] = [];
-  for (const p of placed) {
-    if (p.o.kind !== "prop" && p.o.kind !== "tall") continue;
-    if (NATURE.test(p.o.id)) continue;
-    // 탁자·카운터·다른 가구 위에 올린 소품은 그 가구로 닿는다.
-    if (p.cells.every(([dx, dy]) => { const x = p.x + dx, y = p.y + dy; if (x < 0 || y < 0 || x >= w || y >= h) return true; const k = k2[y * w + x]; return onTop[y * w + x]! >= 2 || (!!k && !k.startsWith("#") && info.get(k)?.role === "fence"); })) continue;
-    const touch = p.cells.some(([dx, dy]) => [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([ax, ay]) => {
-      const x = p.x + dx + ax!, y = p.y + dy + ay!; return x >= 0 && y >= 0 && x < w && y < h && seen[y * w + x];
-    }));
-    if (!touch) unreachable.push(`${p.o.id}(${p.x},${p.y})`);
-  }
-  if (unreachable.length) out.push(`통행: 닿을 수 없는 물체 ${unreachable.length} — ${unreachable.slice(0, 8).join(" ")}`);
-  return out;
 }
-
-// ── 빈 바닥 ──
-// 「공간이 남으면 공간이 너무 큰 것이다.」 걸을 수 있는 바닥(A2·A5)인데 물체도 가구(2층 탁자·카운터)도 없는 칸에서
-// 가장 큰 빈 직사각형을 차례로 찾는다. 러그·얼룩 같은 2층 바닥 무늬는 빈 칸으로 센다.
-export function emptyRects(set: LoadedSet, m: Converted, minArea = 12, limit = 5): { x: number; y: number; w: number; h: number }[] {
-  const { width: w, height: h } = m;
-  const nameOf = new Map(set.presetJson.autotiles.map((a) => [`${a.sheet}:${a.kind}`, a.name]));
-  const flatName = new Map((set.presetJson.flats ?? []).map((f) => [`#${set.tileOf(f.sheet, f.cell)}`, f.name]));
-  const part = (k: string) => mvSheetPart(set.fileOf(k.split(":")[0]!));
-  const isFloor = (k: string | null) => {
-    if (!k) return false;
-    if (k.startsWith("#")) { const n = flatName.get(k) ?? ""; return !/어둠|벽|기둥/.test(n); }
-    return part(k) === "A2";
+function lintInput(set: LoadedSet, spec: MapSpec, k1: (string | null)[], k2: (string | null)[], placed: Placed[], layers: [number[], number[], number[], number[]]): PackLintInput {
+  const ts = set.built.tileset, n = spec.w * spec.h;
+  return {
+    w: spec.w, h: spec.h, m1: materialsOf(set, k1), m2: materialsOf(set, k2), placed,
+    pass: Array.from({ length: n }, (_, i) => passabilityOf(ts, layers[0][i]!, layers[1][i]!, layers[2][i]!, layers[3][i]!)),
+    basePass: Array.from({ length: n }, (_, i) => passabilityOf(ts, layers[0][i]!, -1, -1, -1)),
+    occupied: Array.from({ length: n }, (_, i) => layers[2][i]! >= 0 || layers[3][i]! >= 0),
+    ...(spec.entry ? { entry: spec.entry } : {}),
   };
-  const isDecor = (k: string | null) => !k || (!k.startsWith("#") && part(k) === "A2" && !/탁자|카운터|울타리|생울타리|덤불|키 큰 풀/.test(nameOf.get(k) ?? ""));
-  const free = Array.from({ length: w * h }, (_, i) => isFloor(m.keys1[i]!) && isDecor(m.keys2[i]!) && m.upperTiles[i]! < 0 && m.upperOverlayTiles[i]! < 0);
-  const out: { x: number; y: number; w: number; h: number }[] = [];
-  while (out.length < limit) {
-    let best = { x: 0, y: 0, w: 0, h: 0 };
-    const hist = new Array<number>(w).fill(0);
-    for (let y = 0; y < h; y += 1) {
-      for (let x = 0; x < w; x += 1) hist[x] = free[y * w + x] ? hist[x]! + 1 : 0;
-      for (let x = 0; x < w; x += 1) {
-        let mh = Infinity;
-        for (let x2 = x; x2 < w && hist[x2]! > 0; x2 += 1) {
-          mh = Math.min(mh, hist[x2]!);
-          const a = (x2 - x + 1) * mh;
-          if (a > best.w * best.h) best = { x, y: y - mh + 1, w: x2 - x + 1, h: mh };
-        }
-      }
-    }
-    if (best.w * best.h < minArea) break;
-    out.push(best);
-    for (let y = best.y; y < best.y + best.h; y += 1) for (let x = best.x; x < best.x + best.w; x += 1) free[y * w + x] = false;
-  }
-  return out;
 }
-
-// ── 구조 검사 ──
-// A4(천장/벽면)·A3(지붕/벽) 은 시트 짝수 줄 종류가 윗면, 홀수 줄이 벽면이다. 윗면의 남쪽 끝 밑에는 벽면이 있어야 하고
-// 벽면은 위가 윗면(또는 벽면)이고 2줄 이상이어야 한다. 어기면 천장이 바닥 위에 떠 있거나 집이 덜 지어진 것처럼 보인다.
-type Role = "top" | "face" | null;
+export function lintPassage(set: LoadedSet, spec: MapSpec, k1: (string | null)[], k2: (string | null)[], placed: Placed[], layers: [number[], number[], number[], number[]]): string[] {
+  return lintPackPassage(lintInput(set, spec, k1, k2, placed, layers));
+}
 export function lintStructure(set: LoadedSet, w: number, h: number, k1: (string | null)[], k2: (string | null)[]): string[] {
-  const roleOf = (k: string | null, part: "A3" | "A4"): Role => {
-    if (!k || k.startsWith("#")) return null;
-    const [s, kind] = k.split(":");
-    if (mvSheetPart(set.fileOf(s!)) !== part) return null;
-    return Math.floor(Number(kind) / 8) % 2 === 0 ? "top" : "face";
-  };
-  const out: string[] = [];
-  for (const [part, label, keys] of [["A4", "천장", k1], ["A3", "지붕", k2]] as const) {
-    const at = (x: number, y: number): Role | "out" => (x < 0 || y < 0 || x >= w || y >= h) ? "out" : roleOf(keys[y * w + x] ?? null, part);
-    const bad: Record<string, [number, number][]> = {};
-    const add = (msg: string, x: number, y: number) => (bad[msg] ??= []).push([x, y]);
-    for (let y = 0; y < h; y += 1) for (let x = 0; x < w; x += 1) {
-      const r = at(x, y);
-      if (r === "top") {
-        const s = at(x, y + 1);
-        if (s !== "top" && s !== "face" && s !== "out") add(`${label} 밑에 벽면 없음`, x, y);
-      } else if (r === "face") {
-        const n = at(x, y - 1);
-        if (n !== "top" && n !== "face" && n !== "out") add(`벽면 위에 ${label} 없음`, x, y);
-        if (n !== "face") { let run = 0; while (at(x, y + run) === "face") run += 1; if (run < 2) add(`${label} 벽면이 1줄뿐`, x, y); }
-      }
-    }
-    for (const [msg, cells] of Object.entries(bad)) out.push(`구조: ${msg} ${cells.length}칸 — ${cells.slice(0, 8).map(([x, y]) => `(${x},${y})`).join(" ")}${cells.length > 8 ? " …" : ""}`);
-  }
-  return out;
+  return lintPackStructure({ w, h, m1: materialsOf(set, k1), m2: materialsOf(set, k2) });
+}
+// 「공간이 남으면 공간이 너무 큰 것이다.」 가장 큰 빈 바닥 직사각형들(packEmptyRects).
+export function emptyRects(set: LoadedSet, m: Converted, minArea = 12, limit = 5, minSide = 1): { x: number; y: number; w: number; h: number }[] {
+  const n = m.width * m.height;
+  return packEmptyRects({ w: m.width, h: m.height, m1: materialsOf(set, m.keys1), m2: materialsOf(set, m.keys2),
+    occupied: Array.from({ length: n }, (_, i) => m.upperTiles[i]! >= 0 || m.upperOverlayTiles[i]! >= 0) }, minArea, limit, minSide);
 }
 
 export function readMapSpecs(set: LoadedSet): MapSpec[] {

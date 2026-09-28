@@ -7,7 +7,7 @@
   "objectKits": 256,
   "houseKits": 0,
   "autotileGroups": 85,
-  "bytes": 14775321,
+  "bytes": 15231891,
   "maps": {
     "refmap_bakery_home": {
       "place": "shared_refmap_interior_refmap_bakery_home",
@@ -151,10 +151,10 @@
     }
   },
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "0e17014729e8de1109787673d28ff0fd332de0ea2a5c8acc58c0eed7f2e9de40",
+  "revision": "16eaf98558a4acd3174b06947e3457ed59a0b2fec8880464e09ec2ccab485f71",
   "reloaded": true,
-  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-interior-2026-09-27T23-13-15-002Z.sqlite",
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-interior-2026-09-28T00-03-48-574Z.sqlite",
   "otherLibraries": 36,
   "otherLibrariesUnchanged": true,
-  "publishedAt": "2026-09-27T23:13:38.475Z"
+  "publishedAt": "2026-09-28T00:04:08.653Z"
 }

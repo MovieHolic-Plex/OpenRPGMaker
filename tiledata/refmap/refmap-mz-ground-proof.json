@@ -7,13 +7,13 @@
   "objectKits": 0,
   "houseKits": 0,
   "autotileGroups": 25,
-  "bytes": 2221000,
+  "bytes": 2214443,
   "maps": {},
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "e901e5fbcb2292afb5ed9077c700fb60c99ca9ede9183b480cb60a44338c69e4",
+  "revision": "5a076357697bcb4e9fad9b196192378ea5c6a25c2d0f52164e903170d8363ee1",
   "reloaded": true,
-  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-mz-ground-2026-09-27T08-27-43-380Z.sqlite",
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-mz-ground-2026-09-28T00-08-52-996Z.sqlite",
   "otherLibraries": 36,
   "otherLibrariesUnchanged": true,
-  "publishedAt": "2026-09-27T08:28:02.416Z"
+  "publishedAt": "2026-09-28T00:09:19.354Z"
 }

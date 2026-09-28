@@ -8,6 +8,7 @@ import type { GameMap, Project, TilesetDef } from "@/project/types";
 import { MV_PACK_PRESETS } from "@/project/rpgmakerMv/packs";
 import type { MvTownRecipe } from "@/project/rpgmakerMv/packPreset";
 import { layOutPackTown } from "@/project/rpgmakerMv/townLayout";
+import { lintPackMap } from "@/project/rpgmakerMv/packMapLint";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { requireMap } from "./mapHelpers";
 
@@ -343,4 +344,32 @@ const checkTownMapTool: ToolDefinition = {
   },
 };
 
-export const PACK_TOWN_TOOLS: readonly ToolDefinition[] = [buildPackTown, checkTownMapTool];
+// 세트 맵을 사람이 검수하며 모은 규칙(구조·통행·빈 공간)을 조수도 쓰게 한다 — 게시 스크립트와 같은 함수(packMapLint.ts).
+// 2026-09-28 REFMAP 헤드리스 시험: 이 검사 없이 조수가 깐 실내 넷 중 넷이 입구 없음·ㅁ자 방·벽에서 뜬 침대·5×5 빈 바닥이었다.
+const checkPackMapTool: ToolDefinition = {
+  name: "check_pack_map",
+  description:
+    "팩 프리셋 타일셋(REFMAP 세트 등) 맵을 세트 게시 기준으로 검사한다. "
+    + "구조: 천장·지붕 밑에 벽면이 있나, 벽면이 2줄 이상인가. "
+    + "통행(엔진 규칙 그대로): 맵 가장자리 입구에서 모든 바닥·가구에 닿나, 침대 긴 옆면이 비었나, 키 큰 가구 몸통을 뚫고 지나야 하는 곳, 물·벽 위를 걷게 된 칸. "
+    + "벽걸이: 창·액자·선반·시계·침대 머리가 벽에 붙었나. 겹침: 큰 물체끼리. 모양: 네모 물. "
+    + "공간: 가구 없는 빈 바닥 직사각형(두 변 3 이상)이 한도(집 실내 12·동굴 20·야외 48칸)를 넘나 — 넘으면 물체로 메우지 말고 방·맵을 줄인다. "
+    + "경고마다 좌표가 붙는다. 다 깔거나 고친 뒤 warnings 가 빌 때까지 고치고 다시 부른다(세트의 완성 장소 38곳은 모두 경고 0).",
+  mode: "read",
+  parameters: { type: "object", properties: { mapId: { type: "string" } }, required: ["mapId"] },
+  invalidArgsExample: { mapId: "fisher_house" },
+  run(draft, args): ToolExecResult {
+    const map = requireMap(draft, args.mapId as string);
+    const result = lintPackMap(draft, map);
+    if (!result) {
+      throw new ToolError(`${map.name} 의 타일셋(${map.tilesetId})은 재료·물체 이름이 있는 팩 프리셋이 아니다 — check_pack_map 은 팩 프리셋 맵에서만 된다.`, { code: "not-pack-map", mapId: map.id });
+    }
+    return {
+      summary: result.warnings.length ? `${map.name}: 고칠 곳 ${result.warnings.length}가지` : `${map.name}: 구조·통행·벽걸이·겹침·빈 공간 모두 통과(물체 ${result.objects}개)`,
+      ...(result.warnings.length ? { warnings: [...result.warnings] } : {}),
+      data: result,
+    };
+  },
+};
+
+export const PACK_TOWN_TOOLS: readonly ToolDefinition[] = [buildPackTown, checkTownMapTool, checkPackMapTool];

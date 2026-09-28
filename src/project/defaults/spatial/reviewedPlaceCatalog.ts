@@ -13,12 +13,16 @@ export const REVIEWED_PLACES = catalog.roots.map(id => ({ id, name: catalog.plac
 /** Replace the host catalog projection without touching project-owned copies. */
 const sharedIds = new Set<string>();
 const sharedPreviews: Record<string,string> = {};
+// 공용 라이브러리가 층 원본 맵(lib.maps, 장소와 같은 id)을 함께 실으면 가져오기는 그것을 쓴다. 래스터 킷은 2층을 1층에·4층을 3층에
+// 덮어 굳힌 그림이라 칸 통행이 바뀐다(2026-09-28: REFMAP 정글 수풀·A3 벽이 1층으로 내려와 걸리던 길이 막히고 막힌 벽이 뚫렸다).
+const sharedMaps: Record<string, GameMap> = {};
 export const reviewedPlacePreviewUrl = (id:string) => sharedPreviews[id] ?? `/assets/reviewed-places/${id}.png`;
 export const reviewedPlaceReferences = (id: string) => catalog.places[id]?.referenceDocuments;
 export function installSharedReviewedPlaces(snapshot: SharedContentSnapshot): void {
   for(const id of sharedIds) { delete catalog.places[id]; const index=catalog.roots.indexOf(id); if(index>=0)catalog.roots.splice(index,1); }
   sharedIds.clear();
   for(const id of Object.keys(sharedPreviews))delete sharedPreviews[id];
+  for(const id of Object.keys(sharedMaps))delete sharedMaps[id];
   for(const lib of Object.values(snapshot.libraries)) {
     for(const[id,place]of Object.entries(lib.places)) {
       if(!id.startsWith('shared_')) continue;
@@ -27,6 +31,7 @@ export function installSharedReviewedPlaces(snapshot: SharedContentSnapshot): vo
     Object.assign(catalog.tilesets,structuredClone(lib.tilesets));
     Object.assign(catalog.assets,structuredClone(lib.assets));
     Object.assign(sharedPreviews,lib.previews);
+    for(const[id,map]of Object.entries(lib.maps ?? {})) if(sharedIds.has(id)) sharedMaps[id]=map as GameMap;
     for(const id of lib.roots) if(sharedIds.has(id)&&!catalog.roots.includes(id))catalog.roots.push(id);
   }
   REVIEWED_PLACES.splice(0,REVIEWED_PLACES.length,...catalog.roots.map(id=>({id,name:catalog.places[id]!.name,kind:catalog.places[id]!.kind})));
@@ -36,7 +41,10 @@ export function reviewedPlaceMaps(id: string): { map: GameMap; tileset: TilesetD
   function visit(key: string, level: number) {
     const place = catalog.places[key];
     if (!place) throw new Error(`Unknown reviewed place: ${key}`);
-    if (place.exterior) {
+    const layered = sharedMaps[key];
+    if (place.exterior && layered && layered.tilesetId === place.exterior.tilesetId && catalog.tilesets[layered.tilesetId]) {
+      result.push({ level, tileset: catalog.tilesets[layered.tilesetId]!, map: { ...structuredClone(layered), id: key, name: place.name, events: [] } });
+    } else if (place.exterior) {
       const tileset = catalog.tilesets[place.exterior.tilesetId]!;
       const kit = tileset.structureKits!.find(k => k.id === place.exterior!.kitId);
       if (!kit || kit.kind !== 'section') throw new Error(`Missing reviewed raster: ${key}`);
