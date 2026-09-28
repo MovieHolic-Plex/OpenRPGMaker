@@ -584,7 +584,7 @@ export function lintPackRepeats(input: PackLintInput, kind: PackSpaceKind): stri
 }
 
 /**
- * 방이 통째로 네모 하나(ㅁ자)인 실내. 바닥 덩이가 자기 테두리 상자를 0.8 이상 채우면 경고한다.
+ * 방이 통째로 네모 하나(ㅁ자)인 실내. 바닥 덩이가 자기 테두리 상자를 76% 이상 채우면 경고한다(0.8 로 두었더니 조수가 한 칸을 파 79.6% 로 빠져나갔다).
  * 게시 실내 20곳은 0.43~0.74, 조수가 칸막이 없이 깐 집은 0.89~0.92였다(2026-09-28). 작은 방(40칸 미만)은 네모여도 된다.
  */
 export function lintBoxRooms(input: Pick<PackLintInput, "w" | "h" | "m1">): string[] {
@@ -608,7 +608,7 @@ export function lintBoxRooms(input: Pick<PackLintInput, "w" | "h" | "m1">): stri
       }
     }
     const bw = x1 - x0 + 1, bh = y1 - y0 + 1;
-    if (n >= 40 && n / (bw * bh) >= 0.8) out.push(`구조: 방이 네모 하나(ㅁ자) — 바닥 ${n}칸이 ${bw}×${bh}@(${x0},${y0}) 상자를 ${Math.round((100 * n) / (bw * bh))}% 채운다. 구석에 천장 덩이를 들여 ㄱ·ㄷ자로 만들거나 칸막이(천장 덩이 + 벽면 2줄)·알코브로 방을 나눈다(게시 장소는 75% 이하)`);
+    if (n >= 40 && n / (bw * bh) >= 0.76) out.push(`구조: 방이 네모 하나(ㅁ자) — 바닥 ${n}칸이 ${bw}×${bh}@(${x0},${y0}) 상자를 ${Math.round((100 * n) / (bw * bh))}% 채운다. 구석에 천장 덩이를 들여 ㄱ·ㄷ자로 만들거나 칸막이(천장 덩이 + 벽면 2줄)·알코브로 방을 나눈다(게시 장소는 75% 이하)`);
   }
   return out;
 }
