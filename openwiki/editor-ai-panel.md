@@ -3017,6 +3017,25 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 - 빈 시작 맵의 전체 시공 뒤 예전 중앙 좌표가 고립되면 빌더가 검증한 시작점을 유지한다.
   기존 콘텐츠/부분 범위의 시작점은 보존한다. 실측: 4채 green 형태에서 (10,8)을 복원하면
   4채 모두 접근 불가였고, 검증된 시작점 (23,16)은 4/4 도달했다.
+- 방향이 있는 요청(「위로 올라가면 마을」)은 의도 선언이 `construction.approach`
+  (north/south/east/west)로 옮긴다. 계약은 `target:{kind:"new"}` + `connection`이 되고,
+  `author_village` 성공 직후 `villageConnection.connectContractVillage`가 출발 맵의 그쪽 끝과
+  마을 반대쪽 끝을 `link_maps`로 잇고 게임 시작을 출발 맵 원래 자리로 되돌린다. 완료 검사는
+  출입구 존재, 시작→출발 맵 출입구 통행, 마을 착지→집 문앞 통행을 본다. 모델은 출입구를 만들지 않는다.
+- 방향·선택 영역·새 이름이 없는데 대상 맵에 이미 내용이 있으면(`isLivedMap`) 계약을 만들지 않는다.
+  얼린 `target:{kind:"existing"}`(bounds 없음)은 `village-requires-scope`로 항상 거부되기 때문이다.
+  이때는 일반 경로의 마을 노트(빈 땅 bounds → 없으면 새 맵)를 따른다.
+  실측(2026-09-28): 숲·NPC가 있는 20×15 시작 맵에서 「위로 올라가면 마을」이 이 조합으로 얼어 6번 중 5번 실패했다.
+- 계약 해제(2026-09-28): 계약 인자 그대로 부른 `author_village`가 대상·범위·칩셋·설계서 규칙
+  (`village-requires-scope`, `village-tileset-mismatch`, `bounds-*`, `map-*`, `village-design-*`,
+  `target`을 가리키는 `invalid-args`)에 거부되면 `villageContractBlocker`가 막다른 길로 판정한다.
+  워커는 그 자리에서 계약을 풀고, 계약 지시 줄을 `[마을 계약 해제]` 안내로 바꾸고, 같은 실패 결과에 안내를 붙인다.
+  이후는 일반 실행이다(다른 쓰기 도구 허용, 일반 마을 검사). `done.villageContractReleased`를 받은 패널은
+  조화 검수와 적용 정책을 계약 없는 실행으로 되돌린다. 집·주민 수 부족이나 문·길 검사처럼 seed로 달라질 수 있는
+  실패와, `residents` 같은 모델 몫 인자 오류는 계약을 유지한다. 회귀: `test/piVillageContractRelease.bun.test.ts`.
+- 의도 판정 로그: `classifyPlainPiTurn`이 `plan.routingAudit` 한 줄을 만들고(`intent:llm mode=… construction=approach:north … → 마을 계약: 새 맵 …`),
+  Pi 활동 로그의 첫 상태 행 「의도 판정: …」으로 남는다. 같은 감사에 실패한 도구마다 실제 오류 문장과 계약 해제 사실도 싣는다.
+  예전 사용 로그에는 판정도, 「오류 5」의 문장도 없었다.
 
 검증: Bun 계약/실행 루프 6건, 기존 facade/intent-note Vitest 50건 통과.
 실제 에디터 + Gemini 호출은 `author_village` 1회/2턴/9.294초/도구 오류 0으로

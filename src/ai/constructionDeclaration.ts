@@ -21,6 +21,11 @@ export type ConstructionScale = "small" | "medium" | "large" | "vast";
 
 const CONSTRUCTION_SCALES: readonly ConstructionScale[] = ["small", "medium", "large", "vast"];
 
+/** 「위로 올라가면 마을」의 방향 — 지금 맵에서 그쪽 가장자리로 나가면 새 마을 맵이 나온다. */
+export type ConstructionApproach = "north" | "south" | "east" | "west";
+
+const CONSTRUCTION_APPROACHES: readonly ConstructionApproach[] = ["north", "south", "east", "west"];
+
 export interface ConstructionDeclaration {
   readonly morphology?: VillageMorphology;
   /** Only a user-authored theme; do not invent one for an unspecified village. */
@@ -35,6 +40,11 @@ export interface ConstructionDeclaration {
   readonly residentDialogue?: boolean;
   /** 새로 만들 맵 이름(「큰 강호 장터 마을」) — 신축 표지. 기존 맵 수정이면 생략. */
   readonly targetName?: string;
+  /**
+   * 지금 맵에서 이 방향으로 가면 마을이 나온다(「위로 올라가면 마을」=north). 새 마을 맵 신축 표지이며,
+   * 두 맵의 가장자리 출입구는 시공 직후 코드가 잇는다(villageContract.connectContractVillage).
+   */
+  readonly approach?: ConstructionApproach;
 }
 
 export interface EstimatedVillageSize {
@@ -68,7 +78,7 @@ const MIN_SIZE = 20;
 /** 선언 JSON의 construction 필드. 모르는 값은 버린다 — 전체 선언을 실패로 만들지 않는다(관대한 경계). */
 export function parseConstructionDeclaration(raw: unknown): ConstructionDeclaration | undefined {
   if (!isRecord(raw)) return undefined;
-  const construction: { morphology?: VillageMorphology; theme?: string; scale?: ConstructionScale; houseCount?: number; npcCount?: number; residentDialogue?: boolean; targetName?: string } = {};
+  const construction: { morphology?: VillageMorphology; theme?: string; scale?: ConstructionScale; houseCount?: number; npcCount?: number; residentDialogue?: boolean; targetName?: string; approach?: ConstructionApproach } = {};
   if (typeof raw.scale === "string" && (CONSTRUCTION_SCALES as readonly string[]).includes(raw.scale)) {
     construction.scale = raw.scale as ConstructionScale;
   }
@@ -80,6 +90,9 @@ export function parseConstructionDeclaration(raw: unknown): ConstructionDeclarat
   if (npcCount !== undefined) construction.npcCount = npcCount;
   if (typeof raw.residentDialogue === "boolean") construction.residentDialogue = raw.residentDialogue;
   if (typeof raw.targetName === "string" && raw.targetName.trim()) construction.targetName = raw.targetName.trim().slice(0, 60);
+  if (typeof raw.approach === "string" && (CONSTRUCTION_APPROACHES as readonly string[]).includes(raw.approach)) {
+    construction.approach = raw.approach as ConstructionApproach;
+  }
   return Object.keys(construction).length > 0 ? construction : undefined;
 }
 

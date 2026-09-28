@@ -189,6 +189,11 @@ type PiAgentEventPayload =
       /** 요청 프로젝트와 내용이 같아 project 에서 뺀 무거운 키. 클라이언트가 요청 프로젝트의 것을 다시 붙인다. */
       readonly unchangedKeys?: readonly PiCheckpointHeavyKey[];
       /**
+       * 실행 전에 얼린 마을 계약을 실행 도중 풀었다 — 계약 인자 그대로 부른 시공이 대상·범위·칩셋 규칙에 막혔다.
+       * 패널은 이 실행을 계약 실행이 아니라 일반 실행으로 마무리한다(완료 검사·검수·적용 정책).
+       */
+      readonly villageContractReleased?: { readonly code: string; readonly message: string };
+      /**
        * 모델·제공자 오류나 상한으로 **도중에 멈춘** 실행의 사유. 반영된 작업은 남지만 요청을 끝까지 하지 않았다 —
        * 패널이 「만들었어요 · 플레이해 보세요」 대신 멈췄다고 말하게 한다(2026-09-24 연애 도그푸딩: 공략 인물 하나 없이 완료 표시).
        */

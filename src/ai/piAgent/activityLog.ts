@@ -30,6 +30,8 @@ export interface PiRunContext {
   readonly mapName: string | null;
   readonly provider: string;
   readonly model: string;
+  /** 의도 판정 한 줄(`classifyPlainPiTurn` 의 routingAudit). 명시 `/pi` 처럼 판정 없이 들어온 실행은 비운다. */
+  readonly routing?: string;
 }
 
 export interface PiRunFacts {
@@ -44,6 +46,8 @@ export interface PiRunFacts {
   readonly stoppedReason?: string;
   /** 이 실행의 단계별 벽시계(`createTurnTiming().snapshot()`). `npm run ai:trace` 가 이 필드만 읽는다. */
   readonly timing?: import("../turnTiming").TurnTimingRecord;
+  /** 실행 도중 판정이 바뀐 사실(마을 계약 해제 등) — 보드 행에 없는 것만. 결말 행 앞에 상태 행으로 싣는다. */
+  readonly notes?: readonly string[];
 }
 
 export interface PiRunLogHandle {
@@ -128,6 +132,7 @@ function boardUsage(board: TeamBoardState): PiAgentUsage | undefined {
 
 function runAudit(context: PiRunContext, facts: PiRunFacts): AuditEntry[] {
   const rows: AuditEntry[] = [{ kind: "user", text: context.instruction }];
+  if (context.routing) rows.push({ kind: "status", text: `의도 판정: ${context.routing}` });
   for (const agent of facts.board.agents) {
     const where = agent.mapName ?? "프로젝트 전체";
     rows.push({
@@ -143,7 +148,14 @@ function runAudit(context: PiRunContext, facts: PiRunFacts): AuditEntry[] {
     if (agent.conflicts.length > 0) {
       rows.push({ kind: "status", text: `맵 충돌 (${agent.roleLabel}): ${agent.conflicts.join(", ")}` });
     }
+    // 실패한 도구마다 실제 오류 문장. 에이전트 행 요약은 「오류 5」 숫자뿐이라 무엇이 거부됐는지 로그에서 사라졌다
+    // (2026-09-28: author_village 5회 거부의 사유가 사용 로그 어디에도 없었다). 보드 과정 행이 이미 들고 있다.
+    for (const entry of agent.log) {
+      if (entry.kind === "tool" && entry.ok === false) rows.push({ kind: "tool", name: entry.name, args: {}, ok: false, summary: entry.summary });
+      else if (entry.kind === "error") rows.push({ kind: "status", text: `오류 (${agent.roleLabel}): ${entry.text}` });
+    }
   }
+  for (const note of facts.notes ?? []) rows.push({ kind: "status", text: note });
   const scope = context.mapIds.length > 0 ? context.mapIds.join(", ") : "프로젝트 전체";
   const ending = facts.error
     ? `실패: ${facts.error}`
