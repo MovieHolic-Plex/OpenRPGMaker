@@ -535,7 +535,7 @@ const VICTORY_LAYOUT = [
   /* 17 */ "WWW.......................WW",
   /* 18 */ "WWW.ggggg.....~~~~~.......WW",
   /* 19 */ "WWW.ggggg.....~~~~~..gggg.WW",
-  /* 20 */ "WWW.ggggg............gggg..WW",
+  /* 20 */ "WWW.ggggg............gggg.WW",
   /* 21 */ "WWW.......................WW",
   /* 22 */ "WWWWWWWWWWWWW..WWWWWWWWWWWWW",
   /* 23 */ "WWWWWWWWWWWWW..WWWWWWWWWWWWW",
