@@ -523,6 +523,27 @@ export interface PackMapLintResult {
 }
 
 /** 팩 프리셋 맵 한 장을 검사한다. 경고가 없고 빈 직사각형이 한도 안이면 합격. */
+/** 늘 여럿 두는 가구(의자·창·촛대·문·침대·탁자·선반·기둥 등)는 반복을 세지 않는다. */
+const REPEAT_OK = /chair|stool|bench|window|sconce|candle|torch|door|bed|table|desk|bars|column|pillar|banner|curtain|plant|shelf|armor|portrait|painting|grave|headstone|cross|fence|chimney/;
+
+/**
+ * 같은 소품을 방에 여러 번 흩는 것 — 목적 없는 채우기의 가장 흔한 꼴(2026-09-28 조수 시험: 재봉사 집 14×12 에 옷감 두루마리 7개).
+ * 게시 실내·던전 38곳은 이 기준에 하나도 걸리지 않는다: 소품 하나가 4번 이상이면서 맵 30칸마다 1개를 넘을 때만.
+ */
+export function lintPackRepeats(input: PackLintInput, kind: PackSpaceKind): string[] {
+  if (kind === "outdoor") return [];
+  const counts = new Map<string, number>();
+  for (const p of input.placed) {
+    const id = p.o.id;
+    if (id.startsWith("tile:") || NATURE.test(id) || TABLETOP.test(id) || REPEAT_OK.test(id)) continue;
+    counts.set(id, (counts.get(id) ?? 0) + 1);
+  }
+  const over = [...counts].filter(([, n]) => n >= 4 && n * 30 >= input.w * input.h);
+  return over.length
+    ? [`반복: ${over.map(([id, n]) => `「${id}」 ${n}개`).join(", ")} — 같은 소품을 여러 번 흩지 않는다. 구역마다 기준 물체 하나 + 서로 다른 곁들이 2~4개로 줄인다`]
+    : [];
+}
+
 export function lintPackMap(project: Project, map: GameMap): PackMapLintResult | null {
   const input = packLintInputFromMap(project, map);
   if (!input) return null;
@@ -534,6 +555,7 @@ export function lintPackMap(project: Project, map: GameMap): PackMapLintResult |
   const warnings = [...lintPackStructure(input), ...lintPackPassage(input), ...lintAutotileShapes(project, map)];
   if (input.m1.every((m) => !m)) warnings.unshift("재료: 1층에 이 팩 재료가 하나도 없다 — 팩 재료로 칠한 맵이 아니다");
   if (!input.starts?.length) warnings.unshift("통행: 입구가 없다 — 맵 가장자리에 열린 바닥이 없다. 실내는 남쪽 벽 천장 테를 1~2칸 비워 바닥을 맵 끝까지 잇는다");
+  warnings.push(...lintPackRepeats(input, kind));
   if (empty.length) warnings.push(`공간: 가구·물체 없는 빈 바닥 ${empty.map((r) => `${r.w}×${r.h}@(${r.x},${r.y})`).join(" ")} — ${kind === "interior" ? "집 실내" : kind === "cave" ? "동굴·던전" : "야외"} 한도 ${emptyLimit}칸. 물체로 메우지 말고 방·맵을 줄인다(또는 그 자리에 용도 있는 구역을 둔다)`);
   return { interior, kind, warnings, empty, emptyLimit, objects: input.placed.length };
 }

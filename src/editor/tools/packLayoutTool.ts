@@ -15,14 +15,36 @@ import { requireMap } from "./mapHelpers";
 type Grid = { rows: string[]; legend: Record<string, string> };
 type Material = { kind: "auto"; group: AutotileGroup } | { kind: "flat"; tile: number };
 
+/**
+ * 범례는 [{char, material}] 배열이다. 글자를 키로 쓰는 객체(additionalProperties)는 Gemini 도구 스키마에서
+ * `properties: {}` 로 바뀌어, 모델이 키를 쓰면 검증 모드(VALIDATED)에서 요청 전체가 400 으로 죽었다(2026-09-28 시험 8회 중 5회).
+ * 사람이 쓰는 {글자: 재료} 객체도 받아 준다.
+ */
 function readGrid(value: unknown, name: string): Grid | undefined {
   if (value === undefined) return undefined;
   const grid = value as { rows?: unknown; legend?: unknown };
-  if (!Array.isArray(grid.rows) || !grid.rows.every((row) => typeof row === "string") || typeof grid.legend !== "object" || !grid.legend) {
-    throw new ToolError(`${name} 는 {rows: 문자열 배열, legend: {글자: 재료 이름}} 이어야 합니다.`, { code: "invalid-args" });
+  const legend: Record<string, string> = {};
+  if (Array.isArray(grid.legend)) {
+    for (const entry of grid.legend as { char?: unknown; material?: unknown }[]) {
+      if (typeof entry?.char !== "string" || [...entry.char].length !== 1 || typeof entry.material !== "string") {
+        throw new ToolError(`${name}.legend 항목은 {char: 글자 하나, material: 재료 이름} 이어야 합니다: ${JSON.stringify(entry)}`, { code: "invalid-args" });
+      }
+      legend[entry.char] = entry.material;
+    }
+  } else if (typeof grid.legend === "object" && grid.legend) {
+    Object.assign(legend, grid.legend);
   }
-  return { rows: grid.rows as string[], legend: grid.legend as Record<string, string> };
+  if (!Array.isArray(grid.rows) || !grid.rows.every((row) => typeof row === "string") || !Object.keys(legend).length) {
+    throw new ToolError(`${name} 는 {rows: 문자열 배열, legend: [{char, material}]} 이어야 합니다.`, { code: "invalid-args" });
+  }
+  return { rows: grid.rows as string[], legend };
 }
+
+const LEGEND_SCHEMA = {
+  type: "array",
+  description: "글자 → 재료 이름. 예: [{char:\"#\", material:\"그늘 천장\"}]",
+  items: { type: "object", properties: { char: { type: "string" }, material: { type: "string" } }, required: ["char", "material"] },
+};
 
 function materialOf(tileset: TilesetDef, name: string): Material {
   const group = tileset.autotileGroups?.find((entry) => entry.name === name);
@@ -72,7 +94,7 @@ export const paintPackLayoutTool: ToolDefinition = {
   name: "paint_pack_layout",
   description:
     "팩 프리셋 타일셋(REFMAP 세트 등) 맵 한 장을 글자 배열로 한 번에 깐다 — 참고문서 「예시」 문서와 같은 형식. "
-    + "layer1 = {rows:[\"####\",…], legend:{\"#\":\"재료 이름\"}} 모든 칸 필수(방 밖은 천장 재료), layer2 = 탁자·카운터·풀 같은 겹침 재료(`.` = 없음), "
+    + "layer1 = {rows:[\"####\",…], legend:[{char:\"#\", material:\"재료 이름\"}]} 모든 칸 필수(방 밖은 천장 재료), layer2 = 탁자·카운터·풀 같은 겹침 재료(`.` = 없음), "
     + "objects = [{id, at:{x,y}}] (at = 물체 왼쪽 위 칸, stamp_tileset_object 와 같은 규칙·순서대로; 한 줄 소품을 탁자·상자 위에 두면 4층에 올라간다). "
     + "배열 크기가 맵 크기와 다르면 맵을 그 크기로 바꾼다(작은 집은 9×9~15×13). 맵의 1~4층을 모두 새로 쓴다(이벤트는 남긴다). "
     + "재료 이름은 「재료 목록」, 물체 id 는 「물체 목록」 그대로. 오토타일 모양은 이웃에 맞춰 자동. "
@@ -86,13 +108,13 @@ export const paintPackLayoutTool: ToolDefinition = {
       layer1: {
         type: "object",
         description: "1층 바닥·천장·벽면 글자 배열",
-        properties: { rows: { type: "array", items: { type: "string" } }, legend: { type: "object", additionalProperties: { type: "string" } } },
+        properties: { rows: { type: "array", items: { type: "string" } }, legend: LEGEND_SCHEMA },
         required: ["rows", "legend"],
       },
       layer2: {
         type: "object",
         description: "선택. 2층 겹침 재료(탁자·카운터·러그·풀 덤불). `.` = 없음",
-        properties: { rows: { type: "array", items: { type: "string" } }, legend: { type: "object", additionalProperties: { type: "string" } } },
+        properties: { rows: { type: "array", items: { type: "string" } }, legend: LEGEND_SCHEMA },
         required: ["rows", "legend"],
       },
       objects: {
@@ -109,7 +131,7 @@ export const paintPackLayoutTool: ToolDefinition = {
   },
   invalidArgsExample: {
     mapId: "hut",
-    layer1: { rows: ["#####", "#www#", "#www#", "#fff#", "##f##"], legend: { "#": "그늘 천장", w: "갈색 돌벽돌 벽", f: "흙바닥(평)" } },
+    layer1: { rows: ["#####", "#www#", "#www#", "#fff#", "##f##"], legend: [{ char: "#", material: "그늘 천장" }, { char: "w", material: "갈색 돌벽돌 벽" }, { char: "f", material: "흙바닥(평)" }] },
     objects: [{ id: "crate", at: { x: 1, y: 3 } }],
   },
   run(draft, args): ToolExecResult {
