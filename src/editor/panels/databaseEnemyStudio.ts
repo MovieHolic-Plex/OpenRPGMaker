@@ -2,6 +2,7 @@ import { battlerIdleAnimation, battlerIdleAnimationDurationMs, battlerIdleAnimat
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
 import { currentEnemy, enemyGraphicVisual } from "@/editor/panels/databaseEnemyRecordSupport";
+import { renderEnemyPixelPreview, type EnemyPixelPreview } from "@/editor/panels/databaseEnemyPixelPreview";
 import { recordDetailSection, recordPreviewPaused, setRecordDetailSection, setRecordPreviewPaused, setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { store } from "@/project/store";
 import type { EnemyRecord } from "@/project/types";
@@ -12,6 +13,7 @@ export type EnemyInspectorSection = { id: string; label: string; cards: HTMLElem
 /** Local UI state only. Every field keeps its existing databaseActions mutation path. */
 export function renderEnemyStudio(record: EnemyRecord, sections: EnemyInspectorSection[], actions: HTMLElement): HTMLElement {
   const stage = enemyStage(record);
+  const pixel = enemyPixelSlot(record);
   const tabs = el("div", { class: "db-enemy-inspector-tabs db-ws-section-tabs", attrs: { role: "tablist", "aria-label": "몬스터 속성" } });
   const panels = el("div", { class: "db-enemy-inspector-body" });
   const buttons: HTMLButtonElement[] = [];
@@ -92,12 +94,13 @@ export function renderEnemyStudio(record: EnemyRecord, sections: EnemyInspectorS
   refreshReferences();
   const refresh = (): void => {
     stage.refresh();
+    pixel.refresh();
     refreshReferences();
   };
   const root = el("div", {
     class: "db-enemy-studio",
     children: [
-      el("div", { class: "db-enemy-stage-column", children: [stage.element, actions, references] }),
+      el("div", { class: "db-enemy-stage-column", children: [stage.element, pixel.element, actions, references] }),
       el("aside", {
         class: "db-enemy-inspector",
         attrs: { "aria-label": "몬스터 속성 편집" },
@@ -109,6 +112,28 @@ export function renderEnemyStudio(record: EnemyRecord, sections: EnemyInspectorS
   root.addEventListener("input", refresh);
   root.addEventListener("change", refresh);
   return root;
+}
+
+/**
+ * retro2003 손도트 시트가 있는 몬스터의 도트 미리보기 카드 자리. 시트가 없으면 빈 자리(hidden)다.
+ * 리소스·색조·투명이 바뀔 때만 카드를 새로 그리고 옛 카드의 루프를 멈춘다.
+ */
+function enemyPixelSlot(record: EnemyRecord): { element: HTMLElement; refresh: () => void } {
+  const slot = el("div", { class: "db-enemy-pixel-slot", dataset: { testid: "db-enemy-pixel-slot" } });
+  let preview: EnemyPixelPreview | null = null;
+  let key = "";
+  const refresh = (): void => {
+    const live = currentEnemy(record);
+    const next = JSON.stringify([live.monsterResourceId, live.graphicHue, live.transparent, live.name]);
+    if (next === key) return;
+    key = next;
+    preview?.stop();
+    preview = renderEnemyPixelPreview(live);
+    slot.replaceChildren(...(preview ? [preview.element] : []));
+    slot.hidden = !preview;
+  };
+  refresh();
+  return { element: slot, refresh };
 }
 
 function enemyStage(record: EnemyRecord): { element: HTMLElement; refresh: () => void } {

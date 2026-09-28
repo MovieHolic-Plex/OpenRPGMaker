@@ -29,6 +29,7 @@ import {
   skillClassFilterFor,
   skillMatchesRetroClass,
 } from "@/editor/panels/databaseSkillRetroStage";
+import { enemyPixelListBadge } from "@/editor/panels/databaseEnemyPixelPreview";
 import { renderStateRecordForm } from "@/editor/panels/databaseStateRecordView";
 import { renderEquipmentRecordForm, renderItemRecordForm, renderSkillRecordForm, renderTroopRecordForm } from "@/editor/panels/databaseAdvancedRecordViews";
 import { ITEM_TYPES } from "@/editor/panels/databaseItemRecordView";
@@ -616,13 +617,14 @@ function recordListRow(
   const isSelected = selectedRecordIdForSession(collection) === record.id;
   const thumb = recordListThumbnail(collection, record, store.getCurrent());
   const sub = recordCategoryLabel(collection, record);
-  // retro2003 도트 연출이 있는 스킬은 이펙트 시트 한 칸을 썸네일 모서리 배지로 단다(행 그리드 열은 그대로).
-  const badge = collection === "skills" ? retroSkillListBadge(record, 16) : null;
+  // retro2003 도트 연출이 있는 스킬은 이펙트 시트 한 칸을, 손도트 시트가 있는 몬스터는 대기 칸을 썸네일 모서리 배지로 단다(행 그리드 열은 그대로).
+  const badge = collection === "skills" ? retroSkillListBadge(record, 16)
+    : collection === "enemies" ? enemyPixelListBadge((record as { monsterResourceId?: string }).monsterResourceId, 16) : null;
   if (badge && thumb) { thumb.classList.add("db-list-thumb-has-retro"); thumb.append(badge); }
   return el("button", {
     class: `db-list-row${thumb ? " db-list-row-has-thumb" : ""}${isSelected ? " active" : ""}`,
     attrs: { "aria-pressed": String(isSelected), title: `${record.name} (${record.id})`, type: "button" },
-    dataset: { recordId: record.id, recordIndex: String(visibleIndex), recordName: record.name, recordTotal: String(total), testid: `db-record-row-${record.id}`, ...(badge ? { retroFx: "true" } : {}) },
+    dataset: { recordId: record.id, recordIndex: String(visibleIndex), recordName: record.name, recordTotal: String(total), testid: `db-record-row-${record.id}`, ...(badge ? { [collection === "enemies" ? "pixelSheet" : "retroFx"]: "true" } : {}) },
     children: [
       ...(thumb ? [thumb] : []),
       el("span", { class: "db-list-name", text: record.name || "(이름 없음)" }),
@@ -652,7 +654,8 @@ function recordGalleryCard(
   const isSelected = selectedRecordIdForSession(collection) === record.id;
   const thumb = recordListThumbnail(collection, record, store.getCurrent(), GALLERY_THUMB_SIZE);
   const tag = galleryCategoryTag(collection, record);
-  const badge = collection === "skills" ? retroSkillListBadge(record, 24) : null;
+  const badge = collection === "skills" ? retroSkillListBadge(record, 24)
+    : collection === "enemies" ? enemyPixelListBadge((record as { monsterResourceId?: string }).monsterResourceId, 24) : null;
   if (badge && thumb) thumb.classList.add("db-list-thumb-has-retro");
   return el("button", {
     class: `db-gallery-card${isSelected ? " active" : ""}`,
