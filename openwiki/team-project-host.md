@@ -221,9 +221,36 @@ UTF-8 JSON 요청이 1MiB를 초과하고 `CompressionStream`이 있으면 gzip�
 
 | 요청 | 전송 바이트 상한 | 압축 해제 후 상한 |
 |---|---:|---:|
-| gzip + `oprn:project.save` 명시 헤더 | 64MiB | 256MiB |
-| 비압축 + `oprn:project.save` 명시 헤더 | 256MiB | 256MiB |
-| 나머지 브리지 RPC (mapPatch 포함) | 64MiB | 64MiB |
+| gzip + 문서 채널(`project.save` · `project.saveMapPatch` · `start.createProject`) 명시 헤더 | 256MiB | 256MiB |
+| 비압축 + 문서 채널 명시 헤더 | 256MiB | 256MiB |
+| 나머지 브리지 RPC | 64MiB | 64MiB |
+
+### 큰 문서 저장 봉투 (2026-09-28)
+
+실측: Firefox 로 빈 새 프로젝트를 열면 첫 자동 저장(`project.save`, 전체 글)이 **조수를 켜기 전부터** 매번 실패했다.
+전체 글이 1억 8,700만 자(타일셋 368개 101MB + 공용 업로드 dataURL 414개 85MB)였고 두 곳에서 막혔다.
+
+1. `electron/browser/requestBody.ts` 가 봉투 `{ channel, payload }` 를 `JSON.stringify` 한 번으로 만들었다. 그 긴 문자열 하나를
+   따옴표 처리하다 Firefox 가 `InternalError: allocation size overflow` 를 던졌다(같은 브라우저에서 1.5억 자 통과, 1.8억 자 실패).
+   이제 `bridgeJsonParts` 가 가지마다 따로 직렬화하고 긴 문자열은 8Mi 자씩 끊어 Blob 조각으로 잇는다. 이은 결과는
+   `JSON.stringify` 와 바이트까지 같다(`test/browserBridgeRequestEncoding.test.ts`). 받는 쪽·CAS·해시는 그대로다.
+2. 고친 뒤 gzip 본문이 69MB 라 문서 채널의 gzip 전송 상한 64MiB 에서 413 이 났다. 해제량은 스트리밍 중 256MiB 로 따로 자르므로
+   문서 채널은 gzip 전송량도 256MiB 까지 받는다(`electron/serve/bridgeRequestBody.ts`, 회귀 `test/bridgeRequestBody.test.ts`).
+
+두 수정 뒤 같은 재현에서 `project.save` 200, SQLite `project` 행 revision 2 가 생겼다. 팀 실행 결과(맵 15개)가 저장되지 않던
+`team-village-live` 실측의 원인도 이것이다 — 맵 패치는 기준본(`persistedBaseline`)이 있어야 쓰는데 첫 전체 저장이 한 번도 성공하지 않아
+매 저장이 전체 글 경로로 떨어졌다.
+
+3. 첫 저장이 성공하자 새 문제가 드러났다. 호스트의 저장 뒤 미디어 분리(`dispatch.ts` `separateMediaAfterSave`)가 방금 받은 문서의
+   공용 그림 414장을 파일로 떼어 **행을 한 번 더 썼다**(revision 1 → 2). 저장 응답은 1 이라 팀 폴링(`teamSession.ts`)이 2 를 남의 변경으로 보고
+   `refreshFromHost` 로 편집기 프로젝트를 통째로 바꿨다(자산 `dataUrl` → `ref`). 그 사이 시작된 조수 실행의 적용 기준(`captureApplyAuthority`)이
+   달라져 시공 적용이 매번 `stale-base` 로 거부됐다 — 시공 7번 모두 실패, 맵 0개. 이제 로드 정규화가 파일 저장이 있는 저장소
+   (`supportsAssetRefs`)면 인라인 업로드 자산을 먼저 `assets.put` 으로 옮기고 문서에는 `ref` 만 둔다
+   (`src/project/persistence/inlineMediaRefs.ts`, 회귀 `test/inlineMediaRefs.test.ts`). 호스트가 다시 쓸 것이 없어 첫 저장이 곧 최종 행이고,
+   첫 저장 본문도 85MB 줄었다. 호스트 쪽 저장 뒤 분리는 옛 클라이언트용 안전망으로 남긴다.
+
+세 수정 뒤 `scripts/qa/team-village-live.mjs`(빈 새 SQLite 호스트 + Firefox + 팀 「마을을 만들어줘」): 첫 저장 revision 1 뒤 다시 받기 없음,
+시공 적용마다 `saveMapPatch` 가 revision 을 올렸다. `SUMMARY.json` 의 `hostTrace` 가 저장·다시 받기·호스트 리비전 순서를 남긴다.
 
 새 프로젝트의 `oprn:start.createProject`도 전체 `seed` 안에 공용 자산·AI 문서를 담으므로
 `project.save`와 같은 상한을 적용한다(2026-09-24). 음식 자료 추가 뒤 실제 신규 생성에서

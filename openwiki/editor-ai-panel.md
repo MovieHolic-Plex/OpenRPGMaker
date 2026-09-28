@@ -3218,8 +3218,10 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 - **실측 스크립트(팀 + 평문 마을):** `scripts/qa/team-village-live.mjs` — 빈 새 SQLite 호스트에서 작업 인원 「팀으로」 → 「마을을 만들어줘」 →
   그래픽 조합 선택 → 끝까지 기다린다. `E2E_SOLO=1` 이면 혼자. 결과는 `verify-shots/team-village-live/SUMMARY.json`.
   2026-09-28 실측(위 두 수정 뒤): 「Pi 팀」 배지, 팀장이 시공 배정 → 검수 → 수정 배정 → 재검수 → 완료 후 검토까지 돌고 21분에 「적용됨」
-  (맵 15개 · 이벤트 168개). 남은 문제: 적용 뒤 자동 저장이 `allocation size overflow`(Firefox, 큰 프로젝트 직렬화)로 실패해 SQLite 에
-  남지 않았다 — 이 변경 범위 밖이며 별도 수정이 필요하다.
+  (맵 15개 · 이벤트 168개). 그때 남은 문제였던 자동 저장 실패(`allocation size overflow`)는 조수 쪽이 아니라 **새 프로젝트 첫 전체 저장**의
+  브라우저 브리지 전송 문제였다 — 조수를 켜기 전에도 이미 실패하고 있었다. 저장이 성공하자 호스트의 저장 뒤 미디어 분리가 행을 다시 써
+  편집기가 프로젝트를 다시 받았고, 실행 중 시공 적용이 모두 `stale-base` 로 거부됐다(맵 0개). 수정과 실측은
+  `team-project-host.md` 「큰 문서 저장 봉투」.
 
 ## 큰 프로젝트의 Pi 요청 전송 (2026-09-24)
 
