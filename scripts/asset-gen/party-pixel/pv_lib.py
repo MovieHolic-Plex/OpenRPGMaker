@@ -358,3 +358,15 @@ def burst(pen, x, y, r, keys):
             rad = rr * (1.0 if j % 2 == 0 else 0.55)
             pts.append((x + math.cos(a) * rad, y + math.sin(a) * rad))
         pen.poly(pts, k)
+
+
+def squeeze(pen, x0, x1):
+    """열 x0..x1-1 을 지우고 오른쪽을 왼쪽으로 당긴다(몸통 길이를 줄일 때)."""
+    w = x1 - x0
+    src = pen.im
+    out = Image.new('RGBA', src.size, (0, 0, 0, 0))
+    out.paste(src.crop((0, 0, x0, src.height)), (0, 0))
+    out.paste(src.crop((x1, 0, src.width, src.height)), (x0, 0))
+    pen.im = out
+    pen.d = ImageDraw.Draw(out)
+    return pen
