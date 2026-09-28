@@ -20,6 +20,14 @@ PALETTE = {
  'j':(42,115,139,255), 'J':(115,224,219,255), '@':(139,88,49,255),
 }
 
+
+# 2026-09-28 새 주인공 6명(사무라이·닌자·음유시인·드루이드·마녀) 장비 색. 기존 글자 색은 바꾸지 않는다.
+PALETTE.update({
+ 'k':(30,24,34,255), 'K':(74,52,78,255), 'r':(178,38,44,255),
+ 'n':(40,112,40,255), 'N':(122,190,64,255),
+ 'p':(92,44,120,255), 'P':(186,112,226,255),
+ 's':(96,50,26,255), 'b':(170,98,44,255), 'B':(222,158,82,255), 'y':(246,226,160,255),
+})
 # Leading spaces have meaning. Rows are padded with transparent pixels.
 AXIAL = {
  'sword': '''
@@ -91,6 +99,43 @@ AXIAL = {
    ow L
     owL
       go
+''',
+ # 카타나: 가는 두 줄 날, 금빛 코등이, 검은 자루에 붉은 감개.
+ 'katana': '''
+              g
+ HLLLLLLLLLLLLgkr@rk
+  DMMMMMMMMMMMg
+              g
+''',
+ # 쿠나이: 짧은 잎 모양 날 + 검은 자루 + 끝 고리.
+ 'kunai': '''
+  L
+ HLLMk@kko
+  DMM    o
+''',
+ # 류트: 손(@)이 목을 쥐고 둥근 공명통은 손 뒤(오른쪽)에 있다. y 줄, k 울림구멍.
+ 'lute': '''
+          ssss
+ gs     ssbBBbss
+ gsww@wwyyyykBbbs
+ gs     ssbbBbss
+          ssss
+''',
+ # 드루이드 지팡이: 끝에서 새잎이 돋은 나무.
+ 'druid_staff': '''
+ Nn
+ nNno
+  nNowgwwgww@wwgwo
+ nNno ow   o
+ Nn
+''',
+ # 마녀 지팡이: 비틀린 검은 나무 + 보라 구슬.
+ 'witch_staff': '''
+  pp
+ pPPp
+ PpPpkkKkkKk@kkKkkr
+ pPPpk
+  ppk
 ''',
 }
 DIAGONAL = {
@@ -207,6 +252,73 @@ DIAGONAL = {
   ow L
    ow
     og
+''',
+ 'katana': '''
+ H
+ LD
+  LD
+   LD
+    LD
+     LD
+      LD
+       LD
+        LDg
+        ggk
+          r
+           @
+            r
+             k
+''',
+ 'kunai': '''
+ H
+ LL
+  LMD
+   Mk
+     @
+      k
+      oo
+''',
+ 'lute': '''
+ gg
+ ss
+   w
+    @
+     w
+      yss
+     sbyBs
+    sbByBBs
+    sbBkyBbs
+    sbBByBbs
+     sbbBbs
+      ssss
+''',
+ 'druid_staff': '''
+ N  N
+ nNNn
+  nNo
+ NnoNw
+   n gw
+       ow
+        gw
+         ow
+          @w
+           ow
+            gw
+             oo
+''',
+ 'witch_staff': '''
+  pp
+ pPPp
+ pPPpk
+  ppkK
+    kKk
+      kK
+       kK
+        kK
+         @K
+          kK
+           kK
+            kr
 ''',
 }
 
