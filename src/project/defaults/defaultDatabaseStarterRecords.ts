@@ -24,6 +24,7 @@ import { normalizeBattleAnimationRecord } from "../databaseAnimationRecordModel"
 import { normalizeSkillRecord } from "../databaseRecordModel";
 import { DEFAULT_ANIMATION_ID, DEFAULT_SKILL_ID, DEFAULT_STATE_ID } from "./constants";
 import { retroClassSkillRecords } from "./retroClassSkillRecords";
+import { retroMonsterSkillRecords } from "./retroMonsterSkillRecords";
 export { defaultItemRecords } from "./defaultDatabaseItemRecords";
 
 type BattleEffectAnimationSeed = {
@@ -115,6 +116,8 @@ export function defaultSkillRecords(): SkillRecord[] {
     ]),
     // retro2003 직업 스킬 48개(계약 src/assets/retroClassSkills.ts). 기존 스킬 뒤에 붙인다.
     ...retroClassSkillRecords(),
+    // retro2003 몬스터 스킬 42개(계약 src/assets/retroMonsterSkills.ts). 도트 적 행동이 쓴다(defaultBattleRecords).
+    ...retroMonsterSkillRecords(),
   ];
   applyGeneratedBattleEffectSkillBindings(records);
   return records;

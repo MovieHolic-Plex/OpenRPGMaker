@@ -3,9 +3,12 @@ import { normalizeMonsterSpeciesRecord } from "../monsterCollection";
 import { DEFAULT_ENEMY_ID, DEFAULT_SKILL_ID, DEFAULT_TROOP_ID } from "./constants";
 import { archetypeActions } from "./enemyActionArchetypes";
 import { generatedEnemyRecords } from "./generatedEnemyRecords";
+import { withRetroMonsterSkills } from "./retroMonsterSkillRecords";
 
 export function defaultBattleRecords() {
   return {
+    // 도트 시트(PIXEL_ENEMY_SHEETS)가 있는 적은 레벨대별 몬스터 스킬(RETRO_MONSTER_SKILLSETS)을 행동으로 받는다.
+    // generatedEnemyRecords() 자체는 아키타입 출력 그대로 둔다(test/enemyActionArchetypes 의 역판정 계약).
     enemies: [
       normalizeEnemyRecord({"id":"enemy_slime","name":"슬라임","level":1,"speciesId":"species_wild_slime","monsterResourceId":"generated-enemy-slime-01","stats":{"maxHp":324,"maxMp":10,"attack":57,"defense":15,"mind":57,"agility":34},"rewards":{"exp":98,"gold":30,"dropRatePercent":15},"actions":archetypeActions("blob")}),
       normalizeEnemyRecord({"id":"enemy_meadow_slime","name":"초원 슬라임","level":3,"speciesId":"species_king_slime","monsterResourceId":"generated-enemy-slime-01","stats":{"maxHp":107,"maxMp":10,"attack":36,"defense":16,"mind":36,"agility":34},"rewards":{"exp":40,"gold":37,"dropRatePercent":15},"actions":archetypeActions("blob")}),
@@ -36,7 +39,7 @@ export function defaultBattleRecords() {
       // 검을 든 skeleton-01로 가짜 1:1 매핑을 만들거나 legacy enemy_extra 폴백을 쓰지 않는다.
       normalizeEnemyRecord({"id":"enemy_mine_skel_archer","name":"광산 해골 궁수","level":16,"speciesId":"species_mine_skeleton","monsterResourceId":"generated-enemy-skeleton-archer","stats":{"maxHp":256,"maxMp":10,"attack":75,"defense":27,"mind":75,"agility":38},"rewards":{"exp":108,"gold":68,"dropItemId":"item_bone","dropRatePercent":15},"actions":archetypeActions("curse"),"actionProfile":{"contactDamage":8,"aggroRange":9,"moveIntervalMs":450,"knockbackResist":0,"attack":{"kind":"projectile","windupMs":700,"recoverMs":300,"damage":18,"range":8,"cooldownMs":1400,"projectileSpeedTilesPerSec":7}}}),
       ...generatedEnemyRecords(),
-    ],
+    ].map(withRetroMonsterSkills),
     troops: [
       normalizeTroopRecord({
         id: DEFAULT_TROOP_ID,
