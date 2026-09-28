@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **108쪽 / 3896KB / 약 1,120,309 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **108쪽 / 3904KB / 약 1,122,741 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -24,7 +24,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-pre-edit-routing.md` | 165KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1033 | ~48,429 |
 | `openwiki/editor-workflows-misc.md` | 74KB | 33KB | 513 | ~20,302 |
 | `openwiki/runtime-battle.md` | 212KB | 31KB | 1093 | ~61,200 |
-| `openwiki/runtime-pre-edit-routing.md` | 77KB | 51KB ⚠상한 초과 — 절을 더 쪼개라 | 535 | ~22,959 |
+| `openwiki/runtime-pre-edit-routing.md` | 84KB | 58KB ⚠상한 초과 — 절을 더 쪼개라 | 585 | ~25,041 |
 | `openwiki/runtime-project-schema.md` | 181KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1333 | ~50,102 |
 | `openwiki/runtime-sessions.md` | 123KB | 50KB | 627 | ~33,263 |
 | `openwiki/testing.md` | 206KB | 48KB | 1923 | ~56,967 |
@@ -1141,14 +1141,14 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L175` 4. 위키를 읽는 법
 - `L187` 5. 끝났다고 말할 수 있는 조건
 
-### `openwiki/refmap-town-outside.md` — 18KB · 150줄 · ~5,396 토큰
+### `openwiki/refmap-town-outside.md` — 19KB · 156줄 · ~5,746 토큰
 
 - `L7` 어디에 무엇이 있나
 - `L20` 게시
 - `L36` 변환 규칙과 함정
 - `L50` 확인 (2026-09-27)
 - `L56` 세트 8개 더 (2026-09-27)
-  - `L142` 세트 맵 기술 (maps/*.json)
+  - `L148` 세트 맵 기술 (maps/*.json)
 
 ### `openwiki/release-and-version.md` — 15KB · 227줄 · ~4,530 토큰
 
@@ -1263,19 +1263,19 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L247` Genre ambience presets and sound pairing (2026-09-21)
   - `L271` Thirty audiovisual presets — evidence (2026-09-21)
 
-### `openwiki/runtime-pre-edit-routing.md` — 77KB · 535줄 · ~22,959 토큰 · 통째읽기 잘림
+### `openwiki/runtime-pre-edit-routing.md` — 84KB · 585줄 · ~25,041 토큰 · 통째읽기 잘림
 
-- `L327` 게임 화면의 2층·그림자·4층 (MZ식 4층, 2026-09-24)
-- `L347` 맵별 16/32/48px 좌표
-- `L351` ESC skill thumbnails (2026-09-06)
-- `L362` Recovered head emotes (2026-09-05)
-- `L368` 메뉴 입력·불러오기 배율 (2026-09-05)
-- `L376` 가구 밀기 애니메이션 (2026-09-05)
-- `L385` Recovered head emotes (2026-09-05)
-- `L391` Saved uploaded tilesets in the actual player (2026-09-14)
-- `L412` 맵 배경(패럴랙스) 렌더 (2026-09-14)
-- `L439` 맵 배경 다중 레이어 (2026-09-21)
-- `L491` 맵 배경 깊이(카메라 따라가기)·흐름 배율 — 회상 파노라마 (2026-09-27)
+- `L377` 게임 화면의 2층·그림자·4층 (MZ식 4층, 2026-09-24)
+- `L397` 맵별 16/32/48px 좌표
+- `L401` ESC skill thumbnails (2026-09-06)
+- `L412` Recovered head emotes (2026-09-05)
+- `L418` 메뉴 입력·불러오기 배율 (2026-09-05)
+- `L426` 가구 밀기 애니메이션 (2026-09-05)
+- `L435` Recovered head emotes (2026-09-05)
+- `L441` Saved uploaded tilesets in the actual player (2026-09-14)
+- `L462` 맵 배경(패럴랙스) 렌더 (2026-09-14)
+- `L489` 맵 배경 다중 레이어 (2026-09-21)
+- `L541` 맵 배경 깊이(카메라 따라가기)·흐름 배율 — 회상 파노라마 (2026-09-27)
 
 ### `openwiki/runtime-project-schema.md` — 181KB · 1333줄 · ~50,102 토큰 · 통째읽기 잘림 · 깨진 줄 1
 
