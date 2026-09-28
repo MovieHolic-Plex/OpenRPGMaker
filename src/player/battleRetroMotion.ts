@@ -702,6 +702,13 @@ function isEnemyMeleeEntry(entry: BattleTimelineEntrySnapshot): boolean {
   return skill?.effect.kind === "damage" && skill.effect.statistic === "attack";
 }
 
+/**
+ * 다가가지 않고 제자리에서 근접 칸을 쓰는 도트 적(리소스 id). 계약 motion 은 칸 순서만 빌린 것이다 —
+ * 식충 식물은 stomp 칸(내려찍기) 자리에 덩굴 채찍을 그렸다(retroMonsterPlan.ts design).
+ * reach 가 없으면 animatePixelEnemyBeat 의 제자리 분기(당겼다 나서기)로 windup → attack → recover 를 그린다.
+ */
+const ROOTED_PIXEL_ENEMIES: ReadonlySet<string> = new Set(["generated-enemy-plant-carnivore"]);
+
 export function retroEnemyReach(field: HTMLElement, entry: BattleTimelineEntrySnapshot): RetroEnemyReach | undefined {
   let cache = reachCache.get(field);
   if (!cache) reachCache.set(field, cache = new Map());
@@ -716,8 +723,9 @@ function measureEnemyReach(field: HTMLElement, entry: BattleTimelineEntrySnapsho
   const enemies = [...field.querySelectorAll<HTMLElement>(".battle-enemy[data-pixel-enemy]:not(.defeated)")];
   const user = enemies.find((node) => node.dataset.testid === entry.userId)
     ?? enemies.find((node) => node.dataset.recordId === entry.userRecordId);
-  // 궁수·브레스는 통상 공격이어도 ranged. 대상까지 걸어가지 않는다.
+  // 궁수·브레스는 통상 공격이어도 ranged. 대상까지 걸어가지 않는다. 뿌리 박힌 적(식충 식물: stomp 칸이지만 제자리 덩굴 채찍)도 제자리.
   if (user?.dataset.pixelEnemy === "shoot" || user?.dataset.pixelEnemy === "breath") return undefined;
+  if (ROOTED_PIXEL_ENEMIES.has(user?.querySelector<HTMLElement>(".battle-enemy-image")?.dataset.pixelSheet ?? "")) return undefined;
   const actors = [...field.querySelectorAll<HTMLElement>(".battle-actor:not(.defeated)")];
   const target = actors.find((node) => node.dataset.testid === entry.targetId)
     ?? actors.find((node) => node.dataset.recordId === entry.targetId);

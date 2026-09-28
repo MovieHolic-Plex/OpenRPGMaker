@@ -431,7 +431,10 @@ function fieldScale(field: HTMLElement): { readonly rect: DOMRect; readonly x: n
   return { rect, x: rect.width / (field.offsetWidth || rect.width || 1), y: rect.height / (field.offsetHeight || rect.height || 1) };
 }
 
-/** 몸 위 레이어: 발 기준(칸 바닥 8행 = 화면 16px 아래가 발). */
+/**
+ * 몸 위 레이어: 발 기준(칸 바닥 8행 = 화면 16px 아래가 발). 128px 대상 상자는 칸 대부분을 채우므로
+ * 편집기 스킬 탭(databaseSkillRetroStage footPad)과 같게 발 아래 24px 에 바닥을 둬 폭심이 몸 가운데에 온다.
+ */
 function placeOnBody(field: HTMLElement, node: HTMLElement, host: HTMLElement): void {
   const image = battlerImage(host);
   const box = image.getBoundingClientRect();
@@ -439,7 +442,8 @@ function placeOnBody(field: HTMLElement, node: HTMLElement, host: HTMLElement): 
   const footMargin = image.dataset.pixelSheet !== undefined ? box.height / f.y * 4 / pixelCellOf(image)
     : host.dataset.battlerExtended === "true" ? box.height / f.y * 3 / 48 : 0;
   node.style.left = `${Math.round((box.left + box.width / 2 - f.rect.left) / f.x)}px`;
-  node.style.top = `${Math.round((box.bottom - f.rect.top) / f.y + 16 - footMargin)}px`;
+  const pad = Number(node.dataset.fxSize) >= 128 && Number(node.dataset.fxBox) <= 128 ? 24 : 16;
+  node.style.top = `${Math.round((box.bottom - f.rect.top) / f.y + pad - footMargin)}px`;
 }
 function stageCenter(field: HTMLElement): Point {
   const f = fieldScale(field);
@@ -459,6 +463,15 @@ function handPoint(field: HTMLElement, user: HTMLElement): Point {
   return { x: Math.round((box.left + box.width * 0.3 - f.rect.left) / f.x), y: Math.round((box.top + box.height * 0.55 - f.rect.top) / f.y) };
 }
 
+/**
+ * 화면 상자 한 변. 기본은 칸 × 2(도트 2배). 단 대상 몸 위에 얹는 128px 칸(낙하참·브레이브 블레이드·파산장·용권 멸살의 착탄)은
+ * 2배면 256px 로 적보다 2.7배 컸다(qa 실측) — 칸 × 1(128px)로 그린다. 계약 frame 은 시트 칸 크기라 그대로 둔다.
+ * screen 128 은 무대 배경 연출이라 2배를 유지한다.
+ */
+export function retroClassFxBox(size: number, anchor: string): number {
+  return size >= 128 && (anchor === "target" || anchor === "allTargets") ? size : size * 2;
+}
+
 function fxNode(player: ClassPlayer, field: HTMLElement, key: string, size: number, frames: number, anchor: string): HTMLElement {
   const node = document.createElement("span");
   node.className = "retro-skill-fx retro-class-fx";
@@ -466,7 +479,8 @@ function fxNode(player: ClassPlayer, field: HTMLElement, key: string, size: numb
   node.dataset.retroFxAnchor = anchor;
   node.dataset.fxSize = String(size);
   node.setAttribute("aria-hidden", "true");
-  const box = size * 2;
+  const box = retroClassFxBox(size, anchor);
+  node.dataset.fxBox = String(box);
   node.style.width = `${box}px`;
   node.style.height = `${box}px`;
   node.style.backgroundImage = `url("${classSheets[key] ?? classSheetUrl(key)}")`;
@@ -475,9 +489,9 @@ function fxNode(player: ClassPlayer, field: HTMLElement, key: string, size: numb
   player.nodes.add(node);
   return node;
 }
-/** 칸 이동: 칸 한 변 × 2 × index(32px → 64, 64px → 128, 128px → 256). */
+/** 칸 이동: 화면 상자 한 변 × index(보통 칸 × 2: 32px → 64, 64px → 128, 128px → 256 · 128px 대상 층은 128). */
 function classFrame(node: HTMLElement, index: number): void {
-  const box = Number(node.dataset.fxSize || 64) * 2;
+  const box = Number(node.dataset.fxBox) || Number(node.dataset.fxSize || 64) * 2;
   node.dataset.fxFrame = String(index);
   node.style.backgroundPosition = index === 0 ? "0px 0px" : `-${box * index}px 0px`;
 }

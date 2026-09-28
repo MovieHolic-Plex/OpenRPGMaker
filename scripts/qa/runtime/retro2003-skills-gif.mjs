@@ -162,7 +162,7 @@ async function recordGroup(groupIndex, group, defaults, contract) {
         for (const node of document.querySelectorAll('.retro-skill-fx')) {
           if (seen.has(node)) continue; seen.add(node);
           const frames = [], positions = [];
-          const row = { fx: node.dataset.retroSkillFx, anchor: node.dataset.retroFxAnchor, size: node.dataset.fxSize, frames, positions,
+          const row = { fx: node.dataset.retroSkillFx, anchor: node.dataset.retroFxAnchor, size: node.dataset.fxSize, box: node.dataset.fxBox, frames, positions,
             width: getComputedStyle(node).width, rendering: getComputedStyle(node).imageRendering };
           window.__skillEvidence.push(row);
           const capture = () => { const n = Number(node.dataset.fxFrame); if (frames.at(-1) !== n) { frames.push(n); positions.push(node.style.backgroundPosition); } };
@@ -255,7 +255,9 @@ async function recordGroup(groupIndex, group, defaults, contract) {
         if (missing.length && !values.reduced) row.problems.push('missing layers ' + missing.join(','));
         if (!detail.sounds && !values.reduced) row.problems.push('no sound event');
         for (const e of detail.effects) {
-          const size = Number(e.size) * 2;
+          // 화면 상자 = 칸 × 2, 단 128px 대상 층(target·allTargets)은 칸 × 1(retroClassFxBox).
+          const size = Number(e.size) >= 128 && (e.anchor === 'target' || e.anchor === 'allTargets') ? Number(e.size) : Number(e.size) * 2;
+          if (e.box && Number(e.box) !== size) row.problems.push('box ' + e.fx + ' ' + e.box + ' != ' + size);
           if (e.width !== size + 'px' || e.rendering !== 'pixelated') row.problems.push('scale ' + e.fx + ' ' + e.width);
           e.positions.forEach((p, i) => { const want = e.frames[i] === 0 ? '0px 0px' : '-' + size * e.frames[i] + 'px 0px'; if (p !== want) row.problems.push('frame step ' + e.fx + ' ' + p + ' != ' + want); });
         }
