@@ -2,6 +2,7 @@ import { animateRetroSkillFx, clearRetroSkillFx, driveRetroClassSkill, isRetroCl
 import { CAST_TYPES, EXTENDED_POSE_FRAME, castTypeForSkill, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
 import type { PixelEnemyCell } from "@/assets/pixelEnemySheets";
 import { store } from "@/project/store";
+import { retroRosterClass } from "@/assets/retroRoster";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
 import type { BattleSnapshot } from "@/battle/runtime";
 import type { BattleActionBeat } from "@/player/battleActionBeats";
@@ -449,13 +450,29 @@ const STYLE_BY_NAME: readonly [RegExp, RetroApproachStyle][] = [
   [/수호|기사|성기사|guard|knight|paladin|tank|전차/i, "leap"],
 ];
 
+/**
+ * 2차 로스터(2026-09-28) 직업은 역할로 고른다: 민첩·원거리 flash, 마법·회복·지원·소환 blink, 물리·탱커 dash.
+ * 창을 쓰는 직업(발키리·용기사)은 역할과 무관하게 leap — 하늘에서 내리꽂는 창술이다.
+ */
+const ROSTER_STYLE_BY_ROLE: Readonly<Record<string, RetroApproachStyle>> = {
+  민첩: "flash", 원거리: "flash", 마법: "blink", 회복: "blink", 지원: "blink", 소환: "blink", 물리: "dash", 탱커: "dash",
+};
+export function rosterApproachStyle(classId: string | undefined): RetroApproachStyle | undefined {
+  const row = retroRosterClass(classId);
+  if (!row) return undefined;
+  if (/발키리|용기사/.test(row.name) || /창/.test(row.concept)) return "leap";
+  return ROSTER_STYLE_BY_ROLE[row.role];
+}
+
 /** 액터(또는 그 직업) 이름으로 접근 방식을 고른다. 모르면 dash. */
 export function retroApproachStyle(actorId: string | undefined): RetroApproachStyle {
   const project = store.getCurrent();
   const actor = project.database.actors.find((row) => row.id === actorId);
   const cls = actor ? project.database.classes.find((row) => row.id === actor.classId) : undefined;
   const words = [cls?.id, cls?.name, actor?.id].filter(Boolean).join(" ");
-  return STYLE_BY_NAME.find(([pattern]) => pattern.test(words))?.[1] ?? "dash";
+  // 로스터 직업은 역할이 먼저다(성기사·암흑기사 이름의 「기사」가 낱말 표의 leap 에 걸리지 않게). 마도사(class_mage)는 기존 12직업 표를 그대로 쓴다.
+  const roster = cls && cls.id !== "class_mage" ? rosterApproachStyle(cls.id) : undefined;
+  return roster ?? STYLE_BY_NAME.find(([pattern]) => pattern.test(words))?.[1] ?? "dash";
 }
 
 /**

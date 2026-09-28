@@ -1,4 +1,5 @@
 import { CHARSET_BATTLERS } from "./charsetBattlers";
+import { PARTY_PIXEL_SHEETS } from "./partyPixelSheets";
 import { BATTLE_SCENERY_CATALOG } from "./battleSceneryCatalog";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import { withInlineAsset } from "./inlineAssetStore";
@@ -24,6 +25,8 @@ import type { Project } from "@/project/types";
 // 파일 경로(*.png) 자체는 안 옮겼다 — 에셋 파일 개명은 별도 라운드(Phase 5).
 const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   ...Object.fromEntries(CHARSET_BATTLERS.map((entry) => [entry.resourceId, `/${entry.path}`])),
+  // 파티원 몬스터 9칸 시트(2차 로스터). 배우 battleCharacterResourceId 로 참조한다.
+  ...Object.fromEntries(PARTY_PIXEL_SHEETS.map((entry) => [entry.resourceId, `/${entry.path}`])),
   // 미설치 팩도 id 는 유지한다. 파일 실패는 전투 배경의 네 장 로드 가드가 처리한다.
   ...Object.fromEntries(BATTLE_SCENERY_CATALOG.map((entry) => [entry.resourceId, `/${entry.layers.ground}`])),
   hero: "/assets/generated/starter/hero-01-battle.png",

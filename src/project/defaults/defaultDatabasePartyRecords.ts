@@ -43,6 +43,7 @@ import {
 } from "./defaultDatabaseRecordIds";
 import { applyGeneratedBattleEffectActorBindings } from "./generatedBattleEffectBindings";
 import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
+import { retroRosterActorRecords } from "./retroRosterRecords";
 
 type PartyRecords = {
   readonly actors: ActorRecord[];
@@ -194,6 +195,8 @@ function defaultActorRecords(): ActorRecord[] {
       },
     },
     ...retroExtensionActors(),
+    // 2차 로스터 예비 배우(직업 이름 그대로). 시작 파티는 그대로다.
+    ...retroRosterActorRecords(),
   ];
   applyGeneratedBattleEffectActorBindings(records);
   return records;

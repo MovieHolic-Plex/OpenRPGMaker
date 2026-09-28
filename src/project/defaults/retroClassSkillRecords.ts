@@ -6,11 +6,12 @@
 // animationId 는 retro2003 이 아닌 스킨에서 쓰는 기존 생성 이펙트다. retro2003 은 이 층을 띄우지 않는다.
 import type { DatabaseStateEffect, SkillRecord } from "../types";
 import { RETRO_CLASS_SKILLS } from "@/assets/retroClassSkills";
+import { RETRO_ALL_CLASS_SKILLS } from "@/assets/retroSkillCatalog";
 import { generatedEffectDatabaseAnimationId as anim } from "@/assets/generatedEffectSheets";
 import { normalizeSkillRecord } from "../databaseRecordModel";
 
 type Scope = SkillRecord["scope"];
-interface Seed {
+export interface Seed {
   readonly scope: Scope;
   readonly mp: number;
   readonly animation: string;
@@ -23,8 +24,8 @@ interface Seed {
   readonly hitRate?: number;
 }
 
-const add = (stateId: string, chance = 100): DatabaseStateEffect => ({ stateId, chance, operation: "add" });
-const remove = (stateId: string): DatabaseStateEffect => ({ stateId, chance: 100, operation: "remove" });
+export const add = (stateId: string, chance = 100): DatabaseStateEffect => ({ stateId, chance, operation: "add" });
+export const remove = (stateId: string): DatabaseStateEffect => ({ stateId, chance: 100, operation: "remove" });
 
 const SEEDS: Readonly<Record<string, Seed>> = {
   // 전사: 공격력 근접기. 필살기는 신성 속성 대형 일격.
@@ -140,7 +141,7 @@ const SEEDS: Readonly<Record<string, Seed>> = {
   skill_witch_moon_sabbath: { scope: "allEnemies", mp: 36, kind: "mind", power: 198, element: "dark", animation: anim("shadow-pulse") },
 };
 
-function record(id: string, name: string, description: string, seed: Seed): SkillRecord {
+export function record(id: string, name: string, description: string, seed: Seed): SkillRecord {
   const effect: SkillRecord["effect"] = seed.kind === "attack" || seed.kind === "mind"
     ? { kind: "damage", statistic: seed.kind, affects: "hp" }
     : seed.kind === "healing" ? { kind: "healing", statistic: "mind", affects: "hp" }
@@ -174,6 +175,6 @@ export function retroClassSkillRecords(): SkillRecord[] {
 
 /** 직업별 레벨 습득 목록(계약의 level). defaultClassRecords 가 기존 스킬 뒤에 붙인다. */
 export function retroClassLearnedSkills(classId: string): { level: number; skillId: string }[] {
-  return RETRO_CLASS_SKILLS.filter((skill) => skill.classId === classId).map((skill) => ({ level: skill.level, skillId: skill.id }));
+  return RETRO_ALL_CLASS_SKILLS.filter((skill) => skill.classId === classId).map((skill) => ({ level: skill.level, skillId: skill.id }));
 }
 

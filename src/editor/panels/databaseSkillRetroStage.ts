@@ -16,7 +16,8 @@ import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { charsetBattler, resolvePartyBattleCharset } from "@/assets/charsetBattlers";
 import { PIXEL_ENEMY_FRAME, pixelEnemyCell, pixelEnemySheet, pixelEnemySheetUrl, type PixelEnemyCell } from "@/assets/pixelEnemySheets";
-import { RETRO_CLASS_SKILLS, retroClassSkill, type RetroClassSkill, type RetroFxAnchor, type RetroSkillMotion } from "@/assets/retroClassSkills";
+import { RETRO_CLASS_SKILLS, type RetroClassSkill, type RetroFxAnchor, type RetroSkillMotion } from "@/assets/retroClassSkills";
+import { retroClassSkill } from "@/assets/retroSkillCatalog";
 import { EXTENDED_POSE_FRAME, castFrame, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
 import {
   retroClassSkillTimeline,

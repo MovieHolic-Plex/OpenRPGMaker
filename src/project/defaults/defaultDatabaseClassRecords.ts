@@ -29,6 +29,7 @@ import {
 } from "./defaultDatabaseRecordIds";
 import { applyGeneratedBattleEffectClassBindings } from "./generatedBattleEffectBindings";
 import { retroClassLearnedSkills } from "./retroClassSkillRecords";
+import { retroRosterClassRecords } from "./retroRosterRecords";
 
 const STANDARD_BATTLE_COMMANDS = [
   { id: "cmd_attack", name: "공격", kind: "attack" },
@@ -196,6 +197,8 @@ export function defaultClassRecords(): ClassRecord[] {
     retroExtensionClass(CLASS_BARD_ID, "음유시인", "agile", BARD_EQUIPMENT_IDS, { dualWield: false, mightyGuard: false }),
     retroExtensionClass(CLASS_DRUID_ID, "드루이드", "caster", DRUID_EQUIPMENT_IDS, { dualWield: false, mightyGuard: true }),
     retroExtensionClass(CLASS_WITCH_ID, "마녀", "caster", WITCH_EQUIPMENT_IDS, { dualWield: false, mightyGuard: false }),
+    // ── retro2003 2차 로스터(2026-09-28): 걷기 칩 약 100개마다 직업 하나(마도사는 기존 직업이라 제외). 스킬은 아래 공용 루프가 붙인다.
+    ...retroRosterClassRecords(),
   ];
   // retro2003 직업 스킬: 계약의 레벨대로 배운다. 기존 스킬(레벨 1)은 그대로 둔다.
   for (const record of records) {

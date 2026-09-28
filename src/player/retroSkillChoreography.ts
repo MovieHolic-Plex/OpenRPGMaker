@@ -1,7 +1,8 @@
 import type { CastType, ExtendedBattlerPose } from "@/battle/battlePose";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
 import type { SkillRecord } from "@/project/types";
-import { RETRO_CLASS_SKILLS, RETRO_FX_SHEETS, retroClassSkill, type RetroClassSkill } from "@/assets/retroClassSkills";
+import type { RetroClassSkill } from "@/assets/retroClassSkills";
+import { RETRO_ALL_CLASS_SKILLS, RETRO_ALL_FX_SHEETS, retroClassSkill } from "@/assets/retroSkillCatalog";
 import { RETRO_MONSTER_FX_SHEETS, RETRO_MONSTER_SKILLS, retroMonsterSkill } from "@/assets/retroMonsterSkills";
 import type { RetroFxLayer } from "@/assets/retroClassSkills";
 import {
@@ -226,7 +227,7 @@ export function animateRetroSkillFx(field: HTMLElement, user: HTMLElement, beat:
 type ClassSkillSheets = Readonly<Record<string, string>>;
 // 동적 템플릿 URL 은 Vite 가 폴더의 PNG 전부를 player 자산 그래프에 넣는다(내보내기에도 실린다).
 const classSheetUrl = (key: string): string => new URL(`../../public/assets/generated/pixel-fx/${key}.png`, import.meta.url).href;
-const classSheets: ClassSkillSheets = Object.fromEntries([...RETRO_FX_SHEETS, ...RETRO_MONSTER_FX_SHEETS].map((layer) => [layer.key, classSheetUrl(layer.key)]));
+const classSheets: ClassSkillSheets = Object.fromEntries([...RETRO_ALL_FX_SHEETS, ...RETRO_MONSTER_FX_SHEETS].map((layer) => [layer.key, classSheetUrl(layer.key)]));
 
 const VISUAL_KINDS = new Set(["damage", "healing", "miss", "action"]);
 const HITSTOP_MS = 110;
@@ -849,7 +850,7 @@ export function startRetroSpecialSkill(field: HTMLElement, entry: BattleTimeline
 
 export function preloadRetroClassSkillFx(): void {
   const sounds = new Set<string>();
-  for (const skill of RETRO_CLASS_SKILLS) for (const id of retroTimelineSounds(retroClassSkillTimeline(skill))) sounds.add(id);
+  for (const skill of RETRO_ALL_CLASS_SKILLS) for (const id of retroTimelineSounds(retroClassSkillTimeline(skill))) sounds.add(id);
   for (const skill of RETRO_MONSTER_SKILLS) for (const id of retroTimelineSounds(retroMonsterSkillTimeline(skill))) sounds.add(id);
   preloadBattleSamples([...sounds]);
   for (const url of Object.values(classSheets)) { const img = new Image(); img.src = url; }
