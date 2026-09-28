@@ -86,8 +86,12 @@ def fang(c, x, y, L, w, down, body, hi, edge=None):
 def jaws(c, hx, cy, open_, length, tooth, gum, maw=None, n=5, big=None):
     """Side-on jaws hinged at (hx, cy) opening to the right (the biter comes from the left)."""
     top, bot = (hx + length, cy - open_), (hx + length, cy + open_)
-    if maw:
-        c.poly([(hx - 2, cy), (top[0], top[1] - 1), (bot[0], bot[1] + 1)], maw)
+    if maw:                                                 # checker-dithered maw: the target shows through
+        for yy in range(int(top[1]), int(bot[1]) + 1):
+            half = abs(yy - cy) / max(open_, 1)
+            for xx in range(int(hx + length * half), int(top[0]) + 1):
+                if (xx + yy) % 2 == 0:
+                    c.px(xx, yy, maw)
     c.line([(hx, cy - 1), top], gum, 3)
     c.line([(hx, cy + 1), bot], gum, 3)
     teeth(c, (hx + 3, cy - 1), (top[0] - 3, top[1] + 1), n, 3, False, tooth)
@@ -153,6 +157,27 @@ def drops(c, cx, cy, n, r0, r1, seed, body, hi, a0=0.0, a1=2 * math.pi, sq=1.0, 
         c.disc(x, y, s, body)
         if s >= 1.2:
             c.px(x - 1, y - 1, hi)
+
+
+def dust(c, x, y, r, seed, keys=('d1', 'd2', 'd3', 'd4'), fade=False):
+    """Soft dust cloud: checker-dithered dark rim, mid body squashed flat, light lobes up-left.
+    fade=True keeps only a dithered ghost for the last frames."""
+    rr = rng(seed)
+    lobes = [(rr.uniform(-0.75, 0.75) * r, rr.uniform(-0.45, 0.1) * r, rr.uniform(0.35, 0.55) * r) for _ in range(5)]
+    if fade:
+        c.ddisc(x, y, r, keys[1], squash=0.6)
+        for ox, oy, s in lobes[:3]:
+            c.ddisc(x + ox, y + oy, s, keys[2], parity=1)
+        return
+    c.ddisc(x, y, r * 1.15, keys[0], squash=0.62)
+    c.oval(x, y + r * 0.1, r * 0.85, r * 0.45, keys[1])
+    for ox, oy, s in lobes:
+        c.disc(x + ox, y + oy, s, keys[1])
+    for ox, oy, s in lobes:
+        if oy < -0.1 * r:
+            c.disc(x + ox - 1, y + oy - 1, max(0.8, s - 1.2), keys[2])
+    for ox, oy, s in lobes[:2]:
+        c.disc(x + ox - 1.5, y + oy - 1.5, max(0.6, s * 0.4), keys[3])
 
 
 def specks(c, cx, cy, n, r0, r1, seed, keys, sq=1.0):

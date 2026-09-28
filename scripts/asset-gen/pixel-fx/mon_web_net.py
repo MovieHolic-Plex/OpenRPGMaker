@@ -58,7 +58,6 @@ def draw(c, f):
         c.disc(WX, WY, 2, 'k3')
     elif f == 3:
         tips = web(c, 25, 3, 'k2', 'k2', sag=2)
-        web(c, 25, 3, 'k3', 'k3', sag=2.5, sq=0.88) if False else None
         for x, y in tips:
             c.spark(x, y, 2, 'w', 'k3')
         c.disc(WX, WY, 2, 'u2')

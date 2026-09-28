@@ -9,12 +9,8 @@ PAL = pal(IMPACT, DIRT, pick(GORE, 'r1', 'r3'), WHITE)
 PX, PY = CX - 5, CY - 1
 
 
-def dust(c, x, y, r, seed, dither=False):
-    if dither:
-        c.ddisc(x, y, r, 'd2', squash=0.7)
-        c.ddisc(x - 1, y - 1, r * 0.6, 'd3', parity=1, squash=0.7)
-        return
-    c.puff(x, y, r, ['d1', 'd2', 'd3', 'd4'], seed=seed)
+def puff(c, x, y, r, seed, dither=False):
+    dust(c, x, y, r, seed, fade=dither)
 
 
 def stars(c, f):
@@ -54,24 +50,24 @@ def draw(c, f):
         c.disc(PX + 1, PY, 2, 'w')
         for a in (-0.5, 0.3, 1.1, -1.3, 2.5):
             c.line([pol(PX + 2, PY, 16, a), pol(PX + 2, PY, 22, a)], 'w')
-        dust(c, CX - 10, FEET - 2, 4, 3)
-        dust(c, CX + 10, FEET - 2, 4, 4)
+        puff(c, CX - 10, FEET - 2, 4, 3)
+        puff(c, CX + 10, FEET - 2, 4, 4)
     elif f == 4:
         c.dring(PX + 2, PY, 19, 'y2')
         c.dring(PX + 2, PY, 17, 'y3', parity=1)
-        dust(c, CX - 14, FEET - 3, 6, 5)
-        dust(c, CX + 12, FEET - 3, 6, 6)
+        puff(c, CX - 14, FEET - 3, 6, 5)
+        puff(c, CX + 12, FEET - 3, 6, 6)
         for x, y in ((CX - 22, FEET - 12), (CX + 20, FEET - 14), (CX + 24, FEET - 6)):
             c.rect(x, y, x + 1, y + 1, 'd1')
         stars(c, f)
     elif f == 5:
-        dust(c, CX - 17, FEET - 5, 7, 7)
-        dust(c, CX + 15, FEET - 6, 7, 8)
-        dust(c, CX - 2, FEET - 2, 4, 9)
+        puff(c, CX - 17, FEET - 5, 7, 7)
+        puff(c, CX + 15, FEET - 6, 7, 8)
+        puff(c, CX - 2, FEET - 2, 4, 9)
         stars(c, f)
     elif f == 6:
-        dust(c, CX - 19, FEET - 9, 7, 7, dither=True)
-        dust(c, CX + 17, FEET - 10, 7, 8, dither=True)
+        puff(c, CX - 19, FEET - 9, 7, 7, dither=True)
+        puff(c, CX + 17, FEET - 10, 7, 8, dither=True)
         stars(c, f)
     else:
         specks(c, CX, FEET - 12, 8, 14, 24, 71, ['d2', 'd3'], sq=0.4)

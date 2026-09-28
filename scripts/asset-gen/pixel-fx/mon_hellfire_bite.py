@@ -45,33 +45,38 @@ def draw(c, f):
         c.disc(JX + 30, JY, 4, 'w')
     elif f == 4:                                           # fireball
         bx, by = CX + 1, CY - 4
-        c.disc(bx, by, 16, 'e0')
-        c.disc(bx, by, 14, 'e1')
-        c.disc(bx - 1, by - 1, 11, 'e2')
-        c.disc(bx - 2, by - 2, 7, 'e3')
-        c.disc(bx - 3, by - 3, 4, 'e4')
-        c.disc(bx - 3, by - 3, 1.5, 'w')
-        c.rays(bx, by, 12, 17, 23, 'e3', rot=0.2)
+        for i in range(10):                                 # flame tongues thrown outward
+            a = i * math.pi / 5 + 0.15
+            x0, y0 = pol(bx, by, 9, a)
+            x1, y1 = pol(bx, by, 23 if i % 2 else 18, a)
+            c.lens((x0, y0), (x1, y1), 3.2, ['e1', 'e2', 'e3'])
+        c.ring(bx, by, 13, 'e1', 3)
+        c.ring(bx, by, 12, 'e3', 1)
+        c.ddisc(bx, by, 11, 'e2')
+        c.disc(bx - 1, by - 1, 6, 'e3')
+        c.disc(bx - 2, by - 2, 3, 'e4')
+        c.disc(bx - 2, by - 2, 1.5, 'w')
     elif f == 5:
         bx, by = CX + 1, CY - 6
         for i in range(7):
             x = bx - 15 + i * 5
             c.flame(x, FEET - 2, 24 - abs(i - 3) * 4, 3.4, ['e1', 'e2', 'e3', 'e4'], lean=(i - 3) * 0.6)
         c.ring(bx, by, 17, 'e2', 1)
-        c.puff(bx, by - 10, 6, ['o1', 'o2'], seed=5)
+        c.ddisc(bx - 2, by - 16, 6, 'o1')
+        c.ddisc(bx + 3, by - 20, 4, 'o2', parity=1)
     elif f == 6:
         for i in range(6):
             x = CX - 13 + i * 5.4
             c.flame(x, FEET - 2, 18 - abs(i - 2.5) * 3, 2.8, ['e1', 'e2', 'e3'], lean=(i - 2.5) * 0.5)
-        c.puff(CX - 4, CY - 20, 7, ['o0', 'o1', 'o2'], seed=6)
-        c.puff(CX + 7, CY - 24, 5, ['o0', 'o1', 'o2'], seed=7)
+        dust(c, CX - 4, CY - 20, 7, 6, keys=('o0', 'o1', 'o2', 'o2'))
+        dust(c, CX + 7, CY - 25, 5, 7, keys=('o0', 'o1', 'o2', 'o2'))
         embers(c, 6, 8, 14)
     elif f == 7:
         for i in range(4):
             x = CX - 9 + i * 6
             c.flame(x, FEET - 2, 10 - abs(i - 1.5) * 2, 2.2, ['e1', 'e2', 'e3'])
-        c.puff(CX - 6, CY - 28, 7, ['o0', 'o1', 'o2'], seed=8)
-        c.puff(CX + 6, CY - 32, 5, ['o0', 'o1'], seed=9)
+        dust(c, CX - 6, CY - 28, 7, 8, keys=('o0', 'o1', 'o2', 'o2'))
+        dust(c, CX + 6, CY - 33, 5, 9, keys=('o0', 'o1', 'o2', 'o2'), fade=True)
         embers(c, 7, 9, 22)
     elif f == 8:
         c.ddisc(CX - 4, CY - 32, 7, 'o1')

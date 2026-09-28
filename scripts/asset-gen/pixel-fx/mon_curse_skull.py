@@ -37,11 +37,11 @@ def draw(c, f):
         skull(c, SX, SY + 12, 0.7, 'b2', 'b3', 'v1', 'v0')
     elif f == 3:
         sigil(c, 20, 0.9, 'v1', 'v2')
-        c.disc(SX, SY, 12, 'v1')
+        c.ddisc(SX, SY, 12, 'v1')
         c.ring(SX, SY, 12, 'v3', 1)
         skull(c, SX, SY + 2, 1.0, 'b2', 'b3', 'v0', 'v0', glow='r2')
     elif f == 4:                                           # peak: eyes blaze, jaw drops
-        c.disc(SX, SY, 14, 'v1')
+        c.ddisc(SX, SY, 14, 'v1')
         c.ring(SX, SY, 14, 'v3', 2)
         c.rays(SX, SY, 12, 16, 22, 'v3', rot=0.26)
         skull(c, SX, SY, 1.15, 'b3', 'w', 'v0', 'v0', glow='r3', jaw=2)
@@ -54,7 +54,6 @@ def draw(c, f):
             c.line([(x, SY + 10), (x, SY + 20)], 'v2')
     elif f == 6:                                           # sinks into the chest
         skull(c, SX, SY + 12, 0.8, 'b1', 'b2', 'v1', 'v0', glow='r2')
-        c.rect(CX - 14, SY + 14, CX + 16, SY + 20, 'v1') if False else None
         c.ring(CX, CY, 12, 'v2', 1, squash=0.6)
         c.ring(CX, CY, 8, 'v3', 1, squash=0.6)
     elif f == 7:

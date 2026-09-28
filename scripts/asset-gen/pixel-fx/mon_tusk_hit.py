@@ -50,23 +50,22 @@ def draw(c, f):
         c.rays(CX + 4, TY, 9, 15, 22, 'w', rot=0.1)
         dirt(c, 3, 10, 18, 0)
         c.disc(CX + 6, TY - 3, 2, 'r2')
-        c.puff(CX - 2, FEET - 3, 5, ['d1', 'd2', 'd3'], seed=3)
+        dust(c, CX - 2, FEET - 3, 5, 3)
     elif f == 4:
         c.dring(CX + 4, TY, 18, 'y2')
         dirt(c, 3, 10, 22, 5)
-        c.puff(CX + 8, FEET - 4, 7, ['d1', 'd2', 'd3', 'd4'], seed=4)
-        c.puff(CX - 8, FEET - 3, 5, ['d1', 'd2', 'd3'], seed=5)
+        dust(c, CX + 8, FEET - 4, 7, 4)
+        dust(c, CX - 8, FEET - 3, 5, 5)
         for y in (FEET - 1, FEET + 1):
             c.line([(CX - 14, y), (CX + 2, y)], 'd2')
     elif f == 5:
         dirt(c, 3, 7, 24, 11)
-        c.puff(CX + 12, FEET - 6, 8, ['d1', 'd2', 'd3', 'd4'], seed=6)
-        c.puff(CX - 4, FEET - 5, 6, ['d1', 'd2', 'd3'], seed=7)
+        dust(c, CX + 12, FEET - 6, 8, 6)
+        dust(c, CX - 4, FEET - 5, 6, 7)
         c.line([(CX - 16, FEET + 1), (CX + 6, FEET + 1)], 'd1')
     elif f == 6:
-        c.ddisc(CX + 14, FEET - 8, 9, 'd2', squash=0.7)
-        c.ddisc(CX + 13, FEET - 10, 5, 'd3', parity=1, squash=0.7)
-        c.ddisc(CX - 4, FEET - 6, 6, 'd2', squash=0.7)
+        dust(c, CX + 14, FEET - 8, 9, 6, fade=True)
+        dust(c, CX - 4, FEET - 6, 6, 7, fade=True)
     else:
         specks(c, CX + 8, FEET - 10, 10, 6, 20, 8, ['d2', 'd3'], sq=0.5)
 
