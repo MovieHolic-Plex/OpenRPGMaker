@@ -5,6 +5,7 @@ import { app } from "electron";
 import { readProjectCoverSource, readProjectFolderSummary } from "../local-store/summary";
 import { PROJECT_COVER_FILE, PROJECT_STORE_FILE } from "../local-store/schema";
 import type { ProjectCoverSource, RecentProjectEntry, SuggestedProjectDir } from "../shared/start";
+import type { RecentTeamEntry } from "../shared/start";
 
 type RecentEntry = { readonly projectDir: string; readonly title: string; readonly lastOpenedAt: string };
 const MAX_RECENT = 20;
@@ -35,6 +36,39 @@ export function rememberRecentProject(projectDir: string, title: string): void {
 }
 
 export function recentProjectsPath(): string { return recentPath(); }
+
+const MAX_RECENT_TEAMS = 8;
+
+function recentTeamsPath(): string {
+  return join(app.getPath("userData"), "recent-teams.json");
+}
+
+/** 초대 비밀(#join=)과 로그인 이후 경로는 버리고, 호스트 주소와 hostProject 만 남긴다. */
+export function teamEntryUrl(target: URL): string {
+  const url = new URL(target.origin + "/");
+  const project = target.searchParams.get("hostProject");
+  if (project) url.searchParams.set("hostProject", project);
+  return url.href;
+}
+
+export function listRecentTeams(): readonly RecentTeamEntry[] {
+  const path = recentTeamsPath();
+  if (!existsSync(path)) return [];
+  try {
+    const parsed = JSON.parse(readFileSync(path, "utf8"));
+    return Array.isArray(parsed)
+      ? parsed.filter((entry) => typeof entry?.url === "string" && URL.canParse(entry.url) && typeof entry?.lastJoinedAt === "string").slice(0, MAX_RECENT_TEAMS)
+      : [];
+  } catch { return []; }
+}
+
+export function rememberRecentTeam(target: URL): void {
+  const url = teamEntryUrl(target);
+  const entries = [{ url, lastJoinedAt: new Date().toISOString() }, ...listRecentTeams().filter((entry) => entry.url !== url)];
+  const path = recentTeamsPath();
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, JSON.stringify(entries.slice(0, MAX_RECENT_TEAMS), null, 2));
+}
 
 function temporaryRoots(): readonly string[] {
   const roots = new Set<string>(["/tmp"]);

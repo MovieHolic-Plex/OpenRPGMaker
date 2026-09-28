@@ -25,7 +25,7 @@ import {
   saveProjectSchema,
 } from "../shared/schemas";
 import { PROJECT_COVER_FILE } from "../local-store/schema";
-import type { SessionKey, SessionRegistry } from "./sessions";
+import { separateInlineMediaOnOpen, type ProjectSession, type SessionKey, type SessionRegistry } from "./sessions";
 
 const services = new WeakMap<SessionRegistry, Readonly<Record<string, Handler>>>();
 
@@ -335,6 +335,18 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
     OPRN_CHANNELS.aiLoadConversation, OPRN_CHANNELS.assetsList, OPRN_CHANNELS.assetsRead]);
   // Serialize service operations: lock ownership cannot change halfway through an async save.
   let tail: Promise<unknown> = Promise.resolve();
+  // 저장 뒤 문서에 남은 base64 업로드 자산을 파일로 뗀다. 새 프로젝트는 부팅 정규화 저장이 공용 그림(실측 414장·85MB)을
+  // dataUrl 로 넣는데, 여는 순간의 분리는 그보다 먼저 돌아서 한 세션 내내 저장마다 그 85MB 를 다시 해시했다
+  // (2026-09-28 팀 호스트 실측: 한 줄 저장 4–5s → 분리 뒤 약 1s). 세션마다 처음 몇 번의 저장 뒤에만 본다.
+  const mediaChecks = new WeakMap<ProjectSession, number>();
+  const separateMediaAfterSave = async (key: SessionKey): Promise<void> => {
+    const session = sessions.get(key);
+    if (!session) return;
+    const checks = mediaChecks.get(session) ?? 0;
+    if (checks >= 3) return;
+    mediaChecks.set(session, checks + 1);
+    await separateInlineMediaOnOpen(session.store);
+  };
   const handlers = Object.fromEntries(Object.entries(raw).map(([channel, handler]) => [channel, (key: SessionKey, payload: unknown) => {
     const run = async () => {
       // Initial desktop open/status has no adopted folder yet.
@@ -363,8 +375,28 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
           return documents;
         };
         const session = sessions.require(key);
+        // 변경분 저장은 패치가 건드린 가지만 본다. 패치에 없는 맵·DB 는 기준본과 같으므로 임대와 부딪히지 않는다.
+        // 실측(2026-09-28, 팀 참여): 호스트가 보고 있는 맵의 임대가 늘 살아 있어, 참여자의 한 줄 저장마다 여기서
+        // 프로젝트 전체 역직렬화 + 맵 정렬 직렬화 비교가 돌았다(저장 응답 4.7–8.6s).
+        // 기준이 저장 행 그대로일 때만(baseSha 일치) 패치가 곧 저장될 변경의 전부다. 다르면 3자 병합이 다른 가지도 바꾼다.
+        const patch = channel === OPRN_CHANNELS.projectSaveMapPatch
+          ? (payload as { readonly patch?: { readonly set?: Readonly<Record<string, unknown>>; readonly del?: readonly string[]; readonly maps?: { readonly set?: Readonly<Record<string, unknown>>; readonly del?: readonly string[] }; readonly database?: unknown }; readonly baseSerialized?: unknown; readonly baseSha?: unknown } | null)
+          : null;
+        const patchOnly = patch?.patch !== undefined && patch.baseSerialized === undefined
+          && typeof patch.baseSha === 'string' && patch.baseSha === store(key).info().sha256 ? patch.patch : null;
+        const untouched = (resource: string): boolean => {
+          if (!patchOnly) return false;
+          const rootSet = patchOnly.set ?? {};
+          const rootDel = patchOnly.del ?? [];
+          if (resource === 'database') return patchOnly.database === undefined && !Object.hasOwn(rootSet, 'database') && !rootDel.includes('database');
+          if (!resource.startsWith('map:')) return false;
+          if (Object.hasOwn(rootSet, 'maps') || rootDel.includes('maps')) return false;
+          const mapId = resource.slice(4);
+          return !Object.hasOwn(patchOnly.maps?.set ?? {}, mapId) && !(patchOnly.maps?.del ?? []).includes(mapId);
+        };
         const conflicts = [...session.locks].filter(([resource, lease]) => {
           if (lease.session === key || lease.expiresAt <= Date.now()) return false;
+          if (untouched(resource)) return false;
           const { base, local } = readDocuments();
           const value = (project: Project | undefined): unknown => resource.startsWith('map:')
             ? project?.maps[resource.slice(4)] : resource === 'database' ? project?.database : project;
@@ -376,6 +408,9 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
     };
     const result = tail.then(run);
     tail = result.catch(() => {});
+    if (channel === OPRN_CHANNELS.projectSave || channel === OPRN_CHANNELS.projectSaveMapPatch) {
+      tail = tail.then(() => separateMediaAfterSave(key)).catch(() => {});
+    }
     return result;
   }]));
   services.set(sessions, handlers);

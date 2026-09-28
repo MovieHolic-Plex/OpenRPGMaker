@@ -8,7 +8,7 @@ import type { SharedContentScope, SharedContentSnapshot } from "./sharedContentS
  * 저장하지 않는다. 그래서 판본(ETag)과 파싱된 스냅숏을 직접 들고, 요청에 If-None-Match 를 붙여
  * 304 면 이것을 쓴다. 저장은 structured clone 이라 다시 파싱하지 않는다.
  */
-type CacheEntry = { readonly scope: SharedContentScope; readonly etag: string; readonly value: SharedContentSnapshot };
+type CacheEntry<T = SharedContentSnapshot> = { readonly scope: string; readonly etag: string; readonly value: T };
 
 const DB_NAME = "oprn-shared-content";
 const STORE = "responses";
@@ -25,13 +25,13 @@ function open(): Promise<IDBDatabase> {
 }
 
 /** 없거나 읽을 수 없으면 null — 캐시는 언제나 버려도 되는 사본이다. */
-export async function readSharedContentCache(scope: SharedContentScope): Promise<CacheEntry | null> {
+export async function readSharedContentCache<T = SharedContentSnapshot>(scope: SharedContentScope | "tile-references"): Promise<CacheEntry<T> | null> {
   try {
     const db = await open();
     return await new Promise((resolve) => {
       const request = db.transaction(STORE, "readonly").objectStore(STORE).get(scope);
       request.onsuccess = () => {
-        const entry = request.result as CacheEntry | undefined;
+        const entry = request.result as CacheEntry<T> | undefined;
         resolve(entry && typeof entry.etag === "string" && entry.value ? entry : null);
       };
       request.onerror = () => resolve(null);
@@ -42,12 +42,12 @@ export async function readSharedContentCache(scope: SharedContentScope): Promise
 }
 
 /** 실패해도 부팅을 막지 않는다 — 다음 부팅이 다시 받을 뿐이다. */
-export async function writeSharedContentCache(scope: SharedContentScope, etag: string, value: SharedContentSnapshot): Promise<void> {
+export async function writeSharedContentCache<T = SharedContentSnapshot>(scope: SharedContentScope | "tile-references", etag: string, value: T): Promise<void> {
   try {
     const db = await open();
     await new Promise<void>((resolve) => {
       const tx = db.transaction(STORE, "readwrite");
-      tx.objectStore(STORE).put({ scope, etag, value } satisfies CacheEntry);
+      tx.objectStore(STORE).put({ scope, etag, value } satisfies CacheEntry<T>);
       tx.oncomplete = () => resolve();
       tx.onerror = () => resolve();
       tx.onabort = () => resolve();

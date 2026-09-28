@@ -11,7 +11,7 @@
 import "./startScreen.css";
 import { APP_VERSION, PRODUCT_BRAND } from "@/brand";
 import { NEW_PROJECT_CHOICES, type NewProjectChoice, type NewProjectChoiceId } from "@/editor/newProjectChoices";
-import type { RecentProjectEntry } from "../../electron/shared/start";
+import type { RecentProjectEntry, RecentTeamEntry } from "../../electron/shared/start";
 import type { OprnBridgeStart } from "@/project/persistence/electronRepository";
 import { el } from "@/util/dom";
 import { writeStartScreenIntent } from "./startIntent";
@@ -20,6 +20,7 @@ export const START_SCREEN_TESTIDS = {
   root: "start-screen",
   newGame: "start-new-game",
   openFolder: "start-open-folder",
+  joinTeam: "start-join-team",
   navRecent: "start-nav-recent",
   navNew: "start-nav-new",
   continueCard: "start-continue",
@@ -33,12 +34,15 @@ export const START_SCREEN_TESTIDS = {
   create: "start-create",
   back: "start-back",
   error: "start-error",
+  joinInput: "start-join-input",
+  joinSubmit: "start-join-submit",
+  recentTeam: "start-recent-team",
 } as const;
 
 const DEFAULT_TITLE = "새 게임";
 const MAX_GRID = 9;
 
-type View = "home" | "new";
+type View = "home" | "new" | "join";
 
 type State = {
   view: View;
@@ -53,6 +57,8 @@ type State = {
   projectDir: string | null;
   busy: boolean;
   error: string;
+  joinUrl: string;
+  teams: readonly RecentTeamEntry[];
 };
 
 /** 첫 화면에 보이는 장르 — 새 프로젝트 다이얼로그·웰컴과 같은 정본(featured)만 쓴다. */
@@ -102,7 +108,7 @@ function entryMeta(entry: RecentProjectEntry): string {
   return parts.join(" · ");
 }
 
-function icon(name: "plus" | "folder" | "clock" | "sparkle" | "back" | "blank"): HTMLElement {
+function icon(name: "plus" | "folder" | "clock" | "sparkle" | "back" | "blank" | "team"): HTMLElement {
   return el("span", { class: "start-icon start-icon-" + name, attrs: { "aria-hidden": "true" } });
 }
 
@@ -136,6 +142,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     projectDir: null,
     busy: false,
     error: "",
+    joinUrl: "",
+    teams: [],
   };
 
   host.dataset.testid = START_SCREEN_TESTIDS.root;
@@ -210,6 +218,15 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       void refreshLocation();
       main.querySelector<HTMLTextAreaElement>("textarea")?.focus();
     }
+    if (view === "join") {
+      main.querySelector<HTMLInputElement>("#start-join-url")?.focus();
+      if (bridge?.recentTeams) {
+        void bridge.recentTeams().then((teams) => {
+          state.teams = teams;
+          if (state.view === "join" && !state.busy) render();
+        }).catch(() => {});
+      }
+    }
   };
 
   const create = (): void => void run(async () => {
@@ -238,6 +255,16 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     if (!root) return;
     state.root = root;
     await refreshLocation();
+  });
+
+  // 참여하는 쪽도 앱이다. 주 프로세스가 호스트 페이지를 앱 창으로 열고, 첫 페이지가 뜨면 돌아온다.
+  const joinTeam = (url: string): void => void run(async () => {
+    if (!bridge?.joinTeam) throw new Error("데스크톱 앱에서만 팀에 참여할 수 있습니다.");
+    const result = await bridge.joinTeam({ url });
+    if (!result.ok) throw new Error(result.error);
+    state.joinUrl = "";
+    if (bridge.recentTeams) state.teams = await bridge.recentTeams();
+    if (state.view === "join") render();
   });
 
   // ── 레일 ──────────────────────────────────────────────────────────────
@@ -281,6 +308,13 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
         dataset: { testid: START_SCREEN_TESTIDS.openFolder },
         children: [icon("folder"), "폴더 열기"],
         on: { click: openFolder },
+      }),
+      el("button", {
+        class: "start-btn start-btn-block",
+        attrs: { type: "button" },
+        dataset: { testid: START_SCREEN_TESTIDS.joinTeam },
+        children: [icon("team"), "팀에 참여"],
+        on: { click: () => showView("join") },
       }),
       el("nav", { class: "start-nav", attrs: { "aria-label": "시작 화면" }, children: [navRecent, navNew] }),
     ],
@@ -473,13 +507,85 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     ];
   };
 
+  // ── 팀에 참여 ─────────────────────────────────────────────────────────
+  const renderJoin = (): HTMLElement[] => {
+    const urlInput = el("input", {
+      class: "start-input",
+      value: state.joinUrl,
+      attrs: {
+        id: "start-join-url",
+        type: "url",
+        inputmode: "url",
+        autocomplete: "off",
+        spellcheck: "false",
+        placeholder: "예: http://192.168.0.10:9840",
+        "aria-describedby": "start-join-hint",
+      },
+      dataset: { testid: START_SCREEN_TESTIDS.joinInput },
+      on: {
+        input: (event) => { state.joinUrl = (event.currentTarget as HTMLInputElement).value; },
+        keydown: (event) => { if ((event as KeyboardEvent).key === "Enter") { event.preventDefault(); joinTeam(state.joinUrl); } },
+      },
+    });
+    const out: HTMLElement[] = [
+      el("div", { class: "start-new-head", children: [
+        el("button", {
+          class: "start-btn start-btn-icon",
+          attrs: { type: "button", "aria-label": "최근 작업으로 돌아가기" },
+          dataset: { testid: START_SCREEN_TESTIDS.back },
+          children: [icon("back")],
+          on: { click: () => showView("home") },
+        }),
+        el("h1", { class: "start-title", text: "팀에 참여" }),
+      ] }),
+      el("div", { class: "start-field", children: [
+        el("label", { class: "start-label", attrs: { for: "start-join-url" }, text: "호스트 주소 또는 초대 링크" }),
+        el("div", { class: "start-row", children: [
+          el("div", { class: "start-field-grow", children: [urlInput] }),
+          el("button", {
+            class: "start-btn start-btn-primary",
+            attrs: { type: "button" },
+            dataset: { testid: START_SCREEN_TESTIDS.joinSubmit },
+            text: "참여",
+            on: { click: () => joinTeam(state.joinUrl) },
+          }),
+        ] }),
+        el("p", {
+          class: "start-hint",
+          attrs: { id: "start-join-hint" },
+          text: "호스트 컴퓨터에서 파일 → 팀 협업 시작을 누르면 주소가 나옵니다. 같은 네트워크에 있어야 합니다. 프로젝트는 호스트 컴퓨터에 저장됩니다.",
+        }),
+      ] }),
+    ];
+    if (state.teams.length > 0) {
+      out.push(el("h2", { class: "start-section", text: "최근 참여한 팀" }));
+      out.push(el("div", {
+        class: "start-team-list",
+        children: state.teams.map((team, index) => el("button", {
+          class: "start-team",
+          attrs: { type: "button", "aria-label": new URL(team.url).host + " 에 다시 참여" },
+          dataset: { testid: START_SCREEN_TESTIDS.recentTeam + "-" + index },
+          on: { click: () => joinTeam(team.url) },
+          children: [
+            icon("team"),
+            el("span", { class: "start-team-host", text: new URL(team.url).host }),
+            el("span", { class: "start-meta", text: formatRelativeTime(team.lastJoinedAt) }),
+          ],
+        })),
+      }));
+    }
+    return out;
+  };
+
   const render = (): void => {
     const home = state.view === "home";
+    const renderView = (): HTMLElement[] => state.view === "home" ? renderHome() : state.view === "new" ? renderNew() : renderJoin();
     navRecent.classList.toggle("is-active", home);
-    navNew.classList.toggle("is-active", !home);
+    navNew.classList.toggle("is-active", state.view === "new");
     if (home) { navRecent.setAttribute("aria-current", "page"); navNew.removeAttribute("aria-current"); }
-    else { navNew.setAttribute("aria-current", "page"); navRecent.removeAttribute("aria-current"); }
-    main.replaceChildren(...(home ? renderHome() : renderNew()), errorBox);
+    else if (state.view === "new") { navNew.setAttribute("aria-current", "page"); navRecent.removeAttribute("aria-current"); }
+    else { navNew.removeAttribute("aria-current"); navRecent.removeAttribute("aria-current"); }
+    main.replaceChildren(...renderView(), errorBox);
   };
 
   /** 구운 그림을 상태에 넣고, 화면에 있는 그 카드의 그림 칸만 바꾼다(전체를 다시 그리면 포커스가 튄다). */
@@ -523,7 +629,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   };
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && state.view === "new" && !state.busy) showView("home");
+    if (event.key === "Escape" && state.view !== "home" && !state.busy) showView("home");
   });
 
   host.replaceChildren(rail, main);
