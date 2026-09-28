@@ -27,6 +27,26 @@ CLASSES = [
         S('card_storm', '카드 회오리', 'spin', '카드 수십 장이 회오리로 적진을 갈아 버린다', 'gypsy_cardstorm'),
         S('star_prophecy', '별의 점괘', 'finisher', '「별」 카드를 세워 하늘의 별빛을 쏟아붓는 필살기', 'gypsy_fate_sky', 'gypsy_fate_hit'),
     ]),
+    dict(batch='p2', classId='class_sword_dancer', ck='sword_dancer', chip='people2-4', name='검무사', mod='r2w3_sdancer', skills=[
+        S('twin_dance', '쌍검무', 'flurry', '두 자루 검이 엇갈리며 초승달 궤적을 그린다', 'sdance_twin'),
+        S('crescent_step', '초승달 걸음', 'dash-strike', '한 걸음에 파고들며 거대한 초승달로 가른다', 'sdance_crescent'),
+        S('ribbon_whirl', '리본 회전', 'spin', '리본과 검날이 겹겹이 돌며 모든 적을 벤다', 'sdance_ribbon'),
+        S('sword_wave', '검기 날리기', 'shoot', '초승달 검기를 날려 적을 가른다', 'sdance_wave', 'sdance_wave_hit'),
+        S('mirror_step', '잔영 걸음', 'blink-strike', '잔영을 남기며 사라졌다가 X자로 벤다', 'sdance_blur', 'sdance_cross'),
+        S('sword_rhythm', '검무 박자', 'buff', '북 장단에 맞춘 검무로 아군 전체의 기세를 올린다', 'sdance_rhythm'),
+        S('moon_waltz', '월광 왈츠', 'leap-strike', '보름달을 등지고 뛰어올라 쌍검을 내려꽂는다', 'sdance_moon'),
+        S('hundred_petals', '백화요란', 'finisher', '꽃잎과 검날의 폭풍 속에서 화면을 가르는 필살기', 'sdance_petal_sky', 'sdance_petal_hit'),
+    ]),
+    dict(batch='p2', classId='class_gambler', ck='gambler', chip='people2-5', name='도박사', mod='r2w3_gambler', skills=[
+        S('dice_throw', '주사위 던지기', 'shoot', '주사위를 굴려 적에게 꽂는다. 눈이 클수록 아프다', 'gambler_dice', 'gambler_dice_hit'),
+        S('slot_spin', '슬롯 머신', 'cast', '거대한 슬롯을 돌려 별 세 개를 맞추면 대폭발', 'gambler_slot'),
+        S('coin_toss', '동전 세례', 'dash-strike', '금화 한 줌을 뿌리며 파고들어 후려친다', 'gambler_coin'),
+        S('poker_face', '포커페이스', 'buff', '패를 펼쳐 표정을 숨기고 회피를 높인다', 'gambler_bluff'),
+        S('all_in', '올인', 'leap-strike', '칩 더미를 통째로 걸고 뛰어올라 내려찍는다', 'gambler_allin'),
+        S('ace_card', '에이스 카드', 'cast', '숨겨 둔 에이스 카드 한 장으로 빛의 일격을 낸다', 'gambler_ace'),
+        S('double_or_nothing', '두 배 아니면 빈손', 'flurry', '동전 앞뒤에 걸고 연타를 몰아친다', 'gambler_coin_flip'),
+        S('jackpot', '잭팟', 'finisher', '릴이 777 로 멈추고 금화 폭포가 쏟아지는 필살기', 'gambler_jackpot_sky', 'gambler_jackpot_hit'),
+    ]),
 ]
 
 

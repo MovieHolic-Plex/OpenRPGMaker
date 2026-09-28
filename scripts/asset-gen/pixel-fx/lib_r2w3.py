@@ -268,6 +268,18 @@ def flash(c, x, y, r, cols):
         c.disc(x, y, r * (1 - i / len(cols)), col)
 
 
+def puff(c, x, y, r, cols):
+    c.disc(x, y, r, cols[0])
+    if len(cols) > 1: c.disc(x - r * .2, y - r * .2, r * .72, cols[1])
+    if len(cols) > 2: c.disc(x - r * .38, y - r * .38, r * .38, cols[2])
+
+
+def add_glyphs(**g):
+    for k, rows in g.items():
+        w = max(len(r) for r in rows)
+        GLYPHS[k] = [r.ljust(w, '.') for r in rows]
+
+
 def ground_ring(c, cx, y, r, col, w=1, t=1.0):
     c.ring(cx, y, r, col, w, max(1, r * .32))
 
