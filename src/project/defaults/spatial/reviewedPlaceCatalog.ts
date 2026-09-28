@@ -32,8 +32,11 @@ export function installSharedReviewedPlaces(snapshot: SharedContentSnapshot): vo
       if(!id.startsWith('shared_')) continue;
       catalog.places[id]=structuredClone(place); sharedIds.add(id);
     }
-    Object.assign(catalog.tilesets,structuredClone(lib.tilesets));
-    Object.assign(catalog.assets,structuredClone(lib.assets));
+    // 카탈로그는 읽기 전용 투영이다 — 프로젝트로 옮기는 쪽(copyReviewedPlace·regionReferenceImport)이 따로 복제한다.
+    // 설치된 공용 스냅숏의 객체를 그대로 가리킨다. 실측(2026-09-28, 팀 참여 창 부팅): 타일셋·그림 dataUrl 약 100MB 를
+    // 여기서 통째로 복제해 1s 가까이 멈췄다.
+    Object.assign(catalog.tilesets,lib.tilesets);
+    Object.assign(catalog.assets,lib.assets);
     Object.assign(sharedPreviews,lib.previews);
     for(const[id,map]of Object.entries(lib.maps ?? {})) if(sharedIds.has(id)) sharedMaps[id]=map as GameMap;
     for(const id of lib.roots) if(sharedIds.has(id)&&!catalog.roots.includes(id))catalog.roots.push(id);
