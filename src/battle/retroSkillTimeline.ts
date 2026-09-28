@@ -270,15 +270,15 @@ function launch(b: TimelineBuilder, at: number, layers: readonly IndexedLayer[],
 function returnHome(b: TimelineBuilder, at: number, blink = false): void {
   if (blink) {
     b.sound(at, SOUND.blink);
-    b.hide(at, 180);
-    b.move(at + 90, 0, "home");
-    b.pose(at + 180, "idle");
+    b.hide(at, 130);
+    b.move(at + 65, 0, "home");
+    b.pose(at + 130, "idle");
     return;
   }
   b.pose(at, "walk_a");
-  b.move(at, 260, "home", -18);
-  b.pose(at + 130, "walk_c");
-  b.pose(at + 260, "idle");
+  b.move(at, 190, "home", -18);
+  b.pose(at + 95, "walk_c");
+  b.pose(at + 190, "idle");
 }
 
 /** 계약 스킬(RETRO_CLASS_SKILLS 한 항목) → 타임라인. */
@@ -291,60 +291,62 @@ export function retroClassSkillTimeline(skill: RetroTimelineSkill, options: { re
   const multiShot = /multi/.test(skill.layers.map((layer) => layer.key).join(" ")) || /연사/.test(skill.name ?? "");
 
   switch (skill.motion) {
+    // 2026-09-28 사용자 피드백 「도약·대시류는 더 빠르게」: 파고드는 이동을 약 45% 줄였다(질주 240→130ms,
+    // 도약 상승 320→190ms·내리꽂기 150→80ms, 순간이동 숨김 200→110ms). 착탄 이펙트 길이는 시트 칸 수가 정하므로 그대로다.
     case "dash-strike": {
-      b.pose(0, "idle"); b.pose(80, "attack_windup"); playUser(80);
-      b.sound(140, SOUND.dash); b.pose(160, "walk_b"); b.move(160, 240, "front", -10);
-      b.pose(400, "attack_windup"); b.pose(450, "attack_strike"); b.pose(510, "attack");
-      const end = playImpact(b, 470, impact);
+      b.pose(0, "idle"); b.pose(50, "attack_windup"); playUser(50);
+      b.sound(90, SOUND.dash); b.pose(100, "walk_b"); b.move(100, 130, "front", -6);
+      b.pose(230, "attack_windup"); b.pose(260, "attack_strike"); b.pose(310, "attack");
+      const end = playImpact(b, 275, impact);
       // 칸이 10장 이상인 베기(십자베기 등)는 두 번째 휘두름이 보이게 한다.
-      const second = impact[0] && impact[0].layer.frames >= 10 ? 470 + Math.round(impact[0].layer.frames * 60 * 0.45) : -1;
+      const second = impact[0] && impact[0].layer.frames >= 10 ? 275 + Math.round(impact[0].layer.frames * 60 * 0.45) : -1;
       if (second > 0) { b.pose(second - 60, "attack_windup"); b.pose(second, "attack_strike"); b.pose(second + 60, "attack_follow"); b.sound(second, SOUND.swing); }
-      returnHome(b, Math.max(end - 120, 760));
+      returnHome(b, Math.max(end - 120, 540));
       break;
     }
     case "leap-strike": {
-      b.pose(0, "idle"); b.pose(60, "defend"); playUser(60);
-      b.sound(200, SOUND.leap); b.pose(200, "evade"); b.move(200, 320, "above", -40);
-      b.pose(520, "attack_windup"); b.move(560, 150, "front");
-      for (const { index, layer } of projectile) b.projectile(520, 190, index, layer, "trail", 0);
-      b.pose(600, "attack_strike"); b.pose(710, "attack");
-      b.sound(710, SOUND.land); b.screen(710, 300, "shake");
-      const end = playImpact(b, 710, impact);
-      returnHome(b, Math.max(end - 100, 1020));
+      b.pose(0, "idle"); b.pose(40, "defend"); playUser(40);
+      b.sound(120, SOUND.leap); b.pose(120, "evade"); b.move(120, 190, "above", -48);
+      b.pose(310, "attack_windup"); b.move(330, 80, "front");
+      for (const { index, layer } of projectile) b.projectile(310, 110, index, layer, "trail", 0);
+      b.pose(350, "attack_strike"); b.pose(410, "attack");
+      b.sound(410, SOUND.land); b.screen(410, 300, "shake");
+      const end = playImpact(b, 410, impact);
+      returnHome(b, Math.max(end - 100, 700));
       break;
     }
     case "blink-strike": {
-      b.pose(0, "idle"); b.pose(60, "evade"); playUser(60);
-      b.sound(160, SOUND.blink); b.hide(200, 200); b.move(300, 0, "front");
-      b.pose(400, "attack_strike"); b.pose(470, "attack"); b.pose(560, "attack_follow");
-      b.screen(420, 100, "flash");
-      const end = playImpact(b, 420, impact);
-      returnHome(b, Math.max(end - 80, 820), true);
+      b.pose(0, "idle"); b.pose(40, "evade"); playUser(40);
+      b.sound(90, SOUND.blink); b.hide(110, 110); b.move(160, 0, "front");
+      b.pose(220, "attack_strike"); b.pose(280, "attack"); b.pose(360, "attack_follow");
+      b.screen(235, 100, "flash");
+      const end = playImpact(b, 235, impact);
+      returnHome(b, Math.max(end - 80, 600), true);
       break;
     }
     case "flurry": {
-      b.pose(0, "idle"); b.pose(60, "attack_windup"); playUser(60);
-      b.sound(100, SOUND.dash); b.pose(120, "walk_b"); b.move(120, 200, "front", -8);
+      b.pose(0, "idle"); b.pose(40, "attack_windup"); playUser(40);
+      b.sound(80, SOUND.dash); b.pose(90, "walk_b"); b.move(90, 120, "front", -6);
       const swings = 4;
       for (let i = 0; i < swings; i += 1) {
-        const at = 340 + i * 120;
+        const at = 220 + i * 95;
         b.pose(at, "attack_windup", i % 2 === 1); b.pose(at + 40, "attack_strike", i % 2 === 1); b.pose(at + 80, "attack", i % 2 === 1);
         b.sound(at + 40, SOUND.swing);
       }
-      const end = playImpact(b, 360, impact, swings);
-      b.pose(340 + swings * 120, "attack_follow", false);
-      returnHome(b, Math.max(end - 80, 340 + swings * 120 + 120));
+      const end = playImpact(b, 240, impact, swings);
+      b.pose(220 + swings * 95, "attack_follow", false);
+      returnHome(b, Math.max(end - 80, 220 + swings * 95 + 100));
       break;
     }
     case "spin": {
-      b.pose(0, "idle"); b.pose(60, "attack_windup"); playUser(60);
-      b.sound(100, SOUND.dash); b.pose(120, "walk_b"); b.move(120, 300, "center", -24);
+      b.pose(0, "idle"); b.pose(40, "attack_windup"); playUser(40);
+      b.sound(80, SOUND.dash); b.pose(90, "walk_b"); b.move(90, 170, "center", -24);
       const cycle: readonly ExtendedBattlerPose[] = ["attack_strike", "attack_follow", "attack", "attack_windup"];
-      for (let i = 0; i < 12; i += 1) b.pose(440 + i * 70, cycle[i % 4]!, Math.floor(i / 2) % 2 === 1);
-      b.sound(440, SOUND.dash);
-      const end = playImpact(b, 460, impact, 3);
-      b.pose(440 + 12 * 70, "attack", false);
-      returnHome(b, Math.max(end - 60, 440 + 12 * 70 + 100));
+      for (let i = 0; i < 12; i += 1) b.pose(270 + i * 60, cycle[i % 4]!, Math.floor(i / 2) % 2 === 1);
+      b.sound(270, SOUND.dash);
+      const end = playImpact(b, 290, impact, 3);
+      b.pose(270 + 12 * 60, "attack", false);
+      returnHome(b, Math.max(end - 60, 270 + 12 * 60 + 90));
       break;
     }
     case "cast": {

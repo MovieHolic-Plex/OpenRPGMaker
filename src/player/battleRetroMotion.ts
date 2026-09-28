@@ -457,13 +457,16 @@ export function retroApproachStyle(actorId: string | undefined): RetroApproachSt
   return STYLE_BY_NAME.find(([pattern]) => pattern.test(words))?.[1] ?? "dash";
 }
 
-/** 스타일별 접근 비트 길이(ms). 걷기보다 모두 짧다 — 준비 동작 + 순간 이동 + 휘두름. */
+/**
+ * 스타일별 접근 비트 길이(ms). 걷기보다 모두 짧다 — 준비 동작 + 순간 이동 + 휘두름.
+ * 2026-09-28 「도약·대시는 더 빠르게」: 질주·도약을 약 30%, 순간이동·섬광을 약 25% 줄였다.
+ */
 function approachMsFor(style: RetroApproachStyle, path: number): number {
   const clamp = (value: number, min: number, max: number) => Math.round(Math.max(min, Math.min(max, value)));
-  if (style === "blink") return 520;
-  if (style === "flash") return 380;
-  if (style === "leap") return clamp(300 + path / 0.9, 480, 700);
-  return clamp(240 + path / 0.8, 420, 620);
+  if (style === "blink") return 400;
+  if (style === "flash") return 290;
+  if (style === "leap") return clamp(220 + path / 1.3, 360, 500);
+  return clamp(170 + path / 1.2, 300, 440);
 }
 
 const approachAnimations = new WeakMap<HTMLElement, Animation>();
@@ -585,7 +588,8 @@ function spawnDust(node: HTMLElement): void {
 // 근접 공격(통상 공격·attack 계열 스킬)은 approach 비트 동안 대상 적 **바로 앞**까지 걷는다.
 // 거리는 실제 DOM 좌표에서 잰다: 아군 몸 앞(왼쪽) 가장자리 → 적 그림 오른쪽 가장자리 + 여유.
 // 시퀀서가 비트 길이를 정하기 전에(actorApproachMs) 한 번, 전진을 걸 때 한 번 부르므로 엔트리별로 기억한다.
-const RETURN_PX_PER_MS = 0.36;
+// 2026-09-28 「더 빠르게」: 복귀도 0.36 → 0.5 px/ms(튀어 돌아가는 공중제비가 늘어지지 않게).
+const RETURN_PX_PER_MS = 0.5;
 const WALK_GAP_PX = 6;
 const walkCache = new WeakMap<HTMLElement, Map<number, RetroWalk | null>>();
 
@@ -659,7 +663,7 @@ function measureWalk(field: HTMLElement, entry: BattleTimelineEntrySnapshot): Re
     dy,
     approachMs: approachMsFor(style, path),
     // 돌아갈 때는 뒤로 공중제비하듯 튀어 돌아간다(retro-return). 순간이동은 다시 사라졌다 나타난다.
-    recoverMs: style === "blink" ? 420 : clamp(path / RETURN_PX_PER_MS, 360, 620),
+    recoverMs: style === "blink" ? 340 : clamp(path / RETURN_PX_PER_MS, 280, 480),
   };
 }
 
