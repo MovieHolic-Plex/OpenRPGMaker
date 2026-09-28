@@ -1,0 +1,488 @@
+{
+"castle": {
+"answer": [
+{
+"piece": "castle.palace",
+"x": 5,
+"y": 3,
+"w": 23,
+"h": 8,
+"door": [
+16,
+10
+],
+"parts": [
+"wing 6 (2 storeys)",
+"drum tower 3",
+"centre block 5 (3 storeys, crow-stepped gable, great door)",
+"drum tower 3",
+"wing 6"
+]
+},
+{
+"piece": "castle.terrace",
+"x": 4,
+"y": 11,
+"w": 25,
+"h": 1
+},
+{
+"piece": "castle.grand_stair",
+"x": 14,
+"y": 12,
+"w": 5,
+"h": 3,
+"note": "terrain stair through the ashlar rock face, on the palace door axis"
+},
+{
+"piece": "castle.tower_round",
+"x": 1,
+"y": 19,
+"w": 3,
+"h": 4
+},
+{
+"piece": "castle.tower_round",
+"x": 11,
+"y": 19,
+"w": 3,
+"h": 4
+},
+{
+"piece": "castle.tower_round",
+"x": 19,
+"y": 19,
+"w": 3,
+"h": 4
+},
+{
+"piece": "castle.tower_round",
+"x": 29,
+"y": 19,
+"w": 3,
+"h": 4
+},
+{
+"piece": "castle.wall_h",
+"x": 4,
+"y": 19,
+"w": 7,
+"h": 4,
+"layer": "ground"
+},
+{
+"piece": "castle.gatehouse",
+"x": 14,
+"y": 19,
+"w": 5,
+"h": 4,
+"layer": "ground"
+},
+{
+"piece": "castle.wall_h",
+"x": 22,
+"y": 19,
+"w": 7,
+"h": 4,
+"layer": "ground"
+},
+{
+"piece": "castle.drawbridge",
+"x": 15,
+"y": 23,
+"w": 3,
+"h": 3
+},
+{
+"piece": "castle.wall_stair",
+"x": 4,
+"y": 18,
+"w": 2,
+"h": 1,
+"layer": "ground"
+},
+{
+"piece": "castle.wall_stair",
+"x": 27,
+"y": 18,
+"w": 2,
+"h": 1,
+"layer": "ground"
+},
+{
+"piece": "castle.wall_v",
+"x": 32,
+"y": 3,
+"w": 1,
+"h": 16,
+"layer": "ground"
+},
+{
+"piece": "castle.stable",
+"x": 1,
+"y": 3,
+"w": 3,
+"h": 5,
+"door": [
+1,
+7
+]
+},
+{
+"piece": "castle.smithy",
+"x": 29,
+"y": 9,
+"w": 3,
+"h": 5,
+"door": [
+30,
+13
+]
+},
+{
+"piece": "castle.barracks",
+"x": 29,
+"y": 3,
+"w": 3,
+"h": 5,
+"door": [
+30,
+7
+]
+},
+{
+"piece": "castle.bailey",
+"x": 1,
+"y": 1,
+"w": 31,
+"h": 18
+},
+{
+"piece": "castle.causeway",
+"x": 15,
+"y": 26,
+"w": 3,
+"h": 4,
+"note": "paved approach: drawbridge -> causeway -> stair (15,30,3) -> main street; guardian statues at x13-14 and x18-19"
+}
+],
+"bbox": [
+0,
+0,
+33,
+33
+],
+"roles": [
+"#################################",
+"#################################",
+"#################################",
+"################################W",
+"################################W",
+"####P#######################P###W",
+"####P#######################P###W",
+"#D##P#######################P#D#W",
+"#PPPP#######################PPPPW",
+"#P##P#######################P###W",
+"#PPPP###########D###########P###W",
+"#PPPPPPPPPPP#PPPPPPP#PPPPPPPP###W",
+"###P^^^^^^^^^^SSSSS^^^^^^^^^^###W",
+"###P^^^^^^^^^^SSSSS^^^^^^^^^^#D#W",
+"#PPP^^^^^^^^^^SSSSS^^^^^^^^^^PPPW",
+"#PPPPPPPP##PPPPPPPPPPP##PPPPPPPPW",
+"#PPPPPPPP##PPPPPPPPPPP##PPPPPPPPW",
+"#PPPPP#PP##PPPPPPPPPPP##PPPPPPPPW",
+"#PPPSS##PPPPPPPPP##PPPPP##PSSPPPW",
+"####WWWWWWW####GGG####WWWWWWW###t",
+"###############GGG##############t",
+"###############GGG##############t",
+"###############GGG##############.",
+"#~~~~~~~~~~~~~~BBB~~~~~~~~~~~~~~~",
+"#~~~~~~~~~~~~~~BBB~~~~~~~~~~~~~~~",
+"#~~~~~~~~~~~~~~BBB~~~~~~~~~~~~~~~",
+"#.......####...RRRRRRRRRR..^^^^^^",
+"#.......####.##RRR##^^^SS^^^^^^^^",
+"^^^^^^^......##RRR##^^^SS^^^^^^^^",
+"^^^^^^^^^^^^^##RRR##^^^SS^^......",
+"^^^^^^^^^^^^^^^SSS^^...RR..###tt#",
+"#......^^^^^^^^SSS^^#ttRR.####tt#",
+"#t..ttt......^^SSS^^#ttRR.####..#"
+],
+"legend": {
+"D": "문 칸 (집의 문, 그 아래 칸이 문 앞)",
+"P": "광장·마당·자갈길 (통행)",
+"W": "성벽길 (통행)",
+"G": "성문 통로 (통행)",
+"B": "도개교·다리 (통행)",
+"S": "계단 (통행)",
+"R": "길",
+"~": "물 (해자·강)",
+"#": "건물·벽·소품 (막힘)",
+"^": "절벽면",
+"t": "나무",
+".": "풀·빈 땅"
+}
+},
+"estate": {
+"answer": [
+{
+"piece": "estate.wall",
+"x": 37,
+"y": 3,
+"w": 19,
+"h": 20,
+"material": "stucco + terracotta coping"
+},
+{
+"piece": "estate.gate",
+"x": 43,
+"y": 22,
+"w": 1,
+"h": 1
+},
+{
+"piece": "estate.gate",
+"x": 46,
+"y": 22,
+"w": 1,
+"h": 1
+},
+{
+"piece": "estate.gate",
+"x": 44,
+"y": 22,
+"w": 2,
+"h": 1,
+"part": "iron_gate_open"
+},
+{
+"piece": "estate.manor",
+"x": 39,
+"y": 3,
+"w": 13,
+"h": 9,
+"door": [
+45,
+11
+]
+},
+{
+"piece": "estate.kitchen",
+"x": 52,
+"y": 3,
+"w": 3,
+"h": 3
+},
+{
+"piece": "estate.coach_house",
+"x": 52,
+"y": 7,
+"w": 3,
+"h": 5,
+"door": [
+53,
+11
+]
+},
+{
+"piece": "estate.lodge",
+"x": 51,
+"y": 16,
+"w": 3,
+"h": 5,
+"door": [
+52,
+20
+]
+},
+{
+"piece": "estate.garden",
+"x": 38,
+"y": 12,
+"w": 17,
+"h": 10
+}
+],
+"bbox": [
+36,
+2,
+56,
+23
+],
+"roles": [
+"~###################",
+"~#.#################",
+"~#t#################",
+"~#t#################",
+"~#t#############...#",
+"~#.#################",
+"~#t#################",
+"~#t#################",
+"~#t#################",
+"~#.######D#######D##",
+"~#PPPPPPPPPPPPPPPPP#",
+"~#PPP###PP##########",
+"~###P###PP##########",
+"~######PPP##P#######",
+"~######PPP##P#####P#",
+"~#PP###PPP##P#####P#",
+"~#PP##PPPP##P#####P#",
+"~#PP##PPPPPPPPP###P#",
+"~#PPPPPPPPPPPPP#D#P#",
+"~#PPPPPPPPPPPPPPPPP#",
+"~#######GG##########"
+],
+"legend": {
+"D": "문 칸 (집의 문, 그 아래 칸이 문 앞)",
+"P": "광장·마당·자갈길 (통행)",
+"W": "성벽길 (통행)",
+"G": "성문 통로 (통행)",
+"B": "도개교·다리 (통행)",
+"S": "계단 (통행)",
+"R": "길",
+"~": "물 (해자·강)",
+"#": "건물·벽·소품 (막힘)",
+"^": "절벽면",
+"t": "나무",
+".": "풀·빈 땅"
+}
+},
+"forum": {
+"answer": [
+{
+"piece": "forum.stoa",
+"x": 55,
+"y": 35,
+"w": 5,
+"h": 5
+},
+{
+"piece": "forum.temple",
+"x": 61,
+"y": 35,
+"w": 7,
+"h": 7,
+"door": [
+64,
+40
+]
+},
+{
+"piece": "forum.cafe",
+"x": 69,
+"y": 35,
+"w": 6,
+"h": 5,
+"door": [
+71,
+39
+]
+},
+{
+"piece": "forum.cafe_table",
+"x": 69,
+"y": 41,
+"w": 2,
+"h": 2
+},
+{
+"piece": "forum.cafe_parasol",
+"x": 72,
+"y": 42,
+"w": 3,
+"h": 3
+},
+{
+"piece": "forum.cafe_table",
+"x": 69,
+"y": 44,
+"w": 2,
+"h": 2
+},
+{
+"piece": "forum.menu_board",
+"x": 68,
+"y": 40,
+"w": 1,
+"h": 2
+},
+{
+"piece": "forum.planter_box",
+"x": 74,
+"y": 40,
+"w": 1,
+"h": 2
+},
+{
+"piece": "forum.fountain",
+"x": 63,
+"y": 43,
+"w": 3,
+"h": 3
+},
+{
+"piece": "forum.statue",
+"x": 60,
+"y": 42,
+"w": 2,
+"h": 4
+},
+{
+"piece": "forum.statue",
+"x": 67,
+"y": 42,
+"w": 2,
+"h": 4
+},
+{
+"piece": "forum.gate",
+"x": 55,
+"y": 45,
+"w": 5,
+"h": 4
+},
+{
+"piece": "windmill",
+"x": 4,
+"y": 36,
+"w": 4,
+"h": 8,
+"note": "west meadow (windmill)"
+}
+],
+"bbox": [
+54,
+34,
+75,
+47
+],
+"roles": [
+"##RRRRRRRRR##RRRRRRRR",
+"######P#######P######",
+"######P#######P######",
+"######P#######P######",
+"######P#######P######",
+"#P##PPP#######P##D###",
+"#P####P###D####PPPPP#",
+"#P#######SSS#####PPP#",
+"#P######PPPPP####P###",
+"#PPPPP##P###P####P###",
+"RRPPPP######P####P###",
+"t#PPP###P###P####PRRR",
+"t#PPP###PPPPPPPPPPPPP"
+],
+"legend": {
+"D": "문 칸 (집의 문, 그 아래 칸이 문 앞)",
+"P": "광장·마당·자갈길 (통행)",
+"W": "성벽길 (통행)",
+"G": "성문 통로 (통행)",
+"B": "도개교·다리 (통행)",
+"S": "계단 (통행)",
+"R": "길",
+"~": "물 (해자·강)",
+"#": "건물·벽·소품 (막힘)",
+"^": "절벽면",
+"t": "나무",
+".": "풀·빈 땅"
+}
+}
+}

@@ -1,0 +1,37 @@
+# 구역 키트 · 버들항 귀족 저택
+
+tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chipset.png`(텍스처 `tex_beodeul_city`, 22784칸, 16px 칸, 한 줄 128칸 — 번호 n 의 칸은 행 n÷128, 열 n%128). 칸 번호는 모두 이 시트의 0기준 번호다. 다른 칩셋 번호를 섞지 않는다.
+
+## 버들항 귀족 저택 — `bd-estate`
+
+버들항 귀족 저택 — 회벽 저택·마구간·문지기 집·정원·담·쇠살문 21×22. 원본 (36,2).
+
+- 찍기: `stamp_object({objectId:'kit:beodeul_city/bd-estate', mapId, x:36, y:2})` (원본 좌표. 다른 맵이면 같은 크기의 풀밭에)
+- 잇는 법: 언덕(2단) 위. 문(44~45,22)에서 남쪽 길로 잇는다.
+- 그림: `kit-estate`
+
+역할 배열(21×22, 위 → 아래):
+```text
+XXXXXXXSXXXSXXXXXXXXX
+XSFXXXXSSSSSXXXXSSSSS
+XSSXXXSSSSSSSXXXSSSSS
+XSSSSSSSSSSSSSSSSSSSS
+XSSSSSSSSSSSSSSSFFFSF
+XSFSSSSSSSSSSSSSSSSSS
+XSSSSSSSSSSSSSSSSSSSS
+XSSSSSSSSSSSSSSSSSSSS
+XSSSSSSSSSSSSSSSSSSSF
+XSFSSSSSSSSSSSSSSSSSX
+XSFFFFFCCCCCFFFFFFFSX
+XSFFFSSSFFSSSSSSSSXSX
+XSSSFSSSFFSSSSSSSSXSF
+XSSSSSSFFFSSFSSSSSXSS
+XSSSSSSFFFSSFSSSSSFSS
+XSFFSSSFFFSSFSSSSSFSS
+XSFFSSFFFFSSFSSSSSFSF
+XSFFSSFCFFCFFFFSSSFSF
+XSFFFFFCFFCFFFFSSSFSS
+XSFFFFFCCCCFFFFFFFFSS
+XSSSSSSSCCSSSSSSSSSSS
+XFSSFSSFFFFFFSSSSSSSS
+```

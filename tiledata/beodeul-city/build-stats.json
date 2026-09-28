@@ -1,0 +1,12 @@
+{
+ "tiles": 22784,
+ "used": 22782,
+ "strips": 1699,
+ "sheet": [
+  2048,
+  2848
+ ],
+ "kits": 120,
+ "upperCells": 5325,
+ "walkableCells": 2907
+}

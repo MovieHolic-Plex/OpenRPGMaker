@@ -9,6 +9,7 @@ import { ATLAS_BIOME_TEXTURES, createAtlasBiomeTileset, ensureAtlasBiomeReferenc
 import { ATLAS_BIOME_WORLD_TEXTURE, createAtlasBiomeWorldTileset } from "./atlasBiomeWorld";
 import { createSharedVillageObjectsTileset, ensureSharedVillageObjectReferences, SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "./sharedVillageObjects";
 import { createCastleTileset } from "./castleTileset";
+import { BEODEUL_CITY_TEXTURE, createBeodeulCityTileset, ensureBeodeulCityReferences } from "./beodeulCity";
 import { ensureForestGroveInterior } from "./forestGrove";
 import { ensureForestTallGrass } from "./forestTallGrass";
 import { createForestHarmonyTileset, ensureForestHarmonyReferences, FOREST_HARMONY_ID, FOREST_HARMONY_TEXTURE } from "./forestHarmony";
@@ -173,6 +174,8 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       // Atlas biome sheets (tiledata/atlas-biomes): the shipped biome guidance.
       changed = ensureAtlasBiomeReferences(project.tilesets[id]) || changed;
       if (id === SHARED_VILLAGE_OBJECT_ID) changed = ensureSharedVillageObjectReferences(project.tilesets[id]) || changed;
+      // 버들항 v6 (tiledata/beodeul-city): the shipped city guidance for older copies.
+      if (asset.textureKey === BEODEUL_CITY_TEXTURE) changed = ensureBeodeulCityReferences(project.tilesets[id]) || changed;
       if (asset.textureKey === ATLAS_VEHICLES_TEXTURE) changed = ensureAtlasVehiclesReferences(project.tilesets[id]) || changed;
       if (id === TIBO_INTERIOR_ID) changed = extendTiboInteriorDefaults(project.tilesets[id]) || changed;
       changed = seedLpcWoodenFurnitureKits(project.tilesets[id]) || changed;
@@ -327,6 +330,7 @@ function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[nu
 function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): TilesetDef {
   if (asset.textureKey === CASTLE_TILESET_TEXTURE_KEY) return createCastleTileset();
   if (asset.textureKey === SHARED_VILLAGE_OBJECT_TEXTURE) return createSharedVillageObjectsTileset();
+  if (asset.textureKey === BEODEUL_CITY_TEXTURE) return createBeodeulCityTileset();
   if (asset.textureKey === ATLAS_VEHICLES_TEXTURE) return createAtlasVehiclesTileset();
   // New projects start with the shared tail slots the place documents use (2550~2759).
   if (asset.textureKey === FOREST_HARMONY_TEXTURE) {

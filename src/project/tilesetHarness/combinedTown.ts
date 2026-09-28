@@ -70,7 +70,9 @@ function applyCustomChipsetMinimalHarness(tileset: TilesetDef): boolean {
   // table is indexed by unrelated 16px combined-town cells and must not reinterpret them.
   if (
     tileset.image.type === "bundled"
-    && (tileset.image.id === CASTLE_TILESET_TEXTURE_KEY || tileset.image.id === LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY)
+    && (tileset.image.id === CASTLE_TILESET_TEXTURE_KEY || tileset.image.id === LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY
+      // 버들항 v6 sheet: every cell's layer is cut from the render (lower = ground, upper = objects), not the RM2k3 table
+      || tileset.image.id === "tex_beodeul_city")
   ) return false;
   let changed = false;
   ensureTileMetaLength(tileset);
