@@ -31,9 +31,10 @@ def dust(c: Cell, t, k=5):
 
 def draw(c: Cell, f: int) -> None:
     if f == 0:
-        shield(c, 60)
+        # QA: 첫 칸 방패가 칸 오른쪽 밖으로 반쯤 잘렸다 — 몸 전체가 보이는 x 로 당긴다.
+        shield(c, 53)
         for y in (18, 28, 40, 50):
-            c.put(c.line([(63, y), (58, y)]), "l")
+            c.put(c.line([(62, y), (59, y)]), "l")
     elif f == 1:
         shield(c, 44, -2)
         for y in (16, 26, 38, 48, 54):
@@ -61,6 +62,17 @@ def draw(c: Cell, f: int) -> None:
         dust(c, 0.75 + (f - 4) * 0.3)
         debris(c, "charge", 10, 26, Y, 0.5 + (f - 4) * 0.3, (26, 46), ang=(140, 220), size=1 if f < 7 else 0, cols=("m", "l", "w"))
         c.thin(f)
+
+
+# QA 2026-09-28: 칸 경계에서 직선으로 잘리던 가장자리를 디더로 걷는다(fx_edge.py). 그림 수식은 위 draw 그대로.
+from fx_edge import fade_edges  # noqa: E402
+
+_draw_body = draw
+
+
+def draw(c, f):
+    _draw_body(c, f)
+    fade_edges(c, R=2)
 
 
 if __name__ == "__main__":

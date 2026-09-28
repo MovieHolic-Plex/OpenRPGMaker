@@ -251,7 +251,14 @@ class Artist(old.Artist):
         if self.is_scout:
             p=self.scout
             p.s=dict(p.s,weapon='dagger')
-            im=p.pose(pid)
+            if pid=='hit':
+                # QA 2026-09-28: 1차 표(art5 'hit')는 머리 y-1·몸 y+1 이라 목 두 줄이 비어 머리가 떠 보였다.
+                # 공유 1차 표는 다른 캐릭터도 쓰므로 정찰병 피격에서만 머리를 한 줄 내린다(다른 포즈의 최대 틈 1줄과 같게).
+                head_at=p.head_at
+                p.head_at=lambda im,dx,dy,closed=False:head_at(im,dx,dy+1,closed)
+                try:im=p.pose(pid)
+                finally:del p.head_at
+            else:im=p.pose(pid)
         else:im=super().make(pid)
         # 아이템 사용과 정면에서도 다른 손에 같은 무기를 둔다.
         if pid in ('item','front'):

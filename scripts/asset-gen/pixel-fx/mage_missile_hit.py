@@ -27,7 +27,8 @@ def hit(c, t, x, y, s, shards):
         c.ring(x, y, 9 * s, A[6])
         return
     # afterglow: ring grows and thins, shards fly and dim
-    r = (9 + t * 5) * s
+    # QA: 큰 착탄(s=1.5)의 잔광 고리가 반경 28 을 넘어 칸 아래·좌우에서 잘렸다 — 칸 안에 들어오는 반경으로 누른다.
+    r = min((9 + t * 5) * s, 63 - y - 1, x - 1, 63 - x - 1, 25)
     if t <= 3:
         ringf = lambda cc: cc.ring(x, y, r, A[6] if t == 2 else A[2], 2 if t == 2 else 1)
         (ringf(c) if t == 2 else c.dither(ringf, t))
@@ -47,10 +48,22 @@ def draw(c, f):
         hit(c, f - start, x, y, s, sh)
     A = PAL.A
     if f == 5:  # the third, larger hit throws a violet shock ring
-        c.ring(32, 38, 24, A[3], 2); c.ring(32, 38, 20, A[1])
+        # QA: 반경 24 고리(중심 y38)가 칸 아래에서 잘렸다 — 가로는 그대로, 세로를 칸 안(≤62)으로 누른다.
+        c.ring(32, 38, 24, A[3], 2, ry=22); c.ring(32, 38, 20, A[1], 1, ry=18)
     if f == 7:
-        c.dither(lambda cc: cc.ring(32, 38, 28, A[1]), 1)
+        c.dither(lambda cc: cc.ring(32, 38, 28, A[1], 1, ry=23), 1)
         for k in range(5): c.px(18 + k * 7, 20 - (k % 2) * 4, A[4])
+
+
+# QA 2026-09-28: 칸 경계에서 직선으로 잘리던 가장자리를 디더로 걷는다(fx_edge.py). 그림 수식은 위 draw 그대로.
+from fx_edge import fade_edges  # noqa: E402
+
+_draw_body = draw
+
+
+def draw(c, f):
+    _draw_body(c, f)
+    fade_edges(c, B=3)
 
 
 if __name__ == '__main__':
