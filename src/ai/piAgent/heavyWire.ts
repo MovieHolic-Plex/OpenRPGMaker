@@ -7,6 +7,7 @@
 
 import type { Project } from "@/project/types";
 import { stringifyAssets, stringifySharedDictionary } from "@/project/io/sharedDictionaryJson";
+import { jsonContentDigest, trustSharedProjectEntries, withTrustedSharedEntries } from "@/project/persistence/core/contentDigest";
 
 export const PI_HEAVY_PROJECT_KEYS = ["tilesets", "database", "assets"] as const;
 export type PiHeavyProjectKey = (typeof PI_HEAVY_PROJECT_KEYS)[number];
@@ -43,10 +44,13 @@ async function sha256Hex(text: string): Promise<string> {
  */
 const hashMemo = new WeakMap<object, { hash: string; json: string }>();
 /**
- * 키마다 마지막 글과 해시. 사전 객체는 적용마다 새로 만들어져(스토어 복제) 위 기억이 빗나가도, 글이 같으면 다시 해시하지 않는다.
+ * 키마다 마지막으로 만든 글·해시와 그 내용 요약. 사전 객체는 적용마다 새로 만들어져(스토어 복제) 위 기억이 빗나가도,
+ * 내용 요약(`jsonContentDigest`: 노드 기억 — 공유 항목은 대조도 건너뛴다)이 같으면 글도 해시도 다시 만들지 않는다.
+ * 요약이 같다 ⇔ 키 순서만 다를 수 있는 같은 내용이다. 스토어 사전은 키 순서를 지키므로 글도 같다 — 다르면 호스트는 해시로
+ * 캐시를 찾을 뿐이라, 순서만 다른 옛 글을 되살려도 내용은 같다.
  * 키마다 하나만 쥔다 — 글이 수십 MB 라 여러 개를 쥐면 메모리가 커진다(계획의 blobs 가 어차피 같은 글을 쥔다).
  */
-const lastByKey = new Map<PiHeavyProjectKey, { readonly json: string; readonly hash: string }>();
+const lastByKey = new Map<PiHeavyProjectKey, { readonly digest: string; readonly json: string; readonly hash: string }>();
 
 /**
  * 무거운 키의 JSON. 타일셋·업로드 자산은 항목 글을 기억해 조립한다 — 글자까지 `JSON.stringify` 와 같다(sharedDictionaryJson).
@@ -58,12 +62,21 @@ function heavyJson(key: PiHeavyProjectKey, value: object): string {
   return JSON.stringify(value);
 }
 
-async function hashOfJson(key: PiHeavyProjectKey, json: string): Promise<string> {
+async function heavyEntry(key: PiHeavyProjectKey, value: object): Promise<{ hash: string; json: string } | null> {
+  // 타일셋·업로드 자산 항목은 제자리에서 고치지 않는다(projectClone 계약) — 공유 항목을 믿고 요약한다.
+  const digest = withTrustedSharedEntries(() => {
+    const token = jsonContentDigest(value);
+    if (key === "tilesets") trustSharedProjectEntries({ tilesets: value });
+    if (key === "assets") trustSharedProjectEntries({ assets: value });
+    return token;
+  });
   const last = lastByKey.get(key);
-  if (last && last.json === json) return last.hash;
+  if (digest !== undefined && last && last.digest === digest) return { hash: last.hash, json: last.json };
+  const json = heavyJson(key, value);
+  if (json.length < MIN_HEAVY_BYTES) return null;
   const hash = await sha256Hex(json);
-  lastByKey.set(key, { json, hash });
-  return hash;
+  if (digest !== undefined) lastByKey.set(key, { digest, json, hash });
+  return { hash, json };
 }
 
 export async function planHeavyWire<T extends { project: Project }>(request: T): Promise<HeavyWirePlan | null> {
@@ -76,9 +89,9 @@ export async function planHeavyWire<T extends { project: Project }>(request: T):
     if (!value || typeof value !== "object") continue;
     let entry = hashMemo.get(value);
     if (!entry) {
-      const json = heavyJson(key, value);
-      if (json.length < MIN_HEAVY_BYTES) continue;
-      entry = { hash: await hashOfJson(key, json), json };
+      const made = await heavyEntry(key, value);
+      if (!made) continue;
+      entry = made;
       hashMemo.set(value, entry);
     }
     heavy[key] = entry.hash;
