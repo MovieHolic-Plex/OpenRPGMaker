@@ -104,8 +104,9 @@ describe("default database starter party", () => {
     // hero-01 시트를 돌려 써서 같은 그림이 두 번 섰고, 전용 시트를 그려 끊었다.
     expect(cleric).toMatchObject({ characterIndex: 7, battleCharacterResourceId: "charset-battler-actor1-7" });
     expect(ranger).toMatchObject({ characterIndex: 3, battleCharacterResourceId: "charset-battler-actor2-3" });
-    const allBattleResourceIds = restored.database.actors.map((actor) => actor.battleCharacterResourceId);
-    expect(new Set(allBattleResourceIds).size).toBe(restored.database.actors.length);
+    // 2차 로스터: 전투 시트가 아직 없는 People·비인간형 칩은 battleCharacterResourceId 가 비어 있다(기존 스킨 폴백). 있는 것끼리는 겹치면 안 된다.
+    const allBattleResourceIds = restored.database.actors.map((actor) => actor.battleCharacterResourceId).filter((id): id is string => Boolean(id));
+    expect(new Set(allBattleResourceIds).size).toBe(allBattleResourceIds.length);
     const starterBattleResourceIds = restored.system.startActorIds.map(
       (id) => restored.database.actors.find((actor) => actor.id === id)?.battleCharacterResourceId
     );
