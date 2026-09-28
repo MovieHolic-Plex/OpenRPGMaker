@@ -55,10 +55,10 @@ const SCREEN_FX_SCALE = 1.25;
 const SCENERY = ["ground", "mid", "far", "sky"].map((layer) => withInlineAsset("/assets/generated/battle-scenery/plains/" + layer + ".png"));
 /** 기본 DB 배우 → 번들 전투 도트. 프로젝트에 배우가 없거나 시트를 못 찾을 때만 쓴다. */
 const FALLBACK_BATTLERS: Readonly<Record<string, string>> = {
-  actor_hero: "charset-battler-actor1-0", actor_guardian: "charset-battler-actor2-0", actor_mage: "charset-battler-actor3-0",
+  actor_hero: "charset-battler-actor1-0", actor_guardian: "charset-battler-actor2-0", actor_mage: "charset-battler-actor1-5",
   actor_scout: "charset-battler-actor4-0", actor_cleric: "charset-battler-actor1-7", actor_ranger: "charset-battler-actor2-3",
   // 2026-09-28 확장 6명(계약 actorId). 배우 기록이 아직 없거나 칩을 못 찾으면 이 매핑으로 그린다.
-  // 사무라이는 actor3-0(마도사) 칩의 전용 변형 시트다.
+  // 사무라이는 actor3-0 칩의 전용 변형 시트다(마도사는 2차 로스터에서 actor1-5 로 옮겼다).
   actor_samurai: "charset-battler-actor3-0-samurai", actor_ninja: "charset-battler-actor3-2", actor_monk: "charset-battler-actor3-5",
   actor_bard: "charset-battler-actor3-6", actor_druid: "charset-battler-actor3-4", actor_witch: "charset-battler-actor4-7",
 };

@@ -114,16 +114,18 @@ function defaultActorRecords(): ActorRecord[] {
     },
     {
       ...createActorRecord(ACTOR_MAGE_ID, CLASS_MAGE_ID, {
-        characterResourceId: "easyrpg-charset-actor3",
-        battleCharacterResourceId: "charset-battler-actor3-0",
+        characterResourceId: "easyrpg-charset-actor1",
+        battleCharacterResourceId: "charset-battler-actor1-5",
         defaultSkillId: "skill_arcane_bolt",
         unarmedAnimationId: DEFAULT_ANIMATION_ID,
       }),
       name: "마도사",
       nickname: "별빛",
-      faceResourceId: pairedFace("easyrpg-charset-actor3"),
-      characterResourceId: "easyrpg-charset-actor3",
-      battleCharacterResourceId: "charset-battler-actor3-0",
+      // 2026-09-28 2차 로스터: actor3#0(사무라이와 공유하던 붉은 무사 칩) → actor1#5(마법 모자).
+      faceResourceId: pairedFace("easyrpg-charset-actor1", 5),
+      characterResourceId: "easyrpg-charset-actor1",
+      characterIndex: 5,
+      battleCharacterResourceId: "charset-battler-actor1-5",
       initialEquipment: {
         weapon: EQUIPMENT_MAGE_STAFF_ID,
         armor: EQUIPMENT_MYSTIC_ROBE_ID,

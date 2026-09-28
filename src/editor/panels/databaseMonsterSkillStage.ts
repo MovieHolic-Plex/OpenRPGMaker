@@ -387,7 +387,7 @@ const SOUND_WAIT_MS = 360;
 const SCENERY = ["ground", "mid", "far", "sky"].map((layer) => withInlineAsset("/assets/generated/battle-scenery/plains/" + layer + ".png"));
 /** 오른쪽 아군 셋(대상). 스킬 탭 직업 무대와 같은 사선 계단. */
 const PARTY_HOMES: readonly Point[] = [{ x: 176, y: 90 }, { x: 196, y: 106 }, { x: 216, y: 122 }];
-const PARTY_BATTLERS = ["charset-battler-actor1-0", "charset-battler-actor2-0", "charset-battler-actor3-0"];
+const PARTY_BATTLERS = ["charset-battler-actor1-0", "charset-battler-actor2-0", "charset-battler-actor1-5"];
 /** 한 대상 스킬의 과녁 — 가운데 아군. */
 const FRONT_ALLY = 1;
 
