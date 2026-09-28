@@ -1,4 +1,6 @@
-import { canMove } from "@/project/collision";
+import { passageBounds } from "@/project/footprint";
+import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
+import { canMoveFootprint, canMove } from "@/project/collision";
 import { armTerrainComponents, terrainMayReach } from "@/project/tilePassabilityComponents";
 import type { Dir, GameMap, MapConnection, MapId, MoveCommand, Project } from "@/project/types";
 import type { RuntimeEventView } from "@/project/runtimeEventState"
@@ -52,31 +54,26 @@ export function routeForLivingMovement(context: RouteContext): LivingRoute | nul
       advanceDestination(context.session, context.view.event.id, living.destinations.length, living.repeat);
       return null;
     }
-    const path = pathTo(context.project, context.map, current, destinationPoint, context.canStep);
+    const path = livingPath(context, current, destinationPoint);
     if (path.length === 0) return null;
     return livingRoute(context.view, path, destination.mapId, destinationPoint);
   }
 
-  const connectionPath = firstConnectionToward(context.project.mapConnections ?? [], context.map.id, destination.mapId);
-  if (!connectionPath) return null;
-  const connection = connectionPath.first;
-  const departure = clampPoint(context.map, connection.from);
-  if (samePoint(current, departure)) {
-    return livingRoute(
-      context.view,
-      [{ kind: "npcTransfer", mapId: connection.to.mapId, x: connection.to.x, y: connection.to.y, direction: connection.to.direction }],
-      connection.to.mapId,
-      connection.to
-    );
+  const connections = context.project.mapConnections ?? [];
+  const preferred = firstConnectionToward(connections, context.map.id, destination.mapId)?.first;
+  const exits = connectionsByFromMap(connections).get(context.map.id) ?? [];
+  for (const connection of preferred ? [preferred, ...exits.filter(item => item !== preferred)] : exits) {
+    if (connection.to.mapId === context.map.id) continue;
+    if (connection.to.mapId !== destination.mapId
+      && !firstConnectionToward(connections, connection.to.mapId, destination.mapId, context.map.id)) continue;
+    const departure = clampPoint(context.map, connection.from);
+    const path = samePoint(current, departure) ? [] : livingPath(context, current, departure);
+    if (!samePoint(current, departure) && path.length === 0) continue;
+    return livingRoute(context.view,
+      [...path, { kind: "npcTransfer", mapId: connection.to.mapId, x: connection.to.x, y: connection.to.y, direction: connection.to.direction }],
+      connection.to.mapId, connection.to);
   }
-  const path = pathTo(context.project, context.map, current, departure, context.canStep);
-  if (path.length === 0) return null;
-  return livingRoute(
-    context.view,
-    [...path, { kind: "npcTransfer", mapId: connection.to.mapId, x: connection.to.x, y: connection.to.y, direction: connection.to.direction }],
-    connection.to.mapId,
-    connection.to
-  );
+  return null;
 }
 
 /**
@@ -85,7 +82,7 @@ export function routeForLivingMovement(context: RouteContext): LivingRoute | nul
  * registerPageMoveRoutes 는 표면 갱신마다 불리고, 그때마다 생활 NPC 전원이 맵 전체 BFS 를 돌았다.
  * 목표에 이미 도착했으면(목적지 전진이 필요한 경우) null 을 내서 전체 경로 계산으로 넘긴다.
  */
-export function livingRouteTargetKey(context: RouteContext): string | null {
+export function livingRouteTargetKey(context: RouteContext, previousTarget?: string | null): string | null {
   const movement = context.view.movement;
   if (movement.type !== "living" || !movement.living || movement.living.destinations.length === 0) return null;
   const destination = activeDestination(context);
@@ -94,6 +91,13 @@ export function livingRouteTargetKey(context: RouteContext): string | null {
   if (context.map.id === destination.mapId) {
     const point = clampPoint(context.map, destination);
     return samePoint(current, point) ? null : `${destination.mapId}:${point.x},${point.y}`;
+  }
+  if (previousTarget) {
+    const connections = context.project.mapConnections ?? [];
+    const retained = (connectionsByFromMap(connections).get(context.map.id) ?? []).some(connection =>
+      `${connection.to.mapId}:${connection.to.x},${connection.to.y}` === previousTarget
+      && (connection.to.mapId === destination.mapId || firstConnectionToward(connections, connection.to.mapId, destination.mapId, context.map.id)));
+    if (retained) return previousTarget;
   }
   const connectionPath = firstConnectionToward(context.project.mapConnections ?? [], context.map.id, destination.mapId);
   if (!connectionPath) return null;
@@ -115,6 +119,7 @@ function activeDestination(context: RouteContext): NonNullable<RuntimeEventView[
   if (!living || living.destinations.length === 0) return null;
   const startIndex = context.session.npcTravelStates?.[context.view.event.id]?.destinationIndex ?? 0;
   for (let offset = 0; offset < living.destinations.length; offset += 1) {
+    if (!living.repeat && startIndex + offset >= living.destinations.length) break;
     const index = (startIndex + offset) % living.destinations.length;
     const destination = living.destinations[index];
     if (!context.project.maps[destination.mapId]) continue;
@@ -140,13 +145,15 @@ function advanceDestination(session: PlaySessionLike, eventId: string, destinati
 export function firstConnectionToward(
   connections: readonly MapConnection[],
   fromMapId: MapId,
-  toMapId: MapId
+  toMapId: MapId,
+  excludedMapId?: MapId
 ): ConnectionPath | null {
   // 출발 맵별 연결 목록(원본 순서 유지). 예전에는 큐의 맵마다 모든 연결을 훑어 O(맵×연결)이었다 —
   // 연결 512개 사슬에서 NPC 10명 조회가 약 21ms, 경로 재사용 분기에서도 표면 갱신마다 불린다.
   const byFrom = connectionsByFromMap(connections);
   const queue: { readonly mapId: MapId; readonly first: MapConnection | null }[] = [{ mapId: fromMapId, first: null }];
   const visited = new Set<MapId>([fromMapId]);
+  if (excludedMapId) visited.add(excludedMapId);
   for (let index = 0; index < queue.length; index += 1) {
     const current = queue[index];
     if (!current) continue;
@@ -190,12 +197,22 @@ function connectionsByFromMap(connections: readonly MapConnection[]): Map<MapId,
   return byFrom;
 }
 
-function pathTo(project: Project, map: GameMap, from: Point, to: Point, canStep?: RouteContext["canStep"]): MoveCommand[] {
+function livingPath(context: RouteContext, from: Point, to: Point): MoveCommand[] {
+  const { project, map, session, view } = context;
+  const unit = view.footprint.width === 1 && view.footprint.height === 1 && view.passRows === 1;
+  // 공간 판정은 Like에도 있는 두 placement 컬렉션만 읽는다(actorRows는 읽지 않는다).
+  const canStep = context.canStep ?? ((fx: number, fy: number, tx: number, ty: number) =>
+    canMoveFootprint(project, map, fx, fy, view.footprint, tx, ty, view.passRows)
+    && !isSpatialPlacementBlocking(project, session as Parameters<typeof isSpatialPlacementBlocking>[1], map.id, passageBounds(tx, ty, view.footprint, view.passRows)));
+  return pathTo(project, map, from, to, canStep, unit && !context.canStep);
+}
+
+function pathTo(project: Project, map: GameMap, from: Point, to: Point, canStep?: RouteContext["canStep"], useTerrainIndex = !canStep): MoveCommand[] {
   if (samePoint(from, to)) return [];
-  // 이 탐색은 지형 통행(canMove)만 본다 — 추격 A* 와 같은 연결 성분 색인으로 도달 불가를 바로 안다.
+  // 기본 1×1만 성분 색인으로 거른다. 몸/사용자 판정은 다른 통행 그래프일 수 있다.
   // 예전에는 목적지가 벽 안이면 표면 갱신마다 생활 NPC 마다 맵 전체 BFS 를 다시 돌렸다(NPC 10명 약 90ms).
   // 한 방향 턱은 색인이 보수적으로 잇는다(tilePassabilityComponents §buildLabels).
-  if (!terrainMayReach(project, map, from.x, from.y, to.x, to.y)) return [];
+  if (useTerrainIndex && !terrainMayReach(project, map, from.x, from.y, to.x, to.y)) return [];
   // 방문 순서·방향 순서는 예전 문자열 키 BFS 와 같다. 칸을 정수 번호로, 방문·직전 칸을 typed array 로 둬
   // 문자열·Map·Set·좌표 객체를 칸마다 만들지 않는다 — 생활 NPC 50명 맵 진입이 약 290ms 였다(브라우저 실측).
   // 맵 밖 칸은 canMove 가 막으므로(inBounds) 큐에 들어가지 않는다. 출발점이 맵 밖이면 예전 경로로 간다.
@@ -234,7 +251,7 @@ function pathTo(project: Project, map: GameMap, from: Point, to: Point, canStep?
     }
   }
   // 성분 전체를 훑고도 못 만났다. 같은 질의가 다시 오면 색인이 바로 답하게 남긴다(훑은 칸이 적으면 안 만든다).
-  armTerrainComponents(project, map, visitedCount);
+  if (useTerrainIndex) armTerrainComponents(project, map, visitedCount);
   return [];
 }
 
@@ -314,3 +331,6 @@ function samePoint(left: Point, right: Point): boolean {
 function pointKey(point: Point): string {
   return `${point.x},${point.y}`;
 }
+
+/** 임시 양보 경로는 표면 갱신이 덮어쓰지 않는다. 무버 수명에 묶인다. */
+export const yieldingLivingMovers = new WeakSet<object>();
