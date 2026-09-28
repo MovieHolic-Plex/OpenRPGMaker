@@ -167,7 +167,8 @@
           1,
           1
         ]
-      ]
+      ],
+      "openPart": "stairs"
     },
     {
       "name": "leader-podium-fire",
@@ -183,7 +184,8 @@
           1,
           1
         ]
-      ]
+      ],
+      "openPart": "stairs"
     },
     {
       "name": "leader-podium-water",
@@ -199,7 +201,8 @@
           1,
           1
         ]
-      ]
+      ],
+      "openPart": "stairs"
     },
     {
       "name": "badge-statue-grass",
@@ -334,7 +337,14 @@
       "h": 3,
       "kind": "shore",
       "layer": "lower",
-      "passage": "solid"
+      "passage": "solid",
+      "openCells": [
+        [
+          1,
+          1
+        ]
+      ],
+      "openPart": "center"
     },
     {
       "name": "shore-sea-inner",

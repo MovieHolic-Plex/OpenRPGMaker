@@ -59,7 +59,7 @@ WET = np.clip(WET, 0, 255)
 # 블록 표. (이름, col, row(부품 반쪽 기준), w, h, kind, layer, passage, 추가 규칙)
 #   layer: lower = 1층 불투명 지형, upper = 3층 투명 부품
 #   passage: passable / solid. overRows = 위에서부터 그 줄 수만큼은 통행 가능(캐릭터 머리 위로 그려짐).
-#   openCells = 막힘 블록 안의 통행 가능 칸 [dx, dy].
+#   openCells = 막힘 블록 안의 통행 가능 칸 [dx, dy]. openPart = 그 칸의 이름(stairs 단상 계단 / center 해안 가운데 젖은 모래).
 # ---------------------------------------------------------------------------
 BLOCKS = []
 
@@ -82,7 +82,7 @@ for i, t in enumerate(["grass", "fire", "water"]):
 block("gym-ceiling", 9, 1, 8, 1, "ceiling", "lower", "solid")
 # 3~4행: 단상·조각상·장식
 for i, t in enumerate(["grass", "fire", "water"]):
-    block(f"leader-podium-{t}", i * 3, 3, 3, 2, "podium", "upper", "solid", openCells=[[1, 1]])
+    block(f"leader-podium-{t}", i * 3, 3, 3, 2, "podium", "upper", "solid", openCells=[[1, 1]], openPart="stairs")
 for i, t in enumerate(["grass", "fire", "water"]):
     block(f"badge-statue-{t}", 9 + i, 3, 1, 2, "statue", "upper", "solid", overRows=1)
 block("gym-fern-pot", 12, 3, 1, 2, "statue", "upper", "solid", overRows=1)
@@ -96,7 +96,7 @@ block("barrier-closed", 3, 5, 1, 1, "barrier", "upper", "solid")
 block("barrier-open", 4, 5, 1, 1, "barrier", "upper", "passable")
 block("gym-doormat", 5, 5, 2, 1, "marker", "upper", "passable")
 # 6~8행: 이어 깔리는 모래 테두리(합성)
-block("shore-sea", 0, 6, 3, 3, "shore", "lower", "solid")
+block("shore-sea", 0, 6, 3, 3, "shore", "lower", "solid", openCells=[[1, 1]], openPart="center")
 block("shore-sea-inner", 3, 6, 2, 2, "shore", "lower", "solid")
 block("sand-wet-edge", 5, 6, 3, 3, "sand-edge", "lower", "passable")
 block("sand-wet-edge-inner", 8, 6, 2, 2, "sand-edge", "lower", "passable")

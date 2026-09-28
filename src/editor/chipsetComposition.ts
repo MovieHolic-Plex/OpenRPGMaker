@@ -27,6 +27,7 @@ const COMBINED_TOWN_WATER_BLOCK_TEXTURES = new Set<string>([
   "tex_modern_exteriors_nocturne",
   "tex_scarloxy_chipset_grassland",
   "tex_scarloxy_chipset_monster_town_kit",
+  "tex_scarloxy_chipset_monster_gym_coast",
   "tex_scarloxy_chipset_wilds",
 ]);
 
