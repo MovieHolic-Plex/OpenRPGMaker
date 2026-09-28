@@ -2727,7 +2727,9 @@ export class EditScene extends PhaserRuntime.Scene {
     if (active && JSON.stringify(active.target) === JSON.stringify(target)) return;
     const camera = this.cameras.main;
     camera.preRender();
-    const plan = planCameraFocus(target, map, this.visibleTileRect(), 1, {
+    // 캔버스·가림 사각형은 250ms 기억한 값을 쓴다(cachedOverlayGeometry) — 크기가 바뀌면 ResizeObserver 가 무효화한다.
+    // 조수 체크포인트마다 초점을 옮기며 getBoundingClientRect 로 강제 레이아웃을 돌려 한 번에 수십~수백 ms 였다(2026-09-28 실측).
+    const plan = planCameraFocus(target, map, this.visibleTileRect({ cachedGeometry: true }), 1, {
       currentZoom: camera.zoom,
       zoomLevels: EDITOR_ZOOM_LEVELS,
     });
@@ -2748,7 +2750,7 @@ export class EditScene extends PhaserRuntime.Scene {
     // 계획은 이미 대상 사각형의 정확한 중심을 담고 있다(분수 타일) — +0.5 를 더하면 반 타일 밀린다.
     const targetWorldX = plan.centerTileX * this.activeTileSize();
     const targetWorldY = plan.centerTileY * this.activeTileSize();
-    const area = this.cameraVisibleArea();
+    const area = this.cameraVisibleArea({ cachedGeometry: true });
     // 조수 카드가 캔버스를 덮고 있으면 캔버스 중앙 = 카드 뒤다. 가림을 뺀 영역의 중앙에 대상이
     // 오도록 lookAt 을 민다(cameraLookAtForTarget).
     const lookAt = area
@@ -2903,8 +2905,8 @@ export class EditScene extends PhaserRuntime.Scene {
    * 같은 헬퍼에서 가져오므로 조수의 팬 판정과 뷰포트 스냅샷이 한 소스를 본다.
    * 정수로 깎지 않는다 — 99% 보이는 타일을 버리면 이미 화면 안인 대상을 다시 끌어당긴다.
    */
-  private visibleTileRect(): VisibleTileRect | null {
-    const area = this.cameraVisibleArea();
+  private visibleTileRect(options?: { readonly cachedGeometry?: boolean }): VisibleTileRect | null {
+    const area = this.cameraVisibleArea(options);
     if (!area) return null;
     return visibleTileRectFromViewport({
       worldView: area.worldView,

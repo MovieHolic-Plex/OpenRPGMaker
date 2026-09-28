@@ -5,6 +5,7 @@ import type { ProjectChangeCell } from "@/project/store";
 
 /** 이보다 많은 칸은 화면 창 전체 재렌더가 더 싸다. */
 const MAX_INCREMENTAL_CELLS = 2048;
+const HEAVY_KEYS = new Set(["tilesets", "database", "assets"]);
 const CELL_FIELDS = new Set(["lowerTiles", "upperTiles", "lowerOverlayTiles", "upperOverlayTiles", "shadowBits", "lowerTileStacks", "upperTileStacks"]);
 
 /**
@@ -20,7 +21,11 @@ export function mapCellApply(
   const afterRecord = after as unknown as Record<string, unknown>;
   for (const key of new Set([...Object.keys(beforeRecord), ...Object.keys(afterRecord)])) {
     if (key === "maps") continue;
-    if (beforeRecord[key] !== afterRecord[key]) return null;
+    // 체크포인트는 NDJSON 에서 다시 읽은 문서라 무거운 키(타일셋·DB·자산)만 스토어 객체를 물려받고 나머지는 새 객체다.
+    // 참조만 보면 내용이 같은 meta 하나로도 전체 재렌더(100×100 맵에서 체크포인트마다 약 1.2s)로 떨어졌다(2026-09-28 실측).
+    // 참조가 다를 때만 내용을 대조한다. 무거운 키는 대조하지 않는다 — 바뀌었으면 전체 재렌더가 맞고, 수십 MB 대조가 재렌더보다 비싸다.
+    if (beforeRecord[key] === afterRecord[key]) continue;
+    if (HEAVY_KEYS.has(key) || !jsonEqual(beforeRecord[key], afterRecord[key])) return null;
   }
   const dirty: string[] = [];
   for (const id of new Set([...Object.keys(before.maps), ...Object.keys(after.maps)])) {
@@ -33,6 +38,10 @@ export function mapCellApply(
   }
   if (dirty.length === 0) return null;
   const mapId = (preferredMapId && dirty.includes(preferredMapId) ? preferredMapId : dirty[0]) as MapId;
+  // 칸 목록은 한 맵만 싣는다. 다른 맵은 새 객체여도(체크포인트 재구성) 내용이 같아야 한다 — 다르면 그 맵 구독자가 알림을 놓친다.
+  for (const id of dirty) {
+    if (id !== mapId && !jsonEqual(before.maps[id], after.maps[id])) return null;
+  }
   const cells = changedCells(before.maps[mapId] as GameMap, after.maps[mapId] as GameMap);
   if (cells.length === 0 || cells.length > MAX_INCREMENTAL_CELLS) return null;
   return { mapId, cells };
