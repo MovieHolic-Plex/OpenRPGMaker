@@ -72,7 +72,7 @@ LW = [(44,29,0),(36,26,0),(28,22,0),(20,19,0),(13,16,0),(8,13,0),(5,10,1),(7,15,
       (10,55,0),(14,56,0),(13,63,0),(12,70,1),(16,67,0),(19,66,0),(20,72,0),(20,79,1),(23,75,0),
       (26,73,0),(27,79,0),(29,85,1),(31,81,0),(34,79,0),(35,82,0),(37,86,1),(39,81,0),(42,79,0),(45,84,1),(48,79,0)]
 HOLES = [(11,48,3,2),(21,63,2,2),(16,36,2,2)]
-WAVE = [1,0,1,1,0,1,0,1,1,0]
+WAVE = [1,0.6,1,0.8,1,0.5,1,1,0.7,1]
 
 def cloak_points(q):
     cs, cl, fl, sw, kR = q['cs'], q['cl'], q['fl'], q['sw'], q.get('kR', 0.96)
@@ -115,9 +115,12 @@ def cloak(p, q):
         if abs(x-48-sw) < 15 and y > 40: return 'r'                  # body shadow on the inner lining
         if r < 9: return 'r'
         th = math.atan2(dy, dx if x < 48+sw else -dx)
-        s = math.sin(th*11 + ph)
-        if s < -0.62: return 'r'
-        if s > 0.72 and (x < 48+sw or s > 0.9) and y < 70: return 'C'
+        s = math.sin(th*7.5 + 1.3*math.sin(th*2.3 + 0.7) + ph)
+        if s < -0.8: return 'r'                                       # thin dark creases
+        left = x < 48+sw
+        if left and s > 0.55 and r < 40: return 'C'                   # lit folds on the light side
+        if not left and s > 0.9 and r < 26: return 'C'
+        if not left and s < -0.35 and r > 20: return 'r'              # far wing sits in shade
         return 'c'
     part(p, draw, shade)
 
@@ -158,6 +161,8 @@ def torso(p, U):
     part(p, poly([U(42,31), U(47,27), U(54,27), U(58,31), U(56,35), U(44,35)]), SKIN)        # traps / neck
     part(p, ell(box(U(35,31), U(49,42))), SKIN)                                             # pecs
     part(p, ell(box(U(48,31), U(61,41))), SKIN)
+    x0, y0 = R(U(0, 0))
+    p.line([(x0+48, y0+33), (x0+48, y0+40)], 's'); p.line([(x0+38, y0+33), (x0+44, y0+32)], 'l')
 
 def box(a, b): return (a[0], a[1], b[0], b[1])
 
@@ -208,51 +213,54 @@ def crossed(p, U):
 def head(p, H, q):
     mood = q['face']
     # horns: out from the temples, then up
-    hl = [H(45,21), H(40,19), H(37,15), H(37,10), H(39,6)]
-    hr = [H(56,21), H(60,19), H(62,15), H(62,10), H(60,6)]
+    hl = [H(46,20), H(40,18), H(36,14), H(35,9), H(37,4)]
+    hr = [H(56,20), H(61,18), H(63,14), H(63,10), H(61,6)]
     if q.get('horn_back'):
-        hl = [H(45,21), H(40,20), H(36,17), H(34,12), H(35,8)]; hr = [H(56,21), H(60,19), H(61,14), H(60,10), H(57,7)]
-    for hs in (hl, hr):
-        part(p, both(stroke(hs[:2], 5), stroke(hs[1:3], 4), stroke(hs[2:4], 3), stroke(hs[3:], 2)), GOLD)
+        hl = [H(46,20), H(40,19), H(35,17), H(32,13), H(32,8)]; hr = [H(56,20), H(61,19), H(64,16), H(65,12), H(63,8)]
+    for hs, w0 in ((hr, 5), (hl, 6)):
+        part(p, both(stroke(hs[:2], w0), stroke(hs[1:3], w0-1), stroke(hs[2:4], w0-2), stroke(hs[3:], w0-3)), GOLD)
     # mane behind the face
-    part(p, poly([H(41,32), H(41,25), H(43,20), H(43,15), H(46,18), H(48,12), H(50,17), H(53,12), H(54,17), H(58,15),
-                  H(57,20), H(60,25), H(59,32), H(56,34), H(54,31), H(47,31), H(44,34)]), BLACK)
+    part(p, poly([H(40,32), H(40,25), H(42,20), H(43,14), H(46,18), H(48,11), H(51,16), H(54,11), H(55,16), H(59,14),
+                  H(58,20), H(60,25), H(59,31), H(57,33), H(55,31), H(48,31), H(43,34)]), BLACK)
     # pointed ears
-    part(p, poly([H(45,22), H(38,19), H(44,26)]), SKIN)
-    part(p, poly([H(56,22), H(62,19), H(56,26)]), SKIN)
-    # face
-    part(p, poly([H(45,19), H(56,19), H(57,26), H(55,30), H(51,32), H(47,31), H(45,27)]), rim('b', 'l', 's'))
+    part(p, poly([H(45,22), H(37,18), H(44,27)]), SKIN)
+    part(p, poly([H(57,22), H(60,20), H(57,26)]), SKIN)
+    # face turned right: jaw and nose pushed to the right side
+    part(p, poly([H(46,19), H(58,19), H(59,23), H(60,25), H(59,29), H(55,32), H(50,31), H(47,27)]), rim('b', 'l', 's'))
     x, y = R(H(0, 0))
     g = lambda gx, gy, rows: p.grid(x+gx, y+gy, rows)
-    g(45, 18, ["ooooooooooo", ".o.oo.oo.o.", "....o..o..."])                   # widow's-peak spikes
+    g(46, 18, ["oooooooooooo", ".o.oo.oo.oo.", "....o..o...."])                   # widow's-peak spikes
     if mood == 'hurt':
-        g(46, 23, ["oo....oo", "..oo.o..", "........"])
-        g(48, 27, [".o", "o."]); g(47, 28, ["ooooo", "owrwo", ".ooo."])
+        g(48, 22, ["oo....oo", "..oo.oo.", "........"])
+        g(49, 27, [".o", "o."]); g(51, 28, ["ooooo", "owrwo", ".ooo."])
     else:
         eye = 'v' if mood == 'glow' else 'e'
-        g(46, 22, ["o.....o.o.", ".oo..oo..."]); g(47, 24, [eye*2+"..."+eye*2])
-        g(50, 26, ["s", "s"])
+        g(48, 22, ["o....ooo.", ".oo..oooo"]); g(49, 24, [eye*2+"..."+eye*3])
+        g(49, 25, ["o....ooo"])
+        g(54, 25, ["s.", "ss"])
         if mood in ('glow', 'roar'):
-            g(47, 28, ["oooooo", "owvvwo", ".ovvo."])
+            g(50, 28, ["ooooooo", "owvvvwo", ".ovvvo.", "..ooo.."])
         else:
-            g(47, 29, ["oooooo", ".w..w."])
+            g(51, 29, ["oooooo", ".w..w."])
 
 # ------------------------------------------------------------------ magic
+TONGUE = [0,2,4,5,3,1,0,1,3,6,4,2,0,2,5,3,1,0,2,4]
+
 def flame(p, x0, y0, reach, h0, spread):
+    """Dark flame widening to the right: ragged tongues on both edges, dark violet rim, wavy violet bands, white core."""
+    def half(t, sign):
+        return h0 + t*spread + TONGUE[(t + (7 if sign > 0 else 0)) % len(TONGUE)]*(0.4 + t/reach*0.6)
     def draw(d):
-        top, bot = [], []
-        for x in range(int(x0), int(x0+reach)+1):
-            t = x - x0
-            hh = h0 + t*spread + 1.6*math.sin(t*0.9) + (1.5 if t % 7 < 2 else 0)
-            top.append((x, y0 - hh + 1.2*math.sin(t*0.5))); bot.append((x, y0 + hh*0.8 + 1.0*math.cos(t*0.6)))
-        d.polygon([R(q) for q in top + bot[::-1]], fill=255)
+        top = [(x0 + t, y0 - half(t, -1)) for t in range(int(reach)+2)]
+        bot = [(x0 + t, y0 + half(t, 1)*0.9) for t in range(int(reach)+2)]
+        d.polygon([R(q) for q in [(x0-3, y0)] + top + bot[::-1]], fill=255)
     def shade(x, y, ins):
-        t = max(1, x - x0); hh = h0 + t*spread
-        u = abs(y - y0 + 0.5) / hh
-        if u < 0.28 and x < x0 + reach - 3: return 'w'
-        if u < 0.62: return 'v'
+        t = max(0, x - x0); hh = h0 + t*spread
+        u = abs(y - y0 + 0.3 + 1.2*math.sin(t*0.45)) / hh
+        if u < 0.28 + 0.08*math.sin(t*0.8): return 'w'
+        if u < 0.72 + 0.12*math.sin(t*0.6 + 1): return 'v'
         return 'm'
-    part(p, draw, shade, open_right=True)
+    part(p, draw, shade, edge='s', open_right=True)
 
 def orb(p, c, r):
     x, y = c
@@ -269,48 +277,58 @@ def wisp(p, x, y, big=False):
 BASE = dict(by=0, ox=0, hx=0, hy=0, cs=1.0, cl=0, fl=0, sw=0, face='calm', arms='cross', chain=3)
 P = {
  'idle_a': dict(),
- 'idle_b': dict(by=-1, fl=1),
- 'idle_c': dict(by=-1, fl=2, cl=1),
- 'windup': dict(by=-2, cs=1.05, cl=6, fl=3, face='glow', arms='flex', ph=0.5),
+ 'idle_b': dict(by=-1, fl=2, cl=1),
+ 'idle_c': dict(by=-1, fl=3, cl=2, ph=0.35),
+ 'windup': dict(by=-2, cs=1.08, cl=9, fl=3, face='glow', arms='flex', ph=0.5),
  'move':   dict(by=-1, cs=1.02, cl=3, fl=1, face='glow', arms='gather', ph=0.9),
- 'attack': dict(by=0, ox=2, hx=1, cs=1.0, kR=0.8, cl=2, fl=3, sw=-2, face='roar', arms='thrust', ph=1.4),
+ 'attack': dict(by=0, ox=-4, hx=2, cs=1.0, kR=0.8, cl=2, fl=3, sw=-2, face='roar', arms='thrust', ph=1.4),
  'recover':dict(by=0, ox=1, cs=1.0, cl=1, fl=2, face='calm', arms='lower', ph=0.3),
- 'hit':    dict(by=1, ox=-3, hx=-2, hy=1, cs=0.62, kR=0.9, cl=-2, fl=0, sw=-3, fold=4, face='hurt', arms='flail', horn_back=True, ph=2.0),
+ 'hit':    dict(by=1, ox=-3, hx=-4, hy=2, cs=0.62, kR=0.9, cl=-2, fl=0, sw=-3, fold=4, face='hurt', arms='flail', horn_back=True, ph=2.0),
 }
 
 def draw_dead(p):
-    # cloak collapsed into a torn pool on the floor behind the kneeling body
-    q = dict(BASE, cs=1.0)
-    def cdraw(d):
-        pts = [(4,92),(6,86),(3,82),(9,80),(12,74),(16,78),(22,72),(28,75),(34,68),(40,72),(46,70),(52,74),(58,72),
-               (62,78),(68,76),(72,82),(78,80),(80,86),(86,86),(84,92)]
-        d.polygon(pts, fill=255)
-        d.ellipse((17,84,20,86), fill=0); d.ellipse((66,85,68,87), fill=0)
+    """Collapsed: knelt, bowed forward to the right, horns on the floor, cloak slumped over the back."""
+    def cdraw(d):   # torn cloak pooled on the floor behind
+        d.polygon([(4,92),(3,86),(8,84),(6,78),(12,80),(16,74),(20,78),(26,72),(30,76),(36,70),(44,74),(50,72),
+                   (56,78),(62,80),(64,86),(70,88),(72,92)], fill=255)
+        d.ellipse((13,85,16,87), fill=0); d.ellipse((58,86,60,88), fill=0)
     def cshade(x, y, ins):
         if not ins(x, y-2): return 'k'
-        s = math.sin(x*0.55 + y*0.15)
-        return 'r' if s < -0.5 or y > 89 else ('C' if s > 0.8 and y < 84 else 'c')
+        s = math.sin(x*0.5 + y*0.2)
+        return 'r' if s < -0.55 or y > 89 else ('C' if s > 0.75 and x < 40 else 'c')
     part(p, cdraw, cshade)
-    # folded legs: shin flat on the floor, boot tipped up behind
-    part(p, stroke([(52,88), (34,88)], 7), BLACK)
-    part(p, poly([(26,82), (30,84), (34,85), (34,91), (24,91), (23,86)]), RED)
-    part(p, poly([(33,84), (36,84), (36,91), (33,91)]), rim('n', 'w', None))
-    part(p, stroke([(40,74), (52,86)], 11), SKIN)
-    part(p, poly([(34,70), (44,68), (48,78), (40,82), (34,78)]), BLACK)                      # loincloth
-    # bowed torso, back up, skull pauldrons
-    part(p, poly([(38,70), (46,60), (60,58), (70,64), (70,74), (58,80), (44,78)]), SKIN)
-    part(p, ell((58,58,72,70)), SKIN)
-    p.grid(50, 55, SKULL); p.grid(62, 57, SKULL)
-    # arm hanging to the floor, claw flat
-    part(p, stroke([(64,68), (68,80)], 9), SKIN)
-    part(p, stroke([(68,80), (72,89)], 7), SKIN)
-    part(p, poly([(68,88), (78,88), (80,92), (68,92)]), SKIN)
-    # head hanging, horns forward onto the floor, eyes dark
-    part(p, poly([(70,66), (76,64), (80,70), (78,78), (72,78)]), BLACK)
-    part(p, both(stroke([(76,72), (82,74), (86,80)], 4), stroke([(86,80), (88,86)], 2)), GOLD)
-    part(p, poly([(72,70), (79,70), (80,77), (76,81), (72,78)]), SKIN)
-    p.grid(74, 74, ["oo.o", "...."]); p.grid(74, 78, ["ooo"])
-    wisp(p, 20, 66); wisp(p, 44, 60); wisp(p, 82, 62)
+    # back leg: shin flat on the floor, boot sole up behind
+    part(p, stroke([(40,88), (24,88)], 7), BLACK)
+    part(p, poly([(15,83), (21,84), (24,85), (24,91), (13,91), (12,87)]), RED)
+    part(p, poly([(24,84), (27,84), (27,91), (24,91)]), rim('n', 'w', None))
+    # thigh from hip down to the knee on the floor
+    part(p, stroke([(34,72), (44,86)], 12), SKIN)
+    part(p, poly([(38,78), (50,80), (50,83), (38,82)]), BLACK)
+    for i in (40, 43, 46, 49): p.im.putpixel((i, 81), p.pal['w'])
+    part(p, poly([(26,64), (36,62), (40,76), (32,80), (26,74)]), BLACK)            # loincloth
+    # bowed torso, back up
+    part(p, poly([(28,66), (36,54), (52,50), (64,56), (66,68), (56,74), (38,74)]), SKIN)
+    part(p, ell((50,50,68,66)), SKIN)
+    p.line([(38,58), (52,54)], 'l'); p.line([(40,70), (56,70)], 's')
+    # cloak slumped over the back, torn hem hanging down the left
+    def ddraw(d):
+        d.polygon([(22,62),(30,52),(42,46),(54,46),(62,50),(52,54),(40,58),(32,66),(30,74),(26,70),(24,78),(20,72),(18,76),(18,66)], fill=255)
+    part(p, ddraw, lambda x, y, ins: 'k' if not ins(x, y-2) else ('C' if (x+y) % 9 == 0 and y < 58 else ('r' if x < 26 else 'c')))
+    # arm propped on the floor
+    part(p, stroke([(62,62), (68,76)], 9), SKIN)
+    part(p, stroke([(68,76), (70,86)], 7), SKIN)
+    part(p, poly([(66,86), (74,85), (78,88), (78,92), (65,92)]), SKIN)
+    p.grid(77, 86, ["ow", ".o"]); p.grid(78, 89, ["ow", ".o"])
+    p.grid(56, 45, SKULL)
+    chain_pts = [(46,56),(50,60),(54,62),(58,63)]
+    for i, (x, y) in enumerate(chain_pts): p.grid(x, y, ["ow", "on"] if i % 2 else ["wo", "no"])
+    # hanging head: mane, horns forward, face down and dark
+    part(p, poly([(61,60), (64,55), (67,58), (70,54), (72,59), (76,60), (75,68), (68,70), (62,67)]), BLACK)
+    part(p, both(stroke([(74,62), (80,63), (85,67)], 5), stroke([(85,67), (88,72)], 3), stroke([(88,72), (88,75)], 2)), GOLD)
+    part(p, both(stroke([(66,66), (64,74)], 4), stroke([(64,74), (62,78)], 2)), GOLD)
+    part(p, poly([(66,64), (74,64), (76,72), (72,78), (67,76), (65,70)]), rim('b', 'l', 's'))
+    p.grid(67, 69, ["oo.oo", "....."]); p.grid(68, 74, ["ooo"])
+    wisp(p, 14, 62); wisp(p, 44, 38); wisp(p, 84, 48); wisp(p, 30, 42)
     return clean(p)
 
 def draw(n):
@@ -323,8 +341,6 @@ def draw(n):
     cloak(p, q)
     A = q['arms']
     # side arms that sit behind the torso edge
-    if A == 'flail':
-        arm(p, U(32,35), U(24,40), U(19,33), 'claw')
     legs(p, q)
     loin(p, U)
     torso(p, U)
@@ -340,16 +356,20 @@ def draw(n):
     elif A == 'thrust':
         shoulders(p, U, False)
         arm(p, U(32,35), U(26,43), U(30,51))
-        arm(p, U(63,35), U(72,36), U(80,35), 'claw')
+        arm(p, U(63,35), U(69,33), U(72,31), 'claw')
     elif A == 'lower':
         shoulders(p, U, False)
         arm(p, U(32,35), U(30,44), U(40,46))
-        arm(p, U(63,35), U(69,43), U(73,49), 'claw')
+        arm(p, U(63,35), U(70,42), U(73,49), 'fist')
     elif A == 'flail':
         shoulders(p, U, False)
-        arm(p, U(63,35), U(69,30), U(66,23), 'fist')
-    x, y = R(U(27, 25)); p.grid(x, y, SKULL)
-    x, y = R(U(58, 25)); p.grid(x, y, SKULL)
+        x, y = R(U(27, 25)); p.grid(x, y, SKULL)
+        x, y = R(U(58, 25)); p.grid(x, y, SKULL)
+        arm(p, U(32,36), U(33,46), U(45,40), 'fist')            # near arm clutched across the belly
+        arm(p, U(64,36), U(69,44), U(64,33), 'claw')            # far arm raised, guarding the jaw
+    if A != 'flail':
+        x, y = R(U(27, 25)); p.grid(x, y, SKULL)
+        x, y = R(U(58, 25)); p.grid(x, y, SKULL)
     chain(p, U, q['chain'])
     head(p, H, q)
     # magic
@@ -358,9 +378,11 @@ def draw(n):
     if n == 'move':
         orb(p, U(84,34), 5); wisp(p, *U(88,24)); wisp(p, *U(78,24)); wisp(p, *U(90,42))
     if n == 'attack':
-        flame(p, U(84,35)[0], U(84,35)[1], 14, 4, 0.75)
+        x0, y0 = U(78,30)
+        flame(p, x0, y0, 94-x0, 3, 0.62)
+        wisp(p, 89, 6, True); wisp(p, 70, 13)
     if n == 'recover':
-        wisp(p, *U(78,44)); wisp(p, *U(82,38))
+        wisp(p, *U(80,40)); wisp(p, *U(84,33)); wisp(p, *U(78,48))
     return clean(p)
 
 if __name__ == '__main__': build('demon-lord', CELL, PAL, draw)
