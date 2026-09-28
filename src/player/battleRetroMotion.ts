@@ -437,10 +437,13 @@ function motionSe(cue: MotionCue, volume = 0.3): void {
 //   leap     수호자: 웅크렸다 높게 도약 → 내리찍기(착지 흙먼지)
 //   blink    마도사·성직자: 제자리에서 사라졌다 대상 앞에 나타난다(순간이동)
 //   flash    정찰병·궁수·도적: 번개처럼 한 번에 파고든다(아주 짧은 잔상 줄)
+// 2026-09-28 확장: 사무라이·음유시인·드루이드·마녀 blink, 닌자 flash, 무도가 dash. 먼저 맞는 줄이 이긴다 —
+// 무도가(monk)는 blink 줄의 monk 낱말보다 먼저 dash 로 잡는다.
 export type RetroApproachStyle = "dash" | "leap" | "blink" | "flash";
 
 const STYLE_BY_NAME: readonly [RegExp, RetroApproachStyle][] = [
-  [/마도|마법|위저드|mage|wizard|sorcer|witch|성직|사제|신관|cleric|priest|healer|monk|수녀/i, "blink"],
+  [/무도가|권사|격투|monk|martial|brawler/i, "dash"],
+  [/마도|마법|위저드|mage|wizard|sorcer|witch|마녀|성직|사제|신관|cleric|priest|healer|monk|수녀|사무라이|samurai|음유|시인|bard|드루이드|druid/i, "blink"],
   [/정찰|궁수|도적|닌자|scout|ranger|archer|thief|rogue|ninja|assassin/i, "flash"],
   [/수호|기사|성기사|guard|knight|paladin|tank|전차/i, "leap"],
 ];

@@ -1,4 +1,4 @@
-// retro2003 직업 스킬 48개(src/assets/retroClassSkills.ts 계약)의 기본 DB 레코드.
+// retro2003 직업 스킬 96개(src/assets/retroClassSkills.ts 계약: 기존 6직업 48 + 2026-09-28 확장 6직업 48)의 기본 DB 레코드.
 //
 // 계약은 연출(모션·레이어)만 정한다. 여기서는 규칙 엔진이 이미 지원하는 필드만으로 효과를 준다 —
 // 위력·MP·scope·효과 종류·속성·상태 효과. 대상 편의 정본은 이 레코드의 scope 다(런타임 연출도 scope 를 본다).
@@ -83,6 +83,61 @@ const SEEDS: Readonly<Record<string, Seed>> = {
   skill_ranger_snipe: { scope: "enemy", mp: 12, kind: "attack", power: 125, element: "bow", animation: anim("projectile-shot"), critical: 50, hitRate: 100 },
   skill_ranger_nature_call: { scope: "allAllies", mp: 14, kind: "healing", power: 40, animation: anim("leaf-volley") },
   skill_ranger_storm_arrow: { scope: "allEnemies", mp: 32, kind: "attack", power: 175, element: "thunder", animation: anim("thunder-strike") },
+  // ── 2026-09-28 확장 6직업. 규칙 엔진에 없는 뜻은 가장 가까운 상태로 대신한다(아래 주석과 openwiki/runtime-battle.md 표).
+  // 사무라이: 발도·검풍 공격력기, 심안 = 민첩 상승(회피·급소 대용), 혈월 = 공격 하락.
+  skill_samurai_iai: { scope: "enemy", mp: 3, kind: "attack", power: 66, element: "sword", animation: anim("slash-steel"), critical: 25 },
+  skill_samurai_twin_moon: { scope: "enemy", mp: 5, kind: "attack", power: 76, element: "sword", animation: anim("slash-steel") },
+  skill_samurai_wind_cut: { scope: "allEnemies", mp: 8, kind: "attack", power: 58, element: "wind", animation: anim("wind-slice") },
+  skill_samurai_mind_eye: { scope: "self", mp: 6, kind: "support", animation: anim("power-aura"), states: [add("state_agility_up"), add("state_attack_up")] },
+  skill_samurai_cherry: { scope: "enemy", mp: 12, kind: "attack", power: 112, element: "sword", animation: anim("slash-steel"), critical: 20 },
+  skill_samurai_thunder_draw: { scope: "allEnemies", mp: 16, kind: "attack", power: 84, element: "thunder", animation: anim("thunder-strike"), states: [add("state_paralysis", 20)] },
+  skill_samurai_blood_moon: { scope: "allEnemies", mp: 18, kind: "attack", power: 96, element: "dark", animation: anim("shadow-pulse"), states: [add("state_attack_down", 50)] },
+  skill_samurai_final_cut: { scope: "allEnemies", mp: 32, kind: "attack", power: 190, element: "sword", animation: anim("critical-burst"), critical: 30 },
+  // 닌자: 투척·둔술. 변신술(통나무 바꿔치기) = 민첩 상승 + 방어 상승, 분신술 = 단일 대상 고위력 연속기(분신 자체는 표현).
+  skill_ninja_shuriken: { scope: "enemy", mp: 3, kind: "attack", power: 62, animation: anim("projectile-shot"), critical: 15 },
+  skill_ninja_kunai_rain: { scope: "allEnemies", mp: 7, kind: "attack", power: 54, animation: anim("projectile-shot") },
+  skill_ninja_fire_style: { scope: "enemy", mp: 6, kind: "mind", power: 80, element: "fire", animation: anim("fire-burst") },
+  skill_ninja_substitute: { scope: "self", mp: 6, kind: "support", animation: anim("smoke-vanish"), states: [add("state_agility_up"), add("state_defense_up")] },
+  skill_ninja_shadow_clone: { scope: "enemy", mp: 12, kind: "attack", power: 118, element: "sword", animation: anim("smoke-vanish"), critical: 20 },
+  skill_ninja_water_dragon: { scope: "allEnemies", mp: 16, kind: "mind", power: 90, element: "water", animation: anim("water-column") },
+  skill_ninja_paralyze: { scope: "enemy", mp: 10, kind: "attack", power: 48, animation: anim("paralysis-bind"), states: [add("state_paralysis", 75)] },
+  skill_ninja_thousand_blades: { scope: "allEnemies", mp: 32, kind: "attack", power: 182, element: "sword", animation: anim("wind-slice"), critical: 25 },
+  // 무도가: 타격(hit) 공격력기. 금강불괴 = 방어 상승, 명상 = 자기 회복 + 재생.
+  skill_monk_hundred_fist: { scope: "enemy", mp: 4, kind: "attack", power: 70, element: "hit", animation: anim("tackle-impact") },
+  skill_monk_rising_kick: { scope: "enemy", mp: 5, kind: "attack", power: 78, element: "hit", animation: anim("tackle-impact"), states: [add("state_defense_down", 35)] },
+  skill_monk_chi_wave: { scope: "enemy", mp: 7, kind: "mind", power: 86, animation: anim("psychic-wave") },
+  skill_monk_iron_body: { scope: "self", mp: 6, kind: "support", animation: anim("guard-barrier"), states: [add("state_defense_up")] },
+  skill_monk_whirl_kick: { scope: "allEnemies", mp: 12, kind: "attack", power: 68, element: "hit", animation: anim("wind-slice") },
+  skill_monk_meditate: { scope: "self", mp: 8, kind: "healing", power: 70, animation: anim("heal-bloom"), states: [add("state_regen")] },
+  skill_monk_earth_palm: { scope: "enemy", mp: 14, kind: "attack", power: 128, element: "earth", animation: anim("earth-spike"), states: [add("state_agility_down", 40)] },
+  skill_monk_dragon_fist: { scope: "enemy", mp: 30, kind: "attack", power: 240, element: "hit", animation: anim("critical-burst"), critical: 30 },
+  // 음유시인: 노래 = 아군 상태·적 상태. 불협화음(혼란) = 공격 하락 + 방어 하락(혼란 상태가 기본 DB 에 없다).
+  skill_bard_battle_song: { scope: "allAllies", mp: 6, kind: "support", animation: anim("sonic-wave"), states: [add("state_attack_up")] },
+  skill_bard_lullaby: { scope: "allEnemies", mp: 6, kind: "support", animation: anim("sleep-dust"), states: [add("state_sleep", 55)] },
+  skill_bard_sonic: { scope: "enemy", mp: 5, kind: "mind", power: 74, element: "wind", animation: anim("sonic-wave") },
+  skill_bard_healing_hymn: { scope: "allAllies", mp: 12, kind: "healing", power: 42, animation: anim("heal-bloom") },
+  skill_bard_discord: { scope: "allEnemies", mp: 10, kind: "support", animation: anim("confusion-spiral"), states: [add("state_attack_down", 60), add("state_defense_down", 60)] },
+  skill_bard_haste: { scope: "allAllies", mp: 12, kind: "support", animation: anim("power-aura"), states: [add("state_agility_up")] },
+  skill_bard_requiem: { scope: "allEnemies", mp: 18, kind: "mind", power: 100, element: "dark", animation: anim("shadow-pulse"), states: [add("state_silence", 35)] },
+  skill_bard_grand_finale: { scope: "allEnemies", mp: 32, kind: "mind", power: 178, element: "holy", animation: anim("holy-beam") },
+  // 드루이드: 자연 마법. 가시 덩굴·대지의 속박 = 민첩 하락(속박), 곰 변신 = 공격력 할퀴기(변신 자체는 표현).
+  skill_druid_thorn: { scope: "enemy", mp: 4, kind: "mind", power: 64, element: "earth", animation: anim("leaf-volley"), states: [add("state_agility_down", 40)] },
+  skill_druid_regrowth: { scope: "ally", mp: 5, kind: "healing", power: 44, animation: anim("heal-bloom"), states: [add("state_regen")] },
+  skill_druid_swarm: { scope: "enemy", mp: 6, kind: "mind", power: 56, animation: anim("poison-mist"), states: [add("state_poison", 80)] },
+  skill_druid_bark_skin: { scope: "allAllies", mp: 10, kind: "support", animation: anim("guard-barrier"), states: [add("state_defense_up")] },
+  skill_druid_entangle: { scope: "allEnemies", mp: 12, kind: "mind", power: 58, element: "earth", animation: anim("earth-spike"), states: [add("state_agility_down", 60)] },
+  skill_druid_moonbeam: { scope: "enemy", mp: 12, kind: "mind", power: 118, element: "holy", animation: anim("holy-beam") },
+  skill_druid_bear_form: { scope: "enemy", mp: 14, kind: "attack", power: 132, animation: anim("claw-rake"), critical: 15 },
+  skill_druid_world_tree: { scope: "allEnemies", mp: 34, kind: "mind", power: 176, element: "earth", animation: anim("leaf-volley") },
+  // 마녀: 저주·흡수. 개구리 변신 = 공격 하락 + 침묵, 생명 흡수 = 어둠 피해(흡수 회복은 규칙에 없다), 거울 장막 = 방어 상승.
+  skill_witch_hex: { scope: "enemy", mp: 4, kind: "mind", power: 48, element: "dark", animation: anim("shadow-pulse"), states: [add("state_defense_down", 80)] },
+  skill_witch_frog: { scope: "enemy", mp: 8, kind: "support", animation: anim("smoke-vanish"), states: [add("state_attack_down", 75), add("state_silence", 75)] },
+  skill_witch_cauldron: { scope: "allEnemies", mp: 10, kind: "mind", power: 50, animation: anim("poison-mist"), states: [add("state_poison", 70)] },
+  skill_witch_drain: { scope: "enemy", mp: 8, kind: "mind", power: 84, element: "dark", animation: anim("drain-orbs") },
+  skill_witch_bats: { scope: "allEnemies", mp: 12, kind: "mind", power: 70, element: "dark", animation: anim("shadow-pulse") },
+  skill_witch_mirror: { scope: "self", mp: 10, kind: "support", animation: anim("guard-barrier"), states: [add("state_defense_up")] },
+  skill_witch_nightmare: { scope: "allEnemies", mp: 18, kind: "mind", power: 92, element: "dark", animation: anim("sleep-dust"), states: [add("state_sleep", 40)] },
+  skill_witch_moon_sabbath: { scope: "allEnemies", mp: 36, kind: "mind", power: 198, element: "dark", animation: anim("shadow-pulse") },
 };
 
 function record(id: string, name: string, description: string, seed: Seed): SkillRecord {
@@ -108,7 +163,7 @@ function record(id: string, name: string, description: string, seed: Seed): Skil
   });
 }
 
-/** 계약 순서 그대로 48개. 계약에 레코드 씨앗이 없으면 곧바로 실패한다(계약과 DB 가 어긋나지 않게). */
+/** 계약 순서 그대로 96개. 계약에 레코드 씨앗이 없으면 곧바로 실패한다(계약과 DB 가 어긋나지 않게). */
 export function retroClassSkillRecords(): SkillRecord[] {
   return RETRO_CLASS_SKILLS.map((skill) => {
     const seed = SEEDS[skill.id];
