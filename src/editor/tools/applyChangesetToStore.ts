@@ -14,7 +14,7 @@ import { currentAgentEditorIdentity, currentHumanEditorIdentity } from "@/projec
 import { combineDiffs, recordProjectCommit, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline, summaryForDiff, type CommitLogInput, type CommitRow } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
 import { canWriteTeamProject, TEAM_READ_ONLY_WRITE_MESSAGE } from "@/project/teamAccess";
-import { jsonContentDigest } from "@/project/persistence/core/contentDigest";
+import { jsonContentDigest, withContentDigestEpoch } from "@/project/persistence/core/contentDigest";
 import { AuthoredProjectBaseline, projectIdentityDigest, type ProjectIdentitySource } from "@/project/authoredProjectBaseline";
 import type { ChangeSummary, Project } from "@/project/types";
 import { reconcileReviewedWorldForApply } from "@/project/world";
@@ -255,7 +255,8 @@ let identityScope: WeakMap<Project, IdentityMemo> | null = null;
 function withIdentityScope<T>(run: () => T): T {
   if (identityScope) return run();
   identityScope = new WeakMap();
-  try { return run(); } finally { identityScope = null; }
+  // 같은 구간 안에서는 요약의 노드 대조도 한 번만 한다(contentDigest.withContentDigestEpoch). 구간 안에서는 값을 고치지 않는다.
+  try { return withContentDigestEpoch(run); } finally { identityScope = null; }
 }
 function memoOf(project: Project): IdentityMemo | null {
   if (!identityScope) return null;

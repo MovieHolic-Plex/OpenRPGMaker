@@ -6,6 +6,7 @@
 // 호스트가 캐시를 잃었으면(재시작·축출) 409 heavy-missing 을 돌려주고, 그 해시의 내용만 다시 보낸다.
 
 import type { Project } from "@/project/types";
+import { stringifyAssets, stringifySharedDictionary } from "@/project/io/sharedDictionaryJson";
 
 export const PI_HEAVY_PROJECT_KEYS = ["tilesets", "database", "assets"] as const;
 export type PiHeavyProjectKey = (typeof PI_HEAVY_PROJECT_KEYS)[number];
@@ -41,6 +42,29 @@ async function sha256Hex(text: string): Promise<string> {
  * 같은 객체를 두 번 해시하지 않게 WeakMap 에 기억한다(체크포인트가 무거운 키 객체를 그대로 물려준다).
  */
 const hashMemo = new WeakMap<object, { hash: string; json: string }>();
+/**
+ * 키마다 마지막 글과 해시. 사전 객체는 적용마다 새로 만들어져(스토어 복제) 위 기억이 빗나가도, 글이 같으면 다시 해시하지 않는다.
+ * 키마다 하나만 쥔다 — 글이 수십 MB 라 여러 개를 쥐면 메모리가 커진다(계획의 blobs 가 어차피 같은 글을 쥔다).
+ */
+const lastByKey = new Map<PiHeavyProjectKey, { readonly json: string; readonly hash: string }>();
+
+/**
+ * 무거운 키의 JSON. 타일셋·업로드 자산은 항목 글을 기억해 조립한다 — 글자까지 `JSON.stringify` 와 같다(sharedDictionaryJson).
+ * 왜(2026-09-28 실측, 149MB 새 프로젝트): 턴마다 사전 객체가 새것이라 hashMemo 가 빗나가 타일셋·자산 전체를 다시 직렬화했다(약 1s).
+ */
+function heavyJson(key: PiHeavyProjectKey, value: object): string {
+  if (key === "tilesets") return stringifySharedDictionary(value) ?? "null";
+  if (key === "assets") return stringifyAssets(value) ?? "null";
+  return JSON.stringify(value);
+}
+
+async function hashOfJson(key: PiHeavyProjectKey, json: string): Promise<string> {
+  const last = lastByKey.get(key);
+  if (last && last.json === json) return last.hash;
+  const hash = await sha256Hex(json);
+  lastByKey.set(key, { json, hash });
+  return hash;
+}
 
 export async function planHeavyWire<T extends { project: Project }>(request: T): Promise<HeavyWirePlan | null> {
   if (typeof crypto === "undefined" || !crypto.subtle) return null;
@@ -52,9 +76,9 @@ export async function planHeavyWire<T extends { project: Project }>(request: T):
     if (!value || typeof value !== "object") continue;
     let entry = hashMemo.get(value);
     if (!entry) {
-      const json = JSON.stringify(value);
+      const json = heavyJson(key, value);
       if (json.length < MIN_HEAVY_BYTES) continue;
-      entry = { hash: await sha256Hex(json), json };
+      entry = { hash: await hashOfJson(key, json), json };
       hashMemo.set(value, entry);
     }
     heavy[key] = entry.hash;
@@ -92,4 +116,5 @@ export function forgetHeavySent(origin: string, hashes: readonly string[]): void
 /** 테스트 전용. */
 export function resetHeavyWireForTests(): void {
   sentByOrigin.clear();
+  lastByKey.clear();
 }

@@ -45,7 +45,8 @@ import { eventBodyRect, eventCoversPoint, eventPassageRect, overlappingEventPair
 import { rectCells } from "../footprint";
 import { createEventPlacementAnalysis, eventIsMovable, eventRequiresPassableTile, type EventRelocation } from "../eventPlacementRecovery";
 import { playerPassageRect, resolvePlayerBody } from "../playerFootprint";
-import { deserialize, serialize } from "../io";
+import { deserialize } from "../io";
+import { serializeReusingSharedDictionaries } from "../io/sharedDictionaryJson";
 import { malformedExtraLayerKeys } from "../mapLayers";
 import { collectProjectReferenceIssues } from "../io/references";
 import { isQuestGraphDef } from "../quest/questDef";
@@ -190,7 +191,8 @@ function checkRoundtrip(project: Project, issues: LintIssue[]): void {
     }
   }
   try {
-    deserialize(serialize(project));
+    // 글은 serialize(project) 와 같다 — 타일셋·업로드 자산 항목의 글만 기억해 다시 쓴다(sharedDictionaryJson 머리말).
+    deserialize(serializeReusingSharedDictionaries(project));
   } catch (cause) {
     issues.push({
       severity: "error",

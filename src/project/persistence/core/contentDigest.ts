@@ -25,6 +25,23 @@ interface NodeMemo {
 
 const memos = new WeakMap<object, NodeMemo>();
 
+/**
+ * 한 동기 구간 안에서 이미 대조를 마친 노드. 구간 안에서는 아무도 값을 고치지 않으므로 같은 노드를 두 번 대조하지 않는다.
+ *
+ * 왜(2026-09-28 실측, 새 프로젝트 기본 자료 149MB · 타일셋 노드 62만 개): 조수 체크포인트 적용 한 번이 같은 타일셋 사전을
+ * 제안 기준·저작 기준선·적용 뒤 권위로 4~5번 요약했다. 기억이 있어도 대조(isFresh)가 노드마다 다시 돌아 한 번에 약 0.3s,
+ * 체크포인트마다 1.2~1.8s 였다. 구간은 호출자가 연다(applyChangesetToStore 의 withIdentityScope) — 구간 밖에서는 예전처럼
+ * 부를 때마다 대조한다(제자리 수정은 구간과 구간 사이에서만 일어날 수 있다).
+ */
+let verifiedInEpoch: WeakSet<object> | null = null;
+
+/** 이 구간 안에서는 같은 노드의 기억을 한 번만 대조한다. 구간 안에서 값을 제자리에서 고치면 안 된다. 중첩 호출은 바깥 구간을 쓴다. */
+export function withContentDigestEpoch<T>(run: () => T): T {
+  if (verifiedInEpoch) return run();
+  verifiedInEpoch = new WeakSet();
+  try { return run(); } finally { verifiedInEpoch = null; }
+}
+
 /** JSON 값의 토큰. 원시값·짧은 노드는 글 그대로, 긴 객체·배열은 `#` + 글의 요약. JSON 값이 없으면 undefined. */
 function tokenOf(value: unknown, key: string): string | undefined {
   if (value === null) return "null";
@@ -52,7 +69,11 @@ function nodeToken(node: Record<string, unknown>): string {
   const items = keys ? null : (node as unknown as unknown[]);
   const length = keys ? keys.length : items!.length;
   const memo = memos.get(node);
-  if (memo && memo.values.length === length && isFresh(node, keys, items, length, memo)) return memo.token;
+  if (memo && verifiedInEpoch?.has(node)) return memo.token;
+  if (memo && memo.values.length === length && isFresh(node, keys, items, length, memo)) {
+    verifiedInEpoch?.add(node);
+    return memo.token;
+  }
 
   const values = new Array<unknown>(length);
   const tokens = new Array<string | undefined>(length);
@@ -78,6 +99,7 @@ function nodeToken(node: Record<string, unknown>): string {
   }
   const token = text.length <= INLINE_TEXT ? text : `#${sha256HexTextSync(text)}`;
   memos.set(node, { keys, values, tokens, token });
+  verifiedInEpoch?.add(node);
   return token;
 }
 

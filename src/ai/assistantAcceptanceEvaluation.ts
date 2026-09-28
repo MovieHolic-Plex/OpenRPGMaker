@@ -9,6 +9,7 @@ import type { GameMap, Project } from "@/project/types";
 import { ACCEPTANCE_EXAMPLES, type AcceptanceIssue, type AcceptanceCriterion, type AcceptanceItemSnapshot, type AcceptanceRegion, type AcceptanceTarget, type ProjectAcceptanceCriterion, type AcceptanceSource } from "./assistantAcceptance";
 import type { ToolVerificationEvidence } from "./toolVerificationEvidence";
 import { collectionRecords, type DbCollection } from "@/editor/tools/queryTools";
+import { jsonContentDigest } from "@/project/persistence/core/contentDigest";
 
 type Evidence = AcceptanceItemSnapshot["evidence"][number];
 export function acceptanceFingerprint(value: unknown): string {
@@ -16,6 +17,17 @@ export function acceptanceFingerprint(value: unknown): string {
   return JSON.stringify(value, (_key, entry: unknown) =>
     entry && typeof entry === "object" && !Array.isArray(entry)
       ? Object.fromEntries(Object.entries(entry).sort(([a], [b]) => a.localeCompare(b))) : entry);
+}
+
+/**
+ * 두 프로젝트(또는 큰 JSON 값)의 내용이 같은가 — `acceptanceFingerprint(a) === acceptanceFingerprint(b)` 와 같은 판정이다
+ * (키 순서 무시, 배열 순서·값·JSON 투영 유지). 지문은 문서 전체를 정렬 직렬화한 글이라 새 프로젝트 기본 자료(149MB)에서
+ * 한 번에 1~2s 였다. 요약(`jsonContentDigest`)은 노드마다 기억을 대조해 바뀐 가지만 다시 해시한다.
+ * 같은 객체는 비교하지 않는다. 요약은 SHA-256 이라 «같다» 는 충돌 확률만큼만 틀릴 수 있다 — 적용 권위가 이미 같은 요약을 쓴다.
+ */
+export function sameAcceptanceContent(left: unknown, right: unknown): boolean {
+  if (left === right) return true;
+  return jsonContentDigest(left) === jsonContentDigest(right);
 }
 export function resolveAcceptanceMap(project: Project, target: AcceptanceTarget, bindings: ReadonlyMap<string, string>): GameMap | undefined {
   const id = "mapId" in target ? target.mapId : bindings.get(target.newMapName) ?? "";
@@ -71,7 +83,9 @@ export function scopedMapContent(map: GameMap, region?: AcceptanceRegion): unkno
   return { tilesetId: map.tilesetId, tileSize: map.tileSize, cells, events: map.events.filter(event => contains(region, event)) };
 }
 export function visualFingerprint(project: Project, map: GameMap): string {
-  return acceptanceFingerprint([map, project.tilesets[map.tilesetId], project.assets]);
+  // 캡처 영수증과 대조 모두 이 함수만 쓴다. 업로드 자산(수십 MB)까지 정렬 직렬화하던 지문 대신 노드 기억을 가진 요약을 쓴다 —
+  // 같은 판정(키 순서 무시·값 정확)이고, 스토어 통지마다 영수증 수만큼 돌던 비용이 바뀐 가지만큼으로 준다.
+  return jsonContentDigest([map, project.tilesets[map.tilesetId] ?? null, project.assets]) ?? "";
 }
 export function criterionTargets(criterion: AcceptanceCriterion): readonly AcceptanceTarget[] {
   switch (criterion.kind) {
