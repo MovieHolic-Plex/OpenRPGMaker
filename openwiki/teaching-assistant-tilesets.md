@@ -364,3 +364,23 @@ Pi 런타임(`scripts/lib/piAgentRuntime.ts`)은 모델이 끝났다고 할 때 
   원본 `src/assets/dungeonSheetTilesets.json` ← `node scripts/content/extract-dungeon-sheet-tilesets.mjs`.
 - **`stamp_forest_recipe`** 는 원본 칸(0~2549)의 이식만 비교한다 — 전에는 칸 수가 2550이 아니면 번들 원본도 「파생판」으로 거부했다.
 - 새 문서가 새 칸 번호를 쓰면 위 두 JSON 을 다시 뽑아 번들한다. 기후 시트(3030칸, 고목 2880~)는 이미 구운 시트라 해당 없음.
+
+## 몬스터 마을 부품 (scarloxy_chipset_monster_town_kit, 2026-09-28)
+
+포켓몬풍 게임의 마을·도로에 Scarloxy 팩에 없는 부품(도구 상점·연구소·동굴 입구·조우 풀숲·흰 울타리·풀밭 턱·나무 다리·
+표지판·우체통·벤치·화단·가로등·베는 나무·밀 바위·상자)을 더한 960칸 시트다.
+
+- **한 장인 이유**: 맵 하나는 타일셋 하나만 쓴다. 위 480칸(0~479)을 초원 마을 시트 그대로 두고 아래 480칸에 부품을 붙여,
+  잔디·집·센터와 새 부품을 한 맵에 깐다(합본 마을 + 레트로 월드맵과 같은 방식). 위 반쪽 번호는 `scarloxy_chipset_grassland` 와 같다.
+- **그림**: 이미지 생성 모델로 Scarloxy 집·센터를 화풍 기준으로 그렸다(생성 자산, 팩 원본 아님 — `public/assets/ATTRIBUTION.md`).
+  원본 `tiledata/monster-town-kit/raw/` → `python3 scripts/content/build-monster-town-kit.py` → 시트 + `src/assets/monsterTownKitManifest.json`.
+- **칸 규칙**: `scarloxyPack.ts` 의 `MONSTER_TOWN_KIT_LABELS` 가 부품마다 그룹 하나를 만든다. 전부 3층(가장자리 투명). 풀숲·턱·다리는 통행 가능.
+  조우는 타일이 아니라 맵 `encounterTable` 의 `conditions.region` 으로 풀숲 사각형에만 건다. 한 방향 턱은 칸마다 점프 playerTouch 이벤트.
+- **참고문서**: `node scripts/content/prepare-monster-town-kit-references.mjs` → `src/assets/monsterTownKitReferences.json`
+  (칸 사전·조립 순서·완성 예제 전체 배열, 실제 타일로 합성한 정상/오류 그림 `public/assets/monster-town-kit/references/`).
+  완성 예제 배열은 데모 맵 덤프가 있을 때만 들어간다 — 먼저 `node_modules/.bin/vite-node --root . scripts/content/dump-pokemon-demo-maps.mts`.
+  `ensureMonsterTownKitReferences` 가 새 프로젝트와 로드 보정 양쪽에서 심는다.
+  출하 player 확인: `vite-node --root . scripts/qa/runtime/monster-town-kit-fixture.mts` 후 `npm run qa:runtime -- --scenario monster-town-kit`.
+- **데모**: `createScarloxyPokemonDemoProject` 의 새싹 마을·초원 1번 길이 이 시트로 그려진다. 이미 저장된 데모 맵은 바꾸지 않는다(저작 콘텐츠).
+- **없는 것**: 동굴·체육관 내부, 바다·해변, 다리 난간. 실내는 `easyrpg_chipset_interior`, 동굴 맵은 `easyrpg_chipset_dungeon`.
+

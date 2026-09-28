@@ -196,6 +196,19 @@
   attribution changes, it does not apply to them; conversely the CC-BY 4.0 credit above does not
   cover them. Review generated-asset terms before shipping commercially.
 
+## Generated monster town kit (not part of the Scarloxy pack)
+
+- Files: `monster-town-kit/monster-town-kit.png` (item shop, research lab, cave entrance, signpost,
+  mailbox, cuttable shrub, boulder, crate, flower planter, bench, street lamp, encounter tall grass,
+  picket fence, fence post, grass ledge, plank bridge).
+- Origin: synthesized with an image generation model, using the Scarloxy house and center sprites
+  as a style reference, then downscaled to 16px tiles by `scripts/content/build-monster-town-kit.py`.
+  Raw model outputs are kept at `tiledata/monster-town-kit/raw/`.
+- Author: not Scarloxy (Ismael Garcia) artwork. The texture key uses the `tex_scarloxy_chipset_`
+  prefix only so the sheet shares the Scarloxy art-style grouping in the editor.
+- Notes: same terms as the generated monster sprites above. The CC-BY 4.0 credit for the pack does
+  not cover these files.
+
 ## EasyRPG RTP scoped runtime import
 
 - Files:

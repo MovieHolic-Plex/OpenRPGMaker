@@ -8,6 +8,7 @@
 
 import type { EasyRpgCharsetAsset } from "@/assets/easyrpgRtp";
 import manifestInput from "./scarloxyPackManifest.json" with { type: "json" };
+import monsterTownKitInput from "./monsterTownKitManifest.json" with { type: "json" };
 
 type ScarloxyPackedBlock = {
   readonly name: string;
@@ -15,7 +16,10 @@ type ScarloxyPackedBlock = {
   readonly row: number;
   readonly w: number;
   readonly h: number;
-  readonly kind: "terrain" | "water" | "tree" | "rock" | "deco" | "structure" | "overhead" | "indoor" | "furniture";
+  readonly kind:
+    | "terrain" | "water" | "tree" | "rock" | "deco" | "structure" | "overhead" | "indoor" | "furniture"
+    // 몬스터 마을 부품(생성 자산, scripts/content/build-monster-town-kit.py)만 쓰는 종류.
+    | "sign" | "shrub" | "lamp" | "tall-grass" | "fence" | "ledge" | "bridge";
 };
 
 type ScarloxyPackManifest = {
@@ -29,6 +33,16 @@ type ScarloxyPackManifest = {
 
 export const SCARLOXY_PACK_MANIFEST = manifestInput as ScarloxyPackManifest;
 
+/**
+ * 몬스터 마을 부품 — Scarloxy 화풍에 맞춰 이미지 생성 모델로 그린 **생성 자산**(팩 원본 아님).
+ * 상점·연구소·동굴 입구·조우 풀숲·울타리·턱·다리·표지판 등. 같은 16px 규격이라 Scarloxy
+ * 시트와 함께 배치된다. 출처 표기는 public/assets/ATTRIBUTION.md 「Generated monster town kit」.
+ */
+export const MONSTER_TOWN_KIT_MANIFEST = monsterTownKitInput as { readonly file: string; readonly baseRows: number; readonly blocks: readonly ScarloxyPackedBlock[] };
+export const MONSTER_TOWN_KIT_TEXTURE_KEY = "tex_scarloxy_chipset_monster_town_kit";
+/** 위 반쪽 = 초원 마을 시트 그대로(0~479), 아래 반쪽 = 새 부품(480~959). */
+export const MONSTER_TOWN_KIT_FRAME_COUNT = 960;
+
 const ASSET_DIR = "assets/scarloxy";
 
 // bundled.ts 의 BundledImageAsset 과 구조 동일(순환 import 방지를 위해 구조 타이핑).
@@ -38,6 +52,8 @@ export const SCARLOXY_CHIPSET_ASSETS = [
   { textureKey: "tex_scarloxy_chipset_grassland", path: `${ASSET_DIR}/scarloxy-chipset-grassland.png`, name: "Scarloxy 초원 마을 ChipSet" },
   { textureKey: "tex_scarloxy_chipset_wilds", path: `${ASSET_DIR}/scarloxy-chipset-wilds.png`, name: "Scarloxy 사막/설원 ChipSet" },
   { textureKey: "tex_scarloxy_chipset_indoor", path: `${ASSET_DIR}/scarloxy-chipset-indoor.png`, name: "Scarloxy 실내 ChipSet" },
+  // 텍스처 키 접두어를 tex_scarloxy_chipset_ 로 맞춰 화풍 분류·테마 팩·생성 프로필을 그대로 탄다.
+  { textureKey: MONSTER_TOWN_KIT_TEXTURE_KEY, path: "assets/monster-town-kit/monster-town-kit.png", name: "Scarloxy 초원 마을 + 몬스터 마을 부품 (480~ 생성 자산)" },
 ] as const satisfies readonly ScarloxyBundledAsset[];
 
 export const SCARLOXY_CHARSET_ASSETS = [
@@ -236,7 +252,66 @@ function blockTileIds(block: ScarloxyPackedBlock, rowOffset = 0, rowCount?: numb
   return ids;
 }
 
+/**
+ * 몬스터 마을 부품 블록 라벨. 블록마다 그룹 하나 — 「상점만 놓아라」「풀숲을 깔아라」를
+ * 도구 수준에서 이름으로 집을 수 있게 한다. 조우는 타일이 아니라 사냥터/조우표로 배선한다.
+ * 한 방향 턱(뛰어내리기)은 통행 가능으로 두고, 그 칸에 밟으면 아래로 점프시키는 playerTouch
+ * 이벤트를 얹는다(선례: 포켓몬풍 데모 「초원 1번 길」 ledgeEvent). 막힘으로 두면 이벤트를 밟을 수 없다.
+ * 모든 조각은 가장자리가 투명하다(풀숲도 칸의 약 88%만 칠해져 있다). 하위에 깔면 투명 픽셀
+ * 아래가 검게 보이므로 전부 상위(3층)에 두어 아래 잔디를 보존한다 — openwiki/tile-layer-policy.md.
+ */
+const MONSTER_TOWN_KIT_LABELS: Record<string, { readonly name: string; readonly role: ScarloxyChipsetGroupSeed["role"]; readonly passage: ScarloxyChipsetGroupSeed["passage"]; readonly repeat?: boolean; readonly description: string }> = {
+  "item-shop": { name: "도구 상점", role: "building", passage: "solid", description: "파란 지붕 도구 상점(6×6)입니다. 가운데 유리문 칸 아래에 입구 이벤트를 둡니다. 통행 불가." },
+  "research-lab": { name: "연구소", role: "building", passage: "solid", description: "위성 안테나가 달린 흰 연구소(8×6)입니다. 박사 스타터 이벤트용. 가운데 유리문 아래가 입구입니다. 통행 불가." },
+  "cave-entrance": { name: "동굴 입구", role: "building", passage: "solid", description: "갈색 바위 더미 동굴 입구(5×4)입니다. 맨 아래 가운데 검은 구멍 칸에 장소 이동 이벤트를 둡니다." },
+  signpost: { name: "나무 표지판", role: "prop", passage: "solid", description: "빈 나무 표지판(1×1)입니다. 조사 이벤트로 글을 붙입니다. 통행 불가." },
+  mailbox: { name: "빨간 우체통", role: "prop", passage: "solid", description: "집 앞 우체통(1×1)입니다. 통행 불가." },
+  "cuttable-shrub": { name: "베는 나무", role: "prop", passage: "solid", description: "길을 막는 작은 둥근 나무(1×1)입니다. 기술로 베어 없애는 장애물 이벤트 그래픽으로 씁니다." },
+  boulder: { name: "밀 수 있는 바위", role: "prop", passage: "solid", description: "회색 큰 바위(1×1)입니다. 힘 기술로 미는 퍼즐 이벤트 그래픽으로 씁니다. 통행 불가." },
+  crate: { name: "나무 상자", role: "prop", passage: "solid", description: "나무 상자(1×1)입니다. 통행 불가." },
+  "flower-planter": { name: "꽃 화단", role: "prop", passage: "solid", description: "빨강·노랑 꽃 나무 화단(2×1)입니다. 통행 불가." },
+  bench: { name: "흰 벤치", role: "prop", passage: "solid", description: "흰 공원 벤치(2×1)입니다. 광장·센터 앞에 둡니다. 통행 불가." },
+  "street-lamp": { name: "가로등", role: "prop", passage: "solid", description: "가로등(1×2)입니다. 위 칸은 캐릭터 머리 위로 그려집니다. 통행 불가." },
+  "tall-grass-a": { name: "조우 풀숲", role: "prop", passage: "passable", repeat: true, description: "야생 몬스터가 나오는 키 큰 풀숲(1×1)입니다. 잔디 위 상위 레이어에 이어 깔고, 두 변형을 섞어 반복을 숨깁니다. 조우는 사냥터/조우표로 배선합니다." },
+  "tall-grass-b": { name: "조우 풀숲", role: "prop", passage: "passable", repeat: true, description: "조우 풀숲 두 번째 변형입니다." },
+  "picket-fence": { name: "흰 울타리", role: "prop", passage: "solid", repeat: true, description: "흰 나무 울타리(2×1)입니다. 가로로 이어 붙여 길 가장자리를 막습니다. 통행 불가." },
+  "fence-post": { name: "울타리 기둥", role: "prop", passage: "solid", description: "울타리 끝 기둥(1×1)입니다. 통행 불가." },
+  "grass-ledge": { name: "풀밭 턱", role: "prop", passage: "passable", repeat: true, description: "아래쪽이 흙 절벽으로 끝나는 풀밭 턱(3×1)입니다. 길 사이 단차에 가로로 잇습니다. 각 칸에 밟으면 아래로 두 칸 점프하는 playerTouch 이벤트를 얹어 한 방향 뛰어내리기를 만듭니다." },
+  "plank-bridge": { name: "나무 다리", role: "prop", passage: "passable", repeat: true, description: "위에서 본 나무 판자 다리(2×1)입니다. 물 위 상위 레이어에 가로로 이어 깝니다." },
+};
+
+function monsterTownKitGroupSeeds(): readonly ScarloxyChipsetGroupSeed[] {
+  const byKey = new Map<string, ScarloxyChipsetGroupSeed>();
+  for (const block of MONSTER_TOWN_KIT_MANIFEST.blocks) {
+    const label = MONSTER_TOWN_KIT_LABELS[block.name];
+    if (!label) continue;
+    // 두 풀숲 변형은 한 그룹으로 묶는다(배치 도구가 두 칸을 섞어 쓴다).
+    const key = block.kind === "tall-grass" ? "tall-grass" : block.name;
+    const tileIds = blockTileIds(block);
+    const existing = byKey.get(key);
+    if (existing) {
+      byKey.set(key, { ...existing, tileIds: [...existing.tileIds, ...tileIds] });
+      continue;
+    }
+    byKey.set(key, {
+      key,
+      name: label.name,
+      role: label.role,
+      defaultLayer: "upper",
+      passage: label.passage,
+      repeatability: label.repeat ? "repeat" : "fixed",
+      tileIds,
+      description: label.description,
+    });
+  }
+  return [...byKey.values()];
+}
+
 export function scarloxyChipsetGroupSeeds(textureKey: string): readonly ScarloxyChipsetGroupSeed[] {
+  // 위 반쪽은 초원 마을 시트와 칸 번호가 같으므로 그 그룹을 그대로 쓰고, 부품 그룹을 덧붙인다.
+  if (textureKey === MONSTER_TOWN_KIT_TEXTURE_KEY) {
+    return [...scarloxyChipsetGroupSeeds("tex_scarloxy_chipset_grassland"), ...monsterTownKitGroupSeeds()];
+  }
   const asset = SCARLOXY_CHIPSET_ASSETS.find((entry) => entry.textureKey === textureKey);
   if (!asset) return [];
   const fileName = asset.path.slice(asset.path.lastIndexOf("/") + 1);
