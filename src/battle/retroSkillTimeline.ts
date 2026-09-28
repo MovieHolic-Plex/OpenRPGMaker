@@ -76,6 +76,15 @@ const SOUND = {
   buff: "easyrpg-sound-buff", boom: "easyrpg-sound-explosion1",
 } as const;
 
+// 2026-09-28 확장 6직업(samurai_·ninja_·monk_·bard_·druid_·witch_ 접두사)의 시전 종류. 기존 낱말 표보다 먼저 본다 —
+// 없으면 "chi_burst"(burst→fire)·"금강불괴"·"불협화음"(불→fire)처럼 우연히 불로 잡혔다.
+const EXTENSION_CAST: readonly [RegExp, CastType][] = [
+  [/samurai_(wind|thunder)|ninja_needle|ninja_paralyze/, "thunder"], [/samurai_blood|ninja_clone|bard_(discord|requiem)|witch_(hex|cauldron|poison|drain|bat|nightmare|sabbath)/, "dark"],
+  [/samurai_mind|ninja_log|monk_iron|bard_(notes|tempo)|druid_bark|witch_mirror/, "support"], [/ninja_fire|monk_dragon/, "fire"], [/ninja_(water|splash)/, "ice"],
+  [/monk_meditate|bard_(hymn|finale)|druid_(regrowth|moonbeam|world_tree|tree)/, "heal"],
+  [/^(samurai|ninja|monk|bard|druid|witch)_/, "arcane"],
+];
+
 const KEY_CAST: readonly [RegExp, CastType][] = [
   [/fire|flame|meteor|burst/, "fire"], [/ice|frost|blizzard|snow/, "ice"], [/lightning|bolt|storm|chain/, "thunder"],
   [/heal|holy|halo|revive|purify|sanctuary|blessing|smite|judgment|leaves|nature/, "heal"],
@@ -86,9 +95,36 @@ const KEY_CAST: readonly [RegExp, CastType][] = [
 /** 계약 스킬의 시전 종류. 레이어 키 낱말 → 이름 낱말(castTypeForSkill) → arcane. */
 export function retroCastTypeFor(skill: RetroTimelineSkill): CastType {
   const keys = skill.layers.map((layer) => layer.key).join(" ");
+  const first = skill.layers[0]?.key ?? "";
+  for (const [pattern, type] of EXTENSION_CAST) if (skill.layers.some((layer) => pattern.test(layer.key)) && /^(samurai|ninja|monk|bard|druid|witch)_/.test(first)) return type;
   for (const [pattern, type] of KEY_CAST) if (pattern.test(keys)) return type;
   return castTypeForSkill({ name: skill.name });
 }
+
+// 확장 6직업 레이어 → 착탄음(EasyRPG RTP 실파일, public/assets/easyrpg/sound). 정확한 키로 먼저 찾는다.
+const EXTENSION_SOUND: Readonly<Record<string, string>> = {
+  samurai_iai_flash: "easyrpg-sound-attack2", samurai_sheath: "easyrpg-sound-evade1", samurai_moon: "easyrpg-sound-attack2",
+  samurai_wind_wave: "easyrpg-sound-wind8", samurai_wind_hit: "easyrpg-sound-wind8", samurai_mind_eye: "easyrpg-sound-chime2",
+  samurai_cherry: "easyrpg-sound-attack2", samurai_petals: "easyrpg-sound-wind8", samurai_thunder_line: "easyrpg-sound-flash3",
+  samurai_thunder_hit: "easyrpg-sound-flash3", samurai_blood_moon: "easyrpg-sound-darkness4", samurai_blood_hit: "easyrpg-sound-darkness3",
+  samurai_final_sky: "easyrpg-sound-flash1", samurai_final_slash: "easyrpg-sound-attack2",
+  ninja_shuriken: "easyrpg-sound-shot1", ninja_shuriken_hit: "easyrpg-sound-blow2", ninja_kunai: "easyrpg-sound-shot1", ninja_kunai_hit: "easyrpg-sound-blow2",
+  ninja_fire_breath: "easyrpg-sound-fire2", ninja_log_puff: "easyrpg-sound-fog1", ninja_clone_smoke: "easyrpg-sound-fog1", ninja_clone_hit: "easyrpg-sound-attack2",
+  ninja_water_dragon: "easyrpg-sound-wave2", ninja_splash: "easyrpg-sound-wave1", ninja_needle: "easyrpg-sound-shot1", ninja_paralyze: "easyrpg-sound-debuff",
+  ninja_thousand_sky: "easyrpg-sound-wind8", ninja_thousand_hit: "easyrpg-sound-attack2",
+  monk_fist_flurry: "easyrpg-sound-blow4", monk_rising_kick: "easyrpg-sound-blow4", monk_chi_orb: "easyrpg-sound-magic1", monk_chi_burst: "easyrpg-sound-flash1",
+  monk_iron_body: "easyrpg-sound-barrier", monk_whirl_kick: "easyrpg-sound-wind8", monk_meditate: "easyrpg-sound-recovery5",
+  monk_earth_palm: "easyrpg-sound-earth6", monk_dragon_aura: "easyrpg-sound-fire2", monk_dragon_hit: "easyrpg-sound-explosion1",
+  bard_notes_red: "easyrpg-sound-song", bard_notes_blue: "easyrpg-sound-sleep", bard_sonic_wave: "easyrpg-sound-magic1", bard_sonic_hit: "easyrpg-sound-blow2",
+  bard_hymn: "easyrpg-sound-recovery7", bard_discord: "easyrpg-sound-confusion", bard_tempo: "easyrpg-sound-buff",
+  bard_requiem_sky: "easyrpg-sound-darkness5", bard_requiem_hit: "easyrpg-sound-darkness3", bard_finale_stage: "easyrpg-sound-bell", bard_finale_hit: "easyrpg-sound-holy3",
+  druid_thorn: "easyrpg-sound-earth6", druid_regrowth: "easyrpg-sound-recovery8", druid_swarm: "easyrpg-sound-pollen", druid_bark: "easyrpg-sound-barrier",
+  druid_roots: "easyrpg-sound-earth2", druid_moonbeam: "easyrpg-sound-holy5", druid_bear_spirit: "easyrpg-sound-monster1", druid_claw: "easyrpg-sound-blow4",
+  druid_world_tree: "easyrpg-sound-earth7", druid_tree_hit: "easyrpg-sound-earth8",
+  witch_hex: "easyrpg-sound-darkness3", witch_frog_puff: "easyrpg-sound-fog1", witch_cauldron: "easyrpg-sound-poison", witch_poison_hit: "easyrpg-sound-poison",
+  witch_drain_beam: "easyrpg-sound-absorb1", witch_drain_orb: "easyrpg-sound-absorb2", witch_bat_swarm: "easyrpg-sound-wind8", witch_mirror: "easyrpg-sound-barrier2",
+  witch_nightmare_sky: "easyrpg-sound-darkness5", witch_nightmare_hit: "easyrpg-sound-sleep", witch_sabbath_sky: "easyrpg-sound-darkness4", witch_sabbath_hit: "easyrpg-sound-darkness3",
+};
 
 const KEY_SOUND: readonly [RegExp, string][] = [
   [/meteor_impact|meteor_blast|quake|fortress|brave_burst/, SOUND.boom],
@@ -104,7 +140,7 @@ const KEY_SOUND: readonly [RegExp, string][] = [
 
 /** 레이어 키 → 착탄 효과음(EasyRPG RTP 리소스 id). */
 export function retroSoundForLayer(key: string): string {
-  return KEY_SOUND.find(([pattern]) => pattern.test(key))?.[1] ?? "easyrpg-sound-magic2";
+  return EXTENSION_SOUND[key] ?? KEY_SOUND.find(([pattern]) => pattern.test(key))?.[1] ?? "easyrpg-sound-magic2";
 }
 
 const CAST_SOUND: Readonly<Record<CastType, string>> = {
@@ -112,7 +148,7 @@ const CAST_SOUND: Readonly<Record<CastType, string>> = {
   dark: "easyrpg-sound-darkness3", arcane: "easyrpg-sound-magic2", support: SOUND.buff,
 };
 
-const ALLY_KEYS = /heal|purify|revive|holy_shield|blessing|sanctuary|leaves|barrier/;
+const ALLY_KEYS = /heal|purify|revive|holy_shield|blessing|sanctuary|leaves|barrier|regrowth|hymn/;
 
 /**
  * 계약 스킬의 기본 대상 편. 호출자가 레코드 scope 로 덮어쓸 수 있다.
@@ -201,6 +237,10 @@ function partition(layers: readonly RetroFxLayer[]): { user: IndexedLayer[]; pro
 function projectileShape(key: string): { path: RetroProjectilePath; count: number; stagger: number; durationMs: number } {
   if (/meteor_rock|star/.test(key)) return { path: "fall", count: 3, stagger: 110, durationMs: 420 };
   if (/knife/.test(key)) return { path: "throw", count: 6, stagger: 60, durationMs: 260 };
+  // 수리검 세 장 연달아 · 쿠나이는 위에서 쏟아진다 · 침은 짧고 빠르게.
+  if (/shuriken/.test(key)) return { path: "throw", count: 3, stagger: 90, durationMs: 260 };
+  if (/kunai/.test(key)) return { path: "fall", count: 3, stagger: 90, durationMs: 360 };
+  if (/needle/.test(key)) return { path: "throw", count: 1, stagger: 0, durationMs: 220 };
   if (/missile/.test(key)) return { path: "throw", count: 3, stagger: 100, durationMs: 340 };
   if (/bomb/.test(key)) return { path: "throw", count: 1, stagger: 0, durationMs: 420 };
   return { path: "throw", count: 1, stagger: 0, durationMs: 300 };
@@ -219,7 +259,7 @@ function launch(b: TimelineBuilder, at: number, layers: readonly IndexedLayer[],
       b.projectile(start, shape.durationMs, index, layer, shape.path, spread ? i % 3 : shape.path === "fall" && count > 1 ? i % 3 : 0);
       arrive = Math.max(arrive, start + shape.durationMs);
     }
-    b.sound(at, /arrow|knife/.test(layer.key) ? SOUND.shot : "easyrpg-sound-magic1");
+    b.sound(at, /arrow|knife|shuriken|kunai|needle/.test(layer.key) ? SOUND.shot : EXTENSION_SOUND[layer.key] ?? "easyrpg-sound-magic1");
   }
   // 첫 발이 닿는 순간부터 착탄 레이어가 시작된다(여러 발이면 첫 발 기준으로 겹쳐 보이게).
   const first = layers.length > 0 ? at + projectileShape(layers[0]!.layer.key).durationMs : at;
