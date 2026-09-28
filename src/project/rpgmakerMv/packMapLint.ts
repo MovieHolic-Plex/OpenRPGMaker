@@ -483,6 +483,37 @@ export function packLintInputFromMap(project: Project, map: GameMap): PackLintIn
 }
 
 /**
+ * 조각난 물체: 3·4층에 물체 킷의 칸이 있는데 어느 온전한 물체에도 속하지 않는다. 다른 물체를 overwrite 로 겹쳐 찍어
+ * 집 한쪽이 잘린 경우(2026-09-28 조수 시험: 초가 왼쪽 줄을 야자수가 덮음) — 잘린 물체는 물체로 되찾아지지 않아 겹침 검사에도 안 걸린다.
+ */
+export function lintBrokenObjects(project: Project, map: GameMap, placed: readonly PackLintPlaced[]): string[] {
+  const tileset = project.tilesets[map.tilesetId];
+  if (!tileset) return [];
+  const index = tilesetIndex(tileset);
+  const { width: w, height: h } = map;
+  const covered = new Set<number>();
+  for (const p of placed) for (const [dx, dy] of p.cells) covered.add((p.y + dy) * w + p.x + dx);
+  const byKit = new Map<string, number[]>();
+  for (let i = 0; i < w * h; i += 1) {
+    if (covered.has(i)) continue;
+    for (const tile of [map.upperTiles[i] ?? -1, map.upperOverlayTiles?.[i] ?? -1]) {
+      const kits = tile >= 0 ? index.objectTile.get(tile) : undefined;
+      // 집·출입구(door) 조각만 센다 — 덤불·바위 대지·창살·단상은 게시 장소에서도 일부러 겹치거나 잘라 쓴다(38곳 대조).
+      const kit = kits?.find((c) => c.kit.o.kind === "door");
+      if (!kit) continue;
+      const id = kit.kit.o.id;
+      byKit.set(id, [...(byKit.get(id) ?? []), i]);
+      break;
+    }
+  }
+  const at = (i: number) => `(${i % w},${Math.floor(i / w)})`;
+  const broken = [...byKit].filter(([, cells]) => cells.length >= 2);
+  return broken.length
+    ? [`겹침: 조각난 집·출입구 ${broken.map(([id, cells]) => `${id} ${cells.length}칸 ${cells.slice(0, 3).map(at).join(" ")}`).join(" · ")} — 다른 물체를 겹쳐 찍어(overwrite) 잘렸거나 일부만 남았다. 겹친 물체를 옮기고 잘린 물체를 다시 찍는다`]
+    : [];
+}
+
+/**
  * 오토타일 모양이 이웃과 맞는가. 도구로 칠하면 늘 맞지만, 완성 장소 그림(모양이 굳은 래스터 킷)을 다른 칸 위에 찍거나
  * 한 칸만 손으로 바꾸면 테두리가 어긋나 벽 조각·천장 줄이 떠 보인다(2026-09-28 시험: 대장간 킷을 찍고 남은 옛 벽 테 두 줄).
  * A1(물·폭포)은 폭포와 물이 서로 이어지는 규칙이 따로라 뺀다.
@@ -582,6 +613,37 @@ export function lintBoxRooms(input: Pick<PackLintInput, "w" | "h" | "m1">): stri
   return out;
 }
 
+/**
+ * 물에 둘러싸인 땅이 네모(곧은 해안선). 물이 맵의 25% 이상인 야외에서 땅 덩이(60칸 이상)가 자기 상자를 85% 이상 채우면 경고.
+ * 게시 야외 중 물이 25% 이상인 곳은 29~75%, 조수가 네모로 깐 섬은 88%였다(2026-09-28).
+ */
+export function lintBoxLand(input: Pick<PackLintInput, "w" | "h" | "m1">): string[] {
+  const { w, h } = input;
+  if (input.m1.filter((m) => m?.part === "A1").length < 0.25 * w * h) return [];
+  const land = (i: number) => { const m = input.m1[i]; return !!m && m.part !== "A1" && m.part !== "A3" && m.part !== "A4"; };
+  const seen = new Uint8Array(w * h);
+  const out: string[] = [];
+  for (let i = 0; i < w * h; i += 1) {
+    if (seen[i] || !land(i)) continue;
+    const stack = [i]; seen[i] = 1;
+    let n = 0, x0 = w, x1 = 0, y0 = h, y1 = 0;
+    while (stack.length) {
+      const c = stack.pop()!; n += 1;
+      const x = c % w, y = Math.floor(c / w);
+      x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        const nx = x + dx, ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+        const j = ny * w + nx;
+        if (!seen[j] && land(j)) { seen[j] = 1; stack.push(j); }
+      }
+    }
+    const bw = x1 - x0 + 1, bh = y1 - y0 + 1;
+    if (n >= 60 && n / (bw * bh) >= 0.85) out.push(`모양: 네모난 땅(곧은 해안선) — 땅 ${n}칸이 ${bw}×${bh}@(${x0},${y0}) 상자를 ${Math.round((100 * n) / (bw * bh))}% 채운다. 곶·후미·모래톱으로 해안선을 들쭉날쭉하게(게시 장소는 75% 이하)`);
+  }
+  return out;
+}
+
 export function lintPackMap(project: Project, map: GameMap): PackMapLintResult | null {
   const input = packLintInputFromMap(project, map);
   if (!input) return null;
@@ -590,11 +652,12 @@ export function lintPackMap(project: Project, map: GameMap): PackMapLintResult |
   const interior = kind === "interior";
   const emptyLimit = PACK_EMPTY_LIMIT[kind];
   const empty = packEmptyRects(input, emptyLimit + 1, 3, 3);
-  const warnings = [...lintPackStructure(input), ...lintPackPassage(input), ...lintAutotileShapes(project, map)];
+  const warnings = [...lintPackStructure(input), ...lintPackPassage(input), ...lintAutotileShapes(project, map), ...lintBrokenObjects(project, map, input.placed)];
   if (input.m1.every((m) => !m)) warnings.unshift("재료: 1층에 이 팩 재료가 하나도 없다 — 팩 재료로 칠한 맵이 아니다");
   if (!input.starts?.length) warnings.unshift("통행: 입구가 없다 — 맵 가장자리에 열린 바닥이 없다. 실내는 남쪽 벽 천장 테를 1~2칸 비워 바닥을 맵 끝까지 잇는다");
   warnings.push(...lintPackRepeats(input, kind));
   if (interior) warnings.push(...lintBoxRooms(input));
+  if (kind === "outdoor") warnings.push(...lintBoxLand(input));
   if (empty.length) warnings.push(`공간: 가구·물체 없는 빈 바닥 ${empty.map((r) => `${r.w}×${r.h}@(${r.x},${r.y})`).join(" ")} — ${kind === "interior" ? "집 실내" : kind === "cave" ? "동굴·던전" : "야외"} 한도 ${emptyLimit}칸. 물체로 메우지 말고 방·맵을 줄인다(또는 그 자리에 용도 있는 구역을 둔다)`);
   return { interior, kind, warnings, empty, emptyLimit, objects: input.placed.length };
 }
