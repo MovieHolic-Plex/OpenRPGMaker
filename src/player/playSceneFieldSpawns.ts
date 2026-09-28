@@ -50,7 +50,7 @@ export function updateFieldSpawnsForScene(scene: PlaySceneContext, deltaMs: numb
   if (scene.running) return;
   const project = store.getCurrent();
   if (refreshRoguelikeRoomForScene(scene)) return;
-  const changed = advanceFieldSpawns(scene.fieldSpawnState, project, scene.map, { x: scene.tileX, y: scene.tileY }, deltaMs);
+  const changed = advanceFieldSpawns(scene.fieldSpawnState, project, scene.map, { x: scene.tileX, y: scene.tileY }, deltaMs, scene.eventPositions);
   if (!changed) return;
   syncFieldSpawnEventsIntoMap(scene.map, scene.fieldSpawnState, scene.eventPositions);
   scene.renderTiles();

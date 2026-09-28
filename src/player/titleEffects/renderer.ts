@@ -142,7 +142,7 @@ export interface TitleEffectsCanvasOptions {
   readonly freezeAtSec?: number;
 }
 
-type RendererHandle = { frame: number; stop: () => void };
+type RendererHandle = { stop: () => void };
 const running = new WeakMap<HTMLCanvasElement, RendererHandle>();
 /** 살아 있는 캔버스의 효과 값만 바꾸는 함수 — 편집기 드래그·슬라이더가 WebGL 문맥을 새로 만들지 않게. */
 const uniformSetters = new WeakMap<HTMLCanvasElement, (uniforms: TitleEffectUniforms) => void>();
@@ -190,23 +190,51 @@ function startTitleEffects(canvas: HTMLCanvasElement, initialUniforms: TitleEffe
     canvas.dataset.titleEffectsRenderer = "unavailable";
     return;
   }
-  const motes = createMotePass(gl);
-  const program = buildProgram(gl, motes ? TITLE_EFFECT_FRAGMENT_SHADER : TITLE_EFFECT_FALLBACK_FRAGMENT_SHADER);
-  if (!program) {
-    canvas.dataset.titleEffectsRenderer = "unavailable";
-    return;
-  }
   const context = gl;
-  // 그림을 불러오기 전에 들어온 값은 보관했다가 onload 가 쓴다.
-  uniformSetters.set(canvas, (next) => {
-    uniforms = next;
-  });
+  let stopped = false;
+  let lost = false;
+  let frame = 0;
+  let lastSeconds = options.freezeAtSec ?? 0;
+  let started: number | undefined;
+  const remember = (next: TitleEffectUniforms) => { uniforms = next; };
+  const handle: RendererHandle = { stop: () => {
+    stopped = true;
+    cancelAnimationFrame(frame);
+    canvas.removeEventListener("webglcontextlost", onLost);
+    canvas.removeEventListener("webglcontextrestored", onRestored);
+    uniformSetters.delete(canvas);
+    context.getExtension("WEBGL_lose_context")?.loseContext();
+  } };
+  const onLost = (event: Event) => {
+    event.preventDefault();
+    lost = true;
+    cancelAnimationFrame(frame);
+    uniformSetters.set(canvas, remember);
+    canvas.dataset.titleEffectsRenderer = "lost";
+    canvas.dataset.titleEffectsAnimated = "false";
+    delete canvas.dataset.titleEffectsDepth;
+  };
+  const onRestored = () => {
+    if (stopped) return;
+    lost = false;
+    if (image.complete && image.naturalWidth) initialize();
+  };
+  canvas.addEventListener("webglcontextlost", onLost);
+  canvas.addEventListener("webglcontextrestored", onRestored);
+  running.set(canvas, handle);
+  uniformSetters.set(canvas, remember);
   const image = new Image();
   image.decoding = "async";
   image.onerror = () => {
     canvas.dataset.titleEffectsRenderer = "unavailable";
   };
-  image.onload = () => {
+  const initialize = () => {
+    if (stopped || lost) return;
+    const motes = createMotePass(context);
+    const program = buildProgram(context, motes ? TITLE_EFFECT_FRAGMENT_SHADER : TITLE_EFFECT_FALLBACK_FRAGMENT_SHADER);
+    if (!program) { canvas.dataset.titleEffectsRenderer = "unavailable"; return; }
+    const scale = titleEffectsResolutionScale(context);
+    canvas.dataset.titleEffectsResolutionScale = String(scale);
     const texture = context.createTexture();
     context.bindTexture(context.TEXTURE_2D, texture);
     context.texParameteri(context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.LINEAR);
@@ -264,6 +292,8 @@ function startTitleEffects(canvas: HTMLCanvasElement, initialUniforms: TitleEffe
       const depthImage = new Image();
       depthImage.decoding = "async";
       depthImage.onload = () => {
+        if (stopped || lost || !context.isProgram(program)) return;
+        context.useProgram(program);
         const depthTexture = context.createTexture();
         context.activeTexture(context.TEXTURE1);
         context.bindTexture(context.TEXTURE_2D, depthTexture);
@@ -286,7 +316,8 @@ function startTitleEffects(canvas: HTMLCanvasElement, initialUniforms: TitleEffe
     }
 
     const draw = (seconds: number) => {
-      resizeCanvas(canvas, context);
+      if (stopped || lost) return;
+      resizeCanvas(canvas, context, scale);
       motes?.draw(seconds);
       context.useProgram(program);
       context.viewport(0, 0, canvas.width, canvas.height);
@@ -295,7 +326,7 @@ function startTitleEffects(canvas: HTMLCanvasElement, initialUniforms: TitleEffe
       context.drawArrays(context.TRIANGLE_STRIP, 0, 4);
     };
     const frozen = typeof options.freezeAtSec === "number" ? options.freezeAtSec : prefersReducedMotion() ? 0 : undefined;
-    let lastSeconds = frozen ?? 0;
+    lastSeconds = frozen ?? lastSeconds;
     uniformSetters.set(canvas, (next) => {
       uniforms = next;
       applyUniforms();
@@ -307,29 +338,31 @@ function startTitleEffects(canvas: HTMLCanvasElement, initialUniforms: TitleEffe
       return;
     }
     canvas.dataset.titleEffectsAnimated = "true";
-    const started = nowMs();
-    const handle: RendererHandle = {
-      frame: 0,
-      stop: () => cancelAnimationFrame(handle.frame),
-    };
+    started ??= nowMs();
     const tick = () => {
       if (!canvas.isConnected) {
         running.delete(canvas);
-        uniformSetters.delete(canvas);
-        context.getExtension("WEBGL_lose_context")?.loseContext();
+        handle.stop();
         return;
       }
-      lastSeconds = (nowMs() - started) / 1000;
+      lastSeconds = (nowMs() - started!) / 1000;
       draw(lastSeconds);
-      handle.frame = requestAnimationFrame(tick);
+      frame = requestAnimationFrame(tick);
     };
     running.set(canvas, handle);
-    handle.frame = requestAnimationFrame(tick);
+    frame = requestAnimationFrame(tick);
   };
+  image.onload = initialize;
   image.src = options.imageUrl;
 }
 
-function resizeCanvas(canvas: HTMLCanvasElement, gl: WebGL2RenderingContext): void {
+/** Detect once per context generation. Unknown/hidden renderer keeps full quality. */
+function titleEffectsResolutionScale(gl: WebGL2RenderingContext): number {
+  const debug = gl.getExtension("WEBGL_debug_renderer_info");
+  return debug && /swiftshader|llvmpipe/i.test(String(gl.getParameter(debug.UNMASKED_RENDERER_WEBGL))) ? 0.5 : 1;
+}
+
+function resizeCanvas(canvas: HTMLCanvasElement, gl: WebGL2RenderingContext, resolutionScale: number): void {
   const dpr = typeof window !== "undefined" ? Math.min(window.devicePixelRatio || 1, 2) : 1;
   let width = Math.max(1, Math.round((canvas.clientWidth || 320) * dpr));
   let height = Math.max(1, Math.round((canvas.clientHeight || 240) * dpr));
@@ -339,6 +372,8 @@ function resizeCanvas(canvas: HTMLCanvasElement, gl: WebGL2RenderingContext): vo
     width = Math.round(width * scale);
     height = Math.round(height * scale);
   }
+  width = Math.max(1, Math.round(width * resolutionScale));
+  height = Math.max(1, Math.round(height * resolutionScale));
   if (canvas.width !== width || canvas.height !== height) {
     canvas.width = width;
     canvas.height = height;

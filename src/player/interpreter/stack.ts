@@ -79,18 +79,68 @@ export function breakLoop(state: InterpreterState): boolean {
   return true;
 }
 
+interface LabelIndex {
+  length: number;
+  labels: { index: number; command: Command; name: string }[];
+  first: Map<string, number>;
+}
+const labelIndexes = new WeakMap<Command[], LabelIndex>();
+let labelPass: { validated?: WeakSet<Command[]> } | undefined;
+
+/** Only the interpreter's synchronous, callback-free label/goto stretch may skip non-label validation. */
+export function withLabelIndexPass<T>(run: () => T): T {
+  const previous = labelPass;
+  labelPass = {};
+  try { return run(); } finally { labelPass = previous; }
+}
+export function invalidateLabelIndexPass(): void {
+  if (labelPass) labelPass.validated = undefined;
+}
+function labelIndex(commands: Command[]): LabelIndex {
+  let cached = labelIndexes.get(commands);
+  let valid = cached !== undefined && cached.length === commands.length;
+  if (valid && cached) {
+    if (labelPass?.validated?.has(commands)) {
+      for (const label of cached.labels) {
+        const command = commands[label.index];
+        if (command !== label.command || command?.kind !== "label" || command.name !== label.name) { valid = false; break; }
+      }
+    } else {
+      // Existing labels alone cannot detect a new earlier label (including an in-place kind edit).
+      let next = 0;
+      for (let i = 0; i < commands.length; i++) {
+        const command = commands[i];
+        if (command?.kind !== "label") continue;
+        const label = cached.labels[next++];
+        if (!label || label.index !== i || label.command !== command || label.name !== command.name) { valid = false; break; }
+      }
+      if (next !== cached.labels.length) valid = false;
+    }
+  }
+  if (!valid || !cached) {
+    cached = { length: commands.length, labels: [], first: new Map() };
+    for (let i = 0; i < commands.length; i++) {
+      const command = commands[i];
+      if (command?.kind !== "label") continue;
+      cached.labels.push({ index: i, command, name: command.name });
+      if (!cached.first.has(command.name)) cached.first.set(command.name, i);
+    }
+    labelIndexes.set(commands, cached);
+  }
+  if (labelPass) (labelPass.validated ??= new WeakSet()).add(commands);
+  return cached;
+}
 export function gotoLabel(stack: Frame[], name: string): boolean {
   for (let i = stack.length - 1; i >= 0; i -= 1) {
     const frame = stack[i];
     if (!frame) continue;
-    for (let j = 0; j < frame.commands.length; j += 1) {
-      const command = frame.commands[j];
-      if (command?.kind === "label" && command.name === name) {
-        stack.length = i + 1;
-        frame.pc = j;
-        return true;
-      }
-    }
+    // The common loop-at-start case was already O(1); do not turn it into a full validation.
+    const head = frame.commands[0];
+    const index = head?.kind === "label" && head.name === name ? 0 : labelIndex(frame.commands).first.get(name);
+    if (index === undefined) continue;
+    stack.length = i + 1;
+    frame.pc = index;
+    return true;
   }
   return false;
 }

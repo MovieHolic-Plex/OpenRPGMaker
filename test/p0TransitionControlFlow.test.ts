@@ -1,4 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+/** @vitest-environment happy-dom */
+import { describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { startSession } from "@/project/session";
 import { store } from "@/project/store";
@@ -62,15 +63,6 @@ function parallelScene(commands: Command[], sleepUntilMorning: () => Promise<boo
 }
 
 describe("P0 transition control flow", () => {
-  beforeEach(() => {
-    vi.stubGlobal("document", {
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-    });
-  });
-
-  afterEach(() => vi.unstubAllGlobals());
-
   it("does not resume the next authored command when sleep reports false", async () => {
     const previous = store.getCurrent();
     try {
