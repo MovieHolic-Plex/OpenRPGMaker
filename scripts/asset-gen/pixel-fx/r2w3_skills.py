@@ -47,6 +47,26 @@ CLASSES = [
         S('double_or_nothing', '두 배 아니면 빈손', 'flurry', '동전 앞뒤에 걸고 연타를 몰아친다', 'gambler_coin_flip'),
         S('jackpot', '잭팟', 'finisher', '릴이 777 로 멈추고 금화 폭포가 쏟아지는 필살기', 'gambler_jackpot_sky', 'gambler_jackpot_hit'),
     ]),
+    dict(batch='p2', classId='class_seraph', ck='seraph', chip='people2-6', name='천사', mod='r2w3_seraph', skills=[
+        S('feather_dart', '성깃 화살', 'shoot', '하얀 깃털을 화살처럼 날려 적을 꿰뚫는다', 'seraph_feather', 'seraph_feather_hit'),
+        S('holy_spear', '성창 강림', 'cast', '하늘에서 성창이 내리꽂히고 빛기둥이 솟는다', 'seraph_spear'),
+        S('angel_heal', '천상의 치유', 'cast', '날개를 펴 깃털 빛으로 아군 전체를 치유한다', 'seraph_heal'),
+        S('chain_of_light', '빛의 사슬', 'cast', '성스러운 사슬로 적을 휘감아 움직임을 묶는다', 'seraph_bind'),
+        S('wing_veil', '날개 장막', 'buff', '금빛 날개로 아군을 감싸 방어를 높인다', 'seraph_veil'),
+        S('divine_smite', '천벌', 'leap-strike', '빛기둥과 함께 내려꽂혀 십자 충격파를 일으킨다', 'seraph_smite'),
+        S('resurrection', '부활의 기적', 'cast', '순백의 날개와 앙크가 쓰러진 아군을 일으킨다', 'seraph_revive'),
+        S('last_judgment', '최후의 심판', 'finisher', '천사의 날개 아래 성창 아홉 자루를 내리는 필살기', 'seraph_judgment_sky', 'seraph_judgment_hit'),
+    ]),
+    dict(batch='p2', classId='class_fairy', ck='fairy', chip='people2-7', name='요정', mod='r2w3_fairy', skills=[
+        S('sparkle_dust', '반짝 가루', 'shoot', '반짝이는 빛가루를 날려 적을 쏜다', 'fairy_dust', 'fairy_dust_hit'),
+        S('vine_snare', '덩굴 속박', 'cast', '땅에서 덩굴이 솟아 적을 휘감고 꽃을 피운다', 'fairy_vines'),
+        S('firefly_swarm', '반딧불 무리', 'cast', '반딧불 떼가 적진을 에워싸며 쏘아 댄다', 'fairy_swarm'),
+        S('healing_pollen', '치유 꽃가루', 'buff', '꽃가루를 흩뿌려 아군 전체를 감싸 치유한다', 'fairy_pollen'),
+        S('sleepy_song', '졸음 노래', 'cast', '졸음 방울과 Z 가 피어올라 적을 재운다', 'fairy_lullaby'),
+        S('blossom_ray', '꽃잎 광선', 'flurry', '거대한 꽃이 피며 꽃잎 광선을 연달아 쏜다', 'fairy_bloom'),
+        S('pixie_dash', '요정 돌진', 'dash-strike', '빛가루 꼬리를 끌며 적의 품으로 파고든다', 'fairy_dash', 'fairy_dash_hit'),
+        S('forest_hymn', '숲의 성가', 'finisher', '깊은 숲과 반딧불이 깨어나 모든 적을 덮치는 필살기', 'fairy_grove_sky', 'fairy_grove_hit'),
+    ]),
 ]
 
 

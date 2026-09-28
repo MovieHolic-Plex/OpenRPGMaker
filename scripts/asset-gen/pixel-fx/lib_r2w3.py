@@ -268,6 +268,32 @@ def flash(c, x, y, r, cols):
         c.disc(x, y, r * (1 - i / len(cols)), col)
 
 
+def holy_cross(c, x, y, arm, thick, cols, top=None):
+    """라틴 십자: cols = [바깥, 안, 밝음]. arm 은 가로 반폭, top 은 위쪽 길이(기본 arm*1.6)."""
+    top = top or round(arm * 1.6)
+    for i, col in enumerate(cols):
+        t = max(1, thick - i * 2)
+        h = t // 2
+        c.rect(x - h, y - top + i, x - h + t - 1, y + arm * 1.4 - i, col)
+        c.rect(x - arm + i, y - h - arm // 3, x + arm - i, y - h - arm // 3 + t - 1, col)
+
+
+def wing(c, x, y, sx, spread, cols, span=20):
+    """한쪽 날개: 세 줄의 깃(뒷줄이 길다)을 부채꼴로. sx=-1 왼쪽 +1 오른쪽, 어깨(x,y). cols=[그림자,몸,밝음]."""
+    tiers = ((6, 1.0, cols[0]), (5, .78, cols[1]), (4, .55, cols[2]))
+    for ti, (n, lenk, col) in enumerate(tiers):
+        for i in range(n):
+            a = math.radians(-75 + (35 + 95 * spread) * (i / max(1, n - 1)) - ti * 8)
+            ln = span * lenk * (0.6 + 0.4 * math.sin(math.pi * (i + .5) / n)) * (0.55 + .45 * spread)
+            ex, ey = x + sx * math.cos(a) * ln, y - math.sin(a) * ln * .85 + ti * 2
+            mx, my = x + sx * math.cos(a) * ln * .55, y - math.sin(a) * ln * .55 * .85 + ti * 2
+            nx, ny = -(ey - y), (ex - x)
+            nl = math.hypot(nx, ny) or 1
+            wd = 2.2 - ti * .3
+            c.poly([(x + sx * 2, y + 1 + ti), (mx + nx / nl * wd, my + ny / nl * wd), (ex, ey), (mx - nx / nl * wd, my - ny / nl * wd)], col)
+    c.line([(x + sx * 2, y + 2), (x + sx * span * .45 * (0.55 + .45 * spread), y - 5 * spread)], cols[2], 1)
+
+
 def puff(c, x, y, r, cols):
     c.disc(x, y, r, cols[0])
     if len(cols) > 1: c.disc(x - r * .2, y - r * .2, r * .72, cols[1])
