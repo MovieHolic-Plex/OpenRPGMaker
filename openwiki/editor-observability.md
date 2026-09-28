@@ -549,3 +549,8 @@ requestEditRenderFrame으로 한 프레임만 요청하고, 카메라·포인터
 `mapCellApply` → `replace({renderCells})` 경로를 사용한다. 네 층·그림자·스택을 비교하고,
 오토타일 이웃 확장은 기존 렌더러가 맡는다. `replace`에는 changedMapIds 옵션이 없으므로
 여러 맵/속성/이벤트/프로젝트 데이터 변경, 추가·삭제와 2,048셀 초과는 전체 통지를 유지한다.
+
+새 워크트리 재측정: 이벤트 2,000건 기준 검증 5.338→0.196ms/호출, project 통지 200회
+패널 DOM 4,400→22개. Chromium 연결 패널은 0.946→0.023ms/통지, DOM 18,800→0개.
+규칙 감사(100ms 간격 20회)는 7→1회, 100×100 한 칸 렌더는 10,000→9객체.
+하네스·명령·원자료·제한은 `verify-shots/perf-editor-subs/SUMMARY.md`에 기록했다.

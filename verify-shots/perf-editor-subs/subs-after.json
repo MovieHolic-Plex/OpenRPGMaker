@@ -1,0 +1,8 @@
+{
+  "reference_ms": 0.1956416900000022,
+  "graph_ms": 0.020656754999999975,
+  "links_ms": 0.01906791500000054,
+  "links_dom_nodes": 0,
+  "audit_calls": 1,
+  "audit_dom_nodes": 1002
+}
