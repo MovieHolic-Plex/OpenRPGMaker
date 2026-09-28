@@ -733,8 +733,8 @@ def terracotta_tim(im):
     return im
 def hay_bales():
     c=C(32,24,seed=1030); c.shadow(16,21.6,15,2)
-    c.group(1); c.box(2,6,14,4,9,'straw' if 'straw' in PAL else 'gold',front=0.6)
-    c.group(2); c.box(14,9,16,4,8,'straw' if 'straw' in PAL else 'gold',front=0.6)
+    c.group(1); c.box(2,6,14,4,9,'rope',front=0.6)          # v6: thatch ramp (the straw ramp read as gold chests)
+    c.group(2); c.box(14,9,16,4,8,'rope',front=0.6)
     for g,(x0,x1,y) in ((1,(2,16,12)),(2,(14,30,14))):
         c.new()
         for x in range(x0,x1): c.tone(x,y,'rope',2)

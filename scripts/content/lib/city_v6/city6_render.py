@@ -72,6 +72,14 @@ _tr=terrain.render(E,MAS,STAIRS,FALLS,frame=0)
 _stc={(x0+i,y0+j) for x0,y0,w in STAIRS for i in range(w) for j in (0,1,2)}
 _cf=[(x,y) for y in range(H) for x in range(W) if F[y][x] and E[y-F[y][x]][x]==3 and (x,y) not in _stc]
 castle6.castle_face(_tr.load(),W*16,H*16,_cf,{(x,y):F[y][x]-1 for x,y in _cf})
+_tp=_tr.load()
+for y in range(H):
+    for x in range(W):
+        if CPAVE[y][x] and not F[y][x]:
+            for ly in range(16):
+                for lx in range(16):
+                    r_,g_,b_,a_=_tp[x*16+lx,y*16+ly]
+                    if a_ and g_>r_+20 and g_>b_+10: _tp[x*16+lx,y*16+ly]=roman.ST[2]+(255,) if (lx in (0,15) or ly in (0,15)) else roman.ST[5]+(255,)
 img.alpha_composite(_tr)
 img.alpha_composite(pn.townwall(wall,gates=GATES))
 for b,x0,y0 in BR:

@@ -35,6 +35,9 @@ def kobj(kit,pid,im,x,y,roles,name=None,ground=False,cast=True,door=None):
     # an image whose bottom sits on the last role row; roles give the cells it claims (upper overhang claims nothing)
     dy=len(roles)*16-im.height
     ok=kraw(kit,pid,im,x,y,roles,dy=dy,name=name,ground=ground,cast=cast)
+    if ok and dy<0:                                        # the overhang: keep props out from under it
+        for yy in range(y-(-dy+15)//16,y):
+            for xx in range(x,x+max(len(r) for r in roles)): PROPBAN.add((xx,yy))
     if ok and door is not None:
         HOUSES.append((name or f'{kit}.{pid}.{x}.{y}',door[0],door[1])); KIT[kit]['answer'][-1]['door']=list(door)
     return ok
@@ -68,7 +71,7 @@ st=roman.stable(3,seed=1); kp('castle','castle.stable',st['im'],1,7,name='cstabl
 h=castle6.castle_house(3,1,door=1,seed=2,chim=True); h['im']=signed(h['im'],h['door'],0,'smith')
 if kp('castle','castle.smithy',h['im'],29,13,name='smithy',door=h['door'],chim=h['chim'],above=h['above']): SMOKEKIND['smithy']='dark'
 h=castle6.castle_house(3,1,door=1,seed=5,chim=False); kp('castle','castle.barracks',h['im'],29,7,name='barracks',door=h['door'],above=0)
-P_('c_anvil',pf.anvil,28,14); P_('c_hay',roman.hay_bales,1,12); P_('c_trough',pi.trough,2,9)
+P_('c_anvil',pf.anvil,28,14); P_('c_hay',pi.P['건초더미'],1,12); P_('c_trough',pi.trough,2,9)
 P_('c_well',pe.P['돌 우물'],1,15)
 P_('c_target',V2('과녁'),6,17); P_('c_rack',pf.P['무기 거치대'],24,16)
 for y in range(1,19):
@@ -124,6 +127,7 @@ rec('estate','estate.garden',38,12,17,10)
 # ======================= forum (v6: squared-up temple / stoa / entrance arch on the chipset houses' view) =======================
 kraw('forum','forum.stoa',v6pieces.stoa6(5,seed=2),55,35,['#####','#####','#####','#####','PPPPP'])
 kobj('forum','forum.temple',v6pieces.temple6(7),61,35,['#######']*6+['##SSS##'],name='temple',door=(64,40))
+for _x in (63,64,65): PROPBAN.add((_x,42))            # keep the foot of the temple stair clear
 h=ph2.house('tim',6,1,shop=True,seed=31,door=2); cim=h['im'].copy()
 aw=roman.awning(5,('red','cream')); cim.alpha_composite(aw,(8,cim.height-38))
 import pz as _pz

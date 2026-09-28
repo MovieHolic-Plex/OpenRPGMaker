@@ -43,6 +43,7 @@ def put(name,x0,by,foot=1,allow=WALKC,anim=None,label=None,cast=True):
     im=R3(name) if isinstance(name,str) else name
     fw=-(-im.width//16); cells=[(x,y) for y in range(by-foot+1,by+1) for x in range(x0,x0+fw)]
     if not all(0<=x<W and 0<=y<H for x,y in cells): return False
+    if any(c in PROPBAN for c in cells): return False
     if len({E[y][x] for x,y in cells})!=1: return False
     wk=[]
     for x,y in cells:

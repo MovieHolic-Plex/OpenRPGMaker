@@ -125,7 +125,9 @@ def signed(im,door,below,trade):
     im=im.copy(); s=pz.fin(pz.bracket_sign(trade)); x=(door+1)*16+1; y=im.height-below-44
     if x+20>im.width: x=door*16-21
     im.alpha_composite(s,(max(0,x),max(0,y))); return im
+PROPBAN=set()      # v6: cells under a tall kit piece's overhang (tower cones): walkable, but no prop may stand there
 def free(x,y,w,h,allow=()):
+    if any((xx,yy) in PROPBAN for yy in range(y,y+h) for xx in range(x,x+w)): return False
     lv={E[yy][xx] for yy in range(y,y+h) for xx in range(x,x+w) if 0<=yy<H and 0<=xx<W}
     return len(lv)==1 and all(0<=xx<W and 0<=yy<H and (occ[yy][xx] is None or occ[yy][xx] in allow) for yy in range(y,y+h) for xx in range(x,x+w))
 def mark(name,x,y,w,h):
@@ -375,7 +377,7 @@ for y in range(2,H-1):
     for x in range(1,W-1):
         if occ[y][x] is not None: continue
         if gr.random()<0.12 and y+2<H and free(x,y,4,2) and all(occ[y+2][i] is not None for i in range(x,x+4)):
-            P_(f'plot{x}_{y}',pi.field(gr.choice(['sprout','cabbage','wheat']),4,2),x,y,allow=()); continue
+            P_(f'plot{x}_{y}',pi.field(gr.choice(['cabbage','wheat']),4,2),x,y,allow=()); continue
         if gr.random()<0.35: continue
         big=gr.sample(['oakA','oakB','bushD'],3)
         if gr.random()<0.30: big=['cyp']+big

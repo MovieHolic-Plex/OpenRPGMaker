@@ -592,7 +592,7 @@ def canal6(mask,skip):
     # neighbour tests still see the skipped cells as water, so no rim runs down the middle of the lake
     import pn
     Wc,Hc=len(mask[0]),len(mask); im=Image.new('RGBA',(Wc*16,Hc*16)); px=im.load()
-    full=pn.canal(mask).load()
+    full=pn.canal([list(r) for r in mask]+[list(mask[-1])]).load()      # water continues past the map's south edge
     for cy in range(Hc):
         for cx in range(Wc):
             if not mask[cy][cx] or skip[cy][cx]: continue
