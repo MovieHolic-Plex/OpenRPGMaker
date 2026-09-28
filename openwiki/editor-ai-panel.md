@@ -3266,3 +3266,25 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
   표본 분산이 크다(low @30k 가 2832~6413ms) — 이 박스는 부하를 나눠 쓰므로 중앙값만 인용한다. n=3 에이전트 런 6행은 전부 `turns=1 · tools=0` 으로 끝나서 위 3턴 실측(3턴·툴 2회)과 조건이 다르다 — 두 실측을 섞어 평균하지 않는다.
 - 프롬프트 캐시: 같은 접두를 다시 보낸 실행이 cacheRead 12,021 토큰을 보고했다 — 공급자의 암묵 접두 캐시가 실행 사이에도 이미 듣는다. 세션 id 를 바꿀 필요는 없다.
 - 프로브: `scripts/qa/_ai-turn-latency-probe.mjs` (`provider` / `agent` 모드), 증거 `verify-shots/ai-turn-latency/`.
+
+
+## AI 패널 렌더 비용 (2026-09-28)
+
+- 스튜디오는 떨어져 있는 동안 teamActivity의 최신 상태만 기억하고 attach/팀 스레드 선택 때 그린다.
+  팀 화면의 `teamWork.update`는 한 번만 호출한다. 영구히 숨겨진 옛 보드 목록은 만들지 않는다.
+- 팀원 행은 ID로 재사용한다. transcript는 `droppedLog + index`를 행 키로 삼아 200행 상한을 넘을 때
+  앞부분만 제거하고 새 행만 붙인다. trace가 보이는 동안 숨겨진 transcript는 갱신하지 않는다.
+- `aiActivityIndex.ts`는 불변 entries 배열별 actor·최근 이미지·단계 색인을 WeakMap으로 공유한다.
+  brief는 기존 묶음/실패/이미지 규칙 그대로 작은 결과 창을 유지하고, detail/trace는 표시 창+1행만 수집한다.
+  동일 입력은 조기 반환하며 표시 결과가 같으면 목록 DOM을 건드리지 않는다. 필터·50행 추가·펼친 기록은 유지한다.
+- 실행 아카이브는 해당 run만 get/serial 비교/put한다. 새 run·종료 전환·60초 간격에 전체 정리를 한다.
+  7일/20run/약10MB 정리 기준과 실패 안내를 유지한다. 실행 중 용량 증가는 다음 정리까지 일시적으로 상한을 넘을 수 있다.
+- 대화 복원은 `renderConversationEntries`로 묶어 높이를 한 번 읽는다. 라이브 append는 그대로 스크롤한다.
+  답변 이름 검색은 색인별 trie+최대256문장 캐시를 쓰며 전역 긴 이름 우선·한국어 조사 경계를 유지한다.
+- 이미지 관찰자는 추가/제거된 서브트리의 이미지만 검사한다. 읽는 중·문서 내 이동·처음 붙기 전 30초 유예를 유지하고
+  미부착 이미지 정리는 저빈도 타이머로 처리한다.
+- 실측: 비활성 스튜디오 DOM365→0, transcript 200행 한 행 추가 DOM200→1, 팀원 한 명 갱신 DOM36→0,
+  대화200건 높이 읽기200→1, 저장마다 getAll 1→0. 상세 수치·조건·브라우저 근거: `verify-shots/perf-ai-ui/`.
+  기준선 수치는 같은 f9bbb5067에서 측정한 삭제 전 워크트리 결과를 사용했고 수정 후는 새 워크트리에서 재측정했다.
+- 계약 테스트: `aiUiPerformance.test.ts`, `activityTraceArchive.test.ts` 및 기존 관련 테스트.
+  렌더 fixture는 실제 Happy DOM Window를 전역에 설치해 add/removeEventListener를 빠뜨리지 않는다.
