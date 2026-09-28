@@ -181,29 +181,83 @@ const MONSTER_LABELS: Record<string, { readonly name: string; readonly tags: rea
   pouch: { name: "Pouch", tags: ["몬스터", "물", "펠리컨", "주머니"] },
   puddlup: { name: "Puddlup", tags: ["몬스터", "물", "올챙이", "물방울", "생성 자산"] },
   sparchu: { name: "Sparchu", tags: ["몬스터", "불", "불씨", "아기"] },
+  // 도감 확장 11종(2026-09-28, 생성 자산). 종 데이터: src/project/defaults/scarloxyExtraSpecies.ts.
+  pebblit: { name: "자갈콩", tags: ["몬스터", "바위", "땅", "돌", "생성 자산"] },
+  bouldurr: { name: "바위곰", tags: ["몬스터", "바위", "땅", "곰", "생성 자산"] },
+  zaplet: { name: "찌릿다람", tags: ["몬스터", "전기", "다람쥐", "생성 자산"] },
+  voltail: { name: "번개꼬리", tags: ["몬스터", "전기", "살쾡이", "생성 자산"] },
+  wispin: { name: "안개령", tags: ["몬스터", "고스트", "혼불", "생성 자산"] },
+  lanterghast: { name: "등롱귀", tags: ["몬스터", "고스트", "불", "등롱", "생성 자산"] },
+  hornbeet: { name: "뿔장수", tags: ["몬스터", "벌레", "격투", "풍뎅이", "생성 자산"] },
+  toxtoad: { name: "독두꺼", tags: ["몬스터", "독", "두꺼비", "생성 자산"] },
+  brawlape: { name: "주먹숭이", tags: ["몬스터", "격투", "원숭이", "생성 자산"] },
+  frostpip: { name: "서리펭", tags: ["몬스터", "얼음", "펭귄", "생성 자산"] },
+  sandscorp: { name: "모래전갈", tags: ["몬스터", "땅", "독", "전갈", "생성 자산"] },
 };
 
-export const SCARLOXY_MONSTER_ASSETS: readonly ScarloxyResourceAsset[] = SCARLOXY_PACK_MANIFEST.monsters.map((key) => ({
-  id: `scarloxy-monster-${key}`,
-  name: `${MONSTER_LABELS[key]?.name ?? key} (Scarloxy)`,
-  path: `${ASSET_DIR}/scarloxy-monster-${key}.png`,
-  tags: MONSTER_LABELS[key]?.tags ?? ["몬스터"],
-}));
+/**
+ * 도감 확장 — 팩 매니페스트(import-scarloxy-pack.py 가 만든다) 밖에서 더한 몬스터 11종.
+ * 그림은 scripts/content/build-scarloxy-monster-roster.py 가 tiledata/pkmn-monsters/raw 에서 만든다.
+ */
+export const SCARLOXY_EXTRA_MONSTER_KEYS = [
+  "pebblit", "bouldurr", "zaplet", "voltail", "wispin", "lanterghast",
+  "hornbeet", "toxtoad", "brawlape", "frostpip", "sandscorp",
+] as const;
 
-export const SCARLOXY_MONSTER_ICON_ASSETS: readonly ScarloxyResourceAsset[] = SCARLOXY_PACK_MANIFEST.monsters.map((key) => ({
+/** 정면·뒷모습·아이콘·울음이 모두 있는 몬스터 키 30개(팩 19 + 확장 11). */
+export const SCARLOXY_ALL_MONSTER_KEYS: readonly string[] = [...SCARLOXY_PACK_MANIFEST.monsters, ...SCARLOXY_EXTRA_MONSTER_KEYS];
+
+export const SCARLOXY_MONSTER_ASSETS: readonly ScarloxyResourceAsset[] = [
+  ...SCARLOXY_ALL_MONSTER_KEYS.map((key) => ({
+    id: `scarloxy-monster-${key}`,
+    name: `${MONSTER_LABELS[key]?.name ?? key} (Scarloxy)`,
+    path: `${ASSET_DIR}/scarloxy-monster-${key}.png`,
+    tags: MONSTER_LABELS[key]?.tags ?? ["몬스터"],
+  })),
+  // 뒷모습(후면 전투용). MonsterSpeciesGraphic.backResourceId 로 지정한다. 포켓몬 스킨은 저작된
+  // 뒷모습을 반전하지 않으므로(20-pokemon-skin.css authored-back) 그림 자체가 우상단 적을 본다.
+  // 전부 생성 자산이다 — 팩 원본에는 뒷모습이 없다(ATTRIBUTION.md 「Generated monster roster expansion」).
+  ...SCARLOXY_ALL_MONSTER_KEYS.map((key) => ({
+    id: `scarloxy-monster-${key}-back`,
+    name: `${MONSTER_LABELS[key]?.name ?? key} 뒷모습 (Scarloxy)`,
+    path: `${ASSET_DIR}/scarloxy-monster-${key}-back.png`,
+    tags: ["뒷모습", "후면", "내 편", "생성 자산", ...(MONSTER_LABELS[key]?.tags ?? ["몬스터"])],
+  })),
+];
+
+export const SCARLOXY_MONSTER_ICON_ASSETS: readonly ScarloxyResourceAsset[] = SCARLOXY_ALL_MONSTER_KEYS.map((key) => ({
   id: `scarloxy-monster-icon-${key}`,
   name: `${MONSTER_LABELS[key]?.name ?? key} 아이콘 (Scarloxy)`,
   path: `${ASSET_DIR}/scarloxy-monster-icon-${key}.png`,
   tags: ["아이콘", ...(MONSTER_LABELS[key]?.tags ?? [])],
 }));
 
+/**
+ * 몬스터 울음소리 30개 — scripts/content/synth-scarloxy-cries.py 가 코드로 합성한 짧은 WAV(샘플 없음).
+ * 리소스 해석기(resolveScarloxyAssetUrl)와 참조 검증(SCARLOXY_RESOURCE_IDS)에 실려 playSoundEffect 로 재생된다.
+ */
+export const SCARLOXY_CRY_ASSETS: readonly ScarloxyResourceAsset[] = SCARLOXY_ALL_MONSTER_KEYS.map((key) => ({
+  id: `scarloxy-cry-${key}`,
+  name: `${MONSTER_LABELS[key]?.name ?? key} 울음소리`,
+  path: `${ASSET_DIR}/cries/scarloxy-cry-${key}.wav`,
+  tags: ["효과음", "울음소리", "몬스터 · 음성", ...(MONSTER_LABELS[key]?.tags ?? [])],
+}));
+
 const BACKDROP_LABELS: Record<string, { readonly name: string; readonly tags: readonly string[] }> = {
   forest: { name: "숲 전투 배경 (Scarloxy)", tags: ["전투 배경", "숲", "초원", "나무"] },
   ice: { name: "설원 전투 배경 (Scarloxy)", tags: ["전투 배경", "설원", "얼음", "눈"] },
   sand: { name: "사막 전투 배경 (Scarloxy)", tags: ["전투 배경", "사막", "모래"] },
+  // 생성 자산 4장(2026-09-28). 팩 원본이 아니다.
+  cave: { name: "동굴 전투 배경 (생성)", tags: ["전투 배경", "동굴", "바위", "생성 자산"] },
+  gym: { name: "체육관 전투 배경 (생성)", tags: ["전투 배경", "체육관", "실내", "생성 자산"] },
+  beach: { name: "해변 전투 배경 (생성)", tags: ["전투 배경", "해변", "바다", "모래", "생성 자산"] },
+  route: { name: "풀밭 길 전투 배경 (생성)", tags: ["전투 배경", "초원", "풀숲", "길", "생성 자산"] },
 };
 
-export const SCARLOXY_BACKDROP_ASSETS: readonly ScarloxyResourceAsset[] = SCARLOXY_PACK_MANIFEST.backdrops.map((key) => ({
+/** 팩 밖에서 더한 전투 배경(640x360). scripts/content/build-scarloxy-monster-roster.py 가 만든다. */
+export const SCARLOXY_EXTRA_BACKDROP_KEYS = ["cave", "gym", "beach", "route"] as const;
+
+export const SCARLOXY_BACKDROP_ASSETS: readonly ScarloxyResourceAsset[] = [...SCARLOXY_PACK_MANIFEST.backdrops, ...SCARLOXY_EXTRA_BACKDROP_KEYS].map((key) => ({
   id: `scarloxy-backdrop-${key}`,
   name: BACKDROP_LABELS[key]?.name ?? `Scarloxy ${key} 배경`,
   path: `${ASSET_DIR}/scarloxy-backdrop-${key}.png`,
@@ -249,6 +303,7 @@ export const SCARLOXY_UI_ICON_ASSETS: readonly ScarloxyResourceAsset[] = SCARLOX
 const ALL_RESOLVABLE_ASSETS: readonly ScarloxyResourceAsset[] = [
   ...SCARLOXY_MONSTER_ASSETS,
   ...SCARLOXY_MONSTER_ICON_ASSETS,
+  ...SCARLOXY_CRY_ASSETS,
   ...SCARLOXY_BACKDROP_ASSETS,
   ...SCARLOXY_BATTLE_ANIMATION_ASSETS,
   ...SCARLOXY_UI_ICON_ASSETS,
