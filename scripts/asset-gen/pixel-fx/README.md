@@ -61,3 +61,40 @@ druid LEAF green, BARK brown, MOON silver (+ blossom pink); witch HEX violet,
 TOXIC green (+ BLOOD crimson for life drain, GLASS lilac for the mirror).
 Checks: size, binary alpha, ≤16 colours, no empty cell, neighbour change ≥ 5 % of ink.
 Review output: `.omo/pixel-fx/<key>-preview.png`, `druid|witch-sheet.png`, `druid|witch-composite.png`.
+
+## Monster skill sheets 0–17 (retro2003)
+
+`lib_monster_0_17.py` draws sheets 0–17 of `RETRO_MONSTER_FX_SHEETS` in `src/assets/retroMonsterSkills.ts`
+(acid, slam, drain, screech, sting, web, scythe, howl, charge, tusk, claw, fang, shell, hellfire, curse skull, bone arrow).
+It reuses the `lib_samurai.Ink` cel and the `lib_scout` checks. Each script's anchor, frame size and count are compared
+with the contract, and the build also stops if the first 18 contract keys change order.
+Direction is the mirror of the class sheets: monsters stand on the left, so projectiles face right and hits arrive from the left.
+Every cell ends with `fx_edge.fade_edges`. Colour identity: poison is acid green and violet, darkness is violet, black and crimson,
+fire is orange-red with soot, earth is brown dust. `python3 lib_monster_0_17.py` rebuilds all 18 and writes
+`.omo/mfx/<key>-preview.png`, `frames-0_17-part*.png` and `board-0_17*.png` (stage mock-up with actor1-0).
+
+## Monster skill sheets 36–52 (retro2003, monster → ally)
+
+`lib_monster_36_52.py` draws RETRO_MONSTER_FX_SHEETS[36..52] of `src/assets/retroMonsterSkills.ts`
+(17 keys, `mon_smoke_bomb` … `mon_judgment_sky`). `python3 lib_monster_36_52.py` rebuilds all of them,
+`python3 mon_<key>.py` one. Each script's anchor, frame size and frame count are compared with the contract
+(and the key must fall inside index 36–52); a mismatch aborts before writing. Direction is mirrored from the class
+skills: monsters stand left, so projectile cells face right and cuts, thrusts and breath travel left → right.
+Target cells put the ally's feet on row 56. Screen sheets end with `fx_edge.fade_oval`, target/user sheets with
+`fade_edges`, and a despeckle pass clears ink with no neighbour within 2 px. Colours: smoke olive, steel +
+blood, gale mint + feathers, rock/dust brown-orange, fire orange-red, rage blood-red, dark violet-black + crimson.
+Review output goes to `.omo/mfx/<key>-preview.png` (4×) and `.omo/mfx/board-36_52.png` (stage #405838, monster
+stand-in square, actor1-0 at 2×; `-partN.png` slices stay under 1900 px).
+
+## Monster skill sheets 18~35 (retro2003)
+
+`lib_monster_18_35.py` draws RETRO_MONSTER_FX_SHEETS index 18~35 of `src/assets/retroMonsterSkills.ts`
+(18 keys, `mon_arrow_hit` … `mon_hex_flame`, listed in contract order with duplicate keys removed). The key list,
+anchor, frame size and frame count are all parsed from the contract, and a mismatch aborts the build.
+`python3 lib_monster_18_35.py` rebuilds every sheet; `python3 <key>.py` rebuilds one.
+Monsters stand on the left, so projectiles face right on the first frame and slashes come in from the left.
+Every cell is finished automatically: screen layers get `fade_oval`, and body layers get `fade_edges` on all four sides.
+Colours: poison yellow-green + violet, darkness violet/black/crimson, ice blue-white, fire orange/red, earth brown.
+Checks: size, binary alpha, ≤16 colours, no empty frame, neighbouring frames differ, isolated pixels (counted before edge dithering).
+Review output: `.omo/mfx/<key>-preview.png` and `.omo/mfx/board-18_35(-partN).png`, a mock stage on #405838 with a monster square and actor1-0 at 2x.
+
