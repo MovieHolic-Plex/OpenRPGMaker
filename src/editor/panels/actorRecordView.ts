@@ -403,11 +403,17 @@ const START_PARTY_LIMIT = 4;
  */
 export function actorSummarySentence(project: Project, actor: ActorRecord): string {
   const className = project.database.classes.find((entry) => entry.id === actor.classId)?.name;
-  const start = className ? `${className} 직업으로 Lv ${actor.initialLevel}에 시작` : `직업 없이 Lv ${actor.initialLevel}에 시작`;
-  const party = project.system.startActorIds.includes(actor.id)
-    ? "처음부터 파티에 있습니다"
-    : "이벤트로 합류할 때까지 대기합니다";
-  return `${start}하고, ${party}.`;
+  const level = actor.initialLevel;
+  const inParty = project.system.startActorIds.includes(actor.id);
+  // 네 경우를 통째 문장으로 쓴다 — 조각을 이어 붙이면 번역 카탈로그가 문장을 찾지 못해 한국어로 남는다.
+  if (className) {
+    return inParty
+      ? `${className} 직업으로 Lv ${level}에 시작하고, 처음부터 파티에 있습니다.`
+      : `${className} 직업으로 Lv ${level}에 시작하고, 이벤트로 합류할 때까지 대기합니다.`;
+  }
+  return inParty
+    ? `직업 없이 Lv ${level}에 시작하고, 처음부터 파티에 있습니다.`
+    : `직업 없이 Lv ${level}에 시작하고, 이벤트로 합류할 때까지 대기합니다.`;
 }
 
 function setStartParty(actorId: string, member: boolean): void {

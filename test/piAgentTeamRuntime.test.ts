@@ -575,6 +575,124 @@ it.each([
 });
 
 
+
+describe("팀 초기 생성 — 맵 사이 연결 계약", () => {
+  /** 마을(시작 맵)과 들판을 build_world 로 잇는 뼈대. 새 프로젝트 마법사의 팀 실행이 첫 project 작업으로 만든다. */
+  function skeleton(): Project {
+    const ctx = { project: createBlankProject() };
+    const result = runTool(ctx, "build_world", {
+      plan: {
+        nodes: [
+          { mapId: "map_town", role: "town", label: "마을", width: 20, height: 16 },
+          { mapId: "map_field", role: "field", label: "들판", width: 20, height: 16 },
+        ],
+        edges: [{ from: { mapId: "map_town", exit: { side: "east" } }, to: { mapId: "map_field", entry: { side: "west" } } }],
+      },
+    });
+    if (!result.ok) throw new Error(result.summary);
+    ctx.project.startMapId = "map_town";
+    return ctx.project;
+  }
+
+  // 깨질 것: 이음새는 한쪽 담당만 안다. 담당 프롬프트에 없으면 들판 담당은 마을에서 오는 도착 칸을 모른다.
+  it("맵 담당 프롬프트에 그 맵의 출입구·도착 칸이 실린다", async () => {
+    const prompts = new Map<string, string>();
+    await runPiTeam(request(skeleton()), {
+      runAgent: (async (req: PiAgentRequest, opts: { extraTools?: readonly PiToolShape[] }) => {
+        const tools = opts.extraTools ?? [];
+        if (tools.some((tool) => tool.name === "assign_map_agent")) {
+          await callTool(tools, "assign_map_agent", { mapId: "map_field", task: "들판" });
+          await callTool(tools, "wait_agents", {});
+          await callTool(tools, "finish", { report: "끝" });
+          return doneWith(req.project);
+        }
+        prompts.set(req.mapIds[0]!, (req.systemPrompt ?? []).join("\n"));
+        return doneWith(req.project);
+      }) as RunPiTeamOptions["runAgent"],
+    });
+    expect(prompts.get("map_field")).toMatch(/연결 계약/);
+    expect(prompts.get("map_field")).toMatch(/← map_town「마을」 에서 온다/);
+  });
+
+  // 깨질 것: 담당이 출입구를 지워도 각자의 검수는 자기 맵만 본다. finish 가 병합본으로 한 번 거절해야
+  // 팀장이 고칠 기회를 얻는다. 같은 오류로 다시 부르면 보고에 남기고 끝낸다(영원히 못 끝나지 않게).
+  it("finish 는 끊긴 연결을 한 번 거절하고, 같은 오류로 다시 부르면 보고에 남긴다", async () => {
+    const events: PiAgentEvent[] = [];
+    const errors: string[] = [];
+    await runPiTeam(request(skeleton()), {
+      onEvent: (event) => events.push(event),
+      runAgent: (async (req: PiAgentRequest, opts: { extraTools?: readonly PiToolShape[] }) => {
+        const tools = opts.extraTools ?? [];
+        if (tools.some((tool) => tool.name === "assign_map_agent")) {
+          await callTool(tools, "assign_map_agent", { mapId: "map_town", task: "마을" });
+          await callTool(tools, "wait_agents", {});
+          await callTool(tools, "finish", { report: "끝" }).catch((error: Error) => { errors.push(error.message); return {}; });
+          await callTool(tools, "finish", { report: "끝" });
+          return doneWith(req.project);
+        }
+        const next = structuredClone(req.project) as Project;
+        next.maps.map_town!.events = next.maps.map_town!.events.filter((event) => !event.id.startsWith("ev_world_gate"));
+        return doneWith(next, ["maps.map_town"]);
+      }) as RunPiTeamOptions["runAgent"],
+    });
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toMatch(/맵 사이 연결 오류 1건/);
+    expect(errors[0]).toMatch(/map_field/);
+    const report = events.find((event) => event.type === "team_report");
+    expect(report).toMatchObject({ text: expect.stringMatching(/남은 맵 연결 오류 1건/) });
+  });
+
+  it("연결이 온전하면 finish 가 바로 받는다", async () => {
+    const errors: string[] = [];
+    await runPiTeam(request(skeleton()), {
+      runAgent: (async (req: PiAgentRequest, opts: { extraTools?: readonly PiToolShape[] }) => {
+        const tools = opts.extraTools ?? [];
+        if (tools.some((tool) => tool.name === "assign_map_agent")) {
+          await callTool(tools, "assign_map_agent", { mapId: "map_town", task: "마을" });
+          await callTool(tools, "assign_map_agent", { mapId: "map_field", task: "들판" });
+          await callTool(tools, "wait_agents", {});
+          await callTool(tools, "finish", { report: "끝" }).catch((error: Error) => { errors.push(error.message); return {}; });
+          return doneWith(req.project);
+        }
+        return doneWith(built(req.project, req.mapIds[0]!, `지음:${req.mapIds[0]}`), [`maps.${req.mapIds[0]}`]);
+      }) as RunPiTeamOptions["runAgent"],
+    });
+    expect(errors).toEqual([]);
+  });
+
+  // 깨질 것(2026-09-28 재현): 시작 맵은 트리 루트라 그 묶음이 곧 모든 맵이다. 시작 맵 담당이 늦게 끝나면
+  // 그 사이 병합된 들판 담당의 결과를 출발 사본으로 덮었고, 충돌 보고도 없었다.
+  it("시작 맵(트리 루트) 담당이 늦게 끝나도 먼저 병합된 다른 맵을 덮지 않는다", async () => {
+    const project = seeded();
+    const root = project.mapTree.mapId;
+    let releaseRoot = (): void => {};
+    const gate = new Promise<void>((resolve) => { releaseRoot = resolve; });
+    const conflicts: string[][] = [];
+    const done = await runPiTeam(request(project), {
+      onEvent: (event) => { if (event.type === "agent_done") conflicts.push([...event.conflicts]); },
+      runAgent: (async (req: PiAgentRequest, opts: { extraTools?: readonly PiToolShape[] }) => {
+        const tools = opts.extraTools ?? [];
+        if (tools.some((tool) => tool.name === "assign_map_agent")) {
+          await callTool(tools, "assign_map_agent", { mapId: root, task: "시작 마을" });
+          await callTool(tools, "assign_map_agent", { mapId: "map_a", task: "들판" });
+          await callTool(tools, "wait_agents", { agentIds: ["builder-2"] });
+          releaseRoot();
+          await callTool(tools, "wait_agents", {});
+          await callTool(tools, "finish", { report: "끝" });
+          return doneWith(req.project);
+        }
+        const id = req.mapIds[0]!;
+        if (id === root) await gate;
+        return doneWith(built(req.project, id, `지음:${id}`), [`maps.${id}`]);
+      }) as RunPiTeamOptions["runAgent"],
+    });
+    expect(done.project.maps[root]!.name).toBe(`지음:${root}`);
+    expect(done.project.maps.map_a!.name).toBe("지음:map_a");
+    expect(conflicts.flat()).toEqual([]);
+  });
+});
+
+
 describe("팀 마을 완료 상태", () => {
   it("팀원 완료 정보를 최종 병합본에서 재검사해 done에도 미완료를 남긴다", async () => {
     const project = seeded();

@@ -8,7 +8,7 @@ import {
   setEffectiveFactionStance,
 } from "@/project/factionRuntime";
 import { resolveFactionTable } from "@/project/factions";
-import type { Command, EndingDef, GameEvent, M2CommandFields, SwitchValue } from "@/project/types";
+import type { Command, Condition, EndingDef, GameEvent, M2CommandFields, SwitchValue } from "@/project/types";
 
 import { clampEmoteDurationMs } from "@/project/emotes";
 import { craftRecipe } from "@/project/craftRecipes";
@@ -548,7 +548,10 @@ export function executeCommand(
         settings: state.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
       });
     case "fork": {
-      const branch = evalCondition(state.session, command.condition, resolveSocialHost(state) ?? state.currentEventId, locationEvalContext(state)) ? command.then : command.else ?? [];
+      // 소셜 host(characterId) 는 호감도·관계 조건만 읽는다. 나머지는 event id 만 쓰므로 프로젝트 전체 이벤트를
+      // 뒤지지 않는다 — 병렬 이벤트의 조건 분기마다 이벤트 수만큼 선형 탐색하던 비용(8,000개 ≈ 550ms/틱)이다.
+      const host = conditionReadsSocialHost(command.condition) ? resolveSocialHost(state) ?? state.currentEventId : state.currentEventId;
+      const branch = evalCondition(state.session, command.condition, host, locationEvalContext(state)) ? command.then : command.else ?? [];
       if (pushFrame(state, branch)) return { kind: "continue" };
       return resumeNext(frame);
     }
@@ -1248,6 +1251,23 @@ function resolveOpenChestId(state: InterpreterState): string {
  */
 function locationEvalContext(state: InterpreterState): ConditionEvalContext {
   return { map: state.project?.maps[state.session.currentMapId] };
+}
+
+/** 조건 트리가 host 의 characterId 를 읽는가(호감도·관계). evalCondition 의 hostSocial 사용처와 맞춘다. */
+function conditionReadsSocialHost(condition: Condition | undefined): boolean {
+  if (!condition) return false;
+  switch (condition.kind) {
+    case "friendshipAtLeast":
+    case "relationshipAtLeast":
+      return true;
+    case "all":
+    case "any":
+      return condition.conditions.some(conditionReadsSocialHost);
+    case "not":
+      return conditionReadsSocialHost(condition.condition);
+    default:
+      return false;
+  }
 }
 
 function resolveSocialHost(state: InterpreterState): SocialHost | undefined {

@@ -10,6 +10,7 @@ import { normalizeGameDesignBrief, type GameDesignBrief } from "@/project/gameDe
 import { newProjectChoiceById } from "./newProjectChoices";
 import { UNNAMED_GAME_TITLE } from "./welcomeGenrePresets";
 import { defaultOpeningSequence } from "@/project/defaults/defaultOpeningSequence";
+import { withVerifiedPlayableSegment } from "@/project/playableSegment";
 
 export type WelcomeGenreSystemPresetDependencies = {
   /** 확정된 시드 프로젝트를 **열려 있는 폴더 프로젝트**로 채택하고 저장한다. */
@@ -45,13 +46,17 @@ export async function applyWelcomeGenreSystemPresetPlan(
   dependencies: WelcomeGenreSystemPresetDependencies = productionDependencies,
   brief?: GameDesignBrief,
 ): Promise<GenreBlankProjectSystemPresetResult> {
-  const result = materializeGenreBlankProjectSystemPreset(plan);
+  let result = materializeGenreBlankProjectSystemPreset(plan);
   if (brief) {
     if (newProjectChoiceById(brief.presetId)?.packId !== plan.packId) throw new Error("게임 기획과 시스템 프리셋이 다릅니다.");
     result.project.gameDesignBrief = normalizeGameDesignBrief(brief);
     // 레시피 이름(「기본 JRPG 시스템 프리셋」)이 게임 제목·타이틀 화면·오프닝에 그대로 남던 결함(2026-09-24 JRPG 도그푸딩).
     // 인터뷰는 제목을 묻지 않는다 — 임시 제목을 두고 조수 지시문이 기획에 맞는 제목으로 바꾸게 한다.
     retitleProject(result.project, UNNAMED_GAME_TITLE);
+    // 인터뷰를 거친 AI 첫 생성이면 끝낼 수 있는 첫 구간 뼈대를 먼저 깐다(메뉴 경로는 prepareProjectInterviewStartup 이 같은 일을 한다).
+    // ⚙ 시스템 프리셋(brief 없음)은 설정만 바꾸는 길이라 뼈대를 깔지 않는다.
+    const skeleton = withVerifiedPlayableSegment(result.project);
+    if (skeleton) result = { ...result, project: skeleton };
   }
   await dependencies.adoptProject(result.project, { title: plan.title });
   dependencies.focusStartMap();

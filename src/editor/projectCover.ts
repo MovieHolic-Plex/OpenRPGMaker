@@ -5,13 +5,13 @@
 // 프로젝트도 한 번 열면 그림이 생긴다), 그 뒤로는 저장이 끝날 때마다 — 단 1분에 한 번까지만 굽는다.
 // 데스크톱 앱(saveCover 가 있는 브리지)의 로컬 폴더에서만 돈다. 실패는 조용히 넘긴다 — 저장을 막을 이유가 없다.
 
-import { renderMapCoverDataUrl } from "@/editor/panels/mapThumbnail";
+import { loadTilesetImage } from "@/editor/mapTileDraw";
+import { renderMapCoverJpeg } from "@/editor/mapCoverRender";
 import { projectRepository } from "@/project/persistence/repository";
 import { isLocalTarget } from "@/project/persistence/target";
 import { store } from "@/project/store";
+import { PROJECT_COVER_HEIGHT, PROJECT_COVER_WIDTH } from "../../electron/shared/start";
 
-const COVER_WIDTH = 480;
-const COVER_HEIGHT = 300;
 const FIRST_CAPTURE_DELAY_MS = 4_000;
 const MIN_INTERVAL_MS = 60_000;
 
@@ -33,7 +33,9 @@ async function captureNow(): Promise<void> {
     const tileset = map ? project.tilesets[map.tilesetId] : undefined;
     if (!map || !tileset) return;
     const focus = map.id === project.startMapId ? project.startPos : undefined;
-    const dataUrl = await renderMapCoverDataUrl(map, tileset, COVER_WIDTH, COVER_HEIGHT, focus);
+    const image = await loadTilesetImage(tileset);
+    if ("complete" in image && (!image.complete || image.naturalWidth === 0)) return;
+    const dataUrl = renderMapCoverJpeg(map, tileset, image, PROJECT_COVER_WIDTH, PROJECT_COVER_HEIGHT, focus);
     lastAt = Date.now();
     if (!dataUrl || dataUrl === lastSent) return;
     await saveCover({ projectDir: target.projectDir, dataUrl });

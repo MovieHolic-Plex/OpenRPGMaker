@@ -91,8 +91,7 @@ export function updateParallelEvents(scene: PlaySceneContext, deltaMs: number): 
       process.waitMs = Math.max(0, process.waitMs - deltaMs);
       if (process.waitMs > 0) continue;
     }
-    const result = process.started ? process.interpreter.resume(undefined) : process.interpreter.start();
-    process.started = true;
+    const result = takeParallelResult(process);
     consumeParallelSteps(scene, key, process, result);
   }
   for (const commonEvent of activeCommonEvents) {
@@ -105,8 +104,7 @@ export function updateParallelEvents(scene: PlaySceneContext, deltaMs: number): 
       process.waitMs = Math.max(0, process.waitMs - deltaMs);
       if (process.waitMs > 0) continue;
     }
-    const result = process.started ? process.interpreter.resume(undefined) : process.interpreter.start();
-    process.started = true;
+    const result = takeParallelResult(process);
     consumeParallelSteps(scene, key, process, result);
   }
 }
@@ -156,6 +154,18 @@ function createCommonParallelProcess(scene: PlaySceneContext, event: CommonEvent
   };
   scene.parallelProcesses.set(`common:${event.id}`, process);
   return process;
+}
+
+/** 지난 프레임에 상한으로 남긴 결과가 있으면 그것, 없으면 다음 단계. */
+function takeParallelResult(process: ParallelProcess): StepResult {
+  const pending = process.pendingResult;
+  if (pending) {
+    process.pendingResult = undefined;
+    return pending;
+  }
+  const result = process.started ? process.interpreter.resume(undefined) : process.interpreter.start();
+  process.started = true;
+  return result;
 }
 
 function invalidateFactionRetargetCache(scene: PlaySceneContext): void {
@@ -246,6 +256,8 @@ function consumeParallelSteps(
     return;
   }
   flushSurfaces();
+  // 상한(16)에 걸려 빠져나왔다. 이 결과는 아직 처리하지 않았다 — 다음 프레임에 이어서 처리한다.
+  if (result.kind !== "done") process.pendingResult = result;
   if (result.kind === "done") {
     releaseCutsceneControlForOwner(scene.session, process.currentEventId);
     scene.parallelProcesses.delete(key);

@@ -7,28 +7,28 @@
   "objectKits": 23,
   "houseKits": 0,
   "autotileGroups": 17,
-  "bytes": 4347929,
+  "bytes": 4542988,
   "maps": {
     "photo_forest_path": {
       "place": "shared_refmap_photo_photo_forest_path",
       "size": "32×24",
-      "objects": 43,
+      "objects": 59,
       "houses": 0,
-      "renderSha": "7917fea8614d9f24c34bd62450f563a42abfb6883118a1e5862506dc23fbb123"
+      "renderSha": "cb0fccb9a9c352594f562ab7c3c751cf19b9f01f8f4c3f0b4a30fa28c14eef79"
     },
     "photo_meadow": {
       "place": "shared_refmap_photo_photo_meadow",
-      "size": "34×25",
-      "objects": 49,
+      "size": "30×22",
+      "objects": 55,
       "houses": 0,
-      "renderSha": "a7362597880844d174ba15251bea2e2d54b7307990e432a3853368da85fe90d8"
+      "renderSha": "8468052ba61699a5dfc30a074f51a58f2e637ae13a16201ad774ca213668a689"
     }
   },
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "0c4c70f4dc64a4389aec1e996f530b638430cd4e715129a7a217d755e89d4b45",
+  "revision": "4fb672e1896d14753faf752518c1b80deca234eae810c95faf1ec62866abf8d7",
   "reloaded": true,
-  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-photo-2026-09-27T11-55-58-704Z.sqlite",
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-photo-2026-09-27T21-35-30-452Z.sqlite",
   "otherLibraries": 36,
   "otherLibrariesUnchanged": true,
-  "publishedAt": "2026-09-27T11:56:12.320Z"
+  "publishedAt": "2026-09-27T21:35:50.959Z"
 }

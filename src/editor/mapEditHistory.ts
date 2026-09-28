@@ -8,6 +8,30 @@ const MAX_HISTORY = 50;
 const LARGE_HISTORY_LIMIT = 25;
 export const MAP_EDIT_HISTORY_EVENT = "oprn:map-edit-history-change";
 
+/**
+ * 프로젝트 스냅샷 — 타일셋·업로드 자산 사전은 **객체째 공유**하고 나머지만 복제한다.
+ *
+ * 왜(2026-09-28 실측, 새 프로젝트 149MB = 타일셋 82MB + 업로드 자산 66MB): 도구 묶음 적용마다 이 스냅샷이
+ * 프로젝트 전체를 structuredClone 해서 1.3s 가 걸렸다. 스토어는 타일셋·자산 객체를 제자리에서 고치지 않는다
+ * (store.update 는 cloneProjectForMutation 으로 읽은 타일셋만 복제하고, 도구는 createDraft 사본을 고친다) —
+ * 그래서 스냅샷이 옛 객체를 붙들고 있으면 그것이 곧 옛 내용이다. 되돌리기(applySnapshotToProject)는 스냅샷을
+ * 다시 복제하므로 공유 객체가 스토어로 새어 나가 고쳐지는 일은 없다.
+ */
+function projectSnapshotSharingTilesets(project: Project): Project {
+  const { tilesets, assets, ...rest } = project;
+  const snapshot = projectWithoutEventDrafts({ ...rest, tilesets: {}, assets: { ...assets, uploaded: {} } } as Project);
+  // 키 순서를 원본과 맞춘다(직렬화 바이트가 같아야 하는 dedup·디버그 소비자가 있다).
+  const ordered: Record<string, unknown> = {};
+  for (const key of Object.keys(project)) {
+    ordered[key] = key === "tilesets"
+      ? { ...tilesets }
+      : key === "assets"
+        ? { ...(snapshot.assets as object), uploaded: { ...assets.uploaded } }
+        : (snapshot as unknown as Record<string, unknown>)[key];
+  }
+  return ordered as unknown as Project;
+}
+
 type ProjectSnapshot = {
   readonly kind: "project";
   readonly before: Project;
@@ -106,7 +130,7 @@ function makeSnapshotFromCurrent(mapId: string | null | undefined, options?: Map
       };
     }
   }
-  return { kind: "project", before: projectWithoutEventDrafts(current) };
+  return { kind: "project", before: projectSnapshotSharingTilesets(current) };
 }
 
 function historyMapId(mapId: string | null | undefined, options?: MapEditHistoryRecordOptions): string | null | undefined {

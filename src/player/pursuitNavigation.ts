@@ -1,5 +1,5 @@
 import { passageBounds } from '@/project/footprint';
-import { findBlockingEventOverlappingRect, type RuntimeEventPositions, type RuntimeEventView } from '@/project/runtimeEventState';
+import { createBlockingEventQuery, type RuntimeEventPositions, type RuntimeEventView } from '@/project/runtimeEventState';
 import { isSpatialPlacementBlocking } from '@/project/spatialOccupancy';
 import type { PursuitState } from '@/project/horrorState';
 import type { PlaySession } from '@/project/session';
@@ -18,10 +18,12 @@ export function pursuitState(world: PursuitWorld, view: RuntimeEventView): Pursu
 
 /** All pursuit paths use the same feet/body policy as autonomous movement. */
 export function pursuitPass(world: PursuitWorld, view: RuntimeEventView): ChasePassSize {
+  // 막는 이벤트 목록은 이 통행 판정기 하나(= 추격 결정 한 번)에서만 공유한다.
+  const blockingEvent = createBlockingEventQuery(world.project, world.map, world.session, world.positions, view.event.id);
   return { footprint: view.footprint, passRows: view.passRows, blocked: (x, y) => {
     const rect = passageBounds(x, y, view.footprint, view.passRows);
     return isSpatialPlacementBlocking(world.project, world.session, world.map.id, rect)
-      || !!findBlockingEventOverlappingRect(world.project, world.map, world.session, world.positions, rect, view.event.id);
+      || blockingEvent(rect);
   } };
 }
 

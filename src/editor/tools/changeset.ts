@@ -3,6 +3,7 @@
 // 여기서 draft 생성 / diff 요약 / 커밋 게이트(projectLint)를 순수 함수로 제공한다.
 
 import { transferDetachedDraftMemory } from "@/editor/detachedDraftMemory";
+import { cloneProjectForMutation, finishProjectMutation } from "@/project/projectClone";
 import { assertSpatialToolChange } from "./spatialToolState";
 import { ToolError } from "./types";
 import { ProjectFormatError } from "@/project/io/errors";
@@ -17,16 +18,30 @@ import type { ChangeSummary } from "./types";
 
 // 구조적 복제본(draft) 생성. Project JSON과 editor-only detached session memory를 함께 복제한다.
 // 타일 버퍼는 칸 단위 순회가 비싼 structuredClone 대신 배열 복사로 분리한다.
+//
+// 타일셋은 **도구가 읽는 것만** 복제한다(store.update 와 같은 사전 — projectClone.cloneProjectForMutation).
+// 왜(2026-09-28 실측, 새 프로젝트 149MB 중 타일셋 347개 82MB): 맵 한 칸을 칠하는 도구도 타일셋 전부를
+// structuredClone 해서 createDraft 한 번이 1.4~2.1s 였다(타일셋 복제 1.8s, 나머지 0.2s). 바로 깔기 주문 하나가
+// 도구 두세 개를 돌리면 편집기가 그만큼 멈췄다. 읽힌 타일셋은 그 자리에서 복제되므로 도구가 draft 의 타일셋을
+// 고쳐도 원본은 안전하다. 커밋 직전 finishDraftTilesets 가 사전을 보통 객체로 확정한다.
 export function createDraft(project: Project): Project {
   const maps: Record<string, GameMap> = {};
   for (const [id, map] of Object.entries(project.maps)) maps[id] = mapWithoutTileBuffers(map);
-  const clone = structuredClone({ ...project, maps });
+  const clone = cloneProjectForMutation({ ...project, maps });
   for (const [id, map] of Object.entries(clone.maps)) {
     const source = project.maps[id];
     if (source) copyTileBuffers(source, map);
   }
   transferDetachedDraftMemory(project, clone);
   return clone;
+}
+
+/**
+ * createDraft 의 지연 타일셋 사전을 보통 객체로 확정한다. 읽지 않았거나 내용이 같은 타일셋은 원본 객체로 돌아간다.
+ * 도구가 끝난 draft 를 커밋·비교·스토어에 넘기기 전에 부른다. 이미 확정됐거나 지연 사전이 아니면 아무 일도 없다.
+ */
+export function finishDraftTilesets(draft: Project): void {
+  finishProjectMutation(draft);
 }
 
 /**

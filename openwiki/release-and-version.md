@@ -79,6 +79,12 @@ gh release create v0.2.0 --title "v0.2.0" --notes-from-tag
 
 Electron 배포는 GitHub Release 에 바이너리를 붙이는 게 본류다. 이 저장소의 절차:
 
+앱 아이콘(2026-09-28): 원본은 `design/app-icon/`(기본안 `oprn-icon-sword-quill.png`, 백업안 `oprn-icon-map-cube.png`)이고,
+`python3 scripts/assets/build-app-icons.py`(백업안은 `--backup`)가 `public/icons/` 의 파비콘·PWA·마스커블 아이콘과
+`build/icon.png`(1024px)를 한 번에 다시 만든다. `scripts/electron-builder.config.mjs` 의 `icon` 이 `build/icon.png` 를 가리켜
+맥 icns·윈도우 ico·리눅스 png 가 여기서 나온다. 리눅스·윈도우 창 아이콘은 `electron/main/main.ts` 가 렌더러 번들의
+`icons/pwa-512.png` 로 준다. 생성 파일을 손으로 고치지 말고 원본을 바꾼 뒤 스크립트를 다시 돌린다.
+
 ```bash
 # 1. 패키지 빌드 (OS별 — 맥 dmg·zip 은 맥 호스트에서, 리눅스 AppImage 는 어디서나)
 npm run electron:package            # → dist-packages/OPRN Studio-<version>.AppImage

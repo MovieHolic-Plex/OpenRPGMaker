@@ -117,9 +117,16 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       && (declared.intent.mode === "create" || declared.intent.mode === "modify")
       && declared.intent.needsPlan === false
       && declared.intent.clarify === null };
-    plan = { ...plan, villageContract: requestsModernMap(project, text, currentMapId ? [currentMapId] : []) ? undefined : resolveVillageContract(project, declared.intent, currentMapId, selection ?? null, text) };
+    // 팀을 켠 사용자에게는 마을 계약을 걸지 않는다. 계약은 단독 실행 전용이라(runPiCommand 가 계약이 있으면
+    // 팀을 끈다) 「마을 만들어」 한 마디가 설정과 무관하게 조용히 혼자 실행이 됐다 — 2026-09-18 이후 일반 채팅
+    // 67회 실행 중 팀 실행 0회. 팀은 팀장 배정·검수 팀원이 마을 품질을 맡는다.
+    const modernMap = requestsModernMap(project, text, currentMapId ? [currentMapId] : []);
+    const skipVillageContract = input.piTeam || modernMap;
+    plan = { ...plan, villageContract: skipVillageContract ? undefined : resolveVillageContract(project, declared.intent, currentMapId, selection ?? null, text) };
+    // 계약이 없으면 왜 없는지까지 적는다 — 「마을 계약 없음」만으로는 팀 설정 때문인지 판정 때문인지 모른다.
+    const noContractReason = input.piTeam ? "팀 실행" : modernMap ? "현대 맵" : "판정";
     routingAudit = `${formatIntentAudit(declared.intent, declared.elapsedMs)}${declared.error ? ` — 선언 오류: ${declared.error}` : ""}`
-      + ` → ${plan.villageContract ? villageContractAudit(plan.villageContract) : "마을 계약 없음"}`;
+      + ` → ${plan.villageContract ? villageContractAudit(plan.villageContract) : `마을 계약 없음(${noContractReason})`}`;
     if (declared.intent.mode === "question") {
       plan = { ...plan, readOnly: true };
       questionPromoted = true;

@@ -309,6 +309,16 @@
     "file": "B_REFMAP_Dungeon_Extra.png",
     "folder": "refmap-dungeon-extra",
     "sha256": "949c2f2c70a06bc8d2db16dfbfb1f5611eef1c3a9c7111c357b16eb7f1181c81"
+   },
+   {
+    "file": "A2_REFMAP_Dungeon_Extra_Extra.png",
+    "folder": "refmap-dungeon-extra",
+    "sha256": "8c9f6e791f0e20ebfac3ff1fdd977fe2f8840b8ad7c51026ca40f8a0dd544c99"
+   },
+   {
+    "file": "C_REFMAP_Dungeon_Extra.png",
+    "folder": "refmap-dungeon-extra",
+    "sha256": "32299b0b9f985a5638443bbbaa09e3808313768e33b9963174b5367065e16c65"
    }
   ],
   "autotiles": [
@@ -654,6 +664,27 @@
     "name": "어둠 낭떠러지 D",
     "role": "wall",
     "description": "「흙 바위 윗면(둥근 자갈)」 아래에 대는 검은 벽. 턱 끝이 어둠 속으로 떨어지는 낭떠러지"
+   },
+   {
+    "sheet": "A2_REFMAP_Dungeon_Extra_Extra.png",
+    "kind": 0,
+    "name": "모래 바닥 우묵한 턱",
+    "role": "ground",
+    "description": "모래 바닥이 한 뼘 꺼진 우묵한 땅. 둘레에 흙 턱이 선다(걸어 들어갈 수 있다). 모래 동굴 바닥 위 3~8칸 덩이."
+   },
+   {
+    "sheet": "A2_REFMAP_Dungeon_Extra_Extra.png",
+    "kind": 1,
+    "name": "흙 바닥 우묵한 턱",
+    "role": "ground",
+    "description": "어두운 흙 바닥이 꺼진 우묵한 땅(흙 턱 테두리). 무너진 갱도·유적 바닥 꺼짐."
+   },
+   {
+    "sheet": "A2_REFMAP_Dungeon_Extra_Extra.png",
+    "kind": 2,
+    "name": "모래 바닥 우묵한 턱 B",
+    "role": "ground",
+    "description": "모래 바닥 우묵한 턱의 밝은 판."
    }
   ],
   "flats": [],
@@ -670,7 +701,7 @@
     "description": "바위 벽 2줄에 세로로 건다. 더 깊은 굴로 이어진다"
    },
    {
-    "id": "tunnel_light",
+    "id": "cave_exit_light",
     "sheet": "B_REFMAP_Dungeon_Extra.png",
     "x": 2,
     "y": 0,
@@ -678,7 +709,13 @@
     "h": 2,
     "kind": "door",
     "name": "빛 드는 굴 출구",
-    "description": "바위 벽 2줄에 건다. 바깥으로 나가는 곳"
+    "description": "벽면 2줄에 세로로 건다. 땅 높이로 바깥에 나가는 밝은 굴(아랫칸만 들어간다). 맵 가장자리로 이어지는 진짜 출구에만, 이동 이벤트를 단다",
+    "solid": [
+     [
+      0,
+      0
+     ]
+    ]
    },
    {
     "id": "hole_dark_small",
@@ -689,18 +726,18 @@
     "h": 1,
     "kind": "wallmount",
     "name": "작은 어두운 굴 구멍",
-    "description": "벽 1칸짜리 구멍"
+    "description": "벽면 1칸짜리 어두운 구멍. 묘지 벽감·쥐구멍"
    },
    {
-    "id": "light_hole",
+    "id": "cave_exit_light_small",
     "sheet": "B_REFMAP_Dungeon_Extra.png",
     "x": 3,
     "y": 1,
     "w": 1,
     "h": 1,
-    "kind": "wallmount",
-    "name": "흰 빛 구멍",
-    "description": "벽 틈으로 새어 드는 빛"
+    "kind": "door",
+    "name": "작은 빛 드는 출구",
+    "description": "땅 높이로 바깥에 나가는 작은 밝은 굴 구멍(천장 채광이 아니다). 맵 가장자리로 이어지는 벽면 맨 아랫줄에 걸고 이동 이벤트를 단다. 진짜 출구에만, 한 맵에 하나"
    },
    {
     "id": "tunnel_collapsed",
@@ -1001,7 +1038,29 @@
     "h": 2,
     "kind": "prop",
     "name": "자갈 테두리 둔덕 밑벽",
-    "description": "pebble_irregular_top 바로 아래"
+    "description": "pebble_irregular_top 바로 아래. 왼쪽 아래 칸은 그림자라 지나간다",
+    "solid": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      2,
+      0
+     ],
+     [
+      1,
+      1
+     ],
+     [
+      2,
+      1
+     ]
+    ]
    },
    {
     "id": "ledge_step_corner",
@@ -1126,16 +1185,6 @@
     "kind": "decal",
     "name": "벽 그림자(세로)",
     "description": "바위 턱 오른쪽에 드리운다"
-   },
-   {
-    "id": "shadow_mesa",
-    "sheet": "B_REFMAP_Dungeon_Extra.png",
-    "x": 11,
-    "y": 1,
-    "w": 1,
-    "h": 1,
-    "kind": "decal",
-    "name": "둔덕 그림자 조각"
    },
    {
     "id": "water_rock_shelf",
@@ -1383,9 +1432,489 @@
     "h": 1,
     "kind": "overhead",
     "name": "어둠 번짐(세로 띠)"
+   },
+   {
+    "id": "ruin_pillar",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 0,
+    "y": 0,
+    "w": 1,
+    "h": 3,
+    "kind": "tall",
+    "name": "유적 돌기둥",
+    "description": "흰 돌 원기둥. 밑동 칸만 막힌다. 유적 신전 회랑에 2~3칸 간격 두 줄.",
+    "solid": [
+     [
+      0,
+      2
+     ]
+    ]
+   },
+   {
+    "id": "ruin_pillar_ivy",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 1,
+    "y": 0,
+    "w": 1,
+    "h": 3,
+    "kind": "tall",
+    "name": "담쟁이 감긴 돌기둥",
+    "description": "밑동에 담쟁이가 감긴 돌기둥. 빛 드는 쪽 기둥에.",
+    "solid": [
+     [
+      0,
+      2
+     ]
+    ]
+   },
+   {
+    "id": "ruin_pillar_broken",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 2,
+    "y": 1,
+    "w": 1,
+    "h": 2,
+    "kind": "tall",
+    "name": "부러진 돌기둥",
+    "description": "윗부분이 부러진 돌기둥과 발치의 돌 조각. 줄 선 기둥 사이 한두 개.",
+    "solid": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "dead_tree_big",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 3,
+    "y": 0,
+    "w": 3,
+    "h": 3,
+    "kind": "tall",
+    "name": "큰 고목",
+    "description": "잎 없이 비틀린 큰 고목(그림자 포함). 가운데 밑동만 막힌다. 빛 드는 굴·묘지 끝에 하나.",
+    "solid": [
+     [
+      1,
+      2
+     ]
+    ]
+   },
+   {
+    "id": "dead_tree_small",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 6,
+    "y": 0,
+    "w": 2,
+    "h": 3,
+    "kind": "tall",
+    "name": "작은 고목",
+    "description": "구멍 난 작은 고목. 밑동(오른쪽 아래)만 막힌다.",
+    "solid": [
+     [
+      1,
+      2
+     ]
+    ]
+   },
+   {
+    "id": "statue_dragon_red",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 8,
+    "y": 0,
+    "w": 1,
+    "h": 2,
+    "kind": "tall",
+    "name": "붉은 구슬 용 석상",
+    "description": "받침 위 용 석상(붉은 구슬). 제단·문 양옆에 짝으로.",
+    "solid": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "statue_dragon_blue",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 9,
+    "y": 0,
+    "w": 1,
+    "h": 2,
+    "kind": "tall",
+    "name": "푸른 구슬 용 석상",
+    "description": "받침 위 용 석상(푸른 구슬). 붉은 쪽과 좌우 짝.",
+    "solid": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "statue_hooded",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 10,
+    "y": 0,
+    "w": 1,
+    "h": 2,
+    "kind": "tall",
+    "name": "두건 쓴 석상",
+    "description": "받침 위 두건 쓴 인물 석상. 제단 뒤·묘지 머리에.",
+    "solid": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "grave_headstone",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 11,
+    "y": 0,
+    "w": 1,
+    "h": 2,
+    "kind": "prop",
+    "name": "둥근 비석 무덤",
+    "description": "둥근 비석 + 앞의 석판. 두 칸 다 막힌다. 묘지에 줄을 맞춰 두되 한두 칸씩 어긋나게."
+   },
+   {
+    "id": "grave_cross",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 12,
+    "y": 0,
+    "w": 1,
+    "h": 2,
+    "kind": "prop",
+    "name": "십자 비석 무덤",
+    "description": "십자 비석 + 석판. 둥근 비석과 섞어 줄 세운다."
+   },
+   {
+    "id": "wall_crack_tall",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 13,
+    "y": 0,
+    "w": 1,
+    "h": 2,
+    "kind": "wallmount",
+    "name": "세로로 갈라진 벽 구멍",
+    "description": "벽면 2줄에 거는 갈라진 검은 틈. 무너진 벽."
+   },
+   {
+    "id": "cave_mouth_grey",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 14,
+    "y": 0,
+    "w": 1,
+    "h": 2,
+    "kind": "door",
+    "name": "회색 바위 굴 입구",
+    "description": "회색 바위 테 굴 입구. 벽면 2줄 맨 아랫줄이 바닥에 닿게."
+   },
+   {
+    "id": "pillar_stump_hollow",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 0,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "속 빈 기둥 밑동",
+    "description": "속이 빈 돌기둥 밑동(부러져 나간 자리)."
+   },
+   {
+    "id": "pillar_stump",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 1,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "돌기둥 밑동",
+    "description": "잘린 돌기둥 밑동. 기둥 줄에서 빠진 자리."
+   },
+   {
+    "id": "pillar_stump_moss",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 2,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "이끼 두른 기둥 밑동",
+    "description": "둘레에 이끼가 낀 기둥 밑동."
+   },
+   {
+    "id": "pillar_stump_mossy",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 3,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "이끼 덮인 기둥 밑동",
+    "description": "이끼로 온통 덮인 밑동. 물가·빛 드는 출구 곁."
+   },
+   {
+    "id": "pillar_stump_cracked",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 4,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "금 간 기둥 밑동",
+    "description": "윗면이 조각난 기둥 밑동."
+   },
+   {
+    "id": "pillar_stump_broken",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 5,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "부서진 기둥 밑동",
+    "description": "윗면이 무너져 내린 기둥 밑동."
+   },
+   {
+    "id": "floor_hole_small",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 6,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "바닥 꺼진 구멍",
+    "description": "금 간 바닥의 검은 구멍(막힘). 무너진 곳 둘레."
+   },
+   {
+    "id": "floor_hole_cracked",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 7,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "금 간 바닥 구멍",
+    "description": "금이 사방으로 뻗은 작은 구멍(막힘)."
+   },
+   {
+    "id": "floor_hole_big",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 8,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "큰 바닥 구멍",
+    "description": "큰 검은 구멍(막힘)."
+   },
+   {
+    "id": "floor_hole_crack",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 9,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "갈라진 바닥 틈",
+    "description": "갈라져 벌어진 바닥 틈(막힘)."
+   },
+   {
+    "id": "ruin_rubble",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 10,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "무너진 석재 더미",
+    "description": "회색 다듬은 돌 무더기. 부러진 기둥·무너진 벽 발치에."
+   },
+   {
+    "id": "ruin_rubble_b",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 11,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "무너진 석재 더미 B",
+    "description": "큰 돌 두 덩이와 조각."
+   },
+   {
+    "id": "grave_slab",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 12,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "석관 뚜껑",
+    "description": "바닥에 누운 문양 새긴 석판 무덤."
+   },
+   {
+    "id": "grave_bouquet",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 13,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "decal",
+    "name": "무덤 꽃다발",
+    "description": "비석 앞에 놓인 꽃다발(지나감). 누군가 찾아온 무덤 하나에만."
+   },
+   {
+    "id": "skull_candle",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 14,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "해골 촛대",
+    "description": "초를 세운 해골과 뼈 한 토막. 제단·묘지 머리·석관 곁 불빛."
+   },
+   {
+    "id": "grave_mound_stick",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 15,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "막대 꽂힌 흙무덤",
+    "description": "갓 덮은 짙은 흙 봉분에 막대 하나(이름 없는 무덤). 모래·흙 바닥 어디서나 보인다."
+   },
+   {
+    "id": "grave_mound",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 0,
+    "y": 4,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "흙무덤",
+    "description": "갓 덮은 짙은 흙 봉분."
+   },
+   {
+    "id": "grave_mound_stone",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 1,
+    "y": 4,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "돌 얹은 흙무덤",
+    "description": "돌 하나 얹은 짙은 흙 봉분."
+   },
+   {
+    "id": "grave_sword",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 2,
+    "y": 4,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "검 꽂힌 무덤",
+    "description": "짙은 흙 봉분에 검을 꽂은 전사의 무덤. 묘지에 하나, 앞에 석관 뚜껑 grave_slab."
+   },
+   {
+    "id": "rocks_brown",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 3,
+    "y": 4,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "갈색 바위 조각",
+    "description": "갈색 바위 두세 덩이."
+   },
+   {
+    "id": "pebbles_brown",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 4,
+    "y": 4,
+    "w": 1,
+    "h": 1,
+    "kind": "decal",
+    "name": "갈색 잔돌",
+    "description": "흩어진 갈색 잔돌(지나감)."
+   },
+   {
+    "id": "moss_tuft",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 5,
+    "y": 4,
+    "w": 1,
+    "h": 1,
+    "kind": "decal",
+    "name": "풀 포기",
+    "description": "가는 풀 한 포기. 빛·물 드는 곳에만."
+   },
+   {
+    "id": "moss_tuft_b",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 6,
+    "y": 4,
+    "w": 1,
+    "h": 1,
+    "kind": "decal",
+    "name": "작은 풀 포기",
+    "description": "작은 풀 한 포기."
+   },
+   {
+    "id": "leaf_tuft",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 7,
+    "y": 4,
+    "w": 1,
+    "h": 1,
+    "kind": "decal",
+    "name": "잎 풀 포기",
+    "description": "둥근 잎 풀 한 포기."
+   },
+   {
+    "id": "bush_small",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 8,
+    "y": 4,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "작은 덤불",
+    "description": "잎 덤불(막힘). 빛 드는 출구 앞·물가."
+   },
+   {
+    "id": "rock_ledge_grey",
+    "sheet": "C_REFMAP_Dungeon_Extra.png",
+    "x": 0,
+    "y": 5,
+    "w": 4,
+    "h": 1,
+    "kind": "prop",
+    "name": "풀 덮인 낮은 회색 바위 턱",
+    "description": "풀 윗면을 인 한 칸 높이 회색 바위 턱(3칸 폭 + 오른쪽 그림자 칸은 지나감). 빛 드는 굴 입구 밖·풀밭 가장자리에만.",
+    "solid": [
+     [
+      0,
+      0
+     ],
+     [
+      1,
+      0
+     ],
+     [
+      2,
+      0
+     ]
+    ]
    }
   ],
-  "guide": "# REFMAP 던전 칩 추가 조립법\n\n작가(REFMAP)의 바위 동굴·폐광 팩. 칸 48px. 바닥은 A2 모래·흙, 높낮이는 A4 바위 턱, 어둠은 A4 「어둠 천장」, 물체는 B.\n\n## 1. 바닥\n- 전체를 `\"모래 동굴 바닥\"`(밝은 동굴) 또는 `\"어두운 흙 바닥\"`(깊은 굴·폐광)으로 깐다.\n- 얼룩 덩이: `\"모래 속 짙은 흙\"`·`\"어두운 흙 얼룩 바닥\"` 을 3~6칸 덩이로 섞는다. 빛 드는 곳 근처엔 `\"풀싹 모래 바닥\"`.\n- 바닥 무늬: `\"바위 테두리 흙 바닥\"`·`\"자갈 테두리 흙 바닥\"` 을 5~10칸 덩이로 칠하면 둘레에 돌 줄이 선다(작가의 동굴 바닥 결). 모래 바닥 위에는 2층에 `{\"sheet\":\"A2\",\"kind\":13}`(어두운 바위 고리)·`{\"sheet\":\"A2\",\"kind\":14}`(밝은 자갈 고리)를 덩이로 칠한다 — 속이 비어 이름 목록에서는 뺐다.\n\n## 2. 어둠·벽·높낮이\n- 맵 테두리와 굴 밖은 `\"어둠 천장\"` 덩이. 그 **바로 아래 2줄**에 `\"어둠 천장 바위 벽\"` 을 대면 천장에서 내려오는 바위 벽이 된다.\n- 바닥 속에 벽 없이 `\"어둠 천장\"` 덩이를 두면 뚫린 구멍(낭떠러지)이다. 건너는 곳은 `plank_walk_h`·`plank_walk_v`.\n- 솟은 바위 턱: `\"흙 바위 윗면\"`(또는 `\"모래 바위 윗면\"`) 덩이 + 아래 1~2줄 `\"흙 바위 벽\"`(`\"모래 바위 벽\"`). 오르는 곳은 벽 줄에 `stone_stairs`.\n- 턱 끝이 어둠으로 떨어지면 윗면 아래에 `\"어둠 낭떠러지\"` 류(검은 벽)를 댄다.\n- 벽에 거는 것: `tunnel_dark`(더 깊은 굴), `tunnel_light`(바깥 출구), `dark_stairwell`(아래층), `tunnel_collapsed`(막힌 굴) — 벽 2줄에 세로로.\n- 작은 지형 조각: `mesa_sand`, `rock_pillar`, `mesa_irregular_top`+`mesa_irregular_base`(위아래로 붙여 쓴다), `ledge_low_h`.\n\n## 3. 물\n- 모래 바닥엔 `\"모래 둑 물웅덩이\"`, 흙 바닥엔 `\"흙 둑 물웅덩이\"`. 넓은 지하 호수는 `\"동굴 물\"`.\n- 물속에 `water_spike`·`water_spike_sunken`·`water_rock`·`water_stones` 를 드문드문. 물가 턱은 `water_rock_shelf`.\n\n## 4. 물체\n- 돌: `rubble_mound`(큰 돌무더기, 통로를 반쯤 막는다), `stalagmite`, `rock_small`, `pebbles`·`rubble_scatter`(잔돌 decal, 드문드문).\n- 빛: 벽에 `light_hole`·`tunnel_light`, 그 앞 바닥에 `\"풀싹 모래 바닥\"`·`\"풀밭 속 모래땅\"`.\n- 폐광: 벽 앞에 `mine_frame`·`mine_frame_big`(갱목 틀), 홀로 선 `mine_post`, 막힌 갱도에 `mine_barricade`, 구멍 위 `plank_walk_h`·`plank_walk_v`.\n- 같은 물체를 줄 세우지 말고 덩이와 빈 바닥을 섞는다.\n"
+  "guide": "# REFMAP 던전 칩 추가 조립법\n\n작가(REFMAP)의 바위 동굴·폐광 팩. 칸 48px. 바닥은 A2 모래·흙, 높낮이는 A4 바위 턱, 어둠은 A4 「어둠 천장」, 물체는 B.\n\n## 1. 바닥\n- 전체를 `\"모래 동굴 바닥\"`(밝은 동굴) 또는 `\"어두운 흙 바닥\"`(깊은 굴·폐광)으로 깐다.\n- 얼룩 덩이: `\"모래 속 짙은 흙\"`·`\"어두운 흙 얼룩 바닥\"` 을 3~6칸 덩이로 섞는다. 빛 드는 곳 근처엔 `\"풀싹 모래 바닥\"`.\n- 바닥 무늬: `\"바위 테두리 흙 바닥\"`·`\"자갈 테두리 흙 바닥\"` 을 5~10칸 덩이로 칠하면 둘레에 돌 줄이 선다(작가의 동굴 바닥 결). 모래 바닥 위에는 2층에 `{\"sheet\":\"A2\",\"kind\":13}`(어두운 바위 고리)·`{\"sheet\":\"A2\",\"kind\":14}`(밝은 자갈 고리)를 덩이로 칠한다 — 속이 비어 이름 목록에서는 뺐다.\n\n## 2. 어둠·벽·높낮이\n- 맵 테두리와 굴 밖은 `\"어둠 천장\"` 덩이. 그 **바로 아래 2줄**에 `\"어둠 천장 바위 벽\"` 을 대면 천장에서 내려오는 바위 벽이 된다.\n- 바닥 속에 벽 없이 `\"어둠 천장\"` 덩이를 두면 뚫린 구멍(낭떠러지)이다. 건너는 곳은 `plank_walk_h`·`plank_walk_v`.\n- 솟은 바위 턱: `\"흙 바위 윗면\"`(또는 `\"모래 바위 윗면\"`) 덩이 + 아래 1~2줄 `\"흙 바위 벽\"`(`\"모래 바위 벽\"`). 오르는 곳은 벽 줄에 `stone_stairs`.\n- 턱 끝이 어둠으로 떨어지면 윗면 아래에 `\"어둠 낭떠러지\"` 류(검은 벽)를 댄다.\n- 벽에 거는 것: `tunnel_dark`(더 깊은 굴), `cave_exit_light`(바깥 출구), `dark_stairwell`(아래층), `tunnel_collapsed`(막힌 굴) — 벽 2줄에 세로로.\n- 작은 지형 조각: `mesa_sand`, `rock_pillar`, `mesa_irregular_top`+`mesa_irregular_base`(위아래로 붙여 쓴다), `ledge_low_h`.\n\n## 3. 물\n- 모래 바닥엔 `\"모래 둑 물웅덩이\"`, 흙 바닥엔 `\"흙 둑 물웅덩이\"`. 넓은 지하 호수는 `\"동굴 물\"`. 작은 샘도 이 둘로 칠한다(출렁이는 A1 물).\n- 물 덩이는 **네모로 칠하지 않는다.** 작가 동굴의 물가는 둥글고 들쭉날쭉하다. 줄마다 시작·끝 칸을 1~2칸씩 어긋나게, 모서리 칸은 비운다. 예(P = 물):\n  ```\n  ..PPP..\n  .PPPPP.\n  PPPPPP.\n  .PPPP..\n  ..PP...\n  ```\n  한 칸짜리 튀어나옴·한 칸짜리 오목(ㄷ 한 칸)만 피하면 둑이 곱게 이어진다.\n- 물속에 `water_spike`·`water_spike_sunken`·`water_rock`·`water_stones` 를 드문드문. 물가 턱은 `water_rock_shelf`.\n\n## 4. 물체\n- 돌: `rubble_mound`(큰 돌무더기, 통로를 반쯤 막는다), `stalagmite`, `rock_small`, `pebbles`·`rubble_scatter`(잔돌 decal, 드문드문).\n- 빛: 바깥으로 나가는 곳에만 `cave_exit_light`(1×2, 아랫칸만 들어감)·`cave_exit_light_small`(1칸, 땅 높이 작은 출구). 둘 다 **진짜 출구**다(맵 가장자리로 이어지는 벽면 맨 아랫줄, 이동 이벤트). 꾸밈 채광으로 쓰지 않는다. 출구 앞 바닥에 `\"풀싹 모래 바닥\"` 둥근 덩이.\n- 폐광: 벽 앞에 `mine_frame`·`mine_frame_big`(갱목 틀), 홀로 선 `mine_post`, 막힌 갱도에 `mine_barricade`, 구멍 위 `plank_walk_h`·`plank_walk_v`.\n- 같은 물체를 줄 세우지 말고 덩이와 빈 바닥을 섞는다.\n\n## 5. 확장 조각 (같은 작가 단품, 시트 `C`·`A2_Extra`)\n- 바닥 재료(A2_Extra, 1층): `\"모래 바닥 우묵한 턱\"`·`\"모래 바닥 우묵한 턱 B\"`(모래 바닥 위), `\"흙 바닥 우묵한 턱\"`(어두운 흙 바닥 위) — 한 뼘 꺼진 땅, 둘레에 흙 턱. 걸어 들어간다.\n  물 덩이처럼 둥글고 들쭉날쭉하게, 벽 테에서 한 칸 떼고 칠한다. 안에 물체를 둘 땐 둘레 테 칸이 아닌 **속 칸**(여덟 이웃이 다 턱인 칸)에 둔다.\n- 유적: `ruin_pillar`·`ruin_pillar_ivy`(1×3, 밑동만 막힘), `ruin_pillar_broken`(1×2), 밑동 `pillar_stump*` 6종, 석재 더미 `ruin_rubble`·`ruin_rubble_b`, 석상 `statue_dragon_red`·`statue_dragon_blue`·`statue_hooded`(1×2, 받침만 막힘).\n- 무너짐: 바닥 구멍 `floor_hole_small`·`floor_hole_cracked`·`floor_hole_big`·`floor_hole_crack`(막힘, 바닥에만), 벽 틈 `wall_crack_tall`(벽면 2줄), 벽감·쥐구멍 `hole_dark_small`(벽면 1칸).\n- 무덤: `grave_headstone`·`grave_cross`(1×2, 두 칸 막힘), `grave_slab`(석관 뚜껑), 흙무덤 `grave_mound`·`grave_mound_stick`·`grave_mound_stone`·`grave_sword`(갓 덮은 짙은 흙 봉분), `grave_bouquet`(decal), `skull_candle`.\n- 자연: 고목 `dead_tree_big`(3×3)·`dead_tree_small`(2×3), 풀 포기 `moss_tuft`·`moss_tuft_b`·`leaf_tuft`(decal), `bush_small`, 갈색 바위 `rocks_brown`·`pebbles_brown`.\n- 흰 돌기둥·석상·비석은 회색 돌이라 올리브 동굴 바위와 다르다 — 사람이 지은 곳(신전·묘지)에만 쓰고 자연 굴엔 섞지 않는다. `cave_mouth_grey`·`rock_ledge_grey`(풀 덮인 회색 턱) 도 회색 바위라 던전 바위 벽 옆에선 튄다.\n- 한 물체 위에 다른 물체를 겹쳐 두지 않는다. 특히 막히는 물체(비석·밑동) 칸에 꽃다발·잔돌(decal)을 얹으면 그 칸이 뚫린다 — 꽃다발은 비석 **앞** 바닥 칸에.\n\n## 6. 꾸미기 조립법 (무엇을 어디에 함께)\n- **유적 신전(회랑):** 바닥 `\"어두운 흙 바닥\"`, 가운데 2층 `\"흰 자갈 돌길\"` 폭 2~3. 돌길은 제단 단의 **계단 발치로** 이어 갈라진다(계단 없는 벽 가운데로 곧장 박지 않는다).\n  돌길 양옆에 `ruin_pillar` 를 3~4칸 간격 두 줄, 첫 기둥은 단 벽면에서 한 줄 떼어 선다. 몇 개는 `ruin_pillar_broken`·`pillar_stump_cracked` 로 바꾸고 그 발치에 `ruin_rubble` 하나. 빛 드는 쪽 기둥은 `ruin_pillar_ivy`.\n- **제단 단:** 방 폭 전체를 `\"흙 바위 윗면\"` 2줄 + `\"흙 바위 벽\"` 2줄로 올리고 `stone_stairs` 를 좌우에. 단 가운데 `statue_hooded`, 그 양옆 `skull_candle`,\n  단 양 끝에 `statue_dragon_red`·`statue_dragon_blue` 짝. 석상 받침 줄은 막히므로 계단마다 따로 닿게 둔다(석상 윗칸을 지나야만 닿는 칸 금지).\n- **지하 묘지:** 비석(`grave_headstone`·`grave_cross` 섞어)을 1칸 띄워 두 줄, 줄 사이 2칸 길. 비석 밑은 `\"모래 속 짙은 흙\"`(판 흙).\n  한두 기는 한 줄 앞뒤로 어긋나게, 꽃다발 `grave_bouquet` 은 한 기 앞에만. 이름 없는 무덤은 `\"모래 바닥 우묵한 턱\"` 구덩이(둥글게 6×4 안팎) **속 칸**에 흙무덤 4~5기.\n  벽면엔 벽감 `hole_dark_small` 과 그 발치 `skull_candle`. 높은 단 가운데엔 `grave_sword`, 그 앞에 석관 `grave_slab`, 양옆 `skull_candle`.\n- **무너진 통로:** 천장 무너진 자리에 `rubble_mound`(3×3, 둥근 더미)로 통로를 반쯤 막아 옆으로 1칸만 남긴다. 벽 테에 딱 붙이지 말고 한 칸 떼어 둥근 윤곽이 보이게.\n  `rubble_fill`(2×2)은 네모 모서리가 드러나므로 홀로 두지 않고 `rubble_mound` 가장자리에 겹쳐 덩이를 키울 때만. 더미 앞 바닥에 `floor_hole_crack`·`rock_small` 하나,\n  떨어진 흙 `\"모래 속 짙은 흙\"` 둥근 얼룩, 옆 벽면에 `wall_crack_tall`. 바닥이 꺼진 곳은 `\"흙/모래 바닥 우묵한 턱\"` 둥근 덩이 + 속 칸에 `floor_hole_big` 하나.\n- **바깥 빛 드는 샘:** 벽면 맨 아랫줄에 진짜 출구 `cave_exit_light_small` 또는 `cave_exit_light` **하나**(맵 가장자리로 이어짐), 그 앞에서 방 쪽으로 `\"풀싹 모래 바닥\"` 둥근 덩이가 번지고,\n  덩이 가운데 `\"모래 둑 물웅덩이\"` 를 들쭉날쭉하게(위 3절 예), 물가에 `rocks_brown` 1~2, 풀 포기 `moss_tuft`·`leaf_tuft`·`bush_small` 2~4개, 곁에 고목 하나. 풀·고목은 빛 닿는 덩이 안에만.\n- **물 빠진 옛 샘:** `\"모래 바닥 우묵한 턱\"` 둥근 덩이 + 속 칸에 `pebbles_brown`·`rocks_brown`.\n- **자연 굴 물가(빛 없음):** 물웅덩이 둑을 따라 `rocks_brown` 2~3 덩이, 물 위로 `water_rock`·`water_spike` 를 한 곳에 몰아(석순 숲이 잠긴 곳), 물가 한쪽에 물이 빠져 드러난 `\"모래 바닥 우묵한 턱\"`.\n  풀·고목은 쓰지 않는다(빛이 없다).\n- **천장에서 떨어진 바위:** 벽 밑 한 곳에 `rocks_brown` + `pebbles_brown` + 그 바위가 깬 바닥 `floor_hole_cracked`. 여러 곳에 흩지 말고 한 무더기.\n- 막힘 규칙: 바닥 구멍·석재 더미·밑동·흙무덤·비석은 막힌다(prop), 기둥·석상·고목은 밑줄만, 풀 포기·꽃다발·잔돌은 지나간다. 벽 틈·벽감은 벽면 칸에만, 출구는 벽면 맨 아랫줄에만.\n"
  },
  {
   "id": "refmap-interior",
@@ -1426,6 +1955,11 @@
     "file": "A5_REFMAP_Interior.png",
     "folder": "refmap-interior",
     "sha256": "1216e8268a91289b18819f767e0b5999119ce3cbca1cfa055903a8b611c19b34"
+   },
+   {
+    "file": "D_REFMAP_Interior_Extra.png",
+    "folder": "refmap-interior",
+    "sha256": "b22c62851d0044d10410970ac23a75935891f5b818fc2680c3349fc3342926e7"
    }
   ],
   "autotiles": [
@@ -4599,9 +5133,755 @@
     "h": 1,
     "kind": "prop",
     "name": "작은 초록 호박"
+   },
+   {
+    "id": "smith_forge",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 0,
+    "y": 0,
+    "w": 2,
+    "h": 3,
+    "kind": "tall",
+    "name": "대장간 화로(달군 숯)",
+    "description": "벽돌 화로 위에 벌건 숯, 앞에 불 아궁이. 북벽에 붙여 윗칸이 벽면에 걸리게. 아래 두 줄이 막힌다",
+    "solid": [
+     [
+      0,
+      1
+     ],
+     [
+      1,
+      1
+     ],
+     [
+      0,
+      2
+     ],
+     [
+      1,
+      2
+     ]
+    ]
+   },
+   {
+    "id": "anvil",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 2,
+    "y": 0,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "모루(나무 밑둥)",
+    "description": "화로 앞 한두 칸 떨어진 바닥 가운데. 곁에 담금질 통"
+   },
+   {
+    "id": "smith_tool_rack",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 3,
+    "y": 0,
+    "w": 1,
+    "h": 1,
+    "kind": "wallmount",
+    "name": "벽 공구걸이(집게·망치·줄)",
+    "description": "화로 곁 벽면에"
+   },
+   {
+    "id": "quench_tub",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 4,
+    "y": 0,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "물 담은 나무통(담금질 통)",
+    "description": "모루 옆. 부엌·빨래터 물통으로도"
+   },
+   {
+    "id": "coal_pile",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 5,
+    "y": 0,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "숯 더미",
+    "description": "화로 옆 바닥 구석"
+   },
+   {
+    "id": "blade_rack",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 6,
+    "y": 0,
+    "w": 1,
+    "h": 2,
+    "kind": "tall",
+    "name": "벼린 칼 세워 둔 거치대",
+    "description": "대장간 벽 앞. 초소 무기 벽 대신 대장간 표지로",
+    "solid": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "spear_rack_wall",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 7,
+    "y": 0,
+    "w": 2,
+    "h": 1,
+    "kind": "wallmount",
+    "name": "벽에 가로로 건 창 네 자루",
+    "description": "대장간·무기점 벽면"
+   },
+   {
+    "id": "dagger_wall",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 9,
+    "y": 0,
+    "w": 1,
+    "h": 1,
+    "kind": "wallmount",
+    "name": "벽에 건 단검 셋",
+    "description": "대장간·무기점 벽면"
+   },
+   {
+    "id": "armor_repair_crates",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 10,
+    "y": 0,
+    "w": 1,
+    "h": 2,
+    "kind": "prop",
+    "name": "수리할 갑옷 상자 두 개",
+    "description": "대장간 구석. 투구·건틀릿이 담긴 상자"
+   },
+   {
+    "id": "bread_oven",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 11,
+    "y": 0,
+    "w": 2,
+    "h": 2,
+    "kind": "tall",
+    "name": "벽돌 빵 가마(쇠문)",
+    "description": "북벽에 붙인다. 윗줄이 벽면, 아랫줄 쇠문 앞이 바닥 첫 줄. 아랫줄만 막힌다",
+    "solid": [
+     [
+      0,
+      1
+     ],
+     [
+      1,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "bread_counter",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 13,
+    "y": 0,
+    "w": 2,
+    "h": 1,
+    "kind": "prop",
+    "name": "빵 광주리 얹은 벽돌 진열대",
+    "description": "가게 칸 앞쪽 카운터 자리. 2칸 막힌다"
+   },
+   {
+    "id": "bread_table",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 15,
+    "y": 0,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "빵 광주리 둘 얹은 작은 탁자",
+    "description": "가마 곁 작업대"
+   },
+   {
+    "id": "bread_basket",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 2,
+    "y": 1,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "둥근 빵 광주리",
+    "description": "탁자·카운터 위에 겹쳐 둔다"
+   },
+   {
+    "id": "flour_sack",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 3,
+    "y": 1,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "밀가루 자루",
+    "description": "가마 곁·창고. 두세 개 덩이로"
+   },
+   {
+    "id": "flour_barrel",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 4,
+    "y": 1,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "밀가루 통",
+    "description": "가마 곁·창고"
+   },
+   {
+    "id": "dough_tub",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 5,
+    "y": 1,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "빵 반죽 통",
+    "description": "작업대 곁 바닥"
+   },
+   {
+    "id": "stone_counter",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 7,
+    "y": 1,
+    "w": 2,
+    "h": 1,
+    "kind": "prop",
+    "name": "흰 돌 벽돌 조리대(2칸)",
+    "description": "부엌 벽 앞. 2칸 막힌다"
+   },
+   {
+    "id": "burner_counter",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 13,
+    "y": 1,
+    "w": 2,
+    "h": 1,
+    "kind": "prop",
+    "name": "화구 달린 벽돌 조리대(2칸)",
+    "description": "부엌 벽 앞. 조리대 곁에 잇는다"
+   },
+   {
+    "id": "sink_counter",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 9,
+    "y": 1,
+    "w": 1,
+    "h": 2,
+    "kind": "tall",
+    "name": "개수대 조리대",
+    "description": "부엌 북벽. 수도꼭지가 벽면에 걸린다. 아랫칸만 막힌다",
+    "solid": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "stock_pots",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 15,
+    "y": 1,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "큰 솥 두 개",
+    "description": "조리대 위나 부엌 바닥"
+   },
+   {
+    "id": "pan_kettle",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 2,
+    "y": 2,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "프라이팬과 주전자",
+    "description": "조리대·화덕 위에"
+   },
+   {
+    "id": "egg_pan",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 3,
+    "y": 2,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "달걀 부치는 팬과 주전자",
+    "description": "조리대 위에"
+   },
+   {
+    "id": "cutting_board",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 4,
+    "y": 2,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "도마와 채소",
+    "description": "조리대·탁자 위에"
+   },
+   {
+    "id": "plates",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 5,
+    "y": 2,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "흰 접시 더미",
+    "description": "탁자·찬장 위에"
+   },
+   {
+    "id": "hanging_pans",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 6,
+    "y": 2,
+    "w": 1,
+    "h": 1,
+    "kind": "wallmount",
+    "name": "벽에 건 프라이팬 둘",
+    "description": "부엌 벽면"
+   },
+   {
+    "id": "hanging_ladles",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 7,
+    "y": 2,
+    "w": 1,
+    "h": 1,
+    "kind": "wallmount",
+    "name": "벽에 건 국자·주걱",
+    "description": "부엌 벽면"
+   },
+   {
+    "id": "log_stack",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 8,
+    "y": 2,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "쌓은 통나무 장작",
+    "description": "화덕 곁·겨울 채비. 나무꾼 집"
+   },
+   {
+    "id": "fishing_net_wall",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 10,
+    "y": 2,
+    "w": 2,
+    "h": 1,
+    "kind": "wallmount",
+    "name": "벽에 늘어뜨린 그물(부표)",
+    "description": "어부 집 벽면 2칸"
+   },
+   {
+    "id": "drying_fish",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 12,
+    "y": 2,
+    "w": 2,
+    "h": 1,
+    "kind": "wallmount",
+    "name": "줄에 꿰어 말리는 생선",
+    "description": "어부 집 벽면·처마 밑"
+   },
+   {
+    "id": "fishing_rods",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 14,
+    "y": 2,
+    "w": 1,
+    "h": 2,
+    "kind": "tall",
+    "name": "기대 세운 낚싯대·뜰채",
+    "description": "벽 앞 구석. 아랫칸만 막힌다",
+    "solid": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "fish_basket",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 15,
+    "y": 2,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "생선 담은 바구니",
+    "description": "어부 집 문가·부엌"
+   },
+   {
+    "id": "fish_tub",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 0,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "생선·천 담긴 나무통",
+    "description": "어부 집·빨래통"
+   },
+   {
+    "id": "wood_tub",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 1,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "빈 나무통",
+    "description": "어디든"
+   },
+   {
+    "id": "pick_shovel",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 2,
+    "y": 3,
+    "w": 1,
+    "h": 2,
+    "kind": "tall",
+    "name": "기대 세운 곡괭이·삽",
+    "description": "광부 집 벽 앞 구석. 아랫칸만 막힌다",
+    "solid": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "miner_lantern",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 3,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "wallmount",
+    "name": "갓 달린 광부 등",
+    "description": "광부 집 벽면·현관"
+   },
+   {
+    "id": "ore_crate",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 4,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "광석 담은 나무 상자",
+    "description": "광부 집 현관·창고"
+   },
+   {
+    "id": "glowing_ore",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 5,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "붉게 빛나는 광석 덩이",
+    "description": "광부 집 탁자 곁·상자 옆 한 점"
+   },
+   {
+    "id": "iron_bucket",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 6,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "빈 양철 양동이",
+    "description": "부엌·셋방 구석"
+   },
+   {
+    "id": "water_bucket",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 7,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "물 담은 양철 양동이",
+    "description": "부엌·셋방 구석"
+   },
+   {
+    "id": "empty_wood_bucket",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 8,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "빈 나무 들통",
+    "description": "부엌·헛간"
+   },
+   {
+    "id": "broom_dustpan",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 9,
+    "y": 3,
+    "w": 1,
+    "h": 2,
+    "kind": "tall",
+    "name": "빗자루와 쓰레받기",
+    "description": "벽 앞 구석. 아랫칸만 막힌다",
+    "solid": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "mop",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 10,
+    "y": 3,
+    "w": 1,
+    "h": 2,
+    "kind": "tall",
+    "name": "기대 세운 걸레 자루",
+    "description": "벽 앞 구석. 아랫칸만 막힌다",
+    "solid": [
+     [
+      0,
+      1
+     ]
+    ]
+   },
+   {
+    "id": "empty_sack",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 11,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "빈 자루",
+    "description": "셋방·창고"
+   },
+   {
+    "id": "empty_barrel",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 12,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "빈 나무통(뚜껑 없음)",
+    "description": "셋방·창고"
+   },
+   {
+    "id": "cloth_rolls",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 13,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "천 두루마리 더미",
+    "description": "재봉·옷가게·혼수 방"
+   },
+   {
+    "id": "cloth_shelf",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 15,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "천 두루마리 얹은 낮은 선반",
+    "description": "재봉집 벽 앞"
+   },
+   {
+    "id": "cloth_table",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 0,
+    "y": 4,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "흰 천 덮은 작은 탁자",
+    "description": "침실·거실"
+   },
+   {
+    "id": "plain_table",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 1,
+    "y": 4,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "다리 보이는 작은 나무 탁자",
+    "description": "어디든"
+   },
+   {
+    "id": "wood_bed_pink_h",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 3,
+    "y": 4,
+    "w": 3,
+    "h": 1,
+    "kind": "prop",
+    "name": "가로 나무 침대(분홍 이불)",
+    "description": "3×1. 머리를 서쪽 벽에 붙인다(세로 침대만 쓰지 말 것)"
+   },
+   {
+    "id": "wood_bed_h",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 6,
+    "y": 4,
+    "w": 3,
+    "h": 1,
+    "kind": "prop",
+    "name": "가로 나무 침대",
+    "description": "3×1. 머리를 서쪽 벽에 붙인다"
+   },
+   {
+    "id": "gold_bed_green_h",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 11,
+    "y": 4,
+    "w": 3,
+    "h": 1,
+    "kind": "prop",
+    "name": "가로 금장 침대(초록 누비이불)",
+    "description": "3×1. 머리를 서쪽 벽에 붙인다"
+   },
+   {
+    "id": "window_wood_lit",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 14,
+    "y": 4,
+    "w": 1,
+    "h": 2,
+    "kind": "wallmount",
+    "name": "밝은 나무 네모창",
+    "description": "벽면 2줄에"
+   },
+   {
+    "id": "window_wood_dark",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 15,
+    "y": 4,
+    "w": 1,
+    "h": 2,
+    "kind": "wallmount",
+    "name": "어두운 나무 네모창",
+    "description": "벽면 2줄에(밤)"
+   },
+   {
+    "id": "window_red_curtain_lit",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 0,
+    "y": 5,
+    "w": 1,
+    "h": 2,
+    "kind": "wallmount",
+    "name": "붉은 커튼 밝은 창",
+    "description": "벽면 2줄에"
+   },
+   {
+    "id": "window_red_curtain_dark",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 1,
+    "y": 5,
+    "w": 1,
+    "h": 2,
+    "kind": "wallmount",
+    "name": "붉은 커튼 어두운 창",
+    "description": "벽면 2줄에(밤)"
+   },
+   {
+    "id": "red_curtain_closed",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 2,
+    "y": 5,
+    "w": 1,
+    "h": 2,
+    "kind": "wallmount",
+    "name": "닫힌 붉은 커튼",
+    "description": "벽면 2줄에"
+   },
+   {
+    "id": "harvest_crates",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 3,
+    "y": 5,
+    "w": 2,
+    "h": 2,
+    "kind": "prop",
+    "name": "기대 세운 수확 상자 넷(가을)",
+    "description": "2×2. 가을 부엌·광 벽 앞"
+   },
+   {
+    "id": "apple_crate",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 5,
+    "y": 5,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "사과 상자(가을)",
+    "description": "부엌·광"
+   },
+   {
+    "id": "veg_crates",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 6,
+    "y": 5,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "채소·당근 작은 상자",
+    "description": "부엌·광"
+   },
+   {
+    "id": "fruit_bowls",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 7,
+    "y": 5,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "사과·귤 담은 그릇",
+    "description": "탁자 위에"
+   },
+   {
+    "id": "garlic_pepper_crates",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 8,
+    "y": 5,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "마늘·고추 작은 상자",
+    "description": "부엌·광"
+   },
+   {
+    "id": "onion_crate",
+    "sheet": "D_REFMAP_Interior_Extra.png",
+    "x": 9,
+    "y": 5,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "양파 상자",
+    "description": "부엌·광"
    }
   ],
-  "guide": "# REFMAP 실내 + 마녀의 방 조립법\n\n작가(REFMAP)의 판타지 실내 팩과 「마녀의 방」 추가 시트(C). 칸 48px. 방은 A4 천장 테로 둘러싸고, 북쪽 벽면 2줄 아래가 바닥이다.\n\n## 1. 바닥\n- 방 밖(맵 전체)을 먼저 천장 재료로 칠한다. 천장 속은 검게 보이고 방과 닿는 곳에 테가 그려진다.\n  - 여관·민가: `\"짙은 나무 천장\"` / 저택·마녀의 방: `\"짙은 갈색 천장\"` / 성·신전: `\"석벽돌 천장\"`·`\"청회색 천장\"` / 지하: `\"그늘 천장\"`.\n- 방 자리를 바닥으로 판다. 기본 바닥은 `\"쪽마루 바닥\"`(나무)·`\"판석 바닥\"`(돌). A5 평타일 `\"밝은 가로 마루\"`+`\"밝은 가로 마루(아랫단)\"`, `\"보라 문양 카펫\"`, `\"흑백 체크 타일\"` 등으로 방마다 바닥을 바꾼다.\n- 방 사이 통로는 1~2칸 폭으로 바닥을 이어 판다. 통로의 벽면도 위쪽 2줄에 댄다.\n\n## 2. 벽\n- 방 사각형의 맨 위 2줄 = 벽면(천장 테 바로 아래). 천장과 짝을 맞춘다:\n  `\"짙은 나무 천장\"`↔`\"흰 회벽\"`, `\"나무·회색 천장\"`↔`\"분홍 벽지\"`, `\"짙은 갈색 천장\"`↔`\"노란 무늬 벽지\"`·`\"흰 회벽(짙은 나무 틀)\"`, `\"밝은 나무 천장\"`↔`\"나무 판자 벽\"`, `\"석벽돌 천장\"`↔`\"밝은 석벽돌 벽\"`.\n- 방 안에 튀어나온 칸막이 벽은 천장 재료 덩이(1~2칸 폭)를 세우고 그 바로 아래 2줄에 벽면을 단다.\n- 옆방으로 가는 가로 통로(세로 칸막이를 뚫는 문)는 통로 2줄 위 2줄에 벽면(문 인방)을 남기고 그 위는 천장으로 둔다 — 천장 바로 밑이 바닥이면 안 된다.\n- 방을 모두 직사각형으로 두지 말 것: 구석에 천장 덩이를 들여 ㄱ·ㄷ자 방, 알코브, 튀어나온 벽 기둥을 만들고 칸막이 두께를 1~3칸으로 섞는다. 통로 바닥은 이어지는 방 바닥 한 가지로.\n- 벽면 평타일(`\"짙은 기둥 회벽 위/아래\"` 등)을 벽면 줄에 덧칠하면 기둥 무늬가 생긴다.\n- 문: 벽면 2줄 자리에 `doorway_dark`·`doorway_lit`·`arch_door_lit`. 바깥 출구는 남쪽 벽 천장 테를 1~2칸 비워 바닥을 맵 끝까지 잇는다.\n\n## 3. 물\n- 실내 수조·목욕탕은 `\"돌테 수조 물\"`, 지하 수로는 `\"돌 수로 물\"`·`\"짙은 물(돌바닥)\"`.\n\n## 4. 큰 가구\n- 탁자·카운터: A2 `\"나무 카운터\"`·`\"짙은 나무 탁자\"`를 **2층**에 2칸 이상 덩이로 깐다(막힘). 위에 `teapot_set`·`wine_set`·`candelabra`·`open_book`, 마녀 방이면 `potion_clutter`·`jars_papers`·`root_herbs`·`green_books` 을 올린다.\n- 식탁: `big_table`(3×3) 둘레에 `chair_s`(위)·`chair_n`(아래)·`chair_e`(왼쪽)·`chair_w`(오른쪽).\n- 벽에 붙는 가구(높이 2~3칸)는 윗칸이 벽면에 걸리게: `light_bookshelf`·`dark_bookshelf`·`light_dresser`·`glass_cabinet`·`fireplace`·`iron_stove`·`pendulum_clock`.\n- 창·액자·화환은 벽면 2줄에만: `window_lit`·`window_blue_lit`·`tall_window_lit`·`lattice_window_lit`·`ivy_window_lit`·`purple_window_lit`·`flower_painting`·`portrait`·`wreath_*`·`hanging_herbs`·`herb_shelf`·`jar_shelf`.\n- 계단: 위층 계단은 **옆벽을 따라 비스듬히** 놓는다 — 방 왼쪽 아래 구석이면 `wood_stairs_up_left`(높은 끝이 왼쪽 벽), 오른쪽 아래 구석이면 `wood_stairs_up_right`. 북쪽 벽 가운데에 붙여 벽 속으로 오르게 두지 않는다. `wood_stairs_wide` 는 두 계단이 붙은 Λ 조각이라 벽 계단으로 쓰지 않는다. 돌 실내는 `stone_stairs_up_left/right`, 벽을 타는 좁은 계단은 `wood_ladder_stairs`, 지하는 `floor_hatch`·`stairwell_down`.\n- 침실: `wood_bed`·`gold_bed` 에 `pink_quilt`·`green_quilt` 를 겹치면 누운 이불이 된다. 곁에 `table_lamp`·`washbasin`.\n\n## 5. 소품\n- 여관·술집: 카운터 뒤 `light_goods_shelf`·`barrel_stack`·`kitchen_cupboard`, 식당에 `big_table` 여러 벌과 `stool_round`, 구석에 `potted_plant`·`crate`·`sack`.\n- 마녀의 방: 가운데 `big_cauldron` 또는 `cauldron_stand` 와 `magic_circle`, 벽에 `hanging_herbs`·`laundry_garland`·`antler_branch`·`pinned_notes`, 점술 방은 `\"보라 문양 카펫\"` 위 `fortune_table`+`crystal_ball`, 창고에 `ingredient_crates`·`barrel_upright`·`lidded_jar`·`herb_box_scales`·`crystals_bones`, 침실 `witch_bed`+`red_blanket`.\n- 계절 장식: 겨울은 `xmas_tree`·`gift_pile`·`wreath_*`, 가을은 `jackolantern_stack`·`pumpkins`·`big_pumpkin`.\n- 같은 물체를 한 줄로 늘어놓지 말고 벽 쪽 덩이 + 빈 동선을 섞는다.\n"
+  "guide": "# REFMAP 실내 + 마녀의 방 조립법\n\n작가(REFMAP)의 판타지 실내 팩과 「마녀의 방」 추가 시트(C). 칸 48px. 방은 A4 천장 테로 둘러싸고, 북쪽 벽면 2줄 아래가 바닥이다.\n\n## 1. 바닥\n- 방 밖(맵 전체)을 먼저 천장 재료로 칠한다. 천장 속은 검게 보이고 방과 닿는 곳에 테가 그려진다.\n  - 여관·민가: `\"짙은 나무 천장\"` / 저택·마녀의 방: `\"짙은 갈색 천장\"` / 성·신전: `\"석벽돌 천장\"`·`\"청회색 천장\"` / 지하: `\"그늘 천장\"`.\n- 방 자리를 바닥으로 판다. 기본 바닥은 `\"쪽마루 바닥\"`(나무)·`\"판석 바닥\"`(돌). A5 평타일 `\"밝은 가로 마루\"`+`\"밝은 가로 마루(아랫단)\"`, `\"보라 문양 카펫\"`, `\"흑백 체크 타일\"` 등으로 방마다 바닥을 바꾼다.\n- 방 사이 통로는 1~2칸 폭으로 바닥을 이어 판다. 통로의 벽면도 위쪽 2줄에 댄다.\n\n## 2. 벽\n- 방 사각형의 맨 위 2줄 = 벽면(천장 테 바로 아래). 천장과 짝을 맞춘다:\n  `\"짙은 나무 천장\"`↔`\"흰 회벽\"`, `\"나무·회색 천장\"`↔`\"분홍 벽지\"`, `\"짙은 갈색 천장\"`↔`\"노란 무늬 벽지\"`·`\"흰 회벽(짙은 나무 틀)\"`, `\"밝은 나무 천장\"`↔`\"나무 판자 벽\"`, `\"석벽돌 천장\"`↔`\"밝은 석벽돌 벽\"`.\n- 방 안에 튀어나온 칸막이 벽은 천장 재료 덩이(1~2칸 폭)를 세우고 그 바로 아래 2줄에 벽면을 단다.\n- 옆방으로 가는 가로 통로(세로 칸막이를 뚫는 문)는 통로 2줄 위 2줄에 벽면(문 인방)을 남기고 그 위는 천장으로 둔다 — 천장 바로 밑이 바닥이면 안 된다.\n- 방을 모두 직사각형으로 두지 말 것: 구석에 천장 덩이를 들여 ㄱ·ㄷ자 방, 알코브, 튀어나온 벽 기둥을 만들고 칸막이 두께를 1~3칸으로 섞는다. 통로 바닥은 이어지는 방 바닥 한 가지로.\n- 벽면 평타일(`\"짙은 기둥 회벽 위/아래\"` 등)을 벽면 줄에 덧칠하면 기둥 무늬가 생긴다.\n- 문: 벽면 2줄 자리에 `doorway_dark`·`doorway_lit`·`arch_door_lit`. 바깥 출구는 남쪽 벽 천장 테를 1~2칸 비워 바닥을 맵 끝까지 잇는다.\n\n## 3. 물\n- 실내 수조·목욕탕은 `\"돌테 수조 물\"`, 지하 수로는 `\"돌 수로 물\"`·`\"짙은 물(돌바닥)\"`.\n\n## 4. 큰 가구\n- 탁자·카운터: A2 `\"나무 카운터\"`·`\"짙은 나무 탁자\"`를 **2층**에 2칸 이상 덩이로 깐다(막힘). 위에 `teapot_set`·`wine_set`·`candelabra`·`open_book`, 마녀 방이면 `potion_clutter`·`jars_papers`·`root_herbs`·`green_books` 을 올린다.\n- 식탁: `big_table`(3×3) 둘레에 `chair_s`(위)·`chair_n`(아래)·`chair_e`(왼쪽)·`chair_w`(오른쪽).\n- 벽에 붙는 가구(높이 2~3칸)는 윗칸이 벽면에 걸리게: `light_bookshelf`·`dark_bookshelf`·`light_dresser`·`glass_cabinet`·`fireplace`·`iron_stove`·`pendulum_clock`.\n- 창·액자·화환은 벽면 2줄에만: `window_lit`·`window_blue_lit`·`tall_window_lit`·`lattice_window_lit`·`ivy_window_lit`·`purple_window_lit`·`flower_painting`·`portrait`·`wreath_*`·`hanging_herbs`·`herb_shelf`·`jar_shelf`.\n- 계단: 위층 계단은 **옆벽을 따라 비스듬히** 놓는다 — 방 왼쪽 아래 구석이면 `wood_stairs_up_left`(높은 끝이 왼쪽 벽), 오른쪽 아래 구석이면 `wood_stairs_up_right`. 북쪽 벽 가운데에 붙여 벽 속으로 오르게 두지 않는다. `wood_stairs_wide` 는 두 계단이 붙은 Λ 조각이라 벽 계단으로 쓰지 않는다. 돌 실내는 `stone_stairs_up_left/right`, 벽을 타는 좁은 계단은 `wood_ladder_stairs`, 지하는 `floor_hatch`·`stairwell_down`.\n- 침실: `wood_bed`·`gold_bed` 에 `pink_quilt`·`green_quilt` 를 겹치면 누운 이불이 된다. 곁에 `table_lamp`·`washbasin`.\n\n## 5. 소품\n- 여관·술집: 카운터 뒤 `light_goods_shelf`·`barrel_stack`·`kitchen_cupboard`, 식당에 `big_table` 여러 벌과 `stool_round`, 구석에 `potted_plant`·`crate`·`sack`.\n- 마녀의 방: 가운데 `big_cauldron` 또는 `cauldron_stand` 와 `magic_circle`, 벽에 `hanging_herbs`·`laundry_garland`·`antler_branch`·`pinned_notes`, 점술 방은 `\"보라 문양 카펫\"` 위 `fortune_table`+`crystal_ball`, 창고에 `ingredient_crates`·`barrel_upright`·`lidded_jar`·`herb_box_scales`·`crystals_bones`, 침실 `witch_bed`+`red_blanket`.\n- 계절 장식: 겨울은 `xmas_tree`·`gift_pile`·`wreath_*`, 가을은 `jackolantern_stack`·`pumpkins`·`big_pumpkin`.\n- 같은 물체를 한 줄로 늘어놓지 말고 벽 쪽 덩이 + 빈 동선을 섞는다.\n\n## 6. 작은 집 직업·살림 조립법 (확장 시트 D_Extra)\n직업은 대용품으로 흉내 내지 말고 그 직업의 물체로 읽히게 한다. 같은 무기 벽·같은 침대 자세를 여러 집에 돌려 쓰지 않는다.\n- **대장간**: 북벽에 `smith_forge`(2×3, 윗줄 벽면) → 그 앞 1~2칸 띄워 `anvil` → 모루 옆 `quench_tub` → 화로 곁 바닥 `coal_pile`, 벽면에 `smith_tool_rack`. 완성품은 `blade_rack`·`dagger_wall`·`spear_rack_wall`, 구석에 `armor_repair_crates`. `crossed_swords`·`shield_deco`·`knight_armor` 무기 벽 세트는 초소·성 전용이다. 거실용 `fireplace` 를 화덕 대신 쓰지 말 것.\n- **빵집**: 북벽에 `bread_oven`(2×2) → 곁에 `bread_table`(작업대)·`dough_tub` → 가마 옆·창고에 `flour_sack` 2~3개 덩이 + `flour_barrel` → 가게 칸 앞쪽에 `bread_counter`, 탁자·카운터 위에 `bread_basket`. 약 저울 `herb_box_scales`·약병은 쓰지 않는다.\n- **부엌(모든 집)**: 벽 앞에 `stone_counter`·`burner_counter`·`sink_counter` 를 이어 조리대 줄을 만들고 위에 `stock_pots`·`pan_kettle`·`egg_pan`·`cutting_board`·`plates`, 벽면에 `hanging_pans`·`hanging_ladles`. 냄비를 맨바닥에 두지 않는다.\n- **어부**: 벽면에 `fishing_net_wall`(2칸)과 `drying_fish`, 벽 앞 구석에 `fishing_rods`, 문가·부엌에 `fish_basket`·`fish_tub`. 나무꾼 집과 다르게 판자 벽 + 짙은 물빛 소품으로.\n- **광부**: 벽 앞 구석 `pick_shovel`, 벽면·현관에 `miner_lantern`, 현관·창고에 `ore_crate` + `glowing_ore` 한 점, `log_stack` 대신 `crate`·`sack`. 전투도끼 `wall_axe` 는 쓰지 않는다.\n- **나무꾼**: `log_stack`·`firewood`·`wood_trestle`, 도끼는 `wall_axe` 하나만. 어부 집과 벽·바닥 재료를 다르게.\n- **재봉·혼수**: `cloth_shelf`·`cloth_rolls`, `cloth_table`.\n- **가난한 셋방**: 물체 수를 줄이고 `iron_bucket`·`water_bucket`·`empty_sack`·`empty_barrel`·`mop`·`broom_dustpan`, 불빛은 `table_lamp` 하나. 금촛대 `candelabra` 는 쓰지 않는다.\n- **침대 자세를 섞는다**: 세로 침대(`wood_bed` 등, 머리 북벽)만 쓰지 말고 두세 집은 가로 침대 `wood_bed_h`·`wood_bed_pink_h`·`gold_bed_green_h`(3×1, 머리를 서쪽 벽)로. 방 가운데로 밀거나 창 밑 벽에 붙이는 자리도 쓴다.\n- **창을 바꾼다**: `window_wood_lit/dark`·`window_red_curtain_lit/dark`·`red_curtain_closed` 로 집마다 창 모양을 다르게.\n- **계절**: 가을 집은 벽 앞 `harvest_crates`(2×2)·`apple_crate`·`onion_crate`·`veg_crates`·`garlic_pepper_crates`, 탁자 위 `fruit_bowls`, 호박류. 겨울 집은 화덕 곁 `log_stack` 과 `wreath_*`·`xmas_tree`·`gift_pile`.\n"
  },
  {
   "id": "refmap-mz-ground",
@@ -6102,7 +7382,13 @@
     "h": 2,
     "kind": "door",
     "name": "동굴 입구",
-    "description": "절벽 벽 맨 아래에서 위로 2칸"
+    "description": "절벽 벽 맨 아래에서 위로 2칸",
+    "solid": [
+     [
+      0,
+      0
+     ]
+    ]
    },
    {
     "id": "stone_steps_short",
@@ -7266,6 +8552,16 @@
     "file": "A5_REFMAP_South_Island.png",
     "folder": "refmap-south-island",
     "sha256": "f2d19b0850d60c4ce02acb1ff4e9a7930baee63884307deaf7acc5e0bad9990a"
+   },
+   {
+    "file": "A2_REFMAP_South_Island_Extra.png",
+    "folder": "refmap-south-island",
+    "sha256": "f8dd6821b9c081db84c32ca36b331a8a22d8f9841569eb1bbacc4100033e7ed4"
+   },
+   {
+    "file": "C_REFMAP_South_Island.png",
+    "folder": "refmap-south-island",
+    "sha256": "2e2ba3ed80685b10c48aabe5adb589fa559bccd6752cdfc7ef2ecbd45cbf47d6"
    }
   ],
   "autotiles": [
@@ -7555,6 +8851,34 @@
     "name": "풀 대지 윗면(풀밭)",
     "role": "ground",
     "description": "풀밭에 솟은 풀 대지 윗면. 아래에 「풀 밑 절벽 벽」."
+   },
+   {
+    "sheet": "A2_REFMAP_South_Island_Extra.png",
+    "kind": 1,
+    "name": "무성한 풀",
+    "role": "plant",
+    "description": "2층 겹침. 연둣빛 키 큰 풀 덤불(통행). 정글 빈터 가장자리·마을 뒤뜰."
+   },
+   {
+    "sheet": "A2_REFMAP_South_Island_Extra.png",
+    "kind": 2,
+    "name": "석호 얕은 물",
+    "role": "water",
+    "description": "얕은 청록 물(흰 물거품 테와 모래 여백까지 그려진 불투명 조각, 작가 海岸線 단품). 1층 「바다」 위에 2층으로 덩이를 덮는다 — 석호 안쪽·여울. 막힘."
+   },
+   {
+    "sheet": "A2_REFMAP_South_Island_Extra.png",
+    "kind": 3,
+    "name": "석호 얕은 물 2",
+    "role": "water",
+    "description": "「석호 얕은 물」과 같은 물, 테가 더 들쭉날쭉한 변형. 한 덩이 안에서는 한 가지만 쓴다."
+   },
+   {
+    "sheet": "A2_REFMAP_South_Island_Extra.png",
+    "kind": 4,
+    "name": "석호 얕은 물 3",
+    "role": "water",
+    "description": "테가 둥글고 모래 여백이 넓은 변형 — 작은 물웅덩이(2~4칸)에 알맞다."
    }
   ],
   "flats": [
@@ -8051,7 +9375,13 @@
     "h": 2,
     "kind": "door",
     "name": "동굴 입구",
-    "description": "1×2 절벽 벽에 뚫린 동굴 입구."
+    "description": "1×2 절벽 벽에 뚫린 동굴 입구.",
+    "solid": [
+     [
+      0,
+      0
+     ]
+    ]
    },
    {
     "id": "sand_patch_rock",
@@ -8074,9 +9404,756 @@
     "kind": "decal",
     "name": "모래 자리 안쪽 모서리",
     "description": "바위 속 모래의 안쪽 모서리 네 조각."
+   },
+   {
+    "id": "straw_hut_open",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 0,
+    "y": 0,
+    "w": 6,
+    "h": 5,
+    "kind": "door",
+    "name": "원두막 초가(열린 입구)",
+    "description": "둥근 초가지붕 움집. 가운데 아래 (2,4) 칸만 들어가는 입구, 나머지 지붕은 막힌다. 오른쪽 그림자 열은 통행.",
+    "solid": [
+     [
+      1,
+      0
+     ],
+     [
+      2,
+      0
+     ],
+     [
+      3,
+      0
+     ],
+     [
+      0,
+      1
+     ],
+     [
+      1,
+      1
+     ],
+     [
+      2,
+      1
+     ],
+     [
+      3,
+      1
+     ],
+     [
+      4,
+      1
+     ],
+     [
+      0,
+      2
+     ],
+     [
+      1,
+      2
+     ],
+     [
+      2,
+      2
+     ],
+     [
+      3,
+      2
+     ],
+     [
+      4,
+      2
+     ],
+     [
+      0,
+      3
+     ],
+     [
+      1,
+      3
+     ],
+     [
+      2,
+      3
+     ],
+     [
+      3,
+      3
+     ],
+     [
+      4,
+      3
+     ],
+     [
+      0,
+      4
+     ],
+     [
+      1,
+      4
+     ],
+     [
+      3,
+      4
+     ],
+     [
+      4,
+      4
+     ]
+    ]
+   },
+   {
+    "id": "straw_hut_closed",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 6,
+    "y": 0,
+    "w": 6,
+    "h": 5,
+    "kind": "door",
+    "name": "원두막 초가(닫힌 문)",
+    "description": "같은 움집에 짚 문을 닫은 모양. 문 칸 (2,4) 만 통행(이벤트 문 자리).",
+    "solid": [
+     [
+      1,
+      0
+     ],
+     [
+      2,
+      0
+     ],
+     [
+      3,
+      0
+     ],
+     [
+      0,
+      1
+     ],
+     [
+      1,
+      1
+     ],
+     [
+      2,
+      1
+     ],
+     [
+      3,
+      1
+     ],
+     [
+      4,
+      1
+     ],
+     [
+      0,
+      2
+     ],
+     [
+      1,
+      2
+     ],
+     [
+      2,
+      2
+     ],
+     [
+      3,
+      2
+     ],
+     [
+      4,
+      2
+     ],
+     [
+      0,
+      3
+     ],
+     [
+      1,
+      3
+     ],
+     [
+      2,
+      3
+     ],
+     [
+      3,
+      3
+     ],
+     [
+      4,
+      3
+     ],
+     [
+      0,
+      4
+     ],
+     [
+      1,
+      4
+     ],
+     [
+      3,
+      4
+     ],
+     [
+      4,
+      4
+     ]
+    ]
+   },
+   {
+    "id": "straw_hut_storehouse",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 0,
+    "y": 5,
+    "w": 6,
+    "h": 5,
+    "kind": "tall",
+    "name": "원두막 초가(문 없는 곳간)",
+    "description": "문 없이 둘러친 초가 곳간·집 뒷면. 지붕 전체가 막힌다.",
+    "solid": [
+     [
+      1,
+      0
+     ],
+     [
+      2,
+      0
+     ],
+     [
+      3,
+      0
+     ],
+     [
+      0,
+      1
+     ],
+     [
+      1,
+      1
+     ],
+     [
+      2,
+      1
+     ],
+     [
+      3,
+      1
+     ],
+     [
+      4,
+      1
+     ],
+     [
+      0,
+      2
+     ],
+     [
+      1,
+      2
+     ],
+     [
+      2,
+      2
+     ],
+     [
+      3,
+      2
+     ],
+     [
+      4,
+      2
+     ],
+     [
+      0,
+      3
+     ],
+     [
+      1,
+      3
+     ],
+     [
+      2,
+      3
+     ],
+     [
+      3,
+      3
+     ],
+     [
+      4,
+      3
+     ],
+     [
+      0,
+      4
+     ],
+     [
+      1,
+      4
+     ],
+     [
+      3,
+      4
+     ],
+     [
+      4,
+      4
+     ],
+     [
+      2,
+      4
+     ]
+    ]
+   },
+   {
+    "id": "produce_stall",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 12,
+    "y": 0,
+    "w": 2,
+    "h": 3,
+    "kind": "prop",
+    "name": "천막 채소 가판",
+    "description": "천막 아래 말린 고기·마늘을 걸고 채소 바구니를 놓은 장터 가판. 앞에 흰 곡물 상자·고추 상자가 붙은 한 벌(2×3, 전부 막힘)."
+   },
+   {
+    "id": "rice_crate",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 9,
+    "y": 7,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "흰 곡물 상자",
+    "description": "쌀·소금 같은 흰 곡물을 담은 나무 상자(가판 앞 상자를 따로 떼어 낸 것)."
+   },
+   {
+    "id": "pepper_bean_crate",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 10,
+    "y": 7,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "고추·콩 상자",
+    "description": "붉은 고추와 푸른 콩을 칸칸이 담은 상자(가판 앞 상자를 따로 떼어 낸 것)."
+   },
+   {
+    "id": "standing_crates_tall",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 14,
+    "y": 0,
+    "w": 1,
+    "h": 2,
+    "kind": "tall",
+    "name": "세워 둔 나무 상자(높은 쪽)",
+    "description": "빈 나무 상자 둘을 세워 쌓은 것. 아랫줄만 막힘."
+   },
+   {
+    "id": "standing_crates_low",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 15,
+    "y": 0,
+    "w": 1,
+    "h": 2,
+    "kind": "tall",
+    "name": "세워 둔 나무 상자(낮은 쪽)",
+    "description": "빈 나무 상자 둘을 세워 쌓은 것(반대 모양)."
+   },
+   {
+    "id": "tilted_crates_empty_a",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 14,
+    "y": 2,
+    "w": 1,
+    "h": 2,
+    "kind": "tall",
+    "name": "기울인 빈 진열 상자",
+    "description": "가판 앞에 비스듬히 세운 빈 진열 상자 둘."
+   },
+   {
+    "id": "tilted_crates_empty_b",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 15,
+    "y": 2,
+    "w": 1,
+    "h": 2,
+    "kind": "tall",
+    "name": "기울인 빈 진열 상자(짝)",
+    "description": "기울인 빈 진열 상자 둘(반대 짝)."
+   },
+   {
+    "id": "tilted_crates_cabbage",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 12,
+    "y": 3,
+    "w": 1,
+    "h": 2,
+    "kind": "tall",
+    "name": "기울인 양배추·레몬 진열 상자",
+    "description": "양배추와 노란 과일을 담아 비스듬히 세운 진열 상자."
+   },
+   {
+    "id": "tilted_crates_greens",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 13,
+    "y": 3,
+    "w": 1,
+    "h": 2,
+    "kind": "tall",
+    "name": "기울인 푸성귀·붉은 열매 진열 상자",
+    "description": "잎채소와 붉은 열매를 담아 비스듬히 세운 진열 상자."
+   },
+   {
+    "id": "fire_pit",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 6,
+    "y": 5,
+    "w": 2,
+    "h": 2,
+    "kind": "prop",
+    "name": "돌 화덕",
+    "description": "둥근 돌로 두른 모닥불 자리와 장작. 마을 공터 가운데(막힘)."
+   },
+   {
+    "id": "fish_basket",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 8,
+    "y": 5,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "생선 바구니",
+    "description": "잡은 생선을 담은 짚 바구니. 선착장·어시장."
+   },
+   {
+    "id": "empty_basket",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 9,
+    "y": 5,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "빈 짚 바구니",
+    "description": "빈 짚 바구니."
+   },
+   {
+    "id": "tomato_greens_baskets",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 10,
+    "y": 5,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "토마토·푸성귀 바구니",
+    "description": "붉은 열매와 잎채소를 담은 낮은 바구니 둘."
+   },
+   {
+    "id": "leek_basket",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 11,
+    "y": 5,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "대파 바구니",
+    "description": "파·뿌리채소를 담은 짚 바구니."
+   },
+   {
+    "id": "open_crate_tall",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 12,
+    "y": 5,
+    "w": 1,
+    "h": 2,
+    "kind": "tall",
+    "name": "속이 빈 나무 궤짝",
+    "description": "위가 트인 큰 나무 궤짝. 아랫줄만 막힘."
+   },
+   {
+    "id": "empty_barrel",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 13,
+    "y": 5,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "빈 나무통",
+    "description": "빈 나무통."
+   },
+   {
+    "id": "empty_sack",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 14,
+    "y": 5,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "빈 자루",
+    "description": "입을 벌린 빈 삼베 자루."
+   },
+   {
+    "id": "small_wood_crate",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 15,
+    "y": 5,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "작은 나무 상자",
+    "description": "뚜껑 없는 작은 나무 상자."
+   },
+   {
+    "id": "apple_crate",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 8,
+    "y": 6,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "붉은 열매 상자",
+    "description": "붉은 열매를 가득 담은 나무 상자."
+   },
+   {
+    "id": "greens_carrot_crates",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 9,
+    "y": 6,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "채소·당근 작은 상자",
+    "description": "잎채소와 당근을 담은 작은 상자 둘."
+   },
+   {
+    "id": "grain_barrel",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 10,
+    "y": 6,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "곡물 나무통",
+    "description": "곡물이 담긴 나무통."
+   },
+   {
+    "id": "flour_sack",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 11,
+    "y": 6,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "가루 자루",
+    "description": "흰 가루·쌀을 채운 자루."
+   },
+   {
+    "id": "fruit_bowls",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 13,
+    "y": 6,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "과일 그릇",
+    "description": "붉은 열매와 귤을 담은 나무 그릇 둘."
+   },
+   {
+    "id": "egg_pepper_crates",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 14,
+    "y": 6,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "알·고추 상자",
+    "description": "흰 알과 붉은 고추를 담은 작은 상자 둘."
+   },
+   {
+    "id": "onion_crate",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 15,
+    "y": 6,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "양파 상자",
+    "description": "흰 양파·마늘을 담은 긴 상자."
+   },
+   {
+    "id": "slatted_crate",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 6,
+    "y": 7,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "살 나무 궤짝",
+    "description": "흰 살 나무 궤짝(선착장 짐)."
+   },
+   {
+    "id": "small_slatted_crates",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 7,
+    "y": 7,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "작은 살 궤짝 둘",
+    "description": "작은 흰 살 궤짝 둘."
+   },
+   {
+    "id": "woven_trays",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 8,
+    "y": 7,
+    "w": 1,
+    "h": 1,
+    "kind": "decal",
+    "name": "짚 채반 둘",
+    "description": "바닥에 놓은 둥근 짚 채반 둘(말리는 생선·열매 자리, 통행)."
+   },
+   {
+    "id": "cloth_stall",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 12,
+    "y": 7,
+    "w": 3,
+    "h": 3,
+    "kind": "prop",
+    "name": "천막 잡화 가판",
+    "description": "천막 아래 연장·천·그릇을 파는 잡화 가판(3×3, 막힘). 실내 상점용 조각이라 가판 안쪽 뒷벽이 비어 바닥이 비친다 — 뒤에 세운 상자·풀밭을 붙여 가린다."
+   },
+   {
+    "id": "leafy_shrub",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 0,
+    "y": 10,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "잎 넓은 덤불",
+    "description": "넓은 잎 덤불."
+   },
+   {
+    "id": "violet_flower_bush",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 1,
+    "y": 10,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "보라 꽃 덤불",
+    "description": "보라 꽃이 핀 덤불."
+   },
+   {
+    "id": "blue_flower_bush",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 2,
+    "y": 10,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "파란 꽃 덤불",
+    "description": "작은 파란 꽃 덤불."
+   },
+   {
+    "id": "yellow_flower_bush",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 3,
+    "y": 10,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "노란 꽃 덤불",
+    "description": "노란 꽃대가 솟은 덤불."
+   },
+   {
+    "id": "small_blue_flowers",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 4,
+    "y": 10,
+    "w": 1,
+    "h": 1,
+    "kind": "decal",
+    "name": "작은 파란 꽃",
+    "description": "바닥의 작은 파란 꽃 포기(통행)."
+   },
+   {
+    "id": "daisy_clump",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 5,
+    "y": 10,
+    "w": 1,
+    "h": 1,
+    "kind": "decal",
+    "name": "흰 들국화 포기",
+    "description": "흰 들국화 포기(통행)."
+   },
+   {
+    "id": "leaf_sprout",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 6,
+    "y": 10,
+    "w": 1,
+    "h": 1,
+    "kind": "decal",
+    "name": "어린 잎 포기",
+    "description": "어린 풀잎 포기(통행)."
+   },
+   {
+    "id": "mossy_stones",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 7,
+    "y": 10,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "이끼 낀 돌 둘",
+    "description": "작은 돌 두세 개 무더기(막힘)."
+   },
+   {
+    "id": "pebbles",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 8,
+    "y": 10,
+    "w": 1,
+    "h": 1,
+    "kind": "decal",
+    "name": "흩어진 조약돌",
+    "description": "바닥 조약돌(통행)."
+   },
+   {
+    "id": "grass_clump",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 9,
+    "y": 10,
+    "w": 1,
+    "h": 1,
+    "kind": "decal",
+    "name": "풀 포기",
+    "description": "연둣빛 풀 포기(통행)."
+   },
+   {
+    "id": "broadleaf_plant",
+    "sheet": "C_REFMAP_South_Island.png",
+    "x": 10,
+    "y": 10,
+    "w": 1,
+    "h": 1,
+    "kind": "prop",
+    "name": "넓은 잎 풀",
+    "description": "넓은 잎 풀 포기(막힘)."
    }
   ],
-  "guide": "# REFMAP 남쪽 섬 조립법\n\n작가(REFMAP)의 남국 섬 팩. 칸 48px. 흰 모래사장·청록 바다·밝은 풀밭·회색 바위 대지·정글 수풀. 집 그림은 없다(마을은 다른 팩의 집을 얹는다).\n\n## 1. 바닥\n- 해변은 전체를 `\"모래사장\"` 으로 깔고 얼룩을 덩이로 섞는다: 물가 쪽 띠에 `\"잔돌 모래\"`, 길·발자국 자리에 `\"젖은 모래\"`, 풀밭 가장자리에 `\"마른 풀 모래\"`.\n- 섬 안쪽은 `\"풀밭\"` 덩이(둘레가 모래로 번지므로 모래 위에 바로 칠한다). 바위 지대는 `\"모래 속 바위 바닥\"`.\n- 정글·바위 언덕은 전체를 `\"바위 바닥\"` 으로 깔고 `\"바위 속 풀밭\"`·`\"풀 섞인 바위 바닥\"` 덩이, 길은 `\"바위 속 모래\"` 2~3칸 폭.\n- 2층 겹침: 수풀 덩이는 `\"정글 수풀\"`, 잎 풀은 `\"클로버 풀\"`, 흙 번짐은 `\"흙 얼룩\"`, 흰 잔가지 얼룩은 `\"흰 마른 풀줄기\"`, 막힌 돌무더기는 `\"바위 더미\"`.\n\n## 2. 높낮이 (A4)\n- 윗면 덩이 **바로 아래** 벽 1~2줄. 둘레 땅에 맞춰 짝을 고른다:\n  - 모래밭: `\"모래톱 바위 대지 윗면\"` 또는 `\"풀 대지 윗면(모래)\"` + `\"모래 밑 절벽 벽\"`.\n  - 풀밭: `\"풀밭 바위 대지 윗면\"` 또는 `\"풀 대지 윗면(풀밭)\"` + `\"풀 밑 절벽 벽\"`.\n  - 바위 바닥: `\"회색 바위 대지 윗면\"` 또는 `\"풀 대지 윗면\"` + `\"바위 바닥 절벽 벽\"`.\n- 절벽 벽 줄에 `cave_entrance`(1×2)를 박으면 동굴 입구. 절벽 오른쪽에 `cliff_shadow_tall` 로 그림자.\n- 들판에 솟은 바위는 `round_rock_pillar`·`rock_mesa`(아랫줄만 막힘), 낮은 바위는 `big_rock_mound`·`rock_pile`·`small_rock`.\n\n## 3. 물\n- 바다는 `\"바다\"`(둘레에 모래 물가·물거품이 붙어 있다 — 바다와 닿는 땅은 모래로 둔다).\n- 먼 바다는 2층 `\"깊은 바다\"` 덩이(물가에서 3칸 이상 떨어져서), 암초는 2층 `\"물속 바위\"` 작은 덩이.\n- 바위 지대의 샘·웅덩이는 `\"바위 웅덩이 물\"`(둘레 바위 둑), 고인 짙은 물은 2층 `\"바위 둑 고인 물\"`.\n\n## 4. 물체\n- 나무는 `palm_tree` 를 2~4그루씩 덩이로, 기울기 다른 곳에 드문드문. 밑동 곁에 `coconut_sprout`.\n- 풀밭 가장자리에 `fern_bush`·`yellow_flower_plant`·`grass_tuft`·`grass_tufts`.\n- 정글은 `jungle_bush_block`·`jungle_bush_column`·`jungle_bush_row`·`jungle_bush_small` 을 섞어 막힌 수풀 벽을 만든다.\n- 해변 잡동사니: `broken_barrel`·`plank_bundle`·`crossed_planks`·`wooden_stakes`·`driftwood`·`dry_branches`·`shells` 를 물가에 흩뿌린다(같은 것을 줄 세우지 않는다).\n- 바위 속 모래 자리 `sand_patch_rock`, 풀 띠 `grass_rock_strip` 은 바위 바닥 위 장식.\n"
+  "guide": "# REFMAP 남쪽 섬 조립법\n\n작가(REFMAP)의 남국 섬 팩. 칸 48px. 흰 모래사장·청록 바다·밝은 풀밭·회색 바위 대지·정글 수풀. 확장 시트(같은 작가 단품)로 초가 움집·돌 화덕·시장 가판·바구니·꽃 덤불이 붙었다(시트 `C`, `A2_Extra`).\n\n## 1. 바닥\n- 해변은 전체를 `\"모래사장\"` 으로 깔고 얼룩을 덩이로 섞는다: 물가 쪽 띠에 `\"잔돌 모래\"`, 길·발자국 자리에 `\"젖은 모래\"`, 풀밭 가장자리에 `\"마른 풀 모래\"`.\n- 섬 안쪽은 `\"풀밭\"` 덩이(둘레가 모래로 번지므로 모래 위에 바로 칠한다). 바위 지대는 `\"모래 속 바위 바닥\"`.\n- 정글·바위 언덕은 전체를 `\"바위 바닥\"` 으로 깔고 `\"바위 속 풀밭\"`·`\"풀 섞인 바위 바닥\"` 덩이, 길은 `\"바위 속 모래\"` 2~3칸 폭.\n- 2층 겹침: 수풀 덩이는 `\"정글 수풀\"`, 잎 풀은 `\"클로버 풀\"`, 흙 번짐은 `\"흙 얼룩\"`, 흰 잔가지 얼룩은 `\"흰 마른 풀줄기\"`, 막힌 돌무더기는 `\"바위 더미\"`.\n\n## 2. 높낮이 (A4)\n- 윗면 덩이 **바로 아래** 벽 1~2줄. 둘레 땅에 맞춰 짝을 고른다:\n  - 모래밭: `\"모래톱 바위 대지 윗면\"` 또는 `\"풀 대지 윗면(모래)\"` + `\"모래 밑 절벽 벽\"`.\n  - 풀밭: `\"풀밭 바위 대지 윗면\"` 또는 `\"풀 대지 윗면(풀밭)\"` + `\"풀 밑 절벽 벽\"`.\n  - 바위 바닥: `\"회색 바위 대지 윗면\"` 또는 `\"풀 대지 윗면\"` + `\"바위 바닥 절벽 벽\"`.\n- 절벽 벽 줄에 `cave_entrance`(1×2)를 박으면 동굴 입구. 절벽 오른쪽에 `cliff_shadow_tall` 로 그림자.\n- 들판에 솟은 바위는 `round_rock_pillar`·`rock_mesa`(아랫줄만 막힘), 낮은 바위는 `big_rock_mound`·`rock_pile`·`small_rock`.\n\n## 3. 물\n- 바다는 `\"바다\"`(둘레에 모래 물가·물거품이 붙어 있다 — 바다와 닿는 땅은 모래로 둔다).\n- 먼 바다는 2층 `\"깊은 바다\"` 덩이(물가에서 3칸 이상 떨어져서), 암초는 2층 `\"물속 바위\"` 작은 덩이.\n- 바위 지대의 샘·웅덩이는 `\"바위 웅덩이 물\"`(둘레 바위 둑), 고인 짙은 물은 2층 `\"바위 둑 고인 물\"`.\n\n## 4. 물체\n- 나무는 `palm_tree` 를 2~4그루씩 덩이로, 기울기 다른 곳에 드문드문. 밑동 곁에 `coconut_sprout`.\n- 풀밭 가장자리에 `fern_bush`·`yellow_flower_plant`·`grass_tuft`·`grass_tufts`.\n- 정글은 `jungle_bush_block`·`jungle_bush_column`·`jungle_bush_row`·`jungle_bush_small` 을 섞어 막힌 수풀 벽을 만든다.\n- 해변 잡동사니: `broken_barrel`·`plank_bundle`·`crossed_planks`·`wooden_stakes`·`driftwood`·`dry_branches`·`shells` 를 물가에 흩뿌린다(같은 것을 줄 세우지 않는다).\n- 바위 속 모래 자리 `sand_patch_rock`, 풀 띠 `grass_rock_strip` 은 바위 바닥 위 장식.\n\n## 5. 꾸미기 조립법 (확장 시트 C · A2_Extra)\n- 새 재료: `\"무성한 풀\"` — 2층 겹침 연둣빛 풀 덤불(통행). 정글 빈터·길 가장자리, 마을 뒤뜰 야자수 발치.\n  `\"석호 얕은 물\"`(1·2·3) — 흰 물거품 테를 두른 얕은 청록 물(아래 「산호 석호」).\n  마을 마당·집 앞 길은 `\"풀밭\"` 덩이에 구멍을 내듯 `\"모래사장\"` 으로 둥글게 비운다(풀 가장자리가 부드럽게 번진다).\n- **움집** `straw_hut_open`(열린 입구)·`straw_hut_closed`(짚 문)·`straw_hut_storehouse`(문 없는 곳간)는 6×5(오른쪽 1열은 그림자).\n  지붕은 전부 막히고 **입구 칸 (2,4) 하나만 통행**이다 — 입구 칸과 그 아래 1칸은 비우고, 그 앞에서 모래 마당 길이 시작되게 한다.\n  문은 늘 남쪽이므로 마당은 집 남쪽에 둔다. 마당 남쪽 집은 문이 바깥(바닷가 길)을 보게 두고 길을 그 문까지 잇는다. 집끼리 1~2칸 띄운다.\n- **섬 마을** = 풀밭 속 모래 마당(「풀밭」 덩이 안의 둥근 「모래사장」 자리, 네모·계단 금지) 가운데 `fire_pit`(2×2 돌 화덕, 막힘) + 곁에 `grain_barrel`·`leek_basket`·`tomato_greens_baskets` 한 덩이.\n  마당 둘레에 움집 3~4채(입구가 마당을 본다), 한쪽 끝에 곳간 + `flour_sack`·`empty_sack`·`small_wood_crate`.\n  집 옆 뜰에 `violet_flower_bush`·`daisy_clump` 한두 포기. 뒤는 절벽 벽·야자수, 앞은 바닷가.\n- **생선 말리는 곳** = `woven_trays`(짚 채반, 통행) 2~3개 + `fish_basket` 하나를 바닷가 길 곁 풀밭이나 모래에 모은다.\n- **해변 어시장** = 모래 골목(폭 2, 젖은 모래는 짧은 얼룩 2~3개만 — 줄·사선으로 잇지 않는다) 북쪽에 가판 셋을 나란히, 모두 골목을 본다.\n  채소 가판: `produce_stall`(2×3, 앞 상자 포함) 양옆에 `tilted_crates_cabbage`/`tilted_crates_greens`(1×2).\n  생선 좌판: `open_crate_tall` 두 개를 기둥처럼 3칸 간격으로 세우고 사이 뒷줄에 `empty_barrel`, 앞줄에 `fish_basket`·`empty_basket`·`fish_basket`(3×3 한 덩이).\n  잡화 가판: `cloth_stall`(3×3) 양옆 앞줄에 `egg_pepper_crates`·`onion_crate`, 뒤(뒷벽이 비치는 쪽)에 `standing_crates_tall`/`low`·`grain_barrel`·`flour_sack` 짐 더미를 붙인다.\n  가판 바로 앞 1칸은 손님이 설 자리로 비운다. 물가에 손질 자리 2×2(`woven_trays` 둘 + `empty_barrel` + `fish_basket`),\n  모래톱 머리에 배에서 내린 짐(`small_wood_crate`·`empty_basket`·`grain_barrel`).\n- **배 매는 곳** = 모래톱 끝 옆 물칸에 `wooden_stakes`(말뚝, 물속에 서도 된다 — 모래 칸과 붙여서) + 모래톱 끝에 `fish_basket`·`empty_basket` 한 덩이. 흰 살 궤짝 `slatted_crate` 는 따뜻한 나무색 사이에서 튀므로 선착장 짐으로만 드물게.\n- **산호 석호** = 모래톱이 둥글게 두른 얕은 물. 1층은 `\"바다\"`, 그 위 2층에 `\"석호 얕은 물\"`(A2_Extra, 흰 물거품 테와 모래 여백이 그려진 불투명 조각)을 덩이로 덮는다\n  — 모래와 만나는 둘레가 흰 테로 번진다. 둘레를 한 칸씩 들쭉날쭉하게(네모·마름모 금지). 석호 안에는 `small_rock` 1~2개만(2층 `\"물속 바위\"` 는 얕은 물 위에 겹칠 수 없다).\n  바깥 `\"바다\"` 는 물가 1칸만 밝게 두고 나머지를 2층 `\"깊은 바다\"` 로 덮어 석호의 밝은 물과 대비시킨다. 석호와 바다 사이 모래톱은 폭 2~3(길이 된다).\n  서쪽 뭍에 움집 + 문 앞 채반 둘·생선 바구니·말뚝(그물 말림), 남쪽 모래톱에 `big_rock_mound`(물가에 반쯤 걸쳐)+`shells`+`empty_basket`(조개 캐기),\n  모래톱 끝에 `big_rock_mound` 낚시 바위 + `fish_basket` + 물속 `wooden_stakes`.\n  해변의 작은 물웅덩이는 `\"석호 얕은 물 3\"` 2~4칸을 같은 방식(1층 바다 + 2층)으로.\n- **정글 빈터 야영** = 빈터 가운데 `fire_pit`, 빈터 어귀(길과 만나는 곳)에 `grain_barrel`·`flour_sack`, 땅에 `woven_trays`, 한쪽 구석에 `open_crate_tall`·`standing_crates_low`·`empty_sack` 짐 더미.\n  빈터 둘레 각진 수풀 경계에는 2층 `\"무성한 풀\"` 을 한 칸 폭으로 둘러 테를 부드럽게 한다. 폐허 기둥 발치에 `mossy_stones`.\n  샘 둘레는 `violet_flower_bush`·`daisy_clump`·`small_blue_flowers`로 꽃을 둘러 준다.\n- 막힘 정리: 움집 지붕·곳간·가판·화덕·통·자루·상자·바구니·덤불(`leafy_shrub`·`*_flower_bush`·`broadleaf_plant`·`mossy_stones`)은 막힘.\n  채반·작은 꽃(`small_blue_flowers`·`daisy_clump`)·`leaf_sprout`·`pebbles`·`grass_clump` 는 통행. 진열 상자·세운 상자·궤짝(1×2)은 아랫줄만 막힘.\n- 수풀 가장자리 조각(B 시트 tile) 바로 옆 한 칸은 비워 둔다 — 막으면 그 조각에 닿을 칸이 없어진다.\n"
  },
  {
   "id": "refmap-volcano",

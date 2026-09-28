@@ -2,6 +2,7 @@ import type { GameEvent, GameMap, MapMinimapSetting, TilesetDef } from "@/projec
 import type { PlaySession } from "@/project/session";
 import { store } from "@/project/store";
 import { drawMapTileLayers, loadTilesetImage } from "@/editor/mapTileDraw";
+import { withWorldCoastRenderPass } from "@/project/defaults/worldCoastMapping";
 import { eventBodyRect } from "@/project/eventFootprintQuery";
 
 export type MinimapCorner = NonNullable<MapMinimapSetting["corner"]>;
@@ -73,7 +74,8 @@ async function renderMinimapTexture(
   canvas.height = map.height * map.tileSize;
   ctx.imageSmoothingEnabled = false;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  drawMapTileLayers(ctx, image, map, tileset, 1);
+  // 칸마다 부르는 월드 해안 판정의 내용 비교를 이 동기 그리기 동안 한 번만 한다(renderTiles 와 같다).
+  withWorldCoastRenderPass(() => drawMapTileLayers(ctx, image, map, tileset, 1));
   if (showEvents) drawEventMarkers(ctx, map);
 }
 

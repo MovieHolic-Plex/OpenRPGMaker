@@ -37,13 +37,11 @@ import { searchResources } from "@/assets/resourceSearch";
 import {
   charsetGraphic,
   compileSimplePages,
-  examineMarkGraphic,
   resolveGraphic,
   resolveGraphicQuery,
   usedCharsetGraphicKeysOnMap,
   type GraphicSpec,
 } from "./eventCompile";
-import { mapTexture } from "@/project/mapTexture";
 import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
 import { assertEventPartyActorReferences } from "./partyActorReferences";
 import { declareReferencedFlags, declaredFlagsWarning, ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
@@ -250,7 +248,7 @@ function commandArrayOrEmpty(value: unknown, label: string, warnings?: string[])
   return normalizeLowLevelCommandArray(value, label, warnings);
 }
 
-function normalizeEventCommandArrays(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event, bareCell?: boolean): void {
+function normalizeEventCommandArrays(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event): void {
   if (supplied === event || Object.prototype.hasOwnProperty.call(supplied, "commands")) {
     event.commands = commandArrayOrEmpty(event.commands, `${event.id}.commands`, warnings);
   }
@@ -264,7 +262,7 @@ function normalizeEventCommandArrays(event: GameEvent, warnings?: string[], supp
     if (typeof page !== "object" || page === null || Array.isArray(page)) continue;
     const pageId = typeof page.id === "string" ? page.id : `pages[${index}]`;
     (page as EventPage).commands = commandArrayOrEmpty((page as { commands?: unknown }).commands, `${event.id}.${pageId}.commands`, warnings);
-    fillRequiredPageFields(event, page as Partial<EventPage>, pageId, warnings, bareCell);
+    fillRequiredPageFields(event, page as Partial<EventPage>, pageId, warnings);
   }
 }
 
@@ -334,9 +332,15 @@ function objectEventGraphic(event: GameEvent, page: Partial<EventPage>): { graph
   // 머리 명사(괄호 앞 마지막 낱말)만 본다 — 「붉은 문」의 「붉은」이 붉은 몬스터를, 「고양이 석상」의 「고양이」가
   // 산 고양이를 고르면 안 된다.
   const head = name.replace(/[(（].*$/u, "").trim().split(/[\s·,/]+/u).filter(Boolean).at(-1);
+  // 이름 전체가 라벨과 같으면 그 칸이 먼저다 — 「감옥 문」이 머리 명사 「문」만 보고 나무 문이 되던 경로(2026-09-27).
+  const whole = name.replace(/[(（].*$/u, "").trim();
+  const exact = searchResources("charset", whole).find((hit) => hit.label.replace(/[(（].*$/u, "").trim() === whole);
+  const exactParsed = exact ? /^charset:(.+):(\d+)$/u.exec(exact.id) : null;
+  if (exactParsed) return { graphic: charsetGraphic(exactParsed[1]!, Number(exactParsed[2])), label: exact!.label };
   for (const hit of head ? searchResources("charset", head).slice(0, 6) : []) {
-    const labelWords = hit.label.split(/[\s()（）·,/]+/u).filter(Boolean);
-    if (!labelWords.includes(head!)) continue;
+    // 라벨의 머리 명사끼리 맞아야 한다. 라벨 낱말 어디든 맞으면 「큰 나무」가 「나무 문(패널)」 그림을 받았다(2026-09-27).
+    const labelHead = hit.label.replace(/[(（].*$/u, "").trim().split(/[\s·,/]+/u).filter(Boolean).at(-1);
+    if (labelHead !== head) continue;
     const parsed = /^charset:(.+):(\d+)$/u.exec(hit.id);
     if (parsed) return { graphic: charsetGraphic(parsed[1]!, Number(parsed[2])), label: hit.label };
   }
@@ -431,30 +435,14 @@ function bodyNamesSpeaker(body: unknown, name: string): boolean {
 }
 
 /**
- * graphic 없이 세워진 조사 이벤트가 게임 검사(dream-invisible-objects) 기준의 「맨바닥」에 있는가 —
- * 지배 바닥 타일과 같고 그 칸 위층 장식도 없을 때. 2026-09-24 꿈 세계 r4: 시계 눈알 석상 3개가
- * 「바닥에서 보이지 않습니다」 경고를 받고도 투명 그대로 방치돼 검사에 계속 걸렸다 — 경고는 모델이
- * 무시하므로 같은 기준으로 표식을 답한다.
- */
-function isBareDominantFloorCell(map: GameMap, x: number, y: number): boolean {
-  if (!Number.isInteger(x) || !Number.isInteger(y) || x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
-  const texture = mapTexture(map);
-  const index = y * map.width + x;
-  return map.lowerTiles[index] === texture.dominantTile && !(map.upperTiles[index] > 0);
-}
-
-/**
  * `EventPage` 필수 필드를 채운다.
  *
  * 모델은 이벤트 레벨에만 trigger 를 주고 페이지에는 conditions/commands 만 담아 보내는 일이 흔하다.
  * 필수 필드가 비면 프로젝트 린트가 `page.trigger.kind` / `movement.route` 를 읽다 TypeError 로 죽고,
  * 사용자에게는 "후처리 실패: Cannot read properties of undefined" 라는 고칠 수 없는 메시지만 남는다
  * (2026-08-23 실측: upsert_event 3회 연속 같은 실패). 값을 채워 통과시키고 무엇을 채웠는지 경고한다.
- *
- * `bareCell` 은 이벤트 칸이 지배 바닥에 위층 장식 없는 맨바닥일 때 true — graphic 없이 세워진 조사
- * 사물에 보석 표식을 붙이는 기준이다(생략하면 경고만 남기던 옛 동작).
  */
-function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, pageId: string, warnings?: string[], bareCell?: boolean): void {
+function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, pageId: string, warnings?: string[]): void {
   const filled: string[] = [];
   if (page.id === undefined) { page.id = pageId; filled.push("id"); }
   if (page.name === undefined) { page.name = event.id; filled.push("name"); }
@@ -484,28 +472,13 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
     const previousLook = siblingGraphic ? undefined : PREVIOUS_EVENT_LOOK.get(event);
     const object = siblingGraphic || previousLook ? null : objectEventGraphic(event, page);
     if (object) {
-      if (object.graphic.transparent === true && bareCell === true && !TILE_HOTSPOT_EVENTS.has(event)) {
-        // 맨바닥 위 graphic 없는 조사 사물 — 경고만으로는 모델이 반응하지 않는다(2026-09-24 꿈 세계 r4:
-        // 석상 3개 연속 투명+경고). place_examine_hotspots(#1370) 와 같은 보석 표식으로 답하고,
-        // 발밑 우선순위라 길을 막지 않는다. 투명이 의도면 graphic:{transparent:true} 를 명시하면 된다.
-        page.graphic = examineMarkGraphic();
-        if (priorityOmitted) {
-          page.priority = "below";
-          if (page.overlapForbidden === undefined) page.overlapForbidden = false;
-          const at = filled.indexOf("priority");
-          if (at >= 0) filled[at] = "priority(below — 맨바닥 조사 사물 보석 표식)";
-        }
-        warnings?.push(
-          `${event.id}.${pageId}: '${event.name ?? event.id}' 조사 사물이 graphic 없이 맨바닥 위라 보석 표식을 붙였습니다 — ` +
-          `물건에 맞는 그림은 graphic, 그 칸 사물 타일은 paint_tiles·place_props 로 바꾸세요(투명이 의도면 graphic:{transparent:true}).`,
-        );
-      } else {
-        page.graphic = object.graphic;
-        warnings?.push(object.graphic.transparent
-          ? `${event.id}.${pageId}: '${event.name ?? event.id}' 은(는) 말하는 인물이 아니라 조사할 사물로 보여 주민 그림을 세우지 않고 투명으로 두었습니다 — ` +
-            `이대로는 바닥에서 보이지 않습니다. 그 칸에 사물 타일을 칠하거나(paint_tiles·place_props) graphic 을 지정하세요.`
-          : `${event.id}.${pageId}: 조사할 사물 '${event.name ?? event.id}' 에 이름으로 찾은 그림 「${object.label}」 을 붙였습니다.`);
-      }
+      // 이름에 맞는 그림이 없으면 투명으로 두고 알린다. 이름과 무관한 대체 그림(예전 보석 표식)은 붙이지 않는다 —
+      // 「고대 진실의 제단」이 보석으로 저장돼 제단 자리에 보석이 놓였다(2026-09-27 사용자 지적).
+      page.graphic = object.graphic;
+      warnings?.push(object.graphic.transparent
+        ? `${event.id}.${pageId}: '${event.name ?? event.id}' 은(는) 말하는 인물이 아니라 조사할 사물로 보여 주민 그림을 세우지 않고 투명으로 두었습니다 — ` +
+          `이대로는 바닥에서 보이지 않습니다. 그 칸에 사물 타일을 칠하거나(paint_tiles·place_props) graphic 을 지정하세요.`
+        : `${event.id}.${pageId}: 조사할 사물 '${event.name ?? event.id}' 에 이름으로 찾은 그림 「${object.label}」 을 붙였습니다.`);
     } else {
       page.graphic = siblingGraphic ? structuredClone(siblingGraphic) : previousLook ? structuredClone(previousLook) : resolveGraphicQuery("villager");
       warnings?.push(
@@ -706,7 +679,7 @@ function relocateImpassableTransfers(project: Project, event: GameEvent, warning
 }
 
 // 페이지 커맨드 shape를 사전 검증(기존 io 검증기 위임).
-function assertEventShape(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event, project?: Project, bareCell?: boolean): void {
+function assertEventShape(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event, project?: Project): void {
   try {
     // 조건 모양을 먼저 본다 — `{kind:"all"}`(conditions 배열 없음)이 뒤쪽 검사기에서 「conditions is not iterable」
     // 같은 JS 예외로 새어 나가 모델이 무엇을 고칠지 몰랐다(2026-09-24 회상 스토리 도그푸딩, 같은 호출 재시도).
@@ -717,7 +690,7 @@ function assertEventShape(event: GameEvent, warnings?: string[], supplied: Parti
       }
       page.conditions.forEach((condition, index) => validateConditionShape(`${event.id}.${page.id}.conditions[${index}]`, condition));
     }
-    normalizeEventCommandArrays(event, warnings, supplied, bareCell);
+    normalizeEventCommandArrays(event, warnings, supplied);
     validateLowLevelCommandArray(`${event.id}.commands`, event.commands);
     for (const page of event.pages ?? []) {
       validateLowLevelCommandArray(`${event.id}.${page.id}.commands`, page.commands);
@@ -926,7 +899,6 @@ function routeRootCommandsIntoPage(
   patch: Partial<GameEvent>,
   existing: GameEvent | undefined,
   warnings: string[],
-  bareCell?: boolean,
 ): void {
   const has = (key: keyof GameEvent) => Object.prototype.hasOwnProperty.call(patch, key);
   const pages = event.pages ?? [];
@@ -966,7 +938,7 @@ function routeRootCommandsIntoPage(
       event.pages = [page as EventPage];
       event.commands = structuredClone(existing?.commands ?? []);
       delete (event as { conditions?: unknown }).conditions;
-      fillRequiredPageFields(event, page, `${event.id}_page`, warnings, bareCell);
+      fillRequiredPageFields(event, page, `${event.id}_page`, warnings);
       const moved = [movesCommands ? "commands" : "", pageConditions.length > 0 ? "conditions" : ""].filter(Boolean).join("·");
       warnings.push(
         `pages 없이 보낸 최상위 ${moved} 를 pages[0] 으로 만들었습니다 — 페이지가 없으면 스위치 조건은 무시되고 이벤트가 그 칸을 막습니다.`,
@@ -1113,8 +1085,7 @@ const upsertEvent: ToolDefinition = {
         if (adjusted) warnings.push(placementAdjustedWarning(`이벤트 '${event.id}'`, requested, placement));
       }
     }
-    const bareCell = isBareDominantFloorCell(map, event.x, event.y);
-    routeRootCommandsIntoPage(event, patch, existing, warnings, bareCell);
+    routeRootCommandsIntoPage(event, patch, existing, warnings);
     applyEventLevelGraphic(draft, map, event, patch, warnings);
     // 기존 투명 조사 지점(그림 없는 action 페이지뿐)이나 통행 불가 칸(가구·벽·문 타일) 위의 새 이벤트는 타일이 그림이다.
     const tileHotspot = existing
@@ -1123,7 +1094,7 @@ const upsertEvent: ToolDefinition = {
     if (tileHotspot) TILE_HOTSPOT_EVENTS.add(event);
     const previousLook = existing && "pages" in patch ? eventLook(existing) : undefined;
     if (previousLook) PREVIOUS_EVENT_LOOK.set(event, previousLook);
-    assertEventShape(event, warnings, existing ? patch : event, draft, bareCell);
+    assertEventShape(event, warnings, existing ? patch : event, draft);
     // place_npc 와 같은 규칙: 새로 쓴 페이지가 켜거나 기다리는 스위치·변수를 등록한다. 없으면 도구는 ok 를
     // 돌려준 뒤 커밋 참조 검증이 `switchId가 존재하지 않습니다` 로 쓰기 전체를 반려했다(2026-09-24 오프닝 컷신).
     if (!existing || "pages" in patch || "commands" in patch) ensureEventStoryFlags(draft, event, warnings);
@@ -1315,7 +1286,6 @@ const placeNpc: ToolDefinition = {
       avoidKeys: usedCharsetGraphicKeysOnMap(map),
       seed: `${map.id}:${name}:${x},${y}`,
       overrides: draft.charsetLabels,
-      onFallback: (message) => normalizationWarnings.push(message),
     });
     // 근접 유사 NPC: 상점 역할이면 id가 달라도 기존 이벤트로 합친다(상점 주인+상인 thrash).
     // 일반 NPC는 id 생략일 때만 병합 — 명시 id 2개는 의도적 복수 배치.
@@ -2664,7 +2634,13 @@ const placeBattleBlocker: ToolDefinition = {
     const intro = (args.intro as string[] | undefined) ?? ["적이 앞을 가로막았다!"];
     const victory = (args.victory as string[] | undefined) ?? ["길이 열렸다."];
     const victoryItems = (args.victoryItems as Array<{ itemId: string; amount: number }> | undefined) ?? [];
-    const graphic = resolveGraphic((args.graphic as GraphicSpec | undefined) ?? { query: "monster" }, { overrides: draft.charsetLabels });
+    // graphic 생략 시 부대와 무관한 「monster」 첫 칸(슬라임)을 쓰지 않고 부대 선두 적의 이름으로 찾는다
+    // (2026-09-27 전수 조사: 용 부대가 슬라임으로 서 있었다). 이름으로도 못 찾으면 거절한다.
+    const troop = draft.database.troops.find((entry) => entry.id === troopId)!;
+    const leadEnemy = draft.database.enemies.find((entry) => entry.id === troop.enemyIds[0]);
+    const blockerSpec: GraphicSpec = (args.graphic as GraphicSpec | undefined)
+      ?? { query: leadEnemy?.name?.trim() || troop.name?.trim() || "monster" };
+    const graphic = resolveGraphic(blockerSpec, { overrides: draft.charsetLabels });
     const event = buildFieldMonsterEvent({
       eventId: id,
       x,
@@ -2682,7 +2658,7 @@ const placeBattleBlocker: ToolDefinition = {
     assertEventShape(event);
     upsertEventIntoMap(map, event);
     const warnings = [
-      ...(args.graphic === undefined ? ['graphic 생략 → query:"monster" 기본 적용'] : []),
+      ...(args.graphic === undefined ? [`graphic 생략 → 부대 선두 적 이름 query:"${"query" in blockerSpec ? blockerSpec.query : ""}" 로 찾음`] : []),
       ...(args.fightMovement === "random" ? ["전투 페이지 이동 → random(배회): 순찰형 몬스터"] : []),
       ...(adjusted ? [placementAdjustedWarning(`전투 블로커 '${troopId}'`, { x: requestedX, y: requestedY }, { x, y })] : []),
     ];
@@ -3141,9 +3117,11 @@ const placeStorageChest: ToolDefinition = {
       replacesAutoInspect: true,
     });
     const { x, y, adjusted } = placement;
-    const graphic = resolveGraphic({ query: "서랍장" }, { overrides: draft.charsetLabels });
     const id = (args.id as string | undefined) ?? genId("ev_storage_chest");
     const name = (args.name as string | undefined) ?? "보관 상자";
+    // 이름·템플릿이 금고를 가리키면 금고 그림(object2#2), 아니면 서랍장. 「철제 금고」가 서랍장으로 서던 경로(2026-09-27).
+    const vault = args.template === "vault" || /금고|vault|safe/iu.test(name);
+    const graphic = resolveGraphic({ query: vault ? "금고" : "서랍장" }, { overrides: draft.charsetLabels });
     const chestIdRaw = typeof args.chestId === "string" ? args.chestId.trim() : "";
     const chestId = chestIdRaw || `storage_${id}`;
     const templateRaw = typeof args.template === "string" ? args.template.trim() : "farm";

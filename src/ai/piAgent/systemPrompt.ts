@@ -5,6 +5,7 @@ import { USER_FACING_REPORT_RULE } from "./userFacingCopy";
 
 import type { Project, TilesetDef } from "@/project/types";
 import { gameDesignBriefContext } from "@/project/gameDesignBrief";
+import { hasPlayableSegmentSkeleton, playableSegmentContract } from "@/project/playableSegmentContract";
 import { hasExtraLayers } from "@/project/mapLayers";
 import { referenceOwner } from "@/project/tilesetReferences";
 import { HOUSE_VARIETY_POLICY_LINE, TILESET_FAMILY_POLICY_LINE } from "../promptPolicies";
@@ -40,6 +41,7 @@ export function buildPiAgentSystemPrompt(project: Project, mapIds: readonly stri
     "너는 웹 JRPG 메이커의 시공 에이전트다. 제공된 도구만으로 프로젝트를 편집하며, 도구 밖의 텍스트 편집은 없다.",
     USER_FACING_REPORT_RULE,
     ...(project.gameDesignBrief ? [gameDesignBriefContext(project.gameDesignBrief)] : []),
+    ...(hasPlayableSegmentSkeleton(project) ? [playableSegmentContract(project)] : []),
     ...scope,
     MODERN_TILESET_POLICY_LINE,
     `새 야외·마을의 기본 칩셋은 ${defaultOutdoorTilesetId(project)}이다. 사용자 선택이 있으면 우선하고 author_village의 새 target.tilesetId에 전달한다. 기존 맵의 칩셋은 유지한다. 실내·던전은 해당 용도 칩셋을 선택한다. 기획·세계관이 눈·겨울·눈보라·설원이면 마을은 author_village groundTheme:"snow"(설원 칩셋·눈 날씨), 사막이면 groundTheme:"desert", 화산이면 "volcano", 가을이면 "autumn"(기후 칩셋·잎 없는 고목 덩이), 다른 야외 맵은 set_map_properties climate:{mode:"fixed",weather:"snow",intensity:0.6} 로 기후를 맞춘다 — 전투 배경이 맵 기후를 따른다.`,
@@ -98,7 +100,7 @@ function genreMechanicLines(project: Project): string[] {
     lines.push("가장자리가 반대편으로 이어지는 맵(끝없는 숲·반복 복도)은 set_map_properties loop:\"both\"(또는 horizontal/vertical)로 만든다 — 가장자리 이동 이벤트로 흉내 내지 않는다. create_map 이 두른 테두리 벽은 통행 가능한 바닥으로 다시 칠한다.");
     lines.push("그 맵을 포함한 각 세계는 fill_region 한 장으로 끝내지 않는다. 각 세계 맵에 place_props(material:그 장소의 사물 타일 라벨, density:\"sparse\"|\"normal\"|\"dense\") 를 최소 1회 호출해 위층 장식을 맵 칸의 3% 이상(20×20이면 12칸 이상) 깔고, 조사 이벤트는 그 사물 타일 위에 둔다 — paint_tiles 몇 칸으로는 빈 판 기준(위층 3%)을 넘기 어렵다.");
     lines.push("장식 재료는 기본 칩셋 라벨(침엽수·촛대·바위·시계·돌 계단 등)로 고른다 — forest_harmony 계열은 참고문서를 선행으로 읽지 않으면 여러 차례 거절되므로 야외 마을 맵이 아닌 꿈 세계 장식에는 쓰지 않는다.");
-    lines.push("조사 지점은 place_examine_hotspots 로 모으면 graphic 을 생략해도 보석 표식이 붙는다 — upsert_event 로 graphic 없이 맨바닥에 세우면 플레이어는 찾을 수 없다.");
+    lines.push("조사 지점은 place_examine_hotspots 로 모으고, 그 칸에 먼저 place_props·paint_tiles 로 그 물건의 타일(제단·석상·촛대 …)을 깔거나 이름에 맞는 graphic 을 준다 — graphic 을 생략하면 투명이라 맨바닥에서는 플레이어가 찾을 수 없다.");
   }
   if (/외형|모습|변신|옷을?\s*갈아|effect|이펙트/iu.test(text)) {
     lines.push("주인공 외형 바꾸기(변신·효과·옷)는 m2Command commandId:\"m2-024-change-actor-graphic\" fields:{target:actorId, value:\"charset:<텍스처>:<칸>\"} 로 실제 스프라이트를 바꾼다(대사로만 알리지 않는다). 그림은 list_resources kind:\"charset\" 로 고른다.");

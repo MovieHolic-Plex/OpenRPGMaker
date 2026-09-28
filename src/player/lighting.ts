@@ -40,15 +40,25 @@ export function lightingGradientParams(
   context: LightingMaskContext
 ): LightingMaskParams {
   const state = normalizeLightingState(lighting);
+  const width = Math.max(1, Math.round(context.viewportWidth));
+  const height = Math.max(1, Math.round(context.viewportHeight));
   return {
     ambient: state.ambient,
     color: state.color ?? "#000000",
-    width: Math.max(1, Math.round(context.viewportWidth)),
-    height: Math.max(1, Math.round(context.viewportHeight)),
+    width,
+    height,
+    // 화면과 겹치지 않는 광원은 마스크에 아무 픽셀도 바꾸지 않는다. 서명·그리기에서 빼야 화면 밖
+    // 깜빡이는 광원 하나 때문에 16ms 마다 캔버스 전체를 다시 그리고 텍스처를 올리지 않는다.
     gradients: state.sources
       .map((source) => lightGradientParam(source, context))
-      .filter((param): param is LightGradientParam => param !== null),
+      .filter((param): param is LightGradientParam => param !== null && gradientTouchesViewport(param, width, height)),
   };
+}
+
+/** 그라디언트가 칠하는 사각(drawLightingMask 의 fillRect)이 화면 [0,w]×[0,h] 과 겹치는가. */
+function gradientTouchesViewport(param: LightGradientParam, width: number, height: number): boolean {
+  const r = Math.max(0, param.radiusPx);
+  return param.centerX + r > 0 && param.centerX - r < width && param.centerY + r > 0 && param.centerY - r < height;
 }
 
 export function lightingMaskSignature(params: LightingMaskParams): string {

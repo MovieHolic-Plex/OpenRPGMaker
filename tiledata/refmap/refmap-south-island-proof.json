@@ -1,34 +1,55 @@
 {
   "id": "refmap-south-island-local",
   "tileset": "shared_refmap_south_island",
-  "tiles": 6144,
-  "atlas": "3072×4608",
-  "places": 2,
-  "objectKits": 45,
+  "tiles": 8192,
+  "atlas": "3072×6144",
+  "places": 5,
+  "objectKits": 88,
   "houseKits": 0,
-  "autotileGroups": 41,
-  "bytes": 6190269,
+  "autotileGroups": 45,
+  "bytes": 9113887,
   "maps": {
     "south_island_beach": {
       "place": "shared_refmap_south_island_south_island_beach",
       "size": "38×24",
-      "objects": 53,
+      "objects": 60,
       "houses": 0,
-      "renderSha": "ff095d5f92f2ff0f6999a2823054a8c35b639d840f5c3a48f9feec3c4b38365a"
+      "renderSha": "b80cd745eaf84abd976854ab8f36202016d780f9229faa111d4b49ba2c1d7a30"
+    },
+    "south_island_fish_market": {
+      "place": "shared_refmap_south_island_south_island_fish_market",
+      "size": "22×15",
+      "objects": 32,
+      "houses": 0,
+      "renderSha": "24f48cc755f6311bd8b6c626189b2d5e597c71d6185d9f8f36f02a22b37d8e19"
     },
     "south_island_jungle": {
       "place": "shared_refmap_south_island_south_island_jungle",
       "size": "36×25",
-      "objects": 53,
+      "objects": 239,
       "houses": 0,
-      "renderSha": "cc52396cb2272a7db54542a88d44a3599bfe8038e944fb58626ba1ba3e7e141c"
+      "renderSha": "3a60fa501b30779f39685272550186c626088f064c61b693ba30e9a85e889bab"
+    },
+    "south_island_lagoon": {
+      "place": "shared_refmap_south_island_south_island_lagoon",
+      "size": "26×15",
+      "objects": 15,
+      "houses": 0,
+      "renderSha": "7fdb5d2b856dde4005fee43a8a5aa1a0a7545b03b510add0f00c639a0d37c22b"
+    },
+    "south_island_village": {
+      "place": "shared_refmap_south_island_south_island_village",
+      "size": "28×20",
+      "objects": 41,
+      "houses": 0,
+      "renderSha": "7dabedb3af32b8261468e3b4324157c804635b1c977256f329b1354ed85bbdd4"
     }
   },
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "79f43014b6658fc76c2fce6fb14c73906af600c78ad47a7e19bc2042773150f9",
+  "revision": "0ca8d0a4db3a496fc0e3a5932d6aa9335fa5b7a0f481be42e2a660708c53164c",
   "reloaded": true,
-  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-south-island-2026-09-27T11-55-10-904Z.sqlite",
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-south-island-2026-09-27T21-33-54-356Z.sqlite",
   "otherLibraries": 36,
   "otherLibrariesUnchanged": true,
-  "publishedAt": "2026-09-27T11:55:28.790Z"
+  "publishedAt": "2026-09-27T21:34:13.513Z"
 }

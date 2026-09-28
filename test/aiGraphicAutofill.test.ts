@@ -159,7 +159,10 @@ describe("몬스터 이벤트 기본 외형", () => {
       expect(page.graphic?.sprite?.id).toBeTruthy();
       expect(page.graphic?.transparent).not.toBe(true);
     }
-    expect((result.diff?.warnings ?? []).join(" ")).toContain('query:"monster"');
+    // place_battle_blocker 는 부대와 무관한 monster 첫 칸 대신 부대 선두 적 이름으로 찾는다(2026-09-27 배치 매칭 전수 조사).
+    expect((result.diff?.warnings ?? []).join(" ")).toContain(
+      toolName === "place_battle_blocker" ? "부대 선두 적 이름" : 'query:"monster"',
+    );
   });
 });
 
@@ -334,7 +337,7 @@ describe("add_companion actor 합류 이벤트 외형", () => {
     expect(joinPage?.graphic?.transparent).not.toBe(true);
   });
 
-  it("upsert_actor 로 만든 charset 없는 액터는 주민 charset 으로 폴백한다", () => {
+  it("upsert_actor 로 만든 charset 없는 액터는 주민 charset 으로 대체하지 않고 거절한다", () => {
     const ctx = context();
     const actorId = "actor_ai_companion";
     const classId = ctx.project.database.classes[0]?.id;
@@ -351,14 +354,9 @@ describe("add_companion actor 합류 이벤트 외형", () => {
       trigger: "talk",
     });
 
-    expect(result.ok, result.summary).toBe(true);
-    const eventId = (result.data as { eventId: string }).eventId;
-    const joinPage = ctx.project.maps[ctx.project.startMapId]?.events
-      .find((entry) => entry.id === eventId)?.pages?.find((page) =>
-        page.commands.some((command) => command.kind === "addFollower")
-      );
-    expect(joinPage?.graphic?.sprite?.id).toBe("tex_easyrpg_charset_people1");
-    expect(joinPage?.graphic?.transparent).not.toBe(true);
+    // 고양이 동료가 마을 사람으로 서 있던 폴백을 없앴다(2026-09-27 배치 매칭 전수 조사).
+    expect(result.ok).toBe(false);
+    expect(result.summary).toContain("characterResourceId");
   });
 });
 

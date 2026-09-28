@@ -10,7 +10,7 @@ import { registerAssetBrowser } from "./assetBrowser";
 import { registerAppProtocol, registerAssetProtocol } from "./protocols";
 import { createProjectSessionRegistry } from "./sessions";
 import { startCompanionServer, type CompanionServer } from "./companion";
-import { describeRecentProjects, prepareNewProjectDir, rememberRecentProject, suggestProjectDir } from "./recent";
+import { describeRecentProjects, prepareNewProjectDir, recentProjectCoverSource, rememberRecentProject, suggestProjectDir, writeRecentProjectCover } from "./recent";
 
 protocol.registerSchemesAsPrivileged([
   { scheme: OPRN_APP_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } },
@@ -59,6 +59,8 @@ function createWindow(): BrowserWindow {
     width: 1280,
     height: 800,
     show: false,
+    // 리눅스·윈도우 창 제목줄과 작업표시줄 아이콘. 맥은 앱 번들 icns 를 쓰므로 주지 않는다.
+    ...(process.platform === "darwin" ? {} : { icon: join(rendererDir, "icons", "pwa-512.png") }),
     webPreferences: {
       preload: join(__dirname, "preload.cjs"),
       contextIsolation: true,
@@ -252,6 +254,12 @@ app.whenReady().then(async () => {
     return true;
   });
   ipcMain.handle(OPRN_CHANNELS.startRecentProjects, () => describeRecentProjects());
+  ipcMain.handle(OPRN_CHANNELS.startCoverSource, (_event: IpcMainInvokeEvent, payload: unknown) =>
+    recentProjectCoverSource((payload as { readonly projectDir?: unknown } | null)?.projectDir));
+  ipcMain.handle(OPRN_CHANNELS.startSaveCover, (_event: IpcMainInvokeEvent, payload: unknown) => {
+    const input = payload as { readonly projectDir?: unknown; readonly dataUrl?: unknown } | null;
+    return writeRecentProjectCover(input?.projectDir, input?.dataUrl);
+  });
   ipcMain.handle(OPRN_CHANNELS.startSuggestProjectDir, (_event: IpcMainInvokeEvent, payload: unknown) => {
     const input = payload as { readonly title?: unknown; readonly root?: unknown } | null;
     const title = typeof input?.title === "string" ? input.title : undefined;

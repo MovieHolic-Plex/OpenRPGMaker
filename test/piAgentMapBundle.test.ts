@@ -116,6 +116,47 @@ describe("piAgent mapBundle", () => {
     expect(merged.project.maps.map_east!.name).toBe("B");
   });
 
+  // 깨질 것(2026-09-28 재현): 시작 맵은 트리 루트라 그 묶음이 곧 모든 맵이다. 팀 초기 생성에서 시작 맵 담당이
+  // 늦게 끝나면, 묶음의 모든 행과 부분 트리를 출발 사본으로 갈아 끼워 그 사이 병합된 들판 담당의 결과와
+  // 들판 아래 새 실내 노드를 지웠다. 충돌 보고도 없었다.
+  it("트리 루트 묶음이 늦게 병합돼도 그 사이 병합된 다른 맵과 트리 노드를 지우지 않는다", () => {
+    const base = seed();
+    const rootId = base.mapTree.mapId;
+    const field = clone(base);
+    field.maps.map_west!.name = "서쪽 (들판 담당)";
+    field.maps.map_west_inner = { ...clone(field.maps.map_west!), id: "map_west_inner", name: "동굴" };
+    field.mapTree.children.find((node) => node.mapId === "map_west")!.children.push({ mapId: "map_west_inner", children: [] });
+    const afterField = mergeMapBundles(base, [{ mapIds: ["map_west"], project: field, base }]).project;
+
+    const root = clone(base);
+    root.maps[rootId]!.name = "시작 마을";
+    root.maps.map_root_inner = { ...clone(root.maps[rootId]!), id: "map_root_inner", name: "여관" };
+    root.mapTree.children.push({ mapId: "map_root_inner", children: [] });
+    const merged = mergeMapBundles(afterField, [{ mapIds: [rootId], project: root, base }]);
+
+    expect(merged.project.maps.map_west!.name).toBe("서쪽 (들판 담당)");
+    expect(merged.project.maps.map_west_inner?.name).toBe("동굴");
+    expect(merged.project.maps[rootId]!.name).toBe("시작 마을");
+    expect(merged.project.maps.map_root_inner?.name).toBe("여관");
+    expect(mapBundleIds(merged.project, "map_west")).toEqual(["map_west", "map_west_inner"]);
+    expect(mapBundleIds(merged.project, rootId)).toEqual(expect.arrayContaining(["map_root_inner", "map_west_inner"]));
+    expect(merged.conflicts).toEqual([]);
+  });
+
+  // 짝: 루트 담당이 남의 맵을 **실제로** 바꿨고 그 맵이 그 사이 병합됐으면 뒤의 것이 이기되 조용히 넘어가지 않는다.
+  it("트리 루트 묶음이 이미 병합된 남의 맵을 실제로 바꿨으면 conflicts 로 보고한다", () => {
+    const base = seed();
+    const rootId = base.mapTree.mapId;
+    const field = clone(base);
+    field.maps.map_west!.name = "들판 담당";
+    const afterField = mergeMapBundles(base, [{ mapIds: ["map_west"], project: field, base }]).project;
+    const root = clone(base);
+    root.maps.map_west!.name = "루트 담당";
+    const merged = mergeMapBundles(afterField, [{ mapIds: [rootId], project: root, base }]);
+    expect(merged.conflicts).toEqual(["map_west"]);
+    expect(merged.project.maps.map_west!.name).toBe("루트 담당");
+  });
+
   // 깨질 것: 비동기 배정에서 에이전트는 자기가 출발한 사본을 기준으로 판정해야 한다. 병합 시점의
   // working 을 기준으로 삼으면, 그 사이 다른 에이전트가 남의 맵을 병합했다는 이유만으로 멀쩡한
   // 결과가 "범위 밖 변경"으로 보고된다(팀 보드에 없는 경고가 뜬다).

@@ -2,6 +2,7 @@ import { inspectPiVillageCompletion } from "../../src/ai/piAgent/villageCompleti
 import type { PiProjectCheckpoint } from "../../src/ai/piAgent/protocol.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
 import { PiTeamMessaging, teamCommunicationPrompt } from "./piTeamMessaging.ts";
+import { describeMapSeams, formatSeamIssues, inspectWorldSeams } from "../../src/ai/piAgent/worldSeams.ts";
 // Pi 팀 런타임. 팀장 에이전트(orchestrator)가 커스텀 툴로 시공·검수 에이전트를 띄운다.
 // 하위 에이전트는 runPiAgent 를 그대로 재사용하고, 시공 결과는 맵 묶음 단위로 작업 사본(working)에
 // 도착 순서대로 병합된다.
@@ -24,6 +25,7 @@ import { createModernTilesetPolicy, modernTilesetViolation, requestsModernMap } 
 import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
 import { PRESET_FIRST_BUILD_MEMBER_TURNS } from "../../src/ai/piAgent/team.ts";
 import { isGenrePresetBriefRequest } from "../../src/ai/genrePresetBrief.ts";
+import { judgePlayableSegment, playableSegmentGateApplies } from "../../src/project/playableSegment.ts";
 import {
   claimAssignment,
   createTeamAssignmentLedger,
@@ -95,6 +97,8 @@ const REVIEW_READ_TOOLS = ["get_map_region", "run_lint", "get_project_summary", 
 
 export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptions = {}): Promise<PiAgentDoneEvent> {
   if (request.modernTilesetOnly || requestsModernMap(request.project, request.task, [...request.mapIds, ...(request.currentMapId ? [request.currentMapId] : [])])) request = { ...request, modernTilesetOnly: true, villageContract: undefined };
+  // 마을 계약은 단독 실행 전용이다. 팀 요청에 실려 오면 모든 팀원이 author_village 한 호출로만 묶이므로 벗긴다.
+  if (request.villageContract) request = { ...request, villageContract: undefined };
   const modernPolicy = request.modernTilesetOnly ? createModernTilesetPolicy(request.project) : undefined;
   const assertModernProposal = (before: Project, after: Project) => {
     const violation = modernPolicy && modernTilesetViolation(before, after, modernPolicy);
@@ -111,6 +115,11 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   let subTurns = 0;
   let subUsage: PiAgentUsage | undefined;
   let finished: string | null = null;
+  /**
+   * finish 가 이음새 오류로 한 번 거절한 오류 묶음. 같은 묶음으로 다시 부르면 받아 준다 — 고칠 수 없는
+   * 연결 때문에 팀이 영원히 못 끝나면 안 된다. 대신 그 오류는 최종 보고에 그대로 남는다.
+   */
+  let seamRejection: string | null = null;
 
   const baseTeam = request.team ? normalizeTeamSpec(request.team) : defaultTeamSpec();
   // 프리셋 첫 생성은 가장 작은 플레이 구간만 만든다 — 팀원 한 배정의 턴을 줄인다(PRESET_FIRST_BUILD_RULES 와 짝).
@@ -120,7 +129,13 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     : baseTeam;
   const builders = enabledMembers(team, "builder");
   const reviewers = enabledMembers(team, "reviewer");
-  if (team.reviewAfterWork && reviewers.length === 0) throw Object.assign(new Error("완료 후 검토 담당이 없습니다. 팀 구성에서 검수 담당을 켜거나 완료 후 검토를 꺼 주세요."), { status: 400 });
+  // 끝낼 수 있는 첫 구간 판정(src/project/playableSegment.ts). 프리셋 첫 생성이고 시작 프로젝트가 합격한 뼈대일 때만 건다 —
+  // 되돌릴 합격본이 없으면 finish 를 막을 근거가 없고, 이후 요청은 사용자가 구간을 넓히거나 바꿀 수 있어야 한다.
+  const segmentGate = isGenrePresetBriefRequest(request.task) && playableSegmentGateApplies(base);
+  let segmentRejections = 0;
+  // 검수 담당을 끄면 팀 메뉴는 「완료 후 검토: 생략」 이라고 보여 준다. 예전 런타임은 여기서 실행 전체를 400 으로
+  // 거절해, 메뉴 말과 달리 팀 요청이 전부 실패했다. 메뉴 말대로 생략하고 최종 보고에 남긴다(조용히 끝내지 않는다).
+  const skipFinalReview = team.reviewAfterWork === true && reviewers.length === 0;
   if (builders.length === 0) throw Object.assign(new Error("팀에 켜진 시공 팀원이 없습니다. 팀 패널에서 팀원을 켜 주세요."), { status: 400 });
 
   let ledger: TeamAssignmentLedger = createTeamAssignmentLedger(teamAssignmentBudget(builders.length));
@@ -213,15 +228,17 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
 
   /** 배정 하나의 결과를 작업 사본에 얹는다. 도착 순서대로 동기 실행되므로 서로 끼어들지 않는다. */
   function mergeOutcome(agentId: string, mapId: string, snapshot: Project, done: PiAgentDoneEvent): { spills: string[]; conflicts: string[] } {
-    // 지금 다른 맵에서 도는 배정의 묶음을 건드렸는지 — 남의 작업 구역에 손을 댄 경우다.
+    // 지금 다른 맵에서 도는 배정의 맵을 **실제로 바꿨는지** — 남의 작업 구역에 손을 댄 경우다.
+    // 묶음 전체로 세면 안 된다: 시작 맵은 트리 루트라 묶음이 곧 모든 맵이고, 손대지 않은 들판까지 충돌로 보고됐다.
     const busyMaps = new Set(runningAssignments(ledger).filter((assignment) => assignment.agentId !== agentId).map((assignment) => assignment.mapId));
     const bundle = new Set([...mapBundleIds(done.project, mapId), ...mapBundleIds(working, mapId)]);
-    const conflicts = [...bundle].filter((id) => busyMaps.has(id)).sort();
+    const touched = [...bundle].filter((id) => JSON.stringify(done.project.maps[id]) !== JSON.stringify(snapshot.maps[id]));
     // 감사 기준은 병합 시점의 working 이 아니라 이 에이전트가 출발한 사본이다. 그 사이 남이
     // 병합한 맵을 이 에이전트의 범위 밖 변경으로 잘못 잡지 않기 위함.
     const merged = mergeMapBundles(working, [{ mapIds: [mapId], project: done.project, base: snapshot }]);
     assertModernProposal(working, merged.project);
     working = merged.project;
+    const conflicts = [...new Set([...touched.filter((id) => busyMaps.has(id)), ...merged.conflicts])].sort();
     return { spills: merged.spills.flatMap((spill) => [...spill.keys]), conflicts };
   }
 
@@ -280,7 +297,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         const done = await runAgent(
           {
             ...request, ...exposureFor(member, false), ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
-            systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), teamCommunicationPrompt(agentId)], maxTurns: member.maxTurns,
+            systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), ...describeMapSeams(snapshot, mapId), teamCommunicationPrompt(agentId)], maxTurns: member.maxTurns,
             ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
             ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
           },
@@ -429,7 +446,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       done = await runAgent(
         {
           ...request, ...exposureFor(member, true), ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
-          systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), teamCommunicationPrompt(agentId)], maxTurns: member.maxTurns,
+          systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), ...describeMapSeams(snapshot, mapId), teamCommunicationPrompt(agentId)], maxTurns: member.maxTurns,
           ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
           ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
         },
@@ -520,8 +537,27 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           throw new Error(`아직 ${running.map((assignment) => `${assignment.memberId}(${assignment.agentId}, ${assignment.mapId})`).join(", ")} 가 작업 중입니다. wait_agents 로 결과를 받은 뒤 보고하세요.`);
         }
         if (mailbox.unread("orchestrator-1")) throw new Error("팀장에게 미열람 메시지 또는 반영 확인이 있습니다. read_team_messages로 확인하고 질문에 답한 뒤 finish 하세요.");
+        // 맵 사이 연결 계약(worldGraph)을 병합본으로 검사한다. 각 담당은 자기 맵만 보므로 이음새는 여기서만 보인다.
+        const seamErrors = inspectWorldSeams(working).issues.filter((issue) => issue.severity === "error");
+        const seamSignature = seamErrors.map((issue) => `${issue.code}:${issue.mapId ?? ""}:${issue.x ?? ""},${issue.y ?? ""}`).sort().join("|");
+        if (seamErrors.length > 0 && seamSignature !== seamRejection) {
+          seamRejection = seamSignature;
+          throw new Error(`맵 사이 연결 오류 ${seamErrors.length}건: ${formatSeamIssues(seamErrors)} — 해당 맵 담당에게 assign_map_agent 로 수정을 맡기거나 link_maps 수정 작업을 배정한 뒤 다시 finish 하세요. 고칠 수 없으면 그대로 다시 finish 하면 보고에 남기고 끝냅니다.`);
+        }
+        // 첫 구간을 끝까지 갈 수 없으면 finish 를 받지 않는다(최대 2번). 막힌 곳을 그대로 돌려줘 팀장이 수정 배정을 하게 한다.
+        // 그 뒤에도 막히면 받아들이되 브라우저가 적용하지 않는다(aiPiAgentCommand 의 같은 판정).
+        if (segmentGate && segmentRejections < 2) {
+          const verdict = judgePlayableSegment(working);
+          if (!verdict.ok) {
+            segmentRejections += 1;
+            emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `첫 구간 자동 플레이 막힘(${segmentRejections}/2): ${verdict.blockers.join(" / ")}` } });
+            throw new Error(`첫 구간을 끝까지 갈 수 없어 finish 를 받지 않습니다(${segmentRejections}/2). 자동 플레이가 막힌 곳: ${verdict.blockers.join(" / ")}. 해당 맵에 수정 배정을 하고 wait_agents 뒤 다시 finish 하세요.`);
+          }
+        }
         const outstanding = mailbox.outstanding();
         finished = str((params as Record<string, unknown>)?.report, "report");
+        if (seamErrors.length > 0) finished += `
+남은 맵 연결 오류 ${seamErrors.length}건: ${formatSeamIssues(seamErrors)}`;
         const failedTasks = [...tasks.keys()].map(id => outcomes.get(id)).filter(outcome => outcome && !outcome.ok);
         if (failedTasks.length) finished += `\n실패한 작업 ${failedTasks.length}건: ${failedTasks.map(outcome => `${outcome!.agentId}: ${outcome!.summary}`).join("; ")}`;
         if (outstanding.length) finished += `\n미확인 협의 ${outstanding.length}건: ${outstanding.map(m => `${m.id} ${m.from}→${m.to}: ${m.body}`).join("; ")}`;
@@ -545,7 +581,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   // 팀장이 wait 없이 끝났을 수 있다(턴 상한·조기 finish 실패). 남은 배정을 거두어 병합한다 —
   // 여기서 놓치면 이미 끝난 시공 결과가 조용히 사라진다.
   await Promise.all(inflight.map((entry) => entry.promise));
-  if (team.reviewAfterWork && request.applyMode !== "yolo") {
+  if (skipFinalReview && request.applyMode !== "yolo") {
+    finished = `${finished ?? summaryOf(orchDone)}\n완료 후 검토: 켜진 검수 담당이 없어 생략했습니다.`;
+    emit({ type: "team_report", text: finished });
+  } else if (team.reviewAfterWork && request.applyMode !== "yolo") {
     const finalReview = startTask(
       `제작이 끝난 최종 결과를 읽기 전용으로 검토하라. 사용자 요청: ${request.task}\n요청 충족 여부, 남은 문제와 확인 근거를 report_task로 보고한다. 직접 수정하지 않는다.`,
       "read", reviewers[0]!,

@@ -53,6 +53,7 @@
 @import "./region-task.part-9.css" layer(map);
 @import "./region-task.part-10.css" layer(map);
 @import "./map-location-layer.css" layer(map);
+@import "./event-ai-queue.css" layer(map);
 @import "./layout-bbox-overlay.css" layer(map);
 @import "./build-palette.css" layer(map);
 @import "./map-event-search.css" layer(map);

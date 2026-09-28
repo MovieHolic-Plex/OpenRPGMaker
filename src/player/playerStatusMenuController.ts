@@ -273,9 +273,12 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     const changedPage = currentMenu()?.dataset.detailState !== panel.dataset.detailState;
     const live = replaceMenu(panel);
     if (changedPage && currentMenu()) animateStatusMenuPage(live);
-    syncRenderedDetailCursor();
+    // 새로 그린 패널이다. 저장된 스크롤이 있으면 아래에서 그대로 되돌리고, 없으면 목록이 맨 위라 첫 행은 이미
+    // 보인다 — 어느 쪽이든 scrollIntoView 로 방금 만든 DOM 의 레이아웃을 강제할 이유가 없다(메뉴 첫 개방 83ms,
+    // 브라우저 실측). 저장된 스크롤이 없는데 선택이 첫 행이 아니면(되돌아온 커서) 그때만 스크롤한다.
     const list = live.querySelector<HTMLElement>(".status-menu-detail-list");
     const savedScroll = detailScrolls.get(detailStateKey());
+    syncRenderedDetailCursor(savedScroll !== undefined || selectedDetailActionIndex === 0);
     if (list && savedScroll !== undefined) list.scrollTop = savedScroll;
     return live;
   };
@@ -858,7 +861,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     detailCursors.set(detailStateKey(), selectedDetailActionIndex);
   }
 
-  function syncRenderedDetailCursor(): void {
+  function syncRenderedDetailCursor(skipScroll = false): void {
     const actions = detailActionButtons();
     if (actions.length === 0) {
       setDetailCursor(0);
@@ -876,7 +879,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     const detailList = currentMenu()?.querySelector<HTMLElement>(".status-menu-detail-list");
     const activeAction = actions[selectedDetailActionIndex];
     if (detailList && activeAction?.id) detailList.setAttribute("aria-activedescendant", activeAction.id);
-    actions[selectedDetailActionIndex]?.scrollIntoView({ block: "nearest" });
+    if (!skipScroll) actions[selectedDetailActionIndex]?.scrollIntoView({ block: "nearest" });
     focusActiveMenuContainer();
   }
 

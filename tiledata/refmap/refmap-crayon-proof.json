@@ -7,28 +7,28 @@
   "objectKits": 14,
   "houseKits": 6,
   "autotileGroups": 10,
-  "bytes": 3665349,
+  "bytes": 4178959,
   "maps": {
     "crayon_field_village": {
       "place": "shared_refmap_crayon_crayon_field_village",
       "size": "40×26",
-      "objects": 94,
+      "objects": 85,
       "houses": 6,
-      "renderSha": "bdb9bbf014f46a2ad12ee977e86aaf58e200491bc30ea0549e471b69539b1d3c"
+      "renderSha": "1ca829ed3845fb6126e49cab1f32af3c640661be7aed706958b2f9a0744faa36"
     },
     "crayon_forest": {
       "place": "shared_refmap_crayon_crayon_forest",
       "size": "30×22",
-      "objects": 79,
+      "objects": 100,
       "houses": 0,
-      "renderSha": "41244aaf923bb60d8c3a344645af09855d9d70b1d509b3fd0cf297f706f39b5f"
+      "renderSha": "c2b6d009c6f3cbcd4ee90e6d4bea6be84f14f36f9e5d735f0598392facf4a08a"
     }
   },
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "69e0657e56cd106d1fa9ea605c54c0d66317dd5ee4bccdb2821b137892c876d0",
+  "revision": "1702a25465f411c0833aecc62a817fb4d78a5f5880b15ef4c673f1a1259ac188",
   "reloaded": true,
-  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-crayon-2026-09-27T11-55-37-854Z.sqlite",
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-crayon-2026-09-27T21-34-56-487Z.sqlite",
   "otherLibraries": 36,
   "otherLibrariesUnchanged": true,
-  "publishedAt": "2026-09-27T11:55:49.393Z"
+  "publishedAt": "2026-09-27T21:35:18.966Z"
 }

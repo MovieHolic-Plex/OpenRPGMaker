@@ -7,11 +7,13 @@
 //   xvfb-run -a node scripts/qa/electronStartScreenProbe.mjs
 //
 // 결과: verify-shots/start-screen/ 의 PNG 와 probe.json.
+// OPRN_START_QA_REAL=<폴더>:<폴더> 를 주면 실제 프로젝트를 **사본으로** 떠서 최근 목록에 더한다(원본에는 쓰지 않는다).
+// 업로드 타일셋·접힌 타일셋(형식 2)·큰 맵에서도 시작 화면이 카드 그림을 굽는지 본다.
 import { _electron as electron } from "@playwright/test";
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { basename, join, resolve } from "node:path";
 
 const REPO_ROOT = resolve(import.meta.dirname, "..", "..");
 const MAIN_BUNDLE = join(REPO_ROOT, "dist-electron/main.cjs");
@@ -37,9 +39,18 @@ const temporary = mkdtempSync(join(tmpdir(), "oprn-packaged-"));
 store("init", temporary);
 const now = Date.now();
 const iso = (minutesAgo) => new Date(now - minutesAgo * 60_000).toISOString();
+const realProjects = (process.env.OPRN_START_QA_REAL ?? "").split(":").filter(Boolean).map((source, index) => {
+  const copy = join(projectsRoot, "real-" + index + "-" + basename(source));
+  // project.sqlite 와 assets/ 만 뜬다 — WAL 이 비어 있는(닫힌) 저장소여야 사본이 온전하다.
+  mkdirSync(copy, { recursive: true });
+  cpSync(join(source, "project.sqlite"), join(copy, "project.sqlite"));
+  if (existsSync(join(source, "assets"))) cpSync(join(source, "assets"), join(copy, "assets"), { recursive: true });
+  return copy;
+});
 writeFileSync(join(userData, "recent-projects.json"), JSON.stringify([
   { projectDir: temporary, title: temporary, lastOpenedAt: iso(5) },
   { projectDir: village, title: village, lastOpenedAt: iso(90) },
+  ...realProjects.map((projectDir, index) => ({ projectDir, title: projectDir, lastOpenedAt: iso(120 + index) })),
   { projectDir: join(projectsRoot, "gone"), title: "사라진 폴더", lastOpenedAt: iso(600) },
   { projectDir: emptyGame, title: "빈 폴더 게임", lastOpenedAt: iso(60 * 30) },
 ], null, 2));
@@ -72,15 +83,28 @@ const probe = { scratch };
 {
   const { app, page, errors } = await launch();
   await page.waitForSelector("[data-testid='start-continue'], .start-hero", { timeout: 30_000 });
+  // 편집기에서 한 번도 안 연 프로젝트(픽스처 마을)도 시작 화면이 직접 카드 그림을 굽는다.
+  const coverDeadline = Date.now() + 20_000;
+  const expected = [village, ...realProjects];
+  while (expected.some((dir) => !existsSync(join(dir, "cover.jpg"))) && Date.now() < coverDeadline + realProjects.length * 20_000) await page.waitForTimeout(300);
   await page.waitForTimeout(400);
   await shot(page, "01-home");
   probe.home = await page.evaluate(() => ({
     url: location.href,
-    continueTitle: document.querySelector("[data-testid='start-continue'] .start-continue-title")?.textContent ?? null,
+    continueTitle: document.querySelector("[data-testid='start-continue'] .start-hero-title")?.textContent ?? null,
+    continueHasCover: Boolean(document.querySelector("[data-testid='start-continue'] img")),
     cards: [...document.querySelectorAll(".start-card-title")].map((node) => node.textContent),
     hiddenNote: document.querySelector(".start-hidden-note")?.textContent ?? null,
     stylesheetRules: [...document.styleSheets].reduce((sum, sheet) => sum + sheet.cssRules.length, 0),
   }));
+  probe.home.neverOpenedCoverBytes = existsSync(join(village, "cover.jpg")) ? readFileSync(join(village, "cover.jpg")).length : 0;
+  probe.home.realCovers = realProjects.map((dir) => ({ dir: basename(dir), bytes: existsSync(join(dir, "cover.jpg")) ? readFileSync(join(dir, "cover.jpg")).length : 0 }));
+  probe.home.cardImages = await page.evaluate(() => [...document.querySelectorAll(".start-card")].map((card) => ({
+    title: card.querySelector(".start-card-title")?.textContent ?? null,
+    hasImage: Boolean(card.querySelector("img")),
+  })));
+  // 빈 폴더(맵 없음) 프로젝트는 그림을 굽지 않는다 — 첫 글자로 남는다.
+  probe.home.emptyProjectCover = existsSync(join(emptyGame, "cover.jpg"));
 
   await page.click("[data-testid='start-hidden-toggle']");
   await shot(page, "02-home-hidden-shown");
@@ -141,7 +165,7 @@ const probe = { scratch };
   await page.waitForTimeout(400);
   await shot(page, "05-home-after-create");
   probe.relaunch = await page.evaluate(() => ({
-    continueTitle: document.querySelector("[data-testid='start-continue'] .start-continue-title")?.textContent ?? null,
+    continueTitle: document.querySelector("[data-testid='start-continue'] .start-hero-title")?.textContent ?? null,
     continueHasCover: Boolean(document.querySelector("[data-testid='start-continue'] img")),
     cards: [...document.querySelectorAll(".start-card-title")].map((node) => node.textContent),
   }));
@@ -153,6 +177,17 @@ const probe = { scratch };
   await shutdown(app);
 }
 
+writeFileSync(join(OUT_DIR, "probe.json"), JSON.stringify(probe, null, 2));
+
+// ── 첫 방문: 최근 작업이 하나도 없는 사용자 데이터 ──────────────────────
+{
+  writeFileSync(join(userData, "recent-projects.json"), "[]");
+  const { app, page } = await launch();
+  await page.waitForSelector(".start-hero.is-welcome", { timeout: 30_000 });
+  await page.waitForTimeout(600);
+  await shot(page, "07-first-visit");
+  await shutdown(app);
+}
 writeFileSync(join(OUT_DIR, "probe.json"), JSON.stringify(probe, null, 2));
 console.log(JSON.stringify(probe, null, 2));
 // 임시 프로젝트·사용자 데이터를 치운다. 스크린샷과 probe.json 만 남긴다.

@@ -7,28 +7,28 @@
   "objectKits": 144,
   "houseKits": 7,
   "autotileGroups": 55,
-  "bytes": 10092459,
+  "bytes": 10176233,
   "maps": {
     "snow_mountain_path": {
       "place": "shared_refmap_snow_snow_mountain_path",
-      "size": "32×28",
-      "objects": 48,
+      "size": "32×23",
+      "objects": 40,
       "houses": 0,
-      "renderSha": "79b7af39862fe48015c1a2b771457b0891fdda4a67e82603885eadb371b1c60f"
+      "renderSha": "74a2253d7b679216cee0a2ce237cd04610001f1b28dc605326f5bdec5b1bcdc4"
     },
     "snow_village": {
       "place": "shared_refmap_snow_snow_village",
-      "size": "40×31",
-      "objects": 90,
+      "size": "41×31",
+      "objects": 91,
       "houses": 7,
-      "renderSha": "0342a31caf45572e9067a81d16a2be9e135921e3335314e398d0902eca9dd236"
+      "renderSha": "a465937fc4cfa1b7a71e72233795b92e299c7c03c987f7e5648efa67e9dfb48f"
     }
   },
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "0cb4320d1a9338485faef808cf8a4da020c6b3bbf09b506bc7b98b0c081ecdb7",
+  "revision": "1c61616c6570d9ee45f96f56a0c334e9b4722ffefd09614d9b96513f1937c165",
   "reloaded": true,
-  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-snow-2026-09-27T11-53-05-794Z.sqlite",
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-snow-2026-09-27T20-01-59-434Z.sqlite",
   "otherLibraries": 36,
   "otherLibrariesUnchanged": true,
-  "publishedAt": "2026-09-27T11:53:20.913Z"
+  "publishedAt": "2026-09-27T20:02:15.287Z"
 }

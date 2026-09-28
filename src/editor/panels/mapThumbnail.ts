@@ -82,63 +82,6 @@ export function createMapThumbnail(mapId: MapId, options: MapThumbnailOptions = 
   return canvas;
 }
 
-/**
- * 맵 한 장을 JPEG data URL 로 굽는다(시작 화면 카드 그림). 카드 비율을 **채우도록** 자른다 — 행 썸네일처럼
- * 여백을 두면 16:10 카드 안에서 정사각 맵 양옆에 검은 띠가 남는다. 초점(focus, 타일 좌표)이 있으면 그 둘레를 보인다.
- * 타일셋 그림을 못 읽으면 null — 대체 무늬를 대표 그림으로 남기지 않는다.
- */
-export async function renderMapCoverDataUrl(
-  map: GameMap,
-  tileset: TilesetDef,
-  width: number,
-  height: number,
-  focus?: { readonly x: number; readonly y: number },
-): Promise<string | null> {
-  // drawMapTileLayers 는 타일셋 칸 크기 기준으로 그린다(renderStage 와 같은 가정).
-  const tile = tileset.tileSize || 16;
-  if (map.width <= 0 || map.height <= 0) return null;
-  const image = await loadTilesetImage(tileset);
-  if ("complete" in image && (!image.complete || image.naturalWidth === 0)) return null;
-  // 카드 한 장에 타일이 너무 잘게 보이지 않게, 보이는 창을 가로 최대 30칸으로 둔다(큰 마을은 일부만 보인다).
-  const viewTilesX = Math.min(map.width, 30, Math.max(1, Math.round(map.height * (width / height))));
-  const viewTilesY = Math.min(map.height, Math.max(1, Math.round(viewTilesX * (height / width))));
-  const cx = focus ? focus.x + 0.5 : map.width / 2;
-  const cy = focus ? focus.y + 0.5 : map.height / 2;
-  const left = Math.max(0, Math.min(map.width - viewTilesX, Math.round(cx - viewTilesX / 2)));
-  const top = Math.max(0, Math.min(map.height - viewTilesY, Math.round(cy - viewTilesY / 2)));
-  const sourceWidth = viewTilesX * tile;
-  const sourceHeight = viewTilesY * tile;
-  // 보이는 창 크기의 캔버스에 옮겨 그린다 — 100×100 맵 전체(32px 칩셋이면 3200px)를 잡지 않는다. 창 밖 칸은 잘린다.
-  const view = document.createElement("canvas");
-  view.width = sourceWidth;
-  view.height = sourceHeight;
-  const viewContext = view.getContext("2d", { alpha: false });
-  if (!viewContext) return null;
-  viewContext.imageSmoothingEnabled = false;
-  viewContext.fillStyle = "#1b2430";
-  viewContext.fillRect(0, 0, sourceWidth, sourceHeight);
-  viewContext.translate(-left * tile, -top * tile);
-  drawMapTileLayers(viewContext, image, map, tileset, 1);
-  const target = document.createElement("canvas");
-  target.width = width;
-  target.height = height;
-  const context = target.getContext("2d", { alpha: false });
-  if (!context) return null;
-  context.fillStyle = "#1b2430";
-  context.fillRect(0, 0, width, height);
-  const scale = Math.max(width / sourceWidth, height / sourceHeight);
-  // 도트 그림이라 정수 배로 키울 수 있으면 부드럽게 하지 않는다.
-  context.imageSmoothingEnabled = scale < 1;
-  context.drawImage(
-    view,
-    Math.round((width - sourceWidth * scale) / 2),
-    Math.round((height - sourceHeight * scale) / 2),
-    Math.round(sourceWidth * scale),
-    Math.round(sourceHeight * scale),
-  );
-  return target.toDataURL("image/jpeg", 0.82);
-}
-
 /** 캐시 키에 목표 크기가 들어가야 한다 — 안 넣으면 40×30 스테이지가 큰 미리보기로 확대된다. */
 function thumbnailKey(mapId: MapId, map: GameMap, width: number, height: number): string {
   let hash = mapContentHashes.get(map);

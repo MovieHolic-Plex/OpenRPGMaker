@@ -27,12 +27,13 @@ import {
   mountPerfMetrics,
 } from "@/app/perfMetrics";
 import { MAP_EDIT_HISTORY_EVENT } from "@/editor/mapEditHistory";
-import { editorState, editorStateChangedOnlyPaintPick } from "@/editor/editorState";
+import { editorState, editorStateChangedOnlyCanvasOverlay, editorStateChangedOnlyPaintPick } from "@/editor/editorState";
 import { hasDeepLinkedProject, presentEditorWelcome, setEditorWelcomeDismissed, shouldPresentEditorWelcome } from "@/editor/editorWelcome";
 import { isForcedWelcomeRehearsal } from "@/editor/automationBootContext";
+import { isBlankStartProject } from "@/project/projectBlankness";
 import { hasElectronBridge, openFolderHeldByMainProcess, type ElectronRepository } from "@/project/persistence/electronRepository";
 import { projectRepository } from "@/project/persistence/repository";
-import { dismissBootLoader } from "@/app/bootLoader";
+import { dismissBootLoader, reportBootStage } from "@/app/bootLoader";
 import { rememberBootBrief } from "@/app/bootBrief";
 import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { START_SCREEN_INTENT_KEY } from "@/start/startIntent";
@@ -94,6 +95,9 @@ export async function bootApp(root: HTMLElement): Promise<void> {
       // 레이어 단추는 menu.ts 가 제자리에서 바꾼다. 타일·붓만 고른 클릭마다 탑바를 통째로
       // 다시 지으면 대형 칩셋 팔레트 클릭이 그만큼 굼떠진다(2026-09-25 실측).
       if (previous && editorStateChangedOnlyPaintPick(previous, state)) return;
+      // 선택 사각형·붙여넣기 고스트·클립보드는 탑바가 읽지 않는다. 우클릭 드래그가 pointermove 마다
+      // 탑바를 통째로 다시 짓고 있었다(2026-09-28 트레이스: 드래그 10걸음에 스타일 무효화 7건).
+      if (previous && editorStateChangedOnlyCanvasOverlay(previous, state)) return;
       if (topbarRefreshQueued) return;
       topbarRefreshQueued = true;
       queueMicrotask(() => {
@@ -114,6 +118,7 @@ export async function bootApp(root: HTMLElement): Promise<void> {
     });
     installAiUiEventCapture();
     deepLinkedProjectAtBoot = hasDeepLinkedProject();
+    reportBootStage("project");
     // Electron 에서는 시작 화면이 고른 폴더가 주 프로세스 세션에만 있다. 편집기 문서는 별개
     // 문서라 모듈 상태가 안 넘어오므로 여기서 다시 붙는다 — 안 붙으면 store.load() 가 대상을
     // 못 찾아 DB 연결 설정 화면으로 떨어진다(로컬 폴더 정본인데도).
@@ -143,6 +148,7 @@ export async function bootApp(root: HTMLElement): Promise<void> {
   syncProjectFontTheme(store.getCurrent());
   store.subscribe(syncProjectFontTheme);
 
+  reportBootStage("editor");
   // 최초 편집 맵 = 시작 맵.
   await finishEditorBoot(startedAt);
 }
@@ -184,13 +190,17 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
   // 만들까요」 브리핑 대신 데모 안내 토스트가 첫 인상을 맡는다. ?forceWelcome=1 리허설만 예외.
   const sharedDemoOpen = store.isSharedDemoSession();
   const demoHoldsFirstScreen = sharedDemoOpen && !isForcedWelcomeRehearsal();
+  // 「어떤 게임을 만들까요? / 빈 맵으로 시작」은 정말 빈 프로젝트에서만 묻는다. 닫음 표시(localStorage)는
+  // 출처마다 따로라 새 포트·새 호스트 주소에서는 비어 있다 — 그것만 보면 다 만든 프로젝트 위에도 뜬다.
+  // ?forceWelcome=1 리허설은 내용과 무관하게 띄운다(e2e 가 예제 프로젝트 위에서 브리핑을 검증한다).
+  const projectIsBlank = isForcedWelcomeRehearsal() || isBlankStartProject(store.getCurrent());
 
   // Cold-boot briefing only. Re-entry while edit/play shell is live must not overlay.
   if (modeMounted) {
     clearPendingAiBootIntent();
   } else {
     clearWelcomeIntentBootFlags();
-    showBriefing = !startHandoff && !store.getCurrent().gameDesignBrief && !demoHoldsFirstScreen && shouldPresentEditorWelcome({
+    showBriefing = !startHandoff && !store.getCurrent().gameDesignBrief && !demoHoldsFirstScreen && projectIsBlank && shouldPresentEditorWelcome({
       modeShellMounted: false,
       deepLinkedProject: deepLinkedProjectAtBoot,
     });
@@ -199,18 +209,12 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
     if (startHandoff) {
       // 시작 화면을 거친 사용자는 첫 방문 브리핑을 이미 본 셈이다 — 다음 부팅에도 띄우지 않는다.
       setEditorWelcomeDismissed(true);
-      if (startHandoff.prompt) {
+      if (startHandoff.presetId) {
+        // 프리셋 장르는 셸이 뜬 뒤 인터뷰로 간다(아래). 코치마크가 인터뷰 위에 뜨지 않게 지금 표시한다.
         markWelcomeIntentAppliedThisBoot();
-        setPendingWelcomePipeline({
-          prompt: startHandoff.prompt,
-          ...(startHandoff.displayText ? { displayText: startHandoff.displayText } : {}),
-          autoSend: startHandoff.autoSend,
-          source: "free-text",
-        });
-        if (!startHandoff.autoSend) {
-          const { toast } = await import("@/util/toast");
-          toast("적어 둔 한 문장을 조수 입력창에 담았습니다. AI 연결 후 보낼 수 있습니다.", "info");
-        }
+      } else if (startHandoff.prompt) {
+        markWelcomeIntentAppliedThisBoot();
+        await queueStartScreenSentence(startHandoff, setPendingWelcomePipeline);
       }
     }
   }
@@ -246,6 +250,17 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
   if (sharedDemoOpen && !showBriefing) {
     const { presentSharedDemoIntro } = await import("@/editor/sharedDemoIntro");
     presentSharedDemoIntro();
+  }
+
+  // 시작 화면에서 프리셋 장르를 골랐으면 메뉴 「새 프로젝트」와 같이 AI 연결 관문 → 기획 인터뷰를 거친다.
+  // 확정하면 기획이 generationPending 으로 심기고 아래 prepareProjectInterviewStartup 이 저장·팀 첫 생성을 넘긴다.
+  // 「나중에」·취소면 예전처럼 한 문장만 조수에게 넘긴다(비었으면 장르만 켜진 채로 둔다).
+  if (startHandoff?.presetId) {
+    const { runStartScreenPresetInterview } = await import("@/editor/startScreenHandoff");
+    const outcome = await runStartScreenPresetInterview(startHandoff);
+    if (outcome === "declined" && startHandoff.prompt) {
+      await queueStartScreenSentence(startHandoff, setPendingWelcomePipeline);
+    }
   }
 
   if (showBriefing && elements) {
@@ -340,6 +355,24 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
   // 데스크톱 시작 화면의 최근 목록 카드 그림(cover.jpg). 브리지에 saveCover 가 있을 때만 모듈을 받는다.
   if (typeof window !== "undefined" && window.oprn?.project.saveCover) {
     void import("@/editor/projectCover").then(({ installProjectCoverCapture }) => installProjectCoverCapture()).catch(() => undefined);
+  }
+}
+
+/** 시작 화면의 한 문장을 조수 파이프라인에 싣는다. AI 가 없으면 입력창에 담기만 하고 알린다. */
+async function queueStartScreenSentence(
+  handoff: import("@/editor/startScreenHandoff").StartScreenHandoff,
+  setPendingWelcomePipeline: typeof import("@/editor/aiBootIntent").setPendingWelcomePipeline,
+): Promise<void> {
+  if (!handoff.prompt) return;
+  setPendingWelcomePipeline({
+    prompt: handoff.prompt,
+    ...(handoff.displayText ? { displayText: handoff.displayText } : {}),
+    autoSend: handoff.autoSend,
+    source: "free-text",
+  });
+  if (!handoff.autoSend) {
+    const { toast } = await import("@/util/toast");
+    toast("적어 둔 한 문장을 조수 입력창에 담았습니다. AI 연결 후 보낼 수 있습니다.", "info");
   }
 }
 

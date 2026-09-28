@@ -7,14 +7,26 @@
 빈 편집기로 넘어간 뒤 캔버스 브리핑이 다시 「어떤 게임을 만들까요?」를 물었다.
 
 - **엔트리**: 루트 `start-screen.html` → `src/start/startScreen.ts` + `startScreen.css`(tokens.css 만 싣는 자기완결 시트).
+- **모양(2026-09-28)**: 어두운 스튜디오 톤(`--st-*`). 가장 최근 프로젝트는 시작 맵 그림을 판 전체에 까는 히어로(판 전체가 열기 단추,
+  `start-continue`/`start-continue-open`), 그 아래 격자 첫 칸이 「새 게임」(`start-new-card`)이다. 최근 작업이 없으면
+  키아트(`public/assets/generated/welcome/start-hero.jpg`) 히어로 + 장르 포스터. 새 게임 입력판 뒤에는 고른 장르 포스터가 깔린다.
+  좁은 창(860px 이하)에서는 레일이 한 줄 머리띠로 접힌다.
   편집기 트리를 import 하지 않는다 — 번들 11KB. 장르 씨앗·AI 모듈을 여기서 부르면 수십 MB 가 된다(실측 esbuild 90MB).
   `vite.config.ts` 의 `startScreen` 입력, `scripts/mac-launch.mjs` 빌드 입력 목록에 들어 있다.
 - **최근 목록**: `electron/main/recent.ts` 의 `describeRecentProjects()` 가 폴더의 `project.sqlite` 를 **읽기 전용**
   (`electron/local-store/summary.ts`, `query_only`, 본문 `current_json` 안 읽음)으로 열어 제목·편집 시각·맵 수를 채운다.
   임시 폴더(`/tmp`·`os.tmpdir()`) 아래와 사라진 폴더는 `hiddenReason` 을 달아 **기본 숨김** — 목록 파일에서 지우지 않는다.
-- **카드 그림**: `<폴더>/cover.jpg` 는 정본이 아니라 캐시다. 편집기가 부팅 4초 뒤 한 번, 이후 저장 뒤 1분에 한 번까지
-  시작 맵(`startPos` 둘레, 30칸 창)을 480×300 으로 구워 `oprn:project.saveCover` 로 보낸다(`src/editor/projectCover.ts`).
-  호스트는 JPEG 표식·1MB 상한을 보고 **세션의 폴더**에만 쓴다(요청의 경로를 믿지 않는다). 팀 호스트 브라우저 브리지에는 채널이 없다.
+- **카드 그림**: `<폴더>/cover.jpg` 는 정본이 아니라 캐시다. 두 곳이 같은 코드로 굽는다 —
+  시작 맵(`startPos` 둘레, 30칸 창)을 480×300 JPEG 로(`src/editor/mapCoverRender.ts`).
+  - 편집기: 부팅 4초 뒤 한 번, 이후 저장 뒤 1분에 한 번까지 `oprn:project.saveCover`(`src/editor/projectCover.ts`). 호스트는 **세션의 폴더**에만 쓴다.
+  - 시작 화면: 그림이 없거나(편집기에서 한 번도 안 연 프로젝트) 마지막 저장보다 1분 넘게 낡은(`coverStale`) 보이는 항목을
+    한 장씩 굽는다(`src/start/startCover.ts`, 필요할 때만 동적 로드). 재료는 `oprn:start.coverSource` 가 읽기 전용으로 꺼낸
+    시작 맵(맵 거울 표) + 그 타일셋(참고문서 제외, 접힌 행이면 `tileset_blobs`, 업로드 그림판이면 16MB 이하 data URL)이고,
+    `oprn:start.saveCover` 로 남긴다. 두 채널 모두 **최근 목록에 있는 폴더만** 받는다(`electron/main/recent.ts`).
+  - 그리기는 store 없는 `src/editor/mapTileDrawCore.ts`(쿼터 합성 판정 `chipsetComposition.ts`)라 편집기 썸네일과 같다.
+    `mapTileDraw.ts` 는 그 코어를 다시 내보내고 편집기 쪽 그림 로드만 더한다. 시작 화면은 이식(tileGrafts)·투명색을 편집기와 같이 합성하고,
+    재료가 하나라도 없으면(번들에 없는 칩셋 등) 반쪽 그림 대신 첫 글자로 둔다. 맵 없는 빈 폴더도 첫 글자.
+  - 팀 호스트 브라우저 브리지에는 두 채널이 없다.
 - **새 게임**: 한 문장(선택)·장르 포스터(featured 3 + 빈 프로젝트)·이름·저장 위치를 한 화면에서 정한다. 저장 위치는
   `oprn:start.suggestProjectDir` 가 `문서/OPRN Games/<이름>`(겹치면 `<이름> 2`…)를 추천하고, 「바꾸기」가 상위 폴더 대화상자를 연다.
   `start.createProject` 에 `projectDir` 를 주면 대화상자 없이 그 **비어 있는** 폴더에 만든다(파일이 있으면 거절). 메뉴 경로는 예전대로 대화상자.
@@ -23,6 +35,11 @@
   편집기 `finishEditorBoot` 가 **그 폴더가 열렸을 때만**(`projectDir` 일치, 10분 이내) 꺼내 `createNewProjectSeed` 씨앗을 채택·flush 하고
   (`src/editor/startScreenHandoff.ts`), 한 문장이 있으면 조수 파이프라인(AI 준비 시 자동 전송, 아니면 입력창에 담기)으로 넘긴다.
   인계가 있으면 캔버스 브리핑을 띄우지 않고 `oprn:editor-welcome-dismissed` 를 켠다. 호스트는 인계 비교를 위해 세션이 정규화한 경로를 돌려준다.
+- **프리셋 장르는 인터뷰를 거친다 (2026-09-28):** 장르를 고른 인계(`presetId`)면 셸이 뜬 뒤 `runStartScreenPresetInterview` 가
+  메뉴 「새 프로젝트」와 같은 AI 연결 관문(`ensureAiConnectedForPreset`) → 기획 인터뷰(`showProjectInterview`, 한 문장은 첫 질문 입력칸에
+  `initialAnswer` 로 담김)를 연다. 확정하면 `gameDesignBrief` 를 `generationPending: true` 로 심고, 같은 부팅의 `prepareProjectInterviewStartup`
+  이 저장 → 팀 첫 생성(`team: true`, `장르 프리셋:` 프롬프트)을 넘긴다. 예전에는 한 문장을 자유 입력 프롬프트로만 보내 기획·팀·장르 저작 지침이 빠졌고,
+  한 문장을 비우면 장르만 켜진 빈 맵에서 아무 일도 없었다. 「나중에」·취소면 예전 한 문장 경로로 돌아간다. 단위: `test/startScreenPresetInterview.test.ts`.
 - **증거**: `xvfb-run -a node scripts/qa/electronStartScreenProbe.mjs`(`build:fast` + `build:electron` 뒤) — 격리 `--user-data-dir` 로
   홈·숨김·새 게임·편집기(저장된 제목/장르 재로드)·cover.jpg·재기동을 확인하고 `verify-shots/start-screen/` 에 남긴다. 단위: `test/startScreen.test.ts`.
 

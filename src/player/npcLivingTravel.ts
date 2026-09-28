@@ -1,4 +1,5 @@
 import { canMove } from "@/project/collision";
+import { armTerrainComponents, terrainMayReach } from "@/project/tilePassabilityComponents";
 import type { Dir, GameMap, MapConnection, MapId, MoveCommand, Project } from "@/project/types";
 import type { RuntimeEventView } from "@/project/runtimeEventState"
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
@@ -133,19 +134,22 @@ function advanceDestination(session: PlaySessionLike, eventId: string, destinati
   session.npcTravelStates[eventId] = { destinationIndex: next };
 }
 
-function firstConnectionToward(
+/** @internal 테스트용으로 내보낸다(연결 기억의 제자리 편집 반례). */
+export function firstConnectionToward(
   connections: readonly MapConnection[],
   fromMapId: MapId,
   toMapId: MapId
 ): ConnectionPath | null {
-  const enabled = connections.filter((connection) => connection.npcEnabled);
+  // 출발 맵별 연결 목록(원본 순서 유지). 예전에는 큐의 맵마다 모든 연결을 훑어 O(맵×연결)이었다 —
+  // 연결 512개 사슬에서 NPC 10명 조회가 약 21ms, 경로 재사용 분기에서도 표면 갱신마다 불린다.
+  const byFrom = connectionsByFromMap(connections);
   const queue: { readonly mapId: MapId; readonly first: MapConnection | null }[] = [{ mapId: fromMapId, first: null }];
   const visited = new Set<MapId>([fromMapId]);
   for (let index = 0; index < queue.length; index += 1) {
     const current = queue[index];
     if (!current) continue;
-    for (const connection of enabled) {
-      if (connection.from.mapId !== current.mapId || visited.has(connection.to.mapId)) continue;
+    for (const connection of byFrom.get(current.mapId) ?? []) {
+      if (visited.has(connection.to.mapId)) continue;
       const first = current.first ?? connection;
       if (connection.to.mapId === toMapId) return { first };
       visited.add(connection.to.mapId);
@@ -155,8 +159,102 @@ function firstConnectionToward(
   return null;
 }
 
+/**
+ * npcEnabled 연결을 출발 맵별로 묶는다. 연결 배열 정체성으로 기억하되, 제자리 편집을 잡으려고 매번
+ * 연결마다 정체성·npcEnabled·출발 맵·도착 맵을 확인한다(연결 수에 선형 — 예전 비용은 맵×연결이었다).
+ */
+type ConnectionIndex = {
+  readonly items: readonly MapConnection[];
+  readonly keys: readonly string[];
+  readonly byFrom: Map<MapId, MapConnection[]>;
+};
+const connectionIndexes = new WeakMap<readonly MapConnection[], ConnectionIndex>();
+// 구분자 충돌이 없게 JSON 배열로 만든다(맵 id 에 "|" 가 들어가도 섞이지 않는다).
+const connectionKey = (item: MapConnection) => JSON.stringify([Boolean(item.npcEnabled), item.from.mapId, item.to.mapId]);
+function connectionsByFromMap(connections: readonly MapConnection[]): Map<MapId, MapConnection[]> {
+  const cached = connectionIndexes.get(connections);
+  if (cached && cached.items.length === connections.length
+    && cached.items.every((item, index) => item === connections[index] && cached.keys[index] === connectionKey(item))) {
+    return cached.byFrom;
+  }
+  const byFrom = new Map<MapId, MapConnection[]>();
+  for (const connection of connections) {
+    if (!connection.npcEnabled) continue;
+    const list = byFrom.get(connection.from.mapId);
+    if (list) list.push(connection);
+    else byFrom.set(connection.from.mapId, [connection]);
+  }
+  connectionIndexes.set(connections, { items: [...connections], keys: connections.map(connectionKey), byFrom });
+  return byFrom;
+}
+
 function pathTo(project: Project, map: GameMap, from: Point, to: Point): MoveCommand[] {
   if (samePoint(from, to)) return [];
+  // 이 탐색은 지형 통행(canMove)만 본다 — 추격 A* 와 같은 연결 성분 색인으로 도달 불가를 바로 안다.
+  // 예전에는 목적지가 벽 안이면 표면 갱신마다 생활 NPC 마다 맵 전체 BFS 를 다시 돌렸다(NPC 10명 약 90ms).
+  // 한 방향 턱은 색인이 보수적으로 잇는다(tilePassabilityComponents §buildLabels).
+  if (!terrainMayReach(project, map, from.x, from.y, to.x, to.y)) return [];
+  // 방문 순서·방향 순서는 예전 문자열 키 BFS 와 같다. 칸을 정수 번호로, 방문·직전 칸을 typed array 로 둬
+  // 문자열·Map·Set·좌표 객체를 칸마다 만들지 않는다 — 생활 NPC 50명 맵 진입이 약 290ms 였다(브라우저 실측).
+  // 맵 밖 칸은 canMove 가 막으므로(inBounds) 큐에 들어가지 않는다. 출발점이 맵 밖이면 예전 경로로 간다.
+  const width = map.width;
+  const height = map.height;
+  if (!inside(map, from) || !inside(map, to)) return pathToSlow(project, map, from, to);
+  const cells = width * height;
+  const startKey = from.y * width + from.x;
+  const targetKey = to.y * width + to.x;
+  const previousCell = new Int32Array(cells).fill(-1);
+  const previousDir = new Int8Array(cells);
+  const visited = new Uint8Array(cells);
+  const queue = new Int32Array(cells);
+  let head = 0;
+  let tail = 0;
+  let visitedCount = 1;
+  visited[startKey] = 1;
+  queue[tail++] = startKey;
+  while (head < tail) {
+    const current = queue[head++]!;
+    const cx = current % width;
+    const cy = (current - cx) / width;
+    for (let d = 0; d < DIRECTIONS.length; d += 1) {
+      const step = DIRECTIONS[d]!;
+      const nx = cx + step.dx;
+      const ny = cy + step.dy;
+      if (nx < 0 || ny < 0 || nx >= width || ny >= height) continue;
+      const key = ny * width + nx;
+      if (visited[key] || !canMove(project, map, cx, cy, nx, ny)) continue;
+      visited[key] = 1;
+      visitedCount += 1;
+      previousCell[key] = current;
+      previousDir[key] = d;
+      if (key === targetKey) return unwindCells(previousCell, previousDir, startKey, targetKey);
+      queue[tail++] = key;
+    }
+  }
+  // 성분 전체를 훑고도 못 만났다. 같은 질의가 다시 오면 색인이 바로 답하게 남긴다(훑은 칸이 적으면 안 만든다).
+  armTerrainComponents(project, map, visitedCount);
+  return [];
+}
+
+function inside(map: GameMap, point: Point): boolean {
+  return Number.isInteger(point.x) && Number.isInteger(point.y)
+    && point.x >= 0 && point.y >= 0 && point.x < map.width && point.y < map.height;
+}
+
+function unwindCells(previousCell: Int32Array, previousDir: Int8Array, startKey: number, targetKey: number): MoveCommand[] {
+  const reversed: MoveCommand[] = [];
+  let current = targetKey;
+  while (current !== startKey) {
+    const prev = previousCell[current]!;
+    if (prev < 0) return [];
+    reversed.push({ kind: "move", dir: DIRECTIONS[previousDir[current]!]!.dir });
+    current = prev;
+  }
+  return reversed.reverse();
+}
+
+/** 맵 밖 좌표가 들어온 경우의 예전 구현(문자열 키). 정상 입력은 위 정수 경로를 탄다. */
+function pathToSlow(project: Project, map: GameMap, from: Point, to: Point): MoveCommand[] {
   const startKey = pointKey(from);
   const targetKey = pointKey(to);
   const queue: Point[] = [from];

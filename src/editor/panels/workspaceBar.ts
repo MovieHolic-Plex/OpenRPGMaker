@@ -77,6 +77,9 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
     button.setAttribute("aria-expanded", "true");
     menu.hidden = false;
     menu.classList.add("open");
+    // 메뉴는 톱바가 그릴 때 한 번만 만들어진다. 언어를 바꿔도 톱바는 다시 그려지지 않으므로
+    // 열 때마다 현재 언어로 라디오를 맞춘다(안 하면 English 를 골라도 한국어에 점이 남는다).
+    syncLocaleItems(menu);
     const rect = button.getBoundingClientRect?.();
     if (rect) {
       // 오른쪽 묶음에 있으므로 버튼 왼쪽에 맞추되 화면 오른쪽 여백 12px 안으로 당긴다 — 폭은 열어 놓고
@@ -124,6 +127,15 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
     );
   }
   return [button, menu];
+}
+
+function syncLocaleItems(menu: HTMLElement): void {
+  const current = getLocale();
+  menu.querySelectorAll<HTMLElement>(".workspace-locale-item").forEach((item) => {
+    const active = item.dataset.locale === current;
+    item.classList.toggle("is-active", active);
+    item.setAttribute("aria-checked", active ? "true" : "false");
+  });
 }
 
 /**
