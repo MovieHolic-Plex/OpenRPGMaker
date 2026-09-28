@@ -40,6 +40,7 @@ import { exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.
 import { createDeltaRelay } from "../../src/ai/piAgent/deltaRelay.ts";
 import { applyMapDeltas, diffMapsForDelta } from "../../src/ai/piAgent/mapDelta.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
+import { gameDesignBriefContext } from "../../src/project/gameDesignBrief.ts";
 import { createModernTilesetPolicy, modernTilesetPolicyPrompt, requestsModernMap } from '../../src/ai/modernTilesetPolicy.ts';
 import { isTransientProviderStreamError, PI_PROVIDER_STREAM_RETRY_LIMIT, providerStreamResumePrompt } from "../../src/ai/piAgent/providerRetry.ts";
 import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
@@ -387,7 +388,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const writer = contract ? undefined : request.roleModels?.writer;
   if (writer && !options.toolNames) {
     const writerTool = createWriterTool(writer, completeProvider,
-      options.providerApiKeys?.[writer.provider] ?? (writer.provider === request.provider ? options.apiKey : undefined));
+      options.providerApiKeys?.[writer.provider] ?? (writer.provider === request.provider ? options.apiKey : undefined),
+      gameDesignBriefContext(base.gameDesignBrief));
     tools.push(writerTool);
     exposed.add(writerTool.name);
   }
