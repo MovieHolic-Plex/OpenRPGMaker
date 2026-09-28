@@ -1,0 +1,118 @@
+{
+  "cast_cells": 21,
+  "battle_cells": 24,
+  "unique_cast_silhouettes": 21,
+  "max_extra_colors_per_cell": 4,
+  "gif_ms": [
+    160,
+    160,
+    160
+  ],
+  "cells": {
+    "cast_fire_1": {
+      "last_row": 44,
+      "extra_colors": 4,
+      "sha256": "2e26fe5c605c1f0f7c4eac72e39faf738194c23dcf61d35264f52be6c68c2e97"
+    },
+    "cast_fire_2": {
+      "last_row": 44,
+      "extra_colors": 4,
+      "sha256": "d6d9d11ca115a071fcc13e01f646a9d7211511a88ec61179c2991fdc3437eab1"
+    },
+    "cast_fire_3": {
+      "last_row": 44,
+      "extra_colors": 4,
+      "sha256": "10edb429ce7826091e80bb7495cba677bf30795f8952be2c81231eef03b3f59d"
+    },
+    "cast_ice_1": {
+      "last_row": 44,
+      "extra_colors": 4,
+      "sha256": "aa4529a74b97cfa7aa099404b57d6147df340e327aa5e40c0a1f1c4e7383102f"
+    },
+    "cast_ice_2": {
+      "last_row": 44,
+      "extra_colors": 4,
+      "sha256": "fde7c9873fbbb3f43fef61bf41fa733dea92e127a894f62fcc5c4677346a1508"
+    },
+    "cast_ice_3": {
+      "last_row": 44,
+      "extra_colors": 4,
+      "sha256": "6a747ed2993ad0639e524ca533c0d6a9ff68fa92c676046828acbd20c1af856e"
+    },
+    "cast_thunder_1": {
+      "last_row": 44,
+      "extra_colors": 4,
+      "sha256": "620b4546c87100c925352c87959eb34d745201407afb124d6abb7e45f2524ac1"
+    },
+    "cast_thunder_2": {
+      "last_row": 44,
+      "extra_colors": 4,
+      "sha256": "c9cff337ebec6b3acf7a697fa27602586e954c5ece059ec997c8b40f0e89ba0d"
+    },
+    "cast_thunder_3": {
+      "last_row": 44,
+      "extra_colors": 4,
+      "sha256": "8691b4cd5c74b3dada11a3162eafe0fbd4c1c1d90cc816b4f83839260504671b"
+    },
+    "cast_heal_1": {
+      "last_row": 44,
+      "extra_colors": 4,
+      "sha256": "a8058d2fffaa3ff0f97a792d559cd8948902580de5f5b8bbc5b7e930f238aee0"
+    },
+    "cast_heal_2": {
+      "last_row": 44,
+      "extra_colors": 4,
+      "sha256": "9b9a11fb94f91dda6e23990f76f0513d6301e11654f3afd4ed3b309fe0d54641"
+    },
+    "cast_heal_3": {
+      "last_row": 44,
+      "extra_colors": 4,
+      "sha256": "60d1b79afbca6a129e5bbb193396a224bbebd30773da3ee0d897e2fe57586f71"
+    },
+    "cast_dark_1": {
+      "last_row": 44,
+      "extra_colors": 4,
+      "sha256": "f16d01329603e891338198b143edb587b2c06e5fa866f92f19257547988a4ad2"
+    },
+    "cast_dark_2": {
+      "last_row": 44,
+      "extra_colors": 4,
+      "sha256": "8e1777b1abd2ae4e0aca75c65b7edadf560bbdd122a6b3b06f8957cef7bfc231"
+    },
+    "cast_dark_3": {
+      "last_row": 44,
+      "extra_colors": 4,
+      "sha256": "e53ec271f389a89815ce0f6486062bc9c879215da34214d18933b9fff22fb99f"
+    },
+    "cast_arcane_1": {
+      "last_row": 44,
+      "extra_colors": 4,
+      "sha256": "df7a4465dec82b37524f5f008e03d9a9e0e633b7d9211a8ab0d7d99c6de19ad9"
+    },
+    "cast_arcane_2": {
+      "last_row": 44,
+      "extra_colors": 4,
+      "sha256": "371f588b970ccf122e5a940d5582be301ed32e51cac9a387c919a9ce35d433a2"
+    },
+    "cast_arcane_3": {
+      "last_row": 44,
+      "extra_colors": 4,
+      "sha256": "fe9715a53add6e5aa94e1876ef550c539971baa73023f90e1c1b9194a5336374"
+    },
+    "cast_support_1": {
+      "last_row": 44,
+      "extra_colors": 4,
+      "sha256": "348772ff4536a32969575a8c1c4b592934a738cfa5677bd42948ad163ede8672"
+    },
+    "cast_support_2": {
+      "last_row": 44,
+      "extra_colors": 4,
+      "sha256": "252a7a5af016f58aa9d0124378531ffd068ed103e3202a69ae47cb56f536b5ad"
+    },
+    "cast_support_3": {
+      "last_row": 44,
+      "extra_colors": 4,
+      "sha256": "75aeb6516239cce39a24447afb32cfe37bc81dfa1c561f34644e014c5bcab70f"
+    }
+  }
+}

@@ -1,3 +1,4 @@
+import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 import { canonicalizeCommandFieldAliases } from "@/project/eventCommands/commandFieldAliases";
 import { validateEndingPresentation } from "./shapeDatabaseFields";
 import { referenceOwner } from "../tilesetReferences";
@@ -240,6 +241,7 @@ function canonicalizeProjectCommandFieldAliases(project: Project): void {
   for (const commonEvent of project.commonEvents ?? []) canonicalizeCommandFieldAliases(commonEvent.commands);
   for (const troop of project.database?.troops ?? []) {
     for (const page of troop.battleEventPages ?? []) canonicalizeCommandFieldAliases(page.commands);
+    for (const list of troopAfterBattleLists(troop)) canonicalizeCommandFieldAliases(list.commands);
   }
 }
 

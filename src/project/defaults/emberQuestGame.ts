@@ -141,7 +141,7 @@ export function createEmberQuestProject(): Project {
   session.inventory = { [EMBER_ITEM.potion]: 2 };
   session.gold = 100;
 
-  const system = defaultSystem();
+  const system = defaultSystem(true);
   system.startActorIds = [DEFAULT_ACTOR_ID];
   system.initialTroopId = EMBER_TROOP.slimes;
   system.titleScreen = {

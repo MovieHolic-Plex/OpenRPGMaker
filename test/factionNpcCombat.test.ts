@@ -1,4 +1,5 @@
 /** @vitest-environment happy-dom */
+import { EventEmitter } from "node:events";
 import { describe, expect, it, vi } from "vitest";
 import {
   initializeActionCombatForScene,
@@ -68,6 +69,7 @@ function fakeScene(project: Project, map: GameMap, playerAt: { x: number; y: num
     eventSprites,
     autonomousNPCs: new Map(),
     actionCombatState: null,
+    events: new EventEmitter(),
     tileX: playerAt.x,
     tileY: playerAt.y,
     movingTo: { x: playerAt.x, y: playerAt.y },
@@ -86,7 +88,7 @@ function fakeScene(project: Project, map: GameMap, playerAt: { x: number; y: num
     add: {
       graphics: vi.fn(graphicsStub),
       circle: vi.fn(() => ({ setDepth: vi.fn(), setStrokeStyle: vi.fn(), setPosition: vi.fn(), destroy: vi.fn() })),
-      text: vi.fn(() => ({ setOrigin: vi.fn(), setDepth: vi.fn(), destroy: vi.fn() })),
+      text: vi.fn(() => ({ setOrigin: vi.fn(), setDepth: vi.fn(), setScale: vi.fn(), destroy: vi.fn() })),
       sprite: vi.fn(() => spriteStub(0, 0)),
     },
     cameras: { main: { shake: vi.fn() } },

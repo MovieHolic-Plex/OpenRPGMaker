@@ -1,3 +1,4 @@
+import { renderRainBuffer, WEATHER_MAX_PARTICLES } from "./weather/rainBuffer";
 import { resolveMapWeather } from "@/player/weather/weatherModel";
 import { syncAtmosphere } from "./playSceneAtmosphere";
 import { getAudioEngine } from "@/player/audio";
@@ -24,7 +25,7 @@ import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 
 const WEATHER_DEPTH = 800_000;
 const WEATHER_FIXED_STEP_MS = 16;
-const MAX_PARTICLES = 180;
+const MAX_PARTICLES = WEATHER_MAX_PARTICLES;
 
 export type WeatherRenderPlan = {
   readonly active: boolean;
@@ -157,7 +158,7 @@ function renderWeather(scene: PlaySceneContext, params: WeatherParams): void {
   const signature = `${params.kind}:${params.intensity}:${scene.weatherClockMs ?? 0}:${canvasWidth}x${canvasHeight}:${zoom}:${density}`;
   if (plan.kind !== "fog" && signature === scene.weatherDrawSignature) return;
   scene.weatherDrawSignature = signature;
-  graphics.clear();
+  if (!plan.active || (plan.kind !== "rain" && plan.kind !== "storm")) graphics.clear();
   layer.setVisible(plan.active);
   for (const mist of scene.weatherMistLayers ?? []) mist.setVisible(plan.active && plan.kind === "fog");
   if (!plan.active) return;
@@ -167,6 +168,10 @@ function renderWeather(scene: PlaySceneContext, params: WeatherParams): void {
   layer.setScale(density / zoom);
   if (plan.kind === "fog") {
     renderFog(scene, params, width, height, scene.weatherClockMs ?? 0);
+    return;
+  }
+  if (plan.kind === "rain" || plan.kind === "storm") {
+    renderRainBuffer(graphics, params, width, height, scene.weatherClockMs ?? 0);
     return;
   }
   renderPrecipitation(graphics, params, width, height, scene.weatherClockMs ?? 0);

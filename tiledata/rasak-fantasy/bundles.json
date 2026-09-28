@@ -160,6 +160,9 @@
         "Exterieur/!$WindChime.png",
         "Mashines/!$Windmill.png",
         "Mashines/$Watermill.png"
+      ],
+      "tailSheets": [
+        "Nature/Tileset_Nature_ForrestFloorSummer_Rasak.png"
       ]
     },
     {
@@ -252,6 +255,9 @@
         "Ruins/Tileset_Old_World_Rasak.png",
         "Ruins/Tileset_Old_World2_Rasak.png",
         "Nature/Tileset_Nature_TreesSummer_Rasak.png"
+      ],
+      "tailSheets": [
+        "Nature/Tileset_Nature_ForrestFloorSummer_Rasak.png"
       ]
     },
     {
@@ -287,6 +293,10 @@
         "Forestfolk/Tileset_ForestfolkTreeTransition_Rasak.png",
         "Outposts/Tileset_Huntercamp_Rasak.png",
         "Outposts/Tileset_Temple_Rasak.png"
+      ],
+      "tailSheets": [
+        "Nature/Tileset_Nature_TreesSummer_Rasak.png",
+        "Nature/Tileset_Nature_ForrestFloorSummer_Rasak.png"
       ]
     },
     {
@@ -343,6 +353,9 @@
         "Ship/!FlagsRight.png",
         "Ship/!FlagsRightDestroyed.png",
         "Ship/!SailsAnimated.png"
+      ],
+      "tailSheets": [
+        "Town/Tileset_Building_Rasak.png"
       ]
     },
     {
@@ -415,6 +428,10 @@
       "animSheets": [
         "Lights/!Christmas_Lights_and_animated.png",
         "Lights/!advent_wreath.png"
+      ],
+      "tailSheets": [
+        "Town/Tileset_Building_Rasak.png",
+        "Nature/Tileset_Nature_TreesWinter_Rasak.png"
       ]
     },
     {

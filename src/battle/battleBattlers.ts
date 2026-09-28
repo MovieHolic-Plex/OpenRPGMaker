@@ -59,6 +59,9 @@ export interface MutableBattler {
   level?: number;
   readonly faceResourceId?: string;
   readonly battleCharacterResourceId?: string;
+  /** 표시용 걷기 칩. 전투 규칙 계산에는 쓰지 않는다. */
+  readonly characterResourceId?: string;
+  readonly characterIndex?: number;
   // 아군측 배틀러가 파티 몬스터에서 합성된 경우 원 인스턴스/종족 식별자.
   // 스프라이트 해석과 전투 후 HP/EXP 되돌려쓰기의 키가 된다.
   readonly monsterInstanceId?: string;
@@ -148,6 +151,8 @@ export function actorBattlers(
       level,
       faceResourceId: resolveActorFaceResourceId({ actorFaceResourceIds: overrides?.faceResourceIds }, normalizedActor, project),
       battleCharacterResourceId: normalizedActor.battleCharacterResourceId,
+      characterResourceId: normalizedActor.characterResourceId,
+      characterIndex: normalizedActor.characterIndex,
       name: overrides?.names?.[actorId] ?? normalizedActor.name,
       maxHp: derived.maxHp,
       hp,
@@ -540,6 +545,8 @@ export function battlerSnapshot(
     level: battler.level,
     faceResourceId: battler.faceResourceId,
     battleCharacterResourceId: battler.battleCharacterResourceId,
+    characterResourceId: battler.characterResourceId,
+    characterIndex: battler.characterIndex,
     monsterInstanceId: battler.monsterInstanceId,
     speciesId: battler.speciesId,
     hp: battler.hp,

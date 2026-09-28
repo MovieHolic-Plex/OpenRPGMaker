@@ -27,6 +27,8 @@ import { emptyToUndefined, numberField, selectField, textField } from "@/editor/
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { requestDatabaseModalClose } from "@/editor/panels/databaseModal";
 import { renderTroopBattleEventPanel } from "@/editor/panels/databaseTroopBattleEventPanel";
+import { renderTroopAfterBattlePanel } from "@/editor/panels/databaseTroopAfterBattlePanel";
+import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 import { troopIntentPanel } from "@/editor/panels/databaseTroopIntentPanel";
 import { imageThumbnail } from "@/editor/panels/databaseRecordThumbnails";
 import {
@@ -92,6 +94,12 @@ export function renderTroopRecordForm(form: HTMLElement, record: TroopRecord, re
       // 전투 배경은 지형 레코드에서 오므로 「설정」 카드의 배경 칸이 그 역할을 대신한다.
       children: [renderTroopBattleEventPanel(record, rerender)],
     },
+    {
+      id: "after",
+      label: "전투 뒤",
+      badge: String(troopAfterBattleLists(record).length),
+      children: [renderTroopAfterBattlePanel(record, rerender)],
+    },
   ];
   form.append(
     el("div", {
@@ -102,7 +110,7 @@ export function renderTroopRecordForm(form: HTMLElement, record: TroopRecord, re
   );
 }
 
-type TroopSectionId = "layout" | "balance" | "events";
+type TroopSectionId = "layout" | "balance" | "events" | "after";
 type TroopSection = {
   readonly id: TroopSectionId;
   readonly label: string;

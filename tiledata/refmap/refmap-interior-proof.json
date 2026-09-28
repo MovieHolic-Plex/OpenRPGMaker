@@ -7,7 +7,7 @@
   "objectKits": 256,
   "houseKits": 0,
   "autotileGroups": 85,
-  "bytes": 14775321,
+  "bytes": 15232436,
   "maps": {
     "refmap_bakery_home": {
       "place": "shared_refmap_interior_refmap_bakery_home",
@@ -35,7 +35,7 @@
       "size": "36×19",
       "objects": 61,
       "houses": 0,
-      "renderSha": "35538f28b6f4933a23208dedadbd7afd9f5ac69848ae182db35fc066cd7cb985"
+      "renderSha": "d7f61110aef5970ab66e755d8e6baef5c4b74f0cc28922f5247e7ac3cfde0c05"
     },
     "refmap_farmhouse": {
       "place": "shared_refmap_interior_refmap_farmhouse",
@@ -105,7 +105,7 @@
       "size": "9×9",
       "objects": 10,
       "houses": 0,
-      "renderSha": "0e45a18cdd534457198b792bc76c221b70cacbff4651656bf6c1933eec6aeb41"
+      "renderSha": "2e68973038d17bbd3e244b5fa6749de7c7b6e0b6232b0bbf82dc7ec49e5d55d4"
     },
     "refmap_student_room": {
       "place": "shared_refmap_interior_refmap_student_room",
@@ -151,10 +151,10 @@
     }
   },
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "0e17014729e8de1109787673d28ff0fd332de0ea2a5c8acc58c0eed7f2e9de40",
+  "revision": "0530ce17d2b2cef5fd6719517a00ac7fe66a922298cb6daa6d8c659522bbfac9",
   "reloaded": true,
-  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-interior-2026-09-27T23-13-15-002Z.sqlite",
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-interior-2026-09-28T03-34-06-121Z.sqlite",
   "otherLibraries": 36,
   "otherLibrariesUnchanged": true,
-  "publishedAt": "2026-09-27T23:13:38.475Z"
+  "publishedAt": "2026-09-28T03:34:20.942Z"
 }

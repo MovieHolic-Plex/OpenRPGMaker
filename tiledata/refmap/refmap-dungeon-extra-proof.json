@@ -7,7 +7,7 @@
   "objectKits": 102,
   "houseKits": 0,
   "autotileGroups": 52,
-  "bytes": 8643466,
+  "bytes": 9248688,
   "maps": {
     "crypt": {
       "place": "shared_refmap_dungeon_extra_crypt",
@@ -46,10 +46,10 @@
     }
   },
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "199b5630e668c333a8d91e32b751f145d744bf3263e4523eb438b24d9768b352",
+  "revision": "b9ff8645909e21987e796de2b5fa143a36839b9546b501c37a34a384dfa11289",
   "reloaded": true,
-  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-dungeon-extra-2026-09-27T21-33-13-816Z.sqlite",
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-dungeon-extra-2026-09-28T03-33-01-904Z.sqlite",
   "otherLibraries": 36,
   "otherLibrariesUnchanged": true,
-  "publishedAt": "2026-09-27T21:33:31.283Z"
+  "publishedAt": "2026-09-28T03:33:20.900Z"
 }

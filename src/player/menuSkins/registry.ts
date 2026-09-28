@@ -12,6 +12,15 @@ import type { Project } from "@/project/types";
 import type { MenuSkin, MenuSkinId } from "@/player/menuSkins/types";
 
 export const MENU_SKINS: Record<MenuSkinId, MenuSkin> = {
+  // 기본 스킨(2026-09-28). 상점 기본 프리셋 "pixel" 과 같은 도트 창 — 걷는 파티, HP·MP·EXP 숫자와 막대,
+  // 손가락 커서, 오른쪽 명령·소지금·장소 창. 장비·아이템 화면은 「현재 → 변경 후 ▲▼」 로 증감을 보인다.
+  pixel: {
+    id: "pixel",
+    label: "도트 창 · 파티 수치",
+    description: "청색 도트 창에 파티 네 명이 걷고 HP·MP·EXP 를 숫자로 보여 줍니다. 장비·아이템은 바뀌는 수치를 ▲▼ 로 미리 보입니다.",
+    landing: "party", tone: "glass", railIcons: "glyph", railStyle: "collapsed", railColumns: 1, sideParty: false,
+    partyArt: "character", partyStats: true,
+  },
   "field-list": {
     id: "field-list", label: "여행 · 세로 명령창", description: "지도를 남겨두고 오른쪽 밝은 창에서 명령을 고릅니다. 방향키 위·아래로 이동합니다.",
     landing: "sheet", tone: "glass", railIcons: "glyph", railStyle: "flat", railColumns: 1, sideParty: false,
@@ -92,8 +101,8 @@ export const MENU_SKINS: Record<MenuSkinId, MenuSkin> = {
 
 };
 
-/** 미설정·미지값이 떨어지는 기본 스킨 = 지금 화면. */
-export const DEFAULT_MENU_SKIN_ID: MenuSkinId = "workbench";
+/** 미설정·미지값이 떨어지는 기본 스킨. 2026-09-28 에 workbench → pixel(상점 기본 프리셋과 같은 도트 창). */
+export const DEFAULT_MENU_SKIN_ID: MenuSkinId = "pixel";
 
 export function listMenuSkinIds(): MenuSkinId[] {
   return Object.keys(MENU_SKINS) as MenuSkinId[];

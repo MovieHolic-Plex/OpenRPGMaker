@@ -540,3 +540,4 @@ claim; existing forest-harmony component notices still apply.
   (`src/assets/forestHarmonyTreeShadows.json`, `src/project/defaults/forestHarmonyTreeShadows.ts`).
 - Each cell is a single shade colour (#10261a) at stepped alpha, shaped only by the transparency mask of an existing
   `forest-harmony/chipset.png` trunk cell. No pixels are copied from any source; the chipset's own notice applies.
+- `generated/battle-scenery/{plains,forest,cave,snow,desert}/*.png`: OPRN Studio 자체 생성 이미지 (OpenAI image_gen, 2026-09-28); 원화 시트와 프롬프트 포함, `scripts/asset-gen/gen-battle-scenery.mjs`로 도트 양자화·레이어 분리·이음매 보정. 외부 게임 소재를 복사하지 않음.

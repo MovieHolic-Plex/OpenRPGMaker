@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type { Project } from "../../src/project/types";
-import { slimCheckpointProject, unchangedHeavyKeys, type PiAgentEvent } from "../../src/ai/piAgent/protocol";
+import { slimProjectForWire, type PiAgentEvent } from "../../src/ai/piAgent/protocol";
 
 type Reply = { renderId?: unknown; png?: unknown; issue?: unknown };
 const pending = new Map<string, (reply: Reply) => void>();
@@ -27,14 +27,14 @@ export function resolvePiRender(reply: Reply): boolean {
 export function requestPiRender(project: Project, base: Project, toolName: string, data: unknown,
   emit: (event: PiAgentEvent) => void, signal: AbortSignal, timeoutMs = 45_000): Promise<string> {
   signal.throwIfAborted();
-  const renderId = randomUUID(), unchangedKeys = unchangedHeavyKeys(base, project);
+  const renderId = randomUUID(), wire = slimProjectForWire(base, project);
   return new Promise((resolve, reject) => {
     const cleanup = () => { clearTimeout(timer); pending.delete(renderId); signal.removeEventListener("abort", abort); };
     const abort = () => { cleanup(); reject(new Error("맵 이미지 요청 중단/시간 초과: 시각 검토 미완료")); };
     const timer = setTimeout(abort, timeoutMs);
     signal.addEventListener("abort", abort, { once: true });
     pending.set(renderId, reply => { cleanup(); if (typeof reply.issue === "string") reject(new Error(reply.issue)); else resolve(reply.png as string); });
-    try { emit({ type: "render_request", renderId, toolName, data, project: slimCheckpointProject(project, unchangedKeys), unchangedKeys }); }
+    try { emit({ type: "render_request", renderId, toolName, data, project: wire.project, unchangedKeys: wire.unchangedKeys, ...(wire.unchangedTilesetIds.length ? { unchangedTilesetIds: wire.unchangedTilesetIds } : {}) }); }
     catch (error) { cleanup(); reject(error); }
   });
 }

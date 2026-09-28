@@ -1,0 +1,2114 @@
+{
+  "actor4-2": {
+    "cast_count": 21,
+    "extra_colors": [
+      [
+        60,
+        240,
+        202
+      ],
+      [
+        107,
+        225,
+        255
+      ],
+      [
+        146,
+        245,
+        115
+      ],
+      [
+        180,
+        106,
+        240
+      ],
+      [
+        255,
+        112,
+        38
+      ],
+      [
+        255,
+        156,
+        223
+      ]
+    ],
+    "poses": {
+      "cast_fire_1": {
+        "weapon_hand": [
+          32,
+          36
+        ],
+        "free_hand": [
+          30,
+          38
+        ],
+        "glow_hand": [
+          30,
+          38
+        ],
+        "glow_pixels": 1
+      },
+      "cast_fire_2": {
+        "weapon_hand": [
+          19,
+          33
+        ],
+        "free_hand": [
+          18,
+          32
+        ],
+        "glow_hand": [
+          18,
+          32
+        ],
+        "glow_pixels": 5
+      },
+      "cast_fire_3": {
+        "weapon_hand": [
+          15,
+          32
+        ],
+        "free_hand": [
+          12,
+          32
+        ],
+        "glow_hand": [
+          12,
+          32
+        ],
+        "glow_pixels": 7
+      },
+      "cast_ice_1": {
+        "weapon_hand": [
+          19,
+          30
+        ],
+        "free_hand": [
+          29,
+          30
+        ],
+        "glow_hand": [
+          29,
+          30
+        ],
+        "glow_pixels": 1
+      },
+      "cast_ice_2": {
+        "weapon_hand": [
+          34,
+          40
+        ],
+        "free_hand": [
+          16,
+          24
+        ],
+        "glow_hand": [
+          16,
+          24
+        ],
+        "glow_pixels": 5
+      },
+      "cast_ice_3": {
+        "weapon_hand": [
+          14,
+          30
+        ],
+        "free_hand": [
+          24,
+          22
+        ],
+        "glow_hand": [
+          24,
+          22
+        ],
+        "glow_pixels": 7
+      },
+      "cast_thunder_1": {
+        "weapon_hand": [
+          22,
+          36
+        ],
+        "free_hand": [
+          37,
+          31
+        ],
+        "glow_hand": [
+          37,
+          31
+        ],
+        "glow_pixels": 1
+      },
+      "cast_thunder_2": {
+        "weapon_hand": [
+          33,
+          37
+        ],
+        "free_hand": [
+          26,
+          21
+        ],
+        "glow_hand": [
+          26,
+          21
+        ],
+        "glow_pixels": 6
+      },
+      "cast_thunder_3": {
+        "weapon_hand": [
+          31,
+          37
+        ],
+        "free_hand": [
+          11,
+          40
+        ],
+        "glow_hand": [
+          11,
+          40
+        ],
+        "glow_pixels": 5
+      },
+      "cast_heal_1": {
+        "weapon_hand": [
+          19,
+          32
+        ],
+        "free_hand": [
+          21,
+          32
+        ],
+        "glow_hand": [
+          21,
+          32
+        ],
+        "glow_pixels": 1
+      },
+      "cast_heal_2": {
+        "weapon_hand": [
+          34,
+          26
+        ],
+        "free_hand": [
+          15,
+          26
+        ],
+        "glow_hand": [
+          15,
+          26
+        ],
+        "glow_pixels": 5
+      },
+      "cast_heal_3": {
+        "weapon_hand": [
+          32,
+          37
+        ],
+        "free_hand": [
+          13,
+          34
+        ],
+        "glow_hand": [
+          13,
+          34
+        ],
+        "glow_pixels": 5
+      },
+      "cast_dark_1": {
+        "weapon_hand": [
+          33,
+          39
+        ],
+        "free_hand": [
+          18,
+          30
+        ],
+        "glow_hand": [
+          18,
+          30
+        ],
+        "glow_pixels": 1
+      },
+      "cast_dark_2": {
+        "weapon_hand": [
+          24,
+          38
+        ],
+        "free_hand": [
+          38,
+          25
+        ],
+        "glow_hand": [
+          38,
+          25
+        ],
+        "glow_pixels": 4
+      },
+      "cast_dark_3": {
+        "weapon_hand": [
+          31,
+          39
+        ],
+        "free_hand": [
+          12,
+          32
+        ],
+        "glow_hand": [
+          12,
+          32
+        ],
+        "glow_pixels": 6
+      },
+      "cast_arcane_1": {
+        "weapon_hand": [
+          30,
+          35
+        ],
+        "free_hand": [
+          17,
+          34
+        ],
+        "glow_hand": [
+          17,
+          34
+        ],
+        "glow_pixels": 1
+      },
+      "cast_arcane_2": {
+        "weapon_hand": [
+          34,
+          29
+        ],
+        "free_hand": [
+          23,
+          21
+        ],
+        "glow_hand": [
+          23,
+          21
+        ],
+        "glow_pixels": 4
+      },
+      "cast_arcane_3": {
+        "weapon_hand": [
+          30,
+          36
+        ],
+        "free_hand": [
+          18,
+          32
+        ],
+        "glow_hand": [
+          18,
+          32
+        ],
+        "glow_pixels": 5
+      },
+      "cast_support_1": {
+        "weapon_hand": [
+          32,
+          37
+        ],
+        "free_hand": [
+          16,
+          27
+        ],
+        "glow_hand": [
+          16,
+          27
+        ],
+        "glow_pixels": 1
+      },
+      "cast_support_2": {
+        "weapon_hand": [
+          30,
+          38
+        ],
+        "free_hand": [
+          40,
+          31
+        ],
+        "glow_hand": [
+          40,
+          31
+        ],
+        "glow_pixels": 3
+      },
+      "cast_support_3": {
+        "weapon_hand": [
+          32,
+          37
+        ],
+        "free_hand": [
+          16,
+          32
+        ],
+        "glow_hand": [
+          16,
+          32
+        ],
+        "glow_pixels": 5
+      }
+    }
+  },
+  "actor4-3": {
+    "cast_count": 21,
+    "extra_colors": [
+      [
+        60,
+        240,
+        202
+      ],
+      [
+        107,
+        225,
+        255
+      ],
+      [
+        146,
+        245,
+        115
+      ],
+      [
+        180,
+        106,
+        240
+      ],
+      [
+        255,
+        112,
+        38
+      ],
+      [
+        255,
+        156,
+        223
+      ]
+    ],
+    "poses": {
+      "cast_fire_1": {
+        "weapon_hand": [
+          30,
+          38
+        ],
+        "free_hand": [
+          32,
+          36
+        ],
+        "glow_hand": [
+          32,
+          36
+        ],
+        "glow_pixels": 1
+      },
+      "cast_fire_2": {
+        "weapon_hand": [
+          18,
+          32
+        ],
+        "free_hand": [
+          19,
+          33
+        ],
+        "glow_hand": [
+          19,
+          33
+        ],
+        "glow_pixels": 5
+      },
+      "cast_fire_3": {
+        "weapon_hand": [
+          15,
+          32
+        ],
+        "free_hand": [
+          12,
+          32
+        ],
+        "glow_hand": [
+          12,
+          32
+        ],
+        "glow_pixels": 7
+      },
+      "cast_ice_1": {
+        "weapon_hand": [
+          19,
+          30
+        ],
+        "free_hand": [
+          29,
+          30
+        ],
+        "glow_hand": [
+          29,
+          30
+        ],
+        "glow_pixels": 1
+      },
+      "cast_ice_2": {
+        "weapon_hand": [
+          34,
+          40
+        ],
+        "free_hand": [
+          16,
+          24
+        ],
+        "glow_hand": [
+          16,
+          24
+        ],
+        "glow_pixels": 5
+      },
+      "cast_ice_3": {
+        "weapon_hand": [
+          14,
+          30
+        ],
+        "free_hand": [
+          24,
+          22
+        ],
+        "glow_hand": [
+          24,
+          22
+        ],
+        "glow_pixels": 7
+      },
+      "cast_thunder_1": {
+        "weapon_hand": [
+          22,
+          36
+        ],
+        "free_hand": [
+          37,
+          31
+        ],
+        "glow_hand": [
+          37,
+          31
+        ],
+        "glow_pixels": 1
+      },
+      "cast_thunder_2": {
+        "weapon_hand": [
+          33,
+          37
+        ],
+        "free_hand": [
+          26,
+          21
+        ],
+        "glow_hand": [
+          26,
+          21
+        ],
+        "glow_pixels": 6
+      },
+      "cast_thunder_3": {
+        "weapon_hand": [
+          31,
+          37
+        ],
+        "free_hand": [
+          11,
+          40
+        ],
+        "glow_hand": [
+          11,
+          40
+        ],
+        "glow_pixels": 5
+      },
+      "cast_heal_1": {
+        "weapon_hand": [
+          19,
+          32
+        ],
+        "free_hand": [
+          21,
+          32
+        ],
+        "glow_hand": [
+          21,
+          32
+        ],
+        "glow_pixels": 1
+      },
+      "cast_heal_2": {
+        "weapon_hand": [
+          34,
+          26
+        ],
+        "free_hand": [
+          15,
+          26
+        ],
+        "glow_hand": [
+          15,
+          26
+        ],
+        "glow_pixels": 5
+      },
+      "cast_heal_3": {
+        "weapon_hand": [
+          32,
+          37
+        ],
+        "free_hand": [
+          13,
+          34
+        ],
+        "glow_hand": [
+          13,
+          34
+        ],
+        "glow_pixels": 5
+      },
+      "cast_dark_1": {
+        "weapon_hand": [
+          33,
+          39
+        ],
+        "free_hand": [
+          18,
+          30
+        ],
+        "glow_hand": [
+          18,
+          30
+        ],
+        "glow_pixels": 1
+      },
+      "cast_dark_2": {
+        "weapon_hand": [
+          24,
+          38
+        ],
+        "free_hand": [
+          38,
+          25
+        ],
+        "glow_hand": [
+          38,
+          25
+        ],
+        "glow_pixels": 4
+      },
+      "cast_dark_3": {
+        "weapon_hand": [
+          31,
+          39
+        ],
+        "free_hand": [
+          12,
+          32
+        ],
+        "glow_hand": [
+          12,
+          32
+        ],
+        "glow_pixels": 6
+      },
+      "cast_arcane_1": {
+        "weapon_hand": [
+          17,
+          34
+        ],
+        "free_hand": [
+          30,
+          35
+        ],
+        "glow_hand": [
+          17,
+          34
+        ],
+        "glow_pixels": 1
+      },
+      "cast_arcane_2": {
+        "weapon_hand": [
+          23,
+          21
+        ],
+        "free_hand": [
+          34,
+          29
+        ],
+        "glow_hand": [
+          23,
+          21
+        ],
+        "glow_pixels": 4
+      },
+      "cast_arcane_3": {
+        "weapon_hand": [
+          18,
+          32
+        ],
+        "free_hand": [
+          30,
+          36
+        ],
+        "glow_hand": [
+          18,
+          32
+        ],
+        "glow_pixels": 5
+      },
+      "cast_support_1": {
+        "weapon_hand": [
+          32,
+          37
+        ],
+        "free_hand": [
+          16,
+          27
+        ],
+        "glow_hand": [
+          16,
+          27
+        ],
+        "glow_pixels": 1
+      },
+      "cast_support_2": {
+        "weapon_hand": [
+          30,
+          38
+        ],
+        "free_hand": [
+          40,
+          31
+        ],
+        "glow_hand": [
+          40,
+          31
+        ],
+        "glow_pixels": 3
+      },
+      "cast_support_3": {
+        "weapon_hand": [
+          32,
+          37
+        ],
+        "free_hand": [
+          16,
+          32
+        ],
+        "glow_hand": [
+          16,
+          32
+        ],
+        "glow_pixels": 5
+      }
+    }
+  },
+  "actor4-4": {
+    "cast_count": 21,
+    "extra_colors": [
+      [
+        60,
+        240,
+        202
+      ],
+      [
+        107,
+        225,
+        255
+      ],
+      [
+        146,
+        245,
+        115
+      ],
+      [
+        180,
+        106,
+        240
+      ],
+      [
+        255,
+        112,
+        38
+      ],
+      [
+        255,
+        156,
+        223
+      ]
+    ],
+    "poses": {
+      "cast_fire_1": {
+        "weapon_hand": [
+          30,
+          38
+        ],
+        "free_hand": [
+          32,
+          36
+        ],
+        "glow_hand": [
+          32,
+          36
+        ],
+        "glow_pixels": 1
+      },
+      "cast_fire_2": {
+        "weapon_hand": [
+          18,
+          32
+        ],
+        "free_hand": [
+          19,
+          33
+        ],
+        "glow_hand": [
+          19,
+          33
+        ],
+        "glow_pixels": 5
+      },
+      "cast_fire_3": {
+        "weapon_hand": [
+          15,
+          32
+        ],
+        "free_hand": [
+          12,
+          32
+        ],
+        "glow_hand": [
+          12,
+          32
+        ],
+        "glow_pixels": 7
+      },
+      "cast_ice_1": {
+        "weapon_hand": [
+          19,
+          30
+        ],
+        "free_hand": [
+          29,
+          30
+        ],
+        "glow_hand": [
+          29,
+          30
+        ],
+        "glow_pixels": 1
+      },
+      "cast_ice_2": {
+        "weapon_hand": [
+          34,
+          40
+        ],
+        "free_hand": [
+          16,
+          24
+        ],
+        "glow_hand": [
+          16,
+          24
+        ],
+        "glow_pixels": 5
+      },
+      "cast_ice_3": {
+        "weapon_hand": [
+          14,
+          30
+        ],
+        "free_hand": [
+          24,
+          22
+        ],
+        "glow_hand": [
+          24,
+          22
+        ],
+        "glow_pixels": 7
+      },
+      "cast_thunder_1": {
+        "weapon_hand": [
+          22,
+          36
+        ],
+        "free_hand": [
+          37,
+          31
+        ],
+        "glow_hand": [
+          37,
+          31
+        ],
+        "glow_pixels": 1
+      },
+      "cast_thunder_2": {
+        "weapon_hand": [
+          33,
+          37
+        ],
+        "free_hand": [
+          26,
+          21
+        ],
+        "glow_hand": [
+          26,
+          21
+        ],
+        "glow_pixels": 6
+      },
+      "cast_thunder_3": {
+        "weapon_hand": [
+          31,
+          37
+        ],
+        "free_hand": [
+          11,
+          40
+        ],
+        "glow_hand": [
+          11,
+          40
+        ],
+        "glow_pixels": 5
+      },
+      "cast_heal_1": {
+        "weapon_hand": [
+          19,
+          32
+        ],
+        "free_hand": [
+          21,
+          32
+        ],
+        "glow_hand": [
+          21,
+          32
+        ],
+        "glow_pixels": 1
+      },
+      "cast_heal_2": {
+        "weapon_hand": [
+          34,
+          26
+        ],
+        "free_hand": [
+          15,
+          26
+        ],
+        "glow_hand": [
+          15,
+          26
+        ],
+        "glow_pixels": 5
+      },
+      "cast_heal_3": {
+        "weapon_hand": [
+          32,
+          37
+        ],
+        "free_hand": [
+          13,
+          34
+        ],
+        "glow_hand": [
+          13,
+          34
+        ],
+        "glow_pixels": 5
+      },
+      "cast_dark_1": {
+        "weapon_hand": [
+          33,
+          39
+        ],
+        "free_hand": [
+          18,
+          30
+        ],
+        "glow_hand": [
+          18,
+          30
+        ],
+        "glow_pixels": 1
+      },
+      "cast_dark_2": {
+        "weapon_hand": [
+          24,
+          38
+        ],
+        "free_hand": [
+          38,
+          25
+        ],
+        "glow_hand": [
+          38,
+          25
+        ],
+        "glow_pixels": 4
+      },
+      "cast_dark_3": {
+        "weapon_hand": [
+          31,
+          39
+        ],
+        "free_hand": [
+          12,
+          32
+        ],
+        "glow_hand": [
+          12,
+          32
+        ],
+        "glow_pixels": 6
+      },
+      "cast_arcane_1": {
+        "weapon_hand": [
+          17,
+          34
+        ],
+        "free_hand": [
+          30,
+          35
+        ],
+        "glow_hand": [
+          17,
+          34
+        ],
+        "glow_pixels": 1
+      },
+      "cast_arcane_2": {
+        "weapon_hand": [
+          23,
+          21
+        ],
+        "free_hand": [
+          34,
+          29
+        ],
+        "glow_hand": [
+          23,
+          21
+        ],
+        "glow_pixels": 4
+      },
+      "cast_arcane_3": {
+        "weapon_hand": [
+          18,
+          32
+        ],
+        "free_hand": [
+          30,
+          36
+        ],
+        "glow_hand": [
+          18,
+          32
+        ],
+        "glow_pixels": 5
+      },
+      "cast_support_1": {
+        "weapon_hand": [
+          32,
+          37
+        ],
+        "free_hand": [
+          16,
+          27
+        ],
+        "glow_hand": [
+          16,
+          27
+        ],
+        "glow_pixels": 1
+      },
+      "cast_support_2": {
+        "weapon_hand": [
+          30,
+          38
+        ],
+        "free_hand": [
+          40,
+          31
+        ],
+        "glow_hand": [
+          40,
+          31
+        ],
+        "glow_pixels": 3
+      },
+      "cast_support_3": {
+        "weapon_hand": [
+          32,
+          37
+        ],
+        "free_hand": [
+          16,
+          32
+        ],
+        "glow_hand": [
+          16,
+          32
+        ],
+        "glow_pixels": 5
+      }
+    }
+  },
+  "actor4-5": {
+    "cast_count": 21,
+    "extra_colors": [
+      [
+        60,
+        240,
+        202
+      ],
+      [
+        107,
+        225,
+        255
+      ],
+      [
+        146,
+        245,
+        115
+      ],
+      [
+        180,
+        106,
+        240
+      ],
+      [
+        255,
+        112,
+        38
+      ],
+      [
+        255,
+        156,
+        223
+      ]
+    ],
+    "poses": {
+      "cast_fire_1": {
+        "weapon_hand": [
+          32,
+          36
+        ],
+        "free_hand": [
+          30,
+          38
+        ],
+        "glow_hand": [
+          30,
+          38
+        ],
+        "glow_pixels": 1
+      },
+      "cast_fire_2": {
+        "weapon_hand": [
+          19,
+          33
+        ],
+        "free_hand": [
+          18,
+          32
+        ],
+        "glow_hand": [
+          18,
+          32
+        ],
+        "glow_pixels": 5
+      },
+      "cast_fire_3": {
+        "weapon_hand": [
+          15,
+          32
+        ],
+        "free_hand": [
+          12,
+          32
+        ],
+        "glow_hand": [
+          12,
+          32
+        ],
+        "glow_pixels": 7
+      },
+      "cast_ice_1": {
+        "weapon_hand": [
+          19,
+          30
+        ],
+        "free_hand": [
+          29,
+          30
+        ],
+        "glow_hand": [
+          29,
+          30
+        ],
+        "glow_pixels": 1
+      },
+      "cast_ice_2": {
+        "weapon_hand": [
+          34,
+          40
+        ],
+        "free_hand": [
+          16,
+          24
+        ],
+        "glow_hand": [
+          16,
+          24
+        ],
+        "glow_pixels": 5
+      },
+      "cast_ice_3": {
+        "weapon_hand": [
+          14,
+          30
+        ],
+        "free_hand": [
+          24,
+          22
+        ],
+        "glow_hand": [
+          24,
+          22
+        ],
+        "glow_pixels": 7
+      },
+      "cast_thunder_1": {
+        "weapon_hand": [
+          22,
+          36
+        ],
+        "free_hand": [
+          37,
+          31
+        ],
+        "glow_hand": [
+          37,
+          31
+        ],
+        "glow_pixels": 1
+      },
+      "cast_thunder_2": {
+        "weapon_hand": [
+          33,
+          37
+        ],
+        "free_hand": [
+          26,
+          21
+        ],
+        "glow_hand": [
+          26,
+          21
+        ],
+        "glow_pixels": 6
+      },
+      "cast_thunder_3": {
+        "weapon_hand": [
+          31,
+          37
+        ],
+        "free_hand": [
+          11,
+          40
+        ],
+        "glow_hand": [
+          11,
+          40
+        ],
+        "glow_pixels": 5
+      },
+      "cast_heal_1": {
+        "weapon_hand": [
+          19,
+          32
+        ],
+        "free_hand": [
+          21,
+          32
+        ],
+        "glow_hand": [
+          21,
+          32
+        ],
+        "glow_pixels": 1
+      },
+      "cast_heal_2": {
+        "weapon_hand": [
+          34,
+          26
+        ],
+        "free_hand": [
+          15,
+          26
+        ],
+        "glow_hand": [
+          15,
+          26
+        ],
+        "glow_pixels": 5
+      },
+      "cast_heal_3": {
+        "weapon_hand": [
+          32,
+          37
+        ],
+        "free_hand": [
+          13,
+          34
+        ],
+        "glow_hand": [
+          13,
+          34
+        ],
+        "glow_pixels": 5
+      },
+      "cast_dark_1": {
+        "weapon_hand": [
+          33,
+          39
+        ],
+        "free_hand": [
+          18,
+          30
+        ],
+        "glow_hand": [
+          18,
+          30
+        ],
+        "glow_pixels": 1
+      },
+      "cast_dark_2": {
+        "weapon_hand": [
+          24,
+          38
+        ],
+        "free_hand": [
+          38,
+          25
+        ],
+        "glow_hand": [
+          38,
+          25
+        ],
+        "glow_pixels": 4
+      },
+      "cast_dark_3": {
+        "weapon_hand": [
+          31,
+          39
+        ],
+        "free_hand": [
+          12,
+          32
+        ],
+        "glow_hand": [
+          12,
+          32
+        ],
+        "glow_pixels": 6
+      },
+      "cast_arcane_1": {
+        "weapon_hand": [
+          30,
+          35
+        ],
+        "free_hand": [
+          17,
+          34
+        ],
+        "glow_hand": [
+          17,
+          34
+        ],
+        "glow_pixels": 1
+      },
+      "cast_arcane_2": {
+        "weapon_hand": [
+          34,
+          29
+        ],
+        "free_hand": [
+          23,
+          21
+        ],
+        "glow_hand": [
+          23,
+          21
+        ],
+        "glow_pixels": 4
+      },
+      "cast_arcane_3": {
+        "weapon_hand": [
+          30,
+          36
+        ],
+        "free_hand": [
+          18,
+          32
+        ],
+        "glow_hand": [
+          18,
+          32
+        ],
+        "glow_pixels": 5
+      },
+      "cast_support_1": {
+        "weapon_hand": [
+          32,
+          37
+        ],
+        "free_hand": [
+          16,
+          27
+        ],
+        "glow_hand": [
+          16,
+          27
+        ],
+        "glow_pixels": 1
+      },
+      "cast_support_2": {
+        "weapon_hand": [
+          30,
+          38
+        ],
+        "free_hand": [
+          40,
+          31
+        ],
+        "glow_hand": [
+          40,
+          31
+        ],
+        "glow_pixels": 3
+      },
+      "cast_support_3": {
+        "weapon_hand": [
+          32,
+          37
+        ],
+        "free_hand": [
+          16,
+          32
+        ],
+        "glow_hand": [
+          16,
+          32
+        ],
+        "glow_pixels": 5
+      }
+    }
+  },
+  "actor4-6": {
+    "cast_count": 21,
+    "extra_colors": [
+      [
+        60,
+        240,
+        202
+      ],
+      [
+        107,
+        225,
+        255
+      ],
+      [
+        146,
+        245,
+        115
+      ],
+      [
+        180,
+        106,
+        240
+      ],
+      [
+        255,
+        112,
+        38
+      ],
+      [
+        255,
+        156,
+        223
+      ]
+    ],
+    "poses": {
+      "cast_fire_1": {
+        "weapon_hand": [
+          30,
+          38
+        ],
+        "free_hand": [
+          32,
+          36
+        ],
+        "glow_hand": [
+          32,
+          36
+        ],
+        "glow_pixels": 1
+      },
+      "cast_fire_2": {
+        "weapon_hand": [
+          18,
+          32
+        ],
+        "free_hand": [
+          19,
+          33
+        ],
+        "glow_hand": [
+          19,
+          33
+        ],
+        "glow_pixels": 5
+      },
+      "cast_fire_3": {
+        "weapon_hand": [
+          15,
+          32
+        ],
+        "free_hand": [
+          12,
+          32
+        ],
+        "glow_hand": [
+          12,
+          32
+        ],
+        "glow_pixels": 7
+      },
+      "cast_ice_1": {
+        "weapon_hand": [
+          19,
+          30
+        ],
+        "free_hand": [
+          29,
+          30
+        ],
+        "glow_hand": [
+          29,
+          30
+        ],
+        "glow_pixels": 1
+      },
+      "cast_ice_2": {
+        "weapon_hand": [
+          34,
+          40
+        ],
+        "free_hand": [
+          16,
+          24
+        ],
+        "glow_hand": [
+          16,
+          24
+        ],
+        "glow_pixels": 5
+      },
+      "cast_ice_3": {
+        "weapon_hand": [
+          14,
+          30
+        ],
+        "free_hand": [
+          24,
+          22
+        ],
+        "glow_hand": [
+          24,
+          22
+        ],
+        "glow_pixels": 7
+      },
+      "cast_thunder_1": {
+        "weapon_hand": [
+          22,
+          36
+        ],
+        "free_hand": [
+          37,
+          31
+        ],
+        "glow_hand": [
+          37,
+          31
+        ],
+        "glow_pixels": 1
+      },
+      "cast_thunder_2": {
+        "weapon_hand": [
+          33,
+          37
+        ],
+        "free_hand": [
+          26,
+          21
+        ],
+        "glow_hand": [
+          26,
+          21
+        ],
+        "glow_pixels": 6
+      },
+      "cast_thunder_3": {
+        "weapon_hand": [
+          31,
+          37
+        ],
+        "free_hand": [
+          11,
+          40
+        ],
+        "glow_hand": [
+          11,
+          40
+        ],
+        "glow_pixels": 5
+      },
+      "cast_heal_1": {
+        "weapon_hand": [
+          19,
+          32
+        ],
+        "free_hand": [
+          21,
+          32
+        ],
+        "glow_hand": [
+          21,
+          32
+        ],
+        "glow_pixels": 1
+      },
+      "cast_heal_2": {
+        "weapon_hand": [
+          34,
+          26
+        ],
+        "free_hand": [
+          15,
+          26
+        ],
+        "glow_hand": [
+          15,
+          26
+        ],
+        "glow_pixels": 5
+      },
+      "cast_heal_3": {
+        "weapon_hand": [
+          32,
+          37
+        ],
+        "free_hand": [
+          13,
+          34
+        ],
+        "glow_hand": [
+          13,
+          34
+        ],
+        "glow_pixels": 5
+      },
+      "cast_dark_1": {
+        "weapon_hand": [
+          33,
+          39
+        ],
+        "free_hand": [
+          18,
+          30
+        ],
+        "glow_hand": [
+          18,
+          30
+        ],
+        "glow_pixels": 1
+      },
+      "cast_dark_2": {
+        "weapon_hand": [
+          24,
+          38
+        ],
+        "free_hand": [
+          38,
+          25
+        ],
+        "glow_hand": [
+          38,
+          25
+        ],
+        "glow_pixels": 4
+      },
+      "cast_dark_3": {
+        "weapon_hand": [
+          31,
+          39
+        ],
+        "free_hand": [
+          12,
+          32
+        ],
+        "glow_hand": [
+          12,
+          32
+        ],
+        "glow_pixels": 6
+      },
+      "cast_arcane_1": {
+        "weapon_hand": [
+          17,
+          34
+        ],
+        "free_hand": [
+          30,
+          35
+        ],
+        "glow_hand": [
+          17,
+          34
+        ],
+        "glow_pixels": 1
+      },
+      "cast_arcane_2": {
+        "weapon_hand": [
+          23,
+          21
+        ],
+        "free_hand": [
+          34,
+          29
+        ],
+        "glow_hand": [
+          23,
+          21
+        ],
+        "glow_pixels": 4
+      },
+      "cast_arcane_3": {
+        "weapon_hand": [
+          18,
+          32
+        ],
+        "free_hand": [
+          30,
+          36
+        ],
+        "glow_hand": [
+          18,
+          32
+        ],
+        "glow_pixels": 5
+      },
+      "cast_support_1": {
+        "weapon_hand": [
+          32,
+          37
+        ],
+        "free_hand": [
+          16,
+          27
+        ],
+        "glow_hand": [
+          16,
+          27
+        ],
+        "glow_pixels": 1
+      },
+      "cast_support_2": {
+        "weapon_hand": [
+          30,
+          38
+        ],
+        "free_hand": [
+          40,
+          31
+        ],
+        "glow_hand": [
+          40,
+          31
+        ],
+        "glow_pixels": 3
+      },
+      "cast_support_3": {
+        "weapon_hand": [
+          32,
+          37
+        ],
+        "free_hand": [
+          16,
+          32
+        ],
+        "glow_hand": [
+          16,
+          32
+        ],
+        "glow_pixels": 5
+      }
+    }
+  },
+  "actor4-7": {
+    "cast_count": 21,
+    "extra_colors": [
+      [
+        60,
+        240,
+        202
+      ],
+      [
+        107,
+        225,
+        255
+      ],
+      [
+        146,
+        245,
+        115
+      ],
+      [
+        180,
+        106,
+        240
+      ],
+      [
+        255,
+        112,
+        38
+      ],
+      [
+        255,
+        156,
+        223
+      ]
+    ],
+    "poses": {
+      "cast_fire_1": {
+        "weapon_hand": [
+          30,
+          38
+        ],
+        "free_hand": [
+          32,
+          36
+        ],
+        "glow_hand": [
+          32,
+          36
+        ],
+        "glow_pixels": 1
+      },
+      "cast_fire_2": {
+        "weapon_hand": [
+          18,
+          32
+        ],
+        "free_hand": [
+          19,
+          33
+        ],
+        "glow_hand": [
+          19,
+          33
+        ],
+        "glow_pixels": 5
+      },
+      "cast_fire_3": {
+        "weapon_hand": [
+          15,
+          32
+        ],
+        "free_hand": [
+          12,
+          32
+        ],
+        "glow_hand": [
+          12,
+          32
+        ],
+        "glow_pixels": 7
+      },
+      "cast_ice_1": {
+        "weapon_hand": [
+          19,
+          30
+        ],
+        "free_hand": [
+          29,
+          30
+        ],
+        "glow_hand": [
+          29,
+          30
+        ],
+        "glow_pixels": 1
+      },
+      "cast_ice_2": {
+        "weapon_hand": [
+          34,
+          40
+        ],
+        "free_hand": [
+          16,
+          24
+        ],
+        "glow_hand": [
+          16,
+          24
+        ],
+        "glow_pixels": 5
+      },
+      "cast_ice_3": {
+        "weapon_hand": [
+          14,
+          30
+        ],
+        "free_hand": [
+          24,
+          22
+        ],
+        "glow_hand": [
+          24,
+          22
+        ],
+        "glow_pixels": 7
+      },
+      "cast_thunder_1": {
+        "weapon_hand": [
+          22,
+          36
+        ],
+        "free_hand": [
+          37,
+          31
+        ],
+        "glow_hand": [
+          37,
+          31
+        ],
+        "glow_pixels": 1
+      },
+      "cast_thunder_2": {
+        "weapon_hand": [
+          33,
+          37
+        ],
+        "free_hand": [
+          26,
+          21
+        ],
+        "glow_hand": [
+          26,
+          21
+        ],
+        "glow_pixels": 6
+      },
+      "cast_thunder_3": {
+        "weapon_hand": [
+          31,
+          37
+        ],
+        "free_hand": [
+          11,
+          40
+        ],
+        "glow_hand": [
+          11,
+          40
+        ],
+        "glow_pixels": 5
+      },
+      "cast_heal_1": {
+        "weapon_hand": [
+          19,
+          32
+        ],
+        "free_hand": [
+          21,
+          32
+        ],
+        "glow_hand": [
+          21,
+          32
+        ],
+        "glow_pixels": 1
+      },
+      "cast_heal_2": {
+        "weapon_hand": [
+          34,
+          26
+        ],
+        "free_hand": [
+          15,
+          26
+        ],
+        "glow_hand": [
+          15,
+          26
+        ],
+        "glow_pixels": 5
+      },
+      "cast_heal_3": {
+        "weapon_hand": [
+          32,
+          37
+        ],
+        "free_hand": [
+          13,
+          34
+        ],
+        "glow_hand": [
+          13,
+          34
+        ],
+        "glow_pixels": 5
+      },
+      "cast_dark_1": {
+        "weapon_hand": [
+          33,
+          39
+        ],
+        "free_hand": [
+          18,
+          30
+        ],
+        "glow_hand": [
+          18,
+          30
+        ],
+        "glow_pixels": 1
+      },
+      "cast_dark_2": {
+        "weapon_hand": [
+          24,
+          38
+        ],
+        "free_hand": [
+          38,
+          25
+        ],
+        "glow_hand": [
+          38,
+          25
+        ],
+        "glow_pixels": 4
+      },
+      "cast_dark_3": {
+        "weapon_hand": [
+          31,
+          39
+        ],
+        "free_hand": [
+          12,
+          32
+        ],
+        "glow_hand": [
+          12,
+          32
+        ],
+        "glow_pixels": 6
+      },
+      "cast_arcane_1": {
+        "weapon_hand": [
+          17,
+          34
+        ],
+        "free_hand": [
+          30,
+          35
+        ],
+        "glow_hand": [
+          17,
+          34
+        ],
+        "glow_pixels": 1
+      },
+      "cast_arcane_2": {
+        "weapon_hand": [
+          23,
+          21
+        ],
+        "free_hand": [
+          34,
+          29
+        ],
+        "glow_hand": [
+          23,
+          21
+        ],
+        "glow_pixels": 4
+      },
+      "cast_arcane_3": {
+        "weapon_hand": [
+          18,
+          32
+        ],
+        "free_hand": [
+          30,
+          36
+        ],
+        "glow_hand": [
+          18,
+          32
+        ],
+        "glow_pixels": 5
+      },
+      "cast_support_1": {
+        "weapon_hand": [
+          32,
+          37
+        ],
+        "free_hand": [
+          16,
+          27
+        ],
+        "glow_hand": [
+          16,
+          27
+        ],
+        "glow_pixels": 1
+      },
+      "cast_support_2": {
+        "weapon_hand": [
+          30,
+          38
+        ],
+        "free_hand": [
+          40,
+          31
+        ],
+        "glow_hand": [
+          40,
+          31
+        ],
+        "glow_pixels": 3
+      },
+      "cast_support_3": {
+        "weapon_hand": [
+          32,
+          37
+        ],
+        "free_hand": [
+          16,
+          32
+        ],
+        "glow_hand": [
+          16,
+          32
+        ],
+        "glow_pixels": 5
+      }
+    }
+  }
+}

@@ -7,7 +7,7 @@
   "objectKits": 88,
   "houseKits": 0,
   "autotileGroups": 45,
-  "bytes": 9113887,
+  "bytes": 9632261,
   "maps": {
     "south_island_beach": {
       "place": "shared_refmap_south_island_south_island_beach",
@@ -46,10 +46,10 @@
     }
   },
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "0ca8d0a4db3a496fc0e3a5932d6aa9335fa5b7a0f481be42e2a660708c53164c",
+  "revision": "b22d0fbadb78962f7dea93b98e28a5d2b7fa0706c9993976f2913e66cb2bda9d",
   "reloaded": true,
-  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-south-island-2026-09-27T21-33-54-356Z.sqlite",
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-south-island-2026-09-28T03-31-51-058Z.sqlite",
   "otherLibraries": 36,
   "otherLibrariesUnchanged": true,
-  "publishedAt": "2026-09-27T21:34:13.513Z"
+  "publishedAt": "2026-09-28T03:32:38.615Z"
 }

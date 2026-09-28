@@ -26,7 +26,7 @@ WebGL 한 장으로 얹는다. 그림은 이미지 모델로 만들고, 생성 �
 
 ## 런타임
 
-- `src/player/titleEffects/shader.ts`(GLSL 300 es 한 패스) + `renderer.ts`(캔버스 수명·유니폼 인코딩).
+- `src/player/titleEffects/shader.ts`(GLSL 300 es 합성 + 입자 계산 패스) + `renderer.ts`(캔버스 수명·유니폼 인코딩).
   `titleScreen.ts` 가 배경 위·로고 아래에 `.rm-title-effects` 캔버스(testid `title-effects`)를 끼운다.
 - 캔버스 dataset: `titleEffectsRenderer` = pending | webgl | unavailable, `titleEffectsCount`, `titleEffectsAnimated`,
   `titleEffectsSignature`. 서명이 같으면 다시 그릴 때 캔버스를 재사용한다(메뉴 이동마다 WebGL 을 새로 만들지 않는다).
@@ -140,3 +140,37 @@ WebGL 한 장으로 얹는다. 그림은 이미지 모델로 만들고, 생성 �
   스틸 한 장짜리 오프닝 장면에는 그대로 붙일 수 있지만, 배선·편집 UI 는 아직 없다.
 - 시퀀스 타이밍(ms)은 편집기에서 숫자로 고치지 않는다(프리셋·도구 인자만). 스크러버·비전 채점·소리 박자 맞춤은 다음 단계. 깊이 시차는 한 장 변형이라 가려졌던 뒤쪽을 새로 그리지 않는다(세기 2 근처에서 가장자리 번짐).
 - 효과 추가는 목록의 종류 선택으로만 한다. 무대에서 영역 꼭짓점을 새로 찍거나 지우는 것은 아직 없다(옮기기만 된다).
+
+## 소프트웨어 WebGL 입자 계산 분리 (2026-09-28)
+
+- `shader.ts`의 `moteData`는 기존 GLSL 해시·궤적·시간식을 그대로 쓴다. JS의
+  `Math.sin`으로 옮기면 `fract(sin(n)*43758.5453)`가 작은 정밀도 차이를 위치 차이로
+  증폭하므로 CPU 계산으로 대체하지 않는다.
+- `renderer.ts`는 `EXT_color_buffer_float`와 framebuffer completeness를 확인하고,
+  프레임마다 작은 RGBA32F 텍스처에 입자 값을 계산한다. TEXTURE2/3, 각각 최대 96×12,
+  36KiB를 한 번 할당한다. MRT로 입자마다 한 번 계산해 두 texel에 위치/반경/수명과 반짝임을 나눠 담아
+  기존 `smoothstep * sin(life*PI) * (0.4+0.6*tw)`의 곱셈 순서를 보존한다.
+  활성 입자/효과 범위만 scissor로 그리고, 입자가 없으면 보조 패스를 생략한다.
+- 색 패스는 원래 효과 순서와 입자 누적 순서를 유지한다. 반경 밖에서만 입자 계산을,
+  합계가 정확히 0일 때만 cone boost를 생략한다. water/mist/dapple은 영역 마스크가
+  **정확히 0**일 때만 noise/굴절을 생략한다. feather를 줄이거나 작은 값을 잘라내지 않는다.
+- 부동소수 렌더 타깃을 지원하지 않거나 보조 프로그램 준비가 실패하면 기존 GPU 입자
+  계산 경로를 사용한다(반경/마스크 조기 생략은 적용). 프레임 루프에 CPU readback은 없다.
+  freeze/reduced-motion의 고정 시각, live update, resize, detach 시 context 해제 계약은 그대로다.
+- 재현: `npx tsx --tsconfig tsconfig.app.json scripts/bench/title-effects.mts`.
+  편집기 셸 없이 실제 렌더러를 Chromium SwiftShader에서 실행한다. 정적 구버전
+  `test/fixtures/titleEffects/legacy{Shader,Renderer}.ts`와 3종 fit × 4시각 × 2효과 묶음의
+  RGBA를 비교한다. 비어 있는 프레임은 실패다. readPixels로 완료를 기다린 전후 시간이며
+  화면 제시 간격(rAF)과 같은 지표가 아니다. 출력은 `/tmp/shader-results.json`.
+- 회귀: `test/titleEffectsShader.browser.test.ts`는 픽셀 오차 ≤1/255, 실제 GL 보조 패스 횟수,
+  resize, detach, float-extension 미지원 + reduced-motion을 검사한다.
+  `TITLE_EFFECT_BENCH_IMPLEMENTATION=legacy`는 현재 구현 자리에 구버전을 주입하는
+  음성 대조다. 픽셀은 같지만 보조 패스가 없어 실패해야 한다.
+
+실측(Chromium 149 SwiftShader, 320×240, forestMorning 7효과/입자 70개, 합성 배경,
+2026-09-28): 3회 × 워밍업 4/측정 24프레임, 구·신 구현을 프레임마다 번갈아 실행했다.
+readPixels 완료까지 중앙값은 **90.8→73.7 / 98.4→76.5 / 88.2→77.9ms**.
+3개 중앙값의 중앙값은 90.8→76.5ms(15.7% 감소). 24개 픽셀 비교는 RGBA 바이트 차이 0.
+공유 머신 loadavg 121.58/77.35/45.29, 실제 GPU/60fps 달성을 뜻하지 않는다.
+블록 단위 교대 측정에는 한 회 역전(89.3→95.3ms)도 있어 성능 수치를 일반화하지 않는다.
+브라우저 전용 테스트는 `--config vitest.browser.config.ts`로 파일 하나만 실행한다.

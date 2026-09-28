@@ -45,6 +45,7 @@ const REQUIRED_RUNTIME_SELECTORS = [
 // 표면 진입 시트 src/styles/runtime/index.css 의 @import 순서(2026-09-11 Task 7 이후). 옛 배럴(battle.css,
 // battle-skins/index.css)은 사라져 슬라이스가 직접 나열된다. playerRuntime.css 는 이 시트로 전달하는 한 줄 허브다.
 const RUNTIME_IMPORTS = [
+  "./fonts.css",
   "./system.css",
   "./playSurface.css",
   "./from-editor-core-part-2.css",
@@ -65,29 +66,38 @@ const RUNTIME_IMPORTS = [
   "./battle/15-juice-capture-fx.css",
   "./battle/17-sprint-a-polish.css",
   "./battle/19-adversarial-review-3.css",
-  // 2026-09-17: 구 14/16/18/20 층(포켓몬 전용)을 20-pokemon-skin.css 하나로 합쳤다.
-  // 19층보다 뒤, 21층보다 앞이라는 자리는 그대로다 — 계산 스타일 덤프로 중립 확인.
+  // 포켓몬 전용 통합 층은 19층과 21층 사이에 둔다.
   "./battle/20-pokemon-skin.css",
   "./battle/21-gen1-hud-type-badge.css",
   "./battle-skins/_pokemon.css",
   "./battle-skins/_rm2000.css",
   "./battle-skins/_rm2003.css",
-  // 2026-09-25: 지원 종료 9종의 스킨별 시트를 지우고 유리 뼈대의 색·HUD 변형 한 장으로 합쳤다.
+  // 유리 뼈대의 색·HUD 변형.
   "./battle-skins/_glass-variants.css",
   "./battle-skins/_transitions.css",
   "./battle-skins/_battlers.css",
   "./battle-skins/_windowskin.css",
-  // 2026-09-25 타격감 층: 스킨 시트보다 뒤 — 같은 특정도의 스킨 규칙을 이긴다.
+  // 타격감 층은 스킨 시트보다 뒤에서 덮는다.
   "./battle/22-hit-feel.css",
   "./battle/23-entry-exit.css",
+  "./battle/24-input-prompt.css",
+  "./battle/24-backdrop-motion.css",
+  "./battle/25-rolling-hp.css",
+  // 전용 스킨·겹 배경·레트로 모션도 출하 CSS에 실려야 한다.
+  "./battle-skins/_retro2003.css",
+  "./battle/26-battle-scenery.css",
+  "./battle/27-retro-motion.css",
   "./commerce.css",
+  "./tacticsBattle.css",
   "./shop.css",
   "./title.css",
   "../database/tabs-b-title-screen.css",
   "../database/tabs-b-status-menu-base.css",
   "../database/tabs-b-status-menu-main.css",
   "./statusMenuEdgeDock.css",
+  "./galleryMenu.css",
   "./statusMenuSkins.css",
+  "./statusMenuLegacySkins.css",
   "./playLoading.css",
   "./actionHud.css",
   "./timer.css",
@@ -96,13 +106,16 @@ const RUNTIME_IMPORTS = [
   "./transitions.css",
   "./nameEntry.css",
   "./keyboardNav.css",
+  "./gameOver.css",
   "./juice.css",
   "../dialogue.css",
+  "../dialogueStyles.css",
   "./zoneFeedback.css",
   "./handSlot.css",
   "./minimap.css",
   "./from-database-system-studio.css",
   "./from-database-modern-utility-records.css",
+  "./fieldHud.css",
 ] as const;
 
 describe("exported player runtime CSS", () => {

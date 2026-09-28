@@ -1,0 +1,335 @@
+/* 이동은 바깥 배틀러의 translate, 진동은 안쪽 스프라이트의 translate를 쓴다.
+   비트 길이가 유일한 시계다. 포즈/시트 숨쉬기는 기존 처리기가 소유한다. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor {
+  animation: none;
+  transform: var(--battle-juice-base, translate(-50%, -100%));
+  translate: 0 0;
+  transition: translate 120ms ease-out;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-command="true"] {
+  translate: -16px 0;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-beat] {
+  animation: retro-walk var(--retro-beat-ms) linear both;
+  animation-play-state: running;
+  transition: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-beat="impact"] {
+  animation-name: retro-thrust;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-beat="recover"] {
+  animation-name: retro-return;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-action="cast"][data-retro-beat="impact"] {
+  animation-name: retro-cast-hold;
+}
+/* 걸어가서 때리기: 적 앞까지 걸음(비트의 앞부분) → 도착해서 제자리 휘두름. retroWalk 가 --retro-travel 을 실측 거리로 심는다. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-action="attack"][data-retro-beat="approach"] {
+  animation-name: retro-walk-up;
+}
+/* 도트 시전 칸이 동작을 보여 주므로 빛 고리·기울임은 걷기 칩 시트에서 끈다. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-actor[data-battler-extended="true"][data-retro-beat="approach"][data-retro-action="cast"]::before {
+  content: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-actor[data-battler-extended="true"][data-retro-beat="approach"][data-retro-action="attack"] .battle-actor-sprite {
+  rotate: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-actor[data-retro-beat="approach"][data-retro-action="attack"] .battle-actor-sprite {
+  rotate: -4deg;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-actor[data-retro-beat="approach"][data-retro-action="cast"]::before {
+  animation: retro-cast-ring var(--retro-beat-ms) ease-out both;
+  background: radial-gradient(ellipse, transparent 54%, #fff 58%, #fff9 62%, transparent 68%);
+  content: "";
+  height: 96px;
+  left: 50%;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  translate: -50% -50%;
+  width: 96px;
+  z-index: 4;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style][data-battle-layout] .battle-actor .battle-actor-platform {
+  background: #10102066;
+  border-radius: 50%;
+  bottom: 0;
+  display: block;
+  height: 12px;
+  left: 50%;
+  translate: -50% 0;
+  width: 48px;
+  z-index: -1;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-action="defend"][data-retro-beat] {
+  animation: none;
+  translate: 0 0;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-action="cast"][data-retro-beat="recover"] {
+  animation-name: retro-cast-return;
+}
+@keyframes retro-cast-return { from { translate: -16px 0; } to { translate: 0 0; } }
+/* 바깥 발 위치를 따라가는 그림자는 점프 높이만 반대로 보정한다. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-actor[data-retro-action="attack"][data-retro-beat="recover"] .battle-actor-platform {
+  animation: retro-shadow-return var(--retro-beat-ms) linear both;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor.retro-hit-release {
+  animation: retro-hurt 220ms linear both;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-ko="stagger"] {
+  animation: retro-stagger 160ms linear both;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-ko="settled"] {
+  animation: retro-ko 180ms ease-out both;
+  filter: grayscale(1) brightness(0.6);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-victory="true"] {
+  animation: retro-victory 560ms ease-out both;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-retro-beat="approach"] .battle-enemy-image {
+  animation: retro-enemy-windup var(--retro-beat-ms) linear both;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-retro-beat="impact"] {
+  animation: retro-enemy-strike var(--retro-beat-ms) ease-out both;
+  animation-play-state: running;
+}
+/* 기본 격파 조각과 sprite 분해를 한 개의 줄무늬 소멸로 대체한다. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-death-shards { display: none; }
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy.defeated .battle-enemy-image {
+  animation: retro-enemy-dissolve 500ms steps(8, end) forwards;
+  mask-image: repeating-linear-gradient(to bottom, #000 0 4px, transparent 4px 8px);
+}
+/* 피해 정보는 정지시키지 않는다. 크기/색은 숫자의 의미만 따른다. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-damage-popup.battle-damage-popup {
+  animation: retro-number 800ms linear both;
+  color: #fff;
+  font-family: "Galmuri11", "NeoDunggeunmo", monospace;
+  font-size: 24px;
+  text-shadow: 2px 2px #101020, -2px 0 #101020, 0 -2px #101020;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-damage-popup.battle-damage-popup-heal { color: #80ff98; }
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-damage-popup.battle-damage-popup-critical { color: #ffe878; }
+@keyframes retro-walk {
+  0% { translate: var(--retro-start, 0px) 0; }
+  16% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.16) -2px; }
+  32% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.32) 0; }
+  50% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.5) -2px; }
+  66% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.66) 0; }
+  84% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.84) -2px; }
+  100% { translate: var(--retro-travel) 0; }
+}
+@keyframes retro-thrust {
+  0%, 100% { translate: var(--retro-travel) var(--retro-travel-y, 0px); }
+  40% { translate: calc(var(--retro-travel) - 8px) var(--retro-travel-y, 0px); }
+}
+/* 걸음 구간 = 비트의 앞 60% 안팎(battleRetroMotion 의 swingMs 240ms 를 뺀 나머지). 도착 뒤에는 서서 휘두른다.
+   대상 적의 발 높이까지 세로로도 걷는다(--retro-travel-y, retroWalk 가 잰다). */
+@keyframes retro-walk-up {
+  0% { translate: var(--retro-start, 0px) 0; }
+  10% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.14) calc(var(--retro-travel-y, 0px) * 0.14 - 2px); }
+  20% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.3) calc(var(--retro-travel-y, 0px) * 0.3); }
+  30% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.46) calc(var(--retro-travel-y, 0px) * 0.46 - 2px); }
+  40% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.62) calc(var(--retro-travel-y, 0px) * 0.62); }
+  50% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.78) calc(var(--retro-travel-y, 0px) * 0.78 - 2px); }
+  62%, 100% { translate: var(--retro-travel) var(--retro-travel-y, 0px); }
+}
+@keyframes retro-cast-hold { from, to { translate: var(--retro-travel) 0; } }
+@keyframes retro-return {
+  0% { translate: var(--retro-travel) var(--retro-travel-y, 0px); }
+  30% { translate: calc(var(--retro-travel) * 0.7) calc(var(--retro-travel-y, 0px) * 0.7 - 10px); }
+  60% { translate: calc(var(--retro-travel) * 0.4) calc(var(--retro-travel-y, 0px) * 0.4 - 12px); }
+  86%, 100% { translate: 0 0; }
+}
+@keyframes retro-shadow-return {
+  0%, 86%, 100% { translate: -50% 0; scale: 1; }
+  30% { translate: -50% 10px; scale: 0.8; }
+  60% { translate: -50% 12px; scale: 0.8; }
+}
+@keyframes retro-cast-ring {
+  0% { opacity: 0; scale: 0.5; }
+  40% { opacity: 0.9; }
+  100% { opacity: 0; scale: 1.3; }
+}
+@keyframes retro-hurt {
+  0%, 40% { translate: 6px 0; filter: sepia(1) saturate(6) hue-rotate(320deg); }
+  20%, 60% { filter: none; }
+  100% { translate: 0 0; filter: none; }
+}
+@keyframes retro-stagger {
+  0%, 100% { rotate: 0deg; }
+  30% { rotate: 6deg; }
+  70% { rotate: -4deg; }
+}
+@keyframes retro-ko { from { translate: 0 0; } to { translate: 0 6px; } }
+@keyframes retro-victory {
+  0%, 40%, 80%, 100% { translate: 0 0; }
+  20%, 60% { translate: 0 -10px; }
+}
+@keyframes retro-enemy-windup {
+  0%, 30%, 60%, 100% { filter: none; }
+  15%, 45% { filter: brightness(0) invert(1); }
+}
+@keyframes retro-enemy-strike {
+  0%, 100% { translate: 0 0; }
+  40% { translate: 10px 0; }
+}
+@keyframes retro-enemy-dissolve {
+  0% { opacity: 1; clip-path: inset(0); filter: sepia(1) saturate(5) hue-rotate(320deg); }
+  100% { opacity: 0; clip-path: inset(100% 0 0); filter: sepia(1) saturate(5) hue-rotate(320deg); }
+}
+@keyframes retro-number {
+  0% { opacity: 1; translate: 0 0; }
+  20% { translate: 0 -32px; }
+  38% { translate: 0 0; }
+  48% { translate: 0 -10px; }
+  60%, 82% { opacity: 1; translate: 0 0; }
+  100% { opacity: 0; translate: 0 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor:is([data-retro-victory], [data-retro-ko], .retro-hit-release, .battle-actor),
+  .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-action][data-retro-beat],
+  .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-retro-beat],
+  .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-retro-beat] .battle-enemy-image {
+    animation: none;
+    translate: 0 0;
+    transition: none;
+  }
+  .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-actor[data-retro-beat][data-retro-action] .battle-actor-sprite { rotate: none; }
+  .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-actor[data-retro-action="cast"]::before { display: none; }
+  .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-actor[data-retro-action][data-retro-beat] .battle-actor-platform { animation: none; }
+  .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy.defeated .battle-enemy-image { animation: none; opacity: 0; }
+  .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-damage-popup.battle-damage-popup { animation: none; }
+}
+
+/* 걷기 칩 전투 시트: 인라인 96px 셀을 그대로 표시한다. 스킨의 1.25·2/3 배율보다 우선한다. */
+.battle-scene[data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-actor-group .battle-actor[data-authored-battler="true"][data-battler-extended="true"] .battle-actor-sprite[data-rendering="pixelated"] {
+  transform: none;
+  scale: 1;
+  rotate: none;
+  image-rendering: pixelated;
+  animation: none;
+}
+.battle-scene[data-battle-skin="retro2003"][data-battle-motion][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-actor-group .battle-actor[data-battler-extended="true"] {
+  width: 96px;
+  height: 96px;
+}
+/* 아이템도 영창처럼 반 걸음만 나왔다 돌아온다. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-action="item"][data-retro-beat="impact"] {
+  animation-name: retro-cast-hold;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-action="item"][data-retro-beat="recover"] {
+  animation-name: retro-cast-return;
+}
+/* 숨쉬기는 칸을 바꾸거나 비정수 확대하지 않고 논리 1px만 움직인다. */
+@media (prefers-reduced-motion: no-preference) {
+  .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-actor-group .battle-actor[data-battler-extended="true"][data-battle-pose-frame="idle"]:not([data-retro-beat]):not(.retro-hit-release) .battle-actor-sprite[data-rendering="pixelated"] {
+    animation: retro-pixel-breathe 1600ms steps(1, end) infinite;
+  }
+}
+@keyframes retro-pixel-breathe { 0%, 100% { translate: 0 0; } 50% { translate: 0 -1px; } }
+
+/* 직업별 접근(battleRetroMotion.animateMeleeApproach): 질주·섬광의 잔상, 도약의 착지 흙먼지. 경로 자체는 Web Animations 가 그린다. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor.retro-afterimage {
+  animation: retro-afterimage 220ms steps(4, end) forwards;
+  filter: brightness(0) invert(0.85) sepia(1) hue-rotate(180deg) saturate(3);
+  pointer-events: none;
+  z-index: 0;
+}
+@keyframes retro-afterimage { from { opacity: 0.55; } to { opacity: 0; } }
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .retro-landing-dust {
+  animation: retro-landing-dust 360ms steps(4, end) forwards;
+  background:
+    radial-gradient(circle at 20% 70%, #e8dcc0 0 3px, transparent 4px),
+    radial-gradient(circle at 50% 80%, #d8c8a4 0 4px, transparent 5px),
+    radial-gradient(circle at 80% 70%, #e8dcc0 0 3px, transparent 4px);
+  bottom: 0;
+  height: 16px;
+  image-rendering: pixelated;
+  left: 50%;
+  pointer-events: none;
+  position: absolute;
+  translate: -50% 0;
+  width: 64px;
+}
+@keyframes retro-landing-dust {
+  from { opacity: 1; scale: 0.6 1; }
+  to { opacity: 0; scale: 1.5 0.7; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] :is(.retro-afterimage, .retro-landing-dust) { display: none; }
+}
+
+/* ── 도트 적 시트(src/assets/pixelEnemySheets.ts) ───────────────────────────────────────
+   48px 셀 3×3 을 아군 전투 도트와 같은 2배(96px)로 그린다. 내용 이미지(원본 통짜 그림)는 상자 밖으로 밀고 배경으로 칸을 그린다.
+   칸은 런타임이 인라인 background-position 으로 고르고(data-pixel-cell), 대기 칸만 여기 루프가 a→b→c→b 로 돈다.
+   이동(뛰기·날기)은 battleRetroMotion 의 Web Animations translate 가 맡는다 — 노드의 transform·animation 슬롯과 겹치지 않는다. */
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-enemy .battle-enemy-image[data-pixel-sheet] {
+  --battle-enemy-base-width: 96px;
+  --battle-enemy-base-height: 96px;
+  object-position: -99999px -99999px;
+  background-image: var(--pixel-enemy-url);
+  background-repeat: no-repeat;
+  background-size: 300% 300%;
+  background-position: 0% 0%;
+  image-rendering: pixelated;
+  animation: none;
+  scale: 1;
+  transition: none;
+}
+.battle-scene[data-battle-skin="retro2003"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-enemy:not(.defeated) .battle-enemy-image[data-pixel-sheet][data-pixel-cell="idle"] {
+  animation: retro-pixel-enemy-idle var(--pixel-enemy-idle-ms, 880ms) infinite;
+  animation-delay: var(--breathe-delay, 0ms);
+}
+@keyframes retro-pixel-enemy-idle {
+  0% { background-position: 0% 0%; animation-timing-function: steps(1, end); }
+  25% { background-position: 50% 0%; animation-timing-function: steps(1, end); }
+  50% { background-position: 100% 0%; animation-timing-function: steps(1, end); }
+  75% { background-position: 50% 0%; animation-timing-function: steps(1, end); }
+  100% { background-position: 0% 0%; }
+}
+/* 흰 점멸 예비동작·10px 찌르기는 도트 칸이 대신한다. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-pixel-enemy][data-retro-beat],
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-pixel-enemy][data-retro-beat] .battle-enemy-image {
+  animation: none;
+}
+/* 돌진 중에는 아군 앞으로 겹쳐 그린다. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy-group:has(.battle-enemy[data-pixel-enemy][data-retro-reach="melee"]) {
+  z-index: 6;
+}
+/* 격파: 맞은 칸 → 녹은/떨어진 칸(dead)을 잠깐 보인 뒤 네 번 깜빡이며 사라진다. 줄무늬 분해 마스크는 쓰지 않는다. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy.defeated .battle-enemy-image[data-pixel-sheet] {
+  animation: retro-pixel-enemy-vanish 560ms steps(1, end) 380ms forwards;
+  mask-image: none;
+  filter: none;
+}
+@keyframes retro-pixel-enemy-vanish {
+  0%, 50% { opacity: 0; }
+  25%, 75% { opacity: 1; }
+  100% { opacity: 0; }
+}
+/* 필드 그림자(아군 발판과 같은 문법). 박쥐는 공중에 떠 있으므로 더 작고 옅다. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-enemy[data-pixel-enemy]::after {
+  background: #10102066;
+  border-radius: 50%;
+  bottom: 4px;
+  content: "";
+  height: 10px;
+  left: 50%;
+  pointer-events: none;
+  position: absolute;
+  translate: -50% 0;
+  width: 40px;
+  z-index: -1;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-enemy[data-pixel-enemy="swoop"]::after {
+  background: #10102044;
+  width: 28px;
+  height: 8px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-enemy.defeated[data-pixel-enemy]::after { display: none; }
+/* 녹은 슬라임·떨어진 박쥐는 제 색으로 남긴다(기본 dead 포즈의 탈색을 끈다). */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-enemy[data-pixel-enemy][data-battle-pose="dead"] { filter: none; }
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-enemy:not(.defeated) .battle-enemy-image[data-pixel-sheet][data-pixel-cell="idle"] { animation: none; }
+  .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy.defeated .battle-enemy-image[data-pixel-sheet] { animation: none; opacity: 0; }
+}

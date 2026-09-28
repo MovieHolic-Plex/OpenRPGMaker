@@ -31,6 +31,8 @@ type EventWithSource = {
 export const NPC_SCHEDULE_TICK_MS = 100;
 
 const scheduleTickAccumulators = new WeakMap<object, number>();
+// A stale schedule state must not claim a later explicit command route.
+const scheduleMovers = new WeakSet<AutonomousMover>();
 
 /**
  * 프레임 루프에서 부르는 진입점. updateNpcSchedules 는 NPC 수 × 맵 면적에 비례하는
@@ -141,6 +143,13 @@ function applyNpcScheduleTarget(
 
   ensureTrackedOnCurrentMap(scene, eventId, current);
   if (current.x === normalizedTarget.x && current.y === normalizedTarget.y) {
+    // The admitted step lands, but a superseded schedule must not keep walking away.
+    const mover = scene.autonomousNPCs.get(eventId);
+    if (state[eventId]?.routeKey !== target.key && mover && scheduleMovers.has(mover)) {
+      mover.moves = [];
+      mover.step = 0;
+      mover.repeat = false;
+    }
     const locationChanged = setNpcFacingAtTarget(scene, eventId, normalizedTarget);
     const previous = state[eventId];
     state[eventId] = { routeKey: target.key };
@@ -234,12 +243,26 @@ function registerScheduleRoute(
 ): boolean {
   const state = scene.session.npcScheduleStates ??= {};
   if (state[eventId]?.routeKey === routeKey && scene.autonomousNPCs.has(eventId)) return false;
-  scene.registerAutonomousMover(eventId, [...moves], false);
+  const existing = scene.autonomousNPCs.get(eventId);
+  // Replace only the unstarted steps. The committed tile already is activeMove.to.
+  if (existing && scheduleMovers.has(existing)) {
+    existing.moves = [...moves];
+    existing.step = 0;
+    existing.repeat = false;
+    existing.blockedSteps = 0;
+  } else {
+    scene.registerAutonomousMover(eventId, [...moves], false);
+  }
   const mover = scene.autonomousNPCs.get(eventId);
   // 무버가 안 만들어졌으면(대상 이벤트가 런타임에 없다) 바뀐 게 없다. true 를 돌려주면
   // 호출부가 이벤트 계층 전체를 다시 그리고, 다음 점검에서 같은 일이 영구 반복된다.
   if (!mover) return false;
+  if (existing?.activeMove && existing !== mover) {
+    mover.activeMove = { ...existing.activeMove, durationMs: existing.activeMove.durationMs ?? existing.moveDurationMs };
+    mover.facing = existing.facing;
+  }
   configureScheduleMover(mover);
+  scheduleMovers.add(mover);
   scene.commandMoveRouteEventIds.add(eventId);
   state[eventId] = { routeKey, exitTarget: state[eventId]?.exitTarget };
   return true;

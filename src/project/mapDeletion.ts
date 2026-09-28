@@ -15,6 +15,7 @@ import { deserialize, serialize } from "./io";
 import type { Command, EventPage, GameEvent, MapId, MapTreeNode, Project } from "./types";
 import { isQuestGraphDef, type AnyQuestDef } from "./quest/questDef";
 import { mapPresentItemBranches, presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
+import { mapTroopAfterBattleLists, troopAfterBattleLists } from "@/project/troopAfterBattle";
 
 export interface MapScheduleRowReference {
   readonly hostMapId: MapId;
@@ -320,6 +321,7 @@ export function applyMapDeletions(draft: Project, mapIds: readonly MapId[], opti
     for (const page of troop.battleEventPages ?? []) {
       page.commands = stripMapCommandSet(page.commands, deleted);
     }
+    mapTroopAfterBattleLists(troop, (commands) => stripMapCommandSet(commands, deleted));
   }
 }
 
@@ -418,6 +420,7 @@ function countIncomingCommands(project: Project, mapId: MapId): number {
   for (const commonEvent of project.commonEvents) countIn(commonEvent.commands);
   for (const troop of project.database?.troops ?? []) {
     for (const page of troop.battleEventPages ?? []) countIn(page.commands);
+    for (const list of troopAfterBattleLists(troop)) countIn(list.commands);
   }
   return count;
 }

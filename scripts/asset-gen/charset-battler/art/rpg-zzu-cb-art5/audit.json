@@ -1,0 +1,282 @@
+{
+  "actor4-0": {
+    "poses": 24,
+    "groundY": 44,
+    "additionalColors": [
+      [
+        101,
+        223,
+        192
+      ],
+      [
+        106,
+        139,
+        153
+      ],
+      [
+        133,
+        84,
+        43
+      ],
+      [
+        192,
+        220,
+        226
+      ],
+      [
+        227,
+        184,
+        84
+      ],
+      [
+        239,
+        255,
+        211
+      ]
+    ],
+    "alpha": [
+      0,
+      255
+    ],
+    "sheetSize": [
+      144,
+      384
+    ],
+    "gifFrames": 16,
+    "gifDurationMs": 120,
+    "gifScale": 4,
+    "walkAndFront": "source pixels unchanged",
+    "sheetSha256": "5d728084e10c1c918b117b0c0463ca9c84522a591ea8811f9ae28510d37af987",
+    "rawPixelsAndSheetAndMotion": "pass"
+  },
+  "actor3-4": {
+    "poses": 24,
+    "groundY": 44,
+    "additionalColors": [
+      [
+        101,
+        223,
+        192
+      ],
+      [
+        133,
+        84,
+        43
+      ],
+      [
+        227,
+        184,
+        84
+      ],
+      [
+        239,
+        255,
+        211
+      ]
+    ],
+    "alpha": [
+      0,
+      255
+    ],
+    "sheetSize": [
+      144,
+      384
+    ],
+    "gifFrames": 16,
+    "gifDurationMs": 120,
+    "gifScale": 4,
+    "walkAndFront": "source pixels unchanged",
+    "sheetSha256": "87216ed4d07db33733c0cae0488e945107c1a7137cf8ed870efab1c762660693",
+    "rawPixelsAndSheetAndMotion": "pass"
+  },
+  "actor3-5": {
+    "poses": 24,
+    "groundY": 44,
+    "additionalColors": [
+      [
+        101,
+        223,
+        192
+      ],
+      [
+        133,
+        84,
+        43
+      ],
+      [
+        227,
+        184,
+        84
+      ],
+      [
+        239,
+        255,
+        211
+      ]
+    ],
+    "alpha": [
+      0,
+      255
+    ],
+    "sheetSize": [
+      144,
+      384
+    ],
+    "gifFrames": 16,
+    "gifDurationMs": 120,
+    "gifScale": 4,
+    "walkAndFront": "source pixels unchanged",
+    "sheetSha256": "9a5f79ad3c91745659fac98ecf4064c0c1083816251c78f2dfb7598e028695c5",
+    "rawPixelsAndSheetAndMotion": "pass"
+  },
+  "actor3-6": {
+    "poses": 24,
+    "groundY": 44,
+    "additionalColors": [
+      [
+        101,
+        223,
+        192
+      ],
+      [
+        106,
+        139,
+        153
+      ],
+      [
+        133,
+        84,
+        43
+      ],
+      [
+        192,
+        220,
+        226
+      ],
+      [
+        227,
+        184,
+        84
+      ],
+      [
+        239,
+        255,
+        211
+      ]
+    ],
+    "alpha": [
+      0,
+      255
+    ],
+    "sheetSize": [
+      144,
+      384
+    ],
+    "gifFrames": 16,
+    "gifDurationMs": 120,
+    "gifScale": 4,
+    "walkAndFront": "source pixels unchanged",
+    "sheetSha256": "c5c880e60394aa5f5bde9b8c1b35044626944ebf629dce43459a3930c8aa7a84",
+    "rawPixelsAndSheetAndMotion": "pass"
+  },
+  "actor3-7": {
+    "poses": 24,
+    "groundY": 44,
+    "additionalColors": [
+      [
+        101,
+        223,
+        192
+      ],
+      [
+        106,
+        139,
+        153
+      ],
+      [
+        133,
+        84,
+        43
+      ],
+      [
+        192,
+        220,
+        226
+      ],
+      [
+        227,
+        184,
+        84
+      ],
+      [
+        239,
+        255,
+        211
+      ]
+    ],
+    "alpha": [
+      0,
+      255
+    ],
+    "sheetSize": [
+      144,
+      384
+    ],
+    "gifFrames": 16,
+    "gifDurationMs": 120,
+    "gifScale": 4,
+    "walkAndFront": "source pixels unchanged",
+    "sheetSha256": "d618af522c9577c144de72708e50ff0be8fc4196a03ebdb430571b55fb9e8452",
+    "rawPixelsAndSheetAndMotion": "pass"
+  },
+  "actor4-1": {
+    "poses": 24,
+    "groundY": 44,
+    "additionalColors": [
+      [
+        101,
+        223,
+        192
+      ],
+      [
+        106,
+        139,
+        153
+      ],
+      [
+        133,
+        84,
+        43
+      ],
+      [
+        192,
+        220,
+        226
+      ],
+      [
+        227,
+        184,
+        84
+      ],
+      [
+        239,
+        255,
+        211
+      ]
+    ],
+    "alpha": [
+      0,
+      255
+    ],
+    "sheetSize": [
+      144,
+      384
+    ],
+    "gifFrames": 16,
+    "gifDurationMs": 120,
+    "gifScale": 4,
+    "walkAndFront": "source pixels unchanged",
+    "sheetSha256": "26f24f712b3cfa7a02179144cd5dea2125c1004c63abef38c62db7fe44e95fbd",
+    "rawPixelsAndSheetAndMotion": "pass"
+  }
+}

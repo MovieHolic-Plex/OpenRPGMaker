@@ -147,8 +147,19 @@ export function interactWithFarmPlot(
   const capability = heldItem?.farmTool
     ? resolveToolCapability(project, heldItemId)
     : { areaWidth: 1, areaHeight: 1, energyMultiplier: 1 };
+  const targets = capabilityTiles(map, tileX, tileY, capability.areaWidth, capability.areaHeight);
+  // Read-only rejection before the transactional clone. Any possible harvest or authored
+  // tool action keeps the original all-or-nothing path, including energy/XP rollback.
+  const canInteract = targets.some(({ x: tx, y: ty }) => {
+    const placeable = session.placeables?.[placeableKey(map.id, tx, ty)];
+    return placeable?.kind === "tree" || placeable?.kind === "rock" || isTileFarmable(map, tx, ty)
+      || resolveToolUseOnTile(project, session, map, tx, ty, "till")
+      || resolveToolUseOnTile(project, session, map, tx, ty, "water")
+      || resolveToolUseOnTile(project, session, map, tx, ty, "harvest");
+  });
+  if (!canInteract) return ignored(tileX, tileY, "not-farmable");
   const draft = structuredClone(session);
-  const results = capabilityTiles(map, tileX, tileY, capability.areaWidth, capability.areaHeight)
+  const results = targets
     .map(({ x: targetX, y: targetY }) => interactWithFarmPlotSingle(project, draft, map, targetX, targetY, intent));
   const successful = results.filter(
     (result): result is FarmInteractionResult & { kind: Exclude<FarmInteractionKind, "ignored"> } => result.kind !== "ignored",

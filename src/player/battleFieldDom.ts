@@ -1,3 +1,6 @@
+import { charsetBattler, resolvePartyBattleCharset } from "@/assets/charsetBattlers";
+import { retroCastFrameFor, retroMotionPose, retroPixelEnemyCell } from "@/player/battleRetroMotion";
+import { PIXEL_ENEMY_FRAME, pixelEnemySheet, pixelEnemySheetUrl } from "@/assets/pixelEnemySheets";
 import { battleTypeBadges } from "@/player/battleTypeBadges";
 import type { BattleActionBeat } from "@/player/battleActionBeats";
 import { fitBattleEnemy } from "@/player/battleEnemyFit";
@@ -9,7 +12,7 @@ import {
   type BattlerIdleAnimation,
 } from "@/assets/battlerIdleAnimations";
 import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/runtime";
-import { POSE_FRAME, VICTORY_POSE_FRAME } from "@/battle/battlePose";
+import { CAST_SHEET_ROWS, EXTENDED_POSE_FRAME, castFrame, type ExtendedBattlerPose, POSE_FRAME, VICTORY_POSE_FRAME } from "@/battle/battlePose";
 import { skinPartySpriteUrl } from "@/battle/partySpriteResources";
 import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
 import type { BattleSkin } from "@/battle/skins/types";
@@ -129,6 +132,28 @@ function applyIdleAnimationToImage(image: HTMLImageElement, resourceId: string |
 }
 
 /**
+ * 도트 측면 전투의 적 도트 시트(pixelEnemySheets.ts)를 `<img>` 에 얹는다.
+ * idle 스트립과 같은 방식으로 내용 이미지를 상자 밖으로 밀고 배경으로 3×3 칸을 그린다(27-retro-motion.css).
+ * 칸 선택은 applyBattlerPose → retroPixelEnemyCell 이 맡는다. 대기 칸은 CSS 루프가 돈다.
+ */
+function applyPixelEnemySheet(node: HTMLElement, image: HTMLImageElement, resourceId: string | undefined): void {
+  const sheet = pixelEnemySheet(resourceId);
+  if (!sheet) return;
+  const url = pixelEnemySheetUrl(sheet);
+  node.dataset.pixelEnemy = sheet.motion;
+  image.dataset.pixelSheet = sheet.resourceId;
+  image.style.setProperty("--pixel-enemy-url", `url("${url}")`);
+  image.style.setProperty("--pixel-enemy-idle-ms", `${sheet.idleFrameMs * 4}ms`);
+  const probe = new Image();
+  probe.addEventListener("error", () => {
+    delete node.dataset.pixelEnemy;
+    delete image.dataset.pixelSheet;
+    image.style.removeProperty("--pixel-enemy-url");
+  });
+  probe.src = url;
+}
+
+/**
  * 48px 전투 캐릭터셋 스프라이트를 idle 스트립으로 바꾼다.
  * 세로(포즈 행)는 인라인으로 남기고 가로만 CSS 애니메이션이 굴린다 — 롱핸드가 달라서
  * 애니메이션이 인라인 포즈 오프셋을 덮지 않는다.
@@ -178,7 +203,15 @@ export function battleField(snapshot: BattleSnapshot): HTMLElement {
     enemyGroup(snapshot.enemies, snapshot),
     actorSpriteGroup(snapshot.actors)
   );
-  applyBattleBackdropMotion(backdrop, troopBackdropAnimation(snapshot.troopId));
+  const project = store.getCurrent();
+  if (activeSkin().scenery === "layered") {
+    if (project.system.battleBackdrop !== "field" && project.system.battlePresentation !== "onField") {
+      // 새 스킨만 모듈을 읽는다. 다른 스킨의 배경 DOM·물결 경로는 그대로 둔다.
+      void import("@/player/battleScenery").then(({ syncBattleScenery }) => {
+        if (backdrop.isConnected) syncBattleScenery(backdrop, project, backdrop.dataset.backdropResourceId);
+      });
+    }
+  } else applyBattleBackdropMotion(backdrop, troopBackdropAnimation(snapshot.troopId));
   return field;
 }
 
@@ -365,6 +398,12 @@ function syncBackdrop(field: HTMLElement, resourceId: string | undefined): void 
     const url = resolveAssetResourceUrl(effectiveId, { project: store.getCurrent() });
     backdrop.style.backgroundImage = url ? battleBackdropImage(url) : "";
     syncSceneBackdropVar(field);
+    if (activeSkin().scenery === "layered") {
+      const project = store.getCurrent();
+      void import("@/player/battleScenery").then(({ syncBattleScenery }) => {
+        if (backdrop.isConnected) syncBattleScenery(backdrop, project, backdrop.dataset.backdropResourceId);
+      });
+    }
   }
 }
 
@@ -484,6 +523,8 @@ function syncActorGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     // 쓰러지는 중인 아군은 아직 dead 포즈로 눕지 않는다.
     if (!presented.defeated && presented.pose === "dead") presented.pose = "hit";
     node.classList.toggle("defeated", presented.defeated);
+    node.dataset.battlerWeak = String(presented.hp > 0 && presented.hp <= actor.maxHp / 4);
+    node.dataset.battlerDefending = String(actor.defending);
     applyBattlerPose(node, presented.pose);
     // KO 배지는 연출 원장(presented)을 따른다 — 스냅샷은 명령 즉시 해결돼 타격 연출 전에 이미 죽어 있다.
     syncStatusIcons(node, { ...actor, defeated: presented.defeated });
@@ -548,16 +589,30 @@ export function applyBattlerPoseForTest(node: HTMLElement, pose: BattleBattlerSn
   applyBattlerPose(node, pose);
 }
 
-function applyBattlerPose(node: HTMLElement, pose: BattleBattlerSnapshot["pose"]): void {
-  node.dataset.battlePose = pose;
+function applyBattlerPose(node: HTMLElement, pose: ExtendedBattlerPose): void {
+  if (activeSkin().motionStyle === "retro") pose = retroMotionPose(node, pose, applyBattlerPose);
+  // 의미 포즈는 기존 CSS 계약을 유지하고 실제 칸은 별도 계측 속성에 남긴다.
+  const logicalPose = pose === "victory_b" ? "victory" : pose === "guard_hit" ? "hit" : pose === "dying" ? "hit" : pose;
+  node.dataset.battlePose = logicalPose;
   node.classList.toggle("battle-pose-idle", pose === "idle");
   node.classList.toggle("battle-pose-attack", pose === "attack");
   node.classList.toggle("battle-pose-hit", pose === "hit");
   node.classList.toggle("battle-pose-defend", pose === "defend");
   node.classList.toggle("battle-pose-dead", pose === "dead");
-  node.classList.toggle("battle-pose-victory", pose === "victory");
+  node.classList.toggle("battle-pose-victory", logicalPose === "victory");
   const sprite = node.querySelector<HTMLElement>(".battle-actor-sprite, .battle-enemy-image, .battle-actor-image");
   if (pose !== "victory") delete node.dataset.battlePoseFrame;
+  if (node.dataset.pixelEnemy && sprite?.classList.contains("battle-enemy-image")) {
+    const cell = retroPixelEnemyCell(node);
+    sprite.dataset.pixelCell = cell;
+    node.dataset.battlePoseFrame = cell;
+    if (cell === "idle") sprite.style.removeProperty("background-position");
+    else {
+      const at = PIXEL_ENEMY_FRAME[cell];
+      sprite.style.backgroundPosition = `${at.col * 50}% ${at.row * 50}%`;
+    }
+    return;
+  }
   if (sprite?.classList.contains("battle-actor-sprite")) {
     // 생성 전투 시트는 5포즈가 (열, 행) 좌표를 갖는다 — POSE_FRAME 이 정본이다.
     // 2026-08-29 까지는 X 만 움직여 defend 가 idle 칸을, dead 가 hit 칸을 돌려 썼다.
@@ -568,13 +623,33 @@ function applyBattlerPose(node: HTMLElement, pose: BattleBattlerSnapshot["pose"]
     const frameH = Number.parseFloat(sprite.style.getPropertyValue("--battle-sprite-frame-height")) || fallback;
     // idle 은 전투의 기본 상태다 — 카탈로그에 스트립이 있으면 숨을 심는다.
     // idle 이 아닌 포즈는 사건 연출이므로 정적 칸으로 즉시 돌아간다(POSE_FRAME 이 이긴다).
-    const idleAnimation = pose === "idle" ? battlerIdleAnimation(sprite.dataset.battlerResourceId) : undefined;
+    const idleAnimation = node.dataset.battlerExtended !== "true" && pose === "idle" ? battlerIdleAnimation(sprite.dataset.battlerResourceId) : undefined;
     if (idleAnimation?.tier === "sheet-cell") {
       applyIdleAnimationToSheetSprite(sprite, idleAnimation, frameW);
       return;
     }
     clearIdleAnimationOnSheetSprite(sprite);
-    const frame = pose === "victory" ? victoryFrameFor(node, sprite) : POSE_FRAME[pose] ?? POSE_FRAME.idle;
+    const extended = node.dataset.battlerExtended === "true";
+    // 마법 시전 칸: 걷기 칩 시트는 마법 종류별 시전 시트(cast/<id>.png)를 따로 갖는다. 그 칸을 그릴 때만 배경 그림을
+    // 시전 시트로 바꾸고, 다른 포즈로 돌아오면 전투 시트로 되돌린다. 시트를 못 읽으면(castSheetReady false) 기존 시전 칸.
+    const cast = extended ? retroCastFrameFor(node, pose) : undefined;
+    const castUrl = cast ? castSheetUrl(sprite) : undefined;
+    if (cast && castUrl) {
+      sprite.style.backgroundImage = `url("${castUrl}")`;
+      sprite.style.backgroundSize = `${frameW * BATTLE_SHEET_COLUMNS}px ${frameH * CAST_SHEET_ROWS}px`;
+      node.dataset.battlePoseFrame = `cast_${cast.type}_${cast.step}`;
+      const castFrameOffset = (value: number) => (value === 0 ? "0px" : `-${value}px`);
+      const at = castFrame(cast.type, cast.step);
+      sprite.style.backgroundPosition = `${castFrameOffset(at.col * frameW)} ${castFrameOffset(at.row * frameH)}`;
+      return;
+    }
+    if (extended && sprite.dataset.battlerSheetUrl && !sprite.style.backgroundImage.includes(sprite.dataset.battlerSheetUrl)) {
+      sprite.style.backgroundImage = `url("${sprite.dataset.battlerSheetUrl}")`;
+      if (sprite.dataset.battlerSheetSize) sprite.style.backgroundSize = sprite.dataset.battlerSheetSize;
+    }
+    const frame = extended ? EXTENDED_POSE_FRAME[pose]
+      : pose === "victory" ? victoryFrameFor(node, sprite) : POSE_FRAME[pose as keyof typeof POSE_FRAME] ?? POSE_FRAME.idle;
+    if (extended) node.dataset.battlePoseFrame = pose;
     // 0 에는 음수 부호를 붙이지 않는다 — CSSOM 이 "-0px" 를 "0px" 로 정규화하므로 그대로 두면
     // 우리가 쓴 값과 읽히는 값이 달라진다(실측: happy-dom).
     const offset = (value: number) => (value === 0 ? "0px" : `-${value}px`);
@@ -872,6 +947,9 @@ function enemyButton(
     image.src = url;
     // CSS 숨쉬기(_battlers.css battler-breathe)의 위상을 적마다 어긋나게 — 같이 부풀면 한 덩이로 보인다.
     image.style.setProperty("--breathe-delay", `-${index * 730}ms`);
+    // 도트 측면 전투: 도트 시트가 있는 적은 시트 칸으로 그린다(대기 루프·예비동작·돌진·착탄·피격·녹음).
+    // src 는 원본 그대로 두고 배경으로 칸을 그린다 — 시트를 못 읽으면 표시를 걷어 원본이 다시 보인다.
+    if (activeSkin().motionStyle === "retro") applyPixelEnemySheet(enemyNode, image, resourceId);
     enemyNode.append(image);
   }
   applyBattlerPose(enemyNode, enemy.pose);
@@ -985,6 +1063,8 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0, count = 4): HTMLElem
   node.dataset.testid = `battle-actor-${actor.recordId}`;
   node.dataset.recordId = actor.recordId;
   node.dataset.facing = "left";
+  node.dataset.battlerWeak = String(actor.hp > 0 && actor.hp <= actor.maxHp / 4);
+  node.dataset.battlerDefending = String(actor.defending);
   node.setAttribute("aria-label", actor.name);
   // SC13/L5: 파티 몬스터가 필드에 나선 경우 종족 그래픽을 아군측(back) 스프라이트로
   // 렌더한다. 스킨 전용 파티 스프라이트보다 우선한다(몬스터는 종족 그래픽이 필수).
@@ -1017,10 +1097,11 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0, count = 4): HTMLElem
   }
   // 정면 사이드뷰에서는 배우가 저작한 전투 시트를 최우선으로 쓴다. 스킨 공용 전사/마법사를
   // 먼저 쓰면 모든 짝수 배우와 홀수 배우가 각각 같은 사람으로 보이고 faceset과도 어긋난다.
-  const resourceId = place.partyFacing === "front" ? actor.battleCharacterResourceId : undefined;
+  const resourceId = place.partyFacing === "front" ? resolvePartyBattleCharset(actor, activeSkin().id === "retro2003") : undefined;
   if (resourceId) {
     node.dataset.authoredBattler = "true";
     node.dataset.battleCharsetResourceId = resourceId;
+    if (charsetBattler(resourceId)) node.dataset.battlerExtended = "true";
     const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
     if (url) node.append(actorBattleImage(actor.name, resourceId, url));
     applyBattlerPose(node, actor.pose);
@@ -1150,6 +1231,8 @@ export function blinkBattlerNode(node: HTMLElement): void {
 
 /** Side-view approach / knockback classes for the current resolve beat. */
 export function applyActionMotion(field: HTMLElement, beat: BattleActionBeat | undefined): void {
+  // 고전 모션은 바깥 노드 translate를 독점하고 스프라이트 피격 진동과 분리한다.
+  if (activeSkin().motionStyle === "retro") return;
   for (const node of field.querySelectorAll<HTMLElement>(".battle-actor, .battle-enemy")) {
     node.classList.remove(
       "battle-motion-windup",
@@ -1538,7 +1621,7 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
 }
 
 function actorBattleImage(name: string, resourceId: string, url: string): HTMLElement {
-  if (resourceId === "hero" || isGeneratedBattleActor(resourceId)) {
+  if (charsetBattler(resourceId) || resourceId === "hero" || isGeneratedBattleActor(resourceId)) {
     // 생성 전투 시트는 144×384 새로 48×48 셀을 3열×8행으로 담는다(자산 계획서의 "3x8 battle sheet").
     // 48×64 로 잘리면 한 프레임에 아랫행 머리 16px 이 따라들어와 발밑에 쟘러기 스프라이트가 보인다.
     // Asset pixels are authored for the old 320×240 stage, so one source pixel maps
@@ -1552,7 +1635,8 @@ function actorBattleImage(name: string, resourceId: string, url: string): HTMLEl
     // 고해상도 짝(xBR 4배, 192px 셀)이 등록된 시트는 그걸 그린다. background-size 는 아래에서 논리 px 로
     // 고정되므로 화면 크기는 같고 밀도만 4배가 된다 — 몬스터(384px 원본)와 같은 급. 축소해 그리므로
     // pixelated 를 걷어야 가장자리가 계단으로 깨지지 않는다(`01-scene-base.css` 의 data-rendering 규칙).
-    const hires = battlerHiresSheet(resourceId);
+    const hires = charsetBattler(resourceId) ? undefined : battlerHiresSheet(resourceId);
+    if (charsetBattler(resourceId)) sprite.dataset.rendering = "pixelated";
     const sheetUrl = hires ? battlerHiresSheetUrl(hires) : url;
     if (hires) {
       sprite.dataset.rendering = "smooth";
@@ -1570,6 +1654,7 @@ function actorBattleImage(name: string, resourceId: string, url: string): HTMLEl
     sprite.style.backgroundSize = `${frameW * BATTLE_SHEET_COLUMNS}px ${frameH * BATTLE_SHEET_ROWS}px`;
     sprite.dataset.battlerSheetSize = sprite.style.backgroundSize;
     sprite.style.backgroundImage = `url("${sheetUrl}")`;
+    if (charsetBattler(resourceId)) preloadCastSheet(sprite);
     return sprite;
   }
   const image = document.createElement("img");
@@ -1580,6 +1665,29 @@ function actorBattleImage(name: string, resourceId: string, url: string): HTMLEl
 }
 
 const BATTLE_SHEET_CELL = 48;
+
+/** 시전 시트 URL(걷기 칩 전투 시트에만 있다). 한 번 불러 보고 실패하면 기억해서 다시 쓰지 않는다. */
+const castSheetState = new Map<string, "loading" | "ready" | "missing">();
+function castSheetUrl(sprite: HTMLElement): string | undefined {
+  const entry = charsetBattler(sprite.dataset.battlerResourceId);
+  if (!entry) return undefined;
+  const url = resolveAssetResourceUrl(`${entry.resourceId}-cast`, { project: store.getCurrent() }) ?? `/${entry.castPath}`;
+  const state = castSheetState.get(url);
+  if (state === "ready") return url;
+  if (state === undefined && typeof Image !== "undefined") {
+    castSheetState.set(url, "loading");
+    const probe = new Image();
+    probe.onload = () => castSheetState.set(url, "ready");
+    probe.onerror = () => castSheetState.set(url, "missing");
+    probe.src = url;
+  }
+  return undefined;
+}
+
+/** 시전 시트를 미리 받아 둔다 — 첫 마법 때 칸이 비지 않게(마운트 때 한 번). */
+export function preloadCastSheet(sprite: HTMLElement): void {
+  castSheetUrl(sprite);
+}
 const BATTLE_SHEET_COLUMNS = 3;
 const BATTLE_SHEET_ROWS = 8;
 
