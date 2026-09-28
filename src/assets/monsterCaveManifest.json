@@ -234,7 +234,9 @@
       "w": 8,
       "h": 6,
       "kind": "blob",
-      "cells": 47
+      "cells": 47,
+      "layer": "lower",
+      "passable": "none"
     },
     {
       "name": "high-blob",
@@ -243,7 +245,74 @@
       "w": 8,
       "h": 6,
       "kind": "blob",
-      "cells": 47
+      "cells": 47,
+      "layer": "lower",
+      "passable": [
+        [
+          7,
+          1
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          7,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          5,
+          3
+        ],
+        [
+          6,
+          3
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          1,
+          4
+        ],
+        [
+          5,
+          4
+        ],
+        [
+          7,
+          4
+        ],
+        [
+          0,
+          5
+        ],
+        [
+          1,
+          5
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          4,
+          5
+        ],
+        [
+          5,
+          5
+        ],
+        [
+          6,
+          5
+        ]
+      ]
     },
     {
       "name": "water-blob",
@@ -252,7 +321,9 @@
       "w": 8,
       "h": 6,
       "kind": "blob",
-      "cells": 47
+      "cells": 47,
+      "layer": "lower",
+      "passable": "none"
     },
     {
       "name": "gravel-blob",
@@ -261,7 +332,9 @@
       "w": 8,
       "h": 6,
       "kind": "blob",
-      "cells": 47
+      "cells": 47,
+      "layer": "lower",
+      "passable": "all"
     },
     {
       "name": "floor-dirt",
@@ -269,7 +342,9 @@
       "row": 0,
       "w": 1,
       "h": 1,
-      "kind": "floor"
+      "kind": "floor",
+      "layer": "lower",
+      "passable": "all"
     },
     {
       "name": "floor-pebbles",
@@ -277,7 +352,9 @@
       "row": 0,
       "w": 1,
       "h": 1,
-      "kind": "floor"
+      "kind": "floor",
+      "layer": "lower",
+      "passable": "all"
     },
     {
       "name": "floor-scatter",
@@ -285,7 +362,9 @@
       "row": 0,
       "w": 1,
       "h": 1,
-      "kind": "floor-decal"
+      "kind": "floor-decal",
+      "layer": "lower",
+      "passable": "all"
     },
     {
       "name": "puddle",
@@ -293,7 +372,9 @@
       "row": 0,
       "w": 1,
       "h": 1,
-      "kind": "floor-decal"
+      "kind": "floor-decal",
+      "layer": "lower",
+      "passable": "all"
     },
     {
       "name": "floor-crack",
@@ -301,7 +382,9 @@
       "row": 0,
       "w": 1,
       "h": 1,
-      "kind": "floor-decal"
+      "kind": "floor-decal",
+      "layer": "lower",
+      "passable": "all"
     },
     {
       "name": "glow-moss",
@@ -309,7 +392,9 @@
       "row": 0,
       "w": 1,
       "h": 1,
-      "kind": "floor-decal"
+      "kind": "floor-decal",
+      "layer": "lower",
+      "passable": "all"
     },
     {
       "name": "sparkle-a",
@@ -317,7 +402,9 @@
       "row": 1,
       "w": 1,
       "h": 1,
-      "kind": "sparkle"
+      "kind": "sparkle",
+      "layer": "lower",
+      "passable": "all"
     },
     {
       "name": "sparkle-b",
@@ -325,7 +412,9 @@
       "row": 1,
       "w": 1,
       "h": 1,
-      "kind": "sparkle"
+      "kind": "sparkle",
+      "layer": "lower",
+      "passable": "all"
     },
     {
       "name": "ladder-hole",
@@ -333,7 +422,9 @@
       "row": 1,
       "w": 1,
       "h": 1,
-      "kind": "ladder-down"
+      "kind": "ladder-down",
+      "layer": "lower",
+      "passable": "all"
     },
     {
       "name": "void",
@@ -341,7 +432,9 @@
       "row": 1,
       "w": 1,
       "h": 1,
-      "kind": "void"
+      "kind": "void",
+      "layer": "lower",
+      "passable": "none"
     },
     {
       "name": "stairs-down",
@@ -349,7 +442,9 @@
       "row": 1,
       "w": 2,
       "h": 1,
-      "kind": "stairs-down"
+      "kind": "stairs-down",
+      "layer": "lower",
+      "passable": "all"
     },
     {
       "name": "cliff-face",
@@ -357,7 +452,9 @@
       "row": 2,
       "w": 4,
       "h": 2,
-      "kind": "face"
+      "kind": "face",
+      "layer": "lower",
+      "passable": "none"
     },
     {
       "name": "ladder-up",
@@ -365,7 +462,14 @@
       "row": 2,
       "w": 1,
       "h": 2,
-      "kind": "ladder-up"
+      "kind": "ladder-up",
+      "layer": "lower",
+      "passable": [
+        [
+          0,
+          1
+        ]
+      ]
     },
     {
       "name": "tunnel-dark",
@@ -373,7 +477,18 @@
       "row": 4,
       "w": 2,
       "h": 2,
-      "kind": "tunnel"
+      "kind": "tunnel",
+      "layer": "lower",
+      "passable": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ]
     },
     {
       "name": "exit-bright",
@@ -381,7 +496,18 @@
       "row": 4,
       "w": 2,
       "h": 2,
-      "kind": "tunnel"
+      "kind": "tunnel",
+      "layer": "lower",
+      "passable": [
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ]
     },
     {
       "name": "stairs-up",
@@ -389,7 +515,9 @@
       "row": 4,
       "w": 2,
       "h": 2,
-      "kind": "stairs-up"
+      "kind": "stairs-up",
+      "layer": "lower",
+      "passable": "all"
     },
     {
       "name": "stalagmite-small",
@@ -397,7 +525,9 @@
       "row": 7,
       "w": 1,
       "h": 1,
-      "kind": "prop"
+      "kind": "prop",
+      "layer": "upper",
+      "passable": "none"
     },
     {
       "name": "stalagmite-tall",
@@ -405,7 +535,14 @@
       "row": 6,
       "w": 1,
       "h": 2,
-      "kind": "prop"
+      "kind": "prop",
+      "layer": "upper",
+      "passable": [
+        [
+          0,
+          0
+        ]
+      ]
     },
     {
       "name": "push-boulder",
@@ -413,7 +550,9 @@
       "row": 7,
       "w": 1,
       "h": 1,
-      "kind": "prop"
+      "kind": "prop",
+      "layer": "upper",
+      "passable": "none"
     },
     {
       "name": "cracked-rock",
@@ -421,7 +560,9 @@
       "row": 7,
       "w": 1,
       "h": 1,
-      "kind": "prop"
+      "kind": "prop",
+      "layer": "upper",
+      "passable": "none"
     },
     {
       "name": "ore-rock",
@@ -429,7 +570,9 @@
       "row": 7,
       "w": 1,
       "h": 1,
-      "kind": "prop"
+      "kind": "prop",
+      "layer": "upper",
+      "passable": "none"
     },
     {
       "name": "crystal",
@@ -437,7 +580,9 @@
       "row": 7,
       "w": 1,
       "h": 1,
-      "kind": "prop"
+      "kind": "prop",
+      "layer": "upper",
+      "passable": "none"
     },
     {
       "name": "rubble",
@@ -445,7 +590,9 @@
       "row": 7,
       "w": 2,
       "h": 1,
-      "kind": "prop"
+      "kind": "prop",
+      "layer": "upper",
+      "passable": "none"
     }
   ]
 }

@@ -32,9 +32,47 @@ MANIFEST = os.path.join(ROOT, "src", "assets", "monsterCaveManifest.json")
 
 TILE = 16
 COLS, ROWS = 30, 16
-PALETTE_COLORS = 96
+# 시트 전체를 한 팔레트로 줄인다. 96색이면 드문 색(광석의 금·파랑, 균열의 흰 선, 반짝이 노랑)이
+# 흙색에 먹혔다(2026-09-28 미리보기) — 255색으로 두면 소품 색이 산다.
+PALETTE_COLORS = 255
 
 N, E, S, W, NE, SE, SW, NW = 1, 2, 4, 8, 16, 32, 64, 128
+
+# 블록별 층과 통행. passable = "all" | "none" | [[dx, dy], ...](나머지 칸은 막힘).
+# 3층(upper)이면서 통행 가능한 칸은 ★ 이 되어 캐릭터 위에 그려진다(큰 석순 끝).
+BLOB_RULES = {
+    "wall": ("lower", "none"),
+    "high": ("lower", "orthogonal-full"),
+    "water": ("lower", "none"),
+    "gravel": ("lower", "all"),
+}
+BLOCK_RULES = {
+    "floor-dirt": ("lower", "all"),
+    "floor-pebbles": ("lower", "all"),
+    "floor-scatter": ("lower", "all"),
+    "puddle": ("lower", "all"),
+    "floor-crack": ("lower", "all"),
+    "glow-moss": ("lower", "all"),
+    "sparkle-a": ("lower", "all"),
+    "sparkle-b": ("lower", "all"),
+    "ladder-hole": ("lower", "all"),
+    "void": ("lower", "none"),
+    "stairs-down": ("lower", "all"),
+    "cliff-face": ("lower", "none"),
+    # 사다리·굴·출구는 아래 칸만 들어선다(그 칸에 장소 이동 이벤트). 윗칸은 절벽이라 막힌다.
+    "ladder-up": ("lower", [[0, 1]]),
+    "tunnel-dark": ("lower", [[0, 1], [1, 1]]),
+    "exit-bright": ("lower", [[0, 1], [1, 1]]),
+    # 오르는 계단은 두 줄 모두 걷는다 — 윗줄 바로 위가 고지대 몸통이어야 한다.
+    "stairs-up": ("lower", "all"),
+    "stalagmite-small": ("upper", "none"),
+    "stalagmite-tall": ("upper", [[0, 0]]),
+    "push-boulder": ("upper", "none"),
+    "cracked-rock": ("upper", "none"),
+    "ore-rock": ("upper", "none"),
+    "crystal": ("upper", "none"),
+    "rubble": ("upper", "none"),
+}
 
 # ---------------------------------------------------------------------------
 # 원본 읽기
@@ -317,11 +355,16 @@ def main():
             paste_tile(sheet, tile_img(arr), c, r)
             mask_to_tile[mask] = r * COLS + c
         blobs[key] = {"col": col, "row": row, "masks": {str(m): t for m, t in mask_to_tile.items()}}
-        blocks.append({"name": f"{key}-blob", "col": col, "row": row, "w": 8, "h": 6, "kind": "blob", "cells": 47})
+        layer, passable = BLOB_RULES[key]
+        if passable == "orthogonal-full":
+            # 고지대: 네 직교가 모두 이어진 칸(몸통·오목 모서리)만 걷는다. 테두리 칸은 막아 가장자리에서 떨어지지 않게 한다.
+            passable = [[i % 8, i // 8] for i, m in enumerate(BLOB_MASKS) if m & 15 == 15]
+        blocks.append({"name": f"{key}-blob", "col": col, "row": row, "w": 8, "h": 6, "kind": "blob", "cells": 47, "layer": layer, "passable": passable})
 
     def add(name, col, row, w, h, kind, img):
         sheet.paste(img, (col * TILE, row * TILE))
-        blocks.append({"name": name, "col": col, "row": row, "w": w, "h": h, "kind": kind})
+        layer, passable = BLOCK_RULES[name]
+        blocks.append({"name": name, "col": col, "row": row, "w": w, "h": h, "kind": kind, "layer": layer, "passable": passable})
 
     dirt_img = tile_img(dirt)
     # 바닥 질감(1층, 칸 하나로 이음매 없이 반복).

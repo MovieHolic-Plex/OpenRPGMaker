@@ -49,7 +49,7 @@ import { EASYRPG_PICTURE_ASSETS } from "@/assets/easyrpgRtp";
 import { FARMING_CROP_SPRITE_ASSETS } from "@/assets/farmingSprites";
 import { generatedMonsterSpriteUrl, isGeneratedMonsterSprite } from "@/assets/generatedMonsterSprites";
 import { cropGraphicStages } from "@/project/farmModel";
-import { MONSTER_TOWN_KIT_FRAME_COUNT, MONSTER_TOWN_KIT_TEXTURE_KEY, SCARLOXY_CHIPSET_ASSETS } from "@/assets/scarloxyPack";
+import { MONSTER_CAVE_FRAME_COUNT, MONSTER_CAVE_TEXTURE_KEY, MONSTER_TOWN_KIT_FRAME_COUNT, MONSTER_TOWN_KIT_TEXTURE_KEY, SCARLOXY_CHIPSET_ASSETS } from "@/assets/scarloxyPack";
 import { EMOTE_ASSET_PATH, EMOTE_FRAME_SIZE, EMOTE_KINDS, EMOTE_TEXTURE_KEY } from "@/project/emotes";
 import { PLACEABLE_OVERLAY_TEXTURE_KEYS } from "@/player/placeableOverlayGraphics";
 import type { Project } from "@/project/types";
@@ -235,6 +235,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY) return LPC_WOODEN_FURNITURE_TILE_COUNT;
   if (key === LPC_WOODEN_FURNITURE_16_TEXTURE_KEY) return LPC_WOODEN_FURNITURE_16_TILE_COUNT;
   if (key === MONSTER_TOWN_KIT_TEXTURE_KEY) return MONSTER_TOWN_KIT_FRAME_COUNT;
+  if (key === MONSTER_CAVE_TEXTURE_KEY) return MONSTER_CAVE_FRAME_COUNT;
   return TILE_FRAME_COUNT;
 }
 

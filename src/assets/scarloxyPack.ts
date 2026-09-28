@@ -9,6 +9,7 @@
 import type { EasyRpgCharsetAsset } from "@/assets/easyrpgRtp";
 import manifestInput from "./scarloxyPackManifest.json" with { type: "json" };
 import monsterTownKitInput from "./monsterTownKitManifest.json" with { type: "json" };
+import monsterCaveInput from "./monsterCaveManifest.json" with { type: "json" };
 
 type ScarloxyPackedBlock = {
   readonly name: string;
@@ -43,6 +44,33 @@ export const MONSTER_TOWN_KIT_TEXTURE_KEY = "tex_scarloxy_chipset_monster_town_k
 /** 위 반쪽 = 초원 마을 시트 그대로(0~479), 아래 반쪽 = 새 부품(480~959). */
 export const MONSTER_TOWN_KIT_FRAME_COUNT = 960;
 
+/** 동굴 칩셋 블록. passable: "all" | "none" | 통행 가능한 칸의 [dx, dy] 목록(나머지 막힘). */
+export type MonsterCaveBlock = {
+  readonly name: string;
+  readonly col: number;
+  readonly row: number;
+  readonly w: number;
+  readonly h: number;
+  readonly kind: string;
+  readonly layer: "lower" | "upper";
+  readonly passable: "all" | "none" | readonly (readonly [number, number])[];
+};
+
+/**
+ * 몬스터 동굴 — Scarloxy 화풍에 맞춰 이미지 생성 모델로 그린 **생성 자산**(팩 원본 아님).
+ * 480칸 한 장: 바위 벽·고지대·물·자갈 47칸 블롭 네 세트, 절벽 앞면, 사다리·계단·굴, 석순·바위 소품.
+ * 원본 scripts/content/build-monster-cave.py. 출처 표기는 public/assets/ATTRIBUTION.md 「Generated monster cave」.
+ */
+export const MONSTER_CAVE_MANIFEST = monsterCaveInput as unknown as {
+  readonly file: string;
+  readonly blobMaskBits: Readonly<Record<"N" | "E" | "S" | "W" | "NE" | "SE" | "SW" | "NW", number>>;
+  /** 47 블롭 세트: 대표 마스크(10진 문자열) → 칸 번호. */
+  readonly blobs: Readonly<Record<"wall" | "high" | "water" | "gravel", { readonly col: number; readonly row: number; readonly masks: Readonly<Record<string, number>> }>>;
+  readonly blocks: readonly MonsterCaveBlock[];
+};
+export const MONSTER_CAVE_TEXTURE_KEY = "tex_scarloxy_chipset_monster_cave";
+export const MONSTER_CAVE_FRAME_COUNT = 480;
+
 const ASSET_DIR = "assets/scarloxy";
 
 // bundled.ts 의 BundledImageAsset 과 구조 동일(순환 import 방지를 위해 구조 타이핑).
@@ -54,6 +82,7 @@ export const SCARLOXY_CHIPSET_ASSETS = [
   { textureKey: "tex_scarloxy_chipset_indoor", path: `${ASSET_DIR}/scarloxy-chipset-indoor.png`, name: "Scarloxy 실내 ChipSet" },
   // 텍스처 키 접두어를 tex_scarloxy_chipset_ 로 맞춰 화풍 분류·테마 팩·생성 프로필을 그대로 탄다.
   { textureKey: MONSTER_TOWN_KIT_TEXTURE_KEY, path: "assets/monster-town-kit/monster-town-kit.png", name: "Scarloxy 초원 마을 + 몬스터 마을 부품 (480~ 생성 자산)" },
+  { textureKey: MONSTER_CAVE_TEXTURE_KEY, path: "assets/monster-cave/monster-cave.png", name: "Scarloxy 몬스터 동굴 (생성 자산)" },
 ] as const satisfies readonly ScarloxyBundledAsset[];
 
 export const SCARLOXY_CHARSET_ASSETS = [
@@ -204,7 +233,7 @@ export function resolveScarloxyAssetUrl(resourceId: string): string | null {
 export type ScarloxyChipsetGroupSeed = {
   readonly key: string;
   readonly name: string;
-  readonly role: "terrain" | "water" | "building" | "prop";
+  readonly role: "terrain" | "water" | "building" | "prop" | "wall";
   readonly defaultLayer: "lower" | "upper";
   readonly passage: "passable" | "solid";
   readonly repeatability: "repeat" | "fixed";
@@ -307,7 +336,86 @@ function monsterTownKitGroupSeeds(): readonly ScarloxyChipsetGroupSeed[] {
   return [...byKey.values()];
 }
 
+/**
+ * 몬스터 동굴 블록 라벨. 블록 하나가 층·통행이 섞인 칸을 가지면(고지대 테두리, 사다리·굴 윗칸,
+ * 큰 석순 끝) 그 블록을 통행 값별 그룹 두 개로 가른다 — 그룹 계약이 칸마다 통행을 적는 유일한 경로다.
+ * 바닥 장식(물웅덩이·반짝이·균열)은 흙 위에 구워 넣은 불투명 1층 칸이다. 투명한 채 3층 ○ 로 두면 ★ 이 되어
+ * 캐릭터 발을 덮는다(openwiki/tile-layer-policy.md).
+ */
+const MONSTER_CAVE_LABELS: Record<string, { readonly name: string; readonly role: ScarloxyChipsetGroupSeed["role"]; readonly repeat?: boolean; readonly description: string; readonly solidName?: string; readonly solidDescription?: string }> = {
+  "wall-blob": { name: "동굴 바위 벽", role: "terrain", repeat: true, description: "위에서 본 바위 덩어리(벽 윗면) 47칸 블롭입니다. 1층, 통행 불가. 바위 벽 몸통을 칠하면 8방 이웃으로 가장자리 모양을 고릅니다. 남쪽 가장자리 아래 두 줄에는 절벽 앞면을 깝니다." },
+  "high-blob": { name: "고지대 바닥", role: "terrain", repeat: true, description: "한 단 높은 흙바닥 47칸 블롭 중 걸을 수 있는 몸통·오목 모서리 칸입니다. 1층. 남쪽 가장자리 아래 두 줄에 절벽 앞면, 오르내림은 오르는 돌계단으로 잇습니다.", solidName: "고지대 테두리", solidDescription: "고지대 47칸 블롭의 바깥 테두리(네 직교 중 하나라도 끊긴 칸)입니다. 1층, 통행 불가 — 가장자리에서 떨어지지 않게 막습니다." },
+  "water-blob": { name: "동굴 물", role: "water", repeat: true, description: "어두운 동굴 물웅덩이 47칸 블롭입니다. 1층, 통행 불가(파도타기·다리 이벤트로 건넙니다)." },
+  "gravel-blob": { name: "자갈 바닥", role: "terrain", repeat: true, description: "흙바닥 위 자갈 무더기 47칸 블롭입니다. 1층, 통행 가능. 조우 구역(conditions.region)으로 쓰기 좋습니다." },
+  "floor-dirt": { name: "동굴 흙바닥", role: "terrain", repeat: true, description: "동굴 기본 바닥(1칸, 이음매 없이 반복)입니다. 1층, 통행 가능. 모든 블롭 세트의 바깥 바탕이 이 흙입니다." },
+  "floor-pebbles": { name: "잔돌 흙바닥", role: "terrain", repeat: true, description: "잔돌이 박힌 흙바닥 변형입니다. 흙바닥 사이에 드문드문 섞어 반복을 숨깁니다. 1층, 통행 가능." },
+  "floor-scatter": { name: "자갈 조각", role: "terrain", description: "흙바닥 위 작은 자갈 무더기(흙에 구운 1칸)입니다. 1층, 통행 가능." },
+  puddle: { name: "작은 물웅덩이", role: "terrain", description: "밟을 수 있는 얕은 물웅덩이(흙에 구운 1칸)입니다. 1층, 통행 가능. 큰 물은 동굴 물 블롭을 씁니다." },
+  "floor-crack": { name: "바닥 균열", role: "terrain", description: "흙바닥의 가는 균열(1칸)입니다. 1층, 통행 가능. 무너지는 바닥 연출 이벤트의 그림으로도 씁니다." },
+  "glow-moss": { name: "빛 이끼", role: "terrain", description: "청록빛 이끼(흙에 구운 1칸)입니다. 1층, 통행 가능." },
+  "sparkle-a": { name: "숨은 도구 반짝이", role: "terrain", description: "숨은 도구 반짝이 두 프레임(흙에 구운 1칸씩)입니다. 1층, 통행 가능. 같은 칸에 조사 이벤트(도구 획득)를 두고, 반짝임은 changeTile 로 두 프레임을 번갈아 바꿉니다." },
+  "sparkle-b": { name: "숨은 도구 반짝이", role: "terrain", description: "숨은 도구 반짝이 두 번째 프레임입니다." },
+  "ladder-hole": { name: "사다리 구멍(내려가기)", role: "terrain", description: "사다리가 꽂힌 바닥 구멍(1칸)입니다. 1층, 통행 가능. 이 칸에 playerTouch 장소 이동 이벤트를 두어 아래층으로 보냅니다." },
+  void: { name: "어둠", role: "terrain", description: "빛이 닿지 않는 검은 칸입니다. 맵 바깥 여백·깊은 구덩이에 씁니다. 1층, 통행 불가." },
+  "stairs-down": { name: "내려가는 계단", role: "terrain", description: "바닥으로 파인 내려가는 돌계단(2×1)입니다. 1층, 통행 가능. 두 칸에 playerTouch 장소 이동 이벤트를 둡니다." },
+  "cliff-face": { name: "절벽 앞면", role: "wall", repeat: true, description: "바위 벽·고지대 남쪽 가장자리 아래 두 줄에 까는 절벽 앞면(왼 끝·반복 A·반복 B·오른 끝 × 윗줄·아랫줄)입니다. 1층, 통행 불가." },
+  "ladder-up": { name: "사다리(올라가기)", role: "terrain", description: "절벽 앞면에 붙은 사다리(1×2)의 아랫칸입니다. 1층, 통행 가능 — 여기에 playerTouch 장소 이동 이벤트를 둡니다.", solidName: "사다리 윗칸", solidDescription: "절벽 앞면 사다리(1×2)의 윗칸입니다. 1층, 통행 불가." },
+  "tunnel-dark": { name: "어두운 굴 입구", role: "terrain", description: "절벽 앞면에 뚫린 어두운 굴(2×2)의 아랫줄입니다. 1층, 통행 가능 — 두 칸에 장소 이동 이벤트를 둡니다.", solidName: "어두운 굴 윗줄", solidDescription: "어두운 굴(2×2) 윗줄 아치입니다. 1층, 통행 불가." },
+  "exit-bright": { name: "밝은 동굴 출구", role: "terrain", description: "바깥 빛이 비치는 출구(2×2)의 아랫줄입니다. 1층, 통행 가능 — 두 칸에 바깥 맵으로 가는 장소 이동 이벤트를 둡니다.", solidName: "밝은 출구 윗줄", solidDescription: "밝은 출구(2×2) 윗줄 아치입니다. 1층, 통행 불가." },
+  "stairs-up": { name: "오르는 돌계단", role: "terrain", description: "절벽 앞면을 깎은 오르는 돌계단(2×2)입니다. 1층, 네 칸 모두 통행 가능. 절벽 앞면 두 줄 자리에 끼워 아래 바닥과 위 고지대를 잇습니다." },
+  "stalagmite-small": { name: "작은 석순", role: "prop", description: "뾰족한 작은 석순(1×1)입니다. 3층, 통행 불가." },
+  "stalagmite-tall": { name: "큰 석순 끝", role: "prop", description: "큰 석순(1×2)의 윗칸입니다. 3층 ★ — 캐릭터가 뒤로 지나갑니다.", solidName: "큰 석순 밑동", solidDescription: "큰 석순(1×2)의 아랫칸입니다. 3층, 통행 불가. 두 칸을 함께 놓습니다." },
+  "push-boulder": { name: "밀 수 있는 바위", role: "prop", description: "둥근 회색 바위(1×1)입니다. 3층, 통행 불가. 힘 퍼즐은 이 그림을 이벤트로 옮기는 대신 changeTile 로 칸을 옮겨 그립니다." },
+  "cracked-rock": { name: "깨는 바위", role: "prop", description: "금 간 바위(1×1)입니다. 3층, 통행 불가. 바위깨기 이벤트가 changeTile 로 3층을 비워(-1) 길을 엽니다." },
+  "ore-rock": { name: "광석 바위", role: "prop", description: "금·청 광석이 박힌 바위(1×1)입니다. 3층, 통행 불가. 조사 이벤트로 광석을 줍니다." },
+  crystal: { name: "수정 무더기", role: "prop", description: "청록 수정 무더기(1×1)입니다. 3층, 통행 불가." },
+  rubble: { name: "돌무더기", role: "prop", description: "길을 막는 돌무더기(2×1)입니다. 3층, 통행 불가." },
+};
+
+function monsterCaveCellIds(block: MonsterCaveBlock, want: "passable" | "solid"): number[] {
+  const ids: number[] = [];
+  const cells = block.kind === "blob" ? 47 : block.w * block.h;
+  for (let i = 0; i < cells; i += 1) {
+    const dx = i % block.w;
+    const dy = Math.floor(i / block.w);
+    const passable = block.passable === "all" || (Array.isArray(block.passable) && block.passable.some(([x, y]) => x === dx && y === dy));
+    if ((want === "passable") === passable) ids.push((block.row + dy) * SHEET_COLUMNS + block.col + dx);
+  }
+  return ids;
+}
+
+function monsterCaveGroupSeeds(): readonly ScarloxyChipsetGroupSeed[] {
+  const byKey = new Map<string, ScarloxyChipsetGroupSeed>();
+  const add = (key: string, seed: Omit<ScarloxyChipsetGroupSeed, "key">): void => {
+    const existing = byKey.get(key);
+    if (existing) byKey.set(key, { ...existing, tileIds: [...existing.tileIds, ...seed.tileIds] });
+    else byKey.set(key, { key, ...seed });
+  };
+  for (const block of MONSTER_CAVE_MANIFEST.blocks) {
+    const label = MONSTER_CAVE_LABELS[block.name];
+    if (!label) continue;
+    // 반짝이 두 프레임은 한 그룹(한 줄 반짝임 애니메이션의 두 칸).
+    const key = block.name.startsWith("sparkle-") ? "sparkle" : block.name;
+    const base = { role: label.role, defaultLayer: block.layer, repeatability: label.repeat ? "repeat" : "fixed" } as const;
+    const open = monsterCaveCellIds(block, "passable");
+    const shut = monsterCaveCellIds(block, "solid");
+    if (open.length > 0) add(key, { ...base, name: label.name, passage: "passable", tileIds: open, description: label.description });
+    if (shut.length > 0) {
+      const mixed = open.length > 0;
+      add(mixed ? `${key}-solid` : key, {
+        ...base,
+        name: mixed ? (label.solidName ?? `${label.name} 막힘`) : label.name,
+        passage: "solid",
+        tileIds: shut,
+        description: mixed ? (label.solidDescription ?? label.description) : label.description,
+      });
+    }
+  }
+  return [...byKey.values()];
+}
+
 export function scarloxyChipsetGroupSeeds(textureKey: string): readonly ScarloxyChipsetGroupSeed[] {
+  if (textureKey === MONSTER_CAVE_TEXTURE_KEY) return monsterCaveGroupSeeds();
   // 위 반쪽은 초원 마을 시트와 칸 번호가 같으므로 그 그룹을 그대로 쓰고, 부품 그룹을 덧붙인다.
   if (textureKey === MONSTER_TOWN_KIT_TEXTURE_KEY) {
     return [...scarloxyChipsetGroupSeeds("tex_scarloxy_chipset_grassland"), ...monsterTownKitGroupSeeds()];

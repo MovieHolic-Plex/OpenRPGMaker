@@ -9,6 +9,7 @@ import {
 import { createInteriorTerrainAutotileGroups } from "@/project/defaults/interiorTerrainAutotiles";
 import { seedInteriorCeilingAutotile } from "@/project/defaults/interiorCeilingAutotile";
 import { createDungeonTerrainAutotileGroups } from "@/project/defaults/dungeonTerrainAutotiles";
+import { createMonsterCaveAutotileGroups } from "@/project/defaults/monsterCaveAutotiles";
 import type { CombinedTownTileSemanticEntry } from "@/project/defaults/tileSemanticsCombinedTown";
 import { INTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsInterior";
 import { chipsetLabelCorrection } from "@/project/defaults/chipsetLabelCorrections";
@@ -22,7 +23,7 @@ import { seedWorldTerrainAutotiles, worldTerrainMetadata } from "@/project/defau
 import { hasWorldAutotileGraft, isWorldWaterTile, seedWorldCoastMapping, WORLD_PLAIN_TILE } from "@/project/defaults/worldCoastMapping";
 import { worldTileDescription } from "@/project/defaults/worldTileDescriptions";
 import { correctedWorldBridgeDescription } from "@/project/defaults/worldStructureRules";
-import { SCARLOXY_CHIPSET_ASSETS, scarloxyChipsetGroupSeeds } from "@/assets/scarloxyPack";
+import { MONSTER_CAVE_TEXTURE_KEY, SCARLOXY_CHIPSET_ASSETS, scarloxyChipsetGroupSeeds } from "@/assets/scarloxyPack";
 import type { AutotileGroup, PassFlag, TileAiMetadata, TileGroupMetadata, TilesetDef } from "@/project/types";
 
 export const DUNGEON_METADATA_PACK_ID = "dungeon-v1";
@@ -372,6 +373,12 @@ export function applyEasyRpgThemeMetadataPacks(tileset: TilesetDef): boolean {
     // 지형 12블록 + 붉은 카펫 9-슬라이스 — vision 감사 정본(1d8e9ee). host↔overlay connectsTo 포함.
     // 브러시(각 블록 몸통)를 칠하면 shapeAutotileGroupAround가 테두리/코너를 자동 성형한다.
     for (const group of createDungeonTerrainAutotileGroups()) {
+      changed = upsertAutotileGroupKeepingCurrent(tileset, group) || changed;
+    }
+  }
+  if (pack.textureKey === MONSTER_CAVE_TEXTURE_KEY) {
+    // 바위 벽·고지대·물·자갈 47칸 블롭(scripts/content/build-monster-cave.py). 몸통 칸 하나로 칠하면 8방 이웃으로 모양을 잡는다.
+    for (const group of createMonsterCaveAutotileGroups()) {
       changed = upsertAutotileGroupKeepingCurrent(tileset, group) || changed;
     }
   }

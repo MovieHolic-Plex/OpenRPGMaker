@@ -144,6 +144,13 @@ const PROFILES = [
     palettes: samePalette({ base: 0, path: 60, obstacle: 48, accent: 78 }),
   },
   {
+    // 몬스터 동굴: 흙 24 · 잔돌 흙 25 · 바위 벽 몸통 156 · 자갈 몸통 336. 생성은 몸통만 칠한다 —
+    // 가장자리 47칸 모양은 참고문서의 마스크 표로 다시 잡는다(scripts/content/build-monster-cave.py).
+    tilesetId: "scarloxy_chipset_monster_cave",
+    layout: "dungeon",
+    palettes: samePalette({ base: 24, path: 25, obstacle: 156, accent: 336 }),
+  },
+  {
     tilesetId: "scarloxy_chipset_wilds",
     layout: "wilds",
     palettes: {
