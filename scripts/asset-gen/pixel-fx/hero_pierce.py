@@ -45,6 +45,17 @@ def draw(c: Cell, f: int) -> None:
         debris(c, "pierce", 9, *HIT, 1.4, (24, 44), ang=(150, 210), size=0, cols=("m", "l"))
 
 
+# QA 2026-09-28: 칸 경계에서 직선으로 잘리던 가장자리를 디더로 걷는다(fx_edge.py). 그림 수식은 위 draw 그대로.
+from fx_edge import fade_edges  # noqa: E402
+
+_draw_body = draw
+
+
+def draw(c, f):
+    _draw_body(c, f)
+    fade_edges(c, R=4)
+
+
 if __name__ == "__main__":
     run([KEY])
 

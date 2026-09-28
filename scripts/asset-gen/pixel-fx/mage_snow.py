@@ -42,6 +42,17 @@ def draw(c, f):
             c.spark(x, y, 5, I[3], diag=True); c.spark(x, y, 3, I[5]); c.px(x, y, I[1])
 
 
+# QA 2026-09-28: 칸 경계에서 직선으로 잘리던 가장자리를 디더로 걷는다(fx_edge.py). 그림 수식은 위 draw 그대로.
+from fx_edge import fade_edges  # noqa: E402
+
+_draw_body = draw
+
+
+def draw(c, f):
+    _draw_body(c, f)
+    fade_edges(c, T=16, B=16, L=16, R=16)
+
+
 if __name__ == '__main__':
     make(KEY)
 
