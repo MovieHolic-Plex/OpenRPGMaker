@@ -255,7 +255,8 @@ const PARTY_HOMES: readonly Point[] = [{ x: 176, y: 90 }, { x: 196, y: 106 }, { 
  */
 function enemyHomes(frontCell: number): readonly Point[] {
   const grow = Math.max(0, frontCell - CELL);
-  const backX = 48 - grow / 2;
+  // 뒤 둘은 48px 상자가 무대 왼쪽(0) 밖으로 나가지 않게 x ≥ 24 로 붙든다.
+  const backX = Math.max(28, 48 - grow / 2);
   return [{ x: backX, y: 92 }, { x: 86 + grow / 4, y: 108 + grow / 8 }, { x: backX - 4, y: 124 }];
 }
 /** 한 대상 스킬이 겨누는 적(가장 앞, 시전자에 가까운 쪽). */

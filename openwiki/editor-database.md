@@ -1417,6 +1417,20 @@ leaf 조건에서 멈추고 `default: return false` 했다:
 - 목록: 도트 연출이 있는 스킬 썸네일 모서리에 이펙트 한 칸 배지(`db-skill-retro-badge`, 행 `data-retro-fx`). 스킬 탭에는 직업 필터 칩(전체·전사·수호자·마도사·정찰병·성직자·궁수 — 계약 classId 또는 직업 습득표·skillIds)이 뜬다. 이 필터는 세션 메모리만 쓰고 `oprn:database.categoryFilter` 에 저장하지 않는다(아이템·장비 전용 계약 유지).
 - 시각 확인: 세션 로컬 `.omo/editor-skill-stage/capture.mjs`(가짜 시계로 16ms 씩 전진, 계약 스킬이 없는 새 프로젝트면 메모리 스토어에만 레코드를 넣는다).
 
+#### 확장 6직업·몬스터 도트 (2026-09-28 mx-ed)
+
+- 직업 칩에 사무라이·닌자·무도가·음유시인·드루이드·마녀(`class_samurai` … `class_witch`)를 더했다. 배우 기록이 없으면 `FALLBACK_BATTLERS` 로 그린다: 사무라이 `charset-battler-actor3-0-samurai`(마도사 actor3-0 의 변형), 닌자 actor3-2, 무도가 actor3-5, 음유시인 actor3-6, 드루이드 actor3-4, 마녀 actor4-7. `CHARSET_BATTLERS` 에 아직 없는 변형 id 는 `battlerPaths` 가 `charset-battlers/<id>.png`·`cast/<id>.png` 로 조립하고, 그 그림이 404 면 밑바탕 칩(actor3-0)으로 물러난다. 양옆 두 배우는 계약 순서에서 시전자 다음 둘(같은 세대끼리 선다).
+- 적 편은 `retroStageEnemyLineup`(레이어 키 낱말 → 테마 줄 셋)으로 스킬마다 다르다. 성·저주는 언데드, 불은 불 정령·오크, 얼음·물은 물 정령·리치, 번개는 철 골렘·부유하는 눈, 자연은 벌·식충 식물·독사, 음악은 하피·미믹, 투척은 산적·고블린, 대지·무술은 멧돼지·고블린, 베기는 사마귀·리자드맨. 필살기 과녁은 96px(암흑=마왕, 검·대지·무술=트롤, 그 밖=드래곤), 내려찍기는 골렘. 앞자리만 큰 셀을 쓰고 `enemyHomes` 가 뒤 둘을 밀어 둔다(x ≥ 28). 발은 시트 계약의 바닥 y = cell−4, 대기 칸 길이는 시트의 `idleFrameMs`. 없는 시트는 그 적만 숨는다. 128px target 시트(파산장·용권 멸살 착탄)는 발 아래 24px 기준이다.
+- `pixelEnemySheets.ts` 에 확장 30종을 등록했다(총 40). 대기 칸 길이는 각 README 권장값, 권장값이 없는 짐승 10종은 이동 방식 기본값이다.
+
+### 적 탭 도트 미리보기 카드 (2026-09-28 mx-ed)
+
+- `databaseEnemyPixelPreview.ts`: `pixelEnemySheet(monsterResourceId)` 가 있는 몬스터만 기존 「미리보기」 아래 `db-enemy-pixel-preview` 카드를 둔다(`databaseEnemyStudio` 의 `enemyPixelSlot`, 리소스·색조·투명·이름이 바뀔 때만 다시 그린다). 무대는 논리 240×128(plains 겹 배경, 과녁 아군 actor1-0)이고 CSS scale 로 늘리며 pixelated 다.
+- 버튼은 `대기`·`공격`·`피격`·`쓰러짐`(`db-enemy-pixel-{idle,attack,hit,dead}`)이다. 공격은 windup 360 → move 320 → attack 300 → recover 360ms(`enemyPixelBeats`, 순수 함수)이고 근접형은 move 칸에서 아군 쪽으로 파고든다. shoot·breath·식충 식물(`IN_PLACE`)은 제자리다. 착탄 칸에서 과녁 아군이 hit 칸이 된다. 9칸 표(`db-enemy-pixel-cells`)는 칸 하나를 눌러 정지 보기, 다시 누르면 대기로 돌아간다.
+- 타이머: rAF 하나, 스테이지별 WeakMap 컨트롤러. `stopSkillAnimationStagesIn` / `resumeSkillAnimationStagesIn` 이 `stopEnemyPixelPreviewsIn` / `resumeEnemyPixelPreviewsIn` 을 함께 부르고, 떨어진 루트는 2틱 뒤 멈춘다. 감속 모드에서는 대기 a 에 서 있고 버튼은 대표 칸 하나만 보인다. 시트가 404 면 카드를 조용히 걷는다.
+- 목록: 도트 시트가 있는 몬스터 썸네일 모서리에 대기 칸 배지(`db-enemy-pixel-badge`, 행 `data-pixel-sheet`). CSS 는 `database/modern/enemies.css` 에만 더했다(새 파일 없음).
+- 시각 확인: 세션 로컬 `.omo/editor-mx/capture.mjs [skills|enemies|all]`(새 프로젝트 메모리 스토어, 계약 스킬이 없으면 메모리에만 넣고 저장하지 않는다). 모달을 닫은 뒤 도는 루프 0, pageerror·시트 404 0 이다.
+
 ## 데이터베이스 30탭 UI/UX 계약 (2026-08-30 실측)
 
 계측은 `scripts/qa/db-ux-probe.mjs` 로 한다(사용법은 `openwiki/testing.md`). 아래 모든 수치는
