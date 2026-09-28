@@ -243,6 +243,68 @@ class Fx(Cel):
             else:
                 self.px(x, y, kk)
 
+    # ---- tubes, crowns, streams
+    def tube(self, path, r0, r1, keys, steps=36, dots=None, dotk=None):
+        """Tapered tube along path(u)->(x, y), u 0..1, radius r0 -> r1. keys = (rim, body[, light]).
+        dots: every n-th step gets a sucker/scale pixel of colour dotk on the lower side."""
+        pts = [path(i / steps) for i in range(steps + 1)]
+        rs = [lerp(r0, r1, i / steps) for i in range(steps + 1)]
+        rim, body = keys[0], keys[1]
+        light = keys[2] if len(keys) > 2 else None
+        for (x, y), r in zip(pts, rs):
+            self.disc(x, y, r + 1, rim)
+        for (x, y), r in zip(pts, rs):
+            self.disc(x, y, r, body)
+        if light:
+            for (x, y), r in zip(pts, rs):
+                if r >= 2:
+                    self.disc(x - r * 0.28, y - r * 0.34, max(0.5, r * 0.45), light)
+        if dots:
+            for i in range(2, steps, dots):
+                (x, y), r = pts[i], rs[i]
+                if r >= 2.2:
+                    nx, ny = pts[min(i + 1, steps)][0] - x, pts[min(i + 1, steps)][1] - y
+                    L = math.hypot(nx, ny) or 1
+                    self.px(x - ny / L * r * 0.5, y + nx / L * r * 0.5, dotk or rim)
+        return pts
+
+    def crown(self, x, y, t, r, keys, n=12, seed=0, spread=(-2.6, -0.54), grav=1.0, size=1):
+        """Splash crown at (x, y): n droplets thrown up/out, falling as t (0..1) grows."""
+        rr = rng(seed)
+        for i in range(n):
+            a = rr.uniform(*spread)
+            v = rr.uniform(0.55, 1.0) * r
+            d = v * ease(min(1.0, t * 1.4))
+            dx = math.cos(a) * d
+            dy = math.sin(a) * d * 0.9 + grav * t * t * r * 0.9
+            life = rr.uniform(0.75, 1.05)
+            if t > life:
+                continue
+            k = keys[min(len(keys) - 1, int(t / life * len(keys)))]
+            if size >= 2 and t < 0.6:
+                self.disc(x + dx, y + dy, 1, k)
+            else:
+                self.px(x + dx, y + dy, k)
+                if t < 0.4:
+                    self.px(x + dx * 0.85, y + dy * 0.85 + 1, k)
+
+    def spikes(self, x, y, n, r0, r1, keys, rot=0.0, squash=1.0, width=1.0, span=None):
+        """Radial thorn/spike burst: tapered triangles from r0 out to r1 (keys dark -> light).
+        span=(a0, a1) radians spreads n spikes over that arc instead of the full circle."""
+        for i in range(n):
+            a = rot + i * 2 * math.pi / n if span is None else span[0] + (span[1] - span[0]) * (i / max(1, n - 1))
+            ux, uy = math.cos(a), math.sin(a) * squash
+            vx, vy = -uy, ux
+            base = pol(x, y, r0, a, squash)
+            tip = pol(x, y, r1 if not isinstance(r1, (list, tuple)) else r1[i % len(r1)], a, squash)
+            for j, k in enumerate(keys):
+                w = width * (1 - j / len(keys)) * 1.4
+                self.poly([(base[0] + vx * w, base[1] + vy * w), tip, (base[0] - vx * w, base[1] - vy * w)], k)
+
+    def stripes_h(self, y0, y1, x0, x1, keys, period=4):
+        for y in range(int(y0), int(y1)):
+            self.line([(x0, y), (x1, y)], keys[(y // period) % len(keys)])
+
 
 # ---------------------------------------------------------------- output
 
@@ -305,6 +367,117 @@ def run(mod, quiet=False, batch=None):
     if not quiet:
         print(line)
     return line, frames, mod
+
+
+# ---------------------------------------------------------------- sheet registry (class modules fx_<class>.py fill it)
+SHEETS = {}
+
+
+def sheet(key, size, frames, anchor, palette):
+    """Decorator: register draw(c, f) as sheet <key>. The stub <key>.py exposes it to run()."""
+    def deco(fn):
+        SHEETS[key] = dict(KEY=key, SIZE=size, FRAMES=frames, ANCHOR=anchor, PAL=palette, draw=fn)
+        return fn
+    return deco
+
+
+def _actor_cell(chip):
+    p = OUT.parent / 'charset-battlers' / f'{chip}.png'
+    im = Image.open(p).convert('RGBA').crop((0, 0, 48, 48)).resize((96, 96), Image.NEAREST)
+    return im
+
+
+def class_boards(name, batch, results, chip):
+    """Review boards: <name>-sheet-N.png (4x/3x/2x strips) and <name>-stage-N.png (stage mock-up, 3 frames each)."""
+    from PIL import ImageFont
+    out_dir = REVIEW / batch
+    out_dir.mkdir(parents=True, exist_ok=True)
+    font = ImageFont.load_default()
+    rows = []
+    for line, frames, mod in results:
+        scale = {32: 4, 64: 3, 128: 2}[mod['SIZE']]
+        while scale > 1 and mod['FRAMES'] * (mod['SIZE'] * scale + 4) + 4 > 1880:
+            scale -= 1
+        b = board(frames, scale)
+        lab = Image.new('RGBA', (b.size[0], 14), BG)
+        ImageDraw.Draw(lab).text((4, 1), f'{mod["KEY"]}  {mod["ANCHOR"]}  {mod["SIZE"]}px x{mod["FRAMES"]}', fill=(255, 255, 255, 255), font=font)
+        rows += [lab, b]
+    pages, cur, h = [], [], 0
+    for r in rows:
+        if h + r.size[1] > 1880 and cur:
+            pages.append(cur)
+            cur, h = [], 0
+        cur.append(r)
+        h += r.size[1]
+    pages.append(cur)
+    paths = []
+    for k, pg in enumerate(pages):
+        W = max(r.size[0] for r in pg)
+        im = Image.new('RGBA', (W, sum(r.size[1] for r in pg)), BG)
+        y = 0
+        for r in pg:
+            im.alpha_composite(r, (0, y))
+            y += r.size[1]
+        pth = out_dir / f'{name}-sheet-{k + 1}.png'
+        im.save(pth)
+        paths.append(pth)
+    # stage
+    actor = _actor_cell(chip)
+    slime = Image.open(ROOT / 'public/assets/generated/pixel-enemies/slime.png').convert('RGBA').crop((0, 0, 48, 48)).resize((96, 96), Image.NEAREST)
+    PW, PH = 400, 260
+    ec, ef, ac, af = 96, 220, 300, 212
+    panels = []
+    for line, frames, mod in results:
+        n = mod['FRAMES']
+        picks = sorted({1, n // 2, n - 2}) if mod['ANCHOR'] != 'projectile' else [0, 1, 2]
+        row = []
+        for fi in picks:
+            p = Image.new('RGBA', (PW, PH), BG)
+            d = ImageDraw.Draw(p)
+            d.line((0, 222, PW, 222), fill=(0x2c, 0x36, 0x54, 255))
+            p.alpha_composite(slime, (ec - 48, ef - 88))
+            p.alpha_composite(actor, (ac - 48, af - 90))
+            s = mod['SIZE'] * 2
+            fx = frames[fi].resize((s, s), Image.NEAREST)
+            a = mod['ANCHOR']
+            if a in ('target', 'allTargets'):
+                pos = (ec - s // 2, ef - (s - 16))
+            elif a in ('user', 'allAllies'):
+                pos = (ac - s // 2, af - (s - 16))
+            elif a == 'screen':
+                pos = (PW // 2 - s // 2, 150 - s // 2)
+            else:
+                pos = (PW // 2 - s // 2 + (1 - fi) * 40, af - 50 - s // 2)
+            p.alpha_composite(fx, pos)
+            d.text((4, 4), f'{mod["KEY"]} #{fi}', fill=(255, 255, 255, 255), font=font)
+            row.append(p)
+        panels.append(row)
+    per = 6
+    for k in range(0, len(panels), per):
+        chunk = panels[k:k + per]
+        im = Image.new('RGBA', (3 * (PW + 4), len(chunk) * (PH + 4)), (0x10, 0x14, 0x20, 255))
+        for r, row in enumerate(chunk):
+            for ci, pnl in enumerate(row):
+                im.alpha_composite(pnl, (ci * (PW + 4), r * (PH + 4)))
+        pth = out_dir / f'{name}-stage-{k // per + 1}.png'
+        im.save(pth)
+        paths.append(pth)
+    return paths
+
+
+def class_main(module_name, prefix, chip, keys=None):
+    """Build every registered sheet whose key starts with prefix (or only 'keys'), then the class boards."""
+    results, bad = [], 0
+    for key in [k for k in SHEETS if k.startswith(prefix)]:
+        if keys and key not in keys:
+            continue
+        res = run(SHEETS[key])
+        bad += res[0].startswith('BAD')
+        results.append(res)
+    if results and not keys:
+        batch = contract()[results[0][2]['KEY']]['batch']
+        class_boards(prefix.rstrip('_'), batch, results, chip)
+    return bad
 
 
 def main(keys=None):
