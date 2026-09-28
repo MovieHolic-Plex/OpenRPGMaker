@@ -61,7 +61,7 @@ for b,x0,y0 in BR:
     WA5.add_reflection(b['reflect'],x0,y0+b['refl_y'])
 _bs={}
 for i,(k,bx_,by_) in enumerate(BOATS):
-    sp=_Im.open(f'/tmp/j8city6/anim/boat_{k}_0.png'); _bs[k]=sp.size
+    sp=_Im.open(f'{OUT}/anim/boat_{k}_0.png'); _bs[k]=sp.size
     WA5.add_boat(bx_*16+sp.width//2,by_*16+sp.height-5,sp.width*0.42,(i*3)%8)
     fl=sp.transpose(_Im.FLIP_TOP_BOTTOM).crop((0,0,sp.width,min(14,sp.height)))
     WA5.add_reflection(fl,bx_*16,by_*16+sp.height-2,alpha=0.22,dark=0.5)
@@ -106,17 +106,39 @@ A[SHM,:3]=_np.floor(A[SHM,:3]*k_)
 img=_Im.fromarray(A.astype(_np.uint8),'RGBA')
 for im,px_,py_ in people:
     sh=_Im.new('RGBA',(14,5)); ImageDraw.Draw(sh).ellipse((0,0,13,4),fill=(0,0,0,70)); img.alpha_composite(sh,(px_+5,py_+28))
-draw=[(y+im.height,im,x,y) for im,x,y,c in objs]+[(py_+32,im,px_,py_) for im,px_,py_ in people]+[(y+im.height,im,x,y) for im,x,y,c in OVER]
+img.save(OUT+'/city6_ground.png')      # editor map: ground before the sorted objects (lower layer of walkable cells)
+# CITY6_NO_PEOPLE: the editor tiles are cut from a render without the townsfolk sprites (their shadows stay; they become NPC events)
+draw=[(y+im.height,im,x,y) for im,x,y,c in objs]+([] if os.environ.get('CITY6_NO_PEOPLE') else [(py_+32,im,px_,py_) for im,px_,py_ in people])+[(y+im.height,im,x,y) for im,x,y,c in OVER]
 for _,im,x,y in sorted(draw,key=lambda o:o[0]): img.alpha_composite(im,(x,y))
-img.save('/tmp/j8city6/city6_base.png')
+# editor tileset: every drawn object as an isolated sprite with a name guess (house/landmark name, prop id, tree),
+# so the builder can cut clean reusable pieces (transparent background) next to the baked city cells
+import hashlib as _hl
+os.makedirs(OUT+'/objects',exist_ok=True)
+_names={id(v[0]):k for k,v in OBJOF.items()}
+_plc={(d.get('px'),d.get('py')):d['id'] for d in PLACED if 'px' in d}
+_kitc=[(a['piece'],a['x'],a['y'],a['w'],a['h']) for k in KIT.values() for a in k['answer']]
+_OJ=[]
+for lst,src in ((objs,'obj'),(OVER,'over'),(GROUNDOBJ,'ground')):
+    for o in lst:
+        im,x,y=o[0],o[1],o[2]
+        hsh=_hl.sha1(im.tobytes()+bytes(str(im.size),'ascii')).hexdigest()[:16]
+        if not os.path.exists(f'{OUT}/objects/{hsh}.png'): im.save(f'{OUT}/objects/{hsh}.png')
+        nm=_names.get(id(o)) or _plc.get((x,y))
+        if nm is None and getattr(im,'_tree',False): nm='tree'
+        if nm is None:
+            fx,fy=(x+im.width//2)//16,(y+im.height-1)//16
+            nm=next((p for p,kx,ky,kw,kh in _kitc if kx<=fx<kx+kw and ky<=fy<ky+kh),None)
+        _OJ.append(dict(hash=hsh,px=x,py=y,w=im.width,h=im.height,name=nm or 'object',src=src))
+json.dump(_OJ,open(OUT+'/city6_objects.json','w'),ensure_ascii=False)
+img.save(OUT+'/city6_base.png')
 # ---- which base pixels are open water (replace per frame): plain, or under a cast shadow ----
 B=_np.array(img).astype(_np.int32); W0=WATER_F[0].astype(_np.int32); surf=WATER_F[0][...,3]>0
 plain=surf&_np.all(B[...,:3]==W0[...,:3],axis=2)
 shd=_np.floor(W0[...,:3]*k_).astype(_np.int32)
 shadowed=surf&SHM&_np.all(B[...,:3]==shd,axis=2)
 AM=_np.zeros(B.shape[:2],_np.uint8); AM[plain]=1; AM[shadowed]=2
-_Im.fromarray(AM*100,'L').save('/tmp/j8city6/anim/water_mask.png')
-for f,fr in enumerate(WATER_F): _Im.fromarray(fr,'RGBA').save(f'/tmp/j8city6/anim/water_{f}.png')
+_Im.fromarray(AM*100,'L').save(OUT+'/anim/water_mask.png')
+for f,fr in enumerate(WATER_F): _Im.fromarray(fr,'RGBA').save(f'{OUT}/anim/water_{f}.png')
 print('water px animated',int(plain.sum()),'shadowed',int(shadowed.sum()),'surface',int(surf.sum()))
 # ---- smoke kinds per chimney ----
 TRADEOF={s_[0]:s_[3] for s_ in SHOPS}
@@ -126,10 +148,10 @@ for i,(sx,sy,nm) in enumerate(SMOKE):
     SM5.append((sx,sy,kd,int(_hash(sx,sy,6)*12),int(_hash(sx,sy,7)*4)))
 FOUNTS=[('big',FOUNTAIN[0]*16,FOUNTAIN[1]*16)]
 if EFOUNT: FOUNTS.append(('big',EFOUNT[0]*16,EFOUNT[1]*16))
-json.dump(dict(boats=BOATS,smoke=SM5,fountains=FOUNTS,falls=FALLS,anim=ANIM+ANIM_EXTRA,glow=GLOW,windmills=WM),open('/tmp/j8city6/city6_anim.json','w'))
+json.dump(dict(boats=BOATS,smoke=SM5,fountains=FOUNTS,falls=FALLS,anim=ANIM+ANIM_EXTRA,glow=GLOW,windmills=WM),open(OUT+'/city6_anim.json','w'))
 import city6_anim; img=city6_anim.frame(img,0)
-img.save(os.environ.get('OUT','/tmp/j8city6/city6.png'))
-json.dump(PLACED,open('/tmp/j8city6/city6_placements.json','w'),ensure_ascii=False)
+img.save(os.environ.get('OUT',OUT+'/city6.png'))
+json.dump(PLACED,open(OUT+'/city6_placements.json','w'),ensure_ascii=False)
 DOORC={(dx,by) for _n,dx,by in HOUSES}
 def _rc(x,y):
     o=occ[y][x]
@@ -139,7 +161,7 @@ def _rc(x,y):
 for k_,v_ in KIT.items():
     x0,y0,x1,y1=v_['bbox']; v_['roles']=[''.join(_rc(x,y) for x in range(x0,x1)) for y in range(y0,y1)]
     v_['legend']={'D':'문 칸 (집의 문, 그 아래 칸이 문 앞)','P':'광장·마당·자갈길 (통행)','W':'성벽길 (통행)','G':'성문 통로 (통행)','B':'도개교·다리 (통행)','S':'계단 (통행)','R':'길','~':'물 (해자·강)','#':'건물·벽·소품 (막힘)','^':'절벽면','t':'나무','.':'풀·빈 땅'}
-json.dump(KIT,open('/tmp/j8city6/city6_kits.json','w'),ensure_ascii=False,indent=0)
+json.dump(KIT,open(OUT+'/city6_kits.json','w'),ensure_ascii=False,indent=0)
 _seen={(62,33)}; _q=[(62,33)]
 while _q:
     cx,cy=_q.pop()
@@ -149,8 +171,19 @@ while _q:
 WALK_ALL=[(x,y) for y in range(H) for x in range(W) if occ[y][x] in WALK]
 WALK_OFF=[c for c in WALK_ALL if c not in _seen]
 print('walkable cells',len(WALK_ALL),'not connected',len(WALK_OFF),WALK_OFF[:20])
+# editor map: the cell grid (occupancy, level, cliff face, water, doors) that decides passability
+json.dump(dict(W=W,H=H,occ=[[o if o is None or o in WALK+('water','cliff','rim','wall','ewall','fence','tree','prop','ovh') else 'obj' for o in row] for row in occ],
+               E=E,F=F,water=[[bool(v) for v in row] for row in water],doors=[[dx,by,n] for n,dx,by in HOUSES],stairs=STAIRS,bridges=BRIDGES,piers=PIERS,walk=list(WALK)),
+          open(OUT+'/city6_grid.json','w'),ensure_ascii=False)
+# editor tileset: houses (footprint cells, door cell, level, shop) -> the isolated sprite in city6_objects.json
+_HJ=[]
+for n_,dx_,by_ in HOUSES:
+    if n_ not in OBJOF: continue
+    (im_,px_,py_,c_),_a,_b=OBJOF[n_]
+    _HJ.append(dict(name=n_,px=px_,py=py_,w=im_.width,h=im_.height,door=[dx_,by_],cells=[(x,y) for y in range(H) for x in range(W) if occ[y][x]==n_],level=E[by_][dx_],shop=next((s_[3] for s_ in SHOPS if s_[0]==n_),None)))
+json.dump(_HJ,open(OUT+'/city6_houses.json','w'),ensure_ascii=False)
 SK={}
 for s_ in SM5: SK[s_[2]]=SK.get(s_[2],0)+1
 json.dump(dict(doors=len(HOUSES),unreached_before=UNREACHED_BEFORE,dropped=DROP,unreached_after=UNREACHED_AFTER,props=PROPLOG,roads=ROADLOG,bridges=len(BRIDGES),
-               smoke_kinds=SK,reeds=len(REEDS),lilies=len(LIL),cafe=CAFE,water_px=int(surf.sum()),walk_cells=len(WALK_ALL),walk_unconnected=len(WALK_OFF),walk_off_list=WALK_OFF),open('/tmp/j8city6/city6_stats.json','w'),ensure_ascii=False,indent=1)
+               smoke_kinds=SK,reeds=len(REEDS),lilies=len(LIL),cafe=CAFE,water_px=int(surf.sum()),walk_cells=len(WALK_ALL),walk_unconnected=len(WALK_OFF),walk_off_list=WALK_OFF),open(OUT+'/city6_stats.json','w'),ensure_ascii=False,indent=1)
 print('objs',len(objs),'people',len(people),'time',round(__import__('time').time()-T0,1))

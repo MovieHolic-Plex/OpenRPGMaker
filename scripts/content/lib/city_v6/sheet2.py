@@ -1,7 +1,7 @@
 import os
 import sys; sys.path.insert(0,__import__('os').path.dirname(__import__('os').path.abspath(__file__)))
 from PIL import Image
-HERE=os.path.dirname(os.path.abspath(__file__)); ASSETS='/home/main/.claude/skills/pixel-object-authoring/assets'
+HERE=os.path.dirname(os.path.abspath(__file__)); ASSETS=os.path.join(HERE,'assets')
 # backgrounds for preview cards: a lawn tile and a water tile from the target chipset (override with PX_LAWN / PX_WATER)
 lawn=Image.open(os.environ.get('PX_LAWN',os.path.join(ASSETS,'lawn16.png'))).convert('RGBA')
 water=Image.open(os.environ.get('PX_WATER',os.path.join(ASSETS,'water16.png'))).convert('RGBA')

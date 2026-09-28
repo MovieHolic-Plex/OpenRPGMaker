@@ -5,7 +5,7 @@ import sys, os, math; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__
 from PIL import Image
 from px2 import _hash, vnoise
 import palette
-CH=Image.open('/home/main/.t3/worktrees/rpg-zzu/t3code-8b4b09de/public/assets/atlas-biomes/jungle-chipset.png').convert('RGBA')
+CH=Image.open(__import__('os').path.join(__import__('os').path.dirname(__import__('os').path.abspath(__file__)),'assets','jungle-chipset-v6.png')).convert('RGBA')
 def hx(s): return tuple(int(s[i:i+2],16) for i in (1,3,5))
 ST=[hx(c) for c in [palette.OUT_CHIP['stone']]+palette.RAMPS_CHIP['stone']]
 WD=[hx(c) for c in [palette.OUT_CHIP['wood']]+palette.RAMPS_CHIP['wood']]

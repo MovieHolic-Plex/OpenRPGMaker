@@ -1,4 +1,4 @@
-import sys; sys.path.insert(0,'/tmp/j8city')
+import sys, os; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
 import palette; palette.apply()
 import pv, pj
 from PIL import Image

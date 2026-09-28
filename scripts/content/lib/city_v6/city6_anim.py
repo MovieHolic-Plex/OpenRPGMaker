@@ -52,7 +52,7 @@ def comp(im,src,x,y):
     if cx or cy: src=src.crop((cx,cy,src.width,src.height)); x+=cx; y+=cy
     im.alpha_composite(src,(x,y))
 def frame(base,f,meta=None):
-    meta=meta or json.load(open('/tmp/j8city6/city6_anim.json'))
+    meta=meta or json.load(open(OUT+'/city6_anim.json'))
     B=np.array(base).copy(); M=wmask(); Wf=water(f)
     B[M==1,:3]=Wf[M==1,:3]
     sh=M==2; B[sh,:3]=np.floor(Wf[sh,:3].astype(np.float64)*np.array((0.52,0.58,0.74))).astype(np.uint8)
@@ -68,7 +68,7 @@ def frame(base,f,meta=None):
     return im
 FR=[]
 def gif(base,box,name,scale=2,n=LOOP,ms=125):
-    meta=json.load(open('/tmp/j8city6/city6_anim.json')); fr=[]
+    meta=json.load(open(OUT+'/city6_anim.json')); fr=[]
     for f in range(n):
         c=(FR[f] if FR else frame(base,f,meta)).crop(box)
         fr.append(c.resize((c.width*scale,c.height*scale),Image.NEAREST).convert('RGB'))

@@ -21,7 +21,7 @@ ROOFPAIR={'tim':{'back0':(224,192),'back':(224,208),'front':(240,192),'eave':(24
 TEXAT={'tim.roof':(240,192),'sto.roof':(272,208),'wod.roof':(240,192),'tim.wall':(248,16),'sto.wall':(200,16),'wod.wall':(200,56)}
 def tex(key,w,h,dx=0,dy=0):
     if _CHIPIM[0] is None:
-        _CHIPIM[0]=Image.open(os.environ.get('PJ_CHIPSET','/home/main/.t3/worktrees/rpg-zzu/t3code-8b4b09de/public/assets/atlas-biomes/jungle-chipset.png')).convert('RGBA')
+        _CHIPIM[0]=Image.open(os.environ.get('PJ_CHIPSET',__import__('os').path.join(__import__('os').path.dirname(__import__('os').path.abspath(__file__)),'assets','jungle-chipset-v6.png'))).convert('RGBA')
     tx,ty=TEXAT[key]; t=_CHIPIM[0].crop((tx,ty,tx+16,ty+16)); o=Image.new('RGBA',(w,h))
     for y in range(-16,h+16,16):
         for x in range(-16,w+16,16): o.paste(t,(x+dx%16-16+16,y+dy%16))

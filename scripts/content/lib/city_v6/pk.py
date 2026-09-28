@@ -28,7 +28,7 @@ def _dirt():
     # the chipset's own light-dirt interior tile (seamless) — road surface matches the chipset exactly
     global _DIRT
     if _DIRT is None:
-        im=Image.open(__import__('os').environ.get('PX_CHIPSET','/home/main/z-project/rpg-zzu/public/assets/atlas-biomes/jungle-chipset.png')).convert('RGBA')
+        im=Image.open(__import__('os').environ.get('PX_CHIPSET',__import__('os').path.join(__import__('os').path.dirname(__import__('os').path.abspath(__file__)),'assets','jungle-chipset-v6.png'))).convert('RGBA')
         _DIRT=im.crop((64,224,80,240)).load()
     return _DIRT
 def road(mask,joins=None):
@@ -50,7 +50,7 @@ COB={}; _COB=[None]
 def _cob():
     # the chipset's cobble interior (seamless) — the plaza matches the chipset's own paving
     if _COB[0] is None:
-        im=Image.open(__import__('os').environ.get('PX_CHIPSET','/home/main/z-project/rpg-zzu/public/assets/atlas-biomes/jungle-chipset.png')).convert('RGBA')
+        im=Image.open(__import__('os').environ.get('PX_CHIPSET',__import__('os').path.join(__import__('os').path.dirname(__import__('os').path.abspath(__file__)),'assets','jungle-chipset-v6.png'))).convert('RGBA')
         _COB[0]=im.crop((160,96,176,112)).load()
     return _COB[0]
 class _PlazaPic:

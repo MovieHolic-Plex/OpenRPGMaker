@@ -11,7 +11,7 @@ _shadow=C.shadow
 def _light_shadow(s,cx,cy,rx,ry,a=100): _shadow(s,cx,cy,rx*0.8,ry*0.8,a=min(a,42))
 C.shadow=_light_shadow
 P={}      # name -> (fn, cells note, where)
-CHIPSET='/home/main/.t3/worktrees/rpg-zzu/t3code-8b4b09de/public/assets/atlas-biomes/jungle-chipset.png'
+CHIPSET=__import__('os').path.join(__import__('os').path.dirname(__import__('os').path.abspath(__file__)),'assets','jungle-chipset-v6.png')
 _CH=[None]
 def chip(x,y,w,h):
     if _CH[0] is None: _CH[0]=Image.open(CHIPSET).convert('RGBA')

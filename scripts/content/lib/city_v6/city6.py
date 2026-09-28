@@ -394,12 +394,13 @@ def pier(w,h):
             else: continue
             px[X,Y]=c+(255,)
     return im
+PIERS=[]           # editor map: pier decks are walkable (occupancy leaves them 'water')
 for px_ in (20,38,62,76):
     # v6 QA: on the natural (sand) banks x<=35 / x>=65 the pier head stopped in the carved sand, a cell short of the
     # promenade; there it starts one row higher so the planks run from the road edge out over the water
     nat=px_<=35 or px_>=65
     y0=shore[px_]-(1 if nat else 0)
-    objs.append((pier(2,5+(1 if nat else 0)),px_*16,y0*16,True))
+    objs.append((pier(2,5+(1 if nat else 0)),px_*16,y0*16,True)); PIERS.append((px_,y0,2,5+(1 if nat else 0)))
 # boats sit in the water (their own waterline effect); drawn per frame by city2_anim.py, frame 0 here
 BOATS=[('ship',51,88),('fishing',40,89),('fishing',77,91),('rowboat',22,92),('rowboat',35,94),('rowboat',66,95),('rowboat',44,97),('barge',47,80)]
 
@@ -420,9 +421,13 @@ people=[]
 walk=[(x,y) for y in range(H) for x in range(W) if occ[y][x] in ('road','plaza')]
 rng.shuffle(walk)
 sheets=['People1','People2','People3','People4','People5']
+PEOPLE=[]          # editor map: the townsfolk become NPC events (sheet, character index, direction, cell)
 for (x,y) in walk[:110]:
-    people.append((npc(rng.choice(sheets),rng.randint(0,7),rng.choice('udlr')),x*16-4,y*16-16))
+    _s,_k,_d=rng.choice(sheets),rng.randint(0,7),rng.choice('udlr'); PEOPLE.append((_s,_k,_d,x,y))
+    people.append((npc(_s,_k,_d),x*16-4,y*16-16))
 for (x,y,d) in ((62,1,'d'),(63,1,'d'),(15,22,'d'),(17,22,'d'),(7,19,'r'),(25,19,'l'),(32,11,'d'),(15,27,'d'),(17,27,'d'),(63,41,'d'),(64,45,'u'),(88,23,'d')):
+    PEOPLE.append(('People3',7 if x%2 else 6,d,x,y))
     people.append((npc('People3',7 if x%2 else 6,d),x*16-4,y*16-16))
+import json as _json; _json.dump(PEOPLE,open(OUT+'/city6_people.json','w'))
 
 exec(open(SRC+'/city6_render.py').read())
