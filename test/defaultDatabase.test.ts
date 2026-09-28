@@ -89,9 +89,10 @@ describe("default database starter party", () => {
       battleCharacterResourceId: "charset-battler-actor2-0",
     });
     expect(mage).toMatchObject({
-      faceResourceId: "easyrpg-faceset-actor2-00",
-      characterResourceId: "easyrpg-charset-actor3",
-      battleCharacterResourceId: "charset-battler-actor3-0",
+      faceResourceId: "easyrpg-faceset-actor1-05",
+      characterResourceId: "easyrpg-charset-actor1",
+      characterIndex: 5,
+      battleCharacterResourceId: "charset-battler-actor1-5",
     });
     expect(scout).toMatchObject({
       faceResourceId: "easyrpg-faceset-actor2-08",

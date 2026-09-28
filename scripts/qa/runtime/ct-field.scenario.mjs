@@ -31,7 +31,7 @@ export default {
       { kind: "waitForPosition", mapId: START, x: 14, y: 8 },
       { kind: "face", dir: "right" },
       { kind: "action" },
-      { kind: "waitForLeader", actorId: "actor_mage", spriteResourceId: "easyrpg-charset-actor3" },
+      { kind: "waitForLeader", actorId: "actor_mage", spriteResourceId: "easyrpg-charset-actor1" },
       { kind: "waitForFollowers", count: 2, ids: ["actor:actor_hero", "actor:actor_guardian"] },
     ], expect: { mapId: START, x: 14, y: 8 }, shot: true },
     { id: "ledge-hop", note: "Stepping down onto the ledge tile at (4,4) hops the player two tiles to (4,5)", ops: [
