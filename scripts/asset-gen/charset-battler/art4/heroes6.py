@@ -80,8 +80,9 @@ def glyph(im, at, rows, pal, over=True):
 
 # 8분음표(색 도트만, 윤곽은 outlined 가 붙인다): 기둥 x=3, 깃발 오른쪽, 머리 왼쪽 아래 2×2.
 NOTE = ['...c..', '...cc.', '...c.c', '...c..', '.ccc..', '.cc...']
-SHURIKEN = ['..k..', '.kLk.', 'kLDLk', '.kLk.', '..k..']
-SHURIKEN_BIG = ['...k...', '..kLk..', '.kMLMk.', 'kLLDLLk', '.kMLMk.', '..kLk..', '...k...']
+# 수리검: 네 날이 한 방향으로 도는 바람개비 모양(윤곽은 outlined 가 두른다). D 는 가운데 구멍.
+SHURIKEN = ['.H..', '.LLM', 'MDL.', '..L.']
+SHURIKEN_BIG = ['.H.....', '.LL....', '..LM.ML', '..MDM..', 'LM.ML..', '....LL.', '.....H.']
 LEAF = ['.N', 'Nn', 'n.']
 
 
@@ -240,6 +241,9 @@ def design(role, pid):
             d['weapons'] = [('lute', 45 if pid not in ('dead',) else 0, None)]
     elif role in ('druid', 'witch'):
         d['weapons'] = [(KIND[role], None, None)]
+        if role == 'witch' and pid in ('cast_raise', 'cast_arcane_2'):
+            # 옛 칸은 지팡이 팔이 얼굴·모자를 가로질렀다. 팔을 몸 뒤(오른쪽)로 돌려 모자 옆에서 치켜든다.
+            d['moves'] = {(26, 26): (31, 28), (23, 21): (32, 21)}
         if pid in ('victory', 'victory_b', 'skill'):
             d['fx'] = [('leaves' if role == 'druid' else 'hexsparks',)]
     return d
@@ -258,7 +262,7 @@ def fx_draw(im, body, fx, ctx):
                     put(im, x + i, y, C['H'] if i < n // 2 else C['L'], over=False)
     elif kind == 'shuriken':
         _, at, big = fx
-        glyph(im, at, SHURIKEN_BIG if big else SHURIKEN, {'k': C['D'], 'L': C['L'], 'M': C['M'], 'D': C['D']})
+        outlined(im, at, SHURIKEN_BIG if big else SHURIKEN, {'H': C['H'], 'L': C['L'], 'M': C['M'], 'D': C['D']})
     elif kind == 'dots':
         for p in fx[1]:
             put(im, *p, C['L'], over=False)
