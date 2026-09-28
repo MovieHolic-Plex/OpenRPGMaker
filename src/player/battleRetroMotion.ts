@@ -640,10 +640,11 @@ function measureWalk(field: HTMLElement, entry: BattleTimelineEntrySnapshot): Re
   const currentY = Number.parseFloat(translate[1] ?? "0") || 0;
   // 96px 셀 안에서 몸은 가운데 약 40px 이다 — 몸 앞 가장자리 = 셀 가운데 − 20px.
   const bodyFront = (userRect.left + userRect.width / 2) / scale - current - 20;
-  // 도트 적 시트는 48px 셀에서 몸 오른쪽 끝이 x≈36, 바닥선이 y=44 다. 통짜 그림은 오른쪽 투명 여백 약 15%, 바닥이 그림 아래끝.
+  // 도트 적 시트는 셀 cell(48·64·96)에서 몸 오른쪽 끝이 x≈cell−12, 바닥선이 y=cell−4 다. 통짜 그림은 오른쪽 투명 여백 약 15%, 바닥이 그림 아래끝.
   const pixel = image.dataset.pixelSheet !== undefined;
-  const enemyFront = (pixel ? enemyRect.left + enemyRect.width * (36 / 48) : enemyRect.right - enemyRect.width * 0.15) / scale;
-  const enemyFeet = (pixel ? enemyRect.top + enemyRect.height * (44 / 48) : enemyRect.bottom) / scale;
+  const cell = Number(image.closest<HTMLElement>("[data-pixel-enemy-cell]")?.dataset.pixelEnemyCell) || 48;
+  const enemyFront = (pixel ? enemyRect.left + enemyRect.width * ((cell - 12) / cell) : enemyRect.right - enemyRect.width * 0.15) / scale;
+  const enemyFeet = (pixel ? enemyRect.top + enemyRect.height * ((cell - 4) / cell) : enemyRect.bottom) / scale;
   // 아군 셀(48px 원본)의 발 마지막 행은 y=44.
   const userFeet = (userRect.top + userRect.height * (45 / 48)) / scale - currentY;
   const distance = Math.round(bodyFront - enemyFront - WALK_GAP_PX);

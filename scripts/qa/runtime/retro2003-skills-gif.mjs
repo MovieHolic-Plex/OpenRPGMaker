@@ -1,7 +1,9 @@
 // node scripts/qa/runtime/retro2003-skills-gif.mjs [--set class|legacy] [--skills a,b] [--out DIR] [--reduced]
-// class(기본): 계약 src/assets/retroClassSkills.ts 의 직업 스킬 48개를 그 직업의 배우가 차례로 쓰고 skill-<id>.gif 로 자른다.
+// class(기본): 계약 src/assets/retroClassSkills.ts 의 직업 스킬 96개(기존 6직업 48 + 2026-09-28 확장 6직업 48)를
+// 그 직업의 배우가 차례로 쓰고 skill-<id>.gif 로 자른다. --set new 는 확장 48개만, --set old 는 기존 48개만.
 // legacy: 예전 17종(모든 배우가 배운다). 녹화 사본만 고친다 — 실제 player.html, 키보드 입력, 정본 쓰기 없음.
-// 조 두 개: (주인공·수호자·마도사·정찰병), (성직자·궁수·쓰러진 주인공 — 부활 대상). 사본에서 레벨 22·MP 999·적 HP 99999.
+// 조 네 개: (주인공·수호자·마도사·정찰병), (성직자·궁수·쓰러진 주인공 — 부활 대상), (사무라이·닌자·무도가), (음유시인·드루이드·마녀).
+// 확장 배우는 데모 픽스처에 없으므로 현재 기본 DB 의 배우·직업·장비를 녹화 사본에 합친다. 사본에서 레벨 22·MP 999·적 HP 99999.
 import { mkdir, writeFile, stat } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 import { parseArgs, promisify } from 'node:util';
@@ -18,7 +20,7 @@ const { values } = parseArgs({ options: {
 } });
 const fps = Number(values.fps), width = Number(values.width);
 if (!Number.isInteger(fps) || fps < 1 || fps > 30 || !Number.isInteger(width) || width < 320 || width > 1280) throw new Error('fps 1..30, width 320..1280');
-if (!['class', 'legacy'].includes(values.set)) throw new Error('--set class|legacy');
+if (!['class', 'new', 'old', 'legacy'].includes(values.set)) throw new Error('--set class|new|old|legacy');
 const out = resolve(values.out);
 await mkdir(join(out, 'video'), { recursive: true });
 await mkdir(join(out, 'browser-tmp'), { recursive: true });
@@ -40,13 +42,17 @@ try {
   const defaults = await setup.evaluate(async () => {
     const m = await import('/src/project/defaults/defaultDatabaseStarterRecords.ts');
     const c = await import('/src/project/defaults/defaultDatabaseClassRecords.ts');
+    const p = await import('/src/project/defaults/defaultDatabasePartyRecords.ts');
     const k = await import('/src/assets/retroClassSkills.ts');
+    const party = p.defaultPartyRecords();
     return { skills: m.defaultSkillRecords(), battleAnimations: m.defaultBattleAnimationRecords(), states: m.defaultStateRecords(), classes: c.defaultClassRecords(),
-      contract: k.RETRO_CLASS_SKILLS.map((s) => ({ id: s.id, actorId: s.actorId, motion: s.motion, layers: s.layers.map((l) => l.key) })) };
+      actors: party.actors, equipment: party.equipment,
+      contract: k.RETRO_CLASS_SKILLS.map((s, index) => ({ id: s.id, actorId: s.actorId, motion: s.motion, layers: s.layers.map((l) => l.key), extension: index >= 48 })) };
   });
   await setup.close();
   const contract = new Map(defaults.contract.map((row) => [row.id, row]));
-  const all = values.set === 'class' ? defaults.contract.map((row) => row.id) : LEGACY;
+  const all = values.set === 'legacy' ? LEGACY
+    : defaults.contract.filter((row) => values.set === 'class' || (values.set === 'new') === row.extension).map((row) => row.id);
   const wanted = values.skills ? values.skills.split(',').map((id) => id.startsWith('skill_') ? id : 'skill_' + id) : all;
   if (wanted.some((id) => !all.includes(id))) throw new Error('Unknown --skills id');
   const groups = values.set === 'legacy'
@@ -54,6 +60,8 @@ try {
     : [
       { party: ['actor_hero', 'actor_guardian', 'actor_mage', 'actor_scout'], dead: [] },
       { party: ['actor_cleric', 'actor_ranger', 'actor_hero'], dead: ['actor_hero'] },
+      { party: ['actor_samurai', 'actor_ninja', 'actor_monk'], dead: [] },
+      { party: ['actor_bard', 'actor_druid', 'actor_witch'], dead: [] },
     ].map((group) => ({ ...group, skills: wanted.filter((id) => group.party.includes(contract.get(id)?.actorId) && !group.dead.includes(contract.get(id)?.actorId)) }))
       .filter((group) => group.skills.length > 0);
   if (groups.reduce((n, g) => n + g.skills.length, 0) !== wanted.length) throw new Error('Some skills have no recording group');
@@ -99,6 +107,15 @@ async function recordGroup(groupIndex, group, defaults, contract) {
   }
   try {
     const project = fixture.project;
+    // 확장 배우·직업은 데모에 없다 — 기본 DB 의 행을 덧붙인다(같은 id 는 데모 행을 둔다: 기존 배우의 저작 값 보존).
+    for (const key of ['actors', 'equipment']) {
+      const have = new Set(project.database[key].map((row) => row.id));
+      project.database[key] = [...project.database[key], ...defaults[key].filter((row) => !have.has(row.id))];
+    }
+    {
+      const have = new Set(project.database.classes.map((row) => row.id));
+      project.database.classes = [...project.database.classes, ...defaults.classes.filter((row) => !have.has(row.id)).map((row) => structuredClone(row))];
+    }
     for (const key of ['skills', 'battleAnimations', 'states']) {
       const rows = defaults[key];
       project.database[key] = [...project.database[key].filter((row) => !rows.some((r) => r.id === row.id)), ...rows];
@@ -233,7 +250,7 @@ async function recordGroup(groupIndex, group, defaults, contract) {
       if (!completed) row.problems.push('did not complete');
       if (detail.remainingFx) row.problems.push(detail.remainingFx + ' fx left');
       if (detail.legacyLayers) row.problems.push('legacy animation layer shown');
-      if (values.set === 'class') {
+      if (values.set !== 'legacy') {
         const missing = [...new Set(contract.get(skill).layers)].filter((key) => !row.layerKeys.includes(key));
         if (missing.length && !values.reduced) row.problems.push('missing layers ' + missing.join(','));
         if (!detail.sounds && !values.reduced) row.problems.push('no sound event');

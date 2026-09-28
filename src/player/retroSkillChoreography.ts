@@ -148,7 +148,7 @@ function sprite(field: HTMLElement, target: HTMLElement, recipe: RetroSkillRecip
   const scaleY = rect.height / (field.offsetHeight || rect.height || 1);
   node.style.left = `${Math.round((box.left + box.width / 2 - rect.left) / scaleX) + (charge ? -24 : 0)}px`;
   // Cell art rests at row 56/64; battler art has its own transparent foot margin.
-  const footMargin = image.dataset.pixelSheet !== undefined ? box.height / scaleY * 4 / 48
+  const footMargin = image.dataset.pixelSheet !== undefined ? box.height / scaleY * 4 / pixelCellOf(image)
     : target.dataset.battlerExtended === "true" ? box.height / scaleY * 3 / 48 : 0;
   node.style.top = `${Math.round((box.bottom - rect.top) / scaleY + (charge ? -20 : 16 - footMargin))}px`;
   field.append(node); track(field, node);
@@ -374,6 +374,10 @@ function currentTranslate(node: HTMLElement): Point {
 function battlerImage(node: HTMLElement): HTMLElement {
   return node.querySelector<HTMLElement>(".battle-enemy-image, .battle-actor-sprite, .battle-actor-image") ?? node;
 }
+/** 도트 적 시트의 셀 한 변(48·64·96). 몸 비율(앞 cell−12 · 뒤 12 · 발 cell−4)은 셀 크기로 나눈다 — 48 고정이면 큰 적에서 어긋났다. */
+function pixelCellOf(image: HTMLElement): number {
+  return Number(image.closest<HTMLElement>("[data-pixel-enemy-cell]")?.dataset.pixelEnemyCell) || 48;
+}
 function livingEnemies(field: HTMLElement): HTMLElement[] {
   return [...field.querySelectorAll<HTMLElement>(".battle-enemy:not(.defeated)")];
 }
@@ -396,11 +400,12 @@ function measurePlaces(field: HTMLElement, user: HTMLElement, primary: HTMLEleme
     const image = battlerImage(node);
     const box = image.getBoundingClientRect();
     const pixel = image.dataset.pixelSheet !== undefined;
+    const cell = pixelCellOf(image);
     return {
-      front: pixel ? box.left + box.width * (36 / 48) : box.right - box.width * 0.15,
-      back: pixel ? box.left + box.width * (12 / 48) : box.left + box.width * 0.15,
+      front: pixel ? box.left + box.width * ((cell - 12) / cell) : box.right - box.width * 0.15,
+      back: pixel ? box.left + box.width * (12 / cell) : box.left + box.width * 0.15,
       center: box.left + box.width / 2,
-      feet: pixel ? box.top + box.height * (44 / 48) : box.bottom,
+      feet: pixel ? box.top + box.height * ((cell - 4) / cell) : box.bottom,
     };
   };
   let front: Point = { x: -72, y: 0 };
@@ -431,7 +436,7 @@ function placeOnBody(field: HTMLElement, node: HTMLElement, host: HTMLElement): 
   const image = battlerImage(host);
   const box = image.getBoundingClientRect();
   const f = fieldScale(field);
-  const footMargin = image.dataset.pixelSheet !== undefined ? box.height / f.y * 4 / 48
+  const footMargin = image.dataset.pixelSheet !== undefined ? box.height / f.y * 4 / pixelCellOf(image)
     : host.dataset.battlerExtended === "true" ? box.height / f.y * 3 / 48 : 0;
   node.style.left = `${Math.round((box.left + box.width / 2 - f.rect.left) / f.x)}px`;
   node.style.top = `${Math.round((box.bottom - f.rect.top) / f.y + 16 - footMargin)}px`;
