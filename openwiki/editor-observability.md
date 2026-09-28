@@ -597,6 +597,20 @@ requestEditRenderFrame으로 한 프레임만 요청하고, 카메라·포인터
   미리 만든 값은 값 대조를 통과할 때만 쓰인다. 이 준비가 없으면 첫 전송 직후 약 7s, 첫 체크포인트 약 2.7s 멈췄다.
 - 편집기 구독자·캔버스(텍스처 적재마다 전체 redraw 등)는 위 "연속 AI 적용의 구독자 비용" 절, 조수 패널 DOM 은 `editor-ai-panel.md` 의 "AI 패널 렌더 비용" 절.
 
+2차(같은 날, 실제 프로젝트 12맵·100×100 기준 프로파일):
+
+- **적용 커밋의 클러스터 규칙 검사**: `applyProposedProject` 는 `commitChangeset(..., { clusterMapIds: [] })` 로 클러스터 스캔을 건너뛴다.
+  `cluster-rule:*` 는 커밋을 막지 않고(`isBlocking`) 이 경로는 `commit.issues` 를 쓰지 않는다. 규칙 감사 표시는 `ruleAuditPanel` 이 따로 한다.
+  검사 자체도 칸마다 `new Set([tile])` 을 만들던 전체 스캔 대신 검사 한 번 동안 맵당 한 번 만드는 타일→칸 색인(`clusterRuleValidators.tileCellIndex`)을 쓴다 — 결과는 같다(실제 프로젝트에서 대조, 88ms → 8ms).
+- **실행 요청 gzip**(`piRequestBody`): 몸통 전체 `JSON.stringify` → `Blob` → `CompressionStream` 대신 조각(256KB)을 흘리며 조각마다 양보한다.
+  heavyBlobs 의 글은 이스케이프 사본을 통째로 만들지 않고 조각별로 이스케이프한다. 풀면 `JSON.stringify(value)` 와 글자까지 같다.
+  이어 붙인 gzip 멤버는 쓰지 않는다 — node 는 풀지만 브라우저 `DecompressionStream` 은 뒤따르는 멤버를 거부한다.
+- **체크포인트 캔버스 갱신**(`incrementalMapApply.mapCellApply`): 체크포인트는 NDJSON 에서 다시 읽은 문서라 무거운 키만 스토어 객체를 물려받는다.
+  참조만 비교해서 내용이 같은 `meta` 하나로도 전체 재렌더(체크포인트마다 약 1.2s)로 떨어졌다. 이제 가벼운 키는 내용을 대조하고,
+  칸 목록이 가리키지 않는 다른 맵은 내용이 같을 때만 칸 단위 갱신을 허락한다. 무거운 키는 대조하지 않는다(바뀌었으면 전체 재렌더가 맞다).
+- **커밋 기준 요약**(`projectCommitLog.manualCommitDigest`, 한가할 때): 적용 권위 요약처럼 공유 항목을 믿는다(`withTrustedSharedEntries`).
+- **초점 이동**(`EditScene.panCameraToTile`): 캔버스·가림 사각형을 250ms 기억한 값으로 읽는다. 체크포인트마다 `getBoundingClientRect` 강제 레이아웃이 돌았다.
+
 새 경로를 추가할 때: 전체 프로젝트를 `JSON.stringify`/`acceptanceFingerprint`/`structuredClone` 하는 비교·복제를 스토어 통지나 체크포인트마다 부르지 마라.
 내용 비교는 `sameAcceptanceContent` 또는 `jsonContentDigest`, 읽기 전용 사본은 `cloneProjectSharingSharedDictionaries` 를 쓴다.
 

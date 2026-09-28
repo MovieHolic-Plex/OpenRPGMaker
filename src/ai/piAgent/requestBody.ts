@@ -1,8 +1,9 @@
 /**
  * Preserve reference images while keeping large project requests below the wire limit.
  *
- * 큰 몸통은 gzip 으로 보낸다. 압축 입력은 몸통 전체를 한 번에 만들지 않고 256KB 조각으로 흘리며, 조각마다
+ * 큰 몸통은 gzip 으로 보낸다. 압축 입력은 몸통 전체를 한 번에 만들지 않고 256KB 조각으로 흘리며, 쉬지 않고 12ms 를 넘게 일했으면
  * 이벤트 루프에 양보한다. 결과 바이트는 JSON.stringify(value) 를 gzip 한 것과 같은 글이다(단일 gzip 멤버).
+ * 조각마다 양보하면 149MB 첫 전송이 양보 약 600번(각 4ms 이상)으로 벽시계 약 5s 가 늘었다 — 시간으로 묶는다.
  *
  * 왜(2026-09-28 실측, 실제 프로젝트 12맵 · 첫 전송 9MB): JSON.stringify(몸통 전체) → new Blob → CompressionStream 을
  * 한 번에 하던 것이 전송 직후 메인 스레드를 약 2.9s 세웠다. 몸통의 대부분은 heavyBlobs 의 타일셋·DB 글(7.4MB)이고,
@@ -71,22 +72,30 @@ function canCompress(): boolean {
 }
 
 const CHUNK_CHARS = 256 * 1024;
+/** 이만큼 쉬지 않고 일했으면 양보한다. 한 프레임(16ms) 안에 들게. */
+const YIELD_AFTER_MS = 12;
+
+function nowMs(): number {
+  return typeof performance !== "undefined" ? performance.now() : Date.now();
+}
 
 /** 조각을 UTF-8 로 바꿔 한 gzip 스트림에 흘린다. 조각 경계에서 서로게이트 쌍을 가르지 않는다. */
 async function gzipPieces(pieces: readonly Piece[], signal?: AbortSignal): Promise<ArrayBuffer> {
   const encoder = new TextEncoder();
   let pieceIndex = 0;
   let offset = 0;
-  let emitted = false;
+  let sliceStart = nowMs();
   const source = new ReadableStream<Uint8Array>({
     async pull(controller) {
       for (;;) {
         const piece = pieces[pieceIndex];
         if (!piece) { controller.close(); return; }
         if (offset >= piece.text.length) { pieceIndex += 1; offset = 0; continue; }
-        if (emitted) await yieldToEventLoop();
+        if (nowMs() - sliceStart >= YIELD_AFTER_MS) {
+          await yieldToEventLoop();
+          sliceStart = nowMs();
+        }
         if (signal?.aborted) { controller.error(signal.reason); return; }
-        emitted = true;
         let end = Math.min(piece.text.length, offset + CHUNK_CHARS);
         if (end < piece.text.length) {
           const code = piece.text.charCodeAt(end - 1);
