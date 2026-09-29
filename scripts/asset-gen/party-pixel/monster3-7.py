@@ -1,76 +1,66 @@
-"""monster3-7 마장군(파티원) — 64 셀. 걷기 칩: 검은 갑옷, 푸른 피부, 붉은 뿔·붉은 눈, 금 장식, 보랏빛 대검.
-대기 = 대검을 앞에 세우고 망토가 흔들림, windup = 대검을 머리 위로, attack = 크게 내려벰, 시전은 windup 칸에서 대검에 암흑이 서림. 왼쪽을 본다."""
+"""monster3-7 마장군(파티원) — 셀 48, 15칸. 검은 갑옷·푸른 피부·붉은 뿔, 금 장식, 보랏빛 대검(뒤 손, 칼끝이 아래). 바닥에 선다. 대검은 손잡이 피벗으로 돈다.
+공용 엔진 pp15_pp5.Poser: 걷기 칩 왼쪽 보기 칸을 확대 없이(칩 × 1) 대기 칸 몸으로 쓰고, 나머지 칸은 부위를 옮겨 만든다."""
 import math, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from mon_lib import *  # noqa
-
-CELL = 64
-PAL = dict(o='151617', s='2a282d', b='434146', l='6a6870', v='3c35a3', V='6a60cb', r='6b2926', R='c83a3a', y='966517', Y='e0b040', e='ff3040', p='2b0c0b', m='5a2a8a', M='a070e0')
+from pp15_pp5 import Poser, fx_common, star, burst, note  # noqa
 
 
-def body(p, J):
-    torso_mass(p, J, 9.5, {'l': 'l', 'b': 'b', 's': 's'}, extra=[(0, 4, 9, 6)])
-    hip, sh = J['hip'], J['sh']
-    p.box((hip[0] - 9, hip[1] - 5, hip[0] + 9, hip[1] - 3), 'y'); p.box((hip[0] - 1, hip[1] - 6, hip[0] + 2, hip[1] - 2), 'Y')
-    p.line([(sh[0] - 2, sh[1] + 5), (sh[0] + 5, sh[1] + 11)], 'y')
-    # 어깨 가시 갑옷
-    blob(p, sh[0] - 1, sh[1] + 3, 6, 4.6, 0, keys={'l': 'l', 'b': 'b', 's': 's'})
-    for k in range(3):
-        x = sh[0] - 5 + k * 4
-        p.poly([(x, sh[1] + 1), (x + 1, sh[1] - 4 - (k == 1) * 2), (x + 3, sh[1] + 1)], 'R', 'o')
+def fx(R, d, J):
+    k = J['P'].get('fx')
+    V, Vl, Rr = R.c('6a60cb'), R.c('a790ec'), R.c('ff3f44')
+    x, y = J['pt'](22, 30, 'arm')
+    if k == 'impact':
+        return burst(d, x, y, 2, 6, 6, Vl, 10)
+    if k == 'finisher':
+        hx, hy = J['pt'](19, 12, 'arm')
+        d.arc((hx - 34, hy - 30, hx + 6, hy + 14), 110, 260, fill=V, width=4)
+        d.arc((hx - 33, hy - 29, hx + 5, hy + 13), 120, 250, fill=Vl, width=1)
+        star(d, x, y, 3, Vl, Rr)
+        return
+    if k in ('charge', 'raise', 'release'):
+        n = {'charge': 2, 'raise': 4, 'release': 3}[k]
+        hx, hy = J['pt'](19, 12, 'arm')
+        for i in range(n):
+            f = (i + 1) / (n + 1)
+            px, py = hx + (x - hx) * f, hy + (y - hy) * f
+            d.point((int(px) - 2, int(py)), fill=Vl)
+            d.point((int(px) + 2, int(py) - 1), fill=V)
+        if k == 'release':
+            d.polygon([(x - 2, y - 3), (x - 16, y), (x - 2, y + 3)], fill=V)
+            d.line((x - 3, y, x - 13, y), fill=Vl)
+        return
+    fx_common(R, d, J, '6a60cb', 'a790ec', (5, 12), 'head')
 
 
-def back(p, J):
-    sh = J['sh']
-    sw = {'idle_b': 1, 'idle_c': 2, 'move': -3, 'attack': -4, 'hit': 3}.get(J['n'], 0)
-    p.poly([(sh[0] - 4, sh[1] + 2), (sh[0] - 12 + sw, J['G'] - 2), (sh[0] - 3 + sw, J['G'] - 4), (sh[0] + 2, sh[1] + 4)], 'r', 'o')
-    p.line([(sh[0] - 5, sh[1] + 6), (sh[0] - 10 + sw, J['G'] - 4)], 'p')
-
-
-def head(p, hx, hy, J):
-    P = J['P']
-    blob(p, hx + 1, hy + 1, 5, 5, 0, keys={'l': 'V', 'b': 'v', 's': 'v'})
-    # 투구
-    blob(p, hx, hy - 2, 6.2, 4.6, 0, keys={'l': 'l', 'b': 'b', 's': 's'})
-    p.box((int(hx) - 5, int(hy) + 1, int(hx) - 2, int(hy) + 6), 'b')
-    for dx_, big in ((-3, 0), (1, 1)):
-        pts = bez([(hx + dx_, hy - 5, 1.5), (hx + dx_ - 3, hy - 8, 1.1), (hx + dx_ + 1, hy - 11 - big, .4)], 10)
-        tube(p, pts, 'R', 'o', 'r')
-    eyes(p, int(hx) + 3, int(hy) + 1, P['eye'], 'e', 'Y')
-    p.line([(hx + 2, hy - 1), (hx + 6, hy)], 'o')
-    if P['mouth']:
-        p.box((int(hx) + 3, int(hy) + 4, int(hx) + 5, int(hy) + 5), 'p')
-
-
-def weapon(p, hand, ang, J):
-    tip = at(hand, ang, 22); base = at(hand, ang + 180, 5)
-    nx, ny = math.cos(math.radians(ang + 90)), math.sin(math.radians(ang + 90))
-    g0, g1 = at(hand, ang, 2), at(hand, ang, 4)
-    blade = [(g1[0] + nx * 3, g1[1] + ny * 3), (tip[0] + nx * 1.5, tip[1] + ny * 1.5), at(tip, ang, 3), (tip[0] - nx * 1.5, tip[1] - ny * 1.5), (g1[0] - nx * 3, g1[1] - ny * 3)]
-    p.poly(blade, 'm', 'o')
-    p.line([g1, tip], 'M')
-    p.line([base, g0], 'o', 3); p.line([base, g0], 'y')
-    p.line([(g0[0] + nx * 5, g0[1] + ny * 5), (g0[0] - nx * 5, g0[1] - ny * 5)], 'o', 3)
-    p.line([(g0[0] + nx * 4, g0[1] + ny * 4), (g0[0] - nx * 4, g0[1] - ny * 4)], 'Y')
-    if J['n'] == 'windup':
-        for k in range(4):
-            q = at(g1, ang, 4 + k * 5)
-            p.line([(q[0] + nx * 5, q[1] + ny * 5), (q[0] + nx * 8, q[1] + ny * 8)], 'M')
-
-
-S = dict(cell=CELL, cx=30, leg=14, torso=14, arm=12, aw=5, lw=5, hr=6, neck=2, legc='b', legfar='s', boot='l', boot_far='b',
-         armc='b', farc='s', fist='l', back=back, body=body, head=head, weapon=weapon,
-         poses={'idle_a': dict(arm=70, wpn=-88), 'idle_b': dict(arm=72, wpn=-86), 'idle_c': dict(arm=74, wpn=-84),
-                'windup': dict(arm=-110, wpn=-160), 'move': dict(arm=40, wpn=-50), 'attack': dict(arm=30, wpn=55),
-                'recover': dict(arm=60, wpn=85), 'hit': dict(arm=140, wpn=-130)})
-
-
-def draw(p, n):
-    if n != 'dead':
-        humanoid(p, n, S)
-
+S = dict(
+    name='monster3-7', chip=7, cell=48, breath_y=16, dead='slump',
+    parts=[
+        # 대검(붉은 손잡이 손 + 보랏빛 칼날). 금 어깨받이와 초록 망토는 몸에 남긴다. 피벗 = 손잡이.
+        ('arm', [(18.5, 18.5), (24, 18.5), (24, 32), (18.5, 32)], (20, 20)),
+        ('head', [(1, 1), (17, 1), (17, 12.5), (1, 12.5)], (9, 12)),
+        ('legs', [(5, 22.5), (15.5, 22.5), (15.5, 31), (5, 31)], (10, 22)),
+    ],
+    order=['legs', 'body', 'head', 'arm'],
+    fx=fx,
+    poses={
+        'idle_b': dict(br=1, arm=(0, 1, 2)),
+        'idle_c': dict(br=1, arm=(0, 1, 4), head=(0, 1, 0)),
+        # 칼날은 처음에 아래(+y)를 본다. 회전 +는 반시계: 180 = 위, -90 = 앞(왼쪽), 90 = 뒤.
+        'windup': dict(g=(3, 0, 4), arm=(-2, -10, 170), head=(1, 0, 0)),
+        'move': dict(g=(-6, 0, -5), arm=(0, -2, 120), legs=(-1, 0, 0)),
+        'attack': dict(g=(-9, 0, -8), br=-1, arm=(-14, 0, -70), head=(-2, 0, 0), fx='impact'),
+        'recover': dict(g=(-3, 0, -2), br=1, arm=(-8, 2, -25)),
+        'hit': dict(g=(5, 0, 8), arm=(2, -2, 25), head=(2, -1, 0), fx='hurt'),
+        'cast_charge': dict(g=(1, 0, 2), br=1, arm=(-4, -4, 150), fx='charge'),
+        'cast_raise': dict(g=(0, -1, 1), br=-2, arm=(-6, -14, 180), head=(0, -1, 0), fx='raise'),
+        'cast_release': dict(g=(-5, 0, -5), arm=(-14, -4, -100), head=(-1, 0, 0), fx='release'),
+        'leap': dict(g=(-3, -9, -4), br=2, arm=(-2, -10, 160), legs=(1, -4, 0), air=True),
+        'buff': dict(g=(0, -1, 1), br=-2, arm=(-6, -2, 0), head=(0, -2, 0), fx='buff'),
+        'finisher': dict(g=(-10, 0, -10), br=-2, arm=(-16, 2, -45), head=(-2, 0, 0), legs=(-1, 0, 0), fx='finisher'),
+    },
+)
 
 if __name__ == '__main__':
-    build('monster3-7', 'b5', CELL, PAL, draw, dead_lying=True)
+    Poser(S).sheet()
 
