@@ -68,7 +68,7 @@ def leg(p, hip, foot, L, w, col, boot):
     fx, G = foot
     ank = (fx, G - 2)
     bend = -1 if fx >= hip[0] else 1
-    j, e = ik(hip, ank, L / 2 + .8, L / 2 + .8, bend)
+    j, e = ik(hip, ank, L / 2 + .15, L / 2 + .15, bend)
     cap(p, [hip, j, e], w, col)
     x = int(round(e[0]))
     p.box((x - 2, G - 2, x + 3, G), 'o')
