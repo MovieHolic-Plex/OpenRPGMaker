@@ -815,6 +815,9 @@ function skillClassFilterChips(rerender: () => void): HTMLElement | null {
     const second = chipCluster(caption, inGroup.map(({ id, label }) => filterChipButton(id, label, skills.filter((skill) => skillMatchesRetroClass(skill, id, project)).length, current === id, pick(id))));
     second.dataset.testid = "db-skill-class-second-row";
     second.dataset.group = activeGroup;
+    // 계열 하나에 직업이 40개까지 있다 — 2단은 네 줄 높이에서 스크롤해 스킬 목록 자리를 지킨다.
+    second.style.maxHeight = "116px";
+    second.style.overflowY = "auto";
     row.append(second);
   }
   return row;
