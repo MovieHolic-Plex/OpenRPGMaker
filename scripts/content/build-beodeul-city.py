@@ -396,25 +396,45 @@ def kit7_struct(kid, spec, rows_):
         k["parts"] = [dict(id="door" if i == 0 else f"door{i + 1}", kind="entrance", dx=d["dx"], dy=d["dy"], w=1, h=1, note=d["note"] + " — 그 아래 칸이 문 앞") for i, d in enumerate(spec["doors"])]
     return k
 for kid, spec, rows_ in KITS7: KITS.append(kit7_struct(kid, spec, rows_))
-# v7: ground variety. The flat material fill (one grass tile) looks dead; the city's own lawn is a noise mix of lawn / meadow / shade /
-# flower. Six 6x6 windows of the plain lawn (no object, no shadow within 1 cell) become stampable ground patches.
-def lawn_windows(n=6, S=6):
-    def clear(x, y): return 0 <= x < W and 0 <= y < H and occ[y][x] is None and upper[y * W + x] < 0 and not water[y][x] and not grid["F"][y][x]
-    cand = []
-    for y in range(1, H - S - 1):
-        for x in range(1, W - S - 1):
-            if all(clear(x + i, y + j) for j in range(0, S) for i in range(0, S)) and len({E[y + j][x + i] for j in range(S) for i in range(S)}) == 1:
-                cand.append((len({lower[(y + j) * W + x + i] for j in range(S) for i in range(S)}), x, y))
-    cand.sort(reverse=True); pick = []
-    for score, x, y in cand:
-        if all(abs(x - a) >= 10 or abs(y - b) >= 10 for _, a, b in pick): pick.append((score, x, y))
-        if len(pick) == n: break
-    return pick
-for k_, (score, gx, gy) in enumerate(lawn_windows(), 1):
+# v7: ground variety. The flat material fill (one grass tile) looks dead; the city's own lawn is a noise mix of lawn / meadow /
+# flower cells. The city has no 6x6 window of open lawn (738 open cells, all in slivers), so the patches are composed: the lower
+# tiles of open lawn cells with no tree / object / water within one cell (no shade grass) are dealt out by a fixed PRNG into six
+# 6x6 patches with cut corners (-1 = keep what is under it, so the outline is not a square).
+def lawn_pool():
+    # open lawn and tree-ground cells whose own picture is as bright as the flat lawn (no shade grass: mean green within 10 of it)
+    gb_ = next(g for g in tileGroups if g["id"] == "beodeul:grass")["tileIds"][0]
+    ref = tiles[gb_][..., :3].reshape(-1, 3).mean(0)
+    pool = []
+    for y in range(H):
+        for x in range(W):
+            if occ[y][x] not in (None, "tree") or upper[y * W + x] >= 0 or water[y][x] or grid["F"][y][x]: continue
+            t_ = lower[y * W + x]; px = tiles[t_]
+            if px.ndim != 3 or px[..., 3].min() < 255: continue
+            q = px[..., :3].reshape(-1, 3).astype(int); m_ = q.mean(0)
+            # no brown / dark specks (fence feet, path crumbs, shadow edges): every pixel stays green and not much darker than the lawn
+            if (q[:, 1] - q[:, 0] < 40).any() or (q[:, 1] < ref[1] - 45).any(): continue
+            # a few specks only: a dense tuft cell reads as a square block when dealt out cell by cell
+            off = (np.abs(q - tiles[gb_][..., :3].reshape(-1, 3).astype(int)).sum(1) > 30).sum()
+            offm = (np.abs(px[..., :3].astype(int) - tiles[gb_][..., :3].astype(int)).sum(2) > 30)
+            dash = any(offm[r_, c_:c_ + 4].all() for r_ in range(16) for c_ in range(13))   # a straight dark dash is a fence foot, not grass
+            if abs(m_[1] - ref[1]) <= 8 and abs(m_[0] - ref[0]) <= 8 and 4 <= off <= 40 and not dash: pool.append(t_)
+    return pool
+_pool = lawn_pool(); _rs = np.random.default_rng(71)
+_gb = next(g for g in tileGroups if g["id"] == "beodeul:grass")["tileIds"][0]
+_CUT = {(0, 0), (5, 0), (0, 5), (5, 5), (1, 0), (0, 1)}
+for k_ in range(1, 7):
+    rows_ = []
+    for j in range(6):
+        row = []
+        for i in range(6):
+            if (i, j) in _CUT or (5 - i, j) in _CUT and k_ % 2 or (i, 5 - j) in _CUT and k_ % 3 == 0: row.append(-1)
+            else: row.append(int(_pool[int(_rs.integers(len(_pool)))]) if _pool and _rs.random() < 0.45 else _gb)
+        rows_.append(dict(tiles=row, upperTiles=[-1] * 6))
     KITS.append(dict(id=f"bd-ground-lawn-{k_}", kind="section", name=f"버들항 잔디 무늬 조각 {k_} 6×6", width=6, height=6, tileSize=16, learnedFrom="db-authored",
-        rows=[dict(tiles=[lower[(gy + j) * W + gx + i] for i in range(6)], upperTiles=[-1] * 6) for j in range(6)],
-        ai=dict(description=f"버들항 잔디 무늬(풀·밝은 풀·그늘 풀·꽃잎이 섞인 원본 {gx},{gy} 6×6 땅). 아래층만 — 빈 땅이 납작한 한 가지 잔디로 죽어 보이지 않게 흩어 찍는다.",
-                placementRules="빈 풀밭 위에 겹쳐 찍는다(길·물·건물 자리는 피한다). 6×6 조각 가장자리는 같은 풀이라 이음새가 거의 안 보인다. 한 곳에 뭉치지 말고 10칸 안팎으로 띄워 흩는다.", tags=["버들항", "ground", "lawn"], role="terrain")))
+        rows=rows_,
+        ai=dict(description=f"버들항 잔디 무늬(원본 풀밭의 밝은 풀·들풀·꽃잎 칸을 섞은 6×6 땅, 모서리는 비어 윤곽이 네모가 아니다). 아래층만 — 빈 땅이 납작한 한 가지 잔디로 죽어 보이지 않게 흩어 찍는다.",
+                placementRules="빈 풀밭 위에 겹쳐 찍는다(길·물·건물 자리는 피한다). 빈 칸(-1)은 밑 땅을 그대로 둔다. 한 곳에 뭉치지 말고 10칸 안팎으로 띄워 흩는다.", tags=["버들항", "ground", "lawn"], role="terrain")))
+print("lawn pool", len(_pool), "distinct", len(set(_pool)))
 # no whole-city kit: the assistant composes a town from the district and house kits (the full map is the saved canon)
 # ---- NPCs ----
 people = json.loads((REND / "city6_people.json").read_text())
