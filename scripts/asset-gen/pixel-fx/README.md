@@ -108,3 +108,9 @@ Review output: `.omo/mfx/<key>-preview.png` and `.omo/mfx/board-18_35(-partN).pn
 공용 모듈 lib_r2w2.py. 스킬표 정본은 emit_r2w2_skills.py → src/assets/retroRosterSkills/a3.ts·p1.ts 로 생성, 각 <key>.py 는 그 .ts 의 anchor·frame·frames 와 다르면 멈춘다.
 python3 scripts/asset-gen/pixel-fx/lib_r2w2.py a3 p1 은 묶음이 소유한 접두(a3: berserker_…swordsman_, p1: scholar_…priest_monk_)의 시트 137장(a3 82 · p1 55)을 다시 굽고 .omo/r2w2/<batch>/fx/ 에 4배 미리보기를 쓴다.
 p1 은 스킬마다 새 시트 최대 1장이고 나머지 층은 기존 시트(focus·heal·sleep·cleric_*·mage_*·mon_* 등)를 재사용한다.
+
+## retro2003 2차 로스터 p2·p3 (r2w3, 2026-09-29)
+
+- 목록 정본 `r2w3_skills.py` → `python3 r2w3_emit.py p2 p3` 가 `src/assets/retroRosterSkills/p2.ts·p3.ts` 를 쓴다. 공용 모듈 `lib_r2w3.py`.
+- p2 직업별 모듈 `r2w3_<class>.py`(8개). p3 는 새 시트 16장을 `r2w3_p3.py` 한 파일에 두고, 나머지 층은 `reuse()` 로 기존 시트를 읽기만 한다(스킬당 새 시트 ≤ 1, emit 이 검사).
+- 생성 전 묶음 파일의 frame·frames·anchor 가 등록값과 다르면 멈춘다(`check_contract`). 검토판은 `.omo/r2w3/<batch>/`.
