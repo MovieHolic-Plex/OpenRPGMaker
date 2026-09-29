@@ -362,6 +362,101 @@ def bubble(c, x, y, r, k, hi='w'):
         c.px(x - r * .45, y - r * .45, hi)
 
 
+# --------------------------------------------------------------------------- p1 소품(학자~승려)
+PAPER = dict(n0='#5a4630', n1='#b09870', n2='#f4ead0', n3='#fffaf0')
+STONE = dict(r0='#2a2226', r1='#5e5258', r2='#948890', r3='#c8bec2')
+EARTHB = dict(d0='#2e1c10', d1='#6a4424', d2='#a8783c', d3='#dcb070')
+INKK = dict(k0='#0c0a14', k1='#2a2440', k2='#54507a')
+GLYPHS = {
+    'x': ['...', '#.#', '.#.', '#.#', '...'], '+': ['...', '.#.', '###', '.#.', '...'], '=': ['...', '###', '...', '###', '...'],
+    '1': ['.#.', '##.', '.#.', '.#.', '###'], '2': ['##.', '..#', '.#.', '#..', '###'], '3': ['##.', '..#', '.#.', '..#', '##.'],
+    '7': ['###', '..#', '.#.', '.#.', '.#.'], 'p': ['###', '#.#', '#.#', '#.#', '#.#'], 'S': ['###', '#..', '.#.', '#..', '###'],
+    'a': ['...', '.##', '#.#', '.##', '...'], 'v': ['..#', '..#', '#.#', '.#.', '...'], 'o': ['...', '.#.', '#.#', '.#.', '...'],
+}
+
+
+def glyph(c, x, y, ch, k, ol=None):
+    """3x5 글자(수식·룬). ol 을 주면 한 칸 윤곽을 먼저 두른다."""
+    rows = GLYPHS[ch]
+    pts = [(x + i, y + j) for j, row in enumerate(rows) for i, q in enumerate(row) if q == '#']
+    if ol:
+        for px_, py_ in pts:
+            for ex, ey in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                c.px(px_ + ex, py_ + ey, ol)
+    for p in pts:
+        c.px(*p, k)
+
+
+def book(c, x, y, w, h, cover, paper, line_k, spread=1.0):
+    """펼친 책: (x, y) 는 제본 위 끝, 한쪽 너비 w, 높이 h. spread 0..1."""
+    hw = max(1, w * spread)
+    c.poly([(x - hw - 1, y - 1), (x, y + 1), (x + hw + 1, y - 1), (x + hw + 1, y + h + 1), (x, y + h + 2), (x - hw - 1, y + h + 1)], cover)
+    c.poly([(x - hw, y), (x, y + 1), (x, y + h), (x - hw, y + h - 1)], paper)
+    c.poly([(x + hw, y), (x, y + 1), (x, y + h), (x + hw, y + h - 1)], paper)
+    if hw >= 4:
+        for j in range(1, 4):
+            yy = y + j * h / 4
+            c.line([(x - hw + 2, yy), (x - 2, yy + 1)], line_k)
+            c.line([(x + 2, yy + 1), (x + hw - 2, yy)], line_k)
+    c.line([(x, y + 1), (x, y + h)], cover)
+
+
+def closed_book(c, x, y, w, h, ang, cover, edge, paper):
+    """닫힌 두꺼운 책(회전 사각형 + 종이 옆면)."""
+    pts = rot_pts([(x - w, y - h), (x + w, y - h), (x + w, y + h), (x - w, y + h)], x, y, ang)
+    c.poly(pts, cover, outline=edge)
+    inner = rot_pts([(x - w + 2, y + h - 3), (x + w - 1, y + h - 3), (x + w - 1, y + h - 1), (x - w + 2, y + h - 1)], x, y, ang)
+    c.poly(inner, paper)
+    c.line(rot_pts([(x - w + 2, y - h + 2), (x - w + 2, y + h - 4)], x, y, ang), edge)
+
+
+def page(c, x, y, ang, L, body, edge, line_k=None):
+    """날아가는 책장 한 장."""
+    pts = rot_pts([(x - L, y - L * .7), (x + L, y - L * .7), (x + L, y + L * .7), (x - L, y + L * .7)], x, y, ang)
+    c.poly(pts, body, outline=edge)
+    if line_k and L >= 3:
+        for t in (-.25, .25):
+            c.line(rot_pts([(x - L * .55, y + t * L), (x + L * .55, y + t * L)], x, y, ang), line_k)
+
+
+def rock(c, x, y, r, keys, seed=0):
+    """모난 바위: keys = (윤곽, 몸, 밝은 면)."""
+    rr = rng(seed)
+    pts = [pol(x, y, r * rr.uniform(.78, 1.12), i * 2 * math.pi / 7 + rr.uniform(-.2, .2)) for i in range(7)]
+    c.poly(pts, keys[1], outline=keys[0])
+    if r >= 2:
+        c.poly([(x - r * .6, y - r * .05), (x - r * .15, y - r * .65), (x + r * .25, y - r * .35), (x - r * .15, y + r * .05)], keys[2])
+
+
+def bullet(c, x, y, L, keys):
+    """왼쪽으로 나는 탄: 뾰족한 머리가 (x, y), 꼬리로 L 만큼 빛줄."""
+    c.line([(x + 2, y), (x + L, y)], keys[0])
+    c.line([(x + 2, y), (x + L * .5, y)], keys[1])
+    c.poly([(x, y), (x + 2, y - 1), (x + 3, y - 1), (x + 3, y + 1), (x + 2, y + 1)], keys[2])
+    c.px(x, y, keys[3] if len(keys) > 3 else keys[2])
+
+
+def steam(c, x, y, h, t, k, amp=2.0, step=2):
+    """위로 오르는 김 한 줄(사인 물결, 점선)."""
+    for j in range(0, int(h), step):
+        c.px(x + math.sin(j * .45 + t * 6) * amp, y - j, k)
+
+
+def lotus(c, x, y, r, open_, keys, core='w'):
+    """위로 벌어지는 연꽃(꽃잎 7장). open_ 0..1."""
+    for i in range(7):
+        a = -math.pi / 2 + (i - 3) * .42 * (.4 + .6 * open_)
+        c.petal(x, y, a, r * (.8 + .2 * (i % 2)), keys[1], keys[2], keys[0])
+    c.disc(x, y - 1, max(1, r * .2), core)
+
+
+def tick_ring(c, x, y, r, n, k, rot=0.0, L=2, squash=1.0):
+    """눈금 고리(조준경·시계)."""
+    for i in range(n):
+        a = rot + i * 2 * math.pi / n
+        c.line([pol(x, y, r, a, squash), pol(x, y, r + L, a, squash)], k)
+
+
 # --------------------------------------------------------------------------- 출력
 
 def render(mod):
