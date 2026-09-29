@@ -38,14 +38,29 @@ export function createBeodeulCityTileset(): TilesetDef {
   };
 }
 
-/** Add the shipped guidance to older copies; authored categories and shared pointers are left alone. */
+/**
+ * Keep the shipped guidance current in older copies. The bundle owns every document/image whose id starts with `bd-`
+ * (the learning result belongs to the bundle, not to one project row): a shipped category that is missing is added, and in a
+ * shipped category that exists the `bd-` entries are replaced by the shipped ones. Entries an author added (other ids),
+ * authored categories and shared pointers are left alone. Round 4 needed this: the round-3 copies still taught the square grid.
+ */
 export function ensureBeodeulCityReferences(tileset: TilesetDef): boolean {
   if (tileset.id !== BEODEUL_CITY_ID || tileset.image.type !== "bundled" || tileset.image.id !== BEODEUL_CITY_TEXTURE
     || tileset.referenceSourceTilesetId) return false;
-  const missing = REFERENCES.filter(category => !(tileset.referenceDocuments ?? []).some(existing => existing.id === category.id));
-  if (!missing.length) return false;
-  tileset.referenceDocuments = [...(tileset.referenceDocuments ?? []), ...structuredClone(missing)];
-  return true;
+  const own = (id: string) => id.startsWith("bd-");
+  const cats = [...(tileset.referenceDocuments ?? [])];
+  let changed = false;
+  for (const shipped of REFERENCES) {
+    const i = cats.findIndex(existing => existing.id === shipped.id);
+    if (i < 0) { cats.push(structuredClone(shipped)); changed = true; continue; }
+    const cur = cats[i]!;
+    const next = { ...cur, name: shipped.name, description: shipped.description,
+      documents: [...(cur.documents ?? []).filter(doc => !own(doc.id)), ...shipped.documents],
+      images: [...(cur.images ?? []).filter(image => !own(image.id)), ...shipped.images] } as TilesetReferenceCategory;
+    if (JSON.stringify(next) !== JSON.stringify(cur)) { cats[i] = structuredClone(next); changed = true; }
+  }
+  if (changed) tileset.referenceDocuments = cats;
+  return changed;
 }
 
 /**

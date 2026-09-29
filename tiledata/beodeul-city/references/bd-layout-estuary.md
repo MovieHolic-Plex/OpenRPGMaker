@@ -2,7 +2,7 @@
 
 tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chipset.png`(텍스처 `tex_beodeul_city`, 23936칸, 16px 칸, 한 줄 128칸 — 번호 n 의 칸은 행 n÷128, 열 n%128). 칸 번호는 모두 이 시트의 0기준 번호다. 다른 칩셋 번호를 섞지 않는다.
 
-의도: 강이 북쪽 맵 가장자리에서 들어와(물 오토타일은 가장자리에 둑을 만들지 않는다) 곧게 남쪽 호수 항구로 흐른다. 서쪽 둑에 왕성·귀족 저택, 동쪽 둑에 저택 구역·성당·포룸·풍차. 다리 셋 + 호수 하구 다리. 양 둑에 강가 둑길. 호수 옆 모랫길에 어부 목조집, 우물 광장.
+의도: (옛 방식 — 강이 곧다, 물길 모양은 따라 하지 말 것) 강이 북쪽 맵 가장자리에서 들어와(물 오토타일은 가장자리에 둑을 만들지 않는다) 곧게 남쪽 호수 항구로 흐른다. 서쪽 둑에 왕성·귀족 저택, 동쪽 둑에 저택 구역·성당·포룸·풍차. 다리 셋 + 호수 하구 다리. 양 둑에 강가 둑길. 호수 옆 모랫길에 어부 목조집, 우물 광장.
 
 그림 `layout-estuary` (엔진 렌더 100×100, 820px 로 줄임). 이 배치는 `scripts/content/author-beodeul-layouts.mts --only estuary` 가
 편집기 도구를 아래 순서로 불러 만든다(같은 순서로 부르면 같은 맵이 나온다 — 전체 아래층·윗층 배열은 이 순서의 결과다).
@@ -111,48 +111,7 @@ fill_region 버들항 길 포석 (30,75) 2×1
 stamp_object bd-out-cabin-small @(3,80)
 stamp_object bd-out-cabin @(7,78)
 stamp_object bd-out-longhouse @(12,78)
-stamp_object bd-tree-e9d9b3 @(95,92)
-stamp_object bd-tree-0f7ed1 @(89,94)
-stamp_object bd-tree-1e09f0 @(97,95)
-stamp_object bd-tree-d105b2 @(89,90)
-stamp_object bd-tree-c27062 @(86,93)
-stamp_object bd-tree-1a786c @(84,88)
-stamp_object bd-tree-f4f319 @(87,97)
-stamp_object bd-tree-eef4bc @(94,87)
-stamp_object bd-tree-132848 @(98,86)
-stamp_object bd-tree-c27062 @(90,97)
-stamp_object bd-tree-c27062 @(36,21)
-stamp_object bd-tree-3e8732 @(71,37)
-stamp_object bd-tree-eef4bc @(45,6)
-stamp_object bd-tree-132848 @(95,50)
-stamp_object bd-tree-f4f319 @(98,18)
-stamp_object bd-tree-c27062 @(75,0)
-stamp_object bd-tree-03a8f7 @(67,52)
-stamp_object bd-tree-5844f6 @(91,41)
-stamp_object bd-tree-d105b2 @(90,47)
-stamp_object bd-tree-132848 @(35,5)
-stamp_object bd-tree-47e17a @(94,0)
-stamp_object bd-tree-28ad5e @(22,38)
-stamp_object bd-tree-d43edd @(73,17)
-stamp_object bd-tree-c27062 @(50,0)
-stamp_object bd-tree-cc0fcb @(78,38)
-stamp_object bd-tree-0f7ed1 @(69,1)
-stamp_object bd-tree-eef4bc @(99,72)
-stamp_object bd-tree-28ad5e @(47,5)
-stamp_object bd-tree-47e17a @(70,6)
-stamp_object bd-tree-d105b2 @(75,8)
-stamp_object bd-tree-5844f6 @(96,12)
-stamp_object bd-tree-e9d9b3 @(68,64)
-stamp_object bd-tree-37f48b @(75,40)
-stamp_object bd-tree-132848 @(74,13)
-stamp_object bd-tree-3e8732 @(74,23)
-stamp_object bd-tree-cc0fcb @(98,26)
-stamp_object bd-tree-0f7ed1 @(56,1)
-stamp_object bd-tree-37f48b @(89,1)
-stamp_object bd-tree-47e17a @(98,47)
-stamp_object bd-tree-1a786c @(43,15)
-stamp_object bd-tree-03a8f7 @(1,51)
-stamp_object bd-tree-eef4bc @(36,12)
+stamp_object 나무 42그루 (빈 잔디, 길에서 1칸 띄움)
 ```
 
 

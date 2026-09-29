@@ -207,6 +207,109 @@ export const LAYOUTS: LayoutSpec[] = [
       let n = 0; for (let x = 4; x < 98; x += 5) { if (crossX.has(x)) continue; api.stamp(n++ % 2 ? "bd-tree-eef4bc" : "bd-prop-lamp_crook", x, 33); }
       n = 0; for (let y = 10; y < 80; y += 4) { if ([y, y + 1, y + 2].some((v) => crossY.has(v))) continue; api.stamp(n++ % 2 ? "bd-tree-28ad5e" : "bd-prop-lamp_crook", 47, y); }
     } },
+  { id: "bends", name: "굽이 운하 도시", build(api) {
+      // Round 4 example (tiledata/beodeul-city/tile-laying-theory.md). Lynch's five elements are fixed first, as coordinates:
+      //  edge = the canal (centre-line table below, three bends) · paths = promenades on both banks + an east avenue that jogs 6 cells
+      //  · districts = castle bank (west), estate/cathedral hill (north-east), market quarter (east), harbour (south)
+      //  · nodes = forum, harbour square, well plaza, the market blocks · landmarks = castle NW, estate + cathedral NE, forum, windmill W.
+      // Blocks are packed band by band: every band starts under a street and ends on a street, gap streets between blocks join the two,
+      // so no street ends in grass. Block ids are reserved before stamping: no id twice, never the same id within 24 cells.
+      const R = "버들항 길 포석", WATER = "물";
+      const rg = rng(11); for (let n = 0; n < 60; n += 1) api.stamp(`bd-ground-lawn-${1 + Math.floor(rg() * 6)}`, Math.floor(rg() * 92), Math.floor(rg() * 92));
+      // ---- 1. edge: canal centre line (y, left x of the 4-wide water). Plateaus carry the bridges; slopes move one cell per row.
+      const PTS: [number, number][] = [[0, 36], [8, 36], [18, 44], [34, 44], [46, 32], [60, 32], [68, 38], [84, 38]];
+      const left = (y: number) => { for (let i = 1; i < PTS.length; i += 1) { const [y0, x0] = PTS[i - 1]!, [y1, x1] = PTS[i]!; if (y <= y1) return Math.round(x0 + ((x1 - x0) * (y - y0)) / (y1 - y0)); } return 40; };
+      api.stamp("bd-harbour-lake", 0, 84);                              // the river enters the lake at lake x + 38..41 = 38..41
+      for (let y = 0; y < 84; y += 1) api.fill({ x: left(y), y, w: 4, h: 1 }, WATER);
+      // promenades on both banks, row by row (the slanting bank never leaves a slit)
+      for (let y = 0; y < 84; y += 1) api.fill({ x: left(y) - 2, y, w: 2, h: 1 }, R);
+      for (let y = 0; y < 84; y += 1) api.fill({ x: left(y) + 4, y, w: 2, h: 1 }, R);
+      const wEnd = (y: number) => left(y) - 3, eStart = (y: number) => left(y) + 6;     // last free column west / first free column east
+      const hW = (y: number, x0 = 0) => { for (let j = 0; j < 2; j += 1) api.fill({ x: x0, y: y + j, w: wEnd(y + j) - x0 + 1, h: 1 }, R); };
+      const hE = (y: number, x1: number, rows = 2) => { for (let j = 0; j < rows; j += 1) api.fill({ x: eStart(y + j), y: y + j, w: x1 - eStart(y + j) + 1, h: 1 }, R); };
+      // ---- 2. landmarks
+      api.stamp("bd-castle", 1, 0); api.stamp("bd-estate", 55, 0); api.stamp("bd-cathedral", 80, 2); api.stamp("bd-windmill", 0, 60);
+      // ---- 3. paths
+      hW(33, 0);                                        // castle gate street
+      hE(22, 75);                                       // estate street → avenue (x 72..75)
+      api.fill({ x: 72, y: 24, w: 28, h: 2 }, R);       // cathedral street, two rows south: the jog
+      api.fill({ x: 72, y: 22, w: 4, h: 28 }, R);       // avenue, upper part (x 72..75, y 22..49)
+      api.fill({ x: 66, y: 47, w: 10, h: 2 }, R);       // avenue jog street
+      api.fill({ x: 66, y: 47, w: 4, h: 37 }, R);       // avenue, lower part (x 66..69, y 47..83)
+      api.fill({ x: 12, y: 58, w: 2, h: 26 }, R);       // windmill lane (x 12..13)
+      for (const by of [21, 47, 72]) api.stamp("bd-bridge-arch", left(by), by);   // decks on rows by+1, by+2
+      // ---- 4. blocks, band by band
+      const TOWN = ["res", "shop", "market"], HOME = ["res", "out", "manor"], ALL = ["res", "shop", "market", "manor", "out"];
+      const pool = (w: number, h: number, kinds: string[]) => (api.tileset().structureKits as any[]).map((k) => k.id as string)
+        .filter((id) => new RegExp(`^bd-block-(${kinds.join("|")})-${w}x${h}(-[bc])?$`).test(id));
+      const used = new Map<string, number>(); const done: { id: string; x: number; y: number; w: number; h: number }[] = [];
+      const near = (a: { x: number; y: number; w: number; h: number }, b: { x: number; y: number; w: number; h: number }) => Math.max(b.x - (a.x + a.w), a.x - (b.x + b.w), b.y - (a.y + a.h), a.y - (b.y + b.h)) <= 24;
+      const pick = (b: { x: number; y: number; w: number; h: number }, kinds: string[]) => {
+        // markets: two per town at most (three market squares read as empty paving)
+        const markets = done.filter((d) => d.id.includes("-market-")).length;
+        const all = pool(b.w, b.h, markets >= 2 && kinds.some((k) => k !== "market") ? kinds.filter((k) => k !== "market") : kinds);
+        const free = all.filter((id) => !done.some((d) => d.id === id && near(d, b)));
+        const ok = free.filter((id) => (used.get(id) ?? 0) < 2); const c = (ok.length ? ok : free).sort((a, z) => (used.get(a) ?? 0) - (used.get(z) ?? 0) || (a < z ? -1 : 1));
+        return c[Math.floor(rng(b.x * 131 + b.y * 7)() * Math.min(3, c.length))];
+      };
+      /** widths (10/14/20, 2-cell gap streets) that fill `len` best; `turn` rotates the order so bands differ */
+      const widths = (len: number, turn: number, avail: number[]) => {
+        let best: number[] = [], bestUsed = -1;
+        const walk = (acc: number[], sum: number) => { if (sum > len) return; const u = sum; if (u > bestUsed || (u === bestUsed && new Set(acc).size > new Set(best).size)) { best = [...acc]; bestUsed = u; }
+          if (acc.length >= 5) return; for (const w of avail) walk([...acc, w], sum + (acc.length ? 2 : 0) + w); };
+        walk([], 0); const r = turn % Math.max(1, best.length); return [...best.slice(r), ...best.slice(0, r)];
+      };
+      let turn = 0;
+      /** one band: blocks between x0 and x1 (x1 may follow the canal: pass a function), a 2-row street under it */
+      const band = (y: number, h: number, x0: number, x1: number | ((y: number) => number), kinds: string[], street: "W" | "E" | number = "W") => {
+        const xe = (yy: number) => (typeof x1 === "number" ? x1 : x1(yy));
+        let xMax = 999; for (let j = 0; j < h + 2; j += 1) xMax = Math.min(xMax, xe(y + j));
+        const ws = widths(xMax - x0 + 1, turn++, [20, 14, 10].filter((w) => pool(w, h, kinds).length)); let x = x0; const placed: { x: number; w: number }[] = [];
+        for (const w of ws) { placed.push({ x, w }); x += w + 2; }
+        // gap streets between blocks, and the wedge between the last block and the bank (row by row, it follows the promenade)
+        for (let i = 1; i < placed.length; i += 1) api.fill({ x: placed[i - 1]!.x + placed[i - 1]!.w, y, w: 2, h }, R);
+        const last = placed[placed.length - 1]!; for (let j = 0; j < h; j += 1) { const a = last.x + last.w, b = xe(y + j); if (b >= a) api.fill({ x: a, y: y + j, w: b - a + 1, h: 1 }, R); }
+        if (street === "W") hW(y + h, x0); else if (street === "E") hE(y + h, xMax); else api.fill({ x: x0, y: y + h, w: street - x0 + 1, h: 2 }, R);
+        for (const p of placed) { const b = { x: p.x, y, w: p.w, h }; const id = pick(b, kinds); if (!id) continue;
+          if (api.stamp(id, p.x, y)) { used.set(id, (used.get(id) ?? 0) + 1); done.push({ id, ...b });
+            if (h === 13) for (const gx of [p.x - 1, p.x + p.w]) if (gx >= 0 && gx < 100) api.fill({ x: gx, y: y + 6, w: 1, h: 1 }, R); } }  // open the back-lane curb
+      };
+      const westBank = (yy: number) => wEnd(yy);
+      // west bank, under the castle (bands end on the promenade)
+      band(35, 13, 0, westBank, ["res", "shop", "manor"]);
+      band(50, 8, 0, westBank, TOWN);
+      band(60, 13, 14, westBank, HOME);
+      band(75, 8, 14, westBank, ["out", "port", "res"]);
+      // east bank, between the promenade and the avenue (upper part x ..71, lower part x ..65)
+      const eBand = (y: number, h: number, x1: number, kinds: string[]) => {
+        let x0 = 0; for (let j = 0; j < h + 2; j += 1) x0 = Math.max(x0, eStart(y + j));
+        // the wedge on the bank side, row by row
+        for (let j = 0; j < h; j += 1) if (x0 - 1 >= eStart(y + j)) api.fill({ x: eStart(y + j), y: y + j, w: x0 - eStart(y + j), h: 1 }, R);
+        band(y, h, x0, x1, kinds, "E");
+      };
+      eBand(24, 13, 71, ALL);
+      eBand(38, 8, 71, TOWN);
+      eBand(48, 13, 65, ALL);
+      // forum (a node) + the market quarter east of the lower avenue
+      api.stamp("bd-forum", 44, 64); hE(78, 65);
+      // east of the avenue: bands shifted two rows south of the west part
+      band(26, 13, 76, 99, ["res", "shop", "manor", "out"], 99);
+      band(41, 13, 76, 99, TOWN, 99);
+      band(56, 8, 70, 99, ["res", "shop", "out"], 99);
+      band(67, 13, 70, 99, ALL, 99);
+      api.fill({ x: 70, y: 82, w: 13, h: 2 }, R);        // the quay: street 80..81 widens onto the lake promenade
+      // ---- 5. nodes in the leftovers
+      api.stamp("bd-harbour-square", 86, 82);
+      api.stamp("bd-out-well-plaza", 42, 1);
+      // ---- 6. groves on the leftover lawn (never on a street: freeFor keeps one cell clear)
+      const TREES = ["bd-tree-d43edd", "bd-tree-5844f6", "bd-tree-1a786c", "bd-tree-03a8f7", "bd-tree-a80c85", "bd-tree-f4f319", "bd-tree-37f48b", "bd-tree-cc0fcb", "bd-tree-eef4bc"];
+      const grove = (x0: number, y0: number, w: number, h: number, seed: number) => { const r = rng(seed);
+        for (let n = 0; n < 60; n += 1) { const id = TREES[Math.floor(r() * TREES.length)]!; const x = x0 + Math.floor(r() * w), y = y0 + Math.floor(r() * h);
+          if (freeFor(api, id, x, y, 1)) api.stamp(id, x, y); } };
+      const TREES_SMALL = ["bd-tree-f4f319", "bd-tree-37f48b", "bd-tree-cc0fcb", "bd-tree-e9d9b3", "bd-tree-47e17a"];
+      for (let s2 = 1; s2 <= 4; s2 += 1) { grove(42, 9, 13, 14, s2); grove(80, 86, 20, 14, 10 + s2); grove(51, 0, 4, 10, 20 + s2); } grove(75, 0, 5, 23, 4); grove(96, 0, 4, 25, 5); grove(0, 34, 2, 50, 6);
+      for (let x = 45; x < 64; x += 3) api.stamp(TREES_SMALL[x % TREES_SMALL.length]!, x, 81);   // a row of small trees on the strip under the forum street
+    } },
   { id: "estuary", name: "강어귀 항구 도시", build(api) {
       const R = "버들항 길 포석", SAND = "버들항 모랫길", WATER = "물";
       const rg = rng(9); for (let n = 0; n < 60; n += 1) api.stamp(`bd-ground-lawn-${1 + Math.floor(rg() * 6)}`, Math.floor(rg() * 92), Math.floor(rg() * 92));

@@ -50,7 +50,7 @@ function call0(api: any, spec: any) {
   spec.build(api);
 }
 function makeApi(ctx: any, mapId: string, stamps: Stamp[], log: { name: string; args: unknown; ok: boolean; summary: string }[]) {
-  const call = (name: string, args: any) => { const r = runTool(ctx, name, args); log.push({ name, args, ok: r.ok, summary: String(r.summary ?? "").slice(0, 300) });
+  const call = (name: string, args: any) => { const t0 = Date.now(); const r = runTool(ctx, name, args); if (process.env.TRACE_CALLS) console.error(`${Date.now() - t0}ms ${name} ${JSON.stringify(args).slice(0, 100)}`); log.push({ name, args, ok: r.ok, summary: String(r.summary ?? "").slice(0, 300) });
     if (!r.ok) console.log(`[${mapId}] FAIL ${name} ${JSON.stringify(args).slice(0, 140)} → ${String(r.summary).slice(0, 200)}`); return r; };
   const spec = { id: mapId };
   const api = {

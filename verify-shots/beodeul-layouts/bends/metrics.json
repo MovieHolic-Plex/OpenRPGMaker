@@ -1,0 +1,435 @@
+{
+ "emptiness": {
+  "lawn": {
+   "share": 0.1433,
+   "screens": 35,
+   "over40": 1,
+   "worst": 0.49,
+   "overAt": [
+    [
+     80,
+     90,
+     0.49
+    ]
+   ]
+  },
+  "open": {
+   "share": 0.2245,
+   "screens": 35,
+   "over40": 3,
+   "worst": 0.595,
+   "overAt": [
+    [
+     40,
+     0,
+     0.573
+    ],
+    [
+     80,
+     15,
+     0.447
+    ],
+    [
+     80,
+     90,
+     0.595
+    ]
+   ]
+  }
+ },
+ "blockRepeats": {
+  "blocks": 17,
+  "distinct": 16,
+  "neighbourRepeats": [],
+  "overused": []
+ },
+ "cityForm": {
+  "deadEnds": [
+   {
+    "at": [
+     96,
+     23
+    ],
+    "kind": "cell",
+    "width": 1
+   },
+   {
+    "at": [
+     50,
+     30
+    ],
+    "kind": "cell",
+    "width": 1
+   },
+   {
+    "at": [
+     76,
+     32
+    ],
+    "kind": "cell",
+    "width": 1
+   },
+   {
+    "at": [
+     16,
+     41
+    ],
+    "kind": "cell",
+    "width": 1
+   },
+   {
+    "at": [
+     40,
+     54
+    ],
+    "kind": "cell",
+    "width": 1
+   },
+   {
+    "at": [
+     86,
+     73
+    ],
+    "kind": "cell",
+    "width": 1
+   },
+   {
+    "at": [
+     76,
+     54
+    ],
+    "kind": "street",
+    "width": 2
+   },
+   {
+    "at": [
+     70,
+     21
+    ],
+    "kind": "street",
+    "width": 2
+   },
+   {
+    "at": [
+     84,
+     67
+    ],
+    "kind": "street",
+    "width": 2
+   },
+   {
+    "at": [
+     50,
+     77
+    ],
+    "kind": "street",
+    "width": 2
+   },
+   {
+    "at": [
+     1,
+     60
+    ],
+    "kind": "street",
+    "width": 2
+   }
+  ],
+  "lines": {
+   "count": 87,
+   "longStraight": [],
+   "longestLen": 44
+  },
+  "graph": {
+   "meanDepth": 3.38,
+   "maxDepth": 7,
+   "components": 3,
+   "isolated": [
+    {
+     "from": [
+      35,
+      0
+     ],
+     "to": [
+      35,
+      9
+     ],
+     "len": 10
+    },
+    {
+     "from": [
+      41,
+      0
+     ],
+     "to": [
+      41,
+      9
+     ],
+     "len": 10
+    }
+   ]
+  },
+  "spacing": {
+   "vGaps": [
+    18,
+    7,
+    11,
+    19,
+    6,
+    24
+   ],
+   "hGaps": [
+    11,
+    6,
+    7,
+    8,
+    4,
+    6,
+    9,
+    5,
+    5
+   ],
+   "cv": 0.593
+  },
+  "bentStreetCells": 85,
+  "canal": {
+   "cells": 1231,
+   "orient": "v",
+   "bends": 3,
+   "straightShare": 0.299,
+   "straight": false
+  },
+  "nodes": [
+   {
+    "at": [
+     46,
+     5
+    ],
+    "cells": 48
+   },
+   {
+    "at": [
+     10,
+     15
+    ],
+    "cells": 102
+   },
+   {
+    "at": [
+     64,
+     15
+    ],
+    "cells": 92
+   },
+   {
+    "at": [
+     29,
+     16
+    ],
+    "cells": 31
+   },
+   {
+    "at": [
+     87,
+     18
+    ],
+    "cells": 75
+   },
+   {
+    "at": [
+     51,
+     42
+    ],
+    "cells": 80
+   },
+   {
+    "at": [
+     23,
+     54
+    ],
+    "cells": 112
+   },
+   {
+    "at": [
+     58,
+     74
+    ],
+    "cells": 35
+   }
+  ],
+  "landmarks": [
+   "bd-castle",
+   "bd-estate",
+   "bd-forum",
+   "bd-cathedral",
+   "bd-windmill"
+  ],
+  "blocks": {
+   "count": 17,
+   "distinct": 16,
+   "neighbourRepeats": [],
+   "overused": []
+  }
+ },
+ "originality": {
+  "sameCells": 73,
+  "ofCells": 10000,
+  "sameShare": 0.0073,
+  "sameShareOfObjectCells": 0.0004
+ },
+ "districts": [
+  {
+   "id": "bd-castle",
+   "stamped": 1,
+   "present": true,
+   "atOriginalOrigin": false,
+   "origins": [
+    [
+     1,
+     0
+    ]
+   ]
+  },
+  {
+   "id": "bd-estate",
+   "stamped": 1,
+   "present": true,
+   "atOriginalOrigin": false,
+   "origins": [
+    [
+     55,
+     0
+    ]
+   ]
+  },
+  {
+   "id": "bd-forum",
+   "stamped": 1,
+   "present": true,
+   "atOriginalOrigin": false,
+   "origins": [
+    [
+     44,
+     64
+    ]
+   ]
+  },
+  {
+   "id": "bd-cathedral",
+   "stamped": 1,
+   "present": true,
+   "atOriginalOrigin": false,
+   "origins": [
+    [
+     80,
+     2
+    ]
+   ]
+  },
+  {
+   "id": "bd-windmill",
+   "stamped": 1,
+   "present": true,
+   "atOriginalOrigin": false,
+   "origins": [
+    [
+     0,
+     60
+    ]
+   ]
+  },
+  {
+   "id": "bd-harbour",
+   "stamped": 0,
+   "present": false,
+   "atOriginalOrigin": false,
+   "origins": []
+  },
+  {
+   "id": "bd-harbour-west",
+   "stamped": 0,
+   "present": false,
+   "atOriginalOrigin": false,
+   "origins": []
+  },
+  {
+   "id": "bd-river-bridge",
+   "stamped": 0,
+   "present": false,
+   "atOriginalOrigin": false,
+   "origins": []
+  }
+ ],
+ "districtsPresent": 5,
+ "districtsAtOriginalOrigin": 0,
+ "stampedKits": 120,
+ "doors": 46,
+ "landReach": {
+  "total": 46,
+  "reached": 46,
+  "unreached": []
+ },
+ "streetReach": {
+  "total": 46,
+  "reached": 46,
+  "unreached": []
+ },
+ "defects": {
+  "deadEndPavedCells": [
+   [
+    96,
+    23
+   ],
+   [
+    50,
+    30
+   ],
+   [
+    76,
+    32
+   ],
+   [
+    16,
+    41
+   ],
+   [
+    40,
+    54
+   ],
+   [
+    86,
+    73
+   ]
+  ],
+  "deadEndStreets": [
+   [
+    76,
+    54
+   ],
+   [
+    70,
+    21
+   ],
+   [
+    84,
+    67
+   ],
+   [
+    50,
+    77
+   ],
+   [
+    1,
+    60
+   ]
+  ],
+  "roadIntoWater": [
+   [
+    26,
+    85
+   ]
+  ],
+  "blockedDoorFronts": [],
+  "sameKitRepeats": []
+ },
+ "designedObjectCells": 2518
+}

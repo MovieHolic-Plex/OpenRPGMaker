@@ -94,7 +94,7 @@ images.append(save("city", "city-levels-walk", up(lv, 8), "세 단 지형과 통
 dist_rows = "\n".join(f"| `{kid}` | {k['name']} | ({BOXES[kid][0]},{BOXES[kid][1]}) | {k['width']}×{k['height']} | {k['ai']['placementRules']} |" for kid, k in DISTRICTS)
 LAY = ROOT / "verify-shots/beodeul-layouts"
 LAYOUTS = [(lid, json.loads((LAY / lid / "metrics.json").read_text()), json.loads((LAY / lid / "recipe.json").read_text()), json.loads((LAY / lid / "map.json").read_text()))
-           for lid in ("blocks", "hilltop", "estuary")]
+           for lid in ("bends", "hilltop", "estuary")]
 for lid, met, rec, _ in LAYOUTS:
     images.append(save("city", f"layout-{lid}", Image.open(LAY / lid / "render.png").convert("RGBA"),
                        f"예시 배치 「{rec['name']}」 100×100 — 편집기 도구(create_map·fill_region·stamp_object)만으로 깐 결과를 엔진 렌더로 찍었다. 원본과 같은 칸 {met['originality']['sameShare'] * 100:.1f}%, 문 {met['doors']}곳 모두 포장 길망에 닿음."))
@@ -104,13 +104,14 @@ guide = f"""# 버들항 — 도시 한 장 조립 (읽는 순서 · 설계 순�
 
 버들항은 100×100 로마풍 항구 도시 시트다. 그림은 Python 손 도트(`scripts/content/lib/city_v6`)를 16px 칸으로 자른 것이고,
 **원본 도시(정본 맵)는 이 시트로 만든 한 가지 예시일 뿐 정답 좌표가 아니다.** 같은 조각으로 다른 도시를 짓는 것이 이 문서의 목적이다.
-완성 예시가 넷 있다: 원본(`city-overview`), **「블록 조립 도시」(`layout-blocks`, 블록 키트로 깐 도시 — 먼저 본다)**, 「언덕 위 성 아래 마을」(`layout-hilltop`),
+완성 예시가 넷 있다: 원본(`city-overview`), **「굽이 운하 도시」(`layout-bends`, 굽은 운하 + 블록 키트 + 결절점·랜드마크 위계 — 먼저 본다)**, 「언덕 위 성 아래 마을」(`layout-hilltop`),
 「강어귀 항구 도시」(`layout-estuary`). 뒤의 셋은 원본과 같은 칸이 1% 미만이고 편집기 도구만으로 깔았다(부른 순서가 「예시 배치」 문서에 그대로 있다).
-**언덕·강어귀 두 배치는 집을 한 채씩 늘어세운 옛 방식이라 빈 풀밭이 한 화면(20×15)의 40%를 넘는 곳이 많다(각 배치 문서의 「빈 바닥」 줄). 채우는 법은 블록 조립 도시를 따른다.**
+**언덕·강어귀 두 배치는 집을 한 채씩 늘어세운 옛 방식이다 — 빈 풀밭이 많고 강어귀의 강은 곧다. 채우는 법·물길 모양은 굽이 운하 도시를 따른다.**
 
 ## 읽는 순서
-0. **「블록 키트」 용도(`beodeul-city-blocks`)의 「작업 순서(시간 예산)」 → 「길 위계 · 굽은 길」 → 「블록 키트 표」.** 큰 도시는 집 한 채가 아니라 블록 하나가 조립 단위다.
-1. 이 문서 → 「배치 규칙」 → 예시 배치(그림 `layout-blocks`·`layout-hilltop`·`layout-estuary`와 도구 순서).
+0. **「블록 키트」 용도(`beodeul-city-blocks`)의 「작업 순서(시간 예산)」 → 「길 위계 · 굽은 길」 → 「블록 키트 표」.** 큰 도시는 집 한 채가 아니라 블록 하나가 조립 단위이고,
+   블록을 찍기 전에 **다섯 요소(경계·길·구역·결절점·랜드마크)를 좌표로** 정한다(「작업 순서」의 표).
+1. 이 문서 → 「배치 규칙」 → 예시 배치(그림 `layout-bends`·`layout-hilltop`·`layout-estuary`와 도구 순서).
 2. 「자동타일·물·다리」 용도: 길·운하 물·모랫길 오토타일(연석·둑이 저절로 붙는다), 강·폭포·다리·호수 항구 키트.
 3. 「구역 키트」 용도: 왕성·저택·포룸·성당·풍차 키트의 크기·출구 칸·역할 배열.
 4. 「귀족 저택·성 밖 마을」 용도: 저택 넷·정원·목조집·우물 광장과 부품 조립표.
@@ -128,7 +129,7 @@ guide = f"""# 버들항 — 도시 한 장 조립 (읽는 순서 · 설계 순�
 
 ## 설계 순서 (새 도시 한 장)
 1. **물의 뼈대를 먼저 정한다.** 강이 어디서 들어와 어디로 나가는가(맵 가장자리 → 폭포 → 하구/호수). 호수 항구 `bd-harbour-lake`(83×15)는 남쪽 가장자리에,
-   폭포 `bd-waterfall-drop`(12×7)은 강 위쪽 끝(맵 가장자리나 단 경계)에 둔다. 강 몸은 `버들항 물` 4칸 폭으로 칠한다.
+   폭포 `bd-waterfall-drop`(12×7)은 강 위쪽 끝(맵 가장자리나 단 경계)에 둔다. 강 몸은 `버들항 물` 폭 4~6 으로, **굽이 2번 이상**(곧은 물길은 인공물 표지)으로 칠한다.
 2. **큰 구역 키트를 평지에 놓는다.** 왕성(33×33)·저택(21×22)·성당(17×22)·포룸(22×14)·풍차(12×22). 키트마다 출구 칸이 정해져 있다(「배치 규칙」 표).
    구역끼리 겹치지 않게, 출구 칸 앞에 거리가 올 자리를 남긴다.
 3. **거리망을 깐다.** 큰 동서 거리 2~4줄(2칸 폭) + 남북 대로 2~3줄. 강을 건너는 자리마다 `bd-bridge-arch`(갑판 2줄이 거리 두 줄과 같은 행).
@@ -137,7 +138,7 @@ guide = f"""# 버들항 — 도시 한 장 조립 (읽는 순서 · 설계 순�
    그래서 집은 동서 거리의 **북쪽**에, 집 높이만큼 위에서부터 놓는다(집 y = 거리 y − 집 높이). 같은 조각을 연달아 셋 이상 두지 않는다.
 5. 귀족 구역: 저택 + 바로 아래 정원(`bd-garden-formal`), 정원 발치가 거리에 닿게. 성 밖: 모랫길 + 목조집 + 우물 광장.
 6. 나무·잔디 무늬를 빈 땅에(문 앞·길 위 금지), 소품은 광장 가장자리·가게 문 옆.
-7. 검사 4가지: 막다른 거리 0, 물에 닿아 끝나는 거리 0, 막힌 문 앞 0, 모든 문 앞이 포장 길망에 닿음.
+7. 검사: `check_city_form`(막다른 길·곧은 줄·직선 운하·이웃 반복·격리 길을 좌표로) → 고치고 한 번 더, `check_reachability`(막힌 문 앞·문 앞 길망 도달).
 
 ## 원본 구역 좌표 (예시 — 새 도시에서 따라 할 필요 없다)
 | 키트 id | 이름 | 원본 원점 (x,y) | 크기 | 잇는 법 |
@@ -218,7 +219,7 @@ rules = f"""# 버들항 배치 규칙 — 구역 출구 · 거리 · 집 줄 · 
 - 호수 항구 키트 위 줄 38~41칸째에 하구 다리가 구워져 있다. 강을 그 칸 위로 내리면(x = 호수 x + 38) 강이 호수로 들어가고 호수 산책길이 강을 건넌다.
 
 ## 5. 물·땅
-- 강 몸: `버들항 물` 4칸 폭(운하처럼 곧게 — 굽이는 칠한 모양대로 둑이 붙는다). 폭포 키트의 물 칸은 dx 4~7, 호수 하구도 4칸.
+- 강 몸: `버들항 물` 폭 4~6, **곧지 않게** — 5~6개 y 마다 중심 x 를 좌우로 번갈아 옮기고(굽이 2번 이상) 행별 `fill_region` 사각형을 앞 조각과 2칸 이상 겹쳐 잇는다. 굽이는 칠한 모양대로 둑이 붙는다. 다리(`bd-bridge-arch`)는 굽이 사이 곧은 구간에. 폭포 키트의 물 칸은 dx 4~7, 호수 하구도 4칸.
 - 폭포 키트 양 끝은 바위 절벽면이 풀밭 위에 드러난다. 옆에 나무를 두거나 맵 가장자리에 붙인다.
 - 성 밖 모랫길: `버들항 모랫길`(잔디 가장자리 오토타일). 목조집 줄과 우물 광장(`bd-out-well-plaza-sand`)을 거기에.
 - 바닥 풀밭은 한 가지 칸이라 넓으면 죽어 보인다 → 잔디 무늬 조각을 흩고 나무 무리를 둔다.
@@ -251,11 +252,39 @@ def call_line(c):
     if c["name"] == "stamp_object": return f"stamp_object {a['objectId'].split('/')[-1]} @({a['x']},{a['y']})"
     if c["name"] == "fill_region": r = a["rect"]; return f"fill_region {a['material']} ({r['x']},{r['y']}) {r['w']}×{r['h']}"
     return f"{c['name']} {json.dumps(a, ensure_ascii=False)[:120]}"
-INTENT = {"blocks": "블록 조립: 길 격자(남북 대로 4칸 x=44..47·동서 대로 4칸 y=32..35, 거리 2칸, 골목 1칸 y=8·59·83, 부두 길 3칸 y=92..94, 그 아래 항구 물)를 먼저 깔고, 격자 칸마다 블록 키트 하나(주택가·상가·시장·정원 저택·성당 앞·성 밖 목조·항구 창고)를 찍었다. 맨 윗줄은 8칸 블록 둘을 1칸 골목 위아래로 겹쳤다. 동쪽 공원 블록은 대각선 거리(3칸 조각을 한 줄씩 비껴 칠함)와 나무·꽃밭·벤치. 대로 가장자리 줄에 가로등·가로수. 성·포룸 같은 구역 키트는 쓰지 않은 순수 블록 예시다 — 실제 도시는 구역 키트 몇 개 + 블록으로 나머지를 채운다.",
+INTENT = {"bends": "굽이 운하 도시(라운드 4): 다섯 요소를 먼저 좌표로 정했다 — 경계 = 운하 중심선 표 (y,x) (0,36)(8,36)(18,44)(34,44)(46,32)(60,32)(68,38)(84,38) 를 행마다 폭 4 로 칠한 굽이 셋의 운하와 남쪽 호수 항구, 길 = 양 둑의 2칸 둑길 + 동쪽 대로(x=72..75 → y=47 에서 6칸 서쪽으로 어긋나 x=66..69) + 성문 거리·저택 거리·성당 거리(두 줄 남쪽으로 어긋남), 구역 = 서쪽 성 둑·북동 언덕(저택·성당)·동쪽 시장 구역·남쪽 항구, 결절점 = 포룸·우물 광장·항구 광장·시장 블록, 랜드마크 = 성(북서)·저택·성당(북동)·포룸(가운데 남쪽)·풍차(서쪽). 그다음 블록을 띠(band)마다 깔았다: 띠 위아래가 모두 거리이고 블록 사이 2칸 거리가 두 거리를 잇는다, 띠 끝과 둑길 사이 비스듬한 틈은 행마다 포석으로 메웠다. 동쪽 띠는 서쪽보다 두 줄 아래로 밀어 가로길이 한 줄로 이어지지 않는다. 블록 id 는 찍기 전에 예약했다(같은 id 2번 이하, 24칸 안 반복 없음).", "blocks": "블록 조립: 길 격자(남북 대로 4칸 x=44..47·동서 대로 4칸 y=32..35, 거리 2칸, 골목 1칸 y=8·59·83, 부두 길 3칸 y=92..94, 그 아래 항구 물)를 먼저 깔고, 격자 칸마다 블록 키트 하나(주택가·상가·시장·정원 저택·성당 앞·성 밖 목조·항구 창고)를 찍었다. 맨 윗줄은 8칸 블록 둘을 1칸 골목 위아래로 겹쳤다. 동쪽 공원 블록은 대각선 거리(3칸 조각을 한 줄씩 비껴 칠함)와 나무·꽃밭·벤치. 대로 가장자리 줄에 가로등·가로수. 성·포룸 같은 구역 키트는 쓰지 않은 순수 블록 예시다 — 실제 도시는 구역 키트 몇 개 + 블록으로 나머지를 채운다.",
           "hilltop": "성은 북쪽 한가운데 언덕, 저택·성당이 양 날개. 큰길(38행) 아래 포룸, 동쪽 귀족 구역(저택+정원), 서쪽 풍차 들. 성벽 밖 남쪽 모랫길에 목조집과 우물 광장. 강·항구 없음 — 내륙 성읍.",
-          "estuary": "강이 북쪽 맵 가장자리에서 들어와(물 오토타일은 가장자리에 둑을 만들지 않는다) 곧게 남쪽 호수 항구로 흐른다. 서쪽 둑에 왕성·귀족 저택, 동쪽 둑에 저택 구역·성당·포룸·풍차. 다리 셋 + 호수 하구 다리. 양 둑에 강가 둑길. 호수 옆 모랫길에 어부 목조집, 우물 광장."}
+          "estuary": "(옛 방식 — 강이 곧다, 물길 모양은 따라 하지 말 것) 강이 북쪽 맵 가장자리에서 들어와(물 오토타일은 가장자리에 둑을 만들지 않는다) 곧게 남쪽 호수 항구로 흐른다. 서쪽 둑에 왕성·귀족 저택, 동쪽 둑에 저택 구역·성당·포룸·풍차. 다리 셋 + 호수 하구 다리. 양 둑에 강가 둑길. 호수 옆 모랫길에 어부 목조집, 우물 광장."}
+def collapse(calls):
+    """Row-by-row fills (canal, promenades, bank wedges) become one line per run (same material, y rising by one);
+    runs of tree stamps become one count line. Keeps the example document short (it is re-sent every turn once read)."""
+    out, i = [], 0
+    while i < len(calls):
+        c = calls[i]; a = c["args"]
+        if c["name"] == "fill_region" and a["rect"]["h"] == 1:
+            j = i
+            while (j + 1 < len(calls) and calls[j + 1]["name"] == "fill_region" and calls[j + 1]["args"]["rect"]["h"] == 1
+                   and calls[j + 1]["args"]["material"] == a["material"] and calls[j + 1]["args"]["rect"]["y"] == calls[j]["args"]["rect"]["y"] + 1):
+                j += 1
+            if j - i >= 3:
+                rs = [calls[k]["args"]["rect"] for k in range(i, j + 1)]
+                segs = []  # plateaus of the left x (runs of 3+ rows)
+                for r in rs:
+                    if segs and segs[-1][0] == r["x"]: segs[-1][2] = r["y"]
+                    else: segs.append([r["x"], r["y"], r["y"]])
+                plat = " → ".join(f"x={sx}(y{a0}~{a1})" for sx, a0, a1 in segs if a1 - a0 >= 2)
+                ws = sorted({r["w"] for r in rs}); wtxt = f"폭 {ws[0]}" if len(ws) == 1 else f"폭 {ws[0]}~{ws[-1]}"
+                out.append(f"fill_region {a['material']} 행마다 y={rs[0]['y']}..{rs[-1]['y']} {wtxt} · {plat or '비스듬히'} (한 줄씩 사이는 1칸씩 비껴, {len(rs)}번)")
+                i = j + 1; continue
+        if c["name"] == "stamp_object" and "/bd-tree-" in a["objectId"]:
+            j = i
+            while j + 1 < len(calls) and calls[j + 1]["name"] == "stamp_object" and "/bd-tree-" in calls[j + 1]["args"]["objectId"]: j += 1
+            if j > i:
+                out.append(f"stamp_object 나무 {j - i + 1}그루 (빈 잔디, 길에서 1칸 띄움)"); i = j + 1; continue
+        out.append(call_line(c)); i += 1
+    return out
 for lid, met, rec, mp in LAYOUTS:
-    lines = [call_line(c) for c in rec["calls"] if not (c["name"] == "stamp_object" and "ground-lawn" in c["args"]["objectId"])]
+    lines = collapse([c for c in rec["calls"] if not (c["name"] == "stamp_object" and "ground-lawn" in c["args"]["objectId"])])
     lawn = sum(1 for c in rec["calls"] if c["name"] == "stamp_object" and "ground-lawn" in c["args"]["objectId"])
     dd_ = met["defects"]
     body = f"""# 예시 배치 · {rec['name']} (`{lid}`)
@@ -283,7 +312,7 @@ for lid, met, rec, mp in LAYOUTS:
 {chr(10).join(lines)}
 ```
 
-""" + ("" if lid == "blocks" else f"""
+""" + ("" if lid == "bends" else f"""
 ## 역할 격자 100×100 (R 포장 · s 모랫길 · = 다리/잔교 · ~ 물 · . 걷는 땅 · X 막힌 땅 · C 윗층 걸음 · S 윗층 막힘)
 ```text
 {role_grid(mp)}
@@ -303,12 +332,28 @@ stamp_object 96~136번 중 대부분이 집 한 채씩이었고, 같은 폭 바�
 
 | 단계 | 할 일 | 도구 호출 예산 | 시간 예산 |
 |---|---|---|---|
-| 1. 계획 (역할 격자) | 물(강·항구)·성벽·구역 키트 자리·대로 2줄·거리 격자를 먼저 정한다. 격자 칸 = 블록 칸(가로 10/14/20, 세로 8/13/17). 종이 위 계획이면 된다. 길게 생각하지 말고 「블록 키트 표」의 「격자에 까는 법」 틀을 고쳐 쓴다 | 읽기 6~10번 | 5분 |
-| 2. 뼈대 칠 | `fill_region` 으로 물 → 대로(4칸) → 거리(2칸) → 골목(1칸) 순. 굽은 길은 아래 「길 위계」의 조각 칠 | 15~25번 | 5분 |
+| 1. 계획 (다섯 요소 → 역할 격자) | **먼저 다섯을 좌표로 못 박는다**(아래 표). 그다음 격자 칸 = 블록 칸(가로 10/14/20, 세로 8/13/17)으로 나눈다. 종이 위 계획이면 된다. 길게 생각하지 말고 「블록 키트 표」의 「띠로 까는 법」대로 영역마다 띠를 쌓고 이웃 영역의 띠는 1~3줄 어긋나게 한다 | 읽기 6~10번 | 5분 |
+| 2. 뼈대 칠 | `fill_region` 으로 물(**굽이 진 운하** — 아래) → 대로(4칸) → 거리(2칸) → 골목(1칸) 순. 굽은 길은 「길 위계」의 조각 칠 | 15~25번 | 5분 |
 | 3. 채우기 (블록) | 구역 키트(성·포룸·성당·저택·항구) 몇 개 → 남은 격자 칸마다 **블록 키트 하나**. 13칸 블록 뒷골목 끝 칸만 한 칸 다시 칠해 연석을 연다 | 30~45번 | 15분 |
 | 4. 마무리 | 대로 가장자리 줄 가로등·가로수, 광장 소품, 강가 나무, 공원 블록 나무·꽃밭. 블록 안은 이미 차 있으니 블록 밖 빈 곳만 | 15~25번 | 10분 |
-| 5. 빈칸 검사 | `show_map_region` 20×15 화면마다 눈으로: 물건 없는 풀밭이 화면의 40%를 넘으면 그 화면에 블록·공원을 더 찍는다. 막다른 길·막힌 문 앞 | 5~10번 | 5분 |
-| 합계 | | 70~110번 | 40분 |
+| 5. 검사 | **`check_city_form`(좌표로 답한다) → 나온 좌표 고치기 → 한 번 더.** 그다음 `show_map_region` 20×15 화면: 물건 없는 풀밭이 화면의 40%를 넘으면 블록·공원을 더 찍는다. `check_reachability` 로 막힌 문 앞 | 8~12번 | 7분 |
+| 합계 | | 70~115번 | 40분 |
+
+**한 턴에 도구를 여러 개 함께 부른다**(뼈대 칠 10~20개, 블록 8~12개씩). 턴마다 앞 대화 전체가 다시 들어가서 턴 수가 곧 시간이다 — 라운드 3 기존 프로젝트 시험은 턴당 입력 약 16만 토큰, 36턴에 50분 상한. 참고문서는 이 용도 셋과 「배치 규칙」만 읽고, 그림은 필요한 한 장만 연다.
+
+## 1단계에서 못 박는 다섯 요소 (Lynch) — 한 줄씩 좌표로
+| 요소 | 정하는 것 | 검사가 세는 것 |
+|---|---|---|
+| 경계 | 운하·해안의 **중심선 좌표표**: 5~6개 y 마다 x (좌우로 번갈아 4~8칸 움직이게), 폭 4~6 | `canal.bends ≥ 2`, `canal.straight = false` |
+| 길 | 대로 1~2줄(한 줄은 중간에서 4~8칸 **어긋나게**), 휜·대각선 거리 1~2줄. 곧은 길은 45칸을 넘기지 않는다 | `lines.longStraight` 0, `bentStreetCells` > 0 |
+| 결절점 | 광장 **2곳 이상**(≥24칸), 대로 교차·다리 머리·성문 앞에 | `nodes ≥ 2` |
+| 랜드마크 | 구역 키트(성·성당·풍차·포룸…) 3개 이상을 **서로 30칸 넘게 떨어뜨려** | `landmarks ≥ 3` |
+| 구역 | 이름 붙은 3~5개, 구역마다 블록 종류를 달리 | `blocks.distinct` |
+
+- **예약표:** 블록 자리마다 종류를 미리 적고(같은 id 2번 이하, 이웃 금지) 그대로 찍는다. 찍으면서 정하지 않는다.
+- **굽이 운하:** `fill_region` 폭 4~6 사각형을 6~10행씩 이어 x 를 옮긴다(앞 조각과 2칸 이상 겹치게). 굽이 사이 곧은 구간에 다리를 둔다.
+- **완료 선언 전 `check_city_form` 이 「이상 없음」이어야 한다.** 막다른 길·격리된 길·이웃 반복은 좌표가 나오니 그 자리만 고친다(막다른 길: 이웃 길과 잇거나 그 길 토막을 지운다).
+
 
 ## 규칙
 - **블록 키트를 찍은 뒤에는 거리 전체를 다시 칠하지 않는다.** `fill_region` 이 블록 가장자리의 한 칸 풀밭 틈을 모두 메워(「벽 틈 메움」) 블록에 길 토막이 파고든다.
@@ -319,12 +364,13 @@ stamp_object 96~136번 중 대부분이 집 한 채씩이었고, 같은 폭 바�
   시장 블록은 도시에 1~2개(광장이 셋이면 빈 판석이 된다). 라운드 3 조수 결과의 적대적 QA 중대 결함 1·2위가 「같은 블록이 한 열에 2~4번」이었다.
 - 구역 키트(성·포룸·저택) 둘레에 잔디를 2칸 넘게 남기지 않는다 — 대로를 붙이거나 블록·광장 판석으로 닫는다.
 - 나란한 길 사이는 5칸 이상(블록 하나) 띄운다. 1칸 간격으로 포장길·흙길·대로가 나란하면 이중 길로 보인다.
-- 강·운하는 다른 물(호수 항구)이나 맵 가장자리에서 끝난다. 거리 앞 난간에서 끊지 않는다. 항구 앞은 부두 길(블록 아래 변이 닿는 거리).
+- 강·운하는 **곧지 않다** — 굽이 2번 이상. 다른 물(호수 항구)이나 맵 가장자리에서 끝난다. 거리 앞 난간에서 끊지 않는다. 항구 앞은 부두 길(블록 아래 변이 닿는 거리).
 - 집 한 채씩 늘어세우기(`bd-house-*`)는 블록 격자에 안 맞는 자투리(성벽 옆·강가 한 줄)에만 쓴다.
 
-## 예시: 「블록 조립 도시」 (`layout-blocks`) 의 실제 호출 수
-{len(LAYOUTS[0][2]['calls'])}번(실패 0) — 뼈대 fill 13 · 물 1 · 블록 {sum(1 for c in LAYOUTS[0][2]['calls'] if c['name'] == 'stamp_object' and 'bd-block-' in c['args']['objectId'])} · 뒷골목 끝 다시 칠 · 공원 대각선 거리 13 · 공원 나무·꽃밭 · 가로등·가로수.
-빈 바닥 {LAYOUTS[0][1]['emptiness']['open']['share'] * 100:.1f}%, 40% 넘는 화면 {LAYOUTS[0][1]['emptiness']['open']['over40']}/35, 문 {LAYOUTS[0][1]['doors']}곳 모두 포장 길망 도달, 막다른 길 0.
+## 예시: 「굽이 운하 도시」 (`layout-bends`) 의 실제 호출 수와 형태
+{len(LAYOUTS[0][2]['calls'])}번(실패 0, 잔디 무늬·나무 덩이 포함) — 블록 {sum(1 for c in LAYOUTS[0][2]['calls'] if c['name'] == 'stamp_object' and 'bd-block-' in c['args']['objectId'])} · 칠하기 {sum(1 for c in LAYOUTS[0][2]['calls'] if c['name'] == 'fill_region')}(운하·둑길은 행마다 한 번이라 대부분이 이것).
+빈 바닥 {LAYOUTS[0][1]['emptiness']['open']['share'] * 100:.1f}%, 40% 넘는 화면 {LAYOUTS[0][1]['emptiness']['open']['over40']}/35, 문 {LAYOUTS[0][1]['doors']}곳 중 포장 길망 {LAYOUTS[0][1]['streetReach']['reached']}.
+`check_city_form`: 운하 굽이 {LAYOUTS[0][1]['cityForm']['canal']['bends']}(곧음 {LAYOUTS[0][1]['cityForm']['canal']['straightShare']}), 결절점 {len(LAYOUTS[0][1]['cityForm']['nodes'])}, 랜드마크 {len(LAYOUTS[0][1]['cityForm']['landmarks'])}, 가장 긴 곧은 길 {LAYOUTS[0][1]['cityForm']['lines']['longestLen']}칸, 이웃 반복 {len(LAYOUTS[0][1]['cityForm']['blocks']['neighbourRepeats'])}.
 """
 WORK_DOC = dict(id="bd-work-order", name="작업 순서 (시간 예산)", markdown=work)
 hier = f"""# 길 위계 — 대로 · 거리 · 골목, 굽은 길
@@ -332,6 +378,7 @@ hier = f"""# 길 위계 — 대로 · 거리 · 골목, 굽은 길
 {HEAD}
 
 같은 폭 바둑판은 도시가 아니라 모눈종이처럼 보인다. 폭이 셋인 길을 쓰고, 대로는 적게(도시에 2줄 안팎), 골목은 많이 쓴다.
+**깨진 격자:** 곧은 길은 45칸을 넘기지 않는다 · 대로 한 줄은 중간에서 4~8칸 어긋나게(jog) · 대각선·휜 거리 1~2줄 · 평행 대로의 간격을 같게 하지 않는다(블록 폭 10/14/20 을 열마다 다르게). `check_city_form` 이 곧은 줄·간격 편차를 좌표로 알려 준다.
 
 | 위계 | 폭 | 재료 | 어디에 | 꾸밈 |
 |---|---|---|---|---|
@@ -349,11 +396,12 @@ hier = f"""# 길 위계 — 대로 · 거리 · 골목, 굽은 길
 ## 굽은 길·대각선 길 (폭 2~3)
 행마다 폭 w 짜리 가로 조각을 칠하고, 줄마다 조금씩 옆으로 민다. 오토타일이 계단 모서리 연석을 그린다.
 ```text
-// 공원을 가로지르는 대각선 거리 (layout-blocks, 공원 블록 x=86..99, y=60..72)
+// 공원을 가로지르는 대각선 거리 (예: 공원 자리 x=86..99, y=60..72)
 for t in 0..12:  fill_region(rect={{x: 86 + round(t*11/12), y: 60 + t, w: 3, h: 1}}, material:'버들항 길 포석')
 ```
 - 원호(굽은 대로)는 같은 방식으로 x 이동량을 줄마다 바꾼다(예: 0,0,1,1,2,3,4,6…). 조각은 앞 줄과 적어도 2칸 겹쳐야 끊기지 않는다.
 - 굽은 길의 양 끝은 반드시 다른 길(교차로)이나 맵 가장자리에 닿는다.
+- **어긋남(jog) 예:** 대로 x=40..43 을 y=0..30 에 칠하고 y=31..32 에 폭 (3+가로 이동)짜리 가로 조각으로 x=40..49 를 이은 뒤 x=46..49 를 y=33.. 로 이어 내린다(4칸 옮김). 어긋남 자리는 교차로가 되니 광장 소품을 둔다.
 - 굽은 길 옆에는 블록 대신 공원(나무·꽃밭·벤치)이나 한 채씩 집을 둔다 — 직사각형 블록은 비스듬한 변에 맞지 않는다.
 """
 HIER_DOC = dict(id="bd-street-hierarchy", name="길 위계 · 굽은 길", markdown=hier)
@@ -393,10 +441,12 @@ bguide = f"""# 블록 키트 — 도시 한 블록을 통째로
 - 성당 앞 블록(세로 17)은 성당 문 앞 광장이 아래 쪽 4줄이다.
 - 블록끼리 맞붙이지 않는다. 블록 사이에 거리 2칸이나 골목 1칸.
 
-## 격자에 까는 법 (layout-blocks 에서 쓴 틀)
-- 가로: 거리2 · 블록20 · 거리2 · 블록20 · **대로4** · 블록20 · 거리2 · 블록14 · 거리2 · 블록14 = 100칸.
-- 세로: 블록17(또는 8+골목1+8) · 거리2 · 블록13 · **대로4** · 블록13 · 거리2 · 블록8 · 골목1 · 블록13 · 거리2 · 블록8 · 골목1 · 블록8 · 부두3 · 물5 = 100칸.
-- 8칸 블록 둘을 골목 1칸 위아래로 겹치면 17칸 줄 하나가 된다(윗 블록의 문이 골목에 열린다).
+## 띠(band)로 까는 법 (layout-bends 에서 쓴 틀) — 바둑판이 아니다
+- 영역(둑길과 대로 사이, 맵 가장자리와 둑길 사이)마다 **가로 띠**를 위에서 아래로 쌓는다: 띠 = 블록 한 줄(세로 8 또는 13) + 그 아래 거리 2줄.
+- 띠 안 블록 폭은 영역 폭에 맞게 20/14/10 을 섞고(띠마다 순서를 바꾼다) 블록 사이에 **2칸 세로 거리**를 칠한다 — 위 띠의 거리와 아래 띠의 거리를 잇는다(막다른 길 0).
+- 띠 끝과 비스듬한 둑길 사이 틈은 행마다 포석으로 메운다(강가 광장처럼 보인다).
+- **이웃 영역의 띠는 1~3줄 어긋나게** 쌓는다(대로 동쪽 띠는 서쪽보다 두 줄 아래). 가로길이 맵을 한 줄로 가로지르지 않는다.
+- 13칸 블록을 찍은 뒤 뒷골목(6행) 양 끝 바깥 한 칸만 다시 칠해 연석을 연다.
 
 ## 종류별 표
 """ + "\n\n".join(f"### {TNAME[t]} (`{t}`)\n{btable(bl)}" for t, bl in TYPES.items())
@@ -421,10 +471,10 @@ bimages.append(bboard(_low, "blocks-8", f"세로 8칸 블록 {len(_low)}종(주�
 bimages.append(bboard(_tall, "blocks-13-17", f"세로 13·17칸 블록 {len(_tall)}종(뒷골목 두 줄 주택가·상가·시장·정원 저택·성 밖·성당 앞) — 6행 가로줄이 뒷골목, 노란 테 = 문 앞 칸."))
 if False: bimages.append(dict(id="bd-layout-blocks-full", name="layout-blocks.png", dataUrl="/assets/beodeul-city/references/layout-blocks.png", caption=f"블록 조립 도시 100×100 — 대로 2줄(4칸)·거리(2칸)·골목(1칸) 격자에 블록 키트 {sum(1 for c in LAYOUTS[0][2]['calls'] if c['name'] == 'stamp_object' and 'bd-block-' in c['args']['objectId'])}개. 빈 바닥 한 화면 최대 {LAYOUTS[0][1]['emptiness']['open']['worst'] * 100:.0f}%."))
 # empty-floor error picture: the worst 20×15 screen of the house-row layout vs the same screen of the block layout
-_hm = next(m_ for l_, m_, _, _ in LAYOUTS if l_ == "hilltop"); _w = max([o for o in _hm["emptiness"]["open"]["overAt"] if o[1] + 15 <= H and 15 <= o[1] <= 75], key=lambda o: o[2])
+_hm = next(m_ for l_, m_, _, _ in LAYOUTS if l_ == "hilltop"); _w = next(o for o in _hm["emptiness"]["open"]["overAt"] if (o[0], o[1]) == (80, 45))  # a screen the bends layout fills with blocks
 _bx, _by = _w[0], _w[1]; _bm = LAYOUTS[0][1]
 _crop = lambda lid: Image.open(LAY / lid / "render.png").convert("RGBA").crop((_bx * T, _by * T, min(W, _bx + 20) * T, min(H, _by + 15) * T))
-_pair = Image.new("RGBA", (20 * T * 2 + T, 15 * T), (0, 0, 0, 255)); _pair.alpha_composite(_crop("hilltop"), (0, 0)); _pair.alpha_composite(_crop("blocks"), (20 * T + T, 0))
+_pair = Image.new("RGBA", (20 * T * 2 + T, 15 * T), (0, 0, 0, 255)); _pair.alpha_composite(_crop("hilltop"), (0, 0)); _pair.alpha_composite(_crop("bends"), (20 * T + T, 0))
 bimages.append(save("blocks", "err-empty-screen", _pair, f"왼쪽 오류 · 오른쪽 정답. 같은 화면 칸(x={_bx}..{_bx + 19}, y={_by}..{_by + 14}) — 왼쪽은 집 한 줄씩 늘어세운 「언덕 위」 배치로 빈 바닥 {_w[2] * 100:.0f}%(한 화면 40% 넘음, 「만들다 만」 도시), 오른쪽은 블록 키트로 채운 배치.", 2))
 cats.append(dict(id="beodeul-city-blocks", name="버들항 · 블록 조립(작업 순서·길 위계·블록 키트) — 먼저 읽는다", description=f"큰 도시를 까는 작업 순서와 단계별 시간 예산, 길 위계(대로 4·거리 2·골목 1·굽은 길 칠하는 법), 블록 키트 {len(BLK)}종(주택가·상가·시장·정원 저택·성 밖 목조·항구 창고·성당 앞, 10×8~20×17)의 문 앞 칸·가장자리 출구 표·뒷골목 규칙·격자 까는 법·역할 배열·그림. 도시를 채울 때는 집 한 채가 아니라 블록 하나를 찍는다.", documents=bdocs, images=bimages))
 def board(kits, per_row, name, cap, scale=1):
