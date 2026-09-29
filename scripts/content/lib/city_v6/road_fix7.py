@@ -7,6 +7,18 @@ exec(open(SRC+'/road_audit6.py').read())
 ROADLOG['first_pass']=_RL1
 _PH={(px_+i,shore[px_]-1) for px_ in (20,38,62,76) for i in (0,1)}       # the two cells that touch a pier head are destinations
 _WK=('road','plaza','stair','bridge','walk','gate')
+def _diag_join():
+    # two street cells that touch only at a corner read as a broken street (v7 QA: 87..88,54): open one of the two lawn cells
+    n=0
+    for y in range(H-1):
+        for x in range(W-1):
+            a,b,c,d=occ[y][x],occ[y][x+1],occ[y+1][x],occ[y+1][x+1]
+            for p_,q_,e1,e2 in (((x,y),(x+1,y+1),(x+1,y),(x,y+1)),((x+1,y),(x,y+1),(x,y),(x+1,y+1))):
+                if occ[p_[1]][p_[0]]=='road' and occ[q_[1]][q_[0]]=='road' and occ[e1[1]][e1[0]] not in _WK and occ[e2[1]][e2[0]] not in _WK:
+                    for ex,ey in (e1,e2):
+                        if occ[ey][ex] is None and not water[ey][ex]: occ[ey][ex]='road'; road[ey][ex]=True; n+=1; break
+    return n
+ROADLOG['diagonal_joins']=_diag_join()
 def _stub_prune():
     n=0; changed=True
     doorf={(dx,by+1) for _n,dx,by in HOUSES}

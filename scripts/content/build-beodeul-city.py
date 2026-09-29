@@ -319,9 +319,20 @@ def cut_off(x0, y0, x1, y1):
 def kit_rect(name, x0, y0, x1, y1, desc, rule, tags, entrance=None, clip=False):
     drop = cut_off(x0, y0, x1, y1) if clip else set()
     gb = next(g for g in tileGroups if g["id"] == "beodeul:grass")["tileIds"][0]
+    under_obj = set().union(*OBJ_CELLS) if drop else set()
     def lo_at(xx, yy):
-        # a removed tree leaves its dark 'shade' grass behind: put the plain lawn tile there
-        return gb if (xx, yy) in drop and label_of(xx, yy)[1] == "grass" else lower[yy * W + xx]
+        # a removed neighbour leaves its shadow on the ground render: lawn → the plain lawn tile; paving/plaza → the tile of the
+        # nearest cell of the same kind that no object stands on (no shadow), inside the kit
+        if (xx, yy) not in drop: return lower[yy * W + xx]
+        kind_ = label_of(xx, yy)[1]
+        if kind_ == "grass": return gb
+        for r_ in range(1, 8):
+            for dy_ in range(-r_, r_ + 1):
+                for dx_ in (-r_, r_) if abs(dy_) != r_ else range(-r_, r_ + 1):
+                    nx_, ny_ = xx + dx_, yy + dy_
+                    if x0 <= nx_ < x1 and y0 <= ny_ < y1 and (nx_, ny_) not in drop and (nx_, ny_) not in under_obj and label_of(nx_, ny_)[1] == kind_:
+                        return lower[ny_ * W + nx_]
+        return lower[yy * W + xx]
     rows = [dict(tiles=[lo_at(xx, yy) for xx in range(x0, x1)], upperTiles=[(-1 if (xx, yy) in drop else upper[yy * W + xx]) for xx in range(x0, x1)]) for yy in range(y0, y1)]
     k = dict(id=name, kind="section", name=desc.split(" — ")[0], width=x1 - x0, height=y1 - y0, tileSize=16, rows=rows, learnedFrom="db-authored",
              ai=dict(description=desc, placementRules=rule, tags=["버들항"] + tags, role="building"))
@@ -368,7 +379,8 @@ DISTRICTS = [
     ("bd-river-bridge", 26, 24, 42, 44, "버들항 강·폭포·아치 다리 — 가운데 마을과 성 사이 강(33~36열), 폭포(33,27), 다리(33,33)", "강을 길이 건너는 곳에 다리 폭 4칸.", ["river", "bridge", "waterfall"]),
 ]
 for kid, x0, y0, x1, y1, desc, rule, tags in DISTRICTS:
-    KITS.append(kit_rect(kid, x0, y0, min(W, x1), min(H, y1), desc + f" {min(W, x1) - x0}×{min(H, y1) - y0}. 원본 ({x0},{y0}).", rule, tags))
+    KITS.append(kit_rect(kid, x0, y0, min(W, x1), min(H, y1), desc + f" {min(W, x1) - x0}×{min(H, y1) - y0}. 원본 ({x0},{y0}).", rule, tags,
+                         clip=kid in ("bd-castle", "bd-estate", "bd-forum", "bd-cathedral", "bd-windmill")))
 # v7: the river in pieces (the upper river 33..36 x 0..23 was in no kit at all): whole upper river, straight pieces, bends, waterfalls
 RIVER_KITS = [
     ("bd-river-upper", 33, 0, 37, 24, "버들항 윗 강줄기 — 성벽 북문 틈에서 시작해 성 해자 옆을 지나 폭포 위까지 4칸 폭 물(둑·그림자 포함)", "물 4칸 폭. 위는 맵 가장자리, 아래는 bd-waterfall-drop 로 이어진다. 양쪽은 성 둑길과 저택 담이다.", ["river", "water", "source"]),
@@ -396,6 +408,27 @@ def kit7_struct(kid, spec, rows_):
         k["parts"] = [dict(id="door" if i == 0 else f"door{i + 1}", kind="entrance", dx=d["dx"], dy=d["dy"], w=1, h=1, note=d["note"] + " — 그 아래 칸이 문 앞") for i, d in enumerate(spec["doors"])]
     return k
 for kid, spec, rows_ in KITS7: KITS.append(kit7_struct(kid, spec, rows_))
+# v7 QA: a district kit stamped on open lawn must not carry its neighbour's ground. The castle's rim columns (x=0, x=32) are the town
+# wall walk that continues to the next district → lawn; its moat ends in the river at both sides → close the moat ends with the
+# water autotile's end variants (bank on the open side). The estate's west column (x=36) is the upper river → lawn.
+def trim_kit(kid, fn):
+    k = next(k for k in KITS if k["id"] == kid)
+    for j, r in enumerate(k["rows"]):
+        for i in range(k["width"]):
+            v = fn(i, j, r["tiles"][i], r["upperTiles"][i])
+            if v is not None: r["tiles"][i], r["upperTiles"][i] = v
+_gbk = next(g for g in tileGroups if g["id"] == "beodeul:grass")["tileIds"][0]
+def _is_water_kit(k, i, j): return 0 <= i < k["width"] and 0 <= j < k["height"] and water[j][i]
+def castle_fix(i, j, lo, up):
+    if i == 32 and j <= 22: return (_gbk, -1)                    # east rim: the town wall walk
+    if i == 0 and occ[j][0] == "wall": return (_gbk, -1)          # west rim: the map-edge town wall
+    end = 1 if i == 1 else 32 if i == 32 else None                # the moat's two open ends → closed water ends
+    if end is not None and water[j][i]:
+        m = (1 if j > 0 and water[j - 1][i] else 0) | (4 if j + 1 < 33 and water[j + 1][i] else 0) | (8 if i == 32 else 2)
+        return (WATER_IDS[m], -1)
+    return None
+trim_kit("bd-castle", castle_fix)
+trim_kit("bd-estate", lambda i, j, lo, up: (_gbk, -1) if i == 0 and water[2 + j][36] else None)
 # v7: ground variety. The flat material fill (one grass tile) looks dead; the city's own lawn is a noise mix of lawn / meadow /
 # flower cells. The city has no 6x6 window of open lawn (738 open cells, all in slivers), so the patches are composed: the lower
 # tiles of open lawn cells with no tree / object / water within one cell (no shade grass) are dealt out by a fixed PRNG into six

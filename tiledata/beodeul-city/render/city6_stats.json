@@ -78,6 +78,7 @@
    "bulges": 17,
    "pier_paths": 2
   },
+  "diagonal_joins": 0,
   "stubs_pruned": 2,
   "ends_left": []
  },

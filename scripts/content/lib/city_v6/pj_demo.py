@@ -1,4 +1,4 @@
-import sys; sys.path.insert(0,'/tmp/j8city')
+import sys, os; sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))   # v7: was /tmp/j8city — every module imported after this one (shapes, pi, pz, roman, sheet2, …) silently came from /tmp
 import pj
 from PIL import Image, ImageDraw
 from sheet2 import lawn
