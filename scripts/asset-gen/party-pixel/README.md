@@ -40,3 +40,12 @@ retro2003 로스터 2차(src/assets/retroRoster.ts)의 beast·vehicle·monster �
   검사·크기 비교판: python3 scripts/asset-gen/party-pixel/review_pp3.py → .omo/pp3/size-compare.png(대기 칸 4배 + 사람 actor1-0).
 - 주의: 사람 전투 도트(charset-battlers)는 칩 × 1(키 23px)을 48 칸에 담고, 파티원 시트도 cell × 2 상자로 뜬다.
   그래서 칩 × 2 규칙의 몬스터 파티원은 무대에서 사람 파티원보다 약 2배 크다. 규칙을 바꾸면 리그의 scale2x 한 번만 빼면 된다.
+
+## b4 Monster2 15칸 재작업 (pp4, 2026-09-29)
+
+- 빌더 pp15_pp4.py, 칩 파일 monster2-0..7.py. 셀 64·3열×5행(행 3 시전 3단, 행 4 도약·강화·필살기), 그림이 처음부터 왼쪽을 본다(반전 없음).
+- Monster2 칩의 행 순서는 RM2k 관례(0 위 · 1 오른쪽 · 2 아래 · 3 왼쪽)다. 대기 칸 밑그림은 행 3 가운데 칸을 ≤13색으로 합친 뒤 EPX 2배로 키운 것이고,
+  2배로 두꺼워진 외곽선 안쪽 절반을 안쪽 색으로 되돌려 1px 외곽선을 만든다. 칩 × 2 보다 키우지 않는다(8명 모두 몸 높이 23~29px → 셀 64).
+- 나머지 칸은 칩에서 오린 부위(팔·날개·꼬리·머리·칼)를 관절 축으로 돌리고 몸은 행 밀기(기울임·호흡·웅크림)로만 바꾼다. 효과(칼날·기·불길·먼지)는 캐릭터별 효과색 3색.
+- 확인판: .omo/pp4/board-a-*.png(칩 4배·8배 | 15칸 4배), .omo/pp4/board-b-size.png(actor1-0 과 대기 칸 같은 배율), 검사는 각 칩 파일 실행 출력과 .omo/pp4/<chip>/validation.json.
+

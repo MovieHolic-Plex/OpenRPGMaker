@@ -72,13 +72,13 @@ export const BATCH: RetroRosterBatch = {
     { id: "skill_dark_lord_total_eclipse", classId: "class_dark_lord", actorId: "actor_dark_lord", name: "종말의 어둠", level: 22, motion: "finisher", description: "하늘을 검게 물들이는 개기 일식의 필살기", layers: [{ key: "dark_lord_eclipse", anchor: "screen", frame: 128, frames: 12 }, { key: "dark_lord_eclipse_hit", anchor: "allTargets", frame: 64, frames: 8 }] },
   ],
   partyPixel: [
-    { chip: "monster2-0", cell: 48, motion: "swoop", idleFrameMs: 120 },
-    { chip: "monster2-1", cell: 64, motion: "swoop", idleFrameMs: 260 },
-    { chip: "monster2-2", cell: 48, motion: "float", idleFrameMs: 200 },
-    { chip: "monster2-3", cell: 48, motion: "dash", idleFrameMs: 300 },
-    { chip: "monster2-4", cell: 64, motion: "stomp", idleFrameMs: 320 },
-    { chip: "monster2-5", cell: 64, motion: "breath", idleFrameMs: 260 },
-    { chip: "monster2-6", cell: 64, motion: "dash", idleFrameMs: 180 },
-    { chip: "monster2-7", cell: 64, motion: "shoot", idleFrameMs: 240 },
+    { chip: "monster2-0", cell: 64, motion: "swoop", idleFrameMs: 120, rows: 5 },
+    { chip: "monster2-1", cell: 64, motion: "swoop", idleFrameMs: 260, rows: 5 },
+    { chip: "monster2-2", cell: 64, motion: "float", idleFrameMs: 200, rows: 5 },
+    { chip: "monster2-3", cell: 64, motion: "dash", idleFrameMs: 300, rows: 5 },
+    { chip: "monster2-4", cell: 64, motion: "stomp", idleFrameMs: 320, rows: 5 },
+    { chip: "monster2-5", cell: 64, motion: "breath", idleFrameMs: 260, rows: 5 },
+    { chip: "monster2-6", cell: 64, motion: "dash", idleFrameMs: 180, rows: 5 },
+    { chip: "monster2-7", cell: 64, motion: "shoot", idleFrameMs: 240, rows: 5 },
   ]
 };
