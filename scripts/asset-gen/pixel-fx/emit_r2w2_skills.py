@@ -99,7 +99,88 @@ BATCHES['a3'] = [
  ]),
 ]
 
-BATCHES['p1'] = []  # 아래 p1 표는 p1 단계에서 채운다.
+BATCHES['p1'] = [
+ ('class_scholar', 'scholar', [
+  ('page_cut', '책장 베기', 'cast', '펼친 책에서 날카로운 책장이 날아가 적을 벤다', [('scholar_pages', 'target', 64, 8)]),
+  ('analyze', '약점 간파', 'cast', '돋보기 조준선으로 적의 약점을 찾아 방어를 낮춘다', [('scholar_analyze', 'target', 64, 10)]),
+  ('lecture', '지식의 강의', 'buff', '떠다니는 글자로 아군 전체의 마법을 북돋는다', [('scholar_runes', 'allAllies', 64, 10)]),
+  ('book_smack', '두꺼운 책 강타', 'dash-strike', '두꺼운 사전으로 적의 머리를 내려친다', [('scholar_smack', 'target', 64, 8)]),
+  ('formula', '공식 폭발', 'cast', '공중에 적은 수식이 빛나며 적 전체에서 터진다', [('scholar_formula', 'allTargets', 64, 10)]),
+  ('study', '밤샘 공부', 'buff', '책을 넘기며 집중해 마력을 끌어모은다', [('focus', 'user', 64, 8)]),
+  ('ink_blot', '먹물 폭탄', 'cast', '먹물이 번져 적의 눈을 가린다', [('scholar_ink', 'target', 64, 8)]),
+  ('grand_library', '대도서관', 'finisher', '하늘에 책장이 열리며 지식의 빛이 쏟아지는 필살기', [('scholar_library', 'screen', 128, 12), ('mage_star_hit', 'allTargets', 64, 8)]),
+ ]),
+ ('class_miner', 'miner', [
+  ('pick_strike', '곡괭이 찍기', 'dash-strike', '곡괭이 끝으로 적을 힘껏 찍는다', [('miner_pick', 'target', 64, 8)]),
+  ('dig', '땅굴 기습', 'blink-strike', '땅속으로 파고들었다가 적 발밑에서 튀어나온다', [('miner_burrow', 'target', 64, 10)]),
+  ('rockfall', '낙석', 'cast', '천장을 때려 바위를 모든 적 위에 떨어뜨린다', [('miner_rockfall', 'allTargets', 64, 10)]),
+  ('lantern', '광산 등불', 'buff', '등불을 밝혀 아군의 명중을 올린다', [('miner_lantern', 'allAllies', 64, 8)]),
+  ('ore_throw', '광석 던지기', 'shoot', '캐낸 광석 덩이를 던져 맞힌다', [('mon_boulder', 'projectile', 32, 4), ('mon_rock_burst', 'target', 64, 8)]),
+  ('tunnel_quake', '갱도 진동', 'leap-strike', '뛰어올라 곡괭이를 땅에 박아 모든 적을 흔든다', [('mon_quake_crack', 'allTargets', 64, 10)]),
+  ('gem_find', '보석 발견', 'buff', '반짝이는 보석을 캐내 힘을 얻는다', [('miner_gem', 'user', 64, 8)]),
+  ('dynamite', '다이너마이트', 'finisher', '갱도를 통째로 날려 버리는 폭파 필살기', [('miner_blast', 'screen', 128, 12), ('mage_meteor_blast', 'allTargets', 64, 10)]),
+ ]),
+ ('class_farmer', 'farmer', [
+  ('fork_thrust', '쇠스랑 찌르기', 'dash-strike', '쇠스랑 세 갈래로 적을 꿰찌른다', [('farmer_fork', 'target', 64, 8)]),
+  ('harvest', '수확', 'spin', '낫질하듯 크게 휘둘러 모든 적을 벤다', [('farmer_harvest', 'allTargets', 64, 10)]),
+  ('seed_spit', '씨앗 흩뿌리기', 'shoot', '한 줌 씨앗을 뿌려 적에게 따끔하게 박는다', [('farmer_seeds', 'target', 64, 8)]),
+  ('hay_bale', '건초 더미', 'buff', '건초를 쌓아 아군을 푹신하게 감싸 방어를 올린다', [('farmer_hay', 'allAllies', 64, 10)]),
+  ('turnip', '순무 뽑기', 'leap-strike', '거대한 순무를 뽑아 적에게 내려친다', [('farmer_turnip', 'target', 64, 10)]),
+  ('sunlight', '햇볕 쬐기', 'buff', '햇살을 받아 기운을 되찾는다', [('heal', 'user', 64, 8)]),
+  ('scarecrow', '허수아비', 'cast', '허수아비를 세워 적들을 겁주어 약하게 만든다', [('farmer_scarecrow', 'allTargets', 64, 8)]),
+  ('bumper_crop', '대풍년', 'finisher', '황금 밀밭이 물결치며 적을 휩쓰는 필살기', [('farmer_wheat', 'screen', 128, 12), ('druid_tree_hit', 'allTargets', 64, 10)]),
+ ]),
+ ('class_elder', 'elder', [
+  ('cane_rap', '지팡이 꿀밤', 'dash-strike', '지팡이로 적의 이마를 딱 때린다', [('elder_rap', 'target', 64, 8)]),
+  ('wisdom', '노인의 지혜', 'buff', '옛 이야기로 아군 전체의 정신을 맑게 한다', [('elder_wisdom', 'allAllies', 64, 10)]),
+  ('scold', '호통', 'cast', '버럭 호통을 쳐 적 전체를 움츠러들게 한다', [('elder_scold', 'allTargets', 64, 8)]),
+  ('bless', '마을의 축복', 'cast', '두 손을 모아 아군 하나를 치유한다', [('cleric_heal', 'target', 64, 10)]),
+  ('ancestor', '조상의 영혼', 'cast', '조상의 혼령을 불러 적을 꾸짖게 한다', [('elder_spirit', 'target', 64, 10)]),
+  ('elder_calm', '느긋한 숨', 'buff', '느긋하게 숨을 골라 방어를 올린다', [('elder_calm', 'user', 64, 8)]),
+  ('revive', '되살림', 'cast', '쓰러진 아군을 흔들어 깨워 일으킨다', [('elder_revive', 'target', 64, 12)]),
+  ('village_oath', '마을의 맹세', 'finisher', '마을 사람들의 소원이 빛기둥이 되어 적을 누르는 필살기', [('elder_oath', 'screen', 128, 12), ('cleric_judgment_hit', 'allTargets', 64, 8)]),
+ ]),
+ ('class_grandma', 'grandma', [
+  ('herb_heal', '약초 찜질', 'cast', '약초를 덮어 아군 하나를 치유한다', [('grandma_herb', 'target', 64, 10)]),
+  ('ladle_whack', '국자 후려치기', 'dash-strike', '국자로 적을 따끔하게 후려친다', [('grandma_ladle', 'target', 64, 8)]),
+  ('broth', '보양탕', 'cast', '김이 나는 탕약을 아군 전체에 돌린다', [('grandma_broth', 'allAllies', 64, 10)]),
+  ('knit', '뜨개 그물', 'cast', '털실을 풀어 적을 얽어맨다', [('grandma_yarn', 'target', 64, 10)]),
+  ('moxa', '뜸', 'buff', '따끈한 뜸으로 몸을 데워 상태이상을 막는다', [('grandma_moxa', 'user', 64, 8)]),
+  ('scold_pot', '냄비 뚜껑', 'shoot', '냄비 뚜껑을 원반처럼 던진다', [('grandma_lid', 'target', 64, 8)]),
+  ('lullaby', '자장가', 'cast', '옛 자장가로 적 전체를 졸게 한다', [('sleep', 'allTargets', 64, 8)]),
+  ('grand_feast', '할머니의 잔칫상', 'finisher', '한 상 가득 차린 음식으로 아군을 완전히 회복시키는 필살기', [('grandma_feast', 'screen', 128, 12), ('cleric_mass_heal', 'allAllies', 64, 10)]),
+ ]),
+ ('class_gunslinger', 'gunslinger', [
+  ('quick_draw', '속사', 'shoot', '눈 깜짝할 새 뽑아 한 발을 쏜다', [('gunslinger_bullet', 'projectile', 32, 4), ('ranger_arrow_hit', 'target', 64, 6)]),
+  ('fan_hammer', '팬 해머', 'flurry', '공이를 연거푸 쳐 여섯 발을 쏟아붓는다', [('gunslinger_fan', 'target', 64, 10)]),
+  ('trick_shot', '도탄 사격', 'shoot', '벽을 맞고 튄 탄이 모든 적을 스친다', [('gunslinger_ricochet', 'allTargets', 64, 8)]),
+  ('hat_tip', '모자 인사', 'buff', '모자챙을 내리고 집중해 치명타를 올린다', [('gunslinger_hat', 'user', 64, 8)]),
+  ('pistol_whip', '권총 손잡이 치기', 'dash-strike', '다가가 권총 손잡이로 후려친다', [('mon_slam_hit', 'target', 64, 8)]),
+  ('dust_devil', '모래 회오리', 'blink-strike', '모래바람 속으로 사라졌다 뒤에서 쏜다', [('gunslinger_dust', 'target', 64, 8)]),
+  ('dead_eye', '데드아이', 'shoot', '시간이 느려진 듯 표적을 겨눠 급소를 꿰뚫는다', [('gunslinger_deadeye', 'target', 64, 10)]),
+  ('high_noon', '하이 눈', 'finisher', '해가 머리 위에 뜬 순간 모든 적을 쏘는 필살기', [('gunslinger_noon', 'screen', 128, 12), ('gunner_volley_hit', 'allTargets', 64, 8)]),
+ ]),
+ ('class_butler', 'butler', [
+  ('knife_throw', '은식기 투척', 'shoot', '은 나이프를 소매에서 꺼내 던진다', [('butler_knife', 'projectile', 32, 4), ('scout_knife_hit', 'target', 64, 8)]),
+  ('tea_time', '티타임', 'cast', '향긋한 홍차를 대접해 아군 하나를 치유한다', [('butler_tea', 'target', 64, 10)]),
+  ('service', '완벽한 시중', 'buff', '아군 전체의 옷매무새를 가다듬어 민첩을 올린다', [('butler_service', 'allAllies', 64, 10)]),
+  ('vanish', '그림자 시중', 'blink-strike', '눈에 띄지 않게 사라졌다 적 뒤에서 찌른다', [('butler_vanish', 'target', 64, 8)]),
+  ('cutlery', '식기 난무', 'flurry', '포크와 나이프를 연거푸 휘두른다', [('butler_cutlery', 'target', 64, 10)]),
+  ('bow', '정중한 인사', 'buff', '깊이 고개 숙여 적의 공격을 흘려 넘길 태세를 갖춘다', [('scout_afterimage', 'user', 64, 8)]),
+  ('silver_rain', '은빛 비', 'cast', '은 식기를 하늘에서 모든 적에게 쏟는다', [('butler_silver_rain', 'allTargets', 64, 10)]),
+  ('final_service', '마지막 시중', 'finisher', '촛불이 꺼진 순간 수백 자루 은식기가 적을 꿰는 필살기', [('butler_final', 'screen', 128, 12), ('scout_assassin_hit', 'target', 64, 8)]),
+ ]),
+ ('class_priest_monk', 'priest_monk', [
+  ('chant', '염불', 'cast', '낮은 염불로 아군 하나를 치유한다', [('priest_monk_chant', 'target', 64, 10)]),
+  ('staff_strike', '석장 치기', 'dash-strike', '금고리 석장으로 적을 내려친다', [('priest_monk_staff', 'target', 64, 8)]),
+  ('vajra', '금강신', 'buff', '금빛 몸이 되어 방어를 크게 올린다', [('priest_monk_vajra', 'user', 64, 10)]),
+  ('bead_toss', '염주 던지기', 'shoot', '염주알을 흩뿌려 적을 맞힌다', [('priest_monk_beads', 'target', 64, 8)]),
+  ('purify', '정화', 'cast', '향 연기로 아군 전체의 상태이상을 씻어낸다', [('priest_monk_incense', 'allAllies', 64, 10)]),
+  ('palm', '장타', 'flurry', '손바닥에 기를 모아 연거푸 친다', [('monk_fist_flurry', 'target', 64, 10)]),
+  ('bell', '범종', 'cast', '커다란 종소리가 적 전체를 울린다', [('priest_monk_bell', 'allTargets', 64, 10)]),
+  ('nirvana', '열반', 'finisher', '연꽃이 피며 부처의 손이 내려앉는 필살기', [('priest_monk_lotus', 'screen', 128, 12), ('cleric_mass_heal', 'allAllies', 64, 10)]),
+ ]),
+]
 
 
 def emit(batch):
@@ -130,6 +211,6 @@ export const BATCH: RetroRosterBatch = {{
 
 
 if __name__ == '__main__':
-    for b in (sys.argv[1:] or ['a3']):
+    for b in (sys.argv[1:] or ['a3', 'p1']):
         if BATCHES[b]:
             emit(b)
