@@ -526,7 +526,370 @@ def kitsune(d, p):
     return to_rgba(c.finish(), PAL_KITSUNE)
 
 
-CHARACTERS = [treant, mushroom, kappa, kitsune, None, None, None, None]
+
+# ───────────────────────── 4 너구리 둔갑사 ─────────────────────────
+PAL_TANUKI = {
+    'ol': '#1e140c', 't0': '#5a3a20', 't1': '#8a5e36', 't2': '#b8864e', 'bl': '#2e2420',
+    'c0': '#c8b08a', 'c1': '#f0dcb4', 'lf': '#4a9a2e', 'l2': '#9ad84a', 'hat': '#7a5a30', 'h2': '#c89a4a',
+    'wh': '#fffaf0', 'rd': '#c83a2a',
+}
+
+
+def _tanuki_leaf(c, x, y):
+    c.poly([(x, y + 2), (x + 2, y - 1), (x + 5, y), (x + 3, y + 2)], 'lf')
+    c.px(x + 2, y, 'l2')
+    c.px(x - 1, y + 3, 't0')
+
+
+@mirror
+def tanuki(d, p):
+    c = Cel(PAL_TANUKI)
+    oy = 0 if p == 1 else -1
+    sw = [1, 0, -1][p]
+    if d in (UP, DOWN):
+        back = d == UP
+        up = [0, None, 1][p]
+        if back:
+            # 줄무늬 꼬리(뒤에서 보인다)
+            c.ell(9, 20 + oy, 15, 28 + oy, 't1')
+            c.line([(9, 23 + oy), (15, 23 + oy)], 'bl')
+            c.line([(9, 26 + oy), (15, 26 + oy)], 'bl')
+        for k, x in enumerate((8, 13)):
+            fy = FEET - (2 if up == k else 0)
+            c.rect(x, 24 + oy, x + 2, fy, 'bl')
+        # 팔
+        c.rect(5, 17 + oy + sw, 6, 21 + oy + sw, 'bl')
+        c.rect(17, 17 + oy - sw, 18, 21 + oy - sw, 'bl')
+        c.ell(6, 14 + oy, 17, 26 + oy, 't1')
+        if not back:
+            c.ell(8, 17 + oy, 15, 26 + oy, 'c1')  # 둥근 배
+            c.px(11, 20 + oy, 'c0')
+            c.px(9, 18 + oy, 'wh')
+        else:
+            c.ell(7, 15 + oy, 12, 19 + oy, 't2')
+            c.ell(9, 20 + oy, 15, 28 + oy, 't1')
+            c.line([(10, 23 + oy), (14, 23 + oy)], 'bl')
+            c.line([(10, 26 + oy), (14, 26 + oy)], 'bl')
+        # 머리
+        c.ell(5, 6 + oy, 18, 16 + oy, 't1')
+        c.ell(6, 7 + oy, 10, 10 + oy, 't2')
+        c.ell(4, 3 + oy, 7, 7 + oy, 't0')
+        c.ell(16, 3 + oy, 19, 7 + oy, 't0')
+        # 삿갓
+        c.poly([(3, 7 + oy), (11, 1 + oy), (12, 1 + oy), (20, 7 + oy)], 'hat')
+        c.line([(5, 6 + oy), (11, 2 + oy)], 'h2')
+        c.rect(3, 7 + oy, 20, 7 + oy, 't0')
+        if back:
+            _tanuki_leaf(c, 9, 0 + oy)
+        else:
+            # 너구리 눈 둘레 검은 가면
+            c.poly([(6, 10 + oy), (10, 9 + oy), (11, 12 + oy), (7, 13 + oy)], 'bl')
+            c.poly([(17, 10 + oy), (13, 9 + oy), (12, 12 + oy), (16, 13 + oy)], 'bl')
+            c.px(9, 11 + oy, 'wh')
+            c.px(14, 11 + oy, 'wh')
+            c.ell(9, 12 + oy, 14, 16 + oy, 'c1')
+            c.rect(11, 13 + oy, 12, 13 + oy, 'ol')
+            c.px(11, 15 + oy, 't0')
+            c.px(12, 15 + oy, 't0')
+            _tanuki_leaf(c, 9, 0 + oy)
+    else:
+        st = [1, 0, -1][p]
+        # 큰 줄무늬 꼬리(뒤, 걸음에 흔들린다)
+        c.ell(1, 16 + oy + st, 8, 26 + oy + st, 't1')
+        c.line([(2, 19 + oy + st), (7, 18 + oy + st)], 'bl')
+        c.line([(1, 22 + oy + st), (7, 21 + oy + st)], 'bl')
+        c.ell(1, 23 + oy + st, 5, 26 + oy + st, 'bl')
+        side_legs(c, p, 10, 24 + oy, 3, 'ol', 'bl', 'ol', 'bl', step=2, toe=1)
+        c.rect(10 - st, 17 + oy, 11 - st, 21 + oy, 'ol')
+        c.ell(6, 14 + oy, 17, 26 + oy, 't1')
+        c.ell(11, 17 + oy, 18, 26 + oy, 'c1')
+        c.ell(7, 15 + oy, 11, 19 + oy, 't2')
+        # 배 두드리는 가까운 팔
+        c.line([(11, 18 + oy), (13 + st, 21 + oy)], 't0', 2)
+        c.rect(14 + st, 21 + oy, 15 + st, 22 + oy, 'bl')
+        # 머리
+        c.ell(7, 6 + oy, 18, 16 + oy, 't1')
+        c.ell(8, 3 + oy, 11, 7 + oy, 't0')
+        c.poly([(14, 10 + oy), (18, 9 + oy), (18, 12 + oy), (15, 13 + oy)], 'bl')
+        c.px(16, 11 + oy, 'wh')
+        c.ell(16, 12 + oy, 21, 15 + oy, 'c1')
+        c.rect(20, 12 + oy, 21, 13 + oy, 'ol')
+        c.poly([(4, 7 + oy), (12, 1 + oy), (13, 1 + oy), (20, 7 + oy)], 'hat')
+        c.line([(6, 6 + oy), (12, 2 + oy)], 'h2')
+        c.rect(4, 7 + oy, 20, 7 + oy, 't0')
+        _tanuki_leaf(c, 10, 0 + oy)
+    return to_rgba(c.finish(), PAL_TANUKI)
+
+
+# ───────────────────────── 5 이끼 골렘 ─────────────────────────
+PAL_GOLEM = {
+    'ol': '#161a1c', 's0': '#3c4448', 's1': '#666e70', 's2': '#949a96', 's3': '#c4c8c0',
+    'g0': '#244a1a', 'g1': '#3f7a2a', 'g2': '#72b040', 'g3': '#b4e070',
+    'ey': '#7af0c8', 'e2': '#e0fff4', 'fl': '#f2d24a',
+}
+
+
+def _moss(c, pts):
+    for x, y in pts:
+        c.rect(x, y, x + 2, y, 'g1')
+        c.px(x + 1, y - 1, 'g2')
+        c.px(x, y + 1, 'g0')
+
+
+@mirror
+def golem(d, p):
+    c = Cel(PAL_GOLEM)
+    oy = 0 if p == 1 else -1
+    sw = [1, 0, -1][p]
+    if d in (UP, DOWN):
+        back = d == UP
+        up = [0, None, 1][p]
+        for k, x in enumerate((6, 13)):
+            fy = FEET - (2 if up == k else 0)
+            c.rect(x, 23 + oy, x + 4, fy, 's1')
+            c.rect(x, 23 + oy, x + 1, fy - 1, 's2')
+            c.rect(x, fy, x + 4, fy, 's0')
+        # 큰 바위 주먹 팔
+        for s, x in ((1, 1), (-1, 18)):
+            ay = 12 + oy + sw * s
+            c.rect(x, ay, x + 4, ay + 7, 's1')
+            c.rect(x, ay, x + 1, ay + 6, 's2')
+            c.rect(x, ay + 8, x + 4, ay + 11, 's0' if s < 0 else 's1')
+            c.rect(x, ay + 8, x + 4, ay + 8, 's0')
+            c.pxs([(x + 1, ay), (x + 2, ay), (x + 3, ay)], 'g2')
+        # 몸통
+        c.rect(5, 9 + oy, 18, 24 + oy, 's1')
+        c.rect(5, 9 + oy, 7, 23 + oy, 's2')
+        c.px(6, 10 + oy, 's3')
+        c.rect(17, 10 + oy, 18, 24 + oy, 's0')
+        c.line([(8, 17 + oy), (15, 17 + oy)], 's0')
+        c.line([(12, 18 + oy), (12, 24 + oy)], 's0')
+        # 머리(몸에 박힌 작은 바위) + 이끼 덮개
+        c.rect(8, 4 + oy, 15, 10 + oy, 's1')
+        c.rect(8, 4 + oy, 9, 9 + oy, 's2')
+        c.rect(7, 3 + oy, 16, 5 + oy, 'g1')
+        c.pxs([(8, 2 + oy), (10, 2 + oy), (13, 2 + oy), (15, 2 + oy)], 'g2')
+        c.pxs([(7, 6 + oy), (16, 6 + oy), (11, 6 + oy)], 'g0')
+        c.px(9, 3 + oy, 'g3')
+        c.px(14, 2 + oy, 'fl')
+        _moss(c, [(5, 9 + oy), (9, 9 + oy), (14, 9 + oy), (6, 22 + oy)])
+        c.pxs([(16, 8 + oy), (17, 9 + oy)], 'g2')
+        if back:
+            _moss(c, [(8, 13 + oy), (13, 15 + oy), (9, 20 + oy)])
+            c.px(11, 13 + oy, 'fl')
+        else:
+            c.rect(9, 7 + oy, 10, 7 + oy, 'ey')
+            c.rect(13, 7 + oy, 14, 7 + oy, 'ey')
+            c.px(9, 7 + oy, 'e2')
+            c.px(13, 7 + oy, 'e2')
+            # 가슴의 빛나는 룬
+            c.pxs([(11, 12 + oy), (12, 12 + oy), (10, 13 + oy), (13, 13 + oy), (11, 14 + oy), (12, 14 + oy)], 'ey')
+    else:
+        st = [1, 0, -1][p]
+        side_legs(c, p, 9, 23 + oy, 5, 's0', 's1', 's0', 's0', step=2, toe=0)
+        # 먼 팔
+        c.rect(9 - st * 2, 12 + oy, 12 - st * 2, 22 + oy, 's0')
+        c.rect(5, 9 + oy, 17, 24 + oy, 's1')
+        c.rect(5, 9 + oy, 7, 23 + oy, 's2')
+        c.rect(16, 10 + oy, 17, 24 + oy, 's0')
+        c.line([(8, 17 + oy), (15, 17 + oy)], 's0')
+        # 등의 이끼 덩굴
+        c.rect(4, 10 + oy, 6, 20 + oy, 'g1')
+        c.pxs([(4, 21 + oy), (5, 22 + oy), (3, 12 + oy), (3, 15 + oy)], 'g1')
+        c.pxs([(5, 11 + oy), (5, 14 + oy), (5, 17 + oy)], 'g2')
+        c.px(4, 13 + oy, 'fl')
+        # 머리
+        c.rect(10, 4 + oy, 17, 10 + oy, 's1')
+        c.rect(10, 4 + oy, 11, 9 + oy, 's2')
+        c.rect(9, 3 + oy, 17, 5 + oy, 'g1')
+        c.pxs([(10, 2 + oy), (13, 2 + oy), (16, 2 + oy)], 'g2')
+        c.px(11, 3 + oy, 'g3')
+        c.rect(15, 7 + oy, 16, 7 + oy, 'ey')
+        c.px(16, 7 + oy, 'e2')
+        _moss(c, [(7, 9 + oy), (12, 9 + oy)])
+        # 가까운 팔(주먹 앞뒤)
+        ax = 11 + st * 2
+        c.rect(ax, 12 + oy, ax + 4, 20 + oy, 's1')
+        c.rect(ax, 12 + oy, ax + 1, 19 + oy, 's2')
+        c.rect(ax, 21 + oy, ax + 4, 24 + oy, 's1')
+        c.rect(ax, 21 + oy, ax + 4, 21 + oy, 's0')
+        c.pxs([(ax + 1, 12 + oy), (ax + 2, 12 + oy), (ax + 3, 12 + oy)], 'g2')
+    return to_rgba(c.finish(), PAL_GOLEM)
+
+
+# ───────────────────────── 6 얼음 요정 ─────────────────────────
+PAL_ICE = {
+    'ol': '#14244a', 'i0': '#3a64b0', 'i1': '#6ea8e8', 'i2': '#b4e0ff', 'i3': '#f2fcff',
+    'sk': '#e8f0fa', 's0': '#a8bcdc', 'hr': '#dff4ff', 'h0': '#8ec8f0', 'ey': '#2a4ab0', 'pk': '#b8c8ff',
+}
+
+
+def _flake_wing(c, cx, cy, flap, left):
+    """눈꽃 날개: 결정 가지 세 갈래. flap 0 펴짐 · 1 반 · 2 접힘."""
+    s = -1 if left else 1
+    spread = [6, 5, 3][flap]
+    lift = [0, 2, 3][flap]
+    tips = [(cx + s * spread, cy - 5 - lift), (cx + s * (spread + 1), cy - 1 - lift // 2), (cx + s * (spread - 1), cy + 3)]
+    c.poly([(cx, cy - 2), tips[0], tips[1], tips[2], (cx, cy + 2)], 'i1')
+    for tx, ty in tips:
+        c.line([(cx, cy), (tx, ty)], 'i0', 1)
+        c.px(tx, ty, 'i3')
+    c.px(cx + s * 2, cy - 1, 'i3')
+
+
+@mirror
+def sprite_ice(d, p):
+    c = Cel(PAL_ICE)
+    hov = [0, 1, 0][p] - 1  # 떠다닌다: 1px 상하
+    oy = -3 + hov
+    flap = [0, 1, 2][p]
+    if d in (UP, DOWN):
+        back = d == UP
+        if not back:
+            _flake_wing(c, 8, 18 + oy, flap, True)
+            _flake_wing(c, 15, 18 + oy, flap, False)
+        # 드레스(얼음 종) — 발끝이 뾰족하다
+        c.poly([(9, 16 + oy), (14, 16 + oy), (17, 26 + oy), (6, 26 + oy)], 'i1')
+        c.poly([(9, 16 + oy), (11, 16 + oy), (9, 26 + oy), (6, 26 + oy)], 'i2')
+        c.pxs([(6, 27 + oy), (9, 27 + oy), (11, 28 + oy), (14, 27 + oy), (17, 27 + oy)], 'i0')
+        c.rect(6, 26 + oy, 17, 26 + oy, 'i0')
+        c.px(8, 28 + oy, 'i2')
+        c.px(15, 28 + oy, 'i2')
+        # 발끝 고드름(바닥 기준: 떠 있어도 칸 아래 1~2px 위 그림자 없는 발)
+        c.rect(10, 27 + oy, 10, 29 + oy + 1, 'sk')
+        c.rect(13, 27 + oy, 13, 29 + oy + 1, 'sk')
+        # 팔
+        sw = [1, 0, -1][p]
+        c.rect(7, 17 + oy + sw, 7, 20 + oy + sw, 'sk')
+        c.rect(16, 17 + oy - sw, 16, 20 + oy - sw, 'sk')
+        # 머리
+        c.ell(6, 6 + oy, 17, 17 + oy, 'hr')
+        c.ell(7, 7 + oy, 11, 10 + oy, 'i3')
+        c.pxs([(6, 15 + oy), (17, 15 + oy), (6, 16 + oy), (17, 16 + oy)], 'h0')
+        if back:
+            c.pxs([(9, 14 + oy), (12, 15 + oy), (14, 13 + oy)], 'h0')
+            _flake_wing(c, 8, 18 + oy, flap, True)
+            _flake_wing(c, 15, 18 + oy, flap, False)
+        else:
+            c.rect(8, 11 + oy, 15, 16 + oy, 'sk')
+            c.rect(8, 11 + oy, 15, 11 + oy, 'hr')
+            c.pxs([(10, 12 + oy)], 'h0')
+            c.rect(9, 13 + oy, 9, 14 + oy, 'ey')
+            c.rect(14, 13 + oy, 14, 14 + oy, 'ey')
+            c.px(8, 15 + oy, 'pk')
+            c.px(15, 15 + oy, 'pk')
+            c.px(11, 16 + oy, 's0')
+        # 눈꽃 관
+        c.pxs([(11, 3 + oy), (12, 3 + oy), (11, 5 + oy), (12, 5 + oy), (10, 4 + oy), (13, 4 + oy)], 'i1')
+        c.pxs([(11, 4 + oy), (12, 4 + oy)], 'i3')
+    else:
+        _flake_wing(c, 10, 18 + oy, flap, True)
+        c.poly([(11, 16 + oy), (15, 16 + oy), (18, 26 + oy), (8, 26 + oy)], 'i1')
+        c.poly([(11, 16 + oy), (13, 16 + oy), (11, 26 + oy), (8, 26 + oy)], 'i2')
+        c.rect(8, 26 + oy, 18, 26 + oy, 'i0')
+        c.pxs([(8, 27 + oy), (12, 28 + oy), (15, 27 + oy), (18, 27 + oy)], 'i0')
+        st = [1, 0, -1][p]
+        c.rect(12 + st, 27 + oy, 12 + st, 29 + oy + 1, 'sk')
+        c.rect(15 - st, 27 + oy, 15 - st, 29 + oy + 1, 's0')
+        c.rect(14 + st, 17 + oy, 15 + st, 17 + oy, 'sk')
+        c.rect(15 + st, 18 + oy, 16 + st, 19 + oy, 'sk')
+        # 머리
+        c.ell(7, 6 + oy, 18, 17 + oy, 'hr')
+        c.ell(8, 7 + oy, 12, 10 + oy, 'i3')
+        c.rect(12, 11 + oy, 18, 16 + oy, 'sk')
+        c.rect(12, 11 + oy, 18, 11 + oy, 'hr')
+        c.rect(7, 12 + oy, 11, 17 + oy, 'hr')
+        c.pxs([(8, 16 + oy), (10, 17 + oy), (7, 15 + oy)], 'h0')
+        c.rect(16, 13 + oy, 16, 14 + oy, 'ey')
+        c.px(17, 15 + oy, 'pk')
+        c.px(19, 14 + oy, 'sk')
+        c.pxs([(12, 3 + oy), (13, 3 + oy), (12, 5 + oy), (13, 5 + oy), (11, 4 + oy), (14, 4 + oy)], 'i1')
+        c.pxs([(12, 4 + oy), (13, 4 + oy)], 'i3')
+    return to_rgba(c.finish(), PAL_ICE)
+
+
+# ───────────────────────── 7 만드라고라 ─────────────────────────
+PAL_MANDRAKE = {
+    'ol': '#241408', 'r0': '#7a4e2a', 'r1': '#b07a44', 'r2': '#d8a868', 'r3': '#f0d09a',
+    'l0': '#1e4a1a', 'l1': '#3a8a2a', 'l2': '#72c43a', 'l3': '#c0ec6a',
+    'mo': '#4a0e14', 'fl': '#f0e2ff', 'f2': '#b88ae0',
+}
+
+
+def _mandrake_leaves(c, oy, dx=0, sway=0):
+    # 머리 위 잎 세 장 + 꽃 한 송이
+    c.poly([(11 + dx, 8 + oy), (5 + dx + sway, 1 + oy), (8 + dx + sway, 0 + oy), (12 + dx, 6 + oy)], 'l1')
+    c.poly([(12 + dx, 8 + oy), (18 + dx + sway, 1 + oy), (15 + dx + sway, 0 + oy), (11 + dx, 6 + oy)], 'l1')
+    c.poly([(11 + dx, 8 + oy), (10 + dx + sway, 1 + oy), (12 + dx + sway, -1 + oy), (13 + dx, 8 + oy)], 'l2')
+    c.line([(6 + dx + sway, 1 + oy), (11 + dx, 7 + oy)], 'l0')
+    c.line([(17 + dx + sway, 1 + oy), (12 + dx, 7 + oy)], 'l0')
+    c.px(11 + dx + sway, 1 + oy, 'l3')
+    c.px(7 + dx + sway, 1 + oy, 'l2')
+    c.px(16 + dx + sway, 1 + oy, 'l2')
+
+
+@mirror
+def mandrake(d, p):
+    c = Cel(PAL_MANDRAKE)
+    oy = 0 if p == 1 else -1
+    sway = [-1, 0, 1][p]
+    sw = [1, 0, -1][p]
+    if d in (UP, DOWN):
+        back = d == UP
+        oy2 = oy + 5
+        up = [0, None, 1][p]
+        # 잔뿌리 다리
+        for k, x in enumerate((8, 13)):
+            fy = FEET - (2 if up == k else 0)
+            c.line([(x + 1, 22 + oy), (x + 1, fy)], 'r1', 2)
+            c.px(x - 1 if k == 0 else x + 3, fy, 'r0')
+            c.px(x if k == 0 else x + 2, fy, 'r0')
+        # 가지 팔
+        c.line([(7, 16 + oy2 - 2), (4, 14 + oy2 + sw), (3, 11 + oy2 + sw)], 'r1', 1)
+        c.line([(16, 16 + oy2 - 2), (19, 14 + oy2 - sw), (20, 11 + oy2 - sw)], 'r1', 1)
+        c.px(2, 11 + oy2 + sw, 'r0')
+        c.px(21, 11 + oy2 - sw, 'r0')
+        # 뿌리 몸(순무 모양)
+        c.ell(6, 7 + oy2 - 2, 17, 20 + oy2 - 3, 'r1')
+        c.poly([(8, 16 + oy2), (15, 16 + oy2), (12, 20 + oy2), (11, 20 + oy2)], 'r1')
+        c.ell(7, 8 + oy2 - 2, 11, 12 + oy2 - 2, 'r2')
+        c.px(8, 7 + oy2, 'r3')
+        c.line([(15, 9 + oy2 - 1), (16, 13 + oy2 - 1)], 'r0')
+        c.pxs([(9, 15 + oy2), (14, 13 + oy2), (13, 17 + oy2)], 'r0')
+        _mandrake_leaves(c, oy + 4, 0, sway)
+        if back:
+            c.pxs([(10, 9 + oy2), (13, 11 + oy2), (11, 13 + oy2)], 'r0')
+        else:
+            # 비명 지르는 얼굴: 까만 두 눈, 벌린 입
+            c.rect(8, 9 + oy2, 9, 10 + oy2, 'ol')
+            c.rect(14, 9 + oy2, 15, 10 + oy2, 'ol')
+            c.ell(10, 11 + oy2, 13, 14 + oy2, 'mo')
+            c.px(11, 11 + oy2, 'ol')
+            c.pxs([(18, 5 + oy + 4 + sway), (19, 4 + oy + 4 + sway)], 'fl')
+    else:
+        oy2 = oy + 5
+        st = [1, 0, -1][p]
+        for k in (0, 1):
+            dx = st * 2 * (-1 if k == 0 else 1)
+            fy = FEET - (1 if (st != 0 and dx < 0) else 0)
+            col = 'r0' if k == 0 else 'r1'
+            c.line([(11 + dx, 22 + oy), (11 + dx, fy)], col, 2)
+            c.px(12 + dx + 1, fy, col)
+        c.line([(10, 14 + oy2), (8 - st, 16 + oy2), (7 - st, 18 + oy2)], 'r0', 1)
+        c.ell(6, 5 + oy2, 17, 17 + oy2, 'r1')
+        c.poly([(8, 16 + oy2), (15, 16 + oy2), (12, 20 + oy2), (11, 20 + oy2)], 'r1')
+        c.ell(7, 6 + oy2, 11, 10 + oy2, 'r2')
+        c.px(8, 6 + oy2, 'r3')
+        c.line([(7, 12 + oy2), (8, 15 + oy2)], 'r0')
+        c.rect(15, 9 + oy2, 16, 10 + oy2, 'ol')
+        c.ell(15, 11 + oy2, 18, 14 + oy2, 'mo')
+        c.px(18, 11 + oy2, 'ol')
+        c.line([(13, 14 + oy2), (16 + st, 16 + oy2), (18 + st, 15 + oy2)], 'r2', 1)
+        _mandrake_leaves(c, oy + 4, -1, sway)
+    return to_rgba(c.finish(), PAL_MANDRAKE)
+
+
+CHARACTERS = [treant, mushroom, kappa, kitsune, tanuki, golem, sprite_ice, mandrake]
 
 
 def build():
