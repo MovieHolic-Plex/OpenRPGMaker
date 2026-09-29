@@ -223,6 +223,22 @@
   `priority` 는 strict 턴제에서만 순서를 바꾼다(ATB 에선 무효). 자기 버서크는 녹화 큐를 멈춘다(배우가 명령을 안 받는다) — 쓰지 않았다.
 - a1.ts 의 mechanic 은 손으로 채웠다. 생성기(`lib_r2w1.py --emit a1`)로 다시 뽑으면 사라진다.
 - 녹화는 스킬마다 숫자 팝업·메시지 창 문장·상태 배지를 report.json evidence(`popups`·`lines`·`statuses`)에 남긴다. 전후 표 `.omo/r2check/a1-v2/MECHANICS.md`.
+
+#### 15칸 파티원 시트 · 크기 규칙 · 3차 몬스터 (2026-09-29)
+
+- **15칸 시트**: `RetroPartyPixelSheet.rows`(retroRoster.ts) 3 = 옛 9칸, 5 = 3×5 — 행 3 `cast_charge·cast_raise·cast_release`, 행 4 `leap·buff·finisher`
+  (`PartyPixelExtraCell`, pixelEnemySheets.ts). 칸 자리는 `partyPixelFrame`/`partyPixelBackgroundPosition`(partyPixelSheets.ts)만 쓴다 — 9칸 시트는 확장 칸을
+  windup·move·attack 으로 물린다. `retroPartyPixelCellForPose` 가 사람 포즈(시전 3단·evade·skill·defend)를 확장 칸으로 보낸다. `background-size` 는 `300% × rows·100%`.
+- **크기 규칙** `art`: 1(기본) = 칩 × 1 로 그린 시트, 화면 상자 = 셀 × 2 · 2 = 칩 × 2 로 그린 시트(b1·b3·b4 재작업), 상자 = 셀 × 1(`PartyPixelSheet.box`).
+  어느 쪽이든 칩 한 픽셀이 화면 2px 라 사람 파티원(전투 도트 = 칩 × 1)과 키가 같다. 사용자 「몬스터가 너무 크다」 실측: art 없이 칩 × 2 면 사람의 두 배였다.
+  편집기 무대(databaseSkillRetroStage)는 art 2 노드를 발 줄 기준 `scale: 0.5`. 상자가 96px 를 넘는 파티원은 반폭만큼 왼쪽으로 당긴다(무대 오른쪽 잘림 — 범선·비공정).
+- **People 준비 목록** `charsetBattlerReady.ts` 는 생성 파일이다. People 시트 PNG 가 늘면 `node scripts/content/sync-charset-battler-ready.mjs` 를 돌려야 배우가 그 시트로 선다
+  (빠졌을 때 증상: 공주 등 People 배우 40명이 전부 공용 폴백 도트로 섰다).
+- **필살기 컷인**: 시전자 스프라이트를 그 순간 칸 그대로 2배로 떠 오던 것 → 전투 시트 맨 왼쪽 위(전신 대기) 칸, 잘라내지 않고 1배, 띠에 「이름 · 스킬 이름」.
+- **3차 로스터 m4~m6**: OPRN 자체 몬스터 걷기 칩 `public/assets/generated/charsets/Monster4~6.png`(RM2K3 288×256, 생성기 `scripts/asset-gen/oprn-charset/monster<N>.py`),
+  카탈로그 `oprnMonsterCharsets.ts`(id `easyrpg-charset-monster<N>` — rosterChip 규칙과 맞추려고 RTP 접두를 쓴다, charsetCatalog·리졸버·참조 검증에 배선).
+  24직업 × 8 스킬, 전투 15칸(칩 × 1). 전체: 직업 124 · 스킬 992 · 파티원 9/15칸 시트 64.
+- 녹화 `--set party-pixel` 64/64, 묶음 m4·m5·m6·b1·b3·b4 각 64/64 통과(2026-09-29 20:56).
   a1 녹화 56/56 통과: 대가·흡수·MP 전환·다단 타수·기름→불 약점(둘째 타 1.7~2.2배)·스톱·암흑이 기록에 남았다.
   흡수 회복 문장은 `enemyActionDirectorState` 가 HP 회복을 피해로 쓰던 것을 고쳤다.
 - **상태 표시 (2026-09-29 2차, 녹화 `.omo/r2check/a1-v3/DISPLAY.md`)** — 사용자 「여전히 데미지만 주고 끝」. 원인 셋:
