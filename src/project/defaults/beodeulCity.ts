@@ -53,11 +53,18 @@ export function ensureBeodeulCityReferences(tileset: TilesetDef): boolean {
  * replaced by the shipped ones (tile tables, groups, autotiles, kits, strips). Same-count copies — including ones whose
  * author added groups or kits — are left alone. When the cell tables are replaced, the shipped reference categories (same
  * category id) are replaced too: their cell numbers belong to the old sheet. Authored categories stay; missing shipped ones are
- * added by ensureBeodeulCityReferences.
+ * added by ensureBeodeulCityReferences. A same-count copy only gains the shipped kits it lacks (by kit id).
  */
 export function ensureBeodeulCityTileset(tileset: TilesetDef): boolean {
   if (tileset.id !== BEODEUL_CITY_ID || tileset.image.type !== "bundled" || tileset.image.id !== BEODEUL_CITY_TEXTURE) return false;
-  if (tileset.count === data.count && tileset.autotileGroups?.some(group => group.id === "beodeul_road_autotile")) return false;
+  if (tileset.count === data.count && tileset.autotileGroups?.some(group => group.id === "beodeul_road_autotile")) {
+    // same sheet: only add shipped kits the copy does not have yet (round 3 block kits bd-block-*); authored and existing kits stay
+    const have = new Set((tileset.structureKits ?? []).map(kit => kit.id));
+    const missing = (data.structureKits as unknown as StructureKitDef[]).filter(kit => !have.has(kit.id));
+    if (!missing.length) return false;
+    tileset.structureKits = [...(tileset.structureKits ?? []), ...structuredClone(missing)];
+    return true;
+  }
   const fresh = createBeodeulCityTileset();
   tileset.count = fresh.count;
   tileset.tilesPerRow = fresh.tilesPerRow;
