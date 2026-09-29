@@ -468,6 +468,190 @@ for k_ in range(1, 7):
         ai=dict(description=f"버들항 잔디 무늬(원본 풀밭의 밝은 풀·들풀·꽃잎 칸을 섞은 6×6 땅, 모서리는 비어 윤곽이 네모가 아니다). 아래층만 — 빈 땅이 납작한 한 가지 잔디로 죽어 보이지 않게 흩어 찍는다.",
                 placementRules="빈 풀밭 위에 겹쳐 찍는다(길·물·건물 자리는 피한다). 빈 칸(-1)은 밑 땅을 그대로 둔다. 한 곳에 뭉치지 말고 10칸 안팎으로 띄워 흩는다.", tags=["버들항", "ground", "lawn"], role="terrain")))
 print("lawn pool", len(_pool), "distinct", len(set(_pool)))
+# ---- v8 (round 3): city BLOCK kits — a whole block in one stamp. The assistant's round-2 towns were a grid of one-house-deep rows
+# with empty lawn behind them (31-33% of the map bare): the unit of assembly was a single house. A block kit is a full block —
+# houses on both faces of a back alley, back yards with laundry / wells / sheds, a market square, a manor in its garden — cut to
+# standard sizes so it drops into a street grid. All houses keep their doors on the bottom row (no flipped kits), so a block has a
+# SOUTH face (doors → the street below the block) and, when two-row, an alley row inside the block whose two ends are exits on the
+# WEST and EAST edges (a side street must touch them). Exits are listed per kit (placementRules + the reference table).
+import random as _rnd
+_KB = {k["id"]: k for k in KITS}
+_PLAZA = next(g for g in tileGroups if g["id"] == "beodeul:plaza")["tileIds"][0]
+_LAWN_MIX = [t for k in KITS if k["id"].startswith("bd-ground-lawn-") for r in k["rows"] for t in r["tiles"] if t >= 0 and t != _gbk]
+def _walk(t): p = passability[t]; return p["up"] or p["down"] or p["left"] or p["right"]
+def _door_ok(k):
+    d = next((p for p in (k.get("parts") or []) if p["kind"] == "entrance"), None)
+    return d is not None and d["dy"] + 1 == k["height"]
+_HOUSES = [k for k in KITS if k["id"].startswith(("bd-house-h", "bd-house-i")) and _door_ok(k)]
+_SHOPS = [k for k in _HOUSES if "가게" in k["name"]]
+_HOMES = [k for k in _HOUSES if "가게" not in k["name"]]
+class _Canvas:
+    def __init__(s, w, h, ground, rng):
+        s.w, s.h = w, h; s.rng = rng
+        s.lo = [[ground() for _ in range(w)] for _ in range(h)]; s.up = [[-1] * w for _ in range(h)]
+        s.busy = [[False] * w for _ in range(h)]; s.doors = []; s.used = []
+    def free(s, k, x, y):
+        if x < 0 or y < 0 or x + k["width"] > s.w or y + k["height"] > s.h: return False
+        for j, r in enumerate(k["rows"]):
+            for i in range(k["width"]):
+                if (r["tiles"][i] >= 0 or r["upperTiles"][i] >= 0) and s.busy[y + j][x + i]: return False
+        return True
+    def stamp(s, k, x, y):
+        for j, r in enumerate(k["rows"]):
+            for i in range(k["width"]):
+                lo, up = r["tiles"][i], r["upperTiles"][i]
+                if lo >= 0: s.lo[y + j][x + i] = lo
+                if up >= 0: s.up[y + j][x + i] = up
+                if lo >= 0 or up >= 0: s.busy[y + j][x + i] = True
+        for p in (k.get("parts") or []):
+            if p["kind"] == "entrance": s.doors.append((x + p["dx"], y + p["dy"], k["id"]))
+        s.used.append((k["id"], x, y))
+    def paint(s, x, y, t):
+        s.lo[y][x] = t; s.busy[y][x] = True
+def _row(cv, pool, x0, x1, bottom, maxh, gap=0.2):
+    """houses side by side on one row whose bottoms (door rows) sit on `bottom`; no kit twice in a row; ends padded with small trees"""
+    x = x0; last = []
+    while x < x1:
+        cands = [k for k in pool if k["height"] <= maxh and x + k["width"] <= x1 and k["id"] not in last]
+        cv.rng.shuffle(cands)
+        # prefer a house that leaves either 0 or >= 3 cells (room for another house) at the end of the row
+        cands.sort(key=lambda k: 0 if (x1 - x - k["width"]) in (0,) or (x1 - x - k["width"]) >= 3 else 1)
+        k = next((k for k in cands if cv.free(k, x, bottom - k["height"] + 1)), None)
+        if k is None: break
+        cv.stamp(k, x, bottom - k["height"] + 1); last = (last + [k["id"]])[-2:]
+        x += k["width"] + (1 if cv.rng.random() < gap and x + k["width"] + 1 < x1 else 0)
+    return x
+def _scatter(cv, ids, y0, y1, tries=60, x0=0, x1=None):
+    x1 = cv.w if x1 is None else x1
+    for _ in range(tries):
+        k = _KB[cv.rng.choice(ids)]; x = cv.rng.randrange(x0, max(x0 + 1, x1 - k["width"] + 1)); y = cv.rng.randrange(y0, max(y0 + 1, y1 - k["height"] + 1))
+        if y + k["height"] > y1 or x + k["width"] > x1 or x + k["width"] > cv.w: continue
+        # keep one lawn cell clear around each prop (no clutter wall), except against the block rim
+        if all(not cv.busy[yy][xx] for yy in range(max(0, y - 1), min(cv.h, y + k["height"] + 1)) for xx in range(max(0, x - 1), min(cv.w, x + k["width"] + 1))):
+            cv.stamp(k, x, y)
+def _plain(cv):
+    return sum(1 for y in range(cv.h) for x in range(cv.w) if not cv.busy[y][x]) / (cv.w * cv.h)
+def _topup(cv, ids, target=0.2, tries=400, y0=0, y1=None):
+    """densify: props with no clearance ring until at most `target` of the block is bare lawn (the ≤40%-per-screen rule
+    leaves room for the streets around the block only if the block itself is mostly built)"""
+    y1 = cv.h if y1 is None else y1
+    for _ in range(tries):
+        if _plain(cv) <= target: break
+        k = _KB[cv.rng.choice(ids)]; x = cv.rng.randrange(0, max(1, cv.w - k["width"] + 1)); y = cv.rng.randrange(y0, max(y0 + 1, y1 - k["height"] + 1))
+        if y + k["height"] <= y1 and cv.free(k, x, y): cv.stamp(k, x, y)
+def _fill_gaps(cv, y0, y1):
+    """one-cell lawn slits between houses on a row: a 1×3 tree or a pot, so the row reads as built up"""
+    for x in range(cv.w):
+        col = [not cv.busy[y][x] for y in range(y0, y1 + 1)]
+        if all(col) and (x == 0 or cv.busy[y1][x - 1]) and (x == cv.w - 1 or cv.busy[y1][x + 1]):
+            k = _KB[cv.rng.choice(["bd-tree-eef4bc", "bd-tree-28ad5e", "bd-tree-c27062"])] if y1 - y0 + 1 >= 3 else _KB["bd-prop-planter_round"]
+            if cv.free(k, x, y1 - k["height"] + 1): cv.stamp(k, x, y1 - k["height"] + 1)
+def _alley(cv, y, ids):
+    for x in range(cv.w): cv.paint(x, y, ids[2 | 8])          # E|W: the alley runs through; its ends open onto the side streets
+YARD = ["bd-prop-laundry_rack", "bd-prop-well_roofed", "bd-prop-flowerbed", "bd-tree-f4f319", "bd-tree-e9d9b3", "bd-prop-planter_round", "bd-prop-door_pots", "bd-tree-47e17a"]
+SHOP_YARD = ["bd-prop-goods_pile", "bd-prop-crate_apple", "bd-prop-crate_cabbage", "bd-prop-veg_cart", "bd-prop-laundry_rack", "bd-prop-flower_cart"]
+def _lawn(rng):
+    return lambda: rng.choice(_LAWN_MIX) if _LAWN_MIX and rng.random() < 0.25 else _gbk
+def block_res(w, h, rng, pool, yard):
+    cv = _Canvas(w, h, _lawn(rng), rng)
+    if h >= 13:     # two rows on a back alley: north row doors on the alley (row 6), south row doors on the street below
+        _row(cv, [k for k in pool if k["height"] == 6], 0, w, 5, 6); _alley(cv, 6, ROAD_IDS)
+        _row(cv, [k for k in pool if k["height"] == 6], 0, w, h - 1, 6); _fill_gaps(cv, 0, 5); _fill_gaps(cv, 7, h - 1)
+        _scatter(cv, yard, 0, 2, 20)
+    else:           # one row on the street, back yards behind
+        _row(cv, [k for k in pool if k["height"] <= h], 0, w, h - 1, h); _fill_gaps(cv, 2, h - 1); _scatter(cv, yard, 0, h - 2, 80)
+    _topup(cv, yard + ["bd-prop-flowerbed", "bd-prop-planter_round"], 0.14, y1=h - 1)
+    return cv
+def block_market(w, h, rng):
+    cv = _Canvas(w, h, lambda: _PLAZA, rng)
+    stalls = ["bd-prop-stall_cheese_meat", "bd-prop-stall_jug_bottle", "bd-prop-stall_herb_flower", "bd-prop-stall_veg"]
+    rows = [1] if h < 13 else [1, 7]
+    for y in rows:
+        x = 1
+        while x < w - 2:
+            k = _KB[rng.choice(stalls)]
+            if x + k["width"] <= w - 1 and cv.free(k, x, y): cv.stamp(k, x, y)
+            x += k["width"] + 1 + rng.randint(0, 1)
+    cx = w // 2 - 1; cy = h - 3 if h < 13 else 5
+    if cv.free(_KB["bd-prop-well_roofed"], cx, cy): cv.stamp(_KB["bd-prop-well_roofed"], cx, cy)
+    _scatter(cv, ["bd-prop-veg_cart", "bd-prop-flower_cart", "bd-prop-crate_apple", "bd-prop-crate_cabbage", "bd-prop-bench_wood", "bd-prop-goods_pile"], 1, h - 1, 40)
+    for (x, y) in ((0, 0), (w - 1, 0)):
+        if cv.free(_KB["bd-prop-lamp_crook"], x, y): cv.stamp(_KB["bd-prop-lamp_crook"], x, y)
+    return cv
+def block_manor(w, h, rng):
+    cv = _Canvas(w, h, _lawn(rng), rng)
+    m = _KB["bd-manor-small"]; mx = 1; cv.stamp(m, mx, h - m["height"])
+    side = ["bd-prop-hedge", "bd-prop-flowerbed", "bd-prop-statue_sage", "bd-prop-bench_wood", "bd-prop-well_roofed", "bd-tree-03a8f7", "bd-tree-a80c85", "bd-tree-e9d9b3", "bd-prop-planter_round"]
+    _scatter(cv, side, 0, h, 160, x0=mx + m["width"], x1=w)
+    _scatter(cv, ["bd-tree-eef4bc", "bd-tree-28ad5e", "bd-prop-planter_round"], 0, h, 20, x0=0, x1=1)
+    _topup(cv, ["bd-prop-hedge", "bd-prop-flowerbed", "bd-prop-planter_round", "bd-tree-e9d9b3", "bd-tree-a80c85"], 0.2)
+    return cv
+def block_out(w, h, rng):
+    cv = _Canvas(w, h, _lawn(rng), rng)
+    pool = [_KB[i] for i in ("bd-out-cabin", "bd-out-cabin-small", "bd-out-house-plank", "bd-out-longhouse")]
+    yard = ["bd-out-woodpile", "bd-out-hay-barrels", "bd-out-fence-run", "bd-out-woodshed", "bd-tree-f4f319", "bd-tree-0f7ed1", "bd-prop-laundry_rack"]
+    if h >= 13:
+        _row(cv, [k for k in pool if k["height"] <= 6], 0, w, 5, 6, 0.4); _alley(cv, 6, SAND_IDS); _row(cv, [k for k in pool if k["height"] <= 6], 0, w, h - 1, 6, 0.4)
+        _scatter(cv, yard, 0, 6, 60); _scatter(cv, yard, 7, h, 60)
+    else:
+        _row(cv, pool, 0, w, h - 1, h, 0.4); _scatter(cv, yard, 0, h - 1, 120)
+    _topup(cv, yard, 0.2)
+    return cv
+def block_port(w, h, rng):
+    cv = _Canvas(w, h, lambda: _PLAZA, rng)
+    wh = _KB["bd-house-ware0"]; x = 0
+    while x + wh["width"] <= w:
+        cv.stamp(wh, x, h - wh["height"]); x += wh["width"] + 2
+    _scatter(cv, ["bd-prop-fish_crates", "bd-prop-goods_pile", "bd-prop-net_rack", "bd-prop-fish_barrel", "bd-prop-crate_fish", "bd-prop-anchor_display"], 0, h, 120)
+    _topup(cv, ["bd-prop-fish_crates", "bd-prop-goods_pile", "bd-prop-fish_barrel", "bd-prop-crate_fish", "bd-prop-net_rack"], 0.3, 400, 0, 2)
+    return cv
+def block_church(w, h, rng):
+    cv = _Canvas(w, h, _lawn(rng), rng)
+    c = _KB["bd-house-cathedral"]; cx = (w - c["width"]) // 2; cv.stamp(c, cx, 0)
+    for y in range(c["height"], h):
+        for x in range(w): cv.paint(x, y, _PLAZA)
+    for k, x, y in (("bd-prop-lamp_double", 0, c["height"]), ("bd-prop-lamp_double", w - 2, c["height"]), ("bd-prop-bench_wood", 1, h - 1), ("bd-prop-bench_wood", w - 3, h - 1)):
+        if cv.free(_KB[k], x, y): cv.stamp(_KB[k], x, y)
+    _scatter(cv, ["bd-tree-cc0fcb", "bd-tree-132848", "bd-prop-flowerbed", "bd-prop-planter_round"], 0, c["height"], 80, x0=0, x1=cx)
+    _scatter(cv, ["bd-tree-cc0fcb", "bd-tree-132848", "bd-prop-flowerbed", "bd-prop-planter_round"], 0, c["height"], 80, x0=cx + c["width"], x1=w)
+    _topup(cv, ["bd-tree-cc0fcb", "bd-tree-132848", "bd-prop-flowerbed", "bd-prop-planter_round", "bd-prop-hedge"], 0.12, y1=c["height"])
+    return cv
+BLOCKS = [
+    ("res", "주택가", "살림집 두 줄(뒷골목 사이) 또는 한 줄 + 뒷마당(빨래·우물·꽃밭·작은 나무)", [(10, 8, "a"), (14, 8, "a"), (14, 8, "b"), (20, 8, "a"), (20, 8, "b"), (14, 13, "a"), (20, 13, "a"), (20, 13, "b")],
+     lambda w, h, r: block_res(w, h, r, _HOMES, YARD)),
+    ("shop", "상가", "가게집 두 줄(뒷골목 사이) 또는 한 줄 + 뒷마당(짐·수레·상자)", [(14, 8, "a"), (20, 8, "a"), (14, 13, "a"), (20, 13, "a")],
+     lambda w, h, r: block_res(w, h, r, _SHOPS, SHOP_YARD)),
+    ("market", "시장", "판석 바닥에 노점 줄·손수레·우물·가로등 — 네 변 모두 열려 있다", [(10, 8, "a"), (14, 8, "a"), (14, 13, "a"), (20, 13, "a")], block_market),
+    ("manor", "정원 저택", "작은 저택(현관 계단이 블록 아래 변에 닿는다)과 옆 정원(산울타리·꽃밭·석상·벤치·우물·나무)", [(14, 13, "a"), (20, 13, "a")], block_manor),
+    ("out", "성 밖 목조", "통나무·판자 집 한 줄(또는 모랫길 뒷골목 두 줄) + 장작·건초·울타리·헛간 마당", [(14, 8, "a"), (20, 8, "a"), (20, 13, "a")], block_out),
+    ("port", "항구 창고", "판석 부두 바닥에 창고 줄, 사이사이 생선 궤짝·그물·통·짐 — 네 변 모두 열려 있다", [(14, 8, "a"), (20, 8, "a")], block_port),
+    ("church", "성당 앞", "첨탑 성당과 그 앞 판석 광장(가로등·벤치), 양옆 작은 나무·꽃밭", [(14, 17, "a"), (20, 17, "a")], block_church),
+]
+BLOCK_TABLE = []
+for bid, bname, bdesc, sizes, fn in BLOCKS:
+    for (bw, bh, var) in sizes:
+        rng = _rnd.Random(f"{bid}-{bw}x{bh}-{var}")
+        cv = fn(bw, bh, rng)
+        kid = f"bd-block-{bid}-{bw}x{bh}" + ("" if var == "a" else f"-{var}")
+        # exits: edge cells a person can stand on that are paving (alley/plaza/stairs), per side; door fronts just below the block
+        def paved(x, y): t = cv.lo[y][x]; return cv.up[y][x] < 0 and _walk(t) and t != _gbk and t not in _LAWN_MIX
+        ex = {"N": [x for x in range(bw) if paved(x, 0)], "S": [x for x in range(bw) if paved(x, bh - 1)],
+              "W": [y for y in range(bh) if paved(0, y)], "E": [y for y in range(bh) if paved(bw - 1, y)]}
+        fronts = sorted({dx for dx, dy, _ in cv.doors if dy == bh - 1})
+        inner = [(dx, dy + 1) for dx, dy, _ in cv.doors if dy < bh - 1]
+        ex_txt = "; ".join(f"{s} {','.join(map(str, v))}" for s, v in ex.items() if v) or "없음"
+        rule = (f"블록 {bw}×{bh}. 아래 변(y={bh}, 블록 밖) = 거리: 문 앞 칸 x={','.join(map(str, fronts)) or '없음'}(블록 원점 기준). "
+                f"가장자리 포장 칸(이 변에 길이 닿아야 이어진다): {ex_txt}. "
+                + ("안쪽 뒷골목(6행)은 서·동 끝이 출구 — 블록 양옆 중 적어도 한쪽에 남북 거리를 붙인다. " if bh >= 13 and bid in ("res", "shop", "out") else "")
+                + "블록끼리는 붙이지 말고 사이에 거리(2칸)나 골목(1칸)을 둔다.")
+        parts = [dict(id=f"door{i + 1}", kind="entrance", dx=dx, dy=dy, w=1, h=1, note=f"{kid_} 문 — 그 아래 칸이 문 앞") for i, (dx, dy, kid_) in enumerate(cv.doors)]
+        KITS.append(dict(id=kid, kind="section", name=f"버들항 블록 · {bname} {bw}×{bh}" + ("" if var == "a" else f" ({var})"), width=bw, height=bh, tileSize=16,
+                         rows=[dict(tiles=cv.lo[y], upperTiles=cv.up[y]) for y in range(bh)], learnedFrom="db-authored", parts=parts,
+                         ai=dict(description=f"버들항 도시 블록 한 칸 통째 — {bdesc}. 조각 {len(cv.used)}개(집 {sum(1 for u in cv.used if u[0].startswith(('bd-house', 'bd-out-cabin', 'bd-out-house', 'bd-out-long')))}). 두 층 모두 채워져 있어 찍은 자리의 땅을 덮는다.",
+                                 placementRules=rule, tags=["버들항", "v8", "block", bid], role="building")))
+        BLOCK_TABLE.append(dict(id=kid, type=bid, name=bname, w=bw, h=bh, fronts=fronts, inner=inner, exits=ex, pieces=len(cv.used), doors=len(cv.doors)))
+(DATA / "blocks-v8.json").write_text(json.dumps(BLOCK_TABLE, ensure_ascii=False, indent=1) + "\n")
+print("blocks", len(BLOCK_TABLE), [(b["id"], b["pieces"], b["doors"]) for b in BLOCK_TABLE])
 # no whole-city kit: the assistant composes a town from the district and house kits (the full map is the saved canon)
 # ---- NPCs ----
 people = json.loads((REND / "city6_people.json").read_text())
