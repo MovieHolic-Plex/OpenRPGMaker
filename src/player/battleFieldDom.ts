@@ -171,7 +171,35 @@ function applyPixelEnemySheet(node: HTMLElement, image: HTMLImageElement, resour
     image.style.removeProperty("--pixel-enemy-url");
     image.style.removeProperty("--pixel-enemy-idle-ms");
   });
+  // 상태 배지를 그림 머리 바로 위에 두려면 칸 위쪽 빈 줄 비율이 필요하다 — 슬라임은 칸 아래쪽만 칠해져
+  // 노드 상자 위에 달면 배지가 90px 위 박쥐 옆에 떠 박쥐 것으로 읽혔다(2026-09-29 프레임 실측).
+  probe.addEventListener("load", () => {
+    const pad = pixelSheetTopPad.get(url) ?? measureTopPad(probe, cell);
+    pixelSheetTopPad.set(url, pad);
+    node.style.setProperty("--battle-sprite-top-pad", `${Math.round(pad * 1000) / 10}%`);
+  });
   probe.src = url;
+}
+
+const pixelSheetTopPad = new Map<string, number>();
+
+/** 시트 첫 칸(대기 0번)에서 불투명 픽셀이 시작되는 줄의 비율(0~1). 읽지 못하면 0. */
+function measureTopPad(image: HTMLImageElement, cell: number): number {
+  try {
+    const canvas = document.createElement("canvas");
+    canvas.width = cell;
+    canvas.height = cell;
+    const context = canvas.getContext("2d");
+    if (!context) return 0;
+    context.drawImage(image, 0, 0, cell, cell, 0, 0, cell, cell);
+    const alpha = context.getImageData(0, 0, cell, cell).data;
+    for (let y = 0; y < cell; y += 1) {
+      for (let x = 0; x < cell; x += 1) if (alpha[(y * cell + x) * 4 + 3] > 16) return y / cell;
+    }
+    return 0;
+  } catch {
+    return 0;
+  }
 }
 
 /**
@@ -775,7 +803,9 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
     const layerRect = layer.getBoundingClientRect();
     const spriteRect = sprite.getBoundingClientRect();
     if (layerRect.height > 0 && spriteRect.height > 0) {
-      let topPx = spriteRect.top - layerRect.top + spriteRect.height * 0.3;
+      // 도트 시트는 칸 위가 비어 있을 수 있다(슬라임) — 그림 머리보다 위로 뜨지 않게 빈 줄 비율을 하한으로.
+      const topPad = (Number.parseFloat(anchor.style.getPropertyValue("--battle-sprite-top-pad")) || 0) / 100;
+      let topPx = spriteRect.top - layerRect.top + spriteRect.height * Math.max(0.3, topPad);
       // 행동 중에는 로그 배너가 필드 위에 떠 있다(z 12). 배너보다 위로 튀면 숫자가 배너 뒤로 숨는다 —
       // 2026-09-27 프레임 실측: 슬라임 머리 위 -68 이 착탄 +80~+160ms 내내 윗줄이 잘렸다.
       // 팝업은 자기 높이의 ~1.4배만큼 위로 튀므로(22-hit-feel.css bounce 정점) 그만큼 배너 아래에 둔다.
