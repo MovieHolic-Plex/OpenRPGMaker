@@ -402,7 +402,8 @@ def check(sheet, cell, airborne=('leap',)):
         if not b:
             errs.append(f'{n} empty'); continue
         rep['frames'][n] = {'bbox': list(b), 'w': b[2] - b[0], 'h': b[3] - b[1], 'bottom': b[3] - 1}
-        if b[0] < 1 or b[1] < 1 or b[2] > cell - 1 or b[3] > cell - 3:
+        # 위는 칸 안이면 된다(칩 30px × 2 + 외곽선 = 62px 인 큰 칩은 위 여백 1px 을 둘 수 없다). 옆 1px, 아래는 바닥선.
+        if b[0] < 1 or b[1] < 0 or b[2] > cell - 1 or b[3] > cell - 3:
             errs.append(f'{n} bounds {b}')
         if n not in airborne and b[3] - 1 != cell - 4:
             errs.append(f'{n} floor {b[3] - 1}')
