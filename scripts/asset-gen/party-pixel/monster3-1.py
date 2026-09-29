@@ -26,7 +26,9 @@ def draw(p, n):
         return
     lean, wag, fwd, hup = POSE[n]
     # 똬리(뒤 → 앞)
-    coil = bez([(46 + wag, 28, 1.2), (56 + wag * .5, 36, 2.2), (54, 52, 3.4), (38, 58, 4.2), (24, 56, 4.4), (22 + fwd * .3, 46, 4.4), (26 + fwd * .6, 38, 4.0)], 70)
+    tail = bez([(50 + wag, 42 - wag * .5, .8), (56 + wag * .4, 50, 1.8), (50, 56, 2.8)], 20)
+    tube(p, tail, 'T', 'o', 't')
+    coil = bez([(50, 56, 3.2), (38, 58.5, 4.2), (20, 57, 4.6), (16, 50, 4.8), (26, 47, 4.8), (22 + fwd * .6, 42, 4.6), (26 + fwd * .6, 36, 4.2)], 70)
     tube(p, coil, 'T', 'o', 't')
     for k in range(1, 9):
         x, y = ipt(coil[k * 7][:2])
@@ -34,7 +36,7 @@ def draw(p, n):
     for k in range(10, 60, 6):   # 배 비늘(아래 줄)
         x, y = ipt(coil[k][:2]); dot(p, x, y + 2, 'u')
     # 상체
-    base = (26 + fwd * .6, 38)
+    base = (26 + fwd * .6, 36)
     sh = (base[0] + lean * .6, base[1] - 12 - hup)
     mass(p, [((base[0] + sh[0]) / 2, (base[1] + sh[1]) / 2 + 1, 4.6, 7.0, lean * 2)])
     p.box((int(sh[0]) - 3, int(sh[1]) + 4, int(sh[0]) + 4, int(sh[1]) + 6), 'r')

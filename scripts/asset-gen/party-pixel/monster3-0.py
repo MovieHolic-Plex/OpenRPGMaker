@@ -13,8 +13,8 @@ PAL = dict(o='292929', s='c67e5e', b='e0a88a', l='f6d0b8', r='821018', q='bc2120
 def wing(p, root, spread, near):
     tips = []
     for k in range(4):
-        a = math.radians(-150 + spread + k * 22)
-        ln = 12 - k * 1.5
+        a = math.radians(-150 + spread * .5 + k * 26)
+        ln = 17 - k * 2
         tip = (root[0] + math.cos(a) * ln, root[1] + math.sin(a) * ln)
         p.poly([root, (root[0] + math.cos(a - .2) * ln * .6, root[1] + math.sin(a - .2) * ln * .6), tip,
                 (root[0] + math.cos(a + .25) * ln * .5, root[1] + math.sin(a + .25) * ln * .5)], 'W' if near else 'w', 'o')
@@ -22,7 +22,7 @@ def wing(p, root, spread, near):
     return tips
 
 
-SPREAD = {'idle_a': 20, 'idle_b': 34, 'idle_c': 48, 'windup': -10, 'move': 60, 'attack': 80, 'recover': 50, 'hit': 100}
+SPREAD = {'idle_a': 0, 'idle_b': 14, 'idle_c': 28, 'windup': -40, 'move': 40, 'attack': -20, 'recover': 20, 'hit': 60}
 
 
 def draw(p, n):
@@ -37,7 +37,8 @@ def draw(p, n):
     dx = {'windup': -2, 'move': 2, 'attack': 3, 'recover': 1, 'hit': -3}.get(n, 0)
     cx, top = 23 + dx, 11 + bob
     sp = SPREAD[n]
-    wing(p, (cx - 2, top + 11), sp - 20, False)
+    wing(p, (cx - 3, top + 12), sp - 20, False)
+    wing(p, (cx - 1, top + 12), sp, True)
     # 치마 + 새 다리
     p.poly([(cx - 5, top + 19), (cx + 4, top + 19), (cx + 7, top + 26), (cx - 7, top + 26)], 'v', 'o')
     p.line([(cx + 3, top + 20), (cx + 5, top + 25)], 'V')
@@ -49,10 +50,11 @@ def draw(p, n):
     p.line([(cx - 3, top + 12), (cx + 3, top + 12)], 'V')
     # 머리 + 곱슬 붉은 머리칼
     hx, hy = cx + 1, top + 5
-    for (ox, oy, r) in ((-4, 1, 3.6), (-3, -3, 3.4), (1, -4, 3.2), (-5, 5, 3), (-2, 7, 2.6)):
+    for (ox, oy, r) in ((-4, 1, 3.4), (-3, -3, 3.2), (0, -4, 3.0), (-5, 5, 2.8), (-3, 7, 2.4)):
         blob(p, hx + ox, hy + oy, r, r, 0, keys={'l': 'Q', 'b': 'q', 's': 'r'})
     blob(p, hx + 1, hy + 1, 3.6, 3.8, 0)
-    blob(p, hx - 1, hy - 3, 3.4, 2, 0, keys={'l': 'Q', 'b': 'q', 's': 'r'})
+    blob(p, hx - 1, hy - 3, 3.2, 1.8, 0, keys={'l': 'Q', 'b': 'q', 's': 'r'})
+    p.line([(hx + 2, hy + 3), (hx + 3, hy + 3)], 's')
     if n == 'hit':
         eyes(p, hx + 2, hy, 'x')
     elif n == 'windup':
@@ -68,7 +70,6 @@ def draw(p, n):
             p.arc_pts = None
             r = 4 + k * 3
             p.d.arc((hx + 6 - r, hy + 3 - r, hx + 6 + r, hy + 3 + r), -40, 40, fill=p.pal['k'] if k == 0 else p.pal['W'])
-    wing(p, (cx + 1, top + 11), sp, True)
 
 
 if __name__ == '__main__':
