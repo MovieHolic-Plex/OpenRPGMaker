@@ -98,3 +98,9 @@ Colours: poison yellow-green + violet, darkness violet/black/crimson, ice blue-w
 Checks: size, binary alpha, ≤16 colours, no empty frame, neighbouring frames differ, isolated pixels (counted before edge dithering).
 Review output: `.omo/mfx/<key>-preview.png` and `.omo/mfx/board-18_35(-partN).png`, a mock stage on #405838 with a monster square and actor1-0 at 2x.
 
+
+## retro2003 2차 로스터 p2·p3 (r2w3, 2026-09-29)
+
+- 목록 정본 `r2w3_skills.py` → `python3 r2w3_emit.py p2 p3` 가 `src/assets/retroRosterSkills/p2.ts·p3.ts` 를 쓴다. 공용 모듈 `lib_r2w3.py`.
+- p2 직업별 모듈 `r2w3_<class>.py`(8개). p3 는 새 시트 16장을 `r2w3_p3.py` 한 파일에 두고, 나머지 층은 `reuse()` 로 기존 시트를 읽기만 한다(스킬당 새 시트 ≤ 1, emit 이 검사).
+- 생성 전 묶음 파일의 frame·frames·anchor 가 등록값과 다르면 멈춘다(`check_contract`). 검토판은 `.omo/r2w3/<batch>/`.

@@ -97,6 +97,87 @@ CLASSES = [
         S('checkmate', '체크메이트', 'leap-strike', '체스판을 펼치고 킹 말을 떨어뜨려 적을 짓누른다', 'noble_checkmate'),
         S('grand_duel', '귀족의 결투', 'finisher', '가문 깃발 아래 수십 번의 찌르기로 적진을 꿰뚫는 필살기', 'noble_duel_sky', 'noble_duel_hit'),
     ]),
+    # ── p3: 스킬 하나당 새 시트 최대 1장(나머지는 기존 시트 재사용). 새 시트 16장은 r2w3_p3.py ──
+    dict(batch='p3', classId='class_princess', ck='princess', chip='people3-3', name='공주', mod='r2w3_p3', skills=[
+        S('prayer', '기도', 'cast', '두 손을 모아 기도해 아군 하나를 치유한다', 'cleric_heal'),
+        S('star_wand', '별빛 지팡이', 'cast', '별 지팡이에서 빛의 탄을 쏘아 적을 친다', 'mage_missile_orb', 'mage_missile_hit'),
+        S('royal_slap', '공주의 따귀', 'dash-strike', '달려가 따귀를 올려 적을 비틀거리게 한다', 'guard_bash'),
+        S('blessing_song', '축복의 노래', 'buff', '맑은 노래로 아군 전체의 힘을 북돋는다', 'bard_hymn', 'cleric_blessing'),
+        S('purify_tear', '정화의 눈물', 'cast', '눈물 한 방울로 아군의 상태이상을 씻어낸다', 'cleric_purify'),
+        S('rose_barrier', '장미 결계', 'buff', '장미 덩굴 결계로 아군 전체를 감싸 지킨다', 'princess_rose_barrier'),
+        S('miracle', '왕가의 기적', 'cast', '왕가의 기도로 쓰러진 아군을 일으킨다', 'cleric_revive'),
+        S('grand_chorus', '축복의 대합창', 'finisher', '티아라가 강림하고 꽃비가 쏟아져 아군 전체를 치유하는 필살기', 'princess_hymn_sky', 'cleric_mass_heal'),
+    ]),
+    dict(batch='p3', classId='class_archmage', ck='archmage', chip='people3-4', name='대마법사', mod='r2w3_p3', skills=[
+        S('flare', '플레어', 'cast', '지팡이 끝의 불덩이를 날려 크게 터뜨린다', 'mage_fireball_orb', 'mage_fire_burst'),
+        S('frost_lance', '빙창', 'cast', '얼음 창을 날려 적을 얼린다', 'ranger_frost_arrow', 'mon_frost_burst'),
+        S('thunder_chain', '뇌격 연쇄', 'cast', '번개가 적에서 적으로 튄다', 'mage_chain_bolt'),
+        S('elemental_prism', '원소 프리즘', 'cast', '수정 프리즘에서 네 원소 광선이 갈라져 내리꽂힌다', 'archmage_prism'),
+        S('arcane_ward', '비전 장벽', 'buff', '푸른 마법진 방벽을 두른다', 'mage_mana_shield'),
+        S('blink', '순간이동 일격', 'blink-strike', '순간이동으로 적 앞에 나타나 지팡이로 후려친다', 'scout_shadow_puff', 'guard_bash'),
+        S('meteor_swarm', '메테오 스웜', 'cast', '운석 무리를 모든 적에게 떨어뜨린다', 'mage_meteor_rock', 'mage_meteor_blast'),
+        S('grand_fusion', '원소 대융합', 'finisher', '네 원소를 한 점에 모아 백색 폭발을 일으키는 필살기', 'archmage_elements_sky', 'mage_star_hit'),
+    ]),
+    dict(batch='p3', classId='class_heavy_knight', ck='heavy_knight', chip='people3-5', name='중갑병', mod='r2w3_p3', skills=[
+        S('shield_charge', '방패 돌격', 'dash-strike', '방패를 앞세워 돌진해 적을 밀쳐낸다', 'guard_charge', 'hero_dust'),
+        S('provoke', '도발', 'buff', '방패를 두드려 적의 시선을 끈다', 'guard_taunt'),
+        S('iron_wall', '철벽 방진', 'buff', '방패를 겹쳐 아군 전체를 지키는 방진을 짠다', 'guard_barrier'),
+        S('mace_crush', '철퇴 분쇄', 'leap-strike', '뛰어올라 철퇴로 내려찍어 땅을 가른다', 'heavy_knight_mace_crush'),
+        S('counter_stance', '반격 태세', 'buff', '방패를 세우고 반격 자세를 취한다', 'guard_counter'),
+        S('shield_bash', '방패 강타', 'dash-strike', '방패 모서리로 쳐서 적을 기절시킨다', 'guard_bash'),
+        S('earthquake', '대지 진동', 'leap-strike', '온몸의 무게로 땅을 찍어 모든 적을 흔든다', 'guard_quake', 'guard_quake_ring'),
+        S('bulwark_march', '철갑 진격', 'finisher', '탑방패의 벽을 세워 적진을 밀어붙이는 필살기', 'heavy_knight_bulwark_sky', 'guard_fortress_slam'),
+    ]),
+    dict(batch='p3', classId='class_mercenary', ck='mercenary', chip='people3-6', name='용병', mod='r2w3_p3', skills=[
+        S('cleave', '내려베기', 'dash-strike', '도끼로 정수리부터 크게 내려벤다', 'mon_cleave_arc'),
+        S('axe_throw', '도끼 던지기', 'shoot', '도끼를 회전시켜 던져 적을 찍는다', 'mercenary_axe_spin', 'ranger_power_hit'),
+        S('battle_cry', '전장의 함성', 'buff', '전장에서 단련된 함성으로 아군 공격력을 올린다', 'hero_warcry'),
+        S('whirl_axe', '회전 도끼', 'spin', '적진 한가운데서 도끼를 휘돌려 모두를 벤다', 'hero_whirl'),
+        S('veteran_eye', '노련한 눈', 'buff', '전장 경험으로 빈틈을 읽어 회피와 급소율을 높인다', 'scout_afterimage'),
+        S('ground_split', '대지 가르기', 'leap-strike', '뛰어올라 도끼로 땅을 쪼개 모든 적에게 균열을 보낸다', 'mon_quake_crack', 'hero_meteor_impact'),
+        S('berserk_chop', '난도질', 'flurry', '도끼를 쉴 새 없이 휘둘러 연속으로 찍는다', 'scout_flurry'),
+        S('warlord', '전장의 군주', 'finisher', '쌍도끼가 X 자로 화면을 가르는 필살기', 'mercenary_warlord_sky', 'mon_cleave_arc'),
+    ]),
+    dict(batch='p3', classId='class_dragoon', ck='dragoon', chip='people3-7', name='용기사', mod='r2w3_p3', skills=[
+        S('lance_thrust', '창 찌르기', 'dash-strike', '창을 곧게 내질러 적을 꿰뚫는다', 'hero_pierce'),
+        S('jump', '점프', 'leap-strike', '하늘 높이 뛰어올라 창을 수직으로 내리꽂는다', 'dragoon_dive'),
+        S('dragon_breath', '용의 숨결', 'cast', '창끝에 용의 불꽃을 모아 적을 태운다', 'ninja_fire_breath'),
+        S('lance_throw', '투창', 'shoot', '창을 던져 적을 꿰뚫는다', 'ranger_arrow', 'mon_spear_pierce'),
+        S('dragon_spirit', '용혼', 'buff', '용의 기운을 둘러 공격력을 끌어올린다', 'hero_flame_aura'),
+        S('sweeping_lance', '창 휘두르기', 'spin', '창을 크게 돌려 모든 적을 쓸어낸다', 'hero_whirl'),
+        S('high_jump', '하이 점프', 'leap-strike', '더 높이 뛰어 떨어지는 힘으로 적진을 흔든다', 'hero_meteor_trail', 'hero_meteor_impact'),
+        S('dragon_ascent', '용기사의 비상', 'finisher', '푸른 용의 날개 아래 빛의 창을 떨어뜨리는 필살기', 'dragoon_dragon_sky', 'hero_brave_burst'),
+    ]),
+    dict(batch='p3', classId='class_villager', ck='villager', chip='people4-0', name='마을 청년', mod='r2w3_p3', skills=[
+        S('club_swing', '몽둥이질', 'dash-strike', '뛰어가 몽둥이로 힘껏 후려친다', 'guard_bash'),
+        S('sling_stone', '돌팔매', 'shoot', '돌멩이를 던져 적의 머리를 맞힌다', 'mon_rock_burst'),
+        S('deep_breath', '심호흡', 'buff', '숨을 고르고 기운을 되찾아 HP를 회복한다', 'monk_meditate'),
+        S('pebble_storm', '돌팔매 세례', 'shoot', '돌멩이를 한 움큼씩 던져 모든 적에게 퍼붓는다', 'villager_pebbles'),
+        S('wild_swing', '막무가내 휘두르기', 'flurry', '몽둥이를 막무가내로 휘둘러 여러 번 때린다', 'monk_fist_flurry'),
+        S('cheer_up', '힘내자', 'buff', '마을 노래로 아군 전체의 기운을 북돋는다', 'bard_notes_red'),
+        S('dash_tackle', '몸통 박치기', 'dash-strike', '온몸으로 들이받아 적을 쓰러뜨린다', 'guard_charge', 'hero_dust'),
+        S('village_mob', '마을 총출동', 'finisher', '마을 사람들이 몰려나와 온갖 것을 퍼붓는 필살기', 'villager_mob_sky', 'mon_rock_burst'),
+    ]),
+    dict(batch='p3', classId='class_tribal', ck='tribal', chip='people4-1', name='부족 전사', mod='r2w3_p3', skills=[
+        S('boomerang', '부메랑', 'shoot', '부메랑을 던져 적을 치고 되돌려 받는다', 'tribal_boomerang', 'ranger_arrow_hit'),
+        S('war_howl', '전쟁 함성', 'buff', '부족의 함성으로 아군 전체의 공격력을 올린다', 'mon_howl_ring'),
+        S('beast_claw', '맹수 발톱', 'dash-strike', '맹수처럼 파고들어 할퀸다', 'druid_claw'),
+        S('vine_trap', '덩굴 덫', 'cast', '땅에 숨긴 덩굴 덫으로 모든 적을 묶는다', 'druid_roots'),
+        S('spin_throw', '회전 투척', 'spin', '몸을 돌려 부메랑 여럿을 던져 모든 적을 벤다', 'samurai_wind_hit'),
+        S('war_dance', '전투 춤', 'buff', '북소리에 맞춘 춤으로 몸을 달군다', 'bard_notes_red'),
+        S('leap_smash', '도약 강타', 'leap-strike', '높이 뛰어 부메랑으로 내려찍는다', 'monk_rising_kick'),
+        S('spirit_call', '조상신의 부름', 'finisher', '토템과 독수리 정령을 불러 적진을 휩쓰는 필살기', 'tribal_spirit_sky', 'druid_tree_hit'),
+    ]),
+    dict(batch='p3', classId='class_fortune_teller', ck='fortune_teller', chip='people4-2', name='점성술사', mod='r2w3_p3', skills=[
+        S('star_bolt', '별빛 탄', 'cast', '별 지팡이에서 빛의 탄을 쏜다', 'mage_missile_orb', 'mage_star_hit'),
+        S('moon_ray', '월광', 'cast', '은빛 달빛 기둥을 적에게 내린다', 'druid_moonbeam'),
+        S('horoscope', '별점', 'buff', '황도 12궁을 돌려 아군 전체의 운을 올린다', 'fortune_teller_zodiac'),
+        S('gravity_star', '중력성', 'cast', '검은 별을 떨어뜨려 적을 짓누른다', 'mage_gravity'),
+        S('dream_star', '꿈별', 'cast', '잔잔한 별노래로 모든 적을 재운다', 'bard_notes_blue'),
+        S('star_step', '별의 걸음', 'blink-strike', '별빛으로 사라졌다 나타나 지팡이로 찌른다', 'scout_shadow_puff', 'mage_missile_hit'),
+        S('meteor', '운석 낙하', 'cast', '하늘에서 운석을 불러 모든 적에게 떨어뜨린다', 'mage_meteor_rock', 'mage_meteor_blast'),
+        S('heaven_collapse', '천궁 붕괴', 'finisher', '별자리를 그린 뒤 별똥별 비를 쏟아붓는 필살기', 'fortune_teller_meteor_sky', 'mage_star_hit'),
+    ]),
 ]
 
 
@@ -114,5 +195,5 @@ def build_class(class_id, argv):
     load_all()
     keys = []
     for sk in cl['skills']:
-        keys += [k for k in sk['layers'] if k not in keys]
+        keys += [k for k in sk['layers'] if k not in keys and k in L.REG]
     return L.make_class(cl['batch'], cl['ck'], keys, cl['skills'], cl['chip'], argv)

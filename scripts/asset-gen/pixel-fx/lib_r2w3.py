@@ -24,6 +24,18 @@ from fx_edge import fade_edges, fade_oval
 
 CX, GY, CY = 32, 56, 40
 REG = {}
+# 이미 있는 시트(retroClassSkills.ts·retroMonsterSkills.ts 의 키)를 재사용하는 층. 그리지 않고 PNG 를 읽기만 한다.
+EXT = {}
+
+
+def reuse(key, anchor, frame, frames, side='enemy'):
+    assert key not in REG, key
+    assert (OUT / f'{key}.png').exists(), f'{key}: 기존 시트가 없다'
+    EXT[key] = dict(key=key, anchor=anchor, frame=frame, frames=frames, side=side)
+
+
+def spec(key):
+    return REG.get(key) or EXT[key]
 
 
 def sheet(key, anchor, frame, frames, pal, peak=None, side='enemy'):
@@ -432,7 +444,7 @@ def stage_composite(batch, skills, chip, name, cols=4):
     panels = []
     for si, sk in enumerate(skills):
         keys = [l for l in sk['layers']]
-        n_ref = max(REG[k]['frames'] for k in keys)
+        n_ref = max(spec(k)['frames'] for k in keys)
         for stepi in (0.28, 0.5, 0.78):
             p = Image.new('RGBA', (W, H), BG)
             p.alpha_composite(Image.new('RGBA', (W, 34), (0x2a, 0x34, 0x52, 255)), (0, 146))
@@ -441,7 +453,7 @@ def stage_composite(batch, skills, chip, name, cols=4):
             for ax, ay in a_feet[:1]:
                 p.alpha_composite(actor, (ax - 48, ay - 88))
             for k in keys:
-                r = REG[k]; fr = r['frame']; cells = LM.cells_of(k, fr)
+                r = spec(k); fr = r['frame']; cells = LM.cells_of(k, fr)
                 f = min(len(cells) - 1, int(stepi * len(cells)))
                 cell = cells[f].resize((fr * 2, fr * 2), Image.NEAREST)
                 anc = r['anchor']
