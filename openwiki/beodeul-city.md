@@ -1,7 +1,8 @@
-# 버들항 v6 — 로마풍 항구 도시를 편집기 맵·공용 타일셋으로 (beodeul_city)
+# 버들항 v6·v7 — 로마풍 항구 도시를 편집기 맵·공용 타일셋으로 (beodeul_city)
 
 2026-09-28. Python 손 도트 합성 그림이던 버들항 v6(100×100, 16px, 세 단)을 **그림 그대로** 편집 가능한 맵과 공용 번들 타일셋으로 옮겼다.
 조수(에디터 AI)가 이 타일셋의 참고문서만 보고 「버들항 비슷한 도시」를 깔 수 있는지도 실제 모델로 시험했다(아래 「조수 시험」).
+2026-09-29 라운드 2(v7): 오토타일·새 키트·원본과 다른 예시 배치 둘·배치 자를 더하고 조수를 「원본 복제 금지」 과제로 다시 시험했다(아래 「라운드 2」).
 
 ## 무엇이 어디에 있나
 
@@ -9,15 +10,17 @@
 |---|---|
 | 그리기 파이프라인 (Python) | `scripts/content/lib/city_v6/` — 입구 `city6.py`, 키트 `city6_kits.py`, 소품 `city6_props.py`, 렌더 `city6_render.py`, 움직임 `city6_anim.py`, 메타 `meta.json`, QA `qa-v6.json`. 출력 폴더는 `CITY6_OUT`(기본 `/tmp/j8city6`). 바탕 칩셋 사본 `assets/jungle-chipset-v6.png`(v6 를 그릴 때의 정글 시트, 뒤에 바뀐 번들 시트와 달라 고정), 잔디·물 견본 `assets/lawn16.png`·`water16.png` — **이제 `/tmp`·홈 폴더를 읽지 않는다**(옛 `addons2.py` 가 `/tmp/j8city` 를 경로 맨 앞에 넣어 모듈 13개가 거기서 읽혔다) |
 | 편집기 쪽 추가 출력 | `city6_render.py` 가 같은 실행에서 `city6_ground.png`(물체 전 땅), `city6_grid.json`(점유·단·절벽·물·문·계단·다리·잔교), `city6_objects.json`+`objects/*.png`(물체마다 투명 그림), `city6_houses.json`, `city6_people.json`(주민) 을 더 쓴다. `CITY6_NO_PEOPLE=1` 이면 주민 그림만 빼고 그린다(주민은 이벤트가 된다) |
-| 칸 자르기 | `python3 scripts/content/build-beodeul-city.py` (`--no-render` = 렌더 다시 안 함) → `public/assets/beodeul-city/beodeul-city-chipset.png`(2048×2848, 128열, 22,784칸), `src/assets/beodeulCityTileset.json`, `src/assets/beodeulCitySheet.json`, `tiledata/beodeul-city/map.json` |
+| 칸 자르기 | `python3 scripts/content/build-beodeul-city.py` (`--no-render` = 렌더 다시 안 함) → `public/assets/beodeul-city/beodeul-city-chipset.png`(v7: 2048×2992, 128열, 23,936칸), `src/assets/beodeulCityTileset.json`, `src/assets/beodeulCitySheet.json`, `tiledata/beodeul-city/map.json` |
 | 원본 렌더 사본 | `tiledata/beodeul-city/render/`(주민 없음, 칸을 자른 원본) · `render-full/`(주민 포함 = `/tmp/j8city6/city6.png` 와 화소 0 차이) |
-| 타일셋 정의 | `src/project/defaults/beodeulCity.ts` `createBeodeulCityTileset` / `ensureBeodeulCityReferences` |
+| 타일셋 정의 | `src/project/defaults/beodeulCity.ts` `createBeodeulCityTileset` / `ensureBeodeulCityTileset`(칸 수가 다른 옛 사본의 칸 표·키트·오토타일과 같은 id 번들 용도를 새것으로) / `ensureBeodeulCityReferences`(빠진 용도 추가) |
 | 공용 배포 | `src/assets/bundled.ts` 한 줄(`tex_beodeul_city`) + `bundledChipsetGeometry.ts`(128열) → `defaultAssets.ts` `ensureBundledTilesets` 가 새 프로젝트·기존 프로젝트 모두에 만든다. `tilesetHarness/combinedTown.ts` 의 RM2k3 투명 칩 표에서 뺐다(칸 층은 렌더에서 잘랐다) |
-| AI 참고문서 | `python3 scripts/content/prepare-beodeul-city-references.py` → `src/assets/beodeulCityReferences.json`(용도 4 · MD 17 · 그림 21, 그림은 `/assets/beodeul-city/references/*.png` 경로 — 바이트 없음) + MD 사본 `tiledata/beodeul-city/references/*.md` + 변조 검사 결과 `tiledata/beodeul-city/qa-tamper-checks.json` |
-| 정본 저장 | `node scripts/content/save-beodeul-city.mjs` → `.oprn-projects/beodeul-city-20260928`(git 밖), 증거 `tiledata/beodeul-city/storage-proof.json` |
+| AI 참고문서 | `python3 scripts/content/prepare-beodeul-city-references.py` → `src/assets/beodeulCityReferences.json`(v7: 용도 6 · MD 24 · 그림 44 · JSON 218KB · 그림 3.4MB(128색 팔레트 PNG); v6 는 용도 4 · MD 17 · 그림 21, 그림은 `/assets/beodeul-city/references/*.png` 경로 — 바이트 없음) + MD 사본 `tiledata/beodeul-city/references/*.md` + 변조 검사 결과 `tiledata/beodeul-city/qa-tamper-checks.json` |
+| 정본 저장 | `node scripts/content/save-beodeul-city.mjs` → v7 `.oprn-projects/beodeul-city-r2-20260929`(git 밖, 맵 `beodeul_v7`), 증거 `tiledata/beodeul-city/storage-proof-r2.json` (v6: `beodeul-city-20260928`, `storage-proof.json`) |
+| 예시 배치·배치 자 | `bun scripts/content/author-beodeul-layouts.mts [--only hilltop\|estuary]`(배치 정의 `scripts/content/lib/beodeul-layout-specs.ts`, 자 `scripts/content/lib/beodeul-metrics.ts`) → `verify-shots/beodeul-layouts/<id>/`(render·recipe·metrics·map·변조 그림 `err-layout-*.png`·`tampers.json`). 배치 하나 약 3분 |
+| v7 그림 추가분 | `scripts/content/lib/city_v6/terrain7.py`(오토타일 16변형) · `road_fix7.py`(두 번째 길 감사) · `kits7_common.py`/`kits7_manor.py`/`kits7_outskirts.py` → `tiledata/beodeul-city/kits7/*.json·up.png·lo.png`(저택 40·외곽 55 키트) |
 | 재로드 렌더·화소 비교 | `bun scripts/content/render-beodeul-city.mts` → `verify-shots/beodeul-assistant/reloaded-render.png`, `pixel-diff.json`, `diff-*.png` |
-| 조수 시험 | `bun scripts/qa/beodeul-assistant-run.mts --project <폴더> --label fresh|existing --map <id> --new 100x100` → `verify-shots/beodeul-assistant/<label>/` |
-| 증거 페이지 | `~/claude-viz/beodeul-assistant-proof.html` (http://mdc-server:18301/beodeul-assistant-proof.html) |
+| 조수 시험 | `bun scripts/qa/beodeul-assistant-run.mts --project <폴더> --label fresh|existing --map <id> --new 100x100` → `verify-shots/beodeul-assistant-r2/<label>/`(라운드 1 결과는 `verify-shots/beodeul-assistant/`). 빈 폴더면 편집기 「새 프로젝트」와 같은 빈 프로젝트에서 시작 |
+| 증거 페이지 | 라운드 1 `~/claude-viz/beodeul-assistant-proof.html`, 라운드 2 `~/claude-viz/r2-beodeul.html` (http://mdc-server:18301/r2-beodeul.html) |
 
 ## 칸 자르기 규칙
 
@@ -70,6 +73,66 @@ Pi 런타임(`runPiAgent`, 채팅 패널과 같은 도구·참고문서 읽기 �
 실패 2회는 두 번 모두 첫 `fill_region` 이 `layer is not defined` 로 죽은 편집기 버그(`constructionTools.ts` 결과 data 의 없는 변수)였다 — 고쳤다.
 다음에 고칠 것: 강 전체를 한 키트로, 길 포석·물가에 오토타일, 문서의 「원본 좌표 = 정답」을 「원본은 예시, 새 배치 규칙」으로.
 
+## 라운드 2 (2026-09-29, v7) — 원본이 아닌 도시를 가르치기
+
+라운드 1 조수는 구역 키트를 원본 좌표에 찍어 원본의 65%를 복사했다. 라운드 2 의 목표는 **같은 조각으로 다른 배치**를 깔게 하는 것.
+
+### 무엇을 더했나
+- **오토타일 셋**(`terrain7.py`, 16변형 N=1 E=2 S=4 W=8): `버들항 길 포석`(연석 2px) · `버들항 물`(돌 둑, 8장면) · `버들항 모랫길`(잔디 가장자리).
+  `edgeConnects`+`outsideConnects` 둘 다 켰다 — `shapeAutotileGroupAround` 는 앞의 것, `fill_region` 이 쓰는 `resolveAutotile` 은 뒤의 것만 본다.
+  맵 가장자리는 이어진 것으로 봐서 길·강이 맵 밖으로 나가는 모양이 된다.
+- **강·폭포·다리·항구 키트 10**: 라운드 1 에서 어느 키트에도 없던 윗 강 74칸(`bd-river-upper`), 곧은 강·운하·굽이, 아치 다리, 폭포 둘, 호수 항구(83×15), 항구 광장.
+- **귀족 저택 4 + 정원 2 + 부품 34**(`kits7_manor.py`), **성 밖 목조집·우물 광장·장작 + 부품 49**(`kits7_outskirts.py`). 부품 조립표는 `tiledata/beodeul-city/kits7/*.json` 의 `assembly`.
+- **잔디 무늬 조각 6**(`bd-ground-lawn-*`): 원본엔 6×6 빈 풀밭이 없어서(빈 칸 738개가 전부 틈) 밝기가 같은 잔디 칸 10종을 고정 난수로 섞어 만든다.
+- **구역 키트 가장자리 정리**: 이웃 집·지붕 꼭지를 잘라 내고(그림자 칸은 같은 종류의 그림자 없는 칸으로), 왕성 양 끝 성벽 기둥·저택 옆 강 한 줄 → 잔디, 해자 양 끝은 물 오토타일 막힌 끝.
+- **v6 잔결함**: 나무 변형·색조, 빨랫줄 5줄, 밀 색(`wheat7`, 칩셋 색만), 두 번째 길 감사(`road_fix7.py`), 넷째 다리, 잔교를 땅으로.
+- **그리기 파이프라인이 /tmp 를 읽던 마지막 구멍**: `pj_demo.py` 가 `sys.path` 맨 앞에 `/tmp/j8city` 를 넣어, 그 뒤 모듈(shapes·pi·pz·roman·sheet2)이 전부 /tmp 사본에서 왔다.
+  v7 의 밀·빨래 색 수정이 렌더에 안 들어간 이유가 이것이었다. 고친 뒤 렌더 차이 7,055화소(밀·건초·빨래), 칸 번호는 그대로.
+  확인법: `python3 -c "import sys;sys.path.insert(0,'.');import palette;palette.apply();import pv,shapes;print(shapes.__file__)"` (lib/city_v6 에서) → lib 경로여야 한다.
+
+### 예시 배치 둘과 배치 자
+`scripts/content/author-beodeul-layouts.mts` 가 편집기 도구만으로 「언덕 위 성읍」(`hilltop`)과 「강어귀 항구」(`estuary`)를 깔고,
+`beodeul-metrics.ts` 로 잰다. 둘 다 원본과 같은 칸 0.45%·0.53%, 결함 0, 문 43·52곳 모두 포장 길망 도달.
+
+배우며 찾은 도구 함정:
+- `fill_region` 은 칠한 칸 옆 **한 칸 틈**(벽 사이 잔디)을 메운다(요약의 「벽 틈 메움 N칸」). 키트 둘레에 잔디 칸이 있는 포룸·풍차 옆에 거리를 나중에 칠하면
+  짧은 길 토막이 생긴다 → 그 거리를 먼저 칠하고 키트를 찍은 뒤, 출구 칸만 다시 칠해 연석을 맞춘다.
+- 칸별 이웃 수로 막다른 길을 재면 2칸 폭 거리의 끝(이웃 2)은 안 보인다 → `deadEndStreets`(끝 줄 2~3칸 검사).
+- 잔디 무늬 조각은 땅 키트라 「키트가 소유한 칸」에서 뺀다(뺐더니 그 위에 깐 막다른 길이 보였다).
+- 변조 4종(문 앞 궤짝 · 막다른 곁길 · 같은 집 셋 · 다리+둑길 빠짐)을 같은 자로 검출해 참고문서의 오류 그림으로 쓴다.
+
+### 참고문서 (v7)
+용도 6 · MD 24 · 그림 44. 「도시 한 장 조립」을 「원본은 예시」로 다시 썼고, 「배치 규칙」(구역 키트 17종 출구 칸 표·거리 끝 규칙·집 줄·다리 갑판 행·물),
+예시 배치 둘(도구 순서·100×100 역할 격자·렌더), 「자동타일과 강·폭포·다리·항구」, 「귀족 저택과 성 밖 목조 마을」 용도를 더했다.
+그림은 128색 팔레트 PNG 그대로 저장한다(RGB 로 되펴 저장하던 것을 바꿔 9.0MB → 3.4MB). 번들 JSON 220KB, 이미지 바이트 없음.
+옛 시트(칸 수가 다른) 사본은 `ensureBeodeulCityTileset` 이 칸 표와 **같은 id 의 번들 용도**를 새것으로 바꾼다(칸 번호가 옛 시트 것이라). 저자 용도는 그대로.
+
+### 정본 (v7)
+project id `6f86ae29-f2a4-4c06-a396-511f972cea52`, `.oprn-projects/beodeul-city-r2-20260929`, 맵 `beodeul_v7`, revision 2.
+재로드 deepEqual 프로젝트·맵·타일셋 true, 통행 불일치 0/10,000(걸음 2,943), 재로드 렌더 대 주민 없는 원본 0화소 차이.
+
+### 조수 재시험 (klb/claude-opus-5.5, 「원본 좌표에 찍지 말고 새로 설계, 예시도 베끼지 말 것」)
+`bun scripts/qa/beodeul-assistant-run.mts … --label fresh|existing --map beodeul_like --new 100x100`, 증거 `verify-shots/beodeul-assistant-r2/{fresh,existing}/`.
+
+| | 새 프로젝트 | 기존 프로젝트(소금 평원 필드 사본) |
+|---|---|---|
+| project id / 폴더 | `ecb372c8-…` `.oprn-projects/beodeul-assistant-r2-fresh` | `dc69bd7c-…` `.oprn-projects/beodeul-assistant-r2-existing` |
+| 시간 · 턴 · 도구 호출(실패) | 50분(Pi 실행 상한 3000초에서 멈춤) · 38 · 192(0) | 42분(스스로 끝냄) · 40 · 224(1 — 참고문서 선행 읽기 게이트) |
+| 참고문서 | list 7 · read 41 | list 7 · read 29 |
+| 원본과 같은 칸 | **0.45%** (라운드 1: 65.1%) | **0.43%** (라운드 1: 64.8%) |
+| 예시 배치와 같은 칸(대부분 빈 잔디) | 언덕 위 10.2% · 강어귀 14.4% | 8.0% · 12.8% |
+| 구역 키트(원본 원점에 찍음) | 성·저택·포룸·성당·풍차 5/5 + 호수 항구, 원점 일치 0 | 5/5 + 호수 항구, 원점 일치 0 |
+| 새 키트 쓴 것 | 저택 1, 목조집 11, 다리 4, 항구 광장 | 저택 1 + 정원 2, 목조집 5, 다리 4, 잔디 무늬 23 |
+| 집 · 나무 · 소품 | 40 · 26 · 7 | 53 · 36 · 6 |
+| 문 → 육지 / 포장 길망 | 50/50 · 50/50 | 58/58 · 58/58 |
+| 막다른 칸 / 막다른 넓은 거리 / 물에 끝남 / 막힌 문 앞 / 같은 조각 일렬 | 1 / 1 / 1 / 0 / 0 | 2 / 1 / 0 / 0 / 0 |
+| 저장 후 재로드 | 맵 동일 true, 저장소 두 번 읽기 동일 | 맵 동일 true, 저장소 두 번 읽기 동일 |
+
+「새 프로젝트」는 도중에 키트 가장자리 정리 전 번들(반쪽 이웃 집이 붙은 포룸 등)로 돌았다 — 실행 중에 번들을 고쳤다. 「기존 프로젝트」는 정리 후 번들이다.
+프로젝트 전체 deepEqual 은 두 결과 모두 false 로 기록됐다: 실행 결과 객체 대 저장소 재로드의 차이는 기존 프로젝트에서 `database`(actors·classes…)·`system.titleScreen`,
+즉 저장소가 옛 데이터를 읽으며 채우는 기본값이다. 맵은 칸까지 같고, 저장소를 두 번 읽은 결과끼리는 deepEqual true·sha 같음.
+판정: 원본 복제는 사라졌고(같은 칸 0.4%), 구역 배치·강 흐름·다리·집 줄을 스스로 설계했다. 약점은 격자처럼 고른 거리망, 막다른 길 한두 곳, 강의 꺾임 한 번, 빈 잔디.
+
 ## 다음 방향 (보류 — 이번에는 다시 그리지 않음)
 
 사용자가 다음 판 참고로 준 그림 세 장. 저장소에 두었다.
@@ -90,7 +153,8 @@ Pi 런타임(`runPiAgent`, 채팅 패널과 같은 도구·참고문서 읽기 �
 
 ## 남은 것
 
-- 시트는 원본을 자른 칸이라 한 칸이 한 자리에서만 맞는다. 조수가 원본과 다른 배치를 만들려면 조각 키트와 땅 재료로 짓게 되고,
-  땅 재료는 가장자리 오토타일이 없어 연석·물가가 끊긴다(원본의 연석은 구역 키트 안에만 있다).
-- 16구역 QA 가 남긴 결함(막다른 길 다섯, 성 북쪽 물 띠 줄무늬, 일렬 반복)은 그림 그대로 옮겼다(「그대로 저장」 요청).
-- 22,784칸 tileMeta 가 프로젝트마다 실린다(프로젝트 JSON 이 약 6MB 커진다). 칸 수를 줄이려면 땅 칸을 오토타일로 다시 그려야 한다.
+- (v7 에서 해결) 땅 재료 오토타일 없음 → 길·물·모랫길 오토타일. v6 잔결함(막다른 길·물띠 줄무늬·일렬 반복·원색 밀밭) → 고침.
+- 왕성 키트 아래 절벽 양 끝은 잘린 단면이다(끝 마감 그림 없음). 예시 배치는 나무 무리로 가린다.
+- 원본 정본: 북쪽 절벽이 x≈55 에서 풀밭 한가운데서 끝난다(단 차가 동쪽으로 이어지지 않음, v7 적대적 QA 중대 1).
+- 바닥 풀밭은 한 가지 칸이라 넓게 비우면 여전히 납작하다(잔디 무늬 조각은 옅다).
+- 23,936칸 tileMeta 가 프로젝트마다 실린다(타일셋 JSON 약 7MB).

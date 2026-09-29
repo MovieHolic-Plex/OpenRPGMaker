@@ -110,7 +110,11 @@ try {
 } finally { store.close(); }
 const m = reloaded.maps[mapId]!;
 const same = JSON.stringify(m) === JSON.stringify(result.maps[mapId]);
-const projectEqual = isDeepStrictEqual(reloaded, JSON.parse(JSON.stringify(result)));
+const resultJson = JSON.parse(JSON.stringify(result));
+const projectEqual = isDeepStrictEqual(reloaded, resultJson);
+// where a whole-project mismatch lives (the store may normalise fields on load)
+const projectDiff = projectEqual ? [] : [...new Set([...Object.keys(reloaded), ...Object.keys(resultJson)])].filter((k) => !isDeepStrictEqual((reloaded as any)[k], resultJson[k]))
+  .map((k) => { const a = (reloaded as any)[k], b = resultJson[k]; if (a && b && typeof a === "object" && typeof b === "object") return `${k}: ${[...new Set([...Object.keys(a), ...Object.keys(b)])].filter((j) => !isDeepStrictEqual(a[j], b[j])).slice(0, 6).join(",")}`; return k; });
 const { png, note } = renderMapPng(reloaded, m);
 fs.writeFileSync(`${OUT}/render.png`, png);
 const counts = (name: string) => trace.filter((t) => t.name === name).length;
@@ -126,7 +130,7 @@ for (const ex of ["hilltop", "estuary"]) {
 }
 const summary = {
   label, projectId, loadUpgrade, projectDir: path.relative(process.cwd(), projectDir), mapId, size: [m.width, m.height], tilesetId: m.tilesetId,
-  model: `${provider}/${modelId}`, task, ms, exposedTools: initialToolNames.length, stats: done.stats, reloadEqual: same, reloadProjectDeepEqual: projectEqual, renderNote: note ?? null,
+  model: `${provider}/${modelId}`, task, ms, exposedTools: initialToolNames.length, stats: done.stats, reloadEqual: same, reloadProjectDeepEqual: projectEqual, reloadProjectDiff: projectDiff, renderNote: note ?? null,
   toolCalls: trace.length, failed: trace.filter((t) => !t.ok).length,
   byTool: Object.fromEntries([...new Set(trace.map((t) => t.name))].map((n) => [n, counts(n)])),
   readReferences: { list: counts("list_tileset_references"), read: counts("read_tileset_reference"),
