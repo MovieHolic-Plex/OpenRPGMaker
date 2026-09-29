@@ -98,3 +98,7 @@ Colours: poison yellow-green + violet, darkness violet/black/crimson, ice blue-w
 Checks: size, binary alpha, ≤16 colours, no empty frame, neighbouring frames differ, isolated pixels (counted before edge dithering).
 Review output: `.omo/mfx/<key>-preview.png` and `.omo/mfx/board-18_35(-partN).png`, a mock stage on #405838 with a monster square and actor1-0 at 2x.
 
+
+## r2w1 묶음 a1·a2 (2026-09-29)
+
+직업 모듈 r2w1_<classKey>.py 가 스킬 8개와 새 시트를 가진다. python3 lib_r2w1.py <a1|a2> 로 시트+확인판(.omo/r2w1/<batch>/), --emit <batch> 로 묶음 TS. a2 부터 스킬당 새 시트 ≤1장, 나머지는 기존 시트 재사용(Skills.check(reuse) 가 검사: 몬스터 투사체 금지, screen 은 128 화면 시트만).

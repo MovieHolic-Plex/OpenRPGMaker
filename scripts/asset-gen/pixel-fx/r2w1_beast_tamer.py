@@ -380,7 +380,7 @@ def _(c, f):
 
 @effect('beast_tamer_king_hit', 64, 10, 'allTargets', BT_K)
 def _(c, f):
-    u = min(1.0, f / 6)
+    u = f / 9  # 끝 칸까지 계속 퍼진다(6칸에서 멈추면 마지막 칸이 같아진다)
     # 세 줄 발톱 참격(대각) 두 번 + 붉은 충격.
     L = 28 * ease(min(1, f / 2.5))
     if f < 8:
@@ -393,3 +393,5 @@ def _(c, f):
         a = r.uniform(0, math.tau)
         d = (4 + u * 24) * r.uniform(0.6, 1.2)
         c.px(CX + math.cos(a) * d, CY + math.sin(a) * d, ['y3', 'w', 'r2'][i % 3])
+    if f >= 7:
+        c.dring(CX, CY, 10 + (f - 7) * 8, 'm2', parity=f % 2)
