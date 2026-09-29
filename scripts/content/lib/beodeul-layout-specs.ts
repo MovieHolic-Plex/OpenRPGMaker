@@ -80,15 +80,15 @@ export function scatterTrees(api: LayoutApi, seed: number, rect: { x: number; y:
  *  Grid columns (x, width): the N-S streets and the avenue sit between them. Bands (y, height): the E-W streets between them. */
 export const BLOCK_COLS: [number, number][] = [[2, 20], [24, 20], [48, 20], [70, 14], [86, 14]];
 export const BLOCK_VSTREETS: [number, number][] = [[0, 2], [22, 2], [44, 4], [68, 2], [84, 2]];          // x, width (44: the avenue)
-export const BLOCK_HSTREETS: [number, number][] = [[17, 2], [32, 4], [49, 2], [59, 1], [73, 2], [83, 1], [92, 3]]; // y, height (32: avenue, 59/83: alleys, 92: quay)
+export const BLOCK_HSTREETS: [number, number][] = [[17, 2], [32, 4], [49, 2], [59, 1], [73, 2], [83, 2]]; // y, height (32: avenue, 59: alley, 83: the quay street on the harbour)
+/** One block kit per grid cell. No id twice on neighbouring blocks, no id more than twice (beodeul-metrics blockRepeats). */
 export const BLOCK_BANDS: { y: number; h: number; row: (string | [string, string] | null)[] }[] = [
-  { y: 0, h: 17, row: ["bd-block-church-20x17", ["bd-block-res-20x8", "bd-block-res-20x8-b"], ["bd-block-shop-20x8", "bd-block-res-20x8"], ["bd-block-res-14x8", "bd-block-res-14x8-b"], ["bd-block-market-14x8", "bd-block-shop-14x8"]] },
+  { y: 0, h: 17, row: ["bd-block-church-20x17", ["bd-block-res-20x8", "bd-block-shop-20x8-b"], ["bd-block-res-20x8-c", "bd-block-shop-20x8"], ["bd-block-res-14x8", "bd-block-market-14x8"], ["bd-block-res-14x8-b", "bd-block-shop-14x8"]] },
   { y: 19, h: 13, row: ["bd-block-res-20x13", "bd-block-market-20x13", "bd-block-shop-20x13", "bd-block-res-14x13", "bd-block-shop-14x13"] },
-  { y: 36, h: 13, row: ["bd-block-manor-20x13", "bd-block-res-20x13-b", "bd-block-res-20x13", "bd-block-market-14x13", "bd-block-manor-14x13"] },
-  { y: 51, h: 8, row: ["bd-block-res-20x8-b", "bd-block-shop-20x8", "bd-block-res-20x8", "bd-block-shop-14x8", "bd-block-res-14x8-b"] },
-  { y: 60, h: 13, row: ["bd-block-out-20x13", "bd-block-shop-20x13", "bd-block-res-20x13-b", "bd-block-res-14x13", null] },
-  { y: 75, h: 8, row: ["bd-block-out-20x8", "bd-block-res-20x8", "bd-block-res-20x8-b", "bd-block-out-14x8", "bd-block-res-10x8"] },
-  { y: 84, h: 8, row: ["bd-block-port-20x8", "bd-block-shop-20x8", "bd-block-out-20x8", "bd-block-market-14x8", "bd-block-port-14x8"] },
+  { y: 36, h: 13, row: ["bd-block-manor-20x13-b", "bd-block-res-20x13-b", "bd-block-shop-20x13-b", "bd-block-market-14x13", "bd-block-manor-14x13"] },
+  { y: 51, h: 8, row: ["bd-block-res-20x8-b", "bd-block-shop-20x8", "bd-block-res-20x8", "bd-block-shop-14x8-b", "bd-block-res-14x8-c"] },
+  { y: 60, h: 13, row: ["bd-block-out-20x13", "bd-block-manor-20x13-c", "bd-block-res-20x13", "bd-block-res-14x13-b", null] },
+  { y: 75, h: 8, row: ["bd-block-out-20x8", "bd-block-port-20x8-b", "bd-block-port-20x8", "bd-block-market-14x8-b", "bd-block-out-14x8"] },
 ];
 /** stamp props with no clearance ring on still-open lawn */
 export function dense(api: LayoutApi, seed: number, rect: { x: number; y: number; w: number; h: number }, ids: string[], count: number, avoid: (x: number, y: number) => boolean = () => false) {
@@ -171,11 +171,12 @@ export const LAYOUTS: LayoutSpec[] = [
       const R = "버들항 길 포석";
       // 1. plan: the whole street grid first — avenues (4), streets (2), the quay (3) and the harbour water below it
       const streets: { x: number; y: number; w: number; h: number }[] = [];
-      for (const [x, w] of BLOCK_VSTREETS) streets.push({ x, y: 0, w, h: 95 });
+      for (const [x, w] of BLOCK_VSTREETS) streets.push({ x, y: 0, w, h: 85 });
       for (const [y, h] of BLOCK_HSTREETS) streets.push({ x: 0, y, w: 100, h });
       streets.push({ x: 22, y: 8, w: 78, h: 1 });              // the back alley of the two-deep top band (1 cell)
       for (const r of streets) api.fill(r, R);
-      api.fill({ x: 0, y: 95, w: 100, h: 5 }, "물");
+      // the harbour: the lake kit under the quay street (its top row is the quay), a warehouse block and a grove east of it
+      api.stamp("bd-harbour-lake", 0, 85);
       // 2. fill: one block kit per grid cell (the top band stacks two 8-deep blocks on the alley)
       for (const band of BLOCK_BANDS) band.row.forEach((b, c) => {
         const [x] = BLOCK_COLS[c]!; if (!b) return;
@@ -195,12 +196,16 @@ export const LAYOUTS: LayoutSpec[] = [
       const onPath = (x: number, y: number) => { const m = api.map(); const t = m.lowerTiles[y * m.width + x]; return !lawnTiles(api).has(t); };
       dense(api, 71, { x: 86, y: 60, w: 14, h: 13 }, ["bd-tree-03a8f7", "bd-tree-a80c85", "bd-tree-e9d9b3", "bd-tree-cc0fcb", "bd-tree-47e17a"], 12, onPath);
       dense(api, 72, { x: 86, y: 60, w: 14, h: 13 }, ["bd-prop-flowerbed", "bd-prop-bench_wood", "bd-prop-planter_round", "bd-tree-eef4bc"], 14, onPath);
-      dense(api, 73, { x: 96, y: 75, w: 4, h: 8 }, ["bd-tree-e9d9b3", "bd-tree-cc0fcb", "bd-tree-eef4bc", "bd-prop-planter_round"], 5);
+      api.stamp("bd-block-port-14x8", 86, 85);
+      // its warehouse doors face south: a lane down the lake's east bank (x=83..85) and a lane along the doors (y=93..94) to the map edge
+      api.fill({ x: 83, y: 85, w: 3, h: 10 }, R); api.fill({ x: 86, y: 93, w: 14, h: 2 }, R);
+      dense(api, 73, { x: 83, y: 95, w: 3, h: 5 }, ["bd-tree-e9d9b3", "bd-tree-cc0fcb", "bd-tree-eef4bc", "bd-tree-28ad5e"], 3);
+      dense(api, 74, { x: 86, y: 95, w: 14, h: 5 }, ["bd-tree-03a8f7", "bd-tree-a80c85", "bd-tree-e9d9b3", "bd-tree-cc0fcb", "bd-prop-flowerbed", "bd-prop-planter_round"], 14);
       // avenue furniture on the edge row that no door or alley opens onto: the E-W avenue's bottom row (y=35), the N-S avenue's east column (x=47)
       const crossX = new Set<number>(); for (const [x, w] of BLOCK_VSTREETS) for (let i = -1; i <= w; i += 1) crossX.add(x + i);
       const crossY = new Set<number>(); for (const [y, h] of BLOCK_HSTREETS) for (let i = -1; i <= h; i += 1) crossY.add(y + i); for (const y of [7, 8, 9, 24, 25, 26, 41, 42, 43, 65, 66, 67]) crossY.add(y);
       let n = 0; for (let x = 4; x < 98; x += 5) { if (crossX.has(x)) continue; api.stamp(n++ % 2 ? "bd-tree-eef4bc" : "bd-prop-lamp_crook", x, 33); }
-      n = 0; for (let y = 10; y < 90; y += 4) { if ([y, y + 1, y + 2].some((v) => crossY.has(v))) continue; api.stamp(n++ % 2 ? "bd-tree-28ad5e" : "bd-prop-lamp_crook", 47, y); }
+      n = 0; for (let y = 10; y < 80; y += 4) { if ([y, y + 1, y + 2].some((v) => crossY.has(v))) continue; api.stamp(n++ % 2 ? "bd-tree-28ad5e" : "bd-prop-lamp_crook", 47, y); }
     } },
   { id: "estuary", name: "강어귀 항구 도시", build(api) {
       const R = "버들항 길 포석", SAND = "버들항 모랫길", WATER = "물";

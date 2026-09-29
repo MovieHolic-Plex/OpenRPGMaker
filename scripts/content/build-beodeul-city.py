@@ -578,9 +578,9 @@ def block_market(w, h, rng):
     for (x, y) in ((0, 0), (w - 1, 0)):
         if cv.free(_KB["bd-prop-lamp_crook"], x, y): cv.stamp(_KB["bd-prop-lamp_crook"], x, y)
     return cv
-def block_manor(w, h, rng):
+def block_manor(w, h, rng, manor="bd-manor-small"):
     cv = _Canvas(w, h, _lawn(rng), rng)
-    m = _KB["bd-manor-small"]; mx = 1; cv.stamp(m, mx, h - m["height"])
+    m = _KB[manor]; mx = 1; cv.stamp(m, mx, h - m["height"])
     side = ["bd-prop-hedge", "bd-prop-flowerbed", "bd-prop-statue_sage", "bd-prop-bench_wood", "bd-prop-well_roofed", "bd-tree-03a8f7", "bd-tree-a80c85", "bd-tree-e9d9b3", "bd-prop-planter_round"]
     _scatter(cv, side, 0, h, 160, x0=mx + m["width"], x1=w)
     _scatter(cv, ["bd-tree-eef4bc", "bd-tree-28ad5e", "bd-prop-planter_round"], 0, h, 20, x0=0, x1=1)
@@ -597,10 +597,15 @@ def block_out(w, h, rng):
         _row(cv, pool, 0, w, h - 1, h, 0.4); _scatter(cv, yard, 0, h - 1, 120)
     _topup(cv, yard, 0.2)
     return cv
-def block_port(w, h, rng):
+def block_port(w, h, rng, yard=False):
+    """a: warehouses from the west edge every 8 cells; b (yard): one warehouse at the east edge, a goods yard to the west"""
     cv = _Canvas(w, h, lambda: _PLAZA, rng)
-    wh = _KB["bd-house-ware0"]; x = 0
-    while x + wh["width"] <= w:
+    wh = _KB["bd-house-ware0"]
+    if yard:
+        cv.stamp(wh, w - wh["width"], h - wh["height"])
+        _topup(cv, ["bd-prop-fish_crates", "bd-prop-goods_pile", "bd-prop-fish_barrel", "bd-prop-crate_fish", "bd-prop-net_rack", "bd-prop-anchor_display"], 0.45, 600, 0, h - 1)
+    x = 0
+    while not yard and x + wh["width"] <= w:
         cv.stamp(wh, x, h - wh["height"]); x += wh["width"] + 2
     _scatter(cv, ["bd-prop-fish_crates", "bd-prop-goods_pile", "bd-prop-net_rack", "bd-prop-fish_barrel", "bd-prop-crate_fish", "bd-prop-anchor_display"], 0, h, 120)
     _topup(cv, ["bd-prop-fish_crates", "bd-prop-goods_pile", "bd-prop-fish_barrel", "bd-prop-crate_fish", "bd-prop-net_rack"], 0.3, 400, 0, 2)
@@ -617,21 +622,23 @@ def block_church(w, h, rng):
     _topup(cv, ["bd-tree-cc0fcb", "bd-tree-132848", "bd-prop-flowerbed", "bd-prop-planter_round", "bd-prop-hedge"], 0.12, y1=c["height"])
     return cv
 BLOCKS = [
-    ("res", "주택가", "살림집 두 줄(뒷골목 사이) 또는 한 줄 + 뒷마당(빨래·우물·꽃밭·작은 나무)", [(10, 8, "a"), (14, 8, "a"), (14, 8, "b"), (20, 8, "a"), (20, 8, "b"), (14, 13, "a"), (20, 13, "a"), (20, 13, "b")],
-     lambda w, h, r: block_res(w, h, r, _HOMES, YARD)),
-    ("shop", "상가", "가게집 두 줄(뒷골목 사이) 또는 한 줄 + 뒷마당(짐·수레·상자)", [(14, 8, "a"), (20, 8, "a"), (14, 13, "a"), (20, 13, "a")],
-     lambda w, h, r: block_res(w, h, r, _SHOPS, SHOP_YARD)),
-    ("market", "시장", "판석 바닥에 노점 줄·손수레·우물·가로등 — 네 변 모두 열려 있다", [(10, 8, "a"), (14, 8, "a"), (14, 13, "a"), (20, 13, "a")], block_market),
-    ("manor", "정원 저택", "작은 저택(현관 계단이 블록 아래 변에 닿는다)과 옆 정원(산울타리·꽃밭·석상·벤치·우물·나무)", [(14, 13, "a"), (20, 13, "a")], block_manor),
-    ("out", "성 밖 목조", "통나무·판자 집 한 줄(또는 모랫길 뒷골목 두 줄) + 장작·건초·울타리·헛간 마당", [(14, 8, "a"), (20, 8, "a"), (20, 13, "a")], block_out),
-    ("port", "항구 창고", "판석 부두 바닥에 창고 줄, 사이사이 생선 궤짝·그물·통·짐 — 네 변 모두 열려 있다", [(14, 8, "a"), (20, 8, "a")], block_port),
-    ("church", "성당 앞", "첨탑 성당과 그 앞 판석 광장(가로등·벤치), 양옆 작은 나무·꽃밭", [(14, 17, "a"), (20, 17, "a")], block_church),
+    # variants b/c are the same frame with other houses / stalls / manor (a different seed): two neighbouring blocks never need the same id
+    ("res", "주택가", "살림집 두 줄(뒷골목 사이) 또는 한 줄 + 뒷마당(빨래·우물·꽃밭·작은 나무)", [(10, 8, "a"), (10, 8, "b"), (14, 8, "a"), (14, 8, "b"), (14, 8, "c"), (20, 8, "a"), (20, 8, "b"), (20, 8, "c"), (14, 13, "a"), (14, 13, "b"), (20, 13, "a"), (20, 13, "b")],
+     lambda w, h, r, v: block_res(w, h, r, _HOMES, YARD)),
+    ("shop", "상가", "가게집 두 줄(뒷골목 사이) 또는 한 줄 + 뒷마당(짐·수레·상자)", [(14, 8, "a"), (14, 8, "b"), (20, 8, "a"), (20, 8, "b"), (14, 13, "a"), (14, 13, "b"), (20, 13, "a"), (20, 13, "b")],
+     lambda w, h, r, v: block_res(w, h, r, _SHOPS, SHOP_YARD)),
+    ("market", "시장", "판석 바닥에 노점 줄·손수레·우물·가로등 — 네 변 모두 열려 있다", [(10, 8, "a"), (14, 8, "a"), (14, 8, "b"), (14, 13, "a"), (14, 13, "b"), (20, 13, "a")], lambda w, h, r, v: block_market(w, h, r)),
+    ("manor", "정원 저택", "저택(현관 계단이 블록 아래 변에 닿는다)과 옆 정원(산울타리·꽃밭·석상·벤치·우물·나무). a 작은 저택, b 탑 저택, c 담쟁이 저택", [(14, 13, "a"), (20, 13, "a"), (20, 13, "b"), (20, 13, "c")],
+     lambda w, h, r, v: block_manor(w, h, r, {"a": "bd-manor-small", "b": "bd-manor-tower", "c": "bd-manor-vine"}[v])),
+    ("out", "성 밖 목조", "통나무·판자 집 한 줄(또는 모랫길 뒷골목 두 줄) + 장작·건초·울타리·헛간 마당", [(14, 8, "a"), (14, 8, "b"), (20, 8, "a"), (20, 8, "b"), (20, 13, "a"), (20, 13, "b")], lambda w, h, r, v: block_out(w, h, r)),
+    ("port", "항구 창고", "판석 부두 바닥에 창고 줄, 사이사이 생선 궤짝·그물·통·짐 — 네 변 모두 열려 있다", [(14, 8, "a"), (20, 8, "a"), (20, 8, "b")], lambda w, h, r, v: block_port(w, h, r, v == "b")),
+    ("church", "성당 앞", "첨탑 성당과 그 앞 판석 광장(가로등·벤치), 양옆 작은 나무·꽃밭", [(14, 17, "a"), (20, 17, "a")], lambda w, h, r, v: block_church(w, h, r)),
 ]
 BLOCK_TABLE = []
 for bid, bname, bdesc, sizes, fn in BLOCKS:
     for (bw, bh, var) in sizes:
         rng = _rnd.Random(f"{bid}-{bw}x{bh}-{var}")
-        cv = fn(bw, bh, rng)
+        cv = fn(bw, bh, rng, var)
         kid = f"bd-block-{bid}-{bw}x{bh}" + ("" if var == "a" else f"-{var}")
         # exits: edge cells a person can stand on that are paving (alley/plaza/stairs), per side; door fronts just below the block
         def paved(x, y): t = cv.lo[y][x]; return cv.up[y][x] < 0 and _walk(t) and t != _gbk and t not in _LAWN_MIX

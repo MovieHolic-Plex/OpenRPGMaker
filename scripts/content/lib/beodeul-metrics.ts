@@ -114,8 +114,19 @@ export function analyzeBeodeul(project: Project, mapId: string, stamps: Stamp[],
   for (const s of kitStamps) { if (!(s.id in CANON_ORIGIN)) continue; const k = kits.get(s.id)!; for (let j = 0; j < k.height; j += 1) for (let i = 0; i < k.width; i += 1) cellsInKits.add(idx(s.x + i, s.y + j)); }
   let designedObjects = 0; for (let i = 0; i < W * H; i += 1) if (map.upperTiles[i]! >= 0 && !cellsInKits.has(i)) designedObjects += 1;
   const emptiness = emptinessOf(map, ts);
+  // block kits: the same bd-block id twice in one row or column of blocks (rectangles overlapping on one axis, at most 20 cells
+  // apart on the other — one block and two streets between them at most) reads as copy-paste; so does one id used more than twice
+  const blocks = kitStamps.filter((s) => s.id.startsWith("bd-block-")).map((s) => ({ ...s, w: kits.get(s.id)!.width, h: kits.get(s.id)!.height }));
+  const neighbourRepeats: { id: string; a: [number, number]; b: [number, number] }[] = [];
+  for (let i = 0; i < blocks.length; i += 1) for (let j = i + 1; j < blocks.length; j += 1) {
+    const p = blocks[i]!, q = blocks[j]!; if (p.id !== q.id) continue;
+    const gx = Math.max(q.x - (p.x + p.w), p.x - (q.x + q.w)), gy = Math.max(q.y - (p.y + p.h), p.y - (q.y + q.h));
+    if ((gx < 0 && gy <= 20) || (gy < 0 && gx <= 20)) neighbourRepeats.push({ id: p.id, a: [p.x, p.y], b: [q.x, q.y] });
+  }
+  const uses: Record<string, number> = {}; for (const b of blocks) uses[b.id] = (uses[b.id] ?? 0) + 1;
+  const blockRepeats = { blocks: blocks.length, distinct: Object.keys(uses).length, neighbourRepeats, overused: Object.entries(uses).filter(([, n]) => n > 2).map(([id, n]) => ({ id, n })) };
   return {
-    emptiness,
+    emptiness, blockRepeats,
     originality: canon ? { sameCells: same, ofCells: W * H, sameShare: +(same / (W * H)).toFixed(4), sameShareOfObjectCells: nonEmpty ? +(sameNonEmpty / nonEmpty).toFixed(4) : 0 } : null,
     districts, districtsPresent: districts.filter((d) => d.present).length, districtsAtOriginalOrigin: districts.filter((d) => d.atOriginalOrigin).length,
     stampedKits: kitStamps.length, doors: doors.length, landReach, streetReach,
