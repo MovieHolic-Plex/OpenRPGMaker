@@ -430,7 +430,7 @@ export function applyRetroSkillMechanic(base: SkillRecord, mechanic: RetroSkillM
   const kind = mechanic.kind ?? (base.effect.kind === "damage" || base.effect.kind === "healing" || base.effect.kind === "steal" || base.effect.kind === "scan" ? base.effect.kind : "support");
   const affects = mechanic.affects ?? baseAffects;
   if (kind === "damage") next.effect = { kind: "damage", statistic: mechanic.stat ?? (base.effect.kind === "damage" ? baseStat : "attack"), affects };
-  else if (kind === "healing") next.effect = { kind: "healing", statistic: mechanic.stat ?? "mind", affects };
+  else if (kind === "healing") next.effect = { kind: "healing", statistic: "mind", affects };
   else if (kind === "steal") next.effect = { kind: "steal" };
   else if (kind === "scan") next.effect = { kind: "scan" };
   else next.effect = { kind: "support" };

@@ -7,7 +7,7 @@
 //
 // ── 어휘 (전부 선택) ─────────────────────────────────────────────────────────────────────────────
 //   kind      damage(기본) · healing · support(피해 없이 상태만) · steal · scan. 유도와 다를 때만 적는다.
-//   stat      damage/healing 의 능력치 attack(공격력·물리 방어로 경감) | mind(정신력·마법 방어로 경감).
+//   stat      damage 의 능력치 attack(공격력·물리 방어로 경감) | mind(정신력·마법 방어로 경감). healing 은 언제나 mind.
 //   affects   hp(기본) | mp. damage+mp = MP 를 깎는다(drain 이면 MP 흡수), healing+mp = MP 회복.
 //   scope     enemy · allEnemies · ally · allAllies · self. 레이어 앵커(allTargets=전체)와 어긋나게 바꾸지 않는다.
 //   power     위력 덮어쓰기(생략 = 레벨 곡선). healing 으로 바꾸면 반드시 적는다.
