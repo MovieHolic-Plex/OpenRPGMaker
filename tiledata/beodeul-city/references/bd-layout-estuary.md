@@ -155,6 +155,7 @@ stamp_object bd-tree-03a8f7 @(1,51)
 stamp_object bd-tree-eef4bc @(36,12)
 ```
 
+
 ## 역할 격자 100×100 (R 포장 · s 모랫길 · = 다리/잔교 · ~ 물 · . 걷는 땅 · X 막힌 땅 · C 윗층 걸음 · S 윗층 막힘)
 ```text
 ...XXXXXXXXXXXSSXXXXXXSSXXXXXXXXXX....~~~~........S........................S..................SS....

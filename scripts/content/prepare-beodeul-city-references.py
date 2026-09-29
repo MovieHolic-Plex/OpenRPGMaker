@@ -283,11 +283,12 @@ for lid, met, rec, mp in LAYOUTS:
 {chr(10).join(lines)}
 ```
 
+""" + ("" if lid == "blocks" else f"""
 ## 역할 격자 100×100 (R 포장 · s 모랫길 · = 다리/잔교 · ~ 물 · . 걷는 땅 · X 막힌 땅 · C 윗층 걸음 · S 윗층 막힘)
 ```text
 {role_grid(mp)}
 ```
-"""
+""")
     docs.append(dict(id=f"bd-layout-{lid}", name=f"예시 배치 · {rec['name']}", markdown=body))
 BLK = json.loads((DATA / "blocks-v8.json").read_text())
 work = f"""# 작업 순서 (시간 예산) — 큰 도시 한 장
@@ -296,11 +297,13 @@ work = f"""# 작업 순서 (시간 예산) — 큰 도시 한 장
 
 라운드 2 조수 시험의 결과는 「만들다 만 도시」였다: 시간 상한(50분)에 걸렸고, 맵의 31~35%가 빈 풀밭, 20×15 화면 35개 중 10~11개가 40% 넘게 비었다.
 stamp_object 96~136번 중 대부분이 집 한 채씩이었고, 같은 폭 바둑판 거리에 블록마다 집 한 줄 + 뒤는 빈 풀밭이었다. **조립 단위를 집 한 채에서 블록 하나로 바꾼다.**
-아래 네 단계를 순서대로, 단계마다 예산 안에서 끝낸다. 예산을 넘으면 그 단계에서 멈추고 다음 단계로 간다(마무리·검사를 건너뛰지 않는다).
+**읽기는 이 용도(문서 3 · 그림 3)와, 실제로 찍을 구역 키트 문서만.** 옛 예시 배치(언덕·강어귀)의 100×100 역할 격자와 조각 사전은 필요할 때 한 쪽씩 —
+모든 문서·그림은 읽은 뒤 매 턴 모델 입력에 다시 실린다(라운드 3 첫 시험: 29번 읽고 턴당 입력 13만 토큰, 50분 중 계획만 30분 → 블록 하나도 못 찍음).
+아래 단계를 순서대로, 단계마다 예산 안에서 끝낸다. 예산을 넘으면 그 단계에서 멈추고 다음 단계로 간다(마무리·검사를 건너뛰지 않는다).
 
 | 단계 | 할 일 | 도구 호출 예산 | 시간 예산 |
 |---|---|---|---|
-| 1. 계획 (역할 격자) | 물(강·항구)·성벽·구역 키트 자리·대로 2줄·거리 격자를 먼저 정한다. 격자 칸 = 블록 칸(가로 10/14/20, 세로 8/13/17). 종이 위 계획이면 된다 | 읽기 5~8번 | 5분 |
+| 1. 계획 (역할 격자) | 물(강·항구)·성벽·구역 키트 자리·대로 2줄·거리 격자를 먼저 정한다. 격자 칸 = 블록 칸(가로 10/14/20, 세로 8/13/17). 종이 위 계획이면 된다. 길게 생각하지 말고 「블록 키트 표」의 「격자에 까는 법」 틀을 고쳐 쓴다 | 읽기 6~10번 | 5분 |
 | 2. 뼈대 칠 | `fill_region` 으로 물 → 대로(4칸) → 거리(2칸) → 골목(1칸) 순. 굽은 길은 아래 「길 위계」의 조각 칠 | 15~25번 | 5분 |
 | 3. 채우기 (블록) | 구역 키트(성·포룸·성당·저택·항구) 몇 개 → 남은 격자 칸마다 **블록 키트 하나**. 13칸 블록 뒷골목 끝 칸만 한 칸 다시 칠해 연석을 연다 | 30~45번 | 15분 |
 | 4. 마무리 | 대로 가장자리 줄 가로등·가로수, 광장 소품, 강가 나무, 공원 블록 나무·꽃밭. 블록 안은 이미 차 있으니 블록 밖 빈 곳만 | 15~25번 | 10분 |
@@ -350,14 +353,14 @@ for t in 0..12:  fill_region(rect={{x: 86 + round(t*11/12), y: 60 + t, w: 3, h: 
 - 굽은 길 옆에는 블록 대신 공원(나무·꽃밭·벤치)이나 한 채씩 집을 둔다 — 직사각형 블록은 비스듬한 변에 맞지 않는다.
 """
 HIER_DOC = dict(id="bd-street-hierarchy", name="길 위계 · 굽은 길", markdown=hier)
-PARK_IMG = (save("city", "layout-blocks-park", Image.open(LAY / "blocks" / "render.png").convert("RGBA").crop((84 * T, 58 * T, 100 * T, 76 * T)),
+PARK_IMG = None and (save("city", "layout-blocks-park", Image.open(LAY / "blocks" / "render.png").convert("RGBA").crop((84 * T, 58 * T, 100 * T, 76 * T)),
                       "굽은(대각선) 거리 — 공원 블록에서 3칸 조각을 한 줄씩 비껴 칠한 결과(fill_region 13번). 연석 계단은 오토타일이 그린다.", 3))
 cats.append(dict(id="beodeul-city", name="버들항 · 도시 한 장 조립(원본은 예시)", description="버들항 시트로 새 도시를 짓는 순서(작업 순서·길 위계·블록 표는 「블록 키트」 용도에 있다 — 그것부터): 도구(stamp_object 키트·오토타일 재료), 배치 규칙(구역 출구 표·거리·집 줄·다리·물), 원본과 다른 예시 배치 셋(블록 조립 도시·언덕 위 성읍·강어귀 항구)의 도구 순서·역할 격자·잰 값(빈 바닥 포함). 먼저 읽는다.", documents=docs, images=images))
 
 # =============================== 1b. block kits (v8) ===============================
 # the work order and the street hierarchy live in the block category: a project made before round 3 lacks the whole category,
 # so ensureBeodeulCityReferences adds all three pages to it (a shipped category that already exists is not rewritten)
-bdocs, bimages = [WORK_DOC, HIER_DOC], [PARK_IMG]
+bdocs, bimages = [WORK_DOC, HIER_DOC], []
 TYPES = collections.OrderedDict()
 for b in BLK: TYPES.setdefault(b["type"], []).append(b)
 def btable(bl):
@@ -392,13 +395,10 @@ bguide = f"""# 블록 키트 — 도시 한 블록을 통째로
 - 8칸 블록 둘을 골목 1칸 위아래로 겹치면 17칸 줄 하나가 된다(윗 블록의 문이 골목에 열린다).
 
 ## 종류별 표
-""" + "\n\n".join(f"### {TNAME[t]} (`{t}`)\n{btable(bl)}" for t, bl in TYPES.items()) + """
-
-## 각 블록의 역할 배열 (F 걸음 · X 막힘 · C 윗층 걸음 · S 윗층 막힘)
-""" + "\n\n".join(f"`{b['id']}` {b['w']}×{b['h']}\n```text\n" + "\n".join(roles(KITS[b['id']])) + "\n```" for b in BLK)
+""" + "\n\n".join(f"### {TNAME[t]} (`{t}`)\n{btable(bl)}" for t, bl in TYPES.items())
 bdocs.append(dict(id="bd-block-table", name="블록 키트 표 · 출구 칸", markdown=bguide))
 def bboard(bl, name, cap):
-    per = 2 if max(b["w"] for b in bl) > 14 else 3
+    per = 4
     cw = max(b["w"] for b in bl) + 2; ch = max(b["h"] for b in bl) + 3
     rows_ = -(-len(bl) // per)
     im = Image.new("RGBA", (per * cw * T, rows_ * ch * T), (40, 40, 40, 255)); dd = ImageDraw.Draw(im)
@@ -411,10 +411,11 @@ def bboard(bl, name, cap):
         im.alpha_composite(kit_image(k), (x + T, y + T))
         for fx in b["fronts"]: dd.rectangle((x + (fx + 1) * T, y + (k["height"] + 1) * T, x + (fx + 2) * T - 1, y + (k["height"] + 2) * T - 1), outline=(255, 230, 0, 255), width=2)
         dd.text((x + 2, y - T + 2), b["id"][9:], fill=(255, 255, 0, 255))
-    return save("blocks", name, im, cap, 2)
-for t, bl in TYPES.items():
-    bimages.append(bboard(bl, f"blocks-{t}", f"{TNAME[t]} 블록 {len(bl)}종 — 둘레 한 칸은 길(포석) 자리, 노란 테 = 문 앞 칸(블록 아래 변 밖). 이름표는 bd-block- 뒤."))
-bimages.append(dict(id="bd-layout-blocks-full", name="layout-blocks.png", dataUrl="/assets/beodeul-city/references/layout-blocks.png", caption=f"블록 조립 도시 100×100 — 대로 2줄(4칸)·거리(2칸)·골목(1칸) 격자에 블록 키트 {sum(1 for c in LAYOUTS[0][2]['calls'] if c['name'] == 'stamp_object' and 'bd-block-' in c['args']['objectId'])}개. 빈 바닥 한 화면 최대 {LAYOUTS[0][1]['emptiness']['open']['worst'] * 100:.0f}%."))
+    return save("blocks", name, im, cap)
+_low = [b for b in BLK if b["h"] == 8]; _tall = [b for b in BLK if b["h"] > 8]
+bimages.append(bboard(_low, "blocks-8", f"세로 8칸 블록 {len(_low)}종(주택가·상가·시장·성 밖·항구) — 둘레 한 칸은 길 자리, 노란 테 = 문 앞 칸(블록 아래 변 밖). 이름표는 bd-block- 뒤."))
+bimages.append(bboard(_tall, "blocks-13-17", f"세로 13·17칸 블록 {len(_tall)}종(뒷골목 두 줄 주택가·상가·시장·정원 저택·성 밖·성당 앞) — 6행 가로줄이 뒷골목, 노란 테 = 문 앞 칸."))
+if False: bimages.append(dict(id="bd-layout-blocks-full", name="layout-blocks.png", dataUrl="/assets/beodeul-city/references/layout-blocks.png", caption=f"블록 조립 도시 100×100 — 대로 2줄(4칸)·거리(2칸)·골목(1칸) 격자에 블록 키트 {sum(1 for c in LAYOUTS[0][2]['calls'] if c['name'] == 'stamp_object' and 'bd-block-' in c['args']['objectId'])}개. 빈 바닥 한 화면 최대 {LAYOUTS[0][1]['emptiness']['open']['worst'] * 100:.0f}%."))
 # empty-floor error picture: the worst 20×15 screen of the house-row layout vs the same screen of the block layout
 _hm = next(m_ for l_, m_, _, _ in LAYOUTS if l_ == "hilltop"); _w = max([o for o in _hm["emptiness"]["open"]["overAt"] if o[1] + 15 <= H and 15 <= o[1] <= 75], key=lambda o: o[2])
 _bx, _by = _w[0], _w[1]; _bm = LAYOUTS[0][1]
