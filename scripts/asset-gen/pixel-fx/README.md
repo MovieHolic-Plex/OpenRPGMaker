@@ -129,3 +129,11 @@ p1 은 스킬마다 새 시트 최대 1장이고 나머지 층은 기존 시트(
 스킬 64개, 레이어 72장. 공용 모듈 `lib_r2w8.py`, 키마다 `<key>.py` 하나. 규격(anchor·frame·frames)은 `src/assets/retroRosterSkills/b4.ts` 에서 읽고 다르면 멈춘다.
 `python3 lib_r2w8.py` 전부, `python3 lib_r2w8.py class:oni_warrior` 직업 하나(확인판·가상 무대 합성판 `.omo/r2w8/b4/fx/`), `python3 lib_r2w8.py <key>` 시트 하나.
 전투 도트 9칸 시트는 `scripts/asset-gen/party-pixel/monster2-<i>.py`, 확인판은 `review_b4.py`.
+
+## Roster batch p5 (retro2003 2차 로스터)
+
+People5-3~5-7 다섯 직업(무녀·사막 전사·메이드·은자·노병)의 새 시트 26장. 클래스별 생성기
+`fx_shrine_maiden.py` `fx_desert_warrior.py` `fx_maid.py` `fx_hermit.py` `fx_old_warrior.py`,
+공용 모듈은 p4 와 같은 `lib_r2w4.py` (계약: `src/assets/retroRosterSkills/p5.ts`, 스킬당 새 시트 최대 1장,
+나머지 층은 기존 시트 재사용). `python3 fx_<class>.py` 로 그 직업 시트와 확인판(`.omo/r2w4/p5/`)을 다시 만든다.
+투사체(ofuda·plate·flask)는 머리가 왼쪽. screen 128 층은 `fade_oval` 로 둥글게 끝난다.
