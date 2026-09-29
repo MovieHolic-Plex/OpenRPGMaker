@@ -58,7 +58,10 @@ class Fx(Cel):
     """Cel + 이번 묶음이 쓰는 그림 도구. 모든 도구는 정수 좌표로 찍고 팔레트 키를 받는다."""
 
     def __init__(self, n, palette, f=0, nf=8):
-        super().__init__(n, palette)
+        # 시트가 고른 가족 외의 키를 잘못 써도 KeyError 로 죽지 않게 공용 가족을 바닥에 깐다(색 수 검사는 실제 찍은 색만 센다).
+        full = dict(WATER); [full.update(x) for x in (WOOD, STEEL, FIRE, SMOKE, GOLD, PLASMA, VIOLET, EARTH, WIND, ROSE, LEAFY, WHITE)]
+        full.update(palette)
+        super().__init__(n, full)
         self.f, self.nf = f, nf
         self.t = f / max(1, nf - 1)
         self.pal['_'] = (0, 0, 0, 0)
