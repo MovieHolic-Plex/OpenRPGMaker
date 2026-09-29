@@ -22,8 +22,23 @@ def draw(c, f):
         t = min(1.0, t)
         tight = 0 if f < 6 else (f - 5)
         end = (lerp(p0[0], p1[0], t), lerp(p0[1], p1[1], t))
-        n = max(2, int(10 * t))
-        chain(c, p0, end, n, 'k2' if i < 2 else 'u3', 'u4' if f >= 6 else 'k1', sag=(3 - tight) if i >= 2 else 0)
+        sag = (3 - tight) if i >= 2 else 0
+        L = math.hypot(end[0] - p0[0], end[1] - p0[1]) or 1
+        n = max(2, int(L / 4.5))                       # 고리 간격 4.5px: 이웃 고리가 맞물린다
+        ux, uy = (end[0] - p0[0]) / L, (end[1] - p0[1]) / L
+        for j in range(n + 1):
+            u = j / n
+            x = lerp(p0[0], end[0], u)
+            y = lerp(p0[1], end[1], u) + math.sin(u * math.pi) * sag
+            if j % 2:          # 옆으로 선 고리: 진행 방향 짧은 막대
+                c.line([(x - ux * 3, y - uy * 3), (x + ux * 3, y + uy * 3)], 'k1', 2)
+                c.line([(x - ux * 2, y - uy * 2), (x + ux * 2, y + uy * 2)], 'k2' if i < 2 else 'u3', 1)
+            else:              # 정면 고리: 속이 빈 굵은 타원
+                c.oval(x, y, 3, 3, 'k1', 2)
+                c.oval(x, y, 3, 3, 'k2' if i < 2 else 'u3', 1)
+                c.px(x - 2, y - 2, 'u4' if f >= 6 else 'k2')
+        if t >= 1:             # 사슬 끝의 쇠 갈고리
+            c.poly([(end[0] + ux * 5, end[1] + uy * 5), (end[0] - uy * 3, end[1] + ux * 3), (end[0] + uy * 3, end[1] - ux * 3)], 'u4')
     if f in (6, 7):
         c.spark(cx, 34, 10 - (f - 6) * 4, 'u4', 'u3', diag=True)
     if f >= 8:

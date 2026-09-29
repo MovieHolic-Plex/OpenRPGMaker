@@ -50,12 +50,15 @@ def draw(c, f):
             lantern(c, x - 13, 102, 1.3)
     if f >= 8:
         a = f - 8
-        front = 128 - a * 34
-        for i in range(8):
-            x = front + i * 7
-            flame(c, x, 118, 5, 22 - i * 2, ['h1', 'h2', 'h3', 'h4'], seed=i + f * 3, sway=4, tongues=1)
-        if a <= 1:
-            c.spark(front, 108, 10, 'h4', 'h3', diag=True)
+        front = 118 - a * 30                             # 푸른 불길 파도가 오른쪽에서 왼쪽으로 쓸고 간다
+        for i in range(12):
+            x = front + i * 9
+            if x > 136:
+                break
+            h = max(10, 46 - i * 3)
+            flame(c, x, 124, 8, h, ['h0', 'h1', 'h2', 'h3', 'h4'], seed=i + f * 3, sway=5, tongues=2)
+        c.disc(front - 2, 104, 6, 'h3')
+        c.spark(front - 2, 104, 12 - a * 2, 'h4', 'h3', diag=True)
 
 
 if __name__ == '__main__':
