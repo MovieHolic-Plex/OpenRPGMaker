@@ -229,6 +229,16 @@ def render(canvas, part, M, off):
 
 def cleanup(g, ol):
     """잡픽셀(4이웃 불투명 0~1 개인 외톨이) 제거, 바늘구멍 메우기, 실루엣 1px 외곽선."""
+    # 부위를 돌린 뒤 생긴 1px 틈(양옆 또는 위아래가 막힌 투명 칸)을 이웃 색으로 메운다
+    for _ in range(2):
+        op = g > 0
+        U, D, L, R = n4(op)
+        gap = ~op & ((L & R) | (U & D))
+        if not gap.any():
+            break
+        p = np.pad(g, 1)
+        left, up = p[1:-1, :-2], p[:-2, 1:-1]
+        g = np.where(gap, np.where(left > 0, left, up), g)
     for _ in range(2):
         op = g > 0
         cnt = sum(n.astype(int) for n in n4(op))
@@ -378,18 +388,18 @@ def pose_table(kind):
     if kind == 'bird':
         # 날개 각도: 0 = 뒤(오른쪽) 수평, -90 = 위. 부리 쪽이 왼쪽.
         Q['idle_b'] = dict(body=(0, 0, 1), head=(0, 0, 1), tail=(-4, 0, 1))
-        Q['idle_c'] = dict(body=(0, 0, 1), head=(-4, 0, 1), tail=(4, 0, 0))
-        Q['windup'] = dict(whole=(8, 'legs', 3, 0), head=(10, 2, 0), tail=(-10, 0, 0), wing=-20, ground=['legs'])
-        Q['move'] = dict(whole=(-12, 'center', -5, -6), legs=(-35, 0, 0), tail=(-14, 0, 0), head=(6, -1, 0), wing=-70, air=True, mouth=1)
-        Q['attack'] = dict(whole=(-22, 'legs', -6, 0), head=(-10, -3, 1), tail=(-10, 0, 0), mouth=2, eye='angry', ground=['legs'], wing=-10)
+        Q['idle_c'] = dict(body=(0, 0, 1), head=(-3, 0, 2), tail=(3, 0, 1))
+        Q['windup'] = dict(whole=(8, 'legs', 4, 0), head=(6, 1, 0), tail=(-8, 0, 0), wing=-25, ground=['legs'])
+        Q['move'] = dict(whole=(-12, 'center', -5, -6), legs=(-35, 0, 0), tail=(-10, 0, 0), head=(4, 0, 0), wing=-70, air=True)
+        Q['attack'] = dict(whole=(-20, 'legs', -3, 0), head=(-8, -2, 1), tail=(-8, 0, 0), eye='angry', ground=['legs'], wing=-15)
         Q['recover'] = dict(whole=(4, 'legs', -2, 0), head=(4, 0, 0), tail=(8, 0, 0), ground=['legs'])
-        Q['hit'] = dict(whole=(16, 'center', 4, -2), head=(14, 1, 0), legs=(25, 0, 0), tail=(20, 0, 0), eye='squint', mouth=1, wing=-120, air=True)
-        Q['cast_charge'] = dict(whole=(-6, 'legs', 1, 0), head=(-14, 1, 2), tail=(16, 0, 1), eye='closed', ground=['legs'], wing=20)
-        Q['cast_raise'] = dict(whole=(18, 'legs', 1, 0), head=(20, 0, -2), tail=(-12, 0, 0), ground=['legs'], wing=-95)
-        Q['cast_release'] = dict(whole=(-12, 'legs', -5, 0), head=(10, -3, 0), tail=(-20, 0, 0), mouth=2, ground=['legs'], wing=-35)
-        Q['leap'] = dict(whole=(14, 'center', -2, -12), legs=(-45, 0, 0), tail=(-16, 0, 0), head=(-6, 0, 0), wing=-110, air=True)
-        Q['buff'] = dict(whole=(22, 'legs', 0, 0), head=(26, 0, -2), tail=(-25, 0, 0), mouth=2, eye='closed', ground=['legs'], wing=-125, sparks='buff')
-        Q['finisher'] = dict(whole=(-16, 'center', -8, -4), head=(8, -3, 0), legs=(-50, 0, 0), tail=(-25, 0, 0), mouth=2, eye='angry', wing=-55, ghost=True, air=True)
+        Q['hit'] = dict(whole=(16, 'center', 4, -2), head=(8, 1, 0), legs=(25, 0, 0), tail=(14, 0, 0), eye='squint', wing=-120, air=True)
+        Q['cast_charge'] = dict(whole=(-6, 'legs', 1, 0), head=(-8, 0, 1), tail=(12, 0, 1), eye='closed', ground=['legs'], wing=15)
+        Q['cast_raise'] = dict(whole=(16, 'legs', 1, 0), head=(8, 0, -1), tail=(-10, 0, 0), ground=['legs'], wing=-95)
+        Q['cast_release'] = dict(whole=(-12, 'legs', -4, 0), head=(-4, -2, 0), tail=(-14, 0, 0), ground=['legs'], wing=-35)
+        Q['leap'] = dict(whole=(12, 'center', -2, -12), legs=(-45, 0, 0), tail=(-12, 0, 0), head=(-4, 0, 0), wing=-110, air=True)
+        Q['buff'] = dict(whole=(20, 'legs', 0, 0), head=(10, 0, -1), tail=(-18, 0, 0), eye='closed', ground=['legs'], wing=-125, sparks='buff')
+        Q['finisher'] = dict(whole=(-16, 'center', -6, -4), head=(4, -2, 0), legs=(-50, 0, 0), tail=(-18, 0, 0), eye='angry', wing=-55, ghost=True, air=True)
     return Q
 
 
@@ -425,15 +435,22 @@ def compose(spec, name, pose, arts, cell):
             render(canvas, w, Mw, off)
     canvas = cleanup(canvas, ol)
     if pose.get('ghost'):
-        # 잔상 두 겹: 본체 실루엣을 뒤쪽(오른쪽)으로 밀어 한 색 평면으로 깐다
+        # 잔상: 본체 실루엣을 뒤쪽(오른쪽)으로 밀고 2px 줄마다 비워 속도선처럼 보이게 한다
         out = np.zeros_like(canvas)
-        for sh, col in ((10, spec['ghost_o']), (5, spec['ghost_c'])):
-            m = np.zeros(canvas.shape, bool)
-            m[:, sh:] = canvas[:, :-sh] > 0
-            m[:, canvas.shape[1] - 3:] = False
-            layer_ = np.where(m, col, 0).astype(np.int16)
-            layer_ = np.where(border(layer_), ol, layer_)
-            out = np.where(layer_ > 0, layer_, out)
+        sh = 7
+        m = np.zeros(canvas.shape, bool)
+        m[:, sh:] = canvas[:, :-sh] > 0
+        m[:, canvas.shape[1] - 3:] = False
+        rows = (np.arange(canvas.shape[0]) // 2) % 2 == 0
+        m &= rows[:, None]
+        # 오른쪽 끝 쪽 절반만(몸 뒤로 끌리는 꼬리) 남긴다
+        xs = np.nonzero(canvas.any(0))[0]
+        if len(xs):
+            m[:, : (xs.min() + xs.max()) // 2] = False
+        out = np.where(m, spec['ghost_c'], 0).astype(np.int16)
+        # 줄 끝 한 칸은 진한 색
+        edge = m & ~np.pad(m, ((0, 0), (0, 1)))[:, 1:]
+        out[edge] = spec['ghost_o']
         canvas = np.where(canvas > 0, canvas, out)
     return canvas
 
@@ -442,12 +459,15 @@ def compose_dead(spec, parts, piv, pal, ol, cell):
     off = spec['_off']
     canvas = np.zeros((cell, cell), np.int16)
     if spec['kind'] == 'bird':
-        c = piv['center']
-        M = mat_rot(-90, c)
-        for nm in ['tail', 'legs', 'body', 'head']:
-            if nm in parts:
-                p = parts[nm] if nm != 'head' else head_edit(parts['head'], spec, dict(eye='x'), pal, ol)
-                render(canvas, p, M, off)
+        # 옆으로 픽 쓰러짐: 몸을 바닥 쪽으로 눌러(세로 0.62) 눕히고, 다리는 뒤로 뻗고, 머리는 바닥에 떨군다
+        fy = piv['legs'][1] + 6
+        cx = piv['center'][0]
+        M = np.array([[1.05, 0, cx - 1.05 * cx], [0, 0.62, fy - 0.62 * fy], [0, 0, 1.0]])
+        render(canvas, parts['legs'], mat_tr(4, -3) @ mat_rot(-80, piv['legs']), off)
+        render(canvas, parts['tail'], M @ mat_rot(-10, piv['tail']), off)
+        render(canvas, parts['body'], M, off)
+        hd = head_edit(parts['head'], spec, dict(eye='x'), pal, ol)
+        render(canvas, hd, mat_tr(0, 5) @ mat_rot(-24, piv['head']), off)
         return cleanup(canvas, ol)
     L = spec['leg_h'] * 2 - 2
     down = mat_tr(0, L)
