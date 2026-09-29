@@ -274,7 +274,7 @@ def armor(c, view, P):
         c.px(-4, -24, eye)
         c.px(-3, -24, 'pm' if eye == 'pl' else eye)
         c.line([(-1, -27), (2, -26)], 'sl')
-        flame(c, 3, -26, 4 + (wisp % 2), (-1, 0, 1)[wisp % 3], ('pd', 'pm', 'pl'), w=1.4)
+        flame(c, 3, -25, 3 + (wisp % 2), (-1, 0, 1)[wisp % 3], ('pd', 'pm', 'pl'), w=1.4)
         if sw and not P.get('sword_back', True):
             greatsword(c, *sw, glow=glow)
         hand = P.get('hand', (sw[0], sw[1]) if sw else (-3, -12))
@@ -309,7 +309,7 @@ def armor(c, view, P):
             c.px(1, -24, 'pl')
         else:
             c.line([(-.5, -27), (-.5, -21)], 'sd')
-        flame(c, 1.5 if front else -.5, -26.5, 3 + (wisp % 2), (-1, 0, 1)[wisp % 3], ('pd', 'pm', 'pl'), w=1.3)
+        flame(c, 1.5 if front else -.5, -26, 2 + (wisp % 2), (-1, 0, 1)[wisp % 3], ('pd', 'pm', 'pl'), w=1.3)
 
 
 # ═══════════════════════ 2 초롱 귀신 ═══════════════════════
@@ -323,7 +323,7 @@ def lantern(c, view, P):
     tng = P.get('tongue', (-1, 0, 1)[ph])
     eye = P.get('eye', 'open')
     c.rect(-4, -26, 4, -22, ('kd', 'kd', 'kl'))
-    c.pxs([(-1, -27), (-1, -28), (0, -29), (1, -28), (1, -27)], 'kd')
+    c.pxs([(-1, -27), (0, -28), (1, -27)], 'kd')
     body = c.ell(0, -14, 7, 8.6, ('pd', 'pm', 'pl'))
     inner = body & ~inner_edge(body)
     for y in (-19, -16, -13, -10, -7):
@@ -367,7 +367,7 @@ PAL_DOLL = dict(o='1a0e16', cd='b08470', cm='e2c2aa', cl='faeadc', hd='2a1a34', 
 def doll(c, view, P):
     ph, st = P.get('ph', 1), P.get('step', 0)
     bx = P.get('bar', (1, 0, -1)[ph])
-    by = P.get('bar_y', -28)
+    by = P.get('bar_y', -27)
     strings = P.get('strings', True)
     hands = P.get('hands', None)
     if view == 'side':
@@ -432,7 +432,7 @@ def book(c, view, P):
     ph = P.get('ph', 1)
     op = P.get('open', (0.35, 0.55, 0.75)[ph])
     flap = P.get('flap', (-3, 0, 3)[ph])
-    H = (5, -13)
+    H = (3, -13)
     L = 13
     if view == 'side':
         a = math.radians(14 + 30 * op)
@@ -469,7 +469,7 @@ def book(c, view, P):
         c.ell(H[0] + 1.5, H[1], 2.6, 4.6, ('vd', 'vm', 'vl'))
         c.pxs([(H[0] + 1, H[1] - 2), (H[0] + 2, H[1] - 2), (H[0] + 1, H[1] + 2), (H[0] + 2, H[1] + 2)], 'G')
     else:
-        g = int(round(2 + 3 * op))
+        g = int(round(1 + 3 * op))
         top, bot = -18 - g // 2, -12 + (g - g // 2)
         for s in (-1, 1):
             c.poly([(s * 6, -16), (s * 11, -21 + flap), (s * 12, -17 + flap), (s * 6, -13)], ('pd', 'pm', 'pl'))
@@ -480,21 +480,21 @@ def book(c, view, P):
             for x in (-5, -3, -1, 1, 3):
                 c.px(x, top + 1, 'pl')
                 c.px(x + 1, bot - 1, 'pl')
-            c.rect(-8, top - 8, 7, top - 2, ('vd', 'vm', 'vl'))
+            c.rect(-8, top - 7, 7, top - 2, ('vd', 'vm', 'vl'))
             c.rect(-8, bot + 2, 7, bot + 6, ('vd', 'vm', 'vl'))
             for x0 in (-8, 5):
-                c.rect(x0, top - 8, x0 + 2, top - 6, 'G', shade=False)
+                c.rect(x0, top - 7, x0 + 2, top - 5, 'G', shade=False)
                 c.rect(x0, bot + 4, x0 + 2, bot + 6, 'G', shade=False)
             eye = P.get('eye', 'open')
             if eye == 'open':
-                c.ell(-.5, top - 5, 2.2, 1.6, 'E')
-                c.px(-.5, top - 5, 'o')
+                c.ell(-.5, top - 4.5, 2.2, 1.6, 'E')
+                c.px(-.5, top - 4.5, 'o')
             if P.get('tongue', True):
                 c.tube([(0, bot - 2), ((-1, 0, 1)[ph], bot + 3), ((-1, 0, 1)[ph] * 2, bot + 8)], ('R', 'R', 'R'), 3)
         else:
-            c.rect(-8, top - 8, 7, top - 2, ('vd', 'vm', 'vl'))
+            c.rect(-8, top - 7, 7, top - 2, ('vd', 'vm', 'vl'))
             c.rect(-8, bot + 2, 7, bot + 6, ('vd', 'vm', 'vl'))
-            c.rect(-3, top - 7, 2, bot + 5, ('vd', 'vm', 'vl'))
+            c.rect(-3, top - 6, 2, bot + 5, ('vd', 'vm', 'vl'))
             for y in (top - 5, (top + bot) // 2, bot + 3):
                 c.rect(-3, y, 2, y + 1, 'G', shade=False)
             c.px(-1, (top + bot) // 2 - 3, 'C')
@@ -506,7 +506,7 @@ PAL_SCARE = dict(o='1e140a', sd='9a7650', sm='cca878', zm='d8b040', zl='f8e27e',
                  bm='4a7aac', X='b03a30', Ld='8e9cb0', Ll='eef4fa', K='26242e', E='ff8020')
 
 
-def scythe(c, x, y, ang, L=22):
+def scythe(c, x, y, ang, L=21):
     """손 (x, y) 가 쥔 낫. ang 0 = 자루가 위로 곧게, 날은 자루 끝에서 앞(왼쪽)으로 휜다. 양수 = 뒤로 기울임."""
     r = math.radians(ang)
     dx, dy = math.sin(r), -math.cos(r)
@@ -528,7 +528,7 @@ def scarecrow(c, view, P):
         c.rect(-1, -10, 1, 0, ('hd', 'hd', 'hm'))
         for x, h in ((-4, 3), (-1, 2), (2, 3), (4, 2)):
             c.poly([(x - 1, -10), (x + 1, -10), (x + (ph - 1) * .5, -10 + h)], 'zm', out='o', shade=False)
-        sc = P.get('scythe', (-6, -14, 0))
+        sc = P.get('scythe', (-2, -14, 0))
         if sc and P.get('scythe_back', True):
             scythe(c, *sc)
         c.poly([(-4, -18), (4, -18), (5, -10), (-5, -10)], ('bd', 'bm', 'bm'))
@@ -536,7 +536,7 @@ def scarecrow(c, view, P):
         c.ell(0, -21, 4.6, 4.2, ('sd', 'sm', 'sm'))
         c.pxs([(-2, -17), (0, -17), (2, -17)], 'zl')
         c.rect(-8, -25, 7, -23, ('hd', 'hm', 'hm'))
-        c.poly([(-4, -25), (3, -25), (4, -28), (6, -29), (2, -30), (-3, -28)], ('hd', 'hm', 'hm'))
+        c.poly([(-4, -25), (3, -25), (4, -27), (6, -28), (2, -29), (-3, -27)], ('hd', 'hm', 'hm'))
         c.pxs([(-1, -26), (0, -26)], 'X')
         eye = P.get('eye', 'E')
         c.px(-3, -21, eye)
@@ -568,13 +568,13 @@ def scarecrow(c, view, P):
         c.rect(-3 if front else 0, -14, -1 if front else 2, -12, 'X', shade=False)
         c.ell(-.5, -21, 4.6, 4.2, ('sd', 'sm', 'sm'))
         c.rect(-8, -25, 7, -23, ('hd', 'hm', 'hm'))
-        c.poly([(-4, -25), (3, -25), (3, -28), (5, -29), (1, -30), (-3, -28)], ('hd', 'hm', 'hm'))
+        c.poly([(-4, -25), (3, -25), (3, -27), (5, -28), (1, -29), (-3, -27)], ('hd', 'hm', 'hm'))
         if front:
             c.pxs([(-3, -21), (-2, -21)], 'E')
             c.pxs([(1, -22), (2, -21), (1, -20), (3, -22), (3, -20)], 'o')
             c.pxs([(-3, -19), (-2, -18), (-1, -19), (0, -18), (1, -19), (2, -18)], 'o')
         c.pxs([(-2, -17), (0, -17), (1, -17)], 'zl')
-        scythe(c, -9, -16, -8, 18) if front else scythe(c, 9, -16, 8, 18)
+        scythe(c, -9, -16, -8, 17) if front else scythe(c, 9, -16, 8, 17)
         if P.get('crow', ph) is not None:
             cx, cy = (6, -20 - (crow == 2)) if front else (-7, -20 - (crow == 2))
             c.ell(cx, cy, 2, 1.6, 'K')
@@ -747,7 +747,9 @@ def candle_imp(c, view, P):
 CHARS = [(mimic, PAL_MIMIC), (armor, PAL_ARMOR), (lantern, PAL_LANTERN), (doll, PAL_DOLL),
          (book, PAL_BOOK), (scarecrow, PAL_SCARE), (clockwork, PAL_CLOCK), (candle_imp, PAL_IMP)]
 # 떠다니는 몸(초롱·마도서): 발밑 원점을 위로 띄운다(칩 칸 안 높이).
-HOVER = {2: 3, 4: 5}
+HOVER = {2: 0, 4: 2}
+# 전투 시트의 부유 높이(칩 칸은 32px 로 좁아 위 여백을 위해 덜 띄운다).
+BATTLE_HOVER = {2: 3, 4: 5}
 
 
 def chip_frame(i, d, p, pose=None):
