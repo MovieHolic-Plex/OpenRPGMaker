@@ -25,12 +25,13 @@
 //   crit      치명 확률 %.   hitRate  명중 %.   priority  기술 우선도 -7~7(strict 턴제에서만 순서를 바꾼다).
 //   cooldown  사용 뒤 못 쓰는 라운드 수.
 //
-// 기본 DB 상태(쓸 수 있는 id): state_poison 독 · state_deep_poison 맹독(출혈) · state_burn 화상 · state_freeze 빙결 ·
+// 기본 DB 상태(쓸 수 있는 id): state_poison 독 · state_deep_poison 맹독(출혈) ·
 //   state_sleep 수면 · state_paralysis 마비 · state_silence 침묵 · state_blind 암흑(통상 공격 명중 ½) ·
 //   state_stop 스톱(게이지 정지·행동 불가, 짧다) · state_petrify 석화(전투 불능 취급) · state_berserk 버서크(무작위 통상 공격, 공 1.5배) ·
 //   state_attack_up/down · state_defense_up/down · state_agility_up(헤이스트)/down(슬로우) · state_protect 프로텍트(물리 경감) ·
 //   state_shell 실드(마법 경감) · state_regen 재생 · state_wet 젖음(번개 약점) · state_oiled 기름(불 약점) · state_death 전투불능.
-//   자동 부활은 엔진에 없다.
+//   자동 부활은 엔진에 없다. 화상·빙결(state_burn/freeze)은 포켓몬 데모 DB 에만 있다 — 기본 DB 에 없는 id 를 쓰면 프로젝트 검증이
+//   「stateId does not exist」로 player 부팅을 막는다.
 //
 // ── 직업 설계 규칙 ───────────────────────────────────────────────────────────────────────────────
 //   1. 직업당 8개 중 **순수 1타 데미지는 최대 2개**. 서로 다른 기믹 최소 4종(다단·범위 모양·비율 수식·대가·흡수·시간·
