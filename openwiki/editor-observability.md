@@ -525,3 +525,92 @@ LLM 전송 본문과 Pi provider payload에서 민감값을 가린 뒤 표시용
 Pi의 `prompt_inspection` 이벤트는 client에서 소비하고 일반 감사/대화 이벤트 전달에서
 제외한다. 기존 로컬 진단 수집 동의나 영구 AI 로그에 새 원문 저장 경로를 추가하지 않는다.
 상세 UI/수명/중앙 검증 명령은 `editor-ai-panel.md`의 Feature16 절을 따른다.
+
+## 연속 AI 적용의 구독자 비용 (2026-09-28)
+
+`editor/projectReferenceIssues.ts`는 작성 여정·진행 패널의 참조 검증 결과를 Project 객체와
+store lineage/generation으로 공유한다. 로드 정규화가 쓰는 순수 검증기는 캐시하지 않는다.
+`editor.ts`는 작성 진행 기록을 통지마다 저장하고, 표면 갱신만 rAF로 합친다.
+서로 다른 범위나 팔레트 요청이 겹치면 전체 패널 갱신으로 승격하며, teardown 뒤 예약은 버린다.
+지연된 store 구독자 오류도 기존 store 로거에 남긴다.
+
+맵 연결 인덱스·그래프는 맵 구성/순서/id, 각 events 배열, mapConnections, startMapId로
+재사용하고 이벤트 명령 순회도 events 배열별로 공유한다. 연결 패널은 그래프·맵 이름·선택이
+같으면 DOM을 보존한다. 이벤트 배열 내부는 제자리 수정하지 않는 store 불변성 계약을 따른다.
+
+열린 규칙 감사 패널은 마지막 통지 뒤 250ms에 검사한다. 닫힘·재마운트·포인터 대기를
+다시 확인하여 폐기된 패널이나 진행 중인 새 편집에 옛 예약이 끼어들지 않게 한다.
+전역 count 규칙과 좌표 없는 위반의 보고 범위를 유지하려고 mapIds 부분 병합은 하지 않았다.
+
+EditScene은 store 렌더 계획이 skip이면 유휴 게이트를 깨우지 않는다. 실제 변경은
+requestEditRenderFrame으로 한 프레임만 요청하고, 카메라·포인터의 연속 렌더 정책은 유지한다.
+
+직접 도구·도구 묶음은 `toolMapCellApply`로 단일 맵의 타일 변경만 증명된 경우 기존
+`mapCellApply` → `replace({renderCells})` 경로를 사용한다. 네 층·그림자·스택을 비교하고,
+오토타일 이웃 확장은 기존 렌더러가 맡는다. `replace`에는 changedMapIds 옵션이 없으므로
+여러 맵/속성/이벤트/프로젝트 데이터 변경, 추가·삭제와 2,048셀 초과는 전체 통지를 유지한다.
+
+새 워크트리 재측정: 이벤트 2,000건 기준 검증 5.338→0.196ms/호출, project 통지 200회
+패널 DOM 4,400→22개. Chromium 연결 패널은 0.946→0.023ms/통지, DOM 18,800→0개.
+규칙 감사(100ms 간격 20회)는 7→1회, 100×100 한 칸 렌더는 10,000→9객체.
+하네스·명령·원자료·제한은 `verify-shots/perf-editor-subs/SUMMARY.md`에 기록했다.
+
+### 텍스처 완료 redraw 합치기 (2026-09-28)
+
+`EditScene`의 캐릭셋·이벤트 스프라이트·업로드 타일셋·번들 로더 onReady 및 맵 전환의
+타일셋 onReady는 같은 rAF 예약 함수를 사용한다. 한 프레임에 완료된 텍스처 수와 무관하게
+전체 redraw와 단발 렌더 요청은 한 번이다. cleanup은 예약을 취소하고 종료 중에는
+늦은 완료 콜백을 무시한다. 재시작 전 예약은 epoch로 무효화하되, 씬별 pending 로더가
+재사용하는 완료 콜백은 재시작 후 새 프레임을 요청할 수 있게 유지한다.
+동기 store redraw와 프레임 등록·로드 오류 처리는 유지한다. 실측은
+`verify-shots/perf-editor-subs/SUMMARY.md`의 텍스처 완료 항목에 기록한다.
+
+실측(실제 EditScene 메서드 + 로더/rAF/그리기 대역): 같은 프레임 전 84개 완료의 redraw는
+84→1회, 6묶음은 504→6회다. 동기 store redraw 6회는 양쪽 모두 유지한다. 완료가 여러
+프레임에 걸치면 각 프레임마다 한 번이며, 위 수치는 감독자 프로파일의 전체 소요 시간 개선율이 아니다.
+
+실행 중지 정정 후에는 Vitest·tsc를 재실행하지 않고 독립 Node 스크립트로 관련 메서드
+원문을 실행하여 84→1회/6묶음 504→6회를 재확인했다. 84개 완료를 6프레임으로 나누면
+84→6회다(`verify-shots/perf-editor-subs/texture-node.json`). 실제 Phaser 수명 이벤트 연결은
+이 호출 수 하네스 범위 밖이며, 과거 테스트 실행 이력과 정정 후 코드 검토는 SUMMARY에서 구분한다.
+
+
+## 조수 적용·체크리스트 경로의 전체 문서 비용 (2026-09-28)
+
+새 프로젝트 기본 자료(약 149MB: 타일셋 82MB · 업로드 자산 66MB)에서 조수 체크포인트 하나가 메인 스레드를 약 4s 멈췄다.
+실측 도구는 `scripts/qa/ai-assistant-lag-perf.mjs`(실제 편집기·스토어, 전송만 NDJSON 대본, `PROFILE=1` 이면 CDP 프로파일 상위 함수를 남긴다).
+원인과 대응은 아래와 같다. 판정 결과는 바꾸지 않았고, 비용만 줄였다.
+
+- **체크리스트 갱신**(`AssistantSession.refreshAcceptance`, 스토어 통지마다): 프로젝트 두 개의 `JSON.stringify` 비교(149MB 에서 2.2~2.6s)와
+  `structuredClone`(1.3s)를 `sameAcceptanceContent`(내용 요약 비교 — 지문과 같은 판정)와 `cloneProjectSharingSharedDictionaries`(타일셋·업로드 공유)로 바꿨다.
+  세션·원장의 다른 전체 프로젝트 지문 비교도 같은 함수로 옮겼다. 첫 비교의 판정 차이는 하나다: 키 순서만 다른 같은 내용을 더는 «바뀜» 으로 보지 않는다.
+- **적용 권위 요약**(`applyChangesetToStore` 의 `withIdentityScope`): 같은 동기 구간 안에서는 요약의 노드 대조를 한 번만 한다(`withContentDigestEpoch`).
+  `projectIdentityDigest` 는 한 번 요약한 타일셋·업로드 자산 항목을 다음 권위 요약부터 대조하지 않는다(`withTrustedSharedEntries` —
+  projectClone 계약: 두 사전의 항목은 제자리에서 고치지 않는다). 사람 편집의 제자리 수정이 일어나는 맵·DB·시스템은 계속 대조한다.
+  로드 정규화처럼 공유 항목을 제자리에서 고치고 전후 요약으로 알아내는 곳은 믿음 없이 끝까지 대조한다.
+- **저장 왕복 검사**(`projectLint.checkRoundtrip`, 적용 커밋마다): 글은 `serializeReusingSharedDictionaries`(항목 글 기억, `serialize` 와 글자까지 같다)로 만들고,
+  이미 왕복을 통과한 타일셋·업로드 항목(같은 객체)은 뼈대 글로 되읽는다(`serializeForRoundtripCheck`). 공간 저작이 있는 문서는 뼈대를 쓰지 않는다
+  (공간 참조가 타일셋 `structureKits` 를 읽는다). 맵·DB 등 나머지 문서의 깨짐과 새 타일셋 객체의 깨짐은 그대로 잡힌다.
+- **실행 요청의 무거운 키 해시**(`heavyWire.planHeavyWire`, 턴마다): 사전 객체가 새것이어도 내용 요약이 같으면 글·SHA-256 을 다시 만들지 않는다.
+- **첫 턴·첫 적용 준비 비용**: 조수 패널이 뜬 뒤와 무거운 키가 바뀐 스토어 통지 뒤, 한가할 때(`requestIdleCallback`) 무거운 키 글·해시
+  (`warmHeavyWire`)와 첫 적용의 왕복 통과 기록·권위 요약 기억(`warmApplyCaches`)을 미리 만든다. 판정에는 영향이 없다 —
+  미리 만든 값은 값 대조를 통과할 때만 쓰인다. 이 준비가 없으면 첫 전송 직후 약 7s, 첫 체크포인트 약 2.7s 멈췄다.
+- 편집기 구독자·캔버스(텍스처 적재마다 전체 redraw 등)는 위 "연속 AI 적용의 구독자 비용" 절, 조수 패널 DOM 은 `editor-ai-panel.md` 의 "AI 패널 렌더 비용" 절.
+
+2차(같은 날, 실제 프로젝트 12맵·100×100 기준 프로파일):
+
+- **적용 커밋의 클러스터 규칙 검사**: `applyProposedProject` 는 `commitChangeset(..., { clusterMapIds: [] })` 로 클러스터 스캔을 건너뛴다.
+  `cluster-rule:*` 는 커밋을 막지 않고(`isBlocking`) 이 경로는 `commit.issues` 를 쓰지 않는다. 규칙 감사 표시는 `ruleAuditPanel` 이 따로 한다.
+  검사 자체도 칸마다 `new Set([tile])` 을 만들던 전체 스캔 대신 검사 한 번 동안 맵당 한 번 만드는 타일→칸 색인(`clusterRuleValidators.tileCellIndex`)을 쓴다 — 결과는 같다(실제 프로젝트에서 대조, 88ms → 8ms).
+- **실행 요청 gzip**(`piRequestBody`): 몸통 전체 `JSON.stringify` → `Blob` → `CompressionStream` 대신 조각(256KB)을 흘리며 조각마다 양보한다.
+  heavyBlobs 의 글은 이스케이프 사본을 통째로 만들지 않고 조각별로 이스케이프한다. 풀면 `JSON.stringify(value)` 와 글자까지 같다.
+  이어 붙인 gzip 멤버는 쓰지 않는다 — node 는 풀지만 브라우저 `DecompressionStream` 은 뒤따르는 멤버를 거부한다.
+- **체크포인트 캔버스 갱신**(`incrementalMapApply.mapCellApply`): 체크포인트는 NDJSON 에서 다시 읽은 문서라 무거운 키만 스토어 객체를 물려받는다.
+  참조만 비교해서 내용이 같은 `meta` 하나로도 전체 재렌더(체크포인트마다 약 1.2s)로 떨어졌다. 이제 가벼운 키는 내용을 대조하고,
+  칸 목록이 가리키지 않는 다른 맵은 내용이 같을 때만 칸 단위 갱신을 허락한다. 무거운 키는 대조하지 않는다(바뀌었으면 전체 재렌더가 맞다).
+- **커밋 기준 요약**(`projectCommitLog.manualCommitDigest`, 한가할 때): 적용 권위 요약처럼 공유 항목을 믿는다(`withTrustedSharedEntries`).
+- **초점 이동**(`EditScene.panCameraToTile`): 캔버스·가림 사각형을 250ms 기억한 값으로 읽는다. 체크포인트마다 `getBoundingClientRect` 강제 레이아웃이 돌았다.
+
+새 경로를 추가할 때: 전체 프로젝트를 `JSON.stringify`/`acceptanceFingerprint`/`structuredClone` 하는 비교·복제를 스토어 통지나 체크포인트마다 부르지 마라.
+내용 비교는 `sameAcceptanceContent` 또는 `jsonContentDigest`, 읽기 전용 사본은 `cloneProjectSharingSharedDictionaries` 를 쓴다.
+

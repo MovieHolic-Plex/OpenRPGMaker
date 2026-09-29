@@ -2,7 +2,7 @@
   {
     "name": "host app opens the project folder in the editor",
     "ok": true,
-    "detail": "app://oprn/index.html"
+    "detail": "app://oprn/index.html?map=map_farming_demo"
   },
   {
     "name": "host starts the team host and lists join addresses",
@@ -22,7 +22,7 @@
   {
     "name": "member app shows the host editor (map canvas + team bar) in an app window",
     "ok": true,
-    "detail": "http://192.168.100.124:9840/?map=map_farming_demo bar=\"내 팀 · 호스트 · 저장 후 팀 변경 반영팀 관리 ↗\" loadMs=34892"
+    "detail": "http://192.168.100.124:9840/?map=map_farming_demo bar=\"내 팀 · 호스트 · 저장 후 팀 변경 반영팀 관리 ↗\" loadMs=42928"
   },
   {
     "name": "member window talks to the host over HTTP, without the local IPC bridge",
@@ -37,12 +37,12 @@
   {
     "name": "member save lands in the host's project.sqlite",
     "ok": true,
-    "detail": "{\"result\":{\"kind\":\"saved\",\"revision\":3},\"revisionBefore\":1,\"revisionAfter\":3,\"titleAfter\":\"팀 참여 저장 1790543673355\"}"
+    "detail": "{\"result\":{\"kind\":\"saved\",\"revision\":6},\"revisionBefore\":1,\"revisionAfter\":6,\"titleAfter\":\"팀 참여 저장 1790575602060\"}"
   },
   {
     "name": "host app reads the member's change",
     "ok": true,
-    "detail": "{\"revision\":3,\"title\":\"팀 참여 저장 1790543673355\"}"
+    "detail": "{\"revision\":6,\"title\":\"팀 참여 저장 1790575602060\"}"
   },
   {
     "name": "joined host appears under 최근 참여한 팀",

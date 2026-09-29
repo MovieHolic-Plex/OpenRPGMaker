@@ -1,5 +1,6 @@
 import type { Project, TilesetDef } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
+import { shareContentDigests } from "@/project/persistence/core/contentDigest";
 
 /**
  * 편집용 프로젝트 복제. 타일셋 참고문서(타일셋당 수 MB, 합계 약 20MB)는
@@ -115,6 +116,20 @@ export function withoutSharedDictionaries(project: Project): Project {
 export function shareUploadedAssets(source: Project, copy: Project): void {
   const uploaded = (source.assets as Project["assets"] | undefined)?.uploaded;
   if (uploaded && copy.assets) copy.assets.uploaded = { ...uploaded };
+}
+
+/**
+ * 읽기 전용 스냅샷용 복제. 타일셋·업로드 자산 항목은 원본 객체를 가리키고(사전만 얕게 복사), 나머지는 깊게 복제한다.
+ * 키 순서는 원본과 같다. 원본의 요약 기억을 넘겨 다음 비교가 처음부터 돌지 않게 한다.
+ * 계약은 위 두 함수와 같다 — 스토어의 타일셋·업로드 자산 항목은 제자리에서 고치지 않는다.
+ * 왜(2026-09-28 실측, 새 프로젝트 기본 자료 149MB): `structuredClone(project)` 한 번이 1.3s, 그중 타일셋·업로드 자산이 거의 전부다.
+ */
+export function cloneProjectSharingSharedDictionaries(project: Project): Project {
+  const next = structuredClone(withoutSharedDictionaries(project)) as Project;
+  next.tilesets = { ...project.tilesets };
+  shareUploadedAssets(project, next);
+  shareContentDigests(project, next);
+  return next;
 }
 
 /**

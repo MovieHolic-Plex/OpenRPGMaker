@@ -184,6 +184,7 @@ describe("T12 RM2K3 player status menu", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
+      project.system.menuUiStyle = "workbench"; // workbench 배치 계약(기본 스킨은 pixel)
       const session = startSession(project);
       session.partyActorIds = [];
       session.actorVitals = {};

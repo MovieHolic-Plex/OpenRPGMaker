@@ -143,6 +143,7 @@ export function appendConversationBubble(options: {
   readonly removeStartScreen: () => void;
   /** 복원·감사 로그용 시각(날짜 구분선). */
   readonly at?: Date | string | null;
+  readonly scroll?: boolean;
 }): HTMLElement {
   options.removeStartScreen();
   if (options.role === "user") {
@@ -170,7 +171,7 @@ export function appendConversationBubble(options: {
   if (displayText && (options.role === "assistant" || options.role === "system")) body.replaceChildren(renderAssistantAnswer(displayText));
   else if (displayText) body.textContent = displayText;
   options.log.append(row);
-  options.log.scrollTop = options.log.scrollHeight;
+  if (options.scroll !== false) options.log.scrollTop = options.log.scrollHeight;
   return body;
 }
 
@@ -200,6 +201,7 @@ export interface ConversationLogHost {
   /** 변경 카드·보드를 작업 띠로 보낸다. 로그에는 붙지 않는다. */
   appendChangeCard: (card: HTMLElement) => HTMLElement;
   renderConversationEntry: (entry: AuditEntry) => void;
+  renderConversationEntries: (entries: readonly AuditEntry[]) => void;
   clearLastReasoning: () => void;
   isLastReasoningBox: (node: HTMLElement) => boolean;
 }
@@ -230,8 +232,9 @@ export function createConversationLogHost(options: {
 }): ConversationLogHost {
   const { log, removeStartScreen, workSink } = options;
 
+  let replaying = false;
   const appendBubble = (role: AiBubbleRole, text: string, at?: Date | string | null): HTMLElement =>
-    appendConversationBubble({ log, role, text, removeStartScreen, at });
+    appendConversationBubble({ log, role, text, removeStartScreen, at, scroll: !replaying });
 
   // 모델의 추론(reasoning) 스트림을 접이식 상자로 보여준다 — 기본 접힘(💭), 클릭하면 펼침.
   // 병합(추론 N회) 시 각 추론의 원문 전체를 별도 아이템으로 보존한다 — 펼치면 전부 보인다(V3C).
@@ -427,6 +430,15 @@ export function createConversationLogHost(options: {
     appendAiDocument,
     appendChangeCard,
     renderConversationEntry,
+    renderConversationEntries(entries) {
+      const wasReplaying = replaying;
+      replaying = true;
+      try { for (const entry of entries) renderConversationEntry(entry); }
+      finally {
+        replaying = wasReplaying;
+        if (!replaying) log.scrollTop = log.scrollHeight;
+      }
+    },
     clearLastReasoning: () => {
       lastReasoning = null;
     },

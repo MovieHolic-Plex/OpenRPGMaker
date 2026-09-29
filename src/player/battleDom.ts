@@ -21,6 +21,7 @@ import { battleAnimationImpactMs, syncBattleAnimationLayer } from "@/player/batt
 import { createPresentationLedger, type BattlePresentationLedger } from "@/player/battlePresentation";
 import { commandPanel, enemyListPanel, syncEnemyListPanel, type BattleCommandSubmenu } from "@/player/battleCommandDom";
 import {
+  advanceBattleResultLevelUps,
   applyBattleDirectorState,
   battleMessageWindow,
   battleResultPanel,
@@ -586,6 +587,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     if (snapshot.result) {
       if (directorState.step === "result" && !resultSent) {
         if (revealAllResultRows(snapshot)) return;
+        if (advanceResultLevelUps()) return;
         resultSent = true;
         options.onResult(snapshot.result, applyRollingHpSurvival(snapshot.result, snapshot, rollingHp));
       }
@@ -637,6 +639,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         // 씬을 닫던 결함(2026-09-14 실측: stage 0 에서 Z → 700ms 뒤 씬 소멸).
         if (directorState.step === "result" && !resultSent) {
           if (revealAllResultRows(snapshot)) return;
+          // 도트 결과: 둘째 확인부터는 레벨 업한 사람을 한 명씩 보인다. 다 보이면 닫는다.
+          if (advanceResultLevelUps()) return;
           resultSent = true;
           options.onResult(snapshot.result, applyRollingHpSurvival(snapshot.result, snapshot, rollingHp));
         }
@@ -1174,7 +1178,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       return;
     }
     const selected = markMenuCursor(snapshot);
-    if (selected && document.activeElement !== selected) selected.focus({ preventScroll: true });
+    // 시퀀스(인트로·액션 비트)가 도는 동안 명령 패널은 숨어 있다. 여기서 focus() 하면 숨은 버튼에 포커스를 주려고
+    // 동기 레이아웃만 강제된다(첫 전투 진입 focus 64ms 실측). 명령 국면이 되면 syncView 가 커서 버튼에 포커스를 준다.
+    if (selected && !sequenceBusy && document.activeElement !== selected) selected.focus({ preventScroll: true });
   }
 
   /** 적 대상 국면의 커서: 「뒤로」 행이 커서를 갖고 있으면 그 행, 아니면 필드의 선택 적. */
@@ -1231,6 +1237,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     return true;
   }
 
+  /** 도트 결과의 다음 레벨 업 창을 열었으면 true. 레벨 업 창이 없거나 다 봤으면 false. */
+  function advanceResultLevelUps(): boolean {
+    const panel = resultHost.querySelector<HTMLElement>("[data-testid='battle-result-panel']");
+    return panel ? advanceBattleResultLevelUps(panel) : false;
+  }
+
   /** 결과 홀드 동안 필드 한가운데 찍히는 도장. 결과 패널이 뜨면 걷는다(syncResultHost).
    *  결과 소리·플래시는 도장과 같은 순간에 한 번 울린다 — 패널이 뜰 때까지 기다리면 막타와
    *  팡파레 사이가 1.5초 비었다(2026-09-25 녹화). 도주는 자기 연출이 있어 도장을 찍지 않는다. */
@@ -1263,7 +1275,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // 애니메이션 레이어 정리는 syncView 의 생성 지점에서 함께 처리한다(중복 방지).
     let panel = resultHost.querySelector<HTMLElement>("[data-testid='battle-result-panel']");
     if (!panel) {
-      const created = battleResultPanel(snapshot, resultRevealStage);
+      const created = battleResultPanel(snapshot, resultRevealStage, options.audioContext);
       if (!created) return;
       resultHost.replaceChildren(created);
       panel = created;
@@ -1493,10 +1505,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     return previous.step === "command" || previous.activeActorRecordId !== snapshot.activeActorId;
   }
 
-  syncView();
-  if (options.introHold !== false) {
-    sequencer.startIntro(initialSnapshot);
-  }
+  // 인트로는 startIntro 가 인트로 상태로 syncView 를 부른다. 그 앞에 명령 상태로 한 번 더 그리면 전투 DOM 전체를
+  // 명령 화면으로 만들고 포커스·레이아웃까지 한 뒤 곧바로 인트로로 갈아엎는다(첫 전투 진입 115–128ms 의 절반 가량).
+  if (options.introHold !== false) sequencer.startIntro(initialSnapshot);
+  else syncView();
 
   const tickInterval = window.setInterval(() => {
     if (sequenceBusy) return;

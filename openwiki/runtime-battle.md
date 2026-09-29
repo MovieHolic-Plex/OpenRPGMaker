@@ -10,6 +10,21 @@
 
 # Runtime Battle Behavior
 
+## 도트 결과 화면 단순화 · 적 그룹 「전투 뒤」 이벤트 (2026-09-28)
+
+- **도트 결과(기본 메뉴 스킨 pixel, 포켓몬 제외)** 는 첫 화면이 세 창이다: 머리 창(승리 · EXP · 돈 · 전리품 이름, `battle-result-summary`) / 파티 창(걷는 그림 · Lv 전후 · EXP 막대 · LEVEL UP 또는 다음 Lv까지, `battle-result-party-<actorId>`) / 전리품 창(`battle-result-cards`: 소지금 「a → b」, 아이템 「보유 a → b」).
+  능력치 24칸을 늘어놓던 레벨 업 창은 없앴다. 확인키 흐름은 **첫 확인 = 보상 전부 공개 → 확인마다 레벨 업한 사람 한 명씩(`battle-result-levelup-<actorId>`, `data-active="true"`) → 다 보면 닫기**다.
+  단계는 `battleDom` 의 확인 처리에서 `revealAllResultRows` 다음 `advanceBattleResultLevelUps(panel)` 이 소비한다. 창은 처음부터 DOM 에 있고 모달(`battle-result-levelups`)의 `data-open`/`data-index` 로 켠다.
+  공용 보상 행은 그대로 남는다(공개 단계·세기 계약). 경험치·레벨 업 행은 `data-reward-kind` 로 숨긴다 — 파티 창과 레벨 업 창이 대신 말한다.
+  그래서 도트 스킨에서 `battle-result-exp-bar` 는 보이지 않는다. QA 는 `battle-result-cards`/`battle-result-party` 를 기다린다.
+- **「전투 뒤」 이벤트** `TroopRecord.afterBattle?: { victory?, defeat?, escape? }`(명령 목록). 결과 화면이 닫히고 필드로 돌아온 뒤 결과별로 한 번 돈다. 명령 문맥은 맵 이벤트("map")다.
+  - 러너 `src/player/troopAfterBattleRunner.ts` (`runCommands`, `allowNested`). 부르는 곳 세 갈래: `commandBattle.playCommandBattle`(이벤트 전투 처리·병렬 전투), `playSceneMovement.runRandomEncounterBattle`, `playSceneFieldSpawns.runFieldSpawnEventBattle`.
+  - 순서: `session.battleResult` 기록 → 적 그룹 「전투 뒤」 → 이 전투를 연 이벤트의 결과 분기(`branchOnResult`)가 이어진다.
+  - 게임 오버로 끝나는 패배(canLose=false, 인카운터·심볼 접촉 패배)에는 돌지 않는다. 「졌을 때」 는 패배 허용 이벤트 전투에서만 의미가 있다.
+  - 모델·순회 `src/project/troopAfterBattle.ts`(`normalizeTroopAfterBattle`, `troopAfterBattleLists`, `mapTroopAfterBattleLists`). 빈 목록은 키를 만들지 않는다(옛 JSON 바이트 유지).
+    명령 목록을 훑는 곳(참조 검증·끊긴 참조 정리·맵 삭제·스위치/변수 이름 바꾸기·사용처·엔딩 도달·lint·명령 색인)은 전투 이벤트 페이지 옆에서 이 목록도 훑는다. 새 순회기를 만들면 같이 넣어라.
+  - QA: `inn-battle-pixel` 의 `after-battle`/`after-battle-done` 비트(승리 뒤 대사 + 스위치 `sw_0001`).
+
 ## 도트 측면 전투 스킨 retro2003 (2026-09-28)
 
 13번째 스킨. 자료집 → 시스템 → 전투 UI 스타일 「레트로 2003 · 측면 도트 전투 (기본)」(드롭다운 첫 번째), AI `set_project_settings battle.uiStyle: "retro2003"`.

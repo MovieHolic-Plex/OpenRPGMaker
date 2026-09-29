@@ -5,6 +5,173 @@
 
 <!-- releases -->
 
+## 0.39.3 — 2026-09-28
+
+### 수정
+
+- **save** — 새 프로젝트 첫 저장과 팀 실행 적용이 큰 문서에서 실패하지 않게 한다 (`efa0354`)
+
+## 0.39.2 — 2026-09-28
+
+### 수정
+
+- **ai** — 전송 gzip 조각 스트림 타입을 CompressionStream 쓰기 쪽(BufferSource)에 맞춤 (`887b4c3`)
+
+### 성능
+
+- **ai** — 조수 렉 2차 실측 증거 (`df2cbec`)
+- **ai** — 전송 gzip 양보를 조각마다가 아니라 12ms 마다 (`54141f8`)
+- **ai** — 체크포인트를 칸 단위로 다시 그리기·커밋 기준 요약에 공유 항목 믿음·초점 이동의 강제 레이아웃 제거 (`9d9d39e`)
+- **ai** — 조수 체크포인트의 클러스터 전체 스캔 제거·타일 색인·전송 gzip 을 조각으로 흘리기 (`b0e38e5`)
+- **ai** — 조수 렉 실측 하네스·전후 증거·위키 기록 (`e347776`)
+- **ai-ui** — record browser-only measurements and corrected validation scope (`6f0f1a8`)
+- **editor** — record standalone Node measurements after validation halt (`c0db7b7`)
+- **editor** — record texture redraw measurements and regression checks (`8670725`)
+- **editor** — retain pending texture completion across scene restart (`abf81ca`)
+- **editor** — verify texture redraw batching and scene lifetime (`b21c01e`)
+- **editor** — coalesce texture completion redraws per frame (`47de879`)
+- **ai-ui** — finalize rendering measurements and validation results (`b707351`)
+- **editor** — finalize subscriber performance verification (`e2c04b5`)
+- **ai-ui** — record measurements contracts and browser evidence (`9d05f55`)
+- **editor** — record subscriber benchmarks and browser evidence (`0e7592b`)
+- **ai-ui** — verify archive version guards pruning and write failures (`5565d06`)
+- **ai-ui** — cover deferred rendering and DOM identity with a complete window fixture (`f29308d`)
+- **ai-ui** — release activity media from removed subtrees only (`b860a7b`)
+- **ai-ui** — match answer references with a cached prefix trie (`f3ecff5`)
+- **editor** — cover coalesced panel state and mount lifetime (`60da691`)
+- **ai-ui** — stop building permanently hidden legacy board rows (`8e96878`)
+- **editor** — apply direct tool tile changes through incremental rendering (`51a28ea`)
+- **ai-ui** — reuse member buttons and index recent media by actor (`e6a7d86`)
+- **editor** — request a render frame only for visible store changes (`ee45dcb`)
+- **ai-ui** — share actor indices and bound activity projections (`aac1ad7`)
+- **editor** — debounce rule audits after the final edit (`d1d4488`)
+- **editor** — reuse map link graphs and preserve unchanged link panels (`8387b32`)
+- **ai-ui** — persist only pending runs and amortize archive pruning (`dd0d0cf`)
+- **ai-ui** — scroll conversation replay once per batch (`d661838`)
+- **ai-ui** — defer detached studio and hidden transcript updates (`ae61d79`)
+- **editor** — share reference diagnostics and coalesce store panel refreshes (`f229979`)
+- **ai-ui** — retain capped transcript rows by stable ordinal (`f0ac581`)
+
+### 기타
+
+- perf(ai) 조수 패널이 한가할 때 첫 턴·첫 적용 준비 비용을 미리 치르기 (`af17a6b`)
+- perf(pi) 무거운 키 해시를 내용 요약으로 재사용 (`cb5a1b0`)
+- perf(lint) 왕복을 통과한 공유 항목은 뼈대로 되읽기 (`6caec2a`)
+- perf(ai) 적용 권위 요약이 공유 항목 대조를 반복하지 않게 (`b273d4a`)
+- perf(ai) 조수 적용·체크리스트 경로의 전체 문서 직렬화·요약 줄이기 (`333f29c`)
+- preserve AI UI verification report while app typecheck finishes (`6b47505`)
+
+## 0.39.1 — 2026-09-28
+
+### 성능
+
+- **team** — 동료 저장 반영·참여 부팅·첫 참여 전송량을 줄인다 (`8836cf5`)
+
+## 0.39.0 — 2026-09-28
+
+### 기능
+
+- **battle** — 도트 전투 결과를 한 화면 요약 + 레벨 업 한 명씩으로 줄이고, 적 그룹에 「전투 뒤」 이벤트를 붙인다 (`7536d0b`)
+
+### 수정
+
+- **runtime** — NPC 양보·교착 사슬·직접 추격·추격 A* 상한을 고친다 (`c11a962`)
+- **ai** — 새 프로젝트 첫 Pi 요청과 팀 체크포인트가 크기 때문에 끊기지 않게 한다 (`616c554`)
+
+### 성능
+
+- **runtime** — 맵 진입 타일 그리기에서 타일별 판정을 패스 캐시로 줄인다 (`54d8002`)
+- **runtime** — 소프트웨어 WebGL 타이틀 반해상도와 전투 워밍업 호스트 폭을 고친다 (`3ac2891`)
+- **runtime** — 라벨 색인·스폰 실패 캐시·농사 사전 검사·비 버퍼로 반복 비용과 GC를 줄인다 (`64438b3`)
+
+### 문서
+
+- **openwiki** — 8차 런타임 렉 수정(NPC 길찾기·보류 3건·타이틀·맵 진입) 기록 (`e79768b`)
+
+### 테스트
+
+- **runtime** — 의도된 제품 변경을 따라가지 못한 기준선 실패 테스트 34건을 고친다 (`df8629d`)
+
+## 0.38.1 — 2026-09-28
+
+### 수정
+
+- **rasak** — 에디터 확대 QA — 흩뿌린 소품 걷기·숲·이름표 교정 (`c582c24`)
+
+## 0.38.0 — 2026-09-28
+
+### 기능
+
+- **refmap** — 빈 어둠 검사 — 걷는 곳이 맵의 30% 미만, 조수 시험 결과 기록 (`22ac9fe`)
+- **refmap** — 조각난 집·출입구, 네모난 땅 검사 (`dd8b57c`)
+- **refmap** — ㅁ자 방 검사 — 실내 바닥 덩이가 상자를 80% 이상 채우면 경고 (`aeee050`)
+- **refmap** — paint_pack_layout — 글자 배열로 팩 맵 한 장을 깔고 검사, 밑줄 뜬 물체 검사 (`858a878`)
+- **refmap** — 세트 맵 검사 — 오토타일 모양 어긋남, 바닥 결 무늬는 빈 바닥, 규칙 문서 보강 (`6a52b4b`)
+- **refmap** — 조수용 세트 맵 검사 check_pack_map·층 원본 가져오기·탁자 위 소품·예시 문서 (`02408b4`)
+
+### 수정
+
+- **refmap** — paint_pack_layout 범례 스키마에 JsonSchema 타입을 붙여 빌드를 되살린다 (`b82558a`)
+- **refmap** — 반복 검사 — 6개 이상이면 맵 크기와 상관없이 (`80e1bad`)
+- **refmap** — 섬은 물가가 입구 — 모래 띠를 맵 끝까지 뚫지 않게 (`0eaae8e`)
+- **pi** — Cloud Code Assist 400 INVALID_ARGUMENT 는 이어 가기 한 번 — 도구 호출 생성 중 실패 (`8c3ad29`)
+- **refmap** — ㅁ자 방 기준 76% (`71d847e`)
+- **refmap** — paint_pack_layout 줄 길이 ±2 맞춤, 못 가는 바닥 경고에 여는 칸 (`a4b74b0`)
+- **refmap** — paint_pack_layout 범례를 배열로 — Gemini 검증 모드 400, 같은 소품 반복 검사 (`c05949a`)
+- **places** — 층 원본은 합친 그림이 래스터 킷과 같을 때만 쓴다 (`174a0a2`)
+
+### 문서
+
+- openwiki INDEX 재생성 (`90e1f47`)
+- **refmap** — 조수 참고문서 — 장소 가져오기는 같은 이야기일 때만, 가져온 뒤 요청 구역 대조 (`3574ffa`)
+- **refmap** — 줄 길이 맞춤·여는 칸 (`514ce39`)
+- **refmap** — ㅁ자 방 검사 (`9c55ed1`)
+- **refmap** — 조수 깔기 8차 — paint_pack_layout 범례·반복 검사 (`b213ec0`)
+
+### 잡무
+
+- **refmap** — 공용 DB 재게시 증거 — 섬 입구 규칙 (`1417f56`)
+- **refmap** — 공용 DB 재게시 증거 — 참고문서 가져오기 조건 (`ac9fe62`)
+- **refmap** — 재게시 증거 (`4d48a6a`)
+- **refmap** — 공용 DB 재게시 증거 (`2631968`)
+
+## 0.37.1 — 2026-09-28
+
+### 수정
+
+- **runtime** — 좌표 이동 명령·시간표 이동의 결과 판정과 보간을 바로잡는다 (`a4a53a6`)
+- **runtime** — NPC 생활·추격 길찾기가 몸 크기·가구·다른 NPC 를 실제 걸음과 같게 본다 (`c64292c`)
+
+### 성능
+
+- **runtime** — 첫 전투 CSS 매칭과 SE 디코드를 진입 커버 동안 미리 치른다 (`9ec169d`)
+
+### 문서
+
+- **openwiki** — 런타임 프레임 예산 7차 — NPC 길찾기·첫 전투 CSS 준비 (`ff4b355`)
+
+## 0.37.0 — 2026-09-28
+
+### 기능
+
+- **player** — ESC 메뉴·장비·아이템·여관·전투 결과를 도트 창 기본값으로 통일한다 (`bfa6566`)
+
+## 0.36.1 — 2026-09-28
+
+### 수정
+
+- **runtime** — 다른 NPC 에 막힌 생활 주민이 우회로로 재경로 (`6db2d6c`)
+
+### 성능
+
+- **runtime** — 표면 갱신에서 이벤트 스프라이트를 그래픽이 같으면 재사용 (`7003c36`)
+- **runtime** — 타이틀 효과 입자를 프레임당 한 번 계산하는 보조 패스로 분리 (`d837b34`)
+- **runtime** — 첫 전투 인트로 마운트에서 명령 화면 선그리기·숨은 버튼 포커스 제거 (`b7510d8`)
+
+### 문서
+
+- **openwiki** — 런타임 프레임 예산 6차 (`8e2160a`)
+
 ## 0.36.0 — 2026-09-28
 
 ### 기능

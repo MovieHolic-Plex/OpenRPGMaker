@@ -38,6 +38,9 @@ export function previewMenuItemTarget(project: Project, session: PlaySession, au
     mp: vitals?.mp ?? 0, maxMp: vitals?.maxMp ?? 0,
     hpAfter: vitals ? Math.min(vitals.maxHp, vitals.hp + (reason ? 0 : recoveryAmount(item.hpRecovery, vitals.maxHp))) : 0,
     mpAfter: vitals ? Math.min(vitals.maxMp, vitals.mp + (reason ? 0 : recoveryAmount(item.mpRecovery, vitals.maxMp))) : 0,
+    // 지금 걸린 상태와 이 아이템으로 풀리는 상태 — 대상 카드가 「독 → 정상」 을 미리 보인다.
+    stateIds: [...(session.actorStateIds?.[actorId] ?? [])],
+    curedStateIds: reason ? [] : (session.actorStateIds?.[actorId] ?? []).filter((stateId) => healStateIdsOf(item).includes(stateId)),
   };
 }
 

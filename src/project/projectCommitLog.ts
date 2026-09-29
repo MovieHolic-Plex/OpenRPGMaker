@@ -22,7 +22,7 @@ import { currentHumanEditorIdentity, type EditorIdentity } from "./editorIdentit
 //  이미 기준선에서 빨강이라 새 오류 하나가 그 속에 묻힌다).
 import { projectViewWithoutEventDrafts } from "./eventDrafts";
 import { projectWireView } from "./io/serialize";
-import { jsonContentDigest } from "./persistence/core/contentDigest";
+import { jsonContentDigest, trustSharedProjectEntries, withTrustedSharedEntries } from "./persistence/core/contentDigest";
 import type { CommitReviewStatus } from "./persistence/types";
 import { projectRepository } from "./persistence/repository";
 import type { ChangeSummary } from "@/project/types";
@@ -46,7 +46,15 @@ export type CommitLogInput = {
 let lastManualDigest: string | null = null;
 
 function manualCommitDigest(project: Project): string {
-  return jsonContentDigest(projectWireView(projectViewWithoutEventDrafts(project)))!;
+  // 타일셋·업로드 자산 항목은 제자리에서 고치지 않는다(projectClone 계약) — 적용 권위 요약(authoredProjectBaseline)과 같이
+  // 요약을 이미 가진 공유 항목은 대조를 건너뛴다. 왜(2026-09-28 실측, 실제 프로젝트 12맵): 조수 체크포인트 뒤 한가할 때
+  // 도는 이 요약이 타일셋 노드를 전부 다시 대조해 한 번에 약 0.6s 메인 스레드를 세웠다.
+  const view = projectWireView(projectViewWithoutEventDrafts(project));
+  return withTrustedSharedEntries(() => {
+    const digest = jsonContentDigest(view)!;
+    trustSharedProjectEntries(view);
+    return digest;
+  });
 }
 /** 직전 커밋에서 어디까지 실었는지. 커밋 경로 전체가 이 한 축을 공유한다. */
 let editActivityCursor = 0;

@@ -44,7 +44,7 @@ import {
 } from "@/player/cutsceneControl";
 import { runCommands } from "@/player/playSceneInterpreter";
 import { abortHop, clearAllHopScales, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
-import { destroyAllCharacterShadows } from "@/player/characterShadow";
+import { destroyCharacterShadow, destroyAllCharacterShadows } from "@/player/characterShadow";
 import { startMapBgm } from "@/player/mapBgm";
 import { eventSpriteFrameForDirection, eventSpriteScale, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
 import {
@@ -111,6 +111,15 @@ const tileLayerSignatures = new WeakMap<object, TileLayerSignature>();
 
 interface RenderedEventSprite extends RenderedTileImage {
   readonly y: number;
+  readonly active?: boolean;
+  readonly alpha?: number;
+  readonly blendMode?: number | string;
+  readonly isTinted?: boolean;
+  readonly flipX?: boolean;
+  readonly flipY?: boolean;
+  readonly rotation?: number;
+  readonly texture?: { readonly key: string };
+  readonly anims?: { readonly isPlaying: boolean };
   readonly width?: number;
   readonly height?: number;
   play(key: string): this;
@@ -147,9 +156,15 @@ interface RenderTilesSceneContext<
   characterShadows?: Map<string, import("@/player/characterShadow").ShadowImage>;
   readonly eventSprites: {
     values(): IterableIterator<TSprite>;
+    entries(): IterableIterator<[string, TSprite]>;
+    get(eventId: string): TSprite | undefined;
+    delete(eventId: string): boolean;
     clear(): void;
     set(eventId: string, marker: TSprite): unknown;
   };
+  readonly textures?: { get?(key: string): unknown };
+  readonly children?: { list: unknown[]; queueDepthSort(): void };
+  readonly tweens?: { getTweens?(): readonly TweenTargetSource[] };
   readonly eventGraphicPatternOverrides?: Map<string, number>;
   /** 걷는 중인 NPC 의 보간 위치를 알기 위한 무버 풀(선택). */
   readonly autonomousNPCs?: { get(eventId: string): AutonomousMover | undefined };
@@ -191,6 +206,25 @@ export function loadMap(scene: PlaySceneContext, mapId: MapId, options: { readon
   scene.syncRuntimeState();
 }
 
+/** Owned by one synchronous render only: authored metadata may mutate between passes. */
+interface TileRenderPass {
+  readonly textureKey: string;
+  readonly size: number;
+  readonly quarters: boolean;
+  readonly backing: Map<number, number | null>;
+  readonly animations: Map<number, string | null>;
+  readonly lakes: Map<number, boolean>;
+  readonly above: Map<number, boolean>;
+}
+
+function cachedTileValue<T>(cache: Map<number, T>, tile: number, resolve: () => T): T {
+  const found = cache.get(tile);
+  if (found !== undefined) return found;
+  const value = resolve();
+  cache.set(tile, value);
+  return value;
+}
+
 export function renderTiles<
   TImage extends RenderedTileImage,
   TSprite extends RenderedEventSprite,
@@ -209,24 +243,32 @@ export function renderTiles<
   scene.tileLayer.removeAll(true);
   scene.upperTileLayer?.removeAll(true);
   clearRootYSortTiles(scene);
-  clearEventSprites(scene);
   resetCullableTiles(host);
   const map = scene.map;
   const tileset = store.getCurrent().tilesets[map.tilesetId];
-  if (!tileset) return;
+  if (!tileset) {
+    clearEventSprites(scene);
+    return;
+  }
+  const pass: TileRenderPass = {
+    textureKey: signature.textureKey,
+    size: mapTileSize(map),
+    quarters: supportsChipsetQuarterComposition(tileset),
+    backing: new Map(), animations: new Map(), lakes: new Map(), above: new Map(),
+  };
   // 칸 판정(해안 그룹)의 내용 비교를 이 동기 그리기 동안 타일셋마다 한 번만 한다.
   withWorldCoastRenderPass(() => {
     for (let y = 0; y < map.height; y++) {
       for (let x = 0; x < map.width; x++) {
         const index = y * map.width + x;
         renderEmptyCellCover(scene, x, y, index);
-        renderTile(scene, tileset, x, y, map.lowerTiles[index], "lower");
-        for (const tile of tileStackAt(map, "lower", index)) renderTile(scene, tileset, x, y, tile, "lower");
-        renderRawTile(scene, tileset, x, y, layerTileAt(map, 2, index), "lower", OVERLAY_LAYER_DEPTH_OFFSET);
+        renderTile(scene, tileset, x, y, map.lowerTiles[index], "lower", pass);
+        for (const tile of tileStackAt(map, "lower", index)) renderTile(scene, tileset, x, y, tile, "lower", pass);
+        renderRawTile(scene, tileset, x, y, layerTileAt(map, 2, index), "lower", OVERLAY_LAYER_DEPTH_OFFSET, pass);
         renderShadow(scene, x, y, shadowAt(map, index));
-        renderTile(scene, tileset, x, y, map.upperTiles[index], "upper");
-        for (const tile of tileStackAt(map, "upper", index)) renderTile(scene, tileset, x, y, tile, "upper");
-        renderRawTile(scene, tileset, x, y, layerTileAt(map, 4, index), "upper", OVERLAY_LAYER_DEPTH_OFFSET);
+        renderTile(scene, tileset, x, y, map.upperTiles[index], "upper", pass);
+        for (const tile of tileStackAt(map, "upper", index)) renderTile(scene, tileset, x, y, tile, "upper", pass);
+        renderRawTile(scene, tileset, x, y, layerTileAt(map, 4, index), "upper", OVERLAY_LAYER_DEPTH_OFFSET, pass);
       }
     }
   });
@@ -312,7 +354,7 @@ function clearEventSprites<
 }
 
 /**
- * 이벤트 스프라이트·마커만 다시 만든다 — 타일·농지·설치물은 건드리지 않는다.
+ * 이벤트 스프라이트를 조정하고 마커를 갱신한다 — 타일·농지·설치물은 건드리지 않는다.
  *
  * 왜: NPC 가 움직이거나 시간표가 바뀔 때마다 renderTiles 를 부르면 맵 전체 GameObject
  * (100×100 = 1만~2.1만개) 를 파괴하고 다시 만든다(실측 15.9~26ms/호출). 그 갱신이
@@ -323,7 +365,6 @@ export function renderEventLayer<
   TSprite extends RenderedEventSprite,
 >(scene: RenderTilesSceneContext<TImage, TSprite>): void {
   bumpPerfCounter(scene, "eventLayerRebuilds");
-  clearEventSprites(scene);
   renderEvents(scene);
 }
 
@@ -388,12 +429,13 @@ function placeMapTileImage<TImage extends RenderedTileImage, TSprite extends Ren
   x: number,
   y: number,
   layer: "lower" | "upper",
-  depthOffset = 0,
+  depthOffset: number,
+  pass: TileRenderPass,
 ): void {
-  const alwaysAbove = layer === "upper" && isAlwaysAboveCharacterUpperTile(tileset, tile);
+  const alwaysAbove = layer === "upper" && cachedTileValue(pass.above, tile, () => isAlwaysAboveCharacterUpperTile(tileset, tile));
   bumpPerfCounter(scene, "tileObjectsCreated");
   image.setOrigin(0, 0);
-  applyTileDepth(mapTileSize(scene.map), image, tileset, tile, y, layer, depthOffset);
+  applyTileDepth(pass.size, image, tileset, tile, y, layer, depthOffset);
   // 화면 밖 타일은 카메라가 타일 경계를 넘을 때 숨긴다(playSceneTileCulling 주석 참고).
   trackCullableTile(rootYSortHost(scene), image, x, y);
   if (layer === "upper" && !alwaysAbove) {
@@ -449,30 +491,31 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
   y: number,
   tile: number,
   layer: "lower" | "upper",
+  pass: TileRenderPass,
 ): void {
   if (tile < 0) return;
-  const textureKey = scene.resolveTilesetTexture?.(tileset) ?? tilesetTextureKey(tileset);
+  const textureKey = pass.textureKey;
   // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 타일 그림판도 포함.
-  if (supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile, tileset)) {
-    renderLakeAutotile(scene, tileset, textureKey, x, y, layer);
+  if (pass.quarters && cachedTileValue(pass.lakes, tile, () => isLakeAutotileTile(tile, tileset))) {
+    renderLakeAutotile(scene, tileset, textureKey, x, y, layer, pass);
     return;
   }
-  if (layer === "lower" && supportsChipsetQuarterComposition(tileset)) {
+  if (layer === "lower" && pass.quarters) {
     const composition = chipsetQuarterComposition(scene.map, tileset, x, y);
     if (composition) {
-      renderTerrainQuarter(scene, tileset, textureKey, x, y, composition, layer);
+      renderTerrainQuarter(scene, tileset, textureKey, x, y, composition, layer, pass);
       return;
     }
   }
   // lower 투명 칩: 정책이 정한 받침을 먼저 깔아 투명 픽셀이 검게 보이지 않게 한다.
   // 받침은 정책(tileLayerPolicy)이 정한다 — 합본 마을 밑동뿐 아니라 혼합 칩셋(위 반쪽 밑동·숲 나무 띠)과
   // 사용자가 받침을 확정한 커스텀 칩셋도 같은 답을 받는다. 규칙이 없으면 null 이라 그 밖은 전과 같다.
-  const backingTile = layer === "lower" ? tileBackingTile(tileset, tile) : null;
+  const backingTile = layer === "lower" ? cachedTileValue(pass.backing, tile, () => tileBackingTile(tileset, tile)) : null;
   if (backingTile !== null) {
-    const backing = scene.add.image(x * mapTileSize(scene.map), y * mapTileSize(scene.map), textureKey, `tile_${backingTile}`);
-    placeMapTileImage(scene, backing, tileset, backingTile, x, y, layer);
+    const backing = scene.add.image(x * pass.size, y * pass.size, textureKey, `tile_${backingTile}`);
+    placeMapTileImage(scene, backing, tileset, backingTile, x, y, layer, 0, pass);
   }
-  renderRawTile(scene, tileset, x, y, tile, layer, 0);
+  renderRawTile(scene, tileset, x, y, tile, layer, 0, pass);
 }
 
 /**
@@ -487,16 +530,19 @@ function renderRawTile<TImage extends RenderedTileImage, TSprite extends Rendere
   tile: number,
   layer: "lower" | "upper",
   depthOffset: number,
+  pass: TileRenderPass,
 ): void {
   if (tile < 0) return;
-  const textureKey = scene.resolveTilesetTexture?.(tileset) ?? tilesetTextureKey(tileset);
-  const baseAnimationKey = tilesetAnimationKeyForTile(tileset, tile);
-  const animationKey = baseAnimationKey ? chipsetAnimationKey(textureKey, baseAnimationKey) : null;
-  const size = mapTileSize(scene.map);
+  const textureKey = pass.textureKey;
+  const animationKey = cachedTileValue(pass.animations, tile, () => {
+    const base = tilesetAnimationKeyForTile(tileset, tile);
+    return base ? chipsetAnimationKey(textureKey, base) : null;
+  });
+  const size = pass.size;
   const image = animationKey
     ? scene.add.sprite(x * size, y * size, textureKey, `tile_${tile}`).play(animationKey)
     : scene.add.image(x * size, y * size, textureKey, `tile_${tile}`);
-  placeMapTileImage(scene, image, tileset, tile, x, y, layer, depthOffset);
+  placeMapTileImage(scene, image, tileset, tile, x, y, layer, depthOffset, pass);
 }
 
 /**
@@ -529,15 +575,16 @@ function renderLakeAutotile<TImage extends RenderedTileImage, TSprite extends Re
   x: number,
   y: number,
   layer: "lower" | "upper",
+  pass: TileRenderPass,
 ): void {
   for (const part of lakeAutotileQuarterSources(scene.map, x, y, tileset)) {
     const animationKey = quarterAnimationKey(textureKey, part.tile, part.quarter);
     const frameName = quarterFrameName(part.tile, part.quarter);
     const image = animationKey
-      ? scene.add.sprite(x * mapTileSize(scene.map) + part.offsetX, y * mapTileSize(scene.map) + part.offsetY, textureKey, frameName).play(animationKey)
-      : scene.add.image(x * mapTileSize(scene.map) + part.offsetX, y * mapTileSize(scene.map) + part.offsetY, textureKey, frameName);
+      ? scene.add.sprite(x * pass.size + part.offsetX, y * pass.size + part.offsetY, textureKey, frameName).play(animationKey)
+      : scene.add.image(x * pass.size + part.offsetX, y * pass.size + part.offsetY, textureKey, frameName);
     // 쿼터 소스는 맵 셀 좌표 기준 depth 를 공유한다.
-    placeMapTileImage(scene, image, tileset, part.tile, x, y, layer);
+    placeMapTileImage(scene, image, tileset, part.tile, x, y, layer, 0, pass);
   }
 }
 
@@ -550,19 +597,20 @@ function renderTerrainQuarter<TImage extends RenderedTileImage, TSprite extends 
   y: number,
   composition: ChipsetQuarterComposition,
   layer: "lower" | "upper",
+  pass: TileRenderPass,
 ): void {
   if (composition.underlayTile !== undefined) {
-    const underlay = scene.add.image(x * mapTileSize(scene.map), y * mapTileSize(scene.map), textureKey, `tile_${composition.underlayTile}`);
-    placeMapTileImage(scene, underlay, tileset, composition.underlayTile, x, y, layer);
+    const underlay = scene.add.image(x * pass.size, y * pass.size, textureKey, `tile_${composition.underlayTile}`);
+    placeMapTileImage(scene, underlay, tileset, composition.underlayTile, x, y, layer, 0, pass);
   }
   for (const part of composition.sources) {
     const image = scene.add.image(
-      x * mapTileSize(scene.map) + part.offsetX,
-      y * mapTileSize(scene.map) + part.offsetY,
+      x * pass.size + part.offsetX,
+      y * pass.size + part.offsetY,
       textureKey,
       `tile_${part.tile}_${part.quarter}`
     );
-    placeMapTileImage(scene, image, tileset, part.tile, x, y, layer);
+    placeMapTileImage(scene, image, tileset, part.tile, x, y, layer, 0, pass);
   }
 }
 
@@ -575,10 +623,56 @@ function quarterAnimationKey(textureKey: string, tile: number, quarter: LakeAuto
   return animationKey ? chipsetAnimationKey(textureKey, `${animationKey}_${quarter}`) : null;
 }
 
+interface TweenTargetSource {
+  readonly targets?: readonly object[] | null;
+  readonly data?: readonly unknown[] | null;
+}
+
+function collectTweenTargets(tween: TweenTargetSource, targets: Set<object>): void {
+  if (tween.targets) {
+    for (const target of tween.targets) targets.add(target);
+  } else {
+    // TweenManager also contains TweenChains, and destroyed Tweens have null targets.
+    for (const child of tween.data ?? []) {
+      if (child && typeof child === "object" && ("targets" in child || "data" in child)) {
+        collectTweenTargets(child as TweenTargetSource, targets);
+      }
+    }
+  }
+}
+
+// Resolved creation inputs: primitive values plus texture identity for hot replacement.
+// Position/direction-derived frame are updated every pass, not cached. Alpha, blend,
+// visibility and tint have no authored creation inputs here: new Sprite defaults win.
+const eventGraphicSignatures = new WeakMap<RenderedEventSprite, readonly unknown[]>();
+
+function reusableEventSprite(sprite: RenderedEventSprite, texture: string, tweenTargets: Set<object>): boolean {
+  // Some consumers capture the object (battle hiding, knockback/windup/landing tweens).
+  // Replacing only these exceptional sprites preserves the old callback lifetime.
+  return sprite.active !== false && sprite.visible !== false
+    && (sprite.alpha === undefined || sprite.alpha === 1)
+    && (sprite.blendMode === undefined || sprite.blendMode === 0)
+    && !sprite.isTinted && !sprite.flipX && !sprite.flipY && !sprite.rotation
+    && !sprite.anims?.isPlaying && !tweenTargets.has(sprite)
+    && (!sprite.texture || sprite.texture.key === texture);
+}
+
 function renderEvents<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
   scene: RenderTilesSceneContext<TImage, TSprite>
 ): void {
-  for (const view of runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)) {
+  // Old refresh destroyed all shadows. Preserve that immediate visibility boundary,
+  // then let the next hop frame reuse the pooled object with updated lift/scale/alpha.
+  for (const shadow of scene.characterShadows?.values() ?? []) shadow.setVisible(false);
+  scene.runtimeDom.clearEventMarkers();
+  scene.missingResources.clear();
+  const retained = new Set<string>();
+  const orderedSprites: [string, TSprite][] = [];
+  const tweenTargets = new Set<object>();
+  for (const tween of scene.tweens?.getTweens?.() ?? []) collectTweenTargets(tween, tweenTargets);
+  const project = store.getCurrent();
+  const size = mapTileSize(scene.map);
+  const referenceSize = projectReferenceTileSize(project);
+  for (const view of runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)) {
     const event = view.event;
     scene.runtimeDom.upsertEventMarker(view, (eventId) => {
       void scene.runEvent(eventId);
@@ -602,15 +696,57 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     // 목적지에 새 스프라이트를 놓으면 이벤트가 열려 이동이 멎은 순간 NPC 가 한 칸 앞으로 튄다 —
     // 진행 중인 걸음의 보간 위치에 놓는다.
     const position = furniturePushPosition(scene, event.id) ?? renderedEventPosition(view, scene.autonomousNPCs?.get(event.id));
-    const marker = scene.add.sprite(
-      footprintSpriteX(position.x, view.footprint, mapTileSize(scene.map)),
-      characterSpriteY(position.y, mapTileSize(scene.map)),
-      spriteTexture?.texture ?? DEFAULT_EASYRPG_CHARSET_ID,
-      frame
-    );
+    const texture = spriteTexture?.texture ?? DEFAULT_EASYRPG_CHARSET_ID;
+    const signature = [texture, scene.textures?.get?.(texture), spriteTexture?.frame, spriteTexture?.fitSize, spriteTexture?.charset,
+      authoredPattern, overrideFrame, view.page?.graphic.scale, view.page?.graphic.scaleMode,
+      size, referenceSize, view.priority];
+    let marker = scene.eventSprites.get(event.id);
+    const previous = marker && eventGraphicSignatures.get(marker);
+    if (marker && (!previous || !signature.every((value, index) => Object.is(value, previous[index]))
+      || !reusableEventSprite(marker, texture, tweenTargets))) {
+      marker.destroy();
+      destroyCharacterShadow(scene, event.id);
+      marker = undefined;
+    }
+    const x = footprintSpriteX(position.x, view.footprint, size);
+    const y = characterSpriteY(position.y, size);
+    if (marker) {
+      marker.setPosition(x, y);
+      marker.setFrame(frame);
+    } else {
+      marker = scene.add.sprite(x, y, texture, frame);
+    }
+    eventGraphicSignatures.set(marker, signature);
+    retained.add(event.id);
     placeCharacterSprite(marker, view.priority);
     marker.setScale(eventSpriteScale(spriteTexture, marker, view.page?.graphic.scale, mapTileSize(scene.map), view.page?.graphic.scaleMode, projectReferenceTileSize(store.getCurrent())));
     scene.eventSprites.set(event.id, marker);
+    orderedSprites.push([event.id, marker]);
+  }
+  for (const [id, marker] of scene.eventSprites.entries()) {
+    if (retained.has(id)) continue;
+    marker.destroy();
+    scene.eventSprites.delete(id);
+    destroyCharacterShadow(scene, id);
+  }
+  // Preserve creation order at equal depth, including interleaved non-event effects.
+  // Phaser's depth sort is stable. A single compaction avoids N moveAbove/indexOf calls.
+  const displayList = scene.children?.list;
+  if (displayList) {
+    const sprites = new Set(orderedSprites.map(([, sprite]) => sprite));
+    let write = 0;
+    for (const object of displayList) {
+      if (!sprites.has(object as TSprite)) displayList[write++] = object;
+    }
+    displayList.length = write;
+    for (const [, sprite] of orderedSprites) displayList.push(sprite);
+    scene.children!.queueDepthSort();
+  }
+  scene.eventSprites.clear();
+  for (const [id, marker] of orderedSprites) scene.eventSprites.set(id, marker);
+  // Erase commands can remove the sprite themselves before this refresh.
+  for (const id of scene.characterShadows?.keys() ?? []) {
+    if (id !== PLAYER_SHADOW_KEY && !retained.has(id)) destroyCharacterShadow(scene, id);
   }
   syncForageWarnings(scene);
   scene.runtimeDom.syncMissingResourceError(scene.missingResources);
@@ -823,8 +959,8 @@ export function refreshRuntimeEntities(scene: PlaySceneContext): void {
 /**
  * 이벤트 스프라이트를 파괴·재생성한 뒤 카메라를 새 객체에 다시 건다.
  *
- * 왜 필요한가: renderEventLayer 는 clearEventSprites 로 모든 이벤트 스프라이트를 destroy
- * 하고 새 객체를 만든다. Phaser 의 Camera.preRender 는 follow 대상의 destroy 여부를 보지
+ * 왜 필요한가: renderEventLayer 는 그래픽이 달라진 이벤트의 스프라이트를 교체한다.
+ * Phaser 의 Camera.preRender 는 follow 대상의 destroy 여부를 보지
  * 않고 매 프레임 `follow.x` 를 읽고, destroy 는 x/y 를 지우지 않는다 — 그래서 이벤트를
  * 따라가던 카메라는 마지막 좌표에 **영구히 얼어붙는다**. refreshRuntimeSurfaces 는
  * applyStoredCameraState 로 다시 걸지만 이 이벤트 전용 경로에는 그게 없었다.

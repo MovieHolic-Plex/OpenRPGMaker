@@ -105,6 +105,17 @@ try {
   step("member app shows the host editor (map canvas + team bar) in an app window", teamBooted,
     teamPage.url() + " bar=" + JSON.stringify(teamBar) + " loadMs=" + (Date.now() - loadStarted));
   // 편집기와 같은 경로로 읽는다: 접힌 행(loadFolded). 전체 글(project.load)은 편집기가 쓰지 않는다.
+  // 부팅 뒤 두 창의 자동 저장(정규화·공용 참고문서 보강)이 끝나 revision 이 멈출 때까지 기다린다. 그 전에 읽으면
+  // 아래 저장이 그 사이 끼어든 자동 저장 때문에 stale-base 가 된다(편집기는 그때 다시 읽어 재시도한다).
+  await teamPage.evaluate(async () => {
+    let last = -1, stableSince = Date.now();
+    for (const deadline = Date.now() + 90_000; Date.now() < deadline;) {
+      const { revision } = await globalThis.oprn.team.status();
+      if (revision !== last) { last = revision; stableSince = Date.now(); }
+      else if (Date.now() - stableSince >= 8_000) return;
+      await new Promise((r) => setTimeout(r, 1000));
+    }
+  });
   const memberSide = await teamPage.evaluate(async () => {
     const bridge = globalThis.oprn;
     const status = await bridge.team.status();

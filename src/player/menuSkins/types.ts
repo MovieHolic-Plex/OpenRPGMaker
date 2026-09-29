@@ -23,4 +23,6 @@ export type MenuSkin = {
   readonly sideParty: boolean;
   /** Optional landing artwork; omitted skins use the actor face. */
   readonly partyArt?: "character";
+  /** 파티 개요에 상태이상·다음 레벨까지 EXP 줄을 더 그린다(도트 창 스킨). 수치가 판단 근거라서. */
+  readonly partyStats?: boolean;
 };

@@ -1,5 +1,5 @@
 import { store } from "@/project/store";
-import { inBounds } from "@/project/collision";
+import { inBounds, isPassable } from "@/project/collision";
 import { nearestPassableTile } from "@/player/playSceneMapCommands";
 import { movementResultLogText, recordMovementResult } from "@/player/movementResult";
 import type { MovementResult } from "@/project/eventCommands/coordinateDestination";
@@ -18,6 +18,8 @@ import type { MoveCommand } from "@/project/types";
 type PathfindStep = Extract<StepResult, { kind: "pathfindMove" }>;
 // The public result flag belongs to the latest request, including immediate no-ops.
 const latestPathfind = new WeakMap<object, object>();
+// Route replacement is local to a character; unrelated parallel requests do not cancel it.
+const targetPathfind = new WeakMap<object, Map<string, object>>();
 
 /**
  * OPRN-OUT-013: 목적지 해석의 결말. 계획을 세우기 **전에** 맵 밖·막힘을 갈라 두면
@@ -104,8 +106,11 @@ export async function playPathfindMove(scene: PlaySceneContext, step: PathfindSt
   if (!plan) return settle("missingTarget", `대상 «${step.target}» 을 이 맵에서 모 못 찾았다`);
   if (!plan.moves.length && (plan.from.x !== effective.x || plan.from.y !== effective.y)) {
     // 칸 자체가 막힌 것과 경로가 없는 것은 저작자에게 다른 사습이다 — 구분해 보고한다.
-    return settle(destinationBlocked(scene, plan, effective, currentEventId) ? "blocked" : "unreachable");
+    return settle(destinationBlocked(scene, plan, effective) ? "blocked" : "unreachable");
   }
+  let requests = targetPathfind.get(session);
+  if (!requests) targetPathfind.set(session, requests = new Map());
+  requests.set(plan.target, request);
   const previousMover = plan.player ? undefined : scene.autonomousNPCs.get(plan.target);
   const inFlight = plan.player ? scene.moving || !!scene.playerHop : !!previousMover?.activeMove;
   if (!plan.moves.length && !inFlight) {
@@ -162,7 +167,14 @@ export async function playPathfindMove(scene: PlaySceneContext, step: PathfindSt
       if (!ownsRoute()) {
         // 루트가 남의 것이 됐다 = 끝났거나 다른 명령이 교체했다. 둘을 구분해야
         // 「내 명령이 도착했다」와 「내 명령이 쓸려나갔다」가 같은 결과가 되지 않는다.
-        if (latestPathfind.get(session) !== request) { finish("interrupted"); return; }
+        // 같은 대상에 더 새 좌표 이동 명령이 들어왔거나, 다른 **명령** 루트(moveEvent·시간표)가 이 루트를 덮었으면
+        // 교체다. 명령이 끝난 뒤 다시 깔린 페이지 자율 이동(생활·랜덤)은 교체가 아니다 — 무버가 있다는 것만으로
+        // 중단으로 보면 정상 도착이 interrupted 가 됐다(리뷰 반례: 도착 직후 표면 갱신). 명령 루트 표식
+        // (commandMoveRouteEventIds)은 이 명령이 끝나면 지워지고 페이지 이동은 달지 않으므로 둘을 가른다.
+        const replacedByCommand = plan.player
+          ? !!scene.playerRoute
+          : scene.autonomousNPCs.has(plan.target) && scene.commandMoveRouteEventIds.has(plan.target);
+        if (requests.get(plan.target) !== request || replacedByCommand) { finish("interrupted"); return; }
         const position = plan.player ? { x: scene.tileX, y: scene.tileY }
           : runtimeEventViewById(store.getCurrent(), map, session, scene.eventPositions, plan.target);
         const arrived = position?.x === effective.x && position?.y === effective.y;
@@ -178,26 +190,30 @@ export async function playPathfindMove(scene: PlaySceneContext, step: PathfindSt
   return settle(outcome);
 }
 
-/**
- * 계획이 빈 이유가 「목적지 칸이 막혀서」인가. 계획기와 **같은** 진입 판정을 목적지
- * 한 칸에만 다시 적용한다 — 두 번째 통행 규칙을 만들지 않기 위해 planner 의 자산을 재사용한다.
- */
+/** Destination occupancy is independent of reachability from the starting component. */
 function destinationBlocked(
   scene: PlaySceneContext,
   plan: NonNullable<ReturnType<typeof planPathfindMove>>,
-  step: PathfindStep,
-  currentEventId: string | undefined
+  step: PathfindStep
 ): boolean {
-  // 목적지만 바꿔 다시 계획하는 대신, 목적지 바로 옆 칸에서 목적지로 들어가는
-  // 계획을 시도한다. 그것조차 안 되면 칸 자체가 막힌 것이다.
-  for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
-    const neighbor = { x: step.x + dx, y: step.y + dy };
-    if (!inBounds(scene.map, neighbor.x, neighbor.y)) continue;
-    const reachable = planPathfindMove(scene, { ...step, x: neighbor.x, y: neighbor.y }, currentEventId);
-    if (!reachable) continue;
-    const arrivesAtNeighbor = reachable.moves.length > 0
-      || (plan.from.x === neighbor.x && plan.from.y === neighbor.y);
-    if (arrivesAtNeighbor) return true;
+  const project = store.getCurrent();
+  const view = plan.player ? undefined
+    : runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, plan.target);
+  const body = plan.player ? resolvePlayerBody(project, scene.session)
+    : { footprint: view!.footprint, passRows: view!.passRows };
+  const rect = passageBounds(step.x, step.y, body.footprint, body.passRows);
+  for (let y = rect.top; y <= rect.bottom; y += 1) {
+    for (let x = rect.left; x <= rect.right; x += 1) {
+      if (!isPassable(project, scene.map, x, y)) return true;
+    }
+  }
+  if (isSpatialPlacementBlocking(project, scene.session, scene.map.id, rect)) return true;
+  if (runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)
+    .some(v => v.event.id !== plan.target && v.priority === "same" && v.overlapForbidden && rectsOverlap(rect, v.passRect))) return true;
+  if (!plan.player) {
+    const playerBody = resolvePlayerBody(project, scene.session);
+    if (rectsOverlap(rect, playerPassageRect(playerBody, scene.tileX, scene.tileY))) return true;
+    if (scene.moving && rectsOverlap(rect, playerPassageRect(playerBody, scene.movingTo.x, scene.movingTo.y))) return true;
   }
   return false;
 }

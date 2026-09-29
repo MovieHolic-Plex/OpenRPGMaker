@@ -3,7 +3,7 @@ import { resolveAppearancePortrait } from "@/project/characterAppearances";
 import { runtimeEventViewById } from "@/project/runtimeEventState";
 import { executeCommand } from "@/player/interpreter/commandCatalog";
 import { advanceResume } from "@/player/interpreter/resume";
-import { advanceCompletedFrame, gotoLabel, topFrame } from "@/player/interpreter/stack";
+import { advanceCompletedFrame, gotoLabel, topFrame, withLabelIndexPass, invalidateLabelIndexPass } from "@/player/interpreter/stack";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import type {
   Interpreter,
@@ -52,10 +52,15 @@ export function createInterpreter(
   }
 
   function run(): StepResult {
+    return withLabelIndexPass(runCommands);
+  }
+
+  function runCommands(): StepResult {
     while (true) {
       const frame = topFrame(state.stack);
       if (!frame) return finish();
       if (frame.pc >= frame.commands.length) {
+        invalidateLabelIndexPass(); // loop-budget callbacks may edit commands before the parent resumes
         if (advanceCompletedFrame(state) === "done") return finish();
         continue;
       }
@@ -70,6 +75,9 @@ export function createInterpreter(
         return finish();
       }
       state.instructionsExecuted += 1;
+      // All other commands and hooks are conservative mutation boundaries. Never trust a
+      // cache across user callbacks, yielded steps, or arbitrary authored command execution.
+      if (state.beforeCommand || (command.kind !== "label" && command.kind !== "gotoLabel")) invalidateLabelIndexPass();
       const result = executeCommand(state, frame, command);
       switch (result.kind) {
         case "continue":

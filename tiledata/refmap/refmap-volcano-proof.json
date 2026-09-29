@@ -7,7 +7,7 @@
   "objectKits": 23,
   "houseKits": 0,
   "autotileGroups": 32,
-  "bytes": 4317717,
+  "bytes": 4639604,
   "maps": {
     "lava_cave": {
       "place": "shared_refmap_volcano_lava_cave",
@@ -25,10 +25,10 @@
     }
   },
   "file": "/home/main/.local/share/oprn/shared-content.sqlite",
-  "revision": "b4e0010f2e9ecb88adaaff86d587f87498cc5a0726a251bf2f505ded75bc5abe",
+  "revision": "5493ab850e19f68a31f7f09a1e5f47873a1e250cf2ab174ef1eac05190de11fe",
   "reloaded": true,
-  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-volcano-2026-09-27T21-34-25-492Z.sqlite",
+  "backup": "/home/main/.local/share/oprn/backups/shared-content-before-refmap-volcano-2026-09-28T03-35-22-441Z.sqlite",
   "otherLibraries": 36,
   "otherLibrariesUnchanged": true,
-  "publishedAt": "2026-09-27T21:34:46.217Z"
+  "publishedAt": "2026-09-28T03:35:51.228Z"
 }

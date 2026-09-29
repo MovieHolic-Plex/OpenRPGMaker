@@ -13,6 +13,8 @@ import type { TitleBackgroundFit, TitleEffect } from "@/project/types";
 import { TITLE_EFFECT_DEFAULT_COLORS, activeTitleEffects } from "@/project/titleEffects";
 import {
   TITLE_EFFECT_FRAGMENT_SHADER,
+  TITLE_EFFECT_FALLBACK_FRAGMENT_SHADER,
+  TITLE_EFFECT_MOTE_FRAGMENT_SHADER,
   TITLE_EFFECT_SHADER_KIND,
   TITLE_EFFECT_SHADER_MAX_EFFECTS,
   TITLE_EFFECT_SHADER_MAX_MOTES,
@@ -25,7 +27,7 @@ export const TITLE_EFFECTS_MAX_CANVAS_EDGE = 1920;
 
 const DEFAULT_SPREAD: Partial<Record<TitleEffect["kind"], number>> = { godRays: 0.19, motes: 0.28, glow: 0.08 };
 
-/** 셰이더 uniform 으로 넘길 평탄 배열. 순수 함수 — 테스트는 이것만 본다. */
+/** 셰이더 uniform 으로 넘길 평탄 배열. 순수 인코딩 함수. */
 export interface TitleEffectUniforms {
   count: number;
   kind: Int32Array;
@@ -140,7 +142,7 @@ export interface TitleEffectsCanvasOptions {
   readonly freezeAtSec?: number;
 }
 
-type RendererHandle = { frame: number; stop: () => void };
+type RendererHandle = { stop: () => void };
 const running = new WeakMap<HTMLCanvasElement, RendererHandle>();
 /** 살아 있는 캔버스의 효과 값만 바꾸는 함수 — 편집기 드래그·슬라이더가 WebGL 문맥을 새로 만들지 않게. */
 const uniformSetters = new WeakMap<HTMLCanvasElement, (uniforms: TitleEffectUniforms) => void>();
@@ -188,22 +190,51 @@ function startTitleEffects(canvas: HTMLCanvasElement, initialUniforms: TitleEffe
     canvas.dataset.titleEffectsRenderer = "unavailable";
     return;
   }
-  const program = buildProgram(gl);
-  if (!program) {
-    canvas.dataset.titleEffectsRenderer = "unavailable";
-    return;
-  }
   const context = gl;
-  // 그림을 불러오기 전에 들어온 값은 보관했다가 onload 가 쓴다.
-  uniformSetters.set(canvas, (next) => {
-    uniforms = next;
-  });
+  let stopped = false;
+  let lost = false;
+  let frame = 0;
+  let lastSeconds = options.freezeAtSec ?? 0;
+  let started: number | undefined;
+  const remember = (next: TitleEffectUniforms) => { uniforms = next; };
+  const handle: RendererHandle = { stop: () => {
+    stopped = true;
+    cancelAnimationFrame(frame);
+    canvas.removeEventListener("webglcontextlost", onLost);
+    canvas.removeEventListener("webglcontextrestored", onRestored);
+    uniformSetters.delete(canvas);
+    context.getExtension("WEBGL_lose_context")?.loseContext();
+  } };
+  const onLost = (event: Event) => {
+    event.preventDefault();
+    lost = true;
+    cancelAnimationFrame(frame);
+    uniformSetters.set(canvas, remember);
+    canvas.dataset.titleEffectsRenderer = "lost";
+    canvas.dataset.titleEffectsAnimated = "false";
+    delete canvas.dataset.titleEffectsDepth;
+  };
+  const onRestored = () => {
+    if (stopped) return;
+    lost = false;
+    if (image.complete && image.naturalWidth) initialize();
+  };
+  canvas.addEventListener("webglcontextlost", onLost);
+  canvas.addEventListener("webglcontextrestored", onRestored);
+  running.set(canvas, handle);
+  uniformSetters.set(canvas, remember);
   const image = new Image();
   image.decoding = "async";
   image.onerror = () => {
     canvas.dataset.titleEffectsRenderer = "unavailable";
   };
-  image.onload = () => {
+  const initialize = () => {
+    if (stopped || lost) return;
+    const motes = createMotePass(context);
+    const program = buildProgram(context, motes ? TITLE_EFFECT_FRAGMENT_SHADER : TITLE_EFFECT_FALLBACK_FRAGMENT_SHADER);
+    if (!program) { canvas.dataset.titleEffectsRenderer = "unavailable"; return; }
+    const scale = titleEffectsResolutionScale(context);
+    canvas.dataset.titleEffectsResolutionScale = String(scale);
     const texture = context.createTexture();
     context.bindTexture(context.TEXTURE_2D, texture);
     context.texParameteri(context.TEXTURE_2D, context.TEXTURE_MIN_FILTER, context.LINEAR);
@@ -233,14 +264,20 @@ function startTitleEffects(canvas: HTMLCanvasElement, initialUniforms: TitleEffe
       image: location("uImage"),
       depth: location("uDepth"),
       hasDepth: location("uHasDepth"),
+      motes: location("uMotes"),
+      moteTw: location("uMoteTw"),
     };
     context.useProgram(program);
     context.uniform1i(loc.image, 0);
     context.uniform1i(loc.depth, 1);
+    context.uniform1i(loc.motes, 2);
+    context.uniform1i(loc.moteTw, 3);
     context.uniform1i(loc.hasDepth, 0);
     context.uniform2f(loc.imageSize, image.naturalWidth || 1, image.naturalHeight || 1);
     context.uniform1i(loc.fit, FIT_ID[options.fit ?? "stretch"]);
     const applyUniforms = (): void => {
+      motes?.update(uniforms, image.naturalWidth || 1, image.naturalHeight || 1);
+      context.useProgram(program);
       context.uniform1i(loc.count, uniforms.count);
       context.uniform1iv(loc.kind, uniforms.kind);
       context.uniform4fv(loc.a, uniforms.a);
@@ -255,6 +292,8 @@ function startTitleEffects(canvas: HTMLCanvasElement, initialUniforms: TitleEffe
       const depthImage = new Image();
       depthImage.decoding = "async";
       depthImage.onload = () => {
+        if (stopped || lost || !context.isProgram(program)) return;
+        context.useProgram(program);
         const depthTexture = context.createTexture();
         context.activeTexture(context.TEXTURE1);
         context.bindTexture(context.TEXTURE_2D, depthTexture);
@@ -277,13 +316,17 @@ function startTitleEffects(canvas: HTMLCanvasElement, initialUniforms: TitleEffe
     }
 
     const draw = (seconds: number) => {
-      resizeCanvas(canvas, context);
+      if (stopped || lost) return;
+      resizeCanvas(canvas, context, scale);
+      motes?.draw(seconds);
+      context.useProgram(program);
+      context.viewport(0, 0, canvas.width, canvas.height);
       context.uniform2f(loc.canvas, canvas.width, canvas.height);
       context.uniform1f(loc.time, seconds);
       context.drawArrays(context.TRIANGLE_STRIP, 0, 4);
     };
     const frozen = typeof options.freezeAtSec === "number" ? options.freezeAtSec : prefersReducedMotion() ? 0 : undefined;
-    let lastSeconds = frozen ?? 0;
+    lastSeconds = frozen ?? lastSeconds;
     uniformSetters.set(canvas, (next) => {
       uniforms = next;
       applyUniforms();
@@ -295,29 +338,31 @@ function startTitleEffects(canvas: HTMLCanvasElement, initialUniforms: TitleEffe
       return;
     }
     canvas.dataset.titleEffectsAnimated = "true";
-    const started = nowMs();
-    const handle: RendererHandle = {
-      frame: 0,
-      stop: () => cancelAnimationFrame(handle.frame),
-    };
+    started ??= nowMs();
     const tick = () => {
       if (!canvas.isConnected) {
         running.delete(canvas);
-        uniformSetters.delete(canvas);
-        context.getExtension("WEBGL_lose_context")?.loseContext();
+        handle.stop();
         return;
       }
-      lastSeconds = (nowMs() - started) / 1000;
+      lastSeconds = (nowMs() - started!) / 1000;
       draw(lastSeconds);
-      handle.frame = requestAnimationFrame(tick);
+      frame = requestAnimationFrame(tick);
     };
     running.set(canvas, handle);
-    handle.frame = requestAnimationFrame(tick);
+    frame = requestAnimationFrame(tick);
   };
+  image.onload = initialize;
   image.src = options.imageUrl;
 }
 
-function resizeCanvas(canvas: HTMLCanvasElement, gl: WebGL2RenderingContext): void {
+/** Detect once per context generation. Unknown/hidden renderer keeps full quality. */
+function titleEffectsResolutionScale(gl: WebGL2RenderingContext): number {
+  const debug = gl.getExtension("WEBGL_debug_renderer_info");
+  return debug && /swiftshader|llvmpipe/i.test(String(gl.getParameter(debug.UNMASKED_RENDERER_WEBGL))) ? 0.5 : 1;
+}
+
+function resizeCanvas(canvas: HTMLCanvasElement, gl: WebGL2RenderingContext, resolutionScale: number): void {
   const dpr = typeof window !== "undefined" ? Math.min(window.devicePixelRatio || 1, 2) : 1;
   let width = Math.max(1, Math.round((canvas.clientWidth || 320) * dpr));
   let height = Math.max(1, Math.round((canvas.clientHeight || 240) * dpr));
@@ -327,6 +372,8 @@ function resizeCanvas(canvas: HTMLCanvasElement, gl: WebGL2RenderingContext): vo
     width = Math.round(width * scale);
     height = Math.round(height * scale);
   }
+  width = Math.max(1, Math.round(width * resolutionScale));
+  height = Math.max(1, Math.round(height * resolutionScale));
   if (canvas.width !== width || canvas.height !== height) {
     canvas.width = width;
     canvas.height = height;
@@ -334,7 +381,90 @@ function resizeCanvas(canvas: HTMLCanvasElement, gl: WebGL2RenderingContext): vo
   }
 }
 
-function buildProgram(gl: WebGL2RenderingContext): WebGLProgram | null {
+/** A tiny GPU calculation pass avoids changing sin/fract hash precision on the CPU.
+ * TEXTURE2/3 belong to this pass; image/depth remain on units 0/1.
+ * Storage is allocated once, never read back or allocated in the animation loop.
+ */
+function createMotePass(gl: WebGL2RenderingContext): {
+  update: (uniforms: TitleEffectUniforms, width: number, height: number) => void;
+  draw: (seconds: number) => void;
+} | null {
+  if (!gl.getExtension("EXT_color_buffer_float")) return null;
+  const texture = gl.createTexture();
+  const twTexture = gl.createTexture();
+  const framebuffer = gl.createFramebuffer();
+  if (!texture || !twTexture || !framebuffer) {
+    gl.deleteTexture(texture);
+    gl.deleteTexture(twTexture);
+    gl.deleteFramebuffer(framebuffer);
+    return null;
+  }
+  gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+  [texture, twTexture].forEach((target, index) => {
+    gl.activeTexture(gl.TEXTURE2 + index);
+    gl.bindTexture(gl.TEXTURE_2D, target);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texStorage2D(gl.TEXTURE_2D, 1, gl.RGBA32F, TITLE_EFFECT_SHADER_MAX_MOTES, TITLE_EFFECT_SHADER_MAX_EFFECTS);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + index, gl.TEXTURE_2D, target, 0);
+  });
+  // MRT computes each particle once while retaining both uncombined brightness factors.
+  gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1]);
+  const complete = gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE;
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.activeTexture(gl.TEXTURE0);
+  const program = complete ? buildProgram(gl, TITLE_EFFECT_MOTE_FRAGMENT_SHADER) : null;
+  if (!program) {
+    gl.deleteFramebuffer(framebuffer);
+    gl.deleteTexture(texture);
+    gl.deleteTexture(twTexture);
+    return null;
+  }
+  const loc = {
+    time: gl.getUniformLocation(program, "uTime"),
+    size: gl.getUniformLocation(program, "uImageSize"),
+    count: gl.getUniformLocation(program, "uCount"),
+    kind: gl.getUniformLocation(program, "uKind"),
+    a: gl.getUniformLocation(program, "uA"),
+    b: gl.getUniformLocation(program, "uB"),
+  };
+  let rows = 0;
+  let columns = 0;
+  return {
+    update(uniforms, width, height) {
+      rows = 0;
+      columns = 0;
+      for (let i = 0; i < uniforms.count; i++) {
+        if (uniforms.kind[i] !== TITLE_EFFECT_SHADER_KIND.motes && uniforms.kind[i] !== TITLE_EFFECT_SHADER_KIND.motesRegion) continue;
+        const count = uniforms.b[i * 4 + 3]!;
+        if (count <= 0) continue;
+        rows = i + 1;
+        columns = Math.max(columns, count);
+      }
+      gl.useProgram(program);
+      gl.uniform2f(loc.size, width, height);
+      gl.uniform1i(loc.count, uniforms.count);
+      gl.uniform1iv(loc.kind, uniforms.kind);
+      gl.uniform4fv(loc.a, uniforms.a);
+      gl.uniform4fv(loc.b, uniforms.b);
+    },
+    draw(seconds) {
+      if (!rows) return;
+      gl.useProgram(program);
+      gl.uniform1f(loc.time, seconds);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+      gl.viewport(0, 0, TITLE_EFFECT_SHADER_MAX_MOTES, TITLE_EFFECT_SHADER_MAX_EFFECTS);
+      // Restrict work without changing gl_FragCoord (particle/slot indices).
+      gl.enable(gl.SCISSOR_TEST);
+      gl.scissor(0, 0, columns, rows);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      gl.disable(gl.SCISSOR_TEST);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    },
+  };
+}
+
+function buildProgram(gl: WebGL2RenderingContext, fragmentSource: string): WebGLProgram | null {
   const compile = (type: number, source: string) => {
     const shader = gl.createShader(type);
     if (!shader) return null;
@@ -347,12 +477,13 @@ function buildProgram(gl: WebGL2RenderingContext): WebGLProgram | null {
     return shader;
   };
   const vs = compile(gl.VERTEX_SHADER, TITLE_EFFECT_VERTEX_SHADER);
-  const fs = compile(gl.FRAGMENT_SHADER, TITLE_EFFECT_FRAGMENT_SHADER);
+  const fs = compile(gl.FRAGMENT_SHADER, fragmentSource);
   if (!vs || !fs) return null;
   const program = gl.createProgram();
   if (!program) return null;
   gl.attachShader(program, vs);
   gl.attachShader(program, fs);
+  gl.bindAttribLocation(program, 0, "aPos");
   gl.linkProgram(program);
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
     console.warn("[title-effects] program link failed", gl.getProgramInfoLog(program));

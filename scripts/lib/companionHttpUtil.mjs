@@ -1,5 +1,13 @@
 import { gunzipSync } from "node:zlib";
 
+/**
+ * 받은(압축된) 몸통 상한. 풀어낸 상한(maxOutputLength)·워커 상한(oh-my-pi-worker maxRequestBodySize)과 같다.
+ * 예전 64MiB 는 풀어낸 상한보다 낮아 의미가 없었다 — 2026-09-28 실측: 새 빈 프로젝트의 첫 Pi 요청이 해시 전송에도
+ * gzip 69MB(풀면 203MB, 공용 업로드 아틀라스 dataURL 414개 85MB + 타일셋 101MB)라 호스트가 매번 「Request body is
+ * too large」로 끊었고, 팀·단독 모두 새 프로젝트에서 첫 요청이 한 번도 돌지 못했다.
+ */
+export const MAX_REQUEST_BYTES = 256 * 1024 * 1024;
+
 export async function readRequestJson(req) {
   if (req.method === "GET" || req.method === "OPTIONS") return {};
   const encoding = req.headers?.["content-encoding"] ?? "identity";
@@ -8,12 +16,12 @@ export async function readRequestJson(req) {
   let size = 0;
   for await (const chunk of req) {
     size += chunk.length;
-    if (size > 64 * 1024 * 1024) throw new Error("Request body is too large");
+    if (size > MAX_REQUEST_BYTES) throw Object.assign(new Error("Request body is too large"), { status: 413 });
     chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
   }
   const wire = Buffer.concat(chunks);
-  // Bound decompression independently; the compressed body still has the 64MiB cap.
-  const decoded = encoding === "gzip" ? gunzipSync(wire, { maxOutputLength: 256 * 1024 * 1024 }) : wire;
+  // Bound decompression independently of the compressed cap.
+  const decoded = encoding === "gzip" ? gunzipSync(wire, { maxOutputLength: MAX_REQUEST_BYTES }) : wire;
   const raw = decoded.toString("utf8") || "{}";
   return JSON.parse(raw);
 }

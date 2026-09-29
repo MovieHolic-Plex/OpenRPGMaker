@@ -45,18 +45,28 @@ afterEach(() => rmSync(directory, { recursive: true, force: true }));
 const decode = (gzip: Buffer) => JSON.parse(gunzipSync(gzip).toString()) as SharedTileReferenceSnapshot;
 
 describe("editor shared tile references", () => {
-  it("replaces reference images and region previews with host addresses that serve the same bytes", () => {
+  it("sends catalog-owned tilesets, sheets and documents as library references and region previews as host addresses", () => {
     const snapshot = decode(encodedSharedTileReferences(file));
+    const entry = snapshot.entries.find(item => item.id === "shared_room")! as unknown as Record<string, unknown>;
+    // 참고문서·구조 킷·타일셋·그림은 공용 카탈로그에 같은 글로 있다 — 라이브러리 id 만 온다.
+    expect(entry.library).toBe("catalog");
+    expect(entry.documents).toBeUndefined();
+    expect(entry.kits).toBeUndefined();
+    expect(snapshot.spatial!.tilesets.shared_room).toEqual({ $library: "catalog" });
+    expect(snapshot.spatial!.assets.shared_room_image).toEqual({ $library: "catalog" });
+    expect(entry.dataUrlSha256).toBe(createHash("sha256").update(PIXEL).digest("hex"));
+    const preview = new URL(snapshot.spatial!.regions[0]!.preview, "http://host").searchParams;
+    expect(readSharedContentPreview(preview.get("library")!, preview.get("kind")!, preview.get("id")!, file)?.bytes.equals(bytes(PIXEL))).toBe(true);
+  });
+
+  it("links reference images to host addresses that serve the same bytes", () => {
+    const snapshot = readSharedTileReferences(file, { linkImages: true });
     const entry = snapshot.entries.find(item => item.id === "shared_room")!;
     const address = entry.documents[0]!.images[0]!.dataUrl;
     expect(isSharedReferenceImage(address)).toBe(true);
     expect(entry.kits![0]!.referenceDocuments![0]!.images[0]!.dataUrl).toBe(address);
     expect(readSharedReferenceImage(address, file)?.bytes.equals(bytes(PIXEL))).toBe(true);
-    const preview = new URL(snapshot.spatial!.regions[0]!.preview, "http://host").searchParams;
-    expect(readSharedContentPreview(preview.get("library")!, preview.get("kind")!, preview.get("id")!, file)?.bytes.equals(bytes(PIXEL))).toBe(true);
-    // The tile sheet itself is installed into projects and keeps its bytes; identity hashes still describe them.
     expect(snapshot.spatial!.assets.shared_room_image!.dataUrl).toBe(PIXEL);
-    expect(entry.dataUrlSha256).toBe(createHash("sha256").update(PIXEL).digest("hex"));
   });
 
   it("keeps the worker reader byte-exact", () => {

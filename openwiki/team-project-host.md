@@ -99,14 +99,42 @@ Docker 주소 모두 200, 위조 Host(`evil.example`)·다른 포트 Host 는 40
 - `removeLegacySpriteReferences` 는 얼린 가지(호스트가 저장 행에서 읽은 타일셋)를 건너뛴다.
 - 본문이 없을 때의 폴백이 펼친 전체 글(`project.load`)을 부르지 않는다 — 이 규모에서 호스트 메인 프로세스가 V8 OOM 으로 죽었다.
 
-남은 것(측정만, 미수정):
+### 동료 저장 반영·부팅·첫 참여 전송량 (2026-09-28 2차)
 
-- 동료 저장이 참여 창에 **보이기까지 약 20s**. 전송은 240KB·50ms 다. 참여 창 메인 스레드가 받은 문서 전체를 파싱·검증하고
-  `refreshFromHost` 의 `jsonEqual`·기준본 요약·복제를 문서 전체에 돌린다(프로파일: `refreshFromHost` 8.5s, 요약 SHA 6.8s, GC 6.6s).
-  가지 재사용으로 줄일 수 있지만 편집기가 제자리 수정한 가지를 재사용하면 판정이 틀어진다 — 별도 과제.
-- 첫 참여의 공용 카탈로그 111MB(`shared-content` defaults 55MB·rest 31MB·tile-references 25MB)는 기기마다 한 번 받는다.
-  두 번째부터는 304. 로컬 폴더로 같은 프로젝트를 열어도 편집기 부팅이 약 40s 라(같은 기기 실측) 참여 부팅 25–34s 는 편집기 자체 비용이 대부분이다.
-- 참여 창은 `crypto.subtle` 이 없는 HTTP 출처라 SHA 를 JS 로 계산한다(부팅 CPU 약 5s).
+앞 절에서 남겼던 세 가지를 고쳤다. 측정은 같은 픽스처(`life-full.reloaded`, 타일셋 368칸)로 한다.
+
+| 항목 | 전 | 후 |
+|---|---|---|
+| 동료 저장이 참여 창에 보이기까지 | 약 20s(1차 측정) · 5.9–7.1s(같은 기기 재측정) | 0.9–1.7s |
+| 첫 참여 공용 자료 | 111.7MB | 87.7MB (`shared-tile-references` 24.8MB → 0.8MB) |
+| 두 번째 참여 부팅(같은 기기) | 28.0s | 14.7–17.6s |
+
+고친 것:
+
+- **동료 저장 반영.** `refreshFromHost` 가 매번 문서 전체를 새로 풀고, 그 사본을 또 복제해 기준본으로 두었다.
+  - 참여 창 어댑터(`electronRepository.ts`)가 지난 로드에서 푼 타일셋 객체와 **그 순간의 내용 요약**을 기억한다. 다음 로드에서 본문 sha 가 같고
+    요약이 그대로인 칸은 파싱하지 않고 그 객체를 쓴다. 편집기가 제자리에서 고친 칸은 요약이 달라져 새로 푼다
+    (`test/persistence/electronRepository.test.ts` folded host loads).
+  - `refreshFromHost` 는 방금 받은 스냅숏을 기준본으로 그대로 쓴다(`baselineFrom(…, { owned: true })`) — 전에는 1.5s 복제.
+- **첫 참여 전송량.** `/__oprn/shared-tile-references` 의 82MB 가 전부 공용 카탈로그(`shared-content`)에 같은 글로 있었다.
+  이제 편집기 응답은 카탈로그에 있는 타일셋·그림·참고문서·구조 킷을 `{"$library":<id>}` / 항목의 `library` 로만 보내고, 편집기는
+  설치한 카탈로그 객체로 채운다(`sharedTileReferences.ts` `resolveLibraryRefs`). 가리키는 라이브러리가 아직 없으면 편집기가 뜬 뒤 받는
+  나머지 범위를 기다린다(`whenSharedLibrariesInstalled`). 작업자 경로(`piAgentRuntime`)는 예전처럼 전체 글을 읽는다. 형식이 바뀌어 ETag 에
+  형식 판(`w2`)을 넣었다 — 옛 형식을 캐시한 기기가 304 로 옛 글을 쓰지 않는다. 시험: `test/sharedTileReferenceLibraryRefs.test.ts`.
+- **부팅 CPU.**
+  - 공용 카탈로그 설치(`reviewedPlaceCatalog.installSharedReviewedPlaces`·`installSharedSpatialReferences`)가 받은 타일셋·그림 약 100MB 를
+    통째로 복제했다. 읽기 전용 투영이라 복제하지 않는다 — 프로젝트로 옮기는 쪽이 복제한다.
+  - 기본 자산 바이트 해시(HTTP 참여 창은 JS SHA)를 호스트가 판본마다 한 번 세어 응답에 싣는다(`assetBytesSha256`).
+  - 부팅 뒤 참고문서 보강(`applySharedReferenceRefresh`)은 바뀔 것이 없으면 문서를 복제하지 않는다(dry run).
+  - 기준본 한가할 때 요약은 current 의 요약 기억을 먼저 넘겨 받는다 — 같은 문서를 처음부터 다시 해시했다(4.4s).
+
+남은 것:
+
+- 첫 참여의 공용 카탈로그 87MB(defaults 55.6MB·rest 31.3MB) 중 약 65MB 는 기본 자산 그림 dataUrl 이다. 그림을 주소로 빼면 더 줄지만
+  프로젝트에 복사되는 공용 자산의 계약(`ensureSharedContent`)을 바꾸는 일이라 따로 한다.
+- 부팅 CPU 에서 가장 큰 것은 타일셋 368칸의 첫 내용 요약(약 4s, 통행 칸 28.8만 개)이다. 잎 배열을 글 한 번으로 세는 시도는 첫 요약을
+  5.9 → 4.1s 로 줄였지만 두 번째 요약이 0.5 → 1.0s 로 늘어 편집 중 저장이 느려져 되돌렸다.
+- 참여 창은 `crypto.subtle` 이 없는 HTTP 출처라 남은 SHA 도 JS 로 계산한다.
 **팀 관리 → 접속 설정 → 접속 코드 사용**을 켜면 로그인을 요구한다. **팀 관리**에서 편집자·읽기 전용 초대 링크를 만들거나 접근 권한을 취소할 수 있다.
 초대 비밀은 URL fragment로 전달하고 로그인 화면에서 주소에서 제거한다.
 팀원 목록·권한 선택·팀 이름 변경·백업·초대 복사를 한 관리 화면에서 제공한다.
@@ -193,9 +221,36 @@ UTF-8 JSON 요청이 1MiB를 초과하고 `CompressionStream`이 있으면 gzip�
 
 | 요청 | 전송 바이트 상한 | 압축 해제 후 상한 |
 |---|---:|---:|
-| gzip + `oprn:project.save` 명시 헤더 | 64MiB | 256MiB |
-| 비압축 + `oprn:project.save` 명시 헤더 | 256MiB | 256MiB |
-| 나머지 브리지 RPC (mapPatch 포함) | 64MiB | 64MiB |
+| gzip + 문서 채널(`project.save` · `project.saveMapPatch` · `start.createProject`) 명시 헤더 | 256MiB | 256MiB |
+| 비압축 + 문서 채널 명시 헤더 | 256MiB | 256MiB |
+| 나머지 브리지 RPC | 64MiB | 64MiB |
+
+### 큰 문서 저장 봉투 (2026-09-28)
+
+실측: Firefox 로 빈 새 프로젝트를 열면 첫 자동 저장(`project.save`, 전체 글)이 **조수를 켜기 전부터** 매번 실패했다.
+전체 글이 1억 8,700만 자(타일셋 368개 101MB + 공용 업로드 dataURL 414개 85MB)였고 두 곳에서 막혔다.
+
+1. `electron/browser/requestBody.ts` 가 봉투 `{ channel, payload }` 를 `JSON.stringify` 한 번으로 만들었다. 그 긴 문자열 하나를
+   따옴표 처리하다 Firefox 가 `InternalError: allocation size overflow` 를 던졌다(같은 브라우저에서 1.5억 자 통과, 1.8억 자 실패).
+   이제 `bridgeJsonParts` 가 가지마다 따로 직렬화하고 긴 문자열은 8Mi 자씩 끊어 Blob 조각으로 잇는다. 이은 결과는
+   `JSON.stringify` 와 바이트까지 같다(`test/browserBridgeRequestEncoding.test.ts`). 받는 쪽·CAS·해시는 그대로다.
+2. 고친 뒤 gzip 본문이 69MB 라 문서 채널의 gzip 전송 상한 64MiB 에서 413 이 났다. 해제량은 스트리밍 중 256MiB 로 따로 자르므로
+   문서 채널은 gzip 전송량도 256MiB 까지 받는다(`electron/serve/bridgeRequestBody.ts`, 회귀 `test/bridgeRequestBody.test.ts`).
+
+두 수정 뒤 같은 재현에서 `project.save` 200, SQLite `project` 행 revision 2 가 생겼다. 팀 실행 결과(맵 15개)가 저장되지 않던
+`team-village-live` 실측의 원인도 이것이다 — 맵 패치는 기준본(`persistedBaseline`)이 있어야 쓰는데 첫 전체 저장이 한 번도 성공하지 않아
+매 저장이 전체 글 경로로 떨어졌다.
+
+3. 첫 저장이 성공하자 새 문제가 드러났다. 호스트의 저장 뒤 미디어 분리(`dispatch.ts` `separateMediaAfterSave`)가 방금 받은 문서의
+   공용 그림 414장을 파일로 떼어 **행을 한 번 더 썼다**(revision 1 → 2). 저장 응답은 1 이라 팀 폴링(`teamSession.ts`)이 2 를 남의 변경으로 보고
+   `refreshFromHost` 로 편집기 프로젝트를 통째로 바꿨다(자산 `dataUrl` → `ref`). 그 사이 시작된 조수 실행의 적용 기준(`captureApplyAuthority`)이
+   달라져 시공 적용이 매번 `stale-base` 로 거부됐다 — 시공 7번 모두 실패, 맵 0개. 이제 로드 정규화가 파일 저장이 있는 저장소
+   (`supportsAssetRefs`)면 인라인 업로드 자산을 먼저 `assets.put` 으로 옮기고 문서에는 `ref` 만 둔다
+   (`src/project/persistence/inlineMediaRefs.ts`, 회귀 `test/inlineMediaRefs.test.ts`). 호스트가 다시 쓸 것이 없어 첫 저장이 곧 최종 행이고,
+   첫 저장 본문도 85MB 줄었다. 호스트 쪽 저장 뒤 분리는 옛 클라이언트용 안전망으로 남긴다.
+
+세 수정 뒤 `scripts/qa/team-village-live.mjs`(빈 새 SQLite 호스트 + Firefox + 팀 「마을을 만들어줘」): 첫 저장 revision 1 뒤 다시 받기 없음,
+시공 적용마다 `saveMapPatch` 가 revision 을 올렸다. `SUMMARY.json` 의 `hostTrace` 가 저장·다시 받기·호스트 리비전 순서를 남긴다.
 
 새 프로젝트의 `oprn:start.createProject`도 전체 `seed` 안에 공용 자산·AI 문서를 담으므로
 `project.save`와 같은 상한을 적용한다(2026-09-24). 음식 자료 추가 뒤 실제 신규 생성에서

@@ -1,3 +1,4 @@
+import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 import type {
   BattleEventCondition,
   Command,
@@ -143,6 +144,9 @@ export function buildStoryFlagUsageIndex(project: Project): StoryFlagUsageIndex 
         });
       }
       scanCommands(page.commands, add, owner, `battleEventPages[${pageIndex}].commands`);
+    }
+    for (const list of troopAfterBattleLists(troop)) {
+      scanCommands(list.commands, add, { source: "troop-event", troopId: troop.id, pageId: `afterBattle.${list.outcome}` }, `afterBattle.${list.outcome}`);
     }
   }
 

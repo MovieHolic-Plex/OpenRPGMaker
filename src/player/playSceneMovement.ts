@@ -4,6 +4,7 @@ import { mapTileSize } from "@/project/tileGeometry";
 import { difficultyRate } from "@/project/difficulty";
 import { updateDetectionEncounters } from "./npcDetectionEncounter";
 import { BattleAdmissionError } from "@/project/battleAdmission";
+import { runTroopAfterBattle } from "@/player/troopAfterBattleRunner";
 import { advanceFurniturePush, beginFurniturePush, clearFurniturePush, furniturePushFrames } from './furniturePushAnimation';
 import { advancePursuitDoors, isPlayerHiding, pushObject, toggleHiding } from "./horrorRuntime";
 import { refreshRuntimeEntities } from "./playSceneMapRuntime";
@@ -975,6 +976,8 @@ async function runRandomEncounterBattle(scene: PlaySceneContext, troopId: string
     if (result === null || scene.session !== session || scene.sys?.isActive() === false) return;
     session.battleResult = result;
     if (result === "defeat") applyBattleDefeat(scene);
+    // 적 그룹 「전투 뒤」 이벤트. 인카운터는 canLose=false 라 패배는 게임 오버 — 승리·도망만 돈다.
+    else await runTroopAfterBattle(scene, troopId, result, () => scene.session === session);
   } catch (error) {
     if (!(error instanceof BattleAdmissionError)) throw error;
     if (scene.session === session && scene.sys?.isActive() !== false) {

@@ -77,6 +77,12 @@ export type AutonomousMover = {
    * playSceneAutonomous §retryBlockedStep 참조.
    */
   blockedSteps?: number;
+  /** 페이지 생활 경로만 막힌 걸음을 보존하고 이벤트 점유를 피해 재탐색한다. */
+  livingRoute?: boolean;
+  /** 재탐색 사이의 시뮬레이션 시간. 표면 갱신/성공한 걸음에서 초기화하지 않는다. */
+  livingRepathCooldownMs?: number;
+  /** 마지막으로 재탐색 차례를 받은 순번. 작을수록 오래 기다렸다(프레임 예산 공정 배분). */
+  livingRepathTurn?: number;
   /**
    * 막힌 걸음을 소비하지 않고 다시 시도할지. **계산된** 경로(시간표·생활 이동의 A* 결과)만
    * 세운다 — 절대 방향 배열이라 한 걸음을 잃으면 남은 계획 전부가 실제 위치와 어긋난다.

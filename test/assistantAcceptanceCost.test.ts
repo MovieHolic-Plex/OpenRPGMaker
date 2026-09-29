@@ -26,10 +26,12 @@ describe("bounded canonical project comparisons", () => {
     ledger.bindVerificationRequirements(evidence);
     evidence.observe("run_lint", {}, { ok: true, data: { counts: { errors: 0 } } });
     const fingerprints = vi.spyOn(evaluation, "acceptanceFingerprint");
+    const comparisons = vi.spyOn(evaluation, "sameAcceptanceContent");
     // When the real canonical ledger evaluates all promises.
     const snapshot = ledger.evaluate(applied, draft, evidence);
-    // Then reference identity costs no serialization; distinct content is compared only once per side.
-    expect(fingerprints.mock.calls.filter(([value]) => value === applied || value === draft)).toHaveLength(scenario === "same-reference" ? 0 : 2);
+    // Then whole projects are never fingerprinted (full sorted JSON); distinct content is compared once, by digest.
+    expect(fingerprints.mock.calls.filter(([value]) => value === applied || value === draft)).toHaveLength(0);
+    expect(comparisons.mock.calls.filter(([left, right]) => left === applied && right === draft)).toHaveLength(scenario === "same-reference" ? 0 : 1);
     const expected = scenario === "changed-content" ? "verifying" : "verified";
     expect(snapshot.items.map(item => item.status)).toEqual([expected, expected, expected]);
   });

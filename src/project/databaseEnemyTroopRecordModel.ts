@@ -2,6 +2,7 @@ import { DEFAULT_ELEMENT_RATE_LABELS } from "@/project/actorModel";
 import { normalizeEnemyActionProfile } from "@/project/actionCombat";
 import { normalizeStealItems } from "@/battle/battleSpecialEffects";
 import { normalizeBattleBackdropAnimation } from "@/project/battleBackdropAnimation";
+import { normalizeTroopAfterBattle } from "@/project/troopAfterBattle";
 import type {
   EnemyActionCondition,
   EnemyActionPattern,
@@ -110,6 +111,11 @@ export function normalizeTroopRecord(record: Partial<TroopRecord> & Pick<TroopRe
     battleFlow: normalizeBattleFlow(record.battleFlow),
     activeSlots: normalizeOptionalPositiveInteger(record.activeSlots),
     battleEventPages: uniqueBattleEventPages(record.battleEventPages ?? []),
+    // 전투 뒤 이벤트. 저작된 결과가 없으면 키를 만들지 않는다(옛 JSON 바이트 유지).
+    ...(() => {
+      const afterBattle = normalizeTroopAfterBattle(record.afterBattle);
+      return afterBattle ? { afterBattle } : {};
+    })(),
   };
 }
 

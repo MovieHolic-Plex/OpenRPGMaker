@@ -58,6 +58,7 @@ describe("제공자 스트림 끊김", () => {
     expect(isTransientProviderStreamError(DROP)).toBe(true);
     expect(isTransientProviderStreamError("Google API stream ended without a finish reason")).toBe(true);
     expect(isTransientProviderStreamError("Cloud Code Assist API returned a thought-only response without final output")).toBe(true);
+    expect(isTransientProviderStreamError('Cloud Code Assist API error (400): {"error":{"code":400,"message":"Request contains an invalid argument.","status":"INVALID_ARGUMENT"}}')).toBe(true);
     expect(isTransientProviderStreamError("Invalid argument: tools[3].parameters")).toBe(false);
     expect(isTransientProviderStreamError(undefined)).toBe(false);
   });

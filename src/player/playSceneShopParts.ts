@@ -1,8 +1,5 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { findCharsetAsset } from "@/assets/charsetCatalog";
-import { applyCharsetFrameCrop, charsetFrameCropPosition } from "@/assets/charsetFrameCrop";
-import { resolvePlayerSpriteResource } from "@/player/playerSpriteResources";
-import { resolveActorAppearance } from "@/project/characterAppearances";
+import { partyWalker } from "@/player/partyWalker";
 import { defaultActorFaceResourceId } from "@/project/actorFaceDefaults";
 import { resolveActorFaceResourceId } from "@/project/sessionActorCommands";
 import { store } from "@/project/store";
@@ -534,34 +531,16 @@ export function partyPreview(
   return wrap;
 }
 
-const WALK_PATTERNS = [0, 1, 2] as const;
-
 /**
  * 필드 캐릭터와 같은 그림을 정면으로 걷게 한다(RPG_RT Window_ShopParty 와 같은 연출).
- * 프레임 위치는 CSS 변수로 넘기고 CSS 가 순환한다 — 타이머를 두지 않아 창이 닫히면 같이 사라진다.
+ * 공용 구현은 player/partyWalker.ts — ESC 메뉴·여관·전투 결과가 같은 그림을 쓴다.
  * 업로드 charset 처럼 목록에 없는 그림이면 null(호출부가 얼굴로 대신한다).
  */
 export function shopPartyWalker(scene: PlaySceneContext, actorId: string, label: string): HTMLElement | null {
-  const project = store.getCurrent();
-  const actor = project.database.actors.find(entry => entry.id === actorId);
-  if (!actor) return null;
-  const sprite = resolvePlayerSpriteResource(project, { ...scene.session, partyActorIds: [actorId] });
-  const url = resolveAssetResourceUrl(sprite.resourceId, { project });
-  if (!url) return null;
-  const override = scene.session.actorCharacterResourceIds?.[actorId];
-  const requested = override ?? resolveActorAppearance(project, actor)?.characterResourceId;
-  const requestedId = requested ? findCharsetAsset(requested)?.id ?? requested : undefined;
-  const characterIndex = override !== undefined || requestedId === sprite.resourceId ? sprite.characterIndex : 0;
-  const node = el("span", {
-    class: "runtime-shop-party-walker",
-    attrs: { role: "img", "aria-label": label },
-    dataset: { testid: `shop-party-sprite-${actorId}`, characterResourceId: sprite.resourceId },
+  return partyWalker(store.getCurrent(), scene.session, actorId, label, {
+    className: "runtime-shop-party-walker",
+    testId: `shop-party-sprite-${actorId}`,
   });
-  applyCharsetFrameCrop(node, url, { characterIndex, direction: "down", pattern: 1 }, 1);
-  for (const pattern of WALK_PATTERNS) {
-    node.style.setProperty(`--shop-walk-${pattern}`, charsetFrameCropPosition({ characterIndex, direction: "down", pattern }, 1));
-  }
-  return node;
 }
 
 /* ────────────────────────── 수량 · 조작 힌트 ────────────────────────── */

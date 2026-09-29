@@ -1,0 +1,113 @@
+{
+  "runner": "node + Playwright Chromium; no test runner",
+  "baseline": "f9bbb5067",
+  "current": "b7073513cf11ba9bd7ff5b1236172b5101cb2e02",
+  "before": {
+    "activity_same_2000": {
+      "ms": 0.952,
+      "elements": 0
+    },
+    "activity_new_2000": {
+      "ms": 0.936,
+      "elements": 5
+    },
+    "hidden_board_6": {
+      "ms": 0.45,
+      "elements": 48
+    },
+    "transcript_roll_200": {
+      "ms": 6.4167,
+      "elements": 200
+    },
+    "workpane_hidden_transcript_6_200": {
+      "ms": 1.9233,
+      "elements": 249
+    },
+    "sidebar_one_member_6_2000": {
+      "ms": 0.7967,
+      "elements": 36
+    },
+    "studio_detached_6_2000": {
+      "ms": 1.86,
+      "elements": 365
+    },
+    "restore_200": {
+      "ms": 51.9,
+      "elements": 1000
+    },
+    "restore_scroll_reads": 200,
+    "links_2000_repeat": {
+      "ms": 0.1109,
+      "elements": 0
+    },
+    "links_2000_unique": {
+      "ms": 0.1261,
+      "elements": 0
+    },
+    "archive_20_runs": {
+      "getAll": 1,
+      "get": 0,
+      "put": 1
+    },
+    "image_observer_200": {
+      "ms": 0.016,
+      "elements": 0
+    },
+    "image_connected_reads": 200,
+    "errors": []
+  },
+  "after": {
+    "activity_same_2000": {
+      "ms": 0.001,
+      "elements": 0
+    },
+    "activity_new_2000": {
+      "ms": 0.455,
+      "elements": 5
+    },
+    "hidden_board_6": {
+      "ms": 0.02,
+      "elements": 0
+    },
+    "transcript_roll_200": {
+      "ms": 3.1933,
+      "elements": 1
+    },
+    "workpane_hidden_transcript_6_200": {
+      "ms": 0.04,
+      "elements": 1
+    },
+    "sidebar_one_member_6_2000": {
+      "ms": 0.03,
+      "elements": 0
+    },
+    "studio_detached_6_2000": {
+      "ms": 0,
+      "elements": 0
+    },
+    "restore_200": {
+      "ms": 10.5667,
+      "elements": 1000
+    },
+    "restore_scroll_reads": 1,
+    "links_2000_repeat": {
+      "ms": 0.0002,
+      "elements": 0
+    },
+    "links_2000_unique": {
+      "ms": 0.0075,
+      "elements": 0
+    },
+    "archive_20_runs": {
+      "getAll": 0,
+      "get": 1,
+      "put": 1
+    },
+    "image_observer_200": {
+      "ms": 0,
+      "elements": 0
+    },
+    "image_connected_reads": 0,
+    "errors": []
+  }
+}

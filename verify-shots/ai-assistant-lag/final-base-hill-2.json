@@ -1,0 +1,57 @@
+{
+  "label": "final-base-hill-2",
+  "base": "http://127.0.0.1:9955",
+  "seed": "/home/main/.codex/worktrees/e03b/rpg-zzu/.perf-tmp/seed-hill.json",
+  "project": {
+    "mapId": "map_peaceful_forest_100",
+    "size": "100x100",
+    "maps": 12
+  },
+  "bootMs": 28397,
+  "checkpoints": 6,
+  "runMs": 69489,
+  "longTask": {
+    "count": 230,
+    "totalMs": 61144,
+    "maxMs": 7482
+  },
+  "frameGapMs": {
+    "p50": 66.6,
+    "p95": 350,
+    "max": 7683.1,
+    "over100": 112
+  },
+  "checkpointAckMs": {
+    "median": 3814.7,
+    "max": 4770.6,
+    "ok": true,
+    "n": 6
+  },
+  "manualEditAfterTurnMs": {
+    "median": 3.6,
+    "max": 6.5
+  },
+  "topLongTasksAt": [
+    [
+      338,
+      7482
+    ],
+    [
+      13902,
+      4781
+    ],
+    [
+      44002,
+      4602
+    ],
+    [
+      38635,
+      3826
+    ],
+    [
+      61368,
+      3821
+    ]
+  ],
+  "errors": []
+}

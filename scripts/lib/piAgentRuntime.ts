@@ -44,7 +44,7 @@ import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
 import { gameDesignBriefContext } from "../../src/project/gameDesignBrief.ts";
 import { createModernTilesetPolicy, modernTilesetPolicyPrompt, requestsModernMap } from '../../src/ai/modernTilesetPolicy.ts';
 import { isTransientProviderStreamError, PI_PROVIDER_STREAM_RETRY_LIMIT, providerStreamResumePrompt } from "../../src/ai/piAgent/providerRetry.ts";
-import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
+import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, slimProjectForWire, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
 import { normalizePiThinkingLevel } from "../../src/ai/piAgent/thinkingLevel.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
 import { searchWebWithCodex } from "./codexWebSearchRuntime.ts";
@@ -312,13 +312,17 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     if (changedProjectKeys(accepted, project).length === 0) return;
     // 쓰기 도구는 매번 createDraft 로 전체를 복제하므로 정체성은 늘 다르다 — 내용으로 판정한다.
     // 안 그러면 타일셋 이미지(수십 MB)가 쓰기마다 체크포인트 한 줄에 실려 오간다.
-    const unchangedKeys: PiCheckpointHeavyKey[] = unchangedHeavyKeys(accepted, project);
+    // tilesets 가 바뀌어도(마을이 숲 타일셋 하나에 이식을 더한다) 그대로인 타일셋은 빼고 보낸다(unchangedTilesetIds).
+    const wire = slimProjectForWire(accepted, project);
+    const unchangedKeys: PiCheckpointHeavyKey[] = wire.unchangedKeys;
     try {
       const published = await options.onCheckpoint!({
-        project: structuredClone(slimCheckpointProject(project, unchangedKeys)) as Project,
+        project: structuredClone(wire.project) as Project,
         label, toolName, spatialProof: exportSpatialToolProof(project), unchangedKeys,
+        ...(wire.unchangedTilesetIds.length ? { unchangedTilesetIds: wire.unchangedTilesetIds } : {}),
       }, signal ?? options.signal);
-      const merged = restoreCheckpointProject(project, published ?? project, unchangedKeys);
+      // ACK 는 같은 모양으로 돌아온다 — 뺀 타일셋은 이쪽 사본에서 다시 붙인다.
+      const merged = restoreCheckpointProject(project, published ?? project, unchangedKeys, wire.unchangedTilesetIds);
       ctx.project = merged;
       accepted = snapshotProjectKeepingHeavy(merged);
       finishSpatialToolAcceptance(ctx.project);
@@ -665,13 +669,18 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     }
     // 배치 품질은 권고 한 번뿐이다 — 거부하지 않고, 두 번째 결과는 숫자만 알린다(layoutQuality.ts).
     if (!fatal && !rejected && !contract && !request.readOnly && turns < maxTurns && !options.signal?.aborted) {
-      const layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds, villageMapIds);
-      if (layout.length) {
-        emit({ type: "execution_status", name: "layout_quality", ok: false, summary: `배치 품질 기준 미달 — 한 번 더 채웁니다: ${layout.map(i => `${i.mapId} ${i.problems.join(", ")}`).join(" / ")}`, data: layout });
+      const describe = (issues: typeof layout) => issues.map(i => `${i.mapId} ${[...i.problems, ...(i.pack ?? [])].join(", ")}`).join(" / ");
+      let layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds, villageMapIds);
+      // 팩 세트 맵(check_pack_map)은 좌표가 붙은 확실한 결함이라 한 번 더 권고한다(같은 결과면 멈춘다). 나머지는 한 번뿐.
+      for (let round = 0; layout.length && round < 2 && turns < maxTurns && !options.signal?.aborted; round++) {
+        if (round > 0 && !layout.some(i => i.pack?.length)) break;
+        emit({ type: "execution_status", name: "layout_quality", ok: false, summary: `배치 품질 기준 미달 — 한 번 더 고칩니다: ${describe(layout)}`, data: layout });
+        const before = JSON.stringify(layout);
         await promptResuming(piLayoutRepairPrompt(layout));
-        const after = inspectPiLayoutQuality(ctx.project, base, request.mapIds, villageMapIds);
-        emit({ type: "execution_status", name: "layout_quality", ok: after.length === 0,
-          summary: after.length ? `배치 품질 수리 뒤에도 기준 미달: ${after.map(i => `${i.mapId} ${i.problems.join(", ")}`).join(" / ")}` : "배치 품질 기준 통과", data: after });
+        layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds, villageMapIds);
+        emit({ type: "execution_status", name: "layout_quality", ok: layout.length === 0,
+          summary: layout.length ? `배치 품질 수리 뒤에도 기준 미달: ${describe(layout)}` : "배치 품질 기준 통과", data: layout });
+        if (JSON.stringify(layout) === before) break;
       }
     }
     let previousInteriorIssues = '';

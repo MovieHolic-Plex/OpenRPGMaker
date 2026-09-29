@@ -21,7 +21,9 @@ export function sharedRegionReferences(): SharedRegionReference[] {
 }
 let catalog: SharedSpatialReferences = { regions: [], maps: {}, tilesets: {}, assets: {} };
 export function installSharedSpatialReferences(value?: SharedSpatialReferences): void {
-  catalog = value ? structuredClone(value) : { regions: [], maps: {}, tilesets: {}, assets: {} };
+  // 받은 응답은 이 모듈만 가진다(sharedTileReferences.ts 가 파싱하거나 IndexedDB 에서 읽은 사본). 읽기 전용으로 쓰고
+  // 프로젝트로 옮길 때 ensureSharedSpatialReferences 가 복제하므로 설치 때 다시 복제하지 않는다(2026-09-28 실측 0.8s).
+  catalog = value ?? { regions: [], maps: {}, tilesets: {}, assets: {} };
   SHARED_REGION_REFERENCES.splice(0, SHARED_REGION_REFERENCES.length, ...catalog.regions);
 }
 export function sharedRegionSnapshot(id: string) {

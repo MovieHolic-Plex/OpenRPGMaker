@@ -11,6 +11,7 @@ import { createBlankProject } from "./defaults";
 import { ensureSwitchVariableSlots } from "./defaults/blankProject";
 import { ensureBundledResourceProfiles, ensureBundledTilesets, removeLegacyRmTileset, removeLegacySpriteReferences } from "./defaults/defaultAssets";
 import { hasPendingFacesetSheetRepair, repairUploadedFacesetSheets } from "@/assets/facesetSheetRepair";
+import { separateInlineUploadedMedia } from "./persistence/inlineMediaRefs";
 import { repairInteriorTransparentPropLayers } from "./defaults/interiorTransparentPropLayerRepair";
 import { ensureScarloxyPokemonInteriors } from "./defaults/scarloxyPokemonInteriors";
 import { ensureDefaultDatabaseIconResources } from "./defaults/defaultDatabaseIconResources";
@@ -703,7 +704,10 @@ class ProjectStore {
     // 메우는 만큼 «다르다» 로 달 수 있지만, 그 방향은 논리적으로 같은 스냅샷을 한 번 다시 얹는 것뿐이다.
     if (this.persistedBaseline && jsonEqual(snapshot.project, this.persistedBaseline)) return true;
     this.current = preserveEventDraftsOnProject(snapshot.project, this.current);
-    this.persistedBaseline = this.baselineFrom(snapshot.project);
+    // 방금 받은 스냅숏은 이 스토어만 가진 사본이고 초안이 없다(호스트 행은 초안을 싣지 않는다). current 는 위에서
+    // 따로 복제했으므로 스냅숏을 그대로 기준본으로 둔다. 실측(2026-09-28, 팀 참여 창): 동료 저장 반영마다 기준본
+    // 복제(cloneProjectSharingReferenceDocuments) 1.5s 와 그 쓰레기의 GC 가 메인 스레드를 막았다.
+    this.persistedBaseline = this.baselineFrom(snapshot.project, { owned: true });
     this.writeAuthority = snapshot.authority;
     this.lastPersistenceReceipt = null;
     this.lastSavedHostRevision = null;
@@ -978,11 +982,16 @@ class ProjectStore {
    * 요약했다(2026-09-26 실측, 81MB 새 프로젝트 첫 칠하기 diff 1.8s 동안 메인 스레드 정지). 한가할 때 원본의
    * 요약을 미리 만들어 기준본에 넘긴다 — 기억은 값 대조로만 쓰이므로 그 사이 무엇이 바뀌어도 결과는 같다.
    */
-  private baselineFrom(source: Project): Project {
-    const baseline = projectWithoutEventDrafts(source);
+  private baselineFrom(source: Project, options: { readonly owned?: boolean } = {}): Project {
+    // owned: 호출자가 source 를 다른 곳에 넘기지 않는 사적 사본이라고 보증한다. 초안이 없으면 복제하지 않는다.
+    const baseline = options.owned && projectViewWithoutEventDrafts(source) === source ? source : projectWithoutEventDrafts(source);
     const lineage = this.contentLineage;
     scheduleIdleWork(() => {
       if (this.contentLineage !== lineage || this.persistedBaseline !== baseline) return;
+      // 로드 직후 정규화가 current 의 요약을 이미 만들었다. 복제본인 기준본은 기억이 비어 있어 같은 문서를 처음부터
+      // 다시 해시했다(2026-09-28 실측, 팀 참여 창 부팅 4.4s). 기억을 먼저 넘기면 바뀐 가지만 다시 센다 — 기억은 값
+      // 대조로만 채택되므로 정규화가 current 를 고친 가지는 그대로 다시 계산된다.
+      if (baseline !== this.current) shareContentDigests(this.current, baseline);
       jsonContentDigest(projectWireView(baseline));
       shareContentDigests(baseline, this.current);
     });
@@ -1657,9 +1666,21 @@ class ProjectStore {
       this.markLocalMutation({ scope: "system", origin: "system", label: "Faceset sheet migration" });
       this.emit();
     }
+    // 파일 저장이 있는 호스트면 인라인 업로드 자산을 지금 파일 참조로 바꾼다(inlineMediaRefs.ts 머리말).
+    // 로드가 끝나기 전이라 조수 실행 기준이 잡히기 전이다 — 나중에 호스트가 문서를 다시 쓰면 실행 기준이 무너진다.
+    const mediaTarget = this.current;
+    const media = this.repository.supportsAssetRefs && this.remotePersistenceEnabled
+      ? await separateInlineUploadedMedia(mediaTarget, this.repository.assets)
+      : null;
+    if (this.current !== mediaTarget || this.contentLineage !== repairLineage) return;
+    if (media) {
+      this.current = media.project;
+      this.markLocalMutation({ scope: "system", origin: "system", label: `업로드 자산 파일 분리 (${media.assetIds.length}건)` });
+      this.emit();
+    }
     // Boot load must not block the editor on a full remote rewrite (~2MB+).
     // Schedule deferred auto-save so the shell can paint first.
-    if ((changed || facesRepaired) && this.remotePersistenceEnabled) {
+    if ((changed || facesRepaired || media) && this.remotePersistenceEnabled) {
       this.dirtySinceLastPersist = true;
       if (persistIfChanged && this.writeAuthority?.mode !== "canonical") await this.persistCurrent();
       else if (persistIfChanged && !this.persistInFlight) await this.saveCurrentWithAutoSaveState();
@@ -1678,6 +1699,9 @@ class ProjectStore {
     if (!this.loaded || this.currentValue === null || !canWriteTeamProject() || this.readOnlyProjectSnapshot) return false;
     // 보강할 타일셋이 없으면 프로젝트를 복제하지 않는다(대부분의 프로젝트가 이 경우다).
     if (!sharedTileReferencesTouch(this.current)) return false;
+    // 부팅 정규화가 같은 판본을 이미 넣었으면 바뀔 것이 없다 — 복제 전에 본다. 실측(2026-09-28, 팀 참여 창 부팅):
+    // 바뀔 것 없는 갱신이 문서 복제 1.5s 를 먼저 치렀다.
+    if (!applySharedTileReferenceEntries(this.current, undefined, { dryRun: true })) return false;
     const draft = cloneProjectSharingReferenceDocuments(this.current);
     if (!applySharedTileReferenceEntries(draft)) return false;
     this.current = draft;
