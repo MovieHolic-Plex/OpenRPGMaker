@@ -153,3 +153,10 @@ mothman_ · basilisk_ · djinn_ · chimera_ · dark_angel_). 시트마다 <키>.
 - 공용 모듈 lib_nm5.py, 새 키 32장(접두 mimic_pal_·living_armor_·lantern_ghost_·doll_·book_demon_·scarecrow_·clockwork_·candle_imp_), 키마다 <key>.py.
 - run() 은 src/assets/retroRosterSkills/m5.ts 의 frame·frames 와 스크립트가 다르면 멈춘다. 128 은 fade_oval, 64 는 fade_edges. 투사체 첫 칸은 왼쪽.
 - 전부 다시 굽기·미리보기: python3 scripts/asset-gen/pixel-fx/lib_nm5.py → .omo/nm5/d-fx-preview-{1,2}.png, 키별 .omo/nm5/fx/<key>.png.
+
+
+## retro2003 3차 로스터 m4 (Monster4 숲·요괴 8명, 2026-09-29)
+
+- 스킬 표 정본 gen_nm4_ts.py → src/assets/retroRosterSkills/m4.ts. 재사용 층은 키만 적고 anchor·frame·frames 는 기존 정의에서 읽어 온다(PNG 크기도 대조). 스킬당 새 시트 ≤ 1, 새 키는 <classKey>_ 접두.
+- 새 시트 16장(직업마다 대표 1 + 필살기 하늘 1): 그림 nm4_sheets.py, 공용 lib_nm4.py(RGBA 캔버스, screen 은 fade_oval · 나머지 fade_edges), 키마다 <key>.py 진입점.
+- python3 lib_nm4.py 전부 · python3 lib_nm4.py <key> 한 장. 미리보기 .omo/nm4/fx/<key>.png.

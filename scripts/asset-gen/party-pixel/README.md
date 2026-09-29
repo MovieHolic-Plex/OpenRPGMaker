@@ -60,3 +60,10 @@ retro2003 로스터 2차(src/assets/retroRoster.ts)의 beast·vehicle·monster �
 - 셀 48 × 8명(칩 × 1, 사람 actor1-0 과 같은 키). 초롱 귀신·마도서는 떠 있다(BATTLE_HOVER, dead 만 바닥). 왼쪽을 본다(반전 없음).
 - 생성: python3 scripts/asset-gen/party-pixel/monster5-{0..7}.py → 시트 + .omo/nm5/board-<chip>.png.
   검사·확인판: python3 scripts/asset-gen/party-pixel/review_nm5.py → m5.ts 스킬·레이어 규격 검사, .omo/nm5/b-battle-{1,2}.png, c-size-compare.png.
+
+
+## retro2003 3차 로스터 m4 — OPRN 자체 몬스터 Monster4 (숲·요괴 8명, 2026-09-29)
+
+- 걷기 칩: `scripts/asset-gen/oprn-charset/monster4.py` → `public/assets/generated/charsets/Monster4.png` (288×256, 캐릭터마다 함수 하나, 행 0 위·1 오른쪽·2 아래·3 왼쪽, 왼쪽 = 오른쪽 좌우 반전).
+- 전투 15칸: 공용 `pp15_nm4.py` + `monster4-<i>.py`. **칩 × 1**(셀 48, 바닥 44): 대기 칸은 칩 왼쪽 보기 서 있는 칸 그대로이고(`review_nm4.py` 가 픽셀 일치를 검사), 나머지 칸은 칩 픽셀의 기울임·눌림·걷기 패턴·회전과 캐릭터별 효과색(≤3)만 쓴다.
+- 확인판: `.omo/nm4/board-monster4-<i>.png`(칩 4배 | 15칸 4배), `size-compare.png`(actor1-0 과 대기 칸 같은 배율).
