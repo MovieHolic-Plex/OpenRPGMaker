@@ -199,11 +199,12 @@ def _treant_side(c, p):
     c.px(13, 17 + oy, 'm2')
     # 가까운 팔
     na = st
-    pts = [(11, 16 + oy), (11 + na * 2, 19 + oy), (11 + na * 3, 22 + oy)]
-    c.line(pts, 'b1', 2)
-    c.line(pts[:2], 'b2', 1)
-    c.pxs([(11 + na * 3 - 1, 24 + oy), (11 + na * 3 + 1, 24 + oy)], 'b0')
-    c.px(12 + na, 17 + oy, 'l2')
+    pts = [(12, 16 + oy), (13 + na * 2, 19 + oy), (14 + na * 3, 22 + oy)]
+    c.line(pts, 'b0', 3)
+    c.line(pts, 'b2', 1)
+    tx, ty = 14 + na * 3, 22 + oy
+    c.pxs([(tx - 1, ty + 1), (tx, ty + 2), (tx + 1, ty + 1), (tx + 2, ty + 2)], 'b0')
+    c.pxs([(12, 15 + oy), (13, 15 + oy)], 'l2')
 
 
 @mirror
@@ -216,7 +217,316 @@ def treant(d, p):
     return to_rgba(c.finish(), PAL_TREANT)
 
 
-CHARACTERS = [treant, None, None, None, None, None, None, None]
+def front_legs(c, p, xl, xr, top, w, col, foot=None, hi=None, lift=2):
+    """정면·뒷면 두 다리. p0 = 왼다리 들림, p2 = 오른다리 들림."""
+    up = [0, None, 1][p]
+    for k, x in enumerate((xl, xr)):
+        fy = FEET - (lift if up == k else 0)
+        c.rect(x, top, x + w - 1, fy, col)
+        if hi:
+            c.rect(x, top, x, fy - 1, hi)
+        if foot:
+            c.rect(x - (1 if k == 0 else 0), fy, x + w - (0 if k == 0 else -0) - (0 if k == 0 else 0), fy, foot)
+
+
+def side_legs(c, p, x, top, w, far, near, foot_far=None, foot_near=None, step=2, toe=1):
+    """옆 보기 두 다리(오른쪽을 본다). p0 가까운 다리 앞, p2 뒤, p1 모음."""
+    st = [1, 0, -1][p]
+    for k, (col, fc) in enumerate(((far, foot_far), (near, foot_near))):
+        sgn = -1 if k == 0 else 1
+        dx = st * step * sgn
+        fy = FEET - (1 if (st != 0 and dx < 0) else 0)
+        c.rect(x + dx, top, x + dx + w - 1, fy, col)
+        c.rect(x + dx, fy, x + dx + w - 1 + toe, fy, fc or col)
+
+
+# ───────────────────────── 1 버섯 요정 ─────────────────────────
+PAL_MUSH = {
+    'ol': '#2a0e12', 'r0': '#7a1622', 'r1': '#c42a30', 'r2': '#f0604a', 'w0': '#e2cfa4', 'w1': '#fffaf0',
+    's0': '#b8866a', 's1': '#f2c8a0', 's2': '#ffe6cc', 'g0': '#2f5a24', 'g1': '#5a9a3a', 'g2': '#9ad060', 'pk': '#f08a9a',
+}
+
+
+def _mush_cap(c, oy, x0=2, x1=21, spots=((5, 8, 3, 2), (11, 5, 3, 3), (17, 9, 2, 2), (8, 12, 2, 1), (14, 12, 2, 1)), gill=True):
+    """갓: 큰 타원의 윗부분만 쓰고(16줄 아래는 지운다) 아랫단에 주름. 몸보다 먼저 그린다."""
+    c.ell(x0, 3 + oy, x1, 26 + oy, 'r1')
+    for y in range(16 + oy, 28 + oy):
+        c.d.line([(0, y), (W - 1, y)], fill=0)
+    c.ell(x0 + 2, 4 + oy, x0 + 8, 9 + oy, 'r2')
+    c.line([(x1 - 1, 11 + oy), (x1, 15 + oy)], 'r0')
+    c.line([(x1 - 3, 6 + oy), (x1 - 1, 10 + oy)], 'r0')
+    for sx, sy, sw, sh in spots:
+        c.rect(sx, sy + oy, sx + sw - 1, sy + sh - 1 + oy, 'w1')
+        c.px(sx + sw - 1, sy + sh - 1 + oy, 'w0')
+    c.rect(x0, 15 + oy, x1, 15 + oy, 'r0')
+    if gill:
+        c.rect(x0 + 2, 15 + oy, x1 - 2, 15 + oy, 'w0')
+        for gx in range(x0 + 3, x1 - 2, 2):
+            c.px(gx, 15 + oy, 's0')
+
+
+def _mush_body(c, p, oy, back):
+    front_legs(c, p, 9, 13, 26, 2, 's1', hi=None)
+    for k, x in enumerate((8, 13)):
+        fy = FEET - (2 if [0, None, 1][p] == k else 0)
+        c.rect(x, fy - 1, x + 2, fy, 'r0')
+    sw = [1, 0, -1][p]
+    # 팔
+    c.rect(6, 21 + oy + sw, 7, 24 + oy + sw, 's1')
+    c.rect(16, 21 + oy - sw, 17, 24 + oy - sw, 's1')
+    # 잎사귀 옷
+    c.poly([(9, 20 + oy), (14, 20 + oy), (16, 26 + oy), (7, 26 + oy)], 'g1')
+    c.line([(7, 26 + oy), (16, 26 + oy)], 'g0')
+    c.pxs([(9, 26 + oy), (11, 25 + oy), (13, 26 + oy), (15, 25 + oy)], 'g0')
+    c.line([(9, 21 + oy), (8, 24 + oy)], 'g2')
+    if not back:
+        c.line([(11, 21 + oy), (11, 24 + oy)], 'g0')
+        c.line([(12, 21 + oy), (12, 24 + oy)], 'g0')
+
+
+@mirror
+def mushroom(d, p):
+    c = Cel(PAL_MUSH)
+    oy = 0 if p == 1 else -1
+    if d in (UP, DOWN):
+        back = d == UP
+        if back:
+            _mush_cap(c, oy, spots=((6, 7, 3, 3), (13, 6, 2, 2), (16, 10, 3, 2), (10, 11, 2, 2), (4, 12, 2, 1)), gill=False)
+            _mush_body(c, p, oy, back)
+            c.rect(8, 16 + oy, 15, 20 + oy, 's0')
+            c.rect(9, 16 + oy, 14, 17 + oy, 's1')
+        else:
+            _mush_cap(c, oy)
+            _mush_body(c, p, oy, back)
+            c.rect(8, 16 + oy, 15, 21 + oy, 's1')
+            c.rect(8, 16 + oy, 9, 18 + oy, 's2')
+            c.rect(9, 18 + oy, 9, 19 + oy, 'ol')
+            c.rect(14, 18 + oy, 14, 19 + oy, 'ol')
+            c.px(8, 20 + oy, 'pk')
+            c.px(15, 20 + oy, 'pk')
+            c.rect(11, 20 + oy, 12, 20 + oy, 'r0')
+    else:
+        _mush_cap(c, oy, x0=3, x1=21, spots=((6, 7, 3, 2), (12, 5, 3, 3), (18, 10, 2, 2), (9, 11, 2, 1)))
+        st = [1, 0, -1][p]
+        for k in (0, 1):
+            dx = st * 2 * (-1 if k == 0 else 1)
+            fy = FEET - (1 if (st != 0 and dx < 0) else 0)
+            col = 's0' if k == 0 else 's1'
+            c.rect(10 + dx, 26, 11 + dx, fy, col)
+            c.rect(10 + dx, fy - 1, 12 + dx, fy, 'r0')
+        c.poly([(9, 20 + oy), (13, 20 + oy), (15, 26 + oy), (8, 26 + oy)], 'g1')
+        c.line([(8, 26 + oy), (15, 26 + oy)], 'g0')
+        c.line([(9, 21 + oy), (8, 25 + oy)], 'g2')
+        c.rect(10, 16 + oy, 16, 21 + oy, 's1')
+        c.rect(15, 18 + oy, 15, 19 + oy, 'ol')
+        c.px(16, 20 + oy, 'pk')
+        c.px(17, 19 + oy, 's1')
+        c.px(10, 17 + oy, 's0')
+        # 팔 앞뒤로
+        c.rect(11 + st, 21 + oy, 12 + st, 24 + oy, 's2')
+        c.px(12 + st * 2, 24 + oy, 's1')
+    return to_rgba(c.finish(), PAL_MUSH)
+
+
+# ───────────────────────── 2 갓파 ─────────────────────────
+PAL_KAPPA = {
+    'ol': '#0d1e14', 'k0': '#1f5a34', 'k1': '#3a8a48', 'k2': '#6cc060', 'k3': '#c2ea8e',
+    'h0': '#4a3014', 'h1': '#7a5424', 'h2': '#a8803c', 'e0': '#c8901a', 'e1': '#f2c83a',
+    'wa': '#5ab8e8', 'pl': '#e6eef2', 'hr': '#23402c', 'wh': '#f8f8ec',
+}
+
+
+def _kappa_dish(c, oy, x0=8, x1=15):
+    c.ell(x0, 4 + oy, x1, 8 + oy, 'pl')
+    c.ell(x0 + 1, 5 + oy, x1 - 1, 7 + oy, 'wa')
+    c.px(x0 + 2, 5 + oy, 'wh')
+
+
+@mirror
+def kappa(d, p):
+    c = Cel(PAL_KAPPA)
+    oy = 0 if p == 1 else -1
+    sw = [1, 0, -1][p]
+    if d in (UP, DOWN):
+        back = d == UP
+        # 다리 + 물갈퀴 발
+        up = [0, None, 1][p]
+        for k, x in enumerate((8, 13)):
+            fy = FEET - (2 if up == k else 0)
+            c.rect(x, 24 + oy, x + 2, fy, 'k1')
+            c.rect(x - 1, fy, x + 3, fy, 'k0')
+            c.px(x + 1, fy, 'k2')
+        # 팔
+        for s, x in ((1, 5), (-1, 17)):
+            ay = 18 + oy + sw * s
+            c.rect(x, ay, x + 1, ay + 4, 'k1')
+            c.rect(x - (1 if s > 0 else 0), ay + 4, x + 1 + (0 if s > 0 else 1), ay + 5, 'k0')
+        # 몸
+        c.ell(6, 16 + oy, 17, 27 + oy, 'k1')
+        if back:
+            # 등딱지
+            c.ell(5, 14 + oy, 18, 27 + oy, 'h1')
+            c.ell(6, 15 + oy, 14, 22 + oy, 'h2')
+            c.line([(8, 18 + oy), (15, 18 + oy)], 'h0')
+            c.line([(7, 23 + oy), (16, 23 + oy)], 'h0')
+            c.line([(11, 15 + oy), (11, 26 + oy)], 'h0')
+            c.pxs([(9, 20 + oy), (14, 21 + oy)], 'h0')
+            c.ell(5, 5 + oy, 18, 16 + oy, 'k1')
+            c.ell(5, 5 + oy, 18, 13 + oy, 'hr')
+            for x in range(6, 18, 2):
+                c.px(x, 14 + oy, 'hr')
+            _kappa_dish(c, oy)
+        else:
+            c.ell(8, 17 + oy, 15, 26 + oy, 'k3')
+            c.line([(9, 21 + oy), (14, 21 + oy)], 'k2')
+            c.line([(9, 23 + oy), (14, 23 + oy)], 'k2')
+            # 머리
+            c.ell(5, 6 + oy, 18, 17 + oy, 'k2')
+            c.ell(6, 7 + oy, 10, 10 + oy, 'k3')
+            c.ell(5, 5 + oy, 18, 10 + oy, 'hr')
+            c.rect(6, 10 + oy, 6, 12 + oy, 'hr')
+            c.rect(17, 10 + oy, 17, 12 + oy, 'hr')
+            c.pxs([(8, 10 + oy), (11, 10 + oy), (14, 10 + oy), (12, 10 + oy)], 'hr')
+            _kappa_dish(c, oy)
+            # 눈
+            c.rect(8, 11 + oy, 9, 12 + oy, 'wh')
+            c.rect(14, 11 + oy, 15, 12 + oy, 'wh')
+            c.px(9, 12 + oy, 'ol')
+            c.px(14, 12 + oy, 'ol')
+            # 부리
+            c.rect(10, 13 + oy, 13, 14 + oy, 'e1')
+            c.rect(10, 15 + oy, 13, 15 + oy, 'e0')
+            c.px(10, 13 + oy, 'wh')
+    else:
+        side_legs(c, p, 10, 24 + oy, 3, 'k0', 'k1', 'k0', 'k0', step=2, toe=1)
+        # 먼 팔
+        c.rect(12 - sw, 18 + oy, 13 - sw, 22 + oy, 'k0')
+        c.ell(8, 16 + oy, 15, 27 + oy, 'k1')
+        c.ell(12, 17 + oy, 16, 26 + oy, 'k3')
+        # 등딱지(왼쪽 뒤)
+        c.ell(4, 14 + oy, 11, 27 + oy, 'h1')
+        c.ell(5, 15 + oy, 9, 21 + oy, 'h2')
+        c.line([(5, 19 + oy), (10, 19 + oy)], 'h0')
+        c.line([(5, 23 + oy), (10, 23 + oy)], 'h0')
+        c.line([(8, 15 + oy), (8, 26 + oy)], 'h0')
+        # 머리
+        c.ell(6, 6 + oy, 17, 17 + oy, 'k2')
+        c.ell(6, 5 + oy, 15, 10 + oy, 'hr')
+        c.rect(6, 10 + oy, 8, 14 + oy, 'hr')
+        c.pxs([(9, 10 + oy), (11, 11 + oy), (13, 10 + oy)], 'hr')
+        _kappa_dish(c, oy, 7, 14)
+        c.rect(14, 11 + oy, 15, 12 + oy, 'wh')
+        c.px(15, 12 + oy, 'ol')
+        c.poly([(15, 13 + oy), (20, 13 + oy), (19, 15 + oy), (15, 15 + oy)], 'e1')
+        c.line([(15, 15 + oy), (19, 15 + oy)], 'e0')
+        # 가까운 팔
+        c.rect(12 + sw, 18 + oy, 13 + sw, 22 + oy, 'k2')
+        c.rect(12 + sw, 23 + oy, 14 + sw, 23 + oy, 'k0')
+    return to_rgba(c.finish(), PAL_KAPPA)
+
+
+# ───────────────────────── 3 구미호 ─────────────────────────
+PAL_KITSUNE = {
+    'ol': '#2a1406', 'f0': '#8a3e0e', 'f1': '#d0741e', 'f2': '#f2a83a', 'f3': '#ffd878',
+    'c0': '#dcc8a8', 'c1': '#fff6e6', 'rd': '#d02838', 'b0': '#3a6ad8', 'b1': '#9ad8ff',
+}
+
+
+def _tail(c, base, tip, w, col, tipcol, dark):
+    (bx, by), (tx, ty) = base, tip
+    c.line([(bx, by), ((bx + tx) / 2, (by + ty) / 2 + 1), (tx, ty)], dark, w + 1)
+    c.line([(bx, by), ((bx + tx) / 2, (by + ty) / 2 + 1), (tx, ty)], col, w)
+    c.px(tx, ty, tipcol)
+    c.px(tx + (1 if tx < bx else -1), ty, tipcol)
+
+
+def _kitsune_fan(c, cx, cy, oy, sway, back=False):
+    import math
+    for i in range(9):
+        a = math.radians(-172 + i * 20.5 + sway * 3)
+        r = 10 if i % 2 == 0 else 9
+        tx = cx + math.cos(a) * r
+        ty = cy + oy + math.sin(a) * r * 0.75
+        col = 'f1' if i % 2 else 'f2'
+        _tail(c, (cx, cy + oy), (round(tx), round(ty)), 2, col, 'c1', 'f0')
+
+
+@mirror
+def kitsune(d, p):
+    c = Cel(PAL_KITSUNE)
+    oy = 0 if p == 1 else -1
+    sway = [-1, 0, 1][p]
+    if d in (UP, DOWN):
+        back = d == UP
+        _kitsune_fan(c, 11.5, 22, oy, sway)
+        up = [0, None, 1][p]
+        # 뒷다리(양옆 조금)
+        c.rect(7, 23 + oy, 8, FEET, 'f0')
+        c.rect(15, 23 + oy, 16, FEET, 'f0')
+        # 몸통
+        c.ell(7, 16 + oy, 16, 26 + oy, 'f1')
+        if not back:
+            c.ell(9, 17 + oy, 14, 25 + oy, 'c1')
+        # 앞다리
+        for k, x in enumerate((9, 13)):
+            fy = FEET - (2 if up == k else 0)
+            c.rect(x, 22 + oy, x + 1, fy, 'f1' if back else 'f2')
+            c.rect(x, fy, x + 1, fy, 'c0')
+        # 머리
+        hy = 8 + oy
+        c.poly([(6, hy + 3), (7, hy - 3), (10, hy + 1)], 'f1')
+        c.poly([(17, hy + 3), (16, hy - 3), (13, hy + 1)], 'f1')
+        if not back:
+            c.pxs([(7, hy), (8, hy + 1), (16, hy), (15, hy + 1)], 'f0')
+        c.ell(6, hy, 17, hy + 9, 'f1')
+        c.ell(7, hy, 12, hy + 3, 'f2')
+        if back:
+            c.pxs([(9, hy + 5), (14, hy + 5), (11, hy + 7), (12, hy + 7)], 'f0')
+            c.ell(7, 16 + oy, 16, 20 + oy, 'f2')
+        else:
+            c.ell(8, hy + 5, 15, hy + 9, 'c1')
+            c.rect(8, hy + 4, 9, hy + 4, 'ol')
+            c.rect(14, hy + 4, 15, hy + 4, 'ol')
+            c.px(9, hy + 3, 'rd')
+            c.px(14, hy + 3, 'rd')
+            c.rect(11, hy + 7, 12, hy + 7, 'ol')
+            c.rect(11, hy + 1, 12, hy + 2, 'rd')
+    else:
+        # 옆 보기(오른쪽): 꼬리는 엉덩이 왼쪽 위로 부챗살
+        import math
+        for i in range(9):
+            a = math.radians(-175 + i * 13 + sway * 4)
+            r = 10 + (i % 3)
+            tx = 7 + math.cos(a) * r
+            ty = 17 + oy + math.sin(a) * r
+            _tail(c, (7, 18 + oy), (round(tx), round(ty)), 2, 'f1' if i % 2 else 'f2', 'c1', 'f0')
+        st = [1, 0, -1][p]
+        # 먼 다리
+        c.rect(8 - st, 22 + oy, 9 - st, FEET, 'f0')
+        c.rect(15 + st, 22 + oy, 16 + st, FEET, 'f0')
+        c.ell(6, 16 + oy, 17, 24 + oy, 'f1')
+        c.ell(7, 16 + oy, 13, 19 + oy, 'f2')
+        c.ell(10, 20 + oy, 16, 24 + oy, 'c1')
+        # 가까운 다리
+        c.rect(7 + st, 22 + oy, 8 + st, FEET - (1 if st < 0 else 0), 'f1')
+        c.rect(14 - st, 22 + oy, 15 - st, FEET - (1 if st > 0 else 0), 'f2')
+        c.px(9 + st, FEET - (1 if st < 0 else 0), 'c0')
+        c.px(16 - st, FEET - (1 if st > 0 else 0), 'c0')
+        # 머리
+        hy = 8 + oy
+        c.poly([(13, hy + 3), (14, hy - 3), (16, hy + 1)], 'f1')
+        c.px(14, hy, 'f0')
+        c.ell(12, hy, 20, hy + 8, 'f1')
+        c.ell(13, hy + 1, 16, hy + 3, 'f2')
+        c.poly([(18, hy + 4), (22, hy + 5), (21, hy + 7), (17, hy + 8)], 'c1')
+        c.px(22, hy + 5, 'ol')
+        c.rect(17, hy + 3, 18, hy + 3, 'ol')
+        c.px(18, hy + 2, 'rd')
+        c.ell(13, hy + 5, 17, hy + 9, 'c1')
+    return to_rgba(c.finish(), PAL_KITSUNE)
+
+
+CHARACTERS = [treant, mushroom, kappa, kitsune, None, None, None, None]
 
 
 def build():
