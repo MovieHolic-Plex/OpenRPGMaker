@@ -425,7 +425,7 @@
   flex-wrap: wrap-reverse;
   justify-content: center;
   width: max-content;
-  max-width: 68px;
+  max-width: 80px;
   gap: 2px;
   z-index: 5;
   pointer-events: none;
