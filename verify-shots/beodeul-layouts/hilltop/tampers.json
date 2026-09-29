@@ -1,0 +1,145 @@
+[
+ {
+  "id": "err-layout-door-blocked",
+  "caption": "문 앞 칸(길)에 사과 궤짝 한 칸을 찍었다 — 그 집 문이 막힌다.",
+  "box": [
+   12,
+   50,
+   29,
+   63
+  ],
+  "calls": [
+   {
+    "name": "stamp_object",
+    "args": {
+     "objectId": "kit:beodeul_city/bd-prop-crate_apple",
+     "mapId": "hilltop",
+     "x": 20,
+     "y": 58
+    },
+    "ok": true
+   }
+  ],
+  "detected": {
+   "blockedDoorFronts": [
+    {
+     "kit": "bd-house-h109_0",
+     "front": [
+      20,
+      58
+     ]
+    }
+   ]
+  },
+  "streetReach": {
+   "reached": 37,
+   "total": 38,
+   "unreached": [
+    {
+     "kit": "bd-house-h109_0",
+     "front": [
+      20,
+      58
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "id": "err-layout-dead-end",
+  "caption": "아래 거리에서 남쪽으로 두 칸짜리 곁길을 냈다가 풀밭에서 끊었다 — 막다른 길.",
+  "box": [
+   80,
+   62,
+   98,
+   76
+  ],
+  "calls": [
+   {
+    "name": "fill_region",
+    "args": {
+     "mapId": "hilltop",
+     "rect": {
+      "x": 88,
+      "y": 70,
+      "w": 2,
+      "h": 2
+     },
+     "material": "버들항 길 포석"
+    },
+    "ok": true
+   }
+  ],
+  "detected": {
+   "deadEndStreets": [
+    [
+     88,
+     71
+    ]
+   ]
+  },
+  "streetReach": {
+   "reached": 38,
+   "total": 38,
+   "unreached": []
+  }
+ },
+ {
+  "id": "err-layout-same-row",
+  "caption": "아래 거리(68행) 북쪽 집 줄 한 토막을 같은 집 조각(bd-house-h113_0) 셋으로 바꿨다 — 같은 조각 일렬.",
+  "box": [
+   14,
+   56,
+   46,
+   72
+  ],
+  "calls": [
+   {
+    "name": "stamp_object",
+    "args": {
+     "objectId": "kit:beodeul_city/bd-house-h113_0",
+     "mapId": "hilltop",
+     "x": 18,
+     "y": 62
+    },
+    "ok": true
+   },
+   {
+    "name": "stamp_object",
+    "args": {
+     "objectId": "kit:beodeul_city/bd-house-h113_0",
+     "mapId": "hilltop",
+     "x": 23,
+     "y": 62
+    },
+    "ok": true
+   },
+   {
+    "name": "stamp_object",
+    "args": {
+     "objectId": "kit:beodeul_city/bd-house-h113_0",
+     "mapId": "hilltop",
+     "x": 28,
+     "y": 62
+    },
+    "ok": true
+   }
+  ],
+  "detected": {
+   "sameKitRepeats": [
+    {
+     "id": "bd-house-h113_0",
+     "at": [
+      18,
+      62
+     ]
+    }
+   ]
+  },
+  "streetReach": {
+   "reached": 38,
+   "total": 38,
+   "unreached": []
+  }
+ }
+]

@@ -1,3 +1,5 @@
+// Round 2 (2026-09-29): the task now forbids copying the original layout; the result is measured with scripts/content/lib/beodeul-metrics.ts
+// (originality vs the canon and vs the two reference layouts, district presence, reach, defects). Evidence → verify-shots/beodeul-assistant-r2/<label>/.
 // Proof run: can the in-editor assistant (Pi agent runtime, same tools and gates as the chat panel) lay down a town
 // like 버들항 v6 using only what it sees through its tools? Loads a canonical SQLite project (fresh or existing),
 // runs the real model once, records every tool call (args + ok + summary), saves the result back to the SAME store,
@@ -19,6 +21,7 @@ import { initLocalProjectStore, openLocalProjectStore } from "../../electron/loc
 import { buildSessionRegistryTools } from "../../src/ai/sessionToolExposure.ts";
 import { ensureBundledTilesets } from "../../src/project/defaults/defaultAssets.ts";
 import type { Project } from "../../src/project/types.ts";
+import { analyzeBeodeul, type Stamp } from "../content/lib/beodeul-metrics.ts";
 
 const arg = (n: string, d?: string) => { const i = process.argv.indexOf(`--${n}`); return i >= 0 ? process.argv[i + 1] ?? d : d; };
 const projectDir = path.resolve(arg("project")!);
@@ -26,9 +29,9 @@ const label = arg("label", "run")!;
 const mapId = arg("map", "beodeul_like")!;
 const size = arg("new");
 const [provider, modelId] = (arg("model", "klb/claude-opus-5.5")!).split("/") as [string, string];
-const task = arg("task", "버들항 비슷한 로마풍 항구 도시를 깔아줘. 맵 전체를 채우는 큰 도시로 — 성, 귀족 저택, 포룸 광장, 항구와 잔교, 풍차, 강과 다리, 높이가 다른 단이 있어야 해.")!;
+const task = arg("task", "버들항 비슷한 로마풍 항구 도시를 깔아줘. 맵 전체(100×100)를 채우는 큰 도시로 — 성, 귀족 저택, 포룸 광장, 항구와 잔교, 풍차, 강과 다리, 성 밖 나무집 마을이 있어야 해. 단, 원본 버들항을 그대로 복제하면 안 돼: 구역 키트를 원본 좌표(원점)에 찍지 말고, 성·저택·광장·항구의 자리와 길·강의 흐름을 원본과 다르게 새로 설계해. 참고문서의 배치 규칙과 예시 배치 두 가지를 읽고 그 규칙대로 하되, 예시 배치를 그대로 베끼지도 마.")!;
 const maxTurns = Number(arg("max-turns", "150"));
-const OUT = `verify-shots/beodeul-assistant/${label}`;
+const OUT = `verify-shots/beodeul-assistant-r2/${label}`;
 fs.mkdirSync(OUT, { recursive: true });
 
 // ---- model from the local omp config (no key in logs/evidence) ----
@@ -68,7 +71,7 @@ if (!project.maps[mapId]) throw new Error(`map ${mapId} missing`);
 const intent = { mode: "create", space: "none", facility: null, targetMapId: mapId, useSelection: false, clarify: null, clarifyOptions: [],
   needsPlan: true, resetsContext: false, summary: task, source: "llm",
   tools: ["create_map", "fill_region", "paint_tiles", "paint_road", "stamp_object", "list_spatial_designs", "get_spatial_design", "show_map_region",
-    "get_map_region", "check_reachability", "list_tileset_references", "read_tileset_reference", "tile_query", "get_tile_info", "upsert_event", "tile_erase"] };
+    "get_map_region", "check_reachability", "lay_path", "list_tileset_references", "read_tileset_reference", "tile_query", "get_tile_info", "upsert_event", "tile_erase"] };
 const initialToolNames = buildSessionRegistryTools({ requestText: task, intent: intent as never }).map((t) => t.function.name);
 fs.writeFileSync(`${OUT}/exposed-tools.json`, JSON.stringify(initialToolNames, null, 1));
 const trace: { i: number; name: string; ok: boolean; summary: string; args: string }[] = [];
@@ -106,6 +109,16 @@ const same = JSON.stringify(m) === JSON.stringify(result.maps[mapId]);
 const { png, note } = renderMapPng(reloaded, m);
 fs.writeFileSync(`${OUT}/render.png`, png);
 const counts = (name: string) => trace.filter((t) => t.name === name).length;
+// ---- round 2 measurements ----
+const canonMap = JSON.parse(fs.readFileSync("tiledata/beodeul-city/map.json", "utf8"));
+const stamps: Stamp[] = trace.filter((t) => t.name === "stamp_object" && t.ok).map((t) => { const a = JSON.parse(t.args); return { objectId: String(a.objectId), x: Number(a.x), y: Number(a.y) }; });
+const metrics = analyzeBeodeul(reloaded, mapId, stamps, { lower: canonMap.lowerTiles, upper: canonMap.upperTiles });
+const vsExamples: Record<string, number> = {};
+for (const ex of ["hilltop", "estuary"]) {
+  const f = `verify-shots/beodeul-layouts/${ex}/map.json`; if (!fs.existsSync(f)) continue;
+  const e = JSON.parse(fs.readFileSync(f, "utf8")); let same = 0; for (let i = 0; i < m.width * m.height; i += 1) if (m.lowerTiles[i] === e.lowerTiles[i] && m.upperTiles[i] === e.upperTiles[i]) same += 1;
+  vsExamples[ex] = +(same / (m.width * m.height)).toFixed(4);
+}
 const summary = {
   label, projectId, loadUpgrade, projectDir: path.relative(process.cwd(), projectDir), mapId, size: [m.width, m.height], tilesetId: m.tilesetId,
   model: `${provider}/${modelId}`, task, ms, exposedTools: initialToolNames.length, stats: done.stats, reloadEqual: same, renderNote: note ?? null,
@@ -114,6 +127,7 @@ const summary = {
   readReferences: { list: counts("list_tileset_references"), read: counts("read_tileset_reference"),
     beodeulDocs: [...new Set(trace.filter((t) => t.name === "read_tileset_reference" && t.args.includes("beodeul")).map((t) => JSON.parse(t.args).documentId ?? JSON.parse(t.args).imageId))] },
   kitsStamped: trace.filter((t) => t.name === "stamp_object" && t.ok).map((t) => JSON.parse(t.args).objectId),
+  metrics, vsExampleLayouts: vsExamples,
   filled: { lower: m.lowerTiles.filter((t) => t >= 0).length, upper: m.upperTiles.filter((t) => t >= 0).length, cells: m.width * m.height },
   finalText: (done as { text?: string }).text ?? log.filter((l) => l.startsWith("assistant:")).slice(-1)[0] ?? "",
 };

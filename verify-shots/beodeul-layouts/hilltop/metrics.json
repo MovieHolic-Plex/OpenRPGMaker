@@ -1,0 +1,113 @@
+{
+ "originality": {
+  "sameCells": 50,
+  "ofCells": 10000,
+  "sameShare": 0.005,
+  "sameShareOfObjectCells": 0
+ },
+ "districts": [
+  {
+   "id": "bd-castle",
+   "stamped": 1,
+   "present": true,
+   "atOriginalOrigin": false,
+   "origins": [
+    [
+     33,
+     0
+    ]
+   ]
+  },
+  {
+   "id": "bd-estate",
+   "stamped": 1,
+   "present": true,
+   "atOriginalOrigin": false,
+   "origins": [
+    [
+     6,
+     4
+    ]
+   ]
+  },
+  {
+   "id": "bd-forum",
+   "stamped": 1,
+   "present": true,
+   "atOriginalOrigin": false,
+   "origins": [
+    [
+     39,
+     44
+    ]
+   ]
+  },
+  {
+   "id": "bd-cathedral",
+   "stamped": 1,
+   "present": true,
+   "atOriginalOrigin": false,
+   "origins": [
+    [
+     77,
+     5
+    ]
+   ]
+  },
+  {
+   "id": "bd-windmill",
+   "stamped": 1,
+   "present": true,
+   "atOriginalOrigin": false,
+   "origins": [
+    [
+     1,
+     40
+    ]
+   ]
+  },
+  {
+   "id": "bd-harbour",
+   "stamped": 0,
+   "present": false,
+   "atOriginalOrigin": false,
+   "origins": []
+  },
+  {
+   "id": "bd-harbour-west",
+   "stamped": 0,
+   "present": false,
+   "atOriginalOrigin": false,
+   "origins": []
+  },
+  {
+   "id": "bd-river-bridge",
+   "stamped": 0,
+   "present": false,
+   "atOriginalOrigin": false,
+   "origins": []
+  }
+ ],
+ "districtsPresent": 5,
+ "districtsAtOriginalOrigin": 0,
+ "stampedKits": 145,
+ "doors": 38,
+ "landReach": {
+  "total": 38,
+  "reached": 38,
+  "unreached": []
+ },
+ "streetReach": {
+  "total": 38,
+  "reached": 38,
+  "unreached": []
+ },
+ "defects": {
+  "deadEndPavedCells": [],
+  "deadEndStreets": [],
+  "roadIntoWater": [],
+  "blockedDoorFronts": [],
+  "sameKitRepeats": []
+ },
+ "designedObjectCells": 1788
+}
