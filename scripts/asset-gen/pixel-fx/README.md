@@ -123,3 +123,9 @@ p1 은 스킬마다 새 시트 최대 1장이고 나머지 층은 기존 시트(
 - 실행: python3 scripts/asset-gen/pixel-fx/lib_r2w5.py dog reaper siren (직업 키별 전부 + 무대판) 또는 python3 scripts/asset-gen/pixel-fx/<키>.py
 - 검수판: .omo/r2w5/<묶음>/fx/
 
+
+## retro2003 로스터 b4 (Monster2 8종)
+
+스킬 64개, 레이어 72장. 공용 모듈 `lib_r2w8.py`, 키마다 `<key>.py` 하나. 규격(anchor·frame·frames)은 `src/assets/retroRosterSkills/b4.ts` 에서 읽고 다르면 멈춘다.
+`python3 lib_r2w8.py` 전부, `python3 lib_r2w8.py class:oni_warrior` 직업 하나(확인판·가상 무대 합성판 `.omo/r2w8/b4/fx/`), `python3 lib_r2w8.py <key>` 시트 하나.
+전투 도트 9칸 시트는 `scripts/asset-gen/party-pixel/monster2-<i>.py`, 확인판은 `review_b4.py`.
