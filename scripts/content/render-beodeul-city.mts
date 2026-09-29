@@ -1,4 +1,4 @@
-// Render the 버들항 map reloaded from the canonical store (save-beodeul-city.mjs → verify-shots/beodeul-assistant-r2/reloaded-map.json)
+// Render the 버들항 map reloaded from the canonical store (save-beodeul-city.mjs → verify-shots/beodeul-assistant-<round>/reloaded-map.json, BEODEUL_ROUND default r3)
 // with the repo's canvas renderer (scripts/qa-game/render.mts → editor/mapTileDraw, frame 0 of every animation strip) and
 // diff it against the Python originals: city6.png (with townsfolk drawn in) and the no-townsfolk render the tiles were cut from.
 //   bun scripts/content/render-beodeul-city.mts
@@ -9,7 +9,7 @@ import { createBlankProject } from "../../src/project/defaults/defaultProject.ts
 import { ensureBundledTilesets } from "../../src/project/defaults/defaultAssets.ts";
 import type { GameMap } from "../../src/project/types.ts";
 
-const OUT = "verify-shots/beodeul-assistant-r2";
+const OUT = `verify-shots/beodeul-assistant-${process.env.BEODEUL_ROUND || "r3"}`;
 const saved = JSON.parse(fs.readFileSync(`${OUT}/reloaded-map.json`, "utf8")) as { projectId: string; map: GameMap };
 const project = createBlankProject();
 ensureBundledTilesets(project);

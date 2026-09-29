@@ -31,9 +31,12 @@ const label = arg("label", "run")!;
 const mapId = arg("map", "beodeul_like")!;
 const size = arg("new");
 const [provider, modelId] = (arg("model", "klb/claude-opus-5.5")!).split("/") as [string, string];
-const task = arg("task", "버들항 비슷한 로마풍 항구 도시를 깔아줘. 맵 전체(100×100)를 채우는 큰 도시로 — 성, 귀족 저택, 포룸 광장, 항구와 잔교, 풍차, 강과 다리, 성 밖 나무집 마을이 있어야 해. 단, 원본 버들항을 그대로 복제하면 안 돼: 구역 키트를 원본 좌표(원점)에 찍지 말고, 성·저택·광장·항구의 자리와 길·강의 흐름을 원본과 다르게 새로 설계해. 참고문서의 배치 규칙과 예시 배치 두 가지를 읽고 그 규칙대로 하되, 예시 배치를 그대로 베끼지도 마.")!;
+const task0 = arg("task", "버들항 비슷한 로마풍 항구 도시를 깔아줘. 맵 전체(100×100)를 채우는 큰 도시로 — 성, 귀족 저택, 포룸 광장, 항구와 잔교, 풍차, 강과 다리, 성 밖 나무집 마을이 있어야 해. 단, 원본 버들항을 그대로 복제하면 안 돼: 구역 키트를 원본 좌표(원점)에 찍지 말고, 성·저택·광장·항구의 자리와 길·강의 흐름을 원본과 다르게 새로 설계해. 참고문서의 배치 규칙과 예시 배치 두 가지를 읽고 그 규칙대로 하되, 예시 배치를 그대로 베끼지도 마.")!;
 const maxTurns = Number(arg("max-turns", "150"));
-const OUT = `verify-shots/beodeul-assistant-r2/${label}`;
+// round 3: the same task "블록 키트로" (whole-block kits on a street grid) + the emptiness measure (≤40% open floor per 20×15 screen)
+const round = arg("round", "r3")!;
+const task = round === "r2" ? task0 : `${task0} 블록 키트로 — 길 격자(대로·거리·골목)를 먼저 깔고, 블록 키트(bd-block-*)로 블록을 통째로 채워서 빈 풀밭을 남기지 마.`;
+const OUT = `verify-shots/beodeul-assistant-${round}/${label}`;
 fs.mkdirSync(OUT, { recursive: true });
 
 // ---- model from the local omp config (no key in logs/evidence) ----
@@ -123,7 +126,7 @@ const canonMap = JSON.parse(fs.readFileSync("tiledata/beodeul-city/map.json", "u
 const stamps: Stamp[] = trace.filter((t) => t.name === "stamp_object" && t.ok).map((t) => { const a = JSON.parse(t.args); return { objectId: String(a.objectId), x: Number(a.x), y: Number(a.y) }; });
 const metrics = analyzeBeodeul(reloaded, mapId, stamps, { lower: canonMap.lowerTiles, upper: canonMap.upperTiles });
 const vsExamples: Record<string, number> = {};
-for (const ex of ["hilltop", "estuary"]) {
+for (const ex of ["hilltop", "estuary", "blocks"]) {
   const f = `verify-shots/beodeul-layouts/${ex}/map.json`; if (!fs.existsSync(f)) continue;
   const e = JSON.parse(fs.readFileSync(f, "utf8")); let same = 0; for (let i = 0; i < m.width * m.height; i += 1) if (m.lowerTiles[i] === e.lowerTiles[i] && m.upperTiles[i] === e.upperTiles[i]) same += 1;
   vsExamples[ex] = +(same / (m.width * m.height)).toFixed(4);
@@ -135,6 +138,7 @@ const summary = {
   byTool: Object.fromEntries([...new Set(trace.map((t) => t.name))].map((n) => [n, counts(n)])),
   readReferences: { list: counts("list_tileset_references"), read: counts("read_tileset_reference"),
     beodeulDocs: [...new Set(trace.filter((t) => t.name === "read_tileset_reference" && t.args.includes("beodeul")).map((t) => JSON.parse(t.args).documentId ?? JSON.parse(t.args).imageId))] },
+  blocksStamped: trace.filter((t) => t.name === "stamp_object" && t.ok && t.args.includes("bd-block-")).length,
   kitsStamped: trace.filter((t) => t.name === "stamp_object" && t.ok).map((t) => JSON.parse(t.args).objectId),
   metrics, vsExampleLayouts: vsExamples,
   filled: { lower: m.lowerTiles.filter((t) => t >= 0).length, upper: m.upperTiles.filter((t) => t >= 0).length, cells: m.width * m.height },

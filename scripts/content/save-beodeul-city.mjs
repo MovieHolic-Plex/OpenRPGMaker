@@ -1,14 +1,15 @@
 // Save 버들항 (round 2: v7 render + autotile sheet) as-is (tiledata/beodeul-city/map.json, cut by build-beodeul-city.py) into its own canonical local project,
 // reopen it and prove the reload is identical, carries the beodeul_city tileset with its bundled reference documents
 // and animation strips, and that walkability in the editor map matches the Python occupancy grid.
-// Store: .oprn-projects/beodeul-city-r2-20260929 (outside git; override with BEODEUL_SAVE_DIR).   node scripts/content/save-beodeul-city.mjs
+// Store: .oprn-projects/beodeul-city-<round>-20260929 (round = BEODEUL_ROUND, default r3; outside git; override with BEODEUL_SAVE_DIR).   node scripts/content/save-beodeul-city.mjs
 // Then: bun scripts/content/render-beodeul-city.mts (renders the reloaded map and diffs it against the original).
 import fs from "node:fs";
 import assert from "node:assert/strict";
 import { isDeepStrictEqual } from "node:util";
 import { withTsModule } from "../ontology-ts-loader.mjs";
 
-const rel = process.env.BEODEUL_SAVE_DIR || ".oprn-projects/beodeul-city-r2-20260929", dir = process.cwd() + "/" + rel;
+const ROUND = process.env.BEODEUL_ROUND || "r3";
+const rel = process.env.BEODEUL_SAVE_DIR || `.oprn-projects/beodeul-city-${ROUND}-20260929`, dir = process.cwd() + "/" + rel;
 const src = JSON.parse(fs.readFileSync("tiledata/beodeul-city/map.json", "utf8"));
 const MAP_ID = "beodeul_v7";
 const SHEETS = { People1: "tex_easyrpg_charset_people1", People2: "tex_easyrpg_charset_people2", People3: "tex_easyrpg_charset_people3",
@@ -61,8 +62,8 @@ await withTsModule("electron/local-store/store.ts", "beodeul-store.mjs", async (
     assert(isDeepStrictEqual(reloaded, project), "Reload differs");
     const ts = reloaded.tilesets.beodeul_city, m = reloaded.maps[MAP_ID];
     assert(isDeepStrictEqual(m, project.maps[MAP_ID]) && isDeepStrictEqual(ts, project.tilesets.beodeul_city));
-    fs.mkdirSync("verify-shots/beodeul-assistant-r2", { recursive: true });
-    fs.writeFileSync("verify-shots/beodeul-assistant-r2/reloaded-map.json", JSON.stringify({ projectId: id, map: m }));
+    fs.mkdirSync(`verify-shots/beodeul-assistant-${ROUND}`, { recursive: true });
+    fs.writeFileSync(`verify-shots/beodeul-assistant-${ROUND}/reloaded-map.json`, JSON.stringify({ projectId: id, map: m }));
     const proof = { projectId: id, projectDir: rel, revision: a.revision, sha256: a.sha256, saved: true, reopened: true,
       deepEqual: { project: true, map: true, tileset: true },
       tileset: { id: ts.id, count: ts.count, image: ts.image, tilesPerRow: ts.tilesPerRow, animationStrips: ts.animationStrips.length,
@@ -71,7 +72,7 @@ await withTsModule("electron/local-store/store.ts", "beodeul-store.mjs", async (
       map: { id: m.id, size: [m.width, m.height], lower: m.lowerTiles.filter((t) => t >= 0).length, upper: m.upperTiles.filter((t) => t >= 0).length,
         animatedCells: m.lowerTiles.concat(m.upperTiles).filter((t) => ts.animationStrips.some((st) => st.baseTile === t)).length, npcs: m.events.length },
       walkability: walkCheck };
-    fs.writeFileSync("tiledata/beodeul-city/storage-proof-r2.json", JSON.stringify(proof, null, 1) + "\n");
+    fs.writeFileSync(`tiledata/beodeul-city/storage-proof-${ROUND}.json`, JSON.stringify(proof, null, 1) + "\n");
     console.log(JSON.stringify(proof));
   } finally { s.close(); }
 });
