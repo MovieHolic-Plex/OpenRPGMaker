@@ -187,6 +187,25 @@
   비트: `battleDom` 의 `enemyApproachMs`/`enemyRecoverMs` 가 `retroClassSkillBeatMs` 를 먼저 본다(첫 착탄·대상별 간격·남은 연출). CSS 는 재생 중 적 노드의 비트 키프레임을 끄고, 편이 뒤집힌 피격/축복 필터를 더했다.
 - **녹화** `node scripts/qa/runtime/retro2003-monster-skills-gif.mjs [--skills acid_spit,dark_judgment] [--out DIR]` → `mskill-<id>.gif`·`SUMMARY.md`. 스킬마다 대표 몬스터(그 스킬을 가진 첫 slug) 한 마리 트룹, 녹화 사본에서 actions = 그 스킬 하나·MP 999, 아군 셋. 판정: 재생기 시작·windup/attack 칸·계약 레이어 전부 표시·기존 애니메이션 층 0·필살기 dim. PNG 가 없는 레이어는 missing 열에 적는다.
 
+### 2차 로스터 통합 — 걷기 칩 전부 직업·스킬, 몬스터도 파티원 (2026-09-29)
+
+사용자 요구: 「몬스터도 파티가 될 수 있는 자유도」. 계약 `src/assets/retroRoster.ts`(101직업, 읽기 전용) + 묶음 `src/assets/retroRosterSkills/<batch>.ts`(13개, 아트 에이전트 소유, 합본 `index.ts` 의 `RETRO_ROSTER_SKILLS`·`RETRO_PARTY_PIXEL_SHEETS`).
+묶음이 비어 있어도 파이프라인은 돈다 — 그 직업은 스킬 없이 들어간다.
+
+- **마도사 칩 이전** actor3-0 → actor1-5(`charset-battler-actor1-5`, 무기 지팡이 확인). 편집기 무대 폴백 표(`databaseSkillRetroStage.ts` FALLBACK_BATTLERS)도 같다.
+- **People 전투 시트** `charsetBattlers.ts` 가 people1~5 40칸(`charset-battler-people<N>-<i>`)을 등록한다. PNG 가 아직 없으면 기존 폴백.
+- **레코드 생성기** `src/project/defaults/retroRosterRecords.ts`: 직업(`rosterParameterCurves(role)`, 습득표 = 스킬 level), 예비 배우 `actor_<key>`(이름 = 직업 이름, 시작 파티 불변),
+  스킬(`deriveRosterSkillSeed` — motion·설명 낱말로 scope·위력·MP·속성·상태를 유도, 800개를 손으로 쓰지 않는다). 기본 DB 의 classes·actors·skills 끝에 붙는다.
+- **공용 조회** `retroSkillCatalog.ts` 의 `retroClassSkill(id)` 가 기존 96 + 로스터를 함께 본다(런타임·편집기 한 곳). 통상 공격 접근 `retroApproachStyle`(battleRetroMotion.ts)은 역할별.
+- **비인간형 파티원** 리소스 id `party-pixel-<칩>` 을 배우 `battleCharacterResourceId` 에 넣는다(스키마 필드 추가 없음, `partyPixelSheets.ts`). 시트 `public/assets/generated/party-pixel/<칩>.png`, 적 도트와 같은 9칸 규격이지만 **왼쪽을 본다**.
+  `battleFieldDom` 이 `data-pixel-party` 노드를 만들고 스프라이트 `data-pixel-cell` 로 칸을 바꾼다. 이동은 적 pixel motion 을 가로만 뒤집어 재사용(`battleRetroMotion` partySign),
+  직업 스킬 포즈 → 9칸은 `retroPartyPixelCellForPose`(retroSkillTimeline.ts; 몬스터용 `retroMonsterCellForPose` 와 달리 피격은 hit, 기합 skill 은 attack). 묶음이 시트를 등록하기 전에는 배우의 전투 그림이 비어 기존 폴백을 쓴다.
+- **편집기 스킬 탭** 직업 칩이 100개를 넘어 2단: 1단 계열(전체 · 기본 12 · Actor · People · 동물 · 탈것 · 몬스터 파티 · 몬스터 스킬, 필터 id `group:<계열>`), 2단 그 계열의 직업(`db-skill-class-second-row`, 최대 116px 스크롤 — People 40칸이 목록을 밀던 것).
+  계열이 하나뿐인 옛 프로젝트는 예전처럼 평평한 칩 줄. 무대는 로스터 시전자면 곁에 주인공·수호자를 세우고, 비인간형이면 9칸 시트로 그린다(컷인 초상은 attack 칸). 시작 파티 선택은 `project.database.actors` 전체라 새 배우가 그대로 보인다.
+  `?freshProject=1` 세션은 옛 6직업 DB 라 계열 칩이 안 보인다 — 확인하려면 기본 DB(defaultClassRecords 등)를 세션에 넣어 본다.
+- **녹화** `node scripts/qa/runtime/retro2003-skills-gif.mjs --set roster [--batch a1]`(묶음 스킬을 그 배우가 세 명씩 조로, 부활 스킬 조엔 쓰러진 주인공) ·
+  `--set party-pixel [--batch b1]`(9칸 파티원 통상 공격 → `party-<칩>.gif`, windup·attack 칸 노출 판정). 녹화 배우 레벨 = max(22, 로스터 최고 level). 묶음이 비면 「녹화할 항목이 없다」로 멈춘다.
+
 ## 타격감 층 (2026-09-25)
 
 사용자 신고 「게임적인 느낌이 거의 안 든다, 타격감이 없다」. 출하 player 녹화로 원인을 쟀다:
