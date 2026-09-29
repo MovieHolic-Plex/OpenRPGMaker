@@ -114,3 +114,12 @@ p1 은 스킬마다 새 시트 최대 1장이고 나머지 층은 기존 시트(
 - 목록 정본 `r2w3_skills.py` → `python3 r2w3_emit.py p2 p3` 가 `src/assets/retroRosterSkills/p2.ts·p3.ts` 를 쓴다. 공용 모듈 `lib_r2w3.py`.
 - p2 직업별 모듈 `r2w3_<class>.py`(8개). p3 는 새 시트 16장을 `r2w3_p3.py` 한 파일에 두고, 나머지 층은 `reuse()` 로 기존 시트를 읽기만 한다(스킬당 새 시트 ≤ 1, emit 이 검사).
 - 생성 전 묶음 파일의 frame·frames·anchor 가 등록값과 다르면 멈춘다(`check_contract`). 검토판은 `.omo/r2w3/<batch>/`.
+
+## retro2003 로스터 2차 r2w5 — b1(Animal)·b3(Monster1)·b5(Monster3) (2026-09-29)
+
+- 공용 모듈 lib_r2w5.py: 시트는 r2w5_<직업 키>.py 에 @sheet(키, frame, frames, anchor, Pal) 로 등록하고, <키>.py 는 한 장만 만드는 진입점이다.
+  frame·frames·anchor 는 src/assets/retroRosterSkills/b1·b3·b5.ts 에서 읽어 대조하고 다르면 멈춘다.
+- 스킬 표(정본): gen_r2w5_b1_ts.py·gen_r2w5_b3_ts.py·gen_r2w5_b5_ts.py 가 묶음 TS 를 생성한다. 재사용 시트는 PNG 크기와 대조, 새 시트는 스킬당 1장.
+- 실행: python3 scripts/asset-gen/pixel-fx/lib_r2w5.py dog reaper siren (직업 키별 전부 + 무대판) 또는 python3 scripts/asset-gen/pixel-fx/<키>.py
+- 검수판: .omo/r2w5/<묶음>/fx/
+
