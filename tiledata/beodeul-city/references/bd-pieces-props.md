@@ -1,6 +1,6 @@
 # 소품·나무 조각 사전
 
-tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chipset.png`(텍스처 `tex_beodeul_city`, 22784칸, 16px 칸, 한 줄 128칸 — 번호 n 의 칸은 행 n÷128, 열 n%128). 칸 번호는 모두 이 시트의 0기준 번호다. 다른 칩셋 번호를 섞지 않는다.
+tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chipset.png`(텍스처 `tex_beodeul_city`, 23936칸, 16px 칸, 한 줄 128칸 — 번호 n 의 칸은 행 n÷128, 열 n%128). 칸 번호는 모두 이 시트의 0기준 번호다. 다른 칩셋 번호를 섞지 않는다.
 
 소품 규칙의 주인: 가로등은 광장 모서리·큰길 가, 벤치는 분수·우물 옆, 노점·수레는 광장 가장자리, 간판·입간판·진열대는 가게 문 옆(문 앞 2칸 금지), 계선주·그물·생선 궤짝은 부두, 빨래는 집 사이 골목.
 
@@ -11,9 +11,9 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 윗층 배열:
 ```text
 -1 -1
-22730 22731
-8032 8034
-8507 8509
+22963 22964
+8376 8378
+8854 8856
 ```
 
 ### `bd-prop-stall_jug_bottle` — 버들항 소품 노점: 옹기·술병 2×4
@@ -23,9 +23,9 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 윗층 배열:
 ```text
 -1 -1
-22732 22733
-7703 7705
-8507 8509
+22965 22966
+8047 8049
+8854 8856
 ```
 
 ### `bd-prop-stall_herb_flower` — 버들항 소품 노점: 약초·꽃 2×4
@@ -35,9 +35,9 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 윗층 배열:
 ```text
 -1 -1
-22734 22735
-8358 8360
-8507 8509
+22967 22968
+8694 8696
+8854 8856
 ```
 
 ### `bd-prop-flower_cart` — 버들항 소품 꽃 수레 2×2
@@ -46,8 +46,8 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `CC / SS`
 - 윗층 배열:
 ```text
-22736 22737
-22738 22739
+22969 22970
+22971 22972
 ```
 
 ### `bd-prop-veg_cart` — 버들항 소품 채소 손수레 2×2
@@ -56,8 +56,8 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `CC / SS`
 - 윗층 배열:
 ```text
-22740 22741
-22742 22743
+22973 22974
+22975 22976
 ```
 
 ### `bd-prop-crate_apple` — 버들항 소품 과일 상자 1×1
@@ -66,7 +66,7 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `S`
 - 윗층 배열:
 ```text
-8861
+9215
 ```
 
 ### `bd-prop-crate_cabbage` — 버들항 소품 양배추 상자 1×1
@@ -75,7 +75,7 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `S`
 - 윗층 배열:
 ```text
-6057
+6391
 ```
 
 ### `bd-prop-lamp_double` — 버들항 소품 쌍등 가로등 2×3
@@ -84,9 +84,9 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `CC / CC / SS`
 - 윗층 배열:
 ```text
-2315 2317
-2476 2478
-22744 22745
+2535 2537
+2705 2707
+22977 22978
 ```
 
 ### `bd-prop-anchor_display` — 버들항 소품 닻 전시대 2×2
@@ -95,8 +95,8 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `CC / SS`
 - 윗층 배열:
 ```text
-22746 22747
-22748 22749
+22979 22980
+22981 22982
 ```
 
 ### `bd-prop-net_rack` — 버들항 소품 그물 건조대 2×2
@@ -105,8 +105,8 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `CC / SS`
 - 윗층 배열:
 ```text
-12019 12021
-22750 22751
+12607 12609
+22983 22984
 ```
 
 ### `bd-prop-fish_crates` — 버들항 소품 얼음 생선 궤짝 2×1
@@ -115,7 +115,7 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `SS`
 - 윗층 배열:
 ```text
-13396 13398
+13780 13782
 ```
 
 ### `bd-prop-stall_veg` — 버들항 소품 노점: 호박·양배추 3×4
@@ -125,9 +125,9 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 윗층 배열:
 ```text
 -1 -1 -1
-22732 22752 22733
-13031 22753 22754
-8507 13239 8509
+22965 22985 22966
+13517 22986 22987
+8854 13663 8856
 ```
 
 ### `bd-prop-fish_barrel` — 버들항 소품 생선 통 1×1
@@ -136,7 +136,7 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `S`
 - 윗층 배열:
 ```text
-13643
+14030
 ```
 
 ### `bd-prop-mooring_bollard` — 버들항 소품 계선주 1×1
@@ -145,7 +145,7 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `S`
 - 윗층 배열:
 ```text
-15257
+15649
 ```
 
 ### `bd-prop-goods_pile` — 버들항 소품 통·상자·자루 더미 2×2
@@ -154,8 +154,8 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `CC / SS`
 - 윗층 배열:
 ```text
-15136 15137
-22755 22756
+15526 15527
+22988 22989
 ```
 
 ### `bd-prop-bread_rack` — 버들항 소품 빵 진열대 1×2
@@ -164,8 +164,8 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `C / S`
 - 윗층 배열:
 ```text
-22757
-2997
+22990
+3229
 ```
 
 ### `bd-prop-sandwich_board` — 버들항 소품 입간판 (분필) 1×1
@@ -174,7 +174,7 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `S`
 - 윗층 배열:
 ```text
-2995
+3227
 ```
 
 ### `bd-prop-crate_fish` — 버들항 소품 생선 상자 1×1
@@ -183,7 +183,7 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `S`
 - 윗층 배열:
 ```text
-13641
+14028
 ```
 
 ### `bd-prop-cloth_stand` — 버들항 소품 옷감 걸이 2×2
@@ -192,8 +192,8 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `CC / SS`
 - 윗층 배열:
 ```text
-22758 22759
-10599 10601
+22991 22992
+10963 10965
 ```
 
 ### `bd-prop-door_pots` — 버들항 소품 문간 화분 둘 1×1
@@ -202,7 +202,7 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `S`
 - 윗층 배열:
 ```text
-6043
+6374
 ```
 
 ### `bd-prop-table_mugs` — 버들항 소품 주막 탁자 2×2
@@ -211,8 +211,8 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `CC / SS`
 - 윗층 배열:
 ```text
-22760 22761
-22762 22763
+22993 22994
+22995 22996
 ```
 
 ### `bd-prop-parasol_table` — 버들항 소품 파라솔 탁자 2×2
@@ -221,8 +221,8 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `CC / SS`
 - 윗층 배열:
 ```text
-22764 22765
-22766 22767
+22997 22998
+22999 23000
 ```
 
 ### `bd-prop-planter_round` — 버들항 소품 둥근 돌 화분 1×1
@@ -231,7 +231,7 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `S`
 - 윗층 배열:
 ```text
-1467
+1677
 ```
 
 ### `bd-prop-sword_barrel` — 버들항 소품 칼 꽂은 통 1×1
@@ -240,7 +240,7 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `S`
 - 윗층 배열:
 ```text
-2601
+2836
 ```
 
 ### `bd-prop-flowerbox_long` — 버들항 소품 긴 꽃상자 2×1
@@ -249,7 +249,7 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `SS`
 - 윗층 배열:
 ```text
-14518 22768
+14908 23001
 ```
 
 ### `bd-prop-laundry_rack` — 버들항 소품 빨래 건조대 2×2
@@ -258,8 +258,8 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `CC / SS`
 - 윗층 배열:
 ```text
-4624 4626
-4790 4791
+4904 4906
+5078 5079
 ```
 
 ### `bd-prop-lamp_crook` — 버들항 소품 목 굽은 가로등 1×3
@@ -268,9 +268,9 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `C / C / S`
 - 윗층 배열:
 ```text
-22769
-22770
-22771
+23002
+23003
+23004
 ```
 
 ### `bd-prop-tree_planter` — 버들항 소품 화분 속 가로수 2×3
@@ -279,9 +279,9 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `CC / CC / SS`
 - 윗층 배열:
 ```text
-5046 5048
-5354 5356
-5590 5592
+5314 5316
+5633 5635
+5857 5859
 ```
 
 ### `bd-prop-bench_wood` — 버들항 소품 나무 벤치 2×1
@@ -290,7 +290,7 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `SS`
 - 윗층 배열:
 ```text
-2884 2886
+3118 3120
 ```
 
 ### `bd-prop-column_monument` — 버들항 소품 기념 원주 1×4
@@ -299,10 +299,10 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `C / C / C / S`
 - 윗층 배열:
 ```text
-2150
-2307
-2307
-22772
+2368
+2527
+2527
+23005
 ```
 
 ### `bd-prop-statue_sage` — 버들항 소품 현자 석상 2×4
@@ -311,10 +311,10 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `CC / CC / SS / SS`
 - 윗층 배열:
 ```text
-4846 4848
-5050 5052
-5358 5360
-22773 22774
+5135 5137
+5318 5320
+5637 5639
+23006 23007
 ```
 
 ### `bd-prop-well_roofed` — 버들항 소품 돌 우물 (지붕) 2×2
@@ -323,8 +323,8 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `SS / SS`
 - 윗층 배열:
 ```text
-2040 2042
-22775 22776
+2258 2260
+23008 23009
 ```
 
 ### `bd-prop-flowerbed` — 버들항 소품 꽃밭 2×1
@@ -333,7 +333,7 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `SS`
 - 윗층 배열:
 ```text
-22777 22778
+23010 23011
 ```
 
 ### `bd-prop-hedge` — 버들항 소품 다듬은 산울타리 3×2
@@ -342,41 +342,8 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `CCC / SSS`
 - 윗층 배열:
 ```text
-11481 22779 22780
-11625 11627 22781
-```
-
-### `bd-tree-28ad5e` — 버들항 나무 1×3
-버들항 활엽수·덤불·사이프러스(윗부분 그림만, 전 칸 막힘).
-- 배치: 풀밭 위. 길·문 앞 2칸에 두지 않는다. 같은 나무를 한 줄로 늘어세우지 않는다(v6 QA 결함).
-- 역할 `S / S / S`
-- 윗층 배열:
-```text
-8911
-532
-647
-```
-
-### `bd-tree-3e8732` — 버들항 나무 3×3
-버들항 활엽수·덤불·사이프러스(윗부분 그림만, 전 칸 막힘).
-- 배치: 풀밭 위. 길·문 앞 2칸에 두지 않는다. 같은 나무를 한 줄로 늘어세우지 않는다(v6 QA 결함).
-- 역할 `SSS / SSS / SSS`
-- 윗층 배열:
-```text
-363 365 367
-510 512 514
-650 652 654
-```
-
-### `bd-tree-c27062` — 버들항 나무 1×3
-버들항 활엽수·덤불·사이프러스(윗부분 그림만, 전 칸 막힘).
-- 배치: 풀밭 위. 길·문 앞 2칸에 두지 않는다. 같은 나무를 한 줄로 늘어세우지 않는다(v6 QA 결함).
-- 역할 `S / S / S`
-- 윗층 배열:
-```text
-661
-519
-659
+11875 23012 23013
+12067 12069 23014
 ```
 
 ### `bd-tree-eef4bc` — 버들항 나무 1×3
@@ -385,32 +352,89 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `S / S / S`
 - 윗층 배열:
 ```text
-375
-522
-663
+535
+707
+839
 ```
 
-### `bd-tree-b1d104` — 버들항 나무 4×5
+### `bd-tree-03a8f7` — 버들항 나무 3×3
+버들항 활엽수·덤불·사이프러스(윗부분 그림만, 전 칸 막힘).
+- 배치: 풀밭 위. 길·문 앞 2칸에 두지 않는다. 같은 나무를 한 줄로 늘어세우지 않는다(v6 QA 결함).
+- 역할 `SSS / SSS / SSS`
+- 윗층 배열:
+```text
+538 540 542
+695 697 699
+842 844 846
+```
+
+### `bd-tree-28ad5e` — 버들항 나무 1×3
+버들항 활엽수·덤불·사이프러스(윗부분 그림만, 전 칸 막힘).
+- 배치: 풀밭 위. 길·문 앞 2칸에 두지 않는다. 같은 나무를 한 줄로 늘어세우지 않는다(v6 QA 결함).
+- 역할 `S / S / S`
+- 윗층 배열:
+```text
+1937
+704
+851
+```
+
+### `bd-tree-d43edd` — 버들항 나무 4×5
 버들항 활엽수·덤불·사이프러스(윗부분 그림만, 전 칸 막힘).
 - 배치: 풀밭 위. 길·문 앞 2칸에 두지 않는다. 같은 나무를 한 줄로 늘어세우지 않는다(v6 QA 결함).
 - 역할 `SSSS / SSSS / SSSS / SSSS / SSSS`
 - 윗층 배열:
 ```text
-377 379 381 383
-524 526 528 530
-665 667 668 670
-819 821 823 825
-975 977 979 981
+551 553 555 557
+709 711 713 715
+855 857 858 860
+1014 1016 1018 1020
+1171 1173 1175 1177
 ```
 
-### `bd-tree-37f48b` — 버들항 나무 2×2
+### `bd-tree-c27062` — 버들항 나무 1×3
+버들항 활엽수·덤불·사이프러스(윗부분 그림만, 전 칸 막힘).
+- 배치: 풀밭 위. 길·문 앞 2칸에 두지 않는다. 같은 나무를 한 줄로 늘어세우지 않는다(v6 QA 결함).
+- 역할 `S / S / S`
+- 윗층 배열:
+```text
+1179
+717
+862
+```
+
+### `bd-tree-5844f6` — 버들항 나무 4×5
+버들항 활엽수·덤불·사이프러스(윗부분 그림만, 전 칸 막힘).
+- 배치: 풀밭 위. 길·문 앞 2칸에 두지 않는다. 같은 나무를 한 줄로 늘어세우지 않는다(v6 QA 결함).
+- 역할 `SSSS / SSSS / SSSS / SSSS / SSSS`
+- 윗층 배열:
+```text
+562 564 566 568
+720 722 724 726
+865 867 869 871
+1024 1026 1028 1030
+1182 1184 1186 1188
+```
+
+### `bd-tree-3e8732` — 버들항 나무 3×3
+버들항 활엽수·덤불·사이프러스(윗부분 그림만, 전 칸 막힘).
+- 배치: 풀밭 위. 길·문 앞 2칸에 두지 않는다. 같은 나무를 한 줄로 늘어세우지 않는다(v6 QA 결함).
+- 역할 `SSS / SSS / SSS`
+- 윗층 배열:
+```text
+731 733 735
+875 877 879
+1035 1037 1039
+```
+
+### `bd-tree-f4f319` — 버들항 나무 2×2
 버들항 활엽수·덤불·사이프러스(윗부분 그림만, 전 칸 막힘).
 - 배치: 풀밭 위. 길·문 앞 2칸에 두지 않는다. 같은 나무를 한 줄로 늘어세우지 않는다(v6 QA 결함).
 - 역할 `SS / SS`
 - 윗층 배열:
 ```text
-559 561
-694 696
+751 753
+893 895
 ```
 
 ### `bd-tree-e9d9b3` — 버들항 나무 2×2
@@ -419,8 +443,60 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `SS / SS`
 - 윗층 배열:
 ```text
-810 812
-966 968
+1005 1007
+1162 1164
+```
+
+### `bd-tree-37f48b` — 버들항 나무 2×2
+버들항 활엽수·덤불·사이프러스(윗부분 그림만, 전 칸 막힘).
+- 배치: 풀밭 위. 길·문 앞 2칸에 두지 않는다. 같은 나무를 한 줄로 늘어세우지 않는다(v6 QA 결함).
+- 역할 `SS / SS`
+- 윗층 배열:
+```text
+1191 1193
+1329 1331
+```
+
+### `bd-tree-1a786c` — 버들항 나무 3×4
+버들항 활엽수·덤불·사이프러스(윗부분 그림만, 전 칸 막힘).
+- 배치: 풀밭 위. 길·문 앞 2칸에 두지 않는다. 같은 나무를 한 줄로 늘어세우지 않는다(v6 QA 결함).
+- 역할 `SSS / SSS / SSS / SSS`
+- 윗층 배열:
+```text
+1313 1315 1317
+1462 1464 1466
+1600 1763 1765
+1772 1939 1941
+```
+
+### `bd-tree-47e17a` — 버들항 나무 2×2
+버들항 활엽수·덤불·사이프러스(윗부분 그림만, 전 칸 막힘).
+- 배치: 풀밭 위. 길·문 앞 2칸에 두지 않는다. 같은 나무를 한 줄로 늘어세우지 않는다(v6 QA 결함).
+- 역할 `SS / SS`
+- 윗층 배열:
+```text
+1320 1322
+1469 1471
+```
+
+### `bd-tree-d105b2` — 버들항 나무 2×2
+버들항 활엽수·덤불·사이프러스(윗부분 그림만, 전 칸 막힘).
+- 배치: 풀밭 위. 길·문 앞 2칸에 두지 않는다. 같은 나무를 한 줄로 늘어세우지 않는다(v6 QA 결함).
+- 역할 `SS / SS`
+- 윗층 배열:
+```text
+1458 1460
+1596 1598
+```
+
+### `bd-tree-0f7ed1` — 버들항 나무 2×2
+버들항 활엽수·덤불·사이프러스(윗부분 그림만, 전 칸 막힘).
+- 배치: 풀밭 위. 길·문 앞 2칸에 두지 않는다. 같은 나무를 한 줄로 늘어세우지 않는다(v6 QA 결함).
+- 역할 `SS / SS`
+- 윗층 배열:
+```text
+1503 1505
+1665 1666
 ```
 
 ### `bd-tree-d61d7e` — 버들항 나무 3×4
@@ -429,8 +505,87 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 - 역할 `SSS / SSS / SSS / SSS`
 - 윗층 배열:
 ```text
-1112 1114 1116
-1253 1255 1257
-1387 1553 1555
-1563 1724 1726
+2470 2472 2474
+2634 2636 2638
+2786 2787 2789
+2928 2930 2932
+```
+
+### `bd-tree-a80c85` — 버들항 나무 3×3
+버들항 활엽수·덤불·사이프러스(윗부분 그림만, 전 칸 막힘).
+- 배치: 풀밭 위. 길·문 앞 2칸에 두지 않는다. 같은 나무를 한 줄로 늘어세우지 않는다(v6 QA 결함).
+- 역할 `SSS / SSS / SSS`
+- 윗층 배열:
+```text
+2658 2660 2662
+2811 2813 2815
+2952 2954 2956
+```
+
+### `bd-tree-7ecdb8` — 버들항 나무 3×3
+버들항 활엽수·덤불·사이프러스(윗부분 그림만, 전 칸 막힘).
+- 배치: 풀밭 위. 길·문 앞 2칸에 두지 않는다. 같은 나무를 한 줄로 늘어세우지 않는다(v6 QA 결함).
+- 역할 `SSS / SSS / SSS`
+- 윗층 배열:
+```text
+3487 3489 3491
+4194 3865 3866
+4218 4220 4222
+```
+
+### `bd-tree-cc0fcb` — 버들항 나무 2×2
+버들항 활엽수·덤불·사이프러스(윗부분 그림만, 전 칸 막힘).
+- 배치: 풀밭 위. 길·문 앞 2칸에 두지 않는다. 같은 나무를 한 줄로 늘어세우지 않는다(v6 QA 결함).
+- 역할 `SS / SS`
+- 윗층 배열:
+```text
+4189 4191
+4550 4552
+```
+
+### `bd-tree-132848` — 버들항 나무 2×2
+버들항 활엽수·덤불·사이프러스(윗부분 그림만, 전 칸 막힘).
+- 배치: 풀밭 위. 길·문 앞 2칸에 두지 않는다. 같은 나무를 한 줄로 늘어세우지 않는다(v6 QA 결함).
+- 역할 `SS / SS`
+- 윗층 배열:
+```text
+4681 4682
+4854 4856
+```
+
+### `bd-tree-1e09f0` — 버들항 나무 3×4
+버들항 활엽수·덤불·사이프러스(윗부분 그림만, 전 칸 막힘).
+- 배치: 풀밭 위. 길·문 앞 2칸에 두지 않는다. 같은 나무를 한 줄로 늘어세우지 않는다(v6 QA 결함).
+- 역할 `SSS / SSS / SSS / SSS`
+- 윗층 배열:
+```text
+5835 5837 5839
+6212 6214 6216
+15538 15539 15540
+15673 15675 15676
+```
+
+### `bd-tree-bdd36e` — 버들항 나무 3×4
+버들항 활엽수·덤불·사이프러스(윗부분 그림만, 전 칸 막힘).
+- 배치: 풀밭 위. 길·문 앞 2칸에 두지 않는다. 같은 나무를 한 줄로 늘어세우지 않는다(v6 QA 결함).
+- 역할 `SSS / SSS / SSS / SSS`
+- 윗층 배열:
+```text
+8790 8792 8794
+8973 8975 8977
+9144 9145 9147
+9299 9300 9302
+```
+
+### `bd-tree-b1d104` — 버들항 나무 4×5
+버들항 활엽수·덤불·사이프러스(윗부분 그림만, 전 칸 막힘).
+- 배치: 풀밭 위. 길·문 앞 2칸에 두지 않는다. 같은 나무를 한 줄로 늘어세우지 않는다(v6 QA 결함).
+- 역할 `SSSS / SSSS / SSSS / SSSS / SSSS`
+- 윗층 배열:
+```text
+15249 15250 15252 15254
+15420 15422 15424 15426
+15555 15556 15557 15559
+15690 15691 15692 15694
+15998 15999 16000 16001
 ```

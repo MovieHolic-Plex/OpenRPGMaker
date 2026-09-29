@@ -51,7 +51,9 @@ export function ensureBeodeulCityReferences(tileset: TilesetDef): boolean {
 /**
  * A copy cut from an older sheet (another cell count) points at tile numbers that no longer exist, so its cell tables are
  * replaced by the shipped ones (tile tables, groups, autotiles, kits, strips). Same-count copies — including ones whose
- * author added groups or kits — are left alone; the reference documents are handled by ensureBeodeulCityReferences.
+ * author added groups or kits — are left alone. When the cell tables are replaced, the shipped reference categories (same
+ * category id) are replaced too: their cell numbers belong to the old sheet. Authored categories stay; missing shipped ones are
+ * added by ensureBeodeulCityReferences.
  */
 export function ensureBeodeulCityTileset(tileset: TilesetDef): boolean {
   if (tileset.id !== BEODEUL_CITY_ID || tileset.image.type !== "bundled" || tileset.image.id !== BEODEUL_CITY_TEXTURE) return false;
@@ -67,5 +69,9 @@ export function ensureBeodeulCityTileset(tileset: TilesetDef): boolean {
   tileset.animationStrips = fresh.animationStrips;
   tileset.structureKits = fresh.structureKits;
   tileset.autotileGroups = fresh.autotileGroups;
+  if (!tileset.referenceSourceTilesetId && tileset.referenceDocuments?.length) {
+    const shipped = new Map(REFERENCES.map(category => [category.id, category]));
+    tileset.referenceDocuments = tileset.referenceDocuments.map(category => shipped.has(category.id) ? structuredClone(shipped.get(category.id)!) : category);
+  }
   return true;
 }

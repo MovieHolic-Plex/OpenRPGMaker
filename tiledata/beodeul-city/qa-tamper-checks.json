@@ -115,5 +115,151 @@
   "code": "visual-only",
   "tamper": "5× same tree in a row @ (3,57)",
   "detected": []
+ },
+ {
+  "code": "err-layout-door-blocked",
+  "tamper": [
+   {
+    "name": "stamp_object",
+    "args": {
+     "objectId": "kit:beodeul_city/bd-prop-crate_apple",
+     "mapId": "hilltop",
+     "x": 20,
+     "y": 58
+    },
+    "ok": true
+   }
+  ],
+  "detected": {
+   "blockedDoorFronts": [
+    {
+     "kit": "bd-house-h109_0",
+     "front": [
+      20,
+      58
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "code": "err-layout-dead-end",
+  "tamper": [
+   {
+    "name": "fill_region",
+    "args": {
+     "mapId": "hilltop",
+     "rect": {
+      "x": 88,
+      "y": 70,
+      "w": 2,
+      "h": 2
+     },
+     "material": "버들항 길 포석"
+    },
+    "ok": true
+   }
+  ],
+  "detected": {
+   "deadEndStreets": [
+    [
+     88,
+     71
+    ]
+   ]
+  }
+ },
+ {
+  "code": "err-layout-same-row",
+  "tamper": [
+   {
+    "name": "stamp_object",
+    "args": {
+     "objectId": "kit:beodeul_city/bd-house-h113_0",
+     "mapId": "hilltop",
+     "x": 18,
+     "y": 62
+    },
+    "ok": true
+   },
+   {
+    "name": "stamp_object",
+    "args": {
+     "objectId": "kit:beodeul_city/bd-house-h113_0",
+     "mapId": "hilltop",
+     "x": 23,
+     "y": 62
+    },
+    "ok": true
+   },
+   {
+    "name": "stamp_object",
+    "args": {
+     "objectId": "kit:beodeul_city/bd-house-h113_0",
+     "mapId": "hilltop",
+     "x": 28,
+     "y": 62
+    },
+    "ok": true
+   }
+  ],
+  "detected": {
+   "sameKitRepeats": [
+    {
+     "id": "bd-house-h113_0",
+     "at": [
+      18,
+      62
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "code": "err-layout-bridge-missing",
+  "tamper": [
+   {
+    "name": "fill_region",
+    "args": {
+     "mapId": "estuary",
+     "rect": {
+      "x": 38,
+      "y": 60,
+      "w": 8,
+      "h": 5
+     },
+     "material": "물"
+    },
+    "ok": true
+   }
+  ],
+  "detected": {
+   "roadIntoWater": [
+    [
+     46,
+     61
+    ],
+    [
+     37,
+     61
+    ],
+    [
+     38,
+     65
+    ],
+    [
+     44,
+     65
+    ],
+    [
+     38,
+     59
+    ],
+    [
+     44,
+     59
+    ]
+   ]
+  }
  }
 ]

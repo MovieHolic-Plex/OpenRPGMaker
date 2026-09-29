@@ -1,12 +1,13 @@
 # 구역 키트 · 버들항 왕성
 
-tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chipset.png`(텍스처 `tex_beodeul_city`, 22784칸, 16px 칸, 한 줄 128칸 — 번호 n 의 칸은 행 n÷128, 열 n%128). 칸 번호는 모두 이 시트의 0기준 번호다. 다른 칩셋 번호를 섞지 않는다.
+tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chipset.png`(텍스처 `tex_beodeul_city`, 23936칸, 16px 칸, 한 줄 128칸 — 번호 n 의 칸은 행 n÷128, 열 n%128). 칸 번호는 모두 이 시트의 0기준 번호다. 다른 칩셋 번호를 섞지 않는다.
 
 ## 버들항 왕성 — `bd-castle`
 
 버들항 왕성 — 성 바위 위 궁전·원탑 넷·성문루·도개교·해자·말굽 계단(3단 지형) 33×33. 원본 (0,0).
 
-- 찍기: `stamp_object({objectId:'kit:beodeul_city/bd-castle', mapId, x:0, y:0})` (원본 좌표. 다른 맵이면 같은 크기의 풀밭에)
+- 찍기: `stamp_object({objectId:'kit:beodeul_city/bd-castle', mapId, x, y})` — x,y 는 새 도시의 설계대로(원본은 (0,0)). 같은 크기의 평지 풀밭에.
+- 출구 칸: 남 (16,32), (23,32), (24,32)
 - 잇는 법: 맵 북서 구석처럼 뒤가 막힌 높은 땅. 도개교 아래로 길을 잇는다.
 - 그림: `kit-castle`
 
@@ -31,9 +32,9 @@ XCCCFFFCFSSCCCFFFFFCCCSSCCFFFCCCF
 XCCCFFFCFSSCCCFFFCCCCCSSCCFFFCCCF
 XCCCFFSCFSSCCCFFFCCCCCSSCFFFFCCCF
 XCCCFFSSFFFCCCFFFSSCCCFFSXFFFCCCF
-XSSSFFFFFFFSSSXFFFXSSSFFFFFFFSSSS
-XSSSXXXXXXXSSSXFFFXSSSXXXXXXXSSSS
-XSSSXXXXXXXSSSXFFFXSSSXXXXXXXSSSS
+XSSSFFFFFFFSSSXFFFXSSSFFFFFFFSSSF
+XSSSXXXXXXXSSSXFFFXSSSXXXXXXXSSSF
+XSSSXXXXXXXSSSXFFFXSSSXXXXXXXSSSF
 XSSSXXXXXXXSSSXCFCXSSSXXXXXXSSSSC
 SSSSXXXXXXXXXXXCCCXXXXXXXXXXSSSSS
 SSXXXXXXXXXXXXXCCCXXXXXXXXXXXXXXX
@@ -42,7 +43,7 @@ XFFFFFFFSSSSFFFFFFFFFFCCCCFXXXXXX
 XFFFFFFFSSSSFSSFFFSSXXSCCSXXXXXXX
 XXXXXXXFFFFFFSSFFFSSXXSCCSXXXXXXX
 XXXXXXXXXXXXXSSCFCSSXXSCCSXFCCFFF
-XXXXXXXXXXXXXXSCFCSXCCFFFFCCCCSSC
-XFFFFFFXXXXXXXSCFCSXCSSFFFCCSSSSC
-XSFFSSSFFFFFFXSCFCSXSSSFFFSSSSFFS
+XXXXXXXXXXXXXXSCFCSXCCFFFFCCCCSFC
+XFFFFFFXXXXXXXSCFCSXCSSFFFCCSSSFC
+XFFFSSSFFFFFFXSCFCSXSSSFFFSSSSSFS
 ```
