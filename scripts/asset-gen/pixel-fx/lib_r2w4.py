@@ -481,16 +481,16 @@ def class_main(module_name, prefix, chip, keys=None):
 
 
 def main(keys=None):
+    """Rebuild every sheet registered by fx_<class>.py modules (layers that reuse older sheets are skipped)."""
+    for p in sorted(HERE.glob('fx_*.py')):
+        if p.stem != 'fx_edge':
+            importlib.import_module(p.stem)
     bad = 0
-    for key in contract():
+    owned = [k for k in contract() if k in SHEETS]
+    for key in owned:
         if keys and key not in keys:
             continue
-        p = HERE / f'{key}.py'
-        if not p.exists():
-            print(f'--- {key} missing')
-            continue
-        mod = importlib.import_module(key)
-        bad += run(vars(mod))[0].startswith('BAD')
+        bad += run(SHEETS[key])[0].startswith('BAD')
     return bad
 
 
