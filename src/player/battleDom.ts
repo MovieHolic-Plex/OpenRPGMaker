@@ -170,6 +170,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let resultRevealStage = 0;
   let finaleCelebrated: BattleSnapshot["result"] | undefined;
   let sequenceBusy = false;
+  /** 시퀀서가 재생을 시작한 마지막 타임라인 엔트리. 이보다 뒤의 상태 변화는 아직 화면에 오지 않았다. */
+  let playedTimelineSequence = -1;
   /** 입력 커맨드 기술의 프롬프트. 열려 있는 동안 키 입력은 이 판정기로만 간다. */
   let inputPrompt: { press(key: SkillInputKey): void } | undefined;
   let eventSurfaceOpen = false;
@@ -402,6 +404,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       directorState = withFormationBanner(state);
     },
     onTimelineEntry(entry) {
+      playedTimelineSequence = Math.max(playedTimelineSequence, entry.sequence);
       if (retroMotion) retroTimelineEntry(field, entry);
       // 훔치기처럼 결과가 특수 메시지 한 줄뿐인 직업 스킬은 시각 비트가 없다 — 그 메시지에서 연출을 시작한다.
       if (retroMotion && entry.kind === "special" && entry.side === "actor" && pendingRetroSkillId && entry.userRecordId === pendingRetroSkillUserId) {
@@ -1026,6 +1029,23 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     playBattleCue(button.dataset.battleCommandInert === "true" ? "command-cancel" : "command-confirm");
   });
 
+  /** 시퀀서가 아직 재생하지 않은 stateAdded/stateRemoved 를 되돌린 배지 목록(표시 전용). */
+  function pendingStateView(snapshot: BattleSnapshot): ((battlerId: string, stateIds: readonly string[]) => readonly string[]) | undefined {
+    const pending = snapshot.timeline.filter((entry) => entry.sequence > playedTimelineSequence
+      && (entry.kind === "stateAdded" || entry.kind === "stateRemoved") && entry.targetId && entry.stateId);
+    if (pending.length === 0) return undefined;
+    return (battlerId, stateIds) => {
+      let view = [...stateIds];
+      // 뒤에서부터 되감는다 — 같은 상태가 붙었다 풀린 경우에도 재생 전 모습으로 돌아간다.
+      for (const entry of [...pending].reverse()) {
+        if (entry.targetId !== battlerId || !entry.stateId) continue;
+        if (entry.kind === "stateAdded") view = view.filter((id) => id !== entry.stateId);
+        else if (!view.includes(entry.stateId)) view.push(entry.stateId);
+      }
+      return view;
+    };
+  }
+
   function syncView(): void {
     if (destroyed) return;
     const snapshot = options.runtime.snapshot();
@@ -1048,6 +1068,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         : undefined,
       onField: options.onField,
       rollingHp,
+      stateView: sequenceBusy ? pendingStateView(snapshot) : undefined,
     };
     // 결과 화면이 뜨면 미터를 멈춘다 — 이 순간 남은 HP 가 결산 값이다. 패배는 결산하지 않으므로
     // 미터를 실제 HP(0)에 붙인다: 전멸 화면에 굴러가던 HP 와 「쓰러지는 중」이 남지 않게.

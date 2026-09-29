@@ -387,7 +387,8 @@
   justify-self: start;
   flex-wrap: nowrap;
   gap: 2px;
-  max-width: 92px;
+  /* 두 개까지 — 더 많으면 이름 칸을 밀어낸다. 전체 목록은 적 위·aria-label 에 있다. */
+  max-width: 72px;
   overflow: hidden;
 }
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-status-icon {
@@ -395,10 +396,10 @@
   border-radius: 0;
   box-shadow: none;
   font-family: var(--runtime-pixel-font);
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 400;
-  height: 18px;
-  min-width: 28px;
+  height: 20px;
+  min-width: 34px;
   padding: 0 2px;
   box-sizing: border-box;
   text-shadow: 1px 1px 0 #060a30;

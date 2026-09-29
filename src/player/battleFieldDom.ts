@@ -253,6 +253,13 @@ export interface BattleFieldPresentation {
   readonly onField?: OnFieldAnchors;
   /** system.battleRollingHp: 아군 HP 표시가 이 미터를 따라 굴러간다(rollingHp.ts). 없으면 즉시 표시. */
   readonly rollingHp?: RollingHpMeter;
+  /** 연출이 아직 재생하지 않은 상태 부여·해제를 되돌린 상태 목록. 스냅샷은 명령 즉시 해결돼
+   *  「…에 걸렸다!」 비트 전에 배지가 먼저 붙었다(2026-09-29 실측). 없으면 스냅샷 그대로. */
+  readonly stateView?: (battlerId: string, stateIds: readonly string[]) => readonly string[];
+}
+
+function presentedStateIds(battler: BattleBattlerSnapshot, presentation: BattleFieldPresentation | undefined): readonly string[] {
+  return presentation?.stateView ? presentation.stateView(battler.id, battler.stateIds) : battler.stateIds;
 }
 
 /** 롤링 미터가 있으면 아군 HP 표시값과 「쓰러지는 중」 여부를 미터에서 얻는다. */
@@ -366,7 +373,7 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot, pr
     if (partyStatusRowsCarryIcons()) {
       // 이름 셀 안에 넣으면 rm2000 계열의 overflow:hidden + 고정 폭 열에 잘린다(실측:
       // 배지가 2px 조각으로만 보임) — 행의 직계 자식으로 달고 배치는 스킨 CSS 가 한다.
-      syncStatusIcons(row, { ...actor, defeated: presented.defeated });
+      syncStatusIcons(row, { ...actor, defeated: presented.defeated, stateIds: presentedStateIds(actor, presentation) });
     }
     let strictOrder = row.querySelector<HTMLElement>(".battle-strict-order");
     if (snapshot.battleFlow === "strict") {
@@ -548,7 +555,7 @@ function syncActorGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     node.dataset.battlerDefending = String(actor.defending);
     applyBattlerPose(node, presented.pose);
     // KO 배지는 연출 원장(presented)을 따른다 — 스냅샷은 명령 즉시 해결돼 타격 연출 전에 이미 죽어 있다.
-    syncStatusIcons(node, { ...actor, defeated: presented.defeated });
+    syncStatusIcons(node, { ...actor, defeated: presented.defeated, stateIds: presentedStateIds(actor, presentation) });
   }
 }
 
@@ -599,7 +606,7 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
   if (atbBar) atbBar.style.setProperty("--battle-stat", `${clampGauge(enemy.gauge)}%`);
   // KO 배지는 연출 원장(presented)을 따른다 — 스냅샷은 명령 즉시 해결돼 타격 연출 전에 이미 죽어 있다
   // (실측: 불꽃이 닿기 전 「KO 74/144」 가 떴다).
-  syncStatusIcons(node, { ...enemy, defeated: presented.defeated });
+  syncStatusIcons(node, { ...enemy, defeated: presented.defeated, stateIds: presentedStateIds(enemy, presentation) });
 }
 
 /**
