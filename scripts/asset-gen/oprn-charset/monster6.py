@@ -29,6 +29,7 @@ class Cv:
         s.rgb = [None] + [tuple(pal[k]) for k in s.names]
         s.ix = {k: i + 1 for i, k in enumerate(s.names)}
         s.a = np.zeros((h, w), np.int16)
+        s.m = {}                     # 기준점(손·눈·입) 설계 좌표 — 전투 시트 효과가 붙는다
         s.ol = s.ix['ol']
         yy, xx = np.mgrid[0:h, 0:w]
         s.xx, s.yy = (xx - ax + 0.5) / k - 0.5, (yy - ay + 0.5) / k - 0.5     # 설계 좌표(k 배로 찍는다)
@@ -147,7 +148,7 @@ def jag(cv, m, period=3, phase=0, depth=1):
     out = m.copy()
     ys, xs = np.nonzero(m)
     for y, x in zip(ys, xs):
-        if y + 1 < m.shape[0] and not m[y + 1, x] and (x + phase) % period == 0:
+        if y + 1 < m.shape[0] and not m[y + 1, x] and (x - cv.ax + phase) % period == 0:   # 기준점 기준 열(칸이 달라도 같은 술)
             for d in range(1, depth + 1):
                 if y + d < m.shape[0]:
                     out[y + d, x] = True
@@ -185,6 +186,7 @@ def yeti(cv, view, P):
         # 먼 다리·팔
         cv.put(cv.T([(2, -7 + by), (2 + 2 * s, -1 + lift[1])], 4) | cv.E(1 + 2 * s, -1 + lift[1], 2.5, 1), FURB)
         hx, hy = pol(3, -17 + by, aF, 8)
+        cv.m['hF'] = (hx, hy)
         cv.put(cv.T([(3, -17 + by), (hx, hy)], [4, 4]) | cv.D(hx, hy, 2.4), FURB)
         # 몸통 + 머리(한 덩이 털)
         body = cv.E(0, -12 + by, 7, 7) | cv.E(-1, -20 + by + P['head'], 6, 5)
@@ -211,6 +213,7 @@ def yeti(cv, view, P):
         cv.put(cv.T([(-1, -7 + by), (-1 - 2 * s, -1 + lift[0])], 4) | cv.E(-2 - 2 * s, -1 + lift[0], 2.5, 1), FUR)
         # 가까운 팔
         hx, hy = pol(-1, -16 + by, aN, 8)
+        cv.m['hN'] = (hx, hy); cv.m['eye'] = (-5, -21 + hy2); cv.m['mouth'] = (-6, -17 + hy2)
         arm = jag(cv, cv.T([(0, -15 + by), (hx, hy)], [4, 3]), 2, 0, 1)
         cv.put(arm | cv.D(hx, hy, 2), ('fur', 'fur', 'furD'))
         tx, ty = pol(hx, hy, aN, 2.5)
@@ -256,6 +259,7 @@ def line(cv, p0, p1, col):
 def trident(cv, hx, hy, ang, up=11, down=10, col=('gold', 'goldD')):
     """ang: 끝(갈래)이 향하는 각(pol 규약: 180 위, 90 앞)."""
     tx, ty = pol(hx, hy, ang, up)
+    cv.m['tip'] = pol(hx, hy, ang, up + 2)
     bx, by_ = pol(hx, hy, ang + 180, down)
     m = np.zeros((cv.h, cv.w), bool)
     line(cv, (bx, by_), (tx, ty), col[1])
@@ -312,6 +316,7 @@ def merfolk(cv, view, P):
             cv.px([(-3, -19 + hb)], 'skinD')
         # 가까운 팔 + 삼지창
         hx, hy = pol(-1, -17 + by, aN, 5)
+        cv.m['hN'] = (hx, hy); cv.m['eye'] = (-3, -22 + hb); cv.m['mouth'] = (-4, -19 + hb)
         wa = P.get('weap', 180)
         trident(cv, hx, hy, wa, up=P.get('wup', 11), down=P.get('wdn', 10))
         cv.put(cv.T([(-1, -17 + by), (hx, hy)], [3, 2]) | cv.D(hx, hy, 1.2), SK)
@@ -374,6 +379,7 @@ def cyclops(cv, view, P):
         lf = [-1 if s < 0 else 0, -1 if s > 0 else 0]
         cv.put(cv.T([(2, -8 + by), (2 + 2 * s, -2 + lf[1])], 5) | cv.E(1 + 2 * s, -1 + lf[1], 3, 1), SKB)
         hx, hy = pol(3, -18 + by, aF, 9)
+        cv.m['hF'] = (hx, hy)
         cv.put(cv.T([(3, -18 + by), (hx, hy)], [5, 4]) | cv.D(hx, hy, 2.5), SKB)
         # 몸통 · 머리(목 없이 한 덩이)
         cv.put(cv.E(0, -14 + by, 7, 6) | cv.E(-2, -21 + by + P['head'], 5, 5), SK)
@@ -394,6 +400,7 @@ def cyclops(cv, view, P):
         # 가까운 다리 · 팔
         cv.put(cv.T([(-2, -8 + by), (-2 - 2 * s, -2 + lf[0])], 5) | cv.E(-3 - 2 * s, -1 + lf[0], 3, 1), SK)
         hx, hy = pol(-2, -18 + by, aN, 9)
+        cv.m['hN'] = (hx, hy); cv.m['eye'] = (-5, -22 + hb); cv.m['mouth'] = (-6, -18 + hb)
         cv.put(cv.T([(-1, -18 + by), (hx, hy)], [4, 4]) | cv.D(hx, hy, 2.5), ('sk', 'sk', 'skD'))
         cv.px([pol(hx, hy, aN, 1.5), (hx + 1, hy)], 'skD')
     else:
@@ -420,7 +427,7 @@ def cyclops(cv, view, P):
 # ───────────────────────── 3 나방 인간 ─────────────────────────
 MOTHMAN = dict(ol=(40, 28, 40), furL=(236, 226, 206), fur=(184, 164, 144), furD=(122, 102, 92), furDD=(80, 62, 66),
                wingL=(222, 204, 150), wing=(170, 140, 100), wingD=(110, 84, 70), spot=(90, 196, 214), spotD=(40, 110, 150),
-               eyeR=(255, 56, 56), eyeL=(255, 206, 168), dust=(252, 242, 150), dustP=(206, 140, 255))
+               eyeR=(255, 56, 56), eyeL=(255, 206, 168), dust=(252, 242, 150), dustP=(206, 140, 255), dustD=(132, 76, 204))
 
 
 def mothman(cv, view, P):
@@ -460,6 +467,7 @@ def mothman(cv, view, P):
             cv.px([(tip[0] + 1, tip[1] + 1), (tip[0] - 1, tip[1] + 1)], 'furD')
         # 가까운 팔
         hx, hy = pol(-2, -16 + by, aN, 6)
+        cv.m['hN'] = (hx, hy); cv.m['eye'] = (-3, -21 + hb); cv.m['wing'] = (7, -20 + by + w)
         cv.put(cv.T([(-2, -16 + by), (hx, hy)], [2, 2]), ('fur', 'furD', 'furD'))
         cv.px([pol(hx, hy, aN - 30, 1.5), pol(hx, hy, aN + 30, 1.5)], 'furDD')
     else:
@@ -519,6 +527,7 @@ def basilisk(cv, view, P):
         cv.put(cv.T([(0, -8 + by), (-4, -12 + hb)], [5, 4]), SC)
         cv.put(cv.P([(-8, -15 + hb), (-7, -19 + hb), (-6, -16 + hb), (-4, -20 + hb), (-3, -16 + hb), (-1, -18 + hb), (-1, -13 + hb), (-7, -13 + hb)]), CR)
         cv.put(cv.E(-6, -13 + hb, 3.5, 2.8) | cv.E(-9, -12 + hb, 2, 1.8), SC)
+        cv.m['eye'] = (-7, -14 + hb); cv.m['mouth'] = (-11, -11 + hb); cv.m['hN'] = (-10, -11 + hb)
         cv.put(cv.R(-8, -16 + hb, -4, -16 + hb), 'crown', ol=False); cv.px([(-7, -17 + hb), (-5, -17 + hb)], 'crown')
         if P['mouth']:
             cv.put(cv.R(-11, -11 + hb, -6, -11 + hb + P['mouth']), 'crestD', ol=True)
@@ -577,12 +586,14 @@ def djinn(cv, view, P):
         aN, aF = P['aN'], P['aF']
         if aF is not None:
             hx, hy = pol(3, -18 + by, aF, 8)
+            cv.m['hF'] = (hx, hy)
             cv.put(cv.T([(3, -18 + by), (hx, hy)], [4, 3]) | cv.D(hx, hy, 2), ('sk', 'skD', 'skDD'))
         cv.put(cv.E(0, -15 + by, 6, 4.5), SK)
         cv.px([(-3, -16 + by), (-2, -15 + by), (1, -16 + by)], 'skD')
         cv.put(cv.R(-5, -11 + by, 5, -10 + by) & cv.E(0, -11 + by, 6, 2), ('sash', 'sash', 'sash'), ol=False)
         hb = by + P['head']
         cv.put(cv.E(-2, -22 + hb, 3, 3.5), SK)
+        cv.m['eye'] = (-4, -23 + hb); cv.m['mouth'] = (-5, -20 + hb); cv.m['hN'] = (-6, -14 + by); cv.m['lamp'] = (lx - 5, -3)
         cv.put(cv.T([(0, -25 + hb), (2, -27 + hb), (4, -26 + hb)], [3, 2, 1]), ('hair', 'hair', 'hair'))
         cv.put(cv.P([(-5, -20 + hb), (-2, -20 + hb), (-4, -16 + hb)]), ('hair', 'hair', 'hair'))
         cv.px([(1, -21 + hb)], 'gold')
@@ -598,6 +609,7 @@ def djinn(cv, view, P):
             cv.px([(-3, -14 + by), (-3, -13 + by), (-3, -15 + by)], 'gold')
         else:
             hx, hy = pol(-3, -17 + by, aN, 8)
+            cv.m['hN'] = (hx, hy)
             cv.put(cv.T([(-3, -17 + by), (hx, hy)], [4, 3]) | cv.D(hx, hy, 2), SK)
             bx, bb = pol(-3, -17 + by, aN, 6)
             cv.px([(bx, bb), (bx, bb + 1)], 'gold')
@@ -628,7 +640,7 @@ djinn.floats = True
 # ───────────────────────── 6 키메라 ─────────────────────────
 CHIMERA = dict(ol=(42, 24, 20), lionL=(250, 212, 122), lion=(222, 160, 70), lionD=(160, 100, 50), mane=(176, 72, 40),
                maneD=(112, 40, 30), goatL=(242, 242, 232), goat=(188, 186, 178), horn=(120, 98, 88), snake=(98, 176, 92),
-               snakeD=(42, 104, 62), fireL=(255, 242, 142), fire=(255, 122, 40), fireD=(206, 50, 30))
+               snakeD=(42, 104, 62), fireL=(255, 242, 142), fire=(255, 122, 40), fireD=(206, 50, 30), bolt=(176, 150, 255))
 
 
 def chimera(cv, view, P):
@@ -643,6 +655,7 @@ def chimera(cv, view, P):
         cv.put(cv.T([(8, -9 + by), (10, -12 + by), (10, -16 + by + sh), (9, -18 + by + sh)], [3, 3, 3, 3]), SN)
         cv.put(cv.E(8, -19 + by + sh, 2, 1.3), SN)
         cv.px([(7, -20 + by + sh)], 'fireL')
+        cv.m['snake'] = (5, -19 + by + sh)
         if P['mouth']:
             cv.px([(5, -19 + by + sh), (6, -19 + by + sh)], 'fireD')
         # 몸
@@ -655,10 +668,12 @@ def chimera(cv, view, P):
         cv.put(cv.E(2, -18 + gh, 2.5, 2), GT)
         cv.put(cv.T([(3, -20 + gh), (5, -22 + gh), (7, -21 + gh), (7, -19 + gh)], [2, 2, 1, 1]), ('horn', 'horn', 'horn'))
         cv.px([(1, -19 + gh)], 'ol'); cv.px([(0, -16 + gh), (0, -15 + gh)], 'goat')
+        cv.m['goat'] = (0, -17 + gh)
         # 사자 머리
         hb = by + P['head']
         cv.put(jag(cv, cv.E(-5, -13 + hb, 5, 5), 2, 0, 1), MN)
         cv.put(cv.E(-7, -12 + hb, 3, 3), LI)
+        cv.m['mouth'] = (-10, -10 + hb); cv.m['eye'] = (-8, -14 + hb); cv.m['hN'] = (-10, -10 + hb)
         cv.put(cv.E(-9, -11 + hb, 1.5, 1.5), ('lionL', 'lionL', 'lion'), ol=False)
         cv.px([(-10, -12 + hb)], 'ol')
         if P['eye'] == 1:
@@ -739,6 +754,7 @@ def dark_angel(cv, view, P):
             cv.px([(-3, -21 + hb)], 'light' if P['eye'] == 2 else 'eye')
         cv.px([(-3, -19 + hb)], 'skinD')
         hx, hy = pol(-1, -17 + by, aN, 6)
+        cv.m['hN'] = pol(hx, hy, aN, 1.5); cv.m['eye'] = (-3, -21 + hb); cv.m['halo'] = (1, -26 + hb)
         cv.put(cv.T([(-1, -17 + by), (hx, hy)], [3, 3]), RB)
         cv.put(cv.D(*pol(hx, hy, aN, 1), 1.1), ('skin', 'skin', 'skinD'))
     else:
