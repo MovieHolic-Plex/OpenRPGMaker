@@ -1185,6 +1185,9 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0, count = 4): HTMLElem
       node.dataset.pixelParty = pixelParty.motion;
       node.dataset.pixelEnemyCell = String(pixelParty.cell);
       node.style.setProperty("--party-pixel-box", `${pixelParty.cell * 2}px`);
+      // 64px 셀(화면 128px) 파티원은 사람 도트(96px)보다 반폭이 16px 넓다 — 오른쪽 사선 열 끝(x 294)에서 무대 밖으로 잘렸다
+      // (범선·비공정 녹화 실측). 넓어진 반폭만큼 왼쪽으로 당긴다(RM 논리 px = 화면 px / 2).
+      if (pixelParty.cell > 48) positionBattleNode(node, ap.x - (pixelParty.cell - 48) / 2, ap.y);
       node.append(partyPixelSprite(actor.name, pixelParty));
       applyBattlerPose(node, actor.pose);
       node.append(statusIconCluster(actor));
