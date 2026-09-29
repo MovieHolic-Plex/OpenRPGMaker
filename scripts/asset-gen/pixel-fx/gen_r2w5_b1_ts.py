@@ -40,55 +40,56 @@ CLASSES = [
         ('flame_crow', '불꽃 울음', 16, 'cast', '불타는 울음소리가 적진을 휩쓴다', ['rooster_flame_crow:at:64:10']),
         ('sunrise', '일출', 22, 'finisher', '떠오르는 태양과 함께 우는 필살기', ['rooster_sunrise_sky:s:128:12', 'rooster_sunrise_hit:at:64:8']),
     ]),
+    # 양~사자: 새 시트는 동물당 2장(스킬당 최대 1장), 나머지 층은 기존 pixel-fx 시트를 재사용한다.
     ('sheep', 'animal-3', 48, 'dash', 240, [
-        ('ram', '박치기', 1, 'dash-strike', '뿔 달린 머리로 힘껏 들이받는다', ['sheep_ram:t:64:8']),
-        ('wool_guard', '털 방어', 3, 'buff', '두툼한 털을 부풀려 방어를 단단히 한다', ['sheep_wool_guard:u:64:10']),
-        ('count', '양 세기', 5, 'cast', '울타리를 넘는 양의 환영으로 적을 재운다', ['sheep_count:t:64:12']),
-        ('wool_ball', '털뭉치 투척', 7, 'shoot', '뭉친 털을 던져 푹신하게 터뜨린다', ['sheep_wool_ball:p:32:4', 'sheep_wool_hit:t:64:8']),
-        ('baa', '매에에', 10, 'cast', '귀를 찢는 울음으로 적 전체를 어지럽힌다', ['sheep_baa:at:64:8']),
-        ('roll', '털공 구르기', 12, 'spin', '몸을 말아 굴러 적진을 짓누른다', ['sheep_roll:at:64:10']),
-        ('cloud', '구름 이불', 16, 'cast', '포근한 구름이 아군 전체를 치유한다', ['sheep_cloud:aa:64:10']),
-        ('dream', '꿈나라 행진', 22, 'finisher', '무수한 양이 꿈의 하늘을 가로지르는 필살기', ['sheep_dream_sky:s:128:12', 'sheep_dream_hit:at:64:8']),
+        ('ram', '박치기', 1, 'dash-strike', '뿔 달린 머리로 힘껏 들이받는다', ['guard_bash:t:64:8']),
+        ('wool_guard', '털 방어', 3, 'buff', '두툼한 털을 부풀려 방어를 단단히 한다', ['sheep_wool:u:64:10']),
+        ('count', '양 세기', 5, 'cast', '졸음이 쏟아지는 주문으로 적을 재운다', ['sleep:t:64:8']),
+        ('wool_ball', '털뭉치 투척', 7, 'shoot', '뭉친 털을 던져 연기처럼 터뜨려 눈을 가린다', ['scout_bomb:p:32:4', 'scout_smoke:t:64:10']),
+        ('baa', '매에에', 10, 'cast', '귀를 찢는 울음으로 적 전체를 어지럽힌다', ['mon_screech_ring:at:64:8']),
+        ('roll', '털공 구르기', 12, 'spin', '몸을 말아 굴러 적진을 짓누른다', ['hero_whirl:at:64:10']),
+        ('cloud', '구름 이불', 16, 'cast', '포근한 빛이 아군 전체를 치유한다', ['cleric_mass_heal:aa:64:10']),
+        ('dream', '꿈나라 행진', 22, 'finisher', '무수한 양이 꿈의 하늘을 가로지르는 필살기', ['sheep_dream_sky:s:128:12', 'sleep:at:64:8']),
     ]),
     ('cow', 'animal-4', 64, 'stomp', 320, [
-        ('gore', '뿔 받기', 1, 'dash-strike', '뿔로 받아 적을 들어 올린다', ['cow_gore:t:64:8']),
+        ('gore', '뿔 받기', 1, 'dash-strike', '뿔을 앞세워 돌진해 적을 밀쳐낸다', ['guard_charge:t:64:8']),
         ('milk', '신선한 우유', 3, 'cast', '갓 짠 우유가 튀어 아군 하나를 치유한다', ['cow_milk:t:64:10']),
-        ('ruminate', '되새김 휴식', 5, 'buff', '느긋이 되새김하며 방어를 굳힌다', ['cow_ruminate:u:64:10']),
-        ('stomp', '발굽 짓밟기', 7, 'leap-strike', '육중한 발굽으로 땅을 굴러 적을 짓밟는다', ['cow_stomp:at:64:10']),
-        ('milk_jet', '우유 물총', 10, 'shoot', '우유를 세차게 뿜어 적을 밀어낸다', ['cow_jet:p:32:4', 'cow_jet_hit:t:64:8']),
-        ('tail_whip', '꼬리 채찍', 12, 'spin', '굵은 꼬리를 휘둘러 적진을 후려친다', ['cow_tail:at:64:8']),
-        ('pasture', '푸른 목장', 16, 'cast', '들꽃 핀 목장의 기운이 아군 전체를 치유한다', ['cow_pasture:aa:64:12']),
-        ('stampede', '대돌진', 22, 'finisher', '뿔 달린 무리가 흙먼지를 일으키며 쓸어버리는 필살기', ['cow_stampede_sky:s:128:12', 'cow_stampede_hit:at:64:8']),
+        ('ruminate', '되새김 휴식', 5, 'buff', '느긋이 되새김하며 체력을 되찾는다', ['monk_meditate:u:64:10']),
+        ('stomp', '발굽 짓밟기', 7, 'leap-strike', '육중한 몸으로 뛰어 땅을 굴러 모든 적을 흔든다', ['guard_quake:at:64:10']),
+        ('bell', '워낭 소리', 10, 'cast', '목의 워낭을 울린 음파로 적을 친다', ['bard_sonic_wave:p:32:4', 'bard_sonic_hit:t:64:8']),
+        ('tail_whip', '꼬리 채찍', 12, 'spin', '굵은 꼬리를 휘둘러 적진을 후려친다', ['monk_whirl_kick:at:64:10']),
+        ('pasture', '푸른 목장', 16, 'cast', '풀내음 바람이 아군 전체를 치유한다', ['ranger_leaves:aa:64:10']),
+        ('stampede', '대돌진', 22, 'finisher', '소 떼가 흙먼지를 일으키며 쓸어버리는 필살기', ['cow_stampede_sky:s:128:12', 'guard_fortress_slam:at:64:8']),
     ]),
     ('horse', 'animal-5', 64, 'dash', 170, [
-        ('charge', '질주 박치기', 1, 'dash-strike', '전속력으로 달려 가슴으로 들이받는다', ['horse_charge:t:64:8']),
-        ('kick', '뒷발 걷어차기', 3, 'leap-strike', '뛰어올라 두 뒷발로 걷어찬다', ['horse_kick:t:64:8']),
-        ('gallop', '질풍 갈기', 5, 'buff', '바람을 가르는 기세로 몸놀림이 빨라진다', ['horse_gallop:u:64:8']),
-        ('neigh', '전장의 울음', 7, 'cast', '길게 우는 소리가 아군의 사기를 북돋는다', ['horse_neigh:aa:64:10']),
-        ('trample', '발굽 연타', 10, 'flurry', '앞발굽으로 쉴 새 없이 짓밟는다', ['horse_trample:t:64:8']),
-        ('whirl', '회전 질주', 12, 'spin', '적진을 빙글 돌며 발굽으로 쓸어낸다', ['horse_whirl:at:64:10']),
-        ('thunder_mane', '뇌운 갈기', 16, 'cast', '번개를 두른 갈기가 적 전체를 내리친다', ['horse_thunder_mane:at:64:8']),
-        ('pegasus', '천마 강림', 22, 'finisher', '빛의 날개를 편 천마가 하늘에서 내달리는 필살기', ['horse_pegasus_sky:s:128:12', 'horse_pegasus_hit:at:64:8']),
+        ('charge', '질주 박치기', 1, 'dash-strike', '전속력으로 달려 가슴으로 들이받는다', ['guard_charge:t:64:8', 'hero_dust:u:64:6']),
+        ('kick', '뒷발 걷어차기', 3, 'leap-strike', '뛰어올라 두 뒷발로 걷어찬다', ['horse_hoof:t:64:8']),
+        ('gallop', '질풍 갈기', 5, 'buff', '잔상을 남기는 기세로 몸놀림이 빨라진다', ['scout_afterimage:u:64:8']),
+        ('neigh', '전장의 울음', 7, 'buff', '길게 우는 소리가 아군의 사기를 북돋는다', ['hero_warcry:u:128:10']),
+        ('trample', '발굽 연타', 10, 'flurry', '앞발굽으로 쉴 새 없이 짓밟는다', ['monk_fist_flurry:t:64:10']),
+        ('whirl', '회전 질주', 12, 'spin', '적진을 빙글 돌며 바람으로 쓸어낸다', ['samurai_wind_hit:at:64:8']),
+        ('thunder_mane', '뇌운 갈기', 16, 'cast', '번개를 두른 갈기가 적 전체를 내리친다', ['samurai_thunder_hit:at:64:8']),
+        ('pegasus', '천마 강림', 22, 'finisher', '빛의 날개를 편 천마가 하늘에서 내달리는 필살기', ['horse_pegasus_sky:s:128:12', 'cleric_judgment_hit:at:64:8']),
     ]),
     ('tiger', 'animal-6', 64, 'dash', 170, [
         ('claw', '발톱 베기', 1, 'dash-strike', '굵은 발톱으로 세 줄기를 그으며 벤다', ['tiger_claw:t:64:8']),
-        ('roar', '맹수의 포효', 3, 'cast', '포효의 충격파가 적 전체를 움츠러들게 한다', ['tiger_roar:at:64:8']),
-        ('instinct', '사냥 본능', 5, 'buff', '줄무늬가 타오르며 공격 본능이 깨어난다', ['tiger_instinct:u:64:10']),
-        ('fang', '송곳니 물기', 7, 'flurry', '송곳니로 물고 놓지 않아 거듭 문다', ['tiger_fang:t:64:9']),
-        ('pounce', '매복 덮치기', 10, 'leap-strike', '몸을 낮췄다 튀어올라 온몸으로 덮친다', ['tiger_pounce:t:64:10']),
-        ('whirl', '회전 발톱', 12, 'spin', '몸을 비틀어 회전하며 발톱으로 적진을 벤다', ['tiger_whirl:at:64:10']),
-        ('bolt', '백호 뇌격', 16, 'shoot', '줄무늬 번개 덩어리를 쏘아 보낸다', ['tiger_bolt:p:32:4', 'tiger_bolt_hit:t:64:8']),
-        ('king', '호왕 강림', 22, 'finisher', '거대한 호랑이 혼이 포효하며 적진을 찢는 필살기', ['tiger_king_sky:s:128:12', 'tiger_king_hit:at:64:8']),
+        ('roar', '맹수의 포효', 3, 'cast', '포효의 충격파가 적 전체를 움츠러들게 한다', ['mon_roar_ring:at:64:8']),
+        ('instinct', '사냥 본능', 5, 'buff', '줄무늬가 타오르며 공격 본능이 깨어난다', ['hero_flame_aura:u:64:6']),
+        ('fang', '송곳니 물기', 7, 'flurry', '송곳니로 물고 놓지 않아 거듭 문다', ['mon_fang_bite:t:64:8']),
+        ('pounce', '매복 덮치기', 10, 'leap-strike', '몸을 낮췄다 튀어올라 온몸으로 덮친다', ['hero_meteor_impact:t:128:10']),
+        ('whirl', '회전 발톱', 12, 'spin', '몸을 비틀어 회전하며 적진을 벤다', ['hero_whirl:at:64:10']),
+        ('bolt', '백호 뇌격', 16, 'shoot', '포효와 함께 번개 검풍을 쏘아 보낸다', ['samurai_wind_wave:p:32:4', 'samurai_thunder_hit:t:64:8']),
+        ('king', '호왕 강림', 22, 'finisher', '거대한 호랑이 혼이 포효하며 적진을 찢는 필살기', ['tiger_king_sky:s:128:12', 'tiger_claw:at:64:8']),
     ]),
     ('lion', 'animal-7', 64, 'dash', 180, [
         ('swipe', '발톱 후려치기', 1, 'dash-strike', '황금빛 앞발로 힘껏 후려친다', ['lion_swipe:t:64:8']),
-        ('roar', '왕의 포효', 3, 'cast', '왕의 포효가 적 전체를 얼어붙게 한다', ['lion_roar:at:64:10']),
-        ('mane', '갈기 곤두세우기', 5, 'buff', '갈기를 불꽃처럼 세워 위엄을 높인다', ['lion_mane:u:64:10']),
-        ('maul', '물어 흔들기', 7, 'flurry', '덥석 물고 사납게 흔들어 뜯는다', ['lion_maul:t:64:8']),
-        ('pounce', '사냥 도약', 10, 'leap-strike', '멀리서 도약해 앞발로 짓누른다', ['lion_pounce:t:64:10']),
-        ('sun_slash', '태양 발톱', 12, 'shoot', '초승달 모양 황금 검기를 날려 보낸다', ['lion_sunwave:p:32:4', 'lion_sunwave_hit:t:64:8']),
-        ('pride', '무리의 호령', 16, 'buff', '무리를 이끄는 호령으로 아군 전체가 힘을 얻는다', ['lion_pride:aa:64:10']),
-        ('king', '백수의 왕', 22, 'finisher', '태양 관을 쓴 사자왕이 나타나는 필살기', ['lion_king_sky:s:128:12', 'lion_king_hit:at:64:8']),
+        ('roar', '왕의 포효', 3, 'cast', '땅을 울리는 포효가 적 전체를 얼어붙게 한다', ['guard_quake_ring:s:128:8']),
+        ('mane', '갈기 곤두세우기', 5, 'buff', '황금 갈기를 세워 몸을 단단하게 한다', ['monk_iron_body:u:64:10']),
+        ('maul', '물어 흔들기', 7, 'flurry', '덥석 물고 사납게 흔들어 뜯는다', ['mon_devour_jaws:t:64:10']),
+        ('pounce', '사냥 도약', 10, 'leap-strike', '멀리서 도약해 앞발로 짓누른다', ['monk_earth_palm:t:128:10']),
+        ('sun_breath', '태양 숨결', 12, 'shoot', '황금 불덩이를 토해 적을 태운다', ['mage_fireball_orb:p:32:4', 'mage_fire_burst:t:64:10']),
+        ('pride', '무리의 호령', 16, 'buff', '무리를 이끄는 호령으로 아군 전체가 힘을 얻는다', ['cleric_blessing:aa:64:10']),
+        ('king', '백수의 왕', 22, 'finisher', '태양 관을 쓴 사자왕이 나타나는 필살기', ['lion_king_sky:s:128:12', 'lion_swipe:at:64:8']),
     ]),
 ]
 LEVELS = [1, 3, 5, 7, 10, 12, 16, 22]
@@ -124,6 +125,18 @@ def main():
     lines.append('  ]')
     lines.append('};')
     (ROOT / 'src/assets/retroRosterSkills/b1.ts').write_text('\n'.join(lines) + '\n', encoding='utf8')
+    from PIL import Image
+    fx = ROOT / 'public/assets/generated/pixel-fx'
+    for c in CLASSES:
+        for s_ in c[5]:
+            for L in s_[5]:
+                k, a, fr, nn = L.split(':')
+                png = fx / f'{k}.png'
+                if png.exists():
+                    w, h = Image.open(png).size
+                    assert (w, h) == (int(fr) * int(nn), int(fr)), (k, (w, h), fr, nn)
+                else:
+                    print('  새 시트(아직 없음):', k)
     n = sum(len(c[5]) for c in CLASSES)
     keys = {L.split(':')[0] for c in CLASSES for s in c[5] for L in s[5]}
     print('skills', n, 'fx sheets', len(keys))
