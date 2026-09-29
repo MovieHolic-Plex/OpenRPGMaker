@@ -102,10 +102,19 @@ export function retroSkillRecipe(skill: Pick<SkillRecord, "id" | "name" | "eleme
 
 export function retroSkillForEntry(entry: BattleTimelineEntrySnapshot | undefined): RetroSkillRecipe | undefined {
   if (!entry || entry.side !== "actor" || entry.commandKind !== "skill") return undefined;
-  // Timeline currently carries skillName, not skillId. Don't guess between duplicate authored names.
+  // Timeline currently carries skillName, not skillId — 이름이 겹치면 skillByName 이 시전자 기준으로 가른다.
   // 몬스터 스킬(skill_mon_*)은 아군 후보에서 뺀다 — 「독침」「연막탄」은 아군 스킬과 이름이 같다.
-  const matches = store.getCurrent().database.skills.filter((skill) => skill.name === entry.skillName && !retroMonsterSkill(skill.id));
-  return matches.length === 1 ? retroSkillRecipe(matches[0]) : undefined;
+  const record = skillByName(entry.skillName, false, entry.userRecordId);
+  return record ? retroSkillRecipe(record) : undefined;
+}
+
+/** 전투 엔트리가 쓴 스킬 레코드. 이름만 실려 오므로 겹치면 시전자가 가진 쪽 → 편에 맞는 쪽 → 첫 일치. */
+export function battleEntrySkillRecord(entry: BattleTimelineEntrySnapshot | undefined): SkillRecord | undefined {
+  if (!entry?.skillName) return undefined;
+  const all = store.getCurrent().database.skills.filter((skill) => skill.name === entry.skillName);
+  if (all.length <= 1) return all[0];
+  const enemy = entry.side === "enemy";
+  return skillByName(entry.skillName, enemy, entry.userRecordId) ?? skillByName(entry.skillName, !enemy, entry.userRecordId) ?? all[0];
 }
 
 const entries = new WeakMap<HTMLElement, BattleTimelineEntrySnapshot>();
@@ -264,15 +273,47 @@ export function retroClassSkillRecord(skill: Pick<SkillRecord, "id"> | undefined
   return skill ? retroClassSkill(skill.id) : undefined;
 }
 
-function skillByName(name: string | undefined, monster = false): SkillRecord | undefined {
+interface SkillOwner {
+  readonly id: string;
+  readonly classId?: string;
+  readonly skillIds?: readonly string[];
+  readonly learnedSkills?: readonly { readonly skillId?: string }[];
+  readonly actions?: readonly { readonly skillId?: string }[];
+}
+
+/** 시전자(배우·그 직업·적)가 가진 스킬 id. 전투 엔트리는 스킬 이름만 싣기 때문에 이름이 겹칠 때 이것으로 가른다. */
+function ownedSkillIds(userRecordId: string | undefined): ReadonlySet<string> {
+  const ids = new Set<string>();
+  if (!userRecordId) return ids;
+  const database = store.getCurrent().database as unknown as Record<string, readonly SkillOwner[] | undefined>;
+  const add = (owner: SkillOwner | undefined) => {
+    owner?.skillIds?.forEach((id) => ids.add(id));
+    owner?.learnedSkills?.forEach((row) => row.skillId && ids.add(row.skillId));
+    owner?.actions?.forEach((row) => row.skillId && ids.add(row.skillId));
+  };
+  const actor = database.actors?.find((row) => row.id === userRecordId);
+  add(actor);
+  if (actor?.classId) add(database.classes?.find((row) => row.id === actor.classId));
+  add(database.enemies?.find((row) => row.id === userRecordId));
+  return ids;
+}
+
+function skillByName(name: string | undefined, monster = false, userRecordId?: string): SkillRecord | undefined {
   // 이름이 겹치는 몬스터 스킬(독침·연막탄)이 있어 편별로 후보를 나눈다.
   const matches = store.getCurrent().database.skills.filter((skill) => skill.name === name && Boolean(retroMonsterSkill(skill.id)) === monster);
-  return matches.length === 1 ? matches[0] : undefined;
+  if (matches.length <= 1) return matches[0];
+  // 같은 편 안에서도 이름이 겹친다(2차 로스터: 정찰병·도적의 「연막탄」, 레인저·총사의 「저격」 등 31쌍).
+  // 시전자가 가진 쪽, 없으면 계약 배우가 시전자인 쪽.
+  const owned = ownedSkillIds(userRecordId);
+  const mine = matches.filter((skill) => owned.has(skill.id));
+  if (mine.length === 1) return mine[0];
+  const contracted = matches.filter((skill) => retroClassSkill(skill.id)?.actorId === userRecordId);
+  return contracted.length === 1 ? contracted[0] : undefined;
 }
 
 function classEntry(entry: BattleTimelineEntrySnapshot | undefined): { skill: RetroClassSkill; record: SkillRecord } | undefined {
   if (!entry || entry.side !== "actor" || entry.commandKind !== "skill" || !VISUAL_KINDS.has(entry.kind)) return undefined;
-  const record = skillByName(entry.skillName);
+  const record = skillByName(entry.skillName, false, entry.userRecordId);
   const skill = retroClassSkillRecord(record);
   return skill && record ? { skill, record } : undefined;
 }
@@ -280,7 +321,7 @@ function classEntry(entry: BattleTimelineEntrySnapshot | undefined): { skill: Re
 /** 적의 몬스터 스킬 엔트리. */
 function monsterEntry(entry: BattleTimelineEntrySnapshot | undefined): { skill: PlayableSkill; record: SkillRecord } | undefined {
   if (!entry || entry.side !== "enemy" || entry.commandKind !== "enemySkill" || !VISUAL_KINDS.has(entry.kind)) return undefined;
-  const record = skillByName(entry.skillName, true);
+  const record = skillByName(entry.skillName, true, entry.userRecordId);
   const skill = record ? retroMonsterSkill(record.id) : undefined;
   return skill && record ? { skill, record } : undefined;
 }

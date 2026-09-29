@@ -1,4 +1,4 @@
-import { animateRetroSkillFx, clearRetroSkillFx, driveRetroClassSkill, isRetroClassSkillActor, preloadRetroClassSkillFx, preloadRetroSkillFx, retroSkillForEntry, setRetroSkillEntry, type RetroSkillRecipe } from "@/player/retroSkillChoreography";
+import { animateRetroSkillFx, battleEntrySkillRecord, clearRetroSkillFx, driveRetroClassSkill, isRetroClassSkillActor, preloadRetroClassSkillFx, preloadRetroSkillFx, retroSkillForEntry, setRetroSkillEntry, type RetroSkillRecipe } from "@/player/retroSkillChoreography";
 import { CAST_TYPES, EXTENDED_POSE_FRAME, castTypeForSkill, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
 import type { PixelEnemyCell } from "@/assets/pixelEnemySheets";
 import { store } from "@/project/store";
@@ -123,7 +123,7 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
       && visualKinds.has(item.kind) && (item.userRecordId === beat.userId || item.userId === beat.userId));
     if (entry) cursors.set(field, entry.sequence);
     const skill = entry?.commandKind === "skill"
-      ? store.getCurrent().database.skills.find((row) => row.name === entry.skillName) : undefined;
+      ? battleEntrySkillRecord(entry) : undefined;
     const recipe = user.classList.contains("battle-actor") ? retroSkillForEntry(entry) : undefined;
     if (recipe) { actorRecipes.set(user, recipe); user.dataset.retroSkill = recipe.fx; }
     else { actorRecipes.delete(user); delete user.dataset.retroSkill; }
@@ -638,7 +638,7 @@ function isMeleeEntry(entry: BattleTimelineEntrySnapshot): boolean {
   if (entry.commandKind !== "skill") return false;
   const recipe = retroSkillForEntry(entry);
   if (recipe) return recipe.approach !== "still";
-  const skill = store.getCurrent().database.skills.find((row) => row.name === entry.skillName);
+  const skill = battleEntrySkillRecord(entry);
   return skill?.effect.kind === "damage" && skill.effect.statistic === "attack";
 }
 
@@ -766,7 +766,7 @@ function isEnemyMeleeEntry(entry: BattleTimelineEntrySnapshot): boolean {
   if (entry.side !== "enemy") return false;
   if (entry.commandKind === "enemyAttack") return true;
   if (entry.commandKind !== "enemySkill") return false;
-  const skill = store.getCurrent().database.skills.find((row) => row.name === entry.skillName);
+  const skill = battleEntrySkillRecord(entry);
   return skill?.effect.kind === "damage" && skill.effect.statistic === "attack";
 }
 
