@@ -1,0 +1,309 @@
+{
+ "deadEnds": [
+  {
+   "at": [
+    20,
+    4
+   ],
+   "kind": "cell",
+   "width": 1
+  },
+  {
+   "at": [
+    36,
+    5
+   ],
+   "kind": "cell",
+   "width": 1
+  },
+  {
+   "at": [
+    20,
+    8
+   ],
+   "kind": "cell",
+   "width": 1
+  },
+  {
+   "at": [
+    23,
+    8
+   ],
+   "kind": "cell",
+   "width": 1
+  },
+  {
+   "at": [
+    36,
+    11
+   ],
+   "kind": "cell",
+   "width": 1
+  },
+  {
+   "at": [
+    20,
+    12
+   ],
+   "kind": "cell",
+   "width": 1
+  },
+  {
+   "at": [
+    17,
+    90
+   ],
+   "kind": "cell",
+   "width": 1
+  },
+  {
+   "at": [
+    36,
+    8
+   ],
+   "kind": "street",
+   "width": 2
+  },
+  {
+   "at": [
+    23,
+    10
+   ],
+   "kind": "street",
+   "width": 2
+  },
+  {
+   "at": [
+    61,
+    12
+   ],
+   "kind": "street",
+   "width": 2
+  },
+  {
+   "at": [
+    15,
+    21
+   ],
+   "kind": "street",
+   "width": 2
+  },
+  {
+   "at": [
+    67,
+    49
+   ],
+   "kind": "street",
+   "width": 2
+  }
+ ],
+ "lines": {
+  "count": 109,
+  "longStraight": [
+   {
+    "orient": "h",
+    "from": [
+     0,
+     33
+    ],
+    "to": [
+     54,
+     33
+    ],
+    "len": 55
+   },
+   {
+    "orient": "h",
+    "from": [
+     0,
+     81
+    ],
+    "to": [
+     54,
+     81
+    ],
+    "len": 55
+   },
+   {
+    "orient": "v",
+    "from": [
+     15,
+     32
+    ],
+    "to": [
+     15,
+     99
+    ],
+    "len": 68
+   },
+   {
+    "orient": "v",
+    "from": [
+     39,
+     0
+    ],
+    "to": [
+     39,
+     84
+    ],
+    "len": 85
+   },
+   {
+    "orient": "v",
+    "from": [
+     40,
+     0
+    ],
+    "to": [
+     40,
+     44
+    ],
+    "len": 45
+   },
+   {
+    "orient": "v",
+    "from": [
+     60,
+     0
+    ],
+    "to": [
+     60,
+     85
+    ],
+    "len": 86
+   },
+   {
+    "orient": "v",
+    "from": [
+     84,
+     33
+    ],
+    "to": [
+     84,
+     84
+    ],
+    "len": 52
+   }
+  ],
+  "longestLen": 86
+ },
+ "graph": {
+  "meanDepth": 1.96,
+  "maxDepth": 4,
+  "components": 2,
+  "isolated": [
+   {
+    "from": [
+     60,
+     0
+    ],
+    "to": [
+     60,
+     85
+    ],
+    "len": 86
+   }
+  ]
+ },
+ "spacing": {
+  "vGaps": [
+   7,
+   15,
+   23,
+   24
+  ],
+  "hGaps": [
+   5,
+   10,
+   18,
+   15,
+   15
+  ],
+  "cv": 0.42
+ },
+ "bentStreetCells": 61,
+ "canal": {
+  "cells": 1211,
+  "orient": "v",
+  "bends": 0,
+  "straightShare": 0.986,
+  "straight": true
+ },
+ "nodes": [
+  {
+   "at": [
+    70,
+    15
+   ],
+   "cells": 102
+  },
+  {
+   "at": [
+    9,
+    15
+   ],
+   "cells": 92
+  },
+  {
+   "at": [
+    30,
+    15
+   ],
+   "cells": 56
+  },
+  {
+   "at": [
+    89,
+    16
+   ],
+   "cells": 31
+  },
+  {
+   "at": [
+    48,
+    43
+   ],
+   "cells": 182
+  },
+  {
+   "at": [
+    75,
+    46
+   ],
+   "cells": 35
+  },
+  {
+   "at": [
+    6,
+    52
+   ],
+   "cells": 80
+  },
+  {
+   "at": [
+    27,
+    58
+   ],
+   "cells": 260
+  },
+  {
+   "at": [
+    93,
+    77
+   ],
+   "cells": 112
+  }
+ ],
+ "landmarks": [
+  "bd-castle",
+  "bd-estate",
+  "bd-forum",
+  "bd-windmill"
+ ],
+ "blocks": {
+  "count": 20,
+  "distinct": 18,
+  "neighbourRepeats": [],
+  "overused": []
+ }
+}
