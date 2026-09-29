@@ -92,7 +92,10 @@ export function enemyActionDirectorState(entry: BattleActionResultSnapshot, snap
     : entry.amount > 0
       ? effect?.resource === "mp"
         ? `${targetName}의 MP가 ${entry.amount} ${effect.healing ? "회복" : "감소"}했다!`
-        : `${withJosa(targetName, "이(가)")} ${entry.amount} 피해를 입었다!${entry.critical ? " 급소다!" : ""}`
+        // HP 회복 엔트리(흡수 등)는 피해 문장으로 읽히면 안 된다 — 팝업은 초록 +N 인데 문장이 「피해를 입었다」였다(실측 2026-09-29).
+        : effect?.healing
+          ? `${withJosa(targetName, "이(가)")} ${entry.amount} 회복했다!`
+          : `${withJosa(targetName, "이(가)")} ${entry.amount} 피해를 입었다!${entry.critical ? " 급소다!" : ""}`
       : "효과가 충분하지 않았다.";
   return {
     step: "acting",

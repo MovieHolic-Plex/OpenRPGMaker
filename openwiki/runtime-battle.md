@@ -212,8 +212,8 @@
 설명 낱말로 추측한 것. 이제 계약 `RetroClassSkill.mechanic`(선택, 어휘·**직업 설계 규칙**은 `src/assets/retroSkillMechanics.ts` 머리 주석)이 있으면
 `applyRetroSkillMechanic`(retroRosterRecords.ts)이 유도 레코드 위에 덮는다 — 적힌 필드가 우선, 나머지(위력·MP·연출)는 유도 그대로. 없으면 예전 유도.
 
-- 엔진 확장: `SkillRecord.hpCostPercent`(시전 시 최대 HP N% 대가, 1 밑으로 안 깎음, 타임라인 「<기술> 대가」 damage) ·
-  `drainPercent`(준 피해 N% 회복, affects mp 면 MP, 「<기술> 흡수」 healing). runtime.ts `paySkillHpCost`/`applySkillDrain`(gen1 경로 제외).
+- 엔진 확장: `SkillRecord.hpCostPercent`(시전 시 최대 HP N% 대가, 1 밑으로 안 깎음, 시전자 자신 대상 damage 엔트리) ·
+  `drainPercent`(준 피해 N% 회복, affects mp 면 MP, 자신 대상 healing 엔트리, 메시지 「○○이(가) N 회복했다!」). runtime.ts `paySkillHpCost`/`applySkillDrain`(gen1 경로 제외).
   편집기 전투 규칙 카드에 숫자 칸 둘(`feature16-hp-cost`·`feature16-drain`).
 - 기본 DB 상태 8종 추가: state_blind(accuracyModifier 50 — **통상 공격만** 본다) · state_stop(freezesGauge+restrictsAction, 2턴부터 50%) ·
   state_protect/shell(물리/마법 방어 1.5배) · state_berserk(attackRandom, 공 1.5배) · state_petrify(incapacitates) · state_wet(번개 A·불 D) · state_oiled(불 A).

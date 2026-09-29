@@ -4,7 +4,7 @@
 
 `SkillRecord.hpCostPercent?`(0~100, 시전자 최대 HP 의 N% 를 잃는다, HP 1 밑으로는 안 깎음)와 `drainPercent?`(0~100, 준 피해의 N% 회복,
 affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는 바이트 그대로. `normalizeSkillRecord` 화이트리스트(0 초과만 남김)·
-`updateSkillRecord` 패치 키 목록에 있다. 전투는 타임라인 엔트리(skillName 「… 대가」/「… 흡수」)를 남겨 숫자가 뜬다. 상세는 runtime-battle.md 「스킬 기믹 명시화」.
+`updateSkillRecord` 패치 키 목록에 있다. 전투는 시전자 자신을 대상으로 한 타임라인 엔트리(대가 damage·흡수 healing)를 남겨 숫자가 뜬다. 상세는 runtime-battle.md 「스킬 기믹 명시화」.
 
 ## 데스크톱 시작 화면 — 런처형 (2026-09-27)
 

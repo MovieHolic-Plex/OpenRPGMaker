@@ -2417,7 +2417,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       hit: true,
       amount: beforeHp - user.hp,
       critical: false,
-      skillName: `${skill.name} 대가`,
+      skillName: skill.name,
     });
   }
 
@@ -2446,7 +2446,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       hit: true,
       amount: healed,
       critical: false,
-      skillName: `${skill.name} 흡수`,
+      skillName: skill.name,
       resource: affects,
     });
   }
