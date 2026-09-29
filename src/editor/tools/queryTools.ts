@@ -34,6 +34,7 @@ import { lintTilesetPalettes } from "@/editor/lint/tilesetPaletteLint";
 import { verifyPlacedTiles } from "@/project/lint/postTileVerify";
 import { passageMarkForTile } from "@/project/tilesetPassage";
 import { requireMap } from "./mapHelpers";
+import { analyzeCityForm, cityFormAdvice } from "./cityForm";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { COORD_SCHEMA } from "./schemaShapes";
 import { validateArgs } from "./jsonSchema";
@@ -697,6 +698,26 @@ const checkReachabilityTool: ToolDefinition = {
   },
 };
 
+const checkCityFormTool: ToolDefinition = {
+  name: "check_city_form",
+  description:
+    "도시 맵 마감 전 자기 점검. 막다른 길(좌표), 45칸 넘는 곧은 길, 곧은 운하, 같은 블록 이웃·3회 이상 반복(좌표), 길망에서 떨어진 길, 광장(결절점)·랜드마크 수를 한 번에 돌려준다. " +
+    "advice 의 좌표를 고친 뒤 다시 부르고, 비면 끝낸다. 마을·도시 맵에서 완료를 말하기 전에 반드시 한 번 부른다.",
+  mode: "read",
+  parameters: { type: "object", properties: { mapId: { type: "string" } }, required: ["mapId"] },
+  run(project, args): ToolExecResult {
+    const map = requireMap(project, args.mapId as string);
+    const r = analyzeCityForm(project, map);
+    const advice = cityFormAdvice(r);
+    const short = {
+      deadEnds: r.deadEnds.length, longStraight: r.lines.longStraight.length, canalStraight: r.canal.orient ? r.canal.straight : null,
+      neighbourRepeats: r.blocks.neighbourRepeats.length, overused: r.blocks.overused.length, isolatedLines: r.graph.isolated.length,
+      nodes: r.nodes.length, landmarks: r.landmarks.length, meanDepth: r.graph.meanDepth, bentStreetCells: r.bentStreetCells, spacingCv: r.spacing.cv,
+    };
+    return { summary: advice.length ? `도시 형태 고칠 곳 ${advice.length}건` : "도시 형태 이상 없음", data: { ok: advice.length === 0, counts: short, advice } };
+  },
+};
+
 const findLayoutRegionsTool: ToolDefinition = {
   name: "find_layout_regions",
   description:
@@ -843,6 +864,7 @@ export const QUERY_TOOLS: readonly ToolDefinition[] = [
   getDatabaseRecords,
   runLint,
   checkReachabilityTool,
+  checkCityFormTool,
   listProjectCommits,
   findLayoutRegionsTool,
 ];

@@ -5,6 +5,7 @@
 //   defects      막다른 포장길, 물에 닿아 끝나는 길, 막힌 문 앞, 같은 조각 일렬(3 이상), 통행 없는 빈 포장
 import type { GameMap, Project, StructureKitDef, TilesetDef } from "../../../src/project/types.ts";
 import { canMove } from "../../../src/project/collision.ts";
+import { analyzeCityForm } from "../../../src/editor/tools/cityForm.ts";
 
 export interface Stamp { objectId: string; x: number; y: number }
 export const CANON_ORIGIN: Record<string, [number, number]> = {
@@ -126,7 +127,7 @@ export function analyzeBeodeul(project: Project, mapId: string, stamps: Stamp[],
   const uses: Record<string, number> = {}; for (const b of blocks) uses[b.id] = (uses[b.id] ?? 0) + 1;
   const blockRepeats = { blocks: blocks.length, distinct: Object.keys(uses).length, neighbourRepeats, overused: Object.entries(uses).filter(([, n]) => n > 2).map(([id, n]) => ({ id, n })) };
   return {
-    emptiness, blockRepeats,
+    emptiness, blockRepeats, cityForm: analyzeCityForm(project, map),
     originality: canon ? { sameCells: same, ofCells: W * H, sameShare: +(same / (W * H)).toFixed(4), sameShareOfObjectCells: nonEmpty ? +(sameNonEmpty / nonEmpty).toFixed(4) : 0 } : null,
     districts, districtsPresent: districts.filter((d) => d.present).length, districtsAtOriginalOrigin: districts.filter((d) => d.atOriginalOrigin).length,
     stampedKits: kitStamps.length, doors: doors.length, landReach, streetReach,
