@@ -77,10 +77,10 @@ POSES['attack'].update(dx=0, dy=-1, tilt=-4, hdx=1, hdy=0, hang=-8, mouth=2, tai
 POSES['recover'].update(dx=-3, tilt=-2, hdx=-1, hdy=0, hang=4, mouth=0, tail=14, mane=0, feet=[(5, 0), (-3, 0), (0, 0), (-6, 1)])
 POSES['hit'].update(dx=-4, dy=-1, tilt=-8, hdx=-3, hdy=-2, hang=-14, mouth=2, eye='c', tail=50, mane=-1, feet=[(-1, 0), (-6, 0), (2, 1), (-7, 2)])
 SPEC = dict(
-    cell=CELL, pal=PAL, cx=30, stand=13, hip=(0, 3.4), hip_fore=(9.6, 3.4), hip_rear=(-10.5, 3.4),
-    leg_fore=(7.2, 7.2, 3.6, 2.8, 2.2), leg_hind=(7.4, 7.4, 4.6, 3.0, 2.2),
+    cell=CELL, pal=PAL, cx=30, stand=16.5, hip=(0, 3.4), hip_fore=(9, 3.4), hip_rear=(-9.8, 3.4),
+    leg_fore=(8.8, 8.8, 3.4, 2.6, 2.1), leg_hind=(9.0, 9.0, 4.4, 2.9, 2.1),
     foot_dx_fore=0, foot_dx_hind=0, far=('s', 'd'), near=('b', 's'),
-    body=[(0, 0, 14.2, 7.2, 0), (9.6, 0.8, 7.4, 7.0, 0), (-10, 0.8, 7.4, 7.2, 0)],
+    body=[(0, 0, 13.0, 7.2, 0), (9.0, 0.8, 7.2, 7.0, 0), (-9.4, 0.8, 7.2, 7.2, 0)],
     light_c=(0, 0), light_r=15, foot=foot, pre=pre, body_detail=body_detail, head=head,
     out_k=0.55, dead_pose=dict(flat=0.7, head_abs=(20, 8), hang=10), poses=POSES,
 )

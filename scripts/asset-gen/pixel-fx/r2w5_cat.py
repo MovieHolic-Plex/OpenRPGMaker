@@ -192,7 +192,7 @@ P_HISS = Pal(O=['#14061e'], G=['#1e7a48', '#4ed078', '#c0ffcc'], F=['#2a1438', '
 def cat_hiss(c, f):
     O, G, F, W = P_HISS.O[0], P_HISS.G, P_HISS.F, P_HISS.W
     cx, cy = 32, 30
-    grow = [.5, .8, 1, 1.05, 1.05, 1.0, .9, .8][f]
+    grow = [.5, .8, 1, 1.08, 1.14, 1.04, .9, .8][f]
     # 털을 곤두세운 고양이 얼굴 유령(정면): 삼각 귀, 갈라진 눈, 쩍 벌린 입, 송곳니
     def face(cc, col, rim, k):
         cc.disc(cx, cy, 17 * k, rim, 14 * k)
@@ -212,7 +212,7 @@ def cat_hiss(c, f):
         c.disc(ex, ey, 3 * grow, G[2], 2.4 * grow)
         c.rect(ex - 0.5, ey - 3 * grow, ex + 0.5, ey + 3 * grow, O)
     # 입: 쩍 벌림 + 송곳니
-    mh = [2, 5, 8, 9, 9, 8, 6, 4][f]
+    mh = [2, 5, 8, 9, 10, 8, 6, 4][f]
     c.disc(cx, cy + 8 * grow, 7 * grow, O, max(1, mh * .7))
     for sx in (-1, 1):
         tooth(c, cx + sx * 4.5 * grow, cy + 7 * grow, 4.5, math.pi / 2, 1.6, W[0], O)

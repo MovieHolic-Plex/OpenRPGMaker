@@ -18,7 +18,7 @@ def foot(p, fp, front, far, lift):
 
 
 def pre(p, R):
-    t0 = R.pt(-11, -1)
+    t0 = R.pt(-12, -1)
     tt = ax(t0, 200 + R.pose.get('tail', 0), 2.5)
     blob(p, tt[0], tt[1], 2.6, 2.3, 0, keys={'l': 'l', 'b': 'b', 's': 's'})
 
@@ -49,7 +49,7 @@ def head(p, R):
         tf = ax(hc, ang, -0.2, -4.0)
         blob(p, tf[0], tf[1], 3.2, 2.4, ang, keys={'l': 'l', 'b': 'b', 's': 's'})
     std_head(p, R, dict(
-        rest=(11.8, -2.4), skull=(4.6, 4.1), tk=0.5,
+        rest=(13.2, -2.6), skull=(5.0, 4.4), tk=0.5,
         ears=[(True, -2, -3.4, -160, 3.4, 1.2, 'F', None), (False, -1.6, -2.6, 170, 4.2, 1.5, 'f', None)],
         muzzle=(4.6, 1.5, 3.0, 2.6, {'l': 'f', 'b': 'f', 's': 'F'}),
         nose=(8.4, 0.6, 'o', 2), eye=(1.8, -1.2, 'e'), eyec='e', eyehi=None,
@@ -71,10 +71,10 @@ POSES['attack'].update(dx=0, dy=1, tilt=8, hdx=4, hdy=4, hang=32, mouth=0, feet=
 POSES['recover'].update(dx=-2, tilt=-2, hdx=0, hdy=1, hang=6, mouth=0, feet=[(3, 0), (-2, 0), (0, 0), (-4, 1)])
 POSES['hit'].update(dx=-3, dy=-1, tilt=-7, hdx=-2, hdy=-1, hang=-16, mouth=0, eye='c', feet=[(-1, 0), (-4, 0), (1, 1), (-5, 2)])
 SPEC = dict(
-    cell=CELL, pal=PAL, cx=21, stand=8.2, hip=(0, 4.6), hip_fore=(6, 4.6), hip_rear=(-6, 4.6),
+    cell=CELL, pal=PAL, cx=21, stand=8.8, hip=(0, 4.8), hip_fore=(6.4, 4.8), hip_rear=(-6.4, 4.8),
     leg_fore=(3.8, 3.8, 1.2, 1.0, 0.9), leg_hind=(3.8, 3.8, 1.3, 1.1, 0.9),
     foot_dx_fore=0, foot_dx_hind=0, far=('F', 'F'), near=('F', 'f'),
-    body=[(0, 0.5, 8.6, 7.2, 0), (-5.4, -0.8, 5.4, 6.4, 0), (5.4, -0.6, 5.4, 6.4, 0), (0, -3.8, 7.2, 5.0, 0), (-7, 2.6, 3.8, 4.4, 0), (7, 2.8, 3.8, 4.4, 0)],
+    body=[(0, 0.5, 9.6, 8.0, 0), (-6.0, -0.8, 6.0, 7.1, 0), (6.0, -0.6, 6.0, 7.1, 0), (0, -4.2, 8.0, 5.6, 0), (-7.8, 2.8, 4.2, 4.8, 0), (7.8, 3.0, 4.2, 4.8, 0)],
     light_c=(0, 0), light_r=11, foot=foot, pre=pre, body_detail=body_detail, head=head,
     dead_pose=dict(flat=0.75, head_abs=(11, 5), hang=14), poses=POSES,
 )

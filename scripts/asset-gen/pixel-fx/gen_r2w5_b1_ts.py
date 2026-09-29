@@ -38,7 +38,7 @@ CLASSES = [
         ('egg', '달걀 폭탄', 10, 'shoot', '갓 낳은 달걀을 던져 노른자를 터뜨린다', ['rooster_egg:p:32:4', 'rooster_egg_burst:t:64:8']),
         ('comb', '붉은 볏 세우기', 12, 'buff', '볏을 활활 세워 투지를 불태운다', ['rooster_comb:u:64:10']),
         ('flame_crow', '불꽃 울음', 16, 'cast', '불타는 울음소리가 적진을 휩쓴다', ['rooster_flame_crow:at:64:10']),
-        ('sunrise', '일출', 22, 'finisher', '떠오르는 태양과 함께 우는 필살기', ['rooster_sunrise:s:128:12', 'rooster_sunrise_hit:at:64:8']),
+        ('sunrise', '일출', 22, 'finisher', '떠오르는 태양과 함께 우는 필살기', ['rooster_sunrise_sky:s:128:12', 'rooster_sunrise_hit:at:64:8']),
     ]),
     ('sheep', 'animal-3', 48, 'dash', 240, [
         ('ram', '박치기', 1, 'dash-strike', '뿔 달린 머리로 힘껏 들이받는다', ['sheep_ram:t:64:8']),
