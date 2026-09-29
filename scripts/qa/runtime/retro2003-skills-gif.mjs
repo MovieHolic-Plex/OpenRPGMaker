@@ -32,7 +32,7 @@ process.env.VITE_CACHE_DIR ??= resolve('.omo/retro-skills/vite-cache');
 const run = promisify(execFile);
 const LEGACY = ['sword_slash','focus','arcane_bolt','heal','sleep_mist','weaken','poison_sting','fire','ice','thunder','earth','wind','dark','holy','water','leaf','throwing_knife'].map((name) => 'skill_' + name);
 const report = { set: values.set, reduced: values.reduced, clips: [], errors: [], evidence: [] };
-let server, browser;
+let server, browser, topLevel = 22;
 const selector = (id) => '[data-testid="' + id + '"]';
 
 try {
@@ -54,7 +54,7 @@ try {
     const skillRows = m.defaultSkillRecords();
     const revives = (id) => Boolean(skillRows.find((row) => row.id === id)?.stateEffects?.some((e) => e.stateId === 'state_death' && e.operation === 'remove'));
     return {
-      roster: rs.RETRO_ROSTER_SKILLS.map((s) => ({ id: s.id, actorId: s.actorId, motion: s.motion, layers: s.layers.map((l) => l.key), batch: rr.retroRosterClass(s.classId)?.batch, revive: revives(s.id) })),
+      roster: rs.RETRO_ROSTER_SKILLS.map((s) => ({ id: s.id, actorId: s.actorId, motion: s.motion, level: s.level, layers: s.layers.map((l) => l.key), batch: rr.retroRosterClass(s.classId)?.batch, revive: revives(s.id) })),
       partyPixel: rs.RETRO_PARTY_PIXEL_SHEETS.map((x) => { const row = rr.RETRO_ROSTER.find((r) => r.chip === x.chip); return { chip: x.chip, cell: x.cell, motion: x.motion, actorId: row ? actorOf(row.classId) : undefined, batch: row?.batch }; }), skills: m.defaultSkillRecords(), battleAnimations: m.defaultBattleAnimationRecords(), states: m.defaultStateRecords(), classes: c.defaultClassRecords(),
       actors: party.actors, equipment: party.equipment,
       contract: k.RETRO_CLASS_SKILLS.map((s, index) => ({ id: s.id, actorId: s.actorId, motion: s.motion, layers: s.layers.map((l) => l.key), extension: index >= 48 })) };
@@ -70,7 +70,9 @@ try {
       : values.set === 'party-pixel' ? attackRows.map((row) => row.id)
         : defaults.contract.filter((row) => values.set === 'class' || (values.set === 'new') === row.extension).map((row) => row.id);
   if (all.length === 0) throw new Error('녹화할 항목이 없다(--set ' + values.set + (values.batch ? ' --batch ' + values.batch : '') + ') — 묶음 파일이 비었거나 시트 규격이 등록되지 않았다.');
-  const wanted = values.skills ? values.skills.split(',').map((id) => id.startsWith('skill_') ? id : 'skill_' + id) : all;
+  const wanted = values.skills ? values.skills.split(',').map((id) => id.startsWith('skill_') || id.startsWith('attack:') ? id : values.set === 'party-pixel' ? 'attack:' + id : 'skill_' + id) : all;
+  // 녹화 배우 레벨: 계약 최고 습득 레벨(22)과 로스터 묶음의 최고 레벨 중 큰 값.
+  topLevel = Math.max(22, ...rosterRows.map((row) => row.level ?? 0));
   if (wanted.some((id) => !all.includes(id))) throw new Error('Unknown --skills id');
   const chunkGroups = () => {
     // 배우별로 스킬을 모아 세 명씩 조로 묶는다. 부활 스킬이 있는 조에는 쓰러진 주인공을 하나 곁들인다.
@@ -158,7 +160,7 @@ async function recordGroup(groupIndex, group, defaults, contract) {
       if (job.parameterCurves?.maxHp) job.parameterCurves.maxHp = job.parameterCurves.maxHp.map(() => 999);
     }
     for (const actor of project.database.actors) {
-      actor.initialLevel = 22; // 계약 최고 습득 레벨
+      actor.initialLevel = topLevel; // 계약·로스터 최고 습득 레벨
       if (values.set === 'legacy') actor.learnedSkills = LEGACY.map((skillId) => ({ level: 1, skillId }));
       if (actor.parameterCurves) {
         actor.parameterCurves.maxMp = actor.parameterCurves.maxMp.map(() => 999);
