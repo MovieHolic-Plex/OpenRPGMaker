@@ -137,3 +137,13 @@ People5-3~5-7 다섯 직업(무녀·사막 전사·메이드·은자·노병)의
 공용 모듈은 p4 와 같은 `lib_r2w4.py` (계약: `src/assets/retroRosterSkills/p5.ts`, 스킬당 새 시트 최대 1장,
 나머지 층은 기존 시트 재사용). `python3 fx_<class>.py` 로 그 직업 시트와 확인판(`.omo/r2w4/p5/`)을 다시 만든다.
 투사체(ofuda·plate·flask)는 머리가 왼쪽. screen 128 층은 `fade_oval` 로 둥글게 끝난다.
+
+## 묶음 m6 (OPRN 자체 Monster6 — 전설의 괴수 8명)
+
+예티·인어 전사·사이클롭스·나방 인간·바실리스크·지니·키메라·타락 천사의 새 시트 20장(키 접두 yeti_ · merfolk_ · cyclops_ ·
+mothman_ · basilisk_ · djinn_ · chimera_ · dark_angel_). 시트마다 <키>.py 하나, 공용 모듈 lib_nm6.py
+(팔레트 색인 칸·도형·Bayer 디더, 마무리 fade_oval/fade_edges, 검사, 확인판 .omo/nm6/fx/).
+스킬 표 64개는 gen_m6_ts.py 가 src/assets/retroRosterSkills/m6.ts 로 쓴다 — 재사용 레이어의 anchor·frame·frames 는
+기존 정의에서 읽어 오고, 스킬당 새 시트 최대 1장·레이어 PNG 크기를 검사한다. 투사체 3장은 머리가 왼쪽.
+걷기 칩은 scripts/asset-gen/oprn-charset/monster6.py, 전투 15칸은 scripts/asset-gen/party-pixel/monster6-<i>.py + pp15_nm6.py
+(칩 함수를 같은 배율로 다시 불러 대기 칸 = 칩 왼쪽 서 있는 칸).
