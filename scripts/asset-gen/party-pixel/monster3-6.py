@@ -1,5 +1,5 @@
-"""monster3-6 업화(파티원) — 셀 64, 15칸. 붉은 불꽃 덩어리에 검은 얼굴 무늬. 칩 가운데 열의 옆 보기(행 1 = 오른쪽)를 좌우로 뒤집어 왼쪽을 보게 한다. 떠서 일렁인다(dead 만 바닥).
-공용 엔진 pp15_pp5.Poser: 걷기 칩 왼쪽 보기 칸을 Scale2x 로 정수 2배 한 몸이 대기 칸이고, 나머지 칸은 부위를 옮겨 만든다."""
+"""monster3-6 업화(파티원) — 셀 48, 15칸. 붉은 불꽃 덩어리에 검은 얼굴 무늬. 칩 가운데 열의 옆 보기(행 1 = 오른쪽)를 좌우로 뒤집어 왼쪽을 보게 한다. 떠서 일렁인다(dead 만 바닥).
+공용 엔진 pp15_pp5.Poser: 걷기 칩 왼쪽 보기 칸을 확대 없이(칩 × 1) 대기 칸 몸으로 쓰고, 나머지 칸은 부위를 옮겨 만든다."""
 import math, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -30,7 +30,7 @@ def fx(R, d, J):
 
 
 S = dict(
-    name='monster3-6', chip=6, cell=64, row=1, col=1, mirror=True, ground=False, oy=-6, breath_y=23,
+    name='monster3-6', chip=6, cell=48, row=1, col=1, mirror=True, ground=False, oy=-6, breath_y=23,
     parts=[
         ('head', [(0, 14), (9, 14), (9, 30), (0, 30)], (8, 22)),
         ('back', [(14, 14), (24, 14), (24, 31), (14, 31)], (15, 23)),

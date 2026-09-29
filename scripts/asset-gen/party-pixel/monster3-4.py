@@ -1,5 +1,5 @@
-"""monster3-4 개미귀신(파티원) — 셀 64, 15칸. 갈색 흙더미·푸른 밧줄, 아래쪽에 분홍 입과 초록 눈. 칩의 풀 장식(초록)과 흩날린 모래는 떼어 낸다. 바닥에 묻혀 있다.
-공용 엔진 pp15_pp5.Poser: 걷기 칩 왼쪽 보기 칸을 Scale2x 로 정수 2배 한 몸이 대기 칸이고, 나머지 칸은 부위를 옮겨 만든다."""
+"""monster3-4 개미귀신(파티원) — 셀 48, 15칸. 갈색 흙더미·푸른 밧줄, 아래쪽에 분홍 입과 초록 눈. 칩의 풀 장식(초록)과 흩날린 모래는 떼어 낸다. 바닥에 묻혀 있다.
+공용 엔진 pp15_pp5.Poser: 걷기 칩 왼쪽 보기 칸을 확대 없이(칩 × 1) 대기 칸 몸으로 쓰고, 나머지 칸은 부위를 옮겨 만든다."""
 import math, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -65,7 +65,7 @@ def fx(R, d, J):
 
 
 S = dict(
-    name='monster3-4', chip=4, cell=64, breath_y=16, clean=clean, dead='slump',
+    name='monster3-4', chip=4, cell=48, breath_y=16, clean=clean, dead='slump',
     parts=[
         ('head', [(6.5, 21.5), (18.5, 21.5), (18.5, 29), (6.5, 29)], (12, 22)),
         ('back', [(5, 3), (19, 3), (19, 9.5), (5, 9.5)], (12, 9)),
@@ -75,7 +75,7 @@ S = dict(
     fx=fx,
     poses={
         'idle_b': dict(br=1, back=(0, 1, 0)),
-        'idle_c': dict(br=2, back=(0, 1, 4), head=(0, 0, 0)),
+        'idle_c': dict(br=3, back=(0, 2, 8), head=(0, 0, 0)),
         'windup': dict(g=(2, 0, 3), br=3, head=(1, -1, 0), back=(0, 2, 6)),
         'move': dict(g=(-5, 0, -4), br=1, head=(-1, 0, 0), back=(0, 0, -6)),
         'attack': dict(g=(-7, 0, -5), br=-2, head=(-4, 1, -10), back=(1, -1, -8), fx='impact'),

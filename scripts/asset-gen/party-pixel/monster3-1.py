@@ -1,5 +1,5 @@
-"""monster3-1 라미아(파티원) — 셀 64, 15칸. 청록 비늘·주황 무늬 뱀 몸이 똬리를 튼 모습(칩 그대로). 머리(왼쪽 앞)가 튀어나가 휘감고 독을 뿜는다. 바닥에 붙는다.
-공용 엔진 pp15_pp5.Poser: 걷기 칩 왼쪽 보기 칸을 Scale2x 로 정수 2배 한 몸이 대기 칸이고, 나머지 칸은 부위를 옮겨 만든다."""
+"""monster3-1 라미아(파티원) — 셀 48, 15칸. 청록 비늘·주황 무늬 뱀 몸이 똬리를 튼 모습(칩 그대로). 머리(왼쪽 앞)가 튀어나가 휘감고 독을 뿜는다. 바닥에 붙는다.
+공용 엔진 pp15_pp5.Poser: 걷기 칩 왼쪽 보기 칸을 확대 없이(칩 × 1) 대기 칸 몸으로 쓰고, 나머지 칸은 부위를 옮겨 만든다."""
 import math, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -22,7 +22,7 @@ def fx(R, d, J):
 
 
 S = dict(
-    name='monster3-1', chip=1, cell=64, breath_y=14, dead='slump',
+    name='monster3-1', chip=1, cell=48, breath_y=14, dead='slump',
     parts=[
         ('head', [(0, 7.5), (11, 7.5), (11, 25), (0, 25)], (9, 22)),
         ('back', [(12, 0), (24, 0), (24, 12.5), (12, 12.5)], (14, 11)),

@@ -1,5 +1,5 @@
-"""monster3-7 마장군(파티원) — 셀 64, 15칸. 검은 갑옷·푸른 피부·붉은 뿔, 금 장식, 보랏빛 대검(뒤 손, 칼끝이 아래). 바닥에 선다. 대검은 손잡이 피벗으로 돈다.
-공용 엔진 pp15_pp5.Poser: 걷기 칩 왼쪽 보기 칸을 Scale2x 로 정수 2배 한 몸이 대기 칸이고, 나머지 칸은 부위를 옮겨 만든다."""
+"""monster3-7 마장군(파티원) — 셀 48, 15칸. 검은 갑옷·푸른 피부·붉은 뿔, 금 장식, 보랏빛 대검(뒤 손, 칼끝이 아래). 바닥에 선다. 대검은 손잡이 피벗으로 돈다.
+공용 엔진 pp15_pp5.Poser: 걷기 칩 왼쪽 보기 칸을 확대 없이(칩 × 1) 대기 칸 몸으로 쓰고, 나머지 칸은 부위를 옮겨 만든다."""
 import math, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -34,7 +34,7 @@ def fx(R, d, J):
 
 
 S = dict(
-    name='monster3-7', chip=7, cell=64, breath_y=16, dead='lie',
+    name='monster3-7', chip=7, cell=48, breath_y=16, dead='slump',
     parts=[
         # 대검(붉은 손잡이 손 + 보랏빛 칼날). 금 어깨받이와 초록 망토는 몸에 남긴다. 피벗 = 손잡이.
         ('arm', [(18.5, 18.5), (24, 18.5), (24, 32), (18.5, 32)], (20, 20)),

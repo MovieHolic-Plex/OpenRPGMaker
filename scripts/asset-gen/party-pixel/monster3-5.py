@@ -1,5 +1,5 @@
-"""monster3-5 새끼 화룡(파티원) — 셀 64, 15칸. 붉은 비늘·흰 뿔·살구빛 배·붉은 날개, 뒷다리로 선 통통한 새끼 용. 입에서 불을 뿜는다. 바닥에 선다.
-공용 엔진 pp15_pp5.Poser: 걷기 칩 왼쪽 보기 칸을 Scale2x 로 정수 2배 한 몸이 대기 칸이고, 나머지 칸은 부위를 옮겨 만든다."""
+"""monster3-5 새끼 화룡(파티원) — 셀 48, 15칸. 붉은 비늘·흰 뿔·살구빛 배·붉은 날개, 뒷다리로 선 통통한 새끼 용. 입에서 불을 뿜는다. 바닥에 선다.
+공용 엔진 pp15_pp5.Poser: 걷기 칩 왼쪽 보기 칸을 확대 없이(칩 × 1) 대기 칸 몸으로 쓰고, 나머지 칸은 부위를 옮겨 만든다."""
 import math, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -27,7 +27,7 @@ def fx(R, d, J):
 
 S = dict(
     # 몸을 오른쪽으로 7px 놓아 입 앞(왼쪽)에 불길 자리를 둔다.
-    name='monster3-5', chip=5, cell=64, breath_y=15, ox=7, dead='slump',
+    name='monster3-5', chip=5, cell=48, breath_y=15, ox=7, dead='slump',
     parts=[
         ('head', [(1, 2), (13.5, 2), (13.5, 12.5), (1, 12.5)], (9, 12)),
         ('back', [(14.5, 6), (21, 6), (21, 21), (14.5, 21)], (15, 13)),
