@@ -102,3 +102,9 @@ Review output: `.omo/mfx/<key>-preview.png` and `.omo/mfx/board-18_35(-partN).pn
 ## r2w1 묶음 a1·a2 (2026-09-29)
 
 직업 모듈 r2w1_<classKey>.py 가 스킬 8개와 새 시트를 가진다. python3 lib_r2w1.py <a1|a2> 로 시트+확인판(.omo/r2w1/<batch>/), --emit <batch> 로 묶음 TS. a2 부터 스킬당 새 시트 ≤1장, 나머지는 기존 시트 재사용(Skills.check(reuse) 가 검사: 몬스터 투사체 금지, screen 은 128 화면 시트만).
+
+## r2w2 — 묶음 a3·p1 이펙트 (2026-09-29)
+
+공용 모듈 lib_r2w2.py. 스킬표 정본은 emit_r2w2_skills.py → src/assets/retroRosterSkills/a3.ts·p1.ts 로 생성, 각 <key>.py 는 그 .ts 의 anchor·frame·frames 와 다르면 멈춘다.
+python3 scripts/asset-gen/pixel-fx/lib_r2w2.py a3 p1 은 묶음이 소유한 접두(a3: berserker_…swordsman_, p1: scholar_…priest_monk_)의 시트 137장(a3 82 · p1 55)을 다시 굽고 .omo/r2w2/<batch>/fx/ 에 4배 미리보기를 쓴다.
+p1 은 스킬마다 새 시트 최대 1장이고 나머지 층은 기존 시트(focus·heal·sleep·cleric_*·mage_*·mon_* 등)를 재사용한다.
