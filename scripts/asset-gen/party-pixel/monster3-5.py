@@ -26,7 +26,8 @@ def fx(R, d, J):
 
 
 S = dict(
-    name='monster3-5', chip=5, cell=64, breath_y=15,
+    # 몸을 오른쪽으로 7px 놓아 입 앞(왼쪽)에 불길 자리를 둔다.
+    name='monster3-5', chip=5, cell=64, breath_y=15, ox=7, dead='slump',
     parts=[
         ('head', [(1, 2), (13.5, 2), (13.5, 12.5), (1, 12.5)], (9, 12)),
         ('back', [(14.5, 6), (21, 6), (21, 21), (14.5, 21)], (15, 13)),

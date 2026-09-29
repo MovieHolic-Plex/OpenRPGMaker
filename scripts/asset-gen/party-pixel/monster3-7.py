@@ -36,8 +36,8 @@ def fx(R, d, J):
 S = dict(
     name='monster3-7', chip=7, cell=64, breath_y=16, dead='lie',
     parts=[
-        # 칼 든 뒤 손(금 건틀릿) + 대검. 초록 망토(x16~18 아래)는 몸에 남긴다.
-        ('arm', [(16.5, 8.5), (24, 8.5), (24, 32), (18.5, 32), (18.5, 19.5), (16.5, 19.5)], (19.5, 14)),
+        # 대검(붉은 손잡이 손 + 보랏빛 칼날). 금 어깨받이와 초록 망토는 몸에 남긴다. 피벗 = 손잡이.
+        ('arm', [(18.5, 18.5), (24, 18.5), (24, 32), (18.5, 32)], (20, 20)),
         ('head', [(1, 1), (17, 1), (17, 12.5), (1, 12.5)], (9, 12)),
         ('legs', [(5, 22.5), (15.5, 22.5), (15.5, 31), (5, 31)], (10, 22)),
     ],
@@ -46,17 +46,18 @@ S = dict(
     poses={
         'idle_b': dict(br=1, arm=(0, 1, 2)),
         'idle_c': dict(br=1, arm=(0, 1, 4), head=(0, 1, 0)),
-        'windup': dict(g=(3, 0, 4), arm=(2, -3, 160), head=(1, 0, 0)),
-        'move': dict(g=(-6, 0, -5), arm=(1, -1, 35), legs=(-1, 0, 0)),
-        'attack': dict(g=(-9, 0, -8), br=-1, arm=(-8, 2, -80), head=(-2, 0, 0), fx='impact'),
-        'recover': dict(g=(-3, 0, -2), br=1, arm=(-3, 1, -30)),
-        'hit': dict(g=(5, 0, 8), arm=(2, -2, 20), head=(2, -1, 0), fx='hurt'),
-        'cast_charge': dict(g=(1, 0, 2), br=1, arm=(0, -1, 25), fx='charge'),
-        'cast_raise': dict(g=(0, -1, 1), br=-2, arm=(-1, -6, 180), head=(0, -1, 0), fx='raise'),
-        'cast_release': dict(g=(-5, 0, -5), arm=(-7, 1, -60), head=(-1, 0, 0), fx='release'),
-        'leap': dict(g=(-3, -9, -4), br=2, arm=(1, -4, 150), legs=(1, -4, 0), air=True),
-        'buff': dict(g=(0, -1, 1), br=-2, arm=(0, -2, 60), head=(0, -2, 0), fx='buff'),
-        'finisher': dict(g=(-10, 0, -10), br=-2, arm=(-9, 0, -105), head=(-2, 0, 0), legs=(-1, 0, 0), fx='finisher'),
+        # 칼날은 처음에 아래(+y)를 본다. 회전 +는 반시계: 180 = 위, -90 = 앞(왼쪽), 90 = 뒤.
+        'windup': dict(g=(3, 0, 4), arm=(-2, -10, 170), head=(1, 0, 0)),
+        'move': dict(g=(-6, 0, -5), arm=(0, -2, 120), legs=(-1, 0, 0)),
+        'attack': dict(g=(-9, 0, -8), br=-1, arm=(-14, 0, -70), head=(-2, 0, 0), fx='impact'),
+        'recover': dict(g=(-3, 0, -2), br=1, arm=(-8, 2, -25)),
+        'hit': dict(g=(5, 0, 8), arm=(2, -2, 25), head=(2, -1, 0), fx='hurt'),
+        'cast_charge': dict(g=(1, 0, 2), br=1, arm=(-4, -4, 150), fx='charge'),
+        'cast_raise': dict(g=(0, -1, 1), br=-2, arm=(-6, -14, 180), head=(0, -1, 0), fx='raise'),
+        'cast_release': dict(g=(-5, 0, -5), arm=(-14, -4, -100), head=(-1, 0, 0), fx='release'),
+        'leap': dict(g=(-3, -9, -4), br=2, arm=(-2, -10, 160), legs=(1, -4, 0), air=True),
+        'buff': dict(g=(0, -1, 1), br=-2, arm=(-6, -2, 0), head=(0, -2, 0), fx='buff'),
+        'finisher': dict(g=(-10, 0, -10), br=-2, arm=(-16, 2, -45), head=(-2, 0, 0), legs=(-1, 0, 0), fx='finisher'),
     },
 )
 

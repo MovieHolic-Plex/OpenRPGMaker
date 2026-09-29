@@ -40,14 +40,21 @@ def clean(c):
 def fx(R, d, J):
     k = J['P'].get('fx')
     S1, S2 = R.c('d7aa73'), R.c('a77b4b')
-    if k in ('impact', 'release', 'finisher', 'buff', 'charge', 'raise', 'hurt'):
+    if k in ('impact', 'release', 'finisher', 'buff'):
         x0, y0 = J['pt'](0, 28)
         x1, _ = J['pt'](24, 28)
-        n = {'impact': 3, 'release': 5, 'finisher': 8, 'buff': 4, 'charge': 2, 'raise': 3, 'hurt': 2}[k]
+        n = {'impact': 3, 'release': 5, 'finisher': 7, 'buff': 4}[k]
         for i in range(n):
             x = x0 - 3 - i * 3 if k in ('release', 'finisher', 'impact') else (x0 - 2 if i % 2 else x1 + 2)
             y = y0 - 1 - (i * 5) % 9 - (i // 2)
-            d.rectangle((x, y, x + 1, y + 1), fill=S1 if i % 2 else S2)
+            d.rectangle((x, y, x + 2, y + 1), fill=S1 if i % 2 else S2)
+    if k == 'hurt':
+        fx_common(R, d, J, 'a77b4b', 'd7aa73', (6, 24))
+    if k == 'charge':
+        # 흙더미 꼭대기로 모래가 빨려 든다
+        x, y = J['pt'](12, 4)
+        for i, (a, b) in enumerate(((-8, -2), (7, -1), (-5, -7), (5, -6))):
+            d.line((x + a, y + b, x + a * 0.6, y + b * 0.6), fill=S1 if i % 2 else S2)
     if k == 'finisher':
         x, y = J['pt'](1, 25)
         d.polygon([(x, y), (x - 14, y + 3), (x - 22, y + 3), (x - 14, y - 4), (x - 4, y - 8)], fill=S2)
