@@ -87,6 +87,16 @@ CLASSES = [
         S('bazaar_rush', '바자르 대방출', 'spin', '노점 세 곳에서 상품이 쏟아져 적진을 휩쓴다', 'merchant_market'),
         S('vault_opening', '금고 개방', 'finisher', '거대한 금고가 열리고 금화와 보석이 폭포처럼 쏟아지는 필살기', 'merchant_vault_sky', 'merchant_vault_hit'),
     ]),
+    dict(batch='p2', classId='class_noble', ck='noble', chip='people3-2', name='귀족', mod='r2w3_noble', skills=[
+        S('triple_thrust', '삼단 찌르기', 'dash-strike', '레이피어로 눈 깜짝할 새 세 번 찌른다', 'noble_thrust'),
+        S('glove_challenge', '결투 신청', 'shoot', '흰 장갑을 던져 적을 도발하고 약점을 드러낸다', 'noble_gauntlet'),
+        S('rose_toss', '장미 던지기', 'shoot', '가시 장미를 날려 꽃잎과 함께 적을 벤다', 'noble_rose', 'noble_rose_hit'),
+        S('family_crest', '가문의 긍지', 'buff', '가문 문장을 드높여 아군 전체의 방어를 올린다', 'noble_crest'),
+        S('parry_stance', '받아넘기기', 'buff', '레이피어로 원을 그려 공격을 흘리고 반격한다', 'noble_parry'),
+        S('noble_order', '귀족의 명령', 'cast', '레이피어로 가리켜 아군 전체를 재촉해 속도를 올린다', 'noble_command'),
+        S('checkmate', '체크메이트', 'leap-strike', '체스판을 펼치고 킹 말을 떨어뜨려 적을 짓누른다', 'noble_checkmate'),
+        S('grand_duel', '귀족의 결투', 'finisher', '가문 깃발 아래 수십 번의 찌르기로 적진을 꿰뚫는 필살기', 'noble_duel_sky', 'noble_duel_hit'),
+    ]),
 ]
 
 
