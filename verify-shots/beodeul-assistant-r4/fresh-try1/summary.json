@@ -1,0 +1,608 @@
+{
+ "label": "fresh",
+ "projectId": "a8adad57-d452-48c6-b2b0-24e117ede104",
+ "loadUpgrade": {
+  "freshStore": true,
+  "hadBeodeulBefore": true,
+  "hasAfter": true,
+  "references": [
+   "beodeul-city",
+   "beodeul-city-blocks",
+   "beodeul-city-kits",
+   "beodeul-city-water",
+   "beodeul-city-manor-outskirts",
+   "beodeul-city-pieces",
+   "beodeul-city-qa"
+  ],
+  "existingMaps": 1
+ },
+ "projectDir": ".oprn-projects/beodeul-assistant-r4-fresh",
+ "mapId": "beodeul_like",
+ "size": [
+  100,
+  100
+ ],
+ "tilesetId": "beodeul_city",
+ "model": "klb/claude-opus-5.5",
+ "task": "버들항 비슷한 로마풍 항구 도시를 깔아줘. 맵 전체(100×100)를 채우는 큰 도시로 — 성, 귀족 저택, 포룸 광장, 항구와 잔교, 풍차, 강과 다리, 성 밖 나무집 마을이 있어야 해. 단, 원본 버들항을 그대로 복제하면 안 돼: 구역 키트를 원본 좌표(원점)에 찍지 말고, 성·저택·광장·항구의 자리와 길·강의 흐름을 원본과 다르게 새로 설계해. 참고문서의 배치 규칙과 예시 배치 두 가지를 읽고 그 규칙대로 하되, 예시 배치를 그대로 베끼지도 마. 블록 키트로 — 길 격자(대로·거리·골목)를 먼저 깔고, 블록 키트(bd-block-*)로 블록을 통째로 채워서 빈 풀밭을 남기지 마.",
+ "ms": 3010213,
+ "exposedTools": 35,
+ "stats": {
+  "ms": 3000009,
+  "turns": 16,
+  "toolCalls": 67,
+  "toolErrors": 14,
+  "usage": {
+   "input": 1962600,
+   "output": 50483,
+   "cacheRead": 0,
+   "cacheWrite": 0,
+   "totalTokens": 2013083,
+   "calls": 16
+  }
+ },
+ "reloadEqual": true,
+ "reloadProjectDeepEqual": false,
+ "reloadProjectDiff": [
+  "database: actors,classes,skills,items,equipment,enemies",
+  "system: titleScreen"
+ ],
+ "renderNote": null,
+ "toolCalls": 66,
+ "failed": 14,
+ "byTool": {
+  "get_map_region": 3,
+  "get_project_summary": 1,
+  "list_spatial_designs": 7,
+  "show_map_region": 1,
+  "list_tileset_references": 5,
+  "read_tileset_reference": 12,
+  "tile_query": 1,
+  "fill_region": 30,
+  "stamp_object": 6
+ },
+ "readReferences": {
+  "list": 5,
+  "read": 12,
+  "beodeulDocs": [
+   "bd-work-order",
+   "bd-street-hierarchy",
+   "bd-block-table",
+   "bd-city-guide",
+   "bd-layout-rules",
+   "bd-layout-bends",
+   "bd-layout-estuary",
+   "bd-kit-castle",
+   "bd-water-kits",
+   "bd-blocks-8",
+   "bd-blocks-13-17",
+   "bd-err-empty-screen"
+  ]
+ },
+ "blocksStamped": 0,
+ "kitsStamped": [
+  "kit:beodeul_city/bd-harbour-lake",
+  "kit:beodeul_city/bd-harbour-lake",
+  "kit:beodeul_city/bd-bridge-arch",
+  "kit:beodeul_city/bd-bridge-arch",
+  "kit:beodeul_city/bd-bridge-arch",
+  "kit:beodeul_city/bd-bridge-arch"
+ ],
+ "metrics": {
+  "emptiness": {
+   "lawn": {
+    "share": 0.8418,
+    "screens": 35,
+    "over40": 31,
+    "worst": 1,
+    "overAt": [
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      20,
+      0,
+      1
+     ],
+     [
+      40,
+      0,
+      1
+     ],
+     [
+      60,
+      0,
+      0.8
+     ],
+     [
+      80,
+      0,
+      1
+     ],
+     [
+      0,
+      15,
+      1
+     ],
+     [
+      20,
+      15,
+      1
+     ],
+     [
+      40,
+      15,
+      0.807
+     ],
+     [
+      60,
+      15,
+      0.993
+     ],
+     [
+      80,
+      15,
+      1
+     ],
+     [
+      0,
+      30,
+      1
+     ],
+     [
+      20,
+      30,
+      1
+     ],
+     [
+      40,
+      30,
+      0.86
+     ],
+     [
+      60,
+      30,
+      0.94
+     ],
+     [
+      80,
+      30,
+      1
+     ],
+     [
+      0,
+      45,
+      1
+     ],
+     [
+      20,
+      45,
+      1
+     ],
+     [
+      40,
+      45,
+      1
+     ],
+     [
+      60,
+      45,
+      0.8
+     ],
+     [
+      80,
+      45,
+      1
+     ],
+     [
+      0,
+      60,
+      1
+     ],
+     [
+      20,
+      60,
+      1
+     ],
+     [
+      40,
+      60,
+      0.873
+     ],
+     [
+      60,
+      60,
+      0.927
+     ],
+     [
+      80,
+      60,
+      1
+     ],
+     [
+      0,
+      75,
+      0.95
+     ],
+     [
+      20,
+      75,
+      0.673
+     ],
+     [
+      40,
+      75,
+      0.533
+     ],
+     [
+      60,
+      75,
+      0.667
+     ],
+     [
+      80,
+      75,
+      0.67
+     ],
+     [
+      0,
+      90,
+      0.85
+     ]
+    ]
+   },
+   "open": {
+    "share": 0.864,
+    "screens": 35,
+    "over40": 31,
+    "worst": 1,
+    "overAt": [
+     [
+      0,
+      0,
+      1
+     ],
+     [
+      20,
+      0,
+      1
+     ],
+     [
+      40,
+      0,
+      1
+     ],
+     [
+      60,
+      0,
+      0.8
+     ],
+     [
+      80,
+      0,
+      1
+     ],
+     [
+      0,
+      15,
+      1
+     ],
+     [
+      20,
+      15,
+      1
+     ],
+     [
+      40,
+      15,
+      0.833
+     ],
+     [
+      60,
+      15,
+      0.993
+     ],
+     [
+      80,
+      15,
+      1
+     ],
+     [
+      0,
+      30,
+      1
+     ],
+     [
+      20,
+      30,
+      1
+     ],
+     [
+      40,
+      30,
+      0.86
+     ],
+     [
+      60,
+      30,
+      0.94
+     ],
+     [
+      80,
+      30,
+      1
+     ],
+     [
+      0,
+      45,
+      1
+     ],
+     [
+      20,
+      45,
+      1
+     ],
+     [
+      40,
+      45,
+      1
+     ],
+     [
+      60,
+      45,
+      0.827
+     ],
+     [
+      80,
+      45,
+      1
+     ],
+     [
+      0,
+      60,
+      1
+     ],
+     [
+      20,
+      60,
+      1
+     ],
+     [
+      40,
+      60,
+      0.9
+     ],
+     [
+      60,
+      60,
+      0.927
+     ],
+     [
+      80,
+      60,
+      1
+     ],
+     [
+      0,
+      75,
+      0.963
+     ],
+     [
+      20,
+      75,
+      0.787
+     ],
+     [
+      40,
+      75,
+      0.667
+     ],
+     [
+      60,
+      75,
+      0.77
+     ],
+     [
+      80,
+      75,
+      0.783
+     ],
+     [
+      0,
+      90,
+      0.9
+     ]
+    ]
+   }
+  },
+  "blockRepeats": {
+   "blocks": 0,
+   "distinct": 0,
+   "neighbourRepeats": [],
+   "overused": []
+  },
+  "cityForm": {
+   "deadEnds": [
+    {
+     "at": [
+      56,
+      22
+     ],
+     "kind": "street",
+     "width": 2
+    },
+    {
+     "at": [
+      61,
+      57
+     ],
+     "kind": "street",
+     "width": 2
+    },
+    {
+     "at": [
+      55,
+      73
+     ],
+     "kind": "street",
+     "width": 2
+    },
+    {
+     "at": [
+      59,
+      22
+     ],
+     "kind": "street",
+     "width": 2
+    },
+    {
+     "at": [
+      64,
+      57
+     ],
+     "kind": "street",
+     "width": 2
+    },
+    {
+     "at": [
+      58,
+      73
+     ],
+     "kind": "street",
+     "width": 2
+    }
+   ],
+   "lines": {
+    "count": 3,
+    "longStraight": [],
+    "longestLen": 4
+   },
+   "graph": {
+    "meanDepth": 0,
+    "maxDepth": 0,
+    "components": 3,
+    "isolated": []
+   },
+   "spacing": {
+    "vGaps": [],
+    "hGaps": [],
+    "cv": null
+   },
+   "bentStreetCells": 50,
+   "canal": {
+    "cells": 1148,
+    "orient": "v",
+    "bends": 2,
+    "straightShare": 0.087,
+    "straight": false
+   },
+   "nodes": [],
+   "landmarks": [],
+   "blocks": {
+    "count": 0,
+    "distinct": 0,
+    "neighbourRepeats": [],
+    "overused": []
+   }
+  },
+  "originality": {
+   "sameCells": 54,
+   "ofCells": 10000,
+   "sameShare": 0.0054,
+   "sameShareOfObjectCells": 0
+  },
+  "districts": [
+   {
+    "id": "bd-castle",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-estate",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-forum",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-cathedral",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-windmill",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-harbour",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-harbour-west",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-river-bridge",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   }
+  ],
+  "districtsPresent": 0,
+  "districtsAtOriginalOrigin": 0,
+  "stampedKits": 6,
+  "doors": 0,
+  "landReach": {
+   "total": 0,
+   "reached": 0,
+   "unreached": []
+  },
+  "streetReach": {
+   "total": 0,
+   "reached": 0,
+   "unreached": []
+  },
+  "defects": {
+   "deadEndPavedCells": [],
+   "deadEndStreets": [],
+   "roadIntoWater": [],
+   "blockedDoorFronts": [],
+   "sameKitRepeats": []
+  },
+  "designedObjectCells": 229
+ },
+ "vsExampleLayouts": {
+  "hilltop": 0.3139,
+  "estuary": 0.2357,
+  "blocks": 0.0607
+ },
+ "filled": {
+  "lower": 10000,
+  "upper": 229,
+  "cells": 10000
+ },
+ "finalText": "assistant: Reading the blocks reference first as instructed."
+}

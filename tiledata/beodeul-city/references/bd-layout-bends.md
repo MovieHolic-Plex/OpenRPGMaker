@@ -23,9 +23,9 @@ tilesetId `beodeul_city` · 그림 `public/assets/beodeul-city/beodeul-city-chip
 create_map {"id": "bends", "name": "굽이 운하 도시", "width": 100, "height": 100, "tilesetId": "beodeul_city"}
 fill_region 버들항 풀밭 (0,0) 100×100
 stamp_object bd-harbour-lake @(0,84)
-fill_region 물 행마다 y=0..83 폭 4 · x=36(y0~8) → x=44(y18~34) → x=32(y46~60) → x=38(y68~83) (한 줄씩 사이는 1칸씩 비껴, 84번)
-fill_region 버들항 길 포석 행마다 y=0..83 폭 2 · x=34(y0~8) → x=42(y18~34) → x=30(y46~60) → x=36(y68~83) (한 줄씩 사이는 1칸씩 비껴, 84번)
-fill_region 버들항 길 포석 행마다 y=0..83 폭 2 · x=40(y0~8) → x=48(y18~34) → x=36(y46~60) → x=42(y68~83) (한 줄씩 사이는 1칸씩 비껴, 84번)
+fill_region 물 path:[{x:37,y:0},{x:37,y:8},{x:45,y:18},{x:45,y:34},{x:33,y:46},{x:33,y:60},{x:39,y:68},{x:39,y:83}] width:4   (예시 스크립트는 행마다 84번 칠했다 — 조수는 이 한 번으로)
+fill_region 버들항 길 포석 path:[{x:34,y:0},{x:34,y:8},{x:42,y:18},{x:42,y:34},{x:30,y:46},{x:30,y:60},{x:36,y:68},{x:36,y:83}] width:2   (예시 스크립트는 행마다 84번 칠했다 — 조수는 이 한 번으로)
+fill_region 버들항 길 포석 path:[{x:40,y:0},{x:40,y:8},{x:48,y:18},{x:48,y:34},{x:36,y:46},{x:36,y:60},{x:42,y:68},{x:42,y:83}] width:2   (예시 스크립트는 행마다 84번 칠했다 — 조수는 이 한 번으로)
 stamp_object bd-castle @(1,0)
 stamp_object bd-estate @(55,0)
 stamp_object bd-cathedral @(80,2)
@@ -43,7 +43,7 @@ stamp_object bd-bridge-arch @(44,21)
 stamp_object bd-bridge-arch @(32,47)
 stamp_object bd-bridge-arch @(38,72)
 fill_region 버들항 길 포석 (14,35) 2×13
-fill_region 버들항 길 포석 행마다 y=35..45 폭 1~11 · x=30(y35~45) (한 줄씩 사이는 1칸씩 비껴, 11번)
+fill_region 버들항 길 포석 행마다 y=35..45 폭 1~11 · x=30(y35~45) (11번)
 fill_region 버들항 길 포석 (0,48) 30×1
 fill_region 버들항 길 포석 (0,49) 30×1
 stamp_object bd-block-res-14x13-b @(0,35)
@@ -56,7 +56,7 @@ fill_region 버들항 길 포석 (0,58) 30×1
 fill_region 버들항 길 포석 (0,59) 30×1
 stamp_object bd-block-res-14x8 @(0,50)
 stamp_object bd-block-market-14x8 @(16,50)
-fill_region 버들항 길 포석 행마다 y=60..74 폭 2~22 · x=28(y60~72) (한 줄씩 사이는 1칸씩 비껴, 15번)
+fill_region 버들항 길 포석 행마다 y=60..74 폭 2~22 · x=28(y60~72) (15번)
 stamp_object bd-block-res-14x13 @(14,60)
 fill_region 버들항 길 포석 (13,66) 1×1
 fill_region 버들항 길 포석 (28,66) 1×1
@@ -67,30 +67,30 @@ stamp_object bd-block-res-10x8-b @(14,75)
 stamp_object bd-block-res-10x8 @(26,75)
 fill_region 버들항 길 포석 (49,35) 1×1
 fill_region 버들항 길 포석 (48,36) 2×1
-fill_region 버들항 길 포석 행마다 y=24..38 폭 2~26 · x=70(y24~36) (한 줄씩 사이는 1칸씩 비껴, 15번)
+fill_region 버들항 길 포석 행마다 y=24..38 폭 2~26 · x=70(y24~36) (15번)
 stamp_object bd-block-manor-20x13-c @(50,24)
 fill_region 버들항 길 포석 (49,30) 1×1
 fill_region 버들항 길 포석 (70,30) 1×1
-fill_region 버들항 길 포석 행마다 y=39..45 폭 1~7 · 비스듬히 (한 줄씩 사이는 1칸씩 비껴, 7번)
+fill_region 버들항 길 포석 행마다 y=39..45 폭 1~7 · 비스듬히 (7번)
 fill_region 버들항 길 포석 (56,38) 2×8
 fill_region 버들항 길 포석 (38,46) 34×1
 fill_region 버들항 길 포석 (38,47) 34×1
 stamp_object bd-block-market-10x8 @(46,38)
 stamp_object bd-block-res-14x8-c @(58,38)
-fill_region 버들항 길 포석 행마다 y=48..60 폭 2 · x=38(y48~60) (한 줄씩 사이는 1칸씩 비껴, 13번)
-fill_region 버들항 길 포석 행마다 y=48..62 폭 6~27 · x=60(y48~60) (한 줄씩 사이는 1칸씩 비껴, 15번)
+fill_region 버들항 길 포석 행마다 y=48..60 폭 2 · x=38(y48~60) (13번)
+fill_region 버들항 길 포석 행마다 y=48..62 폭 6~27 · x=60(y48~60) (15번)
 stamp_object bd-block-manor-20x13-b @(40,48)
 fill_region 버들항 길 포석 (39,54) 1×1
 fill_region 버들항 길 포석 (60,54) 1×1
 stamp_object bd-forum @(44,64)
 fill_region 버들항 길 포석 (44,78) 22×1
 fill_region 버들항 길 포석 (44,79) 22×1
-fill_region 버들항 길 포석 행마다 y=26..38 폭 4 · x=96(y26~38) (한 줄씩 사이는 1칸씩 비껴, 13번)
+fill_region 버들항 길 포석 행마다 y=26..38 폭 4 · x=96(y26~38) (13번)
 fill_region 버들항 길 포석 (76,39) 24×2
 stamp_object bd-block-manor-20x13 @(76,26)
 fill_region 버들항 길 포석 (75,32) 1×1
 fill_region 버들항 길 포석 (96,32) 1×1
-fill_region 버들항 길 포석 행마다 y=41..53 폭 4 · x=96(y41~53) (한 줄씩 사이는 1칸씩 비껴, 13번)
+fill_region 버들항 길 포석 행마다 y=41..53 폭 4 · x=96(y41~53) (13번)
 fill_region 버들항 길 포석 (76,54) 24×2
 stamp_object bd-block-res-20x13 @(76,41)
 fill_region 버들항 길 포석 (75,47) 1×1
