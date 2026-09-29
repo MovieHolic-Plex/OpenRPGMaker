@@ -180,8 +180,12 @@ export function retroMonsterActions(slug: string | undefined): EnemyActionPatter
 }
 
 /** 기본 DB 적 한 행에 몬스터 스킬 행동을 입힌다. 도트 시트가 없거나 계약 목록이 없으면 그대로 돌려준다. */
-export function withRetroMonsterSkills<T extends Pick<EnemyRecord, "monsterResourceId" | "actions">>(enemy: T): T {
+export function withRetroMonsterSkills<T extends Pick<EnemyRecord, "monsterResourceId" | "actions"> & { readonly skillIds?: readonly string[] }>(enemy: T): T {
   const actions = retroMonsterActions(retroMonsterSlugFor(enemy.monsterResourceId));
-  return actions ? { ...enemy, actions } : enemy;
+  if (!actions) return enemy;
+  // skillIds 는 actions 의 투영이다(normalizeEnemyRecord). 행동만 바꾸면 저장·재로드 때 투영이 다시 계산돼
+  // 방금 만든 레코드와 달라진다(2026-09-29 enemyBattleScale·databaseEnemyRelationship 실측). 같은 규칙으로 같이 바꾼다.
+  const skillIds = actions.map((action) => action.skillId).filter((skillId) => skillId.length > 0);
+  return "skillIds" in enemy ? { ...enemy, actions, skillIds } : { ...enemy, actions };
 }
 
