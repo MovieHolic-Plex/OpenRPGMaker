@@ -13,6 +13,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { isDeepStrictEqual } from "node:util";
 import { buildModel } from "@oh-my-pi/pi-catalog/build";
 import { runPiAgent } from "../lib/piAgentRuntime.ts";
 import { renderMapPng, renderToolRegionPngBase64 } from "../qa-game/render.mts";
@@ -20,6 +21,7 @@ import { runTool } from "../../src/editor/tools/index.ts";
 import { initLocalProjectStore, openLocalProjectStore } from "../../electron/local-store/store.ts";
 import { buildSessionRegistryTools } from "../../src/ai/sessionToolExposure.ts";
 import { ensureBundledTilesets } from "../../src/project/defaults/defaultAssets.ts";
+import { createBlankProject } from "../../src/project/defaults.ts";
 import type { Project } from "../../src/project/types.ts";
 import { analyzeBeodeul, type Stamp } from "../content/lib/beodeul-metrics.ts";
 
@@ -49,12 +51,14 @@ const apiKey: string = prov.apiKey;
 let store = await initLocalProjectStore({ projectDir });
 const snap = store.loadSnapshot();
 const projectId = store.info().projectId;
-let project = snap!.project as Project;
+// an empty store (a brand-new project folder) starts from the editor's blank project, like 「새 프로젝트」
+let project = (snap?.project ?? createBlankProject()) as Project;
+const freshStore = !snap;
 store.close();
 // the editor's load path (src/project/store.ts) runs ensureBundledTilesets: an older save gains beodeul_city + its references here
 const hadBeodeul = Boolean(project.tilesets.beodeul_city);
 ensureBundledTilesets(project);
-const loadUpgrade = { hadBeodeulBefore: hadBeodeul, hasAfter: Boolean(project.tilesets.beodeul_city),
+const loadUpgrade = { freshStore, hadBeodeulBefore: hadBeodeul, hasAfter: Boolean(project.tilesets.beodeul_city),
   references: project.tilesets.beodeul_city?.referenceDocuments?.map((c) => c.id) ?? [], existingMaps: Object.keys(project.maps).length };
 if (size) {
   const [w, h] = size.split("x").map(Number);
@@ -106,6 +110,7 @@ try {
 } finally { store.close(); }
 const m = reloaded.maps[mapId]!;
 const same = JSON.stringify(m) === JSON.stringify(result.maps[mapId]);
+const projectEqual = isDeepStrictEqual(reloaded, JSON.parse(JSON.stringify(result)));
 const { png, note } = renderMapPng(reloaded, m);
 fs.writeFileSync(`${OUT}/render.png`, png);
 const counts = (name: string) => trace.filter((t) => t.name === name).length;
@@ -121,7 +126,7 @@ for (const ex of ["hilltop", "estuary"]) {
 }
 const summary = {
   label, projectId, loadUpgrade, projectDir: path.relative(process.cwd(), projectDir), mapId, size: [m.width, m.height], tilesetId: m.tilesetId,
-  model: `${provider}/${modelId}`, task, ms, exposedTools: initialToolNames.length, stats: done.stats, reloadEqual: same, renderNote: note ?? null,
+  model: `${provider}/${modelId}`, task, ms, exposedTools: initialToolNames.length, stats: done.stats, reloadEqual: same, reloadProjectDeepEqual: projectEqual, renderNote: note ?? null,
   toolCalls: trace.length, failed: trace.filter((t) => !t.ok).length,
   byTool: Object.fromEntries([...new Set(trace.map((t) => t.name))].map((n) => [n, counts(n)])),
   readReferences: { list: counts("list_tileset_references"), read: counts("read_tileset_reference"),

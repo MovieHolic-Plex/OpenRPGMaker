@@ -388,19 +388,190 @@
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-harbour-lake",
+    "objectId": "kit:beodeul_city/bd-ground-lawn-4",
     "mapId": "estuary",
-    "x": 2,
-    "y": 85
+    "x": 1,
+    "y": 20
    }
   },
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-waterfall-drop",
+    "objectId": "kit:beodeul_city/bd-ground-lawn-6",
     "mapId": "estuary",
-    "x": 36,
-    "y": 0
+    "x": 28,
+    "y": 29
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-3",
+    "mapId": "estuary",
+    "x": 87,
+    "y": 71
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-6",
+    "mapId": "estuary",
+    "x": 63,
+    "y": 80
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-5",
+    "mapId": "estuary",
+    "x": 60,
+    "y": 12
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-4",
+    "mapId": "estuary",
+    "x": 58,
+    "y": 33
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-2",
+    "mapId": "estuary",
+    "x": 70,
+    "y": 15
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-2",
+    "mapId": "estuary",
+    "x": 90,
+    "y": 43
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-5",
+    "mapId": "estuary",
+    "x": 15,
+    "y": 14
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-4",
+    "mapId": "estuary",
+    "x": 61,
+    "y": 46
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-4",
+    "mapId": "estuary",
+    "x": 32,
+    "y": 64
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-1",
+    "mapId": "estuary",
+    "x": 3,
+    "y": 43
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-2",
+    "mapId": "estuary",
+    "x": 28,
+    "y": 3
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-4",
+    "mapId": "estuary",
+    "x": 32,
+    "y": 40
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-2",
+    "mapId": "estuary",
+    "x": 58,
+    "y": 4
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-3",
+    "mapId": "estuary",
+    "x": 65,
+    "y": 43
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-1",
+    "mapId": "estuary",
+    "x": 89,
+    "y": 43
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-4",
+    "mapId": "estuary",
+    "x": 13,
+    "y": 60
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-1",
+    "mapId": "estuary",
+    "x": 88,
+    "y": 15
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-2",
+    "mapId": "estuary",
+    "x": 70,
+    "y": 24
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-harbour-lake",
+    "mapId": "estuary",
+    "x": 0,
+    "y": 85
    }
   },
   {
@@ -408,10 +579,10 @@
    "args": {
     "mapId": "estuary",
     "rect": {
-     "x": 40,
-     "y": 7,
+     "x": 38,
+     "y": 0,
      "w": 4,
-     "h": 78
+     "h": 85
     },
     "material": "물"
    }
@@ -466,7 +637,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-bridge-arch",
     "mapId": "estuary",
-    "x": 40,
+    "x": 38,
     "y": 32
    }
   },
@@ -475,7 +646,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-bridge-arch",
     "mapId": "estuary",
-    "x": 40,
+    "x": 38,
     "y": 60
    }
   },
@@ -484,7 +655,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-bridge-arch",
     "mapId": "estuary",
-    "x": 40,
+    "x": 38,
     "y": 72
    }
   },
@@ -495,7 +666,7 @@
     "rect": {
      "x": 0,
      "y": 33,
-     "w": 40,
+     "w": 38,
      "h": 2
     },
     "material": "버들항 길 포석"
@@ -506,9 +677,9 @@
    "args": {
     "mapId": "estuary",
     "rect": {
-     "x": 44,
+     "x": 42,
      "y": 33,
-     "w": 56,
+     "w": 58,
      "h": 2
     },
     "material": "버들항 길 포석"
@@ -545,7 +716,7 @@
    "args": {
     "mapId": "estuary",
     "rect": {
-     "x": 38,
+     "x": 36,
      "y": 35,
      "w": 2,
      "h": 49
@@ -558,7 +729,7 @@
    "args": {
     "mapId": "estuary",
     "rect": {
-     "x": 44,
+     "x": 42,
      "y": 35,
      "w": 2,
      "h": 49
@@ -599,7 +770,7 @@
     "rect": {
      "x": 26,
      "y": 47,
-     "w": 12,
+     "w": 10,
      "h": 2
     },
     "material": "버들항 길 포석"
@@ -610,9 +781,9 @@
    "args": {
     "mapId": "estuary",
     "rect": {
-     "x": 46,
+     "x": 44,
      "y": 49,
-     "w": 38,
+     "w": 40,
      "h": 2
     },
     "material": "버들항 길 포석"
@@ -623,7 +794,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-forum",
     "mapId": "estuary",
-    "x": 46,
+    "x": 44,
     "y": 35
    }
   },
@@ -632,7 +803,7 @@
    "args": {
     "mapId": "estuary",
     "rect": {
-     "x": 46,
+     "x": 44,
      "y": 34,
      "w": 22,
      "h": 1
@@ -645,7 +816,7 @@
    "args": {
     "mapId": "estuary",
     "rect": {
-     "x": 45,
+     "x": 43,
      "y": 44,
      "w": 1,
      "h": 3
@@ -658,10 +829,49 @@
    "args": {
     "mapId": "estuary",
     "rect": {
-     "x": 61,
+     "x": 59,
      "y": 49,
      "w": 4,
      "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "estuary",
+    "rect": {
+     "x": 11,
+     "y": 60,
+     "w": 3,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "estuary",
+    "rect": {
+     "x": 0,
+     "y": 61,
+     "w": 38,
+     "h": 2
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "estuary",
+    "rect": {
+     "x": 44,
+     "y": 61,
+     "w": 40,
+     "h": 2
     },
     "material": "버들항 길 포석"
    }
@@ -706,34 +916,8 @@
    "args": {
     "mapId": "estuary",
     "rect": {
-     "x": 11,
-     "y": 60,
-     "w": 3,
-     "h": 1
-    },
-    "material": "버들항 길 포석"
-   }
-  },
-  {
-   "name": "fill_region",
-   "args": {
-    "mapId": "estuary",
-    "rect": {
      "x": 0,
-     "y": 61,
-     "w": 40,
-     "h": 2
-    },
-    "material": "버들항 길 포석"
-   }
-  },
-  {
-   "name": "fill_region",
-   "args": {
-    "mapId": "estuary",
-    "rect": {
-     "x": 46,
-     "y": 61,
+     "y": 73,
      "w": 38,
      "h": 2
     },
@@ -745,22 +929,9 @@
    "args": {
     "mapId": "estuary",
     "rect": {
-     "x": 0,
+     "x": 44,
      "y": 73,
      "w": 40,
-     "h": 2
-    },
-    "material": "버들항 길 포석"
-   }
-  },
-  {
-   "name": "fill_region",
-   "args": {
-    "mapId": "estuary",
-    "rect": {
-     "x": 46,
-     "y": 73,
-     "w": 38,
      "h": 2
     },
     "material": "버들항 길 포석"
@@ -773,7 +944,7 @@
     "rect": {
      "x": 24,
      "y": 84,
-     "w": 16,
+     "w": 14,
      "h": 1
     },
     "material": "버들항 길 포석"
@@ -784,9 +955,9 @@
    "args": {
     "mapId": "estuary",
     "rect": {
-     "x": 44,
+     "x": 42,
      "y": 84,
-     "w": 56,
+     "w": 58,
      "h": 1
     },
     "material": "버들항 길 포석"
@@ -810,9 +981,9 @@
    "args": {
     "mapId": "estuary",
     "rect": {
-     "x": 5,
+     "x": 3,
      "y": 84,
-     "w": 19,
+     "w": 21,
      "h": 1
     },
     "material": "버들항 모랫길"
@@ -920,15 +1091,6 @@
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-house-h141_0",
-    "mapId": "estuary",
-    "x": 35,
-    "y": 41
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
     "objectId": "kit:beodeul_city/bd-house-h145_0",
     "mapId": "estuary",
     "x": 26,
@@ -947,10 +1109,10 @@
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-house-h129_0",
+    "objectId": "kit:beodeul_city/bd-house-i13",
     "mapId": "estuary",
     "x": 33,
-    "y": 53
+    "y": 55
    }
   },
   {
@@ -958,7 +1120,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-house-i12",
     "mapId": "estuary",
-    "x": 68,
+    "x": 66,
     "y": 43
    }
   },
@@ -967,7 +1129,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-house-h107_0",
     "mapId": "estuary",
-    "x": 71,
+    "x": 69,
     "y": 43
    }
   },
@@ -976,7 +1138,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-house-i0",
     "mapId": "estuary",
-    "x": 77,
+    "x": 75,
     "y": 43
    }
   },
@@ -985,7 +1147,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-house-h123_0",
     "mapId": "estuary",
-    "x": 46,
+    "x": 44,
     "y": 55
    }
   },
@@ -994,7 +1156,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-house-h112_0",
     "mapId": "estuary",
-    "x": 49,
+    "x": 47,
     "y": 55
    }
   },
@@ -1003,7 +1165,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-house-h123_1",
     "mapId": "estuary",
-    "x": 53,
+    "x": 51,
     "y": 55
    }
   },
@@ -1012,7 +1174,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-house-h111_0",
     "mapId": "estuary",
-    "x": 59,
+    "x": 57,
     "y": 53
    }
   },
@@ -1021,7 +1183,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-house-h101_0",
     "mapId": "estuary",
-    "x": 66,
+    "x": 64,
     "y": 55
    }
   },
@@ -1030,17 +1192,17 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-house-i8",
     "mapId": "estuary",
-    "x": 73,
+    "x": 71,
     "y": 55
    }
   },
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-house-h103_1",
+    "objectId": "kit:beodeul_city/bd-house-h104_0",
     "mapId": "estuary",
-    "x": 79,
-    "y": 55
+    "x": 77,
+    "y": 53
    }
   },
   {
@@ -1138,7 +1300,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-house-h124_0",
     "mapId": "estuary",
-    "x": 46,
+    "x": 44,
     "y": 64
    }
   },
@@ -1147,7 +1309,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-house-h107_1",
     "mapId": "estuary",
-    "x": 55,
+    "x": 53,
     "y": 65
    }
   },
@@ -1156,7 +1318,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-house-h110_1",
     "mapId": "estuary",
-    "x": 62,
+    "x": 60,
     "y": 65
    }
   },
@@ -1165,7 +1327,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-house-h103_2",
     "mapId": "estuary",
-    "x": 70,
+    "x": 68,
     "y": 67
    }
   },
@@ -1174,17 +1336,17 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-house-h139_0",
     "mapId": "estuary",
-    "x": 75,
+    "x": 73,
     "y": 65
    }
   },
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-house-h116_0",
+    "objectId": "kit:beodeul_city/bd-house-i0",
     "mapId": "estuary",
-    "x": 79,
-    "y": 65
+    "x": 77,
+    "y": 67
    }
   },
   {
@@ -1192,7 +1354,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-house-h102_0",
     "mapId": "estuary",
-    "x": 46,
+    "x": 44,
     "y": 78
    }
   },
@@ -1201,7 +1363,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-house-h111_0",
     "mapId": "estuary",
-    "x": 53,
+    "x": 51,
     "y": 76
    }
   },
@@ -1210,7 +1372,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-house-i13",
     "mapId": "estuary",
-    "x": 60,
+    "x": 58,
     "y": 78
    }
   },
@@ -1219,7 +1381,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-house-h101_2",
     "mapId": "estuary",
-    "x": 64,
+    "x": 62,
     "y": 78
    }
   },
@@ -1228,7 +1390,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-house-h116_0",
     "mapId": "estuary",
-    "x": 67,
+    "x": 65,
     "y": 76
    }
   },
@@ -1237,7 +1399,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-house-i9",
     "mapId": "estuary",
-    "x": 72,
+    "x": 70,
     "y": 78
    }
   },
@@ -1246,8 +1408,17 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-house-h117_1",
     "mapId": "estuary",
-    "x": 78,
+    "x": 76,
     "y": 76
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-house-h101_2",
+    "mapId": "estuary",
+    "x": 80,
+    "y": 78
    }
   },
   {
@@ -1277,7 +1448,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-out-cabin-small",
     "mapId": "estuary",
-    "x": 5,
+    "x": 3,
     "y": 80
    }
   },
@@ -1286,7 +1457,7 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-out-cabin",
     "mapId": "estuary",
-    "x": 9,
+    "x": 7,
     "y": 78
    }
   },
@@ -1295,8 +1466,107 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-out-longhouse",
     "mapId": "estuary",
-    "x": 14,
+    "x": 12,
     "y": 78
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-e9d9b3",
+    "mapId": "estuary",
+    "x": 95,
+    "y": 92
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-0f7ed1",
+    "mapId": "estuary",
+    "x": 89,
+    "y": 94
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-1e09f0",
+    "mapId": "estuary",
+    "x": 97,
+    "y": 95
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-d105b2",
+    "mapId": "estuary",
+    "x": 89,
+    "y": 90
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-c27062",
+    "mapId": "estuary",
+    "x": 86,
+    "y": 93
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-1a786c",
+    "mapId": "estuary",
+    "x": 84,
+    "y": 88
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-f4f319",
+    "mapId": "estuary",
+    "x": 87,
+    "y": 97
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "mapId": "estuary",
+    "x": 94,
+    "y": 87
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-132848",
+    "mapId": "estuary",
+    "x": 98,
+    "y": 86
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-c27062",
+    "mapId": "estuary",
+    "x": 90,
+    "y": 97
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-c27062",
+    "mapId": "estuary",
+    "x": 36,
+    "y": 21
    }
   },
   {
@@ -1311,10 +1581,28 @@
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-tree-03a8f7",
+    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
     "mapId": "estuary",
-    "x": 50,
-    "y": 0
+    "x": 45,
+    "y": 6
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-132848",
+    "mapId": "estuary",
+    "x": 95,
+    "y": 50
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-f4f319",
+    "mapId": "estuary",
+    "x": 98,
+    "y": 18
    }
   },
   {
@@ -1329,10 +1617,28 @@
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "objectId": "kit:beodeul_city/bd-tree-03a8f7",
     "mapId": "estuary",
-    "x": 22,
-    "y": 55
+    "x": 67,
+    "y": 52
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-5844f6",
+    "mapId": "estuary",
+    "x": 91,
+    "y": 41
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-d105b2",
+    "mapId": "estuary",
+    "x": 90,
+    "y": 47
    }
   },
   {
@@ -1340,26 +1646,8 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-tree-132848",
     "mapId": "estuary",
-    "x": 73,
-    "y": 20
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-28ad5e",
-    "mapId": "estuary",
-    "x": 1,
-    "y": 46
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-3e8732",
-    "mapId": "estuary",
-    "x": 87,
-    "y": 46
+    "x": 35,
+    "y": 5
    }
   },
   {
@@ -1374,9 +1662,108 @@
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-tree-0f7ed1",
+    "objectId": "kit:beodeul_city/bd-tree-28ad5e",
+    "mapId": "estuary",
+    "x": 22,
+    "y": 38
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-d43edd",
+    "mapId": "estuary",
+    "x": 73,
+    "y": 17
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-c27062",
+    "mapId": "estuary",
+    "x": 50,
+    "y": 0
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-cc0fcb",
     "mapId": "estuary",
     "x": 78,
+    "y": 38
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-0f7ed1",
+    "mapId": "estuary",
+    "x": 69,
+    "y": 1
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "mapId": "estuary",
+    "x": 99,
+    "y": 72
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-28ad5e",
+    "mapId": "estuary",
+    "x": 47,
+    "y": 5
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-47e17a",
+    "mapId": "estuary",
+    "x": 70,
+    "y": 6
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-d105b2",
+    "mapId": "estuary",
+    "x": 75,
+    "y": 8
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-5844f6",
+    "mapId": "estuary",
+    "x": 96,
+    "y": 12
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-e9d9b3",
+    "mapId": "estuary",
+    "x": 68,
+    "y": 64
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-37f48b",
+    "mapId": "estuary",
+    "x": 75,
     "y": 40
    }
   },
@@ -1385,53 +1772,8 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-tree-132848",
     "mapId": "estuary",
-    "x": 70,
-    "y": 11
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-37f48b",
-    "mapId": "estuary",
-    "x": 97,
-    "y": 0
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
-    "mapId": "estuary",
-    "x": 76,
-    "y": 10
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-7ecdb8",
-    "mapId": "estuary",
-    "x": 73,
-    "y": 52
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-f4f319",
-    "mapId": "estuary",
-    "x": 68,
-    "y": 52
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-28ad5e",
-    "mapId": "estuary",
-    "x": 77,
-    "y": 0
+    "x": 74,
+    "y": 13
    }
   },
   {
@@ -1482,73 +1824,19 @@
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-tree-132848",
+    "objectId": "kit:beodeul_city/bd-tree-1a786c",
     "mapId": "estuary",
-    "x": 98,
-    "y": 20
+    "x": 43,
+    "y": 15
    }
   },
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-tree-d105b2",
-    "mapId": "estuary",
-    "x": 37,
-    "y": 20
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-f4f319",
+    "objectId": "kit:beodeul_city/bd-tree-03a8f7",
     "mapId": "estuary",
     "x": 1,
     "y": 51
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-0f7ed1",
-    "mapId": "estuary",
-    "x": 71,
-    "y": 65
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-c27062",
-    "mapId": "estuary",
-    "x": 99,
-    "y": 11
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-d61d7e",
-    "mapId": "estuary",
-    "x": 92,
-    "y": 39
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-a80c85",
-    "mapId": "estuary",
-    "x": 87,
-    "y": 38
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-37f48b",
-    "mapId": "estuary",
-    "x": 97,
-    "y": 40
    }
   },
   {
@@ -1558,69 +1846,6 @@
     "mapId": "estuary",
     "x": 36,
     "y": 12
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-d105b2",
-    "mapId": "estuary",
-    "x": 45,
-    "y": 13
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-e9d9b3",
-    "mapId": "estuary",
-    "x": 96,
-    "y": 92
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-0f7ed1",
-    "mapId": "estuary",
-    "x": 91,
-    "y": 94
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-3e8732",
-    "mapId": "estuary",
-    "x": 86,
-    "y": 92
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-1e09f0",
-    "mapId": "estuary",
-    "x": 97,
-    "y": 95
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-d105b2",
-    "mapId": "estuary",
-    "x": 91,
-    "y": 90
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-f4f319",
-    "mapId": "estuary",
-    "x": 91,
-    "y": 87
    }
   }
  ]

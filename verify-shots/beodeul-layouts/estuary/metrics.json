@@ -1,8 +1,8 @@
 {
  "originality": {
-  "sameCells": 52,
+  "sameCells": 53,
   "ofCells": 10000,
-  "sameShare": 0.0052,
+  "sameShare": 0.0053,
   "sameShareOfObjectCells": 0
  },
  "districts": [
@@ -37,7 +37,7 @@
    "atOriginalOrigin": false,
    "origins": [
     [
-     46,
+     44,
      35
     ]
    ]
@@ -90,7 +90,7 @@
  ],
  "districtsPresent": 5,
  "districtsAtOriginalOrigin": 0,
- "stampedKits": 140,
+ "stampedKits": 165,
  "doors": 52,
  "landReach": {
   "total": 52,
@@ -109,5 +109,5 @@
   "blockedDoorFronts": [],
   "sameKitRepeats": []
  },
- "designedObjectCells": 2204
+ "designedObjectCells": 2243
 }

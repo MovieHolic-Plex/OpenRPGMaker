@@ -250,7 +250,7 @@ def call_line(c):
     if c["name"] == "fill_region": r = a["rect"]; return f"fill_region {a['material']} ({r['x']},{r['y']}) {r['w']}×{r['h']}"
     return f"{c['name']} {json.dumps(a, ensure_ascii=False)[:120]}"
 INTENT = {"hilltop": "성은 북쪽 한가운데 언덕, 저택·성당이 양 날개. 큰길(38행) 아래 포룸, 동쪽 귀족 구역(저택+정원), 서쪽 풍차 들. 성벽 밖 남쪽 모랫길에 목조집과 우물 광장. 강·항구 없음 — 내륙 성읍.",
-          "estuary": "강이 북쪽 가장자리 폭포로 들어와 곧게 남쪽 호수 항구로 흐른다. 서쪽 둑에 왕성·귀족 저택, 동쪽 둑에 저택 구역·성당·포룸·풍차. 다리 셋 + 호수 하구 다리. 호수 옆 모랫길에 어부 목조집, 우물 광장."}
+          "estuary": "강이 북쪽 맵 가장자리에서 들어와(물 오토타일은 가장자리에 둑을 만들지 않는다) 곧게 남쪽 호수 항구로 흐른다. 서쪽 둑에 왕성·귀족 저택, 동쪽 둑에 저택 구역·성당·포룸·풍차. 다리 셋 + 호수 하구 다리. 양 둑에 강가 둑길. 호수 옆 모랫길에 어부 목조집, 우물 광장."}
 for lid, met, rec, mp in LAYOUTS:
     lines = [call_line(c) for c in rec["calls"] if not (c["name"] == "stamp_object" and "ground-lawn" in c["args"]["objectId"])]
     lawn = sum(1 for c in rec["calls"] if c["name"] == "stamp_object" and "ground-lawn" in c["args"]["objectId"])
@@ -428,7 +428,7 @@ mdocs.append(dict(id="bd-manor-kits", name="귀족 저택·정원 키트와 조�
 {HEAD}
 
 귀족 구역 = 저택 한 채 + 바로 아래 정형 정원. 정원의 가운데 자갈길(3칸)이 저택 현관 계단 아래에서 시작해 정원 발치(아래 줄)로 나간다 —
-그 발치 칸 아래가 거리다. 예시 「언덕 위」: `bd-manor-timber`(72,41) + `bd-garden-formal`(72,53), 거리 62행. 예시 「강어귀」: `bd-manor-vine`(4,40) + 정원(4,52), 거리 61행.
+그 발치 칸 아래가 거리다. 예시 「언덕 위」: `bd-manor-timber`(72,41) + `bd-garden-formal`(72,53), 정원 발치 (80,61)에서 3칸 폭 길이 68행 거리로. 예시 「강어귀」: `bd-manor-vine`(4,40) + 정원(4,52), 거리 61행.
 저택 키트는 부품(`bd-mpart-*`)을 조립표대로 겹친 결과다. 새 저택을 조립할 때는 표처럼 벽 칸 줄 → 창·문 → 지붕 → 박공·지붕창·굴뚝 → 담쟁이 순서로 겹친다.
 
 """ + "\n".join(entry7(k) for k in manors) + "\n## 부품 사전 (`manor-parts`)\n" + "\n".join(f"- `{k['id']}` {k['width']}×{k['height']} — {k['name']}: 역할 `{' / '.join(roles(k))}`" for k in mparts) + "\n"))
@@ -576,6 +576,8 @@ V7_FIXED = [
     "큰길이 강에 닿아 끝남(q32): 넷째 다리 (47,67).",
     "성 북쪽 물띠 줄무늬: 해자 돌 벽면을 창백한 마름돌 한 가지로.",
     "잔교 그림이 사람을 가림: 잔교 널판을 윗층에서 땅으로 내림.",
+    "구역 키트 가장자리의 이웃 조각(반쪽 집·지붕 꼭지·성벽 기둥·저택 옆 강 한 줄)을 잘라 냈다 — 새 도시에 찍어도 잘린 이웃이 따라오지 않는다. 왕성 해자 양 끝은 막힌 물 끝.",
+    "남은 것: 왕성 키트 아래 절벽의 양 끝은 잘린 단면 그대로다(끝 마감 그림이 없다). 맵 가장자리에 붙이거나 끝에 나무 무리를 둔다.",
 ]
 (DATA / "qa-tamper-checks.json").write_text(json.dumps(results, ensure_ascii=False, indent=1) + "\n")
 qrows = "\n".join(f"| {q['id']} | {q['v5M']}/{q['v5m']} → **{q['v6M']}/{q['v6m']}** | {' / '.join(q['fixed'])} | {' / '.join(q['new_in_v6'])} |" for q in QA["quadrants"])

@@ -79,7 +79,7 @@ export const LAYOUTS: LayoutSpec[] = [
   { id: "hilltop", name: "언덕 위 성 아래 마을", build(api) {
       const R = "버들항 길 포석", SAND = "버들항 모랫길";
       // 0. ground variety: lawn patches on the flat lawn (the material fill alone is one flat tile)
-      const rg = rng(5); for (let n = 0; n < 40; n += 1) api.stamp(`bd-ground-lawn-${1 + Math.floor(rg() * 6)}`, Math.floor(rg() * 92), Math.floor(rg() * 92));
+      const rg = rng(5); for (let n = 0; n < 60; n += 1) api.stamp(`bd-ground-lawn-${1 + Math.floor(rg() * 6)}`, Math.floor(rg() * 92), Math.floor(rg() * 92));
       // 1. landmarks first: the castle on the top-centre hill, the estate and the cathedral on the flanks (kits keep their cliffs, walls and gates)
       api.stamp("bd-castle", 33, 0);           // exit: causeway stair, cells (48..50, 32)
       api.stamp("bd-estate", 6, 4);            // gate exit (14..15, 25)
@@ -104,23 +104,25 @@ export const LAYOUTS: LayoutSpec[] = [
       api.fill({ x: 13, y: 58, w: 26, h: 2 }, R);              // street y=58 west part (ends at the forum spur)
       api.fill({ x: 55, y: 58, w: 6, h: 2 }, R);               // forum south exit → east avenue (not under the forum: its wall gaps would be filled)
       api.fill({ x: 12, y: 62, w: 1, h: 6 }, R);               // windmill lane continues to street y=68
-      api.fill({ x: 12, y: 68, w: 84, h: 2 }, R);              // lower street: windmill lane → east loop
-      api.fill({ x: 63, y: 62, w: 33, h: 2 }, R);              // below the garden foot (80,61)
-      api.fill({ x: 94, y: 64, w: 2, h: 4 }, R);               // closes the east loop (62 ↔ 68)
-      api.fill({ x: 79, y: 61, w: 3, h: 1 }, R);
+      api.fill({ x: 12, y: 68, w: 88, h: 2 }, R);              // lower street: windmill lane → leaves town at the east edge
+      api.fill({ x: 79, y: 61, w: 3, h: 7 }, R);               // the garden foot (80,61) runs straight down to street y=68
+      api.fill({ x: 42, y: 58, w: 1, h: 10 }, R);              // the forum's south arch gate (42,57) → lane → street y=68
+      api.fill({ x: 16, y: 70, w: 2, h: 8 }, R); api.fill({ x: 94, y: 70, w: 2, h: 8 }, R);   // the town streets reach the country road
       // 4. houses: every house stands NORTH of an east-west street with its door on the street row
       terrace(api, 11, 38, 18, 47); terrace(api, 12, 38, 52, 80);
       terrace(api, 14, 48, 18, 36);
       terrace(api, 16, 58, 18, 36);
-      terrace(api, 17, 68, 18, 60); terrace(api, 19, 68, 63, 93);
-      terrace(api, 20, 62, 63, 71);
+      terrace(api, 17, 68, 18, 60); terrace(api, 19, 68, 63, 99);
       // 5. outside the walls: a sand road, a well plaza, wooden houses (new kits), a fenced yard
       api.fill({ x: 48, y: 70, w: 2, h: 1 }, R);       // meets the plaza kit's north opening (49,71)
       api.fill({ x: 0, y: 78, w: 100, h: 2 }, SAND);            // the country road leaves town at both edges
       api.stamp("bd-out-well-plaza-sand", 44, 71 - 1 + 1);
       const OUT = ["bd-out-cabin", "bd-out-cabin-small", "bd-out-house-plank", "bd-out-longhouse"];
       terrace(api, 31, 78, 8, 43, { gap: 0.3, ids: OUT }); terrace(api, 32, 78, 56, 91, { gap: 0.3, ids: OUT });
+      // 6. trees: groves hide the cut ends of the castle cliff; the country south of the road is a wood, not an empty lawn
+      scatterTrees(api, 23, { x: 28, y: 18, w: 5, h: 18 }, 4); scatterTrees(api, 24, { x: 66, y: 18, w: 6, h: 18 }, 4);
       scatterTrees(api, 21, { x: 2, y: 24, w: 96, h: 74 }, 60, (x, y) => false);
+      scatterTrees(api, 22, { x: 0, y: 80, w: 100, h: 20 }, 55);
     },
     tampers: [
       { id: "err-layout-door-blocked", caption: "문 앞 칸(길)에 사과 궤짝 한 칸을 찍었다 — 그 집 문이 막힌다.", box: [0, 0, 0, 0],
@@ -140,57 +142,58 @@ export const LAYOUTS: LayoutSpec[] = [
     ] },
   { id: "estuary", name: "강어귀 항구 도시", build(api) {
       const R = "버들항 길 포석", SAND = "버들항 모랫길", WATER = "물";
-      const rg = rng(9); for (let n = 0; n < 40; n += 1) api.stamp(`bd-ground-lawn-${1 + Math.floor(rg() * 6)}`, Math.floor(rg() * 92), Math.floor(rg() * 92));
-      // 1. water first: the harbour lake at the bottom (its river mouth is kit columns 38..41 → x 40..43), the river falls in over the
-      //    waterfall at the top edge (river columns 4..7 of the kit → x 40..43) and runs straight down to the mouth.
-      api.stamp("bd-harbour-lake", 2, 85);
-      api.stamp("bd-waterfall-drop", 36, 0);
-      api.fill({ x: 40, y: 7, w: 4, h: 78 }, WATER);            // autotile water: the banks shape themselves
-      // 2. landmarks: the castle on the west bank, estate and cathedral on the east bank, the forum by the river
+      const rg = rng(9); for (let n = 0; n < 60; n += 1) api.stamp(`bd-ground-lawn-${1 + Math.floor(rg() * 6)}`, Math.floor(rg() * 92), Math.floor(rg() * 92));
+      // 1. water first: the harbour lake along the bottom edge from x=0 (its river mouth is kit columns 38..41), the river comes in
+      //    from the north map edge (water autotile: no bank at the edge) and runs straight down to the mouth.
+      api.stamp("bd-harbour-lake", 0, 85);
+      api.fill({ x: 38, y: 0, w: 4, h: 85 }, WATER);
+      // 2. landmarks: the castle on the west bank, estate and cathedral on the east bank, the manor + garden on the west bank
       api.stamp("bd-castle", 2, 0);            // exits (18,32) stair and (25..26,32) → street y=33
       api.stamp("bd-estate", 48, 4);           // gate exit (56..57, 26)
       api.stamp("bd-cathedral", 78, 4);        // plaza exit (84..85, 26)
       api.stamp("bd-manor-vine", 4, 40);       // door (12,49), stairs down to the garden
       api.stamp("bd-garden-formal", 4, 52);    // garden foot (12,60) meets street y=61
-      // 3. bridges: three crossings (main street, middle street, lower street) plus the quay bridge inside the lake kit
-      api.stamp("bd-bridge-arch", 40, 32); api.stamp("bd-bridge-arch", 40, 60); api.stamp("bd-bridge-arch", 40, 72);
+      // 3. bridges: three crossings plus the quay bridge inside the lake kit
+      api.stamp("bd-bridge-arch", 38, 32); api.stamp("bd-bridge-arch", 38, 60); api.stamp("bd-bridge-arch", 38, 72);
       // 4. streets. Rule: a street ends at a junction, a kit entrance, a bridge or the map edge (a road leaving town) — never in the
       //    grass or at the water. River-bank promenades on both banks take the cross streets.
-      api.fill({ x: 0, y: 33, w: 40, h: 2 }, R); api.fill({ x: 44, y: 33, w: 56, h: 2 }, R);     // main street
+      api.fill({ x: 0, y: 33, w: 38, h: 2 }, R); api.fill({ x: 42, y: 33, w: 58, h: 2 }, R);     // main street
       api.fill({ x: 56, y: 26, w: 2, h: 7 }, R); api.fill({ x: 84, y: 26, w: 2, h: 7 }, R);     // estate + cathedral
-      api.fill({ x: 38, y: 35, w: 2, h: 49 }, R); api.fill({ x: 44, y: 35, w: 2, h: 49 }, R);   // promenades
+      api.fill({ x: 36, y: 35, w: 2, h: 49 }, R); api.fill({ x: 42, y: 35, w: 2, h: 49 }, R);   // promenades
       api.fill({ x: 24, y: 35, w: 2, h: 49 }, R); api.fill({ x: 84, y: 35, w: 2, h: 49 }, R);   // west and east avenues
-      api.fill({ x: 26, y: 47, w: 12, h: 2 }, R);
-      api.fill({ x: 46, y: 49, w: 38, h: 2 }, R);                                              // forum south street
+      api.fill({ x: 26, y: 47, w: 10, h: 2 }, R);
+      api.fill({ x: 44, y: 49, w: 40, h: 2 }, R);                                              // forum south street
       // The forum and the windmill have grass cells on their rims. A street filled AFTER them would close those one-cell slits
       // ("벽 틈 메움") into road stubs, so they are stamped after the streets beside them; re-filling the street cells at their exits
       // re-shapes the curbs so the exits join without a curb.
-      api.stamp("bd-forum", 46, 35);           // top strip on the main street, west exit on the promenade (45,45), south exit (62..63, 49)
-      api.fill({ x: 46, y: 34, w: 22, h: 1 }, R); api.fill({ x: 45, y: 44, w: 1, h: 3 }, R); api.fill({ x: 61, y: 49, w: 4, h: 1 }, R);
+      api.stamp("bd-forum", 44, 35);           // top strip on the main street, west exit on the promenade (43,45), south exit (60..61, 49)
+      api.fill({ x: 44, y: 34, w: 22, h: 1 }, R); api.fill({ x: 43, y: 44, w: 1, h: 3 }, R); api.fill({ x: 59, y: 49, w: 4, h: 1 }, R);
+      api.fill({ x: 11, y: 60, w: 3, h: 1 }, R);
+      api.fill({ x: 0, y: 61, w: 38, h: 2 }, R); api.fill({ x: 44, y: 61, w: 40, h: 2 }, R);
       api.fill({ x: 86, y: 59, w: 14, h: 2 }, R);                                              // reaches the windmill lane top
       api.stamp("bd-windmill", 86, 61);        // its lane is column x=97, rows 61..82 (east avenue x=84..85 and street y=59..60 are already there)
       api.fill({ x: 96, y: 60, w: 3, h: 1 }, R);
-      api.fill({ x: 11, y: 60, w: 3, h: 1 }, R);
-      api.fill({ x: 0, y: 61, w: 40, h: 2 }, R); api.fill({ x: 46, y: 61, w: 38, h: 2 }, R);
-      api.fill({ x: 0, y: 73, w: 40, h: 2 }, R); api.fill({ x: 46, y: 73, w: 38, h: 2 }, R);
-      api.fill({ x: 24, y: 84, w: 16, h: 1 }, R); api.fill({ x: 44, y: 84, w: 56, h: 1 }, R);   // quay street over the lake kit
+      api.fill({ x: 0, y: 73, w: 38, h: 2 }, R); api.fill({ x: 44, y: 73, w: 40, h: 2 }, R);
+      api.fill({ x: 24, y: 84, w: 14, h: 1 }, R); api.fill({ x: 42, y: 84, w: 58, h: 1 }, R);   // quay street over the lake kit
       api.fill({ x: 97, y: 83, w: 1, h: 1 }, R);
-      api.fill({ x: 5, y: 84, w: 19, h: 1 }, SAND);                                            // the fishermen's sand lane
+      api.fill({ x: 3, y: 84, w: 21, h: 1 }, SAND);                                            // the fishermen's sand lane
       // 5. houses north of every east-west street
       terrace(api, 41, 33, 44, 55); terrace(api, 42, 33, 58, 83); terrace(api, 43, 33, 86, 99);
-      terrace(api, 44, 47, 26, 37); terrace(api, 45, 61, 26, 37);
-      terrace(api, 46, 49, 68, 83); terrace(api, 47, 61, 46, 83); terrace(api, 48, 59, 86, 99);
-      terrace(api, 49, 73, 0, 23); terrace(api, 50, 73, 26, 37); terrace(api, 51, 73, 46, 83);
-      terrace(api, 52, 84, 46, 83);
+      terrace(api, 44, 47, 26, 35); terrace(api, 45, 61, 26, 35);
+      terrace(api, 46, 49, 66, 83); terrace(api, 47, 61, 44, 83); terrace(api, 48, 59, 86, 99);
+      terrace(api, 49, 73, 0, 23); terrace(api, 50, 73, 26, 35); terrace(api, 51, 73, 44, 83);
+      terrace(api, 52, 84, 44, 83);
       // 6. the fishermen's quarter: wooden houses on the sand lane and a well plaza that opens onto street y=73
       api.stamp("bd-out-well-plaza-sand", 26, 76);
       api.fill({ x: 30, y: 75, w: 2, h: 1 }, R);
       const OUT = ["bd-out-cabin", "bd-out-cabin-small", "bd-out-house-plank", "bd-out-longhouse"];
-      terrace(api, 53, 84, 5, 23, { gap: 0.3, ids: OUT });
-      scatterTrees(api, 54, { x: 0, y: 0, w: 100, h: 85 }, 45); scatterTrees(api, 55, { x: 85, y: 85, w: 15, h: 15 }, 6);
+      terrace(api, 53, 84, 3, 23, { gap: 0.3, ids: OUT });
+      // 7. trees: a grove closes the lake kit's east end and the castle cliff's east end
+      scatterTrees(api, 55, { x: 82, y: 85, w: 18, h: 15 }, 10); scatterTrees(api, 56, { x: 33, y: 18, w: 4, h: 14 }, 3);
+      scatterTrees(api, 54, { x: 0, y: 0, w: 100, h: 85 }, 45);
     },
     tampers: [
-      { id: "err-layout-bridge-missing", caption: "가운데 거리(61~62행)의 아치 다리와 다리 머리 둑길 칸을 강물로 되돌렸다 — 동서 거리와 둑길이 물가에서 끊긴다.", box: [30, 54, 54, 70],
-        apply(api) { api.fill({ x: 38, y: 60, w: 8, h: 5 }, "물"); } },
+      { id: "err-layout-bridge-missing", caption: "가운데 거리(61~62행)의 아치 다리와 다리 머리 둑길 칸을 강물로 되돌렸다 — 동서 거리와 둑길이 물가에서 끊긴다.", box: [28, 54, 52, 70],
+        apply(api) { api.fill({ x: 36, y: 60, w: 8, h: 5 }, "물"); } },
     ] },
 ];

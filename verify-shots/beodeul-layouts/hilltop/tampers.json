@@ -32,8 +32,8 @@
    ]
   },
   "streetReach": {
-   "reached": 37,
-   "total": 38,
+   "reached": 42,
+   "total": 43,
    "unreached": [
     {
      "kit": "bd-house-h109_0",
@@ -79,8 +79,8 @@
    ]
   },
   "streetReach": {
-   "reached": 38,
-   "total": 38,
+   "reached": 43,
+   "total": 43,
    "unreached": []
   }
  },
@@ -137,8 +137,8 @@
    ]
   },
   "streetReach": {
-   "reached": 38,
-   "total": 38,
+   "reached": 43,
+   "total": 43,
    "unreached": []
   }
  }

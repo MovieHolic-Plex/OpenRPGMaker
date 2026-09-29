@@ -388,6 +388,186 @@
   {
    "name": "stamp_object",
    "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-4",
+    "mapId": "hilltop",
+    "x": 57,
+    "y": 90
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-4",
+    "mapId": "hilltop",
+    "x": 47,
+    "y": 38
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-5",
+    "mapId": "hilltop",
+    "x": 61,
+    "y": 66
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-5",
+    "mapId": "hilltop",
+    "x": 54,
+    "y": 52
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-2",
+    "mapId": "hilltop",
+    "x": 54,
+    "y": 1
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-3",
+    "mapId": "hilltop",
+    "x": 44,
+    "y": 18
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-4",
+    "mapId": "hilltop",
+    "x": 28,
+    "y": 49
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-1",
+    "mapId": "hilltop",
+    "x": 35,
+    "y": 86
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-1",
+    "mapId": "hilltop",
+    "x": 45,
+    "y": 55
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-1",
+    "mapId": "hilltop",
+    "x": 38,
+    "y": 66
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-2",
+    "mapId": "hilltop",
+    "x": 74,
+    "y": 3
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-5",
+    "mapId": "hilltop",
+    "x": 20,
+    "y": 23
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-1",
+    "mapId": "hilltop",
+    "x": 27,
+    "y": 41
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-3",
+    "mapId": "hilltop",
+    "x": 87,
+    "y": 30
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-6",
+    "mapId": "hilltop",
+    "x": 17,
+    "y": 80
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-3",
+    "mapId": "hilltop",
+    "x": 81,
+    "y": 55
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-3",
+    "mapId": "hilltop",
+    "x": 85,
+    "y": 30
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-2",
+    "mapId": "hilltop",
+    "x": 90,
+    "y": 69
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-1",
+    "mapId": "hilltop",
+    "x": 1,
+    "y": 9
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-1",
+    "mapId": "hilltop",
+    "x": 50,
+    "y": 6
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
     "objectId": "kit:beodeul_city/bd-castle",
     "mapId": "hilltop",
     "x": 33,
@@ -624,34 +804,8 @@
     "rect": {
      "x": 12,
      "y": 68,
-     "w": 84,
+     "w": 88,
      "h": 2
-    },
-    "material": "버들항 길 포석"
-   }
-  },
-  {
-   "name": "fill_region",
-   "args": {
-    "mapId": "hilltop",
-    "rect": {
-     "x": 63,
-     "y": 62,
-     "w": 33,
-     "h": 2
-    },
-    "material": "버들항 길 포석"
-   }
-  },
-  {
-   "name": "fill_region",
-   "args": {
-    "mapId": "hilltop",
-    "rect": {
-     "x": 94,
-     "y": 64,
-     "w": 2,
-     "h": 4
     },
     "material": "버들항 길 포석"
    }
@@ -664,7 +818,46 @@
      "x": 79,
      "y": 61,
      "w": 3,
-     "h": 1
+     "h": 7
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "hilltop",
+    "rect": {
+     "x": 42,
+     "y": 58,
+     "w": 1,
+     "h": 10
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "hilltop",
+    "rect": {
+     "x": 16,
+     "y": 70,
+     "w": 2,
+     "h": 8
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "hilltop",
+    "rect": {
+     "x": 94,
+     "y": 70,
+     "w": 2,
+     "h": 8
     },
     "material": "버들항 길 포석"
    }
@@ -879,46 +1072,91 @@
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-house-h124_0",
+    "objectId": "kit:beodeul_city/bd-house-h131_0",
     "mapId": "hilltop",
-    "x": 41,
-    "y": 59
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-house-h116_0",
-    "mapId": "hilltop",
-    "x": 50,
-    "y": 60
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-house-h127_0",
-    "mapId": "hilltop",
-    "x": 56,
+    "x": 43,
     "y": 62
    }
   },
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-house-h106_1",
+    "objectId": "kit:beodeul_city/bd-house-i9",
     "mapId": "hilltop",
-    "x": 63,
-    "y": 54
+    "x": 49,
+    "y": 62
    }
   },
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-house-i14",
+    "objectId": "kit:beodeul_city/bd-house-i8",
     "mapId": "hilltop",
-    "x": 69,
-    "y": 56
+    "x": 55,
+    "y": 62
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-house-h103_1",
+    "mapId": "hilltop",
+    "x": 63,
+    "y": 62
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-house-h113_1",
+    "mapId": "hilltop",
+    "x": 68,
+    "y": 62
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-house-i13",
+    "mapId": "hilltop",
+    "x": 73,
+    "y": 62
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-house-h144_0",
+    "mapId": "hilltop",
+    "x": 76,
+    "y": 62
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-house-i8",
+    "mapId": "hilltop",
+    "x": 82,
+    "y": 62
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-house-h138_0",
+    "mapId": "hilltop",
+    "x": 88,
+    "y": 60
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-house-h120_0",
+    "mapId": "hilltop",
+    "x": 92,
+    "y": 62
    }
   },
   {
@@ -968,28 +1206,28 @@
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-out-longhouse",
-    "mapId": "hilltop",
-    "x": 17,
-    "y": 72
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
     "objectId": "kit:beodeul_city/bd-out-cabin",
     "mapId": "hilltop",
-    "x": 28,
+    "x": 18,
     "y": 72
    }
   },
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-out-cabin-small",
+    "objectId": "kit:beodeul_city/bd-out-longhouse",
     "mapId": "hilltop",
-    "x": 34,
-    "y": 74
+    "x": 23,
+    "y": 72
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-out-house-plank",
+    "mapId": "hilltop",
+    "x": 33,
+    "y": 72
    }
   },
   {
@@ -1040,10 +1278,55 @@
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-tree-47e17a",
+    "objectId": "kit:beodeul_city/bd-tree-d61d7e",
     "mapId": "hilltop",
-    "x": 76,
-    "y": 65
+    "x": 29,
+    "y": 23
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-f4f319",
+    "mapId": "hilltop",
+    "x": 30,
+    "y": 28
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-28ad5e",
+    "mapId": "hilltop",
+    "x": 29,
+    "y": 19
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-132848",
+    "mapId": "hilltop",
+    "x": 31,
+    "y": 18
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-d43edd",
+    "mapId": "hilltop",
+    "x": 67,
+    "y": 19
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-e9d9b3",
+    "mapId": "hilltop",
+    "x": 69,
+    "y": 27
    }
   },
   {
@@ -1103,15 +1386,6 @@
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-tree-d105b2",
-    "mapId": "hilltop",
-    "x": 71,
-    "y": 28
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
     "objectId": "kit:beodeul_city/bd-tree-37f48b",
     "mapId": "hilltop",
     "x": 26,
@@ -1166,10 +1440,10 @@
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-tree-f4f319",
+    "objectId": "kit:beodeul_city/bd-tree-5844f6",
     "mapId": "hilltop",
-    "x": 30,
-    "y": 24
+    "x": 73,
+    "y": 93
    }
   },
   {
@@ -1197,15 +1471,6 @@
     "mapId": "hilltop",
     "x": 95,
     "y": 88
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-d43edd",
-    "mapId": "hilltop",
-    "x": 26,
-    "y": 27
    }
   },
   {
@@ -1238,46 +1503,19 @@
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-tree-5844f6",
+    "objectId": "kit:beodeul_city/bd-tree-03a8f7",
     "mapId": "hilltop",
-    "x": 9,
-    "y": 93
+    "x": 95,
+    "y": 47
    }
   },
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-tree-a80c85",
+    "objectId": "kit:beodeul_city/bd-tree-1a786c",
     "mapId": "hilltop",
-    "x": 60,
-    "y": 86
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-d105b2",
-    "mapId": "hilltop",
-    "x": 91,
-    "y": 91
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-c27062",
-    "mapId": "hilltop",
-    "x": 38,
-    "y": 85
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-37f48b",
-    "mapId": "hilltop",
-    "x": 2,
-    "y": 63
+    "x": 56,
+    "y": 90
    }
   },
   {
@@ -1292,19 +1530,10 @@
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-tree-bdd36e",
+    "objectId": "kit:beodeul_city/bd-tree-1e09f0",
     "mapId": "hilltop",
-    "x": 73,
-    "y": 93
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-cc0fcb",
-    "mapId": "hilltop",
-    "x": 30,
-    "y": 84
+    "x": 93,
+    "y": 41
    }
   },
   {
@@ -1312,17 +1541,35 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-tree-7ecdb8",
     "mapId": "hilltop",
-    "x": 41,
-    "y": 91
+    "x": 67,
+    "y": 82
    }
   },
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-tree-c27062",
+    "objectId": "kit:beodeul_city/bd-tree-132848",
     "mapId": "hilltop",
-    "x": 21,
-    "y": 27
+    "x": 33,
+    "y": 82
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-a80c85",
+    "mapId": "hilltop",
+    "x": 88,
+    "y": 38
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-47e17a",
+    "mapId": "hilltop",
+    "x": 63,
+    "y": 89
    }
   },
   {
@@ -1346,10 +1593,19 @@
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-tree-47e17a",
+    "objectId": "kit:beodeul_city/bd-tree-d105b2",
     "mapId": "hilltop",
-    "x": 6,
-    "y": 35
+    "x": 39,
+    "y": 83
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-c27062",
+    "mapId": "hilltop",
+    "x": 91,
+    "y": 90
    }
   },
   {
@@ -1364,46 +1620,37 @@
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-tree-5844f6",
+    "objectId": "kit:beodeul_city/bd-tree-47e17a",
     "mapId": "hilltop",
-    "x": 90,
-    "y": 44
+    "x": 26,
+    "y": 93
    }
   },
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "objectId": "kit:beodeul_city/bd-tree-3e8732",
     "mapId": "hilltop",
-    "x": 7,
-    "y": 83
+    "x": 5,
+    "y": 90
    }
   },
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-tree-bdd36e",
+    "objectId": "kit:beodeul_city/bd-tree-b1d104",
     "mapId": "hilltop",
-    "x": 36,
-    "y": 89
+    "x": 3,
+    "y": 28
    }
   },
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-tree-7ecdb8",
+    "objectId": "kit:beodeul_city/bd-tree-e9d9b3",
     "mapId": "hilltop",
-    "x": 55,
-    "y": 88
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-28ad5e",
-    "mapId": "hilltop",
-    "x": 27,
-    "y": 94
+    "x": 91,
+    "y": 50
    }
   },
   {
@@ -1411,8 +1658,8 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-tree-d105b2",
     "mapId": "hilltop",
-    "x": 42,
-    "y": 88
+    "x": 86,
+    "y": 33
    }
   },
   {
@@ -1436,37 +1683,10 @@
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-tree-d43edd",
+    "objectId": "kit:beodeul_city/bd-tree-132848",
     "mapId": "hilltop",
-    "x": 86,
-    "y": 28
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-37f48b",
-    "mapId": "hilltop",
-    "x": 4,
-    "y": 86
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-c27062",
-    "mapId": "hilltop",
-    "x": 70,
-    "y": 94
-   }
-  },
-  {
-   "name": "stamp_object",
-   "args": {
-    "objectId": "kit:beodeul_city/bd-tree-e9d9b3",
-    "mapId": "hilltop",
-    "x": 55,
-    "y": 95
+    "x": 25,
+    "y": 81
    }
   },
   {
@@ -1481,10 +1701,19 @@
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-tree-3e8732",
+    "objectId": "kit:beodeul_city/bd-tree-1a786c",
     "mapId": "hilltop",
-    "x": 47,
-    "y": 85
+    "x": 82,
+    "y": 93
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-1e09f0",
+    "mapId": "hilltop",
+    "x": 39,
+    "y": 86
    }
   },
   {
@@ -1508,10 +1737,19 @@
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-tree-132848",
+    "objectId": "kit:beodeul_city/bd-tree-03a8f7",
     "mapId": "hilltop",
-    "x": 55,
-    "y": 71
+    "x": 10,
+    "y": 92
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-d43edd",
+    "mapId": "hilltop",
+    "x": 46,
+    "y": 88
    }
   },
   {
@@ -1526,10 +1764,10 @@
   {
    "name": "stamp_object",
    "args": {
-    "objectId": "kit:beodeul_city/bd-tree-e9d9b3",
+    "objectId": "kit:beodeul_city/bd-tree-bdd36e",
     "mapId": "hilltop",
-    "x": 95,
-    "y": 44
+    "x": 41,
+    "y": 94
    }
   },
   {
@@ -1537,8 +1775,35 @@
    "args": {
     "objectId": "kit:beodeul_city/bd-tree-cc0fcb",
     "mapId": "hilltop",
+    "x": 74,
+    "y": 28
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-132848",
+    "mapId": "hilltop",
+    "x": 70,
+    "y": 96
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-37f48b",
+    "mapId": "hilltop",
     "x": 46,
-    "y": 91
+    "y": 95
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-1a786c",
+    "mapId": "hilltop",
+    "x": 8,
+    "y": 34
    }
   },
   {
@@ -1562,6 +1827,15 @@
   {
    "name": "stamp_object",
    "args": {
+    "objectId": "kit:beodeul_city/bd-tree-28ad5e",
+    "mapId": "hilltop",
+    "x": 69,
+    "y": 55
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
     "objectId": "kit:beodeul_city/bd-tree-eef4bc",
     "mapId": "hilltop",
     "x": 97,
@@ -1571,10 +1845,379 @@
   {
    "name": "stamp_object",
    "args": {
+    "objectId": "kit:beodeul_city/bd-tree-47e17a",
+    "mapId": "hilltop",
+    "x": 25,
+    "y": 30
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-a80c85",
+    "mapId": "hilltop",
+    "x": 17,
+    "y": 27
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-1a786c",
+    "mapId": "hilltop",
+    "x": 95,
+    "y": 57
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-cc0fcb",
+    "mapId": "hilltop",
+    "x": 14,
+    "y": 94
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-132848",
+    "mapId": "hilltop",
+    "x": 13,
+    "y": 97
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-03a8f7",
+    "mapId": "hilltop",
+    "x": 69,
+    "y": 87
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-d105b2",
+    "mapId": "hilltop",
+    "x": 28,
+    "y": 82
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "mapId": "hilltop",
+    "x": 2,
+    "y": 96
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-cc0fcb",
+    "mapId": "hilltop",
+    "x": 7,
+    "y": 84
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-7ecdb8",
+    "mapId": "hilltop",
+    "x": 63,
+    "y": 81
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-5844f6",
+    "mapId": "hilltop",
+    "x": 1,
+    "y": 82
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-3e8732",
+    "mapId": "hilltop",
+    "x": 78,
+    "y": 95
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-f4f319",
+    "mapId": "hilltop",
+    "x": 55,
+    "y": 81
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-d105b2",
+    "mapId": "hilltop",
+    "x": 6,
+    "y": 95
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
     "objectId": "kit:beodeul_city/bd-tree-28ad5e",
     "mapId": "hilltop",
-    "x": 64,
+    "x": 55,
+    "y": 85
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-37f48b",
+    "mapId": "hilltop",
+    "x": 75,
     "y": 83
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-47e17a",
+    "mapId": "hilltop",
+    "x": 30,
+    "y": 85
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-e9d9b3",
+    "mapId": "hilltop",
+    "x": 51,
+    "y": 83
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-c27062",
+    "mapId": "hilltop",
+    "x": 52,
+    "y": 89
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-a80c85",
+    "mapId": "hilltop",
+    "x": 63,
+    "y": 85
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-132848",
+    "mapId": "hilltop",
+    "x": 89,
+    "y": 98
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "mapId": "hilltop",
+    "x": 67,
+    "y": 89
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-d105b2",
+    "mapId": "hilltop",
+    "x": 43,
+    "y": 91
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-37f48b",
+    "mapId": "hilltop",
+    "x": 78,
+    "y": 92
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-f4f319",
+    "mapId": "hilltop",
+    "x": 56,
+    "y": 95
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-c27062",
+    "mapId": "hilltop",
+    "x": 16,
+    "y": 88
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-cc0fcb",
+    "mapId": "hilltop",
+    "x": 84,
+    "y": 98
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-d105b2",
+    "mapId": "hilltop",
+    "x": 19,
+    "y": 81
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-1e09f0",
+    "mapId": "hilltop",
+    "x": 66,
+    "y": 96
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-132848",
+    "mapId": "hilltop",
+    "x": 97,
+    "y": 98
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-e9d9b3",
+    "mapId": "hilltop",
+    "x": 21,
+    "y": 84
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-cc0fcb",
+    "mapId": "hilltop",
+    "x": 35,
+    "y": 85
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-5844f6",
+    "mapId": "hilltop",
+    "x": 96,
+    "y": 81
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-37f48b",
+    "mapId": "hilltop",
+    "x": 80,
+    "y": 83
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-1a786c",
+    "mapId": "hilltop",
+    "x": 1,
+    "y": 88
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "mapId": "hilltop",
+    "x": 98,
+    "y": 93
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-e9d9b3",
+    "mapId": "hilltop",
+    "x": 26,
+    "y": 96
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-d105b2",
+    "mapId": "hilltop",
+    "x": 31,
+    "y": 98
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-f4f319",
+    "mapId": "hilltop",
+    "x": 60,
+    "y": 89
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-0f7ed1",
+    "mapId": "hilltop",
+    "x": 92,
+    "y": 87
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-28ad5e",
+    "mapId": "hilltop",
+    "x": 54,
+    "y": 89
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-e9d9b3",
+    "mapId": "hilltop",
+    "x": 51,
+    "y": 98
    }
   }
  ]

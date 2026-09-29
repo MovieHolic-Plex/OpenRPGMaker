@@ -1,8 +1,8 @@
 {
  "originality": {
-  "sameCells": 50,
+  "sameCells": 45,
   "ofCells": 10000,
-  "sameShare": 0.005,
+  "sameShare": 0.0045,
   "sameShareOfObjectCells": 0
  },
  "districts": [
@@ -90,16 +90,16 @@
  ],
  "districtsPresent": 5,
  "districtsAtOriginalOrigin": 0,
- "stampedKits": 145,
- "doors": 38,
+ "stampedKits": 215,
+ "doors": 43,
  "landReach": {
-  "total": 38,
-  "reached": 38,
+  "total": 43,
+  "reached": 43,
   "unreached": []
  },
  "streetReach": {
-  "total": 38,
-  "reached": 38,
+  "total": 43,
+  "reached": 43,
   "unreached": []
  },
  "defects": {
@@ -109,5 +109,5 @@
   "blockedDoorFronts": [],
   "sameKitRepeats": []
  },
- "designedObjectCells": 1788
+ "designedObjectCells": 2213
 }
