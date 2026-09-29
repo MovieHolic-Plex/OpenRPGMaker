@@ -17,3 +17,13 @@ retro2003 로스터 2차(src/assets/retroRoster.ts)의 beast·vehicle·monster �
 - 종 파일 `animal-<i>.py` 는 부위 사각형·중심점·눈·입 자리만 적는다. 실행하면 시트 + 검사 줄 + `.omo/pp1/board-<칩>.png`(칩 4배·8배 옆 15칸).
 - 크기 비교판: `python3 -c "import sys;sys.path.insert(0,'scripts/asset-gen/party-pixel');import pp15_pp1 as L;L.board_lineup([('animal-%d'%i,48 if i<4 else 64) for i in range(8)])"` → `.omo/pp1/lineup.png`.
 - `review_board.py` 는 3×3 시트 전제라 b1 15칸 시트에는 맞지 않는다.
+
+## 2026-09-29 b3 재작업(pp15_pp2.py) — 15칸, 칩 2배 밑그림
+
+- monster1-0~3(슬라임·붉은 악마·꼬마 오거·유령)은 `pp15_pp2.py` 가 그린다. 종 파일 `monster1-<n>.py` 는 그 빌더를 부르는 얇은 진입점.
+- 밑그림 = 걷기 칩 Monster1.png 의 **행 3(왼쪽 보기) 가운데 칸**(칩 행: 0 위·1 오른쪽·2 아래·3 왼쪽). 외곽선을 벗기고 Scale2x 로 정수 2배 → 부위(머리·몸·팔·다리) 층을 돌리고 옮김 → 새 1px 외곽선 → 왼쪽 위 빛 한 단계. 반전하지 않는다.
+- 셀: 슬라임 48(칩 13×9 → 26×18). 악마 52px·오거 44px·유령 40px+부유 4px 는 칩 × 2 가 48 에 안 들어가 64.
+- 오거 칩은 49색이라 칩에서 고른 15색(OGRE_PAL)으로 옮긴 뒤 2배. 삼지창·몽둥이·불덩이·바위는 칩에 없어 스킬 칸에만 수식으로 그린다.
+- 검사는 빌드마다: 크기 (cell·3)×(cell·5), 알파 0/255, ≤16색, 빈 칸·같은 칸, 바닥선 cell−4(공중 칸 제외), 칸 경계 1px, 외톨이 픽셀.
+- 확인판: `python3 scripts/asset-gen/party-pixel/pp15_pp2.py board` → `.omo/pp2/board-<chip>.png`(칩 4배 | 15칸 4배), `size-compare.png`(actor1-0 과 대기 칸 같은 배율).
+- 주의: 사람 전투 시트(charset-battlers)는 칩 **1배**(몸 24px)다. 칩 2배 규칙을 따르면 화면에서 b3 몬스터가 사람 아군의 약 2배 키로 선다.
