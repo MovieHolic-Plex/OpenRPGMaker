@@ -16,6 +16,7 @@ from rig45 import *  # noqa: F401,F403
 _SHIELD_POSES = ['idle', 'walk_a', 'walk_b', 'walk_c', 'attack_windup', 'attack_strike', 'attack', 'attack_follow',
                  'hit', 'defend', 'guard_hit', 'skill', 'weak', 'evade', 'revive']
 _OLD_OVER = {pid: dict(bh=(3, 2), bwk=('shield', 0)) for pid in _SHIELD_POSES}
+_OLD_OVER['item'] = dict(fh=(-10, -2))
 _OLD_OVER['defend'] = dict(bh=(-6, 0), bwk=('shield', 0), fh=(-4, -4))
 _OLD_OVER['guard_hit'] = dict(bh=(-5, 0), bwk=('shield', 0), fh=(-3, -4))
 # 호리병은 얼굴을 가리지 않게 앞으로 내밀어 든다(1차 검토: 사막 전사·은자 item 칸에서 얼굴이 가려짐).
