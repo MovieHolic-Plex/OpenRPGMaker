@@ -10,7 +10,7 @@
 //   그 밖        착탄 순간부터 목록 순서대로 이어 재생한다. 다음 레이어는 앞 레이어의 55% 지점에서 겹쳐 시작한다.
 import { castTypeForSkill, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
 import type { RetroFxAnchor, RetroFxLayer, RetroSkillMotion } from "@/assets/retroClassSkills";
-import type { PixelEnemyCell } from "@/assets/pixelEnemySheets";
+import type { PartyPixelCell, PixelEnemyCell } from "@/assets/pixelEnemySheets";
 
 /** 시전자가 서는 자리. 좌표는 무대가 정한다. */
 export type RetroStagePlace = "home" | "front" | "center" | "above";
@@ -463,13 +463,23 @@ export function retroMonsterCellForPose(pose: ExtendedBattlerPose): PixelEnemyCe
  *   피격(hit·guard_hit) → hit, 쓰러짐(dying·dead) → dead, 승리 → idle_b/idle_c.
  * 몬스터 스킬용 retroMonsterCellForPose 와 다른 점: 피격은 hit 칸을 쓰고, 기합류 skill 은 windup 이 아니라 attack 이다.
  */
-export function retroPartyPixelCellForPose(pose: ExtendedBattlerPose): PixelEnemyCell | undefined {
+/**
+ * 15칸 시트(rows 5)는 확장 칸을 쓴다: cast_charge·cast_raise·cast_release(시전 3단), evade 도약 중 → leap,
+ * skill(필살기 결정) → finisher, defend·item(기합·강화) → buff. 9칸 시트는 partyPixelFrame 이 기존 칸으로 물린다.
+ */
+export function retroPartyPixelCellForPose(pose: ExtendedBattlerPose): PartyPixelCell | undefined {
   switch (pose) {
     case "idle": case "front": return undefined;
-    case "attack_windup": case "cast_charge": case "defend": case "item": return "windup";
-    case "walk_a": case "walk_b": case "walk_c": case "cast_raise": return "move";
-    case "attack": case "attack_strike": case "cast_release": case "skill": return "attack";
-    case "attack_follow": case "evade": case "weak": case "revive": return "recover";
+    case "attack_windup": return "windup";
+    case "cast_charge": return "cast_charge";
+    case "cast_raise": return "cast_raise";
+    case "cast_release": return "cast_release";
+    case "defend": case "item": return "buff";
+    case "skill": return "finisher";
+    case "evade": return "leap";
+    case "walk_a": case "walk_b": case "walk_c": return "move";
+    case "attack": case "attack_strike": return "attack";
+    case "attack_follow": case "weak": case "revive": return "recover";
     case "hit": case "guard_hit": return "hit";
     case "dying": case "dead": return "dead";
     case "victory": return "idle_b";

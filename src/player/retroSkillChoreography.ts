@@ -249,6 +249,8 @@ const HIT_STAGGER_MS = 90;
 /** 재생기가 읽는 계약 모양(직업·몬스터 공통). */
 interface PlayableSkill {
   readonly id: string;
+  /** 직업·몬스터 스킬 계약의 이름(컷인 띠에 적는다). */
+  readonly name?: string;
   readonly motion: string;
   readonly layers: readonly RetroFxLayer[];
 }
@@ -724,9 +726,23 @@ function playScreen(field: HTMLElement, player: ClassPlayer, event: Extract<Retr
       copy.style.height = `${sprite.offsetHeight || 96}px`;
       copy.style.backgroundImage = computed.backgroundImage;
       copy.style.backgroundSize = computed.backgroundSize;
-      copy.style.backgroundPosition = computed.backgroundPosition;
+      // 2026-09-29: 그 순간 칸(시전 준비·도약 등)을 그대로 떠 오면 2배로 부풀어 다른 캐릭터처럼 보였다(사용자 지적).
+      // 컷인은 늘 **전신 대기 칸**(시트 맨 왼쪽 위)을 쓰고 잘라내지 않는다. 시전 시트로 바뀌어 있으면 전투 시트로 되돌린다.
+      const battleSheet = sprite.dataset.battlerSheetUrl;
+      if (battleSheet && sprite.dataset.battlerSheetSize) {
+        copy.style.backgroundImage = `url("${battleSheet}")`;
+        copy.style.backgroundSize = sprite.dataset.battlerSheetSize;
+      }
+      copy.style.backgroundPosition = "0% 0%";
       copy.style.backgroundRepeat = "no-repeat";
       veil.append(copy);
+    }
+    const name = player.user.querySelector<HTMLElement>(".battle-actor-sprite")?.getAttribute("aria-label")?.replace(/ 전투 캐릭터$/, "");
+    if (name) {
+      const label = document.createElement("span");
+      label.className = "retro-class-cutin-name";
+      label.textContent = player.plan.skill.name ? `${name} · ${player.plan.skill.name}` : name;
+      veil.append(label);
     }
     if (typeof veil.animate === "function") player.animations.push(veil.animate([
       { translate: "100% 0", offset: 0 }, { translate: "0 0", offset: 0.14 }, { translate: "-3% 0", offset: 0.84 }, { translate: "-100% 0", offset: 1 },

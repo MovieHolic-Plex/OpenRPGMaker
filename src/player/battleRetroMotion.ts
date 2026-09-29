@@ -1,6 +1,6 @@
 import { animateRetroSkillFx, battleEntrySkillRecord, clearRetroSkillFx, driveRetroClassSkill, isRetroClassSkillActor, preloadRetroClassSkillFx, preloadRetroSkillFx, retroSkillForEntry, setRetroSkillEntry, type RetroSkillRecipe } from "@/player/retroSkillChoreography";
 import { CAST_TYPES, EXTENDED_POSE_FRAME, castTypeForSkill, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
-import type { PixelEnemyCell } from "@/assets/pixelEnemySheets";
+import type { PartyPixelCell, PixelEnemyCell } from "@/assets/pixelEnemySheets";
 import { store } from "@/project/store";
 import { retroRosterClass } from "@/assets/retroRoster";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
@@ -741,14 +741,14 @@ export function retroPixelEnemyCell(node: HTMLElement): PixelEnemyCell | "idle" 
  * 승리(들썩임: windup ↔ idle_b)·방어 태세(windup)·회피(recover). 비트/직업 스킬 재생기가 고른 칸(retroPixelCell)이 있으면 그것이 이긴다.
  * 그 밖의 스킨(모션이 retro 가 아닌 정면 스킨)에서는 의미 포즈로 대신한다.
  */
-export function retroPartyPixelCell(node: HTMLElement, pose: Pose = "idle"): PixelEnemyCell | "idle" {
+export function retroPartyPixelCell(node: HTMLElement, pose: Pose = "idle"): PartyPixelCell | "idle" {
   const transient = node.dataset.retroTransient;
   if (node.classList.contains("defeated") || pose === "dead") return transient === "hit" ? "hit" : "dead";
   if (transient === "hit" || transient === "guard_hit") return "hit";
   if (transient === "evade") return "recover";
   if (node.dataset.retroVictory === "true" || pose === "victory") return node.dataset.retroVictoryFrame === "victory_b" ? "idle_b" : "windup";
   const cell = node.dataset.retroBeat || node.dataset.retroClassSkill ? node.dataset.retroPixelCell : undefined;
-  if (cell) return cell as PixelEnemyCell;
+  if (cell) return cell as PartyPixelCell;
   if (node.dataset.retroCommand === "true") return "idle";
   if (node.dataset.battlerDefending === "true" || pose === "defend") return "windup";
   if (pose === "hit") return "hit";

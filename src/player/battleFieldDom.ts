@@ -1,7 +1,7 @@
 import { charsetBattler, resolvePartyBattleCharset } from "@/assets/charsetBattlers";
 import { retroCastFrameFor, retroMotionPose, retroPartyPixelCell, retroPixelEnemyCell } from "@/player/battleRetroMotion";
 import { PIXEL_ENEMY_FRAME, pixelEnemySheet, pixelEnemySheetUrl } from "@/assets/pixelEnemySheets";
-import { partyPixelSheet, partyPixelSheetUrl, type PartyPixelSheet } from "@/assets/partyPixelSheets";
+import { partyPixelBackgroundPosition, partyPixelSheet, partyPixelSheetUrl, type PartyPixelSheet } from "@/assets/partyPixelSheets";
 import { battleTypeBadges } from "@/player/battleTypeBadges";
 import type { BattleActionBeat } from "@/player/battleActionBeats";
 import { fitBattleEnemy } from "@/player/battleEnemyFit";
@@ -676,8 +676,8 @@ function applyBattlerPose(node: HTMLElement, pose: ExtendedBattlerPose): void {
     node.dataset.battlePoseFrame = cell;
     if (cell === "idle") sprite.style.removeProperty("background-position");
     else {
-      const at = PIXEL_ENEMY_FRAME[cell];
-      sprite.style.backgroundPosition = `${at.col * 50}% ${at.row * 50}%`;
+      const sheet = partyPixelSheet(sprite.dataset.pixelSheet);
+      sprite.style.backgroundPosition = partyPixelBackgroundPosition(sheet ?? { rows: 3 }, cell);
     }
     return;
   }
@@ -1737,8 +1737,10 @@ function partyPixelSprite(name: string, sheet: PartyPixelSheet): HTMLElement {
   sprite.style.setProperty("--battle-sprite-frame-height", `${box}px`);
   sprite.style.setProperty("--pixel-enemy-idle-ms", `${sheet.idleFrameMs * 4}ms`);
   sprite.style.backgroundImage = `url("${url}")`;
-  sprite.style.backgroundSize = "300% 300%";
+  sprite.style.backgroundSize = `300% ${sheet.rows * 100}%`;
   sprite.style.backgroundPosition = "0% 0%";
+  // 대기 루프 키프레임(retro-pixel-enemy-idle)은 행 0 을 백분율로 옮긴다 — 행 수와 무관하게 0% 가 맨 윗줄이다.
+  sprite.dataset.pixelRows = String(sheet.rows);
   return sprite;
 }
 

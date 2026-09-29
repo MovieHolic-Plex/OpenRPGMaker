@@ -9,7 +9,7 @@
 // 리소스 id 는 "party-pixel-<칩>" — 배우 battleCharacterResourceId 에 그대로 넣는다(별도 스키마 필드 없음).
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { RETRO_PARTY_PIXEL_SHEETS } from "@/assets/retroRosterSkills";
-import type { PixelEnemyMotion } from "@/assets/pixelEnemySheets";
+import { PIXEL_ENEMY_FRAME, type PartyPixelCell, type PartyPixelExtraCell, type PixelEnemyCell, type PixelEnemyMotion } from "@/assets/pixelEnemySheets";
 import { RETRO_ROSTER } from "@/assets/retroRoster";
 
 export const PARTY_PIXEL_PREFIX = "party-pixel-";
@@ -24,6 +24,8 @@ export interface PartyPixelSheet {
   readonly motion: PixelEnemyMotion;
   /** 대기 루프 한 칸 길이(ms). a→b→c→b. */
   readonly idleFrameMs: number;
+  /** 시트 행 수(3 = 9칸, 5 = 15칸 확장). */
+  readonly rows: 3 | 5;
 }
 
 export function partyPixelResourceId(chip: string): string {
@@ -37,7 +39,35 @@ export const PARTY_PIXEL_SHEETS: readonly PartyPixelSheet[] = RETRO_PARTY_PIXEL_
   cell: entry.cell,
   motion: entry.motion,
   idleFrameMs: entry.idleFrameMs,
+  rows: entry.rows ?? 3,
 }));
+
+/** 15칸 시트의 확장 칸 자리(열, 행). 행 0~2 는 PIXEL_ENEMY_FRAME 과 같다. */
+export const PARTY_PIXEL_EXTRA_FRAME: Readonly<Record<PartyPixelExtraCell, { readonly col: number; readonly row: number }>> = {
+  cast_charge: { col: 0, row: 3 },
+  cast_raise: { col: 1, row: 3 },
+  cast_release: { col: 2, row: 3 },
+  leap: { col: 0, row: 4 },
+  buff: { col: 1, row: 4 },
+  finisher: { col: 2, row: 4 },
+};
+/** 확장 칸이 없는 9칸 시트에서 대신 쓸 칸. */
+const EXTRA_FALLBACK: Readonly<Record<PartyPixelExtraCell, PixelEnemyCell>> = {
+  cast_charge: "windup", cast_raise: "move", cast_release: "attack", leap: "move", buff: "windup", finisher: "attack",
+};
+
+/** 이 시트에서 칸의 실제 자리. 9칸 시트면 확장 칸을 기존 칸으로 물린다. */
+export function partyPixelFrame(sheet: Pick<PartyPixelSheet, "rows">, cell: PartyPixelCell): { readonly col: number; readonly row: number } {
+  if (cell in PIXEL_ENEMY_FRAME) return PIXEL_ENEMY_FRAME[cell as PixelEnemyCell];
+  const extra = cell as PartyPixelExtraCell;
+  return sheet.rows >= 5 ? PARTY_PIXEL_EXTRA_FRAME[extra] : PIXEL_ENEMY_FRAME[EXTRA_FALLBACK[extra]];
+}
+
+/** background-position 백분율(열 0~2, 행 0~rows−1). background-size 는 300% × (rows×100)%. */
+export function partyPixelBackgroundPosition(sheet: Pick<PartyPixelSheet, "rows">, cell: PartyPixelCell): string {
+  const at = partyPixelFrame(sheet, cell);
+  return `${at.col * 50}% ${sheet.rows > 1 ? (at.row * 100) / (sheet.rows - 1) : 0}%`;
+}
 
 const byId = new Map(PARTY_PIXEL_SHEETS.map((entry) => [entry.resourceId, entry]));
 

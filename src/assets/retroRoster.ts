@@ -157,6 +157,13 @@ export interface RetroPartyPixelSheet {
   readonly cell: 48 | 64;
   readonly motion: "hop" | "swoop" | "stomp" | "dash" | "float" | "shoot" | "breath";
   readonly idleFrameMs: number;
+  /**
+   * 시트 행 수. 3(기본) = 9칸 3×3. 5 = 15칸 3×5 — 2026-09-29 확장 행 둘을 덧붙인다:
+   *   (0,3) cast_charge 시전 준비 · (1,3) cast_raise 시전 고조 · (2,3) cast_release 시전 방출
+   *   (0,4) leap 도약(공중) · (1,4) buff 기합·강화 · (2,4) finisher 필살기 결정 자세
+   * 확장 칸이 없는 3행 시트는 이 여섯 칸을 기존 9칸(windup·move·attack)으로 대신한다.
+   */
+  readonly rows?: 3 | 5;
 }
 
 /** 묶음 파일 하나의 모양: 그 묶음 직업들의 스킬(직업당 8개, RetroClassSkill 계약 그대로)과 비인간형 시트 규격. */

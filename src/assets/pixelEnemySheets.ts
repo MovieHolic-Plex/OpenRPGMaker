@@ -13,6 +13,9 @@ import { withInlineAsset } from "@/assets/inlineAssetStore";
 export const PIXEL_ENEMY_CELL = 48;
 
 export type PixelEnemyCell = "idle_a" | "idle_b" | "idle_c" | "windup" | "move" | "attack" | "recover" | "hit" | "dead";
+/** 파티원 15칸 시트(3×5)가 더 갖는 칸. 적 시트(3×3)에는 없다 — partyPixelSheets.partyPixelFrame 이 없으면 9칸으로 물린다. */
+export type PartyPixelExtraCell = "cast_charge" | "cast_raise" | "cast_release" | "leap" | "buff" | "finisher";
+export type PartyPixelCell = PixelEnemyCell | PartyPixelExtraCell;
 
 /**
  * 공격할 때 대상에게 가는 방식.

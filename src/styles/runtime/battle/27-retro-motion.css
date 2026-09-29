@@ -408,11 +408,21 @@
   right: 18%;
   top: 50%;
   translate: 0 -50%;
-  scale: 2;
+  /* 전신 대기 칸을 잘라내지 않고 띠 높이(76px)에 맞춘다 — 2배로 키워 머리만 보이던 것이 다른 캐릭터처럼 보였다. */
+  scale: 1;
   transform: none;
   animation: none;
   image-rendering: pixelated;
-  clip-path: inset(8% 0 30% 0);
+}
+.battle-scene[data-battle-skin="retro2003"] .retro-class-cutin .retro-class-cutin-name {
+  position: absolute;
+  left: 8%;
+  top: 50%;
+  translate: 0 -50%;
+  color: #f8f0c0;
+  font-weight: 500;
+  text-shadow: 2px 2px 0 #101020;
+  white-space: nowrap;
 }
 .battle-scene[data-battle-skin="retro2003"] .battle-enemy.retro-skill-struck .battle-enemy-image { filter: brightness(0) invert(1); }
 .battle-scene[data-battle-skin="retro2003"] .battle-actor.retro-skill-blessed .battle-actor-sprite { filter: brightness(1.7) saturate(0.6); }

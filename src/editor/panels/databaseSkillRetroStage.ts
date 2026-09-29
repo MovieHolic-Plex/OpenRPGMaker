@@ -15,7 +15,7 @@
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { charsetBattler, charsetBattlerIdForChip, resolvePartyBattleCharset } from "@/assets/charsetBattlers";
-import { partyPixelSheet, partyPixelSheetUrl, PARTY_PIXEL_SHEETS, type PartyPixelSheet } from "@/assets/partyPixelSheets";
+import { partyPixelFrame, partyPixelSheet, partyPixelSheetUrl, PARTY_PIXEL_SHEETS, type PartyPixelSheet } from "@/assets/partyPixelSheets";
 import { RETRO_ROSTER, retroRosterClass, type RetroRosterClass } from "@/assets/retroRoster";
 import { PIXEL_ENEMY_FRAME, pixelEnemyCell, pixelEnemySheet, pixelEnemySheetUrl, type PixelEnemyCell } from "@/assets/pixelEnemySheets";
 import { RETRO_CLASS_SKILLS, type RetroClassSkill, type RetroFxAnchor, type RetroSkillMotion } from "@/assets/retroClassSkills";
@@ -455,7 +455,7 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
     if (sheets.pixel) {
       node.style.width = sheets.pixel.cell + "px";
       node.style.height = sheets.pixel.cell + "px";
-      node.style.backgroundSize = sheets.pixel.cell * 3 + "px " + sheets.pixel.cell * 3 + "px";
+      node.style.backgroundSize = sheets.pixel.cell * 3 + "px " + sheets.pixel.cell * sheets.pixel.rows + "px";
       node.dataset.pixel = sheets.pixel.chip;
       void probeSheet(sheets.sheet).then((ok) => { if (!ok) node.hidden = true; });
     }
@@ -505,9 +505,9 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
   portraitRefresh = () => { if (caster.sheet) portrait.style.backgroundImage = 'url("' + caster.sheet + '")'; };
   portraitRefresh();
   if (caster.pixel) {
-    // 몬스터 9칸 시트 시전자: 컷인 초상은 셀을 48px 로 맞춰 attack 칸을 보인다.
-    portrait.style.backgroundSize = "144px 144px";
-    placeCell(portrait, PIXEL_ENEMY_FRAME.attack, CELL);
+    // 몬스터형 시전자: 컷인 초상은 셀을 48px 로 맞춰 필살기 칸(15칸 시트) 또는 attack 칸(9칸 시트)을 보인다.
+    portrait.style.backgroundSize = "144px " + 48 * caster.pixel.rows + "px";
+    placeCell(portrait, partyPixelFrame(caster.pixel, "finisher"), CELL);
   } else placeCell(portrait, EXTENDED_POSE_FRAME.skill, CELL);
 
   const missing = new Set<string>();
@@ -634,7 +634,7 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
       const cell = caster.pixel.cell;
       const idleCells: readonly PixelEnemyCell[] = ["idle_a", "idle_b", "idle_c", "idle_b"];
       const name = retroPartyPixelCellForPose(state.pose) ?? idleCells[Math.floor(clock / caster.pixel.idleFrameMs) % 4]!;
-      placeCell(node, PIXEL_ENEMY_FRAME[name], cell);
+      placeCell(node, partyPixelFrame(caster.pixel, name), cell);
       placeSprite(node, point, cell, cell - 4);
       node.style.zIndex = state.move.to === "home" && state.move.progress >= 1 ? node.style.zIndex : "40";
       node.classList.toggle("is-hidden", state.hidden);
