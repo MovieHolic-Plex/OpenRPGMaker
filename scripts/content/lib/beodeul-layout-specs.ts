@@ -75,6 +75,33 @@ export function scatterTrees(api: LayoutApi, seed: number, rect: { x: number; y:
   return placed;
 }
 
+/** Round-3 block town: the street grid is laid first (hierarchy: avenue 4 cells with lamps and trees, street 2, alley 1), then one
+ *  block kit per grid cell, then the streets are filled again so every block edge, alley end and plaza joins the curb-less road.
+ *  Grid columns (x, width): the N-S streets and the avenue sit between them. Bands (y, height): the E-W streets between them. */
+export const BLOCK_COLS: [number, number][] = [[2, 20], [24, 20], [48, 20], [70, 14], [86, 14]];
+export const BLOCK_VSTREETS: [number, number][] = [[0, 2], [22, 2], [44, 4], [68, 2], [84, 2]];          // x, width (44: the avenue)
+export const BLOCK_HSTREETS: [number, number][] = [[17, 2], [32, 4], [49, 2], [59, 1], [73, 2], [83, 1], [92, 3]]; // y, height (32: avenue, 59/83: alleys, 92: quay)
+export const BLOCK_BANDS: { y: number; h: number; row: (string | [string, string] | null)[] }[] = [
+  { y: 0, h: 17, row: ["bd-block-church-20x17", ["bd-block-res-20x8", "bd-block-res-20x8-b"], ["bd-block-shop-20x8", "bd-block-res-20x8"], ["bd-block-res-14x8", "bd-block-res-14x8-b"], ["bd-block-market-14x8", "bd-block-shop-14x8"]] },
+  { y: 19, h: 13, row: ["bd-block-res-20x13", "bd-block-market-20x13", "bd-block-shop-20x13", "bd-block-res-14x13", "bd-block-shop-14x13"] },
+  { y: 36, h: 13, row: ["bd-block-manor-20x13", "bd-block-res-20x13-b", "bd-block-res-20x13", "bd-block-market-14x13", "bd-block-manor-14x13"] },
+  { y: 51, h: 8, row: ["bd-block-res-20x8-b", "bd-block-shop-20x8", "bd-block-res-20x8", "bd-block-shop-14x8", "bd-block-res-14x8-b"] },
+  { y: 60, h: 13, row: ["bd-block-out-20x13", "bd-block-shop-20x13", "bd-block-res-20x13-b", "bd-block-res-14x13", null] },
+  { y: 75, h: 8, row: ["bd-block-out-20x8", "bd-block-res-20x8", "bd-block-res-20x8-b", "bd-block-out-14x8", "bd-block-res-10x8"] },
+  { y: 84, h: 8, row: ["bd-block-port-20x8", "bd-block-shop-20x8", "bd-block-out-20x8", "bd-block-market-14x8", "bd-block-port-14x8"] },
+];
+/** stamp props with no clearance ring on still-open lawn */
+export function dense(api: LayoutApi, seed: number, rect: { x: number; y: number; w: number; h: number }, ids: string[], count: number, avoid: (x: number, y: number) => boolean = () => false) {
+  const r = rng(seed); let placed = 0;
+  for (let n = 0; n < count * 20 && placed < count; n += 1) {
+    const id = ids[Math.floor(r() * ids.length)]!; const { w, h } = kitInfo(api, id);
+    const x = rect.x + Math.floor(r() * (rect.w - w + 1)), y = rect.y + Math.floor(r() * (rect.h - h + 1));
+    let bad = false; for (let j = 0; j < h && !bad; j += 1) for (let i = 0; i < w; i += 1) if (avoid(x + i, y + j)) { bad = true; break; }
+    if (bad || !freeFor(api, id, x, y)) continue;
+    if (api.stamp(id, x, y)) placed += 1;
+  }
+  return placed;
+}
 export const LAYOUTS: LayoutSpec[] = [
   { id: "hilltop", name: "언덕 위 성 아래 마을", build(api) {
       const R = "버들항 길 포석", SAND = "버들항 모랫길";
@@ -140,6 +167,41 @@ export const LAYOUTS: LayoutSpec[] = [
             stamps.splice(stamps.indexOf(s), 1); freed = s.x + k.w - x0; }
           for (const i of [0, 1, 2]) api.stamp("bd-house-h113_0", x0 + i * 5, 62); } },
     ] },
+  { id: "blocks", name: "블록 조립 도시", build(api) {
+      const R = "버들항 길 포석";
+      // 1. plan: the whole street grid first — avenues (4), streets (2), the quay (3) and the harbour water below it
+      const streets: { x: number; y: number; w: number; h: number }[] = [];
+      for (const [x, w] of BLOCK_VSTREETS) streets.push({ x, y: 0, w, h: 95 });
+      for (const [y, h] of BLOCK_HSTREETS) streets.push({ x: 0, y, w: 100, h });
+      streets.push({ x: 22, y: 8, w: 78, h: 1 });              // the back alley of the two-deep top band (1 cell)
+      for (const r of streets) api.fill(r, R);
+      api.fill({ x: 0, y: 95, w: 100, h: 5 }, "물");
+      // 2. fill: one block kit per grid cell (the top band stacks two 8-deep blocks on the alley)
+      for (const band of BLOCK_BANDS) band.row.forEach((b, c) => {
+        const [x] = BLOCK_COLS[c]!; if (!b) return;
+        if (Array.isArray(b)) { api.stamp(b[0], x, band.y); api.stamp(b[1], x, band.y + 9); } else api.stamp(b, x, band.y);
+      });
+      // 3. join the alley ends: re-fill only the one street cell outside each end of a block's back alley (row 6 of a 13-deep
+      //    res/shop/out block) so the curb opens. Never re-fill whole streets after the blocks: fill_region closes every one-cell
+      //    lawn slit on a block rim ("벽 틈 메움") and bites road notches into the blocks.
+      for (const band of BLOCK_BANDS) band.row.forEach((b, c) => {
+        if (typeof b !== "string" || band.h !== 13 || !/-(res|shop|out)-/.test(b)) return; const [x, w] = BLOCK_COLS[c]!; const y = band.y + 6;
+        if (x - 1 >= 0) api.fill({ x: x - 1, y, w: 1, h: 1 }, R); if (x + w < 100) api.fill({ x: x + w, y, w: 1, h: 1 }, R);
+      });
+      // 4. finish: the park with a curved lane (two parallel lay_path lines = a 2-cell street), street trees and lamps on the avenues
+      // a diagonal lane through the park: one 3-cell row slice per map row, each shifted east by about one cell (the road autotile
+      // draws the curb steps). lay_path draws a one-cell 8-neighbour line — two parallel lay_paths read as a staircase, not a street.
+      for (let t = 0; t < 13; t += 1) api.fill({ x: 86 + Math.round((t * 11) / 12), y: 60 + t, w: 3, h: 1 }, R);
+      const onPath = (x: number, y: number) => { const m = api.map(); const t = m.lowerTiles[y * m.width + x]; return !lawnTiles(api).has(t); };
+      dense(api, 71, { x: 86, y: 60, w: 14, h: 13 }, ["bd-tree-03a8f7", "bd-tree-a80c85", "bd-tree-e9d9b3", "bd-tree-cc0fcb", "bd-tree-47e17a"], 12, onPath);
+      dense(api, 72, { x: 86, y: 60, w: 14, h: 13 }, ["bd-prop-flowerbed", "bd-prop-bench_wood", "bd-prop-planter_round", "bd-tree-eef4bc"], 14, onPath);
+      dense(api, 73, { x: 96, y: 75, w: 4, h: 8 }, ["bd-tree-e9d9b3", "bd-tree-cc0fcb", "bd-tree-eef4bc", "bd-prop-planter_round"], 5);
+      // avenue furniture on the edge row that no door or alley opens onto: the E-W avenue's bottom row (y=35), the N-S avenue's east column (x=47)
+      const crossX = new Set<number>(); for (const [x, w] of BLOCK_VSTREETS) for (let i = -1; i <= w; i += 1) crossX.add(x + i);
+      const crossY = new Set<number>(); for (const [y, h] of BLOCK_HSTREETS) for (let i = -1; i <= h; i += 1) crossY.add(y + i); for (const y of [7, 8, 9, 24, 25, 26, 41, 42, 43, 65, 66, 67]) crossY.add(y);
+      let n = 0; for (let x = 4; x < 98; x += 5) { if (crossX.has(x)) continue; api.stamp(n++ % 2 ? "bd-tree-eef4bc" : "bd-prop-lamp_crook", x, 33); }
+      n = 0; for (let y = 10; y < 90; y += 4) { if ([y, y + 1, y + 2].some((v) => crossY.has(v))) continue; api.stamp(n++ % 2 ? "bd-tree-28ad5e" : "bd-prop-lamp_crook", 47, y); }
+    } },
   { id: "estuary", name: "강어귀 항구 도시", build(api) {
       const R = "버들항 길 포석", SAND = "버들항 모랫길", WATER = "물";
       const rg = rng(9); for (let n = 0; n < 60; n += 1) api.stamp(`bd-ground-lawn-${1 + Math.floor(rg() * 6)}`, Math.floor(rg() * 92), Math.floor(rg() * 92));

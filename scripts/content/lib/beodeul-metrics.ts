@@ -113,11 +113,41 @@ export function analyzeBeodeul(project: Project, mapId: string, stamps: Stamp[],
   const cellsInKits = new Set<number>();
   for (const s of kitStamps) { if (!(s.id in CANON_ORIGIN)) continue; const k = kits.get(s.id)!; for (let j = 0; j < k.height; j += 1) for (let i = 0; i < k.width; i += 1) cellsInKits.add(idx(s.x + i, s.y + j)); }
   let designedObjects = 0; for (let i = 0; i < W * H; i += 1) if (map.upperTiles[i]! >= 0 && !cellsInKits.has(i)) designedObjects += 1;
+  const emptiness = emptinessOf(map, ts);
   return {
+    emptiness,
     originality: canon ? { sameCells: same, ofCells: W * H, sameShare: +(same / (W * H)).toFixed(4), sameShareOfObjectCells: nonEmpty ? +(sameNonEmpty / nonEmpty).toFixed(4) : 0 } : null,
     districts, districtsPresent: districts.filter((d) => d.present).length, districtsAtOriginalOrigin: districts.filter((d) => d.atOriginalOrigin).length,
     stampedKits: kitStamps.length, doors: doors.length, landReach, streetReach,
     defects: { deadEndPavedCells: deadEnds, deadEndStreets: streetEnds, roadIntoWater: intoWater, blockedDoorFronts: blockedFronts, sameKitRepeats: repeats },
     designedObjectCells: designedObjects,
   };
+}
+
+/** Emptiness, the supervisor's round-3 criterion (one 20×15 screen may be at most 40% empty floor). Two readings:
+ *  - `lawn`: no object (upper -1) on the base lawn (grass group or a lawn-patch kit tile) — strict bare lawn;
+ *  - `open`: no object on WALKABLE ground that is not a road / canal / sand autotile or a paving / plaza tile — every unbuilt,
+ *    unpaved floor cell (flower lawn, tufts, garden ground too). Buildings drawn on the lower layer are not walkable, so they stay out.
+ *  The map is cut into 20×15 screens (the last row/column may be short). */
+export function emptinessOf(map: GameMap, ts: any, sw = 20, sh = 15, limit = 0.4) {
+  const lawn = new Set<number>(), built = new Set<number>();
+  for (const g of (ts.tileGroups ?? []) as any[]) for (const t of g.tileIds) (g.id === "beodeul:grass" ? lawn : built).add(t);
+  for (const k of (ts.structureKits ?? []) as any[]) if (/^bd-ground-lawn-/.test(k.id)) for (const r of k.rows) for (const t of r.tiles) if (t >= 0) lawn.add(t);
+  const walk = (v: unknown): void => { if (typeof v === "number") built.add(v); else if (Array.isArray(v)) v.forEach(walk); else if (v && typeof v === "object") Object.values(v).forEach(walk); };
+  for (const a of (ts.autotileGroups ?? []) as any[]) { walk(a.memberTileIds); walk(a.variantMap); }
+  for (const t of lawn) built.delete(t);
+  const W = map.width, H = map.height;
+  const walkable = (t: number) => { const p = ts.passability?.[t]; return !p || p.up || p.down || p.left || p.right; };
+  const test = { lawn: (i: number) => map.upperTiles[i]! < 0 && lawn.has(map.lowerTiles[i]!), open: (i: number) => map.upperTiles[i]! < 0 && !built.has(map.lowerTiles[i]!) && walkable(map.lowerTiles[i]!) };
+  const read = (fn: (i: number) => boolean) => {
+    let total = 0; for (let i = 0; i < W * H; i += 1) if (fn(i)) total += 1;
+    const screens: { x: number; y: number; share: number }[] = [];
+    for (let y0 = 0; y0 < H; y0 += sh) for (let x0 = 0; x0 < W; x0 += sw) {
+      let n = 0, p = 0; for (let y = y0; y < Math.min(H, y0 + sh); y += 1) for (let x = x0; x < Math.min(W, x0 + sw); x += 1) { n += 1; if (fn(y * W + x)) p += 1; }
+      screens.push({ x: x0, y: y0, share: +(p / n).toFixed(3) });
+    }
+    const over = screens.filter((s) => s.share > limit);
+    return { share: +(total / (W * H)).toFixed(4), screens: screens.length, over40: over.length, worst: Math.max(...screens.map((s) => s.share)), overAt: over.map((s) => [s.x, s.y, s.share]) };
+  };
+  return { lawn: read(test.lawn), open: read(test.open) };
 }
