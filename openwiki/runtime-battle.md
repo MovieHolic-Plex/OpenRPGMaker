@@ -234,6 +234,8 @@
   `timelineDirectorState` → 「슬라임 1은 스톱에 걸렸다!」「…의 공격이 올랐다!」(「○○ 상승/하락」 이름) 「…의 암흑이 풀렸다.」 한 줄씩 800ms(`BATTLE_STATE_LINE_MS`).
   피해 0 보조 기술은 둘째 줄(효과가 충분하지 않았다)을 떼고, 뒤따르는 상태 변화가 없는데 기술에 상태 부여가 있으면 recover 뒤 「…에게는 효과가 없었다.」 한 비트(`supportOutcome`, 기술은 이름으로 찾는다).
   stateAdded 는 `DamageFeedback.label` 팝업(숫자 경로 재사용, `battle-damage-popup-status`, battleDom 이 원장·타격·효과음을 건너뜀)으로 상태 이름이 떠오른다.
+  이미 걸린 상태라 새로 안 붙었으면 「…은 이미 프로텍트 상태다.」(실패 아님). 훔치기처럼 action 없이 special 한 줄만 남기는 명령은
+  명령 대사가 그 엔트리를 차지해 결과가 사라졌다 → 명령 줄 뒤에 special 줄을 따로 읽힌다(`specialAfterCommand`).
   배지는 스냅샷이 아니라 **재생된 타임라인** 기준 — `stateView` 가 아직 재생 안 한 stateAdded/Removed 를 되감아 「걸렸다!」 비트에 붙는다.
 
 ## 타격감 층 (2026-09-25)

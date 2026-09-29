@@ -805,7 +805,8 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
     if (layerRect.height > 0 && spriteRect.height > 0) {
       // 도트 시트는 칸 위가 비어 있을 수 있다(슬라임) — 그림 머리보다 위로 뜨지 않게 빈 줄 비율을 하한으로.
       const topPad = (Number.parseFloat(anchor.style.getPropertyValue("--battle-sprite-top-pad")) || 0) / 100;
-      let topPx = spriteRect.top - layerRect.top + spriteRect.height * Math.max(0.3, topPad);
+      // 상태 이름(label)은 머리 위 배지 줄과 겹치지 않게 몸통 쪽으로 조금 내린다.
+      let topPx = spriteRect.top - layerRect.top + spriteRect.height * (Math.max(0.3, topPad) + (feedback.label ? 0.12 : 0));
       // 행동 중에는 로그 배너가 필드 위에 떠 있다(z 12). 배너보다 위로 튀면 숫자가 배너 뒤로 숨는다 —
       // 2026-09-27 프레임 실측: 슬라임 머리 위 -68 이 착탄 +80~+160ms 내내 윗줄이 잘렸다.
       // 팝업은 자기 높이의 ~1.4배만큼 위로 튀므로(22-hit-feel.css bounce 정점) 그만큼 배너 아래에 둔다.
