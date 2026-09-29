@@ -77,6 +77,16 @@ CLASSES = [
         S('crown_fall', '왕관 강하', 'leap-strike', '거대한 왕관이 떨어져 충격파로 적을 밀어낸다', 'king_crown_drop'),
         S('realm_decree', '왕국의 칙령', 'finisher', '성벽과 깃발이 솟고 왕관이 내려앉는 필살기', 'king_realm_sky', 'king_realm_hit'),
     ]),
+    dict(batch='p2', classId='class_merchant', ck='merchant', chip='people3-1', name='상인', mod='r2w3_merchant', skills=[
+        S('coin_fling', '금화 던지기', 'shoot', '금화를 손가락으로 튕겨 적에게 박아 넣는다', 'merchant_coin', 'merchant_coin_hit'),
+        S('abacus_smash', '주판 내려치기', 'leap-strike', '거대한 주판이 떨어져 구슬이 딸깍이며 적을 짓누른다', 'merchant_abacus'),
+        S('fair_scale', '공정한 저울', 'cast', '저울이 기울며 적의 힘을 깎아 낸다', 'merchant_scale'),
+        S('binding_contract', '구속 계약서', 'cast', '붉은 인장 계약서가 적을 사슬로 옭아맨다', 'merchant_contract'),
+        S('hard_bargain', '흥정의 방벽', 'buff', '금화 고리가 몸을 돌며 받는 피해를 깎는다', 'merchant_haggle'),
+        S('powder_keg', '화약 자루', 'shoot', '화약 자루를 던져 적진을 폭파한다', 'merchant_bomb', 'merchant_bomb_hit'),
+        S('bazaar_rush', '바자르 대방출', 'spin', '노점 세 곳에서 상품이 쏟아져 적진을 휩쓴다', 'merchant_market'),
+        S('vault_opening', '금고 개방', 'finisher', '거대한 금고가 열리고 금화와 보석이 폭포처럼 쏟아지는 필살기', 'merchant_vault_sky', 'merchant_vault_hit'),
+    ]),
 ]
 
 
