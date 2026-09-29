@@ -189,13 +189,13 @@ def storm(c, f):
 @fx('airship_dragon', 'screen', 128, 12, pal(TEAL, FIRE, GOLD, SMOKE, WHITE))
 def dragon(c, f):
     # 거대한 용이 오른쪽에서 몸을 물결치며 들어와 머리를 들고 화면 왼쪽으로 불을 토한다
-    hx = [124, 112, 100, 90, 80, 76, 76, 76, 78, 82, 90, 100][f]
-    hy = 50 + math.sin(f * 0.6) * 3
+    hx = [100, 92, 84, 76, 70, 66, 64, 64, 66, 68, 72, 78][f]
+    hy = 56 + math.sin(f * 0.6) * 3
     # 몸통(비늘 띠): 머리 뒤로 사인 곡선
-    for s in range(26, -1, -1):
+    for s in range(16, -1, -1):
         x = hx + 10 + s * 5
         y = hy + 6 + math.sin(s * 0.45 - f * 0.8) * 10
-        r = 9 - s * 0.22
+        r = 10 - s * 0.35
         if r < 2:
             continue
         c.disc(x, y, r, 'c0')
@@ -222,14 +222,14 @@ def dragon(c, f):
             u = i / 17
             if u > reach:
                 break
-            x = hx - 12 - u * 80
-            y = hy + 4 + u * 34 + math.sin(u * 8 + f) * 4
-            r = 3 + u * 13
+            x = hx - 12 - u * 42
+            y = hy + 4 + u * 20 + math.sin(u * 8 + f) * 3
+            r = 3 + u * 9
             c.disc(x, y, r, 'e1'); c.disc(x + 1, y - 1, r * 0.7, 'e2'); c.disc(x + 1, y - 1, r * 0.4, 'e3')
         c.line([(hx - 12, hy + 4), (hx - 40, hy + 16)], 'e4', 3)
     if f >= 8:
         for i in range(4):
-            c.smoke(16 + i * 18, 70 - (f - 8) * 6, 8, ['q1', 'q2', 'q3'], seed=i + f)
+            c.smoke(24 + i * 14, 66 - (f - 8) * 5, 6, ['q1', 'q2', 'q3'], seed=i + f)
     for k in range(12):
         c.px(8 + k * 10, 110 - (f * 7 + k * 9) % 70, 'e4' if k % 2 else 'y2')
 

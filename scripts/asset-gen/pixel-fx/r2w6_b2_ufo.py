@@ -223,14 +223,14 @@ def meteor(c, f):
 @fx('ufo_mothership', 'screen', 128, 12, pal(STEEL, PLASMA, CYAN, GOLD, WHITE))
 def mothership(c, f):
     # 거대한 원반이 위에서 내려오고(0~3) 아래 창이 차례로 켜지며(4~6) 초록 광선 기둥이 땅을 태운다(7~11)
-    cy = [-10, 4, 14, 20, 22, 22, 22, 22, 22, 22, 22, 22][f]
+    cy = [6, 18, 30, 38, 42, 42, 42, 42, 42, 42, 42, 42][f]
     cx = 64
     if f >= 3:
         cy += (f % 2)  # 떠 있는 동안 1px 흔들림
-    c.oval(cx, cy + 2, 60, 12, 's0')
-    c.oval(cx, cy, 58, 10, 's1')
-    c.oval(cx, cy - 2, 52, 7, 's2')
-    c.line([(cx - 44, cy - 5), (cx + 44, cy - 5)], 's3')
+    c.oval(cx, cy + 2, 50, 11, 's0')
+    c.oval(cx, cy, 48, 9, 's1')
+    c.oval(cx, cy - 2, 42, 6, 's2')
+    c.line([(cx - 36, cy - 5), (cx + 36, cy - 5)], 's3')
     c.oval(cx, cy - 10, 20, 9, 'u1')
     c.oval(cx - 4, cy - 12, 12, 5, 'u2')
     c.px(cx - 10, cy - 14, 'u3')
@@ -239,24 +239,24 @@ def mothership(c, f):
     lights = 11
     on = max(0, f - 3) * 3
     for i in range(lights):
-        x = cx - 50 + i * 10
+        x = cx - 40 + i * 8
         lit = i < on and (i + f) % 3 != 0
         c.rect(x - 1, cy + 3, x + 1, cy + 5, 'n3' if lit else 's0')
     if f >= 6:
         t = f - 6
         w = [4, 10, 16, 18, 18, 14][t]
-        for j, bx in enumerate((34, 64, 94)):
+        for j, bx in enumerate((40, 64, 88)):
             if t < j:
                 continue
             ww = w * (1.0 if j == 1 else 0.7)
-            c.poly([(bx - ww * 0.5, cy + 8), (bx + ww * 0.5, cy + 8), (bx + ww, 110), (bx - ww, 110)], 'n1')
-            c.poly([(bx - ww * 0.25, cy + 8), (bx + ww * 0.25, cy + 8), (bx + ww * 0.5, 110), (bx - ww * 0.5, 110)], 'n2')
-            c.line([(bx, cy + 8), (bx, 110)], 'n4')
-            c.star(bx, 108, 10 + (f % 3) * 3, ['n2', 'n3', 'n4', 'w'], pts=9, rot=f + j)
-            c.dring(bx, 110, 12 + t * 3, 'n3', parity=f, squash=0.25)
+            c.poly([(bx - ww * 0.5, cy + 8), (bx + ww * 0.5, cy + 8), (bx + ww, 100), (bx - ww, 100)], 'n1')
+            c.poly([(bx - ww * 0.25, cy + 8), (bx + ww * 0.25, cy + 8), (bx + ww * 0.5, 100), (bx - ww * 0.5, 100)], 'n2')
+            c.line([(bx, cy + 8), (bx, 100)], 'n4')
+            c.star(bx, 98, 10 + (f % 3) * 3, ['n2', 'n3', 'n4', 'w'], pts=9, rot=f + j)
+            c.dring(bx, 100, 12 + t * 3, 'n3', parity=f, squash=0.25)
     if f >= 8:
         for i in range(5):
-            c.smoke(16 + i * 24, 96 - (f - 8) * 5, 6, ['s1', 's2', 's3'], seed=i + f)
+            c.smoke(28 + i * 18, 92 - (f - 8) * 5, 6, ['s1', 's2', 's3'], seed=i + f)
     for k in range(10):
         c.px(10 + k * 12, 60 + (f * 9 + k * 13) % 50, 'y3' if k % 2 else 'n4')
 

@@ -234,37 +234,37 @@ def mega(c, f):
     if f <= 3:
         # 포구 섬광(오른쪽)
         r = [8, 18, 26, 16][f]
-        c.star(116, cy, r, ['e1', 'e2', 'e3', 'e4', 'w'], pts=10, rot=f * 0.3)
-        c.rect(118, cy - 8, 127, cy + 8, 's0'); c.rect(118, cy - 6, 127, cy - 4, 's2')
+        c.star(100, cy, r, ['e1', 'e2', 'e3', 'e4', 'w'], pts=10, rot=f * 0.3)
+        c.rect(102, cy - 8, 114, cy + 8, 's0'); c.rect(102, cy - 6, 114, cy - 4, 's2')
     if 2 <= f <= 6:
-        x = [0, 0, 104, 72, 40, 14, 0][f]
-        c.rect(x, cy - 5, 118, cy + 5, 'e2')
-        c.rect(x, cy - 3, 118, cy + 3, 'e3')
-        c.rect(x, cy - 1, 118, cy + 1, 'w')
+        x = [0, 0, 88, 70, 52, 40, 36][f]
+        c.rect(x, cy - 5, 102, cy + 5, 'e2')
+        c.rect(x, cy - 3, 102, cy + 3, 'e3')
+        c.rect(x, cy - 1, 102, cy + 1, 'w')
         c.ball(x, cy, 7, 's0', 's1', 's3', 'w')
-        for k in range(6):
+        for k in range(max(0, int((102 - x) // 16))):
             c.line([(x + 10 + k * 16, cy - 10 - (k % 2) * 4), (x + 22 + k * 16, cy - 10 - (k % 2) * 4)], 'y2')
             c.line([(x + 14 + k * 16, cy + 10 + (k % 2) * 4), (x + 26 + k * 16, cy + 10 + (k % 2) * 4)], 'y2')
     if f >= 6:
         t = f - 6
-        r = [22, 40, 50, 52, 48, 42][t]
-        c.star(34, cy, r, ['e0', 'e1', 'e2', 'e3', 'e4'], pts=12, rot=t * 0.3, inner=0.66)
+        r = [20, 32, 38, 40, 36, 30][t]
+        c.star(44, cy, r, ['e0', 'e1', 'e2', 'e3', 'e4'], pts=12, rot=t * 0.3, inner=0.66)
         if t <= 1:
-            c.disc(34, cy, 10 + t * 6, 'w')
-        c.dring(34, cy + 18, 24 + t * 12, 'y2', parity=f, squash=0.3)
+            c.disc(44, cy, 10 + t * 6, 'w')
+        c.dring(44, cy + 18, 24 + t * 12, 'y2', parity=f, squash=0.3)
         if t >= 2:
             for i in range(6):
                 a = -math.pi / 2 + (i - 2.5) * 0.45
-                d = 30 + t * 6
-                c.smoke(34 + math.cos(a) * d, cy - 10 + math.sin(a) * d * 0.7 - t * 2, 9 - i % 2, ['q0', 'q1', 'q2', 'q3'], seed=i + f)
+                d = 20 + t * 5
+                c.smoke(44 + math.cos(a) * d, cy - 10 + math.sin(a) * d * 0.7 - t * 2, 9 - i % 2, ['q0', 'q1', 'q2', 'q3'], seed=i + f)
         for k in range(14):
             a = k * 0.45
             d = 20 + t * 9
-            c.px(34 + math.cos(a) * d, cy + math.sin(a) * d * 0.7, 'e4' if k % 2 else 's3')
+            c.px(44 + math.cos(a) * d, cy + math.sin(a) * d * 0.7, 'e4' if k % 2 else 's3')
     # 화면 흔들림 줄
     if f in (6, 7):
-        for y in (24, 112):
-            c.line([(10, y), (118, y)], 'y2')
+        for y in (32, 100):
+            c.line([(24, y), (104, y)], 'y2')
 
 
 @fx('tank_mega_hit', 'target', 64, 8, pal(FIRE, STEEL, SMOKE, GOLD, WHITE))
