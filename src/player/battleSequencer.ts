@@ -433,7 +433,10 @@ export function createBattleSequencer(
     // 보조 기술(피해 0 인 action): 결과는 뒤따르는 상태 엔트리가 말한다 — 「효과가 충분하지 않았다」를 떼고,
     // 아무 상태도 안 붙었으면 recover 뒤에 「…에게는 효과가 없었다.」를 한 비트 준다.
     const support = supportOutcome(entries, entryOffset, snapshot);
-    const directorBase = support ? { ...rawDirector, lines: rawDirector.lines.slice(0, 1) } : rawDirector;
+    // 훔치기처럼 action 없이 special 한 줄만 남기는 명령은 명령 대사가 그 엔트리를 차지해 결과(「…을 훔쳤다!」)가
+    // 사라지고 「효과가 충분하지 않았다」가 남았다 — 명령 줄 다음에 special 줄을 따로 읽힌다.
+    const specialAfterCommand = rawDirector === firstDirector && entry.kind === "special" && entry.message ? entry.message : undefined;
+    const directorBase = support || specialAfterCommand ? { ...rawDirector, lines: rawDirector.lines.slice(0, 1) } : rawDirector;
     const feedback = feedbackFromTimeline(entry);
     // 적 이동: 대사 없이 스냅샷의 새 좌표로 미끄러지는 동안만 기다린다(CSS 트랜지션이 그린다).
     if (entry.kind === "move") {
@@ -458,6 +461,16 @@ export function createBattleSequencer(
       hooks.onDamageFeedback({ targetId: entry.targetId, amount: 0, critical: false, healing: false, label: stateLabel(entry.stateId) });
       hooks.onSyncView();
       delay(() => { hooks.onDamageFeedback(undefined); continueNext(); }, BATTLE_STATE_LINE_MS);
+      return;
+    }
+    if (specialAfterCommand) {
+      hooks.onDirectorState(directorBase);
+      hooks.onSyncView();
+      delay(() => {
+        hooks.onDirectorState({ step: "acting", lines: [specialAfterCommand], targetId: entry.targetId });
+        hooks.onSyncView();
+        delay(continueNext, BATTLE_STATE_LINE_MS);
+      }, BATTLE_LOG_MS);
       return;
     }
     if (!visual) {
@@ -601,10 +614,16 @@ export function createBattleSequencer(
     }
     if (changed) return {};
     const skill = store.getCurrent().database.skills.find((record) => record.name === entry.skillName);
-    if (!skill?.stateEffects?.some((effect) => effect.operation !== "remove")) return undefined;
+    const adds = (skill?.stateEffects ?? []).filter((effect) => effect.operation !== "remove").map((effect) => effect.stateId);
+    if (adds.length === 0) return undefined;
     const peers = snapshot.enemies.some((enemy) => enemy.id === entry.targetId) ? snapshot.enemies : snapshot.actors;
     const target = peers.find((battler) => battler.id === entry.targetId);
-    return { failLine: `${target ? disambiguatedBattlerName(target, peers) : "대상"}에게는 효과가 없었다.` };
+    const name = target ? disambiguatedBattlerName(target, peers) : "대상";
+    // 이미 걸려 있어 새로 붙지 않은 것은 실패가 아니다 — 「효과가 없었다」로 읽히면 기술이 헛나간 것 같다.
+    if (target && adds.every((stateId) => target.stateIds.includes(stateId))) {
+      return { failLine: `${withJosa(name, "은/는")} 이미 ${stateLabel(adds[0])} 상태다.` };
+    }
+    return { failLine: `${name}에게는 효과가 없었다.` };
   }
 
   /** 상태 부여·해제 문장. 능력 증감(「공격 상승」)은 「…의 공격이 올랐다!」로 읽는다. */

@@ -224,8 +224,17 @@
 - a1.ts 의 mechanic 은 손으로 채웠다. 생성기(`lib_r2w1.py --emit a1`)로 다시 뽑으면 사라진다.
 - 녹화는 스킬마다 숫자 팝업·메시지 창 문장·상태 배지를 report.json evidence(`popups`·`lines`·`statuses`)에 남긴다. 전후 표 `.omo/r2check/a1-v2/MECHANICS.md`.
   a1 녹화 56/56 통과: 대가·흡수·MP 전환·다단 타수·기름→불 약점(둘째 타 1.7~2.2배)·스톱·암흑이 기록에 남았다.
-  **남은 결함**: retro2003 스킨 화면에는 상태 배지가 그려지지 않고(DOM 에만 있음, 기존 상태도 같다) 「…이 걸렸다!」 문장도 안 뜬다 —
-  보조 기술이 「효과가 충분하지 않았다.」로 읽힌다. 흡수 회복 문장은 `enemyActionDirectorState` 가 HP 회복을 피해로 쓰던 것을 고쳤다.
+  흡수 회복 문장은 `enemyActionDirectorState` 가 HP 회복을 피해로 쓰던 것을 고쳤다.
+- **상태 표시 (2026-09-29 2차, 녹화 `.omo/r2check/a1-v3/DISPLAY.md`)** — 사용자 「여전히 데미지만 주고 끝」. 원인 셋:
+  ① 적 배지는 retro2003 이 대상 선택 때만 펼치는 `.battle-enemy-chrome` 안에 있어 늘 숨었다(아군은 필드 머리 위, 이웃 사이라 누구 것인지 모름).
+  ② 상태 엔트리(stateAdded/Removed)가 userRecordId·targetId 를 들고 있어 시퀀서가 `enemyActionDirectorState` 로 보내 「발키리의 공격!」으로 읽혔다.
+  ③ retro2003 메시지 창은 **첫 줄만** 보인다(`.battle-message-line ~ .battle-message-line { display:none }`) — 둘째 줄 결과문은 원래 안 보인다.
+  고친 것: retro2003 적 배지는 노드 직계(`enemyIconsOutsideChrome`) + 시트 첫 칸 위 빈 줄 비율 `--battle-sprite-top-pad` 로 그림 머리 위,
+  아군 배지는 파티 창 state 칸(`partyStatusRowsCarryIcons` 에 retro2003, 필드 배지는 CSS 로 숨김, 두 개까지). 상태 엔트리는 `STATE_ENTRY_KINDS` 로
+  `timelineDirectorState` → 「슬라임 1은 스톱에 걸렸다!」「…의 공격이 올랐다!」(「○○ 상승/하락」 이름) 「…의 암흑이 풀렸다.」 한 줄씩 800ms(`BATTLE_STATE_LINE_MS`).
+  피해 0 보조 기술은 둘째 줄(효과가 충분하지 않았다)을 떼고, 뒤따르는 상태 변화가 없는데 기술에 상태 부여가 있으면 recover 뒤 「…에게는 효과가 없었다.」 한 비트(`supportOutcome`, 기술은 이름으로 찾는다).
+  stateAdded 는 `DamageFeedback.label` 팝업(숫자 경로 재사용, `battle-damage-popup-status`, battleDom 이 원장·타격·효과음을 건너뜀)으로 상태 이름이 떠오른다.
+  배지는 스냅샷이 아니라 **재생된 타임라인** 기준 — `stateView` 가 아직 재생 안 한 stateAdded/Removed 를 되감아 「걸렸다!」 비트에 붙는다.
 
 ## 타격감 층 (2026-09-25)
 
