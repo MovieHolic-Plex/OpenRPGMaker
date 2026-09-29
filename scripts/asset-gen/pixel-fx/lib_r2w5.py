@@ -26,10 +26,31 @@ import fx_edge                   # noqa: E402
 from PIL import Image            # noqa: E402
 
 B1 = ROOT / 'src/assets/retroRosterSkills/b1.ts'
+BATCH_FILES = [ROOT / f'src/assets/retroRosterSkills/{b}.ts' for b in ('b1', 'b3', 'b5')]
 REVIEW_DIR = ROOT / '.omo/r2w5/b1/fx'
 LM.REVIEW = REVIEW_DIR
 ANIMALS = ['dog', 'cat', 'rooster', 'sheep', 'cow', 'horse', 'tiger', 'lion']
 CHIP = {a: f'animal-{i}' for i, a in enumerate(ANIMALS)}
+BATCH_OF = {a: 'b1' for a in ANIMALS}
+# b3(Monster1)·b5(Monster3): 직업 키 → 걷기 칩. 시트 키 접두는 직업 키(classId 에서 class_ 를 뗀 것).
+B3 = ['slime_pal', 'demon', 'ogre_kid', 'ghost_pal', 'skeleton_pal', 'zombie_pal', 'reaper', 'minotaur_pal']
+B5 = ['siren', 'lamia', 'wraith_mage', 'succubus', 'mound', 'red_dragon_pal', 'flame_spirit', 'demon_general']
+for i, k in enumerate(B3):
+    CHIP[k] = f'monster1-{i}'; BATCH_OF[k] = 'b3'
+for i, k in enumerate(B5):
+    CHIP[k] = f'monster3-{i}'; BATCH_OF[k] = 'b5'
+GROUPS = ANIMALS + B3 + B5
+
+
+def group_of(key):
+    return max((g for g in GROUPS if key.startswith(g + '_')), key=len, default=None)
+
+
+def review_dir(key):
+    g = group_of(key)
+    d = ROOT / f'.omo/r2w5/{BATCH_OF.get(g, "b1")}/fx'
+    LM.REVIEW = d
+    return d
 CX, CY, GY = 32, 40, 56          # 64 셀: 발밑 56, 몸 중심 40
 REG = {}
 
@@ -43,7 +64,7 @@ def sheet(key, frame, frames, anchor, pal, peak=None):
 
 
 def b1_contract():
-    text = B1.read_text(encoding='utf8')
+    text = ''.join(f.read_text(encoding='utf8') for f in BATCH_FILES if f.exists())
     out = {}
     for m in re.finditer(r'key: "(\w+)", anchor: "(\w+)", frame: (\d+), frames: (\d+)', text):
         out.setdefault(m.group(1), dict(anchor=m.group(2), frame=int(m.group(3)), frames=int(m.group(4))))
@@ -51,7 +72,7 @@ def b1_contract():
 
 
 def load_all():
-    for a in ANIMALS:
+    for a in GROUPS:
         f = HERE / f'r2w5_{a}.py'
         if f.exists():
             importlib.import_module(f'r2w5_{a}')
@@ -319,6 +340,7 @@ def preview(key):
     spec = REG[key]
     fr = spec['frame']
     cells = LM.cells_of(key, fr)
+    REVIEW_DIR = review_dir(key)
     sc = 4
     s = fr * sc
     per_row = max(1, min(len(cells), (1880 - 4) // (s + 4)))
@@ -349,6 +371,7 @@ def make(key, review=True):
     r = check(key)
     if review:
         preview(key)
+        review_dir(key)
         LM.gif(key, REG[key]['frame'])
     print(('OK  ' if r['ok'] else 'FAIL'), key, r['size'], 'colours', r['colours'], 'minFill', r['minFill'], 'minDiff', r['minDiff'], *r['errors'])
     return r
@@ -357,8 +380,9 @@ def make(key, review=True):
 def stage_board(animal, keys=None):
     """가상 무대: 왼쪽에 슬라임(적), 오른쪽에 그 동물(전투 도트 idle) — 시트마다 정점 3칸."""
     load_all()
-    keys = keys or [k for k in REG if k.startswith(animal + '_')]
+    keys = keys or [k for k in REG if group_of(k) == animal]
     chip = CHIP[animal]
+    REVIEW_DIR = review_dir(keys[0]) if keys else ROOT / '.omo/r2w5/b1/fx'
     sh = Image.open(ROOT / f'public/assets/generated/party-pixel/{chip}.png').convert('RGBA')
     cell = sh.width // 3
     caster = sh.crop((0, 0, cell, cell)).resize((cell * 2, cell * 2), Image.NEAREST)
@@ -412,9 +436,9 @@ def run(args):
     keys = []
     animals = []
     for a in args or ANIMALS:
-        if a in ANIMALS:
+        if a in GROUPS:
             animals.append(a)
-            keys += [k for k in REG if k.startswith(a + '_')]
+            keys += [k for k in REG if group_of(k) == a]
         else:
             keys.append(a)
     res = [make(k) for k in keys]
