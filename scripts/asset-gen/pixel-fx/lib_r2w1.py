@@ -61,8 +61,21 @@ PINK = dict(p0='#4c1030', p1='#b02c68', p2='#f070a8', p3='#ffc0d8')
 AMBER = dict(m0='#4a2408', m1='#a85c14', m2='#f0a028', m3='#ffe07c')
 
 
+class _Pal(dict):
+    """없는 키를 만나면 마젠타를 돌려주고 기록한다(끝에서 한꺼번에 알린다)."""
+    missing = set()
+
+    def __missing__(self, k):
+        _Pal.missing.add(k)
+        return (255, 0, 255, 255)
+
+
 class Ink2(Ink):
     """Ink + 이 묶음 전용 모티프. 모든 채움은 팔레트 키다."""
+
+    def __init__(self, n, palette):
+        super().__init__(n, palette)
+        self.pal = _Pal(self.pal)
 
     def wing(self, x, y, side, span, keys, flap=0.0, tilt=0.0, feathers=5):
         """옆으로 펼친 날개. side=-1 왼쪽/+1 오른쪽, span 은 펼친 길이. flap: -1(내림)~1(올림). keys 어두움→밝음."""
@@ -325,12 +338,15 @@ def ts_text(batch):
 # ------------------------------------------------------------------ 그리기 · 검사
 def render(key):
     e = REG[key]
+    _Pal.missing = set()
     frames = []
     for f in range(e['frames']):
         c = Ink2(e['size'], e['pal'])
         e['draw'](c, f)
         post(c, e)
         frames.append(c.im)
+    if _Pal.missing:
+        raise SystemExit(f'{key}: 팔레트에 없는 키 {sorted(_Pal.missing)} — PAL 에 추가하거나 다른 키를 쓴다')
     return frames
 
 
