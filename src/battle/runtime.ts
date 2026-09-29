@@ -1176,6 +1176,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         for (const partner of comboPartners(actor, command)) consumeSkillMp(partner, command.skillId);
         // 입력 커맨드: 성공은 보너스, 실패는 약화. 판정이 없으면(자동전투 등) 1배.
         const inputMultiplier = inputSequencePowerMultiplier(lookupSkill(command.skillId)?.inputSequence, command.inputResult);
+        paySkillHpCost(actor, command.skillId, "skill");
         for (const target of targets) applySkill(actor, target, command.skillId, "skill", inputMultiplier);
         applyGen1Residual(actor);
         break;
@@ -1941,6 +1942,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       // battlers still use the normal finite-PP path above.
       if (!gen1) consumeBattleSkillResource(options.project, enemy, skillId);
       else startBattleSkillCooldown(enemy, skill);
+      paySkillHpCost(enemy, skillId, "enemySkill");
       for (const target of targets) applySkill(enemy, target, skillId, "enemySkill");
       applyEnemyActionSwitchEffects(action);
       applyGen1Residual(enemy);
@@ -2398,6 +2400,57 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     finish({ targetId: target.id, captureItemId, success: true, rate, roll, shakes, speciesId: species.id });
   }
 
+  /** SkillRecord.hpCostPercent: 시전 대가로 최대 HP 의 N% 를 잃는다(1 밑으로는 안 깎음). 화면에 숫자가 뜨게 타임라인에 남긴다. */
+  function paySkillHpCost(user: MutableBattler, skillId: SkillId, commandKind: BattleTimelineEntrySnapshot["commandKind"]): void {
+    const skill = lookupSkill(skillId);
+    const percent = skill?.hpCostPercent ?? 0;
+    if (!skill || percent <= 0 || user.hp <= 1) return;
+    const cost = Math.max(1, Math.floor(user.maxHp * percent / 100));
+    const beforeHp = user.hp;
+    user.hp = Math.max(1, user.hp - cost);
+    recordTimeline({
+      kind: "damage",
+      side: battlerSide(user),
+      userRecordId: user.recordId,
+      targetId: user.id,
+      commandKind,
+      hit: true,
+      amount: beforeHp - user.hp,
+      critical: false,
+      skillName: `${skill.name} 대가`,
+    });
+  }
+
+  /** SkillRecord.drainPercent: 준 피해의 N% 를 시전자가 회복한다(affects mp 면 MP). */
+  function applySkillDrain(
+    user: MutableBattler,
+    skill: ReturnType<typeof lookupSkill>,
+    dealt: number,
+    affects: "hp" | "mp",
+    commandKind: BattleTimelineEntrySnapshot["commandKind"],
+  ): void {
+    const percent = skill?.drainPercent ?? 0;
+    if (!skill || percent <= 0 || dealt <= 0 || user.hp <= 0) return;
+    const gain = Math.max(1, Math.floor(dealt * percent / 100));
+    const before = affects === "mp" ? user.mp : user.hp;
+    if (affects === "mp") user.mp = Math.min(user.maxMp, user.mp + gain);
+    else user.hp = Math.min(user.maxHp, user.hp + gain);
+    const healed = (affects === "mp" ? user.mp : user.hp) - before;
+    if (healed <= 0) return;
+    recordTimeline({
+      kind: "healing",
+      side: battlerSide(user),
+      userRecordId: user.recordId,
+      targetId: user.id,
+      commandKind,
+      hit: true,
+      amount: healed,
+      critical: false,
+      skillName: `${skill.name} 흡수`,
+      resource: affects,
+    });
+  }
+
   function consumeSkillMp(user: MutableBattler, skillId: SkillId): void {
     const skill = lookupSkill(skillId);
     if (!skill) return;
@@ -2748,6 +2801,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, skill.animationId, target.id);
       attachAnimationToLatestTimeline(lastAnimation);
     }
+    if (result.hit && effectKind === "damage") applySkillDrain(user, skill, result.amount, affects, commandKind);
     // 피격에 의한 상태 해제(수면 등)를 먼저 처리한 뒤, 스킬의 상태 효과를 적용한다.
     // 이 순서라야 이번 스킬로 새로 부여한 상태가 즉시 해제되지 않는다.
     if (result.hit && effectKind === "damage" && result.amount > 0) {
