@@ -52,7 +52,8 @@ export const PLAYER_SOURCE_INPUT_INVENTORY = Object.freeze([
 ]);
 
 const TEXT_EXTENSIONS = new Set([".css", ".cjs", ".html", ".js", ".json", ".map", ".mjs", ".svg", ".txt", ".xml"]);
-const MAX_TEXT_SCAN_BYTES = 16 * 1024 * 1024;
+// 번들 하나가 이 크기를 넘으면 검사를 건너뛰지 않고 빌드를 멈춘다. #1763 뒤 standalone.js 가 20.5MiB 가 돼 16MiB 에서 64MiB 로 올렸다.
+const MAX_TEXT_SCAN_BYTES = 64 * 1024 * 1024;
 const SECRET_RULES = Object.freeze([
   Object.freeze({ rule: "private-key", category: "private-key", pattern: /-----BEGIN (?:[A-Z0-9 ]+ )?PRIVATE KEY-----/u }),
   Object.freeze({ rule: "provider-key", category: "api-credential", pattern: /\b(?:sk|rk|pk)-(?:live-)?[A-Za-z0-9_-]{20,}\b/u }),
