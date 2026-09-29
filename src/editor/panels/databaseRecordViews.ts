@@ -23,8 +23,11 @@ import { recordIdentity } from "@/editor/panels/databaseRecordIdentity";
 import { emptyState } from "@/editor/panels/databaseWorkspace";
 import { recordListThumbnail } from "@/editor/panels/databaseRecordThumbnails";
 import {
+  RETRO_GROUP_FILTER_PREFIX,
   RETRO_MONSTER_FILTER_ID,
+  retroSkillActiveGroup,
   retroSkillClassFilters,
+  retroSkillClassGroups,
   retroSkillListBadge,
   setSkillClassFilter,
   skillClassFilterFor,
@@ -769,8 +772,9 @@ function categoryFilterChips(collection: DatabaseCollection, rerender: () => voi
 }
 
 /**
- * 스킬 직업 필터(전사·수호자·마도사·정찰병·성직자·궁수). 직업 레코드도 계약 스킬도 없는 프로젝트는 칩 줄을 그리지 않는다.
- * 개수는 필터 전 전체 스킬에서 센다(아이템 칩과 같은 규칙).
+ * 스킬 직업 필터. 2차 로스터로 직업이 100개를 넘어 **두 단계**로 고른다 —
+ * 1단 계열(전체 · 기본 12 · Actor · People · 동물 · 탈것 · 몬스터 파티 · 몬스터 스킬), 2단 그 계열의 직업.
+ * 직업 레코드도 계약 스킬도 없는 프로젝트는 칩 줄을 그리지 않는다. 개수는 필터 전 전체 스킬에서 센다(아이템 칩과 같은 규칙).
  */
 function skillClassFilterChips(rerender: () => void): HTMLElement | null {
   const project = store.getCurrent();
@@ -783,11 +787,36 @@ function skillClassFilterChips(rerender: () => void): HTMLElement | null {
     setSkillClassFilter(id);
     rerender();
   };
+  const activeGroup = retroSkillActiveGroup(project, current);
+  const groups = retroSkillClassGroups(project);
+  const groupChip = (id: string, label: string): HTMLElement => {
+    const filterId = RETRO_GROUP_FILTER_PREFIX + id;
+    const count = skills.filter((skill) => skillMatchesRetroClass(skill, filterId, project)).length;
+    // 그룹 칩을 다시 누르면 접는다(전체로).
+    const chip = filterChipButton(filterId, label, count, activeGroup === id, () => { setSkillClassFilter(activeGroup === id && current === filterId ? "all" : filterId); rerender(); });
+    chip.dataset.skillClassGroup = id;
+    return chip;
+  };
+  const single = groups.length <= 1;
+  const monsterChip = filters.find((entry) => entry.id === RETRO_MONSTER_FILTER_ID);
   const row = el("div", { class: "db-filter-chips db-skill-class-chips", attrs: { role: "group", "aria-label": "직업 필터" } });
   row.append(chipCluster("", [
     filterChipButton("all", "전체", skills.length, current === "all", pick("all")),
-    ...filters.map(({ id, label }) => filterChipButton(id, label, skills.filter((skill) => skillMatchesRetroClass(skill, id, project)).length, current === id, pick(id))),
+    // 계열이 하나뿐(기본 12 만 있는 옛 프로젝트)이면 두 단계로 나누지 않고 직업 칩을 그대로 늘어놓는다.
+    ...(single
+      ? filters.filter((entry) => entry.id !== RETRO_MONSTER_FILTER_ID).map(({ id, label }) => filterChipButton(id, label, skills.filter((skill) => skillMatchesRetroClass(skill, id, project)).length, current === id, pick(id)))
+      : groups.map((group) => groupChip(group.id, group.label))),
+    ...(monsterChip ? [filterChipButton(monsterChip.id, "몬스터 스킬", skills.filter((skill) => skillMatchesRetroClass(skill, monsterChip.id, project)).length, current === monsterChip.id, pick(monsterChip.id))] : []),
   ]));
+  if (!single && activeGroup) {
+    // 2단: 고른 계열의 직업. 같은 `.db-filter-chips`(세로 flex) 안에 줄을 하나 더 쌓는다 — 목록 창 그리드 행은 그대로다.
+    const inGroup = filters.filter((entry) => entry.group === activeGroup);
+    const caption = groups.find((group) => group.id === activeGroup)?.label ?? "";
+    const second = chipCluster(caption, inGroup.map(({ id, label }) => filterChipButton(id, label, skills.filter((skill) => skillMatchesRetroClass(skill, id, project)).length, current === id, pick(id))));
+    second.dataset.testid = "db-skill-class-second-row";
+    second.dataset.group = activeGroup;
+    row.append(second);
+  }
   return row;
 }
 

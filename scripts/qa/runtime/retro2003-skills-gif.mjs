@@ -1,4 +1,7 @@
-// node scripts/qa/runtime/retro2003-skills-gif.mjs [--set class|legacy] [--skills a,b] [--out DIR] [--reduced]
+// node scripts/qa/runtime/retro2003-skills-gif.mjs [--set class|legacy|roster|party-pixel] [--batch a1] [--skills a,b] [--out DIR] [--reduced]
+// roster(2026-09-28 2차 로스터): 계약 src/assets/retroRoster.ts + 묶음 파일(retroRosterSkills/<batch>.ts)의 스킬을 그 직업 배우가 쓴다.
+//   --batch a1 처럼 묶음 하나만. 세 명씩 조(부활 스킬이 있으면 쓰러진 주인공을 곁들임)로 찍는다. 스킬이 없는 빈 묶음은 건너뛴다.
+// party-pixel: 사람형이 아닌 파티원(짐승·탈것·몬스터 칩, 몬스터 9칸 시트)의 통상 공격 한 번 — party-<칩>.gif. --batch 로 묶음을 좁힌다.
 // class(기본): 계약 src/assets/retroClassSkills.ts 의 직업 스킬 96개(기존 6직업 48 + 2026-09-28 확장 6직업 48)를
 // 그 직업의 배우가 차례로 쓰고 skill-<id>.gif 로 자른다. --set new 는 확장 48개만, --set old 는 기존 48개만.
 // legacy: 예전 17종(모든 배우가 배운다). 녹화 사본만 고친다 — 실제 player.html, 키보드 입력, 정본 쓰기 없음.
@@ -16,11 +19,11 @@ const { values } = parseArgs({ options: {
   out: { type: 'string', default: '.omo/retro-skills/recording' },
   set: { type: 'string', default: 'class' },
   fps: { type: 'string', default: '15' }, width: { type: 'string', default: '640' },
-  skills: { type: 'string' }, reduced: { type: 'boolean', default: false },
+  skills: { type: 'string' }, batch: { type: 'string' }, reduced: { type: 'boolean', default: false },
 } });
 const fps = Number(values.fps), width = Number(values.width);
 if (!Number.isInteger(fps) || fps < 1 || fps > 30 || !Number.isInteger(width) || width < 320 || width > 1280) throw new Error('fps 1..30, width 320..1280');
-if (!['class', 'new', 'old', 'legacy'].includes(values.set)) throw new Error('--set class|new|old|legacy');
+if (!['class', 'new', 'old', 'legacy', 'roster', 'party-pixel'].includes(values.set)) throw new Error('--set class|new|old|legacy|roster|party-pixel');
 const out = resolve(values.out);
 await mkdir(join(out, 'video'), { recursive: true });
 await mkdir(join(out, 'browser-tmp'), { recursive: true });
@@ -44,19 +47,46 @@ try {
     const c = await import('/src/project/defaults/defaultDatabaseClassRecords.ts');
     const p = await import('/src/project/defaults/defaultDatabasePartyRecords.ts');
     const k = await import('/src/assets/retroClassSkills.ts');
+    const rr = await import('/src/assets/retroRoster.ts');
+    const rs = await import('/src/assets/retroRosterSkills/index.ts');
     const party = p.defaultPartyRecords();
-    return { skills: m.defaultSkillRecords(), battleAnimations: m.defaultBattleAnimationRecords(), states: m.defaultStateRecords(), classes: c.defaultClassRecords(),
+    const actorOf = (classId) => classId.replace(/^class_/, 'actor_');
+    const skillRows = m.defaultSkillRecords();
+    const revives = (id) => Boolean(skillRows.find((row) => row.id === id)?.stateEffects?.some((e) => e.stateId === 'state_death' && e.operation === 'remove'));
+    return {
+      roster: rs.RETRO_ROSTER_SKILLS.map((s) => ({ id: s.id, actorId: s.actorId, motion: s.motion, layers: s.layers.map((l) => l.key), batch: rr.retroRosterClass(s.classId)?.batch, revive: revives(s.id) })),
+      partyPixel: rs.RETRO_PARTY_PIXEL_SHEETS.map((x) => { const row = rr.RETRO_ROSTER.find((r) => r.chip === x.chip); return { chip: x.chip, cell: x.cell, motion: x.motion, actorId: row ? actorOf(row.classId) : undefined, batch: row?.batch }; }), skills: m.defaultSkillRecords(), battleAnimations: m.defaultBattleAnimationRecords(), states: m.defaultStateRecords(), classes: c.defaultClassRecords(),
       actors: party.actors, equipment: party.equipment,
       contract: k.RETRO_CLASS_SKILLS.map((s, index) => ({ id: s.id, actorId: s.actorId, motion: s.motion, layers: s.layers.map((l) => l.key), extension: index >= 48 })) };
   });
   await setup.close();
-  const contract = new Map(defaults.contract.map((row) => [row.id, row]));
+  const rosterRows = defaults.roster.filter((row) => !values.batch || row.batch === values.batch);
+  // 통상 공격 녹화 과제는 「attack:<칩>」 id 를 쓴다(스킬이 아니라 명령 공격 한 번).
+  const attackRows = defaults.partyPixel.filter((row) => row.actorId && (!values.batch || row.batch === values.batch))
+    .map((row) => ({ id: 'attack:' + row.chip, actorId: row.actorId, motion: row.motion, layers: [], attack: true, chip: row.chip }));
+  const contract = new Map([...defaults.contract, ...rosterRows, ...attackRows].map((row) => [row.id, row]));
   const all = values.set === 'legacy' ? LEGACY
-    : defaults.contract.filter((row) => values.set === 'class' || (values.set === 'new') === row.extension).map((row) => row.id);
+    : values.set === 'roster' ? rosterRows.map((row) => row.id)
+      : values.set === 'party-pixel' ? attackRows.map((row) => row.id)
+        : defaults.contract.filter((row) => values.set === 'class' || (values.set === 'new') === row.extension).map((row) => row.id);
+  if (all.length === 0) throw new Error('녹화할 항목이 없다(--set ' + values.set + (values.batch ? ' --batch ' + values.batch : '') + ') — 묶음 파일이 비었거나 시트 규격이 등록되지 않았다.');
   const wanted = values.skills ? values.skills.split(',').map((id) => id.startsWith('skill_') ? id : 'skill_' + id) : all;
   if (wanted.some((id) => !all.includes(id))) throw new Error('Unknown --skills id');
+  const chunkGroups = () => {
+    // 배우별로 스킬을 모아 세 명씩 조로 묶는다. 부활 스킬이 있는 조에는 쓰러진 주인공을 하나 곁들인다.
+    const owners = [...new Set(wanted.map((id) => contract.get(id).actorId))];
+    const rows = [];
+    for (let i = 0; i < owners.length; i += 3) {
+      const party = owners.slice(i, i + 3);
+      const skills = wanted.filter((id) => party.includes(contract.get(id).actorId));
+      const dead = skills.some((id) => contract.get(id).revive) && !party.includes('actor_hero') ? ['actor_hero'] : [];
+      rows.push({ party: [...party, ...dead], dead, skills });
+    }
+    return rows;
+  };
   const groups = values.set === 'legacy'
     ? [{ party: ['actor_hero', 'actor_guardian', 'actor_mage', 'actor_scout'], dead: [], skills: wanted }]
+    : values.set === 'roster' || values.set === 'party-pixel' ? chunkGroups()
     : [
       { party: ['actor_hero', 'actor_guardian', 'actor_mage', 'actor_scout'], dead: [] },
       { party: ['actor_cleric', 'actor_ranger', 'actor_hero'], dead: ['actor_hero'] },
@@ -150,9 +180,14 @@ async function recordGroup(groupIndex, group, defaults, contract) {
     page.on('response', (r) => { if (r.status() >= 400 && /pixel-fx|easyrpg\/sound/.test(r.url())) report.errors.push('Asset ' + r.status() + ': ' + r.url()); });
     await page.addInitScript(() => {
       window.__OPENRPG_BOOT__ = { projectUrl: '/__skills-qa/project.json', saveNamespace: 'retro-skills-qa', qaInstrumentation: true };
-      window.__skillEvidence = []; window.__skillPoses = []; window.__legacySkillLayers = 0;
+      window.__skillEvidence = []; window.__skillPoses = []; window.__partyCells = []; window.__legacySkillLayers = 0;
       const seen = new WeakSet();
       const observe = () => {
+        // 몬스터 9칸 시트 파티원: 스프라이트가 그린 칸(data-pixel-cell)의 변화를 순서대로 남긴다.
+        for (const node of document.querySelectorAll('.battle-actor[data-pixel-party]')) {
+          const cell = node.querySelector('.battle-actor-sprite')?.dataset.pixelCell;
+          if (cell && window.__partyCells.at(-1) !== cell) window.__partyCells.push(cell);
+        }
         const users = document.querySelectorAll('.battle-actor[data-retro-class-skill], .battle-actor[data-retro-skill]');
         for (const user of users) {
           const pose = user.dataset.retroFrame;
@@ -169,7 +204,7 @@ async function recordGroup(groupIndex, group, defaults, contract) {
           capture(); new MutationObserver(capture).observe(node, { attributes: true, attributeFilter: ['data-fx-frame'] });
         }
       };
-      document.addEventListener('DOMContentLoaded', () => new MutationObserver(observe).observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['data-retro-frame', 'class'] }));
+      document.addEventListener('DOMContentLoaded', () => new MutationObserver(observe).observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['data-retro-frame', 'class', 'data-pixel-cell'] }));
     });
     await page.route('**/__skills-qa/project.json', (route) => route.fulfill({ contentType: 'application/json', body: JSON.stringify(project) }));
     console.log('[skills] group ' + groupIndex + ': ' + group.party.join(',') + ' -> ' + group.skills.length + ' skills');
@@ -216,13 +251,16 @@ async function recordGroup(groupIndex, group, defaults, contract) {
         continue;
       }
       const skill = queue.splice(index, 1)[0];
-      await choose('actor-command-skill');
-      await page.waitForSelector(selector('actor-skill-' + skill));
-      await page.evaluate(() => { window.__skillEvidence = []; window.__skillPoses = []; window.__legacySkillLayers = 0; const f = document.querySelector('.battle-field'); if (f) delete f.dataset.retroClassSkillSounds; });
+      const attackTask = Boolean(contract.get(skill)?.attack);
+      if (!attackTask) {
+        await choose('actor-command-skill');
+        await page.waitForSelector(selector('actor-skill-' + skill));
+      }
+      await page.evaluate(() => { window.__skillEvidence = []; window.__skillPoses = []; window.__partyCells = []; window.__legacySkillLayers = 0; const f = document.querySelector('.battle-field'); if (f) delete f.dataset.retroClassSkillSounds; });
       const from = elapsed();
       // 표식 색을 스킬마다 마젠타·청록으로 번갈아 켠다 — 이어지는 두 스킬 사이의 꺼짐이 짧아도 경계가 남는다.
       await page.evaluate((odd) => { document.getElementById('skill-video-marker').style.background = odd ? 'rgb(0, 255, 255)' : 'rgb(255, 0, 255)'; }, segments.length % 2 === 1);
-      await choose('actor-skill-' + skill);
+      await choose(attackTask ? 'actor-command-attack' : 'actor-skill-' + skill);
       let acted = false, completed = false, targeted = false;
       for (let i = 0; i < 900; i++) {
         const t = await state();
@@ -230,7 +268,7 @@ async function recordGroup(groupIndex, group, defaults, contract) {
         if (t.phase === 'targetSelect' && t.busy === 'false' && !targeted) {
           targeted = true;
           // 부활은 쓰러진 배우를 고른다. 나머지 단일 대상은 첫 후보.
-          if (/revive/.test(skill) && group.dead[0]) await choose('battle-target-' + group.dead[0]);
+          if ((/revive/.test(skill) || contract.get(skill)?.revive) && group.dead[0]) await choose('battle-target-' + group.dead[0]);
           else await page.keyboard.press('z');
           await sleep(100);
           continue;
@@ -242,15 +280,21 @@ async function recordGroup(groupIndex, group, defaults, contract) {
       await sleep(120);
       const detail = await page.evaluate(() => {
         document.getElementById('skill-video-marker').style.background = '#000';
-        return { effects: window.__skillEvidence, poses: window.__skillPoses, legacyLayers: window.__legacySkillLayers,
+        return { effects: window.__skillEvidence, poses: window.__skillPoses, cells: window.__partyCells ?? [], legacyLayers: window.__legacySkillLayers,
           sounds: Number(document.querySelector('.battle-field')?.dataset.retroClassSkillSounds ?? 0),
           remainingFx: document.querySelectorAll('.retro-skill-fx, .retro-class-veil, .retro-class-cutin').length };
       });
       const row = { skill, group: groupIndex, completed, ...detail, layerKeys: [...new Set(detail.effects.map((e) => e.fx))], problems: [] };
       if (!completed) row.problems.push('did not complete');
+      if (attackTask) {
+        // 통상 공격: windup·move·attack·recover 가 순서대로 보여야 한다(몬스터 9칸 시트 이동·칸 매핑).
+        const seenCells = new Set(detail.cells);
+        for (const want of ['windup', 'attack']) if (!seenCells.has(want)) row.problems.push('party cell ' + want + ' not shown (' + detail.cells.join('>') + ')');
+        if (seenCells.size < 3) row.problems.push('only ' + seenCells.size + ' distinct cells');
+      }
       if (detail.remainingFx) row.problems.push(detail.remainingFx + ' fx left');
       if (detail.legacyLayers) row.problems.push('legacy animation layer shown');
-      if (values.set !== 'legacy') {
+      if (values.set !== 'legacy' && !attackTask) {
         const missing = [...new Set(contract.get(skill).layers)].filter((key) => !row.layerKeys.includes(key));
         if (missing.length && !values.reduced) row.problems.push('missing layers ' + missing.join(','));
         if (!detail.sounds && !values.reduced) row.problems.push('no sound event');
@@ -301,7 +345,7 @@ async function recordGroup(groupIndex, group, defaults, contract) {
     for (const [i, segment] of segments.entries()) {
       const [a, b] = usable[i];
       segment.start = a / 50; segment.duration = (b - a + 1) / 50;
-      const file = join(out, 'skill-' + segment.skill + '.gif');
+      const file = join(out, (segment.skill.startsWith('attack:') ? 'party-' + segment.skill.slice(7) : 'skill-' + segment.skill) + '.gif');
       const filter = 'crop=' + crop.width + ':' + crop.height + ':' + crop.x + ':' + crop.y + ',fps=' + fps + ',scale=' + width + ':-1:flags=neighbor,split[a][b];[a]palettegen=max_colors=128[p];[b][p]paletteuse=dither=none';
       await run('/usr/bin/ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-threads', '2', '-filter_complex_threads', '1', '-ss', String(segment.start), '-t', String(segment.duration), '-i', raw, '-filter_complex', filter, '-loop', '0', file]);
       report.clips.push({ ...segment, group: groupIndex, file, bytes: (await stat(file)).size });

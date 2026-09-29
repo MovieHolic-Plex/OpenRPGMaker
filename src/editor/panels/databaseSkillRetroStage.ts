@@ -14,13 +14,16 @@
 // 재생 루프는 requestAnimationFrame 하나이고, 루트가 두 틱 연속 문서에서 떨어져 있으면 스스로 멈춘다.
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { charsetBattler, resolvePartyBattleCharset } from "@/assets/charsetBattlers";
+import { charsetBattler, charsetBattlerIdForChip, resolvePartyBattleCharset } from "@/assets/charsetBattlers";
+import { partyPixelSheet, partyPixelSheetUrl, PARTY_PIXEL_SHEETS, type PartyPixelSheet } from "@/assets/partyPixelSheets";
+import { RETRO_ROSTER, retroRosterClass, type RetroRosterClass } from "@/assets/retroRoster";
 import { PIXEL_ENEMY_FRAME, pixelEnemyCell, pixelEnemySheet, pixelEnemySheetUrl, type PixelEnemyCell } from "@/assets/pixelEnemySheets";
 import { RETRO_CLASS_SKILLS, type RetroClassSkill, type RetroFxAnchor, type RetroSkillMotion } from "@/assets/retroClassSkills";
 import { retroClassSkill } from "@/assets/retroSkillCatalog";
 import { EXTENDED_POSE_FRAME, castFrame, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
 import {
   retroClassSkillTimeline,
+  retroPartyPixelCellForPose,
   retroRecipeTimeline,
   retroSideForScope,
   retroSoundsBetween,
@@ -64,6 +67,8 @@ const FALLBACK_BATTLERS: Readonly<Record<string, string>> = {
   actor_bard: "charset-battler-actor3-6", actor_druid: "charset-battler-actor3-4", actor_witch: "charset-battler-actor4-7",
 };
 const PARTY_ORDER = [...new Set(RETRO_CLASS_SKILLS.map((skill) => skill.actorId))];
+/** 계약 밖(2차 로스터) 시전자 곁에 서는 두 동료. */
+const ROSTER_COMPANIONS = ["actor_hero", "actor_guardian"] as const;
 
 /** 직업 필터 칩. 라벨은 프로젝트 직업 이름이 우선이고 없으면 이 값. */
 export const RETRO_SKILL_CLASS_FILTERS: readonly { readonly id: string; readonly label: string }[] = [
@@ -72,6 +77,26 @@ export const RETRO_SKILL_CLASS_FILTERS: readonly { readonly id: string; readonly
   { id: "class_samurai", label: "사무라이" }, { id: "class_ninja", label: "닌자" }, { id: "class_monk", label: "무도가" },
   { id: "class_bard", label: "음유시인" }, { id: "class_druid", label: "드루이드" }, { id: "class_witch", label: "마녀" },
 ];
+
+// ---- 계열 그룹(2차 로스터: 직업 칩이 100개를 넘는다) ----
+// 칩 줄이 터지지 않게 두 단계로 고른다 — 1단 계열(기본·Actor·People·동물·탈것·몬스터 파티), 2단 그 계열의 직업.
+// 필터 id: "all" · "group:<계열>"(그 계열 직업 스킬 전부) · "<직업 id>" · "monster"(적 몬스터 스킬).
+export const RETRO_GROUP_FILTER_PREFIX = "group:";
+export const RETRO_SKILL_CLASS_GROUPS: readonly { readonly id: string; readonly label: string }[] = [
+  { id: "base", label: "기본 12" }, { id: "actor", label: "Actor" }, { id: "people", label: "People" },
+  { id: "animal", label: "동물" }, { id: "vehicles", label: "탈것" }, { id: "monster-party", label: "몬스터 파티" },
+];
+const BASE_CLASS_IDS: ReadonlySet<string> = new Set(RETRO_SKILL_CLASS_FILTERS.map((entry) => entry.id));
+
+/** 직업이 속한 계열. 기본 12직업(마도사 포함)이 먼저고, 나머지는 걷기 칩 시트 이름으로 가른다. */
+export function retroSkillClassGroupOf(classId: string): string | undefined {
+  if (BASE_CLASS_IDS.has(classId)) return "base";
+  const row = retroRosterClass(classId);
+  if (!row) return undefined;
+  const sheet = /^([a-z]+)/.exec(row.chip)?.[1];
+  return sheet === "actor" ? "actor" : sheet === "people" ? "people" : sheet === "animal" ? "animal" : sheet === "vehicles" ? "vehicles" : "monster-party";
+}
+
 /** 직업 칩 옆 「몬스터」 칩 id. skill_mon_* 스킬(계약 retroMonsterSkills.ts)을 고른다. */
 export const RETRO_MONSTER_FILTER_ID = "monster";
 
@@ -210,30 +235,78 @@ export function retroSkillListBadge(record: Pick<SkillRecord, "id">, size = 20):
 /** 직업 필터 판정: 계약 직업이거나, 프로젝트 직업의 습득표·스킬 목록에 있다. */
 export function skillMatchesRetroClass(record: Pick<SkillRecord, "id">, classId: string, project: Project): boolean {
   if (classId === RETRO_MONSTER_FILTER_ID) return isMonsterSkillId(record.id);
+  if (classId.startsWith(RETRO_GROUP_FILTER_PREFIX)) {
+    const group = classId.slice(RETRO_GROUP_FILTER_PREFIX.length);
+    const owner = retroClassSkill(record.id)?.classId;
+    if (owner) return retroSkillClassGroupOf(owner) === group;
+    return groupSkillIds(project, group).has(record.id);
+  }
   if (retroClassSkill(record.id)?.classId === classId) return true;
   const found = project.database.classes.find((entry) => entry.id === classId);
   return Boolean(found && (found.skillIds.includes(record.id) || found.learnedSkills.some((entry) => entry.skillId === record.id)));
 }
 
-/** 직업 필터 칩 목록. 프로젝트에 그 직업도 계약 스킬도 없으면 빈 배열(칩 줄을 그리지 않는다). */
-export function retroSkillClassFilters(project: Project): readonly { readonly id: string; readonly label: string }[] {
+// 프로젝트 직업 습득표 → 계열별 스킬 id 집합. 직업 배열이 그대로면 캐시를 쓴다(스킬 1,000개 × 계열 6개를 매번 다시 훑지 않는다).
+const groupSkillCache = new WeakMap<object, Map<string, Set<string>>>();
+function groupSkillIds(project: Project, group: string): ReadonlySet<string> {
+  let byGroup = groupSkillCache.get(project.database.classes);
+  if (!byGroup) groupSkillCache.set(project.database.classes, byGroup = new Map());
+  let ids = byGroup.get(group);
+  if (!ids) {
+    ids = new Set();
+    for (const klass of project.database.classes) {
+      if (retroSkillClassGroupOf(klass.id) !== group) continue;
+      for (const id of klass.skillIds) ids.add(id);
+      for (const entry of klass.learnedSkills) ids.add(entry.skillId);
+    }
+    byGroup.set(group, ids);
+  }
+  return ids;
+}
+
+export interface RetroSkillClassFilter { readonly id: string; readonly label: string; readonly group?: string }
+
+/** 직업 필터 칩 전체(계열 무관, 평평한 목록). 프로젝트에 그 직업도 계약 스킬도 없으면 빠진다. */
+export function retroSkillClassFilters(project: Project): readonly RetroSkillClassFilter[] {
   const skills = project.database.skills;
-  const classes = RETRO_SKILL_CLASS_FILTERS.flatMap((entry) => {
+  const withContract = new Set<string>();
+  for (const skill of skills) { const classId = retroClassSkill(skill.id)?.classId; if (classId) withContract.add(classId); }
+  const base = RETRO_SKILL_CLASS_FILTERS.flatMap((entry) => {
     const record = project.database.classes.find((candidate) => candidate.id === entry.id);
-    const hasContract = skills.some((skill) => retroClassSkill(skill.id)?.classId === entry.id);
-    return record || hasContract ? [{ id: entry.id, label: record?.name || entry.label }] : [];
+    return record || withContract.has(entry.id) ? [{ id: entry.id, label: record?.name || entry.label, group: "base" }] : [];
   });
+  const roster = RETRO_ROSTER.filter((row) => !BASE_CLASS_IDS.has(row.classId)).flatMap((row) => {
+    const record = project.database.classes.find((candidate) => candidate.id === row.classId);
+    return record || withContract.has(row.classId) ? [{ id: row.classId, label: record?.name || row.name, group: retroSkillClassGroupOf(row.classId) }] : [];
+  });
+  const classes = [...base, ...roster];
   // 몬스터 칩은 늘 보인다 — 레코드(skill_mon_*)가 아직 없으면 빈 칩(0개)이고, 고르면 계약 둘러보기가 뜬다.
   return classes.length > 0 || skills.some((skill) => isMonsterSkillId(skill.id))
     ? [...classes, { id: RETRO_MONSTER_FILTER_ID, label: "몬스터" }]
     : classes;
 }
 
+/** 1단 계열 칩: 직업이 하나라도 있는 계열만. */
+export function retroSkillClassGroups(project: Project): readonly { readonly id: string; readonly label: string }[] {
+  const present = new Set(retroSkillClassFilters(project).map((entry) => entry.group).filter(Boolean));
+  return RETRO_SKILL_CLASS_GROUPS.filter((group) => present.has(group.id));
+}
+
+/** 현재 필터가 가리키는 계열(그룹 필터이거나 그 계열 직업 필터). 그 밖이면 undefined. */
+export function retroSkillActiveGroup(project: Project, filterId: string): string | undefined {
+  if (filterId.startsWith(RETRO_GROUP_FILTER_PREFIX)) return filterId.slice(RETRO_GROUP_FILTER_PREFIX.length);
+  return retroSkillClassFilters(project).find((entry) => entry.id === filterId)?.group;
+}
+
 // 스킬 목록 직업 필터 — 편집 세션 동안만 기억한다(아이템·장비 필터의 localStorage 계약과 섞지 않는다).
 let skillClassFilter = "all";
 
 export function skillClassFilterFor(project: Project): string {
-  return skillClassFilter !== "all" && retroSkillClassFilters(project).some((entry) => entry.id === skillClassFilter) ? skillClassFilter : "all";
+  if (skillClassFilter === "all") return "all";
+  if (skillClassFilter.startsWith(RETRO_GROUP_FILTER_PREFIX)) {
+    return retroSkillClassGroups(project).some((group) => RETRO_GROUP_FILTER_PREFIX + group.id === skillClassFilter) ? skillClassFilter : "all";
+  }
+  return retroSkillClassFilters(project).some((entry) => entry.id === skillClassFilter) ? skillClassFilter : "all";
 }
 
 export function setSkillClassFilter(id: string): void {
@@ -265,7 +338,7 @@ function probeSheet(url: string): Promise<boolean> {
 // ---- 무대 좌표 ----
 
 type Point = { readonly x: number; readonly y: number };
-type Actor = { readonly node: HTMLElement; sheet: string; cast?: string; castOk: boolean; readonly home: Point };
+type Actor = { readonly node: HTMLElement; sheet: string; cast?: string; castOk: boolean; readonly home: Point; readonly pixel?: PartyPixelSheet };
 type Enemy = { readonly node: HTMLElement; readonly home: Point; readonly cell: number; readonly idleMs: number };
 
 /** 발 위치(논리 px). 파티는 오른쪽 사선 계단, 가운데가 시전자. 적은 왼쪽 삼각형. */
@@ -284,7 +357,20 @@ function enemyHomes(frontCell: number): readonly Point[] {
 const FRONT_ENEMY = 1;
 const FRONT_ALLY = 0;
 
-type BattlerSheet = { readonly sheet: string; readonly cast?: string; readonly fallback?: BattlerSheet };
+type BattlerSheet = { readonly sheet: string; readonly cast?: string; readonly fallback?: BattlerSheet; /** 사람형이 아닌 시전자의 몬스터 9칸 시트(2차 로스터). */ readonly pixel?: PartyPixelSheet };
+
+/** 배우 id → 로스터 직업 행(계약 actorId 규칙: class_<key> → actor_<key>). */
+function rosterRowForActor(actorId: string | undefined): RetroRosterClass | undefined {
+  return actorId ? RETRO_ROSTER.find((row) => row.classId.replace(/^class_/, "actor_") === actorId) : undefined;
+}
+
+/** 이 칩의 걷기 칩 전투 시트 id(파일이 있을 때만). Actor 는 항상, People 은 등록된 것만. */
+function rosterHumanoidBattler(row: RetroRosterClass): string | undefined {
+  const match = /^([a-z]+\d*)-(\d)$/.exec(row.chip);
+  if (!match) return undefined;
+  const id = charsetBattlerIdForChip(`easyrpg-charset-${match[1]}`, Number(match[2]));
+  return charsetBattler(id) ? id : undefined;
+}
 
 /** 번들 전투 도트 id → 시트·시전 시트 경로. 카탈로그(CHARSET_BATTLERS)에 아직 없는 변형 id 는 규칙대로 경로를 조립한다. */
 function battlerPaths(resourceId: string, project: Project): { readonly sheet: string; readonly cast: string } | undefined {
@@ -302,7 +388,11 @@ function battlerPaths(resourceId: string, project: Project): { readonly sheet: s
 function battlerSheet(actorId: string | undefined, project: Project): BattlerSheet {
   const actor = actorId ? project.database.actors.find((entry) => entry.id === actorId) : undefined;
   const resolved = actor ? resolvePartyBattleCharset(actor, true) : undefined;
-  const fallbackId = FALLBACK_BATTLERS[actorId ?? ""] ?? FALLBACK_BATTLERS.actor_hero!;
+  // 사람형이 아닌 시전자: 배우가 가리키는 9칸 시트, 없으면 계약 묶음이 등록한 시트로 그린다(프로젝트 배우가 아직 시트를 못 받았어도 미리 본다).
+  const rosterRow = rosterRowForActor(actorId);
+  const pixel = partyPixelSheet(resolved) ?? (rosterRow && rosterRow.body !== "humanoid" ? PARTY_PIXEL_SHEETS.find((entry) => entry.chip === rosterRow.chip) : undefined);
+  if (pixel) return { sheet: partyPixelSheetUrl(pixel), pixel };
+  const fallbackId = FALLBACK_BATTLERS[actorId ?? ""] ?? (rosterRow ? rosterHumanoidBattler(rosterRow) : undefined) ?? FALLBACK_BATTLERS.actor_hero!;
   // 배우 기록이 있으면 그 시트, 없으면 계약 매핑. 조립한 변형 경로(…-samurai)가 404 면 밑바탕 칩(actor3-0)으로 한 번 더 물러난다.
   const primary = (resolved ? battlerPaths(resolved, project) : undefined) ?? battlerPaths(fallbackId, project);
   if (!primary) return { sheet: "" };
@@ -352,13 +442,23 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
   // 파티: 가운데 칸이 시전자. 양옆은 계약 순서에서 시전자 다음 두 배우(사무라이 → 닌자·무도가). 같은 세대끼리 선다.
   let portraitRefresh: (() => void) | undefined;
   const casterAt = Math.max(0, PARTY_ORDER.indexOf(source.actorId ?? ""));
-  const others = [1, 2].map((step) => PARTY_ORDER[(casterAt + step) % PARTY_ORDER.length]).filter((id) => id !== source.actorId);
+  const inBase = PARTY_ORDER.includes(source.actorId ?? "");
+  const others = inBase
+    ? [1, 2].map((step) => PARTY_ORDER[(casterAt + step) % PARTY_ORDER.length]).filter((id) => id !== source.actorId)
+    : [...ROSTER_COMPANIONS];
   const partyIds = [others[0], source.actorId, others[1]];
   const party: Actor[] = partyIds.map((actorId, index) => {
     const sheets = battlerSheet(actorId, project);
     const node = el("span", { class: "db-skill-retro-battler", dataset: { role: index === 1 ? "caster" : "ally", actor: actorId ?? "" } });
     node.style.backgroundImage = sheets.sheet ? 'url("' + sheets.sheet + '")' : "none";
-    const member: Actor = { node, sheet: sheets.sheet, cast: sheets.cast, castOk: false, home: PARTY_HOMES[index]! };
+    const member: Actor = { node, sheet: sheets.sheet, cast: sheets.cast, castOk: false, home: PARTY_HOMES[index]!, pixel: sheets.pixel };
+    if (sheets.pixel) {
+      node.style.width = sheets.pixel.cell + "px";
+      node.style.height = sheets.pixel.cell + "px";
+      node.style.backgroundSize = sheets.pixel.cell * 3 + "px " + sheets.pixel.cell * 3 + "px";
+      node.dataset.pixel = sheets.pixel.chip;
+      void probeSheet(sheets.sheet).then((ok) => { if (!ok) node.hidden = true; });
+    }
     const fallback = sheets.fallback;
     if (fallback && sheets.sheet) {
       void probeSheet(sheets.sheet).then((ok) => {
@@ -404,7 +504,11 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
   const portrait = cutin.querySelector<HTMLElement>(".db-skill-retro-cutin-portrait")!;
   portraitRefresh = () => { if (caster.sheet) portrait.style.backgroundImage = 'url("' + caster.sheet + '")'; };
   portraitRefresh();
-  placeCell(portrait, EXTENDED_POSE_FRAME.skill, CELL);
+  if (caster.pixel) {
+    // 몬스터 9칸 시트 시전자: 컷인 초상은 셀을 48px 로 맞춰 attack 칸을 보인다.
+    portrait.style.backgroundSize = "144px 144px";
+    placeCell(portrait, PIXEL_ENEMY_FRAME.attack, CELL);
+  } else placeCell(portrait, EXTENDED_POSE_FRAME.skill, CELL);
 
   const missing = new Set<string>();
   for (const sheet of source.sheets) {
@@ -525,6 +629,21 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
     const point = casterPoint(state);
     const node = caster.node;
     const step = castStep(state.pose);
+    if (caster.pixel) {
+      // 사람 24포즈 이름 → 몬스터 9칸(retroPartyPixelCellForPose). idle 은 시트 계약의 대기 루프 a→b→c→b.
+      const cell = caster.pixel.cell;
+      const idleCells: readonly PixelEnemyCell[] = ["idle_a", "idle_b", "idle_c", "idle_b"];
+      const name = retroPartyPixelCellForPose(state.pose) ?? idleCells[Math.floor(clock / caster.pixel.idleFrameMs) % 4]!;
+      placeCell(node, PIXEL_ENEMY_FRAME[name], cell);
+      placeSprite(node, point, cell, cell - 4);
+      node.style.zIndex = state.move.to === "home" && state.move.progress >= 1 ? node.style.zIndex : "40";
+      node.classList.toggle("is-hidden", state.hidden);
+      node.classList.toggle("is-flipped", state.flip);
+      const glow = side === "self" ? Math.max(state.hitTarget, state.hitAll) : side === "allies" ? state.hitAll : 0;
+      node.style.setProperty("--retro-glow", String(Math.round(glow * 100) / 100));
+      node.dataset.pixelCell = name;
+      return;
+    }
     if (step && caster.castOk && caster.cast) {
       node.style.backgroundImage = 'url("' + caster.cast + '")';
       node.style.backgroundSize = "144px 336px";
