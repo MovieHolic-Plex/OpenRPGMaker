@@ -1,65 +1,61 @@
-"""monster3-6 업화(파티원) — 48 셀. 걷기 칩: 붉은 불꽃 덩어리, 검은 얼굴 구멍에 붉은 눈. 떠서 일렁인다(float).
-대기 = 불꽃 혀가 칸마다 다르게 일렁, windup = 작게 움츠러들며 속이 하얘짐, attack = 앞으로 크게 부풀어 불꽃을 내뻗음, dead = 잿더미와 불씨. 왼쪽을 본다."""
+"""monster3-6 업화(파티원) — 셀 64, 15칸. 붉은 불꽃 덩어리에 검은 얼굴 무늬. 칩 가운데 열의 옆 보기(행 1 = 오른쪽)를 좌우로 뒤집어 왼쪽을 보게 한다. 떠서 일렁인다(dead 만 바닥).
+공용 엔진 pp15_pp5.Poser: 걷기 칩 왼쪽 보기 칸을 Scale2x 로 정수 2배 한 몸이 대기 칸이고, 나머지 칸은 부위를 옮겨 만든다."""
 import math, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from mon_lib import *  # noqa
-
-CELL = 48
-PAL = dict(o='330000', s='6b0000', b='a50000', l='d30000', L='f45858', f='ff9a2a', F='ffe070', W='fff6d0', k='151617', e='ff3040', a='5a4a4a', A='8a7a7a')
+from pp15_pp5 import Poser, fx_common, star, burst, note  # noqa
 
 
-def flame_mass(p, cx, cy, r, ph, grow=1.0, lean=0):
-    tongues = []
-    for k in range(7):
-        a = math.radians(-90 + (k - 3) * 26)
-        ln = r * (1.0 + .35 * math.sin(ph * 1.7 + k * 2.1)) * grow
-        tongues.append((cx + math.cos(a) * r * .5 + lean * (k - 3) * .2, cy + math.sin(a) * r * .4, cx + math.cos(a) * ln + lean, cy + math.sin(a) * ln - ln * .6))
-    for i, (col, sc) in enumerate((('o', 1.0), ('b', .86), ('l', .7), ('f', .5), ('F', .3))):
-        p.d.ellipse((cx - r * sc, cy - r * sc * .9, cx + r * sc, cy + r * sc * .9), fill=p.pal[col])
-        for (bx, by, tx, ty) in tongues:
-            mx, my = cx + (tx - cx) * sc, cy + (ty - cy) * sc
-            w = r * .32 * sc
-            p.poly([(bx - w, by), (mx, my), (bx + w, by)], col)
-
-
-SH = {'idle_a': (0, 0, 1.0, 0), 'idle_b': (1, 1, 1.03, 1), 'idle_c': (2, 0, 1.06, -1), 'windup': (3, -2, .82, 0), 'move': (4, 2, 1.0, 3),
-      'attack': (5, 4, 1.08, 4), 'recover': (6, 1, 1.05, 1), 'hit': (7, -3, .9, -3)}
-
-
-def draw(p, n):
-    G = CELL - 4
-    if n == 'dead':
-        p.d.ellipse((12, G - 5, 36, G), fill=p.pal['a']); p.d.ellipse((15, G - 6, 30, G - 2), fill=p.pal['A'])
-        for x, y in ((18, G - 7), (25, G - 8), (31, G - 5)):
-            p.box((x, y, x + 1, y + 1), 'f'); dot(p, x, y - 1, 'F')
-        p.line([(12, G), (36, G)], 'o')
+def fx(R, d, J):
+    k = J['P'].get('fx')
+    x, y = J['pt'](1, 23, 'head')
+    Rr, Lt, Dd = R.c('f45858'), R.c('d30000'), R.c('8c0c0c')
+    if k in ('release', 'finisher', 'impact'):
+        ln = {'impact': 8, 'release': 16, 'finisher': 24}[k]
+        for i in range(3 if k != 'finisher' else 5):
+            yy = y - 6 + i * 4
+            d.polygon([(x, yy - 1), (x - ln + (i % 2) * 4, yy), (x, yy + 2)], fill=Rr if i % 2 else Lt)
+        if k == 'finisher':
+            burst(d, x - 10, y - 2, 12, 16, 8, Rr, 10)
         return
-    ph, dx, grow, lean = SH[n]
-    cx, cy = 22 + dx, 28 - (1 if ph % 2 else 0) + (2 if n == 'attack' else 0)
-    flame_mass(p, cx, cy, 11, ph, grow, lean)
-    if n == 'windup':
-        p.d.ellipse((cx - 4, cy - 3, cx + 4, cy + 4), fill=p.pal['W'])
-    if n == 'attack':
-        for k in range(3):
-            y = cy - 3 + k * 3
-            p.poly([(cx + 8, y - 1), (cx + 20 - k * 2, y + (k - 1)), (cx + 8, y + 2)], 'f' if k != 1 else 'F', 'b')
-    # 얼굴 구멍(앞쪽)
-    fx, fy = cx + 4, cy - 1
-    p.d.ellipse((fx - 5, fy - 4, fx + 4, fy + 5), fill=p.pal['k'])
-    if n == 'hit':
-        eyes(p, fx - 2, fy, 'x'); eyes(p, fx + 2, fy, 'x')
-    else:
-        for x in (fx - 3, fx + 1):
-            p.box((x, fy - 1, x + 1, fy), 'e')
-    p.line([(fx - 2, fy + 3), (fx + 2, fy + 3)], 'e' if n in ('attack', 'move') else 's')
-    # 떠다니는 불씨
-    for k in range(3):
-        x = cx - 9 + k * 8 + (ph + k) % 3
-        y = cy - 16 - ((ph * 3 + k * 5) % 6)
-        dot(p, x, y, 'F' if k % 2 else 'f')
+    if k in ('charge', 'raise', 'buff'):
+        (x0, y0), (x1, y1) = J['pt'](1, 15), J['pt'](23, 31)
+        n = {'charge': 3, 'raise': 5, 'buff': 7}[k]
+        for i in range(n):
+            xx = x0 + (x1 - x0) * (i + .5) / n
+            h = 3 + (i * 7) % 5
+            d.polygon([(xx - 2, y0 + 3), (xx, y0 - h), (xx + 2, y0 + 3)], fill=Rr if i % 2 else Lt)
+        return
+    fx_common(R, d, J, 'd30000', 'f45858', (1, 23), 'head')
 
+
+S = dict(
+    name='monster3-6', chip=6, cell=64, row=1, col=1, mirror=True, ground=False, oy=-6, breath_y=23,
+    parts=[
+        ('head', [(0, 14), (9, 14), (9, 30), (0, 30)], (8, 22)),
+        ('back', [(14, 14), (24, 14), (24, 31), (14, 31)], (15, 23)),
+    ],
+    order=['back', 'body', 'head'],
+    attached=('head', 'back'),
+    fx=fx,
+    dead='slump',
+    poses={
+        'idle_b': dict(g=(0, 1, 1), br=1, back=(1, 0, 4)),
+        'idle_c': dict(g=(0, 2, -1), br=-1, head=(0, -1, 0), back=(0, -1, -4)),
+        'windup': dict(g=(3, 1, 4), br=2, head=(2, 0, 0), back=(0, 0, 6)),
+        'move': dict(g=(-5, -2, -8), head=(-2, 0, 0), back=(2, 0, -6)),
+        'attack': dict(g=(-8, 0, -8), br=-3, head=(-3, 0, 0), back=(2, 0, -8), fx='impact'),
+        'recover': dict(g=(-2, 1, -2), br=1, back=(1, 0, -3)),
+        'hit': dict(g=(5, -1, 10), br=1, head=(2, -1, 0), back=(-1, 0, 10), fx='hurt'),
+        'cast_charge': dict(g=(1, 2, 2), br=3, back=(0, 0, 4), fx='charge'),
+        'cast_raise': dict(g=(0, -3, 0), br=-4, head=(0, -2, 0), back=(0, -2, 0), fx='raise'),
+        'cast_release': dict(g=(-6, -1, -7), br=-2, head=(-3, 0, 0), back=(1, 0, -6), fx='release'),
+        'leap': dict(g=(-2, -9, -4), br=-2, back=(1, -1, 8), air=True),
+        'buff': dict(g=(0, -2, 0), br=-5, head=(-1, -2, 0), back=(1, -2, 0), fx='buff'),
+        'finisher': dict(g=(-8, -2, -10), br=-4, head=(-3, -1, 0), back=(2, -1, -10), fx='finisher'),
+    },
+)
 
 if __name__ == '__main__':
-    build('monster3-6', 'b5', CELL, PAL, draw, ground=False)
+    Poser(S).sheet()
 

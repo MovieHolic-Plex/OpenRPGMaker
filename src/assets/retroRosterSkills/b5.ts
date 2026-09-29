@@ -80,12 +80,12 @@ export const BATCH: RetroRosterBatch = {
   ],
   partyPixel: [
     { chip: "monster3-0", cell: 64, rows: 5, motion: "swoop", idleFrameMs: 150 },
-    { chip: "monster3-1", cell: 64, motion: "dash", idleFrameMs: 200 },
-    { chip: "monster3-2", cell: 48, motion: "float", idleFrameMs: 240 },
-    { chip: "monster3-3", cell: 48, motion: "swoop", idleFrameMs: 140 },
-    { chip: "monster3-4", cell: 64, motion: "stomp", idleFrameMs: 340 },
-    { chip: "monster3-5", cell: 64, motion: "breath", idleFrameMs: 260 },
-    { chip: "monster3-6", cell: 48, motion: "float", idleFrameMs: 160 },
-    { chip: "monster3-7", cell: 64, motion: "stomp", idleFrameMs: 300 },
+    { chip: "monster3-1", cell: 64, rows: 5, motion: "dash", idleFrameMs: 200 },
+    { chip: "monster3-2", cell: 64, rows: 5, motion: "float", idleFrameMs: 240 },
+    { chip: "monster3-3", cell: 64, rows: 5, motion: "swoop", idleFrameMs: 140 },
+    { chip: "monster3-4", cell: 64, rows: 5, motion: "stomp", idleFrameMs: 340 },
+    { chip: "monster3-5", cell: 64, rows: 5, motion: "breath", idleFrameMs: 260 },
+    { chip: "monster3-6", cell: 64, rows: 5, motion: "float", idleFrameMs: 160 },
+    { chip: "monster3-7", cell: 64, rows: 5, motion: "stomp", idleFrameMs: 300 },
   ]
 };

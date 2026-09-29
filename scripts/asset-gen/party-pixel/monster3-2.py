@@ -1,55 +1,56 @@
-"""monster3-2 망령술사(파티원) — 48 셀. 걷기 칩: 검은 두건 긴 망토, 금 테두리, 얼굴은 어둠, 발 없이 뜬다(float).
-대기 = 망토 자락과 영혼 불빛이 흔들림, windup = 두 팔을 벌려 영혼을 모음, attack = 한 손을 앞으로 뻗어 흡수. 왼쪽을 본다."""
+"""monster3-2 망령술사(파티원) — 셀 64, 15칸. 검은 두건·금 테두리·긴 망토, 얼굴은 어둠, 손에 보라 영혼 불. 발 없이 뜬다(dead 만 바닥).
+공용 엔진 pp15_pp5.Poser: 걷기 칩 왼쪽 보기 칸을 Scale2x 로 정수 2배 한 몸이 대기 칸이고, 나머지 칸은 부위를 옮겨 만든다."""
 import math, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from mon_lib import *  # noqa
-
-CELL = 48
-PAL = dict(o='101f28', s='243745', b='3b5060', l='6c7f90', k='000000', y='b7871f', Y='d8ad50', e='7fe6d4', E='d8fff4', w='5d4234', v='3a2a4a')
-SH = {'idle_a': (0, 0, 0), 'idle_b': (1, 0, 1), 'idle_c': (2, 0, 2), 'windup': (-2, -1, 0), 'move': (0, 3, 1), 'attack': (1, 3, 2), 'recover': (1, 1, 0), 'hit': (-2, -3, 1)}
+from pp15_pp5 import Poser, fx_common, star, burst, note  # noqa
 
 
-def draw(p, n):
-    G = CELL - 4
-    if n == 'dead':
-        p.poly([(8, G), (14, G - 7), (30, G - 8), (38, G)], 's', 'o'); p.line([(14, G - 6), (30, G - 7)], 'Y')
-        p.poly([(30, G - 8), (36, G - 10), (40, G - 4), (38, G)], 'b', 'o'); dot(p, 36, G - 6, 'e')
+def fx(R, d, J):
+    k = J['P'].get('fx')
+    x, y = J['pt'](7, 23, 'arm')
+    V, Vl = R.c('622680'), R.c('d8ad50')
+    if k == 'release':
+        for i in range(3):
+            d.ellipse((x - 8 - i * 6, y - 2 - i, x - 4 - i * 6, y + 2 - i), fill=V)
+            d.point((x - 6 - i * 6, y - 1 - i), fill=Vl)
         return
-    dy, dx, ph = SH[n]
-    cx, top = 23 + dx, 9 + dy
-    body = [(cx - 4, top + 8), (cx + 6, top + 8), (cx + 9, top + 22), (cx + 10, top + 30), (cx - 10, top + 30), (cx - 8, top + 18)]
-    p.poly(body, 's', 'o')
-    p.poly([(cx + 3, top + 9), (cx + 7, top + 22), (cx + 8, top + 29), (cx + 3, top + 29)], 'b')
-    p.line([(cx + 1, top + 9), (cx + 2, top + 29)], 'Y')
-    for k in range(5):
-        x = cx - 10 + k * 4 + (ph % 2)
-        p.poly([(x, top + 29), (x + 2, top + 33 + ((k + ph) % 2)), (x + 4, top + 29)], 's', 'o')
-    p.line([(cx - 10, top + 30), (cx + 10, top + 30)], 'y')
-    # 두건
-    blob(p, cx + 1, top + 4, 6.6, 6.2, 0, keys={'l': 'l', 'b': 'b', 's': 's'})
-    p.poly([(cx + 2, top), (cx + 7, top + 2), (cx + 8, top + 9), (cx + 2, top + 9)], 'k')
-    p.line([(cx - 4, top + 1), (cx + 2, top - 1), (cx + 7, top + 2)], 'Y')
-    if n == 'hit':
-        eyes(p, cx + 5, top + 4, 'x')
-    else:
-        dot(p, cx + 5, top + 4, 'e'); dot(p, cx + 3, top + 4, 'e')
-    # 팔
-    ta = {'windup': [(-9, -6), (10, -6)], 'attack': [(14, 2)], 'hit': [(-8, 6)]}.get(n, [(8, 8)])
-    for t in ta:
-        hand = (cx + 3 + t[0], top + 12 + t[1])
-        p.line([(cx + 3, top + 12), hand], 'o', 4); p.line([(cx + 3, top + 12), hand], 'b', 2)
-        x, y = ipt(hand); p.box((x - 1, y - 1, x + 1, y + 1), 'l')
-        if n in ('windup', 'attack'):
-            p.d.ellipse((x - 3, y - 3, x + 3, y + 3), outline=p.pal['e'])
-            dot(p, x, y, 'E')
-    # 영혼 불빛
-    for k in range(3):
-        a = (k * 2.1 + ph * .8)
-        x, y = cx - 12 + math.cos(a) * 3, top + 10 + k * 7 + math.sin(a) * 2
-        p.box((int(x), int(y), int(x) + 1, int(y) + 1), 'e')
+    if k == 'finisher':
+        for i in range(5):
+            a = math.radians(160 + i * 16)
+            px, py = x + math.cos(a) * 16, y + math.sin(a) * 16
+            d.ellipse((px - 2, py - 2, px + 2, py + 2), fill=V)
+            d.point((int(px), int(py) - 1), fill=Vl)
+        d.arc((x - 22, y - 18, x + 6, y + 10), 140, 230, fill=Vl, width=1)
+        return
+    fx_common(R, d, J, '622680', 'd8ad50', (7, 23), 'arm')
 
+
+S = dict(
+    name='monster3-2', chip=2, cell=64, ground=False, oy=-4, breath_y=19,
+    parts=[
+        ('head', [(5, 6), (20, 6), (20, 18.5), (5, 18.5)], (12, 18)),
+        ('arm', [(5, 20.5), (10.5, 20.5), (10.5, 28), (5, 28)], (9, 21)),
+    ],
+    order=['body', 'arm', 'head'],
+    fx=fx,
+    poses={
+        'idle_b': dict(g=(0, 1, 0), br=1),
+        'idle_c': dict(g=(0, 2, 1), br=1, arm=(0, 1, 0)),
+        'windup': dict(g=(3, -1, 5), arm=(2, -3, 30), head=(1, 0, 0)),
+        'move': dict(g=(-5, -2, -8), arm=(-1, 0, -10)),
+        'attack': dict(g=(-8, 0, -8), arm=(-5, -1, -35), head=(-2, 0, 0), fx='impact'),
+        'recover': dict(g=(-2, 1, -2), arm=(-1, 0, -10), br=1),
+        'hit': dict(g=(5, -1, 9), arm=(2, -2, 20), head=(2, -1, 0), fx='hurt'),
+        'cast_charge': dict(g=(1, 1, 2), br=2, arm=(1, -2, 15), fx='charge'),
+        'cast_raise': dict(g=(0, -3, 1), br=-2, arm=(1, -8, 60), head=(0, -1, 0), fx='raise'),
+        'cast_release': dict(g=(-5, -1, -6), arm=(-5, -2, -40), head=(-1, 0, 0), fx='release'),
+        'leap': dict(g=(-2, -9, -5), br=2, arm=(0, -3, 40), air=True),
+        'buff': dict(g=(0, -2, 0), br=-3, arm=(1, -4, 45), head=(0, -2, 0), fx='buff'),
+        'finisher': dict(g=(-7, -2, -9), br=-2, arm=(-5, -4, -50), head=(-2, -1, 0), fx='finisher'),
+    },
+)
 
 if __name__ == '__main__':
-    build('monster3-2', 'b5', CELL, PAL, draw, ground=False)
+    Poser(S).sheet()
 

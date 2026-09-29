@@ -261,7 +261,17 @@ def cut(big, parts):
 def rot(im, deg, pivot):
     if not deg:
         return im
-    return im.rotate(deg, resample=Image.Resampling.NEAREST, center=pivot)
+    # RotSprite 축약: 3배 확대 → 최근접 회전 → 칸 가운데 표본. 새 색이 생기지 않고 1px 선이 덜 끊긴다.
+    k = 3
+    w, h = im.size
+    up = im.resize((w * k, h * k), Image.Resampling.NEAREST)
+    up = up.rotate(deg, resample=Image.Resampling.NEAREST, center=(pivot[0] * k, pivot[1] * k))
+    out = Image.new('RGBA', im.size)
+    src, dst = up.load(), out.load()
+    for y in range(h):
+        for x in range(w):
+            dst[x, y] = src[x * k + 1, y * k + 1]
+    return out
 
 
 def shift(im, dx, dy):

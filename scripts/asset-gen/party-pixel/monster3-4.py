@@ -1,67 +1,88 @@
-"""monster3-4 개미귀신(파티원) — 64 셀. 걷기 칩: 갈색 흙더미에 푸른 밧줄 무늬, 입구에서 분홍 입이 벌어진다. 몸 대부분이 모래에 묻힌 괴수(stomp).
-대기 = 흙더미가 들썩·모래가 흘러내림, windup = 가라앉으며 부풀림, move = 모래 파도를 밀며 전진, attack = 입구가 크게 열려 턱이 튀어나옴. 왼쪽을 본다."""
+"""monster3-4 개미귀신(파티원) — 셀 64, 15칸. 갈색 흙더미·푸른 밧줄, 아래쪽에 분홍 입과 초록 눈. 칩의 풀 장식(초록)과 흩날린 모래는 떼어 낸다. 바닥에 묻혀 있다.
+공용 엔진 pp15_pp5.Poser: 걷기 칩 왼쪽 보기 칸을 Scale2x 로 정수 2배 한 몸이 대기 칸이고, 나머지 칸은 부위를 옮겨 만든다."""
 import math, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from mon_lib import *  # noqa
+from pp15_pp5 import Poser, fx_common, star, burst, note  # noqa
 
-CELL = 64
-PAL = dict(o='24160c', s='4f2e21', b='714e29', l='a77b4b', L='c8a070', r='082b44', R='00558e', m='a3355f', M='e07aa0', t='f0e0c0', g='3a5a2a', e='fff08a')
-SH = {'idle_a': (0, 22, 16, 0), 'idle_b': (0, 23, 15, 1), 'idle_c': (0, 22, 17, 2), 'windup': (-2, 25, 12, 0), 'move': (4, 21, 15, 1),
-      'attack': (5, 22, 18, 3), 'recover': (2, 22, 16, 1), 'hit': (-4, 20, 14, 0), 'dead': (0, 26, 7, 0)}
+GRASS = {(0x30, 0x80, 0x50), (0x3c, 0x8f, 0x4b), (0x2c, 0x63, 0x4c), (0x19, 0x96, 0x17)}
 
 
-def draw(p, n):
-    G = CELL - 4
-    dx, rx, ry, jaw = SH[n]
-    cx = 30 + dx
-    # 흙더미: 둥근 봉분
-    mass(p, [(cx, G - ry * .55, rx, ry, 0), (cx - rx * .5, G - ry * .3, rx * .55, ry * .6, 0), (cx + rx * .45, G - ry * .3, rx * .55, ry * .6, 0)],
-         keys={'l': 'L', 'b': 'l', 's': 'b'})
-    # 바닥 평평하게 자르기
-    for y in range(G + 1, CELL):
-        for x in range(CELL):
-            p.im.putpixel((x, y), (0, 0, 0, 0))
-    p.line([(cx - rx - 2, G), (cx + rx + 2, G)], 'o')
-    p.line([(cx - rx - 1, G - 1), (cx + rx + 1, G - 1)], 's')
-    # 흙 줄무늬 + 밧줄
-    top = G - ry * 1.55
-    for k in range(3):
-        y = top + ry * (.45 + k * .32)
-        p.d.arc((cx - rx + 2, y - 5, cx + rx - 2, y + 5), 200, 340, fill=p.pal['b'])
-    p.d.arc((cx - rx + 1, top + ry * .6 - 7, cx + rx - 1, top + ry * .6 + 7), 190, 350, fill=p.pal['o'], width=3)
-    p.d.arc((cx - rx + 1, top + ry * .6 - 7, cx + rx - 1, top + ry * .6 + 7), 190, 350, fill=p.pal['R'], width=1)
-    if n == 'dead':
-        for k in range(4): dot(p, cx - 10 + k * 7, G - 3, 'L')
-        p.line([(cx + 8, G - 4), (cx + 12, G - 4)], 'm')
-        return
-    # 입구(앞 = 오른쪽): 분홍 입과 턱
-    mx, my = cx + rx * .55, G - ry * .5
-    w = 4 + jaw * 2
-    blob(p, mx, my, w, 3 + jaw, 0, keys={'l': 'M', 'b': 'm', 's': 's'})
-    p.box((int(mx) - w + 2, int(my) - 1, int(mx) + w - 2, int(my) + jaw), 's')
-    for k in range(-1, 2):
-        dot(p, mx + k * 2, my - 1, 't')
-    if jaw >= 2:     # 튀어나온 집게 턱
-        for sgn in (-1, 1):
-            base = (mx + 2, my + sgn * (2 + jaw))
-            tip = (mx + 10 + jaw, my + sgn * 1)
-            pts = bez([(base[0], base[1], 1.4), (mx + 8, my + sgn * (6 + jaw), 1.2), (tip[0], tip[1], .5)], 12)
-            tube(p, pts, 'b', 'o', 's')
-    # 눈 둘(흙더미 위, 번쩍)
-    for ox in (4, 9):
-        ex, ey = cx + ox, top + ry * .3
-        p.box((int(ex), int(ey), int(ex) + 1, int(ey) + 1), 'o' if n == 'hit' else 'e')
-    # 흘러내리는 모래알 / 이끼
-    for k in range(5):
-        x = cx - rx + 4 + k * (rx * 2 - 8) / 4
-        y = G - 3 - ((k * 3 + jaw + SH[n][3]) % 5)
-        dot(p, x, y, 'L')
-    dot(p, cx - 6, top + 3, 'g'); dot(p, cx - 5, top + 3, 'g')
-    if n == 'move':
-        for k in range(4): p.line([(cx - rx - 4 - k * 3, G - 1 - k), (cx - rx - 1 - k * 3, G - 1 - k)], 'l')
+def clean(c):
+    px = c.load()
+    for y in range(32):
+        for x in range(24):
+            q = px[x, y]
+            if q[3] and (q[:3] in GRASS and y >= 27 or y < 4):
+                px[x, y] = (0, 0, 0, 0)
+    # 흩날린 모래 알갱이(몸과 4방향으로 이어지지 않은 점)를 뗀다
+    seen, comps = set(), []
+    for y in range(32):
+        for x in range(24):
+            if px[x, y][3] and (x, y) not in seen:
+                st, comp = [(x, y)], []
+                seen.add((x, y))
+                while st:
+                    a, b = st.pop()
+                    comp.append((a, b))
+                    for i, j in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                        q = (a + i, b + j)
+                        if 0 <= q[0] < 24 and 0 <= q[1] < 32 and q not in seen and px[q][3]:
+                            seen.add(q)
+                            st.append(q)
+                comps.append(comp)
+    for comp in comps:
+        if len(comp) < 12:
+            for q in comp:
+                px[q] = (0, 0, 0, 0)
 
+
+def fx(R, d, J):
+    k = J['P'].get('fx')
+    S1, S2 = R.c('d7aa73'), R.c('a77b4b')
+    if k in ('impact', 'release', 'finisher', 'buff', 'charge', 'raise', 'hurt'):
+        x0, y0 = J['pt'](0, 28)
+        x1, _ = J['pt'](24, 28)
+        n = {'impact': 3, 'release': 5, 'finisher': 8, 'buff': 4, 'charge': 2, 'raise': 3, 'hurt': 2}[k]
+        for i in range(n):
+            x = x0 - 3 - i * 3 if k in ('release', 'finisher', 'impact') else (x0 - 2 if i % 2 else x1 + 2)
+            y = y0 - 1 - (i * 5) % 9 - (i // 2)
+            d.rectangle((x, y, x + 1, y + 1), fill=S1 if i % 2 else S2)
+    if k == 'finisher':
+        x, y = J['pt'](1, 25)
+        d.polygon([(x, y), (x - 14, y + 3), (x - 22, y + 3), (x - 14, y - 4), (x - 4, y - 8)], fill=S2)
+        d.line((x - 4, y - 5, x - 16, y), fill=S1)
+    if k == 'raise':
+        x, y = J['pt'](12, 2)
+        burst(d, x, y - 4, 3, 6, 5, S1, -90)
+
+
+S = dict(
+    name='monster3-4', chip=4, cell=64, breath_y=16, clean=clean, dead='slump',
+    parts=[
+        ('head', [(6.5, 21.5), (18.5, 21.5), (18.5, 29), (6.5, 29)], (12, 22)),
+        ('back', [(5, 3), (19, 3), (19, 9.5), (5, 9.5)], (12, 9)),
+    ],
+    attached=('head', 'back'),
+    order=['body', 'back', 'head'],
+    fx=fx,
+    poses={
+        'idle_b': dict(br=1, back=(0, 1, 0)),
+        'idle_c': dict(br=2, back=(0, 1, 4), head=(0, 0, 0)),
+        'windup': dict(g=(2, 0, 3), br=3, head=(1, -1, 0), back=(0, 2, 6)),
+        'move': dict(g=(-5, 0, -4), br=1, head=(-1, 0, 0), back=(0, 0, -6)),
+        'attack': dict(g=(-7, 0, -5), br=-2, head=(-4, 1, -10), back=(1, -1, -8), fx='impact'),
+        'recover': dict(g=(-2, 0, -1), br=1, head=(-1, 0, -3)),
+        'hit': dict(g=(4, 0, 6), br=-1, head=(2, -1, 10), back=(0, -1, 10), fx='hurt'),
+        'cast_charge': dict(g=(1, 0, 1), br=3, back=(0, 2, 0), fx='charge'),
+        'cast_raise': dict(g=(0, 0, 0), br=-4, back=(0, -3, 0), head=(0, -1, 0), fx='raise'),
+        'cast_release': dict(g=(-4, 0, -4), br=-1, head=(-3, 0, -8), fx='release'),
+        'leap': dict(g=(-2, -8, -3), br=-2, back=(0, -1, 8), air=True),
+        'buff': dict(g=(0, 0, 0), br=-3, back=(0, -2, 12), head=(0, -1, 0), fx='buff'),
+        'finisher': dict(g=(-6, 0, -7), br=-3, head=(-5, 0, -14), back=(1, -2, -10), fx='finisher'),
+    },
+)
 
 if __name__ == '__main__':
-    build('monster3-4', 'b5', CELL, PAL, draw)
+    Poser(S).sheet()
 
