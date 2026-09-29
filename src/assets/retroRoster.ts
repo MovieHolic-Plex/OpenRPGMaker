@@ -132,6 +132,32 @@ export const RETRO_ROSTER: readonly RetroRosterClass[] = [
   { classId: "class_red_dragon_pal", chip: "monster3-5", name: "새끼 화룡", role: "마법", body: "monster", batch: "b5", concept: "붉은 새끼 용, 화염 브레스" },
   { classId: "class_flame_spirit", chip: "monster3-6", name: "업화", role: "마법", body: "monster", batch: "b5", concept: "붉은 불꽃 덩어리, 폭염" },
   { classId: "class_demon_general", chip: "monster3-7", name: "마장군", role: "물리", body: "monster", batch: "b5", concept: "검은 갑옷 마장군, 암흑 대검" },
+  // 2026-09-29 3차: OPRN 자체 제작 몬스터 걷기 칩 Monster4~6(각 8명, public/assets/generated/charsets/Monster<N>.png,
+  // RM2K3 규격 288×256). 걷기 칩과 전투 15칸 시트(party-pixel)를 같은 에이전트가 함께 그린다.
+  { classId: "class_treant", chip: "monster4-0", name: "트렌트", role: "탱커", body: "monster", batch: "m4", concept: "걸어 다니는 고목 정령, 가지 팔·이끼 수염, 뿌리 휘감기" },
+  { classId: "class_mushroom", chip: "monster4-1", name: "버섯 요정", role: "회복", body: "monster", batch: "m4", concept: "빨간 갓 버섯 요정, 포자로 치유·수면" },
+  { classId: "class_kappa", chip: "monster4-2", name: "갓파", role: "민첩", body: "monster", batch: "m4", concept: "머리에 접시 인 물 요괴, 물대포·스모 박치기" },
+  { classId: "class_kitsune", chip: "monster4-3", name: "구미호", role: "마법", body: "monster", batch: "m4", concept: "아홉 꼬리 여우, 여우불·환술" },
+  { classId: "class_tanuki", chip: "monster4-4", name: "너구리 둔갑사", role: "운", body: "monster", batch: "m4", concept: "배 두드리는 너구리, 둔갑·나뭇잎 표창" },
+  { classId: "class_golem_moss", chip: "monster4-5", name: "이끼 골렘", role: "탱커", body: "monster", batch: "m4", concept: "풀 덮인 돌 골렘, 대지 방벽" },
+  { classId: "class_sprite_ice", chip: "monster4-6", name: "얼음 요정", role: "마법", body: "monster", batch: "m4", concept: "눈꽃 날개 요정, 빙결·눈보라" },
+  { classId: "class_mandrake", chip: "monster4-7", name: "만드라고라", role: "지원", body: "monster", batch: "m4", concept: "뿌리 인형 식물, 비명·약초" },
+  { classId: "class_mimic_pal", chip: "monster5-0", name: "미믹", role: "물리", body: "monster", batch: "m5", concept: "이빨 달린 보물상자, 통째로 삼키기" },
+  { classId: "class_living_armor", chip: "monster5-1", name: "살아있는 갑옷", role: "탱커", body: "monster", batch: "m5", concept: "빈 갑옷 속 보라빛 영혼, 대검" },
+  { classId: "class_lantern_ghost", chip: "monster5-2", name: "초롱 귀신", role: "마법", body: "monster", batch: "m5", concept: "한 눈 종이 초롱 요괴, 도깨비불" },
+  { classId: "class_doll", chip: "monster5-3", name: "저주 인형", role: "지원", body: "monster", batch: "m5", concept: "실 달린 인형, 실 조종·저주" },
+  { classId: "class_book_demon", chip: "monster5-4", name: "마도서", role: "마법", body: "monster", batch: "m5", concept: "날아다니는 이빨 달린 책, 주문 난사" },
+  { classId: "class_scarecrow", chip: "monster5-5", name: "허수아비", role: "물리", body: "monster", batch: "m5", concept: "짚 허수아비, 낫·까마귀 떼" },
+  { classId: "class_clockwork", chip: "monster5-6", name: "태엽 병정", role: "원거리", body: "monster", batch: "m5", concept: "태엽 달린 장난감 병정, 나사 탄환" },
+  { classId: "class_candle_imp", chip: "monster5-7", name: "촛불 임프", role: "마법", body: "monster", batch: "m5", concept: "촛농 몸의 작은 불꽃 악마, 녹이기" },
+  { classId: "class_yeti", chip: "monster6-0", name: "예티", role: "물리", body: "monster", batch: "m6", concept: "흰 털 설인, 눈덩이·포효" },
+  { classId: "class_merfolk", chip: "monster6-1", name: "인어 전사", role: "원거리", body: "monster", batch: "m6", concept: "삼지창 든 인어, 물살·조수" },
+  { classId: "class_cyclops", chip: "monster6-2", name: "사이클롭스", role: "물리", body: "monster", batch: "m6", concept: "외눈 거인, 바위 던지기·눈빛" },
+  { classId: "class_mothman", chip: "monster6-3", name: "나방 인간", role: "마법", body: "monster", batch: "m6", concept: "큰 날개 나방 괴인, 인분·환각" },
+  { classId: "class_basilisk", chip: "monster6-4", name: "바실리스크", role: "마법", body: "monster", batch: "m6", concept: "볏 달린 도마뱀 왕, 석화 시선" },
+  { classId: "class_djinn", chip: "monster6-5", name: "지니", role: "소환", body: "monster", batch: "m6", concept: "램프 연기 거인, 소원·폭풍" },
+  { classId: "class_chimera", chip: "monster6-6", name: "키메라", role: "물리", body: "monster", batch: "m6", concept: "사자·염소·뱀 머리, 삼중 브레스" },
+  { classId: "class_dark_angel", chip: "monster6-7", name: "타락 천사", role: "마법", body: "monster", batch: "m6", concept: "검은 날개 천사, 심판의 빛" },
 ];
 
 /** 묶음 설명(감독용). */
@@ -149,6 +175,7 @@ export const RETRO_ROSTER_BATCHES: Readonly<Record<string, string>> = {
   b3: "Monster1 8",
   b4: "Monster2 8",
   b5: "Monster3 8"
+  , m4: "Monster4 8(OPRN 자체 칩: 숲·요괴)", m5: "Monster5 8(OPRN 자체 칩: 저주받은 물건)", m6: "Monster6 8(OPRN 자체 칩: 전설의 괴수)"
 };
 
 /** 사람형이 아닌 파티원의 9칸 시트 규격(묶음 파일이 채운다). */

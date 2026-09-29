@@ -14,8 +14,11 @@ import { BATCH as b2 } from "./b2";
 import { BATCH as b3 } from "./b3";
 import { BATCH as b4 } from "./b4";
 import { BATCH as b5 } from "./b5";
+import { BATCH as m4 } from "./m4";
+import { BATCH as m5 } from "./m5";
+import { BATCH as m6 } from "./m6";
 
-const ALL = [a1, a2, a3, p1, p2, p3, p4, p5, b1, b2, b3, b4, b5];
+const ALL = [a1, a2, a3, p1, p2, p3, p4, p5, b1, b2, b3, b4, b5, m4, m5, m6];
 
 export const RETRO_ROSTER_SKILLS: readonly RetroClassSkill[] = ALL.flatMap((batch) => batch.skills);
 export const RETRO_PARTY_PIXEL_SHEETS: readonly RetroPartyPixelSheet[] = ALL.flatMap((batch) => batch.partyPixel ?? []);

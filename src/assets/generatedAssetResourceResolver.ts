@@ -10,6 +10,7 @@ import { openingStillPackUrl } from "./openingStillPackCdn";
 import { findOpeningStillPackEntry } from "./openingStillPackRuntime";
 import { resolveSeCatalogAssetUrl } from "./seCatalogResolver";
 import { resolveFarmingAssetUrl } from "./farmingSprites";
+import { resolveOprnMonsterCharsetUrl } from "./oprnMonsterCharsets";
 import { resolveGeneratedEffectAssetUrl } from "./generatedEffectSheets";
 import { resolveScarloxyAssetUrl } from "./scarloxyPack";
 import { resolveOgaBackdropAssetUrl } from "./ogaBackdropAssets";
@@ -337,6 +338,7 @@ export function resolveAssetResourceUrl(resourceId: string | undefined, options:
     resolveScarloxyAssetUrl(resourceId) ??
     resolveGeneratedEffectAssetUrl(resourceId) ??
     resolveFarmingAssetUrl(resourceId) ??
+    resolveOprnMonsterCharsetUrl(resourceId) ??
     resolveCc0IconAssetUrl(resourceId) ??
     resolveOgaBackdropAssetUrl(resourceId) ??
     resolveOgaCraftpixAssetUrl(resourceId) ??
