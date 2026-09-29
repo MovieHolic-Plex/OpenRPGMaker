@@ -263,15 +263,39 @@ class Skills:
         self.rows = []
 
     def add(self, ident, name, level, motion, desc, *keys):
+        """keys: 새 시트 키(이 직업 모듈의 @effect) 또는 이미 있는 시트 키. 이미 있는 시트는 (키, anchor) 로 앵커만 바꿔 쓸 수 있다."""
         assert motion in MOTIONS, motion
-        self.rows.append(dict(id=f'skill_{self.class_key}_{ident}', name=name, level=level, motion=motion, desc=desc, keys=list(keys)))
+        ks, anchors = [], {}
+        for k in keys:
+            if isinstance(k, tuple):
+                k, a = k
+                assert a in ANCHORS, a
+                anchors[k] = a
+            ks.append(k)
+        self.rows.append(dict(id=f'skill_{self.class_key}_{ident}', name=name, level=level, motion=motion, desc=desc, keys=ks, anchors=anchors))
         return self
 
-    def check(self):
+    def check(self, reuse=False):
         levels = [r['level'] for r in self.rows]
         assert levels == [1, 3, 5, 7, 10, 12, 16, 22], (self.class_key, levels)
         assert len({r['motion'] for r in self.rows}) >= 4, (self.class_key, 'motion 이 4종 미만')
         assert self.rows[-1]['motion'] == 'finisher', self.class_key
+        if reuse:
+            # a2 부터: 스킬 하나당 새 시트 최대 1장, 나머지는 기존 시트(EXISTING) 재사용.
+            existing = existing_sheets()
+            for r in self.rows:
+                new = [k for k in r['keys'] if k in REG]
+                assert len(new) <= 1, (r['id'], new, '스킬 하나당 새 시트는 최대 1장')
+                for k in r['keys']:
+                    if k in REG:
+                        assert k.startswith(self.class_key + '_'), (r['id'], k, '새 키는 <classKey>_ 로 시작한다')
+                        continue
+                    assert k in existing, (r['id'], k, '없는 시트')
+                    a = r['anchors'].get(k, existing[k]['anchor'])
+                    assert (a == 'projectile') == (existing[k]['anchor'] == 'projectile'), (r['id'], k, '투사체 시트는 투사체로만')
+                    assert not (a == 'projectile' and k.startswith('mon_')), (r['id'], k, '몬스터 투사체는 오른쪽을 본다 — 아군 스킬에 쓰지 않는다')
+                    assert (a == 'screen') == (existing[k]['frame'] == 128 and existing[k]['anchor'] == 'screen'), (r['id'], k, 'screen 은 128 화면 시트만')
+            return
         primary = set()
         for r in self.rows:
             for k in r['keys']:
@@ -287,6 +311,29 @@ def batch_contract(batch):
     for m in re.finditer(r'key: "(\w+)", anchor: "(\w+)", frame: (\d+), frames: (\d+)', text):
         layers.setdefault(m.group(1), dict(anchor=m.group(2), frame=int(m.group(3)), frames=int(m.group(4))))
     return layers
+
+
+REUSE_BATCHES = {'a2'}   # 이 묶음들은 기존 시트를 재사용한다(스킬당 새 시트 ≤1)
+_EXISTING = {}
+
+
+def existing_sheets():
+    """이미 그려진 시트의 규격(계약 두 파일 + 앞 묶음 a1). 키 → dict(anchor, frame, frames)."""
+    if _EXISTING:
+        return _EXISTING
+    srcs = [ROOT / 'src/assets/retroClassSkills.ts', ROOT / 'src/assets/retroMonsterSkills.ts', BATCH_DIR / 'a1.ts']
+    for p in srcs:
+        text = p.read_text(encoding='utf8')
+        for m in re.finditer(r'key: "(\w+)", anchor: "(\w+)", frame: (\d+), frames: (\d+)', text):
+            _EXISTING.setdefault(m.group(1), dict(anchor=m.group(2), frame=int(m.group(3)), frames=int(m.group(4))))
+        for m in re.finditer(r'L\("(\w+)", "(\w+)", (\d+), (\d+)\)', text):
+            _EXISTING.setdefault(m.group(1), dict(anchor=m.group(2), frame=int(m.group(3)), frames=int(m.group(4))))
+    for k, v in _EXISTING.items():
+        png = OUT / f'{k}.png'
+        assert png.exists(), (k, '시트 파일 없음')
+        w, h = Image.open(png).size
+        assert (w, h) == (v['frame'] * v['frames'], v['frame']), (k, (w, h), v)
+    return _EXISTING
 
 
 def batch_of(key):
@@ -321,13 +368,17 @@ def ts_text(batch):
         if not mod:
             continue
         sk = mod.SKILLS
-        sk.check()
+        sk.check(reuse=batch in REUSE_BATCHES)
         for r in sk.rows:
             layers = []
             for k in r['keys']:
-                e = REG[k]
-                frame = e['size']
-                layers.append(f'{{ key: "{k}", anchor: "{e["anchor"]}", frame: {frame}, frames: {e["frames"]} }}')
+                if k in REG:
+                    e = REG[k]
+                    anchor, frame, frames = e['anchor'], e['size'], e['frames']
+                else:
+                    e = existing_sheets()[k]
+                    anchor, frame, frames = r['anchors'].get(k, e['anchor']), e['frame'], e['frames']
+                layers.append(f'{{ key: "{k}", anchor: "{anchor}", frame: {frame}, frames: {frames} }}')
             rows.append(f'    {{ id: "{r["id"]}", classId: "{sk.class_id}", actorId: "actor_{sk.class_key}", name: "{r["name"]}", level: {r["level"]}, '
                         f'motion: "{r["motion"]}", description: "{r["desc"]}", layers: [{", ".join(layers)}] }},')
     out += rows
@@ -480,7 +531,7 @@ def stage(cls_mod, batch):
             for ax, af in ally_x[:1]:
                 p.alpha_composite(actor, (ax - 48, af - 90))
             for k in r['keys']:
-                e = REG[k]
+                e = sheet_spec(k, r)
                 fr_all = render_cache(k)
                 fi = min(len(fr_all) - 1, int(tt * len(fr_all)))
                 fr = fr_all[fi]
@@ -517,8 +568,22 @@ _CACHE = {}
 
 def render_cache(key):
     if key not in _CACHE:
-        _CACHE[key] = render(key)
+        if key in REG:
+            _CACHE[key] = render(key)
+        else:
+            e = existing_sheets()[key]
+            im = Image.open(OUT / f'{key}.png').convert('RGBA')
+            s = e['frame']
+            _CACHE[key] = [im.crop((i * s, 0, (i + 1) * s, s)) for i in range(e['frames'])]
     return _CACHE[key]
+
+
+def sheet_spec(key, row):
+    """무대 합성용 규격: 새 시트는 REG, 재사용 시트는 기존 규격(+스킬의 앵커 덮어쓰기)."""
+    if key in REG:
+        return REG[key]
+    e = existing_sheets()[key]
+    return dict(size=e['frame'], frames=e['frames'], anchor=row['anchors'].get(key, e['anchor']))
 
 
 def main(argv):
@@ -538,7 +603,7 @@ def main(argv):
         mod = CLASSES.get(cname)
         if not mod or (only_cls and cname not in only_cls):
             continue
-        keys = [k for r in mod.SKILLS.rows for k in r['keys']]
+        keys = list(dict.fromkeys(k for r in mod.SKILLS.rows for k in r['keys'] if k in REG))
         # 스킬에 안 쓰인 이펙트가 있으면 알린다.
         own = [k for k, v in REG.items() if v['module'] == mod.__name__]
         for k in own:
@@ -552,7 +617,7 @@ def main(argv):
             bad += res[0].startswith('BAD')
             results.append(res)
         if results and not only:
-            mod.SKILLS.check()
+            mod.SKILLS.check(reuse=batch in REUSE_BATCHES)
             imgs = class_board(cname, results, None)
             for p in stack(imgs, REVIEW / batch / f'{cname}-sheet.png'):
                 print('sheet', p)
