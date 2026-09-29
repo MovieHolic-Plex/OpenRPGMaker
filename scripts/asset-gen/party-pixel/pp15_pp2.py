@@ -645,6 +645,448 @@ def build_ghost():
 BUILDERS = {'monster1-0': build_slime, 'monster1-3': build_ghost}
 
 
+# ═══════════════════════════════════════════════════════════════════════
+# 부위 리그(두 다리형: 붉은 악마·꼬마 오거) — 칩 2배 속살을 부위별 층으로 나눠 돌리고 옮긴다.
+# 부위 판정은 칩 좌표(24×32) 술어. 각도는 화면 시계 방향 +(y 가 아래). 팔: 0 = 늘어뜨림, +90 = 앞(왼쪽), 180 = 위, −90 = 뒤.
+# 몸 기울기 lean: + 는 윗부분이 뒤(오른쪽)로, − 는 앞으로.
+# ═══════════════════════════════════════════════════════════════════════
+CAN = 112          # 작업 캔버스
+GROUND = 96        # 작업 캔버스 바닥 행(칩 행 31 아래 = 2배 62 → 여기)
+CX0 = CAN // 2
+FOFF = [0]         # 마지막 finish 의 세로 옮김(무기·효과 좌표 환산용)
+
+
+def rot_pt(p, deg, pv):
+    t = math.radians(deg)
+    c, s = math.cos(t), math.sin(t)
+    x, y = p[0] - pv[0], p[1] - pv[1]
+    return (pv[0] + c * x - s * y, pv[1] + s * x + c * y)
+
+
+class Rig:
+    def __init__(self, chip_arr, parts, outc, strip, body_cx, keep=None, keep_col=None, under=None, ncol=None, keepcols=()):
+        """chip_arr: 칩(24×32 RGBA, 배경 0). parts: [(이름, 술어(x,y))] — 앞에 있는 것이 먼저 판정.
+        body_cx: 칩 좌표 몸 가운데 x(셀 가로 중심에 맞춘다)."""
+        if ncol:
+            chip_arr = quantize(chip_arr, ncol, keepcols)
+        a = strip_outline(chip_arr, strip, keep, keep_col)
+        a2 = scale2x(a)
+        self.under = under or {}
+        self.ox = int(round(CX0 - body_cx * 2))
+        self.oy = GROUND - 62
+        self.layers = {}
+        owner = np.full(a2.shape[:2], '', object)
+        for y in range(a2.shape[0]):
+            for x in range(a2.shape[1]):
+                if a2[y, x, 3] == 0:
+                    continue
+                for name, pred in parts:
+                    if pred(x // 2, y // 2):
+                        owner[y, x] = name
+                        break
+        for name, _ in parts:
+            L = np.zeros((CAN, CAN, 4), np.uint8)
+            m = owner == name
+            ys, xs = np.nonzero(m)
+            L[ys + self.oy, xs + self.ox] = a2[ys, xs]
+            self.layers[name] = L
+        self.outc = outc
+        pal = sorted({tuple(p) for p in a2[a2[..., 3] > 0].tolist()})
+        self.lighter, self.darker = ramp_maps(pal, [outc])
+
+    def c(self, p):
+        """칩 좌표 → 작업 캔버스 좌표(2배)."""
+        return (p[0] * 2 + self.ox, p[1] * 2 + self.oy)
+
+
+def compose(rig, order, xf, lean=0., lean_pv=None, sx=1., sy=1., holes=True, extra=None):
+    """order: 뒤→앞 부위 이름. xf[name] = (회전각, 칩 좌표 피벗, dx, dy[2배 px]).
+    lean 은 모든 부위를 발 기준으로 함께 기울인다."""
+    out = np.zeros((CAN, CAN, 4), np.uint8)
+    for name in order:
+        L = rig.layers[name]
+        deg, pv, dx, dy = xf.get(name, (0, None, 0, 0))
+        if deg and pv is not None:
+            L = rotate(L, deg, rig.c(pv))
+        if dx or dy:
+            L = shift(L, int(dx), int(dy))
+        over(out, L)
+        if extra and name in extra:
+            extra[name](out)
+        # 옮겨 간 부위가 비운 자리를 몸 색으로 메운다(under = {부위: (메울 층, 색)})
+        for part, (host, col) in rig.under.items():
+            if host == name and xf.get(part, (0, None, 0, 0)) != (0, None, 0, 0):
+                hd = xf.get(host, (0, None, 0, 0))
+                M = shift(rig.layers[part], int(hd[2]), int(hd[3]))[..., 3] > 0
+                M &= out[..., 3] == 0
+                out[M] = hx(col)
+    if holes:
+        m = out[..., 3] > 0
+        for _ in range(2):
+            p = np.pad(m, 1)
+            n4 = p[:-2, 1:-1].astype(int) + p[2:, 1:-1] + p[1:-1, :-2] + p[1:-1, 2:]
+            hole = (~m) & (n4 >= 3)
+            if not hole.any():
+                break
+            ys, xs = np.nonzero(hole)
+            for y, x in zip(ys, xs):
+                for dy_, dx_ in ((0, 1), (1, 0), (0, -1), (-1, 0)):
+                    if m[y + dy_, x + dx_]:
+                        out[y, x] = out[y + dy_, x + dx_]
+                        break
+            m = out[..., 3] > 0
+    if sx != 1 or sy != 1:
+        out = warp(out, sx, sy, 0, anchor=(CX0, GROUND))
+    if lean:
+        out = rotate(out, lean, lean_pv or (CX0, GROUND))
+    return out
+
+
+def finish(rig, a, cell, lift=0, dx=0, dark=False):
+    """외곽선·명암 → 셀로 옮김(작업 캔버스 CX0 → 셀 가운데, GROUND → 셀 cell−4 − lift)."""
+    if dark:
+        m = a[..., 3] > 0
+        for y, x in zip(*np.nonzero(m)):
+            c = tuple(a[y, x])
+            if c in rig.darker:
+                a[y, x] = rig.darker[c]
+    a = shade(outline(a, rig.outc), rig.lighter, rig.darker, [rig.outc])
+    f = np.zeros((cell, cell, 4), np.uint8)
+    ys, xs = np.nonzero(a[..., 3] > 0)
+    ox = cell // 2 - CX0 + int(dx)
+    oy = (cell - 4) - int(ys.max()) - int(lift)
+    FOFF[0] = (cell - 4) - int(ys.max())
+    for y, x in zip(ys, xs):
+        yy, xx = y + oy, x + ox
+        if 0 <= yy < cell and 0 <= xx < cell:
+            f[yy, xx] = a[y, x]
+    return f
+
+
+def stick(a, p0, deg, ln, cols, w=1):
+    """막대(무기 자루): p0 에서 deg(0 = 아래, +90 = 앞/왼쪽, 180 = 위) 방향으로 ln. cols = (외곽, 몸, 밝은 면)."""
+    t = math.radians(deg)
+    vx, vy = -math.sin(t), math.cos(t)
+    pts = []
+    for k in range(int(ln * 2) + 1):
+        pts.append((p0[0] + vx * k / 2, p0[1] + vy * k / 2))
+    m = np.zeros(a.shape[:2], bool)
+    for (x, y) in pts:
+        for ww in range(w):
+            xx, yy = int(round(x - vy * ww)), int(round(y + vx * ww))
+            if 0 <= yy < a.shape[0] and 0 <= xx < a.shape[1]:
+                m[yy, xx] = True
+    return m, pts[-1], (vx, vy)
+
+
+def paint_mask(a, m, body, edge=None, light=None):
+    ys, xs = np.nonzero(m)
+    for y, x in zip(ys, xs):
+        a[y, x] = hx(body)
+    if light:
+        for y, x in zip(ys, xs):
+            if y - 1 >= 0 and not m[y - 1, x]:
+                a[y, x] = hx(light)
+    if edge:
+        p = np.pad(m, 1)
+        ring = np.zeros_like(m)
+        for dy, dx in ((0, 1), (0, -1), (1, 0), (-1, 0)):
+            ring |= p[1 + dy:1 + dy + m.shape[0], 1 + dx:1 + dx + m.shape[1]]
+        ring &= ~m
+        for y, x in zip(*np.nonzero(ring)):
+            if a[y, x, 3] == 0:
+                a[y, x] = hx(edge)
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# 빌더 2: monster1-1 붉은 악마 — 칩 왼쪽 보기 17×26, 둥근 머리에 휜 뿔 한 가닥, 초록 눈, 불룩한 배, 짙은 남색 발.
+# 칩 × 2 = 34×52 → 셀 64(48 에는 44px 까지만 들어간다).
+# 무기: 칩에 없으므로 대기 칸엔 없고, 스킬(삼지창 찌르기·지옥불)이 쓰는 칸에만 작은 금빛 삼지창·불덩이를 쥔다.
+# ═══════════════════════════════════════════════════════════════════════
+DEVIL_OUT = '290800'
+
+
+def devil_rig():
+    parts = [
+        ('legs', lambda x, y: y >= 28),
+        ('arm', lambda x, y: 12 <= x <= 16 and 19 <= y <= 26),
+        ('head', lambda x, y: y <= 17),
+        ('body', lambda x, y: True),
+    ]
+    # 칩 뿔 끝(행 5~7)은 외곽선 색 한 가닥뿐 — 벗기지 말고 짙은 빨강으로 남겨 새 외곽선이 감싸게 한다.
+    return Rig(chip_frame(1), parts, DEVIL_OUT, [DEVIL_OUT], body_cx=11.5,
+               keep=lambda x, y: y <= 7 and 10 <= x <= 13, keep_col='7b0818', under={'arm': ('body', 'c52029')})
+
+
+FIRE = ('7b0818', 'ff737b', 'f8d048', 'fff0a0')  # 불: 가장자리·몸·속·심
+
+
+def fireball(f, x, y, r):
+    disc(f, x, y, r + 1, FIRE[0]); disc(f, x, y, r, FIRE[1]); disc(f, x - .5, y - .5, r * .62, FIRE[2]); disc(f, x - 1, y - 1, max(.8, r * .3), FIRE[3])
+    for k in range(3):
+        put(f, int(x) + 1 - k, int(y - r - 1 - (k % 2)), FIRE[1])
+
+
+def trident(f, hand, deg, ln=18):
+    m, tip, (vx, vy) = stick(f, hand, deg, ln, None, w=1)
+    # 날 셋(끝에서 수직으로 벌어짐)
+    px, py = -vy, vx
+    head = np.zeros_like(m)
+    for s_ in (-2, 0, 2):
+        for k in range(4):
+            x = int(round(tip[0] + px * s_ + vx * k))
+            y = int(round(tip[1] + py * s_ + vy * k))
+            if 0 <= y < f.shape[0] and 0 <= x < f.shape[1]:
+                head[y, x] = True
+    for s_ in (-2, -1, 0, 1, 2):
+        x = int(round(tip[0] + px * s_)); y = int(round(tip[1] + py * s_))
+        if 0 <= y < f.shape[0] and 0 <= x < f.shape[1]:
+            head[y, x] = True
+    paint_mask(f, m | head, 'f8d048', None, None)
+    for y, x in zip(*np.nonzero(m)):
+        f[y, x] = hx('b07818')
+
+
+def limb(a, p0, p1, r, body, light=None):
+    """관절 막대(팔)를 작업 캔버스 속살에 그린다 — 외곽선은 finish 가 두른다."""
+    n = int(max(abs(p1[0] - p0[0]), abs(p1[1] - p0[1])) * 2) + 1
+    for k in range(n + 1):
+        t = k / n
+        disc(a, p0[0] + (p1[0] - p0[0]) * t, p0[1] + (p1[1] - p0[1]) * t, r, body)
+    if light:
+        put(a, int(p1[0]) - 1, int(p1[1]) - 1, light)
+
+
+def build_devil():
+    CELL = 64
+    rig = devil_rig()
+    SH = (14, 20)   # 어깨(칩 좌표)
+    NECK = (11, 17)
+    HAND = (13.5, 26)
+    order = ['legs', 'body', 'head', 'arm']
+    P = dict(  # lean, 팔각, 머리각, 머리 dy, 몸 sy, 다리 dx, 들림, 가로이동
+        idle_a=(0, 0, 0, 0, 1, 0, 0, 0), idle_b=(0, 4, 0, 1, .98, 0, 0, 0), idle_c=(0, 8, 0, 2, .96, 0, 0, 0),
+        windup=(8, -130, 6, 0, 1, 0, 0, 0), move=(-10, 40, -4, 0, 1, -3, 3, -4), attack=(-14, 92, -8, 0, 1, -2, 0, 0),
+        recover=(-4, 40, -2, 1, .98, 0, 0, -2), hit=(14, -40, 14, 0, 1, 2, 2, 6), dead=(0, 0, 0, 0, 1, 0, 0, 0),
+        cast_charge=(3, 55, 4, 1, .96, 0, 0, 1), cast_raise=(-2, 175, -10, 0, 1.03, 0, 0, 0), cast_release=(-10, 100, -6, 0, 1, -2, 0, 2),
+        leap=(-12, -150, -6, 0, 1, -4, 6, -2), buff=(6, 140, -14, -1, 1.04, 0, 0, 1), finisher=(-6, 150, -12, 0, 1.03, -1, 2, -3))
+    frames = {}
+    for n in NAMES:
+        lean, adeg, hdeg, hdy, sy, ldx, lift, dx = P[n]
+        xf = {'arm': (adeg, SH, 0, 0), 'head': (hdeg, NECK, 0, hdy), 'legs': (0, None, ldx, 0), 'body': (0, None, 0, 0)}
+        if n in ('idle_b', 'idle_c'):
+            xf['body'] = (0, None, 0, 1 if n == 'idle_c' else 0)
+        big_arm = abs(adeg) >= 30
+        a = compose(rig, [o for o in order if not (big_arm and o == 'arm')], xf, lean=lean, sy=sy)
+        if n == 'dead':  # 뒤로 벌렁(머리가 오른쪽)
+            a = rotate(a, 90, (CX0, GROUND - 14))
+            ys, xs = np.nonzero(a[..., 3] > 0)
+            a = shift(a, int(CX0 - (xs.min() + xs.max()) / 2), 0)
+        # 손 위치(작업 캔버스): 팔 회전 → 몸 기울기
+        hand = rot_pt(rig.c(HAND), adeg, rig.c(SH))
+        if sy != 1:
+            hand = (hand[0], GROUND - (GROUND - hand[1]) * sy)
+        hand = rot_pt(hand, lean, (CX0, GROUND))
+        sh = rot_pt(rig.c(SH), lean, (CX0, GROUND))
+        if big_arm:  # 칩 팔은 몸에 붙은 선뿐이라 들어 올린 팔은 따로 외곽선 두른 막대로 새로 그린다
+            L = np.zeros_like(a)
+            limb(L, (sh[0] - 1, sh[1] + 2), hand, 2.1, 'c52029')
+            limb(L, (sh[0] - 1.5, sh[1] + 1.5), (hand[0] - .5, hand[1] - .5), .9, 'f63141')
+            over(a, outline(L, DEVIL_OUT))
+        if n in ('windup', 'move', 'attack', 'recover', 'leap'):
+            wdeg = {'windup': -150, 'move': 70, 'attack': 90, 'recover': 45, 'leap': -175}[n]
+            base = (hand[0] - math.sin(math.radians(wdeg)) * -6, hand[1] + math.cos(math.radians(wdeg)) * -6)
+            trident(a, base, wdeg, 19)
+        a = finish(rig, a, CELL, lift=lift, dx=dx, dark=(n == 'dead'))
+        hx_, hy_ = hand[0] + CELL // 2 - CX0 + dx, hand[1] + FOFF[0] - lift
+        m = a[..., 3] > 0
+        ys, xs = np.nonzero(m)
+        top, l, r = ys.min(), xs.min(), xs.max()
+        if n == 'hit':
+            for (x, y) in ((l - 2, top + 6), (l - 4, top + 12), (l - 2, top + 18)):
+                put(a, x, y, 'fff0a0'); put(a, x - 1, y, 'ff737b')
+        if n == 'cast_charge':
+            fireball(a, hx_ - 3, hy_ - 2, 2)
+            for (x, y) in ((hx_ - 9, hy_ - 8), (hx_ + 2, hy_ - 11), (hx_ - 10, hy_ + 3)):
+                spark(a, int(x), int(y), 'ff737b', 'fff0a0')
+        if n == 'cast_raise':
+            fireball(a, hx_ - 1, hy_ - 6, 3.5)
+        if n == 'cast_release':
+            fireball(a, l - 5, hy_ - 1, 3)
+            for k in range(2):
+                put(a, l + k * 3, int(hy_) - 1, 'f8d048'); put(a, l + 1 + k * 3, int(hy_) - 1, 'f8d048')
+        if n == 'buff':  # 계약: 몸 둘레 붉은 기운
+            for (x, y) in ((l - 3, top + 10), (r + 3, top + 6), (l - 2, top + 28), (r + 3, top + 24), (r + 2, top + 1)):
+                spark(a, int(x), int(y), 'ff737b', 'f8d048')
+        if n == 'finisher':  # 연옥의 문: 머리 위 큰 불덩이 + 발밑 불길
+            fireball(a, hx_ - 3, hy_ - 8, 5)
+            for k, x in enumerate(range(l - 4, r + 5, 4)):
+                h = 3 + (k * 7) % 4
+                for y in range(CELL - 4 - h, CELL - 4 + 1):
+                    if a[y, x, 3] == 0:
+                        a[y, x] = hx(FIRE[1] if y > CELL - 4 - h + 1 else FIRE[2])
+                    if a[y, x + 1, 3] == 0 and y > CELL - 4 - h + 1:
+                        a[y, x + 1] = hx(FIRE[0])
+        frames[n] = a
+    assemble('monster1-1', CELL, frames)
+    return check('monster1-1', air=('leap', 'move', 'hit', 'finisher'))
+
+
+BUILDERS['monster1-1'] = build_devil
+
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# 빌더 3: monster1-2 꼬마 오거 — 칩 왼쪽 보기 16×22: 민머리 큰 귀, 붉은 눈, 금빛 체크 어깨·팔 보호대, 보라 띠, 맨다리.
+# 칩 × 2 = 32×44(외곽선 포함 34×46) → 셀 48 로는 도약·몽둥이 들기 여유가 없어 셀 64(화면 배율은 같다).
+# 칩은 49색이라 14색으로 줄인 뒤 2배. 몽둥이는 칩에 없지만 스킬(몽둥이 휘두르기·내려찍기)이 쓰므로 공격 칸에만 쥔다.
+# ═══════════════════════════════════════════════════════════════════════
+OGRE_OUT = '311800'
+
+
+# 칩 49색 → 칩에서 고른 15색(피부 4·금빛 갑옷 4·보라 2·눈 3·외곽 1·짙은 선 1). 가장 가까운 색으로 옮긴다.
+OGRE_PAL = ['311800', 'f7d6bf', 'f9b687', 'e1a073', 'bd5a39', 'c90000', 'ffffff', 'b0d7ff',
+            'fbe88b', 'f1d04d', 'd37934', '985325', '3c291d', '6e185a', '30172d']
+OGRE_FIX = {'5f1710': '311800', '000000': '311800', '010100': '311800', '1a1a1a': '311800', '202020': '311800',
+            '231c15': '311800', '472e1e': '3c291d', '55134d': '30172d', 'cc7438': 'bd5a39', 'a06439': '985325'}
+
+
+def remap(a, pal, fix):
+    out = a.copy()
+    P = [hx(c) for c in pal]
+    for y, x in zip(*np.nonzero(a[..., 3] > 0)):
+        c = '%02x%02x%02x' % tuple(a[y, x, :3])
+        if c in fix:
+            out[y, x] = hx(fix[c])
+            continue
+        best = min(P, key=lambda q: sum((int(a[y, x, t]) - q[t]) ** 2 for t in range(3)))
+        out[y, x] = best
+    return out
+
+
+def ogre_rig():
+    a = remap(chip_frame(2), OGRE_PAL, OGRE_FIX)
+    darks = ['311800']
+    parts = [
+        ('legs', lambda x, y: y >= 26),
+        ('arm', lambda x, y: x <= 10 and 18 <= y <= 23),
+        ('head', lambda x, y: y <= 17),
+        ('body', lambda x, y: True),
+    ]
+    rig = Rig(a, parts, OGRE_OUT, darks, body_cx=12, under={'arm': ('body', '985325')})
+    # 자동 명암 짝은 피부 밝은 쪽이 금빛으로 넘어간다 — 피부·갑옷 사다리를 손으로 준다.
+    chains = [['bd5a39', 'e1a073', 'f9b687', 'f7d6bf'], ['3c291d', '985325', 'd37934', 'f1d04d', 'fbe88b'], ['30172d', '6e185a']]
+    rig.lighter, rig.darker = {}, {}
+    for ch in chains:
+        for lo, hi in zip(ch, ch[1:]):
+            rig.lighter[hx(lo)] = hx(hi)
+            rig.darker[hx(hi)] = hx(lo)
+    return rig
+
+
+CLUB = ('311800', '985325', 'd37934')
+
+
+def club(f, hand, deg, ln=15):
+    """손에서 deg 방향으로 끝이 굵어지는 나무 몽둥이. 외곽선은 따로 두른다."""
+    L = np.zeros_like(f)
+    t = math.radians(deg)
+    vx, vy = -math.sin(t), math.cos(t)
+    for k in range(int(ln * 2) + 1):
+        d = k / 2
+        r = 1.0 + 2.2 * (d / ln) ** 1.4
+        disc(L, hand[0] + vx * d, hand[1] + vy * d, r, CLUB[1])
+    # 빛(왼쪽 위 면) 한 줄·옹이 둘
+    for k in range(4, int(ln * 2) - 1):
+        d = k / 2
+        r = 1.0 + 2.2 * (d / ln) ** 1.4
+        px, py = (-vy, vx) if (-vy + vx) < 0 else (vy, -vx)
+        put(L, int(round(hand[0] + vx * d + px * (r - 1))), int(round(hand[1] + vy * d + py * (r - 1))), CLUB[2])
+    for d in (ln * .55, ln * .85):
+        put(L, int(round(hand[0] + vx * d)), int(round(hand[1] + vy * d)), CLUB[0])
+    over(f, outline(L, CLUB[0]))
+    return (hand[0] + vx * ln, hand[1] + vy * ln)
+
+
+def build_ogre():
+    CELL = 64
+    rig = ogre_rig()
+    SH = (9, 19)
+    NECK = (12, 17)
+    HAND = (7.5, 23)
+    order = ['legs', 'body', 'head', 'arm']
+    P = dict(  # lean, 팔각, 머리각, 머리 dy, sy, 다리 dx, 들림, 가로이동, 몽둥이각(None = 없음)
+        idle_a=(0, 0, 0, 0, 1, 0, 0, 0, None), idle_b=(0, 3, 0, 1, .98, 0, 0, 0, None), idle_c=(0, 6, 0, 1, .96, 0, 0, 0, None),
+        windup=(10, -150, 6, 0, .96, 1, 0, 2, -170), move=(-8, -120, -4, 0, 1, -2, 3, -2, -150), attack=(-14, 60, -8, 1, .95, -2, 0, 8, 58),
+        recover=(-4, 40, -2, 1, .96, 0, 0, -1, 30), hit=(14, -50, 14, 0, 1, 2, 2, 5, None), dead=(0, 0, 0, 0, 1, 0, 0, 0, None),
+        cast_charge=(4, 150, 4, 1, .94, 0, 0, 1, None), cast_raise=(-2, 175, -10, 0, 1.02, 0, 0, 0, None), cast_release=(-12, 105, -6, 0, 1, -2, 0, 4, None),
+        leap=(-6, 175, -8, 0, 1, -3, 7, 0, 185), buff=(6, 30, -12, -1, 1.04, 0, 0, 1, None), finisher=(-10, 160, -10, 0, 1.02, -1, 0, -1, 190))
+    frames = {}
+    for n in NAMES:
+        lean, adeg, hdeg, hdy, sy, ldx, lift, dx, cdeg = P[n]
+        xf = {'arm': (adeg, SH, 0, 0), 'head': (hdeg, NECK, 0, hdy), 'legs': (0, None, ldx, 0), 'body': (0, None, 0, 0)}
+        a = compose(rig, order if cdeg is None or cdeg < 100 else ['legs', 'body', 'head'], xf, lean=lean, sy=sy)
+        hand = rot_pt(rig.c(HAND), adeg, rig.c(SH))
+        if sy != 1:
+            hand = (hand[0], GROUND - (GROUND - hand[1]) * sy)
+        hand = rot_pt(hand, lean, (CX0, GROUND))
+        tip = None
+        if cdeg is not None:
+            if cdeg >= 100:  # 몽둥이를 머리 위로 — 몽둥이를 먼저, 팔을 위에
+                club(a, hand, cdeg, 16)
+                arm_l = compose(rig, ['arm'], xf, lean=lean, sy=sy, holes=False)
+                over(a, arm_l)
+            else:
+                tip = club(a, hand, cdeg, 14)
+        if n == 'dead':
+            a = rotate(a, 90, (CX0, GROUND - 12))
+            ys, xs = np.nonzero(a[..., 3] > 0)
+            a = shift(a, int(CX0 - (xs.min() + xs.max()) / 2), 0)
+        a = finish(rig, a, CELL, lift=lift, dx=dx, dark=(n == 'dead'))
+        hx_, hy_ = hand[0] + CELL // 2 - CX0 + dx, hand[1] + FOFF[0] - lift
+        m = a[..., 3] > 0
+        ys, xs = np.nonzero(m)
+        top, l, r = ys.min(), xs.min(), xs.max()
+        G = CELL - 4
+        if n == 'attack':  # 내리친 자리 흙먼지
+            tx = int(tip[0] + CELL // 2 - CX0 + dx)
+            for (x, y) in ((tx - 3, G - 1), (tx - 5, G - 4), (tx + 3, G - 2)):
+                put(a, x, y, 'd37934'); put(a, x + 1, y, 'd37934')
+        if n == 'hit':
+            for (x, y) in ((l - 2, top + 5), (l - 4, top + 11), (l - 2, top + 17)):
+                put(a, x, y, 'fbe88b'); put(a, x - 1, y, 'fbe88b')
+        if n in ('cast_charge', 'cast_raise', 'cast_release'):  # 바위를 들어 던진다
+            ROCK = ('311800', '3c291d', '985325', 'd37934')
+            if n == 'cast_charge':
+                bx, by, rr = hx_ - 2, hy_ - 3, 3.2
+            elif n == 'cast_raise':
+                bx, by, rr = hx_, hy_ - 5, 4.2
+            else:
+                bx, by, rr = l - 5, hy_ - 1, 4
+            disc(a, bx, by, rr + 1, ROCK[0]); disc(a, bx, by, rr, ROCK[1]); disc(a, bx - .8, by - .8, rr * .6, ROCK[2]); put(a, int(bx - 1.5), int(by - 1.5), ROCK[3])
+            if n == 'cast_release':
+                for k in range(2):
+                    put(a, int(bx + rr + 2 + k * 3), int(by), 'fbe88b'); put(a, int(bx + rr + 3 + k * 3), int(by), 'fbe88b')
+        if n == 'buff':  # 배를 두드리며 함성: 입 옆 외침 선
+            for k, (x, y) in enumerate(((l - 3, top + 9), (l - 4, top + 13), (l - 3, top + 17))):
+                put(a, x, y, 'fbe88b'); put(a, x - 1, y + (k - 1), 'fbe88b')
+            for (x, y) in ((r + 3, top + 4), (l + 2, top - 2)):
+                spark(a, x, y, 'f1d04d', 'fbe88b')
+        if n == 'finisher':  # 거인의 한 방: 몽둥이 둘레 금빛·발밑 금 간 땅
+            for (x, y) in ((l - 2, top + 3), (r + 2, top + 2), ((l + r) // 2, top - 1 if top > 2 else top + 1)):
+                spark(a, int(x), int(y), 'f1d04d', 'fbe88b')
+            for x in range(l - 2, r + 3, 3):
+                if a[G, x, 3] == 0:
+                    put(a, x, G, '985325'); put(a, x + 1, G, '985325')
+        frames[n] = a
+    assemble('monster1-2', CELL, frames)
+    return check('monster1-2', air=('leap', 'move', 'hit'))
+
+
+BUILDERS['monster1-2'] = build_ogre
+
+
+
 def build(chip):
     return BUILDERS[chip]()
 
