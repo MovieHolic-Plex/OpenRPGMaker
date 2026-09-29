@@ -98,3 +98,11 @@ Colours: poison yellow-green + violet, darkness violet/black/crimson, ice blue-w
 Checks: size, binary alpha, ≤16 colours, no empty frame, neighbouring frames differ, isolated pixels (counted before edge dithering).
 Review output: `.omo/mfx/<key>-preview.png` and `.omo/mfx/board-18_35(-partN).png`, a mock stage on #405838 with a monster square and actor1-0 at 2x.
 
+
+## Roster batch p5 (retro2003 2차 로스터)
+
+People5-3~5-7 다섯 직업(무녀·사막 전사·메이드·은자·노병)의 새 시트 26장. 클래스별 생성기
+`fx_shrine_maiden.py` `fx_desert_warrior.py` `fx_maid.py` `fx_hermit.py` `fx_old_warrior.py`,
+공용 모듈은 p4 와 같은 `lib_r2w4.py` (계약: `src/assets/retroRosterSkills/p5.ts`, 스킬당 새 시트 최대 1장,
+나머지 층은 기존 시트 재사용). `python3 fx_<class>.py` 로 그 직업 시트와 확인판(`.omo/r2w4/p5/`)을 다시 만든다.
+투사체(ofuda·plate·flask)는 머리가 왼쪽. screen 128 층은 `fade_oval` 로 둥글게 끝난다.

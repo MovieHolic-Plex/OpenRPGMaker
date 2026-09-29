@@ -181,8 +181,11 @@ def torii_sky(c, f):
         u = min(1.0, (f - 2) / 4)
         gx0, gx1 = 64 - 20, 64 + 20
         top = base - h + 16
-        c.rect(64 - 19 * u, top, 64 + 19 * u, base - 1, 'g1')
-        c.rect(64 - 11 * u, top, 64 + 11 * u, base - 1, 'g2')
+        for y in range(int(top), base):
+            for x in range(int(64 - 19 * u), int(64 + 19 * u) + 1):
+                if (x + y + f) % 2 == 0:
+                    c.px(x, y, 'g1')
+        c.rect(64 - 7 * u, top, 64 + 7 * u, base - 1, 'g2')
         for y in range(int(top), base):
             for x in range(int(64 - 5 * u), int(64 + 5 * u) + 1):
                 if (x + y + f) % 2 == 0:
