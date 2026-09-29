@@ -206,6 +206,24 @@
 - **녹화** `node scripts/qa/runtime/retro2003-skills-gif.mjs --set roster [--batch a1]`(묶음 스킬을 그 배우가 세 명씩 조로, 부활 스킬 조엔 쓰러진 주인공) ·
   `--set party-pixel [--batch b1]`(9칸 파티원 통상 공격 → `party-<칩>.gif`, windup·attack 칸 노출 판정). 녹화 배우 레벨 = max(22, 로스터 최고 level). 묶음이 비면 「녹화할 항목이 없다」로 멈춘다.
 
+#### 스킬 기믹 명시화 (2026-09-29)
+
+사용자 신고 「스킬 효과가 다 데미지만 주고 끝」 — a1 56개 중 순수 1타 27개·다단 0개, 보조는 거의 공격↑. 원인은 `deriveRosterSkillSeed` 가
+설명 낱말로 추측한 것. 이제 계약 `RetroClassSkill.mechanic`(선택, 어휘·**직업 설계 규칙**은 `src/assets/retroSkillMechanics.ts` 머리 주석)이 있으면
+`applyRetroSkillMechanic`(retroRosterRecords.ts)이 유도 레코드 위에 덮는다 — 적힌 필드가 우선, 나머지(위력·MP·연출)는 유도 그대로. 없으면 예전 유도.
+
+- 엔진 확장: `SkillRecord.hpCostPercent`(시전 시 최대 HP N% 대가, 1 밑으로 안 깎음, 타임라인 「<기술> 대가」 damage) ·
+  `drainPercent`(준 피해 N% 회복, affects mp 면 MP, 「<기술> 흡수」 healing). runtime.ts `paySkillHpCost`/`applySkillDrain`(gen1 경로 제외).
+  편집기 전투 규칙 카드에 숫자 칸 둘(`feature16-hp-cost`·`feature16-drain`).
+- 기본 DB 상태 8종 추가: state_blind(accuracyModifier 50 — **통상 공격만** 본다) · state_stop(freezesGauge+restrictsAction, 2턴부터 50%) ·
+  state_protect/shell(물리/마법 방어 1.5배) · state_berserk(attackRandom, 공 1.5배) · state_petrify(incapacitates) · state_wet(번개 A·불 D) · state_oiled(불 A).
+  배지 토큰 STP·PRT·SHL·BSK·STN·WET·OIL(battleFieldDom `stateIconToken` + 03-vxace-status-nodes.css). 자동 부활은 엔진에 없어 뺐다.
+  **새 프로젝트만** 받는다 — 기존 프로젝트 DB 에 상태를 심는 ensure 경로는 없다.
+- 함정: 다단(`hitSequence`)은 회마다 상태 판정 — 첫 타의 기름이 둘째 타 불을 약점으로 만든다(듀얼 카타스트로프). `formula` 는 방어 경감을 건너뛴다.
+  `priority` 는 strict 턴제에서만 순서를 바꾼다(ATB 에선 무효). 자기 버서크는 녹화 큐를 멈춘다(배우가 명령을 안 받는다) — 쓰지 않았다.
+- a1.ts 의 mechanic 은 손으로 채웠다. 생성기(`lib_r2w1.py --emit a1`)로 다시 뽑으면 사라진다.
+- 녹화는 스킬마다 숫자 팝업·메시지 창 문장·상태 배지를 report.json evidence(`popups`·`lines`·`statuses`)에 남긴다. 전후 표 `.omo/r2check/a1-v2/MECHANICS.md`.
+
 ## 타격감 층 (2026-09-25)
 
 사용자 신고 「게임적인 느낌이 거의 안 든다, 타격감이 없다」. 출하 player 녹화로 원인을 쟀다:
