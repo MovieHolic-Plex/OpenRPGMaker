@@ -109,6 +109,12 @@
 }
 .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-damage-popup.battle-damage-popup-heal { color: #80ff98; }
 .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-damage-popup.battle-damage-popup-critical { color: #ffe878; }
+/* 상태 부여 팝업(「스톱」「암흑」) — 숫자 팝업 경로를 쓰는 표시 전용 글자. 숫자보다 작고 하늘색. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-damage-popup.battle-damage-popup-status {
+  color: #9fe8ff;
+  font-size: 20px;
+  white-space: nowrap;
+}
 @keyframes retro-walk {
   0% { translate: var(--retro-start, 0px) 0; }
   16% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.16) -2px; }

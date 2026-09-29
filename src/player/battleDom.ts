@@ -428,6 +428,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     },
     onDamageFeedback(feedback) {
       lastDamageFeedback = feedback;
+      // 상태 이름 팝업(label)은 표시 전용 — 원장·타격 세기·효과음·플래시를 건드리지 않는다.
+      if (feedback?.label) return;
       if (feedback) {
         const vitalsBefore = presentation?.vitalsFor(feedback.targetId);
         const wasAlive = !vitalsBefore?.defeated;
@@ -1041,7 +1043,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       // 시퀀스가 끝난 뒤(결과 화면 포함)에도 걷는다 — 패배 결과에서 살아남은 적이
       // attack 포즈로 박제되던 결함(적대 리뷰 3차).
       calm: !sequenceBusy || !snapshot.result,
-      hitTargetId: lastDamageFeedback && !lastDamageFeedback.healing && !lastDamageFeedback.miss
+      hitTargetId: lastDamageFeedback && !lastDamageFeedback.healing && !lastDamageFeedback.miss && !lastDamageFeedback.label
         ? lastDamageFeedback.targetId
         : undefined,
       onField: options.onField,

@@ -61,7 +61,16 @@ export interface DamageFeedback {
   readonly miss?: boolean;
   /** 명중했지만 피해가 0 인 타격(완전 방어·무효). 화면에 반드시 표시한다. */
   readonly blocked?: boolean;
+  /** 숫자 대신 띄울 글자(상태 부여 「스톱」 등). 있으면 HP 원장·타격 연출·효과음을 건드리지 않는
+   *  **표시 전용** 팝업이다(battleDom.onDamageFeedback 이 일찍 돌아간다). */
+  readonly label?: string;
 }
+
+/** 상태 부여 문장·떠오르는 글자가 머무는 시간. 한 줄 메시지 창(retro2003)에서 읽을 수 있어야 한다. */
+export const BATTLE_STATE_LINE_MS = 800;
+const STATE_ENTRY_KINDS: ReadonlySet<BattleTimelineEntrySnapshot["kind"]> = new Set([
+  "stateAdded", "stateRemoved", "stateUpkeep", "stateRecovery", "incapacitated",
+]);
 
 export type ScheduleFn = (callback: () => void, delayMs: number) => number;
 export type ClearScheduleFn = (timerId: number) => void;
@@ -414,10 +423,17 @@ export function createBattleSequencer(
     // 뒤집히고, 정작 아군 엔트리는 제네릭 재생으로 떨어진다(코덱스 리뷰 C2: 도주 성공
     // 뒤 "주인공의 공격! 효과가 충분하지 않았다"가 재생되던 결함).
     const resultEntry = resultFromTimeline(entry);
-    const directorBase = (firstDirector && entryOffset === firstDirectorIndex)
+    // 상태 엔트리는 userRecordId·targetId 를 들고 있어 resultEntry 가 만들어진다 — 예전에는 그래서
+    // enemyActionDirectorState 로 떨어져 「발키리의 공격! 효과가 충분하지 않았다.」로 읽혔다(2026-09-29 실측).
+    const rawDirector = (firstDirector && entryOffset === firstDirectorIndex)
       ? firstDirector
       : actionEntryDirectorState(entry, snapshot)
-        ?? (resultEntry ? enemyActionDirectorState(resultEntry, snapshot, { resource: entry.resource ?? "hp", healing: entry.kind === "healing" || (entry.amount ?? 0) < 0 }) : timelineDirectorState(entry, snapshot));
+        ?? (STATE_ENTRY_KINDS.has(entry.kind) ? timelineDirectorState(entry, snapshot)
+          : resultEntry ? enemyActionDirectorState(resultEntry, snapshot, { resource: entry.resource ?? "hp", healing: entry.kind === "healing" || (entry.amount ?? 0) < 0 }) : timelineDirectorState(entry, snapshot));
+    // 보조 기술(피해 0 인 action): 결과는 뒤따르는 상태 엔트리가 말한다 — 「효과가 충분하지 않았다」를 떼고,
+    // 아무 상태도 안 붙었으면 recover 뒤에 「…에게는 효과가 없었다.」를 한 비트 준다.
+    const support = supportOutcome(entries, entryOffset, snapshot);
+    const directorBase = support ? { ...rawDirector, lines: rawDirector.lines.slice(0, 1) } : rawDirector;
     const feedback = feedbackFromTimeline(entry);
     // 적 이동: 대사 없이 스냅샷의 새 좌표로 미끄러지는 동안만 기다린다(CSS 트랜지션이 그린다).
     if (entry.kind === "move") {
@@ -436,6 +452,14 @@ export function createBattleSequencer(
     }
     const visual = entry.kind === "damage" || entry.kind === "healing" || entry.kind === "miss"
       || entry.kind === "action" || entry.kind === "capture" || entry.kind === "stateUpkeep" || entry.kind === "stateRecovery";
+    if (entry.kind === "stateAdded" && entry.targetId) {
+      // 상태 이름이 대상 위에 숫자 팝업처럼 잠깐 떠오른다(표시 전용 label 피드백).
+      hooks.onDirectorState(directorBase);
+      hooks.onDamageFeedback({ targetId: entry.targetId, amount: 0, critical: false, healing: false, label: stateLabel(entry.stateId) });
+      hooks.onSyncView();
+      delay(() => { hooks.onDamageFeedback(undefined); continueNext(); }, BATTLE_STATE_LINE_MS);
+      return;
+    }
     if (!visual) {
       hooks.onDirectorState(directorBase);
       hooks.onSyncView();
@@ -508,7 +532,14 @@ export function createBattleSequencer(
         if (decisive && snapshot.result) hooks.onResultPending?.(snapshot.result);
         delay(continueNext, decisive ? BATTLE_DECISIVE_KILL_LINE_MS : BATTLE_KILL_LINE_MS);
       }
-      : continueNext;
+      : support?.failLine
+        ? (): void => {
+          hooks.onActionMotion?.(undefined);
+          hooks.onDirectorState({ step: "acting", lines: [support.failLine ?? ""], targetId: entry.targetId });
+          hooks.onSyncView();
+          delay(continueNext, BATTLE_STATE_LINE_MS);
+        }
+        : continueNext;
     playBeats(beats, directorBase, afterBeats);
   }
 
@@ -552,6 +583,42 @@ export function createBattleSequencer(
     return undefined;
   }
 
+  /** 피해 0 인 보조 기술 엔트리의 결과. 보조 기술이 아니면 undefined.
+   *  뒤따르는(다음 행동 엔트리 전까지) 같은 대상의 상태 변화·특수 결과가 있으면 failLine 없음,
+   *  없는데 기술에 상태 부여가 적혀 있으면 「…에게는 효과가 없었다.」. */
+  function supportOutcome(
+    entries: readonly BattleTimelineEntrySnapshot[],
+    offset: number,
+    snapshot: BattleSnapshot,
+  ): { readonly failLine?: string } | undefined {
+    const entry = entries[offset];
+    if (entry.kind !== "action" || entry.hit === false || (entry.amount ?? 0) !== 0 || !entry.skillName || !entry.targetId) return undefined;
+    if (entry.commandKind === "defend" || entry.commandKind === "escape" || entry.commandKind === "switch") return undefined;
+    let changed = false;
+    for (const later of entries.slice(offset + 1)) {
+      if (later.kind === "action" || later.kind === "damage" || later.kind === "healing" || later.kind === "miss" || later.kind === "counter") break;
+      if ((later.kind === "stateAdded" || later.kind === "stateRemoved" || later.kind === "special") && later.targetId === entry.targetId) changed = true;
+    }
+    if (changed) return {};
+    const skill = store.getCurrent().database.skills.find((record) => record.name === entry.skillName);
+    if (!skill?.stateEffects?.some((effect) => effect.operation !== "remove")) return undefined;
+    const peers = snapshot.enemies.some((enemy) => enemy.id === entry.targetId) ? snapshot.enemies : snapshot.actors;
+    const target = peers.find((battler) => battler.id === entry.targetId);
+    return { failLine: `${target ? disambiguatedBattlerName(target, peers) : "대상"}에게는 효과가 없었다.` };
+  }
+
+  /** 상태 부여·해제 문장. 능력 증감(「공격 상승」)은 「…의 공격이 올랐다!」로 읽는다. */
+  function stateChangeLine(kind: "stateAdded" | "stateRemoved", stateId: string | undefined, name: string): string {
+    const label = stateLabel(stateId);
+    if (kind === "stateRemoved") {
+      if (stateId === "state_death") return `${withJosa(name, "이/가")} 되살아났다!`;
+      return `${name}의 ${withJosa(label, "이/가")} 풀렸다.`;
+    }
+    const buff = /^(.+) (상승|하락)$/u.exec(label);
+    if (buff) return `${name}의 ${withJosa(buff[1], "이/가")} ${buff[2] === "상승" ? "올랐다!" : "내려갔다!"}`;
+    return `${withJosa(name, "은/는")} ${label}에 걸렸다!`;
+  }
+
   /** 내부 state id 대신 DB 의 상태 이름을 돌려준다. 플레이어에게 `state_poison_01`
    *  같은 문자열을 읽히면 상태 시스템이 있다는 사실 자체가 전달되지 않는다. */
   function stateLabel(stateId: string | undefined): string {
@@ -573,8 +640,10 @@ export function createBattleSequencer(
       : "행동을 실행했다.";
     const peers = snapshot.enemies.some((enemy) => enemy.id === entry.targetId) ? snapshot.enemies : snapshot.actors;
     const target = peers.find((battler) => battler.id === entry.targetId);
-    const isState = ["stateAdded", "stateRemoved", "stateUpkeep", "stateRecovery", "incapacitated"].includes(entry.kind);
-    const line = isState && target ? `${disambiguatedBattlerName(target, peers)}: ${detail}` : detail;
+    const isState = STATE_ENTRY_KINDS.has(entry.kind);
+    const line = (entry.kind === "stateAdded" || entry.kind === "stateRemoved") && target
+      ? stateChangeLine(entry.kind, entry.stateId, disambiguatedBattlerName(target, peers))
+      : isState && target ? `${disambiguatedBattlerName(target, peers)}: ${detail}` : detail;
     return { step: "acting", lines: [line], targetId: entry.targetId };
   }
 

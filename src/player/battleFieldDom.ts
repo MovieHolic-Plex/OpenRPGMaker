@@ -94,7 +94,15 @@ function activeSkin(): BattleSkin {
  *  아군 상태 배지의 유일한 살림터다. 필드 노드가 있는 스킨에도 행에 달면 같은 testid 가
  *  두 번 생기므로 이 조건으로만 단다. */
 function partyStatusRowsCarryIcons(): boolean {
-  return BATTLER_PLACEMENTS[activeSkin().id].partyFacing === "hidden";
+  // retro2003 은 필드에 아군을 그리지만 배지는 파티 창 이름 옆에 단다(FF6·크로노 트리거 관례).
+  // 필드 노드 머리 위 배지는 이웃 배우 사이에 떠서 누구 것인지 읽히지 않았다(2026-09-29 실측).
+  return BATTLER_PLACEMENTS[activeSkin().id].partyFacing === "hidden" || activeSkin().id === "retro2003";
+}
+
+/** retro2003 은 적 chrome(이름·HUD)을 대상 선택 때만 펼친다 — 그 안의 배지도 함께 숨었다.
+ *  이 스킨에서는 배지를 적 노드 직계로 달아 스프라이트 위에 늘 보이게 한다. */
+function enemyIconsOutsideChrome(): boolean {
+  return activeSkin().id === "retro2003";
 }
 
 /** 스킨 전용 적 스프라이트(bskin-enemy-<id>)를 우선 사용. 없으면 null. */
@@ -737,7 +745,10 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
   // 완전 방어(명중했지만 0 피해)는 "0" 으로 분명히 보여준다. 예전에는 이 경우
   // 피드백 자체가 만들어지지 않아 화면이 조용했다.
   popup.classList.toggle("battle-damage-popup-blocked", feedback.blocked === true);
-  popup.textContent = feedback.miss
+  popup.classList.toggle("battle-damage-popup-status", Boolean(feedback.label));
+  popup.textContent = feedback.label
+    ? feedback.label
+    : feedback.miss
     ? "MISS"
     : feedback.blocked
       ? "0"
@@ -775,7 +786,7 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
     // 숫자 크기가 위력을 말한다 — 7 과 700 이 같은 28px 이던 때는 숫자를 읽어야만 셌다.
     // 세기는 battleDom 이 이 동기화 직전에 노드에 심는다(applyHitIntensity).
     const popScale = POP_SCALE[anchor.dataset.hitIntensity ?? ""];
-    if (popScale && !feedback.healing && !feedback.miss) popup.style.setProperty("--pop-scale", String(popScale));
+    if (popScale && !feedback.healing && !feedback.miss && !feedback.label) popup.style.setProperty("--pop-scale", String(popScale));
     layer.append(popup);
   } else if (!showPartyRowDamage(field, feedback, popup)) {
     layer.append(popup);
@@ -984,7 +995,11 @@ function enemyButton(
   // 이름·순번·상태·HP 는 스프라이트 **아래에 겹쳐** 놓는다(.battle-enemy-chrome 이 절대 배치).
   // 흐름에 두면 HUD 를 펼칠 때 노드 높이가 변하고, 그 높이로 스프라이트 top 을 보정하던
   // 옛 코드(alignEnemyFeetToAuthoredY) 때문에 몬스터가 눈에 보이게 튀었다.
-  enemyNode.append(enemyChrome(name, enemyIndexBadge(index), statusIconCluster(enemy), enemyHpHud(enemy)));
+  if (enemyIconsOutsideChrome()) {
+    enemyNode.append(enemyChrome(name, enemyIndexBadge(index), enemyHpHud(enemy)), statusIconCluster(enemy));
+  } else {
+    enemyNode.append(enemyChrome(name, enemyIndexBadge(index), statusIconCluster(enemy), enemyHpHud(enemy)));
+  }
   if (snapshot.targetSelection?.side === "enemy" && snapshot.targetSelection.selectedTargetId === enemy.id) {
     const brackets = document.createElement("span");
     brackets.className = "battle-target-brackets";
