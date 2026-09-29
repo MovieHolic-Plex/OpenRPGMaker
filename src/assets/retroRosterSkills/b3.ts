@@ -83,9 +83,9 @@ export const BATCH: RetroRosterBatch = {
     { chip: "monster1-1", cell: 64, motion: "swoop", idleFrameMs: 150, rows: 5 },
     { chip: "monster1-2", cell: 64, motion: "stomp", idleFrameMs: 300, rows: 5 },
     { chip: "monster1-3", cell: 64, motion: "float", idleFrameMs: 200, rows: 5 },
-    { chip: "monster1-4", cell: 48, motion: "dash", idleFrameMs: 200 },
-    { chip: "monster1-5", cell: 48, motion: "stomp", idleFrameMs: 340 },
-    { chip: "monster1-6", cell: 48, motion: "float", idleFrameMs: 220 },
-    { chip: "monster1-7", cell: 64, motion: "stomp", idleFrameMs: 300 },
+    { chip: "monster1-4", cell: 48, motion: "dash", idleFrameMs: 200, rows: 5 },
+    { chip: "monster1-5", cell: 64, motion: "stomp", idleFrameMs: 340, rows: 5 },
+    { chip: "monster1-6", cell: 64, motion: "float", idleFrameMs: 220, rows: 5 },
+    { chip: "monster1-7", cell: 64, motion: "stomp", idleFrameMs: 300, rows: 5 },
   ]
 };
