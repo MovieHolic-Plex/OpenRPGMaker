@@ -5,6 +5,7 @@ import { normalizeCropRecord } from "@/project/farmModel";
 import { defaultFeatureCropRecords } from "./defaultFeatureItemRecords";
 import { DEFAULT_ACTOR_ID, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_ITEM_ID, DEFAULT_TILE_SIZE } from "./constants";
 import { defaultPartyRecords, defaultStarterActorIds } from "./defaultDatabasePartyRecords";
+import { defaultClassRecords } from "./defaultDatabaseClassRecords";
 import { placeableKey, type PlaceableObjectState } from "@/project/placeables";
 import { configureScarloxyDemoProject, createScarloxyDemoMaps } from "./scarloxyDemoGame";
 import { configureScarloxyPokemonDemoProject, createScarloxyPokemonDemoMaps } from "./scarloxyPokemonDemoGame";
@@ -58,6 +59,13 @@ export function createSampleAdventureProject(): Project {
   // 새 데모도 새 프로젝트의 전투 기본값을 사용한다. 기존 저장 문서는 바꾸지 않는다.
   project.system.battleUiStyle = "retro2003";
   const starterGraphics = defaultPartyRecords().actors;
+  // 픽스처의 직업·배우는 옛 기본 DB 사본이다. 장비(`fixture:sync` 로 코드값을 따른다)가 retro2003 확장 직업·배우를
+  // 착용 목록에 넣으면서 참조가 끊겼다(2026-09-29 CI parity: 「actor does not exist: actor_samurai」). 코드 기본값에만 있는
+  // 직업·배우를 덧붙인다 — 픽스처에 이미 있는 행은 저작본이므로 건드리지 않는다. 시작 파티는 아래에서 따로 정한다.
+  const fixtureClassIds = new Set(project.database.classes.map((record) => record.id));
+  for (const record of defaultClassRecords()) if (!fixtureClassIds.has(record.id)) project.database.classes.push(record);
+  const fixtureActorIds = new Set(project.database.actors.map((record) => record.id));
+  for (const record of starterGraphics) if (!fixtureActorIds.has(record.id)) project.database.actors.push(structuredClone(record));
   for (const actor of project.database.actors) {
     if (!actor.battleCharacterResourceId?.startsWith("generated-actor-hero-")) continue;
     const seed = starterGraphics.find((entry) => entry.id === actor.id);
