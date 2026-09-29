@@ -148,6 +148,14 @@ export const GENERATED_BATTLE_EFFECT_ACTOR_BINDINGS: Readonly<Record<string, str
   actor_cleric: animation("tackle-impact"),
   actor_ranger: animation("tackle-impact"),
 };
+/**
+ * 표에 없는 배우의 맨손 연출. 2026-09-29 retro2003 로스터로 예비 배우가 124명이 됐는데 표는 기본 6명만 알아서,
+ * 나머지가 옛 `anim_hit` 에 머물렀다(생성 이펙트 팩 설치 계약: 모든 배우가 생성 맨손 연출). 기본 배우 여부와 무관하게 같은 값이다.
+ */
+const GENERATED_BATTLE_EFFECT_ACTOR_DEFAULT = animation("tackle-impact");
+function expectedActorBinding(id: string): string {
+  return GENERATED_BATTLE_EFFECT_ACTOR_BINDINGS[id] ?? GENERATED_BATTLE_EFFECT_ACTOR_DEFAULT;
+}
 
 export function applyGeneratedBattleEffectSkillBindings(records: AnimationBoundRecord[]): number {
   return applyBindings(records, GENERATED_BATTLE_EFFECT_SKILL_BINDINGS);
@@ -164,8 +172,8 @@ export function applyGeneratedBattleEffectClassBindings(records: AnimationBoundR
 export function applyGeneratedBattleEffectActorBindings(records: UnarmedAnimationBoundRecord[]): number {
   let changed = 0;
   for (const record of records) {
-    const expected = GENERATED_BATTLE_EFFECT_ACTOR_BINDINGS[record.id];
-    if (expected === undefined || record.unarmedAnimationId === expected) continue;
+    const expected = expectedActorBinding(record.id);
+    if (record.unarmedAnimationId === expected) continue;
     record.unarmedAnimationId = expected;
     changed += 1;
   }
@@ -174,8 +182,8 @@ export function applyGeneratedBattleEffectActorBindings(records: UnarmedAnimatio
 
 export function countGeneratedBattleEffectActorBindingChanges(records: readonly UnarmedAnimationBoundRecord[]): number {
   return records.reduce((count, record) => {
-    const expected = GENERATED_BATTLE_EFFECT_ACTOR_BINDINGS[record.id];
-    return expected !== undefined && record.unarmedAnimationId !== expected ? count + 1 : count;
+    const expected = expectedActorBinding(record.id);
+    return record.unarmedAnimationId !== expected ? count + 1 : count;
   }, 0);
 }
 

@@ -199,7 +199,9 @@ describe("SC8 — predictSkillDamage includes equipment elemental defense (M2)",
     const project = scarloxyProject();
     const element = project.database.elements?.[0];
     if (!element) return;
-    const skill = project.database.skills.find((s) => s.elementId === element.id);
+    // 포켓몬 데모 자기 기술만 본다. 2026-09-29 retro2003 로스터가 공용 기본 DB 에 sword 속성 직업 스킬을 넣으면서
+    // 이 검사가 gen1 공식(장비 속성 방어 반감을 아직 적용하지 않는다)으로 처음 돌기 시작했다 — 원래 의도는 rm2k3 예측 경로다.
+    const skill = project.database.skills.find((s) => s.elementId === element.id && s.id.startsWith("skill_scarloxy_"));
     if (!skill) return;
     const userSnapshot: BattleBattlerSnapshot = {
       id: "u1", recordId: project.database.actors[0]?.id ?? "a", name: "Caster",

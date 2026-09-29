@@ -44,6 +44,9 @@ export function skillCombatRuleCard(record: SkillRecord, options: { readonly col
     el('p', { class: 'db-skill-card-note', text: '급소 확률 -1: 기존 배틀러 기본값. 명중률은 효과 카드에서 설정합니다. 대기 턴은 사용한 턴 이후의 완전한 턴 수입니다.' }),
     numberField('급소 배율', 'feature16-critical-multiplier', record.criticalMultiplier ?? 1.35, value => updateDatabaseRecord('skills', record.id, { criticalMultiplier: value }), { min: 1, max: 10, step: 0.05 }),
     numberField('재사용 대기 턴', 'feature16-cooldown', record.cooldownTurns ?? 0, value => updateDatabaseRecord('skills', record.id, { cooldownTurns: value }), { min: 0, max: 99 }),
+    numberField('HP 대가 % (최대 HP)', 'feature16-hp-cost', record.hpCostPercent ?? 0, value => updateDatabaseRecord('skills', record.id, { hpCostPercent: value }), { min: 0, max: 100 }),
+    numberField('흡수 % (준 피해)', 'feature16-drain', record.drainPercent ?? 0, value => updateDatabaseRecord('skills', record.id, { drainPercent: value }), { min: 0, max: 100 }),
+    el('p', { class: 'db-skill-card-note', text: 'HP 대가: 쓸 때마다 시전자가 최대 HP 의 N% 를 잃습니다(1 밑으로는 안 깎음). 흡수: 준 피해의 N% 만큼 시전자가 회복합니다(MP 피해 기술이면 MP).' }),
   ] });
 }
 

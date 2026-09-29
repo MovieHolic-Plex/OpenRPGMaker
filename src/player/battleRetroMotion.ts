@@ -1,6 +1,8 @@
+import { animateRetroSkillFx, battleEntrySkillRecord, clearRetroSkillFx, driveRetroClassSkill, isRetroClassSkillActor, preloadRetroClassSkillFx, preloadRetroSkillFx, retroSkillForEntry, setRetroSkillEntry, type RetroSkillRecipe } from "@/player/retroSkillChoreography";
 import { CAST_TYPES, EXTENDED_POSE_FRAME, castTypeForSkill, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
-import type { PixelEnemyCell } from "@/assets/pixelEnemySheets";
+import type { PartyPixelCell, PixelEnemyCell } from "@/assets/pixelEnemySheets";
 import { store } from "@/project/store";
+import { retroRosterClass } from "@/assets/retroRoster";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
 import type { BattleSnapshot } from "@/battle/runtime";
 import type { BattleActionBeat } from "@/player/battleActionBeats";
@@ -10,6 +12,7 @@ import { playBattleSample, preloadBattleSamples } from "@/player/battleSeSamples
 
 type Pose = ExtendedBattlerPose;
 type PaintPose = (node: HTMLElement, pose: Pose) => void;
+const actorRecipes = new WeakMap<HTMLElement, RetroSkillRecipe>();
 const painters = new WeakMap<HTMLElement, PaintPose>();
 const cursors = new WeakMap<HTMLElement, number>();
 const currentEntries = new WeakMap<HTMLElement, BattleTimelineEntrySnapshot>();
@@ -23,6 +26,8 @@ export function retroMotionPose(node: HTMLElement, pose: Pose, paint: PaintPose)
   if (node.dataset.battlerExtended === "true") return extendedMotionPose(node, pose);
   // 도트 적 시트는 칸을 retroPixelEnemyCell 이 고른다. 의미 포즈만 그대로 통과시킨다.
   if (node.dataset.pixelEnemy) return node.classList.contains("defeated") || pose === "dead" ? "dead" : "idle";
+  // 파티원 몬스터 9칸 시트(2차 로스터)도 같다 — 칸은 retroPartyPixelCell 이 고른다. 승리·격파만 의미 포즈로 남긴다.
+  if (node.dataset.pixelParty) return node.classList.contains("defeated") || pose === "dead" ? "dead" : pose === "victory" ? "victory" : "idle";
   if (pose === "dead") {
     if (!node.dataset.retroKo && node.classList.contains("battle-actor")) {
       node.dataset.retroKo = reduced() ? "settled" : "stagger";
@@ -46,13 +51,16 @@ export function retroMotionPose(node: HTMLElement, pose: Pose, paint: PaintPose)
 
 function paint(node: HTMLElement, pose: Pose): void { painters.get(node)?.(node, pose); }
 
+/** 표시 계층이 이미 한 번 그린 배틀러를 현재 연출 상태로 다시 그린다. */
+export function repaintRetroBattler(node: HTMLElement): void { paint(node, "idle"); }
+
 /**
  * 지금 그릴 칸이 시전 칸(cast_charge/raise/release, skill 제외)이고 이 행동에 마법 종류가 붙어 있으면
  * 시전 시트의 (종류, 단계)를 돌려준다. 준비=1, 영창=2, 방출=3. 표시 계층(applyBattlerPose)이 시전 시트로 그린다.
  */
 export function retroCastFrameFor(node: HTMLElement, pose: Pose): { readonly type: CastType; readonly step: 1 | 2 | 3 } | undefined {
   const type = node.dataset.retroCast as CastType | undefined;
-  if (!type || !CAST_TYPES.includes(type) || !node.dataset.retroBeat) return undefined;
+  if (!type || !CAST_TYPES.includes(type) || !(node.dataset.retroBeat || node.dataset.retroClassSkill)) return undefined;
   const step = pose === "cast_charge" ? 1 : pose === "cast_raise" ? 2 : pose === "cast_release" ? 3 : undefined;
   return step ? { type, step } : undefined;
 }
@@ -60,9 +68,12 @@ export function retroCastFrameFor(node: HTMLElement, pose: Pose): { readonly typ
 /** 시퀀서가 실제로 소비하는 시각 엔트리만 따라간다. 마지막 결과는 이미 다음 행동일 수 있다. */
 export function initRetroMotion(field: HTMLElement, snapshot: BattleSnapshot): void {
   cursors.set(field, snapshot.timeline.at(-1)?.sequence ?? -1);
+  preloadRetroSkillFx();
+  preloadRetroClassSkillFx();
 }
 
 export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | undefined, snapshot: BattleSnapshot): void {
+  if (!beat) clearRetroSkillFx(field);
   const nodes = [...field.querySelectorAll<HTMLElement>(".battle-actor, .battle-enemy")];
   const matchesUser = (node: HTMLElement) => node.dataset.recordId === beat?.userId || node.dataset.testid === beat?.userId
     || snapshot.actors.some((actor) => actor.id === beat?.userId && actor.recordId === node.dataset.recordId);
@@ -70,14 +81,18 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
   for (const node of nodes) {
     node.classList.remove("battle-motion-knockback", "battle-motion-target");
     if (node === user && beat) continue;
+    // 직업 스킬 재생기가 움직이는 배우는 재생기가 끝낼 때까지 그대로 둔다(전체기의 엔트리 사이 정리가 연출을 끊었다).
+    if (isRetroClassSkillActor(node)) continue;
     if (node.dataset.retroBeat) {
       delete node.dataset.retroBeat;
       delete node.dataset.retroAction;
+      delete node.dataset.retroSkill;
+      actorRecipes.delete(node);
       delete node.dataset.retroReach;
       delete node.dataset.retroStyle;
       approachAnimations.get(node)?.cancel();
       approachAnimations.delete(node);
-      if (node.dataset.pixelEnemy) resetPixelEnemy(node);
+      if (node.dataset.pixelEnemy || node.dataset.pixelParty) resetPixelEnemy(node);
       beatGenerations.set(node, (beatGenerations.get(node) ?? 0) + 1);
       delete node.dataset.retroFrame;
       paint(node, node.classList.contains("defeated") ? "dead" : "idle");
@@ -91,21 +106,37 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
     target?.classList.add("battle-motion-target", "battle-motion-knockback");
   }
   if (!beat || !user) return;
+  // 직업 스킬 96종(계약 retroClassSkills)과 몬스터 스킬 42종(계약 retroMonsterSkills): 타임라인 재생기가
+  // 포즈·이동·이펙트를 모두 소유한다. 몬스터는 도트 시트 칸(retroPixelCell)을 재생기가 고른다.
+  {
+    const entry = currentEntries.get(field);
+    if (beat.kind === "approach" && entry) cursors.set(field, entry.sequence);
+    if (driveRetroClassSkill(field, user, beat, entry, snapshot.timeline, (node) => paint(node, "idle"))) {
+      user.dataset.retroBeat = beat.kind;
+      user.dataset.retroAction = "skill";
+      user.style.setProperty("--retro-beat-ms", `${Math.max(1, beat.durationMs)}ms`);
+      return;
+    }
+  }
   if (beat.kind === "approach") {
     const entry = currentEntries.get(field) ?? snapshot.timeline.find((item) => item.sequence > (cursors.get(field) ?? -1)
       && visualKinds.has(item.kind) && (item.userRecordId === beat.userId || item.userId === beat.userId));
     if (entry) cursors.set(field, entry.sequence);
     const skill = entry?.commandKind === "skill"
-      ? store.getCurrent().database.skills.find((row) => row.name === entry.skillName) : undefined;
+      ? battleEntrySkillRecord(entry) : undefined;
+    const recipe = user.classList.contains("battle-actor") ? retroSkillForEntry(entry) : undefined;
+    if (recipe) { actorRecipes.set(user, recipe); user.dataset.retroSkill = recipe.fx; }
+    else { actorRecipes.delete(user); delete user.dataset.retroSkill; }
     user.dataset.retroFinisher = String(Boolean(skill?.limitSkill || (skill?.power ?? 0) >= 100));
     user.dataset.retroAction = user.classList.contains("battle-enemy") ? "enemy"
       : entry?.commandKind === "defend" ? "defend"
         : entry?.commandKind === "item" && user.dataset.battlerExtended === "true" ? "item"
           // 공격력으로 치는 기술(검격 등)은 걸어가서 벤다. 나머지 기술은 제자리 시전.
+          : recipe ? (recipe.approach === "still" ? "cast" : "attack")
           : entry && entry.commandKind === "skill" && isMeleeEntry(entry) ? "attack"
             : entry?.commandKind === "skill" || entry?.commandKind === "item" ? "cast" : "attack";
     // 마법 종류별 시전 칸(cast 시트). 걷기 칩 시트가 아니면 기존 시전 칸으로 떨어진다.
-    const castType = user.dataset.retroAction === "cast" && skill ? castTypeForSkill(skill) : undefined;
+    const castType = recipe?.cast ?? (user.dataset.retroAction === "cast" && skill ? castTypeForSkill(skill) : undefined);
     if (castType) user.dataset.retroCast = castType;
     else delete user.dataset.retroCast;
     // 이 스킨은 날아가는 투사체 애니메이션을 띄우지 않는다(battleDom). 그 소리도 함께 빠지므로 표시해 두고 방출음을 낸다.
@@ -120,8 +151,16 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
       : ["cast", "item"].includes(user.dataset.retroAction) ? "-16px"
         : `${-(walk?.distance ?? 72)}px`);
     // 근접은 직업별 접근(질주·도약·순간이동·섬광). 거리를 못 쟀으면(감속 모드 등) 예전 걷기 키프레임.
-    if (walk) user.dataset.retroStyle = retroApproachStyle(entry?.userRecordId ?? user.dataset.recordId);
+    if (walk) user.dataset.retroStyle = recipe && recipe.approach !== "still" ? recipe.approach : retroApproachStyle(entry?.userRecordId ?? user.dataset.recordId);
     else delete user.dataset.retroStyle;
+    if (user.dataset.pixelParty && entry) {
+      // 파티원 몬스터 시트: 걷기 칩용 접근 방식(질주·도약·순간이동)이 아니라 적 도트와 같은 이동(hop·swoop·stomp·dash·float)을 쓴다.
+      // 대상 적 앞까지의 거리(retroWalk)를 그대로 쓰되 가로는 왼쪽 방향이다(animatePixelEnemyBeat 가 뒤집는다).
+      delete user.dataset.retroStyle;
+      user.dataset.retroReach = walk ? "melee" : "ranged";
+      user.style.setProperty("--retro-enemy-dx", `${walk?.distance ?? 18}px`);
+      user.style.setProperty("--retro-enemy-dy", `${walk?.dy ?? 0}px`);
+    }
     if (user.dataset.pixelEnemy && entry) {
       // 도트 적: 근접 공격은 대상 아군 앞까지 뛰어/날아간다. 그 밖의 기술은 제자리에서 반 걸음만 나선다.
       const reach = retroEnemyReach(field, entry);
@@ -130,16 +169,18 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
       user.style.setProperty("--retro-enemy-dy", `${reach?.dy ?? 0}px`);
     }
   }
+  animateRetroSkillFx(field, user, beat);
   user.dataset.retroBeat = beat.kind;
   user.style.setProperty("--retro-beat-ms", `${Math.max(1, beat.durationMs)}ms`);
   if (user.dataset.battlerExtended === "true") animateExtendedBeat(user, beat);
-  else if (user.dataset.pixelEnemy) animatePixelEnemyBeat(user, beat);
+  else if (user.dataset.pixelEnemy || user.dataset.pixelParty) animatePixelEnemyBeat(user, beat);
   else paint(user, "idle");
 }
 
 export function retroDamage(node: HTMLElement | null, feedback: DamageFeedback, lethal: boolean): void {
   if (!node) return;
-  if (node.dataset.pixelEnemy) {
+  if (node.dataset.pixelEnemy || node.dataset.pixelParty) {
+    if (node.dataset.pixelParty && feedback.miss) { transientPose(node, "evade", 240); return; }
     if (feedback.healing || feedback.miss || feedback.amount <= 0) return;
     // 맞은 칸을 잠깐 보이고, 막타면 그 뒤 녹아내린 칸(dead)으로 넘어간다.
     if (lethal) node.classList.add("defeated");
@@ -189,7 +230,7 @@ export function retroVictory(field: HTMLElement): void {
     if (node.dataset.retroVictory) continue;
     node.dataset.retroVictory = "true";
     paint(node, "victory");
-    if (node.dataset.battlerExtended === "true") victoryLoop(node);
+    if (node.dataset.battlerExtended === "true" || node.dataset.pixelParty) victoryLoop(node);
   }
 }
 
@@ -227,8 +268,18 @@ function animateExtendedBeat(node: HTMLElement, beat: BattleActionBeat): void {
       { offset: 1, translate: "0px 0px", opacity: 1, filter: "none" },
     ], { duration: length, fill: "forwards" }));
   }
-  let frames: readonly [number, Pose][];
-  if (action === "defend") frames = [[0, "defend"]];
+  const recipe = actorRecipes.get(node);
+  let frames: readonly (readonly [number, Pose])[];
+  if (recipe) {
+    if (beat.kind === "approach" && recipe.approach !== "still" && !reduced() && length > 0 && typeof node.animate === "function") {
+      // Arrive in the first third; the remaining beat belongs to the actual combo.
+      animateMeleeApproach(node, length * 0.34);
+    }
+    frames = beat.kind === "approach" ? recipe.poses
+      : beat.kind === "impact" ? [[0, recipe.release]]
+        : [[0, recipe.release], [recipe.approach === "still" ? 0.72 : 0.2, "idle"]];
+  }
+  else if (action === "defend") frames = [[0, "defend"]];
   else if (action === "item") frames = [[0, "item"]];
   else if (action === "cast") {
     frames = beat.kind === "approach" ? [[0, "cast_charge"], [0.55, "cast_raise"]]
@@ -261,7 +312,7 @@ function animateExtendedBeat(node: HTMLElement, beat: BattleActionBeat): void {
   else frames = [[0, "attack_follow"], [0.18, "evade"], [0.86, "idle"]];
   // 감속 모드와 길이 0 비트에서는 대표 칸만 내보내고 뒤늦은 칸 전환을 예약하지 않는다.
   if (reduced() || length === 0) {
-    frames = [[0, action === "defend" ? "defend" : action === "item" ? "item"
+    frames = [[0, recipe ? (beat.kind === "recover" ? "idle" : recipe.release) : action === "defend" ? "defend" : action === "item" ? "item"
       : beat.kind === "recover" ? "idle" : action === "cast" ? (finisher ? "skill" : "cast_release")
         : beat.kind === "impact" ? "attack" : "idle"]];
   }
@@ -313,7 +364,8 @@ function extendedMotionPose(node: HTMLElement, pose: Pose): Pose {
   if (node.dataset.retroHurt === "true") return extendedFrame(node.dataset.retroHurtFrame) ?? "hit";
   const transient = extendedFrame(node.dataset.retroTransient);
   if (transient) return transient;
-  const frame = node.dataset.retroBeat ? extendedFrame(node.dataset.retroFrame) : undefined;
+  // 직업 스킬 재생기는 비트 밖(훔치기의 special 엔트리, 전체기의 엔트리 사이)에서도 칸을 소유한다.
+  const frame = node.dataset.retroBeat || node.dataset.retroClassSkill ? extendedFrame(node.dataset.retroFrame) : undefined;
   if (frame && frame !== "idle") return frame;
   if (node.dataset.retroCommand === "true") return "idle";
   if (node.dataset.battlerDefending === "true") return "defend";
@@ -345,6 +397,7 @@ export function retroCommandPose(node: HTMLElement, active: boolean): void {
 /** 시퀀서가 소비 중인 엔트리 자체를 쓴다. 같은 사용자의 과거 피해를 재검색하지 않는다. */
 export function retroTimelineEntry(field: HTMLElement, entry: BattleTimelineEntrySnapshot): void {
   currentEntries.set(field, entry);
+  setRetroSkillEntry(field, entry);
 }
 
 // ── 도트 측면 접근 효과음 ────────────────────────────────────────────────────────────────
@@ -358,6 +411,11 @@ const MOTION_SE = {
   flash: "easyrpg-sound-flash1",
   "enemy-hop": "easyrpg-sound-move",
   "enemy-swoop": "easyrpg-sound-wind8",
+  "enemy-stomp": "easyrpg-sound-earth2",
+  "enemy-dash": "easyrpg-sound-wind8",
+  "enemy-float": "easyrpg-sound-magic2",
+  "enemy-shoot": "easyrpg-sound-shot1",
+  "enemy-breath": "easyrpg-sound-fire1",
   // 마법 방출(cast_release) 순간. 날아가는 투사체 애니메이션을 이 스킨은 띄우지 않아서, 그 애니메이션의
   // 첫 타이밍 소리(예: 독침 Poison.wav)도 함께 사라졌다 — 시전 도트가 방출하는 순간에 종류별 소리를 낸다.
   "cast-fire": "easyrpg-sound-fire1",
@@ -392,13 +450,30 @@ function motionSe(cue: MotionCue, volume = 0.3): void {
 //   leap     수호자: 웅크렸다 높게 도약 → 내리찍기(착지 흙먼지)
 //   blink    마도사·성직자: 제자리에서 사라졌다 대상 앞에 나타난다(순간이동)
 //   flash    정찰병·궁수·도적: 번개처럼 한 번에 파고든다(아주 짧은 잔상 줄)
+// 2026-09-28 확장: 사무라이·음유시인·드루이드·마녀 blink, 닌자 flash, 무도가 dash. 먼저 맞는 줄이 이긴다 —
+// 무도가(monk)는 blink 줄의 monk 낱말보다 먼저 dash 로 잡는다.
 export type RetroApproachStyle = "dash" | "leap" | "blink" | "flash";
 
 const STYLE_BY_NAME: readonly [RegExp, RetroApproachStyle][] = [
-  [/마도|마법|위저드|mage|wizard|sorcer|witch|성직|사제|신관|cleric|priest|healer|monk|수녀/i, "blink"],
+  [/무도가|권사|격투|monk|martial|brawler/i, "dash"],
+  [/마도|마법|위저드|mage|wizard|sorcer|witch|마녀|성직|사제|신관|cleric|priest|healer|monk|수녀|사무라이|samurai|음유|시인|bard|드루이드|druid/i, "blink"],
   [/정찰|궁수|도적|닌자|scout|ranger|archer|thief|rogue|ninja|assassin/i, "flash"],
   [/수호|기사|성기사|guard|knight|paladin|tank|전차/i, "leap"],
 ];
+
+/**
+ * 2차 로스터(2026-09-28) 직업은 역할로 고른다: 민첩·원거리 flash, 마법·회복·지원·소환 blink, 물리·탱커 dash.
+ * 창을 쓰는 직업(발키리·용기사)은 역할과 무관하게 leap — 하늘에서 내리꽂는 창술이다.
+ */
+const ROSTER_STYLE_BY_ROLE: Readonly<Record<string, RetroApproachStyle>> = {
+  민첩: "flash", 원거리: "flash", 마법: "blink", 회복: "blink", 지원: "blink", 소환: "blink", 물리: "dash", 탱커: "dash",
+};
+export function rosterApproachStyle(classId: string | undefined): RetroApproachStyle | undefined {
+  const row = retroRosterClass(classId);
+  if (!row) return undefined;
+  if (/발키리|용기사/.test(row.name) || /창/.test(row.concept)) return "leap";
+  return ROSTER_STYLE_BY_ROLE[row.role];
+}
 
 /** 액터(또는 그 직업) 이름으로 접근 방식을 고른다. 모르면 dash. */
 export function retroApproachStyle(actorId: string | undefined): RetroApproachStyle {
@@ -406,16 +481,21 @@ export function retroApproachStyle(actorId: string | undefined): RetroApproachSt
   const actor = project.database.actors.find((row) => row.id === actorId);
   const cls = actor ? project.database.classes.find((row) => row.id === actor.classId) : undefined;
   const words = [cls?.id, cls?.name, actor?.id].filter(Boolean).join(" ");
-  return STYLE_BY_NAME.find(([pattern]) => pattern.test(words))?.[1] ?? "dash";
+  // 로스터 직업은 역할이 먼저다(성기사·암흑기사 이름의 「기사」가 낱말 표의 leap 에 걸리지 않게). 마도사(class_mage)는 기존 12직업 표를 그대로 쓴다.
+  const roster = cls && cls.id !== "class_mage" ? rosterApproachStyle(cls.id) : undefined;
+  return roster ?? STYLE_BY_NAME.find(([pattern]) => pattern.test(words))?.[1] ?? "dash";
 }
 
-/** 스타일별 접근 비트 길이(ms). 걷기보다 모두 짧다 — 준비 동작 + 순간 이동 + 휘두름. */
+/**
+ * 스타일별 접근 비트 길이(ms). 걷기보다 모두 짧다 — 준비 동작 + 순간 이동 + 휘두름.
+ * 2026-09-28 「도약·대시는 더 빠르게」: 질주·도약을 약 30%, 순간이동·섬광을 약 25% 줄였다.
+ */
 function approachMsFor(style: RetroApproachStyle, path: number): number {
   const clamp = (value: number, min: number, max: number) => Math.round(Math.max(min, Math.min(max, value)));
-  if (style === "blink") return 520;
-  if (style === "flash") return 380;
-  if (style === "leap") return clamp(300 + path / 0.9, 480, 700);
-  return clamp(240 + path / 0.8, 420, 620);
+  if (style === "blink") return 400;
+  if (style === "flash") return 290;
+  if (style === "leap") return clamp(220 + path / 1.3, 360, 500);
+  return clamp(170 + path / 1.2, 300, 440);
 }
 
 const approachAnimations = new WeakMap<HTMLElement, Animation>();
@@ -537,7 +617,8 @@ function spawnDust(node: HTMLElement): void {
 // 근접 공격(통상 공격·attack 계열 스킬)은 approach 비트 동안 대상 적 **바로 앞**까지 걷는다.
 // 거리는 실제 DOM 좌표에서 잰다: 아군 몸 앞(왼쪽) 가장자리 → 적 그림 오른쪽 가장자리 + 여유.
 // 시퀀서가 비트 길이를 정하기 전에(actorApproachMs) 한 번, 전진을 걸 때 한 번 부르므로 엔트리별로 기억한다.
-const RETURN_PX_PER_MS = 0.36;
+// 2026-09-28 「더 빠르게」: 복귀도 0.36 → 0.5 px/ms(튀어 돌아가는 공중제비가 늘어지지 않게).
+const RETURN_PX_PER_MS = 0.5;
 const WALK_GAP_PX = 6;
 const walkCache = new WeakMap<HTMLElement, Map<number, RetroWalk | null>>();
 
@@ -555,7 +636,9 @@ function isMeleeEntry(entry: BattleTimelineEntrySnapshot): boolean {
   if (entry.side === "enemy") return false;
   if (entry.commandKind === "attack") return true;
   if (entry.commandKind !== "skill") return false;
-  const skill = store.getCurrent().database.skills.find((row) => row.name === entry.skillName);
+  const recipe = retroSkillForEntry(entry);
+  if (recipe) return recipe.approach !== "still";
+  const skill = battleEntrySkillRecord(entry);
   return skill?.effect.kind === "damage" && skill.effect.statistic === "attack";
 }
 
@@ -588,27 +671,43 @@ function measureWalk(field: HTMLElement, entry: BattleTimelineEntrySnapshot): Re
   const current = Number.parseFloat(getComputedStyle(user).translate.split(" ")[0] ?? "0") || 0;
   const translate = getComputedStyle(user).translate.split(" ");
   const currentY = Number.parseFloat(translate[1] ?? "0") || 0;
+  // 파티원 몬스터 시트: 셀 cell 에서 몸 왼쪽 끝이 x≈12, 바닥선이 y=cell−4 다(적 시트를 뒤집은 규격).
+  const partyCell = user.dataset.pixelParty ? Number(user.dataset.pixelEnemyCell) || 48 : 0;
   // 96px 셀 안에서 몸은 가운데 약 40px 이다 — 몸 앞 가장자리 = 셀 가운데 − 20px.
-  const bodyFront = (userRect.left + userRect.width / 2) / scale - current - 20;
-  // 도트 적 시트는 48px 셀에서 몸 오른쪽 끝이 x≈36, 바닥선이 y=44 다. 통짜 그림은 오른쪽 투명 여백 약 15%, 바닥이 그림 아래끝.
+  const bodyFront = partyCell ? (userRect.left + userRect.width * (12 / partyCell)) / scale - current : (userRect.left + userRect.width / 2) / scale - current - 20;
+  // 도트 적 시트는 셀 cell(48·64·96)에서 몸 오른쪽 끝이 x≈cell−12, 바닥선이 y=cell−4 다. 통짜 그림은 오른쪽 투명 여백 약 15%, 바닥이 그림 아래끝.
   const pixel = image.dataset.pixelSheet !== undefined;
-  const enemyFront = (pixel ? enemyRect.left + enemyRect.width * (36 / 48) : enemyRect.right - enemyRect.width * 0.15) / scale;
-  const enemyFeet = (pixel ? enemyRect.top + enemyRect.height * (44 / 48) : enemyRect.bottom) / scale;
+  const cell = Number(image.closest<HTMLElement>("[data-pixel-enemy-cell]")?.dataset.pixelEnemyCell) || 48;
+  const enemyFront = (pixel ? enemyRect.left + enemyRect.width * ((cell - 12) / cell) : enemyRect.right - enemyRect.width * 0.15) / scale;
+  const enemyFeet = (pixel ? enemyRect.top + enemyRect.height * ((cell - 4) / cell) : enemyRect.bottom) / scale;
   // 아군 셀(48px 원본)의 발 마지막 행은 y=44.
-  const userFeet = (userRect.top + userRect.height * (45 / 48)) / scale - currentY;
+  const userFeet = (userRect.top + userRect.height * (partyCell ? (partyCell - 4) / partyCell : 45 / 48)) / scale - currentY;
   const distance = Math.round(bodyFront - enemyFront - WALK_GAP_PX);
   // 적보다 조금 앞(화면 아래)에 서야 적 그림을 가리지 않고 맞붙어 보인다.
   const dy = Math.round(enemyFeet - userFeet + 2);
   if (!Number.isFinite(distance) || !Number.isFinite(dy) || distance < 24) return undefined;
   const clamp = (value: number, min: number, max: number) => Math.round(Math.max(min, Math.min(max, value)));
   const path = Math.hypot(distance, dy);
+  if (partyCell) {
+    // 파티원 몬스터: 적 도트와 같은 이동(measureEnemyReach) — 궁수형·브레이스형은 다가가지 않는다.
+    const motion = user.dataset.pixelParty;
+    if (motion === "shoot" || motion === "breath") return undefined;
+    const hovering = motion === "swoop" || motion === "float";
+    const speed = motion === "dash" ? 0.65 : motion === "stomp" ? 0.34 : hovering ? 0.42 : 0.3;
+    return {
+      distance,
+      dy,
+      approachMs: ENEMY_HOLD_MS + clamp(path / speed, motion === "stomp" ? 440 : 300, 900),
+      recoverMs: clamp(160 + path / (motion === "stomp" ? 0.38 : motion === "dash" ? 0.7 : 0.42), 420, 900),
+    };
+  }
   const style = retroApproachStyle(userId);
   return {
     distance,
     dy,
     approachMs: approachMsFor(style, path),
     // 돌아갈 때는 뒤로 공중제비하듯 튀어 돌아간다(retro-return). 순간이동은 다시 사라졌다 나타난다.
-    recoverMs: style === "blink" ? 420 : clamp(path / RETURN_PX_PER_MS, 360, 620),
+    recoverMs: style === "blink" ? 340 : clamp(path / RETURN_PX_PER_MS, 280, 480),
   };
 }
 
@@ -637,6 +736,26 @@ export function retroPixelEnemyCell(node: HTMLElement): PixelEnemyCell | "idle" 
   return (cell as PixelEnemyCell | undefined) ?? "idle";
 }
 
+/**
+ * 파티원 몬스터 9칸 시트(partyPixelSheets.ts)의 지금 칸. 적과 같은 규칙에 파티원만의 상태가 더해진다 —
+ * 승리(들썩임: windup ↔ idle_b)·방어 태세(windup)·회피(recover). 비트/직업 스킬 재생기가 고른 칸(retroPixelCell)이 있으면 그것이 이긴다.
+ * 그 밖의 스킨(모션이 retro 가 아닌 정면 스킨)에서는 의미 포즈로 대신한다.
+ */
+export function retroPartyPixelCell(node: HTMLElement, pose: Pose = "idle"): PartyPixelCell | "idle" {
+  const transient = node.dataset.retroTransient;
+  if (node.classList.contains("defeated") || pose === "dead") return transient === "hit" ? "hit" : "dead";
+  if (transient === "hit" || transient === "guard_hit") return "hit";
+  if (transient === "evade") return "recover";
+  if (node.dataset.retroVictory === "true" || pose === "victory") return node.dataset.retroVictoryFrame === "victory_b" ? "idle_b" : "windup";
+  const cell = node.dataset.retroBeat || node.dataset.retroClassSkill ? node.dataset.retroPixelCell : undefined;
+  if (cell) return cell as PartyPixelCell;
+  if (node.dataset.retroCommand === "true") return "idle";
+  if (node.dataset.battlerDefending === "true" || pose === "defend") return "windup";
+  if (pose === "hit") return "hit";
+  if (pose === "attack") return "attack";
+  return "idle";
+}
+
 function resetPixelEnemy(node: HTMLElement): void {
   pixelAnimations.get(node)?.cancel();
   pixelAnimations.delete(node);
@@ -647,9 +766,16 @@ function isEnemyMeleeEntry(entry: BattleTimelineEntrySnapshot): boolean {
   if (entry.side !== "enemy") return false;
   if (entry.commandKind === "enemyAttack") return true;
   if (entry.commandKind !== "enemySkill") return false;
-  const skill = store.getCurrent().database.skills.find((row) => row.name === entry.skillName);
+  const skill = battleEntrySkillRecord(entry);
   return skill?.effect.kind === "damage" && skill.effect.statistic === "attack";
 }
+
+/**
+ * 다가가지 않고 제자리에서 근접 칸을 쓰는 도트 적(리소스 id). 계약 motion 은 칸 순서만 빌린 것이다 —
+ * 식충 식물은 stomp 칸(내려찍기) 자리에 덩굴 채찍을 그렸다(retroMonsterPlan.ts design).
+ * reach 가 없으면 animatePixelEnemyBeat 의 제자리 분기(당겼다 나서기)로 windup → attack → recover 를 그린다.
+ */
+const ROOTED_PIXEL_ENEMIES: ReadonlySet<string> = new Set(["generated-enemy-plant-carnivore"]);
 
 export function retroEnemyReach(field: HTMLElement, entry: BattleTimelineEntrySnapshot): RetroEnemyReach | undefined {
   let cache = reachCache.get(field);
@@ -662,10 +788,15 @@ export function retroEnemyReach(field: HTMLElement, entry: BattleTimelineEntrySn
 
 function measureEnemyReach(field: HTMLElement, entry: BattleTimelineEntrySnapshot): RetroEnemyReach | undefined {
   if (!isEnemyMeleeEntry(entry) || reduced()) return undefined;
-  const user = [...field.querySelectorAll<HTMLElement>(".battle-enemy[data-pixel-enemy]:not(.defeated)")]
-    .find((node) => node.dataset.recordId === entry.userRecordId || node.dataset.testid === entry.userId);
-  const target = [...field.querySelectorAll<HTMLElement>(".battle-actor:not(.defeated)")]
-    .find((node) => node.dataset.recordId === entry.targetId);
+  const enemies = [...field.querySelectorAll<HTMLElement>(".battle-enemy[data-pixel-enemy]:not(.defeated)")];
+  const user = enemies.find((node) => node.dataset.testid === entry.userId)
+    ?? enemies.find((node) => node.dataset.recordId === entry.userRecordId);
+  // 궁수·브레스는 통상 공격이어도 ranged. 대상까지 걸어가지 않는다. 뿌리 박힌 적(식충 식물: stomp 칸이지만 제자리 덩굴 채찍)도 제자리.
+  if (user?.dataset.pixelEnemy === "shoot" || user?.dataset.pixelEnemy === "breath") return undefined;
+  if (ROOTED_PIXEL_ENEMIES.has(user?.querySelector<HTMLElement>(".battle-enemy-image")?.dataset.pixelSheet ?? "")) return undefined;
+  const actors = [...field.querySelectorAll<HTMLElement>(".battle-actor:not(.defeated)")];
+  const target = actors.find((node) => node.dataset.testid === entry.targetId)
+    ?? actors.find((node) => node.dataset.recordId === entry.targetId);
   const image = user?.querySelector<HTMLElement>(".battle-enemy-image");
   const sprite = target?.querySelector<HTMLElement>(".battle-actor-sprite, .battle-actor-image") ?? target;
   if (!user || !image || !sprite) return undefined;
@@ -674,23 +805,29 @@ function measureEnemyReach(field: HTMLElement, entry: BattleTimelineEntrySnapsho
   if (imageRect.width === 0 || actorRect.width === 0) return undefined;
   // 화면 px → 적 노드 translate 단위(무대 배율 × 필드 zoom). 이미지 자신의 레이아웃 폭 대비 화면 폭으로 잰다.
   const scale = image.offsetWidth > 0 ? imageRect.width / image.offsetWidth : 1;
-  const swoop = user.dataset.pixelEnemy === "swoop";
-  // 착탄 칸의 앞 가장자리(48px 셀의 x≈42) → 아군 몸 앞(셀 가운데 − 셀의 20/96) 2px 앞.
-  const front = imageRect.left + imageRect.width * (42 / 48);
-  const actorFront = actorRect.left + actorRect.width / 2 - actorRect.width * (20 / 96);
+  const motion = user.dataset.pixelEnemy;
+  const hovering = motion === "swoop" || motion === "float";
+  const cell = Math.max(1, Number(user.dataset.pixelEnemyCell) || 48);
+  // 적 셀은 가변 크기: 앞 가장자리 cell−6, 지면 cell−4, 부유 중심 cell/2−4.
+  // 아군 확장 시트는 여전히 48px 셀이다. 적의 비율을 아군에도 적용하면 큰 적이 높이를 잘못 맞춘다.
+  const front = imageRect.left + imageRect.width * ((cell - 6) / cell);
+  // 파티원 몬스터 시트(셀 48·64)는 몸 앞 12/cell, 발 (cell−4)/cell — 사람 전투 시트(14/48 · 44/48)와 다르다.
+  const targetCell = target?.dataset.pixelParty ? Number(target.dataset.pixelEnemyCell) || 48 : 0;
+  const actorFront = actorRect.left + actorRect.width * (targetCell ? 12 / targetCell : (48 / 2 - 10) / 48);
   const dx = Math.round((actorFront - front) / scale - 2);
-  // 슬라임은 발(셀 y=44)을 아군 발(y=44)에, 박쥐는 머리(셀 y≈20)를 아군 얼굴 높이(y≈20)에 맞춘다.
-  const dy = Math.round(swoop
-    ? (actorRect.top + actorRect.height * (20 / 48) - (imageRect.top + imageRect.height * (20 / 48))) / scale
-    : (actorRect.top + actorRect.height * (44 / 48) - (imageRect.top + imageRect.height * (44 / 48))) / scale);
-  if (!Number.isFinite(dx) || !Number.isFinite(dy) || dx < 16) return undefined;
+  const enemyAnchor = hovering ? cell / 2 - 4 : cell - 4;
+  const actorAnchor = targetCell ? (hovering ? targetCell / 2 - 4 : targetCell - 4) : hovering ? 20 : 44;
+  const dy = Math.round((actorRect.top + actorRect.height * (actorAnchor / (targetCell || 48))
+    - (imageRect.top + imageRect.height * (enemyAnchor / cell))) / scale);
+  if (!Number.isFinite(dx) || !Number.isFinite(dy)) return undefined;
   const distance = Math.hypot(dx, dy);
   const clamp = (value: number, min: number, max: number) => Math.round(Math.max(min, Math.min(max, value)));
+  const speed = motion === "dash" ? 0.65 : motion === "stomp" ? 0.34 : hovering ? 0.42 : 0.3;
   return {
     dx,
     dy,
-    approachMs: ENEMY_HOLD_MS + clamp(distance / (swoop ? 0.42 : 0.3), 300, 900),
-    recoverMs: clamp(160 + distance / 0.42, 420, 900),
+    approachMs: ENEMY_HOLD_MS + clamp(distance / speed, motion === "stomp" ? 440 : 300, 900),
+    recoverMs: clamp(160 + distance / (motion === "stomp" ? 0.38 : motion === "dash" ? 0.7 : 0.42), 420, 900),
   };
 }
 
@@ -700,40 +837,79 @@ function animatePixelEnemyBeat(node: HTMLElement, beat: BattleActionBeat): void 
   const generation = (beatGenerations.get(node) ?? 0) + 1;
   beatGenerations.set(node, generation);
   const length = Math.max(0, beat.durationMs);
-  const swoop = node.dataset.pixelEnemy === "swoop";
-  const melee = node.dataset.retroReach === "melee";
-  const dx = Number.parseFloat(node.style.getPropertyValue("--retro-enemy-dx")) || 18;
+  // 파티원 몬스터 시트(data-pixel-party)는 오른쪽 진영에서 왼쪽을 본다 — 이동 경로의 가로만 뒤집고 칸 순서·거리 산식은 적과 같다.
+  const party = node.dataset.pixelParty !== undefined;
+  const sign = party ? -1 : 1;
+  const motion = node.dataset.pixelEnemy ?? node.dataset.pixelParty;
+  const swoop = motion === "swoop";
+  const stationary = motion === "shoot" || motion === "breath";
+  const melee = !stationary && node.dataset.retroReach === "melee";
+  // Preserve a measured zero (already next to the target), rather than inventing an 18px lunge.
+  const parsedDx = Number.parseFloat(node.style.getPropertyValue("--retro-enemy-dx"));
+  const dx = Number.isFinite(parsedDx) ? parsedDx : 18;
   const dy = Number.parseFloat(node.style.getPropertyValue("--retro-enemy-dy")) || 0;
+  const cues: [number, MotionCue][] = [];
   let cells: readonly [number, PixelEnemyCell][];
   let path: readonly PathPoint[];
-  if (melee && beat.kind === "approach") {
+  if (stationary) {
+    // The authored neck/bow changes supply the motion. Feet and node remain planted, including recover.
+    node.dataset.retroReach = "ranged";
+    path = [[0, 0, 0], [1, 0, 0]];
+    if (beat.kind === "approach") cells = [[0, "windup"], [motion === "breath" ? 0.7 : 0.55, "move"]];
+    else if (beat.kind === "impact") {
+      cells = [[0, "attack"]];
+      cues.push([0, motion === "breath" ? "enemy-breath" : "enemy-shoot"]);
+    } else cells = [[0, "recover"], [0.8, "idle_b"]];
+  } else if (melee && beat.kind === "approach") {
     const hold = Math.min(0.45, ENEMY_HOLD_MS / Math.max(1, length));
     const travel = 1 - hold;
-    // 슬라임은 두 번 뛸 때마다 통, 박쥐는 급강하에 바람 소리 한 번.
-    const hops = swoop ? [hold] : [hold, hold + travel * 0.5];
-    for (const at of hops) scheduleBattleTimer(() => {
-      if (node.isConnected && beatGenerations.get(node) === generation) motionSe(swoop ? "enemy-swoop" : "enemy-hop", 0.22);
-    }, Math.round(length * at));
-    if (swoop) {
-      // 날개를 치켜들며 살짝 뒤로 떠올랐다가(windup) 날개를 접고 대상에게 내리꽂는다(move).
+    if (motion === "stomp") {
+      const first = hold + travel * 0.42;
+      const second = hold + travel * 0.82;
+      path = [[0, 0, 0], [hold, -3, 1],
+        [hold + travel * 0.18, dx * 0.25, dy * 0.25 - 3], [first, dx * 0.5, dy * 0.5 + 2],
+        [hold + travel * 0.62, dx * 0.75, dy * 0.75 - 3], [second, dx, dy + 2], [1, dx, dy]];
+      cells = [[0, "idle_c"], [hold, "move"], [first, "idle_b"],
+        [hold + travel * 0.52, "move"], [second, "windup"]];
+      cues.push([first, "enemy-stomp"], [second, "enemy-stomp"]);
+    } else if (motion === "dash") {
+      path = [[0, 0, 0], [hold, -7, 3, "ease-in"],
+        [hold + travel * 0.7, dx * 0.86, dy * 0.86 + 3, "ease-out"], [1, dx, dy]];
+      cells = [[0, "windup"], [hold, "move"], [hold + travel * 0.45, "idle_c"], [hold + travel * 0.62, "move"]];
+      cues.push([hold, "enemy-dash"]);
+    } else if (motion === "float") {
+      path = [[0, 0, 0, "ease-in-out"], [hold, -4, -4],
+        [hold + travel * 0.5, dx * 0.5, dy * 0.5 - 6], [1, dx, dy]];
+      cells = [[0, "windup"], [hold, "move"], [hold + travel * 0.5, "idle_c"], [0.92, "move"]];
+      cues.push([hold, "enemy-float"]);
+    } else if (swoop) {
       path = [[0, 0, 0, "ease-out"], [hold, -8, -12, "ease-in"], [hold + travel * 0.45, dx * 0.45, dy * 0.35 - 14, "ease-in"], [1, dx, dy]];
       cells = [[0, "windup"], [hold, "move"]];
+      cues.push([hold, "enemy-swoop"]);
     } else {
-      // 웅크렸다가(windup) 두 번 통통 뛴다. 중간 착지에서 잠깐 퍼진다(recover 칸).
       const land = hold + travel * 0.5;
-      path = [
-        [0, 0, 0], [hold * 0.5, -4, 0], [hold, -4, 0, "ease-out"],
+      path = [[0, 0, 0], [hold * 0.5, -4, 0], [hold, -4, 0, "ease-out"],
         [hold + travel * 0.25, dx * 0.25, dy * 0.25 - 18, "ease-in"], [land, dx * 0.5, dy * 0.5, "ease-out"],
-        [land + travel * 0.25, dx * 0.75, dy * 0.75 - 22, "ease-in"], [1, dx, dy],
-      ];
+        [land + travel * 0.25, dx * 0.75, dy * 0.75 - 22, "ease-in"], [1, dx, dy]];
       cells = [[0, "windup"], [hold, "move"], [Math.max(hold, land - travel * 0.06), "recover"], [land + travel * 0.06, "move"]];
+      cues.push([hold, "enemy-hop"], [land, "enemy-hop"]);
     }
   } else if (melee && beat.kind === "impact") {
-    path = [[0, dx, dy], [0.4, dx + 5, dy + (swoop ? 2 : 0)], [1, dx + 2, dy + (swoop ? 1 : 0)]];
+    const down = motion === "stomp" ? 4 : swoop ? 2 : 0;
+    const push = motion === "float" ? 2 : motion === "dash" ? 8 : 5;
+    path = [[0, dx, dy], [0.4, dx + push, dy + down], [1, dx + 2, dy + (swoop ? 1 : 0)]];
     cells = [[0, "attack"]];
   } else if (melee) {
-    if (swoop) {
-      // 날개를 크게 쳐 뒤로 떠오른 뒤 날갯짓하며 제자리로.
+    if (motion === "stomp") {
+      path = [[0, dx + 2, dy], [0.2, dx, dy], [0.5, dx * 0.5, dy * 0.5 - 2], [0.65, dx * 0.5, dy * 0.5], [0.95, 0, 0], [1, 0, 0]];
+      cells = [[0, "recover"], [0.2, "move"], [0.5, "idle_b"], [0.65, "move"], [0.95, "idle_a"]];
+    } else if (motion === "dash") {
+      path = [[0, dx + 2, dy], [0.18, dx, dy + 2, "ease-in-out"], [0.85, 0, 0], [1, 0, 0]];
+      cells = [[0, "recover"], [0.18, "move"], [0.85, "idle_a"]];
+    } else if (motion === "float") {
+      path = [[0, dx + 2, dy, "ease-in-out"], [0.5, dx * 0.5, dy * 0.5 - 5], [1, 0, 0]];
+      cells = [[0, "recover"], [0.3, "idle_b"], [0.65, "idle_c"], [0.9, "idle_a"]];
+    } else if (swoop) {
       path = [[0, dx + 2, dy + 1, "ease-out"], [0.3, dx * 0.75, dy - 16], [0.9, 0, 0], [1, 0, 0]];
       cells = [[0, "recover"], [0.3, "idle_a"], [0.45, "idle_c"], [0.6, "idle_a"], [0.75, "idle_c"], [0.9, "idle_b"]];
     } else {
@@ -741,7 +917,6 @@ function animatePixelEnemyBeat(node: HTMLElement, beat: BattleActionBeat): void 
       cells = [[0, "recover"], [0.22, "move"], [0.9, "recover"]];
     }
   } else if (beat.kind === "approach") {
-    // 제자리 기술: 뒤로 몸을 당겨 힘을 모은다.
     path = [[0, 0, 0, "ease-out"], [0.6, -6, swoop ? -6 : 0], [1, -6, swoop ? -6 : 0]];
     cells = [[0, "windup"]];
   } else if (beat.kind === "impact") {
@@ -751,13 +926,21 @@ function animatePixelEnemyBeat(node: HTMLElement, beat: BattleActionBeat): void 
     path = [[0, dx, 0, "ease-in-out"], [0.8, 0, 0], [1, 0, 0]];
     cells = [[0, "recover"], [0.55, swoop ? "idle_a" : "idle_b"]];
   }
+  // Cue zero is synchronous with the attack cell; delayed cues belong to this beat generation only.
+  if (!reduced()) for (const [fraction, cue] of cues) {
+    const play = () => {
+      if (node.isConnected && beatGenerations.get(node) === generation && node.dataset.retroBeat === beat.kind) motionSe(cue, 0.22);
+    };
+    if (fraction === 0) play();
+    else if (length > 0) scheduleBattleTimer(play, Math.min(length - 1, Math.round(length * fraction)));
+  }
   if (reduced() || length === 0) cells = [[0, cells[0]![1]]];
   pixelAnimations.get(node)?.cancel();
   pixelAnimations.delete(node);
   // 길이 0 비트(빗나간 착탄)도 도착 자리를 붙잡아야 한다 — 애니메이션을 걷으면 한 프레임 제자리로 튄다.
   if (!reduced() && typeof node.animate === "function") {
     const animation = node.animate(
-      path.map(([offset, x, y, easing]) => ({ offset, translate: `${Math.round(x)}px ${Math.round(y)}px`, ...(easing ? { easing } : {}) })),
+      path.map(([offset, x, y, easing]) => ({ offset, translate: `${Math.round(x * sign)}px ${Math.round(y)}px`, ...(easing ? { easing } : {}) })),
       { duration: Math.max(1, length), fill: "forwards" },
     );
     pixelAnimations.set(node, animation);

@@ -50,10 +50,14 @@ POSES = [
 POSE_BY_ID = {p[0]: p for p in POSES}
 SHEETS = {"actor1": "Actor1.png", "actor2": "Actor2.png", "actor3": "Actor3.png", "actor4": "Actor4.png"}
 ALL_IDS = [f"{s}-{i}" for s in SHEETS for i in range(8)]
+# People 걷기 칩(2026-09-29, retro2003 2차 로스터). ALL_IDS 에는 넣지 않는다 — repaint_weapons.py 가 인자 없이 돌 때
+# People 칩을 Actor 무기로 덮지 않게 하려는 것. People 은 id 를 인자로 명시해서 쓴다(baseline.py people2-3 ...).
+PEOPLE_SHEETS = {f"people{n}": f"People{n}.png" for n in range(1, 6)}
+ALL_PEOPLE_IDS = [f"{s}-{i}" for s in PEOPLE_SHEETS for i in range(8)]
 
 
 def load_sheet(sheet):
-    im = Image.open(os.path.join(CHARSET_DIR, SHEETS[sheet])).convert("RGBA")
+    im = Image.open(os.path.join(CHARSET_DIR, SHEETS.get(sheet) or PEOPLE_SHEETS[sheet])).convert("RGBA")
     key = im.getpixel((0, 0))[:3]
     px = im.load()
     for y in range(im.height):

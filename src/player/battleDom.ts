@@ -1,4 +1,5 @@
-import { retroTimelineEntry, retroCommandPose, initRetroMotion, isTravellingEffect, preloadRetroMotionSe, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, retroVictory, retroWalk } from "@/player/battleRetroMotion";
+import { hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillRecord, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
+import { retroTimelineEntry, retroCommandPose, initRetroMotion, isTravellingEffect, preloadRetroMotionSe, repaintRetroBattler, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, retroVictory, retroWalk } from "@/player/battleRetroMotion";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
 import type {
   ActorCommand,
@@ -159,6 +160,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let destroyed = false;
   /** impact · 평타 확정 뒤 처음 오는 접근 비트에 베기 궤적과 휘두름 소리를 한 번 둔다. */
   let swingArmed = false;
+  // 방금 확정한 직업 스킬(훔치기 등 special 결과만 남는 기술의 연출 시작점).
+  let pendingRetroSkillId: string | undefined;
+  let pendingRetroSkillUserId: string | undefined;
   let choiceController: AbortController | undefined;
   let resultSent = false;
   let submenu: BattleCommandSubmenu = null;
@@ -167,6 +171,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let resultRevealStage = 0;
   let finaleCelebrated: BattleSnapshot["result"] | undefined;
   let sequenceBusy = false;
+  /** 시퀀서가 재생을 시작한 마지막 타임라인 엔트리. 이보다 뒤의 상태 변화는 아직 화면에 오지 않았다. */
+  let playedTimelineSequence = -1;
   /** 입력 커맨드 기술의 프롬프트. 열려 있는 동안 키 입력은 이 판정기로만 간다. */
   let inputPrompt: { press(key: SkillInputKey): void } | undefined;
   let eventSurfaceOpen = false;
@@ -399,7 +405,14 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       directorState = withFormationBanner(state);
     },
     onTimelineEntry(entry) {
+      playedTimelineSequence = Math.max(playedTimelineSequence, entry.sequence);
       if (retroMotion) retroTimelineEntry(field, entry);
+      // 훔치기처럼 결과가 특수 메시지 한 줄뿐인 직업 스킬은 시각 비트가 없다 — 그 메시지에서 연출을 시작한다.
+      if (retroMotion && entry.kind === "special" && entry.side === "actor" && pendingRetroSkillId && entry.userRecordId === pendingRetroSkillUserId) {
+        const skillId = pendingRetroSkillId;
+        pendingRetroSkillId = undefined;
+        startRetroSpecialSkill(field, entry, skillId, sequencer.speedMultiplier, repaintRetroBattler);
+      }
       // 연출이 화면에 도달한 반격·부활의 흔적 — QA 와 스킨 CSS 가 읽는다.
       if (entry.kind === "counter") root.dataset.battleCounterSeen = "true";
       if (entry.kind === "revive") root.dataset.battleReviveSeen = "true";
@@ -413,12 +426,14 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       activeAnimation?.destroy();
       activeAnimation = syncBattleAnimationLayer(
         animationLayer,
-        { ...options.runtime.snapshot(), lastAnimation: retroMotion && isTravellingEffect(animation) ? undefined : animation },
+        { ...options.runtime.snapshot(), lastAnimation: retroMotion && (hasRetroChoreography(field) || isTravellingEffect(animation)) ? undefined : animation },
         root,
       );
     },
     onDamageFeedback(feedback) {
       lastDamageFeedback = feedback;
+      // 상태 이름 팝업(label)은 표시 전용 — 원장·타격 세기·효과음·플래시를 건드리지 않는다.
+      if (feedback?.label) return;
       if (feedback) {
         const vitalsBefore = presentation?.vitalsFor(feedback.targetId);
         const wasAlive = !vitalsBefore?.defeated;
@@ -528,11 +543,16 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     },
     // 도트 측면 전투: 근접 공격은 대상 적 앞까지 실제로 걸어간다. 비트 길이를 걸음 거리에 맞춘다.
     ...(retroMotion ? {
-      actorApproachMs: (entry: BattleTimelineEntrySnapshot) => retroWalk(field, entry)?.approachMs,
-      actorRecoverMs: (entry: BattleTimelineEntrySnapshot) => retroWalk(field, entry)?.recoverMs,
-      // 도트 적(슬라임·박쥐)은 대상 아군 앞까지 뛰어/날아가서 친다.
-      enemyApproachMs: (entry: BattleTimelineEntrySnapshot) => retroEnemyReach(field, entry)?.approachMs,
-      enemyRecoverMs: (entry: BattleTimelineEntrySnapshot) => retroEnemyReach(field, entry)?.recoverMs,
+      // 직업 스킬 48종은 타임라인 길이(첫 착탄·대상별 간격·남은 연출)를 비트로 준다. 필살기는 약 2.5초다.
+      actorApproachMs: (entry: BattleTimelineEntrySnapshot) => retroClassSkillBeatMs(field, entry, "approach", options.runtime.snapshot().timeline)
+        ?? retroSkillForEntry(entry)?.approachMs ?? retroWalk(field, entry)?.approachMs,
+      actorRecoverMs: (entry: BattleTimelineEntrySnapshot) => retroClassSkillBeatMs(field, entry, "recover", options.runtime.snapshot().timeline)
+        ?? retroSkillForEntry(entry)?.recoverMs ?? retroWalk(field, entry)?.recoverMs,
+      // 몬스터 스킬 42종은 같은 타임라인 훅(첫 착탄·대상별 간격·남은 연출). 그 밖의 도트 적 근접은 대상 아군 앞까지 뛰어/날아간다.
+      enemyApproachMs: (entry: BattleTimelineEntrySnapshot) => retroClassSkillBeatMs(field, entry, "approach", options.runtime.snapshot().timeline)
+        ?? retroEnemyReach(field, entry)?.approachMs,
+      enemyRecoverMs: (entry: BattleTimelineEntrySnapshot) => retroClassSkillBeatMs(field, entry, "recover", options.runtime.snapshot().timeline)
+        ?? retroEnemyReach(field, entry)?.recoverMs,
     } : {}),
     onResultStage(stage) {
       // 사용자가 확인키로 전부 공개했으면(revealAllResultRows) 늦게 도착한 낮은 단계가 되감지 않는다.
@@ -1013,6 +1033,23 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     playBattleCue(button.dataset.battleCommandInert === "true" ? "command-cancel" : "command-confirm");
   });
 
+  /** 시퀀서가 아직 재생하지 않은 stateAdded/stateRemoved 를 되돌린 배지 목록(표시 전용). */
+  function pendingStateView(snapshot: BattleSnapshot): ((battlerId: string, stateIds: readonly string[]) => readonly string[]) | undefined {
+    const pending = snapshot.timeline.filter((entry) => entry.sequence > playedTimelineSequence
+      && (entry.kind === "stateAdded" || entry.kind === "stateRemoved") && entry.targetId && entry.stateId);
+    if (pending.length === 0) return undefined;
+    return (battlerId, stateIds) => {
+      let view = [...stateIds];
+      // 뒤에서부터 되감는다 — 같은 상태가 붙었다 풀린 경우에도 재생 전 모습으로 돌아간다.
+      for (const entry of [...pending].reverse()) {
+        if (entry.targetId !== battlerId || !entry.stateId) continue;
+        if (entry.kind === "stateAdded") view = view.filter((id) => id !== entry.stateId);
+        else if (!view.includes(entry.stateId)) view.push(entry.stateId);
+      }
+      return view;
+    };
+  }
+
   function syncView(): void {
     if (destroyed) return;
     const snapshot = options.runtime.snapshot();
@@ -1030,11 +1067,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       // 시퀀스가 끝난 뒤(결과 화면 포함)에도 걷는다 — 패배 결과에서 살아남은 적이
       // attack 포즈로 박제되던 결함(적대 리뷰 3차).
       calm: !sequenceBusy || !snapshot.result,
-      hitTargetId: lastDamageFeedback && !lastDamageFeedback.healing && !lastDamageFeedback.miss
+      hitTargetId: lastDamageFeedback && !lastDamageFeedback.healing && !lastDamageFeedback.miss && !lastDamageFeedback.label
         ? lastDamageFeedback.targetId
         : undefined,
       onField: options.onField,
       rollingHp,
+      stateView: sequenceBusy ? pendingStateView(snapshot) : undefined,
     };
     // 결과 화면이 뜨면 미터를 멈춘다 — 이 순간 남은 HP 가 결산 값이다. 패배는 결산하지 않으므로
     // 미터를 실제 HP(0)에 붙인다: 전멸 화면에 굴러가던 HP 와 「쓰러지는 중」이 남지 않게.
@@ -1289,6 +1327,13 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const actorNode = snapshot.activeActorId
       ? findBattlerNode(field, snapshot.activeActorId)
       : null;
+    const skillRecord = command.kind === "skill" ? store.getCurrent().database.skills.find((skill) => skill.id === command.skillId) : undefined;
+    pendingRetroSkillId = retroMotion && retroClassSkillRecord(skillRecord) ? skillRecord?.id : undefined;
+    pendingRetroSkillUserId = snapshot.activeActorId;
+    if (retroMotion && command.kind === "skill" && (retroSkillRecipe(skillRecord) || retroClassSkillRecord(skillRecord))) {
+      swingArmed = false; // The recipe owns release SE; the old animation and generic swing are silent.
+      return;
+    }
     if (command.kind === "attack" || command.kind === "skill") {
       // impact 의 평타는 휘두름 소리를 착탄 직전(onActionMotion)으로 옮기고 베기 궤적을 같이 긋는다. 여기서도
       // 울면 한 행동에 두 번 운다. 스킬은 자기 애니메이션이 있어 예전 자리(확정 순간)를 지킨다.

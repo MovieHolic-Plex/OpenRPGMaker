@@ -1,0 +1,90 @@
+// 묶음 b1(Animal 8) — 담당 에이전트만 이 파일을 쓴다. 규격: src/assets/retroRoster.ts 머리 주석, 스킬 형식은 retroClassSkills.ts(RetroClassSkill).
+// 생성: scripts/asset-gen/pixel-fx/gen_r2w5_b1_ts.py (표를 고치고 다시 돌린다). 이펙트 시트 그림: scripts/asset-gen/pixel-fx/r2w5_<동물>.py + <키>.py.
+import type { RetroRosterBatch } from "@/assets/retroRoster";
+
+export const BATCH: RetroRosterBatch = {
+  skills: [
+    // ── 충견 (animal-0) ──
+    { id: "skill_dog_bite", classId: "class_dog", actorId: "actor_dog", name: "물어뜯기", level: 1, motion: "dash-strike", description: "송곳니로 적을 덥석 물어뜯는다", layers: [{ key: "dog_bite", anchor: "target", frame: 64, frames: 8 }] },
+    { id: "skill_dog_bark", classId: "class_dog", actorId: "actor_dog", name: "우렁찬 짖음", level: 3, motion: "cast", description: "짖는 소리의 충격파로 적의 기세를 꺾는다", layers: [{ key: "dog_bark_wave", anchor: "projectile", frame: 32, frames: 4 }, { key: "dog_bark_hit", anchor: "target", frame: 64, frames: 8 }] },
+    { id: "skill_dog_loyal", classId: "class_dog", actorId: "actor_dog", name: "충성 맹세", level: 5, motion: "buff", description: "주인을 지키겠다는 충성심이 아군 전체를 감싼다", layers: [{ key: "dog_loyal", anchor: "allAllies", frame: 64, frames: 10 }] },
+    { id: "skill_dog_scratch", classId: "class_dog", actorId: "actor_dog", name: "앞발 긁기", level: 7, motion: "flurry", description: "앞발로 정신없이 할퀴어 흙먼지를 일으킨다", layers: [{ key: "dog_scratch", anchor: "target", frame: 64, frames: 8 }] },
+    { id: "skill_dog_tackle", classId: "class_dog", actorId: "actor_dog", name: "덮치기", level: 10, motion: "leap-strike", description: "높이 뛰어올라 온몸으로 덮쳐 눕힌다", layers: [{ key: "dog_tackle", anchor: "target", frame: 64, frames: 9 }] },
+    { id: "skill_dog_tail_whirl", classId: "class_dog", actorId: "actor_dog", name: "꼬리 돌개바람", level: 12, motion: "spin", description: "꼬리를 휘돌려 흙바람으로 적진을 쓸어낸다", layers: [{ key: "dog_whirl", anchor: "allTargets", frame: 64, frames: 10 }] },
+    { id: "skill_dog_bone", classId: "class_dog", actorId: "actor_dog", name: "뼈다귀 투척", level: 16, motion: "shoot", description: "물고 있던 뼈다귀를 빙글 돌려 던진다", layers: [{ key: "dog_bone", anchor: "projectile", frame: 32, frames: 4 }, { key: "dog_bone_hit", anchor: "target", frame: 64, frames: 8 }] },
+    { id: "skill_dog_howl", classId: "class_dog", actorId: "actor_dog", name: "달빛 포효", level: 22, motion: "finisher", description: "보름달 아래 늑대의 혼을 불러 울부짖는 필살기", layers: [{ key: "dog_howl_sky", anchor: "screen", frame: 128, frames: 12 }, { key: "dog_howl_hit", anchor: "allTargets", frame: 64, frames: 8 }] },
+    // ── 고양이 (animal-1) ──
+    { id: "skill_cat_claw", classId: "class_cat", actorId: "actor_cat", name: "냥냥 할퀴기", level: 1, motion: "flurry", description: "재빠른 앞발로 여러 번 할퀸다", layers: [{ key: "cat_claw", anchor: "target", frame: 64, frames: 8 }] },
+    { id: "skill_cat_jab", classId: "class_cat", actorId: "actor_cat", name: "고양이 잽", level: 3, motion: "dash-strike", description: "앞발 잽으로 톡톡 두들겨 정신을 빼놓는다", layers: [{ key: "cat_jab", anchor: "target", frame: 64, frames: 8 }] },
+    { id: "skill_cat_afterimage", classId: "class_cat", actorId: "actor_cat", name: "잔상 회피", level: 5, motion: "buff", description: "잔상을 남기며 몸놀림을 가볍게 한다", layers: [{ key: "cat_afterimage", anchor: "user", frame: 64, frames: 8 }] },
+    { id: "skill_cat_hairball", classId: "class_cat", actorId: "actor_cat", name: "털뭉치 발사", level: 7, motion: "shoot", description: "뭉친 털을 뱉어 적의 눈앞에서 터뜨린다", layers: [{ key: "cat_hairball", anchor: "projectile", frame: 32, frames: 4 }, { key: "cat_hairball_hit", anchor: "target", frame: 64, frames: 8 }] },
+    { id: "skill_cat_hiss", classId: "class_cat", actorId: "actor_cat", name: "하악질", level: 10, motion: "cast", description: "날카로운 하악질에 적 전체의 기가 꺾인다", layers: [{ key: "cat_hiss", anchor: "allTargets", frame: 64, frames: 8 }] },
+    { id: "skill_cat_pounce", classId: "class_cat", actorId: "actor_cat", name: "낙하 급습", level: 12, motion: "leap-strike", description: "높은 곳에서 뛰어내려 발톱으로 낚아챈다", layers: [{ key: "cat_pounce", anchor: "target", frame: 64, frames: 10 }] },
+    { id: "skill_cat_nine_lives", classId: "class_cat", actorId: "actor_cat", name: "아홉 목숨", level: 16, motion: "buff", description: "아홉 개의 영혼이 감싸 체력을 되살린다", layers: [{ key: "cat_nine_lives", anchor: "user", frame: 64, frames: 12 }] },
+    { id: "skill_cat_frenzy", classId: "class_cat", actorId: "actor_cat", name: "고양이 광란", level: 22, motion: "finisher", description: "달밤에 수십 발톱이 화면을 가르는 필살기", layers: [{ key: "cat_frenzy_sky", anchor: "screen", frame: 128, frames: 12 }, { key: "cat_frenzy_hit", anchor: "allTargets", frame: 64, frames: 8 }] },
+    // ── 수탉 (animal-2) ──
+    { id: "skill_rooster_peck", classId: "class_rooster", actorId: "actor_rooster", name: "쪼기 연타", level: 1, motion: "flurry", description: "부리로 쉴 새 없이 쪼아 댄다", layers: [{ key: "rooster_peck", anchor: "target", frame: 64, frames: 8 }] },
+    { id: "skill_rooster_dawn", classId: "class_rooster", actorId: "actor_rooster", name: "새벽 울음", level: 3, motion: "buff", description: "새벽을 여는 울음으로 아군 전체의 기력을 깨운다", layers: [{ key: "rooster_dawn", anchor: "allAllies", frame: 64, frames: 10 }] },
+    { id: "skill_rooster_wing_gust", classId: "class_rooster", actorId: "actor_rooster", name: "날개 후려치기", level: 5, motion: "spin", description: "날개를 펼쳐 회오리를 일으켜 적진을 쓸어낸다", layers: [{ key: "rooster_gust", anchor: "allTargets", frame: 64, frames: 9 }] },
+    { id: "skill_rooster_spur", classId: "class_rooster", actorId: "actor_rooster", name: "며느리발톱 차기", level: 7, motion: "dash-strike", description: "뾰족한 며느리발톱으로 걷어찬다", layers: [{ key: "rooster_spur", anchor: "target", frame: 64, frames: 8 }] },
+    { id: "skill_rooster_egg", classId: "class_rooster", actorId: "actor_rooster", name: "달걀 폭탄", level: 10, motion: "shoot", description: "갓 낳은 달걀을 던져 노른자를 터뜨린다", layers: [{ key: "rooster_egg", anchor: "projectile", frame: 32, frames: 4 }, { key: "rooster_egg_burst", anchor: "target", frame: 64, frames: 8 }] },
+    { id: "skill_rooster_comb", classId: "class_rooster", actorId: "actor_rooster", name: "붉은 볏 세우기", level: 12, motion: "buff", description: "볏을 활활 세워 투지를 불태운다", layers: [{ key: "rooster_comb", anchor: "user", frame: 64, frames: 10 }] },
+    { id: "skill_rooster_flame_crow", classId: "class_rooster", actorId: "actor_rooster", name: "불꽃 울음", level: 16, motion: "cast", description: "불타는 울음소리가 적진을 휩쓴다", layers: [{ key: "rooster_flame_crow", anchor: "allTargets", frame: 64, frames: 10 }] },
+    { id: "skill_rooster_sunrise", classId: "class_rooster", actorId: "actor_rooster", name: "일출", level: 22, motion: "finisher", description: "떠오르는 태양과 함께 우는 필살기", layers: [{ key: "rooster_sunrise_sky", anchor: "screen", frame: 128, frames: 12 }, { key: "rooster_sunrise_hit", anchor: "allTargets", frame: 64, frames: 8 }] },
+    // ── 양 (animal-3) ──
+    { id: "skill_sheep_ram", classId: "class_sheep", actorId: "actor_sheep", name: "박치기", level: 1, motion: "dash-strike", description: "뿔 달린 머리로 힘껏 들이받는다", layers: [{ key: "guard_bash", anchor: "target", frame: 64, frames: 8 }] },
+    { id: "skill_sheep_wool_guard", classId: "class_sheep", actorId: "actor_sheep", name: "털 방어", level: 3, motion: "buff", description: "두툼한 털을 부풀려 방어를 단단히 한다", layers: [{ key: "sheep_wool", anchor: "user", frame: 64, frames: 10 }] },
+    { id: "skill_sheep_count", classId: "class_sheep", actorId: "actor_sheep", name: "양 세기", level: 5, motion: "cast", description: "졸음이 쏟아지는 주문으로 적을 재운다", layers: [{ key: "sleep", anchor: "target", frame: 64, frames: 8 }] },
+    { id: "skill_sheep_wool_ball", classId: "class_sheep", actorId: "actor_sheep", name: "털뭉치 투척", level: 7, motion: "shoot", description: "뭉친 털을 던져 연기처럼 터뜨려 눈을 가린다", layers: [{ key: "scout_bomb", anchor: "projectile", frame: 32, frames: 4 }, { key: "scout_smoke", anchor: "target", frame: 64, frames: 10 }] },
+    { id: "skill_sheep_baa", classId: "class_sheep", actorId: "actor_sheep", name: "매에에", level: 10, motion: "cast", description: "귀를 찢는 울음으로 적 전체를 어지럽힌다", layers: [{ key: "mon_screech_ring", anchor: "allTargets", frame: 64, frames: 8 }] },
+    { id: "skill_sheep_roll", classId: "class_sheep", actorId: "actor_sheep", name: "털공 구르기", level: 12, motion: "spin", description: "몸을 말아 굴러 적진을 짓누른다", layers: [{ key: "hero_whirl", anchor: "allTargets", frame: 64, frames: 10 }] },
+    { id: "skill_sheep_cloud", classId: "class_sheep", actorId: "actor_sheep", name: "구름 이불", level: 16, motion: "cast", description: "포근한 빛이 아군 전체를 치유한다", layers: [{ key: "cleric_mass_heal", anchor: "allAllies", frame: 64, frames: 10 }] },
+    { id: "skill_sheep_dream", classId: "class_sheep", actorId: "actor_sheep", name: "꿈나라 행진", level: 22, motion: "finisher", description: "무수한 양이 꿈의 하늘을 가로지르는 필살기", layers: [{ key: "sheep_dream_sky", anchor: "screen", frame: 128, frames: 12 }, { key: "sleep", anchor: "allTargets", frame: 64, frames: 8 }] },
+    // ── 젖소 (animal-4) ──
+    { id: "skill_cow_gore", classId: "class_cow", actorId: "actor_cow", name: "뿔 받기", level: 1, motion: "dash-strike", description: "뿔을 앞세워 돌진해 적을 밀쳐낸다", layers: [{ key: "guard_charge", anchor: "target", frame: 64, frames: 8 }] },
+    { id: "skill_cow_milk", classId: "class_cow", actorId: "actor_cow", name: "신선한 우유", level: 3, motion: "cast", description: "갓 짠 우유가 튀어 아군 하나를 치유한다", layers: [{ key: "cow_milk", anchor: "target", frame: 64, frames: 10 }] },
+    { id: "skill_cow_ruminate", classId: "class_cow", actorId: "actor_cow", name: "되새김 휴식", level: 5, motion: "buff", description: "느긋이 되새김하며 체력을 되찾는다", layers: [{ key: "monk_meditate", anchor: "user", frame: 64, frames: 10 }] },
+    { id: "skill_cow_stomp", classId: "class_cow", actorId: "actor_cow", name: "발굽 짓밟기", level: 7, motion: "leap-strike", description: "육중한 몸으로 뛰어 땅을 굴러 모든 적을 흔든다", layers: [{ key: "guard_quake", anchor: "allTargets", frame: 64, frames: 10 }] },
+    { id: "skill_cow_bell", classId: "class_cow", actorId: "actor_cow", name: "워낭 소리", level: 10, motion: "cast", description: "목의 워낭을 울린 음파로 적을 친다", layers: [{ key: "bard_sonic_wave", anchor: "projectile", frame: 32, frames: 4 }, { key: "bard_sonic_hit", anchor: "target", frame: 64, frames: 8 }] },
+    { id: "skill_cow_tail_whip", classId: "class_cow", actorId: "actor_cow", name: "꼬리 채찍", level: 12, motion: "spin", description: "굵은 꼬리를 휘둘러 적진을 후려친다", layers: [{ key: "monk_whirl_kick", anchor: "allTargets", frame: 64, frames: 10 }] },
+    { id: "skill_cow_pasture", classId: "class_cow", actorId: "actor_cow", name: "푸른 목장", level: 16, motion: "cast", description: "풀내음 바람이 아군 전체를 치유한다", layers: [{ key: "ranger_leaves", anchor: "allAllies", frame: 64, frames: 10 }] },
+    { id: "skill_cow_stampede", classId: "class_cow", actorId: "actor_cow", name: "대돌진", level: 22, motion: "finisher", description: "소 떼가 흙먼지를 일으키며 쓸어버리는 필살기", layers: [{ key: "cow_stampede_sky", anchor: "screen", frame: 128, frames: 12 }, { key: "guard_fortress_slam", anchor: "allTargets", frame: 64, frames: 8 }] },
+    // ── 군마 (animal-5) ──
+    { id: "skill_horse_charge", classId: "class_horse", actorId: "actor_horse", name: "질주 박치기", level: 1, motion: "dash-strike", description: "전속력으로 달려 가슴으로 들이받는다", layers: [{ key: "guard_charge", anchor: "target", frame: 64, frames: 8 }, { key: "hero_dust", anchor: "user", frame: 64, frames: 6 }] },
+    { id: "skill_horse_kick", classId: "class_horse", actorId: "actor_horse", name: "뒷발 걷어차기", level: 3, motion: "leap-strike", description: "뛰어올라 두 뒷발로 걷어찬다", layers: [{ key: "horse_hoof", anchor: "target", frame: 64, frames: 8 }] },
+    { id: "skill_horse_gallop", classId: "class_horse", actorId: "actor_horse", name: "질풍 갈기", level: 5, motion: "buff", description: "잔상을 남기는 기세로 몸놀림이 빨라진다", layers: [{ key: "scout_afterimage", anchor: "user", frame: 64, frames: 8 }] },
+    { id: "skill_horse_neigh", classId: "class_horse", actorId: "actor_horse", name: "전장의 울음", level: 7, motion: "buff", description: "길게 우는 소리가 아군의 사기를 북돋는다", layers: [{ key: "hero_warcry", anchor: "user", frame: 128, frames: 10 }] },
+    { id: "skill_horse_trample", classId: "class_horse", actorId: "actor_horse", name: "발굽 연타", level: 10, motion: "flurry", description: "앞발굽으로 쉴 새 없이 짓밟는다", layers: [{ key: "monk_fist_flurry", anchor: "target", frame: 64, frames: 10 }] },
+    { id: "skill_horse_whirl", classId: "class_horse", actorId: "actor_horse", name: "회전 질주", level: 12, motion: "spin", description: "적진을 빙글 돌며 바람으로 쓸어낸다", layers: [{ key: "samurai_wind_hit", anchor: "allTargets", frame: 64, frames: 8 }] },
+    { id: "skill_horse_thunder_mane", classId: "class_horse", actorId: "actor_horse", name: "뇌운 갈기", level: 16, motion: "cast", description: "번개를 두른 갈기가 적 전체를 내리친다", layers: [{ key: "samurai_thunder_hit", anchor: "allTargets", frame: 64, frames: 8 }] },
+    { id: "skill_horse_pegasus", classId: "class_horse", actorId: "actor_horse", name: "천마 강림", level: 22, motion: "finisher", description: "빛의 날개를 편 천마가 하늘에서 내달리는 필살기", layers: [{ key: "horse_pegasus_sky", anchor: "screen", frame: 128, frames: 12 }, { key: "cleric_judgment_hit", anchor: "allTargets", frame: 64, frames: 8 }] },
+    // ── 호랑이 (animal-6) ──
+    { id: "skill_tiger_claw", classId: "class_tiger", actorId: "actor_tiger", name: "발톱 베기", level: 1, motion: "dash-strike", description: "굵은 발톱으로 세 줄기를 그으며 벤다", layers: [{ key: "tiger_claw", anchor: "target", frame: 64, frames: 8 }] },
+    { id: "skill_tiger_roar", classId: "class_tiger", actorId: "actor_tiger", name: "맹수의 포효", level: 3, motion: "cast", description: "포효의 충격파가 적 전체를 움츠러들게 한다", layers: [{ key: "mon_roar_ring", anchor: "allTargets", frame: 64, frames: 8 }] },
+    { id: "skill_tiger_instinct", classId: "class_tiger", actorId: "actor_tiger", name: "사냥 본능", level: 5, motion: "buff", description: "줄무늬가 타오르며 공격 본능이 깨어난다", layers: [{ key: "hero_flame_aura", anchor: "user", frame: 64, frames: 6 }] },
+    { id: "skill_tiger_fang", classId: "class_tiger", actorId: "actor_tiger", name: "송곳니 물기", level: 7, motion: "flurry", description: "송곳니로 물고 놓지 않아 거듭 문다", layers: [{ key: "mon_fang_bite", anchor: "target", frame: 64, frames: 8 }] },
+    { id: "skill_tiger_pounce", classId: "class_tiger", actorId: "actor_tiger", name: "매복 덮치기", level: 10, motion: "leap-strike", description: "몸을 낮췄다 튀어올라 온몸으로 덮친다", layers: [{ key: "hero_meteor_impact", anchor: "target", frame: 128, frames: 10 }] },
+    { id: "skill_tiger_whirl", classId: "class_tiger", actorId: "actor_tiger", name: "회전 발톱", level: 12, motion: "spin", description: "몸을 비틀어 회전하며 적진을 벤다", layers: [{ key: "hero_whirl", anchor: "allTargets", frame: 64, frames: 10 }] },
+    { id: "skill_tiger_bolt", classId: "class_tiger", actorId: "actor_tiger", name: "백호 뇌격", level: 16, motion: "shoot", description: "포효와 함께 번개 검풍을 쏘아 보낸다", layers: [{ key: "samurai_wind_wave", anchor: "projectile", frame: 32, frames: 4 }, { key: "samurai_thunder_hit", anchor: "target", frame: 64, frames: 8 }] },
+    { id: "skill_tiger_king", classId: "class_tiger", actorId: "actor_tiger", name: "호왕 강림", level: 22, motion: "finisher", description: "거대한 호랑이 혼이 포효하며 적진을 찢는 필살기", layers: [{ key: "tiger_king_sky", anchor: "screen", frame: 128, frames: 12 }, { key: "tiger_claw", anchor: "allTargets", frame: 64, frames: 8 }] },
+    // ── 사자 (animal-7) ──
+    { id: "skill_lion_swipe", classId: "class_lion", actorId: "actor_lion", name: "발톱 후려치기", level: 1, motion: "dash-strike", description: "황금빛 앞발로 힘껏 후려친다", layers: [{ key: "lion_swipe", anchor: "target", frame: 64, frames: 8 }] },
+    { id: "skill_lion_roar", classId: "class_lion", actorId: "actor_lion", name: "왕의 포효", level: 3, motion: "cast", description: "땅을 울리는 포효가 적 전체를 얼어붙게 한다", layers: [{ key: "guard_quake_ring", anchor: "screen", frame: 128, frames: 8 }] },
+    { id: "skill_lion_mane", classId: "class_lion", actorId: "actor_lion", name: "갈기 곤두세우기", level: 5, motion: "buff", description: "황금 갈기를 세워 몸을 단단하게 한다", layers: [{ key: "monk_iron_body", anchor: "user", frame: 64, frames: 10 }] },
+    { id: "skill_lion_maul", classId: "class_lion", actorId: "actor_lion", name: "물어 흔들기", level: 7, motion: "flurry", description: "덥석 물고 사납게 흔들어 뜯는다", layers: [{ key: "mon_devour_jaws", anchor: "target", frame: 64, frames: 10 }] },
+    { id: "skill_lion_pounce", classId: "class_lion", actorId: "actor_lion", name: "사냥 도약", level: 10, motion: "leap-strike", description: "멀리서 도약해 앞발로 짓누른다", layers: [{ key: "monk_earth_palm", anchor: "target", frame: 128, frames: 10 }] },
+    { id: "skill_lion_sun_breath", classId: "class_lion", actorId: "actor_lion", name: "태양 숨결", level: 12, motion: "shoot", description: "황금 불덩이를 토해 적을 태운다", layers: [{ key: "mage_fireball_orb", anchor: "projectile", frame: 32, frames: 4 }, { key: "mage_fire_burst", anchor: "target", frame: 64, frames: 10 }] },
+    { id: "skill_lion_pride", classId: "class_lion", actorId: "actor_lion", name: "무리의 호령", level: 16, motion: "buff", description: "무리를 이끄는 호령으로 아군 전체가 힘을 얻는다", layers: [{ key: "cleric_blessing", anchor: "allAllies", frame: 64, frames: 10 }] },
+    { id: "skill_lion_king", classId: "class_lion", actorId: "actor_lion", name: "백수의 왕", level: 22, motion: "finisher", description: "태양 관을 쓴 사자왕이 나타나는 필살기", layers: [{ key: "lion_king_sky", anchor: "screen", frame: 128, frames: 12 }, { key: "lion_swipe", anchor: "allTargets", frame: 64, frames: 8 }] },
+  ],
+  partyPixel: [
+    { chip: "animal-0", cell: 48, motion: "dash", idleFrameMs: 170, rows: 5, art: 2 },
+    { chip: "animal-1", cell: 48, motion: "dash", idleFrameMs: 150, rows: 5, art: 2 },
+    { chip: "animal-2", cell: 48, motion: "swoop", idleFrameMs: 200, rows: 5, art: 2 },
+    { chip: "animal-3", cell: 48, motion: "dash", idleFrameMs: 240, rows: 5, art: 2 },
+    { chip: "animal-4", cell: 64, motion: "stomp", idleFrameMs: 320, rows: 5, art: 2 },
+    { chip: "animal-5", cell: 64, motion: "dash", idleFrameMs: 170, rows: 5, art: 2 },
+    { chip: "animal-6", cell: 64, motion: "dash", idleFrameMs: 170, rows: 5, art: 2 },
+    { chip: "animal-7", cell: 64, motion: "dash", idleFrameMs: 180, rows: 5, art: 2 },
+  ]
+};

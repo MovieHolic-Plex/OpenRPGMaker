@@ -285,6 +285,16 @@ export interface SkillRecord {
   learnable?: boolean;
   /** 입력 커맨드: 성공/실패에 따라 위력이 달라진다. 생략 = 입력 없음. */
   inputSequence?: SkillInputSequence;
+  /**
+   * HP 대가(0~100): 시전할 때 시전자가 최대 HP 의 N% 를 잃는다(FFT 암흑검·희생). HP 1 밑으로는 깎지 않는다.
+   * 전투 타임라인에 시전자 자신을 대상으로 한 damage 엔트리(skillName = 기술 이름)를 남긴다. 생략 = 대가 없음.
+   */
+  hpCostPercent?: number;
+  /**
+   * 흡수(0~100): 준 피해의 N% 를 시전자가 회복한다(FFT 흡수 검). effect.affects 가 mp 면 MP 를 흡수한다.
+   * 타임라인에 시전자 자신을 대상으로 한 healing 엔트리(resource hp|mp)를 남긴다. 생략 = 흡수 없음.
+   */
+  drainPercent?: number;
 }
 
 export interface SkillArea {

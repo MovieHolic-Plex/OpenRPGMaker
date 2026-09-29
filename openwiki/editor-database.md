@@ -1412,6 +1412,40 @@ leaf 조건에서 멈추고 `default: return false` 했다:
 - 스타일은 `src/styles/database/skill-item-visuals.css` 안에서만 늘린다. 색은 `.database-modal-backdrop` 아래 `--db-studio-*` 토큰만 쓰고(하드코딩 hex/rgba 금지), **새 CSS 파일을 만들지 않는다**(`scripts/check-css-budget.mjs` 파일 수 래칫).
 - 커버리지: `test/databaseSkillAnimationStage.test.ts`(자동 반복 + 카운터 추적, 1프레임 정지, reduced-motion 정지, 토글 왕복, 표시면 교체 후 분리된 스테이지의 인터벌 정리), `test/databaseSkillItemForms.test.ts`(스테이지·셀·시트 메타·토글 계약), `test/eventEditorShowAnimationPreview.test.ts`(loop 랩어라운드와 `onFrame` 이 기존 1회 재생을 깨지 않음).
 
+### retro2003 도트 전투 미리보기 (2026-09-28)
+
+- `연출` 카드 맨 위에 **도트 전투 무대** `db-skill-retro-stage`(`databaseSkillRetroStage.ts`)가 붙는다. 조건: `retroClassSkill(record.id)`(계약 48종) 또는 `retroSkillRecipe(record)`(런타임 레시피 17종 + 속성·이름·효과 추정). 둘 다 없으면 그리지 않는다.
+- 무대: 논리 240×136, CSS `scale` 로 카드 폭(최대 480px = 2배)에 맞추고 pixelated. 배경 plains 네 장 겹 배경, 오른쪽 파티 셋(가운데 = 계약 `actorId` 의 전투 도트, `resolvePartyBattleCharset` → 시트 3×8 + `cast/<id>.png`), 왼쪽 적 셋(슬라임·박쥐·늑대 48px 3×3). 회복·아군 버프는 레이어가 파티 위에 올라간다.
+- **순서의 정본은 순수 함수** `src/battle/retroSkillTimeline.ts`: `retroClassSkillTimeline(contract)` / `retroRecipeTimeline(RETRO_SKILL_RECIPES 항목)` → `[ms, pose|move|hide|fx|projectile|screen|hit|sound]` 사건 목록, `retroTimelineStateAt(timeline, t)` → 그 시각의 무대 상태. 런타임(`retroSkillChoreography`)은 아직 이 함수를 쓰지 않는다 — 계약 48종의 런타임 연출을 붙일 때 같은 함수를 쓰면 두 화면이 같은 순서가 된다.
+  레이어 규칙: user 는 준비 순간, projectile 은 방출(투사체보다 앞의 target 은 조준), 나머지는 착탄부터 목록 순서로 55% 겹쳐 이어 재생. 칸 폭은 계약 `frame`(32·64·128) 그대로이고 screen 은 1.25배로 무대 가운데. 필살기 = 어둡게 → 컷인(띠 + 초상 + 스킬 이름) → 대형 레이어 + 번쩍임·흔들림.
+- 조작: `▶ 재생`(`db-skill-retro-play`, 처음부터 + 효과음), `반복`(`db-skill-retro-repeat`), 속도 `0.5×/1×`, 경과 시간 칩, 레이어 칩(키·anchor·규격, 404 면 `그림 없음`). 자동 반복은 **무음**이고 소리는 버튼을 누른 회차에만 난다. 피해·회복 숫자는 표시용(위력 기반)이며 지원 스킬에는 없다.
+- 타이머: rAF 루프 하나, 스테이지 루트별 WeakMap 컨트롤러. `stopSkillAnimationStagesIn` / `resumeSkillAnimationStagesIn` 이 `stopRetroSkillStagesIn` / `resumeRetroSkillStagesIn` 을 함께 부르므로 탭 전환·레코드 전환·모달 닫기가 기존 경로 그대로 멈춘다. 떨어진 루트는 2틱 뒤 스스로 멈춘다. reduced-motion·rAF 없음 → 대표 시각 정지 화면. 없는 시트는 그 레이어만 빠진다.
+- 목록: 도트 연출이 있는 스킬 썸네일 모서리에 이펙트 한 칸 배지(`db-skill-retro-badge`, 행 `data-retro-fx`). 스킬 탭에는 직업 필터 칩(전체·전사·수호자·마도사·정찰병·성직자·궁수 — 계약 classId 또는 직업 습득표·skillIds)이 뜬다. 이 필터는 세션 메모리만 쓰고 `oprn:database.categoryFilter` 에 저장하지 않는다(아이템·장비 전용 계약 유지).
+- 시각 확인: 세션 로컬 `.omo/editor-skill-stage/capture.mjs`(가짜 시계로 16ms 씩 전진, 계약 스킬이 없는 새 프로젝트면 메모리 스토어에만 레코드를 넣는다).
+
+#### 확장 6직업·몬스터 도트 (2026-09-28 mx-ed)
+
+- 직업 칩에 사무라이·닌자·무도가·음유시인·드루이드·마녀(`class_samurai` … `class_witch`)를 더했다. 배우 기록이 없으면 `FALLBACK_BATTLERS` 로 그린다: 사무라이 `charset-battler-actor3-0-samurai`(마도사 actor3-0 의 변형), 닌자 actor3-2, 무도가 actor3-5, 음유시인 actor3-6, 드루이드 actor3-4, 마녀 actor4-7. `CHARSET_BATTLERS` 에 아직 없는 변형 id 는 `battlerPaths` 가 `charset-battlers/<id>.png`·`cast/<id>.png` 로 조립하고, 그 그림이 404 면 밑바탕 칩(actor3-0)으로 물러난다. 양옆 두 배우는 계약 순서에서 시전자 다음 둘(같은 세대끼리 선다).
+- 적 편은 `retroStageEnemyLineup`(레이어 키 낱말 → 테마 줄 셋)으로 스킬마다 다르다. 성·저주는 언데드, 불은 불 정령·오크, 얼음·물은 물 정령·리치, 번개는 철 골렘·부유하는 눈, 자연은 벌·식충 식물·독사, 음악은 하피·미믹, 투척은 산적·고블린, 대지·무술은 멧돼지·고블린, 베기는 사마귀·리자드맨. 필살기 과녁은 96px(암흑=마왕, 검·대지·무술=트롤, 그 밖=드래곤), 내려찍기는 골렘. 앞자리만 큰 셀을 쓰고 `enemyHomes` 가 뒤 둘을 밀어 둔다(x ≥ 28). 발은 시트 계약의 바닥 y = cell−4, 대기 칸 길이는 시트의 `idleFrameMs`. 없는 시트는 그 적만 숨는다. 128px target 시트(파산장·용권 멸살 착탄)는 발 아래 24px 기준이다.
+- `pixelEnemySheets.ts` 에 확장 30종을 등록했다(총 40). 대기 칸 길이는 각 README 권장값, 권장값이 없는 짐승 10종은 이동 방식 기본값이다.
+
+### 적 탭 도트 미리보기 카드 (2026-09-28 mx-ed)
+
+- `databaseEnemyPixelPreview.ts`: `pixelEnemySheet(monsterResourceId)` 가 있는 몬스터만 기존 「미리보기」 아래 `db-enemy-pixel-preview` 카드를 둔다(`databaseEnemyStudio` 의 `enemyPixelSlot`, 리소스·색조·투명·이름이 바뀔 때만 다시 그린다). 무대는 논리 240×128(plains 겹 배경, 과녁 아군 actor1-0)이고 CSS scale 로 늘리며 pixelated 다.
+- 버튼은 `대기`·`공격`·`피격`·`쓰러짐`(`db-enemy-pixel-{idle,attack,hit,dead}`)이다. 공격은 windup 360 → move 320 → attack 300 → recover 360ms(`enemyPixelBeats`, 순수 함수)이고 근접형은 move 칸에서 아군 쪽으로 파고든다. shoot·breath·식충 식물(`IN_PLACE`)은 제자리다. 착탄 칸에서 과녁 아군이 hit 칸이 된다. 9칸 표(`db-enemy-pixel-cells`)는 칸 하나를 눌러 정지 보기, 다시 누르면 대기로 돌아간다.
+- 타이머: rAF 하나, 스테이지별 WeakMap 컨트롤러. `stopSkillAnimationStagesIn` / `resumeSkillAnimationStagesIn` 이 `stopEnemyPixelPreviewsIn` / `resumeEnemyPixelPreviewsIn` 을 함께 부르고, 떨어진 루트는 2틱 뒤 멈춘다. 감속 모드에서는 대기 a 에 서 있고 버튼은 대표 칸 하나만 보인다. 시트가 404 면 카드를 조용히 걷는다.
+- 목록: 도트 시트가 있는 몬스터 썸네일 모서리에 대기 칸 배지(`db-enemy-pixel-badge`, 행 `data-pixel-sheet`). CSS 는 `database/modern/enemies.css` 에만 더했다(새 파일 없음).
+- 시각 확인: 세션 로컬 `.omo/editor-mx/capture.mjs [skills|enemies|all]`(새 프로젝트 메모리 스토어, 계약 스킬이 없으면 메모리에만 넣고 저장하지 않는다). 모달을 닫은 뒤 도는 루프 0, pageerror·시트 404 0 이다.
+
+### 몬스터 스킬 미리보기 (2026-09-28 med)
+
+- 계약은 `src/assets/retroMonsterSkills.ts`(스킬 42 · slug → 스킬 목록, 레벨대마다 1~5개). 편집기 쪽 전부가 `databaseMonsterSkillStage.ts` 에 있다: 순수 타임라인 `monsterSkillTimeline`(사건 형식·상태 계산은 `retroSkillTimeline.ts` 것을 그대로 쓴다), 레이어 그리기 `createMonsterFxPainter`, 스킬 탭 반전 무대 `renderMonsterSkillStage`, 레코드가 없을 때의 계약 둘러보기.
+- 몬스터 시트 9칸은 pose 사건에 싣는다: windup=`attack_windup` · move=`walk_b` · attack=`attack` · recover=`attack_follow`(`monsterCellForPose`). lunge 는 직업 파고들기와 같은 박자(질주 130ms · 복귀 190ms · 여운 260ms), 나머지는 여운 520ms.
+- 레이어 크기(논리 px, 무대가 2배로 그린다): 32·64 칸 그대로, 대상·전원 위 128 칸은 절반(화면 1배), screen 128 은 무대 높이 × 1.25. **screen 층은 배우 뒤**(`db-*-screen-layer`)에 둔다 — 앞에 두면 심판의 하늘·눈보라가 시전 몬스터를 통째로 덮었다(1차 캡처). 투사체는 몬스터 몸 앞에서 왼→오로 난다(계약상 첫 칸이 오른쪽을 본다). 404 시트는 그 레이어만 생략한다.
+- 적 탭 카드: slug(`pixelEnemySlug` = 시트 파일 이름)의 스킬마다 `db-enemy-pixel-skill-<id>` 버튼, 머리에 「스킬 N개」(`db-enemy-pixel-skill-count`)와 모션 칩, 아래 설명(`aria-live`). 대기·공격 버튼이나 칸 정지로 바꾸면 스킬 층·어둡게·흔들림을 지운다. 감속 모드에서는 착탄 한가운데 한 장면.
+- 스킬 탭: 직업 칩 뒤 `db-filter-chip-monster`(「몬스터」, `RETRO_MONSTER_FILTER_ID`, 판정 `isMonsterSkillId` = 계약 id 또는 `skill_mon_`). `renderSkillRetroStage` 는 계약 몬스터 스킬이면 반전 무대(`db-skill-mon-stage`, 몬스터 왼쪽 시전 → 아군 셋 오른쪽 대상, 시전 몬스터 = `monsterCasterFor` 의 첫 slug)를 돌려준다. skill_mon_* 레코드가 아직 없으면 몬스터 칩 목록 자리에 계약 42개 선택 상자(`db-skill-mon-browser`)가 뜬다. 타이머는 `stopRetroSkillStagesIn` / `resumeRetroSkillStagesIn` 이 `stop/resumeMonsterSkillStagesIn` 을 함께 부른다.
+- 시각 확인: 세션 로컬 `.omo/editor-mon/capture.mjs <회차>`(기본 프로젝트 `/`, Playwright 가짜 시계로 정확한 시각에 찍는다). 마왕 5개 · 서릿 리치 3개 · 슬라임 1개, 「암흑의 심판」「화염 브레스」 모두 pageerror 0.
+
 ## 데이터베이스 30탭 UI/UX 계약 (2026-08-30 실측)
 
 계측은 `scripts/qa/db-ux-probe.mjs` 로 한다(사용법은 `openwiki/testing.md`). 아래 모든 수치는

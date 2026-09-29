@@ -66,8 +66,10 @@ const SEEDED_COUNT = 5;
  * `validateProjectReferences` 가 프로젝트를 아예 열지 못한다(io/shape.ts 의 하드 실패).
  * elements 는 오늘 데모와 기본이 같아 실제로는 0건이지만, 기본 속성표가 늘어나도
  * 스킬 참조가 끊기지 않도록 같은 규칙(없는 id 만 덧붙이기)으로 둔다.
+ * classes·actors 는 2026-09-29 부터 필요하다 — 기본 장비가 retro2003 확장 직업·배우(actor_samurai 등)를 착용 가능 목록에
+ * 넣어서, 장비만 옮기면 참조 검증이 「actor does not exist」로 던졌다. 시작 파티(session.partyActorIds)는 건드리지 않는다.
  */
-const MERGED_TABLES = ["elements", "states", "battleAnimations", "skills", "items", "equipment"];
+const MERGED_TABLES = ["elements", "states", "battleAnimations", "skills", "classes", "actors", "items", "equipment"];
 
 function parseArgs(argv) {
   const args = { source: DEFAULT_SOURCE, out: DEFAULT_OUT };

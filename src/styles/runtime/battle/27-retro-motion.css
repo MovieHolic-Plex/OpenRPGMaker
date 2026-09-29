@@ -109,6 +109,12 @@
 }
 .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-damage-popup.battle-damage-popup-heal { color: #80ff98; }
 .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-damage-popup.battle-damage-popup-critical { color: #ffe878; }
+/* 상태 부여 팝업(「스톱」「암흑」) — 숫자 팝업 경로를 쓰는 표시 전용 글자. 숫자보다 작고 하늘색. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-damage-popup.battle-damage-popup-status {
+  color: #9fe8ff;
+  font-size: 20px;
+  white-space: nowrap;
+}
 @keyframes retro-walk {
   0% { translate: var(--retro-start, 0px) 0; }
   16% { translate: calc(var(--retro-start, 0px) + (var(--retro-travel) - var(--retro-start, 0px)) * 0.16) -2px; }
@@ -260,12 +266,10 @@
 }
 
 /* ── 도트 적 시트(src/assets/pixelEnemySheets.ts) ───────────────────────────────────────
-   48px 셀 3×3 을 아군 전투 도트와 같은 2배(96px)로 그린다. 내용 이미지(원본 통짜 그림)는 상자 밖으로 밀고 배경으로 칸을 그린다.
+   48·64·96px 셀 3×3 을 아군 전투 도트와 같은 2배로 그린다(인라인 base-width/height = cell×2). 내용 이미지(원본 통짜 그림)는 상자 밖으로 밀고 배경으로 칸을 그린다.
    칸은 런타임이 인라인 background-position 으로 고르고(data-pixel-cell), 대기 칸만 여기 루프가 a→b→c→b 로 돈다.
    이동(뛰기·날기)은 battleRetroMotion 의 Web Animations translate 가 맡는다 — 노드의 transform·animation 슬롯과 겹치지 않는다. */
 .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-enemy .battle-enemy-image[data-pixel-sheet] {
-  --battle-enemy-base-width: 96px;
-  --battle-enemy-base-height: 96px;
   object-position: -99999px -99999px;
   background-image: var(--pixel-enemy-url);
   background-repeat: no-repeat;
@@ -321,7 +325,8 @@
   width: 40px;
   z-index: -1;
 }
-.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-enemy[data-pixel-enemy="swoop"]::after {
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-enemy[data-pixel-enemy="swoop"]::after,
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-enemy[data-pixel-enemy="float"]::after {
   background: #10102044;
   width: 28px;
   height: 8px;
@@ -332,4 +337,146 @@
 @media (prefers-reduced-motion: reduce) {
   .battle-scene[data-battle-skin="retro2003"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-enemy:not(.defeated) .battle-enemy-image[data-pixel-sheet][data-pixel-cell="idle"] { animation: none; }
   .battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy.defeated .battle-enemy-image[data-pixel-sheet] { animation: none; opacity: 0; }
+}
+
+/* Skill choreography: 64px original cells at exactly 2×, no blur or fractional frame tween. */
+.battle-scene[data-battle-skin="retro2003"] .retro-skill-fx {
+  position: absolute;
+  width: 128px;
+  height: 128px;
+  translate: -50% -100%;
+  background-size: 1024px 128px;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  pointer-events: none;
+  z-index: 35;
+}
+.battle-scene[data-battle-skin="retro2003"] .retro-skill-screen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 30;
+  animation: retro-skill-veil var(--retro-fx-ms) steps(3, end) both;
+}
+.battle-scene[data-battle-skin="retro2003"] .retro-skill-screen-flash { background: #ffffdf; }
+.battle-scene[data-battle-skin="retro2003"] .retro-skill-screen-dim { background: #160e2e; }
+.battle-scene[data-battle-skin="retro2003"] .retro-skill-screen-shake { background: transparent; }
+@keyframes retro-skill-veil { 0% { opacity: 0.24; } 100% { opacity: 0; } }
+/* Recipe movement is still owned by the outer battler, its poses by the inner sheet. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-skill][data-retro-action="cast"][data-retro-beat] {
+  animation: none;
+  translate: -16px 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene[data-battle-skin="retro2003"] .retro-skill-screen { display: none; }
+}
+
+/* 직업 스킬 48종(retroSkillChoreography 의 타임라인 재생기). 칸 한 변 × 2 상자, 칸 이동은 인라인 background-position.
+   이동은 재생기의 Web Animations(translate) 가 소유한다 — 비트 키프레임(retro-walk·thrust·return)을 끈다. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-class-skill] {
+  animation: none;
+  transition: none;
+}
+.battle-scene[data-battle-skin="retro2003"] .retro-class-fx { background-repeat: no-repeat; }
+.battle-scene[data-battle-skin="retro2003"] .retro-class-fx-screen { translate: -50% -50%; z-index: 36; }
+.battle-scene[data-battle-skin="retro2003"] .retro-class-fx-projectile { translate: -50% -50%; z-index: 37; }
+.battle-scene[data-battle-skin="retro2003"] .retro-class-veil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 30;
+  opacity: 0;
+}
+.battle-scene[data-battle-skin="retro2003"] .retro-class-veil-dim { background: #0a0618; }
+.battle-scene[data-battle-skin="retro2003"] .retro-class-veil-flash { background: #fffbe0; z-index: 38; }
+/* 필살기 컷인 띠: 무대 가운데를 가로지르는 청색 띠 + 시전자 도트 2배(정수) 확대. */
+.battle-scene[data-battle-skin="retro2003"] .retro-class-cutin {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 38%;
+  height: 76px;
+  pointer-events: none;
+  z-index: 40;
+  overflow: hidden;
+  background: repeating-linear-gradient(to bottom, #203a8c 0 4px, #1a2e70 4px 8px);
+  border-block: 4px solid #f8f0c0;
+  box-shadow: 0 0 0 2px #101020;
+}
+.battle-scene[data-battle-skin="retro2003"] .retro-class-cutin .retro-class-cutin-face {
+  position: absolute;
+  right: 18%;
+  top: 50%;
+  translate: 0 -50%;
+  /* 전신 대기 칸을 잘라내지 않고 띠 높이(76px)에 맞춘다 — 2배로 키워 머리만 보이던 것이 다른 캐릭터처럼 보였다. */
+  scale: 1;
+  transform: none;
+  animation: none;
+  image-rendering: pixelated;
+}
+.battle-scene[data-battle-skin="retro2003"] .retro-class-cutin .retro-class-cutin-name {
+  position: absolute;
+  left: 8%;
+  top: 50%;
+  translate: 0 -50%;
+  color: #f8f0c0;
+  font-weight: 500;
+  text-shadow: 2px 2px 0 #101020;
+  white-space: nowrap;
+}
+.battle-scene[data-battle-skin="retro2003"] .battle-enemy.retro-skill-struck .battle-enemy-image { filter: brightness(0) invert(1); }
+.battle-scene[data-battle-skin="retro2003"] .battle-actor.retro-skill-blessed .battle-actor-sprite { filter: brightness(1.7) saturate(0.6); }
+/* 몬스터 스킬(retroMonsterSkills): 편이 반대다 — 맞는 쪽은 아군, 축복받는 쪽은 몬스터 편. */
+.battle-scene[data-battle-skin="retro2003"] .battle-actor.retro-skill-struck .battle-actor-sprite { filter: brightness(0) invert(1); }
+.battle-scene[data-battle-skin="retro2003"] .battle-enemy.retro-skill-blessed .battle-enemy-image { filter: brightness(1.6) saturate(0.7); }
+/* 몬스터 스킬 재생기가 translate 를 소유한다. 비트 키프레임(retro-enemy-windup·strike)을 끄고 파고들 때 아군 위에 그린다. */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-retro-class-skill],
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy-group .battle-enemy[data-retro-class-skill] .battle-enemy-image {
+  animation: none;
+  transition: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-enemy-group:has(.battle-enemy[data-retro-class-skill]) {
+  z-index: 6;
+}
+/* 회전베기·쌍검 난무의 좌우 반전 교대. 걷기 칩 시트의 scale:1 규칙보다 구체적이어야 한다. */
+.battle-scene[data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-actor-group .battle-actor.retro-skill-flip[data-battler-extended="true"] .battle-actor-sprite[data-rendering="pixelated"],
+.battle-scene[data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-actor-group .battle-actor.retro-skill-flip[data-pixel-party] .battle-actor-sprite[data-rendering="pixelated"],
+.battle-scene[data-battle-skin="retro2003"] .battle-actor.retro-skill-flip .battle-actor-sprite { scale: -1 1; }
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene[data-battle-skin="retro2003"] :is(.retro-class-veil, .retro-class-cutin) { display: none; }
+}
+
+/* ── 파티원 몬스터 9칸 시트(src/assets/partyPixelSheets.ts, 2차 로스터) ─────────────────────────
+   사람형이 아닌 파티원(짐승·탈것·몬스터 칩)은 24포즈 걷기 칩 시트 대신 적 도트와 같은 3×3 시트로 선다.
+   그림은 왼쪽을 본다 — 이동 경로만 battleRetroMotion 이 가로로 뒤집는다. 노드·스프라이트 상자는 셀 × 2(96·128px)이고
+   스킨의 1.25 배율은 걷기 칩 시트와 같은 이유로 끈다. 칸은 런타임이 인라인 background-position 으로 고르고(data-pixel-cell),
+   대기 칸만 적 도트와 같은 a→b→c→b 루프(retro-pixel-enemy-idle)가 돈다. */
+.battle-scene[data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-actor-group .battle-actor[data-authored-battler="true"][data-pixel-party] {
+  width: var(--party-pixel-box, 96px);
+  height: var(--party-pixel-box, 96px);
+}
+.battle-scene[data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-actor-group .battle-actor[data-authored-battler="true"][data-pixel-party] .battle-actor-sprite[data-rendering="pixelated"] {
+  transform: none;
+  scale: 1;
+  rotate: none;
+  image-rendering: pixelated;
+  animation: none;
+  background-repeat: no-repeat;
+  background-position: 0% 0%;
+}
+.battle-scene[data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-actor-group .battle-actor[data-pixel-party]:not(.defeated) .battle-actor-sprite[data-pixel-sheet][data-pixel-cell="idle"] {
+  animation: retro-pixel-enemy-idle var(--pixel-enemy-idle-ms, 880ms) infinite;
+}
+/* 걷기 칩용 걷기·기울임 키프레임 대신 Web Animations 이동을 쓴다(적 도트와 같다). */
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"][data-battle-ui-style] .battle-actor-group .battle-actor[data-pixel-party][data-retro-beat] {
+  animation: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-actor[data-pixel-party][data-retro-beat="approach"][data-retro-action="attack"] .battle-actor-sprite {
+  rotate: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-skin="retro2003"] .battle-actor[data-pixel-party][data-retro-beat="approach"][data-retro-action="cast"]::before {
+  content: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene[data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-actor-group .battle-actor[data-pixel-party] .battle-actor-sprite[data-pixel-sheet][data-pixel-cell="idle"] { animation: none; }
 }

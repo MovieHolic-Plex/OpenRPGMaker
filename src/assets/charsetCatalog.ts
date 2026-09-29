@@ -5,6 +5,7 @@
 
 import { EASYRPG_CHARSET_ASSETS, type EasyRpgCharsetAsset } from "@/assets/easyrpgRtp";
 import { FARMING_ANIMAL_CHARSET_ASSETS } from "@/assets/farmingSprites";
+import { OPRN_MONSTER_CHARSET_ASSETS } from "@/assets/oprnMonsterCharsets";
 import { SCARLOXY_CHARSET_ASSETS } from "@/assets/scarloxyPack";
 import type { UploadedAsset } from "@/project/types";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
@@ -13,6 +14,7 @@ export const CHARSET_ASSETS: readonly EasyRpgCharsetAsset[] = [
   ...EASYRPG_CHARSET_ASSETS,
   ...SCARLOXY_CHARSET_ASSETS,
   ...FARMING_ANIMAL_CHARSET_ASSETS,
+  ...OPRN_MONSTER_CHARSET_ASSETS,
 ];
 
 /**

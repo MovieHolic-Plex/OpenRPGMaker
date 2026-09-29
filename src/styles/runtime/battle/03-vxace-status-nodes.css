@@ -337,3 +337,18 @@
   content: "REG";
 }
 
+/* 기믹 상태(2차 로스터, 2026-09-29): 스톱·프로텍트·실드·버서크·석화·젖음·기름 */
+.battle-status-icon-stop { --battle-status-icon-bg: #6c5bb0; }
+.battle-status-icon-stop::before { content: "STP"; }
+.battle-status-icon-protect { --battle-status-icon-bg: #3f7fb8; }
+.battle-status-icon-protect::before { content: "PRT"; }
+.battle-status-icon-shell { --battle-status-icon-bg: #8a5fb8; }
+.battle-status-icon-shell::before { content: "SHL"; }
+.battle-status-icon-berserk { --battle-status-icon-bg: #b83a3a; }
+.battle-status-icon-berserk::before { content: "BSK"; }
+.battle-status-icon-petrify { --battle-status-icon-bg: #7d7568; }
+.battle-status-icon-petrify::before { content: "STN"; }
+.battle-status-icon-wet { --battle-status-icon-bg: #3a78a8; }
+.battle-status-icon-wet::before { content: "WET"; }
+.battle-status-icon-oiled { --battle-status-icon-bg: #8a6a2a; }
+.battle-status-icon-oiled::before { content: "OIL"; }

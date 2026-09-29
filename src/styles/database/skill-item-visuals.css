@@ -459,3 +459,369 @@
 .db-item-state-effect-row .db-item-state-effect-delete {
   margin-left: auto;
 }
+
+/* ── 스킬 탭 「연출」 카드 · retro2003 도트 전투 미리보기 (databaseSkillRetroStage.ts) ──────────────
+   논리 240×136 무대를 transform 없이 zoom 대신 scale(2) 로 키운다 — 도트는 nearest(pixelated).
+   색은 --db-studio-* 토큰과 color-mix 만 쓴다(하드코딩 hex 금지). */
+.db-skill-retro-preview {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 10px;
+}
+
+.db-skill-retro-caption,
+.db-skill-retro-controls {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.db-skill-retro-badge-inline {
+  background: var(--db-studio-accent-soft);
+  border: 1px solid var(--db-studio-accent-border);
+  border-radius: 999px;
+  color: var(--db-studio-accent-text);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 8px;
+}
+
+.db-skill-retro-stage {
+  aspect-ratio: 240 / 136;
+  background: var(--db-studio-well);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--db-studio-text-1) 18%, transparent);
+  max-width: 480px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.db-skill-retro-world {
+  image-rendering: pixelated;
+  left: 0;
+  position: absolute;
+  top: 0;
+  transform: scale(var(--retro-stage-scale, 2)) translate(var(--retro-shake-x, 0), var(--retro-shake-y, 0));
+  transform-origin: 0 0;
+}
+
+.db-skill-retro-world > * {
+  inset: 0;
+  position: absolute;
+}
+
+.db-skill-retro-scenery {
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  /* 640×360 원본(= 논리 320×180 의 2배)을 논리 폭 240 에 맞춘다. 네 장은 같은 캔버스라 한 번에 줄인다. */
+  background-size: 240px 135px;
+  image-rendering: pixelated;
+}
+
+.db-skill-retro-dim {
+  background: color-mix(in srgb, var(--db-studio-text-1) 86%, black);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.db-skill-retro-flash {
+  background: var(--db-studio-surface);
+  mix-blend-mode: screen;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.db-skill-retro-battler,
+.db-skill-retro-enemy,
+.db-skill-retro-fx,
+.db-skill-retro-cutin-portrait {
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  position: absolute;
+}
+
+.db-skill-retro-battler,
+.db-skill-retro-enemy {
+  height: 48px;
+  width: 48px;
+}
+
+.db-skill-retro-battler {
+  background-size: 144px 384px;
+  /* 걷기 칩 전투 시트는 원래 왼쪽(적 쪽)을 본다 — 뒤집지 않는다. */
+  filter:
+    drop-shadow(0 0 calc(var(--retro-glow, 0) * 3px) color-mix(in srgb, var(--db-studio-success) 90%, var(--db-studio-surface)))
+    brightness(calc(1 + var(--retro-glow, 0) * 0.35 - var(--retro-dim, 0) * 0.35));
+}
+
+.db-skill-retro-battler.is-flipped {
+  transform: scaleX(-1);
+}
+
+.db-skill-retro-battler.is-hidden {
+  opacity: 0;
+}
+
+.db-skill-retro-enemy {
+  background-size: 144px 144px;
+  filter:
+    brightness(calc(1 + var(--retro-hit, 0) * 1.6 - var(--retro-dim, 0) * 0.3))
+    saturate(calc(1 - var(--retro-hit, 0) * 0.7));
+}
+
+.db-skill-retro-fx-layer {
+  z-index: 60;
+}
+
+.db-skill-retro-cutin {
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.db-skill-retro-cutin[hidden] {
+  display: none;
+}
+
+.db-skill-retro-cutin-lines {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--db-studio-surface) 70%, transparent) 0 2px,
+      transparent 2px 9px,
+      color-mix(in srgb, var(--db-studio-warning) 60%, transparent) 9px 10px,
+      transparent 10px 23px
+    ),
+    linear-gradient(90deg, color-mix(in srgb, var(--db-studio-accent) 80%, black), color-mix(in srgb, var(--db-studio-danger) 70%, black));
+  background-position: var(--retro-cutin-lines, 0) 0, 0 0;
+  border-block: 2px solid var(--db-studio-surface);
+  height: calc(44px * var(--retro-cutin-open, 1));
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: calc(40px + 22px * (1 - var(--retro-cutin-open, 1)));
+}
+
+.db-skill-retro-cutin-portrait {
+  background-size: 144px 384px;
+  height: 48px;
+  left: calc(150px + var(--retro-cutin-x, 0px));
+  opacity: var(--retro-cutin-open, 1);
+  top: 38px;
+  transform: scale(1.25);
+  transform-origin: 50% 100%;
+  width: 48px;
+}
+
+.db-skill-retro-cutin-name {
+  color: var(--db-studio-surface);
+  font-family: var(--runtime-pixel-font, inherit);
+  font-size: 10px;
+  font-weight: 700;
+  left: calc(22px - var(--retro-cutin-x, 0px) * 0.5);
+  letter-spacing: 1px;
+  opacity: var(--retro-cutin-open, 1);
+  position: absolute;
+  text-shadow: 1px 1px 0 color-mix(in srgb, var(--db-studio-text-1) 90%, black);
+  top: 56px;
+  white-space: nowrap;
+}
+
+.db-skill-retro-option {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  min-height: 26px;
+  padding: 2px 9px;
+}
+
+.db-skill-retro-option[aria-pressed="true"] {
+  background: var(--db-studio-accent-soft);
+  border-color: var(--db-studio-accent-border);
+  color: var(--db-studio-accent-text);
+  font-weight: 700;
+}
+
+.db-skill-retro-option:focus-visible,
+.db-skill-retro-play:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: 1px;
+}
+
+.db-skill-retro-segment {
+  display: inline-flex;
+}
+
+.db-skill-retro-segment > .db-skill-retro-option:first-child {
+  border-radius: 6px 0 0 6px;
+}
+
+.db-skill-retro-segment > .db-skill-retro-option:last-child {
+  border-left: 0;
+  border-radius: 0 6px 6px 0;
+}
+
+.db-skill-retro-time {
+  font-variant-numeric: tabular-nums;
+  margin-left: auto;
+}
+
+.db-skill-retro-layers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+}
+
+.db-skill-retro-layer {
+  align-items: center;
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 6px;
+  color: var(--db-studio-text-2);
+  display: inline-flex;
+  font-size: 11px;
+  gap: 5px;
+  padding: 2px 6px 2px 3px;
+}
+
+.db-skill-retro-layer-thumb {
+  background: var(--db-studio-well);
+  border-radius: 3px;
+  height: 16px;
+  image-rendering: pixelated;
+  object-fit: cover;
+  object-position: 40% 50%;
+  width: 16px;
+}
+
+.db-skill-retro-layer-key {
+  color: var(--db-studio-text-1);
+  font-size: 11px;
+}
+
+.db-skill-retro-layer-size,
+.db-skill-retro-layer-anchor {
+  color: var(--db-studio-text-3);
+}
+
+.db-skill-retro-layer-missing {
+  display: none;
+}
+
+.db-skill-retro-layer.is-missing {
+  border-style: dashed;
+  opacity: 0.7;
+}
+
+.db-skill-retro-layer.is-missing .db-skill-retro-layer-thumb {
+  visibility: hidden;
+}
+
+.db-skill-retro-layer.is-missing .db-skill-retro-layer-missing {
+  color: var(--db-studio-warning-strong);
+  display: inline;
+}
+
+/* 목록 배지 — 스킬 썸네일 오른쪽 아래 모서리에 이펙트 시트 한 칸. */
+.db-list-thumb.db-list-thumb-has-retro,
+.db-gallery-thumb {
+  position: relative;
+}
+
+.db-skill-retro-badge {
+  background-color: color-mix(in srgb, var(--db-studio-text-1) 82%, black);
+  background-repeat: no-repeat;
+  border: 1px solid var(--db-studio-accent-border);
+  border-radius: 4px;
+  bottom: -5px;
+  box-shadow: 0 0 0 1px var(--db-studio-surface);
+  box-sizing: content-box;
+  image-rendering: pixelated;
+  pointer-events: none;
+  position: absolute;
+  right: -7px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .db-skill-retro-world {
+    transform: scale(var(--retro-stage-scale, 2));
+  }
+}
+
+.db-skill-retro-pop-layer {
+  pointer-events: none;
+  z-index: 70;
+}
+
+.db-skill-retro-pop {
+  color: var(--db-studio-surface);
+  font-family: var(--runtime-pixel-font, inherit);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  position: absolute;
+  text-shadow:
+    1px 0 0 color-mix(in srgb, var(--db-studio-text-1) 92%, black),
+    -1px 0 0 color-mix(in srgb, var(--db-studio-text-1) 92%, black),
+    0 1px 0 color-mix(in srgb, var(--db-studio-text-1) 92%, black),
+    0 -1px 0 color-mix(in srgb, var(--db-studio-text-1) 92%, black);
+  transform: translateX(-50%);
+}
+
+.db-skill-retro-pop.is-heal {
+  color: color-mix(in srgb, var(--db-studio-success) 60%, white);
+}
+
+.db-skill-retro-pop[hidden] {
+  display: none;
+}
+
+/* 스킬 탭 몬스터 스킬 무대(몬스터 왼쪽 시전 → 아군 오른쪽 대상) · 레코드가 없을 때의 계약 둘러보기. */
+.db-skill-mon-browser {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+}
+
+.db-skill-mon-browser-note {
+  color: var(--db-studio-text-2);
+  font-size: 12px;
+  margin: 0;
+}
+
+.db-skill-mon-browser-label {
+  align-items: center;
+  color: var(--db-studio-text-2);
+  display: flex;
+  font-size: 12px;
+  gap: 6px;
+}
+
+.db-skill-mon-browser-select {
+  flex: 1 1 auto;
+  min-height: 28px;
+  min-width: 0;
+}
+
+.db-skill-mon-browser-select:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: 1px;
+}
+
+.db-skill-retro-fx[hidden] {
+  display: none;
+}
+
+/* 몬스터 스킬 화면 층(screen 128)은 배우(z 10~) 뒤, 어둡게 층 위에 둔다. */
+.db-skill-retro-screen-layer {
+  pointer-events: none;
+  z-index: 5;
+}

@@ -129,9 +129,10 @@ describe("database category filter chips", () => {
     expect(visibleRecordIds(host)).toEqual(["eq_helmet1"]);
   });
 
-  it("chips are absent on actors/skills/switches tabs", () => {
+  it("chips are absent on actors/enemies/states/switches tabs", () => {
     seedItems();
-    for (const collection of ["actors", "skills", "enemies", "states"] as const) {
+    // 스킬 탭은 2026-09-28 부터 retro2003 직업 필터 칩(db-skill-class-chips)을 의도적으로 갖는다 — 카테고리 칩 계약에서 뺀다.
+    for (const collection of ["actors", "enemies", "states"] as const) {
       const host = renderRecordHost(collection);
       expect(host.querySelectorAll(".db-filter-chip")).toHaveLength(0);
       expect(findByTestId(host, "db-filter-chip-all")).toBeNull();

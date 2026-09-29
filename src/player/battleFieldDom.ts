@@ -1,6 +1,7 @@
 import { charsetBattler, resolvePartyBattleCharset } from "@/assets/charsetBattlers";
-import { retroCastFrameFor, retroMotionPose, retroPixelEnemyCell } from "@/player/battleRetroMotion";
+import { retroCastFrameFor, retroMotionPose, retroPartyPixelCell, retroPixelEnemyCell } from "@/player/battleRetroMotion";
 import { PIXEL_ENEMY_FRAME, pixelEnemySheet, pixelEnemySheetUrl } from "@/assets/pixelEnemySheets";
+import { partyPixelBackgroundPosition, partyPixelSheet, partyPixelSheetUrl, type PartyPixelSheet } from "@/assets/partyPixelSheets";
 import { battleTypeBadges } from "@/player/battleTypeBadges";
 import type { BattleActionBeat } from "@/player/battleActionBeats";
 import { fitBattleEnemy } from "@/player/battleEnemyFit";
@@ -93,7 +94,15 @@ function activeSkin(): BattleSkin {
  *  아군 상태 배지의 유일한 살림터다. 필드 노드가 있는 스킨에도 행에 달면 같은 testid 가
  *  두 번 생기므로 이 조건으로만 단다. */
 function partyStatusRowsCarryIcons(): boolean {
-  return BATTLER_PLACEMENTS[activeSkin().id].partyFacing === "hidden";
+  // retro2003 은 필드에 아군을 그리지만 배지는 파티 창 이름 옆에 단다(FF6·크로노 트리거 관례).
+  // 필드 노드 머리 위 배지는 이웃 배우 사이에 떠서 누구 것인지 읽히지 않았다(2026-09-29 실측).
+  return BATTLER_PLACEMENTS[activeSkin().id].partyFacing === "hidden" || activeSkin().id === "retro2003";
+}
+
+/** retro2003 은 적 chrome(이름·HUD)을 대상 선택 때만 펼친다 — 그 안의 배지도 함께 숨었다.
+ *  이 스킨에서는 배지를 적 노드 직계로 달아 스프라이트 위에 늘 보이게 한다. */
+function enemyIconsOutsideChrome(): boolean {
+  return activeSkin().id === "retro2003";
 }
 
 /** 스킨 전용 적 스프라이트(bskin-enemy-<id>)를 우선 사용. 없으면 null. */
@@ -140,17 +149,57 @@ function applyPixelEnemySheet(node: HTMLElement, image: HTMLImageElement, resour
   const sheet = pixelEnemySheet(resourceId);
   if (!sheet) return;
   const url = pixelEnemySheetUrl(sheet);
+  const cell = sheet.cell ?? 48;
+  const dimensions = ["--battle-enemy-base-width", "--battle-enemy-base-height"] as const;
+  const previousDimensions = dimensions.map((key) => image.style.getPropertyValue(key));
   node.dataset.pixelEnemy = sheet.motion;
+  node.dataset.pixelEnemyCell = String(cell);
+  for (const key of dimensions) image.style.setProperty(key, `${cell * 2}px`);
   image.dataset.pixelSheet = sheet.resourceId;
   image.style.setProperty("--pixel-enemy-url", `url("${url}")`);
   image.style.setProperty("--pixel-enemy-idle-ms", `${sheet.idleFrameMs * 4}ms`);
   const probe = new Image();
   probe.addEventListener("error", () => {
     delete node.dataset.pixelEnemy;
+    delete node.dataset.pixelEnemyCell;
+    dimensions.forEach((key, index) => {
+      const previous = previousDimensions[index];
+      if (previous) image.style.setProperty(key, previous);
+      else image.style.removeProperty(key);
+    });
     delete image.dataset.pixelSheet;
     image.style.removeProperty("--pixel-enemy-url");
+    image.style.removeProperty("--pixel-enemy-idle-ms");
+  });
+  // 상태 배지를 그림 머리 바로 위에 두려면 칸 위쪽 빈 줄 비율이 필요하다 — 슬라임은 칸 아래쪽만 칠해져
+  // 노드 상자 위에 달면 배지가 90px 위 박쥐 옆에 떠 박쥐 것으로 읽혔다(2026-09-29 프레임 실측).
+  probe.addEventListener("load", () => {
+    const pad = pixelSheetTopPad.get(url) ?? measureTopPad(probe, cell);
+    pixelSheetTopPad.set(url, pad);
+    node.style.setProperty("--battle-sprite-top-pad", `${Math.round(pad * 1000) / 10}%`);
   });
   probe.src = url;
+}
+
+const pixelSheetTopPad = new Map<string, number>();
+
+/** 시트 첫 칸(대기 0번)에서 불투명 픽셀이 시작되는 줄의 비율(0~1). 읽지 못하면 0. */
+function measureTopPad(image: HTMLImageElement, cell: number): number {
+  try {
+    const canvas = document.createElement("canvas");
+    canvas.width = cell;
+    canvas.height = cell;
+    const context = canvas.getContext("2d");
+    if (!context) return 0;
+    context.drawImage(image, 0, 0, cell, cell, 0, 0, cell, cell);
+    const alpha = context.getImageData(0, 0, cell, cell).data;
+    for (let y = 0; y < cell; y += 1) {
+      for (let x = 0; x < cell; x += 1) if (alpha[(y * cell + x) * 4 + 3] > 16) return y / cell;
+    }
+    return 0;
+  } catch {
+    return 0;
+  }
 }
 
 /**
@@ -232,6 +281,13 @@ export interface BattleFieldPresentation {
   readonly onField?: OnFieldAnchors;
   /** system.battleRollingHp: 아군 HP 표시가 이 미터를 따라 굴러간다(rollingHp.ts). 없으면 즉시 표시. */
   readonly rollingHp?: RollingHpMeter;
+  /** 연출이 아직 재생하지 않은 상태 부여·해제를 되돌린 상태 목록. 스냅샷은 명령 즉시 해결돼
+   *  「…에 걸렸다!」 비트 전에 배지가 먼저 붙었다(2026-09-29 실측). 없으면 스냅샷 그대로. */
+  readonly stateView?: (battlerId: string, stateIds: readonly string[]) => readonly string[];
+}
+
+function presentedStateIds(battler: BattleBattlerSnapshot, presentation: BattleFieldPresentation | undefined): readonly string[] {
+  return presentation?.stateView ? presentation.stateView(battler.id, battler.stateIds) : battler.stateIds;
 }
 
 /** 롤링 미터가 있으면 아군 HP 표시값과 「쓰러지는 중」 여부를 미터에서 얻는다. */
@@ -345,7 +401,7 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot, pr
     if (partyStatusRowsCarryIcons()) {
       // 이름 셀 안에 넣으면 rm2000 계열의 overflow:hidden + 고정 폭 열에 잘린다(실측:
       // 배지가 2px 조각으로만 보임) — 행의 직계 자식으로 달고 배치는 스킨 CSS 가 한다.
-      syncStatusIcons(row, { ...actor, defeated: presented.defeated });
+      syncStatusIcons(row, { ...actor, defeated: presented.defeated, stateIds: presentedStateIds(actor, presentation) });
     }
     let strictOrder = row.querySelector<HTMLElement>(".battle-strict-order");
     if (snapshot.battleFlow === "strict") {
@@ -527,7 +583,7 @@ function syncActorGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     node.dataset.battlerDefending = String(actor.defending);
     applyBattlerPose(node, presented.pose);
     // KO 배지는 연출 원장(presented)을 따른다 — 스냅샷은 명령 즉시 해결돼 타격 연출 전에 이미 죽어 있다.
-    syncStatusIcons(node, { ...actor, defeated: presented.defeated });
+    syncStatusIcons(node, { ...actor, defeated: presented.defeated, stateIds: presentedStateIds(actor, presentation) });
   }
 }
 
@@ -578,7 +634,7 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
   if (atbBar) atbBar.style.setProperty("--battle-stat", `${clampGauge(enemy.gauge)}%`);
   // KO 배지는 연출 원장(presented)을 따른다 — 스냅샷은 명령 즉시 해결돼 타격 연출 전에 이미 죽어 있다
   // (실측: 불꽃이 닿기 전 「KO 74/144」 가 떴다).
-  syncStatusIcons(node, { ...enemy, defeated: presented.defeated });
+  syncStatusIcons(node, { ...enemy, defeated: presented.defeated, stateIds: presentedStateIds(enemy, presentation) });
 }
 
 /**
@@ -610,6 +666,18 @@ function applyBattlerPose(node: HTMLElement, pose: ExtendedBattlerPose): void {
     else {
       const at = PIXEL_ENEMY_FRAME[cell];
       sprite.style.backgroundPosition = `${at.col * 50}% ${at.row * 50}%`;
+    }
+    return;
+  }
+  if (node.dataset.pixelParty && sprite?.classList.contains("battle-actor-sprite")) {
+    // 파티원 몬스터 9칸 시트(partyPixelSheets.ts). 적 도트와 같은 칸 배치, 대기 칸만 CSS 루프가 돈다.
+    const cell = retroPartyPixelCell(node, pose);
+    sprite.dataset.pixelCell = cell;
+    node.dataset.battlePoseFrame = cell;
+    if (cell === "idle") sprite.style.removeProperty("background-position");
+    else {
+      const sheet = partyPixelSheet(sprite.dataset.pixelSheet);
+      sprite.style.backgroundPosition = partyPixelBackgroundPosition(sheet ?? { rows: 3 }, cell);
     }
     return;
   }
@@ -712,7 +780,10 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
   // 완전 방어(명중했지만 0 피해)는 "0" 으로 분명히 보여준다. 예전에는 이 경우
   // 피드백 자체가 만들어지지 않아 화면이 조용했다.
   popup.classList.toggle("battle-damage-popup-blocked", feedback.blocked === true);
-  popup.textContent = feedback.miss
+  popup.classList.toggle("battle-damage-popup-status", Boolean(feedback.label));
+  popup.textContent = feedback.label
+    ? feedback.label
+    : feedback.miss
     ? "MISS"
     : feedback.blocked
       ? "0"
@@ -732,7 +803,10 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
     const layerRect = layer.getBoundingClientRect();
     const spriteRect = sprite.getBoundingClientRect();
     if (layerRect.height > 0 && spriteRect.height > 0) {
-      let topPx = spriteRect.top - layerRect.top + spriteRect.height * 0.3;
+      // 도트 시트는 칸 위가 비어 있을 수 있다(슬라임) — 그림 머리보다 위로 뜨지 않게 빈 줄 비율을 하한으로.
+      const topPad = (Number.parseFloat(anchor.style.getPropertyValue("--battle-sprite-top-pad")) || 0) / 100;
+      // 상태 이름(label)은 머리 위 배지 줄과 겹치지 않게 몸통 쪽으로 조금 내린다.
+      let topPx = spriteRect.top - layerRect.top + spriteRect.height * (Math.max(0.3, topPad) + (feedback.label ? 0.12 : 0));
       // 행동 중에는 로그 배너가 필드 위에 떠 있다(z 12). 배너보다 위로 튀면 숫자가 배너 뒤로 숨는다 —
       // 2026-09-27 프레임 실측: 슬라임 머리 위 -68 이 착탄 +80~+160ms 내내 윗줄이 잘렸다.
       // 팝업은 자기 높이의 ~1.4배만큼 위로 튀므로(22-hit-feel.css bounce 정점) 그만큼 배너 아래에 둔다.
@@ -750,7 +824,7 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
     // 숫자 크기가 위력을 말한다 — 7 과 700 이 같은 28px 이던 때는 숫자를 읽어야만 셌다.
     // 세기는 battleDom 이 이 동기화 직전에 노드에 심는다(applyHitIntensity).
     const popScale = POP_SCALE[anchor.dataset.hitIntensity ?? ""];
-    if (popScale && !feedback.healing && !feedback.miss) popup.style.setProperty("--pop-scale", String(popScale));
+    if (popScale && !feedback.healing && !feedback.miss && !feedback.label) popup.style.setProperty("--pop-scale", String(popScale));
     layer.append(popup);
   } else if (!showPartyRowDamage(field, feedback, popup)) {
     layer.append(popup);
@@ -959,7 +1033,11 @@ function enemyButton(
   // 이름·순번·상태·HP 는 스프라이트 **아래에 겹쳐** 놓는다(.battle-enemy-chrome 이 절대 배치).
   // 흐름에 두면 HUD 를 펼칠 때 노드 높이가 변하고, 그 높이로 스프라이트 top 을 보정하던
   // 옛 코드(alignEnemyFeetToAuthoredY) 때문에 몬스터가 눈에 보이게 튀었다.
-  enemyNode.append(enemyChrome(name, enemyIndexBadge(index), statusIconCluster(enemy), enemyHpHud(enemy)));
+  if (enemyIconsOutsideChrome()) {
+    enemyNode.append(enemyChrome(name, enemyIndexBadge(index), enemyHpHud(enemy)), statusIconCluster(enemy));
+  } else {
+    enemyNode.append(enemyChrome(name, enemyIndexBadge(index), statusIconCluster(enemy), enemyHpHud(enemy)));
+  }
   if (snapshot.targetSelection?.side === "enemy" && snapshot.targetSelection.selectedTargetId === enemy.id) {
     const brackets = document.createElement("span");
     brackets.className = "battle-target-brackets";
@@ -1101,6 +1179,24 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0, count = 4): HTMLElem
   if (resourceId) {
     node.dataset.authoredBattler = "true";
     node.dataset.battleCharsetResourceId = resourceId;
+    const pixelParty = partyPixelSheet(resourceId);
+    if (pixelParty) {
+      // 사람형이 아닌 파티원(짐승·탈것·몬스터 칩): 24포즈 걷기 칩 시트 대신 몬스터 9칸 시트로 선다. battlerExtended 는 켜지 않는다.
+      node.dataset.pixelParty = pixelParty.motion;
+      node.dataset.pixelEnemyCell = String(pixelParty.cell);
+      node.style.setProperty("--party-pixel-box", `${pixelParty.box}px`);
+      // 상자가 사람 도트(96px)보다 넓은 파티원(화면 128px)은 오른쪽 사선 열 끝(x 294)에서 무대 밖으로 잘렸다
+      // (범선·비공정 녹화 실측). 넓어진 반폭만큼 왼쪽으로 당긴다(RM 논리 px = 화면 px / 2).
+      if (pixelParty.box > 96) positionBattleNode(node, ap.x - (pixelParty.box - 96) / 4, ap.y);
+      node.append(partyPixelSprite(actor.name, pixelParty));
+      applyBattlerPose(node, actor.pose);
+      node.append(statusIconCluster(actor));
+      if (actor.defeated) node.classList.add("defeated");
+      const pixelPlatform = document.createElement("span");
+      pixelPlatform.className = "battle-actor-platform";
+      node.append(pixelPlatform);
+      return node;
+    }
     if (charsetBattler(resourceId)) node.dataset.battlerExtended = "true";
     const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
     if (url) node.append(actorBattleImage(actor.name, resourceId, url));
@@ -1556,6 +1652,13 @@ function stateIconToken(stateId: string): string {
   const buff = buffIconToken(stateId);
   if (buff) return buff;
   if (stateId.includes("regen")) return "regen";
+  if (stateId.includes("stop")) return "stop";
+  if (stateId.includes("protect")) return "protect";
+  if (stateId.includes("shell")) return "shell";
+  if (stateId.includes("berserk") || stateId.includes("taunt")) return "berserk";
+  if (stateId.includes("petrify") || stateId.includes("stone")) return "petrify";
+  if (stateId.includes("wet")) return "wet";
+  if (stateId.includes("oil")) return "oiled";
   if (stateId.includes("poison")) return "poison";
   if (stateId.includes("burn")) return "burn";
   if (stateId.includes("freeze") || stateId.includes("frozen")) return "freeze";
@@ -1618,6 +1721,30 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
     cluster.append(node);
   }
   return cluster;
+}
+
+/** 파티원 몬스터 9칸 시트 스프라이트. 상자 = 셀 × 2(적 도트와 같은 2배), 그림은 배경 300%×300%. */
+function partyPixelSprite(name: string, sheet: PartyPixelSheet): HTMLElement {
+  const box = sheet.box;
+  const sprite = document.createElement("span");
+  sprite.className = "battle-actor-sprite";
+  sprite.dataset.testid = `battle-actor-sprite-${sheet.resourceId}`;
+  sprite.dataset.rendering = "pixelated";
+  // pixelSheet: placeOnBody·sprite() 가 발 여백을 (cell−4)/cell 로 재는 신호(적 도트 시트와 같은 규격).
+  sprite.dataset.pixelSheet = sheet.resourceId;
+  sprite.dataset.pixelCell = "idle";
+  sprite.setAttribute("role", "img");
+  sprite.setAttribute("aria-label", `${name} 전투 캐릭터`);
+  const url = partyPixelSheetUrl(sheet);
+  sprite.style.setProperty("--battle-sprite-frame-width", `${box}px`);
+  sprite.style.setProperty("--battle-sprite-frame-height", `${box}px`);
+  sprite.style.setProperty("--pixel-enemy-idle-ms", `${sheet.idleFrameMs * 4}ms`);
+  sprite.style.backgroundImage = `url("${url}")`;
+  sprite.style.backgroundSize = `300% ${sheet.rows * 100}%`;
+  sprite.style.backgroundPosition = "0% 0%";
+  // 대기 루프 키프레임(retro-pixel-enemy-idle)은 행 0 을 백분율로 옮긴다 — 행 수와 무관하게 0% 가 맨 윗줄이다.
+  sprite.dataset.pixelRows = String(sheet.rows);
+  return sprite;
 }
 
 function actorBattleImage(name: string, resourceId: string, url: string): HTMLElement {
