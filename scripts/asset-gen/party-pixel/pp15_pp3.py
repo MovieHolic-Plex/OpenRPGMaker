@@ -1,15 +1,15 @@
-"""pp15_pp3 — b3 네 명(monster1-4..7) 15칸 파티 시트 공용 빌더.
+"""pp15_pp3 — b3 네 명(monster1-4 해골병 · 1-5 좀비 · 1-6 사신 · 1-7 수인 전사) 15칸 파티 시트 공용 리그.
 
-방법(2026-09-29 재작업 규칙): 걷기 칩 왼쪽 보기 가운데 칸(행 3·열 1, 24×32)을
-  1) 캐릭터 팔레트로 줄이고(≤16색 예산),
-  2) Scale2x(EPX) 로 정수 2배 — 새 색 없이 계단 대각선만 다듬는다,
-  3) 부위(머리·몸·팔·다리…)를 칩 좌표 마스크로 잘라, 부위마다 외곽선을 벗긴 채움(fill)으로 보관한다.
-칸마다 부위를 옮기고(평행이동·회전) 뒤→앞 순서로 합성하며, 부위마다 1px 어두운 외곽선을 새로 두르고
-왼쪽 위 테두리에 밝은 한 단을 더한다. 옮기지 않은 대기 칸은 2배 칩과 같은 실루엣이 된다.
-그림은 처음부터 왼쪽(적 쪽)을 본다 — 반전하지 않는다.
+방법(2026-09-29 재작업 규칙, 감독 지시):
+  1) 걷기 칩 왼쪽 보기 가운데 칸(Monster1.png 칩 i 블록의 행 3·열 1, 24×32)을 캐릭터 팔레트(≤16색)로 줄이고
+     바깥 어두운 외곽선 한 겹을 벗긴다.
+  2) Scale2x(EPX)로 정수 2배 — 새 색 없이 계단 대각선만 다듬는다. 이것이 대기 칸의 몸이다(칩 × 2, 더 키우지 않는다).
+  3) 칩 좌표 사각형으로 부위(머리·팔·다리…)를 나누고, 칸마다 부위를 관절 기준으로 옮기거나 돌린다.
+     돌릴 때는 부위를 Scale2x 로 8배 더 키운 뒤 표본을 뽑아(RotSprite 식) 계단이 덜 깨지게 한다.
+  4) 합성 뒤 왼쪽 위 테두리에 밝은 한 단, 오른쪽 아래 안쪽에 그늘 한 단을 얹고 1px 외곽선을 새로 두른다.
+그림은 처음부터 왼쪽(적 쪽)을 본다 — 반전하지 않는다. 행 순서는 NAMES(15칸, 3열×5행).
 """
-import json, math, sys
-from collections import deque
+import json, math
 from pathlib import Path
 from PIL import Image, ImageDraw
 
@@ -21,6 +21,8 @@ BGKEY = (0x00, 0x93, 0x92)
 NAMES = ['idle_a', 'idle_b', 'idle_c', 'windup', 'move', 'attack', 'recover', 'hit', 'dead',
          'cast_charge', 'cast_raise', 'cast_release', 'leap', 'buff', 'finisher']
 T = (0, 0, 0, 0)
+N4 = ((1, 0), (-1, 0), (0, 1), (0, -1))
+N8 = N4 + ((1, 1), (1, -1), (-1, 1), (-1, -1))
 
 
 def hexc(h):
@@ -40,29 +42,41 @@ def chip_frame(index, row=3, col=1):
     return fr
 
 
+def lum(c):
+    return 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]
+
+
 def quantize(im, pal, force=None):
-    """칩 색을 캐릭터 팔레트(키→hex)의 가장 가까운 색으로. force = {칩hex: 키} 로 강제 대응."""
     cols = {k: hexc(v) for k, v in pal.items()}
     force = {hexc(k)[:3]: v for k, v in (force or {}).items()}
-    out = im.copy()
-    px = out.load()
+    out = im.copy(); px = out.load()
     for y in range(im.height):
         for x in range(im.width):
             c = px[x, y]
             if c[3] == 0:
                 continue
             if c[:3] in force:
-                px[x, y] = cols[force[c[:3]]]
-                continue
+                px[x, y] = cols[force[c[:3]]]; continue
             px[x, y] = min(cols.values(), key=lambda q: sum((a - b) ** 2 for a, b in zip(q[:3], c[:3])))
+    return out
+
+
+def strip_edge(im, dark):
+    """바깥(투명)에 4방향으로 닿은 어두운 픽셀 한 겹을 벗긴다."""
+    w, h = im.size
+    s = im.load(); out = im.copy(); o = out.load()
+    for y in range(h):
+        for x in range(w):
+            if s[x, y][3] and lum(s[x, y]) < dark and any(
+                    not (0 <= x + dx < w and 0 <= y + dy < h) or s[x + dx, y + dy][3] == 0 for dx, dy in N4):
+                o[x, y] = T
     return out
 
 
 def scale2x(im):
     w, h = im.size
     s = im.load()
-    out = Image.new('RGBA', (w * 2, h * 2))
-    o = out.load()
+    out = Image.new('RGBA', (w * 2, h * 2)); o = out.load()
 
     def g(x, y):
         return s[min(max(x, 0), w - 1), min(max(y, 0), h - 1)]
@@ -82,228 +96,26 @@ def scale2x(im):
     return out
 
 
-N4 = ((1, 0), (-1, 0), (0, 1), (0, -1))
-N8 = N4 + ((1, 1), (1, -1), (-1, 1), (-1, -1))
-
-
-def strip(im, dark):
-    """바깥 테두리의 어두운 외곽선 한 겹을 벗긴 채움. dark = 외곽선으로 볼 RGBA 집합."""
-    w, h = im.size
-    s = im.load()
-    out = im.copy()
-    o = out.load()
-    for y in range(h):
-        for x in range(w):
-            if s[x, y][3] and s[x, y] in dark:
-                edge = any(not (0 <= x + dx < w and 0 <= y + dy < h) or s[x + dx, y + dy][3] == 0 for dx, dy in N8)
-                if edge:
-                    o[x, y] = T
-    return out
-
-
-class Part:
-    def __init__(self, fill, pivot, light=True):
-        self.fill = fill          # RGBA, 캔버스 좌표계(2배 칩 좌표)
-        self.pivot = pivot        # 회전 중심(2배 좌표)
-        self.light = light
-
-
-def mask_poly(size, polys):
-    m = Image.new('L', size, 0)
-    d = ImageDraw.Draw(m)
-    for p in polys:
-        d.polygon([(x * 2, y * 2) for x, y in p], fill=255)
-    return m
-
-
-def cut(fill, polys, pivot, inpaint=None, light=True):
-    """칩 좌표 다각형(여럿)으로 fill 에서 부위를 잘라 Part 로. pivot 은 칩 좌표."""
-    m = mask_poly(fill.size, polys)
-    part = Image.new('RGBA', fill.size)
-    part.paste(fill, (0, 0), m)
-    return Part(part, (pivot[0] * 2, pivot[1] * 2), light)
-
-
-def fill_hole(im, polys, color=None):
-    """부위를 떼어낸 자리를 주변 색(BFS 최근접) 또는 지정 색으로 메운다(칩 좌표 다각형)."""
-    m = mask_poly(im.size, polys).load()
-    px = im.load()
-    w, h = im.size
-    todo = [(x, y) for y in range(h) for x in range(w) if m[x, y] and px[x, y][3] == 0]
-    if color is not None:
-        for q in todo:
-            px[q] = color
-        return im
-    todo = set(todo)
-    q = deque((x, y) for y in range(h) for x in range(w) if px[x, y][3] and any((x + dx, y + dy) in todo for dx, dy in N4))
-    while q and todo:
-        x, y = q.popleft()
-        for dx, dy in N4:
-            n = (x + dx, y + dy)
-            if n in todo:
-                px[n] = px[x, y]; todo.discard(n); q.append(n)
-    return im
-
-
-def xform(part, dx=0, dy=0, rot=0, flip=False, size=None):
-    """부위를 pivot 기준 rot 도(양수 = 화면상 반시계) 회전 후 (dx,dy) 이동. 최근접 표본."""
-    src = part.fill
-    w, h = size or src.size
-    out = Image.new('RGBA', (w, h))
-    s = src.load(); o = out.load()
-    px_, py_ = part.pivot
-    r = math.radians(rot)
-    c, sn = math.cos(r), math.sin(r)
-    sw, sh = src.size
-    for y in range(h):
-        for x in range(w):
-            X = x - dx - px_; Y = y - dy - py_
-            u = c * X - sn * Y; v = sn * X + c * Y
-            if flip:
-                u = -u
-            sx, sy = int(round(u + px_ - 1e-6)), int(round(v + py_ - 1e-6))
-            if 0 <= sx < sw and 0 <= sy < sh and s[sx, sy][3]:
-                o[x, y] = s[sx, sy]
-    return out
-
-
-def outline(fill, col, light=None):
-    """채움 둘레 바깥에 1px 외곽선(8방향). light = {색: 밝은색} 이면 왼쪽 위 안쪽 테두리를 한 단 밝힌다."""
+def outline(fill, col):
     w, h = fill.size
-    s = fill.load()
-    out = fill.copy()
-    o = out.load()
+    s = fill.load(); out = fill.copy(); o = out.load()
     for y in range(h):
         for x in range(w):
-            if s[x, y][3]:
-                if light and s[x, y] in light:
-                    if any(not (0 <= x + dx < w and 0 <= y + dy < h) or s[x + dx, y + dy][3] == 0 for dx, dy in ((-1, 0), (0, -1))):
-                        o[x, y] = light[s[x, y]]
-                continue
-            if any(0 <= x + dx < w and 0 <= y + dy < h and s[x + dx, y + dy][3] for dx, dy in N8):
+            if not s[x, y][3] and any(0 <= x + dx < w and 0 <= y + dy < h and s[x + dx, y + dy][3] for dx, dy in N8):
                 o[x, y] = col
     return out
 
 
-class Canvas:
-    def __init__(self, size, pal):
-        self.im = Image.new('RGBA', size)
-        self.pal = {k: hexc(v) for k, v in pal.items()}
-        self.d = ImageDraw.Draw(self.im)
-
-    def c(self, k):
-        return self.pal[k] if isinstance(k, str) else k
-
-    def layer(self, img):
-        self.im.alpha_composite(img)
-
-    def line(self, pts, k, w=1):
-        self.d.line([tuple(map(round, p)) for p in pts], fill=self.c(k), width=w)
-
-    def dot(self, x, y, k):
-        if 0 <= x < self.im.width and 0 <= y < self.im.height:
-            self.im.putpixel((int(x), int(y)), self.c(k))
-
-    def box(self, b, k):
-        self.d.rectangle(b, fill=self.c(k))
-
-    def ell(self, b, k, outline=None):
-        self.d.ellipse(b, fill=self.c(k), outline=self.c(outline) if outline else None)
-
-
-def stroke(cv, pts, core, edge, w=1):
-    """외곽선 둘린 선(뼈·낫자루·기운 줄기): edge 로 w+2 두께, core 로 w 두께."""
-    cv.line(pts, edge, w + 2)
-    cv.line(pts, core, w)
-
-
-def isolated(im):
-    a = im.getchannel('A').load()
-    w, h = im.size
-    return [(x, y) for y in range(h) for x in range(w)
-            if a[x, y] and not any(0 <= x + dx < w and 0 <= y + dy < h and a[x + dx, y + dy] for dx, dy in N4)]
-
-
-def place(img, cell, cx, floor, keep_x=False):
-    """그림 bbox 를 셀에 넣는다: 가로 기준 cx(몸 중심 x, 원 좌표)를 cell/2 로, floor(원 좌표 바닥 행)를 cell-4 로."""
-    out = Image.new('RGBA', (cell, cell))
-    out.paste(img, (cell // 2 - cx, (cell - 4) - floor), img)
-    return out
-
-
-def build(chip, cell, render, pal):
-    """render(name) -> (RGBA 캔버스 이미지, cx, floor) 가 원 좌표 그림을 준다."""
-    frames = []
-    for n in NAMES:
-        img, cx, floor = render(n)
-        f = place(img, cell, cx, floor)
-        for q in isolated(f):
-            f.putpixel(q, T)
-        frames.append(f)
-    sheet = Image.new('RGBA', (cell * 3, cell * 5))
-    for i, f in enumerate(frames):
-        sheet.paste(f, (i % 3 * cell, i // 3 * cell))
-    errs = check(sheet, cell)
-    OUT.mkdir(parents=True, exist_ok=True)
-    sheet.save(OUT / f'{chip}.png')
-    ncol = len({c for _, c in sheet.getcolors(1 << 20) if c[3]})
-    print(chip, 'cell', cell, 'colours', ncol, 'idle bbox', frames[0].getbbox(), 'errors', errs or 'none')
-    return sheet, errs
-
-
-def check(sheet, cell, airborne=False):
-    errs = []
-    if sheet.size != (cell * 3, cell * 5):
-        errs.append(f'size {sheet.size}')
-    if not set(sheet.getchannel('A').tobytes()) <= {0, 255}:
-        errs.append('alpha')
-    ncol = len({c for _, c in sheet.getcolors(1 << 20) if c[3]})
-    if ncol > 16:
-        errs.append(f'colours {ncol}')
-    cells = [sheet.crop((i % 3 * cell, i // 3 * cell, i % 3 * cell + cell, i // 3 * cell + cell)) for i in range(15)]
-    for n, c in zip(NAMES, cells):
-        b = c.getbbox()
-        if not b:
-            errs.append(f'{n} empty'); continue
-        if b[0] < 1 or b[1] < 1 or b[2] > cell - 1 or b[3] > cell - 3:
-            errs.append(f'{n} bounds {b}')
-    for i in range(15):
-        for j in range(i + 1, 15):
-            if cells[i].tobytes() == cells[j].tobytes():
-                errs.append(f'{NAMES[i]}=={NAMES[j]}')
-    return errs
-
-
-
-# ───────────────────────── 리그: 칩 부위를 잘라 옮기는 몸 ─────────────────────────
-CELL64 = 64
-
-
-def lum(c):
-    return 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]
-
-
-def strip1(fr, dark):
-    """1배 칩에서 바깥에 닿은 어두운 외곽선 한 겹(4방향)을 벗긴다."""
-    w, h = fr.size
-    s = fr.load()
-    out = fr.copy()
-    o = out.load()
-    for y in range(h):
-        for x in range(w):
-            if s[x, y][3] and lum(s[x, y]) < dark and any(
-                    not (0 <= x + dx < w and 0 <= y + dy < h) or s[x + dx, y + dy][3] == 0 for dx, dy in N4):
-                o[x, y] = T
-    return out
-
-
-def aff_local(dx, dy, rot, pv):
+# ── 아핀(부위 좌표 = 2배 칩 좌표, y 아래). rot 양수 = 화면에서 반시계. 왼쪽을 보므로 앞 = −x. ──
+def aff_local(dx, dy, rot, pv, lean=0.0):
+    """pv 기준 lean(가로 기울임: 위로 1px 갈 때 앞(−x)으로 lean px) → rot 회전 → (dx, dy) 이동."""
     r = math.radians(rot)
     c, s = math.cos(r), math.sin(r)
-    a, b, cc, d = c, s, -s, c          # x' = a x + b y ; y' = cc x + d y (y 아래, rot + = 화면 반시계)
-    tx = pv[0] - (a * pv[0] + b * pv[1]) + dx
-    ty = pv[1] - (cc * pv[0] + d * pv[1]) + dy
-    return (a, b, cc, d, tx, ty)
+    # 기울임 S: x' = x + lean*(y - py)  (위쪽 y<py 가 −x 로)
+    S = (1, lean, 0, 1, -lean * pv[1], 0)
+    R = (c, s, -s, c, pv[0] - (c * pv[0] + s * pv[1]), pv[1] - (-s * pv[0] + c * pv[1]))
+    M = aff_mul(R, S)
+    return (M[0], M[1], M[2], M[3], M[4] + dx, M[5] + dy)
 
 
 def aff_mul(P, L):
@@ -318,200 +130,413 @@ def aff_apply(M, p):
     return (a * p[0] + b * p[1] + tx, c * p[0] + d * p[1] + ty)
 
 
-def aff_render(src, M, size):
-    a, b, c, d, tx, ty = M
-    det = a * d - b * c
-    ia, ib, ic, idd = d / det, -b / det, -c / det, a / det
-    w, h = size
-    out = Image.new('RGBA', (w, h))
-    s = src.load(); o = out.load()
-    sw, sh = src.size
-    ident = abs(a - 1) < 1e-9 and abs(d - 1) < 1e-9 and abs(b) < 1e-9 and abs(c) < 1e-9
-    for y in range(h):
-        for x in range(w):
-            X, Y = x + 0.5 - tx, y + 0.5 - ty
-            u = ia * X + ib * Y; v = ic * X + idd * Y
-            sx, sy = (int(round(u - 0.5)), int(round(v - 0.5))) if ident else (int(math.floor(u)), int(math.floor(v)))
-            if 0 <= sx < sw and 0 <= sy < sh and s[sx, sy][3]:
-                o[x, y] = s[sx, sy]
-    return out
+def is_shift(M):
+    """1배 표본으로 충분한 변환: 이동·가로 기울임(행이 통째로 밀림)·90° 배수 회전."""
+    a, b, c, d = M[:4]
+    if abs(a - 1) < 1e-9 and abs(d - 1) < 1e-9 and abs(c) < 1e-9:
+        return True
+    return all(min(abs(v), abs(abs(v) - 1)) < 1e-9 for v in (a, b, c, d))
+
+
+class Canvas:
+    def __init__(self, im, pal):
+        self.im = im
+        self.pal = pal
+        self.d = ImageDraw.Draw(im)
+
+    def c(self, k):
+        return self.pal[k] if isinstance(k, str) else k
+
+    def line(self, pts, k, w=1):
+        self.d.line([(round(x), round(y)) for x, y in pts], fill=self.c(k), width=w)
+
+    def dot(self, x, y, k):
+        x, y = int(round(x)), int(round(y))
+        if 0 <= x < self.im.width and 0 <= y < self.im.height:
+            self.im.putpixel((x, y), self.c(k))
+
+    def box(self, b, k):
+        self.d.rectangle([round(v) for v in b], fill=self.c(k))
+
+    def ell(self, cx, cy, rx, ry, k):
+        self.d.ellipse((round(cx - rx), round(cy - ry), round(cx + rx), round(cy + ry)), fill=self.c(k))
+
+    def poly(self, pts, k):
+        self.d.polygon([(round(x), round(y)) for x, y in pts], fill=self.c(k))
 
 
 class Rig:
-    """labels: [(부위, x0, y0, x1, y1)] 칩 1배 좌표(포함), 먼저 맞는 것이 이긴다. 나머지 = 'body'.
-    pivots: {부위: (x, y)} 칩 1배 좌표(반픽셀 가능). parent: {부위: 부모}. order: 뒤→앞. own: 움직이면 제 외곽선을 두르는 부위."""
+    """index: Monster1 칩 번호. pal: 키→hex(≤16, 외곽선 키 'o' 필수). labels: [(부위, x0, y0, x1, y1)] 칩 1배(포함), 앞의 것이 이긴다.
+    pivots: {부위: (x, y)} 칩 1배 관절. parent: {부위: 부모}(없으면 root). order: 뒤→앞. own: 옮겨지면 제 외곽선을 두른다.
+    light/shade: {색 키: 한 단 밝은/어두운 색 키}."""
 
-    def __init__(self, index, pal, labels, pivots, parent, order, own=(), dark=0x40, force=None,
-                 cx=12, bottom=None, light=None, shade=None, okey='o', col=1, row=3, cell=CELL64, floor=None):
-        self.pal = {k: hexc(v) for k, v in pal.items()}
+    def __init__(self, index, pal, labels, pivots, parent, order, cell=64, own=(), dark=0x46, force=None,
+                 light=None, shade=None, root_pivot=None):
         self.cell = cell
-        self.floor = cell - 4 if floor is None else floor
-        self.okey = okey
-        fr = chip_frame(index, row, col)
-        q = quantize(strip1(fr, dark), pal, force)
-        big = scale2x(q)
-        bb = fr.getbbox()
-        bottom = (bb[3] - 1) if bottom is None else bottom
-        self.OX = cell // 2 - 2 * cx
-        self.OY = self.floor - (2 * bottom + 1)
-        self.parts = {}
-        lab = {}
-        for y in range(32):
-            for x in range(24):
-                name = 'body'
-                for (n, x0, y0, x1, y1) in labels:
-                    if x0 <= x <= x1 and y0 <= y <= y1:
-                        name = n; break
-                lab[x, y] = name
-        names = set(lab.values()) | set(order)
-        for n in names:
-            self.parts[n] = Image.new('RGBA', (cell, cell))
+        self.pal = {k: hexc(v) for k, v in pal.items()}
+        self.o = self.pal['o']
+        fr = chip_frame(index)
+        self.chip = fr
+        base = strip_edge(quantize(fr, pal, force), dark)
+        big = scale2x(base)
+        self.labels = labels
+        names = list(dict.fromkeys(order))
+        self.parts = {n: Image.new('RGBA', big.size) for n in names}
         bp = big.load()
-        for (x, y), n in lab.items():
-            for j in range(2):
-                for i in range(2):
-                    c = bp[2 * x + i, 2 * y + j]
-                    X, Y = 2 * x + i + self.OX, 2 * y + j + self.OY
-                    if c[3] and 0 <= X < cell and 0 <= Y < cell:
-                        self.parts[n].putpixel((X, Y), c)
-        self.pivots = {n: self.to_sheet(p) for n, p in pivots.items()}
+        for y in range(big.height):
+            for x in range(big.width):
+                c = bp[x, y]
+                if not c[3]:
+                    continue
+                self.parts[self.label(x // 2, y // 2)].putpixel((x, y), c)
+        self.up = {}
+        self.pivots = {n: (2 * p[0], 2 * p[1]) for n, p in pivots.items()}
+        bb = fr.getbbox()
+        self.pivots['root'] = (2 * root_pivot[0], 2 * root_pivot[1]) if root_pivot else ((bb[0] + bb[2]), 2 * bb[3])
         self.parent = parent
-        self.order = order
+        self.order = names
         self.own = set(own)
         self.light = {self.pal[a]: self.pal[b] for a, b in (light or {}).items()}
         self.shade = {self.pal[a]: self.pal[b] for a, b in (shade or {}).items()}
+        # 2배 칩 → 셀: 가로 중심·바닥은 build 가 대기 칸으로 맞춘다. 여기서는 대충 가운데.
+        self.W = cell * 2
+        self.place = (self.W // 2 - (bb[0] + bb[2]), self.W - cell // 2 - 2 * bb[3])
 
-    def to_sheet(self, p):
-        return (2 * p[0] + self.OX, 2 * p[1] + self.OY)
+    def label(self, x, y):
+        for (n, x0, y0, x1, y1) in self.labels:
+            if x0 <= x <= x1 and y0 <= y <= y1:
+                return n
+        return 'body'
 
-    def c(self, k):
-        return self.pal[k]
+    def upscaled(self, n):
+        if n not in self.up:
+            im = self.parts[n]
+            for _ in range(3):
+                im = scale2x(im)
+            self.up[n] = im
+        return self.up[n]
 
     def world(self, pose, n, memo):
         if n in memo:
             return memo[n]
-        dx, dy, rot = (list(pose.get(n, ())) + [0, 0, 0])[:3]
-        L = aff_local(dx, dy, rot, self.pivots.get(n, (32, 32)))
-        par = self.parent.get(n, 'root' if n != 'root' else None)
-        if par:
-            M = aff_mul(self.world(pose, par, memo), L)
+        v = list(pose.get(n, ())) + [0, 0, 0, 0]
+        L = aff_local(v[0], v[1], v[2], self.pivots.get(n, self.pivots['root']), v[3])
+        if n == 'root':
+            M = aff_mul((1, 0, 0, 1, self.place[0], self.place[1]), L)
         else:
-            M = L
+            M = aff_mul(self.world(pose, self.parent.get(n, 'root'), memo), L)
         memo[n] = M
         return M
 
-    def point(self, pose, n, p):
-        """칩 1배 좌표 p(부위 n 에 붙은 점)가 이 포즈에서 시트 어디로 가는가."""
-        return aff_apply(self.world(pose, n, {}), self.to_sheet(p))
+    def pt(self, pose, n, p):
+        """칩 1배 좌표 p(부위 n 에 붙은 점)가 이 포즈에서 셀 어디에 오는가."""
+        return aff_apply(self.world(pose, n, {}), (2 * p[0], 2 * p[1]))
 
-    def render(self, pose, under=None, over=None, hide=(), swap=None):
-        """pose: {부위: (dx, dy, rot)}, 'root' 는 전체. under/over(cv, rig, pose) 는 소품 그리기(외곽선 전/후)."""
+    def draw_part(self, n, M):
+        cell = self.W
+        out = Image.new('RGBA', (cell, cell)); o = out.load()
+        a, b, c, d, tx, ty = M
+        det = a * d - b * c
+        ia, ib, ic, idd = d / det, -b / det, -c / det, a / det
+        if is_shift(M):
+            src = self.parts[n]; s = src.load(); f = 1
+        else:
+            src = self.upscaled(n); s = src.load(); f = 8
+        sw, sh = src.size
+        for y in range(cell):
+            for x in range(cell):
+                X, Y = x + 0.5 - tx, y + 0.5 - ty
+                if f == 1:
+                    sx = int(math.floor(ia * X + ib * Y + 1e-6)); sy = int(math.floor(ic * X + idd * Y + 1e-6))
+                else:
+                    sx = int(math.floor((ia * X + ib * Y) * 8)); sy = int(math.floor((ic * X + idd * Y) * 8))
+                if 0 <= sx < sw and 0 <= sy < sh and s[sx, sy][3]:
+                    o[x, y] = s[sx, sy]
+        return out
+
+    def render(self, pose, under=None, over=None, mid=None, hide=(), recolor=None):
+        """pose: {부위: (dx, dy, rot)} ('root' = 전체). under/over(cv, pose): 몸 뒤/앞 소품. mid = {부위: fn} 그 부위 바로 뒤에 그린다."""
+        pose = dict(pose)
         memo = {}
-        cv = Canvas((self.cell, self.cell), {})
-        cv.pal = self.pal
+        im = Image.new('RGBA', (self.W, self.W))
+        cv = Canvas(im, self.pal)
         if under:
-            under(cv, self, pose)
+            under(cv, pose)
         for n in self.order:
+            if mid and n in mid:
+                mid[n](cv, pose)
             if n in hide:
                 continue
-            src = (swap or {}).get(n, self.parts[n])
-            M = self.world(pose, n, memo)
-            img = aff_render(src, M, (self.cell, self.cell))
-            moved = any(abs(v) > 1e-9 for v in (M[0] - 1, M[1], M[2], M[3] - 1))
-            if n in self.own and (moved or pose.get(n)):
-                img = outline(img, self.pal[self.okey])
-            cv.im.alpha_composite(img)
-            if n in (pose.get('_after') or {}):
-                pose['_after'][n](cv, self, pose)
+            img = self.draw_part(n, self.world(pose, n, memo))
+            if n in self.own and any(abs(v) > 1e-9 for v in (list(pose.get(n, ())) + [0])):
+                img = outline(img, self.o)
+            im.alpha_composite(img)
+        if recolor:
+            px = im.load()
+            rc = {self.pal[a]: self.pal[b] for a, b in recolor.items()}
+            for y in range(self.W):
+                for x in range(self.W):
+                    if px[x, y] in rc:
+                        px[x, y] = rc[px[x, y]]
+        im = self.shadepass(im)
+        im = outline(im, self.o)
         if over:
-            over(cv, self, pose)
-        im = self.finish(cv.im)
+            over(Canvas(im, self.pal), pose)
         return im
 
-    def finish(self, im):
+    def shadepass(self, im):
         w, h = im.size
-        s = im.load()
-        out = im.copy()
-        o = out.load()
-        oc = self.pal[self.okey]
+        s = im.load(); out = im.copy(); o = out.load()
+        oc = self.o
         for y in range(h):
             for x in range(w):
                 p = s[x, y]
                 if not p[3] or p == oc:
                     continue
-                def empty(dx, dy):
+
+                def e(dx, dy):
                     X, Y = x + dx, y + dy
-                    return not (0 <= X < w and 0 <= Y < h) or s[X, Y][3] == 0 or s[X, Y] == oc
-                if p in self.light and (empty(-1, 0) or empty(0, -1)):
+                    return not (0 <= X < w and 0 <= Y < h) or s[X, Y][3] == 0
+                tl = e(-1, 0) or e(0, -1)
+                br = e(1, 0) or e(0, 1)
+                if tl and p in self.light:
                     o[x, y] = self.light[p]
-                elif p in self.shade and (empty(1, 0) or empty(0, 1)) and not (empty(-1, 0) or empty(0, -1)):
+                elif br and not tl and p in self.shade:
                     o[x, y] = self.shade[p]
-        return outline(out, oc)
+        return out
 
 
-def fx_glow(cv, x, y, r, core, rim):
-    """두 겹 빛 방울(외곽선 없음, 2px 이상)."""
-    cv.ell((x - r, y - r, x + r, y + r), rim)
-    if r >= 2:
-        cv.ell((x - r + 1, y - r + 1, x + r - 1, y + r - 1), core)
+# ── 소품·효과 도우미(셀 좌표) ──
+def stroke(cv, pts, core, edge='o', w=1):
+    cv.line(pts, edge, w + 2)
+    cv.line(pts, core, w)
 
 
-def fx_spark(cv, x, y, n, k):
-    """십자 반짝임(팔 길이 n)."""
+def ring(cv, cx, cy, r, k, step=30, a0=0):
+    for a in range(a0, a0 + 360, step):
+        t = math.radians(a)
+        cv.dot(cx + r * math.cos(t), cy - r * math.sin(t), k)
+
+
+def spark(cv, x, y, n, k, core=None):
     cv.line([(x - n, y), (x + n, y)], k)
     cv.line([(x, y - n), (x, y + n)], k)
+    if core:
+        cv.dot(x, y, core)
 
 
-def fx_lines(cv, cx, cy, r0, r1, angles, k, w=1):
-    for a in angles:
-        t = math.radians(a)
-        cv.line([(cx + r0 * math.cos(t), cy - r0 * math.sin(t)), (cx + r1 * math.cos(t), cy - r1 * math.sin(t))], k, w)
+def orb(cv, x, y, r, rim, core, hi=None):
+    cv.ell(x, y, r, r, rim)
+    if r >= 2:
+        cv.ell(x, y, r - 1, r - 1, core)
+    if hi and r >= 2:
+        cv.dot(x - 1, y - 1, hi)
 
 
-def label_board(rig, path, z=8):
-    """부위 확인판: 부위마다 색을 입혀 대기 칸을 확대."""
-    cols = [(230, 80, 80), (80, 200, 90), (80, 120, 240), (230, 200, 60), (200, 80, 220), (60, 210, 210), (240, 140, 40), (150, 150, 150), (255, 255, 255)]
-    im = Image.new('RGB', (rig.cell * 2 * z + 8, rig.cell * z), (30, 30, 40))
-    base = rig.render({})
-    b = Image.new('RGBA', (rig.cell, rig.cell), (60, 70, 90, 255)); b.alpha_composite(base)
-    im.paste(b.convert('RGB').resize((rig.cell * z, rig.cell * z), Image.NEAREST), (0, 0))
-    lab = Image.new('RGBA', (rig.cell, rig.cell), (60, 70, 90, 255))
-    for i, n in enumerate(rig.order):
-        m = rig.parts[n].getchannel('A')
-        lab.paste(Image.new('RGBA', (rig.cell, rig.cell), cols[i % len(cols)] + (255,)), (0, 0), m)
-    im.paste(lab.convert('RGB').resize((rig.cell * z, rig.cell * z), Image.NEAREST), (rig.cell * z + 8, 0))
-    d = ImageDraw.Draw(im)
-    for i, n in enumerate(rig.order):
-        d.text((rig.cell * z + 14, 6 + i * 12), n, fill=cols[i % len(cols)])
-    im.save(path)
+def arc(cv, cx, cy, r, a0, a1, k, w=1, step=4):
+    pts = [(cx + r * math.cos(math.radians(a)), cy - r * math.sin(math.radians(a))) for a in range(a0, a1 + 1, step)]
+    cv.line(pts, k, w)
 
 
-def board(chip, sheet, cell, walk_index, path):
-    """확인판 (a): 걷기 칩 왼쪽 보기 3칸(4배) + 15칸(4배), 칸 이름·바닥선."""
-    z = 4
+def dirv(p, q):
+    dx, dy = q[0] - p[0], q[1] - p[1]
+    L = math.hypot(dx, dy) or 1
+    return dx / L, dy / L
+
+
+def lerp(p, q, t):
+    return (p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t)
+
+
+def isolated(im):
+    a = im.getchannel('A').load()
+    w, h = im.size
+    return [(x, y) for y in range(h) for x in range(w)
+            if a[x, y] and not any(0 <= x + dx < w and 0 <= y + dy < h and a[x + dx, y + dy] for dx, dy in N4)]
+
+
+def shift(im, dx, dy):
+    out = Image.new('RGBA', im.size)
+    out.paste(im, (dx, dy))
+    return out
+
+
+def build(chip, cell, frames, walk_index, airborne=('leap',), preplaced=False):
+    """frames: {이름: 셀 이미지}. 대기 a 로 가로 중심(cell/2)·바닥(cell−4)을 맞추고 같은 이동을 모든 칸에 준다."""
+    ref = frames['idle_a'].getbbox()
+    dx = 0 if preplaced else cell // 2 - (ref[0] + ref[2]) // 2
+    dy = 0 if preplaced else (cell - 4) - (ref[3] - 1)
+    cells = []
+    for n in NAMES:
+        f = shift(frames[n], dx, dy)
+        for q in isolated(f):
+            f.putpixel(q, T)
+        cells.append(f)
+    sheet = Image.new('RGBA', (cell * 3, cell * 5))
+    for i, f in enumerate(cells):
+        sheet.paste(f, (i % 3 * cell, i // 3 * cell))
+    OUT.mkdir(parents=True, exist_ok=True)
+    sheet.save(OUT / f'{chip}.png')
+    rep = check(sheet, cell, airborne)
+    QA.mkdir(parents=True, exist_ok=True)
+    (QA / f'{chip}.json').write_text(json.dumps(rep, indent=1, ensure_ascii=False) + '\n')
+    board(chip, sheet, cell, walk_index, QA / f'board-{chip}.png')
+    print(chip, 'cell', cell, 'colours', rep['colours'], 'idle', rep['frames']['idle_a'], 'errors', rep['errors'] or 'none')
+    return sheet, rep
+
+
+def check(sheet, cell, airborne=('leap',)):
+    """크기·알파 0/255·≤16색·빈 칸·칸끼리 다름·가장자리 1px·바닥선(땅에 선 칸은 맨 아래 픽셀 = cell−4)."""
+    errs = []
+    if sheet.size != (cell * 3, cell * 5):
+        errs.append(f'size {sheet.size}')
+    if not set(sheet.getchannel('A').tobytes()) <= {0, 255}:
+        errs.append('alpha')
+    ncol = len({c for _, c in sheet.getcolors(1 << 20) if c[3]})
+    if ncol > 16:
+        errs.append(f'colours {ncol}')
+    cells = [sheet.crop((i % 3 * cell, i // 3 * cell, i % 3 * cell + cell, i // 3 * cell + cell)) for i in range(15)]
+    rep = {'size': list(sheet.size), 'cell': cell, 'colours': ncol, 'frames': {}}
+    for n, c in zip(NAMES, cells):
+        b = c.getbbox()
+        if not b:
+            errs.append(f'{n} empty'); continue
+        rep['frames'][n] = {'bbox': list(b), 'w': b[2] - b[0], 'h': b[3] - b[1], 'bottom': b[3] - 1}
+        if b[0] < 1 or b[1] < 1 or b[2] > cell - 1 or b[3] > cell - 3:
+            errs.append(f'{n} bounds {b}')
+        if n not in airborne and b[3] - 1 != cell - 4:
+            errs.append(f'{n} floor {b[3] - 1}')
+        if n in airborne and b[3] - 1 >= cell - 4:
+            errs.append(f'{n} not airborne')
+    for i in range(15):
+        for j in range(i + 1, 15):
+            if cells[i].tobytes() == cells[j].tobytes():
+                errs.append(f'{NAMES[i]}=={NAMES[j]}')
+    rep['errors'] = errs
+    return rep
+
+
+def board(chip, sheet, cell, walk_index, path, z=4):
+    """확인판 (a): 걷기 칩 왼쪽 보기(4배)와 칩 2배를 4배(= 대기 칸과 같은 배율), 옆에 15칸 4배."""
     BG = (0x28, 0x30, 0x48, 255)
-    chipim = Image.new('RGBA', (72, 32))
-    for col in range(3):
-        chipim.paste(chip_frame(walk_index, 3, col), (col * 24, 0))
-    W = 72 * z + 16 + cell * 3 * z
-    H = max(32 * z, cell * 5 * z) + 20
+    fr = chip_frame(walk_index)
+    W = 24 * 2 * z + 24 + cell * 3 * z
+    H = cell * 5 * z + 24
     im = Image.new('RGBA', (W, H), (14, 16, 26, 255))
-    cb = Image.new('RGBA', chipim.size, BG); cb.alpha_composite(chipim)
-    im.paste(cb.resize((72 * z, 32 * z), Image.NEAREST), (0, 20))
-    # 같은 배율 비교: 칩 2배(시트 1px = 화면 4px 일 때 칩은 8배가 된다)도 아래에
-    big = chip_frame(walk_index, 3, 1).resize((24 * 2 * z, 32 * 2 * z), Image.NEAREST)
-    bb = Image.new('RGBA', big.size, BG); bb.alpha_composite(big)
-    im.paste(bb, (40, 32 * z + 40))
+    c1 = Image.new('RGBA', (24, 32), BG); c1.alpha_composite(fr)
+    im.paste(c1.resize((24 * z, 32 * z), Image.NEAREST), (8, 20))
+    c2 = c1.resize((48 * z, 64 * z), Image.NEAREST)
+    im.paste(c2, (8, 32 * z + 44))
     sb = Image.new('RGBA', sheet.size, BG); sb.alpha_composite(sheet)
-    im.paste(sb.resize((cell * 3 * z, cell * 5 * z), Image.NEAREST), (72 * z + 16, 20))
+    im.paste(sb.resize((cell * 3 * z, cell * 5 * z), Image.NEAREST), (24 * 2 * z + 16, 20))
     d = ImageDraw.Draw(im)
-    d.text((4, 4), chip + ' 걷기 칩 왼쪽 보기 x4', fill=(220, 220, 230))
-    d.text((44, 32 * z + 26), 'chip x2 (= idle scale)', fill=(220, 220, 230))
+    d.text((8, 4), f'{chip} chip x{z}', fill=(220, 220, 230))
+    d.text((8, 32 * z + 28), f'chip x2 at x{z} (= idle scale)', fill=(220, 220, 230))
     for i, n in enumerate(NAMES):
-        x, y = 72 * z + 16 + i % 3 * cell * z, 20 + i // 3 * cell * z
+        x, y = 24 * 2 * z + 16 + i % 3 * cell * z, 20 + i // 3 * cell * z
         d.rectangle((x, y, x + cell * z - 1, y + cell * z - 1), outline=(80, 90, 120))
         d.line((x + 2, y + (cell - 3) * z, x + cell * z - 3, y + (cell - 3) * z), fill=(70, 100, 150))
         d.text((x + 4, y + 3), n, fill=(210, 205, 220))
     im.save(path)
-    return im
 
+
+def parts_board(rig, path, z=10):
+    cols = [(230, 80, 80), (80, 200, 90), (80, 120, 240), (230, 200, 60), (200, 80, 220), (60, 210, 210), (240, 140, 40), (150, 150, 150), (255, 255, 255), (120, 60, 30)]
+    w, h = rig.parts[rig.order[0]].size
+    lab = Image.new('RGBA', (w, h), (40, 45, 60, 255))
+    for i, n in enumerate(rig.order):
+        lab.paste(Image.new('RGBA', (w, h), cols[i % len(cols)] + (255,)), (0, 0), rig.parts[n].getchannel('A'))
+    im = lab.convert('RGB').resize((w * z, h * z), Image.NEAREST)
+    d = ImageDraw.Draw(im)
+    for i, n in enumerate(rig.order):
+        d.text((4, 4 + i * 12), n, fill=cols[i % len(cols)])
+    for n, p in rig.pivots.items():
+        d.ellipse((p[0] * z - 4, p[1] * z - 4, p[0] * z + 4, p[1] * z + 4), outline=(255, 255, 255))
+    im.save(path)
+
+
+
+# ── 사람형(두 다리) 공통 포즈표. 값 = (dx, dy, rot) 셀 px·도. rot + = 윗부분이 앞(왼쪽)으로. 매달린 팔·다리는 rot + 이면 끝이 뒤로. ──
+HUMANOID = {
+    'idle_a': {},
+    'idle_b': {'body': (0, 1, 0), 'arm': (0, 1, 0)},
+    'idle_c': {'body': (0, 1, 0), 'head': (0, 1, 0), 'arm': (0, 1, 0)},
+    'windup': {'root': (3, 0, 0, -0.18), 'arm': (0, 0, 120), 'leg_f': (0, 0, -10), 'leg_b': (0, 0, 8)},
+    'move': {'root': (-2, 0, 0, 0.25), 'arm': (0, 0, 40), 'leg_f': (0, 0, -28), 'leg_b': (0, 0, 24)},
+    'attack': {'root': (0, 0, 0, 0.34), 'arm': (0, 0, -80), 'leg_f': (0, 0, -30), 'leg_b': (0, 0, 24)},
+    'recover': {'root': (-2, 0, 0, 0.12), 'arm': (0, 0, -20), 'leg_f': (0, 0, -12), 'leg_b': (0, 0, 8)},
+    'hit': {'root': (3, 0, 0, -0.3), 'head': (1, 1, 0), 'arm': (0, 0, 55), 'leg_f': (0, 0, -6), 'leg_b': (0, 0, 5)},
+    'dead': {'root': (0, 0, -90)},
+    'cast_charge': {'root': (1, 0, 0, -0.08), 'body': (0, 1, 0), 'head': (0, 1, 0), 'arm': (0, 0, 30), 'leg_f': (0, 0, -6), 'leg_b': (0, 0, 6)},
+    'cast_raise': {'root': (1, 0, 0, -0.16), 'head': (0, -1, 0), 'arm': (0, 0, 170), 'leg_f': (0, 0, -4), 'leg_b': (0, 0, 3)},
+    'cast_release': {'root': (0, 0, 0, 0.22), 'arm': (0, 0, -95), 'leg_f': (0, 0, -20), 'leg_b': (0, 0, 16)},
+    'leap': {'root': (0, -6, 0, 0.14), 'arm': (0, 0, 135), 'leg_f': (0, 0, -60), 'leg_b': (0, 0, 40)},
+    'buff': {'root': (0, 0, 0, -0.1), 'body': (0, -1, 0), 'head': (0, -2, 0), 'arm': (0, 0, 150), 'leg_f': (0, 0, -14), 'leg_b': (0, 0, 14)},
+    'finisher': {'root': (-6, 0, 0, 0.4), 'head': (-1, 0, 0), 'arm': (0, 0, -120), 'leg_f': (0, 0, -38), 'leg_b': (0, 0, 34)},
+}
+
+
+def pose_of(table, n, **over):
+    """표의 포즈를 복사하고 부위별로 덮어쓴다(over 값 None 이면 지운다)."""
+    p = dict(table.get(n, {}))
+    for k, v in over.items():
+        if v is None:
+            p.pop(k, None)
+        else:
+            p[k] = v
+    return p
+
+
+def ground(im, cell, floor=None):
+    """칸 그림의 맨 아래 픽셀을 바닥선(cell−4 또는 floor)으로 세로 이동."""
+    b = im.getbbox()
+    if not b:
+        return im
+    return shift(im, 0, (cell - 4 if floor is None else floor) - (b[3] - 1))
+
+
+def clampx(f, cell):
+    """칸 밖으로 나간 그림을 가로로만 밀어 넣는다(가장자리 1px). 돌진 거리는 런타임 이동 경로가 맡는다."""
+    b = f.getbbox()
+    if not b:
+        return f
+    if b[0] < 1:
+        return shift(f, 1 - b[0], 0)
+    if b[2] > cell - 1:
+        return shift(f, (cell - 1) - b[2], 0)
+    return f
+
+
+def laid(rig, pose, hide=(), over=None):
+    """쓰러진 몸 등: 포즈를 그린 뒤 bbox 로 잘라 돌려준다(붙일 자리는 호출자가 정한다)."""
+    im = rig.render(pose, hide=hide, over=over)
+    b = im.getbbox()
+    return im.crop(b) if b else im
+
+
+def build2(chip, cell, frames, walk_index, airborne=('leap',), hover=None, nudge=None):
+    """frames: 아무 크기(보통 Rig.W) 그림. 가로는 대기 a 의 몸 중심을 cell/2 로 옮기는 같은 이동(nudge = {이름: 추가 dx}),
+    칸 밖이면 가로로만 밀어 넣는다(가장자리 1px). 세로는 맨 아래 픽셀을 바닥선 cell−4 에 — airborne 칸은 대기 a 와 같은
+    세로 이동만 받아 그린 높이만큼 뜨고, hover = {이름: 바닥선 위 뜬 px} 는 그 높이에 맞춘다."""
+    ref = frames['idle_a'].getbbox()
+    dx0 = cell // 2 - (ref[0] + ref[2]) // 2
+    dy0 = (cell - 4) - (ref[3] - 1)
+    fixed = {}
+    for n in NAMES:
+        f = frames[n]
+        b = f.getbbox()
+        dx = dx0 + (nudge or {}).get(n, 0)
+        if b[0] + dx < 1:
+            dx = 1 - b[0]
+        if b[2] + dx > cell - 1:
+            dx = cell - 1 - b[2]
+        if hover and n in hover:
+            dy = (cell - 4 - hover[n]) - (b[3] - 1)
+        elif n in airborne:
+            dy = max(dy0, 2 - b[1])          # 머리는 칸 안(위 2px), 발은 그린 만큼 뜬다
+        else:
+            dy = (cell - 4) - (b[3] - 1)
+        out = Image.new('RGBA', (cell, cell))
+        out.paste(f, (dx, dy), f)
+        fixed[n] = out
+    return build(chip, cell, fixed, walk_index, airborne=tuple(airborne) + tuple(hover or ()), preplaced=True)
