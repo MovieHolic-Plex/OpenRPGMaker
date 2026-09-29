@@ -147,3 +147,9 @@ mothman_ · basilisk_ · djinn_ · chimera_ · dark_angel_). 시트마다 <키>.
 기존 정의에서 읽어 오고, 스킬당 새 시트 최대 1장·레이어 PNG 크기를 검사한다. 투사체 3장은 머리가 왼쪽.
 걷기 칩은 scripts/asset-gen/oprn-charset/monster6.py, 전투 15칸은 scripts/asset-gen/party-pixel/monster6-<i>.py + pp15_nm6.py
 (칩 함수를 같은 배율로 다시 불러 대기 칸 = 칩 왼쪽 서 있는 칸).
+
+## m5 (Monster5 저주받은 물건 8명, nm5, 2026-09-29)
+
+- 공용 모듈 lib_nm5.py, 새 키 32장(접두 mimic_pal_·living_armor_·lantern_ghost_·doll_·book_demon_·scarecrow_·clockwork_·candle_imp_), 키마다 <key>.py.
+- run() 은 src/assets/retroRosterSkills/m5.ts 의 frame·frames 와 스크립트가 다르면 멈춘다. 128 은 fade_oval, 64 는 fade_edges. 투사체 첫 칸은 왼쪽.
+- 전부 다시 굽기·미리보기: python3 scripts/asset-gen/pixel-fx/lib_nm5.py → .omo/nm5/d-fx-preview-{1,2}.png, 키별 .omo/nm5/fx/<key>.png.
