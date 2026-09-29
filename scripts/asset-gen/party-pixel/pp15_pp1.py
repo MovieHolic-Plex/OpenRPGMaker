@@ -291,7 +291,7 @@ def head_edit(part, spec, pose, pal, ol):
     if mo and spec.get('mouth'):
         mx0, mx1, my = spec['mouth']  # 1배: 턱 앞 x 범위와 입선 y
         X0, X1, Y = mx0 * 2, mx1 * 2 + 1, my * 2
-        k = min(3, 1 + mo)  # 벌림 px
+        k = 2 if mo > 1 else 1  # 벌림 px(칩 2배에서 2px 가 한계 — 더 벌리면 검은 쐐기가 된다)
         jaw = np.zeros_like(part)
         ys, xs = np.mgrid[0:64, 0:48]
         jm = (ys >= Y) & (xs >= X0) & (xs <= X1) & (part > 0)
@@ -448,6 +448,17 @@ def compose(spec, name, pose, arts, cell):
         if len(xs):
             m[:, : (xs.min() + xs.max()) // 2] = False
         out = np.where(m, spec['ghost_c'], 0).astype(np.int16)
+        # 3px 보다 짧은 줄 조각은 지운다(잡픽셀 방지)
+        for y in range(out.shape[0]):
+            run = 0
+            for x in range(out.shape[1] + 1):
+                if x < out.shape[1] and out[y, x]:
+                    run += 1
+                    continue
+                if 0 < run < 3:
+                    out[y, x - run:x] = 0
+                    m[y, x - run:x] = False
+                run = 0
         # 줄 끝 한 칸은 진한 색
         edge = m & ~np.pad(m, ((0, 0), (0, 1)))[:, 1:]
         out[edge] = spec['ghost_o']

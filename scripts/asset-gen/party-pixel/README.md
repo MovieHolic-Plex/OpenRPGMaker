@@ -9,3 +9,11 @@ retro2003 로스터 2차(src/assets/retroRoster.ts)의 beast·vehicle·monster �
 - 확인판: python3 scripts/asset-gen/party-pixel/review_board.py b1|b3|b5 → .omo/r2w5/<묶음>/party-board-*.png(대기·windup·attack·hit·dead 4배), party-stage-*.png(가상 무대).
 - 검사: 크기·알파·≤16색·빈 칸·칸끼리 다름·칸 경계(가로 1px, 바닥 cell-3). 실패하면 종료 코드 1.
 
+## pp1 재작업(2026-09-29): b1 Animal 8 → 15칸, 칩 비율 유지
+
+- 빌더 `pp15_pp1.py`(b1 전용): Animal.png 왼쪽 보기(방향 행 3 — 이 칩셋은 0 위·1 오른쪽·2 아래·3 왼쪽) 가운데 칸 24×32 를 Scale2x 로 2배 밑그림을 만든다.
+  실루엣 외곽선 1px, 위·아래 안쪽 한 줄에 칩 팔레트 안의 한 단계 빛·그늘. 칩 1배 좌표 사각형으로 머리·몸·앞다리·뒷다리·꼬리(수탉은 다리·날개)를 갈라 자세표대로 돌린다.
+  색은 칩 원본 색만 쓴다(≤16). 셀 48 = 개·고양이·수탉·양, 64 = 젖소·말·호랑이·사자, 모두 칩 × 2 그대로.
+- 종 파일 `animal-<i>.py` 는 부위 사각형·중심점·눈·입 자리만 적는다. 실행하면 시트 + 검사 줄 + `.omo/pp1/board-<칩>.png`(칩 4배·8배 옆 15칸).
+- 크기 비교판: `python3 -c "import sys;sys.path.insert(0,'scripts/asset-gen/party-pixel');import pp15_pp1 as L;L.board_lineup([('animal-%d'%i,48 if i<4 else 64) for i in range(8)])"` → `.omo/pp1/lineup.png`.
+- `review_board.py` 는 3×3 시트 전제라 b1 15칸 시트에는 맞지 않는다.
