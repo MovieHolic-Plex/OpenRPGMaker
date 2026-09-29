@@ -59,11 +59,20 @@ def contract(batch=None):
     return out
 
 
+OWN_PREFIX = {
+    'a3': ('berserker_', 'gunner_', 'dancer_', 'alchemist_', 'summoner_', 'squire_', 'flower_girl_', 'swordsman_'),
+    'p1': ('scholar_', 'miner_', 'farmer_', 'elder_', 'grandma_', 'gunslinger_', 'butler_', 'priest_monk_'),
+}
+
+
 def batch_keys(batch):
     """묶음의 새 시트 키(계약 순서, 중복 제거)."""
     seen, keys = set(), []
     text = (BATCH_DIR / f'{batch}.ts').read_text(encoding='utf8')
     for l in re.finditer(r'key: "(\w+)", anchor', text):
+        # 다른 묶음·기본 직업·몬스터가 소유한 공용 시트(focus·heal·mon_* 등)는 이 묶음이 굽지 않는다.
+        if not l.group(1).startswith(OWN_PREFIX[batch]):
+            continue
         if l.group(1) not in seen:
             seen.add(l.group(1))
             keys.append(l.group(1))

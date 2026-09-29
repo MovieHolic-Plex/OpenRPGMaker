@@ -98,3 +98,9 @@ Colours: poison yellow-green + violet, darkness violet/black/crimson, ice blue-w
 Checks: size, binary alpha, ≤16 colours, no empty frame, neighbouring frames differ, isolated pixels (counted before edge dithering).
 Review output: `.omo/mfx/<key>-preview.png` and `.omo/mfx/board-18_35(-partN).png`, a mock stage on #405838 with a monster square and actor1-0 at 2x.
 
+
+## r2w2 — 묶음 a3·p1 이펙트 (2026-09-29)
+
+공용 모듈 lib_r2w2.py. 스킬표 정본은 emit_r2w2_skills.py → src/assets/retroRosterSkills/a3.ts·p1.ts 로 생성, 각 <key>.py 는 그 .ts 의 anchor·frame·frames 와 다르면 멈춘다.
+python3 scripts/asset-gen/pixel-fx/lib_r2w2.py a3 p1 은 묶음이 소유한 접두(a3: berserker_…swordsman_, p1: scholar_…priest_monk_)의 시트 137장(a3 82 · p1 55)을 다시 굽고 .omo/r2w2/<batch>/fx/ 에 4배 미리보기를 쓴다.
+p1 은 스킬마다 새 시트 최대 1장이고 나머지 층은 기존 시트(focus·heal·sleep·cleric_*·mage_*·mon_* 등)를 재사용한다.

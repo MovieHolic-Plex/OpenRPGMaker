@@ -19,7 +19,7 @@ CHARS = {
                       main='short_sword', item='potion_red', guard_angle=90, skill_angle=45,
                       angles=dict(idle=45, windup=135, strike=90, attack=0, follow=315), fx_color=(255, 226, 120, 255)),
     'people1-1': dict(label='꽃집 아가씨', batch='a3', skin='#fcc29b', sleeve='#c59daf', sleeve_d='#76415c', sleeve_l='#f2e3ea',
-                      main='bouquet', item='basket', guard_angle=90, skill_angle=70,
+                      main='bouquet', item='herbs', guard_angle=90, skill_angle=70,
                       angles=dict(idle=60, windup=120, strike=90, attack=10, follow=315), fx_color=(255, 150, 190, 255)),
     'people1-2': dict(label='검객', batch='a3', skin='#f1a06a', sleeve='#154b39', sleeve_d='#0a261f', sleeve_l='#257d5c',
                       main='slim_blade', item='potion_red', guard_angle=90, skill_angle=0,
