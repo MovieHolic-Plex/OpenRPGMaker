@@ -696,7 +696,7 @@ def candle_imp(c, view, P):
     fh = P.get('flame', (6, 7, 8)[ph])
     sway = P.get('sway', (-1, 0, 1)[ph])
     if P.get('puddle', True):
-        c.ell(0, -.3, 6, 1.3, ('xd', 'xm', 'xm'))
+        c.ell(0, -1, 6, 1.3, ('xd', 'xm', 'xm'))
     if view == 'side':
         c.tube([(3, -6), (7, -8), (8, -12)], ('xd', 'xd', 'xd'), 2, out=None)
         c.pxs([(8, -12), (8, -13)], 'xd')
