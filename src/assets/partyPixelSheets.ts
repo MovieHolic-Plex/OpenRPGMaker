@@ -26,6 +26,8 @@ export interface PartyPixelSheet {
   readonly idleFrameMs: number;
   /** 시트 행 수(3 = 9칸, 5 = 15칸 확장). */
   readonly rows: 3 | 5;
+  /** 화면 상자 한 변(px). 칩 × 1 그림은 셀 × 2, 칩 × 2 그림(art 2)은 셀 × 1 — 어느 쪽이든 칩 한 픽셀이 화면 2px 다. */
+  readonly box: number;
 }
 
 export function partyPixelResourceId(chip: string): string {
@@ -40,6 +42,7 @@ export const PARTY_PIXEL_SHEETS: readonly PartyPixelSheet[] = RETRO_PARTY_PIXEL_
   motion: entry.motion,
   idleFrameMs: entry.idleFrameMs,
   rows: entry.rows ?? 3,
+  box: entry.cell * (entry.art === 2 ? 1 : 2),
 }));
 
 /** 15칸 시트의 확장 칸 자리(열, 행). 행 0~2 는 PIXEL_ENEMY_FRAME 과 같다. */

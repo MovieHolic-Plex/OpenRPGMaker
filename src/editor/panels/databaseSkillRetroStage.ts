@@ -456,6 +456,12 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
       node.style.width = sheets.pixel.cell + "px";
       node.style.height = sheets.pixel.cell + "px";
       node.style.backgroundSize = sheets.pixel.cell * 3 + "px " + sheets.pixel.cell * sheets.pixel.rows + "px";
+      // 칩 × 2 로 그린 시트(art 2)는 무대에서 절반으로 — 사람 칩(× 1)과 키를 맞춘다. 좌표·칸 계산은 셀 px 그대로 두고
+      // 발 줄(cell−4)을 기준점으로 줄여 발 위치가 변하지 않게 한다.
+      if (sheets.pixel.box === sheets.pixel.cell) {
+        node.style.scale = "0.5";
+        node.style.transformOrigin = "50% " + (sheets.pixel.cell - 4) + "px";
+      }
       node.dataset.pixel = sheets.pixel.chip;
       void probeSheet(sheets.sheet).then((ok) => { if (!ok) node.hidden = true; });
     }

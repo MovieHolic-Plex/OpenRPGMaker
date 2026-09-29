@@ -1184,10 +1184,10 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0, count = 4): HTMLElem
       // 사람형이 아닌 파티원(짐승·탈것·몬스터 칩): 24포즈 걷기 칩 시트 대신 몬스터 9칸 시트로 선다. battlerExtended 는 켜지 않는다.
       node.dataset.pixelParty = pixelParty.motion;
       node.dataset.pixelEnemyCell = String(pixelParty.cell);
-      node.style.setProperty("--party-pixel-box", `${pixelParty.cell * 2}px`);
-      // 64px 셀(화면 128px) 파티원은 사람 도트(96px)보다 반폭이 16px 넓다 — 오른쪽 사선 열 끝(x 294)에서 무대 밖으로 잘렸다
+      node.style.setProperty("--party-pixel-box", `${pixelParty.box}px`);
+      // 상자가 사람 도트(96px)보다 넓은 파티원(화면 128px)은 오른쪽 사선 열 끝(x 294)에서 무대 밖으로 잘렸다
       // (범선·비공정 녹화 실측). 넓어진 반폭만큼 왼쪽으로 당긴다(RM 논리 px = 화면 px / 2).
-      if (pixelParty.cell > 48) positionBattleNode(node, ap.x - (pixelParty.cell - 48) / 2, ap.y);
+      if (pixelParty.box > 96) positionBattleNode(node, ap.x - (pixelParty.box - 96) / 4, ap.y);
       node.append(partyPixelSprite(actor.name, pixelParty));
       applyBattlerPose(node, actor.pose);
       node.append(statusIconCluster(actor));
@@ -1725,7 +1725,7 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
 
 /** 파티원 몬스터 9칸 시트 스프라이트. 상자 = 셀 × 2(적 도트와 같은 2배), 그림은 배경 300%×300%. */
 function partyPixelSprite(name: string, sheet: PartyPixelSheet): HTMLElement {
-  const box = sheet.cell * 2;
+  const box = sheet.box;
   const sprite = document.createElement("span");
   sprite.className = "battle-actor-sprite";
   sprite.dataset.testid = `battle-actor-sprite-${sheet.resourceId}`;
