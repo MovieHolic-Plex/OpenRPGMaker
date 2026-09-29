@@ -18,29 +18,28 @@ CX, FEET = 32, 56
 
 
 def jaws(c, close, y0=FEET):
-    """곰덫(옆에서 본 모양). close 0 = 두 턱이 바닥에 누움, 1 = 세워져 맞물림. 턱 안쪽에 이빨."""
-    R = 13
+    """곰덫(옆에서 본 모양). 두 턱은 힌지(CX, y0)를 중심으로 한 사분원이다.
+    close 0 = 바닥에 납작하게 벌어짐(세로 눌림 0.22), 1 = 세워져 위에서 맞물린 반원. 턱 안쪽으로 톱니."""
+    R = 15
+    sq = lerp(0.22, 1.0, close)
     for side in (-1, 1):
-        th = math.radians(lerp(8, 88, close))
-        pts, teeth = [], []
-        for i in range(11):
-            u = i / 10
-            a = math.pi * u  # 반원
-            # 반원(힌지 CX, y0)을 기울기 th 로 세운다: 가로 반지름 R, 세로 반지름 R*sin(th)
-            x = CX + side * (R - R * math.cos(a)) * math.cos(th) * 0.5 + side * 0.0
-            x = CX + side * R * math.sin(a) * (1 - close * 0.55)
-            y = y0 - R * (1 - math.cos(a)) * 0.5 * math.sin(th) * 2
-            pts.append((x, y))
-            if 1 <= i <= 9 and i % 2:
-                teeth.append((x, y, a))
-        c.line(pts, 's0', 3)
-        c.line(pts, 's1', 1)
-        for x, y, a in teeth:
-            tx = x - side * 3 * (1 - close * 0.5)
-            ty = y + 2 * close
-            c.poly([(x, y - 1), (x, y + 1), (tx, ty)], 's3')
-    c.rect(CX - 5, y0 - 1, CX + 5, y0 + 1, 's0')
-    c.rect(CX - 3, y0 - 1, CX + 3, y0, 's2')
+        a0, a1 = (math.pi, math.pi * 1.5) if side < 0 else (math.pi * 1.5, math.tau)
+        pts = [(CX + math.cos(lerp(a0, a1, i / 12)) * R, y0 + math.sin(lerp(a0, a1, i / 12)) * R * sq) for i in range(13)]
+        # 톱니: 턱을 따라 안쪽(힌지 쪽)으로 뾰족하게
+        for i in range(1, 12, 2):
+            a = lerp(a0, a1, i / 12)
+            bx, by = CX + math.cos(a) * R, y0 + math.sin(a) * R * sq
+            tx, ty = CX + math.cos(a) * (R - 5), y0 + math.sin(a) * (R - 5) * sq
+            c.poly([pol(bx, by, 1.6, a + math.pi / 2), pol(bx, by, 1.6, a - math.pi / 2), (tx, ty)], 's2')
+            c.px(tx, ty, 's3')
+        c.line(pts, 's0', 4)
+        c.line(pts, 's1', 2)
+        c.line(pts[: 7], 's3', 1)
+    # 받침판·스프링
+    c.rect(CX - R - 2, y0, CX + R + 2, y0 + 2, 's0')
+    c.rect(CX - R - 1, y0, CX + R + 1, y0 + 1, 's1')
+    c.oval(CX, y0, 4, 2, 's0')
+    c.oval(CX, y0, 3, 1, 'y2')
 
 
 @effect('hunter_bear_trap', 64, 8, 'target', TRAP)
@@ -49,7 +48,7 @@ def _(c, f):
     if f == 0:
         c.line([(60, 10), (40, 30)], 's1')
         c.dring(CX + 6, 34, 6, 's2')
-        jaws(c, 0.4, 40)
+        jaws(c, 0.3, 40)
         return
     close = {1: 0.0, 2: 0.35, 3: 0.7}.get(f, 1.0)
     shake = [0, 0, 0, 0, -1, 1, -1, 0][f]

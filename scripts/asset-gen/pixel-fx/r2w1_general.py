@@ -29,18 +29,20 @@ def _(c, f):
     if f <= 2:
         c.shockring(PX, FEET, 4 + f * 4, 't2', None, 0.35, 1)
     if f >= 3:
-        w = 16 * min(1.0, (f - 2) / 3)
+        w = 24 * min(1.0, (f - 2) / 3)
         ph = f * 0.9
-        topl = [(PX + 1 + i * w / 6, top + 3 + math.sin(ph + i * 0.9) * 1.6 * (i / 6)) for i in range(7)]
-        botl = [(x, y + 12 - (i / 6) * 2) for i, (x, y) in enumerate(topl)]
+        # 군기는 깃대 앞(왼쪽, 적 쪽)으로 휘날린다.
+        topl = [(PX - 1 - i * w / 6, top + 3 + math.sin(ph + i * 0.9) * 2.0 * (i / 6)) for i in range(7)]
+        botl = [(x, y + 17 - (i / 6) * 3) for i, (x, y) in enumerate(topl)]
         c.poly(topl + botl[::-1], 'r1')
         inner = [(x, y + 1) for x, y in topl[:-1]] + [(x, y - 1) for x, y in botl[:-1][::-1]]
         c.poly(inner, 'r2')
         c.line(topl, 'r3')
         c.line(botl, 'r0')
-        if w > 8:
-            mx, my = topl[3][0], topl[3][1] + 6
-            c.crown(mx, my + 2, 7, 'y1', gem='w', hi='y3')
+        c.line([(x, y + 15 - (i / 6) * 3) for i, (x, y) in enumerate(topl)], 'y1')
+        if w > 12:
+            mx, my = topl[3][0], topl[3][1] + 9
+            c.crown(mx, my + 2, 10, 'y1', gem='w', hi='y3')
     if f >= 5:
         u = (f - 5) / 4
         c.shockring(32, FEET, 12 + u * 16, 'y1', 'y2', 0.3, 1)

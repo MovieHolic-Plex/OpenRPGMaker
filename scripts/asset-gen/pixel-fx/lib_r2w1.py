@@ -309,7 +309,10 @@ def batch_contract(batch):
     text = (BATCH_DIR / f'{batch}.ts').read_text(encoding='utf8')
     layers = {}
     for m in re.finditer(r'key: "(\w+)", anchor: "(\w+)", frame: (\d+), frames: (\d+)', text):
-        layers.setdefault(m.group(1), dict(anchor=m.group(2), frame=int(m.group(3)), frames=int(m.group(4))))
+        spec = layers.setdefault(m.group(1), dict(anchor=m.group(2), frame=int(m.group(3)), frames=int(m.group(4)), anchors=set()))
+        spec['anchors'].add(m.group(2))
+        if (spec['frame'], spec['frames']) != (int(m.group(3)), int(m.group(4))):
+            raise SystemExit(f'{m.group(1)}: 묶음 파일 안에서 규격이 서로 다르다')
     return layers
 
 
@@ -374,7 +377,8 @@ def ts_text(batch):
             for k in r['keys']:
                 if k in REG:
                     e = REG[k]
-                    anchor, frame, frames = e['anchor'], e['size'], e['frames']
+                    anchor, frame, frames = r['anchors'].get(k, e['anchor']), e['size'], e['frames']
+                    assert (anchor == 'projectile') == (e['anchor'] == 'projectile') and (anchor == 'screen') == (e['anchor'] == 'screen'), (r['id'], k, anchor)
                 else:
                     e = existing_sheets()[k]
                     anchor, frame, frames = r['anchors'].get(k, e['anchor']), e['frame'], e['frames']
@@ -420,7 +424,7 @@ def run(key, batch=None, quiet=False):
     batch = batch or batch_of(key)
     spec = batch_contract(batch).get(key)
     got = (e['size'], e['frames'], e['anchor'])
-    if not spec or (spec['frame'], spec['frames'], spec['anchor']) != got:
+    if not spec or (spec['frame'], spec['frames']) != got[:2] or got[2] not in spec['anchors']:
         raise SystemExit(f'{key}: 스크립트 {got} != 묶음 파일 {spec}')
     if len(e['pal']) > 15:
         raise SystemExit(f'{key}: 잉크 {len(e["pal"])}색(+투명 > 16)')
@@ -581,7 +585,8 @@ def render_cache(key):
 def sheet_spec(key, row):
     """무대 합성용 규격: 새 시트는 REG, 재사용 시트는 기존 규격(+스킬의 앵커 덮어쓰기)."""
     if key in REG:
-        return REG[key]
+        e = REG[key]
+        return dict(e, anchor=row['anchors'].get(key, e['anchor']))
     e = existing_sheets()[key]
     return dict(size=e['frame'], frames=e['frames'], anchor=row['anchors'].get(key, e['anchor']))
 
