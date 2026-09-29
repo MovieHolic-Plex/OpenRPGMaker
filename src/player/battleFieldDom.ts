@@ -1596,6 +1596,13 @@ function stateIconToken(stateId: string): string {
   const buff = buffIconToken(stateId);
   if (buff) return buff;
   if (stateId.includes("regen")) return "regen";
+  if (stateId.includes("stop")) return "stop";
+  if (stateId.includes("protect")) return "protect";
+  if (stateId.includes("shell")) return "shell";
+  if (stateId.includes("berserk") || stateId.includes("taunt")) return "berserk";
+  if (stateId.includes("petrify") || stateId.includes("stone")) return "petrify";
+  if (stateId.includes("wet")) return "wet";
+  if (stateId.includes("oil")) return "oiled";
   if (stateId.includes("poison")) return "poison";
   if (stateId.includes("burn")) return "burn";
   if (stateId.includes("freeze") || stateId.includes("frozen")) return "freeze";
