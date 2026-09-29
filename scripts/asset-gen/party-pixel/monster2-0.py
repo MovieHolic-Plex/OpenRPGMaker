@@ -17,4 +17,4 @@ TUNE = {'attack': {'angles': {'legs': 55}}, 'finisher': {'angles': {'legs': 65, 
 
 if __name__ == '__main__':
     rig = Rig(0, PARTS, chest=15, cut=lambda x, y: y >= 28, flying=True, fx=('f4fff0', 'a8e0a0', '5a9a60'))
-    run('monster2-0', rig, ROLES, style='claw', weapon='legs', hover=4, tune=TUNE)
+    run('monster2-0', rig, ROLES, style='claw', weapon='legs', hover=4, tune=TUNE, cast_part=None)

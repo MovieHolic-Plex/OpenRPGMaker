@@ -535,15 +535,17 @@ def review(chip, fig, sheet, qa):
     """확인판 (a): 원본 걷기 칩 왼쪽 보기(4배) | 15칸(4배) — 폭 1860px 이하."""
     S = 4
     src = Image.fromarray(fig.src, 'RGBA')
-    W = 24 * S + 24 + CELL * 3 * S
+    W = 24 * S * 2 + 24 + CELL * 3 * S
     H = CELL * 5 * S
     board = Image.new('RGB', (W, H), (26, 30, 44))
     d = ImageDraw.Draw(board)
     t = Image.new('RGBA', src.size, BG + (255,)); t.alpha_composite(src)
-    board.paste(t.convert('RGB').resize((24 * S, 32 * S), Image.NEAREST), (0, (BASE - 30) * S - 28 * S + 32 * S - 32 * S))
+    board.paste(t.convert('RGB').resize((24 * S, 32 * S), Image.NEAREST), (0, 20))
     d.text((4, 4), 'chip x4', fill=(220, 220, 220))
+    board.paste(t.convert('RGB').resize((24 * S * 2, 32 * S * 2), Image.NEAREST), (0, 32 * S + 60))
+    d.text((4, 32 * S + 44), 'chip x8 (= idle x4)', fill=(220, 220, 220))
     sh = Image.new('RGBA', sheet.size, BG + (255,)); sh.alpha_composite(sheet)
-    ox = 24 * S + 24
+    ox = 24 * S * 2 + 24
     board.paste(sh.convert('RGB').resize((sheet.width * S, sheet.height * S), Image.NEAREST), (ox, 0))
     for i, n in enumerate(NAMES):
         x, y = ox + i % 3 * CELL * S, i // 3 * CELL * S
@@ -577,7 +579,8 @@ def fwd_rot(pt, pivot, deg):
 class Pose:
     """한 칸의 몸 자세: 기울기 k(− 앞), 몸 밀기 dx, 들림 lift, 눌림/세움 행, 부위 각도."""
 
-    def __init__(self, k=0.0, dx=0, lift=0, squash=0, stretch=0, tuck=0, angles=None, shifts=None, rot=0):
+    def __init__(self, k=0.0, dx=0, lift=0, squash=0, stretch=0, tuck=0, angles=None, shifts=None, rot=0, tilt=0):
+        self.tilt = tilt   # 몸 전체를 발 축으로 기울임(도, + = 머리가 뒤로 넘어감). dead 에서 rot 대신 쓴다.
         self.k, self.dx, self.lift = k, dx, lift
         self.squash, self.stretch, self.tuck = squash, stretch, tuck
         self.angles = angles or {}
@@ -599,6 +602,7 @@ class Rig:
         self.flying = flying
         self.foot_x, self.foot_y = anchor(self.fig)
         self.chest = chest * 2 + OFF[1]           # 호흡 행(칩 y)
+        self.center_dx = 0                         # 몸을 셀 중심에서 뒤(오른쪽)로 밀기 — 앞쪽 효과 자리
         self.pivot_y = self.foot_y
 
     def compose(self, pose):
@@ -631,6 +635,7 @@ class Rig:
             if tip:
                 tp = fwd_rot((tip[0] * 2, tip[1] * 2), pv, deg)
                 tips[name] = (tp[0] + OFF[0] + npv[0] - wp[0] + sx, tp[1] + OFF[1] + npv[1] - wp[1] + sy)
+                tips[name + '@'] = (npv[0] + sx, npv[1] + sy)
         out = -np.ones_like(body)
         for b in backs:
             paste(out, b)
@@ -639,15 +644,17 @@ class Rig:
             paste(out, fr)
         if pose.rot:
             out = np.rot90(out, pose.rot).copy()
+        if pose.tilt:
+            out = rotate(out, (self.foot_x, self.foot_y), -pose.tilt, canvas=WORK, off=(0, 0))
         return out, tips
 
     def cell(self, pose, fx=None, lift=None):
         img, tips = self.compose(pose)
         img = finish(self.fig, img)
         # 바닥 맞춤: 대기 칸 발끝 기준으로 모든 칸 같은 이동. dead 는 몸 아래 끝을 바닥에 놓는다.
-        cx = self.foot_x
+        cx = self.foot_x - self.center_dx
         foot = self.foot_y
-        if pose.rot:
+        if pose.rot or pose.tilt:
             ys, xs = np.nonzero(img >= 0)
             foot = ys.max()
             cx = (xs.min() + xs.max() + 1) / 2
@@ -745,10 +752,17 @@ def standard(rig, roles, hover=0, tune=None):
     return P
 
 
-def standard_fx(fig, style='slash', weapon=None):
+def standard_fx(fig, style='slash', weapon=None, cast_part=''):
     """칸별 효과. style: slash(베기 호) · claw(세 줄 할퀴기) · magic(구체·빔) · breath(불길) · punch(충격·먼지) · feather(깃털)."""
 
-    def hand(b, tips):
+    def hand(b, tips, cast=False):
+        w = cast_part if (cast and cast_part != '') else weapon
+        if w and w in tips:
+            return tips[w]
+        if cast and cast_part is None:
+            x0, y0, x1, y1 = bbox(fig, b.img)
+            y = y0 + (y1 - y0) * 0.45
+            return front_at(fig, b.img, y) - 2, y
         if weapon and weapon in tips:
             return tips[weapon]
         x0, y0, x1, y1 = bbox(fig, b.img)
@@ -785,7 +799,7 @@ def standard_fx(fig, style='slash', weapon=None):
             x0, y0, x1, y1 = bbox(fig, b.img)
             midy = (y0 + y1) / 2
             fr = front_at(fig, b.img, midy)
-            hx, hy = hand(b, tips)
+            hx, hy = hand(b, tips, n.startswith('cast'))
             if n == 'move':
                 speed(b, x1, y0 + (y1 - y0) * 0.3, 3, 9)
             elif n == 'attack':
@@ -805,7 +819,8 @@ def standard_fx(fig, style='slash', weapon=None):
             elif n == 'recover':
                 b.dust(x1 - 2, BASE, 2) if style == 'punch' else None
             elif n == 'hit':
-                impact(b, fr - 3, y0 + (y1 - y0) * 0.35, False)
+                hy_ = y0 + (y1 - y0) * 0.35
+                impact(b, front_at(fig, b.img, hy_) - 2, hy_, False)
             elif n == 'dead':
                 b.dust(x0 - 4, BASE, 1)
             elif n == 'cast_charge':
@@ -827,7 +842,20 @@ def standard_fx(fig, style='slash', weapon=None):
                 for i in range(2):
                     b.line(x1 - 4 + i * 5, y1 + 3, x1 + i * 5, y1 + 7, 2)
             elif n == 'buff':
-                b.aura(1, 1, spikes=(int(x0 + 3), int((x0 + x1) / 2), int(x1 - 3)), tip=0)
+                cx = (x0 + x1) / 2
+                hw = (x1 - x0) / 2 + 4
+                for i in range(int(-hw), int(hw) + 1):      # 발밑 기운 고리(타원 윗·아랫 호)
+                    t = i / hw
+                    dy = 2.2 * math.sqrt(max(0.0, 1 - t * t))
+                    b.px(cx + i, BASE - dy, 1 if abs(t) < 0.7 else 2)
+                    b.px(cx + i, BASE + 1 - 0.0, 2) if abs(t) < 0.5 else None
+                for j, fxp in enumerate((x0 - 3, x1 + 3, x0 - 1, x1 + 1)):   # 몸 양옆으로 솟는 기운 가닥
+                    base = BASE - 3 - j * 5
+                    h = 9 - j
+                    for d in range(h):
+                        k = 0 if d > h - 3 else (1 if d > 2 else 2)
+                        b.px(fxp + (1 if (d // 3) % 2 else 0) * (1 if j % 2 else -1), base - d, k)
+                b.spark(cx, y0 - 4, 0, 1, 1)
             elif n == 'finisher':
                 if style == 'slash':
                     swing(b, fr + 12, midy, 17, 120, 260, 3)
@@ -854,9 +882,39 @@ def standard_fx(fig, style='slash', weapon=None):
     return {n: fx(n) for n in NAMES}
 
 
-def run(chip, rig, roles, style='slash', weapon=None, hover=0, tune=None, extra_fx=None):
+def blade(part, length, frames, core=0, edge=1, width=2):
+    """부위 손끝에서 (손끝 − 관절) 방향으로 뻗는 칼날 효과. 효과색: core 심·edge 테."""
+    def draw(b, tips, n):
+        if n not in frames or part not in tips:
+            return
+        (tx, ty), (px_, py_) = tips[part], tips[part + '@']
+        dx, dy = tx - px_, ty - py_
+        d = math.hypot(dx, dy) or 1
+        ux, uy = dx / d, dy / d
+        nx, ny = -uy, ux
+        L = frames[n] if isinstance(frames, dict) else length
+        for i in range(1, L + 1):
+            x, y = tx + ux * i, ty + uy * i
+            b.over(x, y, core)
+            if width > 1 and i < L - 1:
+                b.over(x + nx, y + ny, edge)
+                b.over(x - nx, y - ny, 2)
+        b.over(tx + ux * (L + 1), ty + uy * (L + 1), edge)
+        b.over(tx - nx * 2, ty - ny * 2, edge); b.over(tx + nx * 2, ty + ny * 2, edge)   # 코등이
+    return draw
+
+
+def run(chip, rig, roles, style='slash', weapon=None, hover=0, tune=None, extra_fx=None, weapon_fx=None, cast_part=''):
     poses = standard(rig, roles, hover, tune)
-    fxs = standard_fx(rig.fig, style, weapon)
+    fxs = standard_fx(rig.fig, style, weapon, cast_part)
+    if weapon_fx:
+        base = dict(fxs)
+        for n in NAMES:
+            def f(b, tips, n=n, prev=base.get(n)):
+                weapon_fx(b, tips, n)
+                if prev:
+                    prev(b, tips)
+            fxs[n] = f
     if extra_fx:
         fxs.update(extra_fx(rig.fig, fxs))
     return build(chip, rig.fig, lambda n: rig.cell(poses[n], fxs.get(n)), flying=rig.flying)

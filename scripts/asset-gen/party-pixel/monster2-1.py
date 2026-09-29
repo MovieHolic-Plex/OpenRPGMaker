@@ -13,8 +13,11 @@ PARTS = {
     'tail': ([(17, 21), (24, 17), (24, 26), (16, 26), (16, 22)], (17, 23), 'back', (23, 22), None),
     'head': ([(0, 8), (8, 8), (9, 19), (0, 19)], (8, 15), 'front', (1, 15), None),
 }
+TUNE = {
+    'dead': {'rot': 0, 'tilt': 70, 'squash': 3},
+}
 ROLES = {'wing': [('wing', -1)], 'tail': [('tail', -1)], 'arm': [('head', 0.22)], 'legs': []}
 
 if __name__ == '__main__':
     rig = Rig(1, PARTS, chest=16, fx=('eef4ff', '9aa8ff', '5a64b0'))
-    run('monster2-1', rig, ROLES, style='claw', weapon='head')
+    run('monster2-1', rig, ROLES, style='claw', weapon='head', tune=TUNE, cast_part=None)
