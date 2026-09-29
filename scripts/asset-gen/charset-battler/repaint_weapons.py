@@ -18,6 +18,8 @@ BASIC=['actor1-0','actor2-0','actor3-0','actor4-0','actor1-7','actor2-3']
 # art4/heroes6.py 가 소유한 출력 id. actor3-0 은 마도사(기본 배우) 시트라 여기서 계속 지팡이로 칠한다 —
 # 사무라이는 actor3-0-samurai 로 따로 있다.
 HEROES6={'actor3-2','actor3-5','actor3-6','actor3-4','actor4-7'}
+# art5/a3_actor.py(2026-09-29 r2w2)가 직업 장비를 소유한 칩(광전사·총사·무희·연금술사·소환사). 옛 공용 무기로 덮지 않는다.
+R2W2_A3={'actor4-2','actor4-3','actor4-4','actor4-5','actor4-6'}
 KINDS={
  'actor1':('sword','staff','sword','sword','staff','staff','staff','staff'),
  'actor2':('sword','dagger','bow','bow','sword','dagger','bow','bow'),
@@ -138,6 +140,7 @@ def shield(im,center):
 def repaint(cid):
  # 새 주인공 6명은 art4/heroes6.py 가 직업 장비(카타나·쿠나이·류트 등)까지 소유한다. 여기서 옛 공용 무기로 덮지 않는다.
  if cid in HEROES6:return {'kind':'art4/heroes6.py','poses':0}
+ if cid in R2W2_A3:return {'kind':'art5/a3_actor.py','poses':0}
  records={}
  with equipment_pass('record',records):original=sources.render(cid)
  group,index=cid.split('-');kind=KINDS[group][int(index)]
