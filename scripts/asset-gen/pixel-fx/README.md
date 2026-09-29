@@ -98,3 +98,12 @@ Colours: poison yellow-green + violet, darkness violet/black/crimson, ice blue-w
 Checks: size, binary alpha, ≤16 colours, no empty frame, neighbouring frames differ, isolated pixels (counted before edge dithering).
 Review output: `.omo/mfx/<key>-preview.png` and `.omo/mfx/board-18_35(-partN).png`, a mock stage on #405838 with a monster square and actor1-0 at 2x.
 
+
+## retro2003 로스터 2차 r2w5 — b1(Animal)·b3(Monster1)·b5(Monster3) (2026-09-29)
+
+- 공용 모듈 lib_r2w5.py: 시트는 r2w5_<직업 키>.py 에 @sheet(키, frame, frames, anchor, Pal) 로 등록하고, <키>.py 는 한 장만 만드는 진입점이다.
+  frame·frames·anchor 는 src/assets/retroRosterSkills/b1·b3·b5.ts 에서 읽어 대조하고 다르면 멈춘다.
+- 스킬 표(정본): gen_r2w5_b1_ts.py·gen_r2w5_b3_ts.py·gen_r2w5_b5_ts.py 가 묶음 TS 를 생성한다. 재사용 시트는 PNG 크기와 대조, 새 시트는 스킬당 1장.
+- 실행: python3 scripts/asset-gen/pixel-fx/lib_r2w5.py dog reaper siren (직업 키별 전부 + 무대판) 또는 python3 scripts/asset-gen/pixel-fx/<키>.py
+- 검수판: .omo/r2w5/<묶음>/fx/
+
