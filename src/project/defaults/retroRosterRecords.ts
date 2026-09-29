@@ -13,7 +13,8 @@ import { partyPixelResourceId } from "@/assets/partyPixelSheets";
 import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
 import { generatedEffectDatabaseAnimationId as anim } from "@/assets/generatedEffectSheets";
 import { ACTOR_LEVEL_MAX, createActorRecord } from "../actorModel";
-import { normalizeClassRecord } from "../databaseRecordModel";
+import { normalizeClassRecord, normalizeSkillRecord } from "../databaseRecordModel";
+import { RETRO_MECHANIC_AREA_RADIUS, type RetroSkillMechanic } from "@/assets/retroSkillMechanics";
 import { DEFAULT_ANIMATION_ID, DEFAULT_EQUIPMENT_ID, DEFAULT_SKILL_ID } from "./constants";
 import {
   CLERIC_EQUIPMENT_IDS, EQUIPMENT_FOCUS_CHARM_ID, EQUIPMENT_LEATHER_ARMOR_ID, EQUIPMENT_MAGE_STAFF_ID, EQUIPMENT_MYSTIC_ROBE_ID,
@@ -418,6 +419,50 @@ export function deriveRosterSkillSeed(skill: Pick<RetroClassSkill, "name" | "des
   };
 }
 
+/**
+ * 계약의 기믹 칸(mechanic)을 유도 레코드 위에 덮는다. 적힌 필드가 우선, 나머지는 유도 값 그대로.
+ * **순수 함수** — 어휘·규칙은 src/assets/retroSkillMechanics.ts 머리 주석.
+ */
+export function applyRetroSkillMechanic(base: SkillRecord, mechanic: RetroSkillMechanic): SkillRecord {
+  const next: SkillRecord = { ...base };
+  const baseStat = base.effect.kind === "damage" || base.effect.kind === "healing" ? base.effect.statistic : "attack";
+  const baseAffects = base.effect.kind === "damage" || base.effect.kind === "healing" ? base.effect.affects : "hp";
+  const kind = mechanic.kind ?? (base.effect.kind === "damage" || base.effect.kind === "healing" || base.effect.kind === "steal" || base.effect.kind === "scan" ? base.effect.kind : "support");
+  const affects = mechanic.affects ?? baseAffects;
+  if (kind === "damage") next.effect = { kind: "damage", statistic: mechanic.stat ?? (base.effect.kind === "damage" ? baseStat : "attack"), affects };
+  else if (kind === "healing") next.effect = { kind: "healing", statistic: mechanic.stat ?? "mind", affects };
+  else if (kind === "steal") next.effect = { kind: "steal" };
+  else if (kind === "scan") next.effect = { kind: "scan" };
+  else next.effect = { kind: "support" };
+  if (kind !== base.effect.kind) {
+    next.variance = kind === "damage" || kind === "healing" ? 15 : 0;
+    next.hitRate = kind === "damage" && next.effect.kind === "damage" && next.effect.statistic === "attack" ? 95 : 100;
+    if (kind !== "damage") { delete next.criticalRate; if (kind !== "healing") next.elementId = undefined; }
+  }
+  if (mechanic.scope) next.scope = mechanic.scope;
+  if (mechanic.power !== undefined) next.power = mechanic.power;
+  if (mechanic.mp !== undefined) next.mpCost = { flat: mechanic.mp, percentMax: 0 };
+  if (mechanic.hits && mechanic.hits.length > 0) next.hitSequence = [...mechanic.hits];
+  if (mechanic.area) next.area = { shape: mechanic.area, radius: RETRO_MECHANIC_AREA_RADIUS[mechanic.area] };
+  if (mechanic.formula) next.damageFormula = mechanic.formula;
+  if (mechanic.hpCost) next.hpCostPercent = mechanic.hpCost;
+  if (mechanic.drain) next.drainPercent = mechanic.drain;
+  if (mechanic.element === null) next.elementId = undefined;
+  else if (mechanic.element) next.elementId = mechanic.element;
+  if (mechanic.crit !== undefined) next.criticalRate = mechanic.crit;
+  if (mechanic.hitRate !== undefined) next.hitRate = mechanic.hitRate;
+  if (mechanic.priority) next.movePriority = mechanic.priority;
+  if (mechanic.cooldown) next.cooldownTurns = mechanic.cooldown;
+  let states: DatabaseStateEffect[] | undefined = mechanic.states
+    ? mechanic.states.map((state) => ({ stateId: state.id, chance: state.chance ?? 100, operation: state.op ?? "add" }))
+    : base.stateEffects ? [...base.stateEffects] : undefined;
+  if (mechanic.revive && !states?.some((state) => state.stateId === "state_death" && state.operation === "remove")) {
+    states = [...(states ?? []), remove("state_death")];
+  }
+  next.stateEffects = states && states.length > 0 ? states : undefined;
+  return normalizeSkillRecord(next);
+}
+
 /** 로스터 스킬 전부의 레코드(묶음 순서 그대로). 역할을 모르는 직업(계약 밖)은 혼합으로 본다. */
 export function retroRosterSkillRecords(): SkillRecord[] {
   const seen = new Set<string>();
@@ -426,7 +471,8 @@ export function retroRosterSkillRecords(): SkillRecord[] {
     if (seen.has(skill.id)) continue;
     seen.add(skill.id);
     const role = retroRosterClass(skill.classId)?.role ?? "혼합";
-    records.push(record(skill.id, skill.name, skill.description, deriveRosterSkillSeed(skill, role)));
+    const derived = record(skill.id, skill.name, skill.description, deriveRosterSkillSeed(skill, role));
+    records.push(skill.mechanic ? applyRetroSkillMechanic(derived, skill.mechanic) : derived);
   }
   return records;
 }

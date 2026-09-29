@@ -14,6 +14,8 @@
 //         flurry 파고들어 연속 베기 · spin 적진 한가운데서 회전 · cast 제자리 시전 · shoot 제자리 활 · buff 제자리 강화
 //         finisher 필살기(화면 어둡게 → 컷인 → 대형 연출)
 
+import type { RetroSkillMechanic } from "./retroSkillMechanics";
+
 export type RetroFxAnchor = "user" | "target" | "allTargets" | "allAllies" | "screen" | "projectile";
 export type RetroSkillMotion = "dash-strike" | "leap-strike" | "blink-strike" | "flurry" | "spin" | "cast" | "shoot" | "buff" | "finisher";
 
@@ -35,6 +37,8 @@ export interface RetroClassSkill {
   readonly description: string;
   /** 재생 순서대로. 같은 key 는 한 장의 시트다. */
   readonly layers: readonly RetroFxLayer[];
+  /** 기믹 칸(다단·범위·수식·대가·흡수·상태…). 있으면 기본 DB 레코드가 설명 낱말 유도보다 이 칸을 우선한다. 어휘·규칙은 retroSkillMechanics.ts. */
+  readonly mechanic?: RetroSkillMechanic;
 }
 
 export const RETRO_CLASS_SKILLS: readonly RetroClassSkill[] = [
