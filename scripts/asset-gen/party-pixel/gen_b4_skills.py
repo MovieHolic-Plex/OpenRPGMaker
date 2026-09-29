@@ -9,7 +9,7 @@ LEVELS = [1, 3, 5, 7, 10, 12, 16, 22]
 # classKey(=classId 에서 class_ 뺀 것), (chip, cell, motion, idleFrameMs), skills
 # skill: (idSuffix, name, motion, description, [(layerKey, anchor, frame, frames)...])
 CLASSES = [
-    ('harpy_pal', ('monster2-0', 48, 'swoop', 120), [
+    ('harpy_pal', ('monster2-0', 64, 'swoop', 120), [
         ('feather_dart', '깃털 표창', 'shoot', '날개에서 뽑은 깃털 한 장을 날려 적을 꿰뚫는다',
          [('harpy_pal_feather', 'projectile', 32, 4), ('harpy_pal_feather_hit', 'target', 64, 6)]),
         ('talon_dive', '급강하 발톱', 'leap-strike', '높이 솟았다 내리꽂히며 발톱으로 세 줄을 긋는다',
@@ -45,7 +45,7 @@ CLASSES = [
         ('cathedral_fall', '성당 붕괴', 'finisher', '고딕 첨탑과 아치가 무너져 내리는 필살기',
          [('gargoyle_pal_cathedral', 'screen', 128, 12), ('gargoyle_pal_cathedral_hit', 'allTargets', 64, 8)]),
     ]),
-    ('vampire', ('monster2-2', 48, 'float', 200), [
+    ('vampire', ('monster2-2', 64, 'float', 200), [
         ('fang_bite', '송곳니 물기', 'dash-strike', '스르르 다가가 목덜미를 송곳니로 문다',
          [('vampire_fang', 'target', 64, 8)]),
         ('blood_claws', '핏빛 손톱', 'flurry', '붉게 물든 손톱으로 연속해서 할퀸다',
@@ -63,7 +63,7 @@ CLASSES = [
         ('blood_moon', '붉은 달의 밤', 'finisher', '핏빛 보름달이 떠오르고 박쥐 떼가 밤을 덮는 필살기',
          [('vampire_bloodmoon', 'screen', 128, 12), ('vampire_moonbite', 'target', 64, 8)]),
     ]),
-    ('demon_knight', ('monster2-3', 48, 'dash', 300), [
+    ('demon_knight', ('monster2-3', 64, 'dash', 300), [
         ('demon_slash', '마검 일섬', 'dash-strike', '검은 마검으로 붉은 반월을 그리며 벤다',
          [('demon_knight_slash', 'target', 64, 8)]),
         ('blade_awaken', '마검 각성', 'buff', '마검이 붉은 불꽃을 두르며 공격력을 끌어올린다',
@@ -167,7 +167,7 @@ def main():
             lines.append(f'    {{ id: "skill_{ck}_{sid}", classId: "class_{ck}", actorId: "actor_{ck}", name: "{name}", level: {lv}, motion: "{motion}", '
                          f'description: "{desc}", layers: [{ls}] }},')
     pp = ', '.join(f'{{ chip: "{c}", cell: {cell}, motion: "{m}", idleFrameMs: {ms} }}' for _, (c, cell, m, ms), _ in CLASSES)
-    pp_lines = [f'    {{ chip: "{c}", cell: {cell}, motion: "{m}", idleFrameMs: {ms} }},' for _, (c, cell, m, ms), _ in CLASSES]
+    pp_lines = [f'    {{ chip: "{c}", cell: {cell}, motion: "{m}", idleFrameMs: {ms}, rows: 5 }},' for _, (c, cell, m, ms), _ in CLASSES]
     text = ('// 묶음 b4 — Monster2 8명(하피·가고일·흡혈귀·마기사·흙 골렘·용인·오니 무사·마족 공작)의 스킬 64개와 전투 도트 규격.\n'
             '// 담당 에이전트만 이 파일을 쓴다. 규격: src/assets/retroRoster.ts 머리 주석, 스킬 형식은 retroClassSkills.ts(RetroClassSkill).\n'
             '// 이 파일은 scripts/asset-gen/party-pixel/gen_b4_skills.py 가 쓴다 — 표를 고치고 그 스크립트를 다시 돌려라.\n'
