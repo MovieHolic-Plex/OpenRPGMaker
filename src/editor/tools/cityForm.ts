@@ -32,6 +32,39 @@ export interface CityFormReport {
   blocks: { count: number; distinct: number; neighbourRepeats: { id: string; a: Pt; b: Pt }[]; overused: { id: string; n: number }[] };
 }
 
+/**
+ * 맵 칸에서 블록·구역 킷을 찾아낸다(윗층 무늬 대조, 85% 이상 일치). 변형(-b/-c)이 같은 조각을 나눠 쓰므로
+ * 점수 높은 것부터 겹치지 않게 고른다. 뒤에 길을 덧칠한 가장자리가 조금 달라도 잡힌다.
+ */
+export function detectKitStamps(map: GameMap, ts: TilesetDef, match: RegExp = /^bd-(block-|castle$|estate$|forum$|cathedral$|windmill$|harbour|river-bridge$)/) {
+  const W = map.width, H = map.height;
+  const at = new Map<number, number[]>();
+  map.upperTiles.forEach((t, i) => { if (t >= 0) { const l = at.get(t); if (l) l.push(i); else at.set(t, [i]); } });
+  const found: { kitId: string; x: number; y: number; w: number; h: number; score: number }[] = [];
+  for (const k of ts.structureKits ?? []) {
+    if (!match.test(k.id)) continue;
+    const cells: [number, number, number][] = [];
+    for (let j = 0; j < k.height; j += 1) for (let i = 0; i < k.width; i += 1) { const t = k.rows[j]?.upperTiles?.[i] ?? -1; if (t >= 0) cells.push([i, j, t]); }
+    if (cells.length < 6) continue;
+    // 가장 드문 칸을 닻으로
+    const anchor = cells.reduce((b, c) => ((at.get(c[2])?.length ?? 0) < (at.get(b[2])?.length ?? 0) ? c : b), cells[0]!);
+    for (const pos of at.get(anchor[2]) ?? []) {
+      const ox = (pos % W) - anchor[0], oy = Math.floor(pos / W) - anchor[1];
+      if (ox < 0 || oy < 0 || ox + k.width > W || oy + k.height > H) continue;
+      let hit = 0; for (const [i, j, t] of cells) if (map.upperTiles[(oy + j) * W + ox + i] === t) hit += 1;
+      const score = hit / cells.length; if (score >= 0.85) found.push({ kitId: k.id, x: ox, y: oy, w: k.width, h: k.height, score: score + cells.length * 1e-6 });
+    }
+  }
+  found.sort((a, b) => b.score - a.score);
+  const out: typeof found = [];
+  for (const f of found) {
+    const clash = out.some((o) => { const ix = Math.min(o.x + o.w, f.x + f.w) - Math.max(o.x, f.x), iy = Math.min(o.y + o.h, f.y + f.h) - Math.max(o.y, f.y);
+      return ix > 0 && iy > 0 && ix * iy > 0.3 * Math.min(o.w * o.h, f.w * f.h); });
+    if (!clash) out.push(f);
+  }
+  return out.map(({ score: _s, ...p }) => p);
+}
+
 function tagsOf(ts: TilesetDef, t: number): readonly string[] {
   return (ts.tileMeta?.[t]?.tags ?? []) as readonly string[];
 }
@@ -43,7 +76,9 @@ export function analyzeCityForm(project: Project, map: GameMap): CityFormReport 
   const idx = (x: number, y: number) => y * W + x;
   const inMap = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < H;
   const kits = new Map<string, StructureKitDef>((ts.structureKits ?? []).map((k) => [k.id, k]));
-  const placements = map.structurePlacements ?? [];
+  // stamp_object(kit:…) 는 structurePlacements 를 남기지 않는다 → 기록이 없으면 칸 무늬로 킷 자리를 찾는다
+  const recorded = (map.structurePlacements ?? []).filter((p) => kits.has(p.kitId));
+  const placements: { kitId: string; x: number; y: number; w: number; h: number }[] = recorded.length ? recorded : detectKitStamps(map, ts);
 
   // ---- 칸 분류 ----
   const kindCache = new Map<number, readonly string[]>();
