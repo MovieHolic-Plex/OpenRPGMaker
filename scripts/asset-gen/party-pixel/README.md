@@ -49,3 +49,12 @@ retro2003 로스터 2차(src/assets/retroRoster.ts)의 beast·vehicle·monster �
 - 나머지 칸은 칩에서 오린 부위(팔·날개·꼬리·머리·칼)를 관절 축으로 돌리고 몸은 행 밀기(기울임·호흡·웅크림)로만 바꾼다. 효과(칼날·기·불길·먼지)는 캐릭터별 효과색 3색.
 - 확인판: .omo/pp4/board-a-*.png(칩 4배·8배 | 15칸 4배), .omo/pp4/board-b-size.png(actor1-0 과 대기 칸 같은 배율), 검사는 각 칩 파일 실행 출력과 .omo/pp4/<chip>/validation.json.
 
+
+## m5 Monster5 15칸 (nm5, 2026-09-29) — OPRN 자체 칩 저주받은 물건 8명
+
+- 걷기 칩과 전투 시트가 **같은 그리기 함수**를 쓴다: scripts/asset-gen/oprn-charset/monster5.py 의 캐릭터 함수(mimic·armor·lantern·doll·book·scarecrow·clockwork·candle_imp)를
+  빌더 pp15_nm5.py 가 칩 1배로 48 칸에 다시 부른다. 대기 칸 idle_a 는 칩 왼쪽 보기 서 있는 칸(행 3·열 1)과 픽셀까지 같다(review 가 확인).
+- 나머지 칸은 캐릭터 함수의 포즈 인자(뚜껑 각도·검 각도·손 위치·불꽃 높이·실 조종대…)를 바꿔 다시 그린 뒤 이동·행 밀기 기울임·90° 회전(dead)만 한다. 효과는 캐릭터 팔레트 색.
+- 셀 48 × 8명(칩 × 1, 사람 actor1-0 과 같은 키). 초롱 귀신·마도서는 떠 있다(BATTLE_HOVER, dead 만 바닥). 왼쪽을 본다(반전 없음).
+- 생성: python3 scripts/asset-gen/party-pixel/monster5-{0..7}.py → 시트 + .omo/nm5/board-<chip>.png.
+  검사·확인판: python3 scripts/asset-gen/party-pixel/review_nm5.py → m5.ts 스킬·레이어 규격 검사, .omo/nm5/b-battle-{1,2}.png, c-size-compare.png.

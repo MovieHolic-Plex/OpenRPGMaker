@@ -137,3 +137,9 @@ People5-3~5-7 다섯 직업(무녀·사막 전사·메이드·은자·노병)의
 공용 모듈은 p4 와 같은 `lib_r2w4.py` (계약: `src/assets/retroRosterSkills/p5.ts`, 스킬당 새 시트 최대 1장,
 나머지 층은 기존 시트 재사용). `python3 fx_<class>.py` 로 그 직업 시트와 확인판(`.omo/r2w4/p5/`)을 다시 만든다.
 투사체(ofuda·plate·flask)는 머리가 왼쪽. screen 128 층은 `fade_oval` 로 둥글게 끝난다.
+
+## m5 (Monster5 저주받은 물건 8명, nm5, 2026-09-29)
+
+- 공용 모듈 lib_nm5.py, 새 키 32장(접두 mimic_pal_·living_armor_·lantern_ghost_·doll_·book_demon_·scarecrow_·clockwork_·candle_imp_), 키마다 <key>.py.
+- run() 은 src/assets/retroRosterSkills/m5.ts 의 frame·frames 와 스크립트가 다르면 멈춘다. 128 은 fade_oval, 64 는 fade_edges. 투사체 첫 칸은 왼쪽.
+- 전부 다시 굽기·미리보기: python3 scripts/asset-gen/pixel-fx/lib_nm5.py → .omo/nm5/d-fx-preview-{1,2}.png, 키별 .omo/nm5/fx/<key>.png.

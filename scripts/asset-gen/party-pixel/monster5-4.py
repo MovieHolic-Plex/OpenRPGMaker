@@ -91,5 +91,5 @@ POSES = {
 }
 
 if __name__ == '__main__':
-    build(4, POSES, hover=M5.HOVER[4])
+    build(4, POSES, hover=M5.BATTLE_HOVER[4])
 
