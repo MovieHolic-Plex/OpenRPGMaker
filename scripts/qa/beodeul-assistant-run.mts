@@ -78,7 +78,7 @@ if (!project.maps[mapId]) throw new Error(`map ${mapId} missing`);
 const intent = { mode: "create", space: "none", facility: null, targetMapId: mapId, useSelection: false, clarify: null, clarifyOptions: [],
   needsPlan: true, resetsContext: false, summary: task, source: "llm",
   tools: ["create_map", "fill_region", "paint_tiles", "paint_road", "stamp_object", "list_spatial_designs", "get_spatial_design", "show_map_region",
-    "get_map_region", "check_reachability", "lay_path", "list_tileset_references", "read_tileset_reference", "tile_query", "get_tile_info", "upsert_event", "tile_erase"] };
+    "get_map_region", "check_reachability", "check_city_form", "lay_path", "list_tileset_references", "read_tileset_reference", "tile_query", "get_tile_info", "upsert_event", "tile_erase"] };
 const initialToolNames = buildSessionRegistryTools({ requestText: task, intent: intent as never }).map((t) => t.function.name);
 fs.writeFileSync(`${OUT}/exposed-tools.json`, JSON.stringify(initialToolNames, null, 1));
 const trace: { i: number; name: string; ok: boolean; summary: string; args: string }[] = [];

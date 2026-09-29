@@ -38,20 +38,26 @@ export interface CityFormReport {
  */
 export function detectKitStamps(map: GameMap, ts: TilesetDef, match: RegExp = /^bd-(block-|castle$|estate$|forum$|cathedral$|windmill$|harbour|river-bridge$)/) {
   const W = map.width, H = map.height;
-  const at = new Map<number, number[]>();
-  map.upperTiles.forEach((t, i) => { if (t >= 0) { const l = at.get(t); if (l) l.push(i); else at.set(t, [i]); } });
+  const index = (layer: readonly number[]) => { const at = new Map<number, number[]>(); layer.forEach((t, i) => { if (t >= 0) { const l = at.get(t); if (l) l.push(i); else at.set(t, [i]); } }); return at; };
+  const atUp = index(map.upperTiles); let atLo: Map<number, number[]> | null = null;
   const found: { kitId: string; x: number; y: number; w: number; h: number; score: number }[] = [];
   for (const k of ts.structureKits ?? []) {
     if (!match.test(k.id)) continue;
-    const cells: [number, number, number][] = [];
+    let cells: [number, number, number][] = [];
     for (let j = 0; j < k.height; j += 1) for (let i = 0; i < k.width; i += 1) { const t = k.rows[j]?.upperTiles?.[i] ?? -1; if (t >= 0) cells.push([i, j, t]); }
+    // 윗층이 거의 없는 킷(호수 항구 등 바닥 킷)은 아래층 무늬로
+    let layer = map.upperTiles, at = atUp;
+    if (cells.length < 0.1 * k.width * k.height) {
+      cells = []; for (let j = 0; j < k.height; j += 1) for (let i = 0; i < k.width; i += 1) { const t = k.rows[j]?.tiles[i] ?? -1; if (t >= 0) cells.push([i, j, t]); }
+      layer = map.lowerTiles; at = atLo ??= index(map.lowerTiles);
+    }
     if (cells.length < 6) continue;
     // 가장 드문 칸을 닻으로
-    const anchor = cells.reduce((b, c) => ((at.get(c[2])?.length ?? 0) < (at.get(b[2])?.length ?? 0) ? c : b), cells[0]!);
+    const anchor = cells.reduce((b, c) => ((at.get(c[2])?.length ?? 1e9) < (at.get(b[2])?.length ?? 1e9) ? c : b), cells[0]!);
     for (const pos of at.get(anchor[2]) ?? []) {
       const ox = (pos % W) - anchor[0], oy = Math.floor(pos / W) - anchor[1];
       if (ox < 0 || oy < 0 || ox + k.width > W || oy + k.height > H) continue;
-      let hit = 0; for (const [i, j, t] of cells) if (map.upperTiles[(oy + j) * W + ox + i] === t) hit += 1;
+      let hit = 0; for (const [i, j, t] of cells) if (layer[(oy + j) * W + ox + i] === t) hit += 1;
       const score = hit / cells.length; if (score >= 0.85) found.push({ kitId: k.id, x: ox, y: oy, w: k.width, h: k.height, score: score + cells.length * 1e-6 });
     }
   }
@@ -140,7 +146,8 @@ export function analyzeCityForm(project: Project, map: GameMap): CityFormReport 
     const raw: { fixed: number; a: number; b: number }[] = [];
     for (let o = 0; o < outer; o += 1) { let s = -1;
       for (let i = 0; i <= inner; i += 1) {
-        const on = i < inner && (orient === "h" ? isStreet(i, o) : isStreet(o, i));
+        // 킷 안에 구워진 뒷골목·뜰은 축선에서 뺀다(블록 속 골목이 옆 거리와 한 줄로 이어져 「곧은 길」로 세지지 않게)
+        const on = i < inner && (orient === "h" ? isRoadFree(i, o) : isRoadFree(o, i));
         if (on && s < 0) s = i;
         if (!on && s >= 0) { if (i - s >= 3) raw.push({ fixed: o, a: s, b: i - 1 }); s = -1; }
       } }
@@ -148,10 +155,11 @@ export function analyzeCityForm(project: Project, map: GameMap): CityFormReport 
     const parent = raw.map((_, i) => i);
     const find = (i: number): number => (parent[i] === i ? i : (parent[i] = find(parent[i]!)));
     for (let i = 0; i < raw.length; i += 1) for (let j = i + 1; j < raw.length; j += 1) {
-      const p = raw[i]!, q = raw[j]!; if (q.fixed - p.fixed > 4) break;
+      const p = raw[i]!, q = raw[j]!; if (q.fixed - p.fixed > 1) break;
       if (q.fixed === p.fixed) continue;
+      // 옆 줄끼리만, 길이가 비슷할 때만 묶는다 — 4칸 대로를 가로지르는 짧은 토막이 긴 가로길과 사슬로 이어져 「100칸 곧은 길」이 되지 않게
       const ov = Math.min(p.b, q.b) - Math.max(p.a, q.a) + 1;
-      if (ov >= 0.7 * Math.min(p.b - p.a + 1, q.b - q.a + 1)) parent[find(j)] = find(i);
+      if (ov >= 0.7 * Math.max(p.b - p.a + 1, q.b - q.a + 1)) parent[find(j)] = find(i);
     }
     const groups = new Map<number, typeof raw>();
     raw.forEach((r, i) => { const g = groups.get(find(i)); if (g) g.push(r); else groups.set(find(i), [r]); });
