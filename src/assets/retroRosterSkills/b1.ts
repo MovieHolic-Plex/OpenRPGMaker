@@ -78,13 +78,13 @@ export const BATCH: RetroRosterBatch = {
     { id: "skill_lion_king", classId: "class_lion", actorId: "actor_lion", name: "백수의 왕", level: 22, motion: "finisher", description: "태양 관을 쓴 사자왕이 나타나는 필살기", layers: [{ key: "lion_king_sky", anchor: "screen", frame: 128, frames: 12 }, { key: "lion_swipe", anchor: "allTargets", frame: 64, frames: 8 }] },
   ],
   partyPixel: [
-    { chip: "animal-0", cell: 48, motion: "dash", idleFrameMs: 170 },
-    { chip: "animal-1", cell: 48, motion: "dash", idleFrameMs: 150 },
-    { chip: "animal-2", cell: 48, motion: "swoop", idleFrameMs: 200 },
-    { chip: "animal-3", cell: 48, motion: "dash", idleFrameMs: 240 },
-    { chip: "animal-4", cell: 64, motion: "stomp", idleFrameMs: 320 },
-    { chip: "animal-5", cell: 64, motion: "dash", idleFrameMs: 170 },
-    { chip: "animal-6", cell: 64, motion: "dash", idleFrameMs: 170 },
-    { chip: "animal-7", cell: 64, motion: "dash", idleFrameMs: 180 },
+    { chip: "animal-0", cell: 48, motion: "dash", idleFrameMs: 170, rows: 5 },
+    { chip: "animal-1", cell: 48, motion: "dash", idleFrameMs: 150, rows: 5 },
+    { chip: "animal-2", cell: 48, motion: "swoop", idleFrameMs: 200, rows: 5 },
+    { chip: "animal-3", cell: 48, motion: "dash", idleFrameMs: 240, rows: 5 },
+    { chip: "animal-4", cell: 64, motion: "stomp", idleFrameMs: 320, rows: 5 },
+    { chip: "animal-5", cell: 64, motion: "dash", idleFrameMs: 170, rows: 5 },
+    { chip: "animal-6", cell: 64, motion: "dash", idleFrameMs: 170, rows: 5 },
+    { chip: "animal-7", cell: 64, motion: "dash", idleFrameMs: 180, rows: 5 },
   ]
 };
