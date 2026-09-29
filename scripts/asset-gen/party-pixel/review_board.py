@@ -3,16 +3,17 @@
 import json
 from pathlib import Path
 from PIL import Image, ImageDraw
-ROOT=Path('.'); OUT=ROOT/'.omo/r2w5/b1'
+import sys
+ROOT=Path('.'); B=sys.argv[1] if len(sys.argv)>1 else 'b1'; OUT=ROOT/f'.omo/r2w5/{B}'
 BG=(0x20,0x28,0x40,255)
-chips=[f'animal-{i}' for i in range(8)]
+chips={'b1':[f'animal-{i}' for i in range(8)],'b3':[f'monster1-{i}' for i in range(8)],'b5':[f'monster3-{i}' for i in range(8)]}[B]
 cols=['idle_a','windup','attack','hit','dead']; idx={'idle_a':0,'windup':3,'attack':5,'hit':7,'dead':8}
 errs=[]
 rows=[]
 for ch in chips:
     sh=Image.open(ROOT/f'public/assets/generated/party-pixel/{ch}.png').convert('RGBA'); c=sh.width//3
     assert sh.size==(c*3,c*3) and c in (48,64)
-    al=set(sh.getchannel('A').tobytes()); nc=len({p for p in sh.getdata() if p[3]})
+    al=set(sh.getchannel('A').tobytes()); nc=len({c for _,c in sh.getcolors(1<<16) if c[3]})
     cells=[sh.crop((i%3*c,i//3*c,i%3*c+c,i//3*c+c)) for i in range(9)]
     if al-{0,255}: errs.append((ch,'alpha'))
     if nc>16: errs.append((ch,'colors',nc))
