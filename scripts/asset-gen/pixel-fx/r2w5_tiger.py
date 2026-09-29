@@ -47,10 +47,10 @@ def tiger_king_sky(c, f):
     c.rect(0, 64, 127, 127, S[1])
     c.dither(lambda cc: cc.rect(0, 90, 127, 127, S[2]), 1)
     # 불꽃 띠(아래)
-    for k in range(12):
-        x = k * 11 + 4
+    for k in range(11):
+        x = 20 + k * 8
         h = 18 + ((k * 7 + f * 5) % 14)
-        LM.flame(c, x, 128, h, 6, [S[2], S[3], Y[0]], lean=((k + f) % 3 - 1) * 2)
+        LM.flame(c, x, 116, h, 6, [S[2], S[3], Y[0]], lean=((k + f) % 3 - 1) * 2)
     # 얼굴 크기: 떠오르며 커진다
     g = [.45, .6, .75, .88, .96, 1.0, 1.02, 1.0, 1.0, 1.0, .98, .95][f]
     cx, cy = 64, 62 + (1 - g) * 30

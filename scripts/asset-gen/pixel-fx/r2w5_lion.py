@@ -10,14 +10,19 @@ def lion_swipe(c, f):
     O, Y, G, W = P_SWIPE.O, P_SWIPE.Y, P_SWIPE.G, P_SWIPE.W[0]
     # 호: 오른쪽 위(각 -40°) → 왼쪽 아래(각 150°)
     a_now = [-40, 20, 80, 130, 150, 150, 150, 150][f]
+    if 1 <= f <= 3:
+        # 얇은 금빛 궤적 호 + 호 끝의 앞발(발바닥이 적 쪽을 본다)
+        crescent(c, 34, 30, 22, -40, a_now, 3.5, [Y[0], G[0], G[1]], u=1.0, tail=.35 if f == 3 else 0)
+    a = math.radians(a_now)
+    px_, py_ = 34 + math.cos(a) * 22, 30 + math.sin(a) * 22
     if f <= 3:
-        crescent(c, 34, 30, 22, -40, a_now if a_now > -30 else -30, 7, [Y[0], Y[2], G[1]] if f < 3 else [Y[0], Y[2]], u=1.0)
-        a = math.radians(a_now)
-        px_, py_ = 34 + math.cos(a) * 22, 30 + math.sin(a) * 22
-        c.disc(px_, py_, 8, O[0], 7); c.disc(px_, py_, 7, Y[1], 6); c.disc(px_ - 1, py_ - 1, 4, Y[3], 3)
+        c.disc(px_, py_, 7.5, O[0], 6.5); c.disc(px_, py_, 6.5, Y[1], 5.5); c.disc(px_ - 1.5, py_ - 1.5, 3.5, Y[3], 2.5)
+        c.disc(px_ + .5, py_ + 1.5, 2.6, O[2], 2)
         for k in range(4):
-            aa = a + math.radians(70 + k * 14)
-            tooth(c, px_ + math.cos(aa) * 6, py_ + math.sin(aa) * 6, 5, aa, 1.4, W, O[0])
+            aa = a + math.radians(95 + (k - 1.5) * 26)
+            bx, by = px_ + math.cos(aa) * 6.5, py_ + math.sin(aa) * 6
+            c.disc(bx, by, 1.8, O[2])
+            tooth(c, bx, by, 4.5, aa, 1.1, W, O[0])
     if f >= 2:
         tail = [0, 0, 0, 0, .15, .4, .65, .85][f]
         cols = [O[1], G[0], G[1]] if f <= 4 else [O[2], Y[0]]

@@ -49,12 +49,28 @@ P_PEG = Pal(N=['#1a2a6a', '#2c52a8', '#4a86d8', '#8ac4f4'], W=['#9aa8d0', '#dce4
             M=['#e8b0ff'], K=['#3a3a5a'])
 
 
+def wing(c, x, y, s, a0, col, edge):
+    """어깨 (x, y) 에서 뒤(오른쪽 위)로 펼친 깃털 부채. a0 = 첫 깃의 각(도, 0 = 오른쪽)."""
+    for k in range(5):
+        a = math.radians(a0 + k * 14)
+        ln = (22 - k * 3) * s
+        dx, dy = math.cos(a), math.sin(a)
+        nx, ny = -dy, dx
+        tip = (x + dx * ln, y + dy * ln)
+        body = [(x + nx * 2.2 * s, y + ny * 2.2 * s), (x + dx * ln * .6 + nx * 3 * s, y + dy * ln * .6 + ny * 3 * s), tip,
+                (x + dx * ln * .55 - nx * 1.5 * s, y + dy * ln * .55 - ny * 1.5 * s)]
+        c.poly(body, edge)
+        inner = [(x + nx * 1.2 * s, y + ny * 1.2 * s), (x + dx * ln * .6 + nx * 2 * s, y + dy * ln * .6 + ny * 2 * s),
+                 (x + dx * (ln - 2), y + dy * (ln - 2)), (x + dx * ln * .5, y + dy * ln * .5)]
+        c.poly(inner, col)
+
+
 def pegasus(c, x, y, s, flap, N, W, G, K):
     """왼쪽 아래로 내달리는 천마. (x, y) = 가슴. flap 0 날개 위, 1 수평, 2 아래."""
     lean = .35
     # 뒤 날개
-    tip = [-22, -8, 6][flap] * s
-    c.poly([(x + 8 * s, y - 2 * s), (x + 20 * s, y + tip - 4 * s), (x + 30 * s, y + tip), (x + 18 * s, y + 3 * s)], W[0])
+    base_a = [-60, -25, 10][flap]
+    wing(c, x + 9 * s, y - 2 * s, s * .8, base_a - 8, W[0], W[0])
     # 몸
     c.disc(x + 7 * s, y + 2 * s, 11 * s + 1, W[0], 5.5 * s + 1)
     c.disc(x + 7 * s, y + 2 * s, 11 * s, W[1], 5.5 * s)
@@ -73,9 +89,7 @@ def pegasus(c, x, y, s, flap, N, W, G, K):
     c.line([(x + 14 * s, y + 5 * s), (x + 20 * s, y + 10 * s)], W[0], max(1, round(2 * s)))
     c.line([(x + 17 * s, y + 3 * s), (x + 24 * s, y + 5 * s)], G[1], max(1, round(2 * s)))    # 꼬리
     # 앞 날개
-    c.poly([(x + 4 * s, y - 2 * s), (x + 12 * s, y + tip - 8 * s), (x + 24 * s, y + tip - 6 * s), (x + 14 * s, y + 1 * s)], W[2])
-    for k in range(3):
-        c.line([(x + (8 + k * 4) * s, y + tip * (.3 + k * .2) - 3 * s), (x + (12 + k * 4) * s, y + tip * (.4 + k * .2) - 1 * s)], W[0])
+    wing(c, x + 5 * s, y - 2 * s, s, base_a, W[2], W[0])
 
 
 @sheet('horse_pegasus_sky', 128, 12, 'screen', P_PEG, peak=[3, 6, 9])
