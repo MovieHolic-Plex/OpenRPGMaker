@@ -79,7 +79,7 @@ export const BATCH: RetroRosterBatch = {
     { id: "skill_demon_general_apocalypse", classId: "class_demon_general", actorId: "actor_demon_general", name: "종말의 검", level: 22, motion: "finisher", description: "하늘을 가르는 거대한 암흑 대검이 떨어지는 필살기", layers: [{ key: "demon_general_doom_sky", anchor: "screen", frame: 128, frames: 12 }, { key: "mon_dark_crater", anchor: "allTargets", frame: 64, frames: 10 }] },
   ],
   partyPixel: [
-    { chip: "monster3-0", cell: 48, motion: "swoop", idleFrameMs: 150 },
+    { chip: "monster3-0", cell: 64, rows: 5, motion: "swoop", idleFrameMs: 150 },
     { chip: "monster3-1", cell: 64, motion: "dash", idleFrameMs: 200 },
     { chip: "monster3-2", cell: 48, motion: "float", idleFrameMs: 240 },
     { chip: "monster3-3", cell: 48, motion: "swoop", idleFrameMs: 140 },
