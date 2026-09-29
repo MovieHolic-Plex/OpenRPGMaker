@@ -137,3 +137,10 @@ People5-3~5-7 다섯 직업(무녀·사막 전사·메이드·은자·노병)의
 공용 모듈은 p4 와 같은 `lib_r2w4.py` (계약: `src/assets/retroRosterSkills/p5.ts`, 스킬당 새 시트 최대 1장,
 나머지 층은 기존 시트 재사용). `python3 fx_<class>.py` 로 그 직업 시트와 확인판(`.omo/r2w4/p5/`)을 다시 만든다.
 투사체(ofuda·plate·flask)는 머리가 왼쪽. screen 128 층은 `fade_oval` 로 둥글게 끝난다.
+
+
+## retro2003 3차 로스터 m4 (Monster4 숲·요괴 8명, 2026-09-29)
+
+- 스킬 표 정본 gen_nm4_ts.py → src/assets/retroRosterSkills/m4.ts. 재사용 층은 키만 적고 anchor·frame·frames 는 기존 정의에서 읽어 온다(PNG 크기도 대조). 스킬당 새 시트 ≤ 1, 새 키는 <classKey>_ 접두.
+- 새 시트 16장(직업마다 대표 1 + 필살기 하늘 1): 그림 nm4_sheets.py, 공용 lib_nm4.py(RGBA 캔버스, screen 은 fade_oval · 나머지 fade_edges), 키마다 <key>.py 진입점.
+- python3 lib_nm4.py 전부 · python3 lib_nm4.py <key> 한 장. 미리보기 .omo/nm4/fx/<key>.png.

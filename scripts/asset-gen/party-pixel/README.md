@@ -49,3 +49,10 @@ retro2003 로스터 2차(src/assets/retroRoster.ts)의 beast·vehicle·monster �
 - 나머지 칸은 칩에서 오린 부위(팔·날개·꼬리·머리·칼)를 관절 축으로 돌리고 몸은 행 밀기(기울임·호흡·웅크림)로만 바꾼다. 효과(칼날·기·불길·먼지)는 캐릭터별 효과색 3색.
 - 확인판: .omo/pp4/board-a-*.png(칩 4배·8배 | 15칸 4배), .omo/pp4/board-b-size.png(actor1-0 과 대기 칸 같은 배율), 검사는 각 칩 파일 실행 출력과 .omo/pp4/<chip>/validation.json.
 
+
+
+## retro2003 3차 로스터 m4 — OPRN 자체 몬스터 Monster4 (숲·요괴 8명, 2026-09-29)
+
+- 걷기 칩: `scripts/asset-gen/oprn-charset/monster4.py` → `public/assets/generated/charsets/Monster4.png` (288×256, 캐릭터마다 함수 하나, 행 0 위·1 오른쪽·2 아래·3 왼쪽, 왼쪽 = 오른쪽 좌우 반전).
+- 전투 15칸: 공용 `pp15_nm4.py` + `monster4-<i>.py`. **칩 × 1**(셀 48, 바닥 44): 대기 칸은 칩 왼쪽 보기 서 있는 칸 그대로이고(`review_nm4.py` 가 픽셀 일치를 검사), 나머지 칸은 칩 픽셀의 기울임·눌림·걷기 패턴·회전과 캐릭터별 효과색(≤3)만 쓴다.
+- 확인판: `.omo/nm4/board-monster4-<i>.png`(칩 4배 | 15칸 4배), `size-compare.png`(actor1-0 과 대기 칸 같은 배율).

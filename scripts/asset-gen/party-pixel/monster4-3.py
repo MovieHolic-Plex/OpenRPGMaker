@@ -11,14 +11,15 @@ B0, B1 = H('#3a6ad8'), H('#9ad8ff')
 BV = H('#6a2ab8')  # 효과색: 환술 보라
 
 
-def foxfire(f, x, y, s=1):
+def foxfire(f, x, y, s=1, under=False):
     """푸른 여우불: 아래 둥근 몸, 위로 뾰족 불꽃. s = 크기 1~3."""
-    f.ell(x - s, y - s, x + s, y + s, B0)
-    f.poly([(x - s, y), (x, y - 2 - s * 2), (x + s, y)], B0)
+    f.ell(x - s, y - s, x + s, y + s, B0, under=under)
+    f.poly([(x - s, y), (x, y - 2 - s * 2), (x + s, y)], B0, under=under)
     k = max(0, s - 1)
-    f.ell(x - k, y - k, x + k, y + k, B1)
-    f.px(x, y - 1 - s, B1)
-    f.px(x, y, C1)
+    f.ell(x - k, y - k, x + k, y + k, B1, under=under)
+    if not under:
+        f.px(x, y - 1 - s, B1)
+        f.px(x, y, C1)
 
 
 def fx(f, pal):
@@ -65,8 +66,8 @@ def fx(f, pal):
     c = f['finisher']
     for i in range(9):
         a = math.radians(-90 + i * 40)
-        foxfire(c, 16 + math.cos(a) * 14, 22 + math.sin(a) * 16, 1 if i % 2 else 2)
-    c.ring(1, 5, 31, 39, BV)
+        foxfire(c, 16 + math.cos(a) * 14, 22 + math.sin(a) * 16, 1 if i % 2 else 2, under=True)
+    c.ring(1, 5, 31, 39, BV, under=True)
     foxfire(c, 5, 24, 3)
     c.spark(5, 24, 4, C1)
 
