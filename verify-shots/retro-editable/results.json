@@ -1,0 +1,164 @@
+{
+  "a": {
+    "before": {
+      "drainPercent": 50
+    },
+    "after": {
+      "drainPercent": 40,
+      "hpCostPercent": 15,
+      "hitSequence": [
+        1,
+        0.5,
+        0.5
+      ]
+    }
+  },
+  "b": {
+    "actors": [
+      {
+        "id": "actor_hero",
+        "name": "주인공"
+      },
+      {
+        "id": "actor_guardian",
+        "name": "수호자"
+      },
+      {
+        "id": "actor_mage",
+        "name": "마도사"
+      }
+    ],
+    "after": {
+      "drainPercent": 40,
+      "hpCostPercent": 15,
+      "hitSequence": [
+        1,
+        0.5,
+        0.5
+      ],
+      "area": {
+        "shape": "line",
+        "radius": 160
+      },
+      "comboActorIds": [
+        "actor_hero",
+        "actor_guardian",
+        "actor_mage"
+      ]
+    },
+    "reopened": {
+      "shapeField": "line",
+      "radiusField": "160",
+      "combo": [
+        "actor_hero",
+        "actor_guardian",
+        "actor_mage"
+      ],
+      "drainField": "40",
+      "record": {
+        "drainPercent": 40,
+        "hpCostPercent": 15,
+        "hitSequence": [
+          1,
+          0.5,
+          0.5
+        ],
+        "area": {
+          "shape": "line",
+          "radius": 160
+        },
+        "comboActorIds": [
+          "actor_hero",
+          "actor_guardian",
+          "actor_mage"
+        ]
+      }
+    }
+  },
+  "e": {
+    "running": "true",
+    "pose": "idle",
+    "motion": "blink-strike",
+    "time": "1.0 / 1.1초"
+  },
+  "c-state-stop": {
+    "freezesGauge": true,
+    "restrictsAction": true,
+    "removeOnBattleEnd": true
+  },
+  "c-state-berserk": {
+    "forcedAction": "attackRandom",
+    "attackMultiplier": 1.5,
+    "removeOnBattleEnd": true
+  },
+  "c-state-protect": {
+    "physicalDefenseMultiplier": 1.5,
+    "removeOnBattleEnd": true
+  },
+  "c-state-wet": {
+    "before": {
+      "elementRates": {
+        "thunder": "A",
+        "fire": "D"
+      },
+      "removeOnBattleEnd": true
+    },
+    "after": {
+      "elementRates": {
+        "thunder": "A",
+        "fire": "E"
+      },
+      "removeOnBattleEnd": true,
+      "magicDefenseMultiplier": 0.75
+    },
+    "reopenedThunderField": "A",
+    "reopenedFireField": "E"
+  },
+  "d": {
+    "stripped": {
+      "before": {
+        "classes": 136,
+        "actors": 136,
+        "skills": 1163,
+        "states": 20
+      },
+      "dropped": [
+        "class_samurai",
+        "class_ninja",
+        "class_druid",
+        "class_witch",
+        "class_valkyrie",
+        "class_dark_knight",
+        "class_sorceress"
+      ],
+      "after": {
+        "classes": 129,
+        "actors": 129,
+        "skills": 1106,
+        "states": 12
+      }
+    },
+    "ensured": {
+      "changed": true,
+      "again": false,
+      "counts": {
+        "classes": 136,
+        "actors": 136,
+        "skills": 1163,
+        "states": 20
+      }
+    },
+    "namesBefore": {
+      "valkyrie": [],
+      "darkKnight": []
+    },
+    "namesAfter": {
+      "valkyrie": [
+        "발키리#134"
+      ],
+      "darkKnight": [
+        "암흑기사#135"
+      ]
+    }
+  }
+}
