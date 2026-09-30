@@ -29,7 +29,7 @@ export function mountFirstRunGuide(dock: HTMLElement, layout: HTMLElement): () =
   const action = (text: string, id: string, run: () => void, primary = false) => el("button", {
     class: `first-run-guide-button${primary ? " is-primary" : ""}`, text, attrs: { type: "button" }, dataset: { testid: id }, on: { click: run },
   });
-  const dismiss = () => store.update(project => { project.flags.firstRunGuide = false; }, { label: "첫 편집 안내 닫기", origin: "human" });
+  const dismiss = () => store.update(project => { project.flags.firstRunGuide = false; }, { scope: "project", label: "첫 편집 안내 닫기", origin: "human" });
   const render = () => {
     const project = store.getCurrent();
     const scope = JSON.stringify(store.getProjectIdentity());
@@ -61,7 +61,7 @@ export function mountFirstRunGuide(dock: HTMLElement, layout: HTMLElement): () =
           const command = commands?.[current.index];
           if (command?.kind === "text") command.body = draft;
         }, { eventId: current.event.id, label: "첫 대사 수정", origin: "human" });
-        store.update(p => { p.flags.firstRunDialogueEdited = true; p.flags.firstRunTested = false; }, { label: "첫 편집 진행", origin: "human" });
+        store.update(p => { p.flags.firstRunDialogueEdited = true; p.flags.firstRunTested = false; }, { scope: "project", label: "첫 편집 진행", origin: "human" });
       }, true);
       host.append(el("label", { text: "무슨 말을 할까요?" }), input, apply,
         el("p", { class: "first-run-guide-hint", text: "적용한 뒤 테스트 플레이에서 확인해요." }),
@@ -85,7 +85,7 @@ export function mountFirstRunGuide(dock: HTMLElement, layout: HTMLElement): () =
       void import("@/project/defaults/defaultMaps").then(({ createStarterMap, singleNodeTree }) => {
         if (JSON.stringify(store.getProjectIdentity()) !== scope || !store.getCurrent().flags.firstRunGuide) return;
         const added = createStarterMap();
-        store.update(p => { p.maps[added.id] = added; p.mapTree.children.push(singleNodeTree(added.id)); p.startMapId = added.id; p.startPos = { x: 15, y: 16 }; }, { label: "첫 마을 예제 추가", origin: "human" });
+        store.update(p => { p.maps[added.id] = added; p.mapTree.children.push(singleNodeTree(added.id)); p.startMapId = added.id; p.startPos = { x: 15, y: 16 }; }, { scope: "project", label: "첫 마을 예제 추가", origin: "human" });
         focusProjectStartMap();
       }).finally(() => { addingMap = false; });
     }, true)));
@@ -110,7 +110,7 @@ export function mountFirstRunGuide(dock: HTMLElement, layout: HTMLElement): () =
     const project = store.getCurrent();
     if (!project.flags.firstRunGuide || !project.flags.firstRunDialogueEdited || project.flags.firstRunTested) return;
     if ((event as CustomEvent<{ projectFingerprint?: string }>).detail?.projectFingerprint !== authoringProjectFingerprint(project)) return;
-    store.update(p => { p.flags.firstRunTested = true; }, { label: "첫 테스트 플레이 확인", origin: "system" });
+    store.update(p => { p.flags.firstRunTested = true; }, { scope: "project", label: "첫 테스트 플레이 확인", origin: "system" });
   };
   window.addEventListener(AUTHORING_TEST_BOOT_SUCCESS_EVENT, tested);
   render();
