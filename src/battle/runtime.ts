@@ -954,6 +954,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       phase = "charging";
       return;
     }
+    // 메뉴가 열린 사이 적이 버서크를 걸었다: 메뉴를 거두고 곧바로 무작위 통상 공격(게이지 경로와 같은 처리).
+    const forced = berserkAttackCommand(menuActor);
+    if (forced) {
+      targetSelection = undefined;
+      phase = "charging";
+      activeActorId = menuActor.recordId;
+      applyActorCommandEffect(menuActor, forced);
+      applyTroopEvents(() => finishGaugeActorCommand(menuActor), markGaugeActionCycle(menuActor));
+      return;
+    }
     activeActorId = menuActor.recordId;
     if (menuPhase === "targetSelect" && menuTargets) {
       const alive = new Set([...activeActors(), ...visibleEnemies(), ...actors].filter((entry) => entry.hp > 0 || menuTargets.side === "actor").map(targetIdFor));
@@ -2840,6 +2850,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const affects =
       effect && (effect.kind === "damage" || effect.kind === "healing") ? effect.affects : "hp";
     const hpBefore = target.hp;
+    const mpBefore = target.mp;
     const targetMaxHpBefore = target.maxHp;
     const rawResult = applySkillLike(user, target, {
       power,
@@ -2880,7 +2891,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, skill.animationId, target.id);
       attachAnimationToLatestTimeline(lastAnimation);
     }
-    if (result.hit && effectKind === "damage") applySkillDrain(user, skill, result.amount, affects, commandKind);
+    // MP 흡수는 상대가 실제로 잃은 MP 까지만(HP 흡수는 굴린 피해 그대로 — battleSkillVitals 정책).
+    if (result.hit && effectKind === "damage") applySkillDrain(user, skill, affects === "mp" ? Math.min(result.amount, mpBefore - target.mp) : result.amount, affects, commandKind);
     // 피격에 의한 상태 해제(수면 등)를 먼저 처리한 뒤, 스킬의 상태 효과를 적용한다.
     // 이 순서라야 이번 스킬로 새로 부여한 상태가 즉시 해제되지 않는다.
     if (result.hit && effectKind === "damage" && result.amount > 0) {
@@ -2915,6 +2927,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const affects = effect && (effect.kind === "damage" || effect.kind === "healing")
       ? effect.affects
       : "hp";
+    const gen1MpBefore = target.mp;
     const applied = effectKind === "damage"
       ? applyExactGen1Damage(user, target, {
           power,
@@ -2960,6 +2973,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, skill.animationId, target.id);
       attachAnimationToLatestTimeline(lastAnimation);
     }
+    // 흡수(drainPercent)는 gen1 규칙에서도 먹는다 — 예전엔 대가만 깎이고 회복은 조용히 빠졌다.
+    if (applied.hit && effectKind === "damage") applySkillDrain(user, skill, affects === "mp" ? Math.min(applied.amount, gen1MpBefore - target.mp) : applied.amount, affects, commandKind);
     const defrosted = applied.hit
       && effectKind === "damage"
       && applied.amount > 0

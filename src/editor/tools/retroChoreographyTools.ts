@@ -11,6 +11,7 @@ import {
   projectRetroChoreographyEntries, resolveSkillChoreography, retroChoreographyEntries, retroClassSkill, retroFxSheetEntries, retroFxSheetMeta, searchRetroFxSheets,
 } from "@/assets/retroSkillCatalog";
 import { RETRO_SKILL_DESIGN_GUIDE } from "@/assets/retroSkillMechanics";
+import { isRetroTintValue, RETRO_TINT_PRESETS } from "@/assets/retroChoreographyTints";
 import { retroMonsterSkill } from "@/assets/retroMonsterSkills";
 import { choreographyCloneBase, freshChoreographyId } from "@/assets/retroChoreographyClone";
 import {
@@ -134,6 +135,11 @@ function checkRange(label: string, value: unknown, [min, max]: readonly [number,
   return value;
 }
 
+/** 색조로 받는 값 — 저장 정규화(skillChoreographyRecords tintValue)와 같은 집합. 복제한 층의 프리셋을 그대로 되돌려 보내도 통과한다. */
+const TINT_HINT = `#rrggbb · 프리셋 ${RETRO_TINT_PRESETS.map((preset) => preset.id).join("·")} · original(층만 원본색)`;
+/** upsert_choreography 의 clear — 이 필드들을 레코드에서 지운다(원래 값으로 되돌리기). */
+const CLEARABLE = ["description", "speed", "weight", "tint", "screen", "tags"] as const;
+
 function checkLayer(raw: unknown, index: number): SkillChoreographyLayer {
   const label = `layers[${index}]`;
   if (!isObject(raw)) fail(`${label} 는 {sheet, anchor} 객체여야 합니다. 예: {sheet:"fx_slash_a", anchor:"target"}`, "invalid-choreography");
@@ -152,8 +158,8 @@ function checkLayer(raw: unknown, index: number): SkillChoreographyLayer {
   if (raw.onHit !== undefined && raw.onHit !== null && raw.onHit !== "first" && raw.onHit !== "each") {
     fail(`${label}.onHit 는 first(첫 타에만) 또는 each(타마다)여야 합니다(받은 값 ${JSON.stringify(raw.onHit)}).`, "invalid-choreography");
   }
-  if (raw.tint !== undefined && raw.tint !== null && !(typeof raw.tint === "string" && /^#[0-9a-fA-F]{6}$/.test(raw.tint))) {
-    fail(`${label}.tint 는 #rrggbb 색이어야 합니다(받은 값 ${JSON.stringify(raw.tint)}).`, "invalid-choreography");
+  if (raw.tint !== undefined && raw.tint !== null && !isRetroTintValue(typeof raw.tint === "string" ? raw.tint.trim().toLowerCase() : raw.tint)) {
+    fail(`${label}.tint 는 ${TINT_HINT} 중 하나여야 합니다(받은 값 ${JSON.stringify(raw.tint)}).`, "invalid-choreography");
   }
   return {
     sheet, anchor: raw.anchor as SkillChoreographyLayer["anchor"],
@@ -161,7 +167,7 @@ function checkLayer(raw: unknown, index: number): SkillChoreographyLayer {
     ...(scale !== undefined ? { scale } : {}),
     ...(repeat !== undefined ? { repeat: Math.round(repeat) } : {}),
     ...(raw.onHit === "first" || raw.onHit === "each" ? { onHit: raw.onHit } : {}),
-    ...(typeof raw.tint === "string" ? { tint: raw.tint } : {}),
+    ...(typeof raw.tint === "string" ? { tint: raw.tint.trim().toLowerCase() } : {}),
     ...(text(raw.se) ? { se: text(raw.se) } : {}),
   };
 }
@@ -200,7 +206,7 @@ const layerItemSchema = {
     scale: { type: "number", description: `크기 배율(${SKILL_CHOREOGRAPHY_RANGES.scale.join("~")}). 생략=1` },
     repeat: { type: "integer", description: `연달아 반복(${SKILL_CHOREOGRAPHY_RANGES.repeat.join("~")}회). 생략=1` },
     onHit: { type: "string", enum: ["first", "each"], description: "each=다단 스킬에서 타마다 이 층이 터짐, first(기본)=첫 타에 한 번" },
-    tint: { type: "string", description: "#rrggbb 색조(선택)" },
+    tint: { type: "string", description: "층 색조(선택): #rrggbb · 프리셋 id(fire ice thunder …) · original(이 층만 원본색)" },
     se: { type: "string", description: "층이 터질 때 효과음 id(선택)" },
   },
   required: ["sheet", "anchor"],
@@ -226,7 +232,7 @@ const upsertChoreography: ToolDefinition = {
       layers: { type: "array", items: layerItemSchema, description: "이펙트 층 목록(새로 만들 때 필수). 주면 층 전체를 교체" },
       speed: { type: "number", description: `재생 속도 배율(${SPEED_MIN}~${SPEED_MAX}, 선택)` },
       weight: { type: "string", enum: [...SKILL_CHOREOGRAPHY_WEIGHTS], description: "무게감(선택)" },
-      tint: { type: "string", description: "#rrggbb 전체 색조(선택)" },
+      tint: { type: "string", description: "전체 색조(선택): #rrggbb 또는 프리셋 id(fire ice thunder …)" },
       screen: {
         type: "object",
         description: "화면 연출(선택). 주면 통째로 교체, {} 면 제거",
@@ -241,6 +247,7 @@ const upsertChoreography: ToolDefinition = {
         type: "object",
         properties: { family: { type: "string", description: "분류 이름(선택)" }, element: { type: "string", enum: [...RETRO_ELEMENT_IDS], description: "속성(선택)" } },
       },
+      clear: { type: "array", items: { type: "string", enum: [...CLEARABLE] }, description: "지울 필드 목록 — 색조·속도 등을 원래대로 되돌린다. 예: [\"tint\",\"speed\"]" },
     },
   },
   invalidArgsExample: { name: "도약 번개", motion: "leap-strike", layers: [{ sheet: "fx_slash_a", anchor: "target" }, { sheet: "fx_thunder_a", anchor: "target", startMs: 120, scale: 1.5 }] },
@@ -269,24 +276,31 @@ const upsertChoreography: ToolDefinition = {
     if (args.weight !== undefined && !(SKILL_CHOREOGRAPHY_WEIGHTS as readonly unknown[]).includes(args.weight)) {
       fail(`weight 는 ${SKILL_CHOREOGRAPHY_WEIGHTS.join(" · ")} 중 하나여야 합니다.`, "invalid-choreography");
     }
-    if (args.tint !== undefined && !(typeof args.tint === "string" && /^#[0-9a-fA-F]{6}$/.test(args.tint))) fail("tint 는 #rrggbb 색이어야 합니다.", "invalid-choreography");
+    if (args.tint !== undefined && !(typeof args.tint === "string" && isRetroTintValue(args.tint.trim().toLowerCase()) && args.tint.trim().toLowerCase() !== "original")) {
+      fail(`tint 는 #rrggbb 또는 프리셋 ${RETRO_TINT_PRESETS.map((preset) => preset.id).join("·")} 이어야 합니다. 색조를 없애려면 clear:["tint"].`, "invalid-choreography");
+    }
+    const clear = args.clear === undefined ? [] : args.clear;
+    if (!Array.isArray(clear) || clear.some((key) => !(CLEARABLE as readonly unknown[]).includes(key))) {
+      fail(`clear 는 ${CLEARABLE.join(" · ")} 중에서 고른 배열이어야 합니다(받은 값 ${JSON.stringify(args.clear)}).`, "invalid-choreography");
+    }
     if (args.screen !== undefined && !isObject(args.screen)) fail("screen 은 {shake, flash, dim, cutIn} 객체여야 합니다.", "invalid-choreography");
     if (isObject(args.screen)) {
       checkRange("screen.shake", args.screen.shake, SKILL_CHOREOGRAPHY_RANGES.shake);
       if (args.screen.flash !== undefined && !(typeof args.screen.flash === "string" && /^#[0-9a-fA-F]{6}$/.test(args.screen.flash))) fail("screen.flash 는 #rrggbb 색이어야 합니다.", "invalid-choreography");
     }
     const tags = isObject(args.tags) ? { ...existing?.tags, ...(text(args.tags.family) ? { family: text(args.tags.family) } : {}), ...(text(args.tags.element) ? { element: text(args.tags.element) } : {}) } : existing?.tags;
-    const draftRecord = {
+    const draftRecord: Record<string, unknown> = {
       ...existing,
       id: existing?.id ?? freshChoreographyId(records, name),
       name, motion, layers,
       ...(text(args.description) ? { description: text(args.description) } : {}),
       ...(speed !== undefined ? { speed } : {}),
       ...(args.weight !== undefined ? { weight: args.weight } : {}),
-      ...(typeof args.tint === "string" ? { tint: args.tint } : {}),
+      ...(typeof args.tint === "string" ? { tint: args.tint.trim().toLowerCase() } : {}),
       ...(isObject(args.screen) ? { screen: args.screen } : {}),
       ...(tags ? { tags } : {}),
     };
+    for (const key of clear as readonly (typeof CLEARABLE)[number][]) delete draftRecord[key];
     const record = normalizeSkillChoreographyRecord(draftRecord);
     if (!record) fail("연출을 만들 수 없습니다: motion·layers 를 확인하세요.", "invalid-choreography");
     if (existing) records[records.indexOf(existing)] = record;

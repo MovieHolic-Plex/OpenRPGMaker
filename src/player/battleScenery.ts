@@ -12,6 +12,8 @@ const scenes = new WeakMap<HTMLElement, SceneryState>();
 // 겹 배경으로 바뀌었다 — 사용자 신고 「전투 도중에 배경이 바뀐다」.
 const layerLoads = new Map<BattleSceneryBiome, Promise<boolean>>();
 const readyBiomes = new Set<BattleSceneryBiome>();
+// 네트워크가 멈춰 onload·onerror 가 끝내 안 오면 그 지형은 세션 내내 「불러오는 중」 빈 배경이었다 — 이 시간 뒤 실패로 보고 대체 그림을 깐다.
+const LAYER_LOAD_TIMEOUT_MS = 8000;
 
 function loadSceneryLayers(biome: BattleSceneryBiome): Promise<boolean> {
   const pending = layerLoads.get(biome);
@@ -19,8 +21,9 @@ function loadSceneryLayers(biome: BattleSceneryBiome): Promise<boolean> {
   const entry = BATTLE_SCENERY_CATALOG.find((item) => item.biome === biome)!;
   const load = Promise.all(BATTLE_SCENERY_LAYERS.map((layer) => new Promise<boolean>((resolve) => {
     const image = new Image();
-    image.onload = () => { void image.decode().catch(() => undefined).then(() => resolve(true)); };
-    image.onerror = () => resolve(false);
+    const timer = window.setTimeout(() => resolve(false), LAYER_LOAD_TIMEOUT_MS);
+    image.onload = () => { void image.decode().catch(() => undefined).then(() => { window.clearTimeout(timer); resolve(true); }); };
+    image.onerror = () => { window.clearTimeout(timer); resolve(false); };
     image.src = `/${entry.layers[layer]}`;
   }))).then((results) => {
     const ok = results.every(Boolean);
