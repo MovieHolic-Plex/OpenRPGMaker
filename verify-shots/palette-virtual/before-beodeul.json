@@ -1,0 +1,297 @@
+{
+ "label": "before-beodeul",
+ "tilesetId": "beodeul_city",
+ "runs": {
+  "category:__first": [
+   {
+    "val": "recent",
+    "total": 1304.2,
+    "sync": 526.5,
+    "long": [
+     195,
+     559,
+     521
+    ],
+    "cells": 7136,
+    "nodes": 7137,
+    "sig": "41704:7135:0칸 표시필터 해제"
+   },
+   {
+    "val": "recent",
+    "total": 2348.5,
+    "sync": 1238.3,
+    "long": [
+     195,
+     1271,
+     833
+    ],
+    "cells": 10848,
+    "nodes": 10849,
+    "sig": "64824:10847:1칸 표시필터 해제"
+   },
+   {
+    "val": "recent",
+    "total": 1516.3,
+    "sync": 628.4,
+    "long": [
+     278,
+     667,
+     610
+    ],
+    "cells": 14560,
+    "nodes": 14561,
+    "sig": "90808:14559:1칸 표시필터 해제"
+   }
+  ],
+  "category:terrain": [
+   {
+    "val": "terrain",
+    "total": 1325.5,
+    "sync": 575,
+    "long": [
+     598,
+     162,
+     143,
+     167
+    ],
+    "cells": 7520,
+    "nodes": 7521,
+    "sig": "44008:7519:0칸 표시필터 해제"
+   },
+   {
+    "val": "terrain",
+    "total": 1054.3,
+    "sync": 558,
+    "long": [
+     206,
+     585,
+     475
+    ],
+    "cells": 11360,
+    "nodes": 11361,
+    "sig": "68408:11359:0칸 표시필터 해제"
+   },
+   {
+    "val": "terrain",
+    "total": 1106.3,
+    "sync": 547.1,
+    "long": [
+     336,
+     586,
+     310
+    ],
+    "cells": 14816,
+    "nodes": 14817,
+    "sig": "92600:14815:0칸 표시필터 해제"
+   }
+  ],
+  "category:water": [
+   {
+    "val": "water",
+    "total": 1045.3,
+    "sync": 524.3,
+    "long": [
+     182,
+     549,
+     257
+    ],
+    "cells": 8160,
+    "nodes": 8161,
+    "sig": "45619:5930:10719칸 표시필터 해제"
+   },
+   {
+    "val": "water",
+    "total": 1220.3,
+    "sync": 577.6,
+    "long": [
+     221,
+     608,
+     615
+    ],
+    "cells": 11744,
+    "nodes": 11745,
+    "sig": "67947:8594:10719칸 표시필터 해제"
+   },
+   {
+    "val": "water",
+    "total": 1316.8,
+    "sync": 606.3,
+    "long": [
+     331,
+     646,
+     683
+    ],
+    "cells": 15200,
+    "nodes": 15201,
+    "sig": "91256:11167:10719칸 표시필터 해제"
+   }
+  ],
+  "category:all": [
+   {
+    "val": "all",
+    "total": 1209.7,
+    "sync": 579.2,
+    "long": [
+     291,
+     603,
+     339
+    ],
+    "cells": 8544,
+    "nodes": 8545,
+    "sig": "41609:0:"
+   },
+   {
+    "val": "all",
+    "total": 1540.8,
+    "sync": 584.4,
+    "long": [
+     241,
+     618,
+     932
+    ],
+    "cells": 12256,
+    "nodes": 12257,
+    "sig": "62425:0:"
+   },
+   {
+    "val": "all",
+    "total": 1480.7,
+    "sync": 643.3,
+    "long": [
+     307,
+     685,
+     806
+    ],
+    "cells": 15456,
+    "nodes": 15457,
+    "sig": "81625:0:"
+   }
+  ],
+  "cellclick": [
+   {
+    "tid": "chipset-tile-46",
+    "total": 294.7,
+    "sync": 28.2,
+    "long": [
+     212
+    ],
+    "cells": 9056
+   },
+   {
+    "tid": "chipset-tile-46",
+    "total": 209.1,
+    "sync": 0.3,
+    "long": [
+     204,
+     200
+    ],
+    "cells": 12640
+   },
+   {
+    "tid": "chipset-tile-55",
+    "total": 369.9,
+    "sync": 253.3,
+    "long": [
+     260,
+     113
+    ],
+    "cells": 15840
+   }
+  ],
+  "scroll": [
+   {
+    "frames": 9,
+    "p50": 44.4,
+    "p95": 495.3,
+    "max": 495.3,
+    "long": [
+     236,
+     232,
+     223,
+     248,
+     287
+    ],
+    "scrollTop": 600
+   },
+   {
+    "frames": 9,
+    "p50": 66.8,
+    "p95": 431.8,
+    "max": 431.8,
+    "long": [
+     213,
+     234,
+     216,
+     255,
+     251,
+     226
+    ],
+    "scrollTop": 600
+   },
+   {
+    "frames": 9,
+    "p50": 274.9,
+    "p95": 509.5,
+    "max": 509.5,
+    "long": [
+     274,
+     327,
+     297,
+     305,
+     52,
+     273
+    ],
+    "scrollTop": 600
+   }
+  ]
+ },
+ "tilesetSwitch": {
+  "total": 613.6,
+  "sync": 17.1,
+  "long": [
+   86
+  ],
+  "cells": 96
+ },
+ "nodesAfterSettle": {
+  "nodes": 4705,
+  "cells": 4704,
+  "panelAll": 9346
+ },
+ "summary": {
+  "category:__first": {
+   "total": 1516.3,
+   "sync": 628.4,
+   "nodes": 7137,
+   "cells": 7136
+  },
+  "category:terrain": {
+   "total": 1106.3,
+   "sync": 558,
+   "nodes": 7521,
+   "cells": 7520
+  },
+  "category:water": {
+   "total": 1220.3,
+   "sync": 577.6,
+   "nodes": 8161,
+   "cells": 8160
+  },
+  "category:all": {
+   "total": 1480.7,
+   "sync": 584.4,
+   "nodes": 8545,
+   "cells": 8544
+  },
+  "cellclick": {
+   "total": 294.7,
+   "sync": 28.2,
+   "cells": 9056
+  },
+  "scroll": {
+   "p50": 66.8,
+   "p95": 495.3,
+   "max": 495.3
+  }
+ }
+}

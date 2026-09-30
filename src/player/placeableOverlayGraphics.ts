@@ -3,7 +3,7 @@
  * Kept free of Phaser/scene imports so the asset loader can depend on it safely.
  */
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
-import { DEFAULT_TILESET_TEXTURE_KEY, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_TEXTURE_KEY, TILE } from "@/project/defaults/constants";
 
 export type PlaceableOverlayGraphic = {
   readonly texture: string;
@@ -22,7 +22,7 @@ const PLACEABLE_CHARSET: Readonly<Record<string, { readonly texture: string; rea
  * Not a rock/gem charset marker.
  */
 export const PLACEABLE_TREE_GRAPHIC: PlaceableOverlayGraphic = {
-  texture: DEFAULT_TILESET_TEXTURE_KEY,
+  texture: COMBINED_TOWN_TILESET_TEXTURE_KEY,
   frame: `tile_${TILE.TREE}`,
 };
 

@@ -11,7 +11,7 @@ import {
   resetScratchConceptTabSession,
 } from "@/editor/panels/scratchConceptTab";
 import { CONCEPT_FACILITY_TEMPLATES } from "@/project/defaults/conceptFacilityTemplates";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { cloneConceptBundle, SCRATCH_INN_BUNDLE } from "@/project/defaults/scratchInnBundle";
 import { validateTileset } from "@/project/io/shapeResourceFields";
 import { store } from "@/project/store";
@@ -99,12 +99,12 @@ describe("scratchConceptTab 실내 시드", () => {
   });
 
   it("마을 칩셋은 여관을 기본으로 얹지 않는다", () => {
-    const host = renderOnTileset(DEFAULT_TILESET_ID);
+    const host = renderOnTileset(COMBINED_TOWN_TILESET_ID);
     expect(host.querySelector("[data-testid='scratch-concept-empty']")).not.toBeNull();
     expect(host.querySelector("[data-testid='scratch-concept-place-bedroom']")).toBeNull();
     expect(host.querySelector("[data-testid='scratch-concept-thing-name']")?.value).not.toBe("침대(가로)");
     expect(host.querySelector("[data-testid='scratch-concept-place-dorm']")).toBeNull();
-    expect(store.getCurrent().tilesets[DEFAULT_TILESET_ID]?.scratchConceptBundles).toBeUndefined();
+    expect(store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID]?.scratchConceptBundles).toBeUndefined();
   });
 
   it("실내 칩셋은 시설 초안 묶음을 시드하고 첫 시설(여관)의 다층 장소를 그린다", () => {

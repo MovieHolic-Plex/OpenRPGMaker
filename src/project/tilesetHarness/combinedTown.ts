@@ -1,6 +1,6 @@
 import { isForestHarmonyTileset } from "@/project/defaults/forestHarmony";
 import type { PassFlag, Project, TileAiMetadata, TileGroupMetadata, TilesetDef } from "@/project/types";
-import { CASTLE_TILESET_TEXTURE_KEY, COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, DEFAULT_TILESET_TEXTURE_KEY, LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY, TILE } from "@/project/defaults/constants";
+import { CASTLE_TILESET_TEXTURE_KEY, COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, COMBINED_TOWN_TILESET_TEXTURE_KEY, LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY, TILE } from "@/project/defaults/constants";
 import {
   DIRT_ROAD_TILE,
   TERRAIN_TAG,
@@ -30,7 +30,7 @@ type RuntimeHarnessGroup = {
 };
 
 export function isCombinedTownTileset(tileset: Pick<TilesetDef, "image">): boolean {
-  return tileset.image.type === "bundled" && tileset.image.id === DEFAULT_TILESET_TEXTURE_KEY;
+  return tileset.image.type === "bundled" && tileset.image.id === COMBINED_TOWN_TILESET_TEXTURE_KEY;
 }
 
 /**
@@ -70,7 +70,9 @@ function applyCustomChipsetMinimalHarness(tileset: TilesetDef): boolean {
   // table is indexed by unrelated 16px combined-town cells and must not reinterpret them.
   if (
     tileset.image.type === "bundled"
-    && (tileset.image.id === CASTLE_TILESET_TEXTURE_KEY || tileset.image.id === LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY)
+    && (tileset.image.id === CASTLE_TILESET_TEXTURE_KEY || tileset.image.id === LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY
+      // 버들항 v6 sheet: every cell's layer is cut from the render (lower = ground, upper = objects), not the RM2k3 table
+      || tileset.image.id === "tex_beodeul_city")
   ) return false;
   let changed = false;
   ensureTileMetaLength(tileset);

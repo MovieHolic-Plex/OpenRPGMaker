@@ -15,7 +15,7 @@
 
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import { CHIPSET_TILE_GROUPS } from "./chipsetMapping";
-import { DEFAULT_TILESET_ID, TILE } from "./constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "./constants";
 
 /** 이 role 을 소비하는 기존 시공 프리미티브(신규 도구 아님). 첫 항목이 권장 도구. */
 export type PokemonPresetTool =
@@ -137,7 +137,7 @@ export const POKEMON_OVERWORLD_PRESET: PokemonChipsetPreset = {
   description:
     "combined_town(CC0) 타일을 포켓몬 오버월드 role별로 묶은 큐레이션 프리셋. 잔디·키큰 풀·흙길 루트·물·" +
     "나무·꽃·마을 건물을 기존 시공 프리미티브에 바로 넣을 group id 로 노출한다.",
-  tilesetId: DEFAULT_TILESET_ID,
+  tilesetId: COMBINED_TOWN_TILESET_ID,
   roles: POKEMON_OVERWORLD_ROLES,
 };
 

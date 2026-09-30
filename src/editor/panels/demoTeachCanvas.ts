@@ -9,7 +9,7 @@ import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { searchResources } from "@/assets/resourceSearch";
 import { knownTileLabel } from "@/editor/tools/tileMetadataTools";
 import type { DemonstrationPayload, DemonstrationStroke } from "@/ai/demonstrationPrompt";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
@@ -38,7 +38,7 @@ export function openDemoTeachModal(options: DemoTeachOptions): HTMLElement {
   const project = store.getCurrent();
   const seed = options.seed ?? null;
   const map = seed ? project.maps[seed.mapId] : undefined;
-  const tileset = project.tilesets[map?.tilesetId ?? DEFAULT_TILESET_ID] ?? project.tilesets[DEFAULT_TILESET_ID];
+  const tileset = project.tilesets[map?.tilesetId ?? COMBINED_TOWN_TILESET_ID] ?? project.tilesets[COMBINED_TOWN_TILESET_ID];
 
   const w = Math.min(MAX_W, Math.max(1, seed?.w ?? DEFAULT_W));
   const h = Math.min(MAX_H, Math.max(1, seed?.h ?? DEFAULT_H));

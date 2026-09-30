@@ -1,0 +1,129 @@
+{
+ "id": "bd-out-house-plank",
+ "name": "외곽 판자 2층집(간판)",
+ "w": 8,
+ "h": 6,
+ "walk": [
+  "XXXXXXXX",
+  "XXXXXXXX",
+  "XXXXXXXX",
+  "XXXXXXXX",
+  "XXXXXXXX",
+  "XXXXXXXX"
+ ],
+ "description": "왼쪽은 옆박공 판자 본채(물결 끝단 널 지붕, 창 둘), 오른쪽은 박공이 앞을 향한 3칸 날개(둥근 통나무 기둥, 교차한 검 간판, 판자문 + 계단). 2층 겹판자 벽과 허리띠.",
+ "rules": "문은 (6,5). 굴뚝은 지붕 앞 경사 위에 얹혀 있다(전부 X). 지붕 위 빈 칸은 잔디.",
+ "tags": [
+  "외곽",
+  "나무집",
+  "판자",
+  "2층",
+  "간판"
+ ],
+ "role": "building",
+ "doors": [
+  {
+   "dx": 6,
+   "dy": 5,
+   "note": "판자문 (아래 칸이 문 앞)"
+  }
+ ],
+ "notes": "",
+ "assembly": [
+  {
+   "kit": "bd-out-roof-hl",
+   "x": 0,
+   "y": 0
+  },
+  {
+   "kit": "bd-out-roof-m",
+   "x": 1,
+   "y": 0
+  },
+  {
+   "kit": "bd-out-roof-m2",
+   "x": 2,
+   "y": 0
+  },
+  {
+   "kit": "bd-out-roof-m",
+   "x": 3,
+   "y": 0
+  },
+  {
+   "kit": "bd-out-roof-hr",
+   "x": 4,
+   "y": 0
+  },
+  {
+   "kit": "bd-out-ridge-end-l",
+   "x": 1,
+   "y": 0
+  },
+  {
+   "kit": "bd-out-ridge-end-r",
+   "x": 3,
+   "y": 0
+  },
+  {
+   "kit": "bd-out-gable-3",
+   "x": 5,
+   "y": 0
+  },
+  {
+   "kit": "bd-out-plank-l",
+   "x": 0,
+   "y": 3
+  },
+  {
+   "kit": "bd-out-plank-window",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "kit": "bd-out-plank-wall",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "kit": "bd-out-plank-window-shut",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "kit": "bd-out-plank-wall",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "kit": "bd-out-plank-l",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "kit": "bd-out-plank-door",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "kit": "bd-out-plank-r",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "kit": "bd-out-ivy",
+   "x": 4,
+   "y": 4
+  },
+  {
+   "kit": "bd-out-hanging-sign",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "kit": "bd-out-chimney",
+   "x": 3,
+   "y": 0
+  }
+ ]
+}

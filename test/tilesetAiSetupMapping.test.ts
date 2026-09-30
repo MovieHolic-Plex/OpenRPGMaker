@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { applyAiMappingAnswer as applyAiMappingAnswerForTest } from "@/editor/panels/tilesetAiMappingParser";
 import { buildSetupMappingAnswer } from "@/editor/panels/tilesetAiSetupMapping";
-import { defaultTileset } from "@/project/defaults/defaultAssets";
+import { combinedTownTileset as defaultTileset } from "@/project/defaults/defaultAssets";
 
 describe("tileset AI setup mapping", () => {
   it("uses existing tileset labels for a user-confirmed grass terrain draft", () => {

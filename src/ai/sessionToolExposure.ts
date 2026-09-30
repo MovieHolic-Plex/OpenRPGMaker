@@ -52,6 +52,11 @@ function schemasForIntent(intent: IntentDeclaration | null): OpenAiTool[] {
     ...intent.tools,
     ...(intent.adventure ? adventureToolNames(intent.adventure as AdventureRequirements) : []),
   ];
+  // 마을 시공 도구를 고른 요청에는 버들항 조립 도구·검사 도구를 함께 보인다 — 대상 계열이 버들항이면 author_village 는
+  // 거절·우회되고 author_beodeul_town 이 짓는데, 선언이 고른 도구 8개 안에 그것이 없으면 모델이 존재를 모른다(2026-10-01).
+  if (names.includes("author_village") || names.includes("author_beodeul_town")) {
+    names.push("author_beodeul_town", "check_city_form", "check_reachability");
+  }
   return toolSchemasForNames(names) as OpenAiTool[];
 }
 

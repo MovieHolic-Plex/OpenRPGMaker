@@ -13,7 +13,7 @@ export const TILESET_REFERENCE_WRITERS: ReadonlySet<string> = new Set([
   "start_interior_room_session", "advance_interior_room_build", "run_interior_room_pipeline", "furnish_interior_space",
   "start_dungeon_room_session", "advance_dungeon_room_build", "run_dungeon_room_pipeline",
   "run_village_pipeline", "start_village_session", "advance_village_build", "run_village_session", "plant_tree_clusters",
-  "arrange_tall_grass",
+  "arrange_tall_grass", "author_beodeul_town",
 ]);
 
 /**
@@ -72,7 +72,7 @@ export const TILESET_REFERENCE_TOOLS: readonly ToolDefinition[] = [
         if (!tileset) throw new ToolError("용도의 자료 목록에는 tilesetId가 필요합니다.");
         const owner = referenceOwner(project, tileset);
         const group = owner.referenceDocuments?.find(g => g.id === args.categoryId);
-        if (!group) throw new ToolError("용도를 찾을 수 없습니다.");
+        if (!group) throw new ToolError(unknownIdMessage("용도", args.categoryId, (owner.referenceDocuments ?? []).map(g => g.id)));
         const manifest = referenceManifest(group);
         const entries = [...manifest.documents.map(d => ({ kind: "document", ...d })), ...manifest.images.map(i => ({ kind: "image", ...i, caption: i.caption.slice(0, 160) }))];
         const offset = Number(args.offset ?? 0);

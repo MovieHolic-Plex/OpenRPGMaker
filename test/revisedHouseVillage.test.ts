@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { runTool } from "@/editor/tools/toolRunner";
 import { computeReachableCells } from "@/project/lint/reachability";
 import { emptySpatialDocument } from "./support/spatialSchemaFixture";
@@ -23,11 +23,11 @@ it("combines all three house catalogs and counts a three- and four-storey landma
   ];
   expect(entries).toHaveLength(57);
   const project = createBlankProject();
-  project.tilesets[DEFAULT_TILESET_ID]!.structureKits = entries.map(e => e.kit);
+  project.tilesets[COMBINED_TOWN_TILESET_ID]!.structureKits = entries.map(e => e.kit);
   project.spatialAuthoring = emptySpatialDocument();
   project.spatialAuthoring.library.objects = Object.fromEntries(entries.map(e => [e.id, {
     id: e.id, name: e.name, revision: 2, exteriorStories: e.floors, chips: [], tags: [], provenance: { origin: "user" },
-    graphic: { tilesetId: DEFAULT_TILESET_ID, kitId: e.kit.id },
+    graphic: { tilesetId: COMBINED_TOWN_TILESET_ID, kitId: e.kit.id },
     anchors: e.doors.map((d, i) => ({ id: `door:${i}`, name: "현관 앞", x: d.x, y: d.y + 1 })),
   }]));
   const preset = smallVillageDefinition(entries.map(e => e.id));

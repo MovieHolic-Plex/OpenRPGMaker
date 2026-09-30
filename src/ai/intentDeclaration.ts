@@ -620,7 +620,7 @@ export function formatIntentNote(
         + "이미 확인된 의도이므로 야외/실내를 다시 묻지 말고 진행하라.",
       );
     } else if (intent.space === "outdoor") {
-      lines.push("[의도] 지금 맵 위 야외 시공이다(author_house/author_village/fill_region/place_props). 집은 author_house(interior:\"linked-interior\")가 기본이다 — 실내맵과 양방향 전이가 함께 생긴다. 겉모습만 필요하면 명시적으로 interior:\"exterior-only\". 독립 실내 세션은 만들지 말 것. 이미 확인된 의도이므로 되묻지 말고 진행하라.");
+      lines.push("[의도] 지금 맵 위 야외 시공이다(author_house/author_village/fill_region/place_props; 대상 맵이 버들항 계열이면 마을은 author_beodeul_town). 집은 author_house(interior:\"linked-interior\")가 기본이다 — 실내맵과 양방향 전이가 함께 생긴다. 겉모습만 필요하면 명시적으로 interior:\"exterior-only\". 독립 실내 세션은 만들지 말 것. 이미 확인된 의도이므로 되묻지 말고 진행하라.");
     }
   }
   const constructionNote = formatConstructionNote(intent, options.targetMap ?? null);

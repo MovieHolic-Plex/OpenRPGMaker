@@ -5,13 +5,13 @@ import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import type { Project } from "@/project/types";
 
 const MAP_ID = "map_blank_start";
 
 function withUploaded(project: Project, id: string, family?: string): Project {
-  const bundled = project.tilesets[DEFAULT_TILESET_ID]!;
+  const bundled = project.tilesets[COMBINED_TOWN_TILESET_ID]!;
   const tileset = { ...structuredClone(bundled), id, name: `올린 ${id}`, image: { type: "uploaded" as const, id: `asset_${id}` } };
   delete tileset.referenceDocuments;
   delete tileset.referenceSourceTilesetId;
@@ -95,7 +95,7 @@ describe("칩셋 계열 검사", () => {
     const { applyProjectWithHistory } = await import("@/editor/mapEditHistory");
     const { store } = await import("@/project/store");
     const base = uploadedProject();
-    base.maps[MAP_ID]!.tilesetId = DEFAULT_TILESET_ID;
+    base.maps[MAP_ID]!.tilesetId = COMBINED_TOWN_TILESET_ID;
     store.replace(structuredClone(base));
     resetMapEditHistory();
     const next = structuredClone(base);
@@ -105,7 +105,7 @@ describe("칩셋 계열 검사", () => {
     const ctx: ToolContext = { project: store.getCurrent(), currentMapId: MAP_ID };
     const result = runTool(ctx, "revert_last_edit", {}, { dryRun: false });
     expect(result.ok, result.summary).toBe(true);
-    expect(ctx.project.maps[MAP_ID]!.tilesetId).toBe(DEFAULT_TILESET_ID);
+    expect(ctx.project.maps[MAP_ID]!.tilesetId).toBe(COMBINED_TOWN_TILESET_ID);
   });
 
   it("(f) create_map tilesetId 생략 → 지금 보는 맵 칩셋(다른 계열일 때)", () => {

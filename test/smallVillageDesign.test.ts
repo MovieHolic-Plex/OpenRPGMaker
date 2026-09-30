@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { deserialize, serialize } from "@/project/io";
 import { villageDesignIssue } from "@/project/villageDesign";
 import { runTool } from "@/editor/tools/toolRunner";
@@ -19,11 +19,11 @@ import { smallVillageDefinition } from "../scripts/lib/smallVillageDefinition.mt
 
 function fixture() {
   const project = createBlankProject(), entries = buildCompactVillageHouses();
-  project.tilesets[DEFAULT_TILESET_ID]!.structureKits = entries.map(e => e.kit);
+  project.tilesets[COMBINED_TOWN_TILESET_ID]!.structureKits = entries.map(e => e.kit);
   project.spatialAuthoring = emptySpatialDocument();
   project.spatialAuthoring.library.objects = Object.fromEntries(entries.map(e => [e.id, {
     id: e.id, name: e.name, revision: 1, exteriorStories: e.exteriorStories, tags: [], provenance: { origin: "user" }, chips: [],
-    graphic: { tilesetId: DEFAULT_TILESET_ID, kitId: e.kit.id },
+    graphic: { tilesetId: COMBINED_TOWN_TILESET_ID, kitId: e.kit.id },
     anchors: e.doors.map((door, i) => ({ id: `door:${i}`, name: "현관 앞", x: door.x, y: door.y + 1 })),
   }]));
   const preset = smallVillageDefinition(entries.map(e => e.id));

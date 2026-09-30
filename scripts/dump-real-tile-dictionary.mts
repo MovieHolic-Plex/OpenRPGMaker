@@ -13,7 +13,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import { defaultTileset } from "../src/project/defaults/defaultAssets.ts";
+import { combinedTownTileset as combinedTownTileset as defaultTileset } from "../src/project/defaults/defaultAssets.ts";
 import { approvedVocabulary } from "../src/project/tileVocabulary.ts";
 import { COMBINED_TOWN_HARNESS_GROUPS } from "../src/project/tilesetHarness/combinedTownGroups.ts";
 

@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { INTERIOR_ROOM_THEME_CATALOG, INTERIOR_ROOM_THEMES, INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { renderTilesetSpacesTab, resetTilesetSpacesTabSession } from "@/editor/panels/tilesetSpacesTab";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { FakeElement, installFakeDom } from "./fakeDom";
 
@@ -46,11 +46,11 @@ describe("tilesetSpacesTab 은 구조물 앨범이 아니다", () => {
   });
 
   it("마을 칩셋은 침실·주방을 기본으로 얹지 않는다", () => {
-    const host = renderOnTileset(DEFAULT_TILESET_ID);
+    const host = renderOnTileset(COMBINED_TOWN_TILESET_ID);
     expect(host.querySelector("[data-testid='tileset-spaces-empty']")).not.toBeNull();
     expect(host.querySelector("[data-testid='tileset-spaces-kind-bedroom']")).toBeNull();
     expect(host.querySelector("[data-testid='tileset-spaces-seed-builtin']")).toBeNull();
-    expect(store.getCurrent().tilesets[DEFAULT_TILESET_ID]?.interiorRoomKinds).toBeUndefined();
+    expect(store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID]?.interiorRoomKinds).toBeUndefined();
   });
 
   it("저작값이 없고 꾸러미가 있으면 파생 칩과 읽기 전용 행을 보여준다", () => {
@@ -171,10 +171,10 @@ describe("tilesetSpacesTab 저작", () => {
   });
 
   it("[+ 방 템플릿]가 빈 문법을 추가한다", () => {
-    const host = renderOnTileset(DEFAULT_TILESET_ID);
+    const host = renderOnTileset(COMBINED_TOWN_TILESET_ID);
     host.querySelector("[data-testid='tileset-spaces-empty-add']")!.click();
 
-    const kinds = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.interiorRoomKinds ?? [];
+    const kinds = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID]!.interiorRoomKinds ?? [];
     expect(kinds).toHaveLength(1);
     expect(kinds[0]!.label).toBe("새 장소");
     expect(host.querySelector("[data-testid='tileset-spaces-empty']")).toBeNull();

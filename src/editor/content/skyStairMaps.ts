@@ -12,7 +12,7 @@ import { stampRectHouseKit, type HouseKitId } from "@/editor/houseKit";
 import type { Command, EventPage, GameEvent, GameMap, LightingState, Project, SimpleTriggerKind, TilesetDef } from "@/project/types";
 import { canMove, isPassable } from "@/project/collision";
 import { FARMLAND_TILE } from "@/project/defaults/chipsetMapping";
-import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { DEFAULT_TILE_SIZE, COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { defaultTilesets } from "@/project/defaults/defaultAssets";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { paintSnowGateTerrain } from "@/project/defaults/snowGateTerrain";
@@ -806,7 +806,7 @@ function mistwoodMap(): GameMap {
     setUpper(map, p.x, p.y, TILE.FLOWERS);
   }
   // 밀집 배치는 갇힌 주머니를 만든다. 이벤트 자리를 비우고 고립 영역을 이어 붙인다.
-  connectForest(map, defaultTilesets()[DEFAULT_TILESET_ID]!, { x: 15, y: 30 }, MISTWOOD_EVENT_SPOTS);
+  connectForest(map, defaultTilesets()[COMBINED_TOWN_TILESET_ID]!, { x: 15, y: 30 }, MISTWOOD_EVENT_SPOTS);
 
   map.events.push(
     // 진입하면 안개가 낀다 — 층에 들어선 순간 화면이 바뀐다.
@@ -1551,7 +1551,7 @@ function makeMap(
   name: string,
   width: number,
   height: number,
-  tilesetId: string = DEFAULT_TILESET_ID,
+  tilesetId: string = COMBINED_TOWN_TILESET_ID,
 ): GameMap {
   const map = createBlankMap(name, width, height, tilesetId, DEFAULT_TILE_SIZE);
   map.id = id;

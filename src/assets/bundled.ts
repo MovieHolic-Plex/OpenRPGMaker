@@ -9,6 +9,7 @@ import forestHarmonyAtlasTownParts from "./forestHarmonyAtlasTownParts.json";
 import forestHarmonyTreeShadows from "./forestHarmonyTreeShadows.json";
 import climateSheets from "../../tiledata/climate-villages/sheets.json";
 import atlasBiomeSheets from "./atlasBiomeSheets.json";
+import beodeulCitySheet from "./beodeulCitySheet.json";
 import tiboRecovered from "./tiboRecoveredTileset.json";
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { loadUploadedTilesets, registerUploadedTilesets } from "./uploadedTilesets";
@@ -181,6 +182,9 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   {textureKey:"tex_atlas_biome_blight",path:"assets/atlas-biomes/blight-chipset.png",name:"오염된 땅 · 어둠의 숲 (바이옴)"},
   {textureKey:"tex_atlas_biome_skyisle",path:"assets/atlas-biomes/skyisle-chipset.png",name:"하늘섬 · 구름 위 떠 있는 섬 (바이옴)"},
   {textureKey:"tex_atlas_biome_tropical",path:"assets/atlas-biomes/tropical-chipset.png",name:"열대 섬 · 산호 해안 (바이옴)"},
+  // 버들항 v6(2026-09-28) — 로마풍 항구 도시 손 도트 렌더를 16px 칸으로 자른 시트(칸마다 땅/윗부분, 움직임 animationStrips).
+  // 재생성: scripts/content/build-beodeul-city.py, 정의는 project/defaults/beodeulCity.ts, openwiki/beodeul-city.md.
+  {textureKey:"tex_beodeul_city",path:"assets/beodeul-city/beodeul-city-chipset.png",name:"버들항 v6 · 로마풍 항구 도시 (손 도트)"},
   // 바이옴 월드맵 시트 — EasyRPG 월드 시트(0~479 그대로) + 새 바이옴 지형 블록 10개·아이콘. build-atlas-biome-world.py, defaults/atlasBiomeWorld.ts.
   {textureKey:"tex_atlas_biome_world",path:"assets/atlas-biomes/world-chipset.png",name:"월드맵 · 바이옴 확장 (OPRN)"},
   {textureKey:"tex_tibo_interior_expanded",path:"assets/tibo-interior/interior-expanded.png",name:"실내 확장 · Tibo"},
@@ -229,6 +233,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_forest_harmony_desert") return climateSheets.desert.count;
   if (key === "tex_forest_harmony_autumn") return climateSheets.autumn.count;
   if (key in atlasBiomeSheets) return (atlasBiomeSheets as Record<string, number>)[key]!;
+  if (key === "tex_beodeul_city") return beodeulCitySheet.count;
   if (key === "tex_tibo_interior_expanded") return tiboRecovered.count;
   if (key === SLATES_32_TEXTURE_KEY) return SLATES_32_FRAME_COUNT;
   if (key === COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY) return COMBINED_TOWN_RETRO_WORLD_TILE_COUNT;
@@ -596,6 +601,7 @@ export function ensureBundledProjectTextures(
       if (!scene.textures.exists(asset.textureKey)) continue;
       registerTilesetTextureFrames(scene, asset.textureKey, bundledChipsetFrameCount(asset.textureKey));
     }
+    if (chipsets.length > 0) registerUploadedTilesets(scene, project);   // 늦게 실린 번들 시트의 저작 스트립
     for (const key of charsetKeys) inFlight.delete(rawCharsetTextureKey(key));
     for (const id of cropIds) inFlight.delete(id);
     if (charsetKeys.size > 0) registerEasyRpgCharsetTextures(scene, charsetKeys);

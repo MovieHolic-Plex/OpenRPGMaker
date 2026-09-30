@@ -1,0 +1,60 @@
+{
+ "id": "bd-out-cabin-small",
+ "name": "외곽 작은 통나무 오두막",
+ "w": 4,
+ "h": 4,
+ "walk": [
+  "XXXX",
+  "XXXX",
+  "XXXX",
+  "XXXX"
+ ],
+ "description": "4x4 작은 통나무 오두막: 낮고 넓은 박공 지붕(짧은 용마루), 판자문과 덧문 창, 모서리 덩굴.",
+ "rules": "문은 (1,3). 지붕 위쪽 모서리 칸은 비어 있다.",
+ "tags": [
+  "외곽",
+  "나무집",
+  "작은집"
+ ],
+ "role": "building",
+ "doors": [
+  {
+   "dx": 1,
+   "dy": 3,
+   "note": "판자문 (아래 칸이 문 앞)"
+  }
+ ],
+ "notes": "",
+ "assembly": [
+  {
+   "kit": "bd-out-gable-4",
+   "x": 0,
+   "y": 0
+  },
+  {
+   "kit": "bd-out-logg-l",
+   "x": 0,
+   "y": 2
+  },
+  {
+   "kit": "bd-out-logg-door-blue",
+   "x": 1,
+   "y": 2
+  },
+  {
+   "kit": "bd-out-logg-window-shut",
+   "x": 2,
+   "y": 2
+  },
+  {
+   "kit": "bd-out-logg-r",
+   "x": 3,
+   "y": 2
+  },
+  {
+   "kit": "bd-out-ivy-corner",
+   "x": 3,
+   "y": 2
+  }
+ ]
+}

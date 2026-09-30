@@ -1,0 +1,73 @@
+{
+ "id": "bd-out-cabin",
+ "name": "외곽 통나무 오두막(박공 정면)",
+ "w": 5,
+ "h": 6,
+ "walk": [
+  ".CXX.",
+  "XXXXX",
+  "XXXXX",
+  "XXXXX",
+  "XXXXX",
+  "XXXXX"
+ ],
+ "description": "가파른 통나무 지붕과 앞을 향한 박공(둥근 용마루 통나무 끝, 둥근 창), 통나무 벽에 꽃상자 창과 판자문, 왼쪽 지붕 위 돌 굴뚝, 덩굴. 성 밖 마을의 오두막.",
+ "rules": "문은 (2,5), 그 아래 칸이 문 앞 길. 굴뚝 머리 (1,0)은 C. 좌우 위 모서리 칸은 비어 있어 잔디가 보인다.",
+ "tags": [
+  "외곽",
+  "나무집",
+  "오두막",
+  "박공"
+ ],
+ "role": "building",
+ "doors": [
+  {
+   "dx": 2,
+   "dy": 5,
+   "note": "판자문 (아래 칸이 문 앞)"
+  }
+ ],
+ "notes": "",
+ "assembly": [
+  {
+   "kit": "bd-out-gable-5",
+   "x": 0,
+   "y": 0
+  },
+  {
+   "kit": "bd-out-logg-l",
+   "x": 0,
+   "y": 4
+  },
+  {
+   "kit": "bd-out-logg-window-box",
+   "x": 1,
+   "y": 4
+  },
+  {
+   "kit": "bd-out-logg-door",
+   "x": 2,
+   "y": 4
+  },
+  {
+   "kit": "bd-out-logg-wall",
+   "x": 3,
+   "y": 4
+  },
+  {
+   "kit": "bd-out-logg-r",
+   "x": 4,
+   "y": 4
+  },
+  {
+   "kit": "bd-out-ivy",
+   "x": 3,
+   "y": 4
+  },
+  {
+   "kit": "bd-out-chimney",
+   "x": 1,
+   "y": 0
+  }
+ ]
+}

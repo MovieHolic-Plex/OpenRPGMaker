@@ -1,0 +1,61 @@
+[
+ {
+  "id": "err-layout-bridge-missing",
+  "caption": "가운데 거리(61~62행)의 아치 다리와 다리 머리 둑길 칸을 강물로 되돌렸다 — 동서 거리와 둑길이 물가에서 끊긴다.",
+  "box": [
+   28,
+   54,
+   52,
+   70
+  ],
+  "calls": [
+   {
+    "name": "fill_region",
+    "args": {
+     "mapId": "estuary",
+     "rect": {
+      "x": 36,
+      "y": 60,
+      "w": 8,
+      "h": 5
+     },
+     "material": "물"
+    },
+    "ok": true
+   }
+  ],
+  "detected": {
+   "roadIntoWater": [
+    [
+     44,
+     61
+    ],
+    [
+     35,
+     61
+    ],
+    [
+     36,
+     65
+    ],
+    [
+     42,
+     65
+    ],
+    [
+     36,
+     59
+    ],
+    [
+     42,
+     59
+    ]
+   ]
+  },
+  "streetReach": {
+   "reached": 52,
+   "total": 52,
+   "unreached": []
+  }
+ }
+]

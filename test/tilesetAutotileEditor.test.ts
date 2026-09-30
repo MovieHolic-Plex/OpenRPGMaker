@@ -5,7 +5,7 @@ import {
   renderAutotileLayoutToolbar,
   resetAutotileComposerState,
 } from "@/editor/panels/tilesetAutotileEditor";
-import { createBlankProject, DEFAULT_TILESET_ID } from "@/project/defaults";
+import { createBlankProject, COMBINED_TOWN_TILESET_ID } from "@/project/defaults";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { DEFAULT_TILES_PER_ROW } from "@/project/defaults/constants";
 import { store } from "@/project/store";
@@ -26,7 +26,7 @@ afterEach(() => {
 });
 
 function renderComposer(rerender: () => void): FakeElement {
-  const tileset = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!;
+  const tileset = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID]!;
   const root = document.createElement("div") as unknown as FakeElement;
   (root as unknown as HTMLElement).append(
     renderAutotileLayoutToolbar(tileset, rerender),
@@ -37,7 +37,7 @@ function renderComposer(rerender: () => void): FakeElement {
 
 describe("tileset autotile editor", () => {
   it("기본 Combined Town 내장 오토타일 그룹을 읽기 전용 칩과 격자로 표시한다", () => {
-    const tileset = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!;
+    const tileset = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID]!;
     const root = renderWithFakeDom(() => renderAutotileEditorPanel(tileset, vi.fn()));
 
     expect(findByTestId(root, "tileset-autotile-group-builtin_dirt_road")).toBeTruthy();
@@ -49,7 +49,7 @@ describe("tileset autotile editor", () => {
   });
 
   it("9칸·11칸·커스텀 형식 카드가 보인다", () => {
-    const tileset = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!;
+    const tileset = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID]!;
     const toolbar = renderWithFakeDom(() => renderAutotileLayoutToolbar(tileset, vi.fn()));
     expect(findByTestId(toolbar, "tileset-autotile-layout-cells-9")).toBeTruthy();
     expect(findByTestId(toolbar, "tileset-autotile-layout-cells-11")).toBeTruthy();
@@ -63,9 +63,9 @@ describe("tileset autotile editor", () => {
       });
     });
     (findByTestId(root, "tileset-autotile-layout-cells-9") as unknown as HTMLElement).click();
-    applyAutotileSheetPick(store.getCurrent().tilesets[DEFAULT_TILESET_ID]!, 33);
+    applyAutotileSheetPick(store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID]!, 33);
 
-    const groups = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.autotileGroups ?? [];
+    const groups = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID]!.autotileGroups ?? [];
     const created = groups.find((group) => group.memberTileIds[0] === 33);
     expect(created).toBeTruthy();
     expect(created?.memberTileIds).toHaveLength(9);
@@ -84,16 +84,16 @@ describe("tileset autotile editor", () => {
       });
     });
     (findByTestId(root, "tileset-autotile-layout-custom") as unknown as HTMLElement).click();
-    const tileset = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!;
+    const tileset = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID]!;
     const custom = (tileset.autotileGroups ?? []).find((group) => group.name.includes("커스텀"));
     expect(custom).toBeTruthy();
     applyAutotileSheetPick(tileset, 64);
-    const updated = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.autotileGroups?.find((group) => group.id === custom!.id);
+    const updated = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID]!.autotileGroups?.find((group) => group.id === custom!.id);
     expect(updated?.memberTileIds).toContain(64);
   });
 
   it("시트에서 내장 그룹 멤버를 누르면 그 그룹을 선택한다", () => {
-    const tileset = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!;
+    const tileset = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID]!;
     const dirt = autotileGroupsForTileset(tileset).find((group) => group.id === "builtin_dirt_road");
     expect(dirt?.memberTileIds[0]).toBeDefined();
     applyAutotileSheetPick(tileset, dirt!.memberTileIds[0]!);
@@ -103,7 +103,7 @@ describe("tileset autotile editor", () => {
   });
 
   it("격자가 그룹 목록보다 위에 있고 6칸·물이 처음부터 보인다", () => {
-    const tileset = store.getCurrent().tilesets[DEFAULT_TILESET_ID]!;
+    const tileset = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID]!;
     const panel = renderWithFakeDom(() => renderAutotileEditorPanel(tileset, vi.fn()));
     const toolbar = renderWithFakeDom(() => renderAutotileLayoutToolbar(tileset, vi.fn()));
     const composer = findByTestId(panel, "tileset-autotile-composer-builtin_dirt_road");

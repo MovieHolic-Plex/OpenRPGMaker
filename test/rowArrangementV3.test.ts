@@ -18,7 +18,7 @@ import {
 import { CONSTRUCTION_TOOLS_V3 } from "@/editor/tools/v3";
 import { byName } from "@/editor/tools/toolArgCoerce";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { Project, TileGroupMetadata, TilesetDef } from "@/project/types";
 
@@ -31,7 +31,7 @@ function project(): Project {
 }
 
 function tileset(proj = project()): TilesetDef {
-  return proj.tilesets[DEFAULT_TILESET_ID];
+  return proj.tilesets[COMBINED_TOWN_TILESET_ID];
 }
 
 function harnessGroup(def: TilesetDef, suffix: string): TileGroupMetadata {

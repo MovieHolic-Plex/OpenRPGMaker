@@ -270,8 +270,12 @@ NPC·캐릭터 Sprite와 런타임 렌더 경로는 이 변경의 대상이 아�
   auto-fill 열과 줄바꿈 이름표라 행 높이가 균일하지 않아 가상화하지 않는다.
 - **타일 팔레트 칸 입력은 판(grid) 하나가 받는다**(`tilePaletteGrid.ts` `installCellActivation`). 칸마다 리스너 셋을
   달던 비용이 커스텀 아틀라스 2,000칸에서 컸다. 스탬프 제스처가 grid 의 pointerdown 에서 전파를 멈추므로
-  **제스처보다 먼저** 설치한다. 칸 가상화는 하지 않았다 — 스탬프 미리보기·스포이트 노출(`tilePalette.ts` 의
-  `chipset-tile-N` 조회)·roving 이 모든 칸이 DOM 에 있다고 가정한다.
+  **제스처보다 먼저** 설치한다. 커스텀 팔레트는 칸 수가 512 를 넘으면 **2D 가상화**한다(`tilePaletteVirtual.ts`,
+  `makeCustomPalette` 가 설치; 보이는 창 ± 18행·1열만 DOM, 칸은 `--vr`/`--vc` 절대 배치). 필터는 DOM 을 만들지
+  않고 목록만 바꾼다(`refreshPaletteFilter` → `setCustomPaletteFilter` → `VirtualPalette.refreshFilter`). 이 경로에서는
+  **`chipset-tile-N` 이 DOM 에 있다고 가정하지 마라** — 선택·스포이트 노출은 `setVirtualPaletteActive` /
+  `revealVirtualPaletteTile`, 화살표·Home/End 는 가상 팔레트 자체 keydown 이 맡는다. 스탬프 미리보기는 렌더된
+  칸만 돈다(스크롤하면 드래그 취소). 512 이하·rAF 없는 환경(vitest fake DOM)은 예전 전체 렌더.
 - **이벤트 편집기는 줌·격자·선택 사각형·붓 고르기 같은 editorState 변화에 본문을 다시 짓지 않는다**
   (`editorStateNeedsEventEditorRefresh`). 본문이 실제로 읽는 필드(맵·이벤트·페이지·도구·레이어·좌표 대기)는 그대로 갱신한다.
   명령 행에 `content-visibility` 는 걸지 않았다 — 깊이 레일 `::before` 가 행 밖(음수 left)에 그려져 페인트 격리에 잘린다.
@@ -939,6 +943,8 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
 
 ## Agent cautions
 
+- **마을 요청의 버들항 경로 (2026-10-01):** `src/ai/piAgent/beodeulTownRoute.ts`(노트), `executionRoute.ts`(노트 우선), `plainTurn.ts`/`villageContract.ts`(계약 생략), `sessionToolExposure.ts`(check_* 짝), `authorVillageToolDef.ts::rerouteToBeodeulTown`, `authorBeodeulTown.ts`. 마을 경로를 고칠 때 이 여섯 곳을 같이 본다 — 계약이 살아 있으면 `author_village` 숲 한 방으로 되돌아간다. `openwiki/beodeul-city.md` 「조수 마을 경로」.
+- **기본 타일셋은 버들항이다 (2026-09-30):** `DEFAULT_TILESET_*` 는 `beodeul_city`. 합본 마을 칸 번호(`TILE.*`)에 의존하는 코드는 `COMBINED_TOWN_TILESET_*`/`combinedTownTileset()` 를 명시한다. 버들항 맵에서 `TILE.GRASS`(240)는 벽이다 — 빈 채움은 `createBlankMap` 의 잔디 737. 팔레트는 23,936칸 무가상화라 DOM 2.4만 노드(필터 전환 0.7~2.3초) — 팔레트 코드를 만지면 `openwiki/beodeul-city.md` 「기본 타일셋」의 실측을 먼저 본다.
 
 - **그림 워밍업 소유자 (2026-08-28):** 편집기 다이얼로그가 쓰는 그림 카탈로그 프리로드는 `src/assets/editorAssetWarmup.ts` 만 한다. `scheduleEditorAssetWarmup()` 은 `renderEditor` 끝에서 한 번 불리고 `requestIdleCallback` 로 미뤄지며(없으면 800ms 폴백), **부팅 배경 워밍은 캐릭셋 색키 21장뿐이다(2026-09-30, 렉 조사 G).** `picker` tier(캐릭셋 색키 + 낱장 얼굴 + 칩셋 13)와 `library`(CC0 아이콘)는 부팅에 걸지 않는다 — 실측(운영 빌드, 385 타일셋 프로젝트): 부팅 뒤 ~45초에 요청 1847건·18.9MB(얼굴 1216 / 7.3MB, 아이콘 282, 칩셋 ≈11MB)가 프로젝트 배경 작업(digest·clone·diff, ready 뒤 ~20초)과 겹쳐 네트워크·재검증(`/assets/*.png` 는 `no-cache`)·GC 를 경쟁했다. 이벤트 편집기 모달은 `warmEditorPickerAssets()` 로 `picker` tier 를 앞당긴다. 실제 요청은 공용 큐 `src/assets/imageWarmQueue.ts` 가 URL 단위 in-flight 공유 + 전체 동시 요청 상한 6(배경 호출 몫 4 / 요구 호출 몫 6)으로 낸다. 테스트 플레이 창이 열려 있는 동안은 `setImageWarmQueueSuspended(true)` 로 이 큐를 멈춘다. 색키 워밍이 플레이 프리로드의 HTTP 슬롯과 메인 스레드를 가져가지 않게 하고, 창을 닫으면 다시 흐른다. dev 서버가 HTTP/1.1 이라 상한 없이 수백 장을 걸면 사용자가 지금 보는 그림이 큐 뒤로 밀린다. 새 피커를 만들 때 `new Image()` 나 `<link rel=prefetch>` 를 손으로 뿌리지 말고 tier 목록에 경로를 추가하라. 몬스터/전투 스킨 아트(40MB+)와 업로드 `dataUrl` 은 의도적으로 제외다. `navigator.connection.saveData` 또는 2G 에서는 배경 워밍을 아예 걸지 않는다. 계약: `test/editorAssetWarmup.test.ts`.
 - **store 구독자는 칠하기 샘플을 거른다 (2026-09-25):** `store.subscribe` 알림은 동기이고 묶이지 않는다. 칠하기·채우기·지우기는 포인터 샘플마다 `scope: "map"` + `cells` 로 알린다. 이벤트·위치·대사·맵 이름처럼 타일 id 를 읽지 않는 표면은 `isTileCellChange(change)` 로 걸러라. 걸러 버리거나(`mapLocationLayer`, `aiAuthoring/dialogue`), 썸네일·경고처럼 결과가 필요하면 획이 멈춘 뒤 500ms 에 한 번 그린다(`mapSidebarSection`, 이벤트 편집기 모달). 되돌리기 중복 판정·변경 감지에는 `JSON.stringify(a) === JSON.stringify(b)` 대신 `jsonEqual` (`src/util/structuralJson.ts`)을 쓴다 — 프로젝트 전체를 문자열로 만들지 않고 첫 차이에서 멈춘다. 되돌리기 개수만 필요하면 `getMapEditHistoryDepth()` 를 쓴다(`getMapEditHistoryDebugEntries()` 는 스냅샷 전부를 직렬화한다). 손 팬은 카메라만 샘플마다 옮기고 오버레이 동기화(`onPanMove`)는 프레임당 한 번이다(`CameraPanController`).

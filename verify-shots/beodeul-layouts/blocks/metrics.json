@@ -1,0 +1,123 @@
+{
+ "emptiness": {
+  "lawn": {
+   "share": 0.0862,
+   "screens": 35,
+   "over40": 0,
+   "worst": 0.217,
+   "overAt": []
+  },
+  "open": {
+   "share": 0.1077,
+   "screens": 35,
+   "over40": 0,
+   "worst": 0.217,
+   "overAt": []
+  }
+ },
+ "blockRepeats": {
+  "blocks": 34,
+  "distinct": 31,
+  "neighbourRepeats": [],
+  "overused": []
+ },
+ "originality": {
+  "sameCells": 33,
+  "ofCells": 10000,
+  "sameShare": 0.0033,
+  "sameShareOfObjectCells": 0
+ },
+ "districts": [
+  {
+   "id": "bd-castle",
+   "stamped": 0,
+   "present": false,
+   "atOriginalOrigin": false,
+   "origins": []
+  },
+  {
+   "id": "bd-estate",
+   "stamped": 0,
+   "present": false,
+   "atOriginalOrigin": false,
+   "origins": []
+  },
+  {
+   "id": "bd-forum",
+   "stamped": 0,
+   "present": false,
+   "atOriginalOrigin": false,
+   "origins": []
+  },
+  {
+   "id": "bd-cathedral",
+   "stamped": 0,
+   "present": false,
+   "atOriginalOrigin": false,
+   "origins": []
+  },
+  {
+   "id": "bd-windmill",
+   "stamped": 0,
+   "present": false,
+   "atOriginalOrigin": false,
+   "origins": []
+  },
+  {
+   "id": "bd-harbour",
+   "stamped": 0,
+   "present": false,
+   "atOriginalOrigin": false,
+   "origins": []
+  },
+  {
+   "id": "bd-harbour-west",
+   "stamped": 0,
+   "present": false,
+   "atOriginalOrigin": false,
+   "origins": []
+  },
+  {
+   "id": "bd-river-bridge",
+   "stamped": 0,
+   "present": false,
+   "atOriginalOrigin": false,
+   "origins": []
+  }
+ ],
+ "districtsPresent": 0,
+ "districtsAtOriginalOrigin": 0,
+ "stampedKits": 98,
+ "doors": 120,
+ "landReach": {
+  "total": 120,
+  "reached": 120,
+  "unreached": []
+ },
+ "streetReach": {
+  "total": 120,
+  "reached": 120,
+  "unreached": []
+ },
+ "defects": {
+  "deadEndPavedCells": [
+   [
+    82,
+    87
+   ]
+  ],
+  "deadEndStreets": [],
+  "roadIntoWater": [],
+  "blockedDoorFronts": [],
+  "sameKitRepeats": [
+   {
+    "id": "bd-prop-flowerbed",
+    "at": [
+     86,
+     99
+    ]
+   }
+  ]
+ },
+ "designedObjectCells": 5011
+}

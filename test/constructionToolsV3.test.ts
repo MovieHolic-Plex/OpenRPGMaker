@@ -11,7 +11,7 @@ import { buildEightNeighborVariantMap } from "@/editor/tools/v3/rmTypeExpander";
 import { DEFAULT_LITE_MODEL, DEFAULT_MODEL } from "@/ai/llmClient";
 import { isPassable } from "@/project/collision";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { LAKE_AUTOTILE_TILE, isLakeAutotileTile, lakeAutotileQuarterSources } from "@/project/defaults/lakeAutotile";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { TileGroupMetadata, TilesetDef } from "@/project/types";
@@ -22,7 +22,7 @@ const WATER_GROUP_ID = `${COMBINED_TOWN_HARNESS_PREFIX}lake-water-autotile`;
 
 function context(): { ctx: ToolContext; tileset: () => TilesetDef } {
   const ctx: ToolContext = { project: createBlankProject() };
-  return { ctx, tileset: () => ctx.project.tilesets[DEFAULT_TILESET_ID] };
+  return { ctx, tileset: () => ctx.project.tilesets[COMBINED_TOWN_TILESET_ID] };
 }
 
 function approve(tileset: TilesetDef, groupId: string): TileGroupMetadata {

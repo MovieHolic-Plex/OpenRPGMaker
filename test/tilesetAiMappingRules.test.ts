@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { applyAiMappingAnswer as applyAiMappingAnswerForTest } from "@/editor/panels/tilesetAiMappingParser";
 import { analyzeTilesetSelection } from "@/editor/panels/tilesetAiMappingRules";
 import { buildSetupMappingAnswer } from "@/editor/panels/tilesetAiSetupMapping";
-import { defaultTileset } from "@/project/defaults/defaultAssets";
+import { combinedTownTileset as defaultTileset } from "@/project/defaults/defaultAssets";
 
 describe("tileset AI mapping rules", () => {
   it("detects a horizontal expandable terrain strip with preserved caps", () => {

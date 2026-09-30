@@ -13,7 +13,7 @@ import fs from "node:fs";
 import path from "node:path";
 import Jimp from "jimp";
 import { RESOURCE_SLICING } from "../src/assets/resourceSlicing.ts";
-import { defaultTileset } from "../src/project/defaults/defaultAssets.ts";
+import { combinedTownTileset as combinedTownTileset as defaultTileset } from "../src/project/defaults/defaultAssets.ts";
 import { COMBINED_TOWN_HARNESS_GROUPS } from "../src/project/tilesetHarness/combinedTownGroups.ts";
 import { COMBINED_TOWN_TILE_SEMANTICS } from "../src/project/defaults/tileSemanticsCombinedTown.ts";
 import { isTransparentChipsetTile } from "../src/project/defaults/chipsetMapping.ts";

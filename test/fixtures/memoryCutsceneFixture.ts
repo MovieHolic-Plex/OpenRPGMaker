@@ -1,11 +1,11 @@
 import { runTool } from "@/editor/tools";
-import { createBlankProject, DEFAULT_TILESET_TEXTURE_KEY } from "@/project/defaults";
+import { createBlankProject, COMBINED_TOWN_TILESET_TEXTURE_KEY } from "@/project/defaults";
 import type { Project } from "@/project/types";
 
 export const MEMORY_CUTSCENE_MAP_ID = "map_blank_start";
 export const MEMORY_CUTSCENE_EVENT_ID = "ev_memory_cutscene";
 export const MEMORY_CUTSCENE_PICTURE_ID = "memory_fade";
-export const MEMORY_CUTSCENE_PICTURE_RESOURCE_ID = DEFAULT_TILESET_TEXTURE_KEY;
+export const MEMORY_CUTSCENE_PICTURE_RESOURCE_ID = COMBINED_TOWN_TILESET_TEXTURE_KEY;
 
 export function createMemoryCutsceneProject(): Project {
   const project = createBlankProject();

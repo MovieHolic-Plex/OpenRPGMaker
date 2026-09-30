@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createAiPreviewProject, validateAiPreviewProject } from "@/project/aiPreviewGenerator";
 import { createBlankProject, defaultTilesets, TILE } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 
 function firstUnsupportedTilesetId(): string {
   const id = Object.keys(defaultTilesets()).find((candidate) => candidate.includes("ship") || candidate.includes("world"));
@@ -358,13 +358,13 @@ describe("AI preview generator", () => {
 
   it("returns preview evidence detached from source tile group metadata", () => {
     const source = createBlankProject();
-    const originalTile = source.tilesets[DEFAULT_TILESET_ID].tileGroups?.[0]?.tileIds[0];
+    const originalTile = source.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups?.[0]?.tileIds[0];
     const result = createAiPreviewProject({ goal: "작은 항구 마을", sourceProject: source });
     expect(result.ok).toBe(true);
     if (!result.ok) throw new Error(result.clarificationQuestion);
     const evidenceGroup = result.evidence.tileGroups[0] as { tileIds: number[] };
     evidenceGroup.tileIds[0] = 999_999;
 
-    expect(source.tilesets[DEFAULT_TILESET_ID].tileGroups?.[0]?.tileIds[0]).toBe(originalTile);
+    expect(source.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups?.[0]?.tileIds[0]).toBe(originalTile);
   });
 });

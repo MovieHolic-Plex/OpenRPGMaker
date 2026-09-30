@@ -17,7 +17,7 @@ import {
 } from "@/editor/panels/aiChatPanel";
 import { runTool, type ToolContext } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import type { Project } from "@/project/types";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
@@ -34,7 +34,7 @@ afterEach(() => {
 
 // propose_tile_vocabulary를 실제 실행해 ProposedCall 모양의 픽스처를 만든다.
 function proposeCall(project: Project): { call: ProposedCall; groupId: string } {
-  const groupId = project.tilesets[DEFAULT_TILESET_ID].tileGroups![0].id;
+  const groupId = project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups![0].id;
   const args = {
     items: [{ kind: "group", groupId, name: "석벽", role: "wall", patternKind: "nine_slice_expandable", layerHome: "lower" }],
   };
@@ -94,7 +94,7 @@ describe("어휘 카드 렌더 + 인라인 편집", () => {
     const reassembled = reassembleSelectedProposalProject(project, effective, [true]);
     expect(reassembled.ok).toBe(true);
     if (!reassembled.ok) return;
-    const group = reassembled.project.tilesets[DEFAULT_TILESET_ID].tileGroups!.find((entry) => entry.id === groupId)!;
+    const group = reassembled.project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups!.find((entry) => entry.id === groupId)!;
     expect(group).toMatchObject({ name: "돌담", layerHome: "upper", origin: "user" });
   });
 

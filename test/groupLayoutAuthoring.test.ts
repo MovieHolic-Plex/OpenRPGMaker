@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { buildClusterEditKickoff } from "@/ai/clusterAssistPrompt";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 
 function clusterEditPrompt(): string {
-  return buildClusterEditKickoff({ tilesetId: DEFAULT_TILESET_ID, groupId: "roof_layout_group", group: null });
+  return buildClusterEditKickoff({ tilesetId: COMBINED_TOWN_TILESET_ID, groupId: "roof_layout_group", group: null });
 }
 
 describe("클러스터 구성 저작", () => {

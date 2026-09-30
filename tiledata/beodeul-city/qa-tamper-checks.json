@@ -1,0 +1,265 @@
+[
+ {
+  "code": "door-unreachable",
+  "tamper": "bd-house-h103_1 @ (15,74)",
+  "detected": [
+   {
+    "code": "door-unreachable",
+    "at": [
+     17,
+     74
+    ],
+    "door": "h103_0"
+   }
+  ]
+ },
+ {
+  "code": "door-unreachable",
+  "tamper": "drawbridge (15..17,23..25) → moat water",
+  "detected": [
+   {
+    "code": "door-unreachable",
+    "at": [
+     16,
+     11
+    ],
+    "door": "palace"
+   },
+   {
+    "code": "door-unreachable",
+    "at": [
+     1,
+     8
+    ],
+    "door": "cstable"
+   },
+   {
+    "code": "door-unreachable",
+    "at": [
+     30,
+     14
+    ],
+    "door": "smithy"
+   },
+   {
+    "code": "door-unreachable",
+    "at": [
+     30,
+     8
+    ],
+    "door": "barracks"
+   }
+  ]
+ },
+ {
+  "code": "door-unreachable",
+  "tamper": "grand stair (14..18,12..14) → cliff face",
+  "detected": [
+   {
+    "code": "door-unreachable",
+    "at": [
+     16,
+     11
+    ],
+    "door": "palace"
+   }
+  ]
+ },
+ {
+  "code": "pier-unreachable",
+  "tamper": "pier row (20..21,89) → water",
+  "detected": [
+   [
+    20,
+    90
+   ],
+   [
+    21,
+    90
+   ],
+   [
+    20,
+    91
+   ],
+   [
+    21,
+    91
+   ],
+   [
+    20,
+    92
+   ],
+   [
+    21,
+    92
+   ],
+   [
+    20,
+    93
+   ],
+   [
+    21,
+    93
+   ],
+   [
+    20,
+    94
+   ],
+   [
+    21,
+    94
+   ]
+  ]
+ },
+ {
+  "code": "visual-only",
+  "tamper": "5× same tree in a row @ (3,57)",
+  "detected": []
+ },
+ {
+  "code": "err-layout-door-blocked",
+  "tamper": [
+   {
+    "name": "stamp_object",
+    "args": {
+     "objectId": "kit:beodeul_city/bd-prop-crate_apple",
+     "mapId": "hilltop",
+     "x": 20,
+     "y": 58
+    },
+    "ok": true
+   }
+  ],
+  "detected": {
+   "blockedDoorFronts": [
+    {
+     "kit": "bd-house-h109_0",
+     "front": [
+      20,
+      58
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "code": "err-layout-dead-end",
+  "tamper": [
+   {
+    "name": "fill_region",
+    "args": {
+     "mapId": "hilltop",
+     "rect": {
+      "x": 88,
+      "y": 70,
+      "w": 2,
+      "h": 2
+     },
+     "material": "버들항 길 포석"
+    },
+    "ok": true
+   }
+  ],
+  "detected": {
+   "deadEndStreets": [
+    [
+     88,
+     71
+    ]
+   ]
+  }
+ },
+ {
+  "code": "err-layout-same-row",
+  "tamper": [
+   {
+    "name": "stamp_object",
+    "args": {
+     "objectId": "kit:beodeul_city/bd-house-h113_0",
+     "mapId": "hilltop",
+     "x": 18,
+     "y": 62
+    },
+    "ok": true
+   },
+   {
+    "name": "stamp_object",
+    "args": {
+     "objectId": "kit:beodeul_city/bd-house-h113_0",
+     "mapId": "hilltop",
+     "x": 23,
+     "y": 62
+    },
+    "ok": true
+   },
+   {
+    "name": "stamp_object",
+    "args": {
+     "objectId": "kit:beodeul_city/bd-house-h113_0",
+     "mapId": "hilltop",
+     "x": 28,
+     "y": 62
+    },
+    "ok": true
+   }
+  ],
+  "detected": {
+   "sameKitRepeats": [
+    {
+     "id": "bd-house-h113_0",
+     "at": [
+      18,
+      62
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "code": "err-layout-bridge-missing",
+  "tamper": [
+   {
+    "name": "fill_region",
+    "args": {
+     "mapId": "estuary",
+     "rect": {
+      "x": 36,
+      "y": 60,
+      "w": 8,
+      "h": 5
+     },
+     "material": "물"
+    },
+    "ok": true
+   }
+  ],
+  "detected": {
+   "roadIntoWater": [
+    [
+     44,
+     61
+    ],
+    [
+     35,
+     61
+    ],
+    [
+     36,
+     65
+    ],
+    [
+     42,
+     65
+    ],
+    [
+     36,
+     59
+    ],
+    [
+     42,
+     59
+    ]
+   ]
+  }
+ }
+]

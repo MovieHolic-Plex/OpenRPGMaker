@@ -9,7 +9,7 @@ import type { ToolResult } from "@/editor/tools";
 import { renderAiDocument } from "@/editor/panels/aiDocRenderers";
 import { sanitizeUserFacingToolId } from "@/editor/uiCopy";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { AiDocument } from "@/project/types";
 import { formatRunRecapPlayerLine, parseRunRecapPayload } from "@/ai/runRecap";
@@ -341,7 +341,7 @@ export function createConversationLogHost(options: {
   // 타일 이미지를 채팅에 렌더한다(show_tiles 툴콜).
   const appendTileThumbs = (tilesetId: string, tiles: readonly number[]): void => {
     removeStartScreen();
-    const tileset = store.getCurrent().tilesets[tilesetId] ?? store.getCurrent().tilesets[DEFAULT_TILESET_ID];
+    const tileset = store.getCurrent().tilesets[tilesetId] ?? store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID];
     if (!tileset) return;
     const bubble = el("div", {
       class: "ai-command-attachment ai-chat-tiles",
@@ -379,7 +379,7 @@ export function createConversationLogHost(options: {
   // 맵 영역을 하위+상위 합성 그리드로 채팅에 렌더 — 구조물 학습 인터뷰의 시각 자료.
   const appendTileGrid = (data: TileGridData): void => {
     removeStartScreen();
-    const tileset = store.getCurrent().tilesets[data.tilesetId] ?? store.getCurrent().tilesets[DEFAULT_TILESET_ID];
+    const tileset = store.getCurrent().tilesets[data.tilesetId] ?? store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID];
     if (!tileset) return;
     const rows: HTMLElement[] = [];
     for (let row = 0; row < data.h; row += 1) {

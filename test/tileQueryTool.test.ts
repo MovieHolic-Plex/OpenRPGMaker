@@ -4,12 +4,12 @@
 import { describe, expect, it } from "vitest";
 import { runTool, type ToolContext } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import type { TilesetDef } from "@/project/types";
 
 function context(): { ctx: ToolContext; tileset: () => TilesetDef } {
   const ctx: ToolContext = { project: createBlankProject() };
-  return { ctx, tileset: () => ctx.project.tilesets[DEFAULT_TILESET_ID] };
+  return { ctx, tileset: () => ctx.project.tilesets[COMBINED_TOWN_TILESET_ID] };
 }
 
 describe("tile_query ask:vocab", () => {
@@ -51,13 +51,13 @@ describe("tile_query ask:labels tileset resolution", () => {
       ...structuredClone(start),
       id: outdoorId,
       name: "야외",
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
     };
     const ctx: ToolContext = { project };
     const result = runTool(ctx, "tile_query", { ask: "labels", query: "탁자", mapId: outdoorId }, { dryRun: true });
     expect(result.ok, result.summary).toBe(true);
     const data = result.data as { tilesetId: string; labels: { label: string }[] };
-    expect(data.tilesetId).toBe(DEFAULT_TILESET_ID);
+    expect(data.tilesetId).toBe(COMBINED_TOWN_TILESET_ID);
     expect(data.labels.some((l) => l.label.includes("가로 탁자"))).toBe(true);
   });
 });

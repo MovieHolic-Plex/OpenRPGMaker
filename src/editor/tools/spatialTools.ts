@@ -8,7 +8,7 @@ import { prepareSharedObject, sharedDesignDetail } from "./sharedObjectTools";
 import { previewSpatialAuthoring } from "@/editor/spatial/preview";
 import type { SpatialAuthoringRequest } from "@/editor/spatial/authoringTypes";
 import { SpatialCompileError, type SpatialStampTarget } from "@/editor/spatial/compilerTypes";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { isWorldTileset } from "@/project/defaults/worldCoastMapping";
 import { WORLD_TERRAIN_BLOCKS } from "@/project/defaults/worldTerrainAutotiles";
 import { checkedDocument, designNode, designSlots, own, SpatialOperationError } from "@/project/spatial/domain";
@@ -181,7 +181,7 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
         active: project.spatialAuthoring !== undefined,
         terrain: {
           worldTilesetIds,
-          settlementTilesetId: DEFAULT_TILESET_ID,
+          settlementTilesetId: COMBINED_TOWN_TILESET_ID,
           materials: ["ground", "water", ...WORLD_TERRAIN_BLOCKS.map(block => block.key)],
           structures: {
             "mountain:grass|dirt|snow": "rect 영역 하나가 계단 포함 한 단 산 — polygon 거부",

@@ -1,0 +1,22 @@
+{
+ "id": "bd-mpart-ivy-wall-b",
+ "name": "담쟁이(벽 기둥 타고) b",
+ "w": 1,
+ "h": 3,
+ "walk": [
+  "X",
+  "X",
+  "X"
+ ],
+ "description": "1x3칸 투명 덧그림: 벽 기둥을 타고 오르는 덩굴 (변형 b).",
+ "rules": "벽칸 위에 겹친다.",
+ "tags": [
+  "귀족저택",
+  "부품",
+  "담쟁이"
+ ],
+ "role": "part",
+ "doors": [],
+ "notes": "",
+ "assembly": []
+}

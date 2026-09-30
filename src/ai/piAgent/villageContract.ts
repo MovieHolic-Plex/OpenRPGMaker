@@ -1,4 +1,5 @@
 import { packTownTargetFor } from "./packTownRoute";
+import { beodeulTownTargetFor } from "./beodeulTownRoute";
 import { withVillageMorphologyDefault } from "@/editor/tools/village/defaultMorphology";
 import { computeReachableCells } from "@/project/lint/reachability";
 import type { Project } from "@/project/types";
@@ -38,6 +39,11 @@ export function resolveVillageContract(project: Project, intent: IntentDeclarati
   if (intent.source !== "llm" || intent.mode === "question" || !intent.tools.includes("author_village")) return;
   // 팩 도시 타일셋(Rasak 등) 마을은 build_pack_town 이 짠다 — 계약을 걸면 author_village 만 허용돼 숲마을로 바뀐다(packTownRoute).
   if (packTownTargetFor(project, requestText, intent.targetMapId ?? currentMapId)) return;
+  // 버들항 계열 마을은 author_beodeul_town 이 짠다 — 계약이 author_village 만 허용하면 숲마을로 바뀐다(beodeulTownRoute).
+  {
+    const townMapId = intent.targetMapId ?? currentMapId;
+    if (beodeulTownTargetFor(project, intent, townMapId, !!(townMapId && project.maps[townMapId] && isLivedMap(project.maps[townMapId])))) return;
+  }
   // Multi-goal adventures retain their existing orchestration; this contract owns one village.
   if (intent.adventure || intent.npcRewards || intent.functionalAcceptance?.length || intent.actionCombat) return;
   const declared = intent.construction;

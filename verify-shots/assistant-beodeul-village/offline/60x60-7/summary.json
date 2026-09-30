@@ -1,0 +1,41 @@
+{
+ "spec": "60x60",
+ "ms": 451,
+ "size": "60x59",
+ "blocks": 13,
+ "summary": "버들항 마을 60×59 (맵 map_beodeul_7_60x59): 블록 13개(church 1, out 4, res 2, market 2, manor 1, port 3), 열 20+20+14, 띠 17+13+13+8. 다음: check_city_form 과 check_reachability 로 길·문 앞 통행을 점검하고, 이름·NPC·이벤트는 그 뒤에 올린다.",
+ "metrics": {
+  "streetReach": {
+   "reached": 35,
+   "total": 35,
+   "unreached": []
+  },
+  "defects": {
+   "deadEndPavedCells": 0,
+   "deadEndStreets": 0,
+   "roadIntoWater": 0,
+   "blockedDoorFronts": 0,
+   "sameKitRepeats": 0
+  }
+ },
+ "emptiness": {
+  "lawn": {
+   "share": 0.1025,
+   "screens": 12,
+   "over40": 0,
+   "worst": 0.183,
+   "overAt": []
+  },
+  "open": {
+   "share": 0.1042,
+   "screens": 12,
+   "over40": 0,
+   "worst": 0.203,
+   "overAt": []
+  }
+ },
+ "cityForm": {
+  "ok": true,
+  "summary": "도시 형태 고칠 곳 7건"
+ }
+}

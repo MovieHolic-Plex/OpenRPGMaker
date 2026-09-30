@@ -4,7 +4,7 @@ import { TOOL_CATEGORIES } from "@/editor/panels/toolBrowserModal";
 import { runTool } from "@/editor/tools/toolRunner";
 import { allTools, getTool } from "@/editor/tools/toolRegistry";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import type { TileGroupMetadata } from "@/project/types";
 import type { ToolContext } from "@/editor/tools/types";
 
@@ -17,7 +17,7 @@ type SetGroupLayoutData = {
 
 function contextWithGroup(): ToolContext {
   const project = createBlankProject();
-  project.tilesets[DEFAULT_TILESET_ID].tileGroups = [layoutGroup()];
+  project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups = [layoutGroup()];
   return { project };
 }
 
@@ -34,7 +34,7 @@ function layoutGroup(): TileGroupMetadata {
 }
 
 function groupOf(ctx: ToolContext): TileGroupMetadata {
-  const group = ctx.project.tilesets[DEFAULT_TILESET_ID].tileGroups?.find((candidate) => candidate.id === "tree-pair");
+  const group = ctx.project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups?.find((candidate) => candidate.id === "tree-pair");
   if (!group) throw new Error("test group missing");
   return group;
 }
@@ -52,7 +52,7 @@ function dataOf(value: unknown): SetGroupLayoutData {
 
 function isSetGroupLayoutData(value: unknown): value is SetGroupLayoutData {
   if (typeof value !== "object" || value === null || Array.isArray(value)) return false;
-  return Reflect.get(value, "tilesetId") === DEFAULT_TILESET_ID
+  return Reflect.get(value, "tilesetId") === COMBINED_TOWN_TILESET_ID
     && typeof Reflect.get(value, "groupId") === "string"
     && (Reflect.get(value, "axis") === "vertical" || Reflect.get(value, "axis") === "horizontal");
 }
@@ -68,7 +68,7 @@ describe("set_group_layout", () => {
     // Then: the grammar, tile union, registry data, and sample placement match the saved layout.
     expect(result.ok, result.summary).toBe(true);
     expect(result.summary).toBe("구성 저장: 나무 2칸 — 위 [260] / 아래 [290] (세로)");
-    expect(dataOf(result.data)).toEqual({ axis: "vertical", groupId: "tree-pair", tilesetId: DEFAULT_TILESET_ID });
+    expect(dataOf(result.data)).toEqual({ axis: "vertical", groupId: "tree-pair", tilesetId: COMBINED_TOWN_TILESET_ID });
     expect(grammarOf(ctx)).toEqual({
       axis: "vertical",
       kind: "vertical_expandable",
@@ -83,7 +83,7 @@ describe("set_group_layout", () => {
     });
     expect(groupOf(ctx).tileIds).toEqual([100, 260, 290]);
 
-    const sample = buildGroupSample(ctx.project.tilesets[DEFAULT_TILESET_ID], groupOf(ctx));
+    const sample = buildGroupSample(ctx.project.tilesets[COMBINED_TOWN_TILESET_ID], groupOf(ctx));
     expect(sample.w).toBe(5);
     expect(sample.h).toBe(2);
     expect(sample.upper[0]).toBe(260);
@@ -102,7 +102,7 @@ describe("set_group_layout", () => {
       groupId: "tree-pair",
       left: [210],
       right: [211],
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
     });
 
     // Then: the horizontal expandable grammar uses the supported cap roles.

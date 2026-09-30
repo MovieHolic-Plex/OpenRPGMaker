@@ -1,0 +1,6335 @@
+{
+ "id": "bends",
+ "name": "굽이 운하 도시",
+ "calls": [
+  {
+   "name": "create_map",
+   "args": {
+    "id": "bends",
+    "name": "굽이 운하 도시",
+    "width": 100,
+    "height": 100,
+    "tilesetId": "beodeul_city"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 100,
+     "h": 100
+    },
+    "material": "버들항 풀밭"
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-3",
+    "mapId": "bends",
+    "x": 7,
+    "y": 13
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-2",
+    "mapId": "bends",
+    "x": 86,
+    "y": 32
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-2",
+    "mapId": "bends",
+    "x": 54,
+    "y": 26
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-3",
+    "mapId": "bends",
+    "x": 5,
+    "y": 0
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-2",
+    "mapId": "bends",
+    "x": 24,
+    "y": 41
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-3",
+    "mapId": "bends",
+    "x": 1,
+    "y": 11
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-3",
+    "mapId": "bends",
+    "x": 18,
+    "y": 11
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-3",
+    "mapId": "bends",
+    "x": 55,
+    "y": 75
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-1",
+    "mapId": "bends",
+    "x": 30,
+    "y": 10
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-1",
+    "mapId": "bends",
+    "x": 34,
+    "y": 73
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-3",
+    "mapId": "bends",
+    "x": 16,
+    "y": 66
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-5",
+    "mapId": "bends",
+    "x": 0,
+    "y": 82
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-6",
+    "mapId": "bends",
+    "x": 61,
+    "y": 46
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-4",
+    "mapId": "bends",
+    "x": 44,
+    "y": 5
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-6",
+    "mapId": "bends",
+    "x": 87,
+    "y": 34
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-3",
+    "mapId": "bends",
+    "x": 22,
+    "y": 84
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-2",
+    "mapId": "bends",
+    "x": 8,
+    "y": 39
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-2",
+    "mapId": "bends",
+    "x": 15,
+    "y": 63
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-1",
+    "mapId": "bends",
+    "x": 6,
+    "y": 27
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-3",
+    "mapId": "bends",
+    "x": 21,
+    "y": 48
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-4",
+    "mapId": "bends",
+    "x": 82,
+    "y": 19
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-3",
+    "mapId": "bends",
+    "x": 66,
+    "y": 90
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-4",
+    "mapId": "bends",
+    "x": 8,
+    "y": 40
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-6",
+    "mapId": "bends",
+    "x": 2,
+    "y": 28
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-2",
+    "mapId": "bends",
+    "x": 21,
+    "y": 91
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-3",
+    "mapId": "bends",
+    "x": 13,
+    "y": 18
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-6",
+    "mapId": "bends",
+    "x": 55,
+    "y": 16
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-2",
+    "mapId": "bends",
+    "x": 13,
+    "y": 79
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-6",
+    "mapId": "bends",
+    "x": 88,
+    "y": 27
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-5",
+    "mapId": "bends",
+    "x": 0,
+    "y": 72
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-6",
+    "mapId": "bends",
+    "x": 51,
+    "y": 87
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-2",
+    "mapId": "bends",
+    "x": 48,
+    "y": 5
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-3",
+    "mapId": "bends",
+    "x": 55,
+    "y": 88
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-4",
+    "mapId": "bends",
+    "x": 81,
+    "y": 78
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-6",
+    "mapId": "bends",
+    "x": 29,
+    "y": 10
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-5",
+    "mapId": "bends",
+    "x": 82,
+    "y": 42
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-3",
+    "mapId": "bends",
+    "x": 68,
+    "y": 32
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-4",
+    "mapId": "bends",
+    "x": 3,
+    "y": 15
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-4",
+    "mapId": "bends",
+    "x": 58,
+    "y": 34
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-3",
+    "mapId": "bends",
+    "x": 12,
+    "y": 53
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-6",
+    "mapId": "bends",
+    "x": 67,
+    "y": 64
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-1",
+    "mapId": "bends",
+    "x": 7,
+    "y": 12
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-6",
+    "mapId": "bends",
+    "x": 80,
+    "y": 25
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-6",
+    "mapId": "bends",
+    "x": 31,
+    "y": 84
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-2",
+    "mapId": "bends",
+    "x": 17,
+    "y": 1
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-3",
+    "mapId": "bends",
+    "x": 87,
+    "y": 25
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-4",
+    "mapId": "bends",
+    "x": 35,
+    "y": 30
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-3",
+    "mapId": "bends",
+    "x": 58,
+    "y": 81
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-1",
+    "mapId": "bends",
+    "x": 26,
+    "y": 21
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-2",
+    "mapId": "bends",
+    "x": 85,
+    "y": 23
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-4",
+    "mapId": "bends",
+    "x": 31,
+    "y": 24
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-6",
+    "mapId": "bends",
+    "x": 31,
+    "y": 39
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-6",
+    "mapId": "bends",
+    "x": 56,
+    "y": 28
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-6",
+    "mapId": "bends",
+    "x": 70,
+    "y": 74
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-3",
+    "mapId": "bends",
+    "x": 43,
+    "y": 48
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-4",
+    "mapId": "bends",
+    "x": 25,
+    "y": 69
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-5",
+    "mapId": "bends",
+    "x": 86,
+    "y": 66
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-4",
+    "mapId": "bends",
+    "x": 57,
+    "y": 72
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-5",
+    "mapId": "bends",
+    "x": 3,
+    "y": 35
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-ground-lawn-5",
+    "mapId": "bends",
+    "x": 88,
+    "y": 62
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-harbour-lake",
+    "mapId": "bends",
+    "x": 0,
+    "y": 84
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 0,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 1,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 2,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 3,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 4,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 5,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 6,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 7,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 8,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 37,
+     "y": 9,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 10,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 11,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 39,
+     "y": 12,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 40,
+     "y": 13,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 41,
+     "y": 14,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 15,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 16,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 43,
+     "y": 17,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 44,
+     "y": 18,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 44,
+     "y": 19,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 44,
+     "y": 20,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 44,
+     "y": 21,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 44,
+     "y": 22,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 44,
+     "y": 23,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 44,
+     "y": 24,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 44,
+     "y": 25,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 44,
+     "y": 26,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 44,
+     "y": 27,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 44,
+     "y": 28,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 44,
+     "y": 29,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 44,
+     "y": 30,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 44,
+     "y": 31,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 44,
+     "y": 32,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 44,
+     "y": 33,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 44,
+     "y": 34,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 43,
+     "y": 35,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 36,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 41,
+     "y": 37,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 40,
+     "y": 38,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 39,
+     "y": 39,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 40,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 37,
+     "y": 41,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 42,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 35,
+     "y": 43,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 34,
+     "y": 44,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 33,
+     "y": 45,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 32,
+     "y": 46,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 32,
+     "y": 47,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 32,
+     "y": 48,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 32,
+     "y": 49,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 32,
+     "y": 50,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 32,
+     "y": 51,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 32,
+     "y": 52,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 32,
+     "y": 53,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 32,
+     "y": 54,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 32,
+     "y": 55,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 32,
+     "y": 56,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 32,
+     "y": 57,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 32,
+     "y": 58,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 32,
+     "y": 59,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 32,
+     "y": 60,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 33,
+     "y": 61,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 34,
+     "y": 62,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 34,
+     "y": 63,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 35,
+     "y": 64,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 65,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 37,
+     "y": 66,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 37,
+     "y": 67,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 68,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 69,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 70,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 71,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 72,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 73,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 74,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 75,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 76,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 77,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 78,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 79,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 80,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 81,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 82,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 83,
+     "w": 4,
+     "h": 1
+    },
+    "material": "물"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 34,
+     "y": 0,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 34,
+     "y": 1,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 34,
+     "y": 2,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 34,
+     "y": 3,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 34,
+     "y": 4,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 34,
+     "y": 5,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 34,
+     "y": 6,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 34,
+     "y": 7,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 34,
+     "y": 8,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 35,
+     "y": 9,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 10,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 11,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 37,
+     "y": 12,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 13,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 39,
+     "y": 14,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 40,
+     "y": 15,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 40,
+     "y": 16,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 41,
+     "y": 17,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 18,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 19,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 20,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 21,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 22,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 23,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 24,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 25,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 26,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 27,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 28,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 29,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 30,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 31,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 32,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 33,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 34,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 41,
+     "y": 35,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 40,
+     "y": 36,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 39,
+     "y": 37,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 38,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 37,
+     "y": 39,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 40,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 35,
+     "y": 41,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 34,
+     "y": 42,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 33,
+     "y": 43,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 32,
+     "y": 44,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 31,
+     "y": 45,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 46,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 47,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 48,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 49,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 50,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 51,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 52,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 53,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 54,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 55,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 56,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 57,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 58,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 59,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 60,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 31,
+     "y": 61,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 32,
+     "y": 62,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 32,
+     "y": 63,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 33,
+     "y": 64,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 34,
+     "y": 65,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 35,
+     "y": 66,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 35,
+     "y": 67,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 68,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 69,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 70,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 71,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 72,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 73,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 74,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 75,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 76,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 77,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 78,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 79,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 80,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 81,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 82,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 83,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 40,
+     "y": 0,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 40,
+     "y": 1,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 40,
+     "y": 2,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 40,
+     "y": 3,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 40,
+     "y": 4,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 40,
+     "y": 5,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 40,
+     "y": 6,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 40,
+     "y": 7,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 40,
+     "y": 8,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 41,
+     "y": 9,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 10,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 11,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 43,
+     "y": 12,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 44,
+     "y": 13,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 45,
+     "y": 14,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 46,
+     "y": 15,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 46,
+     "y": 16,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 47,
+     "y": 17,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 48,
+     "y": 18,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 48,
+     "y": 19,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 48,
+     "y": 20,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 48,
+     "y": 21,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 48,
+     "y": 22,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 48,
+     "y": 23,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 48,
+     "y": 24,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 48,
+     "y": 25,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 48,
+     "y": 26,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 48,
+     "y": 27,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 48,
+     "y": 28,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 48,
+     "y": 29,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 48,
+     "y": 30,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 48,
+     "y": 31,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 48,
+     "y": 32,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 48,
+     "y": 33,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 48,
+     "y": 34,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 47,
+     "y": 35,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 46,
+     "y": 36,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 45,
+     "y": 37,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 44,
+     "y": 38,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 43,
+     "y": 39,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 40,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 41,
+     "y": 41,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 40,
+     "y": 42,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 39,
+     "y": 43,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 44,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 37,
+     "y": 45,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 46,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 47,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 48,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 49,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 50,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 51,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 52,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 53,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 54,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 55,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 56,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 57,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 58,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 59,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 36,
+     "y": 60,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 37,
+     "y": 61,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 62,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 63,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 39,
+     "y": 64,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 40,
+     "y": 65,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 41,
+     "y": 66,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 41,
+     "y": 67,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 68,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 69,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 70,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 71,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 72,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 73,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 74,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 75,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 76,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 77,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 78,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 79,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 80,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 81,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 82,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 83,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-castle",
+    "mapId": "bends",
+    "x": 1,
+    "y": 0
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-estate",
+    "mapId": "bends",
+    "x": 55,
+    "y": 0
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-cathedral",
+    "mapId": "bends",
+    "x": 80,
+    "y": 2
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-windmill",
+    "mapId": "bends",
+    "x": 0,
+    "y": 60
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 0,
+     "y": 33,
+     "w": 42,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 0,
+     "y": 34,
+     "w": 42,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 50,
+     "y": 22,
+     "w": 26,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 50,
+     "y": 23,
+     "w": 26,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 72,
+     "y": 24,
+     "w": 28,
+     "h": 2
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 72,
+     "y": 22,
+     "w": 4,
+     "h": 28
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 66,
+     "y": 47,
+     "w": 10,
+     "h": 2
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 66,
+     "y": 47,
+     "w": 4,
+     "h": 37
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 12,
+     "y": 58,
+     "w": 2,
+     "h": 26
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-bridge-arch",
+    "mapId": "bends",
+    "x": 44,
+    "y": 21
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-bridge-arch",
+    "mapId": "bends",
+    "x": 32,
+    "y": 47
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-bridge-arch",
+    "mapId": "bends",
+    "x": 38,
+    "y": 72
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 14,
+     "y": 35,
+     "w": 2,
+     "h": 13
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 35,
+     "w": 11,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 36,
+     "w": 10,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 37,
+     "w": 9,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 38,
+     "w": 8,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 39,
+     "w": 7,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 40,
+     "w": 6,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 41,
+     "w": 5,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 42,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 43,
+     "w": 3,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 44,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 45,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 0,
+     "y": 48,
+     "w": 30,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 0,
+     "y": 49,
+     "w": 30,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-res-14x13-b",
+    "mapId": "bends",
+    "x": 0,
+    "y": 35
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 14,
+     "y": 41,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-manor-14x13",
+    "mapId": "bends",
+    "x": 16,
+    "y": 35
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 15,
+     "y": 41,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 30,
+     "y": 41,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 14,
+     "y": 50,
+     "w": 2,
+     "h": 8
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 0,
+     "y": 58,
+     "w": 30,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 0,
+     "y": 59,
+     "w": 30,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-res-14x8",
+    "mapId": "bends",
+    "x": 0,
+    "y": 50
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-market-14x8",
+    "mapId": "bends",
+    "x": 16,
+    "y": 50
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 28,
+     "y": 60,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 28,
+     "y": 61,
+     "w": 3,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 28,
+     "y": 62,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 28,
+     "y": 63,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 28,
+     "y": 64,
+     "w": 5,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 28,
+     "y": 65,
+     "w": 6,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 28,
+     "y": 66,
+     "w": 7,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 28,
+     "y": 67,
+     "w": 7,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 28,
+     "y": 68,
+     "w": 8,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 28,
+     "y": 69,
+     "w": 8,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 28,
+     "y": 70,
+     "w": 8,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 28,
+     "y": 71,
+     "w": 8,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 28,
+     "y": 72,
+     "w": 8,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 14,
+     "y": 73,
+     "w": 22,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 14,
+     "y": 74,
+     "w": 22,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-res-14x13",
+    "mapId": "bends",
+    "x": 14,
+    "y": 60
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 13,
+     "y": 66,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 28,
+     "y": 66,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 24,
+     "y": 75,
+     "w": 2,
+     "h": 8
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 14,
+     "y": 83,
+     "w": 22,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 14,
+     "y": 84,
+     "w": 22,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-res-10x8-b",
+    "mapId": "bends",
+    "x": 14,
+    "y": 75
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-res-10x8",
+    "mapId": "bends",
+    "x": 26,
+    "y": 75
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 49,
+     "y": 35,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 48,
+     "y": 36,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 70,
+     "y": 24,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 70,
+     "y": 25,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 70,
+     "y": 26,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 70,
+     "y": 27,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 70,
+     "y": 28,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 70,
+     "y": 29,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 70,
+     "y": 30,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 70,
+     "y": 31,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 70,
+     "y": 32,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 70,
+     "y": 33,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 70,
+     "y": 34,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 70,
+     "y": 35,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 70,
+     "y": 36,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 47,
+     "y": 37,
+     "w": 25,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 46,
+     "y": 38,
+     "w": 26,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-manor-20x13-c",
+    "mapId": "bends",
+    "x": 50,
+    "y": 24
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 49,
+     "y": 30,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 70,
+     "y": 30,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 45,
+     "y": 39,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 44,
+     "y": 40,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 43,
+     "y": 41,
+     "w": 3,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 42,
+     "y": 42,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 41,
+     "y": 43,
+     "w": 5,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 40,
+     "y": 44,
+     "w": 6,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 39,
+     "y": 45,
+     "w": 7,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 56,
+     "y": 38,
+     "w": 2,
+     "h": 8
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 46,
+     "w": 34,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 47,
+     "w": 34,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-market-10x8",
+    "mapId": "bends",
+    "x": 46,
+    "y": 38
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-res-14x8-c",
+    "mapId": "bends",
+    "x": 58,
+    "y": 38
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 48,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 49,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 50,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 51,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 52,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 53,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 54,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 55,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 56,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 57,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 58,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 59,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 38,
+     "y": 60,
+     "w": 2,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 60,
+     "y": 48,
+     "w": 6,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 60,
+     "y": 49,
+     "w": 6,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 60,
+     "y": 50,
+     "w": 6,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 60,
+     "y": 51,
+     "w": 6,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 60,
+     "y": 52,
+     "w": 6,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 60,
+     "y": 53,
+     "w": 6,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 60,
+     "y": 54,
+     "w": 6,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 60,
+     "y": 55,
+     "w": 6,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 60,
+     "y": 56,
+     "w": 6,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 60,
+     "y": 57,
+     "w": 6,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 60,
+     "y": 58,
+     "w": 6,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 60,
+     "y": 59,
+     "w": 6,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 60,
+     "y": 60,
+     "w": 6,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 39,
+     "y": 61,
+     "w": 27,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 40,
+     "y": 62,
+     "w": 26,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-manor-20x13-b",
+    "mapId": "bends",
+    "x": 40,
+    "y": 48
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 39,
+     "y": 54,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 60,
+     "y": 54,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-forum",
+    "mapId": "bends",
+    "x": 44,
+    "y": 64
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 44,
+     "y": 78,
+     "w": 22,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 44,
+     "y": 79,
+     "w": 22,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 26,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 27,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 28,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 29,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 30,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 31,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 32,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 33,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 34,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 35,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 36,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 37,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 38,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 76,
+     "y": 39,
+     "w": 24,
+     "h": 2
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-manor-20x13",
+    "mapId": "bends",
+    "x": 76,
+    "y": 26
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 75,
+     "y": 32,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 32,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 41,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 42,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 43,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 44,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 45,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 46,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 47,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 48,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 49,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 50,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 51,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 52,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 53,
+     "w": 4,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 76,
+     "y": 54,
+     "w": 24,
+     "h": 2
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-res-20x13",
+    "mapId": "bends",
+    "x": 76,
+    "y": 41
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 75,
+     "y": 47,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 96,
+     "y": 47,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 84,
+     "y": 56,
+     "w": 2,
+     "h": 8
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 70,
+     "y": 64,
+     "w": 30,
+     "h": 2
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-res-14x8-b",
+    "mapId": "bends",
+    "x": 70,
+    "y": 56
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-out-14x8",
+    "mapId": "bends",
+    "x": 86,
+    "y": 56
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 84,
+     "y": 67,
+     "w": 2,
+     "h": 13
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 70,
+     "y": 80,
+     "w": 30,
+     "h": 2
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-shop-14x13",
+    "mapId": "bends",
+    "x": 70,
+    "y": 67
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 69,
+     "y": 73,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 84,
+     "y": 73,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-manor-14x13",
+    "mapId": "bends",
+    "x": 86,
+    "y": 67
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 85,
+     "y": 73,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "bends",
+    "rect": {
+     "x": 70,
+     "y": 82,
+     "w": 13,
+     "h": 2
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-harbour-square",
+    "mapId": "bends",
+    "x": 86,
+    "y": 82
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-out-well-plaza",
+    "mapId": "bends",
+    "x": 42,
+    "y": 1
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-cc0fcb",
+    "mapId": "bends",
+    "x": 50,
+    "y": 13
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-f4f319",
+    "mapId": "bends",
+    "x": 49,
+    "y": 9
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "mapId": "bends",
+    "x": 54,
+    "y": 17
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-37f48b",
+    "mapId": "bends",
+    "x": 51,
+    "y": 16
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-a80c85",
+    "mapId": "bends",
+    "x": 92,
+    "y": 97
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "mapId": "bends",
+    "x": 99,
+    "y": 91
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-f4f319",
+    "mapId": "bends",
+    "x": 97,
+    "y": 97
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-cc0fcb",
+    "mapId": "bends",
+    "x": 86,
+    "y": 98
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-cc0fcb",
+    "mapId": "bends",
+    "x": 53,
+    "y": 2
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-37f48b",
+    "mapId": "bends",
+    "x": 53,
+    "y": 6
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "mapId": "bends",
+    "x": 52,
+    "y": 9
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "mapId": "bends",
+    "x": 99,
+    "y": 87
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-f4f319",
+    "mapId": "bends",
+    "x": 89,
+    "y": 96
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "mapId": "bends",
+    "x": 84,
+    "y": 97
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-cc0fcb",
+    "mapId": "bends",
+    "x": 96,
+    "y": 94
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-f4f319",
+    "mapId": "bends",
+    "x": 93,
+    "y": 94
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-f4f319",
+    "mapId": "bends",
+    "x": 85,
+    "y": 94
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-37f48b",
+    "mapId": "bends",
+    "x": 77,
+    "y": 1
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "mapId": "bends",
+    "x": 78,
+    "y": 9
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-37f48b",
+    "mapId": "bends",
+    "x": 77,
+    "y": 19
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-f4f319",
+    "mapId": "bends",
+    "x": 98,
+    "y": 7
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-37f48b",
+    "mapId": "bends",
+    "x": 98,
+    "y": 15
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-f4f319",
+    "mapId": "bends",
+    "x": 98,
+    "y": 2
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-f4f319",
+    "mapId": "bends",
+    "x": 98,
+    "y": 10
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-37f48b",
+    "mapId": "bends",
+    "x": 98,
+    "y": 18
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-f4f319",
+    "mapId": "bends",
+    "x": 45,
+    "y": 81
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-e9d9b3",
+    "mapId": "bends",
+    "x": 48,
+    "y": 81
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-37f48b",
+    "mapId": "bends",
+    "x": 51,
+    "y": 81
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-47e17a",
+    "mapId": "bends",
+    "x": 54,
+    "y": 81
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-cc0fcb",
+    "mapId": "bends",
+    "x": 57,
+    "y": 81
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-f4f319",
+    "mapId": "bends",
+    "x": 60,
+    "y": 81
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-e9d9b3",
+    "mapId": "bends",
+    "x": 63,
+    "y": 81
+   }
+  }
+ ]
+}

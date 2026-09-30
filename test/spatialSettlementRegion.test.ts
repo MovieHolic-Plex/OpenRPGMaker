@@ -3,7 +3,7 @@ import { compileSpatialOccurrence, SpatialCompileError } from "@/editor/spatial/
 // 정주지 스탬프는 등록 훅 경유 — builder 모듈 로드가 bindSettlementVillageBuild를 실행한다.
 import "@/editor/tools/village/builder";
 import { deserialize, serialize } from "@/project/io";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { checkedDocument, own, spatialId } from "@/project/spatial/domain";
 import { instantiateSpatialDesign } from "@/project/spatial/instances";
 import type { RegionDesign, SpatialRoute } from "@/project/spatial/types";
@@ -22,7 +22,7 @@ function settlementRegion(overrides: Partial<RegionDesign> = {}): RegionDesign {
     revision: 1,
     tags: ["settlement"],
     provenance: { origin: "user" },
-    terrain: { tilesetId: DEFAULT_TILESET_ID, width: 48, height: 40, floor: "ground", areas: [] },
+    terrain: { tilesetId: COMBINED_TOWN_TILESET_ID, width: 48, height: 40, floor: "ground", areas: [] },
     places: [],
     ports: [{ id: spatialId("entry"), name: "Entry", x: 24, y: 39 }],
     routes: [],
@@ -63,7 +63,7 @@ describe("settlement region compile", () => {
   it("stamps the preset village onto the region map", () => {
     const compiled = compileSpatialOccurrence(settlementFixture(), { occurrenceId: geographyRoot });
     const map = settlementMap(compiled);
-    expect(map.tilesetId).toBe(DEFAULT_TILESET_ID);
+    expect(map.tilesetId).toBe(COMBINED_TOWN_TILESET_ID);
     // 마을 시공 흔적 — 지붕/벽 상부 타일과 NPC 이벤트가 생긴다.
     expect(map.upperTiles.some((tile) => tile !== TILE.EMPTY)).toBe(true);
     expect(map.events.some((event) => event.id.startsWith("ev_village_"))).toBe(true);

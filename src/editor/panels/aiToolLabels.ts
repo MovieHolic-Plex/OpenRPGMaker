@@ -109,6 +109,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   analyze_map_tile_usage: inspect("타일 사용 분석", "grid"),
   look_at_houses: inspect("집 살펴보기", "eye"),
   check_reachability: inspect("통행 검사", "shield"),
+  check_city_form: inspect("도시 형태 검사", "shield"),
   run_lint: inspect("맵 검사", "shield"),
   lint_quest: inspect("퀘스트 검사", "shield"),
   lint_world: inspect("세계 검사", "shield"),

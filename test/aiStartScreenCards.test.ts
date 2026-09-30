@@ -14,7 +14,7 @@ import {
 import type { AiActivityLogRecord } from "@/ai/activityLog";
 import { editorState } from "@/editor/editorState";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 
 let restoreDom: (() => void) | null = null;
@@ -152,7 +152,7 @@ describe("buildVisualStartGallery", () => {
   it("모자이크 헬퍼는 호출 시에만 썸을 만들고 5열 갤러리를 부팅 빈 면으로 쓰지 않는다", () => {
     // Break: panel boot still mounts ai-start-visual-gallery as the empty product.
     const project = createBlankProject();
-    const tileset = project.tilesets[DEFAULT_TILESET_ID] ?? Object.values(project.tilesets)[0] ?? null;
+    const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID] ?? Object.values(project.tilesets)[0] ?? null;
     const gallery = renderWithFakeDom(() =>
       buildVisualStartGallery({
         tileset,

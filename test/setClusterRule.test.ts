@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
 import { allTools } from "@/editor/tools/toolRegistry";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { createBlankProject } from "@/project/defaults/defaultProject";
 import type { ClusterRule, TileGroupMetadata } from "@/project/types";
 import type { ToolContext } from "@/editor/tools/types";
@@ -24,12 +24,12 @@ function contextWithGroup(): ToolContext {
     map.lowerTiles.fill(TILE.GRASS);
     map.upperTiles.fill(TILE.EMPTY);
   }
-  project.tilesets[DEFAULT_TILESET_ID].tileGroups = [clusterGroup()];
+  project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups = [clusterGroup()];
   return { project };
 }
 
 function rulesOf(ctx: ToolContext): readonly ClusterRule[] {
-  return ctx.project.tilesets[DEFAULT_TILESET_ID].tileGroups?.[0]?.rules ?? [];
+  return ctx.project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups?.[0]?.rules ?? [];
 }
 
 describe("set_cluster_rule", () => {
@@ -41,12 +41,12 @@ describe("set_cluster_rule", () => {
     const first = runTool(ctx, "set_cluster_rule", {
       groupId: "cluster-main",
       rule: { id: "roof-wall", kind: "adjacency", params: { a: 260, b: 290, relation: "aAboveB" }, strength: "hard" },
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
     });
     const second = runTool(ctx, "set_cluster_rule", {
       groupId: "cluster-main",
       rule: { id: "roof-wall", kind: "adjacency", message: "260 아래 290 필요", params: { a: 260, b: 290, relation: "aAboveB" }, strength: "medium" },
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
     });
 
     // Then: the rule is updated in place.
@@ -65,12 +65,12 @@ describe("set_cluster_rule", () => {
     const missing = runTool(ctx, "set_cluster_rule", {
       groupId: "missing",
       rule: { id: "ok", kind: "count", params: { max: 1 }, strength: "soft" },
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
     });
     const invalidKind = runTool(ctx, "set_cluster_rule", {
       groupId: "cluster-main",
       rule: { id: "bad", kind: "diagonal", params: {}, strength: "hard" },
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
     });
 
     // Then: both calls fail without changing the group rules.
@@ -91,13 +91,13 @@ describe("set_cluster_rule", () => {
       role: "building",
       rules: [{ id: "max-two", kind: "count", params: { max: 2, perMap: true }, strength: "soft" }],
       tileIds: [260, 290],
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
     });
 
     // Then: rules are persisted and the new tool is catalog-visible.
     expect(result.ok, result.summary).toBe(true);
     const groupId = (result.data as { readonly groupId: string }).groupId;
-    const group = ctx.project.tilesets[DEFAULT_TILESET_ID].tileGroups?.find((candidate) => candidate.id === groupId);
+    const group = ctx.project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups?.find((candidate) => candidate.id === groupId);
     expect(group?.rules).toEqual([{ id: "max-two", kind: "count", params: { max: 2, perMap: true }, strength: "soft" }]);
     expect(allTools().map((tool) => tool.name)).toContain("set_cluster_rule");
   });

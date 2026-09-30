@@ -7,7 +7,7 @@ import { snapFlushToWall } from "./wallFlush";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { appendToTree } from "@/project/mapTree";
 import { isPassable } from "@/project/collision";
-import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { DEFAULT_TILE_SIZE, COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { normalizeWorldGraph } from "@/project/worldGraph";
 import {
@@ -347,7 +347,7 @@ function createRoleMap(project: Project, id: string, name: string, width: number
     name,
     width,
     height,
-    tilesetId: role === "town" || role === "field" ? defaultOutdoorTilesetId(project) : DEFAULT_TILESET_ID,
+    tilesetId: role === "town" || role === "field" ? defaultOutdoorTilesetId(project) : COMBINED_TOWN_TILESET_ID,
     tileSize: DEFAULT_TILE_SIZE,
     lowerTiles: new Array<number>(size).fill(lowerTile),
     upperTiles: new Array<number>(size).fill(TILE.EMPTY),
