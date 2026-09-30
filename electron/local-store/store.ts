@@ -11,7 +11,7 @@ import type { GameMap, Project, UploadedAsset, UploadedAssetRef } from "../../sr
 import { applyStorePragmas, openNodeSqliteDriver, readDataVersion, type Driver, type DriverValue } from "./driver";
 import { LocalStoreError } from "./errors";
 import { ASSETS_DIR, BACKUPS_DIR, LOCAL_STORE_FORMAT_VERSION, META_KEYS, PROJECT_STORE_FILE, STORE_DDL, TILESET_BLOBS_DDL } from "./schema";
-import { blobOfText, deepFreeze, foldDocument, foldedTilesetShas, foldSubmittedText, type FoldedDocument, type TilesetBlob } from "./tilesetFold";
+import { blobOfText, createFoldHashCache, deepFreeze, foldDocument, foldedTilesetShas, foldSubmittedText, type FoldedDocument, type TilesetBlob } from "./tilesetFold";
 
 export type LocalStoreSaveResult =
   | { readonly kind: "saved"; readonly sha256: string; readonly revision: number; readonly serialized?: string }
@@ -512,7 +512,9 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
     });
   };
   const storedTree = (): unknown => readRowConsistently((row) => hostDocumentTree(driver, row.serialized));
-  const wireOf = (project: Project): HostWire => foldDocument(projectWireView(project), blobFor);
+  // 펼친 글 해시의 타일셋 앞부분 상태를 저장소마다 하나 둔다(tilesetFold.ts FoldHashCache). 읽기 검증(unfoldRowText)은 일부러 캐시를 쓰지 않는다.
+  const foldHashCache = createFoldHashCache();
+  const wireOf = (project: Project): HostWire => foldDocument(projectWireView(project), blobFor, foldHashCache);
   const written = (wire: HostWire): void => {
     remember(wire.sha256, wire.full);
     retainLiveBlobs(storeToken, new Set(wire.blobs.keys()));

@@ -197,6 +197,9 @@ PR #845, P2(로컬 어댑터·Electron 셸)는 브랜치 `local-store/p2`가 mai
   (들여쓴 JSON 등)으로 `saveSerialized` 하면 접지 않고 그 글을 그대로 둔다. 저장마다 현재 행이 가리키지 않는 본문은 지운다.
   호스트 맵 패치는 `hostDocument()`(타일셋은 얼린 공유 객체, 바깥 트리는 매번 새 것)를 기준으로 쓰고,
   저장은 객체 신원으로 본문을 재사용해 바뀐 타일셋만 직렬화한다. 실측(82MB 프로젝트): 행 81.6MB → 1.0MB.
+  **저장 SHA 는 접두 상태 캐시로 만든다 (2026-09-30)**: 펼친 글의 99% 가 타일셋이라 매 저장 109MB 를 다시 해시하던 것
+  (≈270ms)을, 타일셋 앞 글 + (타일셋 id, 본문 sha) 가 같으면 이어 붙인 SHA-256 상태(`Hash.copy()`)를 재사용해 뒤 조각만
+  먹인다(`FoldHashCache`, store 당 하나). 값은 바이트 단위로 같아 **sha 계약은 불변**이다. `unfoldRowText` 검증은 캐시를 안 쓴다.
   **`current_json` 을 SQL 로 직접 읽는 스크립트는 표식만 본다** — 문서는 `openLocalProjectStore().exportSerialized()`
   또는 `scripts/oprn-store.mjs export-json` 으로 읽는다.
 - **접힌 로드 (2026-09-27)**: 편집기(`electronRepository` 의 load·loadSnapshot·loadForProof)는 `oprn:project.loadFolded`
