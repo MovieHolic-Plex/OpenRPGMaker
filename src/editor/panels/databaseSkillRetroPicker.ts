@@ -10,9 +10,9 @@ import {
   resolveRetroMonsterChoreography,
   retroChoreographyEntries,
   retroClassSkill,
-  retroMonsterSkill,
   type RetroChoreographyFilter,
 } from "@/assets/retroSkillCatalog";
+import { retroMonsterSkill } from "@/assets/retroMonsterSkills";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import type { SkillRecord } from "@/project/types";
 import { el } from "@/util/dom";
