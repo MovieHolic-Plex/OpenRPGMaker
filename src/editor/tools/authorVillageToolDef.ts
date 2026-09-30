@@ -108,7 +108,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
             kind: { type: "string", enum: ["existing", "new"] },
             mapId: { type: "string" },
             name: { type: "string", description: "마을(맵) 이름. kind=new 는 필수. kind=existing 이면 시공 뒤 그 맵 이름을 이것으로 바꾼다 — 생략하면 '빈 맵' 같은 자리표시 이름만 '마을'로 바꾼다." },
-            tilesetId: { type: "string", description: "kind=new 전용. 생략하면 숲마을 · 거리별 잔디. 사용자가 선택한 칩셋은 여기에 지정한다. 기존 맵은 원래 칩셋을 유지한다." },
+            tilesetId: { type: "string", description: "kind=new 전용. 생략하면 프로젝트 야외 기본(새 프로젝트는 버들항 — 이 경우 author_beodeul_town 으로 넘어간다, 그 밖엔 숲마을). 사용자가 선택한 칩셋은 여기에 지정한다. 기존 맵은 원래 칩셋을 유지한다." },
             width: { type: "integer" },
             height: { type: "integer" },
             minSize: {
