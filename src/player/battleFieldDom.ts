@@ -17,6 +17,7 @@ import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/runtime";
 import { CAST_SHEET_ROWS, EXTENDED_POSE_FRAME, castFrame, type ExtendedBattlerPose, POSE_FRAME, VICTORY_POSE_FRAME } from "@/battle/battlePose";
 import { skinPartySpriteUrl } from "@/battle/partySpriteResources";
 import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
+import { resolveSceneryBiome } from "@/assets/battleSceneryCatalog";
 import type { BattleSkin } from "@/battle/skins/types";
 import {
   BATTLER_PLACEMENTS,
@@ -453,7 +454,7 @@ function syncBackdrop(field: HTMLElement, resourceId: string | undefined): void 
   if (effectiveId && backdrop.dataset.backdropResourceId !== effectiveId) {
     backdrop.dataset.backdropResourceId = effectiveId;
     const url = resolveAssetResourceUrl(effectiveId, { project: store.getCurrent() });
-    backdrop.style.backgroundImage = url ? battleBackdropImage(url) : "";
+    paintBackdropImage(backdrop, effectiveId, url);
     syncSceneBackdropVar(field);
     if (activeSkin().scenery === "layered") {
       const project = store.getCurrent();
@@ -878,6 +879,28 @@ function battleBackdropImage(url: string): string {
   return `linear-gradient(rgba(4, 10, 24, 0.12), rgba(2, 6, 14, 0.28)), url("${url}")`;
 }
 
+/** 겹 배경(retro2003 layered)이 이 전투 배경을 맡는가. 맡으면 단일 그림은 칠하지 않는다 — 전투 배경은 하나다.
+ *  단일 그림은 겹 배경을 못 읽었을 때의 대체로만 쓴다(battleScenery.ts, data-backdrop-fallback-url).
+ *  저작자가 고른 임의 그림(지형 판정 불가)은 겹 배경을 쓰지 않으므로 그대로 칠한다. */
+function layeredSceneryOwnsBackdrop(effectiveId: string | undefined): boolean {
+  const project = store.getCurrent();
+  return activeSkin().scenery === "layered"
+    && project.system.battleBackdrop !== "field" && project.system.battlePresentation !== "onField"
+    && resolveSceneryBiome(project, { backdropResourceId: effectiveId }) !== undefined;
+}
+
+/** 단일 그림을 칠하거나, 겹 배경이 맡으면 비워 두고 대체 url 만 적어 둔다. */
+function paintBackdropImage(backdrop: HTMLElement, effectiveId: string | undefined, url: string | null | undefined): void {
+  if (layeredSceneryOwnsBackdrop(effectiveId)) {
+    backdrop.style.backgroundImage = "";
+    if (url) backdrop.dataset.backdropFallbackUrl = url;
+    else delete backdrop.dataset.backdropFallbackUrl;
+    return;
+  }
+  delete backdrop.dataset.backdropFallbackUrl;
+  backdrop.style.backgroundImage = url ? battleBackdropImage(url) : "";
+}
+
 function battleBackdrop(resourceId: string | undefined): HTMLElement {
   const backdrop = document.createElement("div");
   backdrop.className = "battle-backdrop";
@@ -892,7 +915,7 @@ function battleBackdrop(resourceId: string | undefined): HTMLElement {
   if (effectiveId) backdrop.dataset.backdropResourceId = effectiveId;
   else backdrop.dataset.backdropFallback = "forest";
   backdrop.setAttribute("aria-label", "전투 배경");
-  if (url) backdrop.style.backgroundImage = battleBackdropImage(url);
+  paintBackdropImage(backdrop, effectiveId, url);
   return backdrop;
 }
 

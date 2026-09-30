@@ -1,4 +1,4 @@
-import { BATTLE_SCENERY_CATALOG, BATTLE_SCENERY_LAYERS, resolveSceneryBiome, sceneryBiomeFromResourceId, type BattleSceneryBiome } from "@/assets/battleSceneryCatalog";
+import { BATTLE_SCENERY_CATALOG, BATTLE_SCENERY_LAYERS, resolveSceneryBiome, type BattleSceneryBiome } from "@/assets/battleSceneryCatalog";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
 import { clearBattleBackdropMotion } from "@/player/battleBackdropMotion";
@@ -62,11 +62,6 @@ export function syncBattleScenery(backdrop: HTMLElement, project: Project, resou
   clearBattleBackdropMotion(backdrop);
   const resolvedBiome = resolveSceneryBiome(project, { backdropResourceId: resourceId });
   const biome = resolvedBiome ?? "plains";
-  // 명시적 겹 배경 파일이 미설치여도 기존 숲 그림으로 돌아갈 수 있어야 한다.
-  if (sceneryBiomeFromResourceId(resourceId)) {
-    const fallback = resolveAssetResourceUrl("generated-battle-reference-forest", { project });
-    if (fallback) backdrop.style.backgroundImage = `url("${fallback}")`;
-  }
   const camera = document.createElement("div");
   camera.className = "battle-scenery-camera";
   camera.dataset.biome = biome;
@@ -140,6 +135,13 @@ export function syncBattleScenery(backdrop: HTMLElement, project: Project, resou
       }
       camera.dataset.layers = "ready";
     };
+    // 겹 배경을 못 읽었을 때만 단일 그림을 대신 깐다(battleFieldDom 이 적어 둔 url, 없으면 숲 레퍼런스).
+    const paintFallback = (): void => {
+      camera.dataset.layers = "fallback";
+      const url = backdrop.dataset.backdropFallbackUrl
+        ?? resolveAssetResourceUrl("generated-battle-reference-forest", { project });
+      if (url) backdrop.style.backgroundImage = `url("${url}")`;
+    };
     if (readyBiomes.has(biome)) mount();
     else {
       // 아직 네 장이 안 왔으면 다른 그림(단일 배경)을 비추지 않고 기다렸다가 페이드인한다(CSS data-layers="loading").
@@ -147,7 +149,7 @@ export function syncBattleScenery(backdrop: HTMLElement, project: Project, resou
       void loadSceneryLayers(biome).then((ok) => {
         if (disposed) return;
         if (ok) { camera.dataset.layersFade = "in"; mount(); }
-        else camera.dataset.layers = "fallback";
+        else paintFallback();
       });
     }
   } else camera.dataset.layers = "custom";
