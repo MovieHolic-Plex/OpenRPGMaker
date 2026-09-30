@@ -227,6 +227,16 @@ const upsertChoreography: ToolDefinition = {
       speed: { type: "number", description: `재생 속도 배율(${SPEED_MIN}~${SPEED_MAX}, 선택)` },
       weight: { type: "string", enum: [...SKILL_CHOREOGRAPHY_WEIGHTS], description: "무게감(선택)" },
       tint: { type: "string", description: "#rrggbb 전체 색조(선택)" },
+      screen: {
+        type: "object",
+        description: "화면 연출(선택). 주면 통째로 교체, {} 면 제거",
+        properties: {
+          shake: { type: "number", description: `화면 흔들림 세기(${SKILL_CHOREOGRAPHY_RANGES.shake.join("~")})` },
+          flash: { type: "string", description: "#rrggbb 번쩍임 색" },
+          dim: { type: "boolean", description: "true=연출 동안 화면 어둡게" },
+          cutIn: { type: "boolean", description: "true=시전자 이름 컷인 띠" },
+        },
+      },
       tags: {
         type: "object",
         properties: { family: { type: "string", description: "분류 이름(선택)" }, element: { type: "string", enum: [...RETRO_ELEMENT_IDS], description: "속성(선택)" } },
@@ -260,6 +270,11 @@ const upsertChoreography: ToolDefinition = {
       fail(`weight 는 ${SKILL_CHOREOGRAPHY_WEIGHTS.join(" · ")} 중 하나여야 합니다.`, "invalid-choreography");
     }
     if (args.tint !== undefined && !(typeof args.tint === "string" && /^#[0-9a-fA-F]{6}$/.test(args.tint))) fail("tint 는 #rrggbb 색이어야 합니다.", "invalid-choreography");
+    if (args.screen !== undefined && !isObject(args.screen)) fail("screen 은 {shake, flash, dim, cutIn} 객체여야 합니다.", "invalid-choreography");
+    if (isObject(args.screen)) {
+      checkRange("screen.shake", args.screen.shake, SKILL_CHOREOGRAPHY_RANGES.shake);
+      if (args.screen.flash !== undefined && !(typeof args.screen.flash === "string" && /^#[0-9a-fA-F]{6}$/.test(args.screen.flash))) fail("screen.flash 는 #rrggbb 색이어야 합니다.", "invalid-choreography");
+    }
     const tags = isObject(args.tags) ? { ...existing?.tags, ...(text(args.tags.family) ? { family: text(args.tags.family) } : {}), ...(text(args.tags.element) ? { element: text(args.tags.element) } : {}) } : existing?.tags;
     const draftRecord = {
       ...existing,
@@ -269,6 +284,7 @@ const upsertChoreography: ToolDefinition = {
       ...(speed !== undefined ? { speed } : {}),
       ...(args.weight !== undefined ? { weight: args.weight } : {}),
       ...(typeof args.tint === "string" ? { tint: args.tint } : {}),
+      ...(isObject(args.screen) ? { screen: args.screen } : {}),
       ...(tags ? { tags } : {}),
     };
     const record = normalizeSkillChoreographyRecord(draftRecord);

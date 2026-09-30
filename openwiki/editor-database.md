@@ -16,6 +16,12 @@ retro2003 전투 기믹이 JSON 에만 있던 것을 화면에서 고칠 수 있
 - 스킬 탭 `db-skill-retro-picker` 는 이 갤러리 위로 다시 쓰였다(testid `-status`·`-clear` 유지, 고르기 버튼 「이 연출을 이 스킬에 쓰기」).
 - 캡처: `node scripts/capture-retro-choreo-a2.mjs`(dev:worktree 9807, `?freshProject=1` 메모리 세션) -> `verify-shots/retro-choreo-a2/`.
 
+## 연출 손잡이 카드 · 상태 「몸에 남는 표시」 (2026-09-30, B)
+
+- 도트 연출 편집기(`databaseRetroChoreographyView.ts`)에 카드 `db-retro-choreo-handles`: 속도 슬라이더(`-speed`, 0.5~2)·무게 칩 3개(`-weight`, `button[data-weight]`)·색조 칩 행(`-tint`, 「원래 색」 포함)·화면 효과(흔들림·번쩍임·어둡게·컷인)·층별 효과음. 값이 기본으로 돌아오면 필드를 지워 A1 과 같은 저장 모양을 지킨다. 필드 조각은 `databaseRetroHandleFields.ts`. 스킬 탭 연출 카드는 「자동 추천」 결과도 보여 준다.
+- 상태 탭에 select `db-state-battle-aura`(「걸려 있는 동안 몸에 남는 표시」, 8종 + 기본): `updateDatabaseRecord("states", id, { battleAura })`, 비우면 필드 삭제.
+- 캡처 증거: `verify-shots/retro-choreo-b/g0-handles-before.png`·`g1-handles-after.png`(`?freshProject=1` 메모리 세션 — 정본 저장 증거 아님).
+
 ## 스킬 탭 「도트 연출」 고르기 (2026-09-30)
 
 스킬 탭 「연출」 카드의 `db-skill-retro-picker`(`src/editor/panels/databaseSkillRetroPicker.ts`): 낱말 검색·모션·속성·계열(직업/몬스터 계열 칩)로 계약 약 850개를 거르고 목록에서 고르면 `updateDatabaseRecord("skills", id, { retroChoreographyId })` 로 저장하며 무대(`db-skill-retro-stage`)가 그 연출로 다시 그려진다(「빌려 온 연출: 이름 (id)」 상태 줄, 「연출 지우기」). 색인·필터는 `retroSkillCatalog.ts` 의 `retroChoreographyEntries`/`filterRetroChoreographies` 를 조수 도구와 공유한다. 스킬 id 자체가 계약이면 고르기는 안내만 보인다. 캡처: `scripts/capture-retro-choreo-a2.mjs` -> `verify-shots/retro-choreo-a2/d*.png`(옛 capture-retro-picker.mjs 는 폐기).

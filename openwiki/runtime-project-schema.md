@@ -6,7 +6,7 @@
 
 ## 프로젝트 연출 레코드 — database.skillChoreographies (2026-09-30)
 
-선택 컬렉션 `Database.skillChoreographies?: SkillChoreographyRecord[]`(`types/database.ts`, 모델·정규화 `src/project/skillChoreographyRecords.ts`). 비면 키를 만들지 않아 옛 JSON 바이트가 그대로이고 **스키마 버전은 올리지 않는다**(`SCHEMA_VERSION = 4`, 추가형 선택 필드). 스킬이 `retroChoreographyId: "chor_..."` 로 가리킨다(`validateSkillRetroPatch` 가 `chor_` id 허용). 저장 왕복은 `serialize`/`deserialize`(`io/serialize.ts`)가 그대로 지나가며 변경 원장(`changeLedger.ts`)·`shapeDatabaseFields`·`databaseRecordModel` 에 컬렉션이 등록돼 있다. 손 도구용 선택 층 필드(B 단계)는 타입·정규화에만 있고 런타임은 아직 읽지 않는다. 연출 규칙: [runtime-battle.md](runtime-battle.md).
+선택 컬렉션 `Database.skillChoreographies?: SkillChoreographyRecord[]`(`types/database.ts`, 모델·정규화 `src/project/skillChoreographyRecords.ts`). 비면 키를 만들지 않아 옛 JSON 바이트가 그대로이고 **스키마 버전은 올리지 않는다**(`SCHEMA_VERSION = 4`, 추가형 선택 필드). 스킬이 `retroChoreographyId: "chor_..."` 로 가리킨다(`validateSkillRetroPatch` 가 `chor_` id 허용). 저장 왕복은 `serialize`/`deserialize`(`io/serialize.ts`)가 그대로 지나가며 변경 원장(`changeLedger.ts`)·`shapeDatabaseFields`·`databaseRecordModel` 에 컬렉션이 등록돼 있다. 선택 손잡이(B 단계)는 런타임이 읽는다: 레코드 `speed`(0.5~2)·`weight`(light/normal/heavy)·`tint`(#rrggbb, 속성 팔레트 9종이면 CSS filter)·`screen`({shake 0~12, flash #rrggbb, dim, cutIn}), 층 `tint`·`se`. 값이 없으면 A1 과 바이트 동일. 상태 레코드는 선택 `StateRecord.battleAura`(프리셋 8종 id, 없으면 기본 id 맵)를 갖는다. 연출 규칙: [runtime-battle.md](runtime-battle.md).
 
 ## ensureRetroRosterRecords — 기존 프로젝트에 레트로 로스터 심기 (2026-09-30)
 

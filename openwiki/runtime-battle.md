@@ -27,6 +27,13 @@
 - 증거: `verify-shots/retro-choreo-a1/SUMMARY.md`.
 - 편집기·조수(A2): 탭 「도트 연출」·갤러리·타임라인 편집기는 `openwiki/editor-database.md` 「도트 연출 탭」, 조수 도구(`upsert_choreography`·`duplicate_choreography`·`list_fx_sheets`·`preview_choreography`)는 `openwiki/editor-ai-tools.md`. 속도·무게·색조·화면·소리 손잡이(B단계)는 편집기에 칸이 없다.
 
+## 연출 손잡이 · 자동 추천 · 상태 오라 (2026-09-30, B)
+
+- **손잡이(`src/player/retroSkillChoreography.ts`)**: `speed` 는 타임라인 시각 전체를 나눈다(실측 approach 216/131/82ms · 첫 hitstop 720/438/281ms, 배율 0.6/1/1.6). `weight` 는 접근·복귀 속도와 hitstop 을 바꾼다(APPROACH .72/1/1.28, HITSTOP_SCALE 0/1/1.9, RECOVER_SCALE .68/1/1.45 — 접근·복귀는 미리 나눠 전체 시간은 같다). 관측되는 것은 `battle-hit-stop` 시간: light 없음 · normal ≈112ms · heavy ≈211ms. 빗나감·0 피해·회복은 항상 light. `tint` 는 `src/assets/retroChoreographyTints.ts` 9종(fire·ice·thunder·water·wind·earth·holy·dark·poison)의 `grayscale(1) sepia(1) hue-rotate saturate brightness contrast` 필터, 층 tint 가 우선. `screen` 은 shake·flash·dim·cutIn 을 전투 무대에 덧씌운다. 손잡이가 없으면 A1 과 동일(A1 덤프 sha256 `aa31514d…6f0`, 4436개 동일).
+- **자동 추천** `src/assets/retroChoreographyRecommend.ts` `recommendRetroChoreography`: 계약·레코드·정확 레시피·`retroChoreographyId` 가 **모두 없는** 스킬의 폴백일 뿐이다(옛 레시피·적 스킬 불변). 속성·타수·범위·계열로 계약 연출과 tint 를 고르고, 런타임·스킬 탭·`upsert_skill` 결과 노트가 같은 함수를 쓴다.
+- **상태 오라 `StateRecord.battleAura`** (`src/assets/battleStateAuras.ts`, CSS 전용): `freeze-grey`·`berserk-pulse`·`shield-shimmer`·`wet-drip`·`poison-bubble`·`dark-fog`·`petrify-still`·`regen-sparkle`. 기본 id 맵(state_poison→poison-bubble 등)이 있고 `resolveBattlerAuras` 가 중복을 합쳐 **최대 3개**만 남긴다. `battleFieldDom.syncBattleAura` 가 `data-battle-aura` 와 `.battle-aura-layer > .battle-aura[data-aura]` 를 만든다. CSS `styles/runtime/battle/28-retro-state-aura.css`(피격 깜빡임 중 양보, reduced-motion 존중).
+- 증거: `verify-shots/retro-choreo-b/SUMMARY.md`.
+
 ## 도트 결과 화면 단순화 · 적 그룹 「전투 뒤」 이벤트 (2026-09-28)
 
 - **도트 결과(기본 메뉴 스킨 pixel, 포켓몬 제외)** 는 첫 화면이 세 창이다: 머리 창(승리 · EXP · 돈 · 전리품 이름, `battle-result-summary`) / 파티 창(걷는 그림 · Lv 전후 · EXP 막대 · LEVEL UP 또는 다음 Lv까지, `battle-result-party-<actorId>`) / 전리품 창(`battle-result-cards`: 소지금 「a → b」, 아이템 「보유 a → b」).
