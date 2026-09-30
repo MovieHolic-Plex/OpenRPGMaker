@@ -316,6 +316,7 @@ export interface BattleActionResultSnapshot {
   readonly amount: number;
   readonly critical: boolean;
   readonly skillName?: string;
+  readonly skillId?: SkillId;
 }
 
 export type BattleTimelineEntryKind =
@@ -355,6 +356,8 @@ export interface BattleTimelineEntrySnapshot {
   readonly amount?: number;
   readonly critical?: boolean;
   readonly skillName?: string;
+  /** Stable executed identity; skillName is presentation and legacy fallback only. */
+  readonly skillId?: SkillId;
   readonly stateId?: string;
   readonly reason?: "natural" | "hit" | "battleEnd" | "effect" | "strictCap";
   readonly success?: boolean;

@@ -1,0 +1,476 @@
+{
+  "scenarioId": "retro-1440",
+  "projectPath": ".omo/battle-fix-3852/retro-1440.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "note": "타이틀 화면이 뜬다",
+      "shot": null,
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "field-start",
+      "note": "새 게임 → 등대 마을 시작 지점",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_lantern_village",
+        "x": 14,
+        "y": 18,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForRuntime"
+        },
+        {
+          "kind": "seed",
+          "seed": 1
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "face-battle-event",
+      "note": "달빛우물 숲 봉인(14,2) 남쪽 칸으로 이동해 위를 본다",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "map_moonwell_forest",
+        "x": 14,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "teleport",
+          "mapId": "map_moonwell_forest",
+          "x": 14,
+          "y": 3
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_moonwell_forest",
+          "x": 14,
+          "y": 3
+        },
+        {
+          "kind": "face",
+          "dir": "up"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "battle-intro",
+      "note": "대사를 넘겨 전투 진입 — 아군 4명 시트와 적 배틀러가 한 화면에 선다",
+      "shot": "04-battle-intro.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_moonwell_forest",
+        "x": 14,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_moonwell_forest",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "dialogue-box",
+          "state": "present"
+        },
+        {
+          "kind": "pressUntil",
+          "key": "z",
+          "testid": "battle-scene",
+          "state": "present",
+          "maxPresses": 24
+        },
+        {
+          "kind": "waitFor",
+          "testid": "battle-actor-sprites",
+          "state": "present"
+        }
+      ],
+      "battlers": {
+        "skin": "retro2003",
+        "directorStep": "intro",
+        "field": {
+          "top": 90,
+          "bottom": 582,
+          "left": 240,
+          "right": 1200,
+          "width": 960,
+          "height": 492
+        },
+        "enemyGroup": {
+          "top": 174,
+          "bottom": 582,
+          "left": 240,
+          "right": 1200,
+          "width": 960,
+          "height": 408
+        },
+        "enemies": [
+          {
+            "id": "enemy-1",
+            "node": {
+              "top": 379,
+              "bottom": 523,
+              "left": 204,
+              "right": 348,
+              "width": 144,
+              "height": 144
+            },
+            "image": {
+              "top": 379,
+              "bottom": 523,
+              "left": 204,
+              "right": 348,
+              "width": 144,
+              "height": 144
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "id": "enemy-2",
+            "node": {
+              "top": 277,
+              "bottom": 421,
+              "left": 300,
+              "right": 444,
+              "width": 144,
+              "height": 144
+            },
+            "image": {
+              "top": 277,
+              "bottom": 421,
+              "left": 300,
+              "right": 444,
+              "width": 144,
+              "height": 144
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "id": "enemy-3",
+            "node": {
+              "top": 379,
+              "bottom": 523,
+              "left": 396,
+              "right": 540,
+              "width": 144,
+              "height": 144
+            },
+            "image": {
+              "top": 379,
+              "bottom": 523,
+              "left": 396,
+              "right": 540,
+              "width": 144,
+              "height": 144
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          }
+        ],
+        "allies": [
+          {
+            "id": "battle-actor-actor_hero",
+            "node": {
+              "top": 239,
+              "bottom": 383,
+              "left": 834,
+              "right": 978,
+              "width": 144,
+              "height": 144
+            }
+          },
+          {
+            "id": "battle-actor-actor_guardian",
+            "node": {
+              "top": 285,
+              "bottom": 429,
+              "left": 906,
+              "right": 1050,
+              "width": 144,
+              "height": 144
+            }
+          },
+          {
+            "id": "battle-actor-actor_mage",
+            "node": {
+              "top": 331,
+              "bottom": 475,
+              "left": 978,
+              "right": 1122,
+              "width": 144,
+              "height": 144
+            }
+          },
+          {
+            "id": "battle-actor-actor_scout",
+            "node": {
+              "top": 377,
+              "bottom": 521,
+              "left": 1050,
+              "right": 1194,
+              "width": 144,
+              "height": 144
+            }
+          }
+        ]
+      }
+    },
+    {
+      "index": 4,
+      "id": "battle-command",
+      "note": "측면 레트로 스킨의 시간 게이지와 명령 대기",
+      "shot": "05-battle-command.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_moonwell_forest",
+        "x": 14,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_moonwell_forest",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "waitFor",
+          "testid": "actor-command-attack",
+          "state": "present",
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "battle-scene",
+          "attr": "data-battle-sequence-busy",
+          "value": "false"
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "battle-scene",
+          "attr": "data-battle-skin",
+          "value": "retro2003"
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "battle-scene",
+          "attr": "data-battle-flow",
+          "value": "gauge"
+        }
+      ],
+      "battlers": {
+        "skin": "retro2003",
+        "directorStep": "command",
+        "field": {
+          "top": 90,
+          "bottom": 582,
+          "left": 240,
+          "right": 1200,
+          "width": 960,
+          "height": 492
+        },
+        "enemyGroup": {
+          "top": 174,
+          "bottom": 582,
+          "left": 240,
+          "right": 1200,
+          "width": 960,
+          "height": 408
+        },
+        "enemies": [
+          {
+            "id": "enemy-1",
+            "node": {
+              "top": 379,
+              "bottom": 523,
+              "left": 348,
+              "right": 492,
+              "width": 144,
+              "height": 144
+            },
+            "image": {
+              "top": 379,
+              "bottom": 523,
+              "left": 348,
+              "right": 492,
+              "width": 144,
+              "height": 144
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "id": "enemy-2",
+            "node": {
+              "top": 277,
+              "bottom": 421,
+              "left": 444,
+              "right": 588,
+              "width": 144,
+              "height": 144
+            },
+            "image": {
+              "top": 277,
+              "bottom": 421,
+              "left": 444,
+              "right": 588,
+              "width": 144,
+              "height": 144
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "id": "enemy-3",
+            "node": {
+              "top": 379,
+              "bottom": 523,
+              "left": 540,
+              "right": 684,
+              "width": 144,
+              "height": 144
+            },
+            "image": {
+              "top": 379,
+              "bottom": 523,
+              "left": 540,
+              "right": 684,
+              "width": 144,
+              "height": 144
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          }
+        ],
+        "allies": [
+          {
+            "id": "battle-actor-actor_hero",
+            "node": {
+              "top": 239,
+              "bottom": 383,
+              "left": 834,
+              "right": 978,
+              "width": 144,
+              "height": 144
+            }
+          },
+          {
+            "id": "battle-actor-actor_guardian",
+            "node": {
+              "top": 285,
+              "bottom": 429,
+              "left": 906,
+              "right": 1050,
+              "width": 144,
+              "height": 144
+            }
+          },
+          {
+            "id": "battle-actor-actor_mage",
+            "node": {
+              "top": 331,
+              "bottom": 475,
+              "left": 978,
+              "right": 1122,
+              "width": 144,
+              "height": 144
+            }
+          },
+          {
+            "id": "battle-actor-actor_scout",
+            "node": {
+              "top": 377,
+              "bottom": 521,
+              "left": 1032,
+              "right": 1176,
+              "width": 144,
+              "height": 144
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

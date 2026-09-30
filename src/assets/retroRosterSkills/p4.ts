@@ -28,7 +28,7 @@ export const BATCH: RetroRosterBatch = {
 
     // ── 귀부인(class_noblewoman, people4-5) — 향수·부채·보석·왈츠·장미
     { id: "skill_noblewoman_perfume", classId: "class_noblewoman", actorId: "actor_noblewoman", name: "장미 향수", level: 1, motion: "cast", description: "달콤한 향수 안개로 적 전원의 정신을 흐린다", layers: [{ key: "noblewoman_perfume", anchor: "allTargets", frame: 64, frames: 10 }] },
-    { id: "skill_noblewoman_fan_slap", classId: "class_noblewoman", actorId: "actor_noblewoman", name: "부채 연타", level: 3, motion: "flurry", description: "접은 부채로 얄밉도록 빠르게 두들긴다", layers: [{ key: "noblewoman_fan_slap", anchor: "target", frame: 64, frames: 8 }] },
+    { id: "skill_noblewoman_fan_slap", classId: "class_noblewoman", actorId: "actor_noblewoman", name: "부채 연타", level: 3, motion: "flurry", description: "접은 부채로 얄밉도록 빠르게 두들긴다", mechanic: { hits: [0.4, 0.4, 0.4] }, layers: [{ key: "noblewoman_fan_slap", anchor: "target", frame: 64, frames: 8 }] },
     { id: "skill_noblewoman_gem_toss", classId: "class_noblewoman", actorId: "actor_noblewoman", name: "보석 세례", level: 5, motion: "shoot", description: "값비싼 보석을 던져 맞힌다", layers: [{ key: "noblewoman_gem", anchor: "projectile", frame: 32, frames: 4 }, { key: "noblewoman_gem_hit", anchor: "target", frame: 64, frames: 8 }] },
     { id: "skill_noblewoman_charm_glance", classId: "class_noblewoman", actorId: "actor_noblewoman", name: "추파", level: 7, motion: "cast", description: "요염한 눈길로 적 하나를 매혹한다", layers: [{ key: "noblewoman_charm", anchor: "target", frame: 64, frames: 10 }] },
     { id: "skill_noblewoman_parasol_spin", classId: "class_noblewoman", actorId: "actor_noblewoman", name: "양산 회전", level: 10, motion: "spin", description: "펼친 양산을 빙글 돌려 모두 밀쳐낸다", layers: [{ key: "noblewoman_parasol", anchor: "allTargets", frame: 64, frames: 10 }] },
@@ -57,7 +57,7 @@ export const BATCH: RetroRosterBatch = {
     { id: "skill_nun_miracle", classId: "class_nun", actorId: "actor_nun", name: "성녀의 기적", level: 22, motion: "finisher", description: "스테인드글라스 빛이 쏟아져 아군을 일으키는 필살기", layers: [{ key: "nun_miracle_sky", anchor: "screen", frame: 128, frames: 12 }, { key: "cleric_mass_heal", anchor: "allAllies", frame: 64, frames: 10 }] },
 
     // ── 광대(class_jester, people5-0) — 저글링·색종이·상자·가면·카니발
-    { id: "skill_jester_juggle", classId: "class_jester", actorId: "actor_jester", name: "저글링", level: 1, motion: "flurry", description: "색색의 공을 돌리다 연달아 던져 맞힌다", layers: [{ key: "jester_juggle", anchor: "target", frame: 64, frames: 10 }] },
+    { id: "skill_jester_juggle", classId: "class_jester", actorId: "actor_jester", name: "저글링", level: 1, motion: "flurry", description: "색색의 공을 돌리다 연달아 던져 맞힌다", mechanic: { hits: [0.4, 0.4, 0.4] }, layers: [{ key: "jester_juggle", anchor: "target", frame: 64, frames: 10 }] },
     { id: "skill_jester_confetti", classId: "class_jester", actorId: "actor_jester", name: "색종이 폭죽", level: 3, motion: "cast", description: "색종이 폭죽을 터뜨려 적 전원의 눈을 어지럽힌다", layers: [{ key: "jester_confetti", anchor: "allTargets", frame: 64, frames: 8 }] },
     { id: "skill_jester_knives", classId: "class_jester", actorId: "actor_jester", name: "단검 저글링", level: 5, motion: "shoot", description: "돌리던 단검을 휙휙 날려 꽂는다", layers: [{ key: "scout_knife", anchor: "projectile", frame: 32, frames: 4 }, { key: "scout_knife_hit", anchor: "target", frame: 64, frames: 8 }] },
     { id: "skill_jester_jack_box", classId: "class_jester", actorId: "actor_jester", name: "깜짝 상자", level: 7, motion: "blink-strike", description: "적 앞에 상자를 펑 열어 권투 장갑을 튀어나오게 한다", layers: [{ key: "jester_jack_box", anchor: "target", frame: 64, frames: 10 }] },
@@ -78,7 +78,7 @@ export const BATCH: RetroRosterBatch = {
 
     // ── 낭인(class_ronin, people5-2) — 거합·빗속·먼지·늑대·혈도
     { id: "skill_ronin_draw_cut", classId: "class_ronin", actorId: "actor_ronin", name: "거합 일섬", level: 1, motion: "blink-strike", description: "칼집에서 뽑는 한 줄기 가로 일섬", layers: [{ key: "ronin_draw", anchor: "target", frame: 64, frames: 8 }] },
-    { id: "skill_ronin_rain_cut", classId: "class_ronin", actorId: "actor_ronin", name: "우중 난도", level: 3, motion: "flurry", description: "빗줄기 속에서 비껴 치는 연속 베기", layers: [{ key: "ronin_rain_cut", anchor: "target", frame: 64, frames: 10 }] },
+    { id: "skill_ronin_rain_cut", classId: "class_ronin", actorId: "actor_ronin", name: "우중 난도", level: 3, motion: "flurry", description: "빗줄기 속에서 비껴 치는 연속 베기", mechanic: { hits: [0.4, 0.4, 0.4] }, layers: [{ key: "ronin_rain_cut", anchor: "target", frame: 64, frames: 10 }] },
     { id: "skill_ronin_dust_slash", classId: "class_ronin", actorId: "actor_ronin", name: "흙먼지 베기", level: 5, motion: "dash-strike", description: "낮게 미끄러져 흙먼지를 일으키며 벤다", layers: [{ key: "hero_pierce", anchor: "target", frame: 64, frames: 8 }, { key: "hero_dust", anchor: "user", frame: 64, frames: 6 }] },
     { id: "skill_ronin_ash_stance", classId: "class_ronin", actorId: "actor_ronin", name: "재의 자세", level: 7, motion: "buff", description: "잿빛 불씨를 두르고 살기를 가라앉힌다", layers: [{ key: "ronin_ash_stance", anchor: "user", frame: 64, frames: 10 }] },
     { id: "skill_ronin_wolf_fang", classId: "class_ronin", actorId: "actor_ronin", name: "늑대 이빨", level: 10, motion: "leap-strike", description: "떠돌이 늑대의 혼이 이빨을 드러내며 덮친다", layers: [{ key: "mon_fang_bite", anchor: "target", frame: 64, frames: 8 }] },

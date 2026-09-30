@@ -1,0 +1,369 @@
+{
+  "strictStop": {
+    "actor": "actor_hero",
+    "addedIndex": 1,
+    "attackIndex": 2,
+    "reproduced": true,
+    "actorStateIds": [
+      "state_audit_stop"
+    ],
+    "timeline": [
+      {
+        "kind": "action",
+        "side": "enemy",
+        "userRecordId": "enemy_slime",
+        "targetId": "actor_hero",
+        "commandKind": "enemySkill",
+        "hit": true,
+        "amount": 0,
+        "critical": false,
+        "skillName": "감사 스톱",
+        "sequence": 0
+      },
+      {
+        "kind": "stateAdded",
+        "side": "enemy",
+        "userRecordId": "enemy_slime",
+        "targetId": "actor_hero",
+        "stateId": "state_audit_stop",
+        "reason": "effect",
+        "sequence": 1
+      },
+      {
+        "kind": "damage",
+        "side": "actor",
+        "userRecordId": "actor_hero",
+        "targetId": "enemy-1",
+        "commandKind": "attack",
+        "hit": true,
+        "amount": 67,
+        "critical": false,
+        "sequence": 2,
+        "animation": {
+          "animationId": "anim_gen_tackle_impact",
+          "targetId": "enemy-1",
+          "name": "몸통박치기 충격",
+          "resourceId": "generated-battle-anim-tackle-impact",
+          "scope": "singleTarget",
+          "position": "center",
+          "soundResourceIds": [
+            "easyrpg-sound-blow4"
+          ],
+          "flashTargets": [
+            "target"
+          ],
+          "screenShake": true,
+          "frameCount": 8,
+          "durationMs": 600
+        }
+      },
+      {
+        "kind": "incapacitated",
+        "side": "actor",
+        "userRecordId": "actor_hero",
+        "targetId": "actor_hero",
+        "sequence": 3
+      },
+      {
+        "kind": "action",
+        "side": "enemy",
+        "userRecordId": "enemy_slime",
+        "targetId": "actor_hero",
+        "commandKind": "enemySkill",
+        "hit": true,
+        "amount": 0,
+        "critical": false,
+        "skillName": "감사 스톱",
+        "sequence": 4
+      },
+      {
+        "kind": "incapacitated",
+        "side": "actor",
+        "userRecordId": "actor_hero",
+        "targetId": "actor_hero",
+        "sequence": 5
+      },
+      {
+        "kind": "action",
+        "side": "enemy",
+        "userRecordId": "enemy_slime",
+        "targetId": "actor_hero",
+        "commandKind": "enemySkill",
+        "hit": true,
+        "amount": 0,
+        "critical": false,
+        "skillName": "감사 스톱",
+        "sequence": 6
+      },
+      {
+        "kind": "incapacitated",
+        "side": "actor",
+        "userRecordId": "actor_hero",
+        "targetId": "actor_hero",
+        "sequence": 7
+      }
+    ],
+    "totalTimelineEntries": 402
+  },
+  "freezeDeadlock": {
+    "simulatedMs": 2100000,
+    "naturalRecovery": {
+      "fromTurn": 2,
+      "chance": 100
+    },
+    "first": {
+      "phase": "charging",
+      "turn": 1,
+      "actors": [
+        {
+          "states": [
+            "state_audit_stop"
+          ],
+          "turns": {
+            "state_audit_stop": 1
+          },
+          "gauge": 0
+        }
+      ],
+      "enemies": [
+        {
+          "states": [
+            "state_audit_stop"
+          ],
+          "turns": {
+            "state_audit_stop": 1
+          },
+          "gauge": 0
+        }
+      ]
+    },
+    "last": {
+      "phase": "charging",
+      "turn": 1,
+      "actors": [
+        {
+          "states": [
+            "state_audit_stop"
+          ],
+          "turns": {
+            "state_audit_stop": 1
+          },
+          "gauge": 0
+        }
+      ],
+      "enemies": [
+        {
+          "states": [
+            "state_audit_stop"
+          ],
+          "turns": {
+            "state_audit_stop": 1
+          },
+          "gauge": 0
+        }
+      ]
+    },
+    "reproduced": true
+  },
+  "randomAoe": {
+    "enemies": [
+      {
+        "id": "enemy-1",
+        "hp": 9979,
+        "hpLoss": 20
+      },
+      {
+        "id": "enemy-2",
+        "hp": 9979,
+        "hpLoss": 20
+      }
+    ],
+    "hits": [
+      {
+        "kind": "damage",
+        "side": "actor",
+        "userRecordId": "actor_hero",
+        "targetId": "enemy-1",
+        "commandKind": "skill",
+        "hit": true,
+        "amount": 10,
+        "critical": false,
+        "skillName": "감사 전체 피해 10",
+        "resource": "hp",
+        "sequence": 1
+      },
+      {
+        "kind": "damage",
+        "side": "actor",
+        "userRecordId": "actor_hero",
+        "targetId": "enemy-2",
+        "commandKind": "skill",
+        "hit": true,
+        "amount": 10,
+        "critical": false,
+        "skillName": "감사 전체 피해 10",
+        "resource": "hp",
+        "sequence": 2
+      },
+      {
+        "kind": "damage",
+        "side": "actor",
+        "userRecordId": "actor_hero",
+        "targetId": "enemy-1",
+        "commandKind": "skill",
+        "hit": true,
+        "amount": 10,
+        "critical": false,
+        "skillName": "감사 전체 피해 10",
+        "resource": "hp",
+        "sequence": 4
+      },
+      {
+        "kind": "damage",
+        "side": "actor",
+        "userRecordId": "actor_hero",
+        "targetId": "enemy-2",
+        "commandKind": "skill",
+        "hit": true,
+        "amount": 10,
+        "critical": false,
+        "skillName": "감사 전체 피해 10",
+        "resource": "hp",
+        "sequence": 5
+      }
+    ],
+    "reproduced": true
+  },
+  "hpCostPrediction": {
+    "predicted": 500,
+    "actual": 250,
+    "hits": [
+      {
+        "kind": "damage",
+        "side": "actor",
+        "userRecordId": "actor_hero",
+        "targetId": "enemy-1",
+        "commandKind": "skill",
+        "hit": true,
+        "amount": 250,
+        "critical": false,
+        "skillName": "감사 hpCost",
+        "resource": "hp",
+        "sequence": 1
+      }
+    ],
+    "actorHpAfter": 249,
+    "reproduced": true
+  },
+  "drainPrediction": {
+    "predicted": 200,
+    "actual": 250,
+    "hits": [
+      {
+        "kind": "damage",
+        "side": "actor",
+        "userRecordId": "actor_hero",
+        "targetId": "enemy-1",
+        "commandKind": "skill",
+        "hit": true,
+        "amount": 100,
+        "critical": false,
+        "skillName": "감사 drain",
+        "resource": "hp",
+        "sequence": 0
+      },
+      {
+        "kind": "damage",
+        "side": "actor",
+        "userRecordId": "actor_hero",
+        "targetId": "enemy-1",
+        "commandKind": "skill",
+        "hit": true,
+        "amount": 150,
+        "critical": false,
+        "skillName": "감사 drain",
+        "resource": "hp",
+        "sequence": 2
+      }
+    ],
+    "actorHpAfter": 224,
+    "reproduced": true
+  },
+  "stateElementPrediction": {
+    "predicted": 200,
+    "actual": 300,
+    "amounts": [
+      100,
+      200
+    ],
+    "targetStates": [
+      "state_audit_wet"
+    ],
+    "reproduced": true
+  },
+  "customBackfill": {
+    "beforeIssueCount": 0,
+    "beforeIssues": [],
+    "beforeReload": "ok",
+    "changed": true,
+    "afterIssueCount": 1106,
+    "afterIssues": [
+      "actor actor_samurai: initialEquipment does not exist: equip_iron_sword",
+      "actor actor_samurai: initialEquipment does not exist: equip_leather_armor",
+      "actor actor_samurai: initialEquipment does not exist: equip_traveler_hat",
+      "actor actor_samurai: initialEquipment does not exist: equip_focus_charm",
+      "actor actor_ninja: initialEquipment does not exist: equip_scout_dagger",
+      "actor actor_ninja: initialEquipment does not exist: equip_leather_armor",
+      "actor actor_ninja: initialEquipment does not exist: equip_traveler_hat",
+      "actor actor_ninja: initialEquipment does not exist: equip_focus_charm",
+      "actor actor_monk: initialEquipment does not exist: equip_leather_armor",
+      "actor actor_monk: initialEquipment does not exist: equip_traveler_hat",
+      "actor actor_monk: initialEquipment does not exist: equip_focus_charm",
+      "actor actor_bard: initialEquipment does not exist: equip_scout_dagger",
+      "actor actor_bard: initialEquipment does not exist: equip_leather_armor",
+      "actor actor_bard: initialEquipment does not exist: equip_traveler_hat",
+      "actor actor_bard: initialEquipment does not exist: equip_focus_charm",
+      "actor actor_druid: initialEquipment does not exist: equip_mage_staff"
+    ],
+    "afterReload": "ProjectFormatError: actor actor_samurai: initialEquipment does not exist: equip_iron_sword\nactor actor_samurai: initialEquipment does not exist: equip_leather_armor\nactor actor_samurai: initialEquipment does not exist: equip_traveler_hat\nactor actor_samurai: initialEquipment does not exist: equip_focus_charm\nactor actor_ninja: initialEquipment does not exist: equip_scout_dagger\nactor actor_ninja: initialEquipment does not exist: equip_leather_armor\nactor actor_ninja: initialEquipment does not exist: equip_traveler_hat\nactor actor_ninja: initialEquipment does not exist: equip_focus_charm",
+    "reproduced": true
+  },
+  "rosterTriple": [
+    {
+      "id": "skill_squire_triple_cut",
+      "name": "삼연격",
+      "hitSequence": [
+        1
+      ],
+      "scope": "enemy",
+      "description": "연습한 대로 세 번 빠르게 벤다.",
+      "actualHitCount": 1,
+      "amounts": [
+        94
+      ]
+    },
+    {
+      "id": "skill_noble_triple_thrust",
+      "name": "삼단 찌르기",
+      "hitSequence": [
+        1
+      ],
+      "scope": "enemy",
+      "description": "레이피어로 눈 깜짝할 새 세 번 찌른다.",
+      "actualHitCount": 1,
+      "amounts": [
+        84
+      ]
+    }
+  ],
+  "castExport": {
+    "actor": "actor_mage",
+    "resource": "charset-battler-actor1-5",
+    "basePath": "assets/generated/charset-battlers/actor1-5.png",
+    "castPath": "assets/generated/charset-battlers/cast/actor1-5.png",
+    "baseIncluded": true,
+    "castIncluded": false,
+    "collectedCastPaths": [],
+    "collectedBaseCount": 72
+  }
+}

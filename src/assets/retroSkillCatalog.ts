@@ -129,7 +129,8 @@ export function resolveSkillChoreography(
     return undefined;
   };
   const own = contract(ref.id);
-  if (own) return own;
+  // A request for the other kind cannot replace an existing own contract with a borrowed one.
+  if (retroChoreographyKind(ref.id)) return own;
   const record = ref.retroChoreographyId && records ? records.find((row) => row.id === ref.retroChoreographyId) : undefined;
   if (record) {
     const kind = want ?? skillChoreographyRecordKind(record);

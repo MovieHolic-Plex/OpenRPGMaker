@@ -1,0 +1,1286 @@
+{
+  "id": "retro-strict",
+  "settings": {
+    "id": "retro-strict",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "skin": "retro2003",
+    "flow": "strict",
+    "menus": true
+  },
+  "extra": [
+    {
+      "name": "command-settled",
+      "geometry": {
+        "viewport": [
+          1024,
+          768
+        ],
+        "phase": "actorCommand",
+        "step": "command",
+        "busy": "false",
+        "scene": {
+          "x": 32,
+          "y": 24,
+          "width": 960,
+          "height": 720,
+          "top": 24,
+          "right": 992,
+          "bottom": 744,
+          "left": 32
+        },
+        "message": {
+          "text": "주인공은 무엇을 할까?",
+          "display": "grid",
+          "visibility": "visible",
+          "rect": {
+            "x": 44,
+            "y": 36,
+            "width": 936,
+            "height": 60,
+            "top": 36,
+            "right": 980,
+            "bottom": 96,
+            "left": 44
+          }
+        },
+        "summary": {
+          "rect": null
+        },
+        "messageOverlapsSummary": false,
+        "buttons": [
+          {
+            "id": "enemy-1",
+            "text": "",
+            "disabled": true,
+            "rect": {
+              "x": 140,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 284,
+              "bottom": 457.3359375,
+              "left": 140
+            }
+          },
+          {
+            "id": "enemy-2",
+            "text": "",
+            "disabled": true,
+            "rect": {
+              "x": 236,
+              "y": 211.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 211.3359375,
+              "right": 380,
+              "bottom": 355.3359375,
+              "left": 236
+            }
+          },
+          {
+            "id": "enemy-3",
+            "text": "",
+            "disabled": true,
+            "rect": {
+              "x": 332,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 476,
+              "bottom": 457.3359375,
+              "left": 332
+            }
+          },
+          {
+            "id": "actor-command-attack",
+            "text": "공격",
+            "disabled": false,
+            "cursor": "true",
+            "rect": {
+              "x": 592.5546875,
+              "y": 534,
+              "width": 190.7109375,
+              "height": 48,
+              "top": 534,
+              "right": 783.265625,
+              "bottom": 582,
+              "left": 592.5546875
+            }
+          },
+          {
+            "id": "actor-command-skill",
+            "text": "스킬",
+            "disabled": false,
+            "rect": {
+              "x": 783.265625,
+              "y": 534,
+              "width": 190.734375,
+              "height": 48,
+              "top": 534,
+              "right": 974,
+              "bottom": 582,
+              "left": 783.265625
+            }
+          },
+          {
+            "id": "actor-command-defend",
+            "text": "방어",
+            "disabled": false,
+            "rect": {
+              "x": 592.5546875,
+              "y": 582,
+              "width": 190.7109375,
+              "height": 48,
+              "top": 582,
+              "right": 783.265625,
+              "bottom": 630,
+              "left": 592.5546875
+            }
+          },
+          {
+            "id": "actor-command-item",
+            "text": "아이템",
+            "disabled": false,
+            "rect": {
+              "x": 783.265625,
+              "y": 582,
+              "width": 190.734375,
+              "height": 48,
+              "top": 582,
+              "right": 974,
+              "bottom": 630,
+              "left": 783.265625
+            }
+          },
+          {
+            "id": "actor-command-escape",
+            "text": "도주",
+            "disabled": false,
+            "rect": {
+              "x": 592.5546875,
+              "y": 630,
+              "width": 190.7109375,
+              "height": 48,
+              "top": 630,
+              "right": 783.265625,
+              "bottom": 678,
+              "left": 592.5546875
+            }
+          }
+        ],
+        "images": [
+          {
+            "rect": {
+              "x": 140,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 284,
+              "bottom": 457.3359375,
+              "left": 140
+            },
+            "bg": "url(\"http://127.0.0.1:34447/assets/generated/pixel-enemies/slime.png\")",
+            "rendering": "pixelated"
+          },
+          {
+            "rect": {
+              "x": 236,
+              "y": 211.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 211.3359375,
+              "right": 380,
+              "bottom": 355.3359375,
+              "left": 236
+            },
+            "bg": "url(\"http://127.0.0.1:34447/assets/generated/pixel-enemies/bat.png\")",
+            "rendering": "pixelated"
+          },
+          {
+            "rect": {
+              "x": 332,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 476,
+              "bottom": 457.3359375,
+              "left": 332
+            },
+            "bg": "url(\"http://127.0.0.1:34447/assets/generated/pixel-enemies/slime.png\")",
+            "rendering": "pixelated"
+          }
+        ],
+        "scroll": [
+          {
+            "cls": "battle-command-menu battle-standard-root",
+            "clientHeight": 128,
+            "scrollHeight": 128,
+            "scrollTop": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "skills",
+      "geometry": {
+        "viewport": [
+          1024,
+          768
+        ],
+        "phase": "actorCommand",
+        "step": "command",
+        "busy": "false",
+        "scene": {
+          "x": 32,
+          "y": 24,
+          "width": 960,
+          "height": 720,
+          "top": 24,
+          "right": 992,
+          "bottom": 744,
+          "left": 32
+        },
+        "message": {
+          "text": "주인공은 무엇을 할까?",
+          "display": "grid",
+          "visibility": "visible",
+          "rect": {
+            "x": 44,
+            "y": 36,
+            "width": 936,
+            "height": 60,
+            "top": 36,
+            "right": 980,
+            "bottom": 96,
+            "left": 44
+          }
+        },
+        "summary": {
+          "rect": null
+        },
+        "messageOverlapsSummary": false,
+        "buttons": [
+          {
+            "id": "enemy-1",
+            "text": "",
+            "disabled": true,
+            "rect": {
+              "x": 140,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 284,
+              "bottom": 457.3359375,
+              "left": 140
+            }
+          },
+          {
+            "id": "enemy-2",
+            "text": "",
+            "disabled": true,
+            "rect": {
+              "x": 236,
+              "y": 211.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 211.3359375,
+              "right": 380,
+              "bottom": 355.3359375,
+              "left": 236
+            }
+          },
+          {
+            "id": "enemy-3",
+            "text": "",
+            "disabled": true,
+            "rect": {
+              "x": 332,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 476,
+              "bottom": 457.3359375,
+              "left": 332
+            }
+          },
+          {
+            "id": "actor-skill-skill_attack",
+            "text": "공격\nMP 0",
+            "disabled": false,
+            "cursor": "true",
+            "rect": {
+              "x": 592.5546875,
+              "y": 582,
+              "width": 381.4453125,
+              "height": 48,
+              "top": 582,
+              "right": 974,
+              "bottom": 630,
+              "left": 592.5546875
+            }
+          },
+          {
+            "id": "actor-skill-skill_focus",
+            "text": "집중\nMP 2",
+            "disabled": false,
+            "rect": {
+              "x": 592.5546875,
+              "y": 630,
+              "width": 381.4453125,
+              "height": 48,
+              "top": 630,
+              "right": 974,
+              "bottom": 678,
+              "left": 592.5546875
+            }
+          },
+          {
+            "id": "actor-skill-skill_sword_slash",
+            "text": "검격\nMP 0",
+            "disabled": false,
+            "rect": {
+              "x": 592.5546875,
+              "y": 678,
+              "width": 381.4453125,
+              "height": 48,
+              "top": 678,
+              "right": 974,
+              "bottom": 726,
+              "left": 592.5546875
+            }
+          },
+          {
+            "id": "actor-command-back",
+            "text": "뒤로",
+            "disabled": false,
+            "rect": {
+              "x": 592.5546875,
+              "y": 726,
+              "width": 381.4453125,
+              "height": 48,
+              "top": 726,
+              "right": 974,
+              "bottom": 774,
+              "left": 592.5546875
+            }
+          }
+        ],
+        "images": [
+          {
+            "rect": {
+              "x": 140,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 284,
+              "bottom": 457.3359375,
+              "left": 140
+            },
+            "bg": "url(\"http://127.0.0.1:34447/assets/generated/pixel-enemies/slime.png\")",
+            "rendering": "pixelated"
+          },
+          {
+            "rect": {
+              "x": 236,
+              "y": 211.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 211.3359375,
+              "right": 380,
+              "bottom": 355.3359375,
+              "left": 236
+            },
+            "bg": "url(\"http://127.0.0.1:34447/assets/generated/pixel-enemies/bat.png\")",
+            "rendering": "pixelated"
+          },
+          {
+            "rect": {
+              "x": 332,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 476,
+              "bottom": 457.3359375,
+              "left": 332
+            },
+            "bg": "url(\"http://127.0.0.1:34447/assets/generated/pixel-enemies/slime.png\")",
+            "rendering": "pixelated"
+          }
+        ],
+        "scroll": [
+          {
+            "cls": "battle-command-menu",
+            "clientHeight": 128,
+            "scrollHeight": 192,
+            "scrollTop": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "target",
+      "geometry": {
+        "viewport": [
+          1024,
+          768
+        ],
+        "phase": "targetSelect",
+        "step": "target",
+        "busy": "false",
+        "scene": {
+          "x": 32,
+          "y": 24,
+          "width": 960,
+          "height": 720,
+          "top": 24,
+          "right": 992,
+          "bottom": 744,
+          "left": 32
+        },
+        "message": {
+          "text": "슬라임 1을 노린다 (← → 대상 변경)",
+          "display": "grid",
+          "visibility": "visible",
+          "rect": {
+            "x": 44,
+            "y": 36,
+            "width": 936,
+            "height": 60,
+            "top": 36,
+            "right": 980,
+            "bottom": 96,
+            "left": 44
+          }
+        },
+        "summary": {
+          "rect": null
+        },
+        "messageOverlapsSummary": false,
+        "buttons": [
+          {
+            "id": "enemy-1",
+            "text": "슬라임 1",
+            "disabled": false,
+            "cursor": "true",
+            "rect": {
+              "x": 140,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 284,
+              "bottom": 457.3359375,
+              "left": 140
+            }
+          },
+          {
+            "id": "enemy-2",
+            "text": "",
+            "disabled": false,
+            "rect": {
+              "x": 236,
+              "y": 211.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 211.3359375,
+              "right": 380,
+              "bottom": 355.3359375,
+              "left": 236
+            }
+          },
+          {
+            "id": "enemy-3",
+            "text": "",
+            "disabled": false,
+            "rect": {
+              "x": 332,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 476,
+              "bottom": 457.3359375,
+              "left": 332
+            }
+          },
+          {
+            "id": "battle-target-enemy-1",
+            "text": "슬라임\n1",
+            "disabled": false,
+            "rect": {
+              "x": 592.5546875,
+              "y": 534,
+              "width": 381.4453125,
+              "height": 48,
+              "top": 534,
+              "right": 974,
+              "bottom": 582,
+              "left": 592.5546875
+            }
+          },
+          {
+            "id": "battle-target-enemy-2",
+            "text": "동굴 박쥐",
+            "disabled": false,
+            "rect": {
+              "x": 592.5546875,
+              "y": 582,
+              "width": 381.4453125,
+              "height": 48,
+              "top": 582,
+              "right": 974,
+              "bottom": 630,
+              "left": 592.5546875
+            }
+          },
+          {
+            "id": "battle-target-enemy-3",
+            "text": "슬라임\n2",
+            "disabled": false,
+            "rect": {
+              "x": 592.5546875,
+              "y": 630,
+              "width": 381.4453125,
+              "height": 48,
+              "top": 630,
+              "right": 974,
+              "bottom": 678,
+              "left": 592.5546875
+            }
+          },
+          {
+            "id": "battle-target-cancel",
+            "text": "뒤로",
+            "disabled": false,
+            "rect": {
+              "x": 592.5546875,
+              "y": 678,
+              "width": 381.4453125,
+              "height": 48,
+              "top": 678,
+              "right": 974,
+              "bottom": 726,
+              "left": 592.5546875
+            }
+          }
+        ],
+        "images": [
+          {
+            "rect": {
+              "x": 140,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 284,
+              "bottom": 457.3359375,
+              "left": 140
+            },
+            "bg": "url(\"http://127.0.0.1:34447/assets/generated/pixel-enemies/slime.png\")",
+            "rendering": "pixelated"
+          },
+          {
+            "rect": {
+              "x": 236,
+              "y": 211.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 211.3359375,
+              "right": 380,
+              "bottom": 355.3359375,
+              "left": 236
+            },
+            "bg": "url(\"http://127.0.0.1:34447/assets/generated/pixel-enemies/bat.png\")",
+            "rendering": "pixelated"
+          },
+          {
+            "rect": {
+              "x": 332,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 476,
+              "bottom": 457.3359375,
+              "left": 332
+            },
+            "bg": "url(\"http://127.0.0.1:34447/assets/generated/pixel-enemies/slime.png\")",
+            "rendering": "pixelated"
+          }
+        ],
+        "scroll": [
+          {
+            "cls": "battle-command-menu battle-target-menu",
+            "clientHeight": 128,
+            "scrollHeight": 128,
+            "scrollTop": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "target-next",
+      "geometry": {
+        "viewport": [
+          1024,
+          768
+        ],
+        "phase": "targetSelect",
+        "step": "target",
+        "busy": "false",
+        "scene": {
+          "x": 32,
+          "y": 24,
+          "width": 960,
+          "height": 720,
+          "top": 24,
+          "right": 992,
+          "bottom": 744,
+          "left": 32
+        },
+        "message": {
+          "text": "동굴 박쥐를 노린다 (← → 대상 변경)",
+          "display": "grid",
+          "visibility": "visible",
+          "rect": {
+            "x": 44,
+            "y": 36,
+            "width": 936,
+            "height": 60,
+            "top": 36,
+            "right": 980,
+            "bottom": 96,
+            "left": 44
+          }
+        },
+        "summary": {
+          "rect": null
+        },
+        "messageOverlapsSummary": false,
+        "buttons": [
+          {
+            "id": "enemy-1",
+            "text": "",
+            "disabled": false,
+            "rect": {
+              "x": 140,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 284,
+              "bottom": 457.3359375,
+              "left": 140
+            }
+          },
+          {
+            "id": "enemy-2",
+            "text": "동굴 박쥐",
+            "disabled": false,
+            "cursor": "true",
+            "rect": {
+              "x": 236,
+              "y": 211.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 211.3359375,
+              "right": 380,
+              "bottom": 355.3359375,
+              "left": 236
+            }
+          },
+          {
+            "id": "enemy-3",
+            "text": "",
+            "disabled": false,
+            "rect": {
+              "x": 332,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 476,
+              "bottom": 457.3359375,
+              "left": 332
+            }
+          },
+          {
+            "id": "battle-target-enemy-1",
+            "text": "슬라임\n1",
+            "disabled": false,
+            "rect": {
+              "x": 592.5546875,
+              "y": 534,
+              "width": 381.4453125,
+              "height": 48,
+              "top": 534,
+              "right": 974,
+              "bottom": 582,
+              "left": 592.5546875
+            }
+          },
+          {
+            "id": "battle-target-enemy-2",
+            "text": "동굴 박쥐",
+            "disabled": false,
+            "rect": {
+              "x": 592.5546875,
+              "y": 582,
+              "width": 381.4453125,
+              "height": 48,
+              "top": 582,
+              "right": 974,
+              "bottom": 630,
+              "left": 592.5546875
+            }
+          },
+          {
+            "id": "battle-target-enemy-3",
+            "text": "슬라임\n2",
+            "disabled": false,
+            "rect": {
+              "x": 592.5546875,
+              "y": 630,
+              "width": 381.4453125,
+              "height": 48,
+              "top": 630,
+              "right": 974,
+              "bottom": 678,
+              "left": 592.5546875
+            }
+          },
+          {
+            "id": "battle-target-cancel",
+            "text": "뒤로",
+            "disabled": false,
+            "rect": {
+              "x": 592.5546875,
+              "y": 678,
+              "width": 381.4453125,
+              "height": 48,
+              "top": 678,
+              "right": 974,
+              "bottom": 726,
+              "left": 592.5546875
+            }
+          }
+        ],
+        "images": [
+          {
+            "rect": {
+              "x": 140,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 284,
+              "bottom": 457.3359375,
+              "left": 140
+            },
+            "bg": "url(\"http://127.0.0.1:34447/assets/generated/pixel-enemies/slime.png\")",
+            "rendering": "pixelated"
+          },
+          {
+            "rect": {
+              "x": 236,
+              "y": 211.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 211.3359375,
+              "right": 380,
+              "bottom": 355.3359375,
+              "left": 236
+            },
+            "bg": "url(\"http://127.0.0.1:34447/assets/generated/pixel-enemies/bat.png\")",
+            "rendering": "pixelated"
+          },
+          {
+            "rect": {
+              "x": 332,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 476,
+              "bottom": 457.3359375,
+              "left": 332
+            },
+            "bg": "url(\"http://127.0.0.1:34447/assets/generated/pixel-enemies/slime.png\")",
+            "rendering": "pixelated"
+          }
+        ],
+        "scroll": [
+          {
+            "cls": "battle-command-menu battle-target-menu",
+            "clientHeight": 128,
+            "scrollHeight": 128,
+            "scrollTop": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "target-cancel",
+      "geometry": {
+        "viewport": [
+          1024,
+          768
+        ],
+        "phase": "actorCommand",
+        "step": "command",
+        "busy": "false",
+        "scene": {
+          "x": 32,
+          "y": 24,
+          "width": 960,
+          "height": 720,
+          "top": 24,
+          "right": 992,
+          "bottom": 744,
+          "left": 32
+        },
+        "message": {
+          "text": "주인공은 무엇을 할까?",
+          "display": "grid",
+          "visibility": "visible",
+          "rect": {
+            "x": 44,
+            "y": 36,
+            "width": 936,
+            "height": 60,
+            "top": 36,
+            "right": 980,
+            "bottom": 96,
+            "left": 44
+          }
+        },
+        "summary": {
+          "rect": null
+        },
+        "messageOverlapsSummary": false,
+        "buttons": [
+          {
+            "id": "enemy-1",
+            "text": "",
+            "disabled": true,
+            "rect": {
+              "x": 140,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 284,
+              "bottom": 457.3359375,
+              "left": 140
+            }
+          },
+          {
+            "id": "enemy-2",
+            "text": "",
+            "disabled": true,
+            "rect": {
+              "x": 236,
+              "y": 211.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 211.3359375,
+              "right": 380,
+              "bottom": 355.3359375,
+              "left": 236
+            }
+          },
+          {
+            "id": "enemy-3",
+            "text": "",
+            "disabled": true,
+            "rect": {
+              "x": 332,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 476,
+              "bottom": 457.3359375,
+              "left": 332
+            }
+          },
+          {
+            "id": "actor-command-attack",
+            "text": "공격",
+            "disabled": false,
+            "cursor": "true",
+            "rect": {
+              "x": 592.5546875,
+              "y": 534,
+              "width": 190.7109375,
+              "height": 48,
+              "top": 534,
+              "right": 783.265625,
+              "bottom": 582,
+              "left": 592.5546875
+            }
+          },
+          {
+            "id": "actor-command-skill",
+            "text": "스킬",
+            "disabled": false,
+            "rect": {
+              "x": 783.265625,
+              "y": 534,
+              "width": 190.734375,
+              "height": 48,
+              "top": 534,
+              "right": 974,
+              "bottom": 582,
+              "left": 783.265625
+            }
+          },
+          {
+            "id": "actor-command-defend",
+            "text": "방어",
+            "disabled": false,
+            "rect": {
+              "x": 592.5546875,
+              "y": 582,
+              "width": 190.7109375,
+              "height": 48,
+              "top": 582,
+              "right": 783.265625,
+              "bottom": 630,
+              "left": 592.5546875
+            }
+          },
+          {
+            "id": "actor-command-item",
+            "text": "아이템",
+            "disabled": false,
+            "rect": {
+              "x": 783.265625,
+              "y": 582,
+              "width": 190.734375,
+              "height": 48,
+              "top": 582,
+              "right": 974,
+              "bottom": 630,
+              "left": 783.265625
+            }
+          },
+          {
+            "id": "actor-command-escape",
+            "text": "도주",
+            "disabled": false,
+            "rect": {
+              "x": 592.5546875,
+              "y": 630,
+              "width": 190.7109375,
+              "height": 48,
+              "top": 630,
+              "right": 783.265625,
+              "bottom": 678,
+              "left": 592.5546875
+            }
+          }
+        ],
+        "images": [
+          {
+            "rect": {
+              "x": 140,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 284,
+              "bottom": 457.3359375,
+              "left": 140
+            },
+            "bg": "url(\"http://127.0.0.1:34447/assets/generated/pixel-enemies/slime.png\")",
+            "rendering": "pixelated"
+          },
+          {
+            "rect": {
+              "x": 236,
+              "y": 211.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 211.3359375,
+              "right": 380,
+              "bottom": 355.3359375,
+              "left": 236
+            },
+            "bg": "url(\"http://127.0.0.1:34447/assets/generated/pixel-enemies/bat.png\")",
+            "rendering": "pixelated"
+          },
+          {
+            "rect": {
+              "x": 332,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 476,
+              "bottom": 457.3359375,
+              "left": 332
+            },
+            "bg": "url(\"http://127.0.0.1:34447/assets/generated/pixel-enemies/slime.png\")",
+            "rendering": "pixelated"
+          }
+        ],
+        "scroll": [
+          {
+            "cls": "battle-command-menu battle-standard-root",
+            "clientHeight": 128,
+            "scrollHeight": 128,
+            "scrollTop": 0
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [],
+  "beats": [
+    {
+      "id": "title",
+      "failures": []
+    },
+    {
+      "id": "field-start",
+      "failures": []
+    },
+    {
+      "id": "face-battle-event",
+      "failures": []
+    },
+    {
+      "id": "battle-intro",
+      "failures": []
+    },
+    {
+      "id": "battle-command",
+      "failures": []
+    }
+  ],
+  "skillCancel": {
+    "viewport": [
+      1024,
+      768
+    ],
+    "phase": "actorCommand",
+    "step": "command",
+    "busy": "false",
+    "scene": {
+      "x": 32,
+      "y": 24,
+      "width": 960,
+      "height": 720,
+      "top": 24,
+      "right": 992,
+      "bottom": 744,
+      "left": 32
+    },
+    "message": {
+      "text": "주인공은 무엇을 할까?",
+      "display": "grid",
+      "visibility": "visible",
+      "rect": {
+        "x": 44,
+        "y": 36,
+        "width": 936,
+        "height": 60,
+        "top": 36,
+        "right": 980,
+        "bottom": 96,
+        "left": 44
+      }
+    },
+    "summary": {
+      "rect": null
+    },
+    "messageOverlapsSummary": false,
+    "buttons": [
+      {
+        "id": "enemy-1",
+        "text": "",
+        "disabled": true,
+        "rect": {
+          "x": 140,
+          "y": 313.3359375,
+          "width": 144,
+          "height": 144,
+          "top": 313.3359375,
+          "right": 284,
+          "bottom": 457.3359375,
+          "left": 140
+        }
+      },
+      {
+        "id": "enemy-2",
+        "text": "",
+        "disabled": true,
+        "rect": {
+          "x": 236,
+          "y": 211.3359375,
+          "width": 144,
+          "height": 144,
+          "top": 211.3359375,
+          "right": 380,
+          "bottom": 355.3359375,
+          "left": 236
+        }
+      },
+      {
+        "id": "enemy-3",
+        "text": "",
+        "disabled": true,
+        "rect": {
+          "x": 332,
+          "y": 313.3359375,
+          "width": 144,
+          "height": 144,
+          "top": 313.3359375,
+          "right": 476,
+          "bottom": 457.3359375,
+          "left": 332
+        }
+      },
+      {
+        "id": "actor-command-attack",
+        "text": "공격",
+        "disabled": false,
+        "rect": {
+          "x": 592.5546875,
+          "y": 534,
+          "width": 190.7109375,
+          "height": 48,
+          "top": 534,
+          "right": 783.265625,
+          "bottom": 582,
+          "left": 592.5546875
+        }
+      },
+      {
+        "id": "actor-command-skill",
+        "text": "스킬",
+        "disabled": false,
+        "cursor": "true",
+        "rect": {
+          "x": 783.265625,
+          "y": 534,
+          "width": 190.734375,
+          "height": 48,
+          "top": 534,
+          "right": 974,
+          "bottom": 582,
+          "left": 783.265625
+        }
+      },
+      {
+        "id": "actor-command-defend",
+        "text": "방어",
+        "disabled": false,
+        "rect": {
+          "x": 592.5546875,
+          "y": 582,
+          "width": 190.7109375,
+          "height": 48,
+          "top": 582,
+          "right": 783.265625,
+          "bottom": 630,
+          "left": 592.5546875
+        }
+      },
+      {
+        "id": "actor-command-item",
+        "text": "아이템",
+        "disabled": false,
+        "rect": {
+          "x": 783.265625,
+          "y": 582,
+          "width": 190.734375,
+          "height": 48,
+          "top": 582,
+          "right": 974,
+          "bottom": 630,
+          "left": 783.265625
+        }
+      },
+      {
+        "id": "actor-command-escape",
+        "text": "도주",
+        "disabled": false,
+        "rect": {
+          "x": 592.5546875,
+          "y": 630,
+          "width": 190.7109375,
+          "height": 48,
+          "top": 630,
+          "right": 783.265625,
+          "bottom": 678,
+          "left": 592.5546875
+        }
+      }
+    ],
+    "images": [
+      {
+        "rect": {
+          "x": 140,
+          "y": 313.3359375,
+          "width": 144,
+          "height": 144,
+          "top": 313.3359375,
+          "right": 284,
+          "bottom": 457.3359375,
+          "left": 140
+        },
+        "bg": "url(\"http://127.0.0.1:34447/assets/generated/pixel-enemies/slime.png\")",
+        "rendering": "pixelated"
+      },
+      {
+        "rect": {
+          "x": 236,
+          "y": 211.3359375,
+          "width": 144,
+          "height": 144,
+          "top": 211.3359375,
+          "right": 380,
+          "bottom": 355.3359375,
+          "left": 236
+        },
+        "bg": "url(\"http://127.0.0.1:34447/assets/generated/pixel-enemies/bat.png\")",
+        "rendering": "pixelated"
+      },
+      {
+        "rect": {
+          "x": 332,
+          "y": 313.3359375,
+          "width": 144,
+          "height": 144,
+          "top": 313.3359375,
+          "right": 476,
+          "bottom": 457.3359375,
+          "left": 332
+        },
+        "bg": "url(\"http://127.0.0.1:34447/assets/generated/pixel-enemies/slime.png\")",
+        "rendering": "pixelated"
+      }
+    ],
+    "scroll": [
+      {
+        "cls": "battle-command-menu battle-standard-root",
+        "clientHeight": 128,
+        "scrollHeight": 128,
+        "scrollTop": 0
+      }
+    ]
+  }
+}
