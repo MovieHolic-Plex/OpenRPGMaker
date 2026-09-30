@@ -1,6 +1,6 @@
 import { releasePlaceOwnership } from "./placeOwnership";
 import { inspectRemovedAuthoringTransfers } from "./authoringConnections";
-import { deserialize } from "@/project/io";
+import { isolateProject } from "./compileIsolation";
 import { appendToTree, containsMap } from "@/project/mapTree";
 import { own } from "@/project/spatial/domain";
 import type { SpatialOccurrence } from "@/project/spatial/types";
@@ -32,5 +32,5 @@ export function compileMixedComposition(context: SpatialCompileContext) {
   project.maps[raster.map.id] = raster.map;
   if (!containsMap(project.mapTree, raster.map.id)) appendToTree(project.mapTree, raster.map.id);
   project.spatialAuthoring = compileConnections(project, { ...document, occurrences }, { members, transfers });
-  return deserialize(JSON.stringify(project));
+  return isolateProject(project);
 }
