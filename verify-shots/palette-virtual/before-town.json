@@ -1,0 +1,222 @@
+{
+ "label": "before-town",
+ "tilesetId": "easyrpg_chipset_combined_town",
+ "runs": {
+  "category:__first": [
+   {
+    "val": "recent",
+    "total": 62.5,
+    "sync": 47,
+    "long": [],
+    "cells": 1,
+    "nodes": 3,
+    "sig": "3:0:1칸 표시필터 해제"
+   },
+   {
+    "val": "recent",
+    "total": 47.7,
+    "sync": 35.1,
+    "long": [],
+    "cells": 1,
+    "nodes": 2,
+    "sig": "2:0:1칸 표시필터 해제"
+   },
+   {
+    "val": "recent",
+    "total": 46.6,
+    "sync": 36.2,
+    "long": [],
+    "cells": 2,
+    "nodes": 3,
+    "sig": "5:0:2칸 표시필터 해제"
+   }
+  ],
+  "category:terrain": [
+   {
+    "val": "terrain",
+    "total": 54.4,
+    "sync": 37.4,
+    "long": [],
+    "cells": 42,
+    "nodes": 49,
+    "sig": "147:0:42칸 표시필터 해제"
+   },
+   {
+    "val": "terrain",
+    "total": 45.5,
+    "sync": 31,
+    "long": [],
+    "cells": 43,
+    "nodes": 50,
+    "sig": "150:0:43칸 표시필터 해제"
+   },
+   {
+    "val": "terrain",
+    "total": 46,
+    "sync": 32.1,
+    "long": [],
+    "cells": 43,
+    "nodes": 50,
+    "sig": "150:0:43칸 표시필터 해제"
+   }
+  ],
+  "category:water": [
+   {
+    "val": "water",
+    "total": 48.6,
+    "sync": 36.1,
+    "long": [],
+    "cells": 13,
+    "nodes": 17,
+    "sig": "35:0:13칸 표시필터 해제"
+   },
+   {
+    "val": "water",
+    "total": 46.4,
+    "sync": 27.8,
+    "long": [],
+    "cells": 13,
+    "nodes": 16,
+    "sig": "34:0:13칸 표시필터 해제"
+   },
+   {
+    "val": "water",
+    "total": 43.8,
+    "sync": 31.2,
+    "long": [],
+    "cells": 13,
+    "nodes": 16,
+    "sig": "34:0:13칸 표시필터 해제"
+   }
+  ],
+  "category:all": [
+   {
+    "val": "all",
+    "total": 55.8,
+    "sync": 33.4,
+    "long": [],
+    "cells": 195,
+    "nodes": 209,
+    "sig": "720:0:"
+   },
+   {
+    "val": "all",
+    "total": 57.1,
+    "sync": 32.7,
+    "long": [],
+    "cells": 195,
+    "nodes": 209,
+    "sig": "720:0:"
+   },
+   {
+    "val": "all",
+    "total": 59.8,
+    "sync": 33.4,
+    "long": [],
+    "cells": 195,
+    "nodes": 209,
+    "sig": "720:0:"
+   }
+  ],
+  "cellclick": [
+   {
+    "tid": "chipset-tile-78",
+    "total": 37.5,
+    "sync": 2.5,
+    "long": [],
+    "cells": 195
+   },
+   {
+    "tid": "chipset-tile-49",
+    "total": 34.8,
+    "sync": 1.1,
+    "long": [],
+    "cells": 195
+   },
+   {
+    "tid": "chipset-tile-75",
+    "total": 34,
+    "sync": 1,
+    "long": [],
+    "cells": 195
+   }
+  ],
+  "scroll": [
+   {
+    "frames": 90,
+    "p50": 16.7,
+    "p95": 17.4,
+    "max": 26.1,
+    "long": [],
+    "scrollTop": 723
+   },
+   {
+    "frames": 90,
+    "p50": 16.7,
+    "p95": 17.2,
+    "max": 24.6,
+    "long": [],
+    "scrollTop": 723
+   },
+   {
+    "frames": 87,
+    "p50": 16.6,
+    "p95": 20.3,
+    "max": 68.1,
+    "long": [
+     73
+    ],
+    "scrollTop": 723
+   }
+  ]
+ },
+ "tilesetSwitch": {
+  "total": 225.3,
+  "sync": 19,
+  "long": [
+   170
+  ],
+  "cells": 195
+ },
+ "nodesAfterSettle": {
+  "nodes": 209,
+  "cells": 195,
+  "panelAll": 4844
+ },
+ "summary": {
+  "category:__first": {
+   "total": 47.7,
+   "sync": 36.2,
+   "nodes": 3,
+   "cells": 1
+  },
+  "category:terrain": {
+   "total": 46,
+   "sync": 32.1,
+   "nodes": 49,
+   "cells": 42
+  },
+  "category:water": {
+   "total": 46.4,
+   "sync": 31.2,
+   "nodes": 17,
+   "cells": 13
+  },
+  "category:all": {
+   "total": 57.1,
+   "sync": 33.4,
+   "nodes": 209,
+   "cells": 195
+  },
+  "cellclick": {
+   "total": 34.8,
+   "sync": 1.1,
+   "cells": 195
+  },
+  "scroll": {
+   "p50": 16.7,
+   "p95": 17.4,
+   "max": 26.1
+  }
+ }
+}

@@ -27,7 +27,19 @@
 | 타일 클릭 | 171~525ms | 약 72ms |
 | 전체 채움 | 배치 128칸×`setTimeout(0)` 로 약 60초 | 즉시 |
 
-부팅 시간은 dev 서버가 지배해 차이가 작다. **DOM 2만 노드 초과·필터 1초 안팎 → 「팔레트 가상화 필요」.** `tilePaletteGrid.ts` 는 칸마다 `button.chipset-tile` 을 만들고 걸러진 칸도 DOM 에 남긴다. 미해결 위험이다.
+**가상화 적용 후 (2026-10-01, 같은 조건, `perf/palette-virtual`).** `tilePaletteVirtual.ts` 가 보이는 창 + 위아래 18행·좌우 1열만 DOM 에 둔다(칸 수 512 초과인 커스텀 팔레트만; 이하는 예전 전체 렌더).
+
+| | 이전 | 이후 |
+|---|---|---|
+| 팔레트 DOM `.chipset-tile` / 패널 노드 | 23,936 / 24,036 (측정 4,705~8,545 은 지연 채움 도중) | 969 / 970 |
+| 필터(분류) 전환 | 1.1~1.5초 | 42~100ms (`refreshPaletteFilter`: 툴바·보조 패널 재빌드 생략, 목록만 교체) |
+| 타일 클릭 | 약 295ms | 39~75ms(부하 잡음 큼) |
+| 스크롤 프레임 p50 / p95 | 67ms / 495ms | 약 19ms / 64~80ms — **16ms 목표 미달** |
+| 합본 마을 | (기준) | 같은 값(가상화 문턱 미만, 경로 불변) |
+
+스크롤은 유휴 프레임 비용이 칸 수가 아니라 **격자 전체 높이**에 비례했다(헤드리스 소프트웨어 래스터 추정; contain·will-change·content-visibility 무효). 스크롤 중 추가 비용은 칸 추가·제거 시 스타일 재계산이며 행 버퍼를 늘릴수록 줄어든다(1행 360~520ms/s → 18행 약 80~160ms/s). 측정 스크립트·전후 JSON·스크린샷은 `verify-shots/palette-virtual/` (`bench.mjs`, `behavior.mjs`, `pdiff.py`). 기본 화면 픽셀 diff 는 두 타일셋 모두 0.
+
+분류 보정(코드): `tileMeta` 에 role 이 없는 타일셋은 「지형」이 0칸이었다 → 태그(grass·road·plaza·sand·walk·cliff…)로 usage 추정(`tilePaletteFilter.ts inferTerrainUsage`), 버들항 지형 2,482칸. **「물」 10,719칸은 그대로다** — 무늬 없는 일반 물칸 10,591개가 `water` 태그를 다 갖는다(`beodeulCityTileset.json` 데이터). 고치려면 `python3 scripts/content/build-beodeul-city.py --no-render` 로 JSON 을 다시 만들 때 일반 물칸 태그를 `water-plain` 등으로 나눠야 한다(이번엔 재생성하지 않음). 잔디·광장·오토타일 앞쪽 고정 구역은 미구현.
 
 앞쪽 배치: 잔디 737 은 5행, 광장 8~22행. 그러나 길·물·모래 **오토타일 본체는 맨 끝**(길 23015~, 물 23025~23152, 모래 23160~, 179~181행)이고, `지형` 필터는 0칸, `물` 필터는 10,719칸(과대 분류)이다. 구조물 키트 286종은 팔레트 칸이 아니라 `stamp_object`/구조 보조로 찍는다. 후속: 자주 쓰는 칸 고정 구역, 지형 분류 수정, 가상화.
 
