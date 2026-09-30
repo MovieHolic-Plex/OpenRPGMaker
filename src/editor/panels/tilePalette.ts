@@ -18,7 +18,9 @@ import { makeTileBrushControls } from "@/editor/panels/tilePaletteStampStatus";
 import { selectPaletteStamp } from "@/editor/panels/tileToolbarActions";
 import { dismissLocationDrawModeForTool } from "@/editor/locationDrawMode";
 import {
+  applyPaletteSheetImage,
   makeCustomPalette,
+  setCustomPaletteFilter,
   makeGridPalette,
   gridPaletteDisplayTile,
   gridPaletteVisibleCount,
@@ -71,18 +73,22 @@ type PaletteScroll = {
   readonly sheetTop: number;
 };
 
-/** 칸 집합이 같을 때 시트 노드를 유지한다. 도구·붓·선택은 크롬만 다시 그린다. */
+/**
+ * 칸 집합이 같을 때 시트 노드를 유지한다. 도구·붓·선택은 크롬만 다시 그린다.
+ *
+ * 키에 **넣지 않는 것**(2026-09-30 렉 수정): 그림 주소(타일 이식 베이크가 끝나면 바뀌지만 판의 CSS 변수
+ * 하나만 갈면 된다 — applyPaletteSheetImage), 그리고 커스텀 판의 레이어·분류·검색어(칸 집합이 그 셋과
+ * 무관하고 안 맞는 칸을 흐리게만 하므로 setCustomPaletteFilter 가 클래스만 맞춘다). 커스텀 1140칸을
+ * 레이어·필터 전환마다 다시 짓던 것이 사라진다. 기본 리플로우 판은 칸 집합 자체가 레이어·필터로 바뀌므로 넣는다.
+ */
 function paintSheetRetainKey(tileset: TilesetDef, layer: Exclude<Layer, "event">): string {
-  return [
-    tileset.id,
-    tilesetImageUrl(tileset),
-    tileset.count,
-    tileset.tilesPerRow,
-    layer,
-    activeTileCategory,
-    tileSearchQuery,
-    isCustomTileset(tileset) ? "custom" : "grid",
-  ].join("|");
+  if (isCustomTileset(tileset)) return [tileset.id, tileset.count, tileset.tilesPerRow, "custom"].join("|");
+  return [tileset.id, tileset.count, tileset.tilesPerRow, layer, activeTileCategory, tileSearchQuery, "grid"].join("|");
+}
+
+/** 필터가 켜져 있으면 기본 판은 칸 집합이 달라져 못 살린다. 커스텀 판은 언제나 살린다. */
+function canRetainPalette(tileset: TilesetDef): boolean {
+  return isCustomTileset(tileset) || !isFilterActive();
 }
 
 function detachRetainedPalette(container: HTMLElement, key: string): HTMLElement | null {
@@ -164,11 +170,13 @@ export function renderTilePalette(container: HTMLElement): void {
   const previousPaletteScroll = readPaletteScroll(container);
   const state = editorState.get();
   let retainedSheet: HTMLElement | null = null;
-  if (state.layer !== "event" && !isFilterActive()) {
+  if (state.layer !== "event") {
     const project = store.getCurrent();
     const map = project.maps[state.currentMapId ?? project.startMapId];
     const tileset = map ? project.tilesets[map.tilesetId] : undefined;
-    if (tileset) retainedSheet = detachRetainedPalette(container, paintSheetRetainKey(tileset, state.layer));
+    if (tileset && canRetainPalette(tileset)) {
+      retainedSheet = detachRetainedPalette(container, paintSheetRetainKey(tileset, state.layer));
+    }
   }
   clearChildren(container);
 
@@ -373,6 +381,9 @@ function makePaletteSurface(input: {
       }));
   palette.dataset.retainKey = paintSheetRetainKey(tileset, tileLayer);
   if (retainedSheet) {
+    // 살린 판은 칸을 다시 짓지 않는다 — 그림(이식 베이크)과 필터·선택만 제자리에서 맞춘다.
+    applyPaletteSheetImage(palette, tilesetImageUrl(tileset));
+    if (isCustomTileset(tileset)) setCustomPaletteFilter(palette, visibleTiles, state.selectedTile);
     const displayTile = isCustomTileset(tileset) ? state.selectedTile : gridPaletteDisplayTile(tileset, state.selectedTile);
     movePaletteActiveCell(palette, displayTile);
   }
