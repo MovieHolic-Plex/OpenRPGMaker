@@ -37,3 +37,11 @@ GIF 는 4개(slash, triple, tide, wrath)만 남겼다. 나머지 4개는 report 
 
     npx vite-node scripts/qa/runtime/retro-assistant-build-project.mts
     node scripts/qa/runtime/retro2003-skills-gif.mjs --set custom --custom .omo/retro-assistant/custom-project.json --out <경로>
+
+## 편집기 스킬 탭 「도트 연출」 고르기 (editor-*.png, editor-results.json)
+
+`node scripts/capture-retro-picker.mjs` (dev:worktree 9807, 새 프로젝트). 기본 스킬을 복제해 연출 빌림을 지운 「새 스킬」로:
+
+- before: 상태 「고르지 않으면 기본 베기·탄 연출로 재생됩니다.」, 모션 dash, 층 [slash] 한 장 (editor-picker-before.png, editor-preview-before.png).
+- 필터 모션 「파고들어 베기」 + 속성 「불」 -> 6개 후보 (editor-picker-filtered.png).
+- 후보 skill_hero_flame_sword 선택 -> 저장값 retroChoreographyId = skill_hero_flame_sword, 상태 「빌려 온 연출: 화염검」, 모션 dash-strike, 층 [hero_flame_aura, hero_flame_slash], 무대 스프라이트·이펙트 칩이 바뀜 (editor-picker-after.png, editor-preview-playing.png).

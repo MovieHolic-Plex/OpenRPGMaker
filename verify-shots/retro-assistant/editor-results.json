@@ -1,0 +1,42 @@
+{
+ "cloneId": "skill_3ab90279-1abf-40fb-b35b-4b6027ed60b2",
+ "before": {
+  "retroChoreographyId": null,
+  "status": "고르지 않으면 기본 베기·탄 연출로 재생됩니다.",
+  "motion": "dash",
+  "layers": [
+   "slash"
+  ]
+ },
+ "motionOptions": [
+  "|모션 전체",
+  "dash-strike|파고들어 베기",
+  "spin|회전 베기",
+  "buff|제자리 강화",
+  "leap-strike|뛰어올라 내려찍기",
+  "finisher|필살기",
+  "cast|제자리 시전",
+  "flurry|연속 베기",
+  "blink-strike|순간이동 베기",
+  "shoot|제자리 사격",
+  "lunge|돌진 물기",
+  "breath|숨결"
+ ],
+ "countAfterFilter": "6개",
+ "picked": "skill_hero_flame_sword",
+ "after": {
+  "retroChoreographyId": "skill_hero_flame_sword",
+  "status": "빌려 온 연출: 화염검 (skill_hero_flame_sword)",
+  "motion": "dash-strike",
+  "layers": [
+   "hero_flame_aura",
+   "hero_flame_slash"
+  ]
+ },
+ "playing": {
+  "running": "true",
+  "pose": "idle",
+  "motion": "dash-strike",
+  "time": "1.2 / 1.2초"
+ }
+}
