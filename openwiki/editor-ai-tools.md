@@ -1,5 +1,12 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 조수 스킬 저작 — 기믹·연출 빌리기 (2026-09-30)
+
+- `upsert_skill`(`dbTools.ts`) 는 `hpCostPercent`·`drainPercent`·`retroChoreographyId` 도 받는다. 없는 연출 id 는 `nearbyRetroChoreographies` 후보와 함께 거부한다.
+- 읽기 도구 `list_retro_choreographies`(`tools/retroChoreographyTools.ts`): motion·속성·앵커·계열·낱말로 계약 연출을 찾는다(편집기 선택기와 같은 색인).
+- 읽기 도구 `read_retro_skill_guide`: 지침의 정본은 `src/assets/retroSkillMechanics.ts` 의 `RETRO_SKILL_DESIGN_GUIDE` **하나**이고 묶음 작성자와 조수가 같은 문자열을 읽는다(기믹 어휘·`upsert_skill` 필드 대응·새 스킬이 연출을 빌리는 절차·크로노 트리거/FF 풍 예시). 지침을 고칠 땐 이 파일만 고친다.
+- 흐름 증거(모델 없이 도구 레지스트리만): `scripts/qa/runtime/retro-assistant-build-project.mts` — 새 직업 「화염 검투사」 + 상태 + 스킬 8개를 만들고 `retro2003-skills-gif.mjs --set custom` 으로 8/8 재생을 확인.
+
 ## 실내 설계는 검토된 실내 프리셋을 함께 본다 (2026-09-28)
 
 사용자 지적: "AI 가 실내를 놓을 때 '버드나무 여관' 같은 미리 만들어진 프리셋을 전혀 참고하지 않는다". 실측이 맞았다.

@@ -14,6 +14,10 @@
 
 스킬 `area`·`comboActorIds`, 상태 `freezesGauge`·`forcedAction`·`physicalDefenseMultiplier`·`magicDefenseMultiplier`·`elementRates` 는 이제 자료집 스킬/상태 탭에서 고친다(칸 목록·저장 경로: [editor-database.md](editor-database.md) 같은 날짜 절). 런타임 의미는 아래 「스킬 기믹 명시화」·「연계기 · 위치 범위기」 그대로다. 기본 DB 상태 8종·확장 직업 6종은 기존 프로젝트에도 `ensureRetroRosterRecords` 가 빠진 것만 심는다([runtime-project-schema.md](runtime-project-schema.md)).
 
+## 스킬이 계약 도트 연출을 빌린다 — retroChoreographyId (2026-09-30)
+
+새 스킬은 자기 id 가 계약(`retroClassSkills`·`retroRosterSkills`·`retroMonsterSkills`)에 없어도 `SkillRecord.retroChoreographyId` 가 가리키는 계약의 연출(모션·층·소리·타격 간격)을 그대로 재생한다. 위력·비용·상태·범위는 레코드 값을 쓴다. 조회는 `src/assets/retroSkillCatalog.ts` 의 `resolveRetroClassChoreography(record) = retroClassSkill(record.id) ?? retroClassSkill(record.retroChoreographyId)`(몬스터판 `resolveRetroMonsterChoreography`) 하나이고, 런타임(`skillByName`·battleEntry·특수기)과 편집기 무대·배지·서명이 같이 쓴다 — 런타임은 스킬을 **이름**으로 찾으므로 이름이 계약과 다르면 이 필드가 유일한 연결이다. 자기 id 가 계약이면 그쪽이 우선이라 빌린 값은 무시된다. 스킬 복제(편집기·조수)는 사본에 원본 계약 id 를 채운다. 내보내기 플레이어는 `pixel-fx` 폴더 전량을 번들하므로 자산 배선이 더 필요 없다. 증거: `verify-shots/retro-assistant/SUMMARY.md`(새 직업 「화염 검투사」 스킬 8개가 모두 빌린 연출을 재생).
+
 ## 도트 결과 화면 단순화 · 적 그룹 「전투 뒤」 이벤트 (2026-09-28)
 
 - **도트 결과(기본 메뉴 스킨 pixel, 포켓몬 제외)** 는 첫 화면이 세 창이다: 머리 창(승리 · EXP · 돈 · 전리품 이름, `battle-result-summary`) / 파티 창(걷는 그림 · Lv 전후 · EXP 막대 · LEVEL UP 또는 다음 Lv까지, `battle-result-party-<actorId>`) / 전리품 창(`battle-result-cards`: 소지금 「a → b」, 아이템 「보유 a → b」).

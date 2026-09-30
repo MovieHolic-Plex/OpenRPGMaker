@@ -1,5 +1,9 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 스킬 도트 연출 빌리기 — 선택 필드 retroChoreographyId (2026-09-30)
+
+`SkillRecord.retroChoreographyId?: string` — 계약 연출 id(예: `skill_hero_flame_sword`). 정규화 화이트리스트와 편집 변이 키에 들어 있고, 비어 있으면 필드 자체가 없다. 없는 id 는 조수 도구가 거부하고(비슷한 후보를 돌려줌) 편집기는 계약 목록에서만 고르게 한다. 런타임 의미는 [runtime-battle.md](runtime-battle.md) 같은 날짜 절.
+
 ## ensureRetroRosterRecords — 기존 프로젝트에 레트로 로스터 심기 (2026-09-30)
 
 `src/project/defaults/defaultDatabase.ts` `ensureRetroRosterRecords(project): boolean`. 로스터(발키리·암흑기사 등 확장 직업 6종 `RETRO_EXTENSION_CLASS_IDS`의 클래스·배우·스킬)와 기믹 상태 8종(`RETRO_GIMMICK_STATE_IDS`: blind·stop·protect·shell·berserk·petrify·wet·oiled)을 **id 로 없는 것만** 덧붙인다. 저자가 이미 가진 레코드는 건드리지 않고, 바뀐 게 있으면 true. 선례 관용구는 `ensureBundledBattleAnimations`.
