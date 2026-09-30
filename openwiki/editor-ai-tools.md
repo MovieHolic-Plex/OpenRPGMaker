@@ -4,6 +4,7 @@
 
 - `upsert_skill`(`dbTools.ts`) 는 `hpCostPercent`·`drainPercent`·`retroChoreographyId` 도 받는다. 없는 연출 id 는 `nearbyRetroChoreographies` 후보와 함께 거부한다.
 - 읽기 도구 `list_retro_choreographies`(`tools/retroChoreographyTools.ts`): motion·속성·앵커·계열·낱말로 계약 연출을 찾는다(편집기 선택기와 같은 색인).
+- 연출 조립 도구(`tools/retroChoreographyTools.ts`, 2026-09-30): `upsert_choreography`(프로젝트 레코드 추가·수정, 층 배열은 자유 키 객체 금지 — Gemini 400)·`duplicate_choreography`(계약/레코드를 `chor_` 사본으로 복제, 반환 `data` 가 레코드 자체)·`list_fx_sheets`(이펙트 시트 이름·프레임 폭)·`list_retro_choreographies`(이제 프로젝트 레코드도 함께). 스킬에는 `upsert_skill.retroChoreographyId:"chor_..."` 로 붙인다. 지침 「연출 조립」 절은 `retroSkillMechanics.ts` 의 같은 가이드 문자열. 증거: `verify-shots/retro-choreo-a1/`.
 - 읽기 도구 `read_retro_skill_guide`: 지침의 정본은 `src/assets/retroSkillMechanics.ts` 의 `RETRO_SKILL_DESIGN_GUIDE` **하나**이고 묶음 작성자와 조수가 같은 문자열을 읽는다(기믹 어휘·`upsert_skill` 필드 대응·새 스킬이 연출을 빌리는 절차·크로노 트리거/FF 풍 예시). 지침을 고칠 땐 이 파일만 고친다.
 - 흐름 증거(모델 없이 도구 레지스트리만): `scripts/qa/runtime/retro-assistant-build-project.mts` — 새 직업 「화염 검투사」 + 상태 + 스킬 8개를 만들고 `retro2003-skills-gif.mjs --set custom` 으로 8/8 재생을 확인.
 

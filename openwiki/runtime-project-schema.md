@@ -4,6 +4,10 @@
 
 `SkillRecord.retroChoreographyId?: string` — 계약 연출 id(예: `skill_hero_flame_sword`). 정규화 화이트리스트와 편집 변이 키에 들어 있고, 비어 있으면 필드 자체가 없다. 없는 id 는 조수 도구가 거부하고(비슷한 후보를 돌려줌) 편집기는 계약 목록에서만 고르게 한다. 런타임 의미는 [runtime-battle.md](runtime-battle.md) 같은 날짜 절.
 
+## 프로젝트 연출 레코드 — database.skillChoreographies (2026-09-30)
+
+선택 컬렉션 `Database.skillChoreographies?: SkillChoreographyRecord[]`(`types/database.ts`, 모델·정규화 `src/project/skillChoreographyRecords.ts`). 비면 키를 만들지 않아 옛 JSON 바이트가 그대로이고 **스키마 버전은 올리지 않는다**(`SCHEMA_VERSION = 4`, 추가형 선택 필드). 스킬이 `retroChoreographyId: "chor_..."` 로 가리킨다(`validateSkillRetroPatch` 가 `chor_` id 허용). 저장 왕복은 `serialize`/`deserialize`(`io/serialize.ts`)가 그대로 지나가며 변경 원장(`changeLedger.ts`)·`shapeDatabaseFields`·`databaseRecordModel` 에 컬렉션이 등록돼 있다. 손 도구용 선택 층 필드(B 단계)는 타입·정규화에만 있고 런타임은 아직 읽지 않는다. 연출 규칙: [runtime-battle.md](runtime-battle.md).
+
 ## ensureRetroRosterRecords — 기존 프로젝트에 레트로 로스터 심기 (2026-09-30)
 
 `src/project/defaults/defaultDatabase.ts` `ensureRetroRosterRecords(project): boolean`. 로스터(발키리·암흑기사 등 확장 직업 6종 `RETRO_EXTENSION_CLASS_IDS`의 클래스·배우·스킬)와 기믹 상태 8종(`RETRO_GIMMICK_STATE_IDS`: blind·stop·protect·shell·berserk·petrify·wet·oiled)을 **id 로 없는 것만** 덧붙인다. 저자가 이미 가진 레코드는 건드리지 않고, 바뀐 게 있으면 true. 선례 관용구는 `ensureBundledBattleAnimations`.

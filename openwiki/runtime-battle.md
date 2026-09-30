@@ -18,6 +18,14 @@
 
 새 스킬은 자기 id 가 계약(`retroClassSkills`·`retroRosterSkills`·`retroMonsterSkills`)에 없어도 `SkillRecord.retroChoreographyId` 가 가리키는 계약의 연출(모션·층·소리·타격 간격)을 그대로 재생한다. 위력·비용·상태·범위는 레코드 값을 쓴다. 조회는 `src/assets/retroSkillCatalog.ts` 의 `resolveRetroClassChoreography(record) = retroClassSkill(record.id) ?? retroClassSkill(record.retroChoreographyId)`(몬스터판 `resolveRetroMonsterChoreography`) 하나이고, 런타임(`skillByName`·battleEntry·특수기)과 편집기 무대·배지·서명이 같이 쓴다 — 런타임은 스킬을 **이름**으로 찾으므로 이름이 계약과 다르면 이 필드가 유일한 연결이다. 자기 id 가 계약이면 그쪽이 우선이라 빌린 값은 무시된다. 스킬 복제(편집기·조수)는 사본에 원본 계약 id 를 채운다. 내보내기 플레이어는 `pixel-fx` 폴더 전량을 번들하므로 자산 배선이 더 필요 없다. 증거: `verify-shots/retro-assistant/SUMMARY.md`(새 직업 「화염 검투사」 스킬 8개가 모두 빌린 연출을 재생).
 
+## 프로젝트 연출 레코드 — skillChoreographies (2026-09-30, A1)
+
+계약 카탈로그는 읽기 전용 **기본 연출**이고, 프로젝트가 자기 연출을 `database.skillChoreographies`(id `chor_<slug>`)로 갖는다. 조회는 `resolveSkillChoreography(ref, records?, want?)`(`src/project/skillChoreographyRecords.ts`) 하나: ① 스킬 id 가 계약이면 계약 → ② `retroChoreographyId` 가 가리키는 프로젝트 레코드 → ③ 그 id 가 계약이면 계약. 런타임(`skillByName`)·편집기 무대·배지가 같이 쓴다. 기본 연출은 프로젝트에 복사하지 않는다. 시트 프레임 폭·칸 수는 `retroFxSheetMeta(key)`(`retroSkillCatalog.ts`) 하나.
+- 레코드 `motion` 은 클래스 모션(dash-strike·leap-strike·blink-strike·flurry·spin·cast·shoot·buff·finisher)과 몬스터 모션(lunge·shoot·cast·breath·stomp·buff·finisher)의 **합집합**이다. 층은 최대 8, 레코드는 최대 500.
+- 층 옵션 `startMs`(0~5000)·`scale`(0.5~3)·`repeat`(1~6)·`onHit:"each"`(타수만큼 90ms 간격 복제). 옵션이 없는 계약 층의 타임라인은 바이트 그대로다(번들 4436개 타임라인이 기준 커밋과 동일).
+- 함정: 단일 대상 다단 스킬은 플레이어가 타수마다 **행동 전체를 다시 재생**한다(계획 hits=1 이 N번). `onHit:"each"` 복제는 여러 대상이 한 계획으로 묶이는 전체 범위기에서 보인다.
+- 증거: `verify-shots/retro-choreo-a1/SUMMARY.md`.
+
 ## 도트 결과 화면 단순화 · 적 그룹 「전투 뒤」 이벤트 (2026-09-28)
 
 - **도트 결과(기본 메뉴 스킨 pixel, 포켓몬 제외)** 는 첫 화면이 세 창이다: 머리 창(승리 · EXP · 돈 · 전리품 이름, `battle-result-summary`) / 파티 창(걷는 그림 · Lv 전후 · EXP 막대 · LEVEL UP 또는 다음 Lv까지, `battle-result-party-<actorId>`) / 전리품 창(`battle-result-cards`: 소지금 「a → b」, 아이템 「보유 a → b」).
