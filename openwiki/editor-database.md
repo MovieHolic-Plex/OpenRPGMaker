@@ -8,6 +8,10 @@ retro2003 전투 기믹이 JSON 에만 있던 것을 화면에서 고칠 수 있
 - **상태** (`databaseStateRecordView.ts` `retroGimmickControls`, `state.runtimeEffects` 부분 병합): 게이지 정지(`db-state-rt-freezes-gauge`) · 버서크(`db-state-rt-forced-attack`, `forcedAction:"attackRandom"`) · 물리/마법 방어 배율(`db-state-rt-physical-defense`·`-magic-defense`) · 속성 등급 덮어쓰기(`db-state-rt-element-<id>`, 「덮어쓰지 않음」·A~E).
 - 이미 화면에 있던 것(타격별 배율·피해 공식·상태 변화·우선도·속성·재사용 대기·급소·HP 대가·흡수·입력 커맨드·명중 보정·행동 불가·행동 제한)은 새로 만들지 않았다.
 
+## 스킬 탭 「도트 연출」 고르기 (2026-09-30)
+
+스킬 탭 「연출」 카드의 `db-skill-retro-picker`(`src/editor/panels/databaseSkillRetroPicker.ts`): 낱말 검색·모션·속성·계열(직업/몬스터 계열 칩)로 계약 약 850개를 거르고 목록에서 고르면 `updateDatabaseRecord("skills", id, { retroChoreographyId })` 로 저장하며 무대(`db-skill-retro-stage`)가 그 연출로 다시 그려진다(「빌려 온 연출: 이름 (id)」 상태 줄, 「연출 지우기」). 색인·필터는 `retroSkillCatalog.ts` 의 `retroChoreographyEntries`/`filterRetroChoreographies` 를 조수 도구와 공유한다. 스킬 id 자체가 계약이면 고르기는 안내만 보인다. 캡처: `scripts/capture-retro-picker.mjs` -> `verify-shots/retro-assistant/editor-*.png`.
+
 ## 적 그룹 「전투 뒤」 구획 (2026-09-28)
 
 - 적 그룹 폼 구획 탭에 「전투 뒤」(`db-troop-section-after`)가 붙었다. `src/editor/panels/databaseTroopAfterBattlePanel.ts` — 결과 탭 셋(`db-troop-after-battle-tab-victory|defeat|escape`) + 명령 목록 하나(`db-troop-after-battle-command-list`, 피커 문맥 "map").

@@ -7,7 +7,7 @@
 // legacy: 예전 17종(모든 배우가 배운다). 녹화 사본만 고친다 — 실제 player.html, 키보드 입력, 정본 쓰기 없음.
 // 조 네 개: (주인공·수호자·마도사·정찰병), (성직자·궁수·쓰러진 주인공 — 부활 대상), (사무라이·닌자·무도가), (음유시인·드루이드·마녀).
 // 확장 배우는 데모 픽스처에 없으므로 현재 기본 DB 의 배우·직업·장비를 녹화 사본에 합친다. 사본에서 레벨 22·MP 999·적 HP 99999.
-import { mkdir, writeFile, stat } from 'node:fs/promises';
+import { mkdir, writeFile, readFile, stat } from 'node:fs/promises';
 import { resolve, join } from 'node:path';
 import { parseArgs, promisify } from 'node:util';
 import { execFile } from 'node:child_process';
@@ -19,11 +19,12 @@ const { values } = parseArgs({ options: {
   out: { type: 'string', default: '.omo/retro-skills/recording' },
   set: { type: 'string', default: 'class' },
   fps: { type: 'string', default: '15' }, width: { type: 'string', default: '640' },
-  skills: { type: 'string' }, batch: { type: 'string' }, reduced: { type: 'boolean', default: false },
+  skills: { type: 'string' }, batch: { type: 'string' }, custom: { type: 'string' }, reduced: { type: 'boolean', default: false },
 } });
 const fps = Number(values.fps), width = Number(values.width);
 if (!Number.isInteger(fps) || fps < 1 || fps > 30 || !Number.isInteger(width) || width < 320 || width > 1280) throw new Error('fps 1..30, width 320..1280');
-if (!['class', 'new', 'old', 'legacy', 'roster', 'party-pixel'].includes(values.set)) throw new Error('--set class|new|old|legacy|roster|party-pixel');
+if (!['class', 'new', 'old', 'legacy', 'roster', 'party-pixel', 'custom'].includes(values.set)) throw new Error('--set class|new|old|legacy|roster|party-pixel|custom');
+if (values.set === 'custom' && !values.custom) throw new Error('--set custom 은 --custom <스펙.json> 이 필요하다(retro-assistant-build-project.mts 가 만든다)');
 const out = resolve(values.out);
 await mkdir(join(out, 'video'), { recursive: true });
 await mkdir(join(out, 'browser-tmp'), { recursive: true });
@@ -60,12 +61,19 @@ try {
       contract: k.RETRO_CLASS_SKILLS.map((s, index) => ({ id: s.id, actorId: s.actorId, motion: s.motion, layers: s.layers.map((l) => l.key), extension: index >= 48 })) };
   });
   await setup.close();
+  // 조수 도구로 만든 임의 스킬: 스펙의 DB 행과 녹화 계약(배우·모션·연출 층)을 기본 목록에 합친다.
+  const customSpec = values.set === 'custom' ? JSON.parse(await readFile(resolve(values.custom), 'utf8')) : undefined;
+  if (customSpec) {
+    for (const key of ['skills', 'states', 'classes', 'actors', 'equipment']) defaults[key] = [...defaults[key].filter((row) => !customSpec[key].some((r) => r.id === row.id)), ...customSpec[key]];
+    report.custom = { file: values.custom, contract: customSpec.contract, log: customSpec.log };
+  }
   const rosterRows = defaults.roster.filter((row) => !values.batch || row.batch === values.batch);
   // 통상 공격 녹화 과제는 「attack:<칩>」 id 를 쓴다(스킬이 아니라 명령 공격 한 번).
   const attackRows = defaults.partyPixel.filter((row) => row.actorId && (!values.batch || row.batch === values.batch))
     .map((row) => ({ id: 'attack:' + row.chip, actorId: row.actorId, motion: row.motion, layers: [], attack: true, chip: row.chip }));
-  const contract = new Map([...defaults.contract, ...rosterRows, ...attackRows].map((row) => [row.id, row]));
-  const all = values.set === 'legacy' ? LEGACY
+  const contract = new Map([...defaults.contract, ...rosterRows, ...attackRows, ...(customSpec?.contract ?? [])].map((row) => [row.id, row]));
+  const all = values.set === 'custom' ? customSpec.contract.map((row) => row.id)
+    : values.set === 'legacy' ? LEGACY
     : values.set === 'roster' ? rosterRows.map((row) => row.id)
       : values.set === 'party-pixel' ? attackRows.map((row) => row.id)
         : defaults.contract.filter((row) => values.set === 'class' || (values.set === 'new') === row.extension).map((row) => row.id);
@@ -88,7 +96,7 @@ try {
   };
   const groups = values.set === 'legacy'
     ? [{ party: ['actor_hero', 'actor_guardian', 'actor_mage', 'actor_scout'], dead: [], skills: wanted }]
-    : values.set === 'roster' || values.set === 'party-pixel' ? chunkGroups()
+    : values.set === 'roster' || values.set === 'party-pixel' || values.set === 'custom' ? chunkGroups()
     : [
       { party: ['actor_hero', 'actor_guardian', 'actor_mage', 'actor_scout'], dead: [] },
       { party: ['actor_cleric', 'actor_ranger', 'actor_hero'], dead: ['actor_hero'] },

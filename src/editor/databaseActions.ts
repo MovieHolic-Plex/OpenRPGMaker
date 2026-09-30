@@ -1,5 +1,6 @@
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { duplicateInto } from "@/editor/databaseCopy";
+import { retroChoreographyIdForClone } from "@/assets/retroSkillCatalog";
 import { databaseRecordPrefix, databaseReferenceMessage } from "@/editor/databaseReferences";
 import { updateClassRecord, updateEnemyRecord, updateEquipmentRecord, updateItemRecord, updateSkillRecord, updateTroopRecord } from "@/editor/databaseRecordMutators";
 import { createActorRecord, normalizeActorPatch, normalizeActorRecord } from "@/project/actorModel";
@@ -378,9 +379,15 @@ export function duplicateDatabaseRecord(collection: DatabaseCollection, id: stri
       case "classes":
         duplicateInto(project.database.classes, id, copyId);
         return;
-      case "skills":
+      case "skills": {
         duplicateInto(project.database.skills, id, copyId);
+        // 계약 연출(id 로만 찾는다)을 사본이 이어받도록 원본의 계약 id 를 적어 둔다.
+        const source = project.database.skills.find((entry) => entry.id === id);
+        const copy = project.database.skills.find((entry) => entry.id === copyId);
+        const borrowed = source ? retroChoreographyIdForClone(source) : undefined;
+        if (copy && borrowed) copy.retroChoreographyId = borrowed;
         return;
+      }
       case "items":
         duplicateInto(project.database.items, id, copyId);
         return;

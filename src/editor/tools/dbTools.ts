@@ -3,6 +3,7 @@ import { actionSkillClearProperties, authoredSkillProperties, combatConditionSch
 import { hasEquipmentSlot } from "@/project/equipmentSlots";
 import { mergeRecordPatch } from "./mergeRecordPatch";
 import { projectDatabaseReferenceMessage } from "@/editor/databaseRecordReferences";
+import { nearbyRetroChoreographies, retroChoreographyIdForClone, retroChoreographyKind } from "@/assets/retroSkillCatalog";
 // editor/tools/dbTools.ts
 // DB 쓰기 툴: upsert_item / upsert_enemy / upsert_troop / upsert_actor / upsert_skill
 //            / upsert_equipment / upsert_class / define_promotion / upsert_state / upsert_common_event
@@ -165,7 +166,13 @@ function duplicateFromCollection(draft: Project, collection: DatabaseRecordColle
   switch (collection) {
     case "actors": return duplicateRecord(draft.database.actors, id, newId, name);
     case "classes": return duplicateRecord(draft.database.classes, id, newId, name);
-    case "skills": return duplicateRecord(draft.database.skills, id, newId, name);
+    case "skills": {
+      const source = draft.database.skills.find((record) => record.id === id);
+      const borrowed = source ? retroChoreographyIdForClone(source) : undefined;
+      const copy = duplicateRecord(draft.database.skills, id, newId, name);
+      if (borrowed) copy.retroChoreographyId = borrowed;
+      return copy;
+    }
     case "items": return duplicateRecord(draft.database.items, id, newId, name);
     case "equipment": return duplicateRecord(draft.database.equipment, id, newId, name);
     case "enemies": return duplicateRecord(draft.database.enemies, id, newId, name);
@@ -676,6 +683,9 @@ const skillRecordSchema = objectSchema({
   resource2Cost: integerSchema("제2 자원 「기력」 소모량(system.resource2.enabled 일 때만). 0 이면 없음"),
   limitSkill: booleanSchema("리미트 기술 — 리미트 게이지가 가득 찼을 때만 쓰고 쓰면 비운다(system.limitGauge.enabled 일 때만)"),
   partyGaugeCost: integerSchema("추격 연계기 — 파티 공용 게이지 소모량(system.partyGauge.enabled 일 때만). 0 이면 없음"),
+  hpCostPercent: integerSchema("시전 대가로 시전자가 최대 HP 의 N% 를 잃는다(0~100, 0=없음, HP 는 1 밑으로 안 내려감). 희생·폭발계 기술의 대가"),
+  drainPercent: integerSchema("준 피해의 N% 만큼 시전자가 회복(0~100, 0=없음, affects mp 면 MP). 흡수·흡혈계 기술. 피해를 주는 기술에만 의미가 있다"),
+  retroChoreographyId: stringSchema("retro2003 측면 전투에서 이 스킬이 보여 줄 도트 연출을 계약 id 로 빌린다(예: skill_knight_slash). 새·복제 스킬은 이걸 안 주면 기본 베기/불꽃으로 보인다. 후보는 list_retro_choreographies 로 찾는다. 빈 문자열이면 해제"),
 }) as RecordSchema;
 
 const equipmentRecordSchema = objectSchema({
@@ -1130,6 +1140,26 @@ function validateSkillTechPatch(draft: Project, patch: unknown): void {
   }
 }
 
+/**
+ * retroChoreographyId 검사. 존재하지 않는 id 는 정규화가 그대로 두어 전투에서 조용히 기본 연출이 되므로,
+ * 여기서 거부하고 비슷한 계약 후보를 돌려준다. 빈 문자열은 해제.
+ */
+function validateSkillRetroPatch(patch: unknown): void {
+  if (!patch || typeof patch !== "object" || Array.isArray(patch)) return;
+  const value = (patch as Record<string, unknown>).retroChoreographyId;
+  if (value === undefined || value === null) return;
+  if (typeof value !== "string") {
+    throw new ToolError("skill.retroChoreographyId 는 문자열이어야 합니다. 예: \"skill_knight_slash\" (list_retro_choreographies 로 조회)", { code: "invalid-retro-choreography" });
+  }
+  const id = value.trim();
+  if (!id || retroChoreographyKind(id)) return;
+  const near = nearbyRetroChoreographies(id).map((entry) => `${entry.id}(${entry.name}, ${entry.motion})`);
+  throw new ToolError(
+    `존재하지 않는 retroChoreographyId: ${id}${near.length ? ` — 비슷한 후보: ${near.join(", ")}` : ""}. list_retro_choreographies 로 motion/element/query 를 좁혀 정확한 id 를 고르세요.`,
+    { code: "retro-choreography-not-found" },
+  );
+}
+
 /** 배우 learnedSkills[].tp 와 적 rewards.tp 는 양의 정수만 받는다. 음수·0 은 정규화가 조용히 버린다. */
 function requirePositiveTp(value: unknown, label: string): void {
   if (value === undefined) return;
@@ -1567,12 +1597,13 @@ function reconcileActorFace(record: ActorRecord, patch: Record<string, unknown>,
 
 const upsertSkill: ToolDefinition = {
   name: "upsert_skill",
-  description: "스킬 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
+  description: "스킬 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. retro2003 전투에서는 새·복제 스킬에 retroChoreographyId 로 도트 연출을 빌려야 기본 베기로 안 보인다(list_retro_choreographies). 기믹 어휘·직업 설계 규칙은 read_retro_skill_guide.",
   mode: "write",
   parameters: parametersForRecord("skill", skillRecordSchema, { id: "skill_fire", name: "화염", power: 35, elementId: "fire" }, actionSkillClearProperties),
   run(draft, args): ToolExecResult {
     validateSkillCombatPatch(args.skill);
     validateSkillTechPatch(draft, args.skill);
+    validateSkillRetroPatch(args.skill);
     const merged = mergeRecord(draft.database.skills, args.skill, "skill", skillRecordSchema, { id: "skill_fire", name: "화염" });
     finalizeSkillCombatPatch(merged as unknown as Record<string, unknown>, args.skill, args);
     const record = normalizeSkillRecord(merged as Partial<SkillRecord> & Pick<SkillRecord, "id" | "name">);

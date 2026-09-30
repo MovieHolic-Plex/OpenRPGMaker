@@ -30,6 +30,7 @@ import {
   type SkillComposerEffectKind,
 } from "@/editor/panels/databaseSkillComposerModel";
 import { renderSkillAnimationStage, type SkillAnimationStage } from "@/editor/panels/databaseSkillAnimationStage";
+import { retroChoreographyPicker } from "@/editor/panels/databaseSkillRetroPicker";
 import { renderSkillRetroStage, retroStageSignature, type SkillRetroStage } from "@/editor/panels/databaseSkillRetroStage";
 import { sectionCard } from "@/editor/panels/databaseWorkspace";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
@@ -74,6 +75,7 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
   const stateBody = el("div", { class: "db-skill-state-effects" });
   const previewBody = el("div", { class: "db-skill-preview-slot" });
   const retroBody = el("div", { class: "db-skill-retro-slot" });
+  const pickerBody = el("div", { class: "db-skill-retro-picker-slot" });
   const actionBody = el("div", { class: "db-skill-action-fields" });
   const renderEffectPanel = () => effectBody.replaceChildren(...effectFields(currentSkill(record), renderEffectPanel));
   const renderStatePanel = () => stateBody.replaceChildren(...stateEffectFields(currentSkill(record), renderStatePanel));
@@ -97,6 +99,10 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
     retroBody.replaceChildren(...(retroStage ? [retroStage.element] : []));
     presentationCard?.classList.toggle("db-skill-card-has-retro", Boolean(retroStage));
   };
+  // 「도트 연출」 고르기 — 고르면 상태 문구·무대를 함께 다시 그린다.
+  const renderPickerPanel = (): void => {
+    pickerBody.replaceChildren(retroChoreographyPicker(currentSkill(record), () => { renderPickerPanel(); renderRetroPanel(true); }));
+  };
   let presentationCard: HTMLElement | null = null;
   // 투사체를 켜도 데미지/사거리/탄약 필드가 안 나타나던 문제(개편 전부터 있던 결함) —
   // 효과/상태 패널처럼 이 카드도 토글 후 다시 그린다.
@@ -106,6 +112,7 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
   renderStatePanel();
   renderPreviewPanel();
   renderRetroPanel(true);
+  renderPickerPanel();
   renderActionPanel();
 
   let composer = skillComposer(currentSkill(record));
@@ -173,7 +180,7 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
         title: "연출",
         hint: retroStage ? "도트 전투 미리보기 · ▶ 재생을 누르면 효과음도 들립니다" : undefined,
         testid: "db-skill-card-presentation",
-        children: [retroBody, ...(animationNode ? [animationNode] : []), previewBody],
+        children: [retroBody, pickerBody, ...(animationNode ? [animationNode] : []), previewBody],
       })),
       sectionCard({
         title: "Gen1 기술",
