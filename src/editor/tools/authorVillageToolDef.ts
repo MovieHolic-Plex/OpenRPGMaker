@@ -13,6 +13,7 @@ import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness/combin
 import { estimateVillageSize } from "@/ai/constructionDeclaration";
 import type { GameMap, Project } from "@/project/types";
 import { createDraft } from "./changeset";
+import { AUTHOR_BEODEUL_TOWN_TOOL } from "./authorBeodeulTown";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
 import { cropExtraLayers } from "@/project/mapLayers";
@@ -239,6 +240,9 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
       interior: false,
     },
     run(draft, args): ToolExecResult {
+      // 버들항 타일셋 대상이면 숲마을 생성기가 아니라 블록 조립 생성기로 보낸다(이 생성기는 버들항 그림을 모른다).
+      const beodeul = rerouteToBeodeulTown(draft, args);
+      if (beodeul) return beodeul;
       // referenceId 는 결과 비교용 — 파서(허용 키 고정)와 시공기에 넘기지 않는다.
       const { referenceId: rawReferenceId, ...buildArgs } = args;
       const referenceId = typeof rawReferenceId === "string" && rawReferenceId.trim() ? rawReferenceId.trim() : undefined;
@@ -359,6 +363,39 @@ function renameVillageTargetMap(draft: Project, mapId: string, requested: string
       ? `맵 이름: '${previous}' → '${next}'.`
       : `맵 이름이 자리표시 '${previous}'라 '${next}'(으)로 바꿨습니다 — 고유 마을 이름은 target.name 또는 set_map_properties 로 지정하세요.`,
   ];
+}
+
+/**
+ * author_village 의 대상이 버들항이면 author_beodeul_town 으로 넘긴다.
+ * 새 맵: target.tilesetId 가 버들항이거나, 생략했는데 프로젝트 야외 기본이 버들항(새 프로젝트)일 때.
+ * 기존 맵: 맵 타일셋이 버들항일 때(맵 전체를 다시 깐다).
+ */
+function rerouteToBeodeulTown(draft: Project, args: Record<string, unknown>): ToolExecResult | null {
+  const target = args.target;
+  if (!target || typeof target !== "object") return null;
+  const t = target as Record<string, unknown>;
+  const isNew = t.kind === "new";
+  const existing = !isNew && typeof t.mapId === "string" ? draft.maps[t.mapId] : undefined;
+  const tilesetId = isNew
+    ? (typeof t.tilesetId === "string" && t.tilesetId.trim() ? t.tilesetId.trim() : defaultOutdoorTilesetId(draft))
+    : existing?.tilesetId;
+  if (tilesetId !== "beodeul_city") return null;
+  const number = (v: unknown): number | undefined => (typeof v === "number" && Number.isFinite(v) ? v : undefined);
+  const text = JSON.stringify(args);
+  const forwarded: Record<string, unknown> = {};
+  if (existing) forwarded.mapId = existing.id;
+  if (typeof t.name === "string" && t.name.trim()) forwarded.name = t.name.trim();
+  if (isNew && typeof t.mapId === "string" && t.mapId.trim()) forwarded.id = t.mapId.trim();
+  const width = number(t.width), height = number(t.height);
+  if (width !== undefined) forwarded.width = width;
+  if (height !== undefined) forwarded.height = height;
+  if (number(args.seed) !== undefined) forwarded.seed = number(args.seed);
+  if (/항구|harbou?r|port\b|부두|선착장/i.test(text)) forwarded.harbour = true;
+  const result = AUTHOR_BEODEUL_TOWN_TOOL.run(draft, forwarded);
+  return {
+    ...result,
+    summary: "author_village 는 숲마을 생성기라 버들항 타일셋에서는 author_beodeul_town(블록 키트 조립)으로 대신 시공했다. " + result.summary,
+  };
 }
 
 /**

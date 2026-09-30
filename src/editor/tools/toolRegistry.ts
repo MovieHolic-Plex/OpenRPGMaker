@@ -77,6 +77,7 @@ import { WORLD_GRAPH_TOOLS } from "./worldGraphTools";
 import { TILE_QUERY_TOOLS } from "./tileQueryTool";
 import { AUTHOR_HOUSE_TOOL } from "./authorHouseToolDef";
 import { AUTHOR_VILLAGE_TOOL } from "./authorVillageToolDef";
+import { AUTHOR_BEODEUL_TOWN_TOOL } from "./authorBeodeulTown";
 import { PROJECT_TOOLS } from "./projectTools";
 import { FIND_TOOLS } from "./discoveryTools";
 import { LIFE_SYSTEM_TOOLS } from "./lifeSystemTools";
@@ -190,6 +191,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(VOCABULARY_TOOLS_V3, "tile"),
   AUTHOR_HOUSE_TOOL,
   AUTHOR_VILLAGE_TOOL,
+  AUTHOR_BEODEUL_TOWN_TOOL,
   ...WORLD_STRUCTURE_TOOLS,
   ...SPATIAL_TOOLS,
   ...SHARED_SCENE_TOOLS,
