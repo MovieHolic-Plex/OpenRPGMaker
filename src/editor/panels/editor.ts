@@ -1021,7 +1021,7 @@ function renderAuthoringJourneyNow(project: ReturnType<typeof store.getCurrent>,
   ) return;
   clearChildren(authoringJourneyRoot);
   authoringJourneyRoot.append(renderAuthoringJourney(project, progress, {
-    referenceIssues: authoringJourneyReferenceIssues,
+    referenceIssues: authoringJourneyReferenceIssues ?? undefined,
     open: authoringJourneyOpen,
     onOpenChange: (open) => {
       authoringJourneyOpen = open;
