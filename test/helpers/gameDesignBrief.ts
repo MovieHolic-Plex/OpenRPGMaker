@@ -1,3 +1,4 @@
+import { vi } from "vitest";
 import { GAME_BRIEF_SLOTS, gameDesignSummary, normalizeGameDesignBrief, type GameDesignAnswers, type GameDesignBrief, type GamePresetId } from "@/project/gameDesignBrief";
 import { projectInterviewQuestions } from "@/editor/projectInterviewQuestions";
 
@@ -11,11 +12,14 @@ export function interviewBrief(presetId: GamePresetId = "monster-collect"): Game
 }
 
 export async function completeInterviewChoices(): Promise<void> {
-  for (let i = 0; i < 5; i++) {
-    document.querySelector<HTMLButtonElement>('[data-testid="project-interview-option-0"]')!.click();
-    document.querySelector<HTMLButtonElement>('[data-testid="project-interview-next"]')!.click();
+  vi.useFakeTimers();
+  try {
+    for (let i = 0; i < 5; i++) {
+      document.querySelector<HTMLButtonElement>('[data-testid="project-interview-option-0"]')!.click();
+      document.querySelector<HTMLButtonElement>('[data-testid="project-interview-next"]')!.click();
+      await vi.advanceTimersByTimeAsync(2000);
+    }
+    document.querySelector<HTMLButtonElement>('[data-testid="project-interview-confirm"]')!.click();
     await Promise.resolve();
-  }
-  document.querySelector<HTMLButtonElement>('[data-testid="project-interview-confirm"]')!.click();
-  await Promise.resolve();
+  } finally { vi.useRealTimers(); }
 }
